@@ -770,41 +770,21 @@ ags_live_dssi_bridge_resize_audio_channels(AgsMachine *machine,
   AgsRecycling *first_recycling;
   AgsAudioSignal *audio_signal;  
 
-  AgsMutexManager *mutex_manager;
-
-  GObject *soundcard;
+  GObject *output_soundcard;
   
   guint output_pads, input_pads;
   
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *audio_mutex;
-  pthread_mutex_t *channel_mutex;
-
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-
   live_dssi_bridge = (AgsLiveDssiBridge *) machine;
 
   audio = machine->audio;
 
-  /* get audio mutex */
-  pthread_mutex_lock(application_mutex);
-
-  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
-					 (GObject *) audio);
-  
-  pthread_mutex_unlock(application_mutex);
-
   /* get some fields */
-  pthread_mutex_lock(audio_mutex);
-
-  output = audio->output;
-  input = audio->input;
-  
-  output_pads = audio->output_pads;
-  input_pads = audio->input_pads;
-  
-  pthread_mutex_unlock(audio_mutex);
+  g_object_get(audio,
+	       "output", &output,
+	       "input", &input,
+	       "output-pads", &output_pads,
+	       "input-pads", &input_pads,
+	       NULL);
 
   if(input_pads == 0 &&
      output_pads == 0){
@@ -816,43 +796,23 @@ ags_live_dssi_bridge_resize_audio_channels(AgsMachine *machine,
     channel = input;
     
     while(channel != NULL){
-      /* get channel mutex */
-      pthread_mutex_lock(application_mutex);
-
-      channel_mutex = ags_mutex_manager_lookup(mutex_manager,
-					     (GObject *) channel);
-  
-      pthread_mutex_unlock(application_mutex);
-
       /* get some fields */
-      pthread_mutex_lock(channel_mutex);
-      
-      next_pad = channel->next_pad;
-
-      pthread_mutex_unlock(channel_mutex);
+      g_object_get(channel,
+		   "next-pad", &next_pad,
+		   NULL);
       
       channel = ags_channel_nth(channel,
 				audio_channels_old);
 
       while(channel != next_pad){
-	/* get channel mutex */
-	pthread_mutex_lock(application_mutex);
-
-	channel_mutex = ags_mutex_manager_lookup(mutex_manager,
-						 (GObject *) channel);
-  
-	pthread_mutex_unlock(application_mutex);
-
 	/* get some fields */
-	pthread_mutex_lock(channel_mutex);
-	
-      	soundcard = channel->soundcard;
-	first_recycling = channel->first_recycling;
-
-	pthread_mutex_unlock(channel_mutex);
+	g_object_get(channel,
+		     "output-soundcard", &output_soundcard,
+		     "first-recycling", &first_recycling,
+		     NULL);
 
 	/* audio signal */
-	audio_signal = ags_audio_signal_new(soundcard,
+	audio_signal = ags_audio_signal_new(output_soundcard,
 					    (GObject *) first_recycling,
 					    NULL);
 	audio_signal->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;
@@ -862,11 +822,9 @@ ags_live_dssi_bridge_resize_audio_channels(AgsMachine *machine,
 				       audio_signal);
 
 	/* iterate */
-	pthread_mutex_lock(channel_mutex);
-      
-	channel = channel->next;
-
-	pthread_mutex_unlock(channel_mutex);
+	g_object_get(channel,
+		     "next", &channel,
+		     NULL);
       }
     }
 
@@ -874,43 +832,23 @@ ags_live_dssi_bridge_resize_audio_channels(AgsMachine *machine,
     channel = output;
 
     while(channel != NULL){
-      /* get channel mutex */
-      pthread_mutex_lock(application_mutex);
-
-      channel_mutex = ags_mutex_manager_lookup(mutex_manager,
-					     (GObject *) channel);
-  
-      pthread_mutex_unlock(application_mutex);
-
       /* get some fields */
-      pthread_mutex_lock(channel_mutex);
-      
-      next_pad = channel->next_pad;
-
-      pthread_mutex_unlock(channel_mutex);
+      g_object_get(channel,
+		   "next-pad", &next_pad,
+		   NULL);
 
       channel = ags_channel_pad_nth(channel,
 				    audio_channels_old);
 
       while(channel != next_pad){
-	/* get channel mutex */
-	pthread_mutex_lock(application_mutex);
-
-	channel_mutex = ags_mutex_manager_lookup(mutex_manager,
-						 (GObject *) channel);
-  
-	pthread_mutex_unlock(application_mutex);
-
 	/* get some fields */
-	pthread_mutex_lock(channel_mutex);
-
-	soundcard = channel->soundcard;
-	first_recycling = channel->first_recycling;
-
-	pthread_mutex_unlock(channel_mutex);
+	g_object_get(channel,
+		     "output-soundcard", &output_soundcard,
+		     "first-recycling", &first_recycling,
+		     NULL);
 
 	/* audio signal */
-	audio_signal = ags_audio_signal_new(soundcard,
+	audio_signal = ags_audio_signal_new(output_soundcard,
 					    (GObject *) first_recycling,
 					    NULL);
 	audio_signal->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;
@@ -920,11 +858,9 @@ ags_live_dssi_bridge_resize_audio_channels(AgsMachine *machine,
 				       audio_signal);
 	
 	/* iterate */
-	pthread_mutex_lock(channel_mutex);
-      
-	channel = channel->next;
-
-	pthread_mutex_unlock(channel_mutex);
+	g_object_get(channel,
+		     "next", &channel,
+		     NULL);
       }
     }
 
@@ -954,41 +890,21 @@ ags_live_dssi_bridge_resize_pads(AgsMachine *machine, GType type,
   AgsRecycling *first_recycling;
   AgsAudioSignal *audio_signal;
   
-  AgsMutexManager *mutex_manager;
-
-  GObject *soundcard;
+  GObject *output_soundcard;
   
   guint audio_channels;
   gboolean grow;
 
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *audio_mutex;
-  pthread_mutex_t *channel_mutex;
-
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-
   live_dssi_bridge = (AgsLiveDssiBridge *) machine;
 
   audio = machine->audio;
-  
-  /* get audio mutex */
-  pthread_mutex_lock(application_mutex);
-
-  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
-					 (GObject *) audio);
-  
-  pthread_mutex_unlock(application_mutex);  
 
   /* get some fields */
-  pthread_mutex_lock(audio_mutex);
-
-  output = audio->output;
-  input = audio->input;
-  
-  audio_channels = audio->audio_channels;
-
-  pthread_mutex_unlock(audio_mutex);
+  g_object_get(audio,
+	       "output", &output,
+	       "input", &input,
+	       "audio-channels", &audio_channels,
+	       NULL);
 
   if(pads == pads_old ||
      audio_channels == 0){
@@ -1008,25 +924,14 @@ ags_live_dssi_bridge_resize_pads(AgsMachine *machine, GType type,
 				    pads_old);
 
       while(channel != NULL){
-	/* get channel mutex */
-	pthread_mutex_lock(application_mutex);
-
-	channel_mutex = ags_mutex_manager_lookup(mutex_manager,
-						 (GObject *) channel);
-  
-	pthread_mutex_unlock(application_mutex);
-
 	/* get some fields */
-	pthread_mutex_lock(channel_mutex);
-	
-	soundcard = channel->soundcard;
-
-	first_recycling = channel->first_recycling;
-
-	pthread_mutex_unlock(channel_mutex);
+	g_object_get(channel,
+		     "output-soundcard", &output_soundcard,
+		     "first-recycling", &first_recycling,
+		     NULL);
 
 	/* audio signal */
-	audio_signal = ags_audio_signal_new(soundcard,
+	audio_signal = ags_audio_signal_new(output_soundcard,
 					    (GObject *) first_recycling,
 					    NULL);
 	audio_signal->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;
@@ -1036,11 +941,9 @@ ags_live_dssi_bridge_resize_pads(AgsMachine *machine, GType type,
 				       audio_signal);
 	
 	/* iterate */
-	pthread_mutex_lock(channel_mutex);
-
-	channel = channel->next;
-
-	pthread_mutex_unlock(channel_mutex);
+	g_object_get(channel,
+		     "next", &channel,
+		     NULL);
       }
 
       /* recall */
@@ -1059,25 +962,14 @@ ags_live_dssi_bridge_resize_pads(AgsMachine *machine, GType type,
 				    pads_old);
 
       while(channel != NULL){
-	/* get channel mutex */
-	pthread_mutex_lock(application_mutex);
-
-	channel_mutex = ags_mutex_manager_lookup(mutex_manager,
-						 (GObject *) channel);
-  
-	pthread_mutex_unlock(application_mutex);
-
 	/* get some fields */
-	pthread_mutex_lock(channel_mutex);
-	
-	soundcard = channel->soundcard;
-
-	first_recycling = channel->first_recycling;
-
-	pthread_mutex_unlock(channel_mutex);
+	g_object_get(channel,
+		     "output-soundcard", &output_soundcard,
+		     "first-recycling", &first_recycling,
+		     NULL);
 
 	/* audio signal */
-	audio_signal = ags_audio_signal_new(soundcard,
+	audio_signal = ags_audio_signal_new(output_soundcard,
 					    (GObject *) first_recycling,
 					    NULL);
 	audio_signal->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;
@@ -1087,11 +979,9 @@ ags_live_dssi_bridge_resize_pads(AgsMachine *machine, GType type,
 				       audio_signal);
 	
 	/* iterate */
-	pthread_mutex_lock(channel_mutex);
-
-	channel = channel->next;
-
-	pthread_mutex_unlock(channel_mutex);
+	g_object_get(channel,
+		     "next", &channel,
+		     NULL);
       }
 
       /* recall */
@@ -1123,20 +1013,13 @@ ags_live_dssi_bridge_map_recall(AgsMachine *machine)
   AgsPlayDssiAudio *play_dssi_audio;
   AgsPlayDssiAudioRun *play_dssi_audio_run;
 
-  AgsMutexManager *mutex_manager;
-
-  GList *list;
-
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *audio_mutex;
-    
+  GList *start_play, *play;
+  GList *start_recall, *recall;
+  
   if((AGS_MACHINE_MAPPED_RECALL & (machine->flags)) != 0 ||
      (AGS_MACHINE_PREMAPPED_RECALL & (machine->flags)) != 0){
     return;
   }
-
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
 
   window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) machine,
 						 AGS_TYPE_WINDOW);
@@ -1144,14 +1027,10 @@ ags_live_dssi_bridge_map_recall(AgsMachine *machine)
   live_dssi_bridge = (AgsLiveDssiBridge *) machine;
 
   audio = machine->audio;
-
-  /* get audio mutex */
-  pthread_mutex_lock(application_mutex);
-
-  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
-					 (GObject *) audio);
-  
-  pthread_mutex_unlock(application_mutex);  
+  g_object_get(audio,
+	       "play", &start_play,
+	       "recall", &start_recall,
+	       NULL);
 
   /* ags-delay */
   ags_recall_factory_create(audio,
@@ -1165,19 +1044,15 @@ ags_live_dssi_bridge_map_recall(AgsMachine *machine)
 			     AGS_RECALL_FACTORY_RECALL),
 			    0);
 
-  pthread_mutex_lock(audio_mutex);
-
-  list = ags_recall_find_type(audio->play,
+  play = ags_recall_find_type(start_play,
 			      AGS_TYPE_DELAY_AUDIO_RUN);
 
   if(list != NULL){
-    play_delay_audio_run = AGS_DELAY_AUDIO_RUN(list->data);
+    play_delay_audio_run = AGS_DELAY_AUDIO_RUN(play->data);
     //    AGS_RECALL(play_delay_audio_run)->flags |= AGS_RECALL_PERSISTENT;
   }else{
     play_delay_audio_run = NULL;
   }
-
-  pthread_mutex_unlock(audio_mutex);
 
   /* ags-count-beats */
   ags_recall_factory_create(audio,
@@ -1191,13 +1066,11 @@ ags_live_dssi_bridge_map_recall(AgsMachine *machine)
 			     AGS_RECALL_FACTORY_RECALL),
 			    0);
 
-  pthread_mutex_lock(audio_mutex);
-
-  list = ags_recall_find_type(audio->play,
+  play = ags_recall_find_type(start_play,
 			      AGS_TYPE_COUNT_BEATS_AUDIO_RUN);
 
-  if(list != NULL){
-    play_count_beats_audio_run = AGS_COUNT_BEATS_AUDIO_RUN(list->data);
+  if(play != NULL){
+    play_count_beats_audio_run = AGS_COUNT_BEATS_AUDIO_RUN(play->data);
 
     /* set dependency */  
     g_object_set(G_OBJECT(play_count_beats_audio_run),
@@ -1210,8 +1083,6 @@ ags_live_dssi_bridge_map_recall(AgsMachine *machine)
     play_count_beats_audio_run = NULL;
   }
 
-  pthread_mutex_unlock(audio_mutex);
-
   /* ags-record-midi */
   ags_recall_factory_create(audio,
 			    NULL, NULL,
@@ -1223,13 +1094,11 @@ ags_live_dssi_bridge_map_recall(AgsMachine *machine)
 			     AGS_RECALL_FACTORY_RECALL),
 			    0);
 
-  pthread_mutex_lock(audio_mutex);
+  recall = ags_recall_find_type(start_recall,
+				AGS_TYPE_RECORD_MIDI_AUDIO_RUN);
 
-  list = ags_recall_find_type(audio->recall,
-			      AGS_TYPE_RECORD_MIDI_AUDIO_RUN);
-
-  if(list != NULL){
-    recall_record_midi_audio_run = AGS_RECORD_MIDI_AUDIO_RUN(list->data);
+  if(recall != NULL){
+    recall_record_midi_audio_run = AGS_RECORD_MIDI_AUDIO_RUN(recall->data);
     
     /* set dependency */
     g_object_set(G_OBJECT(recall_record_midi_audio_run),
@@ -1241,8 +1110,6 @@ ags_live_dssi_bridge_map_recall(AgsMachine *machine)
 		 "count-beats-audio-run", play_count_beats_audio_run,
 		 NULL);
   }  
-
-  pthread_mutex_unlock(audio_mutex);
 
   /* ags-play-dssi */
   ags_recall_factory_create(audio,
@@ -1256,13 +1123,11 @@ ags_live_dssi_bridge_map_recall(AgsMachine *machine)
 			     AGS_RECALL_FACTORY_BULK),
 			    0);
 
-  pthread_mutex_lock(audio_mutex);
-
-  list = ags_recall_find_type(audio->play,
+  play = ags_recall_find_type(start_play,
 			      AGS_TYPE_PLAY_DSSI_AUDIO);
   
-  if(list != NULL){
-    play_dssi_audio = AGS_PLAY_DSSI_AUDIO(list->data);
+  if(play != NULL){
+    play_dssi_audio = AGS_PLAY_DSSI_AUDIO(play->data);
     
     g_object_set(play_dssi_audio,
 		 "filename", live_dssi_bridge->filename,
@@ -1273,11 +1138,11 @@ ags_live_dssi_bridge_map_recall(AgsMachine *machine)
     ags_play_dssi_audio_load_ports(play_dssi_audio);
   }
 
-  list = ags_recall_find_type(audio->play,
+  play = ags_recall_find_type(start_play,
 			      AGS_TYPE_PLAY_DSSI_AUDIO_RUN);
 
-  if(list != NULL){
-    play_dssi_audio_run = AGS_PLAY_DSSI_AUDIO_RUN(list->data);
+  if(play != NULL){
+    play_dssi_audio_run = AGS_PLAY_DSSI_AUDIO_RUN(play->data);
 
     /* set dependency */
     g_object_set(G_OBJECT(play_dssi_audio_run),
@@ -1290,8 +1155,6 @@ ags_live_dssi_bridge_map_recall(AgsMachine *machine)
 		 NULL);
   }
 
-  pthread_mutex_unlock(audio_mutex);
-
   /* depending on destination */
   ags_live_dssi_bridge_input_map_recall(live_dssi_bridge,
 					0,
@@ -1301,6 +1164,9 @@ ags_live_dssi_bridge_map_recall(AgsMachine *machine)
   ags_live_dssi_bridge_output_map_recall(live_dssi_bridge,
 					 0,
 					 0);
+
+  g_list_free(start_play);
+  g_list_free(start_recall);
 
   /* call parent */
   AGS_MACHINE_CLASS(ags_live_dssi_bridge_parent_class)->map_recall(machine);
@@ -1341,14 +1207,11 @@ ags_live_dssi_bridge_output_map_recall(AgsLiveDssiBridge *live_dssi_bridge,
 void
 ags_live_dssi_bridge_load(AgsLiveDssiBridge *live_dssi_bridge)
 {
-  AgsEffectBulk *effect_bulk;
-  AgsBulkMember *bulk_member;
   GtkListStore *model;
+
   GtkTreeIter iter;
 
   AgsDssiPlugin *dssi_plugin;
-
-  AgsConfig *config;
 
   void *plugin_so;
   DSSI_Descriptor_Function dssi_descriptor;
@@ -1372,27 +1235,7 @@ ags_live_dssi_bridge_load(AgsLiveDssiBridge *live_dssi_bridge)
   unsigned long i, j;
   guint k;
 
-  config = ags_config_get_instance();
-
-  /* samplerate */
-  str = ags_config_get_value(config,
-			     AGS_CONFIG_SOUNDCARD,
-			     "samplerate");
-
-  if(str == NULL){
-    str = ags_config_get_value(config,
-			       AGS_CONFIG_SOUNDCARD_0,
-			       "samplerate");
-  }
-  
-  if(str != NULL){
-    samplerate = g_ascii_strtoull(str,
-				  NULL,
-				  10);
-    free(str);
-  }else{
-    samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
-  }
+  samplerate = ags_soundcard_helper_config_get_samplerate(ags_config_get_instance());
 
   g_message("ags_live_dssi_bridge.c - load %s %s", live_dssi_bridge->filename, live_dssi_bridge->effect);
  
@@ -1449,8 +1292,9 @@ ags_live_dssi_bridge_load(AgsLiveDssiBridge *live_dssi_bridge)
 
 	    while(list != NULL){
 	      if(!g_strcmp0(specifier,
-			    AGS_PORT_DESCRIPTOR(list->data)->port_name)){
-		live_dssi_bridge->port_values[i] = g_value_get_float(AGS_PORT_DESCRIPTOR(list->data)->default_value);
+			    AGS_PLUGIN_PORT(list->data)->port_name)){
+		live_dssi_bridge->port_values[i] = g_value_get_float(AGS_PLUGIN_PORT(list->data)->default_value);
+
 		break;
 	      }
 
@@ -1479,220 +1323,6 @@ ags_live_dssi_bridge_load(AgsLiveDssiBridge *live_dssi_bridge)
   
   gtk_combo_box_set_model(GTK_COMBO_BOX(live_dssi_bridge->program),
 			  GTK_TREE_MODEL(model));
-
-  effect_bulk = AGS_EFFECT_BRIDGE(AGS_MACHINE(live_dssi_bridge)->bridge)->bulk_output;
-
-  /* retrieve position within table  */
-  x = 0;
-  y = 0;
-  
-  list = effect_bulk->table->children;
-
-  while(list != NULL){
-    if(y <= ((GtkTableChild *) list->data)->top_attach){
-      y = ((GtkTableChild *) list->data)->top_attach + 1;
-    }
-
-    list = list->next;
-  }
-
-  /* load ports */
-  port = AGS_BASE_PLUGIN(dssi_plugin)->port;
-
-  port_count = g_list_length(port);
-  k = 0;
-
-  while(port != NULL){
-    if((AGS_PORT_DESCRIPTOR_CONTROL & (AGS_PORT_DESCRIPTOR(port->data)->flags)) != 0){
-      GtkWidget *child_widget;
-
-      AgsLadspaConversion *ladspa_conversion;
-      
-      GType widget_type;
-
-      gchar *plugin_name;
-      gchar *control_port;
-      
-      guint step_count;
-      gboolean disable_seemless;
-
-      disable_seemless = FALSE;
-      
-      if(x == AGS_EFFECT_BULK_COLUMNS_COUNT){
-	x = 0;
-	y++;
-	gtk_table_resize(effect_bulk->table,
-			 y + 1, AGS_EFFECT_BULK_COLUMNS_COUNT);
-      }
-
-      if((AGS_PORT_DESCRIPTOR_TOGGLED & (AGS_PORT_DESCRIPTOR(port->data)->flags)) != 0){
-	if((AGS_PORT_DESCRIPTOR_OUTPUT & (AGS_PORT_DESCRIPTOR(port->data)->flags)) != 0){
-	  widget_type = AGS_TYPE_LED;
-	}else{
-	  widget_type = GTK_TYPE_TOGGLE_BUTTON;
-	}
-      }else{
-	if((AGS_PORT_DESCRIPTOR_OUTPUT & (AGS_PORT_DESCRIPTOR(port->data)->flags)) != 0){
-	  widget_type = AGS_TYPE_HINDICATOR;
-	}else{
-	  widget_type = AGS_TYPE_DIAL;
-	}
-      }
-
-      step_count = AGS_DIAL_DEFAULT_PRECISION;
-
-      if((AGS_PORT_DESCRIPTOR_INTEGER & (AGS_PORT_DESCRIPTOR(port->data)->flags)) != 0){
-	step_count = AGS_PORT_DESCRIPTOR(port->data)->scale_steps;
-
-	disable_seemless = TRUE;	
-      }
-
-      /* add bulk member */
-      plugin_name = g_strdup_printf("dssi-%u",
-				    dssi_plugin->unique_id);
-      control_port = g_strdup_printf("%u/%u",
-				     k,
-				     port_count);
-      bulk_member = (AgsBulkMember *) g_object_new(AGS_TYPE_BULK_MEMBER,
-						   "widget-type", widget_type,
-						   "widget-label", AGS_PORT_DESCRIPTOR(port->data)->port_name,
-						   "plugin-name", plugin_name,
-						   "filename", live_dssi_bridge->filename,
-						   "effect", live_dssi_bridge->effect,
-						   "specifier", AGS_PORT_DESCRIPTOR(port->data)->port_name,
-						   "control-port", control_port,
-						   "steps", step_count,
-						   NULL);
-      child_widget = ags_bulk_member_get_widget(bulk_member);
-
-      g_free(plugin_name);
-      g_free(control_port);
-      
-      /* ladspa conversion */
-      ladspa_conversion = NULL;
-
-      if((AGS_PORT_DESCRIPTOR_BOUNDED_BELOW & (AGS_PORT_DESCRIPTOR(port->data)->flags)) != 0){
-	if(ladspa_conversion == NULL ||
-	   !AGS_IS_LADSPA_CONVERSION(ladspa_conversion)){
-	  ladspa_conversion = ags_ladspa_conversion_new();
-	}
-
-	ladspa_conversion->flags |= AGS_LADSPA_CONVERSION_BOUNDED_BELOW;
-      }
-
-      if((AGS_PORT_DESCRIPTOR_BOUNDED_ABOVE & (AGS_PORT_DESCRIPTOR(port->data)->flags)) != 0){
-	if(ladspa_conversion == NULL ||
-	   !AGS_IS_LADSPA_CONVERSION(ladspa_conversion)){
-	  ladspa_conversion = ags_ladspa_conversion_new();
-	}
-
-	ladspa_conversion->flags |= AGS_LADSPA_CONVERSION_BOUNDED_ABOVE;
-      }
-      
-      if((AGS_PORT_DESCRIPTOR_SAMPLERATE & (AGS_PORT_DESCRIPTOR(port->data)->flags)) != 0){
-	if(ladspa_conversion == NULL ||
-	   !AGS_IS_LADSPA_CONVERSION(ladspa_conversion)){
-	  ladspa_conversion = ags_ladspa_conversion_new();
-	}
-
-	ladspa_conversion->flags |= AGS_LADSPA_CONVERSION_SAMPLERATE;
-      }
-
-      if((AGS_PORT_DESCRIPTOR_LOGARITHMIC & (AGS_PORT_DESCRIPTOR(port->data)->flags)) != 0){
-	if(ladspa_conversion == NULL ||
-	   !AGS_IS_LADSPA_CONVERSION(ladspa_conversion)){
-	  ladspa_conversion = ags_ladspa_conversion_new();
-	}
-    
-	ladspa_conversion->flags |= AGS_LADSPA_CONVERSION_LOGARITHMIC;
-      }
-
-      bulk_member->conversion = (AgsConversion *) ladspa_conversion;
-
-      /* child widget */
-      if((AGS_PORT_DESCRIPTOR_TOGGLED & (AGS_PORT_DESCRIPTOR(port->data)->flags)) != 0){
-	bulk_member->port_flags = AGS_BULK_MEMBER_PORT_BOOLEAN;
-      }
-      
-      if((AGS_PORT_DESCRIPTOR_INTEGER & (AGS_PORT_DESCRIPTOR(port->data)->flags)) != 0){
-	bulk_member->port_flags = AGS_BULK_MEMBER_PORT_INTEGER;
-      }
-
-      if(AGS_IS_DIAL(child_widget)){
-	AgsDial *dial;
-	GtkAdjustment *adjustment;
-
-	LADSPA_Data lower_bound, upper_bound;
-	LADSPA_Data default_value;
-	
-	dial = (AgsDial *) child_widget;
-
-	if(disable_seemless){
-	  dial->flags &= (~AGS_DIAL_SEEMLESS_MODE);
-	}
-
-	/* add controls of ports and apply range  */
-	lower_bound = g_value_get_float(AGS_PORT_DESCRIPTOR(port->data)->lower_value);
-	upper_bound = g_value_get_float(AGS_PORT_DESCRIPTOR(port->data)->upper_value);
-
-	adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 0.1, 0.1, 0.0);
-	g_object_set(dial,
-		     "adjustment", adjustment,
-		     NULL);
-
-	if(upper_bound >= 0.0 && lower_bound >= 0.0){
-	  step = (upper_bound - lower_bound) / step_count;
-	}else if(upper_bound < 0.0 && lower_bound < 0.0){
-	  step = -1.0 * (lower_bound - upper_bound) / step_count;
-	}else{
-	  step = (upper_bound - lower_bound) / step_count;
-	}
-
-	gtk_adjustment_set_step_increment(adjustment,
-					  step);
-	gtk_adjustment_set_lower(adjustment,
-				 lower_bound);
-	gtk_adjustment_set_upper(adjustment,
-				 upper_bound);
-
-	default_value = (LADSPA_Data) g_value_get_float(AGS_PORT_DESCRIPTOR(port->data)->default_value);
-
-	if(ladspa_conversion != NULL){
-	  //	  default_value = ags_ladspa_conversion_convert(ladspa_conversion,
-	  //						default_value,
-	  //						TRUE);
-	}
-	
-	gtk_adjustment_set_value(adjustment,
-				 default_value);
-
-#ifdef AGS_DEBUG
-	g_message("dssi bounds: %f %f", lower_bound, upper_bound);
-#endif
-      }else if(AGS_IS_INDICATOR(child_widget) ||
-	       AGS_IS_LED(child_widget)){
-	g_hash_table_insert(ags_effect_bulk_indicator_queue_draw,
-			    child_widget, ags_effect_bulk_indicator_queue_draw_timeout);
-	effect_bulk->queued_drawing = g_list_prepend(effect_bulk->queued_drawing,
-						     child_widget);
-	g_timeout_add(1000 / 30, (GSourceFunc) ags_effect_bulk_indicator_queue_draw_timeout, (gpointer) child_widget);
-      }
-
-      gtk_table_attach(effect_bulk->table,
-		       (GtkWidget *) bulk_member,
-		       x, x + 1,
-		       y, y + 1,
-		       GTK_FILL, GTK_FILL,
-		       0, 0);
-      ags_connectable_connect(AGS_CONNECTABLE(bulk_member));
-      gtk_widget_show_all((GtkWidget *) effect_bulk->table);
-
-      x++;
-    }
-
-    port = port->next;    
-    k++;
-  }
 }
 
 /**
@@ -1701,11 +1331,11 @@ ags_live_dssi_bridge_load(AgsLiveDssiBridge *live_dssi_bridge)
  * @filename: the plugin.so
  * @effect: the effect
  *
- * Creates an #AgsLiveDssiBridge
+ * Create a new instance of #AgsLiveDssiBridge
  *
- * Returns: a new #AgsLiveDssiBridge
+ * Returns: the new #AgsLiveDssiBridge
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsLiveDssiBridge*
 ags_live_dssi_bridge_new(GObject *soundcard,
@@ -1719,7 +1349,7 @@ ags_live_dssi_bridge_new(GObject *soundcard,
 
   if(soundcard != NULL){
     g_object_set(G_OBJECT(AGS_MACHINE(live_dssi_bridge)->audio),
-		 "soundcard", soundcard,
+		 "output-soundcard", soundcard,
 		 NULL);
   }
 

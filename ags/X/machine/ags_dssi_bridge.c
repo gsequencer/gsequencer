@@ -1502,8 +1502,9 @@ ags_dssi_bridge_load(AgsDssiBridge *dssi_bridge)
 
 	    while(list != NULL){
 	      if(!g_strcmp0(specifier,
-			    AGS_PORT_DESCRIPTOR(list->data)->port_name)){
-		dssi_bridge->port_values[i] = g_value_get_float(AGS_PORT_DESCRIPTOR(list->data)->default_value);
+			    AGS_PLUGIN_PORT(list->data)->port_name)){
+		dssi_bridge->port_values[i] = g_value_get_float(AGS_PLUGIN_PORT(list->data)->default_value);
+
 		break;
 	      }
 
@@ -1540,11 +1541,11 @@ ags_dssi_bridge_load(AgsDssiBridge *dssi_bridge)
  * @filename: the plugin.so
  * @effect: the effect
  *
- * Creates an #AgsDssiBridge
+ * Create a new instance of #AgsDssiBridge
  *
- * Returns: a new #AgsDssiBridge
+ * Returns: the new #AgsDssiBridge
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsDssiBridge*
 ags_dssi_bridge_new(GObject *soundcard,
@@ -1558,7 +1559,7 @@ ags_dssi_bridge_new(GObject *soundcard,
 
   if(soundcard != NULL){
     g_object_set(G_OBJECT(AGS_MACHINE(dssi_bridge)->audio),
-		 "soundcard", soundcard,
+		 "output-soundcard", soundcard,
 		 NULL);
   }
 
