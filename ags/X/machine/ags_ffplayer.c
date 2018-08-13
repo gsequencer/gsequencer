@@ -40,8 +40,7 @@ void ags_ffplayer_connect(AgsConnectable *connectable);
 void ags_ffplayer_disconnect(AgsConnectable *connectable);
 void ags_ffplayer_finalize(GObject *gobject);
 void ags_ffplayer_realize(GtkWidget *widget);
-void ags_ffplayer_show(GtkWidget *widget);
-void ags_ffplayer_map_recall(AgsMachine *machine);
+
 gchar* ags_ffplayer_get_name(AgsPlugin *plugin);
 void ags_ffplayer_set_name(AgsPlugin *plugin, gchar *name);
 gchar* ags_ffplayer_get_xml_type(AgsPlugin *plugin);
@@ -59,6 +58,7 @@ void ags_ffplayer_resize_pads(AgsMachine *machine, GType type,
 			      guint pads, guint pads_old,
 			      gpointer data);
 
+void ags_ffplayer_map_recall(AgsMachine *machine);
 void ags_ffplayer_output_map_recall(AgsFFPlayer *ffplayer, guint output_pad_start);
 void ags_ffplayer_input_map_recall(AgsFFPlayer *ffplayer, guint input_pad_start);
 void ags_ffplayer_paint(AgsFFPlayer *ffplayer);
@@ -142,7 +142,6 @@ ags_ffplayer_class_init(AgsFFPlayerClass *ffplayer)
   widget = (GtkWidgetClass *) ffplayer;
 
   widget->realize = ags_ffplayer_realize;
-  widget->show = ags_ffplayer_show;
 
   /* AgsMachineClass */
   machine = (AgsMachineClass *) ffplayer;
@@ -256,7 +255,11 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
   table = (GtkTable *) gtk_table_new(3, 2, FALSE);
   gtk_container_add((GtkContainer *) alignment,
 		    (GtkWidget *) table);
+
+  /* audio container */
+  ffplayer->audio_container = NULL;
   
+  /* preset and instrument */
   hbox = (GtkHBox *) gtk_hbox_new(FALSE, 0);
   gtk_table_attach(table,
 		   GTK_WIDGET(hbox),
@@ -348,155 +351,6 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
 		     (GtkWidget *) AGS_MACHINE(ffplayer)->bridge,
 		     FALSE, FALSE,
 		     0);
-}
-
-void
-ags_ffplayer_map_recall(AgsMachine *machine)
-{
-  AgsWindow *window;
-  AgsFFPlayer *ffplayer;
-  
-  AgsAudio *audio;
-
-  AgsDelayAudio *play_delay_audio;
-  AgsDelayAudioRun *play_delay_audio_run;
-  AgsCountBeatsAudio *play_count_beats_audio;
-  AgsCountBeatsAudioRun *play_count_beats_audio_run;
-  AgsRecordMidiAudio *recall_record_midi_audio;
-  AgsRecordMidiAudioRun *recall_record_midi_audio_run;
-  AgsPlayNotationAudio *recall_notation_audio;
-  AgsPlayNotationAudioRun *recall_notation_audio_run;
-
-  GList *list;
-
-  if((AGS_MACHINE_MAPPED_RECALL & (machine->flags)) != 0 ||
-     (AGS_MACHINE_PREMAPPED_RECALL & (machine->flags)) != 0){
-    return;
-  }
-
-  ffplayer = AGS_FFPLAYER(machine);
-  
-  window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) machine,
-						 AGS_TYPE_WINDOW);
-
-  audio = machine->audio;
-
-  /* ags-delay */
-  ags_recall_factory_create(audio,
-			    NULL, NULL,
-			    "ags-delay",
-			    0, 0,
-			    0, 0,
-			    (AGS_RECALL_FACTORY_OUTPUT |
-			     AGS_RECALL_FACTORY_ADD |
-			     AGS_RECALL_FACTORY_PLAY),
-			    0);
-
-  list = ags_recall_find_type(audio->play, AGS_TYPE_DELAY_AUDIO_RUN);
-
-  if(list != NULL){
-    play_delay_audio_run = AGS_DELAY_AUDIO_RUN(list->data);
-    //    AGS_RECALL(play_delay_audio_run)->flags |= AGS_RECALL_PERSISTENT;
-  }else{
-    play_delay_audio_run = NULL;
-  }
-  
-  /* ags-count-beats */
-  ags_recall_factory_create(audio,
-			    NULL, NULL,
-			    "ags-count-beats",
-			    0, 0,
-			    0, 0,
-			    (AGS_RECALL_FACTORY_OUTPUT |
-			     AGS_RECALL_FACTORY_ADD |
-			     AGS_RECALL_FACTORY_PLAY),
-			    0);
-  
-  list = ags_recall_find_type(audio->play, AGS_TYPE_COUNT_BEATS_AUDIO_RUN);
-
-  if(list != NULL){
-    GValue value = {0,};
-
-    play_count_beats_audio_run = AGS_COUNT_BEATS_AUDIO_RUN(list->data);
-
-    /* set dependency */  
-    g_object_set(G_OBJECT(play_count_beats_audio_run),
-		 "delay-audio-run", play_delay_audio_run,
-		 NULL);
-    ags_seekable_seek(AGS_SEEKABLE(play_count_beats_audio_run),
-		      window->navigation->position_tact->adjustment->value,
-		      TRUE);
-
-    g_value_init(&value, G_TYPE_BOOLEAN);
-    g_value_set_boolean(&value, gtk_toggle_button_get_active((GtkToggleButton *) window->navigation->loop));
-    ags_port_safe_write(AGS_COUNT_BEATS_AUDIO(AGS_RECALL_AUDIO_RUN(play_count_beats_audio_run)->recall_audio)->notation_loop,
-			&value);
-  }else{
-    play_count_beats_audio_run = NULL;
-  }
-
-  /* ags-record-midi */
-  ags_recall_factory_create(audio,
-			    NULL, NULL,
-			    "ags-record-midi",
-			    0, 0,
-			    0, 0,
-			    (AGS_RECALL_FACTORY_INPUT |
-			     AGS_RECALL_FACTORY_ADD |
-			     AGS_RECALL_FACTORY_RECALL),
-			    0);
-
-  list = ags_recall_find_type(audio->recall, AGS_TYPE_RECORD_MIDI_AUDIO_RUN);
-
-  if(list != NULL){
-    recall_record_midi_audio_run = AGS_RECORD_MIDI_AUDIO_RUN(list->data);
-    
-    /* set dependency */
-    g_object_set(G_OBJECT(recall_record_midi_audio_run),
-		 "delay-audio-run", play_delay_audio_run,
-		 NULL);
-
-    /* set dependency */
-    g_object_set(G_OBJECT(recall_record_midi_audio_run),
-		 "count-beats-audio-run", play_count_beats_audio_run,
-		 NULL);
-  }  
-
-  /* ags-play-notation */
-  ags_recall_factory_create(audio,
-			    NULL, NULL,
-			    "ags-play-notation",
-			    0, 0,
-			    0, 0,
-			    (AGS_RECALL_FACTORY_INPUT |
-			     AGS_RECALL_FACTORY_ADD |
-			     AGS_RECALL_FACTORY_RECALL),
-			    0);
-
-  list = ags_recall_find_type(audio->recall, AGS_TYPE_PLAY_NOTATION_AUDIO_RUN);
-
-  if(list != NULL){
-    recall_notation_audio_run = AGS_PLAY_NOTATION_AUDIO_RUN(list->data);
-    
-    /* set dependency */
-    g_object_set(G_OBJECT(recall_notation_audio_run),
-		 "delay-audio-run", play_delay_audio_run,
-		 NULL);
-
-    /* set dependency */
-    g_object_set(G_OBJECT(recall_notation_audio_run),
-		 "count-beats-audio-run", play_count_beats_audio_run,
-		 NULL);
-  }
-
-  /* depending on destination */
-  ags_ffplayer_input_map_recall(ffplayer, 0);
-
-  /* depending on destination */
-  ags_ffplayer_output_map_recall(ffplayer, 0);
-
-  /* call parent */
-  AGS_MACHINE_CLASS(ags_ffplayer_parent_class)->map_recall(machine);  
 }
 
 void
@@ -646,12 +500,6 @@ ags_ffplayer_realize(GtkWidget *widget)
 		       ffplayer_style);
 }
 
-void
-ags_ffplayer_show(GtkWidget *widget)
-{
-  GTK_WIDGET_CLASS(ags_ffplayer_parent_class)->show(widget);
-}
-
 gchar*
 ags_ffplayer_get_name(AgsPlugin *plugin)
 {
@@ -767,9 +615,12 @@ ags_ffplayer_launch_task(AgsFileLaunch *file_launch, AgsFFPlayer *ffplayer)
 {
   AgsWindow *window;
   AgsFFPlayer *gobject;
+  
   GtkTreeModel *list_store;
   GtkTreeIter iter;
+
   xmlNode *node;
+
   gchar *filename;
   gchar *preset, *instrument;
 
@@ -784,51 +635,33 @@ ags_ffplayer_launch_task(AgsFileLaunch *file_launch, AgsFFPlayer *ffplayer)
   }
 
   if(g_str_has_suffix(filename, ".sf2")){
-    AgsIpatch *ipatch;
-    AgsPlayable *playable;
+    AgsAudioContainer *audio_container;
+    
     gchar **preset, **instrument, *selected;
+
     GError *error;
 
     /* clear preset, instrument and sample*/
     gtk_list_store_clear(GTK_LIST_STORE(gtk_combo_box_get_model(GTK_COMBO_BOX(ffplayer->instrument))));
 
     /* Ipatch related */
-    ffplayer->ipatch =
-      ipatch = g_object_new(AGS_TYPE_IPATCH,
-			    "mode", AGS_IPATCH_READ,
-			    "filename", filename,
-			    NULL);
-    ipatch->soundcard = window->soundcard;
-    ags_playable_open(AGS_PLAYABLE(ipatch), filename);
-
-    playable = AGS_PLAYABLE(ipatch);
-      
-    ags_playable_open(playable, filename);
-
-    error = NULL;
-    ipatch->nth_level = 0;
-    ags_playable_level_select(playable,
-			      0, filename,
-			      &error);
-
-    if(error != NULL){
-      g_warning("%s", error->message);
-    }
+    ffplayer->audio_container =
+      audio_container = ags_audio_container_new(filename,
+						NULL,
+						NULL,
+						NULL,
+						window->soundcard,
+						-1);
+    ags_audio_container_open(audio_container);
     
     /* select first preset */
-    ipatch->nth_level = 1;
-    preset = ags_playable_sublevel_names(playable);
+    AGS_IPATCH(audio_container->sound_container)->nesting_level = AGS_SF2_FILENAME;
+    ags_sound_container_select_level_by_index(AGS_SOUND_CONTAINER(audio_container->sound_container),
+					      0);
 
-    error = NULL;
-    ags_playable_level_select(playable,
-			      1, *preset,
-			      &error);
-
-    if(error != NULL){
-      g_warning("%s", error->message);
-    }
-    
     /* fill ffplayer->preset */
+    preset = ags_sound_container_get_sublevel_name(AGS_SOUND_CONTAINER(audio_container->sound_container));
+    
     while(*preset != NULL){
       gtk_combo_box_text_append_text(ffplayer->preset,
 				     *preset);
@@ -860,19 +693,12 @@ ags_ffplayer_launch_task(AgsFileLaunch *file_launch, AgsFFPlayer *ffplayer)
     }
   
     /* select first instrument */
-    ipatch->nth_level = 2;
-    instrument = ags_playable_sublevel_names(playable);
-
-    error = NULL;
-    ags_playable_level_select(playable,
-			      2, *instrument,
-			      &error);
-
-    if(error != NULL){
-      g_warning("%s", error->message);
-    }
+    ags_sound_container_select_level_by_index(AGS_SOUND_CONTAINER(audio_container->sound_container),
+					      0);
     
     /* fill ffplayer->instrument */
+    instrument = ags_sound_container_get_sublevel_name(AGS_SOUND_CONTAINER(audio_container->sound_container));
+
     while(*instrument != NULL){
       gtk_combo_box_text_append_text(ffplayer->instrument,
 				     *instrument);
@@ -961,76 +787,19 @@ ags_ffplayer_resize_audio_channels(AgsMachine *machine,
 {
   AgsAudio *audio;
   
-  AgsMutexManager *mutex_manager;
-
-  AgsConfig *config;
-
-  gchar *str;
-
   guint input_pads;
-  gboolean rt_safe;
-  gboolean performance_mode;
-
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *audio_mutex;
-
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-  
-  config = ags_config_get_instance();
 
   audio = machine->audio;
 
-  /* get audio mutex */
-  pthread_mutex_lock(application_mutex);
-
-  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
-					 (GObject *) audio);
-  
-  pthread_mutex_unlock(application_mutex);
-
   /* get some fields */
-  pthread_mutex_lock(audio_mutex);
-
-  input_pads = audio->input_pads;
-  
-  pthread_mutex_unlock(audio_mutex);
+  g_object_get(audio,
+	       "input-pads", &input_pads,
+	       NULL);
 
   /*  */
-  if(audio_channels > audio_channels_old){
-    /* map dependending on output */
-    str = ags_config_get_value(config,
-			       AGS_CONFIG_GENERIC,
-			       "engine-mode");
-    rt_safe = TRUE;
-    performance_mode = TRUE;
-
-    str = ags_config_get_value(config,
-			       AGS_CONFIG_GENERIC,
-			       "rt-safe");
-
-    if(str != NULL &&
-       !g_ascii_strncasecmp(str,
-			    "FALSE",
-			    6)){
-      rt_safe = FALSE;
-    }
-
-    str = ags_config_get_value(config,
-			       AGS_CONFIG_GENERIC,
-			       "engine-mode");
-
-    if(str != NULL &&
-       !g_ascii_strncasecmp(str,
-			    "performance",
-			    12)){
-      performance_mode = TRUE;
-    }else{
-      performance_mode = FALSE;
-    }
-  
-    if(rt_safe ||
-       performance_mode){
+  if(audio_channels > audio_channels_old){  
+    if(ags_recall_global_get_rt_safe() ||
+       ags_recall_global_get_performance_mode()){
       /* ags-copy */
       ags_recall_factory_create(audio,
 				NULL, NULL,
@@ -1041,9 +810,6 @@ ags_ffplayer_resize_audio_channels(AgsMachine *machine,
 				 AGS_RECALL_FACTORY_RECALL |
 				 AGS_RECALL_FACTORY_ADD),
 				0);
-
-      /* set performance mode */
-      performance_mode = TRUE;
     }else{    
       /* ags-buffer */
       ags_recall_factory_create(audio,
@@ -1107,7 +873,8 @@ ags_ffplayer_resize_audio_channels(AgsMachine *machine,
     
     /* AgsOutput */
     /* ags-stream */
-    if(!performance_mode){
+    if(!(ags_recall_global_get_rt_safe() ||
+	 ags_recall_global_get_performance_mode())){
       ags_recall_factory_create(audio,
 				NULL, NULL,
 				"ags-stream",
@@ -1130,40 +897,22 @@ ags_ffplayer_resize_pads(AgsMachine *machine, GType type,
 
   AgsAudio *audio;
 
-  AgsMutexManager *mutex_manager;
-
   guint output_pads, input_pads;
   gboolean grow;
-
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *audio_mutex;
   
   if(pads_old == pads){
     return;
   }
-  
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-  
+    
   ffplayer = machine;
 
   audio = machine->audio;
 
-  /* get audio mutex */
-  pthread_mutex_lock(application_mutex);
-
-  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
-					 (GObject *) audio);
-  
-  pthread_mutex_unlock(application_mutex);
-
   /* get some fields */
-  pthread_mutex_lock(audio_mutex);
-
-  output_pads = audio->output_pads;
-  input_pads = audio->input_pads;
-  
-  pthread_mutex_unlock(audio_mutex);
+  g_object_get(audio,
+	       "output-pads", &output_pads,
+	       "input-pads", &input_pads,
+	       NULL);
 
   /* check grow */
   if(pads_old < pads){
@@ -1190,86 +939,189 @@ ags_ffplayer_resize_pads(AgsMachine *machine, GType type,
 }
 
 void
+ags_ffplayer_map_recall(AgsMachine *machine)
+{
+  AgsWindow *window;
+  AgsFFPlayer *ffplayer;
+  
+  AgsAudio *audio;
+
+  AgsDelayAudio *play_delay_audio;
+  AgsDelayAudioRun *play_delay_audio_run;
+  AgsCountBeatsAudio *play_count_beats_audio;
+  AgsCountBeatsAudioRun *play_count_beats_audio_run;
+  AgsRecordMidiAudio *recall_record_midi_audio;
+  AgsRecordMidiAudioRun *recall_record_midi_audio_run;
+  AgsPlayNotationAudio *recall_notation_audio;
+  AgsPlayNotationAudioRun *recall_notation_audio_run;
+
+  GList *start_play, *play;
+  GList *start_recall, *recall;
+
+  if((AGS_MACHINE_MAPPED_RECALL & (machine->flags)) != 0 ||
+     (AGS_MACHINE_PREMAPPED_RECALL & (machine->flags)) != 0){
+    return;
+  }
+
+  ffplayer = AGS_FFPLAYER(machine);
+  
+  window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) machine,
+						 AGS_TYPE_WINDOW);
+
+  audio = machine->audio;
+  g_object_get(audio,
+	       "play", &start_play,
+	       "recall", &start_recall,
+	       NULL);
+  
+  /* ags-delay */
+  ags_recall_factory_create(audio,
+			    NULL, NULL,
+			    "ags-delay",
+			    0, 0,
+			    0, 0,
+			    (AGS_RECALL_FACTORY_OUTPUT |
+			     AGS_RECALL_FACTORY_ADD |
+			     AGS_RECALL_FACTORY_PLAY),
+			    0);
+
+  play = ags_recall_find_type(start_play,
+			      AGS_TYPE_DELAY_AUDIO_RUN);
+
+  if(play != NULL){
+    play_delay_audio_run = AGS_DELAY_AUDIO_RUN(play->data);
+    //    AGS_RECALL(play_delay_audio_run)->flags |= AGS_RECALL_PERSISTENT;
+  }else{
+    play_delay_audio_run = NULL;
+  }
+  
+  /* ags-count-beats */
+  ags_recall_factory_create(audio,
+			    NULL, NULL,
+			    "ags-count-beats",
+			    0, 0,
+			    0, 0,
+			    (AGS_RECALL_FACTORY_OUTPUT |
+			     AGS_RECALL_FACTORY_ADD |
+			     AGS_RECALL_FACTORY_PLAY),
+			    0);
+  
+  play = ags_recall_find_type(start_play,
+			      AGS_TYPE_COUNT_BEATS_AUDIO_RUN);
+
+  if(play != NULL){
+    GValue value = {0,};
+
+    play_count_beats_audio_run = AGS_COUNT_BEATS_AUDIO_RUN(play->data);
+
+    /* set dependency */  
+    g_object_set(G_OBJECT(play_count_beats_audio_run),
+		 "delay-audio-run", play_delay_audio_run,
+		 NULL);
+    ags_seekable_seek(AGS_SEEKABLE(play_count_beats_audio_run),
+		      window->navigation->position_tact->adjustment->value,
+		      TRUE);
+
+    g_value_init(&value, G_TYPE_BOOLEAN);
+    g_value_set_boolean(&value, gtk_toggle_button_get_active((GtkToggleButton *) window->navigation->loop));
+    ags_port_safe_write(AGS_COUNT_BEATS_AUDIO(AGS_RECALL_AUDIO_RUN(play_count_beats_audio_run)->recall_audio)->notation_loop,
+			&value);
+  }else{
+    play_count_beats_audio_run = NULL;
+  }
+
+  /* ags-record-midi */
+  ags_recall_factory_create(audio,
+			    NULL, NULL,
+			    "ags-record-midi",
+			    0, 0,
+			    0, 0,
+			    (AGS_RECALL_FACTORY_INPUT |
+			     AGS_RECALL_FACTORY_ADD |
+			     AGS_RECALL_FACTORY_RECALL),
+			    0);
+
+  recall = ags_recall_find_type(start_recall,
+				AGS_TYPE_RECORD_MIDI_AUDIO_RUN);
+
+  if(recall != NULL){
+    recall_record_midi_audio_run = AGS_RECORD_MIDI_AUDIO_RUN(recall->data);
+    
+    /* set dependency */
+    g_object_set(G_OBJECT(recall_record_midi_audio_run),
+		 "delay-audio-run", play_delay_audio_run,
+		 NULL);
+
+    /* set dependency */
+    g_object_set(G_OBJECT(recall_record_midi_audio_run),
+		 "count-beats-audio-run", play_count_beats_audio_run,
+		 NULL);
+  }  
+
+  /* ags-play-notation */
+  ags_recall_factory_create(audio,
+			    NULL, NULL,
+			    "ags-play-notation",
+			    0, 0,
+			    0, 0,
+			    (AGS_RECALL_FACTORY_INPUT |
+			     AGS_RECALL_FACTORY_ADD |
+			     AGS_RECALL_FACTORY_RECALL),
+			    0);
+
+  recall = ags_recall_find_type(start_recall,
+				AGS_TYPE_PLAY_NOTATION_AUDIO_RUN);
+
+  if(recall != NULL){
+    recall_notation_audio_run = AGS_PLAY_NOTATION_AUDIO_RUN(recall->data);
+    
+    /* set dependency */
+    g_object_set(G_OBJECT(recall_notation_audio_run),
+		 "delay-audio-run", play_delay_audio_run,
+		 NULL);
+
+    /* set dependency */
+    g_object_set(G_OBJECT(recall_notation_audio_run),
+		 "count-beats-audio-run", play_count_beats_audio_run,
+		 NULL);
+  }
+
+  /* depending on destination */
+  ags_ffplayer_input_map_recall(ffplayer, 0);
+
+  /* depending on destination */
+  ags_ffplayer_output_map_recall(ffplayer, 0);
+
+  /* call parent */
+  AGS_MACHINE_CLASS(ags_ffplayer_parent_class)->map_recall(machine);  
+}
+
+void
 ags_ffplayer_input_map_recall(AgsFFPlayer *ffplayer, guint input_pad_start)
 {
   AgsAudio *audio;
   AgsChannel *source, *current;
 
-  AgsMutexManager *mutex_manager;
-
-  AgsConfig *config;
-
   GList *list;
-
-  gchar *str;
 
   guint input_pads;
   guint audio_channels;
-  gboolean rt_safe;
-  gboolean performance_mode;
-
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *audio_mutex;
 
   if(ffplayer->mapped_input_pad > input_pad_start){
     return;
   }
 
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-
-  config = ags_config_get_instance();
-
   audio = AGS_MACHINE(ffplayer)->audio;
 
-  /* get audio mutex */
-  pthread_mutex_lock(application_mutex);
-
-  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
-					 (GObject *) audio);
-  
-  pthread_mutex_unlock(application_mutex);
-
   /* get some fields */
-  pthread_mutex_lock(audio_mutex);
+  g_object_get(audio,
+	       "input-pads", &input_pads,
+	       "audio-channels", &audio_channels,
+	       NULL);
 
-  input_pads = audio->input_pads;
-
-  audio_channels = audio->audio_channels;
-  
-  pthread_mutex_unlock(audio_mutex);
-
-  /* map dependending on output */
-    rt_safe = TRUE;
-    performance_mode = TRUE;
-
-    str = ags_config_get_value(config,
-			       AGS_CONFIG_GENERIC,
-			       "rt-safe");
-
-    if(str != NULL &&
-       !g_ascii_strncasecmp(str,
-			    "FALSE",
-			    6)){
-      rt_safe = FALSE;
-    }
-
-    str = ags_config_get_value(config,
-			       AGS_CONFIG_GENERIC,
-			       "engine-mode");
-
-    if(str != NULL &&
-       !g_ascii_strncasecmp(str,
-			    "performance",
-			    12)){
-      performance_mode = TRUE;
-    }else{
-      performance_mode = FALSE;
-    }
-  
   /* remap for input */
-  if(rt_safe ||
-     performance_mode){
+  if(ags_recall_global_get_rt_safe() ||
+     ags_recall_global_get_performance_mode()){
     /* ags-copy */
     ags_recall_factory_create(audio,
 			      NULL, NULL,
@@ -1280,9 +1132,6 @@ ags_ffplayer_input_map_recall(AgsFFPlayer *ffplayer, guint input_pad_start)
 			       AGS_RECALL_FACTORY_RECALL |
 			       AGS_RECALL_FACTORY_ADD),
 			      0);
-    
-    /* set performance mode */
-    performance_mode = TRUE;
   }else{
     /* ags-buffer */
     ags_recall_factory_create(audio,
@@ -1331,7 +1180,7 @@ ags_ffplayer_input_map_recall(AgsFFPlayer *ffplayer, guint input_pad_start)
 			     AGS_RECALL_FACTORY_ADD),
 			    0);
   /* ags-stream */
-  if(!rt_safe){
+  if(!ags_recall_global_get_rt_safe()){
     ags_recall_factory_create(audio,
 			      NULL, NULL,
 			      "ags-stream",
@@ -1363,80 +1212,25 @@ ags_ffplayer_output_map_recall(AgsFFPlayer *ffplayer, guint output_pad_start)
 {
   AgsAudio *audio;
 
-  AgsMutexManager *mutex_manager;
-
-  AgsConfig *config;
-
-  gchar *str;
-
   guint output_pads, input_pads;
   guint audio_channels;
-  gboolean rt_safe;
-  gboolean performance_mode;
-
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *audio_mutex;
 
   if(ffplayer->mapped_output_pad > output_pad_start){
     return;
   }
 
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-
-  config = ags_config_get_instance();
-
   audio = AGS_MACHINE(ffplayer)->audio;
 
-  /* get audio mutex */
-  pthread_mutex_lock(application_mutex);
-
-  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
-					 (GObject *) audio);
-  
-  pthread_mutex_unlock(application_mutex);
-
   /* get some fields */
-  pthread_mutex_lock(audio_mutex);
-
-  output_pads = audio->output_pads;
-  input_pads = audio->input_pads;
-
-  audio_channels = audio->audio_channels;
+  g_object_get(audio,
+	       "output-pads", &output_pads,
+	       "input-pads", &input_pads,
+	       "audio-channels", &audio_channels,
+	       NULL);
   
-  pthread_mutex_unlock(audio_mutex);
-  
-  /* map dependending on output */
-  rt_safe = TRUE;
-  performance_mode = TRUE;
-
-  str = ags_config_get_value(config,
-			     AGS_CONFIG_GENERIC,
-			     "rt-safe");
-
-  if(str != NULL &&
-     !g_ascii_strncasecmp(str,
-			  "FALSE",
-			  6)){
-    rt_safe = FALSE;
-  }
-
-  str = ags_config_get_value(config,
-			     AGS_CONFIG_GENERIC,
-			     "engine-mode");
-
-  if(str != NULL &&
-     !g_ascii_strncasecmp(str,
-			  "performance",
-			  12)){
-    performance_mode = TRUE;
-  }else{
-    performance_mode = FALSE;
-  }
-
   /* remap for input */
-  if(rt_safe ||
-     performance_mode){
+  if(ags_recall_global_get_rt_safe() ||
+     ags_recall_global_get_performance_mode()){
     /* ags-copy */
     ags_recall_factory_create(audio,
 			      NULL, NULL,
@@ -1463,7 +1257,8 @@ ags_ffplayer_output_map_recall(AgsFFPlayer *ffplayer, guint output_pad_start)
 			      0);
   }
 
-  if(!performance_mode){
+  if(!(ags_recall_global_get_rt_safe() ||
+       ags_recall_global_get_performance_mode())){
     /* ags-stream */
     ags_recall_factory_create(audio,
 			      NULL, NULL,
@@ -1630,10 +1425,7 @@ ags_ffplayer_open_filename(AgsFFPlayer *ffplayer,
   if(g_str_has_suffix(filename, ".sf2")){
     AgsWindow *window;
     
-    AgsIpatch *ipatch;
-    AgsPlayable *playable;
-
-    GError *error;
+    AgsAudioContainer *audio_container;
 
     window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) ffplayer);
     
@@ -1642,19 +1434,14 @@ ags_ffplayer_open_filename(AgsFFPlayer *ffplayer,
     gtk_list_store_clear(GTK_LIST_STORE(gtk_combo_box_get_model(GTK_COMBO_BOX(ffplayer->instrument))));
 
     /* Ipatch related */
-    ipatch = g_object_new(AGS_TYPE_IPATCH,
-			  "mode", AGS_IPATCH_READ,
-			  "filename", filename,
-			  NULL);
-    ffplayer->ipatch = ipatch;
-    ipatch->soundcard = window->soundcard;
-
-    playable = AGS_PLAYABLE(ipatch);
-
-    error = NULL;
-    ags_playable_level_select(playable,
-			      0, filename,
-			      &error);
+    ffplayer->audio_container = 
+      audio_container = ags_audio_container_new(filename,
+						NULL,
+						NULL,
+						NULL,
+						window->soundcard,
+						-1);
+    AGS_IPATCH(audio_container->sound_container)->nesting_level = AGS_SF2_FILENAME;
 
     ags_ffplayer_load_preset(ffplayer);
     ags_ffplayer_load_instrument(ffplayer);
@@ -1664,22 +1451,20 @@ ags_ffplayer_open_filename(AgsFFPlayer *ffplayer,
 void
 ags_ffplayer_load_preset(AgsFFPlayer *ffplayer)
 {
-  AgsPlayable *playable;
-
+  AgsAudioContainer *audio_container;
+  
   gchar **preset;
 
   GError *error;
 
-  playable = AGS_PLAYABLE(ffplayer->ipatch);
+  audio_container = ffplayer->audio_container;
 
   /* select first preset */
-  ffplayer->ipatch->nth_level = 1;
-  preset = ags_playable_sublevel_names(playable);
+  AGS_IPATCH(audio_container->sound_container)->nesting_level = AGS_SF2_FILENAME;
 
-  error = NULL;
-  ags_playable_level_select(playable,
-			    1, *preset,
-			    &error);
+  preset = ags_sound_container_get_sublevel_name(audio_container);
+  ags_sound_container_select_level_by_index(AGS_SOUND_CONTAINER(audio_container->sound_container),
+					    0);
 
   /* fill ffplayer->preset */
   while(preset != NULL && preset[0] != NULL){
@@ -1701,13 +1486,11 @@ ags_ffplayer_load_instrument(AgsFFPlayer *ffplayer)
   
   playable = AGS_PLAYABLE(ffplayer->ipatch);
 
-  ffplayer->ipatch->nth_level = 2;
-  instrument = ags_playable_sublevel_names(playable);
-  
-  error = NULL;
-  ags_playable_level_select(playable,
-			    2, *instrument,
-			    &error);
+  AGS_IPATCH(audio_container->sound_container)->nesting_level = AGS_SF2_PHDR;
+
+  instrument = ags_sound_container_get_sublevel_name(AGS_SOUND_CONTAINER(audio_container->sound_container));
+  ags_sound_container_select_level_by_index(AGS_SOUND_CONTAINER(audio_container->sound_container),
+					    0);
   
   /* fill ffplayer->instrument */
   while(instrument != NULL && instrument[0] != NULL){
@@ -1722,27 +1505,24 @@ ags_ffplayer_load_instrument(AgsFFPlayer *ffplayer)
  * ags_ffplayer_new:
  * @soundcard: the assigned soundcard.
  *
- * Creates an #AgsFFPlayer
+ * Create a new instance of #AgsFFPlayer
  *
- * Returns: a new #AgsFFPlayer
+ * Returns: the new #AgsFFPlayer
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsFFPlayer*
-ags_ffplayer_new(GObject *soundcard)
+ags_ffplayer_new(GObject *output_soundcard)
 {
   AgsFFPlayer *ffplayer;
-  GValue value = {0,};
 
   ffplayer = (AgsFFPlayer *) g_object_new(AGS_TYPE_FFPLAYER,
 					  NULL);
 
-  if(soundcard != NULL){
-    g_value_init(&value, G_TYPE_OBJECT);
-    g_value_set_object(&value, soundcard);
-    g_object_set_property(G_OBJECT(ffplayer->machine.audio),
-			  "soundcard", &value);
-    g_value_unset(&value);
+  if(output_soundcard != NULL){
+    g_object_set(AGS_MACHINE(ffplayer)->audio,
+		 "output-soundcard", output_soundcard,
+		 NULL);
   }
 
   return(ffplayer);

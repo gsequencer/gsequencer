@@ -60,6 +60,7 @@ static gpointer ags_open_sf2_sample_parent_class = NULL;
 enum{
   PROP_0,
   PROP_CHANNEL,
+  PROP_IPATCH_SAMPLE,
   PROP_FILENAME,
   PROP_PRESET,
   PROP_INSTRUMENT,
@@ -130,6 +131,22 @@ ags_open_sf2_sample_class_init(AgsOpenSf2SampleClass *open_sf2_sample)
 				  PROP_CHANNEL,
 				  param_spec);
   
+  /**
+   * AgsOpenSf2Sample:ipatch-sample:
+   *
+   * The assigned #AgsIpatchSample
+   * 
+   * Since: 2.0.0
+   */
+  param_spec = g_param_spec_object("ipatch-sample",
+				   i18n_pspec("ipatch sample object"),
+				   i18n_pspec("The sample object of open sf2 sample task"),
+				   AGS_TYPE_IPATCH_SAMPLE,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_IPATCH_SAMPLE,
+				  param_spec);
+
   /**
    * AgsOpenSf2Sample:filename:
    *
@@ -223,6 +240,8 @@ ags_open_sf2_sample_init(AgsOpenSf2Sample *open_sf2_sample)
 {
   open_sf2_sample->channel = NULL;
 
+  open_sf2_sample->sample = NULL;
+
   open_sf2_sample->filename = NULL;
 
   open_sf2_sample->preset = NULL;
@@ -262,6 +281,27 @@ ags_open_sf2_sample_set_property(GObject *gobject,
       }
 
       open_sf2_sample->channel = (GObject *) channel;
+    }
+    break;
+  case PROP_IPATCH_SAMPLE:
+    {
+      AgsIpatchSample *ipatch_sample;
+
+      ipatch_sample = (AgsIpatchSample *) g_value_get_object(value);
+
+      if(open_sf2_sample->ipatch_sample == (GObject *) ipatch_sample){
+	return;
+      }
+
+      if(open_sf2_sample->ipatch_sample != NULL){
+	g_object_unref(open_sf2_sample->ipatch_sample);
+      }
+
+      if(ipatch_sample != NULL){
+	g_object_ref(ipatch_sample);
+      }
+
+      open_sf2_sample->ipatch_sample = (GObject *) ipatch_sample;
     }
     break;
   case PROP_FILENAME:
@@ -354,6 +394,11 @@ ags_open_sf2_sample_get_property(GObject *gobject,
       g_value_set_object(value, open_sf2_sample->channel);
     }
     break;
+  case PROP_IPATCH_SAMPLE:
+    {
+      g_value_set_object(value, open_sf2_sample->ipatch_sample);
+    }
+    break;
   case PROP_FILENAME:
     {
       g_value_set_string(value, open_sf2_sample->filename);
@@ -389,6 +434,14 @@ ags_open_sf2_sample_dispose(GObject *gobject)
 
   if(open_sf2_sample->channel != NULL){
     g_object_unref(open_sf2_sample->channel);
+
+    open_sf2_sample->channel = NULL;
+  }
+
+  if(open_sf2_sample->ipatch_sample != NULL){
+    g_free(open_sf2_sample->ipatch_sample);
+
+    open_sf2_sample->ipatch_sample = NULL;
   }
 
   if(open_sf2_sample->filename != NULL){
@@ -430,6 +483,10 @@ ags_open_sf2_sample_finalize(GObject *gobject)
     g_object_unref(open_sf2_sample->channel);
   }
   
+  if(open_sf2_sample->ipatch_sample != NULL){
+    g_object_unref(open_sf2_sample->ipatch_sample);
+  }
+
   g_free(open_sf2_sample->filename);
   g_free(open_sf2_sample->preset);
   g_free(open_sf2_sample->instrument);
@@ -447,8 +504,9 @@ ags_open_sf2_sample_launch(AgsTask *task)
   AgsRecycling *first_recycling;
 
   AgsOpenSf2Sample *open_sf2_sample;
-
+  
   AgsAudioContainer *audio_container;
+  AgsIpatchSample *sample;
   
   AgsFileLink *file_link;
 
@@ -467,26 +525,30 @@ ags_open_sf2_sample_launch(AgsTask *task)
   g_object_get(channel,
 	       "output-soundcard", &soundcard,
 	       NULL);
+
+  ipatch_sample = open_sf2_sample->ipatch_sample;
   
   /* open audio file and read audio signal */
-  audio_container = ags_audio_container_new(open_sf2_sample->filename,
-					    open_sf2_sample->preset,
-					    open_sf2_sample->instrument,
-					    open_sf2_sample->sample,
-					    soundcard,
-					    open_sf2_sample->audio_channel);
+  if(ipatch_sample == NULL){
+    audio_container = ags_audio_container_new(open_sf2_sample->filename,
+					      open_sf2_sample->preset,
+					      open_sf2_sample->instrument,
+					      open_sf2_sample->sample,
+					      soundcard,
+					      open_sf2_sample->audio_channel);
 
-  if(!ags_audio_container_open(audio_container)){
-    g_message("unable to open file - %s", open_sf2_sample->filename);
+    if(!ags_audio_container_open(audio_container)){
+      g_message("unable to open file - %s", open_sf2_sample->filename);
 
-    return;
+      return;
+    }
+  
+    audio_signal = ags_audio_container_read_audio_signal(audio_container);
+  }else{
+    audio_signal = ags_sound_resource_read_audio_signal(AGS_SOUND_RESOURCE(ipatch_sample),
+							open_sf2_sample->audio_channel);
   }
   
-  ags_audio_container_read_audio_signal(audio_container);
-
-  /* iterate channels */
-  audio_signal = audio_container->audio_signal;
-    
   /* set link */
   g_object_get(channel,
 	       "link", &link,
@@ -542,6 +604,7 @@ ags_open_sf2_sample_launch(AgsTask *task)
 /**
  * ags_open_sf2_sample_new:
  * @channel: the #AgsChannel
+ * @ipatch_sample: the #AgsIpatchSample or %NULL
  * @filename: the Soundfont2 file
  * @preset: the preset
  * @instrument: the instrument
@@ -556,6 +619,7 @@ ags_open_sf2_sample_launch(AgsTask *task)
  */
 AgsOpenSf2Sample*
 ags_open_sf2_sample_new(AgsChannel *channel,
+			AgsIpatchSample *ipatch_sample,
 			gchar *filename,
 			gchar *preset,
 			gchar *instrument,
@@ -566,6 +630,7 @@ ags_open_sf2_sample_new(AgsChannel *channel,
 
   open_sf2_sample = (AgsOpenSf2Sample *) g_object_new(AGS_TYPE_OPEN_SF2_SAMPLE,
 						      "channel", channel,
+						      "ipatch-sample", ipatch_sample,
 						      "filename", filename,
 						      "preset", preset,
 						      "instrument", instrument,

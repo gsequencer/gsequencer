@@ -43,6 +43,8 @@ struct _AgsOpenSf2Sample
 
   AgsChannel *channel;
 
+  AgsIpatchSample *ipatch_sample;
+  
   gchar *filename;
   
   gchar *preset;
@@ -60,6 +62,7 @@ struct _AgsOpenSf2SampleClass
 GType ags_open_sf2_sample_get_type();
 
 AgsOpenSf2Sample* ags_open_sf2_sample_new(AgsChannel *channel,
+					  AgsIpatchSample *ipatch_sample,
 					  gchar *filename,
 					  gchar *preset,
 					  gchar *instrument,

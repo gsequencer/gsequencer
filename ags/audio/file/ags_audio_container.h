@@ -87,10 +87,10 @@ void* ags_audio_container_read(AgsAudioContainer *audio_container,
 			       guint audio_channel,
 			       guint format,
 			       GError **error);
-void ags_audio_container_read_audio_signal(AgsAudioContainer *audio_container);
-void ags_audio_container_read_wave(AgsAudioContainer *audio_container,
-				   guint64 x_offset,
-				   gdouble delay, guint attack);
+GList* ags_audio_container_read_audio_signal(AgsAudioContainer *audio_container);
+GList* ags_audio_container_read_wave(AgsAudioContainer *audio_container,
+				     guint64 x_offset,
+				     gdouble delay, guint attack);
 void ags_audio_container_seek(AgsAudioContainer *audio_container, guint frames, gint whence);
 void ags_audio_container_write(AgsAudioContainer *audio_container,
 			       void *buffer, guint buffer_size,
