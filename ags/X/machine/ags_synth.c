@@ -522,8 +522,6 @@ ags_synth_update(AgsSynth *synth)
   AgsClearAudioSignal *clear_audio_signal;
   AgsApplySynth *apply_synth;
 
-  AgsMutexManager *mutex_manager;
-  AgsThread *main_loop;
   AgsGuiThread *gui_thread;
 
   AgsApplicationContext *application_context;
@@ -543,37 +541,12 @@ ags_synth_update(AgsSynth *synth)
   AgsComplex **sync_point;
   guint sync_point_count;
   
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *audio_mutex;
-  pthread_mutex_t *channel_mutex;
-  pthread_mutex_t *recycling_mutex;
-
   window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) synth);
-  application_context = (AgsApplicationContext *) window->application_context;
 
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+  application_context = (AgsApplicationContext *) window->application_context;
+  gui_thread = ags_ui_provider_get_gui_thread(AGS_UI_PROVIDER(application_context));
 
   audio = AGS_MACHINE(synth)->audio;
-
-  /* get audio loop */
-  pthread_mutex_lock(application_mutex);
-
-  main_loop = (AgsThread *) application_context->main_loop;
-
-  pthread_mutex_unlock(application_mutex);
-
-  /* get task thread */
-  gui_thread = (AgsGuiThread *) ags_thread_find_type(main_loop,
-						       AGS_TYPE_GUI_THREAD);
-
-  /* lookup audio mutex */
-  pthread_mutex_lock(application_mutex);
-    
-  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
-					 (GObject *) audio);
-  
-  pthread_mutex_unlock(application_mutex);
 
   /*  */
   start_frequency = (gdouble) gtk_spin_button_get_value_as_float(synth->lower);
@@ -586,23 +559,19 @@ ags_synth_update(AgsSynth *synth)
     input_pad = gtk_container_get_children((GtkContainer *) synth->input_pad);
 
   /* get soundcard */
-  pthread_mutex_lock(audio_mutex);
-
-  channel = audio->input;
-  
-  pthread_mutex_unlock(audio_mutex);
+  g_object_get(audio,
+	       "input", &channel,
+	       NULL);
 
   task = NULL;
 
   while(input_pad != NULL){
-    /* lookup channel mutex */
-    pthread_mutex_lock(application_mutex);
+    guint buffer_size;
 
-    channel_mutex = ags_mutex_manager_lookup(mutex_manager,
-					     (GObject *) channel);
-  
-    pthread_mutex_unlock(application_mutex);
-
+    g_object_get(channel,
+		 "buffer-size", &buffer_size,
+		 NULL);
+    
     /* do it so */
     input_line = gtk_container_get_children((GtkContainer *) AGS_PAD(input_pad->data)->expander_set);
     oscillator = AGS_OSCILLATOR(gtk_container_get_children((GtkContainer *) AGS_LINE(input_line->data)->expander->table)->data);
@@ -616,22 +585,20 @@ ags_synth_update(AgsSynth *synth)
 
     apply_synth = ags_apply_synth_new(channel, 1,
 				      wave,
-				      attack % channel->buffer_size, frame_count,
+				      attack % buffer_size, frame_count,
 				      frequency, phase, start_frequency,
 				      volume,
 				      loop_start, loop_end);
     g_object_set(apply_synth,
-		 "delay", (gdouble) attack / channel->buffer_size,
+		 "delay", (gdouble) attack / buffer_size,
 		 NULL);
     task = g_list_prepend(task,
 			  apply_synth);
 
     /* iterate */
-    pthread_mutex_lock(channel_mutex);
-
-    channel = channel->next;
-
-    pthread_mutex_unlock(channel_mutex);
+    g_object_get(channel,
+		 "next", &channel,
+		 NULL);
 
     input_pad = input_pad->next;
   }
@@ -642,69 +609,53 @@ ags_synth_update(AgsSynth *synth)
   input_pad_start = 
     input_pad = gtk_container_get_children((GtkContainer *) synth->input_pad);
 
-  pthread_mutex_lock(audio_mutex);
-
-  channel = audio->output;
-  output_lines = audio->output_lines;
-
-  pthread_mutex_unlock(audio_mutex);
+  g_object_get(audio,
+	       "output", &channel,
+	       "output-lines", &output_lines,
+	       NULL);
 
   while(channel != NULL){
     AgsAudioSignal *template;
+
+    GList *start_list;
     
-    /* lookup channel mutex */
-    pthread_mutex_lock(application_mutex);
+    g_object_get(channel,
+		 "first-recycling", &first_recycling,
+		 NULL);
 
-    channel_mutex = ags_mutex_manager_lookup(mutex_manager,
-					     (GObject *) channel);
-  
-    pthread_mutex_unlock(application_mutex);
-
-    /* clear task */
-    pthread_mutex_lock(channel_mutex);
-
-    first_recycling = channel->first_recycling;
+    g_object_get(first_recycling,
+		 "audio-signal", &start_list,
+		 NULL);
     
-    pthread_mutex_unlock(channel_mutex);
-
-    /* lookup recycling mutex */
-    pthread_mutex_lock(application_mutex);
-
-    recycling_mutex = ags_mutex_manager_lookup(mutex_manager,
-					       (GObject *) first_recycling);
-  
-    pthread_mutex_unlock(application_mutex);
-
     /*  */
-    pthread_mutex_lock(recycling_mutex);
-
-    template = ags_audio_signal_get_template(first_recycling->audio_signal);
-
-    pthread_mutex_unlock(recycling_mutex);
+    template = ags_audio_signal_get_template(start_list);
 
     clear_audio_signal = ags_clear_audio_signal_new(template);
     task = g_list_prepend(task,
 			  clear_audio_signal);
+
+    g_list_free(start_list);
     
     /* iterate */
-    pthread_mutex_lock(channel_mutex);
-
-    channel = channel->next;
-
-    pthread_mutex_unlock(channel_mutex);
+    g_object_get(channel,
+		 "next", &channel,
+		 NULL);
   }
   
   /* write output */
-  pthread_mutex_lock(audio_mutex);
-  
-  channel = audio->output;
-
-  pthread_mutex_unlock(audio_mutex);
+  g_object_get(audio,
+	       "output", &channel,
+	       NULL);
 
   while(input_pad != NULL){
+    guint buffer_size;
     guint i;
     gboolean do_sync;
 
+    g_object_get(channel,
+		 "buffer-size", &buffer_size,
+		 NULL);
+    
     /* do it so */
     input_line = gtk_container_get_children((GtkContainer *) AGS_PAD(input_pad->data)->expander_set);
     oscillator = AGS_OSCILLATOR(gtk_container_get_children((GtkContainer *) AGS_LINE(input_line->data)->expander->table)->data);
@@ -747,16 +698,17 @@ ags_synth_update(AgsSynth *synth)
 
     apply_synth = ags_apply_synth_new(channel, output_lines,
 				      wave,
-				      attack % channel->buffer_size, frame_count,
+				      attack % buffer_size, frame_count,
 				      frequency, phase, start_frequency,
 				      volume,
 				      loop_start, loop_end);
     g_object_set(apply_synth,
-		 "delay", (gdouble) attack / channel->buffer_size,
+		 "delay", (gdouble) attack / buffer_size,
 		 NULL);
     task = g_list_prepend(task,
 			  apply_synth);
 
+    /* iterate */
     input_pad = input_pad->next;
   }
   
@@ -770,11 +722,11 @@ ags_synth_update(AgsSynth *synth)
  * ags_synth_new:
  * @soundcard: the assigned soundcard.
  *
- * Creates an #AgsSynth
+ * Create a new instance of #AgsSynth
  *
- * Returns: a new #AgsSynth
+ * Returns: the new #AgsSynth
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsSynth*
 ags_synth_new(GObject *soundcard)
@@ -785,7 +737,7 @@ ags_synth_new(GObject *soundcard)
 				    NULL);
 
   g_object_set(G_OBJECT(AGS_MACHINE(synth)->audio),
-	       "soundcard", soundcard,
+	       "output-soundcard", soundcard,
 	       NULL);
 
   return(synth);

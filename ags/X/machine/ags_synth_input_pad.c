@@ -33,9 +33,10 @@ void ags_synth_input_pad_class_init(AgsSynthInputPadClass *synth_input_pad);
 void ags_synth_input_pad_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_synth_input_pad_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_synth_input_pad_init(AgsSynthInputPad *synth_input_pad);
-void ags_synth_input_pad_destroy(GtkObject *object);
+
 void ags_synth_input_pad_connect(AgsConnectable *connectable);
 void ags_synth_input_pad_disconnect(AgsConnectable *connectable);
+
 gchar* ags_synth_input_pad_get_name(AgsPlugin *plugin);
 void ags_synth_input_pad_set_name(AgsPlugin *plugin, gchar *name);
 gchar* ags_synth_input_pad_get_xml_type(AgsPlugin *plugin);
@@ -166,12 +167,6 @@ ags_synth_input_pad_disconnect(AgsConnectable *connectable)
 {
   ags_synth_input_pad_parent_connectable_interface->disconnect(connectable);
 
-  /* empty */
-}
-
-void
-ags_synth_input_pad_destroy(GtkObject *object)
-{
   /* empty */
 }
 

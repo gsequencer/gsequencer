@@ -34,8 +34,10 @@ void ags_synth_input_line_class_init(AgsSynthInputLineClass *synth_input_line);
 void ags_synth_input_line_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_synth_input_line_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_synth_input_line_init(AgsSynthInputLine *synth_input_line);
+
 void ags_synth_input_line_connect(AgsConnectable *connectable);
 void ags_synth_input_line_disconnect(AgsConnectable *connectable);
+
 gchar* ags_synth_input_line_get_name(AgsPlugin *plugin);
 void ags_synth_input_line_set_name(AgsPlugin *plugin, gchar *name);
 gchar* ags_synth_input_line_get_xml_type(AgsPlugin *plugin);
@@ -367,11 +369,11 @@ ags_synth_input_line_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
  * ags_synth_input_line_new:
  * @channel: the assigned channel
  *
- * Creates an #AgsSynthInputLine
+ * Create a new instance of #AgsSynthInputLine
  *
- * Returns: a new #AgsSynthInputLine
+ * Returns: the new #AgsSynthInputLine
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsSynthInputLine*
 ags_synth_input_line_new(AgsChannel *channel)
