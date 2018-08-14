@@ -536,8 +536,8 @@ ags_live_lv2_bridge_preset_changed_callback(GtkComboBox *combo_box, AgsLiveLv2Br
   port_preset = lv2_preset->port_preset;
   
   while(port_preset != NULL){
-    port_descriptor = ags_port_descriptor_find_symbol(start_plugin_port,
-						      AGS_LV2_PORT_PRESET(port_preset->data)->port_symbol);
+    plugin_port = ags_plugin_port_find_symbol(start_plugin_port,
+					      AGS_LV2_PORT_PRESET(port_preset->data)->port_symbol);
     value = (gdouble) g_value_get_float(AGS_LV2_PORT_PRESET(port_preset->data)->port_value);
     
     list_start = 

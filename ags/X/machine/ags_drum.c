@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -195,16 +195,16 @@ ags_drum_init(AgsDrum *drum)
 
 
   audio = AGS_MACHINE(drum)->audio;
-  audio->flags |= (AGS_AUDIO_OUTPUT_HAS_RECYCLING |
-		   AGS_AUDIO_INPUT_HAS_RECYCLING |
-		   AGS_AUDIO_INPUT_TAKES_FILE |
-		   AGS_AUDIO_SYNC |
+  audio->flags |= (AGS_AUDIO_SYNC |
 		   AGS_AUDIO_ASYNC |
-		   AGS_AUDIO_HAS_NOTATION |
-		   AGS_AUDIO_HAS_PATTERN |
-		   AGS_AUDIO_NOTATION_DEFAULT |
-		   AGS_AUDIO_PATTERN_MODE |
-		   AGS_AUDIO_REVERSE_MAPPING);
+		   AGS_AUDIO_OUTPUT_HAS_RECYCLING |
+		   AGS_AUDIO_INPUT_HAS_RECYCLING |
+		   AGS_AUDIO_INPUT_HAS_FILE);
+  audio->ability_flags |= (AGS_SOUND_ABILITY_SEQUENCER |
+			   AGS_SOUND_ABILITY_NOTATION);
+  audio->behaviour_flags = (AGS_SOUND_BEHAVIOUR_PATTERN_MODE |
+			    AGS_SOUND_BEHAVIOUR_REVERSE_MAPPING |
+			    AGS_SOUND_BEHAVIOUR_DEFAULTS_TO_INPUT);
   g_object_set(audio,
 	       "audio-start-mapping", 0,
 	       "audio-end-mapping", 128,
@@ -532,7 +532,7 @@ ags_drum_map_recall(AgsMachine *machine)
 
   g_object_get(audio,
 	       "play", &start_play,
-	       "recall", &recall_play,
+	       "recall", &start_recall,
 	       NULL);
 
   /* ags-delay */

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -184,14 +184,15 @@ ags_matrix_init(AgsMatrix *matrix)
 			 G_CALLBACK(ags_matrix_parent_set_callback), (gpointer) matrix);
 
   audio = AGS_MACHINE(matrix)->audio;
-  audio->flags |= (AGS_AUDIO_OUTPUT_HAS_RECYCLING |
-		   AGS_AUDIO_INPUT_HAS_RECYCLING |
-		   AGS_AUDIO_SYNC |
+  audio->flags |= (AGS_AUDIO_SYNC |
 		   AGS_AUDIO_ASYNC |
-		   AGS_AUDIO_NOTATION_DEFAULT |
-		   AGS_AUDIO_HAS_NOTATION |
-		   AGS_AUDIO_HAS_PATTERN |
-		   AGS_AUDIO_PATTERN_MODE);
+		   AGS_AUDIO_OUTPUT_HAS_RECYCLING |
+		   AGS_AUDIO_INPUT_HAS_RECYCLING);
+  audio->ability_flags |= (AGS_SOUND_ABILITY_SEQUENCER |
+			   AGS_SOUND_ABILITY_NOTATION);
+  audio->behaviour_flags = (AGS_SOUND_BEHAVIOUR_PATTERN_MODE |
+			    AGS_SOUND_BEHAVIOUR_REVERSE_MAPPING |
+			    AGS_SOUND_BEHAVIOUR_DEFAULTS_TO_INPUT);
   g_object_set(audio,
 	       "audio-start-mapping", 0,
 	       "audio-end-mapping", 128,

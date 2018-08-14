@@ -518,9 +518,9 @@ ags_ladspa_bridge_launch_task(AgsFileLaunch *file_launch, AgsLadspaBridge *ladsp
     recall = AGS_MACHINE(ladspa_bridge)->audio->input->recall;
     
     while((recall = ags_recall_template_find_type(recall, AGS_TYPE_RECALL_LADSPA)) != NULL){
-      if(!g_strcmp0(AGS_RECALL_LADSPA(recall->data)->filename,
+      if(!g_strcmp0(AGS_RECALL(recall->data)->filename,
 		  ladspa_bridge->filename) &&
-	 !g_strcmp0(AGS_RECALL_LADSPA(recall->data)->effect,
+	 !g_strcmp0(AGS_RECALL(recall->data)->effect,
 		    ladspa_bridge->effect)){
 	break;
       }

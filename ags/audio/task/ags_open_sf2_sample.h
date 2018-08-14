@@ -27,6 +27,8 @@
 
 #include <ags/audio/ags_channel.h>
 
+#include <ags/audio/file/ags_ipatch_sample.h>
+
 #define AGS_TYPE_OPEN_SF2_SAMPLE                (ags_open_sf2_sample_get_type())
 #define AGS_OPEN_SF2_SAMPLE(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_OPEN_SF2_SAMPLE, AgsOpenSf2Sample))
 #define AGS_OPEN_SF2_SAMPLE_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_OPEN_SF2_SAMPLE, AgsOpenSf2SampleClass))

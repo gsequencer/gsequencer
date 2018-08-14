@@ -25,8 +25,8 @@
 
 typedef enum{
   AGS_SOUND_ABILITY_PLAYBACK            = 1,
-  AGS_SOUND_ABILITY_NOTATION            = 1 <<  1,
-  AGS_SOUND_ABILITY_SEQUENCER           = 1 <<  2,
+  AGS_SOUND_ABILITY_SEQUENCER           = 1 <<  1,
+  AGS_SOUND_ABILITY_NOTATION            = 1 <<  2,
   AGS_SOUND_ABILITY_WAVE                = 1 <<  3,
   AGS_SOUND_ABILITY_MIDI                = 1 <<  4,
 }AgsSoundAbilityFlags;

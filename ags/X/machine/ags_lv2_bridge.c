@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -847,9 +847,9 @@ ags_lv2_bridge_launch_task(AgsFileLaunch *file_launch, AgsLv2Bridge *lv2_bridge)
     recall = AGS_MACHINE(lv2_bridge)->audio->input->recall;
     
     while((recall = ags_recall_template_find_type(recall, AGS_TYPE_RECALL_LV2)) != NULL){
-      if(!g_strcmp0(AGS_RECALL_LV2(recall->data)->filename,
+      if(!g_strcmp0(AGS_RECALL(recall->data)->filename,
 		  lv2_bridge->filename) &&
-	 !g_strcmp0(AGS_RECALL_LV2(recall->data)->effect,
+	 !g_strcmp0(AGS_RECALL(recall->data)->effect,
 		    lv2_bridge->effect)){
 	break;
       }
@@ -2162,11 +2162,11 @@ ags_lv2_bridge_lv2ui_idle_timeout(GtkWidget *widget)
  * @filename: the plugin.so
  * @effect: the effect
  *
- * Creates an #AgsLv2Bridge
+ * Create a new instance of #AgsLv2Bridge
  *
- * Returns: a new #AgsLv2Bridge
+ * Returns: the new #AgsLv2Bridge
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsLv2Bridge*
 ags_lv2_bridge_new(GObject *soundcard,
@@ -2179,14 +2179,10 @@ ags_lv2_bridge_new(GObject *soundcard,
   lv2_bridge = (AgsLv2Bridge *) g_object_new(AGS_TYPE_LV2_BRIDGE,
 					     NULL);
 
-  if(soundcard != NULL){
-    g_value_init(&value, G_TYPE_OBJECT);
-    g_value_set_object(&value, soundcard);
-    g_object_set_property(G_OBJECT(AGS_MACHINE(lv2_bridge)->audio),
-			  "soundcard", &value);
-    g_value_unset(&value);
-  }
-
+  g_object_set(AGS_MACHINE(lv2_bridge)->audio,
+	       "output-soundcard", soundcard,
+	       NULL);
+  
   g_object_set(lv2_bridge,
 	       "filename", filename,
 	       "effect", effect,

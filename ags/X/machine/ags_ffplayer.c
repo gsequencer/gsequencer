@@ -36,9 +36,11 @@ void ags_ffplayer_class_init(AgsFFPlayerClass *ffplayer);
 void ags_ffplayer_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_ffplayer_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_ffplayer_init(AgsFFPlayer *ffplayer);
+void ags_ffplayer_finalize(GObject *gobject);
+
 void ags_ffplayer_connect(AgsConnectable *connectable);
 void ags_ffplayer_disconnect(AgsConnectable *connectable);
-void ags_ffplayer_finalize(GObject *gobject);
+
 void ags_ffplayer_realize(GtkWidget *widget);
 
 gchar* ags_ffplayer_get_name(AgsPlugin *plugin);
@@ -193,10 +195,10 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
 		   AGS_AUDIO_ASYNC |
 		   AGS_AUDIO_OUTPUT_HAS_RECYCLING |
 		   AGS_AUDIO_INPUT_HAS_RECYCLING |
-		   AGS_AUDIO_INPUT_TAKES_FILE |
-		   AGS_AUDIO_HAS_NOTATION | 
-		   AGS_AUDIO_NOTATION_DEFAULT |
-		   AGS_AUDIO_REVERSE_MAPPING);
+		   AGS_AUDIO_INPUT_HAS_FILE);
+  audio->ability_flags |= (AGS_SOUND_ABILITY_NOTATION);
+  audio->behaviour_flags = (AGS_SOUND_BEHAVIOUR_REVERSE_MAPPING |
+			    AGS_SOUND_BEHAVIOUR_DEFAULTS_TO_INPUT);
   g_object_set(audio,
 	       "audio-start-mapping", 0,
 	       "audio-end-mapping", 128,
@@ -760,10 +762,10 @@ ags_ffplayer_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
 				   "reference", ffplayer,
 				   NULL));
 
-  if(ffplayer->ipatch != NULL && ffplayer->ipatch->filename != NULL){
+  if(ffplayer->audio_container != NULL && ffplayer->audio_container->filename != NULL){
     xmlNewProp(node,
 	       "filename",
-	       g_strdup(ffplayer->ipatch->filename));
+	       g_strdup(ffplayer->audio_container->filename));
 
     xmlNewProp(node,
 	       "preset",
@@ -847,7 +849,8 @@ ags_ffplayer_resize_audio_channels(AgsMachine *machine,
 			      0);
 
     /* ags-stream */
-    if(!rt_safe){
+    if(!(ags_recall_global_get_rt_safe() ||
+	 ags_recall_global_get_performance_mode())){
       ags_recall_factory_create(audio,
 				NULL, NULL,
 				"ags-stream",
@@ -1241,9 +1244,6 @@ ags_ffplayer_output_map_recall(AgsFFPlayer *ffplayer, guint output_pad_start)
 			       AGS_RECALL_FACTORY_RECALL |
 			       AGS_RECALL_FACTORY_ADD),
 			      0);
-    
-    /* set performance mode */
-    performance_mode = TRUE;
   }else{
     /* ags-buffer */
     ags_recall_factory_create(audio,
@@ -1478,13 +1478,13 @@ ags_ffplayer_load_preset(AgsFFPlayer *ffplayer)
 void
 ags_ffplayer_load_instrument(AgsFFPlayer *ffplayer)
 {
-  AgsPlayable *playable;
-
+  AgsAudioContainer *audio_container;
+  
   gchar **instrument;
 
   GError *error;
-  
-  playable = AGS_PLAYABLE(ffplayer->ipatch);
+
+  audio_container = ffplayer->audio_container;
 
   AGS_IPATCH(audio_container->sound_container)->nesting_level = AGS_SF2_PHDR;
 

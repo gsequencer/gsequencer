@@ -2676,7 +2676,7 @@ ags_simple_file_read_machine_launch(AgsFileLaunch *file_launch,
     ags_ffplayer_open_filename(ffplayer,
 			       str);
 
-    if(ffplayer->ipatch == NULL){
+    if(ffplayer->audio_container == NULL){
       return;
     }
 
@@ -6525,11 +6525,11 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
 
     ffplayer = (AgsFFPlayer *) machine;
 
-    if(ffplayer->ipatch != NULL &&
-       ffplayer->ipatch->filename != NULL){
+    if(ffplayer->audio_container != NULL &&
+       ffplayer->audio_container->filename != NULL){
       xmlNewProp(node,
 		 "filename",
-		 ffplayer->ipatch->filename);
+		 ffplayer->audio_container->filename);
 
       xmlNewProp(node,
 		 "preset",

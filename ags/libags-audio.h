@@ -104,6 +104,7 @@
 #include <ags/audio/thread/ags_export_thread.h>
 
 /* audio file */
+#include <ags/audio/file/ags_audio_container.h>
 #include <ags/audio/file/ags_audio_file.h>
 #include <ags/audio/file/ags_audio_file_link.h>
 #include <ags/audio/file/ags_audio_file_xml.h>

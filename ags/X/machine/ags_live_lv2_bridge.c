@@ -354,14 +354,14 @@ ags_live_lv2_bridge_init(AgsLiveLv2Bridge *live_lv2_bridge)
   }
 
   audio = AGS_MACHINE(live_lv2_bridge)->audio;
-  audio->flags |= (AGS_AUDIO_OUTPUT_HAS_RECYCLING |
-		   AGS_AUDIO_INPUT_HAS_RECYCLING |
-		   AGS_AUDIO_SYNC |
+  audio->flags |= (AGS_AUDIO_SYNC |
 		   AGS_AUDIO_ASYNC |
-		   AGS_AUDIO_HAS_NOTATION |  
-		   AGS_AUDIO_SKIP_INPUT |
-		   AGS_AUDIO_REVERSE_MAPPING);
-  audio->flags &= (~AGS_AUDIO_NOTATION_DEFAULT);
+		   AGS_AUDIO_OUTPUT_HAS_RECYCLING |
+		   AGS_AUDIO_INPUT_HAS_RECYCLING |
+		   AGS_AUDIO_SKIP_INPUT);
+  audio->ability_flags |= (AGS_SOUND_ABILITY_NOTATION);
+  audio->behaviour_flags = (AGS_SOUND_BEHAVIOUR_REVERSE_MAPPING);
+  //  audio->flags &= (~AGS_AUDIO_NOTATION_DEFAULT);
   g_object_set(audio,
 	       "audio-start-mapping", 0,
 	       "audio-end-mapping", 128,
@@ -824,9 +824,9 @@ ags_live_lv2_bridge_launch_task(AgsFileLaunch *file_launch, AgsLiveLv2Bridge *li
     recall = AGS_MACHINE(live_lv2_bridge)->audio->input->recall;
     
     while((recall = ags_recall_template_find_type(recall, AGS_TYPE_PLAY_LV2_AUDIO)) != NULL){
-      if(!g_strcmp0(AGS_PLAY_LV2_AUDIO(recall->data)->filename,
+      if(!g_strcmp0(AGS_RECALL(recall->data)->filename,
 		    live_lv2_bridge->filename) &&
-	 !g_strcmp0(AGS_PLAY_LV2_AUDIO(recall->data)->effect,
+	 !g_strcmp0(AGS_RECALL(recall->data)->effect,
 		    live_lv2_bridge->effect)){
 	break;
       }
@@ -1382,35 +1382,49 @@ ags_live_lv2_bridge_load_program(AgsLiveLv2Bridge *live_lv2_bridge)
     uint32_t i;
 
     if(live_lv2_bridge->lv2_handle == NULL){
+      guint samplerate;
+      guint buffer_size;
+
+      g_object_get(AGS_MACHINE(live_lv2_bridge)->audio,
+		   "samplerate", &samplerate,
+		   "buffer-size", &buffer_size,
+		   NULL);
+      
       live_lv2_bridge->lv2_handle = (LV2_Handle *) ags_base_plugin_instantiate(lv2_plugin,
-									       AGS_MACHINE(live_lv2_bridge)->audio->samplerate);
+									       samplerate, buffer_size);
     }
 
     if(live_lv2_bridge->port_value == NULL){
-      GList *port_descriptor;
+      GList *start_plugin_port, *plugin_port;
       
       guint port_count;
 
-      port_count = g_list_length(AGS_BASE_PLUGIN(lv2_plugin)->port);
+      port_count = g_list_length(AGS_BASE_PLUGIN(lv2_plugin)->plugin_port);
 
       if(port_count > 0){
 	live_lv2_bridge->port_value = (float *) malloc(port_count * sizeof(float));
       }
 
-      port_descriptor = AGS_BASE_PLUGIN(lv2_plugin)->port;
+      g_object_get(lv2_plugin,
+		   "plugin-port", &start_plugin_port,
+		   NULL);
       
-      for(i = 0; port_descriptor != NULL;){
-	if((AGS_PORT_DESCRIPTOR_CONTROL & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
-	  if((AGS_PORT_DESCRIPTOR_INPUT & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
+      plugin_port = start_plugin_port;
+      
+      for(i = 0; plugin_port != NULL;){
+	if(ags_plugin_port_test_flags(plugin_port->data, AGS_PLUGIN_PORT_CONTROL)){
+	  if(ags_plugin_port_test_flags(plugin_port->data, AGS_PLUGIN_PORT_INPUT)){
 	    plugin_descriptor->connect_port(live_lv2_bridge->lv2_handle[0],
-					    AGS_PORT_DESCRIPTOR(port_descriptor->data)->port_index,
+					    AGS_PLUGIN_PORT(plugin_port->data)->port_index,
 					    &(live_lv2_bridge->port_value[i]));
 	    i++;
 	  }
 	}
 
-	port_descriptor = port_descriptor->next;
+	plugin_port = plugin_port->next;
       }
+
+      g_list_free(start_plugin_port);
     }
     
     if(live_lv2_bridge->program == NULL){
@@ -1582,10 +1596,12 @@ ags_live_lv2_bridge_load(AgsLiveLv2Bridge *live_lv2_bridge)
 
   void *plugin_so;
 
+  GList *list;
   GList *start_plugin_port, *plugin_port;
   
-  unsigned long samplerate;
-  unsigned long effect_index;
+  guint samplerate;
+  guint buffer_size;
+  guint effect_index;
   gdouble step;
   unsigned long port_count;
   gboolean has_output_port;
@@ -1609,6 +1625,7 @@ ags_live_lv2_bridge_load(AgsLiveLv2Bridge *live_lv2_bridge)
 
   /* samplerate */
   samplerate = ags_soundcard_helper_config_get_samplerate(ags_config_get_instance());
+  buffer_size = ags_soundcard_helper_config_get_buffer_size(ags_config_get_instance());
 
   g_message("ags_live_lv2_bridge.c - load %s %s", live_lv2_bridge->filename, live_lv2_bridge->effect);
  
@@ -1639,7 +1656,7 @@ ags_live_lv2_bridge_load(AgsLiveLv2Bridge *live_lv2_bridge)
 	       "plugin-port", &start_plugin_port,
 	       NULL);
 
-  port_count = g_list_length(port);
+  port_count = g_list_length(start_plugin_port);
   k = 0;
 
   while(plugin_port != NULL){
@@ -1799,7 +1816,7 @@ ags_live_lv2_bridge_load(AgsLiveLv2Bridge *live_lv2_bridge)
 
   /* program */
   live_lv2_bridge->lv2_handle = ags_base_plugin_instantiate(lv2_plugin,
-							    AGS_MACHINE(live_lv2_bridge)->audio->samplerate);
+							    samplerate, buffer_size);
   
   if((AGS_LV2_PLUGIN_HAS_PROGRAM_INTERFACE & (lv2_plugin->flags)) != 0){
     ags_live_lv2_bridge_load_program(live_lv2_bridge);
@@ -1848,11 +1865,11 @@ ags_live_lv2_bridge_lv2ui_idle_timeout(GtkWidget *widget)
  * @filename: the plugin.so
  * @effect: the effect
  *
- * Creates an #AgsLiveLv2Bridge
+ * Create a new instance of #AgsLiveLv2Bridge
  *
- * Returns: a new #AgsLiveLv2Bridge
+ * Returns: the new #AgsLiveLv2Bridge
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsLiveLv2Bridge*
 ags_live_lv2_bridge_new(GObject *soundcard,
@@ -1864,11 +1881,9 @@ ags_live_lv2_bridge_new(GObject *soundcard,
   live_lv2_bridge = (AgsLiveLv2Bridge *) g_object_new(AGS_TYPE_LIVE_LV2_BRIDGE,
 						      NULL);
 
-  if(soundcard != NULL){
-    g_object_set(AGS_MACHINE(live_lv2_bridge)->audio,
-		 "output-soundcard", soundcard,
-		 NULL);
-  }
+  g_object_set(AGS_MACHINE(live_lv2_bridge)->audio,
+	       "output-soundcard", soundcard,
+	       NULL);
 
   g_object_set(live_lv2_bridge,
 	       "filename", filename,

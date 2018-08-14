@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -53,8 +53,11 @@ void ags_live_dssi_bridge_get_property(GObject *gobject,
 				       guint prop_id,
 				       GValue *value,
 				       GParamSpec *param_spec);
+void ags_live_dssi_bridge_finalize(GObject *gobject);
+
 void ags_live_dssi_bridge_connect(AgsConnectable *connectable);
 void ags_live_dssi_bridge_disconnect(AgsConnectable *connectable);
+
 gchar* ags_live_dssi_bridge_get_version(AgsPlugin *plugin);
 void ags_live_dssi_bridge_set_version(AgsPlugin *plugin, gchar *version);
 gchar* ags_live_dssi_bridge_get_build_id(AgsPlugin *plugin);
@@ -64,7 +67,6 @@ void ags_live_dssi_bridge_set_xml_type(AgsPlugin *plugin, gchar *xml_type);
 void ags_live_dssi_bridge_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin);
 void ags_live_dssi_bridge_launch_task(AgsFileLaunch *file_launch, AgsLiveDssiBridge *live_dssi_bridge);
 xmlNode* ags_live_dssi_bridge_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin);
-void ags_live_dssi_bridge_finalize(GObject *gobject);
 
 void ags_live_dssi_bridge_resize_audio_channels(AgsMachine *machine,
 						guint audio_channels, guint audio_channels_old,
@@ -261,14 +263,14 @@ ags_live_dssi_bridge_init(AgsLiveDssiBridge *live_dssi_bridge)
 			 G_CALLBACK(ags_live_dssi_bridge_parent_set_callback), (gpointer) live_dssi_bridge);
 
   audio = AGS_MACHINE(live_dssi_bridge)->audio;
-  audio->flags |= (AGS_AUDIO_OUTPUT_HAS_RECYCLING |
-		   AGS_AUDIO_INPUT_HAS_RECYCLING |
-		   AGS_AUDIO_SYNC |
+  audio->flags |= (AGS_AUDIO_SYNC |
 		   AGS_AUDIO_ASYNC |
-		   AGS_AUDIO_HAS_NOTATION | 
-		   AGS_AUDIO_SKIP_INPUT |
-		   AGS_AUDIO_REVERSE_MAPPING);
-  audio->flags &= (~AGS_AUDIO_NOTATION_DEFAULT);
+		   AGS_AUDIO_OUTPUT_HAS_RECYCLING |
+		   AGS_AUDIO_INPUT_HAS_RECYCLING |
+		   AGS_AUDIO_SKIP_INPUT);
+  audio->ability_flags |= (AGS_SOUND_ABILITY_NOTATION);
+  audio->behaviour_flags = (AGS_SOUND_BEHAVIOUR_REVERSE_MAPPING);
+  //  audio->flags &= (~AGS_AUDIO_NOTATION_DEFAULT);
   g_object_set(audio,
 	       "audio-start-mapping", 0,
 	       "audio-end-mapping", 128,
@@ -471,6 +473,29 @@ ags_live_dssi_bridge_get_property(GObject *gobject,
 }
 
 void
+ags_live_dssi_bridge_finalize(GObject *gobject)
+{
+  AgsLiveDssiBridge *live_dssi_bridge;
+
+  live_dssi_bridge = (AgsLiveDssiBridge *) gobject;
+  
+  g_object_disconnect(G_OBJECT(live_dssi_bridge),
+		      "any_signal::resize-audio-channels",
+		      G_CALLBACK(ags_live_dssi_bridge_resize_audio_channels),
+		      NULL,
+		      "any_signal::resize-pads",
+		      G_CALLBACK(ags_live_dssi_bridge_resize_pads),
+		      NULL,
+		      NULL);
+
+  g_free(live_dssi_bridge->filename);
+  g_free(live_dssi_bridge->effect);
+  
+  /* call parent */
+  G_OBJECT_CLASS(ags_live_dssi_bridge_parent_class)->finalize(gobject);
+}
+
+void
 ags_live_dssi_bridge_connect(AgsConnectable *connectable)
 {
   AgsLiveDssiBridge *live_dssi_bridge;
@@ -634,9 +659,9 @@ ags_live_dssi_bridge_launch_task(AgsFileLaunch *file_launch, AgsLiveDssiBridge *
     recall = AGS_MACHINE(live_dssi_bridge)->audio->play;
     
     while((recall = ags_recall_template_find_type(recall, AGS_TYPE_PLAY_DSSI_AUDIO)) != NULL){
-      if(!g_strcmp0(AGS_PLAY_DSSI_AUDIO(recall->data)->filename,
+      if(!g_strcmp0(AGS_RECALL(recall->data)->filename,
 		    live_dssi_bridge->filename) &&
-	 !g_strcmp0(AGS_PLAY_DSSI_AUDIO(recall->data)->effect,
+	 !g_strcmp0(AGS_RECALL(recall->data)->effect,
 		    live_dssi_bridge->effect)){
 	break;
       }
@@ -732,29 +757,6 @@ ags_live_dssi_bridge_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
 	      node);
 
   return(node);
-}
-
-void
-ags_live_dssi_bridge_finalize(GObject *gobject)
-{
-  AgsLiveDssiBridge *live_dssi_bridge;
-
-  live_dssi_bridge = (AgsLiveDssiBridge *) gobject;
-  
-  g_object_disconnect(G_OBJECT(live_dssi_bridge),
-		      "any_signal::resize-audio-channels",
-		      G_CALLBACK(ags_live_dssi_bridge_resize_audio_channels),
-		      NULL,
-		      "any_signal::resize-pads",
-		      G_CALLBACK(ags_live_dssi_bridge_resize_pads),
-		      NULL,
-		      NULL);
-
-  g_free(live_dssi_bridge->filename);
-  g_free(live_dssi_bridge->effect);
-  
-  /* call parent */
-  G_OBJECT_CLASS(ags_live_dssi_bridge_parent_class)->finalize(gobject);
 }
 
 void
@@ -1047,7 +1049,7 @@ ags_live_dssi_bridge_map_recall(AgsMachine *machine)
   play = ags_recall_find_type(start_play,
 			      AGS_TYPE_DELAY_AUDIO_RUN);
 
-  if(list != NULL){
+  if(play != NULL){
     play_delay_audio_run = AGS_DELAY_AUDIO_RUN(play->data);
     //    AGS_RECALL(play_delay_audio_run)->flags |= AGS_RECALL_PERSISTENT;
   }else{

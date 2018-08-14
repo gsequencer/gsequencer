@@ -259,13 +259,13 @@ ags_dssi_bridge_init(AgsDssiBridge *dssi_bridge)
 			 G_CALLBACK(ags_dssi_bridge_parent_set_callback), (gpointer) dssi_bridge);
 
   audio = AGS_MACHINE(dssi_bridge)->audio;
-  audio->flags |= (AGS_AUDIO_OUTPUT_HAS_RECYCLING |
-		   AGS_AUDIO_INPUT_HAS_RECYCLING |
-		   AGS_AUDIO_SYNC |
+  audio->flags |= (AGS_AUDIO_SYNC |
 		   AGS_AUDIO_ASYNC |
-		   AGS_AUDIO_HAS_NOTATION | 
-		   AGS_AUDIO_NOTATION_DEFAULT |
-		   AGS_AUDIO_REVERSE_MAPPING);
+		   AGS_AUDIO_OUTPUT_HAS_RECYCLING |
+		   AGS_AUDIO_INPUT_HAS_RECYCLING);
+  audio->ability_flags |= (AGS_SOUND_ABILITY_NOTATION);
+  audio->behaviour_flags = (AGS_SOUND_BEHAVIOUR_REVERSE_MAPPING |
+			    AGS_SOUND_BEHAVIOUR_DEFAULTS_TO_INPUT);
   g_object_set(audio,
 	       "audio-start-mapping", 0,
 	       "audio-end-mapping", 128,
@@ -657,9 +657,9 @@ ags_dssi_bridge_launch_task(AgsFileLaunch *file_launch, AgsDssiBridge *dssi_brid
     recall = AGS_MACHINE(dssi_bridge)->audio->input->recall;
     
     while((recall = ags_recall_template_find_type(recall, AGS_TYPE_RECALL_DSSI)) != NULL){
-      if(!g_strcmp0(AGS_RECALL_DSSI(recall->data)->filename,
+      if(!g_strcmp0(AGS_RECALL(recall->data)->filename,
 		  dssi_bridge->filename) &&
-	 !g_strcmp0(AGS_RECALL_DSSI(recall->data)->effect,
+	 !g_strcmp0(AGS_RECALL(recall->data)->effect,
 		    dssi_bridge->effect)){
 	break;
       }
@@ -1053,7 +1053,7 @@ ags_dssi_bridge_map_recall(AgsMachine *machine)
   play = ags_recall_find_type(start_play,
 			      AGS_TYPE_DELAY_AUDIO_RUN);
 
-  if(ply != NULL){
+  if(play != NULL){
     play_delay_audio_run = AGS_DELAY_AUDIO_RUN(play->data);
     //    AGS_RECALL(play_delay_audio_run)->flags |= AGS_RECALL_PERSISTENT;
   }else{

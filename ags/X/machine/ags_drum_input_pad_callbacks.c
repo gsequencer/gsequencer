@@ -117,6 +117,8 @@ ags_drum_input_pad_open_response_callback(GtkWidget *widget, gint response, AgsD
   AgsOpenSingleFile *open_single_file;
   
   AgsApplicationContext *application_context;
+
+  GList *task;
   
   char *name0, *name1;
 
@@ -150,11 +152,27 @@ ags_drum_input_pad_open_response_callback(GtkWidget *widget, gint response, AgsD
     }
 
     /* task */
+    task = NULL;
+    
     if(AGS_PAD(drum_input_pad)->group->active){
-      open_single_file = ags_open_single_file_new(AGS_PAD(drum_input_pad)->channel,
-						  AGS_AUDIO(AGS_MACHINE(drum)->audio)->soundcard,
-						  name0,
-						  0, AGS_AUDIO(AGS_MACHINE(drum)->audio)->audio_channels);
+      AgsChannel *current;
+
+      guint i;
+
+      current = AGS_PAD(drum_input_pad)->channel;
+
+      for(i = 0; current != NULL; i++){
+	open_single_file = ags_open_single_file_new(current,
+						    name0,
+						    i);
+	task = g_list_prepend(task,
+			      open_single_file);
+
+	/* iterate */
+	g_object_get(current,
+		     "next", &current,
+		     NULL);
+      }
     }else{
       AgsLine *line;
       GList *list;
@@ -163,15 +181,16 @@ ags_drum_input_pad_open_response_callback(GtkWidget *widget, gint response, AgsD
       line = AGS_LINE(ags_line_find_next_grouped(list)->data);
 
       open_single_file = ags_open_single_file_new(line->channel,
-						  AGS_AUDIO(AGS_MACHINE(drum)->audio)->soundcard,
 						  name0,
-						  (guint) spin_button->adjustment->value, 1);
-
+						  (guint) spin_button->adjustment->value);
+      task = g_list_prepend(task,
+			    open_single_file);
+      
       g_list_free(list);
     }
 
-    ags_gui_thread_schedule_task(gui_thread,
-				 open_single_file);
+    ags_gui_thread_schedule_tasks(gui_thread,
+				  task);
 
     gtk_widget_destroy((GtkWidget *) file_chooser);
   }else if(response == GTK_RESPONSE_CANCEL){

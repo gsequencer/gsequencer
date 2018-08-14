@@ -23,8 +23,12 @@
 #include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_input.h>
 
+#include <ags/audio/file/ags_sound_container.h>
+#include <ags/audio/file/ags_sound_resource.h>
 #include <ags/audio/file/ags_audio_file_link.h>
 #include <ags/audio/file/ags_audio_container.h>
+#include <ags/audio/file/ags_ipatch.h>
+#include <ags/audio/file/ags_ipatch_sample.h>
 
 #include <ags/config.h>
 
@@ -506,7 +510,7 @@ ags_open_sf2_sample_launch(AgsTask *task)
   AgsOpenSf2Sample *open_sf2_sample;
   
   AgsAudioContainer *audio_container;
-  AgsIpatchSample *sample;
+  AgsIpatchSample *ipatch_sample;
   
   AgsFileLink *file_link;
 
@@ -546,6 +550,7 @@ ags_open_sf2_sample_launch(AgsTask *task)
     audio_signal = ags_audio_container_read_audio_signal(audio_container);
   }else{
     audio_signal = ags_sound_resource_read_audio_signal(AGS_SOUND_RESOURCE(ipatch_sample),
+							soundcard,
 							open_sf2_sample->audio_channel);
   }
   

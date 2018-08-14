@@ -646,6 +646,9 @@ ags_equalizer10_resize_pads_callback(AgsEqualizer10 *equalizer10,
       AgsAudio *audio;
       AgsChannel *channel;
       AgsPort *port;
+
+      GList *start_play, *play;
+      GList *start_recall, *recall;
       
       guint audio_channels;
       guint i;

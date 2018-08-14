@@ -265,13 +265,13 @@ ags_synth_input_pad_resize_lines(AgsPad *pad, GType line_type,
 
 /**
  * ags_synth_input_pad_new:
- * @channel: the assigned channel
+ * @channel: the assigned #AgsChannel
  *
- * Creates an #AgsSynthInputPad
+ * Create a new instance of #AgsSynthInputPad
  *
- * Returns: a new #AgsSynthInputPad
+ * Returns: the new #AgsSynthInputPad
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsSynthInputPad*
 ags_synth_input_pad_new(AgsChannel *channel)
