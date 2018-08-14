@@ -42,19 +42,19 @@ ags_soundcard_util_get_obj_mutex(GObject *soundcard)
 
   obj_mutex = NULL;
   
-  if(AGS_IS_MIDIIIN(soundcard)){
+  if(AGS_IS_DEVOUT(soundcard)){
     pthread_mutex_lock(ags_devout_get_class_mutex());
 
     obj_mutex = AGS_DEVOUT(soundcard)->obj_mutex;
     
     pthread_mutex_unlock(ags_devout_get_class_mutex());
-  }else if(AGS_IS_JACK_MIDIIIN(soundcard)){
+  }else if(AGS_IS_JACK_DEVOUT(soundcard)){
     pthread_mutex_lock(ags_jack_devout_get_class_mutex());
 
     obj_mutex = AGS_JACK_DEVOUT(soundcard)->obj_mutex;
     
     pthread_mutex_unlock(ags_jack_devout_get_class_mutex());
-  }else if(AGS_IS_CORE_AUDIO_MIDIIIN(soundcard)){
+  }else if(AGS_IS_CORE_AUDIO_DEVOUT(soundcard)){
     pthread_mutex_lock(ags_core_audio_devout_get_class_mutex());
 
     obj_mutex = AGS_CORE_AUDIO_DEVOUT(soundcard)->obj_mutex;

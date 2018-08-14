@@ -5557,11 +5557,11 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
 
       for(i = 0; i < audio_channels - audio_channels_old; i++){
 	/* get current mutex */
-	pthread_mutex_lock(ags_current_get_class_mutex());
+	pthread_mutex_lock(ags_channel_get_class_mutex());
 	  
 	current_mutex = current->obj_mutex;
 	  
-	pthread_mutex_unlock(ags_current_get_class_mutex());
+	pthread_mutex_unlock(ags_channel_get_class_mutex());
 
 	/* playback */
 	pthread_mutex_lock(current_mutex);
@@ -5596,11 +5596,11 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
 
       for(i = 0; i < audio_channels - audio_channels_old; i++){
 	/* get current mutex */
-	pthread_mutex_lock(ags_current_get_class_mutex());
+	pthread_mutex_lock(ags_channel_get_class_mutex());
 	  
 	current_mutex = current->obj_mutex;
 	  
-	pthread_mutex_unlock(ags_current_get_class_mutex());
+	pthread_mutex_unlock(ags_channel_get_class_mutex());
 
 	/* playback */
 	pthread_mutex_lock(current_mutex);
@@ -6372,11 +6372,11 @@ ags_audio_real_set_pads(AgsAudio *audio,
 	    AgsPlayback *playback;
 	    
 	    /* get current mutex */
-	    pthread_mutex_lock(ags_current_get_class_mutex());
+	    pthread_mutex_lock(ags_channel_get_class_mutex());
 	  
 	    current_mutex = current->obj_mutex;
 	  
-	    pthread_mutex_unlock(ags_current_get_class_mutex());
+	    pthread_mutex_unlock(ags_channel_get_class_mutex());
 
 	    /* playback */
 	    pthread_mutex_lock(current_mutex);
@@ -6546,11 +6546,11 @@ ags_audio_real_set_pads(AgsAudio *audio,
 	    AgsPlayback *playback;
 	    
 	    /* get current mutex */
-	    pthread_mutex_lock(ags_current_get_class_mutex());
+	    pthread_mutex_lock(ags_channel_get_class_mutex());
 	  
 	    current_mutex = current->obj_mutex;
 	  
-	    pthread_mutex_unlock(ags_current_get_class_mutex());
+	    pthread_mutex_unlock(ags_channel_get_class_mutex());
 
 	    /* playback */
 	    pthread_mutex_lock(current_mutex);
@@ -8808,8 +8808,7 @@ ags_audio_real_resolve_recall(AgsAudio *audio,
 						  (GObject *) recycling_context)) != NULL){
     recall = AGS_RECALL(list->data);
     
-    ags_recall_resolve_dependencies(recall);
-    ags_dynamic_connectable_connect_dynamic(AGS_DYNAMIC_CONNECTABLE(recall));
+    ags_recall_resolve_dependency(recall);
 
     list = list->next;
   }

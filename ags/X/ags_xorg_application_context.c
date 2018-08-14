@@ -1747,7 +1747,7 @@ ags_xorg_application_context_register_types(AgsApplicationContext *application_c
   //TODO:JK: extend me
   
   /* register recalls */
-  ags_recall_channel_run_dummy_get_type();
+  ags_generic_recall_channel_run_get_type();
 
   ags_play_audio_get_type();
   ags_play_channel_get_type();

@@ -1559,10 +1559,11 @@ ags_channel_set_property(GObject *gobject,
 	return;
       }
 
+      channel->recycling_context = g_list_prepend(channel->recycling_context,
+						  recycling_context);
+      g_object_ref(recycling_context);
+      
       pthread_mutex_unlock(channel_mutex);
-
-      ags_channel_add_recycling_context(channel,
-					(GObject *) recycling_context);
     }
     break;
   case PROP_RECALL_CONTAINER:
@@ -7145,7 +7146,7 @@ ags_channel_add_pattern(AgsChannel *channel, GObject *pattern)
   pthread_mutex_t *channel_mutex;
 
   if(!AGS_IS_CHANNEL(channel) ||
-     !AGS__IS_PATTERN(pattern)){
+     !AGS_IS_PATTERN(pattern)){
     return;
   }
 
@@ -7181,7 +7182,7 @@ ags_channel_remove_pattern(AgsChannel *channel, GObject *pattern)
   pthread_mutex_t *channel_mutex;
 
   if(!AGS_IS_CHANNEL(channel) ||
-     !AGS__IS_PATTERN(pattern)){
+     !AGS_IS_PATTERN(pattern)){
     return;
   }
 
@@ -7670,7 +7671,7 @@ ags_channel_add_ladspa_effect(AgsChannel *channel,
 	  /* notify run and resolve dependencies */
 	  ags_recall_notify_dependency(current, AGS_RECALL_NOTIFY_RUN, 1);
 
-	  ags_recall_resolve_dependencies(current);
+	  ags_recall_resolve_dependency(current);
 
 	  /* set staging flags */	  
 	  ags_recall_set_staging_flags(current,
@@ -9257,8 +9258,7 @@ ags_channel_real_resolve_recall(AgsChannel *channel,
 						  (GObject *) recycling_context)) != NULL){
     recall = AGS_RECALL(list->data);
     
-    ags_recall_resolve_dependencies(recall);
-    ags_dynamic_connectable_connect_dynamic(AGS_DYNAMIC_CONNECTABLE(recall));
+    ags_recall_resolve_dependency(recall);
 
     list = list->next;
   }

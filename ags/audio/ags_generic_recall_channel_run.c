@@ -28,6 +28,8 @@
 
 #include <libxml/tree.h>
 
+#include <ags/i18n.h>
+
 void ags_generic_recall_channel_run_class_init(AgsGenericRecallChannelRunClass *generic_recall_channel_run);
 void ags_generic_recall_channel_run_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_generic_recall_channel_run_plugin_interface_init(AgsPluginInterface *plugin);

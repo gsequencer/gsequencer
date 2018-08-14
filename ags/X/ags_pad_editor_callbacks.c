@@ -41,7 +41,7 @@ ags_pad_editor_resize_audio_channels_callback(AgsMachine *machine,
     guint i;
 
     /* get some channel fields */
-    g_ojbect_get(pad_editor->pad,
+    g_object_get(pad_editor->pad,
 		 "next-pad", &next_pad,
 		 NULL);
 

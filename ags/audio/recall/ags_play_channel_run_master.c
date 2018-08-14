@@ -663,8 +663,8 @@ ags_play_channel_run_master_remap_dependencies(AgsPlayChannelRunMaster *play_cha
 		        NULL);
 	  
 	  /* remove dependency */
-	  ags_recall_remove_dependency(play_channel_run_master,
-				       dependency);
+	  ags_recall_remove_recall_dependency(play_channel_run_master,
+					      dependency);
 
 	  /* remove stream channel run */
 	  g_object_get(play_channel_run_master,

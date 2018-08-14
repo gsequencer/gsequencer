@@ -231,14 +231,14 @@ ags_play_channel_run_set_property(GObject *gobject,
 
       if(is_template &&
 	 old_stream_channel_run != NULL){
-	ags_recall_remove_dependency(AGS_RECALL(play_channel_run),
-				     (AgsRecall *) old_stream_channel_run);
+	ags_recall_remove_recall_dependency(AGS_RECALL(play_channel_run),
+					    (AgsRecall *) old_stream_channel_run);
       }
 
       if(is_template &&
 	 stream_channel_run != NULL){
-	ags_recall_add_dependency(AGS_RECALL(play_channel_run),
-				  ags_recall_dependency_new((GObject *) stream_channel_run));
+	ags_recall_add_recall_dependency(AGS_RECALL(play_channel_run),
+					 ags_recall_dependency_new((GObject *) stream_channel_run));
       }
     }
     break;

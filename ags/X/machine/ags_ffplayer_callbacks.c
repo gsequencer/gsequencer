@@ -24,6 +24,7 @@
 #include <ags/libags-audio.h>
 #include <ags/libags-gui.h>
 
+#include <ags/X/ags_ui_provider.h>
 #include <ags/X/ags_window.h>
 
 #include <ags/X/thread/ags_gui_thread.h>
@@ -116,7 +117,7 @@ ags_ffplayer_preset_changed_callback(GtkComboBox *preset, AgsFFPlayer *ffplayer)
 
   gint position;
 
-  audio_container = AGS_PLAYABLE(ffplayer->audio_container);
+  audio_container = ffplayer->audio_container;
 
   if(audio_container == NULL ||
      (AGS_FFPLAYER_NO_LOAD & (ffplayer->flags)) != 0){

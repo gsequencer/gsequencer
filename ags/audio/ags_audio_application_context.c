@@ -1201,7 +1201,7 @@ ags_audio_application_context_register_types(AgsApplicationContext *application_
   ags_peak_channel_run_get_type();
 
   ags_recall_ladspa_get_type();
-  ags_recall_channel_run_dummy_get_type();
+  ags_generic_recall_channel_run_get_type();
   ags_recall_ladspa_run_get_type();
 
   ags_delay_audio_get_type();

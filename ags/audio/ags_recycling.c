@@ -802,7 +802,7 @@ ags_recycling_get_property(GObject *gobject,
     {
       pthread_mutex_lock(recycling_mutex);
 
-      g_value_set_unint(value, recycling->samplerate);
+      g_value_set_uint(value, recycling->samplerate);
 
       pthread_mutex_unlock(recycling_mutex);
     }
@@ -810,7 +810,7 @@ ags_recycling_get_property(GObject *gobject,
     {
       pthread_mutex_lock(recycling_mutex);
 
-      g_value_set_unint(value, recycling->buffer_size);
+      g_value_set_uint(value, recycling->buffer_size);
 
       pthread_mutex_unlock(recycling_mutex);
     }
@@ -818,7 +818,7 @@ ags_recycling_get_property(GObject *gobject,
     {
       pthread_mutex_lock(recycling_mutex);
 
-      g_value_set_unint(value, recycling->format);
+      g_value_set_uint(value, recycling->format);
 
       pthread_mutex_unlock(recycling_mutex);
     }

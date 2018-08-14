@@ -27,6 +27,8 @@
 
 #include <math.h>
 
+#include <ags/i18n.h>
+
 void ags_loop_channel_run_class_init(AgsLoopChannelRunClass *loop_channel_run);
 void ags_loop_channel_run_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_loop_channel_run_plugin_interface_init(AgsPluginInterface *plugin);
@@ -161,8 +163,8 @@ ags_loop_channel_run_class_init(AgsLoopChannelRunClass *loop_channel_run)
    * Since: 2.0.0
    */
   param_spec = g_param_spec_object("count-beats-audio-run",
-				   "assigned AgsCountBeatsAudioRun",
-				   "The pointer to a counter object which indicates when looping should happen",
+				   i18n_pspec("assigned AgsCountBeatsAudioRun"),
+				   i18n_pspec("The pointer to a counter object which indicates when looping should happen"),
 				   G_TYPE_OBJECT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -269,14 +271,14 @@ ags_loop_channel_run_set_property(GObject *gobject,
 
       if(is_template &&
 	 old_count_beats_audio_run != NULL){
-	ags_recall_remove_dependency(AGS_RECALL(loop_channel_run),
-				     (AgsRecall *) old_count_beats_audio_run);
+	ags_recall_remove_recall_dependency(AGS_RECALL(loop_channel_run),
+					    (AgsRecall *) old_count_beats_audio_run);
       }
 
       if(is_template &&
 	 count_beats_audio_run != NULL){
-	ags_recall_add_dependency(AGS_RECALL(loop_channel_run),
-				  ags_recall_dependency_new((GObject *) count_beats_audio_run));
+	ags_recall_add_recall_dependency(AGS_RECALL(loop_channel_run),
+					 ags_recall_dependency_new((GObject *) count_beats_audio_run));
       }
     }
     break;

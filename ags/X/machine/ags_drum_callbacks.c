@@ -26,6 +26,7 @@
 #include <ags/libags-audio.h>
 #include <ags/libags-gui.h>
 
+#include <ags/X/ags_ui_provider.h>
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_pad.h>
 #include <ags/X/ags_navigation.h>

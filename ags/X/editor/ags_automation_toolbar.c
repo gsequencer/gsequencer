@@ -508,7 +508,7 @@ ags_automation_toolbar_load_port(AgsAutomationToolbar *automation_toolbar)
 		       -1);
   }
 
-  g_free_strv(start_specifier);
+  g_strfreev(start_specifier);
   
   /* output */
   specifier =
@@ -531,7 +531,7 @@ ags_automation_toolbar_load_port(AgsAutomationToolbar *automation_toolbar)
 		       -1);
   }
 
-  g_free_strv(start_specifier);
+  g_strfreev(start_specifier);
 
   /* input */
   specifier =
@@ -554,7 +554,7 @@ ags_automation_toolbar_load_port(AgsAutomationToolbar *automation_toolbar)
 		       -1);
   }
 
-  g_free_strv(start_specifier);
+  g_strfreev(start_specifier);
 
   g_list_free(start_automation);
   

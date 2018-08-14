@@ -42,19 +42,19 @@ ags_sequencer_util_get_obj_mutex(GObject *sequencer)
 
   obj_mutex = NULL;
   
-  if(AGS_IS_MIDIIIN(sequencer)){
+  if(AGS_IS_MIDIIN(sequencer)){
     pthread_mutex_lock(ags_midiin_get_class_mutex());
 
     obj_mutex = AGS_MIDIIN(sequencer)->obj_mutex;
     
     pthread_mutex_unlock(ags_midiin_get_class_mutex());
-  }else if(AGS_IS_JACK_MIDIIIN(sequencer)){
+  }else if(AGS_IS_JACK_MIDIIN(sequencer)){
     pthread_mutex_lock(ags_jack_midiin_get_class_mutex());
 
     obj_mutex = AGS_JACK_MIDIIN(sequencer)->obj_mutex;
     
     pthread_mutex_unlock(ags_jack_midiin_get_class_mutex());
-  }else if(AGS_IS_CORE_AUDIO_MIDIIIN(sequencer)){
+  }else if(AGS_IS_CORE_AUDIO_MIDIIN(sequencer)){
     pthread_mutex_lock(ags_core_audio_midiin_get_class_mutex());
 
     obj_mutex = AGS_CORE_AUDIO_MIDIIN(sequencer)->obj_mutex;

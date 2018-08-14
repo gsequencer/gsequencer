@@ -21,6 +21,8 @@
 
 #include <ags/libags.h>
 
+#include <ags/i18n.h>
+
 void ags_play_wave_channel_class_init(AgsPlayWaveChannelClass *play_wave_channel);
 void ags_play_wave_channel_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_play_wave_channel_init(AgsPlayWaveChannel *play_wave_channel);

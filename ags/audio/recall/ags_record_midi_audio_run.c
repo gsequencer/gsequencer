@@ -268,8 +268,8 @@ ags_record_midi_audio_run_set_property(GObject *gobject,
 
       /* old - dependency/connection */
       if(is_template){
-	ags_recall_remove_dependency(AGS_RECALL(record_midi_audio_run),
-				     (AgsRecall *) old_delay_audio_run);
+	ags_recall_remove_recall_dependency(AGS_RECALL(record_midi_audio_run),
+					    (AgsRecall *) old_delay_audio_run);
       }
 
       /* new - dependency/connection */
@@ -281,8 +281,8 @@ ags_record_midi_audio_run_set_property(GObject *gobject,
 
       if(delay_audio_run != NULL){
 	if(is_template){
-	  ags_recall_add_dependency(AGS_RECALL(record_midi_audio_run),
-				    ags_recall_dependency_new((GObject *) delay_audio_run));
+	  ags_recall_add_recall_dependency(AGS_RECALL(record_midi_audio_run),
+					   ags_recall_dependency_new((GObject *) delay_audio_run));
 	}
       }
     }
@@ -332,15 +332,15 @@ ags_record_midi_audio_run_set_property(GObject *gobject,
       /* dependency - remove */
       if(is_template &&
 	 old_count_beats_audio_run != NULL){
-	ags_recall_remove_dependency(AGS_RECALL(record_midi_audio_run),
-				     (AgsRecall *) old_count_beats_audio_run);
+	ags_recall_remove_recall_dependency(AGS_RECALL(record_midi_audio_run),
+					    (AgsRecall *) old_count_beats_audio_run);
       }
 
       /* dependency - add */
       if(is_template &&
 	 count_beats_audio_run != NULL){
-	ags_recall_add_dependency(AGS_RECALL(record_midi_audio_run),
-				  ags_recall_dependency_new((GObject *) count_beats_audio_run));
+	ags_recall_add_recall_dependency(AGS_RECALL(record_midi_audio_run),
+					 ags_recall_dependency_new((GObject *) count_beats_audio_run));
       }
     }
     break;

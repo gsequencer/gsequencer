@@ -21,6 +21,8 @@
 
 #include <ags/libags.h>
 
+#include <ags/i18n.h>
+
 void ags_lv2_worker_class_init(AgsLv2WorkerClass *lv2_worker);
 void ags_lv2_worker_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_lv2_worker_init(AgsLv2Worker *lv2_worker);

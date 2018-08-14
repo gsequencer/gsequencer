@@ -243,6 +243,7 @@ ags_automation_window_finalize(GObject *gobject)
   
   /* call parent */
   G_OBJECT_CLASS(ags_automation_window_parent_class)->finalize(gobject);
+}
 
 void
 ags_automation_window_connect(AgsConnectable *connectable)
@@ -278,7 +279,6 @@ ags_automation_window_disconnect(AgsConnectable *connectable)
   if(automation_window->automation_editor != NULL){
     ags_connectable_disconnect(AGS_CONNECTABLE(automation_window->automation_editor));
   }
-}
 }
 
 gboolean

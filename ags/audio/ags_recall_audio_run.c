@@ -314,8 +314,6 @@ ags_recall_audio_run_dispose(GObject *gobject)
   recall_audio_run = AGS_RECALL_AUDIO_RUN(gobject);
 
   /* unpack */
-  ags_packable_unpack(AGS_PACKABLE(recall_audio_run));
-
   if(AGS_RECALL(gobject)->recall_container != NULL){
     AgsRecallContainer *recall_container;
 

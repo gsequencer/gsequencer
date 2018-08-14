@@ -729,8 +729,8 @@ ags_count_beats_audio_run_set_property(GObject *gobject,
 
       /* old - dependency/connection */
       if(is_template){
-	ags_recall_remove_dependency(AGS_RECALL(count_beats_audio_run),
-				     (AgsRecall *) old_delay_audio_run);
+	ags_recall_remove_recall_dependency(AGS_RECALL(count_beats_audio_run),
+					    (AgsRecall *) old_delay_audio_run);
       }else{
 	if(ags_connectable_is_connected(AGS_CONNECTABLE(count_beats_audio_run))){
 	  ags_connectable_disconnect_connection(AGS_CONNECTABLE(count_beats_audio_run),
@@ -747,8 +747,8 @@ ags_count_beats_audio_run_set_property(GObject *gobject,
 
       if(delay_audio_run != NULL){
 	if(is_template){
-	  ags_recall_add_dependency(AGS_RECALL(count_beats_audio_run),
-				    ags_recall_dependency_new((GObject *) delay_audio_run));
+	  ags_recall_add_recall_dependency(AGS_RECALL(count_beats_audio_run),
+					   ags_recall_dependency_new((GObject *) delay_audio_run));
 	}else{
 	  if(ags_connectable_is_connected(AGS_CONNECTABLE(count_beats_audio_run))){
 	    ags_connectable_connect_connection(AGS_CONNECTABLE(count_beats_audio_run),
