@@ -362,40 +362,20 @@ ags_spectrometer_map_recall(AgsMachine *machine)
   
   AgsPeakChannelRun *recall_peak_channel_run, *play_peak_channel_run;
 
-  AgsMutexManager *mutex_manager;
-
   guint audio_channels;
   guint i;
-
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *audio_mutex;
-  pthread_mutex_t *channel_mutex;
-  
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
 
   spectrometer = machine;
 
   cartesian = spectrometer->cartesian;
   
   audio = machine->audio;
-
-  /* lookup audio mutex */
-  pthread_mutex_lock(application_mutex);
-
-  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
-					 (GObject *) audio);
-  
-  pthread_mutex_unlock(application_mutex);
   
   /* get some fields */
-  pthread_mutex_lock(audio_mutex);
-
-  audio_channels = audio->audio_channels;
-
-  channel = audio->input;
-  
-  pthread_mutex_unlock(audio_mutex);
+  g_object_get(audio,
+	       "audio-channels", &audio_channels,
+	       "input", &channel,
+	       NULL);
 
   /* ags-analyse */
   ags_recall_factory_create(audio,
@@ -411,6 +391,9 @@ ags_spectrometer_map_recall(AgsMachine *machine)
 
   for(i = 0; i < audio_channels; i++){
     AgsPort *port;
+
+    GList *start_play;
+    GList *start_recall;
     
     fg_plot = ags_spectrometer_fg_plot_alloc(spectrometer,
 					     0.125, 0.5, 1.0);
@@ -420,18 +403,13 @@ ags_spectrometer_map_recall(AgsMachine *machine)
     spectrometer->fg_plot = g_list_prepend(spectrometer->fg_plot,
 					   fg_plot);
 
-    /* lookup channel mutex */
-    pthread_mutex_lock(application_mutex);
-
-    channel_mutex = ags_mutex_manager_lookup(mutex_manager,
-					     (GObject *) channel);
+    g_object_get(channel,
+		 "play", &start_play,
+		 "recall", &start_recall,
+		 NULL);
     
-    pthread_mutex_unlock(application_mutex);
-
     /* frequency - find port */
-    pthread_mutex_lock(channel_mutex);
-
-    port = ags_spectrometer_find_specifier(channel->play,
+    port = ags_spectrometer_find_specifier(start_play,
 					   "./frequency-buffer[0]");
 
     if(port != NULL){
@@ -441,7 +419,7 @@ ags_spectrometer_map_recall(AgsMachine *machine)
 								port);
     }
 
-    port = ags_spectrometer_find_specifier(channel->recall,
+    port = ags_spectrometer_find_specifier(start_recall,
 					   "./frequency-buffer[0]");
 
     if(port != NULL){
@@ -452,7 +430,7 @@ ags_spectrometer_map_recall(AgsMachine *machine)
     }
 
     /* magnitude - find port */
-    port = ags_spectrometer_find_specifier(channel->play,
+    port = ags_spectrometer_find_specifier(start_play,
 					   "./magnitude-buffer[0]");
 
     if(port != NULL){
@@ -462,7 +440,7 @@ ags_spectrometer_map_recall(AgsMachine *machine)
 								port);
     }
 
-    port = ags_spectrometer_find_specifier(channel->recall,
+    port = ags_spectrometer_find_specifier(start_recall,
 					   "./magnitude-buffer[0]");
 
     if(port != NULL){
@@ -473,9 +451,9 @@ ags_spectrometer_map_recall(AgsMachine *machine)
     }
     
     /* iterate */
-    channel = channel->next;
-    
-    pthread_mutex_unlock(channel_mutex);
+    g_object_get(channel,
+		 "next", &channel,
+		 NULL);
   }
   
   /* call parent */
