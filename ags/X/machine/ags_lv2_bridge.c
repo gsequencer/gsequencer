@@ -1300,8 +1300,6 @@ ags_lv2_bridge_map_recall(AgsMachine *machine)
 		   NULL);
     }  
 
-    pthread_mutex_unlock(audio_mutex);
-
     /* ags-route-lv2 */
     ags_recall_factory_create(audio,
 			      NULL, NULL,
@@ -1312,8 +1310,6 @@ ags_lv2_bridge_map_recall(AgsMachine *machine)
 			       AGS_RECALL_FACTORY_ADD |
 			       AGS_RECALL_FACTORY_RECALL),
 			      0);
-
-    pthread_mutex_lock(audio_mutex);
     
     recall = ags_recall_find_type(start_recall,
 				  AGS_TYPE_ROUTE_LV2_AUDIO_RUN);
@@ -1334,8 +1330,6 @@ ags_lv2_bridge_map_recall(AgsMachine *machine)
       recall_route_lv2_audio_run = NULL;
     }
 
-    pthread_mutex_unlock(audio_mutex);
-
     /* ags-play-notation */
     ags_recall_factory_create(audio,
 			      NULL, NULL,
@@ -1346,8 +1340,6 @@ ags_lv2_bridge_map_recall(AgsMachine *machine)
 			       AGS_RECALL_FACTORY_ADD |
 			       AGS_RECALL_FACTORY_RECALL),
 			      0);
-
-    pthread_mutex_lock(audio_mutex);
     
     recall = ags_recall_find_type(start_recall,
 				  AGS_TYPE_PLAY_NOTATION_AUDIO_RUN);
@@ -1365,8 +1357,6 @@ ags_lv2_bridge_map_recall(AgsMachine *machine)
 		   "count-beats-audio-run", play_count_beats_audio_run,
 		   NULL);
     }
-
-    pthread_mutex_unlock(audio_mutex);
   }
 
   g_list_free(start_play);
@@ -1465,7 +1455,7 @@ ags_lv2_bridge_input_map_recall(AgsLv2Bridge *lv2_bridge,
 	ags_port_safe_write(port,
 			    &use_note_length_value);
 
-	g_value_unset(&value);
+	g_value_unset(&use_note_length_value);
       }
 
       g_list_free(start_list);
@@ -1494,7 +1484,7 @@ ags_lv2_bridge_input_map_recall(AgsLv2Bridge *lv2_bridge,
 	ags_port_safe_write(port,
 			    &use_note_length_value);
 
-	g_value_unset(&value);
+	g_value_unset(&use_note_length_value);
       }
 
       g_list_free(start_list);
@@ -1672,8 +1662,16 @@ ags_lv2_bridge_load_program(AgsLv2Bridge *lv2_bridge)
     uint32_t i;
 
     if(lv2_bridge->lv2_handle == NULL){
+      guint samplerate;
+      guint buffer_size;
+
+      g_object_get(AGS_MACHINE(lv2_bridge)->audio,
+		   "samplerate", &samplerate,
+		   "buffer-size", &buffer_size,
+		   NULL);
+      
       lv2_bridge->lv2_handle = ags_base_plugin_instantiate(lv2_plugin,
-							   AGS_MACHINE(lv2_bridge)->audio->samplerate);
+							   samplerate, buffer_size);
     }
     
     if(lv2_bridge->port_value == NULL){
@@ -1869,6 +1867,9 @@ ags_lv2_bridge_load(AgsLv2Bridge *lv2_bridge)
 {
   AgsLv2Plugin *lv2_plugin;
     
+  guint samplerate;
+  guint buffer_size;
+
   lv2_plugin = ags_lv2_manager_find_lv2_plugin(ags_lv2_manager_get_instance(),
 					       lv2_bridge->filename,
 					       lv2_bridge->effect);
@@ -1882,9 +1883,13 @@ ags_lv2_bridge_load(AgsLv2Bridge *lv2_bridge)
 	       "uri", lv2_plugin->uri,
 	       NULL);
 
+  /* samplerate and buffer size */
+  samplerate = ags_soundcard_helper_config_get_samplerate(ags_config_get_instance());
+  buffer_size = ags_soundcard_helper_config_get_buffer_size(ags_config_get_instance());
+
   /* program */
   lv2_bridge->lv2_handle = ags_base_plugin_instantiate(lv2_plugin,
-						       AGS_MACHINE(lv2_bridge)->audio->samplerate);
+						       samplerate, buffer_size);
 
   if((AGS_LV2_PLUGIN_HAS_PROGRAM_INTERFACE & (lv2_plugin->flags)) != 0){
     ags_lv2_bridge_load_program(lv2_bridge);

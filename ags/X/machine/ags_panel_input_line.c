@@ -62,8 +62,6 @@ void ags_panel_input_line_map_recall(AgsLine *line,
  * The #AgsPanelInputLine is a composite widget to act as panel input line.
  */
 
-GHashTable *ags_panel_input_line_message_monitor = NULL;
-
 static gpointer ags_panel_input_line_parent_class = NULL;
 static AgsConnectableInterface *ags_panel_input_line_parent_connectable_interface;
 
@@ -162,17 +160,6 @@ void
 ags_panel_input_line_init(AgsPanelInputLine *panel_input_line)
 {
   AgsLineMember *line_member;
-
-  if(ags_panel_input_line_message_monitor == NULL){
-    ags_panel_input_line_message_monitor = g_hash_table_new_full(g_direct_hash, g_direct_equal,
-								 NULL,
-								 NULL);
-  }
-
-  g_hash_table_insert(ags_panel_input_line_message_monitor,
-		      panel_input_line, ags_panel_input_line_message_monitor_timeout);
-  
-  g_timeout_add(1000 / 30, (GSourceFunc) ags_line_message_monitor_timeout, (gpointer) panel_input_line);
 
   /* mute line member */
   panel_input_line->soundcard_connection = (GtkLabel *) gtk_label_new("(null)");
@@ -297,15 +284,16 @@ ags_panel_input_line_set_channel(AgsLine *line, AgsChannel *channel)
 								 channel);
 
   /* update label */
-  device = ags_soundcard_get_device(AGS_SOUNDCARD(soundcard));
-
   g_object_get(channel,
+	       "output-soundcard", &output_soundcard,
 	       "output-soundcard-channel", output_soundcard_channel,
 	       NULL);
   
+  device = ags_soundcard_get_device(AGS_SOUNDCARD(output_soundcard));
+
   /* label */
   str = g_strdup_printf("%s:%s[%d]",
-			G_OBJECT_TYPE_NAME(soundcard),
+			G_OBJECT_TYPE_NAME(output_soundcard),
 			device,
 			output_soundcard_channel);
   gtk_label_set_label(panel_input_line->soundcard_connection,

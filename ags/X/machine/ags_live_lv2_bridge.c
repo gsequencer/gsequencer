@@ -1623,7 +1623,7 @@ ags_live_lv2_bridge_load(AgsLiveLv2Bridge *live_lv2_bridge)
 	       "uri", lv2_plugin->uri,
 	       NULL);
 
-  /* samplerate */
+  /* samplerate and buffer size */
   samplerate = ags_soundcard_helper_config_get_samplerate(ags_config_get_instance());
   buffer_size = ags_soundcard_helper_config_get_buffer_size(ags_config_get_instance());
 

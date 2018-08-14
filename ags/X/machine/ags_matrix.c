@@ -659,7 +659,8 @@ ags_matrix_map_recall(AgsMachine *machine)
       AgsPort *port;
       
       GList *start_list, *list;
-
+      GList *pattern;
+      
       GValue pattern_value = {0,};
 
       g_object_get(channel,
@@ -676,7 +677,7 @@ ags_matrix_map_recall(AgsMachine *machine)
 		     "pattern", &port,
 		     NULL);
 
-	g_object_get(source,
+	g_object_get(channel,
 		     "pattern", &pattern,
 		     NULL);
 
@@ -796,7 +797,7 @@ ags_matrix_input_map_recall(AgsMatrix *matrix,
   /* get some fields */
   g_object_get(audio,
 	       "input", &input,
-	       "input-pads" &input_pads,
+	       "input-pads", &input_pads,
 	       "audio-channels", &audio_channels,
 	       NULL);
 
@@ -824,7 +825,8 @@ ags_matrix_input_map_recall(AgsMatrix *matrix,
       AgsPort *port;
       
       GList *start_list, *list;
-
+      GList *pattern;
+      
       GValue pattern_value = {0,};
 
       g_object_get(channel,
@@ -841,7 +843,7 @@ ags_matrix_input_map_recall(AgsMatrix *matrix,
 		     "pattern", &port,
 		     NULL);
 
-	g_object_get(source,
+	g_object_get(channel,
 		     "pattern", &pattern,
 		     NULL);
 
@@ -998,7 +1000,8 @@ ags_matrix_output_map_recall(AgsMatrix *matrix,
 			      0);
   }
 
-  if(!performance_mode){
+  if(!(ags_recall_global_get_rt_safe() ||
+       ags_recall_global_get_performance_mode())){
     /* ags-stream */
     ags_recall_factory_create(audio,
 			      NULL, NULL,

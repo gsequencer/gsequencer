@@ -100,11 +100,11 @@ ags_matrix_index_callback(GtkWidget *widget, AgsMatrix *matrix)
 		     G_TYPE_UINT64);
 	
 	g_value_set_uint64(&value,
-			   index0);
+			   index1);
 
-	copy_pattern_audio = AGS_COPY_PATTERN_AUDIO(list->data);
-	g_object_get(copy_pattern_audio,
-		     "bank-index-0", &port,
+	play_copy_pattern_audio = AGS_COPY_PATTERN_AUDIO(list->data);
+	g_object_get(play_copy_pattern_audio,
+		     "bank-index-1", &port,
 		     NULL);
 	
 	ags_port_safe_write(port,
@@ -130,11 +130,11 @@ ags_matrix_index_callback(GtkWidget *widget, AgsMatrix *matrix)
 		     G_TYPE_UINT64);
 	
 	g_value_set_uint64(&value,
-			   index0);
+			   index1);
 
-	copy_pattern_audio = AGS_COPY_PATTERN_AUDIO(list->data);
-	g_object_get(copy_pattern_audio,
-		     "bank-index-0", &port,
+	recall_copy_pattern_audio = AGS_COPY_PATTERN_AUDIO(list->data);
+	g_object_get(recall_copy_pattern_audio,
+		     "bank-index-1", &port,
 		     NULL);
 
 	ags_port_safe_write(port,
@@ -190,6 +190,7 @@ ags_matrix_length_spin_callback(GtkWidget *spin_button, AgsMatrix *matrix)
 void
 ags_matrix_loop_button_callback(GtkWidget *button, AgsMatrix *matrix)
 {
+  AgsPort *port;
   AgsCountBeatsAudio *count_beats_audio;
 
   GList *start_list, *list;
