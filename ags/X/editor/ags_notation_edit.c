@@ -869,6 +869,8 @@ ags_notation_edit_auto_scroll_timeout(GtkWidget *widget)
     AgsNotationEdit *notation_edit;
     AgsNotationToolbar *notation_toolbar;
 
+    GObject *output_soundcard;
+    
     double zoom;
     double x;
     
@@ -891,8 +893,12 @@ ags_notation_edit_auto_scroll_timeout(GtkWidget *widget)
     zoom = exp2((double) gtk_combo_box_get_active((GtkComboBox *) notation_toolbar->zoom) - 2.0);
 
     /* reset offset */
-    notation_edit->note_offset = ags_soundcard_get_note_offset(AGS_SOUNDCARD(notation_editor->selected_machine->audio->soundcard));
-    notation_edit->note_offset_absolute = ags_soundcard_get_note_offset_absolute(AGS_SOUNDCARD(notation_editor->selected_machine->audio->soundcard));
+    g_object_get(notation_editor->selected_machine->audio,
+		 "output-soundcard", &output_soundcard,
+		 NULL);
+    
+    notation_edit->note_offset = ags_soundcard_get_note_offset(AGS_SOUNDCARD(output_soundcard));
+    notation_edit->note_offset_absolute = ags_soundcard_get_note_offset_absolute(AGS_SOUNDCARD(output_soundcard));
 
     /* reset scrollbar */
     x = ((notation_edit->note_offset * notation_edit->control_width) / (AGS_NOTATION_EDITOR_MAX_CONTROLS * notation_edit->control_width)) * GTK_RANGE(notation_edit->hscrollbar)->adjustment->upper;
@@ -1665,21 +1671,15 @@ ags_notation_edit_draw_notation(AgsNotationEdit *notation_edit)
 
   GtkStyle *notation_edit_style;
   
-  AgsMutexManager *mutex_manager;
-  
   cairo_t *cr;
 
-  GList *list_notation;
-  GList *list_note;
+  GList *start_list_notation, *list_notation;
 
   gdouble zoom;
   guint x0, x1;
   guint y0, y1;
   guint offset;
   gint i;    
-  
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *audio_mutex;
 
   static const gdouble white_gc = 65535.0;
   
@@ -1696,17 +1696,6 @@ ags_notation_edit_draw_notation(AgsNotationEdit *notation_edit)
   }
   
   notation_edit_style = gtk_widget_get_style(GTK_WIDGET(notation_edit->drawing_area));
-
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-
-  /* get audio mutex */
-  pthread_mutex_lock(application_mutex);
-
-  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
-					 (GObject *) notation_editor->selected_machine->audio);
-  
-  pthread_mutex_unlock(application_mutex);
 
   /* create cairo context */
   cr = gdk_cairo_create(GTK_WIDGET(notation_edit->drawing_area)->window);
@@ -1729,19 +1718,20 @@ ags_notation_edit_draw_notation(AgsNotationEdit *notation_edit)
   cairo_push_group(cr);
 
   /* draw notation */
-  pthread_mutex_lock(audio_mutex);
-
+  g_object_get(notation_editor->selected_machine->audio,
+	       "notation", &start_list_notation,
+	       NULL);
   i = 0;
   
   while((i = ags_notebook_next_active_tab(notation_editor->notebook,
 					  i)) != -1){
-    list_notation = notation_editor->selected_machine->audio->notation;
+    list_notation = start_list_notation;
 
     while((list_notation = ags_notation_find_near_timestamp(list_notation, i,
 							    NULL)) != NULL){
       AgsNotation *notation;
 
-      GList *list_note;
+      GList *start_list_note, *list_note;
 
       notation = AGS_NOTATION(list_notation->data);
       
@@ -1757,7 +1747,11 @@ ags_notation_edit_draw_notation(AgsNotationEdit *notation_edit)
 	continue;
       }
 
-      list_note = notation->notes;
+      g_object_get(notation,
+		   "note", &start_list_note,
+		   NULL);
+      
+      list_note = start_list_note;
 
       while(list_note != NULL){
 	ags_notation_edit_draw_note(notation_edit,
@@ -1771,13 +1765,15 @@ ags_notation_edit_draw_notation(AgsNotationEdit *notation_edit)
 	list_note = list_note->next;
       }
 
+      g_list_free(start_list_note);
+      
       list_notation = list_notation->next;
     }
     
     i++;
   }
 
-  pthread_mutex_unlock(audio_mutex);
+  g_list_free(start_list_notation);
 
   /* complete */
   cairo_pop_group_to_source(cr);

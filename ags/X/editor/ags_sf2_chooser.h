@@ -22,9 +22,11 @@
 
 #include <glib.h>
 #include <glib-object.h>
+
 #include <gtk/gtk.h>
 
-#include <ags/audio/file/ags_ipatch.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
 
 #define AGS_TYPE_SF2_CHOOSER                (ags_sf2_chooser_get_type ())
 #define AGS_SF2_CHOOSER(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_SF2_CHOOSER, AgsSF2Chooser))
@@ -40,7 +42,7 @@ struct _AgsSF2Chooser
 {
   GtkVBox vbox;
 
-  AgsIpatch *ipatch;
+  AgsAudioContainer *audio_container;
 
   GtkComboBoxText *preset;
   GtkComboBoxText *instrument;

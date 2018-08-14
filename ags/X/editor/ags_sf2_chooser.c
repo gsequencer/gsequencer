@@ -20,11 +20,8 @@
 #include <ags/X/editor/ags_sf2_chooser.h>
 #include <ags/X/editor/ags_sf2_chooser_callbacks.h>
 
-#include <ags/object/ags_connectable.h>
-
-#include <ags/audio/ags_playable.h>
-
-#include <ags/audio/file/ags_ipatch_sf2_reader.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
 
 #include <ags/X/ags_window.h>
 
@@ -48,7 +45,7 @@ void ags_sf2_chooser_update(AgsSF2Chooser *sf2_chooser);
 
 enum{
   PROP_0,
-  PROP_IPATCH,
+  PROP_AUDIO_CONTAINER,
 };
 
 static gpointer ags_sf2_chooser_parent_class = NULL;
@@ -107,13 +104,13 @@ ags_sf2_chooser_class_init(AgsSF2ChooserClass *sf2_chooser)
   gobject->finalize = ags_sf2_chooser_finalize;
 
   /* properties */
-  param_spec = g_param_spec_object("ipatch",
-				   "current ipatch",
-				   "The current AgsIpatch",
-				   AGS_TYPE_IPATCH,
+  param_spec = g_param_spec_object("audio-container",
+				   "current audio container",
+				   "The current AgsAudioContainer",
+				   AGS_TYPE_AUDIO_CONTAINER,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
-				  PROP_IPATCH,
+				  PROP_AUDIO_CONTAINER,
 				  param_spec);
 
   /* GtkWidgetClass */
@@ -137,7 +134,7 @@ ags_sf2_chooser_init(AgsSF2Chooser *sf2_chooser)
   GtkTable *table;
   GtkLabel *label;
 
-  sf2_chooser->ipatch = NULL;
+  sf2_chooser->audio_container = NULL;
 
   table = (GtkTable *) gtk_table_new(2, 3, FALSE);
   gtk_box_pack_start(GTK_BOX(sf2_chooser), GTK_WIDGET(table), FALSE, FALSE, 0);
@@ -214,24 +211,24 @@ ags_sf2_chooser_set_property(GObject *gobject,
   sf2_chooser = AGS_SF2_CHOOSER(gobject);
 
   switch(prop_id){
-  case PROP_IPATCH:
+  case PROP_AUDIO_CONTAINER:
     {
-      AgsIpatch *ipatch;
+      AgsAudioContainer *audio_container;
 
-      ipatch = (AgsIpatch *) g_value_get_object(value);
+      audio_container = (AgsAudioContainer *) g_value_get_object(value);
 
-      if(sf2_chooser->ipatch == ipatch)
+      if(sf2_chooser->audio_container == audio_container)
 	return;
 
-      if(sf2_chooser->ipatch != NULL){
-	g_object_unref(sf2_chooser->ipatch);
+      if(sf2_chooser->audio_container != NULL){
+	g_object_unref(sf2_chooser->audio_container);
       }
 	  
-      if(ipatch != NULL){
-	g_object_ref(ipatch);
+      if(audio_container != NULL){
+	g_object_ref(audio_container);
       }	
 
-      sf2_chooser->ipatch = ipatch;
+      sf2_chooser->audio_container = audio_container;
     }
     break;
   default:
@@ -251,8 +248,8 @@ ags_sf2_chooser_get_property(GObject *gobject,
   sf2_chooser = AGS_SF2_CHOOSER(gobject);
 
   switch(prop_id){
-  case PROP_IPATCH:
-    g_value_set_object(value, sf2_chooser->ipatch);
+  case PROP_AUDIO_CONTAINER:
+    g_value_set_object(value, sf2_chooser->audio_container);
     break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
@@ -312,12 +309,12 @@ ags_sf2_chooser_show(GtkWidget *widget)
 void
 ags_sf2_chooser_open(AgsSF2Chooser *sf2_chooser, gchar *filename)
 {
-  AgsIpatch *ipatch;
-  AgsIpatchSF2Reader *sf2_reader;
-  AgsPlayable *playable;
+  AgsAudioContainer *audio_container;
+
   gchar **preset;
   gchar **instrument;
   gchar **sample;
+
   GError *error;
 
   /* clear preset, instrument and sample*/
@@ -325,69 +322,8 @@ ags_sf2_chooser_open(AgsSF2Chooser *sf2_chooser, gchar *filename)
   gtk_list_store_clear(GTK_LIST_STORE(sf2_chooser->instrument));
   gtk_list_store_clear(GTK_LIST_STORE(sf2_chooser->sample));
 
-  /* Ipatch related */
-  ipatch = g_object_new(AGS_TYPE_IPATCH,
-			"mode", AGS_IPATCH_READ,
-			"filename", filename,
-			NULL);
-  ags_playable_open(AGS_PLAYABLE(ipatch), filename);
-
-  sf2_reader = ags_ipatch_sf2_reader_new();
-  sf2_reader->ipatch =  ipatch;
-  ipatch->reader = (GObject *) sf2_reader;
-
-  g_object_set(G_OBJECT(sf2_chooser),
-	       "ipatch", ipatch,
-	       NULL);
-
-  /* fill sf2_chooser->preset */
-  playable = AGS_PLAYABLE(ipatch);
-
-  ags_playable_open(playable, filename);
-
-  error = NULL;
-  ags_playable_level_select(playable,
-			    0, filename,
-			    &error);
-
-  if(error != NULL){
-    g_error("%s", error->message);
-  }
-
-  preset = ags_playable_sublevel_names(playable);
-
-  while(*preset != NULL){
-    gtk_combo_box_text_append_text(sf2_chooser->preset,
-				   *preset);
-
-    preset++;
-  }
-
-  /* fill sf2_chooser->instrument */
-  sf2_chooser->ipatch->nth_level = 1;
-  instrument = ags_playable_sublevel_names(playable);
-
-  while(*instrument != NULL){
-    gtk_combo_box_text_append_text(sf2_chooser->instrument,
-				   *instrument);
-    
-    instrument++;
-  }
-
-
-  /* fill sf2_chooser->sample */
-  sf2_chooser->ipatch->nth_level = 2;
-  sample = ags_playable_sublevel_names(playable);
-
-  while(*sample != NULL){
-    gtk_combo_box_text_append_text(sf2_chooser->sample,
-				   *sample);
-
-    sample++;
-  }
-
-  /* reset nth_level */
-  sf2_chooser->ipatch->nth_level = 0;
+  //TODO:JK:
+  /* implement me */  
 }
 
 void

@@ -708,6 +708,8 @@ ags_wave_edit_auto_scroll_timeout(GtkWidget *widget)
     AgsWaveEdit *wave_edit;
     AgsWaveToolbar *wave_toolbar;
 
+    GObject *output_soundcard;
+    
     double zoom;
     double x;
     
@@ -730,8 +732,12 @@ ags_wave_edit_auto_scroll_timeout(GtkWidget *widget)
     zoom = exp2((double) gtk_combo_box_get_active((GtkComboBox *) wave_toolbar->zoom) - 2.0);
 
     /* reset offset */
-    wave_edit->note_offset = ags_soundcard_get_note_offset(AGS_SOUNDCARD(wave_editor->selected_machine->audio->soundcard));
-    wave_edit->note_offset_absolute = ags_soundcard_get_note_offset_absolute(AGS_SOUNDCARD(wave_editor->selected_machine->audio->soundcard));
+    g_object_get(wave_editor->selected_machine->audio,
+		 "output-soundcard", &output_soundcard,
+		 NULL);
+    
+    wave_edit->note_offset = ags_soundcard_get_note_offset(AGS_SOUNDCARD(output_soundcard));
+    wave_edit->note_offset_absolute = ags_soundcard_get_note_offset_absolute(AGS_SOUNDCARD(output_soundcard));
 
     /* reset scrollbar */
     x = ((wave_edit->note_offset * wave_edit->control_width) / (AGS_WAVE_EDITOR_MAX_CONTROLS * wave_edit->control_width)) * GTK_RANGE(wave_edit->hscrollbar)->adjustment->upper;

@@ -24,7 +24,8 @@
 #include <glib-object.h>
 #include <gtk/gtk.h>
 
-#include <ags/audio/ags_playable.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
 
 #define AGS_TYPE_INLINE_PLAYER                (ags_inline_player_get_type ())
 #define AGS_INLINE_PLAYER(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_INLINE_PLAYER, AgsInlinePlayer))
@@ -40,7 +41,7 @@ struct _AgsInlinePlayer
 {
   GtkHBox vbox;
 
-  AgsPlayable *playable;
+  GObject *sound_resource;;
 
   GtkToggleButton *play;
   GtkHScale *position;

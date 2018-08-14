@@ -48,10 +48,11 @@ void ags_automation_edit_get_property(GObject *gobject,
 				      guint prop_id,
 				      GValue *value,
 				      GParamSpec *param_spec);
+void ags_automation_edit_finalize(GObject *gobject);
+
 void ags_automation_edit_connect(AgsConnectable *connectable);
 void ags_automation_edit_disconnect(AgsConnectable *connectable);
 AtkObject* ags_automation_edit_get_accessible(GtkWidget *widget);
-void ags_automation_edit_finalize(GObject *gobject);
 
 gboolean ags_accessible_automation_edit_do_action(AtkAction *action,
 						  gint i);
@@ -658,6 +659,21 @@ ags_automation_edit_get_property(GObject *gobject,
 }
 
 void
+ags_automation_edit_finalize(GObject *gobject)
+{
+  AgsAutomationEdit *automation_edit;
+  
+  automation_edit = AGS_AUTOMATION_EDIT(gobject);
+  
+  /* remove auto scroll */
+  g_hash_table_remove(ags_automation_edit_auto_scroll,
+		      automation_edit);
+
+  /* call parent */
+  G_OBJECT_CLASS(ags_automation_edit_parent_class)->finalize(gobject);
+}
+
+void
 ags_automation_edit_connect(AgsConnectable *connectable)
 {
   AgsAutomationEditor *automation_editor;
@@ -774,21 +790,6 @@ ags_automation_edit_get_accessible(GtkWidget *widget)
   }
   
   return(accessible);
-}
-
-void
-ags_automation_edit_finalize(GObject *gobject)
-{
-  AgsAutomationEdit *automation_edit;
-  
-  automation_edit = AGS_AUTOMATION_EDIT(gobject);
-  
-  /* remove auto scroll */
-  g_hash_table_remove(ags_automation_edit_auto_scroll,
-		      automation_edit);
-
-  /* call parent */
-  G_OBJECT_CLASS(ags_automation_edit_parent_class)->finalize(gobject);
 }
 
 gboolean
@@ -1220,6 +1221,8 @@ ags_automation_edit_auto_scroll_timeout(GtkWidget *widget)
     AgsAutomationEdit *automation_edit;
     AgsAutomationToolbar *automation_toolbar;
 
+    GObject *output_soundcard;
+    
     double zoom;
     double x;
     
@@ -1242,8 +1245,12 @@ ags_automation_edit_auto_scroll_timeout(GtkWidget *widget)
     zoom = exp2((double) gtk_combo_box_get_active((GtkComboBox *) automation_toolbar->zoom) - 2.0);
 
     /* reset offset */
-    automation_edit->note_offset = ags_soundcard_get_note_offset(AGS_SOUNDCARD(automation_editor->selected_machine->audio->soundcard));
-    automation_edit->note_offset_absolute = ags_soundcard_get_note_offset_absolute(AGS_SOUNDCARD(automation_editor->selected_machine->audio->soundcard));
+    g_object_get(automation_editor->selected_machine->audio,
+		 "output-soundcard", &output_soundcard,
+		 NULL);
+    
+    automation_edit->note_offset = ags_soundcard_get_note_offset(AGS_SOUNDCARD(output_soundcard));
+    automation_edit->note_offset_absolute = ags_soundcard_get_note_offset_absolute(AGS_SOUNDCARD(output_soundcard));
 
     /* reset scrollbar */
     x = ((automation_edit->note_offset * automation_edit->control_width) / (AGS_AUTOMATION_EDITOR_MAX_CONTROLS * automation_edit->control_width)) * GTK_RANGE(automation_edit->hscrollbar)->adjustment->upper;
