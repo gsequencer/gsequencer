@@ -454,13 +454,15 @@ ags_drum_input_line_map_recall(AgsLine *line,
 		 NULL);
 
     g_value_init(&pattern_value,
-		 G_TYPE_UINT64);
+		 G_TYPE_OBJECT);
     
     g_value_set_object(&pattern_value,
 		       pattern->data);
 
     ags_port_safe_write(port,
 			&pattern_value);
+
+    g_list_free(pattern);
   }
 
   if(ags_recall_global_get_rt_safe()){

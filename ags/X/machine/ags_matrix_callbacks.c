@@ -59,56 +59,100 @@ ags_matrix_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsMatr
 void
 ags_matrix_index_callback(GtkWidget *widget, AgsMatrix *matrix)
 {
-  GtkToggleButton *toggle;
-
   if(matrix->selected != NULL){
-    if(GTK_TOGGLE_BUTTON(widget) != matrix->selected){
-      AgsAudio *audio;
+    GtkToggleButton *toggle;
 
+    if(GTK_TOGGLE_BUTTON(widget) != matrix->selected){
+      AgsPort *port;
+      
       AgsCopyPatternAudio *recall_copy_pattern_audio, *play_copy_pattern_audio;
 
-      GList *list;
+      GList *start_list, *list;
 
       guint64 index1;
 
-      GValue recall_value = {0,};
-
-      audio = AGS_MACHINE(matrix)->audio;
-
-      /* refresh GUI */
       toggle = matrix->selected;
       matrix->selected = NULL;
 
-      gtk_toggle_button_set_active(toggle, FALSE);
+      gtk_toggle_button_set_active(toggle,
+				   FALSE);
 
       matrix->selected = (GtkToggleButton*) widget;
 
       ags_cell_pattern_paint(matrix->cell_pattern);
 
-      /*  */
+      /* calculate index 1 */
       AGS_MACHINE(matrix)->bank_1 = 
 	index1 = ((guint) g_ascii_strtoull(matrix->selected->button.label_text, NULL, 10)) - 1;
 
-      /* recall */
-      list = ags_recall_find_type(audio->recall, AGS_TYPE_COPY_PATTERN_AUDIO);
-  
+      /* play - set port */
+      g_object_get(AGS_MACHINE(matrix)->audio,
+		   "play", &start_list,
+		   NULL);
+      
+      list = ags_recall_find_type(start_list,
+				  AGS_TYPE_COPY_PATTERN_AUDIO);
+
       if(list != NULL){
-	recall_copy_pattern_audio = AGS_COPY_PATTERN_AUDIO(list->data);
+	GValue value = {0,};
+
+	g_value_init(&value,
+		     G_TYPE_UINT64);
+	
+	g_value_set_uint64(&value,
+			   index0);
+
+	copy_pattern_audio = AGS_COPY_PATTERN_AUDIO(list->data);
+	g_object_get(copy_pattern_audio,
+		     "bank-index-0", &port,
+		     NULL);
+	
+	ags_port_safe_write(port,
+			    &value);
+
+	g_value_unset(&value);
       }
 
-      g_value_init(&recall_value, G_TYPE_UINT64);
-      g_value_set_uint64(&recall_value, index1);
+      g_list_free(start_list);
+      
+      /* recall - set port */
+      g_object_get(AGS_MACHINE(matrix)->audio,
+		   "recall", &start_list,
+		   NULL);
+      
+      list = ags_recall_find_type(start_list,
+				  AGS_TYPE_COPY_PATTERN_AUDIO);
 
-      ags_port_safe_write(recall_copy_pattern_audio->bank_index_1, &recall_value);
+      if(list != NULL){
+	GValue value = {0,};
 
-      g_value_unset(&recall_value);
+	g_value_init(&value,
+		     G_TYPE_UINT64);
+	
+	g_value_set_uint64(&value,
+			   index0);
+
+	copy_pattern_audio = AGS_COPY_PATTERN_AUDIO(list->data);
+	g_object_get(copy_pattern_audio,
+		     "bank-index-0", &port,
+		     NULL);
+
+	ags_port_safe_write(port,
+			    &value);
+
+	g_value_unset(&value);
+      }
+      
+      g_list_free(start_list);
 
       gtk_widget_queue_draw(matrix->cell_pattern->drawing_area);
     }else{
-      toggle = matrix->selected;
       matrix->selected = NULL;
-      gtk_toggle_button_set_active(toggle, TRUE);
-      matrix->selected = toggle;
+      
+      gtk_toggle_button_set_active(toggle,
+				   TRUE);
+      
+      matrix->selected = widget;
     }
   }
 }
@@ -118,39 +162,25 @@ ags_matrix_length_spin_callback(GtkWidget *spin_button, AgsMatrix *matrix)
 {
   AgsWindow *window;
 
-  AgsApplySequencerLength *apply_sequencer_length;
-  
-  AgsMutexManager *mutex_manager;
-  AgsThread *main_loop;
   AgsGuiThread *gui_thread;
+
+  AgsApplySequencerLength *apply_sequencer_length;
   
   AgsApplicationContext *application_context;
   
   gdouble length;
 
-  pthread_mutex_t *application_mutex;
-
+  /* get window and application_context  */
   window = (AgsWindow *) gtk_widget_get_toplevel(GTK_WIDGET(matrix));
 
   application_context = (AgsApplicationContext *) window->application_context;
 
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+  gui_thread = ags_ui_provider_get_gui_thread(AGS_UI_PROVIDER(application_context));
 
-  /* get audio loop */
-  pthread_mutex_lock(application_mutex);
-
-  main_loop = (AgsThread *) application_context->main_loop;
-
-  pthread_mutex_unlock(application_mutex);
-  
-  /* find gui_thread */
-  gui_thread = (AgsGuiThread *) ags_thread_find_type(main_loop,
-						       AGS_TYPE_GUI_THREAD);
-
+  /* task - apply length */
   length = GTK_SPIN_BUTTON(spin_button)->adjustment->value;
 
-  apply_sequencer_length = ags_apply_sequencer_length_new(G_OBJECT(AGS_MACHINE(matrix)->audio),
+  apply_sequencer_length = ags_apply_sequencer_length_new(AGS_MACHINE(matrix)->audio,
 							  length);
 
   ags_gui_thread_schedule_task(gui_thread,
@@ -162,64 +192,76 @@ ags_matrix_loop_button_callback(GtkWidget *button, AgsMatrix *matrix)
 {
   AgsCountBeatsAudio *count_beats_audio;
 
-  AgsMutexManager *mutex_manager;
+  GList *start_list, *list;
 
-  GList *list;
-
-  gboolean loop;
-
-  GValue value = {0,};
-  
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *audio_mutex;
-
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-  
-  pthread_mutex_lock(application_mutex);
-  
-  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
-					 (GObject *) AGS_MACHINE(matrix)->audio);
-  
-  pthread_mutex_unlock(application_mutex);
-
-  pthread_mutex_lock(audio_mutex);
+  gboolean loop;  
 
   loop = (GTK_TOGGLE_BUTTON(button)->active) ? TRUE: FALSE;
 
-  /* AgsCopyPatternAudio */
-  list = AGS_MACHINE(matrix)->audio->play;
-
-  g_value_init(&value,
-	       G_TYPE_BOOLEAN);
+  /* play - count beats audio */
+  g_object_get(AGS_MACHINE(matrix)->audio,
+	       "play", &start_list,
+	       NULL);
+  
+  list = start_list;
   
   while((list = ags_recall_find_type(list,
 				     AGS_TYPE_COUNT_BEATS_AUDIO)) != NULL){
+    GValue value = {0,};
+    
     count_beats_audio = AGS_COUNT_BEATS_AUDIO(list->data);
+    g_object_get(count_beats_audio,
+		 "sequencer-loop", &port,
+		 NULL);
 
+    g_value_init(&value,
+		 G_TYPE_BOOLEAN);
     g_value_set_boolean(&value,
 			loop);
-    ags_port_safe_write(count_beats_audio->sequencer_loop,
+
+    ags_port_safe_write(port,
 			&value);
 
+    g_value_unset(&value);
+    
+    /* iterate */
     list = list->next;
   }
 
-  list = AGS_MACHINE(matrix)->audio->recall;
+
+  g_list_free(start_list);
+
+  /* recall - count beats audio */
+  g_object_get(AGS_MACHINE(matrix)->audio,
+	       "recall", &start_list,
+	       NULL);
+
+  list = start_list;
 
   while((list = ags_recall_find_type(list,
 				     AGS_TYPE_COUNT_BEATS_AUDIO)) != NULL){
+    GValue value = {0,};
+    
     count_beats_audio = AGS_COUNT_BEATS_AUDIO(list->data);
+    g_object_get(count_beats_audio,
+		 "sequencer-loop", &port,
+		 NULL);
 
+    g_value_init(&value,
+		 G_TYPE_BOOLEAN);
     g_value_set_boolean(&value,
 			loop);
-    ags_port_safe_write(count_beats_audio->sequencer_loop,
+
+    ags_port_safe_write(port,
 			&value);
 
+    g_value_unset(&value);
+    
+    /* iterate */
     list = list->next;
   }
 
-  pthread_mutex_unlock(audio_mutex);
+  g_list_free(start_list);  
 }
 
 void
@@ -228,49 +270,40 @@ ags_matrix_done_callback(AgsMatrix *matrix,
 			 gpointer data)
 {
   AgsAudio *audio;
+  AgsPlaybackDomain *playback_domain;
   
-  AgsMutexManager *mutex_manager;
-
-  GList *playback;
+  GList *start_playback, *playback;
 
   gboolean all_done;
 
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *audio_mutex;
-
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-
   audio = AGS_MACHINE(matrix)->audio;
-
-  /* get audio mutex */
-  pthread_mutex_lock(application_mutex);
-
-  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
-					 (GObject *) audio);
-  
-  pthread_mutex_unlock(application_mutex);
+  g_object_get(audio,
+	       "playback-domain", &playback_domain,
+	       NULL);
   
   /* check unset */
-  pthread_mutex_lock(audio_mutex);
-
-  playback = AGS_PLAYBACK_DOMAIN(audio->playback_domain)->playback;
-
+  g_object_get(playback_domain,
+	       "playback", &start_playback,
+	       NULL);
+  
+  playback = start_playback;
   all_done = TRUE;
 
   while(playback != NULL){
-    if(AGS_PLAYBACK(playback->data)->recall_id[1] != NULL){
+    if(ags_playback_get_recall_id(AGS_PLAYBACK(playback->data), AGS_SOUND_SCOPE_SEQUENCER) != NULL){
       all_done = FALSE;
+
       break;
     }
 
     playback = playback->next;
   }
 
-  pthread_mutex_unlock(audio_mutex);
-
+  g_list_free(start_playback);
+  
   /* all done */
   if(all_done){
     ags_led_array_unset_all(matrix->cell_pattern->hled_array);
   }
 }
+

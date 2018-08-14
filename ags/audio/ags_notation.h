@@ -83,6 +83,9 @@ struct _AgsNotation
   GObject *audio;
   guint audio_channel;
 
+  gboolean is_minor;
+  guint sharp_flats;
+
   AgsTimestamp *timestamp;
 
   gdouble maximum_note_length;

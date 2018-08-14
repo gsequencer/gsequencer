@@ -133,6 +133,8 @@ ags_drum_open_response_callback(GtkDialog *dialog, gint response, AgsDrum *drum)
 void
 ags_drum_loop_button_callback(GtkWidget *button, AgsDrum *drum)
 {
+  AgsPort *port;
+  
   AgsCountBeatsAudio *count_beats_audio;
 
   GList *start_list, *list;
@@ -150,10 +152,24 @@ ags_drum_loop_button_callback(GtkWidget *button, AgsDrum *drum)
 
   while((list = ags_recall_find_type(list,
 				     AGS_TYPE_COUNT_BEATS_AUDIO)) != NULL){
+    GValue value = {0,};
+    
     count_beats_audio = AGS_COUNT_BEATS_AUDIO(list->data);
+    g_object_get(count_beats_audio,
+		 "sequencer-loop", &port,
+		 NULL);
 
-    count_beats_audio->sequencer_loop->port_value.ags_port_boolean = loop;
+    g_value_init(&value,
+		 G_TYPE_BOOLEAN);
+    g_value_set_boolean(&value,
+			loop);
 
+    ags_port_safe_write(port,
+			&value);
+
+    g_value_unset(&value);
+    
+    /* iterate */
     list = list->next;
   }
 
@@ -168,10 +184,24 @@ ags_drum_loop_button_callback(GtkWidget *button, AgsDrum *drum)
 
   while((list = ags_recall_find_type(list,
 				     AGS_TYPE_COUNT_BEATS_AUDIO)) != NULL){
+    GValue value = {0,};
+    
     count_beats_audio = AGS_COUNT_BEATS_AUDIO(list->data);
+    g_object_get(count_beats_audio,
+		 "sequencer-loop", &port,
+		 NULL);
 
-    count_beats_audio->sequencer_loop->port_value.ags_port_boolean = loop;
+    g_value_init(&value,
+		 G_TYPE_BOOLEAN);
+    g_value_set_boolean(&value,
+			loop);
 
+    ags_port_safe_write(port,
+			&value);
+
+    g_value_unset(&value);
+    
+    /* iterate */
     list = list->next;
   }
 
@@ -182,10 +212,10 @@ void
 ags_drum_length_spin_callback(GtkWidget *spin_button, AgsDrum *drum)
 {
   AgsWindow *window;
-
-  AgsApplySequencerLength *apply_sequencer_length;
   
   AgsGuiThread *gui_thread;
+
+  AgsApplySequencerLength *apply_sequencer_length;
 
   AgsApplicationContext *application_context;
   
@@ -201,7 +231,7 @@ ags_drum_length_spin_callback(GtkWidget *spin_button, AgsDrum *drum)
   /* task - apply length */
   length = GTK_SPIN_BUTTON(spin_button)->adjustment->value;
 
-  apply_sequencer_length = ags_apply_sequencer_length_new((GObject *) AGS_MACHINE(drum)->audio,
+  apply_sequencer_length = ags_apply_sequencer_length_new(AGS_MACHINE(drum)->audio,
 							  length);
 
   ags_gui_thread_schedule_task(gui_thread,

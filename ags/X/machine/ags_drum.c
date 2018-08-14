@@ -895,11 +895,11 @@ ags_drum_resize_pads(AgsDrum *drum, GType gtype,
  * ags_drum_new:
  * @soundcard: the assigned soundcard.
  *
- * Creates an #AgsDrum
+ * Create a new instance of #AgsDrum
  *
- * Returns: a new #AgsDrum
+ * Returns: the new #AgsDrum
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsDrum*
 ags_drum_new(GObject *soundcard)
@@ -909,8 +909,8 @@ ags_drum_new(GObject *soundcard)
   drum = (AgsDrum *) g_object_new(AGS_TYPE_DRUM,
 				  NULL);
 
-  g_object_set(G_OBJECT(AGS_MACHINE(drum)->audio),
-	       "soundcard", soundcard,
+  g_object_set(AGS_MACHINE(drum)->audio,
+	       "output-soundcard", soundcard,
 	       NULL);
 
   return(drum);

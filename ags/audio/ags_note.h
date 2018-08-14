@@ -71,6 +71,9 @@ struct _AgsNote
   pthread_mutex_t *obj_mutex;
   pthread_mutexattr_t *obj_mutexattr;
   
+  gboolean is_minor;
+  guint sharp_flats;
+
   // gui format, convert easy to visualization
   guint x[2];
   guint y;
