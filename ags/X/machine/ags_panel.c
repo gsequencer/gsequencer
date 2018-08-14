@@ -36,8 +36,10 @@ void ags_panel_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_panel_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_panel_init(AgsPanel *panel);
 static void ags_panel_finalize(GObject *gobject);
+
 void ags_panel_connect(AgsConnectable *connectable);
 void ags_panel_disconnect(AgsConnectable *connectable);
+
 void ags_panel_show(GtkWidget *widget);
 void ags_panel_map_recall(AgsMachine *machine);
 gchar* ags_panel_get_name(AgsPlugin *plugin);
@@ -375,143 +377,7 @@ ags_panel_resize_audio_channels(AgsMachine *machine,
 				guint audio_channels, guint audio_channels_old,
 				gpointer data)
 {
-  AgsAudio *audio;
-  AgsAudioConnection *audio_connection;
-
-  AgsMutexManager *mutex_manager;
-
-  AgsConnectionManager *connection_manager;
-
-  GObject *soundcard;
-  
-  GList *list;
-
-  guint input_pads;
-  guint i, j;
-
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *audio_mutex;
-
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-  
-  connection_manager = ags_connection_manager_get_instance();
-
-  audio = machine->audio;
-
-  /* get audio mutex */
-  pthread_mutex_lock(application_mutex);
-
-  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
-					 (GObject *) audio);
-  
-  pthread_mutex_unlock(application_mutex);
-
-  /* get some fields */
-  pthread_mutex_lock(audio_mutex);
-
-  soundcard = audio->soundcard;
-  
-  input_pads = audio->input_pads;
-  
-  pthread_mutex_unlock(audio_mutex);
-
-  if(audio_channels > audio_channels_old){
-    for(i = 0; i < audio->input_pads; i++){
-      if(i != 0){
-	for(j = 0; j < audio_channels_old; j++){
-	  pthread_mutex_lock(audio_mutex);
-	  
-	  list = audio->audio_connection;
-	  
-	  while((list = ags_audio_connection_find(list,
-						  AGS_TYPE_INPUT,
-						  i,
-						  j)) != NULL){
-	    GObject *data_object;
-
-	    g_object_get(G_OBJECT(list->data),
-			 "data-object", &data_object,
-			 NULL);
-	    
-	    if(AGS_IS_SOUNDCARD(data_object)){
-	      break;
-	    }
-
-	    list = list->next;
-	  }
-
-	  if(list != NULL){
-	    audio_connection = list->data;
-	    audio_connection->line = i * audio_channels + j;
-
-	    audio_connection->mapped_line = audio_connection->line;
-	  }
-
-	  pthread_mutex_unlock(audio_mutex);
-	}
-      }
-
-      for(j = audio_channels_old; j < audio_channels; j++){
-	audio_connection = g_object_new(AGS_TYPE_AUDIO_CONNECTION,
-					"data-object", soundcard,
-					NULL);
-	audio_connection->flags |= (AGS_AUDIO_CONNECTION_IS_OUTPUT |
-				    AGS_AUDIO_CONNECTION_IS_SOUNDCARD_DATA |
-				    AGS_AUDIO_CONNECTION_SCOPE_LINE);
-	
-	audio_connection->audio = (GObject *) audio;
-	audio_connection->channel_type = AGS_TYPE_INPUT;
-
-	audio_connection->pad = i;
-	audio_connection->audio_channel = j;
-	audio_connection->line = i * audio_channels + j;
-
-	audio_connection->mapped_line = audio_connection->line;
-	
-	ags_audio_add_audio_connection(audio,
-				       (GObject *) audio_connection);
-
-	ags_connection_manager_add_connection(connection_manager,
-					      (AgsConnection *) audio_connection);
-      }
-    }
-  }else{
-    for(i = 0; i < input_pads; i++){
-      for(j = audio_channels; j < audio_channels_old; j++){
-	pthread_mutex_lock(audio_mutex);
-	
-	list = audio->audio_connection;
-	
-	while((list = ags_audio_connection_find(list,
-						AGS_TYPE_INPUT,
-						i,
-						j)) != NULL){
-	  GObject *data_object;
-
-	  audio_connection = (AgsAudioConnection *) list->data;
-	  
-	  g_object_get(audio_connection,
-		       "data-object", &data_object,
-		       NULL);
-	    
-	  if(AGS_IS_SOUNDCARD(data_object)){
-	    ags_audio_remove_audio_connection(audio,
-					      (GObject *) audio_connection);
-	    
-	    ags_connection_manager_remove_connection(connection_manager,
-						     (AgsConnection *) audio_connection);
-	    
-	    break;
-	  }
-
-	  list = list->next;
-	}
-
-	pthread_mutex_unlock(audio_mutex);
-      }
-    }
-  }
+  //empty
 }
 
 void
@@ -519,139 +385,30 @@ ags_panel_resize_pads(AgsMachine *machine, GType channel_type,
 		      guint pads, guint pads_old,
 		      gpointer data)
 {
-  AgsAudio *audio;
-  AgsAudioConnection *audio_connection;
-
-  AgsMutexManager *mutex_manager;
-  
-  AgsConnectionManager *connection_manager;
-
-  GObject *soundcard;
-  
-  GList *list;
-  
-  guint audio_channels;
-  guint i, j;
-
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *audio_mutex;
-
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-  
-  connection_manager = ags_connection_manager_get_instance();
-
-  audio = machine->audio;
-
-  /* get audio mutex */
-  pthread_mutex_lock(application_mutex);
-
-  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
-					 (GObject *) audio);
-  
-  pthread_mutex_unlock(application_mutex);  
-
-  /* get some fields */
-  pthread_mutex_lock(audio_mutex);
-
-  soundcard = audio->soundcard;
-  
-  audio_channels = audio->audio_channels;
-  
-  pthread_mutex_unlock(audio_mutex);
-  
-  if(channel_type == AGS_TYPE_INPUT){
-    if(pads > pads_old){
-      for(i = pads_old; i < pads; i++){
-	for(j = 0; j < audio_channels; j++){
-	  audio_connection = g_object_new(AGS_TYPE_AUDIO_CONNECTION,
-					  "data-object", soundcard,
-					  NULL);
-	  audio_connection->flags |= (AGS_AUDIO_CONNECTION_IS_OUTPUT |
-				      AGS_AUDIO_CONNECTION_IS_SOUNDCARD_DATA |
-				      AGS_AUDIO_CONNECTION_SCOPE_LINE);
-
-	  audio_connection->audio = (GObject *) audio;
-	  audio_connection->channel_type = AGS_TYPE_INPUT;
-
-	  audio_connection->pad = i;
-	  audio_connection->audio_channel = j;
-	  audio_connection->line = i * audio_channels + j;
-
-	  audio_connection->mapped_line = audio_connection->line;
-	  
-	  ags_audio_add_audio_connection(audio,
-					 (GObject *) audio_connection);
-
-	  ags_connection_manager_add_connection(connection_manager,
-						(AgsConnection *) audio_connection);
-	}
-      }
-    }else{
-      for(i = pads; i < pads_old; i++){
-	for(j = 0; j < audio_channels; j++){
-	  pthread_mutex_lock(audio_mutex);
-	  
-	  list = audio->audio_connection;
-	
-	  while((list = ags_audio_connection_find(list,
-						  AGS_TYPE_INPUT,
-						  i,
-						  j)) != NULL){
-	    GObject *data_object;
-
-	    audio_connection = (AgsAudioConnection *) list->data;
-	    
-	    g_object_get(G_OBJECT(audio_connection),
-			 "data-object", &data_object,
-			 NULL);
-	    
-	    if(AGS_IS_SOUNDCARD(data_object)){
-	      ags_audio_remove_audio_connection(audio,
-						(GObject *) audio_connection);
-
-	      ags_connection_manager_remove_connection(connection_manager,
-						       (AgsConnection *) audio_connection);
-	      
-	      break;
-	    }
-
-	    list = list->next;
-	  }
-
-	  pthread_mutex_unlock(audio_mutex);
-	}
-      }
-    }
-  }
+  //empty
 }
 
 /**
  * ags_panel_new:
  * @soundcard: the assigned soundcard.
  *
- * Creates an #AgsPanel
+ * Create a new instance of #AgsPanel
  *
- * Returns: a new #AgsPanel
+ * Returns: the new #AgsPanel
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsPanel*
 ags_panel_new(GObject *soundcard)
 {
   AgsPanel *panel;
-  GValue value = {0,};
 
   panel = (AgsPanel *) g_object_new(AGS_TYPE_PANEL,
 				    NULL);
 
-  if(soundcard != NULL){
-    g_value_init(&value, G_TYPE_OBJECT);
-    g_value_set_object(&value, soundcard);
-    g_object_set_property(G_OBJECT(AGS_MACHINE(panel)->audio),
-			  "soundcard", &value);
-    g_value_unset(&value);
-  }
+  g_object_set(AGS_MACHINE(panel)->audio,
+	       "output-soundcard", soundcard,
+	       NULL);
 
   return(panel);
 }

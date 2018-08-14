@@ -32,7 +32,7 @@
 void ags_mixer_input_pad_class_init(AgsMixerInputPadClass *mixer_input_pad);
 void ags_mixer_input_pad_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_mixer_input_pad_init(AgsMixerInputPad *mixer_input_pad);
-void ags_mixer_input_pad_destroy(GtkObject *object);
+
 void ags_mixer_input_pad_connect(AgsConnectable *connectable);
 void ags_mixer_input_pad_disconnect(AgsConnectable *connectable);
 
@@ -140,12 +140,6 @@ ags_mixer_input_pad_disconnect(AgsConnectable *connectable)
 }
 
 void
-ags_mixer_input_pad_destroy(GtkObject *object)
-{
-  /* empty */
-}
-
-void
 ags_mixer_input_pad_set_channel(AgsPad *pad, AgsChannel *channel)
 {
   AGS_PAD_CLASS(ags_mixer_input_pad_parent_class)->set_channel(pad, channel);
@@ -165,13 +159,13 @@ ags_mixer_input_pad_resize_lines(AgsPad *pad, GType line_type,
 
 /**
  * ags_mixer_input_pad_new:
- * @channel: the assigned channel
+ * @channel: the assigned #AgsChannel
  *
- * Creates an #AgsMixerInputPad
+ * Create a new instance of #AgsMixerInputPad
  *
- * Returns: a new #AgsMixerInputPad
+ * Returns: the new #AgsMixerInputPad
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsMixerInputPad*
 ags_mixer_input_pad_new(AgsChannel *channel)

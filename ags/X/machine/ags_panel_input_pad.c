@@ -33,9 +33,10 @@ void ags_panel_input_pad_class_init(AgsPanelInputPadClass *panel_input_pad);
 void ags_panel_input_pad_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_panel_input_pad_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_panel_input_pad_init(AgsPanelInputPad *panel_input_pad);
+void ags_panel_input_pad_finalize(GObject *gobject);
+
 void ags_panel_input_pad_connect(AgsConnectable *connectable);
 void ags_panel_input_pad_disconnect(AgsConnectable *connectable);
-void ags_panel_input_pad_finalize(GObject *gobject);
 gchar* ags_panel_input_pad_get_name(AgsPlugin *plugin);
 void ags_panel_input_pad_set_name(AgsPlugin *plugin, gchar *name);
 gchar* ags_panel_input_pad_get_xml_type(AgsPlugin *plugin);
@@ -165,6 +166,14 @@ ags_panel_input_pad_init(AgsPanelInputPad *panel_input_pad)
 }
 
 void
+ags_panel_input_pad_finalize(GObject *gobject)
+{
+  G_OBJECT_CLASS(ags_panel_input_pad_parent_class)->finalize(gobject);
+
+  /* empty */
+}
+
+void
 ags_panel_input_pad_connect(AgsConnectable *connectable)
 {
   AgsPanelInputPad *panel_input_pad;
@@ -184,14 +193,6 @@ void
 ags_panel_input_pad_disconnect(AgsConnectable *connectable)
 {
   ags_panel_input_pad_parent_connectable_interface->disconnect(connectable);
-
-  /* empty */
-}
-
-void
-ags_panel_input_pad_finalize(GObject *gobject)
-{
-  G_OBJECT_CLASS(ags_panel_input_pad_parent_class)->finalize(gobject);
 
   /* empty */
 }
@@ -254,11 +255,11 @@ ags_panel_input_pad_resize_lines(AgsPad *pad, GType line_type,
  * ags_panel_input_pad_new:
  * @channel: the assigned channel
  *
- * Creates an #AgsPanelInputPad
+ * Create a new instance of #AgsPanelInputPad
  *
- * Returns: a new #AgsPanelInputPad
+ * Returns: the new #AgsPanelInputPad
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsPanelInputPad*
 ags_panel_input_pad_new(AgsChannel *channel)
