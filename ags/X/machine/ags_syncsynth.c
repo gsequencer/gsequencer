@@ -744,76 +744,22 @@ ags_syncsynth_resize_audio_channels(AgsMachine *machine,
   AgsSyncsynth *syncsynth;
 
   AgsAudio *audio;
-  
-  AgsMutexManager *mutex_manager;
-
-  AgsConfig *config;
-
-  gchar *str;
 
   guint output_pads, input_pads;
-  gboolean rt_safe;
-  gboolean performance_mode;
-
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *audio_mutex;
-
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-  
-  config = ags_config_get_instance();
 
   syncsynth = (AgsSyncsynth *) machine;
   
   audio = machine->audio;
 
-  /* get audio mutex */
-  pthread_mutex_lock(application_mutex);
-
-  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
-					 (GObject *) audio);
-  
-  pthread_mutex_unlock(application_mutex);  
-
   /* get some fields */
-  pthread_mutex_lock(audio_mutex);
-  
-  output_pads = audio->output_pads;
-  input_pads = audio->input_pads;
-
-  pthread_mutex_unlock(audio_mutex);
+  g_object_get(audio,
+	       "output-pads", &output_pads,
+	       "input-pads", &input_pads,
+	       NULL);
 
   if(audio_channels > audio_channels_old){
-    /* map dependending on output */
-    rt_safe = TRUE;
-    performance_mode = TRUE;
-
-    str = ags_config_get_value(config,
-			       AGS_CONFIG_GENERIC,
-			       "rt-safe");
-
-    if(str != NULL &&
-       !g_ascii_strncasecmp(str,
-			    "FALSE",
-			    6)){
-      rt_safe = FALSE;
-    }
-
-    str = ags_config_get_value(config,
-			       AGS_CONFIG_GENERIC,
-			       "engine-mode");
-
-    if(str != NULL &&
-       !g_ascii_strncasecmp(str,
-			    "performance",
-			    12)){
-      performance_mode = TRUE;
-    }else{
-      performance_mode = FALSE;
-    }
-
-    if(rt_safe ||
-       performance_mode){
+    if(ags_recall_global_get_rt_safe() ||
+       ags_recall_global_get_performance_mode()){
       /* ags-copy */
       ags_recall_factory_create(audio,
 				NULL, NULL,
@@ -824,9 +770,6 @@ ags_syncsynth_resize_audio_channels(AgsMachine *machine,
 				 AGS_RECALL_FACTORY_RECALL |
 				 AGS_RECALL_FACTORY_ADD),
 				0);
-
-      /* set performance mode */
-      performance_mode = TRUE;
     }else{    
       /* ags-buffer */
       ags_recall_factory_create(audio,
@@ -890,7 +833,8 @@ ags_syncsynth_resize_audio_channels(AgsMachine *machine,
     
     /* AgsOutput */
     /* ags-stream */
-    if(!performance_mode){
+    if(!(ags_recall_global_get_rt_safe() ||
+	 ags_recall_global_get_performance_mode())){
       ags_recall_factory_create(audio,
 				NULL, NULL,
 				"ags-stream",
@@ -916,39 +860,18 @@ ags_syncsynth_resize_pads(AgsMachine *machine, GType type,
   AgsChannel *channel, *source;
   AgsAudioSignal *audio_signal;
 
-  AgsMutexManager *mutex_manager;
-
-  AgsApplicationContext *application_context;
-  
   guint i, j;
   gboolean grow;
-
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *audio_mutex;
-  pthread_mutex_t *source_mutex;
 
   if(pads == pads_old){
     return;
   }
-
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
 
   window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) machine);
 
   syncsynth = (AgsSyncsynth *) machine;
 
   audio = machine->audio;
-
-  application_context = window->application_context;
-  
-  /* lookup audio mutex */
-  pthread_mutex_lock(application_mutex);
-    
-  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
-					 (GObject *) audio);
-  
-  pthread_mutex_unlock(application_mutex);
   
   if(pads_old < pads){
     grow = TRUE;
@@ -958,32 +881,6 @@ ags_syncsynth_resize_pads(AgsMachine *machine, GType type,
   
   if(type == AGS_TYPE_INPUT){
     if(grow){
-      pthread_mutex_lock(audio_mutex);
-
-      source = audio->input;
-
-      pthread_mutex_unlock(audio_mutex);
-      
-      /* create pattern */
-      source = ags_channel_nth(source, pads_old);
-      
-      while(source != NULL){
-	/* lookup source mutex */
-	pthread_mutex_lock(application_mutex);
-
-	source_mutex = ags_mutex_manager_lookup(mutex_manager,
-						(GObject *) source);
-  
-	pthread_mutex_unlock(application_mutex);
-
-	/* iterate pattern */
-	pthread_mutex_lock(source_mutex);
-	
-	source = source->next;
-
-	pthread_mutex_unlock(source_mutex);
-      }
-
       if((AGS_MACHINE_MAPPED_RECALL & (machine->flags)) != 0){
 	/* depending on destination */
 	ags_syncsynth_input_map_recall(syncsynth,
@@ -997,11 +894,9 @@ ags_syncsynth_resize_pads(AgsMachine *machine, GType type,
     if(grow){
       AgsChannel *current, *output;
 
-      pthread_mutex_lock(audio_mutex);
-
-      source = audio->output;
-
-      pthread_mutex_unlock(audio_mutex);
+      g_object_get(audio,
+		   "output", &source,
+		   NULL);
 
       source = ags_channel_nth(source,
 			       pads_old);
@@ -1010,28 +905,16 @@ ags_syncsynth_resize_pads(AgsMachine *machine, GType type,
 	AgsRecycling *recycling;
 	AgsAudioSignal *audio_signal;
 
-	GObject *soundcard;
-
-	pthread_mutex_lock(audio_mutex);
+	GObject *output_soundcard;
 	
-	soundcard = audio->soundcard;
-
-	pthread_mutex_unlock(audio_mutex);
-
-	/* lookup source mutex */
-	pthread_mutex_lock(application_mutex);
-
-	source_mutex = ags_mutex_manager_lookup(mutex_manager,
-						(GObject *) source);
-  
-	pthread_mutex_unlock(application_mutex);
+	g_object_get(audio,
+		     "output-soundcard", &output_soundcard,
+		     NULL);
 
 	/* get recycling */
-	pthread_mutex_lock(source_mutex);
-
-	recycling = source->first_recycling;
-
-	pthread_mutex_unlock(source_mutex);
+	g_object_get(source,
+		     "first-recycling", &recycling,
+		     NULL);
 
 	/* instantiate template audio signal */
 	audio_signal = ags_audio_signal_new(soundcard,
@@ -1059,80 +942,26 @@ ags_syncsynth_input_map_recall(AgsSyncsynth *syncsynth,
 {
   AgsAudio *audio;
 
-  AgsMutexManager *mutex_manager;  
-
-  AgsConfig *config;
-
   GList *list;
-
-  gchar *str;
 
   guint input_pads;
   guint audio_channels;
-  gboolean rt_safe;
-  gboolean performance_mode;
-
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *audio_mutex;
 
   if(syncsynth->mapped_input_pad > input_pad_start){
     return;
   }
 
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-
-  config = ags_config_get_instance();
-
   audio = AGS_MACHINE(syncsynth)->audio;
 
-  /* get audio mutex */
-  pthread_mutex_lock(application_mutex);
-
-  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
-					 (GObject *) audio);
-  
-  pthread_mutex_unlock(application_mutex);  
-
   /* get some fields */
-  pthread_mutex_lock(audio_mutex);
-
-  input_pads = audio->input_pads;
-  audio_channels = audio->audio_channels;
-  
-  pthread_mutex_unlock(audio_mutex);
-
-  /* map dependending on output */
-  rt_safe = TRUE;
-  performance_mode = TRUE;
-
-  str = ags_config_get_value(config,
-			     AGS_CONFIG_GENERIC,
-			     "rt-safe");
-
-  if(str != NULL &&
-     !g_ascii_strncasecmp(str,
-			  "FALSE",
-			  6)){
-    rt_safe = FALSE;
-  }
-
-  str = ags_config_get_value(config,
-			     AGS_CONFIG_GENERIC,
-			     "engine-mode");
-
-  if(str != NULL &&
-     !g_ascii_strncasecmp(str,
-			  "performance",
-			  12)){
-    performance_mode = TRUE;
-  }else{
-    performance_mode = FALSE;
-  }
+  g_object_get(audio,
+	       "input-pads", &input_pads,
+	       "audio-channels", &audio_channels,
+	       NULL);
 
   /* remap for input */
-  if(rt_safe ||
-     performance_mode){
+  if(ags_recall_global_get_rt_safe() ||
+     ags_recall_global_get_performance_mode()){
     /* ags-copy */
     ags_recall_factory_create(audio,
 			      NULL, NULL,
@@ -1143,9 +972,6 @@ ags_syncsynth_input_map_recall(AgsSyncsynth *syncsynth,
 			       AGS_RECALL_FACTORY_RECALL |
 			       AGS_RECALL_FACTORY_ADD),
 			      0);
-    
-    /* set performance mode */
-    performance_mode = TRUE;
   }else{    
     /* ags-buffer */
     ags_recall_factory_create(audio,
@@ -1195,7 +1021,8 @@ ags_syncsynth_input_map_recall(AgsSyncsynth *syncsynth,
 			    0);
   
   /* ags-stream */
-  if(!rt_safe){
+  if(!(ags_recall_global_get_rt_safe() ||
+       ags_recall_global_get_performance_mode())){
     ags_recall_factory_create(audio,
 			      NULL, NULL,
 			      "ags-stream",
@@ -1228,83 +1055,26 @@ ags_syncsynth_output_map_recall(AgsSyncsynth *syncsynth,
 {
   AgsAudio *audio;
 
-  AgsMutexManager *mutex_manager;
-
-  AgsConfig *config;
-
-  gchar *str;
-
   guint input_pad_start;
   guint output_pads, input_pads;
   guint audio_channels;
-  gboolean rt_safe;
-  gboolean performance_mode;
-
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *audio_mutex;
 
   if(syncsynth->mapped_output_pad > output_pad_start){
     return;
   }
 
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-
-  config = ags_config_get_instance();
-
   audio = AGS_MACHINE(syncsynth)->audio;
 
-  /* get audio mutex */
-  pthread_mutex_lock(application_mutex);
-
-  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
-					 (GObject *) audio);
-  
-  pthread_mutex_unlock(application_mutex);
-
   /* get some fields */
-  input_pad_start = 0;
+  g_object_get(audio,
+	       "output-pads", &output_pads,
+	       "input-pads", &input_pads,
+	       "audio-channels", &audio_channels,
+	       NULL);
   
-  pthread_mutex_lock(audio_mutex);
-
-  output_pads = audio->output_pads;
-  input_pads = audio->input_pads;
-  
-  audio_channels = audio->audio_channels;
-
-  pthread_mutex_unlock(audio_mutex);
-  
-  /* map dependending on output */
-  rt_safe = TRUE;
-  performance_mode = TRUE;
-
-  str = ags_config_get_value(config,
-			     AGS_CONFIG_GENERIC,
-			     "rt-safe");
-
-  if(str != NULL &&
-     !g_ascii_strncasecmp(str,
-			  "FALSE",
-			  6)){
-    rt_safe = FALSE;
-  }
-
-  str = ags_config_get_value(config,
-			     AGS_CONFIG_GENERIC,
-			     "engine-mode");
-
-  if(str != NULL &&
-     !g_ascii_strncasecmp(str,
-			  "performance",
-			  12)){
-    performance_mode = TRUE;
-  }else{
-    performance_mode = FALSE;
-  }
-
   /* remap for input */
-  if(rt_safe ||
-     performance_mode){
+  if(ags_recall_global_get_rt_safe() ||
+     ags_recall_global_get_performance_mode()){
     /* ags-copy */
     ags_recall_factory_create(audio,
 			      NULL, NULL,
@@ -1315,9 +1085,6 @@ ags_syncsynth_output_map_recall(AgsSyncsynth *syncsynth,
 			       AGS_RECALL_FACTORY_RECALL |
 			       AGS_RECALL_FACTORY_ADD),
 			      0);
-    
-    /* set performance mode */
-    performance_mode = TRUE;
   }else{    
     /* ags-buffer */
     ags_recall_factory_create(audio,
@@ -1331,7 +1098,8 @@ ags_syncsynth_output_map_recall(AgsSyncsynth *syncsynth,
 			      0);
   }
 
-  if(!performance_mode){
+  if(!(ags_recall_global_get_rt_safe() ||
+       ags_recall_global_get_performance_mode())){
     /* ags-stream */
     ags_recall_factory_create(audio,
 			      NULL, NULL,
@@ -1479,8 +1247,6 @@ ags_syncsynth_update(AgsSyncsynth *syncsynth)
   AgsClearAudioSignal *clear_audio_signal;
   AgsApplySynth *apply_synth;
 
-  AgsMutexManager *mutex_manager;
-  AgsThread *main_loop;
   AgsGuiThread *gui_thread;
 
   AgsApplicationContext *application_context;
@@ -1499,36 +1265,12 @@ ags_syncsynth_update(AgsSyncsynth *syncsynth)
   AgsComplex **sync_point;
   guint sync_point_count;
 
-  pthread_mutex_t *audio_mutex;
-  pthread_mutex_t *channel_mutex;
-  pthread_mutex_t *application_mutex;
-
   window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) syncsynth);
-  application_context = (AgsApplicationContext *) window->application_context;
 
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+  application_context = (AgsApplicationContext *) window->application_context;
+  gui_thread = ags_ui_provider_get_gui_thread(AGS_UI_PROVIDER(application_context));
 
   audio = AGS_MACHINE(syncsynth)->audio;
-
-  /* get audio loop */
-  pthread_mutex_lock(application_mutex);
-
-  main_loop = (AgsThread *) application_context->main_loop;
-
-  pthread_mutex_unlock(application_mutex);
-
-  /* get task thread */
-  gui_thread = (AgsGuiThread *) ags_thread_find_type(main_loop,
-						       AGS_TYPE_GUI_THREAD);
-
-  /* lookup audio mutex */
-  pthread_mutex_lock(application_mutex);
-    
-  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
-					 (GObject *) audio);
-  
-  pthread_mutex_unlock(application_mutex);
 
   /*  */
   start_frequency = (gdouble) gtk_spin_button_get_value_as_float(syncsynth->lower);
@@ -1537,42 +1279,39 @@ ags_syncsynth_update(AgsSyncsynth *syncsynth)
   loop_end = (guint) gtk_spin_button_get_value_as_int(syncsynth->loop_end);
 
   /* clear input */
-  pthread_mutex_lock(audio_mutex);
-
-  channel = audio->input;
-
-  pthread_mutex_unlock(audio_mutex);
+  g_object_get(audio,
+	       "input", &channel,
+	       NULL);
 
   task = NULL;
 
   while(channel != NULL){
+    AgsRecycling *first_recycling;
     AgsAudioSignal *template;
+
+    GList *start_list;
     
-    /* lookup channel mutex */
-    pthread_mutex_lock(application_mutex);
+    g_object_get(channel,
+		 "first-recycling", &first_recycling,
+		 NULL);
 
-    channel_mutex = ags_mutex_manager_lookup(mutex_manager,
-					     (GObject *) channel);
-  
-    pthread_mutex_unlock(application_mutex);
-
+    g_object_get(first_recycling,
+		 "audio-signal", &start_list,
+		 NULL);
+    
     /* clear task */
-    pthread_mutex_lock(channel_mutex);
-
-    template = ags_audio_signal_get_template(channel->first_recycling->audio_signal);
-
-    pthread_mutex_unlock(channel_mutex);
+    template = ags_audio_signal_get_template(start_list);
 
     clear_audio_signal = ags_clear_audio_signal_new(template);
     task = g_list_prepend(task,
 			  clear_audio_signal);
+
+    g_list_free(start_list);
     
     /* iterate */
-    pthread_mutex_lock(channel_mutex);
-
-    channel = channel->next;
-
-    pthread_mutex_unlock(channel_mutex);
+    g_object_get(channel,
+		 "next", &channel,
+		 NULL);
   }
 
   /* write input */
@@ -1580,26 +1319,20 @@ ags_syncsynth_update(AgsSyncsynth *syncsynth)
     list_start = gtk_container_get_children(syncsynth->oscillator);
 
   /* get soundcard */
-  pthread_mutex_lock(audio_mutex);
-
-  channel = audio->input;
-
-  input_lines = audio->input_lines;
-  
-  pthread_mutex_unlock(audio_mutex);
+  g_object_get(audio,
+	       "input", &channel,
+	       "input-lines", &input_lines,
+	       NULL);
 
   while(list != NULL){
+    guint buffer_size;
     guint i;
     gboolean do_sync;
+
+    g_object_get(channel,
+		 "buffer-size", &buffer_size,
+		 NULL);
     
-    /* lookup channel mutex */
-    pthread_mutex_lock(application_mutex);
-
-    channel_mutex = ags_mutex_manager_lookup(mutex_manager,
-					     (GObject *) channel);
-  
-    pthread_mutex_unlock(application_mutex);
-
     /* do it so */
     child_start = gtk_container_get_children(list->data);
 
@@ -1616,12 +1349,12 @@ ags_syncsynth_update(AgsSyncsynth *syncsynth)
 
     apply_synth = ags_apply_synth_new(channel, input_lines,
 				      wave,
-				      attack % channel->buffer_size, frame_count,
+				      attack % buffer_size, frame_count,
 				      frequency, phase, start_frequency,
 				      volume,
 				      loop_start, loop_end);
     g_object_set(apply_synth,
-		 "delay", (gdouble) attack / channel->buffer_size,
+		 "delay", (gdouble) attack / buffer_size,
 		 NULL);
 
     do_sync = gtk_toggle_button_get_active(oscillator->do_sync);
@@ -1657,11 +1390,9 @@ ags_syncsynth_update(AgsSyncsynth *syncsynth)
 			  apply_synth);
 
     /* iterate */
-    pthread_mutex_lock(channel_mutex);
-
-    channel = channel->next;
-
-    pthread_mutex_unlock(channel_mutex);
+    g_object_get(channel,
+		 "next", &channel,
+		 NULL);
     
     list = list->next;
   }
@@ -1676,11 +1407,11 @@ ags_syncsynth_update(AgsSyncsynth *syncsynth)
  * ags_syncsynth_new:
  * @soundcard: the assigned soundcard.
  *
- * Creates an #AgsSyncsynth
+ * Create a new instance of #AgsSyncsynth
  *
- * Returns: a new #AgsSyncsynth
+ * Returns: the new #AgsSyncsynth
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsSyncsynth*
 ags_syncsynth_new(GObject *soundcard)
@@ -1690,8 +1421,8 @@ ags_syncsynth_new(GObject *soundcard)
   syncsynth = (AgsSyncsynth *) g_object_new(AGS_TYPE_SYNCSYNTH,
 					    NULL);
 
-  g_object_set(G_OBJECT(AGS_MACHINE(syncsynth)->audio),
-	       "soundcard", soundcard,
+  g_object_set(AGS_MACHINE(syncsynth)->audio,
+	       "output-soundcard", soundcard,
 	       NULL);
 
   return(syncsynth);
