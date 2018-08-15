@@ -19,6 +19,8 @@
 
 #include <ags/audio/ags_recall_container.h>
 
+#include <ags/libags.h>
+
 #include <ags/audio/ags_recall_audio.h>
 #include <ags/audio/ags_recall_audio_run.h>
 #include <ags/audio/ags_recall_channel.h>
@@ -27,6 +29,7 @@
 #include <ags/i18n.h>
 
 void ags_recall_container_class_init(AgsRecallContainerClass *recall_class);
+void ags_recall_container_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_recall_container_init(AgsRecallContainer *recall);
 void ags_recall_container_set_property(GObject *gobject,
 				       guint prop_id,
@@ -38,6 +41,19 @@ void ags_recall_container_get_property(GObject *gobject,
 				       GParamSpec *param_spec);
 void ags_recall_container_dispose(GObject *recall);
 void ags_recall_container_finalize(GObject *recall);
+
+AgsUUID* ags_recall_container_get_uuid(AgsConnectable *connectable);
+gboolean ags_recall_container_has_resource(AgsConnectable *connectable);
+gboolean ags_recall_container_is_ready(AgsConnectable *connectable);
+void ags_recall_container_add_to_registry(AgsConnectable *connectable);
+void ags_recall_container_remove_from_registry(AgsConnectable *connectable);
+xmlNode* ags_recall_container_list_resource(AgsConnectable *connectable);
+xmlNode* ags_recall_container_xml_compose(AgsConnectable *connectable);
+void ags_recall_container_xml_parse(AgsConnectable *connectable,
+			  xmlNode *node);
+gboolean ags_recall_container_is_connected(AgsConnectable *connectable);
+void ags_recall_container_connect(AgsConnectable *connectable);
+void ags_recall_container_disconnect(AgsConnectable *connectable);
 
 /**
  * SECTION:ags_recall_container
@@ -83,10 +99,20 @@ ags_recall_container_get_type (void)
       (GInstanceInitFunc) ags_recall_container_init,
     };
 
+    static const GInterfaceInfo ags_connectable_interface_info = {
+      (GInterfaceInitFunc) ags_recall_container_connectable_interface_init,
+      NULL, /* interface_finalize */
+      NULL, /* interface_data */
+    };
+
     ags_type_recall_container = g_type_register_static(G_TYPE_OBJECT,
 						       "AgsRecallContainer",
 						       &ags_recall_container_info,
 						       0);
+
+    g_type_add_interface_static(ags_type_recall_container,
+				AGS_TYPE_CONNECTABLE,
+				&ags_connectable_interface_info);
   }
 
   return(ags_type_recall_container);
@@ -234,6 +260,28 @@ ags_recall_container_class_init(AgsRecallContainerClass *recall_container)
   g_object_class_install_property(gobject,
 				  PROP_RECALL_CHANNEL_RUN,
 				  param_spec);
+}
+
+void
+ags_recall_container_connectable_interface_init(AgsConnectableInterface *connectable)
+{
+  connectable->get_uuid = ags_recall_container_get_uuid;
+  connectable->has_resource = ags_recall_container_has_resource;
+
+  connectable->is_ready = ags_recall_container_is_ready;
+  connectable->add_to_registry = ags_recall_container_add_to_registry;
+  connectable->remove_from_registry = ags_recall_container_remove_from_registry;
+
+  connectable->list_resource = ags_recall_container_list_resource;
+  connectable->xml_compose = ags_recall_container_xml_compose;
+  connectable->xml_parse = ags_recall_container_xml_parse;
+
+  connectable->is_connected = ags_recall_container_is_connected;  
+  connectable->connect = ags_recall_container_connect;
+  connectable->disconnect = ags_recall_container_disconnect;
+
+  connectable->connect_connection = NULL;
+  connectable->disconnect_connection = NULL;
 }
 
 void
@@ -751,6 +799,208 @@ ags_recall_container_finalize(GObject *gobject)
   G_OBJECT_CLASS(ags_recall_container_parent_class)->finalize(gobject);
 }
 
+AgsUUID*
+ags_recall_container_get_uuid(AgsConnectable *connectable)
+{
+  AgsRecallContainer *recall_container;
+  
+  AgsUUID *ptr;
+
+  pthread_mutex_t *recall_container_mutex;
+
+  recall_container = AGS_RECALL_CONTAINER(connectable);
+
+  /* get recall_container mutex */
+  pthread_mutex_lock(ags_recall_container_get_class_mutex());
+  
+  recall_container_mutex = recall_container->obj_mutex;
+  
+  pthread_mutex_unlock(ags_recall_container_get_class_mutex());
+
+  /* get UUID */
+  pthread_mutex_lock(recall_container_mutex);
+
+  ptr = recall_container->uuid;
+
+  pthread_mutex_unlock(recall_container_mutex);
+  
+  return(ptr);
+}
+
+gboolean
+ags_recall_container_has_resource(AgsConnectable *connectable)
+{
+  return(TRUE);
+}
+
+gboolean
+ags_recall_container_is_ready(AgsConnectable *connectable)
+{
+  AgsRecallContainer *recall_container;
+  
+  gboolean is_ready;
+
+  pthread_mutex_t *recall_container_mutex;
+
+  recall_container = AGS_RECALL_CONTAINER(connectable);
+
+  /* get recall_container mutex */
+  pthread_mutex_lock(ags_recall_container_get_class_mutex());
+  
+  recall_container_mutex = recall_container->obj_mutex;
+  
+  pthread_mutex_unlock(ags_recall_container_get_class_mutex());
+
+  /* check is added */
+  pthread_mutex_lock(recall_container_mutex);
+
+  is_ready = (((AGS_RECALL_CONTAINER_ADDED_TO_REGISTRY & (recall_container->flags)) != 0) ? TRUE: FALSE);
+
+  pthread_mutex_unlock(recall_container_mutex);
+  
+  return(is_ready);
+}
+
+void
+ags_recall_container_add_to_registry(AgsConnectable *connectable)
+{
+  AgsRecallContainer *recall_container;
+
+  AgsRegistry *registry;
+  AgsRegistryEntry *entry;
+
+  AgsApplicationContext *application_context;
+
+  GList *list;
+
+  if(ags_connectable_is_ready(connectable)){
+    return;
+  }
+  
+  recall_container = AGS_RECALL_CONTAINER(connectable);
+
+  ags_recall_container_set_flags(recall_container, AGS_RECALL_CONTAINER_ADDED_TO_REGISTRY);
+
+  application_context = ags_application_context_get_instance();
+
+  registry = ags_service_provider_get_registry(AGS_SERVICE_PROVIDER(application_context));
+
+  if(registry != NULL){
+    entry = ags_registry_entry_alloc(registry);
+    g_value_set_object(&(entry->entry),
+		       (gpointer) recall_container);
+    ags_registry_add_entry(registry,
+			   entry);
+  }
+
+  //TODO:JK: implement me
+}
+
+void
+ags_recall_container_remove_from_registry(AgsConnectable *connectable)
+{
+  if(!ags_connectable_is_ready(connectable)){
+    return;
+  }
+
+  //TODO:JK: implement me
+}
+
+xmlNode*
+ags_recall_container_list_resource(AgsConnectable *connectable)
+{
+  xmlNode *node;
+  
+  node = NULL;
+
+  //TODO:JK: implement me
+  
+  return(node);
+}
+
+xmlNode*
+ags_recall_container_xml_compose(AgsConnectable *connectable)
+{
+  xmlNode *node;
+  
+  node = NULL;
+
+  //TODO:JK: implement me
+  
+  return(node);
+}
+
+void
+ags_recall_container_xml_parse(AgsConnectable *connectable,
+		     xmlNode *node)
+{
+  //TODO:JK: implement me
+}
+
+gboolean
+ags_recall_container_is_connected(AgsConnectable *connectable)
+{
+  AgsRecallContainer *recall_container;
+  
+  gboolean is_connected;
+
+  pthread_mutex_t *recall_container_mutex;
+
+  recall_container = AGS_RECALL_CONTAINER(connectable);
+
+  /* get recall_container mutex */
+  pthread_mutex_lock(ags_recall_container_get_class_mutex());
+  
+  recall_container_mutex = recall_container->obj_mutex;
+  
+  pthread_mutex_unlock(ags_recall_container_get_class_mutex());
+
+  /* check is connected */
+  pthread_mutex_lock(recall_container_mutex);
+
+  is_connected = (((AGS_RECALL_CONTAINER_CONNECTED & (recall_container->flags)) != 0) ? TRUE: FALSE);
+  
+  pthread_mutex_unlock(recall_container_mutex);
+  
+  return(is_connected);
+}
+
+void
+ags_recall_container_connect(AgsConnectable *connectable)
+{
+  AgsRecallContainer *recall_container;
+
+  GList *list_start, *list;
+
+  pthread_mutex_t *recall_container_mutex;
+
+  if(ags_connectable_is_connected(connectable)){
+    return;
+  }
+
+  recall_container = AGS_RECALL_CONTAINER(connectable);
+
+  ags_recall_container_set_flags(recall_container, AGS_RECALL_CONTAINER_CONNECTED);  
+}
+
+void
+ags_recall_container_disconnect(AgsConnectable *connectable)
+{
+  AgsRecallContainer *recall_container;
+
+  GList *list_start, *list;
+
+  pthread_mutex_t *recall_container_mutex;
+
+  if(!ags_connectable_is_connected(connectable)){
+    return;
+  }
+
+  recall_container = AGS_RECALL_CONTAINER(connectable);
+
+  ags_recall_container_unset_flags(recall_container, AGS_RECALL_CONTAINER_CONNECTED);    
+}
+
 /**
  * ags_recall_container_get_class_mutex:
  * 
@@ -764,6 +1014,112 @@ pthread_mutex_t*
 ags_recall_container_get_class_mutex()
 {
   return(&ags_recall_container_class_mutex);
+}
+
+
+/**
+ * ags_recall_container_test_flags:
+ * @recall_container: the #AgsRecallContainer
+ * @flags: the flags
+ *
+ * Test @flags to be set on @recall_container.
+ * 
+ * Returns: %TRUE if flags are set, else %FALSE
+ *
+ * Since: 2.0.0
+ */
+gboolean
+ags_recall_container_test_flags(AgsRecallContainer *recall_container, guint flags)
+{
+  gboolean retval;  
+  
+  pthread_mutex_t *recall_container_mutex;
+
+  if(!AGS_IS_RECALL_CONTAINER(recall_container)){
+    return(FALSE);
+  }
+
+  /* get recall_container mutex */
+  pthread_mutex_lock(ags_recall_container_get_class_mutex());
+  
+  recall_container_mutex = recall_container->obj_mutex;
+  
+  pthread_mutex_unlock(ags_recall_container_get_class_mutex());
+
+  /* test */
+  pthread_mutex_lock(recall_container_mutex);
+
+  retval = (flags & (recall_container->flags)) ? TRUE: FALSE;
+  
+  pthread_mutex_unlock(recall_container_mutex);
+
+  return(retval);
+}
+
+/**
+ * ags_recall_container_set_flags:
+ * @recall_container: the #AgsRecallContainer
+ * @flags: the flags
+ *
+ * Set flags.
+ * 
+ * Since: 2.0.0
+ */
+void
+ags_recall_container_set_flags(AgsRecallContainer *recall_container, guint flags)
+{
+  pthread_mutex_t *recall_container_mutex;
+
+  if(!AGS_IS_RECALL_CONTAINER(recall_container)){
+    return;
+  }
+
+  /* get recall_container mutex */
+  pthread_mutex_lock(ags_recall_container_get_class_mutex());
+  
+  recall_container_mutex = recall_container->obj_mutex;
+  
+  pthread_mutex_unlock(ags_recall_container_get_class_mutex());
+
+  /* set flags */
+  pthread_mutex_lock(recall_container_mutex);
+
+  recall_container->flags |= flags;
+
+  pthread_mutex_unlock(recall_container_mutex);
+}
+
+/**
+ * ags_recall_container_unset_flags:
+ * @recall_container: the #AgsRecallContainer
+ * @flags: the flags
+ *
+ * Unset flags.
+ * 
+ * Since: 2.0.0
+ */
+void
+ags_recall_container_unset_flags(AgsRecallContainer *recall_container, guint flags)
+{
+  pthread_mutex_t *recall_container_mutex;
+
+  if(!AGS_IS_RECALL_CONTAINER(recall_container)){
+    return;
+  }
+
+  /* get recall_container mutex */
+  pthread_mutex_lock(ags_recall_container_get_class_mutex());
+  
+  recall_container_mutex = recall_container->obj_mutex;
+  
+  pthread_mutex_unlock(ags_recall_container_get_class_mutex());
+
+  /* set flags */
+  pthread_mutex_lock(recall_container_mutex);
+
+  recall_container->flags &= (~flags);
+
+  pthread_mutex_unlock(recall_container_mutex);
 }
 
 /**

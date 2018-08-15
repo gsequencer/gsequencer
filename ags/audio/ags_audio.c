@@ -1029,7 +1029,7 @@ ags_audio_class_init(AgsAudioClass *audio)
 				    i18n_pspec("The assigned recall id"),
 				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
-				  PROP_OUTPUT,
+				  PROP_RECALL_ID,
 				  param_spec);
 
   /**
@@ -1044,7 +1044,7 @@ ags_audio_class_init(AgsAudioClass *audio)
 				    i18n_pspec("The assigned recall id"),
 				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
-				  PROP_OUTPUT,
+				  PROP_RECYCLING_CONTEXT,
 				  param_spec);
 
   /**

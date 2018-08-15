@@ -201,7 +201,7 @@ ags_recycling_class_init(AgsRecyclingClass *recycling)
 				 i18n_pspec("output soundcard channel"),
 				 i18n_pspec("The output soundcard channel"),
 				 -1,
-				 G_MAXUINT32,
+				 G_MAXINT32,
 				 0,
 				 G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -235,7 +235,7 @@ ags_recycling_class_init(AgsRecyclingClass *recycling)
 				 i18n_pspec("input soundcard channel"),
 				 i18n_pspec("The input soundcard channel"),
 				 -1,
-				 G_MAXUINT32,
+				 G_MAXINT32,
 				 0,
 				 G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,

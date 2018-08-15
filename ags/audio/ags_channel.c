@@ -310,7 +310,7 @@ ags_channel_class_init(AgsChannelClass *channel)
 				 i18n_pspec("The output soundcard channel"),
 				 -1,
 				 G_MAXINT32,
-				 -1,
+				 0,
 				 G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_OUTPUT_SOUNDCARD_CHANNEL,
@@ -344,7 +344,7 @@ ags_channel_class_init(AgsChannelClass *channel)
 				 i18n_pspec("The input soundcard channel"),
 				 -1,
 				 G_MAXINT32,
-				 -1,
+				 0,
 				 G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_INPUT_SOUNDCARD_CHANNEL,
@@ -6330,15 +6330,15 @@ ags_channel_reset_recycling(AgsChannel *channel,
 				  line);
       }
 
-      /* get current mutex */
-      pthread_mutex_lock(ags_channel_get_class_mutex());
-  
-      current_mutex = current->obj_mutex;
-  
-      pthread_mutex_unlock(ags_channel_get_class_mutex());
-
-      /* check if parent found */
       if(current != NULL){
+	/* get current mutex */
+	pthread_mutex_lock(ags_channel_get_class_mutex());
+  
+	current_mutex = current->obj_mutex;
+  
+	pthread_mutex_unlock(ags_channel_get_class_mutex());
+
+	/* check if parent found */
 	pthread_mutex_lock(current_mutex);
 	
 	if((AGS_AUDIO_OUTPUT_HAS_RECYCLING & (audio_flags)) != 0){

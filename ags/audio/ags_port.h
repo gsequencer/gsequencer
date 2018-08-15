@@ -69,6 +69,8 @@ struct _AgsPort
   pthread_mutex_t *obj_mutex;
   pthread_mutexattr_t *obj_mutexattr;
 
+  AgsUUID *uuid;
+
   gchar *plugin_name;
   gchar *specifier;
 

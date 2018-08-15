@@ -44,6 +44,16 @@ void ags_port_get_property(GObject *gobject,
 void ags_port_dispose(GObject *gobject);
 void ags_port_finalize(GObject *gobject);
 
+AgsUUID* ags_port_get_uuid(AgsConnectable *connectable);
+gboolean ags_port_has_resource(AgsConnectable *connectable);
+gboolean ags_port_is_ready(AgsConnectable *connectable);
+void ags_port_add_to_registry(AgsConnectable *connectable);
+void ags_port_remove_from_registry(AgsConnectable *connectable);
+xmlNode* ags_port_list_resource(AgsConnectable *connectable);
+xmlNode* ags_port_xml_compose(AgsConnectable *connectable);
+void ags_port_xml_parse(AgsConnectable *connectable,
+			  xmlNode *node);
+gboolean ags_port_is_connected(AgsConnectable *connectable);
 void ags_port_connect(AgsConnectable *connectable);
 void ags_port_disconnect(AgsConnectable *connectable);
 
@@ -392,13 +402,23 @@ ags_port_class_init(AgsPortClass *port)
 void
 ags_port_connectable_interface_init(AgsConnectableInterface *connectable)
 {
-  connectable->add_to_registry = NULL;
-  connectable->remove_from_registry = NULL;
+  connectable->get_uuid = ags_port_get_uuid;
+  connectable->has_resource = ags_port_has_resource;
 
-  connectable->is_ready = NULL;
-  connectable->is_connected = NULL;
+  connectable->is_ready = ags_port_is_ready;
+  connectable->add_to_registry = ags_port_add_to_registry;
+  connectable->remove_from_registry = ags_port_remove_from_registry;
+
+  connectable->list_resource = ags_port_list_resource;
+  connectable->xml_compose = ags_port_xml_compose;
+  connectable->xml_parse = ags_port_xml_parse;
+
+  connectable->is_connected = ags_port_is_connected;  
   connectable->connect = ags_port_connect;
   connectable->disconnect = ags_port_disconnect;
+
+  connectable->connect_connection = NULL;
+  connectable->disconnect_connection = NULL;
 }
 
 void
@@ -836,16 +856,206 @@ ags_port_finalize(GObject *gobject)
   G_OBJECT_CLASS(ags_port_parent_class)->finalize(gobject);
 }
 
+AgsUUID*
+ags_port_get_uuid(AgsConnectable *connectable)
+{
+  AgsPort *port;
+  
+  AgsUUID *ptr;
+
+  pthread_mutex_t *port_mutex;
+
+  port = AGS_PORT(connectable);
+
+  /* get port mutex */
+  pthread_mutex_lock(ags_port_get_class_mutex());
+  
+  port_mutex = port->obj_mutex;
+  
+  pthread_mutex_unlock(ags_port_get_class_mutex());
+
+  /* get UUID */
+  pthread_mutex_lock(port_mutex);
+
+  ptr = port->uuid;
+
+  pthread_mutex_unlock(port_mutex);
+  
+  return(ptr);
+}
+
+gboolean
+ags_port_has_resource(AgsConnectable *connectable)
+{
+  return(TRUE);
+}
+
+gboolean
+ags_port_is_ready(AgsConnectable *connectable)
+{
+  AgsPort *port;
+  
+  gboolean is_ready;
+
+  pthread_mutex_t *port_mutex;
+
+  port = AGS_PORT(connectable);
+
+  /* get port mutex */
+  pthread_mutex_lock(ags_port_get_class_mutex());
+  
+  port_mutex = port->obj_mutex;
+  
+  pthread_mutex_unlock(ags_port_get_class_mutex());
+
+  /* check is added */
+  pthread_mutex_lock(port_mutex);
+
+  is_ready = (((AGS_PORT_ADDED_TO_REGISTRY & (port->flags)) != 0) ? TRUE: FALSE);
+
+  pthread_mutex_unlock(port_mutex);
+  
+  return(is_ready);
+}
+
+void
+ags_port_add_to_registry(AgsConnectable *connectable)
+{
+  AgsPort *port;
+
+  AgsRegistry *registry;
+  AgsRegistryEntry *entry;
+
+  AgsApplicationContext *application_context;
+
+  GList *list;
+
+  if(ags_connectable_is_ready(connectable)){
+    return;
+  }
+  
+  port = AGS_PORT(connectable);
+
+  ags_port_set_flags(port, AGS_PORT_ADDED_TO_REGISTRY);
+
+  application_context = ags_application_context_get_instance();
+
+  registry = ags_service_provider_get_registry(AGS_SERVICE_PROVIDER(application_context));
+
+  if(registry != NULL){
+    entry = ags_registry_entry_alloc(registry);
+    g_value_set_object(&(entry->entry),
+		       (gpointer) port);
+    ags_registry_add_entry(registry,
+			   entry);
+  }
+
+  //TODO:JK: implement me
+}
+
+void
+ags_port_remove_from_registry(AgsConnectable *connectable)
+{
+  if(!ags_connectable_is_ready(connectable)){
+    return;
+  }
+
+  //TODO:JK: implement me
+}
+
+xmlNode*
+ags_port_list_resource(AgsConnectable *connectable)
+{
+  xmlNode *node;
+  
+  node = NULL;
+
+  //TODO:JK: implement me
+  
+  return(node);
+}
+
+xmlNode*
+ags_port_xml_compose(AgsConnectable *connectable)
+{
+  xmlNode *node;
+  
+  node = NULL;
+
+  //TODO:JK: implement me
+  
+  return(node);
+}
+
+void
+ags_port_xml_parse(AgsConnectable *connectable,
+		     xmlNode *node)
+{
+  //TODO:JK: implement me
+}
+
+gboolean
+ags_port_is_connected(AgsConnectable *connectable)
+{
+  AgsPort *port;
+  
+  gboolean is_connected;
+
+  pthread_mutex_t *port_mutex;
+
+  port = AGS_PORT(connectable);
+
+  /* get port mutex */
+  pthread_mutex_lock(ags_port_get_class_mutex());
+  
+  port_mutex = port->obj_mutex;
+  
+  pthread_mutex_unlock(ags_port_get_class_mutex());
+
+  /* check is connected */
+  pthread_mutex_lock(port_mutex);
+
+  is_connected = (((AGS_PORT_CONNECTED & (port->flags)) != 0) ? TRUE: FALSE);
+  
+  pthread_mutex_unlock(port_mutex);
+  
+  return(is_connected);
+}
+
 void
 ags_port_connect(AgsConnectable *connectable)
 {
-  /* empty */
+  AgsPort *port;
+
+  GList *list_start, *list;
+
+  pthread_mutex_t *port_mutex;
+
+  if(ags_connectable_is_connected(connectable)){
+    return;
+  }
+
+  port = AGS_PORT(connectable);
+
+  ags_port_set_flags(port, AGS_PORT_CONNECTED);  
 }
 
 void
 ags_port_disconnect(AgsConnectable *connectable)
 {
-  /* empty */
+  AgsPort *port;
+
+  GList *list_start, *list;
+
+  pthread_mutex_t *port_mutex;
+
+  if(!ags_connectable_is_connected(connectable)){
+    return;
+  }
+
+  port = AGS_PORT(connectable);
+
+  ags_port_unset_flags(port, AGS_PORT_CONNECTED);    
 }
 
 /**

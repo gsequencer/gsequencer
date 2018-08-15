@@ -39,13 +39,17 @@ typedef struct _AgsRecallContainerClass AgsRecallContainerClass;
 
 /**
  * AgsRecallContainerFlags:
+ * @AGS_RECALL_CONTAINER_ADDED_TO_REGISTRY: add to registry
+ * @AGS_RECALL_CONTAINER_CONNECTED: indicates the recall container was connected by calling #AgsConnectable::connect()
  * @AGS_RECALL_CONTAINER_PLAY: bound to play context
  * 
  * Enum values to control the behavior or indicate internal state of #AgsRecallContainer by
  * enable/disable as flags.
  */
 typedef enum{
-  AGS_RECALL_CONTAINER_PLAY    =  1,
+  AGS_RECALL_CONTAINER_ADDED_TO_REGISTRY   = 1,
+  AGS_RECALL_CONTAINER_CONNECTED           = 1 <<  1,
+  AGS_RECALL_CONTAINER_PLAY                = 1 <<  2,
 }AgsRecallContainerFlags;
 
 /**
@@ -71,6 +75,8 @@ struct _AgsRecallContainer
   pthread_mutex_t *obj_mutex;
   pthread_mutexattr_t *obj_mutexattr;
 
+  AgsUUID *uuid;
+
   GType recall_audio_type;
   AgsRecall *recall_audio;
 
@@ -92,6 +98,10 @@ struct _AgsRecallContainerClass
 GType ags_recall_container_get_type();
 
 pthread_mutex_t* ags_recall_container_get_class_mutex();
+
+gboolean ags_recall_container_test_flags(AgsRecallContainer *recall_container, guint flags);
+void ags_recall_container_set_flags(AgsRecallContainer *recall_container, guint flags);
+void ags_recall_container_unset_flags(AgsRecallContainer *recall_container, guint flags);
 
 /* children */
 void ags_recall_container_add(AgsRecallContainer *recall_container,

@@ -185,6 +185,10 @@ void
 ags_reset_peak_add(AgsResetPeak *reset_peak,
 		   AgsPeakChannel *peak_channel)
 {
+  if(!AGS_IS_RESET_PEAK(reset_peak)){
+    return;
+  }
+  
   pthread_mutex_lock(&peak_channel_mutex);
 
   reset_peak->peak_channel = g_list_prepend(reset_peak->peak_channel,
@@ -207,6 +211,10 @@ void
 ags_reset_peak_remove(AgsResetPeak *reset_peak,
 		      AgsPeakChannel *peak_channel)
 {
+  if(!AGS_IS_RESET_PEAK(reset_peak)){
+    return;
+  }
+  
   pthread_mutex_lock(&peak_channel_mutex);
 
   if(g_list_find(reset_peak->peak_channel,
@@ -242,6 +250,8 @@ ags_reset_peak_get_instance()
 
     gboolean no_soundcard;
 
+    ags_reset_peak = ags_reset_peak_new();
+    
     application_context = ags_application_context_get_instance();
 
     g_object_get(application_context,

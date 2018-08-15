@@ -28,6 +28,7 @@
 #include <string.h>
 
 void ags_pattern_class_init(AgsPatternClass *pattern_class);
+void ags_pattern_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_pattern_tactable_interface_init(AgsTactableInterface *tactable);
 void ags_pattern_init(AgsPattern *pattern);
 void ags_pattern_set_property(GObject *gobject,
@@ -40,6 +41,19 @@ void ags_pattern_get_property(GObject *gobject,
 			      GParamSpec *param_spec);
 void ags_pattern_dispose(GObject *gobject);
 void ags_pattern_finalize(GObject *gobject);
+
+AgsUUID* ags_pattern_get_uuid(AgsConnectable *connectable);
+gboolean ags_pattern_has_resource(AgsConnectable *connectable);
+gboolean ags_pattern_is_ready(AgsConnectable *connectable);
+void ags_pattern_add_to_registry(AgsConnectable *connectable);
+void ags_pattern_remove_from_registry(AgsConnectable *connectable);
+xmlNode* ags_pattern_list_resource(AgsConnectable *connectable);
+xmlNode* ags_pattern_xml_compose(AgsConnectable *connectable);
+void ags_pattern_xml_parse(AgsConnectable *connectable,
+			  xmlNode *node);
+gboolean ags_pattern_is_connected(AgsConnectable *connectable);
+void ags_pattern_connect(AgsConnectable *connectable);
+void ags_pattern_disconnect(AgsConnectable *connectable);
 
 void ags_pattern_change_bpm(AgsTactable *tactable, gdouble new_bpm, gdouble old_bpm);
 
@@ -85,6 +99,12 @@ ags_pattern_get_type (void)
       (GInstanceInitFunc) ags_pattern_init,
     };
 
+    static const GInterfaceInfo ags_connectable_interface_info = {
+      (GInterfaceInitFunc) ags_pattern_connectable_interface_init,
+      NULL, /* interface_finalize */
+      NULL, /* interface_data */
+    };
+
     static const GInterfaceInfo ags_tactable_interface_info = {
       (GInterfaceInitFunc) ags_pattern_tactable_interface_init,
       NULL, /* interface_finalize */
@@ -95,6 +115,10 @@ ags_pattern_get_type (void)
 					      "AgsPattern",
 					      &ags_pattern_info,
 					      0);
+
+    g_type_add_interface_static(ags_type_pattern,
+				AGS_TYPE_CONNECTABLE,
+				&ags_connectable_interface_info);
 
     g_type_add_interface_static(ags_type_pattern,
 				AGS_TYPE_TACTABLE,
@@ -219,6 +243,28 @@ ags_pattern_class_init(AgsPatternClass *pattern)
   g_object_class_install_property(gobject,
 				  PROP_TIMESTAMP,
 				  param_spec);
+}
+
+void
+ags_pattern_connectable_interface_init(AgsConnectableInterface *connectable)
+{
+  connectable->get_uuid = ags_pattern_get_uuid;
+  connectable->has_resource = ags_pattern_has_resource;
+
+  connectable->is_ready = ags_pattern_is_ready;
+  connectable->add_to_registry = ags_pattern_add_to_registry;
+  connectable->remove_from_registry = ags_pattern_remove_from_registry;
+
+  connectable->list_resource = ags_pattern_list_resource;
+  connectable->xml_compose = ags_pattern_xml_compose;
+  connectable->xml_parse = ags_pattern_xml_parse;
+
+  connectable->is_connected = ags_pattern_is_connected;  
+  connectable->connect = ags_pattern_connect;
+  connectable->disconnect = ags_pattern_disconnect;
+
+  connectable->connect_connection = NULL;
+  connectable->disconnect_connection = NULL;
 }
 
 void
@@ -446,6 +492,208 @@ ags_pattern_finalize(GObject *gobject)
   
   /* call parent */
   G_OBJECT_CLASS(ags_pattern_parent_class)->finalize(gobject);
+}
+
+AgsUUID*
+ags_pattern_get_uuid(AgsConnectable *connectable)
+{
+  AgsPattern *pattern;
+  
+  AgsUUID *ptr;
+
+  pthread_mutex_t *pattern_mutex;
+
+  pattern = AGS_PATTERN(connectable);
+
+  /* get pattern mutex */
+  pthread_mutex_lock(ags_pattern_get_class_mutex());
+  
+  pattern_mutex = pattern->obj_mutex;
+  
+  pthread_mutex_unlock(ags_pattern_get_class_mutex());
+
+  /* get UUID */
+  pthread_mutex_lock(pattern_mutex);
+
+  ptr = pattern->uuid;
+
+  pthread_mutex_unlock(pattern_mutex);
+  
+  return(ptr);
+}
+
+gboolean
+ags_pattern_has_resource(AgsConnectable *connectable)
+{
+  return(TRUE);
+}
+
+gboolean
+ags_pattern_is_ready(AgsConnectable *connectable)
+{
+  AgsPattern *pattern;
+  
+  gboolean is_ready;
+
+  pthread_mutex_t *pattern_mutex;
+
+  pattern = AGS_PATTERN(connectable);
+
+  /* get pattern mutex */
+  pthread_mutex_lock(ags_pattern_get_class_mutex());
+  
+  pattern_mutex = pattern->obj_mutex;
+  
+  pthread_mutex_unlock(ags_pattern_get_class_mutex());
+
+  /* check is added */
+  pthread_mutex_lock(pattern_mutex);
+
+  is_ready = (((AGS_PATTERN_ADDED_TO_REGISTRY & (pattern->flags)) != 0) ? TRUE: FALSE);
+
+  pthread_mutex_unlock(pattern_mutex);
+  
+  return(is_ready);
+}
+
+void
+ags_pattern_add_to_registry(AgsConnectable *connectable)
+{
+  AgsPattern *pattern;
+
+  AgsRegistry *registry;
+  AgsRegistryEntry *entry;
+
+  AgsApplicationContext *application_context;
+
+  GList *list;
+
+  if(ags_connectable_is_ready(connectable)){
+    return;
+  }
+  
+  pattern = AGS_PATTERN(connectable);
+
+  ags_pattern_set_flags(pattern, AGS_PATTERN_ADDED_TO_REGISTRY);
+
+  application_context = ags_application_context_get_instance();
+
+  registry = ags_service_provider_get_registry(AGS_SERVICE_PROVIDER(application_context));
+
+  if(registry != NULL){
+    entry = ags_registry_entry_alloc(registry);
+    g_value_set_object(&(entry->entry),
+		       (gpointer) pattern);
+    ags_registry_add_entry(registry,
+			   entry);
+  }
+
+  //TODO:JK: implement me
+}
+
+void
+ags_pattern_remove_from_registry(AgsConnectable *connectable)
+{
+  if(!ags_connectable_is_ready(connectable)){
+    return;
+  }
+
+  //TODO:JK: implement me
+}
+
+xmlNode*
+ags_pattern_list_resource(AgsConnectable *connectable)
+{
+  xmlNode *node;
+  
+  node = NULL;
+
+  //TODO:JK: implement me
+  
+  return(node);
+}
+
+xmlNode*
+ags_pattern_xml_compose(AgsConnectable *connectable)
+{
+  xmlNode *node;
+  
+  node = NULL;
+
+  //TODO:JK: implement me
+  
+  return(node);
+}
+
+void
+ags_pattern_xml_parse(AgsConnectable *connectable,
+		     xmlNode *node)
+{
+  //TODO:JK: implement me
+}
+
+gboolean
+ags_pattern_is_connected(AgsConnectable *connectable)
+{
+  AgsPattern *pattern;
+  
+  gboolean is_connected;
+
+  pthread_mutex_t *pattern_mutex;
+
+  pattern = AGS_PATTERN(connectable);
+
+  /* get pattern mutex */
+  pthread_mutex_lock(ags_pattern_get_class_mutex());
+  
+  pattern_mutex = pattern->obj_mutex;
+  
+  pthread_mutex_unlock(ags_pattern_get_class_mutex());
+
+  /* check is connected */
+  pthread_mutex_lock(pattern_mutex);
+
+  is_connected = (((AGS_PATTERN_CONNECTED & (pattern->flags)) != 0) ? TRUE: FALSE);
+  
+  pthread_mutex_unlock(pattern_mutex);
+  
+  return(is_connected);
+}
+
+void
+ags_pattern_connect(AgsConnectable *connectable)
+{
+  AgsPattern *pattern;
+
+  GList *list_start, *list;
+
+  pthread_mutex_t *pattern_mutex;
+
+  if(ags_connectable_is_connected(connectable)){
+    return;
+  }
+
+  pattern = AGS_PATTERN(connectable);
+
+  ags_pattern_set_flags(pattern, AGS_PATTERN_CONNECTED);  
+}
+
+void
+ags_pattern_disconnect(AgsConnectable *connectable)
+{
+  AgsPattern *pattern;
+
+  GList *list_start, *list;
+
+  pthread_mutex_t *pattern_mutex;
+
+  if(!ags_connectable_is_connected(connectable)){
+    return;
+  }
+
+  pattern = AGS_PATTERN(connectable);
+
+  ags_pattern_unset_flags(pattern, AGS_PATTERN_CONNECTED);    
 }
 
 /**

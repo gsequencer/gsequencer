@@ -199,7 +199,8 @@ ags_play_channel_run_set_property(GObject *gobject,
       gboolean is_template;
 
       stream_channel_run = (AgsStreamChannelRun *) g_value_get_object(value);
-
+      old_stream_channel_run = NULL;
+      
       pthread_mutex_lock(recall_mutex);
 
       if(stream_channel_run == play_channel_run->stream_channel_run){

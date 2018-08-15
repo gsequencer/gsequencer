@@ -69,6 +69,8 @@ struct _AgsPattern
   pthread_mutex_t *obj_mutex;
   pthread_mutexattr_t *obj_mutexattr;
 
+  AgsUUID *uuid;
+
   GObject *channel;
 
   AgsTimestamp *timestamp;

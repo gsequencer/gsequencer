@@ -403,13 +403,13 @@ ags_drum_input_line_map_recall(AgsLine *line,
     return;
   }
 
+  source = line->channel;
+  
   /* get some fields */
   g_object_get(source,
 	       "audio", &audio,
 	       "pad", &pad,
 	       "audio-channel", &audio_channel,
-	       "play", &start_play,
-	       "recall", &start_recall,
 	       NULL);
 
   /* ags-peak */
@@ -436,8 +436,12 @@ ags_drum_input_line_map_recall(AgsLine *line,
 			    0);
 
   /* set pattern object on port */
+  g_object_get(source,
+	       "recall", &start_recall,
+	       NULL);
+
   recall = ags_recall_template_find_type(start_recall,
-				       AGS_TYPE_COPY_PATTERN_CHANNEL);
+					 AGS_TYPE_COPY_PATTERN_CHANNEL);
 
   if(recall != NULL){
     GList *pattern;
@@ -465,6 +469,8 @@ ags_drum_input_line_map_recall(AgsLine *line,
     g_list_free(pattern);
   }
 
+  g_list_free(start_recall);
+  
   if(ags_recall_global_get_rt_safe()){
     ags_recall_factory_create(audio,
 			      NULL, NULL,
@@ -489,6 +495,10 @@ ags_drum_input_line_map_recall(AgsLine *line,
 			     AGS_RECALL_FACTORY_ADD),
 			    0);
 
+  g_object_get(source,
+	       "play", &start_play,
+	       NULL);
+
   play = start_play;
 
   while((play = ags_recall_find_type(play, AGS_TYPE_PLAY_CHANNEL)) != NULL){
@@ -510,6 +520,8 @@ ags_drum_input_line_map_recall(AgsLine *line,
     
     play = play->next;
   }
+
+  g_list_free(start_play);
   
   /* ags-volume */
   ags_recall_factory_create(audio,
@@ -549,6 +561,10 @@ ags_drum_input_line_map_recall(AgsLine *line,
 			      0);
 
     /* set up dependencies */
+    g_object_get(source,
+		 "play", &start_play,
+		 NULL);
+    
     play = ags_recall_find_type(start_play,
 				AGS_TYPE_PLAY_CHANNEL_RUN);
     play_channel_run = AGS_PLAY_CHANNEL_RUN(play->data);
@@ -560,6 +576,8 @@ ags_drum_input_line_map_recall(AgsLine *line,
     g_object_set(G_OBJECT(play_channel_run),
 		 "stream-channel-run", stream_channel_run,
 		 NULL);
+
+    g_list_free(start_play);
   }
   
   /* call parent */
