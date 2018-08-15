@@ -66,6 +66,7 @@ AgsRecall* ags_recall_channel_duplicate(AgsRecall *recall,
 
 enum{
   PROP_0,
+  PROP_RECALL_AUDIO,
   PROP_DESTINATION,
   PROP_SOURCE,
 };
@@ -129,6 +130,22 @@ ags_recall_channel_class_init(AgsRecallChannelClass *recall_channel)
   gobject->finalize = ags_recall_channel_finalize;
 
   /* properties */
+  /**
+   * AgsRecallChannel:recall-audio:
+   *
+   * The associated recall within audio context.
+   * 
+   * Since: 2.0.0
+   */
+  param_spec = g_param_spec_object("recall-audio",
+				   i18n_pspec("audio level recall"),
+				   i18n_pspec("The recall which this recall channel has on audio level"),
+				   AGS_TYPE_RECALL_AUDIO,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_RECALL_AUDIO,
+				  param_spec);
+
   /**
    * AgsRecallChannel:destination:
    *
@@ -204,6 +221,35 @@ ags_recall_channel_set_property(GObject *gobject,
   pthread_mutex_unlock(ags_recall_get_class_mutex());
 
   switch(prop_id){
+  case PROP_RECALL_AUDIO:
+    {
+      AgsRecallAudio *recall_audio;
+
+      GList *list_start, *list;
+      
+      recall_audio = (AgsRecallAudio *) g_value_get_object(value);
+
+      pthread_mutex_lock(recall_mutex);
+
+      if(recall_channel->recall_audio == (AgsRecall *) recall_audio){
+	pthread_mutex_unlock(recall_mutex);
+	
+	return;
+      }
+
+      if(recall_channel->recall_audio != NULL){
+	g_object_unref(G_OBJECT(recall_channel->recall_audio));
+      }
+
+      if(recall_audio != NULL){
+	g_object_ref(G_OBJECT(recall_audio));
+      }
+
+      recall_channel->recall_audio = (AgsRecall *) recall_audio;
+
+      pthread_mutex_unlock(recall_mutex);
+    }
+    break;
   case PROP_DESTINATION:
     {
       AgsChannel *destination;
@@ -284,6 +330,15 @@ ags_recall_channel_get_property(GObject *gobject,
   pthread_mutex_unlock(ags_recall_get_class_mutex());
 
   switch(prop_id){
+  case PROP_RECALL_AUDIO:
+    {
+      pthread_mutex_lock(recall_mutex);
+
+      g_value_set_object(value, recall_channel->recall_audio);
+
+      pthread_mutex_unlock(recall_mutex);
+    }
+    break;
   case PROP_DESTINATION:
     {
       pthread_mutex_lock(recall_mutex);

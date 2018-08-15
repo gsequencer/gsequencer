@@ -168,13 +168,13 @@ ags_export_thread_class_init(AgsExportThreadClass *export_thread)
    * 
    * Since: 2.0.0
    */
-  param_spec =  g_param_spec_int("tic",
-				 i18n_pspec("tic"),
-				 i18n_pspec("The tic"),
-				 0,
-				 G_MAXUINT,
-				 0,
-				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  param_spec =  g_param_spec_uint("tic",
+				  i18n_pspec("tic"),
+				  i18n_pspec("The tic"),
+				  0,
+				  G_MAXUINT,
+				  0,
+				  G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_TIC,
 				  param_spec);

@@ -157,11 +157,10 @@ ags_play_channel_run_master_class_init(AgsPlayChannelRunMasterClass *play_channe
    * 
    * Since: 2.0.0
    */
-  param_spec = g_param_spec_object("stream-channel-run",
-				   i18n_pspec("assigned AgsStreamChannelRun"),
-				   i18n_pspec("an assigned AgsStreamChannelRun"),
-				   AGS_TYPE_STREAM_CHANNEL_RUN,
-				   G_PARAM_WRITABLE);
+  param_spec = g_param_spec_pointer("stream-channel-run",
+				    i18n_pspec("assigned AgsStreamChannelRun"),
+				    i18n_pspec("an assigned AgsStreamChannelRun"),
+				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_STREAM_CHANNEL_RUN,
 				  param_spec);

@@ -309,8 +309,8 @@ ags_channel_class_init(AgsChannelClass *channel)
 				 i18n_pspec("output soundcard channel"),
 				 i18n_pspec("The output soundcard channel"),
 				 -1,
-				 G_MAXUINT32,
-				 0,
+				 G_MAXINT32,
+				 -1,
 				 G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_OUTPUT_SOUNDCARD_CHANNEL,
@@ -343,8 +343,8 @@ ags_channel_class_init(AgsChannelClass *channel)
 				 i18n_pspec("input soundcard channel"),
 				 i18n_pspec("The input soundcard channel"),
 				 -1,
-				 G_MAXUINT32,
-				 0,
+				 G_MAXINT32,
+				 -1,
 				 G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_INPUT_SOUNDCARD_CHANNEL,
@@ -7387,7 +7387,7 @@ ags_channel_add_recall(AgsChannel *channel, GObject *recall, gboolean play_conte
       if(AGS_IS_RECALL_CHANNEL(recall) ||
 	 AGS_IS_RECALL_CHANNEL_RUN(recall)){
 	g_object_set(recall,
-		     "channel", channel,
+		     "source", channel,
 		     NULL);
       }
     }
@@ -7415,7 +7415,7 @@ ags_channel_add_recall(AgsChannel *channel, GObject *recall, gboolean play_conte
       if(AGS_IS_RECALL_CHANNEL(recall) ||
 	 AGS_IS_RECALL_CHANNEL_RUN(recall)){
 	g_object_set(recall,
-		     "channel", channel,
+		     "source", channel,
 		     NULL);
       }
     }
@@ -10957,11 +10957,18 @@ ags_channel_recursive_set_property(AgsChannel *channel,
   void ags_channel_recursive_set_property_setv(AgsChannel *channel,
 					       gint n_params,
 					       gchar **parameter_name, GValue *value){
-    guint i;
-
+#if HAVE_GLIB_2_54    
     g_object_setv((GObject *) channel,
 		  n_params,
 		  parameter_name, value);
+#else
+    guint i;
+
+    for(i = 0; i < n_params; i++){
+      g_object_set_property(channel,
+			    parameter_name[i], &(value[i]));
+    }
+#endif
   }
   
   void ags_channel_recursive_set_property_down(AgsChannel *channel,

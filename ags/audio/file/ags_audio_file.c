@@ -1034,9 +1034,9 @@ ags_audio_file_flush(AgsAudioFile *audio_file)
  * @soundcard: defaults of #AgsSoundcard
  * @audio_channel: the audio channel to read
  *
- * Creates an #AgsAudioFile.
+ * Create a new instance of #AgsAudioFile.
  *
- * Returns: an empty #AgsAudioFile.
+ * Returns: the new #AgsAudioFile.
  *
  * Since: 2.0.0
  */

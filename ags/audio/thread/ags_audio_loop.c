@@ -1497,7 +1497,7 @@ ags_audio_loop_new(GObject *soundcard, GObject *application_context)
   AgsAudioLoop *audio_loop;
 
   audio_loop = (AgsAudioLoop *) g_object_new(AGS_TYPE_AUDIO_LOOP,
-					     "soundcard", soundcard,
+					     "default-output-soundcard", soundcard,
 					     NULL);
 
   if(application_context != NULL){

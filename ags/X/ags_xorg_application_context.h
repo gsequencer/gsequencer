@@ -77,6 +77,8 @@ struct _AgsXorgApplicationContext
   GList *sequencer;
 
   GList *sound_server;
+
+  GList *audio;
   
   AgsWindow *window;
 };

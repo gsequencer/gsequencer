@@ -344,8 +344,8 @@ ags_recall_class_init(AgsRecallClass *recall)
 				i18n_pspec("output soundcard channel"),
 				i18n_pspec("The output soundcard channel"),
 				-1,
-				G_MAXUINT32,
-				0,
+				G_MAXINT32,
+				-1,
 				G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_OUTPUT_SOUNDCARD_CHANNEL,
@@ -378,8 +378,8 @@ ags_recall_class_init(AgsRecallClass *recall)
 				i18n_pspec("input soundcard channel"),
 				i18n_pspec("The input soundcard channel"),
 				-1,
-				G_MAXUINT32,
-				0,
+				G_MAXINT32,
+				-1,
 				G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_INPUT_SOUNDCARD_CHANNEL,
@@ -5214,9 +5214,23 @@ ags_recall_real_duplicate(AgsRecall *recall,
 
   n_params[0] += 7;
   
+#if HAVE_GLIB_2_54    
   copy_recall = g_object_new_with_properties(G_OBJECT_TYPE(recall),
 					     n_params[0], parameter_name, value);
+#else
+  copy_recall = g_object_new(G_OBJECT_TYPE(recall),
+			     NULL);
 
+  {
+    guint i;
+
+    for(i = 0; i < n_params[0]; i++){
+      g_object_set_property(copy_recall,
+			    parameter_name[i], &(value[i]));
+    }
+  }
+#endif
+  
   /* free parameter name and value */
   g_free(parameter_name);
 

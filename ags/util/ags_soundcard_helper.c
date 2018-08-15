@@ -52,15 +52,15 @@ ags_soundcard_helper_config_get_dsp_channels(AgsConfig *config)
     return(AGS_SOUNDCARD_DEFAULT_DSP_CHANNELS);
   }
   
-  /* buffer-size */
+  /* dsp-channels */
   str = ags_config_get_value(config,
 			     AGS_CONFIG_SOUNDCARD,
-			     "buffer-size");
+			     "dsp-channels");
 
   if(str == NULL){
     str = ags_config_get_value(config,
 			       AGS_CONFIG_SOUNDCARD_0,
-			       "buffer-size");
+			       "dsp-channels");
   }
   
   if(str != NULL){
@@ -71,6 +71,8 @@ ags_soundcard_helper_config_get_dsp_channels(AgsConfig *config)
   }else{
     dsp_channels = AGS_SOUNDCARD_DEFAULT_DSP_CHANNELS;
   }
+
+  return(dsp_channels);
 }
 
 /**
@@ -94,15 +96,15 @@ ags_soundcard_helper_config_get_pcm_channels(AgsConfig *config)
     return(AGS_SOUNDCARD_DEFAULT_PCM_CHANNELS);
   }
   
-  /* buffer-size */
+  /* pcm-channels */
   str = ags_config_get_value(config,
 			     AGS_CONFIG_SOUNDCARD,
-			     "buffer-size");
+			     "pcm-channels");
 
   if(str == NULL){
     str = ags_config_get_value(config,
 			       AGS_CONFIG_SOUNDCARD_0,
-			       "buffer-size");
+			       "pcm-channels");
   }
   
   if(str != NULL){
@@ -113,6 +115,8 @@ ags_soundcard_helper_config_get_pcm_channels(AgsConfig *config)
   }else{
     pcm_channels = AGS_SOUNDCARD_DEFAULT_PCM_CHANNELS;
   }
+
+  return(pcm_channels);
 }
 
 /**
@@ -198,6 +202,8 @@ ags_soundcard_helper_config_get_buffer_size(AgsConfig *config)
   }else{
     buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
   }
+
+  return(buffer_size);
 }
 
 /**
@@ -221,23 +227,25 @@ ags_soundcard_helper_config_get_format(AgsConfig *config)
     return(AGS_SOUNDCARD_DEFAULT_FORMAT);
   }
   
-  /* buffer-size */
+  /* format */
   str = ags_config_get_value(config,
 			     AGS_CONFIG_SOUNDCARD,
-			     "buffer-size");
+			     "format");
 
   if(str == NULL){
     str = ags_config_get_value(config,
 			       AGS_CONFIG_SOUNDCARD_0,
-			       "buffer-size");
+			       "format");
   }
   
   if(str != NULL){
     format = g_ascii_strtoull(str,
-				   NULL,
-				   10);
+			      NULL,
+			      10);
     free(str);
   }else{
     format = AGS_SOUNDCARD_DEFAULT_FORMAT;
   }
+
+  return(format);
 }

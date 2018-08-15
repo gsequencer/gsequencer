@@ -137,7 +137,7 @@ ags_recall_container_class_init(AgsRecallContainerClass *recall_container)
 				   i18n_pspec("audio level recall"),
 				   i18n_pspec("The recall which this recall container has on audio level"),
 				   AGS_TYPE_RECALL_AUDIO,
-				   G_PARAM_WRITABLE);
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_RECALL_AUDIO,
 				  param_spec);
@@ -168,7 +168,7 @@ ags_recall_container_class_init(AgsRecallContainerClass *recall_container)
   param_spec = g_param_spec_pointer("recall-audio-run",
 				    i18n_pspec("audio runlevel recall"),
 				    i18n_pspec("The recall which this recall container has on audio level during a run"),
-				    G_PARAM_WRITABLE);
+				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_RECALL_AUDIO_RUN,
 				  param_spec);
@@ -199,7 +199,7 @@ ags_recall_container_class_init(AgsRecallContainerClass *recall_container)
  param_spec = g_param_spec_pointer("recall-channel",
 				   i18n_pspec("channel level recall"),
 				   i18n_pspec("The recall which this recall container has on channel level"),
-				   G_PARAM_WRITABLE);
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_RECALL_CHANNEL,
 				  param_spec);
@@ -230,7 +230,7 @@ ags_recall_container_class_init(AgsRecallContainerClass *recall_container)
   param_spec = g_param_spec_pointer("recall-channel-run",
 				    i18n_pspec("channel runlevel recall"),
 				    i18n_pspec("The recall which this recall container has on audio level during a run"),
-				    G_PARAM_WRITABLE);
+				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_RECALL_CHANNEL_RUN,
 				  param_spec);

@@ -383,9 +383,9 @@ ags_devout_class_init(AgsDevoutClass *devout)
   param_spec = g_param_spec_uint("samplerate",
 				 i18n_pspec("frames per second"),
 				 i18n_pspec("The frames count played during a second"),
-				 AGS_SOUNDCARD_MIN_SAMPLERATE,
-				 AGS_SOUNDCARD_MAX_SAMPLERATE,
-				 AGS_SOUNDCARD_DEFAULT_SAMPLERATE,
+				 (guint) AGS_SOUNDCARD_MIN_SAMPLERATE,
+				 (guint) AGS_SOUNDCARD_MAX_SAMPLERATE,
+				 (guint) AGS_SOUNDCARD_DEFAULT_SAMPLERATE,
 				 G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_SAMPLERATE,

@@ -97,6 +97,9 @@
 /* GLib 2.44 available */
 #undef HAVE_GLIB_2_44
 
+/* GLib 2.54 available */
+#undef HAVE_GLIB_2_54
+
 /* GLib 2.6 available */
 #undef HAVE_GLIB_2_6
 

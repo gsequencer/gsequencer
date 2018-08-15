@@ -275,7 +275,7 @@ ags_panel_input_line_set_channel(AgsLine *line, AgsChannel *channel)
   gchar *device;
   gchar *str;
 
-  guint output_soundcard_channel;
+  gint output_soundcard_channel;
 
   panel_input_line = AGS_PANEL_INPUT_LINE(line);
 
@@ -286,8 +286,14 @@ ags_panel_input_line_set_channel(AgsLine *line, AgsChannel *channel)
   /* update label */
   g_object_get(channel,
 	       "output-soundcard", &output_soundcard,
-	       "output-soundcard-channel", output_soundcard_channel,
+	       "output-soundcard-channel", &output_soundcard_channel,
 	       NULL);
+
+  if(output_soundcard_channel == -1){
+    g_object_get(channel,
+		 "line", &output_soundcard_channel,
+		 NULL);
+  }
   
   device = ags_soundcard_get_device(AGS_SOUNDCARD(output_soundcard));
 

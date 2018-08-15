@@ -222,6 +222,9 @@ AC_CHECK_LIB(glib-2.0, g_strv_length,
 	     AC_DEFINE([HAVE_GLIB_2_6], [1], [GLib 2.6 available]))
 AC_CHECK_LIB(glib-2.0, g_strv_contains,
 	     AC_DEFINE([HAVE_GLIB_2_44], [1], [GLib 2.44 available]))
+AC_CHECK_LIB(glib-2.0, g_object_setv,
+	     AC_DEFINE([HAVE_GLIB_2_54], [1], [GLib 2.54 available]))
+
 
 PKG_CHECK_MODULES([GIO], [gio-2.0 >= 2.32.3 glib-2.0 >= 2.32.3 gmodule-2.0 >= 2.32.3 gthread-2.0 >= 2.32.3])
 AC_SUBST(GIO_CFLAGS)
