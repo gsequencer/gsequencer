@@ -642,19 +642,14 @@ ags_ladspa_bridge_new(GObject *soundcard,
 		      gchar *effect)
 {
   AgsLadspaBridge *ladspa_bridge;
-  GValue value = {0,};
 
   ladspa_bridge = (AgsLadspaBridge *) g_object_new(AGS_TYPE_LADSPA_BRIDGE,
 						   NULL);
 
-  if(soundcard != NULL){
-    g_value_init(&value, G_TYPE_OBJECT);
-    g_value_set_object(&value, soundcard);
-    g_object_set_property(G_OBJECT(AGS_MACHINE(ladspa_bridge)->audio),
-			  "soundcard", &value);
-    g_value_unset(&value);
-  }
-
+  g_object_set(AGS_MACHINE(ladspa_bridge)->audio,
+	       "output-soundcard", soundcard,
+	       NULL);
+  
   g_object_set(ladspa_bridge,
 	       "filename", filename,
 	       "effect", effect,

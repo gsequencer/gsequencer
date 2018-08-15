@@ -2229,7 +2229,7 @@ ags_effect_bulk_add_lv2_effect(AgsEffectBulk *effect_bulk,
   k = 0;
 
   while(plugin_port != NULL){
-    if((AGS_PLUGIN_PORT_CONTROL & (AGS_PLUGIN_PORT(plugin_port->data)->flags)) != 0){
+    if(ags_plugin_port_test_flags(plugin_port->data, AGS_PLUGIN_PORT_CONTROL)){
       GtkWidget *child_widget;
 
       AgsLv2Conversion *lv2_conversion;

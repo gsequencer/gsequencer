@@ -398,10 +398,12 @@ ags_recall_audio_run_notify_recall_container_callback(GObject *gobject,
     g_object_get(recall_container,
 		 "recall-audio", &recall_audio,
 		 NULL);
-    
-    g_object_set(recall_audio_run,
-		 "recall-audio", recall_audio,
-		 NULL);
+
+    if(recall_audio != NULL){
+      g_object_set(recall_audio_run,
+		   "recall-audio", recall_audio,
+		   NULL);
+    }
   }else{
     g_object_set(recall_audio_run,
 		 "recall-audio", NULL,

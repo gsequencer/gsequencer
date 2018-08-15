@@ -1355,7 +1355,7 @@ ags_lv2_plugin_load_plugin(AgsBasePlugin *base_plugin)
 
     /* retrieve triple node */
     triple_node = g_hash_table_lookup(ags_lv2_manager_get_instance()->current_plugin_node,
-				      uuid);
+				      base_plugin->uuid);
     ags_uuid_free(uuid);
     
     if(triple_node == NULL){
@@ -1630,7 +1630,7 @@ ags_lv2_plugin_load_plugin(AgsBasePlugin *base_plugin)
 	
 	continue;
       }
-      
+
       /* properties */
       xpath = g_ascii_strdown(".//rdf-verb//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':portProperty') + 1) = ':portProperty']/ancestor::*[self::rdf-verb][1]/following-sibling::*[self::rdf-object-list][1]//rdf-pname-ln",
 			      -1);
@@ -1729,7 +1729,6 @@ ags_lv2_plugin_load_plugin(AgsBasePlugin *base_plugin)
 	current_plugin_port->scale_steps = g_list_length(list) - 1;
 
 	current_plugin_port->scale_point = malloc((current_plugin_port->scale_steps + 2) * sizeof(gchar *));
-	current_plugin_port->scale_value = malloc((current_plugin_port->scale_steps + 1) * sizeof(float));
       
 	for(i = 0; list != NULL; i++){
 	  gchar *str;
@@ -1759,7 +1758,9 @@ ags_lv2_plugin_load_plugin(AgsBasePlugin *base_plugin)
 	  list = ags_turtle_find_xpath_with_context_node(turtle,
 							 xpath,
 							 port_node);
-      
+
+	current_plugin_port->scale_value = malloc((g_list_length(list_start)) * sizeof(gdouble));
+	
 	for(i = 0; list != NULL; i++){
 	  gchar *str;
 	

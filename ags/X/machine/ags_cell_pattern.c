@@ -922,6 +922,7 @@ ags_cell_pattern_led_queue_draw_timeout(AgsCellPattern *cell_pattern)
     audio = machine->audio;
   
     /* get some recalls */
+    recall_id = NULL;
     g_object_get(audio,
 		 "recall-id", &list_start,
 		 NULL);
@@ -929,7 +930,6 @@ ags_cell_pattern_led_queue_draw_timeout(AgsCellPattern *cell_pattern)
     list = list_start;
     
     while(list != NULL){
-      recall_id = NULL;
       recall_id = ags_recall_id_find_parent_recycling_context(list,
 							      NULL);
       

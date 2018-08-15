@@ -309,7 +309,7 @@ ags_lv2_bridge_lv2ui_write_function(LV2UI_Controller controller, uint32_t port_i
     list_bulk_member_start = gtk_container_get_children((GtkContainer *) AGS_EFFECT_BULK(effect_bridge->bulk_input)->table);
 
   str = g_strdup_printf("%d/",
-			port_index);
+			port_index + 1);
 
   while(list_bulk_member != NULL){
     if(!g_ascii_strncasecmp(str,
@@ -662,6 +662,7 @@ ags_lv2_bridge_dial_changed_callback(GtkWidget *dial, AgsLv2Bridge *lv2_bridge)
   
   lv2_bridge->flags |= AGS_LV2_BRIDGE_NO_UPDATE;
 
+  port_index -= 1;
   lv2_bridge->ui_descriptor->port_event(lv2_bridge->ui_handle,
 					port_index,
 					sizeof(float),
@@ -699,6 +700,7 @@ ags_lv2_bridge_vscale_changed_callback(GtkWidget *vscale, AgsLv2Bridge *lv2_brid
   
   lv2_bridge->flags |= AGS_LV2_BRIDGE_NO_UPDATE;
 
+  port_index -= 1;
   lv2_bridge->ui_descriptor->port_event(lv2_bridge->ui_handle,
 					port_index,
 					sizeof(float),
@@ -736,6 +738,7 @@ ags_lv2_bridge_hscale_changed_callback(GtkWidget *hscale, AgsLv2Bridge *lv2_brid
   
   lv2_bridge->flags |= AGS_LV2_BRIDGE_NO_UPDATE;
 
+  port_index -= 1;
   lv2_bridge->ui_descriptor->port_event(lv2_bridge->ui_handle,
 					port_index,
 					sizeof(float),
@@ -773,6 +776,7 @@ ags_lv2_bridge_spin_button_changed_callback(GtkWidget *spin_button, AgsLv2Bridge
   
   lv2_bridge->flags |= AGS_LV2_BRIDGE_NO_UPDATE;
 
+  port_index -= 1;
   lv2_bridge->ui_descriptor->port_event(lv2_bridge->ui_handle,
 					port_index,
 					sizeof(float),
@@ -810,6 +814,7 @@ ags_lv2_bridge_check_button_clicked_callback(GtkWidget *check_button, AgsLv2Brid
   
   lv2_bridge->flags |= AGS_LV2_BRIDGE_NO_UPDATE;
 
+  port_index -= 1;
   lv2_bridge->ui_descriptor->port_event(lv2_bridge->ui_handle,
 					port_index,
 					sizeof(float),
@@ -847,6 +852,7 @@ ags_lv2_bridge_toggle_button_clicked_callback(GtkWidget *toggle_button, AgsLv2Br
   
   lv2_bridge->flags |= AGS_LV2_BRIDGE_NO_UPDATE;
 
+  port_index -= 1;
   lv2_bridge->ui_descriptor->port_event(lv2_bridge->ui_handle,
 					port_index,
 					sizeof(float),
@@ -882,6 +888,7 @@ ags_lv2_bridge_button_clicked_callback(GtkWidget *button, AgsLv2Bridge *lv2_brid
   
   lv2_bridge->flags |= AGS_LV2_BRIDGE_NO_UPDATE;
 
+  port_index -= 1;
   lv2_bridge->ui_descriptor->port_event(lv2_bridge->ui_handle,
 					port_index,
 					sizeof(float),

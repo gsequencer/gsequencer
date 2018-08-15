@@ -136,16 +136,6 @@ ags_uuid_compare(AgsUUID *a,
 {
   gint retval;
   
-  if(a == NULL &&
-     b == NULL){
-    return(TRUE);
-  }
-
-  if(a == NULL ||
-     b == NULL){
-    return(FALSE);
-  }
-
   retval = uuid_compare(a[0],
 			b[0]);
 

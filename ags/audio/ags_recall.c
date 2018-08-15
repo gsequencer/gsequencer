@@ -5533,8 +5533,6 @@ ags_recall_find_recall_id_with_effect(GList *recall, AgsRecallID *recall_id, gch
   AgsRecallID *current_recall_id;
   AgsRecyclingContext *recycling_context;
   AgsRecyclingContext *current_recycling_context;
-  
-  GList *list;
 
   gchar *current_filename, *current_effect;
   
@@ -5565,7 +5563,7 @@ ags_recall_find_recall_id_with_effect(GList *recall, AgsRecallID *recall_id, gch
       
     pthread_mutex_unlock(recall_id_mutex);
   }
-
+  
   while(recall != NULL){
     current_recall = AGS_RECALL(recall->data);
 
@@ -5612,13 +5610,11 @@ ags_recall_find_recall_id_with_effect(GList *recall, AgsRecallID *recall_id, gch
 	 !g_strcmp0(current_effect, effect)){
 	if(recall_id == NULL){
 	  if(current_recall_id == NULL){
-	    list = g_list_prepend(list,
-				  current_recall);
+	    return(recall);
 	  }
 	}else{
 	  if(recycling_context == current_recycling_context){
-	    list = g_list_prepend(list,
-				  current_recall);
+	    return(recall);
 	  }
 	}
       }
@@ -5629,13 +5625,11 @@ ags_recall_find_recall_id_with_effect(GList *recall, AgsRecallID *recall_id, gch
 	 !g_strcmp0(current_effect, effect)){
 	if(recall_id == NULL){
 	  if(current_recall_id == NULL){
-	    list = g_list_prepend(list,
-				  current_recall);
+	    return(recall);
 	  }
 	}else{
 	  if(recycling_context == current_recycling_context){
-	    list = g_list_prepend(list,
-				  current_recall);
+	    return(recall);
 	  }
 	}
       }

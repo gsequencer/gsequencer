@@ -703,7 +703,7 @@ ags_lv2_manager_load_file(AgsLv2Manager *lv2_manager,
   //  xmlSaveFormatFileEnc("-", turtle->doc, "UTF-8", 1);
   
   /* parse lv2 plugin */
-  lv2_manager->current_plugin_node = g_hash_table_new_full(g_direct_hash, ags_uuid_compare,
+  lv2_manager->current_plugin_node = g_hash_table_new_full(g_direct_hash, g_direct_equal,
 							   NULL,
 							   NULL);
 

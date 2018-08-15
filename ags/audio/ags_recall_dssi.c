@@ -409,6 +409,8 @@ ags_recall_dssi_set_ports(AgsPlugin *plugin, GList *port)
 	
 	default_value = g_new0(GValue,
 			       1);
+	g_value_init(default_value,
+		     G_TYPE_FLOAT);
 	
 	pthread_mutex_lock(plugin_port_mutex);
 
@@ -722,6 +724,11 @@ ags_recall_dssi_load_ports(AgsRecallDssi *recall_dssi)
 	pthread_mutex_lock(plugin_port_mutex);
 
 	specifier = g_strdup(current_plugin_port->port_name);
+
+	default_value = g_new0(GValue,
+			       1);
+	g_value_init(default_value,
+		     G_TYPE_FLOAT);
 	g_value_copy(current_plugin_port->default_value,
 		     default_value);
 	

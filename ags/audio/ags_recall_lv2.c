@@ -618,7 +618,9 @@ ags_recall_lv2_set_ports(AgsPlugin *plugin, GList *port)
 
 	default_value = g_new0(GValue,
 			       1);
-	
+	g_value_init(default_value,
+		     G_TYPE_FLOAT);
+		
 	pthread_mutex_lock(plugin_port_mutex);
 
 	specifier = g_strdup(current_plugin_port->port_name);
@@ -1090,7 +1092,9 @@ ags_recall_lv2_load_ports(AgsRecallLv2 *recall_lv2)
 
 	default_value = g_new0(GValue,
 			       1);
-	
+	g_value_init(default_value,
+		     G_TYPE_FLOAT);
+		
 	pthread_mutex_lock(plugin_port_mutex);
 
 	specifier = g_strdup(current_plugin_port->port_name);
@@ -1348,7 +1352,7 @@ ags_recall_lv2_new(AgsChannel *source,
 					     "filename", filename,
 					     "effect", effect,
 					     "uri", uri,
-					     "index", index,
+					     "effect-index", index,
 					     NULL);
 
   return(recall_lv2);

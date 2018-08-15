@@ -263,6 +263,8 @@ ags_recall_ladspa_set_ports(AgsPlugin *plugin, GList *port)
 	/* get specifier and default value */
 	default_value = g_new0(GValue,
 			       1);
+	g_value_init(default_value,
+		     G_TYPE_FLOAT);
 	
 	pthread_mutex_lock(plugin_port_mutex);
 
@@ -573,6 +575,8 @@ ags_recall_ladspa_load_ports(AgsRecallLadspa *recall_ladspa)
 
 	default_value = g_new0(GValue,
 			       1);
+	g_value_init(default_value,
+		     G_TYPE_FLOAT);
 	
 	pthread_mutex_lock(plugin_port_mutex);
 

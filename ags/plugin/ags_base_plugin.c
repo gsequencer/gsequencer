@@ -467,7 +467,7 @@ ags_base_plugin_init(AgsBasePlugin *base_plugin)
 
   /*  */
   base_plugin->uuid = NULL;
-
+  
   base_plugin->filename = NULL;
   base_plugin->effect = NULL;
 

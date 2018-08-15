@@ -567,8 +567,6 @@ ags_matrix_map_recall(AgsMachine *machine)
 	       "input", &input,
 	       "input-pads", &input_pads,
 	       "audio-channels", &audio_channels,
-	       "play", &start_play,
-	       "recall", &start_recall,
 	       NULL);
 
   /* ags-delay */
@@ -581,6 +579,10 @@ ags_matrix_map_recall(AgsMachine *machine)
 			     AGS_RECALL_FACTORY_ADD |
 			     AGS_RECALL_FACTORY_PLAY),
 			    0);
+  
+  g_object_get(audio,
+	       "play", &start_play,
+	       NULL);
 
   play = ags_recall_find_type(start_play,
 			      AGS_TYPE_DELAY_AUDIO_RUN);
@@ -591,6 +593,8 @@ ags_matrix_map_recall(AgsMachine *machine)
   }else{
     play_delay_audio_run = NULL;
   }
+
+  g_list_free(start_play);
   
   /* ags-count-beats */
   ags_recall_factory_create(audio,
@@ -602,6 +606,10 @@ ags_matrix_map_recall(AgsMachine *machine)
 			     AGS_RECALL_FACTORY_ADD |
 			     AGS_RECALL_FACTORY_PLAY),
 			    0);
+
+  g_object_get(audio,
+	       "play", &start_play,
+	       NULL);
 
   play = ags_recall_find_type(start_play,
 			      AGS_TYPE_COUNT_BEATS_AUDIO_RUN);
@@ -625,6 +633,8 @@ ags_matrix_map_recall(AgsMachine *machine)
     play_count_beats_audio_run = NULL;
   }
 
+  g_list_free(start_play);
+  
   /* ags-copy-pattern */
   ags_recall_factory_create(audio,
 			    NULL, NULL,
@@ -635,6 +645,10 @@ ags_matrix_map_recall(AgsMachine *machine)
 			     AGS_RECALL_FACTORY_ADD |
 			     AGS_RECALL_FACTORY_RECALL),
 			    0);
+
+  g_object_get(audio,
+	       "recall", &start_recall,
+	       NULL);
 
   recall = ags_recall_find_type(start_recall,
 			      AGS_TYPE_COPY_PATTERN_AUDIO_RUN);
@@ -650,6 +664,8 @@ ags_matrix_map_recall(AgsMachine *machine)
 
   }
 
+  g_list_free(start_recall);
+  
   /* set pattern object on port */
   channel = ags_channel_pad_nth(input,
 				0);
@@ -713,8 +729,12 @@ ags_matrix_map_recall(AgsMachine *machine)
 			     AGS_RECALL_FACTORY_RECALL),
 			    0);
 
+  g_object_get(audio,
+	       "recall", &start_recall,
+	       NULL);
+
   recall = ags_recall_find_type(start_recall,
-			      AGS_TYPE_RECORD_MIDI_AUDIO_RUN);
+				AGS_TYPE_RECORD_MIDI_AUDIO_RUN);
 
   if(recall != NULL){
     recall_record_midi_audio_run = AGS_RECORD_MIDI_AUDIO_RUN(recall->data);
@@ -730,6 +750,8 @@ ags_matrix_map_recall(AgsMachine *machine)
 		 NULL);
   }  
 
+  g_list_free(start_recall);
+  
   /* ags-play-notation */
   ags_recall_factory_create(audio,
 			    NULL, NULL,
@@ -740,6 +762,10 @@ ags_matrix_map_recall(AgsMachine *machine)
 			     AGS_RECALL_FACTORY_ADD |
 			     AGS_RECALL_FACTORY_RECALL),
 			    0);
+
+  g_object_get(audio,
+	       "recall", &start_recall,
+	       NULL);
 
   recall = ags_recall_find_type(start_recall,
 				AGS_TYPE_PLAY_NOTATION_AUDIO_RUN);
@@ -758,7 +784,6 @@ ags_matrix_map_recall(AgsMachine *machine)
 		 NULL);
   }
 
-  g_list_free(start_play);
   g_list_free(start_recall);
   
   /* depending on destination */

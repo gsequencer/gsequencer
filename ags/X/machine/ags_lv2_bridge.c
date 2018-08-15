@@ -44,8 +44,10 @@ void ags_lv2_bridge_get_property(GObject *gobject,
 				 GValue *value,
 				 GParamSpec *param_spec);
 void ags_lv2_bridge_finalize(GObject *gobject);
+
 void ags_lv2_bridge_connect(AgsConnectable *connectable);
 void ags_lv2_bridge_disconnect(AgsConnectable *connectable);
+
 gchar* ags_lv2_bridge_get_version(AgsPlugin *plugin);
 void ags_lv2_bridge_set_version(AgsPlugin *plugin, gchar *version);
 gchar* ags_lv2_bridge_get_build_id(AgsPlugin *plugin);
@@ -994,15 +996,17 @@ ags_lv2_bridge_resize_audio_channels(AgsMachine *machine,
 		     "first-recycling", &first_recycling,
 		     NULL);
 
-	/* audio signal */
-	audio_signal = ags_audio_signal_new(output_soundcard,
-					    (GObject *) first_recycling,
-					    NULL);
-	audio_signal->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;
-	ags_audio_signal_stream_resize(audio_signal,
-				       1);
-	ags_recycling_add_audio_signal(first_recycling,
-				       audio_signal);
+	if(first_recycling != NULL){
+	  /* audio signal */
+	  audio_signal = ags_audio_signal_new(output_soundcard,
+					      (GObject *) first_recycling,
+					      NULL);
+	  audio_signal->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;
+	  ags_audio_signal_stream_resize(audio_signal,
+					 1);
+	  ags_recycling_add_audio_signal(first_recycling,
+					 audio_signal);
+	}
 	
 	/* iterate */
 	g_object_get(channel,
@@ -1030,15 +1034,17 @@ ags_lv2_bridge_resize_audio_channels(AgsMachine *machine,
 		     "first-recycling", &first_recycling,
 		     NULL);
 
-	/* audio signal */
-	audio_signal = ags_audio_signal_new(output_soundcard,
-					    (GObject *) first_recycling,
-					    NULL);
-	audio_signal->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;
-	ags_audio_signal_stream_resize(audio_signal,
-				       3);
-	ags_recycling_add_audio_signal(first_recycling,
-				       audio_signal);
+	if(first_recycling != NULL){
+	  /* audio signal */
+	  audio_signal = ags_audio_signal_new(output_soundcard,
+					      (GObject *) first_recycling,
+					      NULL);
+	  audio_signal->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;
+	  ags_audio_signal_stream_resize(audio_signal,
+					 3);
+	  ags_recycling_add_audio_signal(first_recycling,
+					 audio_signal);
+	}
 	
 	/* iterate */
 	g_object_get(channel,
@@ -1115,15 +1121,17 @@ ags_lv2_bridge_resize_pads(AgsMachine *machine, GType channel_type,
 		     NULL);
 
 
-	/* audio signal */
-	audio_signal = ags_audio_signal_new(output_soundcard,
-					    (GObject *) first_recycling,
-					    NULL);
-	audio_signal->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;
-	ags_audio_signal_stream_resize(audio_signal,
-				       1);
-	ags_recycling_add_audio_signal(first_recycling,
-				       audio_signal);
+	if(first_recycling != NULL){
+	  /* audio signal */
+	  audio_signal = ags_audio_signal_new(output_soundcard,
+					      (GObject *) first_recycling,
+					      NULL);
+	  audio_signal->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;
+	  ags_audio_signal_stream_resize(audio_signal,
+					 1);
+	  ags_recycling_add_audio_signal(first_recycling,
+					 audio_signal);
+	}
 	
 	/* iterate */
 	g_object_get(channel,
@@ -1153,15 +1161,17 @@ ags_lv2_bridge_resize_pads(AgsMachine *machine, GType channel_type,
 		     "first-recycling", &first_recycling,
 		     NULL);
 
-	/* audio signal */
-	audio_signal = ags_audio_signal_new(output_soundcard,
-					    (GObject *) first_recycling,
-					    NULL);
-	audio_signal->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;
-	ags_audio_signal_stream_resize(audio_signal,
-				       3);
-	ags_recycling_add_audio_signal(first_recycling,
-				       audio_signal);
+	if(first_recycling != NULL){
+	  /* audio signal */
+	  audio_signal = ags_audio_signal_new(output_soundcard,
+					      (GObject *) first_recycling,
+					      NULL);
+	  audio_signal->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;
+	  ags_audio_signal_stream_resize(audio_signal,
+					 3);
+	  ags_recycling_add_audio_signal(first_recycling,
+					 audio_signal);
+	}
 	
 	/* iterate */
 	g_object_get(channel,

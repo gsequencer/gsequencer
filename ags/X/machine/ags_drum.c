@@ -520,6 +520,8 @@ ags_drum_map_recall(AgsMachine *machine)
   GList *start_play, *play;
   GList *start_recall, *recall;
   
+  GValue value = {0,};
+
   if((AGS_MACHINE_MAPPED_RECALL & (machine->flags)) != 0 ||
      (AGS_MACHINE_PREMAPPED_RECALL & (machine->flags)) != 0){
     return;
@@ -529,11 +531,6 @@ ags_drum_map_recall(AgsMachine *machine)
 						 AGS_TYPE_WINDOW);
   
   audio = machine->audio;
-
-  g_object_get(audio,
-	       "play", &start_play,
-	       "recall", &start_recall,
-	       NULL);
 
   /* ags-delay */
   ags_recall_factory_create(audio,
@@ -546,6 +543,10 @@ ags_drum_map_recall(AgsMachine *machine)
 			     AGS_RECALL_FACTORY_PLAY),
 			    0);
 
+  g_object_get(audio,
+	       "play", &start_play,
+	       NULL);
+
   play = ags_recall_find_type(start_play,
 			      AGS_TYPE_DELAY_AUDIO_RUN);
 
@@ -555,6 +556,8 @@ ags_drum_map_recall(AgsMachine *machine)
   }else{
     play_delay_audio_run = NULL;
   }
+
+  g_list_free(start_play);
   
   /* ags-count-beats */
   ags_recall_factory_create(audio,
@@ -567,6 +570,10 @@ ags_drum_map_recall(AgsMachine *machine)
 			     AGS_RECALL_FACTORY_PLAY),
 			    0);
   
+  g_object_get(audio,
+	       "play", &start_play,
+	       NULL);
+
   play = ags_recall_find_type(start_play,
 			      AGS_TYPE_COUNT_BEATS_AUDIO_RUN);
 
@@ -580,10 +587,17 @@ ags_drum_map_recall(AgsMachine *machine)
     ags_seekable_seek(AGS_SEEKABLE(play_count_beats_audio_run),
 		      window->navigation->position_tact->adjustment->value,
 		      TRUE);
+
+    g_value_init(&value, G_TYPE_BOOLEAN);
+    g_value_set_boolean(&value, gtk_toggle_button_get_active((GtkToggleButton *) window->navigation->loop));
+    ags_port_safe_write(AGS_COUNT_BEATS_AUDIO(AGS_RECALL_AUDIO_RUN(play_count_beats_audio_run)->recall_audio)->notation_loop,
+			&value);
   }else{
     play_count_beats_audio_run = NULL;
   }
 
+  g_list_free(start_play);
+  
   /* ags-copy-pattern */
   ags_recall_factory_create(audio,
 			    NULL, NULL,
@@ -594,6 +608,10 @@ ags_drum_map_recall(AgsMachine *machine)
 			     AGS_RECALL_FACTORY_REMAP |
 			     AGS_RECALL_FACTORY_RECALL),
 			    0);
+
+  g_object_get(audio,
+	       "recall", &start_recall,
+	       NULL);
 
   recall = ags_recall_find_type(start_recall,
 				AGS_TYPE_COPY_PATTERN_AUDIO_RUN);
@@ -608,6 +626,8 @@ ags_drum_map_recall(AgsMachine *machine)
 		 NULL);
   }
 
+  g_list_free(start_recall);
+  
   /* ags-record-midi */
   ags_recall_factory_create(audio,
 			    NULL, NULL,
@@ -618,6 +638,10 @@ ags_drum_map_recall(AgsMachine *machine)
 			     AGS_RECALL_FACTORY_ADD |
 			     AGS_RECALL_FACTORY_RECALL),
 			    0);
+
+  g_object_get(audio,
+	       "recall", &start_recall,
+	       NULL);
 
   recall = ags_recall_find_type(start_recall,
 				AGS_TYPE_RECORD_MIDI_AUDIO_RUN);
@@ -636,6 +660,8 @@ ags_drum_map_recall(AgsMachine *machine)
 		 NULL);
   }  
 
+  g_list_free(start_recall);
+  
   /* ags-play-notation */
   ags_recall_factory_create(audio,
 			    NULL, NULL,
@@ -646,6 +672,10 @@ ags_drum_map_recall(AgsMachine *machine)
 			     AGS_RECALL_FACTORY_ADD |
 			     AGS_RECALL_FACTORY_RECALL),
 			    0);
+
+  g_object_get(audio,
+	       "recall", &start_recall,
+	       NULL);
 
   recall = ags_recall_find_type(start_recall,
 				AGS_TYPE_PLAY_NOTATION_AUDIO_RUN);
@@ -664,7 +694,6 @@ ags_drum_map_recall(AgsMachine *machine)
 		 NULL);
   }
 
-  g_list_free(start_play);
   g_list_free(start_recall);
   
   /* call parent */
