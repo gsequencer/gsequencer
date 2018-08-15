@@ -863,6 +863,111 @@ ags_port_get_class_mutex()
   return(&ags_port_class_mutex);
 }
 
+/**
+ * ags_port_test_flags:
+ * @port: the #AgsPort
+ * @flags: the flags
+ *
+ * Test @flags to be set on @port.
+ * 
+ * Returns: %TRUE if flags are set, else %FALSE
+ *
+ * Since: 2.0.0
+ */
+gboolean
+ags_port_test_flags(AgsPort *port, guint flags)
+{
+  gboolean retval;  
+  
+  pthread_mutex_t *port_mutex;
+
+  if(!AGS_IS_PORT(port)){
+    return(FALSE);
+  }
+
+  /* get port mutex */
+  pthread_mutex_lock(ags_port_get_class_mutex());
+  
+  port_mutex = port->obj_mutex;
+  
+  pthread_mutex_unlock(ags_port_get_class_mutex());
+
+  /* test */
+  pthread_mutex_lock(port_mutex);
+
+  retval = (flags & (port->flags)) ? TRUE: FALSE;
+  
+  pthread_mutex_unlock(port_mutex);
+
+  return(retval);
+}
+
+/**
+ * ags_port_set_flags:
+ * @port: the #AgsPort
+ * @flags: the flags
+ *
+ * Set flags.
+ * 
+ * Since: 2.0.0
+ */
+void
+ags_port_set_flags(AgsPort *port, guint flags)
+{
+  pthread_mutex_t *port_mutex;
+
+  if(!AGS_IS_PORT(port)){
+    return;
+  }
+
+  /* get port mutex */
+  pthread_mutex_lock(ags_port_get_class_mutex());
+  
+  port_mutex = port->obj_mutex;
+  
+  pthread_mutex_unlock(ags_port_get_class_mutex());
+
+  /* set flags */
+  pthread_mutex_lock(port_mutex);
+
+  port->flags |= flags;
+
+  pthread_mutex_unlock(port_mutex);
+}
+
+/**
+ * ags_port_unset_flags:
+ * @port: the #AgsPort
+ * @flags: the flags
+ *
+ * Unset flags.
+ * 
+ * Since: 2.0.0
+ */
+void
+ags_port_unset_flags(AgsPort *port, guint flags)
+{
+  pthread_mutex_t *port_mutex;
+
+  if(!AGS_IS_PORT(port)){
+    return;
+  }
+
+  /* get port mutex */
+  pthread_mutex_lock(ags_port_get_class_mutex());
+  
+  port_mutex = port->obj_mutex;
+  
+  pthread_mutex_unlock(ags_port_get_class_mutex());
+
+  /* set flags */
+  pthread_mutex_lock(port_mutex);
+
+  port->flags &= (~flags);
+
+  pthread_mutex_unlock(port_mutex);
+}
+
 void
 ags_port_real_safe_read(AgsPort *port, GValue *value)
 {
@@ -980,6 +1085,102 @@ ags_port_safe_read(AgsPort *port, GValue *value)
 		port_signals[SAFE_READ], 0,
 		value);
   g_object_unref(G_OBJECT(port));
+}
+
+/**
+ * ags_port_safe_read_raw:
+ * @port: an #AgsPort
+ * @value: the #GValue to store result
+ *
+ * Perform safe read.
+ *
+ * Since: 2.0.0
+ */
+void
+ags_port_safe_read_raw(AgsPort *port, GValue *value)
+{
+  guint overall_size;
+  gpointer data;
+
+  pthread_mutex_t *port_mutex;
+
+  /* get port mutex */
+  pthread_mutex_lock(ags_port_get_class_mutex());
+  
+  port_mutex = port->obj_mutex;
+  
+  pthread_mutex_unlock(ags_port_get_class_mutex());
+
+  /* safe read */
+  pthread_mutex_lock(port_mutex);
+
+  overall_size = port->port_value_length * port->port_value_size;
+
+  if(!port->port_value_is_pointer){
+    if(port->port_value_type == G_TYPE_BOOLEAN){
+      g_value_set_boolean(value, port->port_value.ags_port_boolean);
+    }else if(port->port_value_type == G_TYPE_INT64){
+      g_value_set_int64(value, port->port_value.ags_port_int);
+    }else if(port->port_value_type == G_TYPE_UINT64){
+      g_value_set_uint64(value, port->port_value.ags_port_uint);
+    }else if(port->port_value_type == G_TYPE_FLOAT){
+      gfloat new_value;
+      
+      new_value = port->port_value.ags_port_float;
+      
+      g_value_set_float(value, new_value);
+    }else if(port->port_value_type == G_TYPE_DOUBLE){
+      gdouble new_value;
+      
+      new_value = port->port_value.ags_port_double;
+      
+      g_value_set_double(value, new_value);
+    }else{
+      data = NULL;
+      
+      if(port->port_value_type == G_TYPE_POINTER){
+	data = port->port_value.ags_port_pointer;
+      }else if(port->port_value_type == G_TYPE_OBJECT){
+	data = port->port_value.ags_port_object;
+      }
+
+      g_value_set_pointer(value, data);
+    }
+  }else{
+    data = NULL;
+    
+    if(port->port_value_type == G_TYPE_POINTER){
+      data = port->port_value.ags_port_pointer;
+    }else if(port->port_value_type == G_TYPE_OBJECT){
+      data = port->port_value.ags_port_object;
+    }else{
+      data = (gpointer) malloc(overall_size);
+
+      if(port->port_value_type == G_TYPE_BOOLEAN){
+	memcpy(data, port->port_value.ags_port_boolean_ptr, overall_size);
+      }else if(port->port_value_type == G_TYPE_INT64){
+	memcpy(data, port->port_value.ags_port_int_ptr, overall_size);
+      }else if(port->port_value_type == G_TYPE_UINT64){
+	memcpy(data, port->port_value.ags_port_uint_ptr, overall_size);
+      }else if(port->port_value_type == G_TYPE_FLOAT){
+	guint i;
+
+	for(i = 0; i < port->port_value_length; i++){
+	  ((gfloat *) data)[i] = port->port_value.ags_port_float_ptr[i];
+	}
+      }else if(port->port_value_type == G_TYPE_DOUBLE){
+	guint i;
+
+	for(i = 0; i < port->port_value_length; i++){
+	  ((gdouble *) data)[i] = port->port_value.ags_port_double_ptr[i];
+	}
+      }
+    }
+   
+    g_value_set_pointer(value, data);
+  }
+  
+  pthread_mutex_unlock(port_mutex);
 }
 
 void

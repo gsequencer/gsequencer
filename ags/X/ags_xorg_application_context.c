@@ -1725,9 +1725,6 @@ ags_xorg_application_context_register_types(AgsApplicationContext *application_c
   ags_audio_loop_get_type();
   ags_soundcard_thread_get_type();
   ags_export_thread_get_type();
-  ags_record_thread_get_type();
-  ags_iterator_thread_get_type();
-  ags_recycling_thread_get_type();
 
   /*  */
   ags_audio_file_get_type();

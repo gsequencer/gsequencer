@@ -4059,9 +4059,8 @@ ags_audio_set_flags(AgsAudio *audio, guint flags)
 		     "channel", channel,
 		     NULL);
 	  
-	ags_channel_set_recycling(channel,
-				  first_recycling, last_recycling,
-				  TRUE, TRUE);
+	ags_channel_reset_recycling(channel,
+				    first_recycling, last_recycling);
       }
       
       /* iterate */
@@ -4152,9 +4151,8 @@ ags_audio_unset_flags(AgsAudio *audio, guint flags)
       g_object_run_dispose(first_recycling);
       g_object_unref(first_recycling);
 	  
-      ags_channel_set_recycling(channel,
-				NULL, NULL,
-				TRUE, TRUE);
+      ags_channel_reset_recycling(channel,
+				  NULL, NULL);
       
       /* iterate */
       pthread_mutex_lock(channel_mutex);
@@ -4208,9 +4206,8 @@ ags_audio_unset_flags(AgsAudio *audio, guint flags)
 	g_object_run_dispose(first_recycling);
 	g_object_unref(first_recycling);
 	  
-	ags_channel_set_recycling(channel,
-				  NULL, NULL,
-				  TRUE, TRUE);
+	ags_channel_reset_recycling(channel,
+				    NULL, NULL);
       }
       
       /* iterate */
@@ -5176,9 +5173,8 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
 		       "channel", channel,
 		       NULL);
 	  
-	  ags_channel_set_recycling(channel,
-				    first_recycling, last_recycling,
-				    TRUE, TRUE);
+	  ags_channel_reset_recycling(channel,
+				      first_recycling, last_recycling);
 	}else if(set_sync_link){
 	  AgsChannel *input;
 
@@ -5196,9 +5192,8 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
 	    first_recycling = input->first_recycling;
 	    last_recycling = input->last_recycling;
 	    
-	    ags_channel_set_recycling(channel,
-				      first_recycling, last_recycling,
-				      TRUE, TRUE);
+	    ags_channel_reset_recycling(channel,
+					first_recycling, last_recycling);
 	  }
 	}else if(set_async_link){
 	  AgsChannel *input, *input_pad_last;
@@ -5219,9 +5214,8 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
 	    first_recycling = input->first_recycling;
 	    last_recycling = input_pad_last->last_recycling;
 	    
-	    ags_channel_set_recycling(channel,
-				      first_recycling, last_recycling,
-				      TRUE, TRUE);
+	    ags_channel_reset_recycling(channel,
+					first_recycling, last_recycling);
 	  }
 	}
       }
@@ -6028,9 +6022,8 @@ ags_audio_real_set_pads(AgsAudio *audio,
 		       "channel", channel,
 		       NULL);
 	  
-	  ags_channel_set_recycling(channel,
-				    first_recycling, last_recycling,
-				    TRUE, TRUE);
+	  ags_channel_reset_recycling(channel,
+				      first_recycling, last_recycling);
 	}else if(set_sync_link){
 	  AgsChannel *input;
 
@@ -6048,9 +6041,8 @@ ags_audio_real_set_pads(AgsAudio *audio,
 	    first_recycling = input->first_recycling;
 	    last_recycling = input->last_recycling;
 	    
-	    ags_channel_set_recycling(channel,
-				      first_recycling, last_recycling,
-				      TRUE, TRUE);
+	    ags_channel_reset_recycling(channel,
+					first_recycling, last_recycling);
 	  }
 	}else if(set_async_link){
 	  AgsChannel *input, *input_pad_last;
@@ -6071,9 +6063,8 @@ ags_audio_real_set_pads(AgsAudio *audio,
 	    first_recycling = input->first_recycling;
 	    last_recycling = input_pad_last->last_recycling;
 	    
-	    ags_channel_set_recycling(channel,
-				      first_recycling, last_recycling,
-				      TRUE, TRUE);
+	    ags_channel_reset_recycling(channel,
+					first_recycling, last_recycling);
 	  }
 	}
       }
@@ -8678,7 +8669,7 @@ ags_audio_duplicate_recall(AgsAudio *audio,
 			   guint pad, guint audio_channel,
 			   guint line)
 {  
-  g_return_val_if_fail(AGS_IS_AUDIO(audio), NULL);
+  g_return_if_fail(AGS_IS_AUDIO(audio));
 
   g_object_ref((GObject *) audio);
   g_signal_emit(G_OBJECT(audio),
@@ -8829,7 +8820,7 @@ void
 ags_audio_resolve_recall(AgsAudio *audio,
 			 AgsRecallID *recall_id)
 {  
-  g_return_val_if_fail(AGS_IS_AUDIO(audio), NULL);
+  g_return_if_fail(AGS_IS_AUDIO(audio));
 
   g_object_ref((GObject *) audio);
   g_signal_emit(G_OBJECT(audio),

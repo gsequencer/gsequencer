@@ -29,7 +29,6 @@
 
 void ags_rt_stream_channel_run_class_init(AgsRtStreamChannelRunClass *rt_stream_channel_run);
 void ags_rt_stream_channel_run_init(AgsRtStreamChannelRun *rt_stream_channel_run);
-void ags_rt_stream_channel_run_finalize(GObject *gobject);
 
 void ags_rt_stream_channel_run_check_rt_data(AgsRecall *recall);
 void ags_rt_stream_channel_run_done(AgsRecall *recall);
@@ -83,8 +82,6 @@ ags_rt_stream_channel_run_class_init(AgsRtStreamChannelRunClass *rt_stream_chann
 
   /* GObjectClass */
   gobject = (GObjectClass *) rt_stream_channel_run;
-
-  gobject->finalize = ags_rt_stream_channel_run_finalize;
 
   /* AgsRecallClass */
   recall = (AgsRecallClass *) rt_stream_channel_run;

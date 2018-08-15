@@ -317,7 +317,7 @@ ags_audio_preferences_stop_jack_callback(GtkButton *button,
 
   //TODO:JK: improve me
   list =
-    start_list = ags_sound_provider_get_distributed_manager(AGS_SOUND_PROVIDER(application_context));
+    start_list = ags_sound_provider_get_sound_server(AGS_SOUND_PROVIDER(application_context));
   
   while(list != NULL){
     if(AGS_IS_JACK_SERVER(list->data)){

@@ -2998,8 +2998,8 @@ ags_recall_set_sound_scope(AgsRecall *recall, gint sound_scope)
   pthread_mutex_t *recall_mutex;
 
   if(!AGS_IS_RECALL(recall) &&
-     ags_recall_check_scope(recall,
-			    -1)){
+     ags_recall_check_sound_scope(recall,
+				  -1)){
     return;
   }
 
@@ -3173,12 +3173,12 @@ ags_recall_set_staging_flags(AgsRecall *recall, guint staging_flags)
   
     if((AGS_SOUND_STAGING_FEED_INPUT_QUEUE & (staging_flags)) != 0 &&
        (AGS_SOUND_STAGING_FEED_INPUT_QUEUE & (recall_staging_flags)) == 0){
-      ags_recall_run_init_feed_input_queue(recall);
+      ags_recall_feed_input_queue(recall);
     }
 
     if((AGS_SOUND_STAGING_AUTOMATE & (staging_flags)) != 0 &&
        (AGS_SOUND_STAGING_AUTOMATE & (recall_staging_flags)) == 0){
-      ags_recall_run_init_automate(recall);
+      ags_recall_automate(recall);
     }
 
     if((AGS_SOUND_STAGING_RUN_PRE & (staging_flags)) != 0 &&
@@ -3198,12 +3198,12 @@ ags_recall_set_staging_flags(AgsRecall *recall, guint staging_flags)
 
     if((AGS_SOUND_STAGING_DO_FEEDBACK & (staging_flags)) != 0 &&
        (AGS_SOUND_STAGING_DO_FEEDBACK & (recall_staging_flags)) == 0){
-      ags_recall_run_init_do_feedback(recall);
+      ags_recall_do_feedback(recall);
     }
 
     if((AGS_SOUND_STAGING_FEED_OUTPUT_QUEUE & (staging_flags)) != 0 &&
        (AGS_SOUND_STAGING_FEED_OUTPUT_QUEUE & (recall_staging_flags)) == 0){
-      ags_recall_run_init_feed_output_queue(recall);
+      ags_recall_feed_output_queue(recall);
     }
   }
 
@@ -3223,19 +3223,21 @@ ags_recall_set_staging_flags(AgsRecall *recall, guint staging_flags)
     ags_recall_set_state_flags(recall,
 			       AGS_SOUND_STATE_IS_TERMINATING);
 
-    ags_recall_run_init_cancel(recall);
+    ags_recall_cancel(recall);
   }
   
   if((AGS_SOUND_STAGING_DONE & (staging_flags)) != 0 &&
      (AGS_SOUND_STAGING_DONE & (recall_staging_flags)) == 0){
-    ags_recall_run_init_done(recall);
+    ags_recall_done(recall);
   }
 
+#if 0
   if((AGS_SOUND_STAGING_REMOVE & (staging_flags)) != 0 &&
      (AGS_SOUND_STAGING_REMOVE & (recall_staging_flags)) == 0){
-    ags_recall_run_init_remove(recall);
+    ags_recall_remove(recall);
   }
-
+#endif
+  
   /* apply flags */
   pthread_mutex_lock(ags_recall_get_class_mutex());
 
@@ -5247,7 +5249,8 @@ ags_recall_real_duplicate(AgsRecall *recall,
     copy_recall_handler = ags_recall_handler_alloc(recall_handler->signal_name,
 						   recall_handler->callback,
 						   recall_handler->data);
-    ags_recall_add_handler(copy_recall, copy_recall_handler);
+    ags_recall_add_recall_handler(copy_recall,
+				  copy_recall_handler);
 
     list = list->next;
   }

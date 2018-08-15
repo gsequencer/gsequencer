@@ -66,10 +66,10 @@ struct _AgsSequencerEditorClass
 
 GType ags_sequencer_editor_get_type(void);
 
-void ags_sequencer_editor_add_jack(AgsSequencerEditor *sequencer_editor,
-				   gchar *device);
-void ags_sequencer_editor_remove_jack(AgsSequencerEditor *sequencer_editor,
-				      gchar *device);
+void ags_sequencer_editor_add_source(AgsSequencerEditor *sequencer_editor,
+				     gchar *device);
+void ags_sequencer_editor_remove_source(AgsSequencerEditor *sequencer_editor,
+					gchar *device);
 
 void ags_sequencer_editor_add_sequencer(AgsSequencerEditor *sequencer_editor,
 					GObject *sequencer);

@@ -1083,6 +1083,8 @@ ags_level_draw(AgsLevel *level)
   guint width, height;
   guint x_start, y_start;
 
+  auto void ags_level_draw_string(cairo_t *cr, gchar *str);
+  
   void ags_level_draw_string(cairo_t *cr, gchar *str){
     PangoLayout *layout;
     PangoFontDescription *desc;
@@ -1183,7 +1185,7 @@ ags_level_draw(AgsLevel *level)
  */
 void
 ags_level_value_changed(AgsLevel *level,
-			 gdouble normalized_volume)
+			gdouble normalized_volume)
 {
   g_return_if_fail(AGS_IS_LEVEL(level));
   

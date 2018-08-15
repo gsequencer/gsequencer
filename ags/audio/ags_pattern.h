@@ -47,6 +47,19 @@
 typedef struct _AgsPattern AgsPattern;
 typedef struct _AgsPatternClass AgsPatternClass;
 
+/**
+ * AgsPatternFlags:
+ * @AGS_PATTERN_ADDED_TO_REGISTRY: the pattern was added to registry, see #AgsConnectable::add_to_registry()
+ * @AGS_PATTERN_CONNECTED: indicates the port was connected by calling #AgsConnectable::connect()
+ * 
+ * Enum values to control the behavior or indicate internal state of #AgsPattern by
+ * enable/disable as flags.
+ */
+typedef enum{
+  AGS_PATTERN_ADDED_TO_REGISTRY     = 1,
+  AGS_PATTERN_CONNECTED             = 1 <<  1,
+}AgsPatternFlags;
+
 struct _AgsPattern
 {
   GObject gobject;
@@ -78,6 +91,10 @@ struct _AgsPatternClass
 GType ags_pattern_get_type();
 
 pthread_mutex_t* ags_pattern_get_class_mutex();
+
+gboolean ags_pattern_test_flags(AgsPattern *pattern, guint flags);
+void ags_pattern_set_flags(AgsPattern *pattern, guint flags);
+void ags_pattern_unset_flags(AgsPattern *pattern, guint flags);
 
 GList* ags_pattern_find_near_timestamp(GList *pattern, AgsTimestamp *timestamp);
 

@@ -19,6 +19,7 @@
 
 #include <ags/audio/task/ags_apply_tact.h>
 
+#include <ags/audio/ags_sound_provider.h>
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_recall.h>
@@ -489,7 +490,7 @@ ags_apply_tact_application_context(AgsApplyTact *apply_tact, AgsApplicationConte
 
   /* sequencer */
   list =
-    list_start = ags_sound_provider_get_sequencer(apply_tact, AGS_SOUND_PROVIDER(application_context));
+    list_start = ags_sound_provider_get_sequencer(AGS_SOUND_PROVIDER(application_context));
 
   while(list != NULL){
     ags_apply_tact_sequencer(apply_tact, list->data);

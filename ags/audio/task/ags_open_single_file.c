@@ -167,6 +167,16 @@ ags_open_single_file_class_init(AgsOpenSingleFileClass *open_single_file)
 }
 
 void
+ags_open_single_file_init(AgsOpenSingleFile *open_single_file)
+{
+  open_single_file->channel = NULL;
+
+  open_single_file->filename = NULL;
+
+  open_single_file->audio_channel = 0;
+}
+
+void
 ags_open_single_file_set_property(GObject *gobject,
 			       guint prop_id,
 			       const GValue *value,

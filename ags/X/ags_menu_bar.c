@@ -746,7 +746,7 @@ ags_ladspa_bridge_menu_new()
     gchar *filename, *effect;
       
     /* get base plugin mutex */
-    pthread_mutex_lock(ags_base_plugin_class_mutex());
+    pthread_mutex_lock(ags_base_plugin_get_class_mutex());
 
     base_plugin_mutex = AGS_BASE_PLUGIN(list->data)->obj_mutex;
   
@@ -820,7 +820,7 @@ ags_dssi_bridge_menu_new()
     gchar *filename, *effect;
       
     /* get base plugin mutex */
-    pthread_mutex_lock(ags_base_plugin_class_mutex());
+    pthread_mutex_lock(ags_base_plugin_get_class_mutex());
 
     base_plugin_mutex = AGS_BASE_PLUGIN(list->data)->obj_mutex;
   
@@ -894,7 +894,7 @@ ags_lv2_bridge_menu_new()
     gchar *filename, *effect;
       
     /* get base plugin mutex */
-    pthread_mutex_lock(ags_base_plugin_class_mutex());
+    pthread_mutex_lock(ags_base_plugin_get_class_mutex());
 
     base_plugin_mutex = AGS_BASE_PLUGIN(list->data)->obj_mutex;
   
@@ -968,7 +968,7 @@ ags_live_dssi_bridge_menu_new()
     gchar *filename, *effect;
       
     /* get base plugin mutex */
-    pthread_mutex_lock(ags_base_plugin_class_mutex());
+    pthread_mutex_lock(ags_base_plugin_get_class_mutex());
 
     base_plugin_mutex = AGS_BASE_PLUGIN(list->data)->obj_mutex;
   
@@ -1043,7 +1043,7 @@ ags_live_lv2_bridge_menu_new()
       gchar *filename, *effect;
       
       /* get base plugin mutex */
-      pthread_mutex_lock(ags_base_plugin_class_mutex());
+      pthread_mutex_lock(ags_base_plugin_get_class_mutex());
 
       base_plugin_mutex = AGS_BASE_PLUGIN(list->data)->obj_mutex;
   

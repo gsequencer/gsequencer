@@ -909,7 +909,7 @@ ags_lv2_plugin_instantiate(AgsBasePlugin *base_plugin,
   pthread_mutex_unlock(base_plugin_mutex);
 
   if(plugin_so == NULL){
-    return;
+    return(NULL);
   }
 
   /* get some config values */

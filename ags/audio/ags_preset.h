@@ -43,7 +43,8 @@ typedef struct _AgsPresetClass AgsPresetClass;
  * enable/disable as flags.
  */
 typedef enum{
-  AGS_PRESET_CONNECTED      = 1,
+  AGS_PRESET_ADDED_TO_REGISTRY  = 1,
+  AGS_PRESET_CONNECTED          = 1 <<  1,
 }AgsPresetFlags;
 
 #define AGS_PRESET_ERROR (ags_preset_error_quark())
@@ -90,6 +91,10 @@ GType ags_preset_get_type();
 GQuark ags_preset_error_quark();
 
 pthread_mutex_t* ags_preset_get_class_mutex();
+
+gboolean ags_preset_test_flags(AgsPreset *preset, guint flags);
+void ags_preset_set_flags(AgsPreset *preset, guint flags);
+void ags_preset_unset_flags(AgsPreset *preset, guint flags);
 
 GList* ags_preset_find_scope(GList *preset,
 			     gchar *scope);

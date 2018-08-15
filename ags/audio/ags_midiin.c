@@ -2225,8 +2225,6 @@ ags_midiin_set_bpm(AgsSequencer *sequencer,
   midiin->bpm = bpm;
 
   pthread_mutex_unlock(midiin_mutex);
-
-  ags_midiin_adjust_delay_and_attack(midiin);
 }
 
 gdouble
@@ -2280,8 +2278,6 @@ ags_midiin_set_delay_factor(AgsSequencer *sequencer,
   midiin->delay_factor = delay_factor;
 
   pthread_mutex_unlock(midiin_mutex);
-
-  ags_midiin_adjust_delay_and_attack(midiin);
 }
 
 gdouble
@@ -2445,7 +2441,81 @@ ags_midiin_get_note_offset(AgsSequencer *sequencer)
   return(note_offset);
 }
 
+/**
+ * ags_midiin_switch_buffer_flag:
+ * @midiin: the #AgsMidiin
+ *
+ * The buffer flag indicates the currently played buffer.
+ *
+ * Since: 2.0.0
+ */
+void
+ags_midiin_switch_buffer_flag(AgsMidiin *midiin)
+{
+  pthread_mutex_t *midiin_mutex;  
 
+  if(!AGS_IS_MIDIIN(midiin)){
+    return;
+  }
+  
+  /* get midiin mutex */
+  pthread_mutex_lock(ags_midiin_get_class_mutex());
+  
+  midiin_mutex = midiin->obj_mutex;
+  
+  pthread_mutex_unlock(ags_midiin_get_class_mutex());
+
+  /* switch buffer flag */
+  pthread_mutex_lock(midiin_mutex);
+
+  if((AGS_MIDIIN_BUFFER0 & (midiin->flags)) != 0){
+    midiin->flags &= (~AGS_MIDIIN_BUFFER0);
+    midiin->flags |= AGS_MIDIIN_BUFFER1;
+
+    /* clear buffer */
+    if(midiin->buffer[3] != NULL){
+      free(midiin->buffer[3]);
+    }
+
+    midiin->buffer[3] = NULL;
+    midiin->buffer_size[3] = 0;
+  }else if((AGS_MIDIIN_BUFFER1 & (midiin->flags)) != 0){
+    midiin->flags &= (~AGS_MIDIIN_BUFFER1);
+    midiin->flags |= AGS_MIDIIN_BUFFER2;
+
+    /* clear buffer */
+    if(midiin->buffer[0] != NULL){
+      free(midiin->buffer[0]);
+    }
+
+    midiin->buffer[0] = NULL;
+    midiin->buffer_size[0] = 0;
+  }else if((AGS_MIDIIN_BUFFER2 & (midiin->flags)) != 0){
+    midiin->flags &= (~AGS_MIDIIN_BUFFER2);
+    midiin->flags |= AGS_MIDIIN_BUFFER3;
+
+    /* clear buffer */
+    if(midiin->buffer[1] != NULL){
+      free(midiin->buffer[1]);
+    }
+
+    midiin->buffer[1] = NULL;
+    midiin->buffer_size[1] = 0;
+  }else if((AGS_MIDIIN_BUFFER3 & (midiin->flags)) != 0){
+    midiin->flags &= (~AGS_MIDIIN_BUFFER3);
+    midiin->flags |= AGS_MIDIIN_BUFFER0;
+
+    /* clear buffer */
+    if(midiin->buffer[2] != NULL){
+      free(midiin->buffer[2]);
+    }
+
+    midiin->buffer[2] = NULL;
+    midiin->buffer_size[2] = 0;
+  }
+
+  pthread_mutex_unlock(midiin_mutex);
+}
 
 /**
  * ags_midiin_new:

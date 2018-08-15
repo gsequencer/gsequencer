@@ -465,11 +465,11 @@ ags_capture_sound_audio_run_run_init_pre(AgsRecall *recall)
 		 "filename", &port,
 		 NULL);
 
-    pthread_mutex_lock(ags_port_class_get_mutex());
+    pthread_mutex_lock(ags_port_get_class_mutex());
 
     port_mutex = port->obj_mutex;
     
-    pthread_mutex_unlock(ags_port_class_get_mutex());
+    pthread_mutex_unlock(ags_port_get_class_mutex());
 
     /* get filename */
     pthread_mutex_lock(port_mutex);

@@ -19,6 +19,7 @@
 
 #include <ags/audio/task/ags_seek_soundcard.h>
 
+#include <ags/audio/ags_sound_provider.h>
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_notation.h>
 

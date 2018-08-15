@@ -236,7 +236,7 @@ ags_play_channel_init(AgsPlayChannel *play_channel)
 
   /* plugin port */
   g_object_set(play_channel->muted,
-	       "plugin-port", ags_play_audio_get_muted_plugin_port(),
+	       "plugin-port", ags_play_channel_get_muted_plugin_port(),
 	       NULL);
   
   /* add to port */

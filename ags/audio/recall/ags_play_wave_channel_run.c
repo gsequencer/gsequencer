@@ -115,6 +115,17 @@ ags_play_wave_channel_run_init(AgsPlayWaveChannelRun *play_wave_channel_run)
 }
 
 void
+ags_play_wave_channel_run_dispose(GObject *gobject)
+{
+  AgsPlayWaveChannelRun *play_wave_channel_run;
+
+  play_wave_channel_run = AGS_PLAY_WAVE_CHANNEL_RUN(gobject);
+
+  /* call parent */
+  G_OBJECT_CLASS(ags_play_wave_channel_run_parent_class)->dispose(gobject);
+}
+
+void
 ags_play_wave_channel_run_finalize(GObject *gobject)
 {
   AgsPlayWaveChannelRun *play_wave_channel_run;

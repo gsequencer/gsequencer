@@ -550,8 +550,8 @@ ags_sequencer_editor_reset(AgsApplicable *applicable)
 }
 
 void
-ags_sequencer_editor_add_jack(AgsSequencerEditor *sequencer_editor,
-			      gchar *device)
+ags_sequencer_editor_add_source(AgsSequencerEditor *sequencer_editor,
+				gchar *device)
 {
   AgsWindow *window;
   AgsPreferences *preferences;
@@ -632,8 +632,8 @@ ags_sequencer_editor_add_jack(AgsSequencerEditor *sequencer_editor,
 }
 
 void
-ags_sequencer_editor_remove_jack(AgsSequencerEditor *sequencer_editor,
-				 gchar *device)
+ags_sequencer_editor_remove_source(AgsSequencerEditor *sequencer_editor,
+				   gchar *device)
 {
   AgsWindow *window;
   AgsPreferences *preferences;

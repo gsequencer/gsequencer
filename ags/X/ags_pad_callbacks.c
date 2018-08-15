@@ -301,8 +301,8 @@ ags_pad_start_channel_launch_callback(AgsTask *task,
 		     NULL);
       
 	audio_signal = NULL;
-	list = ags_audio_signal_get_by_recall_id(start_list,
-						 recall_id);
+	list = ags_audio_signal_find_by_recall_id(start_list,
+						  recall_id);
 	    
 	if(list != NULL){
 	  audio_signal = list->data;

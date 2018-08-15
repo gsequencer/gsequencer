@@ -19,12 +19,8 @@
 
 #include <ags/X/editor/ags_envelope_editor_callbacks.h>
 
-#include <ags/object/ags_application_context.h>
-
-#include <ags/thread/ags_mutex_manager.h>
-
-#include <ags/audio/ags_audio.h>
-#include <ags/audio/ags_preset.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
 
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_machine.h>
@@ -162,7 +158,7 @@ ags_envelope_editor_preset_rename_response_callback(GtkWidget *widget, gint resp
   envelope_editor->rename = NULL;
   gtk_widget_destroy(widget);
 
-  return(0);
+  return;
 }
 
 void

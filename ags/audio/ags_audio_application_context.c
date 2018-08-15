@@ -1175,9 +1175,6 @@ ags_audio_application_context_register_types(AgsApplicationContext *application_
   ags_audio_loop_get_type();
   ags_soundcard_thread_get_type();
   ags_export_thread_get_type();
-  ags_record_thread_get_type();
-  ags_iterator_thread_get_type();
-  ags_recycling_thread_get_type();
 
   /* register recalls */
   ags_play_audio_get_type();

@@ -616,7 +616,7 @@ ags_buffer_set_samplerate(AgsBuffer *buffer,
   pthread_mutex_t *buffer_mutex;
 
   if(!AGS_IS_BUFFER(buffer)){
-    return(FALSE);
+    return;
   }
 
   /* get buffer mutex */

@@ -25,6 +25,7 @@
 
 #include <ags/libags.h>
 
+#include <ags/audio/ags_sound_provider.h>
 #include <ags/audio/ags_playback_domain.h>
 #include <ags/audio/ags_playback.h>
 #include <ags/audio/ags_recall_audio.h>
@@ -171,8 +172,8 @@ ags_file_read_soundcard(AgsFile *file, xmlNode *node, GObject **soundcard)
 	ags_file_read_audio_list(file,
 				 child,
 				 &audio);
-	ags_soundcard_set_audio(AGS_SOUNDCARD(gobject),
-				audio);
+	ags_sound_provider_set_audio(AGS_SOUND_PROVIDER(file->application_context),
+				     audio);
 
 	while(audio != NULL){
 	  g_object_set(G_OBJECT(audio->data),
@@ -258,7 +259,7 @@ ags_file_write_soundcard(AgsFile *file, xmlNode *parent, GObject *soundcard)
 	     (xmlChar *) g_strdup_printf("%u", note_offset));
 
   /* ags-audio-list */
-  audio = ags_soundcard_get_audio(AGS_SOUNDCARD(soundcard));
+  audio = ags_sound_provider_get_audio(AGS_SOUND_PROVIDER(file->application_context));
   ags_file_write_audio_list(file,
 			    node,
 			    audio);

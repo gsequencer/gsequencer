@@ -256,8 +256,8 @@ ags_play_channel_run_master_set_property(GObject *gobject,
       }
       
       if(is_template){
-	ags_recall_add_dependency((AgsRecall *) play_channel_run_master,
-				  ags_recall_dependency_new((GObject *) stream_channel_run));
+	ags_recall_add_recall_dependency((AgsRecall *) play_channel_run_master,
+					 ags_recall_dependency_new((GObject *) stream_channel_run));
       }else{
 	if(ags_connectable_is_connected(AGS_CONNECTABLE(play_channel_run_master))){
 	  ags_connectable_connect_connection(AGS_CONNECTABLE(play_channel_run_master),

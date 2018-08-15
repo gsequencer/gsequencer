@@ -120,6 +120,18 @@ ags_play_audio_get_type()
 }
 
 void
+ags_play_audio_mutable_interface_init(AgsMutableInterface *mutable)
+{
+  mutable->set_muted = ags_play_audio_set_muted;
+}
+
+void
+ags_play_audio_plugin_interface_init(AgsPluginInterface *plugin)
+{
+  /* empty */
+}
+
+void
 ags_play_audio_class_init(AgsPlayAudioClass *play_audio)
 {
   GObjectClass *gobject;

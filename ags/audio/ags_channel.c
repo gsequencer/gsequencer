@@ -7528,7 +7528,7 @@ ags_channel_add_ladspa_effect(AgsChannel *channel,
   pthread_mutex_t *channel_mutex;
 
   if(!AGS_IS_CHANNEL(channel)){
-    return;
+    return(NULL);
   }
 
   /* get channel mutex */
@@ -7799,7 +7799,7 @@ ags_channel_add_ladspa_effect(AgsChannel *channel,
 	  /* notify run and resolve dependencies */
 	  ags_recall_notify_dependency(current, AGS_RECALL_NOTIFY_RUN, 1);
 
-	  ags_recall_resolve_dependencies(current);
+	  ags_recall_resolve_dependency(current);
 
 	  /* set staging flags */	  
 	  ags_recall_set_staging_flags(current,
@@ -7845,7 +7845,7 @@ ags_channel_add_dssi_effect(AgsChannel *channel,
   pthread_mutex_t *channel_mutex;
 
   if(!AGS_IS_CHANNEL(channel)){
-    return;
+    return(NULL);
   }
 
   /* get channel mutex */
@@ -7987,7 +7987,7 @@ ags_channel_add_dssi_effect(AgsChannel *channel,
 	  /* notify run and resolve dependencies */
 	  ags_recall_notify_dependency(current, AGS_RECALL_NOTIFY_RUN, 1);
 
-	  ags_recall_resolve_dependencies(current);
+	  ags_recall_resolve_dependency(current);
 
 	  /* set staging flags */	  
 	  ags_recall_set_staging_flags(current,
@@ -8115,7 +8115,7 @@ ags_channel_add_dssi_effect(AgsChannel *channel,
 	  /* notify run and resolve dependencies */
 	  ags_recall_notify_dependency(current, AGS_RECALL_NOTIFY_RUN, 1);
 
-	  ags_recall_resolve_dependencies(current);
+	  ags_recall_resolve_dependency(current);
 
 	  /* set staging flags */	  
 	  ags_recall_set_staging_flags(current,
@@ -8165,7 +8165,7 @@ ags_channel_add_lv2_effect(AgsChannel *channel,
   pthread_mutex_t *channel_mutex;
 
   if(!AGS_IS_CHANNEL(channel)){
-    return;
+    return(NULL);
   }
 
   /* get channel mutex */
@@ -8310,7 +8310,7 @@ ags_channel_add_lv2_effect(AgsChannel *channel,
 	  /* notify run and resolve dependencies */
 	  ags_recall_notify_dependency(current, AGS_RECALL_NOTIFY_RUN, 1);
 
-	  ags_recall_resolve_dependencies(current);
+	  ags_recall_resolve_dependency(current);
 
 	  /* set staging flags */	  
 	  ags_recall_set_staging_flags(current,
@@ -8438,7 +8438,7 @@ ags_channel_add_lv2_effect(AgsChannel *channel,
 	  /* notify run and resolve dependencies */
 	  ags_recall_notify_dependency(current, AGS_RECALL_NOTIFY_RUN, 1);
 
-	  ags_recall_resolve_dependencies(current);
+	  ags_recall_resolve_dependency(current);
 
 	  /* set staging flags */	  
 	  ags_recall_set_staging_flags(current,
@@ -10959,11 +10959,9 @@ ags_channel_recursive_set_property(AgsChannel *channel,
 					       gchar **parameter_name, GValue *value){
     guint i;
 
-    for(i = 0; i < n_params; i++){
-      g_object_setv((GObject *) channel,
-		    n_params,
-		    parameter_name, value);
-    }
+    g_object_setv((GObject *) channel,
+		  n_params,
+		  parameter_name, value);
   }
   
   void ags_channel_recursive_set_property_down(AgsChannel *channel,
@@ -11728,9 +11726,9 @@ ags_channel_real_recursive_run_stage(AgsChannel *channel,
     }
     
     /* traverse the tree */
-    ags_channel_recursive_set_prepare_run_stage_down_input(channel,
-							   next_recycling_context,
-							   sound_scope, local_staging_flags);
+    ags_channel_recursive_prepare_run_stage_down_input(channel,
+						       next_recycling_context,
+						       sound_scope, local_staging_flags);
   }
 
   void ags_channel_recursive_prepare_run_stage_down_input(AgsChannel *channel,
@@ -12290,9 +12288,9 @@ ags_channel_real_recursive_run_stage(AgsChannel *channel,
     }
 
     /* traverse the tree */
-    ags_channel_recursive_set_do_run_stage_down_input(channel,
-						      next_recycling_context,
-						      sound_scope, staging_flags);
+    ags_channel_recursive_do_run_stage_down_input(channel,
+						  next_recycling_context,
+						  sound_scope, staging_flags);
   }
   
   void ags_channel_recursive_do_run_stage_down_input(AgsChannel *channel,
@@ -12816,9 +12814,9 @@ ags_channel_real_recursive_run_stage(AgsChannel *channel,
       }
     }
     
-    ags_channel_recursive_set_do_run_stage_down_input(channel,
-						      next_recycling_context,
-						      sound_scope, staging_flags);
+    ags_channel_recursive_do_run_stage_down_input(channel,
+						  next_recycling_context,
+						  sound_scope, staging_flags);
   }
 
   void ags_channel_recursive_cleanup_run_stage_down_input(AgsChannel *channel,

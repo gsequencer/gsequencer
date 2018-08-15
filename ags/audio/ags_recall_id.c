@@ -309,8 +309,8 @@ ags_recall_id_set_sound_scope(AgsRecallID *recall_id, gint sound_scope)
   pthread_mutex_t *recall_id_mutex;
 
   if(!AGS_IS_RECALL_ID(recall_id) ||
-     ags_recall_id_check_scope(recall_id,
-			       -1)){
+     ags_recall_id_check_sound_scope(recall_id,
+				     -1)){
     return;
   }
 

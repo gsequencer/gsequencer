@@ -1434,7 +1434,7 @@ ags_buffer_util_char_buffer_swap_bytes(guchar *cbuffer, guint word_size,
 
   buffer_size = (guint) (word_size * floor(buffer_size / word_size));
   
-  for(0; i < buffer_size; i += word_size){
+  for(i = 0; i < buffer_size; i += word_size){
     for(j = 0; j < word_size; j++){
       tmp_buffer[j] = cbuffer[i + (word_size - j - 1)];
     }

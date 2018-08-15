@@ -297,6 +297,9 @@ ags_recall_ladspa_run_new
 ags_preset_get_type
 ags_preset_error_quark
 ags_preset_get_class_mutex
+ags_preset_test_flags
+ags_preset_set_flags
+ags_preset_unset_flags
 ags_preset_find_scope
 ags_preset_find_name
 ags_preset_add_parameter
@@ -1018,7 +1021,11 @@ ags_buffer_duplicate
 ags_buffer_new
 ags_port_get_type
 ags_port_get_class_mutex
+ags_port_test_flags
+ags_port_set_flags
+ags_port_unset_flags
 ags_port_safe_read
+ags_port_safe_read_raw
 ags_port_safe_write
 ags_port_safe_write_raw
 ags_port_safe_get_property

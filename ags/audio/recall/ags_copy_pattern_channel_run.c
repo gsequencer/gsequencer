@@ -225,9 +225,9 @@ ags_copy_pattern_channel_run_finalize(GObject *gobject)
 }
 
 void
-ags_copy_pattern_channel_run_notify_recall_audio(GObject *gobject,
-						 GParamSpec *pspec,
-						 gpointer user_data)
+ags_copy_pattern_channel_run_notify_recall_audio_run(GObject *gobject,
+						     GParamSpec *pspec,
+						     gpointer user_data)
 {
   AgsCopyPatternAudioRun *copy_pattern_audio_run;
   AgsCopyPatternChannelRun *copy_pattern_channel_run;
@@ -265,9 +265,9 @@ ags_copy_pattern_channel_run_notify_recall_audio(GObject *gobject,
 }
 
 void
-ags_copy_pattern_channel_run_notify_recall_audio_after(GObject *gobject,
-						       GParamSpec *pspec,
-						       gpointer user_data)
+ags_copy_pattern_channel_run_notify_recall_audio_run_after(GObject *gobject,
+							   GParamSpec *pspec,
+							   gpointer user_data)
 {
   AgsCopyPatternAudioRun *copy_pattern_audio_run;
   AgsCopyPatternChannelRun *copy_pattern_channel_run;

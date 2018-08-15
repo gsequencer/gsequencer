@@ -37,10 +37,7 @@ void ags_cell_pattern_start_channel_launch_callback(AgsTask *task, AgsNote *note
 gboolean
 ags_cell_pattern_focus_in_callback(GtkWidget *widget, GdkEvent *event, AgsCellPattern *cell_pattern)
 {
-  pthread_t thread;
-  
-  pthread_create(&thread, NULL,
-		 ags_cell_pattern_blink_worker, cell_pattern);
+  //TODO:JK: implement me, blink cursor
   
   return(TRUE);
 }
@@ -571,8 +568,8 @@ ags_cell_pattern_start_channel_launch_callback(AgsTask *task, AgsNote *note)
 		   NULL);
       
       audio_signal = NULL;
-      list = ags_audio_signal_get_by_recall_id(start_list,
-					       recall_id);
+      list = ags_audio_signal_find_by_recall_id(start_list,
+						recall_id);
 	    
       if(list != NULL){
 	audio_signal = list->data;

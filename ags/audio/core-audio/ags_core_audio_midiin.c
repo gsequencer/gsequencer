@@ -1806,8 +1806,6 @@ ags_core_audio_midiin_set_bpm(AgsSequencer *sequencer,
   core_audio_midiin->bpm = bpm;
 
   pthread_mutex_unlock(core_audio_midiin_mutex);
-
-  ags_core_audio_midiin_adjust_delay_and_attack(core_audio_midiin);
 }
 
 gdouble
@@ -1861,8 +1859,6 @@ ags_core_audio_midiin_set_delay_factor(AgsSequencer *sequencer,
   core_audio_midiin->delay_factor = delay_factor;
 
   pthread_mutex_unlock(core_audio_midiin_mutex);
-
-  ags_core_audio_midiin_adjust_delay_and_attack(core_audio_midiin);
 }
 
 gdouble

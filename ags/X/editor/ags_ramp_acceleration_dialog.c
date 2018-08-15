@@ -755,26 +755,26 @@ ags_ramp_acceleration_dialog_apply(AgsApplicable *applicable)
       channel = ags_channel_nth(machine->audio->output,
 				line);
 
-      play_port = ags_channel_find_port_by_specifier_and_scope(channel,
-							       specifier, TRUE);
+      play_port = ags_channel_collect_all_channel_ports_by_specifier_and_context(channel,
+										 specifier, TRUE);
 
-      recall_port = ags_channel_find_port_by_specifier_and_scope(channel,
-								 specifier, FALSE);
+      recall_port = ags_channel_collect_all_channel_ports_by_specifier_and_context(channel,
+										   specifier, FALSE);
     }else if(channel_type == AGS_TYPE_INPUT){
       channel = ags_channel_nth(machine->audio->input,
 				line);
 
-      play_port = ags_channel_find_port_by_specifier_and_scope(channel,
-							       specifier, TRUE);
+      play_port = ags_channel_collect_all_channel_ports_by_specifier_and_context(channel,
+										 specifier, TRUE);
 
-      recall_port = ags_channel_find_port_by_specifier_and_scope(channel,
-								 specifier, FALSE);
+      recall_port = ags_channel_collect_all_channel_ports_by_specifier_and_context(channel,
+										   specifier, FALSE);
     }else{
-      play_port = ags_audio_find_port_by_specifier_and_scope(machine->audio,
-							     specifier, TRUE);
-
-      recall_port = ags_audio_find_port_by_specifier_and_scope(machine->audio,
-							       specifier, FALSE);
+      play_port = ags_audio_collect_all_audio_ports_by_specifier_and_context(machine->audio,
+									     specifier, TRUE);
+      
+      recall_port = ags_audio_collect_all_audio_ports_by_specifier_and_context(machine->audio,
+									       specifier, FALSE);
     }
         
     if(play_port != NULL){

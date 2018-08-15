@@ -683,9 +683,7 @@ ags_select_acceleration_dialog_apply(AgsApplicable *applicable)
 
 	if(copy_selection){
 	  automation_node = ags_automation_copy_selection(list_automation->data);
-	  ags_automation_merge_clipboard(audio_node,
-					 automation_node);
-	  xmlFreeNode(automation_node);
+	  xmlAddChild(audio_node, automation_node);      
 	}
 
 	list_automation = list_automation->next;

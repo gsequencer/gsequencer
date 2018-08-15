@@ -19,6 +19,7 @@ ags_scale_get_type
 ags_scale_value_changed
 ags_scale_new
 ags_level_get_type
+ags_level_value_changed
 ags_level_new
 ags_dial_get_type
 ags_dial_draw

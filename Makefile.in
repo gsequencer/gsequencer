@@ -260,7 +260,7 @@ libags_audio_la_DEPENDENCIES = libags_server.la libags_thread.la \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
-	$(am__DEPENDENCIES_1)
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
 am__objects_6 = $(am__objects_1) \
 	ags/audio/libags_audio_la-ags_acceleration.lo \
 	ags/audio/libags_audio_la-ags_audio.lo \
@@ -358,6 +358,7 @@ am__objects_12 = $(am__objects_1) \
 	ags/audio/core-audio/libags_audio_la-ags_core_audio_client.lo \
 	ags/audio/core-audio/libags_audio_la-ags_core_audio_midiin.lo \
 	ags/audio/core-audio/libags_audio_la-ags_core_audio_devout.lo \
+	ags/audio/core-audio/libags_audio_la-ags_core_audio_devin.lo \
 	ags/audio/core-audio/libags_audio_la-ags_core_audio_port.lo \
 	ags/audio/core-audio/libags_audio_la-ags_core_audio_server.lo
 am__objects_13 = $(am__objects_1) \
@@ -639,7 +640,7 @@ libgsequencer_la_DEPENDENCIES = libags_audio.la libags_server.la \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
-	$(am__DEPENDENCIES_1)
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
 am__objects_23 = $(am__objects_1)
 am__objects_24 = $(am__objects_23) $(am__objects_23) $(am__objects_23) \
 	$(am__objects_23) $(am__objects_23) $(am__objects_23) \
@@ -2208,6 +2209,8 @@ ECHO_N = @ECHO_N@
 ECHO_T = @ECHO_T@
 EGREP = @EGREP@
 EXEEXT = @EXEEXT@
+FFTW_CFLAGS = @FFTW_CFLAGS@
+FFTW_LIBS = @FFTW_LIBS@
 FGREP = @FGREP@
 FONTCONFIG_CFLAGS = @FONTCONFIG_CFLAGS@
 FONTCONFIG_LIBS = @FONTCONFIG_LIBS@
@@ -2643,9 +2646,9 @@ libags_server_la_LDFLAGS = $(LDFLAGS) -export-symbols $(top_srcdir)/libags_serve
 libags_server_la_LIBADD = libags_thread.la libags.la -ldl -lm -lcrypt $(LIBXML2_LIBS) $(GOBJECT_LIBS)
 
 # library libags-audio
-libags_audio_la_CFLAGS = $(CFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ -I/usr/include $(CORE_AUDIO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SAMPLERATE_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS) $(PULSE_CFLAGS)
+libags_audio_la_CFLAGS = $(CFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ -I/usr/include $(CORE_AUDIO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SAMPLERATE_CFLAGS) $(SNDFILE_CFLAGS) $(FFTW_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS) $(PULSE_CFLAGS)
 libags_audio_la_LDFLAGS = $(LDFLAGS) -export-symbols $(top_srcdir)/libags_audio.sym -version-info 1:0:0 -shared -fPIC -soname,libags_audio.so -pthread 
-libags_audio_la_LIBADD = libags_server.la libags_thread.la libags.la -ldl -lm $(CORE_AUDIO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SAMPLERATE_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS) $(PULSE_LIBS)
+libags_audio_la_LIBADD = libags_server.la libags_thread.la libags.la -ldl -lm $(CORE_AUDIO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SAMPLERATE_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(FFTW_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS) $(PULSE_LIBS)
 
 # library libags-gui
 libags_gui_la_CFLAGS = $(CFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ -I/usr/include $(GOBJECT_CFLAGS) $(GDKPIXBUF_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS)
@@ -2653,9 +2656,9 @@ libags_gui_la_LDFLAGS = $(LDFLAGS) -export-symbols $(top_srcdir)/libags_gui.sym 
 libags_gui_la_LIBADD = -ldl -lm $(GOBJECT_LIBS) $(GDKPIXBUF_LIBS) $(CAIRO_LIBS) $(GTK_LIBS)
 
 # library libgsequencer
-libgsequencer_la_CFLAGS = $(CFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ -I/usr/include $(CORE_AUDIO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(JACK_CFLAGS) $(PULSE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(GDKPIXBUF_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS) $(GTK_MAC_INTEGRATION_CFLAGS)
+libgsequencer_la_CFLAGS = $(CFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ -I/usr/include $(CORE_AUDIO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(FFTW_CFLAGS) $(JACK_CFLAGS) $(PULSE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(GDKPIXBUF_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS) $(GTK_MAC_INTEGRATION_CFLAGS)
 libgsequencer_la_LDFLAGS = $(LDFLAGS) -version-info 0:1:0 -shared -fPIC -Wl,-soname,libgsequencer.so -pthread
-libgsequencer_la_LIBADD = libags_audio.la libags_server.la libags_gui.la libags_thread.la libags.la -ldl -lm $(CORE_AUDIO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(JACK_LIBS) $(PULSE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(GDKPIXBUF_LIBS) $(CAIRO_LIBS) $(GTK_LIBS) $(GTK_MAC_INTEGRATION_LIBS)
+libgsequencer_la_LIBADD = libags_audio.la libags_server.la libags_gui.la libags_thread.la libags.la -ldl -lm $(CORE_AUDIO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(FFTW_LIBS) $(SNDFILE_LIBS) $(JACK_LIBS) $(PULSE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(GDKPIXBUF_LIBS) $(CAIRO_LIBS) $(GTK_LIBS) $(GTK_MAC_INTEGRATION_LIBS)
 
 # gsequencer
 gsequencer_SOURCES = $(gsequencer_c_sources) $(gsequencerheaders)
@@ -3736,6 +3739,7 @@ libags_audio_core_audio_h_sources = \
 	ags/audio/core-audio/ags_core_audio_client.h \
 	ags/audio/core-audio/ags_core_audio_midiin.h \
 	ags/audio/core-audio/ags_core_audio_devout.h \
+	ags/audio/core-audio/ags_core_audio_devin.h \
 	ags/audio/core-audio/ags_core_audio_port.h \
 	ags/audio/core-audio/ags_core_audio_server.h
 
@@ -3745,6 +3749,7 @@ libags_audio_core_audio_c_sources = \
 	ags/audio/core-audio/ags_core_audio_client.c \
 	ags/audio/core-audio/ags_core_audio_midiin.c \
 	ags/audio/core-audio/ags_core_audio_devout.c \
+	ags/audio/core-audio/ags_core_audio_devin.c \
 	ags/audio/core-audio/ags_core_audio_port.c \
 	ags/audio/core-audio/ags_core_audio_server.c
 
@@ -5173,6 +5178,9 @@ ags/audio/core-audio/libags_audio_la-ags_core_audio_midiin.lo:  \
 	ags/audio/core-audio/$(am__dirstamp) \
 	ags/audio/core-audio/$(DEPDIR)/$(am__dirstamp)
 ags/audio/core-audio/libags_audio_la-ags_core_audio_devout.lo:  \
+	ags/audio/core-audio/$(am__dirstamp) \
+	ags/audio/core-audio/$(DEPDIR)/$(am__dirstamp)
+ags/audio/core-audio/libags_audio_la-ags_core_audio_devin.lo:  \
 	ags/audio/core-audio/$(am__dirstamp) \
 	ags/audio/core-audio/$(DEPDIR)/$(am__dirstamp)
 ags/audio/core-audio/libags_audio_la-ags_core_audio_port.lo:  \
@@ -7624,6 +7632,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/$(DEPDIR)/libags_audio_la-ags_track.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/$(DEPDIR)/libags_audio_la-ags_wave.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/core-audio/$(DEPDIR)/libags_audio_la-ags_core_audio_client.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@ags/audio/core-audio/$(DEPDIR)/libags_audio_la-ags_core_audio_devin.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/core-audio/$(DEPDIR)/libags_audio_la-ags_core_audio_devout.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/core-audio/$(DEPDIR)/libags_audio_la-ags_core_audio_midiin.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/core-audio/$(DEPDIR)/libags_audio_la-ags_core_audio_port.Plo@am__quote@
@@ -8950,6 +8959,13 @@ ags/audio/core-audio/libags_audio_la-ags_core_audio_devout.lo: ags/audio/core-au
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/audio/core-audio/ags_core_audio_devout.c' object='ags/audio/core-audio/libags_audio_la-ags_core_audio_devout.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -c -o ags/audio/core-audio/libags_audio_la-ags_core_audio_devout.lo `test -f 'ags/audio/core-audio/ags_core_audio_devout.c' || echo '$(srcdir)/'`ags/audio/core-audio/ags_core_audio_devout.c
+
+ags/audio/core-audio/libags_audio_la-ags_core_audio_devin.lo: ags/audio/core-audio/ags_core_audio_devin.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -MT ags/audio/core-audio/libags_audio_la-ags_core_audio_devin.lo -MD -MP -MF ags/audio/core-audio/$(DEPDIR)/libags_audio_la-ags_core_audio_devin.Tpo -c -o ags/audio/core-audio/libags_audio_la-ags_core_audio_devin.lo `test -f 'ags/audio/core-audio/ags_core_audio_devin.c' || echo '$(srcdir)/'`ags/audio/core-audio/ags_core_audio_devin.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/audio/core-audio/$(DEPDIR)/libags_audio_la-ags_core_audio_devin.Tpo ags/audio/core-audio/$(DEPDIR)/libags_audio_la-ags_core_audio_devin.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/audio/core-audio/ags_core_audio_devin.c' object='ags/audio/core-audio/libags_audio_la-ags_core_audio_devin.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -c -o ags/audio/core-audio/libags_audio_la-ags_core_audio_devin.lo `test -f 'ags/audio/core-audio/ags_core_audio_devin.c' || echo '$(srcdir)/'`ags/audio/core-audio/ags_core_audio_devin.c
 
 ags/audio/core-audio/libags_audio_la-ags_core_audio_port.lo: ags/audio/core-audio/ags_core_audio_port.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -MT ags/audio/core-audio/libags_audio_la-ags_core_audio_port.lo -MD -MP -MF ags/audio/core-audio/$(DEPDIR)/libags_audio_la-ags_core_audio_port.Tpo -c -o ags/audio/core-audio/libags_audio_la-ags_core_audio_port.lo `test -f 'ags/audio/core-audio/ags_core_audio_port.c' || echo '$(srcdir)/'`ags/audio/core-audio/ags_core_audio_port.c

@@ -152,7 +152,7 @@ ags_volume_audio_signal_run_inter(AgsRecall *recall)
 	       "note", &start_note,
 	       NULL);
   
-  if(ags_recall_globags_get_rt_safe() &&
+  if(ags_recall_global_get_rt_safe() &&
      parent_recycling_context != NULL &&
      start_note == NULL){
     return;

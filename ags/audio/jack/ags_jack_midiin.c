@@ -1791,8 +1791,6 @@ ags_jack_midiin_set_bpm(AgsSequencer *sequencer,
   jack_midiin->bpm = bpm;
 
   pthread_mutex_unlock(jack_midiin_mutex);
-
-  ags_jack_midiin_adjust_delay_and_attack(jack_midiin);
 }
 
 gdouble
@@ -1846,8 +1844,6 @@ ags_jack_midiin_set_delay_factor(AgsSequencer *sequencer,
   jack_midiin->delay_factor = delay_factor;
 
   pthread_mutex_unlock(jack_midiin_mutex);
-
-  ags_jack_midiin_adjust_delay_and_attack(jack_midiin);
 }
 
 gdouble
@@ -2024,6 +2020,10 @@ ags_jack_midiin_switch_buffer_flag(AgsJackMidiin *jack_midiin)
 {
   pthread_mutex_t *jack_midiin_mutex;  
 
+  if(!AGS_IS_JACK_MIDIIN(jack_midiin)){
+    return;
+  }
+    
   /* get jack midiin mutex */
   pthread_mutex_lock(ags_jack_midiin_get_class_mutex());
   

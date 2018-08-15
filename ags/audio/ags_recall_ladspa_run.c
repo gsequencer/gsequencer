@@ -48,7 +48,6 @@ void ags_recall_ladspa_run_init(AgsRecallLadspaRun *recall_ladspa_run);
 void ags_recall_ladspa_run_finalize(GObject *gobject);
 
 void ags_recall_ladspa_run_run_init_pre(AgsRecall *recall);
-void ags_recall_ladspa_run_run_pre(AgsRecall *recall);
 void ags_recall_ladspa_run_run_inter(AgsRecall *recall);
 
 void ags_recall_ladspa_run_load_ports(AgsRecallLadspaRun *recall_ladspa_run);
@@ -130,7 +129,6 @@ ags_recall_ladspa_run_class_init(AgsRecallLadspaRunClass *recall_ladspa_run)
   recall = (AgsRecallClass *) recall_ladspa_run;
 
   recall->run_init_pre = ags_recall_ladspa_run_run_init_pre;
-  recall->run_pre = ags_recall_ladspa_run_run_pre;
   recall->run_inter = ags_recall_ladspa_run_run_inter;
 }
 

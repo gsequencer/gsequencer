@@ -3084,7 +3084,7 @@ ags_core_audio_devout_adjust_delay_and_attack(AgsCoreAudioDevout *core_audio_dev
   pthread_mutex_unlock(ags_core_audio_devout_get_class_mutex());
   
   /* get some initial values */
-  delay = ags_core_audio_devout_get_absolute_delay(AGS_SOUNDCARD(core_audio_devout));
+  delay = ags_soundcard_get_absolute_delay(AGS_SOUNDCARD(core_audio_devout));
 
 #ifdef AGS_DEBUG
   g_message("delay : %f", delay);

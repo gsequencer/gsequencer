@@ -119,7 +119,12 @@ GType ags_port_get_type();
 
 pthread_mutex_t* ags_port_get_class_mutex();
 
+gboolean ags_port_test_flags(AgsPort *port, guint flags);
+void ags_port_set_flags(AgsPort *port, guint flags);
+void ags_port_unset_flags(AgsPort *port, guint flags);
+
 void ags_port_safe_read(AgsPort *port, GValue *value);
+void ags_port_safe_read_raw(AgsPort *port, GValue *value);
 void ags_port_safe_write(AgsPort *port, GValue *value);
 void ags_port_safe_write_raw(AgsPort *port, GValue *value);
 

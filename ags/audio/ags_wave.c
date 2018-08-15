@@ -1600,7 +1600,7 @@ ags_wave_copy_selection(AgsWave *wave)
   pthread_mutex_t *wave_mutex;
 
   if(!AGS_IS_WAVE(wave)){
-    return;
+    return(NULL);
   }
 
   /* get wave mutex */
@@ -1825,7 +1825,7 @@ ags_wave_cut_selection(AgsWave *wave)
   pthread_mutex_t *wave_mutex;
 
   if(!AGS_IS_WAVE(wave)){
-    return;
+    return(NULL);
   }
 
   /* get wave mutex */

@@ -190,8 +190,8 @@ ags_drum_input_pad_open_response_callback(GtkWidget *widget, gint response, AgsD
       g_list_free(list);
     }
 
-    ags_gui_thread_schedule_tasks(gui_thread,
-				  task);
+    ags_gui_thread_schedule_task_list(gui_thread,
+				      task);
 
     gtk_widget_destroy((GtkWidget *) file_chooser);
   }else if(response == GTK_RESPONSE_CANCEL){

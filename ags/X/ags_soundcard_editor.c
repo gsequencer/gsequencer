@@ -1051,11 +1051,11 @@ ags_soundcard_editor_add_sink(AgsSoundcardEditor *soundcard_editor,
     while(machine != NULL){
       g_object_ref(G_OBJECT(AGS_MACHINE(machine->data)->audio));
   
-      list = ags_soundcard_get_audio(AGS_SOUNDCARD(soundcard));
+      list = ags_sound_provider_get_audio(AGS_SOUND_PROVIDER(application_context));
       list = g_list_prepend(list,
 			    AGS_MACHINE(machine->data)->audio);
-      ags_soundcard_set_audio(AGS_SOUNDCARD(soundcard),
-			      list);
+      ags_sound_provider_set_audio(AGS_SOUND_PROVIDER(application_context),
+				   list);
 
       machine = machine->next;
     }
@@ -1281,8 +1281,8 @@ ags_soundcard_editor_remove_sink(AgsSoundcardEditor *soundcard_editor,
     machine = machine->next;
   }
 
-  ags_soundcard_set_audio(AGS_SOUNDCARD(soundcard),
-			  NULL);
+  ags_sound_provider_set_audio(AGS_SOUND_PROVIDER(application_context),
+			       NULL);
   g_list_free(machine_start);
 #endif
   
@@ -1420,11 +1420,11 @@ ags_soundcard_editor_add_soundcard(AgsSoundcardEditor *soundcard_editor,
     while(machine != NULL){
       g_object_ref(G_OBJECT(AGS_MACHINE(machine->data)->audio));
   
-      list = ags_soundcard_get_audio(AGS_SOUNDCARD(soundcard));
+      list = ags_sound_provider_get_audio(AGS_SOUND_PROVIDER(application_context));
       list = g_list_prepend(list,
 			    AGS_MACHINE(machine->data)->audio);
-      ags_soundcard_set_audio(AGS_SOUNDCARD(soundcard),
-			      list);
+      ags_sound_provider_set_audio(AGS_SOUND_PROVIDER(application_context),
+				   list);
 
       g_object_set(AGS_MACHINE(machine->data)->audio,
 		   "soundcard", soundcard,
@@ -1522,8 +1522,8 @@ ags_soundcard_editor_remove_soundcard(AgsSoundcardEditor *soundcard_editor,
     machine = machine->next;
   }
 
-  ags_soundcard_set_audio(AGS_SOUNDCARD(soundcard),
-			  NULL);
+  ags_sound_provider_set_audio(AGS_SOUND_PROVIDER(application_context),
+			       NULL);
   g_list_free(machine_start);
 #endif
   

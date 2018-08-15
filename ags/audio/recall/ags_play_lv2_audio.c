@@ -805,11 +805,11 @@ ags_play_lv2_audio_test_flags(AgsPlayLv2Audio *play_lv2_audio, guint flags)
   }
 
   /* get play_lv2_audio mutex */
-  pthread_mutex_lock(ags_play_lv2_audio_get_class_mutex());
+  pthread_mutex_lock(ags_recall_get_class_mutex());
   
   recall_mutex = AGS_RECALL(play_lv2_audio)->obj_mutex;
   
-  pthread_mutex_unlock(ags_play_lv2_audio_get_class_mutex());
+  pthread_mutex_unlock(ags_recall_get_class_mutex());
 
   /* test */
   pthread_mutex_lock(recall_mutex);
@@ -840,11 +840,11 @@ ags_play_lv2_audio_set_flags(AgsPlayLv2Audio *play_lv2_audio, guint flags)
   }
 
   /* get play_lv2_audio mutex */
-  pthread_mutex_lock(ags_play_lv2_audio_get_class_mutex());
+  pthread_mutex_lock(ags_recall_get_class_mutex());
   
   recall_mutex = AGS_RECALL(play_lv2_audio)->obj_mutex;
   
-  pthread_mutex_unlock(ags_play_lv2_audio_get_class_mutex());
+  pthread_mutex_unlock(ags_recall_get_class_mutex());
 
   /* set flags */
   pthread_mutex_lock(recall_mutex);
@@ -873,11 +873,11 @@ ags_play_lv2_audio_unset_flags(AgsPlayLv2Audio *play_lv2_audio, guint flags)
   }
 
   /* get play_lv2_audio mutex */
-  pthread_mutex_lock(ags_play_lv2_audio_get_class_mutex());
+  pthread_mutex_lock(ags_recall_get_class_mutex());
   
   recall_mutex = AGS_RECALL(play_lv2_audio)->obj_mutex;
   
-  pthread_mutex_unlock(ags_play_lv2_audio_get_class_mutex());
+  pthread_mutex_unlock(ags_recall_get_class_mutex());
 
   /* set flags */
   pthread_mutex_lock(recall_mutex);

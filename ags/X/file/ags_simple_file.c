@@ -2393,13 +2393,13 @@ ags_simple_file_read_machine(AgsSimpleFile *simple_file, xmlNode *node, AgsMachi
   gtk_widget_show_all((GtkWidget *) gobject);
 
   /* add audio to soundcard */
-  list = ags_soundcard_get_audio(AGS_SOUNDCARD(soundcard));
+  list = ags_sound_provider_get_audio(AGS_SOUND_PROVIDER(simple_file->application_context));
   g_object_ref(G_OBJECT(gobject->audio));
   
   list = g_list_prepend(list,
 			gobject->audio);
-  ags_soundcard_set_audio(AGS_SOUNDCARD(soundcard),
-			  list);
+  ags_sound_provider_set_audio(AGS_SOUND_PROVIDER(simple_file->application_context),
+			       list);
   
   /* children */
   child = node->children;

@@ -2105,7 +2105,7 @@ ags_automation_copy_selection(AgsAutomation *automation)
   pthread_mutex_t *automation_mutex;
 
   if(!AGS_IS_AUTOMATION(automation)){
-    return;
+    return(NULL);
   }
 
   /* get automation mutex */
@@ -2202,7 +2202,7 @@ ags_automation_cut_selection(AgsAutomation *automation)
   pthread_mutex_t *automation_mutex;
 
   if(!AGS_IS_AUTOMATION(automation)){
-    return;
+    return(NULL);
   }
 
   /* get automation mutex */

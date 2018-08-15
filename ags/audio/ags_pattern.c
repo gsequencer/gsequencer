@@ -65,6 +65,8 @@ enum{
 
 static gpointer ags_pattern_parent_class = NULL;
 
+static pthread_mutex_t ags_pattern_class_mutex = PTHREAD_MUTEX_INITIALIZER;
+
 GType
 ags_pattern_get_type (void)
 {
@@ -228,36 +230,28 @@ ags_pattern_tactable_interface_init(AgsTactableInterface *tactable)
 void
 ags_pattern_init(AgsPattern *pattern)
 {
-  AgsMutexManager *mutex_manager;
-
-  pthread_mutex_t *application_mutex;
   pthread_mutex_t *mutex;
-  pthread_mutexattr_t attr;
-
-  /* create mutex */
-  //FIXME:JK: memory leak
-  pthread_mutexattr_init(&attr);
-  pthread_mutexattr_settype(&attr,
-			    PTHREAD_MUTEX_RECURSIVE);
-
-  mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
-  pthread_mutex_init(mutex,
-		     &attr);
-
-  /* insert mutex */
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-  
-  pthread_mutex_lock(application_mutex);
-
-  ags_mutex_manager_insert(mutex_manager,
-			   (GObject *) pattern,
-			   mutex);
-  
-  pthread_mutex_unlock(application_mutex);
+  pthread_mutexattr_t *attr;
 
   /* base initialization */
   pattern->flags = 0;
+
+  /* add pattern mutex */
+  pattern->obj_mutexattr = 
+    attr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
+  pthread_mutexattr_init(attr);
+  pthread_mutexattr_settype(attr,
+			    PTHREAD_MUTEX_RECURSIVE);
+
+#ifdef __linux__
+  pthread_mutexattr_setprotocol(attr,
+				PTHREAD_PRIO_INHERIT);
+#endif
+
+  pattern->obj_mutex = 
+    mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
+  pthread_mutex_init(mutex,
+		     attr);
 
   /* timestamp */
   pattern->timestamp = NULL;
@@ -452,6 +446,126 @@ ags_pattern_finalize(GObject *gobject)
   
   /* call parent */
   G_OBJECT_CLASS(ags_pattern_parent_class)->finalize(gobject);
+}
+
+/**
+ * ags_pattern_get_class_mutex:
+ * 
+ * Use this function's returned mutex to access mutex fields.
+ *
+ * Returns: the class mutex
+ * 
+ * Since: 2.0.0
+ */
+pthread_mutex_t*
+ags_pattern_get_class_mutex()
+{
+  return(&ags_pattern_class_mutex);
+}
+
+/**
+ * ags_pattern_test_flags:
+ * @pattern: the #AgsPattern
+ * @flags: the flags
+ *
+ * Test @flags to be set on @pattern.
+ * 
+ * Returns: %TRUE if flags are set, else %FALSE
+ *
+ * Since: 2.0.0
+ */
+gboolean
+ags_pattern_test_flags(AgsPattern *pattern, guint flags)
+{
+  gboolean retval;  
+  
+  pthread_mutex_t *pattern_mutex;
+
+  if(!AGS_IS_PATTERN(pattern)){
+    return(FALSE);
+  }
+
+  /* get pattern mutex */
+  pthread_mutex_lock(ags_pattern_get_class_mutex());
+  
+  pattern_mutex = pattern->obj_mutex;
+  
+  pthread_mutex_unlock(ags_pattern_get_class_mutex());
+
+  /* test */
+  pthread_mutex_lock(pattern_mutex);
+
+  retval = (flags & (pattern->flags)) ? TRUE: FALSE;
+  
+  pthread_mutex_unlock(pattern_mutex);
+
+  return(retval);
+}
+
+/**
+ * ags_pattern_set_flags:
+ * @pattern: the #AgsPattern
+ * @flags: the flags
+ *
+ * Set flags.
+ * 
+ * Since: 2.0.0
+ */
+void
+ags_pattern_set_flags(AgsPattern *pattern, guint flags)
+{
+  pthread_mutex_t *pattern_mutex;
+
+  if(!AGS_IS_PATTERN(pattern)){
+    return;
+  }
+
+  /* get pattern mutex */
+  pthread_mutex_lock(ags_pattern_get_class_mutex());
+  
+  pattern_mutex = pattern->obj_mutex;
+  
+  pthread_mutex_unlock(ags_pattern_get_class_mutex());
+
+  /* set flags */
+  pthread_mutex_lock(pattern_mutex);
+
+  pattern->flags |= flags;
+
+  pthread_mutex_unlock(pattern_mutex);
+}
+
+/**
+ * ags_pattern_unset_flags:
+ * @pattern: the #AgsPattern
+ * @flags: the flags
+ *
+ * Unset flags.
+ * 
+ * Since: 2.0.0
+ */
+void
+ags_pattern_unset_flags(AgsPattern *pattern, guint flags)
+{
+  pthread_mutex_t *pattern_mutex;
+
+  if(!AGS_IS_PATTERN(pattern)){
+    return;
+  }
+
+  /* get pattern mutex */
+  pthread_mutex_lock(ags_pattern_get_class_mutex());
+  
+  pattern_mutex = pattern->obj_mutex;
+  
+  pthread_mutex_unlock(ags_pattern_get_class_mutex());
+
+  /* set flags */
+  pthread_mutex_lock(pattern_mutex);
+
+  pattern->flags &= (~flags);
+
+  pthread_mutex_unlock(pattern_mutex);
 }
 
 void

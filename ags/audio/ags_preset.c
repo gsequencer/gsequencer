@@ -613,6 +613,126 @@ ags_preset_finalize(GObject *gobject)
 }
 
 /**
+ * ags_preset_get_class_mutex:
+ * 
+ * Use this function's returned mutex to access mutex fields.
+ *
+ * Returns: the class mutex
+ * 
+ * Since: 2.0.0
+ */
+pthread_mutex_t*
+ags_preset_get_class_mutex()
+{
+  return(&ags_preset_class_mutex);
+}
+
+/**
+ * ags_preset_test_flags:
+ * @preset: the #AgsPreset
+ * @flags: the flags
+ *
+ * Test @flags to be set on @preset.
+ * 
+ * Returns: %TRUE if flags are set, else %FALSE
+ *
+ * Since: 2.0.0
+ */
+gboolean
+ags_preset_test_flags(AgsPreset *preset, guint flags)
+{
+  gboolean retval;  
+  
+  pthread_mutex_t *preset_mutex;
+
+  if(!AGS_IS_PRESET(preset)){
+    return(FALSE);
+  }
+
+  /* get preset mutex */
+  pthread_mutex_lock(ags_preset_get_class_mutex());
+  
+  preset_mutex = preset->obj_mutex;
+  
+  pthread_mutex_unlock(ags_preset_get_class_mutex());
+
+  /* test */
+  pthread_mutex_lock(preset_mutex);
+
+  retval = (flags & (preset->flags)) ? TRUE: FALSE;
+  
+  pthread_mutex_unlock(preset_mutex);
+
+  return(retval);
+}
+
+/**
+ * ags_preset_set_flags:
+ * @preset: the #AgsPreset
+ * @flags: the flags
+ *
+ * Set flags.
+ * 
+ * Since: 2.0.0
+ */
+void
+ags_preset_set_flags(AgsPreset *preset, guint flags)
+{
+  pthread_mutex_t *preset_mutex;
+
+  if(!AGS_IS_PRESET(preset)){
+    return;
+  }
+
+  /* get preset mutex */
+  pthread_mutex_lock(ags_preset_get_class_mutex());
+  
+  preset_mutex = preset->obj_mutex;
+  
+  pthread_mutex_unlock(ags_preset_get_class_mutex());
+
+  /* set flags */
+  pthread_mutex_lock(preset_mutex);
+
+  preset->flags |= flags;
+
+  pthread_mutex_unlock(preset_mutex);
+}
+
+/**
+ * ags_preset_unset_flags:
+ * @preset: the #AgsPreset
+ * @flags: the flags
+ *
+ * Unset flags.
+ * 
+ * Since: 2.0.0
+ */
+void
+ags_preset_unset_flags(AgsPreset *preset, guint flags)
+{
+  pthread_mutex_t *preset_mutex;
+
+  if(!AGS_IS_PRESET(preset)){
+    return;
+  }
+
+  /* get preset mutex */
+  pthread_mutex_lock(ags_preset_get_class_mutex());
+  
+  preset_mutex = preset->obj_mutex;
+  
+  pthread_mutex_unlock(ags_preset_get_class_mutex());
+
+  /* set flags */
+  pthread_mutex_lock(preset_mutex);
+
+  preset->flags &= (~flags);
+
+  pthread_mutex_unlock(preset_mutex);
+}
+
+/**
  * ags_preset_find_scope:
  * @preset: the #GList-struct containing #AgsPreset
  * @scope: the preset's scope
