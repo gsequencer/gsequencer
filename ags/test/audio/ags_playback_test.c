@@ -31,13 +31,9 @@ int ags_playback_test_clean_suite();
 
 void ags_playback_test_set_channel_thread();
 void ags_playback_test_get_channel_thread();
-void ags_playback_test_set_iterator_thread();
-void ags_playback_test_get_iterator_thread();
-void ags_playback_test_set_recycling_thread();
-void ags_playback_test_get_recycling_thread();
 void ags_playback_test_set_recall_id();
 void ags_playback_test_get_recall_id();
-void ags_playback_test_find_source();
+void ags_playback_test_find_channel();
 
 #define AGS_PLAYBACK_TEST_CONFIG "[generic]\n"	\
   "autosave-thread=false\n"			\
@@ -94,20 +90,20 @@ ags_playback_test_set_channel_thread()
   /* set playback to NULL and assert */
   ags_playback_set_channel_thread(playback,
 				  NULL,
-				  AGS_PLAYBACK_SCOPE_PLAYBACK);
-  CU_ASSERT(playback->channel_thread[AGS_PLAYBACK_SCOPE_PLAYBACK] == NULL);
+				  AGS_SOUND_SCOPE_PLAYBACK);
+  CU_ASSERT(playback->channel_thread[AGS_SOUND_SCOPE_PLAYBACK] == NULL);
     
   /* set sequencer to NULL and assert */
   ags_playback_set_channel_thread(playback,
 				  NULL,
-				  AGS_PLAYBACK_SCOPE_SEQUENCER);
-  CU_ASSERT(playback->channel_thread[AGS_PLAYBACK_SCOPE_SEQUENCER] == NULL);
+				  AGS_SOUND_SCOPE_SEQUENCER);
+  CU_ASSERT(playback->channel_thread[AGS_SOUND_SCOPE_SEQUENCER] == NULL);
 
   /* set notation to NULL and assert */
   ags_playback_set_channel_thread(playback,
 				  NULL,
-				  AGS_PLAYBACK_SCOPE_NOTATION);
-  CU_ASSERT(playback->channel_thread[AGS_PLAYBACK_SCOPE_NOTATION] == NULL);
+				  AGS_SOUND_SCOPE_NOTATION);
+  CU_ASSERT(playback->channel_thread[AGS_SOUND_SCOPE_NOTATION] == NULL);
 }
 
 void
@@ -122,124 +118,18 @@ ags_playback_test_get_channel_thread()
 
   /* get playback to NULL and assert */
   thread = ags_playback_get_channel_thread(playback,
-					   AGS_PLAYBACK_SCOPE_PLAYBACK);
-  CU_ASSERT(playback->channel_thread[AGS_PLAYBACK_SCOPE_PLAYBACK] == thread);
+					   AGS_SOUND_SCOPE_PLAYBACK);
+  CU_ASSERT(playback->channel_thread[AGS_SOUND_SCOPE_PLAYBACK] == thread);
   
   /* get sequencer to NULL and assert */
   thread = ags_playback_get_channel_thread(playback,
-					   AGS_PLAYBACK_SCOPE_SEQUENCER);
-  CU_ASSERT(playback->channel_thread[AGS_PLAYBACK_SCOPE_SEQUENCER] == thread);
+					   AGS_SOUND_SCOPE_SEQUENCER);
+  CU_ASSERT(playback->channel_thread[AGS_SOUND_SCOPE_SEQUENCER] == thread);
 
   /* get notation to NULL and assert */
   thread = ags_playback_get_channel_thread(playback,
-					   AGS_PLAYBACK_SCOPE_NOTATION);
-  CU_ASSERT(playback->channel_thread[AGS_PLAYBACK_SCOPE_NOTATION] == thread);
-}
-
-void
-ags_playback_test_set_iterator_thread()
-{
-  AgsPlayback *playback;
-  
-  playback = g_object_new(AGS_TYPE_PLAYBACK,
-			  NULL);
-
-  /* set playback to NULL and assert */
-  ags_playback_set_iterator_thread(playback,
-				   NULL,
-				   AGS_PLAYBACK_SCOPE_PLAYBACK);
-  CU_ASSERT(playback->iterator_thread[AGS_PLAYBACK_SCOPE_PLAYBACK] == NULL);
-    
-  /* set sequencer to NULL and assert */
-  ags_playback_set_iterator_thread(playback,
-				   NULL,
-				   AGS_PLAYBACK_SCOPE_SEQUENCER);
-  CU_ASSERT(playback->iterator_thread[AGS_PLAYBACK_SCOPE_SEQUENCER] == NULL);
-
-  /* set notation to NULL and assert */
-  ags_playback_set_iterator_thread(playback,
-				   NULL,
-				   AGS_PLAYBACK_SCOPE_NOTATION);
-  CU_ASSERT(playback->iterator_thread[AGS_PLAYBACK_SCOPE_NOTATION] == NULL);
-}
-
-void
-ags_playback_test_get_iterator_thread()
-{
-  AgsPlayback *playback;
-
-  AgsThread *thread;
-  
-  playback = g_object_new(AGS_TYPE_PLAYBACK,
-			  NULL);
-
-  /* get playback to NULL and assert */
-  thread = ags_playback_get_iterator_thread(playback,
-					    AGS_PLAYBACK_SCOPE_PLAYBACK);
-  CU_ASSERT(playback->iterator_thread[AGS_PLAYBACK_SCOPE_PLAYBACK] == thread);
-  
-  /* get sequencer to NULL and assert */
-  thread = ags_playback_get_iterator_thread(playback,
-					    AGS_PLAYBACK_SCOPE_SEQUENCER);
-  CU_ASSERT(playback->iterator_thread[AGS_PLAYBACK_SCOPE_SEQUENCER] == thread);
-
-  /* get notation to NULL and assert */
-  thread = ags_playback_get_iterator_thread(playback,
-					    AGS_PLAYBACK_SCOPE_NOTATION);
-  CU_ASSERT(playback->iterator_thread[AGS_PLAYBACK_SCOPE_NOTATION] == thread);
-}
-
-void
-ags_playback_test_set_recycling_thread()
-{
-  AgsPlayback *playback;
-  
-  playback = g_object_new(AGS_TYPE_PLAYBACK,
-			  NULL);
-
-  /* set playback to NULL and assert */
-  ags_playback_set_recycling_thread(playback,
-				    NULL,
-				    AGS_PLAYBACK_SCOPE_PLAYBACK);
-  CU_ASSERT(playback->recycling_thread[AGS_PLAYBACK_SCOPE_PLAYBACK] == NULL);
-    
-  /* set sequencer to NULL and assert */
-  ags_playback_set_recycling_thread(playback,
-				    NULL,
-				    AGS_PLAYBACK_SCOPE_SEQUENCER);
-  CU_ASSERT(playback->recycling_thread[AGS_PLAYBACK_SCOPE_SEQUENCER] == NULL);
-
-  /* set notation to NULL and assert */
-  ags_playback_set_recycling_thread(playback,
-				    NULL,
-				    AGS_PLAYBACK_SCOPE_NOTATION);
-  CU_ASSERT(playback->recycling_thread[AGS_PLAYBACK_SCOPE_NOTATION] == NULL);
-}
-
-void
-ags_playback_test_get_recycling_thread()
-{
-  AgsPlayback *playback;
-
-  AgsThread *thread;
-  
-  playback = g_object_new(AGS_TYPE_PLAYBACK,
-			  NULL);
-
-  /* get playback to NULL and assert */
-  thread = ags_playback_get_recycling_thread(playback,
-					     AGS_PLAYBACK_SCOPE_PLAYBACK);
-  CU_ASSERT(playback->recycling_thread[AGS_PLAYBACK_SCOPE_PLAYBACK] == thread);
-  
-  /* get sequencer to NULL and assert */
-  thread = ags_playback_get_recycling_thread(playback,
-					     AGS_PLAYBACK_SCOPE_SEQUENCER);
-  CU_ASSERT(playback->recycling_thread[AGS_PLAYBACK_SCOPE_SEQUENCER] == thread);
-
-  /* get notation to NULL and assert */
-  thread = ags_playback_get_recycling_thread(playback,
-					     AGS_PLAYBACK_SCOPE_NOTATION);
-  CU_ASSERT(playback->recycling_thread[AGS_PLAYBACK_SCOPE_NOTATION] == thread);
+					   AGS_SOUND_SCOPE_NOTATION);
+  CU_ASSERT(playback->channel_thread[AGS_SOUND_SCOPE_NOTATION] == thread);
 }
 
 void
@@ -263,20 +153,20 @@ ags_playback_test_set_recall_id()
   /* set playback to NULL and assert */
   ags_playback_set_recall_id(playback,
 			     recall_id[0],
-			     AGS_PLAYBACK_SCOPE_PLAYBACK);
-  CU_ASSERT(playback->recall_id[AGS_PLAYBACK_SCOPE_PLAYBACK] == recall_id[0]);
+			     AGS_SOUND_SCOPE_PLAYBACK);
+  CU_ASSERT(playback->recall_id[AGS_SOUND_SCOPE_PLAYBACK] == recall_id[0]);
     
   /* set sequencer to NULL and assert */
   ags_playback_set_recall_id(playback,
 			     recall_id[1],
-			     AGS_PLAYBACK_SCOPE_SEQUENCER);
-  CU_ASSERT(playback->recall_id[AGS_PLAYBACK_SCOPE_SEQUENCER] == recall_id[1]);
+			     AGS_SOUND_SCOPE_SEQUENCER);
+  CU_ASSERT(playback->recall_id[AGS_SOUND_SCOPE_SEQUENCER] == recall_id[1]);
 
   /* set notation to NULL and assert */
   ags_playback_set_recall_id(playback,
 			     recall_id[2],
-			     AGS_PLAYBACK_SCOPE_NOTATION);
-  CU_ASSERT(playback->recall_id[AGS_PLAYBACK_SCOPE_NOTATION] == recall_id[2]);
+			     AGS_SOUND_SCOPE_NOTATION);
+  CU_ASSERT(playback->recall_id[AGS_SOUND_SCOPE_NOTATION] == recall_id[2]);
 }
 
 void
@@ -292,33 +182,33 @@ ags_playback_test_get_recall_id()
 			      NULL);
   ags_playback_set_recall_id(playback,
 			     recall_id[0],
-			     AGS_PLAYBACK_SCOPE_PLAYBACK);
+			     AGS_SOUND_SCOPE_PLAYBACK);
 
   recall_id[1] = g_object_new(AGS_TYPE_RECALL_ID,
 			      NULL);
   ags_playback_set_recall_id(playback,
 			     recall_id[1],
-			     AGS_PLAYBACK_SCOPE_SEQUENCER);
+			     AGS_SOUND_SCOPE_SEQUENCER);
 
   recall_id[2] = g_object_new(AGS_TYPE_RECALL_ID,
 			      NULL);
   ags_playback_set_recall_id(playback,
 			     recall_id[2],
-			     AGS_PLAYBACK_SCOPE_NOTATION);
+			     AGS_SOUND_SCOPE_NOTATION);
 
   /* assert get recall id */
   CU_ASSERT(ags_playback_get_recall_id(playback,
-				       AGS_PLAYBACK_SCOPE_PLAYBACK) == recall_id[0]);
+				       AGS_SOUND_SCOPE_PLAYBACK) == recall_id[0]);
 
   CU_ASSERT(ags_playback_get_recall_id(playback,
-				       AGS_PLAYBACK_SCOPE_SEQUENCER) == recall_id[1]);
+				       AGS_SOUND_SCOPE_SEQUENCER) == recall_id[1]);
 
   CU_ASSERT(ags_playback_get_recall_id(playback,
-				       AGS_PLAYBACK_SCOPE_NOTATION) == recall_id[2]);
+				       AGS_SOUND_SCOPE_NOTATION) == recall_id[2]);
 }
 
 void
-ags_playback_test_find_source()
+ags_playback_test_find_channel()
 {
   AgsChannel *channel[3];
   AgsPlayback *playback[3];
@@ -358,14 +248,14 @@ ags_playback_test_find_source()
 			playback[2]);
 
   /* assert */
-  CU_ASSERT(ags_playback_find_source(list,
-				     channel[0]) == playback[0]);
+  CU_ASSERT(ags_playback_find_channel(list,
+				      channel[0]) == playback[0]);
 
-  CU_ASSERT(ags_playback_find_source(list,
-				     channel[1]) == playback[1]);
+  CU_ASSERT(ags_playback_find_channel(list,
+				      channel[1]) == playback[1]);
 
-  CU_ASSERT(ags_playback_find_source(list,
-				     channel[2]) == playback[2]);
+  CU_ASSERT(ags_playback_find_channel(list,
+				      channel[2]) == playback[2]);
 }
 
 int
@@ -390,13 +280,9 @@ main(int argc, char **argv)
   /* add the tests to the suite */
   if((CU_add_test(pSuite, "test of AgsPlayback set channel thread", ags_playback_test_set_channel_thread) == NULL) ||
      (CU_add_test(pSuite, "test of AgsPlayback get channel thread", ags_playback_test_get_channel_thread) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsPlayback set iterator thread", ags_playback_test_set_iterator_thread) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsPlayback set iterator thread", ags_playback_test_get_iterator_thread) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsPlayback set recycling thread", ags_playback_test_set_recycling_thread) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsPlayback get recycling thread", ags_playback_test_get_recycling_thread) == NULL) ||
      (CU_add_test(pSuite, "test of AgsPlayback set recall id", ags_playback_test_set_recall_id) == NULL) ||
      (CU_add_test(pSuite, "test of AgsPlayback get recall id", ags_playback_test_get_recall_id) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsPlayback get find source", ags_playback_test_find_source) == NULL)){
+     (CU_add_test(pSuite, "test of AgsPlayback get find source", ags_playback_test_find_channel) == NULL)){
     CU_cleanup_registry();
     
     return CU_get_error();
@@ -410,4 +296,3 @@ main(int argc, char **argv)
   
   return(CU_get_error());
 }
-

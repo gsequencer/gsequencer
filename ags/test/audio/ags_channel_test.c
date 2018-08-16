@@ -129,10 +129,10 @@ ags_channel_test_dispose()
   channel->playback = NULL;
   
   CU_ASSERT(channel->audio == NULL);
-  CU_ASSERT(channel->soundcard == NULL);
+  CU_ASSERT(channel->output_soundcard == NULL);
 
   CU_ASSERT(channel->recall_id == NULL);
-  CU_ASSERT(channel->container == NULL);
+  CU_ASSERT(channel->recall_container == NULL);
 
   CU_ASSERT(channel->recall == NULL);
   CU_ASSERT(channel->play == NULL);
@@ -278,7 +278,7 @@ ags_channel_test_add_recall_container()
 				   recall_container0);
   
   /* assert to be in channel->recall_container */
-  CU_ASSERT(g_list_find(channel->container,
+  CU_ASSERT(g_list_find(channel->recall_container,
 			recall_container0) != NULL);
 
   /* instantiate recall */
@@ -287,9 +287,9 @@ ags_channel_test_add_recall_container()
 				   recall_container1);
   
   /* assert to be in channel->recall_container */
-  CU_ASSERT(g_list_find(channel->container,
+  CU_ASSERT(g_list_find(channel->recall_container,
 			recall_container0) != NULL);
-  CU_ASSERT(g_list_find(channel->container,
+  CU_ASSERT(g_list_find(channel->recall_container,
 			recall_container1) != NULL);
 }
 

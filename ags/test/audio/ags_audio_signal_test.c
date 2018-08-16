@@ -83,11 +83,11 @@ ags_audio_signal_test_add_stream()
 				      NULL);
 
   /* assert add stream */
-  CU_ASSERT(audio_signal->stream_beginning == NULL);
+  CU_ASSERT(audio_signal->stream == NULL);
 
   ags_audio_signal_add_stream(audio_signal);
-  CU_ASSERT(audio_signal->stream_beginning != NULL);
-  CU_ASSERT(g_list_length(audio_signal->stream_beginning) == 1);
+  CU_ASSERT(audio_signal->stream != NULL);
+  CU_ASSERT(g_list_length(audio_signal->stream) == 1);
 }
 
 void
@@ -101,12 +101,12 @@ ags_audio_signal_test_resize_stream()
 				      NULL);
 
   /* assert resize stream */
-  CU_ASSERT(audio_signal->stream_beginning == NULL);
+  CU_ASSERT(audio_signal->stream == NULL);
 
   ags_audio_signal_stream_resize(audio_signal,
 				 5);
-  CU_ASSERT(audio_signal->stream_beginning != NULL);
-  CU_ASSERT(g_list_length(audio_signal->stream_beginning) == 5);
+  CU_ASSERT(audio_signal->stream != NULL);
+  CU_ASSERT(g_list_length(audio_signal->stream) == 5);
 }
 
 void

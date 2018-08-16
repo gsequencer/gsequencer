@@ -2,7 +2,6 @@
 check_PROGRAMS += \
 	ags_application_context_test \
 	ags_config_test \
-	ags_connection_manager_test \
 	ags_condition_manager_test \
 	ags_destroy_worker_test \
 	ags_mutex_manager_test \
@@ -40,7 +39,6 @@ check_PROGRAMS += \
 	ags_devout_test \
 	ags_midiin_test \
 	ags_audio_test \
-	ags_audio_connection_test \
 	ags_playback_domain_test \
 	ags_playback_test \
 	ags_preset_test \

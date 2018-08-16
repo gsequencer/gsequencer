@@ -174,9 +174,9 @@ ags_preset_test_add_parameter()
 			   AGS_PRESET_TEST_ADD_PARAMETER_ATTACK_X, &value);
 
   CU_ASSERT(preset->n_params == 1 &&
-	    !g_strcmp0(preset->parameter[0].name,
+	    !g_strcmp0(preset->parameter_name[0],
 		       AGS_PRESET_TEST_ADD_PARAMETER_ATTACK_X) &&
-	    g_value_get_uint(&preset->parameter[0].value) == AGS_PRESET_TEST_ADD_PARAMETER_ATTACK_X_VALUE);
+	    g_value_get_uint(&(preset->value[0])) == AGS_PRESET_TEST_ADD_PARAMETER_ATTACK_X_VALUE);
 }
 
 void
@@ -207,9 +207,9 @@ ags_preset_test_remove_parameter()
 			      0);
   
   CU_ASSERT(preset->n_params == 1 &&
-	    !g_strcmp0(preset->parameter[0].name,
+	    !g_strcmp0(preset->parameter_name[0],
 		       AGS_PRESET_TEST_REMOVE_PARAMETER_DECAY_X) &&
-	    g_value_get_uint(&preset->parameter[0].value) == AGS_PRESET_TEST_REMOVE_PARAMETER_DECAY_X_VALUE);
+	    g_value_get_uint(&(preset->value[0])) == AGS_PRESET_TEST_REMOVE_PARAMETER_DECAY_X_VALUE);
 
   ags_preset_remove_parameter(preset,
 			      0);

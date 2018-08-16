@@ -26,10 +26,6 @@
 #include <ags/libags.h>
 #include <ags/libags-audio.h>
 
-#define AGS_DEVOUT_TEST_DISPOSE_AUDIO_COUNT (8)
-
-#define AGS_DEVOUT_TEST_FINALIZE_AUDIO_COUNT (8)
-
 int ags_devout_test_init_suite();
 int ags_devout_test_clean_suite();
 
@@ -106,36 +102,6 @@ ags_devout_test_dispose()
 			NULL);
   g_object_ref(devout);
   
-  /* instantiate audio list */
-  list_start = NULL;
-  
-  for(i = 0; i < AGS_DEVOUT_TEST_DISPOSE_AUDIO_COUNT; i++){
-    audio = g_object_new(AGS_TYPE_AUDIO,
-			 NULL);
-    g_object_ref(audio);    
-
-    list_start = g_list_prepend(list_start,
-				audio);
-  }
-
-  /* add to soundcard */
-  list = list_start;
-  
-  while(list != NULL){
-    /* audio list of soundcard */
-    ags_soundcard_set_audio(AGS_SOUNDCARD(devout),
-			    g_list_prepend(ags_soundcard_get_audio(AGS_SOUNDCARD(devout)),
-					   list->data));
-    g_object_ref(list->data);
-
-    /* soundcard property of audio */
-    g_object_set(list->data,
-		 "soundcard\0", devout,
-		 NULL);
-
-    /* iterate */
-    list = list->next;
-  }
 
   /* run dispose */
   g_object_run_dispose(devout);
@@ -143,29 +109,6 @@ ags_devout_test_dispose()
   /* assert no application context */
   CU_ASSERT(ags_soundcard_get_application_context(AGS_SOUNDCARD(devout)) == NULL);
   
-  /* assert no audio */
-  CU_ASSERT(ags_soundcard_get_audio(AGS_SOUNDCARD(devout)) == NULL);
-
-  /* verify soundcard equals NULL */
-  list = list_start;
-  success = TRUE;
-  
-  while(list != NULL){
-    GObject *soundcard;
-    
-    g_object_get(list->data,
-		 "soundcard\0", &soundcard,
-		 NULL);
-
-    if(soundcard != NULL){
-      success = FALSE;
-
-      break;
-    }
-    
-    list = list->next;
-  }
-
   /* assert */
   CU_ASSERT(success == TRUE);
 }
@@ -181,25 +124,6 @@ ags_devout_test_finalize()
   devout = g_object_new(AGS_TYPE_DEVOUT,
 			"application-context\0", audio_application_context,
 			NULL);
-
-  /* audio list */  
-  for(i = 0; i < AGS_DEVOUT_TEST_FINALIZE_AUDIO_COUNT; i++){
-    /* instantiate audio */
-    audio = g_object_new(AGS_TYPE_AUDIO,
-			 NULL);
-    g_object_ref(audio);    
-
-    /* audio list of soundcard */
-    ags_soundcard_set_audio(AGS_SOUNDCARD(devout),
-			    g_list_prepend(ags_soundcard_get_audio(AGS_SOUNDCARD(devout)),
-					   audio));
-    g_object_ref(audio);
-
-    /* soundcard property of audio */
-    g_object_set(audio,
-		 "soundcard\0", devout,
-		 NULL);
-  }
 
   /* run dispose */
   g_object_run_dispose(devout);

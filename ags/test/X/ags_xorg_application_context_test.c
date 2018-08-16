@@ -114,7 +114,7 @@ ags_xorg_application_context_test_dispose()
   CU_ASSERT(xorg_application_context->server == NULL);
   CU_ASSERT(xorg_application_context->soundcard == NULL);
   CU_ASSERT(xorg_application_context->sequencer == NULL);
-  CU_ASSERT(xorg_application_context->distributed_manager == NULL);
+  CU_ASSERT(xorg_application_context->sound_server == NULL);
   CU_ASSERT(xorg_application_context->window == NULL);
 }
 

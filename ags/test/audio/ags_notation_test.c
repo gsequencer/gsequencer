@@ -196,7 +196,7 @@ ags_notation_test_add_note()
   }
 
   /* assert position */
-  list = notation->notes;
+  list = notation->note;
   success = TRUE;
   
   for(i = 0; i < AGS_NOTATION_TEST_ADD_NOTE_COUNT; i++){
@@ -249,7 +249,7 @@ ags_notation_test_remove_note_at_position()
 
   for(i = 0; i < AGS_NOTATION_TEST_REMOVE_NOTE_AT_POSITION_REMOVE_COUNT; i++){
     nth = rand() % (AGS_NOTATION_TEST_REMOVE_NOTE_AT_POSITION_COUNT - i);
-    current = g_list_nth(notation->notes,
+    current = g_list_nth(notation->note,
 			 nth);
     
     ags_notation_remove_note_at_position(notation,
@@ -258,7 +258,7 @@ ags_notation_test_remove_note_at_position()
   }
   
   /* assert position */
-  list = notation->notes;
+  list = notation->note;
   success = TRUE;
   
   for(i = 0; i < AGS_NOTATION_TEST_REMOVE_NOTE_AT_POSITION_COUNT - AGS_NOTATION_TEST_REMOVE_NOTE_AT_POSITION_REMOVE_COUNT; i++){
@@ -312,7 +312,7 @@ ags_notation_test_is_note_selected()
   /* select notes */
   for(i = 0; i < AGS_NOTATION_TEST_IS_NOTE_SELECTED_SELECTION_COUNT; i++){
     nth = rand() % (AGS_NOTATION_TEST_IS_NOTE_SELECTED_COUNT - i);
-    current = g_list_nth(notation->notes,
+    current = g_list_nth(notation->note,
 			 nth);
 
     ags_notation_add_note(notation,
@@ -377,7 +377,7 @@ ags_notation_test_find_point()
 
   for(i = 0; i < AGS_NOTATION_TEST_FIND_POINT_N_ATTEMPTS; i++){
     nth = rand() % AGS_NOTATION_TEST_FIND_POINT_COUNT;
-    current = g_list_nth(notation->notes,
+    current = g_list_nth(notation->note,
 			 nth);
     
     note = ags_notation_find_point(notation,
@@ -434,7 +434,7 @@ ags_notation_test_find_region()
 	success;
       i++){
     nth = rand() % AGS_NOTATION_TEST_FIND_REGION_COUNT;
-    current = g_list_nth(notation->notes,
+    current = g_list_nth(notation->note,
 			 nth);
     
     region = ags_notation_find_region(notation,
@@ -492,7 +492,7 @@ ags_notation_test_free_selection()
   /* select notes */
   for(i = 0; i < AGS_NOTATION_TEST_FREE_SELECTION_SELECTION_COUNT; i++){
     nth = rand() % (AGS_NOTATION_TEST_FREE_SELECTION_SELECTION_COUNT - i);
-    current = g_list_nth(notation->notes,
+    current = g_list_nth(notation->note,
 			 nth);
 
     ags_notation_add_note(notation,
@@ -539,7 +539,7 @@ ags_notation_test_add_all_to_selection()
   }
 
   /* assert all present */
-  current = notation->notes;
+  current = notation->note;
   current_selection = notation->selection;
 
   success = TRUE;
@@ -595,7 +595,7 @@ ags_notation_test_add_point_to_selection()
   
   for(i = 0; i < AGS_NOTATION_TEST_ADD_POINT_TO_SELECTION_N_ATTEMPTS; i++){
     nth = rand() % AGS_NOTATION_TEST_ADD_POINT_TO_SELECTION_COUNT;
-    current = g_list_nth(notation->notes,
+    current = g_list_nth(notation->note,
 			 nth);
 
     ags_notation_add_point_to_selection(notation,
@@ -649,7 +649,7 @@ ags_notation_test_remove_point_from_selection()
   /* add point to selection */
   for(i = 0; i < AGS_NOTATION_TEST_REMOVE_POINT_FROM_SELECTION_SELECTION_COUNT; i++){
     nth = rand() % AGS_NOTATION_TEST_REMOVE_POINT_FROM_SELECTION_COUNT;
-    current = g_list_nth(notation->notes,
+    current = g_list_nth(notation->note,
 			 nth);
 
     ags_notation_add_point_to_selection(notation,

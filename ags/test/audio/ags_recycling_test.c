@@ -206,9 +206,9 @@ ags_recycling_test_create_audio_signal_with_defaults()
   }
 
   template->stream_end = stream;
-  template->stream_beginning = g_list_reverse(stream);
+  template->stream = g_list_reverse(stream);
 
-  template->length = g_list_length(template->stream_beginning);
+  template->length = g_list_length(template->stream);
   
   /* add audio signal to recycling */
   ags_recycling_add_audio_signal(recycling,
@@ -236,8 +236,8 @@ ags_recycling_test_create_audio_signal_with_defaults()
   CU_ASSERT(audio_signal->loop_start == template->loop_start);
   CU_ASSERT(audio_signal->loop_end == template->loop_end);
 
-  stream = audio_signal->stream_beginning;
-  template_stream = template->stream_beginning;
+  stream = audio_signal->stream;
+  template_stream = template->stream;
   
   for(i = 0; i < AGS_RECYCLING_TEST_CREATE_AUDIO_SIGNAL_WITH_DEFAULTS_FRAMES;){
     for(j = 0;
@@ -320,7 +320,7 @@ ags_recycling_test_create_audio_signal_with_frame_count()
 				 (guint) ceil(AGS_RECYCLING_TEST_CREATE_AUDIO_SIGNAL_WITH_FRAME_COUNT_FRAMES / template->buffer_size) + 1);
   
   for(i = 0, nth = 0; i < AGS_RECYCLING_TEST_CREATE_AUDIO_SIGNAL_WITH_FRAME_COUNT_FRAMES / 16.0; nth++){
-    buffer = (signed short *) g_list_nth_data(template->stream_beginning,
+    buffer = (signed short *) g_list_nth_data(template->stream,
 					      nth);
     
     for(j = 0;
@@ -365,7 +365,7 @@ ags_recycling_test_create_audio_signal_with_frame_count()
   CU_ASSERT(audio_signal->last_frame == frame_count % AGS_RECYCLING_TEST_CREATE_AUDIO_SIGNAL_WITH_FRAME_COUNT_BUFFER_SIZE);
 
   /* create compare buffer */
-  template_stream = template->stream_beginning;
+  template_stream = template->stream;
 
   loop_frame_count = ((frame_count - template->loop_start) / (template->loop_end - template->loop_start)) * template->buffer_size;
   
@@ -410,7 +410,7 @@ ags_recycling_test_create_audio_signal_with_frame_count()
        i + copy_n_frames < template->loop_start + loop_frame_count &&
        template->loop_start + ((i - template->loop_start) % (template->loop_end - template->loop_start)) + copy_n_frames >= template->loop_end - template->loop_start){
       j = template->loop_start % template->buffer_size;
-      template_stream = g_list_nth(template->stream_beginning,
+      template_stream = g_list_nth(template->stream,
 				   floor(template->loop_start / template->buffer_size));
     }else{
       j += copy_n_frames;
@@ -424,7 +424,7 @@ ags_recycling_test_create_audio_signal_with_frame_count()
   }
   
   /* check loop */
-  stream = audio_signal->stream_beginning;
+  stream = audio_signal->stream;
 
   i = 0;
   j = 0;
@@ -469,7 +469,7 @@ ags_recycling_test_create_audio_signal_with_frame_count()
        i + copy_n_frames < template->loop_start + loop_frame_count &&
        template->loop_start + ((i - template->loop_start) % (template->loop_end - template->loop_start)) + copy_n_frames >= template->loop_end - template->loop_start){
       j = template->loop_start % template->buffer_size;
-      template_stream = g_list_nth(template->stream_beginning,
+      template_stream = g_list_nth(template->stream,
 				   floor(template->loop_start / template->buffer_size));
     }else{
       j += copy_n_frames;

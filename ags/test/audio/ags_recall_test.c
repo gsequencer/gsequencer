@@ -38,7 +38,7 @@
 int ags_recall_test_init_suite();
 int ags_recall_test_clean_suite();
 
-void ags_recall_test_resolve_dependencies();
+void ags_recall_test_resolve_dependency();
 void ags_recall_test_child_added();
 void ags_recall_test_run_init_pre();
 void ags_recall_test_run_init_inter();
@@ -46,17 +46,15 @@ void ags_recall_test_run_init_post();
 void ags_recall_test_stop_persistent();
 void ags_recall_test_done();
 void ags_recall_test_cancel();
-void ags_recall_test_remove();
 void ags_recall_test_is_done();
 void ags_recall_test_duplicate();
 void ags_recall_test_set_recall_id();
 void ags_recall_test_notify_dependency();
 void ags_recall_test_add_dependency();
 void ags_recall_test_remove_dependency();
-void ags_recall_test_get_dependencies();
+void ags_recall_test_get_dependency();
 void ags_recall_test_remove_child();
 void ags_recall_test_add_child();
-void ags_recall_test_get_children();
 void ags_recall_test_get_by_effect();
 void ags_recall_test_find_recall_id_with_effect();
 void ags_recall_test_find_type();
@@ -102,8 +100,6 @@ AgsRecall* ags_recall_test_duplicate_callback(AgsRecall *recall, AgsRecallID *re
 
 #define AGS_RECALL_TEST_ADD_CHILD_CHILDREN_COUNT (16)
 
-#define AGS_RECALL_TEST_GET_CHILDREN_CHILDREN_COUNT (16)
-
 #define AGS_RECALL_TEST_GET_BY_EFFECT_RECALL_COUNT (4)
 #define AGS_RECALL_TEST_GET_BY_EFFECT_LADSPA_RECALL_COUNT (16)
 
@@ -142,7 +138,7 @@ ags_recall_test_callback(AgsRecall *recall,
 }
 
 void
-ags_recall_test_resolve_dependencies()
+ags_recall_test_resolve_dependency()
 {
   AgsRecall *recall;
 
@@ -150,12 +146,12 @@ ags_recall_test_resolve_dependencies()
 
   /* create recall */
   recall = ags_recall_new();
-  g_signal_connect(G_OBJECT(recall), "resolve-dependencies\0",
+  g_signal_connect(G_OBJECT(recall), "resolve-dependency",
 		   G_CALLBACK(ags_recall_test_callback), &data);
 
   /* assert callback invoked */
   data = 0;
-  ags_recall_resolve_dependencies(recall);
+  ags_recall_resolve_dependency(recall);
   
   CU_ASSERT(data == 1);
 }
@@ -176,7 +172,7 @@ ags_recall_test_child_added()
 
   /* create recall */
   recall = ags_recall_new();
-  g_signal_connect(G_OBJECT(recall), "child-added\0",
+  g_signal_connect(G_OBJECT(recall), "child-added",
 		   G_CALLBACK(ags_recall_test_child_added_callback), &data);
 
   /* assert callback invoked */
@@ -197,7 +193,7 @@ ags_recall_test_run_init_pre()
   guint i;
 
   recall = ags_recall_new();
-  g_signal_connect(G_OBJECT(recall), "run-init-pre\0",
+  g_signal_connect(G_OBJECT(recall), "run-init-pre",
 		   G_CALLBACK(ags_recall_test_callback), &data);
   
   child = (AgsRecall **) malloc(AGS_RECALL_RUN_INIT_PRE_N_CHILDREN * sizeof(AgsRecall *));
@@ -206,7 +202,7 @@ ags_recall_test_run_init_pre()
     child[i] = ags_recall_new();
     ags_recall_add_child(recall,
 			 child[i]);
-    g_signal_connect(G_OBJECT(child[i]), "run-init-pre\0",
+    g_signal_connect(G_OBJECT(child[i]), "run-init-pre",
 		     G_CALLBACK(ags_recall_test_callback), &data);
   }
   
@@ -227,7 +223,7 @@ ags_recall_test_run_init_inter()
   guint i;
 
   recall = ags_recall_new();
-  g_signal_connect(G_OBJECT(recall), "run-init-inter\0",
+  g_signal_connect(G_OBJECT(recall), "run-init-inter",
 		   G_CALLBACK(ags_recall_test_callback), &data);
   
   child = (AgsRecall **) malloc(AGS_RECALL_RUN_INIT_INTER_N_CHILDREN * sizeof(AgsRecall *));
@@ -236,7 +232,7 @@ ags_recall_test_run_init_inter()
     child[i] = ags_recall_new();
     ags_recall_add_child(recall,
 			 child[i]);
-    g_signal_connect(G_OBJECT(child[i]), "run-init-inter\0",
+    g_signal_connect(G_OBJECT(child[i]), "run-init-inter",
 		     G_CALLBACK(ags_recall_test_callback), &data);
   }
   
@@ -257,7 +253,7 @@ ags_recall_test_run_init_post()
   guint i;
 
   recall = ags_recall_new();
-  g_signal_connect(G_OBJECT(recall), "run-init-post\0",
+  g_signal_connect(G_OBJECT(recall), "run-init-post",
 		   G_CALLBACK(ags_recall_test_callback), &data);
   
   child = (AgsRecall **) malloc(AGS_RECALL_RUN_INIT_POST_N_CHILDREN * sizeof(AgsRecall *));
@@ -266,7 +262,7 @@ ags_recall_test_run_init_post()
     child[i] = ags_recall_new();
     ags_recall_add_child(recall,
 			 child[i]);
-    g_signal_connect(G_OBJECT(child[i]), "run-init-post\0",
+    g_signal_connect(G_OBJECT(child[i]), "run-init-post",
 		     G_CALLBACK(ags_recall_test_callback), &data);
   }
   
@@ -286,47 +282,47 @@ ags_recall_test_stop_persistent()
 
   /* playback */
   recall = ags_recall_new();
-  recall->flags |= (AGS_RECALL_PERSISTENT |
-		    AGS_RECALL_PERSISTENT_PLAYBACK);
-  g_signal_connect(G_OBJECT(recall), "done\0",
+  recall->behaviour_flags |= (AGS_SOUND_BEHAVIOUR_PERSISTENT |
+			      AGS_SOUND_BEHAVIOUR_PERSISTENT_PLAYBACK);
+  g_signal_connect(G_OBJECT(recall), "done",
 		   G_CALLBACK(ags_recall_test_callback), &data);
   
   /* assert callback invoked */
   data = 0;
   ags_recall_stop_persistent(recall);
   
-  CU_ASSERT(((AGS_RECALL_PERSISTENT & (recall->flags)) == 0) &&
-	    ((AGS_RECALL_PERSISTENT_PLAYBACK & (recall->flags)) == 0) &&
+  CU_ASSERT(((AGS_SOUND_BEHAVIOUR_PERSISTENT & (recall->behaviour_flags)) == 0) &&
+	    ((AGS_SOUND_BEHAVIOUR_PERSISTENT_PLAYBACK & (recall->behaviour_flags)) == 0) &&
 	    data == 1);
 
   /* sequencer */
   recall = ags_recall_new();
-  recall->flags |= (AGS_RECALL_PERSISTENT |
-		    AGS_RECALL_PERSISTENT_SEQUENCER);
-  g_signal_connect(G_OBJECT(recall), "done\0",
+  recall->behaviour_flags |= (AGS_SOUND_BEHAVIOUR_PERSISTENT |
+			      AGS_SOUND_BEHAVIOUR_PERSISTENT_SEQUENCER);
+  g_signal_connect(G_OBJECT(recall), "done",
 		   G_CALLBACK(ags_recall_test_callback), &data);
   
   /* assert callback invoked */
   data = 0;
   ags_recall_stop_persistent(recall);
   
-  CU_ASSERT(((AGS_RECALL_PERSISTENT & (recall->flags)) == 0) &&
-	    ((AGS_RECALL_PERSISTENT_SEQUENCER & (recall->flags)) == 0) &&
+  CU_ASSERT(((AGS_SOUND_BEHAVIOUR_PERSISTENT & (recall->behaviour_flags)) == 0) &&
+	    ((AGS_SOUND_BEHAVIOUR_PERSISTENT_SEQUENCER & (recall->behaviour_flags)) == 0) &&
 	    data == 1);
 
   /* notation */
   recall = ags_recall_new();
-  recall->flags |= (AGS_RECALL_PERSISTENT |
-		    AGS_RECALL_PERSISTENT_NOTATION);
-  g_signal_connect(G_OBJECT(recall), "done\0",
+  recall->behaviour_flags |= (AGS_SOUND_BEHAVIOUR_PERSISTENT |
+			      AGS_SOUND_BEHAVIOUR_PERSISTENT_NOTATION);
+  g_signal_connect(G_OBJECT(recall), "done",
 		   G_CALLBACK(ags_recall_test_callback), &data);
   
   /* assert callback invoked */
   data = 0;
   ags_recall_stop_persistent(recall);
   
-  CU_ASSERT(((AGS_RECALL_PERSISTENT & (recall->flags)) == 0) &&
-	    ((AGS_RECALL_PERSISTENT_NOTATION & (recall->flags)) == 0) &&
+  CU_ASSERT(((AGS_SOUND_BEHAVIOUR_PERSISTENT & (recall->behaviour_flags)) == 0) &&
+	    ((AGS_SOUND_BEHAVIOUR_PERSISTENT_NOTATION & (recall->behaviour_flags)) == 0) &&
 	    data == 1);
 }
 
@@ -339,27 +335,27 @@ ags_recall_test_done()
 
   /* recall */
   recall = ags_recall_new();
-  g_signal_connect(G_OBJECT(recall), "done\0",
+  g_signal_connect(G_OBJECT(recall), "done",
 		   G_CALLBACK(ags_recall_test_callback), &data);
 
   /* assert callback invoked */
   data = 0;
   ags_recall_done(recall);
   
-  CU_ASSERT(((AGS_RECALL_DONE & (recall->flags)) != 0) &&
+  CU_ASSERT(((AGS_SOUND_STAGING_DONE & (recall->staging_flags)) != 0) &&
 	    data == 1);
 
   /* persistent recall */
   recall = ags_recall_new();
-  recall->flags |= AGS_RECALL_PERSISTENT;
-  g_signal_connect(G_OBJECT(recall), "done\0",
+  recall->behaviour_flags |= AGS_SOUND_BEHAVIOUR_PERSISTENT;
+  g_signal_connect(G_OBJECT(recall), "done",
 		   G_CALLBACK(ags_recall_test_callback), &data);
 
   /* assert callback not invoked */
   data = 0;
   ags_recall_done(recall);
   
-  CU_ASSERT(((AGS_RECALL_DONE & (recall->flags)) == 0) &&
+  CU_ASSERT(((AGS_SOUND_STAGING_DONE & (recall->staging_flags)) == 0) &&
 	    data == 0);
 }
 
@@ -372,9 +368,9 @@ ags_recall_test_cancel()
 
   /* recall */
   recall = ags_recall_new();
-  g_signal_connect(G_OBJECT(recall), "done\0",
+  g_signal_connect(G_OBJECT(recall), "done",
 		   G_CALLBACK(ags_recall_test_callback), &done_data);
-  g_signal_connect(G_OBJECT(recall), "cancel\0",
+  g_signal_connect(G_OBJECT(recall), "cancel",
 		   G_CALLBACK(ags_recall_test_callback), &cancel_data);
 
   /* assert callback invoked */
@@ -382,16 +378,16 @@ ags_recall_test_cancel()
   cancel_data = 0;
   ags_recall_cancel(recall);
   
-  CU_ASSERT(((AGS_RECALL_DONE & (recall->flags)) != 0) &&
+  CU_ASSERT(((AGS_SOUND_STAGING_DONE & (recall->staging_flags)) != 0) &&
 	    done_data == 1 &&
 	    cancel_data == 1);
 
   /* persistent recall */
   recall = ags_recall_new();
-  recall->flags |= AGS_RECALL_PERSISTENT;
-  g_signal_connect(G_OBJECT(recall), "done\0",
+  recall->behaviour_flags |= AGS_SOUND_BEHAVIOUR_PERSISTENT;
+  g_signal_connect(G_OBJECT(recall), "done",
 		   G_CALLBACK(ags_recall_test_callback), &done_data);
-  g_signal_connect(G_OBJECT(recall), "cancel\0",
+  g_signal_connect(G_OBJECT(recall), "cancel",
 		   G_CALLBACK(ags_recall_test_callback), &cancel_data);
 
   /* assert callback invoked */
@@ -399,88 +395,9 @@ ags_recall_test_cancel()
   cancel_data = 0;
   ags_recall_cancel(recall);
   
-  CU_ASSERT(((AGS_RECALL_DONE & (recall->flags)) != 0) &&
+  CU_ASSERT(((AGS_SOUND_STAGING_DONE & (recall->staging_flags)) != 0) &&
 	    done_data == 1 &&
 	    cancel_data == 1);
-}
-
-void
-ags_recall_test_remove()
-{
-  AgsRecall *parent, *recall_0, *recall_1;
-
-  guint remove_data, done_data;
-  
-  /* parent */
-  parent = ags_recall_new();
-  g_signal_connect(G_OBJECT(parent), "done\0",
-		   G_CALLBACK(ags_recall_test_callback), &done_data);
-
-  /* 1st recall */
-  recall_0 = ags_recall_new();
-  ags_recall_add_child(parent,
-		       recall_0);
-  g_signal_connect(G_OBJECT(recall_0), "remove\0",
-		   G_CALLBACK(ags_recall_test_callback), &remove_data);
-
-  /* 2nd recall */
-  recall_1 = ags_recall_new();
-  ags_recall_add_child(parent,
-		       recall_1);
-  g_signal_connect(G_OBJECT(recall_1), "remove\0",
-		   G_CALLBACK(ags_recall_test_callback), &remove_data);
-
-  /* assert callback invoked */
-  done_data = 0;
-  remove_data = 0;
-
-  ags_recall_remove(recall_0);
-  
-  CU_ASSERT(((AGS_RECALL_DONE & (parent->flags)) == 0) &&
-	    remove_data == 1 &&
-	    done_data == 0);
-
-  ags_recall_remove(recall_1);
-  
-  CU_ASSERT(((AGS_RECALL_DONE & (parent->flags)) == 0) &&
-	    remove_data == 2 &&
-	    done_data == 0);
-
-  /* parent propagate done */
-  parent = ags_recall_new();
-  parent->flags |= AGS_RECALL_PROPAGATE_DONE;
-  g_signal_connect(G_OBJECT(parent), "done\0",
-		   G_CALLBACK(ags_recall_test_callback), &done_data);
-
-  /* 1st recall */
-  recall_0 = ags_recall_new();
-  ags_recall_add_child(parent,
-		       recall_0);
-  g_signal_connect(G_OBJECT(recall_0), "remove\0",
-		   G_CALLBACK(ags_recall_test_callback), &remove_data);
-
-  /* 2nd recall */
-  recall_1 = ags_recall_new();
-  ags_recall_add_child(parent,
-		       recall_1);
-  g_signal_connect(G_OBJECT(recall_1), "remove\0",
-		   G_CALLBACK(ags_recall_test_callback), &remove_data);
-
-  /* assert callback invoked */
-  done_data = 0;
-  remove_data = 0;
-
-  ags_recall_remove(recall_0);
-  
-  CU_ASSERT(((AGS_RECALL_DONE & (parent->flags)) == 0) &&
-	    remove_data == 1 &&
-	    done_data == 0);
-
-  ags_recall_remove(recall_1);
-  
-  CU_ASSERT(((AGS_RECALL_DONE & (parent->flags)) != 0) &&
-	    remove_data == 2 &&
-	    done_data == 1);
 }
 
 void
@@ -508,15 +425,15 @@ ags_recall_test_is_done()
     
     for(j = 0; j < AGS_RECALL_TEST_IS_DONE_RECALL_COUNT; j++){
       recall_id = g_object_new(AGS_TYPE_RECALL_ID,
-			       "recycling-context\0", recycling_context,
+			       "recycling-context", recycling_context,
 			       NULL);
 
       recall = g_object_new(AGS_TYPE_RECALL,
-			    "recall-id\0", recall_id,
+			    "recall-id", recall_id,
 			    NULL);
 
       if(i != 0){
-	recall->flags |= AGS_RECALL_DONE;
+	recall->staging_flags |= AGS_SOUND_STAGING_DONE;
       }
       
       list = g_list_prepend(list,
@@ -542,15 +459,15 @@ ags_recall_test_is_done()
     
     for(j = 0; j < AGS_RECALL_TEST_IS_DONE_RECALL_COUNT; j++){
       recall_id = g_object_new(AGS_TYPE_RECALL_ID,
-			       "recycling-context\0", recycling_context,
+			       "recycling-context", recycling_context,
 			       NULL);
 
       recall = g_object_new(AGS_TYPE_RECALL,
-			    "recall-id\0", recall_id,
+			    "recall-id", recall_id,
 			    NULL);
 
       if(i == 0){
-	recall->flags |= AGS_RECALL_DONE;
+	recall->staging_flags |= AGS_SOUND_STAGING_DONE;
       }
       
       list = g_list_prepend(list,
@@ -597,12 +514,12 @@ ags_recall_test_duplicate()
 				    NULL);
     
     g_object_set(recall,
-		 "soundcard\0", devout,
-		 "recall-container\0", recall_container,
+		 "soundcard", devout,
+		 "recall-container", recall_container,
 		 NULL);
     recall->flags |= AGS_RECALL_TEMPLATE;
     
-    g_signal_connect(G_OBJECT(recall), "duplicate\0",
+    g_signal_connect(G_OBJECT(recall), "duplicate",
 		     G_CALLBACK(ags_recall_test_duplicate_callback), &data);
 
     start = g_list_prepend(start,
@@ -617,14 +534,15 @@ ags_recall_test_duplicate()
     recycling_context = g_object_new(AGS_TYPE_RECYCLING_CONTEXT,
 				     NULL);
     recall_id = g_object_new(AGS_TYPE_RECALL_ID,
-			     "recycling-context\0", recycling_context,
+			     "recycling-context", recycling_context,
 			     NULL);
     
     list = start;
 
     while(list != NULL){
       ags_recall_duplicate(list->data,
-			   recall_id);
+			   recall_id,
+			   NULL, NULL, NULL);
       
       list = list->next;
     }
@@ -698,7 +616,7 @@ ags_recall_test_remove_dependency()
 }
 
 void
-ags_recall_test_get_dependencies()
+ags_recall_test_get_dependency()
 {
   //TODO:JK: implement me
 }
@@ -785,32 +703,6 @@ ags_recall_test_add_child()
 }
 
 void
-ags_recall_test_get_children()
-{
-  AgsRecall *recall, *child;
-
-  GList *list;
-
-  guint i;
-
-  /* create recall */
-  recall = g_object_new(AGS_TYPE_RECALL,
-			NULL);
-  
-  for(i = 0; i < AGS_RECALL_TEST_GET_CHILDREN_CHILDREN_COUNT; i++){
-    child = g_object_new(AGS_TYPE_RECALL,
-			 NULL);
-    ags_recall_add_child(recall,
-			 child);
-  }
-
-  list = ags_recall_get_children(recall);
-  
-  CU_ASSERT(list != NULL &&
-	    g_list_length(list) == AGS_RECALL_TEST_GET_CHILDREN_CHILDREN_COUNT);
-}
-
-void
 ags_recall_test_get_by_effect()
 {
   AgsRecall *recall;
@@ -823,15 +715,15 @@ ags_recall_test_get_by_effect()
   guint effect_added[4];
   
   static const gchar *filename[] = {
-    "echo.so\0",
-    "echo.so\0",
-    "noise.so\0",
+    "echo.so",
+    "echo.so",
+    "noise.so",
     NULL,
   };
   static const gchar *effect[] = {
-    "delay\0",
-    "feedback\0",
-    "noise\0",
+    "delay",
+    "feedback",
+    "noise",
     NULL,
   };
 
@@ -851,8 +743,8 @@ ags_recall_test_get_by_effect()
     effect_added[nth] += 1;
     
     recall_ladspa = g_object_new(AGS_TYPE_RECALL_LADSPA,
-				 "filename\0", filename[nth],
-				 "effect\0", effect[nth],
+				 "filename", filename[nth],
+				 "effect", effect[nth],
 				 NULL);
 
     list = g_list_prepend(list,
@@ -990,8 +882,8 @@ main(int argc, char **argv)
 {
   CU_pSuite pSuite = NULL;
 
-  putenv("LC_ALL=C\0");
-  putenv("LANG=C\0");
+  putenv("LC_ALL=C");
+  putenv("LANG=C");
   
   /* initialize the CUnit test registry */
   if(CUE_SUCCESS != CU_initialize_registry()){
@@ -999,7 +891,7 @@ main(int argc, char **argv)
   }
 
   /* add a suite to the registry */
-  pSuite = CU_add_suite("AgsRecallTest\0", ags_recall_test_init_suite, ags_recall_test_clean_suite);
+  pSuite = CU_add_suite("AgsRecallTest", ags_recall_test_init_suite, ags_recall_test_clean_suite);
   
   if(pSuite == NULL){
     CU_cleanup_registry();
@@ -1008,40 +900,38 @@ main(int argc, char **argv)
   }
 
   /* add the tests to the suite */
-  if((CU_add_test(pSuite, "test of AgsRecall resolve dependencies\0", ags_recall_test_resolve_dependencies) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsRecall child added\0", ags_recall_test_child_added) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsRecall run init pre\0", ags_recall_test_run_init_pre) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsRecall run init inter\0", ags_recall_test_run_init_inter) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsRecall run init post\0", ags_recall_test_run_init_post) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsRecall stop persistent\0", ags_recall_test_stop_persistent) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsRecall done\0", ags_recall_test_done) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsRecall cancel\0", ags_recall_test_cancel) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsRecall remove\0", ags_recall_test_remove) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsRecall is done\0", ags_recall_test_is_done) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsRecall duplicate\0", ags_recall_test_duplicate) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsRecall set recall id\0", ags_recall_test_set_recall_id) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsRecall notify dependency\0", ags_recall_test_notify_dependency) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsRecall add dependency\0", ags_recall_test_add_dependency) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsRecall remove dependency\0", ags_recall_test_remove_dependency) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsRecall get dependencies\0", ags_recall_test_get_dependencies) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsRecall remove child\0", ags_recall_test_remove_child) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsRecall add child\0", ags_recall_test_add_child) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsRecall get children\0", ags_recall_test_get_children) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsRecall get by effect\0", ags_recall_test_get_by_effect) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsRecall find type\0", ags_recall_test_find_type) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsRecall find template\0", ags_recall_test_find_template) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsRecall template find type\0", ags_recall_test_template_find_type) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsRecall template find all type\0", ags_recall_test_template_find_all_type) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsRecall find type with recycling context\0", ags_recall_test_find_type_with_recycling_context) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsRecall find recycling context\0", ags_recall_test_find_recycling_context) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsRecall find provider\0", ags_recall_test_find_provider) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsRecall template find provider\0", ags_recall_test_template_find_provider) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsRecall find provider with recycling context\0", ags_recall_test_find_provider_with_recycling_context) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsRecall run init\0", ags_recall_test_run_init) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsRecall add handler\0", ags_recall_test_add_handler) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsRecall remove handler\0", ags_recall_test_remove_handler) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsRecall lock port\0", ags_recall_test_lock_port) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsRecall unlock port\0", ags_recall_test_unlock_port) == NULL)){
+  if((CU_add_test(pSuite, "test of AgsRecall resolve dependency", ags_recall_test_resolve_dependency) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsRecall child added", ags_recall_test_child_added) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsRecall run init pre", ags_recall_test_run_init_pre) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsRecall run init inter", ags_recall_test_run_init_inter) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsRecall run init post", ags_recall_test_run_init_post) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsRecall stop persistent", ags_recall_test_stop_persistent) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsRecall done", ags_recall_test_done) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsRecall cancel", ags_recall_test_cancel) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsRecall is done", ags_recall_test_is_done) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsRecall duplicate", ags_recall_test_duplicate) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsRecall set recall id", ags_recall_test_set_recall_id) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsRecall notify dependency", ags_recall_test_notify_dependency) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsRecall add dependency", ags_recall_test_add_dependency) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsRecall remove dependency", ags_recall_test_remove_dependency) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsRecall get dependency", ags_recall_test_get_dependency) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsRecall remove child", ags_recall_test_remove_child) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsRecall add child", ags_recall_test_add_child) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsRecall get by effect", ags_recall_test_get_by_effect) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsRecall find type", ags_recall_test_find_type) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsRecall find template", ags_recall_test_find_template) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsRecall template find type", ags_recall_test_template_find_type) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsRecall template find all type", ags_recall_test_template_find_all_type) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsRecall find type with recycling context", ags_recall_test_find_type_with_recycling_context) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsRecall find recycling context", ags_recall_test_find_recycling_context) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsRecall find provider", ags_recall_test_find_provider) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsRecall template find provider", ags_recall_test_template_find_provider) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsRecall find provider with recycling context", ags_recall_test_find_provider_with_recycling_context) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsRecall run init", ags_recall_test_run_init) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsRecall add handler", ags_recall_test_add_handler) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsRecall remove handler", ags_recall_test_remove_handler) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsRecall lock port", ags_recall_test_lock_port) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsRecall unlock port", ags_recall_test_unlock_port) == NULL)){
     CU_cleanup_registry();
     
     return CU_get_error();

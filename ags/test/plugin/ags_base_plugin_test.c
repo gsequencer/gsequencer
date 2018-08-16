@@ -30,7 +30,7 @@
 int ags_base_plugin_test_init_suite();
 int ags_base_plugin_test_clean_suite();
 
-void ags_port_descriptor_test_find_symbol();
+void ags_plugin_port_test_find_symbol();
 void ags_base_plugin_test_find_filename();
 void ags_base_plugin_test_find_effect();
 void ags_base_plugin_test_find_ui_effect_index();
@@ -59,10 +59,10 @@ void ags_base_plugin_test_stub_run(AgsBasePlugin *base_plugin,
 				   guint frame_count);
 void ags_base_plugin_test_stub_load_plugin(AgsBasePlugin *base_plugin);
 
-#define AGS_PORT_DESCRIPTOR_TEST_FIND_SYMBOL_DELAY "delay"
-#define AGS_PORT_DESCRIPTOR_TEST_FIND_SYMBOL_DRY "dry"
-#define AGS_PORT_DESCRIPTOR_TEST_FIND_SYMBOL_WET "wet"
-#define AGS_PORT_DESCRIPTOR_TEST_FIND_SYMBOL_FEEDBACK "feedback"
+#define AGS_PLUGIN_PORT_TEST_FIND_SYMBOL_DELAY "delay"
+#define AGS_PLUGIN_PORT_TEST_FIND_SYMBOL_DRY "dry"
+#define AGS_PLUGIN_PORT_TEST_FIND_SYMBOL_WET "wet"
+#define AGS_PLUGIN_PORT_TEST_FIND_SYMBOL_FEEDBACK "feedback"
 
 #define AGS_BASE_PLUGIN_TEST_FIND_FILENAME_DEFAULT "default"
 
@@ -94,6 +94,7 @@ void ags_base_plugin_test_stub_load_plugin(AgsBasePlugin *base_plugin);
 #define AGS_BASE_PLUGIN_TEST_SORT_SPATIALIZER "spatializer"
 
 #define AGS_BASE_PLUGIN_TEST_INSTANTIATE_SAMPLERATE (48000)
+#define AGS_BASE_PLUGIN_TEST_INSTANTIATE_BUFFER_SIZE (512)
 
 #define AGS_BASE_PLUGIN_TEST_RUN_FRAME_COUNT (512)
 
@@ -125,62 +126,62 @@ ags_base_plugin_test_clean_suite()
 }
 
 void
-ags_port_descriptor_test_find_symbol()
+ags_plugin_port_test_find_symbol()
 {
-  AgsPortDescriptor *port_descriptor;
+  AgsPluginPort *plugin_port;
 
   GList *list, *current;
 
   list = NULL;
   
   /* delay */
-  port_descriptor = ags_port_descriptor_alloc();
-  port_descriptor->port_symbol = AGS_PORT_DESCRIPTOR_TEST_FIND_SYMBOL_DELAY;
+  plugin_port = ags_plugin_port_new();
+  plugin_port->port_symbol = AGS_PLUGIN_PORT_TEST_FIND_SYMBOL_DELAY;
 
   list = g_list_prepend(list,
-			port_descriptor);
+			plugin_port);
   
   /* dry */
-  port_descriptor = ags_port_descriptor_alloc();
-  port_descriptor->port_symbol = AGS_PORT_DESCRIPTOR_TEST_FIND_SYMBOL_DRY;
+  plugin_port = ags_plugin_port_new();
+  plugin_port->port_symbol = AGS_PLUGIN_PORT_TEST_FIND_SYMBOL_DRY;
 
   list = g_list_prepend(list,
-			port_descriptor);
+			plugin_port);
 
   /* wet */
-  port_descriptor = ags_port_descriptor_alloc();
-  port_descriptor->port_symbol = AGS_PORT_DESCRIPTOR_TEST_FIND_SYMBOL_WET;
+  plugin_port = ags_plugin_port_new();
+  plugin_port->port_symbol = AGS_PLUGIN_PORT_TEST_FIND_SYMBOL_WET;
 
   list = g_list_prepend(list,
-			port_descriptor);
+			plugin_port);
 
   /* feedback */
-  port_descriptor = ags_port_descriptor_alloc();
-  port_descriptor->port_symbol = AGS_PORT_DESCRIPTOR_TEST_FIND_SYMBOL_FEEDBACK;
+  plugin_port = ags_plugin_port_new();
+  plugin_port->port_symbol = AGS_PLUGIN_PORT_TEST_FIND_SYMBOL_FEEDBACK;
 
   list = g_list_prepend(list,
-			port_descriptor);
+			plugin_port);
 
   /* assert find */
-  CU_ASSERT((current = ags_port_descriptor_find_symbol(list,
-						       AGS_PORT_DESCRIPTOR_TEST_FIND_SYMBOL_DELAY)) != NULL &&
-	    !g_strcmp0(AGS_PORT_DESCRIPTOR(current->data)->port_symbol,
-		       AGS_PORT_DESCRIPTOR_TEST_FIND_SYMBOL_DELAY));
+  CU_ASSERT((current = ags_plugin_port_find_symbol(list,
+						   AGS_PLUGIN_PORT_TEST_FIND_SYMBOL_DELAY)) != NULL &&
+	    !g_strcmp0(AGS_PLUGIN_PORT(current->data)->port_symbol,
+		       AGS_PLUGIN_PORT_TEST_FIND_SYMBOL_DELAY));
 
-  CU_ASSERT((current = ags_port_descriptor_find_symbol(list,
-						       AGS_PORT_DESCRIPTOR_TEST_FIND_SYMBOL_DRY)) != NULL &&
-	    !g_strcmp0(AGS_PORT_DESCRIPTOR(current->data)->port_symbol,
-		       AGS_PORT_DESCRIPTOR_TEST_FIND_SYMBOL_DRY));
+  CU_ASSERT((current = ags_plugin_port_find_symbol(list,
+						   AGS_PLUGIN_PORT_TEST_FIND_SYMBOL_DRY)) != NULL &&
+	    !g_strcmp0(AGS_PLUGIN_PORT(current->data)->port_symbol,
+		       AGS_PLUGIN_PORT_TEST_FIND_SYMBOL_DRY));
 
-  CU_ASSERT((current = ags_port_descriptor_find_symbol(list,
-						       AGS_PORT_DESCRIPTOR_TEST_FIND_SYMBOL_WET)) != NULL &&
-	    !g_strcmp0(AGS_PORT_DESCRIPTOR(current->data)->port_symbol,
-		       AGS_PORT_DESCRIPTOR_TEST_FIND_SYMBOL_WET));
+  CU_ASSERT((current = ags_plugin_port_find_symbol(list,
+						   AGS_PLUGIN_PORT_TEST_FIND_SYMBOL_WET)) != NULL &&
+	    !g_strcmp0(AGS_PLUGIN_PORT(current->data)->port_symbol,
+		       AGS_PLUGIN_PORT_TEST_FIND_SYMBOL_WET));
 
-  CU_ASSERT((current = ags_port_descriptor_find_symbol(list,
-						       AGS_PORT_DESCRIPTOR_TEST_FIND_SYMBOL_FEEDBACK)) != NULL &&
-	    !g_strcmp0(AGS_PORT_DESCRIPTOR(current->data)->port_symbol,
-		       AGS_PORT_DESCRIPTOR_TEST_FIND_SYMBOL_FEEDBACK));
+  CU_ASSERT((current = ags_plugin_port_find_symbol(list,
+						   AGS_PLUGIN_PORT_TEST_FIND_SYMBOL_FEEDBACK)) != NULL &&
+	    !g_strcmp0(AGS_PLUGIN_PORT(current->data)->port_symbol,
+		       AGS_PLUGIN_PORT_TEST_FIND_SYMBOL_FEEDBACK));
 }
 
 void
@@ -536,7 +537,7 @@ ags_base_plugin_test_instantiate()
   AGS_BASE_PLUGIN_GET_CLASS(base_plugin)->instantiate = ags_base_plugin_test_stub_instantiate;
 
   ags_base_plugin_instantiate(base_plugin,
-			      AGS_BASE_PLUGIN_TEST_INSTANTIATE_SAMPLERATE);
+			      AGS_BASE_PLUGIN_TEST_INSTANTIATE_SAMPLERATE, AGS_BASE_PLUGIN_TEST_INSTANTIATE_BUFFER_SIZE);
 
   CU_ASSERT(stub_instantiate == TRUE);
   AGS_BASE_PLUGIN_GET_CLASS(base_plugin)->instantiate = ptr;
@@ -708,7 +709,7 @@ main(int argc, char **argv)
   }
 
   /* add the tests to the suite */
-  if((CU_add_test(pSuite, "test of AgsPortDescriptor find symbol\0", ags_port_descriptor_test_find_symbol) == NULL) ||
+  if((CU_add_test(pSuite, "test of AgsPortDescriptor find symbol\0", ags_plugin_port_test_find_symbol) == NULL) ||
      (CU_add_test(pSuite, "test of AgsBasePlugin find filename\0", ags_base_plugin_test_find_filename) == NULL) ||
      (CU_add_test(pSuite, "test of AgsBasePlugin find effect\0", ags_base_plugin_test_find_effect) == NULL) ||
      (CU_add_test(pSuite, "test of AgsBasePlugin find UI effect index\0", ags_base_plugin_test_find_ui_effect_index) == NULL) ||

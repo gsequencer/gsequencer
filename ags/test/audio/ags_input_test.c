@@ -31,27 +31,11 @@ int ags_input_test_clean_suite();
 
 void ags_input_test_open_file();
 void ags_input_test_apply_synth();
-void ags_input_test_apply_synth_extended();
 void ags_input_test_is_active();
 void ags_input_test_next_active();
 
 #define AGS_INPUT_TEST_OPEN_FILE_FILENAME "/usr/share/sounds/alsa/Noise.wav"
 #define AGS_INPUT_TEST_OPEN_FILE_AUDIO_CHANNEL (0)
-
-#define AGS_INPUT_TEST_APPLY_SYNTH_OSCILLATOR (AGS_SYNTH_GENERATOR_OSCILLATOR_SIN)
-#define AGS_INPUT_TEST_APPLY_SYNTH_FREQUENCY (440.0)
-#define AGS_INPUT_TEST_APPLY_SYNTH_PHASE (0.0)
-#define AGS_INPUT_TEST_APPLY_SYNTH_VOLUME (0.5)
-#define AGS_INPUT_TEST_APPLY_SYNTH_N_FRAMES (3200)
-
-#define AGS_INPUT_TEST_APPLY_SYNTH_EXTENDED_OSCILLATOR (AGS_SYNTH_GENERATOR_OSCILLATOR_SIN)
-#define AGS_INPUT_TEST_APPLY_SYNTH_EXTENDED_FREQUENCY (440.0)
-#define AGS_INPUT_TEST_APPLY_SYNTH_EXTENDED_PHASE (0.0)
-#define AGS_INPUT_TEST_APPLY_SYNTH_EXTENDED_VOLUME (0.5)
-#define AGS_INPUT_TEST_APPLY_SYNTH_EXTENDED_N_FRAMES (3200)
-#define AGS_INPUT_TEST_APPLY_SYNTH_EXTENDED_ATTACK (0)
-#define AGS_INPUT_TEST_APPLY_SYNTH_EXTENDED_BASE_NOTE (-48.0)
-#define AGS_INPUT_TEST_APPLY_SYNTH_EXTENDED_COMPUTE_FLAGS (AGS_SYNTH_GENERATOR_COMPUTE_FIXED_LENGTH)
 
 /* The suite initialization function.
  * Opens the temporary file used by the tests.
@@ -103,52 +87,17 @@ ags_input_test_apply_synth()
 {
   AgsInput *input;
 
-  gboolean success;
-  
   input = g_object_new(AGS_TYPE_INPUT,
 		       NULL);
+  ags_input_add_synth_generator(input,
+				ags_synth_generator_new());
   AGS_CHANNEL(input)->first_recycling =
     AGS_CHANNEL(input)->last_recycling = g_object_new(AGS_TYPE_RECYCLING,
 						      NULL);
   
-  success = ags_input_apply_synth(input,
-				  AGS_INPUT_TEST_APPLY_SYNTH_OSCILLATOR,
-				  AGS_INPUT_TEST_APPLY_SYNTH_FREQUENCY,
-				  AGS_INPUT_TEST_APPLY_SYNTH_PHASE,
-				  AGS_INPUT_TEST_APPLY_SYNTH_VOLUME,
-				  AGS_INPUT_TEST_APPLY_SYNTH_N_FRAMES);
+  ags_input_apply_synth(input);
   
-  CU_ASSERT(success == TRUE &&
-	    input->synth_generator != NULL &&
-	    AGS_CHANNEL(input)->first_recycling->audio_signal != NULL);
-}
-
-void
-ags_input_test_apply_synth_extended()
-{
-  AgsInput *input;
-
-  gboolean success;
-  
-  input = g_object_new(AGS_TYPE_INPUT,
-		       NULL);
-  AGS_CHANNEL(input)->first_recycling =
-    AGS_CHANNEL(input)->last_recycling = g_object_new(AGS_TYPE_RECYCLING,
-						      NULL);
-  
-  success = ags_input_apply_synth_extended(input,
-					   AGS_INPUT_TEST_APPLY_SYNTH_EXTENDED_OSCILLATOR,
-					   AGS_INPUT_TEST_APPLY_SYNTH_EXTENDED_FREQUENCY,
-					   AGS_INPUT_TEST_APPLY_SYNTH_EXTENDED_PHASE,
-					   AGS_INPUT_TEST_APPLY_SYNTH_EXTENDED_VOLUME,
-					   AGS_INPUT_TEST_APPLY_SYNTH_EXTENDED_N_FRAMES,
-					   AGS_INPUT_TEST_APPLY_SYNTH_EXTENDED_ATTACK,
-					   AGS_INPUT_TEST_APPLY_SYNTH_EXTENDED_BASE_NOTE,
-					   NULL, NULL,
-					   AGS_INPUT_TEST_APPLY_SYNTH_EXTENDED_COMPUTE_FLAGS);
-  
-  CU_ASSERT(success == TRUE &&
-	    input->synth_generator != NULL &&
+  CU_ASSERT(input->synth_generator != NULL &&
 	    AGS_CHANNEL(input)->first_recycling->audio_signal != NULL);
 }
 
@@ -319,7 +268,6 @@ main(int argc, char **argv)
   /* add the tests to the suite */
   if((CU_add_test(pSuite, "test of AgsInput open file", ags_input_test_open_file) == NULL) ||
      (CU_add_test(pSuite, "test of AgsInput apply synth", ags_input_test_apply_synth) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsInput apply synth extended", ags_input_test_apply_synth_extended) == NULL) ||
      (CU_add_test(pSuite, "test of AgsInput is active", ags_input_test_is_active) == NULL) ||
      (CU_add_test(pSuite, "test of AgsInput next active", ags_input_test_next_active) == NULL)){
     CU_cleanup_registry();

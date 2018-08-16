@@ -493,23 +493,16 @@ ags_functional_audio_test_playback()
   }
 
   void ags_functional_audio_test_playback_start_audio(AgsAudio *audio){
-    AgsInitAudio *init_audio;
-    AgsAppendAudio *append_audio;
+    AgsStartAudio *start_audio;
     AgsStartSoundcard *start_soundcard;
 
     GList *task;
 
     task = NULL;    
-    init_audio = ags_init_audio_new(audio,
-				    FALSE, FALSE, TRUE);
+    start_audio = ags_start_audio_new(audio,
+				     AGS_SOUND_SCOPE_NOTATION);
     task = g_list_prepend(task,
-			  init_audio);
-    
-    append_audio = ags_append_audio_new(AGS_APPLICATION_CONTEXT(audio_application_context)->main_loop,
-					audio,
-					FALSE, FALSE, TRUE);
-    task = g_list_prepend(task,
-			  append_audio);
+			  start_audio);
     
     start_soundcard = ags_start_soundcard_new(audio_application_context);
     task = g_list_prepend(task,
@@ -537,7 +530,7 @@ ags_functional_audio_test_playback()
     
     /* create cancel task */
     cancel_audio = ags_cancel_audio_new(audio,
-					FALSE, FALSE, TRUE);
+					AGS_SOUND_SCOPE_NOTATION);
     
     /* append AgsCancelAudio */
     ags_task_thread_append_task((AgsTaskThread *) task_thread,
@@ -562,15 +555,15 @@ ags_functional_audio_test_playback()
   
   ags_audio_set_pads(panel,
 		     AGS_TYPE_OUTPUT,
-		     1);
+		     1, 0);
   ags_audio_set_pads(panel,
 		     AGS_TYPE_INPUT,
-		     1);
+		     1, 0);
 
-  list = ags_soundcard_get_audio(AGS_SOUNDCARD(soundcard));
-  ags_soundcard_set_audio(AGS_SOUNDCARD(soundcard),
-			  g_list_prepend(list,
-					 panel));
+  list = ags_sound_provider_get_audio(AGS_SOUND_PROVIDER(audio_application_context));
+  ags_sound_provider_set_audio(AGS_SOUND_PROVIDER(audio_application_context),
+			       g_list_prepend(list,
+					      panel));
   
   ags_functional_audio_test_playback_add_sink(panel);
 
@@ -604,15 +597,15 @@ ags_functional_audio_test_playback()
   
   ags_audio_set_pads(mixer,
 		     AGS_TYPE_OUTPUT,
-		     1);
+		     1, 0);
   ags_audio_set_pads(mixer,
 		     AGS_TYPE_INPUT,
-		     AGS_FUNCTIONAL_AUDIO_TEST_PLAYBACK_N_AUDIO);
+		     AGS_FUNCTIONAL_AUDIO_TEST_PLAYBACK_N_AUDIO, 0);
 
-  list = ags_soundcard_get_audio(AGS_SOUNDCARD(soundcard));
-  ags_soundcard_set_audio(AGS_SOUNDCARD(soundcard),
-			  g_list_prepend(list,
-					 mixer));
+  list = ags_sound_provider_get_audio(AGS_SOUND_PROVIDER(audio_application_context));
+  ags_sound_provider_set_audio(AGS_SOUND_PROVIDER(audio_application_context),
+			       g_list_prepend(list,
+					      mixer));
   
   ags_functional_audio_test_playback_add_mixer(mixer);
 
@@ -658,24 +651,24 @@ ags_functional_audio_test_playback()
     audio[i]->flags |= (AGS_AUDIO_OUTPUT_HAS_RECYCLING |
 			AGS_AUDIO_INPUT_HAS_RECYCLING |
 			AGS_AUDIO_SYNC |
-			AGS_AUDIO_ASYNC |
-			AGS_AUDIO_HAS_NOTATION | 
-			AGS_AUDIO_NOTATION_DEFAULT);
+			AGS_AUDIO_ASYNC);
+    audio[i]->ability_flags |= (AGS_SOUND_ABILITY_NOTATION);
+    audio[i]->behaviour_flags |= (AGS_SOUND_BEHAVIOUR_CHAINED_TO_INPUT);
     
     ags_audio_set_audio_channels(audio[i],
-				 AGS_FUNCTIONAL_AUDIO_TEST_PLAYBACK_N_AUDIO_CHANNELS);
+				 AGS_FUNCTIONAL_AUDIO_TEST_PLAYBACK_N_AUDIO_CHANNELS, 0);
   
     ags_audio_set_pads(audio[i],
 		       AGS_TYPE_OUTPUT,
-		       1);
+		       1, 0);
     ags_audio_set_pads(audio[i],
 		       AGS_TYPE_INPUT,
-		       AGS_FUNCTIONAL_AUDIO_TEST_PLAYBACK_N_PADS);
+		       AGS_FUNCTIONAL_AUDIO_TEST_PLAYBACK_N_PADS, 0);
 
-    list = ags_soundcard_get_audio(AGS_SOUNDCARD(soundcard));
-    ags_soundcard_set_audio(AGS_SOUNDCARD(soundcard),
-			    g_list_prepend(list,
-					   audio[i]));
+    list = ags_sound_provider_get_audio(AGS_SOUND_PROVIDER(audio_application_context));
+    ags_sound_provider_set_audio(AGS_SOUND_PROVIDER(audio_application_context),
+				 g_list_prepend(list,
+						audio[i]));
     
     /* populate notation and set link, assert link set and recycling not NULL */
     channel = audio[i]->output;
