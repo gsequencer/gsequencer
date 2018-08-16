@@ -7144,10 +7144,12 @@ ags_channel_add_pattern(AgsChannel *channel, GObject *pattern)
   /*  add pattern */
   pthread_mutex_lock(channel_mutex);
 
-  g_object_ref(pattern);
-  channel->pattern = g_list_prepend(channel->pattern,
-				    pattern);
-
+  if(g_list_find(channel->pattern, pattern) == NULL){
+    g_object_ref(pattern);
+    channel->pattern = g_list_prepend(channel->pattern,
+				      pattern);
+  }
+  
   pthread_mutex_unlock(channel_mutex);
 }
 
@@ -7180,9 +7182,11 @@ ags_channel_remove_pattern(AgsChannel *channel, GObject *pattern)
   /* remove pattern */
   pthread_mutex_lock(channel_mutex);
 
-  channel->pattern = g_list_remove(channel->pattern,
-				   pattern);
-  g_object_unref(G_OBJECT(pattern));
+  if(g_list_find(channel->pattern, pattern) != NULL){
+    channel->pattern = g_list_remove(channel->pattern,
+				     pattern);
+    g_object_unref(G_OBJECT(pattern));
+  }
 
   pthread_mutex_unlock(channel_mutex);
 }
@@ -7288,9 +7292,11 @@ ags_channel_add_recall_container(AgsChannel *channel, GObject *recall_container)
   /* add recall container */    
   pthread_mutex_lock(channel_mutex);
 
-  g_object_ref(G_OBJECT(recall_container));
-  channel->recall_container = g_list_prepend(channel->recall_container,
-					     recall_container);
+  if(g_list_find(channel->recall_container, recall_container) == NULL){
+    g_object_ref(G_OBJECT(recall_container));
+    channel->recall_container = g_list_prepend(channel->recall_container,
+					       recall_container);
+  }
   
   pthread_mutex_unlock(channel_mutex);
 }
@@ -7324,9 +7330,11 @@ ags_channel_remove_recall_container(AgsChannel *channel, GObject *recall_contain
   /* remove recall container */    
   pthread_mutex_lock(channel_mutex);
 
-  channel->recall_container = g_list_remove(channel->recall_container,
-					    recall_container);
-  g_object_unref(G_OBJECT(recall_container));
+  if(g_list_find(channel->recall_container, recall_container) != NULL){
+    channel->recall_container = g_list_remove(channel->recall_container,
+					      recall_container);
+    g_object_unref(G_OBJECT(recall_container));
+  }
   
   pthread_mutex_unlock(channel_mutex);
 }
@@ -7344,10 +7352,14 @@ ags_channel_remove_recall_container(AgsChannel *channel, GObject *recall_contain
 void
 ags_channel_add_recall(AgsChannel *channel, GObject *recall, gboolean play_context)
 {
+  gboolean success;
+  
   if(!AGS_IS_CHANNEL(channel) ||
      !AGS_IS_RECALL(recall)){
     return;
   }
+
+  success = FALSE;
   
   if(play_context){
     pthread_mutex_t *play_mutex;
@@ -7367,13 +7379,6 @@ ags_channel_add_recall(AgsChannel *channel, GObject *recall, gboolean play_conte
     
       channel->play = g_list_prepend(channel->play,
 				     recall);
-            
-      if(AGS_IS_RECALL_CHANNEL(recall) ||
-	 AGS_IS_RECALL_CHANNEL_RUN(recall)){
-	g_object_set(recall,
-		     "source", channel,
-		     NULL);
-      }
     }
 
     pthread_mutex_unlock(play_mutex);
@@ -7395,16 +7400,18 @@ ags_channel_add_recall(AgsChannel *channel, GObject *recall, gboolean play_conte
     
       channel->recall = g_list_prepend(channel->recall,
 				       recall);
-            
-      if(AGS_IS_RECALL_CHANNEL(recall) ||
-	 AGS_IS_RECALL_CHANNEL_RUN(recall)){
-	g_object_set(recall,
-		     "source", channel,
-		     NULL);
-      }
     }
 
     pthread_mutex_unlock(recall_mutex);
+  }
+
+  if(success){
+    if(AGS_IS_RECALL_CHANNEL(recall) ||
+       AGS_IS_RECALL_CHANNEL_RUN(recall)){
+      g_object_set(recall,
+		   "source", channel,
+		   NULL);
+    }
   }
 }
 
@@ -7421,10 +7428,14 @@ ags_channel_add_recall(AgsChannel *channel, GObject *recall, gboolean play_conte
 void
 ags_channel_remove_recall(AgsChannel *channel, GObject *recall, gboolean play_context)
 {
+  gboolean success;
+  
   if(!AGS_IS_CHANNEL(channel) ||
      !AGS_IS_RECALL(recall)){
     return;
   }
+
+  success = FALSE;
   
   if(play_context){
     pthread_mutex_t *play_mutex;
@@ -7440,17 +7451,10 @@ ags_channel_remove_recall(AgsChannel *channel, GObject *recall, gboolean play_co
     pthread_mutex_lock(play_mutex);
     
     if(g_list_find(channel->play, recall) != NULL){
+      success = TRUE;
+      
       channel->play = g_list_remove(channel->play,
 				    recall);
-            
-      if(AGS_IS_RECALL_CHANNEL(recall) ||
-	 AGS_IS_RECALL_CHANNEL_RUN(recall)){
-	g_object_set(recall,
-		     "channel", NULL,
-		     NULL);
-      }
-
-      g_object_unref(G_OBJECT(recall));
     }
 
     pthread_mutex_unlock(play_mutex);
@@ -7468,20 +7472,24 @@ ags_channel_remove_recall(AgsChannel *channel, GObject *recall, gboolean play_co
     pthread_mutex_lock(recall_mutex);
 
     if(g_list_find(channel->recall, recall) != NULL){
+      success = TRUE;
+      
       channel->recall = g_list_remove(channel->recall,
 				      recall);
-            
-      if(AGS_IS_RECALL_CHANNEL(recall) ||
-	 AGS_IS_RECALL_CHANNEL_RUN(recall)){
-	g_object_set(recall,
-		     "channel", NULL,
-		     NULL);
-      }
-
-      g_object_unref(G_OBJECT(recall));
     }
 
     pthread_mutex_unlock(recall_mutex);
+  }
+
+  if(success){
+    if(AGS_IS_RECALL_CHANNEL(recall) ||
+       AGS_IS_RECALL_CHANNEL_RUN(recall)){
+      g_object_set(recall,
+		   "channel", NULL,
+		   NULL);
+    }
+
+    g_object_unref(G_OBJECT(recall));
   }
 }
 

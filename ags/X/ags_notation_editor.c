@@ -637,6 +637,8 @@ ags_notation_editor_add_note(AgsNotationEditor *notation_editor,
       i++;
     }
 
+    g_object_unref(timestamp);
+    
     gtk_widget_queue_draw(notation_editor->notation_edit);
   }
 }
@@ -678,7 +680,7 @@ ags_notation_editor_delete_note(AgsNotationEditor *notation_editor,
     timestamp->flags &= (~AGS_TIMESTAMP_UNIX);
     timestamp->flags |= AGS_TIMESTAMP_OFFSET;
     
-    timestamp->timer.ags_offset.offset = AGS_NOTATION_DEFAULT_OFFSET * floor(x / AGS_NOTATION_DEFAULT_OFFSET);
+    timestamp->timer.ags_offset.offset = (guint64) AGS_NOTATION_DEFAULT_OFFSET * floor((double) x / (double) AGS_NOTATION_DEFAULT_OFFSET);
 
     i = 0;
 
@@ -697,19 +699,18 @@ ags_notation_editor_delete_note(AgsNotationEditor *notation_editor,
       
       if(list_notation != NULL){
 	notation = list_notation->data;
-      }else{
-	i++;
-	
-	continue;
+	ags_notation_remove_note_at_position(notation,
+					     x, y);
+
+	g_list_free(start_list_notation);
       }
-
-      ags_notation_remove_note_at_position(notation,
-					   x, y);
-
+       
       /* iterate */
       i++;
     }
 
+    g_object_unref(timestamp);
+    
     gtk_widget_queue_draw(notation_editor->notation_edit);
   }
 }

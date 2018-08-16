@@ -1377,8 +1377,9 @@ ags_automation_remove_acceleration_at_position(AgsAutomation *automation,
 {
   AgsAcceleration *acceleration;
   
-  GList *list, *current;
+  GList *start_list, *list;
 
+  gdouble upper, lower;
   guint current_x;
   gdouble current_y;
   gboolean retval;
@@ -1399,10 +1400,15 @@ ags_automation_remove_acceleration_at_position(AgsAutomation *automation,
   /* find acceleration */
   pthread_mutex_lock(automation_mutex);
 
-  list = automation->acceleration;
+  upper = automation->upper;
+  lower = automation->lower;
+  
+  list =
+    start_list = ags_list_util_copy_and_ref(automation->acceleration);
+  
+  pthread_mutex_unlock(automation_mutex);
 
   acceleration = NULL;
-  current = NULL;
 
   retval = FALSE;
   
@@ -1413,10 +1419,9 @@ ags_automation_remove_acceleration_at_position(AgsAutomation *automation,
 		 NULL);
     
     if(current_x == x &&
-       (current_y - ((automation->upper - automation->lower) / AGS_AUTOMATION_MAXIMUM_STEPS) <= y &&
-	current_y + ((automation->upper - automation->lower) / AGS_AUTOMATION_MAXIMUM_STEPS) >= y)){
+       (current_y - ((upper - lower) / AGS_AUTOMATION_MAXIMUM_STEPS) <= y &&
+	current_y + ((upper - lower) / AGS_AUTOMATION_MAXIMUM_STEPS) >= y)){
       acceleration = list->data;
-      current = list;
       
       retval = TRUE;
       
@@ -1432,12 +1437,17 @@ ags_automation_remove_acceleration_at_position(AgsAutomation *automation,
 
   /* delete link and unref */
   if(retval){
-    automation->acceleration = g_list_delete_link(automation->acceleration,
-						  current);
+    pthread_mutex_lock(automation_mutex);
+    
+    automation->acceleration = g_list_remove(automation->acceleration,
+					     acceleration);
     g_object_unref(acceleration);
-  }
   
-  pthread_mutex_unlock(automation_mutex);
+    pthread_mutex_unlock(automation_mutex);
+  }
+
+  g_list_free_full(start_list,
+		   g_object_unref);
 
   return(retval);
 }

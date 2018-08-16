@@ -177,11 +177,10 @@ ags_notation_class_init(AgsNotationClass *notation)
    * 
    * Since: 2.0.0
    */
-  param_spec = g_param_spec_object("note",
-				   i18n_pspec("note of notation"),
-				   i18n_pspec("The note of notation"),
-				   AGS_TYPE_NOTE,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  param_spec = g_param_spec_pointer("note",
+				    i18n_pspec("note of notation"),
+				    i18n_pspec("The note of notation"),
+				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_NOTE,
 				  param_spec);   
@@ -842,7 +841,7 @@ ags_notation_remove_note_at_position(AgsNotation *notation,
 {
   AgsNote *note;
   
-  GList *list, *current;
+  GList *start_list, *list;
 
   guint current_x0, current_y;
   gboolean retval;
@@ -863,10 +862,12 @@ ags_notation_remove_note_at_position(AgsNotation *notation,
   /* find note */
   pthread_mutex_lock(notation_mutex);
 
-  list = notation->note;
+  list =
+    start_list = ags_list_util_copy_and_ref(notation->note);
+  
+  pthread_mutex_unlock(notation_mutex);
 
   note = NULL;
-  current = NULL;
 
   retval = FALSE;
   
@@ -875,11 +876,10 @@ ags_notation_remove_note_at_position(AgsNotation *notation,
 		 "x0", &current_x0,
 		 "y", &current_y,
 		 NULL);
-    
+
     if(current_x0 == x &&
        current_y == y){
       note = list->data;
-      current = list;
       
       retval = TRUE;
       
@@ -895,12 +895,17 @@ ags_notation_remove_note_at_position(AgsNotation *notation,
 
   /* delete link and unref */
   if(retval){
-    notation->note = g_list_delete_link(notation->note,
-					current);
+    pthread_mutex_lock(notation_mutex);
+    
+    notation->note = g_list_remove(notation->note,
+				   note);
     g_object_unref(note);
+
+    pthread_mutex_unlock(notation_mutex);
   }
-  
-  pthread_mutex_unlock(notation_mutex);
+
+  g_list_free_full(start_list,
+		   g_object_unref);
 
   return(retval);
 }
