@@ -111,7 +111,7 @@ void ags_xorg_application_context_set_sequencer(AgsSoundProvider *sound_provider
 GList* ags_xorg_application_context_get_sound_server(AgsSoundProvider *sound_provider);
 GList* ags_xorg_application_context_get_audio(AgsSoundProvider *sound_provider);
 void ags_xorg_application_context_set_audio(AgsSoundProvider *sound_provider,
-						GList *soundcard);
+					    GList *soundcard);
 
 GtkWidget* ags_xorg_application_context_get_window(AgsUiProvider *ui_provider);
 void ags_xorg_application_context_set_window(AgsUiProvider *ui_provider,

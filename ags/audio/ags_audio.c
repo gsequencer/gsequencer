@@ -3687,7 +3687,8 @@ ags_audio_connect(AgsConnectable *connectable)
   /* connect recall - play context */
   pthread_mutex_lock(recall_mutex);
 
-  list = g_list_copy(audio->play);
+  list =
+    list_start = g_list_copy(audio->play);
 
   pthread_mutex_unlock(recall_mutex);
 
@@ -3709,7 +3710,8 @@ ags_audio_connect(AgsConnectable *connectable)
   /* connect recall - recall context */
   pthread_mutex_lock(recall_mutex);
 
-  list = g_list_copy(audio->recall);
+  list =
+    list_start = g_list_copy(audio->recall);
 
   pthread_mutex_unlock(recall_mutex);
 
@@ -3831,7 +3833,8 @@ ags_audio_disconnect(AgsConnectable *connectable)
   /* disconnect recall - play context */
   pthread_mutex_lock(recall_mutex);
 
-  list = g_list_copy(audio->play);
+  list = 
+    list_start = g_list_copy(audio->play);
 
   pthread_mutex_unlock(recall_mutex);
 
@@ -3853,7 +3856,8 @@ ags_audio_disconnect(AgsConnectable *connectable)
   /* disconnect recall - recall context */
   pthread_mutex_lock(recall_mutex);
 
-  list = g_list_copy(audio->recall);
+  list = 
+    list_start = g_list_copy(audio->recall);
 
   pthread_mutex_unlock(recall_mutex);
 

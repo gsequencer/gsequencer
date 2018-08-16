@@ -276,13 +276,13 @@ ags_ladspa_browser_disconnect(AgsConnectable *connectable)
   ladspa_browser->flags &= (~AGS_LADSPA_BROWSER_CONNECTED);
 
   g_object_disconnect(G_OBJECT(ladspa_browser->filename),
-		      "changed",
+		      "any_signal::changed",
 		      G_CALLBACK(ags_ladspa_browser_plugin_filename_callback),
 		      ladspa_browser,
 		      NULL);
 
   g_object_disconnect(G_OBJECT(ladspa_browser->effect),
-		      "changed",
+		      "any_signal::changed",
 		      G_CALLBACK(ags_ladspa_browser_plugin_effect_callback),
 		      ladspa_browser,
 		      NULL);

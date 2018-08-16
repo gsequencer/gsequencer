@@ -77,6 +77,8 @@ struct _AgsAudioApplicationContext
   GList *sequencer;
 
   GList *sound_server;
+
+  GList *audio;
 };
 
 struct _AgsAudioApplicationContextClass

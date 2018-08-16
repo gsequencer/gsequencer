@@ -1741,7 +1741,7 @@ ags_recycling_real_add_audio_signal(AgsRecycling *recycling,
   output_soundcard = recycling->output_soundcard;
   
   list =
-    list_start = g_list_copy(recycling->audio_signal);
+    list_start = ags_list_util_copy_and_ref(recycling->audio_signal);
   
   pthread_mutex_unlock(recycling_mutex);
 
@@ -1877,7 +1877,8 @@ ags_recycling_real_add_audio_signal(AgsRecycling *recycling,
     pthread_mutex_unlock(recycling_mutex);
   }
 
-  g_list_free(list_start);
+  g_list_free_full(list_start,
+		   g_object_unref);
 
   g_object_set(audio_signal,
 	       "recycling", recycling,

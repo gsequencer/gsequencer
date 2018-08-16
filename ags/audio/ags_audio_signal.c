@@ -1011,6 +1011,8 @@ ags_audio_signal_set_property(GObject *gobject,
       pthread_mutex_lock(audio_signal_mutex);
 
       audio_signal->length = length;
+
+      pthread_mutex_unlock(audio_signal_mutex);
     }
     break;
   case PROP_FIRST_FRAME:
@@ -1022,6 +1024,8 @@ ags_audio_signal_set_property(GObject *gobject,
       pthread_mutex_lock(audio_signal_mutex);
 
       audio_signal->first_frame = first_frame;
+
+      pthread_mutex_unlock(audio_signal_mutex);
     }
     break;
   case PROP_LAST_FRAME:
@@ -1034,7 +1038,7 @@ ags_audio_signal_set_property(GObject *gobject,
 
       audio_signal->last_frame = last_frame;
 
-      pthread_mutex_lock(audio_signal_mutex);
+      pthread_mutex_unlock(audio_signal_mutex);
     }
     break;
   case PROP_FRAME_COUNT:
@@ -1047,7 +1051,7 @@ ags_audio_signal_set_property(GObject *gobject,
 
       audio_signal->frame_count = frame_count;
 
-      pthread_mutex_lock(audio_signal_mutex);
+      pthread_mutex_unlock(audio_signal_mutex);
     }
     break;
   case PROP_LOOP_START:
@@ -1060,7 +1064,7 @@ ags_audio_signal_set_property(GObject *gobject,
 
       audio_signal->loop_start = loop_start;
 
-      pthread_mutex_lock(audio_signal_mutex);
+      pthread_mutex_unlock(audio_signal_mutex);
     }
     break;
   case PROP_LOOP_END:
@@ -1073,7 +1077,7 @@ ags_audio_signal_set_property(GObject *gobject,
 
       audio_signal->loop_end = loop_end;
 
-      pthread_mutex_lock(audio_signal_mutex);
+      pthread_mutex_unlock(audio_signal_mutex);
     }
     break;
   case PROP_DELAY:
@@ -1086,7 +1090,7 @@ ags_audio_signal_set_property(GObject *gobject,
 
       audio_signal->delay = delay;
 
-      pthread_mutex_lock(audio_signal_mutex);
+      pthread_mutex_unlock(audio_signal_mutex);
     }
     break;
   case PROP_ATTACK:
@@ -1099,7 +1103,7 @@ ags_audio_signal_set_property(GObject *gobject,
 
       audio_signal->attack = attack;
 
-      pthread_mutex_lock(audio_signal_mutex);
+      pthread_mutex_unlock(audio_signal_mutex);
     }
     break;
   case PROP_DAMPING:
@@ -1113,7 +1117,7 @@ ags_audio_signal_set_property(GObject *gobject,
       ags_complex_set(&(audio_signal->damping),
 		      ags_complex_get(damping));      
 
-      pthread_mutex_lock(audio_signal_mutex);
+      pthread_mutex_unlock(audio_signal_mutex);
     }
     break;
   case PROP_VIBRATION:
@@ -1127,7 +1131,7 @@ ags_audio_signal_set_property(GObject *gobject,
       ags_complex_set(&(audio_signal->vibration),
 		      ags_complex_get(vibration));      
 
-      pthread_mutex_lock(audio_signal_mutex);
+      pthread_mutex_unlock(audio_signal_mutex);
     }
     break;
   case PROP_TIMBRE_START:
@@ -1136,7 +1140,7 @@ ags_audio_signal_set_property(GObject *gobject,
 
       audio_signal->timbre_start = g_value_get_uint(value);      
 
-      pthread_mutex_lock(audio_signal_mutex);
+      pthread_mutex_unlock(audio_signal_mutex);
     }
     break;
   case PROP_TIMBRE_END:
@@ -1145,7 +1149,7 @@ ags_audio_signal_set_property(GObject *gobject,
 
       audio_signal->timbre_end = g_value_get_uint(value);      
 
-      pthread_mutex_lock(audio_signal_mutex);
+      pthread_mutex_unlock(audio_signal_mutex);
     }
     break;
   case PROP_TEMPLATE:
@@ -1157,7 +1161,7 @@ ags_audio_signal_set_property(GObject *gobject,
       pthread_mutex_lock(audio_signal_mutex);
 
       if(audio_signal->template == template){
-	pthread_mutex_lock(audio_signal_mutex);
+	pthread_mutex_unlock(audio_signal_mutex);
 	
 	return;
       }
@@ -1172,7 +1176,7 @@ ags_audio_signal_set_property(GObject *gobject,
       
       audio_signal->template = template;
 
-      pthread_mutex_lock(audio_signal_mutex);
+      pthread_mutex_unlock(audio_signal_mutex);
     }
     break;
   case PROP_RT_TEMPLATE:
@@ -1184,7 +1188,7 @@ ags_audio_signal_set_property(GObject *gobject,
       pthread_mutex_lock(audio_signal_mutex);
 
       if(audio_signal->rt_template == rt_template){
-	pthread_mutex_lock(audio_signal_mutex);
+	pthread_mutex_unlock(audio_signal_mutex);
 	
 	return;
       }
@@ -1199,7 +1203,7 @@ ags_audio_signal_set_property(GObject *gobject,
       
       audio_signal->rt_template = rt_template;
 
-      pthread_mutex_lock(audio_signal_mutex);
+      pthread_mutex_unlock(audio_signal_mutex);
     }
     break;
   case PROP_NOTE:
@@ -1211,12 +1215,12 @@ ags_audio_signal_set_property(GObject *gobject,
       pthread_mutex_lock(audio_signal_mutex);
 
       if(g_list_find(audio_signal->note, note) != NULL){
-	pthread_mutex_lock(audio_signal_mutex);
+	pthread_mutex_unlock(audio_signal_mutex);
 	
 	return;
       }
 
-      pthread_mutex_lock(audio_signal_mutex);
+      pthread_mutex_unlock(audio_signal_mutex);
 
       ags_audio_signal_add_note(audio_signal,
 				note);
@@ -1231,7 +1235,7 @@ ags_audio_signal_set_property(GObject *gobject,
       pthread_mutex_lock(audio_signal_mutex);
 
       if(audio_signal->recall_id == recall_id){
-	pthread_mutex_lock(audio_signal_mutex);
+	pthread_mutex_unlock(audio_signal_mutex);
 	
 	return;
       }
@@ -1246,7 +1250,7 @@ ags_audio_signal_set_property(GObject *gobject,
       
       audio_signal->recall_id = recall_id;
 
-      pthread_mutex_lock(audio_signal_mutex);
+      pthread_mutex_unlock(audio_signal_mutex);
     }
     break;
   default:
