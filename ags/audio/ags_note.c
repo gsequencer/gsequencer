@@ -1073,7 +1073,7 @@ ags_note_find_next(GList *note,
   if(note == NULL){
     return(NULL);
   }
-
+  
   g_object_get(note->data,
 	       "x0", &current_x0,
 	       NULL);

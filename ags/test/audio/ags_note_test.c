@@ -107,6 +107,8 @@ ags_note_test_find_prev()
 
       break;
     }
+
+    list = list->next;
   }
 
   CU_ASSERT(success == TRUE);
@@ -159,6 +161,8 @@ ags_note_test_find_next()
 
       break;
     }
+
+    list = list->next;
   }
 
   CU_ASSERT(success == TRUE);

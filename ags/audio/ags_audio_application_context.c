@@ -639,7 +639,8 @@ ags_audio_application_context_init(AgsAudioApplicationContext *audio_application
   
   /* AgsServer */
   audio_application_context->server = ags_server_new((GObject *) audio_application_context);
-
+  g_object_ref(audio_application_context->server);
+  
   /* AgsAudioLoop */
   audio_loop = ags_audio_loop_new((GObject *) soundcard,
 				  (GObject *) audio_application_context);

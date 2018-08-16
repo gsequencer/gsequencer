@@ -2042,7 +2042,7 @@ ags_channel_dispose(GObject *gobject)
     //TODO:JK: stop threads
     
     g_object_set(playback,
-		 "source", NULL,
+		 "channel", NULL,
 		 NULL);
     //    g_object_run_dispose(playback);
     g_object_unref(playback);
@@ -4599,6 +4599,9 @@ ags_channel_set_link(AgsChannel *channel, AgsChannel *link,
 				 NULL);
 	ags_channel_reset_recycling(channel,
 				    recycling, recycling);
+      }else{
+	ags_channel_reset_recycling(channel,
+				    NULL, NULL);
       }
     }
   }else if(AGS_IS_INPUT(link)){
@@ -4671,6 +4674,9 @@ ags_channel_set_link(AgsChannel *channel, AgsChannel *link,
 	ags_channel_reset_recycling(link,
 				    recycling, recycling);
       }
+    }else{
+	ags_channel_reset_recycling(link,
+				    NULL, NULL);
     }
   }
 
@@ -4750,6 +4756,9 @@ ags_channel_set_link(AgsChannel *channel, AgsChannel *link,
 			       NULL);
       ags_channel_reset_recycling(old_channel_link,
 				  recycling, recycling);
+    }else{
+      ags_channel_reset_recycling(old_channel_link,
+				  NULL, NULL);
     }
   }
 
@@ -4829,6 +4838,9 @@ ags_channel_set_link(AgsChannel *channel, AgsChannel *link,
 			       NULL);
       ags_channel_reset_recycling(old_link_link,
 				  recycling, recycling);
+    }else{
+      ags_channel_reset_recycling(old_link_link,
+				  NULL, NULL);
     }
   }
 
@@ -5992,11 +6004,9 @@ ags_channel_reset_recycling(AgsChannel *channel,
 	  pthread_mutex_unlock(ags_recycling_get_class_mutex());
 
 	  /* prev channel last recycling next */
-	  pthread_mutex_lock(nth_recycling_mutex);
-	  
-	  prev_last_recycling->next = first_recycling;
-
-	  pthread_mutex_unlock(nth_recycling_mutex);
+	  g_object_set(prev_last_recycling,
+		       "next", first_recycling,
+		       NULL);
 
 	  /* get nth recycling mutex */
 	  pthread_mutex_lock(ags_recycling_get_class_mutex());
@@ -6005,12 +6015,10 @@ ags_channel_reset_recycling(AgsChannel *channel,
   
 	  pthread_mutex_unlock(ags_recycling_get_class_mutex());
 
-	  /* first recycling prev */	  
-	  pthread_mutex_lock(nth_recycling_mutex);
-
-	  first_recycling->prev = prev_last_recycling;
-
-	  pthread_mutex_unlock(nth_recycling_mutex);
+	  /* first recycling prev */
+	  g_object_set(first_recycling,
+		       "prev", prev_last_recycling,
+		       NULL);
 	}else{
 	  /* get nth recycling mutex */
 	  pthread_mutex_lock(ags_recycling_get_class_mutex());
@@ -6020,11 +6028,9 @@ ags_channel_reset_recycling(AgsChannel *channel,
 	  pthread_mutex_unlock(ags_recycling_get_class_mutex());
 
 	  /* first recycling prev */	  
-	  pthread_mutex_lock(nth_recycling_mutex);
-
-	  first_recycling->prev = NULL;
-
-	  pthread_mutex_unlock(nth_recycling_mutex);
+	  g_object_set(first_recycling,
+		       "prev", NULL,
+		       NULL);
 	}
       }else{
 	/* get nth recycling mutex */
@@ -6035,11 +6041,9 @@ ags_channel_reset_recycling(AgsChannel *channel,
 	pthread_mutex_unlock(ags_recycling_get_class_mutex());
 
 	/* first recycling prev */	  
-	pthread_mutex_lock(nth_recycling_mutex);
-
-	first_recycling->prev = NULL;
-
-	pthread_mutex_unlock(nth_recycling_mutex);
+	g_object_set(first_recycling,
+		     "prev", NULL,
+		     NULL);
       }
     
       if(next_channel != NULL){
@@ -6066,11 +6070,9 @@ ags_channel_reset_recycling(AgsChannel *channel,
 	  pthread_mutex_unlock(ags_recycling_get_class_mutex());
 	  
 	  /* next channel first recycling next */
-	  pthread_mutex_lock(nth_recycling_mutex);
-	  
-	  next_first_recycling->prev = last_recycling;
-
-	  pthread_mutex_unlock(nth_recycling_mutex);
+	  g_object_set(next_first_recycling,
+		       "prev", last_recycling,
+		       NULL);
 	  
 	  /* get nth recycling mutex */
 	  pthread_mutex_lock(ags_recycling_get_class_mutex());
@@ -6079,12 +6081,10 @@ ags_channel_reset_recycling(AgsChannel *channel,
   
 	  pthread_mutex_unlock(ags_recycling_get_class_mutex());
 
-	  /* last recycling next */	  
-	  pthread_mutex_lock(nth_recycling_mutex);
-
-	  last_recycling->next = next_first_recycling;
-
-	  pthread_mutex_unlock(nth_recycling_mutex);
+	  /* last recycling next */
+	  g_object_set(last_recycling,
+		       "next", next_first_recycling,
+		       NULL);
 	}else{
 	  /* get nth recycling mutex */
 	  pthread_mutex_lock(ags_recycling_get_class_mutex());
@@ -6093,12 +6093,10 @@ ags_channel_reset_recycling(AgsChannel *channel,
   
 	  pthread_mutex_unlock(ags_recycling_get_class_mutex());
 
-	  /* last recycling next */	  
-	  pthread_mutex_lock(nth_recycling_mutex);
-
-	  last_recycling->next = NULL;
-
-	  pthread_mutex_unlock(nth_recycling_mutex);
+	  /* last recycling next */
+	  g_object_set(last_recycling,
+		       "next", NULL,
+		       NULL);
 	}
       }else{
 	/* get nth recycling mutex */
@@ -6109,11 +6107,9 @@ ags_channel_reset_recycling(AgsChannel *channel,
 	pthread_mutex_unlock(ags_recycling_get_class_mutex());
 
 	/* last recycling next */	  
-	pthread_mutex_lock(nth_recycling_mutex);
-
-	last_recycling->next = NULL;
-
-	pthread_mutex_unlock(nth_recycling_mutex);
+	g_object_set(last_recycling,
+		     "next", NULL,
+		     NULL);
       }
     }else{
       gboolean link_next, link_prev;
@@ -6207,11 +6203,9 @@ ags_channel_reset_recycling(AgsChannel *channel,
 	  pthread_mutex_unlock(ags_recycling_get_class_mutex());
 
 	  /* next channel first recycling next */
-	  pthread_mutex_lock(nth_recycling_mutex);
-
-	  next_first_recycling->prev = last_recycling;
-
-	  pthread_mutex_unlock(nth_recycling_mutex);
+	  g_object_set(next_first_recycling,
+		       "prev", last_recycling,
+		       NULL);
 
 	  /*
 	   * 
@@ -6224,11 +6218,9 @@ ags_channel_reset_recycling(AgsChannel *channel,
 	  pthread_mutex_unlock(ags_recycling_get_class_mutex());
 
 	  /* prev channel last recycling next */
-	  pthread_mutex_lock(nth_recycling_mutex);
-
-	  prev_last_recycling->next = first_recycling;
-
-	  pthread_mutex_unlock(nth_recycling_mutex);
+	  g_object_set(prev_last_recycling,
+		       "next", first_recycling,
+		       NULL);
 	}else{
 	  /* get nth recycling mutex */
 	  pthread_mutex_lock(ags_recycling_get_class_mutex());
@@ -6238,11 +6230,9 @@ ags_channel_reset_recycling(AgsChannel *channel,
 	  pthread_mutex_unlock(ags_recycling_get_class_mutex());
 
 	  /* prev channel last recycling next */
-	  pthread_mutex_lock(nth_recycling_mutex);
-
-	  prev_last_recycling->next = NULL;
-
-	  pthread_mutex_unlock(nth_recycling_mutex);
+	  g_object_set(prev_last_recycling,
+		       "next", NULL,
+		       NULL);
 	}
       }else if(link_prev){
 	/* get nth recycling mutex */
@@ -6253,11 +6243,9 @@ ags_channel_reset_recycling(AgsChannel *channel,
 	pthread_mutex_unlock(ags_recycling_get_class_mutex());
 
 	/* next channel first recycling next */
-	pthread_mutex_lock(nth_recycling_mutex);
-
-	next_first_recycling->prev = NULL;
-
-	pthread_mutex_unlock(nth_recycling_mutex);
+	g_object_set(next_first_recycling,
+		     "prev", NULL,
+		     NULL);
       }
     }
   }
@@ -6381,9 +6369,11 @@ ags_channel_reset_recycling(AgsChannel *channel,
       pthread_mutex_unlock(ags_recycling_get_class_mutex());
 
       /* set parent and iterate */
-      pthread_mutex_lock(nth_recycling_mutex);
+      g_object_set(nth_recycling,
+		   "parent", parent,
+		   NULL);
       
-      nth_recycling->parent = parent;
+      pthread_mutex_lock(nth_recycling_mutex);
 
       nth_recycling = nth_recycling->next;
 

@@ -452,7 +452,7 @@ ags_recall_class_init(AgsRecallClass *recall)
 				  0,
 				  G_MAXUINT32,
 				  0,
-				  G_PARAM_READABLE);
+				  G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_PAD,
 				  param_spec);
@@ -470,7 +470,7 @@ ags_recall_class_init(AgsRecallClass *recall)
 				  0,
 				  G_MAXUINT32,
 				  0,
-				  G_PARAM_READABLE);
+				  G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_AUDIO_CHANNEL,
 				  param_spec);
@@ -488,7 +488,7 @@ ags_recall_class_init(AgsRecallClass *recall)
 				  0,
 				  G_MAXUINT32,
 				  0,
-				  G_PARAM_READABLE);
+				  G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_LINE,
 				  param_spec);
@@ -580,7 +580,7 @@ ags_recall_class_init(AgsRecallClass *recall)
   param_spec = g_param_spec_gtype("child-type",
 				  i18n_pspec("child type"),
 				  i18n_pspec("The type of child that can be added"),
-				  AGS_TYPE_RECALL,
+				  G_TYPE_NONE,
 				  G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_CHILD_TYPE,
@@ -1412,7 +1412,11 @@ ags_recall_set_property(GObject *gobject,
     break;
   case PROP_CHILD_TYPE:
     {
+      pthread_mutex_lock(recall_mutex);
+
       recall->child_type = g_value_get_gtype(value);
+
+      pthread_mutex_unlock(recall_mutex);
     }
     break;
   case PROP_CHILD:
@@ -5184,30 +5188,44 @@ ags_recall_real_duplicate(AgsRecall *recall,
   /* set parameter name and value */
   parameter_name[n_params[0]] = "output-soundcard";
   memset(&(value[n_params[0]]), 0, sizeof(GValue));
+  g_value_init(&(value[n_params[0]]),
+	       G_TYPE_OBJECT);
   g_value_set_object(&(value[n_params[0]]), output_soundcard);
 
   parameter_name[n_params[0] + 1] = "output-soundcard-channel";
   memset(&(value[n_params[0] + 1]), 0, sizeof(GValue));
+  g_value_init(&(value[n_params[0] + 1]),
+	       G_TYPE_INT);
   g_value_set_int(&(value[n_params[0] + 1]), output_soundcard_channel);
 
   parameter_name[n_params[0] + 2] = "input-soundcard";
   memset(&(value[n_params[0] + 2]), 0, sizeof(GValue));
+  g_value_init(&(value[n_params[0] + 2]),
+	       G_TYPE_OBJECT);
   g_value_set_object(&(value[n_params[0] + 2]), input_soundcard);
     
   parameter_name[n_params[0] + 3] = "input-soundcard-channel";
   memset(&(value[n_params[0] + 3]), 0, sizeof(GValue));
-  g_value_set_int(&(value[n_params[0 + 3]]), input_soundcard_channel);
+  g_value_init(&(value[n_params[0] + 3]),
+	       G_TYPE_INT);
+  g_value_set_int(&(value[n_params[0] + 3]), input_soundcard_channel);
 
   parameter_name[n_params[0] + 4] = "recall-id";
   memset(&(value[n_params[0] + 4]), 0, sizeof(GValue));
+  g_value_init(&(value[n_params[0] + 4]),
+	       G_TYPE_OBJECT);
   g_value_set_object(&(value[n_params[0] + 4]), recall_id);
     
   parameter_name[n_params[0] + 5] = "recall-container";
   memset(&(value[n_params[0] + 5]), 0, sizeof(GValue));
+  g_value_init(&(value[n_params[0] + 5]),
+	       G_TYPE_OBJECT);
   g_value_set_object(&(value[n_params[0] + 5]), recall_container);
 
   parameter_name[n_params[0] + 6] = "child-type";
   memset(&(value[n_params[0] + 6]), 0, sizeof(GValue));
+  g_value_init(&(value[n_params[0] + 6]),
+	       G_TYPE_GTYPE);
   g_value_set_gtype(&(value[n_params[0] + 6]), child_type);
 
   parameter_name[n_params[0] + 7] = NULL;

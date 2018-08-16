@@ -823,12 +823,16 @@ ags_audio_test_duplicate_recall()
   /* case 1: playback recall */
   recall = ags_recall_new();
   recall->flags |= (AGS_RECALL_TEMPLATE);
+  recall->sound_scope = AGS_SOUND_SCOPE_NOTATION;
+  recall->ability_flags = AGS_SOUND_ABILITY_NOTATION;
   ags_audio_add_recall(audio,
 		       recall,
 		       TRUE);
   
   recall_audio_run = ags_recall_audio_run_new();
   recall_audio_run->flags |= (AGS_RECALL_TEMPLATE);
+  recall_audio_run->sound_scope = AGS_SOUND_SCOPE_NOTATION;
+  recall_audio_run->ability_flags = AGS_SOUND_ABILITY_NOTATION;
   ags_audio_add_recall(audio,
 		       recall_audio_run,
 		       TRUE);
@@ -841,6 +845,7 @@ ags_audio_test_duplicate_recall()
   recycling_context = ags_recycling_context_new(0);
 
   recall_id = ags_recall_id_new(NULL);
+  recall_id->sound_scope = AGS_SOUND_SCOPE_NOTATION;
   g_object_set(recall_id,
 	       "recycling-context", recycling_context,
 	       NULL);
@@ -857,12 +862,16 @@ ags_audio_test_duplicate_recall()
   /* case 2: true recall */
   recall = ags_recall_new();
   recall->flags |= (AGS_RECALL_TEMPLATE);
+  recall->sound_scope = AGS_SOUND_SCOPE_NOTATION;
+  recall->ability_flags = AGS_SOUND_ABILITY_NOTATION;
   ags_audio_add_recall(audio,
 		       recall,
 		       FALSE);
   
   recall_audio_run = ags_recall_audio_run_new();
   recall_audio_run->flags |= (AGS_RECALL_TEMPLATE);
+  recall_audio_run->sound_scope = AGS_SOUND_SCOPE_NOTATION;
+  recall_audio_run->ability_flags = AGS_SOUND_ABILITY_NOTATION;
   ags_audio_add_recall(audio,
 		       recall_audio_run,
 		       FALSE);
@@ -880,6 +889,7 @@ ags_audio_test_duplicate_recall()
 	       NULL);
 
   recall_id = ags_recall_id_new(NULL);
+  recall_id->sound_scope = AGS_SOUND_SCOPE_NOTATION;
   g_object_set(recall_id,
 	       "recycling-context", recycling_context,
 	       NULL);
@@ -1491,6 +1501,7 @@ ags_audio_test_init_recall()
 
   /* instantiate recalls */
   recall = ags_recall_new();
+  recall->ability_flags = AGS_SOUND_ABILITY_NOTATION;
   ags_audio_add_recall(audio,
 		       recall,
 		       TRUE);
@@ -1499,6 +1510,7 @@ ags_audio_test_init_recall()
 		   G_CALLBACK(ags_audio_test_init_recall_callback), NULL);
   
   recall_audio_run = ags_recall_audio_run_new();
+  recall_audio_run->ability_flags = AGS_SOUND_ABILITY_NOTATION;
   ags_audio_add_recall(audio,
 		       recall_audio_run,
 		       TRUE);
@@ -1510,6 +1522,7 @@ ags_audio_test_init_recall()
   recycling_context = ags_recycling_context_new(0);
 
   recall_id = ags_recall_id_new(NULL);
+  recall_id->sound_scope = AGS_SOUND_SCOPE_NOTATION;
   g_object_set(recall_id,
 	       "recycling-context", recycling_context,
 	       NULL);
@@ -1524,8 +1537,8 @@ ags_audio_test_init_recall()
 	       NULL);
   
   /* init recall */
-  ags_audio_init_recall(audio, 0,
-			recall_id);
+  ags_audio_init_recall(audio,
+			recall_id, AGS_SOUND_STAGING_RUN_INIT_PRE);
   
   CU_ASSERT(test_init_recall_callback_hits_count == 2);
 }
@@ -1548,13 +1561,14 @@ ags_audio_test_resolve_recall()
 		       slave_recall_audio_run,
 		       TRUE);
 
-  g_signal_connect(G_OBJECT(slave_recall_audio_run), "resolve-dependencies",
+  g_signal_connect(G_OBJECT(slave_recall_audio_run), "resolve-dependency",
 		   G_CALLBACK(ags_audio_test_resolve_recall_callback), NULL);
   
   /* instantiate recycling context and recall id */
   recycling_context = ags_recycling_context_new(0);
 
   recall_id = ags_recall_id_new(NULL);
+  recall_id->sound_scope = AGS_SOUND_SCOPE_NOTATION;
   g_object_set(recall_id,
 	       "recycling-context", recycling_context,
 	       NULL);
@@ -1618,8 +1632,14 @@ main(int argc, char **argv)
     return CU_get_error();
   }
 
-  //  g_log_set_fatal_mask("GLib-GObject", // "Gtk" G_LOG_DOMAIN,
-  //		       G_LOG_LEVEL_CRITICAL | G_LOG_LEVEL_WARNING);
+  g_log_set_fatal_mask("GLib-GObject",
+  		       G_LOG_LEVEL_WARNING | G_LOG_LEVEL_CRITICAL);
+
+  g_log_set_fatal_mask("Gtk",
+  		       G_LOG_LEVEL_CRITICAL);
+
+  g_log_set_fatal_mask(NULL,
+  		       G_LOG_LEVEL_WARNING | G_LOG_LEVEL_CRITICAL);
 
   /* add the tests to the suite */
   if((CU_add_test(pSuite, "test of AgsAudio dispose", ags_audio_test_dispose) == NULL) ||

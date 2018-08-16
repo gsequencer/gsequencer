@@ -351,6 +351,8 @@ ags_server_dispose(GObject *gobject)
 {
   AgsServer *server;
 
+  server = AGS_SERVER(gobject);
+  
   if(server->application_context != NULL){
     g_object_unref(server->application_context);
 

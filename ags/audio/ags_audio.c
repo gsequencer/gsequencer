@@ -5677,15 +5677,17 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
       list = g_list_nth(list_start,
 			(j + 1) * audio_channels);
       
-      for(i = 0; i < audio_channels_old - audio_channels; i++){
+      for(i = 0; i < audio_channels_old - audio_channels && list != NULL; i++){
 	playback = list->data;
 
-	ags_playback_domain_remove_playback(playback_domain,
-					    playback, AGS_TYPE_OUTPUT);
-	
-	g_object_run_dispose(playback);
-	g_object_unref(playback);
+	if(AGS_IS_PLAYBACK(playback)){
+	  ags_playback_domain_remove_playback(playback_domain,
+					      playback, AGS_TYPE_OUTPUT);
 
+	  g_object_run_dispose(playback);
+	  g_object_unref(playback);
+	}
+	
 	/* iterate */
 	list = list->next;
       }
@@ -5707,12 +5709,14 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
       for(i = 0; i < audio_channels_old - audio_channels; i++){
 	playback = list->data;
 
-	ags_playback_domain_remove_playback(playback_domain,
-					    playback, AGS_TYPE_INPUT);
+	if(AGS_IS_PLAYBACK(playback)){
+	  ags_playback_domain_remove_playback(playback_domain,
+					      playback, AGS_TYPE_INPUT);
+	  
+	  g_object_run_dispose(playback);
+	  g_object_unref(playback);
+	}
 	
-	g_object_run_dispose(playback);
-	g_object_unref(playback);
-
 	/* iterate */
 	list = list->next;
       }
@@ -6436,13 +6440,15 @@ ags_audio_real_set_pads(AgsAudio *audio,
 
 	  playback = list->data;
 
-	  /* remove playback */
-	  ags_playback_domain_remove_playback(playback_domain,
-					      playback, AGS_TYPE_OUTPUT);
+	  if(AGS_IS_PLAYBACK(playback)){
+	    /* remove playback */
+	    ags_playback_domain_remove_playback(playback_domain,
+						playback, AGS_TYPE_OUTPUT);
 
-	  g_object_run_dispose(playback);
-	  g_object_unref(playback);
-
+	    g_object_run_dispose(playback);
+	    g_object_unref(playback);
+	  }
+	  
 	  /* iterate */
 	  list = list->next;
 	}
@@ -6483,13 +6489,15 @@ ags_audio_real_set_pads(AgsAudio *audio,
 
 	  playback = list->data;
 
-	  /* remove playback */
-	  ags_playback_domain_remove_playback(playback_domain,
-					      playback, AGS_TYPE_OUTPUT);
+	  if(AGS_IS_PLAYBACK(playback)){
+	    /* remove playback */
+	    ags_playback_domain_remove_playback(playback_domain,
+						playback, AGS_TYPE_OUTPUT);
 	    
-	  g_object_run_dispose(playback);
-	  g_object_unref(playback);
-
+	    g_object_run_dispose(playback);
+	    g_object_unref(playback);
+	  }
+	  
 	  /* iterate */
 	  list = list->next;
 	}
@@ -6610,13 +6618,15 @@ ags_audio_real_set_pads(AgsAudio *audio,
 
 	  playback = list->data;
 
-	  /* remove playback */
-	  ags_playback_domain_remove_playback(playback_domain,
-					      playback, AGS_TYPE_INPUT);
+	  if(AGS_IS_PLAYBACK(playback)){
+	    /* remove playback */
+	    ags_playback_domain_remove_playback(playback_domain,
+						playback, AGS_TYPE_INPUT);
 
-	  g_object_run_dispose(playback);
-	  g_object_unref(playback);
-
+	    g_object_run_dispose(playback);
+	    g_object_unref(playback);
+	  }
+	  
 	  /* iterate */
 	  list = list->next;
 	}
@@ -6657,13 +6667,15 @@ ags_audio_real_set_pads(AgsAudio *audio,
 
 	  playback = list->data;
 
-	  /* remove playback */
-	  ags_playback_domain_remove_playback(playback_domain,
-					      playback, AGS_TYPE_INPUT);
+	  if(AGS_IS_PLAYBACK(playback)){
+	    /* remove playback */
+	    ags_playback_domain_remove_playback(playback_domain,
+						playback, AGS_TYPE_INPUT);
 	    
-	  g_object_run_dispose(playback);
-	  g_object_unref(playback);
-
+	    g_object_run_dispose(playback);
+	    g_object_unref(playback);
+	  }
+	  
 	  /* iterate */
 	  list = list->next;
 	}
@@ -8470,6 +8482,12 @@ ags_audio_real_duplicate_recall(AgsAudio *audio,
 
   pthread_mutex_unlock(recall_id_mutex);
 
+  if(sound_scope == -1){
+    g_critical("can only duplicate for specific sound scope");
+    
+    return;
+  }
+  
   /* get audio mutex */
   pthread_mutex_lock(ags_audio_get_class_mutex());
 
@@ -8526,10 +8544,6 @@ ags_audio_real_duplicate_recall(AgsAudio *audio,
     /* reverse play context */
     list =
       list_start = g_list_reverse(list_start);
-
-    /* reverse play context */
-    list =
-      list_start = g_list_reverse(list_start);
   }else{
     pthread_mutex_t *recall_mutex;
 
@@ -8548,10 +8562,6 @@ ags_audio_real_duplicate_recall(AgsAudio *audio,
     list_start = g_list_copy(audio->recall);
     
     pthread_mutex_unlock(recall_mutex);
-
-    /* reverse recall context */
-    list =
-      list_start = g_list_reverse(list_start);
 
     /* reverse recall context */
     list =
@@ -8716,6 +8726,12 @@ ags_audio_real_resolve_recall(AgsAudio *audio,
 
   pthread_mutex_unlock(recall_id_mutex);
 
+  if(sound_scope == -1){
+    g_critical("can only resolve for specific sound scope");
+    
+    return;
+  }
+  
   /* get audio mutex */
   pthread_mutex_lock(ags_audio_get_class_mutex());
 
@@ -8868,6 +8884,12 @@ ags_audio_real_init_recall(AgsAudio *audio,
   sound_scope = recall_id->sound_scope;
 
   pthread_mutex_unlock(recall_id_mutex);
+
+  if(sound_scope == -1){
+    g_critical("can only init for specific sound scope");
+    
+    return;
+  }
 
   /* get audio mutex */
   pthread_mutex_lock(ags_audio_get_class_mutex());
