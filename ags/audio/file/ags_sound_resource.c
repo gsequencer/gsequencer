@@ -21,6 +21,8 @@
 
 #include <ags/libags.h>
 
+#include <ags/audio/ags_audio_signal.h>
+
 void ags_sound_resource_base_init(AgsSoundResourceInterface *interface);
 
 /**
@@ -377,7 +379,82 @@ ags_sound_resource_read_audio_signal(AgsSoundResource *sound_resource,
 				     GObject *soundcard,
 				     gint audio_channel)
 {
-  //TODO:JK: implement me
+  GList *start_list;
+
+  guint frame_count;
+  guint audio_channels;
+  guint target_samplerate, samplerate;
+  guint target_buffer_size, buffer_size;
+  guint target_format, format;
+  guint i, i_start, i_stop;
+
+  if(!AGS_SOUND_RESOURCE(sound_resource)){
+    return(NULL);
+  }
+
+  ags_sound_resource_info(AGS_SOUND_RESOURCE(sound_resource),
+			  &frame_count,
+			  NULL, NULL);
+
+  ags_sound_resource_get_presets(AGS_SOUND_RESOURCE(sound_resource),
+				 &audio_channels,
+				 &samplerate,
+				 &buffer_size,
+				 &format);
+  if(soundcard != NULL){
+    ags_soundcard_get_presets(AGS_SOUNDCARD(soundcard),
+			      NULL,
+			      &target_samplerate,
+			      &target_buffer_size,
+			      &target_format);
+  }else{
+    AgsConfig *config;
+
+    config = ags_config_get_instance();
+
+    target_samplerate = ags_soundcard_helper_config_get_samplerate(config);
+    target_buffer_size = ags_soundcard_helper_config_get_buffer_size(config);
+    target_format = ags_soundcard_helper_config_get_format(config);
+  }
+  
+  start_list = NULL;
+
+  if(audio_channel == -1){
+    i_start = 0;
+    i_stop = audio_channels;
+  }else{
+    i_start = audio_channel;
+    i_stop = i_start + 1;
+  }
+  
+  for(i = i_start; i < i_stop; i++){
+    AgsAudioSignal *audio_signal;
+
+    GList *stream;
+
+    ags_sound_resource_seek(AGS_SOUND_RESOURCE(sound_resource),
+			    0, G_SEEK_SET);
+    
+    audio_signal = ags_audio_signal_new_with_length(soundcard,
+						    NULL,
+						    NULL,
+						    (guint) ceil(frame_count / buffer_size));
+    start_list = g_list_prepend(start_list,
+				audio_signal);
+
+    stream = audio_signal->stream;
+
+    while(stream != NULL){
+      ags_sound_resource_read(AGS_SOUND_RESOURCE(sound_resource),
+			      stream->data, 1,
+			      i,
+			      target_buffer_size, target_format);
+      
+      stream = stream->next;
+    }
+  }
+
+  return(start_list);
 }
 
 /**

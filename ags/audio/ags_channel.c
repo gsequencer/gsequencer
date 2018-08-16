@@ -4599,9 +4599,6 @@ ags_channel_set_link(AgsChannel *channel, AgsChannel *link,
 				 NULL);
 	ags_channel_reset_recycling(channel,
 				    recycling, recycling);
-      }else{
-	ags_channel_reset_recycling(channel,
-				    NULL, NULL);
       }
     }
   }else if(AGS_IS_INPUT(link)){
@@ -4674,9 +4671,6 @@ ags_channel_set_link(AgsChannel *channel, AgsChannel *link,
 	ags_channel_reset_recycling(link,
 				    recycling, recycling);
       }
-    }else{
-	ags_channel_reset_recycling(link,
-				    NULL, NULL);
     }
   }
 
@@ -4839,7 +4833,7 @@ ags_channel_set_link(AgsChannel *channel, AgsChannel *link,
       ags_channel_reset_recycling(old_link_link,
 				  recycling, recycling);
     }else{
-      ags_channel_reset_recycling(old_link_link,
+      ags_channel_reset_recycling(old_channel_link,
 				  NULL, NULL);
     }
   }

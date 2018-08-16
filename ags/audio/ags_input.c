@@ -558,6 +558,8 @@ ags_input_next_active(AgsInput *input,
     pthread_mutex_lock(recycling_mutex);
     
     /* check recycling */
+    recycling = first_recycling;
+    
     while(recycling != end_region){
       /* get recycling mutex */
       pthread_mutex_lock(ags_recycling_get_class_mutex());

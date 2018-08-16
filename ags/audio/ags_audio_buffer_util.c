@@ -51,6 +51,10 @@ ags_audio_buffer_util_format_from_soundcard(guint soundcard_format)
     return(AGS_AUDIO_BUFFER_UTIL_S32);
   case AGS_SOUNDCARD_SIGNED_64_BIT:
     return(AGS_AUDIO_BUFFER_UTIL_S64);
+  case AGS_SOUNDCARD_FLOAT:
+    return(AGS_AUDIO_BUFFER_UTIL_FLOAT);
+  case AGS_SOUNDCARD_DOUBLE:
+    return(AGS_AUDIO_BUFFER_UTIL_DOUBLE);
   default:
     {
       g_warning("ags_audio_buffer_util_format_from_soundcard() - unsupported soundcard format");
