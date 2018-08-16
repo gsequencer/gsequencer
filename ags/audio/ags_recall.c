@@ -5266,7 +5266,7 @@ ags_recall_real_duplicate(AgsRecall *recall,
 
   ags_recall_set_ability_flags(copy_recall, ability_flags);
   ags_recall_set_behaviour_flags(copy_recall, behaviour_flags);
-  ags_recall_set_sound_scope(copy_recall, sound_scope);
+  //  ags_recall_set_sound_scope(copy_recall, sound_scope);
   
   /* duplicate handlers */
   pthread_mutex_lock(recall_mutex);
@@ -5294,7 +5294,7 @@ ags_recall_real_duplicate(AgsRecall *recall,
 
 /**
  * ags_recall_duplicate:
- * @recall: the template #AgsRecall
+ * @recall: the template #AgsRecAll
  * @recall_id: the #AgsRecallID
  * @n_params: guint pointer to parameter count
  * @parameter_name: string vector containing parameter names

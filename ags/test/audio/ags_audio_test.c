@@ -1632,15 +1632,6 @@ main(int argc, char **argv)
     return CU_get_error();
   }
 
-  g_log_set_fatal_mask("GLib-GObject",
-  		       G_LOG_LEVEL_WARNING | G_LOG_LEVEL_CRITICAL);
-
-  g_log_set_fatal_mask("Gtk",
-  		       G_LOG_LEVEL_CRITICAL);
-
-  g_log_set_fatal_mask(NULL,
-  		       G_LOG_LEVEL_WARNING | G_LOG_LEVEL_CRITICAL);
-
   /* add the tests to the suite */
   if((CU_add_test(pSuite, "test of AgsAudio dispose", ags_audio_test_dispose) == NULL) ||
      (CU_add_test(pSuite, "test of AgsAudio finalize", ags_audio_test_finalize) == NULL) ||

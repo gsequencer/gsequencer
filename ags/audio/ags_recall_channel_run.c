@@ -837,14 +837,18 @@ ags_recall_channel_run_duplicate(AgsRecall *recall,
   
   pthread_mutex_unlock(recall_mutex);
 
-  g_object_get(destination,
-	       "recall-id", &list_start,
-	       NULL);
+  next_recycling_context = NULL;
+  
+  if(destination != NULL){
+    g_object_get(destination,
+		 "recall-id", &list_start,
+		 NULL);
 
-  next_recycling_context = ags_recall_id_find_recycling_context(list_start,
-								recall_id->recycling_context->parent);
-  g_list_free(list_start);
-      
+    next_recycling_context = ags_recall_id_find_recycling_context(list_start,
+								  recall_id->recycling_context->parent);
+    g_list_free(list_start);
+  }
+  
   if(destination != NULL &&
      next_recycling_context == NULL){
     return(NULL);
@@ -894,15 +898,15 @@ ags_recall_channel_run_duplicate(AgsRecall *recall,
     /* get channel mutex */
     pthread_mutex_lock(ags_channel_get_class_mutex());
   
-    channel_mutex = destination->obj_mutex;
+    channel_mutex = source->obj_mutex;
   
     pthread_mutex_unlock(ags_channel_get_class_mutex());
 
     /* get some fields */
     pthread_mutex_lock(channel_mutex);
 
-    first_recycling = destination->first_recycling;
-    last_recycling = destination->last_recycling;
+    first_recycling = source->first_recycling;
+    last_recycling = source->last_recycling;
 
     pthread_mutex_unlock(channel_mutex);
     

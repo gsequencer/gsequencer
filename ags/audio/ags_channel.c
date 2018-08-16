@@ -927,9 +927,9 @@ ags_channel_class_init(AgsChannelClass *channel)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsChannelClass, init_recall),
 		 NULL, NULL,
-		 g_cclosure_marshal_VOID__OBJECT,
-		 G_TYPE_NONE, 1,
-		 G_TYPE_OBJECT);
+		 ags_cclosure_marshal_VOID__OBJECT_UINT,
+		 G_TYPE_NONE, 2,
+		 G_TYPE_OBJECT, G_TYPE_UINT);
 
   /**
    * AgsChannel::play-recall:
@@ -8940,6 +8940,12 @@ ags_channel_real_duplicate_recall(AgsChannel *channel,
 
   pthread_mutex_unlock(recall_id_mutex);
 
+  if(sound_scope == -1){
+    g_critical("can only duplicate for specific sound scope");
+    
+    return;
+  }
+  
   /* get channel mutex */
   pthread_mutex_lock(ags_channel_get_class_mutex());
 
@@ -9165,6 +9171,12 @@ ags_channel_real_resolve_recall(AgsChannel *channel,
 
   pthread_mutex_unlock(recall_id_mutex);
 
+  if(sound_scope == -1){
+    g_critical("can only resolve for specific sound scope");
+    
+    return;
+  }
+
   /* get channel mutex */
   pthread_mutex_lock(ags_channel_get_class_mutex());
 
@@ -9317,6 +9329,12 @@ ags_channel_real_init_recall(AgsChannel *channel,
   sound_scope = recall_id->sound_scope;
 
   pthread_mutex_unlock(recall_id_mutex);
+
+  if(sound_scope == -1){
+    g_critical("can only init for specific sound scope");
+    
+    return;
+  }
 
   /* get channel mutex */
   pthread_mutex_lock(ags_channel_get_class_mutex());
