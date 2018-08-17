@@ -2412,8 +2412,7 @@ ags_recycling_find_next_channel(AgsRecycling *start_region, AgsRecycling *end_re
   pthread_mutex_t *recycling_mutex, *start_recycling_mutex;
 
   /* verify objects and get pointer for safe access */
-  if(!AGS_IS_RECYCLING(start_region) ||
-     !AGS_IS_CHANNEL(prev_channel)){
+  if(!AGS_IS_RECYCLING(start_region)){
     return(NULL);
   }
 

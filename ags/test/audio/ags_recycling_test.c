@@ -576,7 +576,7 @@ ags_recycling_test_find_next_channel()
   
   /* assert to find next channel */
   channel = start;
-  recycling = start->first_recycling->next;
+  recycling = start->first_recycling;
   
   for(i = 0; i + 1 < AGS_RECYCLING_TEST_FIND_NEXT_CHANNEL_N_CHANNEL; i++){
     CU_ASSERT(ags_recycling_find_next_channel(recycling, NULL,
@@ -609,6 +609,17 @@ main(int argc, char **argv)
     return CU_get_error();
   }
 
+#if 0
+  g_log_set_fatal_mask("GLib-GObject",
+  		       G_LOG_LEVEL_WARNING | G_LOG_LEVEL_CRITICAL);
+
+  g_log_set_fatal_mask("Gtk",
+  		       G_LOG_LEVEL_CRITICAL);
+
+  g_log_set_fatal_mask(NULL,
+  		       G_LOG_LEVEL_WARNING | G_LOG_LEVEL_CRITICAL);
+#endif
+  
   /* add the tests to the suite */
   if((CU_add_test(pSuite, "test of AgsRecycling add audio signal\0", ags_recycling_test_add_audio_signal) == NULL) ||
      (CU_add_test(pSuite, "test of AgsRecycling remove audio signal\0", ags_recycling_test_remove_audio_signal) == NULL) ||

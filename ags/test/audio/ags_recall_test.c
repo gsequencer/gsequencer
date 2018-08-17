@@ -77,7 +77,8 @@ void ags_recall_test_callback(AgsRecall *recall,
 void ags_recall_test_child_added_callback(AgsRecall *recall, AgsRecall *child,
 					  gpointer data);
 AgsRecall* ags_recall_test_duplicate_callback(AgsRecall *recall, AgsRecallID *recall_id,
-					      guint *n_params, GParameter *parameter,
+					      guint *n_params,
+					      gchar *parameter_name, GValue *value,
 					      gpointer data);
 
 #define AGS_RECALL_RUN_INIT_PRE_N_CHILDREN (4)
@@ -340,12 +341,14 @@ ags_recall_test_done()
 
   /* assert callback invoked */
   data = 0;
-  ags_recall_done(recall);
+  ags_recall_set_staging_flags(recall,
+			       AGS_SOUND_STAGING_DONE);
   
   CU_ASSERT(((AGS_SOUND_STAGING_DONE & (recall->staging_flags)) != 0) &&
 	    data == 1);
-
+ 
   /* persistent recall */
+  //FIXME:JK: doesn't pass
   recall = ags_recall_new();
   recall->behaviour_flags |= AGS_SOUND_BEHAVIOUR_PERSISTENT;
   g_signal_connect(G_OBJECT(recall), "done",
@@ -353,7 +356,8 @@ ags_recall_test_done()
 
   /* assert callback not invoked */
   data = 0;
-  ags_recall_done(recall);
+  ags_recall_set_staging_flags(recall,
+			       AGS_SOUND_STAGING_DONE);
   
   CU_ASSERT(((AGS_SOUND_STAGING_DONE & (recall->staging_flags)) == 0) &&
 	    data == 0);
@@ -483,7 +487,8 @@ ags_recall_test_is_done()
 
 AgsRecall*
 ags_recall_test_duplicate_callback(AgsRecall *recall, AgsRecallID *recall_id,
-				   guint *n_params, GParameter *parameter,
+				   guint *n_params,
+				   gchar *parameter_name, GValue *value,
 				   gpointer data)
 {
   *((guint *) data) += 1;
@@ -514,7 +519,7 @@ ags_recall_test_duplicate()
 				    NULL);
     
     g_object_set(recall,
-		 "soundcard", devout,
+		 "output-soundcard", devout,
 		 "recall-container", recall_container,
 		 NULL);
     recall->flags |= AGS_RECALL_TEMPLATE;

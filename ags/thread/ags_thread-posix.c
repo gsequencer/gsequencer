@@ -3041,6 +3041,11 @@ ags_thread_add_start_queue(AgsThread *thread,
 			   AgsThread *child)
 {
   GList *start_queue;
+
+  if(!AGS_IS_THREAD(thread) ||
+     !AGS_IS_THREAD(child)){
+    return;
+  }
   
   pthread_mutex_lock(thread->start_mutex);
   

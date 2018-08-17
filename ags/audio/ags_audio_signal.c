@@ -792,9 +792,9 @@ ags_audio_signal_init(AgsAudioSignal *audio_signal)
   audio_signal->input_soundcard_channel = 0;
 
   /* presets */
-  audio_signal->samplerate = ags_soundcard_helper_config_get_samplerate(config);
-  audio_signal->buffer_size = ags_soundcard_helper_config_get_buffer_size(config);
-  audio_signal->format = ags_soundcard_helper_config_get_format(config);
+  audio_signal->samplerate = (guint) ags_soundcard_helper_config_get_samplerate(config);
+  audio_signal->buffer_size = (guint) ags_soundcard_helper_config_get_buffer_size(config);
+  audio_signal->format = (guint) ags_soundcard_helper_config_get_format(config);
 
   audio_signal->word_size = sizeof(gint16);
 
@@ -992,6 +992,7 @@ ags_audio_signal_set_property(GObject *gobject,
       ags_audio_signal_set_buffer_size(audio_signal,
 				       buffer_size);
     }
+    break;
   case PROP_FORMAT:
     {
       guint format;
@@ -1343,6 +1344,7 @@ ags_audio_signal_get_property(GObject *gobject,
 
       pthread_mutex_unlock(audio_signal_mutex);
     }
+    break;
   case PROP_FORMAT:
     {
       pthread_mutex_lock(audio_signal_mutex);
@@ -2436,17 +2438,21 @@ ags_audio_signal_set_format(AgsAudioSignal *audio_signal, guint format)
 
   pthread_mutex_unlock(audio_signal_mutex);
 
+  if(old_format == 0){
+    return;
+  }
+  
   /* resize buffer */
   pthread_mutex_lock(stream_mutex);
 
   stream = audio_signal->stream;
+    
+  copy_mode = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(format),
+						  ags_audio_buffer_util_format_from_soundcard(old_format));
 
   while(stream != NULL){
     data = ags_stream_alloc(audio_signal->buffer_size,
 			    format);
-    
-    copy_mode = ags_audio_buffer_util_get_copy_mode(format,
-						    old_format);
     
     ags_audio_buffer_util_copy_buffer_to_buffer(data, 1, 0,
 						stream->data, 1, 0,

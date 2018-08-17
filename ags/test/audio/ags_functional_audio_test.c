@@ -500,7 +500,7 @@ ags_functional_audio_test_playback()
 
     task = NULL;    
     start_audio = ags_start_audio_new(audio,
-				     AGS_SOUND_SCOPE_NOTATION);
+				      AGS_SOUND_SCOPE_NOTATION);
     task = g_list_prepend(task,
 			  start_audio);
     
@@ -648,12 +648,12 @@ ags_functional_audio_test_playback()
     
     audio[i] = ags_audio_new(soundcard);
     g_object_ref(audio[i]);
-    audio[i]->flags |= (AGS_AUDIO_OUTPUT_HAS_RECYCLING |
-			AGS_AUDIO_INPUT_HAS_RECYCLING |
-			AGS_AUDIO_SYNC |
-			AGS_AUDIO_ASYNC);
-    audio[i]->ability_flags |= (AGS_SOUND_ABILITY_NOTATION);
-    audio[i]->behaviour_flags |= (AGS_SOUND_BEHAVIOUR_CHAINED_TO_INPUT);
+    ags_audio_set_flags(audio[i], (AGS_AUDIO_OUTPUT_HAS_RECYCLING |
+				   AGS_AUDIO_INPUT_HAS_RECYCLING |
+				   AGS_AUDIO_SYNC |
+				   AGS_AUDIO_ASYNC));
+    ags_audio_set_ability_flags(audio[i], (AGS_SOUND_ABILITY_NOTATION));
+    ags_audio_set_behaviour_flags(audio[i], (AGS_SOUND_BEHAVIOUR_CHAINED_TO_INPUT));
     
     ags_audio_set_audio_channels(audio[i],
 				 AGS_FUNCTIONAL_AUDIO_TEST_PLAYBACK_N_AUDIO_CHANNELS, 0);

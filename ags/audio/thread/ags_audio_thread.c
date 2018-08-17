@@ -139,7 +139,7 @@ ags_audio_thread_class_init(AgsAudioThreadClass *audio_thread)
 				   i18n_pspec("default output soundcard assigned to"),
 				   i18n_pspec("The default output AgsSoundcard it is assigned to"),
 				   G_TYPE_OBJECT,
-				   G_PARAM_WRITABLE);
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_DEFAULT_OUTPUT_SOUNDCARD,
 				  param_spec);
@@ -155,7 +155,7 @@ ags_audio_thread_class_init(AgsAudioThreadClass *audio_thread)
 				   i18n_pspec("audio assigned to"),
 				   i18n_pspec("The AgsAudio it is assigned to"),
 				   AGS_TYPE_AUDIO,
-				   G_PARAM_WRITABLE);
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_AUDIO,
 				  param_spec);
