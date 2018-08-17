@@ -351,7 +351,7 @@ ags_lv2_bridge_init(AgsLv2Bridge *lv2_bridge)
   }
 
   audio = AGS_MACHINE(lv2_bridge)->audio;
-  audio->flags |= (AGS_AUDIO_SYNC);
+  ags_audio_set_flags(audio, (AGS_AUDIO_SYNC));
 
   g_signal_connect_after(G_OBJECT(lv2_bridge), "resize-audio-channels",
 			 G_CALLBACK(ags_lv2_bridge_resize_audio_channels), NULL);

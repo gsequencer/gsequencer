@@ -2232,7 +2232,7 @@ ags_machine_message_monitor_timeout(AgsMachine *machine)
 	  
 	  guint pads, pads_old;
 	  gint position;
-	  
+
 	  position = ags_strv_index(AGS_MESSAGE_ENVELOPE(message->data)->parameter_name,
 				     "channel-type");
 	  channel_type = g_value_get_ulong(&(AGS_MESSAGE_ENVELOPE(message->data)->value[position]));

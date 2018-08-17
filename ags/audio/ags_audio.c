@@ -6985,7 +6985,7 @@ ags_audio_set_output_soundcard(AgsAudio *audio,
     if(audio_thread != NULL){
       /* set output soundcard */
       g_object_set(audio_thread,
-		   "output-soundcard", soundcard,
+		   "default-output-soundcard", soundcard,
 		   NULL);
     }
   }

@@ -191,14 +191,14 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
 			 G_CALLBACK(ags_ffplayer_parent_set_callback), (gpointer) ffplayer);
 
   audio = AGS_MACHINE(ffplayer)->audio;
-  audio->flags |= (AGS_AUDIO_SYNC |
-		   AGS_AUDIO_ASYNC |
-		   AGS_AUDIO_OUTPUT_HAS_RECYCLING |
-		   AGS_AUDIO_INPUT_HAS_RECYCLING |
-		   AGS_AUDIO_INPUT_HAS_FILE);
-  audio->ability_flags |= (AGS_SOUND_ABILITY_NOTATION);
-  audio->behaviour_flags = (AGS_SOUND_BEHAVIOUR_REVERSE_MAPPING |
-			    AGS_SOUND_BEHAVIOUR_DEFAULTS_TO_INPUT);
+  ags_audio_set_flags(audio, (AGS_AUDIO_SYNC |
+			      AGS_AUDIO_ASYNC |
+			      AGS_AUDIO_OUTPUT_HAS_RECYCLING |
+			      AGS_AUDIO_INPUT_HAS_RECYCLING |
+			      AGS_AUDIO_INPUT_HAS_FILE));
+  ags_audio_set_ability_flags(audio, (AGS_SOUND_ABILITY_NOTATION));
+  ags_audio_set_behaviour_flags(audio, (AGS_SOUND_BEHAVIOUR_REVERSE_MAPPING |
+					AGS_SOUND_BEHAVIOUR_DEFAULTS_TO_INPUT));
   g_object_set(audio,
 	       "audio-start-mapping", 0,
 	       "audio-end-mapping", 128,
@@ -657,7 +657,6 @@ ags_ffplayer_launch_task(AgsFileLaunch *file_launch, AgsFFPlayer *ffplayer)
     ags_audio_container_open(audio_container);
     
     /* select first preset */
-    AGS_IPATCH(audio_container->sound_container)->nesting_level = AGS_SF2_FILENAME;
     ags_sound_container_select_level_by_index(AGS_SOUND_CONTAINER(audio_container->sound_container),
 					      0);
 
@@ -1418,7 +1417,8 @@ void
 ags_ffplayer_open_filename(AgsFFPlayer *ffplayer,
 			   gchar *filename)
 {
-  if(filename == NULL){
+  if(!AGS_IS_FFPLAYER(ffplayer) ||
+     filename == NULL){
     return;
   }
   
@@ -1441,10 +1441,12 @@ ags_ffplayer_open_filename(AgsFFPlayer *ffplayer,
 						NULL,
 						window->soundcard,
 						-1);
-    AGS_IPATCH(audio_container->sound_container)->nesting_level = AGS_SF2_FILENAME;
-
+    ags_audio_container_open(audio_container);
+    
+    ags_sound_container_select_level_by_index(AGS_SOUND_CONTAINER(audio_container->sound_container), 0);
+    AGS_IPATCH(audio_container->sound_container)->nesting_level += 1;
+    
     ags_ffplayer_load_preset(ffplayer);
-    ags_ffplayer_load_instrument(ffplayer);
   }
 }
 
@@ -1457,22 +1459,24 @@ ags_ffplayer_load_preset(AgsFFPlayer *ffplayer)
 
   GError *error;
 
+  if(!AGS_IS_FFPLAYER(ffplayer)){
+    return;
+  }
+
   audio_container = ffplayer->audio_container;
 
   /* select first preset */
-  AGS_IPATCH(audio_container->sound_container)->nesting_level = AGS_SF2_FILENAME;
-
-  preset = ags_sound_container_get_sublevel_name(audio_container);
-  ags_sound_container_select_level_by_index(AGS_SOUND_CONTAINER(audio_container->sound_container),
-					    0);
+  preset = ags_ipatch_sf2_reader_get_preset_all(AGS_IPATCH(audio_container->sound_container)->reader);
 
   /* fill ffplayer->preset */
   while(preset != NULL && preset[0] != NULL){
     gtk_combo_box_text_append_text(ffplayer->preset,
-				   *preset);
+				   preset[0]);
     
     preset++;
   }
+
+  ags_ffplayer_load_instrument(ffplayer);
 }
 
 void
@@ -1482,20 +1486,31 @@ ags_ffplayer_load_instrument(AgsFFPlayer *ffplayer)
   
   gchar **instrument;
 
+  gint position;
+  
   GError *error;
+  
+  if(!AGS_IS_FFPLAYER(ffplayer)){
+    return;
+  }
 
   audio_container = ffplayer->audio_container;
-
-  AGS_IPATCH(audio_container->sound_container)->nesting_level = AGS_SF2_PHDR;
-
-  instrument = ags_sound_container_get_sublevel_name(AGS_SOUND_CONTAINER(audio_container->sound_container));
-  ags_sound_container_select_level_by_index(AGS_SOUND_CONTAINER(audio_container->sound_container),
-					    0);
   
+  gtk_list_store_clear(GTK_LIST_STORE(gtk_combo_box_get_model(GTK_COMBO_BOX(ffplayer->instrument))));
+
+  position = gtk_combo_box_get_active(ffplayer->preset);
+
+  if(position != -1){
+    instrument = ags_ipatch_sf2_reader_get_instrument_by_preset_index(AGS_IPATCH(audio_container->sound_container)->reader,
+								      position);
+  }else{
+    instrument = NULL;
+  }
+
   /* fill ffplayer->instrument */
   while(instrument != NULL && instrument[0] != NULL){
     gtk_combo_box_text_append_text(ffplayer->instrument,
-				   *instrument);
+				   instrument[0]);
 
     instrument++;
   }

@@ -46,11 +46,14 @@ void ags_drum_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_drum_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_drum_init(AgsDrum *drum);
 void ags_drum_finalize(GObject *gobject);
+
 void ags_drum_connect(AgsConnectable *connectable);
 void ags_drum_disconnect(AgsConnectable *connectable);
+
 void ags_drum_show(GtkWidget *widget);
 void ags_drum_show_all(GtkWidget *widget);
 void ags_drum_map_recall(AgsMachine *machine);
+
 gchar* ags_drum_get_name(AgsPlugin *plugin);
 void ags_drum_set_name(AgsPlugin *plugin, gchar *name);
 gchar* ags_drum_get_xml_type(AgsPlugin *plugin);
@@ -195,16 +198,16 @@ ags_drum_init(AgsDrum *drum)
 
 
   audio = AGS_MACHINE(drum)->audio;
-  audio->flags |= (AGS_AUDIO_SYNC |
-		   AGS_AUDIO_ASYNC |
-		   AGS_AUDIO_OUTPUT_HAS_RECYCLING |
-		   AGS_AUDIO_INPUT_HAS_RECYCLING |
-		   AGS_AUDIO_INPUT_HAS_FILE);
-  audio->ability_flags |= (AGS_SOUND_ABILITY_SEQUENCER |
-			   AGS_SOUND_ABILITY_NOTATION);
-  audio->behaviour_flags = (AGS_SOUND_BEHAVIOUR_PATTERN_MODE |
-			    AGS_SOUND_BEHAVIOUR_REVERSE_MAPPING |
-			    AGS_SOUND_BEHAVIOUR_DEFAULTS_TO_INPUT);
+  ags_audio_set_flags(audio, (AGS_AUDIO_SYNC |
+			      AGS_AUDIO_ASYNC |
+			      AGS_AUDIO_OUTPUT_HAS_RECYCLING |
+			      AGS_AUDIO_INPUT_HAS_RECYCLING |
+			      AGS_AUDIO_INPUT_HAS_FILE));
+  ags_audio_set_ability_flags(audio, (AGS_SOUND_ABILITY_SEQUENCER |
+				      AGS_SOUND_ABILITY_NOTATION));
+  ags_audio_set_behaviour_flags(audio, (AGS_SOUND_BEHAVIOUR_PATTERN_MODE |
+					AGS_SOUND_BEHAVIOUR_REVERSE_MAPPING |
+					AGS_SOUND_BEHAVIOUR_DEFAULTS_TO_INPUT));
   g_object_set(audio,
 	       "audio-start-mapping", 0,
 	       "audio-end-mapping", 128,

@@ -734,7 +734,11 @@ ags_sndfile_read(AgsSoundResource *sound_resource,
   }
 
   if(sndfile->offset + frame_count >= total_frame_count){
-    frame_count = total_frame_count - sndfile->offset;
+    if(total_frame_count > sndfile->offset){
+      frame_count = total_frame_count - sndfile->offset;
+    }else{
+      return(0);
+    }
   }
 
   use_cache = FALSE;
@@ -752,45 +756,54 @@ ags_sndfile_read(AgsSoundResource *sound_resource,
 						  ags_audio_buffer_util_format_from_soundcard(sndfile->format));
   
   for(i = 0; i < frame_count; ){
+    sf_count_t retval;
+    
     if(i + sndfile->buffer_size > frame_count){
       read_count = frame_count - i;
     }
 
-    multi_frames = read_count * sndfile->info->channels;
+    multi_frames = read_count; // * sndfile->info->channels
 
     if(!use_cache){
       switch(sndfile->format){
       case AGS_SOUNDCARD_SIGNED_8_BIT:
 	{
 	  //TODO:JK: implement me
+	  retval = 0;
 	}
 	break;
       case AGS_SOUNDCARD_SIGNED_16_BIT:
 	{
-	  sf_read_short(sndfile->file, sndfile->buffer, multi_frames);
+	  retval = sf_read_short(sndfile->file, sndfile->buffer, multi_frames);
 	}
 	break;
       case AGS_SOUNDCARD_SIGNED_24_BIT:
 	{
 	  //TODO:JK: implement me
+	  retval = 0;
 	}
 	break;
       case AGS_SOUNDCARD_SIGNED_32_BIT:
 	{
 	  //TODO:JK: implement me
+	  retval = 0;
 	}
 	break;
       case AGS_SOUNDCARD_FLOAT:
 	{
-	  sf_read_float(sndfile->file, sndfile->buffer, multi_frames);
+	  retval = sf_read_float(sndfile->file, sndfile->buffer, multi_frames);
 	}
 	break;
       case AGS_SOUNDCARD_DOUBLE:
 	{
-	  sf_read_double(sndfile->file, sndfile->buffer, multi_frames);
+	  retval = sf_read_double(sndfile->file, sndfile->buffer, multi_frames);
 	}
 	break;
       }
+    }
+    
+    if(retval == 0){
+      break;
     }
     
     ags_audio_buffer_util_copy_buffer_to_buffer(dbuffer, daudio_channels, i,

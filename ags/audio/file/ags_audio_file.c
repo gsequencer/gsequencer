@@ -550,27 +550,22 @@ void
 ags_audio_file_finalize(GObject *gobject)
 {
   AgsAudioFile *audio_file;
-  GList *list, *list_next;
 
   audio_file = AGS_AUDIO_FILE(gobject);
-
-  /* AgsAudioSignal */
-  list = audio_file->audio_signal;
-
-  while(list != NULL){
-    list_next = list->next;
-
-    g_object_unref(G_OBJECT(list->data));
-    g_list_free1(list);
-    
-    list = list_next;
-  }
-
-  /* file */
+		   
+  /* sound resource */
   if(audio_file->sound_resource != NULL){
     g_object_unref(audio_file->sound_resource);
-  }
-  
+  }  
+
+  /* AgsAudioSignal */
+  g_list_free_full(audio_file->audio_signal,
+		   g_object_unref);
+		   
+  /* AgsWave */
+  g_list_free_full(audio_file->wave,
+		   g_object_unref);
+
   /* call parent */
   G_OBJECT_CLASS(ags_audio_file_parent_class)->finalize(gobject);
 }
@@ -615,9 +610,11 @@ ags_audio_file_add_audio_signal(AgsAudioFile *audio_file, GObject *audio_signal)
     return;
   }
 
-  g_object_ref(audio_signal);
-  audio_file->audio_signal = g_list_prepend(audio_file->audio_signal,
-					    audio_signal);
+  if(g_list_find(audio_file->audio_signal, audio_signal) == NULL){
+    g_object_ref(audio_signal);
+    audio_file->audio_signal = g_list_prepend(audio_file->audio_signal,
+					      audio_signal);
+  }
 }
 
 /**
@@ -661,9 +658,11 @@ ags_audio_file_add_wave(AgsAudioFile *audio_file, GObject *wave)
     return;
   }
 
-  g_object_ref(wave);
-  audio_file->wave = g_list_prepend(audio_file->wave,
-				    wave);
+  if(g_list_find(audio_file->wave, wave) == NULL){
+    g_object_ref(wave);
+    audio_file->wave = g_list_prepend(audio_file->wave,
+				      wave);
+  }
 }
 
 /**
@@ -714,7 +713,8 @@ ags_audio_file_open(AgsAudioFile *audio_file)
   if(g_file_test(audio_file->filename, G_FILE_TEST_EXISTS)){
     if(ags_audio_file_check_suffix(audio_file->filename)){
       audio_file->sound_resource = (GObject *) ags_sndfile_new();
-
+      g_object_ref(audio_file->sound_resource);
+      
       if(ags_sound_resource_open(AGS_SOUND_RESOURCE(audio_file->sound_resource),
 				 audio_file->filename)){
 	//FIXME:JK: this call should occure just before reading frames because of the new iterate functions of an AgsPlayable
@@ -771,6 +771,9 @@ ags_audio_file_rw_open(AgsAudioFile *audio_file,
     guint loop_start, loop_end;
 
     audio_file->sound_resource = (GObject *) ags_sndfile_new();
+    g_object_ref(audio_file->sound_resource);
+
+
     ags_sound_resource_set_presets(AGS_SOUND_RESOURCE(audio_file->sound_resource),
 				  audio_file->file_audio_channels,
 				  audio_file->file_samplerate,
@@ -819,6 +822,8 @@ ags_audio_file_open_from_data(AgsAudioFile *audio_file, gchar *data)
       guint loop_start, loop_end;
 
       audio_file->sound_resource = (GObject *) ags_sndfile_new();
+      g_object_ref(audio_file->sound_resource);
+      
       AGS_SNDFILE(audio_file->sound_resource)->flags = AGS_SNDFILE_VIRTUAL;
 
       if(ags_sound_resource_open(AGS_SOUND_RESOURCE(audio_file->sound_resource),

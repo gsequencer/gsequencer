@@ -438,7 +438,7 @@ ags_sound_resource_read_audio_signal(AgsSoundResource *sound_resource,
     audio_signal = ags_audio_signal_new_with_length(soundcard,
 						    NULL,
 						    NULL,
-						    (guint) ceil(frame_count / buffer_size));
+						    (guint) ceil(frame_count / target_buffer_size));
     start_list = g_list_prepend(start_list,
 				audio_signal);
 

@@ -177,10 +177,10 @@ ags_synth_init(AgsSynth *synth)
 			 G_CALLBACK(ags_synth_parent_set_callback), (gpointer) synth);
 
   audio = AGS_MACHINE(synth)->audio;
-  audio->flags |= (AGS_AUDIO_ASYNC |
-		   AGS_AUDIO_OUTPUT_HAS_RECYCLING |
-		   AGS_AUDIO_INPUT_HAS_RECYCLING |
-		   AGS_AUDIO_INPUT_HAS_SYNTH);
+  ags_audio_set_flags(audio, (AGS_AUDIO_ASYNC |
+			      AGS_AUDIO_OUTPUT_HAS_RECYCLING |
+			      AGS_AUDIO_INPUT_HAS_RECYCLING |
+			      AGS_AUDIO_INPUT_HAS_SYNTH));
 
   AGS_MACHINE(synth)->input_pad_type = AGS_TYPE_SYNTH_INPUT_PAD;
   AGS_MACHINE(synth)->input_line_type = AGS_TYPE_SYNTH_INPUT_LINE;

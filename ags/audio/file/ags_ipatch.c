@@ -77,7 +77,6 @@ void ags_ipatch_close(AgsSoundContainer *sound_container);
  */
 
 static gpointer ags_ipatch_parent_class = NULL;
-static AgsConnectableInterface *ags_ipatch_parent_connectable_interface;
 static AgsSoundContainerInterface *ags_ipatch_parent_sound_container_interface;
  
 enum{
@@ -94,21 +93,15 @@ ags_ipatch_get_type()
 
   if(!ags_type_ipatch){
     static const GTypeInfo ags_ipatch_info = {
-      sizeof(AgsIpatchClass),
+      sizeof (AgsIpatchClass),
       NULL, /* base_init */
       NULL, /* base_finalize */
       (GClassInitFunc) ags_ipatch_class_init,
       NULL, /* class_finalize */
       NULL, /* class_data */
-      sizeof(AgsIpatch),
+      sizeof (AgsIpatch),
       0,    /* n_preallocs */
       (GInstanceInitFunc) ags_ipatch_init,
-    };
-
-    static const GInterfaceInfo ags_connectable_interface_info = {
-      (GInterfaceInitFunc) ags_ipatch_connectable_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
     };
 
     static const GInterfaceInfo ags_sound_container_interface_info = {
@@ -118,20 +111,16 @@ ags_ipatch_get_type()
     };
 
     ags_type_ipatch = g_type_register_static(G_TYPE_OBJECT,
-					     "AgsIpatch",
-					     &ags_ipatch_info,
-					     0);
-
-    g_type_add_interface_static(ags_type_ipatch,
-				AGS_TYPE_CONNECTABLE,
-				&ags_connectable_interface_info);
+					      "AgsIpatch",
+					      &ags_ipatch_info,
+					      0);
 
     g_type_add_interface_static(ags_type_ipatch,
 				AGS_TYPE_SOUND_CONTAINER,
 				&ags_sound_container_interface_info);
   }
   
-  return(ags_type_ipatch);
+  return (ags_type_ipatch);
 }
 
 void
@@ -198,12 +187,6 @@ ags_ipatch_class_init(AgsIpatchClass *ipatch)
   g_object_class_install_property(gobject,
 				  PROP_MODE,
 				  param_spec);
-}
-
-void
-ags_ipatch_connectable_interface_init(AgsConnectableInterface *connectable)
-{
-  ags_ipatch_parent_connectable_interface = g_type_interface_peek_parent(connectable);
 }
 
 void
@@ -847,15 +830,12 @@ ags_ipatch_check_suffix(gchar *filename)
  * Since: 2.0.0
  */
 AgsIpatch*
-ags_ipatch_new(gchar *filename,
-	       GObject *soundcard)
+ags_ipatch_new()
 {
   AgsIpatch *ipatch;
 
   ipatch = (AgsIpatch *) g_object_new(AGS_TYPE_IPATCH,
-				      "filename", filename,
-				      "soundcard", soundcard,
 				      NULL);
-
+  
   return(ipatch);
 }

@@ -108,36 +108,45 @@ ags_ffplayer_open_dialog_response_callback(GtkWidget *widget, gint response,
 
   ffplayer->open_dialog = NULL;
   gtk_widget_destroy(widget);
+
+  gtk_combo_box_set_active(ffplayer->preset, 0);
 }
 
 void
 ags_ffplayer_preset_changed_callback(GtkComboBox *preset, AgsFFPlayer *ffplayer)
 {
   AgsAudioContainer *audio_container;
-
+  
   gint position;
+  
+  if((AGS_FFPLAYER_NO_LOAD & (ffplayer->flags)) != 0){
+    return;
+  }
 
   audio_container = ffplayer->audio_container;
 
-  if(audio_container == NULL ||
-     (AGS_FFPLAYER_NO_LOAD & (ffplayer->flags)) != 0){
-    return;
-  }
+  /* reset */
+  ags_sound_container_level_up(AGS_SOUND_CONTAINER(audio_container->sound_container),
+			       4);
   
-  position = gtk_combo_box_get_active(preset);
-  
+  ags_sound_container_select_level_by_index(AGS_SOUND_CONTAINER(audio_container->sound_container),
+					    0);
+  AGS_IPATCH(audio_container->sound_container)->nesting_level += 1;
+
   /* load presets */
-  AGS_IPATCH(audio_container->sound_container)->nesting_level = AGS_SF2_FILENAME;
+  position = gtk_combo_box_get_active(ffplayer->preset);
+  
   ags_sound_container_select_level_by_index(AGS_SOUND_CONTAINER(audio_container->sound_container),
 					    position);
+  AGS_IPATCH(audio_container->sound_container)->nesting_level += 1;
+    
+  //  ags_sound_container_select_level_by_index(AGS_SOUND_CONTAINER(audio_container->sound_container),
+  //					    position);
   
   /* select first instrument */
-  gtk_list_store_clear(GTK_LIST_STORE(gtk_combo_box_get_model(GTK_COMBO_BOX(ffplayer->instrument))));
-
   ags_ffplayer_load_instrument(ffplayer);
-  
-  gtk_combo_box_set_active(GTK_COMBO_BOX(ffplayer->instrument),
-  			   0);
+
+  gtk_combo_box_set_active(ffplayer->instrument, 0);
 }
 
 void
@@ -197,15 +206,29 @@ ags_ffplayer_instrument_changed_callback(GtkComboBox *instrument, AgsFFPlayer *f
     return;
   }
 
-  position = gtk_combo_box_get_active(instrument);
+  /* reset */
+  ags_sound_container_level_up(AGS_SOUND_CONTAINER(audio_container->sound_container),
+			       4);
   
-  /* select instrument */
+  ags_sound_container_select_level_by_index(AGS_SOUND_CONTAINER(audio_container->sound_container),
+					    0);
+  AGS_IPATCH(audio_container->sound_container)->nesting_level += 1;
+
+  /* load presets */
+  position = gtk_combo_box_get_active(ffplayer->preset);
+  
   ags_sound_container_select_level_by_index(AGS_SOUND_CONTAINER(audio_container->sound_container),
 					    position);
-  
-  /* select first sample */
-  AGS_IPATCH(audio_container->sound_container)->nesting_level = AGS_SF2_IHDR;
+  AGS_IPATCH(audio_container->sound_container)->nesting_level += 1;
 
+  /* load instrument */
+  position = gtk_combo_box_get_active(instrument);
+
+  ags_sound_container_select_level_by_index(AGS_SOUND_CONTAINER(audio_container->sound_container),
+  					    position);
+
+  AGS_IPATCH(audio_container->sound_container)->nesting_level += 1;
+  
   /* read all samples */
   list = 
     start_list = ags_sound_container_get_resource_current(AGS_SOUND_CONTAINER(audio_container->sound_container));

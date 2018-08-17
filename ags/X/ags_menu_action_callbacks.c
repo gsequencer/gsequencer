@@ -825,13 +825,13 @@ ags_menu_action_add_lv2_bridge_callback(GtkWidget *menu_item, gpointer data)
   
   if(lv2_plugin != NULL &&
      (AGS_LV2_PLUGIN_IS_SYNTHESIZER & (lv2_plugin->flags)) != 0){
-    AGS_MACHINE(lv2_bridge)->audio->flags |= (AGS_AUDIO_OUTPUT_HAS_RECYCLING |
-					      AGS_AUDIO_INPUT_HAS_RECYCLING |
-					      AGS_AUDIO_SYNC |
-					      AGS_AUDIO_ASYNC);
-    AGS_MACHINE(lv2_bridge)->audio->ability_flags |= (AGS_SOUND_ABILITY_NOTATION);
-    AGS_MACHINE(lv2_bridge)->audio->behaviour_flags |= (AGS_SOUND_BEHAVIOUR_DEFAULTS_TO_INPUT |
-							AGS_SOUND_BEHAVIOUR_REVERSE_MAPPING);
+    ags_audio_set_flags(AGS_MACHINE(lv2_bridge)->audio, (AGS_AUDIO_OUTPUT_HAS_RECYCLING |
+							 AGS_AUDIO_INPUT_HAS_RECYCLING |
+							 AGS_AUDIO_SYNC |
+							 AGS_AUDIO_ASYNC));
+    ags_audio_set_ability_flags(AGS_MACHINE(lv2_bridge)->audio, (AGS_SOUND_ABILITY_NOTATION));
+    ags_audio_set_behaviour_flags(AGS_MACHINE(lv2_bridge)->audio, (AGS_SOUND_BEHAVIOUR_DEFAULTS_TO_INPUT |
+								   AGS_SOUND_BEHAVIOUR_REVERSE_MAPPING));
     
     g_object_set(AGS_MACHINE(lv2_bridge)->audio,
 		 "audio-start-mapping", 0,

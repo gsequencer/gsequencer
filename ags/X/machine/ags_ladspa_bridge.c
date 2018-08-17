@@ -233,7 +233,7 @@ ags_ladspa_bridge_init(AgsLadspaBridge *ladspa_bridge)
 			 G_CALLBACK(ags_ladspa_bridge_parent_set_callback), (gpointer) ladspa_bridge);
 
   audio = AGS_MACHINE(ladspa_bridge)->audio;
-  audio->flags |= (AGS_AUDIO_SYNC);
+  ags_audio_set_flags(audio, (AGS_AUDIO_SYNC));
   
   ladspa_bridge->flags = 0;
 

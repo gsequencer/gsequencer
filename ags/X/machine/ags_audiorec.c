@@ -174,9 +174,9 @@ ags_audiorec_init(AgsAudiorec *audiorec)
   AgsAudio *audio;
 
   audio = AGS_MACHINE(audiorec)->audio;
-  audio->flags |= (AGS_AUDIO_SYNC |
-		   AGS_AUDIO_OUTPUT_HAS_RECYCLING |
-		   AGS_AUDIO_INPUT_HAS_RECYCLING);
+  ags_audio_set_flags(audio, (AGS_AUDIO_SYNC |
+			      AGS_AUDIO_OUTPUT_HAS_RECYCLING |
+			      AGS_AUDIO_INPUT_HAS_RECYCLING));
 
   /* audio resize */
   g_signal_connect_after(G_OBJECT(audiorec), "resize-audio-channels",

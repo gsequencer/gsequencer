@@ -263,14 +263,15 @@ ags_live_dssi_bridge_init(AgsLiveDssiBridge *live_dssi_bridge)
 			 G_CALLBACK(ags_live_dssi_bridge_parent_set_callback), (gpointer) live_dssi_bridge);
 
   audio = AGS_MACHINE(live_dssi_bridge)->audio;
-  audio->flags |= (AGS_AUDIO_SYNC |
-		   AGS_AUDIO_ASYNC |
-		   AGS_AUDIO_OUTPUT_HAS_RECYCLING |
-		   AGS_AUDIO_INPUT_HAS_RECYCLING |
-		   AGS_AUDIO_SKIP_INPUT);
-  audio->ability_flags |= (AGS_SOUND_ABILITY_NOTATION);
-  audio->behaviour_flags = (AGS_SOUND_BEHAVIOUR_REVERSE_MAPPING);
+  ags_audio_set_flags(audio, (AGS_AUDIO_SYNC |
+			      AGS_AUDIO_ASYNC |
+			      AGS_AUDIO_OUTPUT_HAS_RECYCLING |
+			      AGS_AUDIO_INPUT_HAS_RECYCLING |
+			      AGS_AUDIO_SKIP_INPUT));
+  ags_audio_set_ability_flags(audio, (AGS_SOUND_ABILITY_NOTATION));
+  ags_audio_set_behaviour_flags(audio, (AGS_SOUND_BEHAVIOUR_REVERSE_MAPPING));
   //  audio->flags &= (~AGS_AUDIO_NOTATION_DEFAULT);
+  
   g_object_set(audio,
 	       "audio-start-mapping", 0,
 	       "audio-end-mapping", 128,

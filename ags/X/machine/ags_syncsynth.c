@@ -183,14 +183,14 @@ ags_syncsynth_init(AgsSyncsynth *syncsynth)
 			 G_CALLBACK(ags_syncsynth_parent_set_callback), (gpointer) syncsynth);
 
   audio = AGS_MACHINE(syncsynth)->audio;
-  audio->flags |= (AGS_AUDIO_SYNC |
-		   AGS_AUDIO_ASYNC |
-		   AGS_AUDIO_OUTPUT_HAS_RECYCLING |
-		   AGS_AUDIO_INPUT_HAS_RECYCLING |
-		   AGS_AUDIO_INPUT_HAS_SYNTH);
-  audio->ability_flags |= (AGS_SOUND_ABILITY_NOTATION);
-  audio->behaviour_flags = (AGS_SOUND_BEHAVIOUR_REVERSE_MAPPING |
-			    AGS_SOUND_BEHAVIOUR_DEFAULTS_TO_INPUT);
+  ags_audio_set_flags(audio, (AGS_AUDIO_SYNC |
+			      AGS_AUDIO_ASYNC |
+			      AGS_AUDIO_OUTPUT_HAS_RECYCLING |
+			      AGS_AUDIO_INPUT_HAS_RECYCLING |
+			      AGS_AUDIO_INPUT_HAS_SYNTH));
+  ags_audio_set_ability_flags(audio, (AGS_SOUND_ABILITY_NOTATION));
+  ags_audio_set_behaviour_flags(audio, (AGS_SOUND_BEHAVIOUR_REVERSE_MAPPING |
+					AGS_SOUND_BEHAVIOUR_DEFAULTS_TO_INPUT));
   g_object_set(audio,
 	       "audio-start-mapping", 0,
 	       "audio-end-mapping", 128,

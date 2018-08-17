@@ -156,7 +156,7 @@ ags_mixer_init(AgsMixer *mixer)
   g_signal_connect_after((GObject *) mixer, "parent_set",
 			 G_CALLBACK(ags_mixer_parent_set_callback), (gpointer) mixer);
 
-  AGS_MACHINE(mixer)->audio->flags |= (AGS_AUDIO_ASYNC);
+  ags_audio_set_flags(AGS_MACHINE(mixer)->audio, (AGS_AUDIO_ASYNC));
 
   AGS_MACHINE(mixer)->input_pad_type = AGS_TYPE_MIXER_INPUT_PAD;
   AGS_MACHINE(mixer)->input_line_type = AGS_TYPE_MIXER_INPUT_LINE;

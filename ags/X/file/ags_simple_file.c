@@ -1885,7 +1885,7 @@ ags_simple_file_read_machine(AgsSimpleFile *simple_file, xmlNode *node, AgsMachi
   }
   
   g_object_set(gobject->audio,
-	       "soundcard", soundcard,
+	       "output-soundcard", soundcard,
 	       NULL);
 
   /* machine specific */
@@ -1945,12 +1945,12 @@ ags_simple_file_read_machine(AgsSimpleFile *simple_file, xmlNode *node, AgsMachi
     if(lv2_plugin != NULL &&
        (AGS_LV2_PLUGIN_IS_SYNTHESIZER & (lv2_plugin->flags)) != 0){
       
-      gobject->audio->flags |= (AGS_AUDIO_OUTPUT_HAS_RECYCLING |
-				AGS_AUDIO_INPUT_HAS_RECYCLING |
-				AGS_AUDIO_SYNC |
-				AGS_AUDIO_ASYNC);
-      gobject->audio->ability_flags |= (AGS_SOUND_ABILITY_NOTATION);
-      gobject->audio->behaviour_flags |= (AGS_SOUND_BEHAVIOUR_DEFAULTS_TO_INPUT);
+      ags_audio_set_flags(gobject->audio, (AGS_AUDIO_OUTPUT_HAS_RECYCLING |
+					   AGS_AUDIO_INPUT_HAS_RECYCLING |
+					   AGS_AUDIO_SYNC |
+					   AGS_AUDIO_ASYNC));
+      ags_audio_set_ability_flags(gobject->audio, (AGS_SOUND_ABILITY_NOTATION));
+      ags_audio_set_behaviour_flags(gobject->audio, (AGS_SOUND_BEHAVIOUR_DEFAULTS_TO_INPUT));
       
       gobject->flags |= (AGS_MACHINE_IS_SYNTHESIZER |
 			 AGS_MACHINE_REVERSE_NOTATION);
@@ -1983,12 +1983,12 @@ ags_simple_file_read_machine(AgsSimpleFile *simple_file, xmlNode *node, AgsMachi
     if(lv2_plugin != NULL &&
        (AGS_LV2_PLUGIN_IS_SYNTHESIZER & (lv2_plugin->flags)) != 0){
       
-      gobject->audio->flags |= (AGS_AUDIO_OUTPUT_HAS_RECYCLING |
-				AGS_AUDIO_INPUT_HAS_RECYCLING |
-				AGS_AUDIO_SYNC |
-				AGS_AUDIO_ASYNC);
-      gobject->audio->ability_flags |= (AGS_SOUND_ABILITY_NOTATION);
-      gobject->audio->behaviour_flags |= (AGS_SOUND_BEHAVIOUR_DEFAULTS_TO_INPUT);
+      ags_audio_set_flags(gobject->audio, (AGS_AUDIO_OUTPUT_HAS_RECYCLING |
+					   AGS_AUDIO_INPUT_HAS_RECYCLING |
+					   AGS_AUDIO_SYNC |
+					   AGS_AUDIO_ASYNC));
+      ags_audio_set_ability_flags(gobject->audio, (AGS_SOUND_ABILITY_NOTATION));
+      ags_audio_set_behaviour_flags(gobject->audio, (AGS_SOUND_BEHAVIOUR_DEFAULTS_TO_INPUT));
       gobject->flags |= (AGS_MACHINE_IS_SYNTHESIZER |
 			 AGS_MACHINE_REVERSE_NOTATION);
 
@@ -2025,7 +2025,7 @@ ags_simple_file_read_machine(AgsSimpleFile *simple_file, xmlNode *node, AgsMachi
 		   "reverse-mapping");
   if(!g_strcmp0(str,
 		"true")){
-    gobject->audio->behaviour_flags |= AGS_SOUND_BEHAVIOUR_REVERSE_MAPPING;
+    ags_audio_set_behaviour_flags(gobject->audio, (AGS_SOUND_BEHAVIOUR_REVERSE_MAPPING));
   }
   
   /* connect AgsMachine */
@@ -2053,6 +2053,7 @@ ags_simple_file_read_machine(AgsSimpleFile *simple_file, xmlNode *node, AgsMachi
     audio_channels = g_ascii_strtoull(str,
 				      NULL,
 				      10);
+    gobject->audio->audio_channels = audio_channels;
   }
 
   str = xmlGetProp(node,
@@ -2062,6 +2063,10 @@ ags_simple_file_read_machine(AgsSimpleFile *simple_file, xmlNode *node, AgsMachi
     input_pads = g_ascii_strtoull(str,
 				  NULL,
 				  10);
+
+    ags_audio_set_pads(gobject->audio,
+		       AGS_TYPE_INPUT,
+		       input_pads, 0);
     wait_input = TRUE;
   }
 
@@ -2072,6 +2077,10 @@ ags_simple_file_read_machine(AgsSimpleFile *simple_file, xmlNode *node, AgsMachi
     output_pads = g_ascii_strtoull(str,
 				   NULL,
 				   10);
+    
+    ags_audio_set_pads(gobject->audio,
+		       AGS_TYPE_OUTPUT,
+		       output_pads, 0);
     wait_output = TRUE;
   }
 
@@ -3545,11 +3554,11 @@ ags_simple_file_read_line(AgsSimpleFile *simple_file, xmlNode *node, AgsLine **l
 
   if(AGS_IS_LINE(gobject)){
     g_object_set(AGS_LINE(gobject)->channel,
-		 "soundcard", soundcard,
+		 "output-soundcard", soundcard,
 		 NULL);
   }else if(AGS_IS_CHANNEL(gobject)){
     g_object_set(AGS_CHANNEL(gobject),
-		 "soundcard", soundcard,
+		 "output-soundcard", soundcard,
 		 NULL);
   }
     
