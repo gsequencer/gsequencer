@@ -230,6 +230,7 @@
 #include <ags/audio/task/ags_move_note.h>
 #include <ags/audio/task/ags_notify_soundcard.h>
 #include <ags/audio/task/ags_open_file.h>
+#include <ags/audio/task/ags_open_sf2_instrument.h>
 #include <ags/audio/task/ags_open_sf2_sample.h>
 #include <ags/audio/task/ags_open_single_file.h>
 #include <ags/audio/task/ags_start_audio.h>

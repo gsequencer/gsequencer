@@ -228,7 +228,7 @@ ags_open_sf2_sample_class_init(AgsOpenSf2SampleClass *open_sf2_sample)
 				  0,
 				  G_MAXUINT32,
 				  0,
-				  G_PARAM_READABLE);
+				  G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_AUDIO_CHANNEL,
 				  param_spec);
@@ -376,6 +376,11 @@ ags_open_sf2_sample_set_property(GObject *gobject,
       open_sf2_sample->sample = g_strdup(sample);
     }
     break;
+  case PROP_AUDIO_CHANNEL:
+    {
+      open_sf2_sample->audio_channel = g_value_get_uint(value);
+    }
+    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -423,6 +428,11 @@ ags_open_sf2_sample_get_property(GObject *gobject,
       g_value_set_string(value, open_sf2_sample->sample);
     }
     break;
+  case PROP_AUDIO_CHANNEL:
+    {
+      g_value_set_uint(value, open_sf2_sample->audio_channel);
+    }
+    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -443,33 +453,9 @@ ags_open_sf2_sample_dispose(GObject *gobject)
   }
 
   if(open_sf2_sample->ipatch_sample != NULL){
-    g_free(open_sf2_sample->ipatch_sample);
+    g_object_unref(open_sf2_sample->ipatch_sample);
 
     open_sf2_sample->ipatch_sample = NULL;
-  }
-
-  if(open_sf2_sample->filename != NULL){
-    g_free(open_sf2_sample->filename);
-
-    open_sf2_sample->filename = NULL;
-  }
-
-  if(open_sf2_sample->preset != NULL){
-    g_free(open_sf2_sample->preset);
-
-    open_sf2_sample->preset = NULL;
-  }
-
-  if(open_sf2_sample->instrument != NULL){
-    g_free(open_sf2_sample->instrument);
-
-    open_sf2_sample->instrument = NULL;
-  }
-
-  if(open_sf2_sample->sample != NULL){
-    g_free(open_sf2_sample->sample);
-
-    open_sf2_sample->sample = NULL;
   }
   
   /* call parent */
@@ -598,12 +584,14 @@ ags_open_sf2_sample_launch(AgsTask *task)
 	       "first-recycling", &first_recycling,
 	       NULL);
   
-  AGS_AUDIO_SIGNAL(audio_container->audio_signal->data)->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;
+  AGS_AUDIO_SIGNAL(audio_signal->data)->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;
   ags_recycling_add_audio_signal(first_recycling,
-				 AGS_AUDIO_SIGNAL(audio_container->audio_signal->data));
+				 AGS_AUDIO_SIGNAL(audio_signal->data));
 
   /* unref audio file */
-  g_object_unref(audio_container);
+  if(ipatch_sample == NULL){
+    g_object_unref(audio_container);
+  }
 }
 
 /**

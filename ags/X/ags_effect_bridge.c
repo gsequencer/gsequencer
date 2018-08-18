@@ -745,7 +745,8 @@ ags_effect_bridge_real_resize_audio_channels(AgsEffectBridge *effect_bridge,
   
   audio = effect_bridge->audio;
 
-  if(audio == NULL){
+  if(audio == NULL ||
+     new_size == old_size){
     return;
   }
 

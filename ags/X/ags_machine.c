@@ -2219,7 +2219,7 @@ ags_machine_message_monitor_timeout(AgsMachine *machine)
 
 	  position = ags_strv_index(AGS_MESSAGE_ENVELOPE(message->data)->parameter_name,
 				    "audio-channels-old");
-	  audio_channels = g_value_get_uint(&(AGS_MESSAGE_ENVELOPE(message->data)->value[position]));
+	  audio_channels_old = g_value_get_uint(&(AGS_MESSAGE_ENVELOPE(message->data)->value[position]));
 
 	  /* resize audio channels */
 	  ags_machine_resize_audio_channels(machine,

@@ -10544,7 +10544,7 @@ ags_audio_open_audio_file_as_channel(AgsAudio *audio,
 	for(j = 0; j < audio_channels && audio_signal != NULL; j++){
 	  AgsRecycling *recycling;
 	  
-	  /* create task */
+	  /* reset link */
 	  error = NULL;
 
 	  ags_channel_set_link(channel, NULL,
@@ -10576,15 +10576,13 @@ ags_audio_open_audio_file_as_channel(AgsAudio *audio,
 	  pthread_mutex_unlock(ags_recycling_get_class_mutex());
 
 	  /* replace template audio signal */
-	  pthread_mutex_lock(recycling_mutex);
-	  
 	  AGS_AUDIO_SIGNAL(audio_signal->data)->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;
-	  AGS_AUDIO_SIGNAL(audio_signal->data)->recycling = (GObject *) recycling;
+	  g_object_set(AGS_AUDIO_SIGNAL(audio_signal->data),
+		       "recycling", recycling,
+		       NULL);
 
 	  ags_recycling_add_audio_signal(recycling,
 					 audio_signal->data);
-
-	  pthread_mutex_unlock(recycling_mutex);
 
 	  /* iterate */
 	  audio_signal = audio_signal->next;

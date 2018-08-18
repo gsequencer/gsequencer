@@ -129,9 +129,9 @@ ags_ffplayer_preset_changed_callback(GtkComboBox *preset, AgsFFPlayer *ffplayer)
   ags_sound_container_level_up(AGS_SOUND_CONTAINER(audio_container->sound_container),
 			       4);
   
-  ags_sound_container_select_level_by_index(AGS_SOUND_CONTAINER(audio_container->sound_container),
-					    0);
-  AGS_IPATCH(audio_container->sound_container)->nesting_level += 1;
+  //  ags_sound_container_select_level_by_index(AGS_SOUND_CONTAINER(audio_container->sound_container),
+  //					    0);
+  //  AGS_IPATCH(audio_container->sound_container)->nesting_level += 1;
 
   /* load presets */
   position = gtk_combo_box_get_active(ffplayer->preset);
@@ -157,29 +157,14 @@ ags_ffplayer_instrument_changed_callback(GtkComboBox *instrument, AgsFFPlayer *f
   AgsGuiThread *gui_thread;
 
   AgsAudio *audio;
-  AgsChannel *start_channel, *channel;
-  AgsRecycling *recycling;
 
   AgsAudioContainer *audio_container;
 
-  AgsResizeAudio *resize_audio;
-  AgsOpenSf2Sample *open_sf2_sample;
+  AgsOpenSf2Instrument *open_sf2_instrument;
 
   AgsApplicationContext *application_context;
   
-  GList *task;
-  GList *start_list, *list;
-  
-  gchar *filename;
-  gchar *preset_name;
-  gchar *instrument_name;
-  gchar **preset;
-  gchar **sample, **sample_iter;
-
   gint position;
-  guint output_pads;
-  guint n_pads, n_audio_channels;
-  int i;
   
   GError *error;
 
@@ -198,14 +183,6 @@ ags_ffplayer_instrument_changed_callback(GtkComboBox *instrument, AgsFFPlayer *f
   /*  */
   audio_container = ffplayer->audio_container;
 
-  filename = audio_container->filename;
-  preset_name = audio_container->preset;
-  instrument_name = audio_container->instrument;
-
-  if(filename == NULL || preset_name == NULL || instrument_name == NULL){
-    return;
-  }
-
   /* reset */
   ags_sound_container_level_up(AGS_SOUND_CONTAINER(audio_container->sound_container),
 			       4);
@@ -222,95 +199,24 @@ ags_ffplayer_instrument_changed_callback(GtkComboBox *instrument, AgsFFPlayer *f
   AGS_IPATCH(audio_container->sound_container)->nesting_level += 1;
 
   /* load instrument */
-  position = gtk_combo_box_get_active(instrument);
+  position = gtk_combo_box_get_active(ffplayer->instrument);
 
   ags_sound_container_select_level_by_index(AGS_SOUND_CONTAINER(audio_container->sound_container),
   					    position);
 
   AGS_IPATCH(audio_container->sound_container)->nesting_level += 1;
+
+  /* open sf2 instrument */
+  open_sf2_instrument = ags_open_sf2_instrument_new(audio,
+						    AGS_IPATCH(audio_container->sound_container),
+						    NULL,
+						    NULL,
+						    NULL,
+						    0);
   
-  /* read all samples */
-  list = 
-    start_list = ags_sound_container_get_resource_current(AGS_SOUND_CONTAINER(audio_container->sound_container));
-
-  g_object_get(audio,
-	       "output-pads", &output_pads,
-	       "input", &start_channel,
-	       NULL);
-  
-  n_pads = g_list_length(start_list);
-  n_audio_channels = 0;
-
-  while(list != NULL){
-    guint current_audio_channels;
-    
-    ags_sound_resource_get_presets(AGS_SOUND_RESOURCE(list->data),
-				   &current_audio_channels,
-				   NULL,
-				   NULL,
-				   NULL);
-
-    if(current_audio_channels > n_audio_channels){
-      n_audio_channels = current_audio_channels;
-    }
-    
-    list = list->next;
-  }
-
-  /* read */
-  task = NULL;
-
-  if(n_audio_channels > 0 &&
-     n_pads > 0){
-    /* resize */
-    resize_audio = ags_resize_audio_new(audio,
-					output_pads,
-					n_pads,
-					n_audio_channels);
-    task = g_list_prepend(task,
-			  resize_audio);
-
-    /* open sf2 sample task */
-    list = start_list;
-  
-    i = 0;
-
-    while(list != NULL){
-      guint audio_channel;
-
-      g_object_get(channel,
-		   "audio-channel", &audio_channel,
-		   NULL);
-    
-      /* create tasks */
-      open_sf2_sample = ags_open_sf2_sample_new(channel,
-						list->data,
-						NULL,
-						NULL,
-						NULL,
-						NULL,
-						audio_channel);
-      task = g_list_prepend(task,
-			    open_sf2_sample);
-    
-      /* iterate */
-      g_object_get(channel,
-		   "next", &channel,
-		   NULL);
-
-      i++;
-
-      if(i >= n_audio_channels ||
-	 audio_channel + 1 >= n_audio_channels){
-	list = list->next;
-      }
-    }    
-      
-    /* append tasks */
-    task = g_list_reverse(task);
-    ags_gui_thread_schedule_task_list(gui_thread,
-				      task);
-  }
+  /* append task */
+  ags_gui_thread_schedule_task(gui_thread,
+			       open_sf2_instrument);
 }
 
 gboolean

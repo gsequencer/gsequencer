@@ -787,9 +787,56 @@ ags_ipatch_get_resource_by_index(AgsSoundContainer *sound_container,
 GList*
 ags_ipatch_get_resource_current(AgsSoundContainer *sound_container)
 {
-  //TODO:JK: implement me
+  AgsIpatch *ipatch;
+  AgsIpatchSF2Reader *ipatch_sf2_reader;
 
-  return(NULL);
+#ifdef AGS_WITH_LIBINSTPATCH
+  IpatchItem *ipatch_item;
+  IpatchList *ipatch_list;
+
+  IpatchIter sample_iter;
+#endif
+
+  GList *sound_resource;
+
+  guint i, i_stop;
+  
+  ipatch = AGS_IPATCH(sound_container);
+  ipatch_sf2_reader = ipatch->reader;
+
+  sound_resource = NULL;
+  
+#ifdef AGS_WITH_LIBINSTPATCH
+  ipatch_list = ipatch_sf2_inst_get_zones(ipatch_sf2_reader->instrument);
+
+  if(ipatch_list != NULL){
+    ipatch_list_init_iter(ipatch_list, &sample_iter);
+    ipatch_iter_first(&sample_iter);
+
+    i_stop = ipatch_iter_count(&sample_iter);
+    
+    for(i  = 0; i < i_stop; i++){
+      AgsIpatchSample *ipatch_sample;
+
+      ipatch_item = ipatch_sf2_izone_get_sample(ipatch_iter_get(&sample_iter));
+
+      ipatch_sample = ags_ipatch_sample_new();
+      g_object_set(ipatch_sample,
+		   "sample", ipatch_item,
+		   NULL);
+
+      sound_resource = g_list_prepend(sound_resource,
+				      ipatch_sample);
+	
+      /* iterate */
+      ipatch_iter_next(&sample_iter);
+    }
+  }
+#endif
+
+  sound_resource = g_list_reverse(sound_resource);
+  
+  return(sound_resource);
 }
 
 void
