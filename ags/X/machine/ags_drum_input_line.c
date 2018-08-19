@@ -308,6 +308,10 @@ ags_drum_input_line_set_channel(AgsLine *line, AgsChannel *channel)
 								channel);
 
   if(channel != NULL){
+    ags_channel_set_ability_flags(channel, (AGS_SOUND_ABILITY_PLAYBACK |
+					    AGS_SOUND_ABILITY_SEQUENCER |
+					    AGS_SOUND_ABILITY_NOTATION));
+    
     /* get some fields */
     g_object_get(channel,
 		 "output-soundcard", &output_soundcard,

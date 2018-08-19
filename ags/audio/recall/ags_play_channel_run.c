@@ -159,6 +159,8 @@ ags_play_channel_run_class_init(AgsPlayChannelRunClass *play_channel_run)
 void
 ags_play_channel_run_init(AgsPlayChannelRun *play_channel_run)
 {
+  ags_recall_set_ability_flags(play_channel_run, (AGS_SOUND_ABILITY_PLAYBACK));
+
   AGS_RECALL(play_channel_run)->name = "ags-play";
   AGS_RECALL(play_channel_run)->version = AGS_RECALL_DEFAULT_VERSION;
   AGS_RECALL(play_channel_run)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;

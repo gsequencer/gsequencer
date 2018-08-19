@@ -262,13 +262,19 @@ ags_start_soundcard_launch(AgsTask *task)
   
   while((soundcard_thread = ags_thread_find_type(soundcard_thread,
 						 AGS_TYPE_SOUNDCARD_THREAD)) != NULL){
-    /* append to AgsSoundcard */
-    AGS_SOUNDCARD_THREAD(soundcard_thread)->error = NULL;
-
-#ifdef AGS_DEBUG
+    GObject *soundcard;
+    
     g_message("start soundcard");
-#endif
 
+    g_object_get(soundcard_thread,
+		 "soundcard", &soundcard,
+		 NULL);
+    
+    AGS_SOUNDCARD_THREAD(soundcard_thread)->error = NULL;
+    ags_soundcard_play_init(AGS_SOUNDCARD(soundcard),
+			    &(AGS_SOUNDCARD_THREAD(soundcard_thread)->error));
+    
+    /* append soundcard thread */
     ags_thread_add_start_queue(audio_loop,
 			       soundcard_thread);
 

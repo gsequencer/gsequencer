@@ -234,6 +234,8 @@ ags_play_notation_audio_run_plugin_interface_init(AgsPluginInterface *plugin)
 void
 ags_play_notation_audio_run_init(AgsPlayNotationAudioRun *play_notation_audio_run)
 {
+  ags_recall_set_ability_flags(play_notation_audio_run, (AGS_SOUND_ABILITY_NOTATION));
+
   AGS_RECALL(play_notation_audio_run)->name = "ags-play-notation";
   AGS_RECALL(play_notation_audio_run)->version = AGS_RECALL_DEFAULT_VERSION;
   AGS_RECALL(play_notation_audio_run)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;

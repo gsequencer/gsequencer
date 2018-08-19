@@ -280,6 +280,11 @@ ags_play_lv2_audio_run_plugin_interface_init(AgsPluginInterface *plugin)
 void
 ags_play_lv2_audio_run_init(AgsPlayLv2AudioRun *play_lv2_audio_run)
 {
+  ags_recall_set_ability_flags(play_lv2_audio_run, (AGS_SOUND_ABILITY_SEQUENCER |
+						    AGS_SOUND_ABILITY_NOTATION |
+						    AGS_SOUND_ABILITY_WAVE |
+						    AGS_SOUND_ABILITY_MIDI));
+
   AGS_RECALL(play_lv2_audio_run)->name = "ags-play-lv2";
   AGS_RECALL(play_lv2_audio_run)->version = AGS_RECALL_DEFAULT_VERSION;
   AGS_RECALL(play_lv2_audio_run)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;

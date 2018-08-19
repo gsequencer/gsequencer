@@ -417,6 +417,11 @@ ags_delay_audio_run_class_init(AgsDelayAudioRunClass *delay_audio_run)
 void
 ags_delay_audio_run_init(AgsDelayAudioRun *delay_audio_run)
 {
+  ags_recall_set_ability_flags(delay_audio_run, (AGS_SOUND_ABILITY_SEQUENCER |
+						 AGS_SOUND_ABILITY_NOTATION |
+						 AGS_SOUND_ABILITY_WAVE |
+						 AGS_SOUND_ABILITY_MIDI));
+
   AGS_RECALL(delay_audio_run)->behaviour_flags |= AGS_SOUND_BEHAVIOUR_PERSISTENT;
 
   AGS_RECALL(delay_audio_run)->name = "ags-delay";

@@ -645,6 +645,11 @@ ags_count_beats_audio_run_class_init(AgsCountBeatsAudioRunClass *count_beats_aud
 void
 ags_count_beats_audio_run_init(AgsCountBeatsAudioRun *count_beats_audio_run)
 {
+  ags_recall_set_ability_flags(count_beats_audio_run, (AGS_SOUND_ABILITY_SEQUENCER |
+						       AGS_SOUND_ABILITY_NOTATION |
+						       AGS_SOUND_ABILITY_WAVE |
+						       AGS_SOUND_ABILITY_MIDI));
+
   g_signal_connect_after(count_beats_audio_run, "notify::output-soundcard",
 			 G_CALLBACK(ags_count_beats_audio_run_notify_output_soundcard_callback), NULL);
 

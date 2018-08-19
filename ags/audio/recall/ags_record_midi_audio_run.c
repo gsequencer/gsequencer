@@ -189,6 +189,8 @@ ags_record_midi_audio_run_plugin_interface_init(AgsPluginInterface *plugin)
 void
 ags_record_midi_audio_run_init(AgsRecordMidiAudioRun *record_midi_audio_run)
 {
+  ags_recall_set_ability_flags(record_midi_audio_run, (AGS_SOUND_ABILITY_MIDI));
+
   AGS_RECALL(record_midi_audio_run)->name = "ags-record-midi";
   AGS_RECALL(record_midi_audio_run)->version = AGS_RECALL_DEFAULT_VERSION;
   AGS_RECALL(record_midi_audio_run)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;

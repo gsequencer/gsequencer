@@ -63,6 +63,7 @@ enum{
   PROP_PLAYBACK_DOMAIN,
   PROP_CHANNEL,
   PROP_AUDIO_CHANNEL,
+  PROP_PLAY_NOTE,
 };
 
 GType
@@ -158,6 +159,22 @@ ags_playback_class_init(AgsPlaybackClass *playback)
 				 G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_AUDIO_CHANNEL,
+				  param_spec);
+
+  /**
+   * AgsPlayback:play-note:
+   *
+   * The assigned note.
+   * 
+   * Since: 2.0.0
+   */
+  param_spec = g_param_spec_object("play-note",
+				   i18n_pspec("assigned note to play"),
+				   i18n_pspec("The note to do playback"),
+				   AGS_TYPE_NOTE,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_PLAY_NOTE,
 				  param_spec);
 }
 
@@ -347,6 +364,33 @@ ags_playback_set_property(GObject *gobject,
       pthread_mutex_unlock(playback_mutex);
     }
     break;
+  case PROP_PLAY_NOTE:
+    {
+      GObject *note;
+
+      note = (GObject *) g_value_get_object(value);
+
+      pthread_mutex_lock(playback_mutex);
+      
+      if(note == playback->play_note){
+	pthread_mutex_unlock(playback_mutex);
+
+	return;
+      }
+
+      if(playback->play_note != NULL){
+	g_object_unref(G_OBJECT(playback->play_note));
+      }
+
+      if(note != NULL){
+	g_object_ref(G_OBJECT(note));
+      }
+
+      playback->play_note = (GObject *) note;
+
+      pthread_mutex_unlock(playback_mutex);
+    }
+    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -399,6 +443,16 @@ ags_playback_get_property(GObject *gobject,
       
       g_value_set_uint(value,
 		       playback->audio_channel);      
+
+      pthread_mutex_unlock(playback_mutex);
+    }
+    break;
+  case PROP_PLAY_NOTE:
+    {
+      pthread_mutex_lock(playback_mutex);
+      
+      g_value_set_object(value,
+			 playback->play_note);
 
       pthread_mutex_unlock(playback_mutex);
     }

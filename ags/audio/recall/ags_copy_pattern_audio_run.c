@@ -180,6 +180,8 @@ ags_copy_pattern_audio_run_plugin_interface_init(AgsPluginInterface *plugin)
 void
 ags_copy_pattern_audio_run_init(AgsCopyPatternAudioRun *copy_pattern_audio_run)
 {
+  ags_recall_set_ability_flags(copy_pattern_audio_run, (AGS_SOUND_ABILITY_SEQUENCER));
+
   AGS_RECALL(copy_pattern_audio_run)->name = "ags-copy-pattern";
   AGS_RECALL(copy_pattern_audio_run)->version = AGS_RECALL_DEFAULT_VERSION;
   AGS_RECALL(copy_pattern_audio_run)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;

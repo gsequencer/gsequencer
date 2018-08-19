@@ -201,6 +201,9 @@ ags_loop_channel_run_plugin_interface_init(AgsPluginInterface *plugin)
 void
 ags_loop_channel_run_init(AgsLoopChannelRun *loop_channel_run)
 {
+  ags_recall_set_ability_flags(loop_channel_run, (AGS_SOUND_ABILITY_SEQUENCER |
+						  AGS_SOUND_ABILITY_NOTATION));
+  
   AGS_RECALL(loop_channel_run)->name = "ags-loop";
   AGS_RECALL(loop_channel_run)->version = AGS_RECALL_DEFAULT_VERSION;
   AGS_RECALL(loop_channel_run)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;

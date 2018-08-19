@@ -99,6 +99,8 @@ ags_play_wave_channel_run_class_init(AgsPlayWaveChannelRunClass *play_wave_chann
 void
 ags_play_wave_channel_run_init(AgsPlayWaveChannelRun *play_wave_channel_run)
 {
+  ags_recall_set_ability_flags(play_wave_channel_run, (AGS_SOUND_ABILITY_WAVE));
+
   AGS_RECALL(play_wave_channel_run)->name = "ags-play-wave";
   AGS_RECALL(play_wave_channel_run)->version = AGS_RECALL_DEFAULT_VERSION;
   AGS_RECALL(play_wave_channel_run)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;

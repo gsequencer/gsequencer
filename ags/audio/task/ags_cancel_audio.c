@@ -131,13 +131,13 @@ ags_cancel_audio_class_init(AgsCancelAudioClass *cancel_audio)
    * 
    * Since: 2.0.0
    */
-  param_spec =  g_param_spec_int("sound-scope",
-				 i18n_pspec("sound scope"),
-				 i18n_pspec("The sound scope"),
-				 0,
-				 AGS_SOUND_SCOPE_LAST,
+  param_spec = g_param_spec_int("sound-scope",
+				i18n_pspec("sound scope"),
+				i18n_pspec("The sound scope"),
 				 -1,
-				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+				AGS_SOUND_SCOPE_LAST,
+				-1,
+				G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_SOUND_SCOPE,
 				  param_spec);

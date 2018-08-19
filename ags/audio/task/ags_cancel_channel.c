@@ -131,7 +131,7 @@ ags_cancel_channel_class_init(AgsCancelChannelClass *cancel_channel)
   param_spec =  g_param_spec_int("sound-scope",
 				 i18n_pspec("sound scope"),
 				 i18n_pspec("The sound scope"),
-				 0,
+				 -1,
 				 AGS_SOUND_SCOPE_LAST,
 				 -1,
 				 G_PARAM_READABLE | G_PARAM_WRITABLE);

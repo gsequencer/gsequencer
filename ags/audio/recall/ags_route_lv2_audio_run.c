@@ -221,6 +221,8 @@ ags_route_lv2_audio_run_class_init(AgsRouteLv2AudioRunClass *route_lv2_audio_run
 void
 ags_route_lv2_audio_run_init(AgsRouteLv2AudioRun *route_lv2_audio_run)
 {
+  ags_recall_set_ability_flags(route_lv2_audio_run, (AGS_SOUND_ABILITY_NOTATION));
+
   AGS_RECALL(route_lv2_audio_run)->name = "ags-route-lv2";
   AGS_RECALL(route_lv2_audio_run)->version = AGS_RECALL_DEFAULT_VERSION;
   AGS_RECALL(route_lv2_audio_run)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;

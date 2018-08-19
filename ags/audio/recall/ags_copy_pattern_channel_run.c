@@ -174,6 +174,8 @@ ags_copy_pattern_channel_run_plugin_interface_init(AgsPluginInterface *plugin)
 void
 ags_copy_pattern_channel_run_init(AgsCopyPatternChannelRun *copy_pattern_channel_run)
 {
+  ags_recall_set_ability_flags(copy_pattern_channel_run, (AGS_SOUND_ABILITY_SEQUENCER));
+
   g_signal_connect(copy_pattern_channel_run, "notify::recall-audio-run",
 		   G_CALLBACK(ags_copy_pattern_channel_run_notify_recall_audio_run), NULL);
   

@@ -136,13 +136,13 @@ ags_soundcard_thread_class_init(AgsSoundcardThreadClass *soundcard_thread)
    *
    * The assigned #AgsSoundcard.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("soundcard",
 				   i18n_pspec("soundcard assigned to"),
 				   i18n_pspec("The AgsSoundcard it is assigned to"),
 				   G_TYPE_OBJECT,
-				   G_PARAM_WRITABLE);
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_SOUNDCARD,
 				  param_spec);
@@ -437,8 +437,6 @@ ags_soundcard_thread_run(AgsThread *thread)
 {
   AgsSoundcardThread *soundcard_thread;
 
-  AgsMutexManager *mutex_manager;
-
   GObject *soundcard;
 
   GList *poll_fd;
@@ -447,24 +445,10 @@ ags_soundcard_thread_run(AgsThread *thread)
   
   GError *error;
 
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *mutex;
-
   soundcard_thread = AGS_SOUNDCARD_THREAD(thread);
 
   soundcard = soundcard_thread->soundcard;
 
-  /*  */
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-
-  pthread_mutex_lock(application_mutex);
-
-  mutex = ags_mutex_manager_lookup(mutex_manager,
-				   (GObject *) soundcard_thread->soundcard);
-
-  pthread_mutex_unlock(application_mutex);
-  
   /* real-time setup */
 #ifdef AGS_WITH_RT
   if((AGS_THREAD_RT_SETUP & (g_atomic_int_get(&(thread->flags)))) == 0){
@@ -483,11 +467,7 @@ ags_soundcard_thread_run(AgsThread *thread)
 #endif
 
   /* playback */
-  pthread_mutex_lock(mutex);
-  
   is_playing = ags_soundcard_is_playing(AGS_SOUNDCARD(soundcard));
-
-  pthread_mutex_unlock(mutex);
   
   if(is_playing){
     error = NULL;

@@ -85,6 +85,12 @@ ags_eq10_channel_run_class_init(AgsEq10ChannelRunClass *eq10_channel_run)
 void
 ags_eq10_channel_run_init(AgsEq10ChannelRun *eq10_channel_run)
 {
+  ags_recall_set_ability_flags(eq10_channel_run, (AGS_SOUND_ABILITY_PLAYBACK |
+						  AGS_SOUND_ABILITY_SEQUENCER |
+						  AGS_SOUND_ABILITY_NOTATION |
+						  AGS_SOUND_ABILITY_WAVE |
+						  AGS_SOUND_ABILITY_MIDI));
+
   AGS_RECALL(eq10_channel_run)->name = "ags-eq10";
   AGS_RECALL(eq10_channel_run)->version = AGS_RECALL_DEFAULT_VERSION;
   AGS_RECALL(eq10_channel_run)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;

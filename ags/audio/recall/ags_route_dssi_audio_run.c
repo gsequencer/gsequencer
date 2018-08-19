@@ -228,6 +228,8 @@ ags_route_dssi_audio_run_class_init(AgsRouteDssiAudioRunClass *route_dssi_audio_
 void
 ags_route_dssi_audio_run_init(AgsRouteDssiAudioRun *route_dssi_audio_run)
 {
+  ags_recall_set_ability_flags(route_dssi_audio_run, (AGS_SOUND_ABILITY_NOTATION));
+
   AGS_RECALL(route_dssi_audio_run)->name = "ags-route-dssi";
   AGS_RECALL(route_dssi_audio_run)->version = AGS_RECALL_DEFAULT_VERSION;
   AGS_RECALL(route_dssi_audio_run)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;

@@ -41,33 +41,23 @@ typedef struct _AgsAudioLoopClass AgsAudioLoopClass;
 
 /**
  * AgsAudioLoopFlags:
- * @AGS_AUDIO_LOOP_PLAY_RECALL: play recall
- * @AGS_AUDIO_LOOP_PLAYING_RECALL: plaing recall
- * @AGS_AUDIO_LOOP_PLAY_RECALL_TERMINATING: play recall terminating
  * @AGS_AUDIO_LOOP_PLAY_CHANNEL: play channel
  * @AGS_AUDIO_LOOP_PLAYING_CHANNEL: playing channnel
  * @AGS_AUDIO_LOOP_PLAY_CHANNEL_TERMINATING: play channe terminating
  * @AGS_AUDIO_LOOP_PLAY_AUDIO: play audio
  * @AGS_AUDIO_LOOP_PLAYING_AUDIO: playing audio
- * @AGS_AUDIO_LOOP_PLAY_NOTATION: play notation
- * @AGS_AUDIO_LOOP_PLAYING_NOTATION: playing notation
  * @AGS_AUDIO_LOOP_PLAY_AUDIO_TERMINATING: play audio terminating
  * 
  * Enum values to control the behavior or indicate internal state of #AgsAudioLoop by
  * enable/disable as flags.
  */
 typedef enum{
-  AGS_AUDIO_LOOP_PLAY_RECALL                    = 1,
-  AGS_AUDIO_LOOP_PLAYING_RECALL                 = 1 << 1,
-  AGS_AUDIO_LOOP_PLAY_RECALL_TERMINATING        = 1 << 2,
-  AGS_AUDIO_LOOP_PLAY_CHANNEL                   = 1 << 3,
-  AGS_AUDIO_LOOP_PLAYING_CHANNEL                = 1 << 4,
-  AGS_AUDIO_LOOP_PLAY_CHANNEL_TERMINATING       = 1 << 5,
-  AGS_AUDIO_LOOP_PLAY_AUDIO                     = 1 << 6,
-  AGS_AUDIO_LOOP_PLAYING_AUDIO                  = 1 << 7,
-  AGS_AUDIO_LOOP_PLAY_NOTATION                  = 1 << 8,
-  AGS_AUDIO_LOOP_PLAYING_NOTATION               = 1 << 9,
-  AGS_AUDIO_LOOP_PLAY_AUDIO_TERMINATING         = 1 << 10,
+  AGS_AUDIO_LOOP_PLAY_CHANNEL                   = 1,
+  AGS_AUDIO_LOOP_PLAYING_CHANNEL                = 1 << 1,
+  AGS_AUDIO_LOOP_PLAY_CHANNEL_TERMINATING       = 1 << 2,
+  AGS_AUDIO_LOOP_PLAY_AUDIO                     = 1 << 3,
+  AGS_AUDIO_LOOP_PLAYING_AUDIO                  = 1 << 4,
+  AGS_AUDIO_LOOP_PLAY_AUDIO_TERMINATING         = 1 << 5,
 }AgsAudioLoopFlags;
 
 /**

@@ -3592,7 +3592,7 @@ ags_devout_alsa_play(AgsSoundcard *soundcard,
 #endif
   
   devout = AGS_DEVOUT(soundcard);
-
+  
   /* get devout mutex */
   pthread_mutex_lock(ags_devout_get_class_mutex());
   

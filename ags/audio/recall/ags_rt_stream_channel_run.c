@@ -93,6 +93,12 @@ ags_rt_stream_channel_run_class_init(AgsRtStreamChannelRunClass *rt_stream_chann
 void
 ags_rt_stream_channel_run_init(AgsRtStreamChannelRun *rt_stream_channel_run)
 {
+  ags_recall_set_ability_flags(rt_stream_channel_run, (AGS_SOUND_ABILITY_PLAYBACK |
+						       AGS_SOUND_ABILITY_SEQUENCER |
+						       AGS_SOUND_ABILITY_NOTATION |
+						       AGS_SOUND_ABILITY_WAVE |
+						       AGS_SOUND_ABILITY_MIDI));
+
   AGS_RECALL(rt_stream_channel_run)->name = "ags-rt_stream";
   AGS_RECALL(rt_stream_channel_run)->version = AGS_RECALL_DEFAULT_VERSION;
   AGS_RECALL(rt_stream_channel_run)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;

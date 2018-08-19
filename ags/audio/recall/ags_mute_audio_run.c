@@ -84,6 +84,11 @@ ags_mute_audio_run_class_init(AgsMuteAudioRunClass *mute_audio_run)
 void
 ags_mute_audio_run_init(AgsMuteAudioRun *mute_audio_run)
 {
+  ags_recall_set_ability_flags(mute_audio_run, (AGS_SOUND_ABILITY_SEQUENCER |
+						AGS_SOUND_ABILITY_NOTATION |
+						AGS_SOUND_ABILITY_WAVE |
+						AGS_SOUND_ABILITY_MIDI));
+
   AGS_RECALL(mute_audio_run)->name = "ags-mute";
   AGS_RECALL(mute_audio_run)->version = AGS_RECALL_DEFAULT_VERSION;
   AGS_RECALL(mute_audio_run)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;

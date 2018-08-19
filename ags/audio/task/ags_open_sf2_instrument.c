@@ -552,7 +552,7 @@ ags_open_sf2_instrument_launch(AgsTask *task)
 
 	/* get recycling */
 	g_object_get(channel,
-		     "fist-recycling", &recycling,
+		     "first-recycling", &recycling,
 		     NULL);	
 	
 	/* replace template audio signal */
@@ -571,13 +571,16 @@ ags_open_sf2_instrument_launch(AgsTask *task)
 		     "next", &channel,
 		     NULL);	
       }
+
+      g_list_free(start_audio_signal);
       
       /* iterate */
       list = list->next;
 
       i++;
     }    
-      
+
+    g_list_free(start_list);
   }
 }
 
