@@ -156,13 +156,17 @@ ags_drum_input_pad_open_response_callback(GtkWidget *widget, gint response, AgsD
     task = NULL;
     
     if(AGS_PAD(drum_input_pad)->group->active){
-      AgsChannel *current;
+      AgsChannel *current, *next_pad;
 
       guint i;
 
       current = AGS_PAD(drum_input_pad)->channel;
 
-      for(i = 0; current != NULL; i++){
+      g_object_get(current,
+		   "next-pad", &next_pad,
+		   NULL);
+      
+      for(i = 0; current != next_pad; i++){
 	open_single_file = ags_open_single_file_new(current,
 						    name0,
 						    i);

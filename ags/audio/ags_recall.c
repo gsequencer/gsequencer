@@ -5307,6 +5307,8 @@ ags_recall_real_duplicate(AgsRecall *recall,
 		 "recall-channel-run", copy_recall,
 		 NULL);
   }
+
+  ags_connectable_connect(AGS_CONNECTABLE(copy_recall));
   
   return(copy_recall);
 }

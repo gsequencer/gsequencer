@@ -1293,7 +1293,7 @@ ags_recall_channel_run_remap_child_source(AgsRecallChannelRun *recall_channel_ru
       
     while(source_recycling != source_end_recycling){
       AgsRecallRecycling *recall_recycling;
-      
+
       recall_recycling = g_object_new(child_type,
 				      "recall-id", recall_id,
 				      "output-soundcard", output_soundcard,
@@ -1309,6 +1309,7 @@ ags_recall_channel_run_remap_child_source(AgsRecallChannelRun *recall_channel_ru
 	
       ags_recall_add_child(recall_channel_run,
 			   recall_recycling);
+      ags_connectable_connect(AGS_CONNECTABLE(recall_recycling));
       
       /* iterate */
       pthread_mutex_lock(source_recycling_mutex);
@@ -1549,6 +1550,7 @@ ags_recall_channel_run_remap_child_destination(AgsRecallChannelRun *recall_chann
 					NULL);
 	  
 	ags_recall_add_child(AGS_RECALL(recall_channel_run), AGS_RECALL(recall_recycling));
+	ags_connectable_connect(AGS_CONNECTABLE(recall_recycling));
 
 	/* iterate */
 	pthread_mutex_lock(source_recycling_mutex);

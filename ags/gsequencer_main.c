@@ -376,18 +376,18 @@ main(int argc, char **argv)
 #endif
   
 #if 0
-#endif
-  g_log_set_fatal_mask("GLib-GObject",
-  		       G_LOG_LEVEL_WARNING | G_LOG_LEVEL_CRITICAL);
-
   g_log_set_fatal_mask("Gtk",
   		       G_LOG_LEVEL_CRITICAL);
 
-  g_log_set_fatal_mask(NULL,
-  		       G_LOG_LEVEL_WARNING | G_LOG_LEVEL_CRITICAL);
-
   g_log_set_fatal_mask("libInstPatch",
   		       G_LOG_LEVEL_CRITICAL);
+
+  g_log_set_fatal_mask("GLib-GObject",
+  		       G_LOG_LEVEL_WARNING | G_LOG_LEVEL_CRITICAL);
+
+  g_log_set_fatal_mask(NULL,
+  		       G_LOG_LEVEL_WARNING | G_LOG_LEVEL_CRITICAL);
+#endif
   
   /* setup */
   wdir = g_strdup_printf("%s/%s",

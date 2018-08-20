@@ -271,7 +271,7 @@ ags_pad_start_channel_launch_callback(AgsTask *task,
 		 "next", &end_recycling,
 		 NULL);
       
-    while(recycling != end_recycling){
+    while(recycling != end_recycling){      
       if(!ags_recall_global_get_rt_safe()){
 	/* instantiate audio signal */
 	audio_signal = ags_audio_signal_new((GObject *) output_soundcard,

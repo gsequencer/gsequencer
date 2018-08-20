@@ -454,6 +454,8 @@ ags_sound_resource_read_audio_signal(AgsSoundResource *sound_resource,
     }
   }
 
+  start_list = g_list_reverse(start_list);
+  
   return(start_list);
 }
 

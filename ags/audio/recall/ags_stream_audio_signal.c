@@ -151,7 +151,7 @@ ags_stream_audio_signal_run_post(AgsRecall *recall)
   void (*parent_class_run_post)(AgsRecall *recall);
 
   stream_audio_signal = (AgsStreamAudioSignal *) recall;
-  
+
   /* get parent class */
   pthread_mutex_lock(ags_recall_get_class_mutex());
 
@@ -164,6 +164,10 @@ ags_stream_audio_signal_run_post(AgsRecall *recall)
 	       "source", &source,
 	       NULL);
 
+#ifdef AGS_DEBUG
+  g_message("stream %x %d: %d", source, g_list_length(source->stream), g_list_length(source->stream_current));
+#endif
+  
   g_object_get(stream_recycling,
 	       "parent", &stream_channel_run,
 	       NULL);

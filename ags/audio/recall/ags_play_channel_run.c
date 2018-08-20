@@ -393,7 +393,7 @@ ags_play_channel_run_run_post(AgsRecall *recall)
   if(ags_recall_global_get_rt_safe()){
     /* connect done */
     g_object_get(source,
-		 "play", list_start,
+		 "play", &list_start,
 		 NULL);
     
     list = list_start;
@@ -432,13 +432,13 @@ ags_play_channel_run_run_post(AgsRecall *recall)
 	  recall_audio_signal_list = recall_audio_signal_list->next;
 	}
 
-	g_list_free(start_recall_audio_signal_list);
+	//	g_list_free(start_recall_audio_signal_list);
 
 	/* iterate */
 	recall_recycling_list = recall_recycling_list->next;
       }
 
-      g_list_free(start_recall_recycling_list);
+      //      g_list_free(start_recall_recycling_list);
 
       /* iterate */
       list = list->next;
@@ -448,7 +448,7 @@ ags_play_channel_run_run_post(AgsRecall *recall)
   }else{
     /* connect done */
     g_object_get(source,
-		 "play", list_start,
+		 "play", &list_start,
 		 NULL);
     
     list = list_start;
@@ -459,7 +459,7 @@ ags_play_channel_run_run_post(AgsRecall *recall)
 	  !found){
       stream_channel_run = AGS_STREAM_CHANNEL_RUN(list->data);
 
-      if(ags_recall_test_flags(rt_stream_channel_run, AGS_RECALL_TEMPLATE)){
+      if(ags_recall_test_flags(stream_channel_run, AGS_RECALL_TEMPLATE)){
 	list = list->next;
 
 	continue;
@@ -483,13 +483,13 @@ ags_play_channel_run_run_post(AgsRecall *recall)
 	  recall_audio_signal_list = recall_audio_signal_list->next;
 	}
 
-	g_list_free(start_recall_audio_signal_list);
+	//	g_list_free(start_recall_audio_signal_list);
 
 	/* iterate */
 	recall_recycling_list = recall_recycling_list->next;
       }
 
-      g_list_free(start_recall_recycling_list);
+      //      g_list_free(start_recall_recycling_list);
 
       /* iterate */
       list = list->next;
@@ -499,7 +499,8 @@ ags_play_channel_run_run_post(AgsRecall *recall)
   }
   
   if(!found){
-    ags_play_channel_run_stop((AgsPlayChannelRun *) recall);
+    //FIXME:JK: uncomment
+    //    ags_play_channel_run_stop((AgsPlayChannelRun *) recall);
   }
 }
 
@@ -592,6 +593,7 @@ ags_play_channel_run_stop(AgsPlayChannelRun *play_channel_run)
   pthread_mutex_t *recall_mutex;
 
   if(!AGS_IS_PLAY_CHANNEL_RUN(play_channel_run)){
+    return;
   }
   
   g_object_get(play_channel_run,

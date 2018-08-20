@@ -1041,7 +1041,7 @@ ags_audio_loop_play_channel(AgsAudioLoop *audio_loop)
   /* entry point */
   audio_loop->flags &= (~AGS_AUDIO_LOOP_PLAY_CHANNEL_TERMINATING);
   audio_loop->flags |= AGS_AUDIO_LOOP_PLAYING_CHANNEL;
-
+  
   /* run the 3 stages */
   list_play =
     list_play_start = g_list_copy(audio_loop->play_channel);

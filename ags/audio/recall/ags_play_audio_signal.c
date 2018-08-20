@@ -151,7 +151,7 @@ ags_play_audio_signal_run_inter(AgsRecall *recall)
   pthread_mutex_t *recall_mutex;
 
   play_audio_signal = AGS_PLAY_AUDIO_SIGNAL(recall);
-
+  
   /* get mutex */
   pthread_mutex_lock(ags_recall_get_class_mutex());
 
@@ -215,12 +215,12 @@ ags_play_audio_signal_run_inter(AgsRecall *recall)
 		 NULL);
     
     g_value_init(&muted_value,
-		 G_TYPE_BOOLEAN);
+		 G_TYPE_FLOAT);
     
     ags_port_safe_read(muted,
 		       &muted_value);
 
-    current_muted = g_value_get_boolean(&muted_value);
+    current_muted = (g_value_get_float(&muted_value) == 1.0) ? TRUE: FALSE;
     g_value_unset(&muted_value);
 
     if(current_muted){
@@ -385,7 +385,7 @@ ags_play_audio_signal_run_inter(AgsRecall *recall)
 	  free(buffer_source_prev);
 	}
       }
-
+      
       /* copy */
       ags_soundcard_lock_buffer(AGS_SOUNDCARD(output_soundcard),
 				buffer0);

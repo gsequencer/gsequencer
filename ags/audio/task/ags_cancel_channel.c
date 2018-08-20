@@ -269,6 +269,8 @@ ags_cancel_channel_launch(AgsTask *task)
   static const guint staging_flags = (AGS_SOUND_STAGING_CANCEL |
 				      AGS_SOUND_STAGING_REMOVE);
 
+  g_message("cancel");
+
   cancel_channel = AGS_CANCEL_CHANNEL(task);
 
   channel = cancel_channel->channel;

@@ -170,11 +170,14 @@ ags_peak_channel_run_run_pre(AgsRecall *recall)
 
   if(!current_buffer_computed){    
     /* set buffer-computed port to TRUE */
+    g_value_init(&value,
+		 G_TYPE_BOOLEAN);
     g_value_set_boolean(&value,
 			TRUE);
 
     ags_port_safe_write(buffer_computed,
 			&value);
+    g_value_unset(&value);
   }
   
   pthread_mutex_unlock(buffer_mutex);

@@ -467,6 +467,10 @@ ags_sndfile_open(AgsSoundResource *sound_resource,
     return(FALSE);
   }
 
+  g_object_set(sndfile,
+	       "audio-channels", sndfile->info->channels,
+	       NULL);
+  
 #ifdef AGS_DEBUG
   g_message("ags_sndfile_open(): channels %d frames %d", sndfile->info->channels, sndfile->info->frames);
 #endif
@@ -758,7 +762,7 @@ ags_sndfile_read(AgsSoundResource *sound_resource,
   for(i = 0; i < frame_count; ){
     sf_count_t retval;
     
-    if(i + sndfile->buffer_size > frame_count){
+    if(frame_count - i < sndfile->buffer_size){
       read_count = frame_count - i;
     }
 
@@ -807,7 +811,7 @@ ags_sndfile_read(AgsSoundResource *sound_resource,
     }
     
     ags_audio_buffer_util_copy_buffer_to_buffer(dbuffer, daudio_channels, i,
-						sndfile->buffer, sndfile->audio_channels, audio_channel,
+						sndfile->buffer, sndfile->info->channels, audio_channel,
 						read_count, copy_mode);
     
     i += read_count;
