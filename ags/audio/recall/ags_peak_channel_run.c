@@ -132,6 +132,10 @@ ags_peak_channel_run_run_pre(AgsRecall *recall)
   pthread_mutex_t *recall_mutex;
   pthread_mutex_t *buffer_mutex;
 
+  g_object_get(recall,
+	       "recall-channel", &peak_channel,
+	       NULL);
+
   /* get mutex */
   pthread_mutex_lock(ags_recall_get_class_mutex());
 
@@ -146,10 +150,6 @@ ags_peak_channel_run_run_pre(AgsRecall *recall)
   parent_class_run_pre(recall);
 
   /* calculate of previous run */
-  g_object_get(recall,
-	       "recall-channel", &peak_channel,
-	       NULL);
-
   g_object_get(peak_channel,
 	       "buffer-size", &buffer_size,
 	       "format", &format,

@@ -265,6 +265,7 @@ ags_start_channel_finalize(GObject *gobject)
 void
 ags_start_channel_launch(AgsTask *task)
 {
+  AgsAudio *audio;
   AgsChannel *channel;
   AgsRecycling *recycling;
   AgsPlaybackDomain *playback_domain;
@@ -291,6 +292,7 @@ ags_start_channel_launch(AgsTask *task)
   channel = (AgsChannel *) start_channel->channel;
 
   g_object_get(channel,
+	       "audio", &audio,
 	       "playback", &playback,
 	       NULL);
 
@@ -319,7 +321,9 @@ ags_start_channel_launch(AgsTask *task)
     /* create recall id and recycling context */
     recall_id = ags_recall_id_new();
     ags_recall_id_set_sound_scope(recall_id, sound_scope);
-
+    ags_channel_add_recall_id(channel,
+			      recall_id);
+    
     recycling_context = ags_recycling_context_new(1);
     ags_recycling_context_replace(recycling_context,
 				  recycling,
@@ -368,7 +372,9 @@ ags_start_channel_launch(AgsTask *task)
       /* create recall id and recycling context */
       recall_id = ags_recall_id_new();
       ags_recall_id_set_sound_scope(recall_id, sound_scope);
-
+      ags_channel_add_recall_id(channel,
+				recall_id);
+    
       recycling_context = ags_recycling_context_new(1);
       ags_recycling_context_replace(recycling_context,
 				    recycling,

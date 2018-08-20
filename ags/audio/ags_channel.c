@@ -8925,7 +8925,9 @@ ags_channel_real_duplicate_recall(AgsChannel *channel,
   if(!AGS_IS_RECALL_ID(recall_id)){
     return;
   }
-
+  
+  //  g_message("dup");
+  
   /* get recall id mutex */
   pthread_mutex_lock(ags_recall_id_get_class_mutex());
 
@@ -9090,8 +9092,8 @@ ags_channel_real_duplicate_recall(AgsChannel *channel,
       continue;
     }
     
+    g_message("recall duplicated: %s", G_OBJECT_TYPE_NAME(copy));
 #ifdef AGS_DEBUG
-    g_message("recall duplicated: %s\n", G_OBJECT_TYPE_NAME(copy));
 #endif
 
     /* set appropriate sound scope */
@@ -11239,7 +11241,7 @@ ags_channel_real_recursive_run_stage(AgsChannel *channel,
       goto ags_channel_recursive_prepare_run_stage_up_OUTPUT;
     }
 
-    while(current_channel != NULL){
+    while(current_channel != NULL){      
       /* get current channel mutex */
       pthread_mutex_lock(ags_channel_get_class_mutex());
     
@@ -11271,9 +11273,9 @@ ags_channel_real_recursive_run_stage(AgsChannel *channel,
 	while(recall_id_iter != NULL){
 	  ags_channel_duplicate_recall(current_channel,
 				       recall_id_iter->data);
-	}
 
-	recall_id_iter = recall_id_iter->next;
+	  recall_id_iter = recall_id_iter->next;
+	}
       }
 
       /* resolve */
@@ -11283,9 +11285,9 @@ ags_channel_real_recursive_run_stage(AgsChannel *channel,
 	while(recall_id_iter != NULL){
 	  ags_channel_resolve_recall(current_channel,
 				     recall_id_iter->data);
-	}
 
-	recall_id_iter = recall_id_iter->next;
+	  recall_id_iter = recall_id_iter->next;
+	}
       }
 
       /* free recall id */
@@ -11337,9 +11339,9 @@ ags_channel_real_recursive_run_stage(AgsChannel *channel,
 				     recall_id_iter->data,
 				     pad, audio_channel,
 				     line);
-	}
 
-	recall_id_iter = recall_id_iter->next;
+	  recall_id_iter = recall_id_iter->next;
+	}
       }
 
       /* resolve */
@@ -11349,9 +11351,9 @@ ags_channel_real_recursive_run_stage(AgsChannel *channel,
 	while(recall_id_iter != NULL){
 	  ags_audio_resolve_recall(current_audio,
 				   recall_id_iter->data);
-	}
 
-	recall_id_iter = recall_id_iter->next;
+	  recall_id_iter = recall_id_iter->next;
+	}
       }
 
       /* free recall id */
@@ -11409,9 +11411,9 @@ ags_channel_real_recursive_run_stage(AgsChannel *channel,
 	while(recall_id_iter != NULL){
 	  ags_channel_duplicate_recall(current_channel,
 				       recall_id_iter->data);
-	}
 
-	recall_id_iter = recall_id_iter->next;
+	  recall_id_iter = recall_id_iter->next;
+	}
       }
 
       /* resolve */
@@ -11421,9 +11423,9 @@ ags_channel_real_recursive_run_stage(AgsChannel *channel,
 	while(recall_id_iter != NULL){
 	  ags_channel_resolve_recall(current_channel,
 				     recall_id_iter->data);
-	}
 
-	recall_id_iter = recall_id_iter->next;
+	  recall_id_iter = recall_id_iter->next;
+	}
       }
 
       /* free recall id */
@@ -11495,9 +11497,9 @@ ags_channel_real_recursive_run_stage(AgsChannel *channel,
       while(recall_id_iter != NULL){
 	ags_channel_duplicate_recall(channel,
 				     recall_id_iter->data);
-      }
 
-      recall_id_iter = recall_id_iter->next;
+	recall_id_iter = recall_id_iter->next;
+      }
     }
 
     /* resolve */
@@ -11507,9 +11509,9 @@ ags_channel_real_recursive_run_stage(AgsChannel *channel,
       while(recall_id_iter != NULL){
 	ags_channel_resolve_recall(channel,
 				   recall_id_iter->data);
-      }
 
-      recall_id_iter = recall_id_iter->next;
+	recall_id_iter = recall_id_iter->next;
+      }
     }
 
     /* free recall id */
@@ -11564,9 +11566,9 @@ ags_channel_real_recursive_run_stage(AgsChannel *channel,
 				   recall_id_iter->data,
 				   pad, audio_channel,
 				   line);
-      }
 
-      recall_id_iter = recall_id_iter->next;
+	recall_id_iter = recall_id_iter->next;
+      }
     }
 
     /* resolve */
@@ -11576,9 +11578,9 @@ ags_channel_real_recursive_run_stage(AgsChannel *channel,
       while(recall_id_iter != NULL){
 	ags_audio_resolve_recall(current_audio,
 				 recall_id_iter->data);
-      }
 
-      recall_id_iter = recall_id_iter->next;
+	recall_id_iter = recall_id_iter->next;
+      }
     }
 
     /* free recall id */
@@ -11851,9 +11853,9 @@ ags_channel_real_recursive_run_stage(AgsChannel *channel,
 	  while(recall_id_iter != NULL){
 	    ags_channel_duplicate_recall(current_input,
 					 recall_id_iter->data);
-	  }
 
-	  recall_id_iter = recall_id_iter->next;
+	    recall_id_iter = recall_id_iter->next;
+	  }
 	}
 
 	/* resolve */
@@ -11863,9 +11865,9 @@ ags_channel_real_recursive_run_stage(AgsChannel *channel,
 	  while(recall_id_iter != NULL){
 	    ags_channel_resolve_recall(current_input,
 				       recall_id_iter->data);
-	  }
 
-	  recall_id_iter = recall_id_iter->next;
+	    recall_id_iter = recall_id_iter->next;
+	  }
 	}
 
 	/* free recall id */
@@ -11925,9 +11927,9 @@ ags_channel_real_recursive_run_stage(AgsChannel *channel,
 	while(recall_id_iter != NULL){
 	  ags_channel_duplicate_recall(current_input,
 				       recall_id_iter->data);
-	}
 
-	recall_id_iter = recall_id_iter->next;
+	  recall_id_iter = recall_id_iter->next;
+	}
       }
 
       /* resolve */
@@ -11937,9 +11939,9 @@ ags_channel_real_recursive_run_stage(AgsChannel *channel,
 	while(recall_id_iter != NULL){
 	  ags_channel_resolve_recall(current_input,
 				     recall_id_iter->data);
-	}
 
-	recall_id_iter = recall_id_iter->next;
+	  recall_id_iter = recall_id_iter->next;
+	}
       }
 
       /* free recall id */
@@ -12531,9 +12533,9 @@ ags_channel_real_recursive_run_stage(AgsChannel *channel,
 	while(recall_id_iter != NULL){
 	  ags_channel_cancel_recall(current_channel,
 				    recall_id_iter->data);
-	}
 
-	recall_id_iter = recall_id_iter->next;
+	  recall_id_iter = recall_id_iter->next;
+	}
       }
 
       /* remove */
@@ -12543,9 +12545,9 @@ ags_channel_real_recursive_run_stage(AgsChannel *channel,
 	while(recall_id_iter != NULL){
 	  ags_channel_cleanup_recall(current_channel,
 				     recall_id_iter->data);
-	}
 
-	recall_id_iter = recall_id_iter->next;
+	  recall_id_iter = recall_id_iter->next;
+	}
       }
 
       /* free recall id */
@@ -12575,9 +12577,9 @@ ags_channel_real_recursive_run_stage(AgsChannel *channel,
 	while(recall_id_iter != NULL){
 	  ags_audio_cancel_recall(current_audio,
 				  recall_id_iter->data);
-	}
 
-	recall_id_iter = recall_id_iter->next;
+	  recall_id_iter = recall_id_iter->next;
+	}
       }
 
       /* remove */
@@ -12587,9 +12589,9 @@ ags_channel_real_recursive_run_stage(AgsChannel *channel,
 	while(recall_id_iter != NULL){
 	  ags_audio_cleanup_recall(current_audio,
 				   recall_id_iter->data);
-	}
 
-	recall_id_iter = recall_id_iter->next;
+	  recall_id_iter = recall_id_iter->next;
+	}
       }
 
       /* free recall id */
@@ -12633,9 +12635,9 @@ ags_channel_real_recursive_run_stage(AgsChannel *channel,
 	while(recall_id_iter != NULL){
 	  ags_channel_cancel_recall(current_channel,
 				    recall_id_iter->data);
-	}
 
-	recall_id_iter = recall_id_iter->next;
+	  recall_id_iter = recall_id_iter->next;
+	}
       }
 
       /* remove */
@@ -12645,9 +12647,9 @@ ags_channel_real_recursive_run_stage(AgsChannel *channel,
 	while(recall_id_iter != NULL){
 	  ags_channel_cleanup_recall(current_channel,
 				     recall_id_iter->data);
-	}
 
-	recall_id_iter = recall_id_iter->next;
+	  recall_id_iter = recall_id_iter->next;
+	}
       }
 
       /* free recall id */
@@ -12705,9 +12707,9 @@ ags_channel_real_recursive_run_stage(AgsChannel *channel,
       while(recall_id_iter != NULL){
 	ags_channel_cancel_recall(channel,
 				  recall_id_iter->data);
-      }
 
-      recall_id_iter = recall_id_iter->next;
+	recall_id_iter = recall_id_iter->next;
+      }
     }
 
     /* remove */
@@ -12717,9 +12719,9 @@ ags_channel_real_recursive_run_stage(AgsChannel *channel,
       while(recall_id_iter != NULL){
 	ags_channel_cleanup_recall(channel,
 				   recall_id_iter->data);
-      }
 
-      recall_id_iter = recall_id_iter->next;
+	recall_id_iter = recall_id_iter->next;
+      }
     }
     
     /* free recall id */
@@ -12752,9 +12754,9 @@ ags_channel_real_recursive_run_stage(AgsChannel *channel,
       while(recall_id_iter != NULL){
 	ags_audio_cancel_recall(current_audio,
 				recall_id_iter->data);
-      }
 
-      recall_id_iter = recall_id_iter->next;
+	recall_id_iter = recall_id_iter->next;
+      }
     }
 
     /* remove */
@@ -12764,9 +12766,9 @@ ags_channel_real_recursive_run_stage(AgsChannel *channel,
       while(recall_id_iter != NULL){
 	ags_audio_cleanup_recall(current_audio,
 				 recall_id_iter->data);
-      }
 
-      recall_id_iter = recall_id_iter->next;
+	recall_id_iter = recall_id_iter->next;
+      }
     }
 
     /* free recall id */
@@ -12922,9 +12924,9 @@ ags_channel_real_recursive_run_stage(AgsChannel *channel,
 	  while(recall_id_iter != NULL){
 	    ags_channel_cancel_recall(current_input,
 				      recall_id_iter->data);
-	  }
 
-	  recall_id_iter = recall_id_iter->next;
+	    recall_id_iter = recall_id_iter->next;
+	  }
 	}
 
 	/* remove */
@@ -12934,9 +12936,9 @@ ags_channel_real_recursive_run_stage(AgsChannel *channel,
 	  while(recall_id_iter != NULL){
 	    ags_channel_cleanup_recall(current_input,
 				       recall_id_iter->data);
-	  }
 
-	  recall_id_iter = recall_id_iter->next;
+	    recall_id_iter = recall_id_iter->next;
+	  }
 	}
 	
 	/* free recall id */
@@ -12982,9 +12984,9 @@ ags_channel_real_recursive_run_stage(AgsChannel *channel,
 	while(recall_id_iter != NULL){
 	  ags_channel_cancel_recall(current_input,
 				    recall_id_iter->data);
-	}
 
-	recall_id_iter = recall_id_iter->next;
+	  recall_id_iter = recall_id_iter->next;
+	}
       }
 
       /* remove */
@@ -12994,9 +12996,9 @@ ags_channel_real_recursive_run_stage(AgsChannel *channel,
 	while(recall_id_iter != NULL){
 	  ags_channel_cleanup_recall(current_input,
 				     recall_id_iter->data);
-	}
 
-	recall_id_iter = recall_id_iter->next;
+	  recall_id_iter = recall_id_iter->next;
+	}
       }
 
       /* free recall id */
