@@ -2988,7 +2988,7 @@ ags_recall_check_behaviour_flags(AgsRecall *recall, guint behaviour_flags)
 }
 
 /**
- * ags_recall_set_scope:
+ * ags_recall_set_sound_scope:
  * @recall: the #AgsRecall
  * @sound_scope: the sound scope
  * 
@@ -3020,6 +3020,44 @@ ags_recall_set_sound_scope(AgsRecall *recall, gint sound_scope)
   recall->sound_scope = sound_scope;
 
   pthread_mutex_unlock(recall_mutex);
+}
+
+/**
+ * ags_recall_get_sound_scope:
+ * @recall: the #AgsRecall
+ * 
+ * Get sound scope for @recall.
+ * 
+ * Returns: the used sound scope
+ * 
+ * Since: 2.0.0
+ */
+gint
+ags_recall_get_sound_scope(AgsRecall *recall)
+{
+  gint sound_scope;
+  
+  pthread_mutex_t *recall_mutex;
+
+  if(!AGS_IS_RECALL(recall)){
+    return;
+  }
+
+  /* get recall mutex */
+  pthread_mutex_lock(ags_recall_get_class_mutex());
+  
+  recall_mutex = recall->obj_mutex;
+  
+  pthread_mutex_unlock(ags_recall_get_class_mutex());
+
+  /* set sound scope */
+  pthread_mutex_lock(recall_mutex);
+
+  sound_scope = recall->sound_scope;
+
+  pthread_mutex_unlock(recall_mutex);
+
+  return(sound_scope);
 }
 
 /**

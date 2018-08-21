@@ -267,45 +267,14 @@ ags_matrix_loop_button_callback(GtkWidget *button, AgsMatrix *matrix)
 }
 
 void
-ags_matrix_done_callback(AgsMatrix *matrix,
-			 AgsRecallID *recall_id,
+ags_matrix_stop_callback(AgsMatrix *matrix,
+			 GList *recall_id, gint sound_scope,
 			 gpointer data)
 {
-  AgsAudio *audio;
-  AgsPlaybackDomain *playback_domain;
-  
-  GList *start_playback, *playback;
-
-  gboolean all_done;
-
-  audio = AGS_MACHINE(matrix)->audio;
-  g_object_get(audio,
-	       "playback-domain", &playback_domain,
-	       NULL);
-  
-  /* check unset */
-  g_object_get(playback_domain,
-	       "playback", &start_playback,
-	       NULL);
-  
-  playback = start_playback;
-  all_done = TRUE;
-
-  while(playback != NULL){
-    if(ags_playback_get_recall_id(AGS_PLAYBACK(playback->data), AGS_SOUND_SCOPE_SEQUENCER) != NULL){
-      all_done = FALSE;
-
-      break;
-    }
-
-    playback = playback->next;
+  if(sound_scope != AGS_SOUND_SCOPE_SEQUENCER){
+    return;
   }
-
-  g_list_free(start_playback);
   
-  /* all done */
-  if(all_done){
-    ags_led_array_unset_all(matrix->cell_pattern->hled_array);
-  }
+  ags_led_array_unset_all(matrix->cell_pattern->hled_array);
 }
 

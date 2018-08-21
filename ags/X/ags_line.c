@@ -104,7 +104,7 @@ enum{
   REMOVE_EFFECT,
   MAP_RECALL,
   FIND_PORT,
-  DONE,
+  STOP,
   LAST_SIGNAL,
 };
 
@@ -227,7 +227,7 @@ ags_line_class_init(AgsLineClass *line)
   line->map_recall = ags_line_real_map_recall;
   line->find_port = ags_line_real_find_port;
 
-  line->done = NULL;
+  line->stop = NULL;
 
   /* signals */
   /**
@@ -350,23 +350,24 @@ ags_line_class_init(AgsLineClass *line)
 		 G_TYPE_POINTER, 0);
 
   /**
-   * AgsLine::done:
+   * AgsLine::stop:
    * @line: the #AgsLine
-   * @recall_id: the #AgsRecallID
+   * @recall_id: the #GList-struct containing #AgsRecallID
+   * @sound_scope: the sound scope
    *
-   * The ::done signal gets emited as audio stops playback.
+   * The ::stop signal gets emited as audio stops playback.
    * 
    * Since: 2.0.0
    */
-  line_signals[DONE] =
-    g_signal_new("done",
+  line_signals[STOP] =
+    g_signal_new("stop",
                  G_TYPE_FROM_CLASS(line),
                  G_SIGNAL_RUN_LAST,
-		 G_STRUCT_OFFSET(AgsLineClass, done),
+		 G_STRUCT_OFFSET(AgsLineClass, stop),
                  NULL, NULL,
-                 g_cclosure_marshal_VOID__OBJECT,
-                 G_TYPE_NONE, 1,
-		 G_TYPE_OBJECT);
+                 ags_cclosure_marshal_VOID__POINTER_INT,
+                 G_TYPE_NONE, 2,
+		 G_TYPE_POINTER, G_TYPE_INT);
 }
 
 void
@@ -455,8 +456,8 @@ ags_line_init(AgsLine *line)
   line->indicator = NULL;
 
   /* forwarded callbacks */
-  g_signal_connect_after(line, "done",
-			 G_CALLBACK(ags_line_done_callback), NULL);
+  g_signal_connect_after(line, "stop",
+			 G_CALLBACK(ags_line_stop_callback), NULL);
 }
 
 void
@@ -1899,23 +1900,25 @@ ags_line_find_port(AgsLine *line)
 }
 
 /**
- * ags_line_done:
+ * ags_line_stop:
  * @line: the #AgsLine
- * @recall_id: the #AgsRecallID
+ * @recall_id: the #GList-struct containing #AgsRecallID
+ * @sound_scope: the sound scope
  *
  * Notify about to stop playback of @recall_id.
  * 
  * Since: 2.0.0
  */
 void
-ags_line_done(AgsLine *line, GObject *recall_id)
+ags_line_stop(AgsLine *line,
+	      GList *recall_id, gint sound_scope)
 {
   g_return_if_fail(AGS_IS_LINE(line));
 
   g_object_ref((GObject *) line);
   g_signal_emit((GObject *) line,
-		line_signals[DONE], 0,
-		recall_id);
+		line_signals[STOP], 0,
+		recall_id, sound_scope);
   g_object_unref((GObject *) line);
 }
 
@@ -2144,20 +2147,25 @@ ags_line_message_monitor_timeout(AgsLine *line)
 			      effect);
 	}else if(!xmlStrncmp(xmlGetProp(root_node,
 					"method"),
-			     "AgsChannel::done",
+			     "AgsChannel::stop",
 			     16)){
-	  AgsRecallID *recall_id;
-	  
+	  GList *recall_id;
+
+	  gint sound_scope;
 	  gint position;
 
 	  position = ags_strv_index(AGS_MESSAGE_ENVELOPE(message->data)->parameter_name,
 				    "recall-id");
 	  
-	  recall_id = g_value_get_object(&(AGS_MESSAGE_ENVELOPE(message->data)->value[position]));
+	  recall_id = g_value_get_pointer(&(AGS_MESSAGE_ENVELOPE(message->data)->value[position]));
 
-	  /* done */
-	  ags_line_done(line,
-			recall_id);
+	  position = ags_strv_index(AGS_MESSAGE_ENVELOPE(message->data)->parameter_name,
+				    "sound-scope");
+	  sound_scope = g_value_get_int(&(AGS_MESSAGE_ENVELOPE(message->data)->value[position]));
+	  
+	  /* stop */
+	  ags_line_stop(line,
+			recall_id, sound_scope);
 	}
       }
       

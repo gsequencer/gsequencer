@@ -84,7 +84,7 @@ enum{
   RESIZE_PADS,
   MAP_RECALL,
   FIND_PORT,
-  DONE,
+  STOP,
   LAST_SIGNAL,
 };
 
@@ -205,7 +205,7 @@ ags_machine_class_init(AgsMachineClass *machine)
   machine->resize_audio_channels = ags_machine_real_resize_audio_channels;
   machine->map_recall = ags_machine_real_map_recall;
   machine->find_port = ags_machine_real_find_port;
-  machine->done = NULL;
+  machine->stop = NULL;
 
   /* signals */
   /**
@@ -292,23 +292,24 @@ ags_machine_class_init(AgsMachineClass *machine)
 		 G_TYPE_POINTER, 0);
 
   /**
-   * AgsMachine::done:
+   * AgsMachine::stop:
    * @machine: the #AgsMachine
-   * @recall_id: the #AgsRecallID
+   * @recall_id: the #GList-struct containing #AgsRecallID
+   * @sound_scope: the sound scope
    *
-   * The ::done signal gets emited as audio stops playback.
+   * The ::stop signal gets emited as audio stops playback.
    * 
    * Since: 2.0.0
    */
-  machine_signals[DONE] =
-    g_signal_new("done",
+  machine_signals[STOP] =
+    g_signal_new("stop",
                  G_TYPE_FROM_CLASS(machine),
                  G_SIGNAL_RUN_LAST,
-		 G_STRUCT_OFFSET(AgsMachineClass, done),
+		 G_STRUCT_OFFSET(AgsMachineClass, stop),
                  NULL, NULL,
-                 g_cclosure_marshal_VOID__OBJECT,
-                 G_TYPE_NONE, 1,
-		 G_TYPE_OBJECT);
+                 ags_cclosure_marshal_VOID__POINTER_INT,
+                 G_TYPE_NONE, 2,
+		 G_TYPE_POINTER, G_TYPE_INT);
 }
 
 void
@@ -392,8 +393,8 @@ ags_machine_init(AgsMachine *machine)
   g_signal_connect_after(G_OBJECT(machine), "resize-pads",
 			 G_CALLBACK(ags_machine_resize_pads_callback), NULL);
 
-  g_signal_connect_after(G_OBJECT(machine), "done",
-			 G_CALLBACK(ags_machine_done_callback), NULL);
+  g_signal_connect_after(G_OBJECT(machine), "stop",
+			 G_CALLBACK(ags_machine_stop_callback), NULL);
   
   machine->play = NULL;
 
@@ -1628,23 +1629,24 @@ ags_machine_find_port(AgsMachine *machine)
 }
 
 /**
- * ags_machine_done:
+ * ags_machine_stop:
  * @machine: the #AgsMachine
- * @recall_id: the #AgsRecallID
+ * @recall_id: the #GList-struct containing #AgsRecallID
+ * @sound_scope: the sound scope
  *
  * Notify about to stop playback of @recall_id.
  * 
  * Since: 2.0.0
  */
 void
-ags_machine_done(AgsMachine *machine, GObject *recall_id)
+ags_machine_stop(AgsMachine *machine, GList *recall_id, gint sound_scope)
 {
   g_return_if_fail(AGS_IS_MACHINE(machine));
 
   g_object_ref((GObject *) machine);
   g_signal_emit((GObject *) machine,
-		machine_signals[DONE], 0,
-		recall_id);
+		machine_signals[STOP], 0,
+		recall_id, sound_scope);
   g_object_unref((GObject *) machine);
 }
 
@@ -2251,18 +2253,24 @@ ags_machine_message_monitor_timeout(AgsMachine *machine)
 				  pads, pads_old);
 	}else if(!xmlStrncmp(xmlGetProp(root_node,
 				  "method"),
-		       "AgsAudio::done",
+		       "AgsAudio::stop",
 		       15)){
-	  AgsRecallID *recall_id;
+	  GList *recall_id;
+
+	  gint sound_scope;
 	  gint position;
 	  
 	  position = ags_strv_index(AGS_MESSAGE_ENVELOPE(message->data)->parameter_name,
 				     "recall-id");
-	  recall_id = g_value_get_object(&(AGS_MESSAGE_ENVELOPE(message->data)->value[position]));
+	  recall_id = g_value_get_pointer(&(AGS_MESSAGE_ENVELOPE(message->data)->value[position]));
 
-	  /* done */
-	  ags_machine_done(machine,
-			   recall_id);
+	  position = ags_strv_index(AGS_MESSAGE_ENVELOPE(message->data)->parameter_name,
+				    "sound-scope");
+	  sound_scope = g_value_get_int(&(AGS_MESSAGE_ENVELOPE(message->data)->value[position]));
+	  
+	  /* stop */
+	  ags_machine_stop(machine,
+			   recall_id, sound_scope);
 	}
       }
       

@@ -97,8 +97,8 @@ struct _AgsLineClass
 		     guint output_pad_start);
   GList* (*find_port)(AgsLine *line);
 
-  void (*done)(AgsLine *line,
-	       GObject *recall_id);
+  void (*stop)(AgsLine *line,
+	       GList *recall_id, gint sound_scope);
 };
 
 GType ags_line_get_type(void);
@@ -118,8 +118,8 @@ void ags_line_map_recall(AgsLine *line,
 			 guint output_pad_start);
 GList* ags_line_find_port(AgsLine *line);
 
-void ags_line_done(AgsLine *line,
-		   GObject *recall_id);
+void ags_line_stop(AgsLine *line,
+		   GList *recall_id, gint sound_scope);
 
 GList* ags_line_find_next_grouped(GList *line);
 

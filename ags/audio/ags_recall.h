@@ -235,6 +235,7 @@ gboolean ags_recall_check_behaviour_flags(AgsRecall *recall, guint behaviour_fla
 
 /* scope */
 void ags_recall_set_sound_scope(AgsRecall *recall, gint sound_scope);
+gint ags_recall_get_sound_scope(AgsRecall *recall);
 
 gboolean ags_recall_check_sound_scope(AgsRecall *recall, gint sound_scope);
 

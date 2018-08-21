@@ -211,6 +211,7 @@ ags_recall_set_behaviour_flags
 ags_recall_unset_behaviour_flags
 ags_recall_check_behaviour_flags
 ags_recall_set_sound_scope
+ags_recall_get_sound_scope
 ags_recall_check_sound_scope
 ags_recall_test_staging_flags
 ags_recall_set_staging_flags

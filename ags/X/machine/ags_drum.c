@@ -414,8 +414,8 @@ ags_drum_connect(AgsConnectable *connectable)
   ags_connectable_connect(AGS_CONNECTABLE(drum->pattern_box));
 
   /* AgsMachine */
-  g_signal_connect_after(G_OBJECT(drum), "done",
-			 G_CALLBACK(ags_drum_done_callback), NULL);
+  g_signal_connect_after(G_OBJECT(drum), "stop",
+			 G_CALLBACK(ags_drum_stop_callback), NULL);
 }
 
 void
@@ -477,8 +477,8 @@ ags_drum_disconnect(AgsConnectable *connectable)
 
   /* AgsAudio */
   g_object_disconnect(G_OBJECT(drum),
-		      "any_signal::done",
-		      G_CALLBACK(ags_drum_done_callback),
+		      "any_signal::stop",
+		      G_CALLBACK(ags_drum_stop_callback),
 		      NULL,
 		      NULL);
 

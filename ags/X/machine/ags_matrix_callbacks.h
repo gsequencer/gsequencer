@@ -45,8 +45,8 @@ void ags_matrix_length_spin_callback(GtkWidget *spin_button, AgsMatrix *matrix);
 void ags_matrix_loop_button_callback(GtkWidget *button, AgsMatrix *matrix);
 
 /* forwarded callbacks */
-void ags_matrix_done_callback(AgsMatrix *matrix,
-			      AgsRecallID *recall_id,
+void ags_matrix_stop_callback(AgsMatrix *matrix,
+			      GList *recall_id, gint sound_scope,
 			      gpointer data);
 
 #endif /*__AGS_MATRIX_CALLBACKS_H__*/

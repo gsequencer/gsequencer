@@ -63,10 +63,6 @@ void ags_play_channel_run_run_init_inter(AgsRecall *recall);
 void ags_play_channel_run_run_post(AgsRecall *recall);
 void ags_play_channel_run_resolve_dependency(AgsRecall *recall);
 
-void ags_play_channel_run_stream_audio_signal_done_callback(AgsRecall *recall,
-							    AgsPlayChannelRun *play_channel_run);
-void ags_play_channel_run_stop(AgsPlayChannelRun *play_channel_run);
-
 /**
  * SECTION:ags_play_channel_run
  * @short_description: plays channel
@@ -311,8 +307,6 @@ ags_play_channel_run_finalize(GObject *gobject)
 
   play_channel_run = AGS_PLAY_CHANNEL_RUN(gobject);
 
-  ags_play_channel_run_stop((AgsPlayChannelRun *) gobject);
-
   /* stream channel run */
   if(play_channel_run->stream_channel_run != NULL){
     g_object_unref(G_OBJECT(play_channel_run->stream_channel_run));
@@ -501,8 +495,7 @@ ags_play_channel_run_run_post(AgsRecall *recall)
   }
   
   if(!found){
-    //FIXME:JK: uncomment
-    //    ags_play_channel_run_stop((AgsPlayChannelRun *) recall);
+    ags_recall_done(recall);
   }
 }
 
@@ -571,68 +564,6 @@ ags_play_channel_run_resolve_dependency(AgsRecall *recall)
   g_object_set(G_OBJECT(recall),
 	       "stream_channel_run", stream_channel_run,
 	       NULL);
-}
-
-void
-ags_play_channel_run_stream_audio_signal_done_callback(AgsRecall *recall,
-						       AgsPlayChannelRun *play_channel_run)
-{  
-  ags_play_channel_run_stop(play_channel_run);
-}
-
-void
-ags_play_channel_run_stop(AgsPlayChannelRun *play_channel_run)
-{
-  AgsChannel *channel;
-  AgsCancelChannel *cancel_channel;
-
-  AgsThread *task_thread;
-
-  AgsApplicationContext *application_context;
-
-  gint sound_scope;
-
-  pthread_mutex_t *recall_mutex;
-
-  if(!AGS_IS_PLAY_CHANNEL_RUN(play_channel_run)){
-    return;
-  }
-  
-  g_object_get(play_channel_run,
-	       "source", &channel,
-	       NULL);
-  
-  if(channel == NULL){
-    return;
-  }
-
-  /* get recall mutex */
-  pthread_mutex_lock(ags_recall_get_class_mutex());
-  
-  recall_mutex = AGS_RECALL(play_channel_run)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_recall_get_class_mutex());
-
-  /* get sound scope */
-  pthread_mutex_lock(recall_mutex);
-
-  sound_scope = AGS_RECALL(play_channel_run)->sound_scope;
-
-  pthread_mutex_unlock(recall_mutex);
-  
-  /* get application_context */
-  application_context = ags_application_context_get_instance();
-
-  /* get async queue */
-  task_thread = ags_concurrency_provider_get_task_thread(AGS_CONCURRENCY_PROVIDER(application_context));
-
-  /* create append task */
-  cancel_channel = ags_cancel_channel_new(channel,
-					  sound_scope);
-  
-  /* append AgsCancelAudio */
-  ags_task_thread_append_task((AgsTaskThread *) task_thread,
-			      (AgsTask *) cancel_channel);
 }
 
 /**

@@ -56,6 +56,8 @@
 #include <ags/audio/file/ags_audio_file_link.h>
 #include <ags/audio/file/ags_audio_file.h>
 
+#include <ags/audio/recall/ags_play_channel_run.h>
+
 #include <stdlib.h>
 #include <stdio.h>
 
@@ -144,6 +146,9 @@ void ags_channel_real_cancel_recall(AgsChannel *channel,
 
 void ags_channel_real_cleanup_recall(AgsChannel *channel,
 				     AgsRecallID *recall_id);
+
+void ags_channel_recall_done_callback(AgsRecall *recall,
+				      AgsChannel *channel);
 
 GList* ags_channel_real_start(AgsChannel *channel,
 			      gint sound_scope);
@@ -8918,7 +8923,7 @@ void
 ags_channel_real_duplicate_recall(AgsChannel *channel,
 				  AgsRecallID *recall_id)
 {
-  AgsRecall *recall, *copy;
+  AgsRecall *recall, *copy_recall;
   AgsRecyclingContext *parent_recycling_context, *recycling_context;
 
   GList *list_start, *list;
@@ -9090,11 +9095,11 @@ ags_channel_real_duplicate_recall(AgsChannel *channel,
     pthread_mutex_unlock(current_recall_mutex);
 
     /* duplicate the recall */
-    copy = ags_recall_duplicate(recall,
-				recall_id,
-				NULL, NULL, NULL);
+    copy_recall = ags_recall_duplicate(recall,
+				       recall_id,
+				       NULL, NULL, NULL);
       
-    if(copy == NULL){
+    if(copy_recall == NULL){
       /* iterate */    
       list = list->next;
 
@@ -9102,22 +9107,24 @@ ags_channel_real_duplicate_recall(AgsChannel *channel,
     }
     
 #ifdef AGS_DEBUG
-    g_message("recall duplicated: %s %s", G_OBJECT_TYPE_NAME(channel), G_OBJECT_TYPE_NAME(copy));
+    g_message("recall duplicated: %s %s", G_OBJECT_TYPE_NAME(channel), G_OBJECT_TYPE_NAME(copy_recall));
 #endif
 
     /* set appropriate sound scope */
-    copy->sound_scope = sound_scope;
+    copy_recall->sound_scope = sound_scope;
       
     /* append to AgsChannel */
     ags_channel_add_recall(channel,
-			   (GObject *) copy,
+			   (GObject *) copy_recall,
 			   play_context);
-
+    g_signal_connect(copy_recall, "done",
+		     G_CALLBACK(ags_channel_recall_done_callback), channel);
+    
     /* connect */
-    ags_connectable_connect(AGS_CONNECTABLE(copy));
+    ags_connectable_connect(AGS_CONNECTABLE(copy_recall));
 
     /* notify run */
-    ags_recall_notify_dependency(copy, AGS_RECALL_NOTIFY_RUN, 1);
+    ags_recall_notify_dependency(copy_recall, AGS_RECALL_NOTIFY_RUN, 1);
 
     /* iterate */
     list = list->next;
@@ -10128,6 +10135,22 @@ ags_channel_cleanup_recall(AgsChannel *channel,
   g_object_unref((GObject *) channel);
 }
 
+void
+ags_channel_recall_done_callback(AgsRecall *recall,
+				 AgsChannel *channel)
+{
+  gint sound_scope;
+  
+  if(AGS_IS_PLAY_CHANNEL_RUN(recall)){
+    sound_scope = ags_recall_get_sound_scope(recall);
+
+    if(sound_scope == AGS_SOUND_SCOPE_PLAYBACK){      
+      ags_channel_stop(channel,
+		       ags_channel_check_scope(channel, sound_scope), sound_scope);
+    }
+  }
+}
+
 GList*
 ags_channel_real_start(AgsChannel *channel,
 		       gint sound_scope)
@@ -10415,6 +10438,7 @@ ags_channel_real_stop(AgsChannel *channel,
 
   pthread_mutex_t *channel_mutex;
 
+#if 0
   /* get channel mutex */
   pthread_mutex_lock(ags_channel_get_class_mutex());
 
@@ -10449,7 +10473,8 @@ ags_channel_real_stop(AgsChannel *channel,
 				 i);
     }
   }
-
+#endif
+  
   /* emit message */
   message_delivery = ags_message_delivery_get_instance();
 
@@ -10527,7 +10552,7 @@ ags_channel_stop(AgsChannel *channel,
 
   g_object_ref((GObject *) channel);
   g_signal_emit(G_OBJECT(channel),
-		channel_signals[START], 0,
+		channel_signals[STOP], 0,
 		recall_id, sound_scope);
   g_object_unref((GObject *) channel);
 }

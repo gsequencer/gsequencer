@@ -355,8 +355,8 @@ ags_matrix_connect(AgsConnectable *connectable)
   g_signal_connect((GObject *) matrix->loop_button, "clicked",
 		   G_CALLBACK(ags_matrix_loop_button_callback), (gpointer) matrix);
 
-  g_signal_connect_after(G_OBJECT(matrix), "done",
-			 G_CALLBACK(ags_matrix_done_callback), NULL);
+  g_signal_connect_after(G_OBJECT(matrix), "stop",
+			 G_CALLBACK(ags_matrix_stop_callback), NULL);
 }
 
 void
@@ -396,8 +396,8 @@ ags_matrix_disconnect(AgsConnectable *connectable)
 		      NULL);
 
   g_object_disconnect(G_OBJECT(matrix),
-		      "any_signal::done",
-		      G_CALLBACK(ags_matrix_done_callback),
+		      "any_signal::stop",
+		      G_CALLBACK(ags_matrix_stop_callback),
 		      NULL,
 		      NULL);
 

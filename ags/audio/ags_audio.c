@@ -44,6 +44,8 @@
 
 #include <ags/audio/midi/ags_midi_file.h>
 
+#include <ags/audio/recall/ags_count_beats_audio_run.h>
+
 #include <libxml/tree.h>
 
 #include <stdlib.h>
@@ -124,6 +126,9 @@ void ags_audio_real_cancel_recall(AgsAudio *audio,
 
 void ags_audio_real_cleanup_recall(AgsAudio *audio,
 				   AgsRecallID *recall_id);
+
+void ags_audio_recall_done_callback(AgsRecall *recall,
+				    AgsAudio *audio);
 
 GList* ags_audio_real_start(AgsAudio *audio,
 			    gint sound_scope);
@@ -8731,7 +8736,9 @@ ags_audio_real_duplicate_recall(AgsAudio *audio,
     ags_audio_add_recall(audio,
 			 (GObject *) copy_recall,
 			 play_context);
-
+    g_signal_connect(copy_recall, "done",
+		     G_CALLBACK(ags_audio_recall_done_callback), audio);
+    
     /* connect */
     ags_connectable_connect(AGS_CONNECTABLE(copy_recall));
 
@@ -9765,6 +9772,20 @@ ags_audio_cleanup_recall(AgsAudio *audio,
   g_object_unref((GObject *) audio);
 }
 
+void
+ags_audio_recall_done_callback(AgsRecall *recall,
+			       AgsAudio *audio)
+{
+  gint sound_scope;
+  
+  if(AGS_IS_COUNT_BEATS_AUDIO_RUN(recall)){
+    sound_scope = ags_recall_get_sound_scope(recall);
+    
+    ags_audio_stop(audio,
+		   ags_audio_check_scope(audio, sound_scope), sound_scope);
+  }
+}
+
 GList*
 ags_audio_real_start(AgsAudio *audio,
 		     gint sound_scope)
@@ -10000,12 +10021,13 @@ ags_audio_real_stop(AgsAudio *audio,
   pthread_mutex_t *channel_mutex;
   pthread_mutex_t *playback_mutex;
 
-  if(!AGS_IS_RECALL_ID(recall_id) ||
+  if(recall_id == NULL ||
      sound_scope < 0 ||
      sound_scope >= AGS_SOUND_SCOPE_LAST){
     return;
   }
   
+#if 0  
   /* get audio mutex */
   pthread_mutex_lock(ags_audio_get_class_mutex());
 
@@ -10065,6 +10087,7 @@ ags_audio_real_stop(AgsAudio *audio,
 
     pthread_mutex_unlock(channel_mutex);
   }
+#endif
   
   /* emit message */
   message_delivery = ags_message_delivery_get_instance();
@@ -10105,17 +10128,17 @@ ags_audio_real_stop(AgsAudio *audio,
     message->parameter_name[0] = "recall-id";
     
     g_value_init(&(message->value[0]),
-		 G_TYPE_OBJECT);
-    g_value_set_object(&(message->value[0]),
-		       recall_id);
+		 G_TYPE_POINTER);
+    g_value_set_pointer(&(message->value[0]),
+			recall_id);
 
     /* sound scope */
     message->parameter_name[1] = "sound-scope";
     
     g_value_init(&(message->value[1]),
-		 G_TYPE_UINT);
-    g_value_set_uint(&(message->value[1]),
-		     sound_scope);
+		 G_TYPE_INT);
+    g_value_set_int(&(message->value[1]),
+		    sound_scope);
 
     /* terminate string vector */
     message->parameter_name[2] = NULL;

@@ -161,50 +161,28 @@ ags_line_volume_callback(GtkRange *range,
 }
 
 void
-ags_line_done_callback(AgsLine *line, AgsRecallID *recall_id,
+ags_line_stop_callback(AgsLine *line,
+		       GList *recall_id, gint sound_scope,
 		       gpointer data)
 {
-  AgsChannel *channel;
-  AgsChannel *next_pad;
-  AgsPlayback *playback;
-
-  gboolean all_done;
+  AgsPad *pad;
   
-  /* retrieve channel */
-  channel = AGS_PAD(AGS_LINE(line)->pad)->channel;
+  gboolean reset_active;
 
-  /* get next pad */
-  g_object_get(channel,
-	       "next-pad", &next_pad,
-	       NULL);
-
-  all_done = TRUE;
-
-  while(channel != next_pad){
-    g_object_get(channel,
-		 "playback", &playback,
-		 NULL);
-    
-    /* check if pending */
-    if(ags_playback_get_recall_id(playback, AGS_SOUND_SCOPE_PLAYBACK) != NULL){
-      all_done = FALSE;
-      break;
-    }
-
-    /* iterate */
-    g_object_get(channel,
-		 "next", &channel,
-		 NULL);
+  pad = line->pad;
+  
+  if((AGS_PAD_BLOCK_STOP & (pad->flags)) != 0){
+    return;
   }
+  
+  pad->flags |= AGS_PAD_BLOCK_STOP;
 
-  /* toggle play button if all playback done */
-  if(all_done){
-    AgsPad *pad;
-
-    pad = AGS_PAD(AGS_LINE(line)->pad);
-
-    if(pad->play != NULL){
-      gtk_toggle_button_set_active(pad->play, FALSE);
-    }
+  /* play button - check reset active */
+  reset_active = (sound_scope == AGS_SOUND_SCOPE_PLAYBACK) ? TRUE: FALSE;
+  
+  if(reset_active){
+    gtk_toggle_button_set_active(pad->play, FALSE);
   }
+  
+  pad->flags &= (~AGS_PAD_BLOCK_STOP);
 }

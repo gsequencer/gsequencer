@@ -658,8 +658,8 @@ ags_machine_resize_pads_callback(AgsMachine *machine, GType channel_type,
 }
 
 void
-ags_machine_done_callback(AgsMachine *machine,
-			  AgsRecallID *recall_id,
+ags_machine_stop_callback(AgsMachine *machine,
+			  GList *recall_id, gint sound_scope,
 			  gpointer data)
 {
   gboolean reset_active;
@@ -671,7 +671,7 @@ ags_machine_done_callback(AgsMachine *machine,
   machine->flags |= AGS_MACHINE_BLOCK_STOP;
 
   /* play button - check reset active */
-  reset_active = (ags_recall_id_check_sound_scope(recall_id, AGS_SOUND_SCOPE_SEQUENCER)) ? TRUE: FALSE;
+  reset_active = (sound_scope == AGS_SOUND_SCOPE_SEQUENCER) ? TRUE: FALSE;
   
   if(reset_active){
     gtk_toggle_button_set_active(machine->play, FALSE);

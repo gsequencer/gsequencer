@@ -60,8 +60,8 @@ void ags_machine_resize_pads_callback(AgsMachine *machine, GType channel_type,
 				      guint pads, guint pads_old,
 				      gpointer data);
 
-void ags_machine_done_callback(AgsMachine *machine,
-			       AgsRecallID *recall_id,
+void ags_machine_stop_callback(AgsMachine *machine,
+			       GList *recall_id, gint sound_scope,
 			       gpointer data);
 
 #endif /*__AGS_MACHINE_CALLBACKS_H__*/

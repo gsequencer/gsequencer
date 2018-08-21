@@ -151,8 +151,8 @@ struct _AgsMachineClass
   void (*map_recall)(AgsMachine *machine);
   GList* (*find_port)(AgsMachine *machine);
 
-  void (*done)(AgsMachine *machine,
-	       GObject *recall_id);
+  void (*stop)(AgsMachine *machine,
+	       GList *recall_id, gint sound_scope);
 };
 
 struct _AgsMachineAutomationPort
@@ -178,8 +178,8 @@ void ags_machine_resize_pads(AgsMachine *machine,
 void ags_machine_map_recall(AgsMachine *machine);
 GList* ags_machine_find_port(AgsMachine *machine);
 
-void ags_machine_done(AgsMachine *machine,
-		      GObject *recall_id);
+void ags_machine_stop(AgsMachine *machine,
+		      GList *recall_id, gint sound_scope);
 
 void ags_machine_add_default_recalls(AgsMachine *machine) G_DEPRECATED_FOR(ags_machine_map_recall);
 
