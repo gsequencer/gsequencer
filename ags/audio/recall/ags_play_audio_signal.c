@@ -315,27 +315,28 @@ ags_play_audio_signal_run_inter(AgsRecall *recall)
     stream = source->stream_current;
 
     g_list_free(note_start);
-      
+        
     if(stream == NULL){
       AgsRecycling *recycling;
-
-      g_object_get(source,
-		   "recycling", &recycling,
-		   NULL);
       
       ags_recall_done(recall);
-  
-      ags_recycling_remove_audio_signal(recycling,
-					source);
-      g_object_unref(source);
 
+      if(play_recycling != NULL){
+	g_object_get(play_recycling,
+		     "source", &recycling,
+		     NULL);
+	ags_recycling_remove_audio_signal(recycling,
+					  source);
+	g_object_unref(source);
+      }
+      
       return;
     }
     
     /* check if resample */
     buffer_source = stream->data;
     resample = FALSE;
-
+    
     if(samplerate != soundcard_samplerate){
       buffer_source = ags_audio_buffer_util_resample(buffer_source, 1,
 						     ags_audio_buffer_util_format_from_soundcard(format), samplerate,

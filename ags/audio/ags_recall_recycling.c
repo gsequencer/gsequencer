@@ -557,13 +557,43 @@ ags_recall_recycling_finalize(GObject *gobject)
 void
 ags_recall_recycling_connect(AgsConnectable *connectable)
 {
+  AgsRecycling *source;
+  AgsRecallRecycling *recall_recycling;
+  
+  if(ags_connectable_is_connected(connectable)){
+    return;
+  }
+
+  recall_recycling = AGS_RECALL_RECYCLING(connectable);
+  g_object_get(recall_recycling,
+	       "source", &source,
+	       NULL);
+  
   ags_recall_recycling_parent_connectable_interface->connect(connectable);
+
+  ags_connectable_connect_connection(connectable,
+				     source);
 }
 
 void
 ags_recall_recycling_disconnect(AgsConnectable *connectable)
 {
+  AgsRecycling *source;
+  AgsRecallRecycling *recall_recycling;
+  
+  if(!ags_connectable_is_connected(connectable)){
+    return;
+  }
+  
+  recall_recycling = AGS_RECALL_RECYCLING(connectable);
+  g_object_get(recall_recycling,
+	       "source", &source,
+	       NULL);
+
   ags_recall_recycling_parent_connectable_interface->disconnect(connectable);
+
+  ags_connectable_disconnect_connection(connectable,
+					source);
 }
 
 void
@@ -596,16 +626,16 @@ ags_recall_recycling_disconnect_connection(AgsConnectable *connectable,
 
   if(recall_recycling->destination == connection){
     //empty
-  }else if(recall_recycling->source == connection){
+  }else if(recall_recycling->source == connection){    
     g_object_disconnect(connection,
-			"add-audio-signal",
+			"any_signal::add-audio-signal",
 			G_CALLBACK(ags_recall_recycling_source_add_audio_signal_callback),
 			recall_recycling,
 			NULL);
 
     g_object_disconnect(connection,
-			"remove-audio-signal",
-			G_CALLBACK(ags_recall_recycling_source_add_audio_signal_callback),
+			"any_signal::remove-audio-signal",
+			G_CALLBACK(ags_recall_recycling_source_remove_audio_signal_callback),
 			recall_recycling,
 			NULL);
   }
@@ -624,8 +654,6 @@ ags_recall_recycling_duplicate(AgsRecall *recall,
   pthread_mutex_t *recall_mutex;
 
   recall_recycling = AGS_RECALL_RECYCLING(recall);
-
-  g_message("dup");
 
   /* get recall mutex */
   pthread_mutex_lock(ags_recall_get_class_mutex());

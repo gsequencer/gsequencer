@@ -8514,6 +8514,7 @@ ags_audio_remove_recall(AgsAudio *audio, GObject *recall, gboolean play_context)
     pthread_mutex_unlock(recall_mutex);
   }
 
+#if 0
   if(success){
     if(AGS_IS_RECALL_AUDIO(recall) ||
        AGS_IS_RECALL_AUDIO_RUN(recall)){
@@ -8524,6 +8525,7 @@ ags_audio_remove_recall(AgsAudio *audio, GObject *recall, gboolean play_context)
 
     g_object_unref(G_OBJECT(recall));
   }
+#endif
 }
 
 void
@@ -9588,12 +9590,18 @@ ags_audio_real_cleanup_recall(AgsAudio *audio,
   AgsRecyclingContext *parent_recycling_context, *recycling_context;
   
   GList *list_start, *list;
+  GList *match_start, *match;
 
-  guint sound_scope;
+  gint sound_scope;
   guint current_staging_flags;
   gboolean play_context;
   gboolean remove_recycling_context;
   
+  static const guint staging_mask = (AGS_SOUND_STAGING_CHECK_RT_DATA |
+				     AGS_SOUND_STAGING_RUN_INIT_PRE |
+				     AGS_SOUND_STAGING_RUN_INIT_INTER |
+				     AGS_SOUND_STAGING_RUN_INIT_POST);
+
   pthread_mutex_t *audio_mutex;
   pthread_mutex_t *recall_id_mutex;
   pthread_mutex_t *recycling_context_mutex;
@@ -9702,25 +9710,37 @@ ags_audio_real_cleanup_recall(AgsAudio *audio,
   }
 
   /* cleanup  */
+  match_start = NULL;
+
   while((list = ags_recall_find_recycling_context(list,
 						  (GObject *) recycling_context)) != NULL){
     recall = AGS_RECALL(list->data);
     
     /* remove recall */
     ags_audio_remove_recall(audio, recall, play_context);
+    match_start = g_list_prepend(match_start,
+				 recall);
 
     list = list->next;
   }
 
   g_list_free(list_start);
 
-  /* remove recall id */
-  ags_audio_remove_recall_id(audio, recall_id);
+  /* destroy  */
+  match = match_start;
+  
+  while(match != NULL){
+    recall = AGS_RECALL(match->data);
 
-  /* remove recycling context */
-  if(remove_recycling_context){
-    ags_audio_remove_recycling_context(audio, recycling_context);
+    /* destroy */
+    ags_connectable_disconnect(AGS_CONNECTABLE(recall));
+    g_object_run_dispose(recall);
+    g_object_unref(recall);
+    
+    match = match->next;
   }
+
+  g_list_free(match_start);
 }
 
 /**

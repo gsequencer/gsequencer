@@ -24,6 +24,7 @@
 #include <ags/audio/ags_playback_domain.h>
 #include <ags/audio/ags_playback.h>
 
+#include <ags/audio/thread/ags_audio_loop.h>
 #include <ags/audio/thread/ags_audio_thread.h>
 
 #include <ags/i18n.h>
@@ -266,9 +267,14 @@ ags_cancel_audio_launch(AgsTask *task)
 
   AgsCancelAudio *cancel_audio;
 
+  AgsAudioLoop *audio_loop;
+
+  AgsApplicationContext *application_context;
+
   GList *list_start, *list;
 
   gint sound_scope;
+
   static const guint staging_flags = (AGS_SOUND_STAGING_CANCEL |
 				      AGS_SOUND_STAGING_REMOVE);
   
@@ -285,6 +291,12 @@ ags_cancel_audio_launch(AgsTask *task)
 	       NULL);
   
   sound_scope = cancel_audio->sound_scope;
+  
+  application_context = ags_application_context_get_instance();
+
+  g_object_get(application_context,
+	       "main-loop", &audio_loop,
+	       NULL);
 
   if(sound_scope >= 0){
     /* cancel */
@@ -299,20 +311,43 @@ ags_cancel_audio_launch(AgsTask *task)
     list = list_start;
 
     while(list != NULL){
+      AgsChannel *channel;
+
+      g_object_get(list->data,
+		   "channel", &channel,
+		   NULL);
+	
       ags_thread_stop(ags_playback_get_channel_thread(list->data,
 						      sound_scope));
-      
-      ags_playback_set_recall_id(list->data,
-				 NULL,
-				 sound_scope);
-
+            
       /* iterate */
       list = list->next;
     }
+
+    /* clean - fini */
+    ags_audio_recursive_run_stage(audio,
+				  sound_scope, AGS_SOUND_STAGING_FINI);
+
+    list = list_start;
+
+    while(list != NULL){
+      ags_playback_set_recall_id(list->data,
+				 NULL,
+				 sound_scope);
+      
+      /* iterate */
+      list = list->next;
+    }
+
+    g_list_free(list_start);
   }else{
     gint i;
 
-    for(i = 0; i < AGS_SOUND_SCOPE_LAST; i++){      
+    for(i = 0; i < AGS_SOUND_SCOPE_LAST; i++){
+      if(i == AGS_SOUND_SCOPE_PLAYBACK){
+	continue;
+      }
+      
       /* cancel */
       ags_audio_recursive_run_stage(audio,
 				    i, staging_flags);
@@ -325,18 +360,47 @@ ags_cancel_audio_launch(AgsTask *task)
       list = list_start;
 
       while(list != NULL){
+	AgsChannel *channel;
+
+	g_object_get(list->data,
+		     "channel", &channel,
+		     NULL);
+	
 	ags_thread_stop(ags_playback_get_channel_thread(list->data,
 							i));
 	
-	ags_playback_set_recall_id(list->data,
-				   NULL,
-				   i);
-
 	/* iterate */
 	list = list->next;
       }
     }
+
+    for(i = 0; i < AGS_SOUND_SCOPE_LAST; i++){
+      if(i == AGS_SOUND_SCOPE_PLAYBACK){
+	continue;
+      }
+      
+      /* clean - fini */
+      ags_audio_recursive_run_stage(audio,
+				    i, AGS_SOUND_STAGING_FINI);
+	
+      list = list_start;
+
+      while(list != NULL){
+	ags_playback_set_recall_id(list->data,
+				   NULL,
+				   i);
+	
+	/* iterate */
+	list = list->next;
+      }
+    }
+
+    g_list_free(list_start);
   }
+
+  /* add channel to AgsAudioLoop */
+  ags_audio_loop_remove_audio(audio_loop,
+			      (GObject *) audio);
 }
 
 /**

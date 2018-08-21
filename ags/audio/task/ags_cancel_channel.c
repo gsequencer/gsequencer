@@ -22,6 +22,7 @@
 #include <ags/audio/ags_playback_domain.h>
 #include <ags/audio/ags_playback.h>
 
+#include <ags/audio/thread/ags_audio_loop.h>
 #include <ags/audio/thread/ags_channel_thread.h>
 
 #include <ags/i18n.h>
@@ -259,17 +260,20 @@ void
 ags_cancel_channel_launch(AgsTask *task)
 {
   AgsChannel *channel;
+  AgsPlaybackDomain *playback_domain;
   AgsPlayback *playback;
   
   AgsCancelChannel *cancel_channel;
 
-  GList *list_start, *list;
+  AgsAudioLoop *audio_loop;
+
+  AgsApplicationContext *application_context;
+
 
   gint sound_scope;
+
   static const guint staging_flags = (AGS_SOUND_STAGING_CANCEL |
 				      AGS_SOUND_STAGING_REMOVE);
-
-  g_message("cancel");
 
   cancel_channel = AGS_CANCEL_CHANNEL(task);
 
@@ -277,8 +281,18 @@ ags_cancel_channel_launch(AgsTask *task)
 
   sound_scope = cancel_channel->sound_scope;
 
+  application_context = ags_application_context_get_instance();
+
+  g_object_get(application_context,
+	       "main-loop", &audio_loop,
+	       NULL);
+
   g_object_get(channel,
 	       "playback", &playback,
+	       NULL);
+
+  g_object_get(playback,
+	       "playback-domain", &playback_domain,
 	       NULL);
 
   if(sound_scope >= 0){
@@ -286,9 +300,15 @@ ags_cancel_channel_launch(AgsTask *task)
     ags_channel_recursive_run_stage(channel,
 				    sound_scope, staging_flags);
 
+    ags_thread_stop(ags_playback_domain_get_audio_thread(playback_domain,
+							 sound_scope));
+    
     ags_thread_stop(ags_playback_get_channel_thread(playback,
 						    sound_scope));
-      
+    
+    ags_channel_recursive_run_stage(channel,
+				    sound_scope, AGS_SOUND_STAGING_FINI);
+
     ags_playback_set_recall_id(playback,
 			       NULL,
 			       sound_scope);
@@ -299,15 +319,27 @@ ags_cancel_channel_launch(AgsTask *task)
       /* cancel */
       ags_channel_recursive_run_stage(channel,
 				      i, staging_flags);
+      
+      ags_thread_stop(ags_playback_domain_get_audio_thread(playback_domain,
+							   i));
 
       ags_thread_stop(ags_playback_get_channel_thread(playback,
-						      sound_scope));
+						      i));
+    }
+
+    for(i = 0; i < AGS_SOUND_SCOPE_LAST; i++){      
+      ags_channel_recursive_run_stage(channel,
+				      i, AGS_SOUND_STAGING_FINI);
       
       ags_playback_set_recall_id(playback,
 				 NULL,
-				 sound_scope);
+				 i);
     }
   }
+  
+  /* add channel to AgsAudioLoop */
+  ags_audio_loop_remove_channel(audio_loop,
+				(GObject *) channel);
 }
 
 /**

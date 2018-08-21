@@ -773,8 +773,6 @@ ags_pad_play(AgsPad *pad)
   channel = pad->channel;
 
   if(gtk_toggle_button_get_active(pad->play)){
-    g_message("- play");
-    
     if(play_all){
       AgsChannel *next_pad;
 
@@ -835,8 +833,6 @@ ags_pad_play(AgsPad *pad)
     AgsRecallID *recall_id;
     
     AgsCancelChannel *cancel_channel;
-
-    g_message("- cancel");
 
     channel = pad->channel;
 

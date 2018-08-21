@@ -372,6 +372,8 @@ ags_play_channel_run_run_post(AgsRecall *recall)
   pthread_mutex_lock(ags_recall_get_class_mutex());
   
   parent_class_run_post = AGS_RECALL_CLASS(ags_play_channel_run_parent_class)->run_post;
+
+  recall_mutex = recall->obj_mutex;
   
   pthread_mutex_unlock(ags_recall_get_class_mutex());
 

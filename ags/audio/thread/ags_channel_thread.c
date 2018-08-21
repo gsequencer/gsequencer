@@ -432,14 +432,6 @@ ags_channel_thread_run(AgsThread *thread)
   
   gint sound_scope;
 
-  static const guint playback_staging_flags = (AGS_SOUND_STAGING_FEED_INPUT_QUEUE |
-					       AGS_SOUND_STAGING_AUTOMATE |
-					       AGS_SOUND_STAGING_RUN_PRE |
-					       AGS_SOUND_STAGING_RUN_INTER |
-					       AGS_SOUND_STAGING_RUN_POST |
-					       AGS_SOUND_STAGING_DO_FEEDBACK |
-					       AGS_SOUND_STAGING_FEED_OUTPUT_QUEUE);
-
 #ifdef AGS_WITH_RT
   if((AGS_THREAD_RT_SETUP & (g_atomic_int_get(&(thread->flags)))) == 0){
     struct sched_param param;
@@ -498,7 +490,17 @@ ags_channel_thread_run(AgsThread *thread)
   for(sound_scope = 0; sound_scope < AGS_SOUND_SCOPE_LAST; sound_scope++){
     if((recall_id = ags_channel_check_scope(channel, sound_scope)) != NULL){
       ags_channel_recursive_run_stage(channel,
-				      sound_scope, playback_staging_flags);
+				      sound_scope, (AGS_SOUND_STAGING_FEED_INPUT_QUEUE |
+						    AGS_SOUND_STAGING_AUTOMATE |
+						    AGS_SOUND_STAGING_RUN_PRE));
+
+      ags_channel_recursive_run_stage(channel,
+				      sound_scope, (AGS_SOUND_STAGING_RUN_INTER));
+
+      ags_channel_recursive_run_stage(channel,
+				      sound_scope, (AGS_SOUND_STAGING_RUN_POST |
+						    AGS_SOUND_STAGING_DO_FEEDBACK |
+						    AGS_SOUND_STAGING_FEED_OUTPUT_QUEUE));
 	  
       g_list_free(recall_id);
     }

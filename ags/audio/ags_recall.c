@@ -1354,7 +1354,7 @@ ags_recall_set_property(GObject *gobject,
 
       pthread_mutex_lock(recall_mutex);
 
-      if(recall->recall_id == recall_id){
+      if(recall->recall_id == recall_id){	
 	pthread_mutex_unlock(recall_mutex);
 	
 	return;
@@ -3615,7 +3615,8 @@ ags_recall_set_recall_id(AgsRecall *recall, AgsRecallID *recall_id)
   pthread_mutex_lock(recall_mutex);
 
   recall->recall_id = recall_id;
-
+  g_object_ref(recall_id);
+  
   pthread_mutex_unlock(recall_mutex);
 }
 
@@ -4714,7 +4715,7 @@ ags_recall_real_run_inter(AgsRecall *recall)
   }
 
   list =
-    list_start = g_list_copy(recall->children);
+    list_start = ags_list_util_copy_and_ref(recall->children);
 
   pthread_mutex_unlock(recall_mutex);
 
@@ -4728,7 +4729,8 @@ ags_recall_real_run_inter(AgsRecall *recall)
     list = list->next;
   }
 
-  g_list_free(list_start);  
+  g_list_free_full(list_start,
+		   g_object_unref);  
 }
 
 /**
@@ -5027,10 +5029,10 @@ ags_recall_real_cancel(AgsRecall *recall)
 
   while(list != NULL){
     ags_recall_cancel(AGS_RECALL(list->data));
-
+    
     list = list->next;
   }
-
+  
   g_list_free(list_start);  
 
   /* stop any recall */
@@ -6240,71 +6242,24 @@ void
 ags_recall_child_done(AgsRecall *child,
 		      AgsRecall *parent)
 {
-  AgsMutexManager *mutex_manager;
-  AgsDestroyWorker *destroy_worker;
-
-  AgsApplicationContext *application_context;
-
-  GList *worker;
   GList *children;
 
   guint parent_behaviour_flags;
-  
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *parent_mutex;
-
-  /*  */
-  application_context = ags_application_context_get_instance();
-
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-
-  /* get destroy worker */
-  pthread_mutex_lock(application_mutex);
-  
-  worker = ags_concurrency_provider_get_worker(AGS_CONCURRENCY_PROVIDER(application_context));
-  worker = ags_list_util_find_type(worker,
-				   AGS_TYPE_DESTROY_WORKER);
-
-  if(worker != NULL){
-    destroy_worker = worker->data;
-  }else{
-    destroy_worker = NULL;
-  }
-  
-  pthread_mutex_unlock(application_mutex);
 
   /* remove child */
+  ags_connectable_disconnect(AGS_CONNECTABLE(child));
   ags_recall_remove_child(parent,
 			  child);
+
+  g_object_run_dispose(child);
+  g_object_unref(child);
   
-  /* dispose and unref */
-  if(destroy_worker != NULL){
-    ags_destroy_worker_add(destroy_worker,
-			   child, ags_destroy_util_dispose_and_unref);
-  }else{
-    g_object_run_dispose(child);
-    g_object_unref(child);
-  }  
-
-  /* get recall mutex */
-  pthread_mutex_lock(ags_recall_get_class_mutex());
+  g_object_get(parent,
+	       "child", &children,
+	       NULL);
   
-  parent_mutex = parent->obj_mutex;
-
-  pthread_mutex_unlock(ags_recall_get_class_mutex());
-
-  /* propagate done */
-  pthread_mutex_lock(parent_mutex);
-
-  parent_behaviour_flags = parent->behaviour_flags;
-  
-  children = parent->children;
-
-  pthread_mutex_unlock(parent_mutex);
-  
-  if((AGS_SOUND_BEHAVIOUR_PROPAGATE_DONE & (parent_behaviour_flags)) != 0 &&
-     (AGS_SOUND_BEHAVIOUR_PERSISTENT & (parent_behaviour_flags)) == 0 &&
+  if(ags_recall_test_behaviour_flags(parent, AGS_SOUND_BEHAVIOUR_PROPAGATE_DONE) &&
+     !ags_recall_test_behaviour_flags(parent, AGS_SOUND_BEHAVIOUR_PERSISTENT) &&
      children == NULL){
     ags_recall_done(parent);
   }

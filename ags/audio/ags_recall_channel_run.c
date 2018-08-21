@@ -340,7 +340,6 @@ ags_recall_channel_run_set_property(GObject *gobject,
 	g_object_ref(G_OBJECT(recall_audio_run));
       }
 
-      g_message("set %x:%x", recall_channel_run, recall_audio_run);
       recall_channel_run->recall_audio_run = recall_audio_run;
       
       pthread_mutex_unlock(recall_mutex);
@@ -397,9 +396,11 @@ ags_recall_channel_run_set_property(GObject *gobject,
       recall_channel_run->destination = destination;
 
       /* child destination */
+#if 0
       if(destination == recall_channel_run->source){
 	g_warning("destination == recall_channel_run->source");
       }
+#endif
       
       if(old_destination != NULL){
 	g_object_unref(G_OBJECT(old_destination));
@@ -431,9 +432,11 @@ ags_recall_channel_run_set_property(GObject *gobject,
 
       recall_channel_run->source = source;
 
+#if 0
       if(source == recall_channel_run->destination){
 	g_warning("source == recall_channel_run->destination");
       }
+#endif
       
       if(old_source != NULL){
 	g_object_unref(G_OBJECT(old_source));
@@ -1224,6 +1227,7 @@ ags_recall_channel_run_remap_child_source(AgsRecallChannelRun *recall_channel_ru
 	  ags_recall_remove_child(recall_channel_run,
 				  current_recall);
 
+	  ags_connectable_disconnect(AGS_CONNECTABLE(current_recall));
 	  g_object_run_dispose(current_recall);
 	  g_object_unref(current_recall);
 	}
@@ -1431,6 +1435,7 @@ ags_recall_channel_run_remap_child_destination(AgsRecallChannelRun *recall_chann
 	  ags_recall_remove_child(recall_channel_run,
 				  current_recall);
 
+	  ags_connectable_disconnect(AGS_CONNECTABLE(current_recall));
 	  g_object_run_dispose(current_recall);
 	  g_object_unref(current_recall);
 	}

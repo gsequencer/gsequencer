@@ -118,7 +118,7 @@ ags_buffer_audio_signal_run_init_pre(AgsRecall *recall)
 {
   AgsChannel *output;
   AgsRecycling *recycling;
-  AgsAudioSignal *destination;
+  AgsAudioSignal *destination, *source;
   AgsRecallID *recall_id;
   AgsRecallID *parent_recall_id;
   AgsRecyclingContext *recycling_context;
@@ -155,6 +155,7 @@ ags_buffer_audio_signal_run_init_pre(AgsRecall *recall)
   /* get some fields */
   g_object_get(buffer_audio_signal,
 	       "output-soundcard", &output_soundcard,
+	       "source", &source,
 	       NULL);
 
   g_object_get(buffer_audio_signal,
@@ -217,7 +218,11 @@ ags_buffer_audio_signal_run_init_pre(AgsRecall *recall)
   ags_recycling_create_audio_signal_with_defaults(recycling,
 						  destination,
 						  delay, attack);
+
   length = 3; // (guint) (2.0 * soundcard->delay[soundcard->tic_counter]) + 1;
+  g_object_get(source,
+	       "length", &length,
+	       NULL);
   ags_audio_signal_stream_resize(destination,
 				 length);
 
@@ -313,7 +318,7 @@ ags_buffer_audio_signal_run_inter(AgsRecall *recall)
   ags_port_safe_read(muted,
 		     &value);
 
-  is_muted = (g_value_get_float(&value) == 0.0) ? TRUE: FALSE;  
+  is_muted = (g_value_get_float(&value) == 1.0) ? TRUE: FALSE;  
   g_value_unset(&value);
 
   if(is_muted){

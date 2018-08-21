@@ -1060,13 +1060,13 @@ ags_audio_loop_play_channel(AgsAudioLoop *audio_loop)
 						 playback);
     }else{
       /* not super threaded */
-      for(sound_scope = 0; sound_scope < AGS_SOUND_SCOPE_LAST; sound_scope++){
-	if((recall_id = ags_channel_check_scope(channel, sound_scope)) != NULL){
-	  ags_channel_recursive_run_stage(channel,
-					  sound_scope, playback_staging_flags);
+      sound_scope = AGS_SOUND_SCOPE_PLAYBACK;
+      
+      if((recall_id = ags_channel_check_scope(channel, sound_scope)) != NULL){
+	ags_channel_recursive_run_stage(channel,
+					sound_scope, playback_staging_flags);
 
-	  g_list_free(recall_id);
-	}
+	g_list_free(recall_id);
       }
     }
 
@@ -1206,13 +1206,6 @@ ags_audio_loop_play_audio(AgsAudioLoop *audio_loop)
   GList *recall_id;
   
   gint sound_scope;
-  static const guint playback_staging_flags = (AGS_SOUND_STAGING_FEED_INPUT_QUEUE |
-					       AGS_SOUND_STAGING_AUTOMATE |
-					       AGS_SOUND_STAGING_RUN_PRE |
-					       AGS_SOUND_STAGING_RUN_INTER |
-					       AGS_SOUND_STAGING_RUN_POST |
-					       AGS_SOUND_STAGING_DO_FEEDBACK |
-					       AGS_SOUND_STAGING_FEED_OUTPUT_QUEUE);
 
   if(audio_loop->play_audio == NULL){
     if((AGS_AUDIO_LOOP_PLAY_AUDIO_TERMINATING & (audio_loop->flags)) != 0){
@@ -1245,9 +1238,23 @@ ags_audio_loop_play_audio(AgsAudioLoop *audio_loop)
     }else{
       /* not super threaded */
       for(sound_scope = 0; sound_scope < AGS_SOUND_SCOPE_LAST; sound_scope++){
+	if(sound_scope == AGS_SOUND_SCOPE_PLAYBACK){
+	  continue;
+	}
+	
 	if((recall_id = ags_audio_check_scope(audio, sound_scope)) != NULL){
 	  ags_audio_recursive_run_stage(audio,
-					sound_scope, playback_staging_flags);
+					sound_scope, (AGS_SOUND_STAGING_FEED_INPUT_QUEUE |
+						      AGS_SOUND_STAGING_AUTOMATE |
+						      AGS_SOUND_STAGING_RUN_PRE));
+
+	  ags_audio_recursive_run_stage(audio,
+					sound_scope, (AGS_SOUND_STAGING_RUN_INTER));
+
+	  ags_audio_recursive_run_stage(audio,
+					sound_scope, (AGS_SOUND_STAGING_RUN_POST |
+						      AGS_SOUND_STAGING_DO_FEEDBACK |
+						      AGS_SOUND_STAGING_FEED_OUTPUT_QUEUE));
 
 	  g_list_free(recall_id);
 	}
