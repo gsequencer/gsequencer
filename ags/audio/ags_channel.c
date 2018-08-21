@@ -9099,8 +9099,8 @@ ags_channel_real_duplicate_recall(AgsChannel *channel,
       continue;
     }
     
-    g_message("recall duplicated: %s %s", G_OBJECT_TYPE_NAME(channel), G_OBJECT_TYPE_NAME(copy));
 #ifdef AGS_DEBUG
+    g_message("recall duplicated: %s %s", G_OBJECT_TYPE_NAME(channel), G_OBJECT_TYPE_NAME(copy));
 #endif
 
     /* set appropriate sound scope */
@@ -9593,7 +9593,7 @@ ags_channel_real_play_recall(AgsChannel *channel,
     list =
       list_start = g_list_reverse(list_start);
   }
-
+  
   /* play  */
   staging_flags = staging_mask & staging_flags;
   
@@ -11490,8 +11490,8 @@ ags_channel_real_recursive_run_stage(AgsChannel *channel,
     /* check scope - output */
     recall_id = ags_channel_check_scope(channel, sound_scope);
       
-    if((AGS_CHANNEL_RECURSIVE_PREPARE_STAGING_ADD_RECALL_ID & (local_staging_flags)) != 0){
-      if(recall_id == NULL){
+    if(recall_id == NULL){
+      if((AGS_CHANNEL_RECURSIVE_PREPARE_STAGING_ADD_RECALL_ID & (local_staging_flags)) != 0){
 	current_recall_id = g_object_new(AGS_TYPE_RECALL_ID,
 					 "recycling-context", recycling_context,
 					 NULL);
@@ -11551,8 +11551,8 @@ ags_channel_real_recursive_run_stage(AgsChannel *channel,
     /* check scope - audio */
     recall_id = ags_audio_check_scope(current_audio, sound_scope);
       
-    if((AGS_CHANNEL_RECURSIVE_PREPARE_STAGING_ADD_RECALL_ID & (local_staging_flags)) != 0){
-      if(recall_id == NULL){
+    if(recall_id == NULL){
+      if((AGS_CHANNEL_RECURSIVE_PREPARE_STAGING_ADD_RECALL_ID & (local_staging_flags)) != 0){
 	current_recall_id = g_object_new(AGS_TYPE_RECALL_ID,
 					 "recycling-context", recycling_context,
 					 NULL);
@@ -11596,9 +11596,6 @@ ags_channel_real_recursive_run_stage(AgsChannel *channel,
 	recall_id_iter = recall_id_iter->next;
       }
     }
-
-    /* free recall id */
-    g_list_free(recall_id);
 
     /* get some fields */
     pthread_mutex_lock(current_audio_mutex);
@@ -11660,6 +11657,7 @@ ags_channel_real_recursive_run_stage(AgsChannel *channel,
 
       if(next_recycling_context == NULL){
 	AgsRecycling *first_recycling, *last_recycling;
+	AgsRecycling *end_region;
 	AgsRecycling *recycling;
 
 	guint64 length;
@@ -11682,11 +11680,15 @@ ags_channel_real_recursive_run_stage(AgsChannel *channel,
 	    g_object_get(first_with_recycling,
 			 "first-recycling", &first_recycling,
 			 NULL);
-	    g_object_get(first_with_recycling,
-			 "first-recycling", &last_recycling,
+	    g_object_get(last_with_recycling,
+			 "last-recycling", &last_recycling,
+			 NULL);
+
+	    g_object_get(last_recycling,
+			 "next", &end_region,
 			 NULL);
 	    
-	    length = ags_recycling_position(first_recycling, last_recycling,
+	    length = ags_recycling_position(first_recycling, end_region,
 					    last_recycling);
 	    length++;
 	  }else{
@@ -11700,7 +11702,7 @@ ags_channel_real_recursive_run_stage(AgsChannel *channel,
 		       "first-recycling", &first_recycling,
 		       NULL);
 	  g_object_get(current_input,
-		       "first-recycling", &last_recycling,
+		       "last-recycling", &last_recycling,
 		       NULL);
 	}
 
@@ -11725,7 +11727,7 @@ ags_channel_real_recursive_run_stage(AgsChannel *channel,
 	    pthread_mutex_unlock(ags_recycling_get_class_mutex());
 
 	    /* set recycling */
-	    ags_recycling_context_replace(recycling_context,
+	    ags_recycling_context_replace(next_recycling_context,
 					  recycling,
 					  i);
 	  
@@ -11739,6 +11741,9 @@ ags_channel_real_recursive_run_stage(AgsChannel *channel,
 	}
       }
     }
+
+    /* free recall id */
+    g_list_free(recall_id);
 
     if(next_recycling_context != recycling_context){
       if(next_recycling_context != NULL){
@@ -11846,15 +11851,15 @@ ags_channel_real_recursive_run_stage(AgsChannel *channel,
 	/* check scope - input */
 	recall_id = ags_channel_check_scope(current_input, sound_scope);
 	
-	if((AGS_CHANNEL_RECURSIVE_PREPARE_STAGING_ADD_RECALL_ID & (local_staging_flags)) != 0){
-	  if(recall_id == NULL){
+	if(recall_id == NULL){
+	  if((AGS_CHANNEL_RECURSIVE_PREPARE_STAGING_ADD_RECALL_ID & (local_staging_flags)) != 0){
 	    current_recall_id = g_object_new(AGS_TYPE_RECALL_ID,
 					     "recycling-context", recycling_context,
 					     NULL);
 	    ags_recall_id_set_sound_scope(current_recall_id, sound_scope);
 
 	    ags_channel_add_recall_id(current_input,
-				      recall_id);
+				      current_recall_id);
 	  }else{
 	    g_warning("recall id not found");
 	  }
@@ -11920,15 +11925,15 @@ ags_channel_real_recursive_run_stage(AgsChannel *channel,
       /* check scope - input */
       recall_id = ags_channel_check_scope(current_input, sound_scope);
 	
-      if((AGS_CHANNEL_RECURSIVE_PREPARE_STAGING_ADD_RECALL_ID & (local_staging_flags)) != 0){
-	if(recall_id == NULL){
+      if(recall_id == NULL){
+	if((AGS_CHANNEL_RECURSIVE_PREPARE_STAGING_ADD_RECALL_ID & (local_staging_flags)) != 0){
 	  current_recall_id = g_object_new(AGS_TYPE_RECALL_ID,
 					   "recycling-context", recycling_context,
 					   NULL);
 	  ags_recall_id_set_sound_scope(current_recall_id, sound_scope);
 
 	  ags_channel_add_recall_id(current_input,
-				    recall_id);
+				    current_recall_id);
 	}else{
 	  g_warning("recall id not found");
 	}
@@ -12259,9 +12264,6 @@ ags_channel_real_recursive_run_stage(AgsChannel *channel,
 	
       recall_id_iter = recall_id_iter->next;
     }
-    
-    /* free recall id */
-    g_list_free(recall_id);
 
     /* get some fields */
     pthread_mutex_lock(current_audio_mutex);
@@ -12321,6 +12323,9 @@ ags_channel_real_recursive_run_stage(AgsChannel *channel,
 	}
       }
     }
+    
+    /* free recall id */
+    g_list_free(recall_id);
 
     /* traverse the tree */
     ags_channel_recursive_do_run_stage_down_input(channel,

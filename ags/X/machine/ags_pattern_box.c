@@ -799,12 +799,12 @@ ags_pattern_box_led_queue_draw_timeout(AgsPatternBox *pattern_box)
 
     AgsAudio *audio;
     AgsRecallID *recall_id;
+    AgsRecyclingContext *recycling_context;
     
     AgsCountBeatsAudio *play_count_beats_audio;
     AgsCountBeatsAudioRun *play_count_beats_audio_run;
 
     GList *start_list, *list;
-    GList *start_play, *play;
     
     guint active_led_new;
 
@@ -817,27 +817,35 @@ ags_pattern_box_led_queue_draw_timeout(AgsPatternBox *pattern_box)
     
     audio = machine->audio;
     
+    /* get some recalls */
+    recall_id = NULL;
     g_object_get(audio,
 		 "recall-id", &start_list,
 		 NULL);
 
-    /* get some recalls */
-    recall_id = NULL;
-
     list = start_list;
     
     while(list != NULL){
-      recall_id = ags_recall_id_find_parent_recycling_context(list,
-							      NULL);
-      
-      if(ags_recall_id_check_sound_scope(recall_id, AGS_SOUND_SCOPE_SEQUENCER)){
-	list = g_list_find(list,
-			   recall_id);
+      AgsRecyclingContext *current;
 
-	list = list->next;
-      }else{
-	break;
+      g_object_get(list->data,
+		   "recycling-context", &current,
+		   NULL);
+
+      if(current != NULL){
+	g_object_get(current,
+		     "parent", &current,
+		     NULL);
+      
+	if(current == NULL &&
+	   ags_recall_id_check_sound_scope(list->data, AGS_SOUND_SCOPE_SEQUENCER)){
+	  recall_id = list->data;
+
+	  break;
+	}
       }
+
+      list = list->next;
     }
 
     g_list_free(start_list);
@@ -847,28 +855,28 @@ ags_pattern_box_led_queue_draw_timeout(AgsPatternBox *pattern_box)
     }
 
     g_object_get(audio,
-		 "play", &start_play,
+		 "play", &start_list,
 		 NULL);
 
     play_count_beats_audio = NULL;
     play_count_beats_audio_run = NULL;
     
-    play = ags_recall_find_type(start_play,
+    list = ags_recall_find_type(start_list,
 				AGS_TYPE_COUNT_BEATS_AUDIO);
     
-    if(play != NULL){
-      play_count_beats_audio = AGS_COUNT_BEATS_AUDIO(play->data);
+    if(list != NULL){
+      play_count_beats_audio = AGS_COUNT_BEATS_AUDIO(list->data);
     }
     
-    play = ags_recall_find_type_with_recycling_context(start_play,
+    list = ags_recall_find_type_with_recycling_context(start_list,
 						       AGS_TYPE_COUNT_BEATS_AUDIO_RUN,
 						       (GObject *) recall_id->recycling_context);
     
-    if(play != NULL){
-      play_count_beats_audio_run = AGS_COUNT_BEATS_AUDIO_RUN(play->data);
+    if(list != NULL){
+      play_count_beats_audio_run = AGS_COUNT_BEATS_AUDIO_RUN(list->data);
     }
 
-    g_list_free(start_play);
+    g_list_free(start_list);
 
     if(play_count_beats_audio == NULL ||
        play_count_beats_audio_run == NULL){

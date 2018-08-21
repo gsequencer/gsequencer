@@ -243,15 +243,15 @@ ags_copy_pattern_channel_run_notify_recall_audio_run(GObject *gobject,
 
   if(copy_pattern_audio_run != NULL){
     g_object_disconnect(copy_pattern_audio_run,
-			"notify::delay-audio-run",
+			"any_signal::notify::delay-audio-run",
 			G_CALLBACK(ags_copy_pattern_channel_run_notify_delay_audio_run),
-			NULL,
+			copy_pattern_channel_run,
 			NULL);
   
     g_object_disconnect(copy_pattern_audio_run,
-			"notify::delay-audio-run",
+			"any_signal::notify::delay-audio-run",
 			G_CALLBACK(ags_copy_pattern_channel_run_notify_delay_audio_run_after),
-			NULL,
+			copy_pattern_channel_run,
 			NULL);
 
     /* connection */
@@ -276,17 +276,17 @@ ags_copy_pattern_channel_run_notify_recall_audio_run_after(GObject *gobject,
   AgsDelayAudioRun *delay_audio_run;
 
   copy_pattern_channel_run = AGS_COPY_PATTERN_CHANNEL_RUN(gobject);
-
+  
   g_object_get(copy_pattern_channel_run,
 	       "recall-audio-run", &copy_pattern_audio_run,
 	       NULL);
 
   if(copy_pattern_audio_run != NULL){
     g_signal_connect(copy_pattern_audio_run, "notify::delay-audio-run",
-		     G_CALLBACK(ags_copy_pattern_channel_run_notify_delay_audio_run), NULL);
+		     G_CALLBACK(ags_copy_pattern_channel_run_notify_delay_audio_run), copy_pattern_channel_run);
   
     g_signal_connect_after(copy_pattern_audio_run, "notify::delay-audio-run",
-			   G_CALLBACK(ags_copy_pattern_channel_run_notify_delay_audio_run_after), NULL);
+			   G_CALLBACK(ags_copy_pattern_channel_run_notify_delay_audio_run_after), copy_pattern_channel_run);
 
     /* connection */
     g_object_get(copy_pattern_audio_run,
@@ -373,7 +373,7 @@ ags_copy_pattern_channel_run_connect(AgsConnectable *connectable)
     g_object_get(copy_pattern_audio_run,
 		 "delay-audio-run", &delay_audio_run,
 		 NULL);
-
+    
     if(delay_audio_run != NULL){
       ags_connectable_connect_connection(connectable, delay_audio_run);
     }
@@ -433,13 +433,15 @@ ags_copy_pattern_channel_run_connect_connection(AgsConnectable *connectable, GOb
 	       "recall-audio-run", &copy_pattern_audio_run,
 	       NULL);
 
-  g_object_get(copy_pattern_audio_run,
-	       "delay-audio-run", &delay_audio_run,
-	       NULL);
+  if(copy_pattern_audio_run != NULL){
+    g_object_get(copy_pattern_audio_run,
+		 "delay-audio-run", &delay_audio_run,
+		 NULL);
 
-  if(delay_audio_run == connection){
-    g_signal_connect(G_OBJECT(delay_audio_run), "sequencer-alloc-input",
-		     G_CALLBACK(ags_copy_pattern_channel_run_sequencer_alloc_callback), copy_pattern_channel_run);
+    if(delay_audio_run == connection){
+      g_signal_connect(G_OBJECT(delay_audio_run), "sequencer-alloc-input",
+		       G_CALLBACK(ags_copy_pattern_channel_run_sequencer_alloc_callback), copy_pattern_channel_run);
+    }
   }
 }
 
@@ -456,16 +458,18 @@ ags_copy_pattern_channel_run_disconnect_connection(AgsConnectable *connectable, 
 	       "recall-audio-run", &copy_pattern_audio_run,
 	       NULL);
 
-  g_object_get(copy_pattern_audio_run,
-	       "delay-audio-run", &delay_audio_run,
-	       NULL);
+  if(copy_pattern_audio_run != NULL){
+    g_object_get(copy_pattern_audio_run,
+		 "delay-audio-run", &delay_audio_run,
+		 NULL);
 
-  if(delay_audio_run == connection){
-    g_object_disconnect(G_OBJECT(delay_audio_run),
-			"sequencer-alloc-input",
-			G_CALLBACK(ags_copy_pattern_channel_run_sequencer_alloc_callback),
-			copy_pattern_channel_run,
-			NULL);
+    if(delay_audio_run == connection){
+      g_object_disconnect(G_OBJECT(delay_audio_run),
+			  "any_signal::sequencer-alloc-input",
+			  G_CALLBACK(ags_copy_pattern_channel_run_sequencer_alloc_callback),
+			  copy_pattern_channel_run,
+			  NULL);
+    }
   }
 }
 
@@ -635,11 +639,11 @@ ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *delay_au
   if(delay != 0.0){
     return;
   }
-
+    
   g_object_get(copy_pattern_channel_run,
 	       "recall-audio", &copy_pattern_audio,
 	       "recall-audio-run", &copy_pattern_audio_run,
-	       "copy-pattern-channel", &copy_pattern_channel,
+	       "recall-channel", &copy_pattern_channel,
 	       NULL);
 
   g_object_get(copy_pattern_audio_run,

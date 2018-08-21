@@ -227,7 +227,7 @@ ags_play_channel_run_master_set_property(GObject *gobject,
       
       gboolean is_template;
 
-      stream_channel_run = (AgsStreamChannelRun *) g_value_get_object(value);
+      stream_channel_run = (AgsStreamChannelRun *) g_value_get_pointer(value);
 
       pthread_mutex_lock(recall_mutex);
 

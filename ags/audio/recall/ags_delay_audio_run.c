@@ -536,7 +536,7 @@ ags_delay_audio_run_run_pre(AgsRecall *recall)
 
     return;
   }
-
+  
   g_object_get(delay_audio_run,
 	       "output-soundcard", &output_soundcard,
 	       "recall-id", &recall_id,
@@ -555,7 +555,7 @@ ags_delay_audio_run_run_pre(AgsRecall *recall)
     guint sequencer_counter;
     
     GValue value = { 0, };
-
+    
     g_object_get(delay_audio,
 		 "sequencer-delay", &sequencer_delay,
 		 NULL);

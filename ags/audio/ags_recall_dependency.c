@@ -453,6 +453,8 @@ ags_recall_dependency_resolve(AgsRecallDependency *recall_dependency, AgsRecallI
       
       return(recall_audio_run);
     }
+
+    g_list_free(list_start);
   }else if(AGS_IS_RECALL_CHANNEL(dependency)){
     AgsChannel *source;
 
@@ -478,6 +480,8 @@ ags_recall_dependency_resolve(AgsRecallDependency *recall_dependency, AgsRecallI
       
       return(recall_channel);
     }
+
+    g_list_free(list_start);
   }else if(AGS_IS_RECALL_CHANNEL_RUN(dependency)){
     AgsRecyclingContext *recycling_context;
 
@@ -508,6 +512,8 @@ ags_recall_dependency_resolve(AgsRecallDependency *recall_dependency, AgsRecallI
       
       return(recall_channel_run);
     }
+
+    g_list_free(list_start);
   }
 
   g_warning("dependency not found!");

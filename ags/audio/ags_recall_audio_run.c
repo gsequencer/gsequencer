@@ -385,11 +385,25 @@ ags_recall_audio_run_notify_recall_container_callback(GObject *gobject,
   AgsRecallContainer *recall_container;
   AgsRecallAudioRun *recall_audio_run;
   
+  pthread_mutex_t *recall_mutex;
+
   recall_audio_run = AGS_RECALL_AUDIO_RUN(gobject);
+
+  /* get recall mutex */
+  pthread_mutex_lock(ags_recall_get_class_mutex());
+  
+  recall_mutex = AGS_RECALL(recall_audio_run)->obj_mutex;
+  
+  pthread_mutex_unlock(ags_recall_get_class_mutex());
+
+  /* get some fields */
+  pthread_mutex_lock(recall_mutex);
 
   audio = recall_audio_run->audio;
 
   recall_container = AGS_RECALL(recall_audio_run)->recall_container;
+
+  pthread_mutex_unlock(recall_mutex);
 
   if(recall_container != NULL){
     AgsRecallAudio *recall_audio;

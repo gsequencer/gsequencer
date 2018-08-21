@@ -3474,8 +3474,9 @@ ags_recall_factory_create_copy_pattern(AgsAudio *audio,
       /* AgsCopyPatternAudioRun */
       copy_pattern_audio_run = (AgsCopyPatternAudioRun *) g_object_new(AGS_TYPE_COPY_PATTERN_AUDIO_RUN,
 								       "output-soundcard", output_soundcard,
-								       // "recall-audio", copy_pattern_audio,
+								       "audio", audio,
 								       "recall-container", play_container,
+								       "recall-audio", copy_pattern_audio,
 								       //TODO:JK: add missing dependency "count_beats_audio_run"
 								       NULL);
       ags_recall_set_flags(copy_pattern_audio_run,
@@ -3562,6 +3563,7 @@ ags_recall_factory_create_copy_pattern(AgsAudio *audio,
 								      "source", channel,
 								      // "destination", destination,
 								      "recall-container", play_container,
+								      "recall-audio", copy_pattern_audio,
 								      // "pattern", channel->pattern->data,
 								      NULL);
 	ags_recall_set_flags(copy_pattern_channel,
@@ -3585,9 +3587,11 @@ ags_recall_factory_create_copy_pattern(AgsAudio *audio,
 									     "output-soundcard", output_soundcard,
 									     "source", channel,
 									     // "destination", destination,
-									     // "recall-channel", copy_pattern_channel,
 									     // "recall_audio_run", copy_pattern_audio_run,
 									     "recall-container", play_container,
+									     "recall-audio", copy_pattern_audio,
+									     "recall-audio-run", copy_pattern_audio_run,
+									     "recall-channel", copy_pattern_channel,
 									     NULL);
 	ags_recall_set_flags(copy_pattern_channel_run,
 			     (AGS_RECALL_TEMPLATE));
@@ -3654,8 +3658,8 @@ ags_recall_factory_create_copy_pattern(AgsAudio *audio,
       /* AgsCopyPatternAudioRun */
       copy_pattern_audio_run = (AgsCopyPatternAudioRun *) g_object_new(AGS_TYPE_COPY_PATTERN_AUDIO_RUN,
 								       "output-soundcard", output_soundcard,
-								       // "recall-audio", copy_pattern_audio,
 								       "recall-container", recall_container,
+								       "recall-audio", copy_pattern_audio,
 								       //TODO:JK: add missing dependency "count_beats_audio_run"
 								       NULL);
       ags_recall_set_flags(copy_pattern_audio_run,
@@ -3673,7 +3677,7 @@ ags_recall_factory_create_copy_pattern(AgsAudio *audio,
 		   "recall-audio-run", copy_pattern_audio_run,
 		   NULL);
     }else{
-      if(recall_container == NULL){
+      if(recall_container == NULL){	
 	g_object_get(audio,
 		     "recall", &list_start,
 		     NULL);
@@ -3689,12 +3693,35 @@ ags_recall_factory_create_copy_pattern(AgsAudio *audio,
 	g_object_get(copy_pattern_audio,
 		     "recall-container", &recall_container,
 		     NULL);
+
+	g_object_get(recall_container,
+		     "recall-audio-run", &list_start,
+		     NULL);
+	
+	list = ags_recall_find_template(list_start);
+	copy_pattern_audio_run = AGS_COPY_PATTERN_AUDIO_RUN(list->data);
+	g_list_free(list_start);
+	
+	recall = g_list_prepend(recall,
+				copy_pattern_audio_run);
       }else{
 	g_object_get(recall_container,
 		     "recall-audio", &copy_pattern_audio,
 		     NULL);
 	recall = g_list_prepend(recall,
 				copy_pattern_audio);
+
+	g_object_get(recall_container,
+		     "recall-audio-run", &list_start,
+		     NULL);
+
+	list = ags_recall_template_find_type(list_start,
+					     AGS_TYPE_COPY_PATTERN_AUDIO_RUN);
+	copy_pattern_audio_run = list->data;
+	recall = g_list_prepend(recall,
+				copy_pattern_audio_run);
+
+	g_list_free(list_start);
       }
     }
 
@@ -3720,6 +3747,7 @@ ags_recall_factory_create_copy_pattern(AgsAudio *audio,
 								      "source", channel,
 								      // "destination", destination,
 								      "recall-container", recall_container,
+								      "recall-audio", copy_pattern_audio,
 								      //"pattern", channel->pattern->data,
 								      NULL);
 	ags_recall_set_flags(copy_pattern_channel,
@@ -3743,9 +3771,11 @@ ags_recall_factory_create_copy_pattern(AgsAudio *audio,
 									     "output-soundcard", output_soundcard,
 									     "source", channel,
 									     // "destination", destination,
-									     // "recall-channel", copy_pattern_channel,
 									     // "recall_audio_run", copy_pattern_audio_run,
 									     "recall-container", recall_container,
+									     "recall-audio", copy_pattern_audio,
+									     "recall-audio-run", copy_pattern_audio_run,
+									     "recall-channel", copy_pattern_channel,
 									     NULL);
 	ags_recall_set_flags(copy_pattern_channel_run,
 			     (AGS_RECALL_TEMPLATE));

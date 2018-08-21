@@ -270,7 +270,7 @@ ags_start_audio_launch(AgsTask *task)
   AgsChannel *output;
   AgsRecycling *recycling;
   AgsPlaybackDomain *playback_domain;
-  AgsRecallID *recall_id;
+  AgsRecallID *audio_recall_id, *channel_recall_id;
   AgsRecyclingContext *recycling_context;
   
   AgsStartAudio *start_audio;
@@ -311,6 +311,9 @@ ags_start_audio_launch(AgsTask *task)
   ags_audio_loop_add_audio(audio_loop,
 			   (GObject *) audio);
 
+  /* flag to playback audio */
+  audio_loop->flags |= AGS_AUDIO_LOOP_PLAY_AUDIO;
+
   if(sound_scope >= 0){
     list = list_start;
 
@@ -325,10 +328,15 @@ ags_start_audio_launch(AgsTask *task)
 		   NULL);
 
       /* create recall id and recycling context */
-      recall_id = ags_recall_id_new();
-      ags_recall_id_set_sound_scope(recall_id, sound_scope);
+      audio_recall_id = ags_recall_id_new();
+      ags_recall_id_set_sound_scope(audio_recall_id, sound_scope);
       ags_audio_add_recall_id(audio,
-			      recall_id);
+			      audio_recall_id);
+
+      channel_recall_id = ags_recall_id_new();
+      ags_recall_id_set_sound_scope(channel_recall_id, sound_scope);
+      ags_channel_add_recall_id(output,
+				channel_recall_id);
       
       recycling_context = ags_recycling_context_new(1);
       ags_recycling_context_replace(recycling_context,
@@ -336,15 +344,19 @@ ags_start_audio_launch(AgsTask *task)
 				    0);
 
       g_object_set(recycling_context,
-		   "recall-id", recall_id,
+		   "recall-id", audio_recall_id,
 		   NULL);
       
-      g_object_set(recall_id,
+      g_object_set(audio_recall_id,
+		   "recycling-context", recycling_context,
+		   NULL);
+
+      g_object_set(channel_recall_id,
 		   "recycling-context", recycling_context,
 		   NULL);
       
       ags_playback_set_recall_id(list->data,
-				 recall_id,
+				 audio_recall_id,
 				 sound_scope);
 
       /* add to start queue */
@@ -365,9 +377,6 @@ ags_start_audio_launch(AgsTask *task)
     ags_thread_add_start_queue(audio_loop,
 			       ags_playback_domain_get_audio_thread(playback_domain,
 								    sound_scope));
-
-    /* flag to playback audio */
-    audio_loop->flags |= AGS_AUDIO_LOOP_PLAY_AUDIO;
   }else{
     gint i;
 
@@ -385,10 +394,15 @@ ags_start_audio_launch(AgsTask *task)
 		     NULL);
 
 	/* create recall id and recycling context */
-	recall_id = ags_recall_id_new();
-	ags_recall_id_set_sound_scope(recall_id, sound_scope);
+	audio_recall_id = ags_recall_id_new();
+	ags_recall_id_set_sound_scope(audio_recall_id, sound_scope);
 	ags_audio_add_recall_id(audio,
-				recall_id);
+				audio_recall_id);
+
+	channel_recall_id = ags_recall_id_new();
+	ags_recall_id_set_sound_scope(channel_recall_id, sound_scope);
+	ags_channel_add_recall_id(output,
+				  channel_recall_id);
 
 	recycling_context = ags_recycling_context_new(1);
 	ags_recycling_context_replace(recycling_context,
@@ -396,15 +410,19 @@ ags_start_audio_launch(AgsTask *task)
 				      0);
 
 	g_object_set(recycling_context,
-		     "recall-id", recall_id,
+		     "recall-id", audio_recall_id,
 		     NULL);
       
-	g_object_set(recall_id,
+	g_object_set(audio_recall_id,
+		     "recycling-context", recycling_context,
+		     NULL);
+
+	g_object_set(channel_recall_id,
 		     "recycling-context", recycling_context,
 		     NULL);
 	
 	ags_playback_set_recall_id(list->data,
-				   recall_id,
+				   audio_recall_id,
 				   i);
 
 	/* add to start queue */
@@ -426,9 +444,6 @@ ags_start_audio_launch(AgsTask *task)
 				 ags_playback_domain_get_audio_thread(playback_domain,
 								      i));
     }
-
-    /* flag to playback audio */
-    audio_loop->flags |= AGS_AUDIO_LOOP_PLAY_AUDIO;
   }
 }
 

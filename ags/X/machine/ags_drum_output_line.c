@@ -226,6 +226,9 @@ ags_drum_output_line_set_channel(AgsLine *line, AgsChannel *channel)
   AGS_LINE_CLASS(ags_drum_output_line_parent_class)->set_channel(line, channel);
 
   if(channel != NULL){
+    ags_channel_set_ability_flags(channel, (AGS_SOUND_ABILITY_SEQUENCER |
+					    AGS_SOUND_ABILITY_NOTATION));
+
     g_object_get(channel,
 		 "output-soundcard", &output_soundcard,
 		 "first-recycling", &first_recycling,

@@ -540,7 +540,7 @@ ags_audio_thread_run(AgsThread *thread)
 
   playback = output_playback_start;
   
-  while(playback != NULL){
+  while(playback != NULL){    
     if(ags_playback_test_flags(playback->data, AGS_PLAYBACK_SUPER_THREADED_CHANNEL)){
       ags_audio_thread_play_channel_super_threaded(audio_thread, playback->data);
     }else{

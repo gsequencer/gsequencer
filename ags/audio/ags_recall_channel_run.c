@@ -340,6 +340,7 @@ ags_recall_channel_run_set_property(GObject *gobject,
 	g_object_ref(G_OBJECT(recall_audio_run));
       }
 
+      g_message("set %x:%x", recall_channel_run, recall_audio_run);
       recall_channel_run->recall_audio_run = recall_audio_run;
       
       pthread_mutex_unlock(recall_mutex);
@@ -829,7 +830,7 @@ ags_recall_channel_run_duplicate(AgsRecall *recall,
   pthread_mutex_lock(recall_mutex);
 
   recall_audio = recall_channel_run->recall_audio;
-  recall_audio_run = recall_channel_run->recall_audio_run;
+  //  recall_audio_run = recall_channel_run->recall_audio_run;
   recall_channel = recall_channel_run->recall_channel;
     
   destination = recall_channel_run->destination;
@@ -860,7 +861,7 @@ ags_recall_channel_run_duplicate(AgsRecall *recall,
 											     n_params, parameter_name, value);
   g_object_set(copy_recall_channel_run,
 	       "recall-audio", recall_audio,
-	       "recall-audio-run", recall_audio_run,
+	       //	       "recall-audio-run", recall_audio_run,
 	       "recall-channel", recall_channel,
 	       "source", source,
 	       "destination", destination,

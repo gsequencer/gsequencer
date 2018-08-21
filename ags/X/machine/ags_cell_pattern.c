@@ -930,18 +930,24 @@ ags_cell_pattern_led_queue_draw_timeout(AgsCellPattern *cell_pattern)
     list = list_start;
     
     while(list != NULL){
-      recall_id = ags_recall_id_find_parent_recycling_context(list,
-							      NULL);
-      
-      if(recall_id != NULL &&
-	 !ags_recall_id_check_sound_scope(recall_id, AGS_SOUND_SCOPE_SEQUENCER)){
-	list = g_list_find(list,
-			   recall_id);
+      AgsRecyclingContext *current_recycling_context;
 
-	list = list->next;
-      }else{
+      g_object_get(list->data,
+		   "recycling-context", &current_recycling_context,
+		   NULL);
+
+      g_object_get(current_recycling_context,
+		   "parent", &current_recycling_context,
+		   NULL);
+
+      if(current_recycling_context == NULL &&
+	 ags_recall_id_check_sound_scope(list->data, AGS_SOUND_SCOPE_SEQUENCER)){
+	recall_id = list->data;
+
 	break;
       }
+
+      list = list->next;
     }
 
     g_list_free(list_start);

@@ -2336,7 +2336,7 @@ ags_count_beats_audio_run_sequencer_count_callback(AgsDelayAudioRun *delay_audio
   if(count_beats_audio_run->first_run){
     count_beats_audio_run->first_run = FALSE;
   }
-
+    
   if(do_loop){
     if(count_beats_audio_run->sequencer_counter >= (guint) loop_end - 1.0){
       count_beats_audio_run->sequencer_counter = loop_start;

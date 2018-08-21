@@ -868,11 +868,10 @@ ags_audio_class_init(AgsAudioClass *audio)
    * 
    * Since: 2.0.0
    */
-  param_spec = g_param_spec_object("preset",
-				   i18n_pspec("preset"),
-				   i18n_pspec("The preset"),
-				   G_TYPE_OBJECT,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  param_spec = g_param_spec_pointer("preset",
+				    i18n_pspec("preset"),
+				    i18n_pspec("The preset"),
+				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_PRESET,
 				  param_spec);
@@ -1961,7 +1960,7 @@ ags_audio_set_property(GObject *gobject,
     {
       AgsPreset *preset;
 
-      preset = (AgsPreset *) g_value_get_object(value);
+      preset = (AgsPreset *) g_value_get_pointer(value);
 
       pthread_mutex_lock(audio_mutex);
 
@@ -8720,7 +8719,7 @@ ags_audio_real_duplicate_recall(AgsAudio *audio,
 		 NULL);
     
 #ifdef AGS_DEBUG
-    g_message("recall duplicated: %s\n", G_OBJECT_TYPE_NAME(copy_recall));
+    g_message("recall duplicated: %s %s", G_OBJECT_TYPE_NAME(audio), G_OBJECT_TYPE_NAME(copy_recall));
 #endif
 
     /* set appropriate sound scope */
@@ -9231,14 +9230,17 @@ ags_audio_real_play_recall(AgsAudio *audio,
     /* play stages */
     ags_recall_set_staging_flags(recall,
 				 staging_flags);
+    ags_recall_unset_staging_flags(recall,
+				   staging_flags);
 
     list = list->next;
   }
   
   g_list_free(list_start);
 
-  ags_audio_set_staging_flags(audio, sound_scope,
-			      staging_flags);
+  //FIXME:JK: uncomment
+  //  ags_audio_set_staging_flags(audio, sound_scope,
+  //			      staging_flags);
 }
 
 /**
@@ -9255,7 +9257,7 @@ void
 ags_audio_play_recall(AgsAudio *audio,
 		      AgsRecallID *recall_id, guint staging_flags)
 {
-  g_return_if_fail(AGS_IS_AUDIO(audio));
+  g_return_if_fail(AGS_IS_AUDIO(audio) && AGS_IS_RECALL_ID(recall_id));
 
   g_object_ref((GObject *) audio);
   g_signal_emit(G_OBJECT(audio),

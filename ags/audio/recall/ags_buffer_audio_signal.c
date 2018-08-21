@@ -287,8 +287,8 @@ ags_buffer_audio_signal_run_inter(AgsRecall *recall)
 	       "parent", &buffer_channel_run,
 	       NULL);
 
-  g_object_get(buffer_channel,
-	       "parent", &buffer_channel,
+  g_object_get(buffer_channel_run,
+	       "recall-channel", &buffer_channel,
 	       NULL);
 
   g_object_get(buffer_audio_signal,
