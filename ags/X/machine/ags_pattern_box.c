@@ -805,6 +805,7 @@ ags_pattern_box_led_queue_draw_timeout(AgsPatternBox *pattern_box)
     AgsCountBeatsAudioRun *play_count_beats_audio_run;
 
     GList *start_list, *list;
+    GList *start_recall, *recall;
     
     guint active_led_new;
 
@@ -841,7 +842,36 @@ ags_pattern_box_led_queue_draw_timeout(AgsPatternBox *pattern_box)
 	   ags_recall_id_check_sound_scope(list->data, AGS_SOUND_SCOPE_SEQUENCER)){
 	  recall_id = list->data;
 
-	  break;
+	  g_object_get(audio,
+		       "play", &start_recall,
+		       NULL);
+
+	  play_count_beats_audio = NULL;
+	  play_count_beats_audio_run = NULL;
+    
+	  recall = ags_recall_find_type(start_recall,
+					AGS_TYPE_COUNT_BEATS_AUDIO);
+    
+	  if(recall != NULL){
+	    play_count_beats_audio = AGS_COUNT_BEATS_AUDIO(recall->data);
+	  }
+    
+	  recall = ags_recall_find_type_with_recycling_context(start_recall,
+							       AGS_TYPE_COUNT_BEATS_AUDIO_RUN,
+							       (GObject *) recall_id->recycling_context);
+    
+	  if(recall != NULL){
+	    play_count_beats_audio_run = AGS_COUNT_BEATS_AUDIO_RUN(recall->data);
+	  }
+
+	  g_list_free(start_recall);
+
+	  if(play_count_beats_audio == NULL ||
+	     play_count_beats_audio_run == NULL){
+	    recall_id = NULL;
+	  }else{
+	    break;
+	  }
 	}
       }
 
@@ -853,36 +883,7 @@ ags_pattern_box_led_queue_draw_timeout(AgsPatternBox *pattern_box)
     if(recall_id == NULL){      
       return(TRUE);
     }
-
-    g_object_get(audio,
-		 "play", &start_list,
-		 NULL);
-
-    play_count_beats_audio = NULL;
-    play_count_beats_audio_run = NULL;
     
-    list = ags_recall_find_type(start_list,
-				AGS_TYPE_COUNT_BEATS_AUDIO);
-    
-    if(list != NULL){
-      play_count_beats_audio = AGS_COUNT_BEATS_AUDIO(list->data);
-    }
-    
-    list = ags_recall_find_type_with_recycling_context(start_list,
-						       AGS_TYPE_COUNT_BEATS_AUDIO_RUN,
-						       (GObject *) recall_id->recycling_context);
-    
-    if(list != NULL){
-      play_count_beats_audio_run = AGS_COUNT_BEATS_AUDIO_RUN(list->data);
-    }
-
-    g_list_free(start_list);
-
-    if(play_count_beats_audio == NULL ||
-       play_count_beats_audio_run == NULL){
-      return(TRUE);
-    }
-
     /* active led */
     active_led_new = (guint) play_count_beats_audio_run->sequencer_counter;      
 

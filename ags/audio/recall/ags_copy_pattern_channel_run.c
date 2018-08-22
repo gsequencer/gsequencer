@@ -705,7 +705,7 @@ ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *delay_au
 
   g_value_unset(&i_value);
   g_value_unset(&j_value);
-  
+
   /*  */
   if(current_bit){
     AgsChannel *link;
@@ -721,7 +721,7 @@ ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *delay_au
 
     guint pad;
     guint audio_channel;	  
-    
+
     //    g_message("ags_copy_pattern_channel_run_sequencer_alloc_callback - playing channel: %u; playing pattern: %u",
     //	      AGS_RECALL_CHANNEL(copy_pattern_channel)->source->line,
     //	      copy_pattern_audio_run->count_beats_audio_run->sequencer_counter);

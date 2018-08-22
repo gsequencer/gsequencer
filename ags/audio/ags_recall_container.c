@@ -50,7 +50,7 @@ void ags_recall_container_remove_from_registry(AgsConnectable *connectable);
 xmlNode* ags_recall_container_list_resource(AgsConnectable *connectable);
 xmlNode* ags_recall_container_xml_compose(AgsConnectable *connectable);
 void ags_recall_container_xml_parse(AgsConnectable *connectable,
-			  xmlNode *node);
+				    xmlNode *node);
 gboolean ags_recall_container_is_connected(AgsConnectable *connectable);
 void ags_recall_container_connect(AgsConnectable *connectable);
 void ags_recall_container_disconnect(AgsConnectable *connectable);
@@ -1190,7 +1190,7 @@ ags_recall_container_remove(AgsRecallContainer *recall_container,
   if(!AGS_IS_RECALL_CONTAINER(recall_container)){
     return;
   }
-
+  
   if(AGS_IS_RECALL_AUDIO(recall)){
     if(recall == recall_container->recall_audio){      
       g_object_set(recall,
@@ -1216,7 +1216,7 @@ ags_recall_container_remove(AgsRecallContainer *recall_container,
     if(g_list_find(recall_container->recall_channel,
 		   recall) != NULL){
       g_object_set(recall,
-		   "recall-container", recall_container,
+		   "recall-container", NULL,
 		   NULL);
       
       recall_container->recall_channel = g_list_remove(recall_container->recall_channel,
@@ -1227,7 +1227,7 @@ ags_recall_container_remove(AgsRecallContainer *recall_container,
     if(g_list_find(recall_container->recall_channel_run,
 		   recall) != NULL){
       g_object_set(recall,
-		   "recall-container", recall_container,
+		   "recall-container", NULL,
 		   NULL);
       
       recall_container->recall_channel_run = g_list_remove(recall_container->recall_channel_run,

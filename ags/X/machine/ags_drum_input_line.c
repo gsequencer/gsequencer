@@ -36,9 +36,10 @@ void ags_drum_input_line_class_init(AgsDrumInputLineClass *drum_input_line);
 void ags_drum_input_line_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_drum_input_line_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_drum_input_line_init(AgsDrumInputLine *drum_input_line);
-void ags_drum_input_line_destroy(GtkObject *object);
+
 void ags_drum_input_line_connect(AgsConnectable *connectable);
 void ags_drum_input_line_disconnect(AgsConnectable *connectable);
+
 gchar* ags_drum_input_line_get_name(AgsPlugin *plugin);
 void ags_drum_input_line_set_name(AgsPlugin *plugin, gchar *name);
 gchar* ags_drum_input_line_get_xml_type(AgsPlugin *plugin);
@@ -221,11 +222,6 @@ ags_drum_input_line_init(AgsDrumInputLine *drum_input_line)
   //  g_object_set(G_OBJECT(line_member),
   //	       "port-data", (gpointer) &(GTK_RANGE(widget)->adjustment->value),
   //	       NULL);
-}
-
-void
-ags_drum_input_line_destroy(GtkObject *object)
-{
 }
 
 void

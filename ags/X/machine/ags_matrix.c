@@ -466,7 +466,7 @@ ags_matrix_resize_pads(AgsMachine *machine, GType type,
     g_object_get(audio,
 		 "input", &source,
 		 NULL);
-
+    
     if(grow){
       if((AGS_MACHINE_MAPPED_RECALL & (machine->flags)) != 0){
 	ags_matrix_input_map_recall(matrix,
