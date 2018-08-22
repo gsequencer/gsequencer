@@ -696,7 +696,12 @@ ags_spectrometer_cartesian_queue_draw_timeout(GtkWidget *widget)
 
     frequency_buffer_port = spectrometer->frequency_buffer_play_port;
     magnitude_buffer_port = spectrometer->magnitude_buffer_play_port;
-      
+
+    if(frequency_buffer_port == NULL ||
+       magnitude_buffer_port == NULL){
+      return;
+    }
+    
     for(i = 0; fg_plot != NULL; i++){
       g_value_init(&value, G_TYPE_POINTER);
       
@@ -769,7 +774,7 @@ ags_spectrometer_new(GObject *soundcard)
 						  NULL);
 
   g_object_set(G_OBJECT(AGS_MACHINE(spectrometer)->audio),
-	       "soundcard", soundcard,
+	       "output-soundcard", soundcard,
 	       NULL);
 
   return(spectrometer);

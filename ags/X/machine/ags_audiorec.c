@@ -173,6 +173,10 @@ ags_audiorec_init(AgsAudiorec *audiorec)
 
   AgsAudio *audio;
 
+  g_signal_connect_after((GObject *) audiorec, "parent_set",
+			 G_CALLBACK(ags_audiorec_parent_set_callback), (gpointer) audiorec);
+
+
   audio = AGS_MACHINE(audiorec)->audio;
   ags_audio_set_flags(audio, (AGS_AUDIO_SYNC |
 			      AGS_AUDIO_OUTPUT_HAS_RECYCLING |
@@ -635,13 +639,9 @@ ags_audiorec_new(GObject *soundcard)
   audiorec = (AgsAudiorec *) g_object_new(AGS_TYPE_AUDIOREC,
 					  NULL);
 
-  if(soundcard != NULL){
-    g_value_init(&value, G_TYPE_OBJECT);
-    g_value_set_object(&value, soundcard);
-    g_object_set_property(G_OBJECT(audiorec->machine.audio),
-			  "soundcard", &value);
-    g_value_unset(&value);
-  }
+  g_object_set(G_OBJECT(AGS_MACHINE(audiorec)->audio),
+	       "output-soundcard", soundcard,
+	       NULL);
 
   return(audiorec);
 }

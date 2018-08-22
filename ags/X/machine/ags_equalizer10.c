@@ -1120,7 +1120,7 @@ ags_equalizer10_new(GObject *soundcard)
 						NULL);
 
   g_object_set(G_OBJECT(AGS_MACHINE(equalizer10)->audio),
-	       "soundcard", soundcard,
+	       "output-soundcard", soundcard,
 	       NULL);
 
   return(equalizer10);

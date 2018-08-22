@@ -36,6 +36,8 @@
 
 #include <ags/X/machine/ags_panel.h>
 #include <ags/X/machine/ags_mixer.h>
+#include <ags/X/machine/ags_spectrometer.h>
+#include <ags/X/machine/ags_equalizer10.h>
 #include <ags/X/machine/ags_drum.h>
 #include <ags/X/machine/ags_matrix.h>
 #include <ags/X/machine/ags_synth.h>
@@ -386,6 +388,96 @@ ags_menu_action_add_mixer_callback(GtkWidget *menu_item, gpointer data)
 		     1, 0);
 
   gtk_widget_show_all(GTK_WIDGET(mixer));
+}
+
+void
+ags_menu_action_add_spectrometer_callback(GtkWidget *menu_item, gpointer data)
+{
+  AgsWindow *window;
+  AgsSpectrometer *spectrometer;
+
+  AgsGuiThread *gui_thread;
+
+  AgsAddAudio *add_audio;
+
+  AgsApplicationContext *application_context;
+    
+  application_context = ags_application_context_get_instance();
+
+  window = ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
+
+  gui_thread = ags_ui_provider_get_gui_thread(AGS_UI_PROVIDER(application_context));
+  
+  /* create spectrometer */
+  spectrometer = ags_spectrometer_new(G_OBJECT(window->soundcard));
+
+  add_audio = ags_add_audio_new(window->application_context,
+				AGS_MACHINE(spectrometer)->audio);
+  ags_gui_thread_schedule_task(gui_thread,
+			       add_audio);
+
+  gtk_box_pack_start((GtkBox *) window->machines,
+		     GTK_WIDGET(spectrometer),
+		     FALSE, FALSE,
+		     0);
+
+  ags_connectable_connect(AGS_CONNECTABLE(spectrometer));
+
+  AGS_MACHINE(spectrometer)->audio->audio_channels = 2;
+
+  ags_audio_set_pads(AGS_MACHINE(spectrometer)->audio,
+		     AGS_TYPE_INPUT,
+		     1, 0);
+  ags_audio_set_pads(AGS_MACHINE(spectrometer)->audio,
+		     AGS_TYPE_OUTPUT,
+		     1, 0);
+
+  gtk_widget_show_all(GTK_WIDGET(spectrometer));
+}
+
+void
+ags_menu_action_add_equalizer_callback(GtkWidget *menu_item, gpointer data)
+{
+  AgsWindow *window;
+  AgsEqualizer10 *equalizer10;
+
+  AgsGuiThread *gui_thread;
+
+  AgsAddAudio *add_audio;
+
+  AgsApplicationContext *application_context;
+    
+  application_context = ags_application_context_get_instance();
+
+  window = ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
+
+  gui_thread = ags_ui_provider_get_gui_thread(AGS_UI_PROVIDER(application_context));
+  
+  /* create equalizer10 */
+  equalizer10 = ags_equalizer10_new(G_OBJECT(window->soundcard));
+
+  add_audio = ags_add_audio_new(window->application_context,
+				AGS_MACHINE(equalizer10)->audio);
+  ags_gui_thread_schedule_task(gui_thread,
+			       add_audio);
+
+  gtk_box_pack_start((GtkBox *) window->machines,
+		     GTK_WIDGET(equalizer10),
+		     FALSE, FALSE,
+		     0);
+
+  ags_connectable_connect(AGS_CONNECTABLE(equalizer10));
+
+  AGS_MACHINE(equalizer10)->audio->audio_channels = 2;
+
+  ags_audio_set_pads(AGS_MACHINE(equalizer10)->audio,
+		     AGS_TYPE_INPUT,
+		     1, 0);
+  ags_audio_set_pads(AGS_MACHINE(equalizer10)->audio,
+		     AGS_TYPE_OUTPUT,
+		     1, 0);
+
+  gtk_widget_show_all(GTK_WIDGET(equalizer10));
 }
 
 void
