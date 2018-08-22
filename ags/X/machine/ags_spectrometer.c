@@ -699,7 +699,7 @@ ags_spectrometer_cartesian_queue_draw_timeout(GtkWidget *widget)
 
     if(frequency_buffer_port == NULL ||
        magnitude_buffer_port == NULL){
-      return;
+      return(TRUE);
     }
     
     for(i = 0; fg_plot != NULL; i++){

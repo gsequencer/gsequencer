@@ -439,7 +439,7 @@ ags_machine_editor_add_children(AgsMachineEditor *machine_editor)
   /* output */
   output_link_editor_child_parameter = g_new0(GParameter, 1);
 
-  output_link_editor_child_parameter[0].name = "channel_type";
+  output_link_editor_child_parameter[0].name = "channel-type";
 
   g_value_init(&(output_link_editor_child_parameter[0].value), G_TYPE_GTYPE);
   g_value_set_gtype(&(output_link_editor_child_parameter[0].value), AGS_TYPE_OUTPUT);
@@ -447,7 +447,7 @@ ags_machine_editor_add_children(AgsMachineEditor *machine_editor)
   /* input */
   input_link_editor_child_parameter = g_new0(GParameter, 1);
 
-  input_link_editor_child_parameter[0].name = "channel_type";
+  input_link_editor_child_parameter[0].name = "channel-type";
 
   g_value_init(&(input_link_editor_child_parameter[0].value), G_TYPE_GTYPE);
   g_value_set_gtype(&(input_link_editor_child_parameter[0].value), AGS_TYPE_INPUT);

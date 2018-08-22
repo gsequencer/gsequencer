@@ -581,20 +581,24 @@ ags_link_collection_editor_check(AgsLinkCollectionEditor *link_collection_editor
 
     GtkTreeModel *model;
 
-    gdouble first_line, first_line_stop, first_line_range;
-    gdouble first_link, first_link_stop, first_link_range;
-    gdouble max;
+    guint first_line, first_line_stop, first_line_range;
+    guint first_link, first_link_stop, first_link_range;
+    guint max;
 
     first_line = gtk_spin_button_get_value(link_collection_editor->first_line);
     
     machine_editor = AGS_MACHINE_EDITOR(gtk_widget_get_ancestor(GTK_WIDGET(link_collection_editor),
 								AGS_TYPE_MACHINE_EDITOR));
 
-    if(link_collection_editor->channel_type == AGS_TYPE_INPUT)
-      first_line_stop = (gdouble) machine_editor->machine->audio->input_lines;
-    else
-      first_line_stop = (gdouble) machine_editor->machine->audio->output_lines;
-    
+    if(link_collection_editor->channel_type == AGS_TYPE_INPUT){
+      g_object_get(machine_editor->machine->audio,
+		   "input-lines", &first_line_stop,
+		   NULL);
+    }else{
+      g_object_get(machine_editor->machine->audio,
+		   "output-lines", &first_line_stop,
+		   NULL);
+    }
     
     /* link machine */
     first_link = gtk_spin_button_get_value(link_collection_editor->first_link);
@@ -665,7 +669,7 @@ ags_link_collection_editor_new(GType channel_type)
   AgsLinkCollectionEditor *link_collection_editor;
   
   link_collection_editor = (AgsLinkCollectionEditor *) g_object_new(AGS_TYPE_LINK_COLLECTION_EDITOR,
-								    "channel_type", channel_type,
+								    "channel-type", channel_type,
 								    NULL);
   
   return(link_collection_editor);

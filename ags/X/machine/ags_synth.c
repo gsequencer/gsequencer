@@ -518,6 +518,7 @@ ags_synth_update(AgsSynth *synth)
   
   AgsAudio *audio;
   AgsChannel *channel;
+  AgsChannel *input;
   AgsRecycling *first_recycling;
   
   AgsClearAudioSignal *clear_audio_signal;
@@ -565,6 +566,8 @@ ags_synth_update(AgsSynth *synth)
 	       "output-lines", &output_lines,
 	       NULL);
 
+  task = NULL;
+  
   while(channel != NULL){
     AgsAudioSignal *template;
 
@@ -596,6 +599,7 @@ ags_synth_update(AgsSynth *synth)
   /* write output */
   g_object_get(audio,
 	       "output", &channel,
+	       "input", &input,
 	       "buffer-size", &buffer_size,
 	       NULL);
 
@@ -614,8 +618,7 @@ ags_synth_update(AgsSynth *synth)
 		 "channel", &input,
 		 NULL);
 
-
-    g_object_get(channel,
+    g_object_get(input,
 		 "synth-generator", &start_synth_generator,
 		 NULL);
     
@@ -669,6 +672,10 @@ ags_synth_update(AgsSynth *synth)
     
     /* iterate */
     input_pad = input_pad->next;
+
+    g_object_get(input,
+		 "next", &input,
+		 NULL);
   }
   
   g_list_free(input_pad_start);

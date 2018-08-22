@@ -27,6 +27,7 @@
 #include <ags/audio/ags_wave.h>
 #include <ags/audio/ags_midi.h>
 #include <ags/audio/ags_pattern.h>
+#include <ags/audio/ags_synth_generator.h>
 #include <ags/audio/ags_output.h>
 #include <ags/audio/ags_input.h>
 #include <ags/audio/ags_playback_domain.h>
@@ -4978,11 +4979,12 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
   AgsMessageQueue *message_queue;
 
   GObject *output_soundcard, *input_soundcard;
-  
+
   gboolean alloc_recycling;
   gboolean link_recycling; // affects AgsInput
   gboolean set_sync_link, set_async_link; // affects AgsOutput
   gboolean alloc_pattern;
+  gboolean add_synth_generator;
 
   guint bank_dim[3];
 
@@ -5007,20 +5009,21 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
   
   void ags_audio_set_audio_channels_init_parameters(GType type){
     alloc_pattern = FALSE;
+    add_synth_generator = FALSE;
     
     if(type == AGS_TYPE_OUTPUT){
       link_recycling = FALSE;
 
-      if((AGS_AUDIO_OUTPUT_HAS_RECYCLING & (audio->flags)) != 0){
+      if((AGS_AUDIO_OUTPUT_HAS_RECYCLING & (audio_flags)) != 0){
 	alloc_recycling = TRUE;
       }else{
 	alloc_recycling = FALSE;
 
-	if((AGS_AUDIO_INPUT_HAS_RECYCLING & (audio->flags)) != 0){
-	  if((AGS_AUDIO_SYNC & (audio->flags)) != 0 && (AGS_AUDIO_ASYNC & (audio->flags)) == 0){
+	if((AGS_AUDIO_INPUT_HAS_RECYCLING & (audio_flags)) != 0){
+	  if((AGS_AUDIO_SYNC & (audio_flags)) != 0 && (AGS_AUDIO_ASYNC & (audio_flags)) == 0){
 	    set_sync_link = FALSE;
 	    set_async_link = TRUE;
-	  }else if((AGS_AUDIO_ASYNC & (audio->flags)) != 0){
+	  }else if((AGS_AUDIO_ASYNC & (audio_flags)) != 0){
 	    set_async_link = TRUE;
 	    set_sync_link = FALSE;
 	  }else{
@@ -5036,13 +5039,13 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
       set_sync_link = FALSE;
       set_async_link = FALSE;
       
-      if((AGS_AUDIO_INPUT_HAS_RECYCLING & (audio->flags)) != 0){
+      if((AGS_AUDIO_INPUT_HAS_RECYCLING & (audio_flags)) != 0){
 	alloc_recycling = TRUE;
       }else{
 	alloc_recycling = FALSE;
       }
       
-      if((AGS_AUDIO_ASYNC & (audio->flags)) != 0 && alloc_recycling){
+      if((AGS_AUDIO_ASYNC & (audio_flags)) != 0 && alloc_recycling){
 	link_recycling = TRUE;
       }else{
 	link_recycling = FALSE;
@@ -5054,6 +5057,10 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
 	bank_dim[0] = audio->bank_dim[0];
 	bank_dim[1] = audio->bank_dim[1];
 	bank_dim[2] = audio->bank_dim[2];
+      }
+
+      if((AGS_AUDIO_INPUT_HAS_SYNTH & (audio_flags)) != 0){
+	add_synth_generator = TRUE;
       }
     }    
   }
@@ -5108,6 +5115,14 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
 			      bank_dim[0], bank_dim[1], bank_dim[2]);
 	}
 
+	if(add_synth_generator){
+	  AgsSynthGenerator *synth_generator;
+
+	  synth_generator = ags_synth_generator_new();
+	  ags_input_add_synth_generator(channel,
+					synth_generator);
+	}
+	
 	if(start == NULL){
 	  pthread_mutex_lock(audio_mutex);
 	  
@@ -5864,7 +5879,8 @@ ags_audio_real_set_pads(AgsAudio *audio,
   guint format;
   gboolean alloc_recycling, link_recycling, set_sync_link, set_async_link;
   gboolean alloc_pattern;
- 
+  gboolean add_synth_generator;
+  
   pthread_mutex_t *audio_mutex;
   pthread_mutex_t *current_mutex;
   pthread_mutex_t *prev_mutex, *prev_pad_mutex;
@@ -5888,6 +5904,7 @@ ags_audio_real_set_pads(AgsAudio *audio,
     set_async_link = FALSE;
 
     alloc_pattern = FALSE;
+    add_synth_generator = FALSE;
     
     if(channel_type == AGS_TYPE_OUTPUT){
       if((AGS_AUDIO_OUTPUT_HAS_RECYCLING & (audio_flags)) != 0){
@@ -5906,6 +5923,10 @@ ags_audio_real_set_pads(AgsAudio *audio,
 	}
       }
     }else{      
+      if((AGS_AUDIO_INPUT_HAS_SYNTH & (audio_flags)) != 0){
+	add_synth_generator = TRUE;
+      }
+
       if((AGS_AUDIO_INPUT_HAS_RECYCLING & (audio_flags)) != 0){
 	alloc_recycling = TRUE;
       }
@@ -5963,6 +5984,14 @@ ags_audio_real_set_pads(AgsAudio *audio,
 	  
 	  ags_pattern_set_dim((AgsPattern *) channel->pattern->data,
 			      bank_dim[0], bank_dim[1], bank_dim[2]);
+	}
+
+	if(add_synth_generator){
+	  AgsSynthGenerator *synth_generator;
+
+	  synth_generator = ags_synth_generator_new();
+	  ags_input_add_synth_generator(channel,
+					synth_generator);
 	}
 	
 	if(start == NULL){
