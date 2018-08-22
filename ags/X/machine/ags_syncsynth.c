@@ -473,7 +473,7 @@ ags_syncsynth_map_recall(AgsMachine *machine)
   AgsPlayNotationAudio *recall_notation_audio;
   AgsPlayNotationAudioRun *recall_notation_audio_run;
 
-  GList *list;
+  GList *start_play, *play;
 
   if((AGS_MACHINE_MAPPED_RECALL & (machine->flags)) != 0 ||
      (AGS_MACHINE_PREMAPPED_RECALL & (machine->flags)) != 0){
@@ -498,14 +498,21 @@ ags_syncsynth_map_recall(AgsMachine *machine)
 			     AGS_RECALL_FACTORY_PLAY),
 			    0);
 
-  list = ags_recall_find_type(audio->play, AGS_TYPE_DELAY_AUDIO_RUN);
+  g_object_get(audio,
+	       "play", &start_play,
+	       NULL);
+  
+  play = ags_recall_find_type(start_play,
+			      AGS_TYPE_DELAY_AUDIO_RUN);
 
-  if(list != NULL){
-    play_delay_audio_run = AGS_DELAY_AUDIO_RUN(list->data);
+  if(play != NULL){
+    play_delay_audio_run = AGS_DELAY_AUDIO_RUN(play->data);
     //    AGS_RECALL(play_delay_audio_run)->flags |= AGS_RECALL_PERSISTENT;
   }else{
     play_delay_audio_run = NULL;
   }
+  
+  g_list_free(start_play);
   
   /* ags-count-beats */
   ags_recall_factory_create(audio,
@@ -517,13 +524,18 @@ ags_syncsynth_map_recall(AgsMachine *machine)
 			     AGS_RECALL_FACTORY_ADD |
 			     AGS_RECALL_FACTORY_PLAY),
 			    0);
-  
-  list = ags_recall_find_type(audio->play, AGS_TYPE_COUNT_BEATS_AUDIO_RUN);
 
-  if(list != NULL){
+  g_object_get(audio,
+	       "play", &start_play,
+	       NULL);
+  
+  play = ags_recall_find_type(start_play,
+			      AGS_TYPE_COUNT_BEATS_AUDIO_RUN);
+
+  if(play != NULL){
     GValue value = {0,};
 
-    play_count_beats_audio_run = AGS_COUNT_BEATS_AUDIO_RUN(list->data);
+    play_count_beats_audio_run = AGS_COUNT_BEATS_AUDIO_RUN(play->data);
 
     /* set dependency */  
     g_object_set(G_OBJECT(play_count_beats_audio_run),
@@ -541,6 +553,8 @@ ags_syncsynth_map_recall(AgsMachine *machine)
     play_count_beats_audio_run = NULL;
   }
 
+  g_list_free(start_play);
+  
   /* ags-record-midi */
   ags_recall_factory_create(audio,
 			    NULL, NULL,
@@ -549,13 +563,18 @@ ags_syncsynth_map_recall(AgsMachine *machine)
 			    0, 0,
 			    (AGS_RECALL_FACTORY_INPUT |
 			     AGS_RECALL_FACTORY_ADD |
-			     AGS_RECALL_FACTORY_RECALL),
+			     AGS_RECALL_FACTORY_PLAY),
 			    0);
 
-  list = ags_recall_find_type(audio->recall, AGS_TYPE_RECORD_MIDI_AUDIO_RUN);
+  g_object_get(audio,
+	       "play", &start_play,
+	       NULL);
 
-  if(list != NULL){
-    recall_record_midi_audio_run = AGS_RECORD_MIDI_AUDIO_RUN(list->data);
+  play = ags_recall_find_type(start_play,
+			      AGS_TYPE_PLAY_NOTATION_AUDIO_RUN);
+
+  if(play != NULL){
+    recall_record_midi_audio_run = AGS_RECORD_MIDI_AUDIO_RUN(play->data);
     
     /* set dependency */
     g_object_set(G_OBJECT(recall_record_midi_audio_run),
@@ -568,6 +587,8 @@ ags_syncsynth_map_recall(AgsMachine *machine)
 		 NULL);
   }  
 
+  g_list_free(start_play);
+  
   /* ags-play-notation */
   ags_recall_factory_create(audio,
 			    NULL, NULL,
@@ -576,14 +597,19 @@ ags_syncsynth_map_recall(AgsMachine *machine)
 			    0, 0,
 			    (AGS_RECALL_FACTORY_INPUT |
 			     AGS_RECALL_FACTORY_ADD |
-			     AGS_RECALL_FACTORY_RECALL),
+			     AGS_RECALL_FACTORY_PLAY),
 			    0);
 
-  list = ags_recall_find_type(audio->recall, AGS_TYPE_PLAY_NOTATION_AUDIO_RUN);
+  g_object_get(audio,
+	       "play", &start_play,
+	       NULL);
 
-  if(list != NULL){
-    recall_notation_audio_run = AGS_PLAY_NOTATION_AUDIO_RUN(list->data);
-    
+  play = ags_recall_find_type(start_play,
+			      AGS_TYPE_PLAY_NOTATION_AUDIO_RUN);
+
+  if(play != NULL){
+    recall_notation_audio_run = AGS_PLAY_NOTATION_AUDIO_RUN(play->data);
+
     /* set dependency */
     g_object_set(G_OBJECT(recall_notation_audio_run),
 		 "delay-audio-run", play_delay_audio_run,
@@ -594,6 +620,8 @@ ags_syncsynth_map_recall(AgsMachine *machine)
 		 "count-beats-audio-run", play_count_beats_audio_run,
 		 NULL);
   }
+
+  g_list_free(start_play);
 
   /* depending on destination */
   ags_syncsynth_input_map_recall(syncsynth, 0);
@@ -1367,10 +1395,39 @@ ags_syncsynth_update(AgsSyncsynth *syncsynth)
     if(do_sync){
       sync_point_count = oscillator->sync_point_count;
       
+      /* free previous sync point */
+      if(AGS_SYNTH_GENERATOR(synth_generator->data)->sync_point != NULL){
+	for(i = 0; i < AGS_SYNTH_GENERATOR(synth_generator->data)->sync_point_count; i++){
+	  ags_complex_free(AGS_SYNTH_GENERATOR(synth_generator->data)->sync_point[i]);
+	}
+
+	free(AGS_SYNTH_GENERATOR(synth_generator->data)->sync_point);
+      }
+
+      /* set new sync point */
+      if(sync_point_count > 0){
+	AGS_SYNTH_GENERATOR(synth_generator->data)->sync_point = (AgsComplex **) malloc(sync_point_count * sizeof(AgsComplex *));
+      }else{
+	AGS_SYNTH_GENERATOR(synth_generator->data)->sync_point = NULL;
+      }
+
+      AGS_SYNTH_GENERATOR(synth_generator->data)->sync_point_count = sync_point_count;
+
       for(i = 0; i < sync_point_count; i++){
+	AGS_SYNTH_GENERATOR(synth_generator->data)->sync_point[i] = ags_complex_alloc();
+
 	AGS_SYNTH_GENERATOR(synth_generator->data)->sync_point[i][0][0] = gtk_spin_button_get_value(oscillator->sync_point[2 * i]);
 	AGS_SYNTH_GENERATOR(synth_generator->data)->sync_point[i][0][1] = gtk_spin_button_get_value(oscillator->sync_point[2 * i + 1]);
       }
+    }else{
+      for(i = 0; i < AGS_SYNTH_GENERATOR(synth_generator->data)->sync_point_count; i++){
+	ags_complex_free(AGS_SYNTH_GENERATOR(synth_generator->data)->sync_point[i]);
+      }
+
+      free(AGS_SYNTH_GENERATOR(synth_generator->data)->sync_point);
+      
+      AGS_SYNTH_GENERATOR(synth_generator->data)->sync_point = NULL;
+      AGS_SYNTH_GENERATOR(synth_generator->data)->sync_point_count = 0;
     }
 					
     apply_synth = ags_apply_synth_new(synth_generator->data,

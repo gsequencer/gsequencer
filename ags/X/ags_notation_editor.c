@@ -694,16 +694,14 @@ ags_notation_editor_delete_note(AgsNotationEditor *notation_editor,
       
       list_notation = ags_notation_find_near_timestamp(start_list_notation, i,
 						       timestamp);
-
-      g_list_free(start_list_notation);
       
       if(list_notation != NULL){
 	notation = list_notation->data;
 	ags_notation_remove_note_at_position(notation,
 					     x, y);
-
-	g_list_free(start_list_notation);
       }
+
+      g_list_free(start_list_notation);
        
       /* iterate */
       i++;

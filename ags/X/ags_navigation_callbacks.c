@@ -303,6 +303,8 @@ ags_navigation_loop_callback(GtkWidget *widget,
 		   "play", &list_start,
 		   NULL);
 
+      list = list_start;
+      
       while((list = ags_recall_find_type(list,
 					 AGS_TYPE_COUNT_BEATS_AUDIO)) != NULL){
 	AgsPort *port;

@@ -586,7 +586,7 @@ ags_copy_pattern_audio_run_resolve_dependency(AgsRecall *recall)
   list = ags_recall_find_template(list_start);
 
   if(list == NULL){
-    g_warning("++ AgsRecallClass::resolve - missing dependency");
+    g_warning("AgsRecallClass::resolve - missing dependency");
 
     return;
   }

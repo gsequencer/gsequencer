@@ -354,15 +354,25 @@ ags_synth_generator_init(AgsSynthGenerator *synth_generator)
   synth_generator->format = ags_soundcard_helper_config_get_format(config);
 
   /* more base init */
+  synth_generator->frame_count = 0;
+  synth_generator->loop_start = 0;
+  synth_generator->loop_end = 0;
+
   synth_generator->delay = 0.0;
   synth_generator->attack = 0;
-  synth_generator->frame_count = 0;
 
   synth_generator->oscillator = 0;
   
   synth_generator->frequency = 0.0;
   synth_generator->phase = 0.0;
   synth_generator->volume = 1.0;
+
+  synth_generator->sync_relative = FALSE;
+  synth_generator->sync_point = NULL;
+  synth_generator->sync_point_count = 0;
+
+  synth_generator->damping = ags_complex_alloc();
+  synth_generator->vibration = ags_complex_alloc();
   
   /* timestamp */
   synth_generator->timestamp = NULL;

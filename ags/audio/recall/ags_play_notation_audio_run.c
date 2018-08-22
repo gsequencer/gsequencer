@@ -284,6 +284,8 @@ ags_play_notation_audio_run_set_property(GObject *gobject,
 
       delay_audio_run = g_value_get_object(value);
 
+      old_delay_audio_run = NULL;
+      
       pthread_mutex_lock(recall_mutex);
 
       if(delay_audio_run == play_notation_audio_run->delay_audio_run){
@@ -756,7 +758,7 @@ ags_play_notation_audio_run_resolve_dependency(AgsRecall *recall)
   GList *list_start, *list;
 
   guint i, i_stop;
-
+  
   g_object_get(recall,
 	       "recall-id", &recall_id,
 	       "recall-container", &recall_container,
@@ -965,8 +967,8 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
 		     "rt-attack", attack,
 		     NULL);
 
-#ifdef AGS_DEBUG	
 	g_message("playing[%u|%u]: %u | %u\n", audio_channel, selected_channel->pad, note->x[0], note->y);
+#ifdef AGS_DEBUG	
 #endif
 	
 	while(recycling != end_recycling){
@@ -1075,9 +1077,10 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
 	       "samplerate", &samplerate,
 	       "delay-audio-run", &delay_audio_run,
 	       "count-beats-audio-run", &count_beats_audio_run,
-	       "timestamp", &timestamp,
 	       NULL);
 
+  timestamp = play_notation_audio_run->timestamp;
+  
   g_object_get(recall_id,
 	       "recycling-context", &recycling_context,
 	       NULL);
@@ -1119,7 +1122,7 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
   
   /* play notation */
   notation = NULL;
-
+  
   g_object_get(count_beats_audio_run,
 	       "notation-counter", &notation_counter,
 	       NULL);

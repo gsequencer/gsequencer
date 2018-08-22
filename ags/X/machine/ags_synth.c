@@ -647,19 +647,39 @@ ags_synth_update(AgsSynth *synth)
     if(do_sync){
       sync_point_count = oscillator->sync_point_count;
 
-      if(sync_point_count > 0){
-	sync_point = (AgsComplex **) malloc(sync_point_count * sizeof(AgsComplex *));
-      }else{
-	sync_point = NULL;
+      /* free previous sync point */
+      if(AGS_SYNTH_GENERATOR(synth_generator->data)->sync_point != NULL){
+	for(i = 0; i < AGS_SYNTH_GENERATOR(synth_generator->data)->sync_point_count; i++){
+	  ags_complex_free(AGS_SYNTH_GENERATOR(synth_generator->data)->sync_point[i]);
+	}
+
+	free(AGS_SYNTH_GENERATOR(synth_generator->data)->sync_point);
       }
 
+      /* set new sync point */
+      if(sync_point_count > 0){
+	AGS_SYNTH_GENERATOR(synth_generator->data)->sync_point = (AgsComplex **) malloc(sync_point_count * sizeof(AgsComplex *));
+      }else{
+	AGS_SYNTH_GENERATOR(synth_generator->data)->sync_point = NULL;
+      }
+
+      AGS_SYNTH_GENERATOR(synth_generator->data)->sync_point_count = sync_point_count;
+
       for(i = 0; i < sync_point_count; i++){
+	AGS_SYNTH_GENERATOR(synth_generator->data)->sync_point[i] = ags_complex_alloc();
+	
 	AGS_SYNTH_GENERATOR(synth_generator->data)->sync_point[i][0][0] = gtk_spin_button_get_value(oscillator->sync_point[2 * i]);
 	AGS_SYNTH_GENERATOR(synth_generator->data)->sync_point[i][0][1] = gtk_spin_button_get_value(oscillator->sync_point[2 * i + 1]);
       }
     }else{
-      sync_point = NULL;
-      sync_point_count = NULL;
+      for(i = 0; i < AGS_SYNTH_GENERATOR(synth_generator->data)->sync_point_count; i++){
+	ags_complex_free(AGS_SYNTH_GENERATOR(synth_generator->data)->sync_point[i]);
+      }
+
+      free(AGS_SYNTH_GENERATOR(synth_generator->data)->sync_point);
+      
+      AGS_SYNTH_GENERATOR(synth_generator->data)->sync_point = NULL;
+      AGS_SYNTH_GENERATOR(synth_generator->data)->sync_point_count = 0;
     }
   
     apply_synth = ags_apply_synth_new(synth_generator->data,
