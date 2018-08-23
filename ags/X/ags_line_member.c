@@ -1436,8 +1436,8 @@ ags_line_member_real_find_port(AgsLineMember *line_member)
       port = ags_port_find_specifier(start_port,
 				     specifier);
     
-#ifdef AGS_DEBUG
       g_message("search port in %s", G_OBJECT_TYPE_NAME(recall->data));
+#ifdef AGS_DEBUG
 #endif
 
       if(port != NULL){
@@ -1502,8 +1502,7 @@ ags_line_member_real_find_port(AgsLineMember *line_member)
 
   channel_port = ags_line_member_find_specifier(list_start);
 
-  g_list_free(list_start);
-  
+  g_list_free(list_start);  
 
   /* recall context */
   g_object_get(channel,

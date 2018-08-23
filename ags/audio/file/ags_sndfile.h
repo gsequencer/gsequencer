@@ -61,7 +61,8 @@ struct _AgsSndfile
 
   guint64 offset;
   guint64 buffer_offset;
-  
+
+  void *full_buffer;
   void *buffer;
 
   guchar *pointer;
