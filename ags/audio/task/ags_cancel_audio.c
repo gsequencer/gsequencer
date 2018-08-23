@@ -399,8 +399,18 @@ ags_cancel_audio_launch(AgsTask *task)
   }
 
   /* add channel to AgsAudioLoop */
-  ags_audio_loop_remove_audio(audio_loop,
-			      (GObject *) audio);
+  list_start = ags_audio_check_scope(audio,
+				     (AGS_SOUND_SCOPE_SEQUENCER |
+				      AGS_SOUND_SCOPE_NOTATION |
+				      AGS_SOUND_SCOPE_WAVE |
+				      AGS_SOUND_SCOPE_MIDI));
+  
+  if(list_start == NULL){
+    ags_audio_loop_remove_audio(audio_loop,
+				(GObject *) audio);
+  }
+
+  g_list_free(list_start);
 }
 
 /**

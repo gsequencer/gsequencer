@@ -607,7 +607,8 @@ ags_synth_update(AgsSynth *synth)
     AgsChannel *input;
 
     GList *start_synth_generator, *synth_generator;
-    
+
+    guint format;
     guint i;
     gboolean do_sync;
     
@@ -620,6 +621,7 @@ ags_synth_update(AgsSynth *synth)
 
     g_object_get(input,
 		 "synth-generator", &start_synth_generator,
+		 "format", &format,
 		 NULL);
     
     synth_generator = start_synth_generator;
@@ -628,12 +630,13 @@ ags_synth_update(AgsSynth *synth)
     wave = (guint) gtk_combo_box_get_active(oscillator->wave) + 1;
     attack = (guint) gtk_spin_button_get_value_as_int(oscillator->attack);
     frame_count = (guint) gtk_spin_button_get_value_as_int(oscillator->frame_count);
-    phase = (gdouble) gtk_spin_button_get_value_as_float(oscillator->phase);
-    frequency = (gdouble) gtk_spin_button_get_value_as_float(oscillator->frequency);
-    volume = (gdouble) gtk_spin_button_get_value_as_float(oscillator->volume);
+    phase = gtk_spin_button_get_value(oscillator->phase);
+    frequency = gtk_spin_button_get_value(oscillator->frequency);
+    volume = gtk_spin_button_get_value(oscillator->volume);
 
     g_object_set(synth_generator->data,
-		 "delay", (gdouble) attack / buffer_size,
+		 "format", format,
+		 "delay", (gdouble) attack / (gdouble) buffer_size,
 		 "attack", attack,
 		 "frame-count", frame_count,
 		 "oscillator", gtk_combo_box_get_active(oscillator->wave),

@@ -1287,6 +1287,7 @@ ags_syncsynth_update(AgsSyncsynth *syncsynth)
   
   guint input_lines;
   guint buffer_size;
+  guint format;
   guint wave;
   guint attack, frame_count;
   gdouble frequency, phase, start_frequency;
@@ -1357,6 +1358,7 @@ ags_syncsynth_update(AgsSyncsynth *syncsynth)
 
   g_object_get(channel,
 	       "buffer-size", &buffer_size,
+	       "format", &format,
 	       "synth-generator", &start_synth_generator,
 	       NULL);
 
@@ -1381,6 +1383,7 @@ ags_syncsynth_update(AgsSyncsynth *syncsynth)
     volume = (gdouble) gtk_spin_button_get_value_as_float(oscillator->volume);
 
     g_object_set(synth_generator->data,
+		 "format", format,
 		 "delay", (gdouble) attack / buffer_size,
 		 "attack", attack,
 		 "frame-count", frame_count,

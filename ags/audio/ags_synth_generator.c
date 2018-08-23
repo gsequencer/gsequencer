@@ -305,7 +305,7 @@ ags_synth_generator_class_init(AgsSynthGeneratorClass *synth_generator)
 				   i18n_pspec("using volume"),
 				   i18n_pspec("The volume to be used"),
 				   0.0,
-				   65535.0,
+				   2.0,
 				   0.0,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,

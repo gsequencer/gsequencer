@@ -167,7 +167,8 @@ ags_play_audio_signal_run_inter(AgsRecall *recall)
 	       NULL);
 
   if(output_soundcard == NULL){
-    g_warning("no soundcard");
+    //    g_warning("no soundcard");
+    
     return;
   }
 

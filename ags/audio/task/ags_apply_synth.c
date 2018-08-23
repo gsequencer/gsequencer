@@ -175,7 +175,7 @@ ags_apply_synth_class_init(AgsApplySynthClass *apply_synth)
 				 i18n_pspec("count of channels"),
 				 i18n_pspec("The count of channels to apply"),
 				 0,
-				 G_MAXUINT,
+				 G_MAXUINT32,
 				 0,
 				 G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
