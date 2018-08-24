@@ -1423,9 +1423,9 @@ ags_line_member_real_find_port(AgsLineMember *line_member)
     current_port = NULL;
     
     while(recall != NULL){
-      if(!ags_recall_test_behaviour_flags(recall->data, AGS_SOUND_BEHAVIOUR_BULK_MODE)){
+      if(ags_recall_test_behaviour_flags(recall->data, AGS_SOUND_BEHAVIOUR_BULK_MODE)){
 	recall = recall->next;
-
+	
 	continue;
       }
 
@@ -1436,8 +1436,8 @@ ags_line_member_real_find_port(AgsLineMember *line_member)
       port = ags_port_find_specifier(start_port,
 				     specifier);
     
-      g_message("search port in %s", G_OBJECT_TYPE_NAME(recall->data));
 #ifdef AGS_DEBUG
+      g_message("search port in %s", G_OBJECT_TYPE_NAME(recall->data));
 #endif
 
       if(port != NULL){

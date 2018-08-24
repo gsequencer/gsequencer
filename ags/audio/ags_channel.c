@@ -13790,23 +13790,45 @@ ags_channel_real_recursive_run_stage(AgsChannel *channel,
   recycling_context = NULL;
     
   if(recall_id != NULL){
-    AgsRecallID *current_recall_id;
-
-    current_recall_id = recall_id->data;
-
-    /* get recall id mutex */
-    pthread_mutex_lock(ags_recall_id_get_class_mutex());
+    AgsRecycling *recycling;
     
-    recall_id_mutex = current_recall_id->obj_mutex;
-    
-    pthread_mutex_unlock(ags_recall_id_get_class_mutex());
-    
-    /* get recycling context */
-    pthread_mutex_lock(recall_id_mutex);
+    GList *iter;
 
-    recycling_context = current_recall_id->recycling_context;
+    g_object_get(channel,
+		 "first-recycling", &recycling,
+		 NULL);
+    
+    iter = recall_id;
 
-    pthread_mutex_unlock(recall_id_mutex);
+    while(iter != NULL){
+      AgsRecallID *current_recall_id;
+      AgsRecyclingContext *current_recycling_context;
+      
+      current_recall_id = iter->data;
+
+      /* get recall id mutex */
+      pthread_mutex_lock(ags_recall_id_get_class_mutex());
+      
+      recall_id_mutex = current_recall_id->obj_mutex;
+      
+      pthread_mutex_unlock(ags_recall_id_get_class_mutex());
+      
+      /* get recycling context */
+      pthread_mutex_lock(recall_id_mutex);
+      
+      current_recycling_context = current_recall_id->recycling_context;
+      
+      pthread_mutex_unlock(recall_id_mutex);
+
+      if(ags_recycling_context_find(current_recycling_context, recycling) >= 0){
+	recycling_context = current_recycling_context;
+	
+	break;
+      }
+      
+      /* iterate */
+      iter = iter->next;
+    }
   }
     
   /* get channel mutex */

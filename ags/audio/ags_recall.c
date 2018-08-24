@@ -2421,7 +2421,7 @@ ags_recall_test_flags(AgsRecall *recall, guint flags)
   /* test */
   pthread_mutex_lock(recall_mutex);
 
-  retval = (flags & (recall->flags)) ? TRUE: FALSE;
+  retval = ((flags & (recall->flags)) != 0) ? TRUE: FALSE;
   
   pthread_mutex_unlock(recall_mutex);
 
@@ -2526,7 +2526,7 @@ ags_recall_test_ability_flags(AgsRecall *recall, guint ability_flags)
   /* test */
   pthread_mutex_lock(recall_mutex);
 
-  retval = (ability_flags & (recall->ability_flags)) ? TRUE: FALSE;
+  retval = ((ability_flags & (recall->ability_flags)) != 0) ? TRUE: FALSE;
   
   pthread_mutex_unlock(recall_mutex);
 
@@ -2805,10 +2805,10 @@ ags_recall_test_behaviour_flags(AgsRecall *recall, guint behaviour_flags)
   /* test */
   pthread_mutex_lock(recall_mutex);
 
-  retval = (behaviour_flags & (recall->behaviour_flags)) ? TRUE: FALSE;
+  retval = ((behaviour_flags & (recall->behaviour_flags)) != 0) ? TRUE: FALSE;
   
   pthread_mutex_unlock(recall_mutex);
-
+  
   return(retval);
 }
 
@@ -3150,7 +3150,7 @@ ags_recall_test_staging_flags(AgsRecall *recall,
   /* test */
   pthread_mutex_lock(recall_mutex);
 
-  retval = (staging_flags & (recall->staging_flags)) ? TRUE: FALSE;
+  retval = ((staging_flags & (recall->staging_flags)) != 0) ? TRUE: FALSE;
   
   pthread_mutex_unlock(recall_mutex);
 
@@ -3469,7 +3469,7 @@ ags_recall_test_state_flags(AgsRecall *recall,
   /* test */
   pthread_mutex_lock(recall_mutex);
 
-  retval = (state_flags & (recall->state_flags)) ? TRUE: FALSE;
+  retval = ((state_flags & (recall->state_flags)) != 0) ? TRUE: FALSE;
   
   pthread_mutex_unlock(recall_mutex);
 
