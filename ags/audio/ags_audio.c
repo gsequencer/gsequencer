@@ -195,6 +195,7 @@ enum{
   PROP_OUTPUT,
   PROP_INPUT,
   PROP_PRESET,
+  PROP_SYNTH_GENERATOR,
   PROP_PLAYBACK_DOMAIN,
   PROP_NOTATION,
   PROP_AUTOMATION,
@@ -880,6 +881,21 @@ ags_audio_class_init(AgsAudioClass *audio)
 				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_PRESET,
+				  param_spec);
+
+  /**
+   * AgsAudio:synth_generator:
+   *
+   * The assigned #GList-struct containing #AgsSynthGenerator information.
+   * 
+   * Since: 2.0.0
+   */
+  param_spec = g_param_spec_pointer("synth-generator",
+				    i18n_pspec("synth generator"),
+				    i18n_pspec("The synth generator"),
+				    G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_SYNTH_GENERATOR,
 				  param_spec);
   
   /**
@@ -1984,6 +2000,28 @@ ags_audio_set_property(GObject *gobject,
 			   (GObject *) preset);
     }
     break;
+  case PROP_SYNTH_GENERATOR:
+    {
+      AgsSynthGenerator *synth_generator;
+
+      synth_generator = (AgsSynthGenerator *) g_value_get_pointer(value);
+
+      pthread_mutex_lock(audio_mutex);
+
+      if(synth_generator == NULL ||
+	 g_list_find(audio->synth_generator,
+		     synth_generator) != NULL){
+	pthread_mutex_unlock(audio_mutex);
+	
+	return;
+      }
+
+      pthread_mutex_unlock(audio_mutex);
+
+      ags_audio_add_synth_generator(audio,
+			   (GObject *) synth_generator);
+    }
+    break;
   case PROP_PLAYBACK_DOMAIN:
     {
       AgsPlaybackDomain *playback_domain;
@@ -2710,6 +2748,16 @@ ags_audio_get_property(GObject *gobject,
       pthread_mutex_unlock(audio_mutex);
     }
     break;
+  case PROP_SYNTH_GENERATOR:
+    {
+      pthread_mutex_lock(audio_mutex);
+
+      g_value_set_pointer(value,
+			  g_list_copy(audio->synth_generator));
+
+      pthread_mutex_unlock(audio_mutex);
+    }
+    break;
   case PROP_PLAYBACK_DOMAIN:
     {
       pthread_mutex_lock(audio_mutex);
@@ -2931,6 +2979,24 @@ ags_audio_dispose(GObject *gobject)
 		     g_object_unref);
 
     audio->preset = NULL;
+  }
+
+  /* synth_generator */
+  if(audio->synth_generator != NULL){
+    list = audio->synth_generator;
+
+    while(list != NULL){
+      list_next = list->next;
+      
+      g_object_run_dispose(list->data);
+
+      list = list_next;
+    }
+  
+    g_list_free_full(audio->synth_generator,
+		     g_object_unref);
+
+    audio->synth_generator = NULL;
   }
 
   /* playback domain */
@@ -3215,6 +3281,22 @@ ags_audio_finalize(GObject *gobject)
     }
 
     g_list_free_full(audio->preset,
+		     g_object_unref);
+  }
+
+  /* synth_generator */
+  if(audio->synth_generator != NULL){
+    list = audio->synth_generator;
+
+    while(list != NULL){
+      g_object_set(list->data,
+		   "audio", NULL,
+		   NULL);
+
+      list = list->next;
+    }
+
+    g_list_free_full(audio->synth_generator,
 		     g_object_unref);
   }
   
@@ -7681,7 +7763,7 @@ ags_audio_set_format(AgsAudio *audio, guint format)
  * @audio: the #AgsAudio
  * @preset: an #AgsPreset
  *
- * Adds an preset.
+ * Adds a preset.
  *
  * Since: 2.0.0
  */
@@ -7733,7 +7815,7 @@ ags_audio_add_preset(AgsAudio *audio,
  * @audio: the #AgsAudio
  * @preset: an #AgsPreset
  *
- * Removes an preset.
+ * Removes a preset.
  *
  * Since: 2.0.0
  */
@@ -7779,6 +7861,86 @@ ags_audio_remove_preset(AgsAudio *audio,
 
     g_object_unref(preset);
   }
+}
+
+/**
+ * ags_audio_add_synth_generator:
+ * @audio: the #AgsAudio
+ * @synth_generator: an #AgsSynthGenerator
+ *
+ * Adds a synth generator.
+ *
+ * Since: 2.0.0
+ */
+void
+ags_audio_add_synth_generator(AgsAudio *audio,
+			      GObject *synth_generator)
+{
+  pthread_mutex_t *audio_mutex;
+
+  if(!AGS_IS_AUDIO(audio) ||
+     !AGS_IS_SYNTH_GENERATOR(synth_generator)){
+    return;
+  }
+
+  /* get audio mutex */
+  pthread_mutex_lock(ags_audio_get_class_mutex());
+
+  audio_mutex = audio->obj_mutex;
+  
+  pthread_mutex_unlock(ags_audio_get_class_mutex());
+
+  /* add synth_generator */
+  pthread_mutex_lock(audio_mutex);
+
+  if(g_list_find(audio->synth_generator,
+		 synth_generator) == NULL){
+    g_object_ref(synth_generator);
+    audio->synth_generator = g_list_prepend(audio->synth_generator,
+					    synth_generator);
+  }
+  
+  pthread_mutex_unlock(audio_mutex);
+}
+
+/**
+ * ags_audio_remove_synth_generator:
+ * @audio: the #AgsAudio
+ * @synth_generator: an #AgsSynthGenerator
+ *
+ * Removes a synth generator.
+ *
+ * Since: 2.0.0
+ */
+void
+ags_audio_remove_synth_generator(AgsAudio *audio,
+				 GObject *synth_generator)
+{
+  pthread_mutex_t *audio_mutex;
+
+  if(!AGS_IS_AUDIO(audio) ||
+     !AGS_IS_SYNTH_GENERATOR(synth_generator)){
+    return;
+  }
+
+  /* get audio mutex */
+  pthread_mutex_lock(ags_audio_get_class_mutex());
+
+  audio_mutex = audio->obj_mutex;
+  
+  pthread_mutex_unlock(ags_audio_get_class_mutex());
+
+  /* remove synth_generator */
+  pthread_mutex_lock(audio_mutex);
+
+  if(g_list_find(audio->synth_generator,
+		 synth_generator) != NULL){
+    audio->synth_generator = g_list_remove(audio->synth_generator,
+					   synth_generator);
+    g_object_unref(synth_generator);
+  }
+  
+  pthread_mutex_unlock(audio_mutex);
 }
 
 /**

@@ -251,6 +251,10 @@ ags_play_audio_signal_run_inter(AgsRecall *recall)
 	       "format", &format,
 	       "attack", &attack,
 	       NULL);
+
+#ifdef AGS_DEBUG
+  g_message("- play 0x%x", source);
+#endif
   
   if(samplerate != soundcard_samplerate){
     attack = soundcard_samplerate * (attack / samplerate);

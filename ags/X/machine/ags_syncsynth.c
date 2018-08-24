@@ -43,8 +43,10 @@ void ags_syncsynth_connectable_interface_init(AgsConnectableInterface *connectab
 void ags_syncsynth_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_syncsynth_init(AgsSyncsynth *syncsynth);
 void ags_syncsynth_finalize(GObject *gobject);
+
 void ags_syncsynth_connect(AgsConnectable *connectable);
 void ags_syncsynth_disconnect(AgsConnectable *connectable);
+
 void ags_syncsynth_show(GtkWidget *widget);
 void ags_syncsynth_map_recall(AgsMachine *machine);
 gchar* ags_syncsynth_get_name(AgsPlugin *plugin);
@@ -1157,8 +1159,14 @@ void
 ags_syncsynth_add_oscillator(AgsSyncsynth *syncsynth,
 			     AgsOscillator *oscillator)
 {
+  AgsAudio *audio;
+  
   GtkHBox *hbox;
   GtkCheckButton *check_button;
+
+  audio = AGS_MACHINE(syncsynth)->audio;
+  ags_audio_add_synth_generator(audio,
+				ags_synth_generator_new());
   
   hbox = (GtkHBox *) gtk_hbox_new(FALSE,
 				  0);
@@ -1197,8 +1205,23 @@ void
 ags_syncsynth_remove_oscillator(AgsSyncsynth *syncsynth,
 				guint nth)
 {
+  AgsAudio *audio;
+  
   GList *list, *list_start;
+  GList *start_synth_generator;
+  
+  audio = AGS_MACHINE(syncsynth)->audio;
+  g_object_get(audio,
+	       "synth-generator", &start_synth_generator,
+	       NULL);
 
+  start_synth_generator = g_list_reverse(start_synth_generator);
+  ags_audio_remove_synth_generator(audio,
+				   g_list_nth_data(start_synth_generator,
+						   nth));
+
+  g_list_free(start_synth_generator);
+  
   list =
     list_start = gtk_container_get_children(syncsynth->oscillator);
 
@@ -1354,12 +1377,12 @@ ags_syncsynth_update(AgsSyncsynth *syncsynth)
   g_object_get(audio,
 	       "input", &channel,
 	       "input-lines", &input_lines,
+	       "synth-generator", &start_synth_generator,
 	       NULL);
 
   g_object_get(channel,
 	       "buffer-size", &buffer_size,
 	       "format", &format,
-	       "synth-generator", &start_synth_generator,
 	       NULL);
 
   synth_generator = start_synth_generator;
