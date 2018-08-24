@@ -9128,8 +9128,10 @@ ags_audio_real_init_recall(AgsAudio *audio,
   
   g_list_free(list_start);
 
+#if 0
   ags_audio_set_staging_flags(audio, sound_scope,
 			      staging_flags);
+#endif
 }
 
 /**
@@ -9216,12 +9218,14 @@ ags_audio_real_play_recall(AgsAudio *audio,
   
   pthread_mutex_unlock(audio_mutex);
 
+#if 0
   if(!AGS_IS_RECYCLING_CONTEXT(recycling_context) ||
      (AGS_SOUND_STAGING_RUN_INIT_PRE & (current_staging_flags)) == 0 ||
      (AGS_SOUND_STAGING_RUN_INIT_INTER & (current_staging_flags)) == 0 ||
      (AGS_SOUND_STAGING_RUN_INIT_POST & (current_staging_flags)) == 0){
     return;
   }
+#endif
   
   /* get recycling context mutex */
   pthread_mutex_lock(ags_recycling_context_get_class_mutex());

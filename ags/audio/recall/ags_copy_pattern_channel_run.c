@@ -950,7 +950,7 @@ ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *delay_au
 	 * emit add_audio_signal on AgsRecycling
 	 */
 #ifdef AGS_DEBUG
-	g_message("play %x", AGS_RECALL(copy_pattern_channel_run)->recall_id);
+	g_message("play %d %x", AGS_RECALL_CHANNEL_RUN(copy_pattern_channel_run)->source->line, AGS_RECALL(copy_pattern_channel_run)->recall_id);
 #endif
 
 	/*

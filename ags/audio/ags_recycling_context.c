@@ -1001,8 +1001,8 @@ ags_recycling_context_add_child(AgsRecyclingContext *parent,
   pthread_mutex_lock(parent_mutex);
 
   if(g_list_find(parent->children, child) == NULL){
-    parent->children = g_list_prepend(parent->children,
-				      child);
+    parent->children = g_list_append(parent->children,
+				     child);
     g_object_ref(child);
   }
   
