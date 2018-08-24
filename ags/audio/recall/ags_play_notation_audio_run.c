@@ -967,8 +967,8 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
 		     "rt-attack", attack,
 		     NULL);
 
-	g_message("playing[%u|%u]: %u | %u\n", audio_channel, selected_channel->pad, note->x[0], note->y);
 #ifdef AGS_DEBUG	
+	g_message("playing[%u|%u]: %u | %u\n", audio_channel, selected_channel->pad, note->x[0], note->y);
 #endif
 	
 	while(recycling != end_recycling){
@@ -989,8 +989,8 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
 	      guint note_x0, note_x1;
 
 	      g_object_get(note,
-			   "x0", note_x0,
-			   "x1", note_x1,
+			   "x0", &note_x0,
+			   "x1", &note_x1,
 			   NULL);
 	      
 	      /* create audio signal with frame count */

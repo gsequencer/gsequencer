@@ -43,12 +43,21 @@ struct _AgsIpatchSample
 {
   GObject object;
 
+  guint audio_channels;
+  gint64 *audio_channel_written;
+
   guint buffer_size;
   guint format;
 
   guint offset;
-  
+  guint64 buffer_offset;
+
+  void *full_buffer;
   void *buffer;
+
+  guchar *pointer;
+  guchar *current;
+  gsize length;
   
 #ifdef AGS_WITH_LIBINSTPATCH
   IpatchContainer *sample;

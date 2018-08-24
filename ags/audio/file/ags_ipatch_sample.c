@@ -227,14 +227,27 @@ ags_ipatch_sample_init(AgsIpatchSample *ipatch_sample)
   AgsConfig *config;
 
   config = ags_config_get_instance();
-  
+
+  ipatch_sample->audio_channels = 1;
+  ipatch_sample->audio_channel_written = (guint64 *) malloc(ipatch_sample->audio_channels * sizeof(guint64));
+
+  ipatch_sample->audio_channel_written[0] = -1;
+
   ipatch_sample->buffer_size = ags_soundcard_helper_config_get_buffer_size(config);
   ipatch_sample->format = AGS_SOUNDCARD_DOUBLE;
 
   ipatch_sample->offset = 0;
-  
-  ipatch_sample->buffer = ags_stream_alloc(ipatch_sample->buffer_size,
+  ipatch_sample->buffer_offset = 0;
+
+  ipatch_sample->full_buffer = NULL;
+  ipatch_sample->buffer = ags_stream_alloc(ipatch_sample->audio_channels * ipatch_sample->buffer_size,
 					   ipatch_sample->format);
+
+  ipatch_sample->pointer = NULL;
+  ipatch_sample->current = NULL;
+  ipatch_sample->length = 0;
+
+  ipatch_sample->sample = NULL;
 }
 
 void
@@ -524,7 +537,7 @@ ags_ipatch_sample_read(AgsSoundResource *sound_resource,
   if(ipatch_sample->offset + frame_count >= total_frame_count){
     frame_count = total_frame_count - ipatch_sample->offset;
   }
-  
+
   error = NULL;
 
   switch(ipatch_sample->format){
@@ -600,6 +613,10 @@ ags_ipatch_sample_read(AgsSoundResource *sound_resource,
     }
   }
 
+  if(error != NULL){
+    g_message("%s", error->message);
+  }
+  
   ags_audio_buffer_util_copy_buffer_to_buffer(dbuffer, daudio_channels, 0,
 					      ipatch_sample->buffer, 1, 0,
 					      frame_count, copy_mode);

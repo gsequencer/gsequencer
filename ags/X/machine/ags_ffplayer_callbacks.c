@@ -127,11 +127,7 @@ ags_ffplayer_preset_changed_callback(GtkComboBox *preset, AgsFFPlayer *ffplayer)
 
   /* reset */
   ags_sound_container_level_up(AGS_SOUND_CONTAINER(audio_container->sound_container),
-			       4);
-  
-  //  ags_sound_container_select_level_by_index(AGS_SOUND_CONTAINER(audio_container->sound_container),
-  //					    0);
-  //  AGS_IPATCH(audio_container->sound_container)->nesting_level += 1;
+			       3);
 
   /* load presets */
   position = gtk_combo_box_get_active(ffplayer->preset);
@@ -139,9 +135,6 @@ ags_ffplayer_preset_changed_callback(GtkComboBox *preset, AgsFFPlayer *ffplayer)
   ags_sound_container_select_level_by_index(AGS_SOUND_CONTAINER(audio_container->sound_container),
 					    position);
   AGS_IPATCH(audio_container->sound_container)->nesting_level += 1;
-    
-  //  ags_sound_container_select_level_by_index(AGS_SOUND_CONTAINER(audio_container->sound_container),
-  //					    position);
   
   /* select first instrument */
   ags_ffplayer_load_instrument(ffplayer);
@@ -185,14 +178,14 @@ ags_ffplayer_instrument_changed_callback(GtkComboBox *instrument, AgsFFPlayer *f
 
   /* reset */
   ags_sound_container_level_up(AGS_SOUND_CONTAINER(audio_container->sound_container),
-			       4);
-  
-  ags_sound_container_select_level_by_index(AGS_SOUND_CONTAINER(audio_container->sound_container),
-					    0);
-  AGS_IPATCH(audio_container->sound_container)->nesting_level += 1;
+			       3);
 
   /* load presets */
   position = gtk_combo_box_get_active(ffplayer->preset);
+
+  if(position == -1){
+    position = 0;
+  }
   
   ags_sound_container_select_level_by_index(AGS_SOUND_CONTAINER(audio_container->sound_container),
 					    position);
@@ -200,6 +193,10 @@ ags_ffplayer_instrument_changed_callback(GtkComboBox *instrument, AgsFFPlayer *f
 
   /* load instrument */
   position = gtk_combo_box_get_active(ffplayer->instrument);
+
+  if(position == -1){
+    position = 0;
+  }
 
   ags_sound_container_select_level_by_index(AGS_SOUND_CONTAINER(audio_container->sound_container),
   					    position);

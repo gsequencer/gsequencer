@@ -386,6 +386,7 @@ ags_sound_resource_read_audio_signal(AgsSoundResource *sound_resource,
   GList *start_list;
 
   guint frame_count;
+  guint loop_start, loop_end;
   guint audio_channels;
   guint target_samplerate, samplerate;
   guint target_buffer_size, buffer_size;
@@ -398,7 +399,7 @@ ags_sound_resource_read_audio_signal(AgsSoundResource *sound_resource,
 
   ags_sound_resource_info(AGS_SOUND_RESOURCE(sound_resource),
 			  &frame_count,
-			  NULL, NULL);
+			  &loop_start, &loop_end);
 
   ags_sound_resource_get_presets(AGS_SOUND_RESOURCE(sound_resource),
 				 &audio_channels,
@@ -444,6 +445,8 @@ ags_sound_resource_read_audio_signal(AgsSoundResource *sound_resource,
 					NULL);
     g_object_set(audio_signal,
 		 "format", target_format,
+		 "loop-start", loop_start,
+		 "loop-end", loop_end,
 		 NULL);
     ags_audio_signal_stream_resize(audio_signal,
 				   (guint) ceil(frame_count / target_buffer_size) + 1);

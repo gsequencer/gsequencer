@@ -277,7 +277,7 @@ ags_sndfile_init(AgsSndfile *sndfile)
   config = ags_config_get_instance();
 
   sndfile->audio_channels = 1;
-  sndfile->audio_channel_written = (guint64 *) malloc(1 * sizeof(guint64));
+  sndfile->audio_channel_written = (guint64 *) malloc(sndfile->audio_channels * sizeof(guint64));
 
   sndfile->audio_channel_written[0] = -1;
   
