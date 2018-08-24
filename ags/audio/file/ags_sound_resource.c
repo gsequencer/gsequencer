@@ -23,6 +23,10 @@
 
 #include <ags/audio/ags_audio_signal.h>
 
+#include <ags/audio/file/ags_sndfile.h>
+
+#include <math.h>
+
 void ags_sound_resource_base_init(AgsSoundResourceInterface *interface);
 
 /**
@@ -433,12 +437,18 @@ ags_sound_resource_read_audio_signal(AgsSoundResource *sound_resource,
     GList *stream;
 
     ags_sound_resource_seek(AGS_SOUND_RESOURCE(sound_resource),
-			    0, G_SEEK_SET);
+    			    0, G_SEEK_SET);
     
-    audio_signal = ags_audio_signal_new_with_length(soundcard,
-						    NULL,
-						    NULL,
-						    (guint) ceil(frame_count / target_buffer_size) + 1);
+    audio_signal = ags_audio_signal_new(soundcard,
+					NULL,
+					NULL);
+    g_object_set(audio_signal,
+		 "format", target_format,
+		 NULL);
+    ags_audio_signal_stream_resize(audio_signal,
+				   (guint) ceil(frame_count / target_buffer_size) + 1);
+    audio_signal->stream_current = audio_signal->stream;
+
     start_list = g_list_prepend(start_list,
 				audio_signal);
 

@@ -220,9 +220,9 @@ ags_buffer_audio_signal_run_init_pre(AgsRecall *recall)
 						  delay, attack);
 
   length = 3; // (guint) (2.0 * soundcard->delay[soundcard->tic_counter]) + 1;
-  g_object_get(source,
-	       "length", &length,
-	       NULL);
+  //  g_object_get(source,
+  //	       "length", &length,
+  //	       NULL);
   ags_audio_signal_stream_resize(destination,
 				 length);
 

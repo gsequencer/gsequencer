@@ -4658,7 +4658,7 @@ ags_audio_buffer_util_copy_double_to_s16(gint16 *destination, guint dchannels,
     limit = count - 8;
   
     for(; i < limit; i += 8){
-      *destination = 0xffff & (gint16) ((gdouble) ((*destination) + (gdouble) (scale * source[0])));
+      destination[0] = 0xffff & (gint16) ((gdouble) ((destination[0]) + (gdouble) (scale * source[0])));
       destination[1 * dchannels] = 0xffff & (gint16) ((gdouble) (destination[1 * dchannels] + (gdouble) (scale * source[1 * schannels])));
       destination[2 * dchannels] = 0xffff & (gint16) ((gdouble) (destination[2 * dchannels] + (gdouble) (scale * source[2 * schannels])));
       destination[3 * dchannels] = 0xffff & (gint16) ((gdouble) (destination[3 * dchannels] + (gdouble) (scale * source[3 * schannels])));
@@ -4673,7 +4673,7 @@ ags_audio_buffer_util_copy_double_to_s16(gint16 *destination, guint dchannels,
   }
 
   for(; i < count; i++){
-    *destination = 0xffff & (gint16) ((gdouble) ((*destination) + (gdouble) (scale * source[0])));
+    destination[0] = 0xffff & (gint16) ((gdouble) ((destination[0]) + (gdouble) (scale * source[0])));
 
     destination += dchannels;
     source += schannels;
@@ -4909,7 +4909,7 @@ ags_audio_buffer_util_copy_double_to_double(gdouble *destination, guint dchannel
     limit = count - 8;
   
     for(; i < limit; i += 8){
-      *destination = ((gdouble) ((*destination) + (gdouble) (source[0])));
+      destination[0] = ((gdouble) ((destination[0]) + (gdouble) (source[0])));
       destination[1 * dchannels] = ((gdouble) (destination[1 * dchannels] + (gdouble) (source[1 * schannels])));
       destination[2 * dchannels] = ((gdouble) (destination[2 * dchannels] + (gdouble) (source[2 * schannels])));
       destination[3 * dchannels] = ((gdouble) (destination[3 * dchannels] + (gdouble) (source[3 * schannels])));
@@ -4924,7 +4924,7 @@ ags_audio_buffer_util_copy_double_to_double(gdouble *destination, guint dchannel
   }
 
   for(; i < count; i++){
-    *destination = ((gdouble) ((*destination) + (gdouble) (source[0])));
+    destination[0] = ((gdouble) ((destination[0]) + (gdouble) (source[0])));
 
     destination += dchannels;
     source += schannels;

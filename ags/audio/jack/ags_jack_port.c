@@ -841,7 +841,7 @@ ags_jack_port_register(AgsJackPort *jack_port,
   //FIXME:JK: memory leak?
   pthread_mutex_lock(jack_port_mutex);
   
-  port_name = g_strdup(jack_port->port_name);
+  jack_port->port_name = g_strdup(port_name);
 
   pthread_mutex_unlock(jack_port_mutex);
 
@@ -859,7 +859,7 @@ ags_jack_port_register(AgsJackPort *jack_port,
     ags_jack_port_set_flags(jack_port, AGS_JACK_PORT_IS_AUDIO);
     
     port = jack_port_register(client,
-			      port_name,
+			      jack_port->port_name,
 			      JACK_DEFAULT_AUDIO_TYPE,
 			      (is_output ? JackPortIsOutput: JackPortIsInput),
 			      0);
@@ -867,7 +867,7 @@ ags_jack_port_register(AgsJackPort *jack_port,
     ags_jack_port_set_flags(jack_port, AGS_JACK_PORT_IS_MIDI);
     
     port = jack_port_register(client,
-			      port_name,
+			      jack_port->port_name,
 			      JACK_DEFAULT_MIDI_TYPE,
 			      (is_output ? JackPortIsOutput: JackPortIsInput),
 			      0);

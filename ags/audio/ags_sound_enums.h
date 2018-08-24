@@ -73,6 +73,7 @@ typedef enum{
   AGS_SOUND_STAGING_CANCEL              = 1 << 12,
   AGS_SOUND_STAGING_DONE                = 1 << 13,
   AGS_SOUND_STAGING_REMOVE              = 1 << 14,
+  AGS_SOUND_STAGING_RESET               = 1 << 15,
 }AgsSoundStagingFlags;
 
 typedef enum{

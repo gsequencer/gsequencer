@@ -4374,6 +4374,7 @@ ags_recall_real_run_init_pre(AgsRecall *recall)
   /* run init pre */
   pthread_mutex_lock(recall_mutex);
 
+  recall->flags |= AGS_RECALL_INITIAL_RUN;
   recall->staging_flags |= AGS_SOUND_STAGING_RUN_INIT_PRE;
 
   if((AGS_RECALL_TEMPLATE & (recall->flags)) != 0){
@@ -4812,6 +4813,7 @@ ags_recall_real_run_post(AgsRecall *recall)
   pthread_mutex_lock(recall_mutex);
 
   recall->staging_flags |= AGS_SOUND_STAGING_RUN_POST;
+  recall->flags &= (~AGS_RECALL_INITIAL_RUN);
 
   if((AGS_RECALL_TEMPLATE & (recall->flags)) != 0){
     g_warning("running on template");

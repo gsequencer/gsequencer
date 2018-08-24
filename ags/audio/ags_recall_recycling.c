@@ -335,7 +335,8 @@ ags_recall_recycling_set_property(GObject *gobject,
       }
 
       if(recall_recycling->source != NULL){
-	if((AGS_RECALL_TEMPLATE & (AGS_RECALL(recall_recycling)->flags)) == 0){
+	if((AGS_RECALL_TEMPLATE & (AGS_RECALL(recall_recycling)->flags)) == 0 &&
+	   ags_connectable_is_connected(AGS_CONNECTABLE(recall_recycling))){
 	  ags_connectable_disconnect_connection(AGS_CONNECTABLE(recall_recycling),
 						recall_recycling->source);
 	}
@@ -350,7 +351,8 @@ ags_recall_recycling_set_property(GObject *gobject,
       recall_recycling->source = source;
 
       if(source != NULL){
-	if((AGS_RECALL_TEMPLATE & (AGS_RECALL(recall_recycling)->flags)) == 0){
+	if((AGS_RECALL_TEMPLATE & (AGS_RECALL(recall_recycling)->flags)) == 0 &&
+	   ags_connectable_is_connected(AGS_CONNECTABLE(recall_recycling))){
 	  ags_connectable_connect_connection(AGS_CONNECTABLE(recall_recycling),
 					     source);
 	}

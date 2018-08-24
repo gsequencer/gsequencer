@@ -163,10 +163,6 @@ ags_stream_audio_signal_run_post(AgsRecall *recall)
 	       "parent", &stream_recycling,
 	       "source", &source,
 	       NULL);
-
-#ifdef AGS_DEBUG
-  g_message("stream %x %d: %d", source, g_list_length(source->stream), g_list_length(source->stream_current));
-#endif
   
   g_object_get(stream_recycling,
 	       "parent", &stream_channel_run,
@@ -175,6 +171,10 @@ ags_stream_audio_signal_run_post(AgsRecall *recall)
   g_object_get(stream_channel_run,
 	       "recall-channel", &stream_channel,
 	       NULL);
+
+#ifdef AGS_DEBUG
+  g_message("stream[%d] %x %d: %d", AGS_RECALL_CHANNEL(stream_channel)->source->line, source, g_list_length(source->stream), g_list_length(source->stream_current));
+#endif
   
   if(source->stream_current != NULL){
     if(source->stream_current->next == NULL){

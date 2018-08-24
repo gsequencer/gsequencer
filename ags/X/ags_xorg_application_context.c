@@ -1481,21 +1481,21 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
 			      "core-audio",
 			      11)){
 	soundcard = ags_sound_server_register_soundcard(AGS_SOUND_SERVER(core_audio_server),
-							       TRUE);
+							TRUE);
 
 	has_core_audio = TRUE;
       }else if(!g_ascii_strncasecmp(str,
 			      "pulse",
 			      6)){
 	soundcard = ags_sound_server_register_soundcard(AGS_SOUND_SERVER(pulse_server),
-							       TRUE);
+							TRUE);
 
 	has_pulse = TRUE;
       }else if(!g_ascii_strncasecmp(str,
 			      "jack",
 			      5)){
 	soundcard = ags_sound_server_register_soundcard(AGS_SOUND_SERVER(jack_server),
-							       TRUE);
+							TRUE);
 
 	has_jack = TRUE;
       }else if(!g_ascii_strncasecmp(str,

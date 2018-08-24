@@ -1021,7 +1021,8 @@ ags_audio_loop_play_channel(AgsAudioLoop *audio_loop)
   GList *recall_id;
 
   gint sound_scope;
-  static const guint playback_staging_flags = (AGS_SOUND_STAGING_FEED_INPUT_QUEUE |
+  static const guint playback_staging_flags = (AGS_SOUND_STAGING_RESET |
+					       AGS_SOUND_STAGING_FEED_INPUT_QUEUE |
 					       AGS_SOUND_STAGING_AUTOMATE |
 					       AGS_SOUND_STAGING_RUN_PRE |
 					       AGS_SOUND_STAGING_RUN_INTER |
@@ -1244,7 +1245,8 @@ ags_audio_loop_play_audio(AgsAudioLoop *audio_loop)
 	
 	if((recall_id = ags_audio_check_scope(audio, sound_scope)) != NULL){
 	  ags_audio_recursive_run_stage(audio,
-					sound_scope, (AGS_SOUND_STAGING_FEED_INPUT_QUEUE |
+					sound_scope, (AGS_SOUND_STAGING_RESET |
+						      AGS_SOUND_STAGING_FEED_INPUT_QUEUE |
 						      AGS_SOUND_STAGING_AUTOMATE |
 						      AGS_SOUND_STAGING_RUN_PRE));
 

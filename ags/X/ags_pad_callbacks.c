@@ -214,27 +214,27 @@ ags_pad_start_channel_launch_callback(AgsTask *task,
 				      AgsPad *input_pad)
 { 
   AgsAudio *audio;
-  AgsChannel *channel, *next_pad;
+  AgsChannel *channel, *next;
   
   GObject *output_soundcard;
 
   GList *recall;
 
   /* get channel */
-  channel = input_pad->channel;
+  channel = AGS_START_CHANNEL(task)->channel;
 
   /* get audio and its audio mutex */
   g_object_get(channel,
 	       "audio", &audio,
 	       "output-soundcard", &output_soundcard,
-	       "next-pad", &next_pad,
+	       "next", &next,
 	       NULL);
   
 #ifdef AGS_DEBUG
   g_message("launch");
 #endif
   
-  while(channel != next_pad){
+  while(channel != next){
     AgsRecycling *last_recycling;
     AgsRecycling *recycling, *end_recycling;
     AgsAudioSignal *audio_signal;

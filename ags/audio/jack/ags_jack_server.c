@@ -246,11 +246,10 @@ ags_jack_server_class_init(AgsJackServerClass *jack_server)
    * 
    * Since: 2.0.0
    */
-  param_spec = g_param_spec_object("jack-client",
-				   i18n_pspec("jack client list"),
-				   i18n_pspec("The jack client list"),
-				   AGS_TYPE_JACK_CLIENT,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  param_spec = g_param_spec_pointer("jack-client",
+				    i18n_pspec("jack client list"),
+				    i18n_pspec("The jack client list"),
+				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_JACK_CLIENT,
 				  param_spec);
@@ -471,7 +470,7 @@ ags_jack_server_set_property(GObject *gobject,
     {
       GObject *client;
 
-      client = (GObject *) g_value_get_object(value);
+      client = (GObject *) g_value_get_pointer(value);
 
       pthread_mutex_lock(jack_server_mutex);
 

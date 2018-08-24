@@ -10537,8 +10537,8 @@ ags_channel_real_stop(AgsChannel *channel,
     message->parameter_name[1] = "sound-scope";
     g_value_init(&(message->value[1]),
 		 G_TYPE_INT);
-    g_value_set_object(&(message->value[1]),
-		       sound_scope);
+    g_value_set_int(&(message->value[1]),
+		    sound_scope);
     
     /* terminate string vector */
     message->parameter_name[2] = NULL;

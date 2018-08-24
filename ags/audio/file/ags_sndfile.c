@@ -720,55 +720,6 @@ ags_sndfile_read(AgsSoundResource *sound_resource,
 		 guint frame_count, guint format)
 {
   AgsSndfile *sndfile;
-  
-  guint copy_mode;
-  guint total_frame_count;
-  guint num_read, num_write;
-  
-  sndfile = AGS_SNDFILE(sound_resource);
-
-  ags_sound_resource_info(sound_resource,
-			  &total_frame_count,
-			  NULL, NULL);
-
-  if(sndfile->offset >= total_frame_count){
-    return(0);
-  }
-
-  if(sndfile->full_buffer == NULL){
-    sndfile->full_buffer = (double *) malloc((size_t) sndfile->info->channels *
-					     sndfile->info->frames *
-					     sizeof(double));
-
-    ags_audio_buffer_util_clear_double(sndfile->full_buffer, sndfile->info->channels,
-				       sndfile->info->frames);
-
-    num_read = sf_read_double(sndfile->file, sndfile->full_buffer, sndfile->info->frames * sndfile->info->channels);
-
-    if(num_read != sndfile->info->frames * sndfile->info->channels){
-      g_warning("ags_sndfile_read(): read to many items");
-    }
-  }
-
-  num_write = frame_count;
-  
-  if(sndfile->offset + frame_count >= total_frame_count){
-    num_write = total_frame_count - sndfile->offset;
-  }
-  
-  copy_mode = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(format),
-						  ags_audio_buffer_util_format_from_soundcard(AGS_SOUNDCARD_DOUBLE));
-
-  ags_audio_buffer_util_copy_buffer_to_buffer(dbuffer, daudio_channels, 0,
-					      &(((gdouble *) sndfile->full_buffer)[audio_channel]), sndfile->info->channels, sndfile->info->channels * sndfile->offset,
-					      num_write, copy_mode);
-
-  sndfile->offset += num_write;
-  
-  return(num_write);
-
-#if 0
-  AgsSndfile *sndfile;
 
   sf_count_t multi_frames;
   guint total_frame_count;
@@ -870,7 +821,6 @@ ags_sndfile_read(AgsSoundResource *sound_resource,
   sndfile->offset += frame_count;
   
   return(frame_count);
-#endif
 }
 
 void
@@ -1014,7 +964,7 @@ ags_sndfile_seek(AgsSoundResource *sound_resource,
     }
   }
 
-  sf_seek(sndfile->file, frame_count, whence);
+  //  sf_seek(sndfile->file, frame_count, whence);
 }
 
 void
