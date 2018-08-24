@@ -20,6 +20,7 @@
 #ifndef __AGS_OPEN_FILE_H__
 #define __AGS_OPEN_FILE_H__
 
+#include <glib.h>
 #include <glib-object.h>
 
 #include <ags/libags.h>

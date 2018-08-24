@@ -41,10 +41,11 @@
 #define AGS_WAVE_TICS_PER_BEAT (1.0)
 #define AGS_WAVE_MINIMUM_BUFFER_LENGTH (1.0 / 16.0)
 
+
 #define AGS_WAVE_DEFAULT_LENGTH (65535.0 / AGS_WAVE_TICS_PER_BEAT - AGS_WAVE_MINIMUM_BUFFER_LENGTH)
 #define AGS_WAVE_DEFAULT_JIFFIE (60.0 / AGS_WAVE_DEFAULT_BPM / AGS_WAVE_TICS_PER_BEAT)
 #define AGS_WAVE_DEFAULT_DURATION (AGS_WAVE_DEFAULT_LENGTH * AGS_WAVE_DEFAULT_JIFFIE * AGS_MICROSECONDS_PER_SECOND)
-#define AGS_WAVE_DEFAULT_OFFSET (64 * (1 / AGS_WAVE_MINIMUM_BUFFER_LENGTH))
+#define AGS_WAVE_DEFAULT_OFFSET (64 * AGS_SOUNDCARD_DEFAULT_SAMPLERATE)
 
 #define AGS_WAVE_CLIPBOARD_VERSION "1.4.0"
 #define AGS_WAVE_CLIPBOARD_TYPE "AgsWaveClipboardXml"
@@ -74,8 +75,10 @@ struct _AgsWave
   pthread_mutexattr_t *obj_mutexattr;
 
   GObject *audio;
-  guint audio_channel;
+  guint line;
 
+  guint64 duration;
+  
   guint samplerate;
   guint buffer_size;
   guint format;
@@ -106,7 +109,7 @@ void ags_wave_set_buffer_size(AgsWave *wave,
 void ags_wave_set_format(AgsWave *wave,
 			 guint format);
 
-GList* ags_wave_find_near_timestamp(GList *wave, guint audio_channel,
+GList* ags_wave_find_near_timestamp(GList *wave, guint line,
 				    AgsTimestamp *timestamp);
 
 GList* ags_wave_add(GList *wave,
@@ -153,9 +156,9 @@ void ags_wave_insert_from_clipboard_extended(AgsWave *wave,
 					     xmlNode *wave_node,
 					     gboolean reset_x_offset, guint64 x_offset,
 					     gdouble delay, guint attack,
-					     gboolean match_audio_channel, gboolean do_replace);
+					     gboolean match_line, gboolean do_replace);
 
 AgsWave* ags_wave_new(GObject *audio,
-		      guint audio_channel);
+		      guint line);
 
 #endif /*__AGS_WAVE_H__*/

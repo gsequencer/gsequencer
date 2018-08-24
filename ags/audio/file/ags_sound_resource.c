@@ -444,6 +444,8 @@ ags_sound_resource_read_audio_signal(AgsSoundResource *sound_resource,
 					NULL,
 					NULL);
     g_object_set(audio_signal,
+		 "samplerate", samplerate, //TODO:JK: implement me target_samplerate
+		 "buffer-size", target_buffer_size,
 		 "format", target_format,
 		 "loop-start", loop_start,
 		 "loop-end", loop_end,
@@ -457,12 +459,17 @@ ags_sound_resource_read_audio_signal(AgsSoundResource *sound_resource,
 
     stream = audio_signal->stream;
 
+    if(samplerate != target_samplerate){
+      //TODO:JK: implement me
+    }
+    
     while(stream != NULL){
       ags_sound_resource_read(AGS_SOUND_RESOURCE(sound_resource),
 			      stream->data, 1,
 			      i,
 			      target_buffer_size, target_format);
       
+      /* iterate */
       stream = stream->next;
     }
   }
@@ -494,5 +501,105 @@ ags_sound_resource_read_wave(AgsSoundResource *sound_resource,
 			     guint64 x_offset,
 			     gdouble delay, guint attack)
 {
-  //TODO:JK: implement me
+  GList *start_list;
+
+  guint frame_count;
+  guint audio_channels;
+  guint target_samplerate, samplerate;
+  guint target_buffer_size, buffer_size;
+  guint target_format, format;
+  guint i, i_start, i_stop;
+  
+  if(!AGS_SOUND_RESOURCE(sound_resource)){
+    return(NULL);
+  }
+
+  ags_sound_resource_info(AGS_SOUND_RESOURCE(sound_resource),
+			  &frame_count,
+			  NULL, NULL);
+
+  ags_sound_resource_get_presets(AGS_SOUND_RESOURCE(sound_resource),
+				 &audio_channels,
+				 &samplerate,
+				 &buffer_size,
+				 &format);
+  if(soundcard != NULL){
+    ags_soundcard_get_presets(AGS_SOUNDCARD(soundcard),
+			      NULL,
+			      &target_samplerate,
+			      &target_buffer_size,
+			      &target_format);
+  }else{
+    AgsConfig *config;
+
+    config = ags_config_get_instance();
+
+    target_samplerate = ags_soundcard_helper_config_get_samplerate(config);
+    target_buffer_size = ags_soundcard_helper_config_get_buffer_size(config);
+    target_format = ags_soundcard_helper_config_get_format(config);
+  }
+  
+  start_list = NULL;
+
+  if(audio_channel == -1){
+    i_start = 0;
+    i_stop = audio_channels;
+  }else{
+    i_start = audio_channel;
+    i_stop = i_start + 1;
+  }
+
+  for(i = i_start; i < i_stop; i++){
+    AgsWave *wave;
+
+    guint64 offset;
+    gboolean success;
+
+    ags_sound_resource_seek(AGS_SOUND_RESOURCE(sound_resource),
+    			    0, G_SEEK_SET);
+    
+    wave = ags_wave_new(NULL,
+			i);
+    g_object_set(wave,
+		 "samplerate", samplerate,
+		 "buffer-size", target_buffer_size,
+		 "format", target_format,
+		 NULL);
+
+    start_list = g_list_prepend(start_list,
+				wave);
+
+    offset = 0;
+    success = TRUE;
+    
+    while(success){
+      AgsBuffer *buffer;
+      
+      guint num_read;
+
+      buffer = ags_buffer_new();
+      g_object_set(buffer,
+		   "x", offset,
+		   "samplerate", samplerate,
+		   "buffer-size", target_buffer_size,
+		   "format", target_format,
+		   NULL);
+      
+      num_read = ags_sound_resource_read(AGS_SOUND_RESOURCE(sound_resource),
+					 buffer->data, 1,
+					 i,
+					 target_buffer_size, target_format);
+
+      /* iterate */
+      offset += num_read;
+
+      if(num_read != target_buffer_size){
+	success = FALSE;
+      }
+    }
+  }
+
+  start_list = g_list_reverse(start_list);
+  
+  return(start_list);
 }

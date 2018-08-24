@@ -1155,6 +1155,7 @@ libags_audio_task_h_sources = \
 	ags/audio/task/ags_open_sf2_instrument.h \
 	ags/audio/task/ags_open_sf2_sample.h \
 	ags/audio/task/ags_open_single_file.h \
+	ags/audio/task/ags_open_wave.h \
 	ags/audio/task/ags_remove_audio.h \
 	ags/audio/task/ags_remove_audio_signal.h \
 	ags/audio/task/ags_remove_note.h \
@@ -1204,6 +1205,7 @@ libags_audio_task_c_sources = \
 	ags/audio/task/ags_open_sf2_instrument.c \
 	ags/audio/task/ags_open_sf2_sample.c \
 	ags/audio/task/ags_open_single_file.c \
+	ags/audio/task/ags_open_wave.c \
 	ags/audio/task/ags_remove_audio.c \
 	ags/audio/task/ags_remove_audio_signal.c \
 	ags/audio/task/ags_remove_note.c \

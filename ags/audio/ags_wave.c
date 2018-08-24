@@ -61,7 +61,7 @@ void ags_wave_insert_native_level_from_clipboard(AgsWave *wave,
 enum{
   PROP_0,
   PROP_AUDIO,
-  PROP_AUDIO_CHANNEL,
+  PROP_LINE,
   PROP_SAMPLERATE,
   PROP_BUFFER_SIZE,
   PROP_FORMAT,
@@ -134,21 +134,21 @@ ags_wave_class_init(AgsWaveClass *wave)
 				  param_spec);
 
   /**
-   * AgsWave:audio-channel:
+   * AgsWave:line:
    *
-   * The wave's audio-channel.
+   * The wave's line.
    * 
    * Since: 2.0.0
    */
-  param_spec =  g_param_spec_uint("audio-channel",
-				  i18n_pspec("audio-channel of wave"),
-				  i18n_pspec("The numerical audio-channel of wave"),
+  param_spec =  g_param_spec_uint("line",
+				  i18n_pspec("line of wave"),
+				  i18n_pspec("The numerical line of wave"),
 				  0,
 				  G_MAXUINT32,
 				  0,
 				  G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
-				  PROP_AUDIO_CHANNEL,
+				  PROP_LINE,
 				  param_spec);
   
   /**
@@ -264,7 +264,7 @@ ags_wave_init(AgsWave *wave)
 
   /* fields */  
   wave->audio = NULL;
-  wave->audio_channel = 0;
+  wave->line = 0;
 
   wave->samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
   wave->buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
@@ -330,15 +330,15 @@ ags_wave_set_property(GObject *gobject,
       pthread_mutex_unlock(wave_mutex);
     }
     break;
-  case PROP_AUDIO_CHANNEL:
+  case PROP_LINE:
     {
-      guint audio_channel;
+      guint line;
 
-      audio_channel = g_value_get_uint(value);
+      line = g_value_get_uint(value);
 
       pthread_mutex_lock(wave_mutex);
 
-      wave->audio_channel = audio_channel;
+      wave->line = line;
 
       pthread_mutex_unlock(wave_mutex);
     }
@@ -457,11 +457,11 @@ ags_wave_get_property(GObject *gobject,
       pthread_mutex_unlock(wave_mutex);
     }
     break;
-  case PROP_AUDIO_CHANNEL:
+  case PROP_LINE:
     {
       pthread_mutex_lock(wave_mutex);
 
-      g_value_set_uint(value, wave->audio_channel);
+      g_value_set_uint(value, wave->line);
 
       pthread_mutex_unlock(wave_mutex);
     }
@@ -862,7 +862,7 @@ ags_wave_set_format(AgsWave *wave,
 /**
  * ags_wave_find_near_timestamp:
  * @wave: a #GList containing #AgsWave
- * @audio_channel: the matching audio channel
+ * @line: the matching audio channel
  * @timestamp: the matching #AgsTimestamp, or %NULL to match any timestamp
  *
  * Retrieve appropriate wave for timestamp.
@@ -872,19 +872,25 @@ ags_wave_set_format(AgsWave *wave,
  * Since: 2.0.0
  */
 GList*
-ags_wave_find_near_timestamp(GList *wave, guint audio_channel,
+ags_wave_find_near_timestamp(GList *wave, guint line,
 			     AgsTimestamp *timestamp)
 {
   AgsTimestamp *current_timestamp;
 
-  guint current_audio_channel;
+  guint current_line;
 
   while(wave != NULL){
-    g_object_get(wave->data,
-		 "audio-channel", &current_audio_channel,
-		 NULL);
+    guint64 relative_offset;
+    guint samplerate;
     
-    if(current_audio_channel != audio_channel){
+    g_object_get(wave->data,
+		 "line", &current_line,
+		 "samplerate", &samplerate,
+		 NULL);
+
+    relative_offset = 64 * samplerate;
+    
+    if(current_line != line){
       wave = wave->next;
       
       continue;
@@ -904,7 +910,7 @@ ags_wave_find_near_timestamp(GList *wave, guint audio_channel,
 	 ags_timestamp_test_flags(current_timestamp,
 				  AGS_TIMESTAMP_OFFSET)){
 	if(ags_timestamp_get_ags_offset(current_timestamp) >= ags_timestamp_get_ags_offset(timestamp) &&
-	   ags_timestamp_get_ags_offset(current_timestamp) < ags_timestamp_get_ags_offset(timestamp) + AGS_WAVE_DEFAULT_OFFSET){
+	   ags_timestamp_get_ags_offset(current_timestamp) < ags_timestamp_get_ags_offset(timestamp) + relative_offset){
 	  return(wave);
 	}
       }else if(ags_timestamp_test_flags(timestamp,
@@ -1629,8 +1635,8 @@ ags_wave_copy_selection(AgsWave *wave)
 	     BAD_CAST "format",
 	     BAD_CAST (AGS_WAVE_CLIPBOARD_FORMAT));
   xmlNewProp(wave_node,
-	     BAD_CAST "audio-channel",
-	     BAD_CAST (g_strdup_printf("%u", wave->audio_channel)));
+	     BAD_CAST "line",
+	     BAD_CAST (g_strdup_printf("%u", wave->line)));
 
   /* buffer format */
   str = NULL;
@@ -1884,7 +1890,9 @@ ags_wave_insert_native_level_from_clipboard(AgsWave *wave,
 					    gdouble delay, guint attack,
 					    gboolean match_channel, gboolean do_replace)
 {
-  guint current_audio_channel;
+  guint current_line;
+  guint64 relative_offset;
+  guint samplerate;
   
   gboolean match_timestamp;
   
@@ -2158,7 +2166,7 @@ ags_wave_insert_native_level_from_clipboard(AgsWave *wave,
 		       NULL);
 
 	  if(!match_timestamp ||
-	     x_val < ags_timestamp_get_ags_offset(timestamp) + AGS_WAVE_DEFAULT_OFFSET){
+	     x_val < ags_timestamp_get_ags_offset(timestamp) + relative_offset){
 	    /* find first */
 	    buffer = ags_wave_find_point(wave,
 					 x_val,
@@ -2282,14 +2290,17 @@ ags_wave_insert_native_level_from_clipboard(AgsWave *wave,
 		 6)){
     /* changes contain only optional informations */
     g_object_get(wave,
-		 "audio-channel", &current_audio_channel,
+		 "line", &current_line,
+		 "samplerate", &samplerate,
 		 NULL);
 
+    relative_offset = 64 * samplerate;
+
     if(match_channel &&
-       current_audio_channel != g_ascii_strtoull(xmlGetProp(root_node,
-							    "audio-channel"),
-						 NULL,
-						 10)){
+       current_line != g_ascii_strtoull(xmlGetProp(root_node,
+						   "line"),
+					NULL,
+					10)){
       return;
     }
     
@@ -2343,7 +2354,7 @@ ags_wave_insert_from_clipboard_extended(AgsWave *wave,
 					xmlNode *wave_node,
 					gboolean reset_x_offset, guint64 x_offset,
 					gdouble delay, guint attack,
-					gboolean match_audio_channel, gboolean do_replace)
+					gboolean match_line, gboolean do_replace)
 {
   char *program, *version, *type, *format;
   char *x_boundary;
@@ -2377,7 +2388,7 @@ ags_wave_insert_from_clipboard_extended(AgsWave *wave,
 						    x_boundary,
 						    reset_x_offset, x_offset,
 						    delay, attack,
-						    match_audio_channel, do_replace);
+						    match_line, do_replace);
       }
     }
   }
@@ -2386,7 +2397,7 @@ ags_wave_insert_from_clipboard_extended(AgsWave *wave,
 /**
  * ags_wave_new:
  * @audio: the assigned #AgsAudio
- * @audio_channel: the audio channel to be used
+ * @line: the audio channel to be used
  *
  * Creates a new instance of #AgsWave.
  *
@@ -2396,13 +2407,13 @@ ags_wave_insert_from_clipboard_extended(AgsWave *wave,
  */
 AgsWave*
 ags_wave_new(GObject *audio,
-	     guint audio_channel)
+	     guint line)
 {
   AgsWave *wave;
   
   wave = (AgsWave *) g_object_new(AGS_TYPE_WAVE,
 				  "audio", audio,
-				  "audio-channel", audio_channel,
+				  "line", line,
 				  NULL);
   
   return(wave);
