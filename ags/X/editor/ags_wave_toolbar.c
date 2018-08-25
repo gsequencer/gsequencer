@@ -29,6 +29,9 @@
 #include <ags/X/ags_menu_bar.h>
 #include <ags/X/ags_wave_editor.h>
 
+#include <ags/X/editor/ags_select_buffer_dialog.h>
+#include <ags/X/editor/ags_position_wave_cursor_dialog.h>
+
 #include <ags/config.h>
 #include <ags/i18n.h>
 
@@ -124,29 +127,25 @@ ags_wave_toolbar_init(AgsWaveToolbar *wave_toolbar)
 			    "select wave",
 			    NULL);
 
-  wave_toolbar->copy = (GtkButton *) g_object_new(GTK_TYPE_BUTTON,
-						  "image", gtk_image_new_from_stock(GTK_STOCK_COPY,
-										    GTK_ICON_SIZE_LARGE_TOOLBAR),
-						  "relief", GTK_RELIEF_NONE,
-						  NULL);
+  wave_toolbar->copy = (GtkToolButton *) g_object_new(GTK_TYPE_TOOL_BUTTON,
+						      "stock-id", GTK_STOCK_COPY,
+						      NULL);
   gtk_toolbar_append_widget((GtkToolbar *) wave_toolbar,
 			    (GtkWidget *) wave_toolbar->copy,
 			    "copy wave",
 			    NULL);
 
-  wave_toolbar->cut = (GtkButton *) g_object_new(GTK_TYPE_BUTTON,
-						 "image", gtk_image_new_from_stock(GTK_STOCK_CUT,
-										   GTK_ICON_SIZE_LARGE_TOOLBAR),
-						 "relief", GTK_RELIEF_NONE,
-						 NULL);
+  wave_toolbar->cut = (GtkToolButton *) g_object_new(GTK_TYPE_TOOL_BUTTON,
+						     "stock-id", GTK_STOCK_CUT,
+						     NULL);
   gtk_toolbar_append_widget((GtkToolbar *) wave_toolbar,
 			    (GtkWidget *) wave_toolbar->cut,
 			    "cut wave",
 			    NULL);
 
   wave_toolbar->paste_tool = (GtkButton *) g_object_new(GTK_TYPE_MENU_TOOL_BUTTON,
-							      "stock-id", GTK_STOCK_PASTE,
-							      NULL);
+							"stock-id", GTK_STOCK_PASTE,
+							NULL);
 
   menu = gtk_menu_new();
 
@@ -179,8 +178,8 @@ ags_wave_toolbar_init(AgsWaveToolbar *wave_toolbar)
 				wave_toolbar->tool_popup);
 
   /* menu tool - dialogs */
-  wave_toolbar->select_buffer = NULL;
-  wave_toolbar->position_wave_cursor = NULL;
+  wave_toolbar->select_buffer = ags_select_buffer_dialog_new(NULL);
+  wave_toolbar->position_wave_cursor = ags_position_wave_cursor_dialog_new(NULL);
 
   /*  */
   wave_toolbar->zoom_history = 4;
@@ -201,6 +200,9 @@ ags_wave_toolbar_init(AgsWaveToolbar *wave_toolbar)
 void
 ags_wave_toolbar_connect(AgsConnectable *connectable)
 {
+  AgsWindow *window;
+  AgsWaveWindow *wave_window;
+  AgsWaveEditor *wave_editor;
   AgsWaveToolbar *wave_toolbar;
 
   GList *list;
@@ -212,6 +214,20 @@ ags_wave_toolbar_connect(AgsConnectable *connectable)
   }
 
   wave_toolbar->flags |= AGS_WAVE_TOOLBAR_CONNECTED;
+
+  wave_editor = (AgsWaveEditor *) gtk_widget_get_ancestor((GtkWidget *) wave_toolbar,
+								      AGS_TYPE_WAVE_EDITOR);
+
+  wave_window = (AgsWaveWindow *) gtk_widget_get_ancestor((GtkWidget *) wave_toolbar,
+								      AGS_TYPE_WAVE_WINDOW);
+  window = wave_window->parent_window;
+  
+  g_object_set(wave_toolbar->select_buffer,
+	       "main-window", window,
+	       NULL);
+  g_object_set(wave_toolbar->position_wave_cursor,
+	       "main-window", window,
+	       NULL);
 
   /* tool */
   g_signal_connect_after((GObject *) wave_toolbar->position, "toggled",

@@ -45,12 +45,12 @@ struct _AgsWaveToolbar
 
   guint flags;
   
-  GtkToggleButton *selected_edit_mode;
-  GtkToggleButton *position;
-  GtkToggleButton *select;
+  GtkToggleToolButton *selected_edit_mode;
+  GtkToggleToolButton *position;
+  GtkToggleToolButton *select;
 
-  GtkButton *copy;
-  GtkButton *cut;
+  GtkToolButton *copy;
+  GtkToolButton *cut;
   GtkMenuToolButton *paste_tool;
 
   GtkMenuToolButton *menu_tool;

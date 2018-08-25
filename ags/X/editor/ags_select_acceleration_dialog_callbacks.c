@@ -19,8 +19,8 @@
 
 #include <ags/X/editor/ags_select_acceleration_dialog_callbacks.h>
 
-#include <ags/object/ags_application_context.h>
-#include <ags/object/ags_applicable.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
 
 #include <ags/thread/ags_mutex_manager.h>
 

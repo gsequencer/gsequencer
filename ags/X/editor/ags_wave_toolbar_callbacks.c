@@ -109,13 +109,13 @@ ags_wave_toolbar_match_line_callback(GtkWidget *widget, AgsWaveToolbar *wave_too
 void
 ags_wave_toolbar_tool_popup_select_buffer_callback(GtkWidget *item, AgsWaveToolbar *wave_toolbar)
 {
-  //TODO:JK: implement me
+  gtk_widget_show_all(wave_toolbar->select_buffer);
 }
 
 void
 ags_wave_toolbar_tool_popup_position_cursor_callback(GtkWidget *item, AgsWaveToolbar *wave_toolbar)
 {
-  //TODO:JK: implement me
+  gtk_widget_show_all(wave_toolbar->position_wave_cursor);  
 }
 
 void

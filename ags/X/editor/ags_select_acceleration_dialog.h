@@ -39,7 +39,6 @@
 
 typedef struct _AgsSelectAccelerationDialog AgsSelectAccelerationDialog;
 typedef struct _AgsSelectAccelerationDialogClass AgsSelectAccelerationDialogClass;
-typedef struct _AgsSelectAutomation AgsSelectAutomation;
 
 typedef enum{
   AGS_SELECT_ACCELERATION_DIALOG_CONNECTED   = 1,

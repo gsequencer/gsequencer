@@ -17,32 +17,17 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <ags/X/editor/ags_position_automation_cursor_dialog_callbacks.h>
+#ifndef __AGS_POSITION_WAVE_CURSOR_DIALOG_CALLBACKS_H__
+#define __AGS_POSITION_WAVE_CURSOR_DIALOG_CALLBACKS_H__
 
-#include <ags/libags.h>
+#include <glib.h>
+#include <glib-object.h>
 
-void
-ags_position_automation_cursor_dialog_response_callback(GtkWidget *dialog, gint response,
-							AgsPositionAutomationCursorDialog *position_automation_cursor_dialog)
-{
-  gboolean hide_dialog;
+#include <gtk/gtk.h>
 
-  hide_dialog = TRUE;
-  
-  switch(response){
-  case GTK_RESPONSE_APPLY:
-    {
-      hide_dialog = FALSE;
-    }
-  case GTK_RESPONSE_OK:
-    {
-      ags_applicable_apply(AGS_APPLICABLE(position_automation_cursor_dialog));
-    }
-  case GTK_RESPONSE_CANCEL:
-    {
-      if(hide_dialog){
-	gtk_widget_hide(position_automation_cursor_dialog);
-      }
-    }
-  }
-}
+#include <ags/X/editor/ags_position_wave_cursor_dialog.h>
+
+void ags_position_wave_cursor_dialog_response_callback(GtkWidget *dialog, gint response,
+						       AgsPositionWaveCursorDialog *position_wave_cursor_dialog);
+
+#endif /*__AGS_POSITION_WAVE_CURSOR_DIALOG_CALLBACKS_H__*/
