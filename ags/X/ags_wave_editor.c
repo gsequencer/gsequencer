@@ -337,6 +337,9 @@ ags_wave_editor_init(AgsWaveEditor *wave_editor)
 		   3, 4,
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
+
+  /* focused wave edit */
+  wave_editor->focused_wave_edit = NULL;
 }
 
 void
@@ -694,6 +697,14 @@ ags_wave_editor_machine_changed(AgsWaveEditor *wave_editor, AgsMachine *machine)
 		wave_editor_signals[MACHINE_CHANGED], 0,
 		machine);
   g_object_unref((GObject *) wave_editor);
+}
+
+void
+ags_wave_editor_select_region(AgsWaveEditor *wave_editor,
+			      guint x0, gdouble y0,
+			      guint x1, gdouble y1)
+{
+  //TODO:JK: implement me
 }
 
 void

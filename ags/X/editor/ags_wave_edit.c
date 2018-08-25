@@ -219,6 +219,7 @@ ags_wave_edit_init(AgsWaveEdit *wave_edit)
   wave_edit->flags = 0;
   wave_edit->mode = AGS_WAVE_EDIT_NO_EDIT_MODE;
 
+  wave_edit->button_mask = 0;
   wave_edit->key_mask = 0;
   
   wave_edit->note_offset = 0;
@@ -1219,7 +1220,89 @@ ags_wave_edit_draw_cursor(AgsWaveEdit *wave_edit)
 void
 ags_wave_edit_draw_selection(AgsWaveEdit *wave_edit)
 {
-  //TODO:JK: implement me
+  GtkStyle *wave_edit_style;
+
+  cairo_t *cr;
+
+  double x, y;
+  double width, height;
+
+  if(!AGS_IS_WAVE_EDIT(wave_edit)){
+    return;
+  }
+  
+  wave_edit_style = gtk_widget_get_style(GTK_WIDGET(wave_edit->drawing_area));
+
+  /* create cairo context */
+  cr = gdk_cairo_create(GTK_WIDGET(wave_edit->drawing_area)->window);
+
+  if(cr == NULL){
+    return;
+  }
+
+  /* get offset and dimensions */
+  if(wave_edit->selection_x0 < wave_edit->selection_x1){
+    x = ((double) wave_edit->selection_x0) - GTK_RANGE(wave_edit->hscrollbar)->adjustment->value;
+    width = ((double) wave_edit->selection_x1 - (double) wave_edit->selection_x0);
+  }else{
+    x = ((double) wave_edit->selection_x1) - GTK_RANGE(wave_edit->hscrollbar)->adjustment->value;
+    width = ((double) wave_edit->selection_x0 - (double) wave_edit->selection_x1);
+  }
+
+  if(wave_edit->selection_y0 < wave_edit->selection_y1){
+    y = ((double) wave_edit->selection_y0) - GTK_RANGE(wave_edit->vscrollbar)->adjustment->value;
+    height = ((double) wave_edit->selection_y1 - (double) wave_edit->selection_y0);
+  }else{
+    y = ((double) wave_edit->selection_y1) - GTK_RANGE(wave_edit->vscrollbar)->adjustment->value;
+    height = ((double) wave_edit->selection_y0 - (double) wave_edit->selection_y1);
+  }
+
+  /* clip */
+  if(x < 0.0){
+    width += x;
+
+    x = 0.0;
+  }else if(x > GTK_WIDGET(wave_edit->drawing_area)->allocation.width){
+    cairo_destroy(cr);
+    
+    return;
+  }
+
+  if(x + width > GTK_WIDGET(wave_edit->drawing_area)->allocation.width){
+    width = ((double) GTK_WIDGET(wave_edit->drawing_area)->allocation.width) - x;
+  }
+  
+  if(y < 0.0){
+    height += y;
+
+    y = 0.0;
+  }else if(y > GTK_WIDGET(wave_edit->drawing_area)->allocation.height){
+    cairo_destroy(cr);
+
+    return;
+  }
+
+  if(y + height > GTK_WIDGET(wave_edit->drawing_area)->allocation.height){
+    height = ((double) GTK_WIDGET(wave_edit->drawing_area)->allocation.height) - y;
+  }
+    
+  /* push group */
+  cairo_push_group(cr);
+
+  /* draw selection */
+  cairo_set_source_rgba(cr,
+			1.0, 0.0, 0.0, 0.3);
+  cairo_rectangle(cr,
+		  x, y,
+		  width, height);
+  cairo_fill(cr);
+
+  /* complete */
+  cairo_pop_group_to_source(cr);
+  cairo_paint(cr);
+      
+  cairo_surface_mark_dirty(cairo_get_target(cr));
+  cairo_destroy(cr);
 }
 
 void

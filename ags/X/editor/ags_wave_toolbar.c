@@ -107,20 +107,17 @@ ags_wave_toolbar_init(AgsWaveToolbar *wave_toolbar)
   GtkLabel *label;
   GtkCellRenderer *cell_renderer;
   
-  wave_toolbar->position = g_object_new(GTK_TYPE_TOGGLE_BUTTON,
-					"image", gtk_image_new_from_stock(GTK_STOCK_JUMP_TO,
-									  GTK_ICON_SIZE_LARGE_TOOLBAR),
-					"relief", GTK_RELIEF_NONE,
+  wave_toolbar->position = g_object_new(GTK_TYPE_TOGGLE_TOOL_BUTTON,
+					"stock-id", GTK_STOCK_JUMP_TO,
 					NULL);
+  wave_toolbar->selected_edit_mode = wave_toolbar->position;
   gtk_toolbar_append_widget((GtkToolbar *) wave_toolbar,
 			    (GtkWidget *) wave_toolbar->position,
 			    "position cursor",
 			    NULL);
   
-  wave_toolbar->select = g_object_new(GTK_TYPE_TOGGLE_BUTTON,
-				      "image", gtk_image_new_from_stock(GTK_STOCK_SELECT_ALL,
-									GTK_ICON_SIZE_LARGE_TOOLBAR),
-				      "relief", GTK_RELIEF_NONE,
+  wave_toolbar->select = g_object_new(GTK_TYPE_TOGGLE_TOOL_BUTTON,
+				      "stock-id", GTK_STOCK_SELECT_ALL,
 				      NULL);
   gtk_toolbar_append_widget((GtkToolbar *) wave_toolbar,
 			    (GtkWidget *) wave_toolbar->select,

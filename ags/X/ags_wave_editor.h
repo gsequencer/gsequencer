@@ -89,6 +89,8 @@ struct _AgsWaveEditor
 
   GtkVScrollbar *vscrollbar;
   GtkHScrollbar *hscrollbar;
+
+  AgsWaveEdit *focused_wave_edit;
 };
 
 struct _AgsWaveEditorClass

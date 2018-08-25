@@ -31,37 +31,79 @@
 void
 ags_wave_toolbar_position_callback(GtkToggleButton *toggle_button, AgsWaveToolbar *wave_toolbar)
 {
-  //TODO:JK: implement me
+  AgsWaveEditor *wave_editor;
+
+  wave_editor = (AgsWaveEditor *) gtk_widget_get_ancestor((GtkWidget *) wave_toolbar,
+							  AGS_TYPE_WAVE_EDITOR);
+  
+  if(toggle_button == wave_toolbar->selected_edit_mode){
+    if(!gtk_toggle_tool_button_get_active(toggle_button)){
+      gtk_toggle_tool_button_set_active(toggle_button, TRUE);
+    }
+  }else if(gtk_toggle_tool_button_get_active(toggle_button)){
+    GtkToggleButton *old_selected_edit_mode;
+    
+    old_selected_edit_mode = wave_toolbar->selected_edit_mode;
+    wave_toolbar->selected_edit_mode = toggle_button;
+    gtk_toggle_tool_button_set_active(old_selected_edit_mode, FALSE);
+  }
 }
 
 void
 ags_wave_toolbar_select_callback(GtkToggleButton *toggle_button, AgsWaveToolbar *wave_toolbar)
 {
-  //TODO:JK: implement me
+  if(toggle_button == wave_toolbar->selected_edit_mode){
+    if(!gtk_toggle_tool_button_get_active(toggle_button)){
+      gtk_toggle_tool_button_set_active(toggle_button, TRUE);
+    }
+  }else if(gtk_toggle_tool_button_get_active(toggle_button)){
+    GtkToggleButton *old_selected_edit_mode;
+    
+    old_selected_edit_mode = wave_toolbar->selected_edit_mode;
+    wave_toolbar->selected_edit_mode = toggle_button;
+    gtk_toggle_tool_button_set_active(old_selected_edit_mode, FALSE);
+  }
 }
 
 void
 ags_wave_toolbar_copy_or_cut_callback(GtkWidget *widget, AgsWaveToolbar *wave_toolbar)
 {
-  //TODO:JK: implement me
+  AgsWaveEditor *wave_editor;
+
+  wave_editor = AGS_WAVE_EDITOR(gtk_widget_get_ancestor(GTK_WIDGET(wave_toolbar),
+							AGS_TYPE_WAVE_EDITOR));
+
+  if(widget == (GtkWidget *) wave_toolbar->copy){
+    ags_wave_editor_copy(wave_editor);
+  }else{
+    ags_wave_editor_cut(wave_editor);
+  }
 }
 
 void
 ags_wave_toolbar_paste_callback(GtkWidget *widget, AgsWaveToolbar *wave_toolbar)
 {
-  //TODO:JK: implement me
+  AgsWaveEditor *wave_editor;
+
+  wave_editor = AGS_WAVE_EDITOR(gtk_widget_get_ancestor(GTK_WIDGET(wave_toolbar),
+							AGS_TYPE_WAVE_EDITOR));
+
+  ags_wave_editor_paste(wave_editor);
 }
 
 void
 ags_wave_toolbar_match_line_callback(GtkWidget *widget, AgsWaveToolbar *wave_toolbar)
 {
-  //TODO:JK: implement me
-}
+  AgsWaveEditor *wave_editor;
 
-void
-ags_wave_toolbar_no_duplicates_callback(GtkWidget *widget, AgsWaveToolbar *wave_toolbar)
-{
-  //TODO:JK: implement me
+  wave_editor = AGS_WAVE_EDITOR(gtk_widget_get_ancestor(GTK_WIDGET(wave_toolbar),
+							AGS_TYPE_WAVE_EDITOR));
+
+  if(gtk_check_menu_item_get_active(widget)){
+    wave_editor->flags |= AGS_WAVE_EDITOR_PASTE_MATCH_LINE;
+  }else{
+    wave_editor->flags &= (~AGS_WAVE_EDITOR_PASTE_MATCH_LINE);
+  }
 }
 
 void

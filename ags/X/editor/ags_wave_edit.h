@@ -79,6 +79,10 @@ typedef enum{
 }AgsWaveEditMode;
 
 typedef enum{
+  AGS_WAVE_EDIT_BUTTON_1            = 1,
+}AgsWaveEditButtonMask;
+
+typedef enum{
   AGS_WAVE_EDIT_KEY_L_CONTROL       = 1,
   AGS_WAVE_EDIT_KEY_R_CONTROL       = 1 <<  1,
   AGS_WAVE_EDIT_KEY_L_SHIFT         = 1 <<  2,
@@ -92,6 +96,7 @@ struct _AgsWaveEdit
   guint flags;
   guint mode;
 
+  guint button_mask;
   guint key_mask;
   
   guint note_offset;
