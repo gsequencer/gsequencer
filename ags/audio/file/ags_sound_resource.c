@@ -21,9 +21,9 @@
 
 #include <ags/libags.h>
 
+#include <ags/audio/ags_wave.h>
+#include <ags/audio/ags_buffer.h>
 #include <ags/audio/ags_audio_signal.h>
-
-#include <ags/audio/file/ags_sndfile.h>
 
 #include <math.h>
 
@@ -552,7 +552,11 @@ ags_sound_resource_read_wave(AgsSoundResource *sound_resource,
   for(i = i_start; i < i_stop; i++){
     AgsWave *wave;
 
+    AgsTimestamp *timestamp;
+
     guint64 offset;
+    guint64 relative_offset;
+    guint frame_count;
     gboolean success;
 
     ags_sound_resource_seek(AGS_SOUND_RESOURCE(sound_resource),
@@ -566,17 +570,35 @@ ags_sound_resource_read_wave(AgsSoundResource *sound_resource,
 		 "format", target_format,
 		 NULL);
 
-    start_list = g_list_prepend(start_list,
-				wave);
+    start_list = ags_wave_add(start_list,
+			      wave);
 
-    offset = 0;
+
+    g_object_get(wave,
+		 "timestamp", &timestamp,
+		 NULL);
+    
+    relative_offset = 64 * samplerate;
+    
+    offset = x_offset;
+    frame_count = target_buffer_size;
+    
     success = TRUE;
     
     while(success){
       AgsBuffer *buffer;
       
       guint num_read;
+      gboolean create_wave;
 
+      create_wave = FALSE;
+
+      if(offset + frame_count >= ags_timestamp_get_ags_offset(timestamp) + relative_offset){
+	create_wave = TRUE;
+
+	frame_count = ags_timestamp_get_ags_offset(timestamp) + relative_offset - offset;
+      }
+      
       buffer = ags_buffer_new();
       g_object_set(buffer,
 		   "x", offset,
@@ -588,18 +610,38 @@ ags_sound_resource_read_wave(AgsSoundResource *sound_resource,
       num_read = ags_sound_resource_read(AGS_SOUND_RESOURCE(sound_resource),
 					 buffer->data, 1,
 					 i,
-					 target_buffer_size, target_format);
+					 frame_count, target_format);
 
+
+      if(create_wave){
+	wave = ags_wave_new(NULL,
+			    i);
+	g_object_set(wave,
+		     "samplerate", samplerate,
+		     "buffer-size", target_buffer_size,
+		     "format", target_format,
+		     NULL);
+
+	start_list = ags_wave_add(start_list,
+				  wave);
+
+	g_object_get(wave,
+		     "timestamp", &timestamp,
+		     NULL);
+	ags_timestamp_set_ags_offset(timestamp,
+				     offset);
+
+	frame_count = target_buffer_size;
+      }
+      
       /* iterate */
       offset += num_read;
 
-      if(num_read != target_buffer_size){
+      if(num_read != frame_count){
 	success = FALSE;
       }
     }
   }
-
-  start_list = g_list_reverse(start_list);
   
   return(start_list);
 }

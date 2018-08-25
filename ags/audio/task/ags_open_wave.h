@@ -49,7 +49,7 @@ struct _AgsOpenWave
   
   gchar *filename;
 
-  guint start_line;
+  guint start_pad;
 };
 
 struct _AgsOpenWaveClass
@@ -62,6 +62,6 @@ GType ags_open_wave_get_type();
 AgsOpenWave* ags_open_wave_new(AgsAudio *audio,
 			       AgsAudioFile *audio_file,
 			       gchar *filename,
-			       guint start_line);
+			       guint start_pad);
 
 #endif /*__AGS_OPEN_WAVE_H__*/

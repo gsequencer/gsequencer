@@ -63,7 +63,7 @@ enum{
   PROP_AUDIO,
   PROP_AUDIO_FILE,
   PROP_FILENAME,
-  PROP_START_LINE,
+  PROP_START_PAD,
 };
 
 GType
@@ -142,7 +142,7 @@ ags_open_wave_class_init(AgsOpenWaveClass *open_wave)
 				   AGS_TYPE_AUDIO_FILE,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
-				  PROP_AUDIO-FILE,
+				  PROP_AUDIO_FILE,
 				  param_spec);
 
   /**
@@ -162,21 +162,21 @@ ags_open_wave_class_init(AgsOpenWaveClass *open_wave)
 				  param_spec);
 
   /**
-   * AgsOpenWave:start-line:
+   * AgsOpenWave:start-pad:
    *
-   * The assigned start-line.
+   * The assigned start-pad.
    * 
    * Since: 2.0.0
    */
-  param_spec = g_param_spec_uint("start-line",
-				 i18n_pspec("the start line"),
-				 i18n_pspec("The start line"),
+  param_spec = g_param_spec_uint("start-pad",
+				 i18n_pspec("the start pad"),
+				 i18n_pspec("The start pad"),
 				 0,
 				 G_MAXUINT32,
 				 0,
 				 G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
-				  PROP_START_LINE,
+				  PROP_START_PAD,
 				  param_spec);
   
   /* AgsTask */
@@ -190,14 +190,11 @@ ags_open_wave_init(AgsOpenWave *open_wave)
 {
   open_wave->audio = NULL;
 
-  open_wave->instrument = NULL;
+  open_wave->audio_file = NULL;
 
   open_wave->filename = NULL;
 
-  open_wave->preset = NULL;
-  open_wave->instrument = NULL;
-
-  open_wave->start_line = NULL;
+  open_wave->start_pad = NULL;
 }
 
 void
@@ -270,9 +267,9 @@ ags_open_wave_set_property(GObject *gobject,
       open_wave->filename = g_strdup(filename);
     }
     break;
-  case PROP_START_LINE:
+  case PROP_START_PAD:
     {
-      open_wave->start_line = g_value_get_uint(value);
+      open_wave->start_pad = g_value_get_uint(value);
     }
     break;
   default:
@@ -307,19 +304,9 @@ ags_open_wave_get_property(GObject *gobject,
       g_value_set_string(value, open_wave->filename);
     }
     break;
-  case PROP_PRESET:
+  case PROP_START_PAD:
     {
-      g_value_set_string(value, open_wave->preset);
-    }
-    break;
-  case PROP_INSTRUMENT:
-    {
-      g_value_set_string(value, open_wave->instrument);
-    }
-    break;
-  case PROP_START_LINE:
-    {
-      g_value_set_uint(value, open_wave->start_line);
+      g_value_set_uint(value, open_wave->start_pad);
     }
     break;
   default:
@@ -375,11 +362,95 @@ ags_open_wave_finalize(GObject *gobject)
 void
 ags_open_wave_launch(AgsTask *task)
 {  
-  AgsOpenWave *open_wave;
+  AgsAudio *audio;
+  AgsChannel *start_channel, *channel;
+
+  AgsAudioFile *audio_file;
   
+  AgsOpenWave *open_wave;
+
+  GObject *output_soundcard;
+  
+  GList *start_list, *list;
+
+  guint n_pads, current_pads;
+  guint n_audio_channels, current_audio_channels;
+  guint i;
+  guint j, j_stop;
+
   open_wave = task;
 
-  //TODO:JK: implement me
+  audio = open_wave->audio;
+
+  audio_file = open_wave->audio_file;
+
+  if(audio_file == NULL){
+    //TODO:JK: implement me
+  }
+  
+  /* get some fields */
+  g_object_get(audio,
+	       "input-pads", n_pads,
+	       "audio-channels", &n_audio_channels,
+	       "output-soundcard", &output_soundcard,
+	       NULL);
+
+  ags_sound_resource_get_presets(AGS_SOUND_RESOURCE(audio_file),
+				 &current_audio_channels,
+				 NULL,
+				 NULL,
+				 NULL);
+  
+  if(current_audio_channels > n_audio_channels){
+    n_audio_channels = current_audio_channels;
+  }
+  
+  if(n_audio_channels > 0){
+    GList *start_wave, *wave;
+
+    /* resize */
+    ags_audio_set_audio_channels(audio,
+				 n_audio_channels, 0);
+
+    if(n_pads < open_wave->start_pad + 1){
+      ags_audio_set_pads(audio,
+			 AGS_TYPE_INPUT,
+			 open_wave->start_pad + 1, 0);
+    }
+          
+    ags_sound_resource_get_presets(AGS_SOUND_RESOURCE(audio_file->sound_resource),
+				   &j_stop,
+				   NULL,
+				   NULL,
+				   NULL);
+    
+    wave =
+      start_wave = ags_sound_resource_read_wave(AGS_SOUND_RESOURCE(audio_file->sound_resource),
+						output_soundcard,
+						-1,
+						0,
+						0.0, 0);
+
+    while(wave != NULL){
+      guint current_line;
+
+      g_object_get(wave->data,
+		   "audio", audio,
+		   "line", &current_line,
+		   NULL);
+      
+      g_object_set(wave->data,
+		   "line", (open_wave->start_pad * n_audio_channels) + current_line,
+		   NULL);
+      
+      ags_audio_add_wave(audio,
+			 wave->data);
+      
+      wave = wave->next;
+    }
+
+    g_list_free(start_wave);
+  }
 }
 
 /**
@@ -387,7 +458,7 @@ ags_open_wave_launch(AgsTask *task)
  * @audio: the #AgsAudio
  * @audio_file: the #AgsAudioFile or %NULL
  * @filename: the Soundfont2 file
- * @start_line: the line start
+ * @start_pad: the pad start
  *
  * Creates an #AgsOpenWave.
  *
@@ -399,7 +470,7 @@ AgsOpenWave*
 ags_open_wave_new(AgsAudio *audio,
 		  AgsAudioFile *audio_file,
 		  gchar *filename,
-		  guint start_line)
+		  guint start_pad)
 {
   AgsOpenWave *open_wave;
 
@@ -407,7 +478,7 @@ ags_open_wave_new(AgsAudio *audio,
 					   "audio", audio,
 					   "audio-file", audio_file,
 					   "filename", filename,
-					   "start-line", start_line,
+					   "start-pad", start_pad,
 					   NULL);
 
   return(open_wave);

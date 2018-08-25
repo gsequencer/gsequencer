@@ -449,7 +449,7 @@ void
 ags_open_sf2_instrument_launch(AgsTask *task)
 {
   AgsAudio *audio;
-  AgsAudio *start_channel, *channel;
+  AgsChannel *start_channel, *channel;
 
   AgsIpatch *ipatch;
   
@@ -500,8 +500,6 @@ ags_open_sf2_instrument_launch(AgsTask *task)
   }
 
   /* read */
-  task = NULL;
-
   if(n_audio_channels > 0 &&
      n_pads > 0){
     /* resize */
@@ -511,7 +509,7 @@ ags_open_sf2_instrument_launch(AgsTask *task)
 		       AGS_TYPE_INPUT,
 		       open_sf2_instrument->start_pad + n_pads, 0);
 
-    /* open sf2 sample task */
+    /* get some fields */
     g_object_get(audio,
 		 "input", &start_channel,
 		 NULL);

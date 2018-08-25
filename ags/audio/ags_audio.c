@@ -5527,7 +5527,7 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
     list_start = g_list_copy(audio->wave);
 
     while(list != NULL){
-      if(AGS_WAVE(list->data)->audio_channel >= audio_channels){
+      if(AGS_WAVE(list->data)->line % audio_channels_old >= audio_channels){
 	ags_audio_remove_wave(audio,
 			      list->data);
 
