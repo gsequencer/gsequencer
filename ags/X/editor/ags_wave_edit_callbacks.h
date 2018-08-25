@@ -27,4 +27,16 @@
 
 #include <ags/X/editor/ags_wave_edit.h>
 
+gboolean ags_wave_edit_drawing_area_expose_event(GtkWidget *widget, GdkEventExpose *event, AgsWaveEdit *wave_edit);
+gboolean ags_wave_edit_drawing_area_configure_event(GtkWidget *widget, GdkEventConfigure *event, AgsWaveEdit *wave_edit);
+
+gboolean ags_wave_edit_drawing_area_button_press_event(GtkWidget *widget, GdkEventButton *event, AgsWaveEdit *wave_edit);
+gboolean ags_wave_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEventButton *event, AgsWaveEdit *wave_edit);
+gboolean ags_wave_edit_drawing_area_motion_notify_event(GtkWidget *widget, GdkEventMotion *event, AgsWaveEdit *wave_edit);
+gboolean ags_wave_edit_drawing_area_key_press_event(GtkWidget *widget, GdkEventKey *event, AgsWaveEdit *wave_edit);
+gboolean ags_wave_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *event, AgsWaveEdit *wave_edit);
+
+void ags_wave_edit_vscrollbar_value_changed(GtkRange *range, AgsWaveEdit *wave_edit);
+void ags_wave_edit_hscrollbar_value_changed(GtkRange *range, AgsWaveEdit *wave_edit);
+
 #endif /*__AGS_WAVE_EDIT_CALLBACKS_H__*/

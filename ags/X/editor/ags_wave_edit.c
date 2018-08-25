@@ -334,7 +334,34 @@ ags_wave_edit_connect(AgsConnectable *connectable)
   
   wave_edit->flags |= AGS_WAVE_EDIT_CONNECTED;
 
-  //TODO:JK: implement me
+  /* drawing area */
+  g_signal_connect_after((GObject *) wave_edit->drawing_area, "expose_event",
+			 G_CALLBACK(ags_wave_edit_drawing_area_expose_event), (gpointer) wave_edit);
+
+  g_signal_connect_after((GObject *) wave_edit->drawing_area, "configure_event",
+			 G_CALLBACK(ags_wave_edit_drawing_area_configure_event), (gpointer) wave_edit);
+
+  g_signal_connect((GObject *) wave_edit->drawing_area, "button_press_event",
+		   G_CALLBACK(ags_wave_edit_drawing_area_button_press_event), (gpointer) wave_edit);
+
+  g_signal_connect((GObject *) wave_edit->drawing_area, "button_release_event",
+		   G_CALLBACK(ags_wave_edit_drawing_area_button_release_event), (gpointer) wave_edit);
+  
+  g_signal_connect((GObject *) wave_edit->drawing_area, "motion_notify_event",
+		   G_CALLBACK(ags_wave_edit_drawing_area_motion_notify_event), (gpointer) wave_edit);
+
+  g_signal_connect((GObject *) wave_edit->drawing_area, "key_press_event",
+		   G_CALLBACK(ags_wave_edit_drawing_area_key_press_event), (gpointer) wave_edit);
+
+  g_signal_connect((GObject *) wave_edit->drawing_area, "key_release_event",
+		   G_CALLBACK(ags_wave_edit_drawing_area_key_release_event), (gpointer) wave_edit);
+
+  /* scrollbars */
+  g_signal_connect_after((GObject *) wave_edit->vscrollbar, "value-changed",
+			 G_CALLBACK(ags_wave_edit_vscrollbar_value_changed), (gpointer) wave_edit);
+
+  g_signal_connect_after((GObject *) wave_edit->hscrollbar, "value-changed",
+			 G_CALLBACK(ags_wave_edit_hscrollbar_value_changed), (gpointer) wave_edit);
 }
 
 void
@@ -350,7 +377,43 @@ ags_wave_edit_disconnect(AgsConnectable *connectable)
   
   wave_edit->flags &= (~AGS_WAVE_EDIT_CONNECTED);
 
-  //TODO:JK: implement me
+  /* drawing area */
+  g_object_disconnect((GObject *) wave_edit->drawing_area,
+		      "any_signal::expose_event",
+		      G_CALLBACK(ags_wave_edit_drawing_area_expose_event),
+		      wave_edit,
+		      "any_signal::configure_event",
+		      G_CALLBACK(ags_wave_edit_drawing_area_configure_event),
+		      wave_edit,
+		      "any_signal::button_press_event",
+		      G_CALLBACK(ags_wave_edit_drawing_area_button_press_event),
+		      wave_edit,
+		      "any_signal::button_release_event",
+		      G_CALLBACK(ags_wave_edit_drawing_area_button_release_event),
+		      wave_edit,
+		      "any_signal::motion_notify_event",
+		      G_CALLBACK(ags_wave_edit_drawing_area_motion_notify_event),
+		      wave_edit,
+		      "any_signal::key_press_event",
+		      G_CALLBACK(ags_wave_edit_drawing_area_key_press_event),
+		      wave_edit,
+		      "any_signal::key_release_event",
+		      G_CALLBACK(ags_wave_edit_drawing_area_key_release_event),
+		      wave_edit,
+		      NULL);
+
+  /* scrollbars */
+  g_object_disconnect((GObject *) wave_edit->vscrollbar,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_wave_edit_vscrollbar_value_changed),
+		      (gpointer) wave_edit,
+		      NULL);
+
+  g_object_disconnect((GObject *) wave_edit->hscrollbar,
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_wave_edit_hscrollbar_value_changed),
+		      (gpointer) wave_edit,
+		      NULL);
 }
 
 AtkObject*
@@ -718,7 +781,7 @@ ags_accessible_wave_edit_get_localized_name(AtkAction *action,
 
 void
 ags_wave_edit_size_request(GtkWidget *widget,
-				 GtkRequisition *requisition)
+			   GtkRequisition *requisition)
 {
   AgsWaveEdit *wave_edit;
 
@@ -730,7 +793,7 @@ ags_wave_edit_size_request(GtkWidget *widget,
 
 void
 ags_wave_edit_size_allocate(GtkWidget *widget,
-				  GtkAllocation *allocation)
+			    GtkAllocation *allocation)
 {
   AgsWaveEdit *wave_edit;
 
@@ -860,6 +923,349 @@ ags_wave_edit_auto_scroll_timeout(GtkWidget *widget)
     return(FALSE);
   }
 }
+
+void
+ags_wave_edit_reset_vscrollbar(AgsWaveEdit *wave_edit)
+{
+  AgsWaveEditor *wave_editor;
+
+  GtkAdjustment *adjustment;
+  
+  double varea_height;
+  gdouble upper, old_upper;
+  
+  if(!AGS_IS_WAVE_EDIT(wave_edit)){
+    return;
+  }
+
+  wave_editor = gtk_widget_get_ancestor(wave_edit,
+					AGS_TYPE_WAVE_EDITOR);
+
+  if(wave_editor->selected_machine == NULL){
+    return;
+  }
+
+  adjustment = GTK_RANGE(wave_edit->vscrollbar)->adjustment;
+
+  /* upper */
+  old_upper = adjustment->upper; 
+
+  varea_height = wave_edit->step_count * wave_edit->control_height;
+  upper = varea_height - GTK_WIDGET(wave_edit->drawing_area)->allocation.height;
+
+  if(upper < 0.0){
+    upper = 0.0;
+  }
+	   
+  gtk_adjustment_set_upper(adjustment,
+			   upper);
+
+  /* reset value */
+  if(old_upper != 0.0){
+    gtk_adjustment_set_value(adjustment,
+			     adjustment->value / old_upper * upper);
+  }
+}
+
+void
+ags_wave_edit_reset_hscrollbar(AgsWaveEdit *wave_edit)
+{
+  AgsWaveEditor *wave_editor;
+  AgsWaveToolbar *wave_toolbar;
+
+  GtkAdjustment *adjustment;
+
+  double zoom_factor, zoom;
+  double zoom_correction;
+  guint map_width;
+  gdouble upper, old_upper;
+  
+  if(!AGS_IS_WAVE_EDIT(wave_edit)){
+    return;
+  }
+
+  wave_editor = gtk_widget_get_ancestor(wave_edit,
+					AGS_TYPE_WAVE_EDITOR);
+
+  if(wave_editor->selected_machine == NULL){
+    return;
+  }
+
+  wave_toolbar = wave_editor->wave_toolbar;
+
+  /* adjustment */
+  adjustment = GTK_RANGE(wave_edit->hscrollbar)->adjustment;
+
+  /* zoom */
+  zoom_factor = exp2(6.0 - (double) gtk_combo_box_get_active((GtkComboBox *) wave_toolbar->zoom));
+  zoom = exp2((double) gtk_combo_box_get_active((GtkComboBox *) wave_toolbar->zoom) - 2.0);
+
+  /* upper */
+  old_upper = adjustment->upper;
+  
+  zoom_correction = 1.0 / 16;
+
+  map_width = ((double) AGS_WAVE_EDITOR_MAX_CONTROLS * zoom * zoom_correction);
+  upper = map_width - GTK_WIDGET(wave_edit->drawing_area)->allocation.width;
+
+  if(upper < 0.0){    
+    upper = 0.0;
+  }
+
+  gtk_adjustment_set_upper(adjustment,
+			   upper);
+
+  /* ruler */
+  wave_edit->ruler->factor = zoom_factor;
+  wave_edit->ruler->precision = zoom;
+  wave_edit->ruler->scale_precision = 1.0 / zoom;
+
+  gtk_adjustment_set_upper(wave_edit->ruler->adjustment,
+			   upper / wave_edit->control_width);
+
+  /* reset value */
+  if(old_upper != 0.0){
+    gtk_adjustment_set_value(adjustment,
+			     adjustment->value / old_upper * upper);
+  }
+}
+
+void
+ags_wave_edit_draw_segment(AgsWaveEdit *wave_edit)
+{
+  AgsWaveEditor *wave_editor;
+  AgsWaveToolbar *wave_toolbar;
+  
+  GtkStyle *wave_edit_style;
+
+  cairo_t *cr;
+
+  gdouble x_offset, y_offset;
+  gdouble translated_ground;
+  double tact;
+  gdouble y;
+  gdouble map_height;
+  gdouble width, height;
+  guint control_width;
+  guint i, j;
+  guint j_set;
+
+  static const gdouble white_gc = 65535.0;
+
+  const static double dashes = {
+    0.25,
+  };
+  
+  if(!AGS_IS_WAVE_EDIT(wave_edit)){
+    return;
+  }
+
+  wave_editor = gtk_widget_get_ancestor(wave_edit,
+					AGS_TYPE_WAVE_EDITOR);
+
+  if(wave_editor->selected_machine == NULL){
+    return;
+  }
+
+  wave_toolbar = wave_editor->wave_toolbar;
+  
+  wave_edit_style = gtk_widget_get_style(GTK_WIDGET(wave_edit->drawing_area));
+
+  x_offset = GTK_RANGE(wave_edit->hscrollbar)->adjustment->value;
+  y_offset = GTK_RANGE(wave_edit->vscrollbar)->adjustment->value;
+
+  /* create cairo context */
+  cr = gdk_cairo_create(GTK_WIDGET(wave_edit->drawing_area)->window);
+
+  if(cr == NULL){
+    return;
+  }
+
+  width = (gdouble) GTK_WIDGET(wave_edit->drawing_area)->allocation.width;
+  height = (gdouble) GTK_WIDGET(wave_edit->drawing_area)->allocation.height;
+
+  /* background */
+  cairo_set_source_rgb(cr,
+		       wave_edit_style->bg[0].red / white_gc,
+		       wave_edit_style->bg[0].red / white_gc,
+		       wave_edit_style->bg[0].red / white_gc);
+  cairo_rectangle(cr, 0.0, y, width, height);
+  cairo_fill(cr);
+
+  /* background border */
+  cairo_set_source_rgb(cr,
+		       wave_edit_style->base[0].red / white_gc,
+		       wave_edit_style->base[0].green / white_gc,
+		       wave_edit_style->base[0].blue / white_gc);
+  cairo_set_line_width(cr, 1.0);
+  cairo_rectangle(cr, 0.0, y, width, height);
+  cairo_stroke(cr);
+
+  cairo_set_line_width(cr, 1.0);
+
+  tact = exp2((double) gtk_combo_box_get_active(wave_editor->wave_toolbar->zoom) - 2.0);
+
+  y = (gdouble) 0.0;
+  
+  map_height = (gdouble) height;
+
+  control_width = AGS_WAVE_EDIT_DEFAULT_CONTROL_WIDTH;
+  i = control_width - (guint) x_offset % control_width;
+  
+  if(i < width &&
+     tact > 1.0 ){
+    j_set = ((guint) x_offset / control_width + 1) % ((guint) tact);
+
+    cairo_set_source_rgb(cr,
+			 wave_edit_style->mid[0].red / white_gc,
+			 wave_edit_style->mid[0].green / white_gc,
+			 wave_edit_style->mid[0].blue / white_gc);
+
+    if(j_set != 0){
+      j = j_set;
+      goto ags_wave_edit_draw_segment0;
+    }
+  }
+
+  for(; i < width; ){
+    cairo_set_source_rgb(cr,
+			 wave_edit_style->fg[0].red / white_gc,
+			 wave_edit_style->fg[0].blue / white_gc,
+			 wave_edit_style->fg[0].green / white_gc);
+    
+    cairo_move_to(cr, (double) i, y);
+    cairo_line_to(cr, (double) i, y + height);
+    cairo_stroke(cr);
+    
+    i += control_width;
+    
+    cairo_set_source_rgb(cr,
+			 wave_edit_style->mid[0].red / white_gc,
+			 wave_edit_style->mid[0].green / white_gc,
+			 wave_edit_style->mid[0].blue / white_gc);
+    
+    for(j = 1; i < width && j < tact; j++){
+    ags_wave_edit_draw_segment0:
+      cairo_move_to(cr, (double) i, y);
+      cairo_line_to(cr, (double) i, y + height);
+      cairo_stroke(cr);
+      
+      i += control_width;
+    }
+  }
+
+  cairo_set_source_rgb(cr,
+		       wave_edit_style->bg[0].red / white_gc,
+		       wave_edit_style->bg[0].green / white_gc,
+		       wave_edit_style->bg[0].blue / white_gc);
+
+  /* middle */
+  if(map_height * 0.5 < height){
+    cairo_move_to(cr,
+		  0.0, y + map_height * 0.5);
+    cairo_line_to(cr,
+		  width, y + map_height * 0.5);
+    cairo_stroke(cr);
+  }
+  
+  /* set dash */
+  cairo_set_source_rgb(cr,
+		       wave_edit_style->bg[0].red / white_gc,
+		       wave_edit_style->bg[0].green / white_gc,
+		       wave_edit_style->bg[0].blue / white_gc);
+  cairo_set_dash(cr,
+		 &dashes,
+		 1,
+		 0.0);
+
+  /* lower quarter */
+  if(map_height * 0.25 < height){
+    cairo_move_to(cr,
+		  0.0, y + map_height * 0.25);
+    cairo_line_to(cr,
+		  width, y + map_height * 0.25);
+    cairo_stroke(cr);
+  }
+  
+  /* upper quarter */
+  if(map_height * 0.75 < height){
+    cairo_move_to(cr,
+		  0.0, y + map_height * 0.75);
+    cairo_line_to(cr,
+		  width, y + map_height * 0.75);
+    cairo_stroke(cr);
+  }
+  
+  /* complete */
+  cairo_pop_group_to_source(cr);
+  cairo_paint(cr);
+      
+  cairo_surface_mark_dirty(cairo_get_target(cr));
+  cairo_destroy(cr);
+}
+
+void
+ags_wave_edit_draw_position(AgsWaveEdit *wave_edit)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_wave_edit_draw_cursor(AgsWaveEdit *wave_edit)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_wave_edit_draw_selection(AgsWaveEdit *wave_edit)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_wave_edit_draw_buffer(AgsWaveEdit *wave_edit,
+			  AgsBuffer *buffer,
+			  cairo_t *cr,
+			  double r, double g, double b, double a)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_wave_edit_draw_wave(AgsWaveEdit *wave_edit)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_wave_edit_draw(AgsWaveEdit *wave_edit)
+{
+  /* segment */
+  ags_wave_edit_draw_segment(wave_edit);
+
+  /* wave */
+  ags_wave_edit_draw_wave(wave_edit);
+  
+  /* edit mode */
+  switch(wave_edit->mode){
+  case AGS_WAVE_EDIT_POSITION_CURSOR:
+    {
+      ags_wave_edit_draw_cursor(wave_edit);
+    }
+    break;
+  case AGS_WAVE_EDIT_SELECT_BUFFER:
+    {
+      ags_wave_edit_draw_selection(wave_edit);
+    }
+    break;
+  }
+
+  /* fader */
+  if((AGS_WAVE_EDIT_AUTO_SCROLL & (wave_edit->flags)) != 0){
+    ags_wave_edit_draw_position(wave_edit);
+  }
+}
+
 
 /**
  * ags_wave_edit_new:

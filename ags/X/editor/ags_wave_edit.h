@@ -75,9 +75,7 @@ typedef enum{
 typedef enum{
   AGS_WAVE_EDIT_NO_EDIT_MODE,
   AGS_WAVE_EDIT_POSITION_CURSOR,
-  AGS_WAVE_EDIT_ADD_ACCELERATION,
-  AGS_WAVE_EDIT_DELETE_ACCELERATION,
-  AGS_WAVE_EDIT_SELECT_ACCELERATION,
+  AGS_WAVE_EDIT_SELECT_BUFFER,
 }AgsWaveEditMode;
 
 typedef enum{
@@ -130,6 +128,23 @@ struct _AgsWaveEditClass
 };
 
 GType ags_wave_edit_get_type(void);
+
+void ags_wave_edit_reset_vscrollbar(AgsWaveEdit *wave_edit);
+void ags_wave_edit_reset_hscrollbar(AgsWaveEdit *wave_edit);
+
+void ags_wave_edit_draw_segment(AgsWaveEdit *wave_edit);
+void ags_wave_edit_draw_position(AgsWaveEdit *wave_edit);
+
+void ags_wave_edit_draw_cursor(AgsWaveEdit *wave_edit);
+void ags_wave_edit_draw_selection(AgsWaveEdit *wave_edit);
+
+void ags_wave_edit_draw_buffer(AgsWaveEdit *wave_edit,
+			       AgsBuffer *buffer,
+			       cairo_t *cr,
+			       double r, double g, double b, double a);
+void ags_wave_edit_draw_wave(AgsWaveEdit *wave_edit);
+
+void ags_wave_edit_draw(AgsWaveEdit *wave_edit);
 
 AgsWaveEdit* ags_wave_edit_new();
 
