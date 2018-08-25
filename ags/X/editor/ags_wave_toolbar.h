@@ -51,12 +51,12 @@ struct _AgsWaveToolbar
 
   GtkButton *copy;
   GtkButton *cut;
-  GtkButton *paste;
+  GtkMenuToolButton *paste_tool;
 
   GtkMenuToolButton *menu_tool;
   GtkMenu *tool_popup;
 
-  GtkDialog *select_audio_data;
+  GtkDialog *select_buffer;
   GtkDialog *position_wave_cursor;
 
   guint zoom_history;

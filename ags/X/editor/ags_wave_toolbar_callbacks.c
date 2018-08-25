@@ -29,7 +29,43 @@
 #include <gdk/gdkkeysyms.h>
 
 void
-ags_wave_toolbar_tool_popup_select_audio_data_callback(GtkWidget *item, AgsWaveToolbar *wave_toolbar)
+ags_wave_toolbar_position_callback(GtkToggleButton *toggle_button, AgsWaveToolbar *wave_toolbar)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_wave_toolbar_select_callback(GtkToggleButton *toggle_button, AgsWaveToolbar *wave_toolbar)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_wave_toolbar_copy_or_cut_callback(GtkWidget *widget, AgsWaveToolbar *wave_toolbar)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_wave_toolbar_paste_callback(GtkWidget *widget, AgsWaveToolbar *wave_toolbar)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_wave_toolbar_match_line_callback(GtkWidget *widget, AgsWaveToolbar *wave_toolbar)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_wave_toolbar_no_duplicates_callback(GtkWidget *widget, AgsWaveToolbar *wave_toolbar)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_wave_toolbar_tool_popup_select_buffer_callback(GtkWidget *item, AgsWaveToolbar *wave_toolbar)
 {
   //TODO:JK: implement me
 }

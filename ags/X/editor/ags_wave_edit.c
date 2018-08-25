@@ -26,8 +26,6 @@
 
 #include <ags/X/ags_wave_editor.h>
 
-#include <ags/X/editor/ags_wave_edit.h>
-
 #include <gdk/gdkkeysyms.h>
 #include <atk/atk.h>
 
@@ -58,6 +56,13 @@ gboolean ags_accessible_wave_edit_set_description(AtkAction *action,
 						  gint i);
 gchar* ags_accessible_wave_edit_get_localized_name(AtkAction *action,
 						   gint i);
+
+void ags_wave_edit_size_request(GtkWidget *widget,
+				GtkRequisition   *requisition);
+void ags_wave_edit_size_allocate(GtkWidget *widget,
+				 GtkAllocation *allocation);
+void ags_wave_edit_show(GtkWidget *widget);
+void ags_wave_edit_show_all(GtkWidget *widget);
 
 gboolean ags_wave_edit_auto_scroll_timeout(GtkWidget *widget);
 
@@ -155,9 +160,21 @@ ags_accessible_wave_edit_get_type(void)
 void
 ags_wave_edit_class_init(AgsWaveEditClass *wave_edit)
 {
+  GtkWidgetClass *widget;
+
+  GObjectClass *gobject;
+
+  GParamSpec *param_spec;
+
   ags_wave_edit_parent_class = g_type_class_peek_parent(wave_edit);
 
-  quark_accessible_object = g_quark_from_static_string("ags-accessible-object");
+  /* GtkWidgetClass */
+  widget = (GtkWidgetClass *) wave_edit;
+
+  widget->size_request = ags_wave_edit_size_request;
+  widget->size_allocate = ags_wave_edit_size_allocate;
+  widget->show = ags_wave_edit_show;
+  widget->show_all = ags_wave_edit_show_all;
 }
 
 void
@@ -172,7 +189,7 @@ ags_wave_edit_connectable_interface_init(AgsConnectableInterface *connectable)
 void
 ags_accessible_wave_edit_class_init(AtkObject *object)
 {
-  /* empty */
+  quark_accessible_object = g_quark_from_static_string("ags-accessible-object");
 }
 
 void
@@ -697,6 +714,99 @@ ags_accessible_wave_edit_get_localized_name(AtkAction *action,
   //TODO:JK: implement me
 
   return(NULL);
+}
+
+void
+ags_wave_edit_size_request(GtkWidget *widget,
+				 GtkRequisition *requisition)
+{
+  AgsWaveEdit *wave_edit;
+
+  wave_edit = AGS_WAVE_EDIT(widget);
+
+  requisition->width = -1;
+  requisition->height = AGS_LEVEL_DEFAULT_HEIGHT;  
+}
+
+void
+ags_wave_edit_size_allocate(GtkWidget *widget,
+				  GtkAllocation *allocation)
+{
+  AgsWaveEdit *wave_edit;
+
+  GtkAllocation child_allocation;
+
+  GdkWindow *window;
+
+  wave_edit = AGS_WAVE_EDIT(widget);
+
+  widget->allocation = *allocation;
+  
+  widget->allocation.height = AGS_LEVEL_DEFAULT_HEIGHT;
+  allocation->height = AGS_LEVEL_DEFAULT_HEIGHT;
+  
+  child_allocation.x = allocation->x;
+  child_allocation.y = allocation->y;
+  
+  child_allocation.width = allocation->width;
+  child_allocation.height = AGS_LEVEL_DEFAULT_HEIGHT;
+
+  gtk_widget_size_allocate(wave_edit->drawing_area,
+  			   &child_allocation);
+
+  window = gtk_widget_get_window(wave_edit->drawing_area);
+  gdk_window_move(window,
+  		  allocation->x, allocation->y);
+}
+
+void
+ags_wave_edit_show(GtkWidget *widget)
+{
+  AgsWaveEdit *wave_edit;
+
+  wave_edit = AGS_WAVE_EDIT(widget);
+
+  /* call parent */
+  GTK_WIDGET_CLASS(ags_wave_edit_parent_class)->show(widget);
+
+  gtk_widget_show(wave_edit->drawing_area);
+  
+  if((AGS_WAVE_EDIT_SHOW_RULER & (wave_edit->flags)) != 0){
+    gtk_widget_show(wave_edit->ruler);
+  }
+
+  if((AGS_WAVE_EDIT_SHOW_VSCROLLBAR & (wave_edit->flags)) != 0){
+    gtk_widget_show(wave_edit->vscrollbar);
+  }
+
+  if((AGS_WAVE_EDIT_SHOW_HSCROLLBAR & (wave_edit->flags)) != 0){
+    gtk_widget_show(wave_edit->hscrollbar);
+  }
+}
+
+void
+ags_wave_edit_show_all(GtkWidget *widget)
+{
+  AgsWaveEdit *wave_edit;
+
+  wave_edit = AGS_WAVE_EDIT(widget);
+
+  /* call parent */
+  GTK_WIDGET_CLASS(ags_wave_edit_parent_class)->show_all(widget);
+
+  gtk_widget_show_all(wave_edit->drawing_area);
+
+  if((AGS_WAVE_EDIT_SHOW_RULER & (wave_edit->flags)) != 0){
+    gtk_widget_show(wave_edit->ruler);
+  }
+
+  if((AGS_WAVE_EDIT_SHOW_VSCROLLBAR & (wave_edit->flags)) != 0){
+    gtk_widget_show(wave_edit->vscrollbar);
+  }
+
+  if((AGS_WAVE_EDIT_SHOW_HSCROLLBAR & (wave_edit->flags)) != 0){
+    gtk_widget_show(wave_edit->hscrollbar);
+  }
 }
 
 gboolean

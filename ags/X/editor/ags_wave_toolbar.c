@@ -103,6 +103,7 @@ ags_wave_toolbar_init(AgsWaveToolbar *wave_toolbar)
 {
   GtkMenuToolButton *menu_tool_button;
   GtkMenu *menu;
+  GtkMenuItem *item;
   GtkLabel *label;
   GtkCellRenderer *cell_renderer;
   
@@ -146,13 +147,25 @@ ags_wave_toolbar_init(AgsWaveToolbar *wave_toolbar)
 			    "cut wave",
 			    NULL);
 
-  wave_toolbar->paste = (GtkButton *) g_object_new(GTK_TYPE_BUTTON,
-						   "image", gtk_image_new_from_stock(GTK_STOCK_PASTE,
-										     GTK_ICON_SIZE_LARGE_TOOLBAR),
-						   "relief", GTK_RELIEF_NONE,
-						   NULL);
+  wave_toolbar->paste_tool = (GtkButton *) g_object_new(GTK_TYPE_MENU_TOOL_BUTTON,
+							      "stock-id", GTK_STOCK_PASTE,
+							      NULL);
+
+  menu = gtk_menu_new();
+
+  item = g_object_new(GTK_TYPE_CHECK_MENU_ITEM,
+		      "label", "match line",
+		      "active", TRUE,
+		      NULL);
+  gtk_menu_shell_append(menu,
+			item);
+
+  gtk_menu_tool_button_set_menu(wave_toolbar->paste_tool,
+				menu);
+  gtk_widget_show_all(menu);
+
   gtk_toolbar_append_widget((GtkToolbar *) wave_toolbar,
-			    (GtkWidget *) wave_toolbar->paste,
+			    (GtkWidget *) wave_toolbar->paste_tool,
 			    "paste wave",
 			    NULL);
   
@@ -169,7 +182,7 @@ ags_wave_toolbar_init(AgsWaveToolbar *wave_toolbar)
 				wave_toolbar->tool_popup);
 
   /* menu tool - dialogs */
-  wave_toolbar->select_audio_data = NULL;
+  wave_toolbar->select_buffer = NULL;
   wave_toolbar->position_wave_cursor = NULL;
 
   /*  */
@@ -193,6 +206,8 @@ ags_wave_toolbar_connect(AgsConnectable *connectable)
 {
   AgsWaveToolbar *wave_toolbar;
 
+  GList *list;
+
   wave_toolbar = AGS_WAVE_TOOLBAR(connectable);
 
   if((AGS_WAVE_TOOLBAR_CONNECTED & (wave_toolbar->flags)) != 0){
@@ -200,6 +215,35 @@ ags_wave_toolbar_connect(AgsConnectable *connectable)
   }
 
   wave_toolbar->flags |= AGS_WAVE_TOOLBAR_CONNECTED;
+
+  /* tool */
+  g_signal_connect_after((GObject *) wave_toolbar->position, "toggled",
+			 G_CALLBACK(ags_wave_toolbar_position_callback), (gpointer) wave_toolbar);
+
+  g_signal_connect_after((GObject *) wave_toolbar->select, "toggled",
+			 G_CALLBACK(ags_wave_toolbar_select_callback), (gpointer) wave_toolbar);
+
+  /* edit */
+  g_signal_connect((GObject *) wave_toolbar->copy, "clicked",
+		   G_CALLBACK(ags_wave_toolbar_copy_or_cut_callback), (gpointer) wave_toolbar);
+
+  g_signal_connect((GObject *) wave_toolbar->cut, "clicked",
+		   G_CALLBACK(ags_wave_toolbar_copy_or_cut_callback), (gpointer) wave_toolbar);
+
+  g_signal_connect((GObject *) wave_toolbar->paste_tool, "clicked",
+		   G_CALLBACK(ags_wave_toolbar_paste_callback), (gpointer) wave_toolbar);
+
+  list = gtk_container_get_children(gtk_menu_tool_button_get_menu(wave_toolbar->paste_tool));
+
+  g_signal_connect_after(list->data, "activate",
+			 G_CALLBACK(ags_wave_toolbar_match_line_callback), wave_toolbar);
+
+  g_list_free(list);
+
+  /* additional tools */
+  ags_connectable_connect(AGS_CONNECTABLE(wave_toolbar->select_buffer));
+
+  ags_connectable_connect(AGS_CONNECTABLE(wave_toolbar->position_wave_cursor));
 
   /* zoom */
   g_signal_connect_after((GObject *) wave_toolbar->zoom, "changed",
@@ -211,6 +255,8 @@ ags_wave_toolbar_disconnect(AgsConnectable *connectable)
 {
   AgsWaveToolbar *wave_toolbar;
 
+  GList *list;
+
   wave_toolbar = AGS_WAVE_TOOLBAR(connectable);
 
   if((AGS_WAVE_TOOLBAR_CONNECTED & (wave_toolbar->flags)) == 0){
@@ -218,6 +264,53 @@ ags_wave_toolbar_disconnect(AgsConnectable *connectable)
   }
 
   wave_toolbar->flags &= (~AGS_WAVE_TOOLBAR_CONNECTED);
+
+  /* tool */
+  g_object_disconnect(G_OBJECT(wave_toolbar->position),
+		      "any_signal::toggled",
+		      G_CALLBACK(ags_wave_toolbar_position_callback),
+		      wave_toolbar,
+		      NULL);
+
+  g_object_disconnect(G_OBJECT(wave_toolbar->select),
+		      "any_signal::toggled",
+		      G_CALLBACK(ags_wave_toolbar_select_callback),
+		      wave_toolbar,
+		      NULL);
+
+  /* edit */
+  g_object_disconnect(G_OBJECT(wave_toolbar->copy),
+		      "any_signal::clicked",
+		      G_CALLBACK(ags_wave_toolbar_copy_or_cut_callback),
+		      wave_toolbar,
+		      NULL);
+
+  g_object_disconnect(G_OBJECT(wave_toolbar->cut),
+		      "any_signal::clicked",
+		      G_CALLBACK(ags_wave_toolbar_copy_or_cut_callback),
+		      wave_toolbar,
+		      NULL);
+
+  g_object_disconnect(G_OBJECT(wave_toolbar->paste_tool),
+		      "any_signal::clicked",
+		      G_CALLBACK(ags_wave_toolbar_paste_callback),
+		      wave_toolbar,
+		      NULL);
+  
+  list = gtk_container_get_children(gtk_menu_tool_button_get_menu(wave_toolbar->paste_tool));
+
+  g_object_disconnect(G_OBJECT(list->data),
+		      "any_signal::activate",
+		      G_CALLBACK(ags_wave_toolbar_match_line_callback),
+		      wave_toolbar,
+		      NULL);
+
+  g_list_free(list);
+
+  /* additional tools */
+  ags_connectable_disconnect(AGS_CONNECTABLE(wave_toolbar->select_buffer));
+
+  ags_connectable_disconnect(AGS_CONNECTABLE(wave_toolbar->position_wave_cursor));
 
   /* zoom */
   g_object_disconnect(G_OBJECT(wave_toolbar->zoom),
@@ -257,7 +350,7 @@ ags_wave_toolbar_tool_popup_new(GtkToolbar *wave_toolbar)
     list = gtk_container_get_children((GtkContainer *) tool_popup);
 
   g_signal_connect(G_OBJECT(list->data), "activate",
-		   G_CALLBACK(ags_wave_toolbar_tool_popup_select_audio_data_callback), (gpointer) wave_toolbar);
+		   G_CALLBACK(ags_wave_toolbar_tool_popup_select_buffer_callback), (gpointer) wave_toolbar);
 
   list = list->next;
   g_signal_connect(G_OBJECT(list->data), "activate",
