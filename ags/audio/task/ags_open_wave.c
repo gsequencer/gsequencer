@@ -390,12 +390,12 @@ ags_open_wave_launch(AgsTask *task)
   
   /* get some fields */
   g_object_get(audio,
-	       "input-pads", n_pads,
+	       "input-pads", &n_pads,
 	       "audio-channels", &n_audio_channels,
 	       "output-soundcard", &output_soundcard,
 	       NULL);
 
-  ags_sound_resource_get_presets(AGS_SOUND_RESOURCE(audio_file),
+  ags_sound_resource_get_presets(AGS_SOUND_RESOURCE(audio_file->sound_resource),
 				 &current_audio_channels,
 				 NULL,
 				 NULL,
@@ -435,7 +435,6 @@ ags_open_wave_launch(AgsTask *task)
       guint current_line;
 
       g_object_get(wave->data,
-		   "audio", audio,
 		   "line", &current_line,
 		   NULL);
       

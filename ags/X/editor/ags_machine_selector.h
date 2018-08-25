@@ -43,6 +43,7 @@ typedef enum{
   AGS_MACHINE_SELECTOR_SHOW_SHIFT_PIANO       = 1 <<  2,
   AGS_MACHINE_SELECTOR_NOTATION               = 1 <<  3,
   AGS_MACHINE_SELECTOR_AUTOMATION             = 1 <<  4,
+  AGS_MACHINE_SELECTOR_WAVE                   = 1 <<  5,
 }AgsMachineSelectorFlags;
 
 struct _AgsMachineSelector

@@ -24,7 +24,10 @@
 #include <ags/libags-audio.h>
 #include <ags/libags-gui.h>
 
+#include <ags/X/ags_ui_provider.h>
 #include <ags/X/ags_window.h>
+
+#include <ags/X/thread/ags_gui_thread.h>
 
 void ags_audiorec_class_init(AgsAudiorecClass *audiorec);
 void ags_audiorec_connectable_interface_init(AgsConnectableInterface *connectable);
@@ -617,7 +620,45 @@ void
 ags_audiorec_open_filename(AgsAudiorec *audiorec,
 			   gchar *filename)
 {
-  //TODO:JK: implement me
+  AgsAudioFile *audio_file;
+
+  AgsOpenWave *open_wave;
+
+  AgsGuiThread *gui_thread;
+  
+  AgsApplicationContext *application_context;
+  
+  GObject *output_soundcard;
+  
+  if(!AGS_IS_AUDIOREC(audiorec) ||
+     filename == NULL){
+    return;
+  }
+
+  application_context = ags_application_context_get_instance();
+
+  gui_thread = ags_ui_provider_get_gui_thread(AGS_UI_PROVIDER(application_context));
+  
+  g_object_get(AGS_MACHINE(audiorec)->audio,
+	       "output-soundcard", &output_soundcard,
+	       NULL);
+
+  audio_file = ags_audio_file_new(filename,
+				  output_soundcard,
+				  -1);
+  ags_audio_file_rw_open(audio_file,
+			 TRUE);
+
+  g_object_set(AGS_MACHINE(audiorec)->audio,
+	       "input-audio-file", audio_file,
+	       NULL);
+
+  open_wave = ags_open_wave_new(AGS_MACHINE(audiorec)->audio,
+				audio_file,
+				NULL,
+				0);
+  ags_gui_thread_schedule_task(gui_thread,
+			       open_wave);
 }
 
 /**

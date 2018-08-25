@@ -233,6 +233,7 @@ ags_wave_editor_init(AgsWaveEditor *wave_editor)
 					       "homogeneous", FALSE,
 					       "spacing", 0,
 					       NULL);
+  wave_editor->machine_selector->flags |= (AGS_MACHINE_SELECTOR_WAVE);
   gtk_label_set_label(wave_editor->machine_selector->label,
 		      i18n("wave"));
   

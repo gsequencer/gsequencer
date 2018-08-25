@@ -107,6 +107,8 @@ ags_machine_selector_popup_link_index_callback(GtkWidget *menu_item, AgsMachineS
     machine_selection->flags |= AGS_MACHINE_SELECTION_NOTATION;
   }else if((AGS_MACHINE_SELECTOR_AUTOMATION & (machine_selector->flags)) != 0){
     machine_selection->flags |= AGS_MACHINE_SELECTION_AUTOMATION;
+  }else if((AGS_MACHINE_SELECTOR_WAVE & (machine_selector->flags)) != 0){
+    machine_selection->flags |= AGS_MACHINE_SELECTION_WAVE;
   }
   
   ags_machine_selection_load_defaults(machine_selection);
