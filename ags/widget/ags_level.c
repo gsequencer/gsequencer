@@ -1149,7 +1149,7 @@ ags_level_draw(AgsLevel *level)
   //TODO:JK: implement me
 
   /* show samplerate */
-  str = g_strdup_printf("%u", level->samplerate);
+  str = g_strdup_printf("%u [Hz]", level->samplerate);
   
   cairo_set_source_rgb(cr,
 		       1.0, 1.0, 1.0);

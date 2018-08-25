@@ -200,6 +200,10 @@ ags_wave_toolbar_connect(AgsConnectable *connectable)
   }
 
   wave_toolbar->flags |= AGS_WAVE_TOOLBAR_CONNECTED;
+
+  /* zoom */
+  g_signal_connect_after((GObject *) wave_toolbar->zoom, "changed",
+			 G_CALLBACK(ags_wave_toolbar_zoom_callback), (gpointer) wave_toolbar);
 }
 
 void
@@ -214,6 +218,13 @@ ags_wave_toolbar_disconnect(AgsConnectable *connectable)
   }
 
   wave_toolbar->flags &= (~AGS_WAVE_TOOLBAR_CONNECTED);
+
+  /* zoom */
+  g_object_disconnect(G_OBJECT(wave_toolbar->zoom),
+		      "any_signal::changed",
+		      G_CALLBACK(ags_wave_toolbar_zoom_callback),
+		      wave_toolbar,
+		      NULL);
 }
 
 /**

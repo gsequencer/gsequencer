@@ -363,11 +363,15 @@ ags_window_set_property(GObject *gobject,
       
       window->soundcard = soundcard;
 
+      g_object_set(G_OBJECT(window->notation_editor),
+		   "soundcard", soundcard,
+		   NULL);
+
       g_object_set(G_OBJECT(window->automation_window),
 		   "soundcard", soundcard,
 		   NULL);
 
-      g_object_set(G_OBJECT(window->notation_editor),
+      g_object_set(G_OBJECT(window->wave_window),
 		   "soundcard", soundcard,
 		   NULL);
 
@@ -471,6 +475,8 @@ ags_window_connect(AgsConnectable *connectable)
 
   ags_connectable_connect(AGS_CONNECTABLE(window->automation_window));
 
+  ags_connectable_connect(AGS_CONNECTABLE(window->wave_window));
+
   ags_connectable_connect(AGS_CONNECTABLE(window->export_window));
 }
 
@@ -513,6 +519,8 @@ ags_window_disconnect(AgsConnectable *connectable)
   ags_connectable_disconnect(AGS_CONNECTABLE(window->navigation));
 
   ags_connectable_disconnect(AGS_CONNECTABLE(window->automation_window));
+
+  ags_connectable_disconnect(AGS_CONNECTABLE(window->wave_window));
 
   ags_connectable_disconnect(AGS_CONNECTABLE(window->export_window));
 }

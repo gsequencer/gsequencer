@@ -190,9 +190,6 @@ ags_wave_editor_init(AgsWaveEditor *wave_editor)
   
   GtkAdjustment *adjustment;
 
-  g_signal_connect_after((GObject *) wave_editor, "parent-set",
-			 G_CALLBACK(ags_wave_editor_parent_set_callback), wave_editor);
-
   wave_editor->flags = 0;
 
   wave_editor->version = AGS_WAVE_EDITOR_DEFAULT_VERSION;
@@ -260,25 +257,6 @@ ags_wave_editor_init(AgsWaveEditor *wave_editor)
   table = (GtkTable *) gtk_table_new(4, 3, FALSE);
   gtk_container_add(viewport,
 		    table);
-
-  /* scrollbars */
-  adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 1.0, AGS_WAVE_EDIT_DEFAULT_CONTROL_HEIGHT, 1.0);
-  wave_editor->vscrollbar = gtk_vscrollbar_new(adjustment);
-  gtk_table_attach(table,
-		   (GtkWidget *) wave_editor->vscrollbar,
-		   2, 3,
-		   2, 3,
-		   GTK_FILL, GTK_FILL,
-		   0, 0);
-
-  adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 1.0, AGS_WAVE_EDIT_DEFAULT_CONTROL_WIDTH, 1.0);
-  wave_editor->hscrollbar = gtk_hscrollbar_new(adjustment);
-  gtk_table_attach(table,
-		   (GtkWidget *) wave_editor->hscrollbar,
-		   1, 2,
-		   3, 4,
-		   GTK_FILL, GTK_FILL,
-		   0, 0);
   
   /* notebook */
   wave_editor->notebook = g_object_new(AGS_TYPE_NOTEBOOK,
@@ -338,6 +316,27 @@ ags_wave_editor_init(AgsWaveEditor *wave_editor)
 			| GDK_POINTER_MOTION_MASK
 			| GDK_POINTER_MOTION_HINT_MASK
 			| GDK_CONTROL_MASK);
+
+
+  
+  /* scrollbars */
+  adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 1.0, AGS_WAVE_EDIT_DEFAULT_CONTROL_HEIGHT, 1.0);
+  wave_editor->vscrollbar = gtk_vscrollbar_new(adjustment);
+  gtk_table_attach(table,
+		   (GtkWidget *) wave_editor->vscrollbar,
+		   2, 3,
+		   2, 3,
+		   GTK_FILL, GTK_FILL,
+		   0, 0);
+
+  adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 1.0, AGS_WAVE_EDIT_DEFAULT_CONTROL_WIDTH, 1.0);
+  wave_editor->hscrollbar = gtk_hscrollbar_new(adjustment);
+  gtk_table_attach(table,
+		   (GtkWidget *) wave_editor->hscrollbar,
+		   1, 2,
+		   3, 4,
+		   GTK_FILL, GTK_FILL,
+		   0, 0);
 }
 
 void
@@ -412,6 +411,19 @@ ags_wave_editor_connect(AgsConnectable *connectable)
   }
 
   wave_editor->flags |= AGS_WAVE_EDITOR_CONNECTED;
+
+  /* edit */
+  g_signal_connect_after((GObject *) wave_editor->scrolled_wave_edit_box->viewport, "expose_event",
+			 G_CALLBACK(ags_wave_editor_edit_expose_event), (gpointer) wave_editor);
+
+  g_signal_connect_after((GObject *) wave_editor->scrolled_wave_edit_box->viewport, "configure_event",
+			 G_CALLBACK(ags_wave_editor_edit_configure_event), (gpointer) wave_editor);
+
+  g_signal_connect_after((GObject *) wave_editor->vscrollbar, "value-changed",
+			 G_CALLBACK(ags_wave_editor_vscrollbar_value_changed), (gpointer) wave_editor);
+
+  g_signal_connect_after((GObject *) wave_editor->hscrollbar, "value-changed",
+			 G_CALLBACK(ags_wave_editor_hscrollbar_value_changed), (gpointer) wave_editor);
   
   /*  */
   g_signal_connect((GObject *) wave_editor->machine_selector, "changed",
@@ -429,6 +441,29 @@ ags_wave_editor_disconnect(AgsConnectable *connectable)
 
   wave_editor = AGS_WAVE_EDITOR(connectable);
 
+  if((AGS_WAVE_EDITOR_CONNECTED & (wave_editor->flags)) == 0){
+    return;
+  }
+
+  wave_editor->flags &= (~AGS_WAVE_EDITOR_CONNECTED);
+
+  /* edit */
+  g_object_disconnect((GObject *) wave_editor->scrolled_wave_edit_box->viewport,
+		      "any_signal::expose_event",
+		      G_CALLBACK(ags_wave_editor_edit_expose_event),
+		      wave_editor,
+		      "any_signal::configure_event",
+		      G_CALLBACK(ags_wave_editor_edit_configure_event),
+		      wave_editor,
+		      NULL);
+
+  /*  */
+  g_object_disconnect((GObject *) wave_editor->machine_selector,
+		      "changed",
+		      G_CALLBACK(ags_wave_editor_machine_changed_callback),
+		      (gpointer) wave_editor,
+		      NULL);
+
   ags_connectable_disconnect(AGS_CONNECTABLE(wave_editor->wave_toolbar)); 
   ags_connectable_disconnect(AGS_CONNECTABLE(wave_editor->machine_selector));
 }
@@ -444,54 +479,200 @@ ags_wave_editor_finalize(GObject *gobject)
 }
 
 void
+ags_wave_editor_reset_scrollbar(AgsWaveEditor *wave_editor)
+{
+  AgsWaveToolbar *wave_toolbar;
+
+  GList *list_start, *list;
+  
+  gdouble v_upper, h_upper;
+  double zoom_factor, zoom;
+  double zoom_correction;
+  guint map_width;
+  
+  wave_toolbar = wave_editor->wave_toolbar;
+
+  /* reset vertical scrollbar */
+  v_upper = GTK_WIDGET(wave_editor->scrolled_wave_edit_box->wave_edit_box)->allocation.height - GTK_WIDGET(wave_editor->scrolled_wave_edit_box->viewport)->allocation.height;
+
+  if(v_upper < 0.0){
+    v_upper = 0.0;
+  }
+  
+  gtk_adjustment_set_upper(GTK_RANGE(wave_editor->vscrollbar)->adjustment,
+			   v_upper);
+
+  gtk_adjustment_set_upper(gtk_viewport_get_vadjustment(wave_editor->scrolled_wave_edit_box->viewport),
+			   v_upper);
+  gtk_adjustment_set_upper(gtk_viewport_get_vadjustment(wave_editor->scrolled_level_box->viewport),
+			   v_upper);
+
+  /* reset horizontal scrollbar */
+  zoom = exp2((double) gtk_combo_box_get_active((GtkComboBox *) wave_toolbar->zoom) - 2.0);
+  zoom_correction = 1.0 / 16;
+
+  map_width = ((double) AGS_WAVE_EDITOR_MAX_CONTROLS * zoom * zoom_correction);
+  h_upper = map_width - GTK_WIDGET(wave_editor->scrolled_wave_edit_box->wave_edit_box)->allocation.width;
+
+  if(h_upper < 0.0){
+    h_upper = 0.0;
+  }
+  
+  gtk_adjustment_set_upper(wave_editor->ruler->adjustment,
+			   h_upper);
+
+  gtk_adjustment_set_upper(GTK_RANGE(wave_editor->hscrollbar)->adjustment,
+			   h_upper);
+
+  /* wave edit */
+  list_start =
+    list = gtk_container_get_children(wave_editor->scrolled_wave_edit_box->wave_edit_box);
+
+  while(list != NULL){
+    gtk_adjustment_set_upper(GTK_RANGE(AGS_WAVE_EDIT(list->data)->hscrollbar)->adjustment,
+			     h_upper);
+    
+
+    list = list->next;
+  }
+
+  g_list_free(list_start);
+}
+
+void
 ags_wave_editor_real_machine_changed(AgsWaveEditor *wave_editor, AgsMachine *machine)
 {
-  AgsMachine *machine_old;
+  AgsMachine *old_machine;
+  AgsWaveEdit *wave_edit;
+  AgsLevel *level;
 
-  AgsMutexManager *mutex_manager;
+  GList *list_start, *list;
+  GList *tab;
 
-  GList *list, *list_start;
-  GList *child;
-
+  guint length;
   guint output_lines, input_lines;
   guint pads;
   guint i;
-
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *audio_mutex;
   
   if(wave_editor->selected_machine == machine){
     return;
   }
 
-  machine_old = wave_editor->selected_machine;
-  wave_editor->selected_machine = machine;
-  
-  if(machine == NULL){
-    return;
+  old_machine = wave_editor->selected_machine;
+
+  if(old_machine != NULL){
+    g_object_disconnect(old_machine,
+			"any_signal::resize-audio-channels",
+			G_CALLBACK(ags_wave_editor_resize_audio_channels_callback),
+			(gpointer) wave_editor,
+			"any_signal::resize-pads",
+			G_CALLBACK(ags_wave_editor_resize_pads_callback),
+			(gpointer) wave_editor,
+			NULL);
   }
 
-  /* get mutex manager and application mutex */
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-
-  /* get audio mutex */
-  pthread_mutex_lock(application_mutex);
-
-  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
-					 (GObject *) machine->audio);
+  /* notebook - remove tabs */
+  length = g_list_length(wave_editor->notebook->tab);
   
-  pthread_mutex_unlock(application_mutex);
+  for(i = 0; i < length; i++){
+    ags_notebook_remove_tab(wave_editor->notebook,
+			    0);
+  }
 
-  /* get audio properties */
-  pthread_mutex_lock(audio_mutex);
+  /*  */
+  if(machine != NULL){
+    g_object_get(machine->audio,
+		 "input-lines", &input_lines,
+		 NULL);
+    
+    for(i = 0; i < input_lines; i++){
+      ags_notebook_insert_tab(wave_editor->notebook,
+			      i);
 
-  output_lines = machine->audio->output_lines;
-  input_lines = machine->audio->input_lines;
-  
-  pthread_mutex_unlock(audio_mutex);
+      tab = wave_editor->notebook->tab;
+      gtk_toggle_button_set_active(AGS_NOTEBOOK_TAB(tab->data)->toggle,
+				   TRUE);
+    }
+  }
 
-  //TODO:JK: implement me
+  /* destroy edit */
+  list =
+    list_start = gtk_container_get_children(wave_editor->scrolled_level_box->level_box);
+
+  while(list != NULL){
+    gtk_widget_destroy(list->data);
+    
+    list = list->next;
+  }
+
+  g_list_free(list_start);
+
+  list =
+    list_start = gtk_container_get_children(wave_editor->scrolled_wave_edit_box->wave_edit_box);
+
+  while(list != NULL){
+    g_object_disconnect(AGS_WAVE_EDIT(list->data)->hscrollbar,
+			"any_signal::value-changed",
+			G_CALLBACK(ags_wave_editor_wave_edit_hscrollbar_value_changed),
+			(gpointer) wave_editor,
+			NULL);
+
+    gtk_widget_destroy(list->data);
+    
+    list = list->next;
+  }
+
+  g_list_free(list_start);
+
+  /*
+   * add new
+   */
+  if(machine != NULL){
+    guint input_lines;
+
+    g_object_get(machine->audio,
+		 "input-lines", &input_lines,
+		 NULL);
+
+    for(i = 0; i < input_lines; i++){
+      AgsWaveEdit *wave_edit;
+      AgsLevel *level;
+
+      /* level */
+      level = ags_level_new();
+      gtk_box_pack_start(wave_editor->scrolled_level_box->level_box,
+			 level,
+			 FALSE, FALSE,
+			 AGS_WAVE_EDIT_DEFAULT_PADDING);
+	
+      gtk_widget_show(level);
+	  
+      /* wave edit */
+      wave_edit = ags_wave_edit_new();
+      gtk_box_pack_start(wave_editor->scrolled_wave_edit_box->wave_edit_box,
+			 wave_edit,
+			 FALSE, FALSE,
+			 AGS_WAVE_EDIT_DEFAULT_PADDING);
+
+      ags_connectable_connect(AGS_CONNECTABLE(wave_edit));
+      gtk_widget_show(wave_edit);
+
+      g_signal_connect_after((GObject *) wave_edit->hscrollbar, "value-changed",
+			     G_CALLBACK(ags_wave_editor_wave_edit_hscrollbar_value_changed), (gpointer) wave_editor);
+    }
+  }
+
+  /* connect set-pads - new */
+  if(machine != NULL){
+    g_signal_connect_after(machine, "resize-audio-channels",
+			   G_CALLBACK(ags_wave_editor_resize_audio_channels_callback), wave_editor);
+
+    g_signal_connect_after(machine, "resize-pads",
+			   G_CALLBACK(ags_wave_editor_resize_pads_callback), wave_editor);
+  }  
+
+  /* selected machine */
+  wave_editor->selected_machine = machine;
 }
  
 /**
