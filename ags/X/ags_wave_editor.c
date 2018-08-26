@@ -651,7 +651,7 @@ ags_wave_editor_real_machine_changed(AgsWaveEditor *wave_editor, AgsMachine *mac
       gtk_widget_show(level);
 	  
       /* wave edit */
-      wave_edit = ags_wave_edit_new();
+      wave_edit = ags_wave_edit_new(i);
       gtk_box_pack_start(wave_editor->scrolled_wave_edit_box->wave_edit_box,
 			 wave_edit,
 			 FALSE, FALSE,

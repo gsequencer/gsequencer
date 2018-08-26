@@ -24,6 +24,9 @@
 #include <ags/libags-audio.h>
 #include <ags/libags-gui.h>
 
+#include <ags/X/ags_window.h>
+#include <ags/X/ags_navigation.h>
+#include <ags/X/ags_wave_window.h>
 #include <ags/X/ags_wave_editor.h>
 
 #include <gdk/gdkkeysyms.h>
@@ -38,6 +41,15 @@ void ags_accessible_wave_edit_class_init(AtkObject *object);
 void ags_accessible_wave_edit_action_interface_init(AtkActionIface *action);
 void ags_wave_edit_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_wave_edit_init(AgsWaveEdit *wave_edit);
+void ags_wave_edit_set_property(GObject *gobject,
+				guint prop_id,
+				const GValue *value,
+				GParamSpec *param_spec);
+void ags_wave_edit_get_property(GObject *gobject,
+				guint prop_id,
+				GValue *value,
+				GParamSpec *param_spec);
+
 void ags_wave_edit_connect(AgsConnectable *connectable);
 void ags_wave_edit_disconnect(AgsConnectable *connectable);
 
@@ -83,6 +95,11 @@ static GQuark quark_accessible_object = 0;
 GtkStyle *wave_edit_style = NULL;
 
 GHashTable *ags_wave_edit_auto_scroll = NULL;
+
+enum{
+  PROP_0,
+  PROP_LINE,
+};
 
 GType
 ags_wave_edit_get_type(void)
@@ -168,6 +185,31 @@ ags_wave_edit_class_init(AgsWaveEditClass *wave_edit)
 
   ags_wave_edit_parent_class = g_type_class_peek_parent(wave_edit);
 
+  /* GObjectClass */
+  gobject = G_OBJECT_CLASS(wave_edit);
+
+  gobject->set_property = ags_wave_edit_set_property;
+  gobject->get_property = ags_wave_edit_get_property;
+
+  /* properties */
+  /**
+   * AgsWaveEdit:line:
+   *
+   * The wave edit's line.
+   * 
+   * Since: 2.0.0
+   */
+  param_spec = g_param_spec_uint("line",
+				 "line",
+				 "The line of wave edit",
+				 0,
+				 G_MAXUINT32,
+				 0,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_LINE,
+				  param_spec);
+
   /* GtkWidgetClass */
   widget = (GtkWidgetClass *) wave_edit;
 
@@ -221,6 +263,8 @@ ags_wave_edit_init(AgsWaveEdit *wave_edit)
 
   wave_edit->button_mask = 0;
   wave_edit->key_mask = 0;
+
+  wave_edit->line = 0;
   
   wave_edit->note_offset = 0;
   wave_edit->note_offset_absolute = 0;
@@ -279,7 +323,10 @@ ags_wave_edit_init(AgsWaveEdit *wave_edit)
 		   GTK_FILL|GTK_EXPAND,
 		   GTK_FILL|GTK_EXPAND,
 		   0, 0);
-    
+
+  wave_edit->wave_data = NULL;
+  wave_edit->stride = -1;
+  
   /* vscrollbar */
   adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 1.0, wave_edit->control_height, 1.0);
   wave_edit->vscrollbar = gtk_vscrollbar_new(adjustment);
@@ -320,6 +367,53 @@ ags_wave_edit_init(AgsWaveEdit *wave_edit)
   g_hash_table_insert(ags_wave_edit_auto_scroll,
 		      wave_edit, ags_wave_edit_auto_scroll_timeout);
   g_timeout_add(1000 / 30, (GSourceFunc) ags_wave_edit_auto_scroll_timeout, (gpointer) wave_edit);
+}
+
+void
+ags_wave_edit_set_property(GObject *gobject,
+				 guint prop_id,
+				 const GValue *value,
+				 GParamSpec *param_spec)
+{
+  AgsWaveEdit *wave_edit;
+
+  wave_edit = AGS_WAVE_EDIT(gobject);
+
+  switch(prop_id){
+  case PROP_LINE:
+    {
+      wave_edit->line = g_value_get_uint(value);
+
+      gtk_widget_queue_draw(wave_edit);
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
+}
+
+void
+ags_wave_edit_get_property(GObject *gobject,
+				 guint prop_id,
+				 GValue *value,
+				 GParamSpec *param_spec)
+{
+  AgsWaveEdit *wave_edit;
+
+  wave_edit = AGS_WAVE_EDIT(gobject);
+
+  switch(prop_id){
+  case PROP_LINE:
+    {
+      g_value_set_uint(value,
+		       wave_edit->line);
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
 }
 
 void
@@ -1309,15 +1403,298 @@ void
 ags_wave_edit_draw_buffer(AgsWaveEdit *wave_edit,
 			  AgsBuffer *buffer,
 			  cairo_t *cr,
+			  gdouble bpm,
 			  double r, double g, double b, double a)
 {
-  //TODO:JK: implement me
+  AgsWaveEditor *wave_editor;
+  AgsWaveToolbar *wave_toolbar;
+
+  GtkStyle *wave_edit_style;
+
+  cairo_t *i_cr;
+  cairo_surface_t *surface;
+
+  unsigned char *image_data, *bg_data;
+  
+  guint samplerate;
+  guint buffer_size;
+  guint format;
+  guint64 x;
+  gdouble width, height;
+  double zoom, zoom_factor;
+  guint wave_data_width;
+  guint i;
+
+  static const gdouble white_gc = 65535.0;
+
+  pthread_mutex_t *buffer_mutex;
+
+  if(!AGS_IS_WAVE_EDIT(wave_edit) ||
+     !AGS_IS_BUFFER(buffer) ||
+     cr == NULL){
+    return;
+  }
+
+  wave_editor = gtk_widget_get_ancestor(wave_edit,
+					AGS_TYPE_WAVE_EDITOR);
+
+  if(wave_editor->selected_machine == NULL){
+    return;
+  }
+
+  pthread_mutex_lock(ags_buffer_get_class_mutex());
+  
+  buffer_mutex = buffer->obj_mutex;
+
+  pthread_mutex_unlock(ags_buffer_get_class_mutex());
+  
+  wave_toolbar = wave_editor->wave_toolbar;
+  
+  wave_edit_style = gtk_widget_get_style(GTK_WIDGET(wave_edit->drawing_area));
+
+  /* zoom */
+  zoom = exp2((double) gtk_combo_box_get_active((GtkComboBox *) wave_toolbar->zoom) - 2.0);
+  zoom_factor = exp2(6.0 - (double) gtk_combo_box_get_active((GtkComboBox *) wave_toolbar->zoom));
+
+  /* width and height */
+  width = (gdouble) GTK_WIDGET(wave_edit->drawing_area)->allocation.width;
+  height = (gdouble) GTK_WIDGET(wave_edit->drawing_area)->allocation.height;
+  
+  /* draw point */
+  g_object_get(buffer,
+	       "samplerate", &samplerate,
+	       "buffer-size", &buffer_size,
+	       "format", &format,
+	       "x", &x,
+	       NULL);
+
+  wave_data_width = buffer_size;
+
+  /*
+  if(wave_edit->stride != cairo_format_stride_for_width(CAIRO_FORMAT_ARGB32, wave_data_width)){
+    if(wave_edit->wave_data != NULL){
+      free(wave_edit->wave_data);
+    }
+
+    wave_edit->stride = cairo_format_stride_for_width(CAIRO_FORMAT_ARGB32, wave_data_width);
+    wave_edit->wave_data = malloc(wave_edit->stride * AGS_WAVE_EDIT_DEFAULT_HEIGHT);
+  }
+  
+  surface = cairo_image_surface_create_for_data(wave_edit->wave_data,
+						CAIRO_FORMAT_ARGB32,
+						wave_data_width,
+						AGS_WAVE_EDIT_DEFAULT_HEIGHT,
+						wave_edit->stride);
+
+  i_cr = cairo_create(surface);
+  */
+  
+  if(ags_buffer_test_flags(buffer, AGS_BUFFER_IS_SELECTED)){
+    /* draw selected buffer */
+    cairo_set_source_rgba(cr,
+			  r,
+			  g,
+			  b,
+			  1.0);
+  }else{
+    /* draw buffer */
+    cairo_set_source_rgba(cr,
+			  b,
+			  g,
+			  r,
+			  a);
+  }
+  
+  cairo_scale(cr,
+	      1.0 / (zoom_factor * (((60.0 / bpm) * ((double) buffer_size / (double) samplerate)) * AGS_WAVE_EDIT_X_RESOLUTION)), 1.0);
+
+  for(i = 0; i < buffer_size; i++){
+    double y0, y1;
+
+    y0 = 0.0;
+
+    pthread_mutex_lock(buffer_mutex);
+
+    switch(format){
+    case AGS_SOUNDCARD_SIGNED_8_BIT:
+      {
+	y1 = (double) ((gint8 *) buffer->data)[i] / exp2(7.0);
+      }
+      break;
+    case AGS_SOUNDCARD_SIGNED_16_BIT:
+      {
+	y1 = (double) ((gint16 *) buffer->data)[i] / exp2(15.0);
+      }
+      break;
+    case AGS_SOUNDCARD_SIGNED_24_BIT:
+      {
+	y1 = (double) ((gint32 *) buffer->data)[i] / exp2(23.0);
+      }
+      break;
+    case AGS_SOUNDCARD_SIGNED_32_BIT:
+      {
+	y1 = (double) ((gint32 *) buffer->data)[i] / exp2(31.0);
+      }
+      break;
+    case AGS_SOUNDCARD_SIGNED_64_BIT:
+      {
+	y1 = (double) ((gint64 *) buffer->data)[i] / exp2(63.0);
+      }
+      break;
+    case AGS_SOUNDCARD_FLOAT:
+      {
+	y1 = (double) ((gfloat *) buffer->data)[i];
+      }
+      break;
+    case AGS_SOUNDCARD_DOUBLE:
+      {
+	y1 = (double) ((gdouble *) buffer->data)[i];
+      }
+      break;
+    }
+
+    pthread_mutex_unlock(buffer_mutex);
+
+    y0 = 0.5 * height;
+    y1 = (((y1 + 1.0) * height) / 2.0);
+    
+    cairo_move_to(cr,
+		  (double) i, y0);
+    cairo_line_to(cr,
+		  (double) i, y1);
+    cairo_stroke(cr);
+  }
+  
+
+  /* draw buffer */
+  //  cairo_set_source_surface(cr, surface,
+  //			   (bpm / (60.0 * (x / samplerate))) * AGS_WAVE_EDIT_X_RESOLUTION, 0.0);
+
+  cairo_paint(cr);
+  cairo_restore(cr);
+  
+  //  cairo_destroy(i_cr);
 }
 
 void
 ags_wave_edit_draw_wave(AgsWaveEdit *wave_edit)
 {
+  AgsWindow *window;
+  AgsWaveWindow *wave_window;
+  AgsWaveEditor *wave_editor;
+
+  GtkStyle *wave_edit_style;
+
+  cairo_t *cr;
+
+  GList *start_list_wave, *list_wave;
+  GList *start_list_buffer, *list_buffer;
+
+  guint line;
+  guint samplerate;
+  gdouble bpm;
+  guint x0, x1;
+
+  static const gdouble white_gc = 65535.0;
+  
+  if(!AGS_IS_WAVE_EDIT(wave_edit)){
+    return;
+  }
+
+  wave_editor = gtk_widget_get_ancestor(wave_edit,
+					AGS_TYPE_WAVE_EDITOR);
+
+  if(wave_editor->selected_machine == NULL){
+    return;
+  }
+
+  wave_window = gtk_widget_get_ancestor(wave_editor,
+					AGS_TYPE_WAVE_WINDOW);
+  window = wave_window->parent_window;  
+
+  wave_edit_style = gtk_widget_get_style(GTK_WIDGET(wave_edit->drawing_area));
+
+  /* create cairo context */
+  cr = gdk_cairo_create(GTK_WIDGET(wave_edit->drawing_area)->window);
+
+  if(cr == NULL){
+    return;
+  }
+
+  bpm = gtk_spin_button_get_value(window->navigation->bpm);
+  
+  /* get visisble region */
+  x0 = (guint) GTK_RANGE(wave_edit->hscrollbar)->adjustment->value;
+  x1 = ((guint) GTK_RANGE(wave_edit->hscrollbar)->adjustment->value + GTK_WIDGET(wave_edit->drawing_area)->allocation.width);
+
+  /* draw wave */
+  g_object_get(wave_editor->selected_machine->audio,
+	       "wave", &start_list_wave,
+	       NULL);
+
+  list_wave = start_list_wave;
+  line = wave_edit->line;
+  
+  while((list_wave = ags_wave_find_near_timestamp(list_wave, line,
+						  NULL)) != NULL){
+    AgsWave *wave;
+
+    AgsTimestamp *timestamp;
+      
+    GList *start_list_buffer, *list_buffer;
+
+    guint64 offset;
+    
+    wave = AGS_WAVE(list_wave->data);
+
+    g_object_get(wave,
+		 "timestamp", &timestamp,
+		 "samplerate", &samplerate,
+		 NULL);
+
+    offset = ags_timestamp_get_ags_offset(timestamp);
+    
+    if(timestamp != NULL &&
+       ((60.0 / bpm) * ((double) offset / (double) samplerate)) * AGS_WAVE_EDIT_X_RESOLUTION > x1){
+      break;
+    }
+
+    g_object_get(wave,
+		 "buffer", &start_list_buffer,
+		 NULL);
+      
+    list_buffer = start_list_buffer;
+
+    while(list_buffer != NULL){
+      ags_wave_edit_draw_buffer(wave_edit,
+				list_buffer->data,
+				cr,
+				bpm,
+				wave_edit_style->fg[0].red / white_gc,
+				wave_edit_style->fg[0].green / white_gc,
+				wave_edit_style->fg[0].blue / white_gc,
+				0.4);
+
+      /* iterate */
+      list_buffer = list_buffer->next;
+    }
+
+    g_list_free(start_list_buffer);
+      
+    /* iterate */
+    list_wave = list_wave->next;
+  }
+  
   //TODO:JK: implement me
+
+  g_list_free(start_list_wave);
+
+  /* complete */
+  cairo_pop_group_to_source(cr);
+  cairo_paint(cr);
+      
+  cairo_surface_mark_dirty(cairo_get_target(cr));
+  cairo_destroy(cr);
 }
 
 void
@@ -1352,19 +1729,22 @@ ags_wave_edit_draw(AgsWaveEdit *wave_edit)
 
 /**
  * ags_wave_edit_new:
+ * @line: the line
  *
- * Create a new #AgsWaveEdit.
+ * Create a new instance of #AgsWaveEdit.
  *
- * Returns: a new #AgsWaveEdit
+ * Returns: the new #AgsWaveEdit
  *
- * Since: 1.2.0
+ * Since: 2.0.0
  */
 AgsWaveEdit*
-ags_wave_edit_new()
+ags_wave_edit_new(guint line)
 {
   AgsWaveEdit *wave_edit;
 
-  wave_edit = (AgsWaveEdit *) g_object_new(AGS_TYPE_WAVE_EDIT, NULL);
+  wave_edit = (AgsWaveEdit *) g_object_new(AGS_TYPE_WAVE_EDIT,
+					   "line", line,
+					   NULL);
 
   return(wave_edit);
 }

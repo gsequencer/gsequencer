@@ -1941,7 +1941,7 @@ ags_automation_edit_draw_acceleration(AgsAutomationEdit *automation_edit,
   }
 
   /* draw point */
-  if((AGS_ACCELERATION_IS_SELECTED & (acceleration_a->flags)) != 0){
+  if(ags_acceleration_test_flags(acceleration_a, AGS_ACCELERATION_IS_SELECTED)){
     /* draw selected acceleration */
     cairo_set_source_rgba(cr,
 			  r, g, b, 1.0);

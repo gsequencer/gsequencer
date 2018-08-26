@@ -61,6 +61,8 @@
 
 #define AGS_WAVE_EDIT_DEFAULT_PADDING (8)
 
+#define AGS_WAVE_EDIT_X_RESOLUTION (16.0 * 64.0)
+
 typedef struct _AgsWaveEdit AgsWaveEdit;
 typedef struct _AgsWaveEditClass AgsWaveEditClass;
 
@@ -98,6 +100,8 @@ struct _AgsWaveEdit
 
   guint button_mask;
   guint key_mask;
+
+  guint line;
   
   guint note_offset;
   guint note_offset_absolute;
@@ -122,6 +126,8 @@ struct _AgsWaveEdit
   gdouble default_value;
 
   GtkDrawingArea *drawing_area;
+  unsigned char *wave_data;
+  int stride;
   
   GtkVScrollbar *vscrollbar;
   GtkHScrollbar *hscrollbar;
@@ -146,11 +152,12 @@ void ags_wave_edit_draw_selection(AgsWaveEdit *wave_edit);
 void ags_wave_edit_draw_buffer(AgsWaveEdit *wave_edit,
 			       AgsBuffer *buffer,
 			       cairo_t *cr,
+			       gdouble bpm,
 			       double r, double g, double b, double a);
 void ags_wave_edit_draw_wave(AgsWaveEdit *wave_edit);
 
 void ags_wave_edit_draw(AgsWaveEdit *wave_edit);
 
-AgsWaveEdit* ags_wave_edit_new();
+AgsWaveEdit* ags_wave_edit_new(guint line);
 
 #endif /*__AGS_WAVE_EDIT_H__*/

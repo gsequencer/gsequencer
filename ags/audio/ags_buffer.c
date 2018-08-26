@@ -756,8 +756,8 @@ ags_buffer_set_format(AgsBuffer *buffer,
   data = ags_stream_alloc(buffer->buffer_size,
 			  format);
 
-  copy_mode = ags_audio_buffer_util_get_copy_mode(format,
-						  buffer->format);
+  copy_mode = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(format),
+						  ags_audio_buffer_util_format_from_soundcard(buffer->format));
   
   ags_audio_buffer_util_copy_buffer_to_buffer(data, 1, 0,
 					      buffer->data, 1, 0,

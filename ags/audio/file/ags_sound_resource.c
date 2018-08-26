@@ -612,7 +612,10 @@ ags_sound_resource_read_wave(AgsSoundResource *sound_resource,
 					 i,
 					 frame_count, target_format);
 
-
+      ags_wave_add_buffer(wave,
+			  buffer,
+			  FALSE);
+      
       if(create_wave){
 	wave = ags_wave_new(NULL,
 			    i);

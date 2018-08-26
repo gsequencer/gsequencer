@@ -646,8 +646,7 @@ ags_audiorec_open_filename(AgsAudiorec *audiorec,
   audio_file = ags_audio_file_new(filename,
 				  output_soundcard,
 				  -1);
-  ags_audio_file_rw_open(audio_file,
-			 TRUE);
+  ags_audio_file_open(audio_file);
 
   g_object_set(AGS_MACHINE(audiorec)->audio,
 	       "input-audio-file", audio_file,

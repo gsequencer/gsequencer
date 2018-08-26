@@ -964,7 +964,7 @@ ags_sndfile_seek(AgsSoundResource *sound_resource,
     }
   }
 
-  //  sf_seek(sndfile->file, frame_count, whence);
+  sf_seek(sndfile->file, frame_count, whence);
 }
 
 void
