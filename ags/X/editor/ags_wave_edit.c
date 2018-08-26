@@ -1419,6 +1419,8 @@ ags_wave_edit_draw_buffer(AgsWaveEdit *wave_edit,
   guint samplerate;
   guint buffer_size;
   guint format;
+  guint x0, x1;
+  guint x_cut;
   guint64 x;
   gdouble width, height;
   double zoom, zoom_factor;
@@ -1456,6 +1458,10 @@ ags_wave_edit_draw_buffer(AgsWaveEdit *wave_edit,
   zoom = exp2((double) gtk_combo_box_get_active((GtkComboBox *) wave_toolbar->zoom) - 2.0);
   zoom_factor = exp2(6.0 - (double) gtk_combo_box_get_active((GtkComboBox *) wave_toolbar->zoom));
 
+  /* get visisble region */
+  x0 = GTK_RANGE(wave_edit->hscrollbar)->adjustment->value;
+  x1 = (GTK_RANGE(wave_edit->hscrollbar)->adjustment->value + GTK_WIDGET(wave_edit->drawing_area)->allocation.width);
+
   /* width and height */
   width = (gdouble) GTK_WIDGET(wave_edit->drawing_area)->allocation.width;
   height = (gdouble) GTK_WIDGET(wave_edit->drawing_area)->allocation.height;
@@ -1468,6 +1474,12 @@ ags_wave_edit_draw_buffer(AgsWaveEdit *wave_edit,
 	       "x", &x,
 	       NULL);
 
+  if((x + buffer_size) / (zoom_factor * (((60.0 / bpm) * ((double) buffer_size / (double) samplerate)) * AGS_WAVE_EDIT_X_RESOLUTION)) < x0 ||
+     (x) / (zoom_factor * (((60.0 / bpm) * ((double) buffer_size / (double) samplerate)) * AGS_WAVE_EDIT_X_RESOLUTION)) > x1){
+    return;
+  }
+  
+  x_cut = x0;
   wave_data_width = buffer_size;
 
   /*
@@ -1505,10 +1517,10 @@ ags_wave_edit_draw_buffer(AgsWaveEdit *wave_edit,
 			  a);
   }
   
-  cairo_scale(cr,
-	      1.0 / (zoom_factor * (((60.0 / bpm) * ((double) buffer_size / (double) samplerate)) * AGS_WAVE_EDIT_X_RESOLUTION)), 1.0);
+  //  cairo_scale(cr,
+  //	      1.0 / (zoom_factor * (((60.0 / bpm) * ((double) buffer_size / (double) samplerate)) * AGS_WAVE_EDIT_X_RESOLUTION)), 1.0);
 
-  for(i = 0; i < buffer_size; i++){
+  for(i = 0; i < buffer_size; i += 32){
     double y0, y1;
 
     y0 = 0.0;
@@ -1559,9 +1571,9 @@ ags_wave_edit_draw_buffer(AgsWaveEdit *wave_edit,
     y1 = (((y1 + 1.0) * height) / 2.0);
     
     cairo_move_to(cr,
-		  (double) i, y0);
+		  (double) (x + i) / (zoom_factor * (((60.0 / bpm) * ((double) buffer_size / (double) samplerate)) * AGS_WAVE_EDIT_X_RESOLUTION)) - x_cut, y0);
     cairo_line_to(cr,
-		  (double) i, y1);
+		  (double) (x + i) / (zoom_factor * (((60.0 / bpm) * ((double) buffer_size / (double) samplerate)) * AGS_WAVE_EDIT_X_RESOLUTION)) - x_cut, y1);
     cairo_stroke(cr);
   }
   
@@ -1569,9 +1581,6 @@ ags_wave_edit_draw_buffer(AgsWaveEdit *wave_edit,
   /* draw buffer */
   //  cairo_set_source_surface(cr, surface,
   //			   (bpm / (60.0 * (x / samplerate))) * AGS_WAVE_EDIT_X_RESOLUTION, 0.0);
-
-  cairo_paint(cr);
-  cairo_restore(cr);
   
   //  cairo_destroy(i_cr);
 }
@@ -1635,6 +1644,8 @@ ags_wave_edit_draw_wave(AgsWaveEdit *wave_edit)
   list_wave = start_list_wave;
   line = wave_edit->line;
   
+  cairo_push_group(cr);
+
   while((list_wave = ags_wave_find_near_timestamp(list_wave, line,
 						  NULL)) != NULL){
     AgsWave *wave;
