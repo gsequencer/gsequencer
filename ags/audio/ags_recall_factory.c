@@ -69,6 +69,10 @@
 #include <ags/audio/recall/ags_play_lv2_audio_run.h>
 #include <ags/audio/recall/ags_play_notation_audio.h>
 #include <ags/audio/recall/ags_play_notation_audio_run.h>
+#include <ags/audio/recall/ags_play_wave_audio.h>
+#include <ags/audio/recall/ags_play_wave_audio_run.h>
+#include <ags/audio/recall/ags_play_wave_channel.h>
+#include <ags/audio/recall/ags_play_wave_channel_run.h>
 #include <ags/audio/recall/ags_peak_channel.h>
 #include <ags/audio/recall/ags_peak_channel_run.h>
 #include <ags/audio/recall/ags_mute_audio.h>

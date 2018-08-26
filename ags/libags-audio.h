@@ -187,6 +187,10 @@
 #include <ags/audio/recall/ags_play_channel_run_master.h>
 #include <ags/audio/recall/ags_play_notation_audio.h>
 #include <ags/audio/recall/ags_play_notation_audio_run.h>
+#include <ags/audio/recall/ags_play_wave_audio.h>
+#include <ags/audio/recall/ags_play_wave_audio_run.h>
+#include <ags/audio/recall/ags_play_wave_channel.h>
+#include <ags/audio/recall/ags_play_wave_channel_run.h>
 #include <ags/audio/recall/ags_play_dssi_audio.h>
 #include <ags/audio/recall/ags_play_dssi_audio_run.h>
 #include <ags/audio/recall/ags_play_lv2_audio.h>
