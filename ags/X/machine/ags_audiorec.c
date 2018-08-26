@@ -446,13 +446,126 @@ ags_audiorec_map_recall(AgsMachine *machine)
 void
 ags_audiorec_output_map_recall(AgsAudiorec *audiorec, guint output_pad_start)
 {
-  //TODO:JK: implement me
+  AgsAudio *audio;
+
+  guint output_pads, input_pads;
+  guint audio_channels;
+
+  if(audiorec->mapped_output_pad > output_pad_start){
+    return;
+  }
+
+  audio = AGS_MACHINE(audiorec)->audio;
+
+  /* get some fields */
+  g_object_get(audio,
+	       "output-pads", &output_pads,
+	       "input-pads", &input_pads,
+	       "audio-channels", &audio_channels,
+	       NULL);
+  
+  /* remap for input */
+  if(ags_recall_global_get_rt_safe() ||
+     ags_recall_global_get_performance_mode()){
+    /* ags-copy */
+    ags_recall_factory_create(audio,
+			      NULL, NULL,
+			      "ags-copy",
+			      0, audio_channels, 
+			      0, input_pads,
+			      (AGS_RECALL_FACTORY_INPUT |
+			       AGS_RECALL_FACTORY_RECALL |
+			       AGS_RECALL_FACTORY_ADD),
+			      0);
+  }else{
+    /* ags-buffer */
+    ags_recall_factory_create(audio,
+			      NULL, NULL,
+			      "ags-buffer",
+			      0, audio_channels, 
+			      0, input_pads,
+			      (AGS_RECALL_FACTORY_INPUT |
+			       AGS_RECALL_FACTORY_RECALL |
+			       AGS_RECALL_FACTORY_ADD),
+			      0);
+  }
+
+  if(!(ags_recall_global_get_rt_safe() ||
+       ags_recall_global_get_performance_mode())){
+    /* ags-stream */
+    ags_recall_factory_create(audio,
+			      NULL, NULL,
+			      "ags-stream",
+			      0, audio_channels,
+			      output_pad_start, output_pads,
+			      (AGS_RECALL_FACTORY_OUTPUT |
+			       AGS_RECALL_FACTORY_PLAY |
+			       AGS_RECALL_FACTORY_ADD),
+			      0);
+  }
+  
+  audiorec->mapped_output_pad = output_pads;
 }
 
 void
 ags_audiorec_input_map_recall(AgsAudiorec *audiorec, guint input_pad_start)
 {
-  //TODO:JK: implement me
+  AgsAudio *audio;
+  AgsChannel *source, *current;
+
+  GList *list;
+
+  guint input_pads;
+  guint audio_channels;
+
+  if(audiorec->mapped_input_pad > input_pad_start){
+    return;
+  }
+
+  audio = AGS_MACHINE(audiorec)->audio;
+
+  /* get some fields */
+  g_object_get(audio,
+	       "input-pads", &input_pads,
+	       "audio-channels", &audio_channels,
+	       NULL);
+
+  /* remap for input */
+  if(ags_recall_global_get_rt_safe() ||
+     ags_recall_global_get_performance_mode()){
+    /* ags-copy */
+    ags_recall_factory_create(audio,
+			      NULL, NULL,
+			      "ags-copy",
+			      0, audio_channels,
+			      input_pad_start, input_pads,
+			      (AGS_RECALL_FACTORY_INPUT |
+			       AGS_RECALL_FACTORY_RECALL |
+			       AGS_RECALL_FACTORY_ADD),
+			      0);
+  }else{
+    /* ags-buffer */
+    ags_recall_factory_create(audio,
+			      NULL, NULL,
+			      "ags-buffer",
+			      0, audio_channels,
+			      input_pad_start, input_pads,
+			      (AGS_RECALL_FACTORY_INPUT |
+			       AGS_RECALL_FACTORY_RECALL |
+			       AGS_RECALL_FACTORY_ADD),
+			      0);
+  }
+  
+  /* ags-play-wave */
+  ags_recall_factory_create(audio,
+			    NULL, NULL,
+			    "ags-play-wave",
+			    0, audio_channels,
+			    input_pad_start, input_pads,
+			    (AGS_RECALL_FACTORY_INPUT |
+			     AGS_RECALL_FACTORY_RECALL |
+			     AGS_RECALL_FACTORY_ADD),
+			    0);
 }
 
 void
@@ -462,18 +575,80 @@ ags_audiorec_resize_audio_channels(AgsMachine *machine,
 {
   AgsAudiorec *audiorec;
 
-  guint pads;
+  AgsAudio *audio;
+  
+  guint output_pads, input_pads;
   
   audiorec = AGS_AUDIOREC(machine);
 
-  pads = machine->audio->input_pads;
+  audio = AGS_MACHINE(audiorec)->audio;
 
-  if(audio_channels > audio_channels_old &&
-     pads > 0){
+  g_object_get(audio,
+	       "input-pads", &input_pads,
+	       "output-pads", &output_pads,
+	       NULL);
+
+  if(audio_channels > audio_channels_old){
     AgsHIndicator *hindicator;
 	
     guint i;
 
+    if(input_pads > 0){
+      if(ags_recall_global_get_rt_safe() ||
+	 ags_recall_global_get_performance_mode()){
+	/* ags-copy */
+	ags_recall_factory_create(audio,
+				  NULL, NULL,
+				  "ags-copy",
+				  audio_channels_old, audio_channels,
+				  0, input_pads,
+				  (AGS_RECALL_FACTORY_INPUT |
+				   AGS_RECALL_FACTORY_RECALL |
+				   AGS_RECALL_FACTORY_ADD),
+				  0);
+      }else{    
+	/* ags-buffer */
+	ags_recall_factory_create(audio,
+				  NULL, NULL,
+				  "ags-buffer",
+				  audio_channels_old, audio_channels,
+				  0, input_pads,
+				  (AGS_RECALL_FACTORY_INPUT |
+				   AGS_RECALL_FACTORY_RECALL |
+				   AGS_RECALL_FACTORY_ADD),
+				  0);
+      }
+    
+      /* ags-play */
+      ags_recall_factory_create(audio,
+				NULL, NULL,
+				"ags-play-wave",
+				audio_channels_old, audio_channels, 
+				0, input_pads,
+				(AGS_RECALL_FACTORY_INPUT |
+				 AGS_RECALL_FACTORY_RECALL |
+				 AGS_RECALL_FACTORY_ADD),
+				0);
+    }
+    
+    if(output_pads > 0){
+      /* AgsOutput */
+      /* ags-stream */
+      if(!(ags_recall_global_get_rt_safe() ||
+	   ags_recall_global_get_performance_mode())){
+	ags_recall_factory_create(audio,
+				  NULL, NULL,
+				  "ags-stream",
+				  audio_channels_old, audio_channels,
+				  0, output_pads,
+				  (AGS_RECALL_FACTORY_OUTPUT |
+				   AGS_RECALL_FACTORY_PLAY |
+				   AGS_RECALL_FACTORY_ADD),
+				  0);
+      }
+    }
+    
+    /* widgets */
     for(i = audio_channels_old; i < audio_channels; i++){
       hindicator = ags_hindicator_new();
       gtk_box_pack_start(audiorec->hindicator_vbox,
@@ -512,8 +687,7 @@ ags_audiorec_resize_pads(AgsMachine *machine, GType type,
   audiorec = AGS_AUDIOREC(machine);
 
   if(type == AGS_TYPE_INPUT){
-    if(pads == 1 &&
-       pads_old == 0){
+    if(pads > pads_old){
       AgsHIndicator *hindicator;
 
       guint audio_channels;
@@ -530,7 +704,11 @@ ags_audiorec_resize_pads(AgsMachine *machine, GType type,
       }
 
       gtk_widget_show_all(audiorec->hindicator_vbox);
-    }else if(pads == 0){
+
+      /* depending on destination */
+      ags_audiorec_input_map_recall(audiorec,
+				    pads_old);
+    }else{
       GList *list, *list_start;
 
       list_start = 
@@ -544,10 +722,6 @@ ags_audiorec_resize_pads(AgsMachine *machine, GType type,
 
       g_list_free(list_start);
 
-      /* depending on destination */
-      ags_audiorec_input_map_recall(audiorec,
-				    pads_old);
-    }else{
       audiorec->mapped_input_pad = pads;
     }
   }else{
