@@ -545,4 +545,3 @@ ags_output_collection_editor_new(GType channel_type)
   
   return(output_collection_editor);
 }
-

@@ -4104,6 +4104,12 @@ libgsequencer_h_sources = \
 	ags/X/ags_generic_preferences.h \
 	ags/X/ags_history_browser_callbacks.h \
 	ags/X/ags_history_browser.h \
+	ags/X/ags_input_collection_editor_callbacks.h \
+	ags/X/ags_input_collection_editor.h \
+	ags/X/ags_input_editor_callbacks.h \
+	ags/X/ags_input_editor.h \
+	ags/X/ags_input_listing_editor_callbacks.h \
+	ags/X/ags_input_listing_editor.h \
 	ags/X/ags_ladspa_browser_callbacks.h \
 	ags/X/ags_ladspa_browser.h \
 	ags/X/ags_lv2_browser_callbacks.h \

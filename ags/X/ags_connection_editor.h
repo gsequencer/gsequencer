@@ -62,9 +62,15 @@ struct _AgsConnectionEditor
   GtkScrolledWindow *output_listing_editor_scrolled_window;
   AgsPropertyCollectionEditor *output_listing_editor;
 
+  GtkScrolledWindow *input_listing_editor_scrolled_window;
+  AgsPropertyCollectionEditor *input_listing_editor;
+
   GtkScrolledWindow *output_connection_editor_scrolled_window;
   AgsPropertyCollectionEditor *output_connection_editor;
 
+  GtkScrolledWindow *input_connection_editor_scrolled_window;
+  AgsPropertyCollectionEditor *input_connection_editor;
+  
   GtkButton *apply;
   GtkButton *ok;
   GtkButton *cancel;
