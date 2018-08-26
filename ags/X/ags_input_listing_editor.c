@@ -54,7 +54,7 @@ static gpointer ags_input_listing_editor_parent_class = NULL;
 static AgsConnectableInterface* ags_input_listing_editor_parent_connectable_interface;
 
 GType
-ags_input_listing_editor_get_type(void)
+ags_input_listing_editor_get_type()
 {
   static GType ags_type_input_listing_editor = 0;
 

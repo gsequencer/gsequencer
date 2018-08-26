@@ -30,6 +30,7 @@
 
 #include <ags/X/ags_link_editor.h>
 #include <ags/X/ags_output_editor.h>
+#include <ags/X/ags_input_editor.h>
 #include <ags/X/ags_line_member_editor.h>
 
 #define AGS_TYPE_LINE_EDITOR                (ags_line_editor_get_type())
@@ -65,6 +66,7 @@ struct _AgsLineEditor
 
   AgsLinkEditor *link_editor;
   AgsOutputEditor *output_editor;
+  AgsInputEditor *input_editor;
   AgsLineMemberEditor *member_editor;
 };
 

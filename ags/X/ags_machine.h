@@ -193,6 +193,7 @@ void ags_machine_set_run_extended(AgsMachine *machine,
 
 GtkListStore* ags_machine_get_possible_links(AgsMachine *machine);
 GtkListStore* ags_machine_get_possible_audio_output_connections(AgsMachine *machine);
+GtkListStore* ags_machine_get_possible_audio_input_connections(AgsMachine *machine);
 
 GtkFileChooserDialog* ags_machine_file_chooser_dialog_new(AgsMachine *machine);
 

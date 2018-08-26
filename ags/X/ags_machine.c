@@ -1882,6 +1882,67 @@ ags_machine_get_possible_audio_output_connections(AgsMachine *machine)
 }
 
 /**
+ * ags_machine_get_possible_audio_input_connections:
+ * @machine: the #AgsMachine
+ *
+ * Find audio input connections suitable for @machine.
+ *
+ * Returns: a #GtkListStore containing one column with a string representing
+ * machines by its type and name.
+ *
+ * Since: 2.0.0
+ */
+GtkListStore*
+ags_machine_get_possible_audio_input_connections(AgsMachine *machine)
+{
+  AgsWindow *window;
+  
+  AgsApplicationContext *application_context;
+
+  GtkListStore *model;
+
+  GList *list;
+  GtkTreeIter iter;
+
+  window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) machine,
+						 AGS_TYPE_WINDOW);
+
+  if(window != NULL){
+    application_context = (AgsApplicationContext *) window->application_context;
+  }else{
+    application_context = NULL;
+  }
+  
+  model = gtk_list_store_new(2, G_TYPE_STRING, G_TYPE_POINTER);
+
+  gtk_list_store_append(model, &iter);
+  gtk_list_store_set(model, &iter,
+		     0, "NULL",
+		     1, NULL,
+		     -1);
+
+  if(application_context != NULL){
+    list = ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(application_context));
+
+    while(list != NULL){
+      if(list->data != machine){
+	gtk_list_store_append(model, &iter);
+	gtk_list_store_set(model, &iter,
+			   0, g_strdup_printf("%s: %s", 
+					      G_OBJECT_TYPE_NAME(G_OBJECT(list->data)),
+					      ags_soundcard_get_device(AGS_SOUNDCARD(list->data))),
+			   1, list->data,
+			   -1);
+      }
+
+      list = list->next;
+    }
+  }
+  
+  return(model);
+}
+
+/**
  * ags_machine_get_possible_links:
  * @machine: the #AgsMachine
  *

@@ -236,6 +236,10 @@ ags_line_editor_connect(AgsConnectable *connectable)
     ags_connectable_connect(AGS_CONNECTABLE(line_editor->output_editor));
   }
   
+  if(line_editor->input_editor != NULL){
+    ags_connectable_connect(AGS_CONNECTABLE(line_editor->input_editor));
+  }
+
   if(line_editor->member_editor != NULL){
     ags_connectable_connect(AGS_CONNECTABLE(line_editor->member_editor));
   }
@@ -268,6 +272,10 @@ ags_line_editor_disconnect(AgsConnectable *connectable)
     ags_connectable_connect(AGS_CONNECTABLE(line_editor->output_editor));
   }
   
+  if(line_editor->input_editor != NULL){
+    ags_connectable_connect(AGS_CONNECTABLE(line_editor->input_editor));
+  }
+
   if(line_editor->member_editor != NULL){
     ags_connectable_disconnect(AGS_CONNECTABLE(line_editor->member_editor));
   }
@@ -299,6 +307,10 @@ ags_line_editor_apply(AgsApplicable *applicable)
   if(line_editor->output_editor != NULL){
     ags_applicable_apply(AGS_APPLICABLE(line_editor->output_editor));
   }
+
+  if(line_editor->input_editor != NULL){
+    ags_applicable_apply(AGS_APPLICABLE(line_editor->input_editor));
+  }
 }
 
 void
@@ -314,6 +326,10 @@ ags_line_editor_reset(AgsApplicable *applicable)
 
   if(line_editor->output_editor != NULL){
     ags_applicable_reset(AGS_APPLICABLE(line_editor->output_editor));
+  }
+
+  if(line_editor->input_editor != NULL){
+    ags_applicable_reset(AGS_APPLICABLE(line_editor->input_editor));
   }
 
   if(line_editor->member_editor != NULL){
@@ -338,6 +354,7 @@ ags_line_editor_set_channel(AgsLineEditor *line_editor,
     line_editor->link_editor = NULL;
     gtk_widget_destroy(GTK_WIDGET(line_editor->link_editor));
     gtk_widget_destroy(GTK_WIDGET(line_editor->output_editor));
+    gtk_widget_destroy(GTK_WIDGET(line_editor->input_editor));
     gtk_widget_destroy(GTK_WIDGET(line_editor->member_editor));
   }
 
@@ -356,7 +373,7 @@ ags_line_editor_set_channel(AgsLineEditor *line_editor,
 			   0);
       }
 
-      /* recall */
+      /* output */
       if(line_editor->editor_type[i] == AGS_TYPE_OUTPUT_EDITOR){
 	line_editor->output_editor = ags_output_editor_new();
 	gtk_box_pack_start(GTK_BOX(line_editor),
@@ -365,6 +382,15 @@ ags_line_editor_set_channel(AgsLineEditor *line_editor,
 			   0);
       }
       
+      /* input */
+      if(line_editor->editor_type[i] == AGS_TYPE_INPUT_EDITOR){
+	line_editor->input_editor = ags_input_editor_new();
+	gtk_box_pack_start(GTK_BOX(line_editor),
+			   GTK_WIDGET(line_editor->input_editor),
+			   FALSE, FALSE,
+			   0);
+      }
+
       /* recall */
       if(line_editor->editor_type[i] == AGS_TYPE_LINE_MEMBER_EDITOR){
 	line_editor->member_editor = ags_line_member_editor_new();

@@ -382,7 +382,7 @@ ags_input_collection_editor_apply(AgsApplicable *applicable)
     AgsConnectionEditor *connection_editor;
 
     AgsAudio *audio;
-    AgsChannel *input, *input;
+    AgsChannel *input, *output;
     AgsChannel *channel;
     
     GObject *input_soundcard;
@@ -421,7 +421,7 @@ ags_input_collection_editor_apply(AgsApplicable *applicable)
     
     for(i = 0; i < count; i++){
       if(g_type_is_a(input_collection_editor->channel_type, AGS_TYPE_OUTPUT)){
-	channel = input;
+	channel = output;
       }else if(g_type_is_a(input_collection_editor->channel_type, AGS_TYPE_INPUT)){
 	channel = input;
       }else{

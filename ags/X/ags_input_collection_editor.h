@@ -37,7 +37,7 @@ typedef struct _AgsInputCollectionEditorClass AgsInputCollectionEditorClass;
 
 typedef enum{
   AGS_INPUT_COLLECTION_EDITOR_CONNECTED    = 1,
-};
+}AgsInputCollectionEditorFlags;
 
 struct _AgsInputCollectionEditor
 {

@@ -19,8 +19,7 @@
 
 #include <ags/X/ags_connection_editor_callbacks.h>
 
-#include <ags/object/ags_connectable.h>
-#include <ags/object/ags_applicable.h>
+#include <ags/libags.h>
 
 int
 ags_connection_editor_switch_page_callback(GtkNotebook *notebook, GtkNotebookPage *page, guint page_num, AgsConnectionEditor *connection_editor)

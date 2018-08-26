@@ -1456,6 +1456,12 @@ libgsequencer_c_sources = \
 	ags/X/ags_ladspa_browser_callbacks.c \
 	ags/X/ags_lv2_browser.c \
 	ags/X/ags_lv2_browser_callbacks.c \
+	ags/X/ags_input_collection_editor_callbacks.c \
+	ags/X/ags_input_collection_editor.c \
+	ags/X/ags_input_editor_callbacks.c \
+	ags/X/ags_input_editor.c \
+	ags/X/ags_input_listing_editor_callbacks.c \
+	ags/X/ags_input_listing_editor.c \
 	ags/X/ags_line.c \
 	ags/X/ags_line_callbacks.c \
 	ags/X/ags_line_editor.c \
