@@ -233,9 +233,9 @@ ags_buffer_audio_signal_run_init_pre(AgsRecall *recall)
   ags_recycling_add_audio_signal(recycling,
 				 destination);
 
-#ifdef AGS_DEBUG
   g_message("buffer %x to %x", destination, parent_recall_id);
   g_message("creating destination");
+#ifdef AGS_DEBUG
 #endif
   
   /* call parent */

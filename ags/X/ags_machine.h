@@ -50,14 +50,15 @@ typedef enum{
   AGS_MACHINE_IS_EFFECT               = 1 <<  1,
   AGS_MACHINE_IS_SEQUENCER            = 1 <<  2,
   AGS_MACHINE_IS_SYNTHESIZER          = 1 <<  3,
-  AGS_MACHINE_TAKES_FILE_INPUT        = 1 <<  4,
-  AGS_MACHINE_MAPPED_RECALL           = 1 <<  5,
-  AGS_MACHINE_PREMAPPED_RECALL        = 1 <<  6,
-  AGS_MACHINE_BLOCK_PLAY              = 1 <<  7,
-  AGS_MACHINE_BLOCK_STOP              = 1 <<  8,
-  AGS_MACHINE_CONNECTED               = 1 <<  9,
-  AGS_MACHINE_REVERSE_NOTATION        = 1 << 10,
-  AGS_MACHINE_STICKY_CONTROLS         = 1 << 11,
+  AGS_MACHINE_IS_WAVE_PLAYER          = 1 <<  4,
+  AGS_MACHINE_TAKES_FILE_INPUT        = 1 <<  5,
+  AGS_MACHINE_MAPPED_RECALL           = 1 <<  6,
+  AGS_MACHINE_PREMAPPED_RECALL        = 1 <<  7,
+  AGS_MACHINE_BLOCK_PLAY              = 1 <<  8,
+  AGS_MACHINE_BLOCK_STOP              = 1 <<  9,
+  AGS_MACHINE_CONNECTED               = 1 << 10,
+  AGS_MACHINE_REVERSE_NOTATION        = 1 << 11,
+  AGS_MACHINE_STICKY_CONTROLS         = 1 << 12,
 }AgsMachineFlags;
 
 typedef enum{

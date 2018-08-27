@@ -207,7 +207,7 @@ ags_play_wave_channel_init(AgsPlayWaveChannel *play_wave_channel)
 						NULL);
   g_object_ref(play_wave_channel->do_playback);
   
-  play_wave_channel->do_playback->port_value.ags_port_boolean = FALSE;
+  play_wave_channel->do_playback->port_value.ags_port_boolean = TRUE;
 
   /* add to port */
   port = g_list_prepend(port, play_wave_channel->do_playback);

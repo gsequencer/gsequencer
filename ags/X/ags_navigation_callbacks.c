@@ -149,7 +149,7 @@ ags_navigation_play_callback(GtkWidget *widget,
   while(machines != NULL){
     machine = AGS_MACHINE(machines->data);
 
-    if(((AGS_MACHINE_IS_SEQUENCER & (machine->flags)) != 0) ||
+    if((AGS_MACHINE_IS_SEQUENCER & (machine->flags)) != 0 ||
        (AGS_MACHINE_IS_SYNTHESIZER & (machine->flags)) != 0){
 #ifdef AGS_DEBUG
       g_message("found machine to play!\n");
@@ -163,6 +163,19 @@ ags_navigation_play_callback(GtkWidget *widget,
       ags_machine_set_run_extended(machine,
 				   TRUE,
 				   !gtk_toggle_button_get_active((GtkToggleButton *) navigation->exclude_sequencer), TRUE, FALSE, FALSE);
+    }else if((AGS_MACHINE_IS_WAVE_PLAYER & (machine->flags)) != 0){
+#ifdef AGS_DEBUG
+      g_message("found machine to play!\n");
+#endif
+      
+      if(!initialized_time){
+	initialized_time = TRUE;
+	navigation->start_tact = ags_soundcard_get_note_offset(AGS_SOUNDCARD(window->soundcard));
+      }
+      
+      ags_machine_set_run_extended(machine,
+				   TRUE,
+				   FALSE, FALSE, TRUE, FALSE);
     }
 
     machines = machines->next;
@@ -196,6 +209,14 @@ ags_navigation_stop_callback(GtkWidget *widget,
       ags_machine_set_run_extended(machine,
 				   FALSE,
 				   !gtk_toggle_button_get_active((GtkToggleButton *) navigation->exclude_sequencer), TRUE, FALSE, FALSE);
+    }else if((AGS_MACHINE_IS_WAVE_PLAYER & (machine->flags)) != 0){
+#ifdef AGS_DEBUG
+      g_message("found machine to stop!");
+#endif
+      
+      ags_machine_set_run_extended(machine,
+				   FALSE,
+				   FALSE, FALSE, TRUE, FALSE);
     }
 
     machines = machines->next;
@@ -290,7 +311,7 @@ ags_navigation_loop_callback(GtkWidget *widget,
   while(machines != NULL){
     machine = AGS_MACHINE(machines->data);
 
-    if((AGS_MACHINE_IS_SEQUENCER & (machine->flags)) !=0 ||
+    if((AGS_MACHINE_IS_SEQUENCER & (machine->flags)) != 0 ||
        (AGS_MACHINE_IS_SYNTHESIZER & (machine->flags)) != 0){
 #ifdef AGS_DEBUG
       g_message("found machine to loop!\n");
@@ -313,6 +334,37 @@ ags_navigation_loop_callback(GtkWidget *widget,
 
 	g_object_get(recall,
 		     "notation-loop", &port,
+		     NULL);
+	
+	ags_port_safe_write(port,
+			    &do_loop_value);
+
+	list = list->next;
+      }
+
+      g_list_free(list_start);
+    }else if((AGS_MACHINE_IS_WAVE_PLAYER & (machine->flags)) != 0){
+#ifdef AGS_DEBUG
+      g_message("found machine to loop!\n");
+#endif
+      
+      audio = machine->audio;
+
+      /* do it so */
+      g_object_get(audio,
+		   "recall", &list_start,
+		   NULL);
+
+      list = list_start;
+      
+      while((list = ags_recall_find_type(list,
+					 AGS_TYPE_PLAY_WAVE_AUDIO)) != NULL){
+	AgsPort *port;
+	
+	recall = AGS_RECALL(list->data);
+
+	g_object_get(recall,
+		     "wave-loop", &port,
 		     NULL);
 	
 	ags_port_safe_write(port,
@@ -414,6 +466,36 @@ ags_navigation_loop_left_tact_callback(GtkWidget *widget,
       }
 
       g_list_free(list_start);
+    }else if((AGS_MACHINE_IS_WAVE_PLAYER & (machine->flags)) != 0){
+#ifdef AGS_DEBUG
+      g_message("found machine to loop!\n");
+#endif
+      
+      audio = machine->audio;
+
+      /* do it so */
+      g_object_get(audio,
+		   "recall", &list_start,
+		   NULL);
+      
+      while((list = ags_recall_find_type(list,
+					 AGS_TYPE_PLAY_WAVE_AUDIO)) != NULL){
+	AgsPort *port;
+
+	recall = AGS_RECALL(list->data);
+
+
+	g_object_get(recall,
+		     "wave-loop-start", &port,
+		     NULL);
+	
+	ags_port_safe_write(port,
+			    &value);
+
+	list = list->next;
+      }
+
+      g_list_free(list_start);
     }
 
     machines = machines->next;
@@ -479,6 +561,35 @@ ags_navigation_loop_right_tact_callback(GtkWidget *widget,
 
 	g_object_get(recall,
 		     "notation-loop-end", &port,
+		     NULL);
+
+	ags_port_safe_write(port,
+			    &value);
+
+	list = list->next;
+      }
+
+      g_list_free(list_start);
+    }else if((AGS_MACHINE_IS_WAVE_PLAYER & (machine->flags)) != 0){
+#ifdef AGS_DEBUG
+      g_message("found machine to loop!\n");
+#endif
+      
+      audio = machine->audio;
+      
+      /* do it so */
+      g_object_get(audio,
+		   "recall", &list_start,
+		   NULL);
+
+      while((list = ags_recall_find_type(list,
+					 AGS_TYPE_PLAY_WAVE_AUDIO)) != NULL){
+	AgsPort *port;
+	
+	recall = AGS_RECALL(list->data);
+
+	g_object_get(recall,
+		     "wave-loop-end", &port,
 		     NULL);
 
 	ags_port_safe_write(port,

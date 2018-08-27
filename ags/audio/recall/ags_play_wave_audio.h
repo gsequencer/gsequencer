@@ -27,6 +27,7 @@
 
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_recall_audio.h>
+#include <ags/audio/ags_port.h>
 
 #define AGS_TYPE_PLAY_WAVE_AUDIO                (ags_play_wave_audio_get_type())
 #define AGS_PLAY_WAVE_AUDIO(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_PLAY_WAVE_AUDIO, AgsPlayWaveAudio))
@@ -41,6 +42,10 @@ typedef struct _AgsPlayWaveAudioClass AgsPlayWaveAudioClass;
 struct _AgsPlayWaveAudio
 {
   AgsRecallAudio recall_audio;
+
+  AgsPort *wave_loop;
+  AgsPort *wave_loop_start;
+  AgsPort *wave_loop_end;
 };
 
 struct _AgsPlayWaveAudioClass

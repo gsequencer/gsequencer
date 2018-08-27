@@ -46,6 +46,8 @@ struct _AgsPlayWaveChannelRun
   AgsTimestamp *timestamp;
 
   AgsAudioSignal *audio_signal;
+
+  guint64 x_offset;
 };
 
 struct _AgsPlayWaveChannelRunClass

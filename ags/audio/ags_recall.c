@@ -6285,7 +6285,7 @@ ags_recall_child_done(AgsRecall *child,
   GList *children;
 
   guint parent_behaviour_flags;
-
+  
   /* remove child */
   ags_connectable_disconnect(AGS_CONNECTABLE(child));
   ags_recall_remove_child(parent,

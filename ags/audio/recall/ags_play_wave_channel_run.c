@@ -117,6 +117,8 @@ ags_play_wave_channel_run_init(AgsPlayWaveChannelRun *play_wave_channel_run)
   play_wave_channel_run->timestamp->timer.ags_offset.offset = 0;
 
   play_wave_channel_run->audio_signal = NULL;
+
+  play_wave_channel_run->x_offset = 0;
 }
 
 void
@@ -181,10 +183,18 @@ ags_play_wave_channel_run_run_inter(AgsRecall *recall)
   auto void ags_play_wave_channel_run_run_inter_buffer(AgsWave *wave);
 
   void ags_play_wave_channel_run_run_inter_add_audio_signal(){
+    AgsChannel *output;
     AgsRecycling *first_recycling;
+#if 0
+    g_object_get(audio,
+		 "output", &output,
+		 NULL);
 
+    output = ags_channel_nth(output, line);
+#endif
+    
     g_object_get(channel,
-		 "first-recycling", &first_recycling,
+ 		 "first-recycling", &first_recycling,
 		 NULL);
 	  
     play_wave_channel_run->audio_signal = ags_audio_signal_new(output_soundcard,
@@ -197,16 +207,23 @@ ags_play_wave_channel_run_run_inter(AgsRecall *recall)
 		 NULL);
     ags_audio_signal_stream_resize(play_wave_channel_run->audio_signal,
 				   3);
+
     play_wave_channel_run->audio_signal->stream_current = play_wave_channel_run->audio_signal->stream;
 
     ags_recycling_add_audio_signal(first_recycling,
 				   play_wave_channel_run->audio_signal);	  
+
+    ags_connectable_connect(AGS_CONNECTABLE(play_wave_channel_run->audio_signal));
   }
   
   void ags_play_wave_channel_run_run_inter_buffer(AgsWave *wave){
     AgsBuffer *buffer;
     
     GList *start_list, *list;
+
+    if(!AGS_IS_WAVE(wave)){
+      return;
+    }
     
     g_object_get(wave,
 		 "buffer", &start_list,
@@ -255,7 +272,7 @@ ags_play_wave_channel_run_run_inter(AgsRecall *recall)
 	copy_mode = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(format),
 							ags_audio_buffer_util_format_from_soundcard(current_format));
 	
-	ags_audio_buffer_util_copy_buffer_to_buffer(play_wave_channel_run->audio_signal->stream_current, 1, 0,
+	ags_audio_buffer_util_copy_buffer_to_buffer(play_wave_channel_run->audio_signal->stream_current->data, 1, 0,
 						    buffer->data, 1, start_frame,
 						    frame_count, copy_mode);
       }else if(current_offset + current_buffer_size >= x_offset &&
@@ -286,7 +303,7 @@ ags_play_wave_channel_run_run_inter(AgsRecall *recall)
 	copy_mode = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(format),
 							ags_audio_buffer_util_format_from_soundcard(current_format));
 		
-	ags_audio_buffer_util_copy_buffer_to_buffer(play_wave_channel_run->audio_signal->stream_current, 1, 0,
+	ags_audio_buffer_util_copy_buffer_to_buffer(play_wave_channel_run->audio_signal->stream_current->data, 1, 0,
 						    buffer->data, 1, start_frame,
 						    frame_count, copy_mode);
       }
@@ -335,15 +352,7 @@ ags_play_wave_channel_run_run_inter(AgsRecall *recall)
 	       "x-offset", &port,
 	       NULL);
 
-  g_value_init(&x_offset_value,
-	       G_TYPE_UINT64);
-  
-  ags_port_safe_read(port,
-		     &x_offset_value);
-
-  x_offset = g_value_get_uint64(&x_offset_value);
-
-  g_value_unset(&x_offset_value);
+  x_offset = play_wave_channel_run->x_offset;
 
   /* get some fields */
   g_object_get(play_wave_audio_run,
@@ -365,6 +374,12 @@ ags_play_wave_channel_run_run_inter(AgsRecall *recall)
 	       "line", &line,
 	       NULL);
 
+  /* clear */
+  if(play_wave_channel_run->audio_signal != NULL){
+    ags_audio_buffer_util_clear_buffer(play_wave_channel_run->audio_signal->stream_current->data, 1,
+				       buffer_size, ags_audio_buffer_util_format_from_soundcard(format));
+  }
+  
   /* time stamp offset */
   ags_timestamp_set_ags_offset(play_wave_channel_run->timestamp,
 			       (guint64) ((64.0 * (double) samplerate) * floor(x_offset / (64.0 * (double) samplerate))));
@@ -398,14 +413,19 @@ ags_play_wave_channel_run_run_inter(AgsRecall *recall)
       ags_play_wave_channel_run_run_inter_buffer(wave);
     }
   }
-  
+
   /* new x offset */
+  play_wave_channel_run->x_offset += buffer_size;
+
   g_object_get(play_wave_channel,
 	       "x-offset", &port,
 	       NULL);
 
+  g_value_init(&x_offset_value,
+	       G_TYPE_UINT64);
+
   g_value_set_uint64(&x_offset_value,
-		     x_offset + buffer_size);
+		     play_wave_channel_run->x_offset);
 
   ags_port_safe_write(port,
 		      &x_offset_value);

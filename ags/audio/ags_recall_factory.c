@@ -4186,7 +4186,7 @@ ags_recall_factory_create_play_wave(AgsAudio *audio,
 	/* add recall container */
 	ags_channel_add_recall_container(channel,
 					 (GObject *) recall_container);
-
+	
 	/* AgsPlayWaveChannel in channel->recall */
 	play_wave_channel = (AgsPlayWaveChannel *) g_object_new(AGS_TYPE_PLAY_WAVE_CHANNEL,
 								"output-soundcard", output_soundcard,
