@@ -293,6 +293,10 @@ ags_panel_input_line_set_channel(AgsLine *line, AgsChannel *channel)
     g_object_get(channel,
 		 "line", &output_soundcard_channel,
 		 NULL);
+    
+    g_object_set(channel,
+		 "output-soundcard-channel", output_soundcard_channel,
+		 NULL);
   }
   
   device = ags_soundcard_get_device(AGS_SOUNDCARD(output_soundcard));

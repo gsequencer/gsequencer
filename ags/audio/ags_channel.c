@@ -1172,7 +1172,7 @@ ags_channel_init(AgsChannel *channel)
   channel->audio = NULL;
 
   channel->output_soundcard = NULL;
-  channel->output_soundcard_channel = 0;
+  channel->output_soundcard_channel = -1;
 
   channel->input_soundcard = NULL;
   channel->input_soundcard_channel = 0;
@@ -11388,11 +11388,11 @@ ags_channel_real_recursive_run_stage(AgsChannel *channel,
       /* get some fields */
       pthread_mutex_lock(current_audio_mutex);
 
-      current_channel = current_audio->output;
-      current_audio_flags = current_audio->flags;
-
       audio_channel = current_channel->audio_channel;
       line = current_channel->line;
+
+      current_channel = current_audio->output;
+      current_audio_flags = current_audio->flags;
       
       pthread_mutex_unlock(current_audio_mutex);
 
@@ -12012,11 +12012,11 @@ ags_channel_real_recursive_run_stage(AgsChannel *channel,
       /* get some fields */
       pthread_mutex_lock(current_audio_mutex);
 
-      current_channel = current_audio->output;
-      current_audio_flags = current_audio->flags;
-
       audio_channel = current_channel->audio_channel;
       line = current_channel->line;
+
+      current_channel = current_audio->output;
+      current_audio_flags = current_audio->flags;
       
       pthread_mutex_unlock(current_audio_mutex);
 
@@ -12553,11 +12553,11 @@ ags_channel_real_recursive_run_stage(AgsChannel *channel,
       /* get some fields */
       pthread_mutex_lock(current_audio_mutex);
 
-      current_channel = current_audio->output;
-      current_audio_flags = current_audio->flags;
-
       audio_channel = current_channel->audio_channel;
       line = current_channel->line;
+
+      current_channel = current_audio->output;
+      current_audio_flags = current_audio->flags;
       
       pthread_mutex_unlock(current_audio_mutex);
 
@@ -13117,12 +13117,12 @@ ags_channel_real_recursive_run_stage(AgsChannel *channel,
       /* get some fields */
       pthread_mutex_lock(current_audio_mutex);
 
-      current_channel = current_audio->output;
-      current_audio_flags = current_audio->flags;
-
       audio_channel = current_channel->audio_channel;
       line = current_channel->line;
       
+      current_channel = current_audio->output;
+      current_audio_flags = current_audio->flags;
+
       pthread_mutex_unlock(current_audio_mutex);
 
       if((AGS_AUDIO_OUTPUT_HAS_RECYCLING & (current_audio_flags)) != 0){
@@ -13701,7 +13701,7 @@ ags_channel_real_recursive_run_stage(AgsChannel *channel,
       ags_channel_recursive_setup_run_stage_down(channel,
 						 recycling_context,
 						 sound_scope, AGS_CHANNEL_RECURSIVE_PREPARE_STAGING_ADD_RECALL_ID);
-      ags_channel_recursive_setup_run_stage_up(channel,
+      ags_channel_recursive_setup_run_stage_up(link,
 					       recycling_context,
 					       sound_scope, AGS_CHANNEL_RECURSIVE_PREPARE_STAGING_ADD_RECALL_ID);
 
@@ -13709,15 +13709,15 @@ ags_channel_real_recursive_run_stage(AgsChannel *channel,
       ags_channel_recursive_prepare_run_stage_down(channel,
 						   recycling_context,
 						   sound_scope, AGS_CHANNEL_RECURSIVE_PREPARE_STAGING_DUPLICATE);
-      ags_channel_recursive_prepare_run_stage_up(channel,
+      ags_channel_recursive_prepare_run_stage_up(link,
 						 recycling_context,
 						 sound_scope, AGS_CHANNEL_RECURSIVE_PREPARE_STAGING_DUPLICATE);
 
       /* resolve */
-      ags_channel_recursive_prepare_run_stage_down(channel,
+      ags_channel_recursive_prepare_run_stage_down(link,
 						   recycling_context,
 						   sound_scope, AGS_CHANNEL_RECURSIVE_PREPARE_STAGING_RESOLVE);
-      ags_channel_recursive_prepare_run_stage_up(channel,
+      ags_channel_recursive_prepare_run_stage_up(link,
 						 recycling_context,
 						 sound_scope, AGS_CHANNEL_RECURSIVE_PREPARE_STAGING_RESOLVE);
     }else{
@@ -13752,7 +13752,7 @@ ags_channel_real_recursive_run_stage(AgsChannel *channel,
     ags_channel_recursive_do_run_stage_down(channel,
 					    recycling_context,
 					    sound_scope, staging_flags);
-    ags_channel_recursive_do_run_stage_up(channel,
+    ags_channel_recursive_do_run_stage_up(link,
 					  recycling_context,
 					  sound_scope, staging_flags);
   }else{
@@ -13771,7 +13771,7 @@ ags_channel_real_recursive_run_stage(AgsChannel *channel,
       ags_channel_recursive_cleanup_run_stage_down(channel,
 						   recycling_context,
 						   sound_scope, AGS_CHANNEL_RECURSIVE_CLEANUP_STAGING_CANCEL_RECALL);
-      ags_channel_recursive_cleanup_run_stage_up(channel,
+      ags_channel_recursive_cleanup_run_stage_up(link,
 						 recycling_context,
 						 sound_scope, AGS_CHANNEL_RECURSIVE_CLEANUP_STAGING_CANCEL_RECALL);
     }else{
@@ -13791,7 +13791,7 @@ ags_channel_real_recursive_run_stage(AgsChannel *channel,
       ags_channel_recursive_cleanup_run_stage_down(channel,
 						   recycling_context,
 						   sound_scope, AGS_CHANNEL_RECURSIVE_CLEANUP_STAGING_REMOVE_RECALL);
-      ags_channel_recursive_cleanup_run_stage_up(channel,
+      ags_channel_recursive_cleanup_run_stage_up(link,
 						 recycling_context,
 						 sound_scope, AGS_CHANNEL_RECURSIVE_CLEANUP_STAGING_REMOVE_RECALL);
     }else{
@@ -13810,7 +13810,7 @@ ags_channel_real_recursive_run_stage(AgsChannel *channel,
       ags_channel_recursive_cleanup_run_stage_down(channel,
 						   recycling_context,
 						   sound_scope, AGS_CHANNEL_RECURSIVE_CLEANUP_SCOPE);
-      ags_channel_recursive_cleanup_run_stage_up(channel,
+      ags_channel_recursive_cleanup_run_stage_up(link,
 						 recycling_context,
 						 sound_scope, AGS_CHANNEL_RECURSIVE_CLEANUP_SCOPE);
     }else{

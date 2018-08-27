@@ -185,14 +185,7 @@ ags_play_wave_channel_run_run_inter(AgsRecall *recall)
   void ags_play_wave_channel_run_run_inter_add_audio_signal(){
     AgsChannel *output;
     AgsRecycling *first_recycling;
-#if 0
-    g_object_get(audio,
-		 "output", &output,
-		 NULL);
 
-    output = ags_channel_nth(output, line);
-#endif
-    
     g_object_get(channel,
  		 "first-recycling", &first_recycling,
 		 NULL);
