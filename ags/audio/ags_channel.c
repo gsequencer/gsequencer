@@ -11386,10 +11386,12 @@ ags_channel_real_recursive_run_stage(AgsChannel *channel,
       g_list_free(start_recall_id);
 
       /* get some fields */
-      pthread_mutex_lock(current_audio_mutex);
+      g_object_get(current_channel,
+		   "audio-channel", &audio_channel,
+		   "line", &line,
+		   NULL);
 
-      audio_channel = current_channel->audio_channel;
-      line = current_channel->line;
+      pthread_mutex_lock(current_audio_mutex);
 
       current_channel = current_audio->output;
       current_audio_flags = current_audio->flags;
@@ -11695,6 +11697,8 @@ ags_channel_real_recursive_run_stage(AgsChannel *channel,
 					  i);
 	  
 	    /* iterate */
+	    i++;
+	    
 	    pthread_mutex_lock(recycling_mutex);
 
 	    recycling = recycling->next;
@@ -11778,6 +11782,7 @@ ags_channel_real_recursive_run_stage(AgsChannel *channel,
 
     current_audio = (AgsAudio *) channel->audio;
 
+    line = channel->line;
     audio_channel = channel->audio_channel;
     
     pthread_mutex_unlock(channel_mutex);
@@ -12010,10 +12015,12 @@ ags_channel_real_recursive_run_stage(AgsChannel *channel,
       g_list_free(recall_id);
 
       /* get some fields */
-      pthread_mutex_lock(current_audio_mutex);
+      g_object_get(current_channel,
+		   "audio-channel", &audio_channel,
+		   "line", &line,
+		   NULL);
 
-      audio_channel = current_channel->audio_channel;
-      line = current_channel->line;
+      pthread_mutex_lock(current_audio_mutex);
 
       current_channel = current_audio->output;
       current_audio_flags = current_audio->flags;
@@ -12312,6 +12319,7 @@ ags_channel_real_recursive_run_stage(AgsChannel *channel,
 
     current_audio = (AgsAudio *) channel->audio;
 
+    line = channel->line;
     audio_channel = channel->audio_channel;
     
     pthread_mutex_unlock(channel_mutex);
@@ -12551,10 +12559,12 @@ ags_channel_real_recursive_run_stage(AgsChannel *channel,
       g_list_free(start_recall_id);
       
       /* get some fields */
+      g_object_get(current_channel,
+		   "audio-channel", &audio_channel,
+		   "line", &line,
+		   NULL);
+      
       pthread_mutex_lock(current_audio_mutex);
-
-      audio_channel = current_channel->audio_channel;
-      line = current_channel->line;
 
       current_channel = current_audio->output;
       current_audio_flags = current_audio->flags;
@@ -12846,6 +12856,7 @@ ags_channel_real_recursive_run_stage(AgsChannel *channel,
 
     current_audio = (AgsAudio *) channel->audio;
 
+    line = channel->line;
     audio_channel = channel->audio_channel;
     
     pthread_mutex_unlock(channel_mutex);
@@ -13115,10 +13126,12 @@ ags_channel_real_recursive_run_stage(AgsChannel *channel,
       g_list_free(start_recall_id);
 
       /* get some fields */
-      pthread_mutex_lock(current_audio_mutex);
+      g_object_get(current_channel,
+		   "audio-channel", &audio_channel,
+		   "line", &line,
+		   NULL);
 
-      audio_channel = current_channel->audio_channel;
-      line = current_channel->line;
+      pthread_mutex_lock(current_audio_mutex);
       
       current_channel = current_audio->output;
       current_audio_flags = current_audio->flags;
@@ -13473,6 +13486,7 @@ ags_channel_real_recursive_run_stage(AgsChannel *channel,
 
     current_audio = (AgsAudio *) channel->audio;
 
+    line = channel->line;
     audio_channel = channel->audio_channel;
     
     pthread_mutex_unlock(channel_mutex);

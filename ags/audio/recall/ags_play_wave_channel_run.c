@@ -219,10 +219,10 @@ ags_play_wave_channel_run_run_inter(AgsRecall *recall)
     }
     
     g_object_get(wave,
-		 //		 "buffer", &start_list,
+		 "buffer", &start_list,
 		 NULL);
 
-    list = AGS_WAVE(wave)->buffer;
+    list = start_list;
 
     while(list != NULL){
       guint current_buffer_size;
@@ -277,7 +277,7 @@ ags_play_wave_channel_run_run_inter(AgsRecall *recall)
       list = list->next;
     }
 
-    //    g_list_free(start_list);
+    g_list_free(start_list);
   }
   
   play_wave_channel_run = (AgsPlayWaveChannelRun *) recall;
@@ -308,11 +308,6 @@ ags_play_wave_channel_run_run_inter(AgsRecall *recall)
   if(!do_playback){
     return;
   }
-
-  /* get x-offset */
-  g_object_get(play_wave_channel,
-	       "x-offset", &port,
-	       NULL);
 
   x_offset = play_wave_channel_run->x_offset;
 

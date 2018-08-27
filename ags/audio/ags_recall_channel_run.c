@@ -1036,8 +1036,8 @@ ags_recall_channel_run_map_recall_recycling(AgsRecallChannelRun *recall_channel_
     source_recycling = source_first_recycling;
     
     while(source_recycling != source_end_recycling){
+      g_message("ags_recall_channel_run_map_recall_recycling %d", source->line);
 #ifdef AGS_DEBUG
-      g_message("ags_recall_channel_run_map_recall_recycling");
 #endif
       
       /* get recycling mutex */
@@ -1299,6 +1299,8 @@ ags_recall_channel_run_remap_child_source(AgsRecallChannelRun *recall_channel_ru
     while(source_recycling != source_end_recycling){
       AgsRecallRecycling *recall_recycling;
 
+      //      g_message("%s[%d]", G_OBJECT_TYPE_NAME(recall_channel_run), recall_channel_run->source->line);
+      
       recall_recycling = g_object_new(child_type,
 				      "recall-id", recall_id,
 				      "output-soundcard", output_soundcard,
