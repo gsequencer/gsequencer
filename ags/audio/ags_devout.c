@@ -2244,7 +2244,7 @@ ags_devout_is_available(AgsSoundcard *soundcard)
     
     list = list->next;
   }
-
+  
   pthread_mutex_unlock(devout_mutex);
   
   return(retval);

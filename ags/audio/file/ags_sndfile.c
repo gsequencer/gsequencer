@@ -770,10 +770,10 @@ ags_sndfile_read(AgsSoundResource *sound_resource,
       read_count = total_frame_count - sndfile->offset;
     }
 
-    multi_frames = read_count; // * sndfile->info->channels
+    multi_frames = read_count * sndfile->info->channels;
 
     //    if(!use_cache){
-      g_message("read %d %d", sndfile->offset, sndfile->buffer_size);
+    //      g_message("read %d %d", sndfile->offset, sndfile->buffer_size);
       
       switch(sndfile->format){
       case AGS_SOUNDCARD_SIGNED_8_BIT:
@@ -811,9 +811,9 @@ ags_sndfile_read(AgsSoundResource *sound_resource,
 	break;
       }
 
-      sndfile->offset += retval;
+      sndfile->offset += read_count;
 
-      if(retval != read_count){
+      if(retval != multi_frames){
 	break;
       }    
       //    }

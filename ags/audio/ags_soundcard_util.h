@@ -23,7 +23,7 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include <libags.h>
+#include <ags/libags.h>
 
 pthread_mutex_t* ags_soundcard_util_get_obj_mutex(GObject *soundcard);
 

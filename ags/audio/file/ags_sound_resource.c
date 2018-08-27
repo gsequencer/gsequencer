@@ -579,7 +579,7 @@ ags_sound_resource_read_wave(AgsSoundResource *sound_resource,
 		 "timestamp", &timestamp,
 		 NULL);
     
-    relative_offset = 64 * samplerate;
+    relative_offset = AGS_WAVE_DEFAULT_BUFFER_LENGTH * samplerate;
     
     offset = x_offset;
     frame_count = target_buffer_size;
@@ -612,7 +612,7 @@ ags_sound_resource_read_wave(AgsSoundResource *sound_resource,
 					 buffer->data, 1,
 					 i,
 					 frame_count, target_format);
-      g_message("read %d[%d-%d]: %d", frame_count, i, i_stop, num_read);
+      //      g_message("read %d[%d-%d]: %d", frame_count, i, i_stop, num_read);
 
       ags_wave_add_buffer(wave,
 			  buffer,
@@ -640,7 +640,7 @@ ags_sound_resource_read_wave(AgsSoundResource *sound_resource,
       }
       
       /* iterate */
-      offset += num_read;
+      offset += target_buffer_size;
 
       if(num_read != frame_count){
 	success = FALSE;

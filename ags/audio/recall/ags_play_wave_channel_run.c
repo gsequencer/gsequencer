@@ -219,10 +219,10 @@ ags_play_wave_channel_run_run_inter(AgsRecall *recall)
     }
     
     g_object_get(wave,
-		 "buffer", &start_list,
+		 //		 "buffer", &start_list,
 		 NULL);
 
-    list = start_list;
+    list = AGS_WAVE(wave)->buffer;
 
     while(list != NULL){
       guint current_buffer_size;
@@ -277,7 +277,7 @@ ags_play_wave_channel_run_run_inter(AgsRecall *recall)
       list = list->next;
     }
 
-    g_list_free(start_list);
+    //    g_list_free(start_list);
   }
   
   play_wave_channel_run = (AgsPlayWaveChannelRun *) recall;

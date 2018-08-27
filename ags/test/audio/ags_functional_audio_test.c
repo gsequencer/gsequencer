@@ -86,7 +86,7 @@ ags_functional_audio_test_init_suite()
   ags_config_load_from_data(config,
 			    AGS_FUNCTIONAL_AUDIO_TEST_CONFIG,
 			    strlen(AGS_FUNCTIONAL_AUDIO_TEST_CONFIG));
-  audio_application_context = ags_audio_application_context_new();
+  audio_application_context = ags_audio_application_context_get_instance();
   
   return(0);
 }

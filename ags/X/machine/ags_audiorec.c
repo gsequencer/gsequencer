@@ -820,6 +820,8 @@ ags_audiorec_open_filename(AgsAudiorec *audiorec,
   AgsApplicationContext *application_context;
   
   GObject *output_soundcard;
+
+  GList *start_wave, *wave;
   
   if(!AGS_IS_AUDIOREC(audiorec) ||
      filename == NULL){
@@ -834,6 +836,21 @@ ags_audiorec_open_filename(AgsAudiorec *audiorec,
 	       "output-soundcard", &output_soundcard,
 	       NULL);
 
+  g_object_get(AGS_MACHINE(audiorec)->audio,
+	       "wave", &start_wave,
+	       NULL);
+
+  wave = start_wave;
+
+  while(wave != NULL){
+    ags_audio_remove_wave(AGS_MACHINE(audiorec)->audio,
+			  wave->data);
+    
+    wave = wave->next;
+  }
+
+  g_list_free(start_wave);
+  
   audio_file = ags_audio_file_new(filename,
 				  output_soundcard,
 				  -1);

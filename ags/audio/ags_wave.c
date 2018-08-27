@@ -888,7 +888,7 @@ ags_wave_find_near_timestamp(GList *wave, guint line,
 		 "samplerate", &samplerate,
 		 NULL);
 
-    relative_offset = 64 * samplerate;
+    relative_offset = AGS_WAVE_DEFAULT_BUFFER_LENGTH * samplerate;
     
     if(current_line != line){
       wave = wave->next;
@@ -2294,7 +2294,7 @@ ags_wave_insert_native_level_from_clipboard(AgsWave *wave,
 		 "samplerate", &samplerate,
 		 NULL);
 
-    relative_offset = 64 * samplerate;
+    relative_offset = AGS_WAVE_DEFAULT_BUFFER_LENGTH * samplerate;
 
     if(match_channel &&
        current_line != g_ascii_strtoull(xmlGetProp(root_node,
