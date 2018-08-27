@@ -72,6 +72,8 @@ GType ags_audiorec_get_type(void);
 void ags_audiorec_open_filename(AgsAudiorec *audiorec,
 				gchar *filename);
 
+gboolean ags_audiorec_indicator_queue_draw_timeout(AgsAudiorec *audiorec);
+
 AgsAudiorec* ags_audiorec_new(GObject *soundcard);
 
 #endif /*__AGS_AUDIOREC_H__*/

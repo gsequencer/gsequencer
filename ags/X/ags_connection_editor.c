@@ -42,8 +42,10 @@ void ags_connection_editor_get_property(GObject *gobject,
 					guint prop_id,
 					GValue *value,
 					GParamSpec *param_spec);
+
 void ags_connection_editor_connect(AgsConnectable *connectable);
 void ags_connection_editor_disconnect(AgsConnectable *connectable);
+
 void ags_connection_editor_set_update(AgsApplicable *applicable, gboolean update);
 void ags_connection_editor_apply(AgsApplicable *applicable);
 void ags_connection_editor_reset(AgsApplicable *applicable);
@@ -213,9 +215,6 @@ ags_connection_editor_init(AgsConnectionEditor *connection_editor)
   /* output listing editor */
   connection_editor->output_listing_editor_scrolled_window =
     scrolled_window = (GtkScrolledWindow *) gtk_scrolled_window_new(NULL, NULL);
-  gtk_notebook_append_page(notebook,
-			   (GtkWidget *) scrolled_window,
-			   (GtkWidget *) gtk_label_new(i18n("output")));
 
   /* input listing editor */
   connection_editor->input_listing_editor_scrolled_window =
@@ -227,9 +226,6 @@ ags_connection_editor_init(AgsConnectionEditor *connection_editor)
   /* output connection editor */
   connection_editor->output_connection_editor_scrolled_window =
     scrolled_window = (GtkScrolledWindow *) gtk_scrolled_window_new(NULL, NULL);
-  gtk_notebook_append_page(notebook,
-			   (GtkWidget *) scrolled_window,
-			   (GtkWidget *) gtk_label_new(i18n("connect output")));
 
   /* input connection editor */
   connection_editor->input_connection_editor_scrolled_window =
@@ -425,6 +421,12 @@ ags_connection_editor_add_children(AgsConnectionEditor *connection_editor)
   gtk_scrolled_window_add_with_viewport(connection_editor->output_listing_editor_scrolled_window,
 					(GtkWidget *) connection_editor->output_listing_editor);
 
+  if((AGS_CONNECTION_EDITOR_SHOW_OUTPUT & (connection_editor->flags)) != 0){
+    gtk_notebook_append_page(connection_editor->notebook,
+			     (GtkWidget *) connection_editor->output_listing_editor_scrolled_window,
+			     (GtkWidget *) gtk_label_new(i18n("output")));
+  }
+
   /* input */
   input_connection_editor_child_parameter = g_new0(GParameter, 1);
 
@@ -438,6 +440,12 @@ ags_connection_editor_add_children(AgsConnectionEditor *connection_editor)
   gtk_scrolled_window_add_with_viewport(connection_editor->input_listing_editor_scrolled_window,
 					(GtkWidget *) connection_editor->input_listing_editor);
   
+  if((AGS_CONNECTION_EDITOR_SHOW_INPUT & (connection_editor->flags)) != 0){
+    gtk_notebook_append_page(connection_editor->notebook,
+			     (GtkWidget *) connection_editor->input_listing_editor_scrolled_window,
+			     (GtkWidget *) gtk_label_new(i18n("input")));
+  }
+
   /* AgsOutput connection editor */
   connection_editor->output_connection_editor = ags_property_collection_editor_new(AGS_TYPE_OUTPUT_COLLECTION_EDITOR,
 										   1,
@@ -445,12 +453,24 @@ ags_connection_editor_add_children(AgsConnectionEditor *connection_editor)
   gtk_scrolled_window_add_with_viewport(connection_editor->output_connection_editor_scrolled_window,
 					(GtkWidget *) connection_editor->output_connection_editor);
 
+  if((AGS_CONNECTION_EDITOR_SHOW_OUTPUT & (connection_editor->flags)) != 0){
+    gtk_notebook_append_page(connection_editor->notebook,
+			     (GtkWidget *) connection_editor->output_connection_editor_scrolled_window,
+			     (GtkWidget *) gtk_label_new(i18n("connect output")));
+  }
+
   /* AgsInput connection editor */
   connection_editor->input_connection_editor = ags_property_collection_editor_new(AGS_TYPE_INPUT_COLLECTION_EDITOR,
 										  1,
 										  input_connection_editor_child_parameter);
   gtk_scrolled_window_add_with_viewport(connection_editor->input_connection_editor_scrolled_window,
 					(GtkWidget *) connection_editor->input_connection_editor);
+
+  if((AGS_CONNECTION_EDITOR_SHOW_INPUT & (connection_editor->flags)) != 0){
+    gtk_notebook_append_page(connection_editor->notebook,
+			     (GtkWidget *) connection_editor->input_connection_editor_scrolled_window,
+			     (GtkWidget *) gtk_label_new(i18n("connect input")));
+  }
 }
 
 void

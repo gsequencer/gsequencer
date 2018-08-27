@@ -72,6 +72,8 @@ void ags_audiorec_input_map_recall(AgsAudiorec *audiorec, guint input_pad_start)
 static gpointer ags_audiorec_parent_class = NULL;
 static AgsConnectableInterface *ags_audiorec_parent_connectable_interface;
 
+GHashTable *ags_audiorec_indicator_queue_draw = NULL;
+
 GType
 ags_audiorec_get_type(void)
 {
@@ -293,6 +295,17 @@ ags_audiorec_init(AgsAudiorec *audiorec)
 
   /* dialog */
   audiorec->open_dialog = NULL;
+
+  /* indicator */
+  if(ags_audiorec_indicator_queue_draw == NULL){
+    ags_audiorec_indicator_queue_draw = g_hash_table_new_full(g_direct_hash, g_direct_equal,
+							      NULL,
+							      NULL);
+  }
+
+  g_hash_table_insert(ags_audiorec_indicator_queue_draw,
+		      audiorec, ags_audiorec_indicator_queue_draw_timeout);
+  g_timeout_add(1000 / 30, (GSourceFunc) ags_audiorec_indicator_queue_draw_timeout, (gpointer) audiorec);
 }
 
 void
@@ -555,6 +568,17 @@ ags_audiorec_input_map_recall(AgsAudiorec *audiorec, guint input_pad_start)
 			       AGS_RECALL_FACTORY_ADD),
 			      0);
   }
+
+  /* ags-peak */
+  ags_recall_factory_create(audio,
+			    NULL, NULL,
+			    "ags-peak",
+			    0, audio_channels,
+			    input_pad_start, input_pads,
+			    (AGS_RECALL_FACTORY_INPUT |
+			     AGS_RECALL_FACTORY_RECALL |
+			     AGS_RECALL_FACTORY_ADD),
+			    0);
   
   /* ags-play-wave */
   ags_recall_factory_create(audio,
@@ -618,7 +642,18 @@ ags_audiorec_resize_audio_channels(AgsMachine *machine,
 				   AGS_RECALL_FACTORY_ADD),
 				  0);
       }
-    
+
+      /* ags-peak */
+      ags_recall_factory_create(audio,
+				NULL, NULL,
+				"ags-peak",
+				audio_channels, audio_channels_old, 
+				0, input_pads,
+				(AGS_RECALL_FACTORY_INPUT |
+				 AGS_RECALL_FACTORY_RECALL |
+				 AGS_RECALL_FACTORY_ADD),
+				0);
+      
       /* ags-play */
       ags_recall_factory_create(audio,
 				NULL, NULL,
@@ -835,14 +870,110 @@ ags_audiorec_open_filename(AgsAudiorec *audiorec,
 }
 
 /**
+ * ags_audiorec_indicator_queue_draw_timeout:
+ * @widget: the widget
+ *
+ * Queue draw widget
+ *
+ * Returns: %TRUE if proceed with redraw, otherwise %FALSE
+ *
+ * Since: 2.0.0
+ */
+gboolean
+ags_audiorec_indicator_queue_draw_timeout(AgsAudiorec *audiorec)
+{
+  if(g_hash_table_lookup(ags_audiorec_indicator_queue_draw,
+			 audiorec) != NULL){
+    AgsAudio *audio;
+    AgsChannel *channel;
+    
+    GList *list, *list_start;
+
+    guint i;
+
+    audio = AGS_MACHINE(audiorec)->audio;
+    g_object_get(audio,
+		 "input", &channel,
+		 NULL);
+    
+    list_start = 
+      list = gtk_container_get_children((GtkContainer *) audiorec->hindicator_vbox);
+    
+    /* check members */
+    for(i = 0; list != NULL; i++){
+      GtkAdjustment *adjustment;
+      GtkWidget *child;
+
+      AgsPort *current;
+
+      GList *start_port;
+      
+      gdouble average_peak;
+      gdouble peak;
+	
+      GValue value = {0,};
+	
+      child = list->data;
+      
+      average_peak = 0.0;
+      
+      start_port = ags_channel_collect_all_channel_ports_by_specifier_and_context(channel,
+										  "./peak[0]",
+										  FALSE);
+
+      current = NULL;
+
+      if(start_port != NULL){
+	current = start_port->data;
+      }
+      
+      /* recall port - read value */
+      g_value_init(&value, G_TYPE_FLOAT);
+      ags_port_safe_read(current,
+			 &value);
+      
+      peak = g_value_get_float(&value);
+      g_value_unset(&value);
+
+      /* calculate peak */
+      average_peak += ((1.0 / (1.0 / peak)) * 10.0);
+      
+      /* apply */
+      g_object_get(child,
+		   "adjustment", &adjustment,
+		   NULL);
+	
+      gtk_adjustment_set_value(adjustment,
+			       average_peak);
+
+      /* queue draw */
+      gtk_widget_queue_draw(child);
+
+      /* iterate */
+      list = list->next;
+
+      g_object_get(channel,
+		   "next", &channel,
+		   NULL);
+    }
+
+    g_list_free(list_start);
+    
+    return(TRUE);
+  }else{
+    return(FALSE);
+  }
+}
+
+/**
  * ags_audiorec_new:
  * @soundcard: the assigned soundcard.
  *
- * Creates an #AgsAudiorec
+ * Create a new instance of #AgsAudiorec
  *
- * Returns: a new #AgsAudiorec
+ * Returns: the new #AgsAudiorec
  *
- * Since: 1.2.0
+ * Since: 2.0.0
  */
 AgsAudiorec*
 ags_audiorec_new(GObject *soundcard)
