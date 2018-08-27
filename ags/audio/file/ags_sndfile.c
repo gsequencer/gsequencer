@@ -812,15 +812,20 @@ ags_sndfile_read(AgsSoundResource *sound_resource,
       }
 
       sndfile->offset += read_count;
+      
+      if(retval == -1){
+	g_warning("read failed");
+      }
 
       if(retval != multi_frames){
 	break;
       }    
       //    }
-    
+
     ags_audio_buffer_util_copy_buffer_to_buffer(dbuffer, daudio_channels, (i * daudio_channels),
 						sndfile->buffer, sndfile->info->channels, audio_channel,
 						read_count, copy_mode);
+    //    g_message("[%d] %d", audio_channel, ags_synth_util_get_xcross_count_s16(dbuffer, read_count));
     
     i += read_count;
   }
@@ -926,6 +931,7 @@ ags_sndfile_seek(AgsSoundResource *sound_resource,
   AgsSndfile *sndfile;
 
   guint total_frame_count;
+  sf_count_t retval;
   
   sndfile = AGS_SNDFILE(sound_resource);
 
@@ -969,7 +975,11 @@ ags_sndfile_seek(AgsSoundResource *sound_resource,
     }
   }
 
-  sf_seek(sndfile->file, frame_count, whence);
+  retval = sf_seek(sndfile->file, sndfile->offset, SEEK_SET);
+
+  if(retval == -1){
+    g_warning("seek failed");
+  }
 }
 
 void

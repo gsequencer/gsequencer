@@ -545,6 +545,8 @@ ags_sound_resource_read_wave(AgsSoundResource *sound_resource,
   if(audio_channel == -1){
     i_start = 0;
     i_stop = audio_channels;
+
+    //    g_message("do %d", audio_channels);
   }else{
     i_start = audio_channel;
     i_stop = i_start + 1;
@@ -561,7 +563,7 @@ ags_sound_resource_read_wave(AgsSoundResource *sound_resource,
     gboolean success;
 
     ags_sound_resource_seek(AGS_SOUND_RESOURCE(sound_resource),
-    			    0, G_SEEK_SET);
+			    0, G_SEEK_SET);
     
     wave = ags_wave_new(NULL,
 			i);
