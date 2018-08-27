@@ -281,6 +281,9 @@ ags_spectrometer_finalize(GObject *gobject)
   AgsSpectrometer *spectrometer;
 
   spectrometer = (AgsSpectrometer *) gobject;
+
+  g_hash_table_remove(ags_spectrometer_cartesian_queue_draw,
+		      spectrometer->cartesian);
   
   g_list_free_full(spectrometer->frequency_buffer_play_port,
 		   g_object_unref);

@@ -461,6 +461,7 @@ ags_sound_resource_read_audio_signal(AgsSoundResource *sound_resource,
 
     if(samplerate != target_samplerate){
       //TODO:JK: implement me
+      g_warning("samplerate != target_samplerate");
     }
     
     while(stream != NULL){
@@ -611,6 +612,7 @@ ags_sound_resource_read_wave(AgsSoundResource *sound_resource,
 					 buffer->data, 1,
 					 i,
 					 frame_count, target_format);
+      g_message("read %d[%d-%d]: %d", frame_count, i, i_stop, num_read);
 
       ags_wave_add_buffer(wave,
 			  buffer,

@@ -20,6 +20,7 @@
 #include <ags/audio/task/ags_export_output.h>
 
 #include <ags/audio/file/ags_audio_file.h>
+#include <ags/audio/file/ags_sndfile.h>
 
 #include <sndfile.h>
 
@@ -464,32 +465,32 @@ ags_export_output_launch(AgsTask *task)
   
   audio_file->file_audio_channels = pcm_channels;
   audio_file->file_samplerate = (int) samplerate;
+  
+  ags_audio_file_rw_open(audio_file,
+			 TRUE);
 
   //TODO:JK: more formats
   if((AGS_EXPORT_OUTPUT_FORMAT_WAV & (export_output->format)) != 0){
     major_format = SF_FORMAT_WAV;
 
-    audio_file->format = major_format | SF_FORMAT_PCM_16;
+    AGS_SNDFILE(audio_file->sound_resource)->info->format = major_format | SF_FORMAT_PCM_16;
   }else if((AGS_EXPORT_OUTPUT_FORMAT_FLAC & (export_output->format)) != 0){    
     major_format = SF_FORMAT_FLAC;
 
-    audio_file->format = major_format | SF_FORMAT_PCM_24;
+    AGS_SNDFILE(audio_file->sound_resource)->info->format = major_format | SF_FORMAT_PCM_24;
   }else if((AGS_EXPORT_OUTPUT_FORMAT_AIFF & (export_output->format)) != 0){    
     major_format = SF_FORMAT_AIFF;
 
-    audio_file->format = major_format | SF_FORMAT_PCM_24;
+    AGS_SNDFILE(audio_file->sound_resource)->info->format = major_format | SF_FORMAT_PCM_24;
   }else if((AGS_EXPORT_OUTPUT_FORMAT_OGG & (export_output->format)) != 0){
     major_format = SF_FORMAT_OGG;
 
-    audio_file->format = major_format | SF_FORMAT_VORBIS;
+    AGS_SNDFILE(audio_file->sound_resource)->info->format = major_format | SF_FORMAT_VORBIS;
   }else{
     major_format = SF_FORMAT_WAV;
 
-    audio_file->format = major_format | SF_FORMAT_PCM_16;
+    AGS_SNDFILE(audio_file->sound_resource)->info->format = major_format | SF_FORMAT_PCM_16;
   }
-  
-  ags_audio_file_rw_open(audio_file,
-			 TRUE);
 
 #ifdef AGS_DEBUG
   g_message("export output");

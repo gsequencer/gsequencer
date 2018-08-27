@@ -376,7 +376,6 @@ ags_open_wave_launch(AgsTask *task)
   guint n_pads, current_pads;
   guint n_audio_channels, current_audio_channels;
   guint i;
-  guint j, j_stop;
 
   open_wave = task;
 
@@ -418,12 +417,6 @@ ags_open_wave_launch(AgsTask *task)
 			 open_wave->start_pad + 1, 0);
     }
           
-    ags_sound_resource_get_presets(AGS_SOUND_RESOURCE(audio_file->sound_resource),
-				   &j_stop,
-				   NULL,
-				   NULL,
-				   NULL);
-    
     wave =
       start_wave = ags_sound_resource_read_wave(AGS_SOUND_RESOURCE(audio_file->sound_resource),
 						output_soundcard,

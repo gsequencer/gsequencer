@@ -460,7 +460,6 @@ ags_export_thread_run(AgsThread *thread)
 {
   AgsExportThread *export_thread;
 
-  AgsMutexManager *mutex_manager;
   AgsSoundcard *soundcard;
 
   void *soundcard_buffer;
@@ -481,19 +480,6 @@ ags_export_thread_run(AgsThread *thread)
   }
 
   /*  */
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-
-  pthread_mutex_lock(application_mutex);
-
-  mutex = ags_mutex_manager_lookup(mutex_manager,
-				   (GObject *) export_thread->soundcard);
-
-  pthread_mutex_unlock(application_mutex);
-
-  /*  */
-  pthread_mutex_lock(mutex);
-
   soundcard = AGS_SOUNDCARD(export_thread->soundcard);
 
   if(AGS_IS_DEVOUT(soundcard)){
@@ -511,12 +497,16 @@ ags_export_thread_run(AgsThread *thread)
 			    &buffer_size,
 			    &format);
 
+  ags_soundcard_lock_buffer(soundcard,
+			    soundcard_buffer);
+  
   ags_audio_file_write(export_thread->audio_file,
 		       soundcard_buffer,
 		       (guint) buffer_size,
 		       format);
-  
-  pthread_mutex_unlock(mutex);
+
+  ags_soundcard_unlock_buffer(soundcard,
+			    soundcard_buffer);
 }
 
 void

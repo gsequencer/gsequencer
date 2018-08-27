@@ -237,7 +237,7 @@ ags_play_wave_channel_run_run_inter(AgsRecall *recall)
 		   "x", &current_offset,
 		   NULL);
 
-      if(current_offset >= x_offset &&
+      if(current_offset + current_buffer_size > x_offset &&
 	 current_offset < x_offset + buffer_size){
 	guint start_frame;
 	guint frame_count;
@@ -268,39 +268,8 @@ ags_play_wave_channel_run_run_inter(AgsRecall *recall)
 	ags_audio_buffer_util_copy_buffer_to_buffer(play_wave_channel_run->audio_signal->stream_current->data, 1, 0,
 						    buffer->data, 1, start_frame,
 						    frame_count, copy_mode);
-      }else if(current_offset + current_buffer_size >= x_offset &&
-	       current_offset < x_offset + buffer_size){
-	guint start_frame;
-	guint frame_count;
-	guint copy_mode;
-	
-	if(play_wave_channel_run->audio_signal == NULL){
-	  ags_play_wave_channel_run_run_inter_add_audio_signal();
-	}
-
-	start_frame = 0;
-	frame_count = current_buffer_size;
-	
-	if(current_offset > x_offset){
-	  start_frame = current_offset - x_offset;
-	}
-
-	if(buffer_size < frame_count){
-	  frame_count = buffer_size;
-	}
-
-	if(start_frame + buffer_size > frame_count){
-	  frame_count = (start_frame + buffer_size) - frame_count;
-	}
-
-	copy_mode = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(format),
-							ags_audio_buffer_util_format_from_soundcard(current_format));
-		
-	ags_audio_buffer_util_copy_buffer_to_buffer(play_wave_channel_run->audio_signal->stream_current->data, 1, 0,
-						    buffer->data, 1, start_frame,
-						    frame_count, copy_mode);
       }
-
+      
       if(current_offset > x_offset + buffer_size){
 	break;
       }

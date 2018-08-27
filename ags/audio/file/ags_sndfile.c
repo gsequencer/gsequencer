@@ -339,6 +339,7 @@ ags_sndfile_set_property(GObject *gobject,
       sndfile->buffer = ags_stream_alloc(sndfile->audio_channels * sndfile->buffer_size,
 					 sndfile->format);
     }
+    break;
   case PROP_BUFFER_SIZE:
     {
       guint buffer_size;
@@ -746,12 +747,14 @@ ags_sndfile_read(AgsSoundResource *sound_resource,
     }
   }
 
+#if 0
   use_cache = FALSE;
 
   if(sndfile->buffer_offset == sndfile->offset &&
      frame_count <= sndfile->buffer_size){
     use_cache = TRUE;
   }
+#endif
   
   sndfile->buffer_offset = sndfile->offset;
   
@@ -760,16 +763,18 @@ ags_sndfile_read(AgsSoundResource *sound_resource,
   copy_mode = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(format),
 						  ags_audio_buffer_util_format_from_soundcard(sndfile->format));
   
-  for(i = 0; i < frame_count; ){
+  for(i = 0; i < frame_count && sndfile->offset + i < total_frame_count; ){
     sf_count_t retval;
     
-    if(frame_count - i < sndfile->buffer_size){
-      read_count = frame_count - i;
+    if(sndfile->offset + frame_count > total_frame_count){
+      read_count = total_frame_count - sndfile->offset;
     }
 
     multi_frames = read_count; // * sndfile->info->channels
 
-    if(!use_cache){
+    //    if(!use_cache){
+      g_message("read %d %d", sndfile->offset, sndfile->buffer_size);
+      
       switch(sndfile->format){
       case AGS_SOUNDCARD_SIGNED_8_BIT:
 	{
@@ -805,11 +810,13 @@ ags_sndfile_read(AgsSoundResource *sound_resource,
 	}
 	break;
       }
-    }
-    
-    if(retval == 0){
-      break;
-    }
+
+      sndfile->offset += retval;
+
+      if(retval != read_count){
+	break;
+      }    
+      //    }
     
     ags_audio_buffer_util_copy_buffer_to_buffer(dbuffer, daudio_channels, (i * daudio_channels),
 						sndfile->buffer, sndfile->info->channels, audio_channel,
@@ -817,8 +824,6 @@ ags_sndfile_read(AgsSoundResource *sound_resource,
     
     i += read_count;
   }
-
-  sndfile->offset += frame_count;
   
   return(frame_count);
 }
