@@ -1424,6 +1424,7 @@ ags_wave_edit_draw_buffer(AgsWaveEdit *wave_edit,
   guint64 x;
   gdouble width, height;
   double zoom, zoom_factor;
+  gdouble delay_factor;
   guint wave_data_width;
   guint i;
 
@@ -1458,6 +1459,8 @@ ags_wave_edit_draw_buffer(AgsWaveEdit *wave_edit,
   zoom = exp2((double) gtk_combo_box_get_active((GtkComboBox *) wave_toolbar->zoom) - 2.0);
   zoom_factor = exp2(6.0 - (double) gtk_combo_box_get_active((GtkComboBox *) wave_toolbar->zoom));
 
+  delay_factor = ags_soundcard_get_delay_factor(AGS_SOUNDCARD(wave_editor->soundcard));
+  
   /* get visisble region */
   x0 = GTK_RANGE(wave_edit->hscrollbar)->adjustment->value;
   x1 = (GTK_RANGE(wave_edit->hscrollbar)->adjustment->value + GTK_WIDGET(wave_edit->drawing_area)->allocation.width);
@@ -1474,8 +1477,8 @@ ags_wave_edit_draw_buffer(AgsWaveEdit *wave_edit,
 	       "x", &x,
 	       NULL);
 
-  if((x + buffer_size) / (zoom_factor * (((60.0 / bpm) * ((double) buffer_size / (double) samplerate)) * AGS_WAVE_EDIT_X_RESOLUTION)) < x0 ||
-     (x) / (zoom_factor * (((60.0 / bpm) * ((double) buffer_size / (double) samplerate)) * AGS_WAVE_EDIT_X_RESOLUTION)) > x1){
+  if(((x + (samplerate / zoom_factor)) / samplerate * (bpm / 60.0) / delay_factor) * 64.0 / zoom_factor < x0 ||
+     ((x) / samplerate * (bpm / 60.0) / delay_factor) * 64.0 / zoom_factor > x1){
     return;
   }
   
@@ -1571,9 +1574,9 @@ ags_wave_edit_draw_buffer(AgsWaveEdit *wave_edit,
     y1 = (((y1 + 1.0) * height) / 2.0);
     
     cairo_move_to(cr,
-		  (double) (x + i) / (zoom_factor * (((60.0 / bpm) * ((double) buffer_size / (double) samplerate)) * AGS_WAVE_EDIT_X_RESOLUTION)) - x_cut, y0);
+		  (((double) (x + i) / samplerate * (bpm / 60.0) / delay_factor) * 64.0 / zoom_factor) - x_cut, y0);
     cairo_line_to(cr,
-		  (double) (x + i) / (zoom_factor * (((60.0 / bpm) * ((double) buffer_size / (double) samplerate)) * AGS_WAVE_EDIT_X_RESOLUTION)) - x_cut, y1);
+		  (((double) (x + i) / samplerate * (bpm / 60.0) / delay_factor) * 64.0 / zoom_factor) - x_cut, y1);
     cairo_stroke(cr);
   }
   
