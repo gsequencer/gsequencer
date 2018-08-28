@@ -778,8 +778,8 @@ ags_wave_editor_select_region(AgsWaveEditor *wave_editor,
 
     relative_offset = AGS_WAVE_DEFAULT_BUFFER_LENGTH * samplerate;
     
-    x0_offset = (x0 * zoom_factor / 64.0) * delay_factor / (bpm / 60.0) * samplerate;
-    x1_offset = (x1 * zoom_factor / 64.0) * delay_factor / (bpm / 60.0) * samplerate;
+    x0_offset = (x0 / 64.0) * delay_factor / (bpm / 60.0) * samplerate;
+    x1_offset = (x1 / 64.0) * delay_factor / (bpm / 60.0) * samplerate;
 
     timestamp = ags_timestamp_new();
 
