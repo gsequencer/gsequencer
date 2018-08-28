@@ -1761,35 +1761,35 @@ ags_wave_copy_selection(AgsWave *wave)
       {
 	cbuffer = ags_buffer_util_s8_to_char_buffer((gint8 *) buffer->data,
 						    buffer->buffer_size);
-	buffer_size = buffer->buffer_size;
+	buffer_size = buffer->buffer_size * sizeof(guchar);
       }
       break;
     case AGS_SOUNDCARD_SIGNED_16_BIT:
       {
 	cbuffer = ags_buffer_util_s16_to_char_buffer((gint16 *) buffer->data,
 						     buffer->buffer_size);
-	buffer_size = 2 * buffer->buffer_size;
+	buffer_size = 2 * buffer->buffer_size * sizeof(guchar);
       }
       break;
     case AGS_SOUNDCARD_SIGNED_24_BIT:
       {
 	cbuffer = ags_buffer_util_s24_to_char_buffer((gint32 *) buffer->data,
 						     buffer->buffer_size);
-	buffer_size = 3 * buffer->buffer_size;
+	buffer_size = 3 * buffer->buffer_size * sizeof(guchar);
       }
       break;
     case AGS_SOUNDCARD_SIGNED_32_BIT:
       {
 	cbuffer = ags_buffer_util_s32_to_char_buffer((gint32 *) buffer->data,
 						     buffer->buffer_size);
-	buffer_size = 4 * buffer->buffer_size;
+	buffer_size = 4 * buffer->buffer_size * sizeof(guchar);
       }
       break;
     case AGS_SOUNDCARD_SIGNED_64_BIT:
       {
 	cbuffer = ags_buffer_util_s64_to_char_buffer((gint64 *) buffer->data,
 						     buffer->buffer_size);
-	buffer_size = 8 * buffer->buffer_size;
+	buffer_size = 8 * buffer->buffer_size * sizeof(guchar);
       }
       break;
     }
