@@ -524,19 +524,35 @@ ags_sndfile_rw_open(AgsSoundResource *sound_resource,
   }else if(g_str_has_suffix(filename, ".flac")){    
     major_format = SF_FORMAT_FLAC;
 
-    sndfile->info->format = major_format | SF_FORMAT_PCM_24;
+    sndfile->info->format = major_format | SF_FORMAT_PCM_16;
+
+    g_object_set(sndfile,
+		 "format", AGS_SOUNDCARD_SIGNED_16_BIT,
+		 NULL);
   }else if(g_str_has_suffix(filename, ".aiff")){    
     major_format = SF_FORMAT_AIFF;
 
-    sndfile->info->format = major_format | SF_FORMAT_PCM_24;
-  }else if(g_str_has_suffix(filename, ".oggg")){
+    sndfile->info->format = major_format | SF_FORMAT_PCM_16;
+
+    g_object_set(sndfile,
+		 "format", AGS_SOUNDCARD_SIGNED_16_BIT,
+		 NULL);
+  }else if(g_str_has_suffix(filename, ".ogg")){
     major_format = SF_FORMAT_OGG;
 
     sndfile->info->format = major_format | SF_FORMAT_VORBIS;
+
+    g_object_set(sndfile,
+		 "format", AGS_SOUNDCARD_DOUBLE,
+		 NULL);
   }else{
     major_format = SF_FORMAT_WAV;
 
     sndfile->info->format = major_format | SF_FORMAT_PCM_16;
+
+    g_object_set(sndfile,
+		 "format", AGS_SOUNDCARD_SIGNED_16_BIT,
+		 NULL);
   }
   
   sndfile->info->frames = 0;
@@ -944,6 +960,9 @@ ags_sndfile_write(AgsSoundResource *sound_resource,
     if(sndfile->format == AGS_SOUNDCARD_DOUBLE){
       ags_audio_buffer_util_clear_double(sndfile->buffer, sndfile->info->channels,
 					 frame_count);
+    }else if(sndfile->format == AGS_SOUNDCARD_FLOAT){
+      ags_audio_buffer_util_clear_float(sndfile->buffer, sndfile->info->channels,
+					frame_count);
     }else{
       ags_audio_buffer_util_clear_buffer(sndfile->buffer, sndfile->info->channels,
 					 frame_count, ags_audio_buffer_util_format_from_soundcard(sndfile->format));
