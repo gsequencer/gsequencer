@@ -263,6 +263,13 @@ ags_export_window_export_callback(GtkWidget *toggle_button,
 				     TRUE,
 				     !gtk_toggle_button_get_active((GtkToggleButton *) export_window->exclude_sequencer), TRUE, FALSE, FALSE);
 	success = TRUE;
+      }else if((AGS_MACHINE_IS_WAVE_PLAYER & (machine->flags)) != 0){
+	g_message("found machine to play!");
+
+	ags_machine_set_run_extended(machine,
+				     TRUE,
+				     FALSE, FALSE, TRUE, FALSE);
+	success = TRUE;
       }
 
       machines = machines->next;
@@ -357,11 +364,18 @@ ags_export_window_export_callback(GtkWidget *toggle_button,
 
       if((AGS_MACHINE_IS_SEQUENCER & (machine->flags)) !=0 ||
 	 (AGS_MACHINE_IS_SYNTHESIZER & (machine->flags)) != 0){
-	printf("found machine to stop!\n");
+	printf("found machine to stop!");
     
 	ags_machine_set_run(machine,
 			    FALSE);
 	
+	success = TRUE;
+      }else if((AGS_MACHINE_IS_WAVE_PLAYER & (machine->flags)) != 0){
+	g_message("found machine to stop!");
+	
+	ags_machine_set_run_extended(machine,
+				     FALSE,
+				     FALSE, FALSE, TRUE, FALSE);
 	success = TRUE;
       }
 

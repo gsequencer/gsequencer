@@ -1477,7 +1477,7 @@ ags_wave_edit_draw_buffer(AgsWaveEdit *wave_edit,
 	       "x", &x,
 	       NULL);
 
-  if(((x + (samplerate / zoom_factor)) / samplerate * (bpm / 60.0) / delay_factor) * 64.0 / zoom_factor < x0 ||
+  if(((x) / samplerate * (bpm / 60.0) / delay_factor + (samplerate * (bpm / 60.0) / delay_factor)) * 64.0 / zoom_factor < x0 ||
      ((x) / samplerate * (bpm / 60.0) / delay_factor) * 64.0 / zoom_factor > x1){
     return;
   }

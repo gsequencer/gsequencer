@@ -41,6 +41,7 @@ struct _AgsSoundResourceInterface
 		   gchar *filename);
   gboolean (*rw_open)(AgsSoundResource *sound_resource,
 		      gchar *filename,
+		      guint audio_channels, guint samplerate,
 		      gboolean create);
 
   void (*load)(AgsSoundResource *sound_resource);
@@ -87,6 +88,7 @@ gboolean ags_sound_resource_open(AgsSoundResource *sound_resource,
 				 gchar *filename);
 gboolean ags_sound_resource_rw_open(AgsSoundResource *sound_resource,
 				    gchar *filename,
+				    guint audio_channels, guint samplerate,
 				    gboolean create);
 
 void ags_sound_resource_load(AgsSoundResource *sound_resource);

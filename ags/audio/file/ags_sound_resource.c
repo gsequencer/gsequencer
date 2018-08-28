@@ -112,6 +112,7 @@ ags_sound_resource_open(AgsSoundResource *sound_resource,
 gboolean
 ags_sound_resource_rw_open(AgsSoundResource *sound_resource,
 			   gchar *filename,
+			   guint audio_channels, guint samplerate,
 			   gboolean create)
 {
   AgsSoundResourceInterface *sound_resource_interface;
@@ -124,6 +125,7 @@ ags_sound_resource_rw_open(AgsSoundResource *sound_resource,
 
   retval = sound_resource_interface->rw_open(sound_resource,
 					     filename,
+					     audio_channels, samplerate,
 					     create);
   
   return(retval);

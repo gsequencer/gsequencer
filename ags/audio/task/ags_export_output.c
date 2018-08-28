@@ -435,7 +435,6 @@ ags_export_output_launch(AgsTask *task)
   guint format;
   guint tic;
   guint val;
-  guint major_format;
   
   export_output = AGS_EXPORT_OUTPUT(task);
   
@@ -468,29 +467,7 @@ ags_export_output_launch(AgsTask *task)
   
   ags_audio_file_rw_open(audio_file,
 			 TRUE);
-
   //TODO:JK: more formats
-  if((AGS_EXPORT_OUTPUT_FORMAT_WAV & (export_output->format)) != 0){
-    major_format = SF_FORMAT_WAV;
-
-    AGS_SNDFILE(audio_file->sound_resource)->info->format = major_format | SF_FORMAT_PCM_16;
-  }else if((AGS_EXPORT_OUTPUT_FORMAT_FLAC & (export_output->format)) != 0){    
-    major_format = SF_FORMAT_FLAC;
-
-    AGS_SNDFILE(audio_file->sound_resource)->info->format = major_format | SF_FORMAT_PCM_24;
-  }else if((AGS_EXPORT_OUTPUT_FORMAT_AIFF & (export_output->format)) != 0){    
-    major_format = SF_FORMAT_AIFF;
-
-    AGS_SNDFILE(audio_file->sound_resource)->info->format = major_format | SF_FORMAT_PCM_24;
-  }else if((AGS_EXPORT_OUTPUT_FORMAT_OGG & (export_output->format)) != 0){
-    major_format = SF_FORMAT_OGG;
-
-    AGS_SNDFILE(audio_file->sound_resource)->info->format = major_format | SF_FORMAT_VORBIS;
-  }else{
-    major_format = SF_FORMAT_WAV;
-
-    AGS_SNDFILE(audio_file->sound_resource)->info->format = major_format | SF_FORMAT_PCM_16;
-  }
 
 #ifdef AGS_DEBUG
   g_message("export output");

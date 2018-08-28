@@ -50,6 +50,7 @@ gboolean ags_sndfile_open(AgsSoundResource *sound_resource,
 			  gchar *filename);
 gboolean ags_sndfile_rw_open(AgsSoundResource *sound_resource,
 			     gchar *filename,
+			     guint audio_channels, guint samplerate,
 			     gboolean create);
 gboolean ags_sndfile_info(AgsSoundResource *sound_resource,
 			  guint *frame_count,
@@ -483,11 +484,14 @@ ags_sndfile_open(AgsSoundResource *sound_resource,
 gboolean
 ags_sndfile_rw_open(AgsSoundResource *sound_resource,
 		    gchar *filename,
+		    guint audio_channels, guint samplerate,
 		    gboolean create)
 {
   AgsSndfile *sndfile;
   
   AgsConfig *config;
+
+  guint major_format;
 
   sndfile = AGS_SNDFILE(sound_resource);
 
@@ -504,10 +508,37 @@ ags_sndfile_rw_open(AgsSoundResource *sound_resource,
   config = ags_config_get_instance();
 
   sndfile->info = (SF_INFO *) malloc(sizeof(SF_INFO));
+  memset(sndfile->info, 0, sizeof(SF_INFO));
 
-  sndfile->info->samplerate = (int) ags_soundcard_helper_config_get_samplerate(config);
-  sndfile->info->channels = (int) sndfile->audio_channels;
-  sndfile->info->format = (int) SF_FORMAT_WAV | SF_FORMAT_PCM_16;
+  sndfile->info->samplerate = (int) samplerate;
+  sndfile->info->channels = (int) audio_channels;
+
+  if(g_str_has_suffix(filename, ".wav")){
+    major_format = SF_FORMAT_WAV;
+
+    sndfile->info->format = major_format | SF_FORMAT_PCM_16;
+
+    g_object_set(sndfile,
+		 "format", AGS_SOUNDCARD_SIGNED_16_BIT,
+		 NULL);
+  }else if(g_str_has_suffix(filename, ".flac")){    
+    major_format = SF_FORMAT_FLAC;
+
+    sndfile->info->format = major_format | SF_FORMAT_PCM_24;
+  }else if(g_str_has_suffix(filename, ".aiff")){    
+    major_format = SF_FORMAT_AIFF;
+
+    sndfile->info->format = major_format | SF_FORMAT_PCM_24;
+  }else if(g_str_has_suffix(filename, ".oggg")){
+    major_format = SF_FORMAT_OGG;
+
+    sndfile->info->format = major_format | SF_FORMAT_VORBIS;
+  }else{
+    major_format = SF_FORMAT_WAV;
+
+    sndfile->info->format = major_format | SF_FORMAT_PCM_16;
+  }
+  
   sndfile->info->frames = 0;
   sndfile->info->seekable = 0;
   sndfile->info->sections = 0;
@@ -523,6 +554,10 @@ ags_sndfile_rw_open(AgsSoundResource *sound_resource,
   }else{
     sndfile->file = (SNDFILE *) sf_open_virtual(ags_sndfile_virtual_io, SFM_RDWR, sndfile->info, sndfile);
   }
+
+  g_object_set(sndfile,
+	       "audio-channels", audio_channels,
+	       NULL);
 
   if(sndfile->file == NULL){
     return(FALSE);
@@ -841,41 +876,35 @@ ags_sndfile_write(AgsSoundResource *sound_resource,
 {
   AgsSndfile *sndfile;
 
-  gint64 current_offset;
   guint copy_mode;
   sf_count_t multi_frames;
-  gboolean write_cache;
   guint i;
+  gboolean do_write;
   
   sndfile = AGS_SNDFILE(sound_resource);
-
-  sndfile->audio_channel_written[audio_channel] = sndfile->offset;
-
+  
   copy_mode = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(sndfile->format),
 						  ags_audio_buffer_util_format_from_soundcard(format));
   
-  /* check write */
-  write_cache = TRUE;
+  ags_audio_buffer_util_copy_buffer_to_buffer(sndfile->buffer, sndfile->info->channels, audio_channel,
+					      sbuffer, saudio_channels, audio_channel,
+					      frame_count, copy_mode);
 
-  if((AGS_SNDFILE_FILL_CACHE & (sndfile->flags)) != 0){
-    ags_audio_buffer_util_copy_buffer_to_buffer(sndfile->buffer, sndfile->audio_channels, audio_channel,
-						sbuffer, saudio_channels, 0,
-						frame_count, copy_mode);
-    current_offset = sndfile->audio_channel_written[0];
-    
-    for(i = 0; i < sndfile->audio_channels; i++){
-      if(sndfile->audio_channel_written[i] != current_offset){
-	write_cache = FALSE;
+  sndfile->audio_channel_written[audio_channel] = frame_count;
+  do_write = TRUE;
 
-	break;
-      }
-    } 
+  for(i = 0; i < sndfile->audio_channels; i++){
+    if(sndfile->audio_channel_written[i] == -1){
+      do_write = FALSE;
+      
+      break;
+    }
   }
   
-  if(write_cache){
-    multi_frames = frame_count * sndfile->audio_channels;
+  if(do_write){
+    multi_frames = frame_count * sndfile->info->channels;
 
-    switch(format){
+    switch(sndfile->format){
     case AGS_SOUNDCARD_SIGNED_8_BIT:
       {
 	//TODO:JK: implement me
@@ -907,8 +936,18 @@ ags_sndfile_write(AgsSoundResource *sound_resource,
       }
       break;
     }
+    
+    for(i = 0; i < sndfile->audio_channels; i++){
+      sndfile->audio_channel_written[i] = -1;
+    }
 
-    sndfile->buffer_offset = sndfile->offset;
+    if(sndfile->format == AGS_SOUNDCARD_DOUBLE){
+      ags_audio_buffer_util_clear_double(sndfile->buffer, sndfile->info->channels,
+					 frame_count);
+    }else{
+      ags_audio_buffer_util_clear_buffer(sndfile->buffer, sndfile->info->channels,
+					 frame_count, ags_audio_buffer_util_format_from_soundcard(sndfile->format));
+    }
     
     sndfile->offset += frame_count;
   }

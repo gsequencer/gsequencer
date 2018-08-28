@@ -773,15 +773,9 @@ ags_audio_file_rw_open(AgsAudioFile *audio_file,
     audio_file->sound_resource = (GObject *) ags_sndfile_new();
     g_object_ref(audio_file->sound_resource);
 
-
-    ags_sound_resource_set_presets(AGS_SOUND_RESOURCE(audio_file->sound_resource),
-				  audio_file->file_audio_channels,
-				  audio_file->file_samplerate,
-				  audio_file->buffer_size,
-				  audio_file->format);
-    
     if(ags_sound_resource_rw_open(AGS_SOUND_RESOURCE(audio_file->sound_resource),
 				  audio_file->filename,
+				  audio_file->file_audio_channels, audio_file->file_samplerate,
 				  create)){
       return(TRUE);
     }else{
@@ -1001,7 +995,7 @@ ags_audio_file_write(AgsAudioFile *audio_file,
   }
 
   if(audio_file->audio_channel == -1){
-    for(i = 0; i < audio_file->file_audio_channels; i++){      
+    for(i = 0; i < audio_file->file_audio_channels; i++){
       ags_sound_resource_write(AGS_SOUND_RESOURCE(audio_file->sound_resource),
 			       buffer, audio_file->file_audio_channels,
 			       i,
