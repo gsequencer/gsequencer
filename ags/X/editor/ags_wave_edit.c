@@ -543,7 +543,7 @@ ags_accessible_wave_edit_do_action(AtkAction *action,
   GdkEventKey *modifier_press, *modifier_release;
   GdkEventKey *second_level_press, *second_level_release;
   
-  if(!(i >= 0 && i < 15)){
+  if(!(i >= 0 && i < 7)){
     return(FALSE);
   }
 
@@ -593,62 +593,6 @@ ags_accessible_wave_edit_do_action(AtkAction *action,
   case 2:
     {
       key_press->keyval =
-	key_release->keyval = GDK_KEY_Up;
-    
-      /* send event */
-      gtk_widget_event((GtkWidget *) wave_edit->drawing_area,
-		       (GdkEvent *) key_press);
-      gtk_widget_event((GtkWidget *) wave_edit->drawing_area,
-		       (GdkEvent *) key_release);
-    }
-    break;
-  case 3:
-    {
-      key_press->keyval =
-	key_release->keyval = GDK_KEY_Down;
-      
-      /* send event */
-      gtk_widget_event((GtkWidget *) wave_edit->drawing_area,
-		       (GdkEvent *) key_press);
-      gtk_widget_event((GtkWidget *) wave_edit->drawing_area,
-		       (GdkEvent *) key_release);
-    }
-    break;    
-  case 4:
-    {
-      key_press->keyval =
-	key_release->keyval = GDK_KEY_Up;
-      
-      /* send event */
-      gtk_widget_event((GtkWidget *) wave_edit->drawing_area,
-		       (GdkEvent *) modifier_press);
-      gtk_widget_event((GtkWidget *) wave_edit->drawing_area,
-		       (GdkEvent *) key_press);
-      gtk_widget_event((GtkWidget *) wave_edit->drawing_area,
-		       (GdkEvent *) key_release);
-      gtk_widget_event((GtkWidget *) wave_edit->drawing_area,
-		       (GdkEvent *) modifier_release);
-    }
-    break;
-  case 5:
-    {
-      key_press->keyval =
-	key_release->keyval = GDK_KEY_Down;
-      
-      /* send event */
-      gtk_widget_event((GtkWidget *) wave_edit->drawing_area,
-		       (GdkEvent *) modifier_press);
-      gtk_widget_event((GtkWidget *) wave_edit->drawing_area,
-		       (GdkEvent *) key_press);
-      gtk_widget_event((GtkWidget *) wave_edit->drawing_area,
-		       (GdkEvent *) key_release);
-      gtk_widget_event((GtkWidget *) wave_edit->drawing_area,
-		       (GdkEvent *) modifier_release);
-    }
-    break;
-  case 6:
-    {
-      key_press->keyval =
 	key_release->keyval = GDK_KEY_Left;
       
       /* send event */
@@ -662,7 +606,7 @@ ags_accessible_wave_edit_do_action(AtkAction *action,
 		       (GdkEvent *) second_level_release);
     }
     break;
-  case 7:
+  case 3:
     {
       key_press->keyval =
 	key_release->keyval = GDK_KEY_Right;
@@ -678,63 +622,7 @@ ags_accessible_wave_edit_do_action(AtkAction *action,
 		       (GdkEvent *) second_level_release);
     }
     break;
-  case 8:
-    {
-      key_press->keyval =
-	key_release->keyval = GDK_KEY_Up;
-      
-      /* send event */
-      gtk_widget_event((GtkWidget *) wave_edit->drawing_area,
-		       (GdkEvent *) second_level_press);
-      gtk_widget_event((GtkWidget *) wave_edit->drawing_area,
-		       (GdkEvent *) key_press);
-      gtk_widget_event((GtkWidget *) wave_edit->drawing_area,
-		       (GdkEvent *) key_release);
-      gtk_widget_event((GtkWidget *) wave_edit->drawing_area,
-		       (GdkEvent *) second_level_release);
-    }
-    break;
-  case 9:
-    {
-      key_press->keyval =
-	key_release->keyval = GDK_KEY_Down;
-      
-      /* send event */
-      gtk_widget_event((GtkWidget *) wave_edit->drawing_area,
-		       (GdkEvent *) second_level_press);
-      gtk_widget_event((GtkWidget *) wave_edit->drawing_area,
-		       (GdkEvent *) key_press);
-      gtk_widget_event((GtkWidget *) wave_edit->drawing_area,
-		       (GdkEvent *) key_release);
-      gtk_widget_event((GtkWidget *) wave_edit->drawing_area,
-		       (GdkEvent *) second_level_release);
-    }
-    break;
-  case 10:
-    {
-      key_press->keyval =
-	key_release->keyval = GDK_KEY_space;
-      
-      /* send event */
-      gtk_widget_event((GtkWidget *) wave_edit->drawing_area,
-		       (GdkEvent *) key_press);
-      gtk_widget_event((GtkWidget *) wave_edit->drawing_area,
-		       (GdkEvent *) key_release);
-    }
-    break;
-  case 11:
-    {
-      key_press->keyval =
-	key_release->keyval = GDK_KEY_Delete;
-      
-      /* send event */
-      gtk_widget_event((GtkWidget *) wave_edit->drawing_area,
-		       (GdkEvent *) key_press);
-      gtk_widget_event((GtkWidget *) wave_edit->drawing_area,
-		       (GdkEvent *) key_release);
-    }
-    break;
-  case 12:
+  case 4:
     {
       key_press->keyval =
 	key_release->keyval = GDK_KEY_c;
@@ -750,7 +638,7 @@ ags_accessible_wave_edit_do_action(AtkAction *action,
 		       (GdkEvent *) modifier_release);      
     }    
     break;
-  case 13:
+  case 5:
     {
       key_press->keyval =
 	key_release->keyval = GDK_KEY_x;
@@ -766,7 +654,7 @@ ags_accessible_wave_edit_do_action(AtkAction *action,
 		       (GdkEvent *) modifier_release);      
     }
     break;
-  case 14:
+  case 6:
     {
       key_press->keyval =
 	key_release->keyval = GDK_KEY_v;
@@ -790,7 +678,7 @@ ags_accessible_wave_edit_do_action(AtkAction *action,
 gint
 ags_accessible_wave_edit_get_n_actions(AtkAction *action)
 {
-  return(15);
+  return(7);
 }
 
 const gchar*
@@ -807,7 +695,7 @@ ags_accessible_wave_edit_get_description(AtkAction *action,
     "paste wave from clipboard",
   };
 
-  if(i >= 0 && i < 15){
+  if(i >= 0 && i < 7){
     return(actions[i]);
   }else{
     return(NULL);
@@ -828,7 +716,7 @@ ags_accessible_wave_edit_get_name(AtkAction *action,
     "paste",
   };
   
-  if(i >= 0 && i < 15){
+  if(i >= 0 && i < 7){
     return(actions[i]);
   }else{
     return(NULL);
@@ -849,7 +737,7 @@ ags_accessible_wave_edit_get_keybinding(AtkAction *action,
     "Ctrl+v",
   };
   
-  if(i >= 0 && i < 15){
+  if(i >= 0 && i < 7){
     return(actions[i]);
   }else{
     return(NULL);
@@ -1537,6 +1425,8 @@ ags_wave_edit_draw_buffer(AgsWaveEdit *wave_edit,
 
   GtkStyle *wave_edit_style;
 
+  GObject *soundcard;
+  
   cairo_t *i_cr;
   cairo_surface_t *surface;
 
@@ -1581,11 +1471,15 @@ ags_wave_edit_draw_buffer(AgsWaveEdit *wave_edit,
   
   wave_edit_style = gtk_widget_get_style(GTK_WIDGET(wave_edit->drawing_area));
 
+  g_object_get(wave_editor->selected_machine->audio,
+	       "output-soundcard", &soundcard,
+	       NULL);
+  
   /* zoom */
   zoom = exp2((double) gtk_combo_box_get_active((GtkComboBox *) wave_toolbar->zoom) - 2.0);
   zoom_factor = exp2(6.0 - (double) gtk_combo_box_get_active((GtkComboBox *) wave_toolbar->zoom));
 
-  delay_factor = ags_soundcard_get_delay_factor(AGS_SOUNDCARD(wave_editor->soundcard));
+  delay_factor = ags_soundcard_get_delay_factor(AGS_SOUNDCARD(soundcard));
   
   /* get visisble region */
   x0 = GTK_RANGE(wave_edit->hscrollbar)->adjustment->value;

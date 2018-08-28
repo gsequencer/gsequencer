@@ -22,6 +22,7 @@
 #include <ags/libags.h>
 
 #include <ags/audio/ags_audio.h>
+#include <ags/audio/ags_audio_buffer_util.h>
 
 #include <pthread.h>
 
@@ -1758,35 +1759,35 @@ ags_wave_copy_selection(AgsWave *wave)
     switch(buffer->format){
     case AGS_SOUNDCARD_SIGNED_8_BIT:
       {
-	cbuffer = ags_buffer_util_s8_to_char_buffer((signed char *) buffer->data,
+	cbuffer = ags_buffer_util_s8_to_char_buffer((gint8 *) buffer->data,
 						    buffer->buffer_size);
 	buffer_size = buffer->buffer_size;
       }
       break;
     case AGS_SOUNDCARD_SIGNED_16_BIT:
       {
-	cbuffer = ags_buffer_util_s16_to_char_buffer((signed short *) buffer->data,
+	cbuffer = ags_buffer_util_s16_to_char_buffer((gint16 *) buffer->data,
 						     buffer->buffer_size);
 	buffer_size = 2 * buffer->buffer_size;
       }
       break;
     case AGS_SOUNDCARD_SIGNED_24_BIT:
       {
-	cbuffer = ags_buffer_util_s24_to_char_buffer((signed long *) buffer->data,
+	cbuffer = ags_buffer_util_s24_to_char_buffer((gint32 *) buffer->data,
 						     buffer->buffer_size);
 	buffer_size = 3 * buffer->buffer_size;
       }
       break;
     case AGS_SOUNDCARD_SIGNED_32_BIT:
       {
-	cbuffer = ags_buffer_util_s32_to_char_buffer((signed long *) buffer->data,
+	cbuffer = ags_buffer_util_s32_to_char_buffer((gint32 *) buffer->data,
 						     buffer->buffer_size);
 	buffer_size = 4 * buffer->buffer_size;
       }
       break;
     case AGS_SOUNDCARD_SIGNED_64_BIT:
       {
-	cbuffer = ags_buffer_util_s64_to_char_buffer((signed long long *) buffer->data,
+	cbuffer = ags_buffer_util_s64_to_char_buffer((gint64 *) buffer->data,
 						     buffer->buffer_size);
 	buffer_size = 8 * buffer->buffer_size;
       }
@@ -2167,6 +2168,9 @@ ags_wave_insert_native_level_from_clipboard(AgsWave *wave,
 
 	  if(!match_timestamp ||
 	     x_val < ags_timestamp_get_ags_offset(timestamp) + relative_offset){
+	    guint target_format;
+	    guint copy_mode;
+	    
 	    /* find first */
 	    buffer = ags_wave_find_point(wave,
 					 x_val,
@@ -2182,27 +2186,27 @@ ags_wave_insert_native_level_from_clipboard(AgsWave *wave,
 		switch(buffer->format){
 		case AGS_SOUNDCARD_SIGNED_8_BIT:
 		  {
-		    data = ((signed char *) data) + attack;
+		    data = ((gint8 *) data) + attack;
 		  }
 		  break;
 		case AGS_SOUNDCARD_SIGNED_16_BIT:
 		  {
-		    data = ((signed short *) data) + attack;
+		    data = ((gint16 *) data) + attack;
 		  }
 		  break;
 		case AGS_SOUNDCARD_SIGNED_24_BIT:
 		  {
-		    data = ((signed long *) data) + attack;
+		    data = ((gint32 *) data) + attack;
 		  }
 		  break;
 		case AGS_SOUNDCARD_SIGNED_32_BIT:
 		  {
-		    data = ((signed long *) data) + attack;
+		    data = ((gint32 *) data) + attack;
 		  }
 		  break;
 		case AGS_SOUNDCARD_SIGNED_64_BIT:
 		  {
-		    data = ((signed long long *) data) + attack;
+		    data = ((gint64 *) data) + attack;
 		  }
 		  break;
 		default:
@@ -2232,14 +2236,21 @@ ags_wave_insert_native_level_from_clipboard(AgsWave *wave,
 				  FALSE);
 	    }
 
+	    g_object_get(buffer,
+			 "format", &target_format,
+			 NULL);
+
+	    ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(target_format),
+						ags_audio_buffer_util_format_from_soundcard(format_val));
+	    
 	    if(attack + count <= wave->buffer_size){
 	      ags_audio_buffer_util_copy_buffer_to_buffer(buffer->data, 1, attack,
 							  clipboard_data, 1, 0,
-							  count);
+							  count, copy_mode);
 	    }else{
 	      ags_audio_buffer_util_copy_buffer_to_buffer(buffer->data, 1, attack,
 							  clipboard_data, 1, 0,
-							  wave->buffer_size - attack);
+							  wave->buffer_size - attack, copy_mode);
 	    }
 
 	    /* find next */
@@ -2267,9 +2278,16 @@ ags_wave_insert_native_level_from_clipboard(AgsWave *wave,
 				    FALSE);
 	      }
 
+	      g_object_get(buffer,
+			   "format", &target_format,
+			   NULL);
+
+	      ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(target_format),
+						  ags_audio_buffer_util_format_from_soundcard(format_val));
+	      
 	      ags_audio_buffer_util_copy_buffer_to_buffer(buffer->data, 1, 0,
 							  clipboard_data, 1, wave->buffer_size - attack,
-							  attack);
+							  attack, copy_mode);
 	    }
 	  }
 	}

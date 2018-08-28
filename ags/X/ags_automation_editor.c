@@ -1775,15 +1775,15 @@ ags_automation_editor_paste(AgsAutomationEditor *automation_editor)
     pthread_mutex_unlock(audio_mutex);
     
     /*  */
-    g_object_get(machine->audio,
-		 "automation", &start_list_automation,
-		 NULL);
-
     i = 0;
 		
     while(notebook == NULL ||
 	  (i = ags_notebook_next_active_tab(notebook,
 					    i)) != -1){		  
+      g_object_get(machine->audio,
+		   "automation", &start_list_automation,
+		   NULL);
+      
       list_automation = ags_automation_find_near_timestamp_extended(start_list_automation, i,
 								    automation_editor->focused_automation_edit->channel_type, automation_editor->focused_automation_edit->control_name,
 								    timestamp);
@@ -1897,6 +1897,12 @@ ags_automation_editor_paste(AgsAutomationEditor *automation_editor)
       }else{
 	automation = AGS_AUTOMATION(list_automation->data);
       }
+
+      g_list_free(start_list_automation);
+      
+      g_object_get(machine->audio,
+		   "automation", &start_list_automation,
+		   NULL);
 
       list_automation = start_list_automation;
       
