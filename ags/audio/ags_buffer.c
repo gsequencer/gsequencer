@@ -27,6 +27,9 @@
 #include <ags/i18n.h>
 
 #include <stdlib.h>
+#include <string.h>
+
+#include <pthread.h>
 
 void ags_buffer_class_init(AgsBufferClass *buffer);
 void ags_buffer_init(AgsBuffer *buffer);
@@ -264,8 +267,9 @@ ags_buffer_init(AgsBuffer *buffer)
   buffer->selection_x0 = 0;
   buffer->selection_x1 = 0;
 
-  buffer->format = AGS_SOUNDCARD_DEFAULT_FORMAT;
+  buffer->samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
   buffer->buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
+  buffer->format = AGS_SOUNDCARD_DEFAULT_FORMAT;
 
   buffer->data = ags_stream_alloc(buffer->buffer_size,
 				  buffer->format);

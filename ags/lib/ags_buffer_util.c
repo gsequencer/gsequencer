@@ -509,12 +509,13 @@ gint8*
 ags_buffer_util_char_buffer_to_s8(guchar *cbuffer,
 				  guint buffer_size)
 {
-  gint8 *buffer;
+  gint8 *buffer, *start_buffer;
 
   guint limit;
   guint i;
 
-  buffer = (gint8 *) malloc(buffer_size * sizeof(gint8));
+  start_buffer = 
+    buffer = (gint8 *) malloc(buffer_size * sizeof(gint8));
   memset(buffer, 0, buffer_size * sizeof(gint8));
   
   i = 0;
@@ -544,7 +545,7 @@ ags_buffer_util_char_buffer_to_s8(guchar *cbuffer,
     cbuffer++;
   }
 
-  return(buffer);
+  return(start_buffer);
 }
 
 /**
@@ -562,12 +563,13 @@ gint16*
 ags_buffer_util_char_buffer_to_s16(guchar *cbuffer,
 				   guint buffer_size)
 {
-  gint16 *buffer;
+  gint16 *buffer, *start_buffer;
 
   guint limit;
   guint i;
 
-  buffer = (gint16 *) malloc((buffer_size / 2) * sizeof(gint16));
+  start_buffer = 
+    buffer = (gint16 *) malloc((buffer_size / 2) * sizeof(gint16));
   memset(buffer, 0, (buffer_size / 2) * sizeof(gint16));
 
   buffer_size = (guint) (2 * floor(buffer_size / 2.0));
@@ -607,7 +609,7 @@ ags_buffer_util_char_buffer_to_s16(guchar *cbuffer,
     }
   }
 
-  for(; i < buffer_size; i += 2){
+  for(; i < buffer_size / 2; i++){
     buffer[0] |= ((0xff & cbuffer[0]) << 8);
     buffer[0] |= (0xff & cbuffer[1]);
       
@@ -615,7 +617,7 @@ ags_buffer_util_char_buffer_to_s16(guchar *cbuffer,
     cbuffer += 2;
   }
 
-  return(buffer);
+  return(start_buffer);
 }
 
 /**
@@ -633,12 +635,13 @@ gint32*
 ags_buffer_util_char_buffer_to_s24(guchar *cbuffer,
 				   guint buffer_size)
 {
-  gint32 *buffer;
+  gint32 *buffer, *start_buffer;
 
   guint limit;
   guint i;
 
-  buffer = (gint32 *) malloc((buffer_size / 4) * sizeof(gint32));
+  start_buffer = 
+    buffer = (gint32 *) malloc((buffer_size / 4) * sizeof(gint32));
   memset(buffer, 0, (buffer_size / 4) * sizeof(gint32));
 
   buffer_size = (guint) (4 * floor(buffer_size / 4.0));
@@ -686,7 +689,7 @@ ags_buffer_util_char_buffer_to_s24(guchar *cbuffer,
     }
   }
 
-  for(; i < buffer_size; i += 4){
+  for(; i < buffer_size / 4; i++){
     buffer[0] |= ((0xff & cbuffer[0]) << 16);
     buffer[0] |= ((0xff & cbuffer[1]) << 8);
     buffer[0] |= (0xff & cbuffer[2]);
@@ -695,7 +698,7 @@ ags_buffer_util_char_buffer_to_s24(guchar *cbuffer,
     cbuffer += 4;
   }
 
-  return(buffer);
+  return(start_buffer);
 }
 
 /**
@@ -713,12 +716,13 @@ gint32*
 ags_buffer_util_char_buffer_to_s32(guchar *cbuffer,
 				   guint buffer_size)
 {
-  gint32 *buffer;
+  gint32 *buffer, *start_buffer;
 
   guint limit;
   guint i;
-
-  buffer = (gint32 *) malloc((buffer_size / 4) * sizeof(gint32));
+  
+  start_buffer = 
+    buffer = (gint32 *) malloc((buffer_size / 4) * sizeof(gint32));
   memset(buffer, 0, (buffer_size / 4) * sizeof(gint32));
 
   buffer_size = (guint) (4 * floor(buffer_size / 4.0));
@@ -774,7 +778,7 @@ ags_buffer_util_char_buffer_to_s32(guchar *cbuffer,
     }
   }
 
-  for(; i < buffer_size; i += 4){
+  for(; i < buffer_size / 4; i++){
     buffer[0] |= ((0xff & cbuffer[0]) << 24);
     buffer[0] |= ((0xff & cbuffer[1]) << 16);
     buffer[0] |= ((0xff & cbuffer[2]) << 8);
@@ -784,7 +788,7 @@ ags_buffer_util_char_buffer_to_s32(guchar *cbuffer,
     cbuffer += 4;
   }
 
-  return(buffer);
+  return(start_buffer);
 }
 
 /**
@@ -802,12 +806,13 @@ gint64*
 ags_buffer_util_char_buffer_to_s64(guchar *cbuffer,
 				   guint buffer_size)
 {
-  gint64 *buffer;
+  gint64 *buffer, *start_buffer;
 
   guint limit;
   guint i;
 
-  buffer = (gint64 *) malloc((buffer_size / 8) * sizeof(gint64));
+  start_buffer = 
+    buffer = (gint64 *) malloc((buffer_size / 8) * sizeof(gint64));
   memset(buffer, 0, (buffer_size / 8) * sizeof(gint64));
 
   buffer_size = (guint) (8 * floor(buffer_size / 8.0)); 
@@ -895,7 +900,7 @@ ags_buffer_util_char_buffer_to_s64(guchar *cbuffer,
     }
   }
 
-  for(; i < buffer_size; i += 8){
+  for(; i < buffer_size / 8; i++){
     buffer[0] |= ((gint64) (0xff & cbuffer[0]) << 56);
     buffer[0] |= ((gint64) (0xff & cbuffer[1]) << 48);
     buffer[0] |= ((gint64) (0xff & cbuffer[2]) << 40);
@@ -909,7 +914,7 @@ ags_buffer_util_char_buffer_to_s64(guchar *cbuffer,
     cbuffer += 8;
   }
 
-  return(buffer);
+  return(start_buffer);
 }
 
 /**
@@ -927,15 +932,16 @@ gfloat*
 ags_buffer_util_char_buffer_to_float(guchar *cbuffer,
 				     guint buffer_size)
 {
-  gfloat *buffer;
+  gfloat *buffer, *start_buffer;
   
-  buffer = (gfloat *) malloc((buffer_size / sizeof(gfloat)) * sizeof(gfloat));
+  start_buffer = 
+    buffer = (gfloat *) malloc((buffer_size / sizeof(gfloat)) * sizeof(gfloat));
 
   buffer_size = (guint) (sizeof(gfloat) * floor(buffer_size / sizeof(gfloat))); 
 
   memcpy(buffer, cbuffer, buffer_size * sizeof(guchar));
 
-  return(buffer);
+  return(start_buffer);
 }
 
 /**
@@ -953,15 +959,16 @@ gdouble*
 ags_buffer_util_char_buffer_to_double(guchar *cbuffer,
 				      guint buffer_size)
 {
-  gdouble *buffer;
+  gdouble *buffer, *start_buffer;
   
-  buffer = (gdouble *) malloc((buffer_size / sizeof(gdouble)) * sizeof(gdouble));
+  start_buffer = 
+    buffer = (gdouble *) malloc((buffer_size / sizeof(gdouble)) * sizeof(gdouble));
 
   buffer_size = (guint) (sizeof(gdouble) * floor(buffer_size / sizeof(gdouble))); 
 
   memcpy(buffer, cbuffer, buffer_size * sizeof(guchar));
 
-  return(buffer);
+  return(start_buffer);
 }
 
 /**

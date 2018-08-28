@@ -1000,7 +1000,7 @@ ags_wave_editor_paste(AgsWaveEditor *wave_editor)
 	}
 
 	x_boundary = g_ascii_strtoull(xmlGetProp(wave_node,
-						 "x_boundary"),
+						 "x-boundary"),
 				      NULL,
 				      10);
 
