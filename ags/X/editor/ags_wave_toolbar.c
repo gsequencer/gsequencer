@@ -109,12 +109,15 @@ ags_wave_toolbar_init(AgsWaveToolbar *wave_toolbar)
   GtkMenuItem *item;
   GtkLabel *label;
   GtkCellRenderer *cell_renderer;
+
+  wave_toolbar->flags = 0;
+
+  wave_toolbar->selected_edit_mode = NULL;
   
   wave_toolbar->position = g_object_new(GTK_TYPE_TOGGLE_TOOL_BUTTON,
 					"label", i18n("Position"),
 					"stock-id", GTK_STOCK_JUMP_TO,
 					NULL);
-  wave_toolbar->selected_edit_mode = wave_toolbar->position;
   gtk_toolbar_append_widget((GtkToolbar *) wave_toolbar,
 			    (GtkWidget *) wave_toolbar->position,
 			    "position cursor",

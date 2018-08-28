@@ -720,6 +720,7 @@ ags_wave_editor_select_region(AgsWaveEditor *wave_editor,
 
   gdouble bpm;
   guint samplerate;
+  guint buffer_size;
   guint64 relative_offset;
   guint64 x0_offset, x1_offset;
   double zoom, zoom_factor;
@@ -772,6 +773,7 @@ ags_wave_editor_select_region(AgsWaveEditor *wave_editor,
 		 "output-soundcard", &soundcard,
 		 "wave", &start_list_wave,
 		 "samplerate", &samplerate,
+		 "buffer-size", &buffer_size,
 		 NULL);
 
     delay_factor = ags_soundcard_get_delay_factor(AGS_SOUNDCARD(soundcard));
@@ -781,6 +783,10 @@ ags_wave_editor_select_region(AgsWaveEditor *wave_editor,
     x0_offset = (x0 / 64.0) * delay_factor / (bpm / 60.0) * samplerate;
     x1_offset = (x1 / 64.0) * delay_factor / (bpm / 60.0) * samplerate;
 
+    //TODO:JK: improve me
+    x0_offset = buffer_size * floor(x0_offset / buffer_size);
+    x1_offset = buffer_size * ceil(x1_offset / buffer_size);
+    
     timestamp = ags_timestamp_new();
 
     timestamp->flags &= (~AGS_TIMESTAMP_UNIX);
@@ -940,14 +946,14 @@ ags_wave_editor_paste(AgsWaveEditor *wave_editor)
     pthread_mutex_unlock(audio_mutex);
     
     /*  */
-    g_object_get(machine->audio,
-		 "wave", &start_list_wave,
-		 NULL);
-
     i = 0;
 		
     while((i = ags_notebook_next_active_tab(notebook,
 					    i)) != -1){		  
+      g_object_get(machine->audio,
+		   "wave", &start_list_wave,
+		   NULL);
+      
       list_wave = ags_wave_find_near_timestamp(start_list_wave, i,
 					       timestamp);
 
@@ -981,7 +987,7 @@ ags_wave_editor_paste(AgsWaveEditor *wave_editor)
 	while(child != NULL){
 	  if(child->type == XML_ELEMENT_NODE){
 	    if(!xmlStrncmp(child->name,
-			   "note",
+			   "buffer",
 			   5)){
 	      guint64 tmp;
 
@@ -1033,7 +1039,7 @@ ags_wave_editor_paste(AgsWaveEditor *wave_editor)
 	while(child != NULL){
 	  if(child->type == XML_ELEMENT_NODE){
 	    if(!xmlStrncmp(child->name,
-			   "note",
+			   "buffer",
 			   5)){
 	      guint64 tmp;
 
@@ -1055,7 +1061,9 @@ ags_wave_editor_paste(AgsWaveEditor *wave_editor)
 	  last_x = current_x;
 	}
       }
-      		  
+
+      g_list_free(start_list_wave);
+      
       i++;
     }
 
@@ -1117,14 +1125,14 @@ ags_wave_editor_paste(AgsWaveEditor *wave_editor)
 		}     
 		
 		/* 1st attempt */
-		timestamp->timer.ags_offset.offset = offset;
+		timestamp->timer.ags_offset.offset = relative_offset * floor(offset / relative_offset);
 		
 		first_x = ags_wave_editor_paste_wave_all(wave_node,
 							 timestamp,
 							 match_line);
 
 		/* 2nd attempt */
-		timestamp->timer.ags_offset.offset = offset + relative_offset;
+		timestamp->timer.ags_offset.offset += relative_offset;
 
 		ags_wave_editor_paste_wave_all(wave_node,
 					       timestamp,
@@ -1187,14 +1195,14 @@ ags_wave_editor_paste(AgsWaveEditor *wave_editor)
     }
 
     /* get position */
-    if(wave_editor->wave_toolbar->selected_edit_mode == wave_editor->wave_toolbar->position){
+    if(wave_toolbar->selected_edit_mode == wave_toolbar->position){
       last_x = 0;
       paste_from_position = TRUE;
 
-      position_x = (wave_editor->focused_wave_edit->cursor_position_x  * zoom_factor / 64.0) * delay_factor / (bpm / 60.0) * samplerate;
+      position_x = 15.0 * delay_factor * wave_editor->focused_wave_edit->cursor_position_x * samplerate / (16.0 * bpm);
       
+      printf("pasting at position: [%u]\n", position_x);
 #ifdef DEBUG
-      printf("pasting at position: [%u,%u]\n", position_x, position_y);
 #endif
     }else{
       paste_from_position = FALSE;
@@ -1287,8 +1295,7 @@ ags_wave_editor_copy(AgsWaveEditor *wave_editor)
     
     i = 0;
 
-    while(notebook == NULL ||
-	  (i = ags_notebook_next_active_tab(notebook,
+    while((i = ags_notebook_next_active_tab(notebook,
 					    i)) != -1){
       list_wave = start_list_wave;
 
@@ -1302,10 +1309,6 @@ ags_wave_editor_copy(AgsWaveEditor *wave_editor)
 	list_wave = list_wave->next;
       }
 
-      if(notebook == NULL){
-	break;
-      }
-      
       i++;
     }
     
@@ -1367,8 +1370,7 @@ ags_wave_editor_cut(AgsWaveEditor *wave_editor)
     
     i = 0;
     
-    while(notebook == NULL ||
-	  (i = ags_notebook_next_active_tab(notebook,
+    while((i = ags_notebook_next_active_tab(notebook,
 					    i)) != -1){
       list_wave = start_list_wave;
 
@@ -1380,10 +1382,6 @@ ags_wave_editor_cut(AgsWaveEditor *wave_editor)
 		    wave_node);
 	
 	list_wave = list_wave->next;
-      }
-      
-      if(notebook == NULL){
-	break;
       }
 
       i++;

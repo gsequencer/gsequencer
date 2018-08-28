@@ -239,6 +239,8 @@ ags_buffer_class_init(AgsBufferClass *buffer)
 void
 ags_buffer_init(AgsBuffer *buffer)
 {  
+  AgsConfig *config;
+
   pthread_mutex_t *mutex;
   pthread_mutexattr_t *attr;
   
@@ -261,15 +263,18 @@ ags_buffer_init(AgsBuffer *buffer)
   pthread_mutex_init(mutex,
 		     attr);  
 
+  /* config */
+  config = ags_config_get_instance();
+
   /* fields */
   buffer->x = 0;
 
   buffer->selection_x0 = 0;
   buffer->selection_x1 = 0;
 
-  buffer->samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
-  buffer->buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
-  buffer->format = AGS_SOUNDCARD_DEFAULT_FORMAT;
+  buffer->samplerate = (guint) ags_soundcard_helper_config_get_samplerate(config);
+  buffer->buffer_size = (guint) ags_soundcard_helper_config_get_buffer_size(config);
+  buffer->format = (guint) ags_soundcard_helper_config_get_format(config);
 
   buffer->data = ags_stream_alloc(buffer->buffer_size,
 				  buffer->format);

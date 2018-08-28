@@ -1262,14 +1262,14 @@ ags_notation_editor_paste(AgsNotationEditor *notation_editor)
 		}     
 
 		/* 1st attempt */
-		timestamp->timer.ags_offset.offset = offset;
+		timestamp->timer.ags_offset.offset = AGS_NOTATION_DEFAULT_OFFSET * floor(offset / AGS_NOTATION_DEFAULT_OFFSET);
 		
 		first_x = ags_notation_editor_paste_notation_all(notation_node,
 								 timestamp,
 								 match_channel, no_duplicates);
 
 		/* 2nd attempt */
-		timestamp->timer.ags_offset.offset = offset + AGS_NOTATION_DEFAULT_OFFSET;
+		timestamp->timer.ags_offset.offset += AGS_NOTATION_DEFAULT_OFFSET;
 
 		ags_notation_editor_paste_notation_all(notation_node,
 						       timestamp,

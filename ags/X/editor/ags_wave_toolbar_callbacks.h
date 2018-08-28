@@ -27,8 +27,8 @@
 
 #include <ags/X/editor/ags_wave_toolbar.h>
 
-void ags_wave_toolbar_position_callback(GtkToggleButton *toggle_button, AgsWaveToolbar *wave_toolbar);
-void ags_wave_toolbar_select_callback(GtkToggleButton *toggle_button, AgsWaveToolbar *wave_toolbar);
+void ags_wave_toolbar_position_callback(GtkToggleToolButton *toggle_tool_button, AgsWaveToolbar *wave_toolbar);
+void ags_wave_toolbar_select_callback(GtkToggleToolButton *toggle_tool_button, AgsWaveToolbar *wave_toolbar);
 
 void ags_wave_toolbar_copy_or_cut_callback(GtkWidget *widget, AgsWaveToolbar *wave_toolbar);
 void ags_wave_toolbar_paste_callback(GtkWidget *widget, AgsWaveToolbar *wave_toolbar);

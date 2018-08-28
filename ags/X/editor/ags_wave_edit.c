@@ -1328,17 +1328,26 @@ ags_wave_edit_draw_cursor(AgsWaveEdit *wave_edit)
 void
 ags_wave_edit_draw_selection(AgsWaveEdit *wave_edit)
 {
+  AgsWaveEditor *wave_editor;
+  AgsWaveToolbar *wave_toolbar;
+
   GtkStyle *wave_edit_style;
 
   cairo_t *cr;
 
+  double zoom, zoom_factor;
   double x, y;
   double width, height;
 
   if(!AGS_IS_WAVE_EDIT(wave_edit)){
     return;
   }
+
+  wave_editor = gtk_widget_get_ancestor(wave_edit,
+					AGS_TYPE_WAVE_EDITOR);
   
+  wave_toolbar = wave_editor->wave_toolbar;
+
   wave_edit_style = gtk_widget_get_style(GTK_WIDGET(wave_edit->drawing_area));
 
   /* create cairo context */
@@ -1348,13 +1357,17 @@ ags_wave_edit_draw_selection(AgsWaveEdit *wave_edit)
     return;
   }
 
+  /* zoom */
+  zoom = exp2((double) gtk_combo_box_get_active((GtkComboBox *) wave_toolbar->zoom) - 2.0);
+  zoom_factor = exp2(6.0 - (double) gtk_combo_box_get_active((GtkComboBox *) wave_toolbar->zoom));
+
   /* get offset and dimensions */
   if(wave_edit->selection_x0 < wave_edit->selection_x1){
-    x = ((double) wave_edit->selection_x0) - GTK_RANGE(wave_edit->hscrollbar)->adjustment->value;
-    width = ((double) wave_edit->selection_x1 - (double) wave_edit->selection_x0);
+    x = (((double) wave_edit->selection_x0) - GTK_RANGE(wave_edit->hscrollbar)->adjustment->value) / zoom_factor;
+    width = ((double) wave_edit->selection_x1 - (double) wave_edit->selection_x0) / zoom_factor;
   }else{
-    x = ((double) wave_edit->selection_x1) - GTK_RANGE(wave_edit->hscrollbar)->adjustment->value;
-    width = ((double) wave_edit->selection_x0 - (double) wave_edit->selection_x1);
+    x = (((double) wave_edit->selection_x1) - GTK_RANGE(wave_edit->hscrollbar)->adjustment->value) / zoom_factor;
+    width = ((double) wave_edit->selection_x0 - (double) wave_edit->selection_x1) / zoom_factor;
   }
 
   if(wave_edit->selection_y0 < wave_edit->selection_y1){
@@ -1483,7 +1496,7 @@ ags_wave_edit_draw_buffer(AgsWaveEdit *wave_edit,
   
   /* get visisble region */
   x0 = GTK_RANGE(wave_edit->hscrollbar)->adjustment->value;
-  x1 = (GTK_RANGE(wave_edit->hscrollbar)->adjustment->value + GTK_WIDGET(wave_edit->drawing_area)->allocation.width);
+  x1 = (GTK_RANGE(wave_edit->hscrollbar)->adjustment->value + GTK_WIDGET(wave_edit->drawing_area)->allocation.width * zoom_factor);
 
   /* width and height */
   width = (gdouble) GTK_WIDGET(wave_edit->drawing_area)->allocation.width;
@@ -1497,12 +1510,13 @@ ags_wave_edit_draw_buffer(AgsWaveEdit *wave_edit,
 	       "x", &x,
 	       NULL);
 
-  if(((x) / samplerate * (bpm / 60.0) / delay_factor + (samplerate * (bpm / 60.0) / delay_factor)) * 64.0 / zoom_factor < x0 ||
-     ((x) / samplerate * (bpm / 60.0) / delay_factor) * 64.0 / zoom_factor > x1){
+  x_cut = x0;
+
+  if(((((double) (x) / samplerate * (bpm / 60.0) / delay_factor) * 64.0) - x_cut) / (16.0) * zoom < 0.0 ||
+     ((((double) (x) / samplerate * (bpm / 60.0) / delay_factor) * 64.0) - x_cut) / (16.0) * zoom > GTK_WIDGET(wave_edit->drawing_area)->allocation.width){
     return;
   }
   
-  x_cut = x0;
   wave_data_width = buffer_size;
 
   /*
@@ -1594,9 +1608,9 @@ ags_wave_edit_draw_buffer(AgsWaveEdit *wave_edit,
     y1 = (((y1 + 1.0) * height) / 2.0);
     
     cairo_move_to(cr,
-		  (((double) (x + i) / samplerate * (bpm / 60.0) / delay_factor) * 64.0 / zoom_factor) - x_cut, y0);
+		  ((((double) (x + i) / samplerate * (bpm / 60.0) / delay_factor) * 64.0) - x_cut) / (16.0) * zoom, y0);
     cairo_line_to(cr,
-		  (((double) (x + i) / samplerate * (bpm / 60.0) / delay_factor) * 64.0 / zoom_factor) - x_cut, y1);
+		  ((((double) (x + i) / samplerate * (bpm / 60.0) / delay_factor) * 64.0) - x_cut) / (16.0) * zoom, y1);
     cairo_stroke(cr);
   }
   

@@ -29,38 +29,38 @@
 #include <gdk/gdkkeysyms.h>
 
 void
-ags_wave_toolbar_position_callback(GtkToggleButton *toggle_button, AgsWaveToolbar *wave_toolbar)
+ags_wave_toolbar_position_callback(GtkToggleToolButton *toggle_tool_button, AgsWaveToolbar *wave_toolbar)
 {
   AgsWaveEditor *wave_editor;
 
   wave_editor = (AgsWaveEditor *) gtk_widget_get_ancestor((GtkWidget *) wave_toolbar,
 							  AGS_TYPE_WAVE_EDITOR);
   
-  if(toggle_button == wave_toolbar->selected_edit_mode){
-    if(!gtk_toggle_tool_button_get_active(toggle_button)){
-      gtk_toggle_tool_button_set_active(toggle_button, TRUE);
+  if(toggle_tool_button == wave_toolbar->selected_edit_mode){
+    if(!gtk_toggle_tool_button_get_active(toggle_tool_button)){
+      gtk_toggle_tool_button_set_active(toggle_tool_button, TRUE);
     }
-  }else if(gtk_toggle_tool_button_get_active(toggle_button)){
-    GtkToggleButton *old_selected_edit_mode;
+  }else if(gtk_toggle_tool_button_get_active(toggle_tool_button)){
+    GtkToggleToolButton *old_selected_edit_mode;
     
     old_selected_edit_mode = wave_toolbar->selected_edit_mode;
-    wave_toolbar->selected_edit_mode = toggle_button;
+    wave_toolbar->selected_edit_mode = toggle_tool_button;
     gtk_toggle_tool_button_set_active(old_selected_edit_mode, FALSE);
   }
 }
 
 void
-ags_wave_toolbar_select_callback(GtkToggleButton *toggle_button, AgsWaveToolbar *wave_toolbar)
+ags_wave_toolbar_select_callback(GtkToggleToolButton *toggle_tool_button, AgsWaveToolbar *wave_toolbar)
 {
-  if(toggle_button == wave_toolbar->selected_edit_mode){
-    if(!gtk_toggle_tool_button_get_active(toggle_button)){
-      gtk_toggle_tool_button_set_active(toggle_button, TRUE);
+  if(toggle_tool_button == wave_toolbar->selected_edit_mode){
+    if(!gtk_toggle_tool_button_get_active(toggle_tool_button)){
+      gtk_toggle_tool_button_set_active(toggle_tool_button, TRUE);
     }
-  }else if(gtk_toggle_tool_button_get_active(toggle_button)){
-    GtkToggleButton *old_selected_edit_mode;
+  }else if(gtk_toggle_tool_button_get_active(toggle_tool_button)){
+    GtkToggleToolButton *old_selected_edit_mode;
     
     old_selected_edit_mode = wave_toolbar->selected_edit_mode;
-    wave_toolbar->selected_edit_mode = toggle_button;
+    wave_toolbar->selected_edit_mode = toggle_tool_button;
     gtk_toggle_tool_button_set_active(old_selected_edit_mode, FALSE);
   }
 }

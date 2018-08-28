@@ -3804,7 +3804,7 @@ ags_devout_alsa_free(AgsSoundcard *soundcard)
 
   AgsNotifySoundcard *notify_soundcard;
 
-  GList *poll_fd;
+  GList *start_poll_fd, *poll_fd;
 
   guint i;
   
@@ -3820,11 +3820,13 @@ ags_devout_alsa_free(AgsSoundcard *soundcard)
   pthread_mutex_unlock(ags_devout_get_class_mutex());  
 
   /* lock */
-  pthread_mutex_lock(devout_mutex);
-
 #ifdef AGS_WITH_ALSA
   /* remove poll fd */
-  poll_fd = devout->poll_fd;
+  pthread_mutex_lock(devout_mutex);
+
+  poll_fd = g_list_copy(devout->poll_fd);
+
+  pthread_mutex_unlock(devout_mutex);
   
   while(poll_fd != NULL){
     ags_polling_thread_remove_poll_fd(AGS_POLL_FD(poll_fd->data)->polling_thread,
@@ -3834,10 +3836,17 @@ ags_devout_alsa_free(AgsSoundcard *soundcard)
     poll_fd = poll_fd->next;
   }
 
-  g_list_free(poll_fd);
+  g_list_free(start_poll_fd);
 
+  pthread_mutex_lock(devout_mutex);
+
+  g_list_free(devout->poll_fd);
   devout->poll_fd = NULL;
+
+  pthread_mutex_unlock(devout_mutex);
 #endif
+
+  pthread_mutex_lock(devout_mutex);
 
   notify_soundcard = AGS_NOTIFY_SOUNDCARD(devout->notify_soundcard);
 
@@ -3846,6 +3855,8 @@ ags_devout_alsa_free(AgsSoundcard *soundcard)
     
     return;
   }
+
+  pthread_mutex_unlock(devout_mutex);
   
 #ifdef AGS_WITH_ALSA
   snd_pcm_drain(devout->out.alsa.handle);
@@ -3854,6 +3865,8 @@ ags_devout_alsa_free(AgsSoundcard *soundcard)
 #endif
 
   /* free ring-buffer */
+  pthread_mutex_lock(devout_mutex);
+
   for(i = 0; i < devout->ring_buffer_size; i++){
     free(devout->ring_buffer[i]);
   }
@@ -3870,6 +3883,8 @@ ags_devout_alsa_free(AgsSoundcard *soundcard)
 		      AGS_DEVOUT_PLAY |
 		      AGS_DEVOUT_INITIALIZED));
 
+  pthread_mutex_unlock(devout_mutex);
+
   /* notify cyclic task */
   pthread_mutex_lock(notify_soundcard->return_mutex);
 
@@ -3881,6 +3896,8 @@ ags_devout_alsa_free(AgsSoundcard *soundcard)
   }
   
   pthread_mutex_unlock(notify_soundcard->return_mutex);
+
+  pthread_mutex_lock(devout_mutex);
 
   devout->note_offset = 0;
   devout->note_offset_absolute = 0;

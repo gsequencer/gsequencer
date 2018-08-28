@@ -84,7 +84,12 @@ ags_wave_edit_drawing_area_button_press_event(GtkWidget *widget, GdkEventButton 
 
   void ags_wave_edit_drawing_area_button_press_select_buffer()
   {
-    wave_edit->selection_x0 = (guint) event->x + GTK_RANGE(wave_edit->hscrollbar)->adjustment->value;
+    double zoom_factor;
+
+    /* zoom */
+    zoom_factor = exp2(6.0 - (double) gtk_combo_box_get_active((GtkComboBox *) wave_toolbar->zoom));
+
+    wave_edit->selection_x0 = (guint) zoom_factor * event->x + GTK_RANGE(wave_edit->hscrollbar)->adjustment->value;
     wave_edit->selection_x1 = wave_edit->selection_x0;
     
     wave_edit->selection_y0 = (guint) event->y + GTK_RANGE(wave_edit->vscrollbar)->adjustment->value;
@@ -167,18 +172,18 @@ ags_wave_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEventButto
     zoom_factor = exp2(6.0 - (double) gtk_combo_box_get_active((GtkComboBox *) wave_toolbar->zoom));
 
     /* region */
-    x0 = (guint) zoom_factor * wave_edit->selection_x0;
+    x0 = (guint) wave_edit->selection_x0;
 
     y0 = ((gdouble) (GTK_WIDGET(wave_edit->drawing_area)->allocation.height - wave_edit->selection_y0) / g_range) * c_range;
   
-    x1 = (guint) zoom_factor * (event->x + GTK_RANGE(wave_edit->hscrollbar)->adjustment->value);
+    x1 = (guint) (zoom_factor * event->x + GTK_RANGE(wave_edit->hscrollbar)->adjustment->value);
     
     y1 = (((GTK_WIDGET(wave_edit->drawing_area)->allocation.height - event->y) + GTK_RANGE(wave_edit->vscrollbar)->adjustment->value) / g_range) * c_range;
     
     /* select region */
     ags_wave_editor_select_region(wave_editor,
-					x0, y0,
-					x1, y1);
+				  x0, y0,
+				  x1, y1);
   }
 
   wave_editor = (AgsWaveEditor *) gtk_widget_get_ancestor(GTK_WIDGET(wave_edit),
@@ -242,8 +247,13 @@ ags_wave_edit_drawing_area_motion_notify_event(GtkWidget *widget, GdkEventMotion
 
   void ags_wave_edit_drawing_area_motion_notify_select_buffer()
   {
-    if(event->x + GTK_RANGE(wave_edit->hscrollbar)->adjustment->value >= 0.0){
-      wave_edit->selection_x1 = (guint) event->x + GTK_RANGE(wave_edit->hscrollbar)->adjustment->value;
+    double zoom_factor;
+
+    /* zoom */
+    zoom_factor = exp2(6.0 - (double) gtk_combo_box_get_active((GtkComboBox *) wave_toolbar->zoom));
+
+    if(zoom_factor * event->x + GTK_RANGE(wave_edit->hscrollbar)->adjustment->value >= 0.0){
+      wave_edit->selection_x1 = (guint) zoom_factor * event->x + GTK_RANGE(wave_edit->hscrollbar)->adjustment->value;
     }else{
       wave_edit->selection_x1 = 0.0;
     }
