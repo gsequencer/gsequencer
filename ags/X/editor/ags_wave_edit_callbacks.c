@@ -74,7 +74,7 @@ ags_wave_edit_drawing_area_button_press_event(GtkWidget *widget, GdkEventButton 
     zoom_factor = exp2(6.0 - (double) gtk_combo_box_get_active((GtkComboBox *) wave_toolbar->zoom));
 
     /* cursor position */
-    wave_edit->cursor_position_x = (guint) (zoom_factor * (event->x + GTK_RANGE(wave_edit->hscrollbar)->adjustment->value)) / wave_edit->control_width;
+    wave_edit->cursor_position_x = (guint) ((zoom_factor * event->x + GTK_RANGE(wave_edit->hscrollbar)->adjustment->value));
     
     wave_edit->cursor_position_y = (((GTK_WIDGET(wave_edit->drawing_area)->allocation.height - event->y) / g_range) * c_range);
 
@@ -143,7 +143,7 @@ ags_wave_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEventButto
     zoom_factor = exp2(6.0 - (double) gtk_combo_box_get_active((GtkComboBox *) wave_toolbar->zoom));
 
     /* cursor position */
-    wave_edit->cursor_position_x = (guint) (zoom_factor * (event->x + GTK_RANGE(wave_edit->hscrollbar)->adjustment->value)) / wave_edit->control_width;
+    wave_edit->cursor_position_x = (guint) ((zoom_factor * event->x + GTK_RANGE(wave_edit->hscrollbar)->adjustment->value));
     
     wave_edit->cursor_position_y = (((GTK_WIDGET(wave_edit->drawing_area)->allocation.height - event->y) / g_range) * c_range);
     
@@ -228,7 +228,7 @@ ags_wave_edit_drawing_area_motion_notify_event(GtkWidget *widget, GdkEventMotion
     zoom_factor = exp2(6.0 - (double) gtk_combo_box_get_active((GtkComboBox *) wave_toolbar->zoom));
 
     /* cursor position */
-    wave_edit->cursor_position_x = (guint) zoom_factor * ((event->x + GTK_RANGE(wave_edit->hscrollbar)->adjustment->value));
+    wave_edit->cursor_position_x = ((zoom_factor * event->x + GTK_RANGE(wave_edit->hscrollbar)->adjustment->value));
 
     wave_edit->cursor_position_y = (((GTK_WIDGET(wave_edit->drawing_area)->allocation.height - event->y) / g_range) * c_range);
 
@@ -279,13 +279,192 @@ ags_wave_edit_drawing_area_motion_notify_event(GtkWidget *widget, GdkEventMotion
 gboolean
 ags_wave_edit_drawing_area_key_press_event(GtkWidget *widget, GdkEventKey *event, AgsWaveEdit *wave_edit)
 {
-  //TODO:JK: implement me
+  AgsWaveEditor *wave_editor;
+  AgsMachine *machine;
+
+  gboolean retval;
+  
+  if(event->keyval == GDK_KEY_Tab ||
+     event->keyval == GDK_ISO_Left_Tab ||
+     event->keyval == GDK_KEY_Shift_L ||
+     event->keyval == GDK_KEY_Shift_R ||
+     event->keyval == GDK_KEY_Alt_L ||
+     event->keyval == GDK_KEY_Alt_R ||
+     event->keyval == GDK_KEY_Control_L ||
+     event->keyval == GDK_KEY_Control_R ){
+    retval = FALSE;
+  }else{
+    retval = TRUE;
+  }
+
+  wave_editor = (AgsWaveEditor *) gtk_widget_get_ancestor(GTK_WIDGET(wave_edit),
+							  AGS_TYPE_WAVE_EDITOR);
+
+  machine = wave_editor->selected_machine;
+  
+  if(machine != NULL){
+    switch(event->keyval){
+    case GDK_KEY_Control_L:
+      {
+	wave_edit->key_mask |= AGS_WAVE_EDIT_KEY_L_CONTROL;
+      }
+      break;
+    case GDK_KEY_Control_R:
+      {
+	wave_edit->key_mask |= AGS_WAVE_EDIT_KEY_R_CONTROL;
+      }
+      break;
+    case GDK_KEY_Shift_L:
+      {
+	wave_edit->key_mask |= AGS_WAVE_EDIT_KEY_L_SHIFT;
+      }
+      break;
+    case GDK_KEY_Shift_R:
+      {
+	wave_edit->key_mask |= AGS_WAVE_EDIT_KEY_R_SHIFT;
+      }
+      break;
+    case GDK_KEY_a:
+      {
+	/* select all accelerations */
+	if((AGS_WAVE_EDIT_KEY_L_CONTROL & (wave_edit->key_mask)) != 0 || (AGS_WAVE_EDIT_KEY_R_CONTROL & (wave_edit->key_mask)) != 0){
+	  ags_wave_editor_select_all(wave_editor);
+	}
+      }
+      break;
+    case GDK_KEY_c:
+      {
+	/* copy accelerations */
+	if((AGS_WAVE_EDIT_KEY_L_CONTROL & (wave_edit->key_mask)) != 0 || (AGS_WAVE_EDIT_KEY_R_CONTROL & (wave_edit->key_mask)) != 0){
+	  ags_wave_editor_copy(wave_editor);
+	}
+      }
+      break;
+    case GDK_KEY_v:
+      {
+	/* paste accelerations */
+	if((AGS_WAVE_EDIT_KEY_L_CONTROL & (wave_edit->key_mask)) != 0 || (AGS_WAVE_EDIT_KEY_R_CONTROL & (wave_edit->key_mask)) != 0){
+	  ags_wave_editor_paste(wave_editor);
+	}
+      }
+      break;
+    case GDK_KEY_x:
+      {
+	/* cut accelerations */
+	if((AGS_WAVE_EDIT_KEY_L_CONTROL & (wave_edit->key_mask)) != 0 || (AGS_WAVE_EDIT_KEY_R_CONTROL & (wave_edit->key_mask)) != 0){
+	  ags_wave_editor_cut(wave_editor);
+	}
+      }
+      break;
+    }
+  }
+
+  return(retval);
 }
 
 gboolean
 ags_wave_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *event, AgsWaveEdit *wave_edit)
 {
-  //TODO:JK: implement me
+  AgsWaveEditor *wave_editor;
+  AgsWaveToolbar *wave_toolbar;
+  AgsMachine *machine;
+
+  double zoom_factor;
+  gint i;
+  gboolean retval;
+
+  wave_editor = (AgsWaveEditor *) gtk_widget_get_ancestor(GTK_WIDGET(wave_edit),
+							  AGS_TYPE_WAVE_EDITOR);
+
+  wave_toolbar = wave_editor->wave_toolbar;
+
+  machine = wave_editor->selected_machine;
+  
+  if(event->keyval == GDK_KEY_Tab ||
+     event->keyval == GDK_ISO_Left_Tab ||
+     event->keyval == GDK_KEY_Shift_L ||
+     event->keyval == GDK_KEY_Shift_R ||
+     event->keyval == GDK_KEY_Alt_L ||
+     event->keyval == GDK_KEY_Alt_R ||
+     event->keyval == GDK_KEY_Control_L ||
+     event->keyval == GDK_KEY_Control_R ){
+    retval = FALSE;
+  }else{
+    retval = TRUE;
+  }
+
+  if(machine != NULL){    
+    /* zoom */
+    zoom_factor = exp2(6.0 - (double) gtk_combo_box_get_active((GtkComboBox *) wave_toolbar->zoom));
+
+    /* check key value */
+    switch(event->keyval){
+    case GDK_KEY_Control_L:
+      {
+	wave_edit->key_mask &= (~AGS_WAVE_EDIT_KEY_L_CONTROL);
+      }
+      break;
+    case GDK_KEY_Control_R:
+      {
+	wave_edit->key_mask &= (~AGS_WAVE_EDIT_KEY_R_CONTROL);
+      }
+      break;
+    case GDK_KEY_Shift_L:
+      {
+	wave_edit->key_mask &= (~AGS_WAVE_EDIT_KEY_L_SHIFT);
+      }
+      break;
+    case GDK_KEY_Shift_R:
+      {
+	wave_edit->key_mask &= (~AGS_WAVE_EDIT_KEY_R_SHIFT);
+      }
+      break;
+    case GDK_KEY_Left:
+    case GDK_KEY_leftarrow:
+      {
+	gdouble x0_offset;
+
+	/* position cursor */
+	if(wave_edit->cursor_position_x > 0){
+	  if(wave_edit->cursor_position_x - (zoom_factor * wave_edit->control_width) > 0){
+	    wave_edit->cursor_position_x -= (zoom_factor * wave_edit->control_width);
+	  }else{
+	    wave_edit->cursor_position_x = 0;
+	  }
+	}
+
+	x0_offset = wave_edit->cursor_position_x / zoom_factor;
+      
+	if(x0_offset < GTK_RANGE(wave_edit->hscrollbar)->adjustment->value){
+	  gtk_range_set_value(GTK_RANGE(wave_edit->hscrollbar),
+			      x0_offset);
+	}
+      }
+      break;
+    case GDK_KEY_Right:
+    case GDK_KEY_rightarrow:
+      {
+	gdouble x0_offset;
+	  
+	/* position cursor */      
+	if(wave_edit->cursor_position_x < AGS_WAVE_EDITOR_MAX_CONTROLS){
+	  wave_edit->cursor_position_x += (zoom_factor * wave_edit->control_width);
+	}
+
+	x0_offset = wave_edit->cursor_position_x / zoom_factor;
+      
+	if(x0_offset + wave_edit->control_width > GTK_RANGE(wave_edit->hscrollbar)->adjustment->value + GTK_WIDGET(wave_edit->drawing_area)->allocation.width){
+	  gtk_range_set_value(GTK_RANGE(wave_edit->hscrollbar),
+			      x0_offset);
+	}
+      }
+      break;
+    }
+
+    gtk_widget_queue_draw(wave_edit);
+  }
+  
+  return(retval);
 }
 
 void

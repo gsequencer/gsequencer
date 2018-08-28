@@ -979,6 +979,10 @@ ags_sndfile_flush(AgsSoundResource *sound_resource)
    
   sndfile = AGS_SNDFILE(sound_resource);
 
+  if(sndfile->file == NULL){
+    return;
+  }
+  
   sf_write_sync(sndfile->file);
 }
 
@@ -1047,8 +1051,15 @@ ags_sndfile_close(AgsSoundResource *sound_resource)
    
   sndfile = AGS_SNDFILE(sound_resource);
 
+  if(sndfile->file == NULL){
+    return;
+  }
+
   sf_close(sndfile->file);
-  free(sndfile->info);
+
+  if(sndfile->info != NULL){
+    free(sndfile->info);
+  }
 
   sndfile->file = NULL;
   sndfile->info = NULL;

@@ -1302,13 +1302,139 @@ ags_wave_edit_draw_segment(AgsWaveEdit *wave_edit)
 void
 ags_wave_edit_draw_position(AgsWaveEdit *wave_edit)
 {
-  //TODO:JK: implement me
+  AgsWaveEditor *wave_editor;
+
+  GtkStyle *wave_edit_style;
+
+  cairo_t *cr;
+
+  double position;
+  double x, y;
+  double width, height;
+  gboolean height_fits;
+
+  static const gdouble white_gc = 65535.0;
+
+  if(!AGS_IS_WAVE_EDIT(wave_edit)){
+    return;
+  }
+
+  wave_editor = gtk_widget_get_ancestor(wave_edit,
+					AGS_TYPE_WAVE_EDITOR);
+
+  if(wave_editor->selected_machine == NULL){
+    return;
+  }
+  
+  wave_edit_style = gtk_widget_get_style(GTK_WIDGET(wave_edit->drawing_area));
+
+  /* create cairo context */
+  cr = gdk_cairo_create(GTK_WIDGET(wave_edit->drawing_area)->window);
+
+  if(cr == NULL){
+    return;
+  }
+
+  /* get offset and dimensions */
+  position = ((double) wave_edit->note_offset) * ((double) wave_edit->control_width);
+  
+  y = 0.0;
+  x = (position) - (GTK_RANGE(wave_edit->hscrollbar)->adjustment->value);
+
+  width = (double) AGS_WAVE_EDIT_DEFAULT_FADER_WIDTH;
+  height = AGS_WAVE_EDIT_DEFAULT_HEIGHT;
+
+  /* push group */
+  cairo_push_group(cr);
+  
+  /* draw fader */
+  cairo_set_source_rgba(cr,
+			wave_edit_style->dark[0].red / white_gc,
+			wave_edit_style->dark[0].green / white_gc,
+			wave_edit_style->dark[0].blue / white_gc,
+			0.5);
+  cairo_rectangle(cr,
+		  (double) x, (double) y,
+		  (double) width, (double) height);
+  cairo_fill(cr);
+
+  /* complete */
+  cairo_pop_group_to_source(cr);
+  cairo_paint(cr);
+      
+  cairo_surface_mark_dirty(cairo_get_target(cr));
+  cairo_destroy(cr);
 }
 
 void
 ags_wave_edit_draw_cursor(AgsWaveEdit *wave_edit)
 {
-  //TODO:JK: implement me
+  AgsWaveEditor *wave_editor;
+  AgsWaveToolbar *wave_toolbar;
+
+  GtkStyle *wave_edit_style;
+
+  cairo_t *cr;
+
+  double zoom, zoom_factor;
+  double x, y;
+  double width, height;
+  gboolean height_fits;
+
+  static const gdouble white_gc = 65535.0;
+
+  if(!AGS_IS_WAVE_EDIT(wave_edit)){
+    return;
+  }
+
+  wave_editor = gtk_widget_get_ancestor(wave_edit,
+					AGS_TYPE_WAVE_EDITOR);
+
+  if(wave_editor->selected_machine == NULL){
+    return;
+  }
+  
+  wave_toolbar = wave_editor->wave_toolbar;
+
+  wave_edit_style = gtk_widget_get_style(GTK_WIDGET(wave_edit->drawing_area));
+
+  /* create cairo context */
+  cr = gdk_cairo_create(GTK_WIDGET(wave_edit->drawing_area)->window);
+
+  if(cr == NULL){
+    return;
+  }
+
+  /* zoom */
+  zoom = exp2((double) gtk_combo_box_get_active((GtkComboBox *) wave_toolbar->zoom) - 2.0);
+  zoom_factor = exp2(6.0 - (double) gtk_combo_box_get_active((GtkComboBox *) wave_toolbar->zoom));
+  
+  y = 0.0;
+  x = (((double) wave_edit->cursor_position_x) - (GTK_RANGE(wave_edit->hscrollbar)->adjustment->value)) /  zoom_factor;
+
+  width = (double) AGS_WAVE_EDIT_DEFAULT_FADER_WIDTH;
+  height = AGS_WAVE_EDIT_DEFAULT_HEIGHT;
+
+  /* push group */
+  cairo_push_group(cr);
+  
+  /* draw cursor */
+  cairo_set_source_rgba(cr,
+			wave_edit_style->base[0].red / white_gc,
+			wave_edit_style->base[0].green / white_gc,
+			wave_edit_style->base[0].blue / white_gc,
+			0.5);
+  cairo_rectangle(cr,
+		  (double) x, (double) y,
+		  (double) width, (double) height);
+  cairo_fill(cr);
+
+  /* complete */
+  cairo_pop_group_to_source(cr);
+  cairo_paint(cr);
+      
+  cairo_surface_mark_dirty(cairo_get_target(cr));
+  cairo_destroy(cr);
 }
 
 void

@@ -111,6 +111,7 @@ ags_wave_toolbar_init(AgsWaveToolbar *wave_toolbar)
   GtkCellRenderer *cell_renderer;
   
   wave_toolbar->position = g_object_new(GTK_TYPE_TOGGLE_TOOL_BUTTON,
+					"label", i18n("Position"),
 					"stock-id", GTK_STOCK_JUMP_TO,
 					NULL);
   wave_toolbar->selected_edit_mode = wave_toolbar->position;
@@ -120,6 +121,7 @@ ags_wave_toolbar_init(AgsWaveToolbar *wave_toolbar)
 			    NULL);
   
   wave_toolbar->select = g_object_new(GTK_TYPE_TOGGLE_TOOL_BUTTON,
+				      "label", i18n("Select"),
 				      "stock-id", GTK_STOCK_SELECT_ALL,
 				      NULL);
   gtk_toolbar_append_widget((GtkToolbar *) wave_toolbar,
