@@ -2273,8 +2273,6 @@ PACKAGE_TARNAME = @PACKAGE_TARNAME@
 PACKAGE_URL = @PACKAGE_URL@
 PACKAGE_VERSION = @PACKAGE_VERSION@
 PATH_SEPARATOR = @PATH_SEPARATOR@
-PCRE_CFLAGS = @PCRE_CFLAGS@
-PCRE_LIBS = @PCRE_LIBS@
 PKG_CONFIG = @PKG_CONFIG@
 PKG_CONFIG_LIBDIR = @PKG_CONFIG_LIBDIR@
 PKG_CONFIG_PATH = @PKG_CONFIG_PATH@
@@ -3201,7 +3199,8 @@ libags_object_h_sources = \
 	ags/object/ags_seekable.h \
 	ags/object/ags_sequencer.h \
 	ags/object/ags_soundcard.h \
-	ags/object/ags_sound_server.h
+	ags/object/ags_sound_server.h \
+	ags/object/ags_tactable.h
 
 deprecated_libags_object_c_sources = 
 libags_object_c_sources = \
@@ -3422,6 +3421,7 @@ libags_server_thread_c_sources = \
 deprecated_libags_audio_h_sources = 
 libags_audio_h_sources = \
 	$(deprecated_libags_audio_h_sources) \
+	ags/audio/ags_sound_enums.h \
 	ags/audio/ags_acceleration.h \
 	ags/audio/ags_audio.h \
 	ags/audio/ags_audio_application_context.h \

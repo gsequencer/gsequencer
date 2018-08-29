@@ -1101,7 +1101,7 @@ ags_pulse_port_register(AgsPulsePort *pulse_port,
 #ifdef AGS_WITH_PULSE
   stream = pa_stream_new(context, "Playback", sample_spec, NULL);
 #else
-  stream = = NULL;
+  stream = NULL;
 #endif
 
   pthread_mutex_lock(pulse_port_mutex);

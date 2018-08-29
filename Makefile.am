@@ -407,7 +407,8 @@ libags_object_h_sources =  \
 	ags/object/ags_seekable.h \
 	ags/object/ags_sequencer.h \
 	ags/object/ags_soundcard.h \
-	ags/object/ags_sound_server.h
+	ags/object/ags_sound_server.h \
+	ags/object/ags_tactable.h
 
 deprecated_libags_object_c_sources =
 
@@ -637,6 +638,7 @@ deprecated_libags_audio_h_sources =
 
 libags_audio_h_sources = \
 	$(deprecated_libags_audio_h_sources) \
+	ags/audio/ags_sound_enums.h \
 	ags/audio/ags_acceleration.h \
 	ags/audio/ags_audio.h \
 	ags/audio/ags_audio_application_context.h \

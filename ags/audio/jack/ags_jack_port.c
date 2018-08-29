@@ -913,6 +913,9 @@ ags_jack_port_unregister(AgsJackPort *jack_port)
 #ifdef AGS_WITH_JACK
   jack_client_t *client;
   jack_port_t *port;
+#else
+  gpointer client;
+  gpointer port;
 #endif
 
   pthread_mutex_t *jack_client_mutex;
