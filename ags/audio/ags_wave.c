@@ -47,7 +47,7 @@ void ags_wave_insert_native_level_from_clipboard(AgsWave *wave,
 						 char *x_boundary,
 						 gboolean reset_x_offset, guint64 x_offset,
 						 gdouble delay, guint attack,
-						 gboolean match_channel, gboolean do_replace);
+						 gboolean match_line, gboolean do_replace);
 
 /**
  * SECTION:ags_wave
@@ -1939,10 +1939,12 @@ ags_wave_copy_selection(AgsWave *wave)
     }
 
     pthread_mutex_unlock(buffer_mutex);
-    
+
+    //    current_buffer->content = g_base64_encode(cbuffer,
+    //					      buffer_size);
     xmlNodeSetContent(current_buffer,
 		      g_base64_encode(cbuffer,
-				      buffer_size));
+    				      buffer_size));
     
     g_free(cbuffer);
     
@@ -2022,7 +2024,7 @@ ags_wave_cut_selection(AgsWave *wave)
  * @x_offset: region start cursor offset
  * @delay: the delay to be used
  * @attack: the attack to be used
- * @match_channel: only paste if channel matches
+ * @match_line: only paste if channel matches
  * @do_replace: if %TRUE current data is replaced, otherwise additive mixing is performed 
  *
  * Paste previously copied buffers. 
@@ -2035,7 +2037,7 @@ ags_wave_insert_native_level_from_clipboard(AgsWave *wave,
 					    char *x_boundary,
 					    gboolean reset_x_offset, guint64 x_offset,
 					    gdouble delay, guint attack,
-					    gboolean match_channel, gboolean do_replace)
+					    gboolean match_line, gboolean do_replace)
 {
   guint current_line;
   guint64 relative_offset;
@@ -2257,7 +2259,8 @@ ags_wave_insert_native_level_from_clipboard(AgsWave *wave,
 	  }
 
 	  content = xmlNodeGetContent(node);
-
+	  //content = node->content;
+	  
 	  if(content == NULL){
 	    node = node->next;
 	  
@@ -2538,11 +2541,13 @@ ags_wave_insert_native_level_from_clipboard(AgsWave *wave,
 
     relative_offset = AGS_WAVE_DEFAULT_BUFFER_LENGTH * wave_samplerate;
 
-    if(match_channel &&
+    if(match_line &&
        current_line != g_ascii_strtoull(xmlGetProp(root_node,
 						   "line"),
 					NULL,
 					10)){
+      //      g_message("line %d", current_line);
+      
       return;
     }
     
@@ -2584,7 +2589,7 @@ ags_wave_insert_from_clipboard(AgsWave *wave,
  * @x_offset: region start cursor offset
  * @delay: the delay to be used
  * @attack: the attack to be used
- * @match_channel: only paste if channel matches
+ * @match_line: only paste if channel matches
  * @do_replace: if %TRUE current data is replaced, otherwise additive mixing is performed 
  * 
  * Paste previously copied buffers. 

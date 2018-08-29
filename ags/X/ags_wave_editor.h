@@ -56,7 +56,7 @@ typedef enum{
   AGS_WAVE_EDITOR_CONNECTED                 = 1,
   AGS_WAVE_EDITOR_RESET_HSCROLLBAR          = 1 <<  1,
   AGS_WAVE_EDITOR_PASTE_MATCH_LINE          = 1 <<  2,
-  AGS_WAVE_EDITOR_PASTE_NO_DUPLICATES       = 1 <<  3,
+  AGS_WAVE_EDITOR_PASTE_REPLACE             = 1 <<  3,
 }AgsWaveEditorFlags;
 
 struct _AgsWaveEditor

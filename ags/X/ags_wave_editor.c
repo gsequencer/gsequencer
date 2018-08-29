@@ -190,7 +190,7 @@ ags_wave_editor_init(AgsWaveEditor *wave_editor)
   
   GtkAdjustment *adjustment;
 
-  wave_editor->flags = 0;
+  wave_editor->flags = AGS_WAVE_EDITOR_PASTE_MATCH_LINE;
 
   wave_editor->version = AGS_WAVE_EDITOR_DEFAULT_VERSION;
   wave_editor->build_id = AGS_WAVE_EDITOR_DEFAULT_BUILD_ID;
@@ -1027,10 +1027,11 @@ ags_wave_editor_paste(AgsWaveEditor *wave_editor)
       }else{
 	xmlNode *child;
 
-	ags_wave_insert_from_clipboard(wave,
-				       wave_node,
-				       FALSE, 0,
-				       0.0, 0);
+	ags_wave_insert_from_clipboard_extended(wave,
+						wave_node,
+						FALSE, 0,
+						0.0, 0,
+						match_line, FALSE);
 
 	/* get boundaries */
 	child = wave_node->children;
@@ -1222,6 +1223,7 @@ ags_wave_editor_paste(AgsWaveEditor *wave_editor)
 	if(!xmlStrncmp("audio", audio_node->name, 6)){
 	  wave_node = audio_node->children;
 	
+	  //	  g_message("paste");
 	  first_x = ags_wave_editor_paste_wave(audio_node);
 	
 	  break;
@@ -1302,6 +1304,7 @@ ags_wave_editor_copy(AgsWaveEditor *wave_editor)
       /* copy */
       while((list_wave = ags_wave_find_near_timestamp(list_wave, i,
 						      NULL)) != NULL){
+	//	g_message("copy %d", i);
 	wave_node = ags_wave_copy_selection(AGS_WAVE(list_wave->data));
 	xmlAddChild(wave_list_node,
 		    wave_node);
@@ -1377,6 +1380,7 @@ ags_wave_editor_cut(AgsWaveEditor *wave_editor)
       /* cut */
       while((list_wave = ags_wave_find_near_timestamp(list_wave, i,
 						      NULL)) != NULL){
+	//	g_message("cut %d", i);
 	wave_node = ags_wave_cut_selection(AGS_WAVE(list_wave->data));
 	xmlAddChild(wave_list_node,
 		    wave_node);
