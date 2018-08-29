@@ -2060,6 +2060,8 @@ ags_wave_insert_native_level_from_clipboard(AgsWave *wave,
     void *clipboard_data;
     unsigned char *clipboard_cdata;
 
+    xmlChar *samplerate;
+    xmlChar *buffer_size;
     xmlChar *format;
     xmlChar *x;
     xmlChar *selection_x0, *selection_x1;
@@ -2074,7 +2076,7 @@ ags_wave_insert_native_level_from_clipboard(AgsWave *wave,
     guint64 x_val;
     guint64 base_x_difference;
     guint64 selection_x0_val, selection_x1_val;
-    guint frame_count;
+    guint target_frame_count, frame_count;
     guint word_size;
     guint clipboard_length;
     gboolean subtract_x;
@@ -2119,6 +2121,26 @@ ags_wave_insert_native_level_from_clipboard(AgsWave *wave,
 	if(!xmlStrncmp("buffer",
 		       node->name,
 		       7)){
+	  void *target_data;
+	  
+	  samplerate = xmlGetProp(node,
+				  "samplerate");
+
+	  if(samplerate != NULL){
+	    samplerate_val = g_ascii_strtoull(samplerate,
+					      NULL,
+					      10);
+	  }
+	  
+	  buffer_size = xmlGetProp(node,
+				   "buffer-size");
+
+	  if(buffer_size != NULL){
+	    buffer_size_val = g_ascii_strtoull(buffer_size,
+					       NULL,
+					       10);
+	  }
+	  
 	  /* retrieve format */
 	  format = xmlGetProp(node,
 			      "format");
@@ -2456,17 +2478,37 @@ ags_wave_insert_native_level_from_clipboard(AgsWave *wave,
 	    //	    g_message("%d %d", wave_format, format_val);
 	    copy_mode = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(wave_format),
 							    ags_audio_buffer_util_format_from_soundcard(format_val));
-	    
-	    if(attack + frame_count <= wave_buffer_size){
-	      ags_audio_buffer_util_copy_buffer_to_buffer(buffer->data, 1, attack,
-							  clipboard_data, 1, 0,
-							  frame_count, copy_mode);
-	    }else{
-	      ags_audio_buffer_util_copy_buffer_to_buffer(buffer->data, 1, attack,
-							  clipboard_data, 1, 0,
-							  wave_buffer_size - attack, copy_mode);
-	    }
 
+	    if(samplerate_val != wave_samplerate){
+	      target_data = ags_audio_buffer_util_resample(clipboard_data, 1,
+							   format_val, samplerate_val,
+							   buffer_size_val,
+							   wave_samplerate);
+	      target_frame_count = ceil((double) frame_count / (double) samplerate_val * (double) wave_samplerate);
+	      
+	      if(attack + target_frame_count <= wave_buffer_size){
+		ags_audio_buffer_util_copy_buffer_to_buffer(buffer->data, 1, attack,
+							    target_data, 1, 0,
+							    target_frame_count, copy_mode);
+	      }else{
+		ags_audio_buffer_util_copy_buffer_to_buffer(buffer->data, 1, attack,
+							    target_data, 1, 0,
+							    wave_buffer_size - attack, copy_mode);
+	      }
+
+	      free(target_data);
+	    }else{
+	      if(attack + frame_count <= wave_buffer_size){
+		ags_audio_buffer_util_copy_buffer_to_buffer(buffer->data, 1, attack,
+							    clipboard_data, 1, 0,
+							    frame_count, copy_mode);
+	      }else{
+		ags_audio_buffer_util_copy_buffer_to_buffer(buffer->data, 1, attack,
+							    clipboard_data, 1, 0,
+							    wave_buffer_size - attack, copy_mode);
+	      }
+	    }
+	    
 	    /* find next */
 	    if(attack + frame_count > wave_buffer_size){
 	      buffer = ags_wave_find_point(wave,
@@ -2510,9 +2552,22 @@ ags_wave_insert_native_level_from_clipboard(AgsWave *wave,
 	      copy_mode = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(wave_format),
 							      ags_audio_buffer_util_format_from_soundcard(format_val));
 	      
-	      ags_audio_buffer_util_copy_buffer_to_buffer(buffer->data, 1, 0,
-							  clipboard_data, 1, wave_buffer_size - attack,
-							  attack, copy_mode);
+	      if(samplerate_val != wave_samplerate){
+		target_data = ags_audio_buffer_util_resample(clipboard_data, 1,
+							     format_val, samplerate_val,
+							     buffer_size_val,
+							     wave_samplerate);
+	      
+		ags_audio_buffer_util_copy_buffer_to_buffer(buffer->data, 1, 0,
+							    target_data, 1, wave_buffer_size - attack,
+							    attack, copy_mode);
+
+		free(target_data);
+	      }else{
+		ags_audio_buffer_util_copy_buffer_to_buffer(buffer->data, 1, 0,
+							    clipboard_data, 1, wave_buffer_size - attack,
+							    attack, copy_mode);
+	      }
 	    }
 	  }
 	}
