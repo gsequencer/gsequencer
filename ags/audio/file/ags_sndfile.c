@@ -401,6 +401,8 @@ ags_sndfile_get_property(GObject *gobject,
 {
   AgsSndfile *sndfile;
 
+  sndfile = AGS_SNDFILE(gobject);
+  
   switch(prop_id){
   case PROP_AUDIO_CHANNELS:
     {

@@ -2408,11 +2408,27 @@ ags_wave_insert_native_level_from_clipboard(AgsWave *wave,
 	      }
 		
 	      if(attack + frame_count <= wave_buffer_size){
-		ags_audio_buffer_util_clear_buffer(data, 1,
-						   frame_count, ags_audio_buffer_util_format_from_soundcard(wave_format));
+		if(wave_format == AGS_SOUNDCARD_DOUBLE){
+		  ags_audio_buffer_util_clear_double(data, 1,
+						     frame_count);
+		}else if(wave_format == AGS_SOUNDCARD_FLOAT){
+		  ags_audio_buffer_util_clear_float(data, 1,
+						    frame_count);
+		}else{		
+		  ags_audio_buffer_util_clear_buffer(data, 1,
+						     frame_count, ags_audio_buffer_util_format_from_soundcard(wave_format));
+		}
 	      }else{
-		ags_audio_buffer_util_clear_buffer(data, 1,
-						   wave_buffer_size - attack, ags_audio_buffer_util_format_from_soundcard(wave_format));
+		if(wave_format == AGS_SOUNDCARD_DOUBLE){
+		  ags_audio_buffer_util_clear_double(data, 1,
+						     wave_buffer_size);
+		}else if(wave_format == AGS_SOUNDCARD_FLOAT){
+		  ags_audio_buffer_util_clear_float(data, 1,
+						    wave_buffer_size);
+		}else{		
+		  ags_audio_buffer_util_clear_buffer(data, 1,
+						     wave_buffer_size - attack, ags_audio_buffer_util_format_from_soundcard(wave_format));
+		}
 	      }
 	    }
 	    
@@ -2434,6 +2450,7 @@ ags_wave_insert_native_level_from_clipboard(AgsWave *wave,
 	    }
 
 	    //	    g_message("insert - buffer->x = %lu", buffer->x);
+	    //	    g_message("%d %d", wave_format, format_val);
 	    copy_mode = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(wave_format),
 							    ags_audio_buffer_util_format_from_soundcard(format_val));
 	    
@@ -2459,8 +2476,16 @@ ags_wave_insert_native_level_from_clipboard(AgsWave *wave,
 
 		data = buffer->data;
 		
-		ags_audio_buffer_util_clear_buffer(data, 1,
-						   attack, ags_audio_buffer_util_format_from_soundcard(wave_format));
+		if(wave_format == AGS_SOUNDCARD_DOUBLE){
+		  ags_audio_buffer_util_clear_double(data, 1,
+						     attack);
+		}else if(wave_format == AGS_SOUNDCARD_FLOAT){
+		  ags_audio_buffer_util_clear_float(data, 1,
+						    attack);
+		}else{		
+		  ags_audio_buffer_util_clear_buffer(data, 1,
+						     attack, ags_audio_buffer_util_format_from_soundcard(wave_format));
+		}
 	      }
 	    
 	      if(buffer == NULL){
