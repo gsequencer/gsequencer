@@ -580,29 +580,29 @@ ags_buffer_util_char_buffer_to_s16(guchar *cbuffer,
     limit = (buffer_size / 2) - 8;
 
     for(; i < limit; i += 8){
-      buffer[0] |= ((0xff & cbuffer[0]) << 8);
-      buffer[0] |= (0xff & cbuffer[1]);
+      buffer[0] |= ((gint16) (0xff & cbuffer[0]) << 8);
+      buffer[0] |= ((gint16) 0xff & cbuffer[1]);
       
-      buffer[1] |= ((0xff & cbuffer[2]) << 8);
-      buffer[1] |= (0xff & cbuffer[3]);
+      buffer[1] |= ((gint16) (0xff & cbuffer[2]) << 8);
+      buffer[1] |= ((gint16) 0xff & cbuffer[3]);
 
-      buffer[2] |= ((0xff & cbuffer[4]) << 8);
-      buffer[2] |= (0xff & cbuffer[5]);
+      buffer[2] |= ((gint16) (0xff & cbuffer[4]) << 8);
+      buffer[2] |= ((gint16) 0xff & cbuffer[5]);
 
-      buffer[3] |= ((0xff & cbuffer[6]) << 8);
-      buffer[3] |= (0xff & cbuffer[7]);
+      buffer[3] |= ((gint16) (0xff & cbuffer[6]) << 8);
+      buffer[3] |= ((gint16) 0xff & cbuffer[7]);
       
-      buffer[4] |= ((0xff & cbuffer[8]) << 8);
-      buffer[4] |= (0xff & cbuffer[9]);
+      buffer[4] |= ((gint16) (0xff & cbuffer[8]) << 8);
+      buffer[4] |= ((gint16) 0xff & cbuffer[9]);
       
-      buffer[5] |= ((0xff & cbuffer[10]) << 8);
-      buffer[5] |= (0xff & cbuffer[11]);
+      buffer[5] |= ((gint16) (0xff & cbuffer[10]) << 8);
+      buffer[5] |= ((gint16) 0xff & cbuffer[11]);
 
-      buffer[6] |= ((0xff & cbuffer[12]) << 8);
-      buffer[6] |= (0xff & cbuffer[13]);
+      buffer[6] |= ((gint16) (0xff & cbuffer[12]) << 8);
+      buffer[6] |= ((gint16) 0xff & cbuffer[13]);
 
-      buffer[7] |= ((0xff & cbuffer[14]) << 8);
-      buffer[7] |= (0xff & cbuffer[15]);
+      buffer[7] |= ((gint16) (0xff & cbuffer[14]) << 8);
+      buffer[7] |= ((gint16) 0xff & cbuffer[15]);
 
       buffer += 8;
       cbuffer += (2 * 8);
@@ -610,8 +610,8 @@ ags_buffer_util_char_buffer_to_s16(guchar *cbuffer,
   }
 
   for(; i < buffer_size / 2; i++){
-    buffer[0] |= ((0xff & cbuffer[0]) << 8);
-    buffer[0] |= (0xff & cbuffer[1]);
+    buffer[0] |= ((gint16) (0xff & cbuffer[0]) << 8);
+    buffer[0] |= ((gint16) 0xff & cbuffer[1]);
       
     buffer++;
     cbuffer += 2;

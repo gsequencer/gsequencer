@@ -17,8 +17,8 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __AGS_CAPTURE_SOUND_AUDIO_H__
-#define __AGS_CAPTURE_SOUND_AUDIO_H__
+#ifndef __AGS_CAPTURE_WAVE_AUDIO_H__
+#define __AGS_CAPTURE_WAVE_AUDIO_H__
 
 #include <glib.h>
 #include <glib-object.h>
@@ -29,17 +29,17 @@
 #include <ags/audio/ags_recall_audio.h>
 #include <ags/audio/ags_port.h>
 
-#define AGS_TYPE_CAPTURE_SOUND_AUDIO                (ags_capture_sound_audio_get_type())
-#define AGS_CAPTURE_SOUND_AUDIO(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_CAPTURE_SOUND_AUDIO, AgsCaptureSoundAudio))
-#define AGS_CAPTURE_SOUND_AUDIO_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_CAPTURE_SOUND_AUDIO, AgsCaptureSoundAudio))
-#define AGS_IS_CAPTURE_SOUND_AUDIO(obj)             (G_TYPE_CHECK_INSTANCE_TYPE ((obj), AGS_TYPE_CAPTURE_SOUND_AUDIO))
-#define AGS_IS_CAPTURE_SOUND_AUDIO_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_CAPTURE_SOUND_AUDIO))
-#define AGS_CAPTURE_SOUND_AUDIO_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_CAPTURE_SOUND_AUDIO, AgsCaptureSoundAudioClass))
+#define AGS_TYPE_CAPTURE_WAVE_AUDIO                (ags_capture_wave_audio_get_type())
+#define AGS_CAPTURE_WAVE_AUDIO(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_CAPTURE_WAVE_AUDIO, AgsCaptureWaveAudio))
+#define AGS_CAPTURE_WAVE_AUDIO_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_CAPTURE_WAVE_AUDIO, AgsCaptureWaveAudio))
+#define AGS_IS_CAPTURE_WAVE_AUDIO(obj)             (G_TYPE_CHECK_INSTANCE_TYPE ((obj), AGS_TYPE_CAPTURE_WAVE_AUDIO))
+#define AGS_IS_CAPTURE_WAVE_AUDIO_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_CAPTURE_WAVE_AUDIO))
+#define AGS_CAPTURE_WAVE_AUDIO_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_CAPTURE_WAVE_AUDIO, AgsCaptureWaveAudioClass))
 
-typedef struct _AgsCaptureSoundAudio AgsCaptureSoundAudio;
-typedef struct _AgsCaptureSoundAudioClass AgsCaptureSoundAudioClass;
+typedef struct _AgsCaptureWaveAudio AgsCaptureWaveAudio;
+typedef struct _AgsCaptureWaveAudioClass AgsCaptureWaveAudioClass;
 
-struct _AgsCaptureSoundAudio
+struct _AgsCaptureWaveAudio
 {
   AgsRecallAudio recall_audio;
 
@@ -54,13 +54,13 @@ struct _AgsCaptureSoundAudio
   AgsPort *file_format;
 };
 
-struct _AgsCaptureSoundAudioClass
+struct _AgsCaptureWaveAudioClass
 {
   AgsRecallAudioClass recall_audio;
 };
 
-GType ags_capture_sound_audio_get_type();
+GType ags_capture_wave_audio_get_type();
 
-AgsCaptureSoundAudio* ags_capture_sound_audio_new(AgsAudio *audio);
+AgsCaptureWaveAudio* ags_capture_wave_audio_new(AgsAudio *audio);
 
-#endif /*__AGS_CAPTURE_SOUND_AUDIO_H__*/
+#endif /*__AGS_CAPTURE_WAVE_AUDIO_H__*/

@@ -109,8 +109,13 @@ struct _AgsAudio
 
   guint bank_dim[3];
 
+  guint min_audio_channels;
   guint max_audio_channels;
+  
+  guint min_output_pads;
   guint max_output_pads;
+  
+  guint min_input_pads;
   guint max_input_pads;
 
   guint audio_channels;
