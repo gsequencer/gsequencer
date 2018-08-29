@@ -95,6 +95,12 @@ typedef enum{
   AGS_SOUNDCARD_DOUBLE          = 0xfffffff1,
 }AgsSoundcardFormat;
 
+typedef enum{
+  AGS_SOUNDCARD_CAPABILITY_PLAYBACK  = 1,
+  AGS_SOUNDCARD_CAPABILITY_CAPTURE   = 1 <<  1,
+  AGS_SOUNDCARD_CAPABILITY_DUPLEX    = 1 <<  2, 
+}AgsSoundcardCapability;
+
 struct _AgsSoundcardInterface
 {
   GTypeInterface ginterface;
@@ -112,6 +118,8 @@ struct _AgsSoundcardInterface
 		   guint *rate_min, guint *rate_max,
 		   guint *buffer_size_min, guint *buffer_size_max,
 		   GError **error);
+
+  guint (*get_capability)(AgsSoundcard *soundcard);
   
   void (*set_presets)(AgsSoundcard *soundcard,
 		      guint channels,
@@ -222,6 +230,8 @@ void ags_soundcard_pcm_info(AgsSoundcard *soundcard, gchar *card_id,
 			    guint *rate_min, guint *rate_max,
 			    guint *buffer_size_min, guint *buffer_size_max,
 			    GError **error);
+
+guint ags_soundcard_get_capability(AgsSoundcard *soundcard);
 
 GList* ags_soundcard_get_poll_fd(AgsSoundcard *soundcard);
 gboolean ags_soundcard_is_available(AgsSoundcard *soundcard);

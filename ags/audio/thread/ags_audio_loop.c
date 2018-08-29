@@ -330,6 +330,8 @@ ags_audio_loop_init(AgsAudioLoop *audio_loop)
 
   audio_loop->play_audio_ref = 0;
   audio_loop->play_audio = NULL;
+
+  audio_loop->sync_thread = NULL;
 }
 
 void
@@ -1284,6 +1286,9 @@ ags_audio_loop_play_audio(AgsAudioLoop *audio_loop)
   }
 
   g_list_free(list_play_domain_start);
+
+  g_list_free(audio_loop->sync_thread);
+  audio_loop->sync_thread = NULL;
 }
  
 /**
@@ -1312,6 +1317,10 @@ ags_audio_loop_play_audio_super_threaded(AgsAudioLoop *audio_loop, AgsPlaybackDo
 	       NULL);
   
   for(sound_scope = 0; sound_scope < AGS_SOUND_SCOPE_LAST; sound_scope++){    
+    if(sound_scope == AGS_SOUND_SCOPE_PLAYBACK){
+      continue;
+    }
+
     if((recall_id = ags_audio_check_scope(audio, sound_scope)) != NULL){
       thread = ags_playback_domain_get_audio_thread(playback_domain,
 						    sound_scope);
@@ -1332,6 +1341,9 @@ ags_audio_loop_play_audio_super_threaded(AgsAudioLoop *audio_loop, AgsPlaybackDo
 	  }
       
 	  pthread_mutex_unlock(audio_thread->wakeup_mutex);
+
+	  audio_loop->sync_thread = g_list_prepend(audio_loop->sync_thread,
+						   audio_thread);
 	}
       }
 
@@ -1366,6 +1378,10 @@ ags_audio_loop_sync_audio_super_threaded(AgsAudioLoop *audio_loop, AgsPlaybackDo
 	       NULL);
   
   for(sound_scope = 0; sound_scope < AGS_SOUND_SCOPE_LAST; sound_scope++){    
+    if(sound_scope == AGS_SOUND_SCOPE_PLAYBACK){
+      continue;
+    }
+
     if((recall_id = ags_audio_check_scope(audio, sound_scope)) != NULL){
       thread = ags_playback_domain_get_audio_thread(playback_domain,
 						    sound_scope);
@@ -1375,7 +1391,8 @@ ags_audio_loop_sync_audio_super_threaded(AgsAudioLoop *audio_loop, AgsPlaybackDo
 
 	pthread_mutex_lock(audio_thread->done_mutex);
 
-	if((AGS_THREAD_RUNNING & (g_atomic_int_get(&(thread->flags)))) != 0 &&
+	if(g_list_find(audio_loop->sync_thread, audio_thread) != NULL &&
+	   (AGS_THREAD_RUNNING & (g_atomic_int_get(&(thread->flags)))) != 0 &&
 	   (AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(thread->flags)))) == 0){
 	  if((AGS_AUDIO_THREAD_WAIT_SYNC & (g_atomic_int_get(&(audio_thread->flags)))) != 0){
 	    g_atomic_int_and(&(audio_thread->flags),

@@ -3034,14 +3034,12 @@ ags_thread_real_start(AgsThread *thread)
  *
  * Add @child to @thread's start queue.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_thread_add_start_queue(AgsThread *thread,
 			   AgsThread *child)
 {
-  GList *start_queue;
-
   if(!AGS_IS_THREAD(thread) ||
      !AGS_IS_THREAD(child)){
     return;
@@ -3049,12 +3047,9 @@ ags_thread_add_start_queue(AgsThread *thread,
   
   pthread_mutex_lock(thread->start_mutex);
   
-  start_queue = g_atomic_pointer_get(&(thread->start_queue));
-  start_queue = g_list_prepend(start_queue,
-			       child);
-
   g_atomic_pointer_set(&(thread->start_queue),
-		       start_queue);
+		       g_list_prepend(g_atomic_pointer_get(&(thread->start_queue)),
+				      child));
   
   pthread_mutex_unlock(thread->start_mutex);
 }

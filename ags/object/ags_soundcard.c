@@ -332,6 +332,32 @@ ags_soundcard_pcm_info(AgsSoundcard *soundcard, gchar *card_id,
 }
 
 /**
+ * ags_soundcard_get_capability:
+ * @soundcard: the #AgsSoundcard
+ *
+ * Retrieve #AgsSoundcardCapability-enum information.
+ *
+ * Returns: the capablities flags
+ * 
+ * Since: 2.0.0
+ */
+guint
+ags_soundcard_get_capability(AgsSoundcard *soundcard)
+{
+  AgsSoundcardInterface *soundcard_interface;
+
+  guint capability;
+  
+  g_return_val_if_fail(AGS_IS_SOUNDCARD(soundcard), 0);
+  soundcard_interface = AGS_SOUNDCARD_GET_INTERFACE(soundcard);
+  g_return_val_if_fail(soundcard_interface->pcm_info, 0);
+
+  capability = soundcard_interface->get_capability(soundcard);
+
+  return(capability);
+}
+
+/**
  * ags_soundcard_get_poll_fd:
  * @soundcard: the #AgsSoundcard
  *

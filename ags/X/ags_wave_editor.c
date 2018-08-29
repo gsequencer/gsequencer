@@ -1212,7 +1212,7 @@ ags_wave_editor_paste(AgsWaveEditor *wave_editor)
     /* get xml tree */
     clipboard = xmlReadMemory(buffer, strlen(buffer),
 			      NULL, "UTF-8",
-			      0);
+			      XML_PARSE_HUGE);
     audio_node = xmlDocGetRootElement(clipboard);
 
     first_x = -1;

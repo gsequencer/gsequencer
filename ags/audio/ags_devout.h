@@ -126,6 +126,7 @@ struct _AgsDevout
   guint buffer_size;
   guint samplerate; // sample_rate
 
+  pthread_mutex_t **buffer_mutex;
   void** buffer;
 
   volatile gboolean available;

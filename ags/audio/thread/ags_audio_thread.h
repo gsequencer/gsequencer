@@ -71,6 +71,8 @@ struct _AgsAudioThread
   pthread_cond_t *done_cond;
 
   GObject *audio;
+
+  GList *sync_thread;
 };
 
 struct _AgsAudioThreadClass

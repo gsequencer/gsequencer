@@ -107,6 +107,7 @@ void ags_devout_pcm_info(AgsSoundcard *soundcard, gchar *card_id,
 			 guint *rate_min, guint *rate_max,
 			 guint *buffer_size_min, guint *buffer_size_max,
 			 GError **error);
+guint ags_devout_get_capability(AgsSoundcard *soundcard);
 
 GList* ags_devout_get_poll_fd(AgsSoundcard *soundcard);
 gboolean ags_devout_is_available(AgsSoundcard *soundcard);
@@ -507,7 +508,8 @@ ags_devout_soundcard_interface_init(AgsSoundcardInterface *soundcard)
 
   soundcard->list_cards = ags_devout_list_cards;
   soundcard->pcm_info = ags_devout_pcm_info;
-
+  soundcard->get_capability = ags_devout_get_capability;
+  
   soundcard->get_poll_fd = ags_devout_get_poll_fd;
   soundcard->is_available = ags_devout_is_available;
 
@@ -568,6 +570,7 @@ ags_devout_init(AgsDevout *devout)
   gchar *str;
   gchar *segmentation;
 
+  guint i;
   guint denumerator, numerator;
   gboolean use_alsa;  
   
@@ -652,6 +655,15 @@ ags_devout_init(AgsDevout *devout)
   }
 
   /* buffer */
+  devout->buffer_mutex = (pthread_mutex_t **) malloc(4 * sizeof(pthread_mutex_t *));
+
+  for(i = 0; i < 4; i++){
+    devout->buffer_mutex[i] = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
+
+    pthread_mutex_init(devout->buffer_mutex[i],
+		       NULL);
+  }
+  
   devout->buffer = (void **) malloc(4 * sizeof(void*));
 
   devout->buffer[0] = NULL;
@@ -2091,6 +2103,12 @@ ags_devout_pcm_info(AgsSoundcard *soundcard,
  ags_devout_pcm_info_ERR:
 
   pthread_mutex_unlock(devout_mutex);
+}
+
+guint
+ags_devout_get_capability(AgsSoundcard *soundcard)
+{
+  return(AGS_SOUNDCARD_CAPABILITY_PLAYBACK);
 }
 
 GList*
@@ -4288,14 +4306,58 @@ void
 ags_devout_lock_buffer(AgsSoundcard *soundcard,
 		       void *buffer)
 {
-  //TODO:JK: implement me
+  AgsDevout *devout;
+
+  pthread_mutex_t *buffer_mutex;
+  
+  devout = AGS_DEVOUT(soundcard);
+
+  buffer_mutex = NULL;
+
+  if(devout->buffer != NULL){
+    if(buffer == devout->buffer[0]){
+      buffer_mutex = devout->buffer_mutex[0];
+    }else if(buffer == devout->buffer[1]){
+      buffer_mutex = devout->buffer_mutex[1];
+    }else if(buffer == devout->buffer[2]){
+      buffer_mutex = devout->buffer_mutex[2];
+    }else if(buffer == devout->buffer[3]){
+      buffer_mutex = devout->buffer_mutex[3];
+    }
+  }
+  
+  if(buffer_mutex != NULL){
+    pthread_mutex_lock(buffer_mutex);
+  }
 }
 
 void
 ags_devout_unlock_buffer(AgsSoundcard *soundcard,
 			 void *buffer)
 {
-  //TODO:JK: implement me
+  AgsDevout *devout;
+
+  pthread_mutex_t *buffer_mutex;
+  
+  devout = AGS_DEVOUT(soundcard);
+
+  buffer_mutex = NULL;
+
+  if(devout->buffer != NULL){
+    if(buffer == devout->buffer[0]){
+      buffer_mutex = devout->buffer_mutex[0];
+    }else if(buffer == devout->buffer[1]){
+      buffer_mutex = devout->buffer_mutex[1];
+    }else if(buffer == devout->buffer[2]){
+      buffer_mutex = devout->buffer_mutex[2];
+    }else if(buffer == devout->buffer[3]){
+      buffer_mutex = devout->buffer_mutex[3];
+    }
+  }
+
+  if(buffer_mutex != NULL){
+    pthread_mutex_unlock(buffer_mutex);
+  }
 }
 
 guint

@@ -276,7 +276,8 @@ ags_start_audio_launch(AgsTask *task)
   AgsStartAudio *start_audio;
 
   AgsAudioLoop *audio_loop;
-
+  AgsAudioThread *audio_thread;
+  
   AgsApplicationContext *application_context;
   
   GList *list_start, *list;
@@ -374,9 +375,11 @@ ags_start_audio_launch(AgsTask *task)
 				  sound_scope, staging_flags);
 
     /* add to start queue */
+    audio_thread = ags_playback_domain_get_audio_thread(playback_domain,
+							sound_scope);
+        
     ags_thread_add_start_queue(audio_loop,
-			       ags_playback_domain_get_audio_thread(playback_domain,
-								    sound_scope));
+			       audio_thread);
   }else{
     gint i;
 
@@ -440,9 +443,11 @@ ags_start_audio_launch(AgsTask *task)
 				    i, staging_flags);
 
       /* add to start queue */
+      audio_thread = ags_playback_domain_get_audio_thread(playback_domain,
+							  i);
+            
       ags_thread_add_start_queue(audio_loop,
-				 ags_playback_domain_get_audio_thread(playback_domain,
-								      i));
+				 audio_thread);
     }
   }
 }

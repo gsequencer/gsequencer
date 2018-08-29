@@ -104,6 +104,8 @@ struct _AgsAudioLoop
 
   guint play_audio_ref;
   GList *play_audio; // play AgsAudio
+
+  GList *sync_thread;
 };
 
 struct _AgsAudioLoopClass

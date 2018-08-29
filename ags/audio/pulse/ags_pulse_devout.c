@@ -96,6 +96,7 @@ void ags_pulse_devout_pcm_info(AgsSoundcard *soundcard, gchar *card_id,
 			       guint *rate_min, guint *rate_max,
 			       guint *buffer_size_min, guint *buffer_size_max,
 			       GError **error);
+guint ags_pulse_devout_get_capability(AgsSoundcard *soundcard);
 
 gboolean ags_pulse_devout_is_starting(AgsSoundcard *soundcard);
 gboolean ags_pulse_devout_is_playing(AgsSoundcard *soundcard);
@@ -128,6 +129,11 @@ guint ags_pulse_devout_get_attack(AgsSoundcard *soundcard);
 void* ags_pulse_devout_get_buffer(AgsSoundcard *soundcard);
 void* ags_pulse_devout_get_next_buffer(AgsSoundcard *soundcard);
 void* ags_pulse_devout_get_prev_buffer(AgsSoundcard *soundcard);
+
+void ags_pulse_devout_lock_buffer(AgsSoundcard *soundcard,
+				  void *buffer);
+void ags_pulse_devout_unlock_buffer(AgsSoundcard *soundcard,
+				    void *buffer);
 
 guint ags_pulse_devout_get_delay_counter(AgsSoundcard *soundcard);
 
@@ -508,6 +514,7 @@ ags_pulse_devout_soundcard_interface_init(AgsSoundcardInterface *soundcard)
 
   soundcard->list_cards = ags_pulse_devout_list_cards;
   soundcard->pcm_info = ags_pulse_devout_pcm_info;
+  soundcard->get_capability = ags_pulse_devout_get_capability;
 
   soundcard->get_poll_fd = NULL;
   soundcard->is_available = NULL;
@@ -544,6 +551,9 @@ ags_pulse_devout_soundcard_interface_init(AgsSoundcardInterface *soundcard)
   soundcard->get_next_buffer = ags_pulse_devout_get_next_buffer;
   soundcard->get_prev_buffer = ags_pulse_devout_get_prev_buffer;
 
+  soundcard->lock_buffer = ags_pulse_devout_lock_buffer;
+  soundcard->unlock_buffer = ags_pulse_devout_unlock_buffer;
+
   soundcard->get_delay_counter = ags_pulse_devout_get_delay_counter;
 
   soundcard->set_note_offset = ags_pulse_devout_set_note_offset;
@@ -567,7 +577,8 @@ ags_pulse_devout_init(AgsPulseDevout *pulse_devout)
   gchar *segmentation;
 
   guint denumerator, numerator;
-  
+  guint i;
+    
   pthread_mutex_t *mutex;
   pthread_mutexattr_t *attr;
 
@@ -613,6 +624,15 @@ ags_pulse_devout_init(AgsPulseDevout *pulse_devout)
   pulse_devout->pulse_port = NULL;
 
   /* buffer */
+  pulse_devout->buffer_mutex = (pthread_mutex_t **) malloc(8 * sizeof(pthread_mutex_t *));
+
+  for(i = 0; i < 8; i++){
+    pulse_devout->buffer_mutex[i] = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
+
+    pthread_mutex_init(pulse_devout->buffer_mutex[i],
+		       NULL);
+  }
+
   pulse_devout->buffer = (void **) malloc(8 * sizeof(void*));
 
   pulse_devout->buffer[0] = NULL;
@@ -1862,6 +1882,12 @@ ags_pulse_devout_pcm_info(AgsSoundcard *soundcard,
   }
 }
 
+guint
+ags_pulse_devout_get_capability(AgsSoundcard *soundcard)
+{
+  return(AGS_SOUNDCARD_CAPABILITY_PLAYBACK);
+}
+
 gboolean
 ags_pulse_devout_is_starting(AgsSoundcard *soundcard)
 {
@@ -2770,6 +2796,80 @@ ags_pulse_devout_get_prev_buffer(AgsSoundcard *soundcard)
   }
 
   return(buffer);
+}
+
+void
+ags_pulse_devout_lock_buffer(AgsSoundcard *soundcard,
+			     void *buffer)
+{
+  AgsPulseDevout *pulse_devout;
+
+  pthread_mutex_t *buffer_mutex;
+  
+  pulse_devout = AGS_PULSE_DEVOUT(soundcard);
+
+  buffer_mutex = NULL;
+
+  if(pulse_devout->buffer != NULL){
+    if(buffer == pulse_devout->buffer[0]){
+      buffer_mutex = pulse_devout->buffer_mutex[0];
+    }else if(buffer == pulse_devout->buffer[1]){
+      buffer_mutex = pulse_devout->buffer_mutex[1];
+    }else if(buffer == pulse_devout->buffer[2]){
+      buffer_mutex = pulse_devout->buffer_mutex[2];
+    }else if(buffer == pulse_devout->buffer[3]){
+      buffer_mutex = pulse_devout->buffer_mutex[3];
+    }else if(buffer == pulse_devout->buffer[4]){
+      buffer_mutex = pulse_devout->buffer_mutex[4];
+    }else if(buffer == pulse_devout->buffer[5]){
+      buffer_mutex = pulse_devout->buffer_mutex[5];
+    }else if(buffer == pulse_devout->buffer[6]){
+      buffer_mutex = pulse_devout->buffer_mutex[6];
+    }else if(buffer == pulse_devout->buffer[7]){
+      buffer_mutex = pulse_devout->buffer_mutex[7];
+    }
+  }
+  
+  if(buffer_mutex != NULL){
+    pthread_mutex_lock(buffer_mutex);
+  }
+}
+
+void
+ags_pulse_devout_unlock_buffer(AgsSoundcard *soundcard,
+			       void *buffer)
+{
+  AgsPulseDevout *pulse_devout;
+
+  pthread_mutex_t *buffer_mutex;
+  
+  pulse_devout = AGS_PULSE_DEVOUT(soundcard);
+
+  buffer_mutex = NULL;
+
+  if(pulse_devout->buffer != NULL){
+    if(buffer == pulse_devout->buffer[0]){
+      buffer_mutex = pulse_devout->buffer_mutex[0];
+    }else if(buffer == pulse_devout->buffer[1]){
+      buffer_mutex = pulse_devout->buffer_mutex[1];
+    }else if(buffer == pulse_devout->buffer[2]){
+      buffer_mutex = pulse_devout->buffer_mutex[2];
+    }else if(buffer == pulse_devout->buffer[3]){
+      buffer_mutex = pulse_devout->buffer_mutex[3];
+    }else if(buffer == pulse_devout->buffer[4]){
+      buffer_mutex = pulse_devout->buffer_mutex[4];
+    }else if(buffer == pulse_devout->buffer[5]){
+      buffer_mutex = pulse_devout->buffer_mutex[5];
+    }else if(buffer == pulse_devout->buffer[6]){
+      buffer_mutex = pulse_devout->buffer_mutex[6];
+    }else if(buffer == pulse_devout->buffer[7]){
+      buffer_mutex = pulse_devout->buffer_mutex[7];
+    }
+  }
+
+  if(buffer_mutex != NULL){
+    pthread_mutex_unlock(buffer_mutex);
+  }
 }
 
 guint

@@ -50,7 +50,7 @@
 <!-- machine -->
 <!ELEMENT ags-sf-machine-list (ags-sf-machine*)>
 
-<!ELEMENT ags-sf-machine (ags-sf-automated-port-list, ags-sf-effect-list*, ags-sf-pad-list*, ags-sf-effect-pad-list*, ags-sf-oscillator-list?, ags-sf-pattern-list?, ags-sf-notation-list?, ags-sf-automation-list?, ags-sf-property-list?, ags-sf-preset-list?)>
+<!ELEMENT ags-sf-machine (ags-sf-automated-port-list, ags-sf-effect-list*, ags-sf-pad-list*, ags-sf-effect-pad-list*, ags-sf-oscillator-list?, ags-sf-pattern-list?, ags-sf-notation-list?, ags-sf-automation-list?, ags-sf-property-list?, ags-sf-preset-list?, ?ags-sf-equalizer10)>
 <!ATTLIST ags-sf-machine
 	  id                      CDATA     #REQUIRED
 	  type                    CDATA     #REQUIRED
@@ -210,6 +210,9 @@
 	  x-start               NMTOKEN  #REQUIRED
 	  x-end                 NMTOKEN  #REQUIRED
 	  >
+
+<!-- equalizer10 -->
+<!ELEMENT ags-sf-equalizer10 (ags-sf-control*)>
 
 <!-- automation -->
 <!ELEMENT ags-sf-automation-list (ags-sf-automation*)>

@@ -96,6 +96,7 @@ void ags_jack_devout_pcm_info(AgsSoundcard *soundcard, gchar *card_id,
 			      guint *rate_min, guint *rate_max,
 			      guint *buffer_size_min, guint *buffer_size_max,
 			      GError **error);
+guint ags_jack_devout_get_capability(AgsSoundcard *soundcard);
 
 gboolean ags_jack_devout_is_starting(AgsSoundcard *soundcard);
 gboolean ags_jack_devout_is_playing(AgsSoundcard *soundcard);
@@ -128,6 +129,11 @@ guint ags_jack_devout_get_attack(AgsSoundcard *soundcard);
 void* ags_jack_devout_get_buffer(AgsSoundcard *soundcard);
 void* ags_jack_devout_get_next_buffer(AgsSoundcard *soundcard);
 void* ags_jack_devout_get_prev_buffer(AgsSoundcard *soundcard);
+
+void ags_jack_devout_lock_buffer(AgsSoundcard *soundcard,
+				 void *buffer);
+void ags_jack_devout_unlock_buffer(AgsSoundcard *soundcard,
+				   void *buffer);
 
 guint ags_jack_devout_get_delay_counter(AgsSoundcard *soundcard);
 
@@ -508,6 +514,7 @@ ags_jack_devout_soundcard_interface_init(AgsSoundcardInterface *soundcard)
 
   soundcard->list_cards = ags_jack_devout_list_cards;
   soundcard->pcm_info = ags_jack_devout_pcm_info;
+  soundcard->get_capability = ags_jack_devout_get_capability;
 
   soundcard->get_poll_fd = NULL;
   soundcard->is_available = NULL;
@@ -544,6 +551,9 @@ ags_jack_devout_soundcard_interface_init(AgsSoundcardInterface *soundcard)
   soundcard->get_next_buffer = ags_jack_devout_get_next_buffer;
   soundcard->get_prev_buffer = ags_jack_devout_get_prev_buffer;
 
+  soundcard->lock_buffer = ags_jack_devout_lock_buffer;
+  soundcard->unlock_buffer = ags_jack_devout_unlock_buffer;
+
   soundcard->get_delay_counter = ags_jack_devout_get_delay_counter;
 
   soundcard->set_note_offset = ags_jack_devout_set_note_offset;
@@ -567,7 +577,8 @@ ags_jack_devout_init(AgsJackDevout *jack_devout)
   gchar *segmentation;
 
   guint denumerator, numerator;
-  
+  guint i;
+ 
   pthread_mutex_t *mutex;
   pthread_mutexattr_t *attr;
 
@@ -613,6 +624,15 @@ ags_jack_devout_init(AgsJackDevout *jack_devout)
   jack_devout->jack_port = NULL;
 
   /* buffer */
+  jack_devout->buffer_mutex = (pthread_mutex_t **) malloc(4 * sizeof(pthread_mutex_t *));
+
+  for(i = 0; i < 4; i++){
+    jack_devout->buffer_mutex[i] = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
+
+    pthread_mutex_init(jack_devout->buffer_mutex[i],
+		       NULL);
+  }
+  
   jack_devout->buffer = (void **) malloc(4 * sizeof(void*));
 
   jack_devout->buffer[0] = NULL;
@@ -1854,6 +1874,12 @@ ags_jack_devout_pcm_info(AgsSoundcard *soundcard,
   }
 }
 
+guint
+ags_jack_devout_get_capability(AgsSoundcard *soundcard)
+{
+  return(AGS_SOUNDCARD_CAPABILITY_PLAYBACK);
+}
+
 gboolean
 ags_jack_devout_is_starting(AgsSoundcard *soundcard)
 {
@@ -2734,6 +2760,65 @@ ags_jack_devout_get_prev_buffer(AgsSoundcard *soundcard)
   }
 
   return(buffer);
+}
+
+void
+ags_jack_devout_lock_buffer(AgsSoundcard *soundcard,
+			    void *buffer)
+{
+  AgsJackDevout *jack_devout;
+
+  pthread_mutex_t *buffer_mutex;
+  
+  jack_devout = AGS_JACK_DEVOUT(soundcard);
+
+  buffer_mutex = NULL;
+
+  if(jack_devout->buffer != NULL){
+    if(buffer == jack_devout->buffer[0]){
+      buffer_mutex = jack_devout->buffer_mutex[0];
+    }else if(buffer == jack_devout->buffer[1]){
+      buffer_mutex = jack_devout->buffer_mutex[1];
+    }else if(buffer == jack_devout->buffer[2]){
+      buffer_mutex = jack_devout->buffer_mutex[2];
+    }else if(buffer == jack_devout->buffer[3]){
+      buffer_mutex = jack_devout->buffer_mutex[3];
+    }
+  }
+  
+  if(buffer_mutex != NULL){
+    pthread_mutex_lock(buffer_mutex);
+  }
+}
+
+
+void
+ags_jack_devout_unlock_buffer(AgsSoundcard *soundcard,
+			      void *buffer)
+{
+  AgsJackDevout *jack_devout;
+
+  pthread_mutex_t *buffer_mutex;
+  
+  jack_devout = AGS_JACK_DEVOUT(soundcard);
+
+  buffer_mutex = NULL;
+
+  if(jack_devout->buffer != NULL){
+    if(buffer == jack_devout->buffer[0]){
+      buffer_mutex = jack_devout->buffer_mutex[0];
+    }else if(buffer == jack_devout->buffer[1]){
+      buffer_mutex = jack_devout->buffer_mutex[1];
+    }else if(buffer == jack_devout->buffer[2]){
+      buffer_mutex = jack_devout->buffer_mutex[2];
+    }else if(buffer == jack_devout->buffer[3]){
+      buffer_mutex = jack_devout->buffer_mutex[3];
+    }
+  }
+
+  if(buffer_mutex != NULL){
+    pthread_mutex_unlock(buffer_mutex);
+  }
 }
 
 guint

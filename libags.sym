@@ -157,6 +157,7 @@ ags_soundcard_set_presets
 ags_soundcard_get_presets
 ags_soundcard_list_cards
 ags_soundcard_pcm_info
+ags_soundcard_get_capability
 ags_soundcard_get_poll_fd
 ags_soundcard_is_available
 ags_soundcard_is_starting
