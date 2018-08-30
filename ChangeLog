@@ -1,8 +1,8 @@
 ags (2.0.0)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
-	* TODO:JK: AgsChannel to listen to AgsRecall::child-done()
-	* TODO:JK: implemented AgsInputCollectionEditor, AgsInputListingEditor and AgsInputEditor
+	* implemented AgsChannel to listen to AgsRecall::child-done()
+	* implemented AgsInputCollectionEditor, AgsInputListingEditor and AgsInputEditor
 	* TODO:JK: improved ags-feed recall thread-safety
 	* TODO:JK: improved ags_audio_signal_feed() reduce over-head
 	* TODO:JK: improved AgsApplySynth thread-safety

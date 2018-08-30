@@ -1327,6 +1327,13 @@ ags_core_audio_server_register_soundcard(AgsSoundServer *sound_server,
     initial_set = TRUE;    
   }
 
+  /* get core audio client mutex */
+  pthread_mutex_lock(ags_core_audio_server_get_class_mutex());
+  
+  core_audio_client_mutex = default_client->obj_mutex;
+  
+  pthread_mutex_unlock(ags_core_audio_server_get_class_mutex());
+
   /* get graph */
   pthread_mutex_lock(core_audio_client_mutex);
 

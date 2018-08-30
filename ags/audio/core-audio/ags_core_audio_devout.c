@@ -2215,6 +2215,8 @@ ags_core_audio_devout_port_play(AgsSoundcard *soundcard,
     pthread_cond_signal(notify_soundcard->return_cond);
   }
   
+  pthread_mutex_unlock(notify_soundcard->return_mutex);
+
   /* update soundcard */
   g_object_get(application_context,
 	       "task-thread", &task_thread,

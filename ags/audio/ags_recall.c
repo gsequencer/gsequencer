@@ -181,6 +181,7 @@ static guint recall_signals[LAST_SIGNAL];
 
 static pthread_mutex_t ags_recall_class_mutex = PTHREAD_MUTEX_INITIALIZER;
 
+static gboolean ags_recall_global_children_lock_free = TRUE;
 static gboolean ags_recall_global_omit_event = TRUE;
 static gboolean ags_recall_global_performance_mode = FALSE;
 static gboolean ags_recall_global_rt_safe = FALSE;
@@ -2032,6 +2033,8 @@ ags_recall_connect(AgsConnectable *connectable)
 
   GList *list_start, *list;
 
+  gboolean children_lock_free;
+  
   pthread_mutex_t *recall_mutex;
 
   if(ags_connectable_is_connected(connectable)){
@@ -2046,24 +2049,32 @@ ags_recall_connect(AgsConnectable *connectable)
   pthread_mutex_lock(ags_recall_get_class_mutex());
   
   recall_mutex = recall->obj_mutex;
+
+  children_lock_free = ags_recall_global_children_lock_free;
   
   pthread_mutex_unlock(ags_recall_get_class_mutex());
 
   /* connect children */
-  pthread_mutex_lock(recall_mutex);
+  if(!children_lock_free){
+    pthread_mutex_lock(recall_mutex);
 
-  list =
-    list_start = g_list_copy(recall->children);
+    list =
+      list_start = g_list_copy(recall->children);
 
-  pthread_mutex_unlock(recall_mutex);
-
+    pthread_mutex_unlock(recall_mutex);
+  }else{
+    list = recall->children;
+  }
+  
   while(list != NULL){
     ags_connectable_connect(AGS_CONNECTABLE(list->data));
 
     list = list->next;
   }
 
-  g_list_free(list_start);
+  if(!children_lock_free){
+    g_list_free(list_start);
+  }
   
   /* recall handler */
   pthread_mutex_lock(recall_mutex);
@@ -2093,6 +2104,8 @@ ags_recall_disconnect(AgsConnectable *connectable)
 
   GList *list_start, *list;
 
+  gboolean children_lock_free;
+  
   pthread_mutex_t *recall_mutex;
 
   if(!ags_connectable_is_connected(connectable)){
@@ -2107,24 +2120,32 @@ ags_recall_disconnect(AgsConnectable *connectable)
   pthread_mutex_lock(ags_recall_get_class_mutex());
   
   recall_mutex = recall->obj_mutex;
+
+  children_lock_free = ags_recall_global_children_lock_free;
   
   pthread_mutex_unlock(ags_recall_get_class_mutex());
 
   /* connect children */
-  pthread_mutex_lock(recall_mutex);
+  if(!children_lock_free){
+    pthread_mutex_lock(recall_mutex);
 
-  list =
-    list_start = g_list_copy(recall->children);
+    list =
+      list_start = g_list_copy(recall->children);
 
-  pthread_mutex_unlock(recall_mutex);
-
+    pthread_mutex_unlock(recall_mutex);
+  }else{
+    list = recall->children;
+  }
+  
   while(list != NULL){
     ags_connectable_disconnect(AGS_CONNECTABLE(list->data));
 
     list = list->next;
   }
 
-  g_list_free(list_start);
+  if(!children_lock_free){
+    g_list_free(list_start);
+  }
   
   /* recall handler */
   pthread_mutex_lock(recall_mutex);
@@ -2318,6 +2339,29 @@ pthread_mutex_t*
 ags_recall_get_class_mutex()
 {
   return(&ags_recall_class_mutex);
+}
+
+/**
+ * ags_recall_global_get_children_lock_free:
+ * 
+ * Get global config value lock free children.
+ *
+ * Returns: if %TRUE does lock free children, else not
+ * 
+ * Since: 2.0.0
+ */
+gboolean
+ags_recall_global_get_children_lock_free()
+{
+  gboolean children_lock_free;
+
+  pthread_mutex_lock(ags_recall_get_class_mutex());
+
+  children_lock_free = ags_recall_global_children_lock_free;
+
+  pthread_mutex_unlock(ags_recall_get_class_mutex());
+  
+  return(children_lock_free);
 }
 
 /**
@@ -2547,6 +2591,8 @@ ags_recall_set_ability_flags(AgsRecall *recall, guint ability_flags)
 {
   GList *child_start, *child;
 
+  gboolean children_lock_free;
+  
   pthread_mutex_t *recall_mutex;
 
   if(!AGS_IS_RECALL(recall)){
@@ -2557,6 +2603,8 @@ ags_recall_set_ability_flags(AgsRecall *recall, guint ability_flags)
   pthread_mutex_lock(ags_recall_get_class_mutex());
   
   recall_mutex = recall->obj_mutex;
+
+  children_lock_free = ags_recall_global_children_lock_free;
   
   pthread_mutex_unlock(ags_recall_get_class_mutex());
 
@@ -2566,9 +2614,13 @@ ags_recall_set_ability_flags(AgsRecall *recall, guint ability_flags)
   recall->ability_flags |= ability_flags;
 
   /* apply recursivly */
-  child =
-    child_start = g_list_copy(recall->children);
-
+  if(!children_lock_free){
+    child =
+      child_start = g_list_copy(recall->children);
+  }else{
+    child = recall->children;
+  }
+  
   pthread_mutex_unlock(recall_mutex);
 
   while(child != NULL){
@@ -2577,7 +2629,9 @@ ags_recall_set_ability_flags(AgsRecall *recall, guint ability_flags)
     child = child->next;
   }
 
-  g_list_free(child_start);
+  if(!children_lock_free){
+    g_list_free(child_start);
+  }
 }
 
 /**
@@ -2594,6 +2648,8 @@ ags_recall_unset_ability_flags(AgsRecall *recall, guint ability_flags)
 {
   GList *child_start, *child;
 
+  gboolean children_lock_free;
+  
   pthread_mutex_t *recall_mutex;
 
   if(!AGS_IS_RECALL(recall)){
@@ -2604,6 +2660,8 @@ ags_recall_unset_ability_flags(AgsRecall *recall, guint ability_flags)
   pthread_mutex_lock(ags_recall_get_class_mutex());
   
   recall_mutex = recall->obj_mutex;
+
+  children_lock_free = ags_recall_global_children_lock_free;
   
   pthread_mutex_unlock(ags_recall_get_class_mutex());
 
@@ -2613,9 +2671,13 @@ ags_recall_unset_ability_flags(AgsRecall *recall, guint ability_flags)
   recall->ability_flags &= (~ability_flags);
 
   /* apply recursivly */
-  child =
-    child_start = g_list_copy(recall->children);
-
+  if(!children_lock_free){
+    child =
+      child_start = g_list_copy(recall->children);
+  }else{
+    child = recall->children;
+  }
+  
   pthread_mutex_unlock(recall_mutex);
 
   while(child != NULL){
@@ -2624,7 +2686,9 @@ ags_recall_unset_ability_flags(AgsRecall *recall, guint ability_flags)
     child = child->next;
   }
 
-  g_list_free(child_start);
+  if(!children_lock_free){
+    g_list_free(child_start);
+  }
 }
 
 /**
@@ -3616,6 +3680,8 @@ ags_recall_set_recall_id(AgsRecall *recall, AgsRecallID *recall_id)
 {
   GList *list_start, *list;
 
+  gboolean children_lock_free;
+  
   pthread_mutex_t *recall_mutex;
 
   if(!AGS_IS_RECALL(recall)){
@@ -3626,6 +3692,8 @@ ags_recall_set_recall_id(AgsRecall *recall, AgsRecallID *recall_id)
   pthread_mutex_lock(ags_recall_get_class_mutex());
   
   recall_mutex = recall->obj_mutex;
+
+  children_lock_free = ags_recall_global_children_lock_free;
   
   pthread_mutex_unlock(ags_recall_get_class_mutex());
 
@@ -3636,9 +3704,13 @@ ags_recall_set_recall_id(AgsRecall *recall, AgsRecallID *recall_id)
     g_warning("set recall id on template");
   }
 
-  list =
-    list_start = g_list_copy(recall->children);
-
+  if(!children_lock_free){
+    list =
+      list_start = g_list_copy(recall->children);
+  }else{
+    list = recall->children;
+  }
+  
   pthread_mutex_unlock(recall_mutex);
 
   while(list != NULL){
@@ -3647,7 +3719,9 @@ ags_recall_set_recall_id(AgsRecall *recall, AgsRecallID *recall_id)
     list = list->next;
   }
 
-  g_list_free(list_start);
+  if(!children_lock_free){
+    g_list_free(list_start);
+  }
   
   /* set recall id */
   pthread_mutex_lock(recall_mutex);
@@ -4240,12 +4314,16 @@ ags_recall_real_resolve_dependency(AgsRecall *recall)
 {
   GList *list_start, *list;
 
+  gboolean children_lock_free;
+  
   pthread_mutex_t *recall_mutex;
 
   /* get recall mutex */
   pthread_mutex_lock(ags_recall_get_class_mutex());
   
   recall_mutex = recall->obj_mutex;
+
+  children_lock_free = ags_recall_global_children_lock_free;
   
   pthread_mutex_unlock(ags_recall_get_class_mutex());
 
@@ -4256,9 +4334,13 @@ ags_recall_real_resolve_dependency(AgsRecall *recall)
     g_warning("running on template");
   }
 
-  list =
-    list_start = g_list_copy(recall->children);
-
+  if(!children_lock_free){
+    list =
+      list_start = g_list_copy(recall->children);
+  }else{
+    list = recall->children;
+  }
+  
   pthread_mutex_unlock(recall_mutex);
 
   while(list != NULL){
@@ -4267,7 +4349,9 @@ ags_recall_real_resolve_dependency(AgsRecall *recall)
     list = list->next;
   }
 
-  g_list_free(list_start);  
+  if(!children_lock_free){
+    g_list_free(list_start);
+  }
 }
 
 /**
@@ -4299,12 +4383,16 @@ ags_recall_real_check_rt_data(AgsRecall *recall)
 {
   GList *list_start, *list;
 
+  gboolean children_lock_free;
+  
   pthread_mutex_t *recall_mutex;
 
   /* get recall mutex */
   pthread_mutex_lock(ags_recall_get_class_mutex());
   
   recall_mutex = recall->obj_mutex;
+
+  children_lock_free = ags_recall_global_children_lock_free;
   
   pthread_mutex_unlock(ags_recall_get_class_mutex());
 
@@ -4317,9 +4405,13 @@ ags_recall_real_check_rt_data(AgsRecall *recall)
     g_warning("running on template");
   }
 
-  list =
-    list_start = g_list_copy(recall->children);
-
+  if(!children_lock_free){
+    list =
+      list_start = g_list_copy(recall->children);
+  }else{
+    list = recall->children;
+  }
+  
   pthread_mutex_unlock(recall_mutex);
 
   while(list != NULL){
@@ -4328,8 +4420,10 @@ ags_recall_real_check_rt_data(AgsRecall *recall)
     list = list->next;
   }
 
-  g_list_free(list_start);  
-
+  if(!children_lock_free){
+    g_list_free(list_start);  
+  }
+  
   /* set is waiting */
   pthread_mutex_lock(recall_mutex);
 
@@ -4362,12 +4456,18 @@ ags_recall_real_run_init_pre(AgsRecall *recall)
 {
   GList *list_start, *list;
 
+  gboolean children_lock_free;
+  gboolean omit_event;
+  
   pthread_mutex_t *recall_mutex;
 
   /* get recall mutex */
   pthread_mutex_lock(ags_recall_get_class_mutex());
   
   recall_mutex = recall->obj_mutex;
+
+  children_lock_free = ags_recall_global_children_lock_free;
+  omit_event = ags_recall_global_omit_event;
   
   pthread_mutex_unlock(ags_recall_get_class_mutex());
 
@@ -4381,18 +4481,28 @@ ags_recall_real_run_init_pre(AgsRecall *recall)
     g_warning("running on template");
   }
 
-  list =
-    list_start = g_list_copy(recall->children);
-
+  if(!children_lock_free){
+    list =
+      list_start = g_list_copy(recall->children);
+  }else{
+    list = recall->children;
+  }
+  
   pthread_mutex_unlock(recall_mutex);
 
   while(list != NULL){
-    ags_recall_run_init_pre(AGS_RECALL(list->data));
-
+    if(omit_event){
+      AGS_RECALL_GET_CLASS(AGS_RECALL(list->data))->run_init_pre(AGS_RECALL(list->data));
+    }else{
+      ags_recall_run_init_pre(AGS_RECALL(list->data));
+    }
+    
     list = list->next;
   }
 
-  g_list_free(list_start);  
+  if(!children_lock_free){
+    g_list_free(list_start);
+  }
 }
 
 /**
@@ -4419,12 +4529,18 @@ ags_recall_real_run_init_inter(AgsRecall *recall)
 {
   GList *list_start, *list;
 
+  gboolean children_lock_free;
+  gboolean omit_event;
+  
   pthread_mutex_t *recall_mutex;
 
   /* get recall mutex */
   pthread_mutex_lock(ags_recall_get_class_mutex());
   
   recall_mutex = recall->obj_mutex;
+
+  children_lock_free = ags_recall_global_children_lock_free;
+  omit_event = ags_recall_global_omit_event;
   
   pthread_mutex_unlock(ags_recall_get_class_mutex());
 
@@ -4437,18 +4553,28 @@ ags_recall_real_run_init_inter(AgsRecall *recall)
     g_warning("running on template");
   }
 
-  list =
-    list_start = g_list_copy(recall->children);
-
+  if(!children_lock_free){
+    list =
+      list_start = g_list_copy(recall->children);
+  }else{
+    list = recall->children;
+  }
+  
   pthread_mutex_unlock(recall_mutex);
 
   while(list != NULL){
-    ags_recall_run_init_inter(AGS_RECALL(list->data));
-
+    if(omit_event){
+      AGS_RECALL_GET_CLASS(AGS_RECALL(list->data))->run_init_inter(AGS_RECALL(list->data));
+    }else{
+      ags_recall_run_init_inter(AGS_RECALL(list->data));
+    }
+    
     list = list->next;
   }
 
-  g_list_free(list_start);  
+  if(!children_lock_free){
+    g_list_free(list_start);
+  }
 }
 
 /**
@@ -4475,12 +4601,18 @@ ags_recall_real_run_init_post(AgsRecall *recall)
 {
   GList *list_start, *list;
 
+  gboolean children_lock_free;
+  gboolean omit_event;
+  
   pthread_mutex_t *recall_mutex;
 
   /* get recall mutex */
   pthread_mutex_lock(ags_recall_get_class_mutex());
   
   recall_mutex = recall->obj_mutex;
+
+  children_lock_free = ags_recall_global_children_lock_free;
+  omit_event = ags_recall_global_omit_event;
   
   pthread_mutex_unlock(ags_recall_get_class_mutex());
 
@@ -4493,19 +4625,29 @@ ags_recall_real_run_init_post(AgsRecall *recall)
     g_warning("running on template");
   }
 
-  list =
-    list_start = g_list_copy(recall->children);
-
+  if(!children_lock_free){
+    list =
+      list_start = g_list_copy(recall->children);
+  }else{
+    list = recall->children;
+  }
+  
   pthread_mutex_unlock(recall_mutex);
 
   while(list != NULL){
-    ags_recall_run_init_post(AGS_RECALL(list->data));
-
+    if(omit_event){
+      AGS_RECALL_GET_CLASS(AGS_RECALL(list->data))->run_init_post(AGS_RECALL(list->data));
+    }else{
+      ags_recall_run_init_post(AGS_RECALL(list->data));
+    }
+    
     list = list->next;
   }
 
-  g_list_free(list_start);
-
+  if(!children_lock_free){
+    g_list_free(list_start);
+  }
+  
   /* set active */
   pthread_mutex_lock(recall_mutex);
 
@@ -4541,6 +4683,7 @@ ags_recall_real_feed_input_queue(AgsRecall *recall)
 
   pthread_mutex_t *recall_mutex;
 
+  gboolean children_lock_free;  
   gboolean omit_event;
   
   /* get recall mutex */
@@ -4548,6 +4691,7 @@ ags_recall_real_feed_input_queue(AgsRecall *recall)
   
   recall_mutex = recall->obj_mutex;
 
+  children_lock_free = ags_recall_global_children_lock_free;
   omit_event = ags_recall_global_omit_event;
   
   pthread_mutex_unlock(ags_recall_get_class_mutex());
@@ -4561,9 +4705,13 @@ ags_recall_real_feed_input_queue(AgsRecall *recall)
     g_warning("running on template");
   }
 
-  list =
-    list_start = g_list_copy(recall->children);
-
+  if(!children_lock_free){
+    list =
+      list_start = g_list_copy(recall->children);
+  }else{
+    list = recall->children;
+  }
+  
   pthread_mutex_unlock(recall_mutex);
 
   while(list != NULL){
@@ -4576,7 +4724,9 @@ ags_recall_real_feed_input_queue(AgsRecall *recall)
     list = list->next;
   }
 
-  g_list_free(list_start);  
+  if(!children_lock_free){
+    g_list_free(list_start);
+  }
 }
 
 /**
@@ -4605,6 +4755,7 @@ ags_recall_real_automate(AgsRecall *recall)
 
   pthread_mutex_t *recall_mutex;
 
+  gboolean children_lock_free;  
   gboolean omit_event;
   
   /* get recall mutex */
@@ -4612,6 +4763,7 @@ ags_recall_real_automate(AgsRecall *recall)
   
   recall_mutex = recall->obj_mutex;
 
+  children_lock_free = ags_recall_global_children_lock_free;
   omit_event = ags_recall_global_omit_event;
   
   pthread_mutex_unlock(ags_recall_get_class_mutex());
@@ -4627,7 +4779,7 @@ ags_recall_real_automate(AgsRecall *recall)
 
   list =
     list_start = g_list_copy(recall->children);
-
+  
   pthread_mutex_unlock(recall_mutex);
 
   while(list != NULL){
@@ -4640,7 +4792,7 @@ ags_recall_real_automate(AgsRecall *recall)
     list = list->next;
   }
 
-  g_list_free(list_start);  
+  g_list_free(list_start);
 }
 
 /**
@@ -4669,6 +4821,7 @@ ags_recall_real_run_pre(AgsRecall *recall)
 
   pthread_mutex_t *recall_mutex;
 
+  gboolean children_lock_free;  
   gboolean omit_event;
   
   /* get recall mutex */
@@ -4676,6 +4829,7 @@ ags_recall_real_run_pre(AgsRecall *recall)
   
   recall_mutex = recall->obj_mutex;
 
+  children_lock_free = ags_recall_global_children_lock_free;
   omit_event = ags_recall_global_omit_event;
   
   pthread_mutex_unlock(ags_recall_get_class_mutex());
@@ -4689,9 +4843,13 @@ ags_recall_real_run_pre(AgsRecall *recall)
     g_warning("running on template");
   }
 
-  list =
-    list_start = g_list_copy(recall->children);
-
+  if(!children_lock_free){
+    list =
+      list_start = g_list_copy(recall->children);
+  }else{
+    list = recall->children;
+  }
+  
   pthread_mutex_unlock(recall_mutex);
 
   while(list != NULL){
@@ -4704,7 +4862,9 @@ ags_recall_real_run_pre(AgsRecall *recall)
     list = list->next;
   }
 
-  g_list_free(list_start);  
+  if(!children_lock_free){
+    g_list_free(list_start);
+  }
 }
 
 /**
@@ -4733,6 +4893,7 @@ ags_recall_real_run_inter(AgsRecall *recall)
 
   pthread_mutex_t *recall_mutex;
 
+  gboolean children_lock_free;  
   gboolean omit_event;
   
   /* get recall mutex */
@@ -4740,6 +4901,7 @@ ags_recall_real_run_inter(AgsRecall *recall)
   
   recall_mutex = recall->obj_mutex;
 
+  children_lock_free = ags_recall_global_children_lock_free;
   omit_event = ags_recall_global_omit_event;
   
   pthread_mutex_unlock(ags_recall_get_class_mutex());
@@ -4753,9 +4915,13 @@ ags_recall_real_run_inter(AgsRecall *recall)
     g_warning("running on template");
   }
 
-  list =
-    list_start = ags_list_util_copy_and_ref(recall->children);
-
+  if(!children_lock_free){
+    list =
+      list_start = ags_list_util_copy_and_ref(recall->children);
+  }else{
+    list = recall->children;
+  }
+  
   pthread_mutex_unlock(recall_mutex);
 
   while(list != NULL){
@@ -4768,8 +4934,10 @@ ags_recall_real_run_inter(AgsRecall *recall)
     list = list->next;
   }
 
-  g_list_free_full(list_start,
-		   g_object_unref);  
+  if(!children_lock_free){
+    g_list_free_full(list_start,
+		     g_object_unref);
+  }
 }
 
 /**
@@ -4798,6 +4966,7 @@ ags_recall_real_run_post(AgsRecall *recall)
 
   pthread_mutex_t *recall_mutex;
 
+  gboolean children_lock_free;  
   gboolean omit_event;
   
   /* get recall mutex */
@@ -4805,6 +4974,7 @@ ags_recall_real_run_post(AgsRecall *recall)
   
   recall_mutex = recall->obj_mutex;
 
+  children_lock_free = ags_recall_global_children_lock_free;
   omit_event = ags_recall_global_omit_event;
   
   pthread_mutex_unlock(ags_recall_get_class_mutex());
@@ -4819,9 +4989,13 @@ ags_recall_real_run_post(AgsRecall *recall)
     g_warning("running on template");
   }
 
-  list =
-    list_start = g_list_copy(recall->children);
-
+  if(!children_lock_free){
+    list =
+      list_start = g_list_copy(recall->children);
+  }else{
+    list = recall->children;
+  }
+  
   pthread_mutex_unlock(recall_mutex);
 
   while(list != NULL){
@@ -4834,7 +5008,9 @@ ags_recall_real_run_post(AgsRecall *recall)
     list = list->next;
   }
 
-  g_list_free(list_start);  
+  if(!children_lock_free){
+    g_list_free(list_start);
+  }
 }
 
 /**
@@ -4863,6 +5039,7 @@ ags_recall_real_do_feedback(AgsRecall *recall)
 
   pthread_mutex_t *recall_mutex;
 
+  gboolean children_lock_free;  
   gboolean omit_event;
   
   /* get recall mutex */
@@ -4870,6 +5047,7 @@ ags_recall_real_do_feedback(AgsRecall *recall)
   
   recall_mutex = recall->obj_mutex;
 
+  children_lock_free = ags_recall_global_children_lock_free;
   omit_event = ags_recall_global_omit_event;
   
   pthread_mutex_unlock(ags_recall_get_class_mutex());
@@ -4883,9 +5061,13 @@ ags_recall_real_do_feedback(AgsRecall *recall)
     g_warning("running on template");
   }
 
-  list =
-    list_start = g_list_copy(recall->children);
-
+  if(!children_lock_free){
+    list =
+      list_start = g_list_copy(recall->children);
+  }else{
+    list = recall->children;
+  }
+  
   pthread_mutex_unlock(recall_mutex);
 
   while(list != NULL){
@@ -4898,7 +5080,9 @@ ags_recall_real_do_feedback(AgsRecall *recall)
     list = list->next;
   }
 
-  g_list_free(list_start);  
+  if(!children_lock_free){
+    g_list_free(list_start);
+  }
 }
 
 /**
@@ -4927,6 +5111,7 @@ ags_recall_real_feed_output_queue(AgsRecall *recall)
 
   pthread_mutex_t *recall_mutex;
 
+  gboolean children_lock_free;  
   gboolean omit_event;
   
   /* get recall mutex */
@@ -4934,6 +5119,7 @@ ags_recall_real_feed_output_queue(AgsRecall *recall)
   
   recall_mutex = recall->obj_mutex;
 
+  children_lock_free = ags_recall_global_children_lock_free;
   omit_event = ags_recall_global_omit_event;
   
   pthread_mutex_unlock(ags_recall_get_class_mutex());
@@ -4947,9 +5133,13 @@ ags_recall_real_feed_output_queue(AgsRecall *recall)
     g_warning("running on template");
   }
 
-  list =
-    list_start = g_list_copy(recall->children);
-
+  if(!children_lock_free){
+    list =
+      list_start = g_list_copy(recall->children);
+  }else{
+    list = recall->children;
+  }
+  
   pthread_mutex_unlock(recall_mutex);
 
   while(list != NULL){
@@ -4962,7 +5152,9 @@ ags_recall_real_feed_output_queue(AgsRecall *recall)
     list = list->next;
   }
 
-  g_list_free(list_start);
+  if(!children_lock_free){
+    g_list_free(list_start);
+  }
 }
 
 /**

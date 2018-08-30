@@ -210,6 +210,7 @@ GType ags_recall_get_type();
 
 pthread_mutex_t* ags_recall_get_class_mutex();
 
+gboolean ags_recall_global_get_children_lock_free();
 gboolean ags_recall_global_get_omit_event();
 gboolean ags_recall_global_get_performance_mode();
 gboolean ags_recall_global_get_rt_safe();
