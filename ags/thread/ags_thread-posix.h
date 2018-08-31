@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -280,6 +280,16 @@ struct _AgsThreadClass
 
 GType ags_thread_get_type();
 
+pthread_mutex_t* ags_thread_get_class_mutex();
+
+gboolean ags_thread_test_flags(AgsThread *thread, guint flags);
+void ags_thread_set_flags(AgsThread *thread, guint flags);
+void ags_thread_unset_flags(AgsThread *thread, guint flags);
+
+gboolean ags_thread_test_sync_flags(AgsThread *thread, guint flags);
+void ags_thread_set_sync_flags(AgsThread *thread, guint flags);
+void ags_thread_unset_sync_flags(AgsThread *thread, guint flags);
+
 void ags_thread_resume_handler(int sig);
 void ags_thread_suspend_handler(int sig);
 
@@ -338,6 +348,8 @@ void ags_thread_add_start_queue(AgsThread *thread,
 				AgsThread *child);
 void ags_thread_add_start_queue_all(AgsThread *thread,
 				    GList *child);
+
+gboolean ags_thread_is_running(AgsThread *thread);
 
 void ags_thread_start(AgsThread *thread);
 void ags_thread_run(AgsThread *thread);

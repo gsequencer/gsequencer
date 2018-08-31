@@ -22,6 +22,7 @@
 
 #include <glib.h>
 #include <glib-object.h>
+
 #include <gtk/gtk.h>
 
 #define AGS_TYPE_PLUGIN_PREFERENCES                (ags_plugin_preferences_get_type())

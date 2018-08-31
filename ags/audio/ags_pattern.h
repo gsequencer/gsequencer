@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -23,8 +23,9 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include <ags/thread/ags_timestamp_thread.h>
-#include <ags/thread/ags_timestamp.h>
+#include <pthread.h>
+
+#include <ags/libags.h>
 
 #define AGS_TYPE_PATTERN                (ags_pattern_get_type())
 #define AGS_PATTERN(obj)                (G_TYPE_CHECK_INSTANCE_CAST(obj, AGS_TYPE_PATTERN, AgsPattern))
@@ -48,13 +49,15 @@ typedef struct _AgsPatternClass AgsPatternClass;
 
 /**
  * AgsPatternFlags:
- * @AGS_PATTERN_CONNECTED: indicates the pattern was connected by calling #AgsConnectable::connect()
+ * @AGS_PATTERN_ADDED_TO_REGISTRY: the pattern was added to registry, see #AgsConnectable::add_to_registry()
+ * @AGS_PATTERN_CONNECTED: indicates the port was connected by calling #AgsConnectable::connect()
  * 
  * Enum values to control the behavior or indicate internal state of #AgsPattern by
  * enable/disable as flags.
  */
 typedef enum{
-  AGS_PATTERN_CONNECTED   = 1,
+  AGS_PATTERN_ADDED_TO_REGISTRY     = 1,
+  AGS_PATTERN_CONNECTED             = 1 <<  1,
 }AgsPatternFlags;
 
 struct _AgsPattern
@@ -62,8 +65,15 @@ struct _AgsPattern
   GObject gobject;
 
   guint flags;
-  
-  GObject *timestamp;
+
+  pthread_mutex_t *obj_mutex;
+  pthread_mutexattr_t *obj_mutexattr;
+
+  AgsUUID *uuid;
+
+  GObject *channel;
+
+  AgsTimestamp *timestamp;
 
   guint dim[3];
   guint ***pattern;
@@ -82,7 +92,13 @@ struct _AgsPatternClass
 
 GType ags_pattern_get_type();
 
-GList* ags_pattern_find_near_timestamp(GList *pattern, GObject *timestamp);
+pthread_mutex_t* ags_pattern_get_class_mutex();
+
+gboolean ags_pattern_test_flags(AgsPattern *pattern, guint flags);
+void ags_pattern_set_flags(AgsPattern *pattern, guint flags);
+void ags_pattern_unset_flags(AgsPattern *pattern, guint flags);
+
+GList* ags_pattern_find_near_timestamp(GList *pattern, AgsTimestamp *timestamp);
 
 void ags_pattern_set_dim(AgsPattern *pattern, guint dim0, guint dim1, guint length);
 

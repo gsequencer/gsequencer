@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -19,6 +19,8 @@
 
 #include <ags/audio/task/ags_open_file.h>
 
+#include <ags/libags.h>
+
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_input.h>
@@ -29,7 +31,6 @@
 #include <ags/i18n.h>
 
 void ags_open_file_class_init(AgsOpenFileClass *open_file);
-void ags_open_file_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_open_file_init(AgsOpenFile *open_file);
 void ags_open_file_set_property(GObject *gobject,
 				guint prop_id,
@@ -39,10 +40,9 @@ void ags_open_file_get_property(GObject *gobject,
 				guint prop_id,
 				GValue *value,
 				GParamSpec *param_spec);
-void ags_open_file_connect(AgsConnectable *connectable);
-void ags_open_file_disconnect(AgsConnectable *connectable);
 void ags_open_file_dispose(GObject *gobject);
 void ags_open_file_finalize(GObject *gobject);
+
 void ags_open_file_launch(AgsTask *task);
 
 /**
@@ -56,12 +56,11 @@ void ags_open_file_launch(AgsTask *task);
  */
 
 static gpointer ags_open_file_parent_class = NULL;
-static AgsConnectableInterface *ags_open_file_parent_connectable_interface;
 
 enum{
   PROP_0,
   PROP_AUDIO,
-  PROP_FILENAMES,
+  PROP_FILENAME,
   PROP_OVERWRITE_CHANNELS,
   PROP_CREATE_CHANNELS,
 };
@@ -75,36 +74,24 @@ ags_open_file_get_type()
     GType ags_type_open_file;
 
     static const GTypeInfo ags_open_file_info = {
-      sizeof (AgsOpenFileClass),
+      sizeof(AgsOpenFileClass),
       NULL, /* base_init */
       NULL, /* base_finalize */
       (GClassInitFunc) ags_open_file_class_init,
       NULL, /* class_finalize */
       NULL, /* class_data */
-      sizeof (AgsOpenFile),
+      sizeof(AgsOpenFile),
       0,    /* n_preallocs */
       (GInstanceInitFunc) ags_open_file_init,
-    };
-
-    static const GInterfaceInfo ags_connectable_interface_info = {
-      (GInterfaceInitFunc) ags_open_file_connectable_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
     };
 
     ags_type_open_file = g_type_register_static(AGS_TYPE_TASK,
 						"AgsOpenFile",
 						&ags_open_file_info,
 						0);
-
-    g_type_add_interface_static(ags_type_open_file,
-				AGS_TYPE_CONNECTABLE,
-				&ags_connectable_interface_info);
-
-    g_once_init_leave (&g_define_type_id__volatile, ags_type_open_file);
   }
-
-  return g_define_type_id__volatile;
+  
+  return(ags_type_open_file);
 }
 
 void
@@ -112,6 +99,7 @@ ags_open_file_class_init(AgsOpenFileClass *open_file)
 {
   GObjectClass *gobject;
   AgsTaskClass *task;
+
   GParamSpec *param_spec;
 
   ags_open_file_parent_class = g_type_class_peek_parent(open_file);
@@ -131,7 +119,7 @@ ags_open_file_class_init(AgsOpenFileClass *open_file)
    *
    * The assigned #AgsAudio
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("audio",
 				   i18n_pspec("audio of open file"),
@@ -143,18 +131,18 @@ ags_open_file_class_init(AgsOpenFileClass *open_file)
 				  param_spec);
   
   /**
-   * AgsOpenFile:filenames:
+   * AgsOpenFile:filename:
    *
-   * The assigned #GSList-struct providing filenames as string
+   * The assigned #GSList-struct providing filename as string
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
-  param_spec = g_param_spec_pointer("filenames",
-				    i18n_pspec("filenames of open file"),
-				    i18n_pspec("The filenames of open file task"),
+  param_spec = g_param_spec_pointer("filename",
+				    i18n_pspec("filename of open file"),
+				    i18n_pspec("The filename of open file task"),
 				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
-				  PROP_FILENAMES,
+				  PROP_FILENAME,
 				  param_spec);
   
   /**
@@ -162,7 +150,7 @@ ags_open_file_class_init(AgsOpenFileClass *open_file)
    *
    * As open files overwrite #AgsChannel.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec =  g_param_spec_boolean("overwrite-channels",
 				     i18n_pspec("open file overwriting channels"),
@@ -178,7 +166,7 @@ ags_open_file_class_init(AgsOpenFileClass *open_file)
    *
    * As open files create #AgsChannel.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec =  g_param_spec_boolean("create-channels",
 				     i18n_pspec("open file creating channels"),
@@ -196,19 +184,10 @@ ags_open_file_class_init(AgsOpenFileClass *open_file)
 }
 
 void
-ags_open_file_connectable_interface_init(AgsConnectableInterface *connectable)
-{
-  ags_open_file_parent_connectable_interface = g_type_interface_peek_parent(connectable);
-
-  connectable->connect = ags_open_file_connect;
-  connectable->disconnect = ags_open_file_disconnect;
-}
-
-void
 ags_open_file_init(AgsOpenFile *open_file)
 {
   open_file->audio = NULL;
-  open_file->filenames = NULL;
+  open_file->filename = NULL;
   open_file->overwrite_channels = FALSE;
   open_file->create_channels = FALSE;
 }
@@ -245,21 +224,21 @@ ags_open_file_set_property(GObject *gobject,
       open_file->audio = (GObject *) audio;
     }
     break;
-  case PROP_FILENAMES:
+  case PROP_FILENAME:
     {
-      GSList *filenames;
+      GSList *filename;
       
-      filenames = g_value_get_pointer(value);
+      filename = g_value_get_pointer(value);
 
-      if(open_file->filenames == filenames){
+      if(open_file->filename == filename){
 	return;
       }
 
-      if(open_file->filenames != NULL){
-	g_slist_free(open_file->filenames);
+      if(open_file->filename != NULL){
+	g_slist_free(open_file->filename);
       }
       
-      open_file->filenames = g_slist_copy(filenames);
+      open_file->filename = g_slist_copy(filename);
     }
     break;
   case PROP_OVERWRITE_CHANNELS:
@@ -294,10 +273,10 @@ ags_open_file_get_property(GObject *gobject,
       g_value_set_object(value, open_file->audio);
     }
     break;
-  case PROP_FILENAMES:
+  case PROP_FILENAME:
     {
       g_value_set_pointer(value,
-			  g_slist_copy(open_file->filenames));
+			  g_slist_copy(open_file->filename));
     }
     break;
   case PROP_OVERWRITE_CHANNELS:
@@ -317,22 +296,6 @@ ags_open_file_get_property(GObject *gobject,
 }
 
 void
-ags_open_file_connect(AgsConnectable *connectable)
-{
-  ags_open_file_parent_connectable_interface->connect(connectable);
-
-  /* empty */
-}
-
-void
-ags_open_file_disconnect(AgsConnectable *connectable)
-{
-  ags_open_file_parent_connectable_interface->disconnect(connectable);
-
-  /* empty */
-}
-
-void
 ags_open_file_dispose(GObject *gobject)
 {
   AgsOpenFile *open_file;
@@ -345,10 +308,10 @@ ags_open_file_dispose(GObject *gobject)
     open_file->audio = NULL;
   }
 
-  if(open_file->filenames != NULL){
-    g_slist_free(open_file->filenames);
+  if(open_file->filename != NULL){
+    g_slist_free(open_file->filename);
 
-    open_file->filenames = NULL;
+    open_file->filename = NULL;
   }
   
   /* call parent */
@@ -366,8 +329,8 @@ ags_open_file_finalize(GObject *gobject)
     g_object_unref(open_file->audio);
   }
 
-  if(open_file->filenames != NULL){
-    g_slist_free(open_file->filenames);
+  if(open_file->filename != NULL){
+    g_slist_free(open_file->filename);
   }
 
   /* call parent */
@@ -377,274 +340,32 @@ ags_open_file_finalize(GObject *gobject)
 void
 ags_open_file_launch(AgsTask *task)
 {
-  AgsAudio *audio;
-  AgsChannel *channel, *iter, *next_pad;
-  AgsChannel *link;
-  AgsRecycling *first_recycling;
-  AgsAudioFile *audio_file;
-
   AgsOpenFile *open_file;
-
-  AgsMutexManager *mutex_manager;
-  
-  AgsFileLink *file_link;
-
-  GObject *soundcard;
-  
-  GSList *current;
-  GList *audio_signal;
-  
-  gchar *current_filename;
-  
-  guint input_pads, pads_old;
-  guint i, i_stop;
-  guint j;
-  
-  GError *error;
-
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *audio_mutex;
-  pthread_mutex_t *channel_mutex;
-  pthread_mutex_t *iter_mutex;
-
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
 
   open_file = AGS_OPEN_FILE(task);
 
-  audio = open_file->audio;
-
-  current = open_file->filenames;
-
-  i_stop = 0;
-  
-  /* get audio mutex */
-  pthread_mutex_lock(application_mutex);
-
-  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
-					 (GObject *) audio);
-  
-  pthread_mutex_unlock(application_mutex);
-
-  /* get some fields */
-  pthread_mutex_lock(audio_mutex);
-
-  input_pads = audio->input_pads;
-  pads_old = audio->input_pads;
-  
-  if(open_file->overwrite_channels){
-    channel = audio->input;
-
-    i_stop = audio->input_pads;
-  }
-
-  pthread_mutex_unlock(audio_mutex);
-
-  /*  */
-  if(open_file->create_channels){
-    GList *list;
-
-    i_stop = g_slist_length(open_file->filenames);
-    
-    if(open_file->overwrite_channels){
-      if(i_stop > input_pads){
-	ags_audio_set_pads(audio, AGS_TYPE_INPUT,
-			   i_stop);
-      }
-
-      /* get some fields */
-      pthread_mutex_lock(audio_mutex);
-  
-      channel = audio->input;
-
-      input_pads = audio->input_pads;
-
-      pthread_mutex_unlock(audio_mutex);
-    }else{
-      ags_audio_set_pads(audio, AGS_TYPE_INPUT,
-			 audio->input_pads + i_stop);
-
-      /* get some fields */
-      pthread_mutex_lock(audio_mutex);
-  
-      channel = audio->input;
-
-      input_pads = audio->input_pads;
-
-      pthread_mutex_unlock(audio_mutex);
-
-      /* reset channel */
-      channel = ags_channel_pad_nth(channel,
-				    pads_old);
-    }
-
-    iter = ags_channel_pad_nth(audio->input,
-			       pads_old);
-
-    while(iter != NULL){
-      /* get channel mutex */
-      pthread_mutex_lock(application_mutex);
-
-      iter_mutex = ags_mutex_manager_lookup(mutex_manager,
-					    (GObject *) iter);
-  
-      pthread_mutex_unlock(application_mutex);
-
-      /* connect */
-      pthread_mutex_lock(iter_mutex);
-      
-      ags_connectable_connect(AGS_CONNECTABLE(iter));
-
-      iter = iter->next;
-
-      pthread_mutex_unlock(iter_mutex);
-    }
-  }
-
-  for(i = 0; i < i_stop && current != NULL; i++){
-    /* get channel mutex */
-    pthread_mutex_lock(application_mutex);
-
-    channel_mutex = ags_mutex_manager_lookup(mutex_manager,
-					     (GObject *) channel);
-  
-    pthread_mutex_unlock(application_mutex);
-
-    /* get some fields */
-    pthread_mutex_lock(channel_mutex);
-
-    soundcard = channel->soundcard;
-
-    next_pad = channel->next_pad;
-    
-    pthread_mutex_unlock(channel_mutex);
-
-    /* audio file */
-    current_filename = (gchar *) current->data;
-    
-    audio_file = ags_audio_file_new((gchar *) current_filename,
-				    soundcard,
-				    0, open_file->audio->audio_channels);
-
-    if(!ags_audio_file_open(audio_file)){
-      g_message("unable to open file - %s", current_filename);
-      
-      current = current->next;
-
-      continue;
-    }
-    
-    ags_audio_file_read_audio_signal(audio_file);
-
-    iter = channel;
-    audio_signal = audio_file->audio_signal;
-    j = 0;
-
-    /* connect */    
-    while(iter != next_pad && audio_signal != NULL){
-      /* get channel mutex */
-      pthread_mutex_lock(application_mutex);
-
-      iter_mutex = ags_mutex_manager_lookup(mutex_manager,
-					    (GObject *) iter);
-  
-      pthread_mutex_unlock(application_mutex);
-
-      /* set link */
-      pthread_mutex_lock(iter_mutex);
-      
-      link = iter->link;
-
-      pthread_mutex_unlock(iter_mutex);
-      
-      if(link != NULL){
-	error = NULL;
-
-	ags_channel_set_link(iter, NULL,
-			     &error);
-
-	if(error != NULL){
-	  g_warning("%s", error->message);
-	}
-      }
-
-      /* file link */
-      if(AGS_IS_INPUT(iter)){
-	pthread_mutex_lock(iter_mutex);
-
-	file_link = AGS_INPUT(iter)->file_link;
-	
-	if(file_link == NULL){
-	  file_link = g_object_new(AGS_TYPE_AUDIO_FILE_LINK,
-				   NULL);
-	
-	  g_object_set(G_OBJECT(iter),
-		       "file-link", file_link,
-		       NULL);
-	}
-
-	g_object_set(file_link,
-		     "filename", current_filename,
-		     "preset", NULL,
-		     "instrument", NULL,
-		     "sample", NULL,
-		     "audio-channel", j,
-		     NULL);
-
-	pthread_mutex_unlock(iter_mutex);
-      }
-      
-      /* add as template */
-      pthread_mutex_lock(iter_mutex);
-
-      first_recycling = iter->first_recycling;
-
-      pthread_mutex_unlock(iter_mutex);
-      
-      AGS_AUDIO_SIGNAL(audio_signal->data)->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;
-      ags_recycling_add_audio_signal(first_recycling,
-				     AGS_AUDIO_SIGNAL(audio_signal->data));
-
-      /* iterate - audio channel and audio signal*/
-      pthread_mutex_lock(iter_mutex);
-
-      iter = iter->next;
-
-      pthread_mutex_unlock(iter_mutex);
-
-      audio_signal = audio_signal->next;
-      
-      j++;
-    }
-
-    /* iterate - pad and filename */
-    pthread_mutex_lock(channel_mutex);
-    
-    channel = channel->next_pad;
-
-    pthread_mutex_unlock(channel_mutex);
-
-    current = current->next;
-  }
+  ags_audio_open_audio_file_as_channel(open_file->audio,
+				       open_file->filename,
+				       open_file->overwrite_channels,
+				       open_file->create_channels);
 }
 
 /**
  * ags_open_file_new:
  * @audio: the #AgsAudio
- * @filenames: the filenames to be opened
+ * @filename: the filename to be opened
  * @overwrite_channels: reset existing #AgsInput
- * @create_channels: inistantiate new #AgsInput, if @overwrite_channell as needed
- * else for sure
+ * @create_channels: instantiate new #AgsInput
  *
- * Creates an #AgsOpenFile.
+ * Create a new instance of #AgsOpenFile.
  *
- * Returns: an new #AgsOpenFile.
+ * Returns: the new #AgsOpenFile.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsOpenFile*
 ags_open_file_new(AgsAudio *audio,
-		  GSList *filenames,
+		  GSList *filename,
 		  gboolean overwrite_channels,
 		  gboolean create_channels)
 {
@@ -652,7 +373,7 @@ ags_open_file_new(AgsAudio *audio,
 
   open_file = (AgsOpenFile *) g_object_new(AGS_TYPE_OPEN_FILE,
 					   "audio", audio,
-					   "filenames", filenames,
+					   "filename", filename,
 					   "overwrite-channels", overwrite_channels,
 					   "create-channels", create_channels,
 					   NULL);

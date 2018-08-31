@@ -24,6 +24,7 @@
 #include <ags/libags-audio.h>
 #include <ags/libags-gui.h>
 
+#include <ags/X/ags_ui_provider.h>
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_pad.h>
 #include <ags/X/ags_effect_bridge.h>
@@ -44,13 +45,16 @@ void ags_machine_get_property(GObject *gobject,
 			      guint prop_id,
 			      GValue *value,
 			      GParamSpec *param_spec);
+static void ags_machine_finalize(GObject *gobject);
+
 void ags_machine_connect(AgsConnectable *connectable);
 void ags_machine_disconnect(AgsConnectable *connectable);
+
 gchar* ags_machine_get_version(AgsPlugin *plugin);
 void ags_machine_set_version(AgsPlugin *plugin, gchar *version);
 gchar* ags_machine_get_build_id(AgsPlugin *plugin);
 void ags_machine_set_build_id(AgsPlugin *plugin, gchar *build_id);
-static void ags_machine_finalize(GObject *gobject);
+
 void ags_machine_show(GtkWidget *widget);
 
 void ags_machine_real_resize_audio_channels(AgsMachine *machine,
@@ -80,7 +84,7 @@ enum{
   RESIZE_PADS,
   MAP_RECALL,
   FIND_PORT,
-  DONE,
+  STOP,
   LAST_SIGNAL,
 };
 
@@ -168,7 +172,7 @@ ags_machine_class_init(AgsMachineClass *machine)
    *
    * The assigned #AgsAudio to visualize.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("audio",
 				   i18n_pspec("assigned audio"),
@@ -184,7 +188,7 @@ ags_machine_class_init(AgsMachineClass *machine)
    *
    * The machine's name.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_string("machine-name",
 				   i18n_pspec("machine name"),
@@ -205,7 +209,7 @@ ags_machine_class_init(AgsMachineClass *machine)
   machine->resize_audio_channels = ags_machine_real_resize_audio_channels;
   machine->map_recall = ags_machine_real_map_recall;
   machine->find_port = ags_machine_real_find_port;
-  machine->done = NULL;
+  machine->stop = NULL;
 
   /* signals */
   /**
@@ -218,7 +222,7 @@ ags_machine_class_init(AgsMachineClass *machine)
    * The ::resize-audio-channels signal notifies about changed channel allocation within
    * audio.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   machine_signals[RESIZE_AUDIO_CHANNELS] =
     g_signal_new("resize-audio-channels",
@@ -226,7 +230,7 @@ ags_machine_class_init(AgsMachineClass *machine)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsMachineClass, resize_audio_channels),
 		 NULL, NULL,
-		 g_cclosure_user_marshal_VOID__UINT_UINT,
+		 ags_cclosure_marshal_VOID__UINT_UINT,
 		 G_TYPE_NONE, 2,
 		 G_TYPE_UINT,
 		 G_TYPE_UINT);
@@ -242,7 +246,7 @@ ags_machine_class_init(AgsMachineClass *machine)
    * The ::resize-pads signal notifies about changed channel allocation within
    * audio.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   machine_signals[RESIZE_PADS] =
     g_signal_new("resize-pads",
@@ -250,7 +254,7 @@ ags_machine_class_init(AgsMachineClass *machine)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsMachineClass, resize_pads),
 		 NULL, NULL,
-		 g_cclosure_user_marshal_VOID__ULONG_UINT_UINT,
+		 ags_cclosure_marshal_VOID__ULONG_UINT_UINT,
 		 G_TYPE_NONE, 3,
 		 G_TYPE_ULONG,
 		 G_TYPE_UINT,
@@ -262,7 +266,7 @@ ags_machine_class_init(AgsMachineClass *machine)
    *
    * The ::map-recall should be used to add the machine's default recall.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   machine_signals[MAP_RECALL] =
     g_signal_new("map-recall",
@@ -280,7 +284,7 @@ ags_machine_class_init(AgsMachineClass *machine)
    *
    * The ::find-port signal emits as recall should be mapped.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   machine_signals[FIND_PORT] =
     g_signal_new("find-port",
@@ -288,27 +292,28 @@ ags_machine_class_init(AgsMachineClass *machine)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsMachineClass, find_port),
 		 NULL, NULL,
-		 g_cclosure_user_marshal_POINTER__VOID,
+		 ags_cclosure_marshal_POINTER__VOID,
 		 G_TYPE_POINTER, 0);
 
   /**
-   * AgsMachine::done:
+   * AgsMachine::stop:
    * @machine: the #AgsMachine
-   * @recall_id: the #AgsRecallID
+   * @recall_id: the #GList-struct containing #AgsRecallID
+   * @sound_scope: the sound scope
    *
-   * The ::done signal gets emited as audio stops playback.
+   * The ::stop signal gets emited as audio stops playback.
    * 
-   * Since: 1.2.0
+   * Since: 2.0.0
    */
-  machine_signals[DONE] =
-    g_signal_new("done",
+  machine_signals[STOP] =
+    g_signal_new("stop",
                  G_TYPE_FROM_CLASS(machine),
                  G_SIGNAL_RUN_LAST,
-		 G_STRUCT_OFFSET(AgsMachineClass, done),
+		 G_STRUCT_OFFSET(AgsMachineClass, stop),
                  NULL, NULL,
-                 g_cclosure_marshal_VOID__OBJECT,
-                 G_TYPE_NONE, 1,
-		 G_TYPE_OBJECT);
+                 ags_cclosure_marshal_VOID__POINTER_INT,
+                 G_TYPE_NONE, 2,
+		 G_TYPE_POINTER, G_TYPE_INT);
 }
 
 void
@@ -349,9 +354,12 @@ ags_machine_init(AgsMachine *machine)
   }
 
   g_hash_table_insert(ags_machine_message_monitor,
-		      machine, ags_machine_message_monitor_timeout);
+		      machine,
+		      ags_machine_message_monitor_timeout);
 
-  g_timeout_add(1000 / 30, (GSourceFunc) ags_machine_message_monitor_timeout, (gpointer) machine);
+  g_timeout_add(1000 / 30,
+		(GSourceFunc) ags_machine_message_monitor_timeout,
+		(gpointer) machine);
 
   machine->machine_name = NULL;
 
@@ -380,7 +388,7 @@ ags_machine_init(AgsMachine *machine)
   g_object_ref(G_OBJECT(machine->audio));
 
   machine->audio->flags |= AGS_AUDIO_CAN_NEXT_ACTIVE;
-  machine->audio->machine = (GObject *) machine;
+  machine->audio->machine_widget = (GObject *) machine;
 
   /* AgsAudio related forwarded signals */
   g_signal_connect_after(G_OBJECT(machine), "resize-audio-channels",
@@ -389,8 +397,8 @@ ags_machine_init(AgsMachine *machine)
   g_signal_connect_after(G_OBJECT(machine), "resize-pads",
 			 G_CALLBACK(ags_machine_resize_pads_callback), NULL);
 
-  g_signal_connect_after(G_OBJECT(machine), "done",
-			 G_CALLBACK(ags_machine_done_callback), NULL);
+  g_signal_connect_after(G_OBJECT(machine), "stop",
+			 G_CALLBACK(ags_machine_stop_callback), NULL);
   
   machine->play = NULL;
 
@@ -447,20 +455,9 @@ ags_machine_set_property(GObject *gobject,
       reset = TRUE;
 
       if(machine->audio != NULL){
-	AgsSoundcard *soundcard;
 	GList *pad;
 	GList *list;
 
-	/* remove from soundcard */
-	soundcard = AGS_SOUNDCARD(audio->soundcard);
-	
-	list = ags_soundcard_get_audio(soundcard);
-	list = g_list_remove(list,
-			     G_OBJECT(audio));
-	ags_soundcard_set_audio(soundcard,
-				list);
-	audio->soundcard = NULL;
-	
 	g_object_unref(G_OBJECT(machine->audio));
 
 	if(audio == NULL){
@@ -493,33 +490,52 @@ ags_machine_set_property(GObject *gobject,
 
 	if(reset){
 	  AgsChannel *input, *output;
-	  GList *pad;
-	  GList *line;
+	  
+	  GList *start_pad, *pad;
+	  GList *start_line, *line;
+
+	  guint audio_channels;
+	  guint output_pads, input_pads;
 	  guint i;
 
+	  g_object_get(audio,
+		       "audio-channels", &audio_channels,
+		       "output-pads", &output_pads,
+		       "input-pads", &input_pads,
+		       "output", &output,
+		       "input", &input,
+		       NULL);
+
 	  /* set channel and resize for AgsOutput */
-	  if(machine->output_pad_type != G_TYPE_NONE){
-	    output = audio->output;
-	    pad = gtk_container_get_children(machine->output);
+	  if(machine->output_pad_type != G_TYPE_NONE){	    
+	    pad =
+	      start_pad = gtk_container_get_children(machine->output);
 
 	    i = 0;
 
 	    while(pad != NULL && output != NULL){
-	      line = gtk_container_get_children(GTK_CONTAINER(AGS_PAD(pad->data)->expander_set));
+	      line =
+		start_line = gtk_container_get_children(GTK_CONTAINER(AGS_PAD(pad->data)->expander_set));
 
 	      ags_pad_resize_lines(AGS_PAD(pad->data), machine->output_line_type,
-				   audio->audio_channels, g_list_length(line));
+				   audio_channels, g_list_length(line));
 	      g_object_set(G_OBJECT(pad->data),
 			   "channel", output,
 			   NULL);
 
-	      g_list_free(line);
+	      g_list_free(start_line);
+
+	      /* iterate */
+	      g_object_get(output,
+			   "next-pad", &output,
+			   NULL);
 	      
-	      output = output->next_pad;
 	      pad = pad->next;
 	      i++;
 	    }
 
+	    g_list_free(start_pad);
+	    
 	    if(output != NULL){
 	      AgsPad *pad;
 
@@ -532,25 +548,29 @@ ags_machine_set_property(GObject *gobject,
 				  GTK_WIDGET(pad));
 
 		ags_pad_resize_lines(pad, machine->output_line_type,
-				     audio->audio_channels, 0);
+				     audio_channels, 0);
 	      }
 	    }else{
 	      /* destroy pad */
-	      pad = gtk_container_get_children(machine->output);
-	      pad = g_list_nth(pad, audio->output_pads);
+	      pad =
+		start_pad = gtk_container_get_children(machine->output);
+	      pad = g_list_nth(pad,
+			       output_pads);
 
 	      while(pad != NULL){
 		gtk_widget_destroy(pad->data);
 
 		pad = pad->next;
-	      }	      
+	      }
+
+	      g_list_free(start_pad);
 	    }
 	  }
 
 	  /* set channel and resize for AgsOutput */
 	  if(machine->input_pad_type != G_TYPE_NONE){
-	    input = audio->input;
-	    pad = gtk_container_get_children(machine->input);
+	    pad =
+	      start_pad = gtk_container_get_children(machine->input);
 
 	    i = 0;
 
@@ -558,17 +578,23 @@ ags_machine_set_property(GObject *gobject,
 	      line = gtk_container_get_children(GTK_CONTAINER(AGS_PAD(pad->data)->expander_set));
 
 	      ags_pad_resize_lines(AGS_PAD(pad->data), machine->input_line_type,
-				   audio->audio_channels, g_list_length(line));
+				   audio_channels, g_list_length(line));
 	      g_object_set(G_OBJECT(pad->data),
 			   "channel", input,
 			   NULL);
 
 	      g_list_free(line);
 
-	      input = input->next_pad;
+	      /* iterate */
+	      g_object_get(input,
+			   "next-pad", &input,
+			   NULL);
+	      
 	      pad = pad->next;
 	      i++;
 	    }
+
+	    g_list_free(start_pad);
 
 	    if(input != NULL){
 	      AgsPad *pad;
@@ -582,11 +608,12 @@ ags_machine_set_property(GObject *gobject,
 				  GTK_WIDGET(pad));
 
 		ags_pad_resize_lines(pad, machine->input_line_type,
-				     audio->audio_channels, 0);
+				     audio_channels, 0);
 	      }
 	    }else{
 	      /* destroy pad */
-	      pad = gtk_container_get_children(machine->input);
+	      pad =
+		start_pad = gtk_container_get_children(machine->input);
 	      pad = g_list_nth(pad, audio->input_pads);
 
 	      while(pad != NULL){
@@ -594,43 +621,62 @@ ags_machine_set_property(GObject *gobject,
 
 		pad = pad->next;
 	      }	      
+
+	      g_list_free(start_pad);
 	    }
 	  }
 	}else{
 	  AgsPad *pad;
+
+	  AgsChannel *input, *output;
 	  AgsChannel *channel;
+	  
+	  guint audio_channels;
+	  guint output_pads, input_pads;
 	  guint i;
+
+	  g_object_get(audio,
+		       "audio-channels", &audio_channels,
+		       "output-pads", &output_pads,
+		       "input-pads", &input_pads,
+		       "output", &output,
+		       "input", &input,
+		       NULL);
 
 	  /* add pad */
 	  if(machine->output_pad_type != G_TYPE_NONE){
-	    channel = audio->output;
+	    channel = output;
 
-	    for(i = 0; i < audio->output_pads; i++){
+	    for(i = 0; i < output_pads; i++){
 	      pad = g_object_new(machine->output_pad_type,
 				 "channel", channel,
 				 NULL);
 	      gtk_container_add(machine->output,
 				GTK_WIDGET(pad));	  
 	      ags_pad_resize_lines(pad, machine->output_line_type,
-				   audio->audio_channels, 0);
+				   audio_channels, 0);
 
-	      channel = channel->next_pad;
+	      g_object_get(channel,
+			   "next-pad", &channel,
+			   NULL);
 	    }
 	  }
 
 	  if(machine->input_pad_type != G_TYPE_NONE){
-	    channel = audio->input;
+	    channel = input;
 
-	    for(i = 0; i < audio->input_pads; i++){
+	    for(i = 0; i < input_pads; i++){
 	      pad = g_object_new(machine->input_pad_type,
 				 "channel", channel,
 				 NULL);
 	      gtk_container_add(machine->output,
 				GTK_WIDGET(pad));
 	      ags_pad_resize_lines(pad, machine->input_line_type,
-				   audio->audio_channels, 0);
+				   audio_channels, 0);
 
-	      channel = channel->next_pad;
+	      g_object_get(channel,
+			   "next-pad", &channel,
+			   NULL);
 	    }
 	  }
 	}
@@ -696,6 +742,61 @@ ags_machine_get_property(GObject *gobject,
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
+  }
+}
+
+
+static void
+ags_machine_finalize(GObject *gobject)
+{
+  AgsMachine *machine;
+
+  AgsAudio *audio;
+  
+  AgsApplicationContext *application_context;
+  
+  GList *list, *list_start;
+
+  char *str;
+
+  machine = (AgsMachine *) gobject;
+
+  application_context = ags_application_context_get_instance();
+  
+  /* remove from sound provider */
+  list = ags_sound_provider_get_audio(AGS_SOUND_PROVIDER(application_context));
+  ags_sound_provider_set_audio(AGS_SOUND_PROVIDER(application_context),
+			       g_list_remove(list,
+					     machine->audio));
+
+  /* remove message monitor */
+  g_hash_table_remove(ags_machine_message_monitor,
+		      machine);
+
+  g_list_free_full(machine->enabled_automation_port,
+		   ags_machine_automation_port_free);
+  
+  //TODO:JK: better clean-up of audio
+  
+  if(machine->properties != NULL){
+    gtk_widget_destroy((GtkWidget *) machine->properties);
+  }
+
+  if(machine->rename != NULL){
+    gtk_widget_destroy((GtkWidget *) machine->rename);
+  }
+  
+  if(machine->machine_name != NULL){
+    g_free(machine->machine_name);
+  }
+
+  audio = machine->audio;
+
+  /* call parent */
+  G_OBJECT_CLASS(ags_machine_parent_class)->finalize(gobject);
+
+  if(audio != NULL){
+    g_object_unref(G_OBJECT(audio));
   }
 }
 
@@ -852,83 +953,6 @@ ags_machine_set_build_id(AgsPlugin *plugin, gchar *build_id)
   //TODO:JK: implement me
 }
 
-static void
-ags_machine_finalize(GObject *gobject)
-{
-  AgsMachine *machine;
-
-  AgsAudio *audio;
-  
-  GObject *soundcard;
-  
-  AgsMutexManager *mutex_manager;
-
-  GList *list, *list_start;
-
-  char *str;
-
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *soundcard_mutex;
-
-  machine = (AgsMachine *) gobject;
-
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-  
-  /* lookup audio mutex */
-  pthread_mutex_lock(application_mutex);
-
-  soundcard = machine->audio->soundcard;  
-  soundcard_mutex = ags_mutex_manager_lookup(mutex_manager,
-					     (GObject *) soundcard);
-  
-  pthread_mutex_unlock(application_mutex);
-
-  /* remove from soundcard */
-  if(soundcard_mutex != NULL){
-    pthread_mutex_lock(soundcard_mutex);
-  }
-  
-  list = ags_soundcard_get_audio(AGS_SOUNDCARD(soundcard));
-  ags_soundcard_set_audio(AGS_SOUNDCARD(soundcard),
-			  g_list_remove(list,
-					machine->audio));
-
-  if(soundcard_mutex != NULL){
-    pthread_mutex_unlock(soundcard_mutex);
-  }
-
-  /* remove message monitor */
-  g_hash_table_remove(ags_machine_message_monitor,
-		      machine);
-
-  g_list_free_full(machine->enabled_automation_port,
-		   ags_machine_automation_port_free);
-  
-  //TODO:JK: better clean-up of audio
-  
-  if(machine->properties != NULL){
-    gtk_widget_destroy((GtkWidget *) machine->properties);
-  }
-
-  if(machine->rename != NULL){
-    gtk_widget_destroy((GtkWidget *) machine->rename);
-  }
-  
-  if(machine->machine_name != NULL){
-    g_free(machine->machine_name);
-  }
-
-  audio = machine->audio;
-
-  /* call parent */
-  G_OBJECT_CLASS(ags_machine_parent_class)->finalize(gobject);
-
-  if(audio != NULL){
-    g_object_unref(G_OBJECT(audio));
-  }
-}
-
 void
 ags_machine_show(GtkWidget *widget)
 {
@@ -957,7 +981,7 @@ ags_machine_show(GtkWidget *widget)
  * 
  * Returns: the new allocated #AgsMachineAutomationPort
  * 
- * Since: 1.3.0
+ * Since: 2.0.0
  */
 AgsMachineAutomationPort*
 ags_machine_automation_port_alloc(GType channel_type, gchar *control_name)
@@ -978,12 +1002,18 @@ ags_machine_automation_port_alloc(GType channel_type, gchar *control_name)
  * 
  * Free @automation_port
  * 
- * Since: 1.3.0
+ * Since: 2.0.0
  */
 void
 ags_machine_automation_port_free(AgsMachineAutomationPort *automation_port)
 {
+  if(automation_port == NULL){
+    return;
+  }
+  
   g_free(automation_port->control_name);
+
+  g_free(automation_port);
 }
 
 /**
@@ -996,7 +1026,7 @@ ags_machine_automation_port_free(AgsMachineAutomationPort *automation_port)
  * 
  * Returns: the matching #AgsAutomationPort or %NULL
  * 
- * Since: 1.3.0
+ * Since: 2.0.0
  */
 GList*
 ags_machine_automation_port_find_channel_type_with_control_name(GList *list,
@@ -1022,8 +1052,6 @@ ags_machine_real_resize_audio_channels(AgsMachine *machine,
   AgsAudio *audio;
   AgsChannel *channel;
 
-  AgsMutexManager *mutex_manager;
-
   GList *list_output_pad, *list_output_pad_start;
   GList *list_input_pad, *list_input_pad_start;
   GList *list_output_pad_next, *list_output_pad_next_start;
@@ -1031,23 +1059,8 @@ ags_machine_real_resize_audio_channels(AgsMachine *machine,
 
   guint i, j;
 
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *audio_mutex;
-  pthread_mutex_t *channel_mutex;
-
   audio = machine->audio;
   
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-  
-  /* lookup audio mutex */
-  pthread_mutex_lock(application_mutex);
-    
-  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
-					 (GObject *) audio);
-  
-  pthread_mutex_unlock(application_mutex);
-
   if(audio_channels > audio_channels_old){
     /* grow lines */
     AgsPad *pad;
@@ -1056,12 +1069,10 @@ ags_machine_real_resize_audio_channels(AgsMachine *machine,
 
     guint input_pads, output_pads;
 
-    pthread_mutex_lock(audio_mutex);
-
-    input_pads = audio->input_pads;
-    output_pads = audio->output_pads;
-    
-    pthread_mutex_unlock(audio_mutex);
+    g_object_get(audio,
+		 "output-pads", &output_pads,
+		 "input-pads", &input_pads,
+		 NULL);
 
     if(machine->input != NULL){
       list_input_pad_start = 
@@ -1080,21 +1091,11 @@ ags_machine_real_resize_audio_channels(AgsMachine *machine,
     /* AgsInput */
     if(machine->input != NULL){
       /* get input */
-      pthread_mutex_lock(audio_mutex);
-
-      channel = audio->input;
-
-      pthread_mutex_unlock(audio_mutex);
+      g_object_get(audio,
+		   "input", &channel,
+		   NULL);
 
       for(i = 0; i < input_pads; i++){
-	/* lookup channel mutex */
-	pthread_mutex_lock(application_mutex);
-
-	channel_mutex = ags_mutex_manager_lookup(mutex_manager,
-						 (GObject *) channel);
-  
-	pthread_mutex_unlock(application_mutex);
-
 	/* create AgsPad's if necessary or resize */
 	if(audio_channels_old == 0){
 	  pad = g_object_new(machine->input_pad_type,
@@ -1115,11 +1116,9 @@ ags_machine_real_resize_audio_channels(AgsMachine *machine,
 	}
 
 	/* iterate */
-	pthread_mutex_lock(channel_mutex);
-	
-	channel = channel->next_pad;
-	
-	pthread_mutex_unlock(channel_mutex);
+	g_object_get(channel,
+		     "next-pad", &channel,
+		     NULL);
 	
 	if(audio_channels_old != 0){
 	  list_input_pad = list_input_pad->next;
@@ -1130,21 +1129,11 @@ ags_machine_real_resize_audio_channels(AgsMachine *machine,
     /* AgsOutput */
     if(machine->output != NULL){
       /* get output */
-      pthread_mutex_lock(audio_mutex);
-
-      channel = audio->output;
-
-      pthread_mutex_unlock(audio_mutex);
+      g_object_get(audio,
+		   "output", &channel,
+		   NULL);
 
       for(i = 0; i < output_pads; i++){
-	/* lookup channel mutex */
-	pthread_mutex_lock(application_mutex);
-
-	channel_mutex = ags_mutex_manager_lookup(mutex_manager,
-						 (GObject *) channel);
-  
-	pthread_mutex_unlock(application_mutex);
-
 	/* create AgsPad's if necessary or resize */
 	if(audio_channels_old == 0){
 	  pad = g_object_new(machine->output_pad_type,
@@ -1164,11 +1153,9 @@ ags_machine_real_resize_audio_channels(AgsMachine *machine,
 	}
 
 	/* iterate */
-	pthread_mutex_lock(channel_mutex);
-	
-	channel = channel->next_pad;
-	
-	pthread_mutex_unlock(channel_mutex);
+	g_object_get(channel,
+		     "next-pad", &channel,
+		     NULL);
 
 	if(audio_channels_old != 0){
 	  list_output_pad = list_output_pad->next;
@@ -1339,7 +1326,7 @@ ags_machine_real_resize_audio_channels(AgsMachine *machine,
  *
  * Resize audio channel allocation.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_machine_resize_audio_channels(AgsMachine *machine,
@@ -1366,39 +1353,19 @@ ags_machine_real_resize_pads(AgsMachine *machine, GType channel_type,
   AgsChannel *channel;
   AgsChannel *input, *output;
   
-  AgsMutexManager *mutex_manager;
-
   GList *list_pad_start, *list_pad;
 
   guint audio_channels;
   guint i, j;
 
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *audio_mutex;
-  pthread_mutex_t *channel_mutex;
-
   audio = machine->audio;
   
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-  
-  /* lookup audio mutex */
-  pthread_mutex_lock(application_mutex);
-    
-  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
-					 (GObject *) audio);
-  
-  pthread_mutex_unlock(application_mutex);
-  
   if(pads_old < pads){
-    pthread_mutex_lock(audio_mutex);
-
-    input = audio->input;
-    output = audio->output;
-
-    audio_channels = audio->audio_channels;
-    
-    pthread_mutex_unlock(audio_mutex);
+    g_object_get(audio,
+		 "audio-channels", &audio_channels,
+		 "output", &output,
+		 "input", &input,
+		 NULL);
 
     /* grow input */
     if(machine->input != NULL){
@@ -1407,14 +1374,6 @@ ags_machine_real_resize_pads(AgsMachine *machine, GType channel_type,
 				  pads_old * audio_channels);
       
 	for(i = pads_old; i < pads; i++){
-	  /* lookup channel mutex */
-	  pthread_mutex_lock(application_mutex);
-
-	  channel_mutex = ags_mutex_manager_lookup(mutex_manager,
-						   (GObject *) channel);
-  
-	  pthread_mutex_unlock(application_mutex);
-
 	  /* instantiate pad */
 	  pad = g_object_new(machine->input_pad_type,
 			     "channel", channel,
@@ -1427,11 +1386,9 @@ ags_machine_real_resize_pads(AgsMachine *machine, GType channel_type,
 			       audio_channels, 0);
 	  
 	  /* iterate */
-	  pthread_mutex_lock(channel_mutex);
-	
-	  channel = channel->next_pad;
-	
-	  pthread_mutex_unlock(channel_mutex);
+	  g_object_get(channel,
+		       "next-pad", &channel,
+		       NULL);	
 	}
 
 	/* show all */
@@ -1457,14 +1414,6 @@ ags_machine_real_resize_pads(AgsMachine *machine, GType channel_type,
 				  pads_old * audio_channels);
     
 	for(i = pads_old; i < pads; i++){
-	  /* lookup channel mutex */
-	  pthread_mutex_lock(application_mutex);
-
-	  channel_mutex = ags_mutex_manager_lookup(mutex_manager,
-						   (GObject *) channel);
-  
-	  pthread_mutex_unlock(application_mutex);
-
 	  /* instantiate pad */
 	  pad = g_object_new(machine->output_pad_type,
 			     "channel", channel,
@@ -1476,11 +1425,9 @@ ags_machine_real_resize_pads(AgsMachine *machine, GType channel_type,
 			       audio_channels, 0);
 
 	  /* iterate */
-	  pthread_mutex_lock(channel_mutex);
-	
-	  channel = channel->next_pad;
-	
-	  pthread_mutex_unlock(channel_mutex);
+	  g_object_get(channel,
+		       "next-pad", &channel,
+		       NULL);
 	}
 
 	/* show all */
@@ -1542,7 +1489,7 @@ ags_machine_real_resize_pads(AgsMachine *machine, GType channel_type,
  *
  * Resize pad allocation.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_machine_resize_pads(AgsMachine *machine,
@@ -1579,7 +1526,7 @@ ags_machine_real_map_recall(AgsMachine *machine)
  *
  * You may want the @machine to add its default recall.
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_machine_map_recall(AgsMachine *machine)
@@ -1665,7 +1612,7 @@ ags_machine_real_find_port(AgsMachine *machine)
  *
  * Lookup ports of associated recalls.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 GList*
 ags_machine_find_port(AgsMachine *machine)
@@ -1686,23 +1633,24 @@ ags_machine_find_port(AgsMachine *machine)
 }
 
 /**
- * ags_machine_done:
+ * ags_machine_stop:
  * @machine: the #AgsMachine
- * @recall_id: the #AgsRecallID
+ * @recall_id: the #GList-struct containing #AgsRecallID
+ * @sound_scope: the sound scope
  *
  * Notify about to stop playback of @recall_id.
  * 
- * Since: 1.2.0
+ * Since: 2.0.0
  */
 void
-ags_machine_done(AgsMachine *machine, GObject *recall_id)
+ags_machine_stop(AgsMachine *machine, GList *recall_id, gint sound_scope)
 {
   g_return_if_fail(AGS_IS_MACHINE(machine));
 
   g_object_ref((GObject *) machine);
   g_signal_emit((GObject *) machine,
-		machine_signals[DONE], 0,
-		recall_id);
+		machine_signals[STOP], 0,
+		recall_id, sound_scope);
   g_object_unref((GObject *) machine);
 }
 
@@ -1715,7 +1663,7 @@ ags_machine_done(AgsMachine *machine, GObject *recall_id)
  *
  * Returns: the matching #AgsMachine, or %NULL
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsMachine*
 ags_machine_find_by_name(GList *list, char *name)
@@ -1737,7 +1685,7 @@ ags_machine_find_by_name(GList *list, char *name)
  *
  * Start/stop playback of @machine.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_machine_set_run(AgsMachine *machine,
@@ -1745,7 +1693,7 @@ ags_machine_set_run(AgsMachine *machine,
 {
   ags_machine_set_run_extended(machine,
 			       run,
-			       TRUE, TRUE);
+			       TRUE, TRUE, TRUE, TRUE);
 }
 
 /**
@@ -1754,74 +1702,51 @@ ags_machine_set_run(AgsMachine *machine,
  * @run: if %TRUE playback is started, otherwise stopped
  * @sequencer: if doing sequencer
  * @notation: if doing notation
+ * @wave: if doing wave
+ * @midi: if doing midi
  *
  * Start/stop playback of @machine.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_machine_set_run_extended(AgsMachine *machine,
 			     gboolean run,
-			     gboolean sequencer, gboolean notation)
+			     gboolean sequencer, gboolean notation, gboolean wave, gboolean midi)
 {
   AgsWindow *window;
 
-  AgsMutexManager *mutex_manager;
-  AgsAudioLoop *audio_loop;
   AgsGuiThread *gui_thread;
 
   AgsApplicationContext *application_context;
 
-  gboolean no_soundcard;
+  GList *start_list;
   
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *audio_loop_mutex;
+  gboolean no_soundcard;
 
   window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) machine);
 
   application_context = (AgsApplicationContext *) window->application_context;
 
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-
   no_soundcard = FALSE;
-  
-  pthread_mutex_lock(application_mutex);
 
-  if(ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(application_context)) == NULL){
+  if((start_list = ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(application_context))) == NULL){
     no_soundcard = TRUE;
   }
 
-  pthread_mutex_unlock(application_mutex);
+  g_list_free(start_list);
 
   if(no_soundcard){
     g_message("No soundcard available");
     
     return;
   }
-
-  /* get threads */
-  pthread_mutex_lock(application_mutex);
-
-  audio_loop = (AgsAudioLoop *) application_context->main_loop;
   
-  pthread_mutex_unlock(application_mutex);
-
-  /* lookup audio loop mutex */
-  pthread_mutex_lock(application_mutex);
-
-  audio_loop_mutex = ags_mutex_manager_lookup(mutex_manager,
-					      (GObject *) audio_loop);
-  
-  pthread_mutex_unlock(application_mutex);
-
-  /* get task thread */
-  gui_thread = (AgsGuiThread *) ags_thread_find_type((AgsThread *) audio_loop,
-						       AGS_TYPE_GUI_THREAD);
+  /* get gui thread */
+  gui_thread = ags_ui_provider_get_gui_thread(AGS_UI_PROVIDER(application_context));
 
   if(run){
-    AgsInitAudio *init_audio;
-    AgsAppendAudio *append_audio;
+    AgsStartAudio *start_audio;
     AgsStartSoundcard *start_soundcard;
     AgsStartSequencer *start_sequencer;
     GList *list;
@@ -1829,44 +1754,39 @@ ags_machine_set_run_extended(AgsMachine *machine,
     list = NULL;
 
     if(sequencer){
-      /* create init task */
-      init_audio = ags_init_audio_new(machine->audio,
-				      FALSE, TRUE, FALSE);
+      /* create start task */
+      start_audio = ags_start_audio_new(machine->audio,
+					AGS_SOUND_SCOPE_SEQUENCER);
       list = g_list_prepend(list,
-			    init_audio);
-    
-      /* create append task */
-      append_audio = ags_append_audio_new((GObject *) audio_loop,
-					  (GObject *) machine->audio,
-					  FALSE, TRUE, FALSE);
-
-      list = g_list_prepend(list,
-			    append_audio);
+			    start_audio);
     }
 
     if(notation){
-      /* create init task */
-      init_audio = ags_init_audio_new(machine->audio,
-				      FALSE, FALSE, TRUE);
+      /* create start task */
+      start_audio = ags_start_audio_new(machine->audio,
+					AGS_SOUND_SCOPE_NOTATION);
       list = g_list_prepend(list,
-			    init_audio);
-
-      /* create append task */
-      append_audio = ags_append_audio_new((GObject *) audio_loop,
-					  (GObject *) machine->audio,
-					  FALSE, FALSE, TRUE);
-
-      list = g_list_prepend(list,
-			    append_audio);
+			    start_audio);
     }
     
+    if(wave){
+      /* create start task */
+      start_audio = ags_start_audio_new(machine->audio,
+					AGS_SOUND_SCOPE_WAVE);
+      list = g_list_prepend(list,
+			    start_audio);
+    }
+
+    if(midi){
+      /* create start task */
+      start_audio = ags_start_audio_new(machine->audio,
+					AGS_SOUND_SCOPE_MIDI);
+      list = g_list_prepend(list,
+			    start_audio);
+    }
+
     /* create start task */
     if(list != NULL){
-      AgsGuiThread *gui_thread;
-
-      gui_thread = (AgsGuiThread *) ags_thread_find_type((AgsThread *) audio_loop,
-							 AGS_TYPE_GUI_THREAD);
-
       /* start soundcard */
       start_soundcard = ags_start_soundcard_new(window->application_context);
       list = g_list_prepend(list,
@@ -1888,7 +1808,15 @@ ags_machine_set_run_extended(AgsMachine *machine,
 
     /* create cancel task */
     cancel_audio = ags_cancel_audio_new(machine->audio,
-					FALSE, sequencer, notation);
+					AGS_SOUND_SCOPE_SEQUENCER);
+    
+    /* append AgsCancelAudio */
+    ags_gui_thread_schedule_task((AgsGuiThread *) gui_thread,
+				 cancel_audio);
+
+    /* create cancel task */
+    cancel_audio = ags_cancel_audio_new(machine->audio,
+					AGS_SOUND_SCOPE_NOTATION);
     
     /* append AgsCancelAudio */
     ags_gui_thread_schedule_task((AgsGuiThread *) gui_thread,
@@ -1905,10 +1833,71 @@ ags_machine_set_run_extended(AgsMachine *machine,
  * Returns: a #GtkListStore containing one column with a string representing
  * machines by its type and name.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 GtkListStore*
 ags_machine_get_possible_audio_output_connections(AgsMachine *machine)
+{
+  AgsWindow *window;
+  
+  AgsApplicationContext *application_context;
+
+  GtkListStore *model;
+
+  GList *list;
+  GtkTreeIter iter;
+
+  window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) machine,
+						 AGS_TYPE_WINDOW);
+
+  if(window != NULL){
+    application_context = (AgsApplicationContext *) window->application_context;
+  }else{
+    application_context = NULL;
+  }
+  
+  model = gtk_list_store_new(2, G_TYPE_STRING, G_TYPE_POINTER);
+
+  gtk_list_store_append(model, &iter);
+  gtk_list_store_set(model, &iter,
+		     0, "NULL",
+		     1, NULL,
+		     -1);
+
+  if(application_context != NULL){
+    list = ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(application_context));
+
+    while(list != NULL){
+      if(list->data != machine){
+	gtk_list_store_append(model, &iter);
+	gtk_list_store_set(model, &iter,
+			   0, g_strdup_printf("%s: %s", 
+					      G_OBJECT_TYPE_NAME(G_OBJECT(list->data)),
+					      ags_soundcard_get_device(AGS_SOUNDCARD(list->data))),
+			   1, list->data,
+			   -1);
+      }
+
+      list = list->next;
+    }
+  }
+  
+  return(model);
+}
+
+/**
+ * ags_machine_get_possible_audio_input_connections:
+ * @machine: the #AgsMachine
+ *
+ * Find audio input connections suitable for @machine.
+ *
+ * Returns: a #GtkListStore containing one column with a string representing
+ * machines by its type and name.
+ *
+ * Since: 2.0.0
+ */
+GtkListStore*
+ags_machine_get_possible_audio_input_connections(AgsMachine *machine)
 {
   AgsWindow *window;
   
@@ -1966,7 +1955,7 @@ ags_machine_get_possible_audio_output_connections(AgsMachine *machine)
  * Returns: a #GtkListStore containing one column with a string representing
  * machines by its type and name.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 GtkListStore*
 ags_machine_get_possible_links(AgsMachine *machine)
@@ -2014,7 +2003,7 @@ ags_machine_get_possible_links(AgsMachine *machine)
  *
  * Returns: a new #GtkFileChooserDialog
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 GtkFileChooserDialog*
 ags_machine_file_chooser_dialog_new(AgsMachine *machine)
@@ -2052,7 +2041,7 @@ ags_machine_file_chooser_dialog_new(AgsMachine *machine)
  *
  * Opens audio files and modifies or creates new channels if wished.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_machine_open_files(AgsMachine *machine,
@@ -2064,40 +2053,16 @@ ags_machine_open_files(AgsMachine *machine,
 
   AgsOpenFile *open_file;
 
-  AgsMutexManager *mutex_manager;
-  AgsAudioLoop *audio_loop;
   AgsGuiThread *gui_thread;
 
   AgsApplicationContext *application_context;
-
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *audio_loop_mutex;
-
+  
   window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) machine);
   
   application_context = (AgsApplicationContext *) window->application_context;
 
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-  
-  /* get audio loop */
-  pthread_mutex_lock(application_mutex);
-
-  audio_loop = (AgsAudioLoop *) application_context->main_loop;
-
-  pthread_mutex_unlock(application_mutex);
-
-  /* lookup audio loop mutex */
-  pthread_mutex_lock(application_mutex);
-    
-  audio_loop_mutex = ags_mutex_manager_lookup(mutex_manager,
-					      (GObject *) audio_loop);
-  
-  pthread_mutex_unlock(application_mutex);
-
-  /* get task thread */
-  gui_thread = (AgsGuiThread *) ags_thread_find_type((AgsThread *) audio_loop,
-						       AGS_TYPE_GUI_THREAD);
+  /* get gui thread */
+  gui_thread = ags_ui_provider_get_gui_thread(AGS_UI_PROVIDER(application_context));
 
   /* instantiate open file task */
   open_file = ags_open_file_new(machine->audio,
@@ -2107,7 +2072,6 @@ ags_machine_open_files(AgsMachine *machine,
 
   ags_gui_thread_schedule_task(gui_thread,
 			       open_file);
-
 }
 
 void
@@ -2116,24 +2080,25 @@ ags_machine_copy_pattern(AgsMachine *machine)
   AgsAudio *audio;
   AgsChannel *channel;
   
-  AgsMutexManager *mutex_manager;
-
   xmlDoc *clipboard;
   xmlNode *audio_node, *notation_list_node, *notation_node;
 
   xmlChar *buffer;
+
+  guint audio_channels;
+  guint input_pads;
   int size;
   gint i;
-
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *audio_mutex;
-  pthread_mutex_t *current_mutex;
 
   auto xmlNode* ags_machine_copy_pattern_to_notation(AgsChannel *current);
 
   xmlNode* ags_machine_copy_pattern_to_notation(AgsChannel *current){
     AgsPattern *pattern;
+
     xmlNode *notation_node, *current_note;
+
+    GList *start_list;
+    
     guint x_boundary, y_boundary;
     guint bank_0, bank_1, k;
     
@@ -2154,9 +2119,38 @@ ags_machine_copy_pattern(AgsMachine *machine)
     y_boundary = G_MAXUINT;
 
     while(current != NULL){
-      pattern = current->pattern->data;
+      guint length;
+      
+      pthread_mutex_t *pattern_mutex;
+      
+      g_object_get(current,
+		   "pattern", &start_list,
+		   NULL);
 
-      for(k = 0; k < pattern->dim[2]; k++){
+      pattern = start_list->data;
+      g_list_free(start_list);
+
+      /* get pattern mutex */
+      pthread_mutex_lock(ags_pattern_get_class_mutex());
+
+      pattern_mutex = pattern->obj_mutex;
+      
+      pthread_mutex_unlock(ags_pattern_get_class_mutex());
+
+      /* get length */
+      pthread_mutex_lock(pattern_mutex);
+
+      length = pattern->dim[2];
+      
+      pthread_mutex_unlock(pattern_mutex);
+      
+      for(k = 0; k < length; k++){
+	guint current_pad;
+
+	g_object_get(current,
+		     "pad", &current_pad,
+		     NULL);
+	
 	if(ags_pattern_get_bit(pattern, bank_0, bank_1, k)){
 	  current_note = xmlNewChild(notation_node, NULL, BAD_CAST "note", NULL);
 	  
@@ -2164,9 +2158,9 @@ ags_machine_copy_pattern(AgsMachine *machine)
 	  xmlNewProp(current_note, BAD_CAST "x1", BAD_CAST g_strdup_printf("%u", k + 1));
 
 	  if((AGS_MACHINE_REVERSE_NOTATION & (machine->flags)) != 0){
-	    xmlNewProp(current_note, BAD_CAST "y", BAD_CAST g_strdup_printf("%u", machine->audio->input_pads - current->pad - 1));
+	    xmlNewProp(current_note, BAD_CAST "y", BAD_CAST g_strdup_printf("%u", input_pads - current_pad - 1));
 	  }else{
-	    xmlNewProp(current_note, BAD_CAST "y", BAD_CAST g_strdup_printf("%u", current->pad));
+	    xmlNewProp(current_note, BAD_CAST "y", BAD_CAST g_strdup_printf("%u", current_pad));
 	  }
 	  
 	  if(x_boundary > k){
@@ -2176,7 +2170,7 @@ ags_machine_copy_pattern(AgsMachine *machine)
 	  if((AGS_MACHINE_REVERSE_NOTATION & (machine->flags)) != 0){
 	    guint tmp;
 
-	    tmp = machine->audio->input_pads - current->pad - 1;
+	    tmp = input_pads - current_pad - 1;
 	    
 	    if(y_boundary > tmp){
 	      y_boundary = tmp;
@@ -2188,8 +2182,11 @@ ags_machine_copy_pattern(AgsMachine *machine)
 	  }
 	}
       }
-      
-      current = current->next;
+
+      /* iterate */
+      g_object_get(current,
+		   "next", &current,
+		   NULL);
     }
 
     xmlNewProp(notation_node, BAD_CAST "x_boundary", BAD_CAST g_strdup_printf("%u", x_boundary));
@@ -2213,43 +2210,23 @@ ags_machine_copy_pattern(AgsMachine *machine)
   
   audio = machine->audio;
 
-  mutex_manager = ags_mutex_manager_get_instance();  
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-  
-  /* lookup audio mutex */
-  pthread_mutex_lock(application_mutex);
-  
-  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
-					 (GObject *) audio);
-  
-  pthread_mutex_unlock(application_mutex);
-
   /* copy to clipboard */
-  pthread_mutex_lock(audio_mutex);
+  g_object_get(audio,
+	       "audio-channels", &audio_channels,
+	       "input-pads", &input_pads,
+	       "input", &channel,
+	       NULL);
 
-  channel = audio->input;
-
-  pthread_mutex_unlock(audio_mutex);
-
-  for(i = 0; i < machine->audio->audio_channels; i++){
-    /* lookup channel mutex */
-    pthread_mutex_lock(application_mutex);
-
-    current_mutex = ags_mutex_manager_lookup(mutex_manager,
-					     (GObject *) channel);
-  
-    pthread_mutex_unlock(application_mutex);
-
+  for(i = 0; i < audio_channels; i++){
     /* do it so */
-    pthread_mutex_lock(current_mutex);
-    
     notation_node = ags_machine_copy_pattern_to_notation(channel);
     xmlAddChild(notation_list_node,
 		notation_node);
 
-    channel = channel->next;
-
-    pthread_mutex_unlock(current_mutex);
+    /* iterate */
+    g_object_get(channel,
+		 "next", &channel,
+		 NULL);
   }
   
   /* write to clipboard */
@@ -2269,7 +2246,7 @@ ags_machine_copy_pattern(AgsMachine *machine)
  *
  * Returns: %TRUE if proceed with redraw, otherwise %FALSE
  *
- * Since: 1.2.0
+ * Since: 2.0.0
  */
 gboolean
 ags_machine_message_monitor_timeout(AgsMachine *machine)
@@ -2300,17 +2277,16 @@ ags_machine_message_monitor_timeout(AgsMachine *machine)
 				  "method"),
 		       "AgsAudio::set-audio-channels",
 		       28)){
-	  GValue *value;
-	  
 	  guint audio_channels, audio_channels_old;
+	  gint position;
+	  
+	  position = ags_strv_index(AGS_MESSAGE_ENVELOPE(message->data)->parameter_name,
+				    "audio-channels");
+	  audio_channels = g_value_get_uint(&(AGS_MESSAGE_ENVELOPE(message->data)->value[position]));
 
-	  value = ags_parameter_find(AGS_MESSAGE_ENVELOPE(message->data)->parameter, AGS_MESSAGE_ENVELOPE(message->data)->n_params,
-				     "audio-channels");
-	  audio_channels = g_value_get_uint(value);
-
-	  value = ags_parameter_find(AGS_MESSAGE_ENVELOPE(message->data)->parameter, AGS_MESSAGE_ENVELOPE(message->data)->n_params,
-				     "audio-channels-old");
-	  audio_channels_old = g_value_get_uint(value);
+	  position = ags_strv_index(AGS_MESSAGE_ENVELOPE(message->data)->parameter_name,
+				    "audio-channels-old");
+	  audio_channels_old = g_value_get_uint(&(AGS_MESSAGE_ENVELOPE(message->data)->value[position]));
 
 	  /* resize audio channels */
 	  ags_machine_resize_audio_channels(machine,
@@ -2319,23 +2295,22 @@ ags_machine_message_monitor_timeout(AgsMachine *machine)
 				  "method"),
 		       "AgsAudio::set-pads",
 		       19)){
-	  GValue *value;
-
 	  GType channel_type;
 	  
 	  guint pads, pads_old;
+	  gint position;
 
-	  value = ags_parameter_find(AGS_MESSAGE_ENVELOPE(message->data)->parameter, AGS_MESSAGE_ENVELOPE(message->data)->n_params,
+	  position = ags_strv_index(AGS_MESSAGE_ENVELOPE(message->data)->parameter_name,
 				     "channel-type");
-	  channel_type = g_value_get_ulong(value);
+	  channel_type = g_value_get_ulong(&(AGS_MESSAGE_ENVELOPE(message->data)->value[position]));
 	  
-	  value = ags_parameter_find(AGS_MESSAGE_ENVELOPE(message->data)->parameter, AGS_MESSAGE_ENVELOPE(message->data)->n_params,
+	  position = ags_strv_index(AGS_MESSAGE_ENVELOPE(message->data)->parameter_name,
 				     "pads");
-	  pads = g_value_get_uint(value);
+	  pads = g_value_get_uint(&(AGS_MESSAGE_ENVELOPE(message->data)->value[position]));
 
-	  value = ags_parameter_find(AGS_MESSAGE_ENVELOPE(message->data)->parameter, AGS_MESSAGE_ENVELOPE(message->data)->n_params,
+	  position = ags_strv_index(AGS_MESSAGE_ENVELOPE(message->data)->parameter_name,
 				     "pads-old");
-	  pads_old = g_value_get_uint(value);
+	  pads_old = g_value_get_uint(&(AGS_MESSAGE_ENVELOPE(message->data)->value[position]));
 
 	  /* resize pads */
 	  ags_machine_resize_pads(machine,
@@ -2343,19 +2318,24 @@ ags_machine_message_monitor_timeout(AgsMachine *machine)
 				  pads, pads_old);
 	}else if(!xmlStrncmp(xmlGetProp(root_node,
 				  "method"),
-		       "AgsAudio::done",
+		       "AgsAudio::stop",
 		       15)){
-	  AgsRecallID *recall_id;
+	  GList *recall_id;
+
+	  gint sound_scope;
+	  gint position;
 	  
-	  GValue *value;
-
-	  value = ags_parameter_find(AGS_MESSAGE_ENVELOPE(message->data)->parameter, AGS_MESSAGE_ENVELOPE(message->data)->n_params,
+	  position = ags_strv_index(AGS_MESSAGE_ENVELOPE(message->data)->parameter_name,
 				     "recall-id");
-	  recall_id = g_value_get_object(value);
+	  recall_id = g_value_get_pointer(&(AGS_MESSAGE_ENVELOPE(message->data)->value[position]));
 
-	  /* done */
-	  ags_machine_done(machine,
-			   recall_id);
+	  position = ags_strv_index(AGS_MESSAGE_ENVELOPE(message->data)->parameter_name,
+				    "sound-scope");
+	  sound_scope = g_value_get_int(&(AGS_MESSAGE_ENVELOPE(message->data)->value[position]));
+	  
+	  /* stop */
+	  ags_machine_stop(machine,
+			   recall_id, sound_scope);
 	}
       }
       
@@ -2383,7 +2363,7 @@ ags_machine_message_monitor_timeout(AgsMachine *machine)
  *
  * Returns: a new #AgsMachine
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsMachine*
 ags_machine_new(GObject *soundcard)
@@ -2411,7 +2391,7 @@ ags_machine_new(GObject *soundcard)
  *
  * Returns: a new #GtkMenu containing basic actions.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 GtkMenu*
 ags_machine_popup_new(AgsMachine *machine)
@@ -2493,7 +2473,7 @@ ags_machine_popup_new(AgsMachine *machine)
  *
  * Add options to edit submenu
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_machine_popup_add_edit_options(AgsMachine *machine, guint edit_options)
@@ -2551,7 +2531,7 @@ ags_machine_popup_add_edit_options(AgsMachine *machine, guint edit_options)
  *
  * Add options to connection submenu
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_machine_popup_add_connection_options(AgsMachine *machine, guint connection_options)

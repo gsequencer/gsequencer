@@ -1,0 +1,28 @@
+Derived files of gsequencer licensed under the terms of GNU GPLv3+, copyright provided by http://www.nongnu.org/gsequencer:
+
+* gsequencer.pot (GPLv3+)
+
+Third-party files of Ulrich Drepper (gettext) without any copyrightable content:
+
+* ChangeLog
+* POTFILES.in
+* stamp-po
+
+Third-party files of Ulrich Drepper (gettext) permissive licensed see specific files for warranty disclaimer and a notice preservation requirement, copyright provided by http://www.fsf.org:
+
+* Makefile.in.in
+* remove-potcdate.sin
+
+Third-party files of Ulrich Drepper (gettext) free software licensed, copyright provided by http://www.fsf.org:
+
+* Makevars.template
+* Makevars
+* Rules-quot
+
+Third-party files of Ulrich Drepper (gettext) all-permissive licensed, copyright provided by http://www.fsf.org:
+
+* quot.sed
+* boldquot.sed
+* en@quot.header
+* en@boldquot.header
+* insert-header.sin

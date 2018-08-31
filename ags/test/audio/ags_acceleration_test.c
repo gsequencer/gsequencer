@@ -59,7 +59,7 @@ ags_acceleration_test_duplicate()
   /* create acceleration */
   acceleration = g_object_new(AGS_TYPE_ACCELERATION,
 			      "x", 0,
-			      "y", 0,
+			      "y", 0.0,
 			      "acceleration-name", "initial value",
 			      NULL);
 
@@ -75,7 +75,7 @@ ags_acceleration_test_duplicate()
   /* create acceleration */
   acceleration = g_object_new(AGS_TYPE_ACCELERATION,
 			      "x", 1024,
-			      "y", 52,
+			      "y", 52.0,
 			      "acceleration-name", "raise value",
 			      NULL);
 

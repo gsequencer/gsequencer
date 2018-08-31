@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -21,13 +21,10 @@
 
 #include <ags/libags.h>
 
-#include <ags/plugin/ags_ladspa_conversion.h>
 #include <ags/plugin/ags_ladspa_manager.h>
 #include <ags/plugin/ags_ladspa_plugin.h>
-
-#include <ags/file/ags_file.h>
-#include <ags/file/ags_file_stock.h>
-#include <ags/file/ags_file_id_ref.h>
+#include <ags/plugin/ags_plugin_port.h>
+#include <ags/plugin/ags_ladspa_conversion.h>
 
 #include <ags/audio/ags_port.h>
 
@@ -46,19 +43,9 @@ void ags_recall_ladspa_class_init(AgsRecallLadspaClass *recall_ladspa_class);
 void ags_recall_ladspa_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_recall_ladspa_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_recall_ladspa_init(AgsRecallLadspa *recall_ladspa);
-void ags_recall_ladspa_set_property(GObject *gobject,
-				    guint prop_id,
-				    const GValue *value,
-				    GParamSpec *param_spec);
-void ags_recall_ladspa_get_property(GObject *gobject,
-				    guint prop_id,
-				    GValue *value,
-				    GParamSpec *param_spec);
-void ags_recall_ladspa_connect(AgsConnectable *connectable);
-void ags_recall_ladspa_disconnect(AgsConnectable *connectable);
-void ags_recall_ladspa_set_ports(AgsPlugin *plugin, GList *port);
 void ags_recall_ladspa_finalize(GObject *gobject);
 
+void ags_recall_ladspa_set_ports(AgsPlugin *plugin, GList *port);
 void ags_recall_ladspa_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin);
 xmlNode* ags_recall_ladspa_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin);
 
@@ -71,13 +58,6 @@ xmlNode* ags_recall_ladspa_write(AgsFile *file, xmlNode *parent, AgsPlugin *plug
  *
  * #AgsRecallLadspa provides LADSPA support.
  */
-
-enum{
-  PROP_0,
-  PROP_FILENAME,
-  PROP_EFFECT,
-  PROP_INDEX,
-};
 
 static gpointer ags_recall_ladspa_parent_class = NULL;
 static AgsConnectableInterface* ags_recall_ladspa_parent_connectable_interface;
@@ -145,61 +125,7 @@ ags_recall_ladspa_class_init(AgsRecallLadspaClass *recall_ladspa)
   /* GObjectClass */
   gobject = (GObjectClass *) recall_ladspa;
 
-  gobject->set_property = ags_recall_ladspa_set_property;
-  gobject->get_property = ags_recall_ladspa_get_property;
-
   gobject->finalize = ags_recall_ladspa_finalize;
-
-  /* properties */
-  /**
-   * AgsRecallLadspa:filename:
-   *
-   * The plugins filename.
-   * 
-   * Since: 1.0.0
-   */
-  param_spec =  g_param_spec_string("filename",
-				    i18n_pspec("the object file"),
-				    i18n_pspec("The filename as string of object file"),
-				    NULL,
-				    G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_FILENAME,
-				  param_spec);
-
-  /**
-   * AgsRecallLadspa:recycling:
-   *
-   * The effect's name.
-   * 
-   * Since: 1.0.0
-   */
-  param_spec =  g_param_spec_string("effect",
-				    i18n_pspec("the effect"),
-				    i18n_pspec("The effect's string representation"),
-				    NULL,
-				    G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_EFFECT,
-				  param_spec);
-
-  /**
-   * AgsRecallLadspa:recycling:
-   *
-   * The effect's index.
-   * 
-   * Since: 1.0.0
-   */
-  param_spec =  g_param_spec_ulong("index",
-				   i18n_pspec("index of effect"),
-				   i18n_pspec("The numerical index of effect"),
-				   0,
-				   65535,
-				   0,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_INDEX,
-				  param_spec);
 }
 
 
@@ -207,9 +133,6 @@ void
 ags_recall_ladspa_connectable_interface_init(AgsConnectableInterface *connectable)
 {
   ags_recall_ladspa_parent_connectable_interface = g_type_interface_peek_parent(connectable);
-
-  connectable->connect = ags_recall_ladspa_connect;
-  connectable->disconnect = ags_recall_ladspa_disconnect;
 }
 
 void
@@ -231,11 +154,6 @@ ags_recall_ladspa_init(AgsRecallLadspa *recall_ladspa)
   AGS_RECALL(recall_ladspa)->xml_type = "ags-recall-ladspa";
   AGS_RECALL(recall_ladspa)->port = NULL;
 
-  recall_ladspa->filename = NULL;
-  recall_ladspa->effect = NULL;
-  recall_ladspa->index = 0;
-
-  recall_ladspa->plugin = NULL;
   recall_ladspa->plugin_descriptor = NULL;
 
   recall_ladspa->input_port = NULL;
@@ -246,223 +164,11 @@ ags_recall_ladspa_init(AgsRecallLadspa *recall_ladspa)
 }
 
 void
-ags_recall_ladspa_set_property(GObject *gobject,
-			       guint prop_id,
-			       const GValue *value,
-			       GParamSpec *param_spec)
-{
-  AgsRecallLadspa *recall_ladspa;
-
-  recall_ladspa = AGS_RECALL_LADSPA(gobject);
-
-  switch(prop_id){
-  case PROP_FILENAME:
-    {
-      gchar *filename;
-
-      filename = g_value_get_string(value);
-
-      if(filename == recall_ladspa->filename){
-	return;
-      }
-
-      if(recall_ladspa->filename != NULL){
-	g_free(recall_ladspa->filename);
-      }
-
-      recall_ladspa->filename = g_strdup(filename);
-    }
-    break;
-  case PROP_EFFECT:
-    {
-      gchar *effect;
-      
-      effect = g_value_get_string(value);
-
-      if(effect == recall_ladspa->effect){
-	return;
-      }
-
-      if(recall_ladspa->effect != NULL){
-	g_free(recall_ladspa->effect);
-      }
-
-      recall_ladspa->effect = g_strdup(effect);
-    }
-    break;
-  case PROP_INDEX:
-    {
-      unsigned long index;
-      
-      index = g_value_get_ulong(value);
-
-      if(index == recall_ladspa->index){
-	return;
-      }
-
-      recall_ladspa->index = index;
-    }
-    break;
-  default:
-    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
-    break;
-  };
-}
-
-void
-ags_recall_ladspa_get_property(GObject *gobject,
-			       guint prop_id,
-			       GValue *value,
-			       GParamSpec *param_spec)
-{
-  AgsRecallLadspa *recall_ladspa;
-
-  recall_ladspa = AGS_RECALL_LADSPA(gobject);
-
-  switch(prop_id){
-  case PROP_FILENAME:
-    {
-      g_value_set_string(value, recall_ladspa->filename);
-    }
-    break;
-  case PROP_EFFECT:
-    {
-      g_value_set_string(value, recall_ladspa->effect);
-    }
-    break;
-  case PROP_INDEX:
-    {
-      g_value_set_uint(value, recall_ladspa->index);
-    }
-    break;
-  default:
-    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
-    break;
-  }
-}
-
-void
-ags_recall_ladspa_connect(AgsConnectable *connectable)
-{
-  AgsRecall *recall;
-
-  recall = AGS_RECALL(connectable);
-  
-  if((AGS_RECALL_CONNECTED & (recall->flags)) != 0){
-    return;
-  }
-
-  ags_recall_load_automation(recall,
-			     g_list_copy(recall->port));
-  
-  ags_recall_ladspa_parent_connectable_interface->connect(connectable);
-}
-
-void
-ags_recall_ladspa_disconnect(AgsConnectable *connectable)
-{
-  ags_recall_ladspa_parent_connectable_interface->disconnect(connectable);
-}
-
-void
-ags_recall_ladspa_set_ports(AgsPlugin *plugin, GList *port)
-{
-  AgsRecallLadspa *recall_ladspa;
-  AgsPort *current;
-  
-  AgsLadspaPlugin *ladspa_plugin;
-  
-  GList *list;  
-  GList *port_descriptor;
-  
-  unsigned long port_count;
-  unsigned long i;
-
-  recall_ladspa = AGS_RECALL_LADSPA(plugin);
-
-  ladspa_plugin = ags_ladspa_manager_find_ladspa_plugin(ags_ladspa_manager_get_instance(),
-							recall_ladspa->filename, recall_ladspa->effect);
-
-  port_descriptor = AGS_BASE_PLUGIN(ladspa_plugin)->port;
-
-  if(port_descriptor != NULL){
-    port_count = g_list_length(port_descriptor);
-
-    for(i = 0; i < port_count; i++){
-      if((AGS_PORT_DESCRIPTOR_CONTROL & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
-	gchar *specifier;
-	
-	specifier = AGS_PORT_DESCRIPTOR(port_descriptor->data)->port_name;
-	
-	list = port;
-	current = NULL;
-	
-	while(list != NULL){
-	  if(!g_strcmp0(specifier,
-			AGS_PORT(list->data)->specifier)){
-	    current = list->data;
-	    break;
-	  }
-	  
-	  list = list->next;
-	}
-
-	if(current != NULL){
-	  current->flags |= AGS_PORT_USE_LADSPA_FLOAT;
-	
-	  current->port_descriptor = port_descriptor->data;
-	  ags_recall_ladspa_load_conversion(recall_ladspa,
-					    (GObject *) current,
-					    port_descriptor->data);
-	
-	  current->port_value.ags_port_float = (LADSPA_Data) g_value_get_float(AGS_PORT_DESCRIPTOR(port_descriptor->data)->default_value);
-
-#ifdef AGS_DEBUG
-	  g_message("connecting port: %lu/%lu", i, port_count);
-#endif
-	}
-      }else if((AGS_PORT_DESCRIPTOR_AUDIO & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
-	if((AGS_PORT_DESCRIPTOR_INPUT & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
-	  if(recall_ladspa->input_port == NULL){
-	    recall_ladspa->input_port = (unsigned long *) malloc(sizeof(unsigned long));
-	    recall_ladspa->input_port[0] = i;
-	  }else{
-	    recall_ladspa->input_port = (unsigned long *) realloc(recall_ladspa->input_port,
-								  (recall_ladspa->input_lines + 1) * sizeof(unsigned long));
-	    recall_ladspa->input_port[recall_ladspa->input_lines] = i;
-	  }
-
-	  recall_ladspa->input_lines += 1;
-	}else if((AGS_PORT_DESCRIPTOR_OUTPUT & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
-	  if(recall_ladspa->output_port == NULL){
-	    recall_ladspa->output_port = (unsigned long *) malloc(sizeof(unsigned long));
-	    recall_ladspa->output_port[0] = i;
-	  }else{
-	    recall_ladspa->output_port = (unsigned long *) realloc(recall_ladspa->output_port,
-								   (recall_ladspa->output_lines + 1) * sizeof(unsigned long));
-	    recall_ladspa->output_port[recall_ladspa->output_lines] = i;
-	  }
-
-	  recall_ladspa->output_lines += 1;
-	}
-      }
-
-      port_descriptor = port_descriptor->next;
-    }
-
-    AGS_RECALL(recall_ladspa)->port = g_list_reverse(port);
-  }
-}
-
-void
 ags_recall_ladspa_finalize(GObject *gobject)
 {
   AgsRecallLadspa *recall_ladspa;
   
   recall_ladspa = AGS_RECALL_LADSPA(gobject);
-
-  g_free(recall_ladspa->filename);
-  g_free(recall_ladspa->effect);
 
   if(recall_ladspa->input_port != NULL){
     free(recall_ladspa->input_port);
@@ -477,12 +183,178 @@ ags_recall_ladspa_finalize(GObject *gobject)
 }
 
 void
+ags_recall_ladspa_set_ports(AgsPlugin *plugin, GList *port)
+{
+  AgsRecallLadspa *recall_ladspa;
+  AgsPort *current_port;
+
+  AgsLadspaPlugin *ladspa_plugin;
+  
+  GList *list;  
+  GList *plugin_port_start, *plugin_port;
+  
+  gchar *filename, *effect;
+  
+  guint port_count;
+  guint i;
+
+  pthread_mutex_t *recall_mutex;
+  pthread_mutex_t *base_plugin_mutex;
+  pthread_mutex_t *port_mutex;
+
+  recall_ladspa = AGS_RECALL_LADSPA(plugin);
+
+  /* get recall mutex */
+  pthread_mutex_lock(ags_recall_get_class_mutex());
+  
+  recall_mutex = AGS_RECALL(recall_ladspa)->obj_mutex;
+  
+  pthread_mutex_unlock(ags_recall_get_class_mutex());
+
+  /* get some fields */
+  pthread_mutex_lock(recall_mutex);
+
+  filename = g_strdup(AGS_RECALL(recall_ladspa)->filename);
+  effect = g_strdup(AGS_RECALL(recall_ladspa)->effect);
+  
+  pthread_mutex_unlock(recall_mutex);
+  
+  ladspa_plugin = ags_ladspa_manager_find_ladspa_plugin(ags_ladspa_manager_get_instance(),
+							filename, effect);
+
+  g_free(filename);
+  g_free(effect);
+
+  /* get base plugin mutex */
+  pthread_mutex_lock(ags_base_plugin_get_class_mutex());
+  
+  base_plugin_mutex = AGS_BASE_PLUGIN(ladspa_plugin)->obj_mutex;
+  
+  pthread_mutex_unlock(ags_base_plugin_get_class_mutex());
+
+  /* get plugin port */
+  pthread_mutex_lock(base_plugin_mutex);
+
+  plugin_port =
+    plugin_port_start = g_list_copy(AGS_BASE_PLUGIN(ladspa_plugin)->plugin_port);
+
+  pthread_mutex_unlock(base_plugin_mutex);
+
+  /* match port */
+  if(plugin_port != NULL){
+    port_count = g_list_length(plugin_port_start);
+
+    for(i = 0; i < port_count; i++){
+      AgsPluginPort *current_plugin_port;
+      
+      pthread_mutex_t *plugin_port_mutex;
+      
+      current_plugin_port = AGS_PLUGIN_PORT(plugin_port->data);
+
+      /* get plugin port mutex */
+      pthread_mutex_lock(ags_plugin_port_get_class_mutex());
+      
+      plugin_port_mutex = current_plugin_port->obj_mutex;
+
+      pthread_mutex_unlock(ags_plugin_port_get_class_mutex());
+
+      if(ags_plugin_port_test_flags(current_plugin_port,
+				    AGS_PLUGIN_PORT_CONTROL)){
+	gchar *specifier;
+	
+	GValue *default_value;
+
+	/* get specifier and default value */
+	default_value = g_new0(GValue,
+			       1);
+	g_value_init(default_value,
+		     G_TYPE_FLOAT);
+	
+	pthread_mutex_lock(plugin_port_mutex);
+
+	specifier = g_strdup(current_plugin_port->port_name);
+	g_value_copy(current_plugin_port->default_value,
+		     default_value);
+	
+	pthread_mutex_unlock(plugin_port_mutex);
+
+	/* find matching port */
+	list = ags_port_find_specifier(port, specifier);
+
+	if(list != NULL){
+	  current_port = list->data;
+	  g_object_set(current_port,
+		       "plugin-port", current_plugin_port,
+		       NULL);
+
+	  ags_recall_ladspa_load_conversion(recall_ladspa,
+					    (GObject *) current_port,
+					    current_plugin_port);
+
+	  //TODO:JK: check non-raw write	  
+	  ags_port_safe_write_raw(current_port,
+				  default_value);
+
+#ifdef AGS_DEBUG
+	  g_message("connecting port: %lu/%lu", i, port_count);
+#endif
+	}
+
+	g_free(default_value);
+	g_free(specifier);
+      }else if(ags_plugin_port_test_flags(current_plugin_port,
+					  AGS_PLUGIN_PORT_AUDIO)){
+	pthread_mutex_lock(recall_mutex);
+
+	if(ags_plugin_port_test_flags(current_plugin_port,
+				      AGS_PLUGIN_PORT_INPUT)){
+	  if(recall_ladspa->input_port == NULL){
+	    recall_ladspa->input_port = (guint *) malloc(sizeof(guint));
+	    recall_ladspa->input_port[0] = i;
+	  }else{
+	    recall_ladspa->input_port = (guint *) realloc(recall_ladspa->input_port,
+							  (recall_ladspa->input_lines + 1) * sizeof(guint));
+	    recall_ladspa->input_port[recall_ladspa->input_lines] = i;
+	  }
+
+	  recall_ladspa->input_lines += 1;
+	}else if(ags_plugin_port_test_flags(current_plugin_port,
+					    AGS_PLUGIN_PORT_OUTPUT)){
+	  if(recall_ladspa->output_port == NULL){
+	    recall_ladspa->output_port = (guint *) malloc(sizeof(guint));
+	    recall_ladspa->output_port[0] = i;
+	  }else{
+	    recall_ladspa->output_port = (guint *) realloc(recall_ladspa->output_port,
+							   (recall_ladspa->output_lines + 1) * sizeof(guint));
+	    recall_ladspa->output_port[recall_ladspa->output_lines] = i;
+	  }
+
+	  recall_ladspa->output_lines += 1;
+	}
+
+	pthread_mutex_unlock(recall_mutex);
+      }
+
+      /* iterate plugin port */
+      plugin_port = plugin_port->next;
+    }
+
+    /* reverse port */
+    pthread_mutex_lock(recall_mutex);
+    
+    AGS_RECALL(recall_ladspa)->port = g_list_reverse(port);
+
+    pthread_mutex_unlock(recall_mutex);
+  }
+
+  g_list_free(plugin_port_start);
+}
+
+void
 ags_recall_ladspa_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
 {
   AgsRecallLadspa *gobject;
   AgsLadspaPlugin *ladspa_plugin;
-  gchar *filename, *effect;
-  unsigned long index;
 
   gobject = AGS_RECALL_LADSPA(plugin);
 
@@ -495,21 +367,6 @@ ags_recall_ladspa_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
 				   "reference", gobject,
 				   NULL));
 
-  filename = xmlGetProp(node,
-			"filename");
-  effect = xmlGetProp(node,
-		      "effect");
-  index = g_ascii_strtoull(xmlGetProp(node,
-				      "index"),
-			   NULL,
-			   10);
-
-  g_object_set(gobject,
-	       "filename", filename,
-	       "effect", effect,
-	       "index", index,
-	       NULL);
-
   ags_recall_ladspa_load(gobject);
 }
 
@@ -517,7 +374,9 @@ xmlNode*
 ags_recall_ladspa_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
 {
   AgsRecallLadspa *recall_ladspa;
+
   xmlNode *node;
+
   gchar *id;
 
   recall_ladspa = AGS_RECALL_LADSPA(plugin);
@@ -539,152 +398,249 @@ ags_recall_ladspa_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
 				   "reference", recall_ladspa,
 				   NULL));
 
-  xmlNewProp(node,
-	     "filename",
-	     g_strdup(recall_ladspa->filename));
-
-  xmlNewProp(node,
-	     "effect",
-	     g_strdup(recall_ladspa->effect));
-
-  xmlNewProp(node,
-	     "index",
-	     g_strdup_printf("%lu", recall_ladspa->index));
-
   xmlAddChild(parent,
 	      node);
 
   return(node);
 }
 
+
 /**
  * ags_recall_ladspa_load:
- * @recall_ladspa: an #AgsRecallLadspa
+ * @recall_ladspa: the #AgsRecallLadspa
  *
  * Set up LADSPA handle.
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_recall_ladspa_load(AgsRecallLadspa *recall_ladspa)
 {
   AgsLadspaPlugin *ladspa_plugin;
 
+  gchar *filename;
+  gchar *effect;
+
+  guint effect_index;
+
   void *plugin_so;
   LADSPA_Descriptor_Function ladspa_descriptor;
   LADSPA_Descriptor *plugin_descriptor;
+
+  pthread_mutex_t *recall_mutex;
 
   if(!AGS_IS_RECALL_LADSPA(recall_ladspa)){
     return;
   }
 
-  /*  */
-  recall_ladspa->plugin = 
-    ladspa_plugin = ags_ladspa_manager_find_ladspa_plugin(ags_ladspa_manager_get_instance(),
-							  recall_ladspa->filename, recall_ladspa->effect);
+  /* get recall mutex */
+  pthread_mutex_lock(ags_recall_get_class_mutex());
   
-  plugin_so = AGS_BASE_PLUGIN(ladspa_plugin)->plugin_so;
+  recall_mutex = AGS_RECALL(recall_ladspa)->obj_mutex;
+  
+  pthread_mutex_unlock(ags_recall_get_class_mutex());
+
+  /* get some fields */
+  pthread_mutex_lock(recall_mutex);
+
+  filename = g_strdup(AGS_RECALL(recall_ladspa)->filename);
+  effect = g_strdup(AGS_RECALL(recall_ladspa)->effect);
+  
+  effect_index = AGS_RECALL(recall_ladspa)->effect_index;
+
+  pthread_mutex_unlock(recall_mutex);
+  
+  /* find ladspa plugin */
+  ladspa_plugin = ags_ladspa_manager_find_ladspa_plugin(ags_ladspa_manager_get_instance(),
+							filename, effect);
+  g_free(filename);
+  g_free(effect);
+
+  g_object_get(ladspa_plugin,
+	       "plugin-so", &plugin_so,
+	       NULL);
 
   if(plugin_so){
     ladspa_descriptor = (LADSPA_Descriptor_Function) dlsym(plugin_so,
 							   "ladspa_descriptor");
 
     if(dlerror() == NULL && ladspa_descriptor){
+      pthread_mutex_lock(recall_mutex);
+
       recall_ladspa->plugin_descriptor = 
-	plugin_descriptor = ladspa_descriptor(recall_ladspa->index);
+	plugin_descriptor = ladspa_descriptor(effect_index);
+
+      pthread_mutex_unlock(recall_mutex);
     }
   }
 }
 
 /**
  * ags_recall_ladspa_load_ports:
- * @recall_ladspa: an #AgsRecallLadspa
+ * @recall_ladspa: the #AgsRecallLadspa
  *
  * Set up LADSPA ports.
  *
- * Returns: a #GList containing #AgsPort.
+ * Returns: a #GList-struct containing #AgsPort
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 GList*
 ags_recall_ladspa_load_ports(AgsRecallLadspa *recall_ladspa)
 {
+  AgsPort *current_port;
+
   AgsLadspaPlugin *ladspa_plugin;
-  AgsPort *current;
 
-  GList *port;
-  GList *port_descriptor;
+  GList *port, *retval;
+  GList *plugin_port_start, *plugin_port;
 
-  unsigned long port_count;
-  unsigned long i;
+  gchar *filename;
+  gchar *effect;
 
+  guint effect_index;
+  
+  guint port_count;
+  guint i;
+
+  pthread_mutex_t *recall_mutex;
   pthread_mutex_t *base_plugin_mutex;
 
+  if(!AGS_IS_RECALL_LADSPA(recall_ladspa)){
+    return(NULL);
+  }
+
+  /* get recall mutex */
+  pthread_mutex_lock(ags_recall_get_class_mutex());
+  
+  recall_mutex = AGS_RECALL(recall_ladspa)->obj_mutex;
+  
+  pthread_mutex_unlock(ags_recall_get_class_mutex());
+
+  /* get some fields */
+  pthread_mutex_lock(recall_mutex);
+
+  filename = g_strdup(AGS_RECALL(recall_ladspa)->filename);
+  effect = g_strdup(AGS_RECALL(recall_ladspa)->effect);
+  
+  effect_index = AGS_RECALL(recall_ladspa)->effect_index;
+
+  pthread_mutex_unlock(recall_mutex);
+
+  /* find ladspa plugin */
   ladspa_plugin = ags_ladspa_manager_find_ladspa_plugin(ags_ladspa_manager_get_instance(),
-							recall_ladspa->filename, recall_ladspa->effect);
+							filename, effect);
+  g_free(filename);
+  g_free(effect);
 
-  /* base plugin mutex */
+  /* get base plugin mutex */
   pthread_mutex_lock(ags_base_plugin_get_class_mutex());
-
+  
   base_plugin_mutex = AGS_BASE_PLUGIN(ladspa_plugin)->obj_mutex;
   
   pthread_mutex_unlock(ags_base_plugin_get_class_mutex());
-  
-  /* load port */
+
+  /* get port descriptor */
   pthread_mutex_lock(base_plugin_mutex);
 
+  plugin_port =
+    plugin_port_start = g_list_copy(AGS_BASE_PLUGIN(ladspa_plugin)->plugin_port);
+
+  pthread_mutex_unlock(base_plugin_mutex);
+
   port = NULL;
-  port_descriptor = AGS_BASE_PLUGIN(ladspa_plugin)->port;
-  
-  if(port_descriptor != NULL){
-    port_count = g_list_length(port_descriptor);
+  retval = NULL;
+
+  if(plugin_port != NULL){
+    port_count = g_list_length(plugin_port_start);
     
     for(i = 0; i < port_count; i++){
-      if((AGS_PORT_DESCRIPTOR_CONTROL & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
-	AgsLadspaConversion *ladspa_conversion;
-	
+      AgsPluginPort *current_plugin_port;
+      
+      pthread_mutex_t *plugin_port_mutex;
+      
+      current_plugin_port = AGS_PLUGIN_PORT(plugin_port->data);
+
+      /* get plugin port mutex */
+      pthread_mutex_lock(ags_plugin_port_get_class_mutex());
+      
+      plugin_port_mutex = current_plugin_port->obj_mutex;
+
+      pthread_mutex_unlock(ags_plugin_port_get_class_mutex());
+
+      if(ags_plugin_port_test_flags(current_plugin_port,
+				    AGS_PLUGIN_PORT_CONTROL)){
 	gchar *plugin_name;
 	gchar *specifier;
+
+	GValue *default_value;
 	
-	plugin_name = g_strdup_printf("ladspa-%u", ladspa_plugin->unique_id);
-	specifier = AGS_PORT_DESCRIPTOR(port_descriptor->data)->port_name;
+	plugin_name = g_strdup_printf("ladspa-%lu", ladspa_plugin->unique_id);
 
-	current = g_object_new(AGS_TYPE_PORT,
-			       "plugin-name", plugin_name,
-			       "specifier", specifier,
-			       "control-port", g_strdup_printf("%lu/%lu",
-								 i,
-								 port_count),
-			       "port-value-is-pointer", FALSE,
-			       "port-value-type", G_TYPE_FLOAT,
-			       NULL);
-	g_object_ref(current);
-	current->flags |= AGS_PORT_USE_LADSPA_FLOAT;
+	default_value = g_new0(GValue,
+			       1);
+	g_value_init(default_value,
+		     G_TYPE_FLOAT);
+	
+	pthread_mutex_lock(plugin_port_mutex);
 
-	if((AGS_PORT_DESCRIPTOR_OUTPUT & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
-	  AGS_RECALL(recall_ladspa)->flags |= AGS_RECALL_HAS_OUTPUT_PORT;
+	specifier = g_strdup(current_plugin_port->port_name);
+	g_value_copy(current_plugin_port->default_value,
+		     default_value);
+	
+	pthread_mutex_unlock(plugin_port_mutex);
 
-	  current->flags |= AGS_PORT_IS_OUTPUT;
+	current_port = g_object_new(AGS_TYPE_PORT,
+				    "plugin-name", plugin_name,
+				    "specifier", specifier,
+				    "control-port", g_strdup_printf("%lu/%lu",
+								    i,
+								    port_count),
+				    "port-value-is-pointer", FALSE,
+				    "port-value-type", G_TYPE_FLOAT,
+				    NULL);
+	current_port->flags |= AGS_PORT_USE_LADSPA_FLOAT;
+	g_object_ref(current_port);
+
+	if(ags_plugin_port_test_flags(current_plugin_port,
+				      AGS_PLUGIN_PORT_OUTPUT)){
+	  current_port->flags |= AGS_PORT_IS_OUTPUT;
+
+	  ags_recall_set_flags(recall_ladspa,
+			       AGS_RECALL_HAS_OUTPUT_PORT);
+
 	}else{
-	  if((AGS_PORT_DESCRIPTOR_INTEGER & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) == 0 &&
-	     (AGS_PORT_DESCRIPTOR_TOGGLED & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) == 0){
-	    current->flags |= AGS_PORT_INFINITE_RANGE;
+	  if(!ags_plugin_port_test_flags(current_plugin_port,
+					 AGS_PLUGIN_PORT_INTEGER) &&
+	     !ags_plugin_port_test_flags(current_plugin_port,
+					 AGS_PLUGIN_PORT_TOGGLED)){
+	    current_port->flags |= AGS_PORT_INFINITE_RANGE;
 	  }
 	}
 	
-	current->port_descriptor = port_descriptor->data;	
-	ags_recall_ladspa_load_conversion(recall_ladspa,
-					  (GObject *) current,
-					  port_descriptor->data);
-
-	current->port_value.ags_port_ladspa = (LADSPA_Data) g_value_get_float(AGS_PORT_DESCRIPTOR(port_descriptor->data)->default_value);
+	g_object_set(current_port,
+		     "plugin-port", current_plugin_port,
+		     NULL);
 	
-	//	g_message("connecting port: %d/%d", i, port_count);
+	ags_recall_ladspa_load_conversion(recall_ladspa,
+					  (GObject *) current_port,
+					  current_plugin_port);
+	
+	ags_port_safe_write_raw(current_port,
+				default_value);
 
 	port = g_list_prepend(port,
-			      current);
-      }else if((AGS_PORT_DESCRIPTOR_AUDIO & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
-	if((AGS_PORT_DESCRIPTOR_INPUT & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
+			      current_port);
+
+	g_free(default_value);
+	g_free(plugin_name);
+	g_free(specifier);
+      }else if(ags_plugin_port_test_flags(current_plugin_port,
+					  AGS_PLUGIN_PORT_AUDIO)){
+	pthread_mutex_lock(recall_mutex);
+
+	if(ags_plugin_port_test_flags(current_plugin_port,
+				      AGS_PLUGIN_PORT_INPUT)){
 	  if(recall_ladspa->input_port == NULL){
 	    recall_ladspa->input_port = (unsigned long *) malloc(sizeof(unsigned long));
 	    recall_ladspa->input_port[0] = i;
@@ -695,7 +651,8 @@ ags_recall_ladspa_load_ports(AgsRecallLadspa *recall_ladspa)
 	  }
 	  
 	  recall_ladspa->input_lines += 1;
-	}else if((AGS_PORT_DESCRIPTOR_OUTPUT & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
+	}else if(ags_plugin_port_test_flags(current_plugin_port,
+					    AGS_PLUGIN_PORT_OUTPUT)){
 	  if(recall_ladspa->output_port == NULL){
 	    recall_ladspa->output_port = (unsigned long *) malloc(sizeof(unsigned long));
 	    recall_ladspa->output_port[0] = i;
@@ -707,74 +664,84 @@ ags_recall_ladspa_load_ports(AgsRecallLadspa *recall_ladspa)
 	  
 	  recall_ladspa->output_lines += 1;
 	}
+
+	pthread_mutex_unlock(recall_mutex);
       }
 
-      port_descriptor = port_descriptor->next;
+      /* iterate plugin port */
+      plugin_port = plugin_port->next;
     }
     
+    /* reverse port */
+    pthread_mutex_lock(recall_mutex);
+    
     AGS_RECALL(recall_ladspa)->port = g_list_reverse(port);
+    
+    retval = g_list_copy(AGS_RECALL(recall_ladspa)->port);
+    
+    pthread_mutex_unlock(recall_mutex);
   }
 
-  pthread_mutex_unlock(base_plugin_mutex);
+  g_list_free(plugin_port_start);
 
-  return(g_list_copy(AGS_RECALL(recall_ladspa)->port));
+  return(retval);
 }
 
 /**
  * ags_recall_ladspa_load_conversion:
  * @recall_ladspa: the #AgsRecallLadspa
- * @port: an #AgsPort
- * @port_descriptor: the #AgsPortDescriptor-struct
+ * @port: the #AgsPort
+ * @plugin_port: the #AgsPluginPort
  * 
- * Loads conversion object by using @port_descriptor and sets in on @port.
+ * Loads conversion object by using @plugin_port and sets in on @port.
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_recall_ladspa_load_conversion(AgsRecallLadspa *recall_ladspa,
 				  GObject *port,
-				  gpointer port_descriptor)
+				  gpointer plugin_port)
 {
   AgsLadspaConversion *ladspa_conversion;
 
-  if(recall_ladspa == NULL ||
-     port == NULL ||
-     port_descriptor == NULL){
+  if(!AGS_IS_RECALL_LADSPA(recall_ladspa) ||
+     !AGS_IS_PORT(port) ||
+     !AGS_IS_PLUGIN_PORT(plugin_port)){
     return;
   }
 
   ladspa_conversion = NULL;
 
-  if((AGS_PORT_DESCRIPTOR_BOUNDED_BELOW & (AGS_PORT_DESCRIPTOR(port_descriptor)->flags)) != 0){
-    if(ladspa_conversion == NULL ||
-       !AGS_IS_LADSPA_CONVERSION(ladspa_conversion)){
+  if(ags_plugin_port_test_flags(plugin_port,
+				AGS_PLUGIN_PORT_BOUNDED_BELOW)){
+    if(!AGS_IS_LADSPA_CONVERSION(ladspa_conversion)){
       ladspa_conversion = ags_ladspa_conversion_new();
     }
 
     ladspa_conversion->flags |= AGS_LADSPA_CONVERSION_BOUNDED_BELOW;
   }
 
-  if((AGS_PORT_DESCRIPTOR_BOUNDED_ABOVE & (AGS_PORT_DESCRIPTOR(port_descriptor)->flags)) != 0){
-    if(ladspa_conversion == NULL ||
-       !AGS_IS_LADSPA_CONVERSION(ladspa_conversion)){
+  if(ags_plugin_port_test_flags(plugin_port,
+				AGS_PLUGIN_PORT_BOUNDED_ABOVE)){
+    if(!AGS_IS_LADSPA_CONVERSION(ladspa_conversion)){
       ladspa_conversion = ags_ladspa_conversion_new();
     }
 
     ladspa_conversion->flags |= AGS_LADSPA_CONVERSION_BOUNDED_ABOVE;
   }
   
-  if((AGS_PORT_DESCRIPTOR_SAMPLERATE & (AGS_PORT_DESCRIPTOR(port_descriptor)->flags)) != 0){
-    if(ladspa_conversion == NULL ||
-       !AGS_IS_LADSPA_CONVERSION(ladspa_conversion)){
+  if(ags_plugin_port_test_flags(plugin_port,
+				AGS_PLUGIN_PORT_SAMPLERATE)){
+    if(!AGS_IS_LADSPA_CONVERSION(ladspa_conversion)){
       ladspa_conversion = ags_ladspa_conversion_new();
     }
         
     ladspa_conversion->flags |= AGS_LADSPA_CONVERSION_SAMPLERATE;
   }
 
-  if((AGS_PORT_DESCRIPTOR_LOGARITHMIC & (AGS_PORT_DESCRIPTOR(port_descriptor)->flags)) != 0){
-    if(ladspa_conversion == NULL ||
-       !AGS_IS_LADSPA_CONVERSION(ladspa_conversion)){
+  if(ags_plugin_port_test_flags(plugin_port,
+				AGS_PLUGIN_PORT_LOGARITHMIC)){
+    if(!AGS_IS_LADSPA_CONVERSION(ladspa_conversion)){
       ladspa_conversion = ags_ladspa_conversion_new();
     }
     
@@ -790,13 +757,13 @@ ags_recall_ladspa_load_conversion(AgsRecallLadspa *recall_ladspa,
 
 /**
  * ags_recall_ladspa_find:
- * @recall: a #GList containing #AgsRecall
+ * @recall: the #GList-struct containing #AgsRecall
  * @filename: plugin filename
  * @effect: effect's name
  *
  * Retrieve LADSPA recall.
  *
- * Returns: Next match.
+ * Returns: Next matching #GList-struct or %NULL
  * 
  * Since: 1.0.0
  */
@@ -804,12 +771,30 @@ GList*
 ags_recall_ladspa_find(GList *recall,
 		       gchar *filename, gchar *effect)
 {
+  gboolean success;
+  
+  pthread_mutex_t *recall_mutex;
+
   while(recall != NULL){
     if(AGS_IS_RECALL_LADSPA(recall->data)){
-      if(!g_strcmp0(AGS_RECALL_LADSPA(recall->data)->filename,
-		    filename) &&
-	 !g_strcmp0(AGS_RECALL_LADSPA(recall->data)->effect,
-		    effect)){
+      /* get recall mutex */
+      pthread_mutex_lock(ags_recall_get_class_mutex());
+  
+      recall_mutex = AGS_RECALL(recall->data)->obj_mutex;
+  
+      pthread_mutex_unlock(ags_recall_get_class_mutex());
+
+      /* check filename and effect */
+      pthread_mutex_lock(recall_mutex);
+      
+      success = (!g_strcmp0(AGS_RECALL(recall->data)->filename,
+			    filename) &&
+		 !g_strcmp0(AGS_RECALL(recall->data)->effect,
+			    effect)) ? TRUE: FALSE;
+
+      pthread_mutex_unlock(recall_mutex);
+      
+      if(success){
 	return(recall);
       }
     }
@@ -822,38 +807,41 @@ ags_recall_ladspa_find(GList *recall,
 
 /**
  * ags_recall_ladspa_new:
- * @source: the source
+ * @source: the #AgsChannel as source
  * @filename: the LADSPA plugin filename
  * @effect: effect's name
- * @index: effect's index
+ * @effect_index: effect's index
  *
- * Creates a #AgsRecallLadspa
+ * Creates a new instance of #AgsRecallLadspa
  *
- * Returns: a new #AgsRecallLadspa
+ * Returns: the new #AgsRecallLadspa
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsRecallLadspa*
 ags_recall_ladspa_new(AgsChannel *source,
 		      gchar *filename,
 		      gchar *effect,
-		      unsigned long index)
+		      guint effect_index)
 {
-  GObject *soundcard;
   AgsRecallLadspa *recall_ladspa;
 
+  GObject *output_soundcard;
+
+  output_soundcard = NULL;
+
   if(source != NULL){
-    soundcard = (GObject *) source->soundcard;
-  }else{
-    soundcard = NULL;
+    g_object_get(source,
+		 "output-soundcard", &output_soundcard,
+		 NULL);
   }
 
   recall_ladspa = (AgsRecallLadspa *) g_object_new(AGS_TYPE_RECALL_LADSPA,
-						   "soundcard", soundcard,
+						   "output-soundcard", output_soundcard,
 						   "source", source,
 						   "filename", filename,
 						   "effect", effect,
-						   "index", index,
+						   "effect-index", effect_index,
 						   NULL);
 
   return(recall_ladspa);

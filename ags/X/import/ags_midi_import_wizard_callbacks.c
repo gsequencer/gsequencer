@@ -19,9 +19,8 @@
 
 #include <ags/X/import/ags_midi_import_wizard_callbacks.h>
 
-#include <ags/object/ags_applicable.h>
-
-#include <ags/audio/midi/ags_midi_parser.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
 
 #include <ags/X/ags_window.h>
 

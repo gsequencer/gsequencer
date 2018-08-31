@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -20,6 +20,7 @@
 #ifndef __AGS_RESIZE_AUDIO_H__
 #define __AGS_RESIZE_AUDIO_H__
 
+#include <glib.h>
 #include <glib-object.h>
 
 #include <ags/libags.h>

@@ -27,18 +27,15 @@
 
 #include <ags/X/ags_line.h>
 
-int ags_line_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsLine *line);
-
-void ags_line_remove_recall_callback(AgsRecall *recall, AgsLine *line);
-
 void ags_line_group_clicked_callback(GtkWidget *widget, AgsLine *line);
 
 /* AgsLine */
 void ags_line_volume_callback(GtkRange *range,
 			      AgsLine *line);
 
-/* done */
-void ags_line_done_callback(AgsLine *line, AgsRecallID *recall_id,
+/* stop */
+void ags_line_stop_callback(AgsLine *line,
+			    GList *recall_id, gint sound_scope,
 			    gpointer data);
 
 #endif /*__AGS_LINE_CALLBACKS_H__*/

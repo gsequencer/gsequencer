@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -23,13 +23,11 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include <ags/config.h>
+#include <ags/libags.h>
 
 #ifdef AGS_WITH_LIBINSTPATCH
 #include <libinstpatch/libinstpatch.h>
 #endif
-
-#include <ags/object/ags_soundcard.h>
 
 #define AGS_TYPE_IPATCH                (ags_ipatch_get_type())
 #define AGS_IPATCH(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_IPATCH, AgsIpatch))
@@ -38,7 +36,7 @@
 #define AGS_IS_IPATCH_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE((class), AGS_TYPE_IPATCH))
 #define AGS_IPATCH_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_IPATCH, AgsIpatchClass))
 
-#define AGS_IPATCH_DEFAULT_CHANNELS 2
+#define AGS_IPATCH_DEFAULT_CHANNELS (2)
 
 #define AGS_IPATCH_READ "r"
 #define AGS_IPATCH_WRITE "w"
@@ -68,42 +66,27 @@ struct _AgsIpatch
   guint flags;
 
   GObject *soundcard;
-  GList *audio_signal;
-
-#ifdef AGS_WITH_LIBINSTPATCH
-  IpatchFile *file;
-#else
-  gpointer file;
-#endif
   
   char *filename;
   char *mode;
 
 #ifdef AGS_WITH_LIBINSTPATCH
+  IpatchFile *file;
   IpatchFileHandle *handle;
 #else
+  gpointer file;
   gpointer handle;
 #endif
+    
+  guint nesting_level;
   
-  GError *error;
+  gchar *level_id;
+  guint level_index;
 
-#ifdef AGS_WITH_LIBINSTPATCH
-  IpatchBase *base;
-#else
-  gpointer base;
-#endif
-  
   GObject *reader;
+  GObject *writer;
 
-#ifdef AGS_WITH_LIBINSTPATCH
-  IpatchList *samples;
-#else
-  gpointer samples;
-#endif
-
-  GList *iter;
-
-  guint nth_level;
+  GList *audio_signal;
 };
 
 struct _AgsIpatchClass

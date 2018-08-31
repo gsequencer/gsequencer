@@ -53,6 +53,7 @@ void ags_lv2_option_manager_test_stub_set_option(AgsLv2OptionManager *lv2_option
 #define AGS_LV2_OPTION_MANAGER_TEST_GET_OPTION_PLUGIN_FILENAME "/usr/lib/lv2/delay-swh.lv2/plugin-linux.so"
 #define AGS_LV2_OPTION_MANAGER_TEST_GET_OPTION_PLUGIN_EFFECT "Simple delay line, noninterpolating"
 #define AGS_LV2_OPTION_MANAGER_TEST_GET_OPTION_SAMPLERATE (44100)
+#define AGS_LV2_OPTION_MANAGER_TEST_GET_OPTION_BUFFER_SIZE (512)
 #define AGS_LV2_OPTION_MANAGER_TEST_GET_OPTION_SUBJECT (3)
 #define AGS_LV2_OPTION_MANAGER_TEST_GET_OPTION_SIZE (4)
 
@@ -203,7 +204,7 @@ ags_lv2_option_manager_test_get_option()
 					       AGS_LV2_OPTION_MANAGER_TEST_GET_OPTION_PLUGIN_FILENAME,
 					       AGS_LV2_OPTION_MANAGER_TEST_GET_OPTION_PLUGIN_EFFECT);
   instance = ags_base_plugin_instantiate(AGS_BASE_PLUGIN(lv2_plugin),
-					 AGS_LV2_OPTION_MANAGER_TEST_GET_OPTION_SAMPLERATE);
+					 AGS_LV2_OPTION_MANAGER_TEST_GET_OPTION_SAMPLERATE, AGS_LV2_OPTION_MANAGER_TEST_GET_OPTION_BUFFER_SIZE);
   
   lv2_option_ressource = ags_lv2_option_ressource_alloc();
   lv2_option_ressource->instance = instance;
@@ -268,7 +269,7 @@ ags_lv2_option_manager_test_set_option()
 					       AGS_LV2_OPTION_MANAGER_TEST_GET_OPTION_PLUGIN_FILENAME,
 					       AGS_LV2_OPTION_MANAGER_TEST_GET_OPTION_PLUGIN_EFFECT);
   instance = ags_base_plugin_instantiate(AGS_BASE_PLUGIN(lv2_plugin),
-					 AGS_LV2_OPTION_MANAGER_TEST_GET_OPTION_SAMPLERATE);
+					 AGS_LV2_OPTION_MANAGER_TEST_GET_OPTION_SAMPLERATE, AGS_LV2_OPTION_MANAGER_TEST_GET_OPTION_BUFFER_SIZE);
   
   option = (LV2_Options_Option *) malloc(sizeof(LV2_Options_Option));
 

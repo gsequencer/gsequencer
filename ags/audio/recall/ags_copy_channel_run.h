@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -23,10 +23,10 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include <ags/audio/ags_recall_channel_run.h>
+#include <ags/libags.h>
 
-#include <ags/object/ags_soundcard.h>
 #include <ags/audio/ags_channel.h>
+#include <ags/audio/ags_recall_channel_run.h>
 
 #define AGS_TYPE_COPY_CHANNEL_RUN                (ags_copy_channel_run_get_type())
 #define AGS_COPY_CHANNEL_RUN(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_COPY_CHANNEL_RUN, AgsCopyChannelRun))
@@ -38,24 +38,9 @@
 typedef struct _AgsCopyChannelRun AgsCopyChannelRun;
 typedef struct _AgsCopyChannelRunClass AgsCopyChannelRunClass;
 
-/**
- * AgsCopyChannelRunFlags:
- * @AGS_COPY_CHANNEL_RUN_EXACT_LENGTH: 
- * @AGS_COPY_CHANNEL_RUN_OMIT_FURTHER_ATTACK: 
- *
- * Enum values to control the behavior or indicate internal state of #AgsCopyChannelRun by
- * enable/disable as flags.
- */
-typedef enum{
-  AGS_COPY_CHANNEL_RUN_EXACT_LENGTH         = 1,
-  AGS_COPY_CHANNEL_RUN_OMIT_FURTHER_ATTACK  = 1 << 1,
-}AgsCopyChannelRunFlags;
-
 struct _AgsCopyChannelRun
 {
   AgsRecallChannelRun recall_channel_run;
-
-  guint flags;
 };
 
 struct _AgsCopyChannelRunClass
@@ -66,7 +51,6 @@ struct _AgsCopyChannelRunClass
 GType ags_copy_channel_run_get_type();
 
 AgsCopyChannelRun* ags_copy_channel_run_new(AgsChannel *destination,
-					    AgsChannel *source,
-					    GObject *soundcard);
+					    AgsChannel *source);
 
 #endif /*__AGS_COPY_CHANNEL_RUN_H__*/

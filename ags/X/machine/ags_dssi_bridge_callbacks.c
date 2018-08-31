@@ -66,8 +66,7 @@ ags_dssi_bridge_program_changed_callback(GtkComboBox *combo_box, AgsDssiBridge *
     AgsChannel *channel;
    
     GList *bulk_member, *bulk_member_start;
-    GList *recall;
-    GList *port;
+    GList *start_recall, *recall;
   
     gchar *name;
     gchar *specifier;
@@ -97,18 +96,31 @@ ags_dssi_bridge_program_changed_callback(GtkComboBox *combo_box, AgsDssiBridge *
     port_descriptor = dssi_bridge->dssi_descriptor->LADSPA_Plugin->PortDescriptors;
     
     while(channel != NULL){
-      recall = channel->recall;
+      g_object_get(channel,
+		   "recall", &start_recall,
+		   NULL);
+      
+      recall = start_recall;
 
       while((recall = ags_recall_find_type(recall, AGS_TYPE_RECALL_DSSI)) != NULL){
-	AGS_RECALL_DSSI(recall->data)->bank = (unsigned long) bank;
-	AGS_RECALL_DSSI(recall->data)->program = (unsigned long) program;
-      
+	GList *start_port, *port;
+	
+	g_object_set(recall->data,
+		     "bank", bank,
+		     "program", program,
+		     NULL);
+
+	g_object_get(recall->data,
+		     "port", &start_port,
+		     NULL);
+	
 	for(i = 0; i < dssi_bridge->dssi_descriptor->LADSPA_Plugin->PortCount; i++){
 	  if(LADSPA_IS_PORT_CONTROL(port_descriptor[i])){
 	    if(LADSPA_IS_PORT_INPUT(port_descriptor[i]) ||
 	       LADSPA_IS_PORT_OUTPUT(port_descriptor[i])){
 	      specifier = dssi_bridge->dssi_descriptor->LADSPA_Plugin->PortNames[i];
-	      port = AGS_RECALL(recall->data)->port;
+
+	      port = start_port;
 
 	      while(port != NULL){
 		if(!g_strcmp0(AGS_PORT(port->data)->specifier,
@@ -121,6 +133,7 @@ ags_dssi_bridge_program_changed_callback(GtkComboBox *combo_box, AgsDssiBridge *
 		  
 		  g_value_init(&value,
 			       G_TYPE_FLOAT);
+		  
 		  g_value_set_float(&value,
 				    dssi_bridge->port_values[i]);
 		  ags_port_safe_write_raw(port->data,
@@ -134,11 +147,19 @@ ags_dssi_bridge_program_changed_callback(GtkComboBox *combo_box, AgsDssiBridge *
 	    }
 	  }
 	}
-      
+
+	g_list_free(start_port);
+
+	/* iterate */
 	recall = recall->next;
       }
 
-      channel = channel->next;
+      g_list_free(start_recall);
+      
+      /* iterate */
+      g_object_get(channel,
+		   "next", &channel,
+		   NULL);
     }
 
     /* update UI */
@@ -205,4 +226,3 @@ ags_dssi_bridge_program_changed_callback(GtkComboBox *combo_box, AgsDssiBridge *
     g_list_free(bulk_member_start);
   }
 }
-

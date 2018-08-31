@@ -219,7 +219,16 @@ main(int argc, char **argv)
     
     return CU_get_error();
   }
+#if 0
+  g_log_set_fatal_mask("GLib-GObject",
+  		       G_LOG_LEVEL_WARNING | G_LOG_LEVEL_CRITICAL);
 
+  g_log_set_fatal_mask("Gtk",
+  		       G_LOG_LEVEL_CRITICAL);
+
+  g_log_set_fatal_mask(NULL,
+  		       G_LOG_LEVEL_WARNING | G_LOG_LEVEL_CRITICAL);
+#endif  
   g_atomic_int_set(&is_available,
 		   FALSE);
 

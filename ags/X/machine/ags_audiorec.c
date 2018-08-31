@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -24,23 +24,30 @@
 #include <ags/libags-audio.h>
 #include <ags/libags-gui.h>
 
+#include <ags/X/ags_ui_provider.h>
 #include <ags/X/ags_window.h>
+
+#include <ags/X/thread/ags_gui_thread.h>
 
 void ags_audiorec_class_init(AgsAudiorecClass *audiorec);
 void ags_audiorec_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_audiorec_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_audiorec_init(AgsAudiorec *audiorec);
+void ags_audiorec_finalize(GObject *gobject);
+
 void ags_audiorec_connect(AgsConnectable *connectable);
 void ags_audiorec_disconnect(AgsConnectable *connectable);
-void ags_audiorec_finalize(GObject *gobject);
-void ags_audiorec_show(GtkWidget *widget);
-void ags_audiorec_map_recall(AgsMachine *machine);
+
 gchar* ags_audiorec_get_name(AgsPlugin *plugin);
 void ags_audiorec_set_name(AgsPlugin *plugin, gchar *name);
 gchar* ags_audiorec_get_xml_type(AgsPlugin *plugin);
 void ags_audiorec_set_xml_type(AgsPlugin *plugin, gchar *xml_type);
 void ags_audiorec_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin);
 xmlNode* ags_audiorec_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin);
+
+void ags_audiorec_show(GtkWidget *widget);
+
+void ags_audiorec_map_recall(AgsMachine *machine);
 
 void ags_audiorec_resize_audio_channels(AgsMachine *machine,
 					guint audio_channels, guint audio_channels_old,
@@ -64,6 +71,8 @@ void ags_audiorec_input_map_recall(AgsAudiorec *audiorec, guint input_pad_start)
 
 static gpointer ags_audiorec_parent_class = NULL;
 static AgsConnectableInterface *ags_audiorec_parent_connectable_interface;
+
+GHashTable *ags_audiorec_indicator_queue_draw = NULL;
 
 GType
 ags_audiorec_get_type(void)
@@ -173,10 +182,16 @@ ags_audiorec_init(AgsAudiorec *audiorec)
 
   AgsAudio *audio;
 
+  g_signal_connect_after((GObject *) audiorec, "parent_set",
+			 G_CALLBACK(ags_audiorec_parent_set_callback), (gpointer) audiorec);
+
   audio = AGS_MACHINE(audiorec)->audio;
-  audio->flags |= (AGS_AUDIO_SYNC |
-		   AGS_AUDIO_OUTPUT_HAS_RECYCLING |
-		   AGS_AUDIO_INPUT_HAS_RECYCLING);
+  ags_audio_set_flags(audio, (AGS_AUDIO_SYNC |
+			      AGS_AUDIO_OUTPUT_HAS_RECYCLING |
+			      AGS_AUDIO_INPUT_HAS_RECYCLING));
+  ags_audio_set_ability_flags(audio, (AGS_SOUND_ABILITY_WAVE));
+
+  AGS_MACHINE(audiorec)->flags |= (AGS_MACHINE_IS_WAVE_PLAYER);
 
   /* audio resize */
   g_signal_connect_after(G_OBJECT(audiorec), "resize-audio-channels",
@@ -286,11 +301,23 @@ ags_audiorec_init(AgsAudiorec *audiorec)
 
   /* dialog */
   audiorec->open_dialog = NULL;
+
+  /* indicator */
+  if(ags_audiorec_indicator_queue_draw == NULL){
+    ags_audiorec_indicator_queue_draw = g_hash_table_new_full(g_direct_hash, g_direct_equal,
+							      NULL,
+							      NULL);
+  }
+
+  g_hash_table_insert(ags_audiorec_indicator_queue_draw,
+		      audiorec, ags_audiorec_indicator_queue_draw_timeout);
+  g_timeout_add(1000 / 30, (GSourceFunc) ags_audiorec_indicator_queue_draw_timeout, (gpointer) audiorec);
 }
 
 void
 ags_audiorec_finalize(GObject *gobject)
 {
+  /* call parent */
   G_OBJECT_CLASS(ags_audiorec_parent_class)->finalize(gobject);
 }
 
@@ -367,6 +394,31 @@ ags_audiorec_disconnect(AgsConnectable *connectable)
 		      NULL);
 }
 
+
+gchar*
+ags_audiorec_get_name(AgsPlugin *plugin)
+{
+  return(AGS_AUDIOREC(plugin)->name);
+}
+
+void
+ags_audiorec_set_name(AgsPlugin *plugin, gchar *name)
+{
+  AGS_AUDIOREC(plugin)->name = name;
+}
+
+gchar*
+ags_audiorec_get_xml_type(AgsPlugin *plugin)
+{
+  return(AGS_AUDIOREC(plugin)->xml_type);
+}
+
+void
+ags_audiorec_set_xml_type(AgsPlugin *plugin, gchar *xml_type)
+{
+  AGS_AUDIOREC(plugin)->xml_type = xml_type;
+}
+
 void
 ags_audiorec_show(GtkWidget *widget)
 {
@@ -395,9 +447,9 @@ ags_audiorec_map_recall(AgsMachine *machine)
 			    "ags-play-wave",
 			    0, 0,
 			    0, 0,
-			    (AGS_RECALL_FACTORY_INPUT |
+			    (AGS_RECALL_FACTORY_OUTPUT |
 			     AGS_RECALL_FACTORY_ADD |
-			     AGS_RECALL_FACTORY_RECALL),
+			     AGS_RECALL_FACTORY_PLAY),
 			    0);
 
   /* depending on destination */
@@ -413,37 +465,69 @@ ags_audiorec_map_recall(AgsMachine *machine)
 void
 ags_audiorec_output_map_recall(AgsAudiorec *audiorec, guint output_pad_start)
 {
-  //TODO:JK: implement me
+  AgsAudio *audio;
+
+  guint output_pads;
+  guint audio_channels;
+  
+  if(audiorec->mapped_output_pad > output_pad_start){
+    return;
+  }
+
+  audio = AGS_MACHINE(audiorec)->audio;
+
+  g_object_get(audio,
+	       "output-pads", &output_pads,
+	       "audio-channels", &audio_channels,
+	       NULL);
+
+  /* ags-peak */
+  ags_recall_factory_create(audio,
+			    NULL, NULL,
+			    "ags-peak",
+			    0, audio_channels, 
+			    output_pad_start, output_pads,
+			    (AGS_RECALL_FACTORY_OUTPUT |
+			     AGS_RECALL_FACTORY_PLAY |
+			     AGS_RECALL_FACTORY_ADD),
+			    0);
+
+  /* ags-play-wave */
+  ags_recall_factory_create(audio,
+			    NULL, NULL,
+			    "ags-play-wave",
+			    0, audio_channels,
+			    output_pad_start, output_pads,
+			    (AGS_RECALL_FACTORY_OUTPUT |
+			     AGS_RECALL_FACTORY_PLAY |
+			     AGS_RECALL_FACTORY_ADD),
+			    0);
+  
+  audiorec->mapped_output_pad = output_pads;
 }
 
 void
 ags_audiorec_input_map_recall(AgsAudiorec *audiorec, guint input_pad_start)
 {
-  //TODO:JK: implement me
-}
+  AgsAudio *audio;
+  AgsChannel *source, *current;
 
-gchar*
-ags_audiorec_get_name(AgsPlugin *plugin)
-{
-  return(AGS_AUDIOREC(plugin)->name);
-}
+  GList *list;
 
-void
-ags_audiorec_set_name(AgsPlugin *plugin, gchar *name)
-{
-  AGS_AUDIOREC(plugin)->name = name;
-}
+  guint input_pads;
+  guint audio_channels;
 
-gchar*
-ags_audiorec_get_xml_type(AgsPlugin *plugin)
-{
-  return(AGS_AUDIOREC(plugin)->xml_type);
-}
+  if(audiorec->mapped_input_pad > input_pad_start){
+    return;
+  }
 
-void
-ags_audiorec_set_xml_type(AgsPlugin *plugin, gchar *xml_type)
-{
-  AGS_AUDIOREC(plugin)->xml_type = xml_type;
+  audio = AGS_MACHINE(audiorec)->audio;
+
+  /* get some fields */
+  g_object_get(audio,
+	       "input-pads", &input_pads,
+	       "audio-channels", &audio_channels,
+	       NULL);
 }
 
 void
@@ -453,18 +537,96 @@ ags_audiorec_resize_audio_channels(AgsMachine *machine,
 {
   AgsAudiorec *audiorec;
 
-  guint pads;
+  AgsAudio *audio;
+  AgsChannel *output;
+  AgsChannel *channel, *next_pad;
+  AgsRecycling *first_recycling;
+  AgsAudioSignal *audio_signal;  
+
+  GObject *output_soundcard;
+  
+  guint output_pads, input_pads;
   
   audiorec = AGS_AUDIOREC(machine);
 
-  pads = machine->audio->input_pads;
+  audio = AGS_MACHINE(audiorec)->audio;
 
-  if(audio_channels > audio_channels_old &&
-     pads > 0){
+  g_object_get(audio,
+	       "input-pads", &input_pads,
+	       "output-pads", &output_pads,
+	       "output", &output,
+	       NULL);
+
+  if(audio_channels > audio_channels_old){
     AgsHIndicator *hindicator;
 	
     guint i;
 
+    /* AgsOutput */
+    channel = output;
+
+    while(channel != NULL){
+      /* get some fields */
+      g_object_get(channel,
+		   "next-pad", &next_pad,
+		   NULL);
+
+      channel = ags_channel_pad_nth(channel,
+				    audio_channels_old);
+
+      while(channel != next_pad){
+	/* get some fields */
+	g_object_get(channel,
+		     "output-soundcard", &output_soundcard,
+		     "first-recycling", &first_recycling,
+		     NULL);
+
+	/* audio signal */
+	audio_signal = ags_audio_signal_new(output_soundcard,
+					    (GObject *) first_recycling,
+					    NULL);
+	audio_signal->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;
+	ags_audio_signal_stream_resize(audio_signal,
+				       3);
+	ags_recycling_add_audio_signal(first_recycling,
+				       audio_signal);
+	
+	/* iterate */
+	g_object_get(channel,
+		     "next", &channel,
+		     NULL);
+      }
+    }
+
+    if(input_pads > 0){      
+    }
+    
+    if(output_pads > 0){
+      /* AgsOutput */
+      /* ags-play */
+      ags_recall_factory_create(audio,
+				NULL, NULL,
+				"ags-play-wave",
+				audio_channels_old, audio_channels, 
+				0, output_pads,
+				(AGS_RECALL_FACTORY_OUTPUT |
+				 AGS_RECALL_FACTORY_PLAY |
+				 AGS_RECALL_FACTORY_ADD),
+				0);
+      
+      /* ags-peak */
+      ags_recall_factory_create(audio,
+				NULL, NULL,
+				"ags-peak",
+				audio_channels, audio_channels_old, 
+				0, output_pads,
+				(AGS_RECALL_FACTORY_OUTPUT |
+				 AGS_RECALL_FACTORY_PLAY |
+				 AGS_RECALL_FACTORY_ADD),
+				0);
+    }
+    
+    /* widgets */
     for(i = audio_channels_old; i < audio_channels; i++){
       hindicator = ags_hindicator_new();
       gtk_box_pack_start(audiorec->hindicator_vbox,
@@ -500,17 +662,59 @@ ags_audiorec_resize_pads(AgsMachine *machine, GType type,
 {
   AgsAudiorec *audiorec;
 
+  AgsAudio *audio;
+  AgsChannel *output;
+  AgsChannel *channel;
+  AgsRecycling *first_recycling;
+  AgsAudioSignal *audio_signal;
+
+  GObject *output_soundcard;
+  
+  guint audio_channels;
+
   audiorec = AGS_AUDIOREC(machine);
 
+  audio = machine->audio;
+
   if(type == AGS_TYPE_INPUT){
-    if(pads == 1 &&
-       pads_old == 0){
+    if(pads > pads_old){
       AgsHIndicator *hindicator;
 
       guint audio_channels;
       guint i;
 
-      audio_channels = machine->audio->audio_channels;
+      /* get some fields */
+      g_object_get(audio,
+		   "output", &output,
+		   "audio-channels", &audio_channels,
+		   NULL);
+
+      /* AgsOutput */
+      channel = ags_channel_pad_nth(output,
+				    pads_old);
+
+      while(channel != NULL){
+	/* get some fields */
+	g_object_get(channel,
+		     "output-soundcard", &output_soundcard,
+		     "first-recycling", &first_recycling,
+		     NULL);
+
+	/* audio signal */
+	audio_signal = ags_audio_signal_new(output_soundcard,
+					    (GObject *) first_recycling,
+					    NULL);
+	audio_signal->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;
+	ags_audio_signal_stream_resize(audio_signal,
+				       3);
+	ags_recycling_add_audio_signal(first_recycling,
+				       audio_signal);
+	
+	/* iterate */
+	g_object_get(channel,
+		     "next", &channel,
+		     NULL);
+      }
 
       for(i = 0; i < audio_channels; i++){
 	hindicator = ags_hindicator_new();
@@ -521,7 +725,11 @@ ags_audiorec_resize_pads(AgsMachine *machine, GType type,
       }
 
       gtk_widget_show_all(audiorec->hindicator_vbox);
-    }else if(pads == 0){
+
+      /* depending on destination */
+      ags_audiorec_input_map_recall(audiorec,
+				    pads_old);
+    }else{
       GList *list, *list_start;
 
       list_start = 
@@ -535,10 +743,6 @@ ags_audiorec_resize_pads(AgsMachine *machine, GType type,
 
       g_list_free(list_start);
 
-      /* depending on destination */
-      ags_audiorec_input_map_recall(audiorec,
-				    pads_old);
-    }else{
       audiorec->mapped_input_pad = pads;
     }
   }else{
@@ -611,18 +815,168 @@ void
 ags_audiorec_open_filename(AgsAudiorec *audiorec,
 			   gchar *filename)
 {
-  //TODO:JK: implement me
+  AgsAudioFile *audio_file;
+
+  AgsOpenWave *open_wave;
+
+  AgsGuiThread *gui_thread;
+  
+  AgsApplicationContext *application_context;
+  
+  GObject *output_soundcard;
+
+  GList *start_wave, *wave;
+  
+  if(!AGS_IS_AUDIOREC(audiorec) ||
+     filename == NULL){
+    return;
+  }
+
+  application_context = ags_application_context_get_instance();
+
+  gui_thread = ags_ui_provider_get_gui_thread(AGS_UI_PROVIDER(application_context));
+  
+  g_object_get(AGS_MACHINE(audiorec)->audio,
+	       "output-soundcard", &output_soundcard,
+	       NULL);
+
+  g_object_get(AGS_MACHINE(audiorec)->audio,
+	       "wave", &start_wave,
+	       NULL);
+
+  wave = start_wave;
+
+  while(wave != NULL){
+    ags_audio_remove_wave(AGS_MACHINE(audiorec)->audio,
+			  wave->data);
+    
+    wave = wave->next;
+  }
+
+  g_list_free(start_wave);
+  
+  audio_file = ags_audio_file_new(filename,
+				  output_soundcard,
+				  -1);
+  ags_audio_file_open(audio_file);
+
+  g_object_set(AGS_MACHINE(audiorec)->audio,
+	       "input-audio-file", audio_file,
+	       NULL);
+
+  open_wave = ags_open_wave_new(AGS_MACHINE(audiorec)->audio,
+				audio_file,
+				NULL,
+				0);
+  ags_gui_thread_schedule_task(gui_thread,
+			       open_wave);
+}
+
+/**
+ * ags_audiorec_indicator_queue_draw_timeout:
+ * @widget: the widget
+ *
+ * Queue draw widget
+ *
+ * Returns: %TRUE if proceed with redraw, otherwise %FALSE
+ *
+ * Since: 2.0.0
+ */
+gboolean
+ags_audiorec_indicator_queue_draw_timeout(AgsAudiorec *audiorec)
+{
+  if(g_hash_table_lookup(ags_audiorec_indicator_queue_draw,
+			 audiorec) != NULL){
+    AgsAudio *audio;
+    AgsChannel *channel;
+    
+    GList *list, *list_start;
+
+    guint i;
+
+    audio = AGS_MACHINE(audiorec)->audio;
+    g_object_get(audio,
+		 "output", &channel,
+		 NULL);
+    
+    list_start = 
+      list = gtk_container_get_children((GtkContainer *) audiorec->hindicator_vbox);
+    
+    /* check members */
+    for(i = 0; list != NULL; i++){
+      GtkAdjustment *adjustment;
+      GtkWidget *child;
+
+      AgsPort *current;
+
+      GList *start_port;
+      
+      gdouble average_peak;
+      gdouble peak;
+	
+      GValue value = {0,};
+	
+      child = list->data;
+      
+      average_peak = 0.0;
+      
+      start_port = ags_channel_collect_all_channel_ports_by_specifier_and_context(channel,
+										  "./peak[0]",
+										  TRUE);
+
+      current = NULL;
+
+      if(start_port != NULL){
+	current = start_port->data;
+      }
+      
+      /* recall port - read value */
+      g_value_init(&value, G_TYPE_FLOAT);
+      ags_port_safe_read(current,
+			 &value);
+      
+      peak = g_value_get_float(&value);
+      g_value_unset(&value);
+
+      /* calculate peak */
+      average_peak += ((1.0 / (1.0 / peak)) * 10.0);
+      
+      /* apply */
+      g_object_get(child,
+		   "adjustment", &adjustment,
+		   NULL);
+	
+      gtk_adjustment_set_value(adjustment,
+			       average_peak);
+
+      /* queue draw */
+      gtk_widget_queue_draw(child);
+
+      /* iterate */
+      list = list->next;
+
+      g_object_get(channel,
+		   "next", &channel,
+		   NULL);
+    }
+
+    g_list_free(list_start);
+    
+    return(TRUE);
+  }else{
+    return(FALSE);
+  }
 }
 
 /**
  * ags_audiorec_new:
  * @soundcard: the assigned soundcard.
  *
- * Creates an #AgsAudiorec
+ * Create a new instance of #AgsAudiorec
  *
- * Returns: a new #AgsAudiorec
+ * Returns: the new #AgsAudiorec
  *
- * Since: 1.2.0
+ * Since: 2.0.0
  */
 AgsAudiorec*
 ags_audiorec_new(GObject *soundcard)
@@ -633,13 +987,9 @@ ags_audiorec_new(GObject *soundcard)
   audiorec = (AgsAudiorec *) g_object_new(AGS_TYPE_AUDIOREC,
 					  NULL);
 
-  if(soundcard != NULL){
-    g_value_init(&value, G_TYPE_OBJECT);
-    g_value_set_object(&value, soundcard);
-    g_object_set_property(G_OBJECT(audiorec->machine.audio),
-			  "soundcard", &value);
-    g_value_unset(&value);
-  }
+  g_object_set(G_OBJECT(AGS_MACHINE(audiorec)->audio),
+	       "output-soundcard", soundcard,
+	       NULL);
 
   return(audiorec);
 }

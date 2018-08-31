@@ -75,14 +75,14 @@ ags_output_test_find_first_input_recycling()
 		       NULL);
   
   ags_audio_set_audio_channels(audio,
-			       AGS_OUTPUT_TEST_FIND_FIRST_INPUT_RECYCLING_AUDIO_CHANNELS);
+			       AGS_OUTPUT_TEST_FIND_FIRST_INPUT_RECYCLING_AUDIO_CHANNELS, 0);
 
   ags_audio_set_pads(audio,
 		     AGS_TYPE_OUTPUT,
-		     AGS_OUTPUT_TEST_FIND_FIRST_INPUT_RECYCLING_OUTPUT_PADS);
+		     AGS_OUTPUT_TEST_FIND_FIRST_INPUT_RECYCLING_OUTPUT_PADS, 0);
   ags_audio_set_pads(audio,
 		     AGS_TYPE_INPUT,
-		     AGS_OUTPUT_TEST_FIND_FIRST_INPUT_RECYCLING_INPUT_PADS);
+		     AGS_OUTPUT_TEST_FIND_FIRST_INPUT_RECYCLING_INPUT_PADS, 0);
 
   /* create some recycling */
   current = ags_channel_pad_nth(audio->input,
@@ -130,14 +130,14 @@ ags_output_test_find_last_input_recycling()
 		       NULL);
   
   ags_audio_set_audio_channels(audio,
-			       AGS_OUTPUT_TEST_FIND_LAST_INPUT_RECYCLING_AUDIO_CHANNELS);
+			       AGS_OUTPUT_TEST_FIND_LAST_INPUT_RECYCLING_AUDIO_CHANNELS, 0);
 
   ags_audio_set_pads(audio,
 		     AGS_TYPE_OUTPUT,
-		     AGS_OUTPUT_TEST_FIND_LAST_INPUT_RECYCLING_OUTPUT_PADS);
+		     AGS_OUTPUT_TEST_FIND_LAST_INPUT_RECYCLING_OUTPUT_PADS, 0);
   ags_audio_set_pads(audio,
 		     AGS_TYPE_INPUT,
-		     AGS_OUTPUT_TEST_FIND_LAST_INPUT_RECYCLING_INPUT_PADS);
+		     AGS_OUTPUT_TEST_FIND_LAST_INPUT_RECYCLING_INPUT_PADS, 0);
 
   /* create some recycling */
   current = ags_channel_pad_nth(audio->input,

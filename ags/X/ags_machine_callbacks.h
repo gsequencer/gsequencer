@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -21,11 +21,11 @@
 
 #include <glib.h>
 #include <glib-object.h>
+
 #include <gtk/gtk.h>
 
-#include <ags/thread/ags_task_completion.h>
-
-#include <ags/thread/ags_task.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
 
 #include <ags/X/ags_machine.h>
 
@@ -60,8 +60,8 @@ void ags_machine_resize_pads_callback(AgsMachine *machine, GType channel_type,
 				      guint pads, guint pads_old,
 				      gpointer data);
 
-void ags_machine_done_callback(AgsMachine *machine,
-			       AgsRecallID *recall_id,
+void ags_machine_stop_callback(AgsMachine *machine,
+			       GList *recall_id, gint sound_scope,
 			       gpointer data);
 
 #endif /*__AGS_MACHINE_CALLBACKS_H__*/

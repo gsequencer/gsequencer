@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -25,6 +25,8 @@
 
 #include <pthread.h>
 
+#include <ags/libags.h>
+
 #define AGS_TYPE_CORE_AUDIO_DEVOUT                (ags_core_audio_devout_get_type())
 #define AGS_CORE_AUDIO_DEVOUT(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_CORE_AUDIO_DEVOUT, AgsCoreAudioDevout))
 #define AGS_CORE_AUDIO_DEVOUT_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST(class, AGS_TYPE_CORE_AUDIO_DEVOUT, AgsCoreAudioDevout))
@@ -37,6 +39,8 @@ typedef struct _AgsCoreAudioDevoutClass AgsCoreAudioDevoutClass;
 
 /**
  * AgsCoreAudioDevoutFlags:
+ * @AGS_CORE_AUDIO_DEVOUT_ADDED_TO_REGISTRY: the core-audio devout was added to registry, see #AgsConnectable::add_to_registry()
+ * @AGS_CORE_AUDIO_DEVOUT_CONNECTED: indicates the core-audio devout was connected by calling #AgsConnectable::connect()
  * @AGS_CORE_AUDIO_DEVOUT_BUFFER0: ring-buffer 0
  * @AGS_CORE_AUDIO_DEVOUT_BUFFER1: ring-buffer 1
  * @AGS_CORE_AUDIO_DEVOUT_BUFFER2: ring-buffer 2
@@ -55,25 +59,27 @@ typedef struct _AgsCoreAudioDevoutClass AgsCoreAudioDevoutClass;
  * Enum values to control the behavior or indicate internal state of #AgsCoreAudioDevout by
  * enable/disable as flags.
  */
-typedef enum
-{
-  AGS_CORE_AUDIO_DEVOUT_BUFFER0                        = 1,
-  AGS_CORE_AUDIO_DEVOUT_BUFFER1                        = 1 <<  1,
-  AGS_CORE_AUDIO_DEVOUT_BUFFER2                        = 1 <<  2,
-  AGS_CORE_AUDIO_DEVOUT_BUFFER3                        = 1 <<  3,
-  AGS_CORE_AUDIO_DEVOUT_BUFFER4                        = 1 <<  4,
-  AGS_CORE_AUDIO_DEVOUT_BUFFER5                        = 1 <<  5,
-  AGS_CORE_AUDIO_DEVOUT_BUFFER6                        = 1 <<  6,
-  AGS_CORE_AUDIO_DEVOUT_BUFFER7                        = 1 <<  7,
+typedef enum{
+  AGS_CORE_AUDIO_DEVOUT_ADDED_TO_REGISTRY              = 1,
+  AGS_CORE_AUDIO_DEVOUT_CONNECTED                      = 1 <<  1,
 
-  AGS_CORE_AUDIO_DEVOUT_ATTACK_FIRST                   = 1 <<  8,
+  AGS_CORE_AUDIO_DEVOUT_BUFFER0                        = 1 <<  2,
+  AGS_CORE_AUDIO_DEVOUT_BUFFER1                        = 1 <<  3,
+  AGS_CORE_AUDIO_DEVOUT_BUFFER2                        = 1 <<  4,
+  AGS_CORE_AUDIO_DEVOUT_BUFFER3                        = 1 <<  5,
+  AGS_CORE_AUDIO_DEVOUT_BUFFER4                        = 1 <<  6,
+  AGS_CORE_AUDIO_DEVOUT_BUFFER5                        = 1 <<  7,
+  AGS_CORE_AUDIO_DEVOUT_BUFFER6                        = 1 <<  8,
+  AGS_CORE_AUDIO_DEVOUT_BUFFER7                        = 1 <<  9,
 
-  AGS_CORE_AUDIO_DEVOUT_PLAY                           = 1 <<  9,
-  AGS_CORE_AUDIO_DEVOUT_SHUTDOWN                       = 1 << 10,
-  AGS_CORE_AUDIO_DEVOUT_START_PLAY                     = 1 << 11,
+  AGS_CORE_AUDIO_DEVOUT_ATTACK_FIRST                   = 1 << 10,
 
-  AGS_CORE_AUDIO_DEVOUT_NONBLOCKING                    = 1 << 12,
-  AGS_CORE_AUDIO_DEVOUT_INITIALIZED                    = 1 << 13,
+  AGS_CORE_AUDIO_DEVOUT_PLAY                           = 1 << 11,
+  AGS_CORE_AUDIO_DEVOUT_SHUTDOWN                       = 1 << 12,
+  AGS_CORE_AUDIO_DEVOUT_START_PLAY                     = 1 << 13,
+
+  AGS_CORE_AUDIO_DEVOUT_NONBLOCKING                    = 1 << 14,
+  AGS_CORE_AUDIO_DEVOUT_INITIALIZED                    = 1 << 15,
 }AgsCoreAudioDevoutFlags;
 
 /**
@@ -109,8 +115,12 @@ struct _AgsCoreAudioDevout
   guint flags;
   volatile guint sync_flags;
   
-  pthread_mutex_t *mutex;
-  pthread_mutexattr_t *mutexattr;
+  pthread_mutex_t *obj_mutex;
+  pthread_mutexattr_t *obj_mutexattr;
+
+  AgsApplicationContext *application_context;
+
+  AgsUUID *uuid;
 
   guint dsp_channels;
   guint pcm_channels;
@@ -118,6 +128,7 @@ struct _AgsCoreAudioDevout
   guint buffer_size;
   guint samplerate;
 
+  pthread_mutex_t **buffer_mutex;
   void** buffer;
 
   double bpm; // beats per minute
@@ -151,12 +162,7 @@ struct _AgsCoreAudioDevout
   pthread_mutex_t *callback_finish_mutex;
   pthread_cond_t *callback_finish_cond;
 
-  GObject *application_context;
-  pthread_mutex_t *application_mutex;
-
   GObject *notify_soundcard;
-
-  GList *audio;
 };
 
 struct _AgsCoreAudioDevoutClass
@@ -168,11 +174,17 @@ GType ags_core_audio_devout_get_type();
 
 GQuark ags_core_audio_devout_error_quark();
 
+pthread_mutex_t* ags_core_audio_devout_get_class_mutex();
+
+gboolean ags_core_audio_devout_test_flags(AgsCoreAudioDevout *core_audio_devout, guint flags);
+void ags_core_audio_devout_set_flags(AgsCoreAudioDevout *core_audio_devout, guint flags);
+void ags_core_audio_devout_unset_flags(AgsCoreAudioDevout *core_audio_devout, guint flags);
+
 void ags_core_audio_devout_switch_buffer_flag(AgsCoreAudioDevout *core_audio_devout);
 
 void ags_core_audio_devout_adjust_delay_and_attack(AgsCoreAudioDevout *core_audio_devout);
 void ags_core_audio_devout_realloc_buffer(AgsCoreAudioDevout *core_audio_devout);
 
-AgsCoreAudioDevout* ags_core_audio_devout_new(GObject *application_context);
+AgsCoreAudioDevout* ags_core_audio_devout_new(AgsApplicationContext *application_context);
 
 #endif /*__AGS_CORE_AUDIO_DEVOUT_H__*/

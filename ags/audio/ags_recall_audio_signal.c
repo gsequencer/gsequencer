@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -18,22 +18,17 @@
  */
 
 #include <ags/audio/ags_recall_audio_signal.h>
-#include <ags/audio/ags_recall_recycling.h>
 
 #include <ags/libags.h>
 
 #include <ags/audio/ags_audio_signal.h>
-#include <ags/audio/ags_recycling.h>
-#include <ags/audio/ags_channel.h>
-#include <ags/audio/ags_recall_id.h>
 
-#include <stdlib.h>
+#include <pthread.h>
 
 #include <ags/i18n.h>
 
 void ags_recall_audio_signal_class_init(AgsRecallAudioSignalClass *recall_audio_signal);
 void ags_recall_audio_signal_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_recall_audio_signal_dynamic_connectable_interface_init(AgsDynamicConnectableInterface *dynamic_connectable);
 void ags_recall_audio_signal_init(AgsRecallAudioSignal *recall_audio_signal);
 void ags_recall_audio_signal_set_property(GObject *gobject,
 					  guint prop_id,
@@ -43,49 +38,27 @@ void ags_recall_audio_signal_get_property(GObject *gobject,
 					  guint prop_id,
 					  GValue *value,
 					  GParamSpec *param_spec);
-void ags_recall_audio_signal_connect(AgsConnectable *connectable);
-void ags_recall_audio_signal_disconnect(AgsConnectable *connectable);
-void ags_recall_audio_signal_connect_dynamic(AgsDynamicConnectable *dynamic_connectable);
-void ags_recall_audio_signal_disconnect_dynamic(AgsDynamicConnectable *dynamic_connectable);
 void ags_recall_audio_signal_dispose(GObject *gobject);
 void ags_recall_audio_signal_finalize(GObject *gobject);
-
-void ags_recall_audio_signal_run_init_pre(AgsRecall *recall);
-void ags_recall_audio_signal_run_init_inter(AgsRecall *recall);
-void ags_recall_audio_signal_run_init_post(AgsRecall *recall);
-
-void ags_recall_audio_signal_run_pre(AgsRecall *recall);
-void ags_recall_audio_signal_run_inter(AgsRecall *recall);
-void ags_recall_audio_signal_run_post(AgsRecall *recall);
-void ags_recall_audio_signal_done(AgsRecall *recall);
-
-AgsRecall* ags_recall_audio_signal_duplicate(AgsRecall *recall,
-					     AgsRecallID *recall_id,
-					     guint *n_params, GParameter *parameter);
-
-void ags_recall_audio_signal_notify_soundcard(AgsRecallAudioSignal *recall_audio_signal, GParamSpec *param,
-					      gpointer data);
-void ags_recall_audio_signal_notify_soundcard_after(AgsRecallAudioSignal *recall_audio_signal, GParamSpec *param,
-						    gpointer data);
 
 /**
  * SECTION:ags_recall_audio_signal
  * @Short_description: audio signal context of recall
  * @Title: AgsRecallAudioSignal
+ * @section_id:
+ * @include: ags/audio/ags_recall_audio_signal.h
  *
  * #AgsRecallAudioSignal acts as audio signal recall.
  */
 
 enum{
   PROP_0,
-  PROP_AUDIO_CHANNEL,
   PROP_DESTINATION,
   PROP_SOURCE,
 };
 
 static gpointer ags_recall_audio_signal_parent_class = NULL;
 static AgsConnectableInterface *ags_recall_audio_signal_parent_connectable_interface;
-static AgsDynamicConnectableInterface *ags_recall_audio_signal_parent_dynamic_connectable_interface;
 
 GType
 ags_recall_audio_signal_get_type()
@@ -113,12 +86,6 @@ ags_recall_audio_signal_get_type()
       NULL, /* interface_data */
     };
 
-    static const GInterfaceInfo ags_dynamic_connectable_interface_info = {
-      (GInterfaceInitFunc) ags_recall_audio_signal_dynamic_connectable_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-
     ags_type_recall_audio_signal = g_type_register_static(AGS_TYPE_RECALL,
 							  "AgsRecallAudioSignal",
 							  &ags_recall_audio_signal_info,
@@ -127,12 +94,6 @@ ags_recall_audio_signal_get_type()
     g_type_add_interface_static(ags_type_recall_audio_signal,
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
-
-    g_type_add_interface_static(ags_type_recall_audio_signal,
-				AGS_TYPE_DYNAMIC_CONNECTABLE,
-				&ags_dynamic_connectable_interface_info);
-
-    g_once_init_leave (&g_define_type_id__volatile, ags_type_recall_audio_signal);
   }
 
   return g_define_type_id__volatile;
@@ -156,42 +117,13 @@ ags_recall_audio_signal_class_init(AgsRecallAudioSignalClass *recall_audio_signa
   gobject->dispose = ags_recall_audio_signal_dispose;
   gobject->finalize = ags_recall_audio_signal_finalize;
 
-  /* for debugging purpose */
-  recall = (AgsRecallClass *) recall_audio_signal;
-
-  recall->run_init_pre = ags_recall_audio_signal_run_init_pre;
-  recall->run_init_inter = ags_recall_audio_signal_run_init_inter;
-  recall->run_init_post = ags_recall_audio_signal_run_init_post;
-
-  recall->run_pre = ags_recall_audio_signal_run_pre;
-  recall->run_inter = ags_recall_audio_signal_run_inter;
-  recall->run_post = ags_recall_audio_signal_run_post;
-
   /* properties */
-  /**
-   * AgsRecallAudioSignal:audio-channel:
-   *
-   * The audio channel to write use.
-   * 
-   * Since: 1.0.0
-   */
-  param_spec = g_param_spec_uint("audio-channel",
-				 i18n_pspec("output to audio channel"),
-				 i18n_pspec("The audio channel to which it should write"),
-				 0,
-				 65536,
-				 0,
-				 G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_AUDIO_CHANNEL,
-				  param_spec);
-
   /**
    * AgsRecallAudioSignal:destination:
    *
    * The destination audio signal
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("destination",
 				   i18n_pspec("destination of output"),
@@ -207,7 +139,7 @@ ags_recall_audio_signal_class_init(AgsRecallAudioSignalClass *recall_audio_signa
    *
    * The source audio signal
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("source",
 				   i18n_pspec("source of input"),
@@ -217,45 +149,17 @@ ags_recall_audio_signal_class_init(AgsRecallAudioSignalClass *recall_audio_signa
   g_object_class_install_property(gobject,
 				  PROP_SOURCE,
 				  param_spec);
-  
-
-  /* AgsRecallClass */
-  recall = (AgsRecallClass *) recall_audio_signal;
-
-  recall->done = ags_recall_audio_signal_done;  
-
-  recall->duplicate = ags_recall_audio_signal_duplicate;
 }
 
 void
 ags_recall_audio_signal_connectable_interface_init(AgsConnectableInterface *connectable)
 {
   ags_recall_audio_signal_parent_connectable_interface = g_type_interface_peek_parent(connectable);
-
-  connectable->connect = ags_recall_audio_signal_connect;
-  connectable->disconnect = ags_recall_audio_signal_disconnect;
-}
-
-void
-ags_recall_audio_signal_dynamic_connectable_interface_init(AgsDynamicConnectableInterface *dynamic_connectable)
-{
-  ags_recall_audio_signal_parent_dynamic_connectable_interface = g_type_interface_peek_parent(dynamic_connectable);
-
-  dynamic_connectable->connect_dynamic = ags_recall_audio_signal_connect_dynamic;
-  dynamic_connectable->disconnect_dynamic = ags_recall_audio_signal_disconnect_dynamic;
 }
 
 void
 ags_recall_audio_signal_init(AgsRecallAudioSignal *recall_audio_signal)
 {
-  //  g_signal_connect(G_OBJECT(recall_audio_signal), "notify::soundcard",
-  //		   G_CALLBACK(ags_recall_audio_signal_notify_soundcard), NULL);
-  //  g_signal_connect_after(G_OBJECT(recall_audio_signal), "notify::soundcard",
-  //			 G_CALLBACK(ags_recall_audio_signal_notify_soundcard_after), NULL);
-
-  recall_audio_signal->flags = AGS_RECALL_INITIAL_RUN;
-  recall_audio_signal->audio_channel = 0;
-
   recall_audio_signal->source = NULL;
   recall_audio_signal->destination = NULL;
 }
@@ -268,25 +172,29 @@ ags_recall_audio_signal_set_property(GObject *gobject,
 {
   AgsRecallAudioSignal *recall_audio_signal;
 
+  pthread_mutex_t *recall_mutex;
+
   recall_audio_signal = AGS_RECALL_AUDIO_SIGNAL(gobject);
 
+  /* get recall mutex */
+  pthread_mutex_lock(ags_recall_get_class_mutex());
+  
+  recall_mutex = AGS_RECALL(gobject)->obj_mutex;
+  
+  pthread_mutex_unlock(ags_recall_get_class_mutex());
+
   switch(prop_id){
-  case PROP_AUDIO_CHANNEL:
-    {
-      guint audio_channel;
-
-      audio_channel = (guint) g_value_get_uint(value);
-
-      recall_audio_signal->audio_channel = audio_channel;
-    }
-    break;
   case PROP_DESTINATION:
     {
       AgsAudioSignal *destination;
 
       destination = (AgsAudioSignal *) g_value_get_object(value);
 
+      pthread_mutex_lock(recall_mutex);
+
       if(recall_audio_signal->destination == destination){
+	pthread_mutex_unlock(recall_mutex);
+
 	return;
       }
 
@@ -299,6 +207,8 @@ ags_recall_audio_signal_set_property(GObject *gobject,
       }
       
       recall_audio_signal->destination = destination;
+
+      pthread_mutex_unlock(recall_mutex);
     }
     break;
   case PROP_SOURCE:
@@ -307,7 +217,11 @@ ags_recall_audio_signal_set_property(GObject *gobject,
 
       source = (AgsAudioSignal *) g_value_get_object(value);
 
+      pthread_mutex_lock(recall_mutex);
+
       if(recall_audio_signal->source == source){
+	pthread_mutex_unlock(recall_mutex);
+	
 	return;
       }
 
@@ -320,6 +234,8 @@ ags_recall_audio_signal_set_property(GObject *gobject,
       }
       
       recall_audio_signal->source = source;
+
+      pthread_mutex_unlock(recall_mutex);
     }
     break;
   default:
@@ -336,56 +252,40 @@ ags_recall_audio_signal_get_property(GObject *gobject,
 {
   AgsRecallAudioSignal *recall_audio_signal;
 
+  pthread_mutex_t *recall_mutex;
+
   recall_audio_signal = AGS_RECALL_AUDIO_SIGNAL(gobject);
 
+  /* get recall mutex */
+  pthread_mutex_lock(ags_recall_get_class_mutex());
+  
+  recall_mutex = AGS_RECALL(gobject)->obj_mutex;
+  
+  pthread_mutex_unlock(ags_recall_get_class_mutex());
+
   switch(prop_id){
-  case PROP_AUDIO_CHANNEL:
-    {
-      g_value_set_uint(value, recall_audio_signal->audio_channel);
-    }
-    break;
   case PROP_DESTINATION:
     {
+      pthread_mutex_lock(recall_mutex);
+
       g_value_set_object(value, recall_audio_signal->destination);
+
+      pthread_mutex_unlock(recall_mutex);
     }
     break;
   case PROP_SOURCE:
     {
+      pthread_mutex_lock(recall_mutex);
+
       g_value_set_object(value, recall_audio_signal->source);
+
+      pthread_mutex_unlock(recall_mutex);
     }
     break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
   }
-}
-
-void
-ags_recall_audio_signal_connect(AgsConnectable *connectable)
-{
-  AgsRecallAudioSignal *recall_audio_signal;
-
-  ags_recall_audio_signal_parent_connectable_interface->connect(connectable);
-
-  /* empty */
-}
-
-void
-ags_recall_audio_signal_disconnect(AgsConnectable *connectable)
-{
-  ags_recall_audio_signal_parent_connectable_interface->disconnect(connectable);
-}
-
-void
-ags_recall_audio_signal_connect_dynamic(AgsDynamicConnectable *dynamic_connectable)
-{
-  ags_recall_audio_signal_parent_dynamic_connectable_interface->connect_dynamic(dynamic_connectable);
-}
-
-void
-ags_recall_audio_signal_disconnect_dynamic(AgsDynamicConnectable *dynamic_connectable)
-{
-  ags_recall_audio_signal_parent_dynamic_connectable_interface->disconnect_dynamic(dynamic_connectable);
 }
 
 void
@@ -434,174 +334,21 @@ ags_recall_audio_signal_finalize(GObject *gobject)
   G_OBJECT_CLASS(ags_recall_audio_signal_parent_class)->finalize(gobject);
 }
 
-AgsRecall*
-ags_recall_audio_signal_duplicate(AgsRecall *recall,
-				  AgsRecallID *recall_id,
-				  guint *n_params, GParameter *parameter)
-{
-  AgsRecallAudioSignal *recall_audio_signal, *copy;
-
-#if 0
-  recall_audio_signal = AGS_RECALL_AUDIO_SIGNAL(recall);
-  parameter = ags_parameter_grow(G_OBJECT_TYPE(recall),
-				 parameter, n_params,
-				 "soundcard", AGS_RECALL(recall_audio_signal)->soundcard,
-				 "audio_channel", recall_audio_signal->audio_channel,
-				 "destination", recall_audio_signal->destination,
-				 "source", recall_audio_signal->source,
-				 NULL);
-
-  copy = (AgsRecallAudioSignal *) AGS_RECALL_CLASS(ags_recall_audio_signal_parent_class)->duplicate(recall,
-												    recall_id,
-												    n_params, parameter);
-#endif
-  
-  return((AgsRecall *) NULL);
-}
-
-void
-ags_recall_audio_signal_run_init_pre(AgsRecall *recall){
-  AgsAudioSignal *source, *destination;
-
-  source = AGS_RECALL_AUDIO_SIGNAL(recall)->source;
-  destination = AGS_RECALL_AUDIO_SIGNAL(recall)->destination;
-
-  AGS_RECALL_CLASS(ags_recall_audio_signal_parent_class)->run_init_pre(recall);
-
-  if(source != NULL && (AGS_AUDIO_SIGNAL_TEMPLATE & (source->flags)) != 0)
-    g_warning("AgsRecallAudioSignal@source - AGS_AUDIO_SIGNAL_TEMPLATE: run_init_pre\n");
-
-  if(destination != NULL && (AGS_AUDIO_SIGNAL_TEMPLATE & (destination->flags)) != 0)
-    g_warning("AgsRecallAudioSignal@destination - AGS_AUDIO_SIGNAL_TEMPLATE: run_init_pre\n");
-}
-
-void
-ags_recall_audio_signal_run_init_inter(AgsRecall *recall){
-  AgsAudioSignal *source, *destination;
-
-  source = AGS_RECALL_AUDIO_SIGNAL(recall)->source;
-  destination = AGS_RECALL_AUDIO_SIGNAL(recall)->destination;
-
-  AGS_RECALL_CLASS(ags_recall_audio_signal_parent_class)->run_init_inter(recall);
-
-  if(source != NULL && (AGS_AUDIO_SIGNAL_TEMPLATE & (source->flags)) != 0)
-    g_warning("AgsRecallAudioSignal@source - AGS_AUDIO_SIGNAL_TEMPLATE: run_init_inter\n");
-
-  if(destination != NULL && (AGS_AUDIO_SIGNAL_TEMPLATE & (destination->flags)) != 0)
-    g_warning("AgsRecallAudioSignal@destination - AGS_AUDIO_SIGNAL_TEMPLATE: run_init_inter\n");
-}
-
-void
-ags_recall_audio_signal_run_init_post(AgsRecall *recall){
-  AgsAudioSignal *source, *destination;
-
-  source = AGS_RECALL_AUDIO_SIGNAL(recall)->source;
-  destination = AGS_RECALL_AUDIO_SIGNAL(recall)->destination;
-
-  AGS_RECALL_CLASS(ags_recall_audio_signal_parent_class)->run_init_post(recall);
-
-  if(source != NULL && (AGS_AUDIO_SIGNAL_TEMPLATE & (source->flags)) != 0)
-    g_warning("AgsRecallAudioSignal@source - AGS_AUDIO_SIGNAL_TEMPLATE: run_init_post\n");
-
-  if(destination != NULL && (AGS_AUDIO_SIGNAL_TEMPLATE & (destination->flags)) != 0)
-    g_warning("AgsRecallAudioSignal@destination - AGS_AUDIO_SIGNAL_TEMPLATE: run_init_post\n");
-
-}
-
-void
-ags_recall_audio_signal_run_pre(AgsRecall *recall){
-  AgsAudioSignal *source, *destination;
-
-  source = AGS_RECALL_AUDIO_SIGNAL(recall)->source;
-  destination = AGS_RECALL_AUDIO_SIGNAL(recall)->destination;
-
-  AGS_RECALL_CLASS(ags_recall_audio_signal_parent_class)->run_pre(recall);
-
-  if(source != NULL && (AGS_AUDIO_SIGNAL_TEMPLATE & (source->flags)) != 0)
-    g_warning("AgsRecallAudioSignal@source - AGS_AUDIO_SIGNAL_TEMPLATE: run_pre\n");
-
-  if(destination != NULL && (AGS_AUDIO_SIGNAL_TEMPLATE & (destination->flags)) != 0)
-    g_warning("AgsRecallAudioSignal@destination - AGS_AUDIO_SIGNAL_TEMPLATE: run_pre\n");
-
-}
-
-void
-ags_recall_audio_signal_run_inter(AgsRecall *recall){
-  AgsAudioSignal *source, *destination;
-
-  source = AGS_RECALL_AUDIO_SIGNAL(recall)->source;
-  destination = AGS_RECALL_AUDIO_SIGNAL(recall)->destination;
-
-  AGS_RECALL_CLASS(ags_recall_audio_signal_parent_class)->run_inter(recall);
-
-  if(source != NULL && (AGS_AUDIO_SIGNAL_TEMPLATE & (source->flags)) != 0)
-    g_warning("AgsRecallAudioSignal@source - AGS_AUDIO_SIGNAL_TEMPLATE: run_inter\n");
-
-  if(destination != NULL && (AGS_AUDIO_SIGNAL_TEMPLATE & (destination->flags)) != 0)
-    g_warning("AgsRecallAudioSignal@destination - AGS_AUDIO_SIGNAL_TEMPLATE: run_inter\n");
-
-}
-
-void
-ags_recall_audio_signal_run_post(AgsRecall *recall){
-  AgsAudioSignal *source, *destination;
-
-  source = AGS_RECALL_AUDIO_SIGNAL(recall)->source;
-  destination = AGS_RECALL_AUDIO_SIGNAL(recall)->destination;
-
-  AGS_RECALL_CLASS(ags_recall_audio_signal_parent_class)->run_post(recall);
-
-  if(source != NULL && (AGS_AUDIO_SIGNAL_TEMPLATE & (source->flags)) != 0)
-    g_warning("AgsRecallAudioSignal@source - AGS_AUDIO_SIGNAL_TEMPLATE: run_post\n");
-
-  if(destination != NULL && (AGS_AUDIO_SIGNAL_TEMPLATE & (destination->flags)) != 0)
-    g_warning("AgsRecallAudioSignal@destination - AGS_AUDIO_SIGNAL_TEMPLATE: run_post\n");
-
-}
-
-void
-ags_recall_audio_signal_done(AgsRecall *recall)
-{
-  g_object_unref(G_OBJECT(recall));
-}
-
-void
-ags_recall_audio_signal_notify_soundcard(AgsRecallAudioSignal *recall_audio_signal, GParamSpec *param,
-					 gpointer data)
-{
-  //TODO:JK: implement me
-}
-
-void
-ags_recall_audio_signal_notify_soundcard_after(AgsRecallAudioSignal *recall_audio_signal, GParamSpec *param,
-					       gpointer data)
-{
-  //TODO:JK: implement me
-}
-
 /**
  * ags_recall_audio_signal_new:
- * @destination: destination #AgsAudioSignal
- * @source: source #AgsAudioSignal
- * @soundcard: default sink #AgsSoundcard
  *
  * Creates an #AgsRecallAudioSignal.
  *
  * Returns: a new #AgsRecallAudioSignal.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsRecallAudioSignal*
-ags_recall_audio_signal_new(AgsAudioSignal *destination,
-			    AgsAudioSignal *source,
-			    GObject *soundcard)
+ags_recall_audio_signal_new()
 {
   AgsRecallAudioSignal *recall_audio_signal;
 
   recall_audio_signal = (AgsRecallAudioSignal *) g_object_new(AGS_TYPE_RECALL_AUDIO_SIGNAL,
-							      "soundcard", soundcard,
-							      "destination", destination,
-							      "source", source, 
 							      NULL);
 
   return(recall_audio_signal);

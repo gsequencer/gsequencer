@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -55,40 +55,40 @@ typedef enum{
   AGS_SF2_PHDR = 1,
   AGS_SF2_IHDR = 2,
   AGS_SF2_SHDR = 3,
-}AgsSF2Levels;
+}AgsSF2Level;
 
 struct _AgsIpatchSF2Reader
 {
   GObject object;
 
+  guint level;
+  
   AgsIpatch *ipatch;
 
-  gchar **selected;
-
+  guint *index_selected;
+  gchar **name_selected;
+  	
 #ifdef AGS_WITH_LIBINSTPATCH
   IpatchSF2Reader *reader;
 
+  IpatchBase *base;
   IpatchSF2 *sf2;
-#else
-  gpointer reader;
 
-  gpointer sf2;
-#endif
-  
-  int bank;
-  int program;
-
-#ifdef AGS_WITH_LIBINSTPATCH
   IpatchContainer *preset;
   IpatchContainer *instrument;
   IpatchContainer *sample;
 #else
+  gpointer reader;
+
+  gpointer base;
+  gpointer sf2;
+
   gpointer preset;
   gpointer instrument;
   gpointer sample;
 #endif
-  
-  int count;
+
+  GError *error;
 };
 
 struct _AgsIpatchSF2ReaderClass
@@ -98,6 +98,31 @@ struct _AgsIpatchSF2ReaderClass
 
 GType ags_ipatch_sf2_reader_get_type();
 
-AgsIpatchSF2Reader* ags_ipatch_sf2_reader_new();
+gboolean ags_ipatch_sf2_reader_load(AgsIpatchSF2Reader *ipatch_sf2_reader,
+				    IpatchFileHandle *handle);
+
+/* select sample */
+gboolean ags_ipatch_sf2_reader_select_preset(AgsIpatchSF2Reader *ipatch_sf2_reader,
+					     guint preset_index);
+gboolean ags_ipatch_sf2_reader_select_instrument(AgsIpatchSF2Reader *ipatch_sf2_reader,
+						 guint instrument_index);
+gboolean ags_ipatch_sf2_reader_select_sample(AgsIpatchSF2Reader *ipatch_sf2_reader,
+					     guint sample_index);
+
+/* query */
+gchar** ags_ipatch_sf2_reader_get_preset_all(AgsIpatchSF2Reader *ipatch_sf2_reader);
+gchar** ags_ipatch_sf2_reader_get_instrument_all(AgsIpatchSF2Reader *ipatch_sf2_reader);
+gchar** ags_ipatch_sf2_reader_get_sample_all(AgsIpatchSF2Reader *ipatch_sf2_reader);
+
+gchar** ags_ipatch_sf2_reader_get_instrument_by_preset_index(AgsIpatchSF2Reader *ipatch_sf2_reader,
+							     guint preset_index);
+
+gchar** ags_ipatch_sf2_reader_get_sample_by_preset_index(AgsIpatchSF2Reader *ipatch_sf2_reader,
+							 guint preset_index);
+gchar** ags_ipatch_sf2_reader_get_sample_by_preset_and_instrument_index(AgsIpatchSF2Reader *ipatch_sf2_reader,
+									guint preset_index, guint instrument_index);
+
+/* instantiate */
+AgsIpatchSF2Reader* ags_ipatch_sf2_reader_new(AgsIpatch *ipatch);
 
 #endif /*__AGS_IPATCH_SF2_READER_H__*/

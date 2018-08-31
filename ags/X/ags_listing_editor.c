@@ -34,8 +34,10 @@ void ags_listing_editor_class_init(AgsListingEditorClass *listing_editor);
 void ags_listing_editor_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_listing_editor_applicable_interface_init(AgsApplicableInterface *applicable);
 void ags_listing_editor_init(AgsListingEditor *listing_editor);
+
 void ags_listing_editor_connect(AgsConnectable *connectable);
 void ags_listing_editor_disconnect(AgsConnectable *connectable);
+
 void ags_listing_editor_set_update(AgsApplicable *applicable, gboolean update);
 void ags_listing_editor_apply(AgsApplicable *applicable);
 void ags_listing_editor_reset(AgsApplicable *applicable);
@@ -295,7 +297,7 @@ ags_listing_editor_reset(AgsApplicable *applicable)
  *
  * Creates new pad editors or destroys them.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_listing_editor_add_children(AgsListingEditor *listing_editor,
@@ -306,12 +308,6 @@ ags_listing_editor_add_children(AgsListingEditor *listing_editor,
   GtkVBox *vbox;
 
   AgsChannel *channel;
-
-  AgsMutexManager *mutex_manager;
-
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *audio_mutex;
-  pthread_mutex_t *channel_mutex;
 
   if(nth_channel == 0 &&
      listing_editor->child != NULL){
@@ -324,17 +320,6 @@ ags_listing_editor_add_children(AgsListingEditor *listing_editor,
     return;
   }
   
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-
-  /* lookup audio mutex */
-  pthread_mutex_lock(application_mutex);
-  
-  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
-					 audio);
-  
-  pthread_mutex_unlock(application_mutex);
-
   /* instantiate pad editor vbox */
   if(nth_channel == 0){
     listing_editor->child = (GtkVBox *) gtk_vbox_new(FALSE, 0);
@@ -346,34 +331,22 @@ ags_listing_editor_add_children(AgsListingEditor *listing_editor,
 
   /* get current channel */
   if(listing_editor->channel_type == AGS_TYPE_OUTPUT){
-    pthread_mutex_lock(audio_mutex);
-
-    channel = audio->output;
-
-    pthread_mutex_unlock(audio_mutex);
+    g_object_get(audio,
+		 "output", &channel,
+		 NULL);
 
     channel = ags_channel_nth(channel,
 			      nth_channel);
   }else{
-    pthread_mutex_lock(audio_mutex);
-
-    channel = audio->input;
-
-    pthread_mutex_unlock(audio_mutex);
+    g_object_get(audio,
+		 "input", &channel,
+		 NULL);
     
     channel = ags_channel_nth(channel,
 			      nth_channel);
   }
   
   while(channel != NULL){
-    /* lookup channel mutex */
-    pthread_mutex_lock(application_mutex);
-
-    channel_mutex = ags_mutex_manager_lookup(mutex_manager,
-					     channel);
-    
-    pthread_mutex_unlock(application_mutex);
-
     /* instantiate pad editor */
     pad_editor = ags_pad_editor_new(NULL);
 
@@ -397,11 +370,9 @@ ags_listing_editor_add_children(AgsListingEditor *listing_editor,
     }
 
     /* iterate */
-    pthread_mutex_lock(channel_mutex);
-      
-    channel = channel->next_pad;
-
-    pthread_mutex_unlock(channel_mutex);
+    g_object_get(channel,
+		 "next-pad", &channel,
+		 NULL);
   }
 }
 
@@ -409,11 +380,11 @@ ags_listing_editor_add_children(AgsListingEditor *listing_editor,
  * ags_listing_editor_new:
  * @channel_type: the channel type to represent
  *
- * Creates an #AgsListingEditor
+ * Create a new instance of #AgsListingEditor
  *
- * Returns: a new #AgsListingEditor
+ * Returns: the new #AgsListingEditor
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsListingEditor*
 ags_listing_editor_new(GType channel_type)

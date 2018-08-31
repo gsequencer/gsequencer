@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -110,6 +110,8 @@ static pthread_key_t ags_thread_key;
 
 /* Once-only initialisation of the key */
 static pthread_once_t ags_thread_key_once = PTHREAD_ONCE_INIT;
+
+static pthread_mutex_t ags_thread_class_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 GType
 ags_thread_get_type()
@@ -233,7 +235,7 @@ ags_thread_class_init(AgsThreadClass *thread)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET (AgsThreadClass, clock),
 		 NULL, NULL,
-		 g_cclosure_user_marshal_UINT__VOID,
+		 ags_cclosure_marshal_UINT__VOID,
 		 G_TYPE_UINT, 0);
 
 
@@ -359,7 +361,7 @@ ags_thread_class_init(AgsThreadClass *thread)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET (AgsThreadClass, interrupted),
 		 NULL, NULL,
-		 g_cclosure_user_marshal_UINT__INT_UINT_POINTER,
+		 ags_cclosure_marshal_UINT__INT_UINT_POINTER,
 		 G_TYPE_UINT, 3,
 		 G_TYPE_INT, G_TYPE_UINT, G_TYPE_POINTER);
 }
@@ -392,7 +394,7 @@ ags_thread_init(AgsThread *thread)
 
   config = ags_config_get_instance();
 
-  /* insert audio loop mutex */
+  /* insert thread mutex */
   thread->obj_mutexattr =
     attr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
 
@@ -846,6 +848,147 @@ ags_thread_finalize(GObject *gobject)
   if(do_exit){
     pthread_exit(NULL);
   }
+}
+
+/**
+ * ags_thread_get_class_mutex:
+ * 
+ * Use this function's returned mutex to access mutex fields.
+ *
+ * Returns: the class mutex
+ * 
+ * Since: 2.0.0
+ */
+pthread_mutex_t*
+ags_thread_get_class_mutex()
+{
+  return(&ags_thread_class_mutex);
+}
+
+/**
+ * ags_thread_test_flags:
+ * @thread: the #AgsThread
+ * @flags: the flags
+ *
+ * Test @flags to be set on @thread.
+ * 
+ * Returns: %TRUE if flags are set, else %FALSE
+ *
+ * Since: 2.0.0
+ */
+gboolean
+ags_thread_test_flags(AgsThread *thread, guint flags)
+{
+  gboolean retval;  
+
+  if(!AGS_IS_THREAD(thread)){
+    return(FALSE);
+  }
+  
+  retval = ((flags & (g_atomic_int_get(&(thread->flags)))) != 0) ? TRUE: FALSE;
+    
+  return(retval);
+}
+
+/**
+ * ags_thread_set_flags:
+ * @thread: the #AgsThread
+ * @flags: the flags
+ *
+ * Set flags.
+ * 
+ * Since: 2.0.0
+ */
+void
+ags_thread_set_flags(AgsThread *thread, guint flags)
+{
+  if(!AGS_IS_THREAD(thread)){
+    return;
+  }
+
+  g_atomic_int_or(&(thread->flags), flags);
+}
+
+/**
+ * ags_thread_unset_flags:
+ * @thread: the #AgsThread
+ * @flags: the flags
+ *
+ * Unset flags.
+ * 
+ * Since: 2.0.0
+ */
+void
+ags_thread_unset_flags(AgsThread *thread, guint flags)
+{
+  if(!AGS_IS_THREAD(thread)){
+    return;
+  }
+
+  g_atomic_int_and(&(thread->flags), (~flags));
+}
+
+/**
+ * ags_thread_test_sync_flags:
+ * @thread: the #AgsThread
+ * @sync_flags: the syn flags
+ *
+ * Test @sync_flags to be set on @thread.
+ * 
+ * Returns: %TRUE if sync flags are set, else %FALSE
+ *
+ * Since: 2.0.0
+ */
+gboolean
+ags_thread_test_sync_flags(AgsThread *thread, guint sync_flags)
+{
+  gboolean retval;  
+
+  if(!AGS_IS_THREAD(thread)){
+    return(FALSE);
+  }
+  
+  retval = ((sync_flags & (g_atomic_int_get(&(thread->sync_flags)))) != 0) ? TRUE: FALSE;
+    
+  return(retval);
+}
+
+/**
+ * ags_thread_set_sync_flags:
+ * @thread: the #AgsThread
+ * @sync_flags: the sync flags
+ *
+ * Set sync flags.
+ * 
+ * Since: 2.0.0
+ */
+void
+ags_thread_set_sync_flags(AgsThread *thread, guint sync_flags)
+{
+  if(!AGS_IS_THREAD(thread)){
+    return;
+  }
+
+  g_atomic_int_or(&(thread->sync_flags), sync_flags);
+}
+
+/**
+ * ags_thread_unset_sync_flags:
+ * @thread: the #AgsThread
+ * @sync_flags: the sync flags
+ *
+ * Unset sync flags.
+ * 
+ * Since: 2.0.0
+ */
+void
+ags_thread_unset_sync_flags(AgsThread *thread, guint sync_flags)
+{
+  if(!AGS_IS_THREAD(thread)){
+    return;
+  }
+
+  g_atomic_int_and(&(thread->sync_flags), (~sync_flags));
 }
 
 void
@@ -2894,22 +3037,22 @@ ags_thread_real_start(AgsThread *thread)
  *
  * Add @child to @thread's start queue.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_thread_add_start_queue(AgsThread *thread,
 			   AgsThread *child)
 {
-  GList *start_queue;
+  if(!AGS_IS_THREAD(thread) ||
+     !AGS_IS_THREAD(child)){
+    return;
+  }
   
   pthread_mutex_lock(thread->start_mutex);
   
-  start_queue = g_atomic_pointer_get(&(thread->start_queue));
-  start_queue = g_list_prepend(start_queue,
-			       child);
-
   g_atomic_pointer_set(&(thread->start_queue),
-		       start_queue);
+		       g_list_prepend(g_atomic_pointer_get(&(thread->start_queue)),
+				      child));
   
   pthread_mutex_unlock(thread->start_mutex);
 }
@@ -2939,6 +3082,24 @@ ags_thread_add_start_queue_all(AgsThread *thread,
 		       start_queue);
   
   pthread_mutex_unlock(thread->start_mutex);
+}
+
+/**
+ * ags_thread_is_running:
+ * @thread: the #AgsThread instance
+ *
+ * Query running flag.
+ *
+ * Since: 2.0.0
+ */
+gboolean
+ags_thread_is_running(AgsThread *thread)
+{
+  if(!AGS_IS_THREAD(thread)){
+    return(FALSE);
+  }
+  
+  return(((AGS_THREAD_RUNNING & (g_atomic_int_get(&(thread->flags)))) ? TRUE: FALSE));
 }
 
 /**
@@ -3129,7 +3290,7 @@ ags_thread_loop(void *ptr)
     g_list_free(start_start_queue);
     
     /* notify start */
-    /* signal AgsAudioLoop */
+    /* signal AgsMainLoop */
     pthread_mutex_lock(thread->start_mutex);
       
     g_atomic_int_set(&(thread->start_done),

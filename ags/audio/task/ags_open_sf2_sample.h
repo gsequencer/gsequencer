@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -25,7 +25,9 @@
 
 #include <ags/libags.h>
 
-#include <ags/audio/ags_audio.h>
+#include <ags/audio/ags_channel.h>
+
+#include <ags/audio/file/ags_ipatch_sample.h>
 
 #define AGS_TYPE_OPEN_SF2_SAMPLE                (ags_open_sf2_sample_get_type())
 #define AGS_OPEN_SF2_SAMPLE(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_OPEN_SF2_SAMPLE, AgsOpenSf2Sample))
@@ -43,11 +45,15 @@ struct _AgsOpenSf2Sample
 
   AgsChannel *channel;
 
+  AgsIpatchSample *ipatch_sample;
+  
   gchar *filename;
   
   gchar *preset;
   gchar *instrument;
   gchar *sample;
+
+  guint audio_channel;
 };
 
 struct _AgsOpenSf2SampleClass
@@ -58,9 +64,11 @@ struct _AgsOpenSf2SampleClass
 GType ags_open_sf2_sample_get_type();
 
 AgsOpenSf2Sample* ags_open_sf2_sample_new(AgsChannel *channel,
+					  AgsIpatchSample *ipatch_sample,
 					  gchar *filename,
 					  gchar *preset,
 					  gchar *instrument,
-					  gchar *sample);
+					  gchar *sample,
+					  guint audio_channel);
 
 #endif /*__AGS_OPEN_SF2_SAMPLE_H__*/

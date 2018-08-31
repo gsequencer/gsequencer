@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -27,12 +27,14 @@
 
 #include <ags/libags.h>
 
+#include <ags/audio/ags_sound_enums.h>
 #include <ags/audio/ags_recall_id.h>
 #include <ags/audio/ags_recall.h>
 #include <ags/audio/ags_recycling.h>
 #include <ags/audio/ags_notation.h>
 
 #include <stdarg.h>
+#include <math.h>
 
 #define AGS_TYPE_CHANNEL                (ags_channel_get_type())
 #define AGS_CHANNEL(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_CHANNEL, AgsChannel))
@@ -41,14 +43,34 @@
 #define AGS_IS_CHANNEL_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_CHANNEL))
 #define AGS_CHANNEL_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_CHANNEL, AgsChannelClass))
 
+#define AGS_CHANNEL_MINIMUM_OCTAVE (0)
+#define AGS_CHANNEL_MAXIMUM_OCTAVE (10)
+#define AGS_CHANNEL_DEFAULT_OCTAVE (AGS_CHANNEL_MINIMUM_OCTAVE)
+
+#define AGS_CHANNEL_MINIMUM_OCTAVE_SEMITONE (0)
+#define AGS_CHANNEL_MAXIMUM_OCTAVE_SEMITONE (12)
+#define AGS_CHANNEL_DEFAULT_OCTAVE_SEMITONE (AGS_CHANNEL_MINIMUM_OCTAVE_SEMITONE)
+
+#define AGS_CHANNEL_MINIMUM_SEMITONE (0)
+#define AGS_CHANNEL_MAXIMUM_SEMITONE (128)
+#define AGS_CHANNEL_DEFAULT_SEMITONE (AGS_CHANNEL_MINIMUM_SEMITONE)
+
+#define AGS_CHANNEL_MINIMUM_NOTE_FREQUENCY (440.0 * exp((-69.0 / 12.0) * log(2.0)))
+#define AGS_CHANNEL_MAXIMUM_NOTE_FREQUENCY (440.0 * exp((58.0 / 12.0) * log(2.0)))
+#define AGS_CHANNEL_DEFAULT_NOTE_FREQUENCY (AGS_CHANNEL_MINIMUM_NOTE_FREQUENCY)
+
+#define AGS_CHANNEL_MINIMUM_MIDI_NOTE (0)
+#define AGS_CHANNEL_MAXIMUM_MIDI_NOTE (127)
+#define AGS_CHANNEL_DEFAULT_MIDI_NOTE (AGS_CHANNEL_MINIMUM_MIDI_NOTE)
+
 typedef struct _AgsChannel AgsChannel;
 typedef struct _AgsChannelClass AgsChannelClass;
 
 /**
  * AgsChannelFlags:
- * @AGS_CHANNEL_ADDED_TO_REGISTRY: added to registry
+ * @AGS_CHANNEL_ADDED_TO_REGISTRY: the channel was added to registry, see #AgsConnectable::add_to_registry()
  * @AGS_CHANNEL_CONNECTED: indicates the channel was connected by calling #AgsConnectable::connect()
- * @AGS_CHANNEL_RUNNING: channel running
+ * @AGS_CHANNEL_BYPASS: don't apply any data
  *
  * Enum values to control the behavior or indicate internal state of #AgsChannel by
  * enable/disable as flags.
@@ -56,13 +78,8 @@ typedef struct _AgsChannelClass AgsChannelClass;
 typedef enum{
   AGS_CHANNEL_ADDED_TO_REGISTRY  = 1,
   AGS_CHANNEL_CONNECTED          = 1 <<  1,
-  AGS_CHANNEL_RUNNING            = 1 <<  2,
+  AGS_CHANNEL_BYPASS             = 1 <<  2,
 }AgsChannelFlags;
-
-typedef enum{
-  AGS_CHANNEL_RECALL_ID_RUN_STAGE,
-  AGS_CHANNEL_RECALL_ID_CANCEL,
-}AgsChannelRecallIDMode;
 
 #define AGS_CHANNEL_ERROR (ags_channel_error_quark())
 
@@ -75,53 +92,70 @@ struct _AgsChannel
   GObject object;
 
   guint flags;
+  guint ability_flags;
+  guint behaviour_flags;
+  guint staging_flags[AGS_SOUND_SCOPE_LAST];
 
   pthread_mutex_t *obj_mutex;
   pthread_mutexattr_t *obj_mutexattr;
 
+  AgsUUID *uuid;
+  
   GObject *audio;
-  GObject *soundcard;
+
+  GObject *output_soundcard;
+  gint output_soundcard_channel;
+  
+  GObject *input_soundcard;
+  gint input_soundcard_channel;
 
   guint samplerate;
   guint buffer_size;
   guint format;
+
+  guint pad;
+  guint audio_channel;
+  guint line;
+
+  gint octave;
+  guint key;
+  gint absolute_key;
+  
+  gdouble note_frequency;
+  gchar *note_key;
+
+  guint midi_note;
   
   AgsChannel *prev;
   AgsChannel *prev_pad;
   AgsChannel *next;
   AgsChannel *next_pad;
 
-  guint pad;
-  guint audio_channel;
-  guint line;
-
-  char *note;
-
-  GList *remote_channel;
-  
-  GObject *playback;
-
-  // GObject *recycling_context; // contains child recycling
-  GList *recall_id; // there may be several recall's running
-
-  pthread_mutexattr_t *recall_mutexattr;
-  pthread_mutex_t *recall_mutex;
-
-  pthread_mutexattr_t *play_mutexattr;
-  pthread_mutex_t *play_mutex;
-
-  GList *container;
-  GList *recall;
-  GList *play;
-
   AgsChannel *link;
 
   AgsRecycling *first_recycling;
   AgsRecycling *last_recycling;
+  
+  GObject *playback;
 
   GList *pattern;
 
-  GObject *line_widget;
+  GList *recall_id;
+  GList *recycling_context;
+
+  GList *recall_container;
+
+  pthread_mutexattr_t *play_mutexattr;
+  pthread_mutex_t *play_mutex;
+
+  GList *play;
+
+  pthread_mutexattr_t *recall_mutexattr;
+  pthread_mutex_t *recall_mutex;
+
+  GList *recall;
+
+  gpointer line_widget;
   gpointer file_data;
 };
 
@@ -129,28 +163,73 @@ struct _AgsChannelClass
 {
   GObjectClass object;
 
-  GList* (*add_effect)(AgsChannel *channel,
-		       gchar *filename,
-		       gchar *effect);
-  void (*remove_effect)(AgsChannel *channel,
-			guint nth);
-
   void (*recycling_changed)(AgsChannel *channel,
 			    AgsRecycling *old_start_region, AgsRecycling *old_end_region,
 			    AgsRecycling *new_start_region, AgsRecycling *new_end_region,
 			    AgsRecycling *old_start_changed_region, AgsRecycling *old_end_changed_region,
 			    AgsRecycling *new_start_changed_region, AgsRecycling *new_end_changed_region);
 
-  void (*done)(AgsChannel *channel,
-	       AgsRecallID *recall_id);
+  GList* (*add_effect)(AgsChannel *channel,
+		       gchar *filename,
+		       gchar *effect);
+  void (*remove_effect)(AgsChannel *channel,
+			guint nth);
+
+  void (*duplicate_recall)(AgsChannel *channel,
+			   AgsRecallID *recall_id);
+  void (*resolve_recall)(AgsChannel *channel,
+			 AgsRecallID *recall_id);
+
+  void (*init_recall)(AgsChannel *channel,
+		      AgsRecallID *recall_id, guint staging_flags);
+  void (*play_recall)(AgsChannel *channel,
+		      AgsRecallID *recall_id, guint staging_flags);
+
+  void (*done_recall)(AgsChannel *channel,
+		      AgsRecallID *recall_id);
+  void (*cancel_recall)(AgsChannel *channel,
+			AgsRecallID *recall_id);
+
+  void (*cleanup_recall)(AgsChannel *channel,
+			 AgsRecallID *recall_id);
+
+  GList* (*start)(AgsChannel *channel,
+		  gint sound_scope);
+  void (*stop)(AgsChannel *channel,
+	       GList *recall_id, gint sound_scope);
+
+  GList* (*check_scope)(AgsChannel *channel, gint sound_scope);
+  
+  void (*recursive_run_stage)(AgsChannel *channel,
+			      gint sound_scope, guint staging_flags);
 };
 
 GType ags_channel_get_type();
 
 GQuark ags_channel_error_quark();
 
-AgsRecall* ags_channel_find_recall(AgsChannel *channel, char *effect, char *name);
+pthread_mutex_t* ags_channel_get_class_mutex();
 
+gboolean ags_channel_test_flags(AgsChannel *channel, guint flags);
+void ags_channel_set_flags(AgsChannel *channel, guint flags);
+void ags_channel_unset_flags(AgsChannel *channel, guint flags);
+
+gboolean ags_channel_test_ability_flags(AgsChannel *channel, guint ability_flags);
+void ags_channel_set_ability_flags(AgsChannel *channel, guint ability_flags);
+void ags_channel_unset_ability_flags(AgsChannel *channel, guint ability_flags);
+
+gboolean ags_channel_test_behaviour_flags(AgsChannel *channel, guint behaviour_flags);
+void ags_channel_set_behaviour_flags(AgsChannel *channel, guint behaviour_flags);
+void ags_channel_unset_behaviour_flags(AgsChannel *channel, guint behaviour_flags);
+
+gboolean ags_channel_test_staging_flags(AgsChannel *channel, gint sound_scope,
+					guint staging_flags);
+void ags_channel_set_staging_flags(AgsChannel *channel, gint sound_scope,
+				   guint staging_flags);
+void ags_channel_unset_staging_flags(AgsChannel *channel, gint sound_scope,
+				     guint staging_flags);
+
+/* channels */
 AgsChannel* ags_channel_first(AgsChannel *channel);
 AgsChannel* ags_channel_last(AgsChannel *channel);
 AgsChannel* ags_channel_nth(AgsChannel *channel, guint nth);
@@ -164,107 +243,93 @@ AgsChannel* ags_channel_last_with_recycling(AgsChannel *channel);
 AgsChannel* ags_channel_prev_with_recycling(AgsChannel *channel);
 AgsChannel* ags_channel_next_with_recycling(AgsChannel *channel);
 
-void ags_channel_set_soundcard(AgsChannel *channel, GObject *soundcard);
-
-void ags_channel_set_samplerate(AgsChannel *channel, guint samplerate);
-void ags_channel_set_buffer_size(AgsChannel *channel, guint buffer_size);
-void ags_channel_set_format(AgsChannel *channel, guint format);
-
-void ags_channel_add_remote_channel(AgsChannel *channel, GObject *remote_channel);
-void ags_channel_remove_remote_channel(AgsChannel *channel, GObject *remote_channel);
-
-void ags_channel_add_recall_id(AgsChannel *channel, AgsRecallID *recall_id);
-void ags_channel_remove_recall_id(AgsChannel *channel, AgsRecallID *recall_id);
-
-void ags_channel_add_recall_container(AgsChannel *channel, GObject *recall_container);
-void ags_channel_remove_recall_container(AgsChannel *channel, GObject *recall_container);
-
-void ags_channel_add_recall(AgsChannel *channel, GObject *recall, gboolean play);
-void ags_channel_remove_recall(AgsChannel *channel, GObject *recall, gboolean play);
-
-void ags_channel_add_pattern(AgsChannel *channel, GObject *pattern);
-void ags_channel_remove_pattern(AgsChannel *channel, GObject *pattern);
-
-GList* ags_channel_add_effect(AgsChannel *channel,
-			      char *filename,
-			      gchar *effect);
-void ags_channel_remove_effect(AgsChannel *channel,
-			       guint nth);
-
-void ags_channel_safe_resize_audio_signal(AgsChannel *channel,
-					  guint length);
-
-void ags_channel_duplicate_recall(AgsChannel *channel,
-				  AgsRecallID *recall_id);
-void ags_channel_resolve_recall(AgsChannel *channel,
-				AgsRecallID *recall_id);
-void ags_channel_init_recall(AgsChannel *channel, gint stage,
-			     AgsRecallID *recall_id);
-void ags_channel_play(AgsChannel *channel,
-		      AgsRecallID *recall_id, gint stage);
-void ags_channel_done(AgsChannel *channel,
-		      AgsRecallID *recall_id);
-
-void ags_channel_cancel(AgsChannel *channel, AgsRecallID *recall_id);
-void ags_channel_remove(AgsChannel *channel, AgsRecallID *recall_id);
-
-void ags_channel_recall_id_set(AgsChannel *output, AgsRecallID *recall_id, gboolean ommit_own_channel,
-			       guint mode, ...);
-
-GList* ags_channel_find_port(AgsChannel *channel);
-GObject* ags_channel_find_port_by_specifier_and_scope(AgsChannel *channel,
-						      gchar *specifier,
-						      gboolean play);
-
 void ags_channel_set_link(AgsChannel *channel, AgsChannel *link,
 			  GError **error);
-void ags_channel_set_recycling(AgsChannel *channel,
-			       AgsRecycling *first_recycling, AgsRecycling *last_recycling,
-			       gboolean update, gboolean destroy_old);
-void ags_channel_recursive_reset_recycling_context(AgsChannel *channel,
-						   AgsRecyclingContext *old_recycling_context,
-						   AgsRecyclingContext *recycling_context);
+void ags_channel_reset_recycling(AgsChannel *channel,
+				 AgsRecycling *first_recycling, AgsRecycling *last_recycling);
+
 void ags_channel_recycling_changed(AgsChannel *channel,
 				   AgsRecycling *old_start_region, AgsRecycling *old_end_region,
 				   AgsRecycling *new_start_region, AgsRecycling *new_end_region,
 				   AgsRecycling *old_start_changed_region, AgsRecycling *old_end_changed_region,
 				   AgsRecycling *new_start_changed_region, AgsRecycling *new_end_changed_region);
 
-void ags_channel_recursive_set_property(AgsChannel *channel,
-					GParameter *parameter, gint n_params);
+/* soundcard */
+void ags_channel_set_output_soundcard(AgsChannel *channel, GObject *output_soundcard);
+void ags_channel_set_input_soundcard(AgsChannel *channel, GObject *input_soundcard);
 
-AgsRecallID* ags_channel_recursive_play_init(AgsChannel *channel, gint stage,
-					     gboolean arrange_recall_id, gboolean duplicate_templates,
-					     gboolean do_playback, gboolean do_sequencer, gboolean do_notation,
-					     gboolean resolve_dependencies,
-					     AgsRecallID *recall_id);
-void ags_channel_recursive_play_threaded(AgsChannel *channel,
-					 AgsRecallID *recall_id, gint stage);
-void ags_channel_recursive_play(AgsChannel *channel,
-				AgsRecallID *recall_id, gint stage);
+/* presets */
+void ags_channel_set_samplerate(AgsChannel *channel, guint samplerate);
+void ags_channel_set_buffer_size(AgsChannel *channel, guint buffer_size);
+void ags_channel_set_format(AgsChannel *channel, guint format);
 
-void ags_channel_tillrecycling_cancel(AgsChannel *channel, AgsRecallID *recall_id);
+/* children */
+void ags_channel_add_pattern(AgsChannel *channel, GObject *pattern);
+void ags_channel_remove_pattern(AgsChannel *channel, GObject *pattern);
 
-void ags_channel_recursive_reset_recall_ids(AgsChannel *channel, AgsChannel *link,
-					    AgsChannel *old_channel_link, AgsChannel *old_link_link);
+/* recall related */
+void ags_channel_add_recall_id(AgsChannel *channel, AgsRecallID *recall_id);
+void ags_channel_remove_recall_id(AgsChannel *channel, AgsRecallID *recall_id);
 
+void ags_channel_add_recall_container(AgsChannel *channel, GObject *recall_container);
+void ags_channel_remove_recall_container(AgsChannel *channel, GObject *recall_container);
+
+void ags_channel_add_recall(AgsChannel *channel, GObject *recall, gboolean play_context);
+void ags_channel_remove_recall(AgsChannel *channel, GObject *recall, gboolean play_context);
+
+/* add/remove effect */
+GList* ags_channel_add_effect(AgsChannel *channel,
+			      char *filename,
+			      gchar *effect);
+void ags_channel_remove_effect(AgsChannel *channel,
+			       guint nth);
+
+/* stages */
+void ags_channel_duplicate_recall(AgsChannel *channel,
+				  AgsRecallID *recall_id);
+void ags_channel_resolve_recall(AgsChannel *channel,
+				AgsRecallID *recall_id);
+
+void ags_channel_init_recall(AgsChannel *channel,
+			     AgsRecallID *recall_id, guint staging_flags);
+void ags_channel_play_recall(AgsChannel *channel,
+			     AgsRecallID *recall_id, guint staging_flags);
+
+void ags_channel_done_recall(AgsChannel *channel,
+			     AgsRecallID *recall_id);
+void ags_channel_cancel_recall(AgsChannel *channel,
+			       AgsRecallID *recall_id);
+
+void ags_channel_cleanup_recall(AgsChannel *channel,
+				AgsRecallID *recall_id);
+
+/* control */
+GList* ags_channel_start(AgsChannel *channel,
+			 gint sound_scope);
+
+void ags_channel_stop(AgsChannel *channel,
+		      GList *recall_id, gint sound_scope);
+
+/* query */
+GList* ags_channel_check_scope(AgsChannel *channel, gint sound_scope);
+
+GList* ags_channel_collect_all_channel_ports(AgsChannel *channel);
+
+GList* ags_channel_collect_all_channel_ports_by_specifier_and_context(AgsChannel *channel,
+								      gchar *specifier,
+								      gboolean play_context);
+
+/* recursive functions */
 AgsChannel* ags_channel_get_level(AgsChannel *channel);
-void ags_channel_recursive_reset_recall_id(AgsChannel *channel,
-					   AgsRecallID *valid_recall_id, gboolean valid_set_up, gboolean valid_set_down,
-					   AgsRecallID *invalid_recall_id, gboolean invalid_set_up, gboolean invalid_set_down);
-void ags_channel_recursive_init(AgsChannel *channel,
-				AgsRecallID *recall_id,
-				gint stage, gint init_stage,
-				gboolean init_up, gboolean init_down);
-void ags_channel_recursive_run(AgsChannel *channel,
-			       AgsRecallID *recall_id,
-			       gint run_stage,
-			       gboolean run_up, gboolean run_down,
-			       gboolean current_level_only);
-void ags_channel_recursive_cancel(AgsChannel *channel,
-				  AgsRecallID *recall_id,
-				  gboolean cancel_up, gboolean cancel_down);
 
+void ags_channel_recursive_set_property(AgsChannel *channel,
+					gint n_params,
+					gchar **parameter_name, GValue *value);
+
+void ags_channel_recursive_run_stage(AgsChannel *channel,
+				     gint sound_scope, guint staging_flags);
+
+/* instantiate */
 AgsChannel* ags_channel_new(GObject *audio);
 
 #endif /*__AGS_CHANNEL_H__*/

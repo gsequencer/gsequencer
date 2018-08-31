@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -19,10 +19,7 @@
 
 #include <ags/plugin/ags_ladspa_manager.h>
 
-#include <ags/lib/ags_string_util.h>
-#include <ags/lib/ags_log.h>
-
-#include <ags/object/ags_marshal.h>
+#include <ags/libags.h>
 
 #include <ags/plugin/ags_base_plugin.h>
 
@@ -33,7 +30,7 @@
 #include <sys/types.h>
 #include <unistd.h>
 
-#include <pthread.h>
+#include <string.h>
 
 #include <ladspa.h>
 
@@ -60,7 +57,8 @@ enum{
 };
 
 static gpointer ags_ladspa_manager_parent_class = NULL;
-static guint ladspa_manager_signals[LAST_SIGNAL];
+
+static pthread_mutex_t ags_ladspa_manager_class_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 AgsLadspaManager *ags_ladspa_manager = NULL;
 gchar **ags_ladspa_default_path = NULL;
@@ -86,11 +84,9 @@ ags_ladspa_manager_get_type()
     };
 
     ags_type_ladspa_manager = g_type_register_static(G_TYPE_OBJECT,
-							"AgsLadspaManager",
-							&ags_ladspa_manager_info,
-							0);
-
-    g_once_init_leave (&g_define_type_id__volatile, ags_type_ladspa_manager);
+						     "AgsLadspaManager",
+						     &ags_ladspa_manager_info,
+						     0);
   }
 
   return g_define_type_id__volatile;
@@ -113,6 +109,22 @@ ags_ladspa_manager_class_init(AgsLadspaManagerClass *ladspa_manager)
 void
 ags_ladspa_manager_init(AgsLadspaManager *ladspa_manager)
 {
+  /* ladspa manager mutex */
+  ladspa_manager->obj_mutexattr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
+  pthread_mutexattr_init(ladspa_manager->obj_mutexattr);
+  pthread_mutexattr_settype(ladspa_manager->obj_mutexattr,
+			    PTHREAD_MUTEX_RECURSIVE);
+
+#ifdef __linux__
+  pthread_mutexattr_setprotocol(ladspa_manager->obj_mutexattr,
+				PTHREAD_PRIO_INHERIT);
+#endif
+
+  ladspa_manager->obj_mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
+  pthread_mutex_init(ladspa_manager->obj_mutex,
+		     ladspa_manager->obj_mutexattr);
+
+  /* ladspa plugin and path */
   ladspa_manager->ladspa_plugin = NULL;
 
   if(ags_ladspa_default_path == NULL){
@@ -213,6 +225,12 @@ ags_ladspa_manager_finalize(GObject *gobject)
 
   ladspa_manager = AGS_LADSPA_MANAGER(gobject);
 
+  pthread_mutex_destroy(ladspa_manager->obj_mutex);
+  free(ladspa_manager->obj_mutex);
+
+  pthread_mutexattr_destroy(ladspa_manager->obj_mutexattr);
+  free(ladspa_manager->obj_mutexattr);
+
   ladspa_plugin = ladspa_manager->ladspa_plugin;
 
   g_list_free_full(ladspa_plugin,
@@ -227,13 +245,28 @@ ags_ladspa_manager_finalize(GObject *gobject)
 }
 
 /**
+ * ags_ladspa_manager_get_class_mutex:
+ * 
+ * Get class mutex.
+ * 
+ * Returns: the class mutex of #AgsLadspaManager
+ * 
+ * Since: 2.0.0
+ */
+pthread_mutex_t*
+ags_ladspa_manager_get_class_mutex()
+{
+  return(&ags_ladspa_manager_class_mutex);
+}
+
+/**
  * ags_ladspa_manager_get_default_path:
  * 
  * Get ladspa manager default plugin path.
  *
  * Returns: the plugin default search path as a string vector
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 gchar**
 ags_ladspa_manager_get_default_path()
@@ -247,7 +280,7 @@ ags_ladspa_manager_get_default_path()
  * 
  * Set ladspa manager default plugin path.
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_ladspa_manager_set_default_path(gchar** default_path)
@@ -263,29 +296,66 @@ ags_ladspa_manager_set_default_path(gchar** default_path)
  *
  * Returns: a %NULL-terminated array of filenames
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 gchar**
 ags_ladspa_manager_get_filenames(AgsLadspaManager *ladspa_manager)
 {
-  GList *ladspa_plugin;
+  GList *start_ladspa_plugin, *ladspa_plugin;
 
   gchar **filenames;
 
   guint i;
   gboolean contains_filename;
 
+  pthread_mutex_t *ladspa_manager_mutex;
+  pthread_mutex_t *base_plugin_mutex;
+
   if(!AGS_IS_LADSPA_MANAGER(ladspa_manager)){
     return(NULL);
   }
   
-  ladspa_plugin = ladspa_manager->ladspa_plugin;
+  /* get ladspa manager mutex */
+  pthread_mutex_lock(ags_ladspa_manager_get_class_mutex());
+  
+  ladspa_manager_mutex = ladspa_manager->obj_mutex;
+  
+  pthread_mutex_unlock(ags_ladspa_manager_get_class_mutex());
+
+  /* collect */
+  pthread_mutex_lock(ladspa_manager_mutex);
+
+  ladspa_plugin = 
+    start_ladspa_plugin = g_list_copy(ladspa_manager->ladspa_plugin);
+
+  pthread_mutex_unlock(ladspa_manager_mutex);
+
   filenames = NULL;
   
   for(i = 0; ladspa_plugin != NULL;){
+    gchar *filename;
+    
+    /* get base plugin mutex */
+    pthread_mutex_lock(ags_base_plugin_get_class_mutex());
+  
+    base_plugin_mutex = AGS_BASE_PLUGIN(ladspa_plugin->data)->obj_mutex;
+    
+    pthread_mutex_unlock(ags_base_plugin_get_class_mutex());
+
+    /* duplicate filename */
+    pthread_mutex_lock(base_plugin_mutex);
+
+    filename = g_strdup(AGS_BASE_PLUGIN(ladspa_plugin->data)->filename);
+
+    pthread_mutex_unlock(base_plugin_mutex);
+
     if(filenames == NULL){
       filenames = (gchar **) malloc(2 * sizeof(gchar *));
-      filenames[i] = AGS_BASE_PLUGIN(ladspa_plugin->data)->filename;
+
+      /* set filename */
+      filenames[i] = filename;
+
+      /* terminate */
       filenames[i + 1] = NULL;
 
       i++;
@@ -301,15 +371,19 @@ ags_ladspa_manager_get_filenames(AgsLadspaManager *ladspa_manager)
       if(!contains_filename){
 	filenames = (gchar **) realloc(filenames,
 				       (i + 2) * sizeof(gchar *));
-	filenames[i] = AGS_BASE_PLUGIN(ladspa_plugin->data)->filename;
+	filenames[i] = filename;
 	filenames[i + 1] = NULL;
 
 	i++;
+      }else{
+	g_free(filename);
       }
     }
     
     ladspa_plugin = ladspa_plugin->next;
   }
+
+  g_list_free(start_ladspa_plugin);
 
   return(filenames);
 }
@@ -324,7 +398,7 @@ ags_ladspa_manager_get_filenames(AgsLadspaManager *ladspa_manager)
  *
  * Returns: the #AgsLadspaPlugin-struct
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsLadspaPlugin*
 ags_ladspa_manager_find_ladspa_plugin(AgsLadspaManager *ladspa_manager,
@@ -332,28 +406,68 @@ ags_ladspa_manager_find_ladspa_plugin(AgsLadspaManager *ladspa_manager,
 {
   AgsLadspaPlugin *ladspa_plugin;
 
-  GList *list;
+  GList *start_list, *list;
+
+  gboolean success;  
+
+  pthread_mutex_t *ladspa_manager_mutex;
+  pthread_mutex_t *base_plugin_mutex;
 
   if(!AGS_IS_LADSPA_MANAGER(ladspa_manager)){
     return(NULL);
   }
   
-  list = ladspa_manager->ladspa_plugin;
+  /* get ladspa manager mutex */
+  pthread_mutex_lock(ags_ladspa_manager_get_class_mutex());
+  
+  ladspa_manager_mutex = ladspa_manager->obj_mutex;
+  
+  pthread_mutex_unlock(ags_ladspa_manager_get_class_mutex());
 
+  /* collect */
+  pthread_mutex_lock(ladspa_manager_mutex);
+
+  list = 
+    start_list = g_list_copy(ladspa_manager->ladspa_plugin);
+
+  pthread_mutex_unlock(ladspa_manager_mutex);
+
+  success = FALSE;
+  
   while(list != NULL){
     ladspa_plugin = AGS_LADSPA_PLUGIN(list->data);
+
+    /* get base plugin mutex */
+    pthread_mutex_lock(ags_base_plugin_get_class_mutex());
+  
+    base_plugin_mutex = AGS_BASE_PLUGIN(ladspa_plugin)->obj_mutex;
     
-    if(!g_strcmp0(AGS_BASE_PLUGIN(ladspa_plugin)->filename,
-		  filename) &&
-       !g_strcmp0(AGS_BASE_PLUGIN(ladspa_plugin)->effect,
-		  effect)){
-      return(ladspa_plugin);
+    pthread_mutex_unlock(ags_base_plugin_get_class_mutex());
+
+    /* check filename and effect */
+    pthread_mutex_lock(base_plugin_mutex);
+
+    success = (!g_strcmp0(AGS_BASE_PLUGIN(ladspa_plugin)->filename,
+			  filename) &&
+	       !g_strcmp0(AGS_BASE_PLUGIN(ladspa_plugin)->effect,
+			  effect)) ? TRUE: FALSE;
+    
+    pthread_mutex_unlock(base_plugin_mutex);
+    
+    if(success){
+      break;
     }
 
     list = list->next;
   }
 
-  return(NULL);
+  g_list_free(start_list);
+
+  if(!success){
+    ladspa_plugin = NULL;
+  }
+
+  return(ladspa_plugin);
 }
 
 /**
@@ -363,17 +477,29 @@ ags_ladspa_manager_find_ladspa_plugin(AgsLadspaManager *ladspa_manager,
  * 
  * Load blacklisted plugin filenames.
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_ladspa_manager_load_blacklist(AgsLadspaManager *ladspa_manager,
 				  gchar *blacklist_filename)
 {
+  pthread_mutex_t *ladspa_manager_mutex;
+
   if(!AGS_IS_LADSPA_MANAGER(ladspa_manager) ||
      blacklist_filename == NULL){
     return;
   }
   
+  /* get ladspa manager mutex */
+  pthread_mutex_lock(ags_ladspa_manager_get_class_mutex());
+  
+  ladspa_manager_mutex = ladspa_manager->obj_mutex;
+  
+  pthread_mutex_unlock(ags_ladspa_manager_get_class_mutex());
+
+  /* fill in */
+  pthread_mutex_lock(ladspa_manager_mutex);
+
   if(g_file_test(blacklist_filename,
 		 (G_FILE_TEST_EXISTS |
 		  G_FILE_TEST_IS_REGULAR))){
@@ -389,6 +515,8 @@ ags_ladspa_manager_load_blacklist(AgsLadspaManager *ladspa_manager,
 							       str);
     }
   }
+
+  pthread_mutex_unlock(ladspa_manager_mutex);
 } 
 
 /**
@@ -399,7 +527,7 @@ ags_ladspa_manager_load_blacklist(AgsLadspaManager *ladspa_manager,
  *
  * Load @filename specified plugin.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_ladspa_manager_load_file(AgsLadspaManager *ladspa_manager,
@@ -416,7 +544,7 @@ ags_ladspa_manager_load_file(AgsLadspaManager *ladspa_manager,
   LADSPA_Descriptor *plugin_descriptor;
   unsigned long i;
   
-  static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+  pthread_mutex_t *ladspa_manager_mutex;
 
   if(!AGS_IS_LADSPA_MANAGER(ladspa_manager) ||
      ladspa_path == NULL ||
@@ -424,7 +552,15 @@ ags_ladspa_manager_load_file(AgsLadspaManager *ladspa_manager,
     return;
   }
   
-  pthread_mutex_lock(&(mutex));
+  /* get ladspa manager mutex */
+  pthread_mutex_lock(ags_ladspa_manager_get_class_mutex());
+  
+  ladspa_manager_mutex = ladspa_manager->obj_mutex;
+  
+  pthread_mutex_unlock(ags_ladspa_manager_get_class_mutex());
+
+  /* load */
+  pthread_mutex_lock(ladspa_manager_mutex);
 
   path = g_strdup_printf("%s/%s",
 			 ladspa_path,
@@ -439,7 +575,8 @@ ags_ladspa_manager_load_file(AgsLadspaManager *ladspa_manager,
     g_warning("ags_ladspa_manager.c - failed to load static object file");
       
     dlerror();
-    pthread_mutex_unlock(&(mutex));
+
+    pthread_mutex_unlock(ladspa_manager_mutex);
 
     return;
   }
@@ -462,7 +599,7 @@ ags_ladspa_manager_load_file(AgsLadspaManager *ladspa_manager,
     }
   }
 
-  pthread_mutex_unlock(&(mutex));
+  pthread_mutex_unlock(ladspa_manager_mutex);
 
   g_free(path);
 }
@@ -473,7 +610,7 @@ ags_ladspa_manager_load_file(AgsLadspaManager *ladspa_manager,
  * 
  * Loads all available plugins.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_ladspa_manager_load_default_directory(AgsLadspaManager *ladspa_manager)
@@ -537,7 +674,7 @@ ags_ladspa_manager_load_default_directory(AgsLadspaManager *ladspa_manager)
  *
  * Returns: the #AgsLadspaManager
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsLadspaManager*
 ags_ladspa_manager_get_instance()
@@ -558,11 +695,11 @@ ags_ladspa_manager_get_instance()
 /**
  * ags_ladspa_manager_new:
  *
- * Creates an #AgsLadspaManager
+ * Create a new instance of #AgsLadspaManager
  *
- * Returns: a new #AgsLadspaManager
+ * Returns: the new #AgsLadspaManager
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsLadspaManager*
 ags_ladspa_manager_new()

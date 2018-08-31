@@ -23,6 +23,9 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <ags/libags.h>
+
+#include <ags/audio/ags_recycling.h>
 #include <ags/audio/ags_recall_recycling.h>
 
 #define AGS_TYPE_RT_STREAM_RECYCLING                (ags_rt_stream_recycling_get_type())
@@ -47,6 +50,6 @@ struct _AgsRtStreamRecyclingClass
 
 GType ags_rt_stream_recycling_get_type();
 
-AgsRtStreamRecycling* ags_rt_stream_recycling_new(AgsRecycling *recycling);
-
+AgsRtStreamRecycling* ags_rt_stream_recycling_new(AgsRecycling *source);
+ 
 #endif /*__AGS_RT_STREAM_RECYCLING_H__*/

@@ -65,7 +65,7 @@ struct _AgsFFPlayer
   GtkHScrollbar *hscrollbar;
   GtkAdjustment *hadjustment;
 
-  AgsIpatch *ipatch;
+  AgsAudioContainer *audio_container;
   GtkComboBoxText *preset;
   GtkComboBoxText *instrument;
 };

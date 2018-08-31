@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -18,8 +18,6 @@
  */
 
 #include <ags/audio/recall/ags_prepare_audio_signal.h>
-#include <ags/audio/recall/ags_prepare_channel.h>
-#include <ags/audio/recall/ags_prepare_recycling.h>
 
 #include <ags/libags.h>
 
@@ -30,21 +28,16 @@
 #include <ags/audio/ags_recall_recycling.h>
 #include <ags/audio/ags_audio_buffer_util.h>
 
+#include <ags/audio/recall/ags_prepare_channel.h>
+#include <ags/audio/recall/ags_prepare_channel_run.h>
+#include <ags/audio/recall/ags_prepare_recycling.h>
+
 void ags_prepare_audio_signal_class_init(AgsPrepareAudioSignalClass *prepare_audio_signal);
-void ags_prepare_audio_signal_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_prepare_audio_signal_dynamic_connectable_interface_init(AgsDynamicConnectableInterface *dynamic_connectable);
 void ags_prepare_audio_signal_init(AgsPrepareAudioSignal *prepare_audio_signal);
-void ags_prepare_audio_signal_connect(AgsConnectable *connectable);
-void ags_prepare_audio_signal_disconnect(AgsConnectable *connectable);
-void ags_prepare_audio_signal_connect_dynamic(AgsDynamicConnectable *dynamic_connectable);
-void ags_prepare_audio_signal_disconnect_dynamic(AgsDynamicConnectable *dynamic_connectable);
 void ags_prepare_audio_signal_finalize(GObject *gobject);
 
 void ags_prepare_audio_signal_run_init_pre(AgsRecall *recall);
 void ags_prepare_audio_signal_run_pre(AgsRecall *recall);
-AgsRecall* ags_prepare_audio_signal_duplicate(AgsRecall *recall,
-					      AgsRecallID *recall_id,
-					      guint *n_params, GParameter *parameter);
 
 /**
  * SECTION:ags_prepare_audio_signal
@@ -57,8 +50,6 @@ AgsRecall* ags_prepare_audio_signal_duplicate(AgsRecall *recall,
  */
 
 static gpointer ags_prepare_audio_signal_parent_class = NULL;
-static AgsConnectableInterface *ags_prepare_audio_signal_parent_connectable_interface;
-static AgsDynamicConnectableInterface *ags_prepare_audio_signal_parent_dynamic_connectable_interface;
 
 GType
 ags_prepare_audio_signal_get_type()
@@ -80,35 +71,13 @@ ags_prepare_audio_signal_get_type()
       (GInstanceInitFunc) ags_prepare_audio_signal_init,
     };
 
-    static const GInterfaceInfo ags_connectable_interface_info = {
-      (GInterfaceInitFunc) ags_prepare_audio_signal_connectable_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-
-    static const GInterfaceInfo ags_dynamic_connectable_interface_info = {
-      (GInterfaceInitFunc) ags_prepare_audio_signal_dynamic_connectable_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-
     ags_type_prepare_audio_signal = g_type_register_static(AGS_TYPE_RECALL_AUDIO_SIGNAL,
 							   "AgsPrepareAudioSignal",
 							   &ags_prepare_audio_signal_info,
 							   0);
-
-    g_type_add_interface_static(ags_type_prepare_audio_signal,
-				AGS_TYPE_CONNECTABLE,
-				&ags_connectable_interface_info);
-
-    g_type_add_interface_static(ags_type_prepare_audio_signal,
-				AGS_TYPE_DYNAMIC_CONNECTABLE,
-				&ags_dynamic_connectable_interface_info);
-
-    g_once_init_leave (&g_define_type_id__volatile, ags_type_prepare_audio_signal);
   }
 
-  return g_define_type_id__volatile;
+  return(ags_type_prepare_audio_signal);
 }
 
 void
@@ -116,7 +85,6 @@ ags_prepare_audio_signal_class_init(AgsPrepareAudioSignalClass *prepare_audio_si
 {
   GObjectClass *gobject;
   AgsRecallClass *recall;
-  GParamSpec *param_spec;
 
   ags_prepare_audio_signal_parent_class = g_type_class_peek_parent(prepare_audio_signal);
 
@@ -130,24 +98,6 @@ ags_prepare_audio_signal_class_init(AgsPrepareAudioSignalClass *prepare_audio_si
 
   recall->run_init_pre = ags_prepare_audio_signal_run_init_pre;
   recall->run_pre = ags_prepare_audio_signal_run_pre;
-}
-
-void
-ags_prepare_audio_signal_connectable_interface_init(AgsConnectableInterface *connectable)
-{
-  ags_prepare_audio_signal_parent_connectable_interface = g_type_interface_peek_parent(connectable);
-
-  connectable->connect = ags_prepare_audio_signal_connect;
-  connectable->disconnect = ags_prepare_audio_signal_disconnect;
-}
-
-void
-ags_prepare_audio_signal_dynamic_connectable_interface_init(AgsDynamicConnectableInterface *dynamic_connectable)
-{
-  ags_prepare_audio_signal_parent_dynamic_connectable_interface = g_type_interface_peek_parent(dynamic_connectable);
-
-  dynamic_connectable->connect_dynamic = ags_prepare_audio_signal_connect_dynamic;
-  dynamic_connectable->disconnect_dynamic = ags_prepare_audio_signal_disconnect_dynamic;
 }
 
 void
@@ -165,100 +115,83 @@ ags_prepare_audio_signal_finalize(GObject *gobject)
 {
   /* call parent */
   G_OBJECT_CLASS(ags_prepare_audio_signal_parent_class)->finalize(gobject);
-
-  /* empty */
-}
-
-void
-ags_prepare_audio_signal_connect(AgsConnectable *connectable)
-{
-  /* call parent */
-  ags_prepare_audio_signal_parent_connectable_interface->connect(connectable);
-
-  /* empty */
-}
-
-void
-ags_prepare_audio_signal_disconnect(AgsConnectable *connectable)
-{
-  /* call parent */
-  ags_prepare_audio_signal_parent_connectable_interface->disconnect(connectable);
-
-  /* empty */
-}
-
-void
-ags_prepare_audio_signal_connect_dynamic(AgsDynamicConnectable *dynamic_connectable)
-{
-  /* call parent */
-  ags_prepare_audio_signal_parent_dynamic_connectable_interface->connect_dynamic(dynamic_connectable);
-
-  /* empty */
-}
-
-void
-ags_prepare_audio_signal_disconnect_dynamic(AgsDynamicConnectable *dynamic_connectable)
-{
-  /* call parent */
-  ags_prepare_audio_signal_parent_dynamic_connectable_interface->disconnect_dynamic(dynamic_connectable);
-
-  /* empty */
 }
 
 void
 ags_prepare_audio_signal_run_init_pre(AgsRecall *recall)
 {
-  GObject *soundcard;
+  AgsChannel *channel;
   AgsRecycling *recycling;
   AgsAudioSignal *destination;
-  AgsRecallID *parent_recall_id;
-  AgsRecyclingContext *recycling_context;
-  
+  AgsRecallID *recall_id, *parent_recall_id;
+  AgsRecyclingContext *recycling_context, *parent_recycling_context;
+  AgsPrepareChannelRun *prepare_channel_run;  
   AgsPrepareRecycling *prepare_recycling;
   AgsPrepareAudioSignal *prepare_audio_signal;
 
-  AgsMutexManager *mutex_manager;
-  
+  GObject *output_soundcard;
+
+  GList *start_list, *list;
   GList *stream;
 
   gdouble delay;
   guint attack;
   guint length;
+
+  void (*parent_class_run_init_pre)(AgsRecall *recall);  
   
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *recycling_mutex;
+  prepare_audio_signal = (AgsPrepareAudioSignal *) recall;
+
+  /* get parent class */
+  pthread_mutex_lock(ags_recall_get_class_mutex());
+
+  parent_class_run_init_pre = AGS_RECALL_CLASS(ags_prepare_audio_signal_parent_class)->run_init_pre;
+
+  pthread_mutex_unlock(ags_recall_get_class_mutex());
+
+  /* get some fields */
+  ags_recall_unset_behaviour_flags(recall, AGS_SOUND_BEHAVIOUR_PERSISTENT);
+
+  g_object_get(prepare_audio_signal,
+	       "parent", &prepare_recycling,
+	       "output-soundcard", &output_soundcard,
+	       "recall-id", &recall_id,
+	       NULL);
   
-  prepare_audio_signal = AGS_PREPARE_AUDIO_SIGNAL(recall);
-  prepare_recycling = AGS_PREPARE_RECYCLING(recall->parent);
-
-  soundcard = AGS_RECALL(prepare_audio_signal)->soundcard;
-
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+  g_object_get(prepare_recycling,
+	       "parent", &prepare_channel_run,
+	       NULL);
   
-  /* recycling */
-  recall->flags &= (~AGS_RECALL_PERSISTENT);
-  recycling = AGS_RECALL_RECYCLING(prepare_recycling)->destination;
-
-  pthread_mutex_lock(application_mutex);
-
-  recycling_mutex = ags_mutex_manager_lookup(mutex_manager,
-					     (GObject *) recycling);
-	
-  pthread_mutex_unlock(application_mutex);
+  g_object_get(prepare_recycling,
+	       "destination", &recycling,
+	       NULL);
+  
+  g_object_get(prepare_channel_run,
+	       "destination", &channel,
+	       NULL);
 
   /* recycling context */
-  recycling_context = recall->recall_id->recycling_context;
+  g_object_get(recall_id,
+	       "recycling-context", &recycling_context,
+	       NULL);
 
-  parent_recall_id = ags_recall_id_find_recycling_context(AGS_RECALL_CHANNEL_RUN(recall->parent->parent)->destination->recall_id,
-							  recycling_context->parent);
+  g_object_get(channel,
+	       "recall-id", &start_list,
+	       NULL);
+
+  g_object_get(recycling_context,
+	       "parent", &parent_recycling_context,
+	       NULL);
+  
+  parent_recall_id = ags_recall_id_find_recycling_context(start_list,
+							  parent_recycling_context);
 
   //TODO:JK: unclear
   attack = 0;
   delay = 0.0;
 
   /* create new audio signal */
-  destination = ags_audio_signal_new((GObject *) soundcard,
+  destination = ags_audio_signal_new((GObject *) output_soundcard,
 				     (GObject *) recycling,
 				     (GObject *) parent_recall_id);
   
@@ -274,14 +207,10 @@ ags_prepare_audio_signal_run_init_pre(AgsRecall *recall)
 
   ags_connectable_connect(AGS_CONNECTABLE(destination));
   
-  destination->stream_current = destination->stream_beginning;
-
-  pthread_mutex_lock(recycling_mutex);
+  destination->stream_current = destination->stream;
 
   ags_recycling_add_audio_signal(recycling,
 				 destination);
-
-  pthread_mutex_unlock(recycling_mutex);
 
 #ifdef AGS_DEBUG
   g_message("prepare %x to %x", destination, parent_recall_id);
@@ -289,24 +218,47 @@ ags_prepare_audio_signal_run_init_pre(AgsRecall *recall)
 #endif
   
   /* call parent */
-  AGS_RECALL_CLASS(ags_prepare_audio_signal_parent_class)->run_init_pre(recall);
+  parent_class_run_init_pre(recall);
 }
 
 void
 ags_prepare_audio_signal_run_pre(AgsRecall *recall)
 {
-  AGS_RECALL_CLASS(ags_prepare_audio_signal_parent_class)->run_pre(recall);
+  AgsAudioSignal *destination, *source;
+  
+  void (*parent_class_run_pre)(AgsRecall *recall);  
+  
+  /* get parent class */
+  pthread_mutex_lock(ags_recall_get_class_mutex());
 
-  if(AGS_RECALL_AUDIO_SIGNAL(recall)->source->stream_current != NULL){
+  parent_class_run_pre = AGS_RECALL_CLASS(ags_prepare_audio_signal_parent_class)->run_pre;
+
+  pthread_mutex_unlock(ags_recall_get_class_mutex());
+
+  /* call parent */
+  parent_class_run_pre(recall);
+
+  /* get some fields */
+  g_object_get(recall,
+	       "destination", &destination,
+	       "source", &source,
+	       NULL);
+  
+  if(source->stream_current != NULL){
     void *buffer;
 
     guint buffer_size;
+    guint format;
 
-    buffer = (signed short *) AGS_RECALL_AUDIO_SIGNAL(recall)->destination->stream_current->data;
-    buffer_size = AGS_RECALL_AUDIO_SIGNAL(recall)->destination->buffer_size;
+    buffer = destination->stream_current->data;
 
+    g_object_get(destination,
+		 "buffer-size", &buffer_size,
+		 "format", &format,
+		 NULL);
+    
     ags_audio_buffer_util_clear_buffer(buffer, 1,
-				       buffer_size, ags_audio_buffer_util_format_from_soundcard(AGS_RECALL_AUDIO_SIGNAL(recall)->destination->format));
+				       buffer_size, ags_audio_buffer_util_format_from_soundcard(format));
   }else{
     ags_recall_done(recall);
   }
@@ -314,20 +266,21 @@ ags_prepare_audio_signal_run_pre(AgsRecall *recall)
 
 /**
  * ags_prepare_audio_signal_new:
- * @audio_signal: an #AgsAudioSignal
+ * @source: the #AgsAudioSignal
  *
- * Creates an #AgsPrepareAudioSignal
+ * Create a new instance of #AgsPrepareAudioSignal
  *
- * Returns: a new #AgsPrepareAudioSignal
+ * Returns: thde new #AgsPrepareAudioSignal
  *
- * Since: 1.0.0.8
+ * Since: 2.0.0
  */
 AgsPrepareAudioSignal*
-ags_prepare_audio_signal_new(AgsAudioSignal *audio_signal)
+ags_prepare_audio_signal_new(AgsAudioSignal *source)
 {
   AgsPrepareAudioSignal *prepare_audio_signal;
 
   prepare_audio_signal = (AgsPrepareAudioSignal *) g_object_new(AGS_TYPE_PREPARE_AUDIO_SIGNAL,
+								"source", source,
 								NULL);
 
   return(prepare_audio_signal);

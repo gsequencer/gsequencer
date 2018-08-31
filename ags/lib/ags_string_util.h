@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -28,5 +28,8 @@ gchar* ags_string_util_escape_single_quote(gchar *str);
 guint ags_strv_length(gchar **str_array);
 gboolean ags_strv_contains(gchar **str_array,
 			   gchar *str);
+
+gint ags_strv_index(gchar **str_array,
+		    gchar *str);
 
 #endif /*__AGS_STRING_UTIL__*/

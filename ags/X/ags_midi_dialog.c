@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -39,8 +39,10 @@ void ags_midi_dialog_get_property(GObject *gobject,
 				  guint prop_id,
 				  GValue *value,
 				  GParamSpec *param_spec);
+
 void ags_midi_dialog_connect(AgsConnectable *connectable);
 void ags_midi_dialog_disconnect(AgsConnectable *connectable);
+
 void ags_midi_dialog_set_update(AgsApplicable *applicable, gboolean update);
 void ags_midi_dialog_apply(AgsApplicable *applicable);
 void ags_midi_dialog_reset(AgsApplicable *applicable);
@@ -141,7 +143,7 @@ ags_midi_dialog_class_init(AgsMidiDialogClass *midi_dialog)
    *
    * The #AgsMachine to edit.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("machine",
 				   i18n_pspec("assigned machine"),
@@ -666,25 +668,19 @@ ags_midi_dialog_load_sequencers(AgsMidiDialog *midi_dialog)
   GtkListStore *model;
   AgsAudio *audio;
 
-  AgsMutexManager *mutex_manager;
-  
   AgsApplicationContext *application_context;
   
   GtkTreeIter iter;
-  GList *list;
+  
+  GList *start_list, *list;
 
   gchar *midi_device;
-  
-  pthread_mutex_t *application_mutex;
 
   window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) midi_dialog->machine,
 						 AGS_TYPE_WINDOW);
 
   /* application context and mutex manager */
   application_context = window->application_context;
-
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
 
   /* clear model */
   gtk_list_store_clear(GTK_LIST_STORE(gtk_combo_box_get_model(GTK_COMBO_BOX(midi_dialog->midi_device))));
@@ -700,9 +696,8 @@ ags_midi_dialog_load_sequencers(AgsMidiDialog *midi_dialog)
 		     -1);
 
   /* load sequencer */
-  pthread_mutex_lock(application_mutex);
-
-  list = ags_sound_provider_get_sequencer(AGS_SOUND_PROVIDER(application_context));
+  list =
+    start_list = ags_sound_provider_get_sequencer(AGS_SOUND_PROVIDER(application_context));
   
   while(list != NULL){
     gtk_list_store_append(model, &iter);
@@ -714,8 +709,8 @@ ags_midi_dialog_load_sequencers(AgsMidiDialog *midi_dialog)
     list = list->next;
   }
 
-  pthread_mutex_unlock(application_mutex);
-
+  g_list_free(start_list);
+  
   gtk_combo_box_set_model(GTK_COMBO_BOX(midi_dialog->midi_device),
 			  GTK_TREE_MODEL(model));
 }
@@ -753,7 +748,7 @@ ags_midi_dialog_show_all(GtkWidget *widget)
  *
  * Returns: a new #AgsMidiDialog
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsMidiDialog*
 ags_midi_dialog_new(AgsMachine *machine)

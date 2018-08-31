@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -25,6 +25,7 @@
 
 #include <ags/libags.h>
 
+#include <ags/audio/ags_sound_enums.h>
 #include <ags/audio/ags_recycling.h>
 
 #define AGS_TYPE_RECYCLING_CONTEXT                (ags_recycling_context_get_type())
@@ -37,21 +38,29 @@
 typedef struct _AgsRecyclingContext AgsRecyclingContext;
 typedef struct _AgsRecyclingContextClass AgsRecyclingContextClass;
 
+typedef enum{
+  AGS_RECYCLING_CONTEXT_CONNECTED           = 1,
+  AGS_RECYCLING_CONTEXT_CHAINED_TO_OUTPUT   = 1 <<  1,
+  AGS_RECYCLING_CONTEXT_CHAINED_TO_INPUT    = 1 <<  2,
+}AgsRecyclingContextFlags;
+
 struct _AgsRecyclingContext
 {
   GObject object;
 
-  pthread_mutexattr_t *mutexattr;
-  pthread_mutex_t *mutex;
-  
-  AgsRecyclingContext *parent;
+  guint flags;
+  gint sound_scope;
 
+  pthread_mutexattr_t *obj_mutexattr;
+  pthread_mutex_t *obj_mutex;
+  
   GObject *recall_id;
+
+  AgsRecyclingContext *parent;
+  GList *children;
 
   AgsRecycling **recycling;
   guint64 length;
-
-  GList *children;
 };
 
 struct _AgsRecyclingContextClass
@@ -61,18 +70,22 @@ struct _AgsRecyclingContextClass
 
 GType ags_recycling_context_get_type();
 
+pthread_mutex_t* ags_recycling_context_get_class_mutex();
+
+GList* ags_recycling_context_find_scope(GList *recycling_context, gint sound_scope);
+
 /* replace, add, remove and insert */
 void ags_recycling_context_replace(AgsRecyclingContext *recycling_context,
 				   AgsRecycling *recycling,
 				   gint position);
 
-AgsRecyclingContext* ags_recycling_context_add(AgsRecyclingContext *recycling_context,
-					       AgsRecycling *recycling);
-AgsRecyclingContext* ags_recycling_context_remove(AgsRecyclingContext *recycling_context,
-						  AgsRecycling *recycling);
-AgsRecyclingContext* ags_recycling_context_insert(AgsRecyclingContext *recycling_context,
-						  AgsRecycling *recycling,
-						  gint position);
+void ags_recycling_context_add(AgsRecyclingContext *recycling_context,
+			       AgsRecycling *recycling);
+void ags_recycling_context_remove(AgsRecyclingContext *recycling_context,
+				  AgsRecycling *recycling);
+void ags_recycling_context_insert(AgsRecyclingContext *recycling_context,
+				  AgsRecycling *recycling,
+				  gint position);
 
 /* tolevel, find, find child and find parent */
 AgsRecyclingContext* ags_recycling_context_get_toplevel(AgsRecyclingContext *recycling_context);

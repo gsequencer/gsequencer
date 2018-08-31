@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -18,24 +18,14 @@
  */
 
 #include <ags/audio/recall/ags_prepare_recycling.h>
-#include <ags/audio/recall/ags_prepare_audio_signal.h>
 
 #include <ags/libags.h>
 
-void ags_prepare_recycling_class_init(AgsPrepareRecyclingClass *prepare_recycling);
-void ags_prepare_recycling_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_prepare_recycling_dynamic_connectable_interface_init(AgsDynamicConnectableInterface *dynamic_connectable);
-void ags_prepare_recycling_init(AgsPrepareRecycling *prepare_recycling);
-void ags_prepare_recycling_connect(AgsConnectable *connectable);
-void ags_prepare_recycling_disconnect(AgsConnectable *connectable);
-void ags_prepare_recycling_connect_dynamic(AgsDynamicConnectable *dynamic_connectable);
-void ags_prepare_recycling_disconnect_dynamic(AgsDynamicConnectable *dynamic_connectable);
-void ags_prepare_recycling_finalize(GObject *gobject);
+#include <ags/audio/recall/ags_prepare_audio_signal.h>
 
-AgsRecall* ags_prepare_recycling_duplicate(AgsRecall *recall,
-					   AgsRecallID *recall_id,
-					   guint *n_params, GParameter *parameter);
-void ags_prepare_recycling_remove(AgsRecall *recall);
+void ags_prepare_recycling_class_init(AgsPrepareRecyclingClass *prepare_recycling);
+void ags_prepare_recycling_init(AgsPrepareRecycling *prepare_recycling);
+void ags_prepare_recycling_finalize(GObject *gobject);
 
 /**
  * SECTION:ags_prepare_recycling
@@ -48,8 +38,6 @@ void ags_prepare_recycling_remove(AgsRecall *recall);
  */
 
 static gpointer ags_prepare_recycling_parent_class = NULL;
-static AgsConnectableInterface *ags_prepare_recycling_parent_connectable_interface;
-static AgsDynamicConnectableInterface *ags_prepare_recycling_parent_dynamic_connectable_interface;
 
 GType
 ags_prepare_recycling_get_type()
@@ -71,32 +59,10 @@ ags_prepare_recycling_get_type()
       (GInstanceInitFunc) ags_prepare_recycling_init,
     };
 
-    static const GInterfaceInfo ags_connectable_interface_info = {
-      (GInterfaceInitFunc) ags_prepare_recycling_connectable_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-
-    static const GInterfaceInfo ags_dynamic_connectable_interface_info = {
-      (GInterfaceInitFunc) ags_prepare_recycling_dynamic_connectable_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-
     ags_type_prepare_recycling = g_type_register_static(AGS_TYPE_RECALL_RECYCLING,
 							"AgsPrepareRecycling",
 							&ags_prepare_recycling_info,
 							0);
-
-    g_type_add_interface_static(ags_type_prepare_recycling,
-				AGS_TYPE_CONNECTABLE,
-				&ags_connectable_interface_info);
-
-    g_type_add_interface_static(ags_type_prepare_recycling,
-				AGS_TYPE_DYNAMIC_CONNECTABLE,
-				&ags_dynamic_connectable_interface_info);
-
-    g_once_init_leave (&g_define_type_id__volatile, ags_type_prepare_recycling);
   }
 
   return g_define_type_id__volatile;
@@ -107,7 +73,6 @@ ags_prepare_recycling_class_init(AgsPrepareRecyclingClass *prepare_recycling)
 {
   GObjectClass *gobject;
   AgsRecallClass *recall;
-  GParamSpec *param_spec;
 
   ags_prepare_recycling_parent_class = g_type_class_peek_parent(prepare_recycling);
 
@@ -118,26 +83,6 @@ ags_prepare_recycling_class_init(AgsPrepareRecyclingClass *prepare_recycling)
 
   /* AgsRecallClass */
   recall = (AgsRecallClass *) prepare_recycling;
-
-  recall->duplicate = ags_prepare_recycling_duplicate;
-}
-
-void
-ags_prepare_recycling_connectable_interface_init(AgsConnectableInterface *connectable)
-{
-  ags_prepare_recycling_parent_connectable_interface = g_type_interface_peek_parent(connectable);
-
-  connectable->connect = ags_prepare_recycling_connect;
-  connectable->disconnect = ags_prepare_recycling_disconnect;
-}
-
-void
-ags_prepare_recycling_dynamic_connectable_interface_init(AgsDynamicConnectableInterface *dynamic_connectable)
-{
-  ags_prepare_recycling_parent_dynamic_connectable_interface = g_type_interface_peek_parent(dynamic_connectable);
-
-  dynamic_connectable->connect_dynamic = ags_prepare_recycling_connect_dynamic;
-  dynamic_connectable->disconnect_dynamic = ags_prepare_recycling_disconnect_dynamic;
 }
 
 void
@@ -157,80 +102,27 @@ ags_prepare_recycling_init(AgsPrepareRecycling *prepare_recycling)
 void
 ags_prepare_recycling_finalize(GObject *gobject)
 {
-  /* empty */
-
   /* call parent */
   G_OBJECT_CLASS(ags_prepare_recycling_parent_class)->finalize(gobject);
 }
 
-void
-ags_prepare_recycling_connect(AgsConnectable *connectable)
-{
-  if((AGS_RECALL_CONNECTED & (AGS_RECALL(connectable)->flags)) != 0){
-    return;
-  }
-
-  ags_prepare_recycling_parent_connectable_interface->connect(connectable);
-
-  /* empty */
-}
-
-void
-ags_prepare_recycling_disconnect(AgsConnectable *connectable)
-{
-  ags_prepare_recycling_parent_connectable_interface->disconnect(connectable);
-
-  /* empty */
-}
-
-void
-ags_prepare_recycling_connect_dynamic(AgsDynamicConnectable *dynamic_connectable)
-{
-  if((AGS_RECALL_DYNAMIC_CONNECTED & (AGS_RECALL(dynamic_connectable)->flags)) != 0){
-    return;
-  }
-
-  ags_prepare_recycling_parent_dynamic_connectable_interface->connect_dynamic(dynamic_connectable);
-}
-
-void
-ags_prepare_recycling_disconnect_dynamic(AgsDynamicConnectable *dynamic_connectable)
-{
-  ags_prepare_recycling_parent_dynamic_connectable_interface->disconnect_dynamic(dynamic_connectable);
-}
-
-AgsRecall*
-ags_prepare_recycling_duplicate(AgsRecall *recall,
-				AgsRecallID *recall_id,
-				guint *n_params, GParameter *parameter)
-{
-  AgsPrepareRecycling *copy;
-
-  copy = (AgsPrepareRecycling *) AGS_RECALL_CLASS(ags_prepare_recycling_parent_class)->duplicate(recall,
-												 recall_id,
-												 n_params, parameter);
-
-
-  return((AgsRecall *) copy);
-}
-
 /**
  * ags_prepare_recycling_new:
- * @recycling: an #AgsRecycling
+ * @source: the #AgsRecycling
  *
- * Creates an #AgsPrepareRecycling
+ * Create a new instance of #AgsPrepareRecycling
  *
- * Returns: a new #AgsPrepareRecycling
+ * Returns: the new #AgsPrepareRecycling
  *
- * Since: 1.0.0.8
+ * Since: 2.0.0
  */
 AgsPrepareRecycling*
-ags_prepare_recycling_new(AgsRecycling *recycling)
+ags_prepare_recycling_new(AgsRecycling *source)
 {
   AgsPrepareRecycling *prepare_recycling;
 
   prepare_recycling = (AgsPrepareRecycling *) g_object_new(AGS_TYPE_PREPARE_RECYCLING,
-							   "source", recycling,
+							   "source", source,
 							   NULL);
 
   return(prepare_recycling);

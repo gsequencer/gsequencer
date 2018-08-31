@@ -42,8 +42,10 @@ void ags_accessible_pattern_box_action_interface_init(AtkActionIface *action);
 void ags_pattern_box_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_pattern_box_init(AgsPatternBox *pattern_box);
 void ags_pattern_box_finalize(GObject *gobject);
+
 void ags_pattern_box_connect(AgsConnectable *connectable);
 void ags_pattern_box_disconnect(AgsConnectable *connectable);
+
 AtkObject* ags_pattern_box_get_accessible(GtkWidget *widget);
 void ags_pattern_box_realize(GtkWidget *widget);
 void ags_pattern_box_show(GtkWidget *widget);
@@ -700,15 +702,13 @@ ags_accessible_pattern_box_get_localized_name(AtkAction *action,
  *
  * Resets the pattern on @pattern_box.
  *
- * since: 0.5.0
+ * since: 1.0.0
  */
 void
 ags_pattern_box_set_pattern(AgsPatternBox *pattern_box)
 {
   AgsMachine *machine;
   AgsLine *selected_line;
-
-  AgsMutexManager *mutex_manager;
 
   GList *list, *list_start;
   GList *line, *line_start;
@@ -718,18 +718,12 @@ ags_pattern_box_set_pattern(AgsPatternBox *pattern_box)
   gboolean set_active;
   guint i;
 
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *channel_mutex;
-
   machine = (AgsMachine *) gtk_widget_get_ancestor((GtkWidget *) pattern_box,
 						   AGS_TYPE_MACHINE);
 
   if(machine->selected_input_pad == NULL){
     return;
   }
-
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
   
   index0 = machine->bank_0;
   index1 = machine->bank_1;
@@ -757,28 +751,28 @@ ags_pattern_box_set_pattern(AgsPatternBox *pattern_box)
       line = gtk_container_get_children(GTK_CONTAINER(AGS_PAD(machine->selected_input_pad)->expander_set));
 
     while((line = ags_line_find_next_grouped(line)) != NULL){
+      GList *start_pattern, *pattern;
+      
       selected_line = AGS_LINE(line->data);
 
-      /* get channel mutex */
-      pthread_mutex_lock(application_mutex);
-      
-      channel_mutex = ags_mutex_manager_lookup(mutex_manager,
-					       (GObject *) selected_line->channel);
-      
-      pthread_mutex_unlock(application_mutex);
+      g_object_get(selected_line->channel,
+		   "pattern", &start_pattern,
+		   NULL);
 
-      /*  */
-      pthread_mutex_lock(channel_mutex);
-
-      is_active = ags_pattern_get_bit((AgsPattern *) selected_line->channel->pattern->data, index0, index1, offset + i);
+      /* check active */
+      pattern = start_pattern;
       
-      pthread_mutex_unlock(channel_mutex);
+      is_active = ags_pattern_get_bit((AgsPattern *) pattern->data, index0, index1, offset + i);
+
+      g_list_free(start_pattern);
       
       if(!is_active){	
 	set_active = FALSE;
+
 	break;
       }
 
+      /* iterate */
       line = line->next;
     }
 
@@ -813,17 +807,15 @@ ags_pattern_box_led_queue_draw_timeout(AgsPatternBox *pattern_box)
 
     AgsAudio *audio;
     AgsRecallID *recall_id;
+    AgsRecyclingContext *recycling_context;
     
     AgsCountBeatsAudio *play_count_beats_audio;
     AgsCountBeatsAudioRun *play_count_beats_audio_run;
 
-    AgsMutexManager *mutex_manager;
-
-    GList *list_start, *list;
+    GList *start_list, *list;
+    GList *start_recall, *recall;
+    
     guint active_led_new;
-
-    pthread_mutex_t *application_mutex;
-    pthread_mutex_t *audio_mutex;
 
     machine = (AgsMachine *) gtk_widget_get_ancestor((GtkWidget *) pattern_box,
 						     AGS_TYPE_MACHINE);
@@ -834,76 +826,72 @@ ags_pattern_box_led_queue_draw_timeout(AgsPatternBox *pattern_box)
     
     audio = machine->audio;
     
-    mutex_manager = ags_mutex_manager_get_instance();
-    application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-  
-    pthread_mutex_lock(application_mutex);
-  
-    audio_mutex = ags_mutex_manager_lookup(mutex_manager,
-					   (GObject *) machine->audio);
-  
-    pthread_mutex_unlock(application_mutex);
-
     /* get some recalls */
-    pthread_mutex_lock(audio_mutex);
-
     recall_id = NULL;
-    list = audio->recall_id;
+    g_object_get(audio,
+		 "recall-id", &start_list,
+		 NULL);
+
+    list = start_list;
     
     while(list != NULL){
-      recall_id = ags_recall_id_find_parent_recycling_context(list,
-							      NULL);
-      
-      if(recall_id != NULL &&
-	 (AGS_RECALL_ID_SEQUENCER & (recall_id->flags)) == 0){
-	list = g_list_find(list,
-			   recall_id);
+      AgsRecyclingContext *current;
 
-	list = list->next;
-      }else{
-	break;
-      }
-    }
+      g_object_get(list->data,
+		   "recycling-context", &current,
+		   NULL);
+
+      if(current != NULL){
+	g_object_get(current,
+		     "parent", &current,
+		     NULL);
+      
+	if(current == NULL &&
+	   ags_recall_id_check_sound_scope(list->data, AGS_SOUND_SCOPE_SEQUENCER)){
+	  recall_id = list->data;
+
+	  g_object_get(audio,
+		       "play", &start_recall,
+		       NULL);
+
+	  play_count_beats_audio = NULL;
+	  play_count_beats_audio_run = NULL;
     
-    pthread_mutex_unlock(audio_mutex);
+	  recall = ags_recall_find_type(start_recall,
+					AGS_TYPE_COUNT_BEATS_AUDIO);
+    
+	  if(recall != NULL){
+	    play_count_beats_audio = AGS_COUNT_BEATS_AUDIO(recall->data);
+	  }
+    
+	  recall = ags_recall_find_type_with_recycling_context(start_recall,
+							       AGS_TYPE_COUNT_BEATS_AUDIO_RUN,
+							       (GObject *) recall_id->recycling_context);
+    
+	  if(recall != NULL){
+	    play_count_beats_audio_run = AGS_COUNT_BEATS_AUDIO_RUN(recall->data);
+	  }
+
+	  g_list_free(start_recall);
+
+	  if(play_count_beats_audio == NULL ||
+	     play_count_beats_audio_run == NULL){
+	    recall_id = NULL;
+	  }else{
+	    break;
+	  }
+	}
+      }
+
+      list = list->next;
+    }
+
+    g_list_free(start_list);
     
     if(recall_id == NULL){      
       return(TRUE);
     }
-
-    g_object_get(audio,
-		 "play", &list_start,
-		 NULL);
-
-    play_count_beats_audio = NULL;
-    play_count_beats_audio_run = NULL;
     
-    pthread_mutex_lock(audio->play_mutex);
-
-    list = ags_recall_find_type(list_start,
-				AGS_TYPE_COUNT_BEATS_AUDIO);
-    
-    if(list != NULL){
-      play_count_beats_audio = AGS_COUNT_BEATS_AUDIO(list->data);
-    }
-    
-    list = ags_recall_find_type_with_recycling_context(list_start,
-						       AGS_TYPE_COUNT_BEATS_AUDIO_RUN,
-						       (GObject *) recall_id->recycling_context);
-    
-    if(list != NULL){
-      play_count_beats_audio_run = AGS_COUNT_BEATS_AUDIO_RUN(list->data);
-    }
-
-    pthread_mutex_unlock(audio->play_mutex);
-
-    g_list_free(list_start);  
-
-    if(play_count_beats_audio == NULL ||
-       play_count_beats_audio_run == NULL){
-      return(TRUE);
-    }
-
     /* active led */
     active_led_new = (guint) play_count_beats_audio_run->sequencer_counter;      
 
@@ -923,11 +911,11 @@ ags_pattern_box_led_queue_draw_timeout(AgsPatternBox *pattern_box)
 /**
  * ags_pattern_box_new:
  *
- * Creates an #AgsPatternBox
+ * Create a new instance of #AgsPatternBox
  *
- * Returns: a new #AgsPatternBox
+ * Returns: the new #AgsPatternBox
  *
- * Since: 0.5
+ * Since: 2.0.0
  */
 AgsPatternBox*
 ags_pattern_box_new()

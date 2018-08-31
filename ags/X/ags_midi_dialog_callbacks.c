@@ -19,18 +19,8 @@
 
 #include <ags/X/ags_midi_dialog_callbacks.h>
 
-#include <ags/object/ags_application_context.h>
-#include <ags/object/ags_connectable.h>
-#include <ags/object/ags_applicable.h>
-#include <ags/object/ags_distributed_manager.h>
-
-#include <ags/thread/ags_mutex_manager.h>
-
-#include <ags/audio/ags_sound_provider.h>
-#include <ags/audio/jack/ags_jack_server.h>
-#include <ags/audio/jack/ags_jack_client.h>
-#include <ags/audio/jack/ags_jack_port.h>
-#include <ags/audio/jack/ags_jack_midiin.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
 
 #include <ags/X/ags_window.h>
 

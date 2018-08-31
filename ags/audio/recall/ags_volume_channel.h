@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -23,7 +23,11 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <ags/libags.h>
+
+#include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_recall_channel.h>
+#include <ags/audio/ags_port.h>
 
 #define AGS_TYPE_VOLUME_CHANNEL                (ags_volume_channel_get_type())
 #define AGS_VOLUME_CHANNEL(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_VOLUME_CHANNEL, AgsVolumeChannel))
@@ -49,6 +53,6 @@ struct _AgsVolumeChannelClass
 
 GType ags_volume_channel_get_type();
 
-AgsVolumeChannel* ags_volume_channel_new();
+AgsVolumeChannel* ags_volume_channel_new(AgsChannel *source);
 
 #endif /*__AGS_VOLUME_CHANNEL_H__*/

@@ -25,6 +25,9 @@
 
 #include <gtk/gtk.h>
 
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+
 #include <ags/X/ags_machine.h>
 
 #define AGS_TYPE_AUDIOREC                (ags_audiorec_get_type())
@@ -68,6 +71,8 @@ GType ags_audiorec_get_type(void);
 
 void ags_audiorec_open_filename(AgsAudiorec *audiorec,
 				gchar *filename);
+
+gboolean ags_audiorec_indicator_queue_draw_timeout(AgsAudiorec *audiorec);
 
 AgsAudiorec* ags_audiorec_new(GObject *soundcard);
 

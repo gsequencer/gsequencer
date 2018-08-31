@@ -27,6 +27,8 @@
 
 #include <ags/X/machine/ags_audiorec.h>
 
+void ags_audiorec_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsAudiorec *audiorec);
+
 void ags_audiorec_open_callback(GtkWidget *button, AgsAudiorec *audiorec);
 
 void ags_audiorec_keep_data_callback(GtkWidget *button, AgsAudiorec *audiorec);

@@ -30,16 +30,16 @@
 #define AGS_IS_CONFIG_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE((class), AGS_TYPE_CONFIG))
 #define AGS_CONFIG_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_CONFIG, AgsConfigClass))
 
-#define AGS_CONFIG_DEFAULT_VERSION "0.7.0\0"
-#define AGS_CONFIG_DEFAULT_BUILD_ID "CEST 13-10-2015 01:19\0"
+#define AGS_CONFIG_DEFAULT_VERSION "0.7.0"
+#define AGS_CONFIG_DEFAULT_BUILD_ID "CEST 13-10-2015 01:19"
 
-#define AGS_CONFIG_GENERIC "generic\0"
-#define AGS_CONFIG_THREAD "thread\0"
-#define AGS_CONFIG_SOUNDCARD "soundcard\0"
-#define AGS_CONFIG_SOUNDCARD_0 "soundcard-0\0"
-#define AGS_CONFIG_SEQUENCER "sequencer\0"
-#define AGS_CONFIG_SEQUENCER_0 "sequencer-0\0"
-#define AGS_CONFIG_RECALL "recall\0"
+#define AGS_CONFIG_GENERIC "generic"
+#define AGS_CONFIG_THREAD "thread"
+#define AGS_CONFIG_SOUNDCARD "soundcard"
+#define AGS_CONFIG_SOUNDCARD_0 "soundcard-0"
+#define AGS_CONFIG_SEQUENCER "sequencer"
+#define AGS_CONFIG_SEQUENCER_0 "sequencer-0"
+#define AGS_CONFIG_RECALL "recall"
 
 typedef struct _AgsConfig AgsConfig;
 typedef struct _AgsConfigClass AgsConfigClass;

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -55,18 +55,25 @@ void ags_pulse_devin_get_property(GObject *gobject,
 				  guint prop_id,
 				  GValue *value,
 				  GParamSpec *param_spec);
-void ags_pulse_devin_disconnect(AgsConnectable *connectable);
-void ags_pulse_devin_connect(AgsConnectable *connectable);
 void ags_pulse_devin_dispose(GObject *gobject);
 void ags_pulse_devin_finalize(GObject *gobject);
+
+AgsUUID* ags_pulse_devin_get_uuid(AgsConnectable *connectable);
+gboolean ags_pulse_devin_has_resource(AgsConnectable *connectable);
+gboolean ags_pulse_devin_is_ready(AgsConnectable *connectable);
+void ags_pulse_devin_add_to_registry(AgsConnectable *connectable);
+void ags_pulse_devin_remove_from_registry(AgsConnectable *connectable);
+xmlNode* ags_pulse_devin_list_resource(AgsConnectable *connectable);
+xmlNode* ags_pulse_devin_xml_compose(AgsConnectable *connectable);
+void ags_pulse_devin_xml_parse(AgsConnectable *connectable,
+			       xmlNode *node);
+gboolean ags_pulse_devin_is_connected(AgsConnectable *connectable);
+void ags_pulse_devin_connect(AgsConnectable *connectable);
+void ags_pulse_devin_disconnect(AgsConnectable *connectable);
 
 void ags_pulse_devin_set_application_context(AgsSoundcard *soundcard,
 					     AgsApplicationContext *application_context);
 AgsApplicationContext* ags_pulse_devin_get_application_context(AgsSoundcard *soundcard);
-
-void ags_pulse_devin_set_application_mutex(AgsSoundcard *soundcard,
-					   pthread_mutex_t *application_mutex);
-pthread_mutex_t* ags_pulse_devin_get_application_mutex(AgsSoundcard *soundcard);
 
 void ags_pulse_devin_set_device(AgsSoundcard *soundcard,
 				gchar *device);
@@ -142,24 +149,19 @@ void ags_pulse_devin_get_loop(AgsSoundcard *soundcard,
 
 guint ags_pulse_devin_get_loop_offset(AgsSoundcard *soundcard);
 
-void ags_pulse_devin_set_audio(AgsSoundcard *soundcard,
-			       GList *audio);
-GList* ags_pulse_devin_get_audio(AgsSoundcard *soundcard);
-
 /**
  * SECTION:ags_pulse_devin
- * @short_description: Output to soundcard
+ * @short_description: Input from soundcard
  * @title: AgsPulseDevin
  * @section_id:
  * @include: ags/audio/pulse/ags_pulse_devin.h
  *
- * #AgsPulseDevin represents a soundcard and supports output.
+ * #AgsPulseDevin represents a soundcard and supports input.
  */
 
 enum{
   PROP_0,
   PROP_APPLICATION_CONTEXT,
-  PROP_APPLICATION_MUTEX,
   PROP_DEVICE,
   PROP_DSP_CHANNELS,
   PROP_PCM_CHANNELS,
@@ -172,15 +174,11 @@ enum{
   PROP_ATTACK,
   PROP_PULSE_CLIENT,
   PROP_PULSE_PORT,
-  PROP_CHANNEL,
-};
-
-enum{
-  LAST_SIGNAL,
 };
 
 static gpointer ags_pulse_devin_parent_class = NULL;
-static guint pulse_devin_signals[LAST_SIGNAL];
+
+static pthread_mutex_t ags_pulse_devin_class_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 GType
 ags_pulse_devin_get_type(void)
@@ -191,13 +189,13 @@ ags_pulse_devin_get_type(void)
     GType ags_type_pulse_devin;
 
     static const GTypeInfo ags_pulse_devin_info = {
-      sizeof (AgsPulseDevinClass),
+      sizeof(AgsPulseDevinClass),
       NULL, /* base_init */
       NULL, /* base_finalize */
       (GClassInitFunc) ags_pulse_devin_class_init,
       NULL, /* class_finalize */
       NULL, /* class_data */
-      sizeof (AgsPulseDevin),
+      sizeof(AgsPulseDevin),
       0,    /* n_preallocs */
       (GInstanceInitFunc) ags_pulse_devin_init,
     };
@@ -256,7 +254,7 @@ ags_pulse_devin_class_init(AgsPulseDevinClass *pulse_devin)
    *
    * The assigned #AgsApplicationContext
    * 
-   * Since: 1.2.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("application-context",
 				   i18n_pspec("the application context object"),
@@ -268,26 +266,11 @@ ags_pulse_devin_class_init(AgsPulseDevinClass *pulse_devin)
 				  param_spec);
 
   /**
-   * AgsPulseDevin:application-mutex:
-   *
-   * The assigned application mutex
-   * 
-   * Since: 1.2.0
-   */
-  param_spec = g_param_spec_pointer("application-mutex",
-				    i18n_pspec("the application mutex object"),
-				    i18n_pspec("The application mutex object"),
-				    G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_APPLICATION_MUTEX,
-				  param_spec);
-
-  /**
    * AgsPulseDevin:device:
    *
    * The pulse soundcard indentifier
    * 
-   * Since: 1.2.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_string("device",
 				   i18n_pspec("the device identifier"),
@@ -303,14 +286,14 @@ ags_pulse_devin_class_init(AgsPulseDevinClass *pulse_devin)
    *
    * The dsp channel count
    * 
-   * Since: 1.2.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_uint("dsp-channels",
 				 i18n_pspec("count of DSP channels"),
 				 i18n_pspec("The count of DSP channels to use"),
-				 1,
-				 64,
-				 2,
+				 AGS_SOUNDCARD_MIN_DSP_CHANNELS,
+				 AGS_SOUNDCARD_MAX_DSP_CHANNELS,
+				 AGS_SOUNDCARD_DEFAULT_DSP_CHANNELS,
 				 G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_DSP_CHANNELS,
@@ -321,14 +304,14 @@ ags_pulse_devin_class_init(AgsPulseDevinClass *pulse_devin)
    *
    * The pcm channel count
    * 
-   * Since: 1.2.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_uint("pcm-channels",
 				 i18n_pspec("count of PCM channels"),
 				 i18n_pspec("The count of PCM channels to use"),
-				 1,
-				 64,
-				 2,
+				 AGS_SOUNDCARD_MIN_PCM_CHANNELS,
+				 AGS_SOUNDCARD_MAX_PCM_CHANNELS,
+				 AGS_SOUNDCARD_DEFAULT_PCM_CHANNELS,
 				 G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_PCM_CHANNELS,
@@ -339,13 +322,13 @@ ags_pulse_devin_class_init(AgsPulseDevinClass *pulse_devin)
    *
    * The precision of the buffer
    * 
-   * Since: 1.2.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_uint("format",
 				 i18n_pspec("precision of buffer"),
 				 i18n_pspec("The precision to use for a frame"),
-				 1,
-				 64,
+ 				 0,
+				 G_MAXUINT32,
 				 AGS_SOUNDCARD_DEFAULT_FORMAT,
 				 G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -357,14 +340,14 @@ ags_pulse_devin_class_init(AgsPulseDevinClass *pulse_devin)
    *
    * The buffer size
    * 
-   * Since: 1.2.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_uint("buffer-size",
 				 i18n_pspec("frame count of a buffer"),
 				 i18n_pspec("The count of frames a buffer contains"),
-				 1,
-				 44100,
-				 940,
+				 AGS_SOUNDCARD_MIN_BUFFER_SIZE,
+				 AGS_SOUNDCARD_MAX_BUFFER_SIZE,
+				 AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE,
 				 G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_BUFFER_SIZE,
@@ -375,14 +358,14 @@ ags_pulse_devin_class_init(AgsPulseDevinClass *pulse_devin)
    *
    * The samplerate
    * 
-   * Since: 1.2.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_uint("samplerate",
 				 i18n_pspec("frames per second"),
 				 i18n_pspec("The frames count recorded during a second"),
-				 8000,
-				 96000,
-				 44100,
+				 AGS_SOUNDCARD_MIN_SAMPLERATE,
+				 AGS_SOUNDCARD_MAX_SAMPLERATE,
+				 AGS_SOUNDCARD_DEFAULT_SAMPLERATE,
 				 G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_SAMPLERATE,
@@ -393,7 +376,7 @@ ags_pulse_devin_class_init(AgsPulseDevinClass *pulse_devin)
    *
    * The buffer
    * 
-   * Since: 1.2.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_pointer("buffer",
 				    i18n_pspec("the buffer"),
@@ -408,7 +391,7 @@ ags_pulse_devin_class_init(AgsPulseDevinClass *pulse_devin)
    *
    * Beats per minute
    * 
-   * Since: 1.2.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_double("bpm",
 				   i18n_pspec("beats per minute"),
@@ -426,7 +409,7 @@ ags_pulse_devin_class_init(AgsPulseDevinClass *pulse_devin)
    *
    * tact
    * 
-   * Since: 1.2.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_double("delay-factor",
 				   i18n_pspec("delay factor"),
@@ -444,7 +427,7 @@ ags_pulse_devin_class_init(AgsPulseDevinClass *pulse_devin)
    *
    * Attack of the buffer
    * 
-   * Since: 1.2.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_pointer("attack",
 				    i18n_pspec("attack of buffer"),
@@ -460,7 +443,7 @@ ags_pulse_devin_class_init(AgsPulseDevinClass *pulse_devin)
    *
    * The assigned #AgsPulseClient
    * 
-   * Since: 1.2.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("pulse-client",
 				   i18n_pspec("pulse client object"),
@@ -476,7 +459,7 @@ ags_pulse_devin_class_init(AgsPulseDevinClass *pulse_devin)
    *
    * The assigned #AgsPulsePort
    * 
-   * Since: 1.2.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_pointer("pulse-port",
 				    i18n_pspec("pulse port object"),
@@ -484,22 +467,6 @@ ags_pulse_devin_class_init(AgsPulseDevinClass *pulse_devin)
 				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_PULSE_PORT,
-				  param_spec);
-
-  /**
-   * AgsPulseDevin:channel:
-   *
-   * The assigned #AgsChannel
-   * 
-   * Since: 1.2.0
-   */
-  param_spec = g_param_spec_object("channel",
-				   i18n_pspec("channel"),
-				   i18n_pspec("The mapped channel"),
-				   AGS_TYPE_CHANNEL,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_CHANNEL,
 				  param_spec);
 }
 
@@ -512,10 +479,23 @@ ags_pulse_devin_error_quark()
 void
 ags_pulse_devin_connectable_interface_init(AgsConnectableInterface *connectable)
 {
-  connectable->is_ready = NULL;
-  connectable->is_connected = NULL;
+  connectable->get_uuid = ags_pulse_devin_get_uuid;
+  connectable->has_resource = ags_pulse_devin_has_resource;
+
+  connectable->is_ready = ags_pulse_devin_is_ready;
+  connectable->add_to_registry = ags_pulse_devin_add_to_registry;
+  connectable->remove_from_registry = ags_pulse_devin_remove_from_registry;
+
+  connectable->list_resource = ags_pulse_devin_list_resource;
+  connectable->xml_compose = ags_pulse_devin_xml_compose;
+  connectable->xml_parse = ags_pulse_devin_xml_parse;
+
+  connectable->is_connected = ags_pulse_devin_is_connected;  
   connectable->connect = ags_pulse_devin_connect;
   connectable->disconnect = ags_pulse_devin_disconnect;
+
+  connectable->connect_connection = NULL;
+  connectable->disconnect_connection = NULL;
 }
 
 void
@@ -523,9 +503,6 @@ ags_pulse_devin_soundcard_interface_init(AgsSoundcardInterface *soundcard)
 {
   soundcard->set_application_context = ags_pulse_devin_set_application_context;
   soundcard->get_application_context = ags_pulse_devin_get_application_context;
-
-  soundcard->set_application_mutex = ags_pulse_devin_set_application_mutex;
-  soundcard->get_application_mutex = ags_pulse_devin_get_application_mutex;
 
   soundcard->set_device = ags_pulse_devin_set_device;
   soundcard->get_device = ags_pulse_devin_get_device;
@@ -540,16 +517,16 @@ ags_pulse_devin_soundcard_interface_init(AgsSoundcardInterface *soundcard)
   soundcard->is_available = NULL;
 
   soundcard->is_starting =  ags_pulse_devin_is_starting;
+  soundcard->is_playing = NULL;
   soundcard->is_recording = ags_pulse_devin_is_recording;
-  soundcard->is_recording = NULL;
 
   soundcard->get_uptime = ags_pulse_devin_get_uptime;
+
+  soundcard->play_init = NULL;
+  soundcard->play = NULL;
   
   soundcard->record_init = ags_pulse_devin_port_init;
   soundcard->record = ags_pulse_devin_port_record;
-
-  soundcard->record_init = NULL;
-  soundcard->record = NULL;
 
   soundcard->stop = ags_pulse_devin_port_free;
 
@@ -583,152 +560,54 @@ ags_pulse_devin_soundcard_interface_init(AgsSoundcardInterface *soundcard)
   soundcard->get_loop = ags_pulse_devin_get_loop;
 
   soundcard->get_loop_offset = ags_pulse_devin_get_loop_offset;
-
-  soundcard->set_audio = ags_pulse_devin_set_audio;
-  soundcard->get_audio = ags_pulse_devin_get_audio;
 }
 
 void
 ags_pulse_devin_init(AgsPulseDevin *pulse_devin)
 {
-  AgsMutexManager *mutex_manager;
-
   AgsConfig *config;
 
   gchar *str;
+  gchar *segmentation;
+
+  guint denumerator, numerator;
   
-  pthread_mutex_t *application_mutex;
   pthread_mutex_t *mutex;
   pthread_mutexattr_t *attr;
-
-  /* insert devin mutex */
-  pulse_devin->mutexattr = 
-    attr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
-  pthread_mutexattr_init(attr);
-  pthread_mutexattr_settype(attr,
-			    PTHREAD_MUTEX_RECURSIVE);
-
-  pulse_devin->mutex =
-    mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
-  pthread_mutex_init(mutex,
-		     attr);
-
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-  
-  pthread_mutex_lock(application_mutex);
-
-  ags_mutex_manager_insert(mutex_manager,
-			   (GObject *) pulse_devin,
-			   mutex);
-  
-  pthread_mutex_unlock(application_mutex);
 
   /* flags */
   pulse_devin->flags = 0;
   g_atomic_int_set(&(pulse_devin->sync_flags),
 		   AGS_PULSE_DEVIN_PASS_THROUGH);
 
-  /* quality */
+  /* insert devin mutex */
+  pulse_devin->obj_mutexattr = 
+    attr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
+  pthread_mutexattr_init(attr);
+  pthread_mutexattr_settype(attr,
+			    PTHREAD_MUTEX_RECURSIVE);
+
+  pulse_devin->obj_mutex =
+    mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
+  pthread_mutex_init(mutex,
+		     attr);
+
+  /* parent */
+  pulse_devin->application_context = NULL;
+
+  /* uuid */
+  pulse_devin->uuid = ags_uuid_alloc();
+  ags_uuid_generate(pulse_devin->uuid);
+
+  /* presets */
   config = ags_config_get_instance();
 
-  pulse_devin->dsp_channels = AGS_SOUNDCARD_DEFAULT_DSP_CHANNELS;
-  pulse_devin->pcm_channels = AGS_SOUNDCARD_DEFAULT_PCM_CHANNELS;
-  pulse_devin->format = AGS_SOUNDCARD_DEFAULT_FORMAT;
-  pulse_devin->buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
-  pulse_devin->samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
+  pulse_devin->dsp_channels = ags_soundcard_helper_config_get_dsp_channels(config);
+  pulse_devin->pcm_channels = ags_soundcard_helper_config_get_pcm_channels(config);
 
-  /* read config */
-  /* dsp channels */
-  str = ags_config_get_value(config,
-			     AGS_CONFIG_SOUNDCARD,
-			     "dsp-channels");
-
-  if(str == NULL){
-    str = ags_config_get_value(config,
-			       AGS_CONFIG_SOUNDCARD_0,
-			       "dsp-channels");
-  }
-  
-  if(str != NULL){
-    pulse_devin->dsp_channels = g_ascii_strtoull(str,
-						 NULL,
-						 10);
-	  
-    g_free(str);
-  }
-
-  /* pcm channels */
-  str = ags_config_get_value(config,
-			     AGS_CONFIG_SOUNDCARD,
-			     "pcm-channels");
-
-  if(str == NULL){
-    str = ags_config_get_value(config,
-			       AGS_CONFIG_SOUNDCARD_0,
-			       "pcm-channels");
-  }
-  
-  if(str != NULL){
-    pulse_devin->pcm_channels = g_ascii_strtoull(str,
-						 NULL,
-						 10);
-    g_free(str);
-  }
-
-  /* samplerate */
-  str = ags_config_get_value(config,
-			     AGS_CONFIG_SOUNDCARD,
-			     "samplerate");
-
-  if(str == NULL){
-    str = ags_config_get_value(config,
-			       AGS_CONFIG_SOUNDCARD_0,
-			       "samplerate");
-  }
-  
-  if(str != NULL){
-    pulse_devin->samplerate = g_ascii_strtoull(str,
-					       NULL,
-					       10);
-    free(str);
-  }
-
-  /* buffer size */
-  str = ags_config_get_value(config,
-			     AGS_CONFIG_SOUNDCARD,
-			     "buffer-size");
-
-  if(str == NULL){
-    str = ags_config_get_value(config,
-			       AGS_CONFIG_SOUNDCARD_0,
-			       "buffer-size");
-  }
-  
-  if(str != NULL){
-    pulse_devin->buffer_size = g_ascii_strtoull(str,
-						NULL,
-						10);
-    free(str);
-  }
-
-  /* format */
-  str = ags_config_get_value(config,
-			     AGS_CONFIG_SOUNDCARD,
-			     "format");
-
-  if(str == NULL){
-    str = ags_config_get_value(config,
-			       AGS_CONFIG_SOUNDCARD_0,
-			       "format");
-  }
-  
-  if(str != NULL){
-    pulse_devin->format = g_ascii_strtoull(str,
-					   NULL,
-					   10);
-    free(str);
-  }
+  pulse_devin->samplerate = ags_soundcard_helper_config_get_samplerate(config);
+  pulse_devin->buffer_size = ags_soundcard_helper_config_get_buffer_size(config);
+  pulse_devin->format = ags_soundcard_helper_config_get_format(config);
 
   /*  */
   pulse_devin->card_uri = NULL;
@@ -740,14 +619,14 @@ ags_pulse_devin_init(AgsPulseDevin *pulse_devin)
   /* buffer */
   pulse_devin->buffer = (void **) malloc(8 * sizeof(void*));
 
-  pulse_devin->buffer[0] = (void *) malloc(pulse_devin->pcm_channels * pulse_devin->buffer_size * sizeof(signed short));
-  pulse_devin->buffer[1] = (void *) malloc(pulse_devin->pcm_channels * pulse_devin->buffer_size * sizeof(signed short));
-  pulse_devin->buffer[2] = (void *) malloc(pulse_devin->pcm_channels * pulse_devin->buffer_size * sizeof(signed short));
-  pulse_devin->buffer[3] = (void *) malloc(pulse_devin->pcm_channels * pulse_devin->buffer_size * sizeof(signed short));
-  pulse_devin->buffer[4] = (void *) malloc(pulse_devin->pcm_channels * pulse_devin->buffer_size * sizeof(signed short));
-  pulse_devin->buffer[5] = (void *) malloc(pulse_devin->pcm_channels * pulse_devin->buffer_size * sizeof(signed short));
-  pulse_devin->buffer[6] = (void *) malloc(pulse_devin->pcm_channels * pulse_devin->buffer_size * sizeof(signed short));
-  pulse_devin->buffer[7] = (void *) malloc(pulse_devin->pcm_channels * pulse_devin->buffer_size * sizeof(signed short));
+  pulse_devin->buffer[0] = NULL;
+  pulse_devin->buffer[1] = NULL;
+  pulse_devin->buffer[2] = NULL;
+  pulse_devin->buffer[3] = NULL;
+  pulse_devin->buffer[4] = NULL;
+  pulse_devin->buffer[5] = NULL;
+  pulse_devin->buffer[6] = NULL;
+  pulse_devin->buffer[7] = NULL;
   
   ags_pulse_devin_realloc_buffer(pulse_devin);
   
@@ -757,6 +636,21 @@ ags_pulse_devin_init(AgsPulseDevin *pulse_devin)
   /* delay factor */
   pulse_devin->delay_factor = AGS_SOUNDCARD_DEFAULT_DELAY_FACTOR;
   
+  /* segmentation */
+  segmentation = ags_config_get_value(config,
+				      AGS_CONFIG_GENERIC,
+				      "segmentation");
+
+  if(segmentation != NULL){
+    sscanf(segmentation, "%d/%d",
+	   &denumerator,
+	   &numerator);
+    
+    pulse_devin->delay_factor = 1.0 / numerator * (numerator / denumerator);
+
+    g_free(segmentation);
+  }
+
   /* delay and attack */
   pulse_devin->delay = (gdouble *) malloc((int) 2 * AGS_SOUNDCARD_DEFAULT_PERIOD *
 					  sizeof(gdouble));
@@ -797,15 +691,8 @@ ags_pulse_devin_init(AgsPulseDevin *pulse_devin)
   pulse_devin->callback_finish_cond = (pthread_cond_t *) malloc(sizeof(pthread_cond_t));
   pthread_cond_init(pulse_devin->callback_finish_cond, NULL);
 
-  /* parent */
-  pulse_devin->application_context = NULL;
-  pulse_devin->application_mutex = NULL;
-
   /*  */
   pulse_devin->notify_soundcard = NULL;
-  
-  /* all AgsAudio */
-  pulse_devin->audio = NULL;
 }
 
 void
@@ -815,8 +702,17 @@ ags_pulse_devin_set_property(GObject *gobject,
 			     GParamSpec *param_spec)
 {
   AgsPulseDevin *pulse_devin;
+  
+  pthread_mutex_t *pulse_devin_mutex;
 
   pulse_devin = AGS_PULSE_DEVIN(gobject);
+
+  /* get pulse devin mutex */
+  pthread_mutex_lock(ags_pulse_devin_get_class_mutex());
+  
+  pulse_devin_mutex = pulse_devin->obj_mutex;
+  
+  pthread_mutex_unlock(ags_pulse_devin_get_class_mutex());
   
   switch(prop_id){
   case PROP_APPLICATION_CONTEXT:
@@ -825,7 +721,11 @@ ags_pulse_devin_set_property(GObject *gobject,
 
       application_context = (AgsApplicationContext *) g_value_get_object(value);
 
-      if(pulse_devin->application_context == (GObject *) application_context){
+      pthread_mutex_lock(pulse_devin_mutex);
+
+      if(pulse_devin->application_context == application_context){
+	pthread_mutex_unlock(pulse_devin_mutex);
+
 	return;
       }
 
@@ -833,51 +733,13 @@ ags_pulse_devin_set_property(GObject *gobject,
 	g_object_unref(G_OBJECT(pulse_devin->application_context));
       }
 
-      if(application_context != NULL){
-	AgsConfig *config;
-
-	gchar *segmentation;
-	guint discriminante, nominante;
-	
+      if(application_context != NULL){	
 	g_object_ref(G_OBJECT(application_context));
-
-	pulse_devin->application_mutex = application_context->mutex;
-
-	config = ags_config_get_instance();
-
-	/* segmentation */
-	segmentation = ags_config_get_value(config,
-					    AGS_CONFIG_GENERIC,
-					    "segmentation");
-
-	if(segmentation != NULL){
-	  sscanf(segmentation, "%d/%d",
-		 &discriminante,
-		 &nominante);
-    
-	  pulse_devin->delay_factor = 1.0 / nominante * (nominante / discriminante);
-	}
-	
-	ags_pulse_devin_adjust_delay_and_attack(pulse_devin);
-	ags_pulse_devin_realloc_buffer(pulse_devin);
-      }else{
-	pulse_devin->application_mutex = NULL;
       }
 
-      pulse_devin->application_context = (GObject *) application_context;
-    }
-    break;
-  case PROP_APPLICATION_MUTEX:
-    {
-      pthread_mutex_t *application_mutex;
+      pulse_devin->application_context = application_context;
 
-      application_mutex = (pthread_mutex_t *) g_value_get_pointer(value);
-
-      if(pulse_devin->application_mutex == application_mutex){
-	return;
-      }
-      
-      pulse_devin->application_mutex = application_mutex;
+      pthread_mutex_unlock(pulse_devin_mutex);
     }
     break;
   case PROP_DEVICE:
@@ -886,7 +748,11 @@ ags_pulse_devin_set_property(GObject *gobject,
 
       device = (char *) g_value_get_string(value);
 
+      pthread_mutex_lock(pulse_devin_mutex);
+
       pulse_devin->card_uri = g_strdup(device);
+
+      pthread_mutex_unlock(pulse_devin_mutex);
     }
     break;
   case PROP_DSP_CHANNELS:
@@ -895,11 +761,17 @@ ags_pulse_devin_set_property(GObject *gobject,
 
       dsp_channels = g_value_get_uint(value);
 
+      pthread_mutex_lock(pulse_devin_mutex);
+
       if(dsp_channels == pulse_devin->dsp_channels){
+	pthread_mutex_unlock(pulse_devin_mutex);
+
 	return;
       }
 
       pulse_devin->dsp_channels = dsp_channels;
+
+      pthread_mutex_unlock(pulse_devin_mutex);
     }
     break;
   case PROP_PCM_CHANNELS:
@@ -908,18 +780,19 @@ ags_pulse_devin_set_property(GObject *gobject,
 
       pcm_channels = g_value_get_uint(value);
 
+      pthread_mutex_lock(pulse_devin_mutex);
+
       if(pcm_channels == pulse_devin->pcm_channels){
+	pthread_mutex_unlock(pulse_devin_mutex);
+
 	return;
       }
 
       pulse_devin->pcm_channels = pcm_channels;
 
-      ags_pulse_devin_realloc_buffer(pulse_devin);
+      pthread_mutex_unlock(pulse_devin_mutex);
 
-      if(pulse_devin->pulse_port != NULL){
-	ags_pulse_port_set_pcm_channels(pulse_devin->pulse_port->data,
-					pcm_channels);
-      }
+      ags_pulse_devin_realloc_buffer(pulse_devin);
     }
     break;
   case PROP_FORMAT:
@@ -928,18 +801,19 @@ ags_pulse_devin_set_property(GObject *gobject,
 
       format = g_value_get_uint(value);
 
+      pthread_mutex_lock(pulse_devin_mutex);
+
       if(format == pulse_devin->format){
+	pthread_mutex_unlock(pulse_devin_mutex);
+
 	return;
       }
 
       pulse_devin->format = format;
 
-      ags_pulse_devin_realloc_buffer(pulse_devin);
+      pthread_mutex_unlock(pulse_devin_mutex);
 
-      if(pulse_devin->pulse_port != NULL){
-	ags_pulse_port_set_format(pulse_devin->pulse_port->data,
-				  format);
-      }
+      ags_pulse_devin_realloc_buffer(pulse_devin);
     }
     break;
   case PROP_BUFFER_SIZE:
@@ -948,19 +822,20 @@ ags_pulse_devin_set_property(GObject *gobject,
 
       buffer_size = g_value_get_uint(value);
 
+      pthread_mutex_lock(pulse_devin_mutex);
+
       if(buffer_size == pulse_devin->buffer_size){
+	pthread_mutex_unlock(pulse_devin_mutex);
+
 	return;
       }
 
       pulse_devin->buffer_size = buffer_size;
 
+      pthread_mutex_unlock(pulse_devin_mutex);
+
       ags_pulse_devin_realloc_buffer(pulse_devin);
       ags_pulse_devin_adjust_delay_and_attack(pulse_devin);
-
-      if(pulse_devin->pulse_port != NULL){
-	ags_pulse_port_set_buffer_size(pulse_devin->pulse_port->data,
-				       buffer_size);
-      }
     }
     break;
   case PROP_SAMPLERATE:
@@ -969,19 +844,20 @@ ags_pulse_devin_set_property(GObject *gobject,
 
       samplerate = g_value_get_uint(value);
 
+      pthread_mutex_lock(pulse_devin_mutex);
+      
       if(samplerate == pulse_devin->samplerate){
+	pthread_mutex_unlock(pulse_devin_mutex);
+
 	return;
       }
 
       pulse_devin->samplerate = samplerate;
 
+      pthread_mutex_unlock(pulse_devin_mutex);
+
       ags_pulse_devin_realloc_buffer(pulse_devin);
       ags_pulse_devin_adjust_delay_and_attack(pulse_devin);
-
-      if(pulse_devin->pulse_port != NULL){
-	ags_pulse_port_set_samplerate(pulse_devin->pulse_port->data,
-				      samplerate);
-      }
     }
     break;
   case PROP_BUFFER:
@@ -995,7 +871,11 @@ ags_pulse_devin_set_property(GObject *gobject,
       
       bpm = g_value_get_double(value);
 
+      pthread_mutex_lock(pulse_devin_mutex);
+
       pulse_devin->bpm = bpm;
+
+      pthread_mutex_unlock(pulse_devin_mutex);
 
       ags_pulse_devin_adjust_delay_and_attack(pulse_devin);
     }
@@ -1006,7 +886,11 @@ ags_pulse_devin_set_property(GObject *gobject,
       
       delay_factor = g_value_get_double(value);
 
+      pthread_mutex_lock(pulse_devin_mutex);
+
       pulse_devin->delay_factor = delay_factor;
+
+      pthread_mutex_unlock(pulse_devin_mutex);
 
       ags_pulse_devin_adjust_delay_and_attack(pulse_devin);
     }
@@ -1017,7 +901,11 @@ ags_pulse_devin_set_property(GObject *gobject,
 
       pulse_client = (AgsPulseClient *) g_value_get_object(value);
 
+      pthread_mutex_lock(pulse_devin_mutex);
+
       if(pulse_devin->pulse_client == (GObject *) pulse_client){
+	pthread_mutex_unlock(pulse_devin_mutex);
+
 	return;
       }
 
@@ -1030,6 +918,8 @@ ags_pulse_devin_set_property(GObject *gobject,
       }
       
       pulse_devin->pulse_client = (GObject *) pulse_client;
+
+      pthread_mutex_unlock(pulse_devin_mutex);
     }
     break;
   case PROP_PULSE_PORT:
@@ -1038,16 +928,20 @@ ags_pulse_devin_set_property(GObject *gobject,
 
       pulse_port = (AgsPulsePort *) g_value_get_pointer(value);
 
+      pthread_mutex_lock(pulse_devin_mutex);
+
       if(!AGS_IS_PULSE_PORT(pulse_port) ||
 	 g_list_find(pulse_devin->pulse_port, pulse_port) != NULL){
+	pthread_mutex_unlock(pulse_devin_mutex);
+
 	return;
       }
 
-      if(pulse_port != NULL){
-	g_object_ref(pulse_port);
-	pulse_devin->pulse_port = g_list_append(pulse_devin->pulse_port,
-						pulse_port);
-      }
+      g_object_ref(pulse_port);
+      pulse_devin->pulse_port = g_list_append(pulse_devin->pulse_port,
+					      pulse_port);
+
+      pthread_mutex_unlock(pulse_devin_mutex);
     }
     break;
   default:
@@ -1064,78 +958,134 @@ ags_pulse_devin_get_property(GObject *gobject,
 {
   AgsPulseDevin *pulse_devin;
 
+  pthread_mutex_t *pulse_devin_mutex;
+
   pulse_devin = AGS_PULSE_DEVIN(gobject);
+
+  /* get pulse devin mutex */
+  pthread_mutex_lock(ags_pulse_devin_get_class_mutex());
+  
+  pulse_devin_mutex = pulse_devin->obj_mutex;
+  
+  pthread_mutex_unlock(ags_pulse_devin_get_class_mutex());
   
   switch(prop_id){
   case PROP_APPLICATION_CONTEXT:
     {
+      pthread_mutex_lock(pulse_devin_mutex);
+
       g_value_set_object(value, pulse_devin->application_context);
-    }
-    break;
-  case PROP_APPLICATION_MUTEX:
-    {
-      g_value_set_pointer(value, pulse_devin->application_mutex);
+
+      pthread_mutex_unlock(pulse_devin_mutex);
     }
     break;
   case PROP_DEVICE:
     {
+      pthread_mutex_lock(pulse_devin_mutex);
+
       g_value_set_string(value, pulse_devin->card_uri);
+
+      pthread_mutex_unlock(pulse_devin_mutex);
     }
     break;
   case PROP_DSP_CHANNELS:
     {
+      pthread_mutex_lock(pulse_devin_mutex);
+
       g_value_set_uint(value, pulse_devin->dsp_channels);
+
+      pthread_mutex_unlock(pulse_devin_mutex);
     }
     break;
   case PROP_PCM_CHANNELS:
     {
+      pthread_mutex_lock(pulse_devin_mutex);
+
       g_value_set_uint(value, pulse_devin->pcm_channels);
+
+      pthread_mutex_unlock(pulse_devin_mutex);
     }
     break;
   case PROP_FORMAT:
     {
+      pthread_mutex_lock(pulse_devin_mutex);
+
       g_value_set_uint(value, pulse_devin->format);
+
+      pthread_mutex_unlock(pulse_devin_mutex);
     }
     break;
   case PROP_BUFFER_SIZE:
     {
+      pthread_mutex_lock(pulse_devin_mutex);
+
       g_value_set_uint(value, pulse_devin->buffer_size);
+
+      pthread_mutex_unlock(pulse_devin_mutex);
     }
     break;
   case PROP_SAMPLERATE:
     {
+      pthread_mutex_lock(pulse_devin_mutex);
+
       g_value_set_uint(value, pulse_devin->samplerate);
+
+      pthread_mutex_unlock(pulse_devin_mutex);
     }
     break;
   case PROP_BUFFER:
     {
+      pthread_mutex_lock(pulse_devin_mutex);
+
       g_value_set_pointer(value, pulse_devin->buffer);
+
+      pthread_mutex_unlock(pulse_devin_mutex);
     }
     break;
   case PROP_BPM:
     {
+      pthread_mutex_lock(pulse_devin_mutex);
+
       g_value_set_double(value, pulse_devin->bpm);
+
+      pthread_mutex_unlock(pulse_devin_mutex);
     }
     break;
   case PROP_DELAY_FACTOR:
     {
+      pthread_mutex_lock(pulse_devin_mutex);
+
       g_value_set_double(value, pulse_devin->delay_factor);
+
+      pthread_mutex_unlock(pulse_devin_mutex);
     }
     break;
   case PROP_ATTACK:
     {
+      pthread_mutex_lock(pulse_devin_mutex);
+
       g_value_set_pointer(value, pulse_devin->attack);
+
+      pthread_mutex_unlock(pulse_devin_mutex);
     }
     break;
   case PROP_PULSE_CLIENT:
     {
+      pthread_mutex_lock(pulse_devin_mutex);
+
       g_value_set_object(value, pulse_devin->pulse_client);
+
+      pthread_mutex_unlock(pulse_devin_mutex);
     }
     break;
   case PROP_PULSE_PORT:
     {
+      pthread_mutex_lock(pulse_devin_mutex);
+
       g_value_set_pointer(value,
 			  g_list_copy(pulse_devin->pulse_port));
+
+      pthread_mutex_unlock(pulse_devin_mutex);
     }
     break;
   default:
@@ -1149,31 +1099,44 @@ ags_pulse_devin_dispose(GObject *gobject)
 {
   AgsPulseDevin *pulse_devin;
 
-  GList *list;
-
   pulse_devin = AGS_PULSE_DEVIN(gobject);
+
+  /* pulse client */
+  if(pulse_devin->pulse_client != NULL){
+    g_object_unref(pulse_devin->pulse_client);
+
+    pulse_devin->pulse_client = NULL;
+  }
+
+  /* pulse port */
+  g_list_free_full(pulse_devin->pulse_port,
+		   g_object_unref);
+
+  pulse_devin->pulse_port = NULL;
+
+  /* notify soundcard */
+  if(pulse_devin->notify_soundcard != NULL){
+    if(pulse_devin->application_context != NULL){
+      AgsTaskThread *task_thread;
+    
+      g_object_get(pulse_devin->application_context,
+		   "task-thread", &task_thread,
+		   NULL);
+      
+      ags_task_thread_remove_cyclic_task(task_thread,
+					 pulse_devin->notify_soundcard);
+    }
+    
+    g_object_unref(pulse_devin->notify_soundcard);
+
+    pulse_devin->notify_soundcard = NULL;
+  }
 
   /* application context */
   if(pulse_devin->application_context != NULL){
     g_object_unref(pulse_devin->application_context);
 
     pulse_devin->application_context = NULL;
-  }
-
-  /* unref audio */
-  if(pulse_devin->audio != NULL){
-    list = pulse_devin->audio;
-
-    while(list != NULL){
-      g_object_set(G_OBJECT(list->data),
-		   "soundcard", NULL,
-		   NULL);
-      
-      list = list->next;
-    }
-
-    g_list_free_full(pulse_devin->audio,
-		     g_object_unref);
   }
 
   /* call parent */
@@ -1185,21 +1148,13 @@ ags_pulse_devin_finalize(GObject *gobject)
 {
   AgsPulseDevin *pulse_devin;
 
-  AgsMutexManager *mutex_manager;
-  
-  GList *list, *list_next;
-
   pulse_devin = AGS_PULSE_DEVIN(gobject);
 
-  /* remove pulse_devin mutex */
-  pthread_mutex_lock(pulse_devin->application_mutex);
-  
-  mutex_manager = ags_mutex_manager_get_instance();
+  pthread_mutex_destroy(pulse_devin->obj_mutex);
+  free(pulse_devin->obj_mutex);
 
-  ags_mutex_manager_remove(mutex_manager,
-			   gobject);
-  
-  pthread_mutex_unlock(pulse_devin->application_mutex);
+  pthread_mutexattr_destroy(pulse_devin->obj_mutexattr);
+  free(pulse_devin->obj_mutexattr);
 
   /* free output buffer */
   free(pulse_devin->buffer[0]);
@@ -1217,10 +1172,25 @@ ags_pulse_devin_finalize(GObject *gobject)
   /* free AgsAttack */
   free(pulse_devin->attack);
 
-  /* unref notify soundcard */
+  /* pulse client */
+  if(pulse_devin->pulse_client != NULL){
+    g_object_unref(pulse_devin->pulse_client);
+  }
+
+  /* pulse port */
+  g_list_free_full(pulse_devin->pulse_port,
+		   g_object_unref);
+
+  /* notify soundcard */
   if(pulse_devin->notify_soundcard != NULL){
     if(pulse_devin->application_context != NULL){
-      ags_task_thread_remove_cyclic_task(AGS_APPLICATION_CONTEXT(pulse_devin->application_context)->task_thread,
+      AgsTaskThread *task_thread;
+      
+      g_object_get(pulse_devin->application_context,
+		   "task-thread", &task_thread,
+		   NULL);
+
+      ags_task_thread_remove_cyclic_task(task_thread,
 					 pulse_devin->notify_soundcard);
     }
     
@@ -1230,32 +1200,159 @@ ags_pulse_devin_finalize(GObject *gobject)
   /* application context */
   if(pulse_devin->application_context != NULL){
     g_object_unref(pulse_devin->application_context);
-  }
-  
-  /* unref audio */
-  if(pulse_devin->audio != NULL){
-    list = pulse_devin->audio;
-
-    while(list != NULL){
-      g_object_set(G_OBJECT(list->data),
-		   "soundcard", NULL,
-		   NULL);
-      
-      list = list->next;
-    }
-
-    g_list_free_full(pulse_devin->audio,
-		     g_object_unref);
-  }
-
-  pthread_mutex_destroy(pulse_devin->mutex);
-  free(pulse_devin->mutex);
-
-  pthread_mutexattr_destroy(pulse_devin->mutexattr);
-  free(pulse_devin->mutexattr);
+  }  
 
   /* call parent */
   G_OBJECT_CLASS(ags_pulse_devin_parent_class)->finalize(gobject);
+}
+
+AgsUUID*
+ags_pulse_devin_get_uuid(AgsConnectable *connectable)
+{
+  AgsPulseDevin *pulse_devin;
+  
+  AgsUUID *ptr;
+
+  pthread_mutex_t *pulse_devin_mutex;
+
+  pulse_devin = AGS_PULSE_DEVIN(connectable);
+
+  /* get pulse devin signal mutex */
+  pthread_mutex_lock(ags_pulse_devin_get_class_mutex());
+  
+  pulse_devin_mutex = pulse_devin->obj_mutex;
+  
+  pthread_mutex_unlock(ags_pulse_devin_get_class_mutex());
+
+  /* get UUID */
+  pthread_mutex_lock(pulse_devin_mutex);
+
+  ptr = pulse_devin->uuid;
+
+  pthread_mutex_unlock(pulse_devin_mutex);
+  
+  return(ptr);
+}
+
+gboolean
+ags_pulse_devin_has_resource(AgsConnectable *connectable)
+{
+  return(FALSE);
+}
+
+gboolean
+ags_pulse_devin_is_ready(AgsConnectable *connectable)
+{
+  AgsPulseDevin *pulse_devin;
+  
+  gboolean is_ready;
+
+  pthread_mutex_t *pulse_devin_mutex;
+
+  pulse_devin = AGS_PULSE_DEVIN(connectable);
+
+  /* get pulse devin mutex */
+  pthread_mutex_lock(ags_pulse_devin_get_class_mutex());
+  
+  pulse_devin_mutex = pulse_devin->obj_mutex;
+  
+  pthread_mutex_unlock(ags_pulse_devin_get_class_mutex());
+
+  /* check is added */
+  pthread_mutex_lock(pulse_devin_mutex);
+
+  is_ready = (((AGS_PULSE_DEVIN_ADDED_TO_REGISTRY & (pulse_devin->flags)) != 0) ? TRUE: FALSE);
+
+  pthread_mutex_unlock(pulse_devin_mutex);
+  
+  return(is_ready);
+}
+
+void
+ags_pulse_devin_add_to_registry(AgsConnectable *connectable)
+{
+  AgsPulseDevin *pulse_devin;
+
+  if(ags_connectable_is_ready(connectable)){
+    return;
+  }
+  
+  pulse_devin = AGS_PULSE_DEVIN(connectable);
+
+  ags_pulse_devin_set_flags(pulse_devin, AGS_PULSE_DEVIN_ADDED_TO_REGISTRY);
+}
+
+void
+ags_pulse_devin_remove_from_registry(AgsConnectable *connectable)
+{
+  AgsPulseDevin *pulse_devin;
+
+  if(!ags_connectable_is_ready(connectable)){
+    return;
+  }
+
+  pulse_devin = AGS_PULSE_DEVIN(connectable);
+
+  ags_pulse_devin_unset_flags(pulse_devin, AGS_PULSE_DEVIN_ADDED_TO_REGISTRY);
+}
+
+xmlNode*
+ags_pulse_devin_list_resource(AgsConnectable *connectable)
+{
+  xmlNode *node;
+  
+  node = NULL;
+
+  //TODO:JK: implement me
+  
+  return(node);
+}
+
+xmlNode*
+ags_pulse_devin_xml_compose(AgsConnectable *connectable)
+{
+  xmlNode *node;
+  
+  node = NULL;
+
+  //TODO:JK: implement me
+  
+  return(node);
+}
+
+void
+ags_pulse_devin_xml_parse(AgsConnectable *connectable,
+			  xmlNode *node)
+{
+  //TODO:JK: implement me
+}
+
+gboolean
+ags_pulse_devin_is_connected(AgsConnectable *connectable)
+{
+  AgsPulseDevin *pulse_devin;
+  
+  gboolean is_connected;
+
+  pthread_mutex_t *pulse_devin_mutex;
+
+  pulse_devin = AGS_PULSE_DEVIN(connectable);
+
+  /* get pulse devin mutex */
+  pthread_mutex_lock(ags_pulse_devin_get_class_mutex());
+  
+  pulse_devin_mutex = pulse_devin->obj_mutex;
+  
+  pthread_mutex_unlock(ags_pulse_devin_get_class_mutex());
+
+  /* check is connected */
+  pthread_mutex_lock(pulse_devin_mutex);
+
+  is_connected = (((AGS_PULSE_DEVIN_CONNECTED & (pulse_devin->flags)) != 0) ? TRUE: FALSE);
+  
+  pthread_mutex_unlock(pulse_devin_mutex);
+  
+  return(is_connected);
 }
 
 void
@@ -1263,62 +1360,152 @@ ags_pulse_devin_connect(AgsConnectable *connectable)
 {
   AgsPulseDevin *pulse_devin;
   
-  GList *list;
+  if(ags_connectable_is_connected(connectable)){
+    return;
+  }
 
   pulse_devin = AGS_PULSE_DEVIN(connectable);
 
-  /*  */  
-  list = pulse_devin->audio;
-
-  while(list != NULL){
-    ags_connectable_connect(AGS_CONNECTABLE(list->data));
-
-    list = list->next;
-  }
+  ags_pulse_devin_set_flags(pulse_devin, AGS_PULSE_DEVIN_CONNECTED);
 }
 
 void
 ags_pulse_devin_disconnect(AgsConnectable *connectable)
 {
-  //TODO:JK: implement me
+
+  AgsPulseDevin *pulse_devin;
+
+  if(!ags_connectable_is_connected(connectable)){
+    return;
+  }
+
+  pulse_devin = AGS_PULSE_DEVIN(connectable);
+  
+  ags_pulse_devin_unset_flags(pulse_devin, AGS_PULSE_DEVIN_CONNECTED);
 }
 
 /**
- * ags_pulse_devin_switch_buffer_flag:
- * @pulse_devin: an #AgsPulseDevin
+ * ags_pulse_devin_get_class_mutex:
+ * 
+ * Use this function's returned mutex to access mutex fields.
  *
- * The buffer flag indicates the currently recorded buffer.
+ * Returns: the class mutex
+ * 
+ * Since: 2.0.0
+ */
+pthread_mutex_t*
+ags_pulse_devin_get_class_mutex()
+{
+  return(&ags_pulse_devin_class_mutex);
+}
+
+/**
+ * ags_pulse_devin_test_flags:
+ * @pulse_devin: the #AgsPulseDevin
+ * @flags: the flags
  *
- * Since: 1.2.0
+ * Test @flags to be set on @pulse_devin.
+ * 
+ * Returns: %TRUE if flags are set, else %FALSE
+ *
+ * Since: 2.0.0
+ */
+gboolean
+ags_pulse_devin_test_flags(AgsPulseDevin *pulse_devin, guint flags)
+{
+  gboolean retval;  
+  
+  pthread_mutex_t *pulse_devin_mutex;
+
+  if(!AGS_IS_PULSE_DEVIN(pulse_devin)){
+    return(FALSE);
+  }
+
+  /* get pulse devin mutex */
+  pthread_mutex_lock(ags_pulse_devin_get_class_mutex());
+  
+  pulse_devin_mutex = pulse_devin->obj_mutex;
+  
+  pthread_mutex_unlock(ags_pulse_devin_get_class_mutex());
+
+  /* test */
+  pthread_mutex_lock(pulse_devin_mutex);
+
+  retval = (flags & (pulse_devin->flags)) ? TRUE: FALSE;
+  
+  pthread_mutex_unlock(pulse_devin_mutex);
+
+  return(retval);
+}
+
+/**
+ * ags_pulse_devin_set_flags:
+ * @pulse_devin: the #AgsPulseDevin
+ * @flags: see #AgsPulseDevinFlags-enum
+ *
+ * Enable a feature of @pulse_devin.
+ *
+ * Since: 2.0.0
  */
 void
-ags_pulse_devin_switch_buffer_flag(AgsPulseDevin *pulse_devin)
+ags_pulse_devin_set_flags(AgsPulseDevin *pulse_devin, guint flags)
 {
-  if((AGS_PULSE_DEVIN_BUFFER0 & (pulse_devin->flags)) != 0){
-    pulse_devin->flags &= (~AGS_PULSE_DEVIN_BUFFER0);
-    pulse_devin->flags |= AGS_PULSE_DEVIN_BUFFER1;
-  }else if((AGS_PULSE_DEVIN_BUFFER1 & (pulse_devin->flags)) != 0){
-    pulse_devin->flags &= (~AGS_PULSE_DEVIN_BUFFER1);
-    pulse_devin->flags |= AGS_PULSE_DEVIN_BUFFER2;
-  }else if((AGS_PULSE_DEVIN_BUFFER2 & (pulse_devin->flags)) != 0){
-    pulse_devin->flags &= (~AGS_PULSE_DEVIN_BUFFER2);
-    pulse_devin->flags |= AGS_PULSE_DEVIN_BUFFER3;
-  }else if((AGS_PULSE_DEVIN_BUFFER3 & (pulse_devin->flags)) != 0){
-    pulse_devin->flags &= (~AGS_PULSE_DEVIN_BUFFER3);
-    pulse_devin->flags |= AGS_PULSE_DEVIN_BUFFER4;
-  }else if((AGS_PULSE_DEVIN_BUFFER4 & (pulse_devin->flags)) != 0){
-    pulse_devin->flags &= (~AGS_PULSE_DEVIN_BUFFER4);
-    pulse_devin->flags |= AGS_PULSE_DEVIN_BUFFER5;
-  }else if((AGS_PULSE_DEVIN_BUFFER5 & (pulse_devin->flags)) != 0){
-    pulse_devin->flags &= (~AGS_PULSE_DEVIN_BUFFER5);
-    pulse_devin->flags |= AGS_PULSE_DEVIN_BUFFER6;
-  }else if((AGS_PULSE_DEVIN_BUFFER6 & (pulse_devin->flags)) != 0){
-    pulse_devin->flags &= (~AGS_PULSE_DEVIN_BUFFER6);
-    pulse_devin->flags |= AGS_PULSE_DEVIN_BUFFER7;
-  }else if((AGS_PULSE_DEVIN_BUFFER7 & (pulse_devin->flags)) != 0){
-    pulse_devin->flags &= (~AGS_PULSE_DEVIN_BUFFER7);
-    pulse_devin->flags |= AGS_PULSE_DEVIN_BUFFER0;
+  pthread_mutex_t *pulse_devin_mutex;
+
+  if(!AGS_IS_PULSE_DEVIN(pulse_devin)){
+    return;
   }
+
+  /* get pulse devin mutex */
+  pthread_mutex_lock(ags_pulse_devin_get_class_mutex());
+  
+  pulse_devin_mutex = pulse_devin->obj_mutex;
+  
+  pthread_mutex_unlock(ags_pulse_devin_get_class_mutex());
+
+  //TODO:JK: add more?
+
+  /* set flags */
+  pthread_mutex_lock(pulse_devin_mutex);
+
+  pulse_devin->flags |= flags;
+  
+  pthread_mutex_unlock(pulse_devin_mutex);
+}
+    
+/**
+ * ags_pulse_devin_unset_flags:
+ * @pulse_devin: the #AgsPulseDevin
+ * @flags: see #AgsPulseDevinFlags-enum
+ *
+ * Disable a feature of @pulse_devin.
+ *
+ * Since: 2.0.0
+ */
+void
+ags_pulse_devin_unset_flags(AgsPulseDevin *pulse_devin, guint flags)
+{  
+  pthread_mutex_t *pulse_devin_mutex;
+
+  if(!AGS_IS_PULSE_DEVIN(pulse_devin)){
+    return;
+  }
+
+  /* get pulse devin mutex */
+  pthread_mutex_lock(ags_pulse_devin_get_class_mutex());
+  
+  pulse_devin_mutex = pulse_devin->obj_mutex;
+  
+  pthread_mutex_unlock(ags_pulse_devin_get_class_mutex());
+
+  //TODO:JK: add more?
+
+  /* unset flags */
+  pthread_mutex_lock(pulse_devin_mutex);
+
+  pulse_devin->flags &= (~flags);
+  
+  pthread_mutex_unlock(pulse_devin_mutex);
 }
 
 void
@@ -1327,8 +1514,23 @@ ags_pulse_devin_set_application_context(AgsSoundcard *soundcard,
 {
   AgsPulseDevin *pulse_devin;
 
+  pthread_mutex_t *pulse_devin_mutex;
+
   pulse_devin = AGS_PULSE_DEVIN(soundcard);
+
+  /* get pulse devin mutex */
+  pthread_mutex_lock(ags_pulse_devin_get_class_mutex());
+  
+  pulse_devin_mutex = pulse_devin->obj_mutex;
+  
+  pthread_mutex_unlock(ags_pulse_devin_get_class_mutex());
+
+  /* set application context */
+  pthread_mutex_lock(pulse_devin_mutex);
+  
   pulse_devin->application_context = (GObject *) application_context;
+  
+  pthread_mutex_unlock(pulse_devin_mutex);
 }
 
 AgsApplicationContext*
@@ -1336,29 +1538,27 @@ ags_pulse_devin_get_application_context(AgsSoundcard *soundcard)
 {
   AgsPulseDevin *pulse_devin;
 
-  pulse_devin = AGS_PULSE_DEVIN(soundcard);
-
-  return((AgsApplicationContext *) pulse_devin->application_context);
-}
-
-void
-ags_pulse_devin_set_application_mutex(AgsSoundcard *soundcard,
-				      pthread_mutex_t *application_mutex)
-{
-  AgsPulseDevin *pulse_devin;
-
-  pulse_devin = AGS_PULSE_DEVIN(soundcard);
-  pulse_devin->application_mutex = application_mutex;
-}
-
-pthread_mutex_t*
-ags_pulse_devin_get_application_mutex(AgsSoundcard *soundcard)
-{
-  AgsPulseDevin *pulse_devin;
+  AgsApplicationContext *application_context;
+  
+  pthread_mutex_t *pulse_devin_mutex;
 
   pulse_devin = AGS_PULSE_DEVIN(soundcard);
 
-  return(pulse_devin->application_mutex);
+  /* get pulse devin mutex */
+  pthread_mutex_lock(ags_pulse_devin_get_class_mutex());
+  
+  pulse_devin_mutex = pulse_devin->obj_mutex;
+  
+  pthread_mutex_unlock(ags_pulse_devin_get_class_mutex());
+
+  /* get application context */
+  pthread_mutex_lock(pulse_devin_mutex);
+
+  application_context = (AgsApplicationContext *) pulse_devin->application_context;
+
+  pthread_mutex_unlock(pulse_devin_mutex);
+  
+  return(application_context);
 }
 
 void
@@ -1370,21 +1570,38 @@ ags_pulse_devin_set_device(AgsSoundcard *soundcard,
   GList *pulse_port, *pulse_port_start;
 
   gchar *str;
-  
+
+  guint pcm_channels;
   int ret;
   guint nth_card;
   guint i;
   
+  pthread_mutex_t *pulse_devin_mutex;
+
   pulse_devin = AGS_PULSE_DEVIN(soundcard);
+
+  /* get pulse devin mutex */
+  pthread_mutex_lock(ags_pulse_devin_get_class_mutex());
+  
+  pulse_devin_mutex = pulse_devin->obj_mutex;
+  
+  pthread_mutex_unlock(ags_pulse_devin_get_class_mutex());
+
+  /* check device */
+  pthread_mutex_lock(pulse_devin_mutex);
 
   if(pulse_devin->card_uri == device ||
      !g_ascii_strcasecmp(pulse_devin->card_uri,
 			 device)){
+    pthread_mutex_unlock(pulse_devin_mutex);
+  
     return;
   }
 
   if(!g_str_has_prefix(device,
 		       "ags-pulse-devin-")){
+    pthread_mutex_unlock(pulse_devin_mutex);
+
     g_warning("invalid pulseaudio device prefix");
 
     return;
@@ -1395,28 +1612,36 @@ ags_pulse_devin_set_device(AgsSoundcard *soundcard,
 	       &nth_card);
 
   if(ret != 1){
+    pthread_mutex_unlock(pulse_devin_mutex);
+
     g_warning("invalid pulseaudio device specifier");
 
     return;
   }
 
-  if(pulse_devin->card_uri != NULL){
-    g_free(pulse_devin->card_uri);
-  }
-  
+  g_free(pulse_devin->card_uri);
   pulse_devin->card_uri = g_strdup(device);
 
   /* apply name to port */
+  pcm_channels = pulse_devin->pcm_channels;
+  
   pulse_port_start = 
     pulse_port = g_list_copy(pulse_devin->pulse_port);
+
+  pthread_mutex_unlock(pulse_devin_mutex);
   
-  str = g_strdup_printf("ags-soundcard%d",
-			nth_card);
+  for(i = 0; i < pcm_channels; i++){
+    str = g_strdup_printf("ags-soundcard%d-%04d",
+			  nth_card,
+			  i);
     
-  g_object_set(pulse_port->data,
-	       "port-name", str,
-	       NULL);
-  g_free(str);
+    g_object_set(pulse_port->data,
+		 "port-name", str,
+		 NULL);
+    g_free(str);
+
+    pulse_port = pulse_port->next;
+  }
 
   g_list_free(pulse_port_start);
 }
@@ -1426,9 +1651,29 @@ ags_pulse_devin_get_device(AgsSoundcard *soundcard)
 {
   AgsPulseDevin *pulse_devin;
   
+  gchar *device;
+
+  pthread_mutex_t *pulse_devin_mutex;
+
   pulse_devin = AGS_PULSE_DEVIN(soundcard);
   
-  return(pulse_devin->card_uri);
+  /* get pulse devin mutex */
+  pthread_mutex_lock(ags_pulse_devin_get_class_mutex());
+  
+  pulse_devin_mutex = pulse_devin->obj_mutex;
+  
+  pthread_mutex_unlock(ags_pulse_devin_get_class_mutex());
+
+  device = NULL;
+
+  /* get device */
+  pthread_mutex_lock(pulse_devin_mutex);
+
+  device = g_strdup(pulse_devin->card_uri);
+
+  pthread_mutex_unlock(pulse_devin_mutex);
+  
+  return(device);
 }
 
 void
@@ -1441,6 +1686,7 @@ ags_pulse_devin_set_presets(AgsSoundcard *soundcard,
   AgsPulseDevin *pulse_devin;
 
   pulse_devin = AGS_PULSE_DEVIN(soundcard);
+
   g_object_set(pulse_devin,
 	       "pcm-channels", channels,
 	       "samplerate", rate,
@@ -1458,7 +1704,19 @@ ags_pulse_devin_get_presets(AgsSoundcard *soundcard,
 {
   AgsPulseDevin *pulse_devin;
 
+  pthread_mutex_t *pulse_devin_mutex;
+
   pulse_devin = AGS_PULSE_DEVIN(soundcard);
+  
+  /* get pulse devin mutex */
+  pthread_mutex_lock(ags_pulse_devin_get_class_mutex());
+  
+  pulse_devin_mutex = pulse_devin->obj_mutex;
+  
+  pthread_mutex_unlock(ags_pulse_devin_get_class_mutex());
+
+  /* get presets */
+  pthread_mutex_lock(pulse_devin_mutex);
 
   if(channels != NULL){
     *channels = pulse_devin->pcm_channels;
@@ -1475,39 +1733,33 @@ ags_pulse_devin_get_presets(AgsSoundcard *soundcard,
   if(format != NULL){
     *format = pulse_devin->format;
   }
+
+  pthread_mutex_unlock(pulse_devin_mutex);
 }
 
-/**
- * ags_pulse_devin_list_cards:
- * @soundcard: the #AgsSoundcard
- * @card_id: pulseaudio identifier
- * @card_name: card name
- *
- * List available soundcards.
- *
- * Since: 1.2.0
- */
 void
 ags_pulse_devin_list_cards(AgsSoundcard *soundcard,
 			   GList **card_id, GList **card_name)
 {
+  AgsPulseClient *pulse_client;
   AgsPulseDevin *pulse_devin;
 
   AgsApplicationContext *application_context;
   
-  GList *list, *list_start;
+  GList *list_start, *list;
 
-  pthread_mutex_t *application_mutex;
+  gchar *card_uri;
+  gchar *client_name;
   
   pulse_devin = AGS_PULSE_DEVIN(soundcard);
 
-  application_context = (AgsApplicationContext *) pulse_devin->application_context;
+  g_object_get(pulse_devin,
+	       "application-context", &application_context,
+	       NULL);
 
   if(application_context == NULL){
     return;
   }
-  
-  application_mutex = pulse_devin->application_mutex;
   
   if(card_id != NULL){
     *card_id = NULL;
@@ -1517,16 +1769,17 @@ ags_pulse_devin_list_cards(AgsSoundcard *soundcard,
     *card_name = NULL;
   }
 
-  pthread_mutex_lock(application_mutex);
-
-  list = ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(application_context));
+  list =
+    list_start = ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(application_context));
   
   while(list != NULL){
     if(AGS_IS_PULSE_DEVIN(list->data)){
       if(card_id != NULL){
+	card_uri = ags_soundcard_get_device(AGS_SOUNDCARD(list->data));
+	
 	if(AGS_PULSE_DEVIN(list->data)->card_uri != NULL){
 	  *card_id = g_list_prepend(*card_id,
-				    g_strdup(AGS_PULSE_DEVIN(list->data)->card_uri));
+				    card_uri);
 	}else{
 	  *card_id = g_list_prepend(*card_id,
 				    g_strdup("(null)"));
@@ -1536,9 +1789,29 @@ ags_pulse_devin_list_cards(AgsSoundcard *soundcard,
       }
 
       if(card_name != NULL){
-	if(AGS_PULSE_DEVIN(list->data)->pulse_client != NULL){
+	g_object_get(list->data,
+		     "pulse-client", &pulse_client,
+		     NULL);
+	
+	if(pulse_client != NULL){
+	  pthread_mutex_t *pulse_client_mutex;
+	  
+	  /* get pulse client mutex */
+	  pthread_mutex_lock(ags_pulse_client_get_class_mutex());
+  
+	  pulse_client_mutex = pulse_client->obj_mutex;
+  
+	  pthread_mutex_unlock(ags_pulse_client_get_class_mutex());
+
+	  /* get client name */
+	  pthread_mutex_lock(pulse_client_mutex);
+
+	  client_name = g_strdup(pulse_client->client_name);
+
+	  pthread_mutex_unlock(pulse_client_mutex);
+	  
 	  *card_name = g_list_prepend(*card_name,
-				      g_strdup(AGS_PULSE_CLIENT(AGS_PULSE_DEVIN(list->data)->pulse_client)->name));
+				      client_name);
 	}else{
 	  *card_name = g_list_prepend(*card_name,
 				      g_strdup("(null)"));
@@ -1550,8 +1823,6 @@ ags_pulse_devin_list_cards(AgsSoundcard *soundcard,
 
     list = list->next;
   }
-
-  pthread_mutex_unlock(application_mutex);
   
   if(card_id != NULL && *card_id != NULL){
     *card_id = g_list_reverse(*card_id);
@@ -1600,9 +1871,27 @@ ags_pulse_devin_is_starting(AgsSoundcard *soundcard)
 {
   AgsPulseDevin *pulse_devin;
 
-  pulse_devin = AGS_PULSE_DEVIN(soundcard);
+  gboolean is_starting;
   
-  return((((AGS_PULSE_DEVIN_START_RECORD & (pulse_devin->flags)) != 0) ? TRUE: FALSE));
+  pthread_mutex_t *pulse_devin_mutex;
+  
+  pulse_devin = AGS_PULSE_DEVIN(soundcard);
+
+  /* get pulse devin mutex */
+  pthread_mutex_lock(ags_pulse_devin_get_class_mutex());
+  
+  pulse_devin_mutex = pulse_devin->obj_mutex;
+  
+  pthread_mutex_unlock(ags_pulse_devin_get_class_mutex());
+
+  /* check is starting */
+  pthread_mutex_lock(pulse_devin_mutex);
+
+  is_starting = ((AGS_PULSE_DEVIN_START_RECORD & (pulse_devin->flags)) != 0) ? TRUE: FALSE;
+
+  pthread_mutex_unlock(pulse_devin_mutex);
+  
+  return(is_starting);
 }
 
 gboolean
@@ -1610,9 +1899,27 @@ ags_pulse_devin_is_recording(AgsSoundcard *soundcard)
 {
   AgsPulseDevin *pulse_devin;
 
+  gboolean is_recording;
+  
+  pthread_mutex_t *pulse_devin_mutex;
+
   pulse_devin = AGS_PULSE_DEVIN(soundcard);
   
-  return((((AGS_PULSE_DEVIN_RECORD & (pulse_devin->flags)) != 0) ? TRUE: FALSE));
+  /* get pulse devin mutex */
+  pthread_mutex_lock(ags_pulse_devin_get_class_mutex());
+  
+  pulse_devin_mutex = pulse_devin->obj_mutex;
+  
+  pthread_mutex_unlock(ags_pulse_devin_get_class_mutex());
+
+  /* check is starting */
+  pthread_mutex_lock(pulse_devin_mutex);
+
+  is_recording = ((AGS_PULSE_DEVIN_RECORD & (pulse_devin->flags)) != 0) ? TRUE: FALSE;
+
+  pthread_mutex_unlock(pulse_devin_mutex);
+
+  return(is_recording);
 }
 
 gchar*
@@ -1661,66 +1968,58 @@ ags_pulse_devin_port_init(AgsSoundcard *soundcard,
 {
   AgsPulseDevin *pulse_devin;
 
-  AgsMutexManager *mutex_manager;
-
-  AgsApplicationContext *application_context;
-
   guint format, word_size;
   
-  pthread_mutex_t *mutex;
+  pthread_mutex_t *pulse_devin_mutex;
   
   pulse_devin = AGS_PULSE_DEVIN(soundcard);
-
-  application_context = ags_soundcard_get_application_context(soundcard);
   
-  pthread_mutex_lock(application_context->mutex);
+  /* get pulse devin mutex */
+  pthread_mutex_lock(ags_pulse_devin_get_class_mutex());
   
-  mutex_manager = ags_mutex_manager_get_instance();
-
-  mutex = ags_mutex_manager_lookup(mutex_manager,
-				   (GObject *) pulse_devin);
+  pulse_devin_mutex = pulse_devin->obj_mutex;
   
-  pthread_mutex_unlock(application_context->mutex);
+  pthread_mutex_unlock(ags_pulse_devin_get_class_mutex());
 
   /* retrieve word size */
-  pthread_mutex_lock(mutex);
+  pthread_mutex_lock(pulse_devin_mutex);
 
   switch(pulse_devin->format){
   case AGS_SOUNDCARD_SIGNED_8_BIT:
     {
-      word_size = sizeof(signed char);
+      word_size = sizeof(gint8);
     }
     break;
   case AGS_SOUNDCARD_SIGNED_16_BIT:
     {
-      word_size = sizeof(signed short);
+      word_size = sizeof(gint16);
     }
     break;
   case AGS_SOUNDCARD_SIGNED_24_BIT:
     {      
       //NOTE:JK: The 24-bit linear samples use 32-bit physical space
-      word_size = sizeof(signed long);
+      word_size = sizeof(gint32);
     }
     break;
   case AGS_SOUNDCARD_SIGNED_32_BIT:
     {
-      word_size = sizeof(signed long);
+      word_size = sizeof(gint32);
     }
     break;
   case AGS_SOUNDCARD_SIGNED_64_BIT:
     {
-      word_size = sizeof(signed long long);
+      word_size = sizeof(gint64);
     }
     break;
   default:
-    pthread_mutex_unlock(mutex);
+    pthread_mutex_unlock(pulse_devin_mutex);
     
     g_warning("ags_pulse_devin_port_init(): unsupported word size");
     
     return;
   }
   
-  /* prepare for capture */
+  /* prepare for playback */
   pulse_devin->flags |= (AGS_PULSE_DEVIN_BUFFER7 |
 			 AGS_PULSE_DEVIN_START_RECORD |
 			 AGS_PULSE_DEVIN_RECORD |
@@ -1749,7 +2048,7 @@ ags_pulse_devin_port_init(AgsSoundcard *soundcard,
   g_atomic_int_or(&(pulse_devin->sync_flags),
 		  AGS_PULSE_DEVIN_INITIAL_CALLBACK);
 
-  pthread_mutex_unlock(mutex);
+  pthread_mutex_unlock(pulse_devin_mutex);
 }
 
 void
@@ -1760,48 +2059,48 @@ ags_pulse_devin_port_record(AgsSoundcard *soundcard,
   AgsPulseDevin *pulse_devin;
 
   AgsNotifySoundcard *notify_soundcard;
+  AgsTicDevice *tic_device;
+  AgsClearBuffer *clear_buffer;
+  AgsSwitchBufferFlag *switch_buffer_flag;
   
-  AgsMutexManager *mutex_manager;
   AgsTaskThread *task_thread;
 
   AgsApplicationContext *application_context;
+      
+  GList *task;
 
   guint word_size;
   gboolean pulse_client_activated;
 
-  pthread_mutex_t *mutex;
-  pthread_mutex_t *client_mutex;
+  pthread_mutex_t *pulse_devin_mutex;
+  pthread_mutex_t *pulse_client_mutex;
   pthread_mutex_t *callback_mutex;
   pthread_mutex_t *callback_finish_mutex;
   
   pulse_devin = AGS_PULSE_DEVIN(soundcard);
   application_context = ags_soundcard_get_application_context(soundcard);
   
-  /* mutices */
-  pthread_mutex_lock(application_context->mutex);
+  /* get pulse devin mutex */
+  pthread_mutex_lock(ags_pulse_devin_get_class_mutex());
   
-  mutex_manager = ags_mutex_manager_get_instance();
-  task_thread = (AgsTaskThread *) application_context->task_thread;
-
-  mutex = ags_mutex_manager_lookup(mutex_manager,
-				   (GObject *) pulse_devin);
+  pulse_devin_mutex = pulse_devin->obj_mutex;
   
-  pthread_mutex_unlock(application_context->mutex);
+  pthread_mutex_unlock(ags_pulse_devin_get_class_mutex());
 
   /* client */
-  pthread_mutex_lock(mutex);
+  pthread_mutex_lock(pulse_devin_mutex);
 
   pulse_client = (AgsPulseClient *) pulse_devin->pulse_client;
   
   callback_mutex = pulse_devin->callback_mutex;
   callback_finish_mutex = pulse_devin->callback_finish_mutex;
 
-  /* do capture */  
+  /* do playback */  
   pulse_devin->flags &= (~AGS_PULSE_DEVIN_START_RECORD);
   notify_soundcard = AGS_NOTIFY_SOUNDCARD(pulse_devin->notify_soundcard);
   
   if((AGS_PULSE_DEVIN_INITIALIZED & (pulse_devin->flags)) == 0){
-    pthread_mutex_unlock(mutex);
+    pthread_mutex_unlock(pulse_devin_mutex);
     
     return;
   }
@@ -1809,43 +2108,43 @@ ags_pulse_devin_port_record(AgsSoundcard *soundcard,
   switch(pulse_devin->format){
   case AGS_SOUNDCARD_SIGNED_16_BIT:
     {
-      word_size = sizeof(signed short);
+      word_size = sizeof(gint16);
     }
     break;
   case AGS_SOUNDCARD_SIGNED_24_BIT:
     {      
       //NOTE:JK: The 24-bit linear samples use 32-bit physical space
-      word_size = sizeof(signed long);
+      word_size = sizeof(gint32);
     }
     break;
   case AGS_SOUNDCARD_SIGNED_32_BIT:
     {
-      word_size = sizeof(signed long);
+      word_size = sizeof(gint32);
     }
     break;
   default:
-    pthread_mutex_unlock(mutex);
+    pthread_mutex_unlock(pulse_devin_mutex);
     
     g_warning("ags_pulse_devin_port_record(): unsupported word size");
     
     return;
   }
 
-  pthread_mutex_unlock(mutex);
+  pthread_mutex_unlock(pulse_devin_mutex);
 
-  /*  */
-  pthread_mutex_lock(application_context->mutex);
+  /* get client mutex */
+  pthread_mutex_lock(ags_pulse_client_get_class_mutex());
   
-  client_mutex = ags_mutex_manager_lookup(mutex_manager,
-					  (GObject *) pulse_client);
+  pulse_client_mutex = pulse_client->obj_mutex;
   
-  pthread_mutex_unlock(application_context->mutex);
+  pthread_mutex_unlock(ags_pulse_client_get_class_mutex());
 
-  pthread_mutex_lock(client_mutex);
+  /* get activated */
+  pthread_mutex_lock(pulse_client_mutex);
 
   pulse_client_activated = ((AGS_PULSE_CLIENT_ACTIVATED & (pulse_client->flags)) != 0) ? TRUE: FALSE;
 
-  pthread_mutex_unlock(client_mutex);
+  pthread_mutex_unlock(pulse_client_mutex);
 
   if(pulse_client_activated){
     /* signal */
@@ -1900,85 +2199,30 @@ ags_pulse_devin_port_record(AgsSoundcard *soundcard,
   
   pthread_mutex_unlock(notify_soundcard->return_mutex);
 
-  if(task_thread != NULL){
-    AgsTicDevice *tic_device;
-    AgsClearBuffer *clear_buffer;
-    AgsSwitchBufferFlag *switch_buffer_flag;
-      
-    GList *task;
-      
-    task = NULL;
+  /* update soundcard */
+  g_object_get(application_context,
+	       "task-thread", &task_thread,
+	       NULL);  
+  task = NULL;
   
-    /* tic soundcard */
-    tic_device = ags_tic_device_new((GObject *) pulse_devin);
-    task = g_list_append(task,
-    			 tic_device);
+  /* tic soundcard */
+  tic_device = ags_tic_device_new((GObject *) pulse_devin);
+  task = g_list_append(task,
+		       tic_device);
 
-    /* reset - clear buffer */
-    clear_buffer = ags_clear_buffer_new((GObject *) pulse_devin);
-    task = g_list_append(task,
-			 clear_buffer);
+  /* reset - clear buffer */
+  clear_buffer = ags_clear_buffer_new((GObject *) pulse_devin);
+  task = g_list_append(task,
+		       clear_buffer);
     
-    /* reset - switch buffer flags */
-    switch_buffer_flag = ags_switch_buffer_flag_new((GObject *) pulse_devin);
-    task = g_list_append(task,
-			 switch_buffer_flag);
+  /* reset - switch buffer flags */
+  switch_buffer_flag = ags_switch_buffer_flag_new((GObject *) pulse_devin);
+  task = g_list_append(task,
+		       switch_buffer_flag);
 
-    /* append tasks */
-    ags_task_thread_append_tasks((AgsTaskThread *) task_thread,
-				 task);
-  }else{
-    guint nth_buffer;
-
-    /* get buffer */  
-    if((AGS_PULSE_DEVIN_BUFFER0 & (pulse_devin->flags)) != 0){
-      nth_buffer = 7;
-    }else if((AGS_PULSE_DEVIN_BUFFER1 & (pulse_devin->flags)) != 0){
-      nth_buffer = 0;
-    }else if((AGS_PULSE_DEVIN_BUFFER2 & (pulse_devin->flags)) != 0){
-      nth_buffer = 1;
-    }else if((AGS_PULSE_DEVIN_BUFFER3 & (pulse_devin->flags)) != 0){
-      nth_buffer = 2;
-    }else if((AGS_PULSE_DEVIN_BUFFER4 & (pulse_devin->flags)) != 0){
-      nth_buffer = 3;
-    }else if((AGS_PULSE_DEVIN_BUFFER5 & (pulse_devin->flags)) != 0){
-      nth_buffer = 4;
-    }else if((AGS_PULSE_DEVIN_BUFFER6 & (pulse_devin->flags)) != 0){
-      nth_buffer = 5;
-    }else if((AGS_PULSE_DEVIN_BUFFER7 & (pulse_devin->flags)) != 0){
-      nth_buffer = 6;
-    }
-    
-    /* tic */
-    ags_soundcard_tic(AGS_SOUNDCARD(pulse_devin));
-
-    switch(pulse_devin->format){
-    case AGS_SOUNDCARD_SIGNED_16_BIT:
-      {
-	word_size = sizeof(signed short);
-      }
-      break;
-    case AGS_SOUNDCARD_SIGNED_24_BIT:
-      {
-	//NOTE:JK: The 24-bit linear samples use 32-bit physical space
-	word_size = sizeof(signed long);
-      }
-      break;
-    case AGS_SOUNDCARD_SIGNED_32_BIT:
-      {
-	word_size = sizeof(signed long);
-      }
-      break;
-    default:
-      g_warning("ags_pulse_devin_port_record(): unsupported word size");
-      return;
-    }
-    
-    memset(pulse_devin->buffer[nth_buffer], 0, (size_t) pulse_devin->pcm_channels * pulse_devin->buffer_size * word_size);
-
-    /* reset - switch buffer flags */
-    ags_pulse_devin_switch_buffer_flag(pulse_devin);
-  }
+  /* append tasks */
+  ags_task_thread_append_tasks((AgsTaskThread *) task_thread,
+			       task);
 }
 
 void
@@ -1989,37 +2233,28 @@ ags_pulse_devin_port_free(AgsSoundcard *soundcard)
 
   AgsNotifySoundcard *notify_soundcard;
   
-  AgsMutexManager *mutex_manager;
-
-  AgsApplicationContext *application_context;
-
   guint word_size;
 
-  pthread_mutex_t *mutex;
+  pthread_mutex_t *pulse_devin_mutex;
   pthread_mutex_t *callback_mutex;
   pthread_mutex_t *callback_finish_mutex;
 
   pulse_devin = AGS_PULSE_DEVIN(soundcard);
   
-  application_context = ags_soundcard_get_application_context(soundcard);
+  /* get pulse devin mutex */
+  pthread_mutex_lock(ags_pulse_devin_get_class_mutex());
+  
+  pulse_devin_mutex = pulse_devin->obj_mutex;
+  
+  pthread_mutex_unlock(ags_pulse_devin_get_class_mutex());
 
   /*  */
-  pthread_mutex_lock(application_context->mutex);
-  
-  mutex_manager = ags_mutex_manager_get_instance();
-
-  mutex = ags_mutex_manager_lookup(mutex_manager,
-				   (GObject *) pulse_devin);
-  
-  pthread_mutex_unlock(application_context->mutex);
-
-  /*  */
-  pthread_mutex_lock(mutex);
+  pthread_mutex_lock(pulse_devin_mutex);
 
   notify_soundcard = AGS_NOTIFY_SOUNDCARD(pulse_devin->notify_soundcard);
 
   if((AGS_PULSE_DEVIN_INITIALIZED & (pulse_devin->flags)) == 0){
-    pthread_mutex_unlock(mutex);
+    pthread_mutex_unlock(pulse_devin_mutex);
 
     return;
   }
@@ -2092,27 +2327,27 @@ ags_pulse_devin_port_free(AgsSoundcard *soundcard)
   switch(pulse_devin->format){
   case AGS_SOUNDCARD_SIGNED_8_BIT:
     {
-      word_size = sizeof(signed char);
+      word_size = sizeof(gint8);
     }
     break;
   case AGS_SOUNDCARD_SIGNED_16_BIT:
     {
-      word_size = sizeof(signed short);
+      word_size = sizeof(gint16);
     }
     break;
   case AGS_SOUNDCARD_SIGNED_24_BIT:
     {
-      word_size = sizeof(signed long);
+      word_size = sizeof(gint32);
     }
     break;
   case AGS_SOUNDCARD_SIGNED_32_BIT:
     {
-      word_size = sizeof(signed long);
+      word_size = sizeof(gint32);
     }
     break;
   case AGS_SOUNDCARD_SIGNED_64_BIT:
     {
-      word_size = sizeof(signed long long);
+      word_size = sizeof(gint64);
     }
     break;
   default:
@@ -2121,7 +2356,7 @@ ags_pulse_devin_port_free(AgsSoundcard *soundcard)
     g_critical("ags_pulse_devin_free(): unsupported word size");
   }
 
-  pthread_mutex_unlock(mutex);
+  pthread_mutex_unlock(pulse_devin_mutex);
 
   if(pulse_devin->pulse_port != NULL){
     pulse_port = pulse_devin->pulse_port->data;
@@ -2129,7 +2364,7 @@ ags_pulse_devin_port_free(AgsSoundcard *soundcard)
     while(!g_atomic_int_get(&(pulse_port->is_empty))) usleep(500000);
   }
 
-  pthread_mutex_lock(mutex);
+  pthread_mutex_lock(pulse_devin_mutex);
   
   memset(pulse_devin->buffer[0], 0, (size_t) pulse_devin->pcm_channels * pulse_devin->buffer_size * word_size);
   memset(pulse_devin->buffer[1], 0, (size_t) pulse_devin->pcm_channels * pulse_devin->buffer_size * word_size);
@@ -2140,42 +2375,78 @@ ags_pulse_devin_port_free(AgsSoundcard *soundcard)
   memset(pulse_devin->buffer[6], 0, (size_t) pulse_devin->pcm_channels * pulse_devin->buffer_size * word_size);
   memset(pulse_devin->buffer[7], 0, (size_t) pulse_devin->pcm_channels * pulse_devin->buffer_size * word_size);
 
-  pthread_mutex_unlock(mutex);
+  pthread_mutex_unlock(pulse_devin_mutex);
 }
 
 void
 ags_pulse_devin_tic(AgsSoundcard *soundcard)
 {
   AgsPulseDevin *pulse_devin;
+
   gdouble delay;
+  gdouble delay_counter;
+  guint note_offset_absolute;
+  guint note_offset;
+  guint loop_left, loop_right;
+  gboolean do_loop;
+  
+  pthread_mutex_t *pulse_devin_mutex;
   
   pulse_devin = AGS_PULSE_DEVIN(soundcard);
+
+  /* get pulse devin mutex */
+  pthread_mutex_lock(ags_pulse_devin_get_class_mutex());
+  
+  pulse_devin_mutex = pulse_devin->obj_mutex;
+  
+  pthread_mutex_unlock(ags_pulse_devin_get_class_mutex());
   
   /* determine if attack should be switched */
-  delay = pulse_devin->delay[pulse_devin->tic_counter];
+  pthread_mutex_lock(pulse_devin_mutex);
 
-  if((guint) pulse_devin->delay_counter + 1 >= (guint) delay){
-    if(pulse_devin->do_loop &&
-       pulse_devin->note_offset + 1 == pulse_devin->loop_right){
+  delay = pulse_devin->delay[pulse_devin->tic_counter];
+  delay_counter = pulse_devin->delay_counter;
+
+  note_offset = pulse_devin->note_offset;
+  note_offset_absolute = pulse_devin->note_offset_absolute;
+  
+  loop_left = pulse_devin->loop_left;
+  loop_right = pulse_devin->loop_right;
+  
+  do_loop = pulse_devin->do_loop;
+
+  pthread_mutex_unlock(pulse_devin_mutex);
+
+  if((guint) delay_counter + 1 >= (guint) delay){
+    if(do_loop &&
+       note_offset + 1 == loop_right){
       ags_soundcard_set_note_offset(soundcard,
-				    pulse_devin->loop_left);
+				    loop_left);
     }else{
       ags_soundcard_set_note_offset(soundcard,
-				    pulse_devin->note_offset + 1);
+				    note_offset + 1);
     }
     
     ags_soundcard_set_note_offset_absolute(soundcard,
-					   pulse_devin->note_offset_absolute + 1);
-    
+					   note_offset_absolute + 1);
+
     /* delay */
     ags_soundcard_offset_changed(soundcard,
-				 pulse_devin->note_offset);
+				 note_offset);
     
     /* reset - delay counter */
+    pthread_mutex_lock(pulse_devin_mutex);
+    
     pulse_devin->delay_counter = 0.0;
     pulse_devin->tact_counter += 1.0;
+
+    pthread_mutex_unlock(pulse_devin_mutex);
   }else{
+    pthread_mutex_lock(pulse_devin_mutex);
+    
     pulse_devin->delay_counter += 1.0;
+
+    pthread_mutex_unlock(pulse_devin_mutex);
   }
 }
 
@@ -2185,7 +2456,19 @@ ags_pulse_devin_offset_changed(AgsSoundcard *soundcard,
 {
   AgsPulseDevin *pulse_devin;
   
+  pthread_mutex_t *pulse_devin_mutex;
+  
   pulse_devin = AGS_PULSE_DEVIN(soundcard);
+
+  /* get pulse devin mutex */
+  pthread_mutex_lock(ags_pulse_devin_get_class_mutex());
+  
+  pulse_devin_mutex = pulse_devin->obj_mutex;
+  
+  pthread_mutex_unlock(ags_pulse_devin_get_class_mutex());
+
+  /* offset changed */
+  pthread_mutex_lock(pulse_devin_mutex);
 
   pulse_devin->tic_counter += 1;
 
@@ -2193,6 +2476,8 @@ ags_pulse_devin_offset_changed(AgsSoundcard *soundcard,
     /* reset - tic counter i.e. modified delay index within period */
     pulse_devin->tic_counter = 0;
   }
+
+  pthread_mutex_unlock(pulse_devin_mutex);
 }
 
 void
@@ -2201,9 +2486,23 @@ ags_pulse_devin_set_bpm(AgsSoundcard *soundcard,
 {
   AgsPulseDevin *pulse_devin;
 
+  pthread_mutex_t *pulse_devin_mutex;
+  
   pulse_devin = AGS_PULSE_DEVIN(soundcard);
 
+  /* get pulse devin mutex */
+  pthread_mutex_lock(ags_pulse_devin_get_class_mutex());
+  
+  pulse_devin_mutex = pulse_devin->obj_mutex;
+  
+  pthread_mutex_unlock(ags_pulse_devin_get_class_mutex());
+
+  /* set bpm */
+  pthread_mutex_lock(pulse_devin_mutex);
+
   pulse_devin->bpm = bpm;
+
+  pthread_mutex_unlock(pulse_devin_mutex);
 
   ags_pulse_devin_adjust_delay_and_attack(pulse_devin);
 }
@@ -2212,10 +2511,28 @@ gdouble
 ags_pulse_devin_get_bpm(AgsSoundcard *soundcard)
 {
   AgsPulseDevin *pulse_devin;
+
+  gdouble bpm;
+  
+  pthread_mutex_t *pulse_devin_mutex;
   
   pulse_devin = AGS_PULSE_DEVIN(soundcard);
 
-  return(pulse_devin->bpm);
+  /* get pulse devin mutex */
+  pthread_mutex_lock(ags_pulse_devin_get_class_mutex());
+  
+  pulse_devin_mutex = pulse_devin->obj_mutex;
+  
+  pthread_mutex_unlock(ags_pulse_devin_get_class_mutex());
+
+  /* get bpm */
+  pthread_mutex_lock(pulse_devin_mutex);
+
+  bpm = pulse_devin->bpm;
+  
+  pthread_mutex_unlock(pulse_devin_mutex);
+
+  return(bpm);
 }
 
 void
@@ -2224,9 +2541,23 @@ ags_pulse_devin_set_delay_factor(AgsSoundcard *soundcard,
 {
   AgsPulseDevin *pulse_devin;
 
+  pthread_mutex_t *pulse_devin_mutex;
+  
   pulse_devin = AGS_PULSE_DEVIN(soundcard);
 
+  /* get pulse devin mutex */
+  pthread_mutex_lock(ags_pulse_devin_get_class_mutex());
+  
+  pulse_devin_mutex = pulse_devin->obj_mutex;
+  
+  pthread_mutex_unlock(ags_pulse_devin_get_class_mutex());
+
+  /* set delay factor */
+  pthread_mutex_lock(pulse_devin_mutex);
+
   pulse_devin->delay_factor = delay_factor;
+
+  pthread_mutex_unlock(pulse_devin_mutex);
 
   ags_pulse_devin_adjust_delay_and_attack(pulse_devin);
 }
@@ -2235,69 +2566,144 @@ gdouble
 ags_pulse_devin_get_delay_factor(AgsSoundcard *soundcard)
 {
   AgsPulseDevin *pulse_devin;
+
+  gdouble delay_factor;
+  
+  pthread_mutex_t *pulse_devin_mutex;
   
   pulse_devin = AGS_PULSE_DEVIN(soundcard);
 
-  return(pulse_devin->delay_factor);
-}
+  /* get pulse devin mutex */
+  pthread_mutex_lock(ags_pulse_devin_get_class_mutex());
+  
+  pulse_devin_mutex = pulse_devin->obj_mutex;
+  
+  pthread_mutex_unlock(ags_pulse_devin_get_class_mutex());
 
-gdouble
-ags_pulse_devin_get_absolute_delay(AgsSoundcard *soundcard)
-{
-  AgsPulseDevin *pulse_devin;
+  /* get delay factor */
+  pthread_mutex_lock(pulse_devin_mutex);
+
+  delay_factor = pulse_devin->delay_factor;
   
-  pulse_devin = AGS_PULSE_DEVIN(soundcard);
-  
-  return((60.0 * (((gdouble) pulse_devin->samplerate / (gdouble) pulse_devin->buffer_size) / (gdouble) pulse_devin->bpm) * ((1.0 / 16.0) * (1.0 / (gdouble) pulse_devin->delay_factor))));
+  pthread_mutex_unlock(pulse_devin_mutex);
+
+  return(delay_factor);
 }
 
 gdouble
 ags_pulse_devin_get_delay(AgsSoundcard *soundcard)
 {
   AgsPulseDevin *pulse_devin;
-  guint index;
+
+  guint delay_index;
+  gdouble delay;
+  
+  pthread_mutex_t *pulse_devin_mutex;
   
   pulse_devin = AGS_PULSE_DEVIN(soundcard);
-  index = pulse_devin->tic_counter;
+
+  /* get pulse devin mutex */
+  pthread_mutex_lock(ags_pulse_devin_get_class_mutex());
   
-  return(pulse_devin->delay[index]);
+  pulse_devin_mutex = pulse_devin->obj_mutex;
+  
+  pthread_mutex_unlock(ags_pulse_devin_get_class_mutex());
+
+  /* get delay */
+  pthread_mutex_lock(pulse_devin_mutex);
+
+  delay_index = pulse_devin->tic_counter;
+
+  delay = pulse_devin->delay[delay_index];
+  
+  pthread_mutex_unlock(pulse_devin_mutex);
+  
+  return(delay);
+}
+
+gdouble
+ags_pulse_devin_get_absolute_delay(AgsSoundcard *soundcard)
+{
+  AgsPulseDevin *pulse_devin;
+
+  gdouble absolute_delay;
+  
+  pthread_mutex_t *pulse_devin_mutex;
+  
+  pulse_devin = AGS_PULSE_DEVIN(soundcard);
+  
+  /* get pulse devin mutex */
+  pthread_mutex_lock(ags_pulse_devin_get_class_mutex());
+  
+  pulse_devin_mutex = pulse_devin->obj_mutex;
+  
+  pthread_mutex_unlock(ags_pulse_devin_get_class_mutex());
+
+  /* get absolute delay */
+  pthread_mutex_lock(pulse_devin_mutex);
+
+  absolute_delay = (60.0 * (((gdouble) pulse_devin->samplerate / (gdouble) pulse_devin->buffer_size) / (gdouble) pulse_devin->bpm) * ((1.0 / 16.0) * (1.0 / (gdouble) pulse_devin->delay_factor)));
+
+  pthread_mutex_unlock(pulse_devin_mutex);
+
+  return(absolute_delay);
 }
 
 guint
 ags_pulse_devin_get_attack(AgsSoundcard *soundcard)
 {
   AgsPulseDevin *pulse_devin;
-  guint index;
+
+  guint attack_index;
+  guint attack;
   
+  pthread_mutex_t *pulse_devin_mutex;  
+
   pulse_devin = AGS_PULSE_DEVIN(soundcard);
-  index = pulse_devin->tic_counter;
   
-  return(pulse_devin->attack[index]);
+  /* get pulse devin mutex */
+  pthread_mutex_lock(ags_pulse_devin_get_class_mutex());
+  
+  pulse_devin_mutex = pulse_devin->obj_mutex;
+  
+  pthread_mutex_unlock(ags_pulse_devin_get_class_mutex());
+
+  /* get attack */
+  pthread_mutex_lock(pulse_devin_mutex);
+
+  attack_index = pulse_devin->tic_counter;
+
+  attack = pulse_devin->attack[attack_index];
+
+  pthread_mutex_unlock(pulse_devin_mutex);
+  
+  return(attack);
 }
 
 void*
 ags_pulse_devin_get_buffer(AgsSoundcard *soundcard)
 {
   AgsPulseDevin *pulse_devin;
+
   void *buffer;
   
   pulse_devin = AGS_PULSE_DEVIN(soundcard);
 
-  if((AGS_PULSE_DEVIN_BUFFER0 & (pulse_devin->flags)) != 0){
+  if(ags_pulse_devin_test_flags(pulse_devin, AGS_PULSE_DEVIN_BUFFER0)){
     buffer = pulse_devin->buffer[0];
-  }else if((AGS_PULSE_DEVIN_BUFFER1 & (pulse_devin->flags)) != 0){
+  }else if(ags_pulse_devin_test_flags(pulse_devin, AGS_PULSE_DEVIN_BUFFER1)){
     buffer = pulse_devin->buffer[1];
-  }else if((AGS_PULSE_DEVIN_BUFFER2 & (pulse_devin->flags)) != 0){
+  }else if(ags_pulse_devin_test_flags(pulse_devin, AGS_PULSE_DEVIN_BUFFER2)){
     buffer = pulse_devin->buffer[2];
-  }else if((AGS_PULSE_DEVIN_BUFFER3 & (pulse_devin->flags)) != 0){
+  }else if(ags_pulse_devin_test_flags(pulse_devin, AGS_PULSE_DEVIN_BUFFER3)){
     buffer = pulse_devin->buffer[3];
-  }else if((AGS_PULSE_DEVIN_BUFFER4 & (pulse_devin->flags)) != 0){
+  }else if(ags_pulse_devin_test_flags(pulse_devin, AGS_PULSE_DEVIN_BUFFER4)){
     buffer = pulse_devin->buffer[4];
-  }else if((AGS_PULSE_DEVIN_BUFFER5 & (pulse_devin->flags)) != 0){
+  }else if(ags_pulse_devin_test_flags(pulse_devin, AGS_PULSE_DEVIN_BUFFER5)){
     buffer = pulse_devin->buffer[5];
-  }else if((AGS_PULSE_DEVIN_BUFFER6 & (pulse_devin->flags)) != 0){
+  }else if(ags_pulse_devin_test_flags(pulse_devin, AGS_PULSE_DEVIN_BUFFER6)){
     buffer = pulse_devin->buffer[6];
-  }else if((AGS_PULSE_DEVIN_BUFFER7 & (pulse_devin->flags)) != 0){
+  }else if(ags_pulse_devin_test_flags(pulse_devin, AGS_PULSE_DEVIN_BUFFER7)){
     buffer = pulse_devin->buffer[7];
   }else{
     buffer = NULL;
@@ -2310,26 +2716,27 @@ void*
 ags_pulse_devin_get_next_buffer(AgsSoundcard *soundcard)
 {
   AgsPulseDevin *pulse_devin;
+
   void *buffer;
   
   pulse_devin = AGS_PULSE_DEVIN(soundcard);
 
-  if((AGS_PULSE_DEVIN_BUFFER0 & (pulse_devin->flags)) != 0){
+  if(ags_pulse_devin_test_flags(pulse_devin, AGS_PULSE_DEVIN_BUFFER0)){
     buffer = pulse_devin->buffer[1];
-  }else if((AGS_PULSE_DEVIN_BUFFER1 & (pulse_devin->flags)) != 0){
+  }else if(ags_pulse_devin_test_flags(pulse_devin, AGS_PULSE_DEVIN_BUFFER1)){
     buffer = pulse_devin->buffer[2];
-  }else if((AGS_PULSE_DEVIN_BUFFER2 & (pulse_devin->flags)) != 0){
+  }else if(ags_pulse_devin_test_flags(pulse_devin, AGS_PULSE_DEVIN_BUFFER2)){
     buffer = pulse_devin->buffer[3];
-  }else if((AGS_PULSE_DEVIN_BUFFER3 & (pulse_devin->flags)) != 0){
+  }else if(ags_pulse_devin_test_flags(pulse_devin, AGS_PULSE_DEVIN_BUFFER3)){
     buffer = pulse_devin->buffer[4];
-  }else if((AGS_PULSE_DEVIN_BUFFER4 & (pulse_devin->flags)) != 0){
+  }else if(ags_pulse_devin_test_flags(pulse_devin, AGS_PULSE_DEVIN_BUFFER4)){
     buffer = pulse_devin->buffer[5];
-  }else if((AGS_PULSE_DEVIN_BUFFER5 & (pulse_devin->flags)) != 0){
+  }else if(ags_pulse_devin_test_flags(pulse_devin, AGS_PULSE_DEVIN_BUFFER5)){
     buffer = pulse_devin->buffer[6];
-  }else if((AGS_PULSE_DEVIN_BUFFER6 & (pulse_devin->flags)) != 0){
+  }else if(ags_pulse_devin_test_flags(pulse_devin, AGS_PULSE_DEVIN_BUFFER6)){
     buffer = pulse_devin->buffer[7];
-  }else if((AGS_PULSE_DEVIN_BUFFER7 & (pulse_devin->flags)) != 0){
-    buffer = pulse_devin->buffer[0];
+  }else if(ags_pulse_devin_test_flags(pulse_devin, AGS_PULSE_DEVIN_BUFFER7)){
+    buffer = pulse_devin->buffer[8];
   }else{
     buffer = NULL;
   }
@@ -2341,25 +2748,26 @@ void*
 ags_pulse_devin_get_prev_buffer(AgsSoundcard *soundcard)
 {
   AgsPulseDevin *pulse_devin;
+
   void *buffer;
   
   pulse_devin = AGS_PULSE_DEVIN(soundcard);
 
-  if((AGS_PULSE_DEVIN_BUFFER0 & (pulse_devin->flags)) != 0){
+  if(ags_pulse_devin_test_flags(pulse_devin, AGS_PULSE_DEVIN_BUFFER0)){
     buffer = pulse_devin->buffer[7];
-  }else if((AGS_PULSE_DEVIN_BUFFER1 & (pulse_devin->flags)) != 0){
+  }else if(ags_pulse_devin_test_flags(pulse_devin, AGS_PULSE_DEVIN_BUFFER1)){
     buffer = pulse_devin->buffer[0];
-  }else if((AGS_PULSE_DEVIN_BUFFER2 & (pulse_devin->flags)) != 0){
+  }else if(ags_pulse_devin_test_flags(pulse_devin, AGS_PULSE_DEVIN_BUFFER2)){
     buffer = pulse_devin->buffer[1];
-  }else if((AGS_PULSE_DEVIN_BUFFER3 & (pulse_devin->flags)) != 0){
+  }else if(ags_pulse_devin_test_flags(pulse_devin, AGS_PULSE_DEVIN_BUFFER3)){
     buffer = pulse_devin->buffer[2];
-  }else if((AGS_PULSE_DEVIN_BUFFER4 & (pulse_devin->flags)) != 0){
+  }else if(ags_pulse_devin_test_flags(pulse_devin, AGS_PULSE_DEVIN_BUFFER4)){
     buffer = pulse_devin->buffer[3];
-  }else if((AGS_PULSE_DEVIN_BUFFER5 & (pulse_devin->flags)) != 0){
+  }else if(ags_pulse_devin_test_flags(pulse_devin, AGS_PULSE_DEVIN_BUFFER5)){
     buffer = pulse_devin->buffer[4];
-  }else if((AGS_PULSE_DEVIN_BUFFER6 & (pulse_devin->flags)) != 0){
+  }else if(ags_pulse_devin_test_flags(pulse_devin, AGS_PULSE_DEVIN_BUFFER6)){
     buffer = pulse_devin->buffer[5];
-  }else if((AGS_PULSE_DEVIN_BUFFER7 & (pulse_devin->flags)) != 0){
+  }else if(ags_pulse_devin_test_flags(pulse_devin, AGS_PULSE_DEVIN_BUFFER7)){
     buffer = pulse_devin->buffer[6];
   }else{
     buffer = NULL;
@@ -2371,33 +2779,135 @@ ags_pulse_devin_get_prev_buffer(AgsSoundcard *soundcard)
 guint
 ags_pulse_devin_get_delay_counter(AgsSoundcard *soundcard)
 {
-  return(AGS_PULSE_DEVIN(soundcard)->delay_counter);
+  AgsPulseDevin *pulse_devin;
+
+  guint delay_counter;
+  
+  pthread_mutex_t *pulse_devin_mutex;  
+
+  pulse_devin = AGS_PULSE_DEVIN(soundcard);
+  
+  /* get pulse devin mutex */
+  pthread_mutex_lock(ags_pulse_devin_get_class_mutex());
+  
+  pulse_devin_mutex = pulse_devin->obj_mutex;
+  
+  pthread_mutex_unlock(ags_pulse_devin_get_class_mutex());
+
+  /* delay counter */
+  pthread_mutex_lock(pulse_devin_mutex);
+
+  delay_counter = pulse_devin->delay_counter;
+  
+  pthread_mutex_unlock(pulse_devin_mutex);
+
+  return(delay_counter);
 }
 
 void
 ags_pulse_devin_set_note_offset(AgsSoundcard *soundcard,
 				guint note_offset)
 {
-  AGS_PULSE_DEVIN(soundcard)->note_offset = note_offset;
+  AgsPulseDevin *pulse_devin;
+
+  pthread_mutex_t *pulse_devin_mutex;  
+
+  pulse_devin = AGS_PULSE_DEVIN(soundcard);
+
+  /* get pulse devin mutex */
+  pthread_mutex_lock(ags_pulse_devin_get_class_mutex());
+  
+  pulse_devin_mutex = pulse_devin->obj_mutex;
+  
+  pthread_mutex_unlock(ags_pulse_devin_get_class_mutex());
+
+  /* set note offset */
+  pthread_mutex_lock(pulse_devin_mutex);
+
+  pulse_devin->note_offset = note_offset;
+
+  pthread_mutex_unlock(pulse_devin_mutex);
 }
 
 guint
 ags_pulse_devin_get_note_offset(AgsSoundcard *soundcard)
 {
-  return(AGS_PULSE_DEVIN(soundcard)->note_offset);
+  AgsPulseDevin *pulse_devin;
+
+  guint note_offset;
+  
+  pthread_mutex_t *pulse_devin_mutex;  
+
+  pulse_devin = AGS_PULSE_DEVIN(soundcard);
+
+  /* get pulse devin mutex */
+  pthread_mutex_lock(ags_pulse_devin_get_class_mutex());
+  
+  pulse_devin_mutex = pulse_devin->obj_mutex;
+  
+  pthread_mutex_unlock(ags_pulse_devin_get_class_mutex());
+
+  /* set note offset */
+  pthread_mutex_lock(pulse_devin_mutex);
+
+  note_offset = pulse_devin->note_offset;
+
+  pthread_mutex_unlock(pulse_devin_mutex);
+
+  return(note_offset);
 }
 
 void
 ags_pulse_devin_set_note_offset_absolute(AgsSoundcard *soundcard,
-					 guint note_offset)
+					 guint note_offset_absolute)
 {
-  AGS_PULSE_DEVIN(soundcard)->note_offset_absolute = note_offset;
+  AgsPulseDevin *pulse_devin;
+  
+  pthread_mutex_t *pulse_devin_mutex;  
+
+  pulse_devin = AGS_PULSE_DEVIN(soundcard);
+
+  /* get pulse devin mutex */
+  pthread_mutex_lock(ags_pulse_devin_get_class_mutex());
+  
+  pulse_devin_mutex = pulse_devin->obj_mutex;
+  
+  pthread_mutex_unlock(ags_pulse_devin_get_class_mutex());
+
+  /* set note offset */
+  pthread_mutex_lock(pulse_devin_mutex);
+
+  pulse_devin->note_offset_absolute = note_offset_absolute;
+
+  pthread_mutex_unlock(pulse_devin_mutex);
 }
 
 guint
 ags_pulse_devin_get_note_offset_absolute(AgsSoundcard *soundcard)
 {
-  return(AGS_PULSE_DEVIN(soundcard)->note_offset_absolute);
+  AgsPulseDevin *pulse_devin;
+
+  guint note_offset_absolute;
+  
+  pthread_mutex_t *pulse_devin_mutex;  
+
+  pulse_devin = AGS_PULSE_DEVIN(soundcard);
+
+  /* get pulse devin mutex */
+  pthread_mutex_lock(ags_pulse_devin_get_class_mutex());
+  
+  pulse_devin_mutex = pulse_devin->obj_mutex;
+  
+  pthread_mutex_unlock(ags_pulse_devin_get_class_mutex());
+
+  /* set note offset */
+  pthread_mutex_lock(pulse_devin_mutex);
+
+  note_offset_absolute = pulse_devin->note_offset_absolute;
+
+  pthread_mutex_unlock(pulse_devin_mutex);
+
+  return(note_offset_absolute);
 }
 
 void
@@ -2405,57 +2915,151 @@ ags_pulse_devin_set_loop(AgsSoundcard *soundcard,
 			 guint loop_left, guint loop_right,
 			 gboolean do_loop)
 {
-  AGS_PULSE_DEVIN(soundcard)->loop_left = loop_left;
-  AGS_PULSE_DEVIN(soundcard)->loop_right = loop_right;
-  AGS_PULSE_DEVIN(soundcard)->do_loop = do_loop;
+  AgsPulseDevin *pulse_devin;
+
+  pthread_mutex_t *pulse_devin_mutex;  
+
+  pulse_devin = AGS_PULSE_DEVIN(soundcard);
+
+  /* get pulse devin mutex */
+  pthread_mutex_lock(ags_pulse_devin_get_class_mutex());
+  
+  pulse_devin_mutex = pulse_devin->obj_mutex;
+  
+  pthread_mutex_unlock(ags_pulse_devin_get_class_mutex());
+
+  /* set loop */
+  pthread_mutex_lock(pulse_devin_mutex);
+
+  pulse_devin->loop_left = loop_left;
+  pulse_devin->loop_right = loop_right;
+  pulse_devin->do_loop = do_loop;
 
   if(do_loop){
-    AGS_PULSE_DEVIN(soundcard)->loop_offset = AGS_PULSE_DEVIN(soundcard)->note_offset;
+    pulse_devin->loop_offset = pulse_devin->note_offset;
   }
+
+  pthread_mutex_unlock(pulse_devin_mutex);
 }
 
 void
 ags_pulse_devin_get_loop(AgsSoundcard *soundcard,
 			 guint *loop_left, guint *loop_right,
-			 gboolean *do_loop)  
+			 gboolean *do_loop)
 {
+  AgsPulseDevin *pulse_devin;
+
+  pthread_mutex_t *pulse_devin_mutex;  
+
+  pulse_devin = AGS_PULSE_DEVIN(soundcard);
+
+  /* get pulse devin mutex */
+  pthread_mutex_lock(ags_pulse_devin_get_class_mutex());
+  
+  pulse_devin_mutex = pulse_devin->obj_mutex;
+  
+  pthread_mutex_unlock(ags_pulse_devin_get_class_mutex());
+
+  /* get loop */
+  pthread_mutex_lock(pulse_devin_mutex);
+
   if(loop_left != NULL){
-    *loop_left = AGS_PULSE_DEVIN(soundcard)->loop_left;
+    *loop_left = pulse_devin->loop_left;
   }
 
   if(loop_right != NULL){
-    *loop_right = AGS_PULSE_DEVIN(soundcard)->loop_right;
+    *loop_right = pulse_devin->loop_right;
   }
 
   if(do_loop != NULL){
-    *do_loop = AGS_PULSE_DEVIN(soundcard)->do_loop;
+    *do_loop = pulse_devin->do_loop;
   }
+
+  pthread_mutex_unlock(pulse_devin_mutex);
 }
 
 guint
-ags_pulse_devin_get_loop_offset(AgsSoundcard *soundcard)  
+ags_pulse_devin_get_loop_offset(AgsSoundcard *soundcard)
 {
-  return(AGS_PULSE_DEVIN(soundcard)->loop_offset);
+  AgsPulseDevin *pulse_devin;
+
+  guint loop_offset;
+  
+  pthread_mutex_t *pulse_devin_mutex;  
+
+  pulse_devin = AGS_PULSE_DEVIN(soundcard);
+
+  /* get pulse devin mutex */
+  pthread_mutex_lock(ags_pulse_devin_get_class_mutex());
+  
+  pulse_devin_mutex = pulse_devin->obj_mutex;
+  
+  pthread_mutex_unlock(ags_pulse_devin_get_class_mutex());
+
+  /* get loop offset */
+  pthread_mutex_lock(pulse_devin_mutex);
+
+  loop_offset = pulse_devin->loop_offset;
+  
+  pthread_mutex_unlock(pulse_devin_mutex);
+
+  return(loop_offset);
 }
 
+/**
+ * ags_pulse_devin_switch_buffer_flag:
+ * @pulse_devin: an #AgsPulseDevin
+ *
+ * The buffer flag indicates the currently played buffer.
+ *
+ * Since: 2.0.0
+ */
 void
-ags_pulse_devin_set_audio(AgsSoundcard *soundcard,
-			  GList *audio)
+ags_pulse_devin_switch_buffer_flag(AgsPulseDevin *pulse_devin)
 {
-  AgsPulseDevin *pulse_devin;
+  pthread_mutex_t *pulse_devin_mutex;
+  
+  if(!AGS_IS_PULSE_DEVIN(pulse_devin)){
+    return;
+  }
 
-  pulse_devin = AGS_PULSE_DEVIN(soundcard);
-  pulse_devin->audio = audio;
-}
+  /* get pulse devin mutex */
+  pthread_mutex_lock(ags_pulse_devin_get_class_mutex());
+  
+  pulse_devin_mutex = pulse_devin->obj_mutex;
+  
+  pthread_mutex_unlock(ags_pulse_devin_get_class_mutex());
 
-GList*
-ags_pulse_devin_get_audio(AgsSoundcard *soundcard)
-{
-  AgsPulseDevin *pulse_devin;
+  /* switch buffer flag */
+  pthread_mutex_lock(pulse_devin_mutex);
 
-  pulse_devin = AGS_PULSE_DEVIN(soundcard);
+  if((AGS_PULSE_DEVIN_BUFFER0 & (pulse_devin->flags)) != 0){
+    pulse_devin->flags &= (~AGS_PULSE_DEVIN_BUFFER0);
+    pulse_devin->flags |= AGS_PULSE_DEVIN_BUFFER1;
+  }else if((AGS_PULSE_DEVIN_BUFFER1 & (pulse_devin->flags)) != 0){
+    pulse_devin->flags &= (~AGS_PULSE_DEVIN_BUFFER1);
+    pulse_devin->flags |= AGS_PULSE_DEVIN_BUFFER2;
+  }else if((AGS_PULSE_DEVIN_BUFFER2 & (pulse_devin->flags)) != 0){
+    pulse_devin->flags &= (~AGS_PULSE_DEVIN_BUFFER2);
+    pulse_devin->flags |= AGS_PULSE_DEVIN_BUFFER3;
+  }else if((AGS_PULSE_DEVIN_BUFFER3 & (pulse_devin->flags)) != 0){
+    pulse_devin->flags &= (~AGS_PULSE_DEVIN_BUFFER3);
+    pulse_devin->flags |= AGS_PULSE_DEVIN_BUFFER4;
+  }else if((AGS_PULSE_DEVIN_BUFFER4 & (pulse_devin->flags)) != 0){
+    pulse_devin->flags &= (~AGS_PULSE_DEVIN_BUFFER4);
+    pulse_devin->flags |= AGS_PULSE_DEVIN_BUFFER5;
+  }else if((AGS_PULSE_DEVIN_BUFFER5 & (pulse_devin->flags)) != 0){
+    pulse_devin->flags &= (~AGS_PULSE_DEVIN_BUFFER5);
+    pulse_devin->flags |= AGS_PULSE_DEVIN_BUFFER6;
+  }else if((AGS_PULSE_DEVIN_BUFFER6 & (pulse_devin->flags)) != 0){
+    pulse_devin->flags &= (~AGS_PULSE_DEVIN_BUFFER6);
+    pulse_devin->flags |= AGS_PULSE_DEVIN_BUFFER7;
+  }else if((AGS_PULSE_DEVIN_BUFFER7 & (pulse_devin->flags)) != 0){
+    pulse_devin->flags &= (~AGS_PULSE_DEVIN_BUFFER7);
+    pulse_devin->flags |= AGS_PULSE_DEVIN_BUFFER0;
+  }
 
-  return(pulse_devin->audio);
+  pthread_mutex_unlock(pulse_devin_mutex);
 }
 
 /**
@@ -2464,7 +3068,7 @@ ags_pulse_devin_get_audio(AgsSoundcard *soundcard)
  *
  * Calculate delay and attack and reset it.
  *
- * Since: 1.2.0
+ * Since: 2.0.0
  */
 void
 ags_pulse_devin_adjust_delay_and_attack(AgsPulseDevin *pulse_devin)
@@ -2476,16 +3080,28 @@ ags_pulse_devin_adjust_delay_and_attack(AgsPulseDevin *pulse_devin)
   gint next_attack;
   guint i;
 
-  if(pulse_devin == NULL){
+  pthread_mutex_t *pulse_devin_mutex;
+
+  if(!AGS_IS_PULSE_DEVIN(pulse_devin)){
     return;
   }
+
+  /* get pulse devin mutex */
+  pthread_mutex_lock(ags_pulse_devin_get_class_mutex());
   
+  pulse_devin_mutex = pulse_devin->obj_mutex;
+  
+  pthread_mutex_unlock(ags_pulse_devin_get_class_mutex());
+  
+  /* get some initial values */
   delay = ags_pulse_devin_get_absolute_delay(AGS_SOUNDCARD(pulse_devin));
 
 #ifdef AGS_DEBUG
   g_message("delay : %f", delay);
 #endif
   
+  pthread_mutex_lock(pulse_devin_mutex);
+
   default_tact_frames = (guint) (delay * pulse_devin->buffer_size);
   delay_tact_frames = (guint) (floor(delay) * pulse_devin->buffer_size);
   default_period = (1.0 / AGS_SOUNDCARD_DEFAULT_PERIOD) * (default_tact_frames);
@@ -2494,10 +3110,6 @@ ags_pulse_devin_adjust_delay_and_attack(AgsPulseDevin *pulse_devin)
   
   pulse_devin->attack[0] = (guint) floor(0.25 * pulse_devin->buffer_size);
   next_attack = (((pulse_devin->attack[i] + default_tact_frames) / pulse_devin->buffer_size) - delay) * pulse_devin->buffer_size;
-
-  if(next_attack < 0){
-    next_attack = 0;
-  }
 
   if(next_attack >= pulse_devin->buffer_size){
     next_attack = pulse_devin->buffer_size - 1;
@@ -2516,7 +3128,7 @@ ags_pulse_devin_adjust_delay_and_attack(AgsPulseDevin *pulse_devin)
     }
     
     next_attack = next_attack + (next_attack / 2.0);
-
+    
     if(next_attack < 0){
       next_attack = 0;
     }
@@ -2526,7 +3138,7 @@ ags_pulse_devin_adjust_delay_and_attack(AgsPulseDevin *pulse_devin)
     }
   }
   
-  for(i = 1; i < (int) 2.0 * AGS_SOUNDCARD_DEFAULT_PERIOD; i++){
+  for(i = 1; i < (int)  2.0 * AGS_SOUNDCARD_DEFAULT_PERIOD; i++){
     pulse_devin->attack[i] = next_attack;
     next_attack = (((pulse_devin->attack[i] + default_tact_frames) / pulse_devin->buffer_size) - delay) * pulse_devin->buffer_size;
 
@@ -2547,7 +3159,7 @@ ags_pulse_devin_adjust_delay_and_attack(AgsPulseDevin *pulse_devin)
       }
     
       next_attack = next_attack + (next_attack / 2.0);
-
+    
       if(next_attack < 0){
 	next_attack = 0;
       }
@@ -2573,6 +3185,8 @@ ags_pulse_devin_adjust_delay_and_attack(AgsPulseDevin *pulse_devin)
   }
 
   pulse_devin->delay[i] = ((gdouble) (default_tact_frames + pulse_devin->attack[i] - pulse_devin->attack[0])) / (gdouble) pulse_devin->buffer_size;
+
+  pthread_mutex_unlock(pulse_devin_mutex);
 }
 
 /**
@@ -2581,31 +3195,53 @@ ags_pulse_devin_adjust_delay_and_attack(AgsPulseDevin *pulse_devin)
  *
  * Reallocate the internal audio buffer.
  *
- * Since: 1.2.0
+ * Since: 2.0.0
  */
 void
 ags_pulse_devin_realloc_buffer(AgsPulseDevin *pulse_devin)
 {
+  guint pcm_channels;
+  guint buffer_size;
+  guint format;
   guint word_size;
 
-  if(pulse_devin == NULL){
+  pthread_mutex_t *pulse_devin_mutex;  
+
+  if(!AGS_IS_PULSE_DEVIN(pulse_devin)){
     return;
   }
 
-  switch(pulse_devin->format){
+  /* get pulse devin mutex */
+  pthread_mutex_lock(ags_pulse_devin_get_class_mutex());
+  
+  pulse_devin_mutex = pulse_devin->obj_mutex;
+  
+  pthread_mutex_unlock(ags_pulse_devin_get_class_mutex());
+
+  /* get word size */  
+  pthread_mutex_lock(pulse_devin_mutex);
+
+  pcm_channels = pulse_devin->pcm_channels;
+  buffer_size = pulse_devin->buffer_size;
+
+  format = pulse_devin->format;
+  
+  pthread_mutex_unlock(pulse_devin_mutex);
+
+  switch(format){
   case AGS_SOUNDCARD_SIGNED_16_BIT:
     {
-      word_size = sizeof(signed short);
+      word_size = sizeof(gint16);
     }
     break;
   case AGS_SOUNDCARD_SIGNED_24_BIT:
     {
-      word_size = sizeof(signed long);
+      word_size = sizeof(gint32);
     }
     break;
   case AGS_SOUNDCARD_SIGNED_32_BIT:
     {
-      word_size = sizeof(signed long);
+      word_size = sizeof(gint32);
     }
     break;
   default:
@@ -2618,70 +3254,70 @@ ags_pulse_devin_realloc_buffer(AgsPulseDevin *pulse_devin)
     free(pulse_devin->buffer[0]);
   }
   
-  pulse_devin->buffer[0] = (void *) malloc(pulse_devin->pcm_channels * pulse_devin->buffer_size * word_size);
+  pulse_devin->buffer[0] = (void *) malloc(pcm_channels * buffer_size * word_size);
   
   /* AGS_PULSE_DEVIN_BUFFER_1 */
   if(pulse_devin->buffer[1] != NULL){
     free(pulse_devin->buffer[1]);
   }
 
-  pulse_devin->buffer[1] = (void *) malloc(pulse_devin->pcm_channels * pulse_devin->buffer_size * word_size);
+  pulse_devin->buffer[1] = (void *) malloc(pcm_channels * buffer_size * word_size);
   
   /* AGS_PULSE_DEVIN_BUFFER_2 */
   if(pulse_devin->buffer[2] != NULL){
     free(pulse_devin->buffer[2]);
   }
 
-  pulse_devin->buffer[2] = (void *) malloc(pulse_devin->pcm_channels * pulse_devin->buffer_size * word_size);
+  pulse_devin->buffer[2] = (void *) malloc(pcm_channels * buffer_size * word_size);
   
   /* AGS_PULSE_DEVIN_BUFFER_3 */
   if(pulse_devin->buffer[3] != NULL){
     free(pulse_devin->buffer[3]);
   }
   
-  pulse_devin->buffer[3] = (void *) malloc(pulse_devin->pcm_channels * pulse_devin->buffer_size * word_size);
+  pulse_devin->buffer[3] = (void *) malloc(pcm_channels * buffer_size * word_size);
 
   /* AGS_PULSE_DEVIN_BUFFER_4 */
   if(pulse_devin->buffer[4] != NULL){
     free(pulse_devin->buffer[4]);
   }
   
-  pulse_devin->buffer[4] = (void *) malloc(pulse_devin->pcm_channels * pulse_devin->buffer_size * word_size);
+  pulse_devin->buffer[4] = (void *) malloc(pcm_channels * buffer_size * word_size);
 
   /* AGS_PULSE_DEVIN_BUFFER_5 */
   if(pulse_devin->buffer[5] != NULL){
     free(pulse_devin->buffer[5]);
   }
   
-  pulse_devin->buffer[5] = (void *) malloc(pulse_devin->pcm_channels * pulse_devin->buffer_size * word_size);
+  pulse_devin->buffer[5] = (void *) malloc(pcm_channels * buffer_size * word_size);
 
   /* AGS_PULSE_DEVIN_BUFFER_6 */
   if(pulse_devin->buffer[6] != NULL){
     free(pulse_devin->buffer[6]);
   }
   
-  pulse_devin->buffer[6] = (void *) malloc(pulse_devin->pcm_channels * pulse_devin->buffer_size * word_size);
+  pulse_devin->buffer[6] = (void *) malloc(pcm_channels * buffer_size * word_size);
 
   /* AGS_PULSE_DEVIN_BUFFER_7 */
   if(pulse_devin->buffer[7] != NULL){
     free(pulse_devin->buffer[7]);
   }
   
-  pulse_devin->buffer[7] = (void *) malloc(pulse_devin->pcm_channels * pulse_devin->buffer_size * word_size);
+  pulse_devin->buffer[7] = (void *) malloc(pcm_channels * buffer_size * word_size);
 }
 
 /**
  * ags_pulse_devin_new:
  * @application_context: the #AgsApplicationContext
  *
- * Creates an #AgsPulseDevin, refering to @application_context.
+ * Creates a new instance of #AgsPulseDevin.
  *
- * Returns: a new #AgsPulseDevin
+ * Returns: the new #AgsPulseDevin
  *
- * Since: 1.2.0
+ * Since: 2.0.0
  */
 AgsPulseDevin*
-ags_pulse_devin_new(GObject *application_context)
+ags_pulse_devin_new(AgsApplicationContext *application_context)
 {
   AgsPulseDevin *pulse_devin;
 

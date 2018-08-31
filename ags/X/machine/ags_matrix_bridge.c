@@ -30,9 +30,10 @@ void ags_matrix_bridge_class_init(AgsMatrixBridgeClass *matrix_bridge);
 void ags_matrix_bridge_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_matrix_bridge_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_matrix_bridge_init(AgsMatrixBridge *matrix_bridge);
+void ags_matrix_bridge_finalize(GObject *gobject);
+
 void ags_matrix_bridge_connect(AgsConnectable *connectable);
 void ags_matrix_bridge_disconnect(AgsConnectable *connectable);
-void ags_matrix_bridge_finalize(GObject *gobject);
 
 /**
  * SECTION:ags_matrix_bridge
@@ -166,6 +167,13 @@ ags_matrix_bridge_init(AgsMatrixBridge *matrix_bridge)
 }
 
 void
+ags_matrix_bridge_finalize(GObject *gobject)
+{
+  /* call parent */
+  G_OBJECT_CLASS(ags_matrix_bridge_parent_class)->finalize(gobject);
+}
+
+void
 ags_matrix_bridge_connect(AgsConnectable *connectable)
 {
   if((AGS_EFFECT_BRIDGE_CONNECTED & (AGS_EFFECT_BRIDGE(connectable)->flags)) != 0){
@@ -189,21 +197,15 @@ ags_matrix_bridge_disconnect(AgsConnectable *connectable)
   //TODO:JK: implement me
 }
 
-void
-ags_matrix_bridge_finalize(GObject *gobject)
-{
-  G_OBJECT_CLASS(ags_matrix_bridge_parent_class)->finalize(gobject);
-}
-
 /**
  * ags_matrix_bridge_new:
  * @audio: the #AgsAudio to visualize
  *
- * Creates an #AgsMatrixBridge
+ * Create a new instance of #AgsMatrixBridge
  *
- * Returns: a new #AgsMatrixBridge
+ * Returns: the new #AgsMatrixBridge
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsMatrixBridge*
 ags_matrix_bridge_new(AgsAudio *audio)

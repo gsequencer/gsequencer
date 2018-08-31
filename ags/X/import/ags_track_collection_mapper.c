@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -147,7 +147,7 @@ ags_track_collection_mapper_class_init(AgsTrackCollectionMapperClass *track_coll
    *
    * The tracks as xmlNode to parse.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_pointer("track",
 				    i18n_pspec("assigned track"),
@@ -162,7 +162,7 @@ ags_track_collection_mapper_class_init(AgsTrackCollectionMapperClass *track_coll
    *
    * The instruments as string to parse.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_string("instrument",
 				   i18n_pspec("assigned instrument"),
@@ -178,7 +178,7 @@ ags_track_collection_mapper_class_init(AgsTrackCollectionMapperClass *track_coll
    *
    * The sequences as string to parse.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_string("sequence",
 				   i18n_pspec("assigned sequence"),
@@ -503,17 +503,19 @@ ags_track_collection_mapper_apply(AgsApplicable *applicable)
 
   /* set size */
   ags_audio_set_audio_channels(machine->audio,
-			       gtk_spin_button_get_value_as_int(track_collection_mapper->audio_channels));
+			       gtk_spin_button_get_value_as_int(track_collection_mapper->audio_channels), 0);
   ags_audio_set_pads(machine->audio,
-		     AGS_TYPE_OUTPUT, 1);
+		     AGS_TYPE_OUTPUT,
+		     1, 0);
   ags_audio_set_pads(machine->audio,
-		     AGS_TYPE_INPUT, 128);
+		     AGS_TYPE_INPUT,
+		     128, 0);
 
   /* apply notation */
   imported_notation = track_collection_mapper->notation;
   g_list_free_full(machine->audio->notation,
 		   g_object_unref);
-
+  
   machine->audio->notation = imported_notation;
   
   while(imported_notation != NULL){
@@ -554,7 +556,7 @@ ags_track_collection_mapper_reset(AgsApplicable *applicable)
  *
  * Returns: the next matching #GList
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 GList*
 ags_track_collection_mapper_find_instrument_with_sequence(GList *track_collection_mapper,
@@ -585,7 +587,7 @@ ags_track_collection_mapper_find_instrument_with_sequence(GList *track_collectio
  *
  * Maps XML tracks to #AgsNotation
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_track_collection_mapper_map(AgsTrackCollectionMapper *track_collection_mapper)
@@ -685,13 +687,15 @@ ags_track_collection_mapper_map(AgsTrackCollectionMapper *track_collection_mappe
 	    if(x >= prev_x + AGS_NOTATION_DEFAULT_OFFSET){
 	      current_notation = ags_notation_new(NULL,
 						  i);
-	      current_notation->timestamp->timer.ags_offset.offset = AGS_NOTATION_DEFAULT_OFFSET * floor(x / AGS_NOTATION_DEFAULT_OFFSET);
+	      ags_timestamp_set_ags_offset(current_notation->timestamp,
+					   AGS_NOTATION_DEFAULT_OFFSET * floor(x / AGS_NOTATION_DEFAULT_OFFSET));
 	      
 	      notation_start = ags_notation_add(notation_start,
 						current_notation);
 
 	    }else{
-	      timestamp->timer.ags_offset.offset = AGS_NOTATION_DEFAULT_OFFSET * floor(x / AGS_NOTATION_DEFAULT_OFFSET);
+	      ags_timestamp_set_ags_offset(timestamp,
+					   AGS_NOTATION_DEFAULT_OFFSET * floor(x / AGS_NOTATION_DEFAULT_OFFSET));
 
 	      notation = ags_notation_find_near_timestamp(notation_start, i,
 							  timestamp);
@@ -729,7 +733,7 @@ ags_track_collection_mapper_map(AgsTrackCollectionMapper *track_collection_mappe
 	    notation = g_list_last(notation_start);
 
 	    while(notation != NULL){
-	      list = ags_note_find_prev(AGS_NOTATION(notation->data)->notes,
+	      list = ags_note_find_prev(AGS_NOTATION(notation->data)->note,
 					x, y);
 
 	      if(list != NULL){
@@ -788,7 +792,7 @@ ags_track_collection_mapper_map(AgsTrackCollectionMapper *track_collection_mappe
  *
  * Returns: a new #AgsTrackCollectionMapper
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsTrackCollectionMapper*
 ags_track_collection_mapper_new()

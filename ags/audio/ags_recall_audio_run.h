@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -41,7 +41,7 @@ typedef struct _AgsRecallAudioRunClass AgsRecallAudioRunClass;
 struct _AgsRecallAudioRun
 {
   AgsRecall recall;
-
+  
   AgsAudio *audio;
   
   AgsRecallAudio *recall_audio;

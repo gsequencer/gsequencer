@@ -124,15 +124,12 @@ ags_channel_test_dispose()
 
   /* run dispose and assert */
   g_object_run_dispose(channel);
-  g_object_run_dispose(channel->playback);
-
-  channel->playback = NULL;
   
   CU_ASSERT(channel->audio == NULL);
-  CU_ASSERT(channel->soundcard == NULL);
+  CU_ASSERT(channel->output_soundcard == NULL);
 
   CU_ASSERT(channel->recall_id == NULL);
-  CU_ASSERT(channel->container == NULL);
+  CU_ASSERT(channel->recall_container == NULL);
 
   CU_ASSERT(channel->recall == NULL);
   CU_ASSERT(channel->play == NULL);
@@ -187,9 +184,6 @@ ags_channel_test_finalize()
 
   /* run dispose */
   g_object_run_dispose(channel);
-  g_object_run_dispose(channel->playback);
-
-  channel->playback = NULL;
   
   /* stub */
   channel_test_finalized = FALSE;
@@ -278,7 +272,7 @@ ags_channel_test_add_recall_container()
 				   recall_container0);
   
   /* assert to be in channel->recall_container */
-  CU_ASSERT(g_list_find(channel->container,
+  CU_ASSERT(g_list_find(channel->recall_container,
 			recall_container0) != NULL);
 
   /* instantiate recall */
@@ -287,9 +281,9 @@ ags_channel_test_add_recall_container()
 				   recall_container1);
   
   /* assert to be in channel->recall_container */
-  CU_ASSERT(g_list_find(channel->container,
+  CU_ASSERT(g_list_find(channel->recall_container,
 			recall_container0) != NULL);
-  CU_ASSERT(g_list_find(channel->container,
+  CU_ASSERT(g_list_find(channel->recall_container,
 			recall_container1) != NULL);
 }
 
@@ -338,12 +332,14 @@ ags_channel_test_duplicate_recall()
   /* case 1: playback recall */
   recall = ags_recall_new();
   recall->flags |= AGS_RECALL_TEMPLATE;
+  recall->ability_flags = AGS_SOUND_ABILITY_NOTATION;
   ags_channel_add_recall(channel,
 			 recall,
 			 TRUE);
   
   recall_channel_run = ags_recall_channel_run_new();
   recall_channel_run->flags |= AGS_RECALL_TEMPLATE;
+  recall_channel_run->ability_flags = AGS_SOUND_ABILITY_NOTATION;
   ags_channel_add_recall(channel,
 			 recall_channel_run,
 			 TRUE);
@@ -356,6 +352,7 @@ ags_channel_test_duplicate_recall()
   recycling_context = ags_recycling_context_new(0);
 
   recall_id = ags_recall_id_new(NULL);
+  recall_id->sound_scope = AGS_SOUND_SCOPE_NOTATION;
   g_object_set(recall_id,
 	       "recycling-context\0", recycling_context,
 	       NULL);
@@ -370,12 +367,14 @@ ags_channel_test_duplicate_recall()
   /* case 2: true recall */
   recall = ags_recall_new();
   recall->flags |= AGS_RECALL_TEMPLATE;
+  recall->ability_flags = AGS_SOUND_ABILITY_NOTATION;
   ags_channel_add_recall(channel,
 			 recall,
 			 FALSE);
   
   recall_channel_run = ags_recall_channel_run_new();
   recall_channel_run->flags |= AGS_RECALL_TEMPLATE;
+  recall_channel_run->ability_flags = AGS_SOUND_ABILITY_NOTATION;
   ags_channel_add_recall(channel,
 			 recall_channel_run,
 			 FALSE);
@@ -393,6 +392,7 @@ ags_channel_test_duplicate_recall()
 	       NULL);
 
   recall_id = ags_recall_id_new(NULL);
+  recall_id->sound_scope = AGS_SOUND_SCOPE_NOTATION;
   g_object_set(recall_id,
 	       "recycling-context\0", recycling_context,
 	       NULL);
@@ -422,12 +422,14 @@ ags_channel_test_init_recall()
   /* instantiate recalls */
   recall = ags_recall_new();
   recall->flags |= AGS_RECALL_TEMPLATE;
+  recall->ability_flags = AGS_SOUND_ABILITY_NOTATION;
   ags_channel_add_recall(channel,
 			 recall,
 			 TRUE);
   
   recall_channel_run = ags_recall_channel_run_new();
   recall_channel_run->flags |= AGS_RECALL_TEMPLATE;
+  recall_channel_run->ability_flags = AGS_SOUND_ABILITY_NOTATION;
   ags_channel_add_recall(channel,
 			 recall_channel_run,
 			 TRUE);
@@ -436,6 +438,7 @@ ags_channel_test_init_recall()
   recycling_context = ags_recycling_context_new(0);
 
   recall_id = ags_recall_id_new(NULL);
+  recall_id->sound_scope = AGS_SOUND_SCOPE_NOTATION;
   g_object_set(recall_id,
 	       "recycling-context\0", recycling_context,
 	       NULL);
@@ -458,8 +461,8 @@ ags_channel_test_init_recall()
     list = list->next;
   }
   
-  ags_channel_init_recall(channel, 0,
-			  recall_id);
+  ags_channel_init_recall(channel,
+			  recall_id, AGS_SOUND_STAGING_RUN_INIT_PRE);
 
   CU_ASSERT(test_init_recall_callback_hits_count == 2);
 }
@@ -478,18 +481,19 @@ ags_channel_test_resolve_recall()
 
   /* instantiate recalls */
   slave_recall_channel_run = ags_recall_channel_run_new();
-  slave_recall_channel_run->flags |= AGS_RECALL_TEMPLATE;
+  slave_recall_channel_run->ability_flags = AGS_SOUND_ABILITY_NOTATION;
   ags_channel_add_recall(channel,
 			 slave_recall_channel_run,
 			 TRUE);
 
-  g_signal_connect(G_OBJECT(slave_recall_channel_run), "resolve-dependencies\0",
+  g_signal_connect(G_OBJECT(slave_recall_channel_run), "resolve-dependency\0",
 		   G_CALLBACK(ags_channel_test_resolve_recall_callback), NULL);
 
   /* instantiate recycling context and recall id */
   recycling_context = ags_recycling_context_new(0);
 
   recall_id = ags_recall_id_new(NULL);
+  recall_id->sound_scope = AGS_SOUND_SCOPE_NOTATION;
   g_object_set(recall_id,
 	       "recycling-context\0", recycling_context,
 	       NULL);

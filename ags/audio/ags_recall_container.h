@@ -39,13 +39,17 @@ typedef struct _AgsRecallContainerClass AgsRecallContainerClass;
 
 /**
  * AgsRecallContainerFlags:
+ * @AGS_RECALL_CONTAINER_ADDED_TO_REGISTRY: add to registry
+ * @AGS_RECALL_CONTAINER_CONNECTED: indicates the recall container was connected by calling #AgsConnectable::connect()
  * @AGS_RECALL_CONTAINER_PLAY: bound to play context
  * 
  * Enum values to control the behavior or indicate internal state of #AgsRecallContainer by
  * enable/disable as flags.
  */
 typedef enum{
-  AGS_RECALL_CONTAINER_PLAY    =  1,
+  AGS_RECALL_CONTAINER_ADDED_TO_REGISTRY   = 1,
+  AGS_RECALL_CONTAINER_CONNECTED           = 1 <<  1,
+  AGS_RECALL_CONTAINER_PLAY                = 1 <<  2,
 }AgsRecallContainerFlags;
 
 /**
@@ -68,6 +72,11 @@ struct _AgsRecallContainer
   
   guint flags;
 
+  pthread_mutex_t *obj_mutex;
+  pthread_mutexattr_t *obj_mutexattr;
+
+  AgsUUID *uuid;
+
   GType recall_audio_type;
   AgsRecall *recall_audio;
 
@@ -88,16 +97,30 @@ struct _AgsRecallContainerClass
 
 GType ags_recall_container_get_type();
 
-AgsRecall* ags_recall_container_get_recall_audio(AgsRecallContainer *container);
-GList* ags_recall_container_get_recall_audio_run(AgsRecallContainer *container);
-GList* ags_recall_container_get_recall_channel(AgsRecallContainer *container);
-GList* ags_recall_container_get_recall_channel_run(AgsRecallContainer *container);
+pthread_mutex_t* ags_recall_container_get_class_mutex();
+
+gboolean ags_recall_container_test_flags(AgsRecallContainer *recall_container, guint flags);
+void ags_recall_container_set_flags(AgsRecallContainer *recall_container, guint flags);
+void ags_recall_container_unset_flags(AgsRecallContainer *recall_container, guint flags);
+
+/* children */
+void ags_recall_container_add(AgsRecallContainer *recall_container,
+			      AgsRecall *recall);
+void ags_recall_container_remove(AgsRecallContainer *recall_container,
+				 AgsRecall *recall);
+
+/* query */
+AgsRecall* ags_recall_container_get_recall_audio(AgsRecallContainer *recall_container);
+GList* ags_recall_container_get_recall_audio_run(AgsRecallContainer *recall_container);
+GList* ags_recall_container_get_recall_channel(AgsRecallContainer *recall_container);
+GList* ags_recall_container_get_recall_channel_run(AgsRecallContainer *recall_container);
 
 GList* ags_recall_container_find(GList *recall_container,
 				 GType type,
 				 guint find_flags,
 				 AgsRecallID *recall_id);
 
+/* instantiate */
 AgsRecallContainer* ags_recall_container_new();
 
 #endif /*__AGS_RECALL_CONTAINER_H__*/

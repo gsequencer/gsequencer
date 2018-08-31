@@ -26,10 +26,6 @@
 #include <ags/libags.h>
 #include <ags/libags-audio.h>
 
-#define AGS_MIDIIN_TEST_DISPOSE_AUDIO_COUNT (8)
-
-#define AGS_MIDIIN_TEST_FINALIZE_AUDIO_COUNT (8)
-
 int ags_midiin_test_init_suite();
 int ags_midiin_test_clean_suite();
 
@@ -105,66 +101,12 @@ ags_midiin_test_dispose()
 			"application-context", audio_application_context,
 			NULL);
   g_object_ref(midiin);
-  
-  /* instantiate audio list */
-  list_start = NULL;
-  
-  for(i = 0; i < AGS_MIDIIN_TEST_DISPOSE_AUDIO_COUNT; i++){
-    audio = g_object_new(AGS_TYPE_AUDIO,
-			 NULL);
-    g_object_ref(audio);    
-
-    list_start = g_list_prepend(list_start,
-				audio);
-  }
-
-  /* add to sequencer */
-  list = list_start;
-  
-  while(list != NULL){
-    /* audio list of sequencer */
-    ags_sequencer_set_audio(AGS_SEQUENCER(midiin),
-			    g_list_prepend(ags_sequencer_get_audio(AGS_SEQUENCER(midiin)),
-					   list->data));
-    g_object_ref(list->data);
-
-    /* sequencer property of audio */
-    g_object_set(list->data,
-		 "sequencer", midiin,
-		 NULL);
-
-    /* iterate */
-    list = list->next;
-  }
 
   /* run dispose */
   g_object_run_dispose(midiin);
 
   /* assert no application context */
   CU_ASSERT(ags_sequencer_get_application_context(AGS_SEQUENCER(midiin)) == NULL);
-  
-  /* assert no audio */
-  CU_ASSERT(ags_sequencer_get_audio(AGS_SEQUENCER(midiin)) == NULL);
-
-  /* verify sequencer equals NULL */
-  list = list_start;
-  success = TRUE;
-  
-  while(list != NULL){
-    GObject *sequencer;
-    
-    g_object_get(list->data,
-		 "sequencer", &sequencer,
-		 NULL);
-
-    if(sequencer != NULL){
-      success = FALSE;
-
-      break;
-    }
-    
-    list = list->next;
-  }
 
   /* assert */
   CU_ASSERT(success == TRUE);
@@ -181,25 +123,6 @@ ags_midiin_test_finalize()
   midiin = g_object_new(AGS_TYPE_MIDIIN,
 			"application-context", audio_application_context,
 			NULL);
-
-  /* audio list */  
-  for(i = 0; i < AGS_MIDIIN_TEST_FINALIZE_AUDIO_COUNT; i++){
-    /* instantiate audio */
-    audio = g_object_new(AGS_TYPE_AUDIO,
-			 NULL);
-    g_object_ref(audio);    
-
-    /* audio list of sequencer */
-    ags_sequencer_set_audio(AGS_SEQUENCER(midiin),
-			    g_list_prepend(ags_sequencer_get_audio(AGS_SEQUENCER(midiin)),
-					   audio));
-    g_object_ref(audio);
-
-    /* sequencer property of audio */
-    g_object_set(audio,
-		 "sequencer", midiin,
-		 NULL);
-  }
 
   /* run dispose */
   g_object_run_dispose(midiin);

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -22,10 +22,8 @@
 #include <ags/libags.h>
 
 void ags_play_notation_audio_class_init(AgsPlayNotationAudioClass *play_notation_audio);
-void ags_play_notation_audio_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_play_notation_audio_init(AgsPlayNotationAudio *play_notation_audio);
 void ags_play_notation_audio_finalize(GObject *gobject);
-void ags_play_notation_audio_set_ports(AgsPlugin *plugin, GList *port);
 
 /**
  * SECTION:ags_play_notation_audio
@@ -38,7 +36,6 @@ void ags_play_notation_audio_set_ports(AgsPlugin *plugin, GList *port);
  */
 
 static gpointer ags_play_notation_audio_parent_class = NULL;
-static AgsPluginInterface *ags_play_notation_parent_plugin_interface;
 
 static const gchar *ags_play_notation_audio_plugin_name = "ags-play-notation";
 static const gchar *ags_play_notation_audio_specifier[] = {
@@ -66,22 +63,10 @@ ags_play_notation_audio_get_type()
       (GInstanceInitFunc) ags_play_notation_audio_init,
     };
 
-    static const GInterfaceInfo ags_plugin_interface_info = {
-      (GInterfaceInitFunc) ags_play_notation_audio_plugin_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };    
-
     ags_type_play_notation_audio = g_type_register_static(AGS_TYPE_RECALL_AUDIO,
 							  "AgsPlayNotationAudio",
 							  &ags_play_notation_audio_info,
 							  0);
-
-    g_type_add_interface_static(ags_type_play_notation_audio,
-				AGS_TYPE_PLUGIN,
-				&ags_plugin_interface_info);
-
-    g_once_init_leave (&g_define_type_id__volatile, ags_type_play_notation_audio);
   }
 
   return g_define_type_id__volatile;
@@ -99,14 +84,6 @@ ags_play_notation_audio_class_init(AgsPlayNotationAudioClass *play_notation_audi
   gobject = (GObjectClass *) play_notation_audio;
 
   gobject->finalize = ags_play_notation_audio_finalize;
-}
-
-void
-ags_play_notation_audio_plugin_interface_init(AgsPluginInterface *plugin)
-{
-  ags_play_notation_parent_plugin_interface = g_type_interface_peek_parent(plugin);
-
-  plugin->set_ports = ags_play_notation_audio_set_ports;
 }
 
 void
@@ -132,29 +109,23 @@ ags_play_notation_audio_finalize(GObject *gobject)
   G_OBJECT_CLASS(ags_play_notation_audio_parent_class)->finalize(gobject);
 }
 
-void
-ags_play_notation_audio_set_ports(AgsPlugin *plugin, GList *port)
-{
-  while(port != NULL){
-    port = port->next;
-  }
-}
-
 /**
  * ags_play_notation_audio_new:
+ * @audio: the #AgsAudio
  *
- * Creates an #AgsPlayNotationAudio
+ * Create a new instance of #AgsPlayNotationAudio
  *
- * Returns: a new #AgsPlayNotationAudio
+ * Returns: the new #AgsPlayNotationAudio
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsPlayNotationAudio*
-ags_play_notation_audio_new()
+ags_play_notation_audio_new(AgsAudio *audio)
 {
   AgsPlayNotationAudio *play_notation_audio;
 
   play_notation_audio = (AgsPlayNotationAudio *) g_object_new(AGS_TYPE_PLAY_NOTATION_AUDIO,
+							      "audio", audio,
 							      NULL);
 
   return(play_notation_audio);

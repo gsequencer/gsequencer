@@ -21,6 +21,7 @@
 #include <ags/X/import/ags_midi_import_wizard_callbacks.h>
 
 #include <ags/libags.h>
+#include <ags/libags-audio.h>
 
 #include <ags/X/ags_window.h>
 
@@ -41,11 +42,14 @@ void ags_midi_import_wizard_get_property(GObject *gobject,
 					 guint prop_id,
 					 GValue *value,
 					 GParamSpec *param_spec);
+
 void ags_midi_import_wizard_connect(AgsConnectable *connectable);
 void ags_midi_import_wizard_disconnect(AgsConnectable *connectable);
+
 void ags_midi_import_wizard_set_update(AgsApplicable *applicable, gboolean update);
 void ags_midi_import_wizard_apply(AgsApplicable *applicable);
 void ags_midi_import_wizard_reset(AgsApplicable *applicable);
+
 gboolean ags_midi_import_wizard_delete_event(GtkWidget *widget, GdkEventAny *event);
 void ags_midi_import_wizard_show(GtkWidget *widget);
 
@@ -141,7 +145,7 @@ ags_midi_import_wizard_class_init(AgsMidiImportWizardClass *midi_import_wizard)
    *
    * The assigned #AgsApplicationContext to give control of application.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("application-context",
 				   i18n_pspec("assigned application context"),
@@ -157,7 +161,7 @@ ags_midi_import_wizard_class_init(AgsMidiImportWizardClass *midi_import_wizard)
    *
    * The assigned #AgsWindow.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("main-window",
 				   i18n_pspec("assigned main window"),
@@ -421,11 +425,11 @@ ags_midi_import_wizard_show(GtkWidget *widget)
 /**
  * ags_midi_import_wizard_new:
  *
- * Creates an #AgsMidiImportWizard
+ * Create a new instance of #AgsMidiImportWizard
  *
- * Returns: a new #AgsMidiImportWizard
+ * Returns: the new #AgsMidiImportWizard
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsMidiImportWizard*
 ags_midi_import_wizard_new()

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -19,14 +19,12 @@
 
 #include <ags/audio/task/ags_resize_audio.h>
 
-#include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_output.h>
 #include <ags/audio/ags_input.h>
 
 #include <ags/i18n.h>
 
 void ags_resize_audio_class_init(AgsResizeAudioClass *resize_audio);
-void ags_resize_audio_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_resize_audio_init(AgsResizeAudio *resize_audio);
 void ags_resize_audio_set_property(GObject *gobject,
 				   guint prop_id,
@@ -36,8 +34,6 @@ void ags_resize_audio_get_property(GObject *gobject,
 				   guint prop_id,
 				   GValue *value,
 				   GParamSpec *param_spec);
-void ags_resize_audio_connect(AgsConnectable *connectable);
-void ags_resize_audio_disconnect(AgsConnectable *connectable);
 void ags_resize_audio_dispose(GObject *gobject);
 void ags_resize_audio_finalize(GObject *gobject);
 
@@ -54,7 +50,6 @@ void ags_resize_audio_launch(AgsTask *task);
  */
 
 static gpointer ags_resize_audio_parent_class = NULL;
-static AgsConnectableInterface *ags_resize_audio_parent_connectable_interface;
 
 enum{
   PROP_0,
@@ -73,36 +68,24 @@ ags_resize_audio_get_type()
     GType ags_type_resize_audio;
 
     static const GTypeInfo ags_resize_audio_info = {
-      sizeof (AgsResizeAudioClass),
+      sizeof(AgsResizeAudioClass),
       NULL, /* base_init */
       NULL, /* base_finalize */
       (GClassInitFunc) ags_resize_audio_class_init,
       NULL, /* class_finalize */
       NULL, /* class_data */
-      sizeof (AgsResizeAudio),
+      sizeof(AgsResizeAudio),
       0,    /* n_preallocs */
       (GInstanceInitFunc) ags_resize_audio_init,
-    };
-
-    static const GInterfaceInfo ags_connectable_interface_info = {
-      (GInterfaceInitFunc) ags_resize_audio_connectable_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
     };
     
     ags_type_resize_audio = g_type_register_static(AGS_TYPE_TASK,
 						   "AgsResizeAudio",
 						   &ags_resize_audio_info,
 						   0);
-    
-    g_type_add_interface_static(ags_type_resize_audio,
-				AGS_TYPE_CONNECTABLE,
-				&ags_connectable_interface_info);
-
-    g_once_init_leave (&g_define_type_id__volatile, ags_type_resize_audio);
   }
-
-  return g_define_type_id__volatile;
+  
+  return(ags_type_resize_audio);
 }
 
 void
@@ -110,6 +93,7 @@ ags_resize_audio_class_init(AgsResizeAudioClass *resize_audio)
 {
   GObjectClass *gobject;
   AgsTaskClass *task;
+
   GParamSpec *param_spec;
 
   ags_resize_audio_parent_class = g_type_class_peek_parent(resize_audio);
@@ -129,7 +113,7 @@ ags_resize_audio_class_init(AgsResizeAudioClass *resize_audio)
    *
    * The assigned #AgsAudio
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("audio",
 				   i18n_pspec("audio of resize audio"),
@@ -145,7 +129,7 @@ ags_resize_audio_class_init(AgsResizeAudioClass *resize_audio)
    *
    * The count of output pads to apply to audio.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_uint("output-pads",
 				 i18n_pspec("output pads"),
@@ -163,7 +147,7 @@ ags_resize_audio_class_init(AgsResizeAudioClass *resize_audio)
    *
    * The count of input pads to apply to audio.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_uint("input-pads",
 				 i18n_pspec("input pads"),
@@ -181,7 +165,7 @@ ags_resize_audio_class_init(AgsResizeAudioClass *resize_audio)
    *
    * The count of audio channels to apply to audio.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_uint("audio-channels",
 				 i18n_pspec("audio channels"),
@@ -199,15 +183,6 @@ ags_resize_audio_class_init(AgsResizeAudioClass *resize_audio)
   task = (AgsTaskClass *) resize_audio;
 
   task->launch = ags_resize_audio_launch;
-}
-
-void
-ags_resize_audio_connectable_interface_init(AgsConnectableInterface *connectable)
-{
-  ags_resize_audio_parent_connectable_interface = g_type_interface_peek_parent(connectable);
-
-  connectable->connect = ags_resize_audio_connect;
-  connectable->disconnect = ags_resize_audio_disconnect;
 }
 
 void
@@ -310,22 +285,6 @@ ags_resize_audio_get_property(GObject *gobject,
 }
 
 void
-ags_resize_audio_connect(AgsConnectable *connectable)
-{
-  ags_resize_audio_parent_connectable_interface->connect(connectable);
-
-  /* empty */
-}
-
-void
-ags_resize_audio_disconnect(AgsConnectable *connectable)
-{
-  ags_resize_audio_parent_connectable_interface->disconnect(connectable);
-
-  /* empty */
-}
-
-void
 ags_resize_audio_dispose(GObject *gobject)
 {
   AgsResizeAudio *resize_audio;
@@ -361,82 +320,41 @@ void
 ags_resize_audio_launch(AgsTask *task)
 {
   AgsAudio *audio;
-  AgsChannel *iter;
-
+  
   AgsResizeAudio *resize_audio;
 
-  AgsMutexManager *mutex_manager;
-
-  guint audio_channels;
+  guint audio_channels_old;
   guint input_pads_old, output_pads_old;
 
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *audio_mutex;
-
-  /* get mutex manager and application mutex */
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-    
   resize_audio = AGS_RESIZE_AUDIO(task);
 
   audio = resize_audio->audio;
 
-  /* get audio mutex */
-  pthread_mutex_lock(application_mutex);
-
-  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
-					 (GObject *) audio);
-
-  pthread_mutex_unlock(application_mutex);
-
   /* get some fields */
-  pthread_mutex_lock(audio_mutex);
-
-  audio_channels = audio->audio_channels;
-
-  output_pads_old = audio->output_pads;
-  input_pads_old = audio->input_pads;
-      
-  pthread_mutex_unlock(audio_mutex);
+  g_object_get(audio,
+	       "audio-channels", &audio_channels_old,
+	       "output-pads", &output_pads_old,
+	       "input-pads", &input_pads_old,
+	       NULL);
   
-  /* resize audio */
-  if(audio->output_pads != resize_audio->output_pads){    
+  /* resize audio - output */
+  if(output_pads_old != resize_audio->output_pads){    
     ags_audio_set_pads(audio,
 		       AGS_TYPE_OUTPUT,
-		       resize_audio->output_pads);
-
-    if(output_pads_old < audio->output_pads){
-      iter = ags_channel_pad_nth(audio->input,
-				 output_pads_old);
-      
-      while(iter != NULL){
-	ags_connectable_connect(AGS_CONNECTABLE(iter));
-	
-	iter = iter->next;
-      }
-    }
+		       resize_audio->output_pads, output_pads_old);
   }
 
-  if(audio->input_pads != resize_audio->input_pads){
+  /* resize audio - input */
+  if(input_pads_old != resize_audio->input_pads){
     ags_audio_set_pads(audio,
 		       AGS_TYPE_INPUT,
-		       resize_audio->input_pads);
-
-    if(input_pads_old < audio->output_pads){
-      iter = ags_channel_pad_nth(audio->input,
-				 input_pads_old);
-      
-      while(iter != NULL){
-	ags_connectable_connect(AGS_CONNECTABLE(iter));
-	
-	iter = iter->next;
-      }
-    }
+		       resize_audio->input_pads, input_pads_old);
   }
 
-  if(audio_channels != resize_audio->audio_channels){
+  /* resize audio - audio channels */
+  if(audio_channels_old != resize_audio->audio_channels){
     ags_audio_set_audio_channels(audio,
-				 resize_audio->audio_channels);
+				 resize_audio->audio_channels, audio_channels_old);
   }
 }
   
@@ -451,7 +369,7 @@ ags_resize_audio_launch(AgsTask *task)
  *
  * Returns: an new #AgsResizeAudio.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsResizeAudio*
 ags_resize_audio_new(AgsAudio *audio,

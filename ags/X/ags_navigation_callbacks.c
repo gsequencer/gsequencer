@@ -27,9 +27,6 @@
 
 #include <ags/X/thread/ags_gui_thread.h>
 
-#include <ags/X/task/ags_change_tact.h>
-#include <ags/X/task/ags_display_tact.h>
-
 void
 ags_navigation_parent_set_callback(GtkWidget *widget, GtkObject *old_parent,
 				   gpointer data)
@@ -78,28 +75,16 @@ ags_navigation_bpm_callback(GtkWidget *widget,
   AgsWindow *window;
   AgsApplyBpm *apply_bpm;
 
-  AgsMutexManager *mutex_manager;
-  AgsThread *main_loop;
   AgsGuiThread *gui_thread;
 
   AgsApplicationContext *application_context;
-
-  pthread_mutex_t *application_mutex;
   
   window = AGS_WINDOW(gtk_widget_get_ancestor(widget,
 					      AGS_TYPE_WINDOW));
   
   application_context = (AgsApplicationContext *) window->application_context;
 
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-
-  /* get audio loop */
-  pthread_mutex_lock(application_mutex);
-
   gui_thread = (AgsThread *) ags_ui_provider_get_gui_thread(AGS_UI_PROVIDER(application_context));
-
-  pthread_mutex_unlock(application_mutex);
 
   /* get task thread */
   apply_bpm = ags_apply_bpm_new(window->soundcard,
@@ -214,7 +199,7 @@ ags_navigation_play_callback(GtkWidget *widget,
   while(machines != NULL){
     machine = AGS_MACHINE(machines->data);
 
-    if(((AGS_MACHINE_IS_SEQUENCER & (machine->flags)) != 0) ||
+    if((AGS_MACHINE_IS_SEQUENCER & (machine->flags)) != 0 ||
        (AGS_MACHINE_IS_SYNTHESIZER & (machine->flags)) != 0){
 #ifdef AGS_DEBUG
       g_message("found machine to play!\n");
@@ -227,7 +212,20 @@ ags_navigation_play_callback(GtkWidget *widget,
       
       ags_machine_set_run_extended(machine,
 				   TRUE,
-				   !gtk_toggle_button_get_active((GtkToggleButton *) navigation->exclude_sequencer), TRUE);
+				   !gtk_toggle_button_get_active((GtkToggleButton *) navigation->exclude_sequencer), TRUE, FALSE, FALSE);
+    }else if((AGS_MACHINE_IS_WAVE_PLAYER & (machine->flags)) != 0){
+#ifdef AGS_DEBUG
+      g_message("found machine to play!\n");
+#endif
+      
+      if(!initialized_time){
+	initialized_time = TRUE;
+	navigation->start_tact = ags_soundcard_get_note_offset(AGS_SOUNDCARD(window->soundcard));
+      }
+      
+      ags_machine_set_run_extended(machine,
+				   TRUE,
+				   FALSE, FALSE, TRUE, FALSE);
     }
 
     machines = machines->next;
@@ -260,7 +258,15 @@ ags_navigation_stop_callback(GtkWidget *widget,
       
       ags_machine_set_run_extended(machine,
 				   FALSE,
-				   !gtk_toggle_button_get_active((GtkToggleButton *) navigation->exclude_sequencer), TRUE);
+				   !gtk_toggle_button_get_active((GtkToggleButton *) navigation->exclude_sequencer), TRUE, FALSE, FALSE);
+    }else if((AGS_MACHINE_IS_WAVE_PLAYER & (machine->flags)) != 0){
+#ifdef AGS_DEBUG
+      g_message("found machine to stop!");
+#endif
+      
+      ags_machine_set_run_extended(machine,
+				   FALSE,
+				   FALSE, FALSE, TRUE, FALSE);
     }
 
     machines = machines->next;
@@ -381,16 +387,10 @@ ags_navigation_loop_callback(GtkWidget *widget,
   AgsAudio *audio;
   AgsRecall *recall;
 
-  AgsMutexManager *mutex_manager;
-
   GList *machines, *machines_start;
   GList *list, *list_start;
 
   guint loop_left, loop_right;
-
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *soundcard_mutex;
-  pthread_mutex_t *audio_mutex;
   
   GValue do_loop_value = {0,};
   
@@ -427,7 +427,7 @@ ags_navigation_loop_callback(GtkWidget *widget,
   while(machines != NULL){
     machine = AGS_MACHINE(machines->data);
 
-    if((AGS_MACHINE_IS_SEQUENCER & (machine->flags)) !=0 ||
+    if((AGS_MACHINE_IS_SEQUENCER & (machine->flags)) != 0 ||
        (AGS_MACHINE_IS_SYNTHESIZER & (machine->flags)) != 0){
 #ifdef AGS_DEBUG
       g_message("found machine to loop!\n");
@@ -435,29 +435,61 @@ ags_navigation_loop_callback(GtkWidget *widget,
       
       audio = machine->audio;
 
-      /* get audio mutex */
-      pthread_mutex_lock(application_mutex);
-
-      audio_mutex = ags_mutex_manager_lookup(mutex_manager,
-					       (GObject *) audio);
-  
-      pthread_mutex_unlock(application_mutex);
-
       /* do it so */
-      pthread_mutex_lock(audio_mutex);
-      
-      list = audio->play;
+      g_object_get(audio,
+		   "play", &list_start,
+		   NULL);
 
+      list = list_start;
+      
       while((list = ags_recall_find_type(list,
 					 AGS_TYPE_COUNT_BEATS_AUDIO)) != NULL){
+	AgsPort *port;
+	
 	recall = AGS_RECALL(list->data);
-	ags_port_safe_write(AGS_COUNT_BEATS_AUDIO(recall)->notation_loop,
+
+	g_object_get(recall,
+		     "notation-loop", &port,
+		     NULL);
+	
+	ags_port_safe_write(port,
 			    &do_loop_value);
 
 	list = list->next;
       }
 
-      pthread_mutex_unlock(audio_mutex);
+      g_list_free(list_start);
+    }else if((AGS_MACHINE_IS_WAVE_PLAYER & (machine->flags)) != 0){
+#ifdef AGS_DEBUG
+      g_message("found machine to loop!\n");
+#endif
+      
+      audio = machine->audio;
+
+      /* do it so */
+      g_object_get(audio,
+		   "recall", &list_start,
+		   NULL);
+
+      list = list_start;
+      
+      while((list = ags_recall_find_type(list,
+					 AGS_TYPE_PLAY_WAVE_AUDIO)) != NULL){
+	AgsPort *port;
+	
+	recall = AGS_RECALL(list->data);
+
+	g_object_get(recall,
+		     "wave-loop", &port,
+		     NULL);
+	
+	ags_port_safe_write(port,
+			    &do_loop_value);
+
+	list = list->next;
+      }
+
+      g_list_free(list_start);
     }
 
     machines = machines->next;
@@ -494,16 +526,10 @@ ags_navigation_loop_left_tact_callback(GtkWidget *widget,
   AgsAudio *audio;
   AgsRecall *recall;
 
-  AgsMutexManager *mutex_manager;
-
   GList *machines, *machines_start;
-  GList *list; // find AgsPlayNotationAudio and AgsCopyPatternAudio
+  GList *list, *list_start; // find AgsPlayNotationAudio and AgsCopyPatternAudio
 
   guint loop_left, loop_right;
-
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *soundcard_mutex;
-  pthread_mutex_t *audio_mutex;
 
   GValue value = {0,};
 
@@ -548,29 +574,59 @@ ags_navigation_loop_left_tact_callback(GtkWidget *widget,
       
       audio = machine->audio;
 
-      /* get audio mutex */
-      pthread_mutex_lock(application_mutex);
-
-      audio_mutex = ags_mutex_manager_lookup(mutex_manager,
-					       (GObject *) audio);
-  
-      pthread_mutex_unlock(application_mutex);
-
       /* do it so */
-      pthread_mutex_lock(audio_mutex);      
-
-      list = audio->play;
-
+      g_object_get(audio,
+		   "play", &list_start,
+		   NULL);
+      
       while((list = ags_recall_find_type(list,
 					 AGS_TYPE_COUNT_BEATS_AUDIO)) != NULL){
+	AgsPort *port;
+
 	recall = AGS_RECALL(list->data);
-	ags_port_safe_write(AGS_COUNT_BEATS_AUDIO(recall)->notation_loop_start,
+
+
+	g_object_get(recall,
+		     "notation-loop-start", &port,
+		     NULL);
+	
+	ags_port_safe_write(port,
 			    &value);
 
 	list = list->next;
       }
 
-      pthread_mutex_unlock(audio_mutex);
+      g_list_free(list_start);
+    }else if((AGS_MACHINE_IS_WAVE_PLAYER & (machine->flags)) != 0){
+#ifdef AGS_DEBUG
+      g_message("found machine to loop!\n");
+#endif
+      
+      audio = machine->audio;
+
+      /* do it so */
+      g_object_get(audio,
+		   "recall", &list_start,
+		   NULL);
+      
+      while((list = ags_recall_find_type(list,
+					 AGS_TYPE_PLAY_WAVE_AUDIO)) != NULL){
+	AgsPort *port;
+
+	recall = AGS_RECALL(list->data);
+
+
+	g_object_get(recall,
+		     "wave-loop-start", &port,
+		     NULL);
+	
+	ags_port_safe_write(port,
+			    &value);
+
+	list = list->next;
+      }
+
+      g_list_free(list_start);
     }
 
     machines = machines->next;
@@ -589,16 +645,10 @@ ags_navigation_loop_right_tact_callback(GtkWidget *widget,
   AgsAudio *audio;
   AgsRecall *recall;
 
-  AgsMutexManager *mutex_manager;
-
   GList *machines, *machines_start;
-  GList *list; // find AgsPlayNotationAudio and AgsCopyPatternAudio
+  GList *list, *list_start; // find AgsPlayNotationAudio and AgsCopyPatternAudio
 
   guint loop_left, loop_right;
-
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *soundcard_mutex;
-  pthread_mutex_t *audio_mutex;
 
   GValue value = {0,};
 
@@ -642,30 +692,59 @@ ags_navigation_loop_right_tact_callback(GtkWidget *widget,
 #endif
       
       audio = machine->audio;
-
-      /* get audio mutex */
-      pthread_mutex_lock(application_mutex);
-
-      audio_mutex = ags_mutex_manager_lookup(mutex_manager,
-					       (GObject *) audio);
-  
-      pthread_mutex_unlock(application_mutex);
+      
 
       /* do it so */
-      pthread_mutex_lock(audio_mutex);
-      
-      list = audio->play;
+      g_object_get(audio,
+		   "play", &list_start,
+		   NULL);
 
       while((list = ags_recall_find_type(list,
 					 AGS_TYPE_COUNT_BEATS_AUDIO)) != NULL){
+	AgsPort *port;
+	
 	recall = AGS_RECALL(list->data);
-	ags_port_safe_write(AGS_COUNT_BEATS_AUDIO(recall)->notation_loop_end,
+
+	g_object_get(recall,
+		     "notation-loop-end", &port,
+		     NULL);
+
+	ags_port_safe_write(port,
 			    &value);
 
 	list = list->next;
       }
 
-      pthread_mutex_unlock(audio_mutex);
+      g_list_free(list_start);
+    }else if((AGS_MACHINE_IS_WAVE_PLAYER & (machine->flags)) != 0){
+#ifdef AGS_DEBUG
+      g_message("found machine to loop!\n");
+#endif
+      
+      audio = machine->audio;
+      
+      /* do it so */
+      g_object_get(audio,
+		   "recall", &list_start,
+		   NULL);
+
+      while((list = ags_recall_find_type(list,
+					 AGS_TYPE_PLAY_WAVE_AUDIO)) != NULL){
+	AgsPort *port;
+	
+	recall = AGS_RECALL(list->data);
+
+	g_object_get(recall,
+		     "wave-loop-end", &port,
+		     NULL);
+
+	ags_port_safe_write(port,
+			    &value);
+
+	list = list->next;
+      }
+
+      g_list_free(list_start);
     }
 
     machines = machines->next;

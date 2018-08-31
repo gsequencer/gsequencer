@@ -208,7 +208,7 @@ ags_config_class_init(AgsConfigClass *config)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET (AgsConfigClass, set_value),
 		 NULL, NULL,
-		 g_cclosure_user_marshal_VOID__STRING_STRING_STRING,
+		 ags_cclosure_marshal_VOID__STRING_STRING_STRING,
 		 G_TYPE_NONE, 3,
 		 G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING);
 
@@ -230,7 +230,7 @@ ags_config_class_init(AgsConfigClass *config)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET (AgsConfigClass, get_value),
 		 NULL, NULL,
-		 g_cclosure_user_marshal_STRING__STRING_STRING,
+		 ags_cclosure_marshal_STRING__STRING_STRING,
 		 G_TYPE_STRING, 2,
 		 G_TYPE_STRING, G_TYPE_STRING);
 }
@@ -853,14 +853,20 @@ ags_config_clear(AgsConfig *config)
  *
  * Returns: the config instance
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsConfig*
 ags_config_get_instance()
 {
+  static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+
+  pthread_mutex_lock(&mutex);
+
   if(ags_config == NULL){
     ags_config = ags_config_new(NULL);
   }
+
+  pthread_mutex_unlock(&mutex);
 
   return(ags_config);
 }

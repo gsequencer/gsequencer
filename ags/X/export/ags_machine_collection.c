@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -46,8 +46,10 @@ void ags_machine_collection_get_property(GObject *gobject,
 					 guint prop_id,
 					 GValue *value,
 					 GParamSpec *param_spec);
+
 void ags_machine_collection_connect(AgsConnectable *connectable);
 void ags_machine_collection_disconnect(AgsConnectable *connectable);
+
 void ags_machine_collection_set_update(AgsApplicable *applicable, gboolean update);
 void ags_machine_collection_apply(AgsApplicable *applicable);
 void ags_machine_collection_reset(AgsApplicable *applicable);
@@ -157,6 +159,8 @@ void
 ags_machine_collection_init(AgsMachineCollection *machine_collection)
 {
   GtkScrolledWindow *scrolled_window;
+
+  machine_collection->flags = 0;
   
   scrolled_window = (GtkScrolledWindow *) gtk_scrolled_window_new(NULL,
 								  NULL);
@@ -209,10 +213,17 @@ void
 ags_machine_collection_connect(AgsConnectable *connectable)
 {
   AgsMachineCollection *machine_collection;
+
   GList *list, *list_start;
   
   machine_collection = AGS_MACHINE_COLLECTION(connectable);
 
+  if((AGS_MACHINE_COLLECTION_CONNECTED & (machine_collection->flags)) != 0){
+    return;
+  }
+
+  machine_collection->flags |= AGS_MACHINE_COLLECTION_CONNECTED;
+  
   /* children */
   list_start = 
     list = gtk_container_get_children((GtkContainer *) machine_collection->child);
@@ -233,6 +244,12 @@ ags_machine_collection_disconnect(AgsConnectable *connectable)
   GList *list, *list_start;
   
   machine_collection = AGS_MACHINE_COLLECTION(connectable);
+
+  if((AGS_MACHINE_COLLECTION_CONNECTED & (machine_collection->flags)) == 0){
+    return;
+  }
+
+  machine_collection->flags &= (~AGS_MACHINE_COLLECTION_CONNECTED);
 
   /* children */
   list_start = 
@@ -336,7 +353,7 @@ ags_machine_collection_reload(AgsMachineCollection *machine_collection)
   
   while(machine != NULL){
     if(AGS_MACHINE(machine->data)->audio != NULL &&
-       (AGS_AUDIO_HAS_NOTATION & (AGS_MACHINE(machine->data)->audio->flags)) != 0){
+       ags_audio_test_ability_flags(AGS_MACHINE(machine->data)->audio, AGS_SOUND_ABILITY_NOTATION)){
       ags_machine_collection_add_entry(machine_collection,
 				       machine->data);
     }
@@ -379,7 +396,7 @@ ags_machine_collection_add_entry(AgsMachineCollection *machine_collection,
  *
  * Returns: a new #AgsMachineCollection
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsMachineCollection*
 ags_machine_collection_new(GType child_type,

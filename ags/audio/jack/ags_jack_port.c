@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -25,15 +25,11 @@
 
 #include <ags/audio/jack/ags_jack_server.h>
 #include <ags/audio/jack/ags_jack_client.h>
-#include <ags/audio/jack/ags_jack_devout.h>
-#include <ags/audio/jack/ags_jack_devin.h>
-#include <ags/audio/jack/ags_jack_midiin.h>
 
 #include <ags/i18n.h>
 
 void ags_jack_port_class_init(AgsJackPortClass *jack_port);
 void ags_jack_port_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_jack_port_distributed_manager_interface_init(AgsDistributedManagerInterface *distributed_manager);
 void ags_jack_port_init(AgsJackPort *jack_port);
 void ags_jack_port_set_property(GObject *gobject,
 				guint prop_id,
@@ -43,10 +39,21 @@ void ags_jack_port_get_property(GObject *gobject,
 				guint prop_id,
 				GValue *value,
 				GParamSpec *param_spec);
-void ags_jack_port_connect(AgsConnectable *connectable);
-void ags_jack_port_disconnect(AgsConnectable *connectable);
 void ags_jack_port_dispose(GObject *gobject);
 void ags_jack_port_finalize(GObject *gobject);
+
+AgsUUID* ags_jack_port_get_uuid(AgsConnectable *connectable);
+gboolean ags_jack_port_has_resource(AgsConnectable *connectable);
+gboolean ags_jack_port_is_ready(AgsConnectable *connectable);
+void ags_jack_port_add_to_registry(AgsConnectable *connectable);
+void ags_jack_port_remove_from_registry(AgsConnectable *connectable);
+xmlNode* ags_jack_port_list_resource(AgsConnectable *connectable);
+xmlNode* ags_jack_port_xml_compose(AgsConnectable *connectable);
+void ags_jack_port_xml_parse(AgsConnectable *connectable,
+			       xmlNode *node);
+gboolean ags_jack_port_is_connected(AgsConnectable *connectable);
+void ags_jack_port_connect(AgsConnectable *connectable);
+void ags_jack_port_disconnect(AgsConnectable *connectable);
 
 /**
  * SECTION:ags_jack_port
@@ -67,6 +74,8 @@ enum{
 
 static gpointer ags_jack_port_parent_class = NULL;
 
+static pthread_mutex_t ags_jack_port_class_mutex = PTHREAD_MUTEX_INITIALIZER;
+
 GType
 ags_jack_port_get_type()
 {
@@ -76,13 +85,13 @@ ags_jack_port_get_type()
     GType ags_type_jack_port;
 
     static const GTypeInfo ags_jack_port_info = {
-      sizeof (AgsJackPortClass),
+      sizeof(AgsJackPortClass),
       NULL, /* base_init */
       NULL, /* base_finalize */
       (GClassInitFunc) ags_jack_port_class_init,
       NULL, /* class_finalize */
       NULL, /* class_data */
-      sizeof (AgsJackPort),
+      sizeof(AgsJackPort),
       0,    /* n_preallocs */
       (GInstanceInitFunc) ags_jack_port_init,
     };
@@ -131,7 +140,7 @@ ags_jack_port_class_init(AgsJackPortClass *jack_port)
    *
    * The assigned #AgsJackClient.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("jack-client",
 				   i18n_pspec("assigned JACK client"),
@@ -145,14 +154,14 @@ ags_jack_port_class_init(AgsJackPortClass *jack_port)
   /**
    * AgsJackPort:port-name:
    *
-   * The jack soundcard indentifier
+   * The JACK port name.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_string("port-name",
 				   i18n_pspec("port name"),
 				   i18n_pspec("The port name"),
-				   "hw:0",
+				   NULL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_PORT_NAME,
@@ -162,49 +171,56 @@ ags_jack_port_class_init(AgsJackPortClass *jack_port)
 void
 ags_jack_port_connectable_interface_init(AgsConnectableInterface *connectable)
 {
+  connectable->get_uuid = ags_jack_port_get_uuid;
+  connectable->has_resource = ags_jack_port_has_resource;
+
+  connectable->is_ready = ags_jack_port_is_ready;
+  connectable->add_to_registry = ags_jack_port_add_to_registry;
+  connectable->remove_from_registry = ags_jack_port_remove_from_registry;
+
+  connectable->list_resource = ags_jack_port_list_resource;
+  connectable->xml_compose = ags_jack_port_xml_compose;
+  connectable->xml_parse = ags_jack_port_xml_parse;
+
+  connectable->is_connected = ags_jack_port_is_connected;  
   connectable->connect = ags_jack_port_connect;
   connectable->disconnect = ags_jack_port_disconnect;
+
+  connectable->connect_connection = NULL;
+  connectable->disconnect_connection = NULL;
 }
 
 void
 ags_jack_port_init(AgsJackPort *jack_port)
 {
-  AgsMutexManager *mutex_manager;
-  
-  pthread_mutex_t *application_mutex;
   pthread_mutex_t *mutex;
   pthread_mutexattr_t *attr;
 
-  /* insert port mutex */
-  jack_port->mutexattr = 
+  /* flags */
+  jack_port->flags = 0;
+
+  /* port mutex */
+  jack_port->obj_mutexattr = 
     attr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
   pthread_mutexattr_init(attr);
   pthread_mutexattr_settype(attr,
 			    PTHREAD_MUTEX_RECURSIVE);
 
-  jack_port->mutex =
+  jack_port->obj_mutex = 
     mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
   pthread_mutex_init(mutex,
 		     attr);
 
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-  
-  pthread_mutex_lock(application_mutex);
-
-  ags_mutex_manager_insert(mutex_manager,
-			   (GObject *) jack_port,
-			   mutex);
-  
-  pthread_mutex_unlock(application_mutex);
-
-  /* flags */
-  jack_port->flags = 0;
-
+  /* parent */
   jack_port->jack_client = NULL;
   
-  jack_port->uuid = NULL;
-  jack_port->name = NULL;
+  /* uuid */
+  jack_port->uuid = ags_uuid_alloc();
+  ags_uuid_generate(jack_port->uuid);
+
+  /* fields */
+  jack_port->port_uuid = NULL;
+  jack_port->port_name = NULL;
 
   jack_port->port = NULL;
 }
@@ -217,7 +233,16 @@ ags_jack_port_set_property(GObject *gobject,
 {
   AgsJackPort *jack_port;
 
+  pthread_mutex_t *jack_port_mutex;
+
   jack_port = AGS_JACK_PORT(gobject);
+
+  /* get jack port mutex */
+  pthread_mutex_lock(ags_jack_port_get_class_mutex());
+  
+  jack_port_mutex = jack_port->obj_mutex;
+  
+  pthread_mutex_unlock(ags_jack_port_get_class_mutex());
 
   switch(prop_id){
   case PROP_JACK_CLIENT:
@@ -226,7 +251,11 @@ ags_jack_port_set_property(GObject *gobject,
 
       jack_client = (AgsJackClient *) g_value_get_object(value);
 
+      pthread_mutex_lock(jack_port_mutex);
+
       if(jack_port->jack_client == (GObject *) jack_client){
+	pthread_mutex_unlock(jack_port_mutex);
+	
 	return;
       }
 
@@ -239,6 +268,8 @@ ags_jack_port_set_property(GObject *gobject,
       }
       
       jack_port->jack_client = (GObject *) jack_client;
+
+      pthread_mutex_unlock(jack_port_mutex);
     }
     break;
   case PROP_PORT_NAME:
@@ -247,17 +278,21 @@ ags_jack_port_set_property(GObject *gobject,
 
       port_name = g_value_get_string(value);
 
-      if(jack_port->name == port_name ||
-	 !g_ascii_strcasecmp(jack_port->name,
+      pthread_mutex_lock(jack_port_mutex);
+
+      if(jack_port->port_name == port_name ||
+	 !g_ascii_strcasecmp(jack_port->port_name,
 			     port_name)){
+	pthread_mutex_unlock(jack_port_mutex);
+	
 	return;
       }
 
-      if(jack_port->name != NULL){
-	g_free(jack_port->name);
+      if(jack_port->port_name != NULL){
+	g_free(jack_port->port_name);
       }
 
-      jack_port->name = port_name;
+      jack_port->port_name = port_name;
 
 #ifdef AGS_WITH_JACK
       if(jack_port->port != NULL){
@@ -265,6 +300,8 @@ ags_jack_port_set_property(GObject *gobject,
 			   port_name);
       }
 #endif
+
+      pthread_mutex_unlock(jack_port_mutex);
     }
     break;
   default:
@@ -281,51 +318,40 @@ ags_jack_port_get_property(GObject *gobject,
 {
   AgsJackPort *jack_port;
 
+  pthread_mutex_t *jack_port_mutex;
+
   jack_port = AGS_JACK_PORT(gobject);
+
+  /* get jack port mutex */
+  pthread_mutex_lock(ags_jack_port_get_class_mutex());
+  
+  jack_port_mutex = jack_port->obj_mutex;
+  
+  pthread_mutex_unlock(ags_jack_port_get_class_mutex());
   
   switch(prop_id){
   case PROP_JACK_CLIENT:
     {
+      pthread_mutex_lock(jack_port_mutex);
+
       g_value_set_object(value, jack_port->jack_client);
+
+      pthread_mutex_unlock(jack_port_mutex);
     }
     break;
   case PROP_PORT_NAME:
     {
-      g_value_set_string(value, jack_port->name);
+      pthread_mutex_lock(jack_port_mutex);
+
+      g_value_set_string(value, jack_port->port_name);
+
+      pthread_mutex_unlock(jack_port_mutex);
     }
     break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
   }
-}
-
-void
-ags_jack_port_connect(AgsConnectable *connectable)
-{
-  AgsJackPort *jack_port;
-
-  jack_port = AGS_JACK_PORT(connectable);
-
-  if((AGS_JACK_PORT_CONNECTED & (jack_port->flags)) != 0){
-    return;
-  }
-
-  jack_port->flags |= AGS_JACK_PORT_CONNECTED;
-}
-
-void
-ags_jack_port_disconnect(AgsConnectable *connectable)
-{
-  AgsJackPort *jack_port;
-
-  jack_port = AGS_JACK_PORT(connectable);
-
-  if((AGS_JACK_PORT_CONNECTED & (jack_port->flags)) == 0){
-    return;
-  }
-
-  jack_port->flags &= (~AGS_JACK_PORT_CONNECTED);
 }
 
 void
@@ -343,7 +369,7 @@ ags_jack_port_dispose(GObject *gobject)
   }
 
   /* name */
-  g_free(jack_port->name);
+  g_free(jack_port->port_name);
 
   /* call parent */
   G_OBJECT_CLASS(ags_jack_port_parent_class)->dispose(gobject);
@@ -354,22 +380,13 @@ ags_jack_port_finalize(GObject *gobject)
 {
   AgsJackPort *jack_port;
 
-  AgsMutexManager *mutex_manager;
-
-  pthread_mutex_t *application_mutex;
-
   jack_port = AGS_JACK_PORT(gobject);
 
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+  pthread_mutex_destroy(jack_port->obj_mutex);
+  free(jack_port->obj_mutex);
 
-  /* remove jack port mutex */
-  pthread_mutex_lock(application_mutex);  
-
-  ags_mutex_manager_remove(mutex_manager,
-			   gobject);
-  
-  pthread_mutex_unlock(application_mutex);
+  pthread_mutexattr_destroy(jack_port->obj_mutexattr);
+  free(jack_port->obj_mutexattr);
 
   /* jack client */
   if(jack_port->jack_client != NULL){
@@ -377,26 +394,322 @@ ags_jack_port_finalize(GObject *gobject)
   }
 
   /* name */
-  g_free(jack_port->name);
-
-  pthread_mutex_destroy(jack_port->mutex);
-  free(jack_port->mutex);
-
-  pthread_mutexattr_destroy(jack_port->mutexattr);
-  free(jack_port->mutexattr);
+  g_free(jack_port->port_name);
 
   /* call parent */
   G_OBJECT_CLASS(ags_jack_port_parent_class)->finalize(gobject);
 }
 
+AgsUUID*
+ags_jack_port_get_uuid(AgsConnectable *connectable)
+{
+  AgsJackPort *jack_port;
+  
+  AgsUUID *ptr;
+
+  pthread_mutex_t *jack_port_mutex;
+
+  jack_port = AGS_JACK_PORT(connectable);
+
+  /* get jack port signal mutex */
+  pthread_mutex_lock(ags_jack_port_get_class_mutex());
+  
+  jack_port_mutex = jack_port->obj_mutex;
+  
+  pthread_mutex_unlock(ags_jack_port_get_class_mutex());
+
+  /* get UUID */
+  pthread_mutex_lock(jack_port_mutex);
+
+  ptr = jack_port->uuid;
+
+  pthread_mutex_unlock(jack_port_mutex);
+  
+  return(ptr);
+}
+
+gboolean
+ags_jack_port_has_resource(AgsConnectable *connectable)
+{
+  return(FALSE);
+}
+
+gboolean
+ags_jack_port_is_ready(AgsConnectable *connectable)
+{
+  AgsJackPort *jack_port;
+  
+  gboolean is_ready;
+
+  pthread_mutex_t *jack_port_mutex;
+
+  jack_port = AGS_JACK_PORT(connectable);
+
+  /* get jack port mutex */
+  pthread_mutex_lock(ags_jack_port_get_class_mutex());
+  
+  jack_port_mutex = jack_port->obj_mutex;
+  
+  pthread_mutex_unlock(ags_jack_port_get_class_mutex());
+
+  /* check is added */
+  pthread_mutex_lock(jack_port_mutex);
+
+  is_ready = (((AGS_JACK_PORT_ADDED_TO_REGISTRY & (jack_port->flags)) != 0) ? TRUE: FALSE);
+
+  pthread_mutex_unlock(jack_port_mutex);
+  
+  return(is_ready);
+}
+
+void
+ags_jack_port_add_to_registry(AgsConnectable *connectable)
+{
+  AgsJackPort *jack_port;
+
+  if(ags_connectable_is_ready(connectable)){
+    return;
+  }
+  
+  jack_port = AGS_JACK_PORT(connectable);
+
+  ags_jack_port_set_flags(jack_port, AGS_JACK_PORT_ADDED_TO_REGISTRY);
+}
+
+void
+ags_jack_port_remove_from_registry(AgsConnectable *connectable)
+{
+  AgsJackPort *jack_port;
+
+  if(!ags_connectable_is_ready(connectable)){
+    return;
+  }
+
+  jack_port = AGS_JACK_PORT(connectable);
+
+  ags_jack_port_unset_flags(jack_port, AGS_JACK_PORT_ADDED_TO_REGISTRY);
+}
+
+xmlNode*
+ags_jack_port_list_resource(AgsConnectable *connectable)
+{
+  xmlNode *node;
+  
+  node = NULL;
+
+  //TODO:JK: implement me
+  
+  return(node);
+}
+
+xmlNode*
+ags_jack_port_xml_compose(AgsConnectable *connectable)
+{
+  xmlNode *node;
+  
+  node = NULL;
+
+  //TODO:JK: implement me
+  
+  return(node);
+}
+
+void
+ags_jack_port_xml_parse(AgsConnectable *connectable,
+		      xmlNode *node)
+{
+  //TODO:JK: implement me
+}
+
+gboolean
+ags_jack_port_is_connected(AgsConnectable *connectable)
+{
+  AgsJackPort *jack_port;
+  
+  gboolean is_connected;
+
+  pthread_mutex_t *jack_port_mutex;
+
+  jack_port = AGS_JACK_PORT(connectable);
+
+  /* get jack port mutex */
+  pthread_mutex_lock(ags_jack_port_get_class_mutex());
+  
+  jack_port_mutex = jack_port->obj_mutex;
+  
+  pthread_mutex_unlock(ags_jack_port_get_class_mutex());
+
+  /* check is connected */
+  pthread_mutex_lock(jack_port_mutex);
+
+  is_connected = (((AGS_JACK_PORT_CONNECTED & (jack_port->flags)) != 0) ? TRUE: FALSE);
+  
+  pthread_mutex_unlock(jack_port_mutex);
+  
+  return(is_connected);
+}
+
+void
+ags_jack_port_connect(AgsConnectable *connectable)
+{
+  AgsJackPort *jack_port;
+  
+  if(ags_connectable_is_connected(connectable)){
+    return;
+  }
+
+  jack_port = AGS_JACK_PORT(connectable);
+
+  ags_jack_port_set_flags(jack_port, AGS_JACK_PORT_CONNECTED);
+}
+
+void
+ags_jack_port_disconnect(AgsConnectable *connectable)
+{
+
+  AgsJackPort *jack_port;
+
+  if(!ags_connectable_is_connected(connectable)){
+    return;
+  }
+
+  jack_port = AGS_JACK_PORT(connectable);
+  
+  ags_jack_port_unset_flags(jack_port, AGS_JACK_PORT_CONNECTED);
+}
+
+/**
+ * ags_jack_port_get_class_mutex:
+ * 
+ * Use this function's returned mutex to access mutex fields.
+ *
+ * Returns: the class mutex
+ * 
+ * Since: 2.0.0
+ */
+pthread_mutex_t*
+ags_jack_port_get_class_mutex()
+{
+  return(&ags_jack_port_class_mutex);
+}
+
+/**
+ * ags_jack_port_test_flags:
+ * @jack_port: the #AgsJackPort
+ * @flags: the flags
+ *
+ * Test @flags to be set on @jack_port.
+ * 
+ * Returns: %TRUE if flags are set, else %FALSE
+ *
+ * Since: 2.0.0
+ */
+gboolean
+ags_jack_port_test_flags(AgsJackPort *jack_port, guint flags)
+{
+  gboolean retval;  
+  
+  pthread_mutex_t *jack_port_mutex;
+
+  if(!AGS_IS_JACK_PORT(jack_port)){
+    return(FALSE);
+  }
+
+  /* get jack port mutex */
+  pthread_mutex_lock(ags_jack_port_get_class_mutex());
+  
+  jack_port_mutex = jack_port->obj_mutex;
+  
+  pthread_mutex_unlock(ags_jack_port_get_class_mutex());
+
+  /* test */
+  pthread_mutex_lock(jack_port_mutex);
+
+  retval = (flags & (jack_port->flags)) ? TRUE: FALSE;
+  
+  pthread_mutex_unlock(jack_port_mutex);
+
+  return(retval);
+}
+
+/**
+ * ags_jack_port_set_flags:
+ * @jack_port: the #AgsJackPort
+ * @flags: see #AgsJackPortFlags-enum
+ *
+ * Enable a feature of @jack_port.
+ *
+ * Since: 2.0.0
+ */
+void
+ags_jack_port_set_flags(AgsJackPort *jack_port, guint flags)
+{
+  pthread_mutex_t *jack_port_mutex;
+
+  if(!AGS_IS_JACK_PORT(jack_port)){
+    return;
+  }
+
+  /* get jack port mutex */
+  pthread_mutex_lock(ags_jack_port_get_class_mutex());
+  
+  jack_port_mutex = jack_port->obj_mutex;
+  
+  pthread_mutex_unlock(ags_jack_port_get_class_mutex());
+
+  //TODO:JK: add more?
+
+  /* set flags */
+  pthread_mutex_lock(jack_port_mutex);
+
+  jack_port->flags |= flags;
+  
+  pthread_mutex_unlock(jack_port_mutex);
+}
+    
+/**
+ * ags_jack_port_unset_flags:
+ * @jack_port: the #AgsJackPort
+ * @flags: see #AgsJackPortFlags-enum
+ *
+ * Disable a feature of @jack_port.
+ *
+ * Since: 2.0.0
+ */
+void
+ags_jack_port_unset_flags(AgsJackPort *jack_port, guint flags)
+{  
+  pthread_mutex_t *jack_port_mutex;
+
+  if(!AGS_IS_JACK_PORT(jack_port)){
+    return;
+  }
+
+  /* get jack port mutex */
+  pthread_mutex_lock(ags_jack_port_get_class_mutex());
+  
+  jack_port_mutex = jack_port->obj_mutex;
+  
+  pthread_mutex_unlock(ags_jack_port_get_class_mutex());
+
+  //TODO:JK: add more?
+
+  /* unset flags */
+  pthread_mutex_lock(jack_port_mutex);
+
+  jack_port->flags &= (~flags);
+  
+  pthread_mutex_unlock(jack_port_mutex);
+}
+
 /**
  * ags_jack_port_find:
- * @jack_port: a #GList
+ * @jack_port: the #GList-struct containing #AgsJackPort
  * @port_name: the port name to find
  *
  * Finds next match of @port_name in @jack_port.
  *
- * Returns: a #GList or %NULL
+ * Returns: the next matching #GList-struct or %NULL
  * 
  * Since: 1.0.0
  */
@@ -405,8 +718,30 @@ ags_jack_port_find(GList *jack_port,
 		   gchar *port_name)
 {
 #ifdef AGS_WITH_JACK
+  jack_port_t *port;
+#else
+  gpointer port;
+#endif
+
+  pthread_mutex_t *jack_port_mutex;
+
+#ifdef AGS_WITH_JACK
   while(jack_port != NULL){
-    if(!g_ascii_strcasecmp(jack_port_name(AGS_JACK_PORT(jack_port->data)->port),
+    /* get jack port mutex */
+    pthread_mutex_lock(ags_jack_port_get_class_mutex());
+  
+    jack_port_mutex = AGS_JACK_PORT(jack_port->data)->obj_mutex;
+  
+    pthread_mutex_unlock(ags_jack_port_get_class_mutex());
+
+    /* get port */
+    pthread_mutex_lock(jack_port_mutex);
+
+    port = AGS_JACK_PORT(jack_port->data)->port;
+    
+    pthread_mutex_unlock(jack_port_mutex);
+    
+    if(!g_ascii_strcasecmp(jack_port_name(port),
 			   port_name)){
       return(jack_port);
     }
@@ -427,7 +762,7 @@ ags_jack_port_find(GList *jack_port,
  * Register a new JACK port and read uuid. Creates a new AgsSequencer or AgsSoundcard
  * object.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_jack_port_register(AgsJackPort *jack_port,
@@ -435,89 +770,222 @@ ags_jack_port_register(AgsJackPort *jack_port,
 		       gboolean is_audio, gboolean is_midi,
 		       gboolean is_output)
 {
+  AgsJackServer *jack_server;
+  AgsJackClient *jack_client;
+  
+#ifdef AGS_WITH_JACK
+  jack_client_t *client;
+  jack_port_t *port;
+#else
+  gpointer client;
+  gpointer port;
+#endif
+  
   GList *list;
 
-  gchar *name, *uuid;
+  gchar *port_uuid;
+
+  pthread_mutex_t *jack_client_mutex;
+  pthread_mutex_t *jack_port_mutex;
   
   if(!AGS_IS_JACK_PORT(jack_port) ||
      port_name == NULL){
     return;
   }
 
-  if(jack_port->jack_client == NULL){
+  g_object_get(jack_port,
+	       "jack-client", &jack_client,
+	       NULL);
+  
+  if(jack_client == NULL){
     g_warning("ags_jack_port.c - no assigned AgsJackClient");
     
     return;
   }
 
-  if((AGS_JACK_PORT_REGISTERED & (jack_port->flags)) != 0){
+  if(ags_jack_port_test_flags(jack_port, AGS_JACK_PORT_REGISTERED)){
     return;
   }
 
   /* get jack server and application context */
-  if(jack_port->jack_client == NULL ||
-     AGS_JACK_CLIENT(jack_port->jack_client)->jack_server == NULL){
-    return;
-  }
-
-  uuid = jack_port->uuid;
-  name = jack_port->name;
-
-  if(AGS_JACK_CLIENT(jack_port->jack_client)->client == NULL){
-    return;
-  }
+  g_object_get(jack_client,
+	       "jack-server", &jack_server,
+	       NULL);
   
-  jack_port->name = g_strdup(port_name);
+  if(jack_server == NULL){
+    return;
+  }
+
+  /* get jack client mutex */
+  pthread_mutex_lock(ags_jack_client_get_class_mutex());
+  
+  jack_client_mutex = jack_client->obj_mutex;
+  
+  pthread_mutex_unlock(ags_jack_client_get_class_mutex());
+
+  /* get client */
+  pthread_mutex_lock(jack_client_mutex);
+
+  client = jack_client->client;
+
+  pthread_mutex_unlock(jack_client_mutex);
+  
+  if(client == NULL){
+    return;
+  }
+
+  /* get jack port mutex */
+  pthread_mutex_lock(ags_jack_port_get_class_mutex());
+  
+  jack_port_mutex = jack_port->obj_mutex;
+  
+  pthread_mutex_unlock(ags_jack_port_get_class_mutex());
+
+  /* get port name */
+  //FIXME:JK: memory leak?
+  pthread_mutex_lock(jack_port_mutex);
+  
+  jack_port->port_name = g_strdup(port_name);
+
+  pthread_mutex_unlock(jack_port_mutex);
 
   /* create sequencer or soundcard */
   if(is_output){
-    jack_port->flags |= AGS_JACK_PORT_IS_OUTPUT;
+    ags_jack_port_set_flags(jack_port, AGS_JACK_PORT_IS_OUTPUT);
+  }else{
+    ags_jack_port_set_flags(jack_port, AGS_JACK_PORT_IS_INPUT);
   }
 
 #ifdef AGS_WITH_JACK
+  port = NULL;
+  
   if(is_audio){
-    jack_port->flags |= AGS_JACK_PORT_IS_AUDIO;
+    ags_jack_port_set_flags(jack_port, AGS_JACK_PORT_IS_AUDIO);
     
-    jack_port->port = jack_port_register(AGS_JACK_CLIENT(jack_port->jack_client)->client,
-					 jack_port->name,
-					 JACK_DEFAULT_AUDIO_TYPE,
-					 (is_output ? JackPortIsOutput: JackPortIsInput),
-					 0);
+    port = jack_port_register(client,
+			      jack_port->port_name,
+			      JACK_DEFAULT_AUDIO_TYPE,
+			      (is_output ? JackPortIsOutput: JackPortIsInput),
+			      0);
   }else if(is_midi){
-    jack_port->flags |= AGS_JACK_PORT_IS_MIDI;
+    ags_jack_port_set_flags(jack_port, AGS_JACK_PORT_IS_MIDI);
     
-    jack_port->port = jack_port_register(AGS_JACK_CLIENT(jack_port->jack_client)->client,
-					 jack_port->name,
-					 JACK_DEFAULT_MIDI_TYPE,
-					 (is_output ? JackPortIsOutput: JackPortIsInput),
-					 0);
+    port = jack_port_register(client,
+			      jack_port->port_name,
+			      JACK_DEFAULT_MIDI_TYPE,
+			      (is_output ? JackPortIsOutput: JackPortIsInput),
+			      0);
   }
 
-  if(jack_port->port != NULL){
-    jack_port->flags |= AGS_JACK_PORT_REGISTERED;
+  pthread_mutex_lock(jack_port_mutex);
+
+  jack_port->port = port;
+  
+  pthread_mutex_unlock(jack_port_mutex);
+
+  if(port != NULL){
+    ags_jack_port_set_flags(jack_port, AGS_JACK_PORT_REGISTERED);
   }
     
 #ifdef HAVE_JACK_PORT_UUID
-  if(jack_port->port != NULL){
-    jack_port->uuid = jack_port_uuid(jack_port->port);
+  if(port != NULL){
+    port_uuid = jack_port_uuid(port);
+
+    pthread_mutex_lock(jack_port_mutex);
+
+    jack_port->port_uuid = g_strdup(port_uuid);
+  
+    pthread_mutex_unlock(jack_port_mutex);    
   }
 #endif
 #endif
 }
 
+/**
+ * ags_jack_port_unregister:
+ * @jack_port: the #AgsJackPort
+ * 
+ * Unregister JACK port.
+ * 
+ * Since: 2.0.0
+ */
 void
 ags_jack_port_unregister(AgsJackPort *jack_port)
 {
-  if(!AGS_IS_JACK_PORT(jack_port) ||
-     AGS_JACK_CLIENT(jack_port->jack_client)->client == NULL){
+  AgsJackClient *jack_client;
+  
+#ifdef AGS_WITH_JACK
+  jack_client_t *client;
+  jack_port_t *port;
+#else
+  gpointer client;
+  gpointer port;
+#endif
+
+  pthread_mutex_t *jack_client_mutex;
+  pthread_mutex_t *jack_port_mutex;
+
+  if(!AGS_IS_JACK_PORT(jack_port)){
+    return;
+  }
+
+  /* get jack port mutex */
+  pthread_mutex_lock(ags_jack_port_get_class_mutex());
+  
+  jack_port_mutex = jack_port->obj_mutex;
+  
+  pthread_mutex_unlock(ags_jack_port_get_class_mutex());
+
+  /* get port */
+  pthread_mutex_lock(jack_port_mutex);
+
+  port = jack_port->port;
+  
+  pthread_mutex_unlock(jack_port_mutex);
+
+  if(port == NULL){
+    return;
+  }
+  
+  /* get jack client */
+  g_object_get(jack_port,
+	       "jack-client", &jack_client,
+	       NULL);
+
+  if(jack_client == NULL){
+    return;
+  }
+
+  /* get jack client mutex */
+  pthread_mutex_lock(ags_jack_client_get_class_mutex());
+  
+  jack_client_mutex = jack_client->obj_mutex;
+  
+  pthread_mutex_unlock(ags_jack_client_get_class_mutex());
+
+  /* get client */
+  pthread_mutex_lock(jack_client_mutex);
+
+  client = jack_client->client;
+
+  pthread_mutex_unlock(jack_client_mutex);
+
+  if(client == NULL){
     return;
   }
 
 #ifdef AGS_WITH_JACK
-  if(jack_port->port != NULL){
-    jack_port_unregister(AGS_JACK_CLIENT(jack_port->jack_client)->client,
-			 jack_port->port);
-  }
+  jack_port_unregister(client,
+		       port);
+
+  /* unset port and flags */
+  pthread_mutex_lock(jack_port_mutex);
+
+  jack_port->port = NULL;
+
+  pthread_mutex_unlock(jack_port_mutex);
+
+  ags_jack_port_unset_flags(jack_port, AGS_JACK_PORT_REGISTERED);
 #endif
 }
 
@@ -525,11 +993,11 @@ ags_jack_port_unregister(AgsJackPort *jack_port)
  * ags_jack_port_new:
  * @jack_client: the #AgsJackClient assigned to
  *
- * Instantiate a new #AgsJackPort.
+ * Create a new instance of #AgsJackPort.
  *
  * Returns: the new #AgsJackPort
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsJackPort*
 ags_jack_port_new(GObject *jack_client)

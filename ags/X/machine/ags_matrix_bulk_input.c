@@ -28,9 +28,10 @@ void ags_matrix_bulk_input_class_init(AgsMatrixBulkInputClass *matrix_bulk_input
 void ags_matrix_bulk_input_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_matrix_bulk_input_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_matrix_bulk_input_init(AgsMatrixBulkInput *matrix_bulk_input);
+void ags_matrix_bulk_input_finalize(GObject *gobject);
+
 void ags_matrix_bulk_input_connect(AgsConnectable *connectable);
 void ags_matrix_bulk_input_disconnect(AgsConnectable *connectable);
-void ags_matrix_bulk_input_finalize(GObject *gobject);
 
 /**
  * SECTION:ags_matrix_bulk_input
@@ -140,6 +141,13 @@ ags_matrix_bulk_input_init(AgsMatrixBulkInput *matrix_bulk_input)
 }
 
 void
+ags_matrix_bulk_input_finalize(GObject *gobject)
+{
+  /* call parent */
+  G_OBJECT_CLASS(ags_matrix_bulk_input_parent_class)->finalize(gobject);
+}
+
+void
 ags_matrix_bulk_input_connect(AgsConnectable *connectable)
 {
   if((AGS_EFFECT_BULK_CONNECTED & (AGS_EFFECT_BULK(connectable)->flags)) != 0){
@@ -163,22 +171,16 @@ ags_matrix_bulk_input_disconnect(AgsConnectable *connectable)
   //TODO:JK: implement me
 }
 
-void
-ags_matrix_bulk_input_finalize(GObject *gobject)
-{
-  G_OBJECT_CLASS(ags_matrix_bulk_input_parent_class)->finalize(gobject);
-}
-
 /**
  * ags_matrix_bulk_input_new:
  * @audio: the #AgsAudio to visualize
  * @channel_type: either %AGS_TYPE_INPUT or %AGS_TYPE_OUTPUT
  *
- * Creates an #AgsMatrixBulkInput
+ * Create a new instance of #AgsMatrixBulkInput
  *
- * Returns: a new #AgsMatrixBulkInput
+ * Returns: the new #AgsMatrixBulkInput
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsMatrixBulkInput*
 ags_matrix_bulk_input_new(AgsAudio *audio,

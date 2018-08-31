@@ -6,11 +6,11 @@ AUTOMAKE_OPTIONS = foreign
 SUBDIRS = po
 
 ACLOCAL_AMFLAGS = -I m4
-AM_CPPFLAGS = -std=gnu99 -include /usr/include/errno.h -I$(top_srcdir) -DSRCDIR=\"$(srcdir)\" -DDESTDIR=\"$(DESTDIR)$(datadir)\" -DPACKAGE_VERSION=\"$(PACKAGE_VERSION)\" -DAGS_LIBRARY_SUFFIX=\".so\" -DAGS_RT_PRIORITY=99 -D_FORTIFY_SOURCE=2 -Wformat -Werror=format-security
+AM_CPPFLAGS = -std=gnu99 -include /usr/include/errno.h -I$(top_srcdir) -DSRCDIR=\"$(srcdir)\" -DDESTDIR=\"$(DESTDIR)$(datadir)\" -DPACKAGE_VERSION=\"$(PACKAGE_VERSION)\" -DAGS_REDUCE_RT_EVENTS=1 -DAGS_LIBRARY_SUFFIX=\".so\" -D_FORTIFY_SOURCE=2 -Wformat -Werror=format-security
 # -msse2 -O3 -ftree-vectorize -ftree-slp-vectorize -ffast-math -ftree-vectorizer-verbose=2
 
 # what flags you want to pass to the C compiler & linker
-CFLAGS = @CFLAGS@
+CFLAGS =  @CFLAGS@
 LDFLAGS = @LDFLAGS@ $(LTLIBINTL)
 LIBTOOL_DEPS = @LIBTOOL_DEPS@
 
@@ -53,7 +53,18 @@ EXTRA_DIST = config.rpath \
 	m4/Makefile.am \
 	m4/Makefile.in \
 	ags/i18n.h \
-	ags/gettext.h
+	ags/gettext.h \
+	ags/object/README \
+	docs/images/README \
+	docs/listings/README \
+	docs/reference/libags-audio/README \
+	docs/reference/libags-gui/README \
+	docs/reference/libags/README \
+	docs/reference/libgsequencer/README \
+	gsequencer.share/icons/README \
+	gsequencer.share/images/README \
+	m4/README \
+	po/README
 
 EXTRA_DIST += \
 	functional-system-tests.mk.am \
@@ -77,8 +88,8 @@ EXTRA_DIST += \
 EXTRA_DIST += \
 	lv2/lv2plug.in/ns/lv2ext/lv2_programs.h
 
-EXTRA_DIST += \
-	lv2.lib/mda/EPiano-presets.ttl
+#EXTRA_DIST += \
+#	lv2.lib/mda/EPiano-presets.ttl
 
 EXTRA_DIST += \
 	apple_script.sh \
@@ -262,8 +273,8 @@ libags_thread_la_HEADERS_0 = $(libags_thread_h_sources) $(libags_thread_file_h_s
 libags_server_la_SOURCES = $(libags_server_c_sources) $(libags_server_security_c_sources) $(libags_server_controller_c_sources) $(libags_server_thread_c_sources)
 libags_server_la_HEADERS_0 = $(libags_server_h_sources) $(libags_server_security_h_sources) $(libags_server_controller_h_sources) $(libags_server_thread_h_sources)
 
-libags_audio_la_SOURCES = $(libags_audio_c_sources) $(libags_audio_client_c_sources) $(libags_audio_thread_c_sources) $(libags_audio_file_c_sources) $(libags_audio_midi_c_sources) $(libags_audio_jack_c_sources) $(libags_audio_pulse_c_sources) $(libags_audio_core_audio_c_sources)  $(libags_audio_task_c_sources) $(libags_audio_task_recall_c_sources) $(libags_audio_recall_c_sources)  $(libags_plugin_c_sources)
-libags_audio_la_HEADERS_0 = ags/libags-audio.h $(libags_audio_h_sources) $(libags_audio_client_h_sources) $(libags_audio_thread_h_sources) $(libags_audio_file_h_sources) $(libags_audio_midi_h_sources) $(libags_audio_jack_h_sources) $(libags_audio_pulse_h_sources) $(libags_audio_core_audio_h_sources) $(libags_audio_task_h_sources) $(libags_audio_task_recall_h_sources) $(libags_audio_recall_h_sources)  $(libags_plugin_h_sources)
+libags_audio_la_SOURCES = $(libags_audio_c_sources) $(libags_audio_thread_c_sources) $(libags_audio_file_c_sources) $(libags_audio_midi_c_sources) $(libags_audio_jack_c_sources) $(libags_audio_pulse_c_sources) $(libags_audio_core_audio_c_sources)  $(libags_audio_task_c_sources) $(libags_audio_task_recall_c_sources) $(libags_audio_recall_c_sources)  $(libags_plugin_c_sources)
+libags_audio_la_HEADERS_0 = ags/libags-audio.h $(libags_audio_h_sources) $(libags_audio_thread_h_sources) $(libags_audio_file_h_sources) $(libags_audio_midi_h_sources) $(libags_audio_jack_h_sources) $(libags_audio_pulse_h_sources) $(libags_audio_core_audio_h_sources) $(libags_audio_task_h_sources) $(libags_audio_task_recall_h_sources) $(libags_audio_recall_h_sources)  $(libags_plugin_h_sources)
 
 libags_gui_la_SOURCES = $(libags_gui_c_sources)
 libags_gui_la_HEADERS_0 = ags/libags-gui.h $(libags_gui_h_sources)
@@ -273,33 +284,33 @@ libgsequencer_la_SOURCES = $(libgsequencer_la_HEADERS_0) $(libgsequencer_c_sourc
 
 # library libags
 libags_la_CFLAGS = $(CFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ -I/usr/include $(UUID_CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(GIO_CFLAGS)
-libags_la_LDFLAGS = $(LDFLAGS) -export-symbols $(top_srcdir)/libags.sym -version-info 1:0:0 -shared -fPIC -Wl,-soname,libags.so -pthread
+libags_la_LDFLAGS = $(LDFLAGS) -export-symbols $(top_srcdir)/libags.sym -version-info 2:0:0 -shared -fPIC -Wl,-soname,libags.so -pthread
 libags_la_LIBADD = -ldl -lm $(UUID_LIBS) $(LIBXML2_LIBS) $(GOBJECT_LIBS) $(GIO_LIBS)
 
 # library libags-thread
 libags_thread_la_CFLAGS = $(CFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ -I/usr/include $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS)
-libags_thread_la_LDFLAGS = $(LDFLAGS) -export-symbols $(top_srcdir)/libags_thread.sym -version-info 1:0:0 -shared -fPIC -Wl,-soname,libags_thread.so -pthread
+libags_thread_la_LDFLAGS = $(LDFLAGS) -export-symbols $(top_srcdir)/libags_thread.sym -version-info 2:0:0 -shared -fPIC -Wl,-soname,libags_thread.so -pthread
 libags_thread_la_LIBADD = libags.la -ldl -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS)
 
 # library libags-server
 libags_server_la_CFLAGS = $(CFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ -I/usr/include $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS)
-libags_server_la_LDFLAGS = $(LDFLAGS) -export-symbols $(top_srcdir)/libags_server.sym -version-info 1:0:0 -shared -fPIC -Wl,-soname,libags_server.so -pthread
+libags_server_la_LDFLAGS = $(LDFLAGS) -export-symbols $(top_srcdir)/libags_server.sym -version-info 2:0:0 -shared -fPIC -Wl,-soname,libags_server.so -pthread
 libags_server_la_LIBADD = libags_thread.la libags.la -ldl -lm -lcrypt $(LIBXML2_LIBS) $(GOBJECT_LIBS)
 
 # library libags-audio
-libags_audio_la_CFLAGS = $(CFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ -I/usr/include $(CORE_AUDIO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SAMPLERATE_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS) $(PULSE_CFLAGS)
-libags_audio_la_LDFLAGS = $(LDFLAGS) -export-symbols $(top_srcdir)/libags_audio.sym -version-info 1:0:0 -shared -fPIC -soname,libags_audio.so -pthread 
-libags_audio_la_LIBADD = libags_server.la libags_thread.la libags.la -ldl -lm $(CORE_AUDIO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SAMPLERATE_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS) $(PULSE_LIBS)
+libags_audio_la_CFLAGS = $(CFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ -I/usr/include $(CORE_AUDIO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SAMPLERATE_CFLAGS) $(SNDFILE_CFLAGS) $(FFTW_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS) $(PULSE_CFLAGS)
+libags_audio_la_LDFLAGS = $(LDFLAGS) -export-symbols $(top_srcdir)/libags_audio.sym -version-info 2:0:0 -shared -fPIC -soname,libags_audio.so -pthread 
+libags_audio_la_LIBADD = libags_server.la libags_thread.la libags.la -ldl -lm $(CORE_AUDIO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SAMPLERATE_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(FFTW_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS) $(PULSE_LIBS)
 
 # library libags-gui
 libags_gui_la_CFLAGS = $(CFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ -I/usr/include $(GOBJECT_CFLAGS) $(GDKPIXBUF_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS)
-libags_gui_la_LDFLAGS = $(LDFLAGS) -export-symbols $(top_srcdir)/libags_gui.sym -version-info 1:0:0 -shared -fPIC -Wl,-soname,libags_gui.so -pthread
+libags_gui_la_LDFLAGS = $(LDFLAGS) -export-symbols $(top_srcdir)/libags_gui.sym -version-info 2:0:0 -shared -fPIC -Wl,-soname,libags_gui.so -pthread
 libags_gui_la_LIBADD = -ldl -lm $(GOBJECT_LIBS) $(GDKPIXBUF_LIBS) $(CAIRO_LIBS) $(GTK_LIBS)
 
 # library libgsequencer
-libgsequencer_la_CFLAGS = $(CFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ -I/usr/include $(CORE_AUDIO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(JACK_CFLAGS) $(PULSE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(GDKPIXBUF_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS) $(GTK_MAC_INTEGRATION_CFLAGS)
+libgsequencer_la_CFLAGS = $(CFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ -I/usr/include $(CORE_AUDIO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(FFTW_CFLAGS) $(JACK_CFLAGS) $(PULSE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(GDKPIXBUF_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS) $(GTK_MAC_INTEGRATION_CFLAGS)
 libgsequencer_la_LDFLAGS = $(LDFLAGS) -version-info 0:1:0 -shared -fPIC -Wl,-soname,libgsequencer.so -pthread
-libgsequencer_la_LIBADD = libags_audio.la libags_server.la libags_gui.la libags_thread.la libags.la -ldl -lm $(CORE_AUDIO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(JACK_LIBS) $(PULSE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(GDKPIXBUF_LIBS) $(CAIRO_LIBS) $(GTK_LIBS) $(GTK_MAC_INTEGRATION_LIBS)
+libgsequencer_la_LIBADD = libags_audio.la libags_server.la libags_gui.la libags_thread.la libags.la -ldl -lm $(CORE_AUDIO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(FFTW_LIBS) $(SNDFILE_LIBS) $(JACK_LIBS) $(PULSE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(GDKPIXBUF_LIBS) $(CAIRO_LIBS) $(GTK_LIBS) $(GTK_MAC_INTEGRATION_LIBS)
 
 # gsequencer
 gsequencer_SOURCES = $(gsequencer_c_sources) $(gsequencerheaders)
@@ -335,7 +346,8 @@ libags_h_sources = \
 	ags/lib/ags_string_util.h \
 	ags/lib/ags_time.h \
 	ags/lib/ags_turtle.h \
-	ags/lib/ags_turtle_manager.h
+	ags/lib/ags_turtle_manager.h \
+	ags/lib/ags_uuid.h
 
 deprecated_libags_c_sources =
 
@@ -352,7 +364,8 @@ libags_c_sources = \
 	ags/lib/ags_string_util.c \
 	ags/lib/ags_time.c \
 	ags/lib/ags_turtle.c \
-	ags/lib/ags_turtle_manager.c
+	ags/lib/ags_turtle_manager.c \
+	ags/lib/ags_uuid.c
 
 deprecated_libags_util_h_sources =
 
@@ -361,7 +374,8 @@ libags_util_h_sources = \
 	$(deprecated_libags_util_h_sources) \
 	ags/util/ags_destroy_util.h \
 	ags/util/ags_id_generator.h \
-	ags/util/ags_list_util.h
+	ags/util/ags_list_util.h \
+	ags/util/ags_soundcard_helper.h
 
 deprecated_libags_util_c_sources =
 
@@ -369,7 +383,8 @@ libags_util_c_sources = \
 	$(deprecated_libags_util_c_sources) \
 	ags/util/ags_destroy_util.c \
 	ags/util/ags_id_generator.c \
-	ags/util/ags_list_util.c
+	ags/util/ags_list_util.c \
+	ags/util/ags_soundcard_helper.c
 
 deprecated_libags_object_h_sources =
 
@@ -381,24 +396,19 @@ libags_object_h_sources =  \
 	ags/object/ags_async_queue.h \
 	ags/object/ags_config.h \
 	ags/object/ags_connectable.h \
-	ags/object/ags_connection.h \
-	ags/object/ags_connection_manager.h \
 	ags/object/ags_countable.h \
-	ags/object/ags_concurrent_tree.h \
-	ags/object/ags_distributed_manager.h \
-	ags/object/ags_dynamic_connectable.h \
+	ags/object/ags_globals.h \
 	ags/object/ags_macros.h \
 	ags/object/ags_main_loop.h \
 	ags/object/ags_marshal.h \
 	ags/object/ags_mutable.h \
-	ags/object/ags_packable.h \
 	ags/object/ags_plugin.h \
 	ags/object/ags_portlet.h \
 	ags/object/ags_seekable.h \
 	ags/object/ags_sequencer.h \
 	ags/object/ags_soundcard.h \
-	ags/object/ags_tactable.h \
-	ags/object/ags_tree_iterator.h
+	ags/object/ags_sound_server.h \
+	ags/object/ags_tactable.h
 
 deprecated_libags_object_c_sources =
 
@@ -409,23 +419,18 @@ libags_object_c_sources = \
 	ags/object/ags_async_queue.c \
 	ags/object/ags_config.c \
 	ags/object/ags_connectable.c \
-	ags/object/ags_connection.c \
-	ags/object/ags_connection_manager.c \
 	ags/object/ags_countable.c \
-	ags/object/ags_concurrent_tree.c \
-	ags/object/ags_distributed_manager.c \
-	ags/object/ags_dynamic_connectable.c \
+	ags/object/ags_globals.c \
 	ags/object/ags_main_loop.c \
 	ags/object/ags_marshal.c \
 	ags/object/ags_mutable.c \
-	ags/object/ags_packable.c \
 	ags/object/ags_plugin.c \
 	ags/object/ags_portlet.c \
 	ags/object/ags_seekable.c \
 	ags/object/ags_sequencer.c \
 	ags/object/ags_soundcard.c \
-	ags/object/ags_tactable.c \
-	ags/object/ags_tree_iterator.c
+	ags/object/ags_sound_server.c \
+	ags/object/ags_tactable.c
 
 deprecated_libags_file_h_sources =
 
@@ -633,28 +638,30 @@ deprecated_libags_audio_h_sources =
 
 libags_audio_h_sources = \
 	$(deprecated_libags_audio_h_sources) \
+	ags/audio/ags_sound_enums.h \
 	ags/audio/ags_acceleration.h \
 	ags/audio/ags_audio.h \
 	ags/audio/ags_audio_application_context.h \
 	ags/audio/ags_audio_buffer_util.h \
-	ags/audio/ags_audio_connection.h \
 	ags/audio/ags_audio_signal.h \
 	ags/audio/ags_automation.h \
 	ags/audio/ags_buffer.h \
 	ags/audio/ags_channel.h \
 	ags/audio/ags_channel_iter.h \
+	ags/audio/ags_char_buffer_util.h \
 	ags/audio/ags_devout.h \
 	ags/audio/ags_devin.h \
 	ags/audio/ags_effect.h \
 	ags/audio/ags_fifoout.h \
+	ags/audio/ags_generic_recall_channel_run.h \
+	ags/audio/ags_generic_recall_recycling.h \
 	ags/audio/ags_input.h \
-	ags/audio/ags_message.h \
+	ags/audio/ags_midi.h \
 	ags/audio/ags_midiin.h \
 	ags/audio/ags_notation.h \
 	ags/audio/ags_note.h \
 	ags/audio/ags_output.h \
 	ags/audio/ags_pattern.h \
-	ags/audio/ags_playable.h \
 	ags/audio/ags_playback.h \
 	ags/audio/ags_playback_domain.h \
 	ags/audio/ags_port.h \
@@ -663,7 +670,6 @@ libags_audio_h_sources = \
 	ags/audio/ags_recall_audio_run.h \
 	ags/audio/ags_recall_audio_signal.h \
 	ags/audio/ags_recall_channel.h \
-	ags/audio/ags_recall_channel_run_dummy.h \
 	ags/audio/ags_recall_channel_run.h \
 	ags/audio/ags_recall_container.h \
 	ags/audio/ags_recall_dependency.h \
@@ -676,14 +682,15 @@ libags_audio_h_sources = \
 	ags/audio/ags_recall_ladspa_run.h \
 	ags/audio/ags_recall_lv2.h \
 	ags/audio/ags_recall_lv2_run.h \
-	ags/audio/ags_recall_adaptor_run.h \
-	ags/audio/ags_recall_recycling_dummy.h \
 	ags/audio/ags_recall_recycling.h \
 	ags/audio/ags_recycling_context.h \
 	ags/audio/ags_recycling.h \
 	ags/audio/ags_sound_provider.h \
+	ags/audio/ags_sequencer_util.h \
+	ags/audio/ags_soundcard_util.h \
 	ags/audio/ags_synth_generator.h \
 	ags/audio/ags_synth_util.h \
+	ags/audio/ags_track.h \
 	ags/audio/ags_wave.h
 
 deprecated_libags_audio_c_sources =
@@ -694,23 +701,24 @@ libags_audio_c_sources = \
 	ags/audio/ags_audio.c \
 	ags/audio/ags_audio_application_context.c \
 	ags/audio/ags_audio_buffer_util.c \
-	ags/audio/ags_audio_connection.c \
 	ags/audio/ags_audio_signal.c \
 	ags/audio/ags_automation.c \
 	ags/audio/ags_buffer.c \
 	ags/audio/ags_channel.c \
 	ags/audio/ags_channel_iter.c \
+	ags/audio/ags_char_buffer_util.c \
 	ags/audio/ags_devout.c \
 	ags/audio/ags_devin.c \
 	ags/audio/ags_input.c \
 	ags/audio/ags_fifoout.c \
-	ags/audio/ags_message.c \
+	ags/audio/ags_generic_recall_channel_run.c \
+	ags/audio/ags_generic_recall_recycling.c \
+	ags/audio/ags_midi.c \
 	ags/audio/ags_midiin.c \
 	ags/audio/ags_notation.c \
 	ags/audio/ags_note.c \
 	ags/audio/ags_output.c \
 	ags/audio/ags_pattern.c \
-	ags/audio/ags_playable.c \
 	ags/audio/ags_playback.c \
 	ags/audio/ags_playback_domain.c \
 	ags/audio/ags_port.c \
@@ -721,7 +729,6 @@ libags_audio_c_sources = \
 	ags/audio/ags_recall.c \
 	ags/audio/ags_recall_channel.c \
 	ags/audio/ags_recall_channel_run.c \
-	ags/audio/ags_recall_channel_run_dummy.c \
 	ags/audio/ags_recall_container.c \
 	ags/audio/ags_recall_dependency.c \
 	ags/audio/ags_recall_factory.c \
@@ -732,32 +739,16 @@ libags_audio_c_sources = \
 	ags/audio/ags_recall_ladspa_run.c \
 	ags/audio/ags_recall_lv2.c \
 	ags/audio/ags_recall_lv2_run.c \
-	ags/audio/ags_recall_adaptor_run.c \
 	ags/audio/ags_recall_recycling.c \
-	ags/audio/ags_recall_recycling_dummy.c \
 	ags/audio/ags_recycling.c \
 	ags/audio/ags_recycling_context.c \
 	ags/audio/ags_sound_provider.c \
+	ags/audio/ags_sequencer_util.c \
+	ags/audio/ags_soundcard_util.c \
 	ags/audio/ags_synth_generator.c \
 	ags/audio/ags_synth_util.c \
+	ags/audio/ags_track.c \
 	ags/audio/ags_wave.c
-
-# libags-audio - client
-deprecated_libags_audio_client_h_sources =
-
-libags_audio_client_h_sources = \
-	$(deprecated_libags_audio_client_h_sources) \
-	ags/audio/client/ags_remote_channel.h \
-	ags/audio/client/ags_remote_input.h \
-	ags/audio/client/ags_remote_output.h
-
-deprecated_libags_audio_client_c_sources =
-
-libags_audio_client_c_sources = \
-	$(deprecated_libags_audio_client_c_sources) \
-	ags/audio/client/ags_remote_channel.c \
-	ags/audio/client/ags_remote_input.c \
-	ags/audio/client/ags_remote_output.c
 
 # libags-audio - thread
 deprecated_libags_audio_thread_h_sources =
@@ -769,11 +760,7 @@ libags_audio_thread_h_sources = \
 	ags/audio/thread/ags_channel_thread.h \
 	ags/audio/thread/ags_sequencer_thread.h \
 	ags/audio/thread/ags_soundcard_thread.h \
-	ags/audio/thread/ags_export_thread.h \
-	ags/audio/thread/ags_iterator_thread.h \
-	ags/audio/thread/ags_record_thread.h \
-	ags/audio/thread/ags_recycling_thread_callbacks.h \
-	ags/audio/thread/ags_recycling_thread.h
+	ags/audio/thread/ags_export_thread.h
 
 deprecated_libags_audio_thread_c_sources =
 
@@ -784,11 +771,7 @@ libags_audio_thread_c_sources = \
 	ags/audio/thread/ags_channel_thread.c \
 	ags/audio/thread/ags_sequencer_thread.c \
 	ags/audio/thread/ags_soundcard_thread.c \
-	ags/audio/thread/ags_export_thread.c \
-	ags/audio/thread/ags_iterator_thread.c \
-	ags/audio/thread/ags_record_thread.c \
-	ags/audio/thread/ags_recycling_thread.c \
-	ags/audio/thread/ags_recycling_thread_callbacks.c
+	ags/audio/thread/ags_export_thread.c
 
 # libags-audio - plugin
 deprecated_libags_plugin_h_sources =
@@ -801,7 +784,6 @@ libags_plugin_h_sources = \
 	ags/plugin/ags_ladspa_conversion.h \
 	ags/plugin/ags_ladspa_manager.h \
 	ags/plugin/ags_ladspa_plugin.h \
-	ags/plugin/ags_plugin_factory.h \
 	ags/plugin/ags_lv2_conversion.h \
 	ags/plugin/ags_lv2_manager.h \
 	ags/plugin/ags_lv2_plugin.h \
@@ -815,7 +797,9 @@ libags_plugin_h_sources = \
 	ags/plugin/ags_lv2_worker.h \
 	ags/plugin/ags_lv2ui_manager.h \
 	ags/plugin/ags_lv2ui_plugin.h \
-	ags/plugin/ags_plugin_stock.h
+	ags/plugin/ags_plugin_factory.h \
+	ags/plugin/ags_plugin_stock.h \
+	ags/plugin/ags_plugin_port.h
 
 deprecated_libags_plugin_c_sources =
 
@@ -840,33 +824,44 @@ libags_plugin_c_sources = \
 	ags/plugin/ags_lv2_worker.c \
 	ags/plugin/ags_lv2ui_manager.c \
 	ags/plugin/ags_lv2ui_plugin.c \
-	ags/plugin/ags_plugin_factory.c
+	ags/plugin/ags_plugin_factory.c \
+	ags/plugin/ags_plugin_port.c
 
 # libags-audio - file
 deprecated_libags_audio_file_h_sources =
 
 libags_audio_file_h_sources = \
 	$(deprecated_libags_audio_file_h_sources) \
+	ags/audio/file/ags_audio_container.h \
 	ags/audio/file/ags_audio_file.h \
 	ags/audio/file/ags_audio_file_link.h \
 	ags/audio/file/ags_audio_file_xml.h \
 	ags/audio/file/ags_audio_xml_serialization_factory.h \
 	ags/audio/file/ags_ipatch.h \
+	ags/audio/file/ags_ipatch_sample.h \
 	ags/audio/file/ags_ipatch_dls2_reader.h \
+	ags/audio/file/ags_ipatch_gig_reader.h \
 	ags/audio/file/ags_ipatch_sf2_reader.h \
+	ags/audio/file/ags_sound_container.h \
+	ags/audio/file/ags_sound_resource.h \
 	ags/audio/file/ags_sndfile.h
 
 deprecated_libags_audio_file_c_sources =
 
 libags_audio_file_c_sources = \
 	$(deprecated_libags_audio_file_c_sources) \
+	ags/audio/file/ags_audio_container.c \
 	ags/audio/file/ags_audio_file.c \
 	ags/audio/file/ags_audio_file_link.c \
 	ags/audio/file/ags_audio_file_xml.c \
 	ags/audio/file/ags_audio_xml_serialization_factory.c \
 	ags/audio/file/ags_ipatch.c \
+	ags/audio/file/ags_ipatch_sample.c \
 	ags/audio/file/ags_ipatch_dls2_reader.c \
+	ags/audio/file/ags_ipatch_gig_reader.c \
 	ags/audio/file/ags_ipatch_sf2_reader.c \
+	ags/audio/file/ags_sound_container.c \
+	ags/audio/file/ags_sound_resource.c \
 	ags/audio/file/ags_sndfile.c
 
 # libags-audio - midi
@@ -942,6 +937,7 @@ libags_audio_core_audio_h_sources = \
 	ags/audio/core-audio/ags_core_audio_client.h \
 	ags/audio/core-audio/ags_core_audio_midiin.h \
 	ags/audio/core-audio/ags_core_audio_devout.h \
+	ags/audio/core-audio/ags_core_audio_devin.h \
 	ags/audio/core-audio/ags_core_audio_port.h \
 	ags/audio/core-audio/ags_core_audio_server.h
 
@@ -952,6 +948,7 @@ libags_audio_core_audio_c_sources = \
 	ags/audio/core-audio/ags_core_audio_client.c \
 	ags/audio/core-audio/ags_core_audio_midiin.c \
 	ags/audio/core-audio/ags_core_audio_devout.c \
+	ags/audio/core-audio/ags_core_audio_devin.c \
 	ags/audio/core-audio/ags_core_audio_port.c \
 	ags/audio/core-audio/ags_core_audio_server.c
 
@@ -960,17 +957,19 @@ deprecated_libags_audio_recall_h_sources =
 
 libags_audio_recall_h_sources = \
 	$(deprecated_libags_audio_recall_h_sources) \
+	ags/audio/recall/ags_analyse_audio_signal.h \
+	ags/audio/recall/ags_analyse_channel.h \
+	ags/audio/recall/ags_analyse_channel_run.h \
+	ags/audio/recall/ags_analyse_recycling.h \
 	ags/audio/recall/ags_buffer_audio_signal.h \
 	ags/audio/recall/ags_buffer_channel.h \
 	ags/audio/recall/ags_buffer_channel_run.h \
 	ags/audio/recall/ags_buffer_recycling.h \
-	ags/audio/recall/ags_capture_sound_audio.h \
-	ags/audio/recall/ags_capture_sound_audio_run.h \
+	ags/audio/recall/ags_capture_wave_audio.h \
+	ags/audio/recall/ags_capture_wave_audio_run.h \
 	ags/audio/recall/ags_copy_audio_signal.h \
 	ags/audio/recall/ags_copy_channel.h \
 	ags/audio/recall/ags_copy_channel_run.h \
-	ags/audio/recall/ags_copy_notation_audio.h \
-	ags/audio/recall/ags_copy_notation_audio_run.h \
 	ags/audio/recall/ags_copy_pattern_audio.h \
 	ags/audio/recall/ags_copy_pattern_audio_run.h \
 	ags/audio/recall/ags_copy_pattern_channel.h \
@@ -984,6 +983,10 @@ libags_audio_recall_h_sources = \
 	ags/audio/recall/ags_envelope_channel.h \
 	ags/audio/recall/ags_envelope_channel_run.h \
 	ags/audio/recall/ags_envelope_recycling.h \
+	ags/audio/recall/ags_eq10_audio_signal.h \
+	ags/audio/recall/ags_eq10_channel.h \
+	ags/audio/recall/ags_eq10_channel_run.h \
+	ags/audio/recall/ags_eq10_recycling.h \
 	ags/audio/recall/ags_feed_audio_signal.h \
 	ags/audio/recall/ags_feed_channel.h \
 	ags/audio/recall/ags_feed_channel_run.h \
@@ -1000,7 +1003,6 @@ libags_audio_recall_h_sources = \
 	ags/audio/recall/ags_peak_channel.h \
 	ags/audio/recall/ags_peak_channel_run.h \
 	ags/audio/recall/ags_peak_recycling.h \
-	ags/audio/recall/ags_play_audio_file.h \
 	ags/audio/recall/ags_play_audio.h \
 	ags/audio/recall/ags_play_audio_signal.h \
 	ags/audio/recall/ags_play_channel.h \
@@ -1012,8 +1014,11 @@ libags_audio_recall_h_sources = \
 	ags/audio/recall/ags_play_lv2_audio_run.h \
 	ags/audio/recall/ags_play_notation_audio.h \
 	ags/audio/recall/ags_play_notation_audio_run.h \
-	ags/audio/recall/ags_play_note.h \
 	ags/audio/recall/ags_play_recycling.h \
+	ags/audio/recall/ags_play_wave_audio.h \
+	ags/audio/recall/ags_play_wave_audio_run.h \
+	ags/audio/recall/ags_play_wave_channel.h \
+	ags/audio/recall/ags_play_wave_channel_run.h \
 	ags/audio/recall/ags_prepare_audio_signal.h \
 	ags/audio/recall/ags_prepare_channel.h \
 	ags/audio/recall/ags_prepare_channel_run.h \
@@ -1041,17 +1046,19 @@ deprecated_libags_audio_recall_c_sources =
 
 libags_audio_recall_c_sources = \
 	$(deprecated_libags_audio_recall_c_sources) \
+	ags/audio/recall/ags_analyse_audio_signal.c \
+	ags/audio/recall/ags_analyse_channel.c \
+	ags/audio/recall/ags_analyse_channel_run.c \
+	ags/audio/recall/ags_analyse_recycling.c \
 	ags/audio/recall/ags_buffer_audio_signal.c \
 	ags/audio/recall/ags_buffer_channel.c \
 	ags/audio/recall/ags_buffer_channel_run.c \
 	ags/audio/recall/ags_buffer_recycling.c \
-	ags/audio/recall/ags_capture_sound_audio.c \
-	ags/audio/recall/ags_capture_sound_audio_run.c \
+	ags/audio/recall/ags_capture_wave_audio.c \
+	ags/audio/recall/ags_capture_wave_audio_run.c \
 	ags/audio/recall/ags_copy_audio_signal.c \
 	ags/audio/recall/ags_copy_channel.c \
 	ags/audio/recall/ags_copy_channel_run.c \
-	ags/audio/recall/ags_copy_notation_audio.c \
-	ags/audio/recall/ags_copy_notation_audio_run.c \
 	ags/audio/recall/ags_copy_pattern_audio.c \
 	ags/audio/recall/ags_copy_pattern_audio_run.c \
 	ags/audio/recall/ags_copy_pattern_channel.c \
@@ -1065,6 +1072,10 @@ libags_audio_recall_c_sources = \
 	ags/audio/recall/ags_envelope_channel.c \
 	ags/audio/recall/ags_envelope_channel_run.c \
 	ags/audio/recall/ags_envelope_recycling.c \
+	ags/audio/recall/ags_eq10_audio_signal.c \
+	ags/audio/recall/ags_eq10_channel.c \
+	ags/audio/recall/ags_eq10_channel_run.c \
+	ags/audio/recall/ags_eq10_recycling.c \
 	ags/audio/recall/ags_feed_audio_signal.c \
 	ags/audio/recall/ags_feed_channel.c \
 	ags/audio/recall/ags_feed_channel_run.c \
@@ -1082,7 +1093,6 @@ libags_audio_recall_c_sources = \
 	ags/audio/recall/ags_peak_channel_run.c \
 	ags/audio/recall/ags_peak_recycling.c \
 	ags/audio/recall/ags_play_audio.c \
-	ags/audio/recall/ags_play_audio_file.c \
 	ags/audio/recall/ags_play_audio_signal.c \
 	ags/audio/recall/ags_play_channel.c \
 	ags/audio/recall/ags_play_channel_run.c \
@@ -1093,8 +1103,11 @@ libags_audio_recall_c_sources = \
 	ags/audio/recall/ags_play_lv2_audio_run.c \
 	ags/audio/recall/ags_play_notation_audio.c \
 	ags/audio/recall/ags_play_notation_audio_run.c \
-	ags/audio/recall/ags_play_note.c \
 	ags/audio/recall/ags_play_recycling.c \
+	ags/audio/recall/ags_play_wave_audio.c \
+	ags/audio/recall/ags_play_wave_audio_run.c \
+	ags/audio/recall/ags_play_wave_channel.c \
+	ags/audio/recall/ags_play_wave_channel_run.c \
 	ags/audio/recall/ags_prepare_audio_signal.c \
 	ags/audio/recall/ags_prepare_channel.c \
 	ags/audio/recall/ags_prepare_channel_run.c \
@@ -1127,63 +1140,47 @@ libags_audio_task_h_sources = \
 	ags/audio/task/ags_add_audio_signal.h \
 	ags/audio/task/ags_add_effect.h \
 	ags/audio/task/ags_add_note.h \
-	ags/audio/task/ags_add_point_to_selection.h \
-	ags/audio/task/ags_add_recall_container.h \
-	ags/audio/task/ags_add_recall.h \
-	ags/audio/task/ags_add_region_to_selection.h \
 	ags/audio/task/ags_add_soundcard.h \
-	ags/audio/task/ags_append_audio.h \
-	ags/audio/task/ags_append_audio_threaded.h \
-	ags/audio/task/ags_append_channel.h \
-	ags/audio/task/ags_append_recall.h \
 	ags/audio/task/ags_apply_presets.h \
 	ags/audio/task/ags_apply_synth.h \
 	ags/audio/task/ags_cancel_audio.h \
 	ags/audio/task/ags_cancel_channel.h \
-	ags/audio/task/ags_cancel_recall.h \
-	ags/audio/task/ags_change_soundcard.h \
 	ags/audio/task/ags_clear_audio_signal.h \
 	ags/audio/task/ags_clear_buffer.h \
 	ags/audio/task/ags_crop_note.h \
 	ags/audio/task/ags_export_output.h \
 	ags/audio/task/ags_free_selection.h \
-	ags/audio/task/ags_init_audio.h \
-	ags/audio/task/ags_init_channel.h \
 	ags/audio/task/ags_link_channel.h \
 	ags/audio/task/ags_move_note.h \
 	ags/audio/task/ags_notify_soundcard.h \
 	ags/audio/task/ags_open_file.h \
+	ags/audio/task/ags_open_sf2_instrument.h \
 	ags/audio/task/ags_open_sf2_sample.h \
 	ags/audio/task/ags_open_single_file.h \
+	ags/audio/task/ags_open_wave.h \
 	ags/audio/task/ags_remove_audio.h \
 	ags/audio/task/ags_remove_audio_signal.h \
 	ags/audio/task/ags_remove_note.h \
-	ags/audio/task/ags_remove_point_from_selection.h \
-	ags/audio/task/ags_remove_recall_container.h \
-	ags/audio/task/ags_remove_recall.h \
-	ags/audio/task/ags_remove_region_from_selection.h \
 	ags/audio/task/ags_remove_soundcard.h \
-	ags/audio/task/ags_reset_audio_connection.h \
 	ags/audio/task/ags_resize_audio.h \
-	ags/audio/task/ags_save_file.h \
 	ags/audio/task/ags_seek_soundcard.h \
 	ags/audio/task/ags_set_audio_channels.h \
 	ags/audio/task/ags_set_buffer_size.h \
 	ags/audio/task/ags_set_format.h \
-	ags/audio/task/ags_set_input_device.h \
-	ags/audio/task/ags_set_output_device.h \
 	ags/audio/task/ags_set_samplerate.h \
+	ags/audio/task/ags_start_audio.h \
+	ags/audio/task/ags_start_channel.h \
 	ags/audio/task/ags_start_sequencer.h \
 	ags/audio/task/ags_start_soundcard.h \
 	ags/audio/task/ags_switch_buffer_flag.h \
 	ags/audio/task/ags_tic_device.h \
 	ags/audio/task/ags_toggle_pattern_bit.h \
-	ags/audio/task/ags_unref_audio_signal.h \
-	ags/audio/task/recall/ags_apply_bpm.h \
-	ags/audio/task/recall/ags_apply_sequencer_length.h \
-	ags/audio/task/recall/ags_apply_tact.h \
-	ags/audio/task/recall/ags_reset_peak.h \
-	ags/audio/task/recall/ags_set_muted.h
+	ags/audio/task/ags_apply_bpm.h \
+	ags/audio/task/ags_apply_sequencer_length.h \
+	ags/audio/task/ags_apply_tact.h \
+	ags/audio/task/ags_reset_amplitude.h \
+	ags/audio/task/ags_reset_peak.h \
+	ags/audio/task/ags_set_muted.h
 
 deprecated_libags_audio_task_c_sources =
 
@@ -1193,63 +1190,47 @@ libags_audio_task_c_sources = \
 	ags/audio/task/ags_add_audio_signal.c \
 	ags/audio/task/ags_add_effect.c \
 	ags/audio/task/ags_add_note.c \
-	ags/audio/task/ags_add_point_to_selection.c \
-	ags/audio/task/ags_add_recall.c \
-	ags/audio/task/ags_add_recall_container.c \
-	ags/audio/task/ags_add_region_to_selection.c \
 	ags/audio/task/ags_add_soundcard.c \
-	ags/audio/task/ags_append_audio.c \
-	ags/audio/task/ags_append_audio_threaded.c \
-	ags/audio/task/ags_append_channel.c \
-	ags/audio/task/ags_append_recall.c \
 	ags/audio/task/ags_apply_presets.c \
 	ags/audio/task/ags_apply_synth.c \
 	ags/audio/task/ags_cancel_audio.c \
 	ags/audio/task/ags_cancel_channel.c \
-	ags/audio/task/ags_cancel_recall.c \
-	ags/audio/task/ags_change_soundcard.c \
 	ags/audio/task/ags_clear_audio_signal.c \
 	ags/audio/task/ags_clear_buffer.c \
 	ags/audio/task/ags_crop_note.c \
 	ags/audio/task/ags_export_output.c \
 	ags/audio/task/ags_free_selection.c \
-	ags/audio/task/ags_init_audio.c \
-	ags/audio/task/ags_init_channel.c \
 	ags/audio/task/ags_link_channel.c \
 	ags/audio/task/ags_move_note.c \
 	ags/audio/task/ags_notify_soundcard.c \
 	ags/audio/task/ags_open_file.c \
+	ags/audio/task/ags_open_sf2_instrument.c \
 	ags/audio/task/ags_open_sf2_sample.c \
 	ags/audio/task/ags_open_single_file.c \
+	ags/audio/task/ags_open_wave.c \
 	ags/audio/task/ags_remove_audio.c \
 	ags/audio/task/ags_remove_audio_signal.c \
 	ags/audio/task/ags_remove_note.c \
-	ags/audio/task/ags_remove_point_from_selection.c \
-	ags/audio/task/ags_remove_recall.c \
-	ags/audio/task/ags_remove_recall_container.c \
-	ags/audio/task/ags_remove_region_from_selection.c \
 	ags/audio/task/ags_remove_soundcard.c \
-	ags/audio/task/ags_reset_audio_connection.c \
 	ags/audio/task/ags_resize_audio.c \
-	ags/audio/task/ags_save_file.c \
 	ags/audio/task/ags_seek_soundcard.c \
 	ags/audio/task/ags_set_audio_channels.c \
 	ags/audio/task/ags_set_buffer_size.c \
 	ags/audio/task/ags_set_format.c \
-	ags/audio/task/ags_set_input_device.c \
-	ags/audio/task/ags_set_output_device.c \
 	ags/audio/task/ags_set_samplerate.c \
 	ags/audio/task/ags_start_sequencer.c \
 	ags/audio/task/ags_start_soundcard.c \
+	ags/audio/task/ags_start_audio.c \
+	ags/audio/task/ags_start_channel.c \
 	ags/audio/task/ags_switch_buffer_flag.c \
 	ags/audio/task/ags_tic_device.c \
 	ags/audio/task/ags_toggle_pattern_bit.c \
-	ags/audio/task/ags_unref_audio_signal.c \
-	ags/audio/task/recall/ags_apply_bpm.c \
-	ags/audio/task/recall/ags_apply_sequencer_length.c \
-	ags/audio/task/recall/ags_apply_tact.c \
-	ags/audio/task/recall/ags_reset_peak.c \
-	ags/audio/task/recall/ags_set_muted.c
+	ags/audio/task/ags_apply_bpm.c \
+	ags/audio/task/ags_apply_sequencer_length.c \
+	ags/audio/task/ags_apply_tact.c \
+	ags/audio/task/ags_reset_amplitude.c \
+	ags/audio/task/ags_reset_peak.c \
+	ags/audio/task/ags_set_muted.c
 
 # libags-gui all files
 deprecated_libags_gui_h_sources =
@@ -1360,6 +1341,12 @@ libgsequencer_h_sources = \
 	ags/X/ags_generic_preferences.h \
 	ags/X/ags_history_browser_callbacks.h \
 	ags/X/ags_history_browser.h \
+	ags/X/ags_input_collection_editor_callbacks.h \
+	ags/X/ags_input_collection_editor.h \
+	ags/X/ags_input_editor_callbacks.h \
+	ags/X/ags_input_editor.h \
+	ags/X/ags_input_listing_editor_callbacks.h \
+	ags/X/ags_input_listing_editor.h \
 	ags/X/ags_ladspa_browser_callbacks.h \
 	ags/X/ags_ladspa_browser.h \
 	ags/X/ags_lv2_browser_callbacks.h \
@@ -1471,6 +1458,12 @@ libgsequencer_c_sources = \
 	ags/X/ags_ladspa_browser_callbacks.c \
 	ags/X/ags_lv2_browser.c \
 	ags/X/ags_lv2_browser_callbacks.c \
+	ags/X/ags_input_collection_editor_callbacks.c \
+	ags/X/ags_input_collection_editor.c \
+	ags/X/ags_input_editor_callbacks.c \
+	ags/X/ags_input_editor.c \
+	ags/X/ags_input_listing_editor_callbacks.c \
+	ags/X/ags_input_listing_editor.c \
 	ags/X/ags_line.c \
 	ags/X/ags_line_callbacks.c \
 	ags/X/ags_line_editor.c \
@@ -1575,39 +1568,15 @@ deprecated_libgsequencer_task_h_sources =
 
 libgsequencer_task_h_sources = \
 	$(deprecated_libgsequencer_task_h_sources) \
-	ags/X/task/ags_add_bulk_member.h \
-	ags/X/task/ags_add_line_member.h \
-	ags/X/task/ags_add_sequencer_editor_jack.h \
-	ags/X/task/ags_add_soundcard_editor_sink.h \
-	ags/X/task/ags_blink_cell_pattern_cursor.h \
-	ags/X/task/ags_change_indicator.h \
-	ags/X/task/ags_change_tact.h \
-	ags/X/task/ags_display_tact.h \
-	ags/X/task/ags_remove_sequencer_editor_jack.h \
-	ags/X/task/ags_remove_soundcard_editor_sink.h \
 	ags/X/task/ags_simple_file_read.h \
-	ags/X/task/ags_simple_file_write.h \
-	ags/X/task/ags_toggle_led.h \
-	ags/X/task/ags_update_bulk_member.h
+	ags/X/task/ags_simple_file_write.h
 
 deprecated_libgsequencer_task_c_sources =
 
 libgsequencer_task_c_sources = \
 	$(deprecated_libgsequencer_task_c_sources) \
-	ags/X/task/ags_add_bulk_member.c \
-	ags/X/task/ags_add_line_member.c \
-	ags/X/task/ags_add_sequencer_editor_jack.c \
-	ags/X/task/ags_add_soundcard_editor_sink.c \
-	ags/X/task/ags_blink_cell_pattern_cursor.c \
-	ags/X/task/ags_change_indicator.c \
-	ags/X/task/ags_change_tact.c \
-	ags/X/task/ags_display_tact.c \
-	ags/X/task/ags_remove_sequencer_editor_jack.c \
-	ags/X/task/ags_remove_soundcard_editor_sink.c \
 	ags/X/task/ags_simple_file_read.c \
-	ags/X/task/ags_simple_file_write.c \
-	ags/X/task/ags_toggle_led.c \
-	ags/X/task/ags_update_bulk_member.c
+	ags/X/task/ags_simple_file_write.c
 
 # libgsequencer - import
 deprecated_libgsequencer_import_h_sources =
@@ -1664,6 +1633,10 @@ libgsequencer_machine_h_sources = \
 	ags/X/machine/ags_audiorec_callbacks.h \
 	ags/X/machine/ags_cell_pattern_callbacks.h \
 	ags/X/machine/ags_cell_pattern.h \
+	ags/X/machine/ags_desk_callbacks.h \
+	ags/X/machine/ags_desk.h \
+	ags/X/machine/ags_desk_input_pad_callbacks.h \
+	ags/X/machine/ags_desk_input_pad.h \
 	ags/X/machine/ags_drum_callbacks.h \
 	ags/X/machine/ags_drum.h \
 	ags/X/machine/ags_drum_input_line_callbacks.h \
@@ -1676,6 +1649,8 @@ libgsequencer_machine_h_sources = \
 	ags/X/machine/ags_drum_output_pad.h \
 	ags/X/machine/ags_dssi_bridge_callbacks.h \
 	ags/X/machine/ags_dssi_bridge.h \
+	ags/X/machine/ags_equalizer10.h \
+	ags/X/machine/ags_equalizer10_callbacks.h \
 	ags/X/machine/ags_ffplayer_callbacks.h \
 	ags/X/machine/ags_ffplayer.h \
 	ags/X/machine/ags_ffplayer_bridge_callbacks.h \
@@ -1719,7 +1694,9 @@ libgsequencer_machine_h_sources = \
 	ags/X/machine/ags_synth.h \
 	ags/X/machine/ags_synth_input_line.h \
 	ags/X/machine/ags_synth_input_line_callbacks.h \
-	ags/X/machine/ags_synth_input_pad.h
+	ags/X/machine/ags_synth_input_pad.h \
+	ags/X/machine/ags_spectrometer.h \
+	ags/X/machine/ags_spectrometer_callbacks.h
 
 deprecated_libgsequencer_machine_c_sources =
 
@@ -1729,6 +1706,10 @@ libgsequencer_machine_c_sources = \
 	ags/X/machine/ags_audiorec_callbacks.c \
 	ags/X/machine/ags_cell_pattern.c \
 	ags/X/machine/ags_cell_pattern_callbacks.c \
+	ags/X/machine/ags_desk_callbacks.c \
+	ags/X/machine/ags_desk.c \
+	ags/X/machine/ags_desk_input_pad_callbacks.c \
+	ags/X/machine/ags_desk_input_pad.c \
 	ags/X/machine/ags_drum.c \
 	ags/X/machine/ags_drum_callbacks.c \
 	ags/X/machine/ags_drum_input_line.c \
@@ -1741,6 +1722,8 @@ libgsequencer_machine_c_sources = \
 	ags/X/machine/ags_drum_output_pad_callbacks.c \
 	ags/X/machine/ags_dssi_bridge.c \
 	ags/X/machine/ags_dssi_bridge_callbacks.c \
+	ags/X/machine/ags_equalizer10.c \
+	ags/X/machine/ags_equalizer10_callbacks.c \
 	ags/X/machine/ags_ffplayer.c \
 	ags/X/machine/ags_ffplayer_callbacks.c \
 	ags/X/machine/ags_ffplayer_bridge.c \
@@ -1784,7 +1767,9 @@ libgsequencer_machine_c_sources = \
 	ags/X/machine/ags_synth_callbacks.c \
 	ags/X/machine/ags_synth_input_line.c \
 	ags/X/machine/ags_synth_input_line_callbacks.c \
-	ags/X/machine/ags_synth_input_pad.c
+	ags/X/machine/ags_synth_input_pad.c \
+	ags/X/machine/ags_spectrometer.c \
+	ags/X/machine/ags_spectrometer_callbacks.c
 
 # libgsequencer - editor
 deprecated_libgsequencer_editor_h_sources =
@@ -1825,6 +1810,8 @@ libgsequencer_editor_h_sources = \
 	ags/X/editor/ags_position_automation_cursor_dialog_callbacks.h \
 	ags/X/editor/ags_position_notation_cursor_dialog.h \
 	ags/X/editor/ags_position_notation_cursor_dialog_callbacks.h \
+	ags/X/editor/ags_position_wave_cursor_dialog.h \
+	ags/X/editor/ags_position_wave_cursor_dialog_callbacks.h \
 	ags/X/editor/ags_ramp_acceleration_dialog.h \
 	ags/X/editor/ags_ramp_acceleration_dialog_callbacks.h \
 	ags/X/editor/ags_scrolled_automation_edit_box.h \
@@ -1833,6 +1820,8 @@ libgsequencer_editor_h_sources = \
 	ags/X/editor/ags_sf2_chooser.h \
 	ags/X/editor/ags_select_acceleration_dialog.h \
 	ags/X/editor/ags_select_acceleration_dialog_callbacks.h \
+	ags/X/editor/ags_select_buffer_dialog.h \
+	ags/X/editor/ags_select_buffer_dialog_callbacks.h \
 	ags/X/editor/ags_select_note_dialog.h \
 	ags/X/editor/ags_select_note_dialog_callbacks.h \
 	ags/X/editor/ags_vautomation_edit_box.h \
@@ -1881,12 +1870,16 @@ libgsequencer_editor_c_sources = \
 	ags/X/editor/ags_position_automation_cursor_dialog_callbacks.c \
 	ags/X/editor/ags_position_notation_cursor_dialog.c \
 	ags/X/editor/ags_position_notation_cursor_dialog_callbacks.c \
+	ags/X/editor/ags_position_wave_cursor_dialog.c \
+	ags/X/editor/ags_position_wave_cursor_dialog_callbacks.c \
 	ags/X/editor/ags_ramp_acceleration_dialog.c \
 	ags/X/editor/ags_ramp_acceleration_dialog_callbacks.c \
 	ags/X/editor/ags_scrolled_automation_edit_box.c \
 	ags/X/editor/ags_scrolled_wave_edit_box.c \
 	ags/X/editor/ags_select_acceleration_dialog.c \
 	ags/X/editor/ags_select_acceleration_dialog_callbacks.c \
+	ags/X/editor/ags_select_buffer_dialog.c \
+	ags/X/editor/ags_select_buffer_dialog_callbacks.c \
 	ags/X/editor/ags_select_note_dialog.c \
 	ags/X/editor/ags_select_note_dialog_callbacks.c \
 	ags/X/editor/ags_sf2_chooser.c \
@@ -2054,7 +2047,7 @@ gen-symbols-ags:
 	find ags/lib -name "*.h" | xargs grep --no-filename -o -P "(?<=\s)(ags_[a-z0-9_]+)(?=[\s]*\()" >> libags.sym
 	echo "ags_application_context" >> libags.sym
 	find ags/object -name "*.h" | xargs grep --no-filename -o -P "(?<=\s)(ags_[a-z0-9_]+)(?=[\s]*\()" >> libags.sym
-	find ags/object -name "ags_marshal.h" | xargs grep --no-filename -o -P "(g_cclosure_user_marshal_[a-zA-Z0-9_]+)" >> libags.sym
+	find ags/object -name "ags_marshal.h" | xargs grep --no-filename -o -P "(ags_cclosure_marshal_[a-zA-Z0-9_]+)" >> libags.sym
 	find ags/file -name "*.h" | xargs grep --no-filename -o -P "(?<=\s)(ags_[a-z0-9_]+)(?=[\s]*\()" >> libags.sym
 
 gen-symbols-ags-thread:

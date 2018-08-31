@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -18,29 +18,14 @@
  */
 
 #include <ags/audio/recall/ags_volume_channel_run.h>
-#include <ags/audio/recall/ags_volume_recycling.h>
 
 #include <ags/libags.h>
 
-#include <ags/audio/ags_audio.h>
-#include <ags/audio/ags_recycling.h>
-#include <ags/audio/ags_recall_id.h>
-
-#include <ags/audio/task/ags_cancel_recall.h>
+#include <ags/audio/recall/ags_volume_recycling.h>
 
 void ags_volume_channel_run_class_init(AgsVolumeChannelRunClass *volume_channel_run);
-void ags_volume_channel_run_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_volume_channel_run_dynamic_connectable_interface_init(AgsDynamicConnectableInterface *dynamic_connectable);
 void ags_volume_channel_run_init(AgsVolumeChannelRun *volume_channel_run);
-void ags_volume_channel_run_connect(AgsConnectable *connectable);
-void ags_volume_channel_run_disconnect(AgsConnectable *connectable);
-void ags_volume_channel_run_connect_dynamic(AgsDynamicConnectable *dynamic_connectable);
-void ags_volume_channel_run_disconnect_dynamic(AgsDynamicConnectable *dynamic_connectable);
 void ags_volume_channel_run_finalize(GObject *gobject);
-
-AgsRecall* ags_volume_channel_run_duplicate(AgsRecall *recall,
-					    AgsRecallID *recall_id,
-					    guint *n_params, GParameter *parameter);
 
 /**
  * SECTION:ags_volume_channel_run
@@ -53,8 +38,6 @@ AgsRecall* ags_volume_channel_run_duplicate(AgsRecall *recall,
  */
 
 static gpointer ags_volume_channel_run_parent_class = NULL;
-static AgsConnectableInterface *ags_volume_channel_run_parent_connectable_interface;
-static AgsDynamicConnectableInterface *ags_volume_channel_run_parent_dynamic_connectable_interface;
 
 GType
 ags_volume_channel_run_get_type()
@@ -76,32 +59,10 @@ ags_volume_channel_run_get_type()
       (GInstanceInitFunc) ags_volume_channel_run_init,
     };
 
-    static const GInterfaceInfo ags_connectable_interface_info = {
-      (GInterfaceInitFunc) ags_volume_channel_run_connectable_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-
-    static const GInterfaceInfo ags_dynamic_connectable_interface_info = {
-      (GInterfaceInitFunc) ags_volume_channel_run_dynamic_connectable_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-
     ags_type_volume_channel_run = g_type_register_static(AGS_TYPE_RECALL_CHANNEL_RUN,
 							 "AgsVolumeChannelRun",
 							 &ags_volume_channel_run_info,
 							 0);
-
-    g_type_add_interface_static(ags_type_volume_channel_run,
-				AGS_TYPE_CONNECTABLE,
-				&ags_connectable_interface_info);
-
-    g_type_add_interface_static(ags_type_volume_channel_run,
-				AGS_TYPE_DYNAMIC_CONNECTABLE,
-				&ags_dynamic_connectable_interface_info);
-
-    g_once_init_leave (&g_define_type_id__volatile, ags_type_volume_channel_run);
   }
 
   return g_define_type_id__volatile;
@@ -111,7 +72,6 @@ void
 ags_volume_channel_run_class_init(AgsVolumeChannelRunClass *volume_channel_run)
 {
   GObjectClass *gobject;
-  AgsRecallClass *recall;
 
   ags_volume_channel_run_parent_class = g_type_class_peek_parent(volume_channel_run);
 
@@ -119,136 +79,50 @@ ags_volume_channel_run_class_init(AgsVolumeChannelRunClass *volume_channel_run)
   gobject = (GObjectClass *) volume_channel_run;
 
   gobject->finalize = ags_volume_channel_run_finalize;
-
-  /* AgsRecallClass */
-  recall = (AgsRecallClass *) volume_channel_run;
-
-  recall->duplicate = ags_volume_channel_run_duplicate;
-}
-
-void
-ags_volume_channel_run_connectable_interface_init(AgsConnectableInterface *connectable)
-{
-  ags_volume_channel_run_parent_connectable_interface = g_type_interface_peek_parent(connectable);
-
-  connectable->connect = ags_volume_channel_run_connect;
-  connectable->disconnect = ags_volume_channel_run_disconnect;
-}
-
-void
-ags_volume_channel_run_dynamic_connectable_interface_init(AgsDynamicConnectableInterface *dynamic_connectable)
-{
-  ags_volume_channel_run_parent_dynamic_connectable_interface = g_type_interface_peek_parent(dynamic_connectable);
-
-  dynamic_connectable->connect_dynamic = ags_volume_channel_run_connect_dynamic;
-  dynamic_connectable->disconnect_dynamic = ags_volume_channel_run_disconnect_dynamic;
 }
 
 void
 ags_volume_channel_run_init(AgsVolumeChannelRun *volume_channel_run)
 {
+  ags_recall_set_ability_flags(volume_channel_run, (AGS_SOUND_ABILITY_PLAYBACK |
+						    AGS_SOUND_ABILITY_SEQUENCER |
+						    AGS_SOUND_ABILITY_NOTATION |
+						    AGS_SOUND_ABILITY_WAVE |
+						    AGS_SOUND_ABILITY_MIDI));
+
   AGS_RECALL(volume_channel_run)->name = "ags-volume";
   AGS_RECALL(volume_channel_run)->version = AGS_RECALL_DEFAULT_VERSION;
   AGS_RECALL(volume_channel_run)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;
   AGS_RECALL(volume_channel_run)->xml_type = "ags-volume-channel-run";
   AGS_RECALL(volume_channel_run)->port = NULL;
 
-  AGS_RECALL(volume_channel_run)->flags |= AGS_RECALL_INPUT_ORIENTATED;
   AGS_RECALL(volume_channel_run)->child_type = AGS_TYPE_VOLUME_RECYCLING;
 }
 
 void
 ags_volume_channel_run_finalize(GObject *gobject)
 {
-  /* empty */
-  
   /* call parent */
   G_OBJECT_CLASS(ags_volume_channel_run_parent_class)->finalize(gobject);
 }
 
-void
-ags_volume_channel_run_connect(AgsConnectable *connectable)
-{
-  if((AGS_RECALL_CONNECTED & (AGS_RECALL(connectable)->flags)) != 0){
-    return;
-  }
-  
-  /* call parent */
-  ags_volume_channel_run_parent_connectable_interface->connect(connectable);
-
-  /* empty */
-}
-
-void
-ags_volume_channel_run_disconnect(AgsConnectable *connectable)
-{
-  if((AGS_RECALL_CONNECTED & (AGS_RECALL(connectable)->flags)) == 0){
-    return;
-  }
-
-  /* empty */
-  
-  /* call parent */
-  ags_volume_channel_run_parent_connectable_interface->disconnect(connectable);
-}
-
-void
-ags_volume_channel_run_connect_dynamic(AgsDynamicConnectable *dynamic_connectable)
-{
-  if((AGS_RECALL_DYNAMIC_CONNECTED & (AGS_RECALL(dynamic_connectable)->flags)) != 0){
-    return;
-  }
-
-  /* call parent */
-  ags_volume_channel_run_parent_dynamic_connectable_interface->connect_dynamic(dynamic_connectable);
-
-  /* empty */
-}
-
-void
-ags_volume_channel_run_disconnect_dynamic(AgsDynamicConnectable *dynamic_connectable)
-{
-  if((AGS_RECALL_DYNAMIC_CONNECTED & (AGS_RECALL(dynamic_connectable)->flags)) == 0){
-    return;
-  }
-
-  /* empty */
-  
-  /* call parent */
-  ags_volume_channel_run_parent_dynamic_connectable_interface->disconnect_dynamic(dynamic_connectable);
-}
-
-AgsRecall*
-ags_volume_channel_run_duplicate(AgsRecall *recall,
-				 AgsRecallID *recall_id,
-				 guint *n_params, GParameter *parameter)
-{
-  AgsVolumeChannelRun *copy;
-  
-  copy = (AgsVolumeChannelRun *) AGS_RECALL_CLASS(ags_volume_channel_run_parent_class)->duplicate(recall,
-												  recall_id,
-												  n_params, parameter);
-  
-  return((AgsRecall *) copy);
-}
-
 /**
  * ags_volume_channel_run_new:
- * @channel: the assigned #AgsChannel
+ * @source: the #AgsChannel
  *
- * Creates an #AgsVolumeChannelRun
+ * Create a new instance of #AgsVolumeChannelRun
  *
- * Returns: a new #AgsVolumeChannelRun
+ * Returns: the new #AgsVolumeChannelRun
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsVolumeChannelRun*
-ags_volume_channel_run_new(AgsChannel *channel)
+ags_volume_channel_run_new(AgsChannel *source)
 {
   AgsVolumeChannelRun *volume_channel_run;
 
   volume_channel_run = (AgsVolumeChannelRun *) g_object_new(AGS_TYPE_VOLUME_CHANNEL_RUN,
-							    "source", channel,
+							    "source", source,
 							    NULL);
 
   return(volume_channel_run);

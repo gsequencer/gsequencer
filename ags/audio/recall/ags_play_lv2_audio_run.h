@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -23,16 +23,16 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include <lv2.h>
-
 #include <ags/libags.h>
 
-#include <ags/audio/ags_recall_audio_run.h>
+#include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_notation.h>
+#include <ags/audio/ags_recall_audio_run.h>
 
 #include <ags/audio/recall/ags_delay_audio_run.h>
-#include <ags/audio/recall/ags_count_beats_audio.h>
 #include <ags/audio/recall/ags_count_beats_audio_run.h>
+
+#include <lv2.h>
 
 #define AGS_TYPE_PLAY_LV2_AUDIO_RUN                (ags_play_lv2_audio_run_get_type())
 #define AGS_PLAY_LV2_AUDIO_RUN(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_PLAY_LV2_AUDIO_RUN, AgsPlayLv2AudioRun))
@@ -46,17 +46,6 @@
 typedef struct _AgsPlayLv2AudioRun AgsPlayLv2AudioRun;
 typedef struct _AgsPlayLv2AudioRunClass AgsPlayLv2AudioRunClass;
 
-/**
- * AgsPlayLv2AudioRunFlags:
- * @AGS_PLAY_LV2_AUDIO_RUN_DEFAULT: not used
- *
- * Enum values to control the behavior or indicate internal state of #AgsPlayLv2AudioRun by
- * enable/disable as flags.
- */
-typedef enum{
-  AGS_PLAY_LV2_AUDIO_RUN_DEFAULT  =  1,
-}AgsPlayLv2AudioRunFlags;
-
 struct _AgsPlayLv2AudioRun
 {
   AgsRecallAudioRun recall_audio_run;
@@ -64,6 +53,8 @@ struct _AgsPlayLv2AudioRun
   guint flags;
 
   LV2_Handle *lv2_handle;
+  
+  float *port_data;
   
   float *input;
   float *output;
@@ -99,6 +90,8 @@ GType ags_play_lv2_audio_run_get_type();
 
 void ags_play_lv2_audio_run_load_ports(AgsPlayLv2AudioRun *play_lv2_audio_run);
 
-AgsPlayLv2AudioRun* ags_play_lv2_audio_run_new();
+AgsPlayLv2AudioRun* ags_play_lv2_audio_run_new(AgsAudio *audio,
+					       AgsDelayAudioRun *delay_audio_run,
+					       AgsCountBeatsAudioRun *count_beats_audio_run);
 
 #endif /*__AGS_PLAY_LV2_AUDIO_RUN_H__*/

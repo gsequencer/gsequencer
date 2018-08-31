@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -25,8 +25,7 @@
 
 #include <alsa/asoundlib.h>
 
-#include <ags/lib/ags_time.h>
-#include <ags/lib/ags_complex.h>
+#include <ags/libags.h>
 
 #define AGS_TYPE_NOTE                (ags_note_get_type())
 #define AGS_NOTE(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_NOTE, AgsNote))
@@ -42,7 +41,6 @@ typedef struct _AgsNoteClass AgsNoteClass;
 
 /**
  * AgsNoteFlags:
- * @AGS_NOTE_CONNECTED: indicates the note was connected by calling #AgsConnectable::connect()
  * @AGS_NOTE_GUI: gui format
  * @AGS_NOTE_RUNTIME: runtime format
  * @AGS_NOTE_HUMAN_READABLE: human readable format
@@ -55,14 +53,13 @@ typedef struct _AgsNoteClass AgsNoteClass;
  * enable/disable as flags.
  */
 typedef enum{
-  AGS_NOTE_CONNECTED       = 1,
-  AGS_NOTE_GUI             = 1 <<  1,
-  AGS_NOTE_RUNTIME         = 1 <<  2,
-  AGS_NOTE_HUMAN_READABLE  = 1 <<  3,
-  AGS_NOTE_DEFAULT_LENGTH  = 1 <<  4,
-  AGS_NOTE_IS_SELECTED     = 1 <<  5,
-  AGS_NOTE_FEED            = 1 <<  6,
-  AGS_NOTE_ENVELOPE        = 1 <<  7,
+  AGS_NOTE_GUI             = 1,
+  AGS_NOTE_RUNTIME         = 1 <<  1,
+  AGS_NOTE_HUMAN_READABLE  = 1 <<  2,
+  AGS_NOTE_DEFAULT_LENGTH  = 1 <<  3,
+  AGS_NOTE_IS_SELECTED     = 1 <<  4,
+  AGS_NOTE_FEED            = 1 <<  5,
+  AGS_NOTE_ENVELOPE        = 1 <<  6,
 }AgsNoteFlags;
 
 struct _AgsNote
@@ -70,6 +67,12 @@ struct _AgsNote
   GObject object;
 
   guint flags;
+
+  pthread_mutex_t *obj_mutex;
+  pthread_mutexattr_t *obj_mutexattr;
+  
+  gboolean is_minor;
+  guint sharp_flats;
 
   // gui format, convert easy to visualization
   guint x[2];
@@ -80,6 +83,7 @@ struct _AgsNote
   
   gdouble stream_delay;
   gdouble stream_attack;
+  guint64 stream_frame_count;
   
   AgsComplex attack;
   AgsComplex decay;
@@ -98,6 +102,12 @@ struct _AgsNoteClass
 };
 
 GType ags_note_get_type();
+
+pthread_mutex_t* ags_note_get_class_mutex();
+
+gboolean ags_note_test_flags(AgsNote *note, guint flags);
+void ags_note_set_flags(AgsNote *note, guint flags);
+void ags_note_unset_flags(AgsNote *note, guint flags);
 
 gint ags_note_sort_func(gconstpointer a,
 			gconstpointer b);

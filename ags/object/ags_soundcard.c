@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -78,7 +78,7 @@ ags_soundcard_class_init(AgsSoundcardInterface *interface)
    * The ::tic signal is emitted every tic of the soundcard. This notifies
    * about a newly played buffer.
    *
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   soundcard_signals[TIC] =
     g_signal_new("tic",
@@ -97,7 +97,7 @@ ags_soundcard_class_init(AgsSoundcardInterface *interface)
    * The ::offset-changed signal notifies about changed position within
    * notation.
    *
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   soundcard_signals[OFFSET_CHANGED] =
     g_signal_new("offset-changed",
@@ -116,7 +116,7 @@ ags_soundcard_class_init(AgsSoundcardInterface *interface)
    * The ::stop signal is emitted every stop of the soundcard. This notifies
    * about a newly played buffer.
    *
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   soundcard_signals[STOP] =
     g_signal_new("stop",
@@ -135,7 +135,7 @@ ags_soundcard_class_init(AgsSoundcardInterface *interface)
  *
  * Set application context.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_soundcard_set_application_context(AgsSoundcard *soundcard,
@@ -158,7 +158,7 @@ ags_soundcard_set_application_context(AgsSoundcard *soundcard,
  *
  * Returns: #AgsApplicationContext
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsApplicationContext*
 ags_soundcard_get_application_context(AgsSoundcard *soundcard)
@@ -173,57 +173,13 @@ ags_soundcard_get_application_context(AgsSoundcard *soundcard)
 }
 
 /**
- * ags_soundcard_set_application_mutex:
- * @soundcard: the #AgsSoundcard
- * @application_mutex: the application mutex to set
- *
- * Set application mutex.
- *
- * Since: 1.0.0
- */
-void
-ags_soundcard_set_application_mutex(AgsSoundcard *soundcard,
-				    pthread_mutex_t *application_mutex)
-{
-  AgsSoundcardInterface *soundcard_interface;
-
-  g_return_if_fail(AGS_IS_SOUNDCARD(soundcard));
-  soundcard_interface = AGS_SOUNDCARD_GET_INTERFACE(soundcard);
-  g_return_if_fail(soundcard_interface->set_application_mutex);
-  soundcard_interface->set_application_mutex(soundcard,
-					       application_mutex);
-}
-
-/**
- * ags_soundcard_get_application_mutex:
- * @soundcard: the #AgsSoundcard
- *
- * Get application mutex. 
- *
- * Returns: #AgsApplicationMutex
- *
- * Since: 1.0.0
- */
-pthread_mutex_t*
-ags_soundcard_get_application_mutex(AgsSoundcard *soundcard)
-{
-  AgsSoundcardInterface *soundcard_interface;
-
-  g_return_val_if_fail(AGS_IS_SOUNDCARD(soundcard), NULL);
-  soundcard_interface = AGS_SOUNDCARD_GET_INTERFACE(soundcard);
-  g_return_val_if_fail(soundcard_interface->get_application_mutex, NULL);
-
-  return(soundcard_interface->get_application_mutex(soundcard));
-}
-
-/**
  * ags_soundcard_set_device:
  * @soundcard: the #AgsSoundcard
  * @device_id: the device to set
  *
  * Set device.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_soundcard_set_device(AgsSoundcard *soundcard,
@@ -246,7 +202,7 @@ ags_soundcard_set_device(AgsSoundcard *soundcard,
  *
  * Returns: the device's identifier
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 gchar*
 ags_soundcard_get_device(AgsSoundcard *soundcard)
@@ -270,7 +226,7 @@ ags_soundcard_get_device(AgsSoundcard *soundcard)
  *
  * Get presets. 
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_soundcard_get_presets(AgsSoundcard *soundcard,
@@ -301,7 +257,7 @@ ags_soundcard_get_presets(AgsSoundcard *soundcard,
  *
  * Set presets. 
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_soundcard_set_presets(AgsSoundcard *soundcard,
@@ -330,7 +286,7 @@ ags_soundcard_set_presets(AgsSoundcard *soundcard,
  *
  * Retrieve @card_id and @card_name as a list of strings.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_soundcard_list_cards(AgsSoundcard *soundcard,
@@ -358,7 +314,7 @@ ags_soundcard_list_cards(AgsSoundcard *soundcard,
  *
  * Retrieve detailed information of @card_id soundcard.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_soundcard_pcm_info(AgsSoundcard *soundcard, gchar *card_id,
@@ -380,6 +336,32 @@ ags_soundcard_pcm_info(AgsSoundcard *soundcard, gchar *card_id,
 }
 
 /**
+ * ags_soundcard_get_capability:
+ * @soundcard: the #AgsSoundcard
+ *
+ * Retrieve #AgsSoundcardCapability-enum information.
+ *
+ * Returns: the capablities flags
+ * 
+ * Since: 2.0.0
+ */
+guint
+ags_soundcard_get_capability(AgsSoundcard *soundcard)
+{
+  AgsSoundcardInterface *soundcard_interface;
+
+  guint capability;
+  
+  g_return_val_if_fail(AGS_IS_SOUNDCARD(soundcard), 0);
+  soundcard_interface = AGS_SOUNDCARD_GET_INTERFACE(soundcard);
+  g_return_val_if_fail(soundcard_interface->pcm_info, 0);
+
+  capability = soundcard_interface->get_capability(soundcard);
+
+  return(capability);
+}
+
+/**
  * ags_soundcard_get_poll_fd:
  * @soundcard: the #AgsSoundcard
  *
@@ -387,7 +369,7 @@ ags_soundcard_pcm_info(AgsSoundcard *soundcard, gchar *card_id,
  *
  * Returns: a #GList-struct containing poll file descriptors
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 GList*
 ags_soundcard_get_poll_fd(AgsSoundcard *soundcard)
@@ -409,7 +391,7 @@ ags_soundcard_get_poll_fd(AgsSoundcard *soundcard)
  *
  * Returns: %TRUE if available, else %FALSE
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 gboolean
 ags_soundcard_is_available(AgsSoundcard *soundcard)
@@ -431,7 +413,7 @@ ags_soundcard_is_available(AgsSoundcard *soundcard)
  *
  * Returns: %TRUE if starting, else %FALSE
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 gboolean
 ags_soundcard_is_starting(AgsSoundcard *soundcard)
@@ -453,7 +435,7 @@ ags_soundcard_is_starting(AgsSoundcard *soundcard)
  *
  * Returns: %TRUE if playing, else %FALSE
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 gboolean
 ags_soundcard_is_playing(AgsSoundcard *soundcard)
@@ -475,7 +457,7 @@ ags_soundcard_is_playing(AgsSoundcard *soundcard)
  *
  * Returns: %TRUE if recording, else %FALSE
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 gboolean
 ags_soundcard_is_recording(AgsSoundcard *soundcard)
@@ -497,7 +479,7 @@ ags_soundcard_is_recording(AgsSoundcard *soundcard)
  *
  * Returns: playback time as string
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 gchar*
 ags_soundcard_get_uptime(AgsSoundcard *soundcard)
@@ -518,7 +500,7 @@ ags_soundcard_get_uptime(AgsSoundcard *soundcard)
  *
  * Initializes the soundcard for playback.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_soundcard_play_init(AgsSoundcard *soundcard,
@@ -540,7 +522,7 @@ ags_soundcard_play_init(AgsSoundcard *soundcard,
  *
  * Plays the current buffer of soundcard.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_soundcard_play(AgsSoundcard *soundcard,
@@ -562,7 +544,7 @@ ags_soundcard_play(AgsSoundcard *soundcard,
  *
  * Initializes the soundcard for recordback.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_soundcard_record_init(AgsSoundcard *soundcard,
@@ -584,7 +566,7 @@ ags_soundcard_record_init(AgsSoundcard *soundcard,
  *
  * Records the current buffer of soundcard.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_soundcard_record(AgsSoundcard *soundcard,
@@ -605,7 +587,7 @@ ags_soundcard_record(AgsSoundcard *soundcard,
  *
  * Stops the soundcard from playing to it.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_soundcard_stop(AgsSoundcard *soundcard)
@@ -621,7 +603,7 @@ ags_soundcard_stop(AgsSoundcard *soundcard)
  *
  * Every call to play may generate a tic. 
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_soundcard_tic(AgsSoundcard *soundcard)
@@ -636,7 +618,7 @@ ags_soundcard_tic(AgsSoundcard *soundcard)
  *
  * Callback when counter expires minor note offset.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_soundcard_offset_changed(AgsSoundcard *soundcard,
@@ -656,7 +638,7 @@ ags_soundcard_offset_changed(AgsSoundcard *soundcard,
  *
  * Returns: current playback buffer
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void*
 ags_soundcard_get_buffer(AgsSoundcard *soundcard)
@@ -678,7 +660,7 @@ ags_soundcard_get_buffer(AgsSoundcard *soundcard)
  *
  * Returns: next playback buffer
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void*
 ags_soundcard_get_next_buffer(AgsSoundcard *soundcard)
@@ -700,7 +682,7 @@ ags_soundcard_get_next_buffer(AgsSoundcard *soundcard)
  *
  * Returns: prev playback buffer
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void*
 ags_soundcard_get_prev_buffer(AgsSoundcard *soundcard)
@@ -715,13 +697,59 @@ ags_soundcard_get_prev_buffer(AgsSoundcard *soundcard)
 }
 
 /**
+ * ags_soundcard_lock_buffer:
+ * @soundcard: the #AgsSoundcard
+ * @buffer: the buffer to lock
+ *
+ * Lock @buffer. 
+ *
+ * Since: 2.0.0
+ */
+void
+ags_soundcard_lock_buffer(AgsSoundcard *soundcard,
+			  void *buffer)
+{
+  AgsSoundcardInterface *soundcard_interface;
+
+  g_return_if_fail(AGS_IS_SOUNDCARD(soundcard));
+  soundcard_interface = AGS_SOUNDCARD_GET_INTERFACE(soundcard);
+  g_return_if_fail(soundcard_interface->lock_buffer);
+
+  soundcard_interface->lock_buffer(soundcard,
+				   buffer);
+}
+
+/**
+ * ags_soundcard_unlock_buffer:
+ * @soundcard: the #AgsSoundcard
+ * @buffer: the buffer to unlock
+ *
+ * Unlock @buffer. 
+ *
+ * Since: 2.0.0
+ */
+void
+ags_soundcard_unlock_buffer(AgsSoundcard *soundcard,
+			    void *buffer)
+{
+  AgsSoundcardInterface *soundcard_interface;
+
+  g_return_if_fail(AGS_IS_SOUNDCARD(soundcard));
+  soundcard_interface = AGS_SOUNDCARD_GET_INTERFACE(soundcard);
+  g_return_if_fail(soundcard_interface->unlock_buffer);
+
+  soundcard_interface->unlock_buffer(soundcard,
+				     buffer);
+}
+
+/**
  * ags_soundcard_set_bpm:
  * @soundcard: the #AgsSoundcard
  * @bpm: the bpm to set
  *
  * Set current playback bpm. 
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_soundcard_set_bpm(AgsSoundcard *soundcard,
@@ -744,7 +772,7 @@ ags_soundcard_set_bpm(AgsSoundcard *soundcard,
  *
  * Returns: bpm
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 gdouble
 ags_soundcard_get_bpm(AgsSoundcard *soundcard)
@@ -765,7 +793,7 @@ ags_soundcard_get_bpm(AgsSoundcard *soundcard)
  *
  * Set current playback delay factor. 
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_soundcard_set_delay_factor(AgsSoundcard *soundcard,
@@ -788,7 +816,7 @@ ags_soundcard_set_delay_factor(AgsSoundcard *soundcard,
  *
  * Returns: delay factor
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 gdouble
 ags_soundcard_get_delay_factor(AgsSoundcard *soundcard)
@@ -810,7 +838,7 @@ ags_soundcard_get_delay_factor(AgsSoundcard *soundcard)
  *
  * Returns: delay
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 gdouble
 ags_soundcard_get_absolute_delay(AgsSoundcard *soundcard)
@@ -832,7 +860,7 @@ ags_soundcard_get_absolute_delay(AgsSoundcard *soundcard)
  *
  * Returns: delay
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 gdouble
 ags_soundcard_get_delay(AgsSoundcard *soundcard)
@@ -854,7 +882,7 @@ ags_soundcard_get_delay(AgsSoundcard *soundcard)
  *
  * Returns: attack
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 guint
 ags_soundcard_get_attack(AgsSoundcard *soundcard)
@@ -876,7 +904,7 @@ ags_soundcard_get_attack(AgsSoundcard *soundcard)
  *
  * Returns: offset
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 guint
 ags_soundcard_get_delay_counter(AgsSoundcard *soundcard)
@@ -897,7 +925,7 @@ ags_soundcard_get_delay_counter(AgsSoundcard *soundcard)
  *
  * Set current playback note offset. 
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_soundcard_set_note_offset(AgsSoundcard *soundcard,
@@ -920,7 +948,7 @@ ags_soundcard_set_note_offset(AgsSoundcard *soundcard,
  *
  * Returns: offset
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 guint
 ags_soundcard_get_note_offset(AgsSoundcard *soundcard)
@@ -941,7 +969,7 @@ ags_soundcard_get_note_offset(AgsSoundcard *soundcard)
  *
  * Set current playback note offset. 
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_soundcard_set_note_offset_absolute(AgsSoundcard *soundcard,
@@ -964,7 +992,7 @@ ags_soundcard_set_note_offset_absolute(AgsSoundcard *soundcard,
  *
  * Returns: offset
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 guint
 ags_soundcard_get_note_offset_absolute(AgsSoundcard *soundcard)
@@ -987,7 +1015,7 @@ ags_soundcard_get_note_offset_absolute(AgsSoundcard *soundcard)
  *
  * Set loop parameters of @soundcard.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_soundcard_set_loop(AgsSoundcard *soundcard,
@@ -1013,7 +1041,7 @@ ags_soundcard_set_loop(AgsSoundcard *soundcard,
  *
  * Get loop parameters of @soundcard.
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_soundcard_get_loop(AgsSoundcard *soundcard,
@@ -1038,7 +1066,7 @@ ags_soundcard_get_loop(AgsSoundcard *soundcard,
  *
  * Returns: offset
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 guint
 ags_soundcard_get_loop_offset(AgsSoundcard *soundcard)
@@ -1050,48 +1078,4 @@ ags_soundcard_get_loop_offset(AgsSoundcard *soundcard)
   g_return_val_if_fail(soundcard_interface->get_loop_offset, 0);
 
   return(soundcard_interface->get_loop_offset(soundcard));
-}
-
-/**
- * ags_soundcard_set_audio:
- * @soundcard: the #AgsSoundcard
- * @audio: the audio as #GList-struct to set
- *
- * Set audio. 
- *
- * Since: 1.0.0
- */
-void
-ags_soundcard_set_audio(AgsSoundcard *soundcard,
-			GList *audio)
-{
-  AgsSoundcardInterface *soundcard_interface;
-
-  g_return_if_fail(AGS_IS_SOUNDCARD(soundcard));
-  soundcard_interface = AGS_SOUNDCARD_GET_INTERFACE(soundcard);
-  g_return_if_fail(soundcard_interface->set_audio);
-  soundcard_interface->set_audio(soundcard,
-				 audio);
-}
-
-/**
- * ags_soundcard_get_audio:
- * @soundcard: the #AgsSoundcard
- *
- * Get audio. 
- *
- * Returns: a #GList-struct container #AgsAudio
- *
- * Since: 1.0.0
- */
-GList*
-ags_soundcard_get_audio(AgsSoundcard *soundcard)
-{
-  AgsSoundcardInterface *soundcard_interface;
-
-  g_return_val_if_fail(AGS_IS_SOUNDCARD(soundcard), NULL);
-  soundcard_interface = AGS_SOUNDCARD_GET_INTERFACE(soundcard);
-  g_return_val_if_fail(soundcard_interface->get_audio, NULL);
-
-  return(soundcard_interface->get_audio(soundcard));
 }

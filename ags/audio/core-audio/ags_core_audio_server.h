@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -34,6 +34,8 @@
 
 #include <pthread.h>
 
+#include <ags/libags.h>
+
 #define AGS_TYPE_CORE_AUDIO_SERVER                (ags_core_audio_server_get_type())
 #define AGS_CORE_AUDIO_SERVER(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_CORE_AUDIO_SERVER, AgsCoreAudioServer))
 #define AGS_CORE_AUDIO_SERVER_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST(class, AGS_TYPE_CORE_AUDIO_SERVER, AgsCoreAudioServer))
@@ -46,28 +48,32 @@ typedef struct _AgsCoreAudioServerClass AgsCoreAudioServerClass;
 
 /**
  * AgsCoreAudioServerFlags:
+ * @AGS_CORE_AUDIO_SERVER_ADDED_TO_REGISTRY: the CoreAudio server was added to registry, see #AgsConnectable::add_to_registry()
  * @AGS_CORE_AUDIO_SERVER_CONNECTED: indicates the server was connected by calling #AgsConnectable::connect()
  * 
- * Enum values to control the behavior or indicate internal state of #AgsCoreAudioPort by
+ * Enum values to control the behavior or indicate internal state of #AgsCoreAudioServer by
  * enable/disable as flags.
  */
 typedef enum{
-  AGS_CORE_AUDIO_SERVER_CONNECTED       = 1,
+  AGS_CORE_AUDIO_SERVER_ADDED_TO_REGISTRY  = 1,
+  AGS_CORE_AUDIO_SERVER_CONNECTED          = 1 <<  1,
 }AgsCoreAudioServerFlags;
 
 struct _AgsCoreAudioServer
 {
-  GObject object;
+  GObject gobject;
 
   guint flags;
 
-  pthread_mutex_t *mutex;
-  pthread_mutexattr_t *mutexattr;
+  pthread_mutex_t *obj_mutex;
+  pthread_mutexattr_t *obj_mutexattr;
 
   volatile gboolean running;
   pthread_t *thread;
-  
-  GObject *application_context;
+
+  AgsApplicationContext *application_context;
+
+  AgsUUID *uuid;
   
   gchar *url;
 
@@ -85,10 +91,16 @@ struct _AgsCoreAudioServer
 
 struct _AgsCoreAudioServerClass
 {
-  GObjectClass object;
+  GObjectClass gobject;
 };
 
 GType ags_core_audio_server_get_type();
+
+pthread_mutex_t* ags_core_audio_server_get_class_mutex();
+
+gboolean ags_core_audio_server_test_flags(AgsCoreAudioServer *core_audio_server, guint flags);
+void ags_core_audio_server_set_flags(AgsCoreAudioServer *core_audio_server, guint flags);
+void ags_core_audio_server_unset_flags(AgsCoreAudioServer *core_audio_server, guint flags);
 
 GList* ags_core_audio_server_find_url(GList *core_audio_server,
 				      gchar *url);
@@ -108,7 +120,7 @@ void ags_core_audio_server_connect_client(AgsCoreAudioServer *core_audio_server)
 
 void ags_core_audio_server_start_poll(AgsCoreAudioServer *core_audio_server);
 
-AgsCoreAudioServer* ags_core_audio_server_new(GObject *application_context,
+AgsCoreAudioServer* ags_core_audio_server_new(AgsApplicationContext *application_context,
 					      gchar *url);
 
 #endif /*__AGS_CORE_AUDIO_SERVER_H__*/

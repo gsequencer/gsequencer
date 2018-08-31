@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -21,12 +21,11 @@
 
 #include <ags/libags.h>
 
-#include <ags/plugin/ags_base_plugin.h>
+#include <ags/plugin/ags_plugin_port.h>
 
 #include <ags/i18n.h>
 
 void ags_buffer_channel_class_init(AgsBufferChannelClass *buffer_channel);
-void ags_buffer_channel_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_buffer_channel_mutable_interface_init(AgsMutableInterface *mutable);
 void ags_buffer_channel_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_buffer_channel_init(AgsBufferChannel *buffer_channel);
@@ -38,15 +37,14 @@ void ags_buffer_channel_get_property(GObject *gobject,
 				     guint prop_id,
 				     GValue *value,
 				     GParamSpec *param_spec);
-void ags_buffer_channel_connect(AgsConnectable *connectable);
-void ags_buffer_channel_disconnect(AgsConnectable *connectable);
-void ags_buffer_channel_set_ports(AgsPlugin *plugin, GList *port);
 void ags_buffer_channel_dispose(GObject *gobject);
 void ags_buffer_channel_finalize(GObject *gobject);
 
+void ags_buffer_channel_set_ports(AgsPlugin *plugin, GList *port);
+
 void ags_buffer_channel_set_muted(AgsMutable *mutable, gboolean muted);
 
-static AgsPortDescriptor* ags_buffer_channel_get_muted_port_descriptor();
+static AgsPluginPort* ags_buffer_channel_get_muted_plugin_port();
 
 /**
  * SECTION:ags_buffer_channel
@@ -64,7 +62,6 @@ enum{
 };
 
 static gpointer ags_buffer_channel_parent_class = NULL;
-static AgsConnectableInterface *ags_buffer_channel_parent_connectable_interface;
 static AgsMutableInterface *ags_buffer_channel_parent_mutable_interface;
 static AgsPluginInterface *ags_buffer_channel_parent_plugin_interface;
 
@@ -96,12 +93,6 @@ ags_buffer_channel_get_type()
       (GInstanceInitFunc) ags_buffer_channel_init,
     };
 
-    static const GInterfaceInfo ags_connectable_interface_info = {
-      (GInterfaceInitFunc) ags_buffer_channel_connectable_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-
     static const GInterfaceInfo ags_mutable_interface_info = {
       (GInterfaceInitFunc) ags_buffer_channel_mutable_interface_init,
       NULL, /* interface_finalize */
@@ -120,10 +111,6 @@ ags_buffer_channel_get_type()
 						     0);
 
     g_type_add_interface_static(ags_type_buffer_channel,
-				AGS_TYPE_CONNECTABLE,
-				&ags_connectable_interface_info);
-
-    g_type_add_interface_static(ags_type_buffer_channel,
 				AGS_TYPE_MUTABLE,
 				&ags_mutable_interface_info);
 
@@ -135,15 +122,6 @@ ags_buffer_channel_get_type()
   }
 
   return g_define_type_id__volatile;
-}
-
-void
-ags_buffer_channel_connectable_interface_init(AgsConnectableInterface *connectable)
-{
-  ags_buffer_channel_parent_connectable_interface = g_type_interface_peek_parent(connectable);
-
-  connectable->connect = ags_buffer_channel_connect;
-  connectable->disconnect = ags_buffer_channel_disconnect;
 }
 
 void
@@ -186,7 +164,7 @@ ags_buffer_channel_class_init(AgsBufferChannelClass *buffer_channel)
    *
    * The mute port.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("muted",
 				   i18n_pspec("mute channel"),
@@ -222,8 +200,10 @@ ags_buffer_channel_init(AgsBufferChannel *buffer_channel)
   g_object_ref(buffer_channel->muted);
   buffer_channel->muted->port_value.ags_port_float = (float) FALSE;
 
-  /* port descriptor */
-  buffer_channel->muted->port_descriptor = ags_buffer_channel_get_muted_port_descriptor();
+  /* plugin port */
+  g_object_set(buffer_channel->muted,
+	       "plugin-port", ags_buffer_channel_get_muted_plugin_port(),
+	       NULL);
 
   /* add to port */
   port = g_list_prepend(port, buffer_channel->muted);
@@ -243,8 +223,17 @@ ags_buffer_channel_set_property(GObject *gobject,
 {
   AgsBufferChannel *buffer_channel;
 
+  pthread_mutex_t *recall_mutex;
+  
   buffer_channel = AGS_BUFFER_CHANNEL(gobject);
 
+  /* get recall mutex */
+  pthread_mutex_lock(ags_recall_get_class_mutex());
+  
+  recall_mutex = AGS_RECALL(gobject)->obj_mutex;
+
+  pthread_mutex_unlock(ags_recall_get_class_mutex());
+  
   switch(prop_id){
   case PROP_MUTED:
     {
@@ -252,7 +241,11 @@ ags_buffer_channel_set_property(GObject *gobject,
 
       port = (AgsPort *) g_value_get_object(value);
 
+      pthread_mutex_lock(recall_mutex);
+      
       if(port == buffer_channel->muted){
+	pthread_mutex_unlock(recall_mutex);
+	
 	return;
       }
 
@@ -265,6 +258,8 @@ ags_buffer_channel_set_property(GObject *gobject,
       }
 
       buffer_channel->muted = port;
+
+      pthread_mutex_unlock(recall_mutex);
     }
     break;
   default:
@@ -281,12 +276,25 @@ ags_buffer_channel_get_property(GObject *gobject,
 {
   AgsBufferChannel *buffer_channel;
 
+  pthread_mutex_t *recall_mutex;
+  
   buffer_channel = AGS_BUFFER_CHANNEL(gobject);
+
+  /* get recall mutex */
+  pthread_mutex_lock(ags_recall_get_class_mutex());
+  
+  recall_mutex = AGS_RECALL(gobject)->obj_mutex;
+
+  pthread_mutex_unlock(ags_recall_get_class_mutex());
 
   switch(prop_id){
   case PROP_MUTED:
     {
+      pthread_mutex_lock(recall_mutex);
+
       g_value_set_object(value, buffer_channel->muted);
+
+      pthread_mutex_unlock(recall_mutex);
     }
     break;
   default:
@@ -328,33 +336,6 @@ ags_buffer_channel_finalize(GObject *gobject)
 }
 
 void
-ags_buffer_channel_connect(AgsConnectable *connectable)
-{
-  AgsRecall *recall;
-  
-  recall = AGS_RECALL(connectable);
-  
-  if((AGS_RECALL_CONNECTED & (recall->flags)) != 0){
-    return;
-  }
-
-  /* load automation */
-  ags_recall_load_automation(recall,
-			     g_list_copy(recall->port));
-
-  /* call parent */
-  ags_buffer_channel_parent_connectable_interface->connect(connectable);
-}
-
-void
-ags_buffer_channel_disconnect(AgsConnectable *connectable)
-{
-  ags_buffer_channel_parent_connectable_interface->disconnect(connectable);
-
-  /* empty */
-}
-
-void
 ags_buffer_channel_set_ports(AgsPlugin *plugin, GList *port)
 {
   while(port != NULL){
@@ -371,64 +352,82 @@ ags_buffer_channel_set_ports(AgsPlugin *plugin, GList *port)
 }
 
 void
-ags_buffer_channel_set_muted(AgsMutable *mutable, gboolean muted)
+ags_buffer_channel_set_muted(AgsMutable *mutable, gboolean is_muted)
 {
+  AgsPort *muted;
+  
   GValue value = {0,};
 
+  g_object_get(G_OBJECT(mutable),
+	       "muted", &muted,
+	       NULL);
+  
   g_value_init(&value, G_TYPE_FLOAT);
-  g_value_set_float(&value, (float) muted);
+  g_value_set_float(&value, (float) is_muted);
 
-  ags_port_safe_write(AGS_BUFFER_CHANNEL(mutable)->muted, &value);
+  ags_port_safe_write(muted, &value);
 }
 
-static AgsPortDescriptor*
-ags_buffer_channel_get_muted_port_descriptor()
+static AgsPluginPort*
+ags_buffer_channel_get_muted_plugin_port()
 {
-  static AgsPortDescriptor *port_descriptor = NULL;
+  static AgsPluginPort *plugin_port = NULL;
 
-  if(port_descriptor == NULL){
-    port_descriptor = ags_port_descriptor_alloc();
+  static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 
-    port_descriptor->flags |= (AGS_PORT_DESCRIPTOR_INPUT |
-			       AGS_PORT_DESCRIPTOR_CONTROL |
-			       AGS_PORT_DESCRIPTOR_TOGGLED);
+  pthread_mutex_lock(&mutex);
+  
+  if(plugin_port == NULL){
+    plugin_port = ags_plugin_port_new();
+    g_object_ref(plugin_port);
+    
+    plugin_port->flags |= (AGS_PLUGIN_PORT_INPUT |
+			   AGS_PLUGIN_PORT_CONTROL |
+			   AGS_PLUGIN_PORT_TOGGLED);
 
-    port_descriptor->port_index = 0;
+    plugin_port->port_index = 0;
 
     /* range */
-    g_value_init(port_descriptor->default_value,
+    g_value_init(plugin_port->default_value,
 		 G_TYPE_FLOAT);
-    g_value_init(port_descriptor->lower_value,
+    g_value_init(plugin_port->lower_value,
 		 G_TYPE_FLOAT);
-    g_value_init(port_descriptor->upper_value,
+    g_value_init(plugin_port->upper_value,
 		 G_TYPE_FLOAT);
 
-    g_value_set_float(port_descriptor->default_value,
+    g_value_set_float(plugin_port->default_value,
 		      0.0);
-    g_value_set_float(port_descriptor->lower_value,
+    g_value_set_float(plugin_port->lower_value,
 		      0.0);
-    g_value_set_float(port_descriptor->upper_value,
+    g_value_set_float(plugin_port->upper_value,
 		      1.0);
   }
   
-  return(port_descriptor);
+  pthread_mutex_unlock(&mutex);
+
+  return(plugin_port);
 }
 
 /**
  * ags_buffer_channel_new:
+ * @destination: the destination #AgsChannel
+ * @source: the source #AgsChannel
  *
- * Creates an #AgsBufferChannel
+ * Create a new instance of #AgsBufferChannel
  *
- * Returns: a new #AgsBufferChannel
+ * Returns: the new #AgsBufferChannel
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsBufferChannel*
-ags_buffer_channel_new()
+ags_buffer_channel_new(AgsChannel *destination,
+		       AgsChannel *source)
 {
   AgsBufferChannel *buffer_channel;
 
   buffer_channel = (AgsBufferChannel *) g_object_new(AGS_TYPE_BUFFER_CHANNEL,
+						     "destination", destination,
+						     "source", source,
 						     NULL);
 
   return(buffer_channel);

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -25,21 +25,9 @@
 
 #include <gtk/gtk.h>
 
-#include <ags/audio/ags_channel.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
 
 #include <ags/X/ags_effect_line.h>
-
-void ags_effect_line_remove_recall_callback(AgsRecall *recall, AgsEffectLine *effect_line);
-
-void ags_effect_line_add_effect_callback(AgsChannel *channel,
-					 gchar *filename,
-					 gchar *effect,
-					 AgsEffectLine *effect_line);
-void ags_effect_line_remove_effect_callback(AgsChannel *channel,
-					    guint nth,
-					    AgsEffectLine *effect_line);
-
-void ags_effect_line_output_port_run_post_callback(AgsRecall *recall,
-						   AgsEffectLine *effect_line);
 
 #endif /*__AGS_EFFECT_LINE_CALLBACKS_H__*/

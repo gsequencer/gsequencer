@@ -51,7 +51,7 @@ ags_output_editor_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, 
       audio = AGS_AUDIO(channel->audio);
 
       if(audio != NULL){
-	machine = AGS_MACHINE(audio->machine);
+	machine = AGS_MACHINE(audio->machine_widget);
 	
 	gtk_combo_box_set_model(GTK_COMBO_BOX(output_editor->soundcard),
 				GTK_TREE_MODEL(ags_machine_get_possible_audio_output_connections(machine)));

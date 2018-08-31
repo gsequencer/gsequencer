@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -18,27 +18,14 @@
  */
 
 #include <ags/audio/recall/ags_feed_recycling.h>
-#include <ags/audio/recall/ags_feed_channel.h>
-#include <ags/audio/recall/ags_feed_audio_signal.h>
 
 #include <ags/libags.h>
 
-#include <ags/audio/ags_audio_signal.h>
-#include <ags/audio/ags_recall_id.h>
+#include <ags/audio/recall/ags_feed_audio_signal.h>
 
 void ags_feed_recycling_class_init(AgsFeedRecyclingClass *feed_recycling);
-void ags_feed_recycling_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_feed_recycling_dynamic_connectable_interface_init(AgsDynamicConnectableInterface *dynamic_connectable);
 void ags_feed_recycling_init(AgsFeedRecycling *feed_recycling);
-void ags_feed_recycling_connect(AgsConnectable *connectable);
-void ags_feed_recycling_disconnect(AgsConnectable *connectable);
-void ags_feed_recycling_connect_dynamic(AgsDynamicConnectable *dynamic_connectable);
-void ags_feed_recycling_disconnect_dynamic(AgsDynamicConnectable *dynamic_connectable);
 void ags_feed_recycling_finalize(GObject *gobject);
-
-AgsRecall* ags_feed_recycling_duplicate(AgsRecall *recall,
-					AgsRecallID *recall_id,
-					guint *n_params, GParameter *parameter);
 
 /**
  * SECTION:ags_feed_recycling
@@ -51,8 +38,6 @@ AgsRecall* ags_feed_recycling_duplicate(AgsRecall *recall,
  */
 
 static gpointer ags_feed_recycling_parent_class = NULL;
-static AgsConnectableInterface *ags_feed_recycling_parent_connectable_interface;
-static AgsDynamicConnectableInterface *ags_feed_recycling_parent_dynamic_connectable_interface;
 
 GType
 ags_feed_recycling_get_type()
@@ -74,35 +59,13 @@ ags_feed_recycling_get_type()
       (GInstanceInitFunc) ags_feed_recycling_init,
     };
 
-    static const GInterfaceInfo ags_connectable_interface_info = {
-      (GInterfaceInitFunc) ags_feed_recycling_connectable_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-
-    static const GInterfaceInfo ags_dynamic_connectable_interface_info = {
-      (GInterfaceInitFunc) ags_feed_recycling_dynamic_connectable_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-
     ags_type_feed_recycling = g_type_register_static(AGS_TYPE_RECALL_RECYCLING,
 						     "AgsFeedRecycling",
 						     &ags_feed_recycling_info,
 						     0);
-
-    g_type_add_interface_static(ags_type_feed_recycling,
-				AGS_TYPE_CONNECTABLE,
-				&ags_connectable_interface_info);
-
-    g_type_add_interface_static(ags_type_feed_recycling,
-				AGS_TYPE_DYNAMIC_CONNECTABLE,
-				&ags_dynamic_connectable_interface_info);
-
-    g_once_init_leave (&g_define_type_id__volatile, ags_type_feed_recycling);
   }
 
-  return g_define_type_id__volatile;
+  return(ags_type_feed_recycling);
 }
 
 void
@@ -110,7 +73,6 @@ ags_feed_recycling_class_init(AgsFeedRecyclingClass *feed_recycling)
 {
   GObjectClass *gobject;
   AgsRecallClass *recall;
-  GParamSpec *param_spec;
 
   ags_feed_recycling_parent_class = g_type_class_peek_parent(feed_recycling);
 
@@ -121,26 +83,6 @@ ags_feed_recycling_class_init(AgsFeedRecyclingClass *feed_recycling)
 
   /* AgsRecallClass */
   recall = (AgsRecallClass *) feed_recycling;
-
-  recall->duplicate = ags_feed_recycling_duplicate;
-}
-
-void
-ags_feed_recycling_connectable_interface_init(AgsConnectableInterface *connectable)
-{
-  ags_feed_recycling_parent_connectable_interface = g_type_interface_peek_parent(connectable);
-
-  connectable->connect = ags_feed_recycling_connect;
-  connectable->disconnect = ags_feed_recycling_disconnect;
-}
-
-void
-ags_feed_recycling_dynamic_connectable_interface_init(AgsDynamicConnectableInterface *dynamic_connectable)
-{
-  ags_feed_recycling_parent_dynamic_connectable_interface = g_type_interface_peek_parent(dynamic_connectable);
-
-  dynamic_connectable->connect_dynamic = ags_feed_recycling_connect_dynamic;
-  dynamic_connectable->disconnect_dynamic = ags_feed_recycling_disconnect_dynamic;
 }
 
 void
@@ -150,7 +92,6 @@ ags_feed_recycling_init(AgsFeedRecycling *feed_recycling)
   AGS_RECALL(feed_recycling)->version = AGS_RECALL_DEFAULT_VERSION;
   AGS_RECALL(feed_recycling)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;
   AGS_RECALL(feed_recycling)->xml_type = "ags-feed-recycling";
-  AGS_RECALL(feed_recycling)->port = NULL;
 
   AGS_RECALL(feed_recycling)->child_type = AGS_TYPE_FEED_AUDIO_SIGNAL;
 
@@ -160,79 +101,27 @@ ags_feed_recycling_init(AgsFeedRecycling *feed_recycling)
 void
 ags_feed_recycling_finalize(GObject *gobject)
 {
-  /* empty */
-
   /* call parent */
   G_OBJECT_CLASS(ags_feed_recycling_parent_class)->finalize(gobject);
 }
 
-void
-ags_feed_recycling_connect(AgsConnectable *connectable)
-{ 
-  /* call parent */
-  ags_feed_recycling_parent_connectable_interface->connect(connectable);
-
-  /* empty */
-}
-
-void
-ags_feed_recycling_disconnect(AgsConnectable *connectable)
-{
-  /* call parent */
-  ags_feed_recycling_parent_connectable_interface->disconnect(connectable);
-
-  /* empty */
-}
-
-void
-ags_feed_recycling_connect_dynamic(AgsDynamicConnectable *dynamic_connectable)
-{
-  /* call parent */
-  ags_feed_recycling_parent_dynamic_connectable_interface->connect_dynamic(dynamic_connectable);
-
-  /* empty */
-}
-
-void
-ags_feed_recycling_disconnect_dynamic(AgsDynamicConnectable *dynamic_connectable)
-{
-  /* call parent */
-  ags_feed_recycling_parent_dynamic_connectable_interface->disconnect_dynamic(dynamic_connectable);
-
-  /* empty */
-}
-
-AgsRecall*
-ags_feed_recycling_duplicate(AgsRecall *recall,
-			     AgsRecallID *recall_id,
-			     guint *n_params, GParameter *parameter)
-{
-  AgsFeedRecycling *copy;
-
-  copy = (AgsFeedRecycling *) AGS_RECALL_CLASS(ags_feed_recycling_parent_class)->duplicate(recall,
-											   recall_id,
-											   n_params, parameter);
-
-  return((AgsRecall *) copy);
-}
-
 /**
  * ags_feed_recycling_new:
- * @recycling: the source #AgsRecycling
+ * @source: the #AgsRecycling
  *
  * Creates an #AgsFeedRecycling
  *
  * Returns: a new #AgsFeedRecycling
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsFeedRecycling*
-ags_feed_recycling_new(AgsRecycling *recycling)
+ags_feed_recycling_new(AgsRecycling *source)
 {
   AgsFeedRecycling *feed_recycling;
 
   feed_recycling = (AgsFeedRecycling *) g_object_new(AGS_TYPE_FEED_RECYCLING,
-						     "source", recycling,
+						     "source", source,
 						     NULL);
 
   return(feed_recycling);

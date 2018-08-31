@@ -21,6 +21,7 @@
 #include <ags/X/editor/ags_inline_player_callbacks.h>
 
 #include <ags/libags.h>
+#include <ags/libags-audio.h>
 
 #include <ags/X/ags_window.h>
 
@@ -44,7 +45,7 @@ void ags_inline_player_update(AgsInlinePlayer *inline_player);
 
 enum{
   PROP_0,
-  PROP_PLAYABLE,
+  PROP_SOUND_RESOURCE,
 };
 
 static gpointer ags_inline_player_parent_class = NULL;
@@ -107,13 +108,13 @@ ags_inline_player_class_init(AgsInlinePlayerClass *inline_player)
   gobject->finalize = ags_inline_player_finalize;
 
   /* properties */
-  param_spec = g_param_spec_object("playable",
-				   "playable for player",
-				   "The AgsPlayable to use within the AgsInlinePlayer",
+  param_spec = g_param_spec_object("sound-resource",
+				   "sound resource for player",
+				   "The AgsSoundResource to use within the AgsInlinePlayer",
 				   G_TYPE_OBJECT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
-				  PROP_PLAYABLE,
+				  PROP_SOUND_RESOURCE,
 				  param_spec);
 
   /* GtkWidgetClass */
@@ -136,7 +137,7 @@ ags_inline_player_init(AgsInlinePlayer *inline_player)
 {
   GtkHBox *hbox;
 
-  inline_player->playable = NULL;
+  inline_player->sound_resource = NULL;
 
   hbox = (GtkHBox *) gtk_hbox_new(FALSE, 0);
   gtk_box_pack_start((GtkBox *) inline_player,
@@ -177,24 +178,24 @@ ags_inline_player_set_property(GObject *gobject,
   inline_player = AGS_INLINE_PLAYER(gobject);
 
   switch(prop_id){
-  case PROP_PLAYABLE:
+  case PROP_SOUND_RESOURCE:
     {
-      AgsPlayable *playable;
+      GObject *sound_resource;
 
-      playable = (AgsPlayable *) g_value_get_object(value);
+      sound_resource = (GObject *) g_value_get_object(value);
 
-      if(inline_player->playable == playable)
+      if(inline_player->sound_resource == sound_resource)
 	return;
 
-      if(inline_player->playable != NULL){
-	g_object_unref(inline_player->playable);
+      if(inline_player->sound_resource != NULL){
+	g_object_unref(inline_player->sound_resource);
       }
 	  
-      if(playable != NULL){
-	g_object_ref(playable);
+      if(sound_resource != NULL){
+	g_object_ref(sound_resource);
       }	
 
-      inline_player->playable = playable;
+      inline_player->sound_resource = sound_resource;
     }
     break;
   default:
@@ -214,8 +215,8 @@ ags_inline_player_get_property(GObject *gobject,
   inline_player = AGS_INLINE_PLAYER(gobject);
 
   switch(prop_id){
-  case PROP_PLAYABLE:
-    g_value_set_object(value, inline_player->playable);
+  case PROP_SOUND_RESOURCE:
+    g_value_set_object(value, inline_player->sound_resource);
     break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);

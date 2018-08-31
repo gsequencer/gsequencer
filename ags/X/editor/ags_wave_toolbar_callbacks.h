@@ -27,7 +27,19 @@
 
 #include <ags/X/editor/ags_wave_toolbar.h>
 
-void ags_wave_toolbar_tool_popup_select_audio_data_callback(GtkWidget *item, AgsWaveToolbar *wave_toolbar);
+void ags_wave_toolbar_position_callback(GtkToggleToolButton *toggle_tool_button, AgsWaveToolbar *wave_toolbar);
+void ags_wave_toolbar_select_callback(GtkToggleToolButton *toggle_tool_button, AgsWaveToolbar *wave_toolbar);
+
+void ags_wave_toolbar_copy_or_cut_callback(GtkWidget *widget, AgsWaveToolbar *wave_toolbar);
+void ags_wave_toolbar_paste_callback(GtkWidget *widget, AgsWaveToolbar *wave_toolbar);
+
+void ags_wave_toolbar_match_line_callback(GtkWidget *widget, AgsWaveToolbar *wave_toolbar);
+
+void ags_wave_toolbar_tool_popup_select_buffer_callback(GtkWidget *item, AgsWaveToolbar *wave_toolbar);
 void ags_wave_toolbar_tool_popup_position_cursor_callback(GtkWidget *item, AgsWaveToolbar *wave_toolbar);
+
+void ags_wave_toolbar_zoom_callback(GtkComboBox *combo_box, AgsWaveToolbar *wave_toolbar);
+
+void ags_wave_toolbar_opacity_callback(GtkSpinButton *spin_button, AgsWaveToolbar *wave_toolbar);
 
 #endif /*__AGS_WAVE_TOOLBAR_CALLBACKS_H__*/

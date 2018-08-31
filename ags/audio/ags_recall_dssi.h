@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -25,11 +25,10 @@
 
 #include <dssi.h>
 
-#include <ags/plugin/ags_dssi_plugin.h>
+#include <ags/libags.h>
 
-#include <ags/audio/ags_recall.h>
-#include <ags/audio/ags_recall_channel_run.h>
 #include <ags/audio/ags_channel.h>
+#include <ags/audio/ags_recall_channel.h>
 
 #define AGS_TYPE_RECALL_DSSI                (ags_recall_dssi_get_type())
 #define AGS_RECALL_DSSI(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_RECALL_DSSI, AgsRecallDssi))
@@ -45,21 +44,17 @@ struct _AgsRecallDssi
 {
   AgsRecallChannel recall_channel;
 
-  gchar *filename;
-  gchar *effect;
-  unsigned long index;
-
-  unsigned long bank;
-  unsigned long program;
+  guint bank;
+  guint program;
   
   AgsDssiPlugin *plugin;
   DSSI_Descriptor *plugin_descriptor;
 
-  unsigned long *input_port;
-  unsigned long input_lines;
+  guint *input_port;
+  guint input_lines;
 
-  unsigned long *output_port;
-  unsigned long output_lines;
+  guint *output_port;
+  guint output_lines;
 };
 
 struct _AgsRecallDssiClass
@@ -73,7 +68,7 @@ void ags_recall_dssi_load(AgsRecallDssi *recall_dssi);
 GList* ags_recall_dssi_load_ports(AgsRecallDssi *recall_dssi);
 void ags_recall_dssi_load_conversion(AgsRecallDssi *recall_dssi,
 				     GObject *port,
-				     gpointer port_descriptor);
+				     gpointer plugin_port);
 
 GList* ags_recall_dssi_find(GList *recall,
 			    gchar *filename, gchar *effect);
@@ -81,6 +76,6 @@ GList* ags_recall_dssi_find(GList *recall,
 AgsRecallDssi* ags_recall_dssi_new(AgsChannel *source,
 				   gchar *filename,
 				   gchar *effect,
-				   unsigned long index);
+				   guint effect_index);
 
 #endif /*__AGS_RECALL_DSSI_H__*/

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -454,7 +454,7 @@ ags_automation_toolbar_disconnect(AgsConnectable *connectable)
  *
  * Fill in port field with available ports.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_automation_toolbar_load_port(AgsAutomationToolbar *automation_toolbar)
@@ -465,12 +465,9 @@ ags_automation_toolbar_load_port(AgsAutomationToolbar *automation_toolbar)
   GtkListStore *list_store;
   GtkTreeIter iter;
 
-  AgsMutexManager *mutex_manager;
-
-  gchar **specifier;
-
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *audio_mutex;
+  GList *start_automation;
+  
+  gchar **start_specifier, **specifier;
 
   automation_editor = (AgsAutomationEditor *) gtk_widget_get_ancestor((GtkWidget *) automation_toolbar,
 								      AGS_TYPE_AUTOMATION_EDITOR);
@@ -482,18 +479,6 @@ ags_automation_toolbar_load_port(AgsAutomationToolbar *automation_toolbar)
     return;
   }
 
-  /* get mutex manager and application mutex */
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-
-  /* get audio mutex */
-  pthread_mutex_lock(application_mutex);
-
-  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
-					 (GObject *) machine->audio);
-  
-  pthread_mutex_unlock(application_mutex);
-
   /*  */
   list_store = gtk_list_store_new(3,
 				  G_TYPE_BOOLEAN,
@@ -502,13 +487,14 @@ ags_automation_toolbar_load_port(AgsAutomationToolbar *automation_toolbar)
   gtk_combo_box_set_model(automation_toolbar->port,
 			  GTK_TREE_MODEL(list_store));
 
-  /* audio */
-  pthread_mutex_lock(audio_mutex);
+  g_object_get(machine->audio,
+	       "automation", &start_automation,
+	       NULL);
   
-  specifier = ags_automation_get_specifier_unique_with_channel_type(machine->audio->automation,
-								    G_TYPE_NONE);
-
-  pthread_mutex_unlock(audio_mutex);
+  /* audio */ 
+  specifier =
+    start_specifier = ags_automation_get_specifier_unique_with_channel_type(start_automation,
+									    G_TYPE_NONE);
 
   for(; *specifier != NULL; specifier++){
     gboolean is_enabled;
@@ -526,13 +512,12 @@ ags_automation_toolbar_load_port(AgsAutomationToolbar *automation_toolbar)
 		       -1);
   }
 
-  /* output */
-  pthread_mutex_lock(audio_mutex);
+  g_strfreev(start_specifier);
   
-  specifier = ags_automation_get_specifier_unique_with_channel_type(machine->audio->automation,
-								    AGS_TYPE_OUTPUT);
-
-  pthread_mutex_unlock(audio_mutex);
+  /* output */
+  specifier =
+    start_specifier = ags_automation_get_specifier_unique_with_channel_type(start_automation,
+									    AGS_TYPE_OUTPUT);
 
   for(; *specifier != NULL; specifier++){
     gboolean is_enabled;
@@ -550,13 +535,12 @@ ags_automation_toolbar_load_port(AgsAutomationToolbar *automation_toolbar)
 		       -1);
   }
 
-  /* input */
-  pthread_mutex_lock(audio_mutex);
-  
-  specifier = ags_automation_get_specifier_unique_with_channel_type(machine->audio->automation,
-								    AGS_TYPE_INPUT);
+  g_strfreev(start_specifier);
 
-  pthread_mutex_unlock(audio_mutex);
+  /* input */
+  specifier =
+    start_specifier = ags_automation_get_specifier_unique_with_channel_type(start_automation,
+									    AGS_TYPE_INPUT);
 
   for(; *specifier != NULL; specifier++){
     gboolean is_enabled;
@@ -574,6 +558,10 @@ ags_automation_toolbar_load_port(AgsAutomationToolbar *automation_toolbar)
 		       -1);
   }
 
+  g_strfreev(start_specifier);
+
+  g_list_free(start_automation);
+  
   gtk_list_store_append(list_store, &iter);
   gtk_list_store_set(list_store, &iter,
 		     0, FALSE,
@@ -593,7 +581,7 @@ ags_automation_toolbar_load_port(AgsAutomationToolbar *automation_toolbar)
  *
  * Applies all port to appropriate #AgsMachine.
  *
- * Since: 1.3.0
+ * Since: 2.0.0
  */
 void
 ags_automation_toolbar_apply_port(AgsAutomationToolbar *automation_toolbar,
@@ -605,16 +593,11 @@ ags_automation_toolbar_apply_port(AgsAutomationToolbar *automation_toolbar,
   GtkTreeModel *model;
   GtkTreeIter iter;
 
-  AgsMutexManager *mutex_manager;
-
-  GList *automation;
+  GList *start_automation, *automation;
   
   guint length;
   gboolean contains_specifier;
   gboolean is_active;
-
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *audio_mutex;
 
   if(!g_ascii_strncasecmp(control_name,
 			  "",
@@ -627,18 +610,6 @@ ags_automation_toolbar_apply_port(AgsAutomationToolbar *automation_toolbar,
   machine = automation_editor->selected_machine;
 
   model = gtk_combo_box_get_model(automation_toolbar->port);
-
-  /* get mutex manager and application mutex */
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-
-  /* get audio mutex */
-  pthread_mutex_lock(application_mutex);
-
-  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
-					 (GObject *) machine->audio);
-  
-  pthread_mutex_unlock(application_mutex);
 
   /* update port combo box */
   contains_specifier = FALSE;
@@ -698,41 +669,63 @@ ags_automation_toolbar_apply_port(AgsAutomationToolbar *automation_toolbar,
 															  channel_type, control_name));
   }
 
+  g_object_get(machine->audio,
+	       "automation", &start_automation,
+	       NULL);
+  
   /* apply */
   if(contains_specifier){
     AgsAutomationEdit *automation_edit;
     AgsScale *scale;
-
-    GList *automation;
     
     gboolean create_audio_automation_edit;
     gboolean create_output_automation_edit;
     gboolean create_input_automation_edit;
 
     /* audio */
-    pthread_mutex_lock(audio_mutex);
-
-    create_audio_automation_edit = ((automation = ags_automation_find_specifier_with_type_and_line(machine->audio->automation,
+    create_audio_automation_edit = ((automation = ags_automation_find_specifier_with_type_and_line(start_automation,
 												   control_name,
 												   channel_type,
 												   0)) != NULL) ? TRUE: FALSE;
 
-    pthread_mutex_unlock(audio_mutex);
-
     if(create_audio_automation_edit){
+      gchar *specifier;
+
+      gdouble upper, lower;
+      gdouble default_value;
+      
+      pthread_mutex_t *automation_mutex;
+      
       /* scale */
       scale = ags_scale_new();
+
+      /* get automation mutex */
+      pthread_mutex_lock(ags_automation_get_class_mutex());
+
+      automation_mutex = AGS_AUTOMATION(automation->data)->obj_mutex;
       
-      pthread_mutex_lock(audio_mutex);
-      
-      g_object_set(scale,
-		   "control-name", AGS_AUTOMATION(automation->data)->control_name,
-		   "upper", AGS_AUTOMATION(automation->data)->upper,
-		   "lower", AGS_AUTOMATION(automation->data)->lower,
-		   "default-value", AGS_AUTOMATION(automation->data)->default_value,
+      pthread_mutex_unlock(ags_automation_get_class_mutex());
+
+      /* get some fields */
+      g_object_get(automation->data,
+		   "upper", &upper,
+		   "lower", &lower,
+		   "default-value", &default_value,
 		   NULL);
+
+      pthread_mutex_lock(automation_mutex);
       
-      pthread_mutex_unlock(audio_mutex);
+      specifier = g_strdup(AGS_AUTOMATION(automation->data)->control_name);
+      
+      pthread_mutex_unlock(automation_mutex);
+
+      /* apply scale */
+      g_object_set(scale,
+		   "control-name", specifier,
+		   "upper", upper,
+		   "lower", lower,
+		   "default-value", default_value,
+		   NULL);
 
       if(channel_type == G_TYPE_NONE){
 	gtk_box_pack_start(automation_editor->audio_scrolled_scale_box->scale_box,
@@ -756,18 +749,14 @@ ags_automation_toolbar_apply_port(AgsAutomationToolbar *automation_toolbar,
       /* automation edit */
       automation_edit = ags_automation_edit_new();
 
-      pthread_mutex_lock(audio_mutex);
-
       g_object_set(automation_edit,
 		   "channel-type", channel_type,
-		   "control-specifier", control_name,
-		   "control-name", AGS_AUTOMATION(automation->data)->control_name,
-		   "upper", AGS_AUTOMATION(automation->data)->upper,
-		   "lower", AGS_AUTOMATION(automation->data)->lower,
-		   "default-value", AGS_AUTOMATION(automation->data)->default_value,
+		   "control-specifier", specifier,
+		   "control-name", control_name,
+		   "upper", upper,
+		   "lower", lower,
+		   "default-value", default_value,
 		   NULL);
-
-      pthread_mutex_unlock(audio_mutex);
 
       if(channel_type == G_TYPE_NONE){
 	gtk_box_pack_start(automation_editor->audio_scrolled_automation_edit_box->automation_edit_box,
@@ -802,18 +791,15 @@ ags_automation_toolbar_apply_port(AgsAutomationToolbar *automation_toolbar,
     }
     
     /* unset bypass */
-    pthread_mutex_lock(audio_mutex);
-
-    automation = machine->audio->automation;
+    automation = start_automation;
     
     while((automation = ags_automation_find_channel_type_with_control_name(automation,
 									   channel_type, control_name)) != NULL){
-      AGS_AUTOMATION(automation->data)->flags &= (~AGS_AUTOMATION_BYPASS);
+      ags_automation_unset_flags(automation->data,
+				 AGS_AUTOMATION_BYPASS);
 
       automation = automation->next;
     }
-
-    pthread_mutex_unlock(audio_mutex);
   }else{
     GList *list_start, *list;
 
@@ -875,19 +861,18 @@ ags_automation_toolbar_apply_port(AgsAutomationToolbar *automation_toolbar,
     }
     
     /* set bypass */
-    pthread_mutex_lock(audio_mutex);
-
-    automation = machine->audio->automation;
+    automation = start_automation;
     
     while((automation = ags_automation_find_channel_type_with_control_name(automation,
 									   channel_type, control_name)) != NULL){
-      AGS_AUTOMATION(automation->data)->flags |= AGS_AUTOMATION_BYPASS;
+      ags_automation_set_flags(automation->data,
+			       AGS_AUTOMATION_BYPASS);
 
       automation = automation->next;
     }
-
-    pthread_mutex_unlock(audio_mutex);
   }
+
+  g_list_free(start_automation);
 }
 
 /**
@@ -897,7 +882,7 @@ ags_automation_toolbar_apply_port(AgsAutomationToolbar *automation_toolbar,
  *
  * Returns: a new #GtkMenu
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 GtkMenu*
 ags_automation_toolbar_tool_popup_new(GtkToolbar *automation_toolbar)
@@ -944,11 +929,11 @@ ags_automation_toolbar_tool_popup_new(GtkToolbar *automation_toolbar)
 /**
  * ags_automation_toolbar_new:
  *
- * Create a new #AgsAutomationToolbar.
+ * Create a new instance of #AgsAutomationToolbar.
  *
- * Returns: a new #AgsAutomationToolbar
+ * Returns: the new #AgsAutomationToolbar
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsAutomationToolbar*
 ags_automation_toolbar_new()

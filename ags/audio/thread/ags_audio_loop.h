@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -23,13 +23,7 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include <ags/object/ags_soundcard.h>
-
-#ifdef AGS_USE_LINUX_THREADS
-#include <ags/thread/ags_thread-kthreads.h>
-#else
-#include <ags/thread/ags_thread-posix.h>
-#endif
+#include <ags/libags.h>
 
 #include <math.h>
 
@@ -47,33 +41,23 @@ typedef struct _AgsAudioLoopClass AgsAudioLoopClass;
 
 /**
  * AgsAudioLoopFlags:
- * @AGS_AUDIO_LOOP_PLAY_RECALL: play recall
- * @AGS_AUDIO_LOOP_PLAYING_RECALL: plaing recall
- * @AGS_AUDIO_LOOP_PLAY_RECALL_TERMINATING: play recall terminating
  * @AGS_AUDIO_LOOP_PLAY_CHANNEL: play channel
  * @AGS_AUDIO_LOOP_PLAYING_CHANNEL: playing channnel
  * @AGS_AUDIO_LOOP_PLAY_CHANNEL_TERMINATING: play channe terminating
  * @AGS_AUDIO_LOOP_PLAY_AUDIO: play audio
  * @AGS_AUDIO_LOOP_PLAYING_AUDIO: playing audio
- * @AGS_AUDIO_LOOP_PLAY_NOTATION: play notation
- * @AGS_AUDIO_LOOP_PLAYING_NOTATION: playing notation
  * @AGS_AUDIO_LOOP_PLAY_AUDIO_TERMINATING: play audio terminating
  * 
  * Enum values to control the behavior or indicate internal state of #AgsAudioLoop by
  * enable/disable as flags.
  */
 typedef enum{
-  AGS_AUDIO_LOOP_PLAY_RECALL                    = 1,
-  AGS_AUDIO_LOOP_PLAYING_RECALL                 = 1 << 1,
-  AGS_AUDIO_LOOP_PLAY_RECALL_TERMINATING        = 1 << 2,
-  AGS_AUDIO_LOOP_PLAY_CHANNEL                   = 1 << 3,
-  AGS_AUDIO_LOOP_PLAYING_CHANNEL                = 1 << 4,
-  AGS_AUDIO_LOOP_PLAY_CHANNEL_TERMINATING       = 1 << 5,
-  AGS_AUDIO_LOOP_PLAY_AUDIO                     = 1 << 6,
-  AGS_AUDIO_LOOP_PLAYING_AUDIO                  = 1 << 7,
-  AGS_AUDIO_LOOP_PLAY_NOTATION                  = 1 << 8,
-  AGS_AUDIO_LOOP_PLAYING_NOTATION               = 1 << 9,
-  AGS_AUDIO_LOOP_PLAY_AUDIO_TERMINATING         = 1 << 10,
+  AGS_AUDIO_LOOP_PLAY_CHANNEL                   = 1,
+  AGS_AUDIO_LOOP_PLAYING_CHANNEL                = 1 << 1,
+  AGS_AUDIO_LOOP_PLAY_CHANNEL_TERMINATING       = 1 << 2,
+  AGS_AUDIO_LOOP_PLAY_AUDIO                     = 1 << 3,
+  AGS_AUDIO_LOOP_PLAYING_AUDIO                  = 1 << 4,
+  AGS_AUDIO_LOOP_PLAY_AUDIO_TERMINATING         = 1 << 5,
 }AgsAudioLoopFlags;
 
 /**
@@ -102,28 +86,18 @@ struct _AgsAudioLoop
   volatile guint time_spent;
   
   GObject *application_context;
-  GObject *soundcard;
+  GObject *default_output_soundcard;
   
   GObject *async_queue;
     
-  pthread_mutexattr_t tree_lock_mutexattr;
+  pthread_mutexattr_t *tree_lock_mutexattr;
   pthread_mutex_t *tree_lock;
   pthread_mutex_t *recall_mutex;
-
-  GMutex mutex;
-  GCond cond;
-  
-  GMainContext *main_context;
-  gint cached_poll_array_size;
-  GPollFD *cached_poll_array;
 
   pthread_mutex_t *timing_mutex;
   pthread_cond_t *timing_cond;
   
   pthread_t *timing_thread;
-  
-  guint play_recall_ref;
-  GList *play_recall; // play AgsRecall
 
   guint play_channel_ref;
   GList *play_channel; // play AgsChannel
@@ -131,10 +105,7 @@ struct _AgsAudioLoop
   guint play_audio_ref;
   GList *play_audio; // play AgsAudio
 
-  guint play_notation_ref;
-  GList *play_notation;
-
-  GList *tree_sanity;
+  GList *sync_thread;
 };
 
 struct _AgsAudioLoopClass
@@ -149,9 +120,6 @@ void ags_audio_loop_remove_audio(AgsAudioLoop *audio_loop, GObject *audio);
 
 void ags_audio_loop_add_channel(AgsAudioLoop *audio_loop, GObject *channel);
 void ags_audio_loop_remove_channel(AgsAudioLoop *audio_loop, GObject *channel);
-
-void ags_audio_loop_add_recall(AgsAudioLoop *audio_loop, gpointer playback);
-void ags_audio_loop_remove_recall(AgsAudioLoop *audio_loop, gpointer playback);
 
 AgsAudioLoop* ags_audio_loop_new(GObject *soundcard, GObject *application_context);
 

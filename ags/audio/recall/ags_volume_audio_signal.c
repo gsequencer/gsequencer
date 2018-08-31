@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -18,7 +18,6 @@
  */
 
 #include <ags/audio/recall/ags_volume_audio_signal.h>
-#include <ags/audio/recall/ags_volume_channel.h>
 
 #include <ags/libags.h>
 
@@ -27,20 +26,15 @@
 #include <ags/audio/ags_recall_channel_run.h>
 #include <ags/audio/ags_audio_buffer_util.h>
 
+#include <ags/audio/recall/ags_volume_channel.h>
+#include <ags/audio/recall/ags_volume_channel_run.h>
+#include <ags/audio/recall/ags_volume_recycling.h>
+
 void ags_volume_audio_signal_class_init(AgsVolumeAudioSignalClass *volume_audio_signal);
-void ags_volume_audio_signal_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_volume_audio_signal_dynamic_connectable_interface_init(AgsDynamicConnectableInterface *dynamic_connectable);
 void ags_volume_audio_signal_init(AgsVolumeAudioSignal *volume_audio_signal);
-void ags_volume_audio_signal_connect(AgsConnectable *connectable);
-void ags_volume_audio_signal_disconnect(AgsConnectable *connectable);
-void ags_volume_audio_signal_connect_dynamic(AgsDynamicConnectable *dynamic_connectable);
-void ags_volume_audio_signal_disconnect_dynamic(AgsDynamicConnectable *dynamic_connectable);
 void ags_volume_audio_signal_finalize(GObject *gobject);
 
 void ags_volume_audio_signal_run_inter(AgsRecall *recall);
-AgsRecall* ags_volume_audio_signal_duplicate(AgsRecall *recall,
-					     AgsRecallID *recall_id,
-					     guint *n_params, GParameter *parameter);
 
 /**
  * SECTION:ags_volume_audio_signal
@@ -53,8 +47,6 @@ AgsRecall* ags_volume_audio_signal_duplicate(AgsRecall *recall,
  */
 
 static gpointer ags_volume_audio_signal_parent_class = NULL;
-static AgsConnectableInterface *ags_volume_audio_signal_parent_connectable_interface;
-static AgsDynamicConnectableInterface *ags_volume_audio_signal_parent_dynamic_connectable_interface;
 
 GType
 ags_volume_audio_signal_get_type()
@@ -76,32 +68,10 @@ ags_volume_audio_signal_get_type()
       (GInstanceInitFunc) ags_volume_audio_signal_init,
     };
 
-    static const GInterfaceInfo ags_connectable_interface_info = {
-      (GInterfaceInitFunc) ags_volume_audio_signal_connectable_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-
-    static const GInterfaceInfo ags_dynamic_connectable_interface_info = {
-      (GInterfaceInitFunc) ags_volume_audio_signal_dynamic_connectable_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-
     ags_type_volume_audio_signal = g_type_register_static(AGS_TYPE_RECALL_AUDIO_SIGNAL,
 							  "AgsVolumeAudioSignal",
 							  &ags_volume_audio_signal_info,
 							  0);
-
-    g_type_add_interface_static(ags_type_volume_audio_signal,
-				AGS_TYPE_CONNECTABLE,
-				&ags_connectable_interface_info);
-
-    g_type_add_interface_static(ags_type_volume_audio_signal,
-				AGS_TYPE_DYNAMIC_CONNECTABLE,
-				&ags_dynamic_connectable_interface_info);
-
-    g_once_init_leave (&g_define_type_id__volatile, ags_type_volume_audio_signal);
   }
 
   return g_define_type_id__volatile;
@@ -112,7 +82,6 @@ ags_volume_audio_signal_class_init(AgsVolumeAudioSignalClass *volume_audio_signa
 {
   GObjectClass *gobject;
   AgsRecallClass *recall;
-  GParamSpec *param_spec;
 
   ags_volume_audio_signal_parent_class = g_type_class_peek_parent(volume_audio_signal);
 
@@ -125,24 +94,6 @@ ags_volume_audio_signal_class_init(AgsVolumeAudioSignalClass *volume_audio_signa
   recall = (AgsRecallClass *) volume_audio_signal;
 
   recall->run_inter = ags_volume_audio_signal_run_inter;
-}
-
-void
-ags_volume_audio_signal_connectable_interface_init(AgsConnectableInterface *connectable)
-{
-  ags_volume_audio_signal_parent_connectable_interface = g_type_interface_peek_parent(connectable);
-
-  connectable->connect = ags_volume_audio_signal_connect;
-  connectable->disconnect = ags_volume_audio_signal_disconnect;
-}
-
-void
-ags_volume_audio_signal_dynamic_connectable_interface_init(AgsDynamicConnectableInterface *dynamic_connectable)
-{
-  ags_volume_audio_signal_parent_dynamic_connectable_interface = g_type_interface_peek_parent(dynamic_connectable);
-
-  dynamic_connectable->connect_dynamic = ags_volume_audio_signal_connect_dynamic;
-  dynamic_connectable->disconnect_dynamic = ags_volume_audio_signal_disconnect_dynamic;
 }
 
 void
@@ -160,82 +111,106 @@ ags_volume_audio_signal_finalize(GObject *gobject)
 {
   /* call parent */
   G_OBJECT_CLASS(ags_volume_audio_signal_parent_class)->finalize(gobject);
-
-  /* empty */
-}
-
-void
-ags_volume_audio_signal_connect(AgsConnectable *connectable)
-{
-  /* call parent */
-  ags_volume_audio_signal_parent_connectable_interface->connect(connectable);
-
-  /* empty */
-}
-
-void
-ags_volume_audio_signal_disconnect(AgsConnectable *connectable)
-{
-  /* call parent */
-  ags_volume_audio_signal_parent_connectable_interface->disconnect(connectable);
-
-  /* empty */
-}
-
-void
-ags_volume_audio_signal_connect_dynamic(AgsDynamicConnectable *dynamic_connectable)
-{
-  /* call parent */
-  ags_volume_audio_signal_parent_dynamic_connectable_interface->connect_dynamic(dynamic_connectable);
-
-  /* empty */
-}
-
-void
-ags_volume_audio_signal_disconnect_dynamic(AgsDynamicConnectable *dynamic_connectable)
-{
-  /* call parent */
-  ags_volume_audio_signal_parent_dynamic_connectable_interface->disconnect_dynamic(dynamic_connectable);
-
-  /* empty */
 }
 
 void
 ags_volume_audio_signal_run_inter(AgsRecall *recall)
 {
-  AGS_RECALL_CLASS(ags_volume_audio_signal_parent_class)->run_inter(recall);
+  AgsAudioSignal *source;
+  AgsVolumeAudioSignal *volume_audio_signal;
+  AgsRecallID *recall_id;
+  AgsRecyclingContext *recycling_context, *parent_recycling_context;
+  
+  GList *start_note;
+  
+  void (*parent_class_run_inter)(AgsRecall *recall);
 
-  if(recall->rt_safe &&
-     recall->recall_id->recycling_context->parent != NULL &&
-     AGS_RECALL_AUDIO_SIGNAL(recall)->source->note == NULL){
+  volume_audio_signal = (AgsVolumeAudioSignal *) recall;
+    
+  /* get parent class */
+  pthread_mutex_lock(ags_recall_get_class_mutex());
+
+  parent_class_run_inter = AGS_RECALL_CLASS(ags_volume_audio_signal_parent_class)->run_inter;
+
+  pthread_mutex_unlock(ags_recall_get_class_mutex());
+
+  /* call parent */
+  parent_class_run_inter(recall);
+
+  g_object_get(volume_audio_signal,
+	       "source", &source,
+	       "recall-id", &recall_id,
+	       NULL);
+
+  g_object_get(recall_id,
+	       "recycling-context", &recycling_context,
+	       NULL);
+
+  g_object_get(recycling_context,
+	       "parent", &parent_recycling_context,
+	       NULL);
+  
+  g_object_get(source,
+	       "note", &start_note,
+	       NULL);
+  
+  if(ags_recall_global_get_rt_safe() &&
+     parent_recycling_context != NULL &&
+     start_note == NULL){
     return;
   }
   
-  if(AGS_RECALL_AUDIO_SIGNAL(recall)->source->stream_current != NULL){
+  if(source->stream_current != NULL){
+    AgsPort *port;
     AgsVolumeChannel *volume_channel;
+    AgsVolumeChannelRun *volume_channel_run;
+    AgsVolumeRecycling *volume_recycling;
 
     void *buffer;
 
     gdouble volume;
     guint buffer_size;
+    guint format;
     guint limit;
     guint i;
 
     GValue value = {0,};
 
-    volume_channel = AGS_VOLUME_CHANNEL(AGS_RECALL_CHANNEL_RUN(recall->parent->parent)->recall_channel);
+    g_object_get(volume_audio_signal,
+		 "parent", &volume_recycling,
+		 NULL);
 
-    buffer = (signed short *) AGS_RECALL_AUDIO_SIGNAL(recall)->source->stream_current->data;
-    buffer_size = AGS_RECALL_AUDIO_SIGNAL(recall)->source->buffer_size;
+    g_object_get(volume_recycling,
+		 "parent", &volume_channel_run,
+		 NULL);
+    
+    g_object_get(volume_channel_run,
+		 "recall-channel", &volume_channel,
+		 NULL);
 
-    g_value_init(&value, G_TYPE_FLOAT);
-    ags_port_safe_read(volume_channel->volume, &value);
+    g_object_get(source,
+		 "buffer-size", &buffer_size,
+		 "format", &format,
+		 NULL);
+
+    buffer = source->stream_current->data;
+
+    g_object_get(volume_channel,
+		 "volume", &port,
+		 NULL);
+    
+    g_value_init(&value,
+		 G_TYPE_FLOAT);
+
+    ags_port_safe_read(port,
+		       &value);
 
     volume = g_value_get_float(&value);
+    
     g_value_unset(&value);
 
     ags_audio_buffer_util_volume(buffer, 1,
-				 ags_audio_buffer_util_format_from_soundcard(AGS_RECALL_AUDIO_SIGNAL(recall)->source->format),
+				 ags_audio_buffer_util_format_from_soundcard(format),
 				 buffer_size,
 				 volume);
 
@@ -246,20 +221,21 @@ ags_volume_audio_signal_run_inter(AgsRecall *recall)
 
 /**
  * ags_volume_audio_signal_new:
- * @audio_signal: an #AgsAudioSignal
+ * @source: the #AgsAudioSignal
  *
- * Creates an #AgsVolumeAudioSignal
+ * Create a new instance of #AgsVolumeAudioSignal
  *
- * Returns: a new #AgsVolumeAudioSignal
+ * Returns: the new #AgsVolumeAudioSignal
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsVolumeAudioSignal*
-ags_volume_audio_signal_new(AgsAudioSignal *audio_signal)
+ags_volume_audio_signal_new(AgsAudioSignal *source)
 {
   AgsVolumeAudioSignal *volume_audio_signal;
 
   volume_audio_signal = (AgsVolumeAudioSignal *) g_object_new(AGS_TYPE_VOLUME_AUDIO_SIGNAL,
+							      "source", source,
 							      NULL);
 
   return(volume_audio_signal);

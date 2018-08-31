@@ -24,6 +24,7 @@
 #include <ags/libags-audio.h>
 #include <ags/libags-gui.h>
 
+#include <ags/X/ags_ui_provider.h>
 #include <ags/X/ags_window.h>
 
 #include <ags/X/thread/ags_gui_thread.h>
@@ -107,41 +108,38 @@ ags_ffplayer_open_dialog_response_callback(GtkWidget *widget, gint response,
 
   ffplayer->open_dialog = NULL;
   gtk_widget_destroy(widget);
+
+  gtk_combo_box_set_active(ffplayer->preset, 0);
 }
 
 void
 ags_ffplayer_preset_changed_callback(GtkComboBox *preset, AgsFFPlayer *ffplayer)
 {
-  AgsPlayable *playable;
-  AgsIpatch *ipatch;
-
-  gchar *preset_name;
-
-  GError *error;
-
-  playable = AGS_PLAYABLE(ffplayer->ipatch);
-  ipatch = ffplayer->ipatch;
-
-  if(ipatch == NULL ||
-     (AGS_FFPLAYER_NO_LOAD & (ffplayer->flags)) != 0){
+  AgsAudioContainer *audio_container;
+  
+  gint position;
+  
+  if((AGS_FFPLAYER_NO_LOAD & (ffplayer->flags)) != 0){
     return;
   }
-  
-  preset_name = gtk_combo_box_text_get_active_text(GTK_COMBO_BOX_TEXT(preset));
+
+  audio_container = ffplayer->audio_container;
+
+  /* reset */
+  ags_sound_container_level_up(AGS_SOUND_CONTAINER(audio_container->sound_container),
+			       3);
 
   /* load presets */
-  error = NULL;
-  ags_playable_level_select(playable,
-			    1, preset_name,
-			    &error);
-
-  /* select first instrument */
-  gtk_list_store_clear(GTK_LIST_STORE(gtk_combo_box_get_model(GTK_COMBO_BOX(ffplayer->instrument))));
-
-  ags_ffplayer_load_instrument(ffplayer);
+  position = gtk_combo_box_get_active(ffplayer->preset);
   
-  gtk_combo_box_set_active(GTK_COMBO_BOX(ffplayer->instrument),
-  			   0);
+  ags_sound_container_select_level_by_index(AGS_SOUND_CONTAINER(audio_container->sound_container),
+					    position);
+  AGS_IPATCH(audio_container->sound_container)->nesting_level += 1;
+  
+  /* select first instrument */
+  ags_ffplayer_load_instrument(ffplayer);
+
+  gtk_combo_box_set_active(ffplayer->instrument, 0);
 }
 
 void
@@ -149,205 +147,73 @@ ags_ffplayer_instrument_changed_callback(GtkComboBox *instrument, AgsFFPlayer *f
 {
   AgsWindow *window;
 
-  AgsAudio *audio;
-  AgsChannel *start_channel, *channel;
-  AgsRecycling *recycling;
-
-  AgsIpatchSF2Reader *reader;
-  
-  //  AgsLinkChannel *link_channel;
-  AgsResizeAudio *resize_audio;
-  AgsOpenSf2Sample *open_sf2_sample;
-  AgsAddAudioSignal *add_audio_signal;
-
-  AgsMutexManager *mutex_manager;
-  AgsThread *main_loop;
   AgsGuiThread *gui_thread;
+
+  AgsAudio *audio;
+
+  AgsAudioContainer *audio_container;
+
+  AgsOpenSf2Instrument *open_sf2_instrument;
 
   AgsApplicationContext *application_context;
   
-  AgsPlayable *playable;
-
-  gchar *filename;
-  gchar *preset_name;
-  gchar *instrument_name;
-  gchar **preset;
-  gchar **sample, **sample_iter;
-  GList *task;
-  GList *list;
-  guint count;
-  guint n_pads, n_audio_channels;
-  int i;
+  gint position;
   
   GError *error;
-
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *audio_mutex;
-  pthread_mutex_t *channel_mutex;
 
   if((AGS_FFPLAYER_NO_LOAD & (ffplayer->flags)) != 0){
     return;
   }
   
   window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) ffplayer);
+
   application_context = (AgsApplicationContext *) window->application_context;
+
+  gui_thread = ags_ui_provider_get_gui_thread(AGS_UI_PROVIDER(application_context));
+
   audio = AGS_MACHINE(ffplayer)->audio;
 
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-
-  /* get audio loop */
-  pthread_mutex_lock(application_mutex);
-
-  main_loop = (AgsThread *) application_context->main_loop;
-
-  pthread_mutex_unlock(application_mutex);
-
-  /* get task thread */
-  gui_thread = (AgsGuiThread *) ags_thread_find_type(main_loop,
-						       AGS_TYPE_GUI_THREAD);
-
-  /* lookup audio mutex */
-  pthread_mutex_lock(application_mutex);
-    
-  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
-					 (GObject *) audio);
-  
-  pthread_mutex_unlock(application_mutex);
-
   /*  */
-  playable = AGS_PLAYABLE(ffplayer->ipatch);
+  audio_container = ffplayer->audio_container;
 
-  filename = ffplayer->ipatch->filename;
-  preset_name = AGS_IPATCH_SF2_READER(ffplayer->ipatch->reader)->selected[1];
-  instrument_name = gtk_combo_box_text_get_active_text(GTK_COMBO_BOX_TEXT(instrument));
+  /* reset */
+  ags_sound_container_level_up(AGS_SOUND_CONTAINER(audio_container->sound_container),
+			       3);
 
-  if(filename == NULL || preset_name == NULL || instrument_name == NULL){
-    return;
+  /* load presets */
+  position = gtk_combo_box_get_active(ffplayer->preset);
+
+  if(position == -1){
+    position = 0;
   }
   
-  /* select instrument */
-  error = NULL;
+  ags_sound_container_select_level_by_index(AGS_SOUND_CONTAINER(audio_container->sound_container),
+					    position);
+  AGS_IPATCH(audio_container->sound_container)->nesting_level += 1;
 
-  ags_playable_level_select(playable,
-			    2, instrument_name,
-			    &error);
+  /* load instrument */
+  position = gtk_combo_box_get_active(ffplayer->instrument);
 
-  if(error != NULL){
-    g_error("%s", error->message);
+  if(position == -1){
+    position = 0;
   }
+
+  ags_sound_container_select_level_by_index(AGS_SOUND_CONTAINER(audio_container->sound_container),
+  					    position);
+
+  AGS_IPATCH(audio_container->sound_container)->nesting_level += 1;
+
+  /* open sf2 instrument */
+  open_sf2_instrument = ags_open_sf2_instrument_new(audio,
+						    AGS_IPATCH(audio_container->sound_container),
+						    NULL,
+						    NULL,
+						    NULL,
+						    0);
   
-  /* select first sample */
-  sample = NULL;
-
-  AGS_IPATCH(ffplayer->ipatch)->nth_level = 3;
-  sample = ags_playable_sublevel_names(playable);
-
-#ifdef HAVE_GLIB_2_6
-  count = g_strv_length(sample);
-#else
-  count = ags_strv_length(sample);
-#endif
-
-  /* read all samples */
-  reader = AGS_IPATCH(ffplayer->ipatch)->reader;
-  task = NULL;
-
-  n_pads = 0;
-  n_audio_channels = 2;
-  
-#ifdef AGS_WITH_LIBINSTPATCH
-  for(sample_iter = sample; *sample_iter != NULL; sample_iter++){
-    IpatchSF2Sample *sf2_sample;
-    
-    guint sample_channel;
-
-    sf2_sample = (IpatchSF2Sample *) ipatch_sf2_find_sample(reader->sf2,
-							    *sample_iter,
-							    NULL);
-    g_object_get(sf2_sample,
-		 "channel", &sample_channel,
-		 NULL);
-
-    if(sample_channel == IPATCH_SF2_SAMPLE_CHANNEL_MONO ||
-       sample_channel == IPATCH_SF2_SAMPLE_CHANNEL_LEFT){
-      n_pads++;
-    }
-  }
-#endif
-
-  resize_audio = ags_resize_audio_new(audio,
-				      audio->output_pads,
-				      n_pads,
-				      n_audio_channels);
-  task = g_list_prepend(task,
-			resize_audio);
-
-  /* open sf2 sample task */
-  pthread_mutex_lock(audio_mutex);
-
-  start_channel = audio->input;
-
-  pthread_mutex_unlock(audio_mutex);
-
-  sample_iter = sample;
-
-  i = 0;
-  
-#ifdef AGS_WITH_LIBINSTPATCH
-  while(*sample_iter != NULL){
-    IpatchSF2Sample *sf2_sample;
-    
-    guint sample_channel;
-
-    sf2_sample = (IpatchSF2Sample *) ipatch_sf2_find_sample(reader->sf2,
-							    *sample_iter,
-							    NULL);
-    g_object_get(sf2_sample,
-		 "channel", &sample_channel,
-		 NULL);
-
-    if(sample_channel == IPATCH_SF2_SAMPLE_CHANNEL_MONO ||
-       sample_channel == IPATCH_SF2_SAMPLE_CHANNEL_LEFT){
-      channel = ags_channel_nth(start_channel,
-				i * audio->audio_channels);
-    }else{
-      channel = ags_channel_nth(start_channel,
-				i * audio->audio_channels + 1);
-    }
-    
-    if(sample_channel == IPATCH_SF2_SAMPLE_CHANNEL_MONO ||
-       sample_channel == IPATCH_SF2_SAMPLE_CHANNEL_RIGHT){
-      i++;
-    }
-
-    if(channel == NULL){
-      g_critical("channel == NULL - Soundfont 2 sample channel %d", sample_channel);
-
-      /* iterate */
-      sample_iter++;
-      
-      continue;
-    }
-    
-    /* create tasks */
-    open_sf2_sample = ags_open_sf2_sample_new(channel,
-					      g_strdup(filename),
-					      g_strdup(preset_name),
-					      g_strdup(instrument_name),
-					      g_strdup(*sample_iter));
-    task = g_list_prepend(task,
-			  open_sf2_sample);
-    
-    /* iterate */
-    sample_iter++;
-  }    
-      
-  /* append tasks */
-  task = g_list_reverse(task);
-  ags_gui_thread_schedule_task_list(gui_thread,
-				    task);
-#endif
+  /* append task */
+  ags_gui_thread_schedule_task(gui_thread,
+			       open_sf2_instrument);
 }
 
 gboolean

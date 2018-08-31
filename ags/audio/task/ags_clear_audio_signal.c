@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -21,6 +21,7 @@
 
 #include <ags/libags.h>
 
+#include <ags/audio/ags_recycling.h>
 #include <ags/audio/ags_audio_buffer_util.h>
 
 #include <math.h>
@@ -28,7 +29,6 @@
 #include <ags/i18n.h>
 
 void ags_clear_audio_signal_class_init(AgsClearAudioSignalClass *clear_audio_signal);
-void ags_clear_audio_signal_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_clear_audio_signal_init(AgsClearAudioSignal *clear_audio_signal);
 void ags_clear_audio_signal_set_property(GObject *gobject,
 				       guint prop_id,
@@ -38,8 +38,6 @@ void ags_clear_audio_signal_get_property(GObject *gobject,
 				       guint prop_id,
 				       GValue *value,
 				       GParamSpec *param_spec);
-void ags_clear_audio_signal_connect(AgsConnectable *connectable);
-void ags_clear_audio_signal_disconnect(AgsConnectable *connectable);
 void ags_clear_audio_signal_dispose(GObject *gobject);
 void ags_clear_audio_signal_finalize(GObject *gobject);
 
@@ -47,16 +45,15 @@ void ags_clear_audio_signal_launch(AgsTask *task);
 
 /**
  * SECTION:ags_clear_audio_signal
- * @short_description: clear audio_signal object from recycling
+ * @short_description: clear audio signal object
  * @title: AgsClearAudioSignal
  * @section_id:
  * @include: ags/audio/task/ags_clear_audio_signal.h
  *
- * The #AgsClearAudioSignal task clears #AgsAudioSignal from #AgsRecycling.
+ * The #AgsClearAudioSignal task clears #AgsAudioSignal.
  */
 
 static gpointer ags_clear_audio_signal_parent_class = NULL;
-static AgsConnectableInterface *ags_clear_audio_signal_parent_connectable_interface;
 
 enum{
   PROP_0,
@@ -83,22 +80,10 @@ ags_clear_audio_signal_get_type()
       (GInstanceInitFunc) ags_clear_audio_signal_init,
     };
 
-    static const GInterfaceInfo ags_connectable_interface_info = {
-      (GInterfaceInitFunc) ags_clear_audio_signal_connectable_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-
     ags_type_clear_audio_signal = g_type_register_static(AGS_TYPE_TASK,
 						  "AgsClearAudioSignal",
 						  &ags_clear_audio_signal_info,
 						  0);
-
-    g_type_add_interface_static(ags_type_clear_audio_signal,
-				AGS_TYPE_CONNECTABLE,
-				&ags_connectable_interface_info);
-
-    g_once_init_leave (&g_define_type_id__volatile, ags_type_clear_audio_signal);
   }
 
   return g_define_type_id__volatile;
@@ -127,7 +112,7 @@ ags_clear_audio_signal_class_init(AgsClearAudioSignalClass *clear_audio_signal)
    *
    * The assigned #AgsAudioSignal
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("audio-signal",
 				   i18n_pspec("audio signal of clear audio signal"),
@@ -142,15 +127,6 @@ ags_clear_audio_signal_class_init(AgsClearAudioSignalClass *clear_audio_signal)
   task = (AgsTaskClass *) clear_audio_signal;
 
   task->launch = ags_clear_audio_signal_launch;
-}
-
-void
-ags_clear_audio_signal_connectable_interface_init(AgsConnectableInterface *connectable)
-{
-  ags_clear_audio_signal_parent_connectable_interface = g_type_interface_peek_parent(connectable);
-
-  connectable->connect = ags_clear_audio_signal_connect;
-  connectable->disconnect = ags_clear_audio_signal_disconnect;
 }
 
 void
@@ -220,22 +196,6 @@ ags_clear_audio_signal_get_property(GObject *gobject,
 }
 
 void
-ags_clear_audio_signal_connect(AgsConnectable *connectable)
-{
-  ags_clear_audio_signal_parent_connectable_interface->connect(connectable);
-
-  /* empty */
-}
-
-void
-ags_clear_audio_signal_disconnect(AgsConnectable *connectable)
-{
-  ags_clear_audio_signal_parent_connectable_interface->disconnect(connectable);
-
-  /* empty */
-}
-
-void
 ags_clear_audio_signal_dispose(GObject *gobject)
 {
   AgsClearAudioSignal *clear_audio_signal;
@@ -270,80 +230,81 @@ ags_clear_audio_signal_finalize(GObject *gobject)
 void
 ags_clear_audio_signal_launch(AgsTask *task)
 {
-  AgsClearAudioSignal *clear_audio_signal;
-  
+  AgsRecycling *recycling;
   AgsAudioSignal *audio_signal;
 
-  AgsMutexManager *mutex_manager;
-
+  AgsClearAudioSignal *clear_audio_signal;
+  
   GList *stream;
 
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *recycling_mutex;
-
-  clear_audio_signal = AGS_CLEAR_AUDIO_SIGNAL(task);
+  guint format;
   
-  /* get mutex manager and application mutex */
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+  clear_audio_signal = AGS_CLEAR_AUDIO_SIGNAL(task);
 
   /* clear */
   audio_signal = clear_audio_signal->audio_signal;
-
-  /* get recycling mutex */
-  pthread_mutex_lock(application_mutex);
-
-  recycling_mutex = ags_mutex_manager_lookup(mutex_manager,
-					     (GObject *) audio_signal->recycling);
-
-  pthread_mutex_unlock(application_mutex);
   
   /* clear the stream */
-  pthread_mutex_lock(recycling_mutex);
-  
-  stream = audio_signal->stream_beginning;
+  stream = audio_signal->stream;
+
+  g_object_get(audio_signal,
+	       "format", &format,
+	       NULL);
   
   while(stream != NULL){
     ags_audio_buffer_util_clear_buffer(stream->data, 1,
-				       audio_signal->buffer_size, ags_audio_buffer_util_format_from_soundcard(audio_signal->format));
+				       audio_signal->buffer_size, ags_audio_buffer_util_format_from_soundcard(format));
     
     stream = stream->next;
   }
 
-  if((AGS_AUDIO_SIGNAL_TEMPLATE & (audio_signal->flags)) != 0){
-    GList *rt_template;
+  if(ags_audio_signal_test_flags(audio_signal, AGS_AUDIO_SIGNAL_TEMPLATE)){
+    GList *list_start;
+    GList *rt_template_start, *rt_template;
 
-    rt_template = AGS_RECYCLING(audio_signal->recycling)->audio_signal;
+    g_object_get(audio_signal,
+		 "recycling", &recycling,
+		 NULL);
+
+    g_object_get(recycling,
+		 "audio-signal", &list_start,
+		 NULL);
+    
+    rt_template =
+      rt_template_start = ags_audio_signal_get_rt_template(list_start);
 
     while(rt_template != NULL){
-      if((AGS_AUDIO_SIGNAL_RT_TEMPLATE & (AGS_AUDIO_SIGNAL(rt_template->data)->flags)) != 0){
-	/* clear the stream */
-	stream = AGS_AUDIO_SIGNAL(rt_template->data)->stream_beginning;
-  
-	while(stream != NULL){
-	  ags_audio_buffer_util_clear_buffer(stream->data, 1,
-					     audio_signal->buffer_size, ags_audio_buffer_util_format_from_soundcard(audio_signal->format));
-    
-	  stream = stream->next;
-	}
+      /* clear the stream */
+      stream = AGS_AUDIO_SIGNAL(rt_template->data)->stream;
+
+      g_object_get(rt_template->data,
+		   "format", &format,
+		   NULL);
+      
+      while(stream != NULL){
+	ags_audio_buffer_util_clear_buffer(stream->data, 1,
+					   audio_signal->buffer_size, ags_audio_buffer_util_format_from_soundcard(format));
+	
+	stream = stream->next;
       }
 
       rt_template = rt_template->next;
     }
-  }
 
-  pthread_mutex_unlock(recycling_mutex);
+    g_list_free(rt_template_start);
+    g_list_free(list_start);
+  }
 }
 
 /**
  * ags_clear_audio_signal_new:
  * @audio_signal: the #AgsAudioSignal to clear
  *
- * Creates an #AgsClearAudioSignal.
+ * Create a new instance of #AgsClearAudioSignal.
  *
- * Returns: an new #AgsClearAudioSignal.
+ * Returns: the new #AgsClearAudioSignal.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsClearAudioSignal*
 ags_clear_audio_signal_new(AgsAudioSignal *audio_signal)

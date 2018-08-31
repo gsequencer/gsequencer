@@ -24,7 +24,9 @@
 #include <glib-object.h>
 
 #include <ags/audio/ags_recall.h>
+
 #include <ags/audio/ags_channel.h>
+#include <ags/audio/ags_recall_audio.h>
 
 #define AGS_TYPE_RECALL_CHANNEL                (ags_recall_channel_get_type())
 #define AGS_RECALL_CHANNEL(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_RECALL_CHANNEL, AgsRecallChannel))
@@ -40,6 +42,8 @@ struct _AgsRecallChannel
 {
   AgsRecall recall;
 
+  AgsRecallAudio *recall_audio;
+  
   AgsChannel *destination;
   AgsChannel *source;
 };
@@ -51,7 +55,7 @@ struct _AgsRecallChannelClass
 
 GType ags_recall_channel_get_type();
 
-GList* ags_recall_channel_find_channel(GList *recall_channel_i, AgsChannel *source);
+GList* ags_recall_channel_find_channel(GList *recall_channel, AgsChannel *source);
 
 AgsRecallChannel* ags_recall_channel_new();
 

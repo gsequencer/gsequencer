@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -26,7 +26,6 @@
 #include <ags/libags.h>
 
 #include <ags/audio/ags_audio.h>
-#include <ags/audio/ags_notation.h>
 #include <ags/audio/ags_note.h>
 
 #define AGS_TYPE_ADD_NOTE                (ags_add_note_get_type())
@@ -44,9 +43,9 @@ struct _AgsAddNote
   AgsTask task;
 
   AgsAudio *audio;
-  AgsNotation *notation;
-
   AgsNote *note;
+
+  guint audio_channel;
   gboolean use_selection_list;
 };
 
@@ -57,8 +56,9 @@ struct _AgsAddNoteClass
 
 GType ags_add_note_get_type();
 
-AgsAddNote* ags_add_note_new(AgsNotation *notation,
+AgsAddNote* ags_add_note_new(AgsAudio *audio,
 			     AgsNote *note,
+			     guint audio_channel,
 			     gboolean use_selection_list);
 
 #endif /*__AGS_ADD_NOTE_H__*/

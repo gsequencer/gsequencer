@@ -51,6 +51,8 @@ typedef enum{
   AGS_PAD_GROUP_LINE          = 1 << 3,
   AGS_PAD_MAPPED_RECALL       = 1 << 4,
   AGS_PAD_PREMAPPED_RECALL    = 1 << 5,
+  AGS_PAD_BLOCK_PLAY          = 1 << 6,
+  AGS_PAD_BLOCK_STOP          = 1 << 7,
 }AgsPadFlags;
 
 struct _AgsPad

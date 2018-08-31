@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -36,6 +36,7 @@ void ags_record_midi_audio_get_property(GObject *gobject,
 					GParamSpec *param_spec);
 void ags_record_midi_audio_dispose(GObject *gobject);
 void ags_record_midi_audio_finalize(GObject *gobject);
+
 void ags_record_midi_audio_set_ports(AgsPlugin *plugin, GList *port);
 
 /**
@@ -63,12 +64,12 @@ static AgsPluginInterface *ags_record_midi_parent_plugin_interface;
 
 static const gchar *ags_record_midi_audio_plugin_name = "ags-record-midi";
 static const gchar *ags_record_midi_audio_specifier[] = {
-  "playback[0]"
-  "record[0]",
-  "filename[0]",
-  "division[0]",
-  "tempo[0]",
-  "bpm[0]",
+  "./playback[0]"
+  "./record[0]",
+  "./filename[0]",
+  "./division[0]",
+  "./tempo[0]",
+  "./bpm[0]",
 };
 static const gchar *ags_record_midi_audio_control_port[] = {
   "1/6",
@@ -144,7 +145,7 @@ ags_record_midi_audio_class_init(AgsRecordMidiAudioClass *record_midi_audio)
    * 
    * The playback port.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("playback",
 				   i18n_pspec("if do playback"),
@@ -160,7 +161,7 @@ ags_record_midi_audio_class_init(AgsRecordMidiAudioClass *record_midi_audio)
    * 
    * The record port.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("record",
 				   i18n_pspec("if do record"),
@@ -176,7 +177,7 @@ ags_record_midi_audio_class_init(AgsRecordMidiAudioClass *record_midi_audio)
    * 
    * The filename port.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("filename",
 				   i18n_pspec("filename of record"),
@@ -192,7 +193,7 @@ ags_record_midi_audio_class_init(AgsRecordMidiAudioClass *record_midi_audio)
    * 
    * The division port.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("division",
 				   i18n_pspec("division of record"),
@@ -208,7 +209,7 @@ ags_record_midi_audio_class_init(AgsRecordMidiAudioClass *record_midi_audio)
    * 
    * The tempo port.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("tempo",
 				   i18n_pspec("tempo of record"),
@@ -224,7 +225,7 @@ ags_record_midi_audio_class_init(AgsRecordMidiAudioClass *record_midi_audio)
    * 
    * The bpm port.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("bpm",
 				   i18n_pspec("bpm of record"),
@@ -364,7 +365,16 @@ ags_record_midi_audio_set_property(GObject *gobject,
 {
   AgsRecordMidiAudio *record_midi_audio;
 
+  pthread_mutex_t *recall_mutex;
+
   record_midi_audio = AGS_RECORD_MIDI_AUDIO(gobject);
+
+  /* get recall mutex */
+  pthread_mutex_lock(ags_recall_get_class_mutex());
+  
+  recall_mutex = AGS_RECALL(gobject)->obj_mutex;
+  
+  pthread_mutex_unlock(ags_recall_get_class_mutex());
 
   switch(prop_id){
   case PROP_PLAYBACK:
@@ -373,7 +383,11 @@ ags_record_midi_audio_set_property(GObject *gobject,
 
       playback = (AgsPort *) g_value_get_object(value);
 
+      pthread_mutex_lock(recall_mutex);
+
       if(record_midi_audio->playback == playback){
+	pthread_mutex_unlock(recall_mutex);
+
 	return;
       }
 
@@ -386,6 +400,8 @@ ags_record_midi_audio_set_property(GObject *gobject,
       }
       
       record_midi_audio->playback = playback;
+
+      pthread_mutex_unlock(recall_mutex);
     }
     break;
   case PROP_RECORD:
@@ -394,7 +410,11 @@ ags_record_midi_audio_set_property(GObject *gobject,
 
       record = (AgsPort *) g_value_get_object(value);
 
+      pthread_mutex_lock(recall_mutex);
+
       if(record_midi_audio->record == record){
+	pthread_mutex_unlock(recall_mutex);
+
 	return;
       }
 
@@ -407,6 +427,8 @@ ags_record_midi_audio_set_property(GObject *gobject,
       }
       
       record_midi_audio->record = record;
+
+      pthread_mutex_unlock(recall_mutex);
     }
     break;
   case PROP_FILENAME:
@@ -415,7 +437,11 @@ ags_record_midi_audio_set_property(GObject *gobject,
 
       filename = (AgsPort *) g_value_get_object(value);
 
+      pthread_mutex_lock(recall_mutex);
+
       if(record_midi_audio->filename == filename){
+	pthread_mutex_unlock(recall_mutex);
+
 	return;
       }
 
@@ -428,6 +454,8 @@ ags_record_midi_audio_set_property(GObject *gobject,
       }
       
       record_midi_audio->filename = filename;
+
+      pthread_mutex_unlock(recall_mutex);
     }
     break;
   case PROP_DIVISION:
@@ -436,7 +464,11 @@ ags_record_midi_audio_set_property(GObject *gobject,
 
       division = (AgsPort *) g_value_get_object(value);
 
+      pthread_mutex_lock(recall_mutex);
+
       if(record_midi_audio->division == division){
+	pthread_mutex_unlock(recall_mutex);
+
 	return;
       }
 
@@ -449,6 +481,8 @@ ags_record_midi_audio_set_property(GObject *gobject,
       }
       
       record_midi_audio->division = division;
+
+      pthread_mutex_unlock(recall_mutex);
     }
     break;
   case PROP_TEMPO:
@@ -457,7 +491,11 @@ ags_record_midi_audio_set_property(GObject *gobject,
 
       tempo = (AgsPort *) g_value_get_object(value);
 
+      pthread_mutex_lock(recall_mutex);
+
       if(record_midi_audio->tempo == tempo){
+	pthread_mutex_unlock(recall_mutex);
+
 	return;
       }
 
@@ -470,6 +508,8 @@ ags_record_midi_audio_set_property(GObject *gobject,
       }
       
       record_midi_audio->tempo = tempo;
+
+      pthread_mutex_unlock(recall_mutex);
     }
     break;
   case PROP_BPM:
@@ -478,7 +518,11 @@ ags_record_midi_audio_set_property(GObject *gobject,
 
       bpm = (AgsPort *) g_value_get_object(value);
 
+      pthread_mutex_lock(recall_mutex);
+
       if(record_midi_audio->bpm == bpm){
+	pthread_mutex_unlock(recall_mutex);
+
 	return;
       }
 
@@ -491,6 +535,8 @@ ags_record_midi_audio_set_property(GObject *gobject,
       }
       
       record_midi_audio->bpm = bpm;
+
+      pthread_mutex_unlock(recall_mutex);
     }
     break;
   default:
@@ -507,37 +553,70 @@ ags_record_midi_audio_get_property(GObject *gobject,
 {
   AgsRecordMidiAudio *record_midi_audio;
 
+  pthread_mutex_t *recall_mutex;
+
   record_midi_audio = AGS_RECORD_MIDI_AUDIO(gobject);
+
+  /* get recall mutex */
+  pthread_mutex_lock(ags_recall_get_class_mutex());
+  
+  recall_mutex = AGS_RECALL(gobject)->obj_mutex;
+  
+  pthread_mutex_unlock(ags_recall_get_class_mutex());
 
   switch(prop_id){
   case PROP_PLAYBACK:
     {
+      pthread_mutex_lock(recall_mutex);
+
       g_value_set_object(value, record_midi_audio->playback);
+
+      pthread_mutex_unlock(recall_mutex);
     }
     break;
   case PROP_RECORD:
     {
+      pthread_mutex_lock(recall_mutex);
+
       g_value_set_object(value, record_midi_audio->record);
+
+      pthread_mutex_unlock(recall_mutex);
     }
     break;
   case PROP_FILENAME:
     {
+      pthread_mutex_lock(recall_mutex);
+
       g_value_set_object(value, record_midi_audio->filename);
+
+      pthread_mutex_unlock(recall_mutex);
     }
     break;
   case PROP_DIVISION:
     {
+      pthread_mutex_lock(recall_mutex);
+
       g_value_set_object(value, record_midi_audio->division);
+
+      pthread_mutex_unlock(recall_mutex);
     }
     break;
   case PROP_TEMPO:
     {
+      pthread_mutex_lock(recall_mutex);
+
       g_value_set_object(value, record_midi_audio->tempo);
+
+      pthread_mutex_unlock(recall_mutex);
     }
     break;
   case PROP_BPM:
     {
+      pthread_mutex_lock(recall_mutex);
+
       g_value_set_object(value, record_midi_audio->bpm);
+
+      pthread_mutex_unlock(recall_mutex);
     }
     break;
   default:
@@ -688,19 +767,21 @@ ags_record_midi_audio_set_ports(AgsPlugin *plugin, GList *port)
 
 /**
  * ags_record_midi_audio_new:
+ * @audio: the #AgsAudio
  *
- * Creates an #AgsRecordMidiAudio
+ * Create a new instance of #AgsRecordMidiAudio
  *
- * Returns: a new #AgsRecordMidiAudio
+ * Returns: the new #AgsRecordMidiAudio
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsRecordMidiAudio*
-ags_record_midi_audio_new()
+ags_record_midi_audio_new(AgsAudio *audio)
 {
   AgsRecordMidiAudio *record_midi_audio;
 
   record_midi_audio = (AgsRecordMidiAudio *) g_object_new(AGS_TYPE_RECORD_MIDI_AUDIO,
+							  "audio", audio,
 							  NULL);
 
   return(record_midi_audio);

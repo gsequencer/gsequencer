@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -53,7 +53,10 @@ struct _AgsTimestamp
   GObject object;
 
   guint flags;
-  
+
+  pthread_mutex_t *obj_mutex;
+  pthread_mutexattr_t *obj_mutexattr;
+
   union{
     struct _unix{
       time_t time_val;
@@ -73,6 +76,25 @@ struct _AgsTimestampClass
 };
 
 GType ags_timestamp_get_type(void);
+
+pthread_mutex_t* ags_timestamp_get_class_mutex();
+
+/* flags */
+gboolean ags_timestamp_test_flags(AgsTimestamp *timestamp,
+				  guint flags);
+void ags_timestamp_set_flags(AgsTimestamp *timestamp,
+			     guint flags);
+void ags_timestamp_unset_flags(AgsTimestamp *timestamp,
+			       guint flags);
+
+/* query */
+time_t ags_timestamp_get_unix_time(AgsTimestamp *timestamp);
+void ags_timestamp_set_unix_time(AgsTimestamp *timestamp,
+				 time_t unix_time);
+
+guint64 ags_timestamp_get_ags_offset(AgsTimestamp *timestamp);
+void ags_timestamp_set_ags_offset(AgsTimestamp *timestamp,
+				  guint64 ags_offset);
 
 /* */
 AgsTimestamp* ags_timestamp_new();

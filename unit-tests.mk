@@ -2,7 +2,6 @@
 check_PROGRAMS += \
 	ags_application_context_test \
 	ags_config_test \
-	ags_connection_manager_test \
 	ags_condition_manager_test \
 	ags_destroy_worker_test \
 	ags_mutex_manager_test \
@@ -40,7 +39,6 @@ check_PROGRAMS += \
 	ags_devout_test \
 	ags_midiin_test \
 	ags_audio_test \
-	ags_audio_connection_test \
 	ags_playback_domain_test \
 	ags_playback_test \
 	ags_preset_test \
@@ -75,12 +73,6 @@ ags_config_test_SOURCES = ags/test/object/ags_config_test.c
 ags_config_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS)
 ags_config_test_LDFLAGS = -pthread $(LDFLAGS)
 ags_config_test_LDADD = libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS)
-
-# connection manager unit test
-ags_connection_manager_test_SOURCES = ags/test/object/ags_connection_manager_test.c
-ags_connection_manager_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS)
-ags_connection_manager_test_LDFLAGS = -pthread $(LDFLAGS)
-ags_connection_manager_test_LDADD = libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS)
 
 # condition manager unit test
 ags_condition_manager_test_SOURCES = ags/test/thread/ags_condition_manager_test.c
@@ -303,12 +295,6 @@ ags_audio_test_SOURCES = ags/test/audio/ags_audio_test.c
 ags_audio_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
 ags_audio_test_LDFLAGS = -pthread $(LDFLAGS)
 ags_audio_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
-
-# audio connection unit test
-ags_audio_connection_test_SOURCES = ags/test/audio/ags_audio_connection_test.c
-ags_audio_connection_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
-ags_audio_connection_test_LDFLAGS = -pthread $(LDFLAGS)
-ags_audio_connection_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
 
 # playback domain unit test
 ags_playback_domain_test_SOURCES = ags/test/audio/ags_playback_domain_test.c

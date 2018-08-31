@@ -22,6 +22,7 @@
 
 #include <glib.h>
 #include <glib-object.h>
+
 #include <gtk/gtk.h>
 
 #define AGS_TYPE_LINK_COLLECTION_EDITOR                (ags_link_collection_editor_get_type())

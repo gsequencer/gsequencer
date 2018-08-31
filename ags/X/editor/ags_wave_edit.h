@@ -61,6 +61,8 @@
 
 #define AGS_WAVE_EDIT_DEFAULT_PADDING (8)
 
+#define AGS_WAVE_EDIT_X_RESOLUTION (16.0 * 64.0)
+
 typedef struct _AgsWaveEdit AgsWaveEdit;
 typedef struct _AgsWaveEditClass AgsWaveEditClass;
 
@@ -75,10 +77,12 @@ typedef enum{
 typedef enum{
   AGS_WAVE_EDIT_NO_EDIT_MODE,
   AGS_WAVE_EDIT_POSITION_CURSOR,
-  AGS_WAVE_EDIT_ADD_ACCELERATION,
-  AGS_WAVE_EDIT_DELETE_ACCELERATION,
-  AGS_WAVE_EDIT_SELECT_ACCELERATION,
+  AGS_WAVE_EDIT_SELECT_BUFFER,
 }AgsWaveEditMode;
+
+typedef enum{
+  AGS_WAVE_EDIT_BUTTON_1            = 1,
+}AgsWaveEditButtonMask;
 
 typedef enum{
   AGS_WAVE_EDIT_KEY_L_CONTROL       = 1,
@@ -94,7 +98,10 @@ struct _AgsWaveEdit
   guint flags;
   guint mode;
 
+  guint button_mask;
   guint key_mask;
+
+  guint line;
   
   guint note_offset;
   guint note_offset_absolute;
@@ -119,6 +126,8 @@ struct _AgsWaveEdit
   gdouble default_value;
 
   GtkDrawingArea *drawing_area;
+  unsigned char *wave_data;
+  int stride;
   
   GtkVScrollbar *vscrollbar;
   GtkHScrollbar *hscrollbar;
@@ -131,6 +140,24 @@ struct _AgsWaveEditClass
 
 GType ags_wave_edit_get_type(void);
 
-AgsWaveEdit* ags_wave_edit_new();
+void ags_wave_edit_reset_vscrollbar(AgsWaveEdit *wave_edit);
+void ags_wave_edit_reset_hscrollbar(AgsWaveEdit *wave_edit);
+
+void ags_wave_edit_draw_segment(AgsWaveEdit *wave_edit);
+void ags_wave_edit_draw_position(AgsWaveEdit *wave_edit);
+
+void ags_wave_edit_draw_cursor(AgsWaveEdit *wave_edit);
+void ags_wave_edit_draw_selection(AgsWaveEdit *wave_edit);
+
+void ags_wave_edit_draw_buffer(AgsWaveEdit *wave_edit,
+			       AgsBuffer *buffer,
+			       cairo_t *cr,
+			       gdouble bpm,
+			       double r, double g, double b, double a);
+void ags_wave_edit_draw_wave(AgsWaveEdit *wave_edit);
+
+void ags_wave_edit_draw(AgsWaveEdit *wave_edit);
+
+AgsWaveEdit* ags_wave_edit_new(guint line);
 
 #endif /*__AGS_WAVE_EDIT_H__*/

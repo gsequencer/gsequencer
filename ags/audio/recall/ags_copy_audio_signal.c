@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -18,11 +18,10 @@
  */
 
 #include <ags/audio/recall/ags_copy_audio_signal.h>
-#include <ags/audio/recall/ags_copy_channel.h>
-#include <ags/audio/recall/ags_copy_recycling.h>
 
 #include <ags/libags.h>
 
+#include <ags/audio/ags_sound_enums.h>
 #include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_input.h>
 #include <ags/audio/ags_recycling.h>
@@ -33,39 +32,30 @@
 #include <ags/audio/ags_audio_buffer_util.h>
 
 #include <ags/audio/recall/ags_copy_channel.h>
+#include <ags/audio/recall/ags_copy_channel_run.h>
+#include <ags/audio/recall/ags_copy_recycling.h>
 
 #include <stdlib.h>
 
 void ags_copy_audio_signal_class_init(AgsCopyAudioSignalClass *copy_audio_signal);
-void ags_copy_audio_signal_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_copy_audio_signal_dynamic_connectable_interface_init(AgsDynamicConnectableInterface *dynamic_connectable);
 void ags_copy_audio_signal_init(AgsCopyAudioSignal *copy_audio_signal);
-void ags_copy_audio_signal_connect(AgsConnectable *connectable);
-void ags_copy_audio_signal_disconnect(AgsConnectable *connectable);
-void ags_copy_audio_signal_connect_dynamic(AgsDynamicConnectable *dynamic_connectable);
-void ags_copy_audio_signal_disconnect_dynamic(AgsDynamicConnectable *dynamic_connectable);
 void ags_copy_audio_signal_finalize(GObject *gobject);
 
 void ags_copy_audio_signal_run_init_pre(AgsRecall *recall);
 void ags_copy_audio_signal_run_pre(AgsRecall *recall);
 void ags_copy_audio_signal_run_inter(AgsRecall *recall);
-AgsRecall* ags_copy_audio_signal_duplicate(AgsRecall *recall,
-					   AgsRecallID *recall_id,
-					   guint *n_params, GParameter *parameter);
 
 /**
  * SECTION:ags_copy_audio_signal
- * @short_description: copys audio signal
+ * @short_description: copy audio signal
  * @title: AgsCopyAudioSignal
  * @section_id:
  * @include: ags/audio/recall/ags_copy_audio_signal.h
  *
- * The #AgsCopyAudioSignal class copys the audio signal.
+ * The #AgsCopyAudioSignal class copies the audio signal.
  */
 
 static gpointer ags_copy_audio_signal_parent_class = NULL;
-static AgsConnectableInterface *ags_copy_audio_signal_parent_connectable_interface;
-static AgsDynamicConnectableInterface *ags_copy_audio_signal_parent_dynamic_connectable_interface;
 
 GType
 ags_copy_audio_signal_get_type()
@@ -76,43 +66,21 @@ ags_copy_audio_signal_get_type()
     GType ags_type_copy_audio_signal;
 
     static const GTypeInfo ags_copy_audio_signal_info = {
-      sizeof (AgsCopyAudioSignalClass),
+      sizeof(AgsCopyAudioSignalClass),
       NULL, /* base_init */
       NULL, /* base_finalize */
       (GClassInitFunc) ags_copy_audio_signal_class_init,
       NULL, /* class_finalize */
       NULL, /* class_data */
-      sizeof (AgsCopyAudioSignal),
+      sizeof(AgsCopyAudioSignal),
       0,    /* n_preallocs */
       (GInstanceInitFunc) ags_copy_audio_signal_init,
-    };
-
-    static const GInterfaceInfo ags_connectable_interface_info = {
-      (GInterfaceInitFunc) ags_copy_audio_signal_connectable_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-
-    static const GInterfaceInfo ags_dynamic_connectable_interface_info = {
-      (GInterfaceInitFunc) ags_copy_audio_signal_dynamic_connectable_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
     };
 
     ags_type_copy_audio_signal = g_type_register_static(AGS_TYPE_RECALL_AUDIO_SIGNAL,
 							"AgsCopyAudioSignal",
 							&ags_copy_audio_signal_info,
 							0);
-
-    g_type_add_interface_static(ags_type_copy_audio_signal,
-				AGS_TYPE_CONNECTABLE,
-				&ags_connectable_interface_info);
-
-    g_type_add_interface_static(ags_type_copy_audio_signal,
-				AGS_TYPE_DYNAMIC_CONNECTABLE,
-				&ags_dynamic_connectable_interface_info);
-
-    g_once_init_leave (&g_define_type_id__volatile, ags_type_copy_audio_signal);
   }
 
   return g_define_type_id__volatile;
@@ -137,25 +105,6 @@ ags_copy_audio_signal_class_init(AgsCopyAudioSignalClass *copy_audio_signal)
   recall->run_init_pre = ags_copy_audio_signal_run_init_pre;
   recall->run_pre = ags_copy_audio_signal_run_pre;
   recall->run_inter = ags_copy_audio_signal_run_inter;  
-  recall->duplicate = ags_copy_audio_signal_duplicate;
-}
-
-void
-ags_copy_audio_signal_connectable_interface_init(AgsConnectableInterface *connectable)
-{
-  ags_copy_audio_signal_parent_connectable_interface = g_type_interface_peek_parent(connectable);
-
-  connectable->connect = ags_copy_audio_signal_connect;
-  connectable->disconnect = ags_copy_audio_signal_disconnect;
-}
-
-void
-ags_copy_audio_signal_dynamic_connectable_interface_init(AgsDynamicConnectableInterface *dynamic_connectable)
-{
-  ags_copy_audio_signal_parent_dynamic_connectable_interface = g_type_interface_peek_parent(dynamic_connectable);
-
-  dynamic_connectable->connect_dynamic = ags_copy_audio_signal_connect_dynamic;
-  dynamic_connectable->disconnect_dynamic = ags_copy_audio_signal_disconnect_dynamic;
 }
 
 void
@@ -171,108 +120,107 @@ ags_copy_audio_signal_init(AgsCopyAudioSignal *copy_audio_signal)
 }
 
 void
-ags_copy_audio_signal_connect(AgsConnectable *connectable)
-{
-  /* call parent */
-  ags_copy_audio_signal_parent_connectable_interface->connect(connectable);
-
-  /* empty */
-}
-
-void
-ags_copy_audio_signal_disconnect(AgsConnectable *connectable)
-{
-  /* call parent */
-  ags_copy_audio_signal_parent_connectable_interface->disconnect(connectable);
-
-  /* empty */
-}
-
-void
-ags_copy_audio_signal_connect_dynamic(AgsDynamicConnectable *dynamic_connectable)
-{
-  /* call parent */
-  ags_copy_audio_signal_parent_dynamic_connectable_interface->connect_dynamic(dynamic_connectable);
-
-  /* empty */
-}
-
-void
-ags_copy_audio_signal_disconnect_dynamic(AgsDynamicConnectable *dynamic_connectable)
-{
-  /* call parent */
-  ags_copy_audio_signal_parent_dynamic_connectable_interface->disconnect_dynamic(dynamic_connectable);
-
-  /* empty */
-}
-
-void
 ags_copy_audio_signal_finalize(GObject *gobject)
 {  
   /* call parent */
   G_OBJECT_CLASS(ags_copy_audio_signal_parent_class)->finalize(gobject);
 }
+
 void
 ags_copy_audio_signal_run_init_pre(AgsRecall *recall)
 {
-  GObject *soundcard;
-  AgsRecycling *recycling;
+  AgsChannel *destination_channel;
+  AgsRecycling *destination_recycling;
   AgsAudioSignal *destination;
   AgsRecallID *parent_recall_id;
+  AgsRecallID *recall_id;
+  AgsRecyclingContext *parent_recycling_context;
   AgsRecyclingContext *recycling_context;
-  
+  AgsCopyChannelRun *copy_channel_run;
   AgsCopyRecycling *copy_recycling;
   AgsCopyAudioSignal *copy_audio_signal;
 
-  AgsMutexManager *mutex_manager;
-  
+  GObject *output_soundcard;
+
+  GList *list_start, *list;
   GList *stream;
 
   gdouble delay;
   guint attack;
   guint length;
   
-  pthread_mutex_t *application_mutex;
+  void (*parent_class_run_init_pre)(AgsRecall *recall);
+  
+  pthread_mutex_t *recall_mutex;
   pthread_mutex_t *recycling_mutex;
   
   copy_audio_signal = AGS_COPY_AUDIO_SIGNAL(recall);
-  copy_recycling = AGS_COPY_RECYCLING(recall->parent);
 
-  soundcard = recall->soundcard;
+  /* get mutex */
+  pthread_mutex_lock(ags_recall_get_class_mutex());
 
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+  recall_mutex = recall->obj_mutex;
+  
+  parent_class_run_init_pre = AGS_RECALL_CLASS(ags_copy_audio_signal_parent_class)->run_init_pre;
+
+  pthread_mutex_unlock(ags_recall_get_class_mutex());
+
+  /* set flags */
+  ags_recall_unset_behaviour_flags(recall,
+				   AGS_SOUND_BEHAVIOUR_PERSISTENT);
+
+  /* get some fields */
+  g_object_get(copy_audio_signal,
+	       "parent", &copy_recycling,
+	       "output-soundcard", &output_soundcard,
+	       "recall-id", &recall_id,
+	       NULL);
+
+  g_object_get(copy_recycling,
+	       "parent", &copy_channel_run,
+	       NULL);
+
+  /* channel */
+  g_object_get(copy_channel_run,
+	       "destination", &destination_channel,
+	       NULL);
   
   /* recycling */
-  recall->flags &= (~AGS_RECALL_PERSISTENT);
-  recycling = AGS_RECALL_RECYCLING(copy_recycling)->destination;
+  g_object_get(copy_recycling,
+	       "destination", &destination_recycling,
+	       NULL);
 
-  pthread_mutex_lock(application_mutex);
+  /* get recycling context */
+  g_object_get(recall_id,
+	       "recycling-context", &recycling_context,
+	       NULL);
 
-  recycling_mutex = ags_mutex_manager_lookup(mutex_manager,
-					     (GObject *) recycling);
-	
-  pthread_mutex_unlock(application_mutex);
+  g_object_get(recycling_context,
+	       "parent", &parent_recycling_context,
+	       NULL);
 
-  /* recycling context */
-  recycling_context = recall->recall_id->recycling_context;
+  g_object_get(destination_channel,
+	       "recall-id", &list_start,
+	       NULL);
+  
+  parent_recall_id = ags_recall_id_find_recycling_context(list_start,
+							  parent_recycling_context);
 
-  parent_recall_id = ags_recall_id_find_recycling_context(AGS_RECALL_CHANNEL_RUN(recall->parent->parent)->destination->recall_id,
-							  recycling_context->parent);
-
+  g_list_free(list_start);
+  
   //TODO:JK: unclear
   attack = 0;
   delay = 0.0;
 
   /* create new audio signal */
-  destination = ags_audio_signal_new((GObject *) soundcard,
-				     (GObject *) recycling,
+  destination = ags_audio_signal_new((GObject *) output_soundcard,
+				     (GObject *) destination_recycling,
 				     (GObject *) parent_recall_id);
   
   g_object_set(copy_audio_signal,
 	       "destination", destination,
 	       NULL);  
-  ags_recycling_create_audio_signal_with_defaults(recycling,
+  ags_recycling_create_audio_signal_with_defaults(destination_recycling,
 						  destination,
 						  delay, attack);
   length = 1; // (guint) (2.0 * soundcard->delay[soundcard->tic_counter]) + 1;
@@ -281,14 +229,10 @@ ags_copy_audio_signal_run_init_pre(AgsRecall *recall)
 
   ags_connectable_connect(AGS_CONNECTABLE(destination));
   
-  destination->stream_current = destination->stream_beginning;
+  destination->stream_current = destination->stream;
 
-  pthread_mutex_lock(recycling_mutex);
-
-  ags_recycling_add_audio_signal(recycling,
+  ags_recycling_add_audio_signal(destination_recycling,
 				 destination);
-
-  pthread_mutex_unlock(recycling_mutex);
 
 #ifdef AGS_DEBUG
   g_message("copy %x to %x", destination, parent_recall_id);
@@ -296,212 +240,303 @@ ags_copy_audio_signal_run_init_pre(AgsRecall *recall)
 #endif
   
   /* call parent */
-  AGS_RECALL_CLASS(ags_copy_audio_signal_parent_class)->run_init_pre(recall);
+  parent_class_run_init_pre(recall);
 }
 
 void
 ags_copy_audio_signal_run_pre(AgsRecall *recall)
 {
-  AGS_RECALL_CLASS(ags_copy_audio_signal_parent_class)->run_pre(recall);
+  AgsAudioSignal *destination, *source;
+  AgsCopyAudioSignal *copy_audio_signal;
+  
+  void *buffer;
 
-  if(AGS_RECALL_AUDIO_SIGNAL(recall)->source->stream_current != NULL){
-    void *buffer;
+  guint buffer_size;
+  guint format;
 
-    guint buffer_size;
+  void (*parent_class_run_pre)(AgsRecall *recall);
+  
+  pthread_mutex_t *recall_mutex;
 
-    buffer = (signed short *) AGS_RECALL_AUDIO_SIGNAL(recall)->destination->stream_current->data;
-    buffer_size = AGS_RECALL_AUDIO_SIGNAL(recall)->destination->buffer_size;
+  copy_audio_signal = AGS_COPY_AUDIO_SIGNAL(recall);
+
+  /* get mutex */
+  pthread_mutex_lock(ags_recall_get_class_mutex());
+
+  recall_mutex = recall->obj_mutex;
+  
+  parent_class_run_pre = AGS_RECALL_CLASS(ags_copy_audio_signal_parent_class)->run_pre;
+
+  pthread_mutex_unlock(ags_recall_get_class_mutex());
+
+  /* call parent */
+  parent_class_run_pre(recall);
+
+  g_object_get(recall,
+	       "source", &source,
+	       NULL);
+  
+  if(source->stream != NULL){
+    g_object_get(recall,
+		 "destination", &destination,
+		 NULL);
+    
+    buffer = destination->stream->data;
+
+    g_object_get(destination,
+		 "buffer-size", &buffer_size,
+		 "format", &format,
+		 NULL);
 
     ags_audio_buffer_util_clear_buffer(buffer, 1,
-				       buffer_size, ags_audio_buffer_util_format_from_soundcard(AGS_RECALL_AUDIO_SIGNAL(recall)->destination->format));
+				       buffer_size, ags_audio_buffer_util_format_from_soundcard(format));
   }
 }
 
 void
 ags_copy_audio_signal_run_inter(AgsRecall *recall)
 {
-  AgsCopyChannel *copy_channel;
-  AgsCopyAudioSignal *copy_audio_signal;
-  AgsAudioSignal *source, *destination;
+  AgsRecycling *destination_recycling, *source_recycling;
+  AgsAudioSignal *destination, *source;
+  AgsPort *port;
+  AgsRecallID *recall_id;
+  AgsRecyclingContext *parent_recycling_context;
+  AgsRecyclingContext *recycling_context;
 
+  AgsCopyChannel *copy_channel;
+  AgsCopyChannelRun *copy_channel_run;
+  AgsCopyRecycling *copy_recycling;
+  AgsCopyAudioSignal *copy_audio_signal;
+
+  GList *note_start;
   GList *stream_source, *stream_destination;
 
+  void *buffer_source;
   gchar *str;
-  gboolean muted;
-  guint buffer_size;
+  
+  guint destination_buffer_size, source_buffer_size;
+  guint destination_samplerate, source_samplerate;
+  guint destination_format, source_format;
+  guint attack; 
   guint copy_mode;
+  gboolean is_muted;
+  gboolean resample;
   
   GValue value = {0,};
 
-  AGS_RECALL_CLASS(ags_copy_audio_signal_parent_class)->run_inter(recall);
-
-  if(recall->rt_safe &&
-     recall->recall_id->recycling_context->parent != NULL &&
-     AGS_RECALL_AUDIO_SIGNAL(recall)->source->note == NULL){
-    return;
-  }
+  void (*parent_class_run_inter)(AgsRecall *recall);
+  
+  pthread_mutex_t *recall_mutex;
 
   copy_audio_signal = AGS_COPY_AUDIO_SIGNAL(recall);
 
-  source = AGS_RECALL_AUDIO_SIGNAL(copy_audio_signal)->source;
-  stream_source = source->stream_current;
+  /* get mutex */
+  pthread_mutex_lock(ags_recall_get_class_mutex());
 
-  destination = AGS_RECALL_AUDIO_SIGNAL(copy_audio_signal)->destination;
+  recall_mutex = recall->obj_mutex;
+  
+  parent_class_run_inter = AGS_RECALL_CLASS(ags_copy_audio_signal_parent_class)->run_inter;
+
+  pthread_mutex_unlock(ags_recall_get_class_mutex());
+
+  /* call parent */
+  parent_class_run_inter(recall);
+
+  /* get source and recall id */
+  g_object_get(recall,
+	       "source", &source,
+	       "recall-id", &recall_id,
+	       NULL);
+
+  /* get recycling context and its parent */
+  g_object_get(recall_id,
+	       "recycling-context", &recycling_context,
+	       NULL);
+
+  g_object_get(recycling_context,
+	       "parent", &parent_recycling_context,
+	       NULL);
+
+  /* get notes */
+  g_object_get(source,
+	       "note", &note_start,
+	       NULL);
+  
+  if(ags_recall_global_get_rt_safe() &&
+     parent_recycling_context != NULL &&
+     note_start == NULL){
+    return;
+  }
+
+  g_list_free(note_start);
+
+  /* get destination */
+  g_object_get(recall,
+	       "destination", &destination,
+	       NULL);
+  
+  /* get stream */
+  stream_source = source->stream;
   
   if(stream_source == NULL){
+    g_object_get(source,
+		 "recycling", &source_recycling,
+		 NULL);
+    
     if(destination != NULL){
-      ags_recycling_remove_audio_signal(destination->recycling,
+      g_object_get(destination,
+		   "recycling", &destination_recycling,
+		   NULL);
+      
+      ags_recycling_remove_audio_signal(destination_recycling,
 					destination);
+      
       g_object_run_dispose(destination);
       g_object_unref(destination);
     }
 
     ags_recall_done(recall);
 
-    ags_recycling_remove_audio_signal(source->recycling,
+    ags_recycling_remove_audio_signal(source_recycling,
 				      source);
     g_object_unref(source);
     
     return;
   }
 
-  //FIXME:JK: attack probably needs to be removed
-
   if(destination == NULL){
     g_warning("no destination");
+    
     return;
   }
 
-  copy_channel = AGS_COPY_CHANNEL(AGS_RECALL_CHANNEL_RUN(recall->parent->parent)->recall_channel);
+  /* get related recalls */
+  g_object_get(recall,
+	       "parent", &copy_recycling,
+	       NULL);
 
-  g_value_init(&value, G_TYPE_BOOLEAN);
-  ags_port_safe_read(copy_channel->muted,
+  g_object_get(copy_recycling,
+	       "parent", &copy_channel_run,
+	       NULL);
+
+  g_object_get(copy_channel_run,
+	       "recall-channel", &copy_channel_run,
+	       NULL);
+  
+  /* check muted */
+  g_object_get(copy_channel,
+	       "muted", &port,
+	       NULL);
+  
+  g_value_init(&value, G_TYPE_FLOAT);
+  ags_port_safe_read(port,
 		     &value);
 
-  muted = g_value_get_boolean(&value);
+  is_muted = (g_value_get_float(&value) == 0.0) ? TRUE: FALSE;  
   g_value_unset(&value);
 
-  if(muted){
+  if(is_muted){
     return;
   }
 
-  stream_destination = destination->stream_current;
-  //  attack = AGS_RECALL_AUDIO_SIGNAL(copy_audio_signal)->attack;
+  stream_destination = destination->stream;
 
-  if(!recall->rt_safe &&
+  if(!ags_recall_global_get_rt_safe() &&
      stream_destination->next == NULL){
     ags_audio_signal_add_stream(destination);
   }
 
-  stream_destination = destination->stream_current;
-  buffer_size = source->buffer_size;
 
-  if(stream_destination != NULL){
-    void *buffer_source;
+  g_object_get(destination,
+	       "buffer-size", &destination_buffer_size,
+	       "samplerate", &destination_samplerate,
+	       "format", &destination_format,
+	       NULL);
 
-    gboolean resample;
-    
-    copy_mode = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(destination->format),
-						    ags_audio_buffer_util_format_from_soundcard(source->format));
-    
-    if(stream_destination->next == NULL){
-      ags_audio_signal_add_stream(destination);
-    }
+  g_object_get(source,
+	       "buffer-size", &source_buffer_size,
+	       "attack", &attack,
+	       "samplerate", &source_samplerate,
+	       "format", &source_format,
+	       NULL);
+  
+  copy_mode = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(destination_format),
+						  ags_audio_buffer_util_format_from_soundcard(source_format));
+  
+  resample = FALSE;
 
-    resample = FALSE;
-    
-    if(stream_destination->next == NULL){
-      ags_audio_signal_add_stream(destination);
-    }
+  /* check if resample */
+  buffer_source = stream_source->data;
+  attack = (destination_samplerate / source_samplerate) * attack;
 
-    /* check if resample */
-    buffer_source = stream_source->data;
-
-    if(source->samplerate != destination->samplerate){
-      buffer_source = ags_audio_buffer_util_resample(buffer_source, 1,
-						     ags_audio_buffer_util_format_from_soundcard(source->format), source->samplerate,
-						     source->length,
-						     destination->samplerate);
+  if(source_samplerate != destination_samplerate){
+    buffer_source = ags_audio_buffer_util_resample(buffer_source, 1,
+						   ags_audio_buffer_util_format_from_soundcard(source_format), source_samplerate,
+						   source_buffer_size,
+						   destination_samplerate);
       
-      resample = TRUE;
-    }
+    resample = TRUE;
+  }
 
-    if((AGS_RECALL_INITIAL_RUN & (AGS_RECALL_AUDIO_SIGNAL(recall)->flags)) != 0){
-      AGS_RECALL_AUDIO_SIGNAL(recall)->flags &= (~AGS_RECALL_INITIAL_RUN);
-      ags_audio_buffer_util_copy_buffer_to_buffer(stream_destination->data, 1, source->attack,
-						  buffer_source, 1, 0,
-						  buffer_size - source->attack, copy_mode);
-    }else{
-      if(source->attack != 0 && stream_source->prev != NULL){
-	void *buffer_source_prev;
+  if(ags_recall_test_flags(recall, AGS_RECALL_INITIAL_RUN)){
+    ags_audio_buffer_util_copy_buffer_to_buffer(stream_destination->data, 1, attack,
+						buffer_source, 1, 0,
+						destination_buffer_size - attack, copy_mode);
+
+    ags_recall_unset_flags(recall, AGS_RECALL_INITIAL_RUN);
+  }else{
+    if(attack != 0 && stream_source->prev != NULL){
+      void *buffer_source_prev;
 	
-	buffer_source_prev = stream_source->prev->data;
+      buffer_source_prev = stream_source->prev->data;
 
-	if(resample){
-	  buffer_source_prev = ags_audio_buffer_util_resample(buffer_source_prev, 1,
-							      ags_audio_buffer_util_format_from_soundcard(source->format), source->samplerate,
-							      source->length,
-							      destination->samplerate);
+      if(resample){
+	buffer_source_prev = ags_audio_buffer_util_resample(buffer_source_prev, 1,
+							    ags_audio_buffer_util_format_from_soundcard(source_format), source_samplerate,
+							    source_buffer_size,
+							    destination_samplerate);
 
-	}
-
-	ags_audio_buffer_util_copy_buffer_to_buffer(stream_destination->data, 1, 0,
-						    buffer_source_prev, 1, buffer_size - source->attack,
-						    source->attack, copy_mode);
-
-	if(resample){
-	  free(buffer_source_prev);
-	}
       }
 
-      ags_audio_buffer_util_copy_buffer_to_buffer(stream_destination->data, 1, source->attack,
-						  buffer_source, 1, 0,
-						  buffer_size - source->attack, copy_mode);
+      ags_audio_buffer_util_copy_buffer_to_buffer(stream_destination->data, 1, 0,
+						  buffer_source_prev, 1, destination_buffer_size - attack,
+						  attack, copy_mode);
+
+      if(resample){
+	free(buffer_source_prev);
+      }
     }
 
-    if(resample){
-      free(buffer_source);
-    }
+    ags_audio_buffer_util_copy_buffer_to_buffer(stream_destination->data, 1, source->attack,
+						buffer_source, 1, 0,
+						destination_buffer_size - attack, copy_mode);
   }
-}
 
-AgsRecall*
-ags_copy_audio_signal_duplicate(AgsRecall *recall,
-				AgsRecallID *recall_id,
-				guint *n_params, GParameter *parameter)
-{
-  AgsCopyAudioSignal *copy;
-
-  copy = (AgsCopyAudioSignal *) AGS_RECALL_CLASS(ags_copy_audio_signal_parent_class)->duplicate(recall,
-												recall_id,
-												n_params, parameter);
-
-  return((AgsRecall *) copy);
+  if(resample){
+    free(buffer_source);
+  }
 }
 
 /**
  * ags_copy_audio_signal_new:
  * @destination: the destination #AgsAudioSignal
  * @source: the source #AgsAudioSignal
- * @soundcard: the #GObject defaulting to
  *
- * Creates an #AgsCopyAudioSignal
+ * Create a new instance of #AgsCopyAudioSignal
  *
- * Returns: a new #AgsCopyAudioSignal
+ * Returns: the new #AgsCopyAudioSignal
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsCopyAudioSignal*
 ags_copy_audio_signal_new(AgsAudioSignal *destination,
-			  AgsAudioSignal *source,
-			  GObject *soundcard)
+			  AgsAudioSignal *source)
 {
   AgsCopyAudioSignal *copy_audio_signal;
 
   copy_audio_signal = (AgsCopyAudioSignal *) g_object_new(AGS_TYPE_COPY_AUDIO_SIGNAL,
 							  "destination", destination,
 							  "source", source,
-							  "soundcard", soundcard,
 							  NULL);
 
   return(copy_audio_signal);

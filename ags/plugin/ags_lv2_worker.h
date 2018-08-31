@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -23,13 +23,7 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#ifdef AGS_USE_LINUX_THREADS
-#include <ags/thread/ags_thread-kthreads.h>
-#else
-#include <ags/thread/ags_thread-posix.h>
-#endif 
-
-#include <ags/thread/ags_returnable_thread.h>
+#include <ags/libags.h>
 
 #include <lv2.h>
 #include <lv2/lv2plug.in/ns/ext/worker/worker.h>
@@ -62,12 +56,15 @@ struct _AgsLv2Worker
 {
   GObject gobject;
 
-  volatile guint flags;
+  guint flags;
+
+  pthread_mutex_t *obj_mutex;
+  pthread_mutexattr_t *obj_mutexattr;
 
   LV2_Handle handle;
   LV2_Worker_Interface *worker_interface;
 
-  uint32_t work_size;
+  guint work_size;
   void *work_data;
   
   GList *response_data;
@@ -82,11 +79,17 @@ struct _AgsLv2WorkerClass
 
 struct _AgsLv2WorkerResponseData
 {
-  uint32_t size;
+  uint32_t data_size;
   void *data;
 };
 
 GType ags_lv2_worker_get_type(void);
+
+pthread_mutex_t* ags_lv2_worker_get_class_mutex();
+
+gboolean ags_lv2_worker_test_flags(AgsLv2Worker *lv2_worker, guint flags);
+void ags_lv2_worker_set_flags(AgsLv2Worker *lv2_worker, guint flags);
+void ags_lv2_worker_unset_flags(AgsLv2Worker *lv2_worker, guint flags);
 
 AgsLv2WorkerResponseData* ags_lv2_worker_alloc_response_data();
 void ags_lv2_worker_free_response_data(AgsLv2WorkerResponseData *response_data);

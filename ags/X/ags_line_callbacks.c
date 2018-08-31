@@ -31,34 +31,6 @@
 
 #include <ags/X/thread/ags_gui_thread.h>
 
-int
-ags_line_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsLine *line)
-{
-  if(old_parent == NULL){
-    //    gtk_widget_show_all(GTK_WIDGET(line));
-  }
-
-  return(0);
-}
-
-void
-ags_line_remove_recall_callback(AgsRecall *recall, AgsLine *line)
-{
-  if(recall->recall_id != NULL && recall->recall_id->recycling_context->parent != NULL){
-    if(AGS_IS_RECALL_AUDIO(recall) || AGS_RECALL_AUDIO_RUN(recall)){
-      ags_audio_remove_recall(AGS_AUDIO(line->channel->audio), (GObject *) recall, FALSE);
-    }else{
-      ags_channel_remove_recall(AGS_CHANNEL(line->channel), (GObject *) recall, FALSE);
-    }
-  }else{
-    if(AGS_IS_RECALL_AUDIO(recall) || AGS_RECALL_AUDIO_RUN(recall)){
-      ags_audio_remove_recall(AGS_AUDIO(line->channel->audio), (GObject *) recall, TRUE);
-    }else{
-      ags_channel_remove_recall(AGS_CHANNEL(line->channel), (GObject *) recall, TRUE);
-    }
-  }
-}
-
 void
 ags_line_group_clicked_callback(GtkWidget *widget, AgsLine *line)
 {
@@ -126,105 +98,91 @@ ags_line_volume_callback(GtkRange *range,
 			 AgsLine *line)
 {
   AgsVolumeChannel *volume_channel;
-  GList *list;
+
+  GList *start_list, *list;
+  
   GValue value = {0,};
 
-  g_value_init(&value, G_TYPE_DOUBLE);
-  g_value_set_double(&value, gtk_range_get_value(range));
+  g_value_init(&value,
+	       G_TYPE_DOUBLE);
 
-  list = line->channel->play;
+  g_value_set_double(&value,
+		     gtk_range_get_value(range));
 
+  /* play context */
+  g_object_get(line->channel,
+	       "play", &start_list,
+	       NULL);
+
+  list = start_list;
+  
   while((list = ags_recall_find_type(list, AGS_TYPE_VOLUME_CHANNEL)) != NULL){
+    AgsPort *port;
+    
     volume_channel = AGS_VOLUME_CHANNEL(list->data);
-    ags_port_safe_write(volume_channel->volume,
+
+    g_object_get(volume_channel,
+		 "volume", &port,
+		 NULL);
+    
+    ags_port_safe_write(port,
 			&value);
 
+    /* iterate */
     list = list->next;
   }
 
-  list = line->channel->recall;
+  g_list_free(start_list);
+  
+  /* recall context */
+  g_object_get(line->channel,
+	       "recall", &start_list,
+	       NULL);
+
+  list = start_list;
 
   while((list = ags_recall_find_type(list, AGS_TYPE_VOLUME_CHANNEL)) != NULL){
+    AgsPort *port;
+    
     volume_channel = AGS_VOLUME_CHANNEL(list->data);
-    ags_port_safe_write(volume_channel->volume,
+
+    g_object_get(volume_channel,
+		 "volume", &port,
+		 NULL);
+    
+    ags_port_safe_write(port,
 			&value);
 
+    /* iterate */
     list = list->next;
   }
+
+  g_list_free(start_list);
 }
 
 void
-ags_line_done_callback(AgsLine *line, AgsRecallID *recall_id,
+ags_line_stop_callback(AgsLine *line,
+		       GList *recall_id, gint sound_scope,
 		       gpointer data)
 {
-  AgsChannel *source;
-  AgsChannel *channel;
-  AgsPlayback *playback;
-  AgsChannel *next_pad;
-  AgsRecallID *match_recall_id;
-
-  AgsMutexManager *mutex_manager;
-
-  gboolean all_done;
-
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *channel_mutex;
-
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-
-  source = line->channel;
+  AgsPad *pad;
   
-  /* retrieve channel */
-  channel = AGS_PAD(AGS_LINE(line)->pad)->channel;
+  gboolean reset_active;
 
-  /* retrieve channel mutex */
-  pthread_mutex_lock(application_mutex);
-
-  channel_mutex = ags_mutex_manager_lookup(mutex_manager,
-					   (GObject *) channel);
-
-  pthread_mutex_unlock(application_mutex);
-
-  /* get next pad */
-  pthread_mutex_lock(channel_mutex);
-
-  next_pad = channel->next_pad;
-
-  pthread_mutex_unlock(channel_mutex);
-
-  all_done = TRUE;
-
-  while(channel != next_pad){
-    pthread_mutex_lock(channel_mutex);
-
-    playback = AGS_PLAYBACK(channel->playback);
-    match_recall_id = playback->recall_id[0];
-		
-    pthread_mutex_unlock(channel_mutex);
-
-    /* check if pending */
-    if(match_recall_id != NULL){
-      all_done = FALSE;
-      break;
-    }
-
-    /* iterate */
-    pthread_mutex_lock(channel_mutex);
-
-    channel = channel->next;
-
-    pthread_mutex_unlock(channel_mutex);
+  pad = line->pad;
+  
+  if((AGS_PAD_BLOCK_STOP & (pad->flags)) != 0){
+    return;
   }
+  
+  pad->flags |= AGS_PAD_BLOCK_STOP;
 
-  /* toggle play button if all playback done */
-  if(all_done){
-    AgsPad *pad;
-
-    pad = AGS_PAD(AGS_LINE(line)->pad);
-
-    if(pad->play != NULL){
-      gtk_toggle_button_set_active(pad->play, FALSE);
-    }
+  /* play button - check reset active */
+  reset_active = (sound_scope == AGS_SOUND_SCOPE_PLAYBACK) ? TRUE: FALSE;
+  
+  if(reset_active){
+    gtk_toggle_button_set_active(pad->play, FALSE);
   }
+  
+  pad->flags &= (~AGS_PAD_BLOCK_STOP);
 }

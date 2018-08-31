@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -35,10 +35,23 @@
 #define AGS_SOUNDCARD_GET_INTERFACE(obj)      (G_TYPE_INSTANCE_GET_INTERFACE((obj), AGS_TYPE_SOUNDCARD, AgsSoundcardInterface))
 
 #define AGS_SOUNDCARD_DEFAULT_DSP_CHANNELS (2)
+#define AGS_SOUNDCARD_MIN_DSP_CHANNELS (1)
+#define AGS_SOUNDCARD_MAX_DSP_CHANNELS (64)
+
 #define AGS_SOUNDCARD_DEFAULT_PCM_CHANNELS (2)
+#define AGS_SOUNDCARD_MIN_PCM_CHANNELS (1)
+#define AGS_SOUNDCARD_MAX_PCM_CHANNELS (64)
+
 #define AGS_SOUNDCARD_DEFAULT_SAMPLERATE (48000.0)
+#define AGS_SOUNDCARD_MIN_SAMPLERATE (8000.0)
+#define AGS_SOUNDCARD_MAX_SAMPLERATE (5644800.0)
+
 #define AGS_SOUNDCARD_DEFAULT_FORMAT (AGS_SOUNDCARD_SIGNED_16_BIT)
+
 #define AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE (1024)
+#define AGS_SOUNDCARD_MIN_BUFFER_SIZE (16)
+#define AGS_SOUNDCARD_MAX_BUFFER_SIZE (16384)
+
 #define AGS_SOUNDCARD_DEFAULT_BPM (120.0)
 #define AGS_SOUNDCARD_DEFAULT_DELAY_FACTOR (1.0 / 4.0)
 #define AGS_SOUNDCARD_DEFAULT_JIFFIE ((double) AGS_SOUNDCARD_DEFAULT_SAMPLERATE / (double) AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE)
@@ -71,16 +84,26 @@ typedef struct _AgsSoundcardInterface AgsSoundcardInterface;
  * @AGS_SOUNDCARD_SIGNED_24_BIT: signed 24 bit raw pcm data
  * @AGS_SOUNDCARD_SIGNED_32_BIT: signed 32 bit raw pcm data
  * @AGS_SOUNDCARD_SIGNED_64_BIT: signed 64 bit raw pcm data
+ * @AGS_SOUNDCARD_FLOAT: float raw pcm data
+ * @AGS_SOUNDCARD_DOUBLE: double raw pcm data
  *
  * #AgsSoundcardFormat specifies the audio data representation to be used.
  */
 typedef enum{
-  AGS_SOUNDCARD_SIGNED_8_BIT    = 8,
-  AGS_SOUNDCARD_SIGNED_16_BIT   = 16,
-  AGS_SOUNDCARD_SIGNED_24_BIT   = 24,
-  AGS_SOUNDCARD_SIGNED_32_BIT   = 32,
-  AGS_SOUNDCARD_SIGNED_64_BIT   = 64,
+  AGS_SOUNDCARD_SIGNED_8_BIT    = 0x8,
+  AGS_SOUNDCARD_SIGNED_16_BIT   = 0x10,
+  AGS_SOUNDCARD_SIGNED_24_BIT   = 0x18,
+  AGS_SOUNDCARD_SIGNED_32_BIT   = 0x20,
+  AGS_SOUNDCARD_SIGNED_64_BIT   = 0x40,
+  AGS_SOUNDCARD_FLOAT           = 0xfffffff0,
+  AGS_SOUNDCARD_DOUBLE          = 0xfffffff1,
 }AgsSoundcardFormat;
+
+typedef enum{
+  AGS_SOUNDCARD_CAPABILITY_PLAYBACK  = 1,
+  AGS_SOUNDCARD_CAPABILITY_CAPTURE   = 1 <<  1,
+  AGS_SOUNDCARD_CAPABILITY_DUPLEX    = 1 <<  2, 
+}AgsSoundcardCapability;
 
 struct _AgsSoundcardInterface
 {
@@ -89,10 +112,6 @@ struct _AgsSoundcardInterface
   void (*set_application_context)(AgsSoundcard *soundcard,
 				  AgsApplicationContext *application_context);
   AgsApplicationContext* (*get_application_context)(AgsSoundcard *soundcard);
-
-  void (*set_application_mutex)(AgsSoundcard *soundcard,
-				pthread_mutex_t *application_mutex);
-  pthread_mutex_t* (*get_application_mutex)(AgsSoundcard *soundcard);
 
   void (*set_device)(AgsSoundcard *soundcard,
 		     gchar *card_id);
@@ -103,6 +122,8 @@ struct _AgsSoundcardInterface
 		   guint *rate_min, guint *rate_max,
 		   guint *buffer_size_min, guint *buffer_size_max,
 		   GError **error);
+
+  guint (*get_capability)(AgsSoundcard *soundcard);
   
   void (*set_presets)(AgsSoundcard *soundcard,
 		      guint channels,
@@ -147,6 +168,11 @@ struct _AgsSoundcardInterface
   void* (*get_next_buffer)(AgsSoundcard *soundcard);  
   void* (*get_prev_buffer)(AgsSoundcard *soundcard);  
 
+  void (*lock_buffer)(AgsSoundcard *soundcard,
+		      void *buffer);
+  void (*unlock_buffer)(AgsSoundcard *soundcard,
+			void *buffer);
+
   void (*set_bpm)(AgsSoundcard *soundcard,
 		  gdouble bpm);
   gdouble (*get_bpm)(AgsSoundcard *soundcard);
@@ -178,10 +204,6 @@ struct _AgsSoundcardInterface
 		   gboolean *do_loop);
 
   guint (*get_loop_offset)(AgsSoundcard *soundcard);
-
-  void (*set_audio)(AgsSoundcard *soundcard,
-		    GList *audio);
-  GList* (*get_audio)(AgsSoundcard *soundcard);
 };
 
 GType ags_soundcard_get_type();
@@ -189,10 +211,6 @@ GType ags_soundcard_get_type();
 void ags_soundcard_set_application_context(AgsSoundcard *soundcard,
 					   AgsApplicationContext *application_context);
 AgsApplicationContext* ags_soundcard_get_application_context(AgsSoundcard *soundcard);
-
-void ags_soundcard_set_application_mutex(AgsSoundcard *soundcard,
-					 pthread_mutex_t *application_mutex);
-pthread_mutex_t* ags_soundcard_get_application_mutex(AgsSoundcard *soundcard);
 
 void ags_soundcard_set_device(AgsSoundcard *soundcard,
 			      gchar *device_id);
@@ -216,6 +234,8 @@ void ags_soundcard_pcm_info(AgsSoundcard *soundcard, gchar *card_id,
 			    guint *rate_min, guint *rate_max,
 			    guint *buffer_size_min, guint *buffer_size_max,
 			    GError **error);
+
+guint ags_soundcard_get_capability(AgsSoundcard *soundcard);
 
 GList* ags_soundcard_get_poll_fd(AgsSoundcard *soundcard);
 gboolean ags_soundcard_is_available(AgsSoundcard *soundcard);
@@ -245,6 +265,11 @@ void ags_soundcard_offset_changed(AgsSoundcard *soundcard,
 void* ags_soundcard_get_buffer(AgsSoundcard *soundcard);
 void* ags_soundcard_get_next_buffer(AgsSoundcard *soundcard);
 void* ags_soundcard_get_prev_buffer(AgsSoundcard *soundcard);
+
+void ags_soundcard_lock_buffer(AgsSoundcard *soundcard,
+			       void *buffer);
+void ags_soundcard_unlock_buffer(AgsSoundcard *soundcard,
+				 void *buffer);
 
 void ags_soundcard_set_bpm(AgsSoundcard *soundcard,
 			   gdouble bpm);
@@ -277,9 +302,5 @@ void ags_soundcard_get_loop(AgsSoundcard *soundcard,
 			    gboolean *do_loop);
 
 guint ags_soundcard_get_loop_offset(AgsSoundcard *soundcard);
-
-void ags_soundcard_set_audio(AgsSoundcard *soundcard,
-			     GList *audio);
-GList* ags_soundcard_get_audio(AgsSoundcard *soundcard);
 
 #endif /*__AGS_SOUNDCARD_H__*/

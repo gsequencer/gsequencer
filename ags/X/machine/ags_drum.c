@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -46,11 +46,14 @@ void ags_drum_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_drum_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_drum_init(AgsDrum *drum);
 void ags_drum_finalize(GObject *gobject);
+
 void ags_drum_connect(AgsConnectable *connectable);
 void ags_drum_disconnect(AgsConnectable *connectable);
+
 void ags_drum_show(GtkWidget *widget);
 void ags_drum_show_all(GtkWidget *widget);
 void ags_drum_map_recall(AgsMachine *machine);
+
 gchar* ags_drum_get_name(AgsPlugin *plugin);
 void ags_drum_set_name(AgsPlugin *plugin, gchar *name);
 gchar* ags_drum_get_xml_type(AgsPlugin *plugin);
@@ -199,16 +202,16 @@ ags_drum_init(AgsDrum *drum)
 
 
   audio = AGS_MACHINE(drum)->audio;
-  audio->flags |= (AGS_AUDIO_OUTPUT_HAS_RECYCLING |
-		   AGS_AUDIO_INPUT_HAS_RECYCLING |
-		   AGS_AUDIO_INPUT_TAKES_FILE |
-		   AGS_AUDIO_SYNC |
-		   AGS_AUDIO_ASYNC |
-		   AGS_AUDIO_HAS_NOTATION |
-		   AGS_AUDIO_HAS_PATTERN |
-		   AGS_AUDIO_NOTATION_DEFAULT |
-		   AGS_AUDIO_PATTERN_MODE |
-		   AGS_AUDIO_REVERSE_MAPPING);
+  ags_audio_set_flags(audio, (AGS_AUDIO_SYNC |
+			      AGS_AUDIO_ASYNC |
+			      AGS_AUDIO_OUTPUT_HAS_RECYCLING |
+			      AGS_AUDIO_INPUT_HAS_RECYCLING |
+			      AGS_AUDIO_INPUT_HAS_FILE));
+  ags_audio_set_ability_flags(audio, (AGS_SOUND_ABILITY_SEQUENCER |
+				      AGS_SOUND_ABILITY_NOTATION));
+  ags_audio_set_behaviour_flags(audio, (AGS_SOUND_BEHAVIOUR_PATTERN_MODE |
+					AGS_SOUND_BEHAVIOUR_REVERSE_MAPPING |
+					AGS_SOUND_BEHAVIOUR_DEFAULTS_TO_INPUT));
   g_object_set(audio,
 	       "audio-start-mapping", 0,
 	       "audio-end-mapping", 128,
@@ -415,8 +418,8 @@ ags_drum_connect(AgsConnectable *connectable)
   ags_connectable_connect(AGS_CONNECTABLE(drum->pattern_box));
 
   /* AgsMachine */
-  g_signal_connect_after(G_OBJECT(drum), "done",
-			 G_CALLBACK(ags_drum_done_callback), NULL);
+  g_signal_connect_after(G_OBJECT(drum), "stop",
+			 G_CALLBACK(ags_drum_stop_callback), NULL);
 }
 
 void
@@ -478,8 +481,8 @@ ags_drum_disconnect(AgsConnectable *connectable)
 
   /* AgsAudio */
   g_object_disconnect(G_OBJECT(drum),
-		      "any_signal::done",
-		      G_CALLBACK(ags_drum_done_callback),
+		      "any_signal::stop",
+		      G_CALLBACK(ags_drum_stop_callback),
 		      NULL,
 		      NULL);
 
@@ -521,33 +524,20 @@ ags_drum_map_recall(AgsMachine *machine)
   AgsPlayNotationAudio *recall_notation_audio;
   AgsPlayNotationAudioRun *recall_notation_audio_run;
 
-  AgsMutexManager *mutex_manager;
-
-  GList *list;
-
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *audio_mutex;
+  GList *start_play, *play;
+  GList *start_recall, *recall;
   
+  GValue value = {0,};
+
   if((AGS_MACHINE_MAPPED_RECALL & (machine->flags)) != 0 ||
      (AGS_MACHINE_PREMAPPED_RECALL & (machine->flags)) != 0){
     return;
   }
-
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-
+  
   window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) machine,
 						 AGS_TYPE_WINDOW);
   
   audio = machine->audio;
-  
-  /* get audio mutex */
-  pthread_mutex_lock(application_mutex);
-
-  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
-					 (GObject *) audio);
-  
-  pthread_mutex_unlock(application_mutex);
 
   /* ags-delay */
   ags_recall_factory_create(audio,
@@ -560,19 +550,21 @@ ags_drum_map_recall(AgsMachine *machine)
 			     AGS_RECALL_FACTORY_PLAY),
 			    0);
 
-  pthread_mutex_lock(audio_mutex);
+  g_object_get(audio,
+	       "play", &start_play,
+	       NULL);
 
-  list = ags_recall_find_type(audio->play,
+  play = ags_recall_find_type(start_play,
 			      AGS_TYPE_DELAY_AUDIO_RUN);
 
-  if(list != NULL){
-    play_delay_audio_run = AGS_DELAY_AUDIO_RUN(list->data);
+  if(play != NULL){
+    play_delay_audio_run = AGS_DELAY_AUDIO_RUN(play->data);
     //    AGS_RECALL(play_delay_audio_run)->flags |= AGS_RECALL_PERSISTENT;
   }else{
     play_delay_audio_run = NULL;
   }
 
-  pthread_mutex_unlock(audio_mutex);
+  g_list_free(start_play);
   
   /* ags-count-beats */
   ags_recall_factory_create(audio,
@@ -585,13 +577,15 @@ ags_drum_map_recall(AgsMachine *machine)
 			     AGS_RECALL_FACTORY_PLAY),
 			    0);
   
-  pthread_mutex_lock(audio_mutex);
+  g_object_get(audio,
+	       "play", &start_play,
+	       NULL);
 
-  list = ags_recall_find_type(audio->play,
+  play = ags_recall_find_type(start_play,
 			      AGS_TYPE_COUNT_BEATS_AUDIO_RUN);
 
-  if(list != NULL){
-    play_count_beats_audio_run = AGS_COUNT_BEATS_AUDIO_RUN(list->data);
+  if(play != NULL){
+    play_count_beats_audio_run = AGS_COUNT_BEATS_AUDIO_RUN(play->data);
 
     /* set dependency */  
     g_object_set(G_OBJECT(play_count_beats_audio_run),
@@ -600,12 +594,17 @@ ags_drum_map_recall(AgsMachine *machine)
     ags_seekable_seek(AGS_SEEKABLE(play_count_beats_audio_run),
 		      window->navigation->position_tact->adjustment->value,
 		      TRUE);
+
+    g_value_init(&value, G_TYPE_BOOLEAN);
+    g_value_set_boolean(&value, gtk_toggle_button_get_active((GtkToggleButton *) window->navigation->loop));
+    ags_port_safe_write(AGS_COUNT_BEATS_AUDIO(AGS_RECALL_AUDIO_RUN(play_count_beats_audio_run)->recall_audio)->notation_loop,
+			&value);
   }else{
     play_count_beats_audio_run = NULL;
   }
 
-  pthread_mutex_unlock(audio_mutex);
-
+  g_list_free(start_play);
+  
   /* ags-copy-pattern */
   ags_recall_factory_create(audio,
 			    NULL, NULL,
@@ -617,13 +616,15 @@ ags_drum_map_recall(AgsMachine *machine)
 			     AGS_RECALL_FACTORY_RECALL),
 			    0);
 
-  pthread_mutex_lock(audio_mutex);
+  g_object_get(audio,
+	       "recall", &start_recall,
+	       NULL);
 
-  list = ags_recall_find_type(audio->recall,
-			      AGS_TYPE_COPY_PATTERN_AUDIO_RUN);
+  recall = ags_recall_find_type(start_recall,
+				AGS_TYPE_COPY_PATTERN_AUDIO_RUN);
 
-  if(list != NULL){
-    recall_copy_pattern_audio_run = AGS_COPY_PATTERN_AUDIO_RUN(list->data);
+  if(recall != NULL){
+    recall_copy_pattern_audio_run = AGS_COPY_PATTERN_AUDIO_RUN(recall->data);
 
     /* set dependency */
     g_object_set(G_OBJECT(recall_copy_pattern_audio_run),
@@ -632,8 +633,8 @@ ags_drum_map_recall(AgsMachine *machine)
 		 NULL);
   }
 
-  pthread_mutex_unlock(audio_mutex);
-
+  g_list_free(start_recall);
+  
   /* ags-record-midi */
   ags_recall_factory_create(audio,
 			    NULL, NULL,
@@ -642,16 +643,18 @@ ags_drum_map_recall(AgsMachine *machine)
 			    0, 0,
 			    (AGS_RECALL_FACTORY_INPUT |
 			     AGS_RECALL_FACTORY_ADD |
-			     AGS_RECALL_FACTORY_RECALL),
+			     AGS_RECALL_FACTORY_PLAY),
 			    0);
 
-  pthread_mutex_lock(audio_mutex);
+  g_object_get(audio,
+	       "play", &start_play,
+	       NULL);
 
-  list = ags_recall_find_type(audio->recall,
+  play = ags_recall_find_type(start_play,
 			      AGS_TYPE_RECORD_MIDI_AUDIO_RUN);
 
-  if(list != NULL){
-    recall_record_midi_audio_run = AGS_RECORD_MIDI_AUDIO_RUN(list->data);
+  if(play != NULL){
+    recall_record_midi_audio_run = AGS_RECORD_MIDI_AUDIO_RUN(play->data);
     
     /* set dependency */
     g_object_set(G_OBJECT(recall_record_midi_audio_run),
@@ -664,8 +667,8 @@ ags_drum_map_recall(AgsMachine *machine)
 		 NULL);
   }  
 
-  pthread_mutex_unlock(audio_mutex);
-
+  g_list_free(start_play);
+  
   /* ags-play-notation */
   ags_recall_factory_create(audio,
 			    NULL, NULL,
@@ -674,16 +677,18 @@ ags_drum_map_recall(AgsMachine *machine)
 			    0, 0,
 			    (AGS_RECALL_FACTORY_INPUT |
 			     AGS_RECALL_FACTORY_ADD |
-			     AGS_RECALL_FACTORY_RECALL),
+			     AGS_RECALL_FACTORY_PLAY),
 			    0);
 
-  pthread_mutex_lock(audio_mutex);
+  g_object_get(audio,
+	       "play", &start_play,
+	       NULL);
 
-  list = ags_recall_find_type(audio->recall,
+  play = ags_recall_find_type(start_play,
 			      AGS_TYPE_PLAY_NOTATION_AUDIO_RUN);
 
-  if(list != NULL){
-    recall_notation_audio_run = AGS_PLAY_NOTATION_AUDIO_RUN(list->data);
+  if(play != NULL){
+    recall_notation_audio_run = AGS_PLAY_NOTATION_AUDIO_RUN(play->data);
 
     /* set dependency */
     g_object_set(G_OBJECT(recall_notation_audio_run),
@@ -696,8 +701,8 @@ ags_drum_map_recall(AgsMachine *machine)
 		 NULL);
   }
 
-  pthread_mutex_unlock(audio_mutex);
-
+  g_list_free(start_play);
+  
   /* call parent */
   AGS_MACHINE_CLASS(ags_drum_parent_class)->map_recall(machine);
 }
@@ -926,11 +931,11 @@ ags_drum_resize_pads(AgsDrum *drum, GType gtype,
  * ags_drum_new:
  * @soundcard: the assigned soundcard.
  *
- * Creates an #AgsDrum
+ * Create a new instance of #AgsDrum
  *
- * Returns: a new #AgsDrum
+ * Returns: the new #AgsDrum
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsDrum*
 ags_drum_new(GObject *soundcard)
@@ -940,8 +945,8 @@ ags_drum_new(GObject *soundcard)
   drum = (AgsDrum *) g_object_new(AGS_TYPE_DRUM,
 				  NULL);
 
-  g_object_set(G_OBJECT(AGS_MACHINE(drum)->audio),
-	       "soundcard", soundcard,
+  g_object_set(AGS_MACHINE(drum)->audio,
+	       "output-soundcard", soundcard,
 	       NULL);
 
   return(drum);

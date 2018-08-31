@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -19,12 +19,13 @@
 
 #include <ags/audio/task/ags_remove_audio_signal.h>
 
+#include <ags/libags.h>
+
 #include <math.h>
 
 #include <ags/i18n.h>
 
 void ags_remove_audio_signal_class_init(AgsRemoveAudioSignalClass *remove_audio_signal);
-void ags_remove_audio_signal_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_remove_audio_signal_init(AgsRemoveAudioSignal *remove_audio_signal);
 void ags_remove_audio_signal_set_property(GObject *gobject,
 				       guint prop_id,
@@ -34,8 +35,6 @@ void ags_remove_audio_signal_get_property(GObject *gobject,
 				       guint prop_id,
 				       GValue *value,
 				       GParamSpec *param_spec);
-void ags_remove_audio_signal_connect(AgsConnectable *connectable);
-void ags_remove_audio_signal_disconnect(AgsConnectable *connectable);
 void ags_remove_audio_signal_dispose(GObject *gobject);
 void ags_remove_audio_signal_finalize(GObject *gobject);
 
@@ -52,7 +51,6 @@ void ags_remove_audio_signal_launch(AgsTask *task);
  */
 
 static gpointer ags_remove_audio_signal_parent_class = NULL;
-static AgsConnectableInterface *ags_remove_audio_signal_parent_connectable_interface;
 
 enum{
   PROP_0,
@@ -69,36 +67,24 @@ ags_remove_audio_signal_get_type()
     GType ags_type_remove_audio_signal;
 
     static const GTypeInfo ags_remove_audio_signal_info = {
-      sizeof (AgsRemoveAudioSignalClass),
+      sizeof(AgsRemoveAudioSignalClass),
       NULL, /* base_init */
       NULL, /* base_finalize */
       (GClassInitFunc) ags_remove_audio_signal_class_init,
       NULL, /* class_finalize */
       NULL, /* class_data */
-      sizeof (AgsRemoveAudioSignal),
+      sizeof(AgsRemoveAudioSignal),
       0,    /* n_preallocs */
       (GInstanceInitFunc) ags_remove_audio_signal_init,
-    };
-
-    static const GInterfaceInfo ags_connectable_interface_info = {
-      (GInterfaceInitFunc) ags_remove_audio_signal_connectable_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
     };
 
     ags_type_remove_audio_signal = g_type_register_static(AGS_TYPE_TASK,
 						  "AgsRemoveAudioSignal",
 						  &ags_remove_audio_signal_info,
 						  0);
-
-    g_type_add_interface_static(ags_type_remove_audio_signal,
-				AGS_TYPE_CONNECTABLE,
-				&ags_connectable_interface_info);
-
-    g_once_init_leave (&g_define_type_id__volatile, ags_type_remove_audio_signal);
   }
-
-  return g_define_type_id__volatile;
+  
+  return(ags_type_remove_audio_signal);
 }
 
 void
@@ -106,6 +92,7 @@ ags_remove_audio_signal_class_init(AgsRemoveAudioSignalClass *remove_audio_signa
 {
   GObjectClass *gobject;
   AgsTaskClass *task;
+
   GParamSpec *param_spec;
 
   ags_remove_audio_signal_parent_class = g_type_class_peek_parent(remove_audio_signal);
@@ -125,7 +112,7 @@ ags_remove_audio_signal_class_init(AgsRemoveAudioSignalClass *remove_audio_signa
    *
    * The assigned #AgsRecycling
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("recycling",
 				   i18n_pspec("recycling of remove audio signal"),
@@ -141,7 +128,7 @@ ags_remove_audio_signal_class_init(AgsRemoveAudioSignalClass *remove_audio_signa
    *
    * The assigned #AgsAudioSignal
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("audio-signal",
 				   i18n_pspec("audio signal of remove audio signal"),
@@ -156,15 +143,6 @@ ags_remove_audio_signal_class_init(AgsRemoveAudioSignalClass *remove_audio_signa
   task = (AgsTaskClass *) remove_audio_signal;
 
   task->launch = ags_remove_audio_signal_launch;
-}
-
-void
-ags_remove_audio_signal_connectable_interface_init(AgsConnectableInterface *connectable)
-{
-  ags_remove_audio_signal_parent_connectable_interface = g_type_interface_peek_parent(connectable);
-
-  connectable->connect = ags_remove_audio_signal_connect;
-  connectable->disconnect = ags_remove_audio_signal_disconnect;
 }
 
 void
@@ -261,22 +239,6 @@ ags_remove_audio_signal_get_property(GObject *gobject,
 }
 
 void
-ags_remove_audio_signal_connect(AgsConnectable *connectable)
-{
-  ags_remove_audio_signal_parent_connectable_interface->connect(connectable);
-
-  /* empty */
-}
-
-void
-ags_remove_audio_signal_disconnect(AgsConnectable *connectable)
-{
-  ags_remove_audio_signal_parent_connectable_interface->disconnect(connectable);
-
-  /* empty */
-}
-
-void
 ags_remove_audio_signal_dispose(GObject *gobject)
 {
   AgsRemoveAudioSignal *remove_audio_signal;
@@ -334,11 +296,11 @@ ags_remove_audio_signal_launch(AgsTask *task)
  * @recycling: the #AgsRecycling
  * @audio_signal: the #AgsAudioSignal to remove
  *
- * Creates an #AgsRemoveAudioSignal.
+ * Create a new instance of #AgsRemoveAudioSignal.
  *
- * Returns: an new #AgsRemoveAudioSignal.
+ * Returns: the new #AgsRemoveAudioSignal
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsRemoveAudioSignal*
 ags_remove_audio_signal_new(AgsRecycling *recycling,

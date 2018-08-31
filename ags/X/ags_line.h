@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -25,9 +25,9 @@
 
 #include <gtk/gtk.h>
 
-#include <ags/audio/ags_channel.h>
-
-#include <ags/widget/ags_expander.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
 
 #define AGS_TYPE_LINE                (ags_line_get_type())
 #define AGS_LINE(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_LINE, AgsLine))
@@ -36,12 +36,12 @@
 #define AGS_IS_LINE_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_LINE))
 #define AGS_LINE_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_LINE, AgsLineClass))
 
-#define AGS_LINE_DEFAULT_VERSION "0.7.0\0"
-#define AGS_LINE_DEFAULT_BUILD_ID "CEST 31-10-2015 19:49\0"
+#define AGS_LINE_DEFAULT_VERSION "0.7.0"
+#define AGS_LINE_DEFAULT_BUILD_ID "CEST 31-10-2015 19:49"
 
 #define AGS_LINE_COLUMNS_COUNT (2)
-#define AGS_LINE_SEPARATOR_FILENAME "ags-line-separator-filename\0"
-#define AGS_LINE_SEPARATOR_EFFECT "ags-line-separator-effect\0"
+#define AGS_LINE_SEPARATOR_FILENAME "ags-line-separator-filename"
+#define AGS_LINE_SEPARATOR_EFFECT "ags-line-separator-effect"
 
 typedef struct _AgsLine AgsLine;
 typedef struct _AgsLineClass AgsLineClass;
@@ -97,8 +97,8 @@ struct _AgsLineClass
 		     guint output_pad_start);
   GList* (*find_port)(AgsLine *line);
 
-  void (*done)(AgsLine *line,
-	       GObject *recall_id);
+  void (*stop)(AgsLine *line,
+	       GList *recall_id, gint sound_scope);
 };
 
 GType ags_line_get_type(void);
@@ -118,8 +118,8 @@ void ags_line_map_recall(AgsLine *line,
 			 guint output_pad_start);
 GList* ags_line_find_port(AgsLine *line);
 
-void ags_line_done(AgsLine *line,
-		   GObject *recall_id);
+void ags_line_stop(AgsLine *line,
+		   GList *recall_id, gint sound_scope);
 
 GList* ags_line_find_next_grouped(GList *line);
 

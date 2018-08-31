@@ -19,7 +19,7 @@
 
 #include <ags/X/editor/ags_position_automation_cursor_dialog_callbacks.h>
 
-#include <ags/object/ags_applicable.h>
+#include <ags/libags.h>
 
 void
 ags_position_automation_cursor_dialog_response_callback(GtkWidget *dialog, gint response,

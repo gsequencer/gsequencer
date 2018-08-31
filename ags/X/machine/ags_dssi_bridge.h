@@ -22,11 +22,13 @@
 
 #include <glib.h>
 #include <glib-object.h>
+
 #include <gtk/gtk.h>
 
 #include <dssi.h>
 
-#include <ags/audio/ags_channel.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
 
 #include <ags/X/ags_machine.h>
 
@@ -37,8 +39,8 @@
 #define AGS_IS_DSSI_BRIDGE_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE((class), AGS_TYPE_DSSI_BRIDGE))
 #define AGS_DSSI_BRIDGE_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_DSSI_BRIDGE, AgsDssiBridgeClass))
 
-#define AGS_DSSI_BRIDGE_DEFAULT_VERSION "0.7.4\0"
-#define AGS_DSSI_BRIDGE_DEFAULT_BUILD_ID "CEST 16-02-2016 23:36\0"
+#define AGS_DSSI_BRIDGE_DEFAULT_VERSION "0.7.4"
+#define AGS_DSSI_BRIDGE_DEFAULT_BUILD_ID "CEST 16-02-2016 23:36"
 
 typedef struct _AgsDssiBridge AgsDssiBridge;
 typedef struct _AgsDssiBridgeClass AgsDssiBridgeClass;

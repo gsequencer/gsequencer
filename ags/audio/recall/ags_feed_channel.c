@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -22,11 +22,7 @@
 #include <ags/libags.h>
 
 void ags_feed_channel_class_init(AgsFeedChannelClass *feed_channel);
-void ags_feed_channel_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_feed_channel_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_feed_channel_init(AgsFeedChannel *feed_channel);
-void ags_feed_channel_connect(AgsConnectable *connectable);
-void ags_feed_channel_disconnect(AgsConnectable *connectable);
 void ags_feed_channel_finalize(GObject *gobject);
 
 /**
@@ -41,7 +37,6 @@ void ags_feed_channel_finalize(GObject *gobject);
  */
 
 static gpointer ags_feed_channel_parent_class = NULL;
-static AgsConnectableInterface *ags_feed_channel_parent_connectable_interface;
 
 static const gchar *ags_feed_channel_plugin_name = "ags-feed";
 
@@ -65,50 +60,13 @@ ags_feed_channel_get_type()
       (GInstanceInitFunc) ags_feed_channel_init,
     };
 
-    static const GInterfaceInfo ags_connectable_interface_info = {
-      (GInterfaceInitFunc) ags_feed_channel_connectable_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-
-    static const GInterfaceInfo ags_plugin_interface_info = {
-      (GInterfaceInitFunc) ags_feed_channel_plugin_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-
     ags_type_feed_channel = g_type_register_static(AGS_TYPE_RECALL_CHANNEL,
 						   "AgsFeedChannel",
 						   &ags_feed_channel_info,
-						   0);
-    
-    g_type_add_interface_static(ags_type_feed_channel,
-				AGS_TYPE_CONNECTABLE,
-				&ags_connectable_interface_info);
-
-    g_type_add_interface_static(ags_type_feed_channel,
-				AGS_TYPE_PLUGIN,
-				&ags_plugin_interface_info);
-
-    g_once_init_leave (&g_define_type_id__volatile, ags_type_feed_channel);
+						   0);    
   }
 
   return g_define_type_id__volatile;
-}
-
-void
-ags_feed_channel_connectable_interface_init(AgsConnectableInterface *connectable)
-{
-  ags_feed_channel_parent_connectable_interface = g_type_interface_peek_parent(connectable);
-
-  connectable->connect = ags_feed_channel_connect;
-  connectable->disconnect = ags_feed_channel_disconnect;
-}
-
-void
-ags_feed_channel_plugin_interface_init(AgsPluginInterface *plugin)
-{
-  plugin->set_ports = NULL;
 }
 
 void
@@ -116,7 +74,6 @@ ags_feed_channel_class_init(AgsFeedChannelClass *feed_channel)
 {
   GObjectClass *gobject;
   AgsRecallClass *recall;
-  GParamSpec *param_spec;
 
   ags_feed_channel_parent_class = g_type_class_peek_parent(feed_channel);
 
@@ -124,13 +81,14 @@ ags_feed_channel_class_init(AgsFeedChannelClass *feed_channel)
   gobject = (GObjectClass *) feed_channel;
 
   gobject->finalize = ags_feed_channel_finalize;
+
+  /* AgsRecallClass */
+  recall = (AgsRecallClass *) feed_channel;
 }
 
 void
 ags_feed_channel_init(AgsFeedChannel *feed_channel)
 {
-  GList *port;
-
   AGS_RECALL(feed_channel)->name = "ags-feed";
   AGS_RECALL(feed_channel)->version = AGS_RECALL_DEFAULT_VERSION;
   AGS_RECALL(feed_channel)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;
@@ -138,47 +96,29 @@ ags_feed_channel_init(AgsFeedChannel *feed_channel)
 }
 
 void
-ags_feed_channel_connect(AgsConnectable *connectable)
-{
-  ags_feed_channel_parent_connectable_interface->connect(connectable);
-
-  /* empty */
-}
-
-void
-ags_feed_channel_disconnect(AgsConnectable *connectable)
-{
-  ags_feed_channel_parent_connectable_interface->disconnect(connectable);
-
-  /* empty */
-}
-
-void
 ags_feed_channel_finalize(GObject *gobject)
 {
-  AgsFeedChannel *feed_channel;
-
-  feed_channel = AGS_FEED_CHANNEL(gobject);
-
   /* call parent */
   G_OBJECT_CLASS(ags_feed_channel_parent_class)->finalize(gobject);
 }
 
 /**
  * ags_feed_channel_new:
+ * @source: the #AgsChannel
  *
- * Creates an #AgsFeedChannel
+ * Create a new instance of #AgsFeedChannel
  *
- * Returns: a new #AgsFeedChannel
+ * Returns: the new #AgsFeedChannel
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsFeedChannel*
-ags_feed_channel_new()
+ags_feed_channel_new(AgsChannel *source)
 {
   AgsFeedChannel *feed_channel;
 
   feed_channel = (AgsFeedChannel *) g_object_new(AGS_TYPE_FEED_CHANNEL,
+						 "source", source,
 						 NULL);
 
   return(feed_channel);

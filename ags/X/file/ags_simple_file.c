@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -44,6 +44,8 @@
 
 #include <ags/X/machine/ags_panel.h>
 #include <ags/X/machine/ags_mixer.h>
+#include <ags/X/machine/ags_equalizer10.h>
+#include <ags/X/machine/ags_spectrometer.h>
 #include <ags/X/machine/ags_drum.h>
 #include <ags/X/machine/ags_matrix.h>
 #include <ags/X/machine/ags_synth.h>
@@ -51,6 +53,7 @@
 #include <ags/X/machine/ags_syncsynth.h>
 #include <ags/X/machine/ags_oscillator.h>
 #include <ags/X/machine/ags_ffplayer.h>
+#include <ags/X/machine/ags_audiorec.h>
 #include <ags/X/machine/ags_ladspa_bridge.h>
 #include <ags/X/machine/ags_dssi_bridge.h>
 #include <ags/X/machine/ags_lv2_bridge.h>
@@ -102,6 +105,8 @@ void ags_simple_file_real_read_start(AgsSimpleFile *simple_file);
 void ags_simple_file_read_config(AgsSimpleFile *simple_file, xmlNode *node, AgsConfig **config);
 void ags_simple_file_read_property_list(AgsSimpleFile *simple_file, xmlNode *node, GList **property);
 void ags_simple_file_read_property(AgsSimpleFile *simple_file, xmlNode *node, GParameter **property);
+void ags_simple_file_read_strv(AgsSimpleFile *simple_file, xmlNode *node, gchar ***strv);
+void ags_simple_file_read_value(AgsSimpleFile *simple_file, xmlNode *node, GValue **value);
 void ags_simple_file_read_window(AgsSimpleFile *simple_file, xmlNode *node, AgsWindow **window);
 void ags_simple_file_read_window_launch(AgsFileLaunch *file_launch,
 					AgsWindow *window);
@@ -155,6 +160,8 @@ xmlNode* ags_simple_file_write_config(AgsSimpleFile *simple_file, xmlNode *paren
 xmlNode* ags_simple_file_write_window(AgsSimpleFile *simple_file, xmlNode *parent, AgsWindow *window);
 xmlNode* ags_simple_file_write_property_list(AgsSimpleFile *simple_file, xmlNode *parent, GList *property);
 xmlNode* ags_simple_file_write_property(AgsSimpleFile *simple_file, xmlNode *parent, GParameter *property);
+xmlNode* ags_simple_file_write_strv(AgsSimpleFile *simple_file, xmlNode *parent, gchar **strv);
+xmlNode* ags_simple_file_write_value(AgsSimpleFile *simple_file, xmlNode *parent, GValue *value);
 xmlNode* ags_simple_file_write_window(AgsSimpleFile *simple_file, xmlNode *parent, AgsWindow *window);
 xmlNode* ags_simple_file_write_machine_list(AgsSimpleFile *simple_file, xmlNode *parent, GList *machine);
 xmlNode* ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMachine *machine);
@@ -411,7 +418,7 @@ ags_simple_file_class_init(AgsSimpleFileClass *simple_file)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsSimpleFileClass, open_from_data),
 		 NULL, NULL,
-		 g_cclosure_user_marshal_VOID__STRING_UINT_POINTER,
+		 ags_cclosure_marshal_VOID__STRING_UINT_POINTER,
 		 G_TYPE_NONE, 3,
 		 G_TYPE_STRING,
 		 G_TYPE_UINT,
@@ -433,7 +440,7 @@ ags_simple_file_class_init(AgsSimpleFileClass *simple_file)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsSimpleFileClass, rw_open),
 		 NULL, NULL,
-		 g_cclosure_user_marshal_VOID__BOOLEAN_POINTER,
+		 ags_cclosure_marshal_VOID__BOOLEAN_POINTER,
 		 G_TYPE_NONE, 2,
 		 G_TYPE_BOOLEAN,
 		 G_TYPE_POINTER);
@@ -1420,6 +1427,133 @@ ags_simple_file_read_property(AgsSimpleFile *simple_file, xmlNode *node, GParame
 }
 
 void
+ags_simple_file_read_strv(AgsSimpleFile *simple_file, xmlNode *node, gchar ***strv)
+{
+  xmlNode *child;
+  
+  gchar **current;
+
+  guint i;
+  
+  current = NULL;
+  
+  child = node->children;
+
+  i = 0;
+  
+  while(child != NULL){
+    if(child->type == XML_ELEMENT_NODE){
+      if(!xmlStrncmp(child->name,
+		     (xmlChar *) "ags-sf-str",
+		     11)){
+	if(current == NULL){
+	  current = malloc(2 * sizeof(gchar *));
+	}else{
+	  current = realloc(current,
+			    (i + 2) * sizeof(gchar *));
+	}
+
+	current[i] = xmlNodeGetContent(child);
+	
+	i++;
+      }
+    }
+
+    child = child->next;
+  }
+
+  /* set return value */
+  strv[0] = current;
+}
+
+void
+ags_simple_file_read_value(AgsSimpleFile *simple_file, xmlNode *node, GValue **value)
+{
+  GValue *current;
+
+  gchar *str, *type;
+  
+  current = value[0];
+  
+  str = xmlGetProp(node,
+		   "value");
+
+  type = xmlGetProp(node,
+		    "type");
+
+  if(str != NULL){
+    if(!g_strcmp0(type,
+		  "gboolean")){
+      g_value_init(current,
+		   G_TYPE_BOOLEAN);
+      
+      if(!g_strcmp0(str,
+		    "false")){
+	g_value_set_boolean(current,
+			    FALSE);
+      }else{
+	g_value_set_boolean(current,
+			    TRUE);
+      }
+    }else if(!g_strcmp0(type,
+			"guint")){
+      guint val;
+
+      g_value_init(current,
+		   G_TYPE_UINT);
+      
+      val = g_ascii_strtoull(str,
+			     NULL,
+			     10);
+
+      g_value_set_uint(current,
+		       val);
+    }else if(!g_strcmp0(type,
+			"gint")){
+      gint val;
+
+      g_value_init(current,
+		   G_TYPE_UINT);
+      
+      val = g_ascii_strtoll(str,
+			    NULL,
+			    10);
+
+      g_value_set_int(current,
+		      val);
+    }else if(!g_strcmp0(type,
+			"gdouble")){
+      gdouble val;
+      
+      g_value_init(current,
+		   G_TYPE_DOUBLE);
+
+      val = g_ascii_strtod(str,
+			   NULL);
+
+      g_value_set_double(current,
+			 val);
+    }else if(!g_strcmp0(type,
+			"AgsComplex")){
+      AgsComplex z;
+      
+      g_value_init(current,
+		   AGS_TYPE_COMPLEX);
+
+      sscanf(str, "%f %f", &(z[0]), &(z[1]));
+      g_value_set_boxed(current,
+			&z);
+    }else{
+      g_value_init(current,
+		   G_TYPE_STRING);
+
+      g_value_set_string(current,
+			 str);
+    }
+  }
+}
+
+void
 ags_simple_file_read_window(AgsSimpleFile *simple_file, xmlNode *node, AgsWindow **window)
 {
   AgsWindow *gobject;
@@ -1758,7 +1892,7 @@ ags_simple_file_read_machine(AgsSimpleFile *simple_file, xmlNode *node, AgsMachi
   }
   
   g_object_set(gobject->audio,
-	       "soundcard", soundcard,
+	       "output-soundcard", soundcard,
 	       NULL);
 
   /* machine specific */
@@ -1818,12 +1952,13 @@ ags_simple_file_read_machine(AgsSimpleFile *simple_file, xmlNode *node, AgsMachi
     if(lv2_plugin != NULL &&
        (AGS_LV2_PLUGIN_IS_SYNTHESIZER & (lv2_plugin->flags)) != 0){
       
-      gobject->audio->flags |= (AGS_AUDIO_OUTPUT_HAS_RECYCLING |
-				AGS_AUDIO_INPUT_HAS_RECYCLING |
-				AGS_AUDIO_SYNC |
-				AGS_AUDIO_ASYNC |
-				AGS_AUDIO_HAS_NOTATION | 
-				AGS_AUDIO_NOTATION_DEFAULT);
+      ags_audio_set_flags(gobject->audio, (AGS_AUDIO_OUTPUT_HAS_RECYCLING |
+					   AGS_AUDIO_INPUT_HAS_RECYCLING |
+					   AGS_AUDIO_SYNC |
+					   AGS_AUDIO_ASYNC));
+      ags_audio_set_ability_flags(gobject->audio, (AGS_SOUND_ABILITY_NOTATION));
+      ags_audio_set_behaviour_flags(gobject->audio, (AGS_SOUND_BEHAVIOUR_DEFAULTS_TO_INPUT));
+      
       gobject->flags |= (AGS_MACHINE_IS_SYNTHESIZER |
 			 AGS_MACHINE_REVERSE_NOTATION);
 
@@ -1855,12 +1990,12 @@ ags_simple_file_read_machine(AgsSimpleFile *simple_file, xmlNode *node, AgsMachi
     if(lv2_plugin != NULL &&
        (AGS_LV2_PLUGIN_IS_SYNTHESIZER & (lv2_plugin->flags)) != 0){
       
-      gobject->audio->flags |= (AGS_AUDIO_OUTPUT_HAS_RECYCLING |
-				AGS_AUDIO_INPUT_HAS_RECYCLING |
-				AGS_AUDIO_SYNC |
-				AGS_AUDIO_ASYNC |
-				AGS_AUDIO_HAS_NOTATION | 
-				AGS_AUDIO_NOTATION_DEFAULT);
+      ags_audio_set_flags(gobject->audio, (AGS_AUDIO_OUTPUT_HAS_RECYCLING |
+					   AGS_AUDIO_INPUT_HAS_RECYCLING |
+					   AGS_AUDIO_SYNC |
+					   AGS_AUDIO_ASYNC));
+      ags_audio_set_ability_flags(gobject->audio, (AGS_SOUND_ABILITY_NOTATION));
+      ags_audio_set_behaviour_flags(gobject->audio, (AGS_SOUND_BEHAVIOUR_DEFAULTS_TO_INPUT));
       gobject->flags |= (AGS_MACHINE_IS_SYNTHESIZER |
 			 AGS_MACHINE_REVERSE_NOTATION);
 
@@ -1897,7 +2032,7 @@ ags_simple_file_read_machine(AgsSimpleFile *simple_file, xmlNode *node, AgsMachi
 		   "reverse-mapping");
   if(!g_strcmp0(str,
 		"true")){
-    gobject->audio->flags |= AGS_AUDIO_REVERSE_MAPPING;
+    ags_audio_set_behaviour_flags(gobject->audio, (AGS_SOUND_BEHAVIOUR_REVERSE_MAPPING));
   }
   
   /* connect AgsMachine */
@@ -1935,10 +2070,10 @@ ags_simple_file_read_machine(AgsSimpleFile *simple_file, xmlNode *node, AgsMachi
     input_pads = g_ascii_strtoull(str,
 				  NULL,
 				  10);
+
     ags_audio_set_pads(gobject->audio,
 		       AGS_TYPE_INPUT,
-		       input_pads);
-
+		       input_pads, 0);
     wait_input = TRUE;
   }
 
@@ -1949,10 +2084,10 @@ ags_simple_file_read_machine(AgsSimpleFile *simple_file, xmlNode *node, AgsMachi
     output_pads = g_ascii_strtoull(str,
 				   NULL,
 				   10);
+    
     ags_audio_set_pads(gobject->audio,
 		       AGS_TYPE_OUTPUT,
-		       output_pads);
-
+		       output_pads, 0);
     wait_output = TRUE;
   }
 
@@ -2274,13 +2409,13 @@ ags_simple_file_read_machine(AgsSimpleFile *simple_file, xmlNode *node, AgsMachi
   gtk_widget_show_all((GtkWidget *) gobject);
 
   /* add audio to soundcard */
-  list = ags_soundcard_get_audio(AGS_SOUNDCARD(soundcard));
+  list = ags_sound_provider_get_audio(AGS_SOUND_PROVIDER(simple_file->application_context));
   g_object_ref(G_OBJECT(gobject->audio));
   
   list = g_list_prepend(list,
 			gobject->audio);
-  ags_soundcard_set_audio(AGS_SOUNDCARD(soundcard),
-			  list);
+  ags_sound_provider_set_audio(AGS_SOUND_PROVIDER(simple_file->application_context),
+			       list);
   
   /* children */
   child = node->children;
@@ -2342,10 +2477,12 @@ ags_simple_file_read_machine_launch(AgsFileLaunch *file_launch,
 
   xmlChar *str;
 
+  auto void ags_simple_file_read_equalizer10_launch(AgsSimpleFile *simpleFile, xmlNode *node, AgsEqualizer10 *equalizer10);
   auto void ags_simple_file_read_drum_launch(AgsSimpleFile *simpleFile, xmlNode *node, AgsDrum *drum);
   auto void ags_simple_file_read_matrix_launch(AgsSimpleFile *simpleFile, xmlNode *node, AgsMatrix *matrix);
   auto void ags_simple_file_read_syncsynth_launch(AgsSimpleFile *simpleFile, xmlNode *node, AgsSyncsynth *syncsynth);
   auto void ags_simple_file_read_ffplayer_launch(AgsSimpleFile *simpleFile, xmlNode *node, AgsFFPlayer *ffplayer);
+  auto void ags_simple_file_read_audiorec_launch(AgsSimpleFile *simpleFile, xmlNode *node, AgsAudiorec *audiorec);
   auto void ags_simple_file_read_dssi_bridge_launch(AgsSimpleFile *simpleFile, xmlNode *node, AgsDssiBridge *dssi_bridge);
   auto void ags_simple_file_read_live_dssi_bridge_launch(AgsSimpleFile *simpleFile, xmlNode *node, AgsLiveDssiBridge *live_dssi_bridge);
   auto void ags_simple_file_read_lv2_bridge_launch(AgsSimpleFile *simpleFile, xmlNode *node, AgsLv2Bridge *lv2_bridge);
@@ -2354,6 +2491,119 @@ ags_simple_file_read_machine_launch(AgsFileLaunch *file_launch,
   auto void ags_simple_file_read_effect_bridge_launch(AgsSimpleFile *simple_file, xmlNode *node, AgsEffectBridge *effect_bridge);
   auto void ags_simple_file_read_effect_bulk_launch(AgsSimpleFile *simple_file, xmlNode *node, AgsEffectBulk *effect_bulk);
   auto void ags_simple_file_read_bulk_member_launch(AgsSimpleFile *simple_file, xmlNode *node, AgsBulkMember *bulk_member);
+
+  void ags_simple_file_read_equalizer10_launch(AgsSimpleFile *simpleFile, xmlNode *node, AgsEqualizer10 *equalizer10)
+  {
+    xmlNode *child;
+
+    child = node->children;
+
+    while(child != NULL){
+      if(child->type == XML_ELEMENT_NODE){
+	if(!xmlStrncmp(child->name,
+		       "ags-sf-equalizer10",
+		       19)){
+	  xmlNode *control_node;
+
+	  control_node = child->children;
+
+	  while(control_node != NULL){
+	    if(control_node->type == XML_ELEMENT_NODE){
+	      if(!xmlStrncmp(control_node->name,
+			     "ags-sf-control",
+			     15)){
+		xmlChar *specifier;
+		xmlChar *value;
+		
+		gdouble val;
+		
+		specifier = xmlGetProp(control_node,
+				       "specifier");
+
+		value = xmlGetProp(control_node,
+				   "value");
+
+		val = 0.0;
+		
+		if(value != NULL){
+		  val = g_strtod(value,
+				 NULL);
+
+		  if(!xmlStrncmp(specifier,
+				 "28 [Hz]",
+				 8)){
+		    gtk_range_set_value(equalizer10->peak_28hz,
+					val);
+		  }else if(!xmlStrncmp(specifier,
+				       "56 [Hz]",
+				       8)){
+		    gtk_range_set_value(equalizer10->peak_56hz,
+					val);
+		  }else if(!xmlStrncmp(specifier,
+				       "112 [Hz]",
+				       9)){
+		    gtk_range_set_value(equalizer10->peak_112hz,
+					val);
+		  }else if(!xmlStrncmp(specifier,
+				       "224 [Hz]",
+				       9)){
+		    gtk_range_set_value(equalizer10->peak_224hz,
+					val);
+		  }else if(!xmlStrncmp(specifier,
+				       "448 [Hz]",
+				       9)){
+		    gtk_range_set_value(equalizer10->peak_448hz,
+					val);
+		  }else if(!xmlStrncmp(specifier,
+				       "896 [Hz]",
+				       9)){
+		    gtk_range_set_value(equalizer10->peak_896hz,
+					val);
+		  }else if(!xmlStrncmp(specifier,
+				       "1792 [Hz]",
+				       10)){
+		    gtk_range_set_value(equalizer10->peak_1792hz,
+					val);
+		  }else if(!xmlStrncmp(specifier,
+				       "1792 [Hz]",
+				       10)){
+		    gtk_range_set_value(equalizer10->peak_1792hz,
+					val);
+		  }else if(!xmlStrncmp(specifier,
+				       "3584 [Hz]",
+				       10)){
+		    gtk_range_set_value(equalizer10->peak_3584hz,
+					val);
+		  }else if(!xmlStrncmp(specifier,
+				       "7168 [Hz]",
+				       10)){
+		    gtk_range_set_value(equalizer10->peak_7168hz,
+					val);
+		  }else if(!xmlStrncmp(specifier,
+				       "14336 [Hz]",
+				       11)){
+		    gtk_range_set_value(equalizer10->peak_14336hz,
+					val);
+		  }else if(!xmlStrncmp(specifier,
+				       "pressure",
+				       9)){
+		    gtk_range_set_value(equalizer10->pressure,
+					val);
+		  }
+		}	
+	      }
+	    }
+	    
+	    control_node = control_node->next;
+	  }
+	  
+	  break;
+	}
+      }
+
+      child = child->next;
+    }
+  }
   
   void ags_simple_file_read_drum_launch(AgsSimpleFile *simpleFile, xmlNode *node, AgsDrum *drum){
     xmlChar *str;
@@ -2557,15 +2807,10 @@ ags_simple_file_read_machine_launch(AgsFileLaunch *file_launch,
     ags_ffplayer_open_filename(ffplayer,
 			       str);
 
-    if(ffplayer->ipatch == NULL ||
-       ffplayer->ipatch->base == NULL){
+    if(ffplayer->audio_container == NULL){
       return;
     }
 
-#ifdef AGS_WITH_LIBINSTPATCH
-    while(g_static_rec_mutex_unlock_full(((IpatchItem *) (ffplayer->ipatch->base))->mutex) != 0);    
-#endif
-    
     /* preset */
     model = gtk_combo_box_get_model(GTK_COMBO_BOX(ffplayer->preset));
 
@@ -2587,10 +2832,6 @@ ags_simple_file_read_machine_launch(AgsFileLaunch *file_launch,
       }while(gtk_tree_model_iter_next(model,
 				      &iter));
     }
-
-#ifdef AGS_WITH_LIBINSTPATCH
-    while(g_static_rec_mutex_unlock_full(((IpatchItem *) (ffplayer->ipatch->base))->mutex) != 0);
-#endif
     
     /* instrument */
     model = gtk_combo_box_get_model(GTK_COMBO_BOX(ffplayer->instrument));
@@ -2613,12 +2854,20 @@ ags_simple_file_read_machine_launch(AgsFileLaunch *file_launch,
       }while(gtk_tree_model_iter_next(model,
 				      &iter));
     }
-
-#ifdef AGS_WITH_LIBINSTPATCH
-    while(g_static_rec_mutex_unlock_full(((IpatchItem *) (ffplayer->ipatch->base))->mutex) != 0);
-#endif
   }
 
+  void ags_simple_file_read_audiorec_launch(AgsSimpleFile *simpleFile, xmlNode *node, AgsAudiorec *audiorec)
+  {
+    xmlChar *str;
+    gchar *value;
+
+    str = xmlGetProp(node,
+		     "filename");
+    
+    ags_audiorec_open_filename(audiorec,
+			       str);
+  }
+  
   void ags_simple_file_read_dssi_bridge_launch(AgsSimpleFile *simpleFile, xmlNode *node, AgsDssiBridge *dssi_bridge){
     GtkTreeModel *model;
     GtkTreeIter iter;
@@ -2909,7 +3158,9 @@ ags_simple_file_read_machine_launch(AgsFileLaunch *file_launch,
     }			  
   }  
   
-  if(AGS_IS_DRUM(machine)){
+  if(AGS_IS_EQUALIZER10(machine)){
+    ags_simple_file_read_equalizer10_launch((AgsSimpleFile *) file_launch->file, file_launch->node, (AgsEqualizer10 *) machine);
+  }else if(AGS_IS_DRUM(machine)){
     ags_simple_file_read_drum_launch((AgsSimpleFile *) file_launch->file, file_launch->node, (AgsDrum *) machine);
   }else if(AGS_IS_MATRIX(machine)){
     ags_simple_file_read_matrix_launch((AgsSimpleFile *) file_launch->file, file_launch->node, (AgsMatrix *) machine);
@@ -2919,6 +3170,8 @@ ags_simple_file_read_machine_launch(AgsFileLaunch *file_launch,
     ags_simple_file_read_syncsynth_launch((AgsSimpleFile *) file_launch->file, file_launch->node, (AgsSyncsynth *) machine);
   }else if(AGS_IS_FFPLAYER(machine)){
     ags_simple_file_read_ffplayer_launch((AgsSimpleFile *) file_launch->file, file_launch->node, (AgsFFPlayer *) machine);
+  }else if(AGS_IS_AUDIOREC(machine)){
+    ags_simple_file_read_audiorec_launch((AgsSimpleFile *) file_launch->file, file_launch->node, (AgsAudiorec *) machine);
   }else if(AGS_IS_DSSI_BRIDGE(machine)){
     ags_simple_file_read_dssi_bridge_launch((AgsSimpleFile *) file_launch->file, file_launch->node, (AgsDssiBridge *) machine);
   }else if(AGS_IS_DSSI_BRIDGE(machine)){
@@ -3439,11 +3692,11 @@ ags_simple_file_read_line(AgsSimpleFile *simple_file, xmlNode *node, AgsLine **l
 
   if(AGS_IS_LINE(gobject)){
     g_object_set(AGS_LINE(gobject)->channel,
-		 "soundcard", soundcard,
+		 "output-soundcard", soundcard,
 		 NULL);
   }else if(AGS_IS_CHANNEL(gobject)){
     g_object_set(AGS_CHANNEL(gobject),
-		 "soundcard", soundcard,
+		 "output-soundcard", soundcard,
 		 NULL);
   }
     
@@ -3495,13 +3748,19 @@ ags_simple_file_read_line(AgsSimpleFile *simple_file, xmlNode *node, AgsLine **l
 						 effect);
 
 		  if(AGS_IS_LINE(gobject)){
-		    ags_channel_add_effect(AGS_LINE(gobject)->channel,
-					   filename,
-					   effect);
+		    GList *recall_list;
+		    
+		    recall_list = ags_channel_add_effect(AGS_LINE(gobject)->channel,
+							 filename,
+							 effect);
+		    g_list_free(recall_list);
 		  }else if(AGS_IS_CHANNEL(gobject)){
-		    ags_channel_add_effect((AgsChannel *) gobject,
-					   filename,
-					   effect);
+		    GList *recall_list;
+
+		    recall_list = ags_channel_add_effect((AgsChannel *) gobject,
+							 filename,
+							 effect);
+		    g_list_free(recall_list);
 		  }
 		}
 	      }
@@ -3703,8 +3962,8 @@ ags_simple_file_read_line_launch(AgsFileLaunch *file_launch,
 
     /* read audio signal */
     audio_file = ags_audio_file_new(filename,
-				    machine->audio->soundcard,
-				    file_channel, 1);
+				    machine->audio->output_soundcard,
+				    file_channel);
 
     ags_audio_file_open(audio_file);
     ags_audio_file_read_audio_signal(audio_file);
@@ -3864,8 +4123,8 @@ ags_simple_file_read_channel_line_launch(AgsFileLaunch *file_launch,
 
     /* read audio signal */
     audio_file = ags_audio_file_new(filename,
-				    channel->soundcard,
-				    file_channel, 1);
+				    channel->output_soundcard,
+				    file_channel);
 
     ags_audio_file_open(audio_file);
     ags_audio_file_read_audio_signal(audio_file);
@@ -5498,6 +5757,8 @@ ags_simple_file_read_preset(AgsSimpleFile *simple_file, xmlNode *node, AgsPreset
   xmlNode *child;
   
   xmlChar *str;
+
+  guint i;	
   
   file_id_ref = (AgsFileIdRef *) ags_simple_file_find_id_ref_by_node(simple_file,
 								     node->parent->parent);
@@ -5605,20 +5866,31 @@ ags_simple_file_read_preset(AgsSimpleFile *simple_file, xmlNode *node, AgsPreset
 
   /* children */
   child = node->children;
+
+  i = 0;
   
   while(child != NULL){
     if(child->type == XML_ELEMENT_NODE){
       if(!xmlStrncmp(child->name,
-		     "ags-sf-property",
-		     15)){
-	GParameter *parameter;
+		     "ags-sf-strv",
+		     12)){
+	ags_simple_file_read_strv(simple_file, child, &(gobject->parameter_name));
+      }else if(!xmlStrncmp(child->name,
+			   "ags-sf-value",
+			   13)){
+	if(gobject->value == NULL){
+	  gobject->value = g_new0(GValue,
+				  1);
+	}else{
+	  gobject->value = g_renew(GValue,
+				   gobject->value,
+				   i + 1);
+	  memset(&(gobject->value[i]), 0, sizeof(GValue));
+	}
+	
+	ags_simple_file_read_value(simple_file, child, &(gobject->value[i]));
 
-	parameter = NULL;
-
-	ags_simple_file_read_property(simple_file, child, &parameter);
-
-	ags_preset_add_parameter(gobject,
-				 parameter->name, &(parameter->value));
+	i++;
       }
     }
 
@@ -5761,6 +6033,108 @@ ags_simple_file_write_property(AgsSimpleFile *simple_file, xmlNode *parent, GPar
   xmlNewProp(node,
 	     "name",
 	     property->name);
+
+  xmlNewProp(node,
+	     "value",
+	     val);
+  
+  /* add to parent */
+  xmlAddChild(parent,
+	      node);
+
+  return(node);
+}
+
+xmlNode*
+ags_simple_file_write_strv(AgsSimpleFile *simple_file, xmlNode *parent, gchar **strv)
+{
+  xmlNode *node;
+  xmlNode *child;
+  
+  gchar **current;
+
+  if(strv == NULL){
+    return(NULL);
+  }
+  
+  node = xmlNewNode(NULL,
+		    "ags-sf-strv");
+  
+  /* add to parent */
+  xmlAddChild(parent,
+	      node);
+
+  current = strv;
+
+  while(*current != NULL){
+    child = xmlNewNode(NULL,
+		      "ags-sf-str");
+    
+    xmlNodeAddContent(child,
+		      *current);
+    
+    /* add to parent */
+    xmlAddChild(node,
+		child);
+
+    current++;
+  }
+
+  return(node);
+}
+
+xmlNode*
+ags_simple_file_write_value(AgsSimpleFile *simple_file, xmlNode *parent, GValue *value)
+{
+  xmlNode *node;
+  
+  xmlChar *type_name;
+  xmlChar *val;
+  
+  if(G_VALUE_HOLDS_BOOLEAN(value)){
+    type_name = g_type_name(G_TYPE_BOOLEAN);
+
+    if(g_value_get_boolean(value)){
+      val = g_strdup("true");
+    }else{
+      val = g_strdup("false");
+    }
+  }else if(G_VALUE_HOLDS_UINT(value)){
+    type_name = g_type_name(G_TYPE_UINT);
+
+    val = g_strdup_printf("%u",
+			  g_value_get_uint(value));
+  }else if(G_VALUE_HOLDS_INT(value)){
+    type_name = g_type_name(G_TYPE_INT);
+
+    val = g_strdup_printf("%d",
+			  g_value_get_int(value));
+  }else if(G_VALUE_HOLDS_DOUBLE(value)){
+    type_name = g_type_name(G_TYPE_DOUBLE);
+
+    val = g_strdup_printf("%f",
+			  g_value_get_double(value));
+  }else if(G_VALUE_HOLDS(value,
+			 AGS_TYPE_COMPLEX)){
+    AgsComplex *z;
+    
+    type_name = g_type_name(AGS_TYPE_COMPLEX);
+
+    z = g_value_get_boxed(value);
+    val = g_strdup_printf("%f %f",
+			  z[0][0], z[0][1]);
+  }else{
+    g_warning("ags_simple_file_write_property() - unsupported type");
+    
+    return(NULL);
+  }
+
+  node = xmlNewNode(NULL,
+		    "ags-sf-value");
+  
+  xmlNewProp(node,
+	     "type",
+	     type_name);
 
   xmlNewProp(node,
 	     "value",
@@ -5929,10 +6303,10 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
 
 	/* device */
 	if(channel != NULL &&
-	   channel->soundcard != NULL){
+	   channel->output_soundcard != NULL){
 	  gchar *device;
 
-	  device = ags_soundcard_get_device(AGS_SOUNDCARD(channel->soundcard));
+	  device = ags_soundcard_get_device(AGS_SOUNDCARD(channel->output_soundcard));
     
 	  if(device != NULL){
 	    xmlNewProp(line,
@@ -6180,10 +6554,10 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
   
   /* device */
   if(machine->audio != NULL &&
-     machine->audio->soundcard != NULL){
+     machine->audio->output_soundcard != NULL){
     gchar *device;
 
-    device = ags_soundcard_get_device(AGS_SOUNDCARD(machine->audio->soundcard));
+    device = ags_soundcard_get_device(AGS_SOUNDCARD(machine->audio->output_soundcard));
     
     if(device != NULL){
       xmlNewProp(node,
@@ -6201,7 +6575,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
 	     (xmlChar *) "bank_1",
 	     (xmlChar *) g_strdup_printf("%d", machine->bank_1));
   
-  if((AGS_AUDIO_REVERSE_MAPPING & (machine->audio->flags)) != 0){
+  if((AGS_SOUND_BEHAVIOUR_REVERSE_MAPPING & (machine->audio->behaviour_flags)) != 0){
     xmlNewProp(node,
 	       "reverse-mapping",
 	       "true");
@@ -6240,7 +6614,217 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
   }
   
   /* machine specific */
-  if(AGS_IS_DRUM(machine)){
+  if(AGS_IS_EQUALIZER10(machine)){
+    AgsEqualizer10 *equalizer10;
+
+    xmlNode *child;
+    xmlNode *control_node;
+    
+    equalizer10 = (AgsEqualizer10 *) machine;
+
+    child = xmlNewNode(NULL,
+		       "ags-sf-equalizer10");
+    xmlAddChild(node,
+		child);
+    
+    /* peak 28hz */
+    control_node = xmlNewNode(NULL,
+			      "ags-sf-control");
+    xmlAddChild(child,
+		control_node);
+    
+    xmlNewProp(control_node,
+	       "specifier",
+	       "28 [Hz]");
+    
+    xmlNewProp(control_node,
+	       "control-type",
+	       "GtkScale");
+    
+    xmlNewProp(control_node,
+	       "value",
+	       g_strdup_printf("%f", gtk_range_get_value(equalizer10->peak_28hz)));
+
+    /* peak 56hz */
+    control_node = xmlNewNode(NULL,
+			      "ags-sf-control");
+    xmlAddChild(child,
+		control_node);
+
+    xmlNewProp(control_node,
+	       "specifier",
+	       "56 [Hz]");
+    
+    xmlNewProp(control_node,
+	       "control-type",
+	       "GtkScale");
+    
+    xmlNewProp(control_node,
+	       "value",
+	       g_strdup_printf("%f", gtk_range_get_value(equalizer10->peak_56hz)));
+
+    /* peak 112hz */
+    control_node = xmlNewNode(NULL,
+			      "ags-sf-control");
+    xmlAddChild(child,
+		control_node);
+
+    xmlNewProp(control_node,
+	       "specifier",
+	       "112 [Hz]");
+    
+    xmlNewProp(control_node,
+	       "control-type",
+	       "GtkScale");
+    
+    xmlNewProp(control_node,
+	       "value",
+	       g_strdup_printf("%f", gtk_range_get_value(equalizer10->peak_112hz)));
+
+    /* peak 224hz */
+    control_node = xmlNewNode(NULL,
+			      "ags-sf-control");
+    xmlAddChild(child,
+		control_node);
+
+    xmlNewProp(control_node,
+	       "specifier",
+	       "224 [Hz]");
+    
+    xmlNewProp(control_node,
+	       "control-type",
+	       "GtkScale");
+    
+    xmlNewProp(control_node,
+	       "value",
+	       g_strdup_printf("%f", gtk_range_get_value(equalizer10->peak_224hz)));
+
+    /* peak 448hz */
+    control_node = xmlNewNode(NULL,
+			      "ags-sf-control");
+    xmlAddChild(child,
+		control_node);
+
+    xmlNewProp(control_node,
+	       "specifier",
+	       "448 [Hz]");
+    
+    xmlNewProp(control_node,
+	       "control-type",
+	       "GtkScale");
+    
+    xmlNewProp(control_node,
+	       "value",
+	       g_strdup_printf("%f", gtk_range_get_value(equalizer10->peak_448hz)));
+
+    /* peak 896hz */
+    control_node = xmlNewNode(NULL,
+			      "ags-sf-control");
+    xmlAddChild(child,
+		control_node);
+
+    xmlNewProp(control_node,
+	       "specifier",
+	       "896 [Hz]");
+    
+    xmlNewProp(control_node,
+	       "control-type",
+	       "GtkScale");
+    
+    xmlNewProp(control_node,
+	       "value",
+	       g_strdup_printf("%f", gtk_range_get_value(equalizer10->peak_896hz)));
+
+    /* peak 1792hz */
+    control_node = xmlNewNode(NULL,
+			      "ags-sf-control");
+    xmlAddChild(child,
+		control_node);
+
+    xmlNewProp(control_node,
+	       "specifier",
+	       "1792 [Hz]");
+    
+    xmlNewProp(control_node,
+	       "control-type",
+	       "GtkScale");
+    
+    xmlNewProp(control_node,
+	       "value",
+	       g_strdup_printf("%f", gtk_range_get_value(equalizer10->peak_1792hz)));
+
+    /* peak 3584hz */
+    control_node = xmlNewNode(NULL,
+			      "ags-sf-control");
+    xmlAddChild(child,
+		control_node);
+
+    xmlNewProp(control_node,
+	       "specifier",
+	       "3584 [Hz]");
+    
+    xmlNewProp(control_node,
+	       "control-type",
+	       "GtkScale");
+    
+    xmlNewProp(control_node,
+	       "value",
+	       g_strdup_printf("%f", gtk_range_get_value(equalizer10->peak_3584hz)));
+
+    /* peak 7168hz */
+    control_node = xmlNewNode(NULL,
+			      "ags-sf-control");
+    xmlAddChild(child,
+		control_node);
+
+    xmlNewProp(control_node,
+	       "specifier",
+	       "7168 [Hz]");
+    
+    xmlNewProp(control_node,
+	       "control-type",
+	       "GtkScale");
+    
+    xmlNewProp(control_node,
+	       "value",
+	       g_strdup_printf("%f", gtk_range_get_value(equalizer10->peak_7168hz)));
+
+    /* peak 14336hz */
+    control_node = xmlNewNode(NULL,
+			      "ags-sf-control");
+    xmlAddChild(child,
+		control_node);
+
+    xmlNewProp(control_node,
+	       "specifier",
+	       "14336 [Hz]");
+    
+    xmlNewProp(control_node,
+	       "control-type",
+	       "GtkScale");
+    
+    xmlNewProp(control_node,
+	       "value",
+	       g_strdup_printf("%f", gtk_range_get_value(equalizer10->peak_14336hz)));
+
+    /* pressure */
+    control_node = xmlNewNode(NULL,
+			      "ags-sf-control");
+    xmlAddChild(child,
+		control_node);
+
+    xmlNewProp(control_node,
+	       "specifier",
+	       "pressure");
+    
+    xmlNewProp(control_node,
+	       "control-type",
+	       "GtkScale");
+    
+    xmlNewProp(control_node,
+	       "value",
+	       g_strdup_printf("%f", gtk_range_get_value(equalizer10->pressure)));
+  }else if(AGS_IS_DRUM(machine)){
     AgsDrum *drum;
 
     drum = (AgsDrum *) machine;
@@ -6298,11 +6882,11 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
 
     ffplayer = (AgsFFPlayer *) machine;
 
-    if(ffplayer->ipatch != NULL &&
-       ffplayer->ipatch->filename != NULL){
+    if(ffplayer->audio_container != NULL &&
+       ffplayer->audio_container->filename != NULL){
       xmlNewProp(node,
 		 "filename",
-		 ffplayer->ipatch->filename);
+		 ffplayer->audio_container->filename);
 
       xmlNewProp(node,
 		 "preset",
@@ -6312,6 +6896,14 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
 		 "instrument",
 		 gtk_combo_box_text_get_active_text(ffplayer->instrument));
     }
+  }else if(AGS_IS_AUDIOREC(machine)){
+    AgsAudiorec *audiorec;
+
+    audiorec = (AgsAudiorec *) machine;
+
+    xmlNewProp(node,
+	       "filename",
+	       gtk_entry_get_text(audiorec->filename));
   }else if(AGS_IS_LADSPA_BRIDGE(machine)){
     AgsLadspaBridge *ladspa_bridge;
 
@@ -6943,10 +7535,10 @@ ags_simple_file_write_line(AgsSimpleFile *simple_file, xmlNode *parent, AgsLine 
   
   /* device */
   if(line->channel != NULL &&
-     line->channel->soundcard != NULL){
+     line->channel->output_soundcard != NULL){
     gchar *device;
 
-    device = ags_soundcard_get_device(AGS_SOUNDCARD(line->channel->soundcard));
+    device = ags_soundcard_get_device(AGS_SOUNDCARD(line->channel->output_soundcard));
     
     if(device != NULL){
       xmlNewProp(node,
@@ -7730,7 +8322,7 @@ ags_simple_file_write_notation(AgsSimpleFile *simple_file, xmlNode *parent, AgsN
 	      child);
 
   /* note */
-  list = notation->notes;
+  list = notation->note;
 
   while(list != NULL){
     child = xmlNewNode(NULL,
@@ -7925,7 +8517,6 @@ ags_simple_file_write_preset(AgsSimpleFile *simple_file, xmlNode *parent, AgsPre
   xmlNode *child;
   
   guint i;
-  gboolean found_preset;
   
   node = xmlNewNode(NULL,
 		    "ags-sf-preset");
@@ -7965,15 +8556,13 @@ ags_simple_file_write_preset(AgsSimpleFile *simple_file, xmlNode *parent, AgsPre
 	     g_strdup_printf("%d", preset->x_end));
 
   /* parameter */
-  found_preset = FALSE;
+  ags_simple_file_write_strv(simple_file, node, preset->parameter_name);
   
   for(i = 0; i < preset->n_params; i++){
-    found_preset = TRUE;
-
-    ags_simple_file_write_property(simple_file, node, &(preset->parameter[i]));
+    ags_simple_file_write_value(simple_file, node, &(preset->value[i]));
   }
   
-  if(found_preset){
+  if(preset->n_params > 0){
     /* add to parent */
     xmlAddChild(parent,
 		node);

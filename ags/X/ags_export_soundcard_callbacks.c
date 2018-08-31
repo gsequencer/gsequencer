@@ -19,17 +19,8 @@
 
 #include <ags/X/ags_export_soundcard_callbacks.h>
 
-#include <ags/object/ags_application_context.h>
-#include <ags/object/ags_soundcard.h>
-
-#include <ags/audio/ags_sound_provider.h>
-#include <ags/audio/ags_devout.h>
-
-#include <ags/audio/pulse/ags_pulse_devout.h>
-
-#include <ags/audio/jack/ags_jack_devout.h>
-
-#include <ags/audio/core-audio/ags_core_audio_devout.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
 
 #include <ags/X/ags_export_window.h>
 
@@ -41,7 +32,7 @@ ags_export_soundcard_backend_callback(GtkWidget *combo_box,
 
   AgsApplicationContext *application_context;
 
-  GList *soundcard;
+  GList *start_soundcard, *soundcard;
 
   gchar *backend;
   gchar *device;
@@ -61,12 +52,14 @@ ags_export_soundcard_backend_callback(GtkWidget *combo_box,
   ags_export_soundcard_refresh_card(export_soundcard);
 
   /* get soundcard */
-  soundcard = NULL;
+  start_soundcard = NULL;
 
   if(application_context != NULL){
-    soundcard = ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(application_context));
+    start_soundcard = ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(application_context));
   }
 
+  soundcard = start_soundcard;
+  
   backend = gtk_combo_box_text_get_active_text(export_soundcard->backend);
   device = gtk_combo_box_text_get_active_text(export_soundcard->card);
 
@@ -82,7 +75,7 @@ ags_export_soundcard_backend_callback(GtkWidget *combo_box,
 			    "alsa",
 			    5)){
       if(AGS_IS_DEVOUT(soundcard->data) &&
-	 (AGS_DEVOUT_ALSA & (AGS_DEVOUT(soundcard->data)->flags)) != 0 &&
+	 ags_devout_test_flags(AGS_DEVOUT(soundcard->data), AGS_DEVOUT_ALSA) &&
 	 !g_ascii_strcasecmp(device,
 			     ags_soundcard_get_device(AGS_SOUNDCARD(soundcard->data)))){
 	g_object_set(export_soundcard,
@@ -97,7 +90,7 @@ ags_export_soundcard_backend_callback(GtkWidget *combo_box,
 				  "oss",
 				  4)){    
       if(AGS_IS_DEVOUT(soundcard->data) &&
-	 (AGS_DEVOUT_OSS & (AGS_DEVOUT(soundcard->data)->flags)) != 0 &&
+	 ags_devout_test_flags(AGS_DEVOUT(soundcard->data), AGS_DEVOUT_OSS) &&
 	 !g_ascii_strcasecmp(device,
 			     ags_soundcard_get_device(AGS_SOUNDCARD(soundcard->data)))){
 	g_object_set(export_soundcard,
@@ -155,6 +148,8 @@ ags_export_soundcard_backend_callback(GtkWidget *combo_box,
     soundcard = soundcard->next;
   }
 
+  g_list_free(start_soundcard);
+  
   if(!found_card){
     g_object_set(export_soundcard,
 		 "soundcard", NULL,
@@ -170,7 +165,7 @@ ags_export_soundcard_card_callback(GtkWidget *combo_box,
 
   AgsApplicationContext *application_context;
 
-  GList *soundcard;
+  GList *start_soundcard, *soundcard;
 
   gchar *backend;
   gchar *device;
@@ -187,12 +182,14 @@ ags_export_soundcard_card_callback(GtkWidget *combo_box,
   }
 
   /* get soundcard */
-  soundcard = NULL;
+  start_soundcard = NULL;
     
   if(application_context != NULL){
-    soundcard = ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(application_context));
+    start_soundcard = ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(application_context));
   }
 
+  soundcard = start_soundcard;
+  
   backend = gtk_combo_box_text_get_active_text(export_soundcard->backend);
   device = gtk_combo_box_text_get_active_text(export_soundcard->card);
 
@@ -208,7 +205,7 @@ ags_export_soundcard_card_callback(GtkWidget *combo_box,
 			    "alsa",
 			    5)){
       if(AGS_IS_DEVOUT(soundcard->data) &&
-	 (AGS_DEVOUT_ALSA & (AGS_DEVOUT(soundcard->data)->flags)) != 0 &&
+	 ags_devout_test_flags(AGS_DEVOUT(soundcard->data), AGS_DEVOUT_ALSA) &&
 	 !g_ascii_strcasecmp(device,
 			     ags_soundcard_get_device(AGS_SOUNDCARD(soundcard->data)))){
 	g_object_set(export_soundcard,
@@ -223,7 +220,7 @@ ags_export_soundcard_card_callback(GtkWidget *combo_box,
 				  "oss",
 				  4)){    
       if(AGS_IS_DEVOUT(soundcard->data) &&
-	 (AGS_DEVOUT_OSS & (AGS_DEVOUT(soundcard->data)->flags)) != 0 &&
+	 ags_devout_test_flags(AGS_DEVOUT(soundcard->data), AGS_DEVOUT_OSS) &&
 	 !g_ascii_strcasecmp(device,
 			     ags_soundcard_get_device(AGS_SOUNDCARD(soundcard->data)))){
 	g_object_set(export_soundcard,
@@ -281,6 +278,8 @@ ags_export_soundcard_card_callback(GtkWidget *combo_box,
     soundcard = soundcard->next;
   }
 
+  g_list_free(start_soundcard);
+  
   if(!found_card){
     g_object_set(export_soundcard,
 		 "soundcard", NULL,

@@ -29,6 +29,8 @@
 #include <jack/jack.h>
 #endif
 
+#include <ags/libags.h>
+
 #define AGS_TYPE_JACK_CLIENT                (ags_jack_client_get_type())
 #define AGS_JACK_CLIENT(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_JACK_CLIENT, AgsJackClient))
 #define AGS_JACK_CLIENT_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST(class, AGS_TYPE_JACK_CLIENT, AgsJackClient))
@@ -41,6 +43,7 @@ typedef struct _AgsJackClientClass AgsJackClientClass;
 
 /**
  * AgsJackClientFlags:
+ * @AGS_JACK_CLIENT_ADDED_TO_REGISTRY: the JACK client was added to registry, see #AgsConnectable::add_to_registry()
  * @AGS_JACK_CLIENT_CONNECTED: indicates the client was connected by calling #AgsConnectable::connect()
  * @AGS_JACK_CLIENT_ACTIVATED: the client was activated
  * 
@@ -48,23 +51,26 @@ typedef struct _AgsJackClientClass AgsJackClientClass;
  * enable/disable as flags.
  */
 typedef enum{
-  AGS_JACK_CLIENT_CONNECTED       = 1,
-  AGS_JACK_CLIENT_ACTIVATED       = 1 <<  1,
+  AGS_JACK_CLIENT_ADDED_TO_REGISTRY  = 1,
+  AGS_JACK_CLIENT_CONNECTED          = 1 <<  1,
+  AGS_JACK_CLIENT_ACTIVATED          = 1 <<  2,
 }AgsJackClientFlags;
 
 struct _AgsJackClient
 {
-  GObject object;
+  GObject gobject;
 
   guint flags;
 
-  pthread_mutex_t *mutex;
-  pthread_mutexattr_t *mutexattr;
+  pthread_mutex_t *obj_mutex;
+  pthread_mutexattr_t *obj_mutexattr;
 
   GObject *jack_server;
   
-  gchar *uuid;
-  gchar *name;
+  AgsUUID *uuid;
+
+  gchar *client_uuid;
+  gchar *client_name;
   
 #ifdef AGS_WITH_JACK
   jack_client_t *client;
@@ -80,10 +86,16 @@ struct _AgsJackClient
 
 struct _AgsJackClientClass
 {
-  GObjectClass object;
+  GObjectClass gobject;
 };
 
 GType ags_jack_client_get_type();
+
+pthread_mutex_t* ags_jack_client_get_class_mutex();
+
+gboolean ags_jack_client_test_flags(AgsJackClient *jack_client, guint flags);
+void ags_jack_client_set_flags(AgsJackClient *jack_client, guint flags);
+void ags_jack_client_unset_flags(AgsJackClient *jack_client, guint flags);
 
 GList* ags_jack_client_find_uuid(GList *jack_client,
 				 gchar *client_uuid);

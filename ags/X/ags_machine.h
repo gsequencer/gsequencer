@@ -50,14 +50,15 @@ typedef enum{
   AGS_MACHINE_IS_EFFECT               = 1 <<  1,
   AGS_MACHINE_IS_SEQUENCER            = 1 <<  2,
   AGS_MACHINE_IS_SYNTHESIZER          = 1 <<  3,
-  AGS_MACHINE_TAKES_FILE_INPUT        = 1 <<  4,
-  AGS_MACHINE_MAPPED_RECALL           = 1 <<  5,
-  AGS_MACHINE_PREMAPPED_RECALL        = 1 <<  6,
-  AGS_MACHINE_BLOCK_PLAY              = 1 <<  7,
-  AGS_MACHINE_BLOCK_STOP              = 1 <<  8,
-  AGS_MACHINE_CONNECTED               = 1 <<  9,
-  AGS_MACHINE_REVERSE_NOTATION        = 1 << 10,
-  AGS_MACHINE_STICKY_CONTROLS         = 1 << 11,
+  AGS_MACHINE_IS_WAVE_PLAYER          = 1 <<  4,
+  AGS_MACHINE_TAKES_FILE_INPUT        = 1 <<  5,
+  AGS_MACHINE_MAPPED_RECALL           = 1 <<  6,
+  AGS_MACHINE_PREMAPPED_RECALL        = 1 <<  7,
+  AGS_MACHINE_BLOCK_PLAY              = 1 <<  8,
+  AGS_MACHINE_BLOCK_STOP              = 1 <<  9,
+  AGS_MACHINE_CONNECTED               = 1 << 10,
+  AGS_MACHINE_REVERSE_NOTATION        = 1 << 11,
+  AGS_MACHINE_STICKY_CONTROLS         = 1 << 12,
 }AgsMachineFlags;
 
 typedef enum{
@@ -151,8 +152,8 @@ struct _AgsMachineClass
   void (*map_recall)(AgsMachine *machine);
   GList* (*find_port)(AgsMachine *machine);
 
-  void (*done)(AgsMachine *machine,
-	       GObject *recall_id);
+  void (*stop)(AgsMachine *machine,
+	       GList *recall_id, gint sound_scope);
 };
 
 struct _AgsMachineAutomationPort
@@ -178,8 +179,8 @@ void ags_machine_resize_pads(AgsMachine *machine,
 void ags_machine_map_recall(AgsMachine *machine);
 GList* ags_machine_find_port(AgsMachine *machine);
 
-void ags_machine_done(AgsMachine *machine,
-		      GObject *recall_id);
+void ags_machine_stop(AgsMachine *machine,
+		      GList *recall_id, gint sound_scope);
 
 void ags_machine_add_default_recalls(AgsMachine *machine) G_DEPRECATED_FOR(ags_machine_map_recall);
 
@@ -189,10 +190,11 @@ void ags_machine_set_run(AgsMachine *machine,
 			 gboolean run);
 void ags_machine_set_run_extended(AgsMachine *machine,
 				  gboolean run,
-				  gboolean sequencer, gboolean notation);
+				  gboolean sequencer, gboolean notation, gboolean wave, gboolean midi);
 
 GtkListStore* ags_machine_get_possible_links(AgsMachine *machine);
 GtkListStore* ags_machine_get_possible_audio_output_connections(AgsMachine *machine);
+GtkListStore* ags_machine_get_possible_audio_input_connections(AgsMachine *machine);
 
 GtkFileChooserDialog* ags_machine_file_chooser_dialog_new(AgsMachine *machine);
 

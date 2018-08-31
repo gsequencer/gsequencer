@@ -21,6 +21,7 @@
 
 #include <glib.h>
 #include <glib-object.h>
+
 #include <gtk/gtk.h>
 
 #define AGS_TYPE_PROPERTY_EDITOR                (ags_property_editor_get_type())

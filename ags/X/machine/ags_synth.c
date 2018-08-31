@@ -24,6 +24,7 @@
 #include <ags/libags-audio.h>
 #include <ags/libags-gui.h>
 
+#include <ags/X/ags_ui_provider.h>
 #include <ags/X/ags_machine.h>
 #include <ags/X/ags_pad.h>
 #include <ags/X/ags_line.h>
@@ -180,10 +181,10 @@ ags_synth_init(AgsSynth *synth)
 			 G_CALLBACK(ags_synth_parent_set_callback), (gpointer) synth);
 
   audio = AGS_MACHINE(synth)->audio;
-  audio->flags |= (AGS_AUDIO_ASYNC |
-		   AGS_AUDIO_OUTPUT_HAS_RECYCLING |
-		   AGS_AUDIO_INPUT_HAS_RECYCLING |
-		   AGS_AUDIO_INPUT_TAKES_SYNTH);
+  ags_audio_set_flags(audio, (AGS_AUDIO_ASYNC |
+			      AGS_AUDIO_OUTPUT_HAS_RECYCLING |
+			      AGS_AUDIO_INPUT_HAS_RECYCLING |
+			      AGS_AUDIO_INPUT_HAS_SYNTH));
 
   AGS_MACHINE(synth)->input_pad_type = AGS_TYPE_SYNTH_INPUT_PAD;
   AGS_MACHINE(synth)->input_line_type = AGS_TYPE_SYNTH_INPUT_LINE;
@@ -521,13 +522,12 @@ ags_synth_update(AgsSynth *synth)
   
   AgsAudio *audio;
   AgsChannel *channel;
+  AgsChannel *input;
   AgsRecycling *first_recycling;
   
   AgsClearAudioSignal *clear_audio_signal;
   AgsApplySynth *apply_synth;
 
-  AgsMutexManager *mutex_manager;
-  AgsThread *main_loop;
   AgsGuiThread *gui_thread;
 
   AgsApplicationContext *application_context;
@@ -538,6 +538,7 @@ ags_synth_update(AgsSynth *synth)
   GList *task;
   
   guint output_lines;
+  guint buffer_size;
   guint wave;
   guint attack, frame_count;
   gdouble frequency, phase, start_frequency;
@@ -547,37 +548,12 @@ ags_synth_update(AgsSynth *synth)
   AgsComplex **sync_point;
   guint sync_point_count;
   
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *audio_mutex;
-  pthread_mutex_t *channel_mutex;
-  pthread_mutex_t *recycling_mutex;
-
   window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) synth);
-  application_context = (AgsApplicationContext *) window->application_context;
 
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+  application_context = (AgsApplicationContext *) window->application_context;
+  gui_thread = ags_ui_provider_get_gui_thread(AGS_UI_PROVIDER(application_context));
 
   audio = AGS_MACHINE(synth)->audio;
-
-  /* get audio loop */
-  pthread_mutex_lock(application_mutex);
-
-  main_loop = (AgsThread *) application_context->main_loop;
-
-  pthread_mutex_unlock(application_mutex);
-
-  /* get task thread */
-  gui_thread = (AgsGuiThread *) ags_thread_find_type(main_loop,
-						       AGS_TYPE_GUI_THREAD);
-
-  /* lookup audio mutex */
-  pthread_mutex_lock(application_mutex);
-    
-  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
-					 (GObject *) audio);
-  
-  pthread_mutex_unlock(application_mutex);
 
   /*  */
   start_frequency = (gdouble) gtk_spin_button_get_value_as_float(synth->lower);
@@ -585,183 +561,148 @@ ags_synth_update(AgsSynth *synth)
   loop_start = (guint) gtk_spin_button_get_value_as_int(synth->loop_start);
   loop_end = (guint) gtk_spin_button_get_value_as_int(synth->loop_end);
 
-  /* write input */
-  input_pad_start = 
-    input_pad = gtk_container_get_children((GtkContainer *) synth->input_pad);
-
-  /* get soundcard */
-  pthread_mutex_lock(audio_mutex);
-
-  channel = audio->input;
-  
-  pthread_mutex_unlock(audio_mutex);
-
-  task = NULL;
-
-  while(input_pad != NULL){
-    /* lookup channel mutex */
-    pthread_mutex_lock(application_mutex);
-
-    channel_mutex = ags_mutex_manager_lookup(mutex_manager,
-					     (GObject *) channel);
-  
-    pthread_mutex_unlock(application_mutex);
-
-    /* do it so */
-    input_line = gtk_container_get_children((GtkContainer *) AGS_PAD(input_pad->data)->expander_set);
-    oscillator = AGS_OSCILLATOR(gtk_container_get_children((GtkContainer *) AGS_LINE(input_line->data)->expander->table)->data);
-    
-    wave = (guint) gtk_combo_box_get_active(oscillator->wave) + 1;
-    attack = (guint) gtk_spin_button_get_value_as_int(oscillator->attack);
-    frame_count = (guint) gtk_spin_button_get_value_as_int(oscillator->frame_count);
-    phase = (gdouble) gtk_spin_button_get_value_as_float(oscillator->phase);
-    frequency = (gdouble) gtk_spin_button_get_value_as_float(oscillator->frequency);
-    volume = (gdouble) gtk_spin_button_get_value_as_float(oscillator->volume);
-
-    apply_synth = ags_apply_synth_new(channel, 1,
-				      wave,
-				      attack % channel->buffer_size, frame_count,
-				      frequency, phase, start_frequency,
-				      volume,
-				      loop_start, loop_end);
-    g_object_set(apply_synth,
-		 "delay", (gdouble) attack / channel->buffer_size,
-		 NULL);
-    task = g_list_prepend(task,
-			  apply_synth);
-
-    /* iterate */
-    pthread_mutex_lock(channel_mutex);
-
-    channel = channel->next;
-
-    pthread_mutex_unlock(channel_mutex);
-
-    input_pad = input_pad->next;
-  }
-  
-  g_list_free(input_pad_start);
-
   /* clear output */
   input_pad_start = 
     input_pad = gtk_container_get_children((GtkContainer *) synth->input_pad);
 
-  pthread_mutex_lock(audio_mutex);
+  g_object_get(audio,
+	       "output", &channel,
+	       "output-lines", &output_lines,
+	       NULL);
 
-  channel = audio->output;
-  output_lines = audio->output_lines;
-
-  pthread_mutex_unlock(audio_mutex);
-
+  task = NULL;
+  
   while(channel != NULL){
     AgsAudioSignal *template;
+
+    GList *start_list;
     
-    /* lookup channel mutex */
-    pthread_mutex_lock(application_mutex);
+    g_object_get(channel,
+		 "first-recycling", &first_recycling,
+		 NULL);
 
-    channel_mutex = ags_mutex_manager_lookup(mutex_manager,
-					     (GObject *) channel);
-  
-    pthread_mutex_unlock(application_mutex);
-
-    /* clear task */
-    pthread_mutex_lock(channel_mutex);
-
-    first_recycling = channel->first_recycling;
+    g_object_get(first_recycling,
+		 "audio-signal", &start_list,
+		 NULL);
     
-    pthread_mutex_unlock(channel_mutex);
-
-    /* lookup recycling mutex */
-    pthread_mutex_lock(application_mutex);
-
-    recycling_mutex = ags_mutex_manager_lookup(mutex_manager,
-					       (GObject *) first_recycling);
-  
-    pthread_mutex_unlock(application_mutex);
-
     /*  */
-    pthread_mutex_lock(recycling_mutex);
-
-    template = ags_audio_signal_get_template(first_recycling->audio_signal);
-
-    pthread_mutex_unlock(recycling_mutex);
+    template = ags_audio_signal_get_template(start_list);
 
     clear_audio_signal = ags_clear_audio_signal_new(template);
     task = g_list_prepend(task,
 			  clear_audio_signal);
+
+    g_list_free(start_list);
     
     /* iterate */
-    pthread_mutex_lock(channel_mutex);
-
-    channel = channel->next;
-
-    pthread_mutex_unlock(channel_mutex);
+    g_object_get(channel,
+		 "next", &channel,
+		 NULL);
   }
   
   /* write output */
-  pthread_mutex_lock(audio_mutex);
-  
-  channel = audio->output;
-
-  pthread_mutex_unlock(audio_mutex);
+  g_object_get(audio,
+	       "output", &channel,
+	       "input", &input,
+	       "buffer-size", &buffer_size,
+	       NULL);
 
   while(input_pad != NULL){
+    AgsChannel *input;
+
+    GList *start_synth_generator, *synth_generator;
+
+    guint format;
     guint i;
     gboolean do_sync;
-
-    /* do it so */
+    
     input_line = gtk_container_get_children((GtkContainer *) AGS_PAD(input_pad->data)->expander_set);
     oscillator = AGS_OSCILLATOR(gtk_container_get_children((GtkContainer *) AGS_LINE(input_line->data)->expander->table)->data);
 
+    g_object_get(AGS_LINE(input_line->data),
+		 "channel", &input,
+		 NULL);
+
+    g_object_get(input,
+		 "synth-generator", &start_synth_generator,
+		 "format", &format,
+		 NULL);
+    
+    synth_generator = start_synth_generator;
+
+    /* do it so */    
     wave = (guint) gtk_combo_box_get_active(oscillator->wave) + 1;
     attack = (guint) gtk_spin_button_get_value_as_int(oscillator->attack);
     frame_count = (guint) gtk_spin_button_get_value_as_int(oscillator->frame_count);
-    phase = (gdouble) gtk_spin_button_get_value_as_float(oscillator->phase);
-    frequency = (gdouble) gtk_spin_button_get_value_as_float(oscillator->frequency);
-    volume = (gdouble) gtk_spin_button_get_value_as_float(oscillator->volume);
+    phase = gtk_spin_button_get_value(oscillator->phase);
+    frequency = gtk_spin_button_get_value(oscillator->frequency);
+    volume = gtk_spin_button_get_value(oscillator->volume);
+
+    g_object_set(synth_generator->data,
+		 "format", format,
+		 "delay", (gdouble) attack / (gdouble) buffer_size,
+		 "attack", attack,
+		 "frame-count", frame_count,
+		 "oscillator", gtk_combo_box_get_active(oscillator->wave),
+		 "frequency", frequency,
+		 "phase", phase,
+		 "volume", volume,
+		 NULL);
 
     do_sync = gtk_toggle_button_get_active(oscillator->do_sync);
     
     if(do_sync){
       sync_point_count = oscillator->sync_point_count;
 
-      if(sync_point_count > 0){
-	sync_point = (AgsComplex **) malloc(sync_point_count * sizeof(AgsComplex *));
-      }else{
-	sync_point = NULL;
+      /* free previous sync point */
+      if(AGS_SYNTH_GENERATOR(synth_generator->data)->sync_point != NULL){
+	for(i = 0; i < AGS_SYNTH_GENERATOR(synth_generator->data)->sync_point_count; i++){
+	  ags_complex_free(AGS_SYNTH_GENERATOR(synth_generator->data)->sync_point[i]);
+	}
+
+	free(AGS_SYNTH_GENERATOR(synth_generator->data)->sync_point);
       }
+
+      /* set new sync point */
+      if(sync_point_count > 0){
+	AGS_SYNTH_GENERATOR(synth_generator->data)->sync_point = (AgsComplex **) malloc(sync_point_count * sizeof(AgsComplex *));
+      }else{
+	AGS_SYNTH_GENERATOR(synth_generator->data)->sync_point = NULL;
+      }
+
+      AGS_SYNTH_GENERATOR(synth_generator->data)->sync_point_count = sync_point_count;
 
       for(i = 0; i < sync_point_count; i++){
-	sync_point[i] = ags_complex_alloc();
-
-	sync_point[i][0][0] = gtk_spin_button_get_value(oscillator->sync_point[2 * i]);
-	sync_point[i][0][1] = gtk_spin_button_get_value(oscillator->sync_point[2 * i + 1]);
+	AGS_SYNTH_GENERATOR(synth_generator->data)->sync_point[i] = ags_complex_alloc();
+	
+	AGS_SYNTH_GENERATOR(synth_generator->data)->sync_point[i][0][0] = gtk_spin_button_get_value(oscillator->sync_point[2 * i]);
+	AGS_SYNTH_GENERATOR(synth_generator->data)->sync_point[i][0][1] = gtk_spin_button_get_value(oscillator->sync_point[2 * i + 1]);
       }
     }else{
-      sync_point = NULL;
-      sync_point_count = NULL;
+      for(i = 0; i < AGS_SYNTH_GENERATOR(synth_generator->data)->sync_point_count; i++){
+	ags_complex_free(AGS_SYNTH_GENERATOR(synth_generator->data)->sync_point[i]);
+      }
+
+      free(AGS_SYNTH_GENERATOR(synth_generator->data)->sync_point);
+      
+      AGS_SYNTH_GENERATOR(synth_generator->data)->sync_point = NULL;
+      AGS_SYNTH_GENERATOR(synth_generator->data)->sync_point_count = 0;
     }
   
-    g_object_set(apply_synth,
-		 "base-note", synth->lower->adjustment->value,
-		 "do-sync", do_sync,
-		 "sync-point", sync_point,
-		 "sync-point-count", sync_point_count,
-		 NULL);
-
-    apply_synth = ags_apply_synth_new(channel, output_lines,
-				      wave,
-				      attack % channel->buffer_size, frame_count,
-				      frequency, phase, start_frequency,
-				      volume,
-				      loop_start, loop_end);
-    g_object_set(apply_synth,
-		 "delay", (gdouble) attack / channel->buffer_size,
-		 NULL);
+    apply_synth = ags_apply_synth_new(synth_generator->data,
+				      channel,
+				      start_frequency, output_lines);
     task = g_list_prepend(task,
 			  apply_synth);
 
+    g_list_free(start_synth_generator);
+    
+    /* iterate */
     input_pad = input_pad->next;
+
+    g_object_get(input,
+		 "next", &input,
+		 NULL);
   }
   
   g_list_free(input_pad_start);
@@ -774,11 +715,11 @@ ags_synth_update(AgsSynth *synth)
  * ags_synth_new:
  * @soundcard: the assigned soundcard.
  *
- * Creates an #AgsSynth
+ * Create a new instance of #AgsSynth
  *
- * Returns: a new #AgsSynth
+ * Returns: the new #AgsSynth
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsSynth*
 ags_synth_new(GObject *soundcard)
@@ -789,7 +730,7 @@ ags_synth_new(GObject *soundcard)
 				    NULL);
 
   g_object_set(G_OBJECT(AGS_MACHINE(synth)->audio),
-	       "soundcard", soundcard,
+	       "output-soundcard", soundcard,
 	       NULL);
 
   return(synth);

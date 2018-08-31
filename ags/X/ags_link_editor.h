@@ -22,11 +22,13 @@
 
 #include <glib.h>
 #include <glib-object.h>
+
 #include <gtk/gtk.h>
 
-#include <ags/X/ags_machine.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
 
-#include <ags/audio/file/ags_audio_file.h>
+#include <ags/X/ags_machine.h>
 
 #define AGS_TYPE_LINK_EDITOR                (ags_link_editor_get_type())
 #define AGS_LINK_EDITOR(obj)                (G_TYPE_CHECK_INSTANCE_CAST(obj, AGS_TYPE_LINK_EDITOR, AgsLinkEditor))

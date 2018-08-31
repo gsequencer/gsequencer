@@ -22,6 +22,7 @@
 
 #include <glib.h>
 #include <glib-object.h>
+
 #include <gtk/gtk.h>
 
 #define AGS_TYPE_LV2_BROWSER                (ags_lv2_browser_get_type())
@@ -34,10 +35,16 @@
 typedef struct _AgsLv2Browser AgsLv2Browser;
 typedef struct _AgsLv2BrowserClass AgsLv2BrowserClass;
 
+typedef enum{
+  AGS_LV2_BROWSER_CONNECTED        = 1,
+}AgsLv2BrowserFlags;
+
 struct _AgsLv2Browser
 {
   GtkVBox vbox;
 
+  guint flags;
+  
   gchar *path;
 
   GtkHBox *plugin;

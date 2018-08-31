@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -25,6 +25,8 @@
 
 #include <libxml/tree.h>
 
+#include <ags/lib/ags_uuid.h>
+
 #define AGS_TYPE_CONNECTABLE                    (ags_connectable_get_type())
 #define AGS_CONNECTABLE(obj)                    (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_CONNECTABLE, AgsConnectable))
 #define AGS_CONNECTABLE_INTERFACE(vtable)       (G_TYPE_CHECK_CLASS_CAST((vtable), AGS_TYPE_CONNECTABLE, AgsConnectableInterface))
@@ -38,40 +40,52 @@ typedef struct _AgsConnectableInterface AgsConnectableInterface;
 struct _AgsConnectableInterface
 {
   GTypeInterface ginterface;
-
+  
+  AgsUUID* (*get_uuid)(AgsConnectable *connectable);
+  gboolean (*has_resource)(AgsConnectable *connectable);
+  
+  gboolean (*is_ready)(AgsConnectable *connectable);
   void (*add_to_registry)(AgsConnectable *connectable);
   void (*remove_from_registry)(AgsConnectable *connectable);
 
-  xmlNode* (*update)(AgsConnectable *connectable);
-  
-  gboolean (*is_ready)(AgsConnectable *connectable);
-  gboolean (*is_connected)(AgsConnectable *connectable);
+  xmlNode* (*list_resource)(AgsConnectable *connectable);
 
+  xmlNode* (*xml_compose)(AgsConnectable *connectable);
+  void (*xml_parse)(AgsConnectable *connectable,
+		    xmlNode *node);
+  
+  gboolean (*is_connected)(AgsConnectable *connectable);
   void (*connect)(AgsConnectable *connectable);
   void (*disconnect)(AgsConnectable *connectable);
 
-  void (*connect_scope)(AgsConnectable *connectable,
-			GObject *connection);
-  void (*disconnect_scope)(AgsConnectable *connectable,
-			   GObject *connection);
+  void (*connect_connection)(AgsConnectable *connectable,
+			     GObject *connection);
+  void (*disconnect_connection)(AgsConnectable *connectable,
+				GObject *connection);
 };
 
 GType ags_connectable_get_type();
 
+AgsUUID* ags_connectable_get_uuid(AgsConnectable *connectable);
+gboolean ags_connectable_has_resource(AgsConnectable *connectable);
+
+gboolean ags_connectable_is_ready(AgsConnectable *connectable);
 void ags_connectable_add_to_registry(AgsConnectable *connectable);
 void ags_connectable_remove_from_registry(AgsConnectable *connectable);
 
-xmlNode* ags_connectable_update(AgsConnectable *connectable);
+xmlNode* ags_connectable_list_resource(AgsConnectable *connectable);
 
-gboolean ags_connectable_is_ready(AgsConnectable *connectable);
+xmlNode* ags_connectable_xml_compose(AgsConnectable *connectable);
+void ags_connectable_xml_parse(AgsConnectable *connectable,
+			       xmlNode *node);
+
 gboolean ags_connectable_is_connected(AgsConnectable *connectable);
-
 void ags_connectable_connect(AgsConnectable *connectable);
 void ags_connectable_disconnect(AgsConnectable *connectable);
 
-void ags_connectable_connect_scope(AgsConnectable *connectable,
-				   GObject *connection);
-void ags_connectable_disconnect_scope(AgsConnectable *connectable,
-				      GObject *connection);
+void ags_connectable_connect_connection(AgsConnectable *connectable,
+					GObject *connection);
+void ags_connectable_disconnect_connection(AgsConnectable *connectable,
+					   GObject *connection);
 
 #endif /*__AGS_CONNECTABLE_H__*/

@@ -30,10 +30,22 @@
 
 #include <ags/X/editor/ags_machine_selector.h>
 
-void ags_wave_editor_parent_set_callback(GtkWidget  *widget, GtkObject *old_parent,
-					 AgsWaveEditor *wave_editor);
+gboolean ags_wave_editor_edit_expose_event(GtkWidget *widget, GdkEventExpose *event, AgsWaveEditor *wave_editor);
+gboolean ags_wave_editor_edit_configure_event(GtkWidget *widget, GdkEventConfigure *event, AgsWaveEditor *wave_editor);
+
+void ags_wave_editor_vscrollbar_value_changed(GtkRange *range, AgsWaveEditor *wave_editor);
+void ags_wave_editor_hscrollbar_value_changed(GtkRange *range, AgsWaveEditor *wave_editor);
+
+void ags_wave_editor_wave_edit_hscrollbar_value_changed(GtkRange *range, AgsWaveEditor *wave_editor);
 
 void ags_wave_editor_machine_changed_callback(AgsMachineSelector *machine_selector, AgsMachine *machine,
 					      AgsWaveEditor *wave_editor);
+
+void ags_wave_editor_resize_audio_channels_callback(AgsMachine *machine, 
+						    guint audio_channels, guint audio_channels_old,
+						    AgsWaveEditor *wave_editor);
+void ags_wave_editor_resize_pads_callback(AgsMachine *machine, GType channel_type,
+					  guint pads, guint pads_old,
+					  AgsWaveEditor *wave_editor);
 
 #endif /*__AGS_WAVE_EDITOR_CALLBACKS_H__*/

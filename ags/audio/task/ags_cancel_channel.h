@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -42,9 +42,8 @@ struct _AgsCancelChannel
   AgsTask task;
 
   AgsChannel *channel;
-  AgsRecallID *recall_id;
 
-  GObject *playback;
+  gint sound_scope;
 };
 
 struct _AgsCancelChannelClass
@@ -54,7 +53,7 @@ struct _AgsCancelChannelClass
 
 GType ags_cancel_channel_get_type();
 
-AgsCancelChannel* ags_cancel_channel_new(AgsChannel *channel, AgsRecallID *recall_id,
-					 GObject *playback);
+AgsCancelChannel* ags_cancel_channel_new(AgsChannel *channel,
+					 gint sound_scope);
 
 #endif /*__AGS_CANCEL_CHANNEL_H__*/

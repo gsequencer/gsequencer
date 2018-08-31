@@ -24,6 +24,7 @@
 void ags_property_listing_editor_class_init(AgsPropertyListingEditorClass *property_listing_editor);
 void ags_property_listing_editor_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_property_listing_editor_init(AgsPropertyListingEditor *property_listing_editor);
+
 void ags_property_listing_editor_connect(AgsConnectable *connectable);
 void ags_property_listing_editor_disconnect(AgsConnectable *connectable);
 
@@ -109,6 +110,15 @@ ags_property_listing_editor_disconnect(AgsConnectable *connectable)
   ags_property_listing_editor_parent_connectable_interface->disconnect(connectable);
 }
 
+/**
+ * ags_property_listing_editor_new:
+ * 
+ * Create a new instance of #AgsPropertyListingEditor
+ * 
+ * Returns: the new #AgsPropertyListingEditor
+ * 
+ * Since: 2.0.0
+ */
 AgsPropertyListingEditor*
 ags_property_listing_editor_new()
 {

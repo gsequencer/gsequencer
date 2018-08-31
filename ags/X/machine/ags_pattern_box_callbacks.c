@@ -78,15 +78,10 @@ ags_pattern_box_pad_callback(GtkWidget *toggle_button, AgsPatternBox *pattern_bo
 
   AgsPattern *pattern;
   
-  AgsMutexManager *mutex_manager;
-  
   GList *list, *list_start;
   GList *line, *line_start;
   GList *tasks;
   guint i, index0, index1, offset;
-
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *channel_mutex;
   
   machine = (AgsMachine *) gtk_widget_get_ancestor((GtkWidget *) pattern_box,
 						   AGS_TYPE_MACHINE);
@@ -106,9 +101,6 @@ ags_pattern_box_pad_callback(GtkWidget *toggle_button, AgsPatternBox *pattern_bo
 
   window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) machine,
 						 AGS_TYPE_WINDOW);
-
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
 
   /* calculate offset */
   list_start = 
@@ -143,25 +135,24 @@ ags_pattern_box_pad_callback(GtkWidget *toggle_button, AgsPatternBox *pattern_bo
   tasks = NULL;
 
   while((line = ags_line_find_next_grouped(line)) != NULL){
+    GList *start_pattern, *pattern;
+    
     selected_line = AGS_LINE(line->data);
 
-    /* get channel mutex */
-    pthread_mutex_lock(application_mutex);
-  
-    channel_mutex = ags_mutex_manager_lookup(mutex_manager,
-					     (GObject *) selected_line->channel);
-  
-    pthread_mutex_unlock(application_mutex);
+    g_object_get(selected_line->channel,
+		 "pattern", &start_pattern,
+		 NULL);
 
     /* toggle */
-    pthread_mutex_lock(channel_mutex);
-
-    ags_pattern_toggle_bit(selected_line->channel->pattern->data,
+    pattern = start_pattern;
+    
+    ags_pattern_toggle_bit(pattern->data,
 			   index0, index1,
 			   offset);
 
-    pthread_mutex_unlock(channel_mutex);
-    
+    g_list_free(start_pattern);
+
+    /* iterate */
     line = line->next;
   }
 
@@ -215,12 +206,8 @@ ags_pattern_box_key_release_event(GtkWidget *widget, GdkEventKey *event, AgsPatt
 {
   AgsWindow *window;
   AgsMachine *machine;
-
-  AgsMutexManager *mutex_manager;
   
   AgsApplicationContext *application_context;
-
-  pthread_mutex_t *application_mutex;
 
   if(event->keyval == GDK_KEY_Tab){
     return(FALSE);
@@ -233,9 +220,6 @@ ags_pattern_box_key_release_event(GtkWidget *widget, GdkEventKey *event, AgsPatt
 						 AGS_TYPE_WINDOW);
 
   application_context = (AgsApplicationContext *) window->application_context;
-
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
   
   switch(event->keyval){
   case GDK_KEY_Control_L:
@@ -379,13 +363,7 @@ ags_pattern_box_key_release_event(GtkWidget *widget, GdkEventKey *event, AgsPatt
       guint i, j;
       guint offset;
       guint index0, index1;
-      
-      pthread_mutex_t *application_mutex;
-      pthread_mutex_t *channel_mutex;
-
-      mutex_manager = ags_mutex_manager_get_instance();
-      application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-      
+            
       i = pattern_box->cursor_y;
       j = pattern_box->cursor_x;
 
@@ -399,26 +377,26 @@ ags_pattern_box_key_release_event(GtkWidget *widget, GdkEventKey *event, AgsPatt
       tasks = NULL;
 
       while((line = ags_line_find_next_grouped(line)) != NULL){
+	GList *start_pattern, *pattern;
+	
 	selected_line = AGS_LINE(line->data);
+
 	channel = selected_line->channel;
 	
-	/* get channel mutex */
-	pthread_mutex_lock(application_mutex);
-
-	channel_mutex = ags_mutex_manager_lookup(mutex_manager,
-						 (GObject *) channel);
-  
-	pthread_mutex_unlock(application_mutex);
+	g_object_get(channel,
+		     "pattern", &start_pattern,
+		     NULL);
 	
 	/* toggle pattern */
-	pthread_mutex_lock(channel_mutex);
+	pattern = start_pattern;
     
-	ags_pattern_toggle_bit(channel->pattern->data,
+	ags_pattern_toggle_bit(pattern->data,
 			       index0, index1,
 			       offset);
 
-	pthread_mutex_unlock(channel_mutex);
+	g_list_free(start_pattern);
 
+	/* iterate */
 	line = line->next;
       }
 

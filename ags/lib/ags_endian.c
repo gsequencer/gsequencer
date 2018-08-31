@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -28,6 +28,40 @@
  *
  * Some common routines dealing with endiannes.
  */
+
+/**
+ * ags_endian_host_is_le:
+ * 
+ * Check host is Little Endian.
+ * 
+ * Returns: %TRUE if LE, otherwise %FALSE
+ * 
+ * Since: 2.0.0
+ */
+gboolean
+ags_endian_host_is_le()
+{
+  int i = 1;
+  
+  return(*((char *)&i));
+}
+
+/**
+ * ags_endian_host_is_be:
+ * 
+ * Check host is Big Endian.
+ * 
+ * Returns: %TRUE if BE, otherwise %FALSE
+ * 
+ * Since: 2.0.0
+ */
+gboolean
+ags_endian_host_is_be()
+{
+  int i = 1;
+  
+  return(!(*((char *)&i)));
+}
 
 /**
  * ags_endian_swap_float:

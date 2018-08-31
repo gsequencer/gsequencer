@@ -43,8 +43,10 @@ void ags_machine_collection_entry_get_property(GObject *gobject,
 					       guint prop_id,
 					       GValue *value,
 					       GParamSpec *param_spec);
+
 void ags_machine_collection_entry_connect(AgsConnectable *connectable);
 void ags_machine_collection_entry_disconnect(AgsConnectable *connectable);
+
 void ags_machine_collection_entry_set_update(AgsApplicable *applicable, gboolean update);
 void ags_machine_collection_entry_apply(AgsApplicable *applicable);
 void ags_machine_collection_entry_reset(AgsApplicable *applicable);
@@ -132,7 +134,7 @@ ags_machine_collection_entry_class_init(AgsMachineCollectionEntryClass *machine_
    *
    * The assigned #AgsMachine.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("machine",
 				   i18n_pspec("assigned machine"),
@@ -166,6 +168,8 @@ ags_machine_collection_entry_init(AgsMachineCollectionEntry *machine_collection_
 {
   GtkLabel *label;
 
+  machine_collection_entry->flags = 0;
+  
   gtk_table_resize((GtkTable *) machine_collection_entry,
 		   4, 4);
 
@@ -312,6 +316,12 @@ ags_machine_collection_entry_connect(AgsConnectable *connectable)
   AgsMachineCollectionEntry *machine_collection_entry;
 
   machine_collection_entry = AGS_MACHINE_COLLECTION_ENTRY(connectable);
+
+  if((AGS_MACHINE_COLLECTION_ENTRY_CONNECTED & (machine_collection_entry->flags)) != 0){
+    return;
+  }
+
+  machine_collection_entry->flags |= AGS_MACHINE_COLLECTION_ENTRY_CONNECTED;
 }
 
 void
@@ -321,7 +331,11 @@ ags_machine_collection_entry_disconnect(AgsConnectable *connectable)
 
   machine_collection_entry = AGS_MACHINE_COLLECTION_ENTRY(connectable);
 
-  /* empty */
+  if((AGS_MACHINE_COLLECTION_ENTRY_CONNECTED & (machine_collection_entry->flags)) == 0){
+    return;
+  }
+
+  machine_collection_entry->flags &= (~AGS_MACHINE_COLLECTION_ENTRY_CONNECTED);
 }
 
 void
@@ -345,8 +359,8 @@ ags_machine_collection_entry_apply(AgsApplicable *applicable)
 
   AgsNote **check_match;
   
-  GList *notation, *notation_start;
-  GList *note;
+  GList *start_notation, *notation;
+  GList *start_note, *note;
   
   gint key_on[128];
   gint key_off[128];
@@ -374,7 +388,9 @@ ags_machine_collection_entry_apply(AgsApplicable *applicable)
   window = midi_export_wizard->main_window;
   machine = machine_collection_entry->machine;
 
-  notation_start = machine->audio->notation;
+  g_object_get(machine->audio,
+	       "notation", &start_notation,
+	       NULL);
   
   midi_builder = midi_export_wizard->midi_builder;
   pulse_unit = midi_export_wizard->pulse_unit;
@@ -382,7 +398,7 @@ ags_machine_collection_entry_apply(AgsApplicable *applicable)
   bpm = midi_builder->midi_header->beat;
   division = midi_builder->midi_header->division;
   
-  notation_count = g_list_length(notation_start);
+  notation_count = g_list_length(start_notation);
 
   if(midi_builder->current_midi_track == NULL){
     initial_track = TRUE;
@@ -421,7 +437,12 @@ ags_machine_collection_entry_apply(AgsApplicable *applicable)
   success = TRUE;
 
   while(success){
-    notation = notation_start;
+    guint note_x0, note_x1;
+    guint check_x0, check_x1;
+    guint note_y;
+    guint check_y;
+    
+    notation = start_notation;
 
     for(i = 0; i < notation_count; i++){
       check_match[i] = NULL;
@@ -429,43 +450,73 @@ ags_machine_collection_entry_apply(AgsApplicable *applicable)
 
     /* check key-on */    
     for(i = 0; notation != NULL; i++){
-      note = AGS_NOTATION(notation->data)->notes;
+      g_object_get(notation->data,
+		   "note", &start_note,
+		   NULL);
+
+      note = start_note;
 
       while(note != NULL){
-	if(AGS_NOTE(note->data)->y < 128){
-	  if(key_on[AGS_NOTE(note->data)->y] < (gint) AGS_NOTE(note->data)->x[0]){
+	g_object_get(note->data,
+		     "x0", &note_x0,
+		     "y", &note_y,
+		     NULL);
+	
+	if(note_y < 128){
+	  if(key_on[note_y] < (gint) note_x0){
 	    check_match[i] = AGS_NOTE(note->data);
+	    
 	    break;
 	  }
 	}
 	
 	note = note->next;
       }
+
+      g_list_free(start_note);
       
       notation = notation->next;
     }
 
     /* check key-off */
-    notation = notation_start;
+    notation = start_notation;
 
     for(i = 0; notation != NULL; i++){
-      note = AGS_NOTATION(notation->data)->notes;
+      g_object_get(notation->data,
+		   "note", &start_note,
+		   NULL);
+
+      note = start_note;
 
       while(note != NULL){
-	if(AGS_NOTE(note->data)->y < 128){
-	  if(check_match[i] != NULL &&
-	     check_match[i]->x[0] < AGS_NOTE(note->data)->x[1]){
-	    break;
+	g_object_get(note->data,
+		     "x0", &note_x0,
+		     "x1", &note_x1,
+		     "y", &note_y,
+		     NULL);
+
+	if(note_y < 128){
+	  if(check_match[i] != NULL){
+	    g_object_get(check_match[i],
+			 "x0", &check_x0,
+			 NULL);
+	    
+	    if(check_x0 < note_x1){
+	      break;
+	    }
 	  }
 	  
-    	  if(key_off[AGS_NOTE(note->data)->y] < (gint) AGS_NOTE(note->data)->x[1]){
+    	  if(key_off[note_y] < (gint) note_x1){
 	    check_match[i] = AGS_NOTE(note->data);
+	    
 	    break;
 	  }
 	}
 	
 	note = note->next;
       }
+
+      g_list_free(start_note);
       
       notation = notation->next;
     }
@@ -476,17 +527,23 @@ ags_machine_collection_entry_apply(AgsApplicable *applicable)
     
     for(i = 0; i < notation_count; i++){
       if(check_match[i] != NULL){
-	if(!key_active[check_match[i]->y]){
+	g_object_get(check_match[i],
+		     "x0", &check_x0,
+		     "x1", &check_x1,
+		     "y", &check_y,
+		     NULL);
+	
+	if(!key_active[check_y]){
 	  /* check key-on */
-	  if(check_match[i]->x[0] < x){
-	    x = check_match[i]->x[0];
+	  if(check_x0 < x){
+	    x = check_x0;
 
 	    success = TRUE;
 	  }
-	}else if(key_active[check_match[i]->y]){
+	}else if(key_active[check_y]){
 	  /* check key-off */
-	  if(check_match[i]->x[1] < x){
-	    x = check_match[i]->x[1];
+	  if(check_x1 < x){
+	    x = check_x1;
 	    
 	    success = TRUE;
 	  }
@@ -504,33 +561,39 @@ ags_machine_collection_entry_apply(AgsApplicable *applicable)
 	    delta_time = 0;
 	  }
 
-	  if(check_match[i]->x[0] == x){
-	    if(key_on[check_match[i]->y] != check_match[i]->x[0]){
+	  g_object_get(check_match[i],
+		       "x0", &check_x0,
+		       "x1", &check_x1,
+		       "y", &check_y,
+		       NULL);
+
+	  if(check_x0 == x){
+	    if(key_on[check_y] != check_x0){
 	      /* append key-on */
 	      ags_midi_builder_append_key_on(midi_builder,
 					     delta_time,
 					     0,
-					     check_match[i]->y,
+					     check_y,
 					     127);
 	      
 #ifdef AGS_DEBUG
-	      g_message("key-on %d,%d - %d", check_match[i]->x[0], check_match[i]->x[1], check_match[i]->y);
+	      g_message("key-on %d,%d - %d", check_x0, check_x1, check_y);
 #endif
 	    
-	      key_on[check_match[i]->y] = check_match[i]->x[0];
-	      key_active[check_match[i]->y] = TRUE;
+	      key_on[check_y] = check_x0;
+	      key_active[check_y] = TRUE;
 	    }
-	  }else if(check_match[i]->x[1] == x){
-	    if(key_off[check_match[i]->y] != check_match[i]->x[1]){
+	  }else if(check_x1 == x){
+	    if(key_off[check_y] != check_x1){
 	      /* append key-off */
 	      ags_midi_builder_append_key_off(midi_builder,
 					      delta_time,
 					      0,
-					      check_match[i]->y,
+					      check_y,
 					      127);	    
 
-	      key_off[check_match[i]->y] = check_match[i]->x[1];
-	      key_active[check_match[i]->y] = FALSE;
+	      key_off[check_y] = check_x1;
+	      key_active[check_y] = FALSE;
 	    }
 	  }
 
@@ -539,6 +602,8 @@ ags_machine_collection_entry_apply(AgsApplicable *applicable)
       }
     }
   }
+
+  g_list_free(start_notation);
 }
 
 void
@@ -551,19 +616,21 @@ ags_machine_collection_entry_reset(AgsApplicable *applicable)
 
 /**
  * ags_machine_collection_entry_new:
+ * @machine: the #AgsMachine
  *
- * Creates an #AgsMachineCollectionEntry
+ * Create a new instance of #AgsMachineCollectionEntry
  *
- * Returns: a new #AgsMachineCollectionEntry
+ * Returns: the new #AgsMachineCollectionEntry
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsMachineCollectionEntry*
-ags_machine_collection_entry_new()
+ags_machine_collection_entry_new(GtkWidget *machine)
 {
   AgsMachineCollectionEntry *machine_collection_entry;
 
   machine_collection_entry = (AgsMachineCollectionEntry *) g_object_new(AGS_TYPE_MACHINE_COLLECTION_ENTRY,
+									"machine", machine,
 									NULL);
   
   return(machine_collection_entry);

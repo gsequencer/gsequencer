@@ -33,9 +33,10 @@ void ags_synth_input_pad_class_init(AgsSynthInputPadClass *synth_input_pad);
 void ags_synth_input_pad_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_synth_input_pad_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_synth_input_pad_init(AgsSynthInputPad *synth_input_pad);
-void ags_synth_input_pad_destroy(GtkObject *object);
+
 void ags_synth_input_pad_connect(AgsConnectable *connectable);
 void ags_synth_input_pad_disconnect(AgsConnectable *connectable);
+
 gchar* ags_synth_input_pad_get_name(AgsPlugin *plugin);
 void ags_synth_input_pad_set_name(AgsPlugin *plugin, gchar *name);
 gchar* ags_synth_input_pad_get_xml_type(AgsPlugin *plugin);
@@ -173,12 +174,6 @@ ags_synth_input_pad_disconnect(AgsConnectable *connectable)
   /* empty */
 }
 
-void
-ags_synth_input_pad_destroy(GtkObject *object)
-{
-  /* empty */
-}
-
 gchar*
 ags_synth_input_pad_get_name(AgsPlugin *plugin)
 {
@@ -274,13 +269,13 @@ ags_synth_input_pad_resize_lines(AgsPad *pad, GType line_type,
 
 /**
  * ags_synth_input_pad_new:
- * @channel: the assigned channel
+ * @channel: the assigned #AgsChannel
  *
- * Creates an #AgsSynthInputPad
+ * Create a new instance of #AgsSynthInputPad
  *
- * Returns: a new #AgsSynthInputPad
+ * Returns: the new #AgsSynthInputPad
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsSynthInputPad*
 ags_synth_input_pad_new(AgsChannel *channel)

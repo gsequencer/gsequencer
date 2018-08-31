@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -22,7 +22,6 @@
 #include <ags/i18n.h>
 
 void ags_free_selection_class_init(AgsFreeSelectionClass *free_selection);
-void ags_free_selection_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_free_selection_init(AgsFreeSelection *free_selection);
 void ags_free_selection_set_property(GObject *gobject,
 				     guint prop_id,
@@ -32,8 +31,6 @@ void ags_free_selection_get_property(GObject *gobject,
 				     guint prop_id,
 				     GValue *value,
 				     GParamSpec *param_spec);
-void ags_free_selection_connect(AgsConnectable *connectable);
-void ags_free_selection_disconnect(AgsConnectable *connectable);
 void ags_free_selection_dispose(GObject *gobject);
 void ags_free_selection_finalize(GObject *gobject);
 
@@ -50,11 +47,9 @@ void ags_free_selection_launch(AgsTask *task);
  */
 
 static gpointer ags_free_selection_parent_class = NULL;
-static AgsConnectableInterface *ags_free_selection_parent_connectable_interface;
 
 enum{
   PROP_0,
-  PROP_AUDIO,
   PROP_NOTATION,
 };
 
@@ -67,36 +62,24 @@ ags_free_selection_get_type()
     GType ags_type_free_selection;
 
     static const GTypeInfo ags_free_selection_info = {
-      sizeof (AgsFreeSelectionClass),
+      sizeof(AgsFreeSelectionClass),
       NULL, /* base_init */
       NULL, /* base_finalize */
       (GClassInitFunc) ags_free_selection_class_init,
       NULL, /* class_finalize */
       NULL, /* class_data */
-      sizeof (AgsFreeSelection),
+      sizeof(AgsFreeSelection),
       0,    /* n_preallocs */
       (GInstanceInitFunc) ags_free_selection_init,
-    };
-
-    static const GInterfaceInfo ags_connectable_interface_info = {
-      (GInterfaceInitFunc) ags_free_selection_connectable_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
     };
 
     ags_type_free_selection = g_type_register_static(AGS_TYPE_TASK,
 						     "AgsFreeSelection",
 						     &ags_free_selection_info,
 						     0);
-
-    g_type_add_interface_static(ags_type_free_selection,
-				AGS_TYPE_CONNECTABLE,
-				&ags_connectable_interface_info);
-
-    g_once_init_leave (&g_define_type_id__volatile, ags_type_free_selection);
   }
-
-  return g_define_type_id__volatile;
+  
+  return(ags_type_free_selection);
 }
 
 void
@@ -120,27 +103,11 @@ ags_free_selection_class_init(AgsFreeSelectionClass *free_selection)
 
   /* properties */
   /**
-   * AgsFreeSelection:audio:
-   *
-   * The assigned #AgsAudio
-   * 
-   * Since: 1.2.2
-   */
-  param_spec = g_param_spec_object("audio",
-				   i18n_pspec("audio of free selection"),
-				   i18n_pspec("The audio of free selection task"),
-				   AGS_TYPE_AUDIO,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_AUDIO,
-				  param_spec);
-
-  /**
    * AgsFreeSelection:notation:
    *
    * The assigned #AgsNotation
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("notation",
 				   i18n_pspec("notation of free selection"),
@@ -158,18 +125,8 @@ ags_free_selection_class_init(AgsFreeSelectionClass *free_selection)
 }
 
 void
-ags_free_selection_connectable_interface_init(AgsConnectableInterface *connectable)
-{
-  ags_free_selection_parent_connectable_interface = g_type_interface_peek_parent(connectable);
-
-  connectable->connect = ags_free_selection_connect;
-  connectable->disconnect = ags_free_selection_disconnect;
-}
-
-void
 ags_free_selection_init(AgsFreeSelection *free_selection)
 {
-  free_selection->audio = NULL;
   free_selection->notation = NULL;
 }
 
@@ -184,27 +141,6 @@ ags_free_selection_set_property(GObject *gobject,
   free_selection = AGS_FREE_SELECTION(gobject);
 
   switch(prop_id){
-  case PROP_AUDIO:
-    {
-      AgsAudio *audio;
-
-      audio = (AgsAudio *) g_value_get_object(value);
-
-      if(free_selection->audio == (GObject *) audio){
-	return;
-      }
-
-      if(free_selection->audio != NULL){
-	g_object_unref(free_selection->audio);
-      }
-
-      if(audio != NULL){
-	g_object_ref(audio);
-      }
-
-      free_selection->audio = (GObject *) audio;
-    }
-    break;
   case PROP_NOTATION:
     {
       AgsNotation *notation;
@@ -243,11 +179,6 @@ ags_free_selection_get_property(GObject *gobject,
   free_selection = AGS_FREE_SELECTION(gobject);
 
   switch(prop_id){
-  case PROP_AUDIO:
-    {
-      g_value_set_object(value, free_selection->audio);
-    }
-    break;
   case PROP_NOTATION:
     {
       g_value_set_object(value, free_selection->notation);
@@ -260,33 +191,11 @@ ags_free_selection_get_property(GObject *gobject,
 }
 
 void
-ags_free_selection_connect(AgsConnectable *connectable)
-{
-  ags_free_selection_parent_connectable_interface->connect(connectable);
-
-  /* empty */
-}
-
-void
-ags_free_selection_disconnect(AgsConnectable *connectable)
-{
-  ags_free_selection_parent_connectable_interface->disconnect(connectable);
-
-  /* empty */
-}
-
-void
 ags_free_selection_dispose(GObject *gobject)
 {
   AgsFreeSelection *free_selection;
 
   free_selection = AGS_FREE_SELECTION(gobject);
-
-  if(free_selection->audio != NULL){
-    g_object_unref(free_selection->audio);
-
-    free_selection->audio = NULL;
-  }
 
   if(free_selection->notation != NULL){
     g_object_unref(free_selection->notation);
@@ -305,10 +214,6 @@ ags_free_selection_finalize(GObject *gobject)
 
   free_selection = AGS_FREE_SELECTION(gobject);
 
-  if(free_selection->audio != NULL){
-    g_object_unref(free_selection->audio);
-  }
-
   if(free_selection->notation != NULL){
     g_object_unref(free_selection->notation);
   }
@@ -320,51 +225,27 @@ ags_free_selection_finalize(GObject *gobject)
 void
 ags_free_selection_launch(AgsTask *task)
 {
-  AgsAudio *audio;
   AgsNotation *notation;
   
   AgsFreeSelection *free_selection;
 
-  AgsMutexManager *mutex_manager;
-
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *audio_mutex;
-
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-
   free_selection = AGS_FREE_SELECTION(task);
-
-  audio = free_selection->audio;
 
   notation = free_selection->notation;
 
-  /* get audio mutex */
-  pthread_mutex_lock(application_mutex);
-
-  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
-					 (GObject *) audio);
-  
-  pthread_mutex_unlock(application_mutex);
-
   /* free selection */
-  pthread_mutex_lock(audio_mutex);
-
   ags_notation_free_selection(notation);
-
-  pthread_mutex_unlock(audio_mutex);
 }
 
 /**
  * ags_free_selection_new:
  * @notation: the #AgsNotation
  *
- * WARNING you need to provide #AgsAudio as a property.
- * Creates an #AgsFreeSelection.
+ * Create a new instance of #AgsFreeSelection.
  *
- * Returns: an new #AgsFreeSelection.
+ * Returns: the new #AgsFreeSelection.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsFreeSelection*
 ags_free_selection_new(AgsNotation *notation)

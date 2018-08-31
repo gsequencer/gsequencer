@@ -182,6 +182,12 @@ ags_context_menu_init(AgsContextMenu *context_menu)
   item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label(i18n("Mixer"));
   gtk_menu_shell_append((GtkMenuShell*) context_menu->add, (GtkWidget*) item);
 
+  item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label(i18n("Spectrometer"));
+  gtk_menu_shell_append((GtkMenuShell*) context_menu->add, (GtkWidget*) item);
+
+  item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label(i18n("Equalizer"));
+  gtk_menu_shell_append((GtkMenuShell*) context_menu->add, (GtkWidget*) item);
+  
   item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label(i18n("Drum"));
   gtk_menu_shell_append((GtkMenuShell*) context_menu->add, (GtkWidget*) item);
 
@@ -198,6 +204,9 @@ ags_context_menu_init(AgsContextMenu *context_menu)
   item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label(i18n("FPlayer"));
   gtk_menu_shell_append((GtkMenuShell*) context_menu->add, (GtkWidget*) item);
 #endif
+
+  item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label(i18n("Audiorec"));
+  gtk_menu_shell_append((GtkMenuShell*) context_menu->add, (GtkWidget*) item);
   
   /* bridge */
   item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label(i18n("LADSPA"));
@@ -229,6 +238,12 @@ ags_context_menu_init(AgsContextMenu *context_menu)
 
   /* automation */
   item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label(i18n("Automation"));
+  //  gtk_widget_set_sensitive(item,
+  //			   FALSE);
+  gtk_menu_shell_append((GtkMenuShell*) context_menu->edit, (GtkWidget*) item);
+
+  /* wave */
+  item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label(i18n("Wave"));
   //  gtk_widget_set_sensitive(item,
   //			   FALSE);
   gtk_menu_shell_append((GtkMenuShell*) context_menu->edit, (GtkWidget*) item);
@@ -337,6 +352,14 @@ ags_context_menu_connect(AgsConnectable *connectable)
   list2 = list2->next;
 
   g_signal_connect (G_OBJECT (list2->data), "activate",
+                    G_CALLBACK (ags_menu_action_add_spectrometer_callback), (gpointer) context_menu);
+  list2 = list2->next;
+
+  g_signal_connect (G_OBJECT (list2->data), "activate",
+                    G_CALLBACK (ags_menu_action_add_equalizer_callback), (gpointer) context_menu);
+  list2 = list2->next;
+  
+  g_signal_connect (G_OBJECT (list2->data), "activate",
                     G_CALLBACK (ags_menu_action_add_drum_callback), (gpointer) context_menu);
   list2 = list2->next;
 
@@ -357,6 +380,10 @@ ags_context_menu_connect(AgsConnectable *connectable)
                     G_CALLBACK (ags_menu_action_add_ffplayer_callback), (gpointer) context_menu);
   list2 = list2->next;
 #endif
+
+  g_signal_connect (G_OBJECT (list2->data), "activate",
+                    G_CALLBACK (ags_menu_action_add_audiorec_callback), (gpointer) context_menu);
+  list2 = list2->next;
   
   /* ladspa */
   list3_start = 
@@ -434,9 +461,13 @@ ags_context_menu_connect(AgsConnectable *connectable)
   g_list_free(list3_start);
   g_list_free(list2_start);
 
-  /* automation and preferences */
+  /* automation, wave and preferences */
   g_signal_connect (G_OBJECT (list1->data), "activate",
                     G_CALLBACK (ags_menu_action_automation_callback), (gpointer) context_menu);
+  list1 = list1->next;
+
+  g_signal_connect (G_OBJECT (list1->data), "activate",
+                    G_CALLBACK (ags_menu_action_wave_callback), (gpointer) context_menu);
   list1 = list1->next;
   list1 = list1->next;
 
@@ -498,7 +529,7 @@ ags_context_menu_disconnect(AgsConnectable *connectable)
  *
  * Returns: a new #AgsContextMenu
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsContextMenu*
 ags_context_menu_new()

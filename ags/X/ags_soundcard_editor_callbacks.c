@@ -23,14 +23,12 @@
 #include <ags/libags-audio.h>
 #include <ags/libags-gui.h>
 
+#include <ags/X/ags_ui_provider.h>
 #include <ags/X/ags_xorg_application_context.h>
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_preferences.h>
 
 #include <ags/X/thread/ags_gui_thread.h>
-
-#include <ags/X/task/ags_add_soundcard_editor_sink.h>
-#include <ags/X/task/ags_remove_soundcard_editor_sink.h>
 
 #include <ags/config.h>
 
@@ -83,13 +81,6 @@ ags_soundcard_editor_card_changed_callback(GtkComboBox *combo,
 {
   AgsWindow *window;
 
-  AgsSetOutputDevice *set_output_device;
-
-  AgsMutexManager *mutex_manager;
-  AgsThread *main_loop;
-  AgsGuiThread *gui_thread;
-
-  AgsApplicationContext *application_context;
   GObject *soundcard;
 
   GtkTreeIter current;
@@ -104,8 +95,6 @@ ags_soundcard_editor_card_changed_callback(GtkComboBox *combo,
 
   GError *error;
 
-  pthread_mutex_t *application_mutex;
-
   if((AGS_SOUNDCARD_EDITOR_BLOCK_CARD & (soundcard_editor->flags)) != 0){
     return;
   }
@@ -116,22 +105,6 @@ ags_soundcard_editor_card_changed_callback(GtkComboBox *combo,
 							      AGS_TYPE_PREFERENCES))->window);
   soundcard = soundcard_editor->soundcard;
 
-  application_context = (AgsApplicationContext *) window->application_context;
-
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-  
-  /* get audio loop */
-  pthread_mutex_lock(application_mutex);
-
-  main_loop = (AgsThread *) application_context->main_loop;
-
-  pthread_mutex_unlock(application_mutex);
-
-  /* get task and soundcard thread */
-  gui_thread = (AgsGuiThread *) ags_thread_find_type(main_loop,
-						     AGS_TYPE_GUI_THREAD);
-  
   /*  */
   use_alsa = FALSE;
 
@@ -192,10 +165,8 @@ ags_soundcard_editor_card_changed_callback(GtkComboBox *combo,
   }
 
   if(card != NULL){
-    set_output_device = ags_set_output_device_new(soundcard,
-						  card);
-    ags_gui_thread_schedule_task(gui_thread,
-				 set_output_device);
+    ags_soundcard_set_device(AGS_SOUNDCARD(soundcard),
+			     card);
     
     gtk_spin_button_set_range(soundcard_editor->audio_channels,
 			      channels_min, channels_max);
@@ -232,13 +203,9 @@ ags_soundcard_editor_audio_channels_changed_callback(GtkSpinButton *spin_button,
   GObject *soundcard;
   AgsSetAudioChannels *set_audio_channels;
 
-  AgsMutexManager *mutex_manager;
-  AgsThread *main_loop;
   AgsGuiThread *gui_thread;
 
   AgsApplicationContext *application_context;
-
-  pthread_mutex_t *application_mutex;  
 
   window = AGS_WINDOW(AGS_PREFERENCES(gtk_widget_get_ancestor(GTK_WIDGET(soundcard_editor),
 							      AGS_TYPE_PREFERENCES))->window);
@@ -246,19 +213,8 @@ ags_soundcard_editor_audio_channels_changed_callback(GtkSpinButton *spin_button,
 
   application_context = (AgsApplicationContext *) window->application_context;
 
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-  
-  /* get audio loop */
-  pthread_mutex_lock(application_mutex);
-
-  main_loop = (AgsThread *) application_context->main_loop;
-
-  pthread_mutex_unlock(application_mutex);
-
-  /* get task and soundcard thread */
-  gui_thread = (AgsGuiThread *) ags_thread_find_type(main_loop,
-						       AGS_TYPE_GUI_THREAD);
+  /* get gui thread */
+  gui_thread = ags_ui_provider_get_gui_thread(AGS_UI_PROVIDER(application_context));
 
   /* create set output device task */
   set_audio_channels = ags_set_audio_channels_new(soundcard,
@@ -277,13 +233,9 @@ ags_soundcard_editor_samplerate_changed_callback(GtkSpinButton *spin_button,
   GObject *soundcard;
   AgsSetSamplerate *set_samplerate;
 
-  AgsMutexManager *mutex_manager;
-  AgsThread *main_loop;
   AgsGuiThread *gui_thread;
 
   AgsApplicationContext *application_context;
-
-  pthread_mutex_t *application_mutex;
   
   window = AGS_WINDOW(AGS_PREFERENCES(gtk_widget_get_ancestor(GTK_WIDGET(soundcard_editor),
 							      AGS_TYPE_PREFERENCES))->window);
@@ -291,19 +243,8 @@ ags_soundcard_editor_samplerate_changed_callback(GtkSpinButton *spin_button,
 
   application_context = (AgsApplicationContext *) window->application_context;
 
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-  
-  /* get audio loop */
-  pthread_mutex_lock(application_mutex);
-
-  main_loop = (AgsThread *) application_context->main_loop;
-
-  pthread_mutex_unlock(application_mutex);
-
-  /* get task and soundcard thread */
-  gui_thread = (AgsGuiThread *) ags_thread_find_type(main_loop,
-						       AGS_TYPE_GUI_THREAD);
+  /* get gui thread */
+  gui_thread = ags_ui_provider_get_gui_thread(AGS_UI_PROVIDER(application_context));
 
   /* create set output device task */
   set_samplerate = ags_set_samplerate_new(soundcard,
@@ -322,13 +263,9 @@ ags_soundcard_editor_buffer_size_changed_callback(GtkSpinButton *spin_button,
   GObject *soundcard;
   AgsSetBufferSize *set_buffer_size;
 
-  AgsMutexManager *mutex_manager;
-  AgsThread *main_loop;
   AgsGuiThread *gui_thread;
 
   AgsApplicationContext *application_context;
-
-  pthread_mutex_t *application_mutex;
   
   window = AGS_WINDOW(AGS_PREFERENCES(gtk_widget_get_ancestor(GTK_WIDGET(soundcard_editor),
 							      AGS_TYPE_PREFERENCES))->window);
@@ -336,19 +273,8 @@ ags_soundcard_editor_buffer_size_changed_callback(GtkSpinButton *spin_button,
 
   application_context = (AgsApplicationContext *) window->application_context;
 
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-  
-  /* get audio loop */
-  pthread_mutex_lock(application_mutex);
-
-  main_loop = (AgsThread *) application_context->main_loop;
-
-  pthread_mutex_unlock(application_mutex);
-
-  /* get task and soundcard thread */
-  gui_thread = (AgsGuiThread *) ags_thread_find_type(main_loop,
-						       AGS_TYPE_GUI_THREAD);
+  /* get gui thread */
+  gui_thread = ags_ui_provider_get_gui_thread(AGS_UI_PROVIDER(application_context));
 
   /* create set output device task */
   set_buffer_size = ags_set_buffer_size_new(soundcard,
@@ -367,35 +293,21 @@ ags_soundcard_editor_format_changed_callback(GtkComboBox *combo_box,
   GObject *soundcard;
   AgsSetFormat *set_format;
 
-  AgsMutexManager *mutex_manager;
-  AgsThread *main_loop;
   AgsGuiThread *gui_thread;
 
   AgsApplicationContext *application_context;
 
   guint format;
   
-  pthread_mutex_t *application_mutex;
-  
   window = AGS_WINDOW(AGS_PREFERENCES(gtk_widget_get_ancestor(GTK_WIDGET(soundcard_editor),
 							      AGS_TYPE_PREFERENCES))->window);
+
   soundcard = soundcard_editor->soundcard;
 
   application_context = (AgsApplicationContext *) window->application_context;
 
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-  
-  /* get audio loop */
-  pthread_mutex_lock(application_mutex);
-
-  main_loop = (AgsThread *) application_context->main_loop;
-
-  pthread_mutex_unlock(application_mutex);
-
-  /* get task and soundcard thread */
-  gui_thread = (AgsGuiThread *) ags_thread_find_type(main_loop,
-						       AGS_TYPE_GUI_THREAD);
+  /* get gui thread */
+  gui_thread = ags_ui_provider_get_gui_thread(AGS_UI_PROVIDER(application_context));
 
   /* format */
   switch(gtk_combo_box_get_active(GTK_COMBO_BOX(soundcard_editor->format))){

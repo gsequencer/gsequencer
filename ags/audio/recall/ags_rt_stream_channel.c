@@ -24,12 +24,7 @@
 #include <ags/i18n.h>
 
 void ags_rt_stream_channel_class_init(AgsRtStreamChannelClass *rt_stream_channel);
-void ags_rt_stream_channel_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_rt_stream_channel_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_rt_stream_channel_init(AgsRtStreamChannel *rt_stream_channel);
-void ags_rt_stream_channel_connect(AgsConnectable *connectable);
-void ags_rt_stream_channel_disconnect(AgsConnectable *connectable);
-void ags_rt_stream_channel_set_ports(AgsPlugin *plugin, GList *port);
 void ags_rt_stream_channel_dispose(GObject *gobject);
 void ags_rt_stream_channel_finalize(GObject *gobject);
 
@@ -44,8 +39,6 @@ void ags_rt_stream_channel_finalize(GObject *gobject);
  */
 
 static gpointer ags_rt_stream_channel_parent_class = NULL;
-static AgsConnectableInterface *ags_rt_stream_channel_parent_connectable_interface;
-static AgsPluginInterface *ags_rt_stream_channel_parent_plugin_interface;
 
 static const gchar *ags_rt_stream_channel_plugin_name = "ags-rt-stream";
 
@@ -69,43 +62,19 @@ ags_rt_stream_channel_get_type()
       (GInstanceInitFunc) ags_rt_stream_channel_init,
     };
 
-    static const GInterfaceInfo ags_connectable_interface_info = {
-      (GInterfaceInitFunc) ags_rt_stream_channel_connectable_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-
-    static const GInterfaceInfo ags_plugin_interface_info = {
-      (GInterfaceInitFunc) ags_rt_stream_channel_plugin_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };    
-
     ags_type_rt_stream_channel = g_type_register_static(AGS_TYPE_RECALL_CHANNEL,
 							"AgsRtStreamChannel",
 							&ags_rt_stream_channel_info,
 							0);
-
-    g_type_add_interface_static(ags_type_rt_stream_channel,
-				AGS_TYPE_CONNECTABLE,
-				&ags_connectable_interface_info);
-
-    g_type_add_interface_static(ags_type_rt_stream_channel,
-				AGS_TYPE_PLUGIN,
-				&ags_plugin_interface_info);
-
-    g_once_init_leave (&g_define_type_id__volatile, ags_type_rt_stream_channel);
   }
 
-  return g_define_type_id__volatile;
+  return(ags_type_rt_stream_channel);
 }
 
 void
 ags_rt_stream_channel_class_init(AgsRtStreamChannelClass *rt_stream_channel)
 {
   GObjectClass *gobject;
-  AgsRecallClass *recall;
-  GParamSpec *param_spec;
 
   ags_rt_stream_channel_parent_class = g_type_class_peek_parent(rt_stream_channel);
 
@@ -114,21 +83,6 @@ ags_rt_stream_channel_class_init(AgsRtStreamChannelClass *rt_stream_channel)
 
   gobject->dispose = ags_rt_stream_channel_dispose;
   gobject->finalize = ags_rt_stream_channel_finalize;
-}
-
-void
-ags_rt_stream_channel_connectable_interface_init(AgsConnectableInterface *connectable)
-{
-  ags_rt_stream_channel_parent_connectable_interface = g_type_interface_peek_parent(connectable);
-
-  connectable->connect = ags_rt_stream_channel_connect;
-  connectable->disconnect = ags_rt_stream_channel_disconnect;
-}
-
-void
-ags_rt_stream_channel_plugin_interface_init(AgsPluginInterface *plugin)
-{
-  ags_rt_stream_channel_parent_plugin_interface = g_type_interface_peek_parent(plugin);
 }
 
 void
@@ -164,41 +118,23 @@ ags_rt_stream_channel_finalize(GObject *gobject)
   G_OBJECT_CLASS(ags_rt_stream_channel_parent_class)->finalize(gobject);
 }
 
-void
-ags_rt_stream_channel_connect(AgsConnectable *connectable)
-{
-  if((AGS_RECALL_CONNECTED & (AGS_RECALL(connectable)->flags)) != 0){
-    return;
-  }
-
-  ags_rt_stream_channel_parent_connectable_interface->connect(connectable);
-
-  /* empty */
-}
-
-void
-ags_rt_stream_channel_disconnect(AgsConnectable *connectable)
-{
-  ags_rt_stream_channel_parent_connectable_interface->disconnect(connectable);
-
-  /* empty */
-}
-
 /**
  * ags_rt_stream_channel_new:
+ * @source: the #AgsChannel
  *
- * Creates an #AgsRtStreamChannel
+ * Create a new instance of #AgsRtStreamChannel
  *
- * Returns: a new #AgsRtStreamChannel
+ * Returns: the new #AgsRtStreamChannel
  *
- * Since: 1.4.0
+ * Since: 2.0.0
  */
 AgsRtStreamChannel*
-ags_rt_stream_channel_new()
+ags_rt_stream_channel_new(AgsChannel *source)
 {
   AgsRtStreamChannel *rt_stream_channel;
 
   rt_stream_channel = (AgsRtStreamChannel *) g_object_new(AGS_TYPE_RT_STREAM_CHANNEL,
+							  "source", source,
 							  NULL);
 
   return(rt_stream_channel);

@@ -1,112 +1,94 @@
-ags (1.4.35)
+ags (2.0.0)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
-	* fixed potential data-race in ags_thread_pool.c
-	* fixed missing ref count of parent with AgsThreadPool
-	* fixed wrong argument to pthread_create() in ags_thread_pool.c
-	* fixed potential infinite loop in ags_simple_file.c
-	* fixed missing segmented notation in MIDI import
-	* fixed AgsAutomationEditor paste missing port automation
-	* fixed AgsNotationEditor paste wrong ref count
-
-ags (1.4.34)
-
-	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
-	* fixed all ags_*_get_type() to use atomic operations
-
-ags (1.4.33)
-
-	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
-	* fixed missing includes of pthread.h
-	* fixed thread-safety of AgsRouteLv2AudioRun
-	* fixed thread-safety of AgsRouteDssiAudioRun
-	* fixed thread-safety of AgsPlayDssiAudioRun
-	* fixed thread-safety of AgsPlayLv2AudioRun
-	* fixed thread-safety of AgsRecallDssi
-	* fixed thread-safety of AgsRecallDssiRun
-	* fixed thread-safety of AgsRecallLadspa
-	* fixed thread-safety of AgsRecallLadspaRun
-	* fixed thread-safety of AgsRecallLv2
-	* fixed thread-safety of AgsRecallLv2Run
-
-ags (1.4.32)
-
-	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
-	* reworked CoreAudio output
-	* improved mutex locks in ags_navigation_callbacks.c
-	* improved midi2xml.1.xml to do file attribution
-	* improved midi2xml to output usage as no parameter was given
-	* fixed wrong loop condition in ags_apply_presets.c
-	* fixed unsafe reference count in ags_audio.c and ags_channel.c
-	* fixed wrong reference count in ags_recycling_context.c
-	* fixed AgsSeekSoundcard to use recall context
-	* fixed AgsSeekSoundcard to use correct mutex variable
-
-ags (1.4.31)
-
-	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
-	* disabled GLib-GObject fatal mask
-
-ags (1.4.30)
-
-	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
-	* fixed wrong if statement in ags_route_dssi_audio_run.c causing DSSI silence
-	* fixed potential SIGSEGV related to AgsRecyclingContext wrong ref count
-
-ags (1.4.29)
-
-	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
-	* fixed timestamp offset clipboard insert
-	* fixed missing timestamp of notation
-
-ags (1.4.28)
-
-	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
-	* fixed integrity check of ags_recall_lv2_load()
-	* fixed selection of notation region
-
-ags (1.4.27)
-
-	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
-	* fixed missing timestamp information in AgsAutomation clipboard
-	* fixed if statement in ags_automation_find_specifier_with_type_and_line()
-	* fixed missing return in ags_automation_get_value()
-	* minor improvements
-
-ags (1.4.26)
-
-	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
-	* fixed wrong ref count in ags_automation.c
-	* fixed wrong ref count in ags_notation.c
-	* fixed allow select all first and last acceleration of automation
-	* improved AgsExportWindow to reset backend
-
-ags (1.4.25)
-
-	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
-	* fixed wrong connectable interface of AgsRecallAudioRun
-	* fixed AgsRecall::stop-persistent and do event invocation
-	* exported symbols of ags_widget_marshal.c
-
-ags (1.4.24)
-
-	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
-	* reverted write double as exporting to audio file
-
-ags (1.4.23)
-
-	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
-	* implemented MIDI input callback of AgsCoreAudioPort
-	* implemented ags_playable_read_int() and ags_playable_write_int()
-	* implemented new AgsPlayable interface functions in ags_sndfile.c and ags_ipatch.c
-	* refactored AgsSequencerEditor to support AgsCoreAudioMidiin
-	* added AgsCoreAudioMidiin support to ags_core_audio_server.c
-
-ags (1.4.22)
-
-	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
-	* fixed do async start of AgsWindow
-	* fixed concurrent access during animation
+	* implemented AgsChannel to listen to AgsRecall::child-done()
+	* implemented AgsInputCollectionEditor, AgsInputListingEditor and AgsInputEditor
+	* TODO:JK: improved ags-feed recall thread-safety
+	* TODO:JK: improved ags_audio_signal_feed() reduce over-head
+	* TODO:JK: improved AgsApplySynth thread-safety
+	* implemented ags_soundcard_lock_buffer() and ags_soundcard_unlock_buffer()
+	* TODO:JK: implemented AgsFunction
+	* TODO:JK: implemented AgsServer, AgsRegistry and AgsServerStatus
+	* TODO:JK: implemented AgsXmlAuthentication, AgsXmlCertificate and AgsXmlPasswordStore
+	* TODO:JK: implemented AgsFrontController, AgsFactoryController, AgsLocalRegistryController, AgsLocalSerializationController and AgsLocalTaskController
+	* TODO:JK: implemented audio input properties
+	* TODO:JK: refactored AgsAutomationEditor to be more light-weight
+	* TODO:JK: implemented AgsCartesian properties
+	* TODO:JK: implemented AgsConnectable:disconnect() to all implementing objects
+	* TODO:JK: implemented AgsPlaybackDomain properties
+	* TODO:JK: implemented AgsPlayback properties
+	* TODO:JK: implemented AgsScaleArea properties
+	* TODO:JK: implemented AgsApplicationContext properties
+	* TODO:JK: implement AgsConnectable properly
+	* TODO:JK: implemented AgsWaveWindow, AgsWaveEditor, AgsWaveToolbar and AgsWaveEdit
+	* TODO:JK: implemented AgsSelectBuffer and AgsPositionWaveCursor
+	* implemented AgsWave and AgsBuffer
+	* TODO:JK: implemented ags-play-wave recall
+	* implemented ags-capture-sound recall
+	* implemented ags-copy-pattern recall plugin port for automation
+	* TODO:JK: implemented AgsAudiorec
+	* TODO:JK: implemented damping/vibration of AgsAudioSignal
+	* TODO:JK: implemented exponential curve option for ags-envelope recall
+	* new ags_globals.[ch]
+	* new ags_uuid.[ch]
+	* new ags_midi.[ch]
+	* new ags_track.[ch]
+	* new ags_char_buffer_util.[ch]
+	* new ags_sound_container.[ch]
+	* new ags_sound_resource.[ch]
+	* new ags_wav_file.[ch]
+	* new ags_soundcard_util.[ch]
+	* new ags_plugin_port.[ch]
+	* incompatible AgsBasePlugin::instantiate() function prototype
+	* added ags_connectable_has_resource()
+	* added ags_audio_done_recall()
+	* TODO:JK: replaced AgsDistributedManager by AgsSoundServer
+	* added propertiy :output-soundcard to AgsAudio, AgsChannel, AgsRecycling, AgsAudioSignal and AgsRecall
+	* added propertiy :input-soundcard to AgsAudio, AgsChannel, AgsRecycling, AgsAudioSignal and AgsRecall
+	* replaced use of GParameter by string vector and value array of AgsMessageEnvelope
+	* replaced use of GParameter by string vector and value array of AgsPreset
+	* replaced AgsPortDescriptor struct by AgsPluginPort object
+	* modified prototype of ags_audio_collect_all_audio_ports_by_specifier_and_context()
+	* modified prototype of ags_midi_file_read_*()
+	* modified prototype of ags_synth_generator_compute()
+	* modified return type of ags_channel_add_effect() to AgsRecall
+	* renamed g_cclosure_user_marshal_* to ags_cclosure_marshal_*
+	* renamed ags_connectable_connect_scope() to ags_connectable_connect_connection()
+	* renamed ags_connectable_disconnect_scope() to ags_connectable_disconnect_connection()
+	* renamed AgsRecallChannelDummyRun to AgsGenericRecallChannelRun
+	* renamed AgsRecallRecyclingDummy to AgsGenericRecallRecycling
+	* renamed ags_audio_play_recall()
+	* renamed ags_audio_cancel_recall()
+	* renamed ags_audio_signal_find_by_recall_id()
+	* renamed ags_audio_signal_find_stream_current()
+	* removed ags_connection_manager.[ch]
+	* removed ags_connection.[ch]
+	* TODO:JK: removed ags_id_generator.[ch]
+	* removed ags_packable.[ch]
+	* removed ags_recall_load_automation() and ags_recall_unload_automation()
+	* removed property :soundcard from AgsAudio, AgsChannel, AgsRecycling, AgsAudioSignal and AgsRecall
+	* removed ags_audio_connection.[ch]
+	* removed ags_message.[ch]
+	* removed ags_playable.[ch]
+	* removed ags_audio_remove()
+	* removed ags_channel_safe_resize_audio_signal()
+	* removed ags_channel_recursive_play_init()
+	* removed ags_channel_tillrecycling_cancel()
+	* removed ags_channel_recursive_reset_recall_ids()
+	* removed ags_channel_recursive_reset_recycling_context
+	* removed ags_channel_recursive_reset_recall_id
+	* removed ags_channel_recursive_init
+	* removed ags_channel_recursive_run
+	* removed ags_channel_recursive_cancel
+	* removed ags_channel_recursive_play_threaded
+	* removed ags_channel_recursive_play
+	* removed ags_audio_signal_realloc_buffer_size()
+	* removed ags_audio_signal_tile()
+	* removed ags_audio_signal_scale()
+	* removed ags_synth_generator_compute_extended()
+	* removed ags_synth_generator_compute_with_audio_signal()
+	* removed ags_play_note.[ch]
+	* removed ags_play_audio_file.[ch]
 
 ags (1.4.21)
 

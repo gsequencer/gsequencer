@@ -43,9 +43,11 @@ void ags_ladspa_bridge_get_property(GObject *gobject,
 				    guint prop_id,
 				    GValue *value,
 				    GParamSpec *param_spec);
+void ags_ladspa_bridge_finalize(GObject *gobject);
+
 void ags_ladspa_bridge_connect(AgsConnectable *connectable);
 void ags_ladspa_bridge_disconnect(AgsConnectable *connectable);
-void ags_ladspa_bridge_finalize(GObject *gobject);
+
 gchar* ags_ladspa_bridge_get_version(AgsPlugin *plugin);
 void ags_ladspa_bridge_set_version(AgsPlugin *plugin, gchar *version);
 gchar* ags_ladspa_bridge_get_build_id(AgsPlugin *plugin);
@@ -235,7 +237,7 @@ ags_ladspa_bridge_init(AgsLadspaBridge *ladspa_bridge)
 			 G_CALLBACK(ags_ladspa_bridge_parent_set_callback), (gpointer) ladspa_bridge);
 
   audio = AGS_MACHINE(ladspa_bridge)->audio;
-  audio->flags |= (AGS_AUDIO_SYNC);
+  ags_audio_set_flags(audio, (AGS_AUDIO_SYNC));
   
   ladspa_bridge->flags = 0;
 
@@ -386,6 +388,20 @@ ags_ladspa_bridge_get_property(GObject *gobject,
 }
 
 void
+ags_ladspa_bridge_finalize(GObject *gobject)
+{
+  AgsLadspaBridge *ladspa_bridge;
+
+  ladspa_bridge = (AgsLadspaBridge *) gobject;
+  
+  g_free(ladspa_bridge->filename);
+  g_free(ladspa_bridge->effect);
+
+  /* call parent */
+  G_OBJECT_CLASS(ags_ladspa_bridge_parent_class)->finalize(gobject);
+}
+
+void
 ags_ladspa_bridge_connect(AgsConnectable *connectable)
 {
   if((AGS_MACHINE_CONNECTED & (AGS_MACHINE(connectable)->flags)) != 0){
@@ -403,20 +419,6 @@ ags_ladspa_bridge_disconnect(AgsConnectable *connectable)
   }
 
   ags_ladspa_bridge_parent_connectable_interface->disconnect(connectable);
-}
-
-void
-ags_ladspa_bridge_finalize(GObject *gobject)
-{
-  AgsLadspaBridge *ladspa_bridge;
-
-  ladspa_bridge = (AgsLadspaBridge *) gobject;
-  
-  g_free(ladspa_bridge->filename);
-  g_free(ladspa_bridge->effect);
-
-  /* call parent */
-  G_OBJECT_CLASS(ags_ladspa_bridge_parent_class)->finalize(gobject);
 }
 
 gchar*
@@ -520,9 +522,9 @@ ags_ladspa_bridge_launch_task(AgsFileLaunch *file_launch, AgsLadspaBridge *ladsp
     recall = AGS_MACHINE(ladspa_bridge)->audio->input->recall;
     
     while((recall = ags_recall_template_find_type(recall, AGS_TYPE_RECALL_LADSPA)) != NULL){
-      if(!g_strcmp0(AGS_RECALL_LADSPA(recall->data)->filename,
+      if(!g_strcmp0(AGS_RECALL(recall->data)->filename,
 		  ladspa_bridge->filename) &&
-	 !g_strcmp0(AGS_RECALL_LADSPA(recall->data)->effect,
+	 !g_strcmp0(AGS_RECALL(recall->data)->effect,
 		    ladspa_bridge->effect)){
 	break;
       }
@@ -644,19 +646,14 @@ ags_ladspa_bridge_new(GObject *soundcard,
 		      gchar *effect)
 {
   AgsLadspaBridge *ladspa_bridge;
-  GValue value = {0,};
 
   ladspa_bridge = (AgsLadspaBridge *) g_object_new(AGS_TYPE_LADSPA_BRIDGE,
 						   NULL);
 
-  if(soundcard != NULL){
-    g_value_init(&value, G_TYPE_OBJECT);
-    g_value_set_object(&value, soundcard);
-    g_object_set_property(G_OBJECT(AGS_MACHINE(ladspa_bridge)->audio),
-			  "soundcard", &value);
-    g_value_unset(&value);
-  }
-
+  g_object_set(AGS_MACHINE(ladspa_bridge)->audio,
+	       "output-soundcard", soundcard,
+	       NULL);
+  
   g_object_set(ladspa_bridge,
 	       "filename", filename,
 	       "effect", effect,

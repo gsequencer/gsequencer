@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -23,34 +23,28 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <ags/libags.h>
+
 #include <ags/audio/ags_recall_id.h>
 
-#define AGS_TYPE_RECALL_DEPENDENCY                (ags_recall_dependency_get_type ())
-#define AGS_RECALL_DEPENDENCY(obj)                (G_TYPE_CHECK_INSTANCE_CAST ((obj), AGS_TYPE_RECALL_DEPENDENCY, AgsRecallDependency))
-#define AGS_RECALL_DEPENDENCY_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST ((class), AGS_TYPE_RECALL_DEPENDENCY, AgsRecallDependencyClass))
-#define AGS_IS_RECALL_DEPENDENCY(obj)             (G_TYPE_CHECK_INSTANCE_TYPE ((obj), AGS_TYPE_RECALL_DEPENDENCY))
-#define AGS_IS_RECALL_DEPENDENCY_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_RECALL_DEPENDENCY))
-#define AGS_RECALL_DEPENDENCY_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_RECALL_DEPENDENCY, AgsRecallDependencyClass))
+#define AGS_TYPE_RECALL_DEPENDENCY                (ags_recall_dependency_get_type())
+#define AGS_RECALL_DEPENDENCY(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_RECALL_DEPENDENCY, AgsRecallDependency))
+#define AGS_RECALL_DEPENDENCY_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_RECALL_DEPENDENCY, AgsRecallDependencyClass))
+#define AGS_IS_RECALL_DEPENDENCY(obj)             (G_TYPE_CHECK_INSTANCE_TYPE((obj), AGS_TYPE_RECALL_DEPENDENCY))
+#define AGS_IS_RECALL_DEPENDENCY_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE((class), AGS_TYPE_RECALL_DEPENDENCY))
+#define AGS_RECALL_DEPENDENCY_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_RECALL_DEPENDENCY, AgsRecallDependencyClass))
 
 typedef struct _AgsRecallDependency AgsRecallDependency;
 typedef struct _AgsRecallDependencyClass AgsRecallDependencyClass;
-
-/**
- * AgsRecallDependencyFlags:
- * @AGS_RECALL_DEPENDENCY_CONNECTED: indicates the recall dependency was connected by calling #AgsConnectable::connect()
- *
- * Enum values to control the behavior or indicate internal state of #AgsPlayback by
- * enable/disable as flags.
- */
-typedef enum{
-  AGS_RECALL_DEPENDENCY_CONNECTED      = 1,
-}AgsRecallDependencyFlags;
 
 struct _AgsRecallDependency
 {
   GObject object;
 
   guint flags;
+
+  pthread_mutex_t *obj_mutex;
+  pthread_mutexattr_t *obj_mutexattr;
   
   GObject *dependency;
 };
@@ -62,8 +56,10 @@ struct _AgsRecallDependencyClass
 
 GType ags_recall_dependency_get_type(void);
 
-GList* ags_recall_dependency_find_dependency(GList *recall_dependencies, GObject *dependency);
-GList* ags_recall_dependency_find_dependency_by_provider(GList *recall_dependencies,
+pthread_mutex_t* ags_recall_dependency_get_class_mutex();
+
+GList* ags_recall_dependency_find_dependency(GList *recall_dependency, GObject *dependency);
+GList* ags_recall_dependency_find_dependency_by_provider(GList *recall_dependency,
 							 GObject *provider);
 
 GObject* ags_recall_dependency_resolve(AgsRecallDependency *recall_dependency, AgsRecallID *recall_id);

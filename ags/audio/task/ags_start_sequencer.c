@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -25,7 +25,6 @@
 #include <ags/i18n.h>
 
 void ags_start_sequencer_class_init(AgsStartSequencerClass *start_sequencer);
-void ags_start_sequencer_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_start_sequencer_init(AgsStartSequencer *start_sequencer);
 void ags_start_sequencer_set_property(GObject *gobject,
 				      guint prop_id,
@@ -35,8 +34,6 @@ void ags_start_sequencer_get_property(GObject *gobject,
 				      guint prop_id,
 				      GValue *value,
 				      GParamSpec *param_spec);
-void ags_start_sequencer_connect(AgsConnectable *connectable);
-void ags_start_sequencer_disconnect(AgsConnectable *connectable);
 void ags_start_sequencer_dispose(GObject *gobject);
 void ags_start_sequencer_finalize(GObject *gobject);
 
@@ -53,7 +50,6 @@ void ags_start_sequencer_launch(AgsTask *task);
  */
 
 static gpointer ags_start_sequencer_parent_class = NULL;
-static AgsConnectableInterface *ags_start_sequencer_parent_connectable_interface;
 
 enum{
   PROP_0,
@@ -69,36 +65,24 @@ ags_start_sequencer_get_type()
     GType ags_type_start_sequencer;
 
     static const GTypeInfo ags_start_sequencer_info = {
-      sizeof (AgsStartSequencerClass),
+      sizeof(AgsStartSequencerClass),
       NULL, /* base_init */
       NULL, /* base_finalize */
       (GClassInitFunc) ags_start_sequencer_class_init,
       NULL, /* class_finalize */
       NULL, /* class_data */
-      sizeof (AgsStartSequencer),
+      sizeof(AgsStartSequencer),
       0,    /* n_preallocs */
       (GInstanceInitFunc) ags_start_sequencer_init,
-    };
-
-    static const GInterfaceInfo ags_connectable_interface_info = {
-      (GInterfaceInitFunc) ags_start_sequencer_connectable_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
     };
 
     ags_type_start_sequencer = g_type_register_static(AGS_TYPE_TASK,
 						      "AgsStartSequencer",
 						      &ags_start_sequencer_info,
 						      0);
-
-    g_type_add_interface_static(ags_type_start_sequencer,
-				AGS_TYPE_CONNECTABLE,
-				&ags_connectable_interface_info);
-
-    g_once_init_leave (&g_define_type_id__volatile, ags_type_start_sequencer);
   }
-
-  return g_define_type_id__volatile;
+  
+  return(ags_type_start_sequencer);
 }
 
 void
@@ -125,7 +109,7 @@ ags_start_sequencer_class_init(AgsStartSequencerClass *start_sequencer)
    *
    * The assigned #AgsApplicationContext
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("application-context",
 				   i18n_pspec("application context of start sequencer"),
@@ -140,15 +124,6 @@ ags_start_sequencer_class_init(AgsStartSequencerClass *start_sequencer)
   task = (AgsTaskClass *) start_sequencer;
 
   task->launch = ags_start_sequencer_launch;
-}
-
-void
-ags_start_sequencer_connectable_interface_init(AgsConnectableInterface *connectable)
-{
-  ags_start_sequencer_parent_connectable_interface = g_type_interface_peek_parent(connectable);
-
-  connectable->connect = ags_start_sequencer_connect;
-  connectable->disconnect = ags_start_sequencer_disconnect;
 }
 
 void
@@ -218,22 +193,6 @@ ags_start_sequencer_get_property(GObject *gobject,
 }
 
 void
-ags_start_sequencer_connect(AgsConnectable *connectable)
-{
-  ags_start_sequencer_parent_connectable_interface->connect(connectable);
-
-  /* empty */
-}
-
-void
-ags_start_sequencer_disconnect(AgsConnectable *connectable)
-{
-  ags_start_sequencer_parent_connectable_interface->disconnect(connectable);
-
-  /* empty */
-}
-
-void
 ags_start_sequencer_dispose(GObject *gobject)
 {
   AgsStartSequencer *start_sequencer;
@@ -261,24 +220,7 @@ ags_start_sequencer_finalize(GObject *gobject)
 
   application_context = AGS_START_SEQUENCER(gobject)->application_context;  
 
-  if(application_context != NULL){
-    //FIXME:JK: wrong location of code
-    audio_loop = AGS_AUDIO_LOOP(application_context->main_loop);
-
-    sequencer_thread = ags_thread_find_type((AgsThread *) audio_loop,
-					    AGS_TYPE_SEQUENCER_THREAD);
-
-    while((sequencer_thread = ags_thread_find_type(sequencer_thread,
-						   AGS_TYPE_SEQUENCER_THREAD)) != NULL){
-      if(AGS_SEQUENCER_THREAD(sequencer_thread)->error != NULL){
-	g_error_free(AGS_SEQUENCER_THREAD(sequencer_thread)->error);
-      
-	AGS_SEQUENCER_THREAD(sequencer_thread)->error = NULL;
-      }
-
-      sequencer_thread = g_atomic_pointer_get(&(sequencer_thread->next));    
-    }
-    
+  if(application_context != NULL){    
     g_object_unref(application_context);
   }
 
@@ -291,60 +233,33 @@ ags_start_sequencer_launch(AgsTask *task)
 {
   AgsStartSequencer *start_sequencer;
 
-  AgsMutexManager *mutex_manager;
+  AgsThread *audio_loop;
   AgsThread *sequencer_thread;
-  AgsThread *main_loop;
 
   AgsApplicationContext *application_context;
-
-  GList *start_queue;
-  
-  pthread_mutex_t *application_mutex;
-
-  /* get mutex manager and application mutex */
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
 
   start_sequencer = AGS_START_SEQUENCER(task);
 
   application_context = start_sequencer->application_context;
 
-  /* get main loop and soundcard mutex */
-  pthread_mutex_lock(application_mutex);
+  /* get main loop */
+  g_object_get(application_context,
+	       "main-loop", &audio_loop,
+	       NULL);
 
-  main_loop = application_context->main_loop;
-  
-  pthread_mutex_unlock(application_mutex);
-
-  /*
-  if(ags_sequencer_is_starting(sequencer) ||
-     ags_sequencer_is_playing(sequencer)){
-    return;
-  }
-  */
-  sequencer_thread = main_loop;
+  sequencer_thread = audio_loop;
   
   while((sequencer_thread = ags_thread_find_type(sequencer_thread,
 						 AGS_TYPE_SEQUENCER_THREAD)) != NULL){
     /* append to AgsSequencer */
     AGS_SEQUENCER_THREAD(sequencer_thread)->error = NULL;
 
+#ifdef AGS_DEBUG
     g_message("start sequencer");
+#endif
 
-    start_queue = NULL;    
-    start_queue = g_list_prepend(start_queue,
-				 sequencer_thread);
-
-    if(start_queue != NULL){
-      if(g_atomic_pointer_get(&(AGS_THREAD(main_loop)->start_queue)) != NULL){
-	g_atomic_pointer_set(&(AGS_THREAD(main_loop)->start_queue),
-			     g_list_concat(start_queue,
-					   g_atomic_pointer_get(&(AGS_THREAD(main_loop)->start_queue))));
-      }else{
-	g_atomic_pointer_set(&(AGS_THREAD(main_loop)->start_queue),
-			     start_queue);
-      }
-    }
+    ags_thread_add_start_queue(audio_loop,
+			       sequencer_thread);
 
     sequencer_thread = g_atomic_pointer_get(&(sequencer_thread->next));
   }
@@ -358,7 +273,7 @@ ags_start_sequencer_launch(AgsTask *task)
  *
  * Returns: an new #AgsStartSequencer.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsStartSequencer*
 ags_start_sequencer_new(AgsApplicationContext *application_context)

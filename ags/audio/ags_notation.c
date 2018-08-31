@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -33,9 +33,6 @@
 #include <errno.h>
 
 void ags_notation_class_init(AgsNotationClass *notation);
-void ags_notation_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_notation_tactable_interface_init(AgsTactableInterface *tactable);
-void ags_notation_portlet_interface_init(AgsPortletInterface *portlet);
 void ags_notation_init(AgsNotation *notation);
 void ags_notation_set_property(GObject *gobject,
 			       guint prop_id,
@@ -45,18 +42,8 @@ void ags_notation_get_property(GObject *gobject,
 			       guint prop_id,
 			       GValue *value,
 			       GParamSpec *param_spec);
-void ags_notation_connect(AgsConnectable *connectable);
-void ags_notation_disconnect(AgsConnectable *connectable);
 void ags_notation_dispose(GObject *gobject);
 void ags_notation_finalize(GObject *gobject);
-
-void ags_notation_change_bpm(AgsTactable *tactable, gdouble new_bpm, gdouble old_bpm);
-
-void ags_notation_set_port(AgsPortlet *portlet, GObject *port);
-GObject* ags_notation_get_port(AgsPortlet *portlet);
-GList* ags_notation_list_safe_properties(AgsPortlet *portlet);
-void ags_notation_safe_set_property(AgsPortlet *portlet, gchar *property_name, GValue *value);
-void ags_notation_safe_get_property(AgsPortlet *portlet, gchar *property_name, GValue *value);
 
 void ags_notation_insert_native_piano_from_clipboard(AgsNotation *notation,
 						     xmlNode *root_node, char *version,
@@ -80,14 +67,13 @@ enum{
   PROP_0,
   PROP_AUDIO,
   PROP_AUDIO_CHANNEL,
-  PROP_PORT,
-  PROP_NOTE,
-  PROP_CURRENT_NOTES,
-  PROP_NEXT_NOTES,
   PROP_TIMESTAMP,
+  PROP_NOTE,
 };
 
 static gpointer ags_notation_parent_class = NULL;
+
+static pthread_mutex_t ags_notation_class_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 GType
 ags_notation_get_type()
@@ -109,42 +95,10 @@ ags_notation_get_type()
       (GInstanceInitFunc) ags_notation_init,
     };
 
-    static const GInterfaceInfo ags_connectable_interface_info = {
-      (GInterfaceInitFunc) ags_notation_connectable_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-
-    static const GInterfaceInfo ags_tactable_interface_info = {
-      (GInterfaceInitFunc) ags_notation_tactable_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-
-    static const GInterfaceInfo ags_portlet_interface_info = {
-      (GInterfaceInitFunc) ags_notation_portlet_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-
     ags_type_notation = g_type_register_static(G_TYPE_OBJECT,
 					       "AgsNotation",
 					       &ags_notation_info,
 					       0);
-
-    g_type_add_interface_static(ags_type_notation,
-				AGS_TYPE_CONNECTABLE,
-				&ags_connectable_interface_info);
-
-    g_type_add_interface_static(ags_type_notation,
-				AGS_TYPE_TACTABLE,
-				&ags_tactable_interface_info);
-
-    g_type_add_interface_static(ags_type_notation,
-				AGS_TYPE_PORTLET,
-				&ags_portlet_interface_info);
-
-    g_once_init_leave (&g_define_type_id__volatile, ags_type_notation);
   }
 
   return g_define_type_id__volatile;
@@ -172,7 +126,7 @@ ags_notation_class_init(AgsNotationClass *notation)
    *
    * The assigned #AgsAudio
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("audio",
 				   i18n_pspec("audio of notation"),
@@ -189,7 +143,7 @@ ags_notation_class_init(AgsNotationClass *notation)
    *
    * The effect's audio-channel.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec =  g_param_spec_uint("audio-channel",
 				  i18n_pspec("audio-channel of effect"),
@@ -203,113 +157,65 @@ ags_notation_class_init(AgsNotationClass *notation)
 				  param_spec);
   
   /**
-   * AgsNotation:port:
+   * AgsNotation:timestamp:
    *
-   * The assigned #AgsPort
+   * The notation's timestamp.
    * 
-   * Since: 1.0.0
-   */
-  param_spec = g_param_spec_object("port",
-				   i18n_pspec("port of notation"),
-				   i18n_pspec("The port of notation"),
-				   AGS_TYPE_PORT,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_PORT,
-				  param_spec);
-
-  /**
-   * AgsNotation:note:
-   *
-   * The assigned #AgsNote
-   * 
-   * Since: 1.0.0
-   */
-  param_spec = g_param_spec_object("note",
-				   i18n_pspec("note of notation"),
-				   i18n_pspec("The note of notation"),
-				   AGS_TYPE_NOTE,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_NOTE,
-				  param_spec);
-  
-  /**
-   * AgsNotation:current-notes:
-   *
-   * Offset of current position.
-   * 
-   * Since: 1.0.0
-   */
-  param_spec = g_param_spec_pointer("current-notes",
-				    i18n_pspec("current notes for offset"),
-				    i18n_pspec("The current notes for offset"),
-				    G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_CURRENT_NOTES,
-				  param_spec);
-
-  /**
-   * AgsNotation:next-notes:
-   *
-   * Offset of next position.
-   * 
-   * Since: 1.0.0
-   */
-  param_spec = g_param_spec_pointer("next-notes",
-				    i18n_pspec("next notes for offset"),
-				    i18n_pspec("The next notes for offset"),
-				    G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_NEXT_NOTES,
-				  param_spec);
-  
-  /**
-   * AgsPattern:timestamp:
-   *
-   * The pattern's timestamp.
-   * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("timestamp",
-				   i18n_pspec("timestamp of pattern"),
-				   i18n_pspec("The timestamp of pattern"),
+				   i18n_pspec("timestamp of notation"),
+				   i18n_pspec("The timestamp of notation"),
 				   AGS_TYPE_TIMESTAMP,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_TIMESTAMP,
 				  param_spec);
-}
-
-void
-ags_notation_connectable_interface_init(AgsConnectableInterface *connectable)
-{
-  connectable->is_ready = NULL;
-  connectable->is_connected = NULL;
-  connectable->connect = ags_notation_connect;
-  connectable->disconnect = ags_notation_disconnect;
-}
-
-void
-ags_notation_tactable_interface_init(AgsTactableInterface *tactable)
-{
-  tactable->change_bpm = ags_notation_change_bpm;
-}
-
-void
-ags_notation_portlet_interface_init(AgsPortletInterface *portlet)
-{
-  portlet->set_port = ags_notation_set_port;
-  portlet->get_port = ags_notation_get_port;
-  portlet->list_safe_properties = ags_notation_list_safe_properties;
-  portlet->safe_set_property = ags_notation_safe_set_property;
-  portlet->safe_get_property = ags_notation_safe_get_property;
+  
+  /**
+   * AgsNotation:note:
+   *
+   * The assigned #AgsNote
+   * 
+   * Since: 2.0.0
+   */
+  param_spec = g_param_spec_pointer("note",
+				    i18n_pspec("note of notation"),
+				    i18n_pspec("The note of notation"),
+				    G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_NOTE,
+				  param_spec);   
 }
 
 void
 ags_notation_init(AgsNotation *notation)
 {
+  pthread_mutex_t *mutex;
+  pthread_mutexattr_t *attr;
+
   notation->flags = 0;
+
+  /* add notation mutex */
+  notation->obj_mutexattr = 
+    attr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
+  pthread_mutexattr_init(attr);
+  pthread_mutexattr_settype(attr,
+			    PTHREAD_MUTEX_RECURSIVE);
+
+#ifdef __linux__
+  pthread_mutexattr_setprotocol(attr,
+				PTHREAD_PRIO_INHERIT);
+#endif
+
+  notation->obj_mutex = 
+    mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
+  pthread_mutex_init(mutex,
+		     attr);  
+
+  /* fields */
+  notation->audio = NULL;
+  notation->audio_channel = 0;
 
   notation->timestamp = ags_timestamp_new();
 
@@ -319,92 +225,31 @@ ags_notation_init(AgsNotation *notation)
   notation->timestamp->timer.ags_offset.offset = 0;
 
   g_object_ref(notation->timestamp);
-  
-  notation->audio_channel = 0;
-  notation->audio = NULL;
-
-  notation->key = g_strdup("violine");
-  notation->base_note = g_strdup("A");
-  notation->base_frequency = 440.0;
-
-  notation->tact = AGS_NOTATION_MINIMUM_NOTE_LENGTH;
-  notation->bpm = 120.0;
 
   notation->maximum_note_length = AGS_NOTATION_MAXIMUM_NOTE_LENGTH;
 
-  notation->notes = NULL;
-
-  notation->loop_start = 0.0;
-  notation->loop_end = 0.0;
-  notation->offset = 0.0;
-
+  notation->note = NULL;
   notation->selection = NULL;
-
-  notation->port = NULL;
-
-  notation->current_notes = NULL;
-  notation->next_notes = NULL;
-}
-
-void
-ags_notation_connect(AgsConnectable *connectable)
-{
-  AgsNotation *notation;
-
-  GList *list;
-  
-  notation = AGS_NOTATION(connectable);
-
-  if((AGS_NOTATION_CONNECTED & (notation->flags)) != 0){
-    return;
-  }
-
-  notation->flags |= AGS_NOTATION_CONNECTED;
-
-  /* note */
-  list = notation->notes;
-
-  while(list != NULL){
-    ags_connectable_connect(AGS_CONNECTABLE(list->data));
-
-    list = list->next;
-  }
-}
-
-void
-ags_notation_disconnect(AgsConnectable *connectable)
-{
-  AgsNotation *notation;
-
-  GList *list;
-
-  notation = AGS_NOTATION(connectable);
-
-  if((AGS_NOTATION_CONNECTED & (notation->flags)) == 0){
-    return;
-  }
-
-  notation->flags &= (~AGS_NOTATION_CONNECTED);
-
-  /* note */
-  list = notation->notes;
-
-  while(list != NULL){
-    ags_connectable_disconnect(AGS_CONNECTABLE(list->data));
-
-    list = list->next;
-  }
 }
 
 void
 ags_notation_set_property(GObject *gobject,
-			 guint prop_id,
-			 const GValue *value,
-			 GParamSpec *param_spec)
+			  guint prop_id,
+			  const GValue *value,
+			  GParamSpec *param_spec)
 {
   AgsNotation *notation;
 
+  pthread_mutex_t *notation_mutex;
+
   notation = AGS_NOTATION(gobject);
+
+  /* get notation mutex */
+  pthread_mutex_lock(ags_notation_get_class_mutex());
+  
+  notation_mutex = notation->obj_mutex;
+  
+  pthread_mutex_unlock(ags_notation_get_class_mutex());
 
   switch(prop_id){
   case PROP_AUDIO:
@@ -413,7 +258,11 @@ ags_notation_set_property(GObject *gobject,
 
       audio = (AgsAudio *) g_value_get_object(value);
 
+      pthread_mutex_lock(notation_mutex);
+
       if(notation->audio == (GObject *) audio){
+	pthread_mutex_unlock(notation_mutex);
+
 	return;
       }
 
@@ -426,6 +275,8 @@ ags_notation_set_property(GObject *gobject,
       }
 
       notation->audio = (GObject *) audio;
+
+      pthread_mutex_unlock(notation_mutex);
     }
     break;
   case PROP_AUDIO_CHANNEL:
@@ -434,106 +285,11 @@ ags_notation_set_property(GObject *gobject,
 
       audio_channel = g_value_get_uint(value);
 
+      pthread_mutex_lock(notation_mutex);
+
       notation->audio_channel = audio_channel;
-    }
-    break;
-  case PROP_PORT:
-    {
-      AgsPort *port;
 
-      port = (AgsPort *) g_value_get_object(value);
-
-      if(port == (AgsPort *) notation->port){
-	return;
-      }
-
-      if(notation->port != NULL){
-	g_object_unref(G_OBJECT(notation->port));
-      }
-
-      if(port != NULL){
-	g_object_ref(G_OBJECT(port));
-      }
-
-      notation->port = (GObject *) port;
-    }
-    break;
-  case PROP_NOTE:
-    {
-      AgsNote *note;
-
-      note = (AgsNote *) g_value_get_object(value);
-
-      if(note == NULL ||
-	 g_list_find(notation->notes, note) != NULL){
-	return;
-      }
-
-      ags_notation_add_note(notation,
-			    note,
-			    FALSE);
-    }
-    break;
-  case PROP_CURRENT_NOTES:
-    {
-      AgsPort *port;
-      GList *current_notes, *list;
-
-      current_notes = (GList *) g_value_get_pointer(value);
-
-      port = AGS_PORT(notation->port);
-
-      pthread_mutex_lock(port->mutex);
-
-      if(notation->current_notes != NULL){
-	g_list_free_full(notation->current_notes,
-			 g_object_unref);
-      }
-
-      if(current_notes != NULL){
-	list = current_notes;
-
-	while(list != NULL){
-	  g_object_ref(G_OBJECT(list->data));
-
-	  list = list->next;
-	}
-      }
-
-      notation->current_notes = current_notes;
-
-      pthread_mutex_unlock(port->mutex);
-    }
-    break;
-  case PROP_NEXT_NOTES:
-    {
-      AgsPort *port;
-      GList *next_notes, *list;
-
-      next_notes = (GList *) g_value_get_pointer(value);
-
-      port = AGS_PORT(notation->port);
-
-      pthread_mutex_lock(port->mutex);
-
-      if(notation->next_notes != NULL){
-	g_list_free_full(notation->next_notes,
-			 g_object_unref);
-      }
-
-      if(next_notes != NULL){
-	list = next_notes;
-
-	while(list != NULL){
-	  g_object_ref(G_OBJECT(list->data));
-
-	  list = list->next;
-	}
-      }
-
-      notation->next_notes = next_notes;
-
-      pthread_mutex_unlock(port->mutex);
+      pthread_mutex_unlock(notation_mutex);
     }
     break;
   case PROP_TIMESTAMP:
@@ -542,7 +298,11 @@ ags_notation_set_property(GObject *gobject,
 
       timestamp = (AgsTimestamp *) g_value_get_object(value);
 
+      pthread_mutex_lock(notation_mutex);
+
       if(timestamp == (AgsTimestamp *) notation->timestamp){
+	pthread_mutex_unlock(notation_mutex);
+	
 	return;
       }
 
@@ -555,6 +315,30 @@ ags_notation_set_property(GObject *gobject,
       }
 
       notation->timestamp = (GObject *) timestamp;
+
+      pthread_mutex_unlock(notation_mutex);
+    }
+    break;
+  case PROP_NOTE:
+    {
+      AgsNote *note;
+
+      note = (AgsNote *) g_value_get_object(value);
+
+      pthread_mutex_lock(notation_mutex);
+
+      if(note == NULL ||
+	 g_list_find(notation->note, note) != NULL){
+	pthread_mutex_unlock(notation_mutex);
+	
+	return;
+      }
+
+      pthread_mutex_unlock(notation_mutex);
+
+      ags_notation_add_note(notation,
+			    note,
+			    FALSE);
     }
     break;
   default:
@@ -571,86 +355,52 @@ ags_notation_get_property(GObject *gobject,
 {
   AgsNotation *notation;
 
+  pthread_mutex_t *notation_mutex;
+
   notation = AGS_NOTATION(gobject);
+
+  /* get notation mutex */
+  pthread_mutex_lock(ags_notation_get_class_mutex());
+  
+  notation_mutex = notation->obj_mutex;
+  
+  pthread_mutex_unlock(ags_notation_get_class_mutex());
 
   switch(prop_id){
   case PROP_AUDIO:
     {
+      pthread_mutex_lock(notation_mutex);
+
       g_value_set_object(value, notation->audio);
+
+      pthread_mutex_unlock(notation_mutex);
     }
     break;
   case PROP_AUDIO_CHANNEL:
     {
+      pthread_mutex_lock(notation_mutex);
+
       g_value_set_uint(value, notation->audio_channel);
-    }
-    break;
-  case PROP_PORT:
-    {
-      g_value_set_object(value, notation->port);
-    }
-    break;
-  case PROP_NOTE:
-    {
-      AgsPort *port;
 
-      port = AGS_PORT(notation->port);
-
-      pthread_mutex_lock(port->mutex);
-
-      g_value_set_pointer(value, g_list_copy(notation->notes));
-
-      pthread_mutex_unlock(port->mutex);
-    }
-    break;
-  case PROP_CURRENT_NOTES:
-    {
-      AgsPort *port;
-      GList *start, *list;
-
-      port = AGS_PORT(notation->port);
-
-      pthread_mutex_lock(port->mutex);
-
-      start = 
-	list = g_list_copy(notation->current_notes);
-
-      while(list != NULL){
-	g_object_ref(G_OBJECT(list->data));
-
-	list = list->next;
-      }
-
-      pthread_mutex_unlock(port->mutex);
-
-      g_value_set_pointer(value, (gpointer) start);
-    }
-    break;
-  case PROP_NEXT_NOTES:
-    {
-      AgsPort *port;
-      GList *start, *list;
-
-      port = AGS_PORT(notation->port);
-
-      pthread_mutex_lock(port->mutex);
-
-      start = 
-	list = g_list_copy(notation->next_notes);
-
-      while(list != NULL){
-	g_object_ref(G_OBJECT(list->data));
-
-	list = list->next;
-      }
-
-      pthread_mutex_unlock(port->mutex);
-
-      g_value_set_pointer(value, (gpointer) start);
+      pthread_mutex_unlock(notation_mutex);
     }
     break;
   case PROP_TIMESTAMP:
     {
+      pthread_mutex_lock(notation_mutex);
+
       g_value_set_object(value, notation->timestamp);
+
+      pthread_mutex_unlock(notation_mutex);
+    }
+    break;
+  case PROP_NOTE:
+    {
+      pthread_mutex_lock(notation_mutex);
+
+      g_value_set_pointer(value, g_list_copy(notation->note));
+
+      pthread_mutex_unlock(notation_mutex);
     }
     break;
   default:
@@ -668,13 +418,6 @@ ags_notation_dispose(GObject *gobject)
   
   notation = AGS_NOTATION(gobject);
 
-  /* timestamp */
-  if(notation->timestamp != NULL){
-    g_object_unref(notation->timestamp);
-
-    notation->timestamp = NULL;
-  }
-
   /* audio */
   if(notation->audio != NULL){
     g_object_unref(notation->audio);
@@ -682,21 +425,15 @@ ags_notation_dispose(GObject *gobject)
     notation->audio = NULL;
   }
 
-  /* key and base note */
-  if(notation->key != NULL){
-    free(notation->key);
+  /* timestamp */
+  if(notation->timestamp != NULL){
+    g_object_unref(notation->timestamp);
 
-    notation->key = NULL;
-  }
-
-  if(notation->base_note != NULL){
-    free(notation->base_note);
-
-    notation->base_note = NULL;
+    notation->timestamp = NULL;
   }
     
   /* note and selection */
-  list = notation->notes;
+  list = notation->note;
 
   while(list != NULL){
     g_object_run_dispose(G_OBJECT(list->data));
@@ -704,21 +441,14 @@ ags_notation_dispose(GObject *gobject)
     list = list->next;
   }
   
-  g_list_free_full(notation->notes,
+  g_list_free_full(notation->note,
+		   g_object_unref);
+  g_list_free_full(notation->selection,
 		   g_object_unref);
 
-  g_list_free(notation->selection);
-
-  notation->notes = NULL;
+  notation->note = NULL;
   notation->selection = NULL;
-  
-  /* port */
-  if(notation->port != NULL){
-    g_object_unref(notation->port);
-
-    notation->port = NULL;
-  }
-  
+    
   /* call parent */
   G_OBJECT_CLASS(ags_notation_parent_class)->dispose(gobject);
 }
@@ -730,101 +460,151 @@ ags_notation_finalize(GObject *gobject)
 
   notation = AGS_NOTATION(gobject);
 
-  /* timestamp */
-  if(notation->timestamp != NULL){
-    g_object_unref(notation->timestamp);
-  }
+  pthread_mutex_destroy(notation->obj_mutex);
+  free(notation->obj_mutex);
+
+  pthread_mutexattr_destroy(notation->obj_mutexattr);
+  free(notation->obj_mutexattr);
 
   /* audio */
   if(notation->audio != NULL){
     g_object_unref(notation->audio);
   }
 
-  /* key and base note */
-  if(notation->key != NULL){
-    free(notation->key);
-  }
-
-  if(notation->base_note != NULL){
-    free(notation->base_note);
+  /* timestamp */
+  if(notation->timestamp != NULL){
+    g_object_unref(notation->timestamp);
   }
     
   /* note and selection */
-  g_list_free_full(notation->notes,
+  g_list_free_full(notation->note,
 		   g_object_unref);
 
-  g_list_free(notation->selection);
-
-  /* port */
-  if(notation->port != NULL){
-    g_object_unref(notation->port);
-  }
+  g_list_free_full(notation->selection,
+		   g_object_unref);
   
   /* call parent */
   G_OBJECT_CLASS(ags_notation_parent_class)->finalize(gobject);
 }
 
-void
-ags_notation_change_bpm(AgsTactable *tactable, gdouble new_bpm, gdouble old_bpm)
+/**
+ * ags_notation_get_class_mutex:
+ * 
+ * Use this function's returned mutex to access mutex fields.
+ *
+ * Returns: the class mutex
+ * 
+ * Since: 2.0.0
+ */
+pthread_mutex_t*
+ags_notation_get_class_mutex()
 {
-  //TODO:JK: implement me
+  return(&ags_notation_class_mutex);
 }
 
-void
-ags_notation_set_port(AgsPortlet *portlet, GObject *port)
+/**
+ * ags_notation_test_flags:
+ * @notation: the #AgsNotation
+ * @flags: the flags
+ * 
+ * Test @flags to be set on @notation.
+ * 
+ * Returns: %TRUE if flags are set, else %FALSE
+ * 
+ * Since: 2.0.0
+ */
+gboolean
+ags_notation_test_flags(AgsNotation *notation, guint flags)
 {
-  g_object_set(G_OBJECT(portlet),
-	       "port", port,
-	       NULL);
-}
+  gboolean retval;
+  
+  pthread_mutex_t *notation_mutex;
 
-GObject*
-ags_notation_get_port(AgsPortlet *portlet)
-{
-  AgsPort *port;
-
-  g_object_get(G_OBJECT(portlet),
-	       "port", &port,
-	       NULL);
-
-  return((GObject *) port);
-}
-
-GList*
-ags_notation_list_safe_properties(AgsPortlet *portlet)
-{
-  static GList *list = NULL;
-
-  static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
-
-  pthread_mutex_lock(&mutex);
-
-  if(list == NULL){
-    list = g_list_prepend(list, "current-notes");
-    list = g_list_prepend(list, "next-notes");
+  if(!AGS_IS_NOTATION(notation)){
+    return(FALSE);
   }
+      
+  /* get notation mutex */
+  pthread_mutex_lock(ags_notation_get_class_mutex());
+  
+  notation_mutex = notation->obj_mutex;
+  
+  pthread_mutex_unlock(ags_notation_get_class_mutex());
 
-  pthread_mutex_unlock(&mutex);
+  /* test */
+  pthread_mutex_lock(notation_mutex);
 
-  return(list);
+  retval = (flags & (notation->flags)) ? TRUE: FALSE;
+  
+  pthread_mutex_unlock(notation_mutex);
+
+  return(retval);
 }
 
+/**
+ * ags_notation_set_flags:
+ * @notation: the #AgsNotation
+ * @flags: the flags
+ * 
+ * Set @flags on @notation.
+ * 
+ * Since: 2.0.0
+ */
 void
-ags_notation_safe_set_property(AgsPortlet *portlet, gchar *property_name, GValue *value)
+ags_notation_set_flags(AgsNotation *notation, guint flags)
 {
-  //TODO:JK: add check for safe property
+  pthread_mutex_t *notation_mutex;
 
-  g_object_set_property(G_OBJECT(portlet),
-			property_name, value);
+  if(!AGS_IS_NOTATION(notation)){
+    return;
+  }
+      
+  /* get notation mutex */
+  pthread_mutex_lock(ags_notation_get_class_mutex());
+  
+  notation_mutex = notation->obj_mutex;
+  
+  pthread_mutex_unlock(ags_notation_get_class_mutex());
+
+  /* set */
+  pthread_mutex_lock(notation_mutex);
+
+  notation->flags |= flags;
+  
+  pthread_mutex_unlock(notation_mutex);
 }
 
+/**
+ * ags_notation_unset_flags:
+ * @notation: the #AgsNotation
+ * @flags: the flags
+ * 
+ * Unset @flags on @notation.
+ * 
+ * Since: 2.0.0
+ */
 void
-ags_notation_safe_get_property(AgsPortlet *portlet, gchar *property_name, GValue *value)
+ags_notation_unset_flags(AgsNotation *notation, guint flags)
 {
-  //TODO:JK: add check for safe property
+  pthread_mutex_t *notation_mutex;
 
-  g_object_get_property(G_OBJECT(portlet),
-			property_name, value);
+  if(!AGS_IS_NOTATION(notation)){
+    return;
+  }
+      
+  /* get notation mutex */
+  pthread_mutex_lock(ags_notation_get_class_mutex());
+  
+  notation_mutex = notation->obj_mutex;
+  
+  pthread_mutex_unlock(ags_notation_get_class_mutex());
+
+  /* set */
+  pthread_mutex_lock(notation_mutex);
+
+  notation->flags &= (~flags);
+  
+  pthread_mutex_unlock(notation_mutex);
 }
 
 /**
@@ -835,9 +615,9 @@ ags_notation_safe_get_property(AgsPortlet *portlet, gchar *property_name, GValue
  *
  * Retrieve appropriate notation for timestamp.
  *
- * Returns: Next match.
+ * Returns: Next matching #GList-struct or %NULL if not found
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 GList*
 ags_notation_find_near_timestamp(GList *notation, guint audio_channel,
@@ -845,8 +625,14 @@ ags_notation_find_near_timestamp(GList *notation, guint audio_channel,
 {
   AgsTimestamp *current_timestamp;
 
+  guint current_audio_channel;
+
   while(notation != NULL){
-    if(AGS_NOTATION(notation->data)->audio_channel != audio_channel){
+    g_object_get(notation->data,
+		 "audio-channel", &current_audio_channel,
+		 NULL);
+    
+    if(current_audio_channel != audio_channel){
       notation = notation->next;
       
       continue;
@@ -856,19 +642,25 @@ ags_notation_find_near_timestamp(GList *notation, guint audio_channel,
       return(notation);
     }
     
-    current_timestamp = (AgsTimestamp *) AGS_NOTATION(notation->data)->timestamp;
-
+    g_object_get(notation->data,
+		 "timestamp", &current_timestamp,
+		 NULL);
+    
     if(current_timestamp != NULL){
-      if((AGS_TIMESTAMP_UNIX & (timestamp->flags)) != 0 &&
-	 (AGS_TIMESTAMP_UNIX & (current_timestamp->flags)) != 0){
-	if(current_timestamp->timer.unix_time.time_val >= timestamp->timer.unix_time.time_val &&
-	   current_timestamp->timer.unix_time.time_val < timestamp->timer.unix_time.time_val + AGS_NOTATION_DEFAULT_DURATION){
+      if(ags_timestamp_test_flags(timestamp,
+				  AGS_TIMESTAMP_OFFSET) &&
+	 ags_timestamp_test_flags(current_timestamp,
+				  AGS_TIMESTAMP_OFFSET)){
+	if(ags_timestamp_get_ags_offset(current_timestamp) >= ags_timestamp_get_ags_offset(timestamp) &&
+	   ags_timestamp_get_ags_offset(current_timestamp) < ags_timestamp_get_ags_offset(timestamp) + AGS_NOTATION_DEFAULT_OFFSET){
 	  return(notation);
 	}
-      }else if((AGS_TIMESTAMP_OFFSET & (timestamp->flags)) != 0 &&
-	       (AGS_TIMESTAMP_OFFSET & (current_timestamp->flags)) != 0){
-	if(current_timestamp->timer.ags_offset.offset >= timestamp->timer.ags_offset.offset &&
-	   current_timestamp->timer.ags_offset.offset < timestamp->timer.ags_offset.offset + AGS_NOTATION_DEFAULT_OFFSET){
+      }else if(ags_timestamp_test_flags(timestamp,
+					AGS_TIMESTAMP_UNIX) &&
+	       ags_timestamp_test_flags(current_timestamp,
+					AGS_TIMESTAMP_UNIX)){
+	if(ags_timestamp_get_unix_time(current_timestamp) >= ags_timestamp_get_unix_time(timestamp) &&
+	   ags_timestamp_get_unix_time(current_timestamp) < ags_timestamp_get_unix_time(timestamp) + AGS_NOTATION_DEFAULT_DURATION){
 	  return(notation);
 	}
       }
@@ -883,13 +675,13 @@ ags_notation_find_near_timestamp(GList *notation, guint audio_channel,
 /**
  * ags_notation_add:
  * @notation: the #GList-struct containing #AgsNotation
- * @new_notation: the notation to add
+ * @new_notation: the #AgsNotation to add
  * 
  * Add @new_notation sorted to @notation
  * 
  * Returns: the new beginning of @notation
  * 
- * Since: 1.2.0
+ * Since: 2.0.0
  */
 GList*
 ags_notation_add(GList *notation,
@@ -901,19 +693,28 @@ ags_notation_add(GList *notation,
   gint ags_notation_add_compare(gconstpointer a,
 				gconstpointer b)
   {
-    if(AGS_NOTATION(a)->timestamp->timer.ags_offset.offset == AGS_NOTATION(b)->timestamp->timer.ags_offset.offset){
+    AgsTimestamp *timestamp_a, *timestamp_b;
+
+    g_object_get(a,
+		 "timestamp", &timestamp_a,
+		 NULL);
+
+    g_object_get(b,
+		 "timestamp", &timestamp_b,
+		 NULL);
+    
+    if(ags_timestamp_get_ags_offset(timestamp_a) == ags_timestamp_get_ags_offset(timestamp_b)){
       return(0);
-    }else if(AGS_NOTATION(a)->timestamp->timer.ags_offset.offset < AGS_NOTATION(b)->timestamp->timer.ags_offset.offset){
+    }else if(ags_timestamp_get_ags_offset(timestamp_a) < ags_timestamp_get_ags_offset(timestamp_b)){
       return(-1);
-    }else if(AGS_NOTATION(a)->timestamp->timer.ags_offset.offset > AGS_NOTATION(b)->timestamp->timer.ags_offset.offset){
+    }else if(ags_timestamp_get_ags_offset(timestamp_a) > ags_timestamp_get_ags_offset(timestamp_b)){
       return(1);
     }
 
     return(0);
   }
   
-  if(!AGS_IS_NOTATION(new_notation) ||
-     !AGS_IS_TIMESTAMP(new_notation->timestamp)){
+  if(!AGS_IS_NOTATION(new_notation)){
     return(notation);
   }
   
@@ -926,70 +727,108 @@ ags_notation_add(GList *notation,
 
 /**
  * ags_notation_add_note:
- * @notation: an #AgsNotation
+ * @notation: the #AgsNotation
  * @note: the #AgsNote to add
  * @use_selection_list: if %TRUE add to selection, else to default notation
  *
- * Adds a note to notation.
+ * Adds @note to @notation.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_notation_add_note(AgsNotation *notation,
 		      AgsNote *note,
 		      gboolean use_selection_list)
 {
+  pthread_mutex_t *notation_mutex;
+
   if(!AGS_IS_NOTATION(notation) ||
      !AGS_IS_NOTE(note)){
     return;
   }
 
+  /* get notation mutex */
+  pthread_mutex_lock(ags_notation_get_class_mutex());
+  
+  notation_mutex = notation->obj_mutex;
+  
+  pthread_mutex_unlock(ags_notation_get_class_mutex());
+
+  /* insert sorted */
   g_object_ref(note);
   
+  pthread_mutex_lock(notation_mutex);
+
   if(use_selection_list){
     note->flags |= AGS_NOTE_IS_SELECTED;
     notation->selection = g_list_insert_sorted(notation->selection,
 					       note,
 					       (GCompareFunc) ags_note_sort_func);
+    ags_note_set_flags(note,
+		       AGS_NOTE_IS_SELECTED);
   }else{
-    notation->notes = g_list_insert_sorted(notation->notes,
-					   note,
-					   (GCompareFunc) ags_note_sort_func);
+    notation->note = g_list_insert_sorted(notation->note,
+					  note,
+					  (GCompareFunc) ags_note_sort_func);
   }
+
+  pthread_mutex_unlock(notation_mutex);
 }
 
 /**
  * ags_notation_remove_note:
- * @notation: an #AgsNotation
+ * @notation: the #AgsNotation
  * @note: the #AgsNote to remove
  * @use_selection_list: if %TRUE remove from selection, else from default notation
  *
- * Removes a note from notation.
+ * Removes @note from @notation.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_notation_remove_note(AgsNotation *notation,
 			 AgsNote *note,
 			 gboolean use_selection_list)
 {
+  pthread_mutex_t *notation_mutex;
+
   if(!AGS_IS_NOTATION(notation) ||
      !AGS_IS_NOTE(note)){
     return;
   }
+
+  /* get notation mutex */
+  pthread_mutex_lock(ags_notation_get_class_mutex());
+  
+  notation_mutex = notation->obj_mutex;
+  
+  pthread_mutex_unlock(ags_notation_get_class_mutex());
+
+  /* remove if found */
+  pthread_mutex_lock(notation_mutex);
   
   if(!use_selection_list){
-    notation->notes = g_list_remove(notation->notes,
-				    note);
+    if(g_list_find(notation->note,
+		   note) != NULL){
+      notation->note = g_list_remove(notation->note,
+				     note);
+      g_object_unref(note);
+    }
   }else{
-    notation->selection = g_list_remove(notation->selection,
-					note);
+    if(g_list_find(notation->selection,
+		   note) != NULL){
+      notation->selection = g_list_remove(notation->selection,
+					  note);
+      g_object_unref(note);
+    }
   }
+
+  pthread_mutex_unlock(notation_mutex);
 }
 
 /**
  * ags_notation_remove_note_at_position:
- * @notation: an #AgsNotation
+ * @notation: the #AgsNotation
  * @x: offset
  * @y: note
  *
@@ -997,110 +836,81 @@ ags_notation_remove_note(AgsNotation *notation,
  *
  * Returns: %TRUE if successfully removed note.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 gboolean
 ags_notation_remove_note_at_position(AgsNotation *notation,
 				     guint x, guint y)
 {
   AgsNote *note;
-  GList *notes, *notes_next, *notes_prev;
-  GList *notes_end_region, *reverse_start;
-  guint x_start, i;
+  
+  GList *start_list, *list;
 
-  notes = notation->notes;
+  guint current_x0, current_y;
+  gboolean retval;
 
-  if(notes == NULL){
+  pthread_mutex_t *notation_mutex;
+
+  if(!AGS_IS_NOTATION(notation)){
     return(FALSE);
   }
 
-  /* get entry point */
-  while(notes->next != NULL && (note = AGS_NOTE(notes->data))->x[0] < x){
-    notes = notes->next;
-  }
+  /* get notation mutex */
+  pthread_mutex_lock(ags_notation_get_class_mutex());
+  
+  notation_mutex = notation->obj_mutex;
+  
+  pthread_mutex_unlock(ags_notation_get_class_mutex());
 
-  notes_end_region = notes;
+  /* find note */
+  pthread_mutex_lock(notation_mutex);
 
-  /* search in y region for appropriate note */
-  if(notes != NULL && (note = AGS_NOTE(notes->data))->x[0] == x){
-    do{
-      notes_next = notes->next;
+  list =
+    start_list = ags_list_util_copy_and_ref(notation->note);
+  
+  pthread_mutex_unlock(notation_mutex);
+
+  note = NULL;
+
+  retval = FALSE;
+  
+  while(list != NULL){
+    g_object_get(list->data,
+		 "x0", &current_x0,
+		 "y", &current_y,
+		 NULL);
+
+    if(current_x0 == x &&
+       current_y == y){
+      note = list->data;
       
-      if(note->y == y){
-#ifdef AGS_DEBUG
-	g_message("remove");
-#endif
-	//TODO:JK: work-around
-	//	notation->notes = g_list_delete_link(notation->notes, notes);
+      retval = TRUE;
+      
+      break;
+    }
 
-	if(notes->prev != NULL){
-	  notes->prev->next = notes->next;
-	}
-
-	if(notes->next != NULL){
-	  notes->next->prev = notes->prev;
-	}
-
-	if(notation->notes == notes){
-	  notation->notes = notes->next;
-	}
-
-	notes->prev = NULL;
-	notes->next = NULL;
-	g_list_free_1(notes);
-	
-	g_object_unref(note);
-
-	return(TRUE);
-      } 
-
-      notes = notes_next;
-    }while(notes != NULL &&
-	   (note = AGS_NOTE(notes->data))->x[0] == x &&
-	   note->y <= y);
-
-    notes = notes_end_region->prev;
-  }else{
-    notes = notes_end_region;
-  }
-
-  /* search backward until x_start */
-  while(notes != NULL && (note = AGS_NOTE(notes->data))->x[0] >= x - (notation->maximum_note_length / notation->tact)){
-    if(note->y == y){
-      if(note->x[0] < x){
-#ifdef AGS_DEBUG
-	g_message("remove");
-#endif
-
-	//TODO:JK: work-around
-	//	notation->notes = g_list_delete_link(notation->notes, notes);
-
-	if(notes->prev != NULL){
-	  notes->prev->next = notes->next;
-	}
-
-	if(notes->next != NULL){
-	  notes->next->prev = notes->prev;
-	}
-
-	if(notation->notes == notes){
-	  notation->notes = notes->next;
-	}
-	
-	notes->prev = NULL;
-	notes->next = NULL;
-	g_list_free_1(notes);
-
-	g_object_unref(note);
-	
-	return(TRUE);
-      }
+    if(current_x0 > x){
+      break;
     }
     
-    notes = notes->prev;
+    list = list->next;
   }
 
-  return(FALSE);
+  /* delete link and unref */
+  if(retval){
+    pthread_mutex_lock(notation_mutex);
+    
+    notation->note = g_list_remove(notation->note,
+				   note);
+    g_object_unref(note);
+
+    pthread_mutex_unlock(notation_mutex);
+  }
+
+  g_list_free_full(start_list,
+		   g_object_unref);
+
+  return(retval);
 }
 
 /**
@@ -1111,12 +921,34 @@ ags_notation_remove_note_at_position(AgsNotation *notation,
  *
  * Returns: the selection.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 GList*
 ags_notation_get_selection(AgsNotation *notation)
 {
-  return(notation->selection);
+  GList *selection;
+
+  pthread_mutex_t *notation_mutex;
+
+  if(!AGS_IS_NOTATION(notation)){
+    return(NULL);
+  }
+
+  /* get notation mutex */
+  pthread_mutex_lock(ags_notation_get_class_mutex());
+  
+  notation_mutex = notation->obj_mutex;
+  
+  pthread_mutex_unlock(ags_notation_get_class_mutex());
+
+  /* selection */
+  pthread_mutex_lock(notation_mutex);
+
+  selection = notation->selection;
+  
+  pthread_mutex_unlock(notation_mutex);
+  
+  return(selection);
 }
 
 /**
@@ -1126,31 +958,71 @@ ags_notation_get_selection(AgsNotation *notation)
  *
  * Check selection for note.
  *
- * Returns: %TRUE if selected
+ * Returns: %TRUE if selected otherwise %FALSE
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 gboolean
 ags_notation_is_note_selected(AgsNotation *notation, AgsNote *note)
 {
   GList *selection;
 
-  selection = notation->selection;
+  guint x0;
+  guint current_x0;
+  gboolean retval;
+  
+  pthread_mutex_t *notation_mutex;
 
-  while(selection != NULL && AGS_NOTE(selection->data)->x[0] <= note->x[0]){
+  if(!AGS_IS_NOTATION(notation) ||
+     !AGS_IS_NOTE(note)){
+    return(FALSE);
+  }
+
+  /* get notation mutex */
+  pthread_mutex_lock(ags_notation_get_class_mutex());
+  
+  notation_mutex = notation->obj_mutex;
+  
+  pthread_mutex_unlock(ags_notation_get_class_mutex());
+
+  /* get x */
+  g_object_get(note,
+	       "x0", &x0,
+	       NULL);
+  
+  /* match note */
+  pthread_mutex_lock(notation_mutex);
+
+  selection = notation->selection;
+  retval = FALSE;
+  
+  while(selection != NULL){
+    /* get current x */
+    g_object_get(selection->data,
+		 "x0", &current_x0,
+		 NULL);
+
+    if(current_x0 > x0){
+      break;
+    }
+    
     if(selection->data == note){
-      return(TRUE);
+      retval = TRUE;
+
+      break;
     }
 
     selection = selection->next;
   }
 
-  return(FALSE);
+  pthread_mutex_unlock(notation_mutex);
+
+  return(retval);
 }
 
 /**
  * ags_notation_find_point:
- * @notation: an #AgsNotation
+ * @notation: the #AgsNotation
  * @x: offset
  * @y: note
  * @use_selection_list: if %TRUE selection is searched
@@ -1159,65 +1031,84 @@ ags_notation_is_note_selected(AgsNotation *notation, AgsNote *note)
  *
  * Returns: the matching note.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */ 
 AgsNote*
 ags_notation_find_point(AgsNotation *notation,
 			guint x, guint y,
 			gboolean use_selection_list)
 {
-  AgsNote *note, *prev_note;
-  GList *notes;
+  AgsNote *retval;
+  
+  GList *note;
+
+  guint current_x0, current_x1, current_y;
+
+  pthread_mutex_t *notation_mutex;
+
+  if(!AGS_IS_NOTATION(notation)){
+    return(NULL);
+  }
+
+  /* get notation mutex */
+  pthread_mutex_lock(ags_notation_get_class_mutex());
+  
+  notation_mutex = notation->obj_mutex;
+  
+  pthread_mutex_unlock(ags_notation_get_class_mutex());
+
+  /* find note */
+  pthread_mutex_lock(notation_mutex);
 
   if(use_selection_list){
-    notes = notation->selection;
+    note = notation->selection;
   }else{
-    notes = notation->notes;
+    note = notation->note;
   }
 
-  while(notes != NULL && AGS_NOTE(notes->data)->x[0] < x){
-    notes = notes->next;
-  }
-
-  if(notes == NULL)
-    return(NULL);
-
-  prev_note = NULL;
-
-  while(notes != NULL && (note = AGS_NOTE(notes->data))->x[0] == x){
-    if(note->y == y){
-      /* find last match for point */
-
-      do{
-	prev_note = note;
-	notes = notes->next;
-      }while(notes != NULL && (note = AGS_NOTE(notes->data))->x[0] == x && note->y == y);
-
+  retval = NULL;
+  
+  while(note != NULL){
+    g_object_get(note->data,
+		 "x0", &current_x0,
+		 "x1", &current_x1,
+		 "y", &current_y,
+		 NULL);
+    
+    if(current_x0 > x){
       break;
     }
 
-    notes = notes->next;
+    if(x >= current_x0 &&
+       x < current_x1 &&
+       current_y == y){
+      retval = note->data;
+
+      break;
+    }
+    
+    note = note->next;
   }
 
-  return(prev_note);
+  pthread_mutex_unlock(notation_mutex);
+
+  return(retval);
 }
-
-
 
 /**
  * ags_notation_find_region:
- * @notation: an #AgsNotation
+ * @notation: the #AgsNotation
  * @x0: start offset
  * @y0: start tone
  * @x1: end offset
  * @y1: end tone
  * @use_selection_list: if %TRUE selection is searched
  *
- * Find notes by offset and tone region.
+ * Find note by offset and tone region.
  *
- * Returns: the matching notes as #GList.
+ * Returns: the matching notes as #GList-struct
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 GList*
 ags_notation_find_region(AgsNotation *notation,
@@ -1225,9 +1116,23 @@ ags_notation_find_region(AgsNotation *notation,
 			 guint x1, guint y1,
 			 gboolean use_selection_list)
 {
-  AgsNote *note;
-  GList *notes;
+  GList *note;
   GList *region;
+
+  guint current_x0, current_y;
+  
+  pthread_mutex_t *notation_mutex;
+
+  if(!AGS_IS_NOTATION(notation)){
+    return(NULL);
+  }
+
+  /* get notation mutex */
+  pthread_mutex_lock(ags_notation_get_class_mutex());
+  
+  notation_mutex = notation->obj_mutex;
+  
+  pthread_mutex_unlock(ags_notation_get_class_mutex());
 
   if(x0 > x1){
     guint tmp;
@@ -1236,34 +1141,57 @@ ags_notation_find_region(AgsNotation *notation,
     x1 = x0;
     x0 = x1;
   }
-  
+
   if(y0 > y1){
-    guint tmp;
+    gdouble tmp_y;
 
-    tmp = y1;
-    y1 = y0;
+    tmp_y = y0;
     y0 = y1;
+    y1 = tmp_y;
   }
   
+  /* find note */
+  pthread_mutex_lock(notation_mutex);
+
   if(use_selection_list){
-    notes = notation->selection;
+    note = notation->selection;
   }else{
-    notes = notation->notes;
+    note = notation->note;
   }
 
-  while(notes != NULL && AGS_NOTE(notes->data)->x[0] < x0){
-    notes = notes->next;
+  while(note != NULL){
+    g_object_get(note->data,
+		 "x0", &current_x0,
+		 NULL);
+    
+    if(current_x0 >= x0){
+      break;
+    }
+    
+    note = note->next;
   }
 
   region = NULL;
 
-  while(notes != NULL && (note = AGS_NOTE(notes->data))->x[0] < x1){
-    if(note->y >= y0 && note->y < y1){
-      region = g_list_prepend(region, note);
+  while(note != NULL){
+    g_object_get(note->data,
+		 "x0", &current_x0,
+		 "y", &current_y,
+		 NULL);
+
+    if(current_x0 > x1){
+      break;
     }
 
-    notes = notes->next;
+    if(current_y >= y0 && current_y < y1){
+      region = g_list_prepend(region,
+			      note->data);
+    }
+
+    note = note->next;
   }
+
+  pthread_mutex_unlock(notation_mutex);
 
   region = g_list_reverse(region);
 
@@ -1272,67 +1200,63 @@ ags_notation_find_region(AgsNotation *notation,
 
 /**
  * ags_notation_free_selection:
- * @notation: an #AgsNotation
+ * @notation: the #AgsNotation
  *
  * Clear selection.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_notation_free_selection(AgsNotation *notation)
 {
-  GList *list;
-
-  list = notation->selection;
-
-  while(list != NULL){
-    AGS_NOTE(list->data)->flags &= (~AGS_NOTE_IS_SELECTED);
-
-    list = list->next;
-  }
-  
-  g_list_free_full(notation->selection,
-		   g_object_unref);
-  
-  notation->selection = NULL;
-}
-
-/**
- * ags_notation_add_all_to_selection:
- * @notation: an #AgsNotation
- *
- * Select all.
- *
- * Since: 1.0.0
- */
-void
-ags_notation_add_all_to_selection(AgsNotation *notation)
-{
   AgsNote *note;
-  GList *region, *list;
 
-  ags_notation_free_selection(notation);
-  list = notation->notes;
+  GList *list_start, *list;
+
+  pthread_mutex_t *notation_mutex;
+
+  if(!AGS_IS_NOTATION(notation)){
+    return;
+  }
+
+  /* get notation mutex */
+  pthread_mutex_lock(ags_notation_get_class_mutex());
+  
+  notation_mutex = notation->obj_mutex;
+  
+  pthread_mutex_unlock(ags_notation_get_class_mutex());
+
+  /* free selection */
+  pthread_mutex_lock(notation_mutex);
+
+  list =
+    list_start = notation->selection;
   
   while(list != NULL){
-    ags_notation_add_note(notation,
-			  list->data,
-			  TRUE);
+    ags_note_unset_flags(list->data,
+				 AGS_NOTE_IS_SELECTED);
     
     list = list->next;
   }
+
+  notation->selection = NULL;
+
+  pthread_mutex_unlock(notation_mutex);
+  
+  g_list_free_full(list_start,
+		   g_object_unref);
 }
 
 /**
  * ags_notation_add_point_to_selection:
- * @notation: an #AgsNotation
- * @x: offset
- * @y: tone
+ * @notation: the #AgsNotation
+ * @x: x offset
+ * @y: y note tone
  * @replace_current_selection: if %TRUE selection is replaced
  *
  * Select notes at position.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */ 
 void
 ags_notation_add_point_to_selection(AgsNotation *notation,
@@ -1341,6 +1265,20 @@ ags_notation_add_point_to_selection(AgsNotation *notation,
 {
   AgsNote *note;
 
+  pthread_mutex_t *notation_mutex;
+
+  if(!AGS_IS_NOTATION(notation)){
+    return;
+  }
+
+  /* get notation mutex */
+  pthread_mutex_lock(ags_notation_get_class_mutex());
+  
+  notation_mutex = notation->obj_mutex;
+  
+  pthread_mutex_unlock(ags_notation_get_class_mutex());
+
+  /* find note */
   note = ags_notation_find_point(notation,
 				 x, y,
 				 FALSE);
@@ -1352,6 +1290,8 @@ ags_notation_add_point_to_selection(AgsNotation *notation,
     }
   }else{
     /* add to or replace selection */
+    ags_note_set_flags(note, AGS_NOTE_IS_SELECTED);
+
     if(replace_current_selection){
       GList *list;
 
@@ -1360,12 +1300,22 @@ ags_notation_add_point_to_selection(AgsNotation *notation,
 
       list = g_list_alloc();
       list->data = note;
+      g_object_ref(note);
       
       ags_notation_free_selection(notation);
+
+      /* replace */
+      pthread_mutex_lock(notation_mutex);
+
       notation->selection = list;
+      
+      pthread_mutex_unlock(notation_mutex);
     }else{
-      if(!ags_notation_is_note_selected(notation, note)){
-	ags_notation_add_note(notation, note, TRUE);
+      if(!ags_notation_is_note_selected(notation,
+					note)){
+	/* add */
+	ags_notation_add_note(notation,
+			      note, TRUE);
       }
     }
   }
@@ -1373,46 +1323,65 @@ ags_notation_add_point_to_selection(AgsNotation *notation,
 
 /**
  * ags_notation_remove_point_from_selection:
- * @notation: an #AgsNotation
- * @x: offset
- * @y: tone
+ * @notation: the #AgsNotation
+ * @x: x offset
+ * @y: y note tone
  *
  * Remove notes at position of selection.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */ 
 void
 ags_notation_remove_point_from_selection(AgsNotation *notation,
 					 guint x, guint y)
 {
   AgsNote *note;
+  
+  pthread_mutex_t *notation_mutex;
 
+  if(!AGS_IS_NOTATION(notation)){
+    return;
+  }
+
+  /* get notation mutex */
+  pthread_mutex_lock(ags_notation_get_class_mutex());
+  
+  notation_mutex = notation->obj_mutex;
+  
+  pthread_mutex_unlock(ags_notation_get_class_mutex());
+
+  /* find point */
   note = ags_notation_find_point(notation,
 				 x, y,
 				 TRUE);
 
   if(note != NULL){
-    note->flags &= (~AGS_NOTE_IS_SELECTED);
+    ags_note_unset_flags(note,
+			 AGS_NOTE_IS_SELECTED);
 
     /* remove note from selection */
-    notation->selection = g_list_remove(notation->selection, note);
-
+    pthread_mutex_lock(notation_mutex);
+    
+    notation->selection = g_list_remove(notation->selection,
+					note);
     g_object_unref(note);
+
+    pthread_mutex_unlock(notation_mutex);
   }
 }
 
 /**
  * ags_notation_add_region_to_selection:
- * @notation: an #AgsNotation
- * @x0: start offset
- * @y0: start tone
- * @x1: end offset
- * @y1: end tone
+ * @notation: the #AgsNotation
+ * @x0: x start offset
+ * @y0: y start tone
+ * @x1: x end offset
+ * @y1: y end tone
  * @replace_current_selection: if %TRUE selection is replaced
  *
- * Select notes within region.
+ * Add note within region to selection.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_notation_add_region_to_selection(AgsNotation *notation,
@@ -1424,6 +1393,20 @@ ags_notation_add_region_to_selection(AgsNotation *notation,
 
   GList *region, *list;
 
+  pthread_mutex_t *notation_mutex;
+
+  if(!AGS_IS_NOTATION(notation)){
+    return;
+  }
+
+  /* get notation mutex */
+  pthread_mutex_lock(ags_notation_get_class_mutex());
+  
+  notation_mutex = notation->obj_mutex;
+  
+  pthread_mutex_unlock(ags_notation_get_class_mutex());
+
+  /* find region */
   region = ags_notation_find_region(notation,
 				    x0, y0,
 				    x1, y1,
@@ -1435,25 +1418,31 @@ ags_notation_add_region_to_selection(AgsNotation *notation,
     list = region;
 
     while(list != NULL){
-      ags_notation_add_note(notation,
-			    list->data,
-			    TRUE);
-      
+      ags_note_set_flags(list->data,
+			 AGS_NOTE_IS_SELECTED);
+      g_object_ref(list->data);
+
       list = list->next;
     }
 
+    /* replace */
+    pthread_mutex_lock(notation_mutex);
+     
     notation->selection = region;
-  }else{
-    while(region != NULL){
-      note = AGS_NOTE(region->data);
 
-      if(!ags_notation_is_note_selected(notation, note)){
+    pthread_mutex_unlock(notation_mutex);
+  }else{
+    list = region;
+    
+    while(list != NULL){
+      if(!ags_notation_is_note_selected(notation, list->data)){
+	/* add */
 	ags_notation_add_note(notation,
-			      note,
+			      list->data,
 			      TRUE);
       }
       
-      region = region->next;
+      list = list->next;
     }
     
     g_list_free(region);
@@ -1462,15 +1451,15 @@ ags_notation_add_region_to_selection(AgsNotation *notation,
 
 /**
  * ags_notation_remove_region_from_selection:
- * @notation: an #AgsNotation
- * @x0: start offset
- * @y0: start tone
- * @x1: end offset
- * @y1: end tone
+ * @notation: the #AgsNotation
+ * @x0: x start offset
+ * @y0: y start tone
+ * @x1: x end offset
+ * @y1: y end tone
  *
- * Remove notes within region of selection.
+ * Remove note within region of selection.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */ 
 void
 ags_notation_remove_region_from_selection(AgsNotation *notation,
@@ -1478,52 +1467,132 @@ ags_notation_remove_region_from_selection(AgsNotation *notation,
 					  guint x1, guint y1)
 {
   AgsNote *note;
-  
-  GList *region;
 
+  GList *region;
+  GList *list;
+  
+  pthread_mutex_t *notation_mutex;
+
+  if(!AGS_IS_NOTATION(notation)){
+    return;
+  }
+
+  /* get notation mutex */
+  pthread_mutex_lock(ags_notation_get_class_mutex());
+  
+  notation_mutex = notation->obj_mutex;
+  
+  pthread_mutex_unlock(ags_notation_get_class_mutex());
+
+  /* find region */
   region = ags_notation_find_region(notation,
 				    x0, y0,
 				    x1, y1,
 				    TRUE);
 
-  while(region != NULL){
-    note = AGS_NOTE(region->data);
-    note->flags &= (~AGS_NOTE_IS_SELECTED);
+  list = region;
+  
+  while(list != NULL){
+    ags_note_unset_flags(list->data,
+			 AGS_NOTE_IS_SELECTED);
 
-    notation->selection = g_list_remove(notation->selection, note);
-    g_object_unref(G_OBJECT(note));
+    /* remove */
+    pthread_mutex_lock(notation_mutex);
 
-    region = region->next;
+    notation->selection = g_list_remove(notation->selection,
+					list->data);
+
+    pthread_mutex_unlock(notation_mutex);
+
+    g_object_unref(list->data);
+
+    /* iterate */
+    list = list->next;
   }
 
   g_list_free(region);
 }
 
 /**
+ * ags_notation_add_all_to_selection:
+ * @notation: the #AgsNotation
+ *
+ * Add all note to selection.
+ *
+ * Since: 2.0.0
+ */
+void
+ags_notation_add_all_to_selection(AgsNotation *notation)
+{
+  GList *list;
+  
+  pthread_mutex_t *notation_mutex;
+
+  if(!AGS_IS_NOTATION(notation)){
+    return;
+  }
+
+  /* get notation mutex */
+  pthread_mutex_lock(ags_notation_get_class_mutex());
+  
+  notation_mutex = notation->obj_mutex;
+  
+  pthread_mutex_unlock(ags_notation_get_class_mutex());
+
+  /* select all */
+  pthread_mutex_lock(notation_mutex);
+
+  list = notation->note;
+
+  while(list != NULL){
+    ags_notation_add_note(notation,
+			  list->data, TRUE);
+    
+    list = list->next;
+  }
+
+  pthread_mutex_unlock(notation_mutex);
+}
+
+/**
  * ags_notation_copy_selection:
- * @notation: an #AgsNotation
+ * @notation: the #AgsNotation
  *
  * Copy selection to clipboard.
  *
  * Returns: the selection as XML.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 xmlNode*
 ags_notation_copy_selection(AgsNotation *notation)
 {
-  AgsNote *note;
-
+  AgsTimestamp *timestamp;
+  
   xmlNode *notation_node, *current_note;
   xmlNode *timestamp_node;
 
   GList *selection;
 
+  guint current_x0, current_x1, current_y;
   guint x_boundary, y_boundary;
 
-  selection = notation->selection;
+  pthread_mutex_t *notation_mutex;
+
+  if(!AGS_IS_NOTATION(notation)){
+    return;
+  }
+
+  /* get notation mutex */
+  pthread_mutex_lock(ags_notation_get_class_mutex());
+  
+  notation_mutex = notation->obj_mutex;
+  
+  pthread_mutex_unlock(ags_notation_get_class_mutex());
 
   /* create root node */
+  pthread_mutex_lock(notation_mutex);
+
   notation_node = xmlNewNode(NULL,
 			     BAD_CAST "notation");
 
@@ -1540,29 +1609,32 @@ ags_notation_copy_selection(AgsNotation *notation)
 	     BAD_CAST "format",
 	     BAD_CAST (AGS_NOTATION_CLIPBOARD_FORMAT));
   xmlNewProp(notation_node,
-	     BAD_CAST "base_frequency",
-	     BAD_CAST (g_strdup_printf("%f", notation->base_frequency)));
-  xmlNewProp(notation_node,
 	     BAD_CAST "audio-channel",
 	     BAD_CAST (g_strdup_printf("%u", notation->audio_channel)));
 
   /* timestamp */
-  if(notation->timestamp != NULL){
+  timestamp = notation->timestamp;
+  
+  if(timestamp != NULL){
     timestamp_node = xmlNewNode(NULL,
 				BAD_CAST "timestamp");
     xmlAddChild(notation_node,
 		timestamp_node);
-
+    
     xmlNewProp(timestamp_node,
 	       BAD_CAST "offset",
-	       BAD_CAST (g_strdup_printf("%u", AGS_TIMESTAMP(notation->timestamp)->timer.ags_offset.offset)));
+	       BAD_CAST (g_strdup_printf("%u", ags_timestamp_get_ags_offset(timestamp))));
   }
   
   /* selection */
   selection = notation->selection;
 
   if(selection != NULL){
-    x_boundary = AGS_NOTE(selection->data)->x[0];
+    g_object_get(selection->data,
+		 "x0", &current_x0,
+		 NULL);
+    
+    x_boundary = current_x0;
     y_boundary = G_MAXUINT;
   }else{
     x_boundary = 0;
@@ -1570,7 +1642,12 @@ ags_notation_copy_selection(AgsNotation *notation)
   }
 
   while(selection != NULL){
-    note = AGS_NOTE(selection->data);
+    g_object_get(selection->data,
+		 "x0", &current_x0,
+		 "x1", &current_x1,
+		 "y", &current_y,
+		 NULL);
+
     current_note = xmlNewChild(notation_node,
 			       NULL,
 			       BAD_CAST "note",
@@ -1578,20 +1655,22 @@ ags_notation_copy_selection(AgsNotation *notation)
 
     xmlNewProp(current_note,
 	       BAD_CAST "x",
-	       BAD_CAST (g_strdup_printf("%u", note->x[0])));
+	       BAD_CAST (g_strdup_printf("%u", current_x0)));
     xmlNewProp(current_note,
 	       BAD_CAST "x1",
-	       BAD_CAST (g_strdup_printf("%u", note->x[1])));
+	       BAD_CAST (g_strdup_printf("%u", current_x1)));
     xmlNewProp(current_note,
 	       BAD_CAST "y",
-	       BAD_CAST (g_strdup_printf("%u", note->y)));
+	       BAD_CAST (g_strdup_printf("%u", current_y)));
 
-    if(y_boundary > note->y){
-      y_boundary = note->y;
+    if(y_boundary > current_y){
+      y_boundary = current_y;
     }
 
     selection = selection->next;
   }
+	       
+  pthread_mutex_unlock(notation_mutex);
 
   xmlNewProp(notation_node,
 	     BAD_CAST "x_boundary",
@@ -1605,35 +1684,53 @@ ags_notation_copy_selection(AgsNotation *notation)
 
 /**
  * ags_notation_cut_selection:
- * @notation: an #AgsNotation
+ * @notation: the #AgsNotation
  *
  * Cut selection to clipboard.
  *
- * Returns: the selection as XML.
+ * Returns: the selection as xmlNode
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 xmlNode*
 ags_notation_cut_selection(AgsNotation *notation)
 {
-  xmlNode* notation_node;
-
-  GList *selection;
+  xmlNode *notation_node;
   
+  GList *selection, *note;
+  
+  pthread_mutex_t *notation_mutex;
+
+  if(!AGS_IS_NOTATION(notation)){
+    return;
+  }
+
+  /* get notation mutex */
+  pthread_mutex_lock(ags_notation_get_class_mutex());
+  
+  notation_mutex = notation->obj_mutex;
+  
+  pthread_mutex_unlock(ags_notation_get_class_mutex());
+
+  /* copy selection */
   notation_node = ags_notation_copy_selection(notation);
+
+  /* cut */
+  pthread_mutex_lock(notation_mutex);
 
   selection = notation->selection;
 
   while(selection != NULL){
-    notation->notes = g_list_remove(notation->notes,
-				    selection->data);
-    
-    AGS_NOTE(selection->data)->flags &= (~AGS_NOTE_IS_SELECTED);
+    notation->note = g_list_remove(notation->note,
+				   selection->data);
     g_object_unref(selection->data);
 
     selection = selection->next;
   }
 
+  pthread_mutex_unlock(notation_mutex);
+
+  /* free selection */
   ags_notation_free_selection(notation);
 
   return(notation_node);
@@ -1641,7 +1738,7 @@ ags_notation_cut_selection(AgsNotation *notation)
 
 /**
  * ags_notation_insert_native_piano_from_clipboard:
- * @notation: an #AgsNotation
+ * @notation: the #AgsNotation
  * @notation_node: the clipboard XML data
  * @version: clipboard version
  * @base_frequency: lowest frequency of notation
@@ -1656,7 +1753,7 @@ ags_notation_cut_selection(AgsNotation *notation)
  *
  * Paste previously copied notes. 
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_notation_insert_native_piano_from_clipboard(AgsNotation *notation,
@@ -1667,6 +1764,8 @@ ags_notation_insert_native_piano_from_clipboard(AgsNotation *notation,
 						gboolean reset_y_offset, guint y_offset,
 						gboolean match_channel, gboolean no_duplicates)
 {
+  guint current_audio_channel;
+  
   gboolean match_timestamp;
   
   auto void ags_notation_insert_native_piano_from_clipboard_version_0_3_12();
@@ -1674,6 +1773,8 @@ ags_notation_insert_native_piano_from_clipboard(AgsNotation *notation,
   void ags_notation_insert_native_piano_from_clipboard_version_0_3_12()
   {
     AgsNote *note;
+
+    AgsTimestamp *timestamp;
 
     xmlNode *node;
 
@@ -1684,7 +1785,6 @@ ags_notation_insert_native_piano_from_clipboard(AgsNotation *notation,
     guint x_boundary_val, y_boundary_val;
     guint x0_val, x1_val, y_val;
     guint base_x_difference, base_y_difference;
-    guint64 offset_val;
     gboolean subtract_x, subtract_y;
 
     node = root_node->children;
@@ -1894,9 +1994,13 @@ ags_notation_insert_native_piano_from_clipboard(AgsNotation *notation,
 	  }
 	  
 	  /* add note */
-	  if(!match_timestamp ||
-	     (x0_val >= notation->timestamp->timer.ags_offset.offset &&
-	      x0_val < notation->timestamp->timer.ags_offset.offset + AGS_NOTATION_DEFAULT_OFFSET)){
+	  g_object_get(notation,
+		       "timestamp", &timestamp,
+		       NULL);
+
+	  if(!match_timestamp || 
+	     (x0_val >= ags_timestamp_get_ags_offset(timestamp) &&
+	      x0_val < ags_timestamp_get_ags_offset(timestamp) + AGS_NOTATION_DEFAULT_OFFSET)){
 	    note = ags_note_new();
 
 	    note->x[0] = x0_val;
@@ -1934,11 +2038,15 @@ ags_notation_insert_native_piano_from_clipboard(AgsNotation *notation,
     /* changes contain only optional informations */
     match_timestamp = TRUE;
 
+    g_object_get(notation,
+		 "audio-channel", &current_audio_channel,
+		 NULL);
+
     if(match_channel &&
-       notation->audio_channel != g_ascii_strtoull(xmlGetProp(root_node,
-							      "audio-channel"),
-						   NULL,
-						   10)){
+       current_audio_channel != g_ascii_strtoull(xmlGetProp(root_node,
+							    "audio-channel"),
+						 NULL,
+						 10)){
       return;
     }
         
@@ -1948,7 +2056,7 @@ ags_notation_insert_native_piano_from_clipboard(AgsNotation *notation,
 
 /**
  * ags_notation_insert_from_clipboard:
- * @notation: an #AgsNotation
+ * @notation: the #AgsNotation
  * @notation_node: the clipboard XML data
  * @reset_x_offset: if %TRUE @x_offset used as cursor
  * @x_offset: region start cursor offset
@@ -1957,7 +2065,7 @@ ags_notation_insert_native_piano_from_clipboard(AgsNotation *notation,
  *
  * Paste previously copied notes. 
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_notation_insert_from_clipboard(AgsNotation *notation,
@@ -1974,7 +2082,7 @@ ags_notation_insert_from_clipboard(AgsNotation *notation,
 
 /**
  * ags_notation_insert_from_clipboard_extended:
- * @notation: an #AgsNotation
+ * @notation: the #AgsNotation
  * @notation_node: the clipboard XML data
  * @reset_x_offset: if %TRUE @x_offset used as cursor
  * @x_offset: region start cursor offset
@@ -1985,7 +2093,7 @@ ags_notation_insert_from_clipboard(AgsNotation *notation,
  * 
  * Paste previously copied notes. 
  * 
- * Since: 1.3.0
+ * Since: 2.0.0
  */
 void
 ags_notation_insert_from_clipboard_extended(AgsNotation *notation,
@@ -1998,6 +2106,10 @@ ags_notation_insert_from_clipboard_extended(AgsNotation *notation,
   char *base_frequency;
   char *x_boundary, *y_boundary;
 
+  if(!AGS_IS_NOTATION(notation)){
+    return;
+  }
+  
   while(notation_node != NULL){
     if(notation_node->type == XML_ELEMENT_NODE && !xmlStrncmp("notation", notation_node->name, 9)){
       break;
@@ -2033,18 +2145,6 @@ ags_notation_insert_from_clipboard_extended(AgsNotation *notation,
   }
 }
 
-GList*
-ags_notation_get_current(AgsNotation *notation)
-{
-  GList *list;
-
-  list = NULL;
-
-  //TODO:JK: get current
-
-  return(list);
-}
-
 /**
  * ags_notation_to_raw_midi:
  * @notation: the #AgsNotation
@@ -2061,7 +2161,7 @@ ags_notation_get_current(AgsNotation *notation)
  * 
  * Returns: the raw-midi buffer
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 unsigned char*
 ags_notation_to_raw_midi(AgsNotation *notation,
@@ -2091,7 +2191,7 @@ ags_notation_to_raw_midi(AgsNotation *notation,
  * 
  * Returns: the #AgsNotation
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsNotation*
 ags_notation_from_raw_midi(unsigned char *raw_midi,
@@ -2108,13 +2208,13 @@ ags_notation_from_raw_midi(unsigned char *raw_midi,
 /**
  * ags_notation_new:
  * @audio: the assigned #AgsAudio
- * @audio_channel: the audio channel to be used
+ * @audio_channel: the audio channel to apply
  *
- * Creates a #AgsNotation, assigned to @audio_channel.
+ * Creates a new instance of #AgsNotation.
  *
- * Returns: a new #AgsNotation
+ * Returns: the new #AgsNotation
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsNotation*
 ags_notation_new(GObject *audio,

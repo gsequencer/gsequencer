@@ -224,21 +224,20 @@ ags_audio_test_dispose()
   /* set input pads */
   ags_audio_set_pads(audio,
 		     AGS_TYPE_INPUT,
-		     AGS_AUDIO_TEST_DISPOSE_INPUT_PADS);
+		     AGS_AUDIO_TEST_DISPOSE_INPUT_PADS, 0);
 
   /* set output pads */
   ags_audio_set_pads(audio,
 		     AGS_TYPE_OUTPUT,
-		     AGS_AUDIO_TEST_DISPOSE_OUTPUT_PADS);
+		     AGS_AUDIO_TEST_DISPOSE_OUTPUT_PADS, 0);
 
   /* run dispose and assert */
   g_object_run_dispose(audio);
 
-  CU_ASSERT(audio->soundcard == NULL);
-  CU_ASSERT(audio->sequencer == NULL);
+  CU_ASSERT(audio->output_soundcard == NULL);
+  CU_ASSERT(audio->input_sequencer == NULL);
 
-  CU_ASSERT(audio->midi_file == NULL);
-  CU_ASSERT(audio->audio_connection == NULL);
+  CU_ASSERT(audio->output_midi_file == NULL);
 
   CU_ASSERT(audio->output == NULL);
   CU_ASSERT(audio->input == NULL);
@@ -251,7 +250,7 @@ ags_audio_test_dispose()
   CU_ASSERT(audio->recall_id == NULL);
   CU_ASSERT(audio->recycling_context == NULL);
 
-  CU_ASSERT(audio->container == NULL);
+  CU_ASSERT(audio->recall_container == NULL);
   CU_ASSERT(audio->recall == NULL);
   CU_ASSERT(audio->play == NULL);
 }
@@ -270,12 +269,12 @@ ags_audio_test_finalize()
   /* set input pads */
   ags_audio_set_pads(audio,
 		     AGS_TYPE_INPUT,
-		     AGS_AUDIO_TEST_FINALIZE_INPUT_PADS);
+		     AGS_AUDIO_TEST_FINALIZE_INPUT_PADS, 0);
 
   /* set output pads */
   ags_audio_set_pads(audio,
 		     AGS_TYPE_OUTPUT,
-		     AGS_AUDIO_TEST_FINALIZE_OUTPUT_PADS);
+		     AGS_AUDIO_TEST_FINALIZE_OUTPUT_PADS, 0);
 
   /* run dispose */
   g_object_run_dispose(audio);
@@ -315,7 +314,7 @@ ags_audio_test_set_audio_channels()
 
   /* set audio channels */
   ags_audio_set_audio_channels(audio,
-			       AGS_AUDIO_TEST_SET_AUDIO_CHANNELS_AUDIO_CHANNELS);
+			       AGS_AUDIO_TEST_SET_AUDIO_CHANNELS_AUDIO_CHANNELS, 0);
 
   CU_ASSERT(audio->audio_channels == AGS_AUDIO_TEST_SET_AUDIO_CHANNELS_AUDIO_CHANNELS);
 
@@ -391,7 +390,7 @@ ags_audio_test_set_pads()
   /* set input pads */
   ags_audio_set_pads(audio,
 		     AGS_TYPE_INPUT,
-		     AGS_AUDIO_TEST_SET_PADS_INPUT_PADS);
+		     AGS_AUDIO_TEST_SET_PADS_INPUT_PADS, 0);
 
   CU_ASSERT(audio->input_pads == AGS_AUDIO_TEST_SET_PADS_INPUT_PADS);
 
@@ -449,7 +448,7 @@ ags_audio_test_set_pads()
   /* set output pads */
   ags_audio_set_pads(audio,
 		     AGS_TYPE_OUTPUT,
-		     AGS_AUDIO_TEST_SET_PADS_OUTPUT_PADS);
+		     AGS_AUDIO_TEST_SET_PADS_OUTPUT_PADS, 0);
 
   CU_ASSERT(audio->output_pads == AGS_AUDIO_TEST_SET_PADS_OUTPUT_PADS);
 
@@ -484,7 +483,7 @@ ags_audio_test_set_pads()
   /* set input pads */
   ags_audio_set_pads(audio,
 		     AGS_TYPE_INPUT,
-		     AGS_AUDIO_TEST_SET_PADS_GROW_INPUT_PADS);
+		     AGS_AUDIO_TEST_SET_PADS_GROW_INPUT_PADS, 0);
 
   CU_ASSERT(audio->input_pads == AGS_AUDIO_TEST_SET_PADS_GROW_INPUT_PADS);
 
@@ -517,7 +516,7 @@ ags_audio_test_set_pads()
   /* set output pads */
   ags_audio_set_pads(audio,
 		     AGS_TYPE_OUTPUT,
-		     AGS_AUDIO_TEST_SET_PADS_GROW_OUTPUT_PADS);
+		     AGS_AUDIO_TEST_SET_PADS_GROW_OUTPUT_PADS, 0);
 
   CU_ASSERT(audio->output_pads == AGS_AUDIO_TEST_SET_PADS_GROW_OUTPUT_PADS);
 
@@ -552,7 +551,7 @@ ags_audio_test_set_pads()
   /* set input pads */
   ags_audio_set_pads(audio,
 		     AGS_TYPE_INPUT,
-		     AGS_AUDIO_TEST_SET_PADS_SHRINK_INPUT_PADS);
+		     AGS_AUDIO_TEST_SET_PADS_SHRINK_INPUT_PADS, 0);
 
   CU_ASSERT(audio->input_pads == AGS_AUDIO_TEST_SET_PADS_SHRINK_INPUT_PADS);
 
@@ -584,7 +583,7 @@ ags_audio_test_set_pads()
   /* set output pads */
   ags_audio_set_pads(audio,
 		     AGS_TYPE_OUTPUT,
-		     AGS_AUDIO_TEST_SET_PADS_SHRINK_OUTPUT_PADS);
+		     AGS_AUDIO_TEST_SET_PADS_SHRINK_OUTPUT_PADS, 0);
 
   CU_ASSERT(audio->output_pads == AGS_AUDIO_TEST_SET_PADS_SHRINK_OUTPUT_PADS);
 
@@ -753,7 +752,7 @@ ags_audio_test_add_recall_container()
 				 recall_container);
   
   /* assert to be in audio->recall_container */
-  CU_ASSERT(g_list_find(audio->container,
+  CU_ASSERT(g_list_find(audio->recall_container,
 			recall_container) != NULL);
 }
 
@@ -823,15 +822,17 @@ ags_audio_test_duplicate_recall()
 
   /* case 1: playback recall */
   recall = ags_recall_new();
-  recall->flags |= (AGS_RECALL_TEMPLATE |
-		    AGS_RECALL_PLAYBACK);
+  recall->flags |= (AGS_RECALL_TEMPLATE);
+  recall->sound_scope = AGS_SOUND_SCOPE_NOTATION;
+  recall->ability_flags = AGS_SOUND_ABILITY_NOTATION;
   ags_audio_add_recall(audio,
 		       recall,
 		       TRUE);
   
   recall_audio_run = ags_recall_audio_run_new();
-  recall_audio_run->flags |= (AGS_RECALL_TEMPLATE |
-			      AGS_RECALL_PLAYBACK);
+  recall_audio_run->flags |= (AGS_RECALL_TEMPLATE);
+  recall_audio_run->sound_scope = AGS_SOUND_SCOPE_NOTATION;
+  recall_audio_run->ability_flags = AGS_SOUND_ABILITY_NOTATION;
   ags_audio_add_recall(audio,
 		       recall_audio_run,
 		       TRUE);
@@ -844,29 +845,33 @@ ags_audio_test_duplicate_recall()
   recycling_context = ags_recycling_context_new(0);
 
   recall_id = ags_recall_id_new(NULL);
-  recall_id->flags |= AGS_RECALL_ID_PLAYBACK;
+  recall_id->sound_scope = AGS_SOUND_SCOPE_NOTATION;
   g_object_set(recall_id,
 	       "recycling-context", recycling_context,
 	       NULL);
 
   /* duplicate recall */
   ags_audio_duplicate_recall(audio,
-			     recall_id);
+			     recall_id,
+			     0, 0,
+			     0);
 
   CU_ASSERT(g_list_length(audio->play) == 4);
   CU_ASSERT(g_list_length(audio->recall) == 0);
   
   /* case 2: true recall */
   recall = ags_recall_new();
-  recall->flags |= (AGS_RECALL_TEMPLATE |
-		    AGS_RECALL_PLAYBACK);
+  recall->flags |= (AGS_RECALL_TEMPLATE);
+  recall->sound_scope = AGS_SOUND_SCOPE_NOTATION;
+  recall->ability_flags = AGS_SOUND_ABILITY_NOTATION;
   ags_audio_add_recall(audio,
 		       recall,
 		       FALSE);
   
   recall_audio_run = ags_recall_audio_run_new();
-  recall_audio_run->flags |= (AGS_RECALL_TEMPLATE |
-			      AGS_RECALL_PLAYBACK);
+  recall_audio_run->flags |= (AGS_RECALL_TEMPLATE);
+  recall_audio_run->sound_scope = AGS_SOUND_SCOPE_NOTATION;
+  recall_audio_run->ability_flags = AGS_SOUND_ABILITY_NOTATION;
   ags_audio_add_recall(audio,
 		       recall_audio_run,
 		       FALSE);
@@ -884,14 +889,16 @@ ags_audio_test_duplicate_recall()
 	       NULL);
 
   recall_id = ags_recall_id_new(NULL);
-  recall_id->flags |= AGS_RECALL_ID_PLAYBACK;
+  recall_id->sound_scope = AGS_SOUND_SCOPE_NOTATION;
   g_object_set(recall_id,
 	       "recycling-context", recycling_context,
 	       NULL);
 
   /* duplicate recall */
   ags_audio_duplicate_recall(audio,
-			     recall_id);
+			     recall_id,
+			     0, 0,
+			     0);
 
   CU_ASSERT(g_list_length(audio->play) == 4);
   CU_ASSERT(g_list_length(audio->recall) == 4);
@@ -972,14 +979,14 @@ ags_audio_test_link_channel()
   test_link_channel.master->flags |= AGS_AUDIO_ASYNC;
   
   ags_audio_set_audio_channels(test_link_channel.master,
-			       AGS_AUDIO_TEST_LINK_CHANNEL_MASTER_AUDIO_CHANNELS);
+			       AGS_AUDIO_TEST_LINK_CHANNEL_MASTER_AUDIO_CHANNELS, 0);
   
   ags_audio_set_pads(test_link_channel.master,
 		     AGS_TYPE_INPUT,
-		     AGS_AUDIO_TEST_LINK_CHANNEL_MASTER_INPUT_PADS);
+		     AGS_AUDIO_TEST_LINK_CHANNEL_MASTER_INPUT_PADS, 0);
   ags_audio_set_pads(test_link_channel.master,
 		     AGS_TYPE_OUTPUT,
-		     AGS_AUDIO_TEST_LINK_CHANNEL_MASTER_OUTPUT_PADS);
+		     AGS_AUDIO_TEST_LINK_CHANNEL_MASTER_OUTPUT_PADS, 0);
 
   /* audio - slave 0 */
   test_link_channel.slave_0 = ags_audio_new(devout);
@@ -987,14 +994,14 @@ ags_audio_test_link_channel()
 				       AGS_AUDIO_ASYNC);
   
   ags_audio_set_audio_channels(test_link_channel.slave_0,
-			       AGS_AUDIO_TEST_LINK_CHANNEL_SLAVE_0_AUDIO_CHANNELS);
+			       AGS_AUDIO_TEST_LINK_CHANNEL_SLAVE_0_AUDIO_CHANNELS, 0);
   
   ags_audio_set_pads(test_link_channel.slave_0,
 		     AGS_TYPE_INPUT,
-		     AGS_AUDIO_TEST_LINK_CHANNEL_SLAVE_0_INPUT_PADS);
+		     AGS_AUDIO_TEST_LINK_CHANNEL_SLAVE_0_INPUT_PADS, 0);
   ags_audio_set_pads(test_link_channel.slave_0,
 		     AGS_TYPE_OUTPUT,
-		     AGS_AUDIO_TEST_LINK_CHANNEL_SLAVE_0_OUTPUT_PADS);
+		     AGS_AUDIO_TEST_LINK_CHANNEL_SLAVE_0_OUTPUT_PADS, 0);
 
   /* audio - slave 1 */
   test_link_channel.slave_1 = ags_audio_new(devout);
@@ -1002,14 +1009,14 @@ ags_audio_test_link_channel()
 				       AGS_AUDIO_ASYNC);
   
   ags_audio_set_audio_channels(test_link_channel.slave_1,
-			       AGS_AUDIO_TEST_LINK_CHANNEL_SLAVE_1_AUDIO_CHANNELS);
+			       AGS_AUDIO_TEST_LINK_CHANNEL_SLAVE_1_AUDIO_CHANNELS, 0);
   
   ags_audio_set_pads(test_link_channel.slave_1,
 		     AGS_TYPE_INPUT,
-		     AGS_AUDIO_TEST_LINK_CHANNEL_SLAVE_1_INPUT_PADS);
+		     AGS_AUDIO_TEST_LINK_CHANNEL_SLAVE_1_INPUT_PADS, 0);
   ags_audio_set_pads(test_link_channel.slave_1,
 		     AGS_TYPE_OUTPUT,
-		     AGS_AUDIO_TEST_LINK_CHANNEL_SLAVE_1_OUTPUT_PADS);
+		     AGS_AUDIO_TEST_LINK_CHANNEL_SLAVE_1_OUTPUT_PADS, 0);
 
   /* audio - slave 2 */
   test_link_channel.slave_2 = ags_audio_new(devout);
@@ -1017,14 +1024,14 @@ ags_audio_test_link_channel()
 				       AGS_AUDIO_ASYNC);
   
   ags_audio_set_audio_channels(test_link_channel.slave_2,
-			       AGS_AUDIO_TEST_LINK_CHANNEL_SLAVE_2_AUDIO_CHANNELS);
+			       AGS_AUDIO_TEST_LINK_CHANNEL_SLAVE_2_AUDIO_CHANNELS, 0);
   
   ags_audio_set_pads(test_link_channel.slave_2,
 		     AGS_TYPE_INPUT,
-		     AGS_AUDIO_TEST_LINK_CHANNEL_SLAVE_2_INPUT_PADS);
+		     AGS_AUDIO_TEST_LINK_CHANNEL_SLAVE_2_INPUT_PADS, 0);
   ags_audio_set_pads(test_link_channel.slave_2,
 		     AGS_TYPE_OUTPUT,
-		     AGS_AUDIO_TEST_LINK_CHANNEL_SLAVE_2_OUTPUT_PADS);
+		     AGS_AUDIO_TEST_LINK_CHANNEL_SLAVE_2_OUTPUT_PADS, 0);
 
   /* setup link master to slave_0 */
   /* connect callback */
@@ -1237,14 +1244,14 @@ ags_audio_test_finalize_linked_channel()
   test_finalize_linked_channel.master->flags |= AGS_AUDIO_ASYNC;
   
   ags_audio_set_audio_channels(test_finalize_linked_channel.master,
-			       AGS_AUDIO_TEST_FINALIZE_LINKED_CHANNEL_MASTER_AUDIO_CHANNELS);
+			       AGS_AUDIO_TEST_FINALIZE_LINKED_CHANNEL_MASTER_AUDIO_CHANNELS, 0);
   
   ags_audio_set_pads(test_finalize_linked_channel.master,
 		     AGS_TYPE_INPUT,
-		     AGS_AUDIO_TEST_FINALIZE_LINKED_CHANNEL_MASTER_INPUT_PADS);
+		     AGS_AUDIO_TEST_FINALIZE_LINKED_CHANNEL_MASTER_INPUT_PADS, 0);
   ags_audio_set_pads(test_finalize_linked_channel.master,
 		     AGS_TYPE_OUTPUT,
-		     AGS_AUDIO_TEST_FINALIZE_LINKED_CHANNEL_MASTER_OUTPUT_PADS);
+		     AGS_AUDIO_TEST_FINALIZE_LINKED_CHANNEL_MASTER_OUTPUT_PADS, 0);
 
   /* audio - slave 0 */
   test_finalize_linked_channel.slave_0 = ags_audio_new(devout);
@@ -1252,14 +1259,14 @@ ags_audio_test_finalize_linked_channel()
 						  AGS_AUDIO_ASYNC);
   
   ags_audio_set_audio_channels(test_finalize_linked_channel.slave_0,
-			       AGS_AUDIO_TEST_FINALIZE_LINKED_CHANNEL_SLAVE_0_AUDIO_CHANNELS);
+			       AGS_AUDIO_TEST_FINALIZE_LINKED_CHANNEL_SLAVE_0_AUDIO_CHANNELS, 0);
   
   ags_audio_set_pads(test_finalize_linked_channel.slave_0,
 		     AGS_TYPE_INPUT,
-		     AGS_AUDIO_TEST_FINALIZE_LINKED_CHANNEL_SLAVE_0_INPUT_PADS);
+		     AGS_AUDIO_TEST_FINALIZE_LINKED_CHANNEL_SLAVE_0_INPUT_PADS, 0);
   ags_audio_set_pads(test_finalize_linked_channel.slave_0,
 		     AGS_TYPE_OUTPUT,
-		     AGS_AUDIO_TEST_FINALIZE_LINKED_CHANNEL_SLAVE_0_OUTPUT_PADS);
+		     AGS_AUDIO_TEST_FINALIZE_LINKED_CHANNEL_SLAVE_0_OUTPUT_PADS, 0);
 
   /* audio - slave 1 */
   test_finalize_linked_channel.slave_1 = ags_audio_new(devout);
@@ -1267,14 +1274,14 @@ ags_audio_test_finalize_linked_channel()
 						  AGS_AUDIO_ASYNC);
   
   ags_audio_set_audio_channels(test_finalize_linked_channel.slave_1,
-			       AGS_AUDIO_TEST_FINALIZE_LINKED_CHANNEL_SLAVE_1_AUDIO_CHANNELS);
+			       AGS_AUDIO_TEST_FINALIZE_LINKED_CHANNEL_SLAVE_1_AUDIO_CHANNELS, 0);
   
   ags_audio_set_pads(test_finalize_linked_channel.slave_1,
 		     AGS_TYPE_INPUT,
-		     AGS_AUDIO_TEST_FINALIZE_LINKED_CHANNEL_SLAVE_1_INPUT_PADS);
+		     AGS_AUDIO_TEST_FINALIZE_LINKED_CHANNEL_SLAVE_1_INPUT_PADS, 0);
   ags_audio_set_pads(test_finalize_linked_channel.slave_1,
 		     AGS_TYPE_OUTPUT,
-		     AGS_AUDIO_TEST_FINALIZE_LINKED_CHANNEL_SLAVE_1_OUTPUT_PADS);
+		     AGS_AUDIO_TEST_FINALIZE_LINKED_CHANNEL_SLAVE_1_OUTPUT_PADS, 0);
 
   /* audio - slave 2 */
   test_finalize_linked_channel.slave_2 = ags_audio_new(devout);
@@ -1282,14 +1289,14 @@ ags_audio_test_finalize_linked_channel()
 						  AGS_AUDIO_ASYNC);
   
   ags_audio_set_audio_channels(test_finalize_linked_channel.slave_2,
-			       AGS_AUDIO_TEST_FINALIZE_LINKED_CHANNEL_SLAVE_2_AUDIO_CHANNELS);
+			       AGS_AUDIO_TEST_FINALIZE_LINKED_CHANNEL_SLAVE_2_AUDIO_CHANNELS, 0);
   
   ags_audio_set_pads(test_finalize_linked_channel.slave_2,
 		     AGS_TYPE_INPUT,
-		     AGS_AUDIO_TEST_FINALIZE_LINKED_CHANNEL_SLAVE_2_INPUT_PADS);
+		     AGS_AUDIO_TEST_FINALIZE_LINKED_CHANNEL_SLAVE_2_INPUT_PADS, 0);
   ags_audio_set_pads(test_finalize_linked_channel.slave_2,
 		     AGS_TYPE_OUTPUT,
-		     AGS_AUDIO_TEST_FINALIZE_LINKED_CHANNEL_SLAVE_2_OUTPUT_PADS);
+		     AGS_AUDIO_TEST_FINALIZE_LINKED_CHANNEL_SLAVE_2_OUTPUT_PADS, 0);
 
   /* setup link master to slave_0 */
   /* set link */
@@ -1353,10 +1360,10 @@ ags_audio_test_finalize_linked_channel()
 
   ags_audio_set_pads(test_finalize_linked_channel.slave_0,
 		     AGS_TYPE_INPUT,
-		     0);
+		     0, 0);
   ags_audio_set_pads(test_finalize_linked_channel.slave_0,
 		     AGS_TYPE_OUTPUT,
-		     0);
+		     0, 0);
 
   g_object_unref(test_finalize_linked_channel.slave_0);
   
@@ -1403,10 +1410,10 @@ ags_audio_test_finalize_linked_channel()
   
   ags_audio_set_pads(test_finalize_linked_channel.slave_1,
 		     AGS_TYPE_INPUT,
-		     0);
+		     0, 0);
   ags_audio_set_pads(test_finalize_linked_channel.slave_1,
 		     AGS_TYPE_OUTPUT,
-		     0);
+		     0, 0);
 
   g_object_unref(test_finalize_linked_channel.slave_1);
   
@@ -1444,10 +1451,10 @@ ags_audio_test_finalize_linked_channel()
 
   ags_audio_set_pads(test_finalize_linked_channel.slave_2,
 		     AGS_TYPE_INPUT,
-		     0);
+		     0, 0);
   ags_audio_set_pads(test_finalize_linked_channel.slave_2,
 		     AGS_TYPE_OUTPUT,
-		     0);
+		     0, 0);
 
   g_object_unref(test_finalize_linked_channel.slave_2);
 
@@ -1494,6 +1501,7 @@ ags_audio_test_init_recall()
 
   /* instantiate recalls */
   recall = ags_recall_new();
+  recall->ability_flags = AGS_SOUND_ABILITY_NOTATION;
   ags_audio_add_recall(audio,
 		       recall,
 		       TRUE);
@@ -1502,6 +1510,7 @@ ags_audio_test_init_recall()
 		   G_CALLBACK(ags_audio_test_init_recall_callback), NULL);
   
   recall_audio_run = ags_recall_audio_run_new();
+  recall_audio_run->ability_flags = AGS_SOUND_ABILITY_NOTATION;
   ags_audio_add_recall(audio,
 		       recall_audio_run,
 		       TRUE);
@@ -1513,6 +1522,7 @@ ags_audio_test_init_recall()
   recycling_context = ags_recycling_context_new(0);
 
   recall_id = ags_recall_id_new(NULL);
+  recall_id->sound_scope = AGS_SOUND_SCOPE_NOTATION;
   g_object_set(recall_id,
 	       "recycling-context", recycling_context,
 	       NULL);
@@ -1527,8 +1537,8 @@ ags_audio_test_init_recall()
 	       NULL);
   
   /* init recall */
-  ags_audio_init_recall(audio, 0,
-			recall_id);
+  ags_audio_init_recall(audio,
+			recall_id, AGS_SOUND_STAGING_RUN_INIT_PRE);
   
   CU_ASSERT(test_init_recall_callback_hits_count == 2);
 }
@@ -1551,13 +1561,14 @@ ags_audio_test_resolve_recall()
 		       slave_recall_audio_run,
 		       TRUE);
 
-  g_signal_connect(G_OBJECT(slave_recall_audio_run), "resolve-dependencies",
+  g_signal_connect(G_OBJECT(slave_recall_audio_run), "resolve-dependency",
 		   G_CALLBACK(ags_audio_test_resolve_recall_callback), NULL);
   
   /* instantiate recycling context and recall id */
   recycling_context = ags_recycling_context_new(0);
 
   recall_id = ags_recall_id_new(NULL);
+  recall_id->sound_scope = AGS_SOUND_SCOPE_NOTATION;
   g_object_set(recall_id,
 	       "recycling-context", recycling_context,
 	       NULL);
@@ -1620,9 +1631,6 @@ main(int argc, char **argv)
     
     return CU_get_error();
   }
-
-  //  g_log_set_fatal_mask("GLib-GObject", // "Gtk" G_LOG_DOMAIN,
-  //		       G_LOG_LEVEL_CRITICAL | G_LOG_LEVEL_WARNING);
 
   /* add the tests to the suite */
   if((CU_add_test(pSuite, "test of AgsAudio dispose", ags_audio_test_dispose) == NULL) ||

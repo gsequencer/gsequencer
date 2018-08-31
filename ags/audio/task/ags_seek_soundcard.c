@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -19,14 +19,13 @@
 
 #include <ags/audio/task/ags_seek_soundcard.h>
 
-#include <ags/libags.h>
-
+#include <ags/audio/ags_sound_provider.h>
 #include <ags/audio/ags_audio.h>
+#include <ags/audio/ags_notation.h>
 
 #include <ags/i18n.h>
 
 void ags_seek_soundcard_class_init(AgsSeekSoundcardClass *seek_soundcard);
-void ags_seek_soundcard_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_seek_soundcard_init(AgsSeekSoundcard *seek_soundcard);
 void ags_seek_soundcard_set_property(GObject *gobject,
 				     guint prop_id,
@@ -36,8 +35,6 @@ void ags_seek_soundcard_get_property(GObject *gobject,
 				     guint prop_id,
 				     GValue *value,
 				     GParamSpec *param_spec);
-void ags_seek_soundcard_connect(AgsConnectable *connectable);
-void ags_seek_soundcard_disconnect(AgsConnectable *connectable);
 void ags_seek_soundcard_dispose(GObject *gobject);
 void ags_seek_soundcard_finalize(GObject *gobject);
 
@@ -54,13 +51,12 @@ void ags_seek_soundcard_launch(AgsTask *task);
  */
 
 static gpointer ags_seek_soundcard_parent_class = NULL;
-static AgsConnectableInterface *ags_seek_soundcard_parent_connectable_interface;
 
 enum{
   PROP_0,
   PROP_SOUNDCARD,
-  PROP_STEPS,
-  PROP_MOVE_FORWARD,
+  PROP_OFFSET,
+  PROP_WHENCE,
 };
 
 GType
@@ -72,33 +68,22 @@ ags_seek_soundcard_get_type()
     GType ags_type_seek_soundcard;
 
     static const GTypeInfo ags_seek_soundcard_info = {
-      sizeof (AgsSeekSoundcardClass),
+      sizeof(AgsSeekSoundcardClass),
       NULL, /* base_init */
       NULL, /* base_finalize */
       (GClassInitFunc) ags_seek_soundcard_class_init,
       NULL, /* class_finalize */
       NULL, /* class_data */
-      sizeof (AgsSeekSoundcard),
+      sizeof(AgsSeekSoundcard),
       0,    /* n_preallocs */
       (GInstanceInitFunc) ags_seek_soundcard_init,
     };
 
-    static const GInterfaceInfo ags_connectable_interface_info = {
-      (GInterfaceInitFunc) ags_seek_soundcard_connectable_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
 
     ags_type_seek_soundcard = g_type_register_static(AGS_TYPE_TASK,
 						     "AgsSeekSoundcard",
 						     &ags_seek_soundcard_info,
 						     0);
-
-    g_type_add_interface_static(ags_type_seek_soundcard,
-				AGS_TYPE_CONNECTABLE,
-				&ags_connectable_interface_info);
-
-    g_once_init_leave (&g_define_type_id__volatile, ags_type_seek_soundcard);
   }
 
   return g_define_type_id__volatile;
@@ -128,7 +113,7 @@ ags_seek_soundcard_class_init(AgsSeekSoundcardClass *seek_soundcard)
    *
    * The assigned #AgsSoundcard
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("soundcard",
 				   i18n_pspec("soundcard of seek soundcard"),
@@ -140,37 +125,37 @@ ags_seek_soundcard_class_init(AgsSeekSoundcardClass *seek_soundcard)
 				  param_spec);
   
   /**
-   * AgsSeekSoundcard:steps:
+   * AgsSeekSoundcard:offset:
    *
-   * The amount of steps to seek.
+   * The offset to seek.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
-  param_spec = g_param_spec_uint("steps",
-				 i18n_pspec("steps"),
-				 i18n_pspec("The amount of steps"),
+  param_spec = g_param_spec_int64("offset",
+				 i18n_pspec("offset"),
+				 i18n_pspec("The amount of offset"),
 				 0,
 				 G_MAXUINT,
 				 0,
 				 G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
-				  PROP_STEPS,
+				  PROP_OFFSET,
 				  param_spec);
 
   /**
-   * AgsSeekSoundcard:move-forward:
+   * AgsSeekSoundcard:whence:
    *
-   * The notation's move-forward.
+   * Whence either AGS_SEEK_SET, AGS_SEEK_CUR or AGS_SEEK_END
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
-  param_spec = g_param_spec_boolean("move-forward",
-				    i18n_pspec("move forward"),
-				    i18n_pspec("Do moving forward"),
+  param_spec = g_param_spec_boolean("whence",
+				    i18n_pspec("whence"),
+				    i18n_pspec("whence"),
 				    FALSE,
 				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
-				  PROP_MOVE_FORWARD,
+				  PROP_WHENCE,
 				  param_spec);
 
   /* task */
@@ -180,20 +165,11 @@ ags_seek_soundcard_class_init(AgsSeekSoundcardClass *seek_soundcard)
 }
 
 void
-ags_seek_soundcard_connectable_interface_init(AgsConnectableInterface *connectable)
-{
-  ags_seek_soundcard_parent_connectable_interface = g_type_interface_peek_parent(connectable);
-
-  connectable->connect = ags_seek_soundcard_connect;
-  connectable->disconnect = ags_seek_soundcard_disconnect;
-}
-
-void
 ags_seek_soundcard_init(AgsSeekSoundcard *seek_soundcard)
 {
   seek_soundcard->soundcard = NULL;
-  seek_soundcard->steps = 0;
-  seek_soundcard->move_forward = FALSE;
+  seek_soundcard->offset = 0;
+  seek_soundcard->whence = AGS_SEEK_CUR;
 }
 
 void
@@ -228,14 +204,14 @@ ags_seek_soundcard_set_property(GObject *gobject,
       seek_soundcard->soundcard = (GObject *) soundcard;
     }
     break;
-  case PROP_STEPS:
+  case PROP_OFFSET:
     {
-      seek_soundcard->steps = g_value_get_uint(value);
+      seek_soundcard->offset = g_value_get_uint(value);
     }
     break;
-  case PROP_MOVE_FORWARD:
+  case PROP_WHENCE:
     {
-      seek_soundcard->move_forward = g_value_get_boolean(value);
+      seek_soundcard->whence = g_value_get_boolean(value);
     }
     break;
   default:
@@ -260,36 +236,20 @@ ags_seek_soundcard_get_property(GObject *gobject,
       g_value_set_object(value, seek_soundcard->soundcard);
     }
     break;
-  case PROP_STEPS:
+  case PROP_OFFSET:
     {
-      g_value_set_uint(value, seek_soundcard->steps);
+      g_value_set_uint(value, seek_soundcard->offset);
     }
     break;
-  case PROP_MOVE_FORWARD:
+  case PROP_WHENCE:
     {
-      g_value_set_boolean(value, seek_soundcard->move_forward);
+      g_value_set_boolean(value, seek_soundcard->whence);
     }
     break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
   }
-}
-
-void
-ags_seek_soundcard_connect(AgsConnectable *connectable)
-{
-  ags_seek_soundcard_parent_connectable_interface->connect(connectable);
-
-  /* empty */
-}
-
-void
-ags_seek_soundcard_disconnect(AgsConnectable *connectable)
-{
-  ags_seek_soundcard_parent_connectable_interface->disconnect(connectable);
-
-  /* empty */
 }
 
 void
@@ -329,146 +289,125 @@ ags_seek_soundcard_launch(AgsTask *task)
 {
   AgsSeekSoundcard *seek_soundcard;
 
-  AgsMutexManager *mutex_manager;
-
+  AgsApplicationContext *application_context;
+  
   GObject *soundcard;
   
   GList *audio_start, *audio;
-  GList *recall;
+  GList *recall_start, *recall;
 
   guint note_offset;
   guint note_offset_absolute;
 
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *soundcard_mutex;
-  pthread_mutex_t *audio_mutex;
-
-  /* get mutex manager and application mutex */
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-
   seek_soundcard = AGS_SEEK_SOUNDCARD(task);
 
   soundcard = seek_soundcard->soundcard;
+
+  application_context = ags_application_context_get_instance();
+
+  audio = 
+    audio_start = ags_sound_provider_get_audio(AGS_SOUND_PROVIDER(application_context));
   
-  /* get soundcard mutex */
-  pthread_mutex_lock(application_mutex);
-
-  soundcard_mutex = ags_mutex_manager_lookup(mutex_manager,
-					     G_OBJECT(soundcard));
-
-  pthread_mutex_unlock(application_mutex);
-
-  /* seek audio */
-  pthread_mutex_lock(soundcard_mutex);
-
-  audio =
-    audio_start = g_list_copy(ags_soundcard_get_audio(AGS_SOUNDCARD(soundcard)));
-
-  pthread_mutex_unlock(soundcard_mutex);
-
   while(audio != NULL){
-    /* get audio mutex */
-    pthread_mutex_lock(application_mutex);
+    /* seek play context */
+    g_object_get(audio->data,
+		 "play", &recall_start,
+		 NULL);
 
-    audio_mutex = ags_mutex_manager_lookup(mutex_manager,
-					       (GObject *) audio->data);
-
-    pthread_mutex_unlock(application_mutex);
-
-    /* seek play */
-    pthread_mutex_lock(audio_mutex);
-    
-    recall = AGS_AUDIO(audio->data)->play;
+    recall = recall_start;
 
     while(recall != NULL){
       if(AGS_IS_SEEKABLE(recall->data)){
 	ags_seekable_seek(AGS_SEEKABLE(recall->data),
-			  seek_soundcard->steps,
-			  seek_soundcard->move_forward);
+			  seek_soundcard->offset,
+			  seek_soundcard->whence);
       }
 
       recall = recall->next;
     }
 
-    pthread_mutex_unlock(audio_mutex);
+    g_list_free(recall_start);
 
-    /* seek recall */
-    pthread_mutex_lock(audio_mutex);
-    
-    recall = AGS_AUDIO(audio->data)->recall;
+    /* seek recall context */
+    g_object_get(audio->data,
+		 "recall", &recall_start,
+		 NULL);
+
+    recall = recall_start;
 
     while(recall != NULL){
       if(AGS_IS_SEEKABLE(recall->data)){
 	ags_seekable_seek(AGS_SEEKABLE(recall->data),
-			  seek_soundcard->steps,
-			  seek_soundcard->move_forward);
+			  seek_soundcard->offset,
+			  seek_soundcard->whence);
       }
 
       recall = recall->next;
     }
 
-    pthread_mutex_unlock(audio_mutex);
-    
+    g_list_free(recall_start);
+
+    /* iterate */
     audio = audio->next;
   }
 
   g_list_free(audio_start);
 
   /* seek soundcard */
-  pthread_mutex_lock(soundcard_mutex);
-
   note_offset = ags_soundcard_get_note_offset(AGS_SOUNDCARD(seek_soundcard->soundcard));
   note_offset_absolute = ags_soundcard_get_note_offset_absolute(AGS_SOUNDCARD(seek_soundcard->soundcard));
-  
-  if(seek_soundcard->move_forward){
-    ags_soundcard_set_note_offset(AGS_SOUNDCARD(seek_soundcard->soundcard),
-				  note_offset + seek_soundcard->steps);
 
-    ags_soundcard_set_note_offset_absolute(AGS_SOUNDCARD(seek_soundcard->soundcard),
-					   note_offset_absolute + seek_soundcard->steps);
-  }else{
-    if(note_offset > seek_soundcard->steps){
+  switch(seek_soundcard->whence){
+  case AGS_SEEK_CUR:
+    {
       ags_soundcard_set_note_offset(AGS_SOUNDCARD(seek_soundcard->soundcard),
-				    note_offset - seek_soundcard->steps);
-
+				    note_offset + seek_soundcard->offset);
       ags_soundcard_set_note_offset_absolute(AGS_SOUNDCARD(seek_soundcard->soundcard),
-					     note_offset_absolute - seek_soundcard->steps);
-    }else{
-      ags_soundcard_set_note_offset(AGS_SOUNDCARD(seek_soundcard->soundcard),
-				    0.0);
-
-      ags_soundcard_set_note_offset_absolute(AGS_SOUNDCARD(seek_soundcard->soundcard),
-					     0.0);
+					     note_offset_absolute + seek_soundcard->offset);
     }
+    break;
+  case AGS_SEEK_SET:
+    {
+      ags_soundcard_set_note_offset(AGS_SOUNDCARD(seek_soundcard->soundcard),
+				    seek_soundcard->offset);
+      ags_soundcard_set_note_offset_absolute(AGS_SOUNDCARD(seek_soundcard->soundcard),
+					     seek_soundcard->offset);
+    }
+    break;
+  case AGS_SEEK_END:
+    {
+      ags_soundcard_set_note_offset(AGS_SOUNDCARD(seek_soundcard->soundcard),
+				    AGS_NOTATION_DEFAULT_END + seek_soundcard->offset);
+      ags_soundcard_set_note_offset_absolute(AGS_SOUNDCARD(seek_soundcard->soundcard),
+					     AGS_NOTATION_DEFAULT_END + seek_soundcard->offset);
+    }
+    break;
   }
-
-  pthread_mutex_unlock(soundcard_mutex);
 }
 
 /**
  * ags_seek_soundcard_new:
- * @soundcard: the #AgsSoundcard to seek
- * @steps: steps
- * @move_forward: moves forward if %TRUE, otherwise backward
+ * @soundcard: the #GObject sub-type implementing #AgsSoundcard
+ * @offset: the offset
+ * @whence: whence see #AgsSeekType-enum
  *
- * Creates an #AgsSeekSoundcard.
+ * Create a new instance of #AgsSeekSoundcard.
  *
- * Returns: an new #AgsSeekSoundcard.
+ * Returns: the new #AgsSeekSoundcard
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsSeekSoundcard*
 ags_seek_soundcard_new(GObject *soundcard,
-		       guint steps,
-		       gboolean move_forward)
+		       gint64 offset,
+		       guint whence)
 {
   AgsSeekSoundcard *seek_soundcard;
 
   seek_soundcard = (AgsSeekSoundcard *) g_object_new(AGS_TYPE_SEEK_SOUNDCARD,
 						     "soundcard", soundcard,
-						     "steps", steps,
-						     "move-forward", move_forward,
+						     "offset", offset,
+						     "whence", whence,
 						     NULL);
 
   return(seek_soundcard);

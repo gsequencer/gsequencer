@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -34,6 +34,7 @@
 
 #define AGS_EXPORT_SOUNDCARD_FORMAT_WAV "wav"
 #define AGS_EXPORT_SOUNDCARD_FORMAT_FLAC "flac"
+#define AGS_EXPORT_SOUNDCARD_FORMAT_AIFF "aiff"
 #define AGS_EXPORT_SOUNDCARD_FORMAT_OGG "ogg"
  
 typedef struct _AgsExportSoundcard AgsExportSoundcard;

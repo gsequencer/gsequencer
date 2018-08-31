@@ -27,11 +27,14 @@
 
 #include <ags/X/machine/ags_panel.h>
 #include <ags/X/machine/ags_mixer.h>
+#include <ags/X/machine/ags_spectrometer.h>
+#include <ags/X/machine/ags_equalizer10.h>
 #include <ags/X/machine/ags_drum.h>
 #include <ags/X/machine/ags_matrix.h>
 #include <ags/X/machine/ags_synth.h>
 #include <ags/X/machine/ags_syncsynth.h>
 #include <ags/X/machine/ags_ffplayer.h>
+#include <ags/X/machine/ags_audiorec.h>
 #include <ags/X/machine/ags_ladspa_bridge.h>
 #include <ags/X/machine/ags_dssi_bridge.h>
 #include <ags/X/machine/ags_lv2_bridge.h>
@@ -151,7 +154,7 @@ ags_window_class_init(AgsWindowClass *window)
    *
    * The assigned main AgsSoundcard.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("soundcard",
 				   i18n_pspec("assigned soundcard"),
@@ -167,7 +170,7 @@ ags_window_class_init(AgsWindowClass *window)
    *
    * The assigned application context.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("application-context",
 				   i18n_pspec("assigned application context"),
@@ -368,11 +371,15 @@ ags_window_set_property(GObject *gobject,
       
       window->soundcard = soundcard;
 
+      g_object_set(G_OBJECT(window->notation_editor),
+		   "soundcard", soundcard,
+		   NULL);
+
       g_object_set(G_OBJECT(window->automation_window),
 		   "soundcard", soundcard,
 		   NULL);
 
-      g_object_set(G_OBJECT(window->notation_editor),
+      g_object_set(G_OBJECT(window->wave_window),
 		   "soundcard", soundcard,
 		   NULL);
 
@@ -397,7 +404,7 @@ ags_window_set_property(GObject *gobject,
       }
 
       if(application_context != NULL){
-	window->application_mutex = application_context->mutex;
+	window->application_mutex = application_context->obj_mutex;
 	
 	g_object_ref(application_context);
       }
@@ -476,6 +483,8 @@ ags_window_connect(AgsConnectable *connectable)
 
   ags_connectable_connect(AGS_CONNECTABLE(window->automation_window));
 
+  ags_connectable_connect(AGS_CONNECTABLE(window->wave_window));
+
   ags_connectable_connect(AGS_CONNECTABLE(window->export_window));
 }
 
@@ -518,6 +527,8 @@ ags_window_disconnect(AgsConnectable *connectable)
   ags_connectable_disconnect(AGS_CONNECTABLE(window->navigation));
 
   ags_connectable_disconnect(AGS_CONNECTABLE(window->automation_window));
+
+  ags_connectable_disconnect(AGS_CONNECTABLE(window->wave_window));
 
   ags_connectable_disconnect(AGS_CONNECTABLE(window->export_window));
 }
@@ -602,7 +613,7 @@ ags_window_delete_event(GtkWidget *widget, GdkEventAny *event)
  * 
  * Returns: a new #GList containing #AgsMachineCounter for know machines
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 GList*
 ags_window_standard_machine_counter_alloc()
@@ -619,6 +630,12 @@ ags_window_standard_machine_counter_alloc()
 							     AGS_TYPE_MIXER, 0));
   machine_counter = g_list_prepend(machine_counter,
 				   ags_machine_counter_alloc(AGS_RECALL_DEFAULT_VERSION, AGS_RECALL_DEFAULT_BUILD_ID,
+							     AGS_TYPE_SPECTROMETER, 0));
+  machine_counter = g_list_prepend(machine_counter,
+				   ags_machine_counter_alloc(AGS_RECALL_DEFAULT_VERSION, AGS_RECALL_DEFAULT_BUILD_ID,
+							     AGS_TYPE_EQUALIZER10, 0));
+  machine_counter = g_list_prepend(machine_counter,
+				   ags_machine_counter_alloc(AGS_RECALL_DEFAULT_VERSION, AGS_RECALL_DEFAULT_BUILD_ID,
 							     AGS_TYPE_DRUM, 0));
   machine_counter = g_list_prepend(machine_counter,
 				   ags_machine_counter_alloc(AGS_RECALL_DEFAULT_VERSION, AGS_RECALL_DEFAULT_BUILD_ID,
@@ -632,6 +649,9 @@ ags_window_standard_machine_counter_alloc()
   machine_counter = g_list_prepend(machine_counter,
 				   ags_machine_counter_alloc(AGS_RECALL_DEFAULT_VERSION, AGS_RECALL_DEFAULT_BUILD_ID,
 							     AGS_TYPE_FFPLAYER, 0));
+  machine_counter = g_list_prepend(machine_counter,
+				   ags_machine_counter_alloc(AGS_RECALL_DEFAULT_VERSION, AGS_RECALL_DEFAULT_BUILD_ID,
+							     AGS_TYPE_AUDIOREC, 0));
   machine_counter = g_list_prepend(machine_counter,
 				   ags_machine_counter_alloc(AGS_RECALL_DEFAULT_VERSION, AGS_RECALL_DEFAULT_BUILD_ID,
 							     AGS_TYPE_LADSPA_BRIDGE, 0));
@@ -660,7 +680,7 @@ ags_window_standard_machine_counter_alloc()
  * 
  * Returns: an #AgsMachineCounter
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsMachineCounter*
 ags_window_find_machine_counter(AgsWindow *window,
@@ -688,7 +708,7 @@ ags_window_find_machine_counter(AgsWindow *window,
  *
  * Keep track of count of machines. Increment window's counter.
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_window_increment_machine_counter(AgsWindow *window,
@@ -711,7 +731,7 @@ ags_window_increment_machine_counter(AgsWindow *window,
  *
  * Keep track of count of machines. Decrement window's counter.
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_window_decrement_machine_counter(AgsWindow *window,
@@ -738,7 +758,7 @@ ags_window_decrement_machine_counter(AgsWindow *window,
  * 
  * Returns: an #AgsMachineCounter
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsMachineCounter*
 ags_machine_counter_alloc(gchar *version, gchar *build_id,
@@ -921,7 +941,7 @@ ags_window_load_libags_audio_timeout(AgsWindow *window)
  *
  * Returns: %TRUE if proceed with redraw, otherwise %FALSE
  * 
- * Since: 1.2.0
+ * Since: 2.0.0
  */
 gboolean
 ags_window_load_file_timeout(AgsWindow *window)
@@ -993,7 +1013,7 @@ ags_window_load_file_timeout(AgsWindow *window)
  *
  * Returns: a new #AgsWindow
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsWindow*
 ags_window_new(GObject *application_context)

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -43,8 +43,10 @@ void ags_track_collection_get_property(GObject *gobject,
 				       guint prop_id,
 				       GValue *value,
 				       GParamSpec *param_spec);
+
 void ags_track_collection_connect(AgsConnectable *connectable);
 void ags_track_collection_disconnect(AgsConnectable *connectable);
+
 void ags_track_collection_set_update(AgsApplicable *applicable, gboolean update);
 void ags_track_collection_apply(AgsApplicable *applicable);
 void ags_track_collection_reset(AgsApplicable *applicable);
@@ -137,7 +139,7 @@ ags_track_collection_class_init(AgsTrackCollectionClass *track_collection)
    *
    * The assigned midi document.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_pointer("midi-document",
 				    i18n_pspec("midi document of track collection"),
@@ -352,9 +354,11 @@ ags_track_collection_parse(AgsTrackCollection *track_collection)
   xmlNode *header_node, *tempo_node;
   xmlNode *time_signature_node;
   xmlNode **node, **instrument_node, **sequence_node;
+
   GList *list, *list_start;
   
   gchar *instrument, *sequence;
+
   gdouble sec_val;
   guint denominator, numerator;
   guint i, j;
@@ -587,7 +591,7 @@ ags_track_collection_add_mapper(AgsTrackCollection *track_collection,
  *
  * Returns: a new #AgsTrackCollection
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsTrackCollection*
 ags_track_collection_new(GType child_type,

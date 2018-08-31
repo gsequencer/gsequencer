@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -17,33 +17,22 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <ags/audio/recall/ags_rt_stream_channel.h>
-#include <ags/audio/recall/ags_rt_stream_channel_run.h>
-#include <ags/audio/recall/ags_rt_stream_recycling.h>
 #include <ags/audio/recall/ags_rt_stream_audio_signal.h>
 
 #include <ags/libags.h>
 
 #include <ags/audio/ags_audio_buffer_util.h>
 
-#include <ags/audio/task/ags_unref_audio_signal.h>
+#include <ags/audio/recall/ags_rt_stream_channel.h>
+#include <ags/audio/recall/ags_rt_stream_channel_run.h>
+#include <ags/audio/recall/ags_rt_stream_recycling.h>
 
 void ags_rt_stream_audio_signal_class_init(AgsRtStreamAudioSignalClass *rt_stream_audio_signal);
-void ags_rt_stream_audio_signal_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_rt_stream_audio_signal_dynamic_connectable_interface_init(AgsDynamicConnectableInterface *dynamic_connectable);
 void ags_rt_stream_audio_signal_init(AgsRtStreamAudioSignal *rt_stream_audio_signal);
-void ags_rt_stream_audio_signal_connect(AgsConnectable *connectable);
-void ags_rt_stream_audio_signal_disconnect(AgsConnectable *connectable);
-void ags_rt_stream_audio_signal_connect_dynamic(AgsDynamicConnectable *dynamic_connectable);
-void ags_rt_stream_audio_signal_disconnect_dynamic(AgsDynamicConnectable *dynamic_connectable);
 void ags_rt_stream_audio_signal_dispose(GObject *gobject);
 void ags_rt_stream_audio_signal_finalize(GObject *gobject);
 
-void ags_rt_stream_audio_signal_run_init_pre(AgsRecall *recall);
 void ags_rt_stream_audio_signal_run_pre(AgsRecall *recall);
-AgsRecall* ags_rt_stream_audio_signal_duplicate(AgsRecall *recall,
-						AgsRecallID *recall_id,
-						guint *n_params, GParameter *parameter);
 
 /**
  * SECTION:ags_rt_stream_audio_signal
@@ -56,8 +45,6 @@ AgsRecall* ags_rt_stream_audio_signal_duplicate(AgsRecall *recall,
  */
 
 static gpointer ags_rt_stream_audio_signal_parent_class = NULL;
-static AgsConnectableInterface *ags_rt_stream_audio_signal_parent_connectable_interface;
-static AgsDynamicConnectableInterface *ags_rt_stream_audio_signal_parent_dynamic_connectable_interface;
 
 GType
 ags_rt_stream_audio_signal_get_type()
@@ -79,35 +66,13 @@ ags_rt_stream_audio_signal_get_type()
       (GInstanceInitFunc) ags_rt_stream_audio_signal_init,
     };
 
-    static const GInterfaceInfo ags_connectable_interface_info = {
-      (GInterfaceInitFunc) ags_rt_stream_audio_signal_connectable_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-
-    static const GInterfaceInfo ags_dynamic_connectable_interface_info = {
-      (GInterfaceInitFunc) ags_rt_stream_audio_signal_dynamic_connectable_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-
     ags_type_rt_stream_audio_signal = g_type_register_static(AGS_TYPE_RECALL_AUDIO_SIGNAL,
 							     "AgsRtStreamAudioSignal",
 							     &ags_rt_stream_audio_signal_info,
 							     0);
-
-    g_type_add_interface_static(ags_type_rt_stream_audio_signal,
-				AGS_TYPE_CONNECTABLE,
-				&ags_connectable_interface_info);
-
-    g_type_add_interface_static(ags_type_rt_stream_audio_signal,
-				AGS_TYPE_DYNAMIC_CONNECTABLE,
-				&ags_dynamic_connectable_interface_info);
-
-    g_once_init_leave (&g_define_type_id__volatile, ags_type_rt_stream_audio_signal);
   }
 
-  return g_define_type_id__volatile;
+  return(ags_type_rt_stream_audio_signal);
 }
 
 void
@@ -115,7 +80,6 @@ ags_rt_stream_audio_signal_class_init(AgsRtStreamAudioSignalClass *rt_stream_aud
 {
   GObjectClass *gobject;
   AgsRecallClass *recall;
-  GParamSpec *param_spec;
 
   ags_rt_stream_audio_signal_parent_class = g_type_class_peek_parent(rt_stream_audio_signal);
 
@@ -128,27 +92,7 @@ ags_rt_stream_audio_signal_class_init(AgsRtStreamAudioSignalClass *rt_stream_aud
   /* AgsRecallClass */
   recall = (AgsRecallClass *) rt_stream_audio_signal;
 
-  recall->run_init_pre = ags_rt_stream_audio_signal_run_init_pre;
   recall->run_pre = ags_rt_stream_audio_signal_run_pre;
-  recall->duplicate = ags_rt_stream_audio_signal_duplicate;
-}
-
-void
-ags_rt_stream_audio_signal_connectable_interface_init(AgsConnectableInterface *connectable)
-{
-  ags_rt_stream_audio_signal_parent_connectable_interface = g_type_interface_peek_parent(connectable);
-
-  connectable->connect = ags_rt_stream_audio_signal_connect;
-  connectable->disconnect = ags_rt_stream_audio_signal_disconnect;
-}
-
-void
-ags_rt_stream_audio_signal_dynamic_connectable_interface_init(AgsDynamicConnectableInterface *dynamic_connectable)
-{
-  ags_rt_stream_audio_signal_parent_dynamic_connectable_interface = g_type_interface_peek_parent(dynamic_connectable);
-
-  dynamic_connectable->connect_dynamic = ags_rt_stream_audio_signal_connect_dynamic;
-  dynamic_connectable->disconnect_dynamic = ags_rt_stream_audio_signal_disconnect_dynamic;
 }
 
 void
@@ -168,8 +112,6 @@ ags_rt_stream_audio_signal_init(AgsRtStreamAudioSignal *rt_stream_audio_signal)
 void
 ags_rt_stream_audio_signal_dispose(GObject *gobject)
 {
-  AGS_RT_STREAM_AUDIO_SIGNAL(gobject)->dispose_source = AGS_RECALL_AUDIO_SIGNAL(gobject)->source;
-
   /* call parent */
   G_OBJECT_CLASS(ags_rt_stream_audio_signal_parent_class)->dispose(gobject); 
 }
@@ -200,144 +142,110 @@ ags_rt_stream_audio_signal_finalize(GObject *gobject)
 }
 
 void
-ags_rt_stream_audio_signal_connect(AgsConnectable *connectable)
-{
-  if((AGS_RECALL_CONNECTED & (AGS_RECALL(connectable)->flags)) != 0){
-    return;
-  }
-
-  /* call parent */
-  ags_rt_stream_audio_signal_parent_connectable_interface->connect(connectable);
-
-  /* empty */
-}
-
-void
-ags_rt_stream_audio_signal_disconnect(AgsConnectable *connectable)
-{
-  /* call parent */
-  ags_rt_stream_audio_signal_parent_connectable_interface->disconnect(connectable);
-
-  /* empty */
-}
-
-void
-ags_rt_stream_audio_signal_connect_dynamic(AgsDynamicConnectable *dynamic_connectable)
-{
-  if((AGS_RECALL_DYNAMIC_CONNECTED & (AGS_RECALL(dynamic_connectable)->flags)) != 0){
-    return;
-  }
-
-  /* call parent */
-  ags_rt_stream_audio_signal_parent_dynamic_connectable_interface->connect_dynamic(dynamic_connectable);
-
-  /* empty */
-}
-
-void
-ags_rt_stream_audio_signal_disconnect_dynamic(AgsDynamicConnectable *dynamic_connectable)
-{
-  /* call parent */
-  ags_rt_stream_audio_signal_parent_dynamic_connectable_interface->disconnect_dynamic(dynamic_connectable);
-
-  /* empty */
-}
-
-void
-ags_rt_stream_audio_signal_run_init_pre(AgsRecall *recall)
-{
-  /* call parent */
-  AGS_RECALL_CLASS(ags_rt_stream_audio_signal_parent_class)->run_init_pre(recall);
-
-  //  g_message("rt_stream");
-}
-
-void
 ags_rt_stream_audio_signal_run_pre(AgsRecall *recall)
 {
-  AgsRtStreamAudioSignal *rt_stream_audio_signal;
-
   AgsRecycling *recycling;
   AgsAudioSignal *source;
-  AgsAudioSignal *template;
+  AgsAudioSignal *rt_template;
+  AgsRecallID *recall_id;
+  AgsRecyclingContext *recycling_context, *parent_recycling_context;
+  AgsRtStreamAudioSignal *rt_stream_audio_signal;
 
-  AgsMutexManager *mutex_manager;
-
-  GList *note;
+  GList *start_note, *note;
 
   void *buffer;
 
   gdouble delay;
+  guint rt_template_length;
+  guint rt_template_frame_count;
+  guint loop_start, loop_end;
   guint buffer_size;
+  guint rt_template_buffer_size;
+  guint source_format, rt_template_format;
   guint copy_mode;
 
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *soundcard_mutex;
-  pthread_mutex_t *recycling_mutex;
+  void (*parent_class_run_pre)(AgsRecall *recall);
 
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+  /* get parent class */
+  pthread_mutex_lock(ags_recall_get_class_mutex());
 
-  AGS_RECALL_CLASS(ags_rt_stream_audio_signal_parent_class)->run_inter(recall);
+  parent_class_run_pre = AGS_RECALL_CLASS(ags_rt_stream_audio_signal_parent_class)->run_pre;
 
+  pthread_mutex_unlock(ags_recall_get_class_mutex());
+  
+  /* call parent */
+  parent_class_run_pre(recall);
+
+  /* get some fields */
   rt_stream_audio_signal = AGS_RT_STREAM_AUDIO_SIGNAL(recall);
 
-  source = AGS_RECALL_AUDIO_SIGNAL(rt_stream_audio_signal)->source;
+  g_object_get(rt_stream_audio_signal,
+	       "source", &source,
+	       "recall-id", &recall_id,
+	       NULL);
+  
+  buffer = source->stream->data;
 
-  buffer = source->stream_beginning->data;
-  buffer_size = source->buffer_size;
-
-  delay = source->delay;
-
-  /* lookup recycling mutex */
-  recycling = source->recycling;
-
-  pthread_mutex_lock(application_mutex);
-
-  recycling_mutex = ags_mutex_manager_lookup(mutex_manager,
-					     (GObject *) recycling);
-	
-  pthread_mutex_unlock(application_mutex);
+  g_object_get(source,
+	       "buffer-size", &buffer_size,
+	       "format", &source_format,
+	       "delay", &delay,
+	       "recycling", &recycling,
+	       "rt-template", &rt_template,
+	       "note", &start_note,
+	       NULL);
 
   /* get template */
-  template = source->rt_template;
-
-  if(template == NULL){
+  if(rt_template == NULL){
     return;
   }
-  
-  note = source->note;
-  
+
+  g_object_get(rt_template,
+	       "buffer-size", &rt_template_buffer_size,
+	       "format", &rt_template_format,
+	       "length", &rt_template_length,
+	       "frame-count", rt_template_frame_count,
+	       "loop-start", &loop_start,
+	       "loop-end", &loop_end,
+	       NULL);
+    
   ags_audio_buffer_util_clear_buffer(buffer, 1,
-				     buffer_size, ags_audio_buffer_util_format_from_soundcard(source->format));
+				     buffer_size, ags_audio_buffer_util_format_from_soundcard(source_format));
 
-  copy_mode = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(source->format),
-						  ags_audio_buffer_util_format_from_soundcard(template->format));
+  copy_mode = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(source_format),
+						  ags_audio_buffer_util_format_from_soundcard(rt_template_format));
 
+  /* check note */
+  g_object_get(recall_id,
+	       "recycling-context", &recycling_context,
+	       NULL);
+
+  g_object_get(recycling_context,
+	       "parent", &parent_recycling_context,
+	       NULL);
+
+  note = start_note;
+  
   while(note != NULL){
     AgsNote *current;
 
     GList *stream, *template_stream;
 
-    guint x0, x1;
+    guint note_x0, note_x1;
     guint rt_attack;
-    guint64 offset;
+    guint64 rt_offset;
     
     current = note->data;
-    offset = current->rt_offset;
 
-    pthread_mutex_lock(recycling_mutex);
-
-    x0 = current->x[0];
-    x1 = current->x[1];
-
-    rt_attack = current->rt_attack;
+    g_object_get(current,
+		 "rt-offset", &rt_offset,
+		 "x0", &note_x0,
+		 "x1", &note_x1,
+		 NULL);
     
-    pthread_mutex_unlock(recycling_mutex);
-
-    if(offset < template->length ||
-       offset < delay * x1){
-      if(template->loop_start < template->loop_end){
+    if(rt_offset < rt_template_length ||
+       rt_offset < delay * note_x1){
+      if(loop_start < loop_end){
 	guint frame_count;
 	guint loop_length;
 	guint loop_frame_count;
@@ -347,18 +255,18 @@ ags_rt_stream_audio_signal_run_pre(AgsRecall *recall)
 	guint j_start;
 	guint i, j, k;
 
-	frame_count = delay * (x1 - x0) * buffer_size;
+	frame_count = delay * (note_x1 - note_x0) * buffer_size;
 	
-	loop_length = template->loop_end - template->loop_start;
-	loop_frame_count = ((frame_count - template->loop_start) / loop_length) * template->buffer_size;
+	loop_length = loop_end - loop_start;
+	loop_frame_count = ((frame_count - loop_start) / loop_length) * rt_template_buffer_size;
 
-	if(offset * buffer_size > template->loop_end){
-	  if(((guint) offset * buffer_size) + buffer_size > frame_count - (template->frame_count - template->loop_end)){
-	    if(offset * buffer_size > frame_count - (template->frame_count - template->loop_end)){
-	      j_start = (frame_count - (offset * buffer_size)) % buffer_size;
+	if(rt_offset * buffer_size > loop_end){
+	  if(((guint) rt_offset * buffer_size) + buffer_size > frame_count - (rt_template_frame_count - loop_end)){
+	    if(rt_offset * buffer_size > frame_count - (rt_template_frame_count - loop_end)){
+	      j_start = (frame_count - (rt_offset * buffer_size)) % buffer_size;
 
-	      template_stream = g_list_nth(template->stream_beginning,
-					   (frame_count - (offset * buffer_size)) / buffer_size);
+	      template_stream = g_list_nth(rt_template->stream,
+					   (frame_count - (rt_offset * buffer_size)) / buffer_size);
 
 	      if(template_stream == NULL){
 		note = note->next;
@@ -366,10 +274,10 @@ ags_rt_stream_audio_signal_run_pre(AgsRecall *recall)
 		continue;
 	      }	      
 	    }else{
-	      j_start = ((guint) (offset * buffer_size) - template->loop_end) % (template->loop_end - template->loop_start) % buffer_size;
+	      j_start = ((guint) (rt_offset * buffer_size) - loop_end) % (loop_end - loop_start) % buffer_size;
 
-	      template_stream = g_list_nth(template->stream_beginning,
-					   (template->loop_start + ((((guint) (offset * buffer_size) - template->loop_end) % (template->loop_end - template->loop_start)) / buffer_size)));
+	      template_stream = g_list_nth(rt_template->stream,
+					   (loop_start + ((((guint) (rt_offset * buffer_size) - loop_end) % (loop_end - loop_start)) / buffer_size)));
 
 	      if(template_stream == NULL){
 		note = note->next;
@@ -378,10 +286,10 @@ ags_rt_stream_audio_signal_run_pre(AgsRecall *recall)
 	      }
 	    }
 	  }else{
-	    j_start = ((guint) (offset * buffer_size) - template->loop_end) % (template->loop_end - template->loop_start) % buffer_size;
+	    j_start = ((guint) (rt_offset * buffer_size) - loop_end) % (loop_end - loop_start) % buffer_size;
 	    
-	    template_stream = g_list_nth(template->stream_beginning,
-					 (template->loop_start + ((((guint) (offset * buffer_size) - template->loop_end) % (template->loop_end - template->loop_start)) / buffer_size)));
+	    template_stream = g_list_nth(rt_template->stream,
+					 (loop_start + ((((guint) (rt_offset * buffer_size) - loop_end) % (loop_end - loop_start)) / buffer_size)));
 
 	    if(template_stream == NULL){
 	      note = note->next;
@@ -390,10 +298,10 @@ ags_rt_stream_audio_signal_run_pre(AgsRecall *recall)
 	    }
 	  }
 	}else{
-	  j_start = ((guint) (offset * buffer_size)) % buffer_size;
+	  j_start = ((guint) (rt_offset * buffer_size)) % buffer_size;
 
-	  template_stream = g_list_nth(template->stream_beginning,
-				       offset);
+	  template_stream = g_list_nth(rt_template->stream,
+				       rt_offset);
 
 	  if(template_stream == NULL){
 	    note = note->next;
@@ -402,22 +310,22 @@ ags_rt_stream_audio_signal_run_pre(AgsRecall *recall)
 	  }
 	}
 
-	if(offset == 0){
+	if(rt_offset == 0){
 	  k = rt_attack;
 	}else{
 	  k = 0;
 	}
 	
-	for(i = 0, j = j_start, nth_loop = offset; i < buffer_size;){
+	for(i = 0, j = j_start, nth_loop = rt_offset; i < buffer_size;){
 	  /* compute count of frames to copy */
 	  copy_n_frames = buffer_size;
 
 	  /* limit nth loop */
-	  if(i > template->loop_start &&
-	     i + copy_n_frames > template->loop_start + loop_length &&
-	     i + copy_n_frames < template->loop_start + loop_frame_count &&
-	     i + copy_n_frames >= template->loop_start + (nth_loop + 1) * loop_length){
-	    copy_n_frames = (template->loop_start + (nth_loop + 1) * loop_length) - i;
+	  if(i > loop_start &&
+	     i + copy_n_frames > loop_start + loop_length &&
+	     i + copy_n_frames < loop_start + loop_frame_count &&
+	     i + copy_n_frames >= loop_start + (nth_loop + 1) * loop_length){
+	    copy_n_frames = (loop_start + (nth_loop + 1) * loop_length) - i;
 	  }
 
 	  /* check boundaries */
@@ -444,18 +352,18 @@ ags_rt_stream_audio_signal_run_pre(AgsRecall *recall)
 	    break;
 	  }
 
-	  if(j + copy_n_frames == template->buffer_size){
+	  if(j + copy_n_frames == rt_template_buffer_size){
 	    template_stream = template_stream->next;
 	  }
     
 	  if(template_stream == NULL ||
-	     (i > template->loop_start &&
-	      i + copy_n_frames > template->loop_start + loop_length &&
-	      i + copy_n_frames < template->loop_start + loop_frame_count &&
-	      i + copy_n_frames >= template->loop_start + (nth_loop + 1) * loop_length)){
-	    j = template->loop_start % template->buffer_size;
-	    template_stream = g_list_nth(template->stream_beginning,
-					 floor(template->loop_start / template->buffer_size));
+	     (i > loop_start &&
+	      i + copy_n_frames > loop_start + loop_length &&
+	      i + copy_n_frames < loop_start + loop_frame_count &&
+	      i + copy_n_frames >= loop_start + (nth_loop + 1) * loop_length)){
+	    j = loop_start % rt_template_buffer_size;
+	    template_stream = g_list_nth(rt_template->stream,
+					 floor(loop_start / rt_template_buffer_size));
 
 	    nth_loop++;
 	  }else{
@@ -465,14 +373,14 @@ ags_rt_stream_audio_signal_run_pre(AgsRecall *recall)
 	  i += copy_n_frames;
 	  k += copy_n_frames;
 
-	  if(j == template->buffer_size){
+	  if(j == rt_template_buffer_size){
 	    j = 0;
 	  }
 	}
 	
       }else{
-	template_stream = g_list_nth(template->stream_beginning,
-				     offset);
+	template_stream = g_list_nth(rt_template->stream,
+				     rt_offset);
 
 	if(template_stream == NULL){
 	  note = note->next;
@@ -480,7 +388,7 @@ ags_rt_stream_audio_signal_run_pre(AgsRecall *recall)
 	  continue;
 	}
 	
-	if(offset == 0){
+	if(rt_offset == 0){
 	  ags_audio_buffer_util_copy_buffer_to_buffer(buffer, 1, rt_attack,
 						      template_stream->data, 1, 0,
 						      buffer_size - rt_attack, copy_mode);
@@ -497,56 +405,50 @@ ags_rt_stream_audio_signal_run_pre(AgsRecall *recall)
 	}
       }
     }else{
+      GList *start_list;
+
       ags_audio_signal_remove_note(source,
 				   current);
 
-      if(source->note == NULL &&
-	 recall->recall_id->recycling_context->parent == NULL){
+      g_object_get(source,
+		   "note", &start_list,
+		   NULL);
+
+      if(start_list == NULL &&
+	 parent_recycling_context == NULL){
 	ags_recall_done(recall);
       }
+
+      g_list_free(start_list);
     }
 
-    pthread_mutex_lock(recycling_mutex);
-
-    current->rt_offset += 1;
-
-    pthread_mutex_unlock(recycling_mutex);
+    g_object_set(current,
+		 "rt-offset", rt_offset + 1,
+		 NULL);
     
     note = note->next;
   }
-}
 
-AgsRecall*
-ags_rt_stream_audio_signal_duplicate(AgsRecall *recall,
-				     AgsRecallID *recall_id,
-				     guint *n_params, GParameter *parameter)
-{
-  AgsRtStreamAudioSignal *copy;
-
-  copy = (AgsRtStreamAudioSignal *) AGS_RECALL_CLASS(ags_rt_stream_audio_signal_parent_class)->duplicate(recall,
-													 recall_id,
-													 n_params, parameter);
-
-  return((AgsRecall *) copy);
+  g_list_free(start_note);
 }
 
 /**
  * ags_rt_stream_audio_signal_new:
- * @audio_signal: an #AgsAudioSignal
+ * @source: the #AgsAudioSignal
  *
- * Creates an #AgsRtStreamAudioSignal
+ * Create a new instance of #AgsRtStreamAudioSignal
  *
- * Returns: a new #AgsRtStreamAudioSignal
+ * Returns: the new #AgsRtStreamAudioSignal
  *
- * Since: 1.4.0
+ * Since: 2.0.0
  */
 AgsRtStreamAudioSignal*
-ags_rt_stream_audio_signal_new(AgsAudioSignal *audio_signal)
+ags_rt_stream_audio_signal_new(AgsAudioSignal *source)
 {
   AgsRtStreamAudioSignal *rt_stream_audio_signal;
 
   rt_stream_audio_signal = (AgsRtStreamAudioSignal *) g_object_new(AGS_TYPE_RT_STREAM_AUDIO_SIGNAL,
-								   "source", audio_signal,
+								   "source", source,
 								   NULL);
 
   return(rt_stream_audio_signal);

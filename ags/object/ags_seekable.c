@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -34,6 +34,13 @@ void ags_seekable_class_init(AgsSeekableInterface *interface);
  * what notifies about changed offset of pattern or notation.
  */
 
+enum {
+  SEEK,
+  LAST_SIGNAL,
+};
+
+static guint seekable_signals[LAST_SIGNAL];
+
 GType
 ags_seekable_get_type()
 {
@@ -59,24 +66,25 @@ ags_seekable_class_init(AgsSeekableInterface *interface)
 {
   /**
    * AgsSeekable::seek:
-   * @seekable: the object
-   * @steps: relative seeking
-   * @forward: direction to seek, if %TRUE seek forward
+   * @seekable: the #GObject sub-type implementing #AgsSeekable
+   * @offset: the offset
+   * @whence: the direction, see #AgsSeekType-enum
    *
    * The ::seek signal notifies about changed position
    * of sequencer.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
-  g_signal_new("seek",
-	       G_TYPE_FROM_INTERFACE(interface),
-	       G_SIGNAL_RUN_LAST,
-	       G_STRUCT_OFFSET(AgsSeekableInterface, seek),
-	       NULL, NULL,
-	       g_cclosure_user_marshal_VOID__UINT_BOOLEAN,
-	       G_TYPE_NONE, 2,
-	       G_TYPE_UINT,
-	       G_TYPE_BOOLEAN);
+  seekable_signals[SEEK] =
+    g_signal_new("seek",
+		 G_TYPE_FROM_INTERFACE(interface),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsSeekableInterface, seek),
+		 NULL, NULL,
+		 ags_cclosure_marshal_VOID__INT64_UINT,
+		 G_TYPE_NONE, 2,
+		 G_TYPE_INT64,
+		 G_TYPE_UINT);
 }
 
 void
@@ -88,20 +96,16 @@ ags_seekable_base_init(AgsSeekableInterface *interface)
 /**
  * ags_seekable_seek:
  * @seekable: the #AgsSeekable interface
- * @steps: the amount of seeking
- * @forward: the direction, %TRUE for moving ahead
+ * @offset: the offset
+ * @whence: the direction, see #AgsSeekType-enum
  *
- * Seek relatively.
+ * Seek.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
-ags_seekable_seek(AgsSeekable *seekable, guint steps, gboolean forward)
+ags_seekable_seek(AgsSeekable *seekable, gint64 offset, guint whence)
 {
-  AgsSeekableInterface *seekable_interface;
-
-  g_return_if_fail(AGS_IS_SEEKABLE(seekable));
-  seekable_interface = AGS_SEEKABLE_GET_INTERFACE(seekable);
-  g_return_if_fail(seekable_interface->seek);
-  seekable_interface->seek(seekable, steps, forward);
+  g_signal_emit(seekable, seekable_signals[SEEK], 0,
+		offset, whence);
 }

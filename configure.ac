@@ -6,16 +6,21 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.69])
-AC_INIT([gsequencer],[1.4.35],[jkraehemann@gmail.com])
+AC_INIT([gsequencer],[2.0.0-beta],[jkraehemann@gmail.com])
 AM_INIT_AUTOMAKE([subdir-objects])
 AC_CONFIG_SRCDIR([ags/config.h.in])
 AC_CONFIG_HEADERS([ags/config.h])
 AC_CONFIG_MACRO_DIR([m4])
 
 AM_GNU_GETTEXT([external])
-AM_GNU_GETTEXT_VERSION([0.19.8])
+AM_GNU_GETTEXT_VERSION([0.19.7])
 
 # options
+AC_ARG_ENABLE(rt, [AS_HELP_STRING([--strip-rt-events],
+			          [strip rt events (default is yes)])],
+	      [],
+	      [strip_rt_events=yes])
+
 AC_ARG_ENABLE(rt, [AS_HELP_STRING([--enable-rt],
 			          [enable rt (default is yes)])],
 	      [],
@@ -101,6 +106,12 @@ AC_CHECK_LIB([dl], [main], , AC_MSG_ERROR("No dl library present"))
 # FIXME: Replace `main' with a function in `-lm':
 AC_CHECK_LIB([m], [main], , AC_MSG_ERROR("No math library present"))
 
+AS_IF([test "x$strip_rt_events" != xno],
+      [AC_DEFINE([AGS_STRIP_RT_EVENTS], [1], [striping rt-events enabled])
+      AC_MSG_NOTICE([striping rt-events enabled])],
+      [AC_MSG_NOTICE([striping rt-events disabled])
+       ])
+
 # FIXME: Replace `main' with a function in `-lrt':
 AS_IF([test "x$enable_rt" != xno],
       [AC_DEFINE([AGS_WITH_RT], [1], [rt enabled])
@@ -109,6 +120,7 @@ AS_IF([test "x$enable_rt" != xno],
       AC_MSG_NOTICE([rt enabled])],
       [AC_MSG_NOTICE([rt disabled])
        ])
+
 # Checks for header files.
 AC_PATH_X
 AC_FUNC_ALLOCA
@@ -198,6 +210,10 @@ PKG_CHECK_MODULES([SNDFILE], [sndfile >= 1.0.25])
 AC_SUBST(SNDFILE_CFLAGS)
 AC_SUBST(SNDFILE_LIBS)
 
+PKG_CHECK_MODULES([FFTW], [fftw3 >= 3.3.5])
+AC_SUBST(FFTW_CFLAGS)
+AC_SUBST(FFTW_LIBS)
+
 PKG_CHECK_MODULES([GOBJECT], [gobject-2.0 >= 2.32.3 glib-2.0 >= 2.32.3 gmodule-2.0 >= 2.32.3 gthread-2.0 >= 2.32.3])
 AC_SUBST(GOBJECT_CFLAGS)
 AC_SUBST(GOBJECT_LIBS)
@@ -206,14 +222,13 @@ AC_CHECK_LIB(glib-2.0, g_strv_length,
 	     AC_DEFINE([HAVE_GLIB_2_6], [1], [GLib 2.6 available]))
 AC_CHECK_LIB(glib-2.0, g_strv_contains,
 	     AC_DEFINE([HAVE_GLIB_2_44], [1], [GLib 2.44 available]))
+AC_CHECK_LIB(glib-2.0, g_object_setv,
+	     AC_DEFINE([HAVE_GLIB_2_54], [1], [GLib 2.54 available]))
+
 
 PKG_CHECK_MODULES([GIO], [gio-2.0 >= 2.32.3 glib-2.0 >= 2.32.3 gmodule-2.0 >= 2.32.3 gthread-2.0 >= 2.32.3])
 AC_SUBST(GIO_CFLAGS)
 AC_SUBST(GIO_LIBS)
-
-PKG_CHECK_MODULES([PCRE], [libpcre >= 3.39])
-AC_SUBST(PCRE_CFLAGS)
-AC_SUBST(PCRE_LIBS)
 
 AC_CHECK_LIB(atk-1.0, atk_value_get_value_and_text,
              [AC_DEFINE([HAVE_ATK_2_12], [1], [Atk 2.12 available])])
@@ -229,7 +244,7 @@ PKG_CHECK_MODULES([FONTCONFIG], [fontconfig >= 2.9.0])
 AC_SUBST(FONTCONFIG_CFLAGS)
 AC_SUBST(FONTCONFIG_LIBS)
 
-PKG_CHECK_MODULES([GDKPIXBUF], [gdk-pixbuf-2.0 >= 2.36.5])
+PKG_CHECK_MODULES([GDKPIXBUF], [gdk-pixbuf-2.0 >= 2.32.2])
 AC_SUBST(GDKPIXBUF_CFLAGS)
 AC_SUBST(GDKPIXBUF_LIBS)
 

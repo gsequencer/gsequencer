@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -41,7 +41,7 @@ struct _AgsAddAudio
 {
   AgsTask task;
 
-  GObject *soundcard;
+  AgsApplicationContext *application_context;
   AgsAudio *audio;
 };
 
@@ -52,7 +52,7 @@ struct _AgsAddAudioClass
 
 GType ags_add_audio_get_type();
 
-AgsAddAudio* ags_add_audio_new(GObject *soundcard,
+AgsAddAudio* ags_add_audio_new(AgsApplicationContext *application_context,
 			       AgsAudio *audio);
 
 #endif /*__AGS_ADD_AUDIO_H__*/

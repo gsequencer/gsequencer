@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -21,6 +21,14 @@
 #define __AGS_ENDIAN__
 
 #include <glib.h>
+
+typedef enum{
+  AGS_BYTE_ORDER_LE,
+  AGS_BYTE_ORDER_BE,
+}AgsByteOrder;
+
+gboolean ags_endian_host_is_le();
+gboolean ags_endian_host_is_be();
 
 gfloat ags_endian_swap_float(gfloat x);
 

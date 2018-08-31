@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -25,11 +25,11 @@
 
 #include <ags/libags.h>
 
-#include <ags/audio/ags_recall_audio_run.h>
+#include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_notation.h>
+#include <ags/audio/ags_recall_audio_run.h>
 
 #include <ags/audio/recall/ags_delay_audio_run.h>
-#include <ags/audio/recall/ags_count_beats_audio.h>
 #include <ags/audio/recall/ags_count_beats_audio_run.h>
 
 #define AGS_TYPE_ROUTE_LV2_AUDIO_RUN                (ags_route_lv2_audio_run_get_type())
@@ -47,8 +47,6 @@ struct _AgsRouteLv2AudioRun
   AgsRecallAudioRun recall_audio_run;
 
   AgsDelayAudioRun *delay_audio_run;
-  gulong notation_alloc_input_handler;
-
   AgsCountBeatsAudioRun *count_beats_audio_run;
 
   AgsNotation *notation;
@@ -67,6 +65,6 @@ struct _AgsRouteLv2AudioRunClass
 
 GType ags_route_lv2_audio_run_get_type();
 
-AgsRouteLv2AudioRun* ags_route_lv2_audio_run_new();
+AgsRouteLv2AudioRun* ags_route_lv2_audio_run_new(AgsAudio *audio);
 
 #endif /*__AGS_ROUTE_LV2_AUDIO_RUN_H__*/

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -36,6 +36,8 @@ void ags_tactable_class_init(AgsTactableInterface *interface);
 enum {
   CHANGE_SEQUENCER_DURATION,
   CHANGE_NOTATION_DURATION,
+  CHANGE_WAVE_DURATION,
+  CHANGE_MIDI_DURATION,
   CHANGE_TACT,
   CHANGE_BPM,
   LAST_SIGNAL,
@@ -74,7 +76,7 @@ ags_tactable_class_init(AgsTactableInterface *interface)
    * The ::change-sequencer-duration signal notifies about changed duration
    * of sequencer.
    *
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   tactable_signals[CHANGE_SEQUENCER_DURATION] = 
     g_signal_new("change-sequencer-duration",
@@ -82,9 +84,9 @@ ags_tactable_class_init(AgsTactableInterface *interface)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsTactableInterface, change_sequencer_duration),
 		 NULL, NULL,
-		 g_cclosure_marshal_VOID__DOUBLE,
+		 ags_cclosure_marshal_VOID__UINT64,
 		 G_TYPE_NONE, 1,
-		 G_TYPE_DOUBLE);
+		 G_TYPE_UINT64);
 
   /**
    * AgsTactable::change-notation-duration:
@@ -94,7 +96,7 @@ ags_tactable_class_init(AgsTactableInterface *interface)
    * The ::change-notation-duration signal notifies about changed duration
    * of notation.
    *
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   tactable_signals[CHANGE_NOTATION_DURATION] = 
     g_signal_new("change-notation-duration",
@@ -102,9 +104,49 @@ ags_tactable_class_init(AgsTactableInterface *interface)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsTactableInterface, change_notation_duration),
 		 NULL, NULL,
-		 g_cclosure_marshal_VOID__DOUBLE,
+		 ags_cclosure_marshal_VOID__UINT64,
 		 G_TYPE_NONE, 1,
-		 G_TYPE_DOUBLE);
+		 G_TYPE_UINT64);
+
+  /**
+   * AgsTactable::change-wave-duration:
+   * @tactable: the #AgsTactable
+   * @duration: new duration
+   *
+   * The ::change-wave-duration signal notifies about changed duration
+   * of wave.
+   *
+   * Since: 2.0.0
+   */
+  tactable_signals[CHANGE_WAVE_DURATION] = 
+    g_signal_new("change-wave-duration",
+		 G_TYPE_FROM_INTERFACE(interface),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsTactableInterface, change_wave_duration),
+		 NULL, NULL,
+		 ags_cclosure_marshal_VOID__UINT64,
+		 G_TYPE_NONE, 1,
+		 G_TYPE_UINT64);
+
+  /**
+   * AgsTactable::change-midi-duration:
+   * @tactable: the #AgsTactable
+   * @duration: new duration
+   *
+   * The ::change-midi-duration signal notifies about changed duration
+   * of midi.
+   *
+   * Since: 2.0.0
+   */
+  tactable_signals[CHANGE_MIDI_DURATION] = 
+    g_signal_new("change-midi-duration",
+		 G_TYPE_FROM_INTERFACE(interface),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsTactableInterface, change_midi_duration),
+		 NULL, NULL,
+		 ags_cclosure_marshal_VOID__UINT64,
+		 G_TYPE_NONE, 1,
+		 G_TYPE_UINT64);
 
   /**
    * AgsTactable::change-tact
@@ -113,7 +155,7 @@ ags_tactable_class_init(AgsTactableInterface *interface)
    *
    * The ::change-tact signal notifies about changed tact.
    *
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   tactable_signals[CHANGE_TACT] = 
     g_signal_new("change-tact",
@@ -121,7 +163,7 @@ ags_tactable_class_init(AgsTactableInterface *interface)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsTactableInterface, change_tact),
 		 NULL, NULL,
-		 g_cclosure_user_marshal_VOID__DOUBLE_DOUBLE,
+		 ags_cclosure_marshal_VOID__DOUBLE_DOUBLE,
 		 G_TYPE_NONE, 2,
 		 G_TYPE_DOUBLE, G_TYPE_DOUBLE);
 
@@ -132,7 +174,7 @@ ags_tactable_class_init(AgsTactableInterface *interface)
    *
    * The ::change-bpm signal notifies about changed bpm.
    *
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   tactable_signals[CHANGE_BPM] = 
     g_signal_new("change-bpm",
@@ -140,86 +182,108 @@ ags_tactable_class_init(AgsTactableInterface *interface)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsTactableInterface, change_bpm),
 		 NULL, NULL,
-		 g_cclosure_user_marshal_VOID__DOUBLE_DOUBLE,
+		 ags_cclosure_marshal_VOID__DOUBLE_DOUBLE,
 		 G_TYPE_NONE, 2,
 		 G_TYPE_DOUBLE, G_TYPE_DOUBLE);
 }
 
 /**
  * ags_tactable_get_sequencer_duration:
- * @tactable: an #AgsTactable
+ * @tactable: the #AgsTactable
  *
  * Get sequencer duration.
  *
  * Returns: the sequencer duration
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
-gdouble
+guint64
 ags_tactable_get_sequencer_duration(AgsTactable *tactable)
 {
   AgsTactableInterface *tactable_interface;
 
-  g_return_val_if_fail(AGS_IS_TACTABLE(tactable), -1.0);
+  g_return_val_if_fail(AGS_IS_TACTABLE(tactable), 0);
   tactable_interface = AGS_TACTABLE_GET_INTERFACE(tactable);
-  g_return_val_if_fail(tactable_interface->get_sequencer_duration, -1.0);
+  g_return_val_if_fail(tactable_interface->get_sequencer_duration, 0);
   
   return(tactable_interface->get_sequencer_duration(tactable));
 }
 
 /**
  * ags_tactable_get_notation_duration:
- * @tactable: an #AgsTactable
+ * @tactable: the #AgsTactable
  *
  * Get notation duration.
  *
  * Returns: the notation duration
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
-gdouble
+guint64
 ags_tactable_get_notation_duration(AgsTactable *tactable)
 {
   AgsTactableInterface *tactable_interface;
 
-  g_return_val_if_fail(AGS_IS_TACTABLE(tactable), -1.0);
+  g_return_val_if_fail(AGS_IS_TACTABLE(tactable), 0);
   tactable_interface = AGS_TACTABLE_GET_INTERFACE(tactable);
-  g_return_val_if_fail(tactable_interface->get_notation_duration, -1.0);
+  g_return_val_if_fail(tactable_interface->get_notation_duration, 0);
   
   return(tactable_interface->get_notation_duration(tactable));
 }
 
 /**
- * ags_tactable_get_tact:
- * @tactable: an #AgsTactable
+ * ags_tactable_get_wave_duration:
+ * @tactable: the #AgsTactable
  *
- * Get tact.
+ * Get wave duration.
  *
- * Returns: the tact
+ * Returns: the wave duration
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
-gdouble
-ags_tactable_get_tact(AgsTactable *tactable)
+guint64
+ags_tactable_get_wave_duration(AgsTactable *tactable)
 {
   AgsTactableInterface *tactable_interface;
 
-  g_return_val_if_fail(AGS_IS_TACTABLE(tactable), -1.0);
+  g_return_val_if_fail(AGS_IS_TACTABLE(tactable), 0);
   tactable_interface = AGS_TACTABLE_GET_INTERFACE(tactable);
-  g_return_val_if_fail(tactable_interface->get_tact, -1.0);
+  g_return_val_if_fail(tactable_interface->get_wave_duration, 0);
   
-  return(tactable_interface->get_tact(tactable));
+  return(tactable_interface->get_wave_duration(tactable));
+}
+
+/**
+ * ags_tactable_get_midi_duration:
+ * @tactable: the #AgsTactable
+ *
+ * Get midi duration.
+ *
+ * Returns: the midi duration
+ *
+ * Since: 2.0.0
+ */
+guint64
+ags_tactable_get_midi_duration(AgsTactable *tactable)
+{
+  AgsTactableInterface *tactable_interface;
+
+  g_return_val_if_fail(AGS_IS_TACTABLE(tactable), 0);
+  tactable_interface = AGS_TACTABLE_GET_INTERFACE(tactable);
+  g_return_val_if_fail(tactable_interface->get_midi_duration, 0);
+  
+  return(tactable_interface->get_midi_duration(tactable));
 }
 
 /**
  * ags_tactable_get_bpm:
- * @tactable: an #AgsTactable
+ * @tactable: the #AgsTactable
  *
  * Get bpm.
  *
  * Returns: the bpm
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 gdouble
 ags_tactable_get_bpm(AgsTactable *tactable)
@@ -234,16 +298,38 @@ ags_tactable_get_bpm(AgsTactable *tactable)
 }
 
 /**
+ * ags_tactable_get_tact:
+ * @tactable: the #AgsTactable
+ *
+ * Get tact.
+ *
+ * Returns: the tact
+ *
+ * Since: 2.0.0
+ */
+gdouble
+ags_tactable_get_tact(AgsTactable *tactable)
+{
+  AgsTactableInterface *tactable_interface;
+
+  g_return_val_if_fail(AGS_IS_TACTABLE(tactable), -1.0);
+  tactable_interface = AGS_TACTABLE_GET_INTERFACE(tactable);
+  g_return_val_if_fail(tactable_interface->get_tact, -1.0);
+  
+  return(tactable_interface->get_tact(tactable));
+}
+
+/**
  * ags_tactable_change_sequencer_duration:
- * @tactable: an #AgsTactable
+ * @tactable: the #AgsTactable
  * @duration: the duration
  *
- * Sequencer duration changed.
+ * Change sequencer duration.
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
-ags_tactable_change_sequencer_duration(AgsTactable *tactable, double duration)
+ags_tactable_change_sequencer_duration(AgsTactable *tactable, guint64 duration)
 {
   g_signal_emit(tactable,
 		tactable_signals[CHANGE_SEQUENCER_DURATION],
@@ -253,15 +339,15 @@ ags_tactable_change_sequencer_duration(AgsTactable *tactable, double duration)
 
 /**
  * ags_tactable_change_notation_duration:
- * @tactable: an #AgsTactable
+ * @tactable: the #AgsTactable
  * @duration: the duration
  *
- * Notation duration changed.
+ * Change notation duration.
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
-ags_tactable_change_notation_duration(AgsTactable *tactable, double duration)
+ags_tactable_change_notation_duration(AgsTactable *tactable, guint64 duration)
 {
   g_signal_emit(tactable,
 		tactable_signals[CHANGE_NOTATION_DURATION],
@@ -270,14 +356,50 @@ ags_tactable_change_notation_duration(AgsTactable *tactable, double duration)
 }
 
 /**
+ * ags_tactable_change_wave_duration:
+ * @tactable: the #AgsTactable
+ * @duration: the duration
+ *
+ * Change wave duration.
+ * 
+ * Since: 2.0.0
+ */
+void
+ags_tactable_change_wave_duration(AgsTactable *tactable, guint64 duration)
+{
+  g_signal_emit(tactable,
+		tactable_signals[CHANGE_WAVE_DURATION],
+		0,
+		duration);
+}
+
+/**
+ * ags_tactable_change_midi_duration:
+ * @tactable: the #AgsTactable
+ * @duration: the duration
+ *
+ * Change midi duration.
+ * 
+ * Since: 2.0.0
+ */
+void
+ags_tactable_change_midi_duration(AgsTactable *tactable, guint64 duration)
+{
+  g_signal_emit(tactable,
+		tactable_signals[CHANGE_MIDI_DURATION],
+		0,
+		duration);
+}
+
+/**
  * ags_tactable_change_tact:
- * @tactable: an #AgsTactable
+ * @tactable: the #AgsTactable
  * @new_tact: the new tact
  * @old_tact: the old tact
  *
- * Tact changed.
+ * Change tact.
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_tactable_change_tact(AgsTactable *tactable, gdouble new_tact, gdouble old_tact)
@@ -291,13 +413,13 @@ ags_tactable_change_tact(AgsTactable *tactable, gdouble new_tact, gdouble old_ta
 
 /**
  * ags_tactable_change_bpm:
- * @tactable: an #AgsTactable
+ * @tactable: the #AgsTactable
  * @new_bpm: the new bpm
  * @old_bpm: the old bpm
  *
- * Bpm changed.
+ * Change bpm.
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_tactable_change_bpm(AgsTactable *tactable, gdouble new_bpm, gdouble old_bpm)

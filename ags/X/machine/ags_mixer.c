@@ -37,8 +37,10 @@ void ags_mixer_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_mixer_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_mixer_init(AgsMixer *mixer);
 void ags_mixer_finalize(GObject *gobject);
+
 void ags_mixer_connect(AgsConnectable *connectable);
 void ags_mixer_disconnect(AgsConnectable *connectable);
+
 void ags_mixer_map_recall(AgsMachine *machine);
 gchar* ags_mixer_get_name(AgsPlugin *plugin);
 void ags_mixer_set_name(AgsPlugin *plugin, gchar *name);
@@ -158,7 +160,7 @@ ags_mixer_init(AgsMixer *mixer)
   g_signal_connect_after((GObject *) mixer, "parent_set",
 			 G_CALLBACK(ags_mixer_parent_set_callback), (gpointer) mixer);
 
-  AGS_MACHINE(mixer)->audio->flags |= (AGS_AUDIO_ASYNC);
+  ags_audio_set_flags(AGS_MACHINE(mixer)->audio, (AGS_AUDIO_ASYNC));
 
   AGS_MACHINE(mixer)->input_pad_type = AGS_TYPE_MIXER_INPUT_PAD;
   AGS_MACHINE(mixer)->input_line_type = AGS_TYPE_MIXER_INPUT_LINE;
@@ -289,11 +291,11 @@ ags_mixer_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
  * ags_mixer_new:
  * @soundcard: the assigned soundcard.
  *
- * Creates an #AgsMixer
+ * Create a new instance of #AgsMixer
  *
- * Returns: a new #AgsMixer
+ * Returns: the new #AgsMixer
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsMixer*
 ags_mixer_new(GObject *soundcard)
@@ -303,8 +305,8 @@ ags_mixer_new(GObject *soundcard)
   mixer = (AgsMixer *) g_object_new(AGS_TYPE_MIXER,
 				    NULL);
 
-  g_object_set(G_OBJECT(AGS_MACHINE(mixer)->audio),
-	       "soundcard", soundcard,
+  g_object_set(AGS_MACHINE(mixer)->audio,
+	       "output-soundcard", soundcard,
 	       NULL);
 
   return(mixer);

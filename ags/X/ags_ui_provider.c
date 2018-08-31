@@ -65,7 +65,7 @@ ags_ui_provider_class_init(AgsUiProviderInterface *interface)
  * 
  * Returns: the #AgsWindow
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 GtkWidget*
 ags_ui_provider_get_window(AgsUiProvider *ui_provider)
@@ -86,7 +86,7 @@ ags_ui_provider_get_window(AgsUiProvider *ui_provider)
  * 
  * Set window.
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_ui_provider_set_window(AgsUiProvider *ui_provider,
@@ -110,7 +110,7 @@ ags_ui_provider_set_window(AgsUiProvider *ui_provider,
  * 
  * Returns: the #AgsGuiThread
  * 
- * Since: 1.4.0
+ * Since: 2.0.0
  */
 AgsThread*
 ags_ui_provider_get_gui_thread(AgsUiProvider *ui_provider)
@@ -131,7 +131,7 @@ ags_ui_provider_get_gui_thread(AgsUiProvider *ui_provider)
  * 
  * Set gui thread.
  * 
- * Since: 1.4.0
+ * Since: 2.0.0
  */
 void
 ags_ui_provider_set_gui_thread(AgsUiProvider *ui_provider,
@@ -155,7 +155,7 @@ ags_ui_provider_set_gui_thread(AgsUiProvider *ui_provider,
  * 
  * Returns: %TRUE if animation does show, else %FALSE
  * 
- * Since: 1.4.0
+ * Since: 2.0.0
  */
 gboolean
 ags_ui_provider_get_show_animation(AgsUiProvider *ui_provider)
@@ -176,7 +176,7 @@ ags_ui_provider_get_show_animation(AgsUiProvider *ui_provider)
  * 
  * Set show animation.
  * 
- * Since: 1.4.0
+ * Since: 2.0.0
  */
 void
 ags_ui_provider_set_show_animation(AgsUiProvider *ui_provider,
@@ -200,7 +200,7 @@ ags_ui_provider_set_show_animation(AgsUiProvider *ui_provider,
  * 
  * Returns: %TRUE if gui is ready, else %FALSE
  * 
- * Since: 1.4.0
+ * Since: 2.0.0
  */
 gboolean
 ags_ui_provider_get_gui_ready(AgsUiProvider *ui_provider)
@@ -221,7 +221,7 @@ ags_ui_provider_get_gui_ready(AgsUiProvider *ui_provider)
  * 
  * Set GUI ready.
  * 
- * Since: 1.4.0
+ * Since: 2.0.0
  */
 void
 ags_ui_provider_set_gui_ready(AgsUiProvider *ui_provider,

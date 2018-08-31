@@ -76,7 +76,9 @@ struct _AgsXorgApplicationContext
   GList *soundcard;
   GList *sequencer;
 
-  GList *distributed_manager;
+  GList *sound_server;
+
+  GList *audio;
   
   AgsWindow *window;
 };

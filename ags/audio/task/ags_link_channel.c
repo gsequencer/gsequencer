@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -24,7 +24,6 @@
 #include <ags/i18n.h>
 
 void ags_link_channel_class_init(AgsLinkChannelClass *link_channel);
-void ags_link_channel_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_link_channel_init(AgsLinkChannel *link_channel);
 void ags_link_channel_set_property(GObject *gobject,
 				   guint prop_id,
@@ -34,8 +33,6 @@ void ags_link_channel_get_property(GObject *gobject,
 				   guint prop_id,
 				   GValue *value,
 				   GParamSpec *param_spec);
-void ags_link_channel_connect(AgsConnectable *connectable);
-void ags_link_channel_disconnect(AgsConnectable *connectable);
 void ags_link_channel_dispose(GObject *gobject);
 void ags_link_channel_finalize(GObject *gobject);
 
@@ -52,7 +49,6 @@ void ags_link_channel_launch(AgsTask *task);
  */
 
 static gpointer ags_link_channel_parent_class = NULL;
-static AgsConnectableInterface *ags_link_channel_parent_connectable_interface;
 
 enum{
   PROP_0,
@@ -70,36 +66,24 @@ ags_link_channel_get_type()
     GType ags_type_link_channel;
 
     static const GTypeInfo ags_link_channel_info = {
-      sizeof (AgsLinkChannelClass),
+      sizeof(AgsLinkChannelClass),
       NULL, /* base_init */
       NULL, /* base_finalize */
       (GClassInitFunc) ags_link_channel_class_init,
       NULL, /* class_finalize */
       NULL, /* class_data */
-      sizeof (AgsLinkChannel),
+      sizeof(AgsLinkChannel),
       0,    /* n_preallocs */
       (GInstanceInitFunc) ags_link_channel_init,
-    };
-
-    static const GInterfaceInfo ags_connectable_interface_info = {
-      (GInterfaceInitFunc) ags_link_channel_connectable_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
     };
 
     ags_type_link_channel = g_type_register_static(AGS_TYPE_TASK,
 						   "AgsLinkChannel",
 						   &ags_link_channel_info,
 						   0);
-
-    g_type_add_interface_static(ags_type_link_channel,
-				AGS_TYPE_CONNECTABLE,
-				&ags_connectable_interface_info);
-
-    g_once_init_leave (&g_define_type_id__volatile, ags_type_link_channel);
   }
-
-  return g_define_type_id__volatile;
+  
+  return(ags_type_link_channel);
 }
 
 void
@@ -107,6 +91,7 @@ ags_link_channel_class_init(AgsLinkChannelClass *link_channel)
 {
   GObjectClass *gobject;
   AgsTaskClass *task;
+
   GParamSpec *param_spec;
 
   ags_link_channel_parent_class = g_type_class_peek_parent(link_channel);
@@ -126,7 +111,7 @@ ags_link_channel_class_init(AgsLinkChannelClass *link_channel)
    *
    * The assigned #AgsChannel
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("channel",
 				   i18n_pspec("channel of link channel"),
@@ -142,7 +127,7 @@ ags_link_channel_class_init(AgsLinkChannelClass *link_channel)
    *
    * The assigned #AgsChannel link
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("link",
 				   i18n_pspec("link of link channel"),
@@ -158,7 +143,7 @@ ags_link_channel_class_init(AgsLinkChannelClass *link_channel)
    *
    * The assigned #GError-struct
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_pointer("error",
 				    i18n_pspec("error of link channel"),
@@ -172,15 +157,6 @@ ags_link_channel_class_init(AgsLinkChannelClass *link_channel)
   task = (AgsTaskClass *) link_channel;
 
   task->launch = ags_link_channel_launch;
-}
-
-void
-ags_link_channel_connectable_interface_init(AgsConnectableInterface *connectable)
-{
-  ags_link_channel_parent_connectable_interface = g_type_interface_peek_parent(connectable);
-
-  connectable->connect = ags_link_channel_connect;
-  connectable->disconnect = ags_link_channel_disconnect;
 }
 
 void
@@ -293,22 +269,6 @@ ags_link_channel_get_property(GObject *gobject,
 }
 
 void
-ags_link_channel_connect(AgsConnectable *connectable)
-{
-  ags_link_channel_parent_connectable_interface->connect(connectable);
-
-  /* empty */
-}
-
-void
-ags_link_channel_disconnect(AgsConnectable *connectable)
-{
-  ags_link_channel_parent_connectable_interface->disconnect(connectable);
-
-  /* empty */
-}
-
-void
 ags_link_channel_dispose(GObject *gobject)
 {
   AgsLinkChannel *link_channel;
@@ -357,60 +317,23 @@ ags_link_channel_launch(AgsTask *task)
   
   AgsLinkChannel *link_channel;
 
-  AgsMutexManager *mutex_manager;
-
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *channel_mutex;
-  pthread_mutex_t *link_mutex;
-
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-
   link_channel = AGS_LINK_CHANNEL(task);
 
   channel = link_channel->channel;
   link = link_channel->link;
 
-  if(channel != NULL){
-    /* get channel mutex */
-    pthread_mutex_lock(application_mutex);
-
-    channel_mutex = ags_mutex_manager_lookup(mutex_manager,
-					     (GObject *) channel);
-  
-    pthread_mutex_unlock(application_mutex);
-
-    /* unset file-link */
-    if(AGS_IS_INPUT(channel)){
-      pthread_mutex_lock(channel_mutex);
-
-      g_object_set(channel,
-		   "file-link", NULL,
-		   NULL);
-    
-      pthread_mutex_unlock(channel_mutex);
-    }
+  /* unset file-link */
+  if(AGS_IS_INPUT(channel)){
+    g_object_set(channel,
+		 "file-link", NULL,
+		 NULL);
   }
 
-  if(link != NULL){
-    /* get channel mutex */
-    pthread_mutex_lock(application_mutex);
-
-    link_mutex = ags_mutex_manager_lookup(mutex_manager,
-					  (GObject *) link);
-  
-    pthread_mutex_unlock(application_mutex);
-
-    /* unset file-link */
-    if(AGS_IS_INPUT(link)){
-      pthread_mutex_lock(link_mutex);
-      
-      g_object_set(link,
-		   "file-link", NULL,
-		   NULL);
-
-      pthread_mutex_unlock(link_mutex);
-    }
+  /* unset file-link */
+  if(AGS_IS_INPUT(link)){
+    g_object_set(link,
+		 "file-link", NULL,
+		 NULL);
   }
   
   /* link channel */
@@ -427,11 +350,11 @@ ags_link_channel_launch(AgsTask *task)
  * @channel: the #AgsChannel
  * @link: the #AgsChannel to be linked, may be %NULL
  *
- * Creates an #AgsLinkChannel.
+ * Create a new instance of #AgsLinkChannel.
  *
- * Returns: an new #AgsLinkChannel.
+ * Returns: the new #AgsLinkChannel.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsLinkChannel*
 ags_link_channel_new(AgsChannel *channel, AgsChannel *link)

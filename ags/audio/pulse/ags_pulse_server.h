@@ -33,6 +33,8 @@
 
 #include <pthread.h>
 
+#include <ags/libags.h>
+
 #define AGS_TYPE_PULSE_SERVER                (ags_pulse_server_get_type())
 #define AGS_PULSE_SERVER(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_PULSE_SERVER, AgsPulseServer))
 #define AGS_PULSE_SERVER_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST(class, AGS_TYPE_PULSE_SERVER, AgsPulseServer))
@@ -43,23 +45,34 @@
 typedef struct _AgsPulseServer AgsPulseServer;
 typedef struct _AgsPulseServerClass AgsPulseServerClass;
 
+/**
+ * AgsPulseServerFlags:
+ * @AGS_PULSE_SERVER_ADDED_TO_REGISTRY: the pulseaudio server was added to registry, see #AgsConnectable::add_to_registry()
+ * @AGS_PULSE_SERVER_CONNECTED: indicates the server was connected by calling #AgsConnectable::connect()
+ * 
+ * Enum values to control the behavior or indicate internal state of #AgsPulseServer by
+ * enable/disable as flags.
+ */
 typedef enum{
-  AGS_PULSE_SERVER_CONNECTED       = 1,
+  AGS_PULSE_SERVER_ADDED_TO_REGISTRY  = 1,
+  AGS_PULSE_SERVER_CONNECTED          = 1 <<  1,
 }AgsPulseServerFlags;
 
 struct _AgsPulseServer
 {
-  GObject object;
+  GObject gobject;
 
   guint flags;
 
-  pthread_mutex_t *mutex;
-  pthread_mutexattr_t *mutexattr;
+  pthread_mutex_t *obj_mutex;
+  pthread_mutexattr_t *obj_mutexattr;
 
   volatile gboolean running;
   pthread_t *thread;
   
-  GObject *application_context;
+  AgsApplicationContext *application_context;
+
+  AgsUUID *uuid;
 
 #ifdef AGS_WITH_PULSE
   pa_mainloop *main_loop;
@@ -85,10 +98,16 @@ struct _AgsPulseServer
 
 struct _AgsPulseServerClass
 {
-  GObjectClass object;
+  GObjectClass gobject;
 };
 
 GType ags_pulse_server_get_type();
+
+pthread_mutex_t* ags_pulse_server_get_class_mutex();
+
+gboolean ags_pulse_server_test_flags(AgsPulseServer *pulse_server, guint flags);
+void ags_pulse_server_set_flags(AgsPulseServer *pulse_server, guint flags);
+void ags_pulse_server_unset_flags(AgsPulseServer *pulse_server, guint flags);
 
 GList* ags_pulse_server_find_url(GList *pulse_server,
 				 gchar *url);
@@ -108,7 +127,7 @@ void ags_pulse_server_connect_client(AgsPulseServer *pulse_server);
 
 void ags_pulse_server_start_poll(AgsPulseServer *pulse_server);
 
-AgsPulseServer* ags_pulse_server_new(GObject *application_context,
+AgsPulseServer* ags_pulse_server_new(AgsApplicationContext *application_context,
 				     gchar *url);
 
 #endif /*__AGS_PULSE_SERVER_H__*/

@@ -38,6 +38,6 @@ void ags_notation_editor_resize_pads_callback(AgsMachine *machine, GType channel
 					      guint pads, guint pads_old,
 					      AgsNotationEditor *notation_editor);
 
-void ags_notation_editor_init_channel_launch_callback(AgsTask *task, AgsNote *note);
+void ags_notation_editor_start_channel_launch_callback(AgsTask *task, AgsNote *note);
 
 #endif /*__AGS_NOTATION_EDITOR_CALLBACKS_H__*/

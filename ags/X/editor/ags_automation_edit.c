@@ -48,10 +48,11 @@ void ags_automation_edit_get_property(GObject *gobject,
 				      guint prop_id,
 				      GValue *value,
 				      GParamSpec *param_spec);
+void ags_automation_edit_finalize(GObject *gobject);
+
 void ags_automation_edit_connect(AgsConnectable *connectable);
 void ags_automation_edit_disconnect(AgsConnectable *connectable);
 AtkObject* ags_automation_edit_get_accessible(GtkWidget *widget);
-void ags_automation_edit_finalize(GObject *gobject);
 
 gboolean ags_accessible_automation_edit_do_action(AtkAction *action,
 						  gint i);
@@ -212,7 +213,7 @@ ags_automation_edit_class_init(AgsAutomationEditClass *automation_edit)
    *
    * The target channel.
    * 
-   * Since: 1.3.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_gtype("channel-type",
 				  i18n_pspec("assigned channel type"),
@@ -228,7 +229,7 @@ ags_automation_edit_class_init(AgsAutomationEditClass *automation_edit)
    *
    * The assigned #AgsFilename representing this channel.
    * 
-   * Since: 1.3.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_string("filename",
 				   i18n_pspec("filename assigned with"),
@@ -244,7 +245,7 @@ ags_automation_edit_class_init(AgsAutomationEditClass *automation_edit)
    *
    * The assigned #AgsEffect representing this channel.
    * 
-   * Since: 1.3.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_string("effect",
 				   i18n_pspec("effect assigned with"),
@@ -260,7 +261,7 @@ ags_automation_edit_class_init(AgsAutomationEditClass *automation_edit)
    *
    * The assigned #AgsControl-Specifier representing this channel.
    * 
-   * Since: 1.3.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_string("control-specifier",
 				   i18n_pspec("assigned control specifier"),
@@ -276,7 +277,7 @@ ags_automation_edit_class_init(AgsAutomationEditClass *automation_edit)
    *
    * The assigned #AgsControl-Name representing this channel.
    * 
-   * Since: 1.3.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_string("control-name",
 				   i18n_pspec("displayed control name"),
@@ -292,7 +293,7 @@ ags_automation_edit_class_init(AgsAutomationEditClass *automation_edit)
    *
    * The automation edit's lower range.
    * 
-   * Since: 1.3.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_double("lower",
 				   "lower",
@@ -310,7 +311,7 @@ ags_automation_edit_class_init(AgsAutomationEditClass *automation_edit)
    *
    * The automation edit's upper range.
    * 
-   * Since: 1.3.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_double("upper",
 				   "upper",
@@ -328,7 +329,7 @@ ags_automation_edit_class_init(AgsAutomationEditClass *automation_edit)
    *
    * The automation edit's default value.
    * 
-   * Since: 1.3.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_double("default-value",
 				   "default value",
@@ -666,6 +667,21 @@ ags_automation_edit_get_property(GObject *gobject,
 }
 
 void
+ags_automation_edit_finalize(GObject *gobject)
+{
+  AgsAutomationEdit *automation_edit;
+  
+  automation_edit = AGS_AUTOMATION_EDIT(gobject);
+  
+  /* remove auto scroll */
+  g_hash_table_remove(ags_automation_edit_auto_scroll,
+		      automation_edit);
+
+  /* call parent */
+  G_OBJECT_CLASS(ags_automation_edit_parent_class)->finalize(gobject);
+}
+
+void
 ags_automation_edit_connect(AgsConnectable *connectable)
 {
   AgsAutomationEditor *automation_editor;
@@ -782,21 +798,6 @@ ags_automation_edit_get_accessible(GtkWidget *widget)
   }
   
   return(accessible);
-}
-
-void
-ags_automation_edit_finalize(GObject *gobject)
-{
-  AgsAutomationEdit *automation_edit;
-  
-  automation_edit = AGS_AUTOMATION_EDIT(gobject);
-  
-  /* remove auto scroll */
-  g_hash_table_remove(ags_automation_edit_auto_scroll,
-		      automation_edit);
-
-  /* call parent */
-  G_OBJECT_CLASS(ags_automation_edit_parent_class)->finalize(gobject);
 }
 
 gboolean
@@ -1228,6 +1229,8 @@ ags_automation_edit_auto_scroll_timeout(GtkWidget *widget)
     AgsAutomationEdit *automation_edit;
     AgsAutomationToolbar *automation_toolbar;
 
+    GObject *output_soundcard;
+    
     double zoom;
     double x;
     
@@ -1250,8 +1253,12 @@ ags_automation_edit_auto_scroll_timeout(GtkWidget *widget)
     zoom = exp2((double) gtk_combo_box_get_active((GtkComboBox *) automation_toolbar->zoom) - 2.0);
 
     /* reset offset */
-    automation_edit->note_offset = ags_soundcard_get_note_offset(AGS_SOUNDCARD(automation_editor->selected_machine->audio->soundcard));
-    automation_edit->note_offset_absolute = ags_soundcard_get_note_offset_absolute(AGS_SOUNDCARD(automation_editor->selected_machine->audio->soundcard));
+    g_object_get(automation_editor->selected_machine->audio,
+		 "output-soundcard", &output_soundcard,
+		 NULL);
+    
+    automation_edit->note_offset = ags_soundcard_get_note_offset(AGS_SOUNDCARD(output_soundcard));
+    automation_edit->note_offset_absolute = ags_soundcard_get_note_offset_absolute(AGS_SOUNDCARD(output_soundcard));
 
     /* reset scrollbar */
     x = ((automation_edit->note_offset * automation_edit->control_width) / (AGS_AUTOMATION_EDITOR_MAX_CONTROLS * automation_edit->control_width)) * GTK_RANGE(automation_edit->hscrollbar)->adjustment->upper;
@@ -1835,6 +1842,7 @@ ags_automation_edit_draw_acceleration(AgsAutomationEdit *automation_edit,
   double zoom, zoom_factor;
   double viewport_x, viewport_y;
   double x, y;
+  double a_x, b_x, a_y, b_y;
   double width, height;
   
   static const gdouble white_gc = 65535.0;
@@ -1874,17 +1882,26 @@ ags_automation_edit_draw_acceleration(AgsAutomationEdit *automation_edit,
   }
   
   viewport_y = GTK_RANGE(automation_edit->vscrollbar)->adjustment->value;
+
+  g_object_get(acceleration_a,
+	       "x", &a_x,
+	       "y", &a_y,
+	       NULL);
   
-  x = ((double) acceleration_a->x) - viewport_x;
+  x = ((double) a_x) - viewport_x;
 
   if((AGS_AUTOMATION_EDIT_LOGARITHMIC & (automation_edit->flags)) != 0){
-    y = GTK_WIDGET(automation_edit->drawing_area)->allocation.height - ((double) exp(acceleration_a->y) / c_range) * GTK_WIDGET(automation_edit->drawing_area)->allocation.height - viewport_y;
+    y = GTK_WIDGET(automation_edit->drawing_area)->allocation.height - ((double) exp(a_y) / c_range) * GTK_WIDGET(automation_edit->drawing_area)->allocation.height - viewport_y;
   }else{
-    y = GTK_WIDGET(automation_edit->drawing_area)->allocation.height - ((double) acceleration_a->y / c_range) * GTK_WIDGET(automation_edit->drawing_area)->allocation.height - viewport_y;
+    y = GTK_WIDGET(automation_edit->drawing_area)->allocation.height - ((double) a_y / c_range) * GTK_WIDGET(automation_edit->drawing_area)->allocation.height - viewport_y;
   }
   
   if(acceleration_b != NULL){
-    width = ((double) acceleration_b->x - acceleration_a->x);
+    g_object_get(acceleration_b,
+		 "x", &b_x,
+		 NULL);
+    
+    width = ((double) b_x - a_x);
   }else{
     width = 1.0;
   }
@@ -1932,7 +1949,7 @@ ags_automation_edit_draw_acceleration(AgsAutomationEdit *automation_edit,
   }
 
   /* draw point */
-  if((AGS_ACCELERATION_IS_SELECTED & (acceleration_a->flags)) != 0){
+  if(ags_acceleration_test_flags(acceleration_a, AGS_ACCELERATION_IS_SELECTED)){
     /* draw selected acceleration */
     cairo_set_source_rgba(cr,
 			  r, g, b, 1.0);
@@ -1975,12 +1992,10 @@ ags_automation_edit_draw_automation(AgsAutomationEdit *automation_edit)
   
   GtkStyle *automation_edit_style;
   
-  AgsMutexManager *mutex_manager;
-  
   cairo_t *cr;
 
-  GList *list_automation;
-  GList *list_acceleration;
+  GList *start_list_automation, *list_automation;
+  GList *start_list_acceleration, *list_acceleration;
 
   gdouble c_range;
   gdouble y_upper, y_value;
@@ -1989,9 +2004,6 @@ ags_automation_edit_draw_automation(AgsAutomationEdit *automation_edit)
   guint offset;
   gint i;    
   
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *audio_mutex;
-
   static const gdouble white_gc = 65535.0;
   
   if(!AGS_IS_AUTOMATION_EDIT(automation_edit)){
@@ -2014,17 +2026,6 @@ ags_automation_edit_draw_automation(AgsAutomationEdit *automation_edit)
   }
   
   automation_edit_style = gtk_widget_get_style(GTK_WIDGET(automation_edit->drawing_area));
-
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-
-  /* get audio mutex */
-  pthread_mutex_lock(application_mutex);
-
-  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
-					 (GObject *) automation_editor->selected_machine->audio);
-  
-  pthread_mutex_unlock(application_mutex);
 
   /* create cairo context */
   cr = gdk_cairo_create(GTK_WIDGET(automation_edit->drawing_area)->window);
@@ -2058,37 +2059,49 @@ ags_automation_edit_draw_automation(AgsAutomationEdit *automation_edit)
   cairo_push_group(cr);
 
   /* draw automation */
-  pthread_mutex_lock(audio_mutex);
-
+  g_object_get(automation_editor->selected_machine->audio,
+	       "automation", &start_list_automation,
+	       NULL);
+    
   i = 0;
   
   while(notebook == NULL ||
 	(i = ags_notebook_next_active_tab(notebook,
 					  i)) != -1){
-    list_automation = automation_editor->selected_machine->audio->automation;
+    list_automation = start_list_automation;
 
     while((list_automation = ags_automation_find_near_timestamp_extended(list_automation, i,
 									 automation_edit->channel_type, automation_edit->control_name,
 									 NULL)) != NULL){
       AgsAutomation *automation;
 
-      GList *list_acceleration;
+      AgsTimestamp *timestamp;
+      
+      GList *start_list_acceleration, *list_acceleration;
 
       automation = AGS_AUTOMATION(list_automation->data);
+
+      g_object_get(automation,
+		   "timestamp", &timestamp,
+		   NULL);
       
-      if(automation->timestamp != NULL &&
-	 AGS_TIMESTAMP(automation->timestamp)->timer.ags_offset.offset > x1){
+      if(timestamp != NULL &&
+	 ags_timestamp_get_ags_offset(timestamp) > x1){
 	break;
       }
 
-      if(automation->timestamp != NULL &&
-	 AGS_TIMESTAMP(automation->timestamp)->timer.ags_offset.offset + AGS_AUTOMATION_DEFAULT_OFFSET < x0){
+      if(timestamp != NULL &&
+	 ags_timestamp_get_ags_offset(timestamp) + AGS_AUTOMATION_DEFAULT_OFFSET < x0){
 	list_automation = list_automation->next;
 
 	continue;
       }
 
-      list_acceleration = automation->acceleration;
+      g_object_get(automation,
+		   "acceleration", &start_list_acceleration,
+		   NULL);
+      
+      list_acceleration = start_list_acceleration;
 
       while(list_acceleration != NULL){
 	ags_automation_edit_draw_acceleration(automation_edit,
@@ -2099,12 +2112,16 @@ ags_automation_edit_draw_automation(AgsAutomationEdit *automation_edit)
 					      automation_edit_style->fg[0].blue / white_gc,
 					      0.4);
 
+	/* iterate */
 	list_acceleration = list_acceleration->next;
       }
 
+      g_list_free(start_list_acceleration);
+      
+      /* iterate */
       list_automation = list_automation->next;
     }
-
+    
     if(notebook == NULL){
       break;
     }
@@ -2112,7 +2129,7 @@ ags_automation_edit_draw_automation(AgsAutomationEdit *automation_edit)
     i++;
   }
 
-  pthread_mutex_unlock(audio_mutex);
+  g_list_free(start_list_automation);
 
   /* complete */
   cairo_pop_group_to_source(cr);
@@ -2186,7 +2203,7 @@ ags_automation_edit_draw(AgsAutomationEdit *automation_edit)
  *
  * Returns: a new #AgsAutomationEdit
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsAutomationEdit*
 ags_automation_edit_new()

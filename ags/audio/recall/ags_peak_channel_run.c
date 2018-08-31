@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -18,29 +18,18 @@
  */
 
 #include <ags/audio/recall/ags_peak_channel_run.h>
-#include <ags/audio/recall/ags_peak_channel.h>
-#include <ags/audio/recall/ags_peak_recycling.h>
 
 #include <ags/libags.h>
 
-#include <ags/audio/ags_audio.h>
-#include <ags/audio/ags_recycling.h>
-#include <ags/audio/ags_recall_id.h>
 #include <ags/audio/ags_audio_buffer_util.h>
 
+#include <ags/audio/recall/ags_peak_channel.h>
+#include <ags/audio/recall/ags_peak_recycling.h>
+
 void ags_peak_channel_run_class_init(AgsPeakChannelRunClass *peak_channel_run);
-void ags_peak_channel_run_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_peak_channel_run_dynamic_connectable_interface_init(AgsDynamicConnectableInterface *dynamic_connectable);
 void ags_peak_channel_run_init(AgsPeakChannelRun *peak_channel_run);
-void ags_peak_channel_run_connect(AgsConnectable *connectable);
-void ags_peak_channel_run_disconnect(AgsConnectable *connectable);
-void ags_peak_channel_run_connect_dynamic(AgsDynamicConnectable *dynamic_connectable);
-void ags_peak_channel_run_disconnect_dynamic(AgsDynamicConnectable *dynamic_connectable);
 void ags_peak_channel_run_finalize(GObject *gobject);
 
-AgsRecall* ags_peak_channel_run_duplicate(AgsRecall *recall,
-					  AgsRecallID *recall_id,
-					  guint *n_params, GParameter *parameter);
 void ags_peak_channel_run_run_pre(AgsRecall *recall);
 
 /**
@@ -54,8 +43,6 @@ void ags_peak_channel_run_run_pre(AgsRecall *recall);
  */
 
 static gpointer ags_peak_channel_run_parent_class = NULL;
-static AgsConnectableInterface *ags_peak_channel_run_parent_connectable_interface;
-static AgsDynamicConnectableInterface *ags_peak_channel_run_parent_dynamic_connectable_interface;
 
 GType
 ags_peak_channel_run_get_type()
@@ -76,36 +63,15 @@ ags_peak_channel_run_get_type()
       0,    /* n_preallocs */
       (GInstanceInitFunc) ags_peak_channel_run_init,
     };
-
-    static const GInterfaceInfo ags_connectable_interface_info = {
-      (GInterfaceInitFunc) ags_peak_channel_run_connectable_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-
-    static const GInterfaceInfo ags_dynamic_connectable_interface_info = {
-      (GInterfaceInitFunc) ags_peak_channel_run_dynamic_connectable_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
     
     ags_type_peak_channel_run = g_type_register_static(AGS_TYPE_RECALL_CHANNEL_RUN,
 						       "AgsPeakChannelRun",
 						       &ags_peak_channel_run_info,
 						       0);
     
-    g_type_add_interface_static(ags_type_peak_channel_run,
-				AGS_TYPE_CONNECTABLE,
-				&ags_connectable_interface_info);
-
-    g_type_add_interface_static(ags_type_peak_channel_run,
-				AGS_TYPE_DYNAMIC_CONNECTABLE,
-				&ags_dynamic_connectable_interface_info);
-
-    g_once_init_leave (&g_define_type_id__volatile, ags_type_peak_channel_run);
   }
 
-  return g_define_type_id__volatile;
+  return(ags_type_peak_channel_run);
 }
 
 void
@@ -124,38 +90,23 @@ ags_peak_channel_run_class_init(AgsPeakChannelRunClass *peak_channel_run)
   /* AgsRecallClass */
   recall = (AgsRecallClass *) peak_channel_run;
 
-  recall->duplicate = ags_peak_channel_run_duplicate;
   recall->run_pre = ags_peak_channel_run_run_pre;
-}
-
-void
-ags_peak_channel_run_connectable_interface_init(AgsConnectableInterface *connectable)
-{
-  ags_peak_channel_run_parent_connectable_interface = g_type_interface_peek_parent(connectable);
-
-  connectable->connect = ags_peak_channel_run_connect;
-  connectable->disconnect = ags_peak_channel_run_disconnect;
-}
-
-void
-ags_peak_channel_run_dynamic_connectable_interface_init(AgsDynamicConnectableInterface *dynamic_connectable)
-{
-  ags_peak_channel_run_parent_dynamic_connectable_interface = g_type_interface_peek_parent(dynamic_connectable);
-
-  dynamic_connectable->connect_dynamic = ags_peak_channel_run_connect_dynamic;
-  dynamic_connectable->disconnect_dynamic = ags_peak_channel_run_disconnect_dynamic;
 }
 
 void
 ags_peak_channel_run_init(AgsPeakChannelRun *peak_channel_run)
 {
+  ags_recall_set_ability_flags(peak_channel_run, (AGS_SOUND_ABILITY_SEQUENCER |
+						  AGS_SOUND_ABILITY_NOTATION |
+						  AGS_SOUND_ABILITY_WAVE |
+						  AGS_SOUND_ABILITY_MIDI));
+
   AGS_RECALL(peak_channel_run)->name = "ags-peak";
   AGS_RECALL(peak_channel_run)->version = AGS_RECALL_DEFAULT_VERSION;
   AGS_RECALL(peak_channel_run)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;
   AGS_RECALL(peak_channel_run)->xml_type = "ags-peak-channel-run";
   AGS_RECALL(peak_channel_run)->port = NULL;
 
-  AGS_RECALL(peak_channel_run)->flags |= AGS_RECALL_INPUT_ORIENTATED;
   AGS_RECALL(peak_channel_run)->child_type = AGS_TYPE_PEAK_RECYCLING;
 }
 
@@ -167,112 +118,101 @@ ags_peak_channel_run_finalize(GObject *gobject)
 }
 
 void
-ags_peak_channel_run_connect(AgsConnectable *connectable)
-{
-  /* call parent */
-  ags_peak_channel_run_parent_connectable_interface->connect(connectable);
-}
-
-void
-ags_peak_channel_run_disconnect(AgsConnectable *connectable)
-{
-  /* call parent */
-  ags_peak_channel_run_parent_connectable_interface->disconnect(connectable);
-}
-
-void
-ags_peak_channel_run_connect_dynamic(AgsDynamicConnectable *dynamic_connectable)
-{
-  /* call parent */
-  ags_peak_channel_run_parent_dynamic_connectable_interface->connect_dynamic(dynamic_connectable);
-}
-
-void
-ags_peak_channel_run_disconnect_dynamic(AgsDynamicConnectable *dynamic_connectable)
-{
-  /* call parent */
-  ags_peak_channel_run_parent_dynamic_connectable_interface->disconnect_dynamic(dynamic_connectable);
-}
-
-AgsRecall*
-ags_peak_channel_run_duplicate(AgsRecall *recall,
-			     AgsRecallID *recall_id,
-			     guint *n_params, GParameter *parameter)
-{
-  AgsPeakChannelRun *copy;
-
-  copy = (AgsPeakChannelRun *) AGS_RECALL_CLASS(ags_peak_channel_run_parent_class)->duplicate(recall,
-											      recall_id,
-											      n_params, parameter);
-  
-  return((AgsRecall *) copy);
-}
-
-void
 ags_peak_channel_run_run_pre(AgsRecall *recall)
 {
+  AgsPort *buffer_computed;
   AgsPeakChannel *peak_channel;
 
-  gboolean buffer_computed;
+  guint buffer_size;
+  guint format;
+  gboolean current_buffer_computed;
   
   GValue value = {0,};
+  
+  void (*parent_class_run_pre)(AgsRecall *recall);  
 
-  AGS_RECALL_CLASS(ags_peak_channel_run_parent_class)->run_pre(recall);
+  pthread_mutex_t *recall_mutex;
+  pthread_mutex_t *buffer_mutex;
+
+  g_object_get(recall,
+	       "recall-channel", &peak_channel,
+	       NULL);
+
+  /* get mutex */
+  pthread_mutex_lock(ags_recall_get_class_mutex());
+
+  recall_mutex = recall->obj_mutex;
+  buffer_mutex = peak_channel->buffer_mutex;
+  
+  parent_class_run_pre = AGS_RECALL_CLASS(ags_peak_channel_run_parent_class)->run_pre;
+
+  pthread_mutex_unlock(ags_recall_get_class_mutex());
+
+  /* call parent */
+  parent_class_run_pre(recall);
 
   /* calculate of previous run */
-  peak_channel = AGS_RECALL_CHANNEL_RUN(recall)->recall_channel;
-
-  pthread_mutex_lock(peak_channel->buffer_mutex);
+  g_object_get(peak_channel,
+	       "buffer-size", &buffer_size,
+	       "format", &format,
+	       "buffer-computed", &buffer_computed,
+	       NULL);
+  
+  pthread_mutex_lock(buffer_mutex);
   
   g_value_init(&value,
 	       G_TYPE_BOOLEAN);
 
-  ags_port_safe_read(peak_channel->buffer_computed,
+  ags_port_safe_read(buffer_computed,
 		     &value);
-  buffer_computed = g_value_get_boolean(&value);
 
-  if(!buffer_computed){    
+  current_buffer_computed = g_value_get_boolean(&value);
+
+  g_value_unset(&value);
+
+  if(!current_buffer_computed){    
     /* set buffer-computed port to TRUE */
+    g_value_init(&value,
+		 G_TYPE_BOOLEAN);
     g_value_set_boolean(&value,
 			TRUE);
 
-    ags_port_safe_write(peak_channel->buffer_computed,
+    ags_port_safe_write(buffer_computed,
 			&value);
+    g_value_unset(&value);
   }
   
-  pthread_mutex_unlock(peak_channel->buffer_mutex);
+  pthread_mutex_unlock(buffer_mutex);
 
   /* lock free - buffer-computed reset by cyclic-task AgsResetPeak */
-  if(!buffer_computed){
+  if(!current_buffer_computed){
     /* retrieve peak */    
     ags_peak_channel_retrieve_peak_internal(peak_channel);
 
     /* clear buffer */
     ags_audio_buffer_util_clear_buffer(peak_channel->buffer, 1,
-				       peak_channel->buffer_size, ags_audio_buffer_util_format_from_soundcard(peak_channel->format));
+				       buffer_size, ags_audio_buffer_util_format_from_soundcard(format));
   }
-
-  g_value_unset(&value);
 }
 
 /**
  * ags_peak_channel_run_new:
- * @channel: the #AgsChannel as source
+ * @source: the #AgsChannel
  *
- * Creates an #AgsPeakChannelRun
+ * Creates a new instance of #AgsPeakChannelRun
  *
- * Returns: a new #AgsPeakChannelRun
+ * Returns: the new #AgsPeakChannelRun
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsPeakChannelRun*
-ags_peak_channel_run_new(AgsChannel *channel)
+ags_peak_channel_run_new(AgsChannel *source)
 {
   AgsPeakChannelRun *peak_channel_run;
-
+  
   peak_channel_run = (AgsPeakChannelRun *) g_object_new(AGS_TYPE_PEAK_CHANNEL_RUN,
-							    "source", channel,
-							    NULL);
+							"source", source,
+							NULL);
 
   return(peak_channel_run);
 }

@@ -61,32 +61,14 @@ ags_listing_editor_resize_pads_callback(AgsMachine *machine, GType channel_type,
   }
 
   if(pads_old < pads){
-    AgsMutexManager *mutex_manager;
-
     guint audio_channels;
     guint nth_channel;
 
-    pthread_mutex_t *application_mutex;
-    pthread_mutex_t *audio_mutex;
-    
-    mutex_manager = ags_mutex_manager_get_instance();
-    application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-
-    /* lookup audio mutex */
-    pthread_mutex_lock(application_mutex);
-  
-    audio_mutex = ags_mutex_manager_lookup(mutex_manager,
-					   audio);
-  
-    pthread_mutex_unlock(application_mutex);
-
     /* get some audio fields */
-    pthread_mutex_lock(audio_mutex);
-
-    audio_channels = audio->audio_channels;
-
-    pthread_mutex_unlock(audio_mutex);
-
+    g_object_get(audio,
+		 "audio-channels", &audio_channels,
+		 NULL);
+    
     /* add children */
     nth_channel = pads_old * audio_channels;
     

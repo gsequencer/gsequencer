@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -23,6 +23,8 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <pthread.h>
+
 #define AGS_TYPE_PRESET                (ags_preset_get_type())
 #define AGS_PRESET(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_PRESET, AgsPreset))
 #define AGS_PRESET_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_PRESET, AgsPresetClass))
@@ -41,7 +43,8 @@ typedef struct _AgsPresetClass AgsPresetClass;
  * enable/disable as flags.
  */
 typedef enum{
-  AGS_PRESET_CONNECTED      = 1,
+  AGS_PRESET_ADDED_TO_REGISTRY  = 1,
+  AGS_PRESET_CONNECTED          = 1 <<  1,
 }AgsPresetFlags;
 
 #define AGS_PRESET_ERROR (ags_preset_error_quark())
@@ -56,6 +59,9 @@ struct _AgsPreset
 
   guint flags;
 
+  pthread_mutex_t *obj_mutex;
+  pthread_mutexattr_t *obj_mutexattr;
+  
   GObject *audio;
 
   gchar *scope;
@@ -70,8 +76,9 @@ struct _AgsPreset
   guint x_start;
   guint x_end;
   
-  GParameter *parameter;
   guint n_params;
+  gchar **parameter_name;
+  GValue *value;
 };
 
 struct _AgsPresetClass
@@ -82,6 +89,12 @@ struct _AgsPresetClass
 GType ags_preset_get_type();
 
 GQuark ags_preset_error_quark();
+
+pthread_mutex_t* ags_preset_get_class_mutex();
+
+gboolean ags_preset_test_flags(AgsPreset *preset, guint flags);
+void ags_preset_set_flags(AgsPreset *preset, guint flags);
+void ags_preset_unset_flags(AgsPreset *preset, guint flags);
 
 GList* ags_preset_find_scope(GList *preset,
 			     gchar *scope);

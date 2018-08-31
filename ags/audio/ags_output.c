@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -19,17 +19,15 @@
 
 #include <ags/audio/ags_output.h>
 
-#include <ags/object/ags_connectable.h>
-#include <ags/object/ags_soundcard.h>
+#include <ags/libags.h>
 
 #include <ags/audio/ags_audio.h>
+
+#include <pthread.h>
 
 void ags_output_class_init(AgsOutputClass *output_class);
 void ags_output_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_output_init(AgsOutput *output);
-void ags_output_finalize(GObject *gobject);
-void ags_output_connect(AgsConnectable *connectable);
-void ags_output_disconnect(AgsConnectable *connectable);
 
 /**
  * SECTION:ags_output
@@ -88,14 +86,7 @@ ags_output_get_type (void)
 void
 ags_output_class_init(AgsOutputClass *output)
 {
-  GObjectClass *gobject;
-
   ags_output_parent_class = g_type_class_peek_parent(output);
-
-  /* GObjectClass */
-  gobject = (GObjectClass *) output;
-  
-  gobject->finalize = ags_output_finalize;
 }
 
 void
@@ -104,9 +95,6 @@ ags_output_connectable_interface_init(AgsConnectableInterface *connectable)
   AgsConnectableInterface *ags_output_connectable_parent_interface;
 
   ags_output_parent_connectable_interface = g_type_interface_peek_parent(connectable);
-
-  connectable->connect = ags_output_connect;
-  connectable->disconnect = ags_output_disconnect;
 }
 
 void
@@ -114,78 +102,6 @@ ags_output_init(AgsOutput *output)
 {
   /* empty */
 }
-
-void
-ags_output_finalize(GObject *gobject)
-{
-  G_OBJECT_CLASS(ags_output_parent_class)->finalize(gobject);
-}
-
-void
-ags_output_connect(AgsConnectable *connectable)
-{
-  ags_output_parent_connectable_interface->connect(connectable);
-}
-
-void
-ags_output_disconnect(AgsConnectable *connectable)
-{
-  ags_output_parent_connectable_interface->disconnect(connectable);
-}
-
-/**
- * ags_output_map_audio_signal:
- * @output: an #AgsOutput
- * @recall_id: the assigned #AgsRecallID
- *
- * Maps audio signal and assigning it to recall id.
- *
- * Returns: a new #GList containing #AgsAudioSignal
- *
- * Since: 1.0.0
- */
-GList*
-ags_output_map_audio_signal(AgsOutput *output, AgsRecallID *recall_id)
-{
-  AgsAudioSignal *audio_signal;
-  
-  GObject *soundcard;
-  
-  GList *list_destination;
-
-  if(output != NULL){
-    soundcard = AGS_CHANNEL(output)->soundcard;
-    
-    list_destination = g_list_alloc();
-    
-    goto ags_copy_pattern_map_destination0;
-  }else{
-    return(NULL);
-  }
-
-  while(output != NULL){
-    list_destination->next = g_list_alloc();
-    list_destination->next->prev = list_destination;
-    list_destination = list_destination->next;
-  ags_copy_pattern_map_destination0:
-    g_message("ags_output_map_audio_signal\n");
-
-    audio_signal = ags_audio_signal_new((GObject *) soundcard,
-					(GObject *) output->channel.first_recycling,
-					(GObject *) recall_id);
-    ags_connectable_connect(AGS_CONNECTABLE(audio_signal));
-
-    ags_recycling_add_audio_signal(output->channel.first_recycling,
-				   audio_signal);
-    audio_signal->stream_current = audio_signal->stream_beginning;
-    list_destination->data = (gpointer) audio_signal;
-
-    output = (AgsOutput *) output->channel.next_pad;
-  }
-  
-  return(list_destination);
-}
-
 
 /**
  * ags_output_find_first_input_recycling:
@@ -195,32 +111,77 @@ ags_output_map_audio_signal(AgsOutput *output, AgsRecallID *recall_id)
  *
  * Returns: the first #AgsRecycling of #AgsAudio
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsRecycling*
 ags_output_find_first_input_recycling(AgsOutput *output)
 {
   AgsAudio *audio;
   AgsChannel *input;
+  AgsRecycling *recycling;
+  
+  guint audio_flags;
+  guint audio_channel, line;
+  
+  pthread_mutex_t *audio_mutex;
+  pthread_mutex_t *channel_mutex;
 
-  if(output == NULL)
+  if(!AGS_IS_OUTPUT(output)){
     return(NULL);
+  }
+  
+  /* get channel mutex */
+  pthread_mutex_lock(ags_channel_get_class_mutex());
+  
+  channel_mutex = AGS_CHANNEL(output)->obj_mutex;
+  
+  pthread_mutex_unlock(ags_channel_get_class_mutex());
 
-  audio = AGS_AUDIO(AGS_CHANNEL(output)->audio);
+  /* get some fields */
+  pthread_mutex_lock(channel_mutex);
+  
+  audio = (AgsAudio *) AGS_CHANNEL(output)->audio;
 
-  if((AGS_AUDIO_ASYNC & (audio->flags)) != 0){
-    input = ags_channel_nth(audio->input, AGS_CHANNEL(output)->audio_channel);
+  audio_channel = AGS_CHANNEL(output)->audio_channel;
+  line = AGS_CHANNEL(output)->line;
+
+  pthread_mutex_unlock(channel_mutex);
+
+  /* get audio mutex */
+  pthread_mutex_lock(ags_audio_get_class_mutex());
+  
+  audio_mutex = AGS_AUDIO(output)->obj_mutex;
+  
+  pthread_mutex_unlock(ags_audio_get_class_mutex());
+
+  /* get some fields */
+  pthread_mutex_lock(audio_mutex);
+
+  audio_flags = audio->flags;
+  
+  input = audio->input;
+  
+  pthread_mutex_unlock(audio_mutex);
+
+  /* find first input recycling */
+  if((AGS_AUDIO_ASYNC & (audio_flags)) != 0){
+    input = ags_channel_nth(input, audio_channel);
 
     input = ags_channel_first_with_recycling(input);
   }else{
-    input = ags_channel_nth(audio->input, AGS_CHANNEL(output)->line);
+    input = ags_channel_nth(input, line);
   }
 
+  /* recycling */
+  recycling = NULL;
+  
   if(input != NULL){
-    return(input->first_recycling);
-  }else{
-    return(NULL);
+    g_object_get(input,
+		 "first-recycling", &recycling,
+		 NULL);
   }
+  
+  return(recycling);
 }
 
 /**
@@ -231,43 +192,87 @@ ags_output_find_first_input_recycling(AgsOutput *output)
  *
  * Returns: the last #AgsRecycling of #AgsAudio
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsRecycling*
 ags_output_find_last_input_recycling(AgsOutput *output)
 {
   AgsAudio *audio;
   AgsChannel *input;
+  AgsRecycling *recycling;
+  
+  guint audio_flags;
+  guint audio_channel, line;
+  
+  pthread_mutex_t *audio_mutex;
+  pthread_mutex_t *channel_mutex;
 
-  if(output == NULL)
+  if(!AGS_IS_OUTPUT(output)){
     return(NULL);
+  }
+  
+  /* get channel mutex */
+  pthread_mutex_lock(ags_channel_get_class_mutex());
+  
+  channel_mutex = AGS_CHANNEL(output)->obj_mutex;
+  
+  pthread_mutex_unlock(ags_channel_get_class_mutex());
 
-  audio = AGS_AUDIO(AGS_CHANNEL(output)->audio);
+  /* get some fields */
+  pthread_mutex_lock(channel_mutex);
+  
+  audio = (AgsAudio *) AGS_CHANNEL(output)->audio;
 
-  if((AGS_AUDIO_ASYNC & (audio->flags)) != 0){
-    input = ags_channel_nth(audio->input, AGS_CHANNEL(output)->audio_channel);
+  audio_channel = AGS_CHANNEL(output)->audio_channel;
+  line = AGS_CHANNEL(output)->line;
+
+  pthread_mutex_unlock(channel_mutex);
+
+  /* get audio mutex */
+  pthread_mutex_lock(ags_audio_get_class_mutex());
+  
+  audio_mutex = AGS_AUDIO(output)->obj_mutex;
+  
+  pthread_mutex_unlock(ags_audio_get_class_mutex());
+
+  /* get some fields */
+  pthread_mutex_lock(audio_mutex);
+
+  audio_flags = audio->flags;
+  
+  input = audio->input;
+  
+  pthread_mutex_unlock(audio_mutex);
+
+  if((AGS_AUDIO_ASYNC & (audio_flags)) != 0){
+    input = ags_channel_nth(input, audio_channel);
 
     input = ags_channel_last_with_recycling(input);
   }else{
-    input = ags_channel_nth(audio->input, AGS_CHANNEL(output)->line);
+    input = ags_channel_nth(input, line);
   }
 
+  /* recycling */
+  recycling = NULL;
+  
   if(input != NULL){
-    return(input->last_recycling);
-  }else{
-    return(NULL);
+    g_object_get(input,
+		 "last-recycling", &recycling,
+		 NULL);
   }
+  
+  return(recycling);
 }
 
 /**
  * ags_output_new:
  * @audio: the #AgsAudio
  *
- * Creates an #AgsOutput, linking tree to @audio.
+ * Creates an #AgsOutput, assigned to @audio.
  *
  * Returns: a new #AgsOutput
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsOutput*
 ags_output_new(GObject *audio)

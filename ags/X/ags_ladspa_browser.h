@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -22,6 +22,7 @@
 
 #include <glib.h>
 #include <glib-object.h>
+
 #include <gtk/gtk.h>
 
 #define AGS_TYPE_LADSPA_BROWSER                (ags_ladspa_browser_get_type())
@@ -34,10 +35,16 @@
 typedef struct _AgsLadspaBrowser AgsLadspaBrowser;
 typedef struct _AgsLadspaBrowserClass AgsLadspaBrowserClass;
 
+typedef enum{
+  AGS_LADSPA_BROWSER_CONNECTED   = 1,
+}AgsLadspaBrowserFlags;
+
 struct _AgsLadspaBrowser
 {
   GtkVBox vbox;
 
+  guint flags;
+  
   gchar *path;
 
   GtkHBox *plugin;
@@ -46,6 +53,12 @@ struct _AgsLadspaBrowser
   GtkComboBox *effect;
   
   GtkVBox *description;
+
+  GtkLabel *label;
+  GtkLabel *maker;
+  GtkLabel *copyright;
+
+  GtkTable *port_table;
 
   GtkWidget *preview;
 };

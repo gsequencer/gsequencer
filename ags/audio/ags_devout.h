@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -23,8 +23,6 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include <ags/lib/ags_time.h>
-
 #include <sys/types.h>
 
 #include <pthread.h>
@@ -35,6 +33,8 @@
 #include <alsa/asoundlib.h>
 #endif
 
+#include <ags/libags.h>
+
 #define AGS_TYPE_DEVOUT                (ags_devout_get_type())
 #define AGS_DEVOUT(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_DEVOUT, AgsDevout))
 #define AGS_DEVOUT_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST(class, AGS_TYPE_DEVOUT, AgsDevout))
@@ -42,8 +42,8 @@
 #define AGS_IS_DEVOUT_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_DEVOUT))
 #define AGS_DEVOUT_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS(obj, AGS_TYPE_DEVOUT, AgsDevoutClass))
 
-#define AGS_DEVOUT_DEFAULT_ALSA_DEVICE "hw:0,0\0"
-#define AGS_DEVOUT_DEFAULT_OSS_DEVICE "/dev/dsp\0"
+#define AGS_DEVOUT_DEFAULT_ALSA_DEVICE "hw:0,0"
+#define AGS_DEVOUT_DEFAULT_OSS_DEVICE "/dev/dsp"
 
 #define AGS_DEVOUT_DEFAULT_RING_BUFFER_SIZE (8)
 
@@ -52,6 +52,8 @@ typedef struct _AgsDevoutClass AgsDevoutClass;
 
 /**
  * AgsDevoutFlags:
+ * @AGS_DEVOUT_ADDED_TO_REGISTRY: the devout was added to registry, see #AgsConnectable::add_to_registry()
+ * @AGS_DEVOUT_CONNECTED: indicates the devout was connected by calling #AgsConnectable::connect()
  * @AGS_DEVOUT_BUFFER0: ring-buffer 0
  * @AGS_DEVOUT_BUFFER1: ring-buffer 1
  * @AGS_DEVOUT_BUFFER2: ring-buffer 2
@@ -70,23 +72,26 @@ typedef struct _AgsDevoutClass AgsDevoutClass;
  */
 typedef enum
 {
-  AGS_DEVOUT_BUFFER0                        = 1,
-  AGS_DEVOUT_BUFFER1                        = 1 <<  1,
-  AGS_DEVOUT_BUFFER2                        = 1 <<  2,
-  AGS_DEVOUT_BUFFER3                        = 1 <<  3,
+  AGS_DEVOUT_ADDED_TO_REGISTRY  = 1,
+  AGS_DEVOUT_CONNECTED          = 1 <<  1,
 
-  AGS_DEVOUT_ATTACK_FIRST                   = 1 <<  4,
+  AGS_DEVOUT_BUFFER0            = 1 <<  2,
+  AGS_DEVOUT_BUFFER1            = 1 <<  3,
+  AGS_DEVOUT_BUFFER2            = 1 <<  4,
+  AGS_DEVOUT_BUFFER3            = 1 <<  5,
 
-  AGS_DEVOUT_PLAY                           = 1 <<  5,
+  AGS_DEVOUT_ATTACK_FIRST       = 1 <<  6,
 
-  AGS_DEVOUT_OSS                            = 1 <<  6,
-  AGS_DEVOUT_ALSA                           = 1 <<  7,
+  AGS_DEVOUT_PLAY               = 1 <<  7,
 
-  AGS_DEVOUT_SHUTDOWN                       = 1 <<  8,
-  AGS_DEVOUT_START_PLAY                     = 1 <<  9,
+  AGS_DEVOUT_OSS                = 1 <<  8,
+  AGS_DEVOUT_ALSA               = 1 <<  9,
 
-  AGS_DEVOUT_NONBLOCKING                    = 1 << 10,
-  AGS_DEVOUT_INITIALIZED                    = 1 << 11,
+  AGS_DEVOUT_SHUTDOWN           = 1 << 10,
+  AGS_DEVOUT_START_PLAY         = 1 << 11,
+
+  AGS_DEVOUT_NONBLOCKING        = 1 << 12,
+  AGS_DEVOUT_INITIALIZED        = 1 << 13,
 }AgsDevoutFlags;
 
 #define AGS_DEVOUT_ERROR (ags_devout_error_quark())
@@ -108,8 +113,12 @@ struct _AgsDevout
 
   guint flags;
 
-  pthread_mutex_t *mutex;
-  pthread_mutexattr_t *mutexattr;
+  pthread_mutex_t *obj_mutex;
+  pthread_mutexattr_t *obj_mutexattr;
+
+  AgsApplicationContext *application_context;
+
+  AgsUUID *uuid;
 
   guint dsp_channels;
   guint pcm_channels;
@@ -117,6 +126,7 @@ struct _AgsDevout
   guint buffer_size;
   guint samplerate; // sample_rate
 
+  pthread_mutex_t **buffer_mutex;
   void** buffer;
 
   volatile gboolean available;
@@ -169,13 +179,8 @@ struct _AgsDevout
 #endif
   }out;
 
-  GObject *application_context;
-  pthread_mutex_t *application_mutex;
-
   GList *poll_fd;
   GObject *notify_soundcard;
-  
-  GList *audio;
 };
 
 struct _AgsDevoutClass
@@ -186,6 +191,12 @@ struct _AgsDevoutClass
 GType ags_devout_get_type();
 
 GQuark ags_devout_error_quark();
+
+pthread_mutex_t* ags_devout_get_class_mutex();
+
+gboolean ags_devout_test_flags(AgsDevout *devout, guint flags);
+void ags_devout_set_flags(AgsDevout *devout, guint flags);
+void ags_devout_unset_flags(AgsDevout *devout, guint flags);
 
 void ags_devout_switch_buffer_flag(AgsDevout *devout);
 

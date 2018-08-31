@@ -206,4 +206,3 @@ ags_live_dssi_bridge_program_changed_callback(GtkComboBox *combo_box, AgsLiveDss
     g_list_free(bulk_member_start);
   }
 }
-

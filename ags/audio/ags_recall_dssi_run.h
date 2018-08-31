@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -25,8 +25,9 @@
 
 #include <dssi.h>
 
-#include <ags/audio/ags_recall.h>
 #include <ags/audio/ags_recall_audio_signal.h>
+
+#include <ags/audio/ags_recall.h>
 
 #define AGS_TYPE_RECALL_DSSI_RUN                (ags_recall_dssi_run_get_type())
 #define AGS_RECALL_DSSI_RUN(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_RECALL_DSSI_RUN, AgsRecallDssiRun))
@@ -44,7 +45,7 @@ struct _AgsRecallDssiRun
 
   LADSPA_Handle *ladspa_handle;
 
-  unsigned long audio_channels;
+  guint audio_channels;
 
   LADSPA_Data *input;
   LADSPA_Data *output;
@@ -56,8 +57,8 @@ struct _AgsRecallDssiRun
   snd_seq_event_t **event_buffer;
   unsigned long *event_count;
 
-  GList *note;
   GObject *route_dssi_audio_run;
+  GList *note;
 };
 
 struct _AgsRecallDssiRunClass
@@ -67,6 +68,6 @@ struct _AgsRecallDssiRunClass
 
 GType ags_recall_dssi_run_get_type();
 
-AgsRecallDssiRun* ags_recall_dssi_run_new(AgsAudioSignal *audio_signal);
+AgsRecallDssiRun* ags_recall_dssi_run_new(AgsAudioSignal *source);
 
 #endif /*__AGS_RECALL_DSSI_RUN_H__*/

@@ -696,7 +696,7 @@ ags_file_read_machine_resolve_audio(AgsFileLookup *file_lookup,
 	       "audio", (AgsAudio *) id_ref->ref,
 	       NULL);
 
-  AGS_AUDIO(id_ref->ref)->machine = (GObject *) machine;
+  AGS_AUDIO(id_ref->ref)->machine_widget = (GObject *) machine;
 
   str = xmlGetProp(file_lookup->node,
 		   AGS_FILE_NAME_PROP);

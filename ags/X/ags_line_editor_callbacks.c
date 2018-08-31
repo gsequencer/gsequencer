@@ -19,7 +19,8 @@
 
 #include <ags/X/ags_line_editor_callbacks.h>
 
-#include <ags/audio/ags_channel.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
 
 #include <ags/X/ags_pad_editor.h>
 #include <ags/X/ags_machine_editor.h>
@@ -45,6 +46,13 @@ ags_line_editor_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, Ag
 		       0);
   }
     
+  if(line_editor->input_editor != NULL){
+    gtk_box_pack_start((GtkBox *) line_editor,
+		       (GtkWidget *) line_editor->input_editor,
+		       FALSE, FALSE,
+		       0);
+  }
+    
   return(0);
 }
 
@@ -57,6 +65,10 @@ ags_line_editor_show_callback(GtkWidget *widget, AgsLineEditor *line_editor)
   
   if(line_editor->output_editor != NULL){
     gtk_widget_show((GtkWidget *) line_editor->output_editor);
+  }
+
+  if(line_editor->input_editor != NULL){
+    gtk_widget_show((GtkWidget *) line_editor->input_editor);
   }
 
   if(line_editor->member_editor != NULL){

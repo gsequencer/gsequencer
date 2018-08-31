@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -27,7 +27,6 @@
 #include <ags/i18n.h>
 
 void ags_recall_id_class_init(AgsRecallIDClass *recall_id);
-void ags_recall_id_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_recall_id_init(AgsRecallID *recall_id);
 void ags_recall_id_set_property(GObject *gobject,
 				guint prop_id,
@@ -37,8 +36,6 @@ void ags_recall_id_get_property(GObject *gobject,
 				guint prop_id,
 				GValue *value,
 				GParamSpec *param_spec);
-void ags_recall_id_connect(AgsConnectable *connectable);
-void ags_recall_id_disconnect(AgsConnectable *connectable);
 void ags_recall_id_dispose(GObject *gobject);
 void ags_recall_id_finalize(GObject *gobject);
 
@@ -54,11 +51,12 @@ void ags_recall_id_finalize(GObject *gobject);
 
 enum{
   PROP_0,
-  PROP_RECYCLING,
   PROP_RECYCLING_CONTEXT,
 };
 
 static gpointer ags_recall_id_parent_class = NULL;
+
+static pthread_mutex_t ags_recall_id_class_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 GType
 ags_recall_id_get_type(void)
@@ -69,42 +67,31 @@ ags_recall_id_get_type(void)
     GType ags_type_recall_id;
 
     static const GTypeInfo ags_recall_id_info = {
-      sizeof (AgsRecallIDClass),
+      sizeof(AgsRecallIDClass),
       NULL, /* base_init */
       NULL, /* base_finalize */
       (GClassInitFunc) ags_recall_id_class_init,
       NULL, /* class_finalize */
       NULL, /* class_data */
-      sizeof (AgsRecallID),
+      sizeof(AgsRecallID),
       0,    /* n_preallocs */
       (GInstanceInitFunc) ags_recall_id_init,
-    };
-
-    static const GInterfaceInfo ags_connectable_interface_info = {
-      (GInterfaceInitFunc) ags_recall_id_connectable_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
     };
 
     ags_type_recall_id = g_type_register_static(G_TYPE_OBJECT,
 						"AgsRecallID",
 						&ags_recall_id_info,
 						0);
-
-    g_type_add_interface_static(ags_type_recall_id,
-				AGS_TYPE_CONNECTABLE,
-				&ags_connectable_interface_info);
-
-    g_once_init_leave (&g_define_type_id__volatile, ags_type_recall_id);
   }
 
-  return g_define_type_id__volatile;
+  return(ags_type_recall_id);
 }
 
 void
 ags_recall_id_class_init(AgsRecallIDClass *recall_id)
 {
   GObjectClass *gobject;
+
   GParamSpec *param_spec;
 
   ags_recall_id_parent_class = g_type_class_peek_parent(recall_id);
@@ -120,27 +107,11 @@ ags_recall_id_class_init(AgsRecallIDClass *recall_id)
 
   /* properties */
   /**
-   * AgsRecallID:recycling:
-   *
-   * The assigned #AgsRecycling.
-   * 
-   * Since: 1.0.0
-   */
-  param_spec = g_param_spec_object("recycling",
-				   i18n_pspec("assigned recycling"),
-				   i18n_pspec("The recycling it is assigned with"),
-				   G_TYPE_OBJECT,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_RECYCLING,
-				  param_spec);
-
-  /**
    * AgsRecallID:recycling-context:
    *
    * The dynamic run context belonging to.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("recycling-context",
 				   i18n_pspec("assigned recycling context"),
@@ -153,18 +124,34 @@ ags_recall_id_class_init(AgsRecallIDClass *recall_id)
 }
 
 void
-ags_recall_id_connectable_interface_init(AgsConnectableInterface *connectable)
-{
-  connectable->connect = ags_recall_id_connect;
-  connectable->disconnect = ags_recall_id_disconnect;
-}
-
-void
 ags_recall_id_init(AgsRecallID *recall_id)
 {
-  recall_id->flags = 0;
+  pthread_mutex_t *mutex;
+  pthread_mutexattr_t *attr;
 
-  recall_id->recycling = NULL;
+  recall_id->flags = 0;
+  recall_id->sound_scope = -1;
+  recall_id->staging_flags = 0;
+  recall_id->state_flags = 0;
+  
+  /* add recall id mutex */
+  recall_id->obj_mutexattr = 
+    attr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
+  pthread_mutexattr_init(attr);
+  pthread_mutexattr_settype(attr,
+			    PTHREAD_MUTEX_RECURSIVE);
+
+#ifdef __linux__
+  pthread_mutexattr_setprotocol(attr,
+				PTHREAD_PRIO_INHERIT);
+#endif
+
+  recall_id->obj_mutex = 
+    mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
+  pthread_mutex_init(mutex,
+		     attr);  
+
+  /* recycling context */
   recall_id->recycling_context = NULL;
 }
 
@@ -176,37 +163,29 @@ ags_recall_id_set_property(GObject *gobject,
 {
   AgsRecallID *recall_id;
 
+  pthread_mutex_t *recall_id_mutex;
+
   recall_id = AGS_RECALL_ID(gobject);
 
+  /* get recall id mutex */
+  pthread_mutex_lock(ags_recall_id_get_class_mutex());
+  
+  recall_id_mutex = recall_id->obj_mutex;
+  
+  pthread_mutex_unlock(ags_recall_id_get_class_mutex());
+
   switch(prop_id){
-  case PROP_RECYCLING:
-    {
-      AgsRecycling *recycling;
-
-      recycling = g_value_get_object(value);
-
-      if(recall_id->recycling == (GObject *) recycling){
-	return;
-      }
-
-      if(recall_id->recycling != NULL){
-	g_object_unref(recall_id->recycling);
-      }
-
-      if(recycling != NULL){
-	g_object_ref(recycling);
-      }
-
-      recall_id->recycling = (GObject *) recycling;
-    }
-    break;
   case PROP_RECYCLING_CONTEXT:
     {
       AgsRecyclingContext *recycling_context;
 
       recycling_context = g_value_get_object(value);
 
+      pthread_mutex_lock(recall_id_mutex);
+      
       if(recall_id->recycling_context == recycling_context){
+	pthread_mutex_unlock(recall_id_mutex);
+
 	return;
       }
 
@@ -219,6 +198,8 @@ ags_recall_id_set_property(GObject *gobject,
       }
 
       recall_id->recycling_context = recycling_context;
+
+      pthread_mutex_unlock(recall_id_mutex);
     }
     break;
   default:
@@ -235,17 +216,25 @@ ags_recall_id_get_property(GObject *gobject,
 {
   AgsRecallID *recall_id;
 
+  pthread_mutex_t *recall_id_mutex;
+
   recall_id = AGS_RECALL_ID(gobject);
 
+  /* get recall id mutex */
+  pthread_mutex_lock(ags_recall_id_get_class_mutex());
+  
+  recall_id_mutex = recall_id->obj_mutex;
+  
+  pthread_mutex_unlock(ags_recall_id_get_class_mutex());
+
   switch(prop_id){
-  case PROP_RECYCLING:
-    {
-      g_value_set_object(value, recall_id->recycling);
-    }
-    break;
   case PROP_RECYCLING_CONTEXT:
     {
+      pthread_mutex_lock(recall_id_mutex);
+
       g_value_set_object(value, recall_id->recycling_context);
+
+      pthread_mutex_unlock(recall_id_mutex);
     }
     break;
   default:
@@ -255,46 +244,11 @@ ags_recall_id_get_property(GObject *gobject,
 }
 
 void
-ags_recall_id_connect(AgsConnectable *connectable)
-{
-  AgsRecallID *recall_id;
-
-  recall_id = AGS_RECALL_ID(connectable);
-
-  if((AGS_RECALL_ID_CONNECTED & (recall_id->flags)) != 0){
-    return;
-  }
-
-  recall_id->flags |= AGS_RECALL_ID_CONNECTED;
-}
-
-void
-ags_recall_id_disconnect(AgsConnectable *connectable)
-{
-  AgsRecallID *recall_id;
-
-  recall_id = AGS_RECALL_ID(connectable);
-
-
-  if((AGS_RECALL_ID_CONNECTED & (recall_id->flags)) == 0){
-    return;
-  }
-
-  recall_id->flags &= (~AGS_RECALL_ID_CONNECTED);
-}
-
-void
 ags_recall_id_dispose(GObject *gobject)
 {
   AgsRecallID *recall_id;
 
   recall_id = AGS_RECALL_ID(gobject);
-
-  if(recall_id->recycling != NULL){
-    g_object_unref(recall_id->recycling);
-
-    recall_id->recycling = NULL;
-  }
   
   if(recall_id->recycling_context != NULL){
     g_object_unref(recall_id->recycling_context);
@@ -313,9 +267,11 @@ ags_recall_id_finalize(GObject *gobject)
 
   recall_id = AGS_RECALL_ID(gobject);
 
-  if(recall_id->recycling != NULL){
-    g_object_unref(recall_id->recycling);
-  }
+  pthread_mutex_destroy(recall_id->obj_mutex);
+  free(recall_id->obj_mutex);
+
+  pthread_mutexattr_destroy(recall_id->obj_mutexattr);
+  free(recall_id->obj_mutexattr);
   
   if(recall_id->recycling_context != NULL){
     g_object_unref(recall_id->recycling_context);
@@ -326,139 +282,526 @@ ags_recall_id_finalize(GObject *gobject)
 }
 
 /**
- * ags_recall_id_get_run_stage:
- * @id: the #AgsRecallID to check
- * @stage: the current run stage to check against
- *
- * Check if a run stage already has been passed for current run. This
- * function is intended to handle AGS_AUDIO_ASYNC correctly.
- *
- * Returns: %TRUE if the stage isn't run yet otherwise %FALSE
+ * ags_recall_id_get_class_mutex:
  * 
- * Since: 1.0.0
+ * Use this function's returned mutex to access mutex fields.
+ *
+ * Returns: the class mutex
+ * 
+ * Since: 2.0.0
+ */
+pthread_mutex_t*
+ags_recall_id_get_class_mutex()
+{
+  return(&ags_recall_id_class_mutex);
+}
+
+/**
+ * ags_recall_id_set_scope:
+ * @recall_id: the #AgsRecallID
+ * @sound_scope: the sound scope
+ * 
+ * Set @sound_scope for @recall_id.
+ * 
+ * Since: 2.0.0
+ */
+void
+ags_recall_id_set_sound_scope(AgsRecallID *recall_id, gint sound_scope)
+{
+  pthread_mutex_t *recall_id_mutex;
+
+  if(!AGS_IS_RECALL_ID(recall_id) ||
+     ags_recall_id_check_sound_scope(recall_id,
+				     -1)){
+    return;
+  }
+
+  /* get recall id mutex */
+  pthread_mutex_lock(ags_recall_id_get_class_mutex());
+  
+  recall_id_mutex = recall_id->obj_mutex;
+  
+  pthread_mutex_unlock(ags_recall_id_get_class_mutex());
+
+  /* set sound scope */
+  pthread_mutex_lock(recall_id_mutex);
+
+  recall_id->sound_scope = sound_scope;
+
+  pthread_mutex_unlock(recall_id_mutex);
+}
+
+/**
+ * ags_recall_id_check_sound_scope:
+ * @recall_id: the #AgsRecallID
+ * @sound_scope: the sound scope to check or -1 to check all
+ * 
+ * Check if @sound_scope is set for @recall_id.
+ * 
+ * Returns: %TRUE if sound scope matches, otherwise  %FALSE
+ * 
+ * Since: 2.0.0
  */
 gboolean
-ags_recall_id_get_run_stage(AgsRecallID *id, gint stage)
+ags_recall_id_check_sound_scope(AgsRecallID *recall_id, gint sound_scope)
 {
-  switch(stage){
-  case 0:
-    {
-      if((AGS_RECALL_ID_PRE & (id->flags)) == 0){
-	return(TRUE);
-      }
-    }
-    break;
-  case 1:
-    {
-      if((AGS_RECALL_ID_INTER & (id->flags)) == 0){
-	return(TRUE);
-      }
-    }
-    break;
-  case 2:
-    {
-      if((AGS_RECALL_ID_POST & (id->flags)) == 0){
-	return(TRUE);
-      }
-    }
-    break;
+  gint recall_id_sound_scope;
+  
+  pthread_mutex_t *recall_id_mutex;
+
+  if(!AGS_IS_RECALL_ID(recall_id)){
+    return(FALSE);
   }
 
-  return(FALSE);
+  /* get recall id mutex */
+  pthread_mutex_lock(ags_recall_id_get_class_mutex());
+  
+  recall_id_mutex = recall_id->obj_mutex;
+  
+  pthread_mutex_unlock(ags_recall_id_get_class_mutex());
+
+  /* get sound scope */
+  pthread_mutex_lock(recall_id_mutex);
+
+  recall_id_sound_scope = recall_id->sound_scope;
+
+  pthread_mutex_unlock(recall_id_mutex);
+  
+  if(sound_scope < 0){
+    switch(recall_id_sound_scope){
+    case AGS_SOUND_SCOPE_PLAYBACK:
+    case AGS_SOUND_SCOPE_NOTATION:
+    case AGS_SOUND_SCOPE_SEQUENCER:
+    case AGS_SOUND_SCOPE_WAVE:
+    case AGS_SOUND_SCOPE_MIDI:
+      return(TRUE);      
+    default:
+      return(FALSE);
+    }
+  }else{
+    if(sound_scope < AGS_SOUND_SCOPE_LAST &&
+       sound_scope == recall_id_sound_scope){
+      return(TRUE);
+    }else{
+      return(FALSE);
+    }
+  }
 }
 
 /**
- * ags_recall_id_set_run_stage:
- * @recall_id: the #AgsRecallID which has been passed
- * @stage: the run stage the networked channels are in
+ * ags_recall_id_test_staging_flags:
+ * @recall_id: the #AgsRecallID
+ * @staging_flags: the staging flags
  *
- * Marks the run stage to be passed for audio channel.
+ * Test @staging_flags to be set on @recall_id.
  * 
- * Since: 1.0.0
+ * Returns: %TRUE if flags are set, else %FALSE
+ *
+ * Since: 2.0.0
+ */
+gboolean
+ags_recall_id_test_staging_flags(AgsRecallID *recall_id,
+				 guint staging_flags)
+{
+  gboolean retval;  
+  
+  pthread_mutex_t *recall_id_mutex;
+
+  if(!AGS_IS_RECALL_ID(recall_id)){
+    return(FALSE);
+  }
+
+  /* get recall id mutex */
+  pthread_mutex_lock(ags_recall_id_get_class_mutex());
+  
+  recall_id_mutex = recall_id->obj_mutex;
+  
+  pthread_mutex_unlock(ags_recall_id_get_class_mutex());
+
+  /* test */
+  pthread_mutex_lock(recall_id_mutex);
+
+  retval = (staging_flags & (recall_id->staging_flags)) ? TRUE: FALSE;
+  
+  pthread_mutex_unlock(recall_id_mutex);
+
+  return(retval);
+}
+
+/**
+ * ags_recall_id_set_staging_flags:
+ * @recall_id: the #AgsRecallID
+ * @staging_flags: staging flags to set
+ * 
+ * Set staging flags.
+ * 
+ * Since: 2.0.0
  */
 void
-ags_recall_id_set_run_stage(AgsRecallID *recall_id, gint stage)
+ags_recall_id_set_staging_flags(AgsRecallID *recall_id, guint staging_flags)
 {
-  guint i;
+  pthread_mutex_t *recall_id_mutex;
 
-  if(stage == 0){
-    recall_id->flags |= AGS_RECALL_ID_PRE;
-  }else if(stage == 1){
-    recall_id->flags |= AGS_RECALL_ID_INTER;
-  }else{
-    recall_id->flags |= AGS_RECALL_ID_POST;
+  if(!AGS_IS_RECALL_ID(recall_id)){
+    return;
   }
+
+  /* get recall id mutex */
+  pthread_mutex_lock(ags_recall_id_get_class_mutex());
+  
+  recall_id_mutex = recall_id->obj_mutex;
+  
+  pthread_mutex_unlock(ags_recall_id_get_class_mutex());
+
+  /* set staging flags */
+  pthread_mutex_lock(recall_id_mutex);
+
+  recall_id->staging_flags |= staging_flags;
+
+  pthread_mutex_unlock(recall_id_mutex);
 }
 
 /**
- * ags_recall_id_unset_run_stage:
- * @recall_id: the #AgsRecallID which has been passed
- * @stage: the run stage the networked channels are in
- *
- * Unmarks the run stage to be passed for audio channel.
+ * ags_recall_id_unset_staging_flags:
+ * @recall_id: the #AgsRecallID
+ * @staging_flags: staging flags to unset
  * 
- * Since: 1.0.0
+ * Unset staging flags.
+ * 
+ * Since: 2.0.0
  */
 void
-ags_recall_id_unset_run_stage(AgsRecallID *recall_id, gint stage)
+ags_recall_id_unset_staging_flags(AgsRecallID *recall_id, guint staging_flags)
 {
-  if(stage == 0){
-    recall_id->flags &= (~AGS_RECALL_ID_PRE);
-  }else if(stage == 1){
-    recall_id->flags &= (~AGS_RECALL_ID_INTER);
-  }else{
-    recall_id->flags &= (~AGS_RECALL_ID_POST);
+  pthread_mutex_t *recall_id_mutex;
+
+  if(!AGS_IS_RECALL_ID(recall_id)){
+    return;
   }
+
+  /* get recall id mutex */
+  pthread_mutex_lock(ags_recall_id_get_class_mutex());
+  
+  recall_id_mutex = recall_id->obj_mutex;
+  
+  pthread_mutex_unlock(ags_recall_id_get_class_mutex());
+
+  /* unset staging flags */
+  pthread_mutex_lock(recall_id_mutex);
+
+  recall_id->staging_flags &= (~staging_flags);
+
+  pthread_mutex_unlock(recall_id_mutex);
 }
 
 /**
- * ags_recall_id_add:
- * @recall_id_list: the #GList the new #AgsRecallID should be added
- * @recall_id: the #AgsRecallID to add
- *
- * Adds an #AgsRecallID with given properties to the passed #GList.
- *
- * Returns: the newly allocated #GList which is the new start of the #GList, too.
+ * ags_recall_id_check_staging_flags:
+ * @recall_id: the #AgsRecallID
+ * @staging_flags: staging flags to check
  * 
- * Since: 1.0.0
+ * Check the occurence of @staging_flags in @recall_id.
+ * 
+ * Returns: %TRUE if all flags matched, otherwise %FALSE
+ * 
+ * Since: 2.0.0
  */
-GList*
-ags_recall_id_add(GList *recall_id_list,
-		  AgsRecallID *recall_id)
+gboolean
+ags_recall_id_check_staging_flags(AgsRecallID *recall_id, guint staging_flags)
 {
-  GList *list;
+  guint recall_id_staging_flags;
+  
+  pthread_mutex_t *recall_id_mutex;
 
-  list = g_list_prepend(recall_id_list,
-			(gpointer) recall_id);
+  if(!AGS_IS_RECALL_ID(recall_id)){
+    return(FALSE);
+  }
 
-  return(list);
+  /* get recall id mutex */
+  pthread_mutex_lock(ags_recall_id_get_class_mutex());
+  
+  recall_id_mutex = recall_id->obj_mutex;
+  
+  pthread_mutex_unlock(ags_recall_id_get_class_mutex());
+
+  /* get staging flags */
+  pthread_mutex_lock(recall_id_mutex);
+
+  recall_id_staging_flags = recall_id->staging_flags;
+
+  pthread_mutex_unlock(recall_id_mutex);
+
+  /* check staging flags */
+  if((AGS_SOUND_STAGING_CHECK_RT_DATA & (staging_flags)) != 0 &&
+     (AGS_SOUND_STAGING_CHECK_RT_DATA & (recall_id_staging_flags)) == 0){
+    return(FALSE);
+  }
+
+  if((AGS_SOUND_STAGING_RUN_INIT_PRE & (staging_flags)) != 0 &&
+     (AGS_SOUND_STAGING_RUN_INIT_PRE & (recall_id_staging_flags)) == 0){
+    return(FALSE);
+  }
+
+  if((AGS_SOUND_STAGING_RUN_INIT_INTER & (staging_flags)) != 0 &&
+     (AGS_SOUND_STAGING_RUN_INIT_INTER & (recall_id_staging_flags)) == 0){
+    return(FALSE);
+  }
+  
+  if((AGS_SOUND_STAGING_RUN_INIT_POST & (staging_flags)) != 0 &&
+     (AGS_SOUND_STAGING_RUN_INIT_POST & (recall_id_staging_flags)) == 0){
+    return(FALSE);
+  }
+  
+  if((AGS_SOUND_STAGING_FEED_INPUT_QUEUE & (staging_flags)) != 0 &&
+     (AGS_SOUND_STAGING_FEED_INPUT_QUEUE & (recall_id_staging_flags)) == 0){
+    return(FALSE);
+  }
+  
+  if((AGS_SOUND_STAGING_AUTOMATE & (staging_flags)) != 0 &&
+     (AGS_SOUND_STAGING_AUTOMATE & (recall_id_staging_flags)) == 0){
+    return(FALSE);
+  }
+  
+  if((AGS_SOUND_STAGING_RUN_PRE & (staging_flags)) != 0 &&
+     (AGS_SOUND_STAGING_RUN_PRE & (recall_id_staging_flags)) == 0){
+    return(FALSE);
+  }
+  
+  if((AGS_SOUND_STAGING_RUN_INTER & (staging_flags)) != 0 &&
+     (AGS_SOUND_STAGING_RUN_INTER & (recall_id_staging_flags)) == 0){
+    return(FALSE);
+  }
+  
+  if((AGS_SOUND_STAGING_RUN_POST & (staging_flags)) != 0 &&
+     (AGS_SOUND_STAGING_RUN_POST & (recall_id_staging_flags)) == 0){
+    return(FALSE);
+  }
+  
+  if((AGS_SOUND_STAGING_DO_FEEDBACK & (staging_flags)) != 0 &&
+     (AGS_SOUND_STAGING_DO_FEEDBACK & (recall_id_staging_flags)) == 0){
+    return(FALSE);
+  }
+  
+  if((AGS_SOUND_STAGING_FEED_OUTPUT_QUEUE & (staging_flags)) != 0 &&
+     (AGS_SOUND_STAGING_FEED_OUTPUT_QUEUE & (recall_id_staging_flags)) == 0){
+    return(FALSE);
+  }
+
+  if((AGS_SOUND_STAGING_FINI & (staging_flags)) != 0 &&
+     (AGS_SOUND_STAGING_FINI & (recall_id_staging_flags)) == 0){
+    return(FALSE);
+  }
+  
+  if((AGS_SOUND_STAGING_CANCEL & (staging_flags)) != 0 &&
+     (AGS_SOUND_STAGING_CANCEL & (recall_id_staging_flags)) == 0){
+    return(FALSE);
+  }
+  
+  if((AGS_SOUND_STAGING_DONE & (staging_flags)) != 0 &&
+     (AGS_SOUND_STAGING_DONE & (recall_id_staging_flags)) == 0){
+    return(FALSE);
+  }
+  
+  if((AGS_SOUND_STAGING_REMOVE & (staging_flags)) != 0 &&
+     (AGS_SOUND_STAGING_REMOVE & (recall_id_staging_flags)) == 0){
+    return(FALSE);
+  }
+  
+  return(TRUE);
+}
+
+/**
+ * ags_recall_id_test_state_flags:
+ * @recall_id: the #AgsRecallID
+ * @state_flags: the state flags
+ *
+ * Test @state_flags to be set on @recall_id.
+ * 
+ * Returns: %TRUE if flags are set, else %FALSE
+ *
+ * Since: 2.0.0
+ */
+gboolean
+ags_recall_id_test_state_flags(AgsRecallID *recall_id,
+			       guint state_flags)
+{
+  gboolean retval;  
+  
+  pthread_mutex_t *recall_id_mutex;
+
+  if(!AGS_IS_RECALL_ID(recall_id)){
+    return(FALSE);
+  }
+
+  /* get recall_id mutex */
+  pthread_mutex_lock(ags_recall_id_get_class_mutex());
+  
+  recall_id_mutex = recall_id->obj_mutex;
+  
+  pthread_mutex_unlock(ags_recall_id_get_class_mutex());
+
+  /* test */
+  pthread_mutex_lock(recall_id_mutex);
+
+  retval = (state_flags & (recall_id->state_flags)) ? TRUE: FALSE;
+  
+  pthread_mutex_unlock(recall_id_mutex);
+
+  return(retval);
+}
+
+/**
+ * ags_recall_id_set_state_flags:
+ * @recall_id: the #AgsRecallID
+ * @state_flags: state flags to set
+ * 
+ * Set state flags.
+ * 
+ * Since: 2.0.0
+ */
+void
+ags_recall_id_set_state_flags(AgsRecallID *recall_id, guint state_flags)
+{
+  pthread_mutex_t *recall_id_mutex;
+
+  if(!AGS_IS_RECALL_ID(recall_id)){
+    return;
+  }
+
+  /* get recall id mutex */
+  pthread_mutex_lock(ags_recall_id_get_class_mutex());
+  
+  recall_id_mutex = recall_id->obj_mutex;
+  
+  pthread_mutex_unlock(ags_recall_id_get_class_mutex());
+
+  /* set state flags */
+  pthread_mutex_lock(recall_id_mutex);
+
+  recall_id->state_flags |= state_flags;
+
+  pthread_mutex_unlock(recall_id_mutex);
+}
+
+/**
+ * ags_recall_id_unset_state_flags:
+ * @recall_id: the #AgsRecallID
+ * @state_flags: state flags to unset
+ * 
+ * Unset state flags.
+ * 
+ * Since: 2.0.0
+ */
+void
+ags_recall_id_unset_state_flags(AgsRecallID *recall_id, guint state_flags)
+{
+  pthread_mutex_t *recall_id_mutex;
+
+  if(!AGS_IS_RECALL_ID(recall_id)){
+    return;
+  }
+
+  /* get recall id mutex */
+  pthread_mutex_lock(ags_recall_id_get_class_mutex());
+  
+  recall_id_mutex = recall_id->obj_mutex;
+  
+  pthread_mutex_unlock(ags_recall_id_get_class_mutex());
+
+  /* unset state flags */
+  pthread_mutex_lock(recall_id_mutex);
+
+  recall_id->state_flags &= (~state_flags);
+
+  pthread_mutex_unlock(recall_id_mutex);
+}
+
+/**
+ * ags_recall_id_check_state_flags:
+ * @recall_id: the #AgsRecallID
+ * @state_flags: state flags to check
+ * 
+ * Check the occurence of @state_flags in @recall_id.
+ * 
+ * Returns: %TRUE if all flags matched, otherwise %FALSE
+ * 
+ * Since: 2.0.0
+ */
+gboolean
+ags_recall_id_check_state_flags(AgsRecallID *recall_id, guint state_flags)
+{
+  guint recall_id_state_flags;
+  
+  pthread_mutex_t *recall_id_mutex;
+
+  if(!AGS_IS_RECALL_ID(recall_id)){
+    return(FALSE);
+  }
+  
+  /* get recall id mutex */
+  pthread_mutex_lock(ags_recall_id_get_class_mutex());
+  
+  recall_id_mutex = recall_id->obj_mutex;
+  
+  pthread_mutex_unlock(ags_recall_id_get_class_mutex());
+
+  /* get state flags */
+  pthread_mutex_lock(recall_id_mutex);
+
+  recall_id_state_flags = recall_id->state_flags;
+  
+  pthread_mutex_unlock(recall_id_mutex);
+
+  /* check state flags */
+  if((AGS_SOUND_STATE_IS_WAITING & (state_flags)) != 0 &&
+     (AGS_SOUND_STATE_IS_WAITING & (recall_id_state_flags)) == 0){
+    return(FALSE);
+  }
+
+  if((AGS_SOUND_STATE_IS_ACTIVE & (state_flags)) != 0 &&
+     (AGS_SOUND_STATE_IS_ACTIVE & (recall_id_state_flags)) == 0){
+    return(FALSE);
+  }
+
+  if((AGS_SOUND_STATE_IS_PROCESSING & (state_flags)) != 0 &&
+     (AGS_SOUND_STATE_IS_PROCESSING & (recall_id_state_flags)) == 0){
+    return(FALSE);
+  }
+
+  if((AGS_SOUND_STATE_IS_TERMINATING & (state_flags)) != 0 &&
+     (AGS_SOUND_STATE_IS_TERMINATING & (recall_id_state_flags)) == 0){
+    return(FALSE);
+  }
+  
+  return(TRUE);
 }
 
 /**
  * ags_recall_id_find_recycling_context:
- * @recall_id_list: a #GList containing #AgsRecallID
+ * @recall_id: a #GList containing #AgsRecallID
  * @recycling_context: the #AgsRecyclingContext to match
  *
  * Retrieve recall id by recycling context.
  *
  * Returns: Matching recall id.
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsRecallID*
-ags_recall_id_find_recycling_context(GList *recall_id_list,
-				       AgsRecyclingContext *recycling_context)
+ags_recall_id_find_recycling_context(GList *recall_id,
+				     AgsRecyclingContext *recycling_context)
 {
-  AgsRecallID *recall_id;
-
-  while(recall_id_list != NULL){
-    recall_id = AGS_RECALL_ID(recall_id_list->data);
-
-    if(recall_id->recycling_context == recycling_context){
-      return(recall_id);
+  AgsRecyclingContext *current_recycling_context;
+  
+  while(recall_id != NULL){
+    g_object_get(recall_id->data,
+		 "recycling-context", &current_recycling_context,
+		 NULL);
+    
+    if(current_recycling_context == recycling_context){
+      return(recall_id->data);
     }
 
-    recall_id_list = recall_id_list->next;
+    recall_id = recall_id->next;
   }
 
   return(NULL);
@@ -466,30 +809,37 @@ ags_recall_id_find_recycling_context(GList *recall_id_list,
 
 /**
  * ags_recall_id_find_parent_recycling_context:
- * @recall_id_list: a #GList containing #AgsRecallID
+ * @recall_id: a #GList containing #AgsRecallID
  * @parent_recycling_context: the #AgsRecyclingContext to match
  *
  * Retrieve recall id by recycling context.
  *
  * Returns: Matching recall id.
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsRecallID*
-ags_recall_id_find_parent_recycling_context(GList *recall_id_list,
-					      AgsRecyclingContext *parent_recycling_context)
+ags_recall_id_find_parent_recycling_context(GList *recall_id,
+					    AgsRecyclingContext *parent_recycling_context)
 {
-  AgsRecallID *recall_id;
+  AgsRecyclingContext *current_parent_recycling_context, *current_recycling_context;
 
-  while(recall_id_list != NULL){
-    recall_id = AGS_RECALL_ID(recall_id_list->data);
+  while(recall_id != NULL){
+    g_object_get(recall_id->data,
+		 "recycling-context", &current_recycling_context,
+		 NULL);
 
-    if(recall_id->recycling_context != NULL &&
-       recall_id->recycling_context->parent == parent_recycling_context){
-      return(recall_id);
+    if(current_recycling_context != NULL){
+      g_object_get(current_recycling_context,
+		   "parent", &current_parent_recycling_context,
+		   NULL);
+      
+      if(current_parent_recycling_context == parent_recycling_context){
+	return(recall_id);
+      }
     }
 
-    recall_id_list = recall_id_list->next;
+    recall_id = recall_id->next;
   }
 
   return(NULL);
@@ -497,20 +847,20 @@ ags_recall_id_find_parent_recycling_context(GList *recall_id_list,
 
 /**
  * ags_recall_id_new:
- * @recycling: the assigned #AgsRecycling
  *
- * Creates a #AgsRecallID, assigned to @recycling
+ * Creates a #AgsRecallID
  *
  * Returns: a new #AgsRecallID
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsRecallID*
-ags_recall_id_new(AgsRecycling *recycling)
+ags_recall_id_new()
 {
   AgsRecallID *recall_id;
 
-  recall_id = (AgsRecallID *) g_object_new(AGS_TYPE_RECALL_ID, NULL);
+  recall_id = (AgsRecallID *) g_object_new(AGS_TYPE_RECALL_ID,
+					   NULL);
 
   return(recall_id);
 }

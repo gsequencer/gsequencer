@@ -28,8 +28,6 @@
 
 #include <ags/X/thread/ags_gui_thread.h>
 
-#include <ags/X/task/ags_blink_cell_pattern_cursor.h>
-
 #include <gdk/gdkkeysyms.h>
 
 #include <atk/atk.h>
@@ -652,30 +650,23 @@ ags_cell_pattern_draw_gutter(AgsCellPattern *cell_pattern)
   
   AgsChannel *start_channel, *channel;
 
-  AgsMutexManager *mutex_manager;
-
   guint input_pads;
   guint gutter;
   guint current_gutter;
   int i, j;
 
-  pthread_mutex_t *application_mutex;
   pthread_mutex_t *audio_mutex;
   pthread_mutex_t *channel_mutex;
 
   machine = (AgsMachine *) gtk_widget_get_ancestor((GtkWidget *) cell_pattern,
 						   AGS_TYPE_MACHINE);
-  
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
 
   /* get audio mutex */
-  pthread_mutex_lock(application_mutex);
+  pthread_mutex_lock(ags_audio_get_class_mutex());
   
-  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
-					 (GObject *) machine->audio);
+  audio_mutex = machine->audio->obj_mutex;
   
-  pthread_mutex_unlock(application_mutex);
+  pthread_mutex_unlock(ags_audio_get_class_mutex());
 
   /* retrieve some audio fields */
   pthread_mutex_lock(audio_mutex);
@@ -722,12 +713,11 @@ ags_cell_pattern_draw_gutter(AgsCellPattern *cell_pattern)
 
   for (i = 0; channel != NULL && i < gutter; i++){
     /* get channel mutex */
-    pthread_mutex_lock(application_mutex);
+    pthread_mutex_lock(ags_channel_get_class_mutex());
   
-    channel_mutex = ags_mutex_manager_lookup(mutex_manager,
-					     (GObject *) channel);
+    channel_mutex = channel->obj_mutex;
   
-    pthread_mutex_unlock(application_mutex);
+    pthread_mutex_unlock(ags_channel_get_class_mutex());
     
     for (j = 0; j < 32; j++){
       gdk_draw_rectangle(GTK_WIDGET(cell_pattern->drawing_area)->window,
@@ -755,30 +745,23 @@ ags_cell_pattern_draw_matrix(AgsCellPattern *cell_pattern)
 
   AgsChannel *start_channel, *channel;
 
-  AgsMutexManager *mutex_manager;
-
   guint input_pads;
   guint gutter;
   guint current_gutter;
   int i, j;
 
-  pthread_mutex_t *application_mutex;
   pthread_mutex_t *audio_mutex;
   pthread_mutex_t *channel_mutex;
 
   machine = (AgsMachine *) gtk_widget_get_ancestor((GtkWidget *) cell_pattern,
 						   AGS_TYPE_MACHINE);
 
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-
   /* get audio mutex */
-  pthread_mutex_lock(application_mutex);
+  pthread_mutex_lock(ags_audio_get_class_mutex());
   
-  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
-					 (GObject *) machine->audio);
+  audio_mutex = machine->audio->obj_mutex;
   
-  pthread_mutex_unlock(application_mutex);
+  pthread_mutex_unlock(ags_audio_get_class_mutex());
 
   /* get some audio fields */
   pthread_mutex_lock(audio_mutex);
@@ -797,7 +780,8 @@ ags_cell_pattern_draw_matrix(AgsCellPattern *cell_pattern)
 
   current_gutter = (guint) GTK_RANGE(cell_pattern->vscrollbar)->adjustment->value;
 
-  channel = ags_channel_nth(start_channel, input_pads - current_gutter - 1);
+  channel = ags_channel_nth(start_channel,
+			    input_pads - current_gutter - 1);
 
   if(channel == NULL){
     return;
@@ -805,12 +789,11 @@ ags_cell_pattern_draw_matrix(AgsCellPattern *cell_pattern)
 
   for (i = 0; channel != NULL && i < gutter; i++){
     /* get channel mutex */
-    pthread_mutex_lock(application_mutex);
+    pthread_mutex_lock(ags_channel_get_class_mutex());
   
-    channel_mutex = ags_mutex_manager_lookup(mutex_manager,
-					     (GObject *) channel);
+    channel_mutex = channel->obj_mutex;
   
-    pthread_mutex_unlock(application_mutex);
+    pthread_mutex_unlock(ags_channel_get_class_mutex());
 
     for(j = 0; j < AGS_CELL_PATTERN_MAX_CONTROLS_SHOWN_HORIZONTALLY; j++){
       ags_cell_pattern_redraw_gutter_point(cell_pattern, channel, j, i);
@@ -848,11 +831,10 @@ ags_cell_pattern_redraw_gutter_point(AgsCellPattern *cell_pattern, AgsChannel *c
 {
   AgsMachine *machine;
 
-  AgsMutexManager *mutex_manager;
-
+  AgsPattern *pattern;
+  
   gboolean do_highlight;
   
-  pthread_mutex_t *application_mutex;
   pthread_mutex_t *channel_mutex;
 
   if(channel == NULL ||
@@ -863,23 +845,24 @@ ags_cell_pattern_redraw_gutter_point(AgsCellPattern *cell_pattern, AgsChannel *c
   machine = (AgsMachine *) gtk_widget_get_ancestor((GtkWidget *) cell_pattern,
 						   AGS_TYPE_MACHINE);
 
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-
   /* get channel mutex */
-  pthread_mutex_lock(application_mutex);
+  pthread_mutex_lock(ags_channel_get_class_mutex());
   
-  channel_mutex = ags_mutex_manager_lookup(mutex_manager,
-					 (GObject *) channel);
+  channel_mutex = channel->obj_mutex;
   
-  pthread_mutex_unlock(application_mutex);
+  pthread_mutex_unlock(ags_channel_get_class_mutex());
 
   /* redraw */
   pthread_mutex_lock(channel_mutex);
 
-  do_highlight = ags_pattern_get_bit((AgsPattern *) channel->pattern->data, machine->bank_0, machine->bank_1, j);
+  pattern = channel->pattern->data;
   
   pthread_mutex_unlock(channel_mutex);
+
+  do_highlight = ags_pattern_get_bit(pattern,
+				     machine->bank_0,
+				     machine->bank_1,
+				     j);
   
   if(do_highlight){
     ags_cell_pattern_highlight_gutter_point(cell_pattern, j, i);
@@ -908,64 +891,6 @@ ags_cell_pattern_unpaint_gutter_point(AgsCellPattern *cell_pattern, guint j, gui
 		     AGS_CELL_PATTERN_DEFAULT_CELL_WIDTH - 1, AGS_CELL_PATTERN_DEFAULT_CELL_HEIGHT - 1);
 }
 
-void*
-ags_cell_pattern_blink_worker(void *data)
-{
-  AgsWindow *window;
-  AgsCellPattern *cell_pattern;
-
-  AgsBlinkCellPatternCursor *blink_cell_pattern_cursor;
-
-  AgsMutexManager *mutex_manager;
-  AgsThread *main_loop;
-  AgsGuiThread *gui_thread;
-  
-  AgsApplicationContext *application_context;
-
-  pthread_mutex_t *application_mutex;
-  
-  static const guint blink_delay = 1000000; // blink every second
-  
-  cell_pattern = AGS_CELL_PATTERN(data);
-  window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) cell_pattern,
-						 AGS_TYPE_WINDOW);
-
-  application_context = (AgsApplicationContext *) window->application_context;
-
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-  
-  /* get audio loop */
-  pthread_mutex_lock(application_mutex);
-
-  main_loop = (AgsThread *) application_context->main_loop;
-
-  pthread_mutex_unlock(application_mutex);
-  
-  /* find task thread */
-  gui_thread = (AgsGuiThread *) ags_thread_find_type(main_loop,
-						       AGS_TYPE_GUI_THREAD);
-
-  while(gtk_widget_has_focus((GtkWidget *) cell_pattern)){
-    /* blink cursor */
-    blink_cell_pattern_cursor = ags_blink_cell_pattern_cursor_new(cell_pattern,
-								  !(AGS_CELL_PATTERN_CURSOR_ON & (cell_pattern->flags)));
-    ags_gui_thread_schedule_task(gui_thread,
-				 blink_cell_pattern_cursor);
-
-    /* delay */
-    usleep(blink_delay);
-  }
-
-  /* unset cursor */
-  blink_cell_pattern_cursor = ags_blink_cell_pattern_cursor_new(cell_pattern,
-								FALSE);
-  ags_gui_thread_schedule_task(gui_thread,
-			       blink_cell_pattern_cursor);
-
-  return(NULL);
-}
-
 /**
  * ags_cell_pattern_led_queue_draw_timeout:
  * @cell_pattern: the #AgsCellPattern
@@ -985,20 +910,17 @@ ags_cell_pattern_led_queue_draw_timeout(AgsCellPattern *cell_pattern)
 
     AgsAudio *audio;
     AgsRecallID *recall_id;
+    AgsRecyclingContext *recycling_context;
     
     AgsCountBeatsAudio *play_count_beats_audio;
     AgsCountBeatsAudioRun *play_count_beats_audio_run;
 
-    AgsMutexManager *mutex_manager;
-
     GList *list_start, *list;
+    GList *start_recall, *recall;
     
     guint offset;
     guint active_led_new;
     
-    pthread_mutex_t *application_mutex;
-    pthread_mutex_t *audio_mutex;
-
     machine = (AgsMachine *) gtk_widget_get_ancestor((GtkWidget *) cell_pattern,
 						     AGS_TYPE_MACHINE);
 
@@ -1007,74 +929,70 @@ ags_cell_pattern_led_queue_draw_timeout(AgsCellPattern *cell_pattern)
     }
 
     audio = machine->audio;
-    
-    mutex_manager = ags_mutex_manager_get_instance();
-    application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
   
-    pthread_mutex_lock(application_mutex);
-  
-    audio_mutex = ags_mutex_manager_lookup(mutex_manager,
-					   (GObject *) machine->audio);
-  
-    pthread_mutex_unlock(application_mutex);
-
     /* get some recalls */
-    pthread_mutex_lock(audio_mutex);
-
     recall_id = NULL;
-    list = audio->recall_id;
+    g_object_get(audio,
+		 "recall-id", &list_start,
+		 NULL);
 
+    list = list_start;
+    
     while(list != NULL){
-      recall_id = ags_recall_id_find_parent_recycling_context(list,
-							      NULL);
-      
-      if(recall_id != NULL &&
-	 (AGS_RECALL_ID_SEQUENCER & (recall_id->flags)) == 0){
-	list = g_list_find(list,
-			   recall_id);
+      AgsRecyclingContext *current;
 
-	list = list->next;
-      }else{
-	break;
+      g_object_get(list->data,
+		   "recycling-context", &current,
+		   NULL);
+
+      if(current != NULL){
+	g_object_get(current,
+		     "parent", &current,
+		     NULL);
+
+	if(current == NULL &&
+	   ags_recall_id_check_sound_scope(list->data, AGS_SOUND_SCOPE_SEQUENCER)){
+	  recall_id = list->data;
+
+	  g_object_get(audio,
+		       "play", &start_recall,
+		       NULL);
+
+	  play_count_beats_audio = NULL;
+	  play_count_beats_audio_run = NULL;
+    
+	  recall = ags_recall_find_type(start_recall,
+					AGS_TYPE_COUNT_BEATS_AUDIO);
+    
+	  if(recall != NULL){
+	    play_count_beats_audio = AGS_COUNT_BEATS_AUDIO(recall->data);
+	  }
+    
+	  recall = ags_recall_find_type_with_recycling_context(start_recall,
+							       AGS_TYPE_COUNT_BEATS_AUDIO_RUN,
+							       (GObject *) recall_id->recycling_context);
+    
+	  if(recall != NULL){
+	    play_count_beats_audio_run = AGS_COUNT_BEATS_AUDIO_RUN(recall->data);
+	  }
+
+	  g_list_free(start_recall);
+
+	  if(play_count_beats_audio == NULL ||
+	     play_count_beats_audio_run == NULL){
+	    recall_id = NULL;
+	  }else{
+	    break;
+	  }
+	}
       }
+      
+      list = list->next;
     }
 
-    pthread_mutex_unlock(audio_mutex);
+    g_list_free(list_start);
     
     if(recall_id == NULL){
-      return(TRUE);
-    }
-
-    g_object_get(audio,
-		 "play", &list_start,
-		 NULL);
-    
-    play_count_beats_audio = NULL;
-    play_count_beats_audio_run = NULL;
-
-    pthread_mutex_lock(audio->play_mutex);
-    
-    list = ags_recall_find_type(list_start,
-				AGS_TYPE_COUNT_BEATS_AUDIO);
-    
-    if(list != NULL){
-      play_count_beats_audio = AGS_COUNT_BEATS_AUDIO(list->data);
-    }
-    
-    list = ags_recall_find_type_with_recycling_context(list_start,
-						       AGS_TYPE_COUNT_BEATS_AUDIO_RUN,
-						       (GObject *) recall_id->recycling_context);
-    
-    if(list != NULL){
-      play_count_beats_audio_run = AGS_COUNT_BEATS_AUDIO_RUN(list->data);
-    }
-
-    pthread_mutex_unlock(audio->play_mutex);
-
-    g_list_free(list_start);  
-    
-    if(play_count_beats_audio == NULL ||
-       play_count_beats_audio_run == NULL){
       return(TRUE);
     }
 

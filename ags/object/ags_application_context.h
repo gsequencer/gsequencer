@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -22,6 +22,8 @@
 
 #include <glib.h>
 #include <glib-object.h>
+
+#include <ags/lib/ags_uuid.h>
 
 #include <ags/object/ags_config.h>
 
@@ -65,12 +67,12 @@ typedef struct _AgsApplicationContextClass AgsApplicationContextClass;
  */
 typedef enum{
   AGS_APPLICATION_CONTEXT_DEFAULT            = 1,
-  AGS_APPLICATION_CONTEXT_REGISTER_TYPES     = 1 << 1,
-  AGS_APPLICATION_CONTEXT_ADD_TO_REGISTRY    = 1 << 2,
-  AGS_APPLICATION_CONTEXT_CONNECT            = 1 << 3,
-  AGS_APPLICATION_CONTEXT_TYPES_REGISTERED   = 1 << 4,
-  AGS_APPLICATION_CONTEXT_ADDED_TO_REGISTRY  = 1 << 5,
-  AGS_APPLICATION_CONTEXT_CONNECTED          = 1 << 6,
+  AGS_APPLICATION_CONTEXT_REGISTER_TYPES     = 1 <<  1,
+  AGS_APPLICATION_CONTEXT_ADD_TO_REGISTRY    = 1 <<  2,
+  AGS_APPLICATION_CONTEXT_CONNECT            = 1 <<  3,
+  AGS_APPLICATION_CONTEXT_TYPES_REGISTERED   = 1 <<  4,
+  AGS_APPLICATION_CONTEXT_ADDED_TO_REGISTRY  = 1 <<  5,
+  AGS_APPLICATION_CONTEXT_CONNECTED          = 1 <<  6,
 }AgsApplicationContextFlags;
 
 struct _AgsApplicationContext
@@ -79,6 +81,11 @@ struct _AgsApplicationContext
 
   guint flags;
 
+  pthread_mutex_t *obj_mutex;
+  pthread_mutexattr_t *obj_mutexattr;
+
+  AgsUUID *uuid;
+  
   gchar *version;
   gchar *build_id;
 
@@ -88,12 +95,8 @@ struct _AgsApplicationContext
   GObject *log;
 
   gchar *domain;
-  GList *sibling;
   
   AgsConfig *config;
-
-  pthread_mutexattr_t *mutexattr;
-  pthread_mutex_t *mutex;
   
   GObject *main_loop;
   GObject *autosave_thread;
@@ -122,20 +125,18 @@ struct _AgsApplicationContextClass
 
 GType ags_application_context_get_type();
 
+pthread_mutex_t* ags_application_context_get_class_mutex();
+
+gboolean ags_application_context_test_flags(AgsApplicationContext *application_context, guint flags);
+void ags_application_context_set_flags(AgsApplicationContext *application_context, guint flags);
+void ags_application_context_unset_flags(AgsApplicationContext *application_context, guint flags);
+
 void ags_application_context_load_config(AgsApplicationContext *application_context);
 
 void ags_application_context_prepare(AgsApplicationContext *application_context);
 void ags_application_context_setup(AgsApplicationContext *application_context);
 
 void ags_application_context_register_types(AgsApplicationContext *application_context);
-
-void ags_application_context_add_sibling(AgsApplicationContext *application_context,
-					 AgsApplicationContext *sibling);
-void ags_application_context_remove_sibling(AgsApplicationContext *application_context,
-					    AgsApplicationContext *sibling);
-
-AgsApplicationContext* ags_application_context_find_default(GList *application_context);
-GList* ags_application_context_find_main_loop(GList *application_context);
 
 void ags_application_context_quit(AgsApplicationContext *application_context);
 

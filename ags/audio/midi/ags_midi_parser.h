@@ -38,10 +38,10 @@
 
 #define AGS_MIDI_PARSER_MAX_TEXT_LENGTH (4096)
 
-#define AGS_MIDI_PARSER_MTHD "MThd\0"
-#define AGS_MIDI_PARSER_MTCK "MTrk\0"
+#define AGS_MIDI_PARSER_MTHD "MThd"
+#define AGS_MIDI_PARSER_MTCK "MTrk"
 
-#define AGS_MIDI_EVENT "event\0"
+#define AGS_MIDI_EVENT "event"
 
 typedef struct _AgsMidiParser AgsMidiParser;
 typedef struct _AgsMidiParserClass AgsMidiParserClass;

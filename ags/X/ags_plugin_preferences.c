@@ -29,9 +29,9 @@
 void ags_plugin_preferences_class_init(AgsPluginPreferencesClass *plugin_preferences);
 void ags_plugin_preferences_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_plugin_preferences_init(AgsPluginPreferences *plugin_preferences);
+
 void ags_plugin_preferences_connect(AgsConnectable *connectable);
 void ags_plugin_preferences_disconnect(AgsConnectable *connectable);
-static void ags_plugin_preferences_finalize(GObject *gobject);
 
 void ags_plugin_preferences_reset(AgsPluginPreferences *plugin_preferences);
 void* ags_plugin_preferences_refresh(void *ptr);
@@ -91,14 +91,7 @@ ags_plugin_preferences_get_type(void)
 void
 ags_plugin_preferences_class_init(AgsPluginPreferencesClass *plugin_preferences)
 {
-  GObjectClass *gobject;
-
   ags_plugin_preferences_parent_class = g_type_class_peek_parent(plugin_preferences);
-
-  /* GtkObjectClass */
-  gobject = (GObjectClass *) plugin_preferences;
-
-  gobject->finalize = ags_plugin_preferences_finalize;
 }
 
 void
@@ -126,12 +119,6 @@ void
 ags_plugin_preferences_disconnect(AgsConnectable *connectable)
 {
   /* empty */
-}
-
-static void
-ags_plugin_preferences_finalize(GObject *gobject)
-{
-  G_OBJECT_CLASS(ags_plugin_preferences_parent_class)->finalize(gobject);
 }
 
 AgsLadspaPluginPreferences*
@@ -182,11 +169,11 @@ ags_ladspa_plugin_preferences_alloc(gchar *ladspa_path)
 /**
  * ags_plugin_preferences_new:
  *
- * Creates an #AgsPluginPreferences
+ * Create a new instance of #AgsPluginPreferences
  *
- * Returns: a new #AgsPluginPreferences
+ * Returns: the new #AgsPluginPreferences
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsPluginPreferences*
 ags_plugin_preferences_new()

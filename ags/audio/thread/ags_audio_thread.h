@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -23,13 +23,7 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include <ags/object/ags_soundcard.h>
-
-#ifdef AGS_USE_LINUX_THREADS
-#include <ags/thread/ags_thread-kthreads.h>
-#else
-#include <ags/thread/ags_thread-posix.h>
-#endif 
+#include <ags/libags.h>
 
 #define AGS_TYPE_AUDIO_THREAD                (ags_audio_thread_get_type())
 #define AGS_AUDIO_THREAD(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_AUDIO_THREAD, AgsAudioThread))
@@ -66,7 +60,7 @@ struct _AgsAudioThread
 
   volatile guint flags;
 
-  GObject *soundcard;
+  GObject *default_output_soundcard;
   
   pthread_mutexattr_t wakeup_attr;
   pthread_mutex_t *wakeup_mutex;
@@ -77,6 +71,8 @@ struct _AgsAudioThread
   pthread_cond_t *done_cond;
 
   GObject *audio;
+
+  GList *sync_thread;
 };
 
 struct _AgsAudioThreadClass
@@ -86,7 +82,7 @@ struct _AgsAudioThreadClass
 
 GType ags_audio_thread_get_type();
 
-AgsAudioThread* ags_audio_thread_new(GObject *soundcard,
+AgsAudioThread* ags_audio_thread_new(GObject *default_output_soundcard,
 				     GObject *audio);
 
 #endif /*__AGS_AUDIO_THREAD_H__*/

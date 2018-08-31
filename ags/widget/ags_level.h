@@ -119,6 +119,9 @@ struct _AgsLevelClass
 
 GType ags_level_get_type(void);
 
+void ags_level_value_changed(AgsLevel *level,
+			     gdouble normalized_volume);
+
 AgsLevel* ags_level_new();
 
 #endif /*__AGS_LEVEL_H__*/

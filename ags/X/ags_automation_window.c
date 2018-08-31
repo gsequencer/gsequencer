@@ -42,8 +42,10 @@ void ags_automation_window_get_property(GObject *gobject,
 					GValue *value,
 					GParamSpec *param_spec);
 void ags_automation_window_finalize(GObject *gobject);
+
 void ags_automation_window_connect(AgsConnectable *connectable);
 void ags_automation_window_disconnect(AgsConnectable *connectable);
+
 gboolean ags_automation_window_delete_event(GtkWidget *widget, GdkEventAny *event);
 
 /**
@@ -126,7 +128,7 @@ ags_automation_window_class_init(AgsAutomationWindowClass *automation_window)
    *
    * The assigned #AgsSoundcard acting as default sink.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("soundcard",
 				   i18n_pspec("assigned soundcard"),
@@ -222,12 +224,29 @@ ags_automation_window_get_property(GObject *gobject,
 
   switch(prop_id){
   case PROP_SOUNDCARD:
-    g_value_set_object(value, automation_window->soundcard);
+    {
+      g_value_set_object(value, automation_window->soundcard);
+    }
     break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
   }
+}
+
+void
+ags_automation_window_finalize(GObject *gobject)
+{
+  AgsAutomationWindow *automation_window;
+
+  automation_window = (AgsAutomationWindow *) gobject;
+
+  if(automation_window->soundcard != NULL){
+    g_object_unref(G_OBJECT(automation_window->soundcard));
+  }
+  
+  /* call parent */
+  G_OBJECT_CLASS(ags_automation_window_parent_class)->finalize(gobject);
 }
 
 void
@@ -266,20 +285,6 @@ ags_automation_window_disconnect(AgsConnectable *connectable)
   }
 }
 
-void
-ags_automation_window_finalize(GObject *gobject)
-{
-  AgsAutomationWindow *automation_window;
-
-  automation_window = (AgsAutomationWindow *) gobject;
-
-  if(automation_window->soundcard != NULL){
-    g_object_unref(G_OBJECT(automation_window->soundcard));
-  }
-  
-  G_OBJECT_CLASS(ags_automation_window_parent_class)->finalize(gobject);
-}
-
 gboolean
 ags_automation_window_delete_event(GtkWidget *widget, GdkEventAny *event)
 {
@@ -292,11 +297,11 @@ ags_automation_window_delete_event(GtkWidget *widget, GdkEventAny *event)
  * ags_automation_window_new:
  * @parent_window: the parent #AgsWindow
  * 
- * Instantiate #AgsAutomationWindow
+ * Create a new instance of #AgsAutomationWindow
  * 
- * Returns: the new #AgsAutomationWindow instance
+ * Returns: the new #AgsAutomationWindow
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsAutomationWindow*
 ags_automation_window_new(GtkWidget *parent_window)

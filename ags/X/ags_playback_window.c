@@ -21,6 +21,7 @@
 #include <ags/X/ags_playback_window_callbacks.h>
 
 #include <ags/libags.h>
+#include <ags/libags-audio.h>
 
 #include <ags/X/ags_window.h>
 
@@ -40,9 +41,10 @@ void ags_playback_window_get_property(GObject *gobject,
 				      GValue *value,
 				      GParamSpec *param_spec);
 void ags_playback_window_finalize(GObject *gobject);
+
 void ags_playback_window_connect(AgsConnectable *connectable);
 void ags_playback_window_disconnect(AgsConnectable *connectable);
-void ags_playback_window_show(GtkWidget *widget);
+
 gboolean ags_playback_window_delete_event(GtkWidget *widget, GdkEventAny *event);
 
 /**
@@ -126,7 +128,7 @@ ags_playback_window_class_init(AgsPlaybackWindowClass *playback_window)
    *
    * The assigned #AgsApplicationContext to give control of application.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("application-context",
 				   i18n_pspec("assigned application context"),
@@ -142,7 +144,7 @@ ags_playback_window_class_init(AgsPlaybackWindowClass *playback_window)
    *
    * The assigned #AgsWindow.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("main-window",
 				   i18n_pspec("assigned main window"),
@@ -156,7 +158,6 @@ ags_playback_window_class_init(AgsPlaybackWindowClass *playback_window)
   /* GtkWidgetClass */
   widget = (GtkWidgetClass *) playback_window;
 
-  widget->show = ags_playback_window_show;
   widget->delete_event = ags_playback_window_delete_event;
 }
 
@@ -311,12 +312,6 @@ ags_playback_window_finalize(GObject *gobject)
   G_OBJECT_CLASS(ags_playback_window_parent_class)->finalize(gobject);
 }
 
-void
-ags_playback_window_show(GtkWidget *widget)
-{
-  GTK_WIDGET_CLASS(ags_playback_window_parent_class)->show(widget);
-}
-
 gboolean
 ags_playback_window_delete_event(GtkWidget *widget, GdkEventAny *event)
 {
@@ -330,18 +325,19 @@ ags_playback_window_delete_event(GtkWidget *widget, GdkEventAny *event)
 /**
  * ags_playback_window_new:
  * 
- * Instantiate an #AgsPlaybackWindow
+ * Create a new instance of #AgsPlaybackWindow
  * 
- * Returns: an #AgsPlaybackWindow
+ * Returns: the new #AgsPlaybackWindow
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsPlaybackWindow*
 ags_playback_window_new()
 {
   AgsPlaybackWindow *playback_window;
 
-  playback_window = (AgsPlaybackWindow *) g_object_new(AGS_TYPE_PLAYBACK_WINDOW, NULL);
+  playback_window = (AgsPlaybackWindow *) g_object_new(AGS_TYPE_PLAYBACK_WINDOW,
+						       NULL);
 
   return(playback_window);
 }

@@ -29,6 +29,7 @@
 #include <ags/X/machine/ags_synth.h>
 #include <ags/X/machine/ags_syncsynth.h>
 #include <ags/X/machine/ags_ffplayer.h>
+#include <ags/X/machine/ags_audiorec.h>
 #include <ags/X/machine/ags_dssi_bridge.h>
 #include <ags/X/machine/ags_lv2_bridge.h>
 #include <ags/X/machine/ags_live_dssi_bridge.h>
@@ -219,6 +220,26 @@ ags_machine_selection_load_defaults(AgsMachineSelection *machine_selection)
       
       if(group == NULL){
 	group = radio_button;
+      }
+    }else if((AGS_MACHINE_SELECTION_WAVE & (machine_selection->flags)) != 0){
+      if(AGS_IS_AUDIOREC(list->data)){
+	str = g_strdup_printf("%s: %s",
+			      G_OBJECT_TYPE_NAME(list->data),
+			      AGS_MACHINE(list->data)->machine_name);
+	radio_button = (GtkRadioButton *) gtk_radio_button_new_with_label_from_widget(group,
+										      str);
+	g_object_set_data((GObject *) radio_button,
+			  AGS_MACHINE_SELECTION_INDEX, list->data);
+	gtk_box_pack_start(GTK_BOX(vbox),
+			   GTK_WIDGET(radio_button),
+			   FALSE, FALSE,
+			   0);
+
+	g_free(str);
+      
+	if(group == NULL){
+	  group = radio_button;
+	}
       }
     }
     

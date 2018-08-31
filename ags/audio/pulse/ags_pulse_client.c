@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -22,7 +22,6 @@
 #include <ags/libags.h>
 
 #include <ags/audio/ags_sound_provider.h>
-#include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_audio_buffer_util.h>
 
 #include <ags/audio/pulse/ags_pulse_server.h>
@@ -34,7 +33,6 @@
 
 void ags_pulse_client_class_init(AgsPulseClientClass *pulse_client);
 void ags_pulse_client_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_pulse_client_distributed_manager_interface_init(AgsDistributedManagerInterface *distributed_manager);
 void ags_pulse_client_init(AgsPulseClient *pulse_client);
 void ags_pulse_client_set_property(GObject *gobject,
 				   guint prop_id,
@@ -44,10 +42,21 @@ void ags_pulse_client_get_property(GObject *gobject,
 				   guint prop_id,
 				   GValue *value,
 				   GParamSpec *param_spec);
-void ags_pulse_client_connect(AgsConnectable *connectable);
-void ags_pulse_client_disconnect(AgsConnectable *connectable);
 void ags_pulse_client_dispose(GObject *gobject);
 void ags_pulse_client_finalize(GObject *gobject);
+
+AgsUUID* ags_pulse_client_get_uuid(AgsConnectable *connectable);
+gboolean ags_pulse_client_has_resource(AgsConnectable *connectable);
+gboolean ags_pulse_client_is_ready(AgsConnectable *connectable);
+void ags_pulse_client_add_to_registry(AgsConnectable *connectable);
+void ags_pulse_client_remove_from_registry(AgsConnectable *connectable);
+xmlNode* ags_pulse_client_list_resource(AgsConnectable *connectable);
+xmlNode* ags_pulse_client_xml_compose(AgsConnectable *connectable);
+void ags_pulse_client_xml_parse(AgsConnectable *connectable,
+				xmlNode *node);
+gboolean ags_pulse_client_is_connected(AgsConnectable *connectable);
+void ags_pulse_client_connect(AgsConnectable *connectable);
+void ags_pulse_client_disconnect(AgsConnectable *connectable);
 
 #ifdef AGS_WITH_PULSE
 void ags_pulse_client_state_callback(pa_context *c, AgsPulseClient *pulse_client);
@@ -66,11 +75,14 @@ void ags_pulse_client_state_callback(pa_context *c, AgsPulseClient *pulse_client
 enum{
   PROP_0,
   PROP_PULSE_SERVER,
+  PROP_CLIENT_NAME,
   PROP_DEVICE,
   PROP_PORT,
 };
 
 static gpointer ags_pulse_client_parent_class = NULL;
+
+static pthread_mutex_t ags_pulse_client_class_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 GType
 ags_pulse_client_get_type()
@@ -81,13 +93,13 @@ ags_pulse_client_get_type()
     GType ags_type_pulse_client;
 
     static const GTypeInfo ags_pulse_client_info = {
-      sizeof (AgsPulseClientClass),
+      sizeof(AgsPulseClientClass),
       NULL, /* base_init */
       NULL, /* base_finalize */
       (GClassInitFunc) ags_pulse_client_class_init,
       NULL, /* class_finalize */
       NULL, /* class_data */
-      sizeof (AgsPulseClient),
+      sizeof(AgsPulseClient),
       0,    /* n_preallocs */
       (GInstanceInitFunc) ags_pulse_client_init,
     };
@@ -117,6 +129,7 @@ void
 ags_pulse_client_class_init(AgsPulseClientClass *pulse_client)
 {
   GObjectClass *gobject;
+
   GParamSpec *param_spec;
   
   ags_pulse_client_parent_class = g_type_class_peek_parent(pulse_client);
@@ -136,7 +149,7 @@ ags_pulse_client_class_init(AgsPulseClientClass *pulse_client)
    *
    * The assigned #AgsPulseServer.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("pulse-server",
 				   i18n_pspec("assigned pulseaudio server"),
@@ -148,11 +161,27 @@ ags_pulse_client_class_init(AgsPulseClientClass *pulse_client)
 				  param_spec);
 
   /**
+   * AgsPulseClient:client-name:
+   *
+   * The pulseaudio client name.
+   * 
+   * Since: 2.0.0
+   */
+  param_spec = g_param_spec_string("client-name",
+				   i18n_pspec("the client name"),
+				   i18n_pspec("The client name"),
+				   NULL,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_CLIENT_NAME,
+				  param_spec);
+
+  /**
    * AgsPulseClient:device:
    *
    * The assigned devices.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("device",
 				   i18n_pspec("assigned device"),
@@ -168,7 +197,7 @@ ags_pulse_client_class_init(AgsPulseClientClass *pulse_client)
    *
    * The assigned ports.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("port",
 				   i18n_pspec("assigned port"),
@@ -183,50 +212,56 @@ ags_pulse_client_class_init(AgsPulseClientClass *pulse_client)
 void
 ags_pulse_client_connectable_interface_init(AgsConnectableInterface *connectable)
 {
+  connectable->get_uuid = ags_pulse_client_get_uuid;
+  connectable->has_resource = ags_pulse_client_has_resource;
+
+  connectable->is_ready = ags_pulse_client_is_ready;
+  connectable->add_to_registry = ags_pulse_client_add_to_registry;
+  connectable->remove_from_registry = ags_pulse_client_remove_from_registry;
+
+  connectable->list_resource = ags_pulse_client_list_resource;
+  connectable->xml_compose = ags_pulse_client_xml_compose;
+  connectable->xml_parse = ags_pulse_client_xml_parse;
+
+  connectable->is_connected = ags_pulse_client_is_connected;  
   connectable->connect = ags_pulse_client_connect;
   connectable->disconnect = ags_pulse_client_disconnect;
+
+  connectable->connect_connection = NULL;
+  connectable->disconnect_connection = NULL;
 }
 
 void
 ags_pulse_client_init(AgsPulseClient *pulse_client)
 {
-  AgsMutexManager *mutex_manager;
-
-  pthread_mutex_t *application_mutex;
   pthread_mutex_t *mutex;
   pthread_mutexattr_t *attr;
 
-  /* insert client mutex */
-  pulse_client->mutexattr = 
+  /* flags */
+  pulse_client->flags = 0;
+
+  /* client mutex */
+  pulse_client->obj_mutexattr = 
     attr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
   pthread_mutexattr_init(attr);
   pthread_mutexattr_settype(attr,
 			    PTHREAD_MUTEX_RECURSIVE);
 
-  pulse_client->mutex =
+  pulse_client->obj_mutex =
     mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
   pthread_mutex_init(mutex,
 		     attr);
 
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-  
-  pthread_mutex_lock(application_mutex);
-
-  ags_mutex_manager_insert(mutex_manager,
-			   (GObject *) pulse_client,
-			   mutex);
-  
-  pthread_mutex_unlock(application_mutex);
-
-  /* flags */
-  pulse_client->flags = 0;
-
   /* server */
   pulse_client->pulse_server = NULL;
   
-  pulse_client->uuid = ags_id_generator_create_uuid();
-  pulse_client->name = NULL;
+  /* uuid */
+  pulse_client->uuid = ags_uuid_alloc();
+  ags_uuid_generate(pulse_client->uuid);
+
+  /* client name and uuid */
+  pulse_client->client_uuid = ags_id_generator_create_uuid();
+  pulse_client->client_name = NULL;
 
   /* client */
   pulse_client->context = NULL;
@@ -244,7 +279,16 @@ ags_pulse_client_set_property(GObject *gobject,
 {
   AgsPulseClient *pulse_client;
 
+  pthread_mutex_t *pulse_client_mutex;
+
   pulse_client = AGS_PULSE_CLIENT(gobject);
+
+  /* get pulse client mutex */
+  pthread_mutex_lock(ags_pulse_client_get_class_mutex());
+  
+  pulse_client_mutex = pulse_client->obj_mutex;
+  
+  pthread_mutex_unlock(ags_pulse_client_get_class_mutex());
 
   switch(prop_id){
   case PROP_PULSE_SERVER:
@@ -253,7 +297,11 @@ ags_pulse_client_set_property(GObject *gobject,
 
       pulse_server = (AgsPulseServer *) g_value_get_object(value);
 
+      pthread_mutex_lock(pulse_client_mutex);
+      
       if(pulse_client->pulse_server == (GObject *) pulse_server){
+	pthread_mutex_unlock(pulse_client_mutex);
+	
 	return;
       }
 
@@ -266,6 +314,23 @@ ags_pulse_client_set_property(GObject *gobject,
       }
       
       pulse_client->pulse_server = (GObject *) pulse_server;
+
+      pthread_mutex_unlock(pulse_client_mutex);
+    }
+    break;
+  case PROP_CLIENT_NAME:
+    {
+      char *client_name;
+
+      client_name = (char *) g_value_get_string(value);
+
+      pthread_mutex_lock(pulse_client_mutex);
+
+      g_free(pulse_client->client_name);
+	
+      pulse_client->client_name = g_strdup(client_name);
+
+      pthread_mutex_unlock(pulse_client_mutex);
     }
     break;
   case PROP_DEVICE:
@@ -274,17 +339,22 @@ ags_pulse_client_set_property(GObject *gobject,
 
       device = (GObject *) g_value_get_object(value);
 
-      if(g_list_find(pulse_client->device,
+      pthread_mutex_lock(pulse_client_mutex);
+
+      if(device == NULL ||
+	 g_list_find(pulse_client->device,
 		     device) != NULL){
+	pthread_mutex_unlock(pulse_client_mutex);
+
 	return;
       }
 
-      if(device != NULL){
-	g_object_ref(device);
+      g_object_ref(device);
 	
-	pulse_client->device = g_list_prepend(pulse_client->device,
-					      device);
-      }
+      pulse_client->device = g_list_prepend(pulse_client->device,
+					    device);
+
+      pthread_mutex_unlock(pulse_client_mutex);
     }
     break;
   case PROP_PORT:
@@ -293,17 +363,21 @@ ags_pulse_client_set_property(GObject *gobject,
 
       port = (GObject *) g_value_get_object(value);
 
-      if(g_list_find(pulse_client->port,
+      pthread_mutex_lock(pulse_client_mutex);
+
+      if(!AGS_IS_PULSE_PORT(port) ||
+	 g_list_find(pulse_client->port,
 		     port) != NULL){
+	pthread_mutex_unlock(pulse_client_mutex);
+
 	return;
       }
 
-      if(port != NULL){
-	g_object_ref(port);
-	
-	pulse_client->port = g_list_prepend(pulse_client->port,
-					    port);
-      }
+      g_object_ref(port);	
+      pulse_client->port = g_list_prepend(pulse_client->port,
+					  port);
+
+      pthread_mutex_unlock(pulse_client_mutex);
     }
     break;
   default:
@@ -320,79 +394,59 @@ ags_pulse_client_get_property(GObject *gobject,
 {
   AgsPulseClient *pulse_client;
 
+  pthread_mutex_t *pulse_client_mutex;
+
   pulse_client = AGS_PULSE_CLIENT(gobject);
+
+  /* get pulse client mutex */
+  pthread_mutex_lock(ags_pulse_client_get_class_mutex());
+  
+  pulse_client_mutex = pulse_client->obj_mutex;
+  
+  pthread_mutex_unlock(ags_pulse_client_get_class_mutex());
   
   switch(prop_id){
   case PROP_PULSE_SERVER:
     {
+      pthread_mutex_lock(pulse_client_mutex);
+
       g_value_set_object(value, pulse_client->pulse_server);
+
+      pthread_mutex_unlock(pulse_client_mutex);
+    }
+    break;
+  case PROP_CLIENT_NAME:
+    {
+      pthread_mutex_lock(pulse_client_mutex);
+
+      g_value_set_string(value, pulse_client->client_name);
+
+      pthread_mutex_unlock(pulse_client_mutex);
     }
     break;
   case PROP_DEVICE:
     {
+      pthread_mutex_lock(pulse_client_mutex);
+
       g_value_set_pointer(value,
 			  g_list_copy(pulse_client->device));
+
+      pthread_mutex_unlock(pulse_client_mutex);
     }
     break;
   case PROP_PORT:
     {
+      pthread_mutex_lock(pulse_client_mutex);
+
       g_value_set_pointer(value,
 			  g_list_copy(pulse_client->port));
+
+      pthread_mutex_unlock(pulse_client_mutex);
     }
     break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
-  }
-}
-
-void
-ags_pulse_client_connect(AgsConnectable *connectable)
-{
-  AgsPulseClient *pulse_client;
-
-  GList *list;
-  
-  pulse_client = AGS_PULSE_CLIENT(connectable);
-
-  if((AGS_PULSE_CLIENT_CONNECTED & (pulse_client->flags)) != 0){
-    return;
-  }
-
-  pulse_client->flags |= AGS_PULSE_CLIENT_CONNECTED;
-
-  /* port */
-  list = pulse_client->port;
-
-  while(list != NULL){
-    ags_connectable_connect(AGS_CONNECTABLE(list->data));
-    
-    list = list->next;
-  }
-}
-
-void
-ags_pulse_client_disconnect(AgsConnectable *connectable)
-{
-  AgsPulseClient *pulse_client;
-
-  GList *list;
-  
-  pulse_client = AGS_PULSE_CLIENT(connectable);
-
-  if((AGS_PULSE_CLIENT_CONNECTED & (pulse_client->flags)) == 0){
-    return;
-  }
-
-  pulse_client->flags &= (~AGS_PULSE_CLIENT_CONNECTED);
-
-  /* port */
-  list = pulse_client->port;
-
-  while(list != NULL){
-    ags_connectable_disconnect(AGS_CONNECTABLE(list->data));
-    
-    list = list->next;
   }
 }
 
@@ -455,22 +509,13 @@ ags_pulse_client_finalize(GObject *gobject)
 {
   AgsPulseClient *pulse_client;
 
-  AgsMutexManager *mutex_manager;
-
-  pthread_mutex_t *application_mutex;
-
   pulse_client = AGS_PULSE_CLIENT(gobject);
 
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+  pthread_mutex_destroy(pulse_client->obj_mutex);
+  free(pulse_client->obj_mutex);
 
-  /* remove pulse server mutex */
-  pthread_mutex_lock(application_mutex);  
-
-  ags_mutex_manager_remove(mutex_manager,
-			   gobject);
-  
-  pthread_mutex_unlock(application_mutex);
+  pthread_mutexattr_destroy(pulse_client->obj_mutexattr);
+  free(pulse_client->obj_mutexattr);
 
   /* pulse server */
   if(pulse_client->pulse_server != NULL){
@@ -488,38 +533,412 @@ ags_pulse_client_finalize(GObject *gobject)
     g_list_free_full(pulse_client->port,
 		     g_object_unref);
   }
-
-  pthread_mutex_destroy(pulse_client->mutex);
-  free(pulse_client->mutex);
-
-  pthread_mutexattr_destroy(pulse_client->mutexattr);
-  free(pulse_client->mutexattr);
   
   /* call parent */
   G_OBJECT_CLASS(ags_pulse_client_parent_class)->finalize(gobject);
 }
 
+AgsUUID*
+ags_pulse_client_get_uuid(AgsConnectable *connectable)
+{
+  AgsPulseClient *pulse_client;
+  
+  AgsUUID *ptr;
+
+  pthread_mutex_t *pulse_client_mutex;
+
+  pulse_client = AGS_PULSE_CLIENT(connectable);
+
+  /* get pulse client mutex */
+  pthread_mutex_lock(ags_pulse_client_get_class_mutex());
+  
+  pulse_client_mutex = pulse_client->obj_mutex;
+  
+  pthread_mutex_unlock(ags_pulse_client_get_class_mutex());
+
+  /* get UUID */
+  pthread_mutex_lock(pulse_client_mutex);
+
+  ptr = pulse_client->uuid;
+
+  pthread_mutex_unlock(pulse_client_mutex);
+  
+  return(ptr);
+}
+
+gboolean
+ags_pulse_client_has_resource(AgsConnectable *connectable)
+{
+  return(FALSE);
+}
+
+gboolean
+ags_pulse_client_is_ready(AgsConnectable *connectable)
+{
+  AgsPulseClient *pulse_client;
+  
+  gboolean is_ready;
+
+  pthread_mutex_t *pulse_client_mutex;
+
+  pulse_client = AGS_PULSE_CLIENT(connectable);
+
+  /* get pulse client mutex */
+  pthread_mutex_lock(ags_pulse_client_get_class_mutex());
+  
+  pulse_client_mutex = pulse_client->obj_mutex;
+  
+  pthread_mutex_unlock(ags_pulse_client_get_class_mutex());
+
+  /* check is added */
+  pthread_mutex_lock(pulse_client_mutex);
+
+  is_ready = (((AGS_PULSE_CLIENT_ADDED_TO_REGISTRY & (pulse_client->flags)) != 0) ? TRUE: FALSE);
+
+  pthread_mutex_unlock(pulse_client_mutex);
+  
+  return(is_ready);
+}
+
+void
+ags_pulse_client_add_to_registry(AgsConnectable *connectable)
+{
+  AgsPulseClient *pulse_client;
+
+  if(ags_connectable_is_ready(connectable)){
+    return;
+  }
+  
+  pulse_client = AGS_PULSE_CLIENT(connectable);
+
+  ags_pulse_client_set_flags(pulse_client, AGS_PULSE_CLIENT_ADDED_TO_REGISTRY);
+}
+
+void
+ags_pulse_client_remove_from_registry(AgsConnectable *connectable)
+{
+  AgsPulseClient *pulse_client;
+
+  if(!ags_connectable_is_ready(connectable)){
+    return;
+  }
+
+  pulse_client = AGS_PULSE_CLIENT(connectable);
+
+  ags_pulse_client_unset_flags(pulse_client, AGS_PULSE_CLIENT_ADDED_TO_REGISTRY);
+}
+
+xmlNode*
+ags_pulse_client_list_resource(AgsConnectable *connectable)
+{
+  xmlNode *node;
+  
+  node = NULL;
+
+  //TODO:JK: implement me
+  
+  return(node);
+}
+
+xmlNode*
+ags_pulse_client_xml_compose(AgsConnectable *connectable)
+{
+  xmlNode *node;
+  
+  node = NULL;
+
+  //TODO:JK: implement me
+  
+  return(node);
+}
+
+void
+ags_pulse_client_xml_parse(AgsConnectable *connectable,
+			   xmlNode *node)
+{
+  //TODO:JK: implement me
+}
+
+gboolean
+ags_pulse_client_is_connected(AgsConnectable *connectable)
+{
+  AgsPulseClient *pulse_client;
+  
+  gboolean is_connected;
+
+  pthread_mutex_t *pulse_client_mutex;
+
+  pulse_client = AGS_PULSE_CLIENT(connectable);
+
+  /* get pulse client mutex */
+  pthread_mutex_lock(ags_pulse_client_get_class_mutex());
+  
+  pulse_client_mutex = pulse_client->obj_mutex;
+  
+  pthread_mutex_unlock(ags_pulse_client_get_class_mutex());
+
+  /* check is connected */
+  pthread_mutex_lock(pulse_client_mutex);
+
+  is_connected = (((AGS_PULSE_CLIENT_CONNECTED & (pulse_client->flags)) != 0) ? TRUE: FALSE);
+  
+  pthread_mutex_unlock(pulse_client_mutex);
+  
+  return(is_connected);
+}
+
+void
+ags_pulse_client_connect(AgsConnectable *connectable)
+{
+  AgsPulseClient *pulse_client;
+
+  GList *list_start, *list;
+
+  pthread_mutex_t *pulse_client_mutex;
+  
+  if(ags_connectable_is_connected(connectable)){
+    return;
+  }
+
+  pulse_client = AGS_PULSE_CLIENT(connectable);
+
+  ags_pulse_client_set_flags(pulse_client, AGS_PULSE_CLIENT_CONNECTED);
+
+  /* get pulse client mutex */
+  pthread_mutex_lock(ags_pulse_client_get_class_mutex());
+  
+  pulse_client_mutex = pulse_client->obj_mutex;
+  
+  pthread_mutex_unlock(ags_pulse_client_get_class_mutex());
+
+  /* port */
+  pthread_mutex_lock(pulse_client_mutex);
+
+  list =
+    list_start = g_list_copy(pulse_client->port);
+
+  pthread_mutex_unlock(pulse_client_mutex);
+
+  while(list != NULL){
+    ags_connectable_connect(AGS_CONNECTABLE(list->data));
+    
+    list = list->next;
+  }
+
+  g_list_free(list_start);
+}
+
+void
+ags_pulse_client_disconnect(AgsConnectable *connectable)
+{
+
+  AgsPulseClient *pulse_client;
+
+  GList *list_start, *list;
+
+  pthread_mutex_t *pulse_client_mutex;
+  
+  if(!ags_connectable_is_connected(connectable)){
+    return;
+  }
+
+  pulse_client = AGS_PULSE_CLIENT(connectable);
+  
+  ags_pulse_client_unset_flags(pulse_client, AGS_PULSE_CLIENT_CONNECTED);
+
+  /* get pulse client mutex */
+  pthread_mutex_lock(ags_pulse_client_get_class_mutex());
+  
+  pulse_client_mutex = pulse_client->obj_mutex;
+  
+  pthread_mutex_unlock(ags_pulse_client_get_class_mutex());
+
+  /* port */
+  pthread_mutex_lock(pulse_client_mutex);
+
+  list =
+    list_start = g_list_copy(pulse_client->port);
+
+  pthread_mutex_unlock(pulse_client_mutex);
+
+  while(list != NULL){
+    ags_connectable_disconnect(AGS_CONNECTABLE(list->data));
+    
+    list = list->next;
+  }
+
+  g_list_free(list_start);
+}
+
+/**
+ * ags_pulse_client_get_class_mutex:
+ * 
+ * Use this function's returned mutex to access mutex fields.
+ *
+ * Returns: the class mutex
+ * 
+ * Since: 2.0.0
+ */
+pthread_mutex_t*
+ags_pulse_client_get_class_mutex()
+{
+  return(&ags_pulse_client_class_mutex);
+}
+
+/**
+ * ags_pulse_client_test_flags:
+ * @pulse_client: the #AgsPulseClient
+ * @flags: the flags
+ *
+ * Test @flags to be set on @pulse_client.
+ * 
+ * Returns: %TRUE if flags are set, else %FALSE
+ *
+ * Since: 2.0.0
+ */
+gboolean
+ags_pulse_client_test_flags(AgsPulseClient *pulse_client, guint flags)
+{
+  gboolean retval;  
+  
+  pthread_mutex_t *pulse_client_mutex;
+
+  if(!AGS_IS_PULSE_CLIENT(pulse_client)){
+    return(FALSE);
+  }
+
+  /* get pulse client mutex */
+  pthread_mutex_lock(ags_pulse_client_get_class_mutex());
+  
+  pulse_client_mutex = pulse_client->obj_mutex;
+  
+  pthread_mutex_unlock(ags_pulse_client_get_class_mutex());
+
+  /* test */
+  pthread_mutex_lock(pulse_client_mutex);
+
+  retval = (flags & (pulse_client->flags)) ? TRUE: FALSE;
+  
+  pthread_mutex_unlock(pulse_client_mutex);
+
+  return(retval);
+}
+
+/**
+ * ags_pulse_client_set_flags:
+ * @pulse_client: the #AgsPulseClient
+ * @flags: see #AgsPulseClientFlags-enum
+ *
+ * Enable a feature of @pulse_client.
+ *
+ * Since: 2.0.0
+ */
+void
+ags_pulse_client_set_flags(AgsPulseClient *pulse_client, guint flags)
+{
+  pthread_mutex_t *pulse_client_mutex;
+
+  if(!AGS_IS_PULSE_CLIENT(pulse_client)){
+    return;
+  }
+
+  /* get pulse client mutex */
+  pthread_mutex_lock(ags_pulse_client_get_class_mutex());
+  
+  pulse_client_mutex = pulse_client->obj_mutex;
+  
+  pthread_mutex_unlock(ags_pulse_client_get_class_mutex());
+
+  //TODO:JK: add more?
+
+  /* set flags */
+  pthread_mutex_lock(pulse_client_mutex);
+
+  pulse_client->flags |= flags;
+  
+  pthread_mutex_unlock(pulse_client_mutex);
+}
+    
+/**
+ * ags_pulse_client_unset_flags:
+ * @pulse_client: the #AgsPulseClient
+ * @flags: see #AgsPulseClientFlags-enum
+ *
+ * Disable a feature of @pulse_client.
+ *
+ * Since: 2.0.0
+ */
+void
+ags_pulse_client_unset_flags(AgsPulseClient *pulse_client, guint flags)
+{  
+  pthread_mutex_t *pulse_client_mutex;
+
+  if(!AGS_IS_PULSE_CLIENT(pulse_client)){
+    return;
+  }
+
+  /* get pulse client mutex */
+  pthread_mutex_lock(ags_pulse_client_get_class_mutex());
+  
+  pulse_client_mutex = pulse_client->obj_mutex;
+  
+  pthread_mutex_unlock(ags_pulse_client_get_class_mutex());
+
+  //TODO:JK: add more?
+
+  /* unset flags */
+  pthread_mutex_lock(pulse_client_mutex);
+
+  pulse_client->flags &= (~flags);
+  
+  pthread_mutex_unlock(pulse_client_mutex);
+}
+
 /**
  * ags_pulse_client_find_uuid:
- * @pulse_client: a #GList
+ * @pulse_client: the #GList-struct containing #AgsPulseClient
  * @client_uuid: the client uuid to find
  *
  * Finds next match of @client_uuid in @pulse_client.
  *
- * Returns: a #GList or %NULL
+ * Returns: the next matching #GList-struct or %NULL
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 GList*
 ags_pulse_client_find_uuid(GList *pulse_client,
 			   gchar *client_uuid)
 {
+  AgsPulseClient *current_pulse_client;
+  
+  gboolean success;
+  
+  pthread_mutex_t *pulse_client_mutex;
+
   while(pulse_client != NULL){
-    if(AGS_PULSE_CLIENT(pulse_client->data)->context != NULL &&
-       !g_ascii_strcasecmp(AGS_PULSE_CLIENT(pulse_client->data)->uuid,
-			   client_uuid)){
+    current_pulse_client = AGS_PULSE_CLIENT(pulse_client->data);
+    
+    /* get pulse client mutex */
+    pthread_mutex_lock(ags_pulse_client_get_class_mutex());
+  
+    pulse_client_mutex = current_pulse_client->obj_mutex;
+  
+    pthread_mutex_unlock(ags_pulse_client_get_class_mutex());
+
+    /* check uuid */
+    pthread_mutex_lock(pulse_client_mutex);
+    
+    success = (current_pulse_client->context != NULL &&
+	       !g_ascii_strcasecmp(current_pulse_client->client_uuid,
+				   client_uuid)) ? TRUE: FALSE;
+
+    pthread_mutex_unlock(pulse_client_mutex);
+
+    if(success){
       return(pulse_client);
     }
+
+    pulse_client = pulse_client->next;
   }
 
   return(NULL);
@@ -527,12 +946,12 @@ ags_pulse_client_find_uuid(GList *pulse_client,
 
 /**
  * ags_pulse_client_find:
- * @pulse_client: a #GList
+ * @pulse_client: the #GList-struct containing #AgsPulseClient
  * @client_name: the client name to find
  *
  * Finds next match of @client_name in @pulse_client.
  *
- * Returns: a #GList or %NULL
+ * Returns: the next matching #GList-struct or %NULL
  * 
  * Since: 1.0.0
  */
@@ -540,12 +959,36 @@ GList*
 ags_pulse_client_find(GList *pulse_client,
 		      gchar *client_name)
 { 
+  AgsPulseClient *current_pulse_client;
+  
+  gboolean success;
+  
+  pthread_mutex_t *pulse_client_mutex;
+
   while(pulse_client != NULL){
-    if(AGS_PULSE_CLIENT(pulse_client->data)->context != NULL &&
-       !g_ascii_strcasecmp(AGS_PULSE_CLIENT(pulse_client->data)->name,
-			   client_name)){
+    current_pulse_client = AGS_PULSE_CLIENT(pulse_client->data);
+    
+    /* get pulse client mutex */
+    pthread_mutex_lock(ags_pulse_client_get_class_mutex());
+  
+    pulse_client_mutex = current_pulse_client->obj_mutex;
+  
+    pthread_mutex_unlock(ags_pulse_client_get_class_mutex());
+
+    /* check client name */
+    pthread_mutex_lock(pulse_client_mutex);
+
+    success = (current_pulse_client->context != NULL &&
+	       !g_ascii_strcasecmp(current_pulse_client->client_name,
+				   client_name)) ? TRUE: FALSE;
+    
+    pthread_mutex_unlock(pulse_client_mutex);
+    
+    if(success){
       return(pulse_client);
     }
+
+    pulse_client = pulse_client->next;
   }
 
   return(NULL);
@@ -555,25 +998,18 @@ ags_pulse_client_find(GList *pulse_client,
 void
 ags_pulse_client_state_callback(pa_context *c, AgsPulseClient *pulse_client)
 {
-  AgsMutexManager *mutex_manager;
-
   pa_context_state_t state;
-
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *mutex;
-
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+  
+  pthread_mutex_t *pulse_client_mutex;
 
   state = pa_context_get_state(c);
 
-  /*  */  
-  pthread_mutex_lock(application_mutex);
-
-  mutex = ags_mutex_manager_lookup(mutex_manager,
-				   (GObject *) pulse_client);
+  /* get pulse client mutex */
+  pthread_mutex_lock(ags_pulse_client_get_class_mutex());
   
-  pthread_mutex_unlock(application_mutex);
+  pulse_client_mutex = pulse_client->obj_mutex;
+  
+  pthread_mutex_unlock(ags_pulse_client_get_class_mutex());
 
   switch(state){
   case PA_CONTEXT_UNCONNECTED:
@@ -586,11 +1022,11 @@ ags_pulse_client_state_callback(pa_context *c, AgsPulseClient *pulse_client)
     g_warning("pulseaudio not running");
     break;
   case PA_CONTEXT_READY:
-    pthread_mutex_lock(mutex);
+    pthread_mutex_lock(pulse_client_mutex);
     
     pulse_client->flags |= AGS_PULSE_CLIENT_READY;
 
-    pthread_mutex_unlock(mutex);
+    pthread_mutex_unlock(pulse_client_mutex);
 
     break;
   }
@@ -604,72 +1040,103 @@ ags_pulse_client_state_callback(pa_context *c, AgsPulseClient *pulse_client)
  *
  * Open the pulseaudio client's connection and read uuid.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_pulse_client_open(AgsPulseClient *pulse_client,
 		      gchar *client_name)
 {
-  AgsMutexManager *mutex_manager;
-
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *mutex;
-
-  gboolean ready;
+  AgsPulseServer *pulse_server;
   
-  if(pulse_client == NULL ||
+#ifdef AGS_WITH_PULSE
+  pa_context *context;
+  pa_mainloop *main_loop;
+  pa_mainloop_api *main_loop_api;
+#else
+  gpointer context;
+  gpointer main_loop;
+  gpointer main_loop_api;
+#endif
+
+  gchar *client_uuid;
+
+  pthread_mutex_t *pulse_server_mutex;
+  pthread_mutex_t *pulse_client_mutex;
+
+  if(!AGS_IS_PULSE_CLIENT(pulse_client) ||
      client_name == NULL){
     return;
   }
 
+  /* get pulse client mutex */
+  pthread_mutex_lock(ags_pulse_client_get_class_mutex());
+  
+  pulse_client_mutex = pulse_client->obj_mutex;
+  
+  pthread_mutex_unlock(ags_pulse_client_get_class_mutex());
+
+  /* check already open */
+  pthread_mutex_lock(pulse_client_mutex);
+
   if(pulse_client->context != NULL){
+    pthread_mutex_unlock(pulse_client_mutex);
+
     g_message("Advanced Gtk+ Sequencer pulseaudio client already open");
     
     return;
   } 
 
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+  pulse_server = pulse_client->pulse_server;
   
-  /*  */  
-  pthread_mutex_lock(application_mutex);
+  pthread_mutex_unlock(pulse_client_mutex);
   
-  mutex = ags_mutex_manager_lookup(mutex_manager,
-				   (GObject *) pulse_client);
-  
-  pthread_mutex_unlock(application_mutex);
-
-  /*  */
   g_message("Advanced Gtk+ Sequencer open pulseaudio client");
   
-  pulse_client->name = g_strdup(client_name);
+  g_object_set(pulse_client,
+	       "client-name", client_name,
+	       NULL);
+
+  /* get pulse server mutex */
+  pthread_mutex_lock(ags_pulse_server_get_class_mutex());
+  
+  pulse_server_mutex = pulse_server->obj_mutex;
+  
+  pthread_mutex_unlock(ags_pulse_server_get_class_mutex());
+
+  /* get main loop API */
+  pthread_mutex_lock(pulse_server_mutex);
+
+  main_loop = pulse_server->main_loop;
+  main_loop_api = pulse_server->main_loop_api;
+  
+  pthread_mutex_unlock(pulse_server_mutex);
+
+  /* new context */
+  pthread_mutex_lock(pulse_client_mutex);
 
 #ifdef AGS_WITH_PULSE
-  pulse_client->context = pa_context_new(AGS_PULSE_SERVER(pulse_client->pulse_server)->main_loop_api, client_name);
+  context = 
+    pulse_client->context = pa_context_new(main_loop_api, client_name);
 #else
-  pulse_client->context = NULL;
+  context = 
+    pulse_client->context = NULL;
 #endif
 
-  if(pulse_client->context != NULL){
+  pthread_mutex_unlock(pulse_client_mutex);  
+
+  if(context != NULL){
 #ifdef AGS_WITH_PULSE
-    pa_context_connect(pulse_client->context,
+    pa_context_connect(context,
 		       NULL,
 		       0,
 		       NULL);
-    pa_context_set_state_callback(pulse_client->context,
+    pa_context_set_state_callback(context,
 				  ags_pulse_client_state_callback,
 				  pulse_client);
-    ready = FALSE;
     
-    while(!ready){
-      pthread_mutex_lock(mutex);
-      
-      ready = (((AGS_PULSE_CLIENT_READY & (pulse_client->flags)) != 0) ? TRUE: FALSE);
-      
-      pthread_mutex_unlock(mutex);
-
-      if(!ready){
-	pa_mainloop_iterate(AGS_PULSE_SERVER(pulse_client->pulse_server)->main_loop,
+    while(!ags_pulse_client_test_flags(pulse_client, AGS_PULSE_CLIENT_READY)){
+      if(!ags_pulse_client_test_flags(pulse_client, AGS_PULSE_CLIENT_READY)){
+	pa_mainloop_iterate(main_loop,
 			    TRUE,
 			    NULL);
       }
@@ -684,56 +1151,72 @@ ags_pulse_client_open(AgsPulseClient *pulse_client,
  *
  * Activate client.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_pulse_client_activate(AgsPulseClient *pulse_client)
 {
-  AgsMutexManager *mutex_manager;
+#ifdef AGS_WITH_PULSE
+  pa_context *context;
+#else
+  gpointer context;
+#endif
 
-  GList *port;
+  GList *port_start, *port;
   
   int ret;
 
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *mutex;
+  pthread_mutex_t *pulse_client_mutex;
 
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-  
-  /*  */  
-  pthread_mutex_lock(application_mutex);
-  
-  mutex = ags_mutex_manager_lookup(mutex_manager,
-				   (GObject *) pulse_client);
-  
-  pthread_mutex_unlock(application_mutex);
-
-  /*  */
-  //TODO:JK: make thread-safe
-  pthread_mutex_lock(mutex);
-  
-  if((AGS_PULSE_CLIENT_ACTIVATED & (pulse_client->flags)) != 0 ||
-     pulse_client->context == NULL){
-    pthread_mutex_unlock(mutex);
-    
+  if(!AGS_IS_PULSE_CLIENT(pulse_client)){
     return;
   }
   
-  port = pulse_client->port;
+  /* get pulse client mutex */
+  pthread_mutex_lock(ags_pulse_client_get_class_mutex());
+  
+  pulse_client_mutex = pulse_client->obj_mutex;
+  
+  pthread_mutex_unlock(ags_pulse_client_get_class_mutex());
+
+  /* get context */
+  pthread_mutex_lock(pulse_client_mutex);
+
+  context = pulse_client->context;
+  
+  pthread_mutex_unlock(pulse_client_mutex);
+
+  if(ags_pulse_client_test_flags(pulse_client, AGS_PULSE_CLIENT_ACTIVATED) ||
+     context == NULL){
+    return;
+  }  
+
+  pthread_mutex_lock(pulse_client_mutex);
+
+  port =
+    port_start = g_list_copy(pulse_client->port);
+
+  pthread_mutex_unlock(pulse_client_mutex);
 
   while(port != NULL){
+    gchar *port_name;
+
+    //TODO:JK: make thread-safe
+    g_object_get(port->data,
+		 "port-name", &port_name,
+		 NULL);
+
     ags_pulse_port_register(port->data,
-			    AGS_PULSE_PORT(port->data)->name,
-			    (((AGS_PULSE_PORT_IS_AUDIO & (AGS_PULSE_PORT(port->data)->flags)) != 0) ? TRUE: FALSE), (((AGS_PULSE_PORT_IS_MIDI & (AGS_PULSE_PORT(port->data)->flags)) != 0) ? TRUE: FALSE),
-			    (((AGS_PULSE_PORT_IS_OUTPUT & (AGS_PULSE_PORT(port->data)->flags)) != 0) ? TRUE: FALSE));
+			    port_name,
+			    (ags_pulse_port_test_flags(port->data, AGS_PULSE_PORT_IS_AUDIO) ? TRUE: FALSE), (ags_pulse_port_test_flags(port->data, AGS_PULSE_PORT_IS_MIDI) ? TRUE: FALSE),
+			    (ags_pulse_port_test_flags(port->data, AGS_PULSE_PORT_IS_OUTPUT) ? TRUE: FALSE));
     
     port = port->next;
   }
 
-  pulse_client->flags |= AGS_PULSE_CLIENT_ACTIVATED;
+  ags_pulse_client_set_flags(pulse_client, AGS_PULSE_CLIENT_ACTIVATED);
 
-  pthread_mutex_unlock(mutex);
+  g_list_free(port_start);
 }
 
 /**
@@ -742,20 +1225,46 @@ ags_pulse_client_activate(AgsPulseClient *pulse_client)
  *
  * Deactivate client.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_pulse_client_deactivate(AgsPulseClient *pulse_client)
 {
-  if(pulse_client->context == NULL){
+#ifdef AGS_WITH_PULSE
+  pa_context *context;
+#else
+  gpointer context;
+#endif
+
+  pthread_mutex_t *pulse_client_mutex;
+
+  if(!AGS_IS_PULSE_CLIENT(pulse_client)){
+    return;
+  }
+  
+  /* get pulse client mutex */
+  pthread_mutex_lock(ags_pulse_client_get_class_mutex());
+  
+  pulse_client_mutex = pulse_client->obj_mutex;
+  
+  pthread_mutex_unlock(ags_pulse_client_get_class_mutex());
+
+  /* get context */
+  pthread_mutex_lock(pulse_client_mutex);
+
+  context = pulse_client->context;
+  
+  pthread_mutex_unlock(pulse_client_mutex);
+
+  if(context == NULL){
     return;
   }
   
 #ifdef AGS_WITH_PULSE
-  pa_context_disconnect(pulse_client->context);
+  pa_context_disconnect(context);
 #endif
   
-  pulse_client->flags &= (~AGS_PULSE_CLIENT_ACTIVATED);
+  ags_pulse_client_unset_flags(pulse_client, AGS_PULSE_CLIENT_ACTIVATED);
 }
 
 /**
@@ -765,21 +1274,37 @@ ags_pulse_client_deactivate(AgsPulseClient *pulse_client)
  *
  * Add @pulse_device to @pulse_client.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_pulse_client_add_device(AgsPulseClient *pulse_client,
 			    GObject *pulse_device)
 {
+  pthread_mutex_t *pulse_client_mutex;
+
   if(!AGS_IS_PULSE_CLIENT(pulse_client) ||
      (!AGS_IS_PULSE_DEVOUT(pulse_device) &&
       !AGS_IS_PULSE_DEVIN(pulse_device))){
     return;
   }
 
-  g_object_ref(pulse_device);
-  pulse_client->device = g_list_prepend(pulse_client->device,
-					pulse_device);
+  /* get pulse client mutex */
+  pthread_mutex_lock(ags_pulse_client_get_class_mutex());
+  
+  pulse_client_mutex = pulse_client->obj_mutex;
+  
+  pthread_mutex_unlock(ags_pulse_client_get_class_mutex());
+
+  /* add device */
+  pthread_mutex_lock(pulse_client_mutex);
+
+  if(g_list_find(pulse_client->device, pulse_device) == NULL){
+    g_object_ref(pulse_device);
+    pulse_client->device = g_list_prepend(pulse_client->device,
+					  pulse_device);
+  }
+  
+  pthread_mutex_unlock(pulse_client_mutex);
 }
 
 /**
@@ -789,19 +1314,35 @@ ags_pulse_client_add_device(AgsPulseClient *pulse_client,
  *
  * Remove @pulse_device from @pulse_client.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_pulse_client_remove_device(AgsPulseClient *pulse_client,
 			       GObject *pulse_device)
 {
+  pthread_mutex_t *pulse_client_mutex;
+
   if(!AGS_IS_PULSE_CLIENT(pulse_client)){
     return;
   }
+
+  /* get pulse client mutex */
+  pthread_mutex_lock(ags_pulse_client_get_class_mutex());
   
-  pulse_client->device = g_list_remove(pulse_client->device,
-				       pulse_device);
-  g_object_unref(pulse_device);
+  pulse_client_mutex = pulse_client->obj_mutex;
+  
+  pthread_mutex_unlock(ags_pulse_client_get_class_mutex());
+  
+  /* remove */
+  pthread_mutex_lock(pulse_client_mutex);
+
+  if(g_list_find(pulse_client->device, pulse_device) != NULL){
+    pulse_client->device = g_list_remove(pulse_client->device,
+					 pulse_device);
+    g_object_unref(pulse_device);
+  }
+
+  pthread_mutex_unlock(pulse_client_mutex);
 }
 
 /**
@@ -811,20 +1352,36 @@ ags_pulse_client_remove_device(AgsPulseClient *pulse_client,
  *
  * Add @pulse_port to @pulse_client.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_pulse_client_add_port(AgsPulseClient *pulse_client,
 			  GObject *pulse_port)
 {
+  pthread_mutex_t *pulse_client_mutex;
+
   if(!AGS_IS_PULSE_CLIENT(pulse_client) ||
      !AGS_IS_PULSE_PORT(pulse_port)){
     return;
   }
+  
+  /* get pulse client mutex */
+  pthread_mutex_lock(ags_pulse_client_get_class_mutex());
+  
+  pulse_client_mutex = pulse_client->obj_mutex;
+  
+  pthread_mutex_unlock(ags_pulse_client_get_class_mutex());
 
-  g_object_ref(pulse_port);
-  pulse_client->port = g_list_prepend(pulse_client->port,
-				      pulse_port);
+  /* add port */
+  pthread_mutex_lock(pulse_client_mutex);
+
+  if(g_list_find(pulse_client->port, pulse_port) == NULL){
+    g_object_ref(pulse_port);
+    pulse_client->port = g_list_prepend(pulse_client->port,
+					pulse_port);
+  }
+  
+  pthread_mutex_unlock(pulse_client_mutex);
 }
 
 /**
@@ -834,30 +1391,46 @@ ags_pulse_client_add_port(AgsPulseClient *pulse_client,
  *
  * Remove @pulse_port from @pulse_client.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_pulse_client_remove_port(AgsPulseClient *pulse_client,
 			     GObject *pulse_port)
 {
+  pthread_mutex_t *pulse_client_mutex;
+
   if(!AGS_IS_PULSE_CLIENT(pulse_client)){
     return;
   }
   
-  pulse_client->port = g_list_remove(pulse_client->port,
-				     pulse_port);
-  g_object_unref(pulse_port);
+  /* get pulse client mutex */
+  pthread_mutex_lock(ags_pulse_client_get_class_mutex());
+  
+  pulse_client_mutex = pulse_client->obj_mutex;
+  
+  pthread_mutex_unlock(ags_pulse_client_get_class_mutex());
+
+  /* remove port */
+  pthread_mutex_lock(pulse_client_mutex);
+
+  if(g_list_find(pulse_client->port, pulse_port) != NULL){
+    pulse_client->port = g_list_remove(pulse_client->port,
+				       pulse_port);
+    g_object_unref(pulse_port);
+  }
+  
+  pthread_mutex_unlock(pulse_client_mutex);
 }
 
 /**
  * ags_pulse_client_new:
  * @pulse_server: the assigned #AgsPulseServer
  *
- * Instantiate a new #AgsPulseClient.
+ * Create a new instance of #AgsPulseClient.
  *
  * Returns: the new #AgsPulseClient
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsPulseClient*
 ags_pulse_client_new(GObject *pulse_server)

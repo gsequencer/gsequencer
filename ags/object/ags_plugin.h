@@ -23,6 +23,8 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <libxml/tree.h>
+
 #include <ags/file/ags_file.h>
 
 #define AGS_TYPE_PLUGIN                    (ags_plugin_get_type())

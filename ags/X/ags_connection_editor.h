@@ -35,14 +35,17 @@
 #define AGS_IS_CONNECTION_EDITOR_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_CONNECTION_EDITOR))
 #define AGS_CONNECTION_EDITOR_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_CONNECTION_EDITOR, AgsConnectionEditorClass))
 
-#define AGS_CONNECTION_EDITOR_DEFAULT_VERSION "0.7.65"
-#define AGS_CONNECTION_EDITOR_DEFAULT_BUILD_ID "Sat Sep 10 07:49:08 CEST 2016"
+#define AGS_CONNECTION_EDITOR_DEFAULT_VERSION "2.0.0"
+#define AGS_CONNECTION_EDITOR_DEFAULT_BUILD_ID "Sun Aug 26 19:06:10 UTC 2018"
 
 typedef struct _AgsConnectionEditor AgsConnectionEditor;
 typedef struct _AgsConnectionEditorClass AgsConnectionEditorClass;
 
 typedef enum{
-  AGS_CONNECTION_EDITOR_CLOSING                    = 1,
+  AGS_CONNECTION_EDITOR_CONNECTED                 = 1,
+  AGS_CONNECTION_EDITOR_CLOSING                   = 1 <<  1,
+  AGS_CONNECTION_EDITOR_SHOW_OUTPUT               = 1 <<  2,
+  AGS_CONNECTION_EDITOR_SHOW_INPUT                = 1 <<  3,
 }AgsConnectionEditorFlags;
 
 struct _AgsConnectionEditor
@@ -61,9 +64,15 @@ struct _AgsConnectionEditor
   GtkScrolledWindow *output_listing_editor_scrolled_window;
   AgsPropertyCollectionEditor *output_listing_editor;
 
+  GtkScrolledWindow *input_listing_editor_scrolled_window;
+  AgsPropertyCollectionEditor *input_listing_editor;
+
   GtkScrolledWindow *output_connection_editor_scrolled_window;
   AgsPropertyCollectionEditor *output_connection_editor;
 
+  GtkScrolledWindow *input_connection_editor_scrolled_window;
+  AgsPropertyCollectionEditor *input_connection_editor;
+  
   GtkButton *apply;
   GtkButton *ok;
   GtkButton *cancel;

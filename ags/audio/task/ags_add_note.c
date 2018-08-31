@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -19,10 +19,11 @@
 
 #include <ags/audio/task/ags_add_note.h>
 
+#include <ags/audio/ags_notation.h>
+
 #include <ags/i18n.h>
 
 void ags_add_note_class_init(AgsAddNoteClass *add_note);
-void ags_add_note_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_add_note_init(AgsAddNote *add_note);
 void ags_add_note_set_property(GObject *gobject,
 			       guint prop_id,
@@ -32,8 +33,6 @@ void ags_add_note_get_property(GObject *gobject,
 			       guint prop_id,
 			       GValue *value,
 			       GParamSpec *param_spec);
-void ags_add_note_connect(AgsConnectable *connectable);
-void ags_add_note_disconnect(AgsConnectable *connectable);
 void ags_add_note_dispose(GObject *gobject);
 void ags_add_note_finalize(GObject *gobject);
 
@@ -50,13 +49,12 @@ void ags_add_note_launch(AgsTask *task);
  */
 
 static gpointer ags_add_note_parent_class = NULL;
-static AgsConnectableInterface *ags_add_note_parent_connectable_interface;
 
 enum{
   PROP_0,
   PROP_AUDIO,
-  PROP_NOTATION,
   PROP_NOTE,
+  PROP_AUDIO_CHANNEL,
   PROP_USE_SELECTION_LIST,
 };
 
@@ -69,33 +67,21 @@ ags_add_note_get_type()
     GType ags_type_add_note;
 
     static const GTypeInfo ags_add_note_info = {
-      sizeof (AgsAddNoteClass),
+      sizeof(AgsAddNoteClass),
       NULL, /* base_init */
       NULL, /* base_finalize */
       (GClassInitFunc) ags_add_note_class_init,
       NULL, /* class_finalize */
       NULL, /* class_data */
-      sizeof (AgsAddNote),
+      sizeof(AgsAddNote),
       0,    /* n_preallocs */
       (GInstanceInitFunc) ags_add_note_init,
-    };
-
-    static const GInterfaceInfo ags_connectable_interface_info = {
-      (GInterfaceInitFunc) ags_add_note_connectable_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
     };
 
     ags_type_add_note = g_type_register_static(AGS_TYPE_TASK,
 					       "AgsAddNote",
 					       &ags_add_note_info,
 					       0);
-
-    g_type_add_interface_static(ags_type_add_note,
-				AGS_TYPE_CONNECTABLE,
-				&ags_connectable_interface_info);
-
-    g_once_init_leave (&g_define_type_id__volatile, ags_type_add_note);
   }
 
   return g_define_type_id__volatile;
@@ -106,6 +92,7 @@ ags_add_note_class_init(AgsAddNoteClass *add_note)
 {
   GObjectClass *gobject;
   AgsTaskClass *task;
+
   GParamSpec *param_spec;
 
   ags_add_note_parent_class = g_type_class_peek_parent(add_note);
@@ -125,7 +112,7 @@ ags_add_note_class_init(AgsAddNoteClass *add_note)
    *
    * The assigned #AgsAudio
    * 
-   * Since: 1.2.2
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("audio",
 				   i18n_pspec("audio of notation"),
@@ -137,27 +124,11 @@ ags_add_note_class_init(AgsAddNoteClass *add_note)
 				  param_spec);
 
   /**
-   * AgsAddNote:notation:
-   *
-   * The assigned #AgsNotation
-   * 
-   * Since: 1.0.0
-   */
-  param_spec = g_param_spec_object("notation",
-				   i18n_pspec("notation of add note"),
-				   i18n_pspec("The notation of add note task"),
-				   AGS_TYPE_NOTATION,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_NOTATION,
-				  param_spec);
-  
-  /**
    * AgsAddNote:note:
    *
    * The assigned #AgsNote
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("note",
 				   i18n_pspec("note of add note"),
@@ -169,11 +140,29 @@ ags_add_note_class_init(AgsAddNoteClass *add_note)
 				  param_spec);
 
   /**
+   * AgsAddNote:audio-channel:
+   *
+   * The assigned audio channel
+   * 
+   * Since: 2.0.0
+   */
+  param_spec = g_param_spec_uint("audio-channel",
+				 i18n_pspec("audio channel of notation"),
+				 i18n_pspec("The audio channel of notation"),
+				 0,
+				 G_MAXUINT32,
+				 0,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_AUDIO_CHANNEL,
+				  param_spec);
+  
+  /**
    * AgsAddNote:use-selection-list:
    *
    * The notation's use-selection-list.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec =  g_param_spec_boolean("use-selection-list",
 				     i18n_pspec("use selection list"),
@@ -191,21 +180,12 @@ ags_add_note_class_init(AgsAddNoteClass *add_note)
 }
 
 void
-ags_add_note_connectable_interface_init(AgsConnectableInterface *connectable)
-{
-  ags_add_note_parent_connectable_interface = g_type_interface_peek_parent(connectable);
-
-  connectable->connect = ags_add_note_connect;
-  connectable->disconnect = ags_add_note_disconnect;
-}
-
-void
 ags_add_note_init(AgsAddNote *add_note)
 {
   add_note->audio = NULL;
-  add_note->notation = NULL;
-
   add_note->note = NULL;
+
+  add_note->audio_channel = 0;
   add_note->use_selection_list = FALSE;
 }
 
@@ -241,27 +221,6 @@ ags_add_note_set_property(GObject *gobject,
       add_note->audio = (GObject *) audio;
     }
     break;
-  case PROP_NOTATION:
-    {
-      AgsNotation *notation;
-
-      notation = (AgsNotation *) g_value_get_object(value);
-
-      if(add_note->notation == (GObject *) notation){
-	return;
-      }
-
-      if(add_note->notation != NULL){
-	g_object_unref(add_note->notation);
-      }
-
-      if(notation != NULL){
-	g_object_ref(notation);
-      }
-
-      add_note->notation = (GObject *) notation;
-    }
-    break;
   case PROP_NOTE:
     {
       AgsNote *note;
@@ -283,6 +242,11 @@ ags_add_note_set_property(GObject *gobject,
       add_note->note = (GObject *) note;
     }
     break;
+  case PROP_AUDIO_CHANNEL:
+    {
+      add_note->audio_channel = g_value_get_uint(value);
+    }
+  break;
   case PROP_USE_SELECTION_LIST:
     {
       add_note->use_selection_list = g_value_get_boolean(value);
@@ -310,14 +274,14 @@ ags_add_note_get_property(GObject *gobject,
       g_value_set_object(value, add_note->audio);
     }
     break;
-  case PROP_NOTATION:
-    {
-      g_value_set_object(value, add_note->notation);
-    }
-    break;
   case PROP_NOTE:
     {
       g_value_set_object(value, add_note->note);
+    }
+    break;
+  case PROP_AUDIO_CHANNEL:
+    {
+      g_value_set_uint(value, add_note->audio_channel);
     }
     break;
   case PROP_USE_SELECTION_LIST:
@@ -332,22 +296,6 @@ ags_add_note_get_property(GObject *gobject,
 }
 
 void
-ags_add_note_connect(AgsConnectable *connectable)
-{
-  ags_add_note_parent_connectable_interface->connect(connectable);
-
-  /* empty */
-}
-
-void
-ags_add_note_disconnect(AgsConnectable *connectable)
-{
-  ags_add_note_parent_connectable_interface->disconnect(connectable);
-
-  /* empty */
-}
-
-void
 ags_add_note_dispose(GObject *gobject)
 {
   AgsAddNote *add_note;
@@ -358,12 +306,6 @@ ags_add_note_dispose(GObject *gobject)
     g_object_unref(add_note->audio);
 
     add_note->audio = NULL;
-  }
-
-  if(add_note->notation != NULL){
-    g_object_unref(add_note->notation);
-
-    add_note->notation = NULL;
   }
 
   if(add_note->note != NULL){
@@ -387,10 +329,6 @@ ags_add_note_finalize(GObject *gobject)
     g_object_unref(add_note->audio);
   }
 
-  if(add_note->notation != NULL){
-    g_object_unref(add_note->notation);
-  }
-
   if(add_note->note != NULL){
     g_object_unref(add_note->note);
   }
@@ -402,60 +340,99 @@ ags_add_note_finalize(GObject *gobject)
 void
 ags_add_note_launch(AgsTask *task)
 {
+  AgsAudio *audio;
+  AgsNotation *notation;
+  AgsNote *note;
+  
   AgsAddNote *add_note;
+  
+  AgsTimestamp *timestamp;
 
-  AgsMutexManager *mutex_manager;
+  GList *list;
 
-  pthread_mutex_t *application_mutex;
+  guint audio_channel;
+  guint x0;
+  
   pthread_mutex_t *audio_mutex;
-
-  /* get mutex manager and application mutex */
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
 
   add_note = AGS_ADD_NOTE(task);
 
-  /* get audio mutex */
-  pthread_mutex_lock(application_mutex);
+  /* get some fields */
+  audio = add_note->audio;
 
-  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
-					 (GObject *) add_note->audio);
-
-  pthread_mutex_unlock(application_mutex);
-
-  /* add note */
-  pthread_mutex_lock(audio_mutex);
+  notation = NULL;
+  audio_channel = add_note->audio_channel;
   
-  ags_notation_add_note(add_note->notation,
-			add_note->note,
-			add_note->use_selection_list);
+  note = add_note->note;
+
+  g_object_get(note,
+	       "x0", &x0,
+	       NULL);
+
+  /* create timestamp */
+  timestamp = ags_timestamp_new();
+
+  timestamp->flags &= (~AGS_TIMESTAMP_UNIX);
+  timestamp->flags |= AGS_TIMESTAMP_OFFSET;
+
+  timestamp->timer.ags_offset.offset = AGS_NOTATION_DEFAULT_OFFSET * floor(x0 / AGS_NOTATION_DEFAULT_OFFSET);
+
+  /* get audio mutex */
+  pthread_mutex_lock(ags_audio_get_class_mutex());
+
+  audio_mutex = audio->obj_mutex;
+  
+  pthread_mutex_unlock(ags_audio_get_class_mutex());
+
+  /* find near timestamp */
+  pthread_mutex_lock(audio_mutex);
+
+  list = ags_notation_find_near_timestamp(audio->notation, audio_channel,
+					  timestamp);
 
   pthread_mutex_unlock(audio_mutex);
+					  
+  if(list == NULL){
+    notation = ags_notation_new(audio,
+				audio_channel);
+    ags_audio_add_notation(audio,
+			   (GObject *) notation);
+  }else{
+    notation = list->data;
+  }
+  
+  /* add note */
+  ags_notation_add_note(notation,
+			note,
+			add_note->use_selection_list);
+
+  g_object_unref(timestamp);
 }
 
 /**
  * ags_add_note_new:
- * @notation: the #AgsNotation
+ * @audio: the #AgsAudio
  * @note: the #AgsNote to add
  * @use_selection_list: if %TRUE added to selection, otherwise to notation
  *
- * WARNING you should provide the #AgsAddNote:audio property.
- * Creates an #AgsAddNote.
+ * Create a new instance of #AgsAddNote.
  *
- * Returns: an new #AgsAddNote.
+ * Returns: the new #AgsAddNote
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsAddNote*
-ags_add_note_new(AgsNotation *notation,
+ags_add_note_new(AgsAudio *audio,
 		 AgsNote *note,
+		 guint audio_channel,
 		 gboolean use_selection_list)
 {
   AgsAddNote *add_note;
 
   add_note = (AgsAddNote *) g_object_new(AGS_TYPE_ADD_NOTE,
-					 "notation", notation,
+					 "audio", audio,
 					 "note", note,
+					 "audio-channel", audio_channel, 
 					 "use-selection-list", use_selection_list,
 					 NULL);
 

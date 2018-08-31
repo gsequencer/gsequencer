@@ -40,8 +40,10 @@ void ags_machine_editor_get_property(GObject *gobject,
 				     guint prop_id,
 				     GValue *value,
 				     GParamSpec *param_spec);
+
 void ags_machine_editor_connect(AgsConnectable *connectable);
 void ags_machine_editor_disconnect(AgsConnectable *connectable);
+
 void ags_machine_editor_set_update(AgsApplicable *applicable, gboolean update);
 void ags_machine_editor_apply(AgsApplicable *applicable);
 void ags_machine_editor_reset(AgsApplicable *applicable);
@@ -140,7 +142,7 @@ ags_machine_editor_class_init(AgsMachineEditorClass *machine_editor)
    *
    * The #AgsMachine to edit.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("machine",
 				   i18n_pspec("assigned machine"),
@@ -161,6 +163,8 @@ ags_machine_editor_class_init(AgsMachineEditorClass *machine_editor)
    * @machine: the #AgsMachine to set
    *
    * The ::set-machine notify about modified machine.
+   * 
+   * Since: 2.0.0
    */
   machine_editor_signals[SET_MACHINE] =
     g_signal_new("set-machine",
@@ -439,7 +443,7 @@ ags_machine_editor_add_children(AgsMachineEditor *machine_editor)
   /* output */
   output_link_editor_child_parameter = g_new0(GParameter, 1);
 
-  output_link_editor_child_parameter[0].name = "channel_type";
+  output_link_editor_child_parameter[0].name = "channel-type";
 
   g_value_init(&(output_link_editor_child_parameter[0].value), G_TYPE_GTYPE);
   g_value_set_gtype(&(output_link_editor_child_parameter[0].value), AGS_TYPE_OUTPUT);
@@ -447,7 +451,7 @@ ags_machine_editor_add_children(AgsMachineEditor *machine_editor)
   /* input */
   input_link_editor_child_parameter = g_new0(GParameter, 1);
 
-  input_link_editor_child_parameter[0].name = "channel_type";
+  input_link_editor_child_parameter[0].name = "channel-type";
 
   g_value_init(&(input_link_editor_child_parameter[0].value), G_TYPE_GTYPE);
   g_value_set_gtype(&(input_link_editor_child_parameter[0].value), AGS_TYPE_INPUT);
@@ -508,7 +512,7 @@ ags_machine_editor_real_set_machine(AgsMachineEditor *machine_editor, AgsMachine
  *
  * Is emitted as machine gets modified.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_machine_editor_set_machine(AgsMachineEditor *machine_editor, AgsMachine *machine)
@@ -530,7 +534,7 @@ ags_machine_editor_set_machine(AgsMachineEditor *machine_editor, AgsMachine *mac
  *
  * Returns: a new #AgsMachineEditor
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsMachineEditor*
 ags_machine_editor_new(AgsMachine *machine)

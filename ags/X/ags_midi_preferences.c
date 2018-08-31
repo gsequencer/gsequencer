@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -34,8 +34,10 @@ void ags_midi_preferences_class_init(AgsMidiPreferencesClass *midi_preferences);
 void ags_midi_preferences_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_midi_preferences_applicable_interface_init(AgsApplicableInterface *applicable);
 void ags_midi_preferences_init(AgsMidiPreferences *midi_preferences);
+
 void ags_midi_preferences_connect(AgsConnectable *connectable);
 void ags_midi_preferences_disconnect(AgsConnectable *connectable);
+
 void ags_midi_preferences_set_update(AgsApplicable *applicable, gboolean update);
 void ags_midi_preferences_apply(AgsApplicable *applicable);
 void ags_midi_preferences_reset(AgsApplicable *applicable);
@@ -164,6 +166,13 @@ ags_midi_preferences_init(AgsMidiPreferences *midi_preferences)
   midi_preferences->add = NULL;  
 }
 
+static void
+ags_midi_preferences_finalize(GObject *gobject)
+{
+  /* call parent */
+  G_OBJECT_CLASS(ags_midi_preferences_parent_class)->finalize(gobject);
+}
+
 void
 ags_midi_preferences_connect(AgsConnectable *connectable)
 {
@@ -205,12 +214,6 @@ ags_midi_preferences_disconnect(AgsConnectable *connectable)
   }
 }
 
-static void
-ags_midi_preferences_finalize(GObject *gobject)
-{
-  //TODO:JK: implement me
-}
-
 void
 ags_midi_preferences_set_update(AgsApplicable *applicable, gboolean update)
 {
@@ -245,7 +248,8 @@ ags_midi_preferences_reset(AgsApplicable *applicable)
   AgsPreferences *preferences;
   AgsMidiPreferences *midi_preferences;
   AgsSequencerEditor *sequencer_editor;
-  
+
+  AgsThread *main_loop;
   AgsThread *sequencer_thread;
   
   AgsApplicationContext *application_context;
@@ -260,7 +264,11 @@ ags_midi_preferences_reset(AgsApplicable *applicable)
   window = (AgsWindow *) preferences->window;
   
   application_context = (AgsApplicationContext *) window->application_context;
-  sequencer_thread = ags_thread_find_type((AgsThread *) application_context->main_loop,
+  g_object_get(application_context,
+	       "main-loop", &main_loop,
+	       NULL);
+  
+  sequencer_thread = ags_thread_find_type(main_loop,
 					  AGS_TYPE_SEQUENCER_THREAD);
 
   /* clear */
@@ -276,7 +284,8 @@ ags_midi_preferences_reset(AgsApplicable *applicable)
   g_list_free(list_start);
 
   /* reset */
-  list = ags_sound_provider_get_sequencer(AGS_SOUND_PROVIDER(application_context));
+  list =
+    list_start = ags_sound_provider_get_sequencer(AGS_SOUND_PROVIDER(application_context));
 
   while(list != NULL){
     sequencer_editor = ags_sequencer_editor_new();    
@@ -297,17 +306,19 @@ ags_midi_preferences_reset(AgsApplicable *applicable)
     list = list->next;
   }
 
+  g_list_free(list_start);
+  
   gtk_widget_show_all((GtkWidget *) midi_preferences->sequencer_editor);
 }
 
 /**
  * ags_midi_preferences_new:
  *
- * Creates an #AgsMidiPreferences
+ * Create a new instance of #AgsMidiPreferences
  *
- * Returns: a new #AgsMidiPreferences
+ * Returns: the new #AgsMidiPreferences
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsMidiPreferences*
 ags_midi_preferences_new()

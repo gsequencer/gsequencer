@@ -107,6 +107,8 @@ ags_machine_selector_popup_link_index_callback(GtkWidget *menu_item, AgsMachineS
     machine_selection->flags |= AGS_MACHINE_SELECTION_NOTATION;
   }else if((AGS_MACHINE_SELECTOR_AUTOMATION & (machine_selector->flags)) != 0){
     machine_selection->flags |= AGS_MACHINE_SELECTION_AUTOMATION;
+  }else if((AGS_MACHINE_SELECTOR_WAVE & (machine_selector->flags)) != 0){
+    machine_selection->flags |= AGS_MACHINE_SELECTION_WAVE;
   }
   
   ags_machine_selection_load_defaults(machine_selection);
@@ -177,9 +179,11 @@ ags_machine_selector_popup_reverse_mapping_callback(GtkWidget *menu_item, AgsMac
   
   if(notation_editor->selected_machine != NULL){
     if(gtk_check_menu_item_get_active((GtkCheckMenuItem *) menu_item)){
-      notation_editor->selected_machine->audio->flags |= AGS_AUDIO_REVERSE_MAPPING;
+      ags_audio_set_behaviour_flags(notation_editor->selected_machine->audio,
+				    AGS_SOUND_BEHAVIOUR_REVERSE_MAPPING);
     }else{
-      notation_editor->selected_machine->audio->flags &= (~AGS_AUDIO_REVERSE_MAPPING);
+      ags_audio_unset_behaviour_flags(notation_editor->selected_machine->audio,
+				      AGS_SOUND_BEHAVIOUR_REVERSE_MAPPING);
     }
   }
 }
@@ -203,13 +207,16 @@ ags_machine_selector_popup_shift_piano_callback(GtkWidget *menu_item, AgsMachine
     notation = notation_editor->selected_machine->audio->notation;
     label = gtk_menu_item_get_label((GtkMenuItem *) menu_item);
 
+    //FIXME:JK: modify to the new API
+#if 0
     while(notation != NULL){
       g_free(AGS_NOTATION(notation->data)->base_note);
       AGS_NOTATION(notation->data)->base_note = g_strdup(label);
       
       notation = notation->next;
     }
-
+#endif
+    
     if(!g_strcmp0(label,
 		  "A")){
       base_note = AGS_PIANO_KEYS_OCTAVE_2_A;

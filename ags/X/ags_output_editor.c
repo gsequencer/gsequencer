@@ -34,8 +34,10 @@ void ags_output_editor_class_init(AgsOutputEditorClass *output_editor);
 void ags_output_editor_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_output_editor_applicable_interface_init(AgsApplicableInterface *applicable);
 void ags_output_editor_init(AgsOutputEditor *output_editor);
+
 void ags_output_editor_connect(AgsConnectable *connectable);
 void ags_output_editor_disconnect(AgsConnectable *connectable);
+
 void ags_output_editor_set_update(AgsApplicable *applicable, gboolean update);
 void ags_output_editor_apply(AgsApplicable *applicable);
 void ags_output_editor_reset(AgsApplicable *applicable);
@@ -213,22 +215,12 @@ ags_output_editor_apply(AgsApplicable *applicable)
     AgsAudio *audio;
     AgsChannel *channel;
 
-    AgsResetAudioConnection *reset_audio_connection;
-    
-    AgsMutexManager *mutex_manager;
-    AgsAudioLoop *audio_loop;
-    AgsGuiThread *gui_thread;
-
-    AgsApplicationContext *application_context;
-    GObject *soundcard;
+    GObject *output_soundcard;
 
     GtkTreeModel *model;
 
     guint soundcard_channel;
     guint pad, audio_channel;
-    
-    pthread_mutex_t *application_mutex;
-    pthread_mutex_t *channel_mutex;
 
     connection_editor = AGS_CONNECTION_EDITOR(gtk_widget_get_ancestor(GTK_WIDGET(output_editor),
 								      AGS_TYPE_CONNECTION_EDITOR));
@@ -236,43 +228,16 @@ ags_output_editor_apply(AgsApplicable *applicable)
 							  AGS_TYPE_LINE_EDITOR));
 
     machine = connection_editor->machine;
+
     audio = machine->audio;
+
     channel = line_editor->channel;
-    
-    /* get window and application_context  */
-    window = (AgsWindow *) gtk_widget_get_toplevel(GTK_WIDGET(machine));
-  
-    application_context = (AgsApplicationContext *) window->application_context;
-    
-    mutex_manager = ags_mutex_manager_get_instance();
-    application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-    
-    /* get audio loop */
-    pthread_mutex_lock(application_mutex);
 
-    audio_loop = (AgsAudioLoop *) application_context->main_loop;
-
-    pthread_mutex_unlock(application_mutex);
-
-    /* lookup channel mutex */
-    pthread_mutex_lock(application_mutex);
-
-    channel_mutex = ags_mutex_manager_lookup(mutex_manager,
-					     channel);
-
-    pthread_mutex_unlock(application_mutex);
-
-    /* get audio fields */
-    pthread_mutex_lock(channel_mutex);
-
-    pad = channel->pad;
-    audio_channel = channel->audio_channel;
-    
-    pthread_mutex_unlock(channel_mutex);
-
-    /* get task and soundcard thread */
-    gui_thread = (AgsGuiThread *) ags_thread_find_type((AgsThread *) audio_loop,
-							 AGS_TYPE_GUI_THREAD);
+    /* get channel fields */
+    g_object_get(channel,
+		 "pad", &pad,
+		 "audio-channel", &audio_channel,
+		 NULL);
 
     /* get mapping and soundcard */
     soundcard_channel = (guint) gtk_spin_button_get_value_as_int(output_editor->audio_channel);
@@ -280,19 +245,14 @@ ags_output_editor_apply(AgsApplicable *applicable)
     model = gtk_combo_box_get_model(GTK_COMBO_BOX(output_editor->soundcard));
     gtk_tree_model_get(model,
 		       &iter,
-		       1, &soundcard,
+		       1, &output_soundcard,
 		       -1);
 
     /* create task */
-    reset_audio_connection = ags_reset_audio_connection_new(soundcard,
-							    audio,
-							    G_OBJECT_TYPE(channel),
-							    pad,
-							    audio_channel,
-							    soundcard_channel);
-    
-    ags_gui_thread_schedule_task(gui_thread,
-				 reset_audio_connection);
+    g_object_set(channel,
+		 "output-soundcard", output_soundcard,
+		 "output-soundcard-channel", soundcard_channel, 
+		 NULL);
   }
 }
 
@@ -314,10 +274,9 @@ ags_output_editor_reset(AgsApplicable *applicable)
     AgsLineEditor *line_editor;
     
     AgsAudio *audio;
-    AgsAudioConnection *audio_connection;
     AgsChannel *channel;
     
-    GObject *soundcard, *current;
+    GObject *output_soundcard, *current;
 
     GList *list;
     
@@ -327,26 +286,28 @@ ags_output_editor_reset(AgsApplicable *applicable)
     line_editor = AGS_LINE_EDITOR(gtk_widget_get_ancestor(GTK_WIDGET(output_editor),
 							  AGS_TYPE_LINE_EDITOR));
 
-    soundcard = NULL;
+    output_soundcard = NULL;
     audio = NULL;
     channel = line_editor->channel;
     
     if(channel != NULL){
-      soundcard = channel->soundcard;
-      audio = AGS_AUDIO(channel->audio);
+      g_object_get(channel,
+		   "audio", &audio,
+		   "output-soundcard", &output_soundcard,
+		   NULL);
     }
     
     i = 0;
     found = FALSE;
 
-    if(soundcard != NULL){
+    if(output_soundcard != NULL){
       do{
 	gtk_tree_model_get(model,
 			   &iter,
 			   1, &current,
 			   -1);
 
-	if(soundcard == current){
+	if(output_soundcard == current){
 	  found = TRUE;
 	  break;
 	}
@@ -357,42 +318,19 @@ ags_output_editor_reset(AgsApplicable *applicable)
     }
 
     if(found &&
-       audio != NULL){      
+       audio != NULL){
+      guint audio_channel;
+      
       /* set channel link */
       gtk_combo_box_set_active(output_editor->soundcard,
 			       i);
 
-      /*  */
-      audio_connection = NULL;
+      g_object_get(channel,
+		   "output-soundcard-channel", &audio_channel,
+		   NULL);
       
-      list = audio->audio_connection;
-	  
-      while((list = ags_audio_connection_find(list,
-					      AGS_TYPE_INPUT,
-					      channel->pad,
-					      channel->audio_channel)) != NULL){
-	GObject *data_object;
-
-	g_object_get(G_OBJECT(list->data),
-		     "data-object", &data_object,
-		     NULL);
-	
-	if(AGS_IS_SOUNDCARD(data_object)){
-	  audio_connection = list->data;
-	  
-	  break;
-	}
-
-	list = list->next;
-      }
-
-      if(audio_connection != NULL){
-	gtk_spin_button_set_value(output_editor->audio_channel,
-				  audio_connection->mapped_line);
-      }else{
-	gtk_spin_button_set_value(output_editor->audio_channel,
-				  0);
-      }
+      gtk_spin_button_set_value(output_editor->audio_channel,
+				audio_channel);
     }else{
       gtk_combo_box_set_active(output_editor->soundcard,
 			       0);
@@ -406,7 +344,7 @@ ags_output_editor_reset(AgsApplicable *applicable)
  *
  * Checks for possible channels to output. And modifies its ranges.
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_output_editor_check(AgsOutputEditor *output_editor)
@@ -423,7 +361,7 @@ ags_output_editor_check(AgsOutputEditor *output_editor)
 
   if(gtk_combo_box_get_active_iter(GTK_COMBO_BOX(output_editor->soundcard),
 				   &iter)){    
-    GObject *soundcard;
+    GObject *output_soundcard;
     
     GtkTreeModel *model;
 
@@ -433,10 +371,10 @@ ags_output_editor_check(AgsOutputEditor *output_editor)
     model = gtk_combo_box_get_model(GTK_COMBO_BOX(output_editor->soundcard));
     gtk_tree_model_get(model,
 		       &iter,
-		       1, &soundcard,
+		       1, &output_soundcard,
 		       -1);
 
-    ags_soundcard_get_presets(AGS_SOUNDCARD(soundcard),
+    ags_soundcard_get_presets(AGS_SOUNDCARD(output_soundcard),
  			      &audio_channels,
 			      NULL,
 			      NULL,
@@ -454,11 +392,11 @@ ags_output_editor_check(AgsOutputEditor *output_editor)
 /**
  * ags_output_editor_new:
  *
- * Creates an #AgsOutputEditor
+ * Create a new instance of #AgsOutputEditor
  *
- * Returns: a new #AgsOutputEditor
+ * Returns: the new #AgsOutputEditor
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsOutputEditor*
 ags_output_editor_new()

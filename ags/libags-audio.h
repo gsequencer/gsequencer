@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -42,13 +42,13 @@
 #include <ags/plugin/ags_lv2ui_manager.h>
 #include <ags/plugin/ags_lv2ui_plugin.h>
 #include <ags/plugin/ags_plugin_stock.h>
+#include <ags/plugin/ags_plugin_port.h>
 
 /* audio */
 #include <ags/audio/ags_acceleration.h>
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_audio_application_context.h>
 #include <ags/audio/ags_audio_buffer_util.h>
-#include <ags/audio/ags_audio_connection.h>
 #include <ags/audio/ags_audio_signal.h>
 #include <ags/audio/ags_automation.h>
 #include <ags/audio/ags_buffer.h>
@@ -58,13 +58,11 @@
 #include <ags/audio/ags_effect.h>
 #include <ags/audio/ags_fifoout.h>
 #include <ags/audio/ags_input.h>
-#include <ags/audio/ags_message.h>
 #include <ags/audio/ags_midiin.h>
 #include <ags/audio/ags_notation.h>
 #include <ags/audio/ags_note.h>
 #include <ags/audio/ags_output.h>
 #include <ags/audio/ags_pattern.h>
-#include <ags/audio/ags_playable.h>
 #include <ags/audio/ags_playback.h>
 #include <ags/audio/ags_playback_domain.h>
 #include <ags/audio/ags_port.h>
@@ -73,7 +71,7 @@
 #include <ags/audio/ags_recall_audio_run.h>
 #include <ags/audio/ags_recall_audio_signal.h>
 #include <ags/audio/ags_recall_channel.h>
-#include <ags/audio/ags_recall_channel_run_dummy.h>
+#include <ags/audio/ags_generic_recall_channel_run.h>
 #include <ags/audio/ags_recall_channel_run.h>
 #include <ags/audio/ags_recall_container.h>
 #include <ags/audio/ags_recall_dependency.h>
@@ -86,11 +84,13 @@
 #include <ags/audio/ags_recall_ladspa_run.h>
 #include <ags/audio/ags_recall_lv2.h>
 #include <ags/audio/ags_recall_lv2_run.h>
-#include <ags/audio/ags_recall_recycling_dummy.h>
+#include <ags/audio/ags_generic_recall_recycling.h>
 #include <ags/audio/ags_recall_recycling.h>
 #include <ags/audio/ags_recycling_context.h>
 #include <ags/audio/ags_recycling.h>
 #include <ags/audio/ags_sound_provider.h>
+#include <ags/audio/ags_sequencer_util.h>
+#include <ags/audio/ags_soundcard_util.h>
 #include <ags/audio/ags_synth_generator.h>
 #include <ags/audio/ags_synth_util.h>
 #include <ags/audio/ags_wave.h>
@@ -102,19 +102,20 @@
 #include <ags/audio/thread/ags_sequencer_thread.h>
 #include <ags/audio/thread/ags_soundcard_thread.h>
 #include <ags/audio/thread/ags_export_thread.h>
-#include <ags/audio/thread/ags_iterator_thread.h>
-#include <ags/audio/thread/ags_record_thread.h>
-#include <ags/audio/thread/ags_recycling_thread_callbacks.h>
-#include <ags/audio/thread/ags_recycling_thread.h>
 
 /* audio file */
+#include <ags/audio/file/ags_audio_container.h>
 #include <ags/audio/file/ags_audio_file.h>
 #include <ags/audio/file/ags_audio_file_link.h>
 #include <ags/audio/file/ags_audio_file_xml.h>
 #include <ags/audio/file/ags_ipatch.h>
+#include <ags/audio/file/ags_ipatch_gig_reader.h>
 #include <ags/audio/file/ags_ipatch_dls2_reader.h>
 #include <ags/audio/file/ags_ipatch_sf2_reader.h>
+#include <ags/audio/file/ags_ipatch_sample.h>
 #include <ags/audio/file/ags_sndfile.h>
+#include <ags/audio/file/ags_sound_container.h>
+#include <ags/audio/file/ags_sound_resource.h>
 
 /* audio midi */
 #include <ags/audio/midi/ags_midi_buffer_util.h>
@@ -148,11 +149,11 @@
 #include <ags/audio/recall/ags_buffer_channel.h>
 #include <ags/audio/recall/ags_buffer_channel_run.h>
 #include <ags/audio/recall/ags_buffer_recycling.h>
+#include <ags/audio/recall/ags_capture_wave_audio.h>
+#include <ags/audio/recall/ags_capture_wave_audio_run.h>
 #include <ags/audio/recall/ags_copy_audio_signal.h>
 #include <ags/audio/recall/ags_copy_channel.h>
 #include <ags/audio/recall/ags_copy_channel_run.h>
-#include <ags/audio/recall/ags_copy_notation_audio.h>
-#include <ags/audio/recall/ags_copy_notation_audio_run.h>
 #include <ags/audio/recall/ags_copy_pattern_audio.h>
 #include <ags/audio/recall/ags_copy_pattern_audio_run.h>
 #include <ags/audio/recall/ags_copy_pattern_channel.h>
@@ -182,7 +183,6 @@
 #include <ags/audio/recall/ags_peak_channel.h>
 #include <ags/audio/recall/ags_peak_channel_run.h>
 #include <ags/audio/recall/ags_peak_recycling.h>
-#include <ags/audio/recall/ags_play_audio_file.h>
 #include <ags/audio/recall/ags_play_audio.h>
 #include <ags/audio/recall/ags_play_audio_signal.h>
 #include <ags/audio/recall/ags_play_channel.h>
@@ -190,11 +190,14 @@
 #include <ags/audio/recall/ags_play_channel_run_master.h>
 #include <ags/audio/recall/ags_play_notation_audio.h>
 #include <ags/audio/recall/ags_play_notation_audio_run.h>
+#include <ags/audio/recall/ags_play_wave_audio.h>
+#include <ags/audio/recall/ags_play_wave_audio_run.h>
+#include <ags/audio/recall/ags_play_wave_channel.h>
+#include <ags/audio/recall/ags_play_wave_channel_run.h>
 #include <ags/audio/recall/ags_play_dssi_audio.h>
 #include <ags/audio/recall/ags_play_dssi_audio_run.h>
 #include <ags/audio/recall/ags_play_lv2_audio.h>
 #include <ags/audio/recall/ags_play_lv2_audio_run.h>
-#include <ags/audio/recall/ags_play_note.h>
 #include <ags/audio/recall/ags_play_recycling.h>
 #include <ags/audio/recall/ags_prepare_audio_signal.h>
 #include <ags/audio/recall/ags_prepare_channel.h>
@@ -220,63 +223,46 @@
 #include <ags/audio/task/ags_add_audio_signal.h>
 #include <ags/audio/task/ags_add_effect.h>
 #include <ags/audio/task/ags_add_note.h>
-#include <ags/audio/task/ags_add_point_to_selection.h>
-#include <ags/audio/task/ags_add_recall_container.h>
-#include <ags/audio/task/ags_add_recall.h>
-#include <ags/audio/task/ags_add_region_to_selection.h>
 #include <ags/audio/task/ags_add_soundcard.h>
-#include <ags/audio/task/ags_append_audio.h>
-#include <ags/audio/task/ags_append_audio_threaded.h>
-#include <ags/audio/task/ags_append_channel.h>
-#include <ags/audio/task/ags_append_recall.h>
 #include <ags/audio/task/ags_apply_presets.h>
 #include <ags/audio/task/ags_apply_synth.h>
 #include <ags/audio/task/ags_cancel_audio.h>
 #include <ags/audio/task/ags_cancel_channel.h>
-#include <ags/audio/task/ags_cancel_recall.h>
-#include <ags/audio/task/ags_change_soundcard.h>
 #include <ags/audio/task/ags_clear_audio_signal.h>
 #include <ags/audio/task/ags_clear_buffer.h>
 #include <ags/audio/task/ags_crop_note.h>
 #include <ags/audio/task/ags_export_output.h>
 #include <ags/audio/task/ags_free_selection.h>
-#include <ags/audio/task/ags_init_audio.h>
-#include <ags/audio/task/ags_init_channel.h>
 #include <ags/audio/task/ags_link_channel.h>
 #include <ags/audio/task/ags_move_note.h>
 #include <ags/audio/task/ags_notify_soundcard.h>
 #include <ags/audio/task/ags_open_file.h>
+#include <ags/audio/task/ags_open_sf2_instrument.h>
 #include <ags/audio/task/ags_open_sf2_sample.h>
 #include <ags/audio/task/ags_open_single_file.h>
+#include <ags/audio/task/ags_open_wave.h>
+#include <ags/audio/task/ags_start_audio.h>
+#include <ags/audio/task/ags_start_channel.h>
 #include <ags/audio/task/ags_remove_audio.h>
 #include <ags/audio/task/ags_remove_audio_signal.h>
 #include <ags/audio/task/ags_remove_note.h>
-#include <ags/audio/task/ags_remove_point_from_selection.h>
-#include <ags/audio/task/ags_remove_recall_container.h>
-#include <ags/audio/task/ags_remove_recall.h>
-#include <ags/audio/task/ags_remove_region_from_selection.h>
 #include <ags/audio/task/ags_remove_soundcard.h>
-#include <ags/audio/task/ags_reset_audio_connection.h>
 #include <ags/audio/task/ags_resize_audio.h>
-#include <ags/audio/task/ags_save_file.h>
 #include <ags/audio/task/ags_seek_soundcard.h>
 #include <ags/audio/task/ags_set_audio_channels.h>
 #include <ags/audio/task/ags_set_buffer_size.h>
 #include <ags/audio/task/ags_set_format.h>
-#include <ags/audio/task/ags_set_input_device.h>
-#include <ags/audio/task/ags_set_output_device.h>
 #include <ags/audio/task/ags_set_samplerate.h>
 #include <ags/audio/task/ags_start_sequencer.h>
 #include <ags/audio/task/ags_start_soundcard.h>
 #include <ags/audio/task/ags_switch_buffer_flag.h>
 #include <ags/audio/task/ags_tic_device.h>
 #include <ags/audio/task/ags_toggle_pattern_bit.h>
-#include <ags/audio/task/ags_unref_audio_signal.h>
 
 /* audio recall task */
-#include <ags/audio/task/recall/ags_apply_bpm.h>
-#include <ags/audio/task/recall/ags_apply_sequencer_length.h>
-#include <ags/audio/task/recall/ags_apply_tact.h>
-#include <ags/audio/task/recall/ags_set_muted.h>
+#include <ags/audio/task/ags_apply_bpm.h>
+#include <ags/audio/task/ags_apply_sequencer_length.h>
+#include <ags/audio/task/ags_apply_tact.h>
+#include <ags/audio/task/ags_set_muted.h>
 
 #endif /*__LIBAGS_AUDIO_H__*/

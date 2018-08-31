@@ -25,6 +25,9 @@
 
 #include <gtk/gtk.h>
 
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+
 #define AGS_TYPE_MIDI_IMPORT_WIZARD                (ags_midi_import_wizard_get_type())
 #define AGS_MIDI_IMPORT_WIZARD(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_MIDI_IMPORT_WIZARD, AgsMidiImportWizard))
 #define AGS_MIDI_IMPORT_WIZARD_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_MIDI_IMPORT_WIZARD, AgsMidiImportWizardClass))
@@ -47,7 +50,7 @@ struct _AgsMidiImportWizard
 
   guint flags;
 
-  GObject *application_context;
+  AgsApplicationContext *application_context;
 
   GtkWidget *main_window;
   

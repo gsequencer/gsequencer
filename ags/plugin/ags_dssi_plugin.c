@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -19,9 +19,9 @@
 
 #include <ags/plugin/ags_dssi_plugin.h>
 
-#include <ags/object/ags_marshal.h>
-#include <ags/object/ags_config.h>
-#include <ags/object/ags_soundcard.h>
+#include <ags/libags.h>
+
+#include <ags/plugin/ags_plugin_port.h>
 
 #include <dlfcn.h>
 #include <stdio.h>
@@ -45,7 +45,7 @@ void ags_dssi_plugin_get_property(GObject *gobject,
 void ags_dssi_plugin_finalize(GObject *gobject);
 
 gpointer ags_dssi_plugin_instantiate(AgsBasePlugin *base_plugin,
-				     guint samplerate);
+				     guint samplerate, guint buffer_size);
 void ags_dssi_plugin_connect_port(AgsBasePlugin *base_plugin,
 				  gpointer plugin_handle,
 				  guint port_index,
@@ -144,7 +144,7 @@ ags_dssi_plugin_class_init(AgsDssiPluginClass *dssi_plugin)
    *
    * The assigned unique-id.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_uint("unique-id",
 				 i18n_pspec("unique-id of the plugin"),
@@ -162,7 +162,7 @@ ags_dssi_plugin_class_init(AgsDssiPluginClass *dssi_plugin)
    *
    * The assigned program.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_string("program",
 				   i18n_pspec("program of the plugin"),
@@ -199,7 +199,7 @@ ags_dssi_plugin_class_init(AgsDssiPluginClass *dssi_plugin)
    *
    * The ::change-program signal creates a new instance of plugin.
    *
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   dssi_plugin_signals[CHANGE_PROGRAM] =
     g_signal_new("change-program",
@@ -207,7 +207,7 @@ ags_dssi_plugin_class_init(AgsDssiPluginClass *dssi_plugin)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET (AgsDssiPluginClass, change_program),
 		 NULL, NULL,
-		 g_cclosure_user_marshal_VOID__POINTER_UINT_UINT,
+		 ags_cclosure_marshal_VOID__POINTER_UINT_UINT,
 		 G_TYPE_NONE, 3,
 		 G_TYPE_POINTER,
 		 G_TYPE_UINT,
@@ -229,12 +229,25 @@ ags_dssi_plugin_set_property(GObject *gobject,
 {
   AgsDssiPlugin *dssi_plugin;
 
+  pthread_mutex_t *base_plugin_mutex;
+
   dssi_plugin = AGS_DSSI_PLUGIN(gobject);
+
+  /* get base plugin mutex */
+  pthread_mutex_lock(ags_base_plugin_get_class_mutex());
+  
+  base_plugin_mutex = AGS_BASE_PLUGIN(gobject)->obj_mutex;
+  
+  pthread_mutex_unlock(ags_base_plugin_get_class_mutex());
 
   switch(prop_id){
   case PROP_UNIQUE_ID:
     {
+      pthread_mutex_lock(base_plugin_mutex);
+
       dssi_plugin->unique_id = g_value_get_uint(value);
+
+      pthread_mutex_unlock(base_plugin_mutex);
     }
     break;
   case PROP_PROGRAM:
@@ -243,7 +256,11 @@ ags_dssi_plugin_set_property(GObject *gobject,
 
       program = (gchar *) g_value_get_string(value);
 
+      pthread_mutex_lock(base_plugin_mutex);
+
       if(dssi_plugin->program == program){
+	pthread_mutex_unlock(base_plugin_mutex);
+
 	return;
       }
       
@@ -252,6 +269,8 @@ ags_dssi_plugin_set_property(GObject *gobject,
       }
 
       dssi_plugin->program = g_strdup(program);
+
+      pthread_mutex_unlock(base_plugin_mutex);
     }
     break;
   default:
@@ -268,14 +287,35 @@ ags_dssi_plugin_get_property(GObject *gobject,
 {
   AgsDssiPlugin *dssi_plugin;
 
+  pthread_mutex_t *base_plugin_mutex;
+
   dssi_plugin = AGS_DSSI_PLUGIN(gobject);
+
+  /* get base plugin mutex */
+  pthread_mutex_lock(ags_base_plugin_get_class_mutex());
+  
+  base_plugin_mutex = AGS_BASE_PLUGIN(gobject)->obj_mutex;
+  
+  pthread_mutex_unlock(ags_base_plugin_get_class_mutex());
 
   switch(prop_id){
   case PROP_UNIQUE_ID:
-    g_value_set_uint(value, dssi_plugin->unique_id);
+    {
+      pthread_mutex_lock(base_plugin_mutex);
+
+      g_value_set_uint(value, dssi_plugin->unique_id);
+      
+      pthread_mutex_unlock(base_plugin_mutex);
+    }
     break;
   case PROP_PROGRAM:
-    g_value_set_string(value, dssi_plugin->program);
+    {
+      pthread_mutex_lock(base_plugin_mutex);
+
+      g_value_set_string(value, dssi_plugin->program);
+
+      pthread_mutex_unlock(base_plugin_mutex);
+    }
     break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
@@ -298,24 +338,36 @@ ags_dssi_plugin_finalize(GObject *gobject)
 
 gpointer
 ags_dssi_plugin_instantiate(AgsBasePlugin *base_plugin,
-			    guint samplerate)
+			    guint samplerate, guint buffer_size)
 {
+  LADSPA_Descriptor *ladspa_descriptor;
+
   gpointer ptr;
+
+  LADSPA_Handle (*instantiate)(const struct _LADSPA_Descriptor *descriptor,
+			       unsigned long ramplerate);
   
   pthread_mutex_t *base_plugin_mutex;
 
-  /* base plugin mutex */
+  /* get base plugin mutex */
   pthread_mutex_lock(ags_base_plugin_get_class_mutex());
-
+  
   base_plugin_mutex = base_plugin->obj_mutex;
   
   pthread_mutex_unlock(ags_base_plugin_get_class_mutex());
 
-  /* instantiate */
+  /* get instantiate */
   pthread_mutex_lock(base_plugin_mutex);
+
+  ladspa_descriptor = AGS_DSSI_PLUGIN_DESCRIPTOR(base_plugin->plugin_descriptor)->LADSPA_Plugin;
   
-  ptr = AGS_DSSI_PLUGIN_DESCRIPTOR(base_plugin->plugin_descriptor)->LADSPA_Plugin->instantiate(AGS_DSSI_PLUGIN_DESCRIPTOR(base_plugin->plugin_descriptor)->LADSPA_Plugin,
-											       (unsigned long) samplerate);
+  instantiate = AGS_DSSI_PLUGIN_DESCRIPTOR(base_plugin->plugin_descriptor)->LADSPA_Plugin->instantiate;
+  
+  pthread_mutex_unlock(base_plugin_mutex);
+
+  /* instantiate */
+  ptr = instantiate(ladspa_descriptor,
+		    (unsigned long) samplerate);
 
   pthread_mutex_unlock(base_plugin_mutex);
 
@@ -328,43 +380,56 @@ ags_dssi_plugin_connect_port(AgsBasePlugin *base_plugin,
 			     guint port_index,
 			     gpointer data_location)
 {
+  void (*connect_port)(LADSPA_Handle instance,
+		       unsigned long port_index,
+		       LADSPA_Data *data_location);
+  
   pthread_mutex_t *base_plugin_mutex;
 
-  /* base plugin mutex */
+  /* get base plugin mutex */
   pthread_mutex_lock(ags_base_plugin_get_class_mutex());
-
+  
   base_plugin_mutex = base_plugin->obj_mutex;
   
   pthread_mutex_unlock(ags_base_plugin_get_class_mutex());
 
-  /* connect port */
+  /* get connect port */
   pthread_mutex_lock(base_plugin_mutex);
-  
-  AGS_DSSI_PLUGIN_DESCRIPTOR(base_plugin->plugin_descriptor)->LADSPA_Plugin->connect_port((LADSPA_Handle) plugin_handle,
-											  (unsigned long) port_index,
-											  (LADSPA_Data *) data_location);
 
+  connect_port = AGS_DSSI_PLUGIN_DESCRIPTOR(base_plugin->plugin_descriptor)->LADSPA_Plugin->connect_port;
+  
   pthread_mutex_unlock(base_plugin_mutex);
+
+  /* connect port */
+  connect_port((LADSPA_Handle) plugin_handle,
+	       (unsigned long) port_index,
+	       (LADSPA_Data *) data_location);
 }
 
 void
 ags_dssi_plugin_activate(AgsBasePlugin *base_plugin,
 			 gpointer plugin_handle)
 {
+  void (*activate)(LADSPA_Handle instance);
+  
   pthread_mutex_t *base_plugin_mutex;
 
-  /* base plugin mutex */
+  /* get base plugin mutex */
   pthread_mutex_lock(ags_base_plugin_get_class_mutex());
-
+  
   base_plugin_mutex = base_plugin->obj_mutex;
   
   pthread_mutex_unlock(ags_base_plugin_get_class_mutex());
 
   /* activate */
   pthread_mutex_lock(base_plugin_mutex);
+
+  activate = AGS_DSSI_PLUGIN_DESCRIPTOR(base_plugin->plugin_descriptor)->LADSPA_Plugin->activate;
   
-  if(AGS_DSSI_PLUGIN_DESCRIPTOR(base_plugin->plugin_descriptor)->LADSPA_Plugin->activate != NULL){
-    AGS_DSSI_PLUGIN_DESCRIPTOR(base_plugin->plugin_descriptor)->LADSPA_Plugin->activate((LADSPA_Handle) plugin_handle);
+  pthread_mutex_unlock(base_plugin_mutex);
+
+  if(activate != NULL){
+    activate((LADSPA_Handle) plugin_handle);
   }
   
   pthread_mutex_unlock(base_plugin_mutex);
@@ -374,20 +439,26 @@ void
 ags_dssi_plugin_deactivate(AgsBasePlugin *base_plugin,
 			   gpointer plugin_handle)
 {
+  void (*deactivate)(LADSPA_Handle instance);
+  
   pthread_mutex_t *base_plugin_mutex;
 
-  /* base plugin mutex */
+  /* get base plugin mutex */
   pthread_mutex_lock(ags_base_plugin_get_class_mutex());
-
+  
   base_plugin_mutex = base_plugin->obj_mutex;
   
   pthread_mutex_unlock(ags_base_plugin_get_class_mutex());
 
-  /* deactivate port */
+  /* deactivate */
   pthread_mutex_lock(base_plugin_mutex);
 
-  if(AGS_DSSI_PLUGIN_DESCRIPTOR(base_plugin->plugin_descriptor)->LADSPA_Plugin->deactivate != NULL){
-    AGS_DSSI_PLUGIN_DESCRIPTOR(base_plugin->plugin_descriptor)->LADSPA_Plugin->deactivate((LADSPA_Handle) plugin_handle);
+  deactivate = AGS_DSSI_PLUGIN_DESCRIPTOR(base_plugin->plugin_descriptor)->LADSPA_Plugin->deactivate;
+  
+  pthread_mutex_unlock(base_plugin_mutex);
+
+  if(deactivate != NULL){
+    deactivate((LADSPA_Handle) plugin_handle);
   }
 
   pthread_mutex_unlock(base_plugin_mutex);
@@ -404,25 +475,25 @@ ags_dssi_plugin_run(AgsBasePlugin *base_plugin,
 		    snd_seq_event_t *events,
 		    unsigned long event_count);
   void (*run)(LADSPA_Handle instance,
-              unsigned long sample_count);
-
+	      unsigned long sample_count);
+  
   pthread_mutex_t *base_plugin_mutex;
 
-  /* base plugin mutex */
+  /* get base plugin mutex */
   pthread_mutex_lock(ags_base_plugin_get_class_mutex());
-
+  
   base_plugin_mutex = base_plugin->obj_mutex;
   
   pthread_mutex_unlock(ags_base_plugin_get_class_mutex());
 
-  /* get fields */
+  /* run */
   pthread_mutex_lock(base_plugin_mutex);
 
   run_synth = AGS_DSSI_PLUGIN_DESCRIPTOR(base_plugin->plugin_descriptor)->run_synth;
   run = AGS_DSSI_PLUGIN_DESCRIPTOR(base_plugin->plugin_descriptor)->LADSPA_Plugin->run;
-
+  
   pthread_mutex_unlock(base_plugin_mutex);
-
+  
   if(run_synth != NULL){
     run_synth((LADSPA_Handle) plugin_handle,
 	      (unsigned long) frame_count,
@@ -437,9 +508,11 @@ ags_dssi_plugin_run(AgsBasePlugin *base_plugin,
 void
 ags_dssi_plugin_load_plugin(AgsBasePlugin *base_plugin)
 {
-  AgsPortDescriptor *port;
+  AgsDssiPlugin *dssi_plugin;  
 
-  GList *port_list;
+  AgsPluginPort *current_plugin_port;
+
+  GList *plugin_port;
 
   gchar *str;
   
@@ -452,6 +525,20 @@ ags_dssi_plugin_load_plugin(AgsBasePlugin *base_plugin)
   unsigned long port_count;
   unsigned long i;
   
+  pthread_mutex_t *base_plugin_mutex;
+  
+  dssi_plugin = AGS_DSSI_PLUGIN(base_plugin);  
+
+  /* get base plugin mutex */
+  pthread_mutex_lock(ags_base_plugin_get_class_mutex());
+  
+  base_plugin_mutex = base_plugin->obj_mutex;
+  
+  pthread_mutex_unlock(ags_base_plugin_get_class_mutex());
+
+  /* dlopen */
+  pthread_mutex_lock(base_plugin_mutex);
+
   base_plugin->plugin_so = dlopen(base_plugin->filename,
 				  RTLD_NOW);
   
@@ -460,162 +547,188 @@ ags_dssi_plugin_load_plugin(AgsBasePlugin *base_plugin)
     
     dlerror();
 
+    pthread_mutex_unlock(base_plugin_mutex);
+
     return;
   }
 
   dssi_descriptor = (DSSI_Descriptor_Function) dlsym(base_plugin->plugin_so,
 						     "dssi_descriptor");
   
-  if(dlerror() == NULL && dssi_descriptor){
-    effect_index = base_plugin->effect_index;
-    base_plugin->plugin_descriptor = dssi_descriptor(effect_index);
+  pthread_mutex_unlock(base_plugin_mutex);
 
-    if(base_plugin->plugin_descriptor != NULL){
-      g_object_set(base_plugin,
-		   "unique-id", AGS_DSSI_PLUGIN_DESCRIPTOR(base_plugin->plugin_descriptor)->LADSPA_Plugin->UniqueID,
-		   NULL);
+  if(dlerror() == NULL && dssi_descriptor){
+    gpointer plugin_descriptor;
+
+    guint unique_id;
+    
+    pthread_mutex_lock(base_plugin_mutex);
+    
+    effect_index = base_plugin->effect_index;
+
+    plugin_descriptor = 
+      base_plugin->plugin_descriptor = dssi_descriptor(effect_index);
+
+    pthread_mutex_unlock(base_plugin_mutex);
+
+    if(plugin_descriptor != NULL){
+      pthread_mutex_lock(base_plugin_mutex);
+
+      unique_id = AGS_DSSI_PLUGIN_DESCRIPTOR(base_plugin->plugin_descriptor)->LADSPA_Plugin->UniqueID;
       
       port_count = AGS_DSSI_PLUGIN_DESCRIPTOR(base_plugin->plugin_descriptor)->LADSPA_Plugin->PortCount;
       port_descriptor = AGS_DSSI_PLUGIN_DESCRIPTOR(base_plugin->plugin_descriptor)->LADSPA_Plugin->PortDescriptors;
 
-      port_list = NULL;
+      pthread_mutex_unlock(base_plugin_mutex);
+
+      g_object_set(base_plugin,
+		   "unique-id", unique_id,
+		   NULL);
+      
+      plugin_port = NULL;
       
       for(i = 0; i < port_count; i++){
-	/* allocate port descriptor */
-	port = ags_port_descriptor_alloc();
-	port_list = g_list_prepend(port_list,
-				   port);
+	/* create plugin port */
+	current_plugin_port = ags_plugin_port_new();
+	g_object_ref(current_plugin_port);
+	
+	plugin_port = g_list_prepend(plugin_port,
+				     current_plugin_port);
+	
+	pthread_mutex_lock(base_plugin_mutex);
 	
 	/* set flags */
 	if(LADSPA_IS_PORT_INPUT(port_descriptor[i])){
-	  port->flags |= AGS_PORT_DESCRIPTOR_INPUT;
+	  current_plugin_port->flags |= AGS_PLUGIN_PORT_INPUT;
 	}else if(LADSPA_IS_PORT_OUTPUT(port_descriptor[i])){
-	  port->flags |= AGS_PORT_DESCRIPTOR_OUTPUT;
+	  current_plugin_port->flags |= AGS_PLUGIN_PORT_OUTPUT;
 	}
 	
 	if(LADSPA_IS_PORT_CONTROL(port_descriptor[i])){
-	  port->flags |= AGS_PORT_DESCRIPTOR_CONTROL;
+	  current_plugin_port->flags |= AGS_PLUGIN_PORT_CONTROL;
 	}else if(LADSPA_IS_PORT_AUDIO(port_descriptor[i])){
-	  port->flags |= AGS_PORT_DESCRIPTOR_AUDIO;
+	  current_plugin_port->flags |= AGS_PLUGIN_PORT_AUDIO;
 	}
 
 	/* set index and name */
-	port->port_index = i;
-	port->port_name = g_strdup(AGS_DSSI_PLUGIN_DESCRIPTOR(base_plugin->plugin_descriptor)->LADSPA_Plugin->PortNames[i]);
+	current_plugin_port->port_index = i;
+	current_plugin_port->port_name = g_strdup(AGS_DSSI_PLUGIN_DESCRIPTOR(base_plugin->plugin_descriptor)->LADSPA_Plugin->PortNames[i]);
 
 	range_hint = &(AGS_DSSI_PLUGIN_DESCRIPTOR(base_plugin->plugin_descriptor)->LADSPA_Plugin->PortRangeHints[i]);
 	hint_descriptor = range_hint->HintDescriptor;
 
-	g_value_init(port->default_value,
+	g_value_init(current_plugin_port->default_value,
 		     G_TYPE_FLOAT);
-	g_value_init(port->lower_value,
+	g_value_init(current_plugin_port->lower_value,
 		     G_TYPE_FLOAT);
-	g_value_init(port->upper_value,
+	g_value_init(current_plugin_port->upper_value,
 		     G_TYPE_FLOAT);
 
-	g_value_set_float(port->default_value,
+	g_value_set_float(current_plugin_port->default_value,
 			  0.0);
 
 	if(LADSPA_IS_HINT_TOGGLED(hint_descriptor)){
 	  /* is toggled */
-	  port->flags |= AGS_PORT_DESCRIPTOR_TOGGLED;
+	  current_plugin_port->flags |= AGS_PLUGIN_PORT_TOGGLED;
 
 	  /* set default */
 	  if(LADSPA_IS_HINT_DEFAULT_0(hint_descriptor)){
-	    g_value_set_float(port->default_value,
+	    g_value_set_float(current_plugin_port->default_value,
 			      0.0);
 	  }else if(LADSPA_IS_HINT_DEFAULT_1(hint_descriptor)){
-	    g_value_set_float(port->default_value,
+	    g_value_set_float(current_plugin_port->default_value,
 			      1.0);
 	  }
 	}else{
 	  /* set lower */
-	  g_value_set_float(port->lower_value,
+	  g_value_set_float(current_plugin_port->lower_value,
 			    range_hint->LowerBound);
 	    
 	  /* set upper */
-	  g_value_set_float(port->upper_value,
+	  g_value_set_float(current_plugin_port->upper_value,
 			    range_hint->UpperBound);
 
 	  /* set default */
-	  g_value_set_float(port->default_value,
+	  g_value_set_float(current_plugin_port->default_value,
 			    range_hint->LowerBound);
 
 	  /* bounds */
 	  if(LADSPA_IS_HINT_BOUNDED_BELOW(hint_descriptor)){
 	    if(LADSPA_IS_HINT_SAMPLE_RATE(hint_descriptor)){
-	      port->flags |= (AGS_PORT_DESCRIPTOR_SAMPLERATE |
-			      AGS_PORT_DESCRIPTOR_BOUNDED_BELOW);
-	      g_value_set_float(port->lower_value,
+	      current_plugin_port->flags |= (AGS_PLUGIN_PORT_SAMPLERATE |
+					     AGS_PLUGIN_PORT_BOUNDED_BELOW);
+	      g_value_set_float(current_plugin_port->lower_value,
 				range_hint->LowerBound);
 	    }
 	  }
 
 	  if(LADSPA_IS_HINT_BOUNDED_ABOVE(hint_descriptor)){
 	    if(LADSPA_IS_HINT_SAMPLE_RATE(hint_descriptor)){
-	      port->flags |= (AGS_PORT_DESCRIPTOR_SAMPLERATE |
-			      AGS_PORT_DESCRIPTOR_BOUNDED_ABOVE);
-	      g_value_set_float(port->upper_value,
+	      current_plugin_port->flags |= (AGS_PLUGIN_PORT_SAMPLERATE |
+					     AGS_PLUGIN_PORT_BOUNDED_ABOVE);
+	      g_value_set_float(current_plugin_port->upper_value,
 				range_hint->UpperBound);
 	    }
 	  }
 
 	  /* integer */
 	  if(LADSPA_IS_HINT_INTEGER(hint_descriptor)){
-	    port->flags |= AGS_PORT_DESCRIPTOR_INTEGER;
-	    port->scale_steps = range_hint->UpperBound - range_hint->LowerBound;
+	    current_plugin_port->flags |= AGS_PLUGIN_PORT_INTEGER;
+	    current_plugin_port->scale_steps = range_hint->UpperBound - range_hint->LowerBound;
 	  }
 
 	  /* logarithmic */
 	  if(LADSPA_IS_HINT_LOGARITHMIC(hint_descriptor)){
-	    port->flags |= AGS_PORT_DESCRIPTOR_LOGARITHMIC;
+	    current_plugin_port->flags |= AGS_PLUGIN_PORT_LOGARITHMIC;
 	  }
 
 	  /* set default value */
 	  if(LADSPA_IS_HINT_DEFAULT_0(hint_descriptor)){
-	    g_value_set_float(port->default_value,
+	    g_value_set_float(current_plugin_port->default_value,
 			      0.0);
 	  }else if(LADSPA_IS_HINT_DEFAULT_1(hint_descriptor)){
-	    g_value_set_float(port->default_value,
+	    g_value_set_float(current_plugin_port->default_value,
 			      1.0);
 	  }else if(LADSPA_IS_HINT_DEFAULT_MINIMUM(hint_descriptor)){
-	    g_value_set_float(port->default_value,
+	    g_value_set_float(current_plugin_port->default_value,
 			      range_hint->LowerBound);
 	  }else if(LADSPA_IS_HINT_DEFAULT_LOW(hint_descriptor)){
 	    float default_value;
 
 	    default_value = 0.75 * range_hint->LowerBound + 0.25 * range_hint->UpperBound;
 	      
-	    g_value_set_float(port->default_value,
+	    g_value_set_float(current_plugin_port->default_value,
 			      default_value);
 	  }else if(LADSPA_IS_HINT_DEFAULT_MIDDLE(hint_descriptor)){
 	    float default_value;
 
 	    default_value = (0.5 * range_hint->LowerBound) + (0.5 * range_hint->UpperBound);
 	      
-	    g_value_set_float(port->default_value,
+	    g_value_set_float(current_plugin_port->default_value,
 			      default_value);
 	  }else if(LADSPA_IS_HINT_DEFAULT_HIGH(hint_descriptor)){
 	    float default_value;
 
 	    default_value = 0.25 * range_hint->LowerBound + 0.75 * range_hint->UpperBound;
 
-	    g_value_set_float(port->default_value,
+	    g_value_set_float(current_plugin_port->default_value,
 			      default_value);
 	  }else if(LADSPA_IS_HINT_DEFAULT_MAXIMUM(hint_descriptor)){
-	    g_value_set_float(port->default_value,
+	    g_value_set_float(current_plugin_port->default_value,
 			      range_hint->UpperBound);
 	  }else if(LADSPA_IS_HINT_DEFAULT_100(hint_descriptor)){
-	    g_value_set_float(port->default_value,
+	    g_value_set_float(current_plugin_port->default_value,
 			      100.0);
 	  }else if(LADSPA_IS_HINT_DEFAULT_440(hint_descriptor)){
-	    g_value_set_float(port->default_value,
+	    g_value_set_float(current_plugin_port->default_value,
 			      440.0);
 	  }
 	}
+
+	pthread_mutex_unlock(base_plugin_mutex);
       }
 
-      base_plugin->port = g_list_reverse(port_list);
+      base_plugin->plugin_port = g_list_reverse(plugin_port);
     }
   }
 }
@@ -629,23 +742,24 @@ ags_dssi_plugin_real_change_program(AgsDssiPlugin *dssi_plugin,
   void (*select_program)(LADSPA_Handle instance,
 			 unsigned long bank,
 			 unsigned long program);
-  
+
   pthread_mutex_t *base_plugin_mutex;
 
-  /* base plugin mutex */
+  /* get base plugin mutex */
   pthread_mutex_lock(ags_base_plugin_get_class_mutex());
-
+  
   base_plugin_mutex = AGS_BASE_PLUGIN(dssi_plugin)->obj_mutex;
   
   pthread_mutex_unlock(ags_base_plugin_get_class_mutex());
 
-  /* select program */
+  /* get change program */
   pthread_mutex_lock(base_plugin_mutex);
 
   select_program = AGS_DSSI_PLUGIN_DESCRIPTOR(AGS_BASE_PLUGIN(dssi_plugin)->plugin_descriptor)->select_program;
   
   pthread_mutex_unlock(base_plugin_mutex);
 
+  /* change program */
   if(select_program != NULL){
     select_program((void *) ladspa_handle,
 		   (unsigned long) bank_index,
@@ -675,11 +789,11 @@ ags_dssi_plugin_change_program(AgsDssiPlugin *dssi_plugin,
  * @effect: the effect's string representation
  * @effect_index: the effect's index
  *
- * Creates an #AgsDssiPlugin
+ * Create a new instance of #AgsDssiPlugin
  *
- * Returns: a new #AgsDssiPlugin
+ * Returns: the new #AgsDssiPlugin
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsDssiPlugin*
 ags_dssi_plugin_new(gchar *filename, gchar *effect, guint effect_index)

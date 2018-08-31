@@ -309,7 +309,7 @@ ags_lv2_bridge_lv2ui_write_function(LV2UI_Controller controller, uint32_t port_i
     list_bulk_member_start = gtk_container_get_children((GtkContainer *) AGS_EFFECT_BULK(effect_bridge->bulk_input)->table);
 
   str = g_strdup_printf("%d/",
-			port_index);
+			port_index + 1);
 
   while(list_bulk_member != NULL){
     if(!g_ascii_strncasecmp(str,
@@ -359,10 +359,10 @@ ags_lv2_bridge_program_changed_callback(GtkComboBox *combo_box, AgsLv2Bridge *lv
     
     LV2_Programs_Interface *program_interface;
 
-    GList *port_descriptor_start, *port_descriptor;
+    GList *start_plugin_port, *plugin_port;
     GList *bulk_member, *bulk_member_start;
-    GList *recall;
-    GList *port;
+    GList *start_recall, *recall;
+    GList *start_port, *port;
   
     gchar *name;
     gchar *specifier;
@@ -391,24 +391,33 @@ ags_lv2_bridge_program_changed_callback(GtkComboBox *combo_box, AgsLv2Bridge *lv
 				      program);
 
     /* update ports */
-    channel = AGS_MACHINE(lv2_bridge)->audio->input;
-    port_descriptor_start = AGS_BASE_PLUGIN(lv2_plugin)->port;
-    
-    while(channel != NULL){
-      recall = channel->recall;
+    g_object_get(AGS_MACHINE(lv2_bridge)->audio,
+		 "input", &channel,
+		 NULL);
 
+    g_object_get(lv2_plugin,
+		 "plugin-port", &start_plugin_port,
+		 NULL);
+
+    while(channel != NULL){
+      g_object_get(channel,
+		   "recall", &start_recall,
+		   NULL);
+      
+      recall = start_recall;
+      
       while((recall = ags_recall_find_type(recall, AGS_TYPE_RECALL_LV2)) != NULL){
 	AGS_RECALL_LV2(recall->data)->bank = (uint32_t) bank;
 	AGS_RECALL_LV2(recall->data)->program = (uint32_t) program;
-
-	port_descriptor = port_descriptor_start;
-      
-	for(i = 0; port_descriptor != NULL;){
-	  if((AGS_PORT_DESCRIPTOR_CONTROL & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
-	    if((AGS_PORT_DESCRIPTOR_INPUT & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
-	      specifier = AGS_PORT_DESCRIPTOR(port_descriptor->data)->port_name;
+	
+	plugin_port = start_plugin_port;
+	
+	for(i = 0; plugin_port != NULL;){
+	  if(ags_plugin_port_test_flags(plugin_port->data, AGS_PLUGIN_PORT_CONTROL)){
+	    if(ags_plugin_port_test_flags(plugin_port->data, AGS_PLUGIN_PORT_INPUT)){
+	      specifier = AGS_PLUGIN_PORT(plugin_port->data)->port_name;
 	      port = AGS_RECALL(recall->data)->port;
-
+	      
 	      while(port != NULL){
 		if(!g_strcmp0(AGS_PORT(port->data)->specifier,
 			      specifier)){
@@ -435,27 +444,32 @@ ags_lv2_bridge_program_changed_callback(GtkComboBox *combo_box, AgsLv2Bridge *lv
 	    }
 	  }
 
-	  port_descriptor = port_descriptor->next;
+	  /* iterate */
+	  plugin_port = plugin_port->next;
 	}
-      
+
+	/* iterate */
 	recall = recall->next;
       }
 
+      g_list_free(start_recall);
+      
+      /* iterate */
       channel = channel->next;
     }
 
     /* update UI */
     bulk_member_start = gtk_container_get_children((GtkContainer *) AGS_EFFECT_BULK(AGS_EFFECT_BRIDGE(AGS_MACHINE(lv2_bridge)->bridge)->bulk_input)->table);
 
-    port_descriptor = port_descriptor_start;
+    plugin_port = start_plugin_port;
   
-    for(i = 0; port_descriptor != NULL;){
-      if((AGS_PORT_DESCRIPTOR_CONTROL & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
-	if((AGS_PORT_DESCRIPTOR_INPUT & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
+    for(i = 0; plugin_port != NULL;){
+      if(ags_plugin_port_test_flags(plugin_port->data, AGS_PLUGIN_PORT_CONTROL)){
+	if(ags_plugin_port_test_flags(plugin_port->data, AGS_PLUGIN_PORT_INPUT)){
 	  /* find bulk member */
 	  bulk_member = bulk_member_start;
-
-	  specifier = AGS_PORT_DESCRIPTOR(port_descriptor->data)->port_name;
+	  
+	  specifier = AGS_PLUGIN_PORT(plugin_port->data)->port_name;
 
 #ifdef AGS_DEBUG
 	  g_message("%s", specifier);
@@ -504,9 +518,12 @@ ags_lv2_bridge_program_changed_callback(GtkComboBox *combo_box, AgsLv2Bridge *lv
 	}
       }
       
-      port_descriptor = port_descriptor->next;
+      /* iterate */
+      plugin_port = plugin_port->next;
     }
-
+    
+    g_list_free(start_plugin_port);      
+    
     g_list_free(bulk_member_start);
   }
 }
@@ -521,8 +538,8 @@ ags_lv2_bridge_preset_changed_callback(GtkComboBox *combo_box, AgsLv2Bridge *lv2
   AgsLv2Preset *lv2_preset;
     
   GList *list, *list_start;
-  GList *port_preset;
-  GList *port_descriptor;
+  GList *start_port_preset, *port_preset;
+  GList *start_plugin_port, *plugin_port;
 
   gchar *preset_label;
   
@@ -551,11 +568,19 @@ ags_lv2_bridge_preset_changed_callback(GtkComboBox *combo_box, AgsLv2Bridge *lv2
 
   container = AGS_EFFECT_BULK(AGS_EFFECT_BRIDGE(AGS_MACHINE(lv2_bridge)->bridge)->bulk_input)->table;
 
-  port_preset = lv2_preset->port_preset;
+  g_object_get(lv2_plugin,
+	       "plugin-port", &start_plugin_port,
+	       NULL);
+  
+  g_object_get(lv2_preset,
+	       "port-preset", &start_port_preset,
+	       NULL);
+  
+  port_preset = start_port_preset;
   
   while(port_preset != NULL){
-    port_descriptor = ags_port_descriptor_find_symbol(AGS_BASE_PLUGIN(lv2_plugin)->port,
-						      AGS_LV2_PORT_PRESET(port_preset->data)->port_symbol);
+    plugin_port = ags_plugin_port_find_symbol(start_plugin_port,
+					      AGS_LV2_PORT_PRESET(port_preset->data)->port_symbol);
     value = (gdouble) g_value_get_float(AGS_LV2_PORT_PRESET(port_preset->data)->port_value);
     
     list_start = 
@@ -563,7 +588,7 @@ ags_lv2_bridge_preset_changed_callback(GtkComboBox *combo_box, AgsLv2Bridge *lv2
     
     while(list != NULL){
       if(!g_strcmp0(AGS_BULK_MEMBER(list->data)->specifier,
-		    AGS_PORT_DESCRIPTOR(port_descriptor->data)->port_name)){
+		    AGS_PLUGIN_PORT(plugin_port->data)->port_name)){
 	GtkWidget *child_widget;
 
 	//	AGS_BULK_MEMBER(list->data)->flags |= AGS_BULK_MEMBER_NO_UPDATE;
@@ -601,9 +626,12 @@ ags_lv2_bridge_preset_changed_callback(GtkComboBox *combo_box, AgsLv2Bridge *lv2
     }
 
     g_list_free(list_start);
-    
+
+    /* iterate */
     port_preset = port_preset->next;
   }
+
+  g_list_free(start_port_preset);
 }
 
 void
@@ -634,6 +662,7 @@ ags_lv2_bridge_dial_changed_callback(GtkWidget *dial, AgsLv2Bridge *lv2_bridge)
   
   lv2_bridge->flags |= AGS_LV2_BRIDGE_NO_UPDATE;
 
+  port_index -= 1;
   lv2_bridge->ui_descriptor->port_event(lv2_bridge->ui_handle,
 					port_index,
 					sizeof(float),
@@ -671,6 +700,7 @@ ags_lv2_bridge_vscale_changed_callback(GtkWidget *vscale, AgsLv2Bridge *lv2_brid
   
   lv2_bridge->flags |= AGS_LV2_BRIDGE_NO_UPDATE;
 
+  port_index -= 1;
   lv2_bridge->ui_descriptor->port_event(lv2_bridge->ui_handle,
 					port_index,
 					sizeof(float),
@@ -708,6 +738,7 @@ ags_lv2_bridge_hscale_changed_callback(GtkWidget *hscale, AgsLv2Bridge *lv2_brid
   
   lv2_bridge->flags |= AGS_LV2_BRIDGE_NO_UPDATE;
 
+  port_index -= 1;
   lv2_bridge->ui_descriptor->port_event(lv2_bridge->ui_handle,
 					port_index,
 					sizeof(float),
@@ -745,6 +776,7 @@ ags_lv2_bridge_spin_button_changed_callback(GtkWidget *spin_button, AgsLv2Bridge
   
   lv2_bridge->flags |= AGS_LV2_BRIDGE_NO_UPDATE;
 
+  port_index -= 1;
   lv2_bridge->ui_descriptor->port_event(lv2_bridge->ui_handle,
 					port_index,
 					sizeof(float),
@@ -782,6 +814,7 @@ ags_lv2_bridge_check_button_clicked_callback(GtkWidget *check_button, AgsLv2Brid
   
   lv2_bridge->flags |= AGS_LV2_BRIDGE_NO_UPDATE;
 
+  port_index -= 1;
   lv2_bridge->ui_descriptor->port_event(lv2_bridge->ui_handle,
 					port_index,
 					sizeof(float),
@@ -819,6 +852,7 @@ ags_lv2_bridge_toggle_button_clicked_callback(GtkWidget *toggle_button, AgsLv2Br
   
   lv2_bridge->flags |= AGS_LV2_BRIDGE_NO_UPDATE;
 
+  port_index -= 1;
   lv2_bridge->ui_descriptor->port_event(lv2_bridge->ui_handle,
 					port_index,
 					sizeof(float),
@@ -854,6 +888,7 @@ ags_lv2_bridge_button_clicked_callback(GtkWidget *button, AgsLv2Bridge *lv2_brid
   
   lv2_bridge->flags |= AGS_LV2_BRIDGE_NO_UPDATE;
 
+  port_index -= 1;
   lv2_bridge->ui_descriptor->port_event(lv2_bridge->ui_handle,
 					port_index,
 					sizeof(float),

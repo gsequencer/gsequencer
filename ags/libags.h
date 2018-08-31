@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -23,6 +23,7 @@
 #include <ags/util/ags_destroy_util.h>
 #include <ags/util/ags_list_util.h>
 #include <ags/util/ags_id_generator.h>
+#include <ags/util/ags_soundcard_helper.h>
 
 /* library */
 #include <ags/lib/ags_buffer_util.h>
@@ -43,24 +44,18 @@
 #include <ags/object/ags_async_queue.h>
 #include <ags/object/ags_config.h>
 #include <ags/object/ags_connectable.h>
-#include <ags/object/ags_connection.h>
-#include <ags/object/ags_connection_manager.h>
 #include <ags/object/ags_countable.h>
-#include <ags/object/ags_concurrent_tree.h>
-#include <ags/object/ags_distributed_manager.h>
-#include <ags/object/ags_dynamic_connectable.h>
 #include <ags/object/ags_macros.h>
 #include <ags/object/ags_main_loop.h>
 #include <ags/object/ags_marshal.h>
 #include <ags/object/ags_mutable.h>
-#include <ags/object/ags_packable.h>
 #include <ags/object/ags_plugin.h>
 #include <ags/object/ags_portlet.h>
 #include <ags/object/ags_seekable.h>
 #include <ags/object/ags_sequencer.h>
 #include <ags/object/ags_soundcard.h>
+#include <ags/object/ags_sound_server.h>
 #include <ags/object/ags_tactable.h>
-#include <ags/object/ags_tree_iterator.h>
 
 /* file */
 #include <ags/file/ags_file.h>

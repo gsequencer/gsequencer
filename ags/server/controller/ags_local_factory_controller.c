@@ -119,7 +119,7 @@ ags_local_factory_controller_class_init(AgsLocalFactoryControllerClass *local_fa
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsLocalFactoryControllerClass, create_instance),
 		 NULL, NULL,
-		 g_cclosure_user_marshal_POINTER__ULONG_POINTER_UINT,
+		 ags_cclosure_marshal_POINTER__ULONG_POINTER_UINT,
 		 G_TYPE_POINTER, 3,
 		 G_TYPE_ULONG,
 		 G_TYPE_POINTER,

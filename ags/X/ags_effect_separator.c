@@ -20,6 +20,7 @@
 #include <ags/X/ags_effect_separator.h>
 
 #include <ags/libags.h>
+#include <ags/libags-audio.h>
 
 #include <ags/i18n.h>
 
@@ -114,7 +115,7 @@ ags_effect_separator_class_init(AgsEffectSeparatorClass *effect_separator)
    *
    * The filename.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_string("filename",
 				   i18n_pspec("filename"),
@@ -130,7 +131,7 @@ ags_effect_separator_class_init(AgsEffectSeparatorClass *effect_separator)
    *
    * The effect.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_string("effect",
 				   i18n_pspec("effect"),
@@ -146,7 +147,7 @@ ags_effect_separator_class_init(AgsEffectSeparatorClass *effect_separator)
    *
    * The text.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_string("text",
 				   i18n_pspec("text"),
@@ -285,12 +286,11 @@ ags_effect_separator_get_property(GObject *gobject,
 /**
  * ags_effect_separator_new:
  *
- * Creates an #AgsEffectSeparator. Note, use rather its implementation #AgsVEffectSeparator or
- * #AgsHEffectSeparator.
+ * Create a new instance of #AgsEffectSeparator.
  *
- * Returns: a new #AgsEffectSeparator
+ * Returns: the new #AgsEffectSeparator
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsEffectSeparator*
 ags_effect_separator_new()

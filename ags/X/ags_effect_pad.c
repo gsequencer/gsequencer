@@ -21,6 +21,7 @@
 #include <ags/X/ags_effect_pad_callbacks.h>
 
 #include <ags/libags.h>
+#include <ags/libags-audio.h>
 
 #include <ags/X/ags_effect_bridge.h>
 #include <ags/X/ags_effect_line.h>
@@ -39,8 +40,10 @@ void ags_effect_pad_get_property(GObject *gobject,
 				 guint prop_id,
 				 GValue *value,
 				 GParamSpec *param_spec);
+
 void ags_effect_pad_connect(AgsConnectable *connectable);
 void ags_effect_pad_disconnect(AgsConnectable *connectable);
+
 gchar* ags_effect_pad_get_name(AgsPlugin *plugin);
 void ags_effect_pad_set_name(AgsPlugin *plugin, gchar *name);
 gchar* ags_effect_pad_get_version(AgsPlugin *plugin);
@@ -65,6 +68,7 @@ GList* ags_effect_pad_real_find_port(AgsEffectPad *effect_pad);
  */
 
 enum{
+  SET_CHANNEL,
   RESIZE_LINES,
   MAP_RECALL,
   FIND_PORT,
@@ -152,7 +156,7 @@ ags_effect_pad_class_init(AgsEffectPadClass *effect_pad)
    *
    * The start of a bunch of #AgsChannel to visualize.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("channel",
 				   i18n_pspec("assigned channel"),
@@ -170,13 +174,34 @@ ags_effect_pad_class_init(AgsEffectPadClass *effect_pad)
 
   /* signals */
   /**
+   * AgsEffectPad::set-channel:
+   * @effect_pad: the #AgsEffectPad to modify
+   * @channel: the #AgsChannel to set
+   *
+   * The ::set-channel signal notifies about changed channel.
+   *
+   * Since: 2.0.0
+   */
+  effect_pad_signals[SET_CHANNEL] =
+    g_signal_new("set-channel",
+		 G_TYPE_FROM_CLASS(effect_pad),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsEffectPadClass, set_channel),
+		 NULL, NULL,
+		 g_cclosure_marshal_VOID__OBJECT,
+		 G_TYPE_NONE, 1,
+		 G_TYPE_OBJECT);
+
+  /**
    * AgsPad::resize-lines:
-   * @pad: the #AgsPad to resize
+   * @effect_pad: the #AgsEffectPad to resize
    * @line_type: the channel type
    * @audio_channels: count of lines
    * @audio_channels_old: old count of lines
    *
    * The ::resize-lines is emitted as count of lines pack is modified.
+   * 
+   * Since: 2.0.0
    */
   effect_pad_signals[RESIZE_LINES] =
     g_signal_new("resize-lines",
@@ -184,15 +209,19 @@ ags_effect_pad_class_init(AgsEffectPadClass *effect_pad)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsEffectPadClass, resize_lines),
 		 NULL, NULL,
-		 g_cclosure_user_marshal_VOID__ULONG_UINT_UINT,
+		 ags_cclosure_marshal_VOID__ULONG_UINT_UINT,
 		 G_TYPE_NONE, 3,
-		 G_TYPE_ULONG, G_TYPE_UINT, G_TYPE_UINT);
+		 G_TYPE_ULONG,
+		 G_TYPE_UINT,
+		 G_TYPE_UINT);
 
   /**
    * AgsEffectPad::map-recall:
    * @effect_pad: the #AgsEffectPad
    *
    * The ::map-recall should be used to add the effect_pad's default recall.
+   * 
+   * Since: 2.0.0
    */
   effect_pad_signals[MAP_RECALL] =
     g_signal_new("map-recall",
@@ -200,15 +229,18 @@ ags_effect_pad_class_init(AgsEffectPadClass *effect_pad)
                  G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET (AgsEffectPadClass, map_recall),
                  NULL, NULL,
-                 g_cclosure_marshal_VOID__UINT,
+                 g_cclosure_marshal_VOID__VOID,
                  G_TYPE_NONE, 0);
 
   /**
    * AgsEffectPad::find-port:
    * @effect_pad: the #AgsEffectPad to resize
-   * Returns: a #GList with associated ports
    *
    * The ::find-port as recall should be mapped
+   * 
+   * Returns: a #GList-struct with associated ports
+   *
+   * Since: 2.0.0
    */
   effect_pad_signals[FIND_PORT] =
     g_signal_new("find-port",
@@ -216,7 +248,7 @@ ags_effect_pad_class_init(AgsEffectPadClass *effect_pad)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsEffectPadClass, find_port),
 		 NULL, NULL,
-		 g_cclosure_user_marshal_POINTER__VOID,
+		 ags_cclosure_marshal_POINTER__VOID,
 		 G_TYPE_POINTER, 0);
 }
 
@@ -282,34 +314,9 @@ ags_effect_pad_set_property(GObject *gobject,
     {
       AgsChannel *channel;
 
-      GList *effect_line, *effect_line_start;
-      
       channel = (AgsChannel *) g_value_get_object(value);
 
-      if(effect_pad->channel == channel){
-	return;
-      }
-
-      if(effect_pad->channel != NULL){
-	g_object_unref(effect_pad->channel);
-      }
-
-      if(channel != NULL){
-	g_object_ref(channel);
-      }
-
-      effect_pad->channel = channel;
-
-      effect_line =
-	effect_line_start = gtk_container_get_children((GtkContainer *) effect_pad->table);
-
-      while(effect_line != NULL){
-	g_object_set(G_OBJECT(effect_line->data),
-		     "channel", channel,
-		     NULL);
-
-	effect_line = effect_line->next;
-      }
+      ags_effect_pad_set_channel(effect_pad, channel);
     }
     break;
   default:
@@ -405,9 +412,6 @@ ags_effect_pad_disconnect(AgsConnectable *connectable)
   }
 
   g_list_free(effect_line_list_start);
-
-  g_signal_handlers_disconnect_by_data(effect_pad->channel,
-				       effect_pad);
 }
 
 gchar*
@@ -459,6 +463,66 @@ ags_effect_pad_set_build_id(AgsPlugin *plugin, gchar *build_id)
 }
 
 void
+ags_effect_pad_real_set_channel(AgsEffectPad *effect_pad, AgsChannel *channel)
+{
+  GList *start_effect_line, *effect_line;
+      
+  gchar *str;
+    
+  if(effect_pad->channel == channel){
+    return;
+  }
+  
+  if(effect_pad->channel != NULL){    
+    g_object_unref(G_OBJECT(effect_pad->channel));
+  }
+
+  if(channel != NULL){
+    g_object_ref(G_OBJECT(channel));
+  }
+
+  if(effect_pad->channel != NULL){
+    effect_pad->flags &= (~AGS_EFFECT_PAD_PREMAPPED_RECALL);
+  }
+  
+  effect_pad->channel = channel;
+
+  start_effect_line =
+    effect_line = gtk_container_get_children((GtkContainer *) effect_pad->table);
+
+  while(effect_line != NULL){
+    g_object_set(G_OBJECT(effect_line->data),
+		 "channel", channel,
+		 NULL);
+
+    effect_line = effect_line->next;
+  }
+
+  g_list_free(start_effect_line);
+}
+
+/**
+ * ags_effect_pad_set_channel:
+ * @effect_pad: the #AgsEffectPad
+ * @channel: the #AgsChannel to set
+ *
+ * Is emitted as channel gets modified.
+ *
+ * Since: 2.0.0
+ */
+void
+ags_effect_pad_set_channel(AgsEffectPad *effect_pad, AgsChannel *channel)
+{
+  g_return_if_fail(AGS_IS_EFFECT_PAD(effect_pad));
+
+  g_object_ref((GObject *) effect_pad);
+  g_signal_emit(G_OBJECT(effect_pad),
+		effect_pad_signals[SET_CHANNEL], 0,
+		channel);
+  g_object_unref((GObject *) effect_pad);
+}
+
+void
 ags_effect_pad_real_resize_lines(AgsEffectPad *effect_pad, GType effect_line_type,
 				 guint audio_channels, guint audio_channels_old)
 {
@@ -466,7 +530,7 @@ ags_effect_pad_real_resize_lines(AgsEffectPad *effect_pad, GType effect_line_typ
 
   AgsChannel *channel;
 
-  GList *list, *list_next;
+  GList *start_list, *list;
 
   guint i, j;  
   
@@ -489,25 +553,39 @@ ags_effect_pad_real_resize_lines(AgsEffectPad *effect_pad, GType effect_line_typ
 			 i / effect_pad->cols, i / effect_pad->cols + 1,
 			 FALSE, FALSE,
 			 0, 0);
-	
-	channel = channel->next;
+
+	g_object_get(channel,
+		     "next", &channel,
+		     NULL);
       }
     }
   }else{
-    list = gtk_container_get_children((GtkContainer *) effect_pad->table);
-    list = g_list_nth(list,
+
+    start_list = gtk_container_get_children((GtkContainer *) effect_pad->table);
+    list = g_list_nth(start_list,
 		      audio_channels);
 
     while(list != NULL){
-      list_next = list->next;
-      
       gtk_widget_destroy(list->data);
 
-      list = list_next;
+      list = list->next;
     }
+
+    g_list_free(start_list);
   }
 }
 
+/**
+ * ags_effect_pad_resize_lines:
+ * @effect_pad: the #AgsEffectPad to resize
+ * @line_type: channel type, either %AGS_TYPE_INPUT or %AGS_TYPE_OUTPUT
+ * @audio_channels: count of lines
+ * @audio_channels_old: old count of lines
+ *
+ * Resize the count of #AgsEffectLine packe by #AgsEffectPad.
+ *
+ * Since: 2.0.0
+ */
 void
 ags_effect_pad_resize_lines(AgsEffectPad *effect_pad, GType line_type,
 			    guint audio_channels, guint audio_channels_old)
@@ -539,6 +617,8 @@ ags_effect_pad_real_map_recall(AgsEffectPad *effect_pad)
  * @effect_pad: the #AgsEffectPad to add its default recall.
  *
  * You may want the @effect_pad to add its default recall.
+ *
+ * Since: 2.0.0
  */
 void
 ags_effect_pad_map_recall(AgsEffectPad *effect_pad)
@@ -587,11 +667,12 @@ ags_effect_pad_real_find_port(AgsEffectPad *effect_pad)
 /**
  * ags_effect_pad_find_port:
  * @effect_pad: the #AgsEffectPad
- * Returns: an #GList containing all related #AgsPort
  *
  * Lookup ports of associated recalls.
  *
- * Since: 1.0.0
+ * Returns: an #GList-struct containing all related #AgsPort
+ * 
+ * Since: 2.0.0
  */
 GList*
 ags_effect_pad_find_port(AgsEffectPad *effect_pad)
@@ -615,11 +696,11 @@ ags_effect_pad_find_port(AgsEffectPad *effect_pad)
  * ags_effect_pad_new:
  * @channel: the #AgsChannel to visualize
  *
- * Creates an #AgsEffectPad
+ * Create a new instance of #AgsEffectPad
  *
- * Returns: a new #AgsEffectPad
+ * Returns: the new #AgsEffectPad
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsEffectPad*
 ags_effect_pad_new(AgsChannel *channel)

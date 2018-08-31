@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -41,8 +41,8 @@ struct _AgsSeekSoundcard
 
   GObject *soundcard;
 
-  guint steps;
-  gboolean move_forward;
+  gint64 offset;
+  guint whence;
 };
 
 struct _AgsSeekSoundcardClass
@@ -53,7 +53,7 @@ struct _AgsSeekSoundcardClass
 GType ags_seek_soundcard_get_type();
 
 AgsSeekSoundcard* ags_seek_soundcard_new(GObject *soundcard,
-					 guint steps,
-					 gboolean move_forward);
+					 gint64 offset,
+					 guint whence);
 
 #endif /*__AGS_SEEK_SOUNDCARD_H__*/

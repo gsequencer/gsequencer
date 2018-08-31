@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -22,6 +22,7 @@
 #include <ags/libags.h>
 
 #include <ags/plugin/ags_lv2_plugin.h>
+#include <ags/plugin/ags_lv2_preset.h>
 #include <ags/plugin/ags_lv2_manager.h>
 #include <ags/plugin/ags_lv2_event_manager.h>
 #include <ags/plugin/ags_lv2_uri_map_manager.h>
@@ -30,6 +31,7 @@
 #include <ags/plugin/ags_lv2_worker.h>
 #include <ags/plugin/ags_lv2_urid_manager.h>
 #include <ags/plugin/ags_lv2_option_manager.h>
+#include <ags/plugin/ags_plugin_port.h>
 
 #include <ags/audio/midi/ags_midi_buffer_util.h>
 
@@ -95,6 +97,11 @@ enum{
   PROP_UI_URI,
   PROP_MANIFEST,
   PROP_TURTLE,
+  PROP_DOAP_NAME,
+  PROP_FOAF_NAME,
+  PROP_FOAF_HOMEPAGE,
+  PROP_FOAF_MBOX,
+  PROP_PRESET,
 };
 
 enum{
@@ -161,7 +168,7 @@ ags_lv2_plugin_class_init(AgsLv2PluginClass *lv2_plugin)
    *
    * The assigned pname.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_string("pname",
 				   i18n_pspec("pname of the plugin"),
@@ -177,7 +184,7 @@ ags_lv2_plugin_class_init(AgsLv2PluginClass *lv2_plugin)
    *
    * The assigned uri.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_string("uri",
 				   i18n_pspec("uri of the plugin"),
@@ -193,7 +200,7 @@ ags_lv2_plugin_class_init(AgsLv2PluginClass *lv2_plugin)
    *
    * The assigned ui-uri.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_string("ui-uri",
 				   i18n_pspec("ui-uri of the plugin"),
@@ -209,7 +216,7 @@ ags_lv2_plugin_class_init(AgsLv2PluginClass *lv2_plugin)
    *
    * The assigned manifest.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("manifest",
 				   i18n_pspec("manifest of the plugin"),
@@ -225,7 +232,7 @@ ags_lv2_plugin_class_init(AgsLv2PluginClass *lv2_plugin)
    *
    * The assigned turtle.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("turtle",
 				   i18n_pspec("turtle of the plugin"),
@@ -234,6 +241,85 @@ ags_lv2_plugin_class_init(AgsLv2PluginClass *lv2_plugin)
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_TURTLE,
+				  param_spec);
+
+  /**
+   * AgsLv2Plugin:doap-name:
+   *
+   * The assigned doap name.
+   * 
+   * Since: 2.0.0
+   */
+  param_spec = g_param_spec_string("doap-name",
+				   i18n_pspec("doap name"),
+				   i18n_pspec("The doap name"),
+				   NULL,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_DOAP_NAME,
+				  param_spec);
+
+  /**
+   * AgsLv2Plugin:foaf-name:
+   *
+   * The assigned foaf name.
+   * 
+   * Since: 2.0.0
+   */
+  param_spec = g_param_spec_string("foaf-name",
+				   i18n_pspec("foaf name"),
+				   i18n_pspec("The foaf name"),
+				   NULL,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_FOAF_NAME,
+				  param_spec);
+
+  /**
+   * AgsLv2Plugin:foaf-homepage:
+   *
+   * The assigned foaf homepage.
+   * 
+   * Since: 2.0.0
+   */
+  param_spec = g_param_spec_string("foaf-homepage",
+				   i18n_pspec("foaf homepage"),
+				   i18n_pspec("The foaf homepage"),
+				   NULL,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_FOAF_HOMEPAGE,
+				  param_spec);
+
+  /**
+   * AgsLv2Plugin:foaf-mbox:
+   *
+   * The assigned foaf mbox.
+   * 
+   * Since: 2.0.0
+   */
+  param_spec = g_param_spec_string("foaf-mbox",
+				   i18n_pspec("foaf mbox"),
+				   i18n_pspec("The foaf mbox"),
+				   NULL,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_FOAF_MBOX,
+				  param_spec);
+
+  /**
+   * AgsLv2Plugin:preset:
+   *
+   * The assigned preset.
+   * 
+   * Since: 2.0.0
+   */
+  param_spec = g_param_spec_pointer("preset",
+				    i18n_pspec("preset of the plugin"),
+				    i18n_pspec("The preset of this plugin"),
+				    G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_PRESET,
 				  param_spec);
   
   /* AgsBasePluginClass */
@@ -262,7 +348,7 @@ ags_lv2_plugin_class_init(AgsLv2PluginClass *lv2_plugin)
    *
    * The ::change-program signal creates a new instance of plugin.
    *
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   lv2_plugin_signals[CHANGE_PROGRAM] =
     g_signal_new("change-program",
@@ -270,7 +356,7 @@ ags_lv2_plugin_class_init(AgsLv2PluginClass *lv2_plugin)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET (AgsLv2PluginClass, change_program),
 		 NULL, NULL,
-		 g_cclosure_user_marshal_VOID__POINTER_UINT_UINT,
+		 ags_cclosure_marshal_VOID__POINTER_UINT_UINT,
 		 G_TYPE_NONE, 3,
 		 G_TYPE_POINTER,
 		 G_TYPE_UINT,
@@ -309,7 +395,16 @@ ags_lv2_plugin_set_property(GObject *gobject,
 {
   AgsLv2Plugin *lv2_plugin;
 
+  pthread_mutex_t *base_plugin_mutex;
+
   lv2_plugin = AGS_LV2_PLUGIN(gobject);
+
+  /* get base plugin mutex */
+  pthread_mutex_lock(ags_base_plugin_get_class_mutex());
+  
+  base_plugin_mutex = AGS_BASE_PLUGIN(gobject)->obj_mutex;
+  
+  pthread_mutex_unlock(ags_base_plugin_get_class_mutex());
 
   switch(prop_id){
   case PROP_PNAME:
@@ -318,7 +413,11 @@ ags_lv2_plugin_set_property(GObject *gobject,
 
       pname = (gchar *) g_value_get_string(value);
 
+      pthread_mutex_lock(base_plugin_mutex);
+
       if(lv2_plugin->pname == pname){
+	pthread_mutex_unlock(base_plugin_mutex);
+
 	return;
       }
       
@@ -327,6 +426,8 @@ ags_lv2_plugin_set_property(GObject *gobject,
       }
 
       lv2_plugin->pname = g_strdup(pname);
+
+      pthread_mutex_unlock(base_plugin_mutex);
     }
     break;
   case PROP_URI:
@@ -335,7 +436,11 @@ ags_lv2_plugin_set_property(GObject *gobject,
 
       uri = (gchar *) g_value_get_string(value);
 
+      pthread_mutex_lock(base_plugin_mutex);
+
       if(lv2_plugin->uri == uri){
+	pthread_mutex_unlock(base_plugin_mutex);
+
 	return;
       }
       
@@ -344,6 +449,8 @@ ags_lv2_plugin_set_property(GObject *gobject,
       }
 
       lv2_plugin->uri = g_strdup(uri);
+
+      pthread_mutex_unlock(base_plugin_mutex);
     }
     break;
   case PROP_UI_URI:
@@ -352,7 +459,11 @@ ags_lv2_plugin_set_property(GObject *gobject,
 
       ui_uri = (gchar *) g_value_get_string(value);
 
+      pthread_mutex_lock(base_plugin_mutex);
+
       if(lv2_plugin->ui_uri == ui_uri){
+	pthread_mutex_unlock(base_plugin_mutex);
+
 	return;
       }
       
@@ -361,6 +472,8 @@ ags_lv2_plugin_set_property(GObject *gobject,
       }
 
       lv2_plugin->ui_uri = g_strdup(ui_uri);
+
+      pthread_mutex_unlock(base_plugin_mutex);
     }
     break;
   case PROP_MANIFEST:
@@ -369,7 +482,11 @@ ags_lv2_plugin_set_property(GObject *gobject,
 
       manifest = (AgsTurtle *) g_value_get_object(value);
 
+      pthread_mutex_lock(base_plugin_mutex);
+
       if(lv2_plugin->manifest == manifest){
+	pthread_mutex_unlock(base_plugin_mutex);
+
 	return;
       }
 
@@ -382,6 +499,8 @@ ags_lv2_plugin_set_property(GObject *gobject,
       }
       
       lv2_plugin->manifest = manifest;
+
+      pthread_mutex_unlock(base_plugin_mutex);
     }
     break;
   case PROP_TURTLE:
@@ -390,7 +509,11 @@ ags_lv2_plugin_set_property(GObject *gobject,
 
       turtle = (AgsTurtle *) g_value_get_object(value);
 
+      pthread_mutex_lock(base_plugin_mutex);
+
       if(lv2_plugin->turtle == turtle){
+	pthread_mutex_unlock(base_plugin_mutex);
+
 	return;
       }
 
@@ -403,6 +526,122 @@ ags_lv2_plugin_set_property(GObject *gobject,
       }
       
       lv2_plugin->turtle = turtle;
+
+      pthread_mutex_unlock(base_plugin_mutex);
+    }
+    break;
+  case PROP_DOAP_NAME:
+    {
+      gchar *doap_name;
+
+      doap_name = (gchar *) g_value_get_string(value);
+
+      pthread_mutex_lock(base_plugin_mutex);
+
+      if(lv2_plugin->doap_name == doap_name){
+	pthread_mutex_unlock(base_plugin_mutex);
+
+	return;
+      }
+      
+      if(lv2_plugin->doap_name != NULL){
+	g_free(lv2_plugin->doap_name);
+      }
+
+      lv2_plugin->doap_name = g_strdup(doap_name);
+
+      pthread_mutex_unlock(base_plugin_mutex);
+    }
+    break;
+  case PROP_FOAF_NAME:
+    {
+      gchar *foaf_name;
+
+      foaf_name = (gchar *) g_value_get_string(value);
+
+      pthread_mutex_lock(base_plugin_mutex);
+
+      if(lv2_plugin->foaf_name == foaf_name){
+	pthread_mutex_unlock(base_plugin_mutex);
+
+	return;
+      }
+      
+      if(lv2_plugin->foaf_name != NULL){
+	g_free(lv2_plugin->foaf_name);
+      }
+
+      lv2_plugin->foaf_name = g_strdup(foaf_name);
+
+      pthread_mutex_unlock(base_plugin_mutex);
+    }
+    break;
+  case PROP_FOAF_HOMEPAGE:
+    {
+      gchar *foaf_homepage;
+
+      foaf_homepage = (gchar *) g_value_get_string(value);
+
+      pthread_mutex_lock(base_plugin_mutex);
+
+      if(lv2_plugin->foaf_homepage == foaf_homepage){
+	pthread_mutex_unlock(base_plugin_mutex);
+
+	return;
+      }
+      
+      if(lv2_plugin->foaf_homepage != NULL){
+	g_free(lv2_plugin->foaf_homepage);
+      }
+
+      lv2_plugin->foaf_homepage = g_strdup(foaf_homepage);
+
+      pthread_mutex_unlock(base_plugin_mutex);
+    }
+    break;
+  case PROP_FOAF_MBOX:
+    {
+      gchar *foaf_mbox;
+
+      foaf_mbox = (gchar *) g_value_get_string(value);
+
+      pthread_mutex_lock(base_plugin_mutex);
+
+      if(lv2_plugin->foaf_mbox == foaf_mbox){
+	pthread_mutex_unlock(base_plugin_mutex);
+
+	return;
+      }
+      
+      if(lv2_plugin->foaf_mbox != NULL){
+	g_free(lv2_plugin->foaf_mbox);
+      }
+
+      lv2_plugin->foaf_mbox = g_strdup(foaf_mbox);
+
+      pthread_mutex_unlock(base_plugin_mutex);
+    }
+    break;
+  case PROP_PRESET:
+    {
+      AgsLv2Preset *lv2_preset;
+
+      lv2_preset = g_value_get_pointer(value);
+
+      pthread_mutex_lock(base_plugin_mutex);
+
+      if(lv2_preset == NULL ||
+	 g_list_find(lv2_plugin->preset, lv2_preset) != NULL){
+	pthread_mutex_unlock(base_plugin_mutex);
+      
+	return;
+      }
+
+      lv2_plugin->preset = g_list_append(lv2_plugin->preset,
+					 lv2_preset);
+      g_object_ref(lv2_preset);
+      
+      pthread_mutex_unlock(base_plugin_mutex);
     }
     break;
   default:
@@ -419,32 +658,106 @@ ags_lv2_plugin_get_property(GObject *gobject,
 {
   AgsLv2Plugin *lv2_plugin;
 
+  pthread_mutex_t *base_plugin_mutex;
+
   lv2_plugin = AGS_LV2_PLUGIN(gobject);
+
+  /* get base plugin mutex */
+  pthread_mutex_lock(ags_base_plugin_get_class_mutex());
+  
+  base_plugin_mutex = AGS_BASE_PLUGIN(gobject)->obj_mutex;
+  
+  pthread_mutex_unlock(ags_base_plugin_get_class_mutex());
 
   switch(prop_id){
   case PROP_PNAME:
     {
+      pthread_mutex_lock(base_plugin_mutex);
+
       g_value_set_string(value, lv2_plugin->pname);
+
+      pthread_mutex_unlock(base_plugin_mutex);
     }
     break;
   case PROP_URI:
     {
+      pthread_mutex_lock(base_plugin_mutex);
+
       g_value_set_string(value, lv2_plugin->uri);
+
+      pthread_mutex_unlock(base_plugin_mutex);
     }
     break;
   case PROP_UI_URI:
     {
+      pthread_mutex_lock(base_plugin_mutex);
+
       g_value_set_string(value, lv2_plugin->ui_uri);
+
+      pthread_mutex_unlock(base_plugin_mutex);
     }
     break;
   case PROP_MANIFEST:
     {
+      pthread_mutex_lock(base_plugin_mutex);
+
       g_value_set_object(value, lv2_plugin->manifest);
+
+      pthread_mutex_unlock(base_plugin_mutex);
     }
     break;
   case PROP_TURTLE:
     {
+      pthread_mutex_lock(base_plugin_mutex);
+
       g_value_set_object(value, lv2_plugin->turtle);
+
+      pthread_mutex_unlock(base_plugin_mutex);
+    }
+    break;
+  case PROP_DOAP_NAME:
+    {
+      pthread_mutex_lock(base_plugin_mutex);
+
+      g_value_set_string(value, lv2_plugin->doap_name);
+
+      pthread_mutex_unlock(base_plugin_mutex);
+    }
+    break;
+  case PROP_FOAF_NAME:
+    {
+      pthread_mutex_lock(base_plugin_mutex);
+
+      g_value_set_string(value, lv2_plugin->foaf_name);
+
+      pthread_mutex_unlock(base_plugin_mutex);
+    }
+    break;
+  case PROP_FOAF_HOMEPAGE:
+    {
+      pthread_mutex_lock(base_plugin_mutex);
+
+      g_value_set_string(value, lv2_plugin->foaf_homepage);
+
+      pthread_mutex_unlock(base_plugin_mutex);
+    }
+    break;
+  case PROP_FOAF_MBOX:
+    {
+      pthread_mutex_lock(base_plugin_mutex);
+
+      g_value_set_string(value, lv2_plugin->foaf_mbox);
+
+      pthread_mutex_unlock(base_plugin_mutex);
+    }
+    break;
+  case PROP_PRESET:
+    {
+      pthread_mutex_lock(base_plugin_mutex);
+
+      g_value_set_pointer(value, g_list_copy(lv2_plugin->preset));
+
+      pthread_mutex_unlock(base_plugin_mutex);
     }
     break;
   default:
@@ -472,6 +785,13 @@ ags_lv2_plugin_dispose(GObject *gobject)
     lv2_plugin->turtle = NULL;
   }
 
+  if(lv2_plugin->preset != NULL){
+    g_list_free_full(lv2_plugin->preset,
+		     g_object_unref);
+
+    lv2_plugin->preset = NULL;
+  }
+  
   /* call parent */
   G_OBJECT_CLASS(ags_lv2_plugin_parent_class)->dispose(gobject);
 }
@@ -505,6 +825,11 @@ ags_lv2_plugin_finalize(GObject *gobject)
     free(lv2_plugin->feature);
   }
 
+  if(lv2_plugin->preset != NULL){
+    g_list_free_full(lv2_plugin->preset,
+		     g_object_unref);
+  }
+  
   /* call parent */
   G_OBJECT_CLASS(ags_lv2_plugin_parent_class)->finalize(gobject);
 }
@@ -540,86 +865,75 @@ ags_lv2_plugin_instantiate(AgsBasePlugin *base_plugin,
   
   LV2_Feature **feature;
 
+  gchar *filename;
   char *path;  
   gchar *str;
   
   float *ptr_samplerate;
   float *ptr_buffer_size;
 
+  uint32_t effect_index;
   guint conf_buffer_size;
   guint conf_samplerate;
   double rate;
   guint total_feature;
   guint nth;
+  gboolean initial_call;
+  
+  LV2_Handle (*instantiate)(const struct _LV2_Descriptor * descriptor,
+			    double sample_rate,
+			    const char *bundle_path,
+			    const LV2_Feature *const *features);
 
   pthread_mutex_t *base_plugin_mutex;
   
-  lv2_plugin = base_plugin;
+  lv2_plugin = AGS_LV2_PLUGIN(base_plugin);
 
-  /* base plugin mutex */
+  /* get base plugin mutex */
   pthread_mutex_lock(ags_base_plugin_get_class_mutex());
-
+  
   base_plugin_mutex = base_plugin->obj_mutex;
   
   pthread_mutex_unlock(ags_base_plugin_get_class_mutex());
-  
+
   //  xmlSaveFormatFileEnc("-", lv2_plugin->turtle->doc, "UTF-8", 1);
+
+  /* get some fields */
+  pthread_mutex_lock(base_plugin_mutex);
+
+  plugin_so = base_plugin->plugin_so;
+
+  feature = lv2_plugin->feature;
+
+  path = g_strndup(base_plugin->filename,
+		   rindex(base_plugin->filename, '/') - base_plugin->filename + 1);
+
+  effect_index = base_plugin->effect_index;
   
-  /* instantiate */
-  feature = NULL;
+  pthread_mutex_unlock(base_plugin_mutex);
+
+  if(plugin_so == NULL){
+    return(NULL);
+  }
+
+  /* get some config values */
+  initial_call = FALSE;
+  
   config = ags_config_get_instance();
+
+  conf_samplerate = ags_soundcard_helper_config_get_samplerate(config);
+  conf_buffer_size = ags_soundcard_helper_config_get_buffer_size(config);
 
   worker_handle = NULL;
 
-  pthread_mutex_lock(base_plugin_mutex);
-  
-  if(lv2_plugin->feature == NULL){
-    /* samplerate */
-    str = ags_config_get_value(config,
-			       AGS_CONFIG_SOUNDCARD,
-			       "samplerate");
-  
-    if(str == NULL){
-      str = ags_config_get_value(config,
-				 AGS_CONFIG_SOUNDCARD_0,
-				 "samplerate");
-    }  
-
-    if(str != NULL){
-      conf_samplerate = g_ascii_strtoull(str,
-					 NULL,
-					 10);
-      free(str);
-    }else{
-      conf_samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
-    }
-
-    /* buffer-size */
-    str = ags_config_get_value(config,
-			       AGS_CONFIG_SOUNDCARD,
-			       "buffer-size");
-
-    if(str == NULL){
-      str = ags_config_get_value(config,
-				 AGS_CONFIG_SOUNDCARD_0,
-				 "buffer-size");
-    }
-  
-    if(str != NULL){
-      conf_buffer_size = g_ascii_strtoull(str,
-					  NULL,
-					  10);
-      free(str);
-    }else{
-      conf_buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
-    }
+  if(feature == NULL){    
+    initial_call = TRUE;
 
     /**/
     total_feature = 8;
-    nth = 0;
-  
-    lv2_plugin->feature = 
-      feature = (LV2_Feature **) malloc(total_feature * sizeof(LV2_Feature *));
+    nth = 0;  
+
+    feature = (LV2_Feature **) malloc(total_feature * sizeof(LV2_Feature *));
   
     /* URI map feature */  
     uri_map_feature = (LV2_URI_Map_Feature *) malloc(sizeof(LV2_URI_Map_Feature));
@@ -633,7 +947,7 @@ ags_lv2_plugin_instantiate(AgsBasePlugin *base_plugin,
     nth++;
   
     /* worker feature */
-    if((AGS_LV2_PLUGIN_NEEDS_WORKER & (lv2_plugin->flags)) != 0){
+    if(ags_lv2_plugin_test_flags(lv2_plugin, AGS_LV2_PLUGIN_NEEDS_WORKER)){
       worker_handle = ags_lv2_worker_manager_pull_worker(ags_lv2_worker_manager_get_instance());
   
       worker_schedule = (LV2_Worker_Schedule *) malloc(sizeof(LV2_Worker_Schedule));
@@ -710,34 +1024,41 @@ ags_lv2_plugin_instantiate(AgsBasePlugin *base_plugin,
     for(; nth < total_feature; nth++){
       feature[nth] = NULL;
     }
-  }
+  
+    pthread_mutex_lock(base_plugin_mutex);
 
-  plugin_so = AGS_BASE_PLUGIN(lv2_plugin)->plugin_so;
+    lv2_plugin->feature = feature;
+    
+    pthread_mutex_unlock(base_plugin_mutex);
+  }
   
   if(plugin_so != NULL){
     lv2_descriptor = (LV2_Descriptor_Function) dlsym(plugin_so,
 						     "lv2_descriptor");
 
     if(dlerror() == NULL && lv2_descriptor){
+      pthread_mutex_lock(base_plugin_mutex);
+      
       base_plugin->plugin_descriptor = 
-	plugin_descriptor = lv2_descriptor(AGS_BASE_PLUGIN(lv2_plugin)->effect_index);
+	plugin_descriptor = lv2_descriptor(effect_index);
+
+      instantiate = plugin_descriptor->instantiate;
+      
+      pthread_mutex_unlock(base_plugin_mutex);
     }
   }
 
   /* alloc handle and path */
   lv2_handle = (LV2_Handle *) malloc(sizeof(LV2_Handle));
 
-  path = g_strndup(base_plugin->filename,
-		   rindex(base_plugin->filename, '/') - base_plugin->filename + 1);
-  
   /* instantiate */
   rate = (double) samplerate;
-  lv2_handle[0] = AGS_LV2_PLUGIN_DESCRIPTOR(base_plugin->plugin_descriptor)->instantiate(AGS_LV2_PLUGIN_DESCRIPTOR(base_plugin->plugin_descriptor),
-											 rate,
-											 path,
-											 lv2_plugin->feature);
+  lv2_handle[0] = instantiate(plugin_descriptor,
+			      rate,
+			      path,
+			      feature);
   
-  if(feature != NULL){
+  if(initial_call){
     /* some options */
     options = (LV2_Options_Option *) malloc(6 * sizeof(LV2_Options_Option));
 
@@ -822,13 +1143,15 @@ ags_lv2_plugin_instantiate(AgsBasePlugin *base_plugin,
     options[5].value = NULL;
 
     /* set options */
-    ags_lv2_option_manager_lv2_options_set(*lv2_handle,
+    ags_lv2_option_manager_lv2_options_set(lv2_handle[0],
 					   options);
   }
   
   /*  */  
   if(worker_handle != NULL){
-    AGS_LV2_WORKER(worker_handle)->handle = *lv2_handle;
+    g_object_set(worker_handle,
+		 "handle", lv2_handle[0],
+		 NULL);
   }
 
   free(path);
@@ -844,43 +1167,57 @@ ags_lv2_plugin_connect_port(AgsBasePlugin *base_plugin,
 			    guint port_index,
 			    gpointer data_location)
 {
+  void (*connect_port)(LV2_Handle instance,
+		       uint32_t port,
+		       void *data_location);
+
   pthread_mutex_t *base_plugin_mutex;
 
-  /* base plugin mutex */
+  /* get base plugin mutex */
   pthread_mutex_lock(ags_base_plugin_get_class_mutex());
-
+  
   base_plugin_mutex = base_plugin->obj_mutex;
   
   pthread_mutex_unlock(ags_base_plugin_get_class_mutex());
 
-  /* connect port */
+  /* get some fields */
   pthread_mutex_lock(base_plugin_mutex);
 
-  AGS_LV2_PLUGIN_DESCRIPTOR(base_plugin->plugin_descriptor)->connect_port((LV2_Handle) plugin_handle,
-									  (uint32_t) port_index,
-									  (float *) data_location);
+  connect_port = AGS_LV2_PLUGIN_DESCRIPTOR(base_plugin->plugin_descriptor)->connect_port;
 
   pthread_mutex_unlock(base_plugin_mutex);
+  
+  /* connect port */
+  connect_port((LV2_Handle) plugin_handle,
+	       (uint32_t) port_index,
+	       (float *) data_location);
 }
 
 void
 ags_lv2_plugin_activate(AgsBasePlugin *base_plugin,
 			gpointer plugin_handle)
 {
+  void (*activate)(LV2_Handle instance);
+  
   pthread_mutex_t *base_plugin_mutex;
 
-  /* base plugin mutex */
+  /* get base plugin mutex */
   pthread_mutex_lock(ags_base_plugin_get_class_mutex());
-
+  
   base_plugin_mutex = base_plugin->obj_mutex;
   
   pthread_mutex_unlock(ags_base_plugin_get_class_mutex());
 
-  /* activate */
+  /* get some fields */
   pthread_mutex_lock(base_plugin_mutex);
 
-  if(AGS_LV2_PLUGIN_DESCRIPTOR(base_plugin->plugin_descriptor)->activate != NULL){
-    AGS_LV2_PLUGIN_DESCRIPTOR(base_plugin->plugin_descriptor)->activate((LV2_Handle) plugin_handle);
+  activate = AGS_LV2_PLUGIN_DESCRIPTOR(base_plugin->plugin_descriptor)->activate;
+  
+  pthread_mutex_unlock(base_plugin_mutex);
+
+  /* activate */
+  if(activate != NULL){
+    activate((LV2_Handle) plugin_handle);
   }
 
   pthread_mutex_unlock(base_plugin_mutex);
@@ -890,20 +1227,27 @@ void
 ags_lv2_plugin_deactivate(AgsBasePlugin *base_plugin,
 			  gpointer plugin_handle)
 {
+  void (*deactivate)(LV2_Handle instance);
+  
   pthread_mutex_t *base_plugin_mutex;
 
-  /* base plugin mutex */
+  /* get base plugin mutex */
   pthread_mutex_lock(ags_base_plugin_get_class_mutex());
-
+  
   base_plugin_mutex = base_plugin->obj_mutex;
   
   pthread_mutex_unlock(ags_base_plugin_get_class_mutex());
 
-  /* deactivate */
+  /* get some fields */
   pthread_mutex_lock(base_plugin_mutex);
 
-  if(AGS_LV2_PLUGIN_DESCRIPTOR(base_plugin->plugin_descriptor)->deactivate != NULL){
-    AGS_LV2_PLUGIN_DESCRIPTOR(base_plugin->plugin_descriptor)->deactivate((LV2_Handle) plugin_handle);
+  deactivate = AGS_LV2_PLUGIN_DESCRIPTOR(base_plugin->plugin_descriptor)->deactivate;
+  
+  pthread_mutex_unlock(base_plugin_mutex);
+
+  /* deactivate */
+  if(deactivate != NULL){
+    deactivate((LV2_Handle) plugin_handle);
   }
 
   pthread_mutex_unlock(base_plugin_mutex);
@@ -917,17 +1261,17 @@ ags_lv2_plugin_run(AgsBasePlugin *base_plugin,
 {
   void (*run)(LV2_Handle instance,
 	      uint32_t sample_count);
-
+  
   pthread_mutex_t *base_plugin_mutex;
 
-  /* base plugin mutex */
+  /* get base plugin mutex */
   pthread_mutex_lock(ags_base_plugin_get_class_mutex());
-
+  
   base_plugin_mutex = base_plugin->obj_mutex;
   
   pthread_mutex_unlock(ags_base_plugin_get_class_mutex());
 
-  /* get fields */
+  /* get some fields */
   pthread_mutex_lock(base_plugin_mutex);
 
   run = AGS_LV2_PLUGIN_DESCRIPTOR(base_plugin->plugin_descriptor)->run;
@@ -942,17 +1286,18 @@ ags_lv2_plugin_run(AgsBasePlugin *base_plugin,
 void
 ags_lv2_plugin_load_plugin(AgsBasePlugin *base_plugin)
 {
-  AgsLv2Plugin *lv2_plugin;
-  
-  AgsPortDescriptor *port;
+  AgsLv2Plugin *lv2_plugin;  
+  AgsPluginPort *current_plugin_port;
 
+  AgsTurtle *turtle;
+  
+  GList *plugin_port;
   GList *metadata_list;
   GList *instrument_list;
   GList *extension_list;
   GList *feature_list;
   GList *ui_list;
   GList *port_list;
-  GList *port_descriptor_list;
   
   gchar *escaped_effect;
   gchar *xpath;
@@ -966,8 +1311,21 @@ ags_lv2_plugin_load_plugin(AgsBasePlugin *base_plugin)
   LV2_Descriptor *plugin_descriptor;
 
   uint32_t effect_index;
+    
+  pthread_mutex_t *base_plugin_mutex;
   
   lv2_plugin = AGS_LV2_PLUGIN(base_plugin);  
+
+  /* get base plugin mutex */
+  pthread_mutex_lock(ags_base_plugin_get_class_mutex());
+  
+  base_plugin_mutex = base_plugin->obj_mutex;
+  
+  pthread_mutex_unlock(ags_base_plugin_get_class_mutex());
+
+  /* dlopen */
+  pthread_mutex_lock(base_plugin_mutex);
+
   base_plugin->plugin_so = dlopen(base_plugin->filename,
 				  RTLD_NOW);
 
@@ -976,24 +1334,39 @@ ags_lv2_plugin_load_plugin(AgsBasePlugin *base_plugin)
     
     dlerror();
 
+    pthread_mutex_unlock(base_plugin_mutex);
+    
     return;
   }
 
   lv2_descriptor = (LV2_Descriptor_Function) dlsym(base_plugin->plugin_so,
 						   "lv2_descriptor");
+
+  turtle = lv2_plugin->turtle;
+  
+  pthread_mutex_unlock(base_plugin_mutex);
   
   if(dlerror() == NULL && lv2_descriptor){
     xmlNode *triple_node;
     xmlNode *port_node;
     xmlNode *current;
 
+    AgsUUID *uuid;
+    
     GList *list, *list_start;
 
+    pthread_mutex_lock(base_plugin_mutex);
+    
+    uuid = ags_uuid_copy(base_plugin->uuid);
+    
     escaped_effect = ags_string_util_escape_single_quote(base_plugin->effect);
+
+    pthread_mutex_unlock(base_plugin_mutex);
 
     /* retrieve triple node */
     triple_node = g_hash_table_lookup(ags_lv2_manager_get_instance()->current_plugin_node,
-				      base_plugin->id);
+				      base_plugin->uuid);
+    ags_uuid_free(uuid);
     
     if(triple_node == NULL){
       g_warning("rdf-triple not found");
@@ -1003,48 +1376,56 @@ ags_lv2_plugin_load_plugin(AgsBasePlugin *base_plugin)
     
     /* name metadata */
     xpath = ".//rdf-pname-ln[text()='doap:name']/ancestor::*[self::rdf-verb][1]/following-sibling::*[self::rdf-object-list][1]//rdf-string";    
-    metadata_list = ags_turtle_find_xpath_with_context_node(lv2_plugin->turtle,
+    metadata_list = ags_turtle_find_xpath_with_context_node(turtle,
 							    xpath,
 							    triple_node);
 
     if(metadata_list != NULL){
-      lv2_plugin->doap_name = xmlNodeGetContent((xmlNode *) metadata_list->data);
+      g_object_set(lv2_plugin,
+		   "doap-name", xmlNodeGetContent((xmlNode *) metadata_list->data),
+		   NULL);
 
       g_list_free(metadata_list);
     }
 
     /* author metadata */
     xpath = ".//rdf-pname-ln[text()='foaf:name']/ancestor::*[self::rdf-verb][1]/following-sibling::*[self::rdf-object-list][1]//rdf-string";
-    metadata_list = ags_turtle_find_xpath_with_context_node(lv2_plugin->turtle,
+    metadata_list = ags_turtle_find_xpath_with_context_node(turtle,
 							    xpath,
 							    triple_node);
 
     if(metadata_list != NULL){
-      lv2_plugin->foaf_name = xmlNodeGetContent((xmlNode *) metadata_list->data);
+      g_object_set(lv2_plugin,
+		   "foaf-name", xmlNodeGetContent((xmlNode *) metadata_list->data),
+		   NULL);
 
       g_list_free(metadata_list);
     }
 
     /* homepage metadata */
     xpath = ".//rdf-pname-ln[text()='foaf:homepage']/ancestor::*[self::rdf-verb][1]/following-sibling::*[self::rdf-object-list][1]//rdf-string";
-    metadata_list = ags_turtle_find_xpath_with_context_node(lv2_plugin->turtle,
+    metadata_list = ags_turtle_find_xpath_with_context_node(turtle,
 							    xpath,
 							    triple_node);
 
     if(metadata_list != NULL){
-      lv2_plugin->foaf_homepage = xmlNodeGetContent((xmlNode *) metadata_list->data);
+      g_object_set(lv2_plugin,
+		   "foaf-homepage", xmlNodeGetContent((xmlNode *) metadata_list->data),
+		   NULL);
 
       g_list_free(metadata_list);
     }
 
     /* mbox metadata */
     xpath = ".//rdf-pname-ln[text()='foaf:mbox']/ancestor::*[self::rdf-verb][1]/following-sibling::*[self::rdf-object-list][1]//rdf-string";
-    metadata_list = ags_turtle_find_xpath_with_context_node(lv2_plugin->turtle,
+    metadata_list = ags_turtle_find_xpath_with_context_node(turtle,
 							    xpath,
 							    triple_node);
 
     if(metadata_list != NULL){
-      lv2_plugin->foaf_mbox = xmlNodeGetContent((xmlNode *) metadata_list->data);
+      g_object_set(lv2_plugin,
+		   "foaf-mbox", xmlNodeGetContent((xmlNode *) metadata_list->data),
+		   NULL);
     
       g_list_free(metadata_list);
     }
@@ -1052,12 +1433,12 @@ ags_lv2_plugin_load_plugin(AgsBasePlugin *base_plugin)
     /* check programs interface */
     xpath = ".//rdf-pname-ln[text()='lv2:extensiondata']/ancestor::*[self::rdf-verb][1]/following-sibling::*[self::rdf-object-list][1]//rdf-iriref[text()='<http://kxstudio.sf.net/ns/lv2ext/programs#Interface>']";
 
-    extension_list = ags_turtle_find_xpath_with_context_node(lv2_plugin->turtle,
+    extension_list = ags_turtle_find_xpath_with_context_node(turtle,
 							     xpath,
 							     triple_node);
 
     if(extension_list != NULL){
-      lv2_plugin->flags |= AGS_LV2_PLUGIN_HAS_PROGRAM_INTERFACE;
+      ags_lv2_plugin_set_flags(lv2_plugin, AGS_LV2_PLUGIN_HAS_PROGRAM_INTERFACE);
       
       g_list_free(extension_list);
     }
@@ -1065,24 +1446,24 @@ ags_lv2_plugin_load_plugin(AgsBasePlugin *base_plugin)
     /* check needs worker */
     xpath = ".//rdf-pname-ln[text()='lv2:requiredFeature']/ancestor::*[self::rdf-verb][1]/following-sibling::*[self::rdf-object-list][1]//rdf-pname-ln[text()='lv2worker:schedule']";
 
-    feature_list = ags_turtle_find_xpath_with_context_node(lv2_plugin->turtle,
+    feature_list = ags_turtle_find_xpath_with_context_node(turtle,
 							   xpath,
 							   triple_node);
 
     if(feature_list != NULL){
-      lv2_plugin->flags |= AGS_LV2_PLUGIN_NEEDS_WORKER;
-    
+      ags_lv2_plugin_set_flags(lv2_plugin, AGS_LV2_PLUGIN_NEEDS_WORKER);
+      
       g_list_free(feature_list);
     }
 
     /* check if is synthesizer */
     xpath = ".//rdf-verb[@verb='a']/following-sibling::*[self::rdf-object-list]//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':instrumentplugin') + 1) = ':instrumentplugin']";
-    instrument_list = ags_turtle_find_xpath_with_context_node(lv2_plugin->turtle,
+    instrument_list = ags_turtle_find_xpath_with_context_node(turtle,
 							      xpath,
 							      triple_node);
 
     if(instrument_list != NULL){
-      lv2_plugin->flags |= AGS_LV2_PLUGIN_IS_SYNTHESIZER;
+      ags_lv2_plugin_set_flags(lv2_plugin, AGS_LV2_PLUGIN_IS_SYNTHESIZER);
 
       g_list_free(instrument_list);
     }
@@ -1090,7 +1471,7 @@ ags_lv2_plugin_load_plugin(AgsBasePlugin *base_plugin)
     /* check UI */
     xpath = ".//rdf-pname-ln[text()='uiext:ui']/ancestor::*[self::rdf-verb][1]/following-sibling::*[self::rdf-object-list][1]//rdf-iriref";
 
-    ui_list = ags_turtle_find_xpath_with_context_node(lv2_plugin->turtle,
+    ui_list = ags_turtle_find_xpath_with_context_node(turtle,
 						      xpath,
 						      triple_node);
 
@@ -1115,25 +1496,27 @@ ags_lv2_plugin_load_plugin(AgsBasePlugin *base_plugin)
 
     /* load ports */
     xpath = ".//rdf-verb//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':port') + 1) = ':port']/ancestor::*[self::rdf-verb][1]/following-sibling::*[self::rdf-object-list]/rdf-object[.//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':index') + 1) = ':index']]";
-    port_list = ags_turtle_find_xpath_with_context_node(lv2_plugin->turtle,
+    port_list = ags_turtle_find_xpath_with_context_node(turtle,
 							xpath,
 							triple_node);
 
-    /*  */
-    port_descriptor_list = NULL;
+    /* AgsPluginPort */
+    plugin_port = NULL;
 
     while(port_list != NULL){
-      port = ags_port_descriptor_alloc();
+      current_plugin_port = ags_plugin_port_new();
+      g_object_ref(current_plugin_port);
+      
       found_port = FALSE;
 
-      g_value_init(port->upper_value,
+      g_value_init(current_plugin_port->upper_value,
 		   G_TYPE_FLOAT);
-      g_value_init(port->lower_value,
+      g_value_init(current_plugin_port->lower_value,
 		   G_TYPE_FLOAT);
-      g_value_init(port->default_value,
+      g_value_init(current_plugin_port->default_value,
 		   G_TYPE_FLOAT);
 
-      g_value_set_float(port->upper_value,
+      g_value_set_float(current_plugin_port->upper_value,
 			0.0);
       
       port_node = (xmlNode *) port_list->data;
@@ -1144,12 +1527,12 @@ ags_lv2_plugin_load_plugin(AgsBasePlugin *base_plugin)
       xpath = g_ascii_strdown(".//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':ControlPort') + 1) = ':ControlPort']",
 			      -1);
 
-      list = ags_turtle_find_xpath_with_context_node(lv2_plugin->turtle,
+      list = ags_turtle_find_xpath_with_context_node(turtle,
 						     xpath,
 						     port_node);
 
       if(list != NULL){
-	port->flags |= AGS_PORT_DESCRIPTOR_CONTROL;
+	current_plugin_port->flags |= AGS_PLUGIN_PORT_CONTROL;
 	found_port = TRUE;
 
 	g_list_free(list);
@@ -1159,12 +1542,12 @@ ags_lv2_plugin_load_plugin(AgsBasePlugin *base_plugin)
       xpath = g_ascii_strdown(".//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':OutputPort') + 1) = ':OutputPort']",
 			      -1);
 
-      list = ags_turtle_find_xpath_with_context_node(lv2_plugin->turtle,
+      list = ags_turtle_find_xpath_with_context_node(turtle,
 						     xpath,
 						     port_node);
 
       if(list != NULL){
-	port->flags |= AGS_PORT_DESCRIPTOR_OUTPUT;
+	current_plugin_port->flags |= AGS_PLUGIN_PORT_OUTPUT;
 	found_port = TRUE;
 
 	g_list_free(list);
@@ -1174,12 +1557,12 @@ ags_lv2_plugin_load_plugin(AgsBasePlugin *base_plugin)
       xpath = g_ascii_strdown(".//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':InputPort') + 1) = ':InputPort']",
 			      -1);
 
-      list = ags_turtle_find_xpath_with_context_node(lv2_plugin->turtle,
+      list = ags_turtle_find_xpath_with_context_node(turtle,
 						     xpath,
 						     port_node);
 
       if(list != NULL){
-	port->flags |= AGS_PORT_DESCRIPTOR_INPUT;
+	current_plugin_port->flags |= AGS_PLUGIN_PORT_INPUT;
 	found_port = TRUE;
 
 	g_list_free(list);
@@ -1189,12 +1572,12 @@ ags_lv2_plugin_load_plugin(AgsBasePlugin *base_plugin)
       xpath = g_ascii_strdown(".//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':AudioPort') + 1) = ':AudioPort']",
 			      -1);
 
-      list = ags_turtle_find_xpath_with_context_node(lv2_plugin->turtle,
+      list = ags_turtle_find_xpath_with_context_node(turtle,
 						     xpath,
 						     port_node);
 
       if(list != NULL){
-	port->flags |= AGS_PORT_DESCRIPTOR_AUDIO;
+	current_plugin_port->flags |= AGS_PLUGIN_PORT_AUDIO;
 	found_port = TRUE;
 	
 	g_list_free(list);
@@ -1204,12 +1587,12 @@ ags_lv2_plugin_load_plugin(AgsBasePlugin *base_plugin)
       xpath = g_ascii_strdown(".//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':EventPort') + 1) = ':EventPort']",
 			      -1);
 
-      list = ags_turtle_find_xpath_with_context_node(lv2_plugin->turtle,
+      list = ags_turtle_find_xpath_with_context_node(turtle,
 						     xpath,
 						     port_node);
 
       if(list != NULL){
-	port->flags |= AGS_PORT_DESCRIPTOR_EVENT;
+	current_plugin_port->flags |= AGS_PLUGIN_PORT_EVENT;
 	found_port = TRUE;
 
 	g_list_free(list);
@@ -1219,12 +1602,12 @@ ags_lv2_plugin_load_plugin(AgsBasePlugin *base_plugin)
       xpath = g_ascii_strdown(".//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':AtomPort') + 1) = ':AtomPort']",
 			      -1);
 
-      list = ags_turtle_find_xpath_with_context_node(lv2_plugin->turtle,
+      list = ags_turtle_find_xpath_with_context_node(turtle,
 						     xpath,
 						     port_node);
 
       if(list != NULL){
-	port->flags |= AGS_PORT_DESCRIPTOR_ATOM;
+	current_plugin_port->flags |= AGS_PLUGIN_PORT_ATOM;
 	found_port = TRUE;
 	
 	g_list_free(list);
@@ -1233,16 +1616,16 @@ ags_lv2_plugin_load_plugin(AgsBasePlugin *base_plugin)
       /* load index */
       xpath = g_ascii_strdown(".//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':index') + 1) = ':index']/ancestor::*[self::rdf-verb][1]/following-sibling::*[self::rdf-object-list][1]//rdf-numeric",
 			      -1);
-      list = ags_turtle_find_xpath_with_context_node(lv2_plugin->turtle,
+      list = ags_turtle_find_xpath_with_context_node(turtle,
 						     xpath,
 						     port_node);
 
       if(list != NULL){
 	current = (xmlNode *) list->data;
 
-       	port->port_index = g_ascii_strtoull(xmlNodeGetContent(current),
-					    NULL,
-					    10);
+       	current_plugin_port->port_index = g_ascii_strtoull(xmlNodeGetContent(current),
+							   NULL,
+							   10);
 	found_port = TRUE;
 	
 	g_list_free(list);
@@ -1251,21 +1634,18 @@ ags_lv2_plugin_load_plugin(AgsBasePlugin *base_plugin)
       }
       
       if(!found_port){
-	free(port);
+	g_object_unref(current_plugin_port);
 	
 	port_list = port_list->next;
-
+	
 	continue;
-      }else{
-	port_descriptor_list = g_list_prepend(port_descriptor_list,
-					      port);
       }
-      
+
       /* properties */
       xpath = g_ascii_strdown(".//rdf-verb//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':portProperty') + 1) = ':portProperty']/ancestor::*[self::rdf-verb][1]/following-sibling::*[self::rdf-object-list][1]//rdf-pname-ln",
 			      -1);
       list_start =
-	list = ags_turtle_find_xpath_with_context_node(lv2_plugin->turtle,
+	list = ags_turtle_find_xpath_with_context_node(turtle,
 						       xpath,
 						       port_node);
       
@@ -1274,16 +1654,16 @@ ags_lv2_plugin_load_plugin(AgsBasePlugin *base_plugin)
 	
 	if(g_str_has_suffix(xmlNodeGetContent(current),
 			    ":toggled")){
-	  port->flags |= AGS_PORT_DESCRIPTOR_TOGGLED;
+	  current_plugin_port->flags |= AGS_PLUGIN_PORT_TOGGLED;
 	}else if(g_str_has_suffix(xmlNodeGetContent(current),
 				  ":enumeration")){
-	  port->flags |= AGS_PORT_DESCRIPTOR_ENUMERATION;
+	  current_plugin_port->flags |= AGS_PLUGIN_PORT_ENUMERATION;
 	}else if(g_str_has_suffix(xmlNodeGetContent(current),
 				  ":logarithmic")){
-	  port->flags |= AGS_PORT_DESCRIPTOR_LOGARITHMIC;
+	  current_plugin_port->flags |= AGS_PLUGIN_PORT_LOGARITHMIC;
 	}else if(g_str_has_suffix(xmlNodeGetContent(current),
 				  ":integer")){
-	  port->flags |= AGS_PORT_DESCRIPTOR_INTEGER;
+	  current_plugin_port->flags |= AGS_PLUGIN_PORT_INTEGER;
 	}
 
 	list = list->next;
@@ -1296,7 +1676,7 @@ ags_lv2_plugin_load_plugin(AgsBasePlugin *base_plugin)
       /* load name */
       xpath = g_ascii_strdown(".//rdf-object-list//rdf-string[ancestor::*[self::rdf-object-list][1]/preceding-sibling::*[self::rdf-verb][1]//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':name') + 1) = ':name']]",
 			      -1);
-      list = ags_turtle_find_xpath_with_context_node(lv2_plugin->turtle,
+      list = ags_turtle_find_xpath_with_context_node(turtle,
 						     xpath,
 						     port_node);
 
@@ -1307,8 +1687,14 @@ ags_lv2_plugin_load_plugin(AgsBasePlugin *base_plugin)
 	str = xmlNodeGetContent(current);
 
 	if(strlen(str) > 2){
-	  port->port_name = g_strndup(str + 1,
-				      strlen(str) - 2);
+	  str = g_strndup(str + 1,
+			  strlen(str) - 2);
+	  
+	  g_object_set(current_plugin_port,
+		       "port-name", str,
+		       NULL);
+
+	  g_free(str);
 	}
 
 	g_list_free(list);
@@ -1317,7 +1703,7 @@ ags_lv2_plugin_load_plugin(AgsBasePlugin *base_plugin)
       /* load symbol */
       xpath = g_ascii_strdown(".//rdf-object-list//rdf-string[ancestor::*[self::rdf-object-list][1]/preceding-sibling::*[self::rdf-verb][1]//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':symbol') + 1) = ':symbol']]",
 			      -1);
-      list = ags_turtle_find_xpath_with_context_node(lv2_plugin->turtle,
+      list = ags_turtle_find_xpath_with_context_node(turtle,
 						     xpath,
 						     port_node);
 
@@ -1328,8 +1714,14 @@ ags_lv2_plugin_load_plugin(AgsBasePlugin *base_plugin)
 	str = xmlNodeGetContent(current);
 
 	if(strlen(str) > 2){
-	  port->port_symbol = g_strndup(str + 1,
-					strlen(str) - 2);
+	  str = g_strndup(str + 1,
+			  strlen(str) - 2);
+	  
+	  g_object_set(current_plugin_port,
+		       "port-symbol", str,
+		       NULL);
+
+	  g_free(str);
 	}
 
 	g_list_free(list);
@@ -1339,30 +1731,33 @@ ags_lv2_plugin_load_plugin(AgsBasePlugin *base_plugin)
       xpath = g_ascii_strdown(".//rdf-verb//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':scalePoint') + 1) = ':scalePoint']/ancestor::*[self::rdf-verb][1]/following-sibling::*[self::rdf-object-list][1]//rdf-string",
 			      -1);
       list_start = 
-	list = ags_turtle_find_xpath_with_context_node(lv2_plugin->turtle,
+	list = ags_turtle_find_xpath_with_context_node(turtle,
 						       xpath,
 						       port_node);
 
       if(list != NULL){
-	port->scale_steps = g_list_length(list) - 1;
+	current_plugin_port->scale_steps = g_list_length(list) - 1;
 
-	port->scale_points = malloc((port->scale_steps + 1) * sizeof(gchar *));
-	port->scale_value = malloc((port->scale_steps + 1) * sizeof(float));
+	current_plugin_port->scale_point = malloc((current_plugin_port->scale_steps + 2) * sizeof(gchar *));
       
 	for(i = 0; list != NULL; i++){
 	  gchar *str;
-	
+
+	  current_plugin_port->scale_point[i] = NULL;
+	  
 	  current = (xmlNode *) list->data;
 	  str = xmlNodeGetContent(current);
 	
 	  if(strlen(str) > 2){
-	    port->scale_points[i] = g_strndup(str + 1,
-					      strlen(str) - 2);
+	    current_plugin_port->scale_point[i] = g_strndup(str + 1,
+							     strlen(str) - 2);
 	  }
 
 	  list = list->next;
 	}
-
+	
+	current_plugin_port->scale_point[i] = NULL;
+	  
 	if(list_start != NULL){
 	  g_list_free(list_start);
 	}
@@ -1370,18 +1765,20 @@ ags_lv2_plugin_load_plugin(AgsBasePlugin *base_plugin)
 	xpath = g_ascii_strdown(".//rdf-verb//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':scalePoint') + 1) = ':scalePoint']/ancestor::*[self::rdf-verb][1]/following-sibling::*[self::rdf-object-list][1]//rdf-numeric",
 				-1);
 	list_start = 
-	  list = ags_turtle_find_xpath_with_context_node(lv2_plugin->turtle,
+	  list = ags_turtle_find_xpath_with_context_node(turtle,
 							 xpath,
 							 port_node);
-      
+
+	current_plugin_port->scale_value = malloc((g_list_length(list_start)) * sizeof(gdouble));
+	
 	for(i = 0; list != NULL; i++){
 	  gchar *str;
 	
 	  current = (xmlNode *) list->data;
 	  str = xmlNodeGetContent(current);
 	
-	  port->scale_value[i] = g_ascii_strtod(str,
-						NULL);
+	  current_plugin_port->scale_value[i] = g_ascii_strtod(str,
+							       NULL);
 	
 	  list = list->next;
 	}
@@ -1390,16 +1787,16 @@ ags_lv2_plugin_load_plugin(AgsBasePlugin *base_plugin)
 	  g_list_free(list_start);
 	}
       }else{
-	port->scale_steps = 0;
+	current_plugin_port->scale_steps = 0;
 
-	port->scale_points = NULL;
-	port->scale_value = NULL;
+	current_plugin_port->scale_point = NULL;
+	current_plugin_port->scale_value = NULL;
       }      
 
       /* minimum */
       xpath = g_ascii_strdown(".//rdf-verb//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':minimum') + 1) = ':minimum']/ancestor::*[self::rdf-verb][1]/following-sibling::*[self::rdf-object-list][1]//rdf-numeric",
 			      -1);
-      list = ags_turtle_find_xpath_with_context_node(lv2_plugin->turtle,
+      list = ags_turtle_find_xpath_with_context_node(turtle,
 						     xpath,
 						     port_node);
       lower_value = 0.0;
@@ -1410,7 +1807,7 @@ ags_lv2_plugin_load_plugin(AgsBasePlugin *base_plugin)
 	lower_value = g_ascii_strtod(xmlNodeGetContent(current),
 				     NULL);
 	
-	g_value_set_float(port->lower_value,
+	g_value_set_float(current_plugin_port->lower_value,
 			  lower_value);
 
 	g_list_free(list);
@@ -1419,7 +1816,7 @@ ags_lv2_plugin_load_plugin(AgsBasePlugin *base_plugin)
       /* maximum */
       xpath = g_ascii_strdown(".//rdf-verb//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':maximum') + 1) = ':maximum']/ancestor::*[self::rdf-verb][1]/following-sibling::*[self::rdf-object-list][1]//rdf-numeric",
 			      -1);
-      list = ags_turtle_find_xpath_with_context_node(lv2_plugin->turtle,
+      list = ags_turtle_find_xpath_with_context_node(turtle,
 						     xpath,
 						     port_node);
       upper_value = 1.0;
@@ -1430,43 +1827,46 @@ ags_lv2_plugin_load_plugin(AgsBasePlugin *base_plugin)
 	upper_value = g_ascii_strtod(xmlNodeGetContent(current),
 				     NULL);
 	
-	g_value_set_float(port->upper_value,
+	g_value_set_float(current_plugin_port->upper_value,
 			  upper_value);
 
 	g_list_free(list);
       }
 
       /* check scale steps */
-      if((AGS_PORT_DESCRIPTOR_INTEGER & (port->flags)) != 0 &&
-	 port->scale_steps == 0){
+      if((AGS_PLUGIN_PORT_INTEGER & (current_plugin_port->flags)) != 0 &&
+	 current_plugin_port->scale_steps == 0){
 	if(upper_value > 0.0 &&
 	   lower_value >= 0.0){
-	  port->scale_steps = upper_value - lower_value;
+	  current_plugin_port->scale_steps = upper_value - lower_value;
 	}else if(upper_value > 0 &&
 		 lower_value < 0){
-	  port->scale_steps = upper_value + (-1 * (lower_value));
+	  current_plugin_port->scale_steps = upper_value + (-1 * (lower_value));
 	}else{
-	  port->scale_steps = -1 * (lower_value - upper_value);
+	  current_plugin_port->scale_steps = -1 * (lower_value - upper_value);
 	}	
       }
       
       /* default */
       xpath = g_ascii_strdown(".//rdf-verb//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':default') + 1) = ':default']/ancestor::*[self::rdf-verb][1]/following-sibling::*[self::rdf-object-list][1]//rdf-numeric",
 			      -1);
-      list = ags_turtle_find_xpath_with_context_node(lv2_plugin->turtle,
+      list = ags_turtle_find_xpath_with_context_node(turtle,
 						     xpath,
 						     port_node);
 
       if(list != NULL){
 	current = (xmlNode *) list->data;
 
-	g_value_set_float(port->default_value,
+	g_value_set_float(current_plugin_port->default_value,
 			  g_ascii_strtod(xmlNodeGetContent(current),
 					 NULL));
 
 	g_list_free(list);
       }
 
+      plugin_port = g_list_prepend(plugin_port,
+				   current_plugin_port);
+      
       /* iterate */
       port_list = port_list->next;
     }
@@ -1475,8 +1875,118 @@ ags_lv2_plugin_load_plugin(AgsBasePlugin *base_plugin)
       g_list_free(port_list);
     }
 
-    base_plugin->port = g_list_reverse(port_descriptor_list);
+    /* set plugin port */
+    pthread_mutex_lock(base_plugin_mutex);
+
+    base_plugin->plugin_port = g_list_reverse(plugin_port);
+
+    pthread_mutex_unlock(base_plugin_mutex);
   }
+}
+
+/**
+ * ags_lv2_plugin_test_flags:
+ * @lv2_plugin: the #AgsLv2Plugin
+ * @flags: the flags
+ * 
+ * Test @flags to be set on @recall.
+ * 
+ * Returns: %TRUE if flags are set, else %FALSE
+ * 
+ * Since: 2.0.0
+ */
+gboolean
+ags_lv2_plugin_test_flags(AgsLv2Plugin *lv2_plugin, guint flags)
+{
+  gboolean retval;
+  
+  pthread_mutex_t *base_plugin_mutex;
+
+  if(!AGS_IS_LV2_PLUGIN(lv2_plugin)){
+    return(FALSE);
+  }
+  
+  /* get base plugin mutex */
+  pthread_mutex_lock(ags_base_plugin_get_class_mutex());
+  
+  base_plugin_mutex = AGS_BASE_PLUGIN(lv2_plugin)->obj_mutex;
+  
+  pthread_mutex_unlock(ags_base_plugin_get_class_mutex());
+
+  /* test flags */
+  pthread_mutex_lock(base_plugin_mutex);
+
+  retval = ((flags & (lv2_plugin->flags)) != 0) ? TRUE: FALSE;
+  
+  pthread_mutex_unlock(base_plugin_mutex);
+
+  return(retval);
+}
+
+/**
+ * ags_lv2_plugin_set_flags:
+ * @lv2_plugin: the #AgsLv2Plugin
+ * @flags: the flags
+ *
+ * Set flags.
+ * 
+ * Since: 2.0.0
+ */
+void
+ags_lv2_plugin_set_flags(AgsLv2Plugin *lv2_plugin, guint flags)
+{
+  pthread_mutex_t *base_plugin_mutex;
+
+  if(!AGS_IS_LV2_PLUGIN(lv2_plugin)){
+    return;
+  }
+  
+  /* get base plugin mutex */
+  pthread_mutex_lock(ags_base_plugin_get_class_mutex());
+  
+  base_plugin_mutex = AGS_BASE_PLUGIN(lv2_plugin)->obj_mutex;
+  
+  pthread_mutex_unlock(ags_base_plugin_get_class_mutex());
+
+  /* set flags */
+  pthread_mutex_lock(base_plugin_mutex);
+
+  lv2_plugin->flags |= flags;
+  
+  pthread_mutex_unlock(base_plugin_mutex);
+}
+
+/**
+ * ags_lv2_plugin_unset_flags:
+ * @lv2_plugin: the #AgsLv2Plugin
+ * @flags: the flags
+ *
+ * Unset flags.
+ * 
+ * Since: 2.0.0
+ */
+void
+ags_lv2_plugin_unset_flags(AgsLv2Plugin *lv2_plugin, guint flags)
+{
+  pthread_mutex_t *base_plugin_mutex;
+
+  if(!AGS_IS_LV2_PLUGIN(lv2_plugin)){
+    return;
+  }
+  
+  /* get base plugin mutex */
+  pthread_mutex_lock(ags_base_plugin_get_class_mutex());
+  
+  base_plugin_mutex = AGS_BASE_PLUGIN(lv2_plugin)->obj_mutex;
+  
+  pthread_mutex_unlock(ags_base_plugin_get_class_mutex());
+
+  /* unset flags */
+  pthread_mutex_lock(base_plugin_mutex);
+
+  lv2_plugin->flags &= (~flags);
+  
+  pthread_mutex_unlock(base_plugin_mutex);
 }
 
 /**
@@ -1487,7 +1997,7 @@ ags_lv2_plugin_load_plugin(AgsBasePlugin *base_plugin)
  * 
  * Returns: the new event buffer
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void*
 ags_lv2_plugin_alloc_event_buffer(guint buffer_size)
@@ -1531,7 +2041,7 @@ ags_lv2_plugin_alloc_event_buffer(guint buffer_size)
  * 
  * Returns: The newly allocated event buffer
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void*
 ags_lv2_plugin_concat_event_buffer(void *buffer0, ...)
@@ -1572,7 +2082,7 @@ ags_lv2_plugin_concat_event_buffer(void *buffer0, ...)
  * 
  * Returns: a new allocated LV2_Event_Buffer
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 LV2_Event_Buffer*
 ags_lv2_plugin_event_buffer_alloc(guint buffer_size)
@@ -1617,7 +2127,7 @@ ags_lv2_plugin_event_buffer_alloc(guint buffer_size)
  * 
  * Reallocate LV2_Event_Buffer struct's data field.
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_lv2_plugin_event_buffer_realloc_data(LV2_Event_Buffer *event_buffer,
@@ -1653,7 +2163,7 @@ ags_lv2_plugin_event_buffer_realloc_data(LV2_Event_Buffer *event_buffer,
  * 
  * Returns: The newly allocated event buffer
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 LV2_Event_Buffer*
 ags_lv2_plugin_event_buffer_concat(LV2_Event_Buffer *event_buffer, ...)
@@ -1705,7 +2215,7 @@ ags_lv2_plugin_event_buffer_concat(LV2_Event_Buffer *event_buffer, ...)
  *
  * Returns: %TRUE on success otherwise %FALSE
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 gboolean
 ags_lv2_plugin_event_buffer_append_midi(void *event_buffer,
@@ -1776,7 +2286,7 @@ ags_lv2_plugin_event_buffer_append_midi(void *event_buffer,
  *
  * Returns: %TRUE on success otherwise %FALSE
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 gboolean
 ags_lv2_plugin_event_buffer_remove_midi(void *event_buffer,
@@ -1845,7 +2355,7 @@ ags_lv2_plugin_event_buffer_remove_midi(void *event_buffer,
  *
  * Clear the event buffer.
  *
- * Since: 1.0.0 
+ * Since: 2.0.0 
  */
 void
 ags_lv2_plugin_clear_event_buffer(void *event_buffer,
@@ -1874,7 +2384,7 @@ ags_lv2_plugin_clear_event_buffer(void *event_buffer,
  * 
  * Returns: the new atom sequence
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void*
 ags_lv2_plugin_alloc_atom_sequence(guint sequence_size)
@@ -1910,7 +2420,7 @@ ags_lv2_plugin_alloc_atom_sequence(guint sequence_size)
  *
  * Returns: %TRUE on success otherwise %FALSE
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 gboolean
 ags_lv2_plugin_atom_sequence_append_midi(void *atom_sequence,
@@ -1990,7 +2500,7 @@ ags_lv2_plugin_atom_sequence_append_midi(void *atom_sequence,
  *
  * Returns: %TRUE on success otherwise %FALSE
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 gboolean
 ags_lv2_plugin_atom_sequence_remove_midi(void *atom_sequence,
@@ -2061,7 +2571,7 @@ ags_lv2_plugin_atom_sequence_remove_midi(void *atom_sequence,
  *
  * Clear the atom sequence.
  *
- * Since: 1.0.0 
+ * Since: 2.0.0 
  */
 void
 ags_lv2_plugin_clear_atom_sequence(void *atom_sequence,
@@ -2079,20 +2589,38 @@ ags_lv2_plugin_clear_atom_sequence(void *atom_sequence,
  * 
  * Returns: the matching #GList-struct containing #AgsLv2Plugin
  * 
- * Since: 1.0.0.8
+ * Since: 2.0.0
  */
 GList*
 ags_lv2_plugin_find_pname(GList *lv2_plugin,
 			  gchar *pname)
 {
+  gboolean success;
+  
+  pthread_mutex_t *base_plugin_mutex;
+
   if(pname == NULL){
     return(NULL);
   }
 
   while(lv2_plugin != NULL){
-    if(AGS_LV2_PLUGIN(lv2_plugin->data)->pname != NULL &&
-       !g_ascii_strcasecmp(pname,
-			   AGS_LV2_PLUGIN(lv2_plugin->data)->pname)){
+    /* get base plugin mutex */
+    pthread_mutex_lock(ags_base_plugin_get_class_mutex());
+  
+    base_plugin_mutex = AGS_BASE_PLUGIN(lv2_plugin->data)->obj_mutex;
+  
+    pthread_mutex_unlock(ags_base_plugin_get_class_mutex());
+
+    /* check pname */
+    pthread_mutex_lock(base_plugin_mutex);
+    
+    success = (AGS_LV2_PLUGIN(lv2_plugin->data)->pname != NULL &&
+	       !g_ascii_strcasecmp(pname,
+				   AGS_LV2_PLUGIN(lv2_plugin->data)->pname)) ? TRUE: FALSE;
+
+    pthread_mutex_unlock(base_plugin_mutex);
+    
+    if(success){
       return(lv2_plugin);
     }
     
@@ -2131,7 +2659,7 @@ ags_lv2_plugin_real_change_program(AgsLv2Plugin *lv2_plugin,
  * 
  * Change program of @lv2_handle.
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_lv2_plugin_change_program(AgsLv2Plugin *lv2_plugin,
@@ -2161,7 +2689,7 @@ ags_lv2_plugin_change_program(AgsLv2Plugin *lv2_plugin,
  *
  * Returns: a new #AgsLv2Plugin
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsLv2Plugin*
 ags_lv2_plugin_new(AgsTurtle *turtle, gchar *filename, gchar *effect, gchar *uri, guint effect_index)

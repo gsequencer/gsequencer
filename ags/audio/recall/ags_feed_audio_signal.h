@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -23,6 +23,9 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <ags/libags.h>
+
+#include <ags/audio/ags_audio_signal.h>
 #include <ags/audio/ags_recall_audio_signal.h>
 
 #define AGS_TYPE_FEED_AUDIO_SIGNAL                (ags_feed_audio_signal_get_type())
@@ -47,6 +50,6 @@ struct _AgsFeedAudioSignalClass
 
 GType ags_feed_audio_signal_get_type();
 
-AgsFeedAudioSignal* ags_feed_audio_signal_new(AgsAudioSignal *audio_signal);
+AgsFeedAudioSignal* ags_feed_audio_signal_new(AgsAudioSignal *source);
 
 #endif /*__AGS_FEED_AUDIO_SIGNAL_H__*/

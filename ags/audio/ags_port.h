@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -27,8 +27,7 @@
 
 #include <ladspa.h>
 
-#include <ags/lib/ags_complex.h>
-#include <ags/lib/ags_conversion.h>
+#include <ags/libags.h>
 
 #define AGS_TYPE_PORT                (ags_port_get_type())
 #define AGS_PORT(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_PORT, AgsPort))
@@ -67,6 +66,11 @@ struct _AgsPort
 
   guint flags;
   
+  pthread_mutex_t *obj_mutex;
+  pthread_mutexattr_t *obj_mutexattr;
+
+  AgsUUID *uuid;
+
   gchar *plugin_name;
   gchar *specifier;
 
@@ -78,9 +82,7 @@ struct _AgsPort
   guint port_value_size;
   guint port_value_length;
 
-  pthread_mutex_t *mutex;
-
-  gpointer port_descriptor;
+  GObject *plugin_port;
   AgsConversion *conversion;
 
   GList *automation;
@@ -117,6 +119,12 @@ struct _AgsPortClass
 
 GType ags_port_get_type();
 
+pthread_mutex_t* ags_port_get_class_mutex();
+
+gboolean ags_port_test_flags(AgsPort *port, guint flags);
+void ags_port_set_flags(AgsPort *port, guint flags);
+void ags_port_unset_flags(AgsPort *port, guint flags);
+
 void ags_port_safe_read(AgsPort *port, GValue *value);
 void ags_port_safe_read_raw(AgsPort *port, GValue *value);
 void ags_port_safe_write(AgsPort *port, GValue *value);
@@ -126,6 +134,11 @@ void ags_port_safe_get_property(AgsPort *port, gchar *property_name, GValue *val
 void ags_port_safe_set_property(AgsPort *port, gchar *property_name, GValue *value);
 
 GList* ags_port_find_specifier(GList *port, gchar *specifier);
+
+void ags_port_add_automation(AgsPort *port,
+			     GObject *automation);
+void ags_port_remove_automation(AgsPort *port,
+				GObject *automation);
 
 AgsPort* ags_port_new();
 

@@ -51,86 +51,94 @@ General Notes on Licensing
 ====
 
 Following images are used by the documentation and hence are distributed under the GNU Free Documentation License, Version 1.3 or
-any later version published by the Free Software Foundation.
+(at your option) any later version published by the Free Software Foundation.
 
-* docs/images/ags_ffplayer.png
-* docs/images/ags_navigation.png
-* docs/images/ags_performance_preferences.png
-* docs/images/ags_midi_preferences.png
-* docs/images/ags_machine_properties-link_input.png
-* docs/images/ags_machine_properties-input.png
-* docs/images/ags_mixer.png
-* docs/images/ags_select_accelerations_dialog.png
-* docs/images/ags_machine_properties-resize_channels.png
-* docs/images/ags_server_preferences.png
-* docs/images/ags_midi_import_wizard_no2.png
-* docs/images/ags_machine_envelope_info.png
-* docs/images/ags_drum.png
-* docs/images/ags_matrix.png
-* docs/images/ags_midi_export_wizard_no1.png
-* docs/images/ags_crop_notes_dialog.png
-* docs/images/AGS_super-threaded.png
-* docs/images/ags_midi_import_wizard_no1.png
-* docs/images/AGS_recall_lifecycle.png
-* docs/images/AGS_linking.png
-* docs/images/AGS_iterator.png
-* docs/images/ags_automation_window_drum.png
-* docs/images/ags_audio_connection_output_line.png
-* docs/images/ags_machine_envelope_editor.png
-* docs/images/ags_select_notes_dialog.png
-* docs/images/ags_move_notes_dialog.png
-* docs/images/ags_ladspa_browser.png
-* docs/images/ags-automation-toolbar.png
-* docs/images/ags_ramp_accelerations_dialog.png
-* docs/images/ags_export_window.png
-* docs/images/ags_midi_export_wizard_no2.png
-* docs/images/ags_audio_connection_output_bulk.png
-* docs/images/ags_machine_envelope_pattern.png
-* docs/images/ags-toolbar.png
-* docs/images/ags_midi_dialog.png
-* docs/images/ags_machine_properties-output.png
-* docs/images/ags_syncsynth.png
-* docs/images/ags_generic_preferences.png
-* docs/images/ags_panel.png
-* docs/images/ags_audio_preferences.png
-* docs/images/ags_synth.png
-* docs/images/ags_position_notation_cursor_dialog.png
-* docs/images/ags_position_automation_cursor_dialog.png
+* docs/images/ags_ffplayer.png (GFDLv1.3+)
+* docs/images/ags_navigation.png (GFDLv1.3+)
+* docs/images/ags_performance_preferences.png (GFDLv1.3+)
+* docs/images/ags_midi_preferences.png (GFDLv1.3+)
+* docs/images/ags_machine_properties-link_input.png (GFDLv1.3+)
+* docs/images/ags_machine_properties-input.png (GFDLv1.3+)
+* docs/images/ags_mixer.png (GFDLv1.3+)
+* docs/images/ags_select_accelerations_dialog.png (GFDLv1.3+)
+* docs/images/ags_machine_properties-resize_channels.png (GFDLv1.3+)
+* docs/images/ags_server_preferences.png (GFDLv1.3+)
+* docs/images/ags_midi_import_wizard_no2.png (GFDLv1.3+)
+* docs/images/ags_machine_envelope_info.png (GFDLv1.3+)
+* docs/images/ags_drum.png (GFDLv1.3+)
+* docs/images/ags_matrix.png (GFDLv1.3+)
+* docs/images/ags_midi_export_wizard_no1.png (GFDLv1.3+)
+* docs/images/ags_crop_notes_dialog.png (GFDLv1.3+)
+* docs/images/AGS_super-threaded.png (GFDLv1.3+)
+* docs/images/ags_midi_import_wizard_no1.png (GFDLv1.3+)
+* docs/images/AGS_recall_lifecycle.png (GFDLv1.3+)
+* docs/images/AGS_linking.png (GFDLv1.3+)
+* docs/images/AGS_iterator.png (GFDLv1.3+)
+* docs/images/ags_automation_window_drum.png (GFDLv1.3+)
+* docs/images/ags_audio_connection_output_line.png (GFDLv1.3+)
+* docs/images/ags_machine_envelope_editor.png (GFDLv1.3+)
+* docs/images/ags_select_notes_dialog.png (GFDLv1.3+)
+* docs/images/ags_move_notes_dialog.png (GFDLv1.3+)
+* docs/images/ags_ladspa_browser.png (GFDLv1.3+)
+* docs/images/ags-automation-toolbar.png (GFDLv1.3+)
+* docs/images/ags_ramp_accelerations_dialog.png (GFDLv1.3+)
+* docs/images/ags_export_window.png (GFDLv1.3+)
+* docs/images/ags_midi_export_wizard_no2.png (GFDLv1.3+)
+* docs/images/ags_audio_connection_output_bulk.png (GFDLv1.3+)
+* docs/images/ags_machine_envelope_pattern.png (GFDLv1.3+)
+* docs/images/ags-toolbar.png (GFDLv1.3+)
+* docs/images/ags_midi_dialog.png (GFDLv1.3+)
+* docs/images/ags_machine_properties-output.png (GFDLv1.3+)
+* docs/images/ags_syncsynth.png (GFDLv1.3+)
+* docs/images/ags_generic_preferences.png (GFDLv1.3+)
+* docs/images/ags_panel.png (GFDLv1.3+)
+* docs/images/ags_audio_preferences.png (GFDLv1.3+)
+* docs/images/ags_synth.png (GFDLv1.3+)
+* docs/images/ags_position_notation_cursor_dialog.png (GFDLv1.3+)
+* docs/images/ags_position_automation_cursor_dialog.png (GFDLv1.3+)
 
 Following listings are used by the documentation and hence are distributed under the GNU Free Documentation License, Version 1.3 or
-any later version published by the Free Software Foundation.
+(at your option) any later version published by the Free Software Foundation.
 
-* docs/listings/effects_echo_channel.c
-* docs/listings/file_property.c
-* docs/listings/effects_echo_audio.c
-* docs/listings/linking_prerequisites.c
-* docs/listings/linking_safe.c
-* docs/listings/effects_echo_audio_run.c
-* docs/listings/effects_recall_container.c
-* docs/listings/file_write.c
-* docs/listings/add_pattern.c
-* docs/listings/linking_unsafe.c
-* docs/listings/thread_application_context.c
-* docs/listings/effects_echo_channel_run.c
-* docs/listings/audio.c
-* docs/listings/pull_thread.c
-* docs/listings/application_mutex.c
-* docs/listings/audio_application_context.c
-* docs/listings/recycling.c
-* docs/listings/config.c
-* docs/listings/pcm_info.c
-* docs/listings/start_thread.c
-* docs/listings/file_read.c
-* docs/listings/complete_example.c
+* docs/listings/effects_echo_channel.c (GFDLv1.3+)
+* docs/listings/file_property.c (GFDLv1.3+)
+* docs/listings/effects_echo_audio.c (GFDLv1.3+)
+* docs/listings/linking_prerequisites.c (GFDLv1.3+)
+* docs/listings/linking_safe.c (GFDLv1.3+)
+* docs/listings/effects_echo_audio_run.c (GFDLv1.3+)
+* docs/listings/effects_recall_container.c (GFDLv1.3+)
+* docs/listings/file_write.c (GFDLv1.3+)
+* docs/listings/add_pattern.c (GFDLv1.3+)
+* docs/listings/linking_unsafe.c (GFDLv1.3+)
+* docs/listings/thread_application_context.c (GFDLv1.3+)
+* docs/listings/effects_echo_channel_run.c (GFDLv1.3+)
+* docs/listings/audio.c (GFDLv1.3+)
+* docs/listings/pull_thread.c (GFDLv1.3+)
+* docs/listings/application_mutex.c (GFDLv1.3+)
+* docs/listings/audio_application_context.c (GFDLv1.3+)
+* docs/listings/recycling.c (GFDLv1.3+)
+* docs/listings/config.c (GFDLv1.3+)
+* docs/listings/pcm_info.c (GFDLv1.3+)
+* docs/listings/start_thread.c (GFDLv1.3+)
+* docs/listings/file_read.c (GFDLv1.3+)
+* docs/listings/complete_example.c (GFDLv1.3+)
 
-The Advanced Gtk+ Sequencer logo is used by the final binary hence it is applied under the GNU General Public License as published by
+The Advanced Gtk+ Sequencer logo and splash screen are used by the final binary hence it is applied under the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or (at your option) any later version. This are the mentioned files (logo and splash screen):
+
+* gsequencer.share/images/ags.png (GPLv3+)
+* gsequencer.share/images/ags_supermoon-800x450.png (GPLv3+)
+
+Other images used by the binary applied under the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
 
-* gsequencer.share/images/ags.png
+* gsequencer.share/icons/ags.png (GPLv3+)
+* gsequencer.share/icons/ags.xpm (GPLv3+)
+* gsequencer.share/icons/jumper.png (GPLv3+)
 
 As well the desktop file:
 
-* gsequencer.desktop.in
+* gsequencer.desktop.in (GPLv3+)
 
 The generated symbol files have the very same license as their origin:
 
@@ -140,24 +148,30 @@ The generated symbol files have the very same license as their origin:
 
 And so for the glib-object marshallers file:
 
-* ags/object/ags_marshallers.list
+* ags/object/ags_marshallers.list (GPLv3+)
 
-Third-party files of gtk-doc TODO:JK: add missing information, copyright provided by http://www.gnome.org:
+Third-party files of gtk-doc licensed under the terms of GNU GPLv3+, copyright provided by James Henstridge and Stefan Sauer
 
-* docs/reference/libags/Makefile.am
+* docs/reference/libags/gtk-doc.make (GPLv3+)
+* docs/reference/libags-audio/gtk-doc.make (GPLv3+)
+* docs/reference/libags-gui/gtk-doc.make (GPLv3+)
+* docs/reference/libgsequencer/gtk-doc.make (GPLv3+)
+* gtk-doc.make (GPLv3+)
+* m4/gtk-doc.m4 (GPLv3+)
+
+Third-party files of gtk-doc permissive licensed see specific files for warranty disclaimer and a notice preservation requirement, copyright provided by James Henstridge, Damon Chaplin and Stefan Sauer
+
 * docs/reference/libags/git.mk
-* docs/reference/libags/gtk-doc.make
-* docs/reference/libags-audio/Makefile.am
 * docs/reference/libags-audio/git.mk
-* docs/reference/libags-audio/gtk-doc.make
-* docs/reference/libags-gui/Makefile.am
 * docs/reference/libags-gui/git.mk
-* docs/reference/libags-gui/gtk-doc.make
-* docs/reference/libgsequencer/Makefile.am
 * docs/reference/libgsequencer/git.mk
-* docs/reference/libgsequencer/gtk-doc.make
-* gtk-doc.make
-* m4/gtk-doc.m4
+
+Third-party files of gtk-doc licensed under the terms of GNU GPLv3+, copyright provided by Stefan Sauer
+
+* docs/reference/libags/Makefile.am (GPLv3+)
+* docs/reference/libags-audio/Makefile.am (GPLv3+)
+* docs/reference/libags-gui/Makefile.am (GPLv3+)
+* docs/reference/libgsequencer/Makefile.am (GPLv3+)
 
 Third-party files of autotools permissive licensed see specific files for warranty disclaimer and a notice preservation requirement, copyright provided by http://www.fsf.org:
 
@@ -177,7 +191,7 @@ Third-party files of autotools permissive licensed see specific files for warran
 
 Derived files of gsequencer licensed under the terms of GNU GPLv3+, copyright provided by http://www.nongnu.org/gsequencer:
 
-* po/gsequencer.pot
+* po/gsequencer.pot (GPLv3+)
 
 Third-party files of Ulrich Drepper (gettext) without any copyrightable content:
 
@@ -206,13 +220,13 @@ Third-party files of Ulrich Drepper (gettext) all-permissive licensed, copyright
 
 Generated files by glib-genmarshal licensed under the terms of GNU LGPLv2.1+, copyright provided by http://www.gnome.org:
 
-ags/object/ags_marshal.c
-ags/object/ags_marshal.h
+ags/object/ags_marshal.c (LGPLv2.1+)
+ags/object/ags_marshal.h (LGPLv2.1+)
 
 Third-party files of Filipe Coelho ISC licensed please consider copyright notice, copyright provided by http://www.falktx.com:
 
-lv2/lv2plug.in/ns/lv2ext/lv2_programs.h
+lv2/lv2plug.in/ns/lv2ext/lv2_programs.h (ISC)
 
 Third-party files of David Robillard licensed under the terms of GNU GPLv3+, copyright provided by http://www.drobilla.net:
 
-lv2.lib/mda/EPiano-presets.ttl
+lv2.lib/mda/EPiano-presets.ttl (GPLv3+)

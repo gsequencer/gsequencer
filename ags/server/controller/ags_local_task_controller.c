@@ -113,7 +113,7 @@ ags_local_task_controller_class_init(AgsLocalTaskControllerClass *local_task_con
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsLocalTaskControllerClass, launch),
 		 NULL, NULL,
-		 g_cclosure_user_marshal_POINTER__OBJECT,
+		 ags_cclosure_marshal_POINTER__OBJECT,
 		 G_TYPE_POINTER, 1,
 		 G_TYPE_OBJECT);
 
@@ -135,7 +135,7 @@ ags_local_task_controller_class_init(AgsLocalTaskControllerClass *local_task_con
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsLocalTaskControllerClass, launch_timed),
 		 NULL, NULL,
-		 g_cclosure_user_marshal_POINTER__OBJECT_OBJECT,
+		 ags_cclosure_marshal_POINTER__OBJECT_OBJECT,
 		 G_TYPE_POINTER, 2,
 		 G_TYPE_OBJECT,
 		 G_TYPE_OBJECT);

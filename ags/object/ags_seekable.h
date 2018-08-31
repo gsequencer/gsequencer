@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -33,16 +33,21 @@
 typedef struct _AgsSeekable AgsSeekable;
 typedef struct _AgsSeekableInterface AgsSeekableInterface;
 
+typedef enum{
+  AGS_SEEK_CUR,
+  AGS_SEEK_SET,
+  AGS_SEEK_END,
+}AgsSeekType;
+
 struct _AgsSeekableInterface
 {
   GTypeInterface ginterface;
 
-  void (*seek)(AgsSeekable *seekable, guint steps, gboolean forward);
+  void (*seek)(AgsSeekable *seekable, gint64 offset, guint whence);
 };
 
 GType ags_seekable_get_type();
 
-void ags_seekable_seek(AgsSeekable *seekable, guint steps, gboolean forward);
+void ags_seekable_seek(AgsSeekable *seekable, gint64 offset, guint whence);
 
 #endif /*__AGS_SEEKABLE_H__*/
-

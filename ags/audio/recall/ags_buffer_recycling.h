@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -23,6 +23,9 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <ags/libags.h>
+
+#include <ags/audio/ags_recycling.h>
 #include <ags/audio/ags_recall_recycling.h>
 
 #define AGS_TYPE_BUFFER_RECYCLING                (ags_buffer_recycling_get_type())
@@ -47,6 +50,7 @@ struct _AgsBufferRecyclingClass
 
 GType ags_buffer_recycling_get_type();
 
-AgsBufferRecycling* ags_buffer_recycling_new(AgsRecycling *recycling);
+AgsBufferRecycling* ags_buffer_recycling_new(AgsRecycling *destination,
+					     AgsRecycling *source);
 
 #endif /*__AGS_BUFFER_RECYCLING_H__*/

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -35,9 +35,15 @@
 typedef struct _AgsMachineCollection AgsMachineCollection;
 typedef struct _AgsMachineCollectionClass AgsMachineCollectionClass;
 
+typedef enum{
+  AGS_MACHINE_COLLECTION_CONNECTED    = 1,
+}AgsMachineCollectionFlags;
+
 struct _AgsMachineCollection
 {
   GtkVBox vbox;
+
+  guint flags;
   
   GType child_type;
   guint child_parameter_count;

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -142,6 +142,8 @@ ags_dssi_browser_init(AgsDssiBrowser *dssi_browser)
   gchar *str;
   gchar **filenames, **filenames_start;
 
+  dssi_browser->flags = 0;
+  
   dssi_manager = ags_dssi_manager_get_instance();
   
   /* plugin */
@@ -157,7 +159,8 @@ ags_dssi_browser_init(AgsDssiBrowser *dssi_browser)
 		     FALSE, FALSE,
 		     0);
 
-  combo_box = (GtkComboBoxText *) gtk_combo_box_text_new();
+  dssi_browser->filename = 
+    combo_box = (GtkComboBoxText *) gtk_combo_box_text_new();
   gtk_box_pack_start(GTK_BOX(dssi_browser->plugin),
 		     GTK_WIDGET(combo_box),
 		     FALSE, FALSE,
@@ -177,7 +180,7 @@ ags_dssi_browser_init(AgsDssiBrowser *dssi_browser)
     filenames++;
   }
 
-  free(filenames_start);
+  g_strfreev(filenames_start);
 
   label = (GtkLabel *) gtk_label_new(i18n("effect: "));
   gtk_box_pack_start(GTK_BOX(dssi_browser->plugin),
@@ -185,7 +188,8 @@ ags_dssi_browser_init(AgsDssiBrowser *dssi_browser)
 		     FALSE, FALSE,
 		     0);
 
-  combo_box = (GtkComboBoxText *) gtk_combo_box_text_new();
+  dssi_browser->effect = 
+    combo_box = (GtkComboBoxText *) gtk_combo_box_text_new();
   gtk_box_pack_start(GTK_BOX(dssi_browser->plugin),
 		     GTK_WIDGET(combo_box),
 		     FALSE, FALSE,
@@ -198,28 +202,31 @@ ags_dssi_browser_init(AgsDssiBrowser *dssi_browser)
 		     FALSE, FALSE,
 		     0);
 
-  label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
-				    "xalign", 0.0,
-				    "label", i18n("Label: "),
-				    NULL);
+  dssi_browser->label =
+    label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
+				      "xalign", 0.0,
+				      "label", i18n("Label: "),
+				      NULL);
   gtk_box_pack_start(GTK_BOX(dssi_browser->description),
 		     GTK_WIDGET(label),
 		     FALSE, FALSE,
 		     0);
 
-  label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
-				    "xalign", 0.0,
-				    "label", i18n("Maker: "),
-				    NULL);
+  dssi_browser->maker = 
+    label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
+				      "xalign", 0.0,
+				      "label", i18n("Maker: "),
+				      NULL);
   gtk_box_pack_start(GTK_BOX(dssi_browser->description),
 		     GTK_WIDGET(label),
 		     FALSE, FALSE,
 		     0);
 
-  label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
-				    "xalign", 0.0,
-				    "label", i18n("Copyright: "),
-				    NULL);
+  dssi_browser->copyright = 
+    label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
+				      "xalign", 0.0,
+				      "label", i18n("Copyright: "),
+				      NULL);
   gtk_box_pack_start(GTK_BOX(dssi_browser->description),
 		     GTK_WIDGET(label),
 		     FALSE, FALSE,
@@ -234,40 +241,61 @@ ags_dssi_browser_init(AgsDssiBrowser *dssi_browser)
 		     FALSE, FALSE,
 		     0);
   
-  table = (GtkTable *) gtk_table_new(256, 2,
-				     FALSE);
+  dssi_browser->port_table =   
+    table = (GtkTable *) gtk_table_new(256, 2,
+				       FALSE);
   gtk_box_pack_start(GTK_BOX(dssi_browser->description),
 		     GTK_WIDGET(table),
 		     FALSE, FALSE,
 		     0);
+
+  dssi_browser->preview = NULL;
 }
 
 void
 ags_dssi_browser_connect(AgsConnectable *connectable)
 {
   AgsDssiBrowser *dssi_browser;
-  GList *list, *list_start;
 
   dssi_browser = AGS_DSSI_BROWSER(connectable);
 
-  list_start = 
-    list = gtk_container_get_children(GTK_CONTAINER(dssi_browser->plugin));
-  list = list->next;
+  if((AGS_DSSI_BROWSER_CONNECTED & (dssi_browser->flags)) != 0){
+    return;
+  }
 
-  g_signal_connect_after(G_OBJECT(list->data), "changed",
+  dssi_browser->flags |= AGS_DSSI_BROWSER_CONNECTED;
+  
+  g_signal_connect_after(G_OBJECT(dssi_browser->filename), "changed",
 			 G_CALLBACK(ags_dssi_browser_plugin_filename_callback), dssi_browser);
 
-  list = list->next->next;
-  g_signal_connect_after(G_OBJECT(list->data), "changed",
+  g_signal_connect_after(G_OBJECT(dssi_browser->effect), "changed",
 			 G_CALLBACK(ags_dssi_browser_plugin_effect_callback), dssi_browser);
-
-  g_list_free(list_start);
 }
 
 void
 ags_dssi_browser_disconnect(AgsConnectable *connectable)
 {
-  /* empty */
+  AgsDssiBrowser *dssi_browser;
+
+  dssi_browser = AGS_DSSI_BROWSER(connectable);
+
+  if((AGS_DSSI_BROWSER_CONNECTED & (dssi_browser->flags)) == 0){
+    return;
+  }
+
+  dssi_browser->flags &= (~AGS_DSSI_BROWSER_CONNECTED);
+
+  g_object_disconnect(G_OBJECT(dssi_browser->filename),
+		      "changed",
+		      G_CALLBACK(ags_dssi_browser_plugin_filename_callback),
+		      dssi_browser,
+		      NULL);
+  
+  g_object_disconnect(G_OBJECT(dssi_browser->effect),
+		      "changed",
+		      G_CALLBACK(ags_dssi_browser_plugin_effect_callback),
+		      dssi_browser,
+		      NULL);
 }
 
 void
@@ -309,20 +337,16 @@ ags_dssi_browser_reset(AgsApplicable *applicable)
  *
  * Returns: the active dssi filename
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 gchar*
 ags_dssi_browser_get_plugin_filename(AgsDssiBrowser *dssi_browser)
 {
-  GtkComboBoxText *filename;
-
-  GList *list;
-
-  list = gtk_container_get_children(GTK_CONTAINER(dssi_browser->plugin));
-  filename = GTK_COMBO_BOX_TEXT(list->next->data);
-  g_list_free(list);
-
-  return(gtk_combo_box_text_get_active_text(filename));
+  if(!AGS_IS_DSSI_BROWSER(dssi_browser)){
+    return(NULL);
+  }
+  
+  return(gtk_combo_box_text_get_active_text(dssi_browser->filename));
 }
 
 /**
@@ -333,20 +357,16 @@ ags_dssi_browser_get_plugin_filename(AgsDssiBrowser *dssi_browser)
  *
  * Returns: the active dssi effect
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 gchar*
 ags_dssi_browser_get_plugin_effect(AgsDssiBrowser *dssi_browser)
 {
-  GtkComboBoxText *effect;
+  if(!AGS_IS_DSSI_BROWSER(dssi_browser)){
+    return(NULL);
+  }
 
-  GList *list;
-
-  list = gtk_container_get_children(GTK_CONTAINER(dssi_browser->plugin));
-  effect = GTK_COMBO_BOX_TEXT(list->next->next->next->data);
-  g_list_free(list);
-
-  return(gtk_combo_box_text_get_active_text(effect));
+  return(gtk_combo_box_text_get_active_text(dssi_browser->effect));
 }
 
 /**
@@ -356,7 +376,7 @@ ags_dssi_browser_get_plugin_effect(AgsDssiBrowser *dssi_browser)
  *
  * Returns: a new #GtkComboBox
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 GtkWidget*
 ags_dssi_browser_combo_box_controls_new()
@@ -395,11 +415,11 @@ ags_dssi_browser_preview_new()
 /**
  * ags_dssi_browser_new:
  *
- * Creates an #AgsDssiBrowser
+ * Create a new instance of #AgsDssiBrowser
  *
- * Returns: a new #AgsDssiBrowser
+ * Returns: the new #AgsDssiBrowser
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsDssiBrowser*
 ags_dssi_browser_new()

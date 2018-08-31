@@ -19,10 +19,37 @@
 
 #include <ags/X/machine/ags_audiorec_callbacks.h>
 
+#include <ags/X/ags_window.h>
+
 #include <ags/i18n.h>
 
 void ags_audiorec_open_response_callback(GtkWidget *widget, gint response,
 					 AgsAudiorec *audiorec);
+
+void
+ags_audiorec_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsAudiorec *audiorec)
+{
+  AgsWindow *window;
+
+  gchar *str;
+  
+  if(old_parent != NULL){
+    return;
+  }
+
+  window = AGS_WINDOW(gtk_widget_get_ancestor((GtkWidget *) audiorec, AGS_TYPE_WINDOW));
+
+  str = g_strdup_printf("Default %d",
+			ags_window_find_machine_counter(window, AGS_TYPE_AUDIOREC)->counter);
+
+  g_object_set(AGS_MACHINE(audiorec),
+	       "machine-name", str,
+	       NULL);
+
+  ags_window_increment_machine_counter(window,
+				       AGS_TYPE_AUDIOREC);
+  g_free(str);
+}
 
 void
 ags_audiorec_open_callback(GtkWidget *button, AgsAudiorec *audiorec)

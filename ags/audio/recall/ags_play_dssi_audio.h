@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -23,8 +23,11 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <ags/libags.h>
+
 #include <ags/plugin/ags_dssi_plugin.h>
 
+#include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_recall_audio.h>
 
 #include <dssi.h>
@@ -42,10 +45,6 @@ typedef struct _AgsPlayDssiAudioClass AgsPlayDssiAudioClass;
 struct _AgsPlayDssiAudio
 {
   AgsRecallAudio recall_audio;
-
-  gchar *filename;
-  gchar *effect;
-  unsigned long index;
 
   unsigned long bank;
   unsigned long program;
@@ -72,11 +71,11 @@ void ags_play_dssi_audio_load(AgsPlayDssiAudio *play_dssi_audio);
 GList* ags_play_dssi_audio_load_ports(AgsPlayDssiAudio *play_dssi_audio);
 void ags_play_dssi_audio_load_conversion(AgsPlayDssiAudio *play_dssi_audio,
 					 GObject *port,
-					 gpointer port_descriptor);
+					 GObject *plugin_port);
 
 GList* ags_play_dssi_audio_find(GList *recall,
 				gchar *filename, gchar *effect);
 
-AgsPlayDssiAudio* ags_play_dssi_audio_new();
+AgsPlayDssiAudio* ags_play_dssi_audio_new(AgsAudio *audio);
 
 #endif /*__AGS_PLAY_DSSI_AUDIO_H__*/

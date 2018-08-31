@@ -37,8 +37,10 @@ void ags_drum_input_pad_connectable_interface_init(AgsConnectableInterface *conn
 void ags_drum_input_pad_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_drum_input_pad_init(AgsDrumInputPad *drum_input_pad);
 static void ags_drum_input_pad_finalize(GObject *gobject);
+
 void ags_drum_input_pad_connect(AgsConnectable *connectable);
 void ags_drum_input_pad_disconnect(AgsConnectable *connectable);
+
 gchar* ags_drum_input_pad_get_name(AgsPlugin *plugin);
 void ags_drum_input_pad_set_name(AgsPlugin *plugin, gchar *name);
 gchar* ags_drum_input_pad_get_xml_type(AgsPlugin *plugin);

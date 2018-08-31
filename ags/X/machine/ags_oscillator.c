@@ -29,6 +29,7 @@
 void ags_oscillator_class_init(AgsOscillatorClass *oscillator);
 void ags_oscillator_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_oscillator_init(AgsOscillator *oscillator);
+
 void ags_oscillator_connect(AgsConnectable *connectable);
 void ags_oscillator_disconnect(AgsConnectable *connectable);
 
@@ -532,11 +533,11 @@ ags_oscillator_control_changed(AgsOscillator *oscillator)
 /**
  * ags_oscillator_new:
  *
- * Creates an #AgsOscillator
+ * Create a new instance of #AgsOscillator
  *
- * Returns: a new #AgsOscillator
+ * Returns: the new #AgsOscillator
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsOscillator*
 ags_oscillator_new()

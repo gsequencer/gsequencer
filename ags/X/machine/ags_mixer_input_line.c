@@ -32,6 +32,7 @@
 void ags_mixer_input_line_class_init(AgsMixerInputLineClass *mixer_input_line);
 void ags_mixer_input_line_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_mixer_input_line_init(AgsMixerInputLine *mixer_input_line);
+
 void ags_mixer_input_line_connect(AgsConnectable *connectable);
 void ags_mixer_input_line_disconnect(AgsConnectable *connectable);
 
@@ -230,43 +231,23 @@ ags_mixer_input_line_map_recall(AgsLine *line,
 
   AgsPeakChannelRun *recall_peak_channel_run, *play_peak_channel_run;
 
-  AgsMutexManager *mutex_manager;
-
   GList *list;
 
   guint pad, audio_channel;
-
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *audio_mutex;
-  pthread_mutex_t *source_mutex;
 
   if((AGS_LINE_MAPPED_RECALL & (line->flags)) != 0 ||
      (AGS_LINE_PREMAPPED_RECALL & (line->flags)) != 0){
     return;
   }
 
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-
   source = line->channel;
 
-  /* get source mutex */
-  pthread_mutex_lock(application_mutex);
-
-  source_mutex = ags_mutex_manager_lookup(mutex_manager,
-					  (GObject *) source);
-  
-  pthread_mutex_unlock(application_mutex);  
-
   /* get some fields */
-  pthread_mutex_lock(source_mutex);
-
-  audio = (AgsAudio *) source->audio;
-
-  pad = source->pad;
-  audio_channel = source->audio_channel;
-  
-  pthread_mutex_unlock(source_mutex);
+  g_object_get(source,
+	       "audio", &audio,
+	       "pad", &pad,
+	       "audio-channel", &audio_channel,
+	       NULL);
 
   /* ags-peak */
   ags_recall_factory_create(audio,
@@ -313,11 +294,11 @@ ags_mixer_input_line_map_recall(AgsLine *line,
  * ags_mixer_input_line_new:
  * @channel: the assigned channel
  *
- * Creates an #AgsMixerInputLine
+ * Create a new instance of #AgsMixerInputLine
  *
- * Returns: a new #AgsMixerInputLine
+ * Returns: the new #AgsMixerInputLine
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsMixerInputLine*
 ags_mixer_input_line_new(AgsChannel *channel)

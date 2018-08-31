@@ -40,9 +40,10 @@ typedef struct _AgsMachineSelection AgsMachineSelection;
 typedef struct _AgsMachineSelectionClass AgsMachineSelectionClass;
 
 typedef enum{
-  AGS_MACHINE_SELECTION_CONNECTED    = 1,
-  AGS_MACHINE_SELECTION_NOTATION     = 1 <<  1,
-  AGS_MACHINE_SELECTION_AUTOMATION   = 1 <<  2,
+  AGS_MACHINE_SELECTION_CONNECTED     = 1,
+  AGS_MACHINE_SELECTION_NOTATION      = 1 <<  1,
+  AGS_MACHINE_SELECTION_AUTOMATION    = 1 <<  2,
+  AGS_MACHINE_SELECTION_WAVE          = 1 <<  3,
 }AgsMachineSelectionFlags;
 
 struct _AgsMachineSelection

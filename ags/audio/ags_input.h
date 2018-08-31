@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -43,7 +43,8 @@ struct _AgsInput
   AgsChannel channel;
 
   GObject *file_link;
-  GObject *synth_generator;
+
+  GList *synth_generator;
 };
 
 struct _AgsInputClass
@@ -53,35 +54,31 @@ struct _AgsInputClass
 
 GType ags_input_get_type();
 
-gboolean ags_input_open_file(AgsInput *input,
-			     gchar *filename,
-			     gchar *preset,
-			     gchar *instrument,
-			     gchar *sample,
-			     guint audio_channel);
-gboolean ags_input_apply_synth(AgsInput *input,
-			       guint oscillator,
-			       gdouble frequency,
-			       gdouble phase,
-			       gdouble volume,
-			       guint n_frames);
-gboolean ags_input_apply_synth_extended(AgsInput *input,
-					guint oscillator,
-					gdouble frequency,
-					gdouble phase,
-					gdouble volume,
-					guint n_frames,
-					guint attack,
-					gdouble base_note,
-					AgsComplex *sync_start, AgsComplex *sync_end,
-					guint compute_flags);
-
+/* dispatcher helper */
 gboolean ags_input_is_active(AgsInput *input,
 			     GObject *recycling_context);
 
 AgsInput* ags_input_next_active(AgsInput *input,
 				GObject *recycling_context);
 
+/* synth generator */
+void ags_input_add_synth_generator(AgsInput *input,
+				   GObject *synth_generator);
+void ags_input_remove_synth_generator(AgsInput *input,
+				      GObject *synth_generator);
+
+/* open file */
+gboolean ags_input_open_file(AgsInput *input,
+			     gchar *filename,
+			     gchar *preset,
+			     gchar *instrument,
+			     gchar *sample,
+			     guint audio_channel);
+
+/* apply synth */
+void ags_input_apply_synth(AgsInput *input);
+
+/* instantiate */
 AgsInput* ags_input_new(GObject *audio);
 
 #endif /*__AGS_INPUT_H__*/

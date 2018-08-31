@@ -23,6 +23,9 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <ags/libags.h>
+
+#include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_recall_channel.h>
 
 #define AGS_TYPE_RT_STREAM_CHANNEL                (ags_rt_stream_channel_get_type())
@@ -47,6 +50,6 @@ struct _AgsRtStreamChannelClass
 
 GType ags_rt_stream_channel_get_type();
 
-AgsRtStreamChannel* ags_rt_stream_channel_new();
+AgsRtStreamChannel* ags_rt_stream_channel_new(AgsChannel *source);
 
 #endif /*__AGS_RT_STREAM_CHANNEL_H__*/

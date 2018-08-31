@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -23,12 +23,10 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include <ags/audio/ags_recall_channel_run.h>
+#include <ags/libags.h>
 
-#include <ags/object/ags_soundcard.h>
 #include <ags/audio/ags_channel.h>
-
-#include <ags/audio/recall/ags_stream_channel_run.h>
+#include <ags/audio/ags_recall_channel_run.h>
 
 #define AGS_TYPE_PLAY_CHANNEL_RUN_MASTER                (ags_play_channel_run_master_get_type())
 #define AGS_PLAY_CHANNEL_RUN_MASTER(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_PLAY_CHANNEL_RUN_MASTER, AgsPlayChannelRunMaster))
@@ -46,7 +44,7 @@ typedef struct _AgsPlayChannelRunMasterStreamer AgsPlayChannelRunMasterStreamer;
  * AgsPlayChannelRunMasterFlags:
  * @AGS_PLAY_CHANNEL_RUN_MASTER_TERMINATING: recall is terminating
  *
- * Enum values to control the behavior or indicate internal state of #AgsPlayChannelRun by
+ * Enum values to control the behavior or indicate internal state of #AgsPlayChannelRunMaster by
  * enable/disable as flags.
  */
 typedef enum{
@@ -59,9 +57,7 @@ struct _AgsPlayChannelRunMaster
 
   guint flags;
 
-  GList *streamer;
-
-  gulong source_recycling_changed_handler;
+  GList *stream_channel_run;
 };
 
 struct _AgsPlayChannelRunMasterClass
@@ -69,22 +65,12 @@ struct _AgsPlayChannelRunMasterClass
   AgsRecallChannelRunClass recall_channel_run;
 };
 
-struct _AgsPlayChannelRunMasterStreamer
-{
-  AgsPlayChannelRunMaster *play_channel_run_master;
-
-  AgsStreamChannelRun *stream_channel_run;
-  gulong done_handler;
-};
-
 GType ags_play_channel_run_master_get_type();
 
-void ags_play_channel_run_master_streamer_free(AgsPlayChannelRunMasterStreamer *streamer);
-AgsPlayChannelRunMasterStreamer* ags_play_channel_run_master_streamer_alloc(AgsPlayChannelRunMaster *play_channel_run_master,
-									    AgsStreamChannelRun *stream_channel_run);
-GList* ags_play_channel_run_master_find_streamer(GList *list,
-						 AgsStreamChannelRun *stream_channel_run);
+gboolean ags_play_channel_run_master_test_flags(AgsPlayChannelRunMaster *play_channel_run_master, guint flags);
+void ags_play_channel_run_master_set_flags(AgsPlayChannelRunMaster *play_channel_run_master, guint flags);
+void ags_play_channel_run_master_unset_flags(AgsPlayChannelRunMaster *play_channel_run_master, guint flags);
 
-AgsPlayChannelRunMaster* ags_play_channel_run_master_new();
+AgsPlayChannelRunMaster* ags_play_channel_run_master_new(AgsChannel *source);
 
 #endif /*__AGS_PLAY_CHANNEL_RUN_MASTER_H__*/

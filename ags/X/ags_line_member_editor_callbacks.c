@@ -19,22 +19,11 @@
 
 #include <ags/X/ags_line_member_editor_callbacks.h>
 
-#include <ags/object/ags_application_context.h>
-#include <ags/object/ags_plugin.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
 
-#ifdef AGS_USE_LINUX_THREADS
-#include <ags/thread/ags_thread-kthreads.h>
-#else
-#include <ags/thread/ags_thread-posix.h>
-#endif
-
-#include <ags/plugin/ags_ladspa_manager.h>
-#include <ags/plugin/ags_lv2_manager.h>
-
-#include <ags/audio/ags_output.h>
-
-#include <ags/audio/task/ags_add_effect.h>
-
+#include <ags/X/ags_ui_provider.h>
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_machine.h>
 #include <ags/X/ags_pad.h>
@@ -76,14 +65,15 @@ ags_line_member_editor_plugin_browser_response_callback(GtkDialog *dialog,
   AgsMachineEditor *machine_editor;
   AgsLineEditor *line_editor;
 
-  AgsThread *main_loop;
   AgsThread *gui_thread;
   
   AgsApplicationContext *application_context;
   
   GList *pad, *pad_start;
   GList *list, *list_start;
+
   gchar *filename, *effect;
+
   gboolean has_bridge;
   gboolean is_output;
   
@@ -133,11 +123,8 @@ ags_line_member_editor_plugin_browser_response_callback(GtkDialog *dialog,
 		   "application-context" , &application_context,
 		   NULL);
 
-      main_loop = (AgsThread *) application_context->main_loop;
+      gui_thread = ags_ui_provider_get_gui_thread(AGS_UI_PROVIDER(application_context));
 
-      gui_thread = ags_thread_find_type(main_loop,
-					 AGS_TYPE_GUI_THREAD);
-      
       if(AGS_IS_OUTPUT(line_editor->channel)){
 	is_output = TRUE;
       }else{
@@ -194,11 +181,18 @@ ags_line_member_editor_plugin_browser_response_callback(GtkDialog *dialog,
 	if(line != NULL){
 	  AgsAddEffect *add_effect;
 
-	  if(ags_recall_find_recall_id_with_effect(line->channel->play,
+	  GList *start_play, *start_recall;
+
+	  g_object_get(line->channel,
+		       "play", &start_play,
+		       "recall", &start_recall,
+		       NULL);
+	  
+	  if(ags_recall_find_recall_id_with_effect(start_play,
 						   NULL,
 						   filename,
 						   effect) == NULL &&
-	     ags_recall_find_recall_id_with_effect(line->channel->recall,
+	     ags_recall_find_recall_id_with_effect(start_recall,
 						   NULL,
 						   filename,
 						   effect) == NULL){
@@ -211,6 +205,9 @@ ags_line_member_editor_plugin_browser_response_callback(GtkDialog *dialog,
 	    ags_gui_thread_schedule_task((AgsGuiThread *) gui_thread,
 					 add_effect);
 	  }
+
+	  g_list_free(start_play);
+	  g_list_free(start_recall);
 	}
       }else{
 	AgsEffectBridge *effect_bridge;
@@ -258,11 +255,18 @@ ags_line_member_editor_plugin_browser_response_callback(GtkDialog *dialog,
 	if(effect_line != NULL){
 	  AgsAddEffect *add_effect;
 	  
-	  if(ags_recall_find_recall_id_with_effect(effect_line->channel->play,
+	  GList *start_play, *start_recall;
+
+	  g_object_get(effect_line->channel,
+		       "play", &start_play,
+		       "recall", &start_recall,
+		       NULL);
+
+	  if(ags_recall_find_recall_id_with_effect(start_play,
 						   NULL,
 						   filename,
 						   effect) == NULL &&
-	     ags_recall_find_recall_id_with_effect(effect_line->channel->recall,
+	     ags_recall_find_recall_id_with_effect(start_recall,
 						   NULL,
 						   filename,
 						   effect) == NULL){
@@ -275,6 +279,9 @@ ags_line_member_editor_plugin_browser_response_callback(GtkDialog *dialog,
 	    ags_gui_thread_schedule_task((AgsGuiThread *) gui_thread,
 					 add_effect);
 	  }
+
+	  g_list_free(start_play);
+	  g_list_free(start_recall);
 	}
       }
     }
@@ -293,6 +300,7 @@ ags_line_member_editor_remove_callback(GtkWidget *button,
   GList *line_member, *line_member_next;
   GList *list, *list_start, *pad, *pad_start;
   GList *children;
+
   guint nth;
   gboolean has_bridge;
   gboolean is_output;

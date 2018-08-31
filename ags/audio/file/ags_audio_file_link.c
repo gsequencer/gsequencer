@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -491,7 +491,6 @@ ags_audio_file_link_read_launch(AgsFileLaunch *file_launch,
   xmlChar *filename;
   xmlChar *encoding, *demuxer;
 
-  guint audio_channels;
   guint audio_channel;
   
   node = file_launch->node;
@@ -508,16 +507,13 @@ ags_audio_file_link_read_launch(AgsFileLaunch *file_launch,
 
   if(id_ref != NULL){
     input = (AgsChannel *) id_ref->ref;
-    soundcard = input->soundcard;
+    soundcard = input->output_soundcard;
   }
 
   /* get audio */
   if(input != NULL &&
      input->audio != NULL){
     audio = AGS_AUDIO(input->audio);
-    audio_channels = audio->audio_channels;
-  }else{
-    audio_channels = 1;
   }
   
   /* read file link using URL or embedded */
@@ -533,20 +529,19 @@ ags_audio_file_link_read_launch(AgsFileLaunch *file_launch,
     filename = AGS_FILE_LINK(audio_file_link)->filename;
     audio_file = ags_audio_file_new((gchar *) filename,
 				    soundcard,
-				    0, audio_channels);
+				    audio_channel);
 
     /* open file and read audio signal */
     ags_audio_file_open(audio_file);
     ags_audio_file_read_audio_signal(audio_file);
 
-    /* retrieve audio channel */
-    audio_signal = g_list_nth(audio_file->audio_signal,
-			      audio_channel);
-
-    if(audio_signal == NULL){
+    /* retrieve audio signal */
+    if(audio_file->audio_signal == NULL){
       return;
     }
 
+    audio_signal = audio_file->audio_signal;
+    
     /* set template flag */
     AGS_AUDIO_SIGNAL(audio_signal->data)->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;
 
@@ -623,7 +618,7 @@ ags_audio_file_link_read_launch(AgsFileLaunch *file_launch,
 
 	  audio_file = ags_audio_file_new(NULL,
 					  soundcard,
-					  0, audio_channels);
+					  audio_channel);
 	  data = child->content;
 
 	  ags_audio_file_open_from_data(audio_file, data);

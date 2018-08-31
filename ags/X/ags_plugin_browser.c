@@ -21,6 +21,7 @@
 #include <ags/X/ags_plugin_browser_callbacks.h>
 
 #include <ags/libags.h>
+#include <ags/libags-audio.h>
 
 #include <ags/X/ags_lv2_browser.h>
 #include <ags/X/ags_dssi_browser.h>
@@ -33,8 +34,10 @@ void ags_plugin_browser_init(AgsPluginBrowser *plugin_browser);
 void ags_plugin_browser_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_plugin_browser_applicable_interface_init(AgsApplicableInterface *applicable);
 void ags_plugin_browser_show(GtkWidget *widget);
+
 void ags_plugin_browser_connect(AgsConnectable *connectable);
 void ags_plugin_browser_disconnect(AgsConnectable *connectable);
+
 void ags_plugin_browser_set_update(AgsApplicable *applicable, gboolean update);
 void ags_plugin_browser_apply(AgsApplicable *applicable);
 void ags_plugin_browser_reset(AgsApplicable *applicable);
@@ -304,7 +307,7 @@ ags_plugin_browser_reset(AgsApplicable *applicable)
  *
  * Returns: the active plugin filename
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 gchar*
 ags_plugin_browser_get_plugin_filename(AgsPluginBrowser *plugin_browser)
@@ -326,7 +329,7 @@ ags_plugin_browser_get_plugin_filename(AgsPluginBrowser *plugin_browser)
  *
  * Returns: the active plugin effect
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 gchar*
 ags_plugin_browser_get_plugin_effect(AgsPluginBrowser *plugin_browser)
@@ -342,23 +345,23 @@ ags_plugin_browser_get_plugin_effect(AgsPluginBrowser *plugin_browser)
 
 /**
  * ags_plugin_browser_new:
- * @parent: the #AgsWindow
+ * @parent_window: the #AgsWindow
  *
- * Creates an #AgsPluginBrowser
+ * Create a new instance of #AgsPluginBrowser
  *
- * Returns: a new #AgsPluginBrowser
+ * Returns: the new #AgsPluginBrowser
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsPluginBrowser*
-ags_plugin_browser_new(GtkWidget *parent)
+ags_plugin_browser_new(GtkWidget *parent_window)
 {
   AgsPluginBrowser *plugin_browser;
 
   plugin_browser = (AgsPluginBrowser *) g_object_new(AGS_TYPE_PLUGIN_BROWSER,
 						     NULL);
 
-  plugin_browser->parent = parent;
+  plugin_browser->parent_window = parent_window;
 
   return(plugin_browser);
 }

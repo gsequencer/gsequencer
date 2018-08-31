@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -24,12 +24,12 @@
 #include <ags/audio/ags_playback_domain.h>
 #include <ags/audio/ags_playback.h>
 
+#include <ags/audio/thread/ags_audio_loop.h>
 #include <ags/audio/thread/ags_audio_thread.h>
 
 #include <ags/i18n.h>
 
 void ags_cancel_audio_class_init(AgsCancelAudioClass *cancel_audio);
-void ags_cancel_audio_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_cancel_audio_init(AgsCancelAudio *cancel_audio);
 void ags_cancel_audio_set_property(GObject *gobject,
 				   guint prop_id,
@@ -39,8 +39,6 @@ void ags_cancel_audio_get_property(GObject *gobject,
 				   guint prop_id,
 				   GValue *value,
 				   GParamSpec *param_spec);
-void ags_cancel_audio_connect(AgsConnectable *connectable);
-void ags_cancel_audio_disconnect(AgsConnectable *connectable);
 void ags_cancel_audio_dispose(GObject *gobject);
 void ags_cancel_audio_finalize(GObject *gobject);
 
@@ -57,14 +55,11 @@ void ags_cancel_audio_launch(AgsTask *task);
  */
 
 static gpointer ags_cancel_audio_parent_class = NULL;
-static AgsConnectableInterface *ags_cancel_audio_parent_connectable_interface;
 
 enum{
   PROP_0,
   PROP_AUDIO,
-  PROP_DO_PLAYBACK,
-  PROP_DO_SEQUENCER,
-  PROP_DO_NOTATION,
+  PROP_SOUND_SCOPE,
 };
 
 GType
@@ -76,36 +71,24 @@ ags_cancel_audio_get_type()
     GType ags_type_cancel_audio;
 
     static const GTypeInfo ags_cancel_audio_info = {
-      sizeof (AgsCancelAudioClass),
+      sizeof(AgsCancelAudioClass),
       NULL, /* base_init */
       NULL, /* base_finalize */
       (GClassInitFunc) ags_cancel_audio_class_init,
       NULL, /* class_finalize */
       NULL, /* class_data */
-      sizeof (AgsCancelAudio),
+      sizeof(AgsCancelAudio),
       0,    /* n_preallocs */
       (GInstanceInitFunc) ags_cancel_audio_init,
-    };
-
-    static const GInterfaceInfo ags_connectable_interface_info = {
-      (GInterfaceInitFunc) ags_cancel_audio_connectable_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
     };
 
     ags_type_cancel_audio = g_type_register_static(AGS_TYPE_TASK,
 						   "AgsCancelAudio",
 						   &ags_cancel_audio_info,
 						   0);
-    
-    g_type_add_interface_static(ags_type_cancel_audio,
-				AGS_TYPE_CONNECTABLE,
-				&ags_connectable_interface_info);
-
-    g_once_init_leave (&g_define_type_id__volatile, ags_type_cancel_audio);
   }
-
-  return g_define_type_id__volatile;
+  
+  return(ags_type_cancel_audio);
 }
 
 void
@@ -113,6 +96,7 @@ ags_cancel_audio_class_init(AgsCancelAudioClass *cancel_audio)
 {
   GObjectClass *gobject;
   AgsTaskClass *task;
+
   GParamSpec *param_spec;
   
   ags_cancel_audio_parent_class = g_type_class_peek_parent(cancel_audio);
@@ -132,7 +116,7 @@ ags_cancel_audio_class_init(AgsCancelAudioClass *cancel_audio)
    *
    * The assigned #AgsAudio
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("audio",
 				   i18n_pspec("audio of cancel audio"),
@@ -144,51 +128,21 @@ ags_cancel_audio_class_init(AgsCancelAudioClass *cancel_audio)
 				  param_spec);
 
   /**
-   * AgsCancelAudio:do-playback:
+   * AgsCancelAudio:sound-scope:
    *
-   * The effects do-playback.
+   * The effects sound-scope.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
-  param_spec =  g_param_spec_boolean("do-playback",
-				     i18n_pspec("do playback"),
-				     i18n_pspec("Do playback of audio"),
-				     FALSE,
-				     G_PARAM_READABLE | G_PARAM_WRITABLE);
+  param_spec = g_param_spec_int("sound-scope",
+				i18n_pspec("sound scope"),
+				i18n_pspec("The sound scope"),
+				 -1,
+				AGS_SOUND_SCOPE_LAST,
+				-1,
+				G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
-				  PROP_DO_PLAYBACK,
-				  param_spec);
-
-  /**
-   * AgsCancelAudio:do-sequencer:
-   *
-   * The effects do-sequencer.
-   * 
-   * Since: 1.0.0
-   */
-  param_spec =  g_param_spec_boolean("do-sequencer",
-				     i18n_pspec("do sequencer"),
-				     i18n_pspec("Do sequencer of audio"),
-				     FALSE,
-				     G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_DO_SEQUENCER,
-				  param_spec);
-
-  /**
-   * AgsCancelAudio:do-notation:
-   *
-   * The effects do-notation.
-   * 
-   * Since: 1.0.0
-   */
-  param_spec =  g_param_spec_boolean("do-notation",
-				     i18n_pspec("do notation"),
-				     i18n_pspec("Do notation of audio"),
-				     FALSE,
-				     G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_DO_NOTATION,
+				  PROP_SOUND_SCOPE,
 				  param_spec);
 
   /* task */
@@ -198,22 +152,11 @@ ags_cancel_audio_class_init(AgsCancelAudioClass *cancel_audio)
 }
 
 void
-ags_cancel_audio_connectable_interface_init(AgsConnectableInterface *connectable)
-{
-  ags_cancel_audio_parent_connectable_interface = g_type_interface_peek_parent(connectable);
-
-  connectable->connect = ags_cancel_audio_connect;
-  connectable->disconnect = ags_cancel_audio_disconnect;
-}
-
-void
 ags_cancel_audio_init(AgsCancelAudio *cancel_audio)
 {
   cancel_audio->audio = NULL;
 
-  cancel_audio->do_playback = FALSE;
-  cancel_audio->do_sequencer = FALSE;
-  cancel_audio->do_notation = FALSE;
+  cancel_audio->sound_scope = -1;
 }
 
 void
@@ -248,31 +191,9 @@ ags_cancel_audio_set_property(GObject *gobject,
       cancel_audio->audio = (GObject *) audio;
     }
     break;
-  case PROP_DO_PLAYBACK:
+  case PROP_SOUND_SCOPE:
     {
-      guint do_playback;
-
-      do_playback = g_value_get_boolean(value);
-
-      cancel_audio->do_playback = do_playback;
-    }
-    break;
-  case PROP_DO_SEQUENCER:
-    {
-      guint do_sequencer;
-
-      do_sequencer = g_value_get_boolean(value);
-
-      cancel_audio->do_sequencer = do_sequencer;
-    }
-    break;
-  case PROP_DO_NOTATION:
-    {
-      guint do_notation;
-
-      do_notation = g_value_get_boolean(value);
-
-      cancel_audio->do_notation = do_notation;
+      cancel_audio->sound_scope = g_value_get_int(value);
     }
     break;
   default:
@@ -297,42 +218,15 @@ ags_cancel_audio_get_property(GObject *gobject,
       g_value_set_object(value, cancel_audio->audio);
     }
     break;
-  case PROP_DO_PLAYBACK:
+  case PROP_SOUND_SCOPE:
     {
-      g_value_set_boolean(value, cancel_audio->do_playback);
-    }
-    break;
-  case PROP_DO_SEQUENCER:
-    {
-      g_value_set_boolean(value, cancel_audio->do_sequencer);
-    }
-    break;
-  case PROP_DO_NOTATION:
-    {
-      g_value_set_boolean(value, cancel_audio->do_notation);
+      g_value_set_int(value, cancel_audio->sound_scope);
     }
     break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
   }
-}
-
-void
-ags_cancel_audio_connect(AgsConnectable *connectable)
-{
-  ags_cancel_audio_parent_connectable_interface->connect(connectable);
-
-
-  /* empty */
-}
-
-void
-ags_cancel_audio_disconnect(AgsConnectable *connectable)
-{
-  ags_cancel_audio_parent_connectable_interface->disconnect(connectable);
-
-  /* empty */
 }
 
 void
@@ -370,294 +264,177 @@ ags_cancel_audio_finalize(GObject *gobject)
 void
 ags_cancel_audio_launch(AgsTask *task)
 {
-  AgsPlaybackDomain *playback_domain;
-  AgsPlayback *playback;
   AgsAudio *audio;
-  AgsChannel *channel;
-  AgsRecallID *recall_id;
+  AgsPlaybackDomain *playback_domain;
 
   AgsCancelAudio *cancel_audio;
 
-  AgsMutexManager *mutex_manager;
+  AgsAudioLoop *audio_loop;
 
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *audio_mutex;
-  pthread_mutex_t *channel_mutex;
+  AgsApplicationContext *application_context;
 
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+  GList *list_start, *list;
 
+  gint sound_scope;
+
+  static const guint staging_flags = (AGS_SOUND_STAGING_CANCEL |
+				      AGS_SOUND_STAGING_REMOVE);
+  
   cancel_audio = AGS_CANCEL_AUDIO(task);
 
   audio = cancel_audio->audio;
 
-  /* get audio mutex */
-  pthread_mutex_lock(application_mutex);
+  g_object_get(audio,
+	       "playback-domain", &playback_domain,
+	       NULL);
 
-  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
-					 (GObject *) audio);
+  g_object_get(playback_domain,
+	       "output-playback", &list_start,
+	       NULL);
   
-  pthread_mutex_unlock(application_mutex);
-
-  /* get some fields */
-  pthread_mutex_lock(audio_mutex);
+  sound_scope = cancel_audio->sound_scope;
   
-  playback_domain = AGS_PLAYBACK_DOMAIN(audio->playback_domain);
+  application_context = ags_application_context_get_instance();
 
-  pthread_mutex_unlock(audio_mutex);
-  
-  /* cancel playback */
-  if(cancel_audio->do_playback){
-    g_atomic_int_and(&(playback_domain->flags),
-		     (~AGS_PLAYBACK_DOMAIN_PLAYBACK));
-    /* get some fields */
-    pthread_mutex_lock(audio_mutex);
-    
-    channel = audio->output;
+  g_object_get(application_context,
+	       "main-loop", &audio_loop,
+	       NULL);
 
-    pthread_mutex_unlock(audio_mutex);
-    
-    while(channel != NULL){
-      /* get channel mutex */
-      pthread_mutex_lock(application_mutex);
+  if(sound_scope >= 0){
+    /* cancel */
+    ags_audio_recursive_run_stage(audio,
+				  sound_scope, staging_flags);
 
-      channel_mutex = ags_mutex_manager_lookup(mutex_manager,
-					       (GObject *) channel);
-  
-      pthread_mutex_unlock(application_mutex);
+    /* stop audio thread */
+    ags_thread_stop(ags_playback_domain_get_audio_thread(playback_domain,
+							 sound_scope));
 
-      /* get some fields */
-      pthread_mutex_lock(channel_mutex);
+    /* stop channel thread and unset recall id */
+    list = list_start;
 
-      playback = AGS_PLAYBACK(channel->playback);
-      recall_id = playback->recall_id[AGS_PLAYBACK_SCOPE_PLAYBACK];
+    while(list != NULL){
+      AgsChannel *channel;
+
+      g_object_get(list->data,
+		   "channel", &channel,
+		   NULL);
+	
+      ags_thread_stop(ags_playback_get_channel_thread(list->data,
+						      sound_scope));
+            
+      /* iterate */
+      list = list->next;
+    }
+
+    /* clean - fini */
+    ags_audio_recursive_run_stage(audio,
+				  sound_scope, AGS_SOUND_STAGING_FINI);
+
+    list = list_start;
+
+    while(list != NULL){
+      ags_playback_set_recall_id(list->data,
+				 NULL,
+				 sound_scope);
       
-      pthread_mutex_unlock(channel_mutex);
+      /* iterate */
+      list = list->next;
+    }
 
-      if(recall_id == NULL){
-	pthread_mutex_lock(channel_mutex);
+    g_list_free(list_start);
+  }else{
+    gint i;
 
-	channel = channel->next;
-
-	pthread_mutex_unlock(channel_mutex);
-
+    for(i = 0; i < AGS_SOUND_SCOPE_LAST; i++){
+      if(i == AGS_SOUND_SCOPE_PLAYBACK){
 	continue;
       }
-
+      
       /* cancel */
-      g_object_ref(recall_id);
-      ags_channel_tillrecycling_cancel(channel,
-				       recall_id);
+      ags_audio_recursive_run_stage(audio,
+				    i, staging_flags);
 
-      /* set recall id to NULL and iterate */
-      pthread_mutex_lock(channel_mutex);
+      /* stop audio thread */
+      ags_thread_stop(ags_playback_domain_get_audio_thread(playback_domain,
+							   i));
 
-      playback->recall_id[AGS_PLAYBACK_SCOPE_PLAYBACK] = NULL;
+      /* stop channel thread and unset recall id */
+      list = list_start;
 
-      channel = channel->next;
+      while(list != NULL){
+	AgsChannel *channel;
 
-      pthread_mutex_unlock(channel_mutex);
-    }
-
-    if((AGS_PLAYBACK_DOMAIN_SUPER_THREADED_AUDIO & (g_atomic_int_get(&(playback_domain->flags)))) != 0){
-      AgsAudioThread *audio_thread;
-
-      /* get some fields */
-      pthread_mutex_lock(audio_mutex);
-      
-      audio_thread = (AgsAudioThread *) playback_domain->audio_thread[AGS_PLAYBACK_DOMAIN_SCOPE_PLAYBACK];
-
-      pthread_mutex_unlock(audio_mutex);
-      
-      if((AGS_THREAD_RUNNING & (g_atomic_int_get(&(AGS_THREAD(audio_thread)->flags)))) != 0){
-	ags_thread_stop(audio_thread);
-
-	/* ensure synced */
-	pthread_mutex_lock(audio_thread->wakeup_mutex);
-
-	g_atomic_int_and(&(audio_thread->flags),
-			 (~AGS_AUDIO_THREAD_WAIT));
-
-	if((AGS_AUDIO_THREAD_DONE & (g_atomic_int_get(&(audio_thread->flags)))) == 0){
-	  pthread_cond_signal(audio_thread->wakeup_cond);
-	}
-      
-	pthread_mutex_unlock(audio_thread->wakeup_mutex);
+	g_object_get(list->data,
+		     "channel", &channel,
+		     NULL);
+	
+	ags_thread_stop(ags_playback_get_channel_thread(list->data,
+							i));
+	
+	/* iterate */
+	list = list->next;
       }
     }
-  }
-  
-  /* cancel sequencer */
-  if(cancel_audio->do_sequencer){
-    g_atomic_int_and(&(playback_domain->flags),
-		     (~AGS_PLAYBACK_DOMAIN_SEQUENCER));
-    /* get some fields */
-    pthread_mutex_lock(audio_mutex);
-    
-    channel = audio->output;
 
-    pthread_mutex_unlock(audio_mutex);
-
-    while(channel != NULL){
-      /* get channel mutex */
-      pthread_mutex_lock(application_mutex);
-
-      channel_mutex = ags_mutex_manager_lookup(mutex_manager,
-					       (GObject *) channel);
-  
-      pthread_mutex_unlock(application_mutex);
-
-      /* get some fields */
-      pthread_mutex_lock(channel_mutex);
-
-      playback = AGS_PLAYBACK(channel->playback);
-      recall_id = playback->recall_id[AGS_PLAYBACK_SCOPE_SEQUENCER];
-      
-      pthread_mutex_unlock(channel_mutex);
-
-      if(recall_id == NULL){
-	pthread_mutex_lock(channel_mutex);
-
-	channel = channel->next;
-
-	pthread_mutex_unlock(channel_mutex);
-	
+    for(i = 0; i < AGS_SOUND_SCOPE_LAST; i++){
+      if(i == AGS_SOUND_SCOPE_PLAYBACK){
 	continue;
       }
-
-      g_object_ref(recall_id);
-      ags_channel_tillrecycling_cancel(channel,
-				       recall_id);
-
-      /* set recall id to NULL and iterate */
-      pthread_mutex_lock(channel_mutex);
-
-      playback->recall_id[AGS_PLAYBACK_SCOPE_SEQUENCER] = NULL;
-
-      channel = channel->next;
-
-      pthread_mutex_unlock(channel_mutex);
-    }
-
-    if((AGS_PLAYBACK_DOMAIN_SUPER_THREADED_AUDIO & (g_atomic_int_get(&(playback_domain->flags)))) != 0){
-      AgsAudioThread *audio_thread;
-
-      audio_thread = (AgsAudioThread *) playback_domain->audio_thread[AGS_PLAYBACK_DOMAIN_SCOPE_SEQUENCER];
       
-      if((AGS_THREAD_RUNNING & (g_atomic_int_get(&(AGS_THREAD(audio_thread)->flags)))) != 0){
-	ags_thread_stop(audio_thread);
-
-	/* ensure synced */
-	pthread_mutex_lock(audio_thread->wakeup_mutex);
-
-	g_atomic_int_and(&(audio_thread->flags),
-			 (~AGS_AUDIO_THREAD_WAIT));
-
-	if((AGS_AUDIO_THREAD_DONE & (g_atomic_int_get(&(audio_thread->flags)))) == 0){
-	  pthread_cond_signal(audio_thread->wakeup_cond);
-	}
-      
-	pthread_mutex_unlock(audio_thread->wakeup_mutex);
-      }
-    }
-  }
-  
-  /* cancel notation */
-  if(cancel_audio->do_notation){
-    g_atomic_int_and(&(playback_domain->flags),
-		     (~AGS_PLAYBACK_DOMAIN_NOTATION));
-    /* get some fields */
-    pthread_mutex_lock(audio_mutex);
-    
-    channel = audio->output;
-
-    pthread_mutex_unlock(audio_mutex);
-
-    while(channel != NULL){
-      /* get channel mutex */
-      pthread_mutex_lock(application_mutex);
-
-      channel_mutex = ags_mutex_manager_lookup(mutex_manager,
-					       (GObject *) channel);
-  
-      pthread_mutex_unlock(application_mutex);
-
-      /* get some fields */
-      pthread_mutex_lock(channel_mutex);
-
-      playback = AGS_PLAYBACK(channel->playback);
-      recall_id = playback->recall_id[AGS_PLAYBACK_SCOPE_NOTATION];
-      
-      pthread_mutex_unlock(channel_mutex);
-
-      if(recall_id == NULL){
-	channel = channel->next;
+      /* clean - fini */
+      ags_audio_recursive_run_stage(audio,
+				    i, AGS_SOUND_STAGING_FINI);
 	
-	continue;
-      }
+      list = list_start;
 
-      g_object_ref(recall_id);
-      ags_channel_tillrecycling_cancel(channel,
-				       recall_id);
-
-      /* set recall id to NULL and iterate */
-      pthread_mutex_lock(channel_mutex);
-      
-      playback->recall_id[AGS_PLAYBACK_SCOPE_NOTATION] = NULL;
-      
-      channel = channel->next;
-
-      pthread_mutex_unlock(channel_mutex);
-    }
-
-    if((AGS_PLAYBACK_DOMAIN_SUPER_THREADED_AUDIO & (g_atomic_int_get(&(playback_domain->flags)))) != 0){
-      AgsAudioThread *audio_thread;
-
-      audio_thread = (AgsAudioThread *) playback_domain->audio_thread[AGS_PLAYBACK_DOMAIN_SCOPE_NOTATION];
-
-      if((AGS_THREAD_RUNNING & (g_atomic_int_get(&(AGS_THREAD(audio_thread)->flags)))) != 0){
-	ags_thread_stop(audio_thread);
-
-	/* ensure synced */
-	pthread_mutex_lock(audio_thread->wakeup_mutex);
-
-	g_atomic_int_and(&(audio_thread->flags),
-			 (~AGS_AUDIO_THREAD_WAIT));
-
-	if((AGS_AUDIO_THREAD_DONE & (g_atomic_int_get(&(audio_thread->flags)))) == 0){
-	  pthread_cond_signal(audio_thread->wakeup_cond);
-	}
-      
-	pthread_mutex_unlock(audio_thread->wakeup_mutex);
+      while(list != NULL){
+	ags_playback_set_recall_id(list->data,
+				   NULL,
+				   i);
+	
+	/* iterate */
+	list = list->next;
       }
     }
+
+    g_list_free(list_start);
   }
+
+  /* add channel to AgsAudioLoop */
+  list_start = ags_audio_check_scope(audio,
+				     (AGS_SOUND_SCOPE_SEQUENCER |
+				      AGS_SOUND_SCOPE_NOTATION |
+				      AGS_SOUND_SCOPE_WAVE |
+				      AGS_SOUND_SCOPE_MIDI));
+  
+  if(list_start == NULL){
+    ags_audio_loop_remove_audio(audio_loop,
+				(GObject *) audio);
+  }
+
+  g_list_free(list_start);
 }
 
 /**
  * ags_cancel_audio_new:
  * @audio: the #AgsAudio to cancel
- * @do_playback: if %TRUE playback is canceld
- * @do_sequencer: if %TRUE sequencer is canceld
- * @do_notation: if %TRUE notation is canceld
+ * @sound_scope: the #AgsSoundScope-enum or -1 for all
  *
- * Creates an #AgsCancelAudio.
+ * Create a new instance of #AgsCancelAudio.
  *
- * Returns: an new #AgsCancelAudio.
+ * Returns: the new #AgsCancelAudio.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsCancelAudio*
 ags_cancel_audio_new(AgsAudio *audio,
-		     gboolean do_playback, gboolean do_sequencer, gboolean do_notation)
+		     gint sound_scope)
 {
   AgsCancelAudio *cancel_audio;
 
   cancel_audio = (AgsCancelAudio *) g_object_new(AGS_TYPE_CANCEL_AUDIO,
 						 "audio", audio,
-						 "do-playback", do_playback,
-						 "do-sequencer", do_sequencer,
-						 "do-notation", do_notation,
+						 "sound-scope", sound_scope,
 						 NULL);
 
 

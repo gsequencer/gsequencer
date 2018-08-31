@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -141,7 +141,7 @@ ags_synth_generator_class_init(AgsSynthGeneratorClass *synth_generator)
    *
    * The samplerate to be used.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_uint("samplerate",
 				 i18n_pspec("using samplerate"),
@@ -159,7 +159,7 @@ ags_synth_generator_class_init(AgsSynthGeneratorClass *synth_generator)
    *
    * The buffer size to be used.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_uint("buffer-size",
 				 i18n_pspec("using buffer size"),
@@ -177,7 +177,7 @@ ags_synth_generator_class_init(AgsSynthGeneratorClass *synth_generator)
    *
    * The format to be used.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_uint("format",
 				 i18n_pspec("using format"),
@@ -195,7 +195,7 @@ ags_synth_generator_class_init(AgsSynthGeneratorClass *synth_generator)
    *
    * The frame count to be used.
    * 
-   * Since: 1.1.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_uint("frame-count",
 				 i18n_pspec("apply frame count"),
@@ -213,7 +213,7 @@ ags_synth_generator_class_init(AgsSynthGeneratorClass *synth_generator)
    *
    * The delay to be used.
    * 
-   * Since: 1.1.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_double("delay",
 				   i18n_pspec("using delay"),
@@ -231,7 +231,7 @@ ags_synth_generator_class_init(AgsSynthGeneratorClass *synth_generator)
    *
    * The attack to be used.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_uint("attack",
 				 i18n_pspec("apply attack"),
@@ -249,7 +249,7 @@ ags_synth_generator_class_init(AgsSynthGeneratorClass *synth_generator)
    *
    * The oscillator to be used.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_uint("oscillator",
 				 i18n_pspec("using oscillator"),
@@ -267,7 +267,7 @@ ags_synth_generator_class_init(AgsSynthGeneratorClass *synth_generator)
    *
    * The frequency to be used.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_double("frequency",
 				   i18n_pspec("using frequency"),
@@ -285,7 +285,7 @@ ags_synth_generator_class_init(AgsSynthGeneratorClass *synth_generator)
    *
    * The phase to be used.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_double("phase",
 				   i18n_pspec("using phase"),
@@ -303,13 +303,13 @@ ags_synth_generator_class_init(AgsSynthGeneratorClass *synth_generator)
    *
    * The volume to be used.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_double("volume",
 				   i18n_pspec("using volume"),
 				   i18n_pspec("The volume to be used"),
 				   0.0,
-				   65535.0,
+				   2.0,
 				   0.0,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -321,7 +321,7 @@ ags_synth_generator_class_init(AgsSynthGeneratorClass *synth_generator)
    *
    * The assigned timestamp.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("timestamp",
 				   i18n_pspec("timestamp"),
@@ -346,86 +346,37 @@ void
 ags_synth_generator_init(AgsSynthGenerator *synth_generator)
 {
   AgsConfig *config;
-  
-  gchar *str;
-  
+
+  synth_generator->flags = 0;
+
   /* config */
   config = ags_config_get_instance();
 
-  /* base init */
-  synth_generator->flags = 0;
-
-  synth_generator->samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
-  synth_generator->buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
-  synth_generator->format = AGS_SOUNDCARD_DEFAULT_FORMAT;
-
-  /* samplerate */
-  str = ags_config_get_value(config,
-			     AGS_CONFIG_SOUNDCARD,
-			     "samplerate");
-
-  if(str == NULL){
-    str = ags_config_get_value(config,
-			       AGS_CONFIG_SOUNDCARD_0,
-			       "samplerate");
-  }
-  
-  if(str != NULL){
-    synth_generator->samplerate = g_ascii_strtoull(str,
-						   NULL,
-						   10);
-
-    free(str);
-  }
-
-  /* buffer size */
-  str = ags_config_get_value(config,
-			     AGS_CONFIG_SOUNDCARD,
-			     "buffer-size");
-
-  if(str == NULL){
-    str = ags_config_get_value(config,
-			       AGS_CONFIG_SOUNDCARD_0,
-			       "buffer-size");
-  }
-  
-  if(str != NULL){
-    synth_generator->buffer_size = g_ascii_strtoull(str,
-						    NULL,
-						    10);
-
-    free(str);
-  }
-
-  /* format */
-  str = ags_config_get_value(config,
-			     AGS_CONFIG_SOUNDCARD,
-			     "format");
-
-  if(str == NULL){
-    str = ags_config_get_value(config,
-			       AGS_CONFIG_SOUNDCARD_0,
-			       "format");
-  }
-  
-  if(str != NULL){
-    synth_generator->format = g_ascii_strtoull(str,
-					       NULL,
-					       10);
-
-    free(str);
-  }
+  /* presets */
+  synth_generator->samplerate = ags_soundcard_helper_config_get_samplerate(config);
+  synth_generator->buffer_size = ags_soundcard_helper_config_get_buffer_size(config);
+  synth_generator->format = ags_soundcard_helper_config_get_format(config);
 
   /* more base init */
+  synth_generator->frame_count = 0;
+  synth_generator->loop_start = 0;
+  synth_generator->loop_end = 0;
+
   synth_generator->delay = 0.0;
   synth_generator->attack = 0;
-  synth_generator->frame_count = 0;
 
   synth_generator->oscillator = 0;
   
   synth_generator->frequency = 0.0;
   synth_generator->phase = 0.0;
   synth_generator->volume = 1.0;
+
+  synth_generator->sync_relative = FALSE;
+  synth_generator->sync_point = NULL;
+  synth_generator->sync_point_count = 0;
+
+  synth_generator->damping = ags_complex_alloc();
+  synth_generator->vibration = ags_complex_alloc();
   
   /* timestamp */
   synth_generator->timestamp = NULL;
@@ -665,252 +616,19 @@ ags_synth_generator_finalize(GObject *gobject)
 /**
  * ags_synth_generator_compute:
  * @synth_generator: the #AgsSynthGenerator
+ * @audio_signal: the #AgsAudioSignal
  * @note: the note to compute
  * 
  * Compute synth for @note.
  *
  * Returns: an #AgsAudioSignal applied specified synth to stream
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
-GObject*
+void
 ags_synth_generator_compute(AgsSynthGenerator *synth_generator,
+			    GObject *audio_signal,
 			    gdouble note)
-{
-  AgsAudioSignal *audio_signal;
-
-  audio_signal = ags_audio_signal_new(NULL,
-				      NULL,
-				      NULL);
-  ags_audio_signal_stream_resize(audio_signal,
-				 ceil(synth_generator->frame_count / synth_generator->buffer_size));
-
-  ags_synth_generator_compute_with_audio_signal(synth_generator,
-						audio_signal,
-						note,
-						NULL, NULL,
-						AGS_SYNTH_GENERATOR_COMPUTE_FIXED_LENGTH);
-  
-  return(audio_signal);
-}
-
-/**
- * ags_synth_generator_compute_with_audio_signal:
- * @synth_generator: the #AgsSynthGenerator
- * @audio_signal: the #AgsAudioSignal
- * @note: the note to compute
- * @sync_start: not used for now
- * @sync_end: not used for now
- * @compute_flags: computation flags
- * 
- * Compute synth for @note for @audio_signal.
- * 
- * Since: 1.0.0
- */
-void
-ags_synth_generator_compute_with_audio_signal(AgsSynthGenerator *synth_generator,
-					      GObject *audio_signal,
-					      gdouble note,
-					      AgsComplex *sync_start, AgsComplex *sync_end,
-					      guint compute_flags)
-{
-  GList *stream;
-  
-  gdouble samplerate;
-  gdouble start_frequency, frequency;
-  gdouble current_frequency;
-  gdouble phase, volume;
-  gdouble current_phase;
-  guint format;
-  guint audio_buffer_util_format;
-  guint frame_count, stop_frame;
-  guint buffer_size;
-  guint offset;
-  guint attack, frame_copy_count;
-
-  gdouble current_rate;
-  gdouble xcross_factor;
-  guint xcross_count;
-  guint i;
-  gboolean initial_run;
-
-  samplerate = AGS_AUDIO_SIGNAL(audio_signal)->samplerate;
-  
-  start_frequency = 48.0;
-  frequency = synth_generator->frequency;
-  
-  current_frequency = (guint) ((double) frequency * exp2((double)((double) note + 48.0) / 12.0));
-
-  phase = synth_generator->phase;
-  volume = synth_generator->volume;
-
-  format = AGS_AUDIO_SIGNAL(audio_signal)->format;
-  audio_buffer_util_format = ags_audio_buffer_util_format_from_soundcard(format);
-
-  frame_count = AGS_AUDIO_SIGNAL(audio_signal)->frame_count;
-  buffer_size = AGS_AUDIO_SIGNAL(audio_signal)->buffer_size;
-  
-  /* generate synth */
-  if((AGS_SYNTH_GENERATOR_COMPUTE_SYNC & compute_flags) != 0){
-    stream = AGS_AUDIO_SIGNAL(audio_signal)->stream_beginning;
-    xcross_count = 0;
-    
-    while(stream != NULL){
-      xcross_count += ags_synth_util_get_xcross_count(stream->data,
-						      audio_buffer_util_format,
-						      buffer_size);
-
-      stream = stream->next;
-    }
-  }
-
-  if(xcross_count == 0){
-    xcross_count = 1;
-  }
-
-  attack = synth_generator->attack;
-
-  if((AGS_SYNTH_GENERATOR_COMPUTE_FIXED_LENGTH & compute_flags) != 0){
-    stop_frame = synth_generator->frame_count;
-  }else{
-    stop_frame = frame_count;
-  }
-  
-  stream = AGS_AUDIO_SIGNAL(audio_signal)->stream_beginning;
-  stream = g_list_nth(stream,
-		      (guint) floor(attack / buffer_size));
-
-  attack %= buffer_size;
-
-  offset = 0;
-  current_phase = phase;
-
-  if((AGS_SYNTH_GENERATOR_COMPUTE_SYNC & compute_flags) != 0){
-    if(xcross_count == 0){
-      current_rate = current_frequency;
-    }else{
-      current_rate = (frame_count / xcross_count) * (frame_count / samplerate);
-    }
-    
-    if((AGS_SYNTH_GENERATOR_COMPUTE_16HZ & compute_flags) != 0){
-      xcross_factor = current_rate * (16.0 / samplerate);
-    }else if((AGS_SYNTH_GENERATOR_COMPUTE_440HZ & compute_flags) != 0){
-      xcross_factor = current_rate * (440.0 / samplerate);
-    }else if((AGS_SYNTH_GENERATOR_COMPUTE_22000HZ & compute_flags) != 0){
-      xcross_factor = current_rate * (22000.0 / samplerate);
-    }else if((AGS_SYNTH_GENERATOR_COMPUTE_LIMIT & compute_flags) != 0){
-      xcross_factor = current_rate * samplerate;
-    }else if((AGS_SYNTH_GENERATOR_COMPUTE_NOHZ & compute_flags) != 0){
-      if(xcross_count != 0){
-	xcross_factor = (1.0 / xcross_count);
-      }else{
-	xcross_factor = 1.0;
-      }
-    }else if((AGS_SYNTH_GENERATOR_COMPUTE_FREQUENCY & compute_flags) != 0){
-      xcross_factor = current_rate * (frequency / samplerate);
-    }else if((AGS_SYNTH_GENERATOR_COMPUTE_NOTE & compute_flags) != 0){
-      xcross_factor = current_rate * (current_frequency / samplerate);
-    }
-  }
-
-  i = 0;
-  
-  initial_run = TRUE;
-  
-  while(stream != NULL &&
-	offset < stop_frame){
-    if(initial_run){
-      if(buffer_size - attack < stop_frame){
-	frame_copy_count = buffer_size - attack;
-      }else{
-	frame_copy_count = stop_frame;
-      }
-    }else{
-      if(offset + buffer_size < stop_frame){
-	frame_copy_count = buffer_size;
-      }else{
-	frame_copy_count = stop_frame - offset;
-      }
-    }
-
-    switch(synth_generator->oscillator){
-    case AGS_SYNTH_GENERATOR_OSCILLATOR_SIN:
-      {
-	ags_synth_util_sin(stream->data,
-			   current_frequency, current_phase, volume,
-			   samplerate, audio_buffer_util_format,
-			   attack, frame_copy_count);
-      }
-      break;
-    case AGS_SYNTH_GENERATOR_OSCILLATOR_SAWTOOTH:
-      {
-	ags_synth_util_sawtooth(stream->data,
-				current_frequency, current_phase, volume,
-				samplerate, audio_buffer_util_format,
-				attack, frame_copy_count);
-      }
-      break;
-    case AGS_SYNTH_GENERATOR_OSCILLATOR_TRIANGLE:
-      {
-	ags_synth_util_triangle(stream->data,
-				current_frequency, current_phase, volume,
-				samplerate, audio_buffer_util_format,
-				attack, frame_copy_count);
-      }
-      break;
-    case AGS_SYNTH_GENERATOR_OSCILLATOR_SQUARE:
-      {
-	ags_synth_util_square(stream->data,
-			      current_frequency, current_phase, volume,
-			      samplerate, audio_buffer_util_format,
-			      attack, frame_copy_count);
-      }
-      break;
-    default:
-      g_message("unknown oscillator");
-    }
-
-    stream = stream->next;
-    offset += frame_copy_count;
-
-    if((AGS_SYNTH_GENERATOR_COMPUTE_SYNC & compute_flags) == 0 ||
-       (xcross_factor * i) > (frame_count / xcross_count)){
-      current_phase = (guint) (offset - attack + phase) % (guint) floor(samplerate / current_frequency);
-
-      i = 0;
-    }else{
-      current_phase = phase;
-
-      i++;
-    }
-    
-    attack = 0;
-
-    initial_run = FALSE;
-  }
-}
-
-/**
- * ags_synth_generator_compute_with_audio_signal:
- * @synth_generator: the #AgsSynthGenerator
- * @audio_signal: the #AgsAudioSignal
- * @note: the note to compute
- * @sync_point: the frame offset to sync
- * @sync_point_count: the count of sync points
- * @frame_count: the amount of frames to produce
- * @delay: the delay
- * @attack: the attack
- * 
- * Compute synth for @note for @audio_signal.
- * 
- * Since: 1.1.0
- */
-void
-ags_synth_generator_compute_extended(AgsSynthGenerator *synth_generator,
-				     GObject *audio_signal,
-				     gdouble note,
-				     AgsComplex **sync_point,
-				     guint sync_point_count)
 {
   GList *stream_start, *stream;
 
@@ -929,6 +647,9 @@ ags_synth_generator_compute_extended(AgsSynthGenerator *synth_generator,
   guint offset;
   guint last_sync;
   guint i, j;
+  gboolean sync_relative;
+  AgsComplex **sync_point;
+  guint sync_point_count;
   gboolean synced;
 
   delay = synth_generator->delay;
@@ -937,6 +658,11 @@ ags_synth_generator_compute_extended(AgsSynthGenerator *synth_generator,
   frame_count = synth_generator->frame_count;
   
   buffer_size = AGS_AUDIO_SIGNAL(audio_signal)->buffer_size;
+
+  sync_relative = synth_generator->sync_relative;
+
+  sync_point = synth_generator->sync_point;
+  sync_point_count = synth_generator->sync_point_count;
 
   current_frame_count = AGS_AUDIO_SIGNAL(audio_signal)->length * buffer_size;
   requested_frame_count = (guint) ceil(((floor(delay) * buffer_size + attack) + frame_count) / buffer_size) * buffer_size;
@@ -948,7 +674,7 @@ ags_synth_generator_compute_extended(AgsSynthGenerator *synth_generator,
   
   /*  */
   stream = 
-    stream_start = g_list_nth(AGS_AUDIO_SIGNAL(audio_signal)->stream_beginning,
+    stream_start = g_list_nth(AGS_AUDIO_SIGNAL(audio_signal)->stream,
 			      (guint) floor(delay));
   
   samplerate = AGS_AUDIO_SIGNAL(audio_signal)->samplerate;
@@ -1086,7 +812,7 @@ ags_synth_generator_compute_extended(AgsSynthGenerator *synth_generator,
  *
  * Returns: a new #AgsSynthGenerator
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsSynthGenerator*
 ags_synth_generator_new()

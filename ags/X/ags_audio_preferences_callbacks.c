@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -19,15 +19,8 @@
 
 #include <ags/X/ags_audio_preferences_callbacks.h>
 
-#include <ags/object/ags_connectable.h>
-#include <ags/object/ags_applicable.h>
-
-#include <ags/audio/ags_sound_provider.h>
-
-#include <ags/audio/jack/ags_jack_server.h>
-#include <ags/audio/jack/ags_jack_devout.h>
-
-#include <ags/audio/thread/ags_soundcard_thread.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
 
 #include <ags/X/ags_xorg_application_context.h>
 #include <ags/X/ags_window.h>
@@ -74,30 +67,28 @@ ags_audio_preferences_connect_sink_callback(GtkWidget *widget, AgsAudioPreferenc
 
   GObject *server;
 
-  GList *list;
+  GList *start_list, *list;
   
-  pthread_mutex_t *application_mutex;
-
   preferences = (AgsPreferences *) gtk_widget_get_ancestor(GTK_WIDGET(audio_preferences),
 							   AGS_TYPE_PREFERENCES);
   window = (AgsWindow *) preferences->window;
 
   application_context = (AgsApplicationContext *) window->application_context;
-  application_mutex = window->application_mutex;
 
-  pthread_mutex_lock(application_mutex);
-
-  list = ags_sound_provider_get_distributed_manager(AGS_SOUND_PROVIDER(application_context));
+  list = 
+    start_list = ags_sound_provider_get_sound_server(AGS_SOUND_PROVIDER(application_context));
 
   while(list != NULL){
-    server = (AgsJackServer *) list->data;
+    server = list->data;
 
-    ags_jack_server_connect_client(server);
-
+    if(AGS_IS_JACK_SERVER(server)){
+      ags_jack_server_connect_client(server);
+    }
+    
     list = list->next;
   }
 
-  pthread_mutex_unlock(application_mutex);
+  g_list_free(start_list);
 }
 
 void
@@ -108,51 +99,55 @@ ags_audio_preferences_add_callback(GtkWidget *widget, AgsAudioPreferences *audio
   AgsSoundcardEditor *soundcard_editor;
 
   AgsSoundcardThread *soundcard_thread;
+
+  AgsThread *main_loop;
   
   AgsApplicationContext *application_context;
 
-  GList *list;
   GObject *soundcard;
 
-  pthread_mutex_t *application_mutex;
+  GList *start_list, *list;
 
   preferences = (AgsPreferences *) gtk_widget_get_ancestor(GTK_WIDGET(audio_preferences),
 							   AGS_TYPE_PREFERENCES);
   window = (AgsWindow *) preferences->window;
 
   application_context = (AgsApplicationContext *) window->application_context;
-  application_mutex = window->application_mutex;
 
+  g_object_get(application_context,
+	       "main-loop", &main_loop,
+	       NULL);
+  
   /* retrieve first soundcard */
   soundcard = NULL;
-  
-  pthread_mutex_lock(application_mutex);
 
-  list = ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(application_context));
+  list =
+    start_list = ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(application_context));
   
   if(list != NULL){
     soundcard = list->data;
   }
 
-  pthread_mutex_unlock(application_mutex);
-
+  g_list_free(start_list);
+  
   /* soundcard editor */
   soundcard_editor = ags_soundcard_editor_new();
 
   if(soundcard != NULL){
     soundcard_editor->soundcard = soundcard;
-    soundcard_editor->soundcard_thread = (GObject *) ags_thread_find_type((AgsThread *) application_context->main_loop,
+    soundcard_editor->soundcard_thread = (GObject *) ags_thread_find_type(main_loop,
 									  AGS_TYPE_SOUNDCARD_THREAD);
-  }
+   }
   
-  list = gtk_container_get_children((GtkContainer *) audio_preferences->soundcard_editor);
+  list =
+    start_list = gtk_container_get_children((GtkContainer *) audio_preferences->soundcard_editor);
   
   if(list != NULL){
     gtk_widget_set_sensitive((GtkWidget *) soundcard_editor->buffer_size,
 			     FALSE);
   }
 
-  g_list_free(list);
+  g_list_free(start_list);
   
   gtk_box_pack_start((GtkBox *) audio_preferences->soundcard_editor,
 		     (GtkWidget *) soundcard_editor,
@@ -181,17 +176,15 @@ ags_audio_preferences_remove_soundcard_editor_callback(GtkWidget *button,
 
   AgsApplicationContext *application_context;
 
-  GList *list;
   GObject *soundcard;
 
-  pthread_mutex_t *application_mutex;
+  GList *start_list, *list;
   
   preferences = (AgsPreferences *) gtk_widget_get_ancestor(GTK_WIDGET(audio_preferences),
 							   AGS_TYPE_PREFERENCES);
   window = (AgsWindow *) preferences->window;
 
   application_context = (AgsApplicationContext *) window->application_context;
-  application_mutex = window->application_mutex;
 
   soundcard_editor = (AgsSoundcardEditor *) gtk_widget_get_ancestor(button,
 								    AGS_TYPE_SOUNDCARD_EDITOR);
@@ -207,15 +200,14 @@ ags_audio_preferences_remove_soundcard_editor_callback(GtkWidget *button,
 #if 0
   soundcard = NULL;
   
-  pthread_mutex_lock(application_mutex);
-  
-  list = ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(application_context));
+  list =
+    start_list = ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(application_context));
   
   if(list != NULL){
     soundcard = list->data;
   }
 
-  pthread_mutex_unlock(application_mutex);
+  g_list_free(start_list);
   
   g_object_set(window,
 	       "soundcard", soundcard,
@@ -223,14 +215,15 @@ ags_audio_preferences_remove_soundcard_editor_callback(GtkWidget *button,
 #endif
   
   /*  */
-  list = gtk_container_get_children((GtkContainer *) audio_preferences->soundcard_editor);
+  list =
+    start_list = gtk_container_get_children((GtkContainer *) audio_preferences->soundcard_editor);
   
   if(list != NULL){
     gtk_widget_set_sensitive((GtkWidget *) AGS_SOUNDCARD_EDITOR(list->data)->buffer_size,
 			     TRUE);
   }
 
-  g_list_free(list);
+  g_list_free(start_list);
 }
 
 void
@@ -241,15 +234,13 @@ ags_audio_preferences_start_jack_callback(GtkButton *button,
 
   AgsJackServer *jack_server;
   
-  AgsMutexManager *mutex_manager;
-
   AgsApplicationContext *application_context;
 
 #ifdef AGS_WITH_JACK
   jackctl_driver_t *driver;
 #endif
 
-  GList *list;
+  GList *start_list, *list;
 
 #ifdef AGS_WITH_JACK
   JSList *jslist;
@@ -260,17 +251,13 @@ ags_audio_preferences_start_jack_callback(GtkButton *button,
   pthread_mutex_t *application_mutex;
 
   window = AGS_WINDOW(AGS_PREFERENCES(gtk_widget_get_ancestor(GTK_WIDGET(audio_preferences),
-									 AGS_TYPE_PREFERENCES))->window);
+							      AGS_TYPE_PREFERENCES))->window);
 
   application_context = (AgsApplicationContext *) window->application_context;
 
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-
-  pthread_mutex_lock(application_mutex);
-
   //TODO:JK: improve me
-  list = ags_sound_provider_get_distributed_manager(AGS_SOUND_PROVIDER(application_context));
+  list =
+    start_list = ags_sound_provider_get_sound_server(AGS_SOUND_PROVIDER(application_context));
   
   while(list != NULL){
     if(AGS_IS_JACK_SERVER(list->data)){
@@ -281,9 +268,9 @@ ags_audio_preferences_start_jack_callback(GtkButton *button,
     
     list = list->next;
   }
-  
-  pthread_mutex_unlock(application_mutex);
 
+  g_list_free(start_list);
+  
 #ifdef AGS_WITH_JACK
   /* find driver */
   driver = NULL;
@@ -321,22 +308,16 @@ ags_audio_preferences_stop_jack_callback(GtkButton *button,
 
   AgsApplicationContext *application_context;
 
-  GList *list;
-
-  pthread_mutex_t *application_mutex;
+  GList *start_list, *list;
 
   window = AGS_WINDOW(AGS_PREFERENCES(gtk_widget_get_ancestor(GTK_WIDGET(audio_preferences),
 									 AGS_TYPE_PREFERENCES))->window);
 
   application_context = (AgsApplicationContext *) window->application_context;
 
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-
-  pthread_mutex_lock(application_mutex);
-
   //TODO:JK: improve me
-  list = ags_sound_provider_get_distributed_manager(AGS_SOUND_PROVIDER(application_context));
+  list =
+    start_list = ags_sound_provider_get_sound_server(AGS_SOUND_PROVIDER(application_context));
   
   while(list != NULL){
     if(AGS_IS_JACK_SERVER(list->data)){
@@ -347,9 +328,9 @@ ags_audio_preferences_stop_jack_callback(GtkButton *button,
     
     list = list->next;
   }
-  
-  pthread_mutex_unlock(application_mutex);
 
+  g_list_free(start_list);
+  
   if(jack_server != NULL){
 #ifdef AGS_WITH_JACK
     //    jackctl_server_stop(jack_server->jackctl);

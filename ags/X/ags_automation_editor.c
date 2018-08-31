@@ -150,7 +150,7 @@ ags_automation_editor_class_init(AgsAutomationEditorClass *automation_editor)
    *
    * The assigned #AgsSoundcard acting as default sink.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("soundcard",
 				   i18n_pspec("assigned soundcard"),
@@ -172,7 +172,7 @@ ags_automation_editor_class_init(AgsAutomationEditorClass *automation_editor)
    *
    * The ::machine-changed signal notifies about changed machine.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   automation_editor_signals[MACHINE_CHANGED] =
     g_signal_new("machine-changed",
@@ -879,9 +879,7 @@ void
 ags_automation_editor_real_machine_changed(AgsAutomationEditor *automation_editor, AgsMachine *machine)
 {  
   AgsMachine *old_machine;
-
-  AgsMutexManager *mutex_manager;
-
+  
   GList *list_start, *list;
   GList *tab;
   
@@ -890,11 +888,8 @@ ags_automation_editor_real_machine_changed(AgsAutomationEditor *automation_edito
   guint audio_channels;
   guint i;
 
-  pthread_mutex_t *application_mutex;
   pthread_mutex_t *audio_mutex;
-
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+  pthread_mutex_t *automation_mutex;
 
   /* disconnect set pads - old */
   old_machine = automation_editor->selected_machine;
@@ -912,12 +907,11 @@ ags_automation_editor_real_machine_changed(AgsAutomationEditor *automation_edito
 
   /* get audio mutex */
   if(machine != NULL){
-    pthread_mutex_lock(application_mutex);
+    pthread_mutex_lock(ags_audio_get_class_mutex());
   
-    audio_mutex = ags_mutex_manager_lookup(mutex_manager,
-					   (GObject *) machine->audio);
+    audio_mutex = machine->audio->obj_mutex;
   
-    pthread_mutex_unlock(application_mutex);
+    pthread_mutex_unlock(ags_audio_get_class_mutex());
   }
   
   /* notebook - remove tabs */
@@ -1058,43 +1052,60 @@ ags_automation_editor_real_machine_changed(AgsAutomationEditor *automation_edito
   /*
    * add new
    */
-  if(machine != NULL){
+  if(machine != NULL){  
+    GList *start_automation, *automation;
     GList *automation_port;
     
     /* audio */
     automation_port = machine->enabled_automation_port;
 
+    g_object_get(machine->audio,
+		 "automation", &start_automation,
+		 NULL);
+    
     while(automation_port != NULL){
       AgsAutomationEdit *automation_edit;
       AgsScale *scale;
-      
-      GList *automation;
 	
       gboolean contains_specifier;
 
-      pthread_mutex_lock(audio_mutex);
-      
-      contains_specifier = ((automation = ags_automation_find_specifier_with_type_and_line(machine->audio->automation,
+      contains_specifier = ((automation = ags_automation_find_specifier_with_type_and_line(start_automation,
 											   AGS_MACHINE_AUTOMATION_PORT(automation_port->data)->control_name,
 											   AGS_MACHINE_AUTOMATION_PORT(automation_port->data)->channel_type,
 											   0)) != NULL) ? TRUE: FALSE;
-      
-      pthread_mutex_unlock(audio_mutex);
 
       if(contains_specifier){
+	gchar *control_name;
+
+	gdouble upper, lower;
+	gdouble default_value;
+	
+	pthread_mutex_lock(ags_automation_get_class_mutex());
+  
+	automation_mutex = AGS_AUTOMATION(automation->data)->obj_mutex;
+  
+	pthread_mutex_unlock(ags_automation_get_class_mutex());
+	
 	/* scale */
 	scale = ags_scale_new();
 
-	pthread_mutex_lock(audio_mutex);
+	pthread_mutex_lock(automation_mutex);
+
+	control_name = g_strdup(AGS_AUTOMATION(automation->data)->control_name);
+	
+	upper = AGS_AUTOMATION(automation->data)->upper;
+	lower = AGS_AUTOMATION(automation->data)->lower;
+
+	default_value = AGS_AUTOMATION(automation->data)->default_value;
+	
+	pthread_mutex_unlock(automation_mutex);
 
 	g_object_set(scale,
-		     "control-name", AGS_AUTOMATION(automation->data)->control_name,
-		     "upper", AGS_AUTOMATION(automation->data)->upper,
-		     "lower", AGS_AUTOMATION(automation->data)->lower,
-		     "default-value", AGS_AUTOMATION(automation->data)->default_value,
+		     "control-name", control_name,
+		     "upper", upper,
+		     "lower", lower,
+		     "default-value", default_value,
 		     NULL);
-
-	pthread_mutex_unlock(audio_mutex);
 
 	if(AGS_MACHINE_AUTOMATION_PORT(automation_port->data)->channel_type == G_TYPE_NONE){
 	  gtk_box_pack_start(automation_editor->audio_scrolled_scale_box->scale_box,
@@ -1123,10 +1134,10 @@ ags_automation_editor_real_machine_changed(AgsAutomationEditor *automation_edito
 	g_object_set(automation_edit,
 		     "channel-type", G_TYPE_NONE,
 		     "control-specifier", AGS_MACHINE_AUTOMATION_PORT(automation_port->data)->control_name,
-		     "control-name", AGS_AUTOMATION(automation->data)->control_name,
-		     "upper", AGS_AUTOMATION(automation->data)->upper,
-		     "lower", AGS_AUTOMATION(automation->data)->lower,
-		     "default-value", AGS_AUTOMATION(automation->data)->default_value,
+		     "control-name", control_name,
+		     "upper", upper,
+		     "lower", lower,
+		     "default-value", default_value,
 		     NULL);
 
 	pthread_mutex_unlock(audio_mutex);
@@ -1161,10 +1172,15 @@ ags_automation_editor_real_machine_changed(AgsAutomationEditor *automation_edito
 	  g_signal_connect_after((GObject *) automation_edit->hscrollbar, "value-changed",
 				 G_CALLBACK(ags_automation_editor_input_automation_edit_hscrollbar_value_changed), (gpointer) automation_editor);
 	}
+
+	g_free(control_name);
       }
       
+      /* iterate */
       automation_port = automation_port->next;
     }
+
+    g_list_free(start_automation);
   }
   
   /* selected machine */
@@ -1187,7 +1203,7 @@ ags_automation_editor_real_machine_changed(AgsAutomationEditor *automation_edito
  *
  * Is emitted as machine changed of automation editor.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_automation_editor_machine_changed(AgsAutomationEditor *automation_editor, AgsMachine *machine)
@@ -1223,9 +1239,8 @@ ags_automation_editor_add_acceleration(AgsAutomationEditor *automation_editor,
   }
 
   if(automation_editor->selected_machine != NULL){
-    AgsMutexManager *mutex_manager;
+    AgsChannel *output, *input;
 
-    pthread_mutex_t *application_mutex;
     pthread_mutex_t *audio_mutex;
 
     machine = automation_editor->selected_machine;
@@ -1237,18 +1252,22 @@ ags_automation_editor_add_acceleration(AgsAutomationEditor *automation_editor,
     }else if(automation_editor->focused_automation_edit->channel_type == AGS_TYPE_INPUT){
       notebook = automation_editor->input_notebook;
     }
-    
-    mutex_manager = ags_mutex_manager_get_instance();
-    application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
 
     /* get audio mutex */
-    pthread_mutex_lock(application_mutex);
-
-    audio_mutex = ags_mutex_manager_lookup(mutex_manager,
-					   (GObject *) machine->audio);
+    pthread_mutex_lock(ags_audio_get_class_mutex());
   
-    pthread_mutex_unlock(application_mutex);
+    audio_mutex = machine->audio->obj_mutex;
+  
+    pthread_mutex_unlock(ags_audio_get_class_mutex());
 
+    /* get some fields */
+    pthread_mutex_lock(audio_mutex);
+
+    output = machine->audio->output;
+    input = machine->audio->input;
+    
+    pthread_mutex_unlock(audio_mutex);
+    
     /* check all active tabs */
     timestamp = ags_timestamp_new();
 
@@ -1263,61 +1282,83 @@ ags_automation_editor_add_acceleration(AgsAutomationEditor *automation_editor,
 	  (i = ags_notebook_next_active_tab(notebook,
 					    i)) != -1){      
       AgsChannel *channel;
-      AgsPort *play_port, *recall_port;
       AgsAcceleration *new_acceleration;
 
-      GList *list;
+      GList *start_play_port, *play_port;
+      GList *start_recall_port, *recall_port;
+      GList *start_list, *list;
       
       play_port = NULL;
       recall_port = NULL;
 	
       if(automation_editor->focused_automation_edit->channel_type == AGS_TYPE_OUTPUT){
-	channel = ags_channel_nth(machine->audio->output,
+	channel = ags_channel_nth(output,
 				  i);
 
-	play_port = ags_channel_find_port_by_specifier_and_scope(channel,
-								 automation_editor->focused_automation_edit->control_name, TRUE);
+	play_port =
+	  start_play_port = ags_channel_collect_all_channel_ports_by_specifier_and_context(channel,
+											   automation_editor->focused_automation_edit->control_name,
+											   TRUE);
 
-	recall_port = ags_channel_find_port_by_specifier_and_scope(channel,
-								   automation_editor->focused_automation_edit->control_name, FALSE);
+	recall_port =
+	  start_recall_port = ags_channel_collect_all_channel_ports_by_specifier_and_context(channel,
+											     automation_editor->focused_automation_edit->control_name,
+											     FALSE);
       }else if(automation_editor->focused_automation_edit->channel_type == AGS_TYPE_INPUT){
-	channel = ags_channel_nth(machine->audio->input,
+	channel = ags_channel_nth(input,
 				  i);
 
-	play_port = ags_channel_find_port_by_specifier_and_scope(channel,
-								 automation_editor->focused_automation_edit->control_name, TRUE);
+	play_port =
+	  start_play_port = ags_channel_collect_all_channel_ports_by_specifier_and_context(channel,
+											   automation_editor->focused_automation_edit->control_name,
+											   TRUE);
 
-	recall_port = ags_channel_find_port_by_specifier_and_scope(channel,
-								   automation_editor->focused_automation_edit->control_name, FALSE);
+	recall_port =
+	  start_recall_port = ags_channel_collect_all_channel_ports_by_specifier_and_context(channel,
+											     automation_editor->focused_automation_edit->control_name,
+											     FALSE);
       }else{
-	play_port = ags_audio_find_port_by_specifier_and_scope(machine->audio,
-							       automation_editor->focused_automation_edit->control_name, TRUE);
-
-	recall_port = ags_audio_find_port_by_specifier_and_scope(machine->audio,
-								 automation_editor->focused_automation_edit->control_name, FALSE);
+	play_port =
+	  start_play_port = ags_audio_collect_all_audio_ports_by_specifier_and_context(machine->audio,
+										       automation_editor->focused_automation_edit->control_name,
+										       TRUE);
+	
+	recall_port =
+	  start_recall_port = ags_audio_collect_all_audio_ports_by_specifier_and_context(machine->audio,
+											 automation_editor->focused_automation_edit->control_name,
+											 FALSE);
       }
-
-      pthread_mutex_lock(audio_mutex);
 
       /* play port */
-      if(play_port != NULL){
-	list = ags_automation_find_near_timestamp(play_port->automation, i,
+      while(play_port != NULL){
+	AgsPort *current_port;
+	
+	current_port = play_port->data;
+
+	g_object_get(current_port,
+		     "automation", &start_list,
+		     NULL);
+	
+	list = ags_automation_find_near_timestamp(start_list, i,
 						  timestamp);
 	
 	if(list == NULL){
 	  automation = ags_automation_new(machine->audio,
 					  i,
 					  automation_editor->focused_automation_edit->channel_type, automation_editor->focused_automation_edit->control_name);
-	  g_object_set(automation,
-		       "port", play_port,
-		       NULL);
-
 	  automation->timestamp->timer.ags_offset.offset = timestamp->timer.ags_offset.offset;
 
-	  machine->audio->automation = ags_automation_add(machine->audio->automation,
-							  automation);
-	  play_port->automation = ags_automation_add(play_port->automation,
-						     automation);	  
+	  g_object_set(automation,
+		       "port", current_port,
+		       NULL);
+
+	  /* add to audio */
+	  ags_audio_add_automation(machine->audio,
+				   automation);
+
+	  /* add to port */
+	  ags_port_add_automation(current_port,
+				  automation);
 	}else{
 	  automation = list->data;
 	}
@@ -1326,27 +1367,44 @@ ags_automation_editor_add_acceleration(AgsAutomationEditor *automation_editor,
 	ags_automation_add_acceleration(automation,
 					new_acceleration,
 					FALSE);
+
+	g_list_free(start_list);
+	
+	/* iterate */
+	play_port = play_port->next;
       }
 
+      g_list_free(start_play_port);
+      
       /* recall port */
       if(recall_port != NULL){
-	list = ags_automation_find_near_timestamp(recall_port->automation, i,
+	AgsPort *current_port;
+	
+	current_port = recall_port->data;
+
+	g_object_get(current_port,
+		     "automation", &start_list,
+		     NULL);
+
+	list = ags_automation_find_near_timestamp(start_list, i,
 						  timestamp);
 	
 	if(list == NULL){
 	  automation = ags_automation_new(machine->audio,
 					  i,
 					  automation_editor->focused_automation_edit->channel_type, automation_editor->focused_automation_edit->control_name);
+	  automation->timestamp->timer.ags_offset.offset = timestamp->timer.ags_offset.offset;
 	  g_object_set(automation,
-		       "port", recall_port,
+		       "port", current_port,
 		       NULL);
 	  
-	  automation->timestamp->timer.ags_offset.offset = timestamp->timer.ags_offset.offset;
+	  /* add to audio */
+	  ags_audio_add_automation(machine->audio,
+				   automation);
 
-	  machine->audio->automation = ags_automation_add(machine->audio->automation,
-							  automation);
-	  recall_port->automation = ags_automation_add(recall_port->automation,
-						       automation);
+	  /* add to port */
+	  ags_port_add_automation(current_port,
+				  automation);
 	}else{
 	  automation = list->data;
 	}
@@ -1355,9 +1413,12 @@ ags_automation_editor_add_acceleration(AgsAutomationEditor *automation_editor,
 	ags_automation_add_acceleration(automation,
 					new_acceleration,
 					FALSE);
-      }      
 
-      pthread_mutex_unlock(audio_mutex);
+	g_list_free(start_list);
+	
+	/* iterate */
+	recall_port = recall_port->next;
+      }      
 
       if(notebook == NULL){
 	break;
@@ -1383,7 +1444,7 @@ ags_automation_editor_delete_acceleration(AgsAutomationEditor *automation_editor
 
   AgsTimestamp *timestamp;
 
-  GList *list_automation;
+  GList *start_list_automation, *list_automation;
 
   gdouble c_range;
   guint g_range;
@@ -1398,11 +1459,6 @@ ags_automation_editor_delete_acceleration(AgsAutomationEditor *automation_editor
   }
 
   if(automation_editor->selected_machine != NULL){
-    AgsMutexManager *mutex_manager;
-
-    pthread_mutex_t *application_mutex;
-    pthread_mutex_t *audio_mutex;
-
     machine = automation_editor->selected_machine;
 
     notebook = NULL;
@@ -1421,18 +1477,11 @@ ags_automation_editor_delete_acceleration(AgsAutomationEditor *automation_editor
 
     g_range = GTK_RANGE(automation_editor->focused_automation_edit->vscrollbar)->adjustment->upper + GTK_WIDGET(automation_editor->focused_automation_edit->drawing_area)->allocation.height;
 
-    mutex_manager = ags_mutex_manager_get_instance();
-    application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-
-    /* get audio mutex */
-    pthread_mutex_lock(application_mutex);
-
-    audio_mutex = ags_mutex_manager_lookup(mutex_manager,
-					   (GObject *) machine->audio);
-  
-    pthread_mutex_unlock(application_mutex);
-
     /* check all active tabs */
+    g_object_get(machine->audio,
+		 "automation", &start_list_automation,
+		 NULL);
+
     timestamp = ags_timestamp_new();
 
     timestamp->flags &= (~AGS_TIMESTAMP_UNIX);
@@ -1440,16 +1489,14 @@ ags_automation_editor_delete_acceleration(AgsAutomationEditor *automation_editor
     
     timestamp->timer.ags_offset.offset = AGS_AUTOMATION_DEFAULT_OFFSET * floor(x / AGS_AUTOMATION_DEFAULT_OFFSET);
 
-    pthread_mutex_lock(audio_mutex);
-
     i = 0;
-    
+
     while(notebook == NULL ||
 	  (i = ags_notebook_next_active_tab(notebook,
 					    i)) != -1){
       AgsAcceleration *new_acceleration;
       
-      list_automation = machine->audio->automation;
+      list_automation = start_list_automation;
       
       while((list_automation = ags_automation_find_near_timestamp_extended(list_automation, i,
 									   automation_editor->focused_automation_edit->channel_type, automation_editor->focused_automation_edit->control_name,
@@ -1506,9 +1553,10 @@ ags_automation_editor_delete_acceleration(AgsAutomationEditor *automation_editor
 
       i++;
     }
-    
-    pthread_mutex_unlock(audio_mutex);
 
+    g_list_free(start_list_automation);
+
+    /* queue draw */
     gtk_widget_queue_draw(automation_editor->focused_automation_edit);
   }
 }
@@ -1525,21 +1573,16 @@ ags_automation_editor_select_region(AgsAutomationEditor *automation_editor,
 
   AgsTimestamp *timestamp;
 
-  GList *list_automation;
+  GList *start_list_automation, *list_automation;
 
   gint i;
-
+  
   if(!AGS_IS_AUTOMATION_EDITOR(automation_editor) ||
      automation_editor->focused_automation_edit == NULL){
     return;
   }
   
   if(automation_editor->selected_machine != NULL){
-    AgsMutexManager *mutex_manager;
-
-    pthread_mutex_t *application_mutex;
-    pthread_mutex_t *audio_mutex;
-
     machine = automation_editor->selected_machine;
   
     notebook = NULL;
@@ -1549,17 +1592,6 @@ ags_automation_editor_select_region(AgsAutomationEditor *automation_editor,
     }else if(automation_editor->focused_automation_edit->channel_type == AGS_TYPE_INPUT){
       notebook = automation_editor->input_notebook;
     }
-
-    mutex_manager = ags_mutex_manager_get_instance();
-    application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-
-    /* get audio mutex */
-    pthread_mutex_lock(application_mutex);
-
-    audio_mutex = ags_mutex_manager_lookup(mutex_manager,
-					   (GObject *) machine->audio);
-  
-    pthread_mutex_unlock(application_mutex);
 
     /* swap values if needed */
     if(x0 > x1){
@@ -1581,19 +1613,21 @@ ags_automation_editor_select_region(AgsAutomationEditor *automation_editor,
     }
 
     /* check all active tabs */
+    g_object_get(machine->audio,
+		 "automation", &start_list_automation,
+		 NULL);
+
     timestamp = ags_timestamp_new();
 
     timestamp->flags &= (~AGS_TIMESTAMP_UNIX);
     timestamp->flags |= AGS_TIMESTAMP_OFFSET;
     
-    pthread_mutex_lock(audio_mutex);
-
     i = 0;
 
     while(notebook == NULL ||
 	  (i = ags_notebook_next_active_tab(notebook,
 					    i)) != -1){      
-      list_automation = machine->audio->automation;
+      list_automation = start_list_automation;
       
       timestamp->timer.ags_offset.offset = AGS_AUTOMATION_DEFAULT_OFFSET * floor(x0 / AGS_AUTOMATION_DEFAULT_OFFSET);
 
@@ -1621,8 +1655,9 @@ ags_automation_editor_select_region(AgsAutomationEditor *automation_editor,
       i++;
     }
     
-    pthread_mutex_unlock(audio_mutex);
+    g_list_free(start_list_automation);
 
+    /* queue draw */
     gtk_widget_queue_draw(automation_editor->focused_automation_edit);
   }
 }
@@ -1633,7 +1668,7 @@ ags_automation_editor_select_all(AgsAutomationEditor *automation_editor)
   AgsMachine *machine;
   AgsNotebook *notebook;
   
-  GList *list_automation;
+  GList *start_list_automation, *list_automation;
 
   gint i;
 
@@ -1642,11 +1677,6 @@ ags_automation_editor_select_all(AgsAutomationEditor *automation_editor)
   }
   
   if(automation_editor->selected_machine != NULL){
-    AgsMutexManager *mutex_manager;
-
-    pthread_mutex_t *application_mutex;
-    pthread_mutex_t *audio_mutex;
-
     machine = automation_editor->selected_machine;
   
     notebook = NULL;
@@ -1657,26 +1687,17 @@ ags_automation_editor_select_all(AgsAutomationEditor *automation_editor)
       notebook = automation_editor->input_notebook;
     }
 
-    mutex_manager = ags_mutex_manager_get_instance();
-    application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-    
-    /* get audio mutex */
-    pthread_mutex_lock(application_mutex);
-
-    audio_mutex = ags_mutex_manager_lookup(mutex_manager,
-					   (GObject *) machine->audio);
-  
-    pthread_mutex_unlock(application_mutex);
-
     /* check all active tabs */
-    pthread_mutex_lock(audio_mutex);
+    g_object_get(machine->audio,
+		 "automation", &start_list_automation,
+		 NULL);
 
     i = 0;
     
     while(notebook == NULL ||
 	  (i = ags_notebook_next_active_tab(notebook,
 					    i)) != -1){
-      list_automation = machine->audio->automation;
+      list_automation = start_list_automation;
       
       while((list_automation = ags_automation_find_near_timestamp_extended(list_automation, i,
 									   automation_editor->focused_automation_edit->channel_type, automation_editor->focused_automation_edit->control_name,
@@ -1693,8 +1714,9 @@ ags_automation_editor_select_all(AgsAutomationEditor *automation_editor)
       i++;
     }
     
-    pthread_mutex_unlock(audio_mutex);
+    g_list_free(start_list_automation);
 
+    /* queue draw */
     gtk_widget_queue_draw(automation_editor->focused_automation_edit);
   }
 }
@@ -1731,36 +1753,31 @@ ags_automation_editor_paste(AgsAutomationEditor *automation_editor)
     AgsChannel *output, *input;
     AgsAutomation *automation;
 		
-    AgsMutexManager *mutex_manager;
-
-    GList *list_automation;
+    GList *start_list_automation, *list_automation;
     
     guint first_x;
     guint current_x;
     gint i;
 
-    pthread_mutex_t *application_mutex;
     pthread_mutex_t *audio_mutex;
-
-    mutex_manager = ags_mutex_manager_get_instance();
-    application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
     
-    /* get audio mutex */
-    pthread_mutex_lock(application_mutex);
+    first_x = -1;
 
-    audio_mutex = ags_mutex_manager_lookup(mutex_manager,
-					   (GObject *) machine->audio);
+    /* get audio mutex */
+    pthread_mutex_lock(ags_audio_get_class_mutex());
   
-    pthread_mutex_unlock(application_mutex);
+    audio_mutex = machine->audio->obj_mutex;
+  
+    pthread_mutex_unlock(ags_audio_get_class_mutex());
 
     /* get some fields */
     pthread_mutex_lock(audio_mutex);
 
     output = machine->audio->output;
     input = machine->audio->input;
-
+    
     pthread_mutex_unlock(audio_mutex);
-
+    
     /*  */
     i = 0;
 		
@@ -1769,164 +1786,233 @@ ags_automation_editor_paste(AgsAutomationEditor *automation_editor)
     while(notebook == NULL ||
 	  (i = ags_notebook_next_active_tab(notebook,
 					    i)) != -1){		  
-      list_automation = ags_automation_find_near_timestamp_extended(machine->audio->automation, i,
+      g_object_get(machine->audio,
+		   "automation", &start_list_automation,
+		   NULL);
+      
+      list_automation = ags_automation_find_near_timestamp_extended(start_list_automation, i,
 								    automation_editor->focused_automation_edit->channel_type, automation_editor->focused_automation_edit->control_name,
 								    timestamp);
 
       if(list_automation == NULL){
 	AgsChannel *channel;
-	AgsPort *play_port, *recall_port;
-	
-	automation = ags_automation_new(machine->audio,
-					i,
-					automation_editor->focused_automation_edit->channel_type,
-					automation_editor->focused_automation_edit->control_name);
-	automation->timestamp->timer.ags_offset.offset = timestamp->timer.ags_offset.offset;
-	machine->audio->automation = ags_automation_add(machine->audio->automation,
-							automation);
-	g_object_ref(automation);
 
-	/* port */
+	GList *start_play_port, *play_port;
+	GList *start_recall_port, *recall_port;
+	
+	AgsPort *current_port;
+
+	play_port = NULL;
+	recall_port = NULL;
+
 	if(automation_editor->focused_automation_edit->channel_type == AGS_TYPE_OUTPUT){
 	  channel = ags_channel_nth(output,
 				    i);
 
-	  play_port = ags_channel_find_port_by_specifier_and_scope(channel,
-								   automation_editor->focused_automation_edit->control_name,
-								   TRUE);
+	  play_port =
+	    start_play_port = ags_channel_collect_all_channel_ports_by_specifier_and_context(channel,
+											     automation_editor->focused_automation_edit->control_name,
+											     TRUE);
 
-	  recall_port = ags_channel_find_port_by_specifier_and_scope(channel,
-								     automation_editor->focused_automation_edit->control_name,
-								     FALSE);
+	  recall_port =
+	    start_recall_port = ags_channel_collect_all_channel_ports_by_specifier_and_context(channel,
+											       automation_editor->focused_automation_edit->control_name,
+											       FALSE);
 	}else if(automation_editor->focused_automation_edit->channel_type == AGS_TYPE_INPUT){
 	  channel = ags_channel_nth(input,
 				    i);
 
-	  play_port = ags_channel_find_port_by_specifier_and_scope(channel,
-								   automation_editor->focused_automation_edit->control_name,
-								   TRUE);
+	  play_port =
+	    start_play_port = ags_channel_collect_all_channel_ports_by_specifier_and_context(channel,
+											     automation_editor->focused_automation_edit->control_name,
+											     TRUE);
 
-	  recall_port = ags_channel_find_port_by_specifier_and_scope(channel,
-								     automation_editor->focused_automation_edit->control_name,
-								     FALSE);
+	  recall_port =
+	    start_recall_port = ags_channel_collect_all_channel_ports_by_specifier_and_context(channel,
+											       automation_editor->focused_automation_edit->control_name,
+											       FALSE);
 	}else{
-	  play_port = ags_audio_find_port_by_specifier_and_scope(machine->audio,
-								 automation_editor->focused_automation_edit->control_name,
-								 TRUE);
-
-	  recall_port = ags_audio_find_port_by_specifier_and_scope(machine->audio,
-								   automation_editor->focused_automation_edit->control_name,
-								   FALSE);
+	  play_port =
+	    start_play_port = ags_audio_collect_all_audio_ports_by_specifier_and_context(machine->audio,
+											 automation_editor->focused_automation_edit->control_name,
+											 TRUE);
+	
+	  recall_port =
+	    start_recall_port = ags_audio_collect_all_audio_ports_by_specifier_and_context(machine->audio,
+											   automation_editor->focused_automation_edit->control_name,
+											   FALSE);
 	}
 
-	if(play_port != NULL){
-	  play_port->automation = ags_automation_add(play_port->automation,
-						     automation);
-	  g_object_ref(automation); 
+	/* play port */
+	while(play_port != NULL){
+	  AgsPort *current_port;
+	
+	  current_port = play_port->data;
+
+	  automation = ags_automation_new(machine->audio,
+					  i,
+					  automation_editor->focused_automation_edit->channel_type,
+					  automation_editor->focused_automation_edit->control_name);
+	  automation->timestamp->timer.ags_offset.offset = timestamp->timer.ags_offset.offset;
+
+	  g_object_set(automation,
+		       "port", current_port,
+		       NULL);
+	
+	  /* add to audio */
+	  ags_audio_add_automation(machine->audio,
+				   automation);
+
+	  /* add to port */
+	  ags_port_add_automation(current_port,
+				  automation);
+	  
+	  /* iterate */
+	  play_port = play_port->next;
 	}
 
+	g_list_free(start_play_port);
+      
+	/* recall port */
 	if(recall_port != NULL){
-	  recall_port->automation = ags_automation_add(recall_port->automation,
-						       automation);
-	  g_object_ref(automation); 
+	  AgsPort *current_port;
+	
+	  current_port = recall_port->data;
+
+	  automation = ags_automation_new(machine->audio,
+					  i,
+					  automation_editor->focused_automation_edit->channel_type,
+					  automation_editor->focused_automation_edit->control_name);
+	  automation->timestamp->timer.ags_offset.offset = timestamp->timer.ags_offset.offset;
+
+	  g_object_set(automation,
+		       "port", current_port,
+		       NULL);
+	
+	  /* add to audio */
+	  ags_audio_add_automation(machine->audio,
+				   automation);
+
+	  /* add to port */
+	  ags_port_add_automation(current_port,
+				  automation);
+	  
+	  /* iterate */
+	  recall_port = recall_port->next;
 	}
       }else{
 	automation = AGS_AUTOMATION(list_automation->data);
       }
-		  
-      if(paste_from_position){
-	xmlNode *child;
 
-	guint x_boundary;
+      g_list_free(start_list_automation);
+      
+      g_object_get(machine->audio,
+		   "automation", &start_list_automation,
+		   NULL);
+
+      list_automation = start_list_automation;
+      
+      while((list_automation = ags_automation_find_near_timestamp_extended(list_automation, i,
+									   automation_editor->focused_automation_edit->channel_type, automation_editor->focused_automation_edit->control_name,
+									   timestamp)) != NULL){
+	automation = list_automation->data;
+	
+	if(paste_from_position){
+	  xmlNode *child;
+
+	  guint x_boundary;
 	  
-	ags_automation_insert_from_clipboard_extended(automation,
-						      automation_node,
-						      TRUE, position_x,
-						      TRUE, position_y,
-						      match_line, no_duplicates);
+	  ags_automation_insert_from_clipboard_extended(automation,
+							automation_node,
+							TRUE, position_x,
+							TRUE, position_y,
+							match_line, no_duplicates);
 
-	/* get boundaries */
-	child = automation_node->children;
-	current_x = 0;
+	  /* get boundaries */
+	  child = automation_node->children;
+	  current_x = 0;
 	  
-	while(child != NULL){
-	  if(child->type == XML_ELEMENT_NODE){
-	    if(!xmlStrncmp(child->name,
-			   "acceleration",
-			   13)){
-	      guint tmp;
+	  while(child != NULL){
+	    if(child->type == XML_ELEMENT_NODE){
+	      if(!xmlStrncmp(child->name,
+			     "note",
+			     5)){
+		guint tmp;
 
-	      tmp = g_ascii_strtoull(xmlGetProp(child,
-						"x"),
-				     NULL,
-				     10);
+		tmp = g_ascii_strtoull(xmlGetProp(child,
+						  "x"),
+				       NULL,
+				       10);
 
-	      if(tmp > current_x){
-		current_x = tmp;
+		if(tmp > current_x){
+		  current_x = tmp;
+		}
 	      }
 	    }
+
+	    child = child->next;
 	  }
 
-	  child = child->next;
-	}
-
-	x_boundary = g_ascii_strtoull(xmlGetProp(automation_node,
-						 "x-boundary"),
-				      NULL,
-				      10);
+	  x_boundary = g_ascii_strtoull(xmlGetProp(automation_node,
+						   "x_boundary"),
+					NULL,
+					10);
 
 
-	if(first_x == -1 || x_boundary < first_x){
-	  first_x = x_boundary;
-	}
+	  if(first_x == -1 || x_boundary < first_x){
+	    first_x = x_boundary;
+	  }
 	  
-	if(position_x > x_boundary){
-	  current_x += (position_x - x_boundary);
+	  if(position_x > x_boundary){
+	    current_x += (position_x - x_boundary);
+	  }else{
+	    current_x -= (x_boundary - position_x);
+	  }
+	  
+	  if(current_x > last_x){
+	    last_x = current_x;
+	  }	
 	}else{
-	  current_x -= (x_boundary - position_x);
-	}
+	  xmlNode *child;
+
+	  ags_automation_insert_from_clipboard(automation,
+					       automation_node,
+					       FALSE, 0,
+					       FALSE, 0);
+
+	  /* get boundaries */
+	  child = automation_node->children;
+	  current_x = 0;
 	  
-	if(current_x > last_x){
-	  last_x = current_x;
-	}	
-      }else{
-	xmlNode *child;
+	  while(child != NULL){
+	    if(child->type == XML_ELEMENT_NODE){
+	      if(!xmlStrncmp(child->name,
+			     "note",
+			     5)){
+		guint tmp;
 
-	ags_automation_insert_from_clipboard(automation,
-					     automation_node,
-					     FALSE, 0,
-					     FALSE, 0);
+		tmp = g_ascii_strtoull(xmlGetProp(child,
+						  "x"),
+				       NULL,
+				       10);
 
-	/* get boundaries */
-	child = automation_node->children;
-	current_x = 0;
-	  
-	while(child != NULL){
-	  if(child->type == XML_ELEMENT_NODE){
-	    if(!xmlStrncmp(child->name,
-			   "acceleration",
-			   13)){
-	      guint tmp;
-
-	      tmp = g_ascii_strtoull(xmlGetProp(child,
-						"x"),
-				     NULL,
-				     10);
-
-	      if(tmp > current_x){
-		current_x = tmp;
+		if(tmp > current_x){
+		  current_x = tmp;
+		}
 	      }
 	    }
+
+	    child = child->next;
 	  }
 
-	  child = child->next;
+	  if(current_x > last_x){
+	    last_x = current_x;
+	  }
 	}
 
-	if(current_x > last_x){
-	  last_x = current_x;
-	}
+	list_automation = list_automation->next;
       }
-
+      
       if(notebook == NULL){
 	break;
       }
@@ -1993,14 +2079,14 @@ ags_automation_editor_paste(AgsAutomationEditor *automation_editor)
 		}     
 		
 		/* 1st attempt */
-		timestamp->timer.ags_offset.offset = offset;
+		timestamp->timer.ags_offset.offset = AGS_AUTOMATION_DEFAULT_OFFSET * floor(offset / AGS_AUTOMATION_DEFAULT_OFFSET);
 		
 		first_x = ags_automation_editor_paste_automation_all(automation_node,
 								     timestamp,
 								     match_line, no_duplicates);
 
 		/* 2nd attempt */
-		timestamp->timer.ags_offset.offset = offset + AGS_AUTOMATION_DEFAULT_OFFSET;
+		timestamp->timer.ags_offset.offset += AGS_AUTOMATION_DEFAULT_OFFSET;
 
 		ags_automation_editor_paste_automation_all(automation_node,
 							   timestamp,
@@ -2028,12 +2114,6 @@ ags_automation_editor_paste(AgsAutomationEditor *automation_editor)
   }
   
   if((machine = automation_editor->selected_machine) != NULL){
-    AgsMutexManager *mutex_manager;
-
-    pthread_mutex_t *application_mutex;
-    pthread_mutex_t *audio_mutex;
-
-
     machine = automation_editor->selected_machine;
 
     automation_edit = NULL;
@@ -2098,17 +2178,6 @@ ags_automation_editor_paste(AgsAutomationEditor *automation_editor)
 
       g_list_free(list_start);
     }
-    
-    mutex_manager = ags_mutex_manager_get_instance();
-    application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-    
-    /* get audio mutex */
-    pthread_mutex_lock(application_mutex);  
-    
-    audio_mutex = ags_mutex_manager_lookup(mutex_manager,
-					   (GObject *) machine->audio);
-  
-    pthread_mutex_unlock(application_mutex);
 
     /* get clipboard */
     buffer = gtk_clipboard_wait_for_text(gtk_clipboard_get(GDK_SELECTION_CLIPBOARD));
@@ -2141,8 +2210,6 @@ ags_automation_editor_paste(AgsAutomationEditor *automation_editor)
     first_x = -1;
     
     /* iterate xml tree */
-    pthread_mutex_lock(audio_mutex);
-
     while(audio_node != NULL){
       if(audio_node->type == XML_ELEMENT_NODE){
 	if(!xmlStrncmp("audio", audio_node->name, 6)){
@@ -2162,8 +2229,6 @@ ags_automation_editor_paste(AgsAutomationEditor *automation_editor)
     }
     
     xmlFreeDoc(clipboard); 
-
-    pthread_mutex_unlock(audio_mutex);
 
     if(paste_from_position){
       gint big_step, small_step;
@@ -2194,7 +2259,7 @@ ags_automation_editor_copy(AgsAutomationEditor *automation_editor)
   xmlDoc *clipboard;
   xmlNode *audio_node, *automation_list_node, *automation_node;
 
-  GList *list_automation;
+  GList *start_list_automation, *list_automation;
 
   xmlChar *buffer;
 
@@ -2207,11 +2272,6 @@ ags_automation_editor_copy(AgsAutomationEditor *automation_editor)
   }
   
   if(automation_editor->selected_machine != NULL){
-    AgsMutexManager *mutex_manager;
-
-    pthread_mutex_t *application_mutex;
-    pthread_mutex_t *audio_mutex;
-
     machine = automation_editor->selected_machine;
 
     notebook = NULL;
@@ -2222,17 +2282,6 @@ ags_automation_editor_copy(AgsAutomationEditor *automation_editor)
       notebook = automation_editor->input_notebook;
     }
   
-    mutex_manager = ags_mutex_manager_get_instance();
-    application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-    
-    /* get audio mutex */
-    pthread_mutex_lock(application_mutex);
-
-    audio_mutex = ags_mutex_manager_lookup(mutex_manager,
-					   (GObject *) machine->audio);
-  
-    pthread_mutex_unlock(application_mutex);
-
     /* create document */
     clipboard = xmlNewDoc(BAD_CAST XML_DEFAULT_VERSION);
 
@@ -2247,15 +2296,16 @@ ags_automation_editor_copy(AgsAutomationEditor *automation_editor)
 		automation_list_node);
 
     /* create automation nodes */
-    list_automation = machine->audio->automation;
+    g_object_get(machine->audio,
+		 "automation", &start_list_automation,
+		 NULL);
+    
     i = 0;
 
     while(notebook == NULL ||
 	  (i = ags_notebook_next_active_tab(notebook,
 					    i)) != -1){
-      pthread_mutex_lock(audio_mutex);
-
-      list_automation = machine->audio->automation;
+      list_automation = start_list_automation;
 
       /* copy */
       while((list_automation = ags_automation_find_near_timestamp_extended(list_automation, i,
@@ -2267,8 +2317,6 @@ ags_automation_editor_copy(AgsAutomationEditor *automation_editor)
 	
 	list_automation = list_automation->next;
       }
-
-      pthread_mutex_unlock(audio_mutex);
 
       if(notebook == NULL){
 	break;
@@ -2299,7 +2347,7 @@ ags_automation_editor_cut(AgsAutomationEditor *automation_editor)
   xmlNode *audio_node;
   xmlNode *automation_list_node, *automation_node;
 
-  GList *list_automation;
+  GList *start_list_automation, *list_automation;
 
   xmlChar *buffer;
   int size;
@@ -2311,11 +2359,6 @@ ags_automation_editor_cut(AgsAutomationEditor *automation_editor)
   }
   
   if(automation_editor->selected_machine != NULL){
-    AgsMutexManager *mutex_manager;
-
-    pthread_mutex_t *application_mutex;
-    pthread_mutex_t *audio_mutex;
-
     machine = automation_editor->selected_machine;
 
     notebook = NULL;
@@ -2325,17 +2368,6 @@ ags_automation_editor_cut(AgsAutomationEditor *automation_editor)
     }else if(automation_editor->focused_automation_edit->channel_type == AGS_TYPE_INPUT){
       notebook = automation_editor->input_notebook;
     }
-
-    mutex_manager = ags_mutex_manager_get_instance();
-    application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-    
-    /* get audio mutex */
-    pthread_mutex_lock(application_mutex);
-
-    audio_mutex = ags_mutex_manager_lookup(mutex_manager,
-					   (GObject *) machine->audio);
-  
-    pthread_mutex_unlock(application_mutex);
 
     /* create document */
     clipboard = xmlNewDoc(BAD_CAST XML_DEFAULT_VERSION);
@@ -2351,20 +2383,16 @@ ags_automation_editor_cut(AgsAutomationEditor *automation_editor)
 		automation_list_node);
 
     /* create automation nodes */
-    pthread_mutex_lock(audio_mutex);
-
-    list_automation = machine->audio->automation;
-
-    pthread_mutex_unlock(audio_mutex);
-
+    g_object_get(machine->audio,
+		 "automation", &start_list_automation,
+		 NULL);
+    
     i = 0;
     
     while(notebook == NULL ||
 	  (i = ags_notebook_next_active_tab(notebook,
 					    i)) != -1){
-      pthread_mutex_lock(audio_mutex);
-      
-      list_automation = machine->audio->automation;
+      list_automation = start_list_automation;
 
       /* cut */
       while((list_automation = ags_automation_find_near_timestamp_extended(list_automation, i,
@@ -2377,8 +2405,6 @@ ags_automation_editor_cut(AgsAutomationEditor *automation_editor)
 	list_automation = list_automation->next;
       }
       
-      pthread_mutex_unlock(audio_mutex);
-
       if(notebook == NULL){
 	break;
       }
@@ -2407,11 +2433,11 @@ ags_automation_editor_invert(AgsAutomationEditor *automation_editor)
 /**
  * ags_automation_editor_new:
  *
- * Create a new #AgsAutomationEditor.
+ * Create a new instance of #AgsAutomationEditor.
  *
- * Returns: a new #AgsAutomationEditor
+ * Returns: the new #AgsAutomationEditor
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsAutomationEditor*
 ags_automation_editor_new()

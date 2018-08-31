@@ -67,6 +67,7 @@ enum{
   PROP_0,
   PROP_SOUNDCARD,
   PROP_AUDIO_FILE,
+  PROP_TIC,
 };
 
 static gpointer ags_export_thread_parent_class = NULL;
@@ -162,6 +163,24 @@ ags_export_thread_class_init(AgsExportThreadClass *export_thread)
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_AUDIO_FILE,
+				  param_spec);
+
+  /**
+   * AgsExportThread:tic:
+   *
+   * The tic.
+   * 
+   * Since: 2.0.0
+   */
+  param_spec =  g_param_spec_uint("tic",
+				  i18n_pspec("tic"),
+				  i18n_pspec("The tic"),
+				  0,
+				  G_MAXUINT,
+				  0,
+				  G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_TIC,
 				  param_spec);
 
   /* AgsThread */
@@ -321,6 +340,11 @@ ags_export_thread_set_property(GObject *gobject,
       export_thread->audio_file = audio_file;
     }
     break;
+  case PROP_TIC:
+    {
+      export_thread->tic = g_value_get_uint(value);
+    }
+    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -346,6 +370,11 @@ ags_export_thread_get_property(GObject *gobject,
   case PROP_AUDIO_FILE:
     {
       g_value_set_object(value, export_thread->audio_file);
+    }
+    break;
+  case PROP_TIC:
+    {
+      g_value_set_uint(value, export_thread->tic);
     }
     break;
   default:
@@ -436,7 +465,6 @@ ags_export_thread_run(AgsThread *thread)
 {
   AgsExportThread *export_thread;
 
-  AgsMutexManager *mutex_manager;
   AgsSoundcard *soundcard;
 
   void *soundcard_buffer;
@@ -457,19 +485,6 @@ ags_export_thread_run(AgsThread *thread)
   }
 
   /*  */
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-
-  pthread_mutex_lock(application_mutex);
-
-  mutex = ags_mutex_manager_lookup(mutex_manager,
-				   (GObject *) export_thread->soundcard);
-
-  pthread_mutex_unlock(application_mutex);
-
-  /*  */
-  pthread_mutex_lock(mutex);
-
   soundcard = AGS_SOUNDCARD(export_thread->soundcard);
 
   if(AGS_IS_JACK_DEVOUT(soundcard) ||
@@ -485,12 +500,16 @@ ags_export_thread_run(AgsThread *thread)
 			    &buffer_size,
 			    &format);
 
+  ags_soundcard_lock_buffer(soundcard,
+			    soundcard_buffer);
+  
   ags_audio_file_write(export_thread->audio_file,
 		       soundcard_buffer,
 		       (guint) buffer_size,
 		       format);
-  
-  pthread_mutex_unlock(mutex);
+
+  ags_soundcard_unlock_buffer(soundcard,
+			    soundcard_buffer);
 }
 
 void

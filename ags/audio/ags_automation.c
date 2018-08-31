@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -22,6 +22,7 @@
 #include <ags/libags.h>
 
 #include <ags/plugin/ags_base_plugin.h>
+#include <ags/plugin/ags_plugin_port.h>
 
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_port.h>
@@ -38,8 +39,6 @@
 #include <ags/i18n.h>
 
 void ags_automation_class_init(AgsAutomationClass *automation);
-void ags_automation_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_automation_portlet_interface_init(AgsPortletInterface *portlet);
 void ags_automation_init(AgsAutomation *automation);
 void ags_automation_set_property(GObject *gobject,
 				 guint prop_id,
@@ -49,16 +48,8 @@ void ags_automation_get_property(GObject *gobject,
 				 guint prop_id,
 				 GValue *value,
 				 GParamSpec *param_spec);
-void ags_automation_connect(AgsConnectable *connectable);
-void ags_automation_disconnect(AgsConnectable *connectable);
 void ags_automation_dispose(GObject *gobject);
 void ags_automation_finalize(GObject *gobject);
-
-void ags_automation_set_port(AgsPortlet *portlet, GObject *port);
-GObject* ags_automation_get_port(AgsPortlet *portlet);
-GList* ags_automation_list_safe_properties(AgsPortlet *portlet);
-void ags_automation_safe_set_property(AgsPortlet *portlet, gchar *property_name, GValue *value);
-void ags_automation_safe_get_property(AgsPortlet *portlet, gchar *property_name, GValue *value);
 
 void ags_automation_insert_native_scale_from_clipboard(AgsAutomation *automation,
 						       xmlNode *root_node, char *version,
@@ -80,21 +71,21 @@ void ags_automation_insert_native_scale_from_clipboard(AgsAutomation *automation
 enum{
   PROP_0,
   PROP_AUDIO,
-  PROP_LINE,
   PROP_CHANNEL_TYPE,
+  PROP_LINE,
+  PROP_TIMESTAMP,
   PROP_CONTROL_NAME,
-  PROP_PORT,
   PROP_STEPS,
   PROP_UPPER,
   PROP_LOWER,
   PROP_DEFAULT_VALUE,
+  PROP_PORT,
   PROP_ACCELERATION,
-  PROP_CURRENT_ACCELERATIONS,
-  PROP_NEXT_ACCELERATIONS,
-  PROP_TIMESTAMP,
 };
 
 static gpointer ags_automation_parent_class = NULL;
+
+static pthread_mutex_t ags_automation_class_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 GType
 ags_automation_get_type()
@@ -116,32 +107,10 @@ ags_automation_get_type()
       (GInstanceInitFunc) ags_automation_init,
     };
 
-    static const GInterfaceInfo ags_connectable_interface_info = {
-      (GInterfaceInitFunc) ags_automation_connectable_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-
-    static const GInterfaceInfo ags_portlet_interface_info = {
-      (GInterfaceInitFunc) ags_automation_portlet_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-
     ags_type_automation = g_type_register_static(G_TYPE_OBJECT,
 						 "AgsAutomation",
 						 &ags_automation_info,
 						 0);
-
-    g_type_add_interface_static(ags_type_automation,
-				AGS_TYPE_CONNECTABLE,
-				&ags_connectable_interface_info);
-
-    g_type_add_interface_static(ags_type_automation,
-				AGS_TYPE_PORTLET,
-				&ags_portlet_interface_info);
-
-    g_once_init_leave (&g_define_type_id__volatile, ags_type_automation);
   }
 
   return g_define_type_id__volatile;
@@ -169,7 +138,7 @@ ags_automation_class_init(AgsAutomationClass *automation)
    *
    * The assigned #AgsAudio
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("audio",
 				   i18n_pspec("audio of automation"),
@@ -180,13 +149,28 @@ ags_automation_class_init(AgsAutomationClass *automation)
 				  PROP_AUDIO,
 				  param_spec);
 
+  /**
+   * AgsAutomation:channel-type:
+   *
+   * The effect's assigned channel type.
+   * 
+   * Since: 2.0.0
+   */
+  param_spec =  g_param_spec_gtype("channel-type",
+				   i18n_pspec("channel type to apply"),
+				   i18n_pspec("The channel type to apply"),
+				   G_TYPE_NONE,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_CHANNEL_TYPE,
+				  param_spec);
 
   /**
    * AgsAutomation:line:
    *
    * The effect's line.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec =  g_param_spec_uint("line",
 				  i18n_pspec("line of effect"),
@@ -200,28 +184,27 @@ ags_automation_class_init(AgsAutomationClass *automation)
 				  param_spec);
 
   /**
-   * AgsAutomation:channel-type:
+   * AgsAutomation:timestamp:
    *
-   * The effect's assigned channel type.
+   * The automation's timestamp.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
-  param_spec =  g_param_spec_gtype("channel-type",
-				   i18n_pspec("channel type to apply"),
-				   i18n_pspec("The channel type to apply"),
-				   G_TYPE_NONE,
+  param_spec = g_param_spec_object("timestamp",
+				   i18n_pspec("timestamp of automation"),
+				   i18n_pspec("The timestamp of automation"),
+				   AGS_TYPE_TIMESTAMP,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
-				  PROP_CHANNEL_TYPE,
+				  PROP_TIMESTAMP,
 				  param_spec);
-
   
   /**
    * AgsAutomation:control-name:
    *
    * The effect's assigned control name.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec =  g_param_spec_string("control-name",
 				    i18n_pspec("control name"),
@@ -233,33 +216,17 @@ ags_automation_class_init(AgsAutomationClass *automation)
 				  param_spec);
 
   /**
-   * AgsAutomation:port:
-   *
-   * The assigned #AgsPort
-   * 
-   * Since: 1.0.0
-   */
-  param_spec = g_param_spec_object("port",
-				   i18n_pspec("port of automation"),
-				   i18n_pspec("The port of automation"),
-				   AGS_TYPE_PORT,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_PORT,
-				  param_spec);
-
-  /**
    * AgsAutomation:steps:
    *
    * The effect's steps.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec =  g_param_spec_uint("steps",
 				  i18n_pspec("steps of effect"),
 				  i18n_pspec("The steps of effect"),
 				  0,
-				  65535,
+				  G_MAXUINT32,
 				  0,
 				  G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -271,14 +238,14 @@ ags_automation_class_init(AgsAutomationClass *automation)
    *
    * The effect's upper.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec =  g_param_spec_double("upper",
 				    i18n_pspec("upper of effect"),
 				    i18n_pspec("The upper of effect"),
-				    -65535.0,
-				    65535.0,
-				    0,
+				    -1.0 * G_MAXDOUBLE,
+				    G_MAXDOUBLE,
+				    0.0,
 				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_UPPER,
@@ -289,14 +256,14 @@ ags_automation_class_init(AgsAutomationClass *automation)
    *
    * The effect's lower.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec =  g_param_spec_double("lower",
 				    i18n_pspec("lower of effect"),
 				    i18n_pspec("The lower of effect"),
-				    -65535.0,
-				    65535.0,
-				    0,
+				    -1.0 * G_MAXDOUBLE,
+				    G_MAXDOUBLE,
+				    0.0,
 				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_LOWER,
@@ -308,26 +275,41 @@ ags_automation_class_init(AgsAutomationClass *automation)
    *
    * The effect's default-value.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec =  g_param_spec_double("default-value",
 				    i18n_pspec("default value of effect"),
 				    i18n_pspec("The default value of effect"),
-				    -65535.0,
-				    65535.0,
-				    0,
+				    -1.0 * G_MAXDOUBLE,
+				    G_MAXDOUBLE,
+				    0.0,
 				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_DEFAULT_VALUE,
 				  param_spec);
 
+  /**
+   * AgsAutomation:port:
+   *
+   * The assigned #AgsPort
+   * 
+   * Since: 2.0.0
+   */
+  param_spec = g_param_spec_object("port",
+				   i18n_pspec("port of automation"),
+				   i18n_pspec("The port of automation"),
+				   AGS_TYPE_PORT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_PORT,
+				  param_spec);
 
   /**
    * AgsAutomation:acceleration:
    *
    * The acceleration list.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_pointer("acceleration",
 				    i18n_pspec("acceleration"),
@@ -336,79 +318,37 @@ ags_automation_class_init(AgsAutomationClass *automation)
   g_object_class_install_property(gobject,
 				  PROP_ACCELERATION,
 				  param_spec);
-
-  /**
-   * AgsAutomation:current-accelerations:
-   *
-   * Offset of current position.
-   * 
-   * Since: 1.0.0
-   */
-  param_spec = g_param_spec_pointer("current-accelerations",
-				    i18n_pspec("current accelerations for offset"),
-				    i18n_pspec("The current accelerations for offset"),
-				    G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_CURRENT_ACCELERATIONS,
-				  param_spec);
-
-  /**
-   * AgsAutomation:next-accelerations:
-   *
-   * Offset of next position.
-   * 
-   * Since: 1.0.0
-   */
-  param_spec = g_param_spec_pointer("next-accelerations",
-				    i18n_pspec("next accelerations for offset"),
-				    i18n_pspec("The next accelerations for offset"),
-				    G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_NEXT_ACCELERATIONS,
-				  param_spec);
-
-  /**
-   * AgsAutomation:timestamp:
-   *
-   * The automation's timestamp.
-   * 
-   * Since: 1.0.0
-   */
-  param_spec = g_param_spec_object("timestamp",
-				   i18n_pspec("timestamp of automation"),
-				   i18n_pspec("The timestamp of automation"),
-				   AGS_TYPE_TIMESTAMP,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_TIMESTAMP,
-				  param_spec);
-}
-
-void
-ags_automation_connectable_interface_init(AgsConnectableInterface *connectable)
-{
-  connectable->is_ready = NULL;
-  connectable->is_connected = NULL;
-  connectable->connect = ags_automation_connect;
-  connectable->disconnect = ags_automation_disconnect;
-}
-
-void
-ags_automation_portlet_interface_init(AgsPortletInterface *portlet)
-{
-  portlet->set_port = ags_automation_set_port;
-  portlet->get_port = ags_automation_get_port;
-  portlet->list_safe_properties = ags_automation_list_safe_properties;
-  portlet->safe_set_property = ags_automation_safe_set_property;
-  portlet->safe_get_property = ags_automation_safe_get_property;
 }
 
 void
 ags_automation_init(AgsAutomation *automation)
 {
-  AgsAcceleration *acceleration;
-  
+  pthread_mutex_t *mutex;
+  pthread_mutexattr_t *attr;
+
   automation->flags = AGS_AUTOMATION_BYPASS;
+
+  /* add automation mutex */
+  automation->obj_mutexattr = 
+    attr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
+  pthread_mutexattr_init(attr);
+  pthread_mutexattr_settype(attr,
+			    PTHREAD_MUTEX_RECURSIVE);
+
+#ifdef __linux__
+  pthread_mutexattr_setprotocol(attr,
+				PTHREAD_PRIO_INHERIT);
+#endif
+
+  automation->obj_mutex = 
+    mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
+  pthread_mutex_init(mutex,
+		     attr);  
+
+  /*  */
+  automation->audio = NULL;
+  automation->channel_type = G_TYPE_NONE;
+  automation->line = 0;
 
   automation->timestamp = ags_timestamp_new();
 
@@ -419,78 +359,19 @@ ags_automation_init(AgsAutomation *automation)
 
   g_object_ref(automation->timestamp);
   
-  automation->audio = NULL;
-  automation->line = 0;
-  automation->channel_type = G_TYPE_NONE;
   automation->control_name = NULL;
 
   automation->steps = 8;
   automation->upper = 1.0;
   automation->lower = 0.0;
   automation->default_value = 0.0;
-  
-  automation->acceleration = NULL;
 
-  automation->loop_start = 0.0;
-  automation->loop_end = 0.0;
-  automation->offset = 0.0;
-  
-  automation->selection = NULL;
+  automation->source_function = NULL;
 
   automation->port = NULL;
-
-  automation->current_accelerations = NULL;
-  automation->next_accelerations = NULL;
-}
-
-void
-ags_automation_connect(AgsConnectable *connectable)
-{
-  AgsAutomation *automation;
-
-  GList *list;
   
-  automation = AGS_AUTOMATION(connectable);
-
-  if((AGS_AUTOMATION_CONNECTED & (automation->flags)) != 0){
-    return;
-  }
-
-  automation->flags |= AGS_AUTOMATION_CONNECTED;
-
-  /* acceleration */
-  list = automation->acceleration;
-
-  while(list != NULL){
-    ags_connectable_connect(AGS_CONNECTABLE(list->data));
-
-    list = list->next;
-  }
-}
-
-void
-ags_automation_disconnect(AgsConnectable *connectable)
-{
-  AgsAutomation *automation;
-
-  GList *list;
-
-  automation = AGS_AUTOMATION(connectable);
-
-  if((AGS_AUTOMATION_CONNECTED & (automation->flags)) == 0){
-    return;
-  }
-
-  automation->flags &= (~AGS_AUTOMATION_CONNECTED);
-
-  /* acceleration */
-  list = automation->acceleration;
-
-  while(list != NULL){
-    ags_connectable_disconnect(AGS_CONNECTABLE(list->data));
-
-    list = list->next;
-  }
+  automation->acceleration = NULL;  
+  automation->selection = NULL;
 }
 
 void
@@ -501,7 +382,16 @@ ags_automation_set_property(GObject *gobject,
 {
   AgsAutomation *automation;
 
+  pthread_mutex_t *automation_mutex;
+
   automation = AGS_AUTOMATION(gobject);
+
+  /* get automation mutex */
+  pthread_mutex_lock(ags_automation_get_class_mutex());
+  
+  automation_mutex = automation->obj_mutex;
+  
+  pthread_mutex_unlock(ags_automation_get_class_mutex());
 
   switch(prop_id){
   case PROP_AUDIO:
@@ -510,7 +400,11 @@ ags_automation_set_property(GObject *gobject,
 
       audio = (AgsAudio *) g_value_get_object(value);
 
-      if(automation->audio == (GObject *) audio){
+      pthread_mutex_lock(automation_mutex);
+
+      if(automation->audio == (GObject *) audio){      
+	pthread_mutex_unlock(automation_mutex);
+	
 	return;
       }
 
@@ -523,6 +417,8 @@ ags_automation_set_property(GObject *gobject,
       }
 
       automation->audio = (GObject *) audio;
+      
+      pthread_mutex_unlock(automation_mutex);
     }
     break;
   case PROP_LINE:
@@ -531,7 +427,11 @@ ags_automation_set_property(GObject *gobject,
 
       line = g_value_get_uint(value);
 
+      pthread_mutex_lock(automation_mutex);
+
       automation->line = line;
+      
+      pthread_mutex_unlock(automation_mutex);
     }
     break;
   case PROP_CHANNEL_TYPE:
@@ -540,7 +440,11 @@ ags_automation_set_property(GObject *gobject,
 
       channel_type = (GType) g_value_get_gtype(value);
 
+      pthread_mutex_lock(automation_mutex);
+
       automation->channel_type = channel_type;
+      
+      pthread_mutex_unlock(automation_mutex);
     }
     break;
   case PROP_CONTROL_NAME:
@@ -549,20 +453,29 @@ ags_automation_set_property(GObject *gobject,
 
       control_name = g_value_get_string(value);
 
+      pthread_mutex_lock(automation_mutex);
+
       if(automation->control_name != NULL){
 	g_free(automation->control_name);
       }
 
       automation->control_name = g_strdup(control_name);
+      
+      pthread_mutex_unlock(automation_mutex);
     }
     break;
   case PROP_PORT:
     {
       AgsPort *port;
-
+      AgsPluginPort *plugin_port;
+      
       port = g_value_get_object(value);
 
-      if(automation->port == (GObject *) port){
+      pthread_mutex_lock(automation_mutex);
+
+      if(automation->port == (GObject *) port){      
+	pthread_mutex_unlock(automation_mutex);
+	
 	return;
       }
 
@@ -570,108 +483,65 @@ ags_automation_set_property(GObject *gobject,
 	g_object_unref(automation->port);
       }
 
+      plugin_port = NULL;
+      
       if(port != NULL){
 	g_object_ref(port);
 
+	g_object_get(port,
+		     "plugin-port", &plugin_port,
+		     NULL);
+	
 	if((AGS_PORT_INFINITE_RANGE & (port->flags)) != 0){
 	  automation->steps = AGS_AUTOMATION_MAXIMUM_STEPS;
 	}
       }
 
       automation->port = (GObject *) port;
+      
+      pthread_mutex_unlock(automation_mutex);
+      
+      if(plugin_port != NULL){
+	gfloat upper, lower;
+	guint steps;
+	guint plugin_port_flags;
+	
+	pthread_mutex_t *plugin_port_mutex;	
 
-      if(port->port_descriptor != NULL){
-	automation->lower = g_value_get_float(AGS_PORT_DESCRIPTOR(port->port_descriptor)->lower_value);
-	automation->upper = g_value_get_float(AGS_PORT_DESCRIPTOR(port->port_descriptor)->upper_value);
+	/* get plugin port mutex */
+	pthread_mutex_lock(ags_plugin_port_get_class_mutex());
 
-	if((AGS_PORT_DESCRIPTOR_TOGGLED & (AGS_PORT_DESCRIPTOR(port->port_descriptor)->flags)) != 0){
+	plugin_port_mutex = plugin_port->obj_mutex;
+	
+	pthread_mutex_unlock(ags_plugin_port_get_class_mutex());
+
+	/* get some fields */
+	pthread_mutex_lock(plugin_port_mutex);
+
+	plugin_port_flags = plugin_port->flags;
+	
+	lower = g_value_get_float(plugin_port->lower_value);
+	upper = g_value_get_float(plugin_port->upper_value);
+
+	steps = plugin_port->scale_steps;
+
+	pthread_mutex_unlock(plugin_port_mutex);
+
+	g_object_set(automation,
+		     "upper", upper,
+		     "lower", lower,
+		     NULL);
+	
+	if((AGS_PLUGIN_PORT_TOGGLED & (plugin_port_flags)) != 0){
 	  automation->lower = 0.0;
 	  automation->upper = 1.0;
 	  automation->steps = 1;
-	}else if((AGS_PORT_DESCRIPTOR_INTEGER & (AGS_PORT_DESCRIPTOR(port->port_descriptor)->flags)) != 0){
-	  automation->steps = AGS_PORT_DESCRIPTOR(port->port_descriptor)->scale_steps;
+	}else if((AGS_PLUGIN_PORT_INTEGER & (plugin_port_flags)) != 0){
+	  automation->steps = steps;
 	}else{
 	  automation->steps = AGS_AUTOMATION_DEFAULT_PRECISION;
 	}
       }
-    }
-    break;
-  case PROP_STEPS:
-    {
-      guint steps;
-
-      steps = g_value_get_uint(value);
-
-      automation->steps = steps;
-    }
-    break;
-  case PROP_UPPER:
-    {
-      gdouble upper;
-
-      upper = g_value_get_double(value);
-
-      automation->upper = upper;      
-    }
-    break;
-  case PROP_LOWER:
-    {
-      gdouble lower;
-
-      lower = g_value_get_double(value);
-
-      automation->lower = lower;      
-    }
-    break;
-  case PROP_DEFAULT_VALUE:
-    {
-      gdouble default_value;
-
-      default_value = g_value_get_double(value);
-
-      automation->default_value = default_value;      
-    }
-    break;
-  case PROP_ACCELERATION:
-    {
-      AgsAcceleration *acceleration;
-
-      acceleration = (AgsAcceleration *) g_value_get_object(value);
-
-      if(acceleration == NULL ||
-	 g_list_find(automation->acceleration, acceleration) != NULL){
-	return;
-      }
-
-      ags_automation_add_acceleration(automation,
-				      acceleration,
-				      FALSE);
-    }
-    break;
-  case PROP_CURRENT_ACCELERATIONS:
-    {
-      GList *current_accelerations;
-
-      current_accelerations = g_value_get_pointer(value);
-
-      if(automation->current_accelerations == current_accelerations){
-	return;
-      }
-
-      automation->current_accelerations = current_accelerations;
-    }
-    break;
-  case PROP_NEXT_ACCELERATIONS:
-    {
-      GList *next_accelerations;
-
-      next_accelerations = g_value_get_pointer(value);
-
-      if(automation->next_accelerations == next_accelerations){
-	return;
-      }
-
-      automation->next_accelerations = next_accelerations;
     }
     break;
   case PROP_TIMESTAMP:
@@ -680,7 +550,11 @@ ags_automation_set_property(GObject *gobject,
 
       timestamp = (AgsTimestamp *) g_value_get_object(value);
 
+      pthread_mutex_lock(automation_mutex);
+
       if(automation->timestamp == (GObject *) timestamp){
+	pthread_mutex_unlock(automation_mutex);
+	
 	return;
       }
 
@@ -693,6 +567,82 @@ ags_automation_set_property(GObject *gobject,
       }
 
       automation->timestamp = (GObject *) timestamp;
+
+      pthread_mutex_unlock(automation_mutex);
+    }
+    break;
+  case PROP_STEPS:
+    {
+      guint steps;
+
+      steps = g_value_get_uint(value);
+
+      pthread_mutex_lock(automation_mutex);
+
+      automation->steps = steps;
+
+      pthread_mutex_unlock(automation_mutex);
+    }
+    break;
+  case PROP_UPPER:
+    {
+      gdouble upper;
+
+      upper = g_value_get_double(value);
+
+      pthread_mutex_lock(automation_mutex);
+
+      automation->upper = upper;      
+
+      pthread_mutex_unlock(automation_mutex);
+    }
+    break;
+  case PROP_LOWER:
+    {
+      gdouble lower;
+
+      lower = g_value_get_double(value);
+
+      pthread_mutex_lock(automation_mutex);
+
+      automation->lower = lower;      
+
+      pthread_mutex_unlock(automation_mutex);
+    }
+    break;
+  case PROP_DEFAULT_VALUE:
+    {
+      gdouble default_value;
+
+      default_value = g_value_get_double(value);
+
+      pthread_mutex_lock(automation_mutex);
+
+      automation->default_value = default_value;      
+
+      pthread_mutex_unlock(automation_mutex);
+    }
+    break;
+  case PROP_ACCELERATION:
+    {
+      AgsAcceleration *acceleration;
+
+      acceleration = (AgsAcceleration *) g_value_get_object(value);
+
+      pthread_mutex_lock(automation_mutex);
+
+      if(!AGS_IS_ACCELERATION(acceleration) ||
+	 g_list_find(automation->acceleration, acceleration) != NULL){
+	pthread_mutex_unlock(automation_mutex);
+	
+	return;
+      }
+
+      pthread_mutex_unlock(automation_mutex);
+
+      ags_automation_add_acceleration(automation,
+				      acceleration,
+				      FALSE);
     }
     break;
   default:
@@ -709,67 +659,115 @@ ags_automation_get_property(GObject *gobject,
 {
   AgsAutomation *automation;
 
+  pthread_mutex_t *automation_mutex;
+
   automation = AGS_AUTOMATION(gobject);
+
+  /* get automation mutex */
+  pthread_mutex_lock(ags_automation_get_class_mutex());
+  
+  automation_mutex = automation->obj_mutex;
+  
+  pthread_mutex_unlock(ags_automation_get_class_mutex());
 
   switch(prop_id){
   case PROP_AUDIO:
     {
+      pthread_mutex_lock(automation_mutex);
+
       g_value_set_object(value, automation->audio);
+
+      pthread_mutex_unlock(automation_mutex);
     }
     break;
   case PROP_LINE:
     {
+      pthread_mutex_lock(automation_mutex);
+
       g_value_set_uint(value, automation->line);
+
+      pthread_mutex_unlock(automation_mutex);
     }
     break;
   case PROP_CHANNEL_TYPE:
     {
+      pthread_mutex_lock(automation_mutex);
+
       g_value_set_gtype(value, automation->channel_type);
-    }
-    break;
-  case PROP_CONTROL_NAME:
-    {
-      g_value_set_string(value, automation->control_name);
-    }
-    break;
-  case PROP_PORT:
-    {
-      g_value_set_object(value, automation->port);
-    }
-    break;
-  case PROP_STEPS:
-    {
-      g_value_set_uint(value, automation->steps);
-    }
-    break;
-  case PROP_UPPER:
-    {
-      g_value_set_double(value, automation->upper);
-    }
-    break;
-  case PROP_LOWER:
-    {
-      g_value_set_double(value, automation->lower);
-    }
-    break;
-  case PROP_DEFAULT_VALUE:
-    {
-      g_value_set_double(value, automation->default_value);
-    }
-    break;
-  case PROP_CURRENT_ACCELERATIONS:
-    {
-      g_value_set_pointer(value, automation->current_accelerations);
-    }
-    break;
-  case PROP_NEXT_ACCELERATIONS:
-    {
-      g_value_set_pointer(value, automation->next_accelerations);
+
+      pthread_mutex_unlock(automation_mutex);
     }
     break;
   case PROP_TIMESTAMP:
     {
+      pthread_mutex_lock(automation_mutex);
+
       g_value_set_object(value, automation->timestamp);
+
+      pthread_mutex_unlock(automation_mutex);
+    }
+    break;
+  case PROP_CONTROL_NAME:
+    {
+      pthread_mutex_lock(automation_mutex);
+
+      g_value_set_string(value, automation->control_name);
+
+      pthread_mutex_unlock(automation_mutex);
+    }
+    break;
+  case PROP_STEPS:
+    {
+      pthread_mutex_lock(automation_mutex);
+
+      g_value_set_uint(value, automation->steps);
+
+      pthread_mutex_unlock(automation_mutex);
+    }
+    break;
+  case PROP_UPPER:
+    {
+      pthread_mutex_lock(automation_mutex);
+
+      g_value_set_double(value, automation->upper);
+
+      pthread_mutex_unlock(automation_mutex);
+    }
+    break;
+  case PROP_LOWER:
+    {
+      pthread_mutex_lock(automation_mutex);
+
+      g_value_set_double(value, automation->lower);
+
+      pthread_mutex_unlock(automation_mutex);
+    }
+    break;
+  case PROP_DEFAULT_VALUE:
+    {
+      pthread_mutex_lock(automation_mutex);
+
+      g_value_set_double(value, automation->default_value);
+
+      pthread_mutex_unlock(automation_mutex);
+    }
+    break;
+  case PROP_PORT:
+    {
+      pthread_mutex_lock(automation_mutex);
+
+      g_value_set_object(value, automation->port);
+
+      pthread_mutex_unlock(automation_mutex);
+    }
+    break;
+  case PROP_ACCELERATION:
+    {
+      pthread_mutex_lock(automation_mutex);
+
+      g_value_set_pointer(value, g_list_copy(automation->acceleration));
+
+      pthread_mutex_unlock(automation_mutex);
     }
     break;
   default:
@@ -787,18 +785,18 @@ ags_automation_dispose(GObject *gobject)
   
   automation = AGS_AUTOMATION(gobject);
 
-  /* timestamp */
-  if(automation->timestamp != NULL){
-    g_object_unref(automation->timestamp);
-
-    automation->timestamp = NULL;
-  }
-
   /* audio */
   if(automation->audio != NULL){
     g_object_unref(automation->audio);
 
     automation->audio = NULL;
+  }
+
+  /* timestamp */
+  if(automation->timestamp != NULL){
+    g_object_unref(automation->timestamp);
+
+    automation->timestamp = NULL;
   }
 
   /* source function */
@@ -808,6 +806,13 @@ ags_automation_dispose(GObject *gobject)
     g_object_unref(automation->source_function);
 
     automation->source_function = NULL;
+  }
+
+  /* port */
+  if(automation->port != NULL){
+    g_object_unref(automation->port);
+
+    automation->port = NULL;
   }
 
   /* acceleration */
@@ -821,17 +826,11 @@ ags_automation_dispose(GObject *gobject)
   
   g_list_free_full(automation->acceleration,
 		   g_object_unref);
-  g_list_free(automation->selection);
+  g_list_free_full(automation->selection,
+		   g_object_unref);
 
   automation->acceleration = NULL;
   automation->selection = NULL;
-
-  /* port */
-  if(automation->port != NULL){
-    g_object_unref(automation->port);
-
-    automation->port = NULL;
-  }
 
   /* call parent */
   G_OBJECT_CLASS(ags_automation_parent_class)->dispose(gobject);
@@ -844,14 +843,20 @@ ags_automation_finalize(GObject *gobject)
 
   automation = AGS_AUTOMATION(gobject);
 
-  /* timestamp */
-  if(automation->timestamp != NULL){
-    g_object_unref(automation->timestamp);
-  }
+  pthread_mutex_destroy(automation->obj_mutex);
+  free(automation->obj_mutex);
+
+  pthread_mutexattr_destroy(automation->obj_mutexattr);
+  free(automation->obj_mutexattr);
   
   /* audio */
   if(automation->audio != NULL){
     g_object_unref(automation->audio);
+  }
+
+  /* timestamp */
+  if(automation->timestamp != NULL){
+    g_object_unref(automation->timestamp);
   }
 
   /* control name */
@@ -863,77 +868,141 @@ ags_automation_finalize(GObject *gobject)
   if(automation->source_function != NULL){
     g_object_unref(automation->source_function);
   }
-  
-  /* acceleration */
-  g_list_free_full(automation->acceleration,
-		   g_object_unref);
-
-  g_list_free(automation->selection);
 
   /* port */
   if(automation->port != NULL){
     g_object_unref(automation->port);
   }
   
+  /* acceleration */
+  g_list_free_full(automation->acceleration,
+		   g_object_unref);
+
+  g_list_free_full(automation->selection,
+		   g_object_unref);
+  
   /* call parent */
   G_OBJECT_CLASS(ags_automation_parent_class)->finalize(gobject);
 }
 
-void
-ags_automation_set_port(AgsPortlet *portlet, GObject *port)
+/**
+ * ags_automation_get_class_mutex:
+ * 
+ * Use this function's returned mutex to access mutex fields.
+ *
+ * Returns: the class mutex
+ * 
+ * Since: 2.0.0
+ */
+pthread_mutex_t*
+ags_automation_get_class_mutex()
 {
-  g_object_set(G_OBJECT(portlet),
-	       "port", port,
-	       NULL);
+  return(&ags_automation_class_mutex);
 }
 
-GObject*
-ags_automation_get_port(AgsPortlet *portlet)
+/**
+ * ags_automation_test_flags:
+ * @automation: the #AgsAutomation
+ * @flags: the flags
+ * 
+ * Test @flags to be set on @automation.
+ * 
+ * Returns: %TRUE if flags are set, else %FALSE
+ * 
+ * Since: 2.0.0
+ */
+gboolean
+ags_automation_test_flags(AgsAutomation *automation, guint flags)
 {
-  GObject *port;
+  gboolean retval;
+  
+  pthread_mutex_t *automation_mutex;
 
-  g_object_get(G_OBJECT(portlet),
-	       "port", &port,
-	       NULL);
-
-  return(port);
-}
-
-GList*
-ags_automation_list_safe_properties(AgsPortlet *portlet)
-{
-  static GList *list = NULL;
-
-  static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
-
-  pthread_mutex_lock(&mutex);
-
-  if(list == NULL){
-    list = g_list_prepend(list, "current-accelerations");
-    list = g_list_prepend(list, "next-accelerations");
+  if(!AGS_IS_AUTOMATION(automation)){
+    return(FALSE);
   }
+      
+  /* get automation mutex */
+  pthread_mutex_lock(ags_automation_get_class_mutex());
+  
+  automation_mutex = automation->obj_mutex;
+  
+  pthread_mutex_unlock(ags_automation_get_class_mutex());
 
-  pthread_mutex_unlock(&mutex);
+  /* test */
+  pthread_mutex_lock(automation_mutex);
 
-  return(list);
+  retval = (flags & (automation->flags)) ? TRUE: FALSE;
+  
+  pthread_mutex_unlock(automation_mutex);
+
+  return(retval);
 }
 
+/**
+ * ags_automation_set_flags:
+ * @automation: the #AgsAutomation
+ * @flags: the flags
+ * 
+ * Set @flags on @automation.
+ * 
+ * Since: 2.0.0
+ */
 void
-ags_automation_safe_set_property(AgsPortlet *portlet, gchar *property_name, GValue *value)
+ags_automation_set_flags(AgsAutomation *automation, guint flags)
 {
-  //TODO:JK: add check for safe property
+  pthread_mutex_t *automation_mutex;
 
-  g_object_set_property(G_OBJECT(portlet),
-			property_name, value);
+  if(!AGS_IS_AUTOMATION(automation)){
+    return;
+  }
+      
+  /* get automation mutex */
+  pthread_mutex_lock(ags_automation_get_class_mutex());
+  
+  automation_mutex = automation->obj_mutex;
+  
+  pthread_mutex_unlock(ags_automation_get_class_mutex());
+
+  /* set */
+  pthread_mutex_lock(automation_mutex);
+
+  automation->flags |= flags;
+  
+  pthread_mutex_unlock(automation_mutex);
 }
 
+/**
+ * ags_automation_unset_flags:
+ * @automation: the #AgsAutomation
+ * @flags: the flags
+ * 
+ * Unset @flags on @automation.
+ * 
+ * Since: 2.0.0
+ */
 void
-ags_automation_safe_get_property(AgsPortlet *portlet, gchar *property_name, GValue *value)
+ags_automation_unset_flags(AgsAutomation *automation, guint flags)
 {
-  //TODO:JK: add check for safe property
+  pthread_mutex_t *automation_mutex;
 
-  g_object_get_property(G_OBJECT(portlet),
-			property_name, value);
+  if(!AGS_IS_AUTOMATION(automation)){
+    return;
+  }
+      
+  /* get automation mutex */
+  pthread_mutex_lock(ags_automation_get_class_mutex());
+  
+  automation_mutex = automation->obj_mutex;
+  
+  pthread_mutex_unlock(ags_automation_get_class_mutex());
+
+  /* set */
+  pthread_mutex_lock(automation_mutex);
+
+  automation->flags &= (~flags);
+  
+  pthread_mutex_unlock(automation_mutex);
 }
 
 /**
@@ -945,19 +1014,25 @@ ags_automation_safe_get_property(AgsPortlet *portlet, gchar *property_name, GVal
  * 
  * Returns: next matching automation as #GList-struct or %NULL if not found
  * 
- * Since: 1.3.0
+ * Since: 2.0.0
  */
 GList*
 ags_automation_find_port(GList *automation,
 			 GObject *port)
 {
+  GObject *current_port;
+  
   if(automation == NULL ||
      !AGS_IS_PORT(port)){
     return(NULL);
   }
 
   while(automation != NULL){
-    if(AGS_AUTOMATION(automation->data)->port == port){
+    g_object_get(automation->data,
+		 "port", &current_port,
+		 NULL);
+    
+    if(current_port == port){
       break;
     }
     
@@ -969,15 +1044,15 @@ ags_automation_find_port(GList *automation,
 
 /**
  * ags_automation_find_near_timestamp:
- * @automation: a #GList containing #AgsAutomation
+ * @automation: the #GList-struct containing #AgsAutomation
  * @line: the matching audio channel
  * @timestamp: the matching timestamp
  *
  * Retrieve appropriate automation for timestamp.
  *
- * Returns: Next match.
+ * Returns: Next matching #GList-struct or %NULL if not found
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 GList*
 ags_automation_find_near_timestamp(GList *automation, guint line,
@@ -985,8 +1060,14 @@ ags_automation_find_near_timestamp(GList *automation, guint line,
 {
   AgsTimestamp *current_timestamp;
 
+  guint current_line;
+
   while(automation != NULL){
-    if(AGS_AUTOMATION(automation->data)->line != line){
+    g_object_get(automation->data,
+		 "line", &current_line,
+		 NULL);
+    
+    if(current_line != line){
       automation = automation->next;
       
       continue;
@@ -995,20 +1076,26 @@ ags_automation_find_near_timestamp(GList *automation, guint line,
     if(timestamp == NULL){
       return(automation);
     }
-    
-    current_timestamp = (AgsTimestamp *) AGS_AUTOMATION(automation->data)->timestamp;
 
+    g_object_get(automation->data,
+		 "timestamp", &current_timestamp,
+		 NULL);
+    
     if(current_timestamp != NULL){
-      if((AGS_TIMESTAMP_UNIX & (timestamp->flags)) != 0 &&
-	 (AGS_TIMESTAMP_UNIX & (current_timestamp->flags)) != 0){
-	if(current_timestamp->timer.unix_time.time_val >= timestamp->timer.unix_time.time_val &&
-	   current_timestamp->timer.unix_time.time_val < timestamp->timer.unix_time.time_val + AGS_AUTOMATION_DEFAULT_DURATION){
+      if(ags_timestamp_test_flags(timestamp,
+				  AGS_TIMESTAMP_OFFSET) &&
+	 ags_timestamp_test_flags(current_timestamp,
+				  AGS_TIMESTAMP_OFFSET)){
+	if(ags_timestamp_get_ags_offset(current_timestamp) >= ags_timestamp_get_ags_offset(timestamp) &&
+	   ags_timestamp_get_ags_offset(current_timestamp) < ags_timestamp_get_ags_offset(timestamp) + AGS_AUTOMATION_DEFAULT_OFFSET){
 	  return(automation);
 	}
-      }else if((AGS_TIMESTAMP_OFFSET & (timestamp->flags)) != 0 &&
-	       (AGS_TIMESTAMP_OFFSET & (current_timestamp->flags)) != 0){
-	if(current_timestamp->timer.ags_offset.offset >= timestamp->timer.ags_offset.offset &&
-	   current_timestamp->timer.ags_offset.offset < timestamp->timer.ags_offset.offset + AGS_AUTOMATION_DEFAULT_OFFSET){
+      }else if(ags_timestamp_test_flags(timestamp,
+					AGS_TIMESTAMP_UNIX) &&
+	       ags_timestamp_test_flags(current_timestamp,
+					AGS_TIMESTAMP_UNIX)){
+	if(ags_timestamp_get_unix_time(current_timestamp) >= ags_timestamp_get_unix_time(timestamp) &&
+	   ags_timestamp_get_unix_time(current_timestamp) < ags_timestamp_get_unix_time(timestamp) + AGS_AUTOMATION_DEFAULT_DURATION){
 	  return(automation);
 	}
       }
@@ -1022,7 +1109,7 @@ ags_automation_find_near_timestamp(GList *automation, guint line,
 
 /**
  * ags_automation_find_near_timestamp_extended:
- * @automation: a #GList containing #AgsAutomation
+ * @automation: the #GList-struct containing #AgsAutomation
  * @line: the matching audio channel
  * @channel_type: the matching channel type
  * @control_name: the matching control name
@@ -1030,22 +1117,58 @@ ags_automation_find_near_timestamp(GList *automation, guint line,
  *
  * Retrieve appropriate automation for timestamp.
  *
- * Returns: Next match.
+ * Returns: Next matching #GList-struct or %NULL if not found
  *
- * Since: 1.3.0
+ * Since: 2.0.0
  */
 GList*
 ags_automation_find_near_timestamp_extended(GList *automation, guint line,
 					    GType channel_type, gchar *control_name,
 					    AgsTimestamp *timestamp)
 {
+  AgsAutomation *current_automation;
+  
   AgsTimestamp *current_timestamp;
 
+  GType current_channel_type;
+
+  gchar *current_control_name;
+  
+  guint current_line;
+  gboolean success;
+
+  pthread_mutex_t *automation_mutex;
+
   while(automation != NULL){
-    if(AGS_AUTOMATION(automation->data)->line != line ||
-       AGS_AUTOMATION(automation->data)->channel_type != channel_type ||
-       g_strcmp0(AGS_AUTOMATION(automation->data)->control_name,
-		 control_name)){
+    current_automation = AGS_AUTOMATION(automation->data);
+    
+    /* get automation mutex */
+    pthread_mutex_lock(ags_automation_get_class_mutex());
+  
+    automation_mutex = current_automation->obj_mutex;
+  
+    pthread_mutex_unlock(ags_automation_get_class_mutex());
+
+    /* get some fields */
+    pthread_mutex_lock(automation_mutex);
+
+    current_line = current_automation->line;
+
+    current_channel_type = current_automation->channel_type;
+
+    current_control_name = g_strdup(current_automation->control_name);
+    
+    pthread_mutex_unlock(automation_mutex);
+
+    /* check success */
+    success = (current_line == line &&
+	       current_channel_type == channel_type &&
+	       !g_strcmp0(current_control_name,
+			  control_name)) ? TRUE: FALSE;
+
+    g_free(current_control_name);
+    
+    if(!success){
       automation = automation->next;
       
       continue;
@@ -1055,19 +1178,25 @@ ags_automation_find_near_timestamp_extended(GList *automation, guint line,
       return(automation);
     }
     
-    current_timestamp = (AgsTimestamp *) AGS_AUTOMATION(automation->data)->timestamp;
-
+    g_object_get(current_automation,
+		 "timestamp", &current_timestamp,
+		 NULL);
+    
     if(current_timestamp != NULL){
-      if((AGS_TIMESTAMP_UNIX & (timestamp->flags)) != 0 &&
-	 (AGS_TIMESTAMP_UNIX & (current_timestamp->flags)) != 0){
-	if(current_timestamp->timer.unix_time.time_val >= timestamp->timer.unix_time.time_val &&
-	   current_timestamp->timer.unix_time.time_val < timestamp->timer.unix_time.time_val + AGS_AUTOMATION_DEFAULT_DURATION){
+      if(ags_timestamp_test_flags(timestamp,
+				  AGS_TIMESTAMP_OFFSET) &&
+	 ags_timestamp_test_flags(current_timestamp,
+				  AGS_TIMESTAMP_OFFSET)){
+	if(ags_timestamp_get_ags_offset(current_timestamp) >= ags_timestamp_get_ags_offset(timestamp) &&
+	   ags_timestamp_get_ags_offset(current_timestamp) < ags_timestamp_get_ags_offset(timestamp) + AGS_AUTOMATION_DEFAULT_OFFSET){
 	  return(automation);
 	}
-      }else if((AGS_TIMESTAMP_OFFSET & (timestamp->flags)) != 0 &&
-	       (AGS_TIMESTAMP_OFFSET & (current_timestamp->flags)) != 0){
-	if(current_timestamp->timer.ags_offset.offset >= timestamp->timer.ags_offset.offset &&
-	   current_timestamp->timer.ags_offset.offset < timestamp->timer.ags_offset.offset + AGS_AUTOMATION_DEFAULT_OFFSET){
+      }else if(ags_timestamp_test_flags(timestamp,
+					AGS_TIMESTAMP_UNIX) &&
+	       ags_timestamp_test_flags(current_timestamp,
+					AGS_TIMESTAMP_UNIX)){
+	if(ags_timestamp_get_unix_time(current_timestamp) >= ags_timestamp_get_unix_time(timestamp) &&
+	   ags_timestamp_get_unix_time(current_timestamp) < ags_timestamp_get_unix_time(timestamp) + AGS_AUTOMATION_DEFAULT_DURATION){
 	  return(automation);
 	}
       }
@@ -1082,13 +1211,13 @@ ags_automation_find_near_timestamp_extended(GList *automation, guint line,
 /**
  * ags_automation_add:
  * @automation: the #GList-struct containing #AgsAutomation
- * @new_automation: the automation to add
+ * @new_automation: the #AgsAutomation to add
  * 
  * Add @new_automation sorted to @automation
  * 
  * Returns: the new beginning of @automation
  * 
- * Since: 1.3.0
+ * Since: 2.0.0
  */
 GList*
 ags_automation_add(GList *automation,
@@ -1100,19 +1229,28 @@ ags_automation_add(GList *automation,
   gint ags_automation_add_compare(gconstpointer a,
 				  gconstpointer b)
   {
-    if(AGS_AUTOMATION(a)->timestamp->timer.ags_offset.offset == AGS_AUTOMATION(b)->timestamp->timer.ags_offset.offset){
+    AgsTimestamp *timestamp_a, *timestamp_b;
+
+    g_object_get(a,
+		 "timestamp", &timestamp_a,
+		 NULL);
+
+    g_object_get(b,
+		 "timestamp", &timestamp_b,
+		 NULL);
+    
+    if(ags_timestamp_get_ags_offset(timestamp_a) == ags_timestamp_get_ags_offset(timestamp_b)){
       return(0);
-    }else if(AGS_AUTOMATION(a)->timestamp->timer.ags_offset.offset < AGS_AUTOMATION(b)->timestamp->timer.ags_offset.offset){
+    }else if(ags_timestamp_get_ags_offset(timestamp_a) < ags_timestamp_get_ags_offset(timestamp_b)){
       return(-1);
-    }else if(AGS_AUTOMATION(a)->timestamp->timer.ags_offset.offset > AGS_AUTOMATION(b)->timestamp->timer.ags_offset.offset){
+    }else if(ags_timestamp_get_ags_offset(timestamp_a) > ags_timestamp_get_ags_offset(timestamp_b)){
       return(1);
     }
 
     return(0);
   }
   
-  if(!AGS_IS_AUTOMATION(new_automation) ||
-     !AGS_IS_TIMESTAMP(new_automation->timestamp)){
+  if(!AGS_IS_AUTOMATION(new_automation)){
     return(automation);
   }
   
@@ -1125,94 +1263,194 @@ ags_automation_add(GList *automation,
 
 /**
  * ags_automation_add_acceleration:
- * @automation: an #AgsAutomation
+ * @automation: the #AgsAutomation
  * @acceleration: the #AgsAcceleration to add
  * @use_selection_list: if %TRUE add to selection, else to default automation
  *
- * Adds a acceleration to automation.
+ * Adds @acceleration to @automation.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_automation_add_acceleration(AgsAutomation *automation,
 				AgsAcceleration *acceleration,
 				gboolean use_selection_list)
 {
-  GList *list, *list_new;
+  pthread_mutex_t *automation_mutex;
 
-  auto gint ags_automation_add_acceleration_compare_function(gpointer a, gpointer b);
-
-  gint ags_automation_add_acceleration_compare_function(gpointer a, gpointer b){
-    if(AGS_ACCELERATION(a)->x == AGS_ACCELERATION(b)->x){
-      return(0);
-    }
-
-    if(AGS_ACCELERATION(a)->x < AGS_ACCELERATION(b)->x){
-      return(-1);
-    }else{
-      return(1);
-    }
-  }
-
-  if(acceleration == NULL){
+  if(!AGS_IS_AUTOMATION(automation) ||
+     !AGS_IS_ACCELERATION(acceleration)){
     return;
   }
 
+  /* get automation mutex */
+  pthread_mutex_lock(ags_automation_get_class_mutex());
+  
+  automation_mutex = automation->obj_mutex;
+  
+  pthread_mutex_unlock(ags_automation_get_class_mutex());
+
+  /* insert sorted */
   g_object_ref(acceleration);
   
+  pthread_mutex_lock(automation_mutex);
+
   if(use_selection_list){
     acceleration->flags |= AGS_ACCELERATION_IS_SELECTED;
     automation->selection = g_list_insert_sorted(automation->selection,
 						 acceleration,
-						 (GCompareFunc) ags_automation_add_acceleration_compare_function);
+						 (GCompareFunc) ags_acceleration_sort_func);
+    ags_acceleration_set_flags(acceleration,
+			       AGS_ACCELERATION_IS_SELECTED);
   }else{
     automation->acceleration = g_list_insert_sorted(automation->acceleration,
 						    acceleration,
-						    (GCompareFunc) ags_automation_add_acceleration_compare_function);
+						    (GCompareFunc) ags_acceleration_sort_func);
   }
+
+  pthread_mutex_unlock(automation_mutex);
+}
+
+/**
+ * ags_automation_remove_acceleration:
+ * @automation: the #AgsAutomation
+ * @acceleration: the #AgsAcceleration to remove
+ * @use_selection_list: if %TRUE remove from selection, else from default automation
+ *
+ * Removes @acceleration from @automation.
+ *
+ * Since: 2.0.0
+ */
+void
+ags_automation_remove_acceleration(AgsAutomation *automation,
+				   AgsAcceleration *acceleration,
+				   gboolean use_selection_list)
+{
+  pthread_mutex_t *automation_mutex;
+
+  if(!AGS_IS_AUTOMATION(automation) ||
+     !AGS_IS_ACCELERATION(acceleration)){
+    return;
+  }
+
+  /* get automation mutex */
+  pthread_mutex_lock(ags_automation_get_class_mutex());
+  
+  automation_mutex = automation->obj_mutex;
+  
+  pthread_mutex_unlock(ags_automation_get_class_mutex());
+
+  /* remove if found */
+  pthread_mutex_lock(automation_mutex);
+  
+  if(!use_selection_list){
+    if(g_list_find(automation->acceleration,
+		   acceleration) != NULL){
+      automation->acceleration = g_list_remove(automation->acceleration,
+					       acceleration);
+      g_object_unref(acceleration);
+    }
+  }else{
+    if(g_list_find(automation->selection,
+		   acceleration) != NULL){
+      automation->selection = g_list_remove(automation->selection,
+					    acceleration);
+      g_object_unref(acceleration);
+    }
+  }
+
+  pthread_mutex_unlock(automation_mutex);
 }
 
 /**
  * ags_automation_remove_acceleration_at_position:
- * @automation: an #AgsAutomation
- * @x: offset
- * @y: acceleration
+ * @automation: the #AgsAutomation
+ * @x: x offset
+ * @y: y value of acceleration
  *
  * Removes one #AgsAcceleration of automation.
  *
- * Returns: %TRUE if successfully removed acceleration.
+ * Returns: %TRUE if successfully removed acceleration, else %FALSE
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 gboolean
 ags_automation_remove_acceleration_at_position(AgsAutomation *automation,
 					       guint x, gdouble y)
 {
-  GList *list, *current;
-  gboolean retval;
+  AgsAcceleration *acceleration;
   
-  list = automation->acceleration;
-  current = NULL;
+  GList *start_list, *list;
+
+  gdouble upper, lower;
+  guint current_x;
+  gdouble current_y;
+  gboolean retval;
+
+  pthread_mutex_t *automation_mutex;
+
+  if(!AGS_IS_AUTOMATION(automation)){
+    return(FALSE);
+  }
+
+  /* get automation mutex */
+  pthread_mutex_lock(ags_automation_get_class_mutex());
+  
+  automation_mutex = automation->obj_mutex;
+  
+  pthread_mutex_unlock(ags_automation_get_class_mutex());
+
+  /* find acceleration */
+  pthread_mutex_lock(automation_mutex);
+
+  upper = automation->upper;
+  lower = automation->lower;
+  
+  list =
+    start_list = ags_list_util_copy_and_ref(automation->acceleration);
+  
+  pthread_mutex_unlock(automation_mutex);
+
+  acceleration = NULL;
+
   retval = FALSE;
   
   while(list != NULL){
-    if(AGS_ACCELERATION(list->data)->x == x &&
-       (AGS_ACCELERATION(list->data)->y - ((automation->upper - automation->lower) / AGS_AUTOMATION_MAXIMUM_STEPS) <= y &&
-	AGS_ACCELERATION(list->data)->y + ((automation->upper - automation->lower) / AGS_AUTOMATION_MAXIMUM_STEPS) >= y)){
-      current = list;
+    g_object_get(list->data,
+		 "x", &current_x,
+		 "y", &current_y,
+		 NULL);
+    
+    if(current_x == x &&
+       (current_y - ((upper - lower) / AGS_AUTOMATION_MAXIMUM_STEPS) <= y &&
+	current_y + ((upper - lower) / AGS_AUTOMATION_MAXIMUM_STEPS) >= y)){
+      acceleration = list->data;
+      
       retval = TRUE;
+      
       break;
     }
 
-    if(AGS_ACCELERATION(list->data)->x > x){
+    if(current_x > x){
       break;
     }
     
     list = list->next;
   }
 
-  automation->acceleration = g_list_delete_link(automation->acceleration,
-						current);
+  /* delete link and unref */
+  if(retval){
+    pthread_mutex_lock(automation_mutex);
+    
+    automation->acceleration = g_list_remove(automation->acceleration,
+					     acceleration);
+    g_object_unref(acceleration);
+  
+    pthread_mutex_unlock(automation_mutex);
+  }
+
+  g_list_free_full(start_list,
+		   g_object_unref);
 
   return(retval);
 }
@@ -1225,12 +1463,34 @@ ags_automation_remove_acceleration_at_position(AgsAutomation *automation,
  *
  * Returns: the selection.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 GList*
 ags_automation_get_selection(AgsAutomation *automation)
 {
-  return(automation->selection);
+  GList *selection;
+
+  pthread_mutex_t *automation_mutex;
+
+  if(!AGS_IS_AUTOMATION(automation)){
+    return(NULL);
+  }
+
+  /* get automation mutex */
+  pthread_mutex_lock(ags_automation_get_class_mutex());
+  
+  automation_mutex = automation->obj_mutex;
+  
+  pthread_mutex_unlock(ags_automation_get_class_mutex());
+
+  /* selection */
+  pthread_mutex_lock(automation_mutex);
+
+  selection = automation->selection;
+  
+  pthread_mutex_unlock(automation_mutex);
+  
+  return(selection);
 }
 
 /**
@@ -1240,47 +1500,106 @@ ags_automation_get_selection(AgsAutomation *automation)
  *
  * Check selection for acceleration.
  *
- * Returns: %TRUE if selected
+ * Returns: %TRUE if selected, else %FALSE
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 gboolean
 ags_automation_is_acceleration_selected(AgsAutomation *automation, AgsAcceleration *acceleration)
 {
   GList *selection;
 
-  selection = automation->selection;
+  guint x, current_x;
+  gboolean retval;
+  
+  pthread_mutex_t *automation_mutex;
 
-  while(selection != NULL && AGS_ACCELERATION(selection->data)->x <= acceleration->x){
+  if(!AGS_IS_AUTOMATION(automation) ||
+     !AGS_IS_ACCELERATION(acceleration)){
+    return(FALSE);
+  }
+
+  /* get automation mutex */
+  pthread_mutex_lock(ags_automation_get_class_mutex());
+  
+  automation_mutex = automation->obj_mutex;
+  
+  pthread_mutex_unlock(ags_automation_get_class_mutex());
+
+  /* get x */
+  g_object_get(acceleration,
+	       "x", &x,
+	       NULL);
+  
+  /* match acceleration */
+  pthread_mutex_lock(automation_mutex);
+
+  selection = automation->selection;
+  retval = FALSE;
+  
+  while(selection != NULL){
+    /* get current x */
+    g_object_get(selection->data,
+		 "x", &current_x,
+		 NULL);
+
+    if(current_x > x){
+      break;
+    }
+    
     if(selection->data == acceleration){
-      return(TRUE);
+      retval = TRUE;
+
+      break;
     }
 
     selection = selection->next;
   }
 
-  return(FALSE);
+  pthread_mutex_unlock(automation_mutex);
+
+  return(retval);
 }
 
 /**
  * ags_automation_find_point:
- * @automation: an #AgsAutomation
- * @x: offset
- * @y: acceleration, will be ignored
+ * @automation: the #AgsAutomation
+ * @x: x offset
+ * @y: y value acceleration, will be ignored
  * @use_selection_list: if %TRUE selection is searched
  *
  * Find acceleration by offset and acceleration.
  *
  * Returns: the matching acceleration.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */ 
 AgsAcceleration*
 ags_automation_find_point(AgsAutomation *automation,
 			  guint x, gdouble y,
 			  gboolean use_selection_list)
 {
+  AgsAcceleration *retval;
+  
   GList *acceleration;
+
+  guint current_x;
+
+  pthread_mutex_t *automation_mutex;
+
+  if(!AGS_IS_AUTOMATION(automation)){
+    return(NULL);
+  }
+
+  /* get automation mutex */
+  pthread_mutex_lock(ags_automation_get_class_mutex());
+  
+  automation_mutex = automation->obj_mutex;
+  
+  pthread_mutex_unlock(ags_automation_get_class_mutex());
+
+  /* find acceleration */
+  pthread_mutex_lock(automation_mutex);
 
   if(use_selection_list){
     acceleration = automation->selection;
@@ -1288,32 +1607,45 @@ ags_automation_find_point(AgsAutomation *automation,
     acceleration = automation->acceleration;
   }
 
-  while(acceleration != NULL && AGS_ACCELERATION(acceleration->data)->x < x){
+  retval = NULL;
+  
+  while(acceleration != NULL){
+    g_object_get(acceleration->data,
+		 "x", &current_x,
+		 NULL);
+    
+    if(current_x > x){
+      break;
+    }
+
+    if(current_x == x){
+      retval = acceleration->data;
+
+      break;
+    }
+    
     acceleration = acceleration->next;
   }
 
-  if(acceleration == NULL ||
-     AGS_ACCELERATION(acceleration->data)->x != x){
-    return(NULL);
-  }else{
-    return(acceleration->data);
-  }
+  pthread_mutex_unlock(automation_mutex);
+
+  return(retval);
 }
 
 /**
  * ags_automation_find_region:
- * @automation: an #AgsAutomation
+ * @automation: the #AgsAutomation
  * @x0: start offset
- * @y0: start tone
+ * @y0: value start
  * @x1: end offset
- * @y1: end tone
+ * @y1: value end
  * @use_selection_list: if %TRUE selection is searched
  *
- * Find acceleration by offset and tone region.
+ * Find acceleration by offset and value region.
  *
- * Returns: the matching acceleration as #GList.
+ * Returns: the matching accelerations as #GList-struct
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 GList*
 ags_automation_find_region(AgsAutomation *automation,
@@ -1321,10 +1653,32 @@ ags_automation_find_region(AgsAutomation *automation,
 			   guint x1, gdouble y1,
 			   gboolean use_selection_list)
 {
-  AgsAcceleration *current;
-
   GList *acceleration;
   GList *region;
+
+  guint current_x;
+  gdouble current_y;
+  
+  pthread_mutex_t *automation_mutex;
+
+  if(!AGS_IS_AUTOMATION(automation)){
+    return(NULL);
+  }
+
+  /* get automation mutex */
+  pthread_mutex_lock(ags_automation_get_class_mutex());
+  
+  automation_mutex = automation->obj_mutex;
+  
+  pthread_mutex_unlock(ags_automation_get_class_mutex());
+
+  if(x0 > x1){
+    guint tmp;
+
+    tmp = x1;
+    x1 = x0;
+    x0 = x1;
+  }
 
   if(y0 > y1){
     gdouble tmp_y;
@@ -1334,25 +1688,48 @@ ags_automation_find_region(AgsAutomation *automation,
     y1 = tmp_y;
   }
   
+  /* find acceleration */
+  pthread_mutex_lock(automation_mutex);
+
   if(use_selection_list){
     acceleration = automation->selection;
   }else{
     acceleration = automation->acceleration;
   }
 
-  while(acceleration != NULL && AGS_ACCELERATION(acceleration->data)->x < x0){
+  while(acceleration != NULL){
+    g_object_get(acceleration->data,
+		 "x", &current_x,
+		 NULL);
+    
+    if(current_x >= x0){
+      break;
+    }
+    
     acceleration = acceleration->next;
   }
 
   region = NULL;
 
-  while(acceleration != NULL && (current = AGS_ACCELERATION(acceleration->data))->x < x1){
-    if(current->y >= y0 && current->y < y1){
-      region = g_list_prepend(region, current);
+  while(acceleration != NULL){
+    g_object_get(acceleration->data,
+		 "x", &current_x,
+		 "y", &current_y,
+		 NULL);
+
+    if(current_x > x1){
+      break;
+    }
+
+    if(current_y >= y0 && current_y < y1){
+      region = g_list_prepend(region,
+			      acceleration->data);
     }
 
     acceleration = acceleration->next;
   }
+
+  pthread_mutex_unlock(automation_mutex);
 
   region = g_list_reverse(region);
 
@@ -1361,41 +1738,63 @@ ags_automation_find_region(AgsAutomation *automation,
 
 /**
  * ags_automation_free_selection:
- * @automation: an #AgsAutomation
+ * @automation: the #AgsAutomation
  *
  * Clear selection.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_automation_free_selection(AgsAutomation *automation)
 {
-  GList *list;
+  AgsAcceleration *acceleration;
 
-  list = automation->selection;
+  GList *list_start, *list;
+
+  pthread_mutex_t *automation_mutex;
+
+  if(!AGS_IS_AUTOMATION(automation)){
+    return;
+  }
+
+  /* get automation mutex */
+  pthread_mutex_lock(ags_automation_get_class_mutex());
+  
+  automation_mutex = automation->obj_mutex;
+  
+  pthread_mutex_unlock(ags_automation_get_class_mutex());
+
+  /* free selection */
+  pthread_mutex_lock(automation_mutex);
+
+  list =
+    list_start = automation->selection;
   
   while(list != NULL){
-    AGS_ACCELERATION(list->data)->flags &= (~AGS_ACCELERATION_IS_SELECTED);
+    ags_acceleration_unset_flags(list->data,
+				 AGS_ACCELERATION_IS_SELECTED);
     
     list = list->next;
   }
 
-  g_list_free_full(automation->selection,
-		   g_object_unref);
-  
   automation->selection = NULL;
+
+  pthread_mutex_unlock(automation_mutex);
+  
+  g_list_free_full(list_start,
+		   g_object_unref);
 }
 
 /**
  * ags_automation_add_point_to_selection:
- * @automation: an #AgsAutomation
- * @x: offset
- * @y: tone
+ * @automation: the #AgsAutomation
+ * @x: x offset
+ * @y: y acceleration value
  * @replace_current_selection: if %TRUE selection is replaced
  *
  * Select acceleration at position.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */ 
 void
 ags_automation_add_point_to_selection(AgsAutomation *automation,
@@ -1404,6 +1803,20 @@ ags_automation_add_point_to_selection(AgsAutomation *automation,
 {
   AgsAcceleration *acceleration;
 
+  pthread_mutex_t *automation_mutex;
+
+  if(!AGS_IS_AUTOMATION(automation)){
+    return;
+  }
+
+  /* get automation mutex */
+  pthread_mutex_lock(ags_automation_get_class_mutex());
+  
+  automation_mutex = automation->obj_mutex;
+  
+  pthread_mutex_unlock(ags_automation_get_class_mutex());
+
+  /* find acceleration */
   acceleration = ags_automation_find_point(automation,
 					   x, y,
 					   FALSE);
@@ -1415,6 +1828,8 @@ ags_automation_add_point_to_selection(AgsAutomation *automation,
     }
   }else{
     /* add to or replace selection */
+    ags_acceleration_set_flags(acceleration, AGS_ACCELERATION_IS_SELECTED);
+
     if(replace_current_selection){
       GList *list;
 
@@ -1423,12 +1838,22 @@ ags_automation_add_point_to_selection(AgsAutomation *automation,
       
       list = g_list_alloc();
       list->data = acceleration;
+      g_object_ref(acceleration);
       
       ags_automation_free_selection(automation);
+
+      /* replace */
+      pthread_mutex_lock(automation_mutex);
+
       automation->selection = list;
+      
+      pthread_mutex_unlock(automation_mutex);
     }else{
-      if(!ags_automation_is_acceleration_selected(automation, acceleration)){
-	ags_automation_add_acceleration(automation, acceleration, TRUE);
+      if(!ags_automation_is_acceleration_selected(automation,
+						  acceleration)){
+	/* add */
+	ags_automation_add_acceleration(automation,
+					acceleration, TRUE);
       }
     }
   }
@@ -1436,13 +1861,13 @@ ags_automation_add_point_to_selection(AgsAutomation *automation,
 
 /**
  * ags_automation_remove_point_from_selection:
- * @automation: an #AgsAutomation
- * @x: offset
- * @y: tone
+ * @automation: the #AgsAutomation
+ * @x: x offset
+ * @y: y acceleration value
  *
  * Remove acceleration at position of selection.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */ 
 void
 ags_automation_remove_point_from_selection(AgsAutomation *automation,
@@ -1450,20 +1875,53 @@ ags_automation_remove_point_from_selection(AgsAutomation *automation,
 {
   AgsAcceleration *acceleration;
 
+  pthread_mutex_t *automation_mutex;
+
+  if(!AGS_IS_AUTOMATION(automation)){
+    return;
+  }
+
+  /* get automation mutex */
+  pthread_mutex_lock(ags_automation_get_class_mutex());
+  
+  automation_mutex = automation->obj_mutex;
+  
+  pthread_mutex_unlock(ags_automation_get_class_mutex());
+
+  /* find point */
   acceleration = ags_automation_find_point(automation,
 					   x, y,
 					   TRUE);
 
   if(acceleration != NULL){
-    acceleration->flags &= (~AGS_ACCELERATION_IS_SELECTED);
+    ags_acceleration_unset_flags(acceleration,
+				 AGS_ACCELERATION_IS_SELECTED);
 
     /* remove acceleration from selection */
-    automation->selection = g_list_remove(automation->selection, acceleration);
-
+    pthread_mutex_lock(automation_mutex);
+    
+    automation->selection = g_list_remove(automation->selection,
+					  acceleration);
     g_object_unref(acceleration);
+
+    pthread_mutex_unlock(automation_mutex);
   }
 }
 
+/**
+ * ags_automation_add_region_from_selection:
+ * @automation: the #AgsAutomation
+ * @x0: x start offset
+ * @y0: y start acceleration
+ * @x1: x end offset
+ * @y1: y end acceleration
+ * @replace_current_selection: if %TRUE current selection is replaced, else if %FALSE
+ * it is added to current selection.
+ *
+ * Add acceleration within region of selection.
+ *
+ * Since: 2.0.0
+ */ 
 void
 ags_automation_add_region_to_selection(AgsAutomation *automation,
 				       guint x0, gdouble y0,
@@ -1471,8 +1929,23 @@ ags_automation_add_region_to_selection(AgsAutomation *automation,
 				       gboolean replace_current_selection)
 {
   AgsAcceleration *acceleration;
+
   GList *region, *list;
 
+  pthread_mutex_t *automation_mutex;
+
+  if(!AGS_IS_AUTOMATION(automation)){
+    return;
+  }
+
+  /* get automation mutex */
+  pthread_mutex_lock(ags_automation_get_class_mutex());
+  
+  automation_mutex = automation->obj_mutex;
+  
+  pthread_mutex_unlock(ags_automation_get_class_mutex());
+
+  /* find region */
   region = ags_automation_find_region(automation,
 				      x0, y0,
 				      x1, y1,
@@ -1484,25 +1957,31 @@ ags_automation_add_region_to_selection(AgsAutomation *automation,
     list = region;
 
     while(list != NULL){
-      ags_automation_add_acceleration(automation,
-				      list->data,
-				      TRUE);
+      ags_acceleration_set_flags(list->data,
+				 AGS_ACCELERATION_IS_SELECTED);
+      g_object_ref(list->data);
 
       list = list->next;
     }
 
+    /* replace */
+    pthread_mutex_lock(automation_mutex);
+     
     automation->selection = region;
-  }else{
-    while(region != NULL){
-      acceleration = AGS_ACCELERATION(region->data);
 
-      if(!ags_automation_is_acceleration_selected(automation, acceleration)){
+    pthread_mutex_unlock(automation_mutex);
+  }else{
+    list = region;
+    
+    while(list != NULL){
+      if(!ags_automation_is_acceleration_selected(automation, list->data)){
+	/* add */
 	ags_automation_add_acceleration(automation,
-					acceleration,
+					list->data,
 					TRUE);
       }
       
-      region = region->next;
+      list = list->next;
     }
     
     g_list_free(region);
@@ -1511,15 +1990,15 @@ ags_automation_add_region_to_selection(AgsAutomation *automation,
 
 /**
  * ags_automation_remove_region_from_selection:
- * @automation: an #AgsAutomation
- * @x0: start offset
- * @y0: start tone
- * @x1: end offset
- * @y1: end tone
+ * @automation: the #AgsAutomation
+ * @x0: x start offset
+ * @y0: y start acceleration
+ * @x1: x end offset
+ * @y1: y end acceleration
  *
  * Remove acceleration within region of selection.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */ 
 void
 ags_automation_remove_region_from_selection(AgsAutomation *automation,
@@ -1527,71 +2006,134 @@ ags_automation_remove_region_from_selection(AgsAutomation *automation,
 					    guint x1, gdouble y1)
 {
   AgsAcceleration *acceleration;
-  GList *region;
 
+  GList *region;
+  GList *list;
+  
+  pthread_mutex_t *automation_mutex;
+
+  if(!AGS_IS_AUTOMATION(automation)){
+    return;
+  }
+
+  /* get automation mutex */
+  pthread_mutex_lock(ags_automation_get_class_mutex());
+  
+  automation_mutex = automation->obj_mutex;
+  
+  pthread_mutex_unlock(ags_automation_get_class_mutex());
+
+  /* find region */
   region = ags_automation_find_region(automation,
 				      x0, y0,
 				      x1, y1,
 				      TRUE);
 
-  while(region != NULL){
-    acceleration = AGS_ACCELERATION(region->data);
-    acceleration->flags &= (~AGS_ACCELERATION_IS_SELECTED);
+  list = region;
+  
+  while(list != NULL){
+    ags_acceleration_unset_flags(list->data,
+				 AGS_ACCELERATION_IS_SELECTED);
 
-    automation->selection = g_list_remove(automation->selection, acceleration);
-    g_object_unref(G_OBJECT(acceleration));
+    /* remove */
+    pthread_mutex_lock(automation_mutex);
 
-    region = region->next;
+    automation->selection = g_list_remove(automation->selection,
+					  list->data);
+
+    pthread_mutex_unlock(automation_mutex);
+
+    g_object_unref(list->data);
+
+    /* iterate */
+    list = list->next;
   }
 
   g_list_free(region);
 }
 
+/**
+ * ags_automation_add_all_to_selection:
+ * @automation: the #AgsAutomation
+ * 
+ * Add all acceleration to selection.
+ * 
+ * Since: 2.0.0
+ */
 void
 ags_automation_add_all_to_selection(AgsAutomation *automation)
 {
-  GList *acceleration;
+  GList *list;
+  
+  pthread_mutex_t *automation_mutex;
 
-  if(automation == NULL ||
-     automation->acceleration == NULL){
+  if(!AGS_IS_AUTOMATION(automation)){
     return;
   }
+
+  /* get automation mutex */
+  pthread_mutex_lock(ags_automation_get_class_mutex());
   
-  acceleration = automation->acceleration;
+  automation_mutex = automation->obj_mutex;
   
-  while(acceleration != NULL){
-    AGS_ACCELERATION(acceleration->data)->flags |= AGS_ACCELERATION_IS_SELECTED;
+  pthread_mutex_unlock(ags_automation_get_class_mutex());
+
+  /* select all */
+  pthread_mutex_lock(automation_mutex);
+
+  list = automation->acceleration;
+
+  while(list != NULL){
+    ags_automation_add_acceleration(automation,
+				    list->data, TRUE);
     
-    acceleration = acceleration->next;
+    list = list->next;
   }
+
+  pthread_mutex_unlock(automation_mutex);
 }
 
 /**
  * ags_automation_copy_selection:
- * @automation: an #AgsAutomation
+ * @automation: the #AgsAutomation
  *
  * Copy selection to clipboard.
  *
- * Returns: the selection as XML.
+ * Returns: the selection as xmlNode
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 xmlNode*
 ags_automation_copy_selection(AgsAutomation *automation)
 {
-  AgsAcceleration *acceleration;
-
+  AgsTimestamp *timestamp;
+  
   xmlNode *automation_node, *current_acceleration;
   xmlNode *timestamp_node;
 
   GList *selection;
 
+  guint current_x;
+  gdouble current_y;
   guint x_boundary;
   gdouble y_boundary;
   
-  selection = automation->selection;
+  pthread_mutex_t *automation_mutex;
+
+  if(!AGS_IS_AUTOMATION(automation)){
+    return(NULL);
+  }
+
+  /* get automation mutex */
+  pthread_mutex_lock(ags_automation_get_class_mutex());
+  
+  automation_mutex = automation->obj_mutex;
+  
+  pthread_mutex_unlock(ags_automation_get_class_mutex());
 
   /* create root node */
+  pthread_mutex_lock(automation_mutex);
+
   automation_node = xmlNewNode(NULL, BAD_CAST "automation");
 
   xmlNewProp(automation_node, BAD_CAST "program", BAD_CAST "ags");
@@ -1602,7 +2144,9 @@ ags_automation_copy_selection(AgsAutomation *automation)
   xmlNewProp(automation_node, "line", g_strdup_printf("%u", automation->line));
 
   /* timestamp */
-  if(automation->timestamp != NULL){
+  timestamp = automation->timestamp;
+  
+  if(timestamp != NULL){
     timestamp_node = xmlNewNode(NULL,
 				BAD_CAST "timestamp");
     xmlAddChild(automation_node,
@@ -1610,14 +2154,18 @@ ags_automation_copy_selection(AgsAutomation *automation)
 
     xmlNewProp(timestamp_node,
 	       BAD_CAST "offset",
-	       BAD_CAST (g_strdup_printf("%u", AGS_TIMESTAMP(automation->timestamp)->timer.ags_offset.offset)));
+	       BAD_CAST (g_strdup_printf("%u", ags_timestamp_get_ags_offset(timestamp))));
   }
 
   /* selection */
   selection = automation->selection;
 
   if(selection != NULL){
-    x_boundary = AGS_ACCELERATION(selection->data)->x;
+    g_object_get(selection->data,
+		 "x", &current_x,
+		 NULL);
+     
+    x_boundary = current_x;
     y_boundary = G_MAXDOUBLE;
   }else{
     x_boundary = 0;
@@ -1625,18 +2173,24 @@ ags_automation_copy_selection(AgsAutomation *automation)
   }
 
   while(selection != NULL){
-    acceleration = AGS_ACCELERATION(selection->data);
+    g_object_get(selection->data,
+		 "x", &current_x,
+		 "y", &current_y,
+		 NULL);
+
     current_acceleration = xmlNewChild(automation_node, NULL, BAD_CAST "acceleration", NULL);
 
-    xmlNewProp(current_acceleration, BAD_CAST "x", BAD_CAST g_strdup_printf("%u", acceleration->x));
-    xmlNewProp(current_acceleration, BAD_CAST "y", BAD_CAST g_strdup_printf("%f", acceleration->y));
+    xmlNewProp(current_acceleration, BAD_CAST "x", BAD_CAST g_strdup_printf("%u", current_x));
+    xmlNewProp(current_acceleration, BAD_CAST "y", BAD_CAST g_strdup_printf("%f", current_y));
 
-    if(y_boundary > acceleration->y){
-      y_boundary = acceleration->y;
+    if(y_boundary > current_y){
+      y_boundary = current_y;
     }
 
     selection = selection->next;
   }
+
+  pthread_mutex_unlock(automation_mutex);
 
   xmlNewProp(automation_node, BAD_CAST "x-boundary", BAD_CAST g_strdup_printf("%u", x_boundary));
   xmlNewProp(automation_node, BAD_CAST "y-boundary", BAD_CAST g_strdup_printf("%f", y_boundary));
@@ -1646,52 +2200,53 @@ ags_automation_copy_selection(AgsAutomation *automation)
 
 /**
  * ags_automation_cut_selection:
- * @automation: an #AgsAutomation
+ * @automation: the #AgsAutomation
  *
  * Cut selection to clipboard.
  *
- * Returns: the selection as XML.
+ * Returns: the selection as xmlNod
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 xmlNode*
 ags_automation_cut_selection(AgsAutomation *automation)
 {
   xmlNode *automation_node;
+  
   GList *selection, *acceleration;
   
+  pthread_mutex_t *automation_mutex;
+
+  if(!AGS_IS_AUTOMATION(automation)){
+    return(NULL);
+  }
+
+  /* get automation mutex */
+  pthread_mutex_lock(ags_automation_get_class_mutex());
+  
+  automation_mutex = automation->obj_mutex;
+  
+  pthread_mutex_unlock(ags_automation_get_class_mutex());
+
+  /* copy selection */
   automation_node = ags_automation_copy_selection(automation);
 
+  /* cut */
+  pthread_mutex_lock(automation_mutex);
+
   selection = automation->selection;
-  acceleration = automation->acceleration;
 
   while(selection != NULL){
-    acceleration = g_list_find(acceleration, selection->data);
-
-    if(acceleration->prev == NULL){
-      automation->acceleration = g_list_remove_link(acceleration, acceleration);
-      acceleration = automation->acceleration;
-    }else{
-      GList *next_acceleration;
-
-      next_acceleration = acceleration->next;
-      acceleration->prev->next = next_acceleration;
-
-      if(next_acceleration != NULL){
-	next_acceleration->prev = acceleration->prev;
-      }
-      
-      g_list_free1(acceleration);
-
-      acceleration = next_acceleration;
-    }
-
-    AGS_ACCELERATION(selection->data)->flags &= (~AGS_ACCELERATION_IS_SELECTED);
+    automation->acceleration = g_list_remove(automation->acceleration,
+					     selection->data);
     g_object_unref(selection->data);
 
     selection = selection->next;
   }
 
+  pthread_mutex_unlock(automation_mutex);
+
+  /* free selection */
   ags_automation_free_selection(automation);
 
   return(automation_node);
@@ -1705,6 +2260,8 @@ ags_automation_insert_native_scale_from_clipboard(AgsAutomation *automation,
 						  gboolean from_y_offset, guint y_offset,
 						  gboolean match_line, gboolean no_duplicates)
 {
+  guint current_line;
+  
   gboolean match_timestamp;
   
   auto void ags_automation_insert_from_clipboard_version_0_4_3();
@@ -1712,10 +2269,15 @@ ags_automation_insert_native_scale_from_clipboard(AgsAutomation *automation,
   void ags_automation_insert_from_clipboard_version_0_4_3()
   {
     AgsAcceleration *acceleration;
+
+    AgsTimestamp *timestamp;
+    
     xmlNode *node;
+
     char *endptr;
-    guint x_boundary_val, y_boundary_val;
     char *x, *y;
+
+    guint x_boundary_val, y_boundary_val;
     guint x_val;
     gdouble y_val;
     guint base_x_difference, base_y_difference;
@@ -1858,9 +2420,13 @@ ags_automation_insert_native_scale_from_clipboard(AgsAutomation *automation,
 	}
 	
 	/* add acceleration */
+	g_object_get(automation,
+		     "timestamp", &timestamp,
+		     NULL);
+	
 	if(!match_timestamp ||
-	   (x_val >= automation->timestamp->timer.ags_offset.offset &&
-	    x_val < automation->timestamp->timer.ags_offset.offset + AGS_AUTOMATION_DEFAULT_OFFSET)){
+	   (x_val >= ags_timestamp_get_ags_offset(timestamp) &&
+	    x_val < ags_timestamp_get_ags_offset(timestamp) + AGS_AUTOMATION_DEFAULT_OFFSET)){
 	  acceleration = ags_acceleration_new();
 	  
 	  acceleration->x = x_val;
@@ -1888,12 +2454,16 @@ ags_automation_insert_native_scale_from_clipboard(AgsAutomation *automation,
     ags_automation_insert_from_clipboard_version_0_4_3();
   }else if(!xmlStrncmp("1.3.0", version, 6)){
     match_timestamp = TRUE;
+
+    g_object_get(automation,
+		 "line", &current_line,
+		 NULL);
     
     if(match_line &&
-       automation->line != g_ascii_strtoull(xmlGetProp(root_node,
-						       "line"),
-					    NULL,
-					    10)){
+       current_line != g_ascii_strtoull(xmlGetProp(root_node,
+						   "line"),
+					NULL,
+					10)){
       return;
     }
 
@@ -1901,106 +2471,19 @@ ags_automation_insert_native_scale_from_clipboard(AgsAutomation *automation,
   }
 }
 
-void
-ags_automation_merge_clipboard(xmlNode *audio_node,
-			       xmlNode *automation_node)
-{
-  xmlNode *find_automation;
-  xmlNode *find_acceleration;
-  xmlNode *child;
-
-  auto gboolean ags_automation_merge_clipboard_find_acceleration(xmlNode *automation_node,
-								 xmlChar *x,
-								 xmlChar *y);
-  
-  gboolean ags_automation_merge_clipboard_find_acceleration(xmlNode *automation_node,
-							    xmlChar *x,
-							    xmlChar *y){
-    xmlNode *child;
-    
-    child = automation_node->children;
-  
-    while(child != NULL){
-      if(child->type == XML_ELEMENT_NODE){
-	if(!xmlStrncmp(child->name,
-		       "acceleration",
-		       13)){
-	  if(!xmlStrcmp(xmlGetProp(child,
-				   "x"),
-			x) &&
-	     !xmlStrcmp(xmlGetProp(child,
-				   "y"),
-			y)){
-	    return(TRUE);
-	  }
-	}
-      }
-
-      child = child->next;
-    }
-    
-    return(FALSE);
-  }
-  
-  if(audio_node == NULL ||
-     automation_node == NULL){
-    return;
-  }
-
-  find_automation = audio_node->children;
-
-  while(find_automation != NULL){
-    if(find_automation->type == XML_ELEMENT_NODE){
-      if(!xmlStrncmp(find_automation->name,
-		     "automation",
-		     11)){
-	if(!xmlStrcmp(xmlGetProp(find_automation,
-				 "line"),
-		      xmlGetProp(automation_node,
-				 "line")) &&
-	   !xmlStrcmp(xmlGetProp(find_automation,
-				 "control-name"),
-		      xmlGetProp(automation_node,
-				 "control-name"))){
-	  break;
-	}
-      }
-    }
-
-    find_automation = find_automation->next;
-  }
-
-  if(find_automation == NULL){
-    xmlAddChild(audio_node,
-		xmlCopyNode(automation_node,
-			    1));
-    
-    return;
-  }
-
-  child = automation_node->children;
-  
-  while(child != NULL){
-    if(child->type == XML_ELEMENT_NODE){
-      if(!xmlStrncmp(child->name,
-		     "acceleration",
-		     13)){
-	if(!ags_automation_merge_clipboard_find_acceleration(find_automation,
-							     xmlGetProp(child,
-									"x"),
-							     xmlGetProp(child,
-									"y"))){
-	  xmlAddChild(find_automation,
-		      xmlCopyNode(child,
-				  1));
-	}
-      }
-    }
-
-    child = child->next;
-  }
-}
-
+/**
+ * ags_automation_insert_from_clipboard:
+ * @automation: the #AgsAutomation
+ * @automation_node: the xmlNode
+ * @reset_x_offset: if %TRUE reset x offset
+ * @x_offset: the x offset to use
+ * @reset_y_offset: if %TRUE reset y offset
+ * @y_offset: the y offset to use
+ * 
+ * Insert clipboard @automation_node to @automation.
+ * 
+ * Since: 2.0.0
+ */
 void
 ags_automation_insert_from_clipboard(AgsAutomation *automation,
 				     xmlNode *automation_node,
@@ -2014,6 +2497,21 @@ ags_automation_insert_from_clipboard(AgsAutomation *automation,
 						FALSE, FALSE);
 }
 
+/**
+ * ags_automation_insert_from_clipboard_extended:
+ * @automation: the #AgsAutomation
+ * @automation_node: the xmlNode
+ * @reset_x_offset: if %TRUE reset x offset
+ * @x_offset: the x offset to use
+ * @reset_y_offset: if %TRUE reset y offset
+ * @y_offset: the y offset to use
+ * @match_line: if %TRUE match line or discard
+ * @no_duplicates: if %TRUE eliminate duplicates
+ * 
+ * Insert clipboard @automation_node to @automation.
+ * 
+ * Since: 2.0.0
+ */
 void
 ags_automation_insert_from_clipboard_extended(AgsAutomation *automation,
 					      xmlNode *automation_node,
@@ -2025,6 +2523,10 @@ ags_automation_insert_from_clipboard_extended(AgsAutomation *automation,
   char *base_frequency;
   char *x_boundary, *y_boundary;
 
+  if(!AGS_IS_AUTOMATION(automation)){
+    return;
+  }
+  
   while(automation_node != NULL){
     if(automation_node->type == XML_ELEMENT_NODE && !xmlStrncmp("automation", automation_node->name, 11)){
       break;
@@ -2059,112 +2561,165 @@ ags_automation_insert_from_clipboard_extended(AgsAutomation *automation,
   }
 }
 
-GList*
-ags_automation_get_current(AgsAutomation *automation)
-{
-  //TODO:JK: implement me
-
-  return(NULL);
-}
-
 /**
  * ags_automation_get_specifier_unique:
- * @automation: a #GList containing #AgsAutomation
+ * @automation: the #GList-struct containing #AgsAutomation
  *
  * Retrieve automation port specifier.
  *
  * Returns: a %NULL terminated string array
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 gchar**
 ags_automation_get_specifier_unique(GList *automation)
 {
-  gchar **specifier, **current;
-
+  AgsAutomation *current_automation;
+  
+  gchar **specifier;
+  gchar *current_control_name;
+  
   guint length, i;
   gboolean contains_control_name;
-    
+
+  pthread_mutex_t *automation_mutex;
+
+  if(automation == NULL){
+    return(NULL);
+  }
+  
   specifier = (gchar **) malloc(sizeof(gchar*));
   specifier[0] = NULL;
   length = 1;
   
   while(automation != NULL){
-    current = specifier;
+    current_automation = automation->data;
+    
+    /* get automation mutex */
+    pthread_mutex_lock(ags_automation_get_class_mutex());
+  
+    automation_mutex = current_automation->obj_mutex;
+  
+    pthread_mutex_unlock(ags_automation_get_class_mutex());
+
+    /* duplicate control name */
+    pthread_mutex_lock(automation_mutex);
+
+    current_control_name = g_strdup(current_automation->control_name);
+    
+    pthread_mutex_unlock(automation_mutex);
     
 #ifdef HAVE_GLIB_2_44
     contains_control_name = g_strv_contains(specifier,
-					    AGS_AUTOMATION(automation->data)->control_name);
+					    current_control_name);
 #else
     contains_control_name = ags_strv_contains(specifier,
-					      AGS_AUTOMATION(automation->data)->control_name);
+					      current_control_name);
 #endif
     
     if(!contains_control_name){
       specifier = (gchar **) realloc(specifier,
 				     (length + 1) * sizeof(gchar *));
-      specifier[length - 1] = AGS_AUTOMATION(automation->data)->control_name;
+      specifier[length - 1] = current_control_name;
       specifier[length] = NULL;
 
       length++;
+    }else{
+      g_free(current_control_name);
     }
-      
+
+    /* iterate */
     automation = automation->next;
   }
-    
+  
   return(specifier);
 }
 
 /**
  * ags_automation_get_specifier_unique_with_channel_type:
- * @automation: a #GList containing #AgsAutomation
+ * @automation: the #GList-struct containing #AgsAutomation
  * @channel_type: the channel's #GType
  *
  * Retrieve automation port specifier.
  *
  * Returns: a %NULL terminated string array
  *
- * Since: 1.3.0
+ * Since: 2.0.0
  */
 gchar**
 ags_automation_get_specifier_unique_with_channel_type(GList *automation,
 						      GType channel_type)
 {
-  gchar **specifier, **current;
+  AgsAutomation *current_automation;  
+
+  GType current_channel_type;
+
+  gchar **specifier;
+  gchar *current_control_name;
 
   guint length, i;
   gboolean contains_control_name;
+
+  pthread_mutex_t *automation_mutex;
+
+  if(automation == NULL){
+    return(NULL);
+  }
     
   specifier = (gchar **) malloc(sizeof(gchar*));
   specifier[0] = NULL;
   length = 1;
   
   while(automation != NULL){
-    current = specifier;
+    current_automation = automation->data;
+    
+    /* get automation mutex */
+    pthread_mutex_lock(ags_automation_get_class_mutex());
+  
+    automation_mutex = current_automation->obj_mutex;
+  
+    pthread_mutex_unlock(ags_automation_get_class_mutex());
 
-    if(AGS_AUTOMATION(automation->data)->channel_type != channel_type){
+    /* get channel type */
+    pthread_mutex_lock(automation_mutex);
+
+    current_channel_type = current_automation->channel_type;
+
+    pthread_mutex_unlock(automation_mutex);
+    
+    if(current_channel_type != channel_type){
       automation = automation->next;
 
       continue;
     }
+
+    /* duplicate control name */
+    pthread_mutex_lock(automation_mutex);
+
+    current_control_name = g_strdup(current_automation->control_name);
+    
+    pthread_mutex_unlock(automation_mutex);
     
 #ifdef HAVE_GLIB_2_44
     contains_control_name = g_strv_contains(specifier,
-					    AGS_AUTOMATION(automation->data)->control_name);
+					    current_control_name);
 #else
     contains_control_name = ags_strv_contains(specifier,
-					      AGS_AUTOMATION(automation->data)->control_name);
+					      current_control_name);
 #endif
     
     if(!contains_control_name){
       specifier = (gchar **) realloc(specifier,
 				     (length + 1) * sizeof(gchar *));
-      specifier[length - 1] = AGS_AUTOMATION(automation->data)->control_name;
+      specifier[length - 1] = current_control_name;
       specifier[length] = NULL;
 
       length++;
+    }else{
+      g_free(current_control_name);
     }
-      
+
+    /* iterate */
     automation = automation->next;
   }
     
@@ -2173,22 +2728,50 @@ ags_automation_get_specifier_unique_with_channel_type(GList *automation,
 
 /**
  * ags_automation_find_specifier:
- * @automation: a #GList-struct containing #AgsAutomation
+ * @automation: the #GList-struct containing #AgsAutomation
  * @specifier: the string specifier to find
  *
  * Find port specifier.
  *
  * Returns: Next matching #GList
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 GList*
 ags_automation_find_specifier(GList *automation,
 			      gchar *specifier)
 {
+  AgsAutomation *current_automation;
+  
+  gchar *current_control_name;
+
+  gboolean success;
+  
+  pthread_mutex_t *automation_mutex;
+ 
   while(automation != NULL){
-    if(!g_ascii_strcasecmp(AGS_AUTOMATION(automation->data)->control_name,
-			   specifier)){
+    current_automation = automation->data;
+
+    /* get automation mutex */
+    pthread_mutex_lock(ags_automation_get_class_mutex());
+  
+    automation_mutex = current_automation->obj_mutex;
+  
+    pthread_mutex_unlock(ags_automation_get_class_mutex());
+
+    /* duplicate control name */
+    pthread_mutex_lock(automation_mutex);
+
+    current_control_name = g_strdup(current_automation->control_name);
+    
+    pthread_mutex_unlock(automation_mutex);
+
+    /* check control name */
+    success = (!g_ascii_strcasecmp(current_control_name,
+				   specifier)) ? TRUE: FALSE;
+    g_free(current_control_name);
+    
+    if(success){
       break;
     }
 
@@ -2201,26 +2784,59 @@ ags_automation_find_specifier(GList *automation,
 /**
  * ags_automation_find_channel_type_with_control_name:
  * @automation: the #GList-struct containing #AgsAutomation
- * @channel_type: the #AgsPort to match
+ * @channel_type: the #GType to match
  * 
- * Find automation by port.
+ * Find automation by @channel_type.
  * 
  * Returns: next matching automation as #GList-struct or %NULL if not found
  * 
- * Since: 1.3.0
+ * Since: 2.0.0
  */
 GList*
 ags_automation_find_channel_type_with_control_name(GList *automation,
 						   GType channel_type, gchar *specifier)
 {
+  AgsAutomation *current_automation;
+
+  GType current_channel_type;
+  
+  gchar *current_control_name;
+ 
+  gboolean success;
+  
+  pthread_mutex_t *automation_mutex;
+
   if(automation == NULL){
     return(NULL);
   }
 
   while(automation != NULL){
-    if(AGS_AUTOMATION(automation->data)->channel_type == channel_type &&
-       !g_strcmp0(AGS_AUTOMATION(automation->data)->control_name,
-		  specifier)){
+    current_automation = automation->data;
+    
+    /* get automation mutex */
+    pthread_mutex_lock(ags_automation_get_class_mutex());
+  
+    automation_mutex = current_automation->obj_mutex;
+  
+    pthread_mutex_unlock(ags_automation_get_class_mutex());
+
+    /* duplicate control name */
+    pthread_mutex_lock(automation_mutex);
+
+    current_channel_type = current_automation->channel_type;
+    
+    current_control_name = g_strdup(current_automation->control_name);
+    
+    pthread_mutex_unlock(automation_mutex);
+
+    /* check channel type and control name */
+    success = (current_channel_type == channel_type &&
+	       !g_strcmp0(current_control_name,
+			  specifier)) ? TRUE: FALSE;
+
+    g_free(current_control_name);
+    
+    if(success){
       break;
     }
     
@@ -2232,7 +2848,7 @@ ags_automation_find_channel_type_with_control_name(GList *automation,
 
 /**
  * ags_automation_find_specifier_with_type_and_line:
- * @automation: a #GList-struct containing #AgsAutomation
+ * @automation: the #GList-struct containing #AgsAutomation
  * @specifier: the string specifier to find
  * @channel_type: the channel #GType
  * @line: the line
@@ -2241,7 +2857,7 @@ ags_automation_find_channel_type_with_control_name(GList *automation,
  *
  * Returns: Next matching #GList-struct
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 GList*
 ags_automation_find_specifier_with_type_and_line(GList *automation,
@@ -2249,17 +2865,50 @@ ags_automation_find_specifier_with_type_and_line(GList *automation,
 						 GType channel_type,
 						 guint line)
 {
-  if(specifier == NULL){
+  AgsAutomation *current_automation;
+  
+  GType current_channel_type;
+
+  gchar *current_control_name;
+
+  guint current_line;
+  gboolean success;
+  
+  pthread_mutex_t *automation_mutex;
+
+  if(automation == NULL){
     return(NULL);
   }
   
   while(automation != NULL){
-    if(AGS_AUTOMATION(automation->data)->control_name != NULL &&
-       !g_ascii_strcasecmp(AGS_AUTOMATION(automation->data)->control_name,
-			   specifier) &&
-       AGS_AUTOMATION(automation->data)->channel_type == channel_type &&
-       AGS_AUTOMATION(automation->data)->line == line){
+    current_automation = automation->data;
+    
+    /* get automation mutex */
+    pthread_mutex_lock(ags_automation_get_class_mutex());
+  
+    automation_mutex = current_automation->obj_mutex;
+  
+    pthread_mutex_unlock(ags_automation_get_class_mutex());
 
+    /* duplicate control name */
+    pthread_mutex_lock(automation_mutex);
+
+    current_channel_type = current_automation->channel_type;
+    current_line = current_automation->line;    
+    
+    current_control_name = g_strdup(current_automation->control_name);
+    
+    pthread_mutex_unlock(automation_mutex);
+
+    /* check channel type, line and control name */
+    success = (!g_ascii_strcasecmp(current_control_name,
+				   specifier) &&
+	       current_channel_type == channel_type &&
+	       current_line == line) ? TRUE: FALSE;
+
+    g_free(current_control_name);
+
+    if(success){
       break;
     }
 
@@ -2281,7 +2930,7 @@ ags_automation_find_specifier_with_type_and_line(GList *automation,
  *
  * Returns: the x_offset
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 guint
 ags_automation_get_value(AgsAutomation *automation,
@@ -2289,30 +2938,62 @@ ags_automation_get_value(AgsAutomation *automation,
 			 gboolean use_prev_on_failure,
 			 GValue *value)
 {
+  AgsAcceleration *current_acceleration;
   AgsPort *port;
 
+  GType port_value_type;
+  
   GList *acceleration;
 
+  guint current_x;
   guint ret_x;
+  gdouble default_value;
+  gdouble y;
+  gboolean port_value_is_pointer;
   
+  pthread_mutex_t *automation_mutex;
+
+  if(!AGS_IS_AUTOMATION(automation)){
+    return(G_MAXUINT);
+  }
+
+  /* get automation mutex */
+  pthread_mutex_lock(ags_automation_get_class_mutex());
+  
+  automation_mutex = automation->obj_mutex;
+  
+  pthread_mutex_unlock(ags_automation_get_class_mutex());
+
+  /*  */
+  pthread_mutex_lock(automation_mutex);
+
   port = (AgsPort *) automation->port;
   acceleration = automation->acceleration;
 
+  current_acceleration = NULL;
   ret_x = 0;
   
   if(acceleration != NULL){
     while(acceleration != NULL){
-      if(AGS_ACCELERATION(acceleration->data)->x >= x &&
-	 AGS_ACCELERATION(acceleration->data)->x < x_end){
+      current_acceleration = acceleration->data;
+      
+      g_object_get(current_acceleration,
+		   "x", &current_x,
+		   NULL);
+      
+      if(current_x >= x &&
+	 current_x < x_end){
 	break;
       }
 
-      if(AGS_ACCELERATION(acceleration->data)->x > x_end){
+      if(current_x > x_end){
 	if(use_prev_on_failure){
 	  acceleration = acceleration->prev;
 
 	  break;
 	}else{
+	  pthread_mutex_unlock(automation_mutex);
+	  
 	  return(G_MAXUINT);
 	}
       }
@@ -2321,26 +3002,44 @@ ags_automation_get_value(AgsAutomation *automation,
     }
     
     if(acceleration == NULL){
+      pthread_mutex_unlock(automation_mutex);
+      
       return(G_MAXUINT);
     }
     
-    ret_x = AGS_ACCELERATION(acceleration->data)->x;
+    ret_x = current_x;
   }else{
     return(G_MAXUINT);
   }
+
+  pthread_mutex_unlock(automation_mutex);
+
+  /* apply port */
+  g_object_get(automation,
+	       "default-value", &default_value,
+	       NULL);
   
-  if(!port->port_value_is_pointer){
-    if(port->port_value_type == G_TYPE_BOOLEAN){
+  g_object_get(port,
+	       "port-value-is-pointer", &port_value_is_pointer,
+	       "port-value-type", &port_value_type,
+	       NULL);
+  
+  g_object_get(current_acceleration,
+	       "y", &y,
+	       NULL);
+
+  if(!port_value_is_pointer){
+    if(port_value_type == G_TYPE_BOOLEAN){
       gboolean current;
 
       current = FALSE;
 
       if(acceleration == NULL){
-	if(automation->default_value != 0){
+	if(default_value != 0.0){
 	  current = TRUE;
 	}
       }else{
-	if(AGS_ACCELERATION(acceleration->data)->y != 0){
+	if(y != 0.0){
 	  current = TRUE;
 	}
       }
@@ -2349,45 +3048,45 @@ ags_automation_get_value(AgsAutomation *automation,
 		   G_TYPE_BOOLEAN);
       g_value_set_boolean(value,
 			  current);
-    }else if(port->port_value_type == G_TYPE_INT64){
+    }else if(port_value_type == G_TYPE_INT64){
       gint64 current;
       
-      current = floor(AGS_ACCELERATION(acceleration->data)->y);
+      current = floor(y);
 
       g_value_init(value,
 		   G_TYPE_INT64);
       g_value_set_int64(value,
 			current);
-    }else if(port->port_value_type == G_TYPE_UINT64){
+    }else if(port_value_type == G_TYPE_UINT64){
       guint64 current;
 
-      current = floor(AGS_ACCELERATION(acceleration->data)->y);
+      current = floor(y);
       
       g_value_init(value,
 		   G_TYPE_UINT64);
       g_value_set_uint64(value,
 			 current);
-    }else if(port->port_value_type == G_TYPE_FLOAT){
+    }else if(port_value_type == G_TYPE_FLOAT){
       gfloat current;
 	
-      current = AGS_ACCELERATION(acceleration->data)->y;
+      current = y;
       
       g_value_init(value,
 		   G_TYPE_FLOAT);
       g_value_set_float(value,
 			current);
-    }else if(port->port_value_type == G_TYPE_DOUBLE){
+    }else if(port_value_type == G_TYPE_DOUBLE){
       gdouble current;
 
-      current = AGS_ACCELERATION(acceleration->data)->y;
+      current = y;
       
       g_value_init(value,
 		   G_TYPE_DOUBLE);
       g_value_set_double(value,
 			 current);
-    }else if(port->port_value_type == G_TYPE_POINTER){
+    }else if(port_value_type == G_TYPE_POINTER){
       g_warning("ags_automation.c - unsupported value type pointer");
-    }else if(port->port_value_type == G_TYPE_OBJECT){
+    }else if(port_value_type == G_TYPE_OBJECT){
       g_warning("ags_automation.c - unsupported value type object");
     }else{
       g_warning("ags_automation.c - unknown type");
@@ -2401,16 +3100,16 @@ ags_automation_get_value(AgsAutomation *automation,
 
 /**
  * ags_automation_new:
- * @audio: an #AgsAudio
+ * @audio: the #AgsAudio
  * @line: the line to apply
  * @channel_type: the channel type
  * @control_name: the control name
  *
- * Creates an #AgsAutomation.
+ * Creates a new instance of #AgsAutomation.
  *
- * Returns: a new #AgsAutomation
+ * Returns: the new #AgsAutomation
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsAutomation*
 ags_automation_new(GObject *audio,

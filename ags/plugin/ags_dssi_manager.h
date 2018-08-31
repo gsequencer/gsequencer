@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -23,6 +23,8 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <ags/libags.h>
+
 #include <ags/plugin/ags_dssi_plugin.h>
 
 #define AGS_TYPE_DSSI_MANAGER                (ags_dssi_manager_get_type())
@@ -38,6 +40,9 @@ typedef struct _AgsDssiManagerClass AgsDssiManagerClass;
 struct _AgsDssiManager
 {
   GObject object;
+
+  pthread_mutex_t *obj_mutex;
+  pthread_mutexattr_t *obj_mutexattr;
   
   GList *dssi_plugin_blacklist;
   GList *dssi_plugin;
@@ -49,6 +54,8 @@ struct _AgsDssiManagerClass
 };
 
 GType ags_dssi_manager_get_type(void);
+
+pthread_mutex_t* ags_dssi_manager_get_class_mutex();
 
 gchar** ags_dssi_manager_get_default_path();
 void ags_dssi_manager_set_default_path(gchar** default_path);

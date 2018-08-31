@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -35,6 +35,8 @@
 #include <CoreMIDI/CoreMIDI.h>
 #endif
 
+#include <ags/libags.h>
+
 #define AGS_TYPE_CORE_AUDIO_PORT                (ags_core_audio_port_get_type())
 #define AGS_CORE_AUDIO_PORT(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_CORE_AUDIO_PORT, AgsCoreAudioPort))
 #define AGS_CORE_AUDIO_PORT_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST(class, AGS_TYPE_CORE_AUDIO_PORT, AgsCoreAudioPort))
@@ -47,6 +49,7 @@ typedef struct _AgsCoreAudioPortClass AgsCoreAudioPortClass;
 
 /**
  * AgsCoreAudioPortFlags:
+ * @AGS_CORE_AUDIO_PORT_ADDED_TO_REGISTRY: the CoreAudio port was added to registry, see #AgsConnectable::add_to_registry()
  * @AGS_CORE_AUDIO_PORT_CONNECTED: indicates the port was connected by calling #AgsConnectable::connect()
  * @AGS_CORE_AUDIO_PORT_REGISTERED: the port was registered
  * @AGS_CORE_AUDIO_PORT_IS_AUDIO: the port provides audio data
@@ -58,12 +61,13 @@ typedef struct _AgsCoreAudioPortClass AgsCoreAudioPortClass;
  * enable/disable as flags.
  */
 typedef enum{
-  AGS_CORE_AUDIO_PORT_CONNECTED       = 1,
-  AGS_CORE_AUDIO_PORT_REGISTERED      = 1 <<  1,
-  AGS_CORE_AUDIO_PORT_IS_AUDIO        = 1 <<  2,
-  AGS_CORE_AUDIO_PORT_IS_MIDI         = 1 <<  3,
-  AGS_CORE_AUDIO_PORT_IS_OUTPUT       = 1 <<  4,
-  AGS_CORE_AUDIO_PORT_IS_INPUT        = 1 <<  5,
+  AGS_CORE_AUDIO_PORT_ADDED_TO_REGISTRY  = 1,
+  AGS_CORE_AUDIO_PORT_CONNECTED          = 1 <<  1,
+  AGS_CORE_AUDIO_PORT_REGISTERED         = 1 <<  2,
+  AGS_CORE_AUDIO_PORT_IS_AUDIO           = 1 <<  3,
+  AGS_CORE_AUDIO_PORT_IS_MIDI            = 1 <<  4,
+  AGS_CORE_AUDIO_PORT_IS_OUTPUT          = 1 <<  5,
+  AGS_CORE_AUDIO_PORT_IS_INPUT           = 1 <<  6,
 }AgsCoreAudioPortFlags;
 
 struct _AgsCoreAudioPort
@@ -72,19 +76,23 @@ struct _AgsCoreAudioPort
 
   guint flags;
 
-  pthread_mutex_t *mutex;
-  pthread_mutexattr_t *mutexattr;
+  pthread_mutex_t *obj_mutex;
+  pthread_mutexattr_t *obj_mutexattr;
 
   GObject *core_audio_client;
+
+  AgsUUID *uuid;
+
   GObject *core_audio_device;
   
-  gchar *uuid;
-  gchar *name;
+  gchar *port_uuid;
+  gchar *port_name;
 
-  guint format;
-  guint buffer_size;
   guint pcm_channels;
+
   guint samplerate;
+  guint buffer_size;
+  guint format;
   
 #ifdef AGS_WITH_CORE_AUDIO
   AudioQueueRef aq_ref;
@@ -117,6 +125,12 @@ struct _AgsCoreAudioPortClass
 };
 
 GType ags_core_audio_port_get_type();
+
+pthread_mutex_t* ags_core_audio_port_get_class_mutex();
+
+gboolean ags_core_audio_port_test_flags(AgsCoreAudioPort *core_audio_port, guint flags);
+void ags_core_audio_port_set_flags(AgsCoreAudioPort *core_audio_port, guint flags);
+void ags_core_audio_port_unset_flags(AgsCoreAudioPort *core_audio_port, guint flags);
 
 GList* ags_core_audio_port_find(GList *core_audio_port,
 				gchar *port_name);

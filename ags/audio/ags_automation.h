@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -22,6 +22,9 @@
 
 #include <glib.h>
 #include <glib-object.h>
+
+#include <pthread.h>
+
 #include <libxml/tree.h>
 
 #include <ags/libags.h>
@@ -59,15 +62,13 @@ typedef struct _AgsAutomationClass AgsAutomationClass;
 
 /**
  * AgsAutomationFlags:
- * @AGS_AUTOMATION_CONNECTED: indicates the automation was connected by calling #AgsConnectable::connect()
  * @AGS_AUTOMATION_BYPASS: ignore any automation data
  * 
  * Enum values to control the behavior or indicate internal state of #AgsAutomation by
  * enable/disable as flags.
  */
 typedef enum{
-  AGS_AUTOMATION_CONNECTED            = 1,
-  AGS_AUTOMATION_BYPASS               = 1 <<  1,
+  AGS_AUTOMATION_BYPASS               = 1,
 }AgsAutomationFlags;
 
 struct _AgsAutomation
@@ -76,11 +77,15 @@ struct _AgsAutomation
 
   guint flags;
 
-  AgsTimestamp *timestamp;
+  pthread_mutex_t *obj_mutex;
+  pthread_mutexattr_t *obj_mutexattr;
 
   GObject *audio;
-  guint line;
   GType channel_type;
+  guint line;
+
+  AgsTimestamp *timestamp;
+
   gchar *control_name;
 
   guint steps;
@@ -89,19 +94,11 @@ struct _AgsAutomation
   gdouble default_value;
 
   AgsFunction *source_function;
-  
-  GList *acceleration;
-
-  gdouble loop_start;
-  gdouble loop_end;
-  gdouble offset;
-  
-  GList *selection;
 
   GObject *port;
-
-  GList *current_accelerations;
-  GList *next_accelerations;
+  
+  GList *acceleration;  
+  GList *selection;
 };
 
 struct _AgsAutomationClass
@@ -110,6 +107,12 @@ struct _AgsAutomationClass
 };
 
 GType ags_automation_get_type(void);
+
+pthread_mutex_t* ags_automation_get_class_mutex();
+
+gboolean ags_automation_test_flags(AgsAutomation *automation, guint flags);
+void ags_automation_set_flags(AgsAutomation *automation, guint flags);
+void ags_automation_unset_flags(AgsAutomation *automation, guint flags);
 
 GList* ags_automation_find_port(GList *automation,
 				GObject *port);
@@ -126,6 +129,9 @@ GList* ags_automation_add(GList *automation,
 void ags_automation_add_acceleration(AgsAutomation *automation,
 				     AgsAcceleration *acceleration,
 				     gboolean use_selection_list);
+void ags_automation_remove_acceleration(AgsAutomation *automation,
+					AgsAcceleration *acceleration,
+					gboolean use_selection_list);
 
 gboolean ags_automation_remove_acceleration_at_position(AgsAutomation *automation,
 							guint x, gdouble y);
@@ -162,8 +168,6 @@ void ags_automation_add_all_to_selection(AgsAutomation *automation);
 
 xmlNode* ags_automation_copy_selection(AgsAutomation *automation);
 xmlNode* ags_automation_cut_selection(AgsAutomation *automation);
-void ags_automation_merge_clipboard(xmlNode *audio_node,
-				    xmlNode *automation_node);
 
 void ags_automation_insert_from_clipboard(AgsAutomation *automation,
 					  xmlNode *automation_node,
@@ -175,8 +179,6 @@ void ags_automation_insert_from_clipboard_extended(AgsAutomation *automation,
 						   gboolean reset_x_offset, guint x_offset,
 						   gboolean reset_y_offset, gdouble y_offset,
 						   gboolean match_line, gboolean no_duplicates);
-
-GList* ags_automation_get_current(AgsAutomation *automation);
 
 gchar** ags_automation_get_specifier_unique(GList *automation);
 gchar** ags_automation_get_specifier_unique_with_channel_type(GList *automation,

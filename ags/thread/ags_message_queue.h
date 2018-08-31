@@ -64,8 +64,9 @@ struct _AgsMessageEnvelope
 
   xmlDoc *doc;
   
-  GParameter *parameter;
   guint n_params;
+  gchar **parameter_name;
+  GValue *value;
 };
 
 GType ags_message_queue_get_type();

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -40,9 +40,11 @@ void ags_export_soundcard_get_property(GObject *gobject,
 				       GValue *value,
 				       GParamSpec *param_spec);
 void ags_export_soundcard_finalize(GObject *gobject);
+
 void ags_export_soundcard_connect(AgsConnectable *connectable);
 void ags_export_soundcard_disconnect(AgsConnectable *connectable);
 void ags_export_soundcard_show(GtkWidget *widget);
+
 gboolean ags_export_soundcard_delete_event(GtkWidget *widget, GdkEventAny *event);
 
 /**
@@ -124,7 +126,7 @@ ags_export_soundcard_class_init(AgsExportSoundcardClass *export_soundcard)
    *
    * The assigned #AgsSoundcard acting as default sink.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("soundcard",
 				   i18n_pspec("assigned soundcard"),
@@ -351,6 +353,20 @@ ags_export_soundcard_get_property(GObject *gobject,
 }
 
 void
+ags_export_soundcard_finalize(GObject *gobject)
+{
+  AgsExportSoundcard *export_soundcard;
+
+  export_soundcard = (AgsExportSoundcard *) gobject;
+
+  if(export_soundcard->soundcard != NULL){
+    g_object_unref(export_soundcard->soundcard);
+  }
+  
+  G_OBJECT_CLASS(ags_export_soundcard_parent_class)->finalize(gobject);
+}
+
+void
 ags_export_soundcard_connect(AgsConnectable *connectable)
 {
   AgsExportSoundcard *export_soundcard;
@@ -405,20 +421,6 @@ ags_export_soundcard_disconnect(AgsConnectable *connectable)
 		      NULL);
 }
 
-void
-ags_export_soundcard_finalize(GObject *gobject)
-{
-  AgsExportSoundcard *export_soundcard;
-
-  export_soundcard = (AgsExportSoundcard *) gobject;
-
-  if(export_soundcard->soundcard != NULL){
-    g_object_unref(export_soundcard->soundcard);
-  }
-  
-  G_OBJECT_CLASS(ags_export_soundcard_parent_class)->finalize(gobject);
-}
-
 /**
  * ags_export_soundcard_set_backend:
  * @export_soundcard: the #AgsExportSoundcard
@@ -426,7 +428,7 @@ ags_export_soundcard_finalize(GObject *gobject)
  * 
  * Set backend.
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 gboolean
 ags_export_soundcard_set_backend(AgsExportSoundcard *export_soundcard,
@@ -473,7 +475,7 @@ ags_export_soundcard_set_backend(AgsExportSoundcard *export_soundcard,
  * 
  * Refresh cards.
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_export_soundcard_refresh_card(AgsExportSoundcard *export_soundcard)
@@ -482,7 +484,7 @@ ags_export_soundcard_refresh_card(AgsExportSoundcard *export_soundcard)
   
   GtkTreeModel *model;
   
-  GList *soundcard;
+  GList *start_soundcard, *soundcard;
   GList *card, *card_start;
   
   gchar *backend;
@@ -491,23 +493,25 @@ ags_export_soundcard_refresh_card(AgsExportSoundcard *export_soundcard)
   export_window = gtk_widget_get_ancestor(export_soundcard,
 					  AGS_TYPE_EXPORT_WINDOW);
  
-  soundcard = NULL;
+  start_soundcard = NULL;
   
   if(export_window != NULL &&
      export_window->application_context != NULL){
-    soundcard = ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(export_window->application_context));
+    start_soundcard = ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(export_window->application_context));
   }
 
   card_start = NULL;
   backend = gtk_combo_box_text_get_active_text(export_soundcard->backend);
 
+  soundcard = start_soundcard;
+  
   if(backend != NULL){
     if(!g_ascii_strncasecmp(backend,
 			    "alsa",
 			    5)){
       while(soundcard != NULL){
 	if(AGS_IS_DEVOUT(soundcard->data) &&
-	   (AGS_DEVOUT_ALSA & (AGS_DEVOUT(soundcard->data)->flags)) != 0){
+	   ags_devout_test_flags(AGS_DEVOUT(soundcard->data), AGS_DEVOUT_ALSA)){
 	  device = ags_soundcard_get_device(AGS_SOUNDCARD(soundcard->data));
 
 	  if(device != NULL){
@@ -523,7 +527,7 @@ ags_export_soundcard_refresh_card(AgsExportSoundcard *export_soundcard)
 				  4)){    
       while(soundcard != NULL){
 	if(AGS_IS_DEVOUT(soundcard->data) &&
-	   (AGS_DEVOUT_OSS & (AGS_DEVOUT(soundcard->data)->flags)) != 0){
+	   ags_devout_test_flags(AGS_DEVOUT(soundcard->data), AGS_DEVOUT_OSS)){
 	  device = ags_soundcard_get_device(AGS_SOUNDCARD(soundcard->data));
 
 	  if(device != NULL){
@@ -581,6 +585,8 @@ ags_export_soundcard_refresh_card(AgsExportSoundcard *export_soundcard)
       }
     }
   }
+
+  g_list_free(start_soundcard);
   
   model = gtk_combo_box_get_model(GTK_COMBO_BOX(export_soundcard->card));
   gtk_list_store_clear(GTK_LIST_STORE(model));
@@ -598,7 +604,8 @@ ags_export_soundcard_refresh_card(AgsExportSoundcard *export_soundcard)
       card = card->next;
     }
 
-    g_list_free(card_start);
+    g_list_free_full(card_start,
+		     g_free);
   }
 }
 
@@ -609,7 +616,7 @@ ags_export_soundcard_refresh_card(AgsExportSoundcard *export_soundcard)
  * 
  * Set card.
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 gboolean
 ags_export_soundcard_set_card(AgsExportSoundcard *export_soundcard,
@@ -657,7 +664,7 @@ ags_export_soundcard_set_card(AgsExportSoundcard *export_soundcard,
  * 
  * Set filename.
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_export_soundcard_set_filename(AgsExportSoundcard *export_soundcard,
@@ -674,7 +681,7 @@ ags_export_soundcard_set_filename(AgsExportSoundcard *export_soundcard,
  * 
  * Set format.
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_export_soundcard_set_format(AgsExportSoundcard *export_soundcard,
@@ -716,11 +723,11 @@ ags_export_soundcard_set_format(AgsExportSoundcard *export_soundcard,
 /**
  * ags_export_soundcard_new:
  * 
- * Instantiate an #AgsExportSoundcard
+ * Create a new instance of #AgsExportSoundcard
  * 
- * Returns: an #AgsExportSoundcard
+ * Returns: the new #AgsExportSoundcard
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsExportSoundcard*
 ags_export_soundcard_new()

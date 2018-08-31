@@ -45,8 +45,10 @@ void ags_live_lv2_bridge_get_property(GObject *gobject,
 				      GValue *value,
 				      GParamSpec *param_spec);
 void ags_live_lv2_bridge_finalize(GObject *gobject);
+
 void ags_live_lv2_bridge_connect(AgsConnectable *connectable);
 void ags_live_lv2_bridge_disconnect(AgsConnectable *connectable);
+
 gchar* ags_live_lv2_bridge_get_version(AgsPlugin *plugin);
 void ags_live_lv2_bridge_set_version(AgsPlugin *plugin, gchar *version);
 gchar* ags_live_lv2_bridge_get_build_id(AgsPlugin *plugin);
@@ -356,14 +358,15 @@ ags_live_lv2_bridge_init(AgsLiveLv2Bridge *live_lv2_bridge)
   }
 
   audio = AGS_MACHINE(live_lv2_bridge)->audio;
-  audio->flags |= (AGS_AUDIO_OUTPUT_HAS_RECYCLING |
-		   AGS_AUDIO_INPUT_HAS_RECYCLING |
-		   AGS_AUDIO_SYNC |
-		   AGS_AUDIO_ASYNC |
-		   AGS_AUDIO_HAS_NOTATION |  
-		   AGS_AUDIO_SKIP_INPUT |
-		   AGS_AUDIO_REVERSE_MAPPING);
-  audio->flags &= (~AGS_AUDIO_NOTATION_DEFAULT);
+  ags_audio_set_flags(audio, (AGS_AUDIO_SYNC |
+			      AGS_AUDIO_ASYNC |
+			      AGS_AUDIO_OUTPUT_HAS_RECYCLING |
+			      AGS_AUDIO_INPUT_HAS_RECYCLING |
+			      AGS_AUDIO_SKIP_INPUT));
+  ags_audio_set_ability_flags(audio, (AGS_SOUND_ABILITY_NOTATION));
+  ags_audio_set_behaviour_flags(audio, (AGS_SOUND_BEHAVIOUR_REVERSE_MAPPING));
+  //  audio->flags &= (~AGS_AUDIO_NOTATION_DEFAULT);
+  
   g_object_set(audio,
 	       "audio-start-mapping", 0,
 	       "audio-end-mapping", 128,
@@ -826,9 +829,9 @@ ags_live_lv2_bridge_launch_task(AgsFileLaunch *file_launch, AgsLiveLv2Bridge *li
     recall = AGS_MACHINE(live_lv2_bridge)->audio->input->recall;
     
     while((recall = ags_recall_template_find_type(recall, AGS_TYPE_PLAY_LV2_AUDIO)) != NULL){
-      if(!g_strcmp0(AGS_PLAY_LV2_AUDIO(recall->data)->filename,
+      if(!g_strcmp0(AGS_RECALL(recall->data)->filename,
 		    live_lv2_bridge->filename) &&
-	 !g_strcmp0(AGS_PLAY_LV2_AUDIO(recall->data)->effect,
+	 !g_strcmp0(AGS_RECALL(recall->data)->effect,
 		    live_lv2_bridge->effect)){
 	break;
       }
@@ -931,41 +934,21 @@ ags_live_lv2_bridge_resize_audio_channels(AgsMachine *machine,
   AgsRecycling *first_recycling;
   AgsAudioSignal *audio_signal;  
 
-  AgsMutexManager *mutex_manager;
-
-  GObject *soundcard;
+  GObject *output_soundcard;
   
   guint output_pads, input_pads;
-
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *audio_mutex;
-  pthread_mutex_t *channel_mutex;
-
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
 
   live_lv2_bridge = (AgsLiveLv2Bridge *) machine;
 
   audio = machine->audio;
 
-  /* get audio mutex */
-  pthread_mutex_lock(application_mutex);
-
-  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
-					 (GObject *) audio);
-  
-  pthread_mutex_unlock(application_mutex);
-
   /* get some fields */
-  pthread_mutex_lock(audio_mutex);
-
-  output = audio->output;
-  input = audio->input;
-  
-  output_pads = audio->output_pads;
-  input_pads = audio->input_pads;
-  
-  pthread_mutex_unlock(audio_mutex);
+  g_object_get(audio,
+	       "output", &output,
+	       "input", &input,
+	       "output-pads", &output_pads,
+	       "input-pads", &input_pads,
+	       NULL);
   
   if(input_pads == 0 &&
      output_pads == 0){
@@ -977,43 +960,23 @@ ags_live_lv2_bridge_resize_audio_channels(AgsMachine *machine,
     channel = input;
 
     while(channel != NULL){
-      /* get channel mutex */
-      pthread_mutex_lock(application_mutex);
-
-      channel_mutex = ags_mutex_manager_lookup(mutex_manager,
-					     (GObject *) channel);
-  
-      pthread_mutex_unlock(application_mutex);
-
-      /* get some fields */
-      pthread_mutex_lock(channel_mutex);
-      
-      next_pad = channel->next_pad;
-
-      pthread_mutex_unlock(channel_mutex);
+      /* get next pad */
+      g_object_get(channel,
+		   "next-pad", &next_pad,
+		   NULL);
 
       channel = ags_channel_nth(channel,
 				audio_channels_old);
 
       while(channel != next_pad){
-	/* get channel mutex */
-	pthread_mutex_lock(application_mutex);
-
-	channel_mutex = ags_mutex_manager_lookup(mutex_manager,
-						 (GObject *) channel);
-  
-	pthread_mutex_unlock(application_mutex);
-
 	/* get some fields */
-	pthread_mutex_lock(channel_mutex);
-	
-      	soundcard = channel->soundcard;
-	first_recycling = channel->first_recycling;
-
-	pthread_mutex_unlock(channel_mutex);
+	g_object_get(channel,
+		     "output-soundcard", &output_soundcard,
+		     "first-recycling", &first_recycling,
+		     NULL);
 
 	/* audio signal */
-	audio_signal = ags_audio_signal_new(soundcard,
+	audio_signal = ags_audio_signal_new(output_soundcard,
 					    (GObject *) first_recycling,
 					    NULL);
 	audio_signal->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;
@@ -1023,11 +986,9 @@ ags_live_lv2_bridge_resize_audio_channels(AgsMachine *machine,
 				       audio_signal);
 	
 	/* iterate */
-	pthread_mutex_lock(channel_mutex);
-      
-	channel = channel->next;
-
-	pthread_mutex_unlock(channel_mutex);
+	g_object_get(channel,
+		     "next", &channel,
+		     NULL);
       }
     }
 
@@ -1035,43 +996,23 @@ ags_live_lv2_bridge_resize_audio_channels(AgsMachine *machine,
     channel = output;
 
     while(channel != NULL){
-      /* get channel mutex */
-      pthread_mutex_lock(application_mutex);
-
-      channel_mutex = ags_mutex_manager_lookup(mutex_manager,
-					     (GObject *) channel);
-  
-      pthread_mutex_unlock(application_mutex);
-
-      /* get some fields */
-      pthread_mutex_lock(channel_mutex);
-      
-      next_pad = channel->next_pad;
-
-      pthread_mutex_unlock(channel_mutex);
+      /* get next pad */
+      g_object_get(channel,
+		   "next-pad", &next_pad,
+		   NULL);
 
       channel = ags_channel_pad_nth(channel,
 				    audio_channels_old);
 
       while(channel != next_pad){
-	/* get channel mutex */
-	pthread_mutex_lock(application_mutex);
-
-	channel_mutex = ags_mutex_manager_lookup(mutex_manager,
-						 (GObject *) channel);
-  
-	pthread_mutex_unlock(application_mutex);
-
 	/* get some fields */
-	pthread_mutex_lock(channel_mutex);
-
-	soundcard = channel->soundcard;
-	first_recycling = channel->first_recycling;
-
-	pthread_mutex_unlock(channel_mutex);
+	g_object_get(channel,
+		     "output-soundcard", &output_soundcard,
+		     "first-recycling", &first_recycling,
+		     NULL);
 
 	/* audio signal */
-	audio_signal = ags_audio_signal_new(soundcard,
+	audio_signal = ags_audio_signal_new(output_soundcard,
 					    (GObject *) first_recycling,
 					    NULL);
 	audio_signal->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;
@@ -1081,11 +1022,9 @@ ags_live_lv2_bridge_resize_audio_channels(AgsMachine *machine,
 				       audio_signal);
 	
 	/* iterate */
-	pthread_mutex_lock(channel_mutex);
-      
-	channel = channel->next;
-
-	pthread_mutex_unlock(channel_mutex);
+	g_object_get(channel,
+		     "next", &channel,
+		     NULL);
       }
     }
 
@@ -1114,42 +1053,22 @@ ags_live_lv2_bridge_resize_pads(AgsMachine *machine, GType channel_type,
   AgsChannel *channel;
   AgsRecycling *first_recycling;
   AgsAudioSignal *audio_signal;
-    
-  AgsMutexManager *mutex_manager;
-
-  GObject *soundcard;
+  
+  GObject *output_soundcard;
   
   guint audio_channels;
   gboolean grow;
-
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *audio_mutex;
-  pthread_mutex_t *channel_mutex;
-
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
 
   live_lv2_bridge = (AgsLiveLv2Bridge *) machine;
 
   audio = machine->audio;
 
-  /* get audio mutex */
-  pthread_mutex_lock(application_mutex);
-
-  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
-					 (GObject *) audio);
-  
-  pthread_mutex_unlock(application_mutex);  
-
   /* get some fields */
-  pthread_mutex_lock(audio_mutex);
-
-  output = audio->output;
-  input = audio->input;
-  
-  audio_channels = audio->audio_channels;
-
-  pthread_mutex_unlock(audio_mutex);
+  g_object_get(audio,
+	       "output", &output,
+	       "input", &input,
+	       "audio-channels", &audio_channels,
+	       NULL);
   
   if(pads == pads_old ||
      audio_channels == 0){
@@ -1169,25 +1088,14 @@ ags_live_lv2_bridge_resize_pads(AgsMachine *machine, GType channel_type,
 				    pads_old);
 
       while(channel != NULL){
-	/* get channel mutex */
-	pthread_mutex_lock(application_mutex);
-
-	channel_mutex = ags_mutex_manager_lookup(mutex_manager,
-						 (GObject *) channel);
-  
-	pthread_mutex_unlock(application_mutex);
-
 	/* get some fields */
-	pthread_mutex_lock(channel_mutex);
-	
-	soundcard = channel->soundcard;
-
-	first_recycling = channel->first_recycling;
-
-	pthread_mutex_unlock(channel_mutex);
+	g_object_get(channel,
+		     "output-soundcard", &output_soundcard,
+		     "first-recycling", &first_recycling,
+		     NULL);
 
 	/* audio signal */
-	audio_signal = ags_audio_signal_new(soundcard,
+	audio_signal = ags_audio_signal_new(output_soundcard,
 					    (GObject *) first_recycling,
 					    NULL);
 	audio_signal->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;
@@ -1197,11 +1105,9 @@ ags_live_lv2_bridge_resize_pads(AgsMachine *machine, GType channel_type,
 				       audio_signal);
 	
 	/* iterate */
-	pthread_mutex_lock(channel_mutex);
-
-	channel = channel->next;
-
-	pthread_mutex_unlock(channel_mutex);
+	g_object_get(channel,
+		     "next", &channel,
+		     NULL);
       }
 
       /* recall */
@@ -1220,25 +1126,14 @@ ags_live_lv2_bridge_resize_pads(AgsMachine *machine, GType channel_type,
 				    pads_old);
 
       while(channel != NULL){
-	/* get channel mutex */
-	pthread_mutex_lock(application_mutex);
-
-	channel_mutex = ags_mutex_manager_lookup(mutex_manager,
-						 (GObject *) channel);
-  
-	pthread_mutex_unlock(application_mutex);
-
 	/* get some fields */
-	pthread_mutex_lock(channel_mutex);
-	
-	soundcard = channel->soundcard;
-
-	first_recycling = channel->first_recycling;
-
-	pthread_mutex_unlock(channel_mutex);
+	g_object_get(channel,
+		     "output-soundcard", &output_soundcard,
+		     "first-recycling", &first_recycling,
+		     NULL);
 
 	/* audio signal */
-	audio_signal = ags_audio_signal_new(soundcard,
+	audio_signal = ags_audio_signal_new(output_soundcard,
 					    (GObject *) first_recycling,
 					    NULL);
 	audio_signal->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;
@@ -1248,11 +1143,9 @@ ags_live_lv2_bridge_resize_pads(AgsMachine *machine, GType channel_type,
 				       audio_signal);
 	
 	/* iterate */
-	pthread_mutex_lock(channel_mutex);
-
-	channel = channel->next;
-
-	pthread_mutex_unlock(channel_mutex);
+	g_object_get(channel,
+		     "next", &channel,
+		     NULL);
       }
 
       /* recall */
@@ -1284,20 +1177,13 @@ ags_live_lv2_bridge_map_recall(AgsMachine *machine)
   AgsPlayLv2Audio *play_lv2_audio;
   AgsPlayLv2AudioRun *play_lv2_audio_run;
 
-  AgsMutexManager *mutex_manager;
-
-  GList *list;
-
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *audio_mutex;
+  GList *start_play, *play;
+  GList *start_recall, *recall;
   
   if((AGS_MACHINE_MAPPED_RECALL & (machine->flags)) != 0 ||
      (AGS_MACHINE_PREMAPPED_RECALL & (machine->flags)) != 0){
     return;
   }
-
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
 
   window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) machine,
 						 AGS_TYPE_WINDOW);
@@ -1305,14 +1191,10 @@ ags_live_lv2_bridge_map_recall(AgsMachine *machine)
   live_lv2_bridge = (AgsLiveLv2Bridge *) machine;
 
   audio = machine->audio;
-
-  /* get audio mutex */
-  pthread_mutex_lock(application_mutex);
-
-  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
-					 (GObject *) audio);
-  
-  pthread_mutex_unlock(application_mutex);  
+  g_object_get(audio,
+	       "play", &start_play,
+	       "recall", &start_recall,
+	       NULL);
 
   /* ags-delay */
   ags_recall_factory_create(audio,
@@ -1326,19 +1208,15 @@ ags_live_lv2_bridge_map_recall(AgsMachine *machine)
 			     AGS_RECALL_FACTORY_RECALL),
 			    0);
 
-  pthread_mutex_lock(audio_mutex);
-
-  list = ags_recall_find_type(audio->play,
+  play = ags_recall_find_type(start_play,
 			      AGS_TYPE_DELAY_AUDIO_RUN);
 
-  if(list != NULL){
-    play_delay_audio_run = AGS_DELAY_AUDIO_RUN(list->data);
+  if(play != NULL){
+    play_delay_audio_run = AGS_DELAY_AUDIO_RUN(play->data);
     //    AGS_RECALL(play_delay_audio_run)->flags |= AGS_RECALL_PERSISTENT;
   }else{
     play_delay_audio_run = NULL;
   }
-  
-  pthread_mutex_unlock(audio_mutex);
 
   /* ags-count-beats */
   ags_recall_factory_create(audio,
@@ -1352,13 +1230,11 @@ ags_live_lv2_bridge_map_recall(AgsMachine *machine)
 			     AGS_RECALL_FACTORY_RECALL),
 			    0);
   
-  pthread_mutex_lock(audio_mutex);
-
-  list = ags_recall_find_type(audio->play,
+  play = ags_recall_find_type(start_play,
 			      AGS_TYPE_COUNT_BEATS_AUDIO_RUN);
 
-  if(list != NULL){
-    play_count_beats_audio_run = AGS_COUNT_BEATS_AUDIO_RUN(list->data);
+  if(play != NULL){
+    play_count_beats_audio_run = AGS_COUNT_BEATS_AUDIO_RUN(play->data);
 
     /* set dependency */  
     g_object_set(G_OBJECT(play_count_beats_audio_run),
@@ -1371,8 +1247,6 @@ ags_live_lv2_bridge_map_recall(AgsMachine *machine)
     play_count_beats_audio_run = NULL;
   }
 
-  pthread_mutex_unlock(audio_mutex);
-
   /* ags-record-midi */
   ags_recall_factory_create(audio,
 			    NULL, NULL,
@@ -1384,13 +1258,11 @@ ags_live_lv2_bridge_map_recall(AgsMachine *machine)
 			     AGS_RECALL_FACTORY_RECALL),
 			    0);
 
-  pthread_mutex_lock(audio_mutex);
+  recall = ags_recall_find_type(start_recall,
+				AGS_TYPE_RECORD_MIDI_AUDIO_RUN);
 
-  list = ags_recall_find_type(audio->recall,
-			      AGS_TYPE_RECORD_MIDI_AUDIO_RUN);
-
-  if(list != NULL){
-    recall_record_midi_audio_run = AGS_RECORD_MIDI_AUDIO_RUN(list->data);
+  if(recall != NULL){
+    recall_record_midi_audio_run = AGS_RECORD_MIDI_AUDIO_RUN(recall->data);
     
     /* set dependency */
     g_object_set(G_OBJECT(recall_record_midi_audio_run),
@@ -1402,8 +1274,6 @@ ags_live_lv2_bridge_map_recall(AgsMachine *machine)
 		 "count-beats-audio-run", play_count_beats_audio_run,
 		 NULL);
   }  
-
-  pthread_mutex_unlock(audio_mutex);
 
   /* ags-play-lv2 */
   ags_recall_factory_create(audio,
@@ -1417,13 +1287,11 @@ ags_live_lv2_bridge_map_recall(AgsMachine *machine)
 			     AGS_RECALL_FACTORY_BULK),
 			    0);
 
-  pthread_mutex_lock(audio_mutex);
-
-  list = ags_recall_find_type(audio->play,
+  play = ags_recall_find_type(start_play,
 			      AGS_TYPE_PLAY_LV2_AUDIO);
   
-  if(list != NULL){
-    play_lv2_audio = AGS_PLAY_LV2_AUDIO(list->data);
+  if(play != NULL){
+    play_lv2_audio = AGS_PLAY_LV2_AUDIO(play->data);
     
     g_object_set(play_lv2_audio,
 		 "filename", live_lv2_bridge->filename,
@@ -1434,11 +1302,11 @@ ags_live_lv2_bridge_map_recall(AgsMachine *machine)
     ags_play_lv2_audio_load_ports(play_lv2_audio);
   }
 
-  list = ags_recall_find_type(audio->play,
+  play = ags_recall_find_type(start_play,
 			      AGS_TYPE_PLAY_LV2_AUDIO_RUN);
 
-  if(list != NULL){
-    play_lv2_audio_run = AGS_PLAY_LV2_AUDIO_RUN(list->data);
+  if(play != NULL){
+    play_lv2_audio_run = AGS_PLAY_LV2_AUDIO_RUN(play->data);
 
     /* set dependency */
     g_object_set(G_OBJECT(play_lv2_audio_run),
@@ -1450,8 +1318,6 @@ ags_live_lv2_bridge_map_recall(AgsMachine *machine)
 		 "count-beats-audio-run", play_count_beats_audio_run,
 		 NULL);
   }
-
-  pthread_mutex_unlock(audio_mutex);
 
   /* depending on destination */
   ags_live_lv2_bridge_input_map_recall(live_lv2_bridge,
@@ -1521,35 +1387,49 @@ ags_live_lv2_bridge_load_program(AgsLiveLv2Bridge *live_lv2_bridge)
     uint32_t i;
 
     if(live_lv2_bridge->lv2_handle == NULL){
+      guint samplerate;
+      guint buffer_size;
+
+      g_object_get(AGS_MACHINE(live_lv2_bridge)->audio,
+		   "samplerate", &samplerate,
+		   "buffer-size", &buffer_size,
+		   NULL);
+      
       live_lv2_bridge->lv2_handle = (LV2_Handle *) ags_base_plugin_instantiate(lv2_plugin,
-									       AGS_MACHINE(live_lv2_bridge)->audio->samplerate);
+									       samplerate, buffer_size);
     }
 
     if(live_lv2_bridge->port_value == NULL){
-      GList *port_descriptor;
+      GList *start_plugin_port, *plugin_port;
       
       guint port_count;
 
-      port_count = g_list_length(AGS_BASE_PLUGIN(lv2_plugin)->port);
+      port_count = g_list_length(AGS_BASE_PLUGIN(lv2_plugin)->plugin_port);
 
       if(port_count > 0){
 	live_lv2_bridge->port_value = (float *) malloc(port_count * sizeof(float));
       }
 
-      port_descriptor = AGS_BASE_PLUGIN(lv2_plugin)->port;
+      g_object_get(lv2_plugin,
+		   "plugin-port", &start_plugin_port,
+		   NULL);
       
-      for(i = 0; port_descriptor != NULL;){
-	if((AGS_PORT_DESCRIPTOR_CONTROL & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
-	  if((AGS_PORT_DESCRIPTOR_INPUT & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
+      plugin_port = start_plugin_port;
+      
+      for(i = 0; plugin_port != NULL;){
+	if(ags_plugin_port_test_flags(plugin_port->data, AGS_PLUGIN_PORT_CONTROL)){
+	  if(ags_plugin_port_test_flags(plugin_port->data, AGS_PLUGIN_PORT_INPUT)){
 	    plugin_descriptor->connect_port(live_lv2_bridge->lv2_handle[0],
-					    AGS_PORT_DESCRIPTOR(port_descriptor->data)->port_index,
+					    AGS_PLUGIN_PORT(plugin_port->data)->port_index,
 					    &(live_lv2_bridge->port_value[i]));
 	    i++;
 	  }
 	}
 
-	port_descriptor = port_descriptor->next;
+	plugin_port = plugin_port->next;
       }
+
+      g_list_free(start_plugin_port);
     }
     
     if(live_lv2_bridge->program == NULL){
@@ -1719,17 +1599,14 @@ ags_live_lv2_bridge_load(AgsLiveLv2Bridge *live_lv2_bridge)
 
   AgsLv2Plugin *lv2_plugin;
 
-  AgsConfig *config;
-
   void *plugin_so;
 
-  GList *port;
   GList *list;
-
-  gchar *str;
+  GList *start_plugin_port, *plugin_port;
   
-  unsigned long samplerate;
-  unsigned long effect_index;
+  guint samplerate;
+  guint buffer_size;
+  guint effect_index;
   gdouble step;
   unsigned long port_count;
   gboolean has_output_port;
@@ -1751,27 +1628,9 @@ ags_live_lv2_bridge_load(AgsLiveLv2Bridge *live_lv2_bridge)
 	       "uri", lv2_plugin->uri,
 	       NULL);
 
-  config = ags_config_get_instance();
-
-  /* samplerate */
-  str = ags_config_get_value(config,
-			     AGS_CONFIG_SOUNDCARD,
-			     "samplerate");
-
-  if(str == NULL){
-    str = ags_config_get_value(config,
-			       AGS_CONFIG_SOUNDCARD_0,
-			       "samplerate");
-  }
-  
-  if(str != NULL){
-    samplerate = g_ascii_strtoull(str,
-				  NULL,
-				  10);
-    free(str);
-  }else{
-    samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
-  }
+  /* samplerate and buffer size */
+  samplerate = ags_soundcard_helper_config_get_samplerate(ags_config_get_instance());
+  buffer_size = ags_soundcard_helper_config_get_buffer_size(ags_config_get_instance());
 
   g_message("ags_live_lv2_bridge.c - load %s %s", live_lv2_bridge->filename, live_lv2_bridge->effect);
  
@@ -1798,13 +1657,15 @@ ags_live_lv2_bridge_load(AgsLiveLv2Bridge *live_lv2_bridge)
   }
 
   /* load ports */
-  port = AGS_BASE_PLUGIN(lv2_plugin)->port;
+  g_object_get(lv2_plugin,
+	       "plugin-port", &start_plugin_port,
+	       NULL);
 
-  port_count = g_list_length(port);
+  port_count = g_list_length(start_plugin_port);
   k = 0;
 
-  while(port != NULL){
-    if((AGS_PORT_DESCRIPTOR_CONTROL & (AGS_PORT_DESCRIPTOR(port->data)->flags)) != 0){
+  while(plugin_port != NULL){
+    if(ags_plugin_port_test_flags(AGS_PLUGIN_PORT(plugin_port->data), AGS_PLUGIN_PORT_CONTROL)){
       GtkWidget *child_widget;
 
       AgsLv2Conversion *lv2_conversion;
@@ -1826,14 +1687,14 @@ ags_live_lv2_bridge_load(AgsLiveLv2Bridge *live_lv2_bridge)
 			 y + 1, AGS_EFFECT_BULK_COLUMNS_COUNT);
       }
 
-      if((AGS_PORT_DESCRIPTOR_TOGGLED & (AGS_PORT_DESCRIPTOR(port->data)->flags)) != 0){
-	if((AGS_PORT_DESCRIPTOR_OUTPUT & (AGS_PORT_DESCRIPTOR(port->data)->flags)) != 0){
+      if(ags_plugin_port_test_flags(AGS_PLUGIN_PORT(plugin_port->data), AGS_PLUGIN_PORT_TOGGLED)){
+	if(ags_plugin_port_test_flags(AGS_PLUGIN_PORT(plugin_port->data), AGS_PLUGIN_PORT_OUTPUT)){
 	  widget_type = AGS_TYPE_LED;
 	}else{
 	  widget_type = GTK_TYPE_TOGGLE_BUTTON;
 	}
       }else{
-	if((AGS_PORT_DESCRIPTOR_OUTPUT & (AGS_PORT_DESCRIPTOR(port->data)->flags)) != 0){
+	if(ags_plugin_port_test_flags(AGS_PLUGIN_PORT(plugin_port->data), AGS_PLUGIN_PORT_OUTPUT)){
 	  widget_type = AGS_TYPE_HINDICATOR;
 	}else{
 	  widget_type = AGS_TYPE_DIAL;
@@ -1842,8 +1703,8 @@ ags_live_lv2_bridge_load(AgsLiveLv2Bridge *live_lv2_bridge)
 
       step_count = AGS_DIAL_DEFAULT_PRECISION;
 
-      if((AGS_PORT_DESCRIPTOR_INTEGER & (AGS_PORT_DESCRIPTOR(port->data)->flags)) != 0){
-	step_count = AGS_PORT_DESCRIPTOR(port->data)->scale_steps;
+      if(ags_plugin_port_test_flags(AGS_PLUGIN_PORT(plugin_port->data), AGS_PLUGIN_PORT_INTEGER)){
+	step_count = AGS_PLUGIN_PORT(plugin_port->data)->scale_steps;
 
 	disable_seemless = TRUE;	
       }
@@ -1856,11 +1717,11 @@ ags_live_lv2_bridge_load(AgsLiveLv2Bridge *live_lv2_bridge)
 				     port_count);
       bulk_member = (AgsBulkMember *) g_object_new(AGS_TYPE_BULK_MEMBER,
 						   "widget-type", widget_type,
-						   "widget-label", AGS_PORT_DESCRIPTOR(port->data)->port_name,
+						   "widget-label", AGS_PLUGIN_PORT(plugin_port->data)->port_name,
 						   "plugin-name", plugin_name,
 						   "filename", live_lv2_bridge->filename,
 						   "effect", live_lv2_bridge->effect,
-						   "specifier", AGS_PORT_DESCRIPTOR(port->data)->port_name,
+						   "specifier", AGS_PLUGIN_PORT(plugin_port->data)->port_name,
 						   "control-port", control_port,
 						   "steps", step_count,
 						   NULL);
@@ -1872,7 +1733,7 @@ ags_live_lv2_bridge_load(AgsLiveLv2Bridge *live_lv2_bridge)
       /* lv2 conversion */
       lv2_conversion = NULL;
 
-      if((AGS_PORT_DESCRIPTOR_LOGARITHMIC & (AGS_PORT_DESCRIPTOR(port->data)->flags)) != 0){
+      if(ags_plugin_port_test_flags(AGS_PLUGIN_PORT(plugin_port->data), AGS_PLUGIN_PORT_LOGARITHMIC)){
 	if(lv2_conversion == NULL ||
 	   !AGS_IS_LV2_CONVERSION(lv2_conversion)){
 	  lv2_conversion = ags_lv2_conversion_new();
@@ -1884,11 +1745,11 @@ ags_live_lv2_bridge_load(AgsLiveLv2Bridge *live_lv2_bridge)
       bulk_member->conversion = (AgsConversion *) lv2_conversion;
 
       /* child widget */
-      if((AGS_PORT_DESCRIPTOR_TOGGLED & (AGS_PORT_DESCRIPTOR(port->data)->flags)) != 0){
+      if(ags_plugin_port_test_flags(AGS_PLUGIN_PORT(plugin_port->data), AGS_PLUGIN_PORT_TOGGLED)){
 	bulk_member->port_flags = AGS_BULK_MEMBER_PORT_BOOLEAN;
       }
       
-      if((AGS_PORT_DESCRIPTOR_INTEGER & (AGS_PORT_DESCRIPTOR(port->data)->flags)) != 0){
+      if(ags_plugin_port_test_flags(AGS_PLUGIN_PORT(plugin_port->data), AGS_PLUGIN_PORT_INTEGER)){
 	bulk_member->port_flags = AGS_BULK_MEMBER_PORT_INTEGER;
       }
 
@@ -1905,8 +1766,8 @@ ags_live_lv2_bridge_load(AgsLiveLv2Bridge *live_lv2_bridge)
 	}
 
 	/* add controls of ports and apply range  */
-	lower_bound = g_value_get_float(AGS_PORT_DESCRIPTOR(port->data)->lower_value);
-	upper_bound = g_value_get_float(AGS_PORT_DESCRIPTOR(port->data)->upper_value);
+	lower_bound = g_value_get_float(AGS_PLUGIN_PORT(plugin_port->data)->lower_value);
+	upper_bound = g_value_get_float(AGS_PLUGIN_PORT(plugin_port->data)->upper_value);
 
 	adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 0.1, 0.1, 0.0);
 	g_object_set(dial,
@@ -1928,7 +1789,7 @@ ags_live_lv2_bridge_load(AgsLiveLv2Bridge *live_lv2_bridge)
 	gtk_adjustment_set_upper(adjustment,
 				 upper_bound);
 	gtk_adjustment_set_value(adjustment,
-				 g_value_get_float(AGS_PORT_DESCRIPTOR(port->data)->default_value));
+				 g_value_get_float(AGS_PLUGIN_PORT(plugin_port->data)->default_value));
       }else if(AGS_IS_INDICATOR(child_widget) ||
 	       AGS_IS_LED(child_widget)){
 	g_hash_table_insert(ags_effect_bulk_indicator_queue_draw,
@@ -1954,13 +1815,13 @@ ags_live_lv2_bridge_load(AgsLiveLv2Bridge *live_lv2_bridge)
       x++;
     }
 
-    port = port->next;    
+    plugin_port = plugin_port->next;    
     k++;
   }
 
   /* program */
   live_lv2_bridge->lv2_handle = ags_base_plugin_instantiate(lv2_plugin,
-							    AGS_MACHINE(live_lv2_bridge)->audio->samplerate);
+							    samplerate, buffer_size);
   
   if((AGS_LV2_PLUGIN_HAS_PROGRAM_INTERFACE & (lv2_plugin->flags)) != 0){
     ags_live_lv2_bridge_load_program(live_lv2_bridge);
@@ -2009,11 +1870,11 @@ ags_live_lv2_bridge_lv2ui_idle_timeout(GtkWidget *widget)
  * @filename: the plugin.so
  * @effect: the effect
  *
- * Creates an #AgsLiveLv2Bridge
+ * Create a new instance of #AgsLiveLv2Bridge
  *
- * Returns: a new #AgsLiveLv2Bridge
+ * Returns: the new #AgsLiveLv2Bridge
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsLiveLv2Bridge*
 ags_live_lv2_bridge_new(GObject *soundcard,
@@ -2021,18 +1882,13 @@ ags_live_lv2_bridge_new(GObject *soundcard,
 			gchar *effect)
 {
   AgsLiveLv2Bridge *live_lv2_bridge;
-  GValue value = {0,};
 
   live_lv2_bridge = (AgsLiveLv2Bridge *) g_object_new(AGS_TYPE_LIVE_LV2_BRIDGE,
 						      NULL);
 
-  if(soundcard != NULL){
-    g_value_init(&value, G_TYPE_OBJECT);
-    g_value_set_object(&value, soundcard);
-    g_object_set_property(G_OBJECT(AGS_MACHINE(live_lv2_bridge)->audio),
-			  "soundcard", &value);
-    g_value_unset(&value);
-  }
+  g_object_set(AGS_MACHINE(live_lv2_bridge)->audio,
+	       "output-soundcard", soundcard,
+	       NULL);
 
   g_object_set(live_lv2_bridge,
 	       "filename", filename,

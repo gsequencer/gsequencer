@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -18,22 +18,16 @@
  */
 
 #include <ags/audio/recall/ags_mute_audio_run.h>
-#include <ags/audio/recall/ags_mute_audio.h>
 
 #include <ags/libags.h>
 
 #include <ags/audio/ags_recall_container.h>
 
+#include <ags/audio/recall/ags_mute_audio.h>
+
 void ags_mute_audio_run_class_init(AgsMuteAudioRunClass *mute_audio_run);
-void ags_mute_audio_run_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_mute_audio_run_dynamic_connectable_interface_init(AgsDynamicConnectableInterface *dynamic_connectable);
-void ags_mute_audio_run_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_mute_audio_run_init(AgsMuteAudioRun *mute_audio_run);
 void ags_mute_audio_run_finalize(GObject *gobject);
-void ags_mute_audio_run_connect(AgsConnectable *connectable);
-void ags_mute_audio_run_disconnect(AgsConnectable *connectable);
-void ags_mute_audio_run_connect_dynamic(AgsDynamicConnectable *dynamic_connectable);
-void ags_mute_audio_run_disconnect_dynamic(AgsDynamicConnectable *dynamic_connectable);
 
 /**
  * SECTION:ags_mute_audio_run
@@ -46,9 +40,6 @@ void ags_mute_audio_run_disconnect_dynamic(AgsDynamicConnectable *dynamic_connec
  */
 
 static gpointer ags_mute_audio_run_parent_class = NULL;
-static AgsConnectableInterface* ags_mute_audio_run_parent_connectable_interface;
-static AgsDynamicConnectableInterface *ags_mute_audio_run_parent_dynamic_connectable_interface;
-static AgsPluginInterface *ags_mute_audio_run_parent_plugin_interface;
 
 GType
 ags_mute_audio_run_get_type()
@@ -70,42 +61,10 @@ ags_mute_audio_run_get_type()
       (GInstanceInitFunc) ags_mute_audio_run_init,
     };
 
-    static const GInterfaceInfo ags_connectable_interface_info = {
-      (GInterfaceInitFunc) ags_mute_audio_run_connectable_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-
-    static const GInterfaceInfo ags_dynamic_connectable_interface_info = {
-      (GInterfaceInitFunc) ags_mute_audio_run_dynamic_connectable_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-
-    static const GInterfaceInfo ags_plugin_interface_info = {
-      (GInterfaceInitFunc) ags_mute_audio_run_plugin_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };    
-
     ags_type_mute_audio_run = g_type_register_static(AGS_TYPE_RECALL_AUDIO_RUN,
 						     "AgsMuteAudioRun",
 						     &ags_mute_audio_run_info,
-						     0);
-    
-    g_type_add_interface_static(ags_type_mute_audio_run,
-				AGS_TYPE_CONNECTABLE,
-				&ags_connectable_interface_info);
-
-    g_type_add_interface_static(ags_type_mute_audio_run,
-				AGS_TYPE_DYNAMIC_CONNECTABLE,
-				&ags_dynamic_connectable_interface_info);
-
-    g_type_add_interface_static(ags_type_mute_audio_run,
-				AGS_TYPE_PLUGIN,
-				&ags_plugin_interface_info);
-
-    g_once_init_leave (&g_define_type_id__volatile, ags_type_mute_audio_run);
+						     0);    
   }
 
   return g_define_type_id__volatile;
@@ -125,32 +84,13 @@ ags_mute_audio_run_class_init(AgsMuteAudioRunClass *mute_audio_run)
 }
 
 void
-ags_mute_audio_run_connectable_interface_init(AgsConnectableInterface *connectable)
-{
-  ags_mute_audio_run_parent_connectable_interface = g_type_interface_peek_parent(connectable);
-
-  connectable->connect = ags_mute_audio_run_connect;
-  connectable->disconnect = ags_mute_audio_run_disconnect;
-}
-
-void
-ags_mute_audio_run_dynamic_connectable_interface_init(AgsDynamicConnectableInterface *dynamic_connectable)
-{
-  ags_mute_audio_run_parent_dynamic_connectable_interface = g_type_interface_peek_parent(dynamic_connectable);
-
-  dynamic_connectable->connect_dynamic = ags_mute_audio_run_connect_dynamic;
-  dynamic_connectable->disconnect_dynamic = ags_mute_audio_run_disconnect_dynamic;
-}
-
-void
-ags_mute_audio_run_plugin_interface_init(AgsPluginInterface *plugin)
-{
-  ags_mute_audio_run_parent_plugin_interface = g_type_interface_peek_parent(plugin);
-}
-
-void
 ags_mute_audio_run_init(AgsMuteAudioRun *mute_audio_run)
 {
+  ags_recall_set_ability_flags(mute_audio_run, (AGS_SOUND_ABILITY_SEQUENCER |
+						AGS_SOUND_ABILITY_NOTATION |
+						AGS_SOUND_ABILITY_WAVE |
+						AGS_SOUND_ABILITY_MIDI));
+
   AGS_RECALL(mute_audio_run)->name = "ags-mute";
   AGS_RECALL(mute_audio_run)->version = AGS_RECALL_DEFAULT_VERSION;
   AGS_RECALL(mute_audio_run)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;
@@ -165,63 +105,23 @@ ags_mute_audio_run_finalize(GObject *gobject)
   G_OBJECT_CLASS(ags_mute_audio_run_parent_class)->finalize(gobject);
 }
 
-void
-ags_mute_audio_run_connect(AgsConnectable *connectable)
-{
-  /* call parent */
-  ags_mute_audio_run_parent_connectable_interface->connect(connectable);
-}
-
-void
-ags_mute_audio_run_disconnect(AgsConnectable *connectable)
-{
-  /* call parent */
-  ags_mute_audio_run_parent_connectable_interface->disconnect(connectable);
-}
-
-void
-ags_mute_audio_run_connect_dynamic(AgsDynamicConnectable *dynamic_connectable)
-{
-  /* call parent */
-  ags_mute_audio_run_parent_dynamic_connectable_interface->connect_dynamic(dynamic_connectable);
-}
-
-void
-ags_mute_audio_run_disconnect_dynamic(AgsDynamicConnectable *dynamic_connectable)
-{
-  /* call parent */
-  ags_mute_audio_run_parent_dynamic_connectable_interface->connect_dynamic(dynamic_connectable);
-}
-
-AgsRecall*
-ags_mute_audio_run_duplicate(AgsRecall *recall,
-			     AgsRecallID *recall_id,
-			     guint *n_params, GParameter *parameter)
-{
-  AgsMuteAudioRun *copy;
-
-  copy = AGS_MUTE_AUDIO_RUN(AGS_RECALL_CLASS(ags_mute_audio_run_parent_class)->duplicate(recall,
-											 recall_id,
-											 n_params, parameter));
-
-  return((AgsRecall *) copy);
-}
-
 /**
  * ags_mute_audio_run_new:
+ * @audio: the #AgsAudio
  *
- * Creates an #AgsMuteAudioRun
+ * Create a new instance of #AgsMuteAudioRun
  *
- * Returns: a new #AgsMuteAudioRun
+ * Returns: the new #AgsMuteAudioRun
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsMuteAudioRun*
-ags_mute_audio_run_new()
+ags_mute_audio_run_new(AgsAudio *audio)
 {
   AgsMuteAudioRun *mute_audio_run;
 
   mute_audio_run = (AgsMuteAudioRun *) g_object_new(AGS_TYPE_MUTE_AUDIO_RUN,
+						    "audio", audio,
 						    NULL);
 
   return(mute_audio_run);

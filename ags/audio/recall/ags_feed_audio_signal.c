@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -18,26 +18,20 @@
  */
 
 #include <ags/audio/recall/ags_feed_audio_signal.h>
-#include <ags/audio/recall/ags_feed_channel.h>
 
 #include <ags/libags.h>
 
 #include <ags/audio/ags_recall_channel_run.h>
 
+#include <ags/audio/recall/ags_feed_channel.h>
+#include <ags/audio/recall/ags_feed_channel_run.h>
+#include <ags/audio/recall/ags_feed_recycling.h>
+
 void ags_feed_audio_signal_class_init(AgsFeedAudioSignalClass *feed_audio_signal);
-void ags_feed_audio_signal_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_feed_audio_signal_dynamic_connectable_interface_init(AgsDynamicConnectableInterface *dynamic_connectable);
 void ags_feed_audio_signal_init(AgsFeedAudioSignal *feed_audio_signal);
-void ags_feed_audio_signal_connect(AgsConnectable *connectable);
-void ags_feed_audio_signal_disconnect(AgsConnectable *connectable);
-void ags_feed_audio_signal_connect_dynamic(AgsDynamicConnectable *dynamic_connectable);
-void ags_feed_audio_signal_disconnect_dynamic(AgsDynamicConnectable *dynamic_connectable);
 void ags_feed_audio_signal_finalize(GObject *gobject);
 
 void ags_feed_audio_signal_run_pre(AgsRecall *recall);
-AgsRecall* ags_feed_audio_signal_duplicate(AgsRecall *recall,
-					   AgsRecallID *recall_id,
-					   guint *n_params, GParameter *parameter);
 
 /**
  * SECTION:ags_feed_audio_signal
@@ -50,8 +44,6 @@ AgsRecall* ags_feed_audio_signal_duplicate(AgsRecall *recall,
  */
 
 static gpointer ags_feed_audio_signal_parent_class = NULL;
-static AgsConnectableInterface *ags_feed_audio_signal_parent_connectable_interface;
-static AgsDynamicConnectableInterface *ags_feed_audio_signal_parent_dynamic_connectable_interface;
 
 GType
 ags_feed_audio_signal_get_type()
@@ -73,35 +65,13 @@ ags_feed_audio_signal_get_type()
       (GInstanceInitFunc) ags_feed_audio_signal_init,
     };
 
-    static const GInterfaceInfo ags_connectable_interface_info = {
-      (GInterfaceInitFunc) ags_feed_audio_signal_connectable_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-
-    static const GInterfaceInfo ags_dynamic_connectable_interface_info = {
-      (GInterfaceInitFunc) ags_feed_audio_signal_dynamic_connectable_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-
     ags_type_feed_audio_signal = g_type_register_static(AGS_TYPE_RECALL_AUDIO_SIGNAL,
 							"AgsFeedAudioSignal",
 							&ags_feed_audio_signal_info,
 							0);
-
-    g_type_add_interface_static(ags_type_feed_audio_signal,
-				AGS_TYPE_CONNECTABLE,
-				&ags_connectable_interface_info);
-
-    g_type_add_interface_static(ags_type_feed_audio_signal,
-				AGS_TYPE_DYNAMIC_CONNECTABLE,
-				&ags_dynamic_connectable_interface_info);
-
-    g_once_init_leave (&g_define_type_id__volatile, ags_type_feed_audio_signal);
   }
 
-  return g_define_type_id__volatile;
+  return(ags_type_feed_audio_signal);
 }
 
 void
@@ -125,24 +95,6 @@ ags_feed_audio_signal_class_init(AgsFeedAudioSignalClass *feed_audio_signal)
 }
 
 void
-ags_feed_audio_signal_connectable_interface_init(AgsConnectableInterface *connectable)
-{
-  ags_feed_audio_signal_parent_connectable_interface = g_type_interface_peek_parent(connectable);
-
-  connectable->connect = ags_feed_audio_signal_connect;
-  connectable->disconnect = ags_feed_audio_signal_disconnect;
-}
-
-void
-ags_feed_audio_signal_dynamic_connectable_interface_init(AgsDynamicConnectableInterface *dynamic_connectable)
-{
-  ags_feed_audio_signal_parent_dynamic_connectable_interface = g_type_interface_peek_parent(dynamic_connectable);
-
-  dynamic_connectable->connect_dynamic = ags_feed_audio_signal_connect_dynamic;
-  dynamic_connectable->disconnect_dynamic = ags_feed_audio_signal_disconnect_dynamic;
-}
-
-void
 ags_feed_audio_signal_init(AgsFeedAudioSignal *feed_audio_signal)
 {
   AGS_RECALL(feed_audio_signal)->name = "ags-feed";
@@ -157,103 +109,120 @@ ags_feed_audio_signal_finalize(GObject *gobject)
 {
   /* call parent */
   G_OBJECT_CLASS(ags_feed_audio_signal_parent_class)->finalize(gobject);
-
-  /* empty */
-}
-
-void
-ags_feed_audio_signal_connect(AgsConnectable *connectable)
-{
-  /* call parent */
-  ags_feed_audio_signal_parent_connectable_interface->connect(connectable);
-
-  /* empty */
-}
-
-void
-ags_feed_audio_signal_disconnect(AgsConnectable *connectable)
-{
-  /* call parent */
-  ags_feed_audio_signal_parent_connectable_interface->disconnect(connectable);
-
-  /* empty */
-}
-
-void
-ags_feed_audio_signal_connect_dynamic(AgsDynamicConnectable *dynamic_connectable)
-{
-  /* call parent */
-  ags_feed_audio_signal_parent_dynamic_connectable_interface->connect_dynamic(dynamic_connectable);
-
-  /* empty */
-}
-
-void
-ags_feed_audio_signal_disconnect_dynamic(AgsDynamicConnectable *dynamic_connectable)
-{
-  /* call parent */
-  ags_feed_audio_signal_parent_dynamic_connectable_interface->disconnect_dynamic(dynamic_connectable);
-
-  /* empty */
 }
 
 void
 ags_feed_audio_signal_run_pre(AgsRecall *recall)
 {
   AgsAudioSignal *template, *audio_signal;
-  AgsNote *note;
+  AgsFeedAudioSignal *feed_audio_signal;
 
-  AGS_RECALL_CLASS(ags_feed_audio_signal_parent_class)->run_pre(recall);
+  GObject *output_soundcard;
+  
+  GList *note_start, *note;
+  
+  void (*parent_class_run_pre)(AgsRecall *recall);
 
-  if(recall->rt_safe){
+  pthread_mutex_t *recall_mutex;
+  
+  feed_audio_signal = (AgsFeedAudioSignal *) recall;
+
+  /* get mutex */
+  pthread_mutex_lock(ags_recall_get_class_mutex());
+
+  recall_mutex = recall->obj_mutex;
+
+  parent_class_run_pre = AGS_RECALL_CLASS(ags_feed_audio_signal_parent_class)->run_pre;
+
+  pthread_mutex_unlock(ags_recall_get_class_mutex());
+
+  /* call parent */
+  parent_class_run_pre(recall);
+
+  if(ags_recall_global_get_rt_safe()){
     return;
   }
-  
-  audio_signal = AGS_RECALL_AUDIO_SIGNAL(recall)->source;
-  note = audio_signal->note->data;
 
-  template = NULL;
-  
-  if(AGS_RECALL_AUDIO_SIGNAL(recall)->source->note != NULL &&
-     (AGS_NOTE_FEED & (note->flags)) != 0){
-    gdouble notation_delay;
-    guint frame_count;
+  g_object_get(feed_audio_signal,
+	       "output-soundcard", &output_soundcard,
+	       "source", &audio_signal,
+	       NULL);
 
-    if(audio_signal->recycling != NULL){
-      template = ags_audio_signal_get_template(AGS_RECYCLING(audio_signal->recycling)->audio_signal);
-    }
+  g_object_get(audio_signal,
+	       "note", &note_start,
+	       NULL);
+
+  if(note_start != NULL){
+    note = note_start;
+
+    while(note != NULL){      
+      if(ags_note_test_flags(note->data, AGS_NOTE_FEED)){
+	AgsRecycling *recycling;
+
+	guint x0, x1;
+	guint samplerate;
+	gdouble notation_delay;
+	guint frame_count;
+
+	template = NULL;
+
+	g_object_get(note->data,
+		     "x0", &x0,
+		     "x1", &x1,
+		     NULL);
+	
+	g_object_get(audio_signal,
+		     "recycling", &recycling,
+		     "samplerate", &samplerate,
+		     NULL);
+      
+	if(recycling != NULL){
+	  GList *list_start;
+
+	  g_object_get(recycling,
+		       "audio-signal", &list_start,
+		       NULL);
+	
+	  template = ags_audio_signal_get_template(list_start);
+	}
     
-    /* get notation delay */
-    notation_delay = ags_soundcard_get_absolute_delay(AGS_SOUNDCARD(recall->soundcard));
+	/* get notation delay */
+	notation_delay = ags_soundcard_get_absolute_delay(AGS_SOUNDCARD(output_soundcard));
 
-    /* feed audio signal */
-    frame_count = (guint) (((gdouble) audio_signal->samplerate / notation_delay) * (gdouble) (note->x[1] - note->x[0]));
+	/* feed audio signal */
+	frame_count = (guint) (((gdouble) samplerate / notation_delay) * (gdouble) (x1 - x0));
 
-    //FIXME:JK: not thread-safe
-    ags_audio_signal_feed(audio_signal,
-			  template,
-			  frame_count);
+	ags_audio_signal_feed(audio_signal,
+			      template,
+			      frame_count);
+      }
+
+      note = note->next;
+    }
   }else{
     ags_recall_done(recall);
   }
+
+  g_list_free(note_start);
 }
 
 /**
  * ags_feed_audio_signal_new:
- * @audio_signal: an #AgsAudioSignal
+ * @source: the #AgsAudioSignal
  *
- * Creates an #AgsFeedAudioSignal
+ * Create a new instance of #AgsFeedAudioSignal
  *
- * Returns: a new #AgsFeedAudioSignal
+ * Returns: the new #AgsFeedAudioSignal
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsFeedAudioSignal*
-ags_feed_audio_signal_new(AgsAudioSignal *audio_signal)
+ags_feed_audio_signal_new(AgsAudioSignal *source)
 {
   AgsFeedAudioSignal *feed_audio_signal;
 
   feed_audio_signal = (AgsFeedAudioSignal *) g_object_new(AGS_TYPE_FEED_AUDIO_SIGNAL,
+							  "source", source,
 							  NULL);
 
   return(feed_audio_signal);

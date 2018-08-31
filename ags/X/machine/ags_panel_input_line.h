@@ -58,8 +58,6 @@ struct _AgsPanelInputLineClass
 
 GType ags_panel_input_line_get_type();
 
-gboolean ags_panel_input_line_message_monitor_timeout(AgsPanelInputLine *panel_input_line);
-
 AgsPanelInputLine* ags_panel_input_line_new(AgsChannel *channel);
 
 #endif /*__AGS_PANEL_INPUT_LINE_H__*/

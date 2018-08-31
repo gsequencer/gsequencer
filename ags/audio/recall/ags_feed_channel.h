@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -23,6 +23,9 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <ags/libags.h>
+
+#include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_recall_channel.h>
 
 #define AGS_TYPE_FEED_CHANNEL                (ags_feed_channel_get_type())
@@ -47,6 +50,6 @@ struct _AgsFeedChannelClass
 
 GType ags_feed_channel_get_type();
 
-AgsFeedChannel* ags_feed_channel_new();
+AgsFeedChannel* ags_feed_channel_new(AgsChannel *source);
 
 #endif /*__AGS_FEED_CHANNEL_H__*/

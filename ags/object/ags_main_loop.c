@@ -85,7 +85,7 @@ ags_main_loop_class_init(AgsMainLoopInterface *interface)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsMainLoopInterface, interrupt),
 		 NULL, NULL,
-		 g_cclosure_user_marshal_VOID__INT_UINT_POINTER,
+		 ags_cclosure_marshal_VOID__INT_UINT_POINTER,
 		 G_TYPE_NONE, 3,
 		 G_TYPE_INT, G_TYPE_UINT, G_TYPE_POINTER);
 
@@ -107,7 +107,7 @@ ags_main_loop_class_init(AgsMainLoopInterface *interface)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsMainLoopInterface, monitor),
 		 NULL, NULL,
-		 g_cclosure_user_marshal_BOOLEAN__UINT_POINTER,
+		 ags_cclosure_marshal_BOOLEAN__UINT_POINTER,
 		 G_TYPE_BOOLEAN, 2,
 		 G_TYPE_UINT, G_TYPE_POINTER);
 

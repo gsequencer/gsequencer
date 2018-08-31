@@ -24,6 +24,7 @@
 #include <ags/libags-audio.h>
 #include <ags/libags-gui.h>
 
+#include <ags/X/ags_ui_provider.h>
 #include <ags/X/ags_window.h>
 
 #include <ags/X/machine/ags_drum.h>
@@ -50,9 +51,10 @@ void ags_notation_editor_get_property(GObject *gobject,
 				      guint prop_id,
 				      GValue *value,
 				      GParamSpec *param_spec);
+void ags_notation_editor_finalize(GObject *gobject);
+
 void ags_notation_editor_connect(AgsConnectable *connectable);
 void ags_notation_editor_disconnect(AgsConnectable *connectable);
-void ags_notation_editor_finalize(GObject *gobject);
 
 void ags_notation_editor_real_machine_changed(AgsNotationEditor *notation_editor,
 					      AgsMachine *machine);
@@ -156,7 +158,7 @@ ags_notation_editor_class_init(AgsNotationEditorClass *notation_editor)
    *
    * The assigned #AgsSoundcard acting as default sink.
    * 
-   * Since: 1.2.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("soundcard",
 				   i18n_pspec("assigned soundcard"),
@@ -178,7 +180,7 @@ ags_notation_editor_class_init(AgsNotationEditorClass *notation_editor)
    *
    * The ::machine-changed signal notifies about changed machine.
    * 
-   * Since: 1.2.0
+   * Since: 2.0.0
    */
   notation_editor_signals[MACHINE_CHANGED] =
     g_signal_new("machine-changed",
@@ -370,6 +372,21 @@ ags_notation_editor_get_property(GObject *gobject,
 }
 
 void
+ags_notation_editor_finalize(GObject *gobject)
+{
+  AgsNotationEditor *notation_editor;
+
+  notation_editor = AGS_NOTATION_EDITOR(gobject);
+
+  if(notation_editor->soundcard != NULL){
+    g_object_unref(notation_editor->soundcard);
+  }
+  
+  /* call parent */
+  G_OBJECT_CLASS(ags_notation_editor_parent_class)->finalize(gobject);
+}
+
+void
 ags_notation_editor_connect(AgsConnectable *connectable)
 {
   AgsNotationEditor *notation_editor;
@@ -402,6 +419,18 @@ ags_notation_editor_disconnect(AgsConnectable *connectable)
 
   notation_editor = AGS_NOTATION_EDITOR(connectable);
 
+  if((AGS_NOTATION_EDITOR_CONNECTED & (notation_editor->flags)) == 0){
+    return;
+  }
+
+  notation_editor->flags &= (~AGS_NOTATION_EDITOR_CONNECTED);
+
+  g_object_disconnect((GObject *) notation_editor->machine_selector,
+		      "changed",
+		      G_CALLBACK(ags_notation_editor_machine_changed_callback),
+		      (gpointer) notation_editor,
+		      NULL);
+
   /* notation toolbar */
   ags_connectable_disconnect(AGS_CONNECTABLE(notation_editor->notation_toolbar)); 
 
@@ -413,39 +442,16 @@ ags_notation_editor_disconnect(AgsConnectable *connectable)
 }
 
 void
-ags_notation_editor_finalize(GObject *gobject)
-{
-  AgsNotationEditor *notation_editor;
-
-  notation_editor = AGS_NOTATION_EDITOR(gobject);
-
-  if(notation_editor->soundcard != NULL){
-    g_object_unref(notation_editor->soundcard);
-  }
-  
-  /* call parent */
-  G_OBJECT_CLASS(ags_notation_editor_parent_class)->finalize(gobject);
-}
-
-void
 ags_notation_editor_real_machine_changed(AgsNotationEditor *notation_editor,
 					 AgsMachine *machine)
 {
   AgsMachine *old_machine;
-
-  AgsMutexManager *mutex_manager;
 
   GList *tab;
 
   guint length;
   guint audio_channels;
   guint i;
-
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *audio_mutex;
-
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
 
   /* disconnect set pads - old */
   old_machine = notation_editor->selected_machine;
@@ -459,16 +465,6 @@ ags_notation_editor_real_machine_changed(AgsNotationEditor *notation_editor,
 			G_CALLBACK(ags_notation_editor_resize_pads_callback),
 			(gpointer) notation_editor,
 			NULL);
-  }
-
-  /* get audio mutex */
-  if(machine != NULL){
-    pthread_mutex_lock(application_mutex);
-  
-    audio_mutex = ags_mutex_manager_lookup(mutex_manager,
-					   (GObject *) machine->audio);
-  
-    pthread_mutex_unlock(application_mutex);
   }
   
   /* notebook - remove tabs */
@@ -489,12 +485,10 @@ ags_notation_editor_real_machine_changed(AgsNotationEditor *notation_editor,
   
   /* notebook - add tabs */
   if(machine != NULL){
-    pthread_mutex_lock(audio_mutex);
-
-    audio_channels = machine->audio->audio_channels;
+    g_object_get(machine->audio,
+		 "audio-channels", &audio_channels,
+		 NULL);
     
-    pthread_mutex_unlock(audio_mutex);
-
     for(i = 0; i < audio_channels; i++){
       ags_notebook_insert_tab(notation_editor->notebook,
 			      i);
@@ -510,19 +504,15 @@ ags_notation_editor_real_machine_changed(AgsNotationEditor *notation_editor,
     guint channel_count;
 
     /* get channel count */
-    pthread_mutex_lock(audio_mutex);
-
-#if 0
-    if((AGS_AUDIO_NOTATION_DEFAULT & (machine->audio->flags)) != 0){
-      channel_count = machine->audio->input_pads;
+    if(ags_audio_test_behaviour_flags(machine->audio, AGS_SOUND_BEHAVIOUR_DEFAULTS_TO_INPUT)){
+      g_object_get(machine->audio,
+		   "input-pads", &channel_count,
+		   NULL);
     }else{
-      channel_count = machine->audio->output_pads;
+      g_object_get(machine->audio,
+		   "output-pads", &channel_count,
+		   NULL);
     }
-#else
-    channel_count = machine->audio->input_pads;
-#endif
-    
-    pthread_mutex_unlock(audio_mutex);
 
     /* apply channel count */
     g_object_set(notation_editor->scrolled_piano->piano,
@@ -559,12 +549,12 @@ ags_notation_editor_real_machine_changed(AgsNotationEditor *notation_editor,
 
 /**
  * ags_notation_editor_machine_changed:
- * @notation_editor: an #AgsNotationEditor
+ * @notation_editor: the #AgsNotationEditor
  * @machine: the new #AgsMachine
  *
  * Is emitted as machine changed of notation_editor.
  *
- * Since: 1.2.0
+ * Since: 2.0.0
  */
 void
 ags_notation_editor_machine_changed(AgsNotationEditor *notation_editor,
@@ -581,12 +571,12 @@ ags_notation_editor_machine_changed(AgsNotationEditor *notation_editor,
 
 /**
  * ags_notation_editor_add_note:
- * @notation_editor: an #AgsNotationEditor
+ * @notation_editor: the #AgsNotationEditor
  * @note: the #AgsNote to add
  * 
  * Add note.
  *
- * Since: 1.2.0
+ * Since: 2.0.0
  */
 void
 ags_notation_editor_add_note(AgsNotationEditor *notation_editor,
@@ -598,7 +588,7 @@ ags_notation_editor_add_note(AgsNotationEditor *notation_editor,
 
   AgsTimestamp *timestamp;
 
-  GList *list_notation;
+  GList *start_list_notation, *list_notation;
 
   gint i;
   
@@ -608,23 +598,7 @@ ags_notation_editor_add_note(AgsNotationEditor *notation_editor,
   }
 
   if(notation_editor->selected_machine != NULL){
-    AgsMutexManager *mutex_manager;
-
-    pthread_mutex_t *application_mutex;
-    pthread_mutex_t *audio_mutex;
-
     machine = notation_editor->selected_machine;
-  
-    mutex_manager = ags_mutex_manager_get_instance();
-    application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-
-    /* get audio mutex */
-    pthread_mutex_lock(application_mutex);
-
-    audio_mutex = ags_mutex_manager_lookup(mutex_manager,
-					   (GObject *) machine->audio);
-  
-    pthread_mutex_unlock(application_mutex);
 
     /* check all active tabs */
     timestamp = ags_timestamp_new();
@@ -634,16 +608,17 @@ ags_notation_editor_add_note(AgsNotationEditor *notation_editor,
     
     timestamp->timer.ags_offset.offset = (guint64) AGS_NOTATION_DEFAULT_OFFSET * floor((double) note->x[0] / (double) AGS_NOTATION_DEFAULT_OFFSET);
 
-    pthread_mutex_lock(audio_mutex);
-
     i = 0;
 
     while((i = ags_notebook_next_active_tab(notation_editor->notebook,
 					    i)) != -1){
       AgsNote *new_note;
+
+      g_object_get(machine->audio,
+		   "notation", &start_list_notation,
+		   NULL);
       
-      list_notation = machine->audio->notation;
-      list_notation = ags_notation_find_near_timestamp(list_notation, i,
+      list_notation = ags_notation_find_near_timestamp(start_list_notation, i,
 						       timestamp);
 
       if(list_notation != NULL){
@@ -651,10 +626,8 @@ ags_notation_editor_add_note(AgsNotationEditor *notation_editor,
       }else{
 	notation = ags_notation_new(machine->audio,
 				    i);
-	notation->timestamp->timer.ags_offset.offset = timestamp->timer.ags_offset.offset;
-	
-	machine->audio->notation = ags_notation_add(machine->audio->notation,
-						    notation);
+	ags_audio_add_notation(machine->audio,
+			       notation);
       }
 
       new_note = ags_note_duplicate(note);
@@ -662,24 +635,27 @@ ags_notation_editor_add_note(AgsNotationEditor *notation_editor,
 			    new_note,
 			    FALSE);
 
+      g_list_free(start_list_notation);
+
+      /* iterate */
       i++;
     }
-    
-    pthread_mutex_unlock(audio_mutex);
 
+    g_object_unref(timestamp);
+    
     gtk_widget_queue_draw(notation_editor->notation_edit);
   }
 }
 
 /**
  * ags_notation_editor_delete_note:
- * @notation_editor: an #AgsNotationEditor
+ * @notation_editor: the #AgsNotationEditor
  * @x: point x
  * @y: point y
  * 
  * Delete note.
  *
- * Since: 1.2.0
+ * Since: 2.0.0
  */
 void
 ags_notation_editor_delete_note(AgsNotationEditor *notation_editor,
@@ -691,7 +667,7 @@ ags_notation_editor_delete_note(AgsNotationEditor *notation_editor,
 
   AgsTimestamp *timestamp;
 
-  GList *list_notation;
+  GList *start_list_notation, *list_notation;
 
   gint i;
 
@@ -700,67 +676,50 @@ ags_notation_editor_delete_note(AgsNotationEditor *notation_editor,
   }
   
   if(notation_editor->selected_machine != NULL){
-    AgsMutexManager *mutex_manager;
-
-    pthread_mutex_t *application_mutex;
-    pthread_mutex_t *audio_mutex;
-
     machine = notation_editor->selected_machine;
   
-    mutex_manager = ags_mutex_manager_get_instance();
-    application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-
-    /* get audio mutex */
-    pthread_mutex_lock(application_mutex);
-
-    audio_mutex = ags_mutex_manager_lookup(mutex_manager,
-					   (GObject *) machine->audio);
-  
-    pthread_mutex_unlock(application_mutex);
-
     /* check all active tabs */
     timestamp = ags_timestamp_new();
 
     timestamp->flags &= (~AGS_TIMESTAMP_UNIX);
     timestamp->flags |= AGS_TIMESTAMP_OFFSET;
     
-    timestamp->timer.ags_offset.offset = AGS_NOTATION_DEFAULT_OFFSET * floor(x / AGS_NOTATION_DEFAULT_OFFSET);
-
-    pthread_mutex_lock(audio_mutex);
+    timestamp->timer.ags_offset.offset = (guint64) AGS_NOTATION_DEFAULT_OFFSET * floor((double) x / (double) AGS_NOTATION_DEFAULT_OFFSET);
 
     i = 0;
 
     while((i = ags_notebook_next_active_tab(notation_editor->notebook,
 					    i)) != -1){
       AgsNote *new_note;
-      
-      list_notation = machine->audio->notation;
-      list_notation = ags_notation_find_near_timestamp(list_notation, i,
-						       timestamp);
 
+      g_object_get(machine->audio,
+		   "notation", &start_list_notation,
+		   NULL);
+      
+      list_notation = ags_notation_find_near_timestamp(start_list_notation, i,
+						       timestamp);
+      
       if(list_notation != NULL){
 	notation = list_notation->data;
-      }else{
-	i++;
-	
-	continue;
+	ags_notation_remove_note_at_position(notation,
+					     x, y);
       }
 
-      ags_notation_remove_note_at_position(notation,
-					   x, y);
-
+      g_list_free(start_list_notation);
+       
+      /* iterate */
       i++;
     }
-    
-    pthread_mutex_unlock(audio_mutex);
 
+    g_object_unref(timestamp);
+    
     gtk_widget_queue_draw(notation_editor->notation_edit);
   }
 }
 
 /**
  * ags_notation_editor_select_region:
- * @notation_editor: an #AgsNotationEditor
+ * @notation_editor: the #AgsNotationEditor
  * @x0: point x0
  * @y0: point y0
  * @x1: point x1
@@ -768,7 +727,7 @@ ags_notation_editor_delete_note(AgsNotationEditor *notation_editor,
  * 
  * Select region.
  *
- * Since: 1.2.0
+ * Since: 2.0.0
  */
 void
 ags_notation_editor_select_region(AgsNotationEditor *notation_editor,
@@ -781,7 +740,7 @@ ags_notation_editor_select_region(AgsNotationEditor *notation_editor,
 
   AgsTimestamp *timestamp;
 
-  GList *list_notation;
+  GList *start_list_notation, *list_notation;
 
   gint i;
 
@@ -790,24 +749,8 @@ ags_notation_editor_select_region(AgsNotationEditor *notation_editor,
   }
   
   if(notation_editor->selected_machine != NULL){
-    AgsMutexManager *mutex_manager;
-
-    pthread_mutex_t *application_mutex;
-    pthread_mutex_t *audio_mutex;
-
     machine = notation_editor->selected_machine;
   
-    mutex_manager = ags_mutex_manager_get_instance();
-    application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-
-    /* get audio mutex */
-    pthread_mutex_lock(application_mutex);
-
-    audio_mutex = ags_mutex_manager_lookup(mutex_manager,
-					   (GObject *) machine->audio);
-  
-    pthread_mutex_unlock(application_mutex);
-
     /* swap values if needed */
     if(x0 > x1){
       guint tmp;
@@ -833,13 +776,15 @@ ags_notation_editor_select_region(AgsNotationEditor *notation_editor,
     timestamp->flags &= (~AGS_TIMESTAMP_UNIX);
     timestamp->flags |= AGS_TIMESTAMP_OFFSET;
     
-    pthread_mutex_lock(audio_mutex);
-
     i = 0;
 
+    g_object_get(machine->audio,
+		 "notation", &start_list_notation,
+		 NULL);
+    
     while((i = ags_notebook_next_active_tab(notation_editor->notebook,
 					    i)) != -1){      
-      list_notation = machine->audio->notation;
+      list_notation = start_list_notation;
       
       timestamp->timer.ags_offset.offset = AGS_NOTATION_DEFAULT_OFFSET * floor(x0 / AGS_NOTATION_DEFAULT_OFFSET);
       
@@ -856,12 +801,13 @@ ags_notation_editor_select_region(AgsNotationEditor *notation_editor,
 	
 	list_notation = list_notation->next;
       }
-      
+
+      /* iterate */
       i++;
     }
-    
-    pthread_mutex_unlock(audio_mutex);
 
+    g_list_free(start_list_notation);
+    
     gtk_widget_queue_draw(notation_editor->notation_edit);
   }
 }
@@ -876,51 +822,24 @@ ags_notation_edit_play_channel(AgsNotationEdit *notation_edit,
   AgsGuiThread *gui_thread;
 
   AgsStartSoundcard *start_soundcard;
-  AgsInitChannel *init_channel;
-  AgsAppendChannel *append_channel;
-  
-  AgsMutexManager *mutex_manager;
-  AgsThread *main_loop;
+  AgsStartChannel *start_channel;
 
   AgsApplicationContext *application_context;
+
   GObject *soundcard;
 
   GList *task;
-  
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *channel_mutex;
 
   window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) notation_edit);
 
   application_context = (AgsApplicationContext *) window->application_context;
-  
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
 
-  /* get threads */
-  pthread_mutex_lock(application_mutex);
-
-  main_loop = (AgsThread *) application_context->main_loop;
-
-  pthread_mutex_unlock(application_mutex);
-
-  gui_thread = (AgsGuiThread *) ags_thread_find_type(main_loop,
-						     AGS_TYPE_GUI_THREAD);
-  
-  /* lookup channel mutex */
-  pthread_mutex_lock(application_mutex);
-  
-  channel_mutex = ags_mutex_manager_lookup(mutex_manager,
-					   (GObject *) channel);
-  
-  pthread_mutex_unlock(application_mutex);
+  gui_thread = ags_ui_provider_get_gui_thread(AGS_UI_PROVIDER(application_context));
 
   /* get soundcard */
-  pthread_mutex_lock(channel_mutex);
-
-  soundcard = channel->soundcard;
-  
-  pthread_mutex_unlock(channel_mutex);
+  g_object_get(channel,
+	       "output-soundcard", &soundcard,
+	       NULL);
 
   if(soundcard == NULL){
     return;
@@ -929,19 +848,11 @@ ags_notation_edit_play_channel(AgsNotationEdit *notation_edit,
   /* create tasks */
   task = NULL;
 
-  /* init channel for playback */
-  init_channel = ags_init_channel_new(channel, FALSE,
-				      TRUE, FALSE, FALSE);
-  g_signal_connect_after(G_OBJECT(init_channel), "launch",
-			 G_CALLBACK(ags_notation_editor_init_channel_launch_callback), note);
+  /* start playback */
+  start_channel = ags_start_channel_new(channel,
+					AGS_SOUND_SCOPE_PLAYBACK);
   task = g_list_prepend(task,
-			init_channel);
-    
-  /* append channel for playback */
-  append_channel = ags_append_channel_new((GObject *) main_loop,
-					  (GObject *) channel);
-  task = g_list_prepend(task,
-			append_channel);
+			start_channel);
 
   /* create start task */
   start_soundcard = ags_start_soundcard_new(application_context);
@@ -956,11 +867,11 @@ ags_notation_edit_play_channel(AgsNotationEdit *notation_edit,
 
 /**
  * ags_notation_editor_do_feedback:
- * @notation_editor: an #AgsNotationEditor
+ * @notation_editor: the #AgsNotationEditor
  * 
  * Do playback feedback.
  *
- * Since: 1.2.0
+ * Since: 2.0.0
  */
 void
 ags_notation_editor_do_feedback(AgsNotationEditor *notation_editor)
@@ -972,7 +883,7 @@ ags_notation_editor_do_feedback(AgsNotationEditor *notation_editor)
 
   AgsTimestamp *timestamp;
 
-  GList *list_notation;
+  GList *start_list_notation, *list_notation;
 
   gint i;
 
@@ -984,27 +895,20 @@ ags_notation_editor_do_feedback(AgsNotationEditor *notation_editor)
     AgsChannel *output, *input;
     AgsChannel *channel;
     
-    AgsMutexManager *mutex_manager;
-
     guint audio_flags;
     guint output_pads, input_pads;
 
-    pthread_mutex_t *application_mutex;
     pthread_mutex_t *audio_mutex;
-
+    
     notation_edit = notation_editor->notation_edit;
     machine = notation_editor->selected_machine;
   
-    mutex_manager = ags_mutex_manager_get_instance();
-    application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-
     /* get audio mutex */
-    pthread_mutex_lock(application_mutex);
+    pthread_mutex_lock(ags_audio_get_class_mutex());
 
-    audio_mutex = ags_mutex_manager_lookup(mutex_manager,
-					   (GObject *) machine->audio);
+    audio_mutex = machine->audio->obj_mutex;
   
-    pthread_mutex_unlock(application_mutex);
+    pthread_mutex_unlock(ags_audio_get_class_mutex());
 
     /* check all active tabs */
     timestamp = ags_timestamp_new();
@@ -1028,13 +932,15 @@ ags_notation_editor_do_feedback(AgsNotationEditor *notation_editor)
     
     pthread_mutex_unlock(audio_mutex);
 
+    g_object_get(machine->audio,
+		 "notation", &start_list_notation,
+		 NULL);
+
     while((i = ags_notebook_next_active_tab(notation_editor->notebook,
 					    i)) != -1){
       AgsNote *current_note;
       
-      pthread_mutex_lock(audio_mutex);
-      
-      list_notation = machine->audio->notation;
+      list_notation = start_list_notation;
       list_notation = ags_notation_find_near_timestamp(list_notation, i,
 						       timestamp);
 
@@ -1043,34 +949,25 @@ ags_notation_editor_do_feedback(AgsNotationEditor *notation_editor)
       }else{
 	i++;
 	
-	pthread_mutex_unlock(audio_mutex);
-	
 	continue;
       }
 
       current_note = ags_notation_find_point(list_notation->data,
 					     notation_edit->cursor_position_x, notation_edit->cursor_position_y,
 					     FALSE);
-    
-      pthread_mutex_unlock(audio_mutex);
 
       if(current_note != NULL){
-#if 0
-	if((AGS_AUDIO_NOTATION_DEFAULT & audio_flags) == 0){
+	if(ags_audio_test_behaviour_flags(machine->audio, AGS_SOUND_BEHAVIOUR_DEFAULTS_TO_OUTPUT)){
 	  channel = ags_channel_nth(output,
 				    i);
 	}else{
 	  channel = ags_channel_nth(input,
 				    i);
 	}
-#else
-	channel = ags_channel_nth(input,
-				  i);
-#endif
 	
-	if((AGS_AUDIO_REVERSE_MAPPING & audio_flags) != 0){
+	if(ags_audio_test_behaviour_flags(machine->audio, AGS_SOUND_BEHAVIOUR_REVERSE_MAPPING)){
 	  channel = ags_channel_pad_nth(channel,
-					(((AGS_AUDIO_NOTATION_DEFAULT & audio_flags) == 0) ? output_pads: input_pads) - notation_edit->cursor_position_y - 1);
+					(ags_audio_test_behaviour_flags(machine->audio, AGS_SOUND_BEHAVIOUR_DEFAULTS_TO_OUTPUT) ? output_pads: input_pads) - notation_edit->cursor_position_y - 1);
 	}else{
 	  channel = ags_channel_pad_nth(channel,
 					notation_edit->cursor_position_y);
@@ -1080,26 +977,29 @@ ags_notation_editor_do_feedback(AgsNotationEditor *notation_editor)
 				       channel,
 				       current_note);
       }
-      
+
+      /* iterate */
       i++;
     }
+
+    g_list_free(start_list_notation);
   }
 }
 
 /**
  * ags_notation_editor_select_all:
- * @notation_editor: an #AgsNotationEditor
+ * @notation_editor: the #AgsNotationEditor
  *
  * Is emitted as machine changed of notation_editor.
  *
- * Since: 1.2.0
+ * Since: 2.0.0
  */
 void
 ags_notation_editor_select_all(AgsNotationEditor *notation_editor)
 {
   AgsMachine *machine;
       
-  GList *list_notation;
+  GList *start_list_notation, *list_notation;
 
   gint i;
 
@@ -1108,32 +1008,18 @@ ags_notation_editor_select_all(AgsNotationEditor *notation_editor)
   }
   
   if(notation_editor->selected_machine != NULL){
-    AgsMutexManager *mutex_manager;
-
-    pthread_mutex_t *application_mutex;
-    pthread_mutex_t *audio_mutex;
-
     machine = notation_editor->selected_machine;
-  
-    mutex_manager = ags_mutex_manager_get_instance();
-    application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-    
-    /* get audio mutex */
-    pthread_mutex_lock(application_mutex);
-
-    audio_mutex = ags_mutex_manager_lookup(mutex_manager,
-					   (GObject *) machine->audio);
-  
-    pthread_mutex_unlock(application_mutex);
 
     /* check all active tabs */
-    pthread_mutex_lock(audio_mutex);
+    g_object_get(machine->audio,
+		 "notation", &start_list_notation,
+		 NULL);
 
     i = 0;
     
     while((i = ags_notebook_next_active_tab(notation_editor->notebook,
 					    i)) != -1){
-      list_notation = machine->audio->notation;
+      list_notation = start_list_notation;
       
       while((list_notation = ags_notation_find_near_timestamp(list_notation, i,
 							      NULL)) != NULL){
@@ -1142,22 +1028,23 @@ ags_notation_editor_select_all(AgsNotationEditor *notation_editor)
 	list_notation = list_notation->next;
       }
 
+      /* iterate */
       i++;
     }
-    
-    pthread_mutex_unlock(audio_mutex);
 
+    g_list_free(start_list_notation);
+    
     gtk_widget_queue_draw(notation_editor->notation_edit);
   }
 }
 
 /**
  * ags_notation_editor_paste:
- * @notation_editor: an #AgsNotationEditor
+ * @notation_editor: the #AgsNotationEditor
  *
  * Is emitted as machine changed of notation_editor.
  *
- * Since: 1.2.0
+ * Since: 2.0.0
  */
 void
 ags_notation_editor_paste(AgsNotationEditor *notation_editor)
@@ -1189,7 +1076,7 @@ ags_notation_editor_paste(AgsNotationEditor *notation_editor)
   {    
     AgsNotation *notation;
 		
-    GList *list_notation;
+    GList *start_list_notation, *list_notation;
     
     gint first_x;
     guint current_x;
@@ -1201,21 +1088,27 @@ ags_notation_editor_paste(AgsNotationEditor *notation_editor)
     i = 0;
 		
     while((i = ags_notebook_next_active_tab(notation_editor->notebook,
-					    i)) != -1){		  
-      list_notation = ags_notation_find_near_timestamp(machine->audio->notation, i,
+					    i)) != -1){
+      g_object_get(machine->audio,
+		   "notation", &start_list_notation,
+		   NULL);
+      
+      list_notation = ags_notation_find_near_timestamp(start_list_notation, i,
 						       timestamp);
 
       if(list_notation == NULL){
 	notation = ags_notation_new(machine->audio,
 				    i);
 	notation->timestamp->timer.ags_offset.offset = timestamp->timer.ags_offset.offset;
-	machine->audio->notation = ags_notation_add(machine->audio->notation,
-						    notation);
-	g_object_ref(notation);
+	
+	ags_audio_add_notation(machine->audio,
+			       notation);
       }else{
 	notation = AGS_NOTATION(list_notation->data);
       }
 		  
+      g_list_free(start_list_notation);
+
       if(paste_from_position){
 	xmlNode *child;
 
@@ -1308,7 +1201,8 @@ ags_notation_editor_paste(AgsNotationEditor *notation_editor)
 	  last_x = current_x;
 	}
       }
-		  
+
+      /* iterate */
       i++;
     }
 
@@ -1372,14 +1266,14 @@ ags_notation_editor_paste(AgsNotationEditor *notation_editor)
 		}     
 
 		/* 1st attempt */
-		timestamp->timer.ags_offset.offset = offset;
+		timestamp->timer.ags_offset.offset = AGS_NOTATION_DEFAULT_OFFSET * floor(offset / AGS_NOTATION_DEFAULT_OFFSET);
 		
 		first_x = ags_notation_editor_paste_notation_all(notation_node,
 								 timestamp,
 								 match_channel, no_duplicates);
 
 		/* 2nd attempt */
-		timestamp->timer.ags_offset.offset = offset + AGS_NOTATION_DEFAULT_OFFSET;
+		timestamp->timer.ags_offset.offset += AGS_NOTATION_DEFAULT_OFFSET;
 
 		ags_notation_editor_paste_notation_all(notation_node,
 						       timestamp,
@@ -1405,23 +1299,7 @@ ags_notation_editor_paste(AgsNotationEditor *notation_editor)
   }
   
   if((machine = notation_editor->selected_machine) != NULL){
-    AgsMutexManager *mutex_manager;
-
-    pthread_mutex_t *application_mutex;
-    pthread_mutex_t *audio_mutex;
-
     notation_edit = notation_editor->notation_edit;
-    
-    mutex_manager = ags_mutex_manager_get_instance();
-    application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-    
-    /* get audio mutex */
-    pthread_mutex_lock(application_mutex);  
-    
-    audio_mutex = ags_mutex_manager_lookup(mutex_manager,
-					   (GObject *) notation_editor->selected_machine->audio);
-  
-    pthread_mutex_unlock(application_mutex);
 
     /* get clipboard */
     buffer = gtk_clipboard_wait_for_text(gtk_clipboard_get(GDK_SELECTION_CLIPBOARD));
@@ -1454,8 +1332,6 @@ ags_notation_editor_paste(AgsNotationEditor *notation_editor)
     first_x = -1;
     
     /* iterate xml tree */
-    pthread_mutex_lock(audio_mutex);
-
     while(audio_node != NULL){
       if(audio_node->type == XML_ELEMENT_NODE){
 	if(!xmlStrncmp("audio", audio_node->name, 6)){
@@ -1475,8 +1351,6 @@ ags_notation_editor_paste(AgsNotationEditor *notation_editor)
     }
     
     xmlFreeDoc(clipboard); 
-
-    pthread_mutex_unlock(audio_mutex);
 
     if(paste_from_position){
       gint big_step, small_step;
@@ -1498,11 +1372,11 @@ ags_notation_editor_paste(AgsNotationEditor *notation_editor)
 
 /**
  * ags_notation_editor_copy:
- * @notation_editor: an #AgsNotationEditor
+ * @notation_editor: the #AgsNotationEditor
  *
  * Is emitted as machine changed of notation_editor.
  *
- * Since: 1.2.0
+ * Since: 2.0.0
  */
 void
 ags_notation_editor_copy(AgsNotationEditor *notation_editor)
@@ -1514,7 +1388,7 @@ ags_notation_editor_copy(AgsNotationEditor *notation_editor)
   xmlDoc *clipboard;
   xmlNode *audio_node, *notation_list_node, *notation_node;
 
-  GList *list_notation;
+  GList *start_list_notation, *list_notation;
 
   xmlChar *buffer;
 
@@ -1526,23 +1400,7 @@ ags_notation_editor_copy(AgsNotationEditor *notation_editor)
   }
   
   if(notation_editor->selected_machine != NULL){
-    AgsMutexManager *mutex_manager;
-
-    pthread_mutex_t *application_mutex;
-    pthread_mutex_t *audio_mutex;
-
     machine = notation_editor->selected_machine;
-  
-    mutex_manager = ags_mutex_manager_get_instance();
-    application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-    
-    /* get audio mutex */
-    pthread_mutex_lock(application_mutex);
-
-    audio_mutex = ags_mutex_manager_lookup(mutex_manager,
-					   (GObject *) machine->audio);
-  
-    pthread_mutex_unlock(application_mutex);
 
     /* create document */
     clipboard = xmlNewDoc(BAD_CAST XML_DEFAULT_VERSION);
@@ -1558,14 +1416,15 @@ ags_notation_editor_copy(AgsNotationEditor *notation_editor)
 		notation_list_node);
 
     /* create notation nodes */
-    list_notation = machine->audio->notation;
+    g_object_get(machine->audio,
+		 "notation", &start_list_notation,
+		 NULL);
+
     i = 0;
 
     while((i = ags_notebook_next_active_tab(notation_editor->notebook,
 					    i)) != -1){
-      pthread_mutex_lock(audio_mutex);
-
-      list_notation = machine->audio->notation;
+      list_notation = start_list_notation;
 
       /* copy */
       while((list_notation = ags_notation_find_near_timestamp(list_notation, i,
@@ -1577,8 +1436,7 @@ ags_notation_editor_copy(AgsNotationEditor *notation_editor)
 	list_notation = list_notation->next;
       }
 
-      pthread_mutex_unlock(audio_mutex);
-
+      /* iterate */
       i++;
     }
     
@@ -1594,11 +1452,11 @@ ags_notation_editor_copy(AgsNotationEditor *notation_editor)
 
 /**
  * ags_notation_editor_cut:
- * @notation_editor: an #AgsNotationEditor
+ * @notation_editor: the #AgsNotationEditor
  *
  * Is emitted as machine changed of notation_editor.
  *
- * Since: 1.2.0
+ * Since: 2.0.0
  */
 void
 ags_notation_editor_cut(AgsNotationEditor *notation_editor)
@@ -1611,7 +1469,7 @@ ags_notation_editor_cut(AgsNotationEditor *notation_editor)
   xmlNode *audio_node;
   xmlNode *notation_list_node, *notation_node;
 
-  GList *list_notation;
+  GList *start_list_notation, *list_notation;
 
   xmlChar *buffer;
   int size;
@@ -1622,23 +1480,7 @@ ags_notation_editor_cut(AgsNotationEditor *notation_editor)
   }
   
   if(notation_editor->selected_machine != NULL){
-    AgsMutexManager *mutex_manager;
-
-    pthread_mutex_t *application_mutex;
-    pthread_mutex_t *audio_mutex;
-
     machine = notation_editor->selected_machine;
-
-    mutex_manager = ags_mutex_manager_get_instance();
-    application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-    
-    /* get audio mutex */
-    pthread_mutex_lock(application_mutex);
-
-    audio_mutex = ags_mutex_manager_lookup(mutex_manager,
-					   (GObject *) machine->audio);
-  
-    pthread_mutex_unlock(application_mutex);
 
     /* create document */
     clipboard = xmlNewDoc(BAD_CAST XML_DEFAULT_VERSION);
@@ -1654,19 +1496,15 @@ ags_notation_editor_cut(AgsNotationEditor *notation_editor)
 		notation_list_node);
 
     /* create notation nodes */
-    pthread_mutex_lock(audio_mutex);
-
-    list_notation = machine->audio->notation;
-
-    pthread_mutex_unlock(audio_mutex);
+    g_object_get(machine->audio,
+		 "notation", &start_list_notation,
+		 NULL);
 
     i = 0;
     
     while((i = ags_notebook_next_active_tab(notation_editor->notebook,
 					    i)) != -1){
-      pthread_mutex_lock(audio_mutex);
-      
-      list_notation = machine->audio->notation;
+      list_notation = start_list_notation;
 
       /* cut */
       while((list_notation = ags_notation_find_near_timestamp(list_notation, i,
@@ -1677,11 +1515,12 @@ ags_notation_editor_cut(AgsNotationEditor *notation_editor)
 	
 	list_notation = list_notation->next;
       }
-      
-      pthread_mutex_unlock(audio_mutex);
 
+      /* iterate */
       i++;
     }
+
+    g_list_free(start_list_notation);
 
     gtk_widget_queue_draw(notation_editor->notation_edit);
 
@@ -1697,11 +1536,11 @@ ags_notation_editor_cut(AgsNotationEditor *notation_editor)
 
 /**
  * ags_notation_editor_invert:
- * @notation_editor: an #AgsNotationEditor
+ * @notation_editor: the #AgsNotationEditor
  *
  * Invert all notation of @notation_editor's selected machine.
  *
- * Since: 1.2.0
+ * Since: 2.0.0
  */
 void
 ags_notation_editor_invert(AgsNotationEditor *notation_editor)
@@ -1710,7 +1549,7 @@ ags_notation_editor_invert(AgsNotationEditor *notation_editor)
   
   AgsNotation *notation;
 
-  GList *list_notation;
+  GList *start_list_notation, *list_notation;
 
   int size;
   gint i;
@@ -1723,39 +1562,69 @@ ags_notation_editor_invert(AgsNotationEditor *notation_editor)
   void ags_notation_editor_get_boundary(AgsNotation *notation,
 					guint *lower, guint *upper)
   {
-    GList *note;
+    GList *start_note, *note;
+
+    guint note_y;
+
+    g_object_get(notation,
+		 "note", &start_note,
+		 NULL);
     
-    /* retrieve upper and lower */    
+    /* retrieve upper and lower */
+    note = start_note;
+    
     while(note != NULL){
-      if(AGS_NOTE(note->data)->y < lower[0]){
-	lower[0] = AGS_NOTE(note->data)->y;
+      g_object_get(note->data,
+		   "y", &note_y,
+		   NULL);
+      
+      if(note_y < lower[0]){
+	lower[0] = note_y;
       }
 
-      if(AGS_NOTE(note->data)->y > upper[0]){
-	upper[0] = AGS_NOTE(note->data)->y;
+      if(note_y > upper[0]){
+	upper[0] = note_y;
       }
       
       note = note->next;
     }
+
+    g_list_free(start_note);
   }
   
   void ags_notation_editor_invert_notation(AgsNotation *notation,
 					   guint lower, guint upper)
   {
-    GList *note;
+    GList *start_note, *note;
+
+    guint note_y;
     
+    g_object_get(notation,
+		 "note", &start_note,
+		 NULL);
+
     /* invert */
-    note = notation->notes;
+    note = start_note;
 
     while(note != NULL){
-      if((gdouble) AGS_NOTE(note->data)->y < (gdouble) (upper - lower) / 2.0){
-	AGS_NOTE(note->data)->y = (upper - (AGS_NOTE(note->data)->y - lower));
-      }else if((gdouble) AGS_NOTE(note->data)->y > (gdouble) (upper - lower) / 2.0){
-	AGS_NOTE(note->data)->y = (lower + (upper - AGS_NOTE(note->data)->y));
+      g_object_get(note->data,
+		   "y", &note_y,
+		   NULL);
+      
+      if((gdouble) note_y < (gdouble) (upper - lower) / 2.0){
+	g_object_set(note->data,
+		     "y", (upper - (note_y - lower)),
+		     NULL);
+      }else if((gdouble) note_y > (gdouble) (upper - lower) / 2.0){
+	g_object_set(note->data,
+		     "y", (lower + (upper - AGS_NOTE(note->data)->y)),
+		     NULL);
       }
       
       note = note->next;
     }
+
+    g_list_free(start_note);
   }
   
   if(!AGS_IS_NOTATION_EDITOR(notation_editor)){
@@ -1763,35 +1632,21 @@ ags_notation_editor_invert(AgsNotationEditor *notation_editor)
   }
   
   if(notation_editor->selected_machine != NULL){
-    AgsMutexManager *mutex_manager;
-
     guint lower, upper;
-    
-    pthread_mutex_t *application_mutex;
-    pthread_mutex_t *audio_mutex;
-
-    mutex_manager = ags_mutex_manager_get_instance();
-    application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-    
-    /* get audio mutex */
-    pthread_mutex_lock(application_mutex);
-
-    audio_mutex = ags_mutex_manager_lookup(mutex_manager,
-					   (GObject *) notation_editor->selected_machine->audio);
-  
-    pthread_mutex_unlock(application_mutex);
 
     /* create notation nodes */
-    pthread_mutex_lock(audio_mutex);
-
     machine = notation_editor->selected_machine;
 
+    g_object_get(machine->audio,
+		 "notation", &start_list_notation,
+		 NULL);
+    
     i = 0;
     
     while((i = ags_notebook_next_active_tab(notation_editor->notebook,
 					    i)) != -1){
       /* get boundary */
-      list_notation = machine->audio->notation;
+      list_notation = start_list_notation;
 
       lower = G_MAXUINT;
       upper = 0;
@@ -1806,7 +1661,7 @@ ags_notation_editor_invert(AgsNotationEditor *notation_editor)
       }
       
       /* invert */
-      list_notation = machine->audio->notation;
+      list_notation = start_list_notation;
       
       while((list_notation = ags_notation_find_near_timestamp(list_notation, i,
 							      NULL)) != NULL){
@@ -1818,8 +1673,6 @@ ags_notation_editor_invert(AgsNotationEditor *notation_editor)
       
       i++;
     }
-
-    pthread_mutex_unlock(audio_mutex);
   
     gtk_widget_queue_draw(notation_editor->notation_edit);
   }
@@ -1828,11 +1681,11 @@ ags_notation_editor_invert(AgsNotationEditor *notation_editor)
 /**
  * ags_notation_editor_new:
  *
- * Creates an #AgsNotationEditor
+ * Creates the #AgsNotationEditor
  *
  * Returns: a new #AgsNotationEditor
  *
- * Since: 1.2.0
+ * Since: 2.0.0
  */
 AgsNotationEditor*
 ags_notation_editor_new()

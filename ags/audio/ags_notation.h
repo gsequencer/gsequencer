@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -22,6 +22,8 @@
 
 #include <glib.h>
 #include <glib-object.h>
+
+#include <pthread.h>
 
 #include <libxml/tree.h>
 
@@ -47,6 +49,8 @@
 #define AGS_NOTATION_DEFAULT_DURATION (AGS_NOTATION_DEFAULT_LENGTH * AGS_NOTATION_DEFAULT_JIFFIE * AGS_MICROSECONDS_PER_SECOND)
 #define AGS_NOTATION_DEFAULT_OFFSET (64 * (1.0 / AGS_NOTATION_MINIMUM_NOTE_LENGTH))
 
+#define AGS_NOTATION_DEFAULT_END (64 * 64 * 1200)
+
 #define AGS_NOTATION_CLIPBOARD_VERSION "1.2.0"
 #define AGS_NOTATION_CLIPBOARD_TYPE "AgsNotationClipboardXml"
 #define AGS_NOTATION_CLIPBOARD_FORMAT "AgsNotationNativePiano"
@@ -56,17 +60,15 @@ typedef struct _AgsNotationClass AgsNotationClass;
 
 /**
  * AgsNotationFlags:
- * @AGS_NOTATION_CONNECTED: indicates the notation was connected by calling #AgsConnectable::connect()
- * @AGS_NOTATION_STICKY: sticky
  * @AGS_NOTATION_PATTERN_MODE: pattern mode
+ * @AGS_NOTATION_BYPASS: ignore any notation data
  *
  * Enum values to control the behavior or indicate internal state of #AgsNotation by
  * enable/disable as flags.
  */
 typedef enum{
-  AGS_NOTATION_CONNECTED           = 1,
-  AGS_NOTATION_STICKY              = 1 <<  1,
-  AGS_NOTATION_PATTERN_MODE        = 1 <<  2,
+  AGS_NOTATION_PATTERN_MODE         = 1,
+  AGS_NOTATION_BYPASS               = 1 <<  1,
 }AgsNotationFlags;
 
 struct _AgsNotation
@@ -75,32 +77,21 @@ struct _AgsNotation
 
   guint flags;
 
-  AgsTimestamp *timestamp;
+  pthread_mutex_t *obj_mutex;
+  pthread_mutexattr_t *obj_mutexattr;
 
-  guint audio_channel;
   GObject *audio;
+  guint audio_channel;
 
-  gchar *key;
-  gchar *base_note;
-  gdouble base_frequency;
+  gboolean is_minor;
+  guint sharp_flats;
 
-  gdouble tact;
-  gdouble bpm;
+  AgsTimestamp *timestamp;
 
   gdouble maximum_note_length;
 
-  GList *notes;
-  
-  gdouble loop_start;
-  gdouble loop_end;
-  gdouble offset;
-
+  GList *note;
   GList *selection;
-
-  GObject *port;
-
-  GList *current_notes;
-  GList *next_notes;
 };
 
 struct _AgsNotationClass
@@ -110,18 +101,25 @@ struct _AgsNotationClass
 
 GType ags_notation_get_type();
 
+pthread_mutex_t* ags_notation_get_class_mutex();
+
+gboolean ags_notation_test_flags(AgsNotation *notation, guint flags);
+void ags_notation_set_flags(AgsNotation *notation, guint flags);
+void ags_notation_unset_flags(AgsNotation *notation, guint flags);
+
 GList* ags_notation_find_near_timestamp(GList *notation, guint audio_channel,
 					AgsTimestamp *timestamp);
+
 GList* ags_notation_add(GList *notation,
 			AgsNotation *new_notation);
 
 void ags_notation_add_note(AgsNotation *notation,
 			   AgsNote *note,
 			   gboolean use_selection_list);
-
 void ags_notation_remove_note(AgsNotation *notation,
 			      AgsNote *note,
 			      gboolean use_selection_list);
+
 gboolean ags_notation_remove_note_at_position(AgsNotation *notation,
 					      guint x, guint y);
 
@@ -138,7 +136,6 @@ GList* ags_notation_find_region(AgsNotation *notation,
 				gboolean use_selection_list);
 
 void ags_notation_free_selection(AgsNotation *notation);
-void ags_notation_add_all_to_selection(AgsNotation *notation);
 
 void ags_notation_add_point_to_selection(AgsNotation *notation,
 					 guint x, guint y,
@@ -154,6 +151,8 @@ void ags_notation_remove_region_from_selection(AgsNotation *notation,
 					       guint x0, guint y0,
 					       guint x1, guint y1);
 
+void ags_notation_add_all_to_selection(AgsNotation *notation);
+
 xmlNode* ags_notation_copy_selection(AgsNotation *notation);
 xmlNode* ags_notation_cut_selection(AgsNotation *notation);
 
@@ -167,8 +166,6 @@ void ags_notation_insert_from_clipboard_extended(AgsNotation *notation,
 						 gboolean reset_x_offset, guint x_offset,
 						 gboolean reset_y_offset, guint y_offset,
 						 gboolean match_channel, gboolean no_duplicates);
-
-GList* ags_notation_get_current(AgsNotation *notation);
 
 unsigned char* ags_notation_to_raw_midi(AgsNotation *notation,
 					gdouble bpm, gdouble delay_factor,

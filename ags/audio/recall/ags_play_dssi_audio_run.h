@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -28,8 +28,9 @@
 
 #include <ags/libags.h>
 
-#include <ags/audio/ags_recall_audio_run.h>
+#include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_notation.h>
+#include <ags/audio/ags_recall_audio_run.h>
 
 #include <ags/audio/recall/ags_delay_audio_run.h>
 #include <ags/audio/recall/ags_count_beats_audio.h>
@@ -42,21 +43,10 @@
 #define AGS_IS_PLAY_DSSI_AUDIO_RUN_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_PLAY_DSSI_AUDIO_RUN))
 #define AGS_PLAY_DSSI_AUDIO_RUN_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_PLAY_DSSI_AUDIO_RUN, AgsPlayDssiAudioRunClass))
 
-#define AGS_PLAY_DSSI_AUDIO_DEFAULT_MIDI_LENGHT (8 * 256)
+#define AGS_PLAY_DSSI_AUDIO_RUN_DEFAULT_MIDI_LENGHT (8 * 256)
 
 typedef struct _AgsPlayDssiAudioRun AgsPlayDssiAudioRun;
 typedef struct _AgsPlayDssiAudioRunClass AgsPlayDssiAudioRunClass;
-
-/**
- * AgsPlayDssiAudioRunFlags:
- * @AGS_PLAY_DSSI_AUDIO_RUN_DEFAULT: not used
- *
- * Enum values to control the behavior or indicate internal state of #AgsPlayDssiAudioRun by
- * enable/disable as flags.
- */
-typedef enum{
-  AGS_PLAY_DSSI_AUDIO_RUN_DEFAULT  =  1,
-}AgsPlayDssiAudioRunFlags;
 
 struct _AgsPlayDssiAudioRun
 {
@@ -67,6 +57,8 @@ struct _AgsPlayDssiAudioRun
   LADSPA_Handle *ladspa_handle;
 
   unsigned long audio_channels;
+
+  LADSPA_Data *port_data;
   
   LADSPA_Data *input;
   LADSPA_Data *output;
@@ -97,6 +89,8 @@ GType ags_play_dssi_audio_run_get_type();
 
 void ags_play_dssi_audio_run_load_ports(AgsPlayDssiAudioRun *play_dssi_audio_run);
 
-AgsPlayDssiAudioRun* ags_play_dssi_audio_run_new();
+AgsPlayDssiAudioRun* ags_play_dssi_audio_run_new(AgsAudio *audio,
+						 AgsDelayAudioRun *delay_audio_run,
+						 AgsCountBeatsAudioRun *count_beats_audio_run);
 
 #endif /*__AGS_PLAY_DSSI_AUDIO_RUN_H__*/

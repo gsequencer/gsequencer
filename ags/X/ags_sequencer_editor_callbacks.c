@@ -19,32 +19,14 @@
 
 #include <ags/X/ags_sequencer_editor_callbacks.h>
 
-#include <ags/object/ags_sequencer.h>
-
-#include <ags/thread/ags_mutex_manager.h>
-#include <ags/thread/ags_task.h>
-
-#include <ags/audio/ags_sound_provider.h>
-#include <ags/audio/ags_midiin.h>
-
-#include <ags/audio/thread/ags_audio_loop.h>
-
-#include <ags/audio/jack/ags_jack_server.h>
-#include <ags/audio/jack/ags_jack_midiin.h>
-
-#include <ags/audio/core-audio/ags_core_audio_server.h>
-#include <ags/audio/core-audio/ags_core_audio_midiin.h>
-
-#include <ags/audio/task/ags_set_input_device.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
 
 #include <ags/X/ags_xorg_application_context.h>
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_preferences.h>
 
 #include <ags/X/thread/ags_gui_thread.h>
-
-#include <ags/X/task/ags_add_sequencer_editor_jack.h>
-#include <ags/X/task/ags_remove_sequencer_editor_jack.h>
 
 #include <ags/config.h>
 
@@ -91,13 +73,6 @@ ags_sequencer_editor_card_changed_callback(GtkComboBox *combo,
 {
   AgsWindow *window;
 
-  AgsSetInputDevice *set_input_device;
-
-  AgsMutexManager *mutex_manager;
-  AgsThread *main_loop;
-  AgsGuiThread *gui_thread;
-
-  AgsApplicationContext *application_context;
   GObject *sequencer;
 
   GtkTreeIter current;
@@ -112,28 +87,10 @@ ags_sequencer_editor_card_changed_callback(GtkComboBox *combo,
 
   GError *error;
 
-  pthread_mutex_t *application_mutex;
-
   window = AGS_WINDOW(AGS_PREFERENCES(gtk_widget_get_ancestor(GTK_WIDGET(sequencer_editor),
 							      AGS_TYPE_PREFERENCES))->window);
   sequencer = sequencer_editor->sequencer;
 
-  application_context = (AgsApplicationContext *) window->application_context;
-
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-  
-  /* get audio loop */
-  pthread_mutex_lock(application_mutex);
-
-  main_loop = (AgsThread *) application_context->main_loop;
-
-  pthread_mutex_unlock(application_mutex);
-
-  /* get task and sequencer thread */
-  gui_thread = (AgsGuiThread *) ags_thread_find_type(main_loop,
-						       AGS_TYPE_GUI_THREAD);
-  
   /*  */
   use_alsa = FALSE;
 
@@ -175,10 +132,8 @@ ags_sequencer_editor_card_changed_callback(GtkComboBox *combo,
   
   /* reset dialog */
   if(card != NULL){
-    set_input_device = ags_set_input_device_new(sequencer,
-						  card);
-    ags_gui_thread_schedule_task(gui_thread,
-				 set_input_device);
+    ags_sequencer_set_device(AGS_SEQUENCER(sequencer),
+			     card);
   }
 }
 

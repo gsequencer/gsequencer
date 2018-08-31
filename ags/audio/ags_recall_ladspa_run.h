@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -42,7 +42,7 @@ struct _AgsRecallLadspaRun
 {
   AgsRecallAudioSignal recall_audio_signal;
 
-  unsigned long audio_channels;
+  guint audio_channels;
   
   LADSPA_Handle *ladspa_handle;
 
@@ -57,6 +57,6 @@ struct _AgsRecallLadspaRunClass
 
 GType ags_recall_ladspa_run_get_type();
 
-AgsRecallLadspaRun* ags_recall_ladspa_run_new(AgsAudioSignal *audio_signal);
+AgsRecallLadspaRun* ags_recall_ladspa_run_new(AgsAudioSignal *source);
 
 #endif /*__AGS_RECALL_LADSPA_RUN_H__*/

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -23,6 +23,7 @@
 #include <ags/libags-audio.h>
 #include <ags/libags-gui.h>
 
+#include <ags/X/ags_ui_provider.h>
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_pad.h>
 #include <ags/X/ags_automation_editor.h>
@@ -121,21 +122,11 @@ ags_machine_popup_destroy_activate_callback(GtkWidget *widget, AgsMachine *machi
   
   AgsRemoveAudio *remove_audio;
 
-  AgsMutexManager *mutex_manager;
-  AgsAudioLoop *audio_loop;
   AgsGuiThread *gui_thread;
-  AgsTaskThread *task_thread;
 
   AgsApplicationContext *application_context;
-
-  GObject *soundcard;
   
   GList *list, *list_start;
-
-  pthread_mutex_t *application_mutex;
-  
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
 
   window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) machine);
 
@@ -176,33 +167,17 @@ ags_machine_popup_destroy_activate_callback(GtkWidget *widget, AgsMachine *machi
   g_list_free(list_start);
 
   /* destroy machine */
-  soundcard = window->soundcard;
-  
   audio = machine->audio;
   g_object_ref(audio);
 
   ags_connectable_disconnect(AGS_CONNECTABLE(machine));
   gtk_widget_destroy((GtkWidget *) machine);
-  
-  /* get audio loop */
-  pthread_mutex_lock(application_mutex);
-
-  audio_loop = (AgsAudioLoop *) application_context->main_loop;
-  
-  pthread_mutex_unlock(application_mutex);
 
   /* get task thread */
-  task_thread = (AgsTaskThread *) ags_thread_find_type((AgsThread *) audio_loop,
-						       AGS_TYPE_TASK_THREAD);
+  gui_thread = ags_ui_provider_get_gui_thread(AGS_UI_PROVIDER(application_context));
 
-  gui_thread = (AgsGuiThread *) ags_thread_find_type((AgsThread *) audio_loop,
-						     AGS_TYPE_GUI_THREAD);
-
-  remove_audio = ags_remove_audio_new(soundcard,
+  remove_audio = ags_remove_audio_new(application_context,
 				      audio);
-  g_object_set(remove_audio,
-	       "task-thread", task_thread,
-	       NULL);
   
   ags_gui_thread_schedule_task(gui_thread,
 			       remove_audio);
@@ -336,6 +311,15 @@ ags_machine_popup_connection_editor_callback(GtkWidget *widget, AgsMachine *mach
   
   if(machine->connection_editor == NULL){
     connection_editor = ags_connection_editor_new(machine);
+
+    if((AGS_MACHINE_SHOW_AUDIO_OUTPUT_CONNECTION & (machine->connection_flags)) != 0){
+      connection_editor->flags |= AGS_CONNECTION_EDITOR_SHOW_OUTPUT;
+    }
+
+    if((AGS_MACHINE_SHOW_AUDIO_INPUT_CONNECTION & (machine->connection_flags)) != 0){
+      connection_editor->flags |= AGS_CONNECTION_EDITOR_SHOW_INPUT;
+    }
+    
     machine->connection_editor = (GtkDialog *) connection_editor;
     
     ags_connectable_connect(AGS_CONNECTABLE(connection_editor));
@@ -403,8 +387,11 @@ ags_machine_open_extended_response_callback(GtkWidget *widget, gint response, Ag
   AgsFileSelection *file_selection;
   GtkCheckButton *overwrite;
   GtkCheckButton *create;
+
   GSList *filenames;
+
   gchar *current_folder;
+
   GError *error;
 
   file_chooser = (GtkFileChooserDialog *) gtk_widget_get_toplevel(widget);
@@ -432,8 +419,10 @@ ags_machine_open_extended_response_callback(GtkWidget *widget, gint response, Ag
 
       if((AGS_MACHINE_ACCEPT_SOUNDFONT2 & (machine->file_input_flags)) != 0){
 	GDir *current_directory;
+
 	GList *new_entry, *old_entry;	  
 	GSList *slist;
+
 	gchar *current_filename;
 	
 	slist = filenames;
@@ -553,7 +542,7 @@ ags_machine_play_callback(GtkWidget *toggle_button, AgsMachine *machine)
 
     ags_machine_set_run_extended(machine,
 				 TRUE,
-				 TRUE, FALSE);
+				 TRUE, FALSE, FALSE, FALSE);
 
     machine->flags &= (~AGS_MACHINE_BLOCK_PLAY);
   }else{
@@ -568,7 +557,7 @@ ags_machine_play_callback(GtkWidget *toggle_button, AgsMachine *machine)
 
     ags_machine_set_run_extended(machine,
 				 FALSE,
-				 TRUE, FALSE);
+				 TRUE, FALSE, FALSE, FALSE);
 
     machine->flags &= (~AGS_MACHINE_BLOCK_STOP);
   }
@@ -678,16 +667,11 @@ ags_machine_resize_pads_callback(AgsMachine *machine, GType channel_type,
 }
 
 void
-ags_machine_done_callback(AgsMachine *machine,
-			  AgsRecallID *recall_id,
+ags_machine_stop_callback(AgsMachine *machine,
+			  GList *recall_id, gint sound_scope,
 			  gpointer data)
 {
-  AgsMutexManager *mutex_manager;
-
   gboolean reset_active;
-
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *audio_mutex;
   
   if((AGS_MACHINE_BLOCK_STOP & (machine->flags)) != 0){
     return;
@@ -695,23 +679,8 @@ ags_machine_done_callback(AgsMachine *machine,
   
   machine->flags |= AGS_MACHINE_BLOCK_STOP;
 
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-
-  /* get audio mutex */
-  pthread_mutex_lock(application_mutex);
-    
-  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
-					 (GObject *) machine->audio);
-  
-  pthread_mutex_unlock(application_mutex);
-
   /* play button - check reset active */
-  pthread_mutex_lock(audio_mutex);
-  
-  reset_active = ((AGS_RECALL_ID_SEQUENCER & (recall_id->flags)) != 0) ? TRUE: FALSE;
-
-  pthread_mutex_unlock(audio_mutex);
+  reset_active = (sound_scope == AGS_SOUND_SCOPE_SEQUENCER) ? TRUE: FALSE;
   
   if(reset_active){
     gtk_toggle_button_set_active(machine->play, FALSE);

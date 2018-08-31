@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -23,7 +23,11 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <ags/libags.h>
+
+#include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_recall_audio.h>
+#include <ags/audio/ags_port.h>
 
 #define AGS_TYPE_RECORD_MIDI_AUDIO                (ags_record_midi_audio_get_type())
 #define AGS_RECORD_MIDI_AUDIO(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_RECORD_MIDI_AUDIO, AgsRecordMidiAudio))
@@ -56,6 +60,6 @@ struct _AgsRecordMidiAudioClass
 
 GType ags_record_midi_audio_get_type();
 
-AgsRecordMidiAudio* ags_record_midi_audio_new();
+AgsRecordMidiAudio* ags_record_midi_audio_new(AgsAudio *audio);
 
 #endif /*__AGS_RECORD_MIDI_AUDIO_H__*/

@@ -34,8 +34,8 @@
 #define AGS_AUDIO_BUFFER_S24(ptr) ((gint32 *)(ptr))
 #define AGS_AUDIO_BUFFER_S32(ptr) ((gint32 *)(ptr))
 #define AGS_AUDIO_BUFFER_S64(ptr) ((gint64 *)(ptr))
-#define AGS_AUDIO_BUFFER_FLOAT(ptr) ((float *)(ptr))
-#define AGS_AUDIO_BUFFER_DOUBLE(ptr) ((double *)(ptr))
+#define AGS_AUDIO_BUFFER_FLOAT(ptr) ((gfloat *)(ptr))
+#define AGS_AUDIO_BUFFER_DOUBLE(ptr) ((gdouble *)(ptr))
 
 /**
  * AgsAudioBufferUtilFormat:
@@ -217,7 +217,7 @@ guint ags_audio_buffer_util_get_copy_mode(guint destination_format,
 					  guint source_format);
 
 /* clear */
-void ags_audio_buffer_util_clear_float(float *buffer, guint channels,
+void ags_audio_buffer_util_clear_float(gfloat *buffer, guint channels,
 				       guint count);
 
 #ifdef __APPLE__
@@ -225,7 +225,7 @@ void ags_audio_buffer_util_clear_float32(Float32 *buffer, guint channels,
 					 guint count);
 #endif
 
-void ags_audio_buffer_util_clear_double(double *buffer, guint channels,
+void ags_audio_buffer_util_clear_double(gdouble *buffer, guint channels,
 					guint count);
 void ags_audio_buffer_util_clear_buffer(void *buffer, guint channels,
 					guint count, guint format);
@@ -251,11 +251,11 @@ gdouble ags_audio_buffer_util_envelope_s64(gint64 *buffer, guint channels,
 					   guint buffer_length,
 					   gdouble current_volume,
 					   gdouble ratio);
-gdouble ags_audio_buffer_util_envelope_float(float *buffer, guint channels,
+gdouble ags_audio_buffer_util_envelope_float(gfloat *buffer, guint channels,
 					     guint buffer_length,
 					     gdouble current_volume,
 					     gdouble ratio);
-gdouble ags_audio_buffer_util_envelope_double(double *buffer, guint channels,
+gdouble ags_audio_buffer_util_envelope_double(gdouble *buffer, guint channels,
 					      guint buffer_length,
 					      gdouble current_volume,
 					      gdouble ratio);
@@ -282,10 +282,10 @@ void ags_audio_buffer_util_volume_s32(gint32 *buffer, guint channels,
 void ags_audio_buffer_util_volume_s64(gint64 *buffer, guint channels,
 				      guint buffer_length,
 				      gdouble volume);
-void ags_audio_buffer_util_volume_float(float *buffer, guint channels,
+void ags_audio_buffer_util_volume_float(gfloat *buffer, guint channels,
 					guint buffer_length,
 					gdouble volume);
-void ags_audio_buffer_util_volume_double(double *buffer, guint channels,
+void ags_audio_buffer_util_volume_double(gdouble *buffer, guint channels,
 					 guint buffer_length,
 					 gdouble volume);
 
@@ -315,11 +315,11 @@ gint64* ags_audio_buffer_util_resample_s64(gint64 *buffer, guint channels,
 						     guint samplerate,
 						     guint buffer_length,
 						     guint target_samplerate);
-float* ags_audio_buffer_util_resample_float(float *buffer, guint channels,
+gfloat* ags_audio_buffer_util_resample_float(gfloat *buffer, guint channels,
 					    guint samplerate,
 					    guint buffer_length,
 					    guint target_samplerate);
-double* ags_audio_buffer_util_resample_double(double *buffer, guint channels,
+double* ags_audio_buffer_util_resample_double(gdouble *buffer, guint channels,
 					      guint samplerate,
 					      guint buffer_length,
 					      guint target_samplerate);
@@ -355,12 +355,12 @@ gdouble ags_audio_buffer_util_peak_s64(gint64 *buffer, guint channels,
 				       gdouble harmonic_rate,
 				       gdouble max_rate,
 				       gdouble pressure_factor);
-gdouble ags_audio_buffer_util_peak_float(float *buffer, guint channels,
+gdouble ags_audio_buffer_util_peak_float(gfloat *buffer, guint channels,
 					 guint buffer_length,
 					 gdouble harmonic_rate,
 					 gdouble max_rate,
 					 gdouble pressure_factor);
-gdouble ags_audio_buffer_util_peak_double(double *buffer, guint channels,
+gdouble ags_audio_buffer_util_peak_double(gdouble *buffer, guint channels,
 					  guint buffer_length,
 					  gdouble harmonic_rate,
 					  gdouble max_rate,
@@ -389,10 +389,10 @@ void ags_audio_buffer_util_copy_s8_to_s32(gint32 *destination, guint dchannels,
 void ags_audio_buffer_util_copy_s8_to_s64(gint64 *destination, guint dchannels,
 					  gint8 *source, guint schannels,
 					  guint count);
-void ags_audio_buffer_util_copy_s8_to_float(float *destination, guint dchannels,
+void ags_audio_buffer_util_copy_s8_to_float(gfloat *destination, guint dchannels,
 					    gint8 *source, guint schannels,
 					    guint count);
-void ags_audio_buffer_util_copy_s8_to_double(double *destination, guint dchannels,
+void ags_audio_buffer_util_copy_s8_to_double(gdouble *destination, guint dchannels,
 					     gint8 *source, guint schannels,
 					     guint count);
 
@@ -412,10 +412,10 @@ void ags_audio_buffer_util_copy_s16_to_s32(gint32 *destination, guint dchannels,
 void ags_audio_buffer_util_copy_s16_to_s64(gint64 *destination, guint dchannels,
 					   gint16 *source, guint schannels,
 					   guint count);
-void ags_audio_buffer_util_copy_s16_to_float(float *destination, guint dchannels,
+void ags_audio_buffer_util_copy_s16_to_float(gfloat *destination, guint dchannels,
 					     gint16 *source, guint schannels,
 					     guint count);
-void ags_audio_buffer_util_copy_s16_to_double(double *destination, guint dchannels,
+void ags_audio_buffer_util_copy_s16_to_double(gdouble *destination, guint dchannels,
 					      gint16 *source, guint schannels,
 					      guint count);
 
@@ -435,10 +435,10 @@ void ags_audio_buffer_util_copy_s24_to_s32(gint32 *destination, guint dchannels,
 void ags_audio_buffer_util_copy_s24_to_s64(gint64 *destination, guint dchannels,
 					   gint32 *source, guint schannels,
 					   guint count);
-void ags_audio_buffer_util_copy_s24_to_float(float *destination, guint dchannels,
+void ags_audio_buffer_util_copy_s24_to_float(gfloat *destination, guint dchannels,
 					     gint32 *source, guint schannels,
 					     guint count);
-void ags_audio_buffer_util_copy_s24_to_double(double *destination, guint dchannels,
+void ags_audio_buffer_util_copy_s24_to_double(gdouble *destination, guint dchannels,
 					      gint32 *source, guint schannels,
 					      guint count);
 
@@ -458,10 +458,10 @@ void ags_audio_buffer_util_copy_s32_to_s32(gint32 *destination, guint dchannels,
 void ags_audio_buffer_util_copy_s32_to_s64(gint64 *destination, guint dchannels,
 					   gint32 *source, guint schannels,
 					   guint count);
-void ags_audio_buffer_util_copy_s32_to_float(float *destination, guint dchannels,
+void ags_audio_buffer_util_copy_s32_to_float(gfloat *destination, guint dchannels,
 					     gint32 *source, guint schannels,
 					     guint count);
-void ags_audio_buffer_util_copy_s32_to_double(double *destination, guint dchannels,
+void ags_audio_buffer_util_copy_s32_to_double(gdouble *destination, guint dchannels,
 					      gint32 *source, guint schannels,
 					      guint count);
 
@@ -481,57 +481,57 @@ void ags_audio_buffer_util_copy_s64_to_s32(gint32 *destination, guint dchannels,
 void ags_audio_buffer_util_copy_s64_to_s64(gint64 *destination, guint dchannels,
 					   gint64 *source, guint schannels,
 					   guint count);
-void ags_audio_buffer_util_copy_s64_to_float(float *destination, guint dchannels,
+void ags_audio_buffer_util_copy_s64_to_float(gfloat *destination, guint dchannels,
 					     gint64 *source, guint schannels,
 					     guint count);
-void ags_audio_buffer_util_copy_s64_to_double(double *destination, guint dchannels,
+void ags_audio_buffer_util_copy_s64_to_double(gdouble *destination, guint dchannels,
 					      gint64 *source, guint schannels,
 					      guint count);
 
 /* copy float */
 void ags_audio_buffer_util_copy_float_to_s8(gint8 *destination, guint dchannels,
-					    float *source, guint schannels,
+					    gfloat *source, guint schannels,
 					    guint count);
 void ags_audio_buffer_util_copy_float_to_s16(gint16 *destination, guint dchannels,
-					     float *source, guint schannels,
+					     gfloat *source, guint schannels,
 					     guint count);
 void ags_audio_buffer_util_copy_float_to_s24(gint32 *destination, guint dchannels,
-					     float *source, guint schannels,
+					     gfloat *source, guint schannels,
 					     guint count);
 void ags_audio_buffer_util_copy_float_to_s32(gint32 *destination, guint dchannels,
-					     float *source, guint schannels,
+					     gfloat *source, guint schannels,
 					     guint count);
 void ags_audio_buffer_util_copy_float_to_s64(gint64 *destination, guint dchannels,
-					     float *source, guint schannels,
+					     gfloat *source, guint schannels,
 					     guint count);
-void ags_audio_buffer_util_copy_float_to_float(float *destination, guint dchannels,
-					       float *source, guint schannels,
+void ags_audio_buffer_util_copy_float_to_float(gfloat *destination, guint dchannels,
+					       gfloat *source, guint schannels,
 					       guint count);
-void ags_audio_buffer_util_copy_float_to_double(double *destination, guint dchannels,
-						float *source, guint schannels,
+void ags_audio_buffer_util_copy_float_to_double(gdouble *destination, guint dchannels,
+						gfloat *source, guint schannels,
 						guint count);
 
 /* copy double */
 void ags_audio_buffer_util_copy_double_to_s8(gint8 *destination, guint dchannels,
-					     double *source, guint schannels,
+					     gdouble *source, guint schannels,
 					     guint count);
 void ags_audio_buffer_util_copy_double_to_s16(gint16 *destination, guint dchannels,
-					      double *source, guint schannels,
+					      gdouble *source, guint schannels,
 					      guint count);
 void ags_audio_buffer_util_copy_double_to_s24(gint32 *destination, guint dchannels,
-					      double *source, guint schannels,
+					      gdouble *source, guint schannels,
 					      guint count);
 void ags_audio_buffer_util_copy_double_to_s32(gint32 *destination, guint dchannels,
-					      double *source, guint schannels,
+					      gdouble *source, guint schannels,
 					      guint count);
 void ags_audio_buffer_util_copy_double_to_s64(gint64 *destination, guint dchannels,
-					      double *source, guint schannels,
+					      gdouble *source, guint schannels,
 					      guint count);
-void ags_audio_buffer_util_copy_double_to_float(float *destination, guint dchannels,
-						double *source, guint schannels,
+void ags_audio_buffer_util_copy_double_to_float(gfloat *destination, guint dchannels,
+						gdouble *source, guint schannels,
 						guint count);
-void ags_audio_buffer_util_copy_double_to_double(double *destination, guint dchannels,
-						 double *source, guint schannels,
+void ags_audio_buffer_util_copy_double_to_double(gdouble *destination, guint dchannels,
+						 gdouble *source, guint schannels,
 						 guint count);
 
 #ifdef __APPLE__

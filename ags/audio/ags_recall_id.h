@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -23,7 +23,7 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include <ags/audio/ags_recycling.h>
+#include <ags/audio/ags_sound_enums.h>
 #include <ags/audio/ags_recycling_context.h>
 
 #define AGS_TYPE_RECALL_ID                (ags_recall_id_get_type ())
@@ -36,29 +36,18 @@
 typedef struct _AgsRecallID AgsRecallID;
 typedef struct _AgsRecallIDClass AgsRecallIDClass;
 
-typedef enum{
-  AGS_RECALL_ID_CONNECTED         = 1,
-  AGS_RECALL_ID_PLAYBACK          = 1 <<  1,
-  AGS_RECALL_ID_SEQUENCER         = 1 <<  2,
-  AGS_RECALL_ID_NOTATION          = 1 <<  3,
-  AGS_RECALL_ID_DUPLICATE         = 1 <<  4,
-  AGS_RECALL_ID_RESOLVE           = 1 <<  5,
-  AGS_RECALL_ID_INIT_PRE          = 1 <<  6,
-  AGS_RECALL_ID_INIT_INTER        = 1 <<  7,
-  AGS_RECALL_ID_INIT_POST         = 1 <<  8,
-  AGS_RECALL_ID_PRE               = 1 <<  9,
-  AGS_RECALL_ID_INTER             = 1 << 10,
-  AGS_RECALL_ID_POST              = 1 << 11,
-  AGS_RECALL_ID_CANCEL            = 1 << 12,
-}AgsRecallIDFlags;
-
 struct _AgsRecallID
 {
   GObject object;
   
   guint flags;
+  gint sound_scope;
+  guint staging_flags;
+  guint state_flags;
+  
+  pthread_mutex_t *obj_mutex;
+  pthread_mutexattr_t *obj_mutexattr;
 
-  GObject *recycling;
   AgsRecyclingContext *recycling_context;
 };
 
@@ -69,16 +58,34 @@ struct _AgsRecallIDClass
 
 GType ags_recall_id_get_type(void);
 
-gboolean ags_recall_id_get_run_stage(AgsRecallID *id, gint stage);
-void ags_recall_id_set_run_stage(AgsRecallID *recall_id, gint stage);
-void ags_recall_id_unset_run_stage(AgsRecallID *recall_id, gint stage);
+pthread_mutex_t* ags_recall_id_get_class_mutex();
 
-AgsRecallID* ags_recall_id_find_recycling_context(GList *recall_id_list,
+/* scope */
+void ags_recall_id_set_sound_scope(AgsRecallID *recall_id, gint sound_scope);
+
+gboolean ags_recall_id_check_sound_scope(AgsRecallID *recall_id, gint sound_scope);
+
+/* staging flags */
+gboolean ags_recall_id_test_staging_flags(AgsRecallID *recall_id, guint staging_flags);
+void ags_recall_id_set_staging_flags(AgsRecallID *recall_id, guint staging_flags);
+void ags_recall_id_unset_staging_flags(AgsRecallID *recall_id, guint staging_flags);
+
+gboolean ags_recall_id_check_staging_flags(AgsRecallID *recall_id, guint staging_flags);
+
+/* state flags */
+gboolean ags_recall_id_test_state_flags(AgsRecallID *recall_id, guint state_flags);
+void ags_recall_id_set_state_flags(AgsRecallID *recall_id, guint state_flags);
+void ags_recall_id_unset_state_flags(AgsRecallID *recall_id, guint state_flags);
+
+gboolean ags_recall_id_check_state_flags(AgsRecallID *recall_id, guint state_flags);
+
+/* query recycling context */
+AgsRecallID* ags_recall_id_find_recycling_context(GList *recall_id,
 						  AgsRecyclingContext *recycling_context);
-
-AgsRecallID* ags_recall_id_find_parent_recycling_context(GList *recall_id_list,
+AgsRecallID* ags_recall_id_find_parent_recycling_context(GList *recall_id,
 							 AgsRecyclingContext *parent_recycling_context);
 
-AgsRecallID* ags_recall_id_new(AgsRecycling *recycling);
+/* instantiate */
+AgsRecallID* ags_recall_id_new();
 
 #endif /*__AGS_RECALL_ID_H__*/

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -22,6 +22,8 @@
 #include <ags/libags.h>
 
 #include <ags/plugin/ags_dssi_manager.h>
+#include <ags/plugin/ags_dssi_plugin.h>
+#include <ags/plugin/ags_plugin_port.h>
 #include <ags/plugin/ags_ladspa_conversion.h>
 
 #include <ags/audio/ags_port.h>
@@ -55,11 +57,9 @@ void ags_recall_dssi_get_property(GObject *gobject,
 				  guint prop_id,
 				  GValue *value,
 				  GParamSpec *param_spec);
-void ags_recall_dssi_connect(AgsConnectable *connectable);
-void ags_recall_dssi_disconnect(AgsConnectable *connectable);
-void ags_recall_dssi_set_ports(AgsPlugin *plugin, GList *port);
 void ags_recall_dssi_finalize(GObject *gobject);
 
+void ags_recall_dssi_set_ports(AgsPlugin *plugin, GList *port);
 void ags_recall_dssi_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin);
 xmlNode* ags_recall_dssi_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin);
 
@@ -75,9 +75,8 @@ xmlNode* ags_recall_dssi_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin
 
 enum{
   PROP_0,
-  PROP_FILENAME,
-  PROP_EFFECT,
-  PROP_INDEX,
+  PROP_BANK,
+  PROP_PROGRAM,
 };
 
 static gpointer ags_recall_dssi_parent_class = NULL;
@@ -139,6 +138,7 @@ void
 ags_recall_dssi_class_init(AgsRecallDssiClass *recall_dssi)
 {
   GObjectClass *gobject;
+
   GParamSpec *param_spec;
 
   ags_recall_dssi_parent_class = g_type_class_peek_parent(recall_dssi);
@@ -153,53 +153,39 @@ ags_recall_dssi_class_init(AgsRecallDssiClass *recall_dssi)
 
   /* properties */
   /**
-   * AgsRecallDssi:filename:
+   * AgsRecallDssi:bank:
    *
-   * The plugins filename.
+   * The selected bank.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
-  param_spec =  g_param_spec_string("filename",
-				    i18n_pspec("the object file"),
-				    i18n_pspec("The filename as string of object file"),
-				    NULL,
-				    G_PARAM_READABLE | G_PARAM_WRITABLE);
+  param_spec = g_param_spec_uint("bank",
+				 i18n_pspec("bank"),
+				 i18n_pspec("The selected bank"),
+				 0,
+				 G_MAXUINT32,
+				 0,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
-				  PROP_FILENAME,
+				  PROP_BANK,
 				  param_spec);
 
   /**
-   * AgsRecallDssi:effect:
+   * AgsRecallDssi:program:
    *
-   * The effect's name.
+   * The selected program.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
-  param_spec =  g_param_spec_string("effect",
-				    i18n_pspec("the effect"),
-				    i18n_pspec("The effect's string representation"),
-				    NULL,
-				    G_PARAM_READABLE | G_PARAM_WRITABLE);
+  param_spec = g_param_spec_uint("program",
+				 i18n_pspec("program"),
+				 i18n_pspec("The selected program"),
+				 0,
+				 G_MAXUINT32,
+				 0,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
-				  PROP_EFFECT,
-				  param_spec);
-
-  /**
-   * AgsRecallDssi:index:
-   *
-   * The effect's index.
-   * 
-   * Since: 1.0.0
-   */
-  param_spec =  g_param_spec_ulong("index",
-				   i18n_pspec("index of effect"),
-				   i18n_pspec("The numerical index of effect"),
-				   0,
-				   65535,
-				   0,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
-  g_object_class_install_property(gobject,
-				  PROP_INDEX,
+				  PROP_PROGRAM,
 				  param_spec);
 }
 
@@ -207,9 +193,6 @@ void
 ags_recall_dssi_connectable_interface_init(AgsConnectableInterface *connectable)
 {
   ags_recall_dssi_parent_connectable_interface = g_type_interface_peek_parent(connectable);
-
-  connectable->connect = ags_recall_dssi_connect;
-  connectable->disconnect = ags_recall_dssi_disconnect;
 }
 
 void
@@ -217,9 +200,9 @@ ags_recall_dssi_plugin_interface_init(AgsPluginInterface *plugin)
 {
   ags_recall_dssi_parent_plugin_interface = g_type_interface_peek_parent(plugin);
 
+  plugin->set_ports = ags_recall_dssi_set_ports;
   plugin->read = ags_recall_dssi_read;
   plugin->write = ags_recall_dssi_write;
-  plugin->set_ports = ags_recall_dssi_set_ports;
 }
 
 void
@@ -230,10 +213,6 @@ ags_recall_dssi_init(AgsRecallDssi *recall_dssi)
   AGS_RECALL(recall_dssi)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;
   AGS_RECALL(recall_dssi)->xml_type = "ags-recall-dssi";
   AGS_RECALL(recall_dssi)->port = NULL;
-
-  recall_dssi->filename = NULL;
-  recall_dssi->effect = NULL;
-  recall_dssi->index = 0;
   
   recall_dssi->bank = 0;
   recall_dssi->program = 0;
@@ -256,51 +235,34 @@ ags_recall_dssi_set_property(GObject *gobject,
 {
   AgsRecallDssi *recall_dssi;
 
+  pthread_mutex_t *recall_mutex;
+
   recall_dssi = AGS_RECALL_DSSI(gobject);
 
+  /* get recall mutex */
+  pthread_mutex_lock(ags_recall_get_class_mutex());
+  
+  recall_mutex = AGS_RECALL(gobject)->obj_mutex;
+  
+  pthread_mutex_unlock(ags_recall_get_class_mutex());
+
   switch(prop_id){
-  case PROP_FILENAME:
+  case PROP_BANK:
     {
-      GObject *soundcard;
-      gchar *filename;
+      pthread_mutex_lock(recall_mutex);
 
-      filename = g_value_get_string(value);
-
-      if(filename == recall_dssi->filename){
-	return;
-      }
-
-      if(recall_dssi->filename != NULL){
-	g_free(recall_dssi->filename);
-      }
-
-      recall_dssi->filename = g_strdup(filename);
+      recall_dssi->bank = g_value_get_uint(value);
+      
+      pthread_mutex_unlock(recall_mutex);	
     }
     break;
-  case PROP_EFFECT:
+  case PROP_PROGRAM:
     {
-      gchar *effect;
+      pthread_mutex_lock(recall_mutex);
+
+      recall_dssi->program = g_value_get_uint(value);
       
-      effect = g_value_get_string(value);
-
-      if(effect == recall_dssi->effect){
-	return;
-      }
-
-      recall_dssi->effect = g_strdup(effect);
-    }
-    break;
-  case PROP_INDEX:
-    {
-      unsigned long index;
-      
-      index = g_value_get_ulong(value);
-
-      if(index == recall_dssi->index){
-	return;
-      }
-
-      recall_dssi->index = index;
+      pthread_mutex_unlock(recall_mutex);	
     }
     break;
   default:
@@ -317,22 +279,34 @@ ags_recall_dssi_get_property(GObject *gobject,
 {
   AgsRecallDssi *recall_dssi;
 
+  pthread_mutex_t *recall_mutex;
+
   recall_dssi = AGS_RECALL_DSSI(gobject);
 
+  /* get recall mutex */
+  pthread_mutex_lock(ags_recall_get_class_mutex());
+  
+  recall_mutex = AGS_RECALL(gobject)->obj_mutex;
+  
+  pthread_mutex_unlock(ags_recall_get_class_mutex());
+
   switch(prop_id){
-  case PROP_FILENAME:
+  case PROP_BANK:
     {
-      g_value_set_string(value, recall_dssi->filename);
+      pthread_mutex_lock(recall_mutex);
+      
+      g_value_set_uint(value, recall_dssi->bank);
+
+      pthread_mutex_unlock(recall_mutex);
     }
     break;
-  case PROP_EFFECT:
+  case PROP_PROGRAM:
     {
-      g_value_set_string(value, recall_dssi->effect);
-    }
-    break;
-  case PROP_INDEX:
-    {
-      g_value_set_uint(value, recall_dssi->index);
+      pthread_mutex_lock(recall_mutex);
+      
+      g_value_set_uint(value, recall_dssi->program);
+
+      pthread_mutex_unlock(recall_mutex);
     }
     break;
   default:
@@ -342,126 +316,11 @@ ags_recall_dssi_get_property(GObject *gobject,
 }
 
 void
-ags_recall_dssi_connect(AgsConnectable *connectable)
-{
-  AgsRecall *recall;
-
-  recall = AGS_RECALL(connectable);
-  
-  if((AGS_RECALL_CONNECTED & (recall->flags)) != 0){
-    return;
-  }
-
-  ags_recall_load_automation(recall,
-			     g_list_copy(recall->port));
-  
-  ags_recall_dssi_parent_connectable_interface->connect(connectable);
-}
-
-void
-ags_recall_dssi_disconnect(AgsConnectable *connectable)
-{
-  ags_recall_dssi_parent_connectable_interface->disconnect(connectable);
-}
-
-void
-ags_recall_dssi_set_ports(AgsPlugin *plugin, GList *port)
-{
-  AgsRecallDssi *recall_dssi;
-  AgsPort *current;
-
-  AgsDssiPlugin *dssi_plugin;
-
-  GList *list;
-  GList *port_descriptor;
-  
-  unsigned long port_count;
-  unsigned long i;
-  
-  recall_dssi = AGS_RECALL_DSSI(plugin);
-
-  dssi_plugin = ags_dssi_manager_find_dssi_plugin(ags_dssi_manager_get_instance(),
-						  recall_dssi->filename, recall_dssi->effect);
-
-  port_descriptor = AGS_BASE_PLUGIN(dssi_plugin)->port;
-
-  if(port_descriptor != NULL){
-    port_count = g_list_length(port_descriptor);
-
-    for(i = 0; i < port_count; i++){
-      if((AGS_PORT_DESCRIPTOR_CONTROL & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
-	gchar *specifier;
-	
-	specifier = AGS_PORT_DESCRIPTOR(port_descriptor->data)->port_name;
-	
-	list = port;
-	current = NULL;
-	
-	while(list != NULL){
-	  if(!g_strcmp0(specifier,
-			AGS_PORT(list->data)->specifier)){
-	    current = list->data;
-	    break;
-	  }
-	  
-	  list = list->next;
-	}
-
-	if(current != NULL){
-	  current->port_descriptor = port_descriptor->data;
-	  ags_recall_dssi_load_conversion(recall_dssi,
-					  (GObject *) current,
-					  port_descriptor->data);
-
-	  current->port_value.ags_port_float = (LADSPA_Data) g_value_get_float(AGS_PORT_DESCRIPTOR(port_descriptor->data)->default_value);
-	  //	ags_conversion_convert(current->conversion,
-	  //		       g_value_get_float(AGS_PORT_DESCRIPTOR(port_descriptor->data)->default_value),
-	  //		       FALSE);
-	    
-	  g_message("connecting port: %lu/%lu", i, port_count);
-	}
-      }else if((AGS_PORT_DESCRIPTOR_AUDIO & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
-	if((AGS_PORT_DESCRIPTOR_INPUT & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
-	  if(recall_dssi->input_port == NULL){
-	    recall_dssi->input_port = (unsigned long *) malloc(sizeof(unsigned long));
-	    recall_dssi->input_port[0] = i;
-	  }else{
-	    recall_dssi->input_port = (unsigned long *) realloc(recall_dssi->input_port,
-								(recall_dssi->input_lines + 1) * sizeof(unsigned long));
-	    recall_dssi->input_port[recall_dssi->input_lines] = i;
-	  }
-
-	  recall_dssi->input_lines += 1;
-	}else if((AGS_PORT_DESCRIPTOR_OUTPUT & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
-	  if(recall_dssi->output_port == NULL){
-	    recall_dssi->output_port = (unsigned long *) malloc(sizeof(unsigned long));
-	    recall_dssi->output_port[0] = i;
-	  }else{
-	    recall_dssi->output_port = (unsigned long *) realloc(recall_dssi->output_port,
-								 (recall_dssi->output_lines + 1) * sizeof(unsigned long));
-	    recall_dssi->output_port[recall_dssi->output_lines] = i;
-	  }
-
-	  recall_dssi->output_lines += 1;
-	}
-      }
-
-      port_descriptor = port_descriptor->next;
-    }
-
-    AGS_RECALL(recall_dssi)->port = g_list_reverse(port);
-  }
-}
-
-void
 ags_recall_dssi_finalize(GObject *gobject)
 {
   AgsRecallDssi *recall_dssi;
   
   recall_dssi = AGS_RECALL_DSSI(gobject);
-
-  g_free(recall_dssi->filename);
-  g_free(recall_dssi->effect);
 
   if(recall_dssi->input_port != NULL){
     free(recall_dssi->input_port);
@@ -476,12 +335,176 @@ ags_recall_dssi_finalize(GObject *gobject)
 }
 
 void
+ags_recall_dssi_set_ports(AgsPlugin *plugin, GList *port)
+{
+  AgsRecallDssi *recall_dssi;
+  AgsPort *current_port;
+
+  AgsDssiPlugin *dssi_plugin;
+
+  GList *list;
+  GList *plugin_port_start, *plugin_port;
+
+  gchar *filename, *effect;
+  
+  guint port_count;
+  guint i;
+  
+  pthread_mutex_t *recall_mutex;
+  pthread_mutex_t *base_plugin_mutex;
+  pthread_mutex_t *port_mutex;
+
+  recall_dssi = AGS_RECALL_DSSI(plugin);
+
+  /* get recall mutex */
+  pthread_mutex_lock(ags_recall_get_class_mutex());
+  
+  recall_mutex = AGS_RECALL(recall_dssi)->obj_mutex;
+  
+  pthread_mutex_unlock(ags_recall_get_class_mutex());
+
+  /* get some fields */
+  pthread_mutex_lock(recall_mutex);
+
+  filename = g_strdup(AGS_RECALL(recall_dssi)->filename);
+  effect = g_strdup(AGS_RECALL(recall_dssi)->effect);
+  
+  pthread_mutex_unlock(recall_mutex);
+  
+  dssi_plugin = ags_dssi_manager_find_dssi_plugin(ags_dssi_manager_get_instance(),
+						  filename, effect);
+
+  g_free(filename);
+  g_free(effect);
+  
+  /* get base plugin mutex */
+  pthread_mutex_lock(ags_base_plugin_get_class_mutex());
+  
+  base_plugin_mutex = AGS_BASE_PLUGIN(dssi_plugin)->obj_mutex;
+  
+  pthread_mutex_unlock(ags_base_plugin_get_class_mutex());
+
+  /* get plugin port */
+  pthread_mutex_lock(base_plugin_mutex);
+
+  plugin_port =
+    plugin_port_start = g_list_copy(AGS_BASE_PLUGIN(dssi_plugin)->plugin_port);
+
+  pthread_mutex_unlock(base_plugin_mutex);
+
+  /* match port */
+  if(plugin_port != NULL){
+    port_count = g_list_length(plugin_port_start);
+
+    for(i = 0; i < port_count; i++){
+      AgsPluginPort *current_plugin_port;
+      
+      pthread_mutex_t *plugin_port_mutex;
+      
+      current_plugin_port = AGS_PLUGIN_PORT(plugin_port->data);
+
+      /* get plugin port mutex */
+      pthread_mutex_lock(ags_plugin_port_get_class_mutex());
+      
+      plugin_port_mutex = current_plugin_port->obj_mutex;
+
+      pthread_mutex_unlock(ags_plugin_port_get_class_mutex());
+      
+      if(ags_plugin_port_test_flags(current_plugin_port,
+				    AGS_PLUGIN_PORT_CONTROL)){
+	gchar *specifier;
+	
+	GValue *default_value;
+	
+	default_value = g_new0(GValue,
+			       1);
+	g_value_init(default_value,
+		     G_TYPE_FLOAT);
+	
+	pthread_mutex_lock(plugin_port_mutex);
+
+	specifier = g_strdup(current_plugin_port->port_name);
+	g_value_copy(current_plugin_port->default_value,
+		     default_value);
+	
+	pthread_mutex_unlock(plugin_port_mutex);
+
+	list = ags_port_find_specifier(port, specifier);
+	
+	if(list != NULL){
+	  current_port = list->data;
+	  g_object_set(current_port,
+		       "plugin-port", current_plugin_port,
+		       NULL);
+
+	  ags_recall_dssi_load_conversion(recall_dssi,
+					  (GObject *) current_port,
+					  current_plugin_port);
+
+	  //TODO:JK: check non-raw write	  
+	  ags_port_safe_write_raw(current_port,
+				  default_value);
+	    
+#ifdef AGS_DEBUG
+	  g_message("connecting port: %lu/%lu", i, port_count);
+#endif
+	}
+
+	g_free(default_value);
+	g_free(specifier);
+      }else if(ags_plugin_port_test_flags(current_plugin_port,
+					  AGS_PLUGIN_PORT_AUDIO)){
+	pthread_mutex_lock(recall_mutex);
+	
+	if(ags_plugin_port_test_flags(current_plugin_port,
+				      AGS_PLUGIN_PORT_INPUT)){
+	  if(recall_dssi->input_port == NULL){
+	    recall_dssi->input_port = (guint *) malloc(sizeof(guint));
+	    recall_dssi->input_port[0] = i;
+	  }else{
+	    recall_dssi->input_port = (guint *) realloc(recall_dssi->input_port,
+							(recall_dssi->input_lines + 1) * sizeof(guint));
+	    recall_dssi->input_port[recall_dssi->input_lines] = i;
+	  }
+
+	  recall_dssi->input_lines += 1;
+	}else if(ags_plugin_port_test_flags(current_plugin_port,
+					    AGS_PLUGIN_PORT_OUTPUT)){
+	  if(recall_dssi->output_port == NULL){
+	    recall_dssi->output_port = (guint *) malloc(sizeof(guint));
+	    recall_dssi->output_port[0] = i;
+	  }else{
+	    recall_dssi->output_port = (guint *) realloc(recall_dssi->output_port,
+							 (recall_dssi->output_lines + 1) * sizeof(guint));
+	    recall_dssi->output_port[recall_dssi->output_lines] = i;
+	  }
+
+	  recall_dssi->output_lines += 1;
+	}
+
+	pthread_mutex_unlock(recall_mutex);
+      }
+
+      /* iterate plugin port */
+      plugin_port = plugin_port->next;
+    }
+    
+    /* reverse port */
+    pthread_mutex_lock(recall_mutex);
+    
+    AGS_RECALL(recall_dssi)->port = g_list_reverse(port);
+
+    pthread_mutex_unlock(recall_mutex);
+  }
+
+  g_list_free(plugin_port_start);
+}
+
+void
 ags_recall_dssi_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
 {
   AgsRecallDssi *gobject;
   AgsDssiPlugin *dssi_plugin;
-  gchar *filename, *effect;
-  unsigned long index;
 
   gobject = AGS_RECALL_DSSI(plugin);
 
@@ -494,21 +517,6 @@ ags_recall_dssi_read(AgsFile *file, xmlNode *node, AgsPlugin *plugin)
 				   "reference", gobject,
 				   NULL));
 
-  filename = xmlGetProp(node,
-			"filename");
-  effect = xmlGetProp(node,
-		      "effect");
-  index = g_ascii_strtoull(xmlGetProp(node,
-				      "index"),
-			   NULL,
-			   10);
-
-  g_object_set(gobject,
-	       "filename", filename,
-	       "effect", effect,
-	       "index", index,
-	       NULL);
-
   ags_recall_dssi_load(gobject);
 }
 
@@ -516,9 +524,12 @@ xmlNode*
 ags_recall_dssi_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
 {
   AgsRecallDssi *recall_dssi;
+
   xmlNode *node;
+
   gchar *id;
 
+  /*  */
   recall_dssi = AGS_RECALL_DSSI(plugin);
 
   id = ags_id_generator_create_uuid();
@@ -538,18 +549,6 @@ ags_recall_dssi_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
 				   "reference", recall_dssi,
 				   NULL));
 
-  xmlNewProp(node,
-	     "filename",
-	     g_strdup(recall_dssi->filename));
-
-  xmlNewProp(node,
-	     "effect",
-	     g_strdup(recall_dssi->effect));
-
-  xmlNewProp(node,
-	     "index",
-	     g_strdup_printf("%lu", recall_dssi->index));
-
   xmlAddChild(parent,
 	      node);
 
@@ -558,70 +557,146 @@ ags_recall_dssi_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
 
 /**
  * ags_recall_dssi_load:
- * @recall_dssi: an #AgsRecallDssi
+ * @recall_dssi: the #AgsRecallDssi
  *
  * Set up DSSI handle.
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_recall_dssi_load(AgsRecallDssi *recall_dssi)
 {
   AgsDssiPlugin *dssi_plugin;
 
+  gchar *filename;
+  gchar *effect;
+
+  guint effect_index;
+  
   void *plugin_so;
   DSSI_Descriptor_Function dssi_descriptor;
   DSSI_Descriptor *plugin_descriptor;
+
+  pthread_mutex_t *recall_mutex;
 
   if(!AGS_IS_RECALL_DSSI(recall_dssi)){
     return;
   }
 
-  /*  */
-  recall_dssi->plugin = 
-    dssi_plugin = ags_dssi_manager_find_dssi_plugin(ags_dssi_manager_get_instance(),
-						    recall_dssi->filename, recall_dssi->effect);
+  /* get recall mutex */
+  pthread_mutex_lock(ags_recall_get_class_mutex());
   
-  plugin_so = AGS_BASE_PLUGIN(dssi_plugin)->plugin_so;
+  recall_mutex = AGS_RECALL(recall_dssi)->obj_mutex;
+  
+  pthread_mutex_unlock(ags_recall_get_class_mutex());
+
+  /* get some fields */
+  pthread_mutex_lock(recall_mutex);
+
+  filename = g_strdup(AGS_RECALL(recall_dssi)->filename);
+  effect = g_strdup(AGS_RECALL(recall_dssi)->effect);
+  
+  effect_index = AGS_RECALL(recall_dssi)->effect_index;
+
+  pthread_mutex_unlock(recall_mutex);
+  
+  /* find dssi plugin */
+  dssi_plugin = ags_dssi_manager_find_dssi_plugin(ags_dssi_manager_get_instance(),
+						  filename, effect);
+  g_free(filename);
+  g_free(effect);
+
+  g_object_get(dssi_plugin,
+	       "plugin-so", &plugin_so,
+	       NULL);
 
   if(plugin_so){
     dssi_descriptor = (DSSI_Descriptor_Function) dlsym(plugin_so,
 						       "dssi_descriptor");
 
     if(dlerror() == NULL && dssi_descriptor){
+      pthread_mutex_lock(recall_mutex);
+      
       recall_dssi->plugin_descriptor = 
-	plugin_descriptor = dssi_descriptor(recall_dssi->index);
+	plugin_descriptor = dssi_descriptor((unsigned long) effect_index);
+
+      pthread_mutex_unlock(recall_mutex);
     }
   }
 }
 
 /**
  * ags_recall_dssi_load_ports:
- * @recall_dssi: an #AgsRecallDssi
+ * @recall_dssi: the #AgsRecallDssi
  *
  * Set up DSSI ports.
  *
- * Returns: a #GList containing #AgsPort.
+ * Returns: the #GList-struct containing #AgsPort
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 GList*
 ags_recall_dssi_load_ports(AgsRecallDssi *recall_dssi)
 {
-  AgsPort *current;
+  AgsPort *current_port;
 
   AgsDssiPlugin *dssi_plugin;
 
-  GList *port;
-  GList *port_descriptor;
+  GList *port, *retval;
+  GList *plugin_port_start, *plugin_port;
 
-  unsigned long port_count;
-  unsigned long i;
+  gchar *filename;
+  gchar *effect;
 
+  guint effect_index;
+  
+  guint port_count;
+  guint i;
+
+  pthread_mutex_t *recall_mutex;
   pthread_mutex_t *base_plugin_mutex;
 
+  if(!AGS_IS_RECALL_DSSI(recall_dssi)){
+    return(NULL);
+  }
+
+  /* get recall mutex */
+  pthread_mutex_lock(ags_recall_get_class_mutex());
+  
+  recall_mutex = AGS_RECALL(recall_dssi)->obj_mutex;
+  
+  pthread_mutex_unlock(ags_recall_get_class_mutex());
+
+  /* get some fields */
+  pthread_mutex_lock(recall_mutex);
+
+  filename = g_strdup(AGS_RECALL(recall_dssi)->filename);
+  effect = g_strdup(AGS_RECALL(recall_dssi)->effect);
+  
+  effect_index = AGS_RECALL(recall_dssi)->effect_index;
+
+  pthread_mutex_unlock(recall_mutex);
+
+  /* find dssi plugin */
   dssi_plugin = ags_dssi_manager_find_dssi_plugin(ags_dssi_manager_get_instance(),
-						  recall_dssi->filename, recall_dssi->effect);
+						  filename, effect);
+  g_free(filename);
+  g_free(effect);
+
+  /* get base plugin mutex */
+  pthread_mutex_lock(ags_base_plugin_get_class_mutex());
+  
+  base_plugin_mutex = AGS_BASE_PLUGIN(dssi_plugin)->obj_mutex;
+  
+  pthread_mutex_unlock(ags_base_plugin_get_class_mutex());
+
+  /* get port descriptor */
+  pthread_mutex_lock(base_plugin_mutex);
+
+  plugin_port =
+    plugin_port_start = g_list_copy(AGS_BASE_PLUGIN(dssi_plugin)->plugin_port);
+
+  pthread_mutex_unlock(base_plugin_mutex);
 
   /* base plugin mutex */
   pthread_mutex_lock(ags_base_plugin_get_class_mutex());
@@ -634,146 +709,202 @@ ags_recall_dssi_load_ports(AgsRecallDssi *recall_dssi)
   pthread_mutex_lock(base_plugin_mutex);
 
   port = NULL;
-  port_descriptor = AGS_BASE_PLUGIN(dssi_plugin)->port;
+  retval = NULL;
   
-  if(port_descriptor != NULL){
-    port_count = g_list_length(port_descriptor);
+  if(plugin_port != NULL){
+    port_count = g_list_length(plugin_port_start);
     
     for(i = 0; i < port_count; i++){
-      if((AGS_PORT_DESCRIPTOR_CONTROL & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
+      AgsPluginPort *current_plugin_port;
+      
+      pthread_mutex_t *plugin_port_mutex;
+      
+      current_plugin_port = AGS_PLUGIN_PORT(plugin_port->data);
+
+      /* get plugin port mutex */
+      pthread_mutex_lock(ags_plugin_port_get_class_mutex());
+      
+      plugin_port_mutex = current_plugin_port->obj_mutex;
+
+      pthread_mutex_unlock(ags_plugin_port_get_class_mutex());
+
+      if(ags_plugin_port_test_flags(current_plugin_port,
+				    AGS_PLUGIN_PORT_CONTROL)){
 	gchar *plugin_name;
 	gchar *specifier;
+
+	GValue *default_value;
 	
 	plugin_name = g_strdup_printf("dssi-%lu", dssi_plugin->unique_id);
-	specifier = AGS_PORT_DESCRIPTOR(port_descriptor->data)->port_name;
 
-	current = g_object_new(AGS_TYPE_PORT,
-			       "plugin-name", plugin_name,
-			       "specifier", specifier,
-			       "control-port", g_strdup_printf("%lu/%lu",
-								 i,
-								 port_count),
-			       "port-value-is-pointer", FALSE,
-			       "port-value-type", G_TYPE_FLOAT,
-			       NULL);
-	g_object_ref(current);
-	current->flags |= AGS_PORT_USE_LADSPA_FLOAT;
+	default_value = g_new0(GValue,
+			       1);
+	
+	pthread_mutex_lock(plugin_port_mutex);
 
-	if((AGS_PORT_DESCRIPTOR_OUTPUT & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
-	  AGS_RECALL(recall_dssi)->flags |= AGS_RECALL_HAS_OUTPUT_PORT;
+	specifier = g_strdup(current_plugin_port->port_name);
 
-	  current->flags |= AGS_PORT_IS_OUTPUT;
+	default_value = g_new0(GValue,
+			       1);
+	g_value_init(default_value,
+		     G_TYPE_FLOAT);
+	g_value_copy(current_plugin_port->default_value,
+		     default_value);
+	
+	pthread_mutex_unlock(plugin_port_mutex);
+
+	current_port = g_object_new(AGS_TYPE_PORT,
+				    "plugin-name", plugin_name,
+				    "specifier", specifier,
+				    "control-port", g_strdup_printf("%lu/%lu",
+								    i,
+								    port_count),
+				    "port-value-is-pointer", FALSE,
+				    "port-value-type", G_TYPE_FLOAT,
+				    NULL);
+	current_port->flags |= AGS_PORT_USE_LADSPA_FLOAT;
+	g_object_ref(current_port);
+	
+	if(ags_plugin_port_test_flags(current_plugin_port,
+				      AGS_PLUGIN_PORT_OUTPUT)){
+	  current_port->flags |= AGS_PORT_IS_OUTPUT;
+
+	  ags_recall_set_flags(recall_dssi,
+			       AGS_RECALL_HAS_OUTPUT_PORT);
+
 	}else{
-	  if((AGS_PORT_DESCRIPTOR_INTEGER & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) == 0 &&
-	     (AGS_PORT_DESCRIPTOR_TOGGLED & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) == 0){
-	    current->flags |= AGS_PORT_INFINITE_RANGE;
+	  if(!ags_plugin_port_test_flags(current_plugin_port,
+					 AGS_PLUGIN_PORT_INTEGER) &&
+	     !ags_plugin_port_test_flags(current_plugin_port,
+					 AGS_PLUGIN_PORT_TOGGLED)){
+	    current_port->flags |= AGS_PORT_INFINITE_RANGE;
 	  }
 	}
 	
-	current->port_descriptor = port_descriptor->data;
+	g_object_set(current_port,
+		     "plugin-port", current_plugin_port,
+		     NULL);
+
 	ags_recall_dssi_load_conversion(recall_dssi,
-					(GObject *) current,
-					port_descriptor->data);
+					(GObject *) current_port,
+					current_plugin_port);
 	
-	current->port_value.ags_port_ladspa = g_value_get_float(AGS_PORT_DESCRIPTOR(port_descriptor->data)->default_value);
-	//	g_message("connecting port: %d/%d %f", i, port_count, current->port_value.ags_port_float);
+	ags_port_safe_write_raw(current_port,
+				default_value);
 
 	port = g_list_prepend(port,
-			      current);
-      }else if((AGS_PORT_DESCRIPTOR_AUDIO & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
-	if((AGS_PORT_DESCRIPTOR_INPUT & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
+			      current_port);
+
+	g_free(default_value);
+	g_free(plugin_name);
+	g_free(specifier);
+      }else if(ags_plugin_port_test_flags(current_plugin_port,
+					  AGS_PLUGIN_PORT_AUDIO)){
+	pthread_mutex_lock(recall_mutex);
+
+	if(ags_plugin_port_test_flags(current_plugin_port,
+				      AGS_PLUGIN_PORT_INPUT)){
 	  if(recall_dssi->input_port == NULL){
 	    recall_dssi->input_port = (unsigned long *) malloc(sizeof(unsigned long));
 	    recall_dssi->input_port[0] = i;
 	  }else{
 	    recall_dssi->input_port = (unsigned long *) realloc(recall_dssi->input_port,
-								  (recall_dssi->input_lines + 1) * sizeof(unsigned long));
+								(recall_dssi->input_lines + 1) * sizeof(unsigned long));
 	    recall_dssi->input_port[recall_dssi->input_lines] = i;
 	  }
 	  
 	  recall_dssi->input_lines += 1;
-	}else if((AGS_PORT_DESCRIPTOR_OUTPUT & (AGS_PORT_DESCRIPTOR(port_descriptor->data)->flags)) != 0){
+	}else if(ags_plugin_port_test_flags(current_plugin_port,
+					    AGS_PLUGIN_PORT_OUTPUT)){
 	  if(recall_dssi->output_port == NULL){
 	    recall_dssi->output_port = (unsigned long *) malloc(sizeof(unsigned long));
 	    recall_dssi->output_port[0] = i;
 	  }else{
 	    recall_dssi->output_port = (unsigned long *) realloc(recall_dssi->output_port,
-								   (recall_dssi->output_lines + 1) * sizeof(unsigned long));
+								 (recall_dssi->output_lines + 1) * sizeof(unsigned long));
 	    recall_dssi->output_port[recall_dssi->output_lines] = i;
 	  }
 	  
 	  recall_dssi->output_lines += 1;
 	}
+
+	pthread_mutex_unlock(recall_mutex);
       }
 
-      port_descriptor = port_descriptor->next;
+      /* iterate plugin port */
+      plugin_port = plugin_port->next;
     }
     
+    /* reverse port */
+    pthread_mutex_lock(recall_mutex);
+    
     AGS_RECALL(recall_dssi)->port = g_list_reverse(port);
+    
+    retval = g_list_copy(AGS_RECALL(recall_dssi)->port);
+    
+    pthread_mutex_unlock(recall_mutex);
   }
 
-  pthread_mutex_unlock(base_plugin_mutex);
+  g_list_free(plugin_port_start);
 
-  //  g_message("output lines: %d", recall_dssi->output_lines);
-
-  return(g_list_copy(AGS_RECALL(recall_dssi)->port));
+  return(retval);
 }
 
 /**
  * ags_recall_dssi_load_conversion:
  * @recall_dssi: the #AgsRecallDssi
- * @port: an #AgsPort
- * @port_descriptor: the #AgsPortDescriptor-struct
+ * @port: the #AgsPort
+ * @plugin_port: the #AgsPluginPort
  * 
- * Loads conversion object by using @port_descriptor and sets in on @port.
+ * Loads conversion object by using @plugin_port and sets in on @port.
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_recall_dssi_load_conversion(AgsRecallDssi *recall_dssi,
 				GObject *port,
-				gpointer port_descriptor)
+				gpointer plugin_port)
 {
   AgsLadspaConversion *ladspa_conversion;
 
-  if(recall_dssi == NULL ||
-     port == NULL ||
-     port_descriptor == NULL){
+  if(!AGS_IS_RECALL_DSSI(recall_dssi) ||
+     !AGS_IS_PORT(port) ||
+     !AGS_IS_PLUGIN_PORT(plugin_port)){
     return;
   }
 
   ladspa_conversion = NULL;
 
-  if((AGS_PORT_DESCRIPTOR_BOUNDED_BELOW & (AGS_PORT_DESCRIPTOR(port_descriptor)->flags)) != 0){
-    if(ladspa_conversion == NULL ||
-       !AGS_IS_LADSPA_CONVERSION(ladspa_conversion)){
+  if(ags_plugin_port_test_flags(plugin_port,
+				AGS_PLUGIN_PORT_BOUNDED_BELOW)){
+    if(!AGS_IS_LADSPA_CONVERSION(ladspa_conversion)){
       ladspa_conversion = ags_ladspa_conversion_new();
     }
 
     ladspa_conversion->flags |= AGS_LADSPA_CONVERSION_BOUNDED_BELOW;
   }
 
-  if((AGS_PORT_DESCRIPTOR_BOUNDED_ABOVE & (AGS_PORT_DESCRIPTOR(port_descriptor)->flags)) != 0){
-    if(ladspa_conversion == NULL ||
-       !AGS_IS_LADSPA_CONVERSION(ladspa_conversion)){
+  if(ags_plugin_port_test_flags(plugin_port,
+				AGS_PLUGIN_PORT_BOUNDED_ABOVE)){
+    if(!AGS_IS_LADSPA_CONVERSION(ladspa_conversion)){
       ladspa_conversion = ags_ladspa_conversion_new();
     }
 
     ladspa_conversion->flags |= AGS_LADSPA_CONVERSION_BOUNDED_ABOVE;
   }
   
-  if((AGS_PORT_DESCRIPTOR_SAMPLERATE & (AGS_PORT_DESCRIPTOR(port_descriptor)->flags)) != 0){
-    if(ladspa_conversion == NULL ||
-       !AGS_IS_LADSPA_CONVERSION(ladspa_conversion)){
+  if(ags_plugin_port_test_flags(plugin_port,
+				AGS_PLUGIN_PORT_SAMPLERATE)){
+    if(!AGS_IS_LADSPA_CONVERSION(ladspa_conversion)){
       ladspa_conversion = ags_ladspa_conversion_new();
     }
         
     ladspa_conversion->flags |= AGS_LADSPA_CONVERSION_SAMPLERATE;
   }
 
-  if((AGS_PORT_DESCRIPTOR_LOGARITHMIC & (AGS_PORT_DESCRIPTOR(port_descriptor)->flags)) != 0){
-    if(ladspa_conversion == NULL ||
-       !AGS_IS_LADSPA_CONVERSION(ladspa_conversion)){
+  if(ags_plugin_port_test_flags(plugin_port,
+				AGS_PLUGIN_PORT_LOGARITHMIC)){
+    if(!AGS_IS_LADSPA_CONVERSION(ladspa_conversion)){
       ladspa_conversion = ags_ladspa_conversion_new();
     }
     
@@ -789,26 +920,44 @@ ags_recall_dssi_load_conversion(AgsRecallDssi *recall_dssi,
 
 /**
  * ags_recall_dssi_find:
- * @recall: a #GList containing #AgsRecall
+ * @recall: the #GList-struct containing #AgsRecall
  * @filename: plugin filename
  * @effect: effect's name
  *
  * Retrieve DSSI recall.
  *
- * Returns: Next match.
+ * Returns: Next matching #GList-struct or %NULL
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 GList*
 ags_recall_dssi_find(GList *recall,
 		     gchar *filename, gchar *effect)
 {
+  gboolean success;
+  
+  pthread_mutex_t *recall_mutex;
+
   while(recall != NULL){
     if(AGS_IS_RECALL_DSSI(recall->data)){
-      if(!g_strcmp0(AGS_RECALL_DSSI(recall->data)->filename,
-		    filename) &&
-	 !g_strcmp0(AGS_RECALL_DSSI(recall->data)->effect,
-		    effect)){
+      /* get recall mutex */
+      pthread_mutex_lock(ags_recall_get_class_mutex());
+  
+      recall_mutex = AGS_RECALL(recall->data)->obj_mutex;
+  
+      pthread_mutex_unlock(ags_recall_get_class_mutex());
+
+      /* check filename and effect */
+      pthread_mutex_lock(recall_mutex);
+      
+      success = (!g_strcmp0(AGS_RECALL(recall->data)->filename,
+			    filename) &&
+		 !g_strcmp0(AGS_RECALL(recall->data)->effect,
+			    effect)) ? TRUE: FALSE;
+
+      pthread_mutex_unlock(recall_mutex);
+      
+      if(success){
 	return(recall);
       }
     }
@@ -821,38 +970,41 @@ ags_recall_dssi_find(GList *recall,
 
 /**
  * ags_recall_dssi_new:
- * @source: the source
+ * @source: the #AgsChannel as source
  * @filename: the DSSI plugin filename
  * @effect: effect's name
- * @index: effect's index
+ * @effect_index: effect's index
  *
- * Creates a #AgsRecallDssi
+ * Creates a new instance of #AgsRecallDssi
  *
- * Returns: a new #AgsRecallDssi
+ * Returns: the new #AgsRecallDssi
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsRecallDssi*
 ags_recall_dssi_new(AgsChannel *source,
 		    gchar *filename,
 		    gchar *effect,
-		    unsigned long index)
+		    guint effect_index)
 {
-  GObject *soundcard;
   AgsRecallDssi *recall_dssi;
 
+  GObject *output_soundcard;
+
+  output_soundcard = NULL;
+
   if(source != NULL){
-    soundcard = (GObject *) source->soundcard;
-  }else{
-    soundcard = NULL;
+    g_object_get(source,
+		 "output-soundcard", &output_soundcard,
+		 NULL);
   }
 
   recall_dssi = (AgsRecallDssi *) g_object_new(AGS_TYPE_RECALL_DSSI,
-					       "soundcard", soundcard,
+					       "output-soundcard", output_soundcard,
 					       "source", source,
 					       "filename", filename,
 					       "effect", effect,
-					       "index", index,
+					       "effect-index", effect_index,
 					       NULL);
 
   return(recall_dssi);

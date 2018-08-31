@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -23,9 +23,7 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include <ags/file/ags_file_link.h>
-
-#include <ags/thread/ags_timestamp.h>
+#include <ags/libags.h>
 
 #define AGS_TYPE_AUDIO_FILE_LINK                (ags_audio_file_link_get_type())
 #define AGS_AUDIO_FILE_LINK(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_AUDIO_FILE_LINK, AgsAudioFileLink))

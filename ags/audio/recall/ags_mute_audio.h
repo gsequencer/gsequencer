@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -23,8 +23,10 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include <ags/audio/ags_recall_audio.h>
+#include <ags/libags.h>
 
+#include <ags/audio/ags_audio.h>
+#include <ags/audio/ags_recall_audio.h>
 #include <ags/audio/ags_port.h>
 
 #define AGS_TYPE_MUTE_AUDIO                (ags_mute_audio_get_type())
@@ -51,6 +53,6 @@ struct _AgsMuteAudioClass
 
 GType ags_mute_audio_get_type();
 
-AgsMuteAudio* ags_mute_audio_new();
+AgsMuteAudio* ags_mute_audio_new(AgsAudio *audio);
 
 #endif /*__AGS_MUTE_AUDIO_H__*/

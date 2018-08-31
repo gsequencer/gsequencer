@@ -1712,6 +1712,13 @@ ags_turtle_find_xpath_with_context_node(AgsTurtle *turtle,
   GList *list;
 
   guint i;
+
+  if(!AGS_IS_TURTLE(turtle) ||
+     turtle->doc == NULL ||
+     xpath == NULL ||
+     context_node == NULL){
+    return(NULL);
+  }
   
   xpath_context = xmlXPathNewContext(turtle->doc);
   xpath_context->node = context_node;

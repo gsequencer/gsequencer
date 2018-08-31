@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -37,8 +37,8 @@
 #define AGS_MIDI_FILE_TRACK(ptr) ((AgsMidiFileTrack *)(ptr))
 
 #define AGS_MIDI_FILE_MAX_TEXT_LENGTH (4096)
-#define AGS_MIDI_FILE_MTHD "MThd\0"
-#define AGS_MIDI_FILE_MTRK "MTrk\0"
+#define AGS_MIDI_FILE_MTHD "MThd"
+#define AGS_MIDI_FILE_MTRK "MTrk"
 
 #define AGS_MIDI_FILE_DEFAULT_OFFSET (0)
 #define AGS_MIDI_FILE_DEFAULT_FORMAT (1)
@@ -77,6 +77,12 @@ typedef enum{
   AGS_MIDI_FILE_DROP_FRAME        = 1 <<  2,
 }AgsMidiFileFlags;
 
+#define AGS_MIDI_FILE_ERROR (ags_midi_file_error_quark())
+
+typedef enum{
+  AGS_MIDI_FILE_ERROR_PREMATURE_EOF,
+}AgsMidiFileError;
+
 struct _AgsMidiFile
 {
   GObject gobject;
@@ -102,6 +108,9 @@ struct _AgsMidiFile
   GList *track;
   
   AgsMidiFileTrack *current_track;
+
+  GList *notation;
+  GList *midi;
 };
 
 struct _AgsMidiFileClass
@@ -119,10 +128,15 @@ struct _AgsMidiFileTrack
 
 GType ags_midi_file_get_type(void);
 
-gboolean ags_midi_file_open(AgsMidiFile *midi_file);
+GQuark ags_midi_file_error_quark();
+
+gboolean ags_midi_file_open(AgsMidiFile *midi_file,
+			    gchar *filename);
 gboolean ags_midi_file_open_from_data(AgsMidiFile *midi_file,
 				      unsigned char *data, guint buffer_length);
-gboolean ags_midi_file_rw_open(AgsMidiFile *midi_file);
+gboolean ags_midi_file_rw_open(AgsMidiFile *midi_file,
+			       gchar *filename,
+			       gboolean create);
 
 void ags_midi_file_close(AgsMidiFile *midi_file);
 
@@ -132,13 +146,21 @@ void ags_midi_file_write(AgsMidiFile *midi_file,
 void ags_midi_file_seek(AgsMidiFile *midi_file, guint position, gint whence);
 void ags_midi_file_flush(AgsMidiFile *midi_file);
 
-gint16 ags_midi_file_read_gint16(AgsMidiFile *midi_file);
-gint32 ags_midi_file_read_gint24(AgsMidiFile *midi_file);
-gint32 ags_midi_file_read_gint32(AgsMidiFile *midi_file);
-long ags_midi_file_read_varlength(AgsMidiFile *midi_file);
+unsigned char ags_midi_file_read_byte(AgsMidiFile *midi_file,
+				      GError **error);
+gint16 ags_midi_file_read_gint16(AgsMidiFile *midi_file,
+				 GError **error);
+gint32 ags_midi_file_read_gint24(AgsMidiFile *midi_file,
+				 GError **error);
+gint32 ags_midi_file_read_gint32(AgsMidiFile *midi_file,
+				 GError **error);
+long ags_midi_file_read_varlength(AgsMidiFile *midi_file,
+				  GError **error);
 unsigned char* ags_midi_file_read_text(AgsMidiFile *midi_file,
-				       gint length);
+				       gint length,
+				       GError **error);
 
+void ags_midi_file_write_byte(AgsMidiFile *midi_file, unsigned char val);
 void ags_midi_file_write_gint16(AgsMidiFile *midi_file, gint16 val);
 void ags_midi_file_write_gint24(AgsMidiFile *midi_file, gint32 val);
 void ags_midi_file_write_gint32(AgsMidiFile *midi_file, gint32 val);
@@ -147,14 +169,19 @@ void ags_midi_file_write_text(AgsMidiFile *midi_file,
 			      gchar *text, guint length);
 
 unsigned char* ags_midi_file_read_header(AgsMidiFile *midi_file,
-					 guint *buffer_length);
+					 guint *buffer_length,
+					 GError **error);
 void ags_midi_file_write_header(AgsMidiFile *midi_file,
 				unsigned char *buffer, guint buffer_length);
 
 unsigned char* ags_midi_file_read_track_data(AgsMidiFile *midi_file,
-					     guint *buffer_length);
+					     guint *buffer_length,
+					     GError **error);
 void ags_midi_file_write_track_data(AgsMidiFile *midi_file,
 				    unsigned char *buffer, guint buffer_length);
+
+void ags_midi_file_read_notation(AgsMidiFile *midi_file);
+void ags_mid_file_read_midi(AgsMidiFile *midi_file);
 
 AgsMidiFile* ags_midi_file_new(gchar *filename);
 

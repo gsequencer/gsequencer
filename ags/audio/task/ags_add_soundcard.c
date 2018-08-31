@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -24,7 +24,6 @@
 #include <ags/i18n.h>
 
 void ags_add_soundcard_class_init(AgsAddSoundcardClass *add_soundcard);
-void ags_add_soundcard_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_add_soundcard_init(AgsAddSoundcard *add_soundcard);
 void ags_add_soundcard_set_property(GObject *gobject,
 				    guint prop_id,
@@ -34,8 +33,6 @@ void ags_add_soundcard_get_property(GObject *gobject,
 				    guint prop_id,
 				    GValue *value,
 				    GParamSpec *param_spec);
-void ags_add_soundcard_connect(AgsConnectable *connectable);
-void ags_add_soundcard_disconnect(AgsConnectable *connectable);
 void ags_add_soundcard_dispose(GObject *gobject);
 void ags_add_soundcard_finalize(GObject *gobject);
 
@@ -58,7 +55,6 @@ enum{
  */
 
 static gpointer ags_add_soundcard_parent_class = NULL;
-static AgsConnectableInterface *ags_add_soundcard_parent_connectable_interface;
 
 GType
 ags_add_soundcard_get_type()
@@ -69,36 +65,24 @@ ags_add_soundcard_get_type()
     GType ags_type_add_soundcard;
 
     static const GTypeInfo ags_add_soundcard_info = {
-      sizeof (AgsAddSoundcardClass),
+      sizeof(AgsAddSoundcardClass),
       NULL, /* base_init */
       NULL, /* base_finalize */
       (GClassInitFunc) ags_add_soundcard_class_init,
       NULL, /* class_finalize */
       NULL, /* class_data */
-      sizeof (AgsAddSoundcard),
+      sizeof(AgsAddSoundcard),
       0,    /* n_preallocs */
       (GInstanceInitFunc) ags_add_soundcard_init,
-    };
-
-    static const GInterfaceInfo ags_connectable_interface_info = {
-      (GInterfaceInitFunc) ags_add_soundcard_connectable_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
     };
 
     ags_type_add_soundcard = g_type_register_static(AGS_TYPE_TASK,
 						    "AgsAddSoundcard",
 						    &ags_add_soundcard_info,
 						    0);
-
-    g_type_add_interface_static(ags_type_add_soundcard,
-				AGS_TYPE_CONNECTABLE,
-				&ags_connectable_interface_info);
-
-    g_once_init_leave (&g_define_type_id__volatile, ags_type_add_soundcard);
   }
-
-  return g_define_type_id__volatile;
+  
+  return(ags_type_add_soundcard);
 }
 
 void
@@ -106,6 +90,7 @@ ags_add_soundcard_class_init(AgsAddSoundcardClass *add_soundcard)
 {
   GObjectClass *gobject;
   AgsTaskClass *task;
+
   GParamSpec *param_spec;
 
   ags_add_soundcard_parent_class = g_type_class_peek_parent(add_soundcard);
@@ -124,7 +109,7 @@ ags_add_soundcard_class_init(AgsAddSoundcardClass *add_soundcard)
    *
    * The assigned #AgsApplicationContext
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("application-context",
 				   i18n_pspec("application context of add soundcard"),
@@ -140,7 +125,7 @@ ags_add_soundcard_class_init(AgsAddSoundcardClass *add_soundcard)
    *
    * The assigned #AgsSoundcard
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("soundcard",
 				   i18n_pspec("soundcard of add soundcard"),
@@ -155,15 +140,6 @@ ags_add_soundcard_class_init(AgsAddSoundcardClass *add_soundcard)
   task = (AgsTaskClass *) add_soundcard;
 
   task->launch = ags_add_soundcard_launch;
-}
-
-void
-ags_add_soundcard_connectable_interface_init(AgsConnectableInterface *connectable)
-{
-  ags_add_soundcard_parent_connectable_interface = g_type_interface_peek_parent(connectable);
-
-  connectable->connect = ags_add_soundcard_connect;
-  connectable->disconnect = ags_add_soundcard_disconnect;
 }
 
 void
@@ -261,22 +237,6 @@ ags_add_soundcard_get_property(GObject *gobject,
 }
 
 void
-ags_add_soundcard_connect(AgsConnectable *connectable)
-{
-  ags_add_soundcard_parent_connectable_interface->connect(connectable);
-
-  /* empty */
-}
-
-void
-ags_add_soundcard_disconnect(AgsConnectable *connectable)
-{
-  ags_add_soundcard_parent_connectable_interface->disconnect(connectable);
-
-  /* empty */
-}
-
-void
 ags_add_soundcard_dispose(GObject *gobject)
 {
   AgsAddSoundcard *add_soundcard;
@@ -322,25 +282,26 @@ void
 ags_add_soundcard_launch(AgsTask *task)
 {
   AgsAddSoundcard *add_soundcard;
-
-  AgsMutexManager *mutex_manager;
-
-  pthread_mutex_t *application_mutex;
-
-  /* get mutex manager and application mutex */
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+  
+  GList *list_start;
   
   add_soundcard = AGS_ADD_SOUNDCARD(task);
 
+  if(!AGS_IS_SOUND_PROVIDER(add_soundcard->application_context) ||
+     !AGS_IS_SOUNDCARD(add_soundcard->soundcard)){
+    return;
+  }
+
   /* add soundcard */
-  pthread_mutex_lock(application_mutex);
-
-  ags_sound_provider_set_soundcard(AGS_SOUND_PROVIDER(add_soundcard->application_context),
-				   g_list_append(ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(add_soundcard->application_context)),
-						 add_soundcard->soundcard));
-
-  pthread_mutex_unlock(application_mutex);
+  list_start = ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(add_soundcard->application_context));
+  
+  if(g_list_find(list_start, add_soundcard->soundcard) == NULL){
+    g_object_ref(add_soundcard->soundcard);
+    
+    ags_sound_provider_set_soundcard(AGS_SOUND_PROVIDER(add_soundcard->application_context),
+				     g_list_append(list_start,
+						   add_soundcard->soundcard));
+  }
 }
 
 /**
@@ -348,11 +309,11 @@ ags_add_soundcard_launch(AgsTask *task)
  * @application_context: the #AgsApplicationContext
  * @soundcard: the #AgsSoundcard to add
  *
- * Creates an #AgsAddSoundcard.
+ * Create a new instance of #AgsAddSoundcard.
  *
- * Returns: an new #AgsAddSoundcard.
+ * Returns: the new #AgsAddSoundcard.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsAddSoundcard*
 ags_add_soundcard_new(AgsApplicationContext *application_context,

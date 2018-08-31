@@ -88,20 +88,20 @@ ags_playback_domain_test_set_audio_thread()
   /* set playback to NULL and assert */
   ags_playback_domain_set_audio_thread(playback_domain,
 				       NULL,
-				       AGS_PLAYBACK_DOMAIN_SCOPE_PLAYBACK);
-  CU_ASSERT(playback_domain->audio_thread[AGS_PLAYBACK_DOMAIN_SCOPE_PLAYBACK] == NULL);
+				       AGS_SOUND_SCOPE_PLAYBACK);
+  CU_ASSERT(playback_domain->audio_thread[AGS_SOUND_SCOPE_PLAYBACK] == NULL);
     
   /* set sequencer to NULL and assert */
   ags_playback_domain_set_audio_thread(playback_domain,
 				       NULL,
-				       AGS_PLAYBACK_DOMAIN_SCOPE_SEQUENCER);
-  CU_ASSERT(playback_domain->audio_thread[AGS_PLAYBACK_DOMAIN_SCOPE_SEQUENCER] == NULL);
+				       AGS_SOUND_SCOPE_SEQUENCER);
+  CU_ASSERT(playback_domain->audio_thread[AGS_SOUND_SCOPE_SEQUENCER] == NULL);
 
   /* set notation to NULL and assert */
   ags_playback_domain_set_audio_thread(playback_domain,
 				       NULL,
-				       AGS_PLAYBACK_DOMAIN_SCOPE_NOTATION);
-  CU_ASSERT(playback_domain->audio_thread[AGS_PLAYBACK_DOMAIN_SCOPE_NOTATION] == NULL);
+				       AGS_SOUND_SCOPE_NOTATION);
+  CU_ASSERT(playback_domain->audio_thread[AGS_SOUND_SCOPE_NOTATION] == NULL);
 }
 
 void
@@ -116,18 +116,18 @@ ags_playback_domain_test_get_audio_thread()
 
   /* get playback to NULL and assert */
   thread = ags_playback_domain_get_audio_thread(playback_domain,
-						AGS_PLAYBACK_DOMAIN_SCOPE_PLAYBACK);
-  CU_ASSERT(playback_domain->audio_thread[AGS_PLAYBACK_DOMAIN_SCOPE_PLAYBACK] == thread);
+						AGS_SOUND_SCOPE_PLAYBACK);
+  CU_ASSERT(playback_domain->audio_thread[AGS_SOUND_SCOPE_PLAYBACK] == thread);
   
   /* get sequencer to NULL and assert */
   thread = ags_playback_domain_get_audio_thread(playback_domain,
-						AGS_PLAYBACK_DOMAIN_SCOPE_SEQUENCER);
-  CU_ASSERT(playback_domain->audio_thread[AGS_PLAYBACK_DOMAIN_SCOPE_SEQUENCER] == thread);
+						AGS_SOUND_SCOPE_SEQUENCER);
+  CU_ASSERT(playback_domain->audio_thread[AGS_SOUND_SCOPE_SEQUENCER] == thread);
 
   /* get notation to NULL and assert */
   thread = ags_playback_domain_get_audio_thread(playback_domain,
-						AGS_PLAYBACK_DOMAIN_SCOPE_NOTATION);
-  CU_ASSERT(playback_domain->audio_thread[AGS_PLAYBACK_DOMAIN_SCOPE_NOTATION] == thread);
+						AGS_SOUND_SCOPE_NOTATION);
+  CU_ASSERT(playback_domain->audio_thread[AGS_SOUND_SCOPE_NOTATION] == thread);
 }
 
 void
@@ -142,26 +142,26 @@ ags_playback_domain_test_add_playback()
   playback[0] = g_object_new(AGS_TYPE_PLAYBACK,
 			     NULL);
   ags_playback_domain_add_playback(playback_domain,
-				   playback[0]);
+				   playback[0], AGS_TYPE_OUTPUT);
 
   playback[1] = g_object_new(AGS_TYPE_PLAYBACK,
 			     NULL);
   ags_playback_domain_add_playback(playback_domain,
-				   playback[1]);
+				   playback[1], AGS_TYPE_OUTPUT);
 
   playback[2] = g_object_new(AGS_TYPE_PLAYBACK,
 			     NULL);
   ags_playback_domain_add_playback(playback_domain,
-				   playback[2]);
+				   playback[2], AGS_TYPE_OUTPUT);
 
   /* assert */
-  CU_ASSERT(g_list_find(playback_domain->playback,
+  CU_ASSERT(g_list_find(playback_domain->output_playback,
 			playback[0]) != NULL);
 
-  CU_ASSERT(g_list_find(playback_domain->playback,
+  CU_ASSERT(g_list_find(playback_domain->output_playback,
 			playback[1]) != NULL);
 
-  CU_ASSERT(g_list_find(playback_domain->playback,
+  CU_ASSERT(g_list_find(playback_domain->output_playback,
 			playback[2]) != NULL);
 }
 
@@ -177,32 +177,32 @@ ags_playback_domain_test_remove_playback()
   playback[0] = g_object_new(AGS_TYPE_PLAYBACK,
 			     NULL);
   ags_playback_domain_add_playback(playback_domain,
-				   playback[0]);
+				   playback[0], AGS_TYPE_OUTPUT);
 
   playback[1] = g_object_new(AGS_TYPE_PLAYBACK,
 			     NULL);
   ags_playback_domain_add_playback(playback_domain,
-				   playback[1]);
+				   playback[1], AGS_TYPE_OUTPUT);
 
   playback[2] = g_object_new(AGS_TYPE_PLAYBACK,
 			     NULL);
   ags_playback_domain_add_playback(playback_domain,
-				   playback[2]);
+				   playback[2], AGS_TYPE_OUTPUT);
 
   /* assert */
   ags_playback_domain_remove_playback(playback_domain,
-				      playback[1]);
-  CU_ASSERT(g_list_find(playback_domain->playback,
+				      playback[1], AGS_TYPE_OUTPUT);
+  CU_ASSERT(g_list_find(playback_domain->output_playback,
 			playback[1]) == NULL);
 
   ags_playback_domain_remove_playback(playback_domain,
-				      playback[2]);
-  CU_ASSERT(g_list_find(playback_domain->playback,
+				      playback[2], AGS_TYPE_OUTPUT);
+  CU_ASSERT(g_list_find(playback_domain->output_playback,
 			playback[2]) == NULL);
 
   ags_playback_domain_remove_playback(playback_domain,
-				      playback[0]);
-  CU_ASSERT(g_list_find(playback_domain->playback,
+				      playback[0], AGS_TYPE_OUTPUT);
+  CU_ASSERT(g_list_find(playback_domain->output_playback,
 			playback[0]) == NULL);
 }
 

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -24,7 +24,6 @@
 #include <math.h>
 
 void ags_crop_note_class_init(AgsCropNoteClass *crop_note);
-void ags_crop_note_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_crop_note_init(AgsCropNote *crop_note);
 void ags_crop_note_set_property(GObject *gobject,
 				guint prop_id,
@@ -34,8 +33,6 @@ void ags_crop_note_get_property(GObject *gobject,
 				guint prop_id,
 				GValue *value,
 				GParamSpec *param_spec);
-void ags_crop_note_connect(AgsConnectable *connectable);
-void ags_crop_note_disconnect(AgsConnectable *connectable);
 void ags_crop_note_dispose(GObject *gobject);
 void ags_crop_note_finalize(GObject *gobject);
 
@@ -52,7 +49,6 @@ void ags_crop_note_launch(AgsTask *task);
  */
 
 static gpointer ags_crop_note_parent_class = NULL;
-static AgsConnectableInterface *ags_crop_note_parent_connectable_interface;
 
 enum{
   PROP_0,
@@ -75,36 +71,24 @@ ags_crop_note_get_type()
     GType ags_type_crop_note;
 
     static const GTypeInfo ags_crop_note_info = {
-      sizeof (AgsCropNoteClass),
+      sizeof(AgsCropNoteClass),
       NULL, /* base_init */
       NULL, /* base_finalize */
       (GClassInitFunc) ags_crop_note_class_init,
       NULL, /* class_finalize */
       NULL, /* class_data */
-      sizeof (AgsCropNote),
+      sizeof(AgsCropNote),
       0,    /* n_preallocs */
       (GInstanceInitFunc) ags_crop_note_init,
-    };
-
-    static const GInterfaceInfo ags_connectable_interface_info = {
-      (GInterfaceInitFunc) ags_crop_note_connectable_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
     };
 
     ags_type_crop_note = g_type_register_static(AGS_TYPE_TASK,
 						"AgsCropNote",
 						&ags_crop_note_info,
 						0);
-
-    g_type_add_interface_static(ags_type_crop_note,
-				AGS_TYPE_CONNECTABLE,
-				&ags_connectable_interface_info);
-
-    g_once_init_leave (&g_define_type_id__volatile, ags_type_crop_note);
   }
-
-  return g_define_type_id__volatile;
+  
+  return(ags_type_crop_note);
 }
 
 void
@@ -131,7 +115,7 @@ ags_crop_note_class_init(AgsCropNoteClass *crop_note)
    *
    * The assigned #AgsAudio
    * 
-   * Since: 1.2.2
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("audio",
 				   i18n_pspec("audio of crop note"),
@@ -147,7 +131,7 @@ ags_crop_note_class_init(AgsCropNoteClass *crop_note)
    *
    * The assigned #AgsNotation
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("notation",
 				   i18n_pspec("notation of crop note"),
@@ -163,7 +147,7 @@ ags_crop_note_class_init(AgsCropNoteClass *crop_note)
    *
    * The assigned #AgsNote
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_pointer("selection",
 				    i18n_pspec("selection to crop"),
@@ -178,7 +162,7 @@ ags_crop_note_class_init(AgsCropNoteClass *crop_note)
    *
    * Crop notation with x padding.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec =  g_param_spec_uint("x-padding",
 				  i18n_pspec("crop with x padding"),
@@ -196,7 +180,7 @@ ags_crop_note_class_init(AgsCropNoteClass *crop_note)
    *
    * Crop notation by x-crop amount.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec =  g_param_spec_int("x-crop",
 				 i18n_pspec("crop with x-crop amount"),
@@ -214,7 +198,7 @@ ags_crop_note_class_init(AgsCropNoteClass *crop_note)
    *
    * Crop notation by absolute position.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec =  g_param_spec_boolean("absolute",
 				     i18n_pspec("crop absolute"),
@@ -230,7 +214,7 @@ ags_crop_note_class_init(AgsCropNoteClass *crop_note)
    *
    * Crop notation in place.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec =  g_param_spec_boolean("in-place",
 				     i18n_pspec("crop in place"),
@@ -246,7 +230,7 @@ ags_crop_note_class_init(AgsCropNoteClass *crop_note)
    *
    * Crop notation do resize.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec =  g_param_spec_boolean("do-resize",
 				     i18n_pspec("crop do resize"),
@@ -261,15 +245,6 @@ ags_crop_note_class_init(AgsCropNoteClass *crop_note)
   task = (AgsTaskClass *) crop_note;
 
   task->launch = ags_crop_note_launch;
-}
-
-void
-ags_crop_note_connectable_interface_init(AgsConnectableInterface *connectable)
-{
-  ags_crop_note_parent_connectable_interface = g_type_interface_peek_parent(connectable);
-
-  connectable->connect = ags_crop_note_connect;
-  connectable->disconnect = ags_crop_note_disconnect;
 }
 
 void
@@ -448,22 +423,6 @@ ags_crop_note_get_property(GObject *gobject,
 }
 
 void
-ags_crop_note_connect(AgsConnectable *connectable)
-{
-  ags_crop_note_parent_connectable_interface->connect(connectable);
-
-  /* empty */
-}
-
-void
-ags_crop_note_disconnect(AgsConnectable *connectable)
-{
-  ags_crop_note_parent_connectable_interface->disconnect(connectable);
-
-  /* empty */
-}
-
-void
 ags_crop_note_dispose(GObject *gobject)
 {
   AgsCropNote *crop_note;
@@ -523,11 +482,10 @@ ags_crop_note_launch(AgsTask *task)
   AgsNote *note;
 
   AgsCropNote *crop_note;
-
-  AgsMutexManager *mutex_manager;
   
   GList *selection;
 
+  guint audio_channel;
   guint x_padding;
   gint x_crop;
   gint x_offset, x_prev;
@@ -537,19 +495,17 @@ ags_crop_note_launch(AgsTask *task)
   gboolean do_resize;
   gboolean initial_run;
 
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *audio_mutex;
-
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-  
   crop_note = AGS_CROP_NOTE(task);
 
   /* get some properties */
-  audio = crop_note->audio;
   notation =
     current_notation = crop_note->notation;
 
+  g_object_get(notation,
+	       "audio", &audio,
+	       "audio-channel", &audio_channel,
+	       NULL);
+  
   selection = crop_note->selection;
 
   x_padding = crop_note->x_padding;
@@ -559,22 +515,12 @@ ags_crop_note_launch(AgsTask *task)
 
   in_place = crop_note->in_place;
   do_resize = crop_note->do_resize;
-  
-  /* get audio mutex */
-  pthread_mutex_lock(application_mutex);
-
-  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
-					 (GObject *) audio);
-  
-  pthread_mutex_unlock(application_mutex);
 
   /* crop */
   x_offset = 0;
   x_prev = 0;
 
   initial_run = TRUE;
-  
-  pthread_mutex_lock(audio_mutex);
 
   while(selection != NULL){
     note = ags_note_duplicate(AGS_NOTE(selection->data));
@@ -619,25 +565,32 @@ ags_crop_note_launch(AgsTask *task)
       }
     }
 
-    if(note->x[0] >= current_notation->timestamp->timer.ags_offset.offset + AGS_NOTATION_DEFAULT_OFFSET){
+    if(note->x[0] >= ags_timestamp_get_ags_offset(current_notation->timestamp) + AGS_NOTATION_DEFAULT_OFFSET){
       AgsTimestamp *timestamp;
 
+      GList *list_start;
+
+      g_object_get(audio,
+		   "notation", &list_start,
+		   NULL);
+      
       timestamp = ags_timestamp_new();
       timestamp->flags &= (~AGS_TIMESTAMP_UNIX);
       timestamp->flags |= AGS_TIMESTAMP_OFFSET;
       
       timestamp->timer.ags_offset.offset = (guint64) (AGS_NOTATION_DEFAULT_OFFSET * floor(note->x[0] / AGS_NOTATION_DEFAULT_OFFSET));
 
-      if((current_notation = ags_notation_find_near_timestamp(crop_note->audio->notation, notation->audio_channel,
+      if((current_notation = ags_notation_find_near_timestamp(list_start, audio_channel,
 							      timestamp)) == NULL){
-	current_notation = ags_notation_new(notation->audio,
-					    notation->audio_channel);
+	current_notation = ags_notation_new(audio,
+					    audio_channel);
 	
-	current_notation->timestamp->timer.ags_offset.offset = timestamp->timer.ags_offset.offset;
-	crop_note->audio->notation = ags_notation_add(crop_note->audio->notation,
-						      current_notation);
+	current_notation->timestamp->timer.ags_offset.offset = ags_timestamp_get_ags_offset(timestamp);
+	ags_audio_add_notation(audio,
+			       current_notation);
       }
 
+      g_list_free(list_start);
       g_object_unref(timestamp);
     }
 
@@ -656,8 +609,6 @@ ags_crop_note_launch(AgsTask *task)
     
     selection = selection->next;
   }
-
-  pthread_mutex_unlock(audio_mutex);
 }
 
 /**
@@ -676,7 +627,7 @@ ags_crop_note_launch(AgsTask *task)
  *
  * Returns: a new #AgsCropNote
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsCropNote*
 ags_crop_note_new(AgsNotation *notation,

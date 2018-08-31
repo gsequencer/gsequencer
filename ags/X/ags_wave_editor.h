@@ -54,11 +54,9 @@ typedef struct _AgsWaveEditorClass AgsWaveEditorClass;
   
 typedef enum{
   AGS_WAVE_EDITOR_CONNECTED                 = 1,
-  AGS_WAVE_EDITOR_RESET_AUDIO_HSCROLLBAR    = 1 <<  1,
-  AGS_WAVE_EDITOR_RESET_OUTPUT_HSCROLLBAR   = 1 <<  2,
-  AGS_WAVE_EDITOR_RESET_INPUT_HSCROLLBAR    = 1 <<  3,
-  AGS_WAVE_EDITOR_PASTE_MATCH_LINE          = 1 <<  4,
-  AGS_WAVE_EDITOR_PASTE_NO_DUPLICATES       = 1 <<  5,
+  AGS_WAVE_EDITOR_RESET_HSCROLLBAR          = 1 <<  1,
+  AGS_WAVE_EDITOR_PASTE_MATCH_LINE          = 1 <<  2,
+  AGS_WAVE_EDITOR_PASTE_REPLACE             = 1 <<  3,
 }AgsWaveEditorFlags;
 
 struct _AgsWaveEditor
@@ -77,17 +75,22 @@ struct _AgsWaveEditor
 
   GtkHPaned *paned;
 
+  AgsWaveToolbar *wave_toolbar;
+
   AgsMachineSelector *machine_selector;
   AgsMachine *selected_machine;
 
-  AgsWaveToolbar *wave_toolbar;
-
   AgsNotebook *notebook;
   AgsRuler *ruler;
+
   AgsScrolledLevelBox *scrolled_level_box;
+
   AgsScrolledWaveEditBox *scrolled_wave_edit_box;
+
   GtkVScrollbar *vscrollbar;
   GtkHScrollbar *hscrollbar;
+
+  AgsWaveEdit *focused_wave_edit;
 };
 
 struct _AgsWaveEditorClass
@@ -99,6 +102,8 @@ struct _AgsWaveEditorClass
 };
 
 GType ags_wave_editor_get_type(void);
+
+void ags_wave_editor_reset_scrollbar(AgsWaveEditor *wave_editor);
 
 void ags_wave_editor_reset_audio_scrollbar(AgsWaveEditor *wave_editor);
 void ags_wave_editor_reset_output_scrollbar(AgsWaveEditor *wave_editor);

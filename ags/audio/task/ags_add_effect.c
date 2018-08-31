@@ -361,12 +361,15 @@ void
 ags_add_effect_launch(AgsTask *task)
 {
   AgsAddEffect *add_effect;
+
+  GList *recall_list;
   
   add_effect = AGS_ADD_EFFECT(task);
 
-  ags_channel_add_effect(add_effect->channel,
-			 add_effect->filename,
-			 add_effect->effect);
+  recall_list = ags_channel_add_effect(add_effect->channel,
+				       add_effect->filename,
+				       add_effect->effect);
+  g_list_free(recall_list);
 }
 
 /**
@@ -379,7 +382,7 @@ ags_add_effect_launch(AgsTask *task)
  *
  * Returns: an new #AgsAddEffect.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsAddEffect*
 ags_add_effect_new(AgsChannel *channel,

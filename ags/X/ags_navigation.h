@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -22,6 +22,7 @@
 
 #include <glib.h>
 #include <glib-object.h>
+
 #include <gtk/gtk.h>
 
 #define AGS_TYPE_NAVIGATION                (ags_navigation_get_type())
@@ -39,9 +40,10 @@ typedef struct _AgsNavigation AgsNavigation;
 typedef struct _AgsNavigationClass AgsNavigationClass;
 
 typedef enum{
-  AGS_NAVIGATION_BLOCK_TACT   = 1,
-  AGS_NAVIGATION_BLOCK_PLAY   = 1 << 1,
-  AGS_NAVIGATION_BLOCK_TIC    = 1 << 2,
+  AGS_NAVIGATION_CONNECTED    = 1,
+  AGS_NAVIGATION_BLOCK_TACT   = 1 << 1,
+  AGS_NAVIGATION_BLOCK_PLAY   = 1 << 2,
+  AGS_NAVIGATION_BLOCK_TIC    = 1 << 3,
 }AgsNavigationFlags;
 
 struct _AgsNavigation

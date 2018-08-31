@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -38,8 +38,10 @@ void ags_ladspa_browser_class_init(AgsLadspaBrowserClass *ladspa_browser);
 void ags_ladspa_browser_init(AgsLadspaBrowser *ladspa_browser);
 void ags_ladspa_browser_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_ladspa_browser_applicable_interface_init(AgsApplicableInterface *applicable);
+
 void ags_ladspa_browser_connect(AgsConnectable *connectable);
 void ags_ladspa_browser_disconnect(AgsConnectable *connectable);
+
 void ags_ladspa_browser_set_update(AgsApplicable *applicable, gboolean update);
 void ags_ladspa_browser_apply(AgsApplicable *applicable);
 void ags_ladspa_browser_reset(AgsApplicable *applicable);
@@ -194,28 +196,31 @@ ags_ladspa_browser_init(AgsLadspaBrowser *ladspa_browser)
 		     FALSE, FALSE,
 		     0);
 
-  label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
-				    "xalign", 0.0,
-				    "label", i18n("Label: "),
-				    NULL);
+  ladspa_browser->label =
+    label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
+				      "xalign", 0.0,
+				      "label", i18n("Label: "),
+				      NULL);
   gtk_box_pack_start(GTK_BOX(ladspa_browser->description),
 		     GTK_WIDGET(label),
 		     FALSE, FALSE,
 		     0);
 
-  label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
-				    "xalign", 0.0,
-				    "label", i18n("Maker: "),
-				    NULL);
+  ladspa_browser->maker = 
+    label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
+				      "xalign", 0.0,
+				      "label", i18n("Maker: "),
+				      NULL);
   gtk_box_pack_start(GTK_BOX(ladspa_browser->description),
 		     GTK_WIDGET(label),
 		     FALSE, FALSE,
 		     0);
 
-  label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
-				    "xalign", 0.0,
-				    "label", i18n("Copyright: "),
-				    NULL);
+  ladspa_browser->copyright = 
+    label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
+				      "xalign", 0.0,
+				      "label", i18n("Copyright: "),
+				      NULL);
   gtk_box_pack_start(GTK_BOX(ladspa_browser->description),
 		     GTK_WIDGET(label),
 		     FALSE, FALSE,
@@ -229,41 +234,62 @@ ags_ladspa_browser_init(AgsLadspaBrowser *ladspa_browser)
 		     GTK_WIDGET(label),
 		     FALSE, FALSE,
 		     0);
-  
-  table = (GtkTable *) gtk_table_new(256, 2,
-				     FALSE);
+
+  ladspa_browser->port_table = 
+    table = (GtkTable *) gtk_table_new(256, 2,
+				       FALSE);
   gtk_box_pack_start(GTK_BOX(ladspa_browser->description),
 		     GTK_WIDGET(table),
 		     FALSE, FALSE,
 		     0);
+
+  ladspa_browser->preview = NULL;
 }
 
 void
 ags_ladspa_browser_connect(AgsConnectable *connectable)
 {
   AgsLadspaBrowser *ladspa_browser;
-  GList *list, *list_start;
 
   ladspa_browser = AGS_LADSPA_BROWSER(connectable);
 
-  list_start = 
-    list = gtk_container_get_children(GTK_CONTAINER(ladspa_browser->plugin));
-  list = list->next;
+  if((AGS_LADSPA_BROWSER_CONNECTED & (ladspa_browser->flags)) != 0){
+    return;
+  }
 
-  g_signal_connect_after(G_OBJECT(list->data), "changed",
+  ladspa_browser->flags |= AGS_LADSPA_BROWSER_CONNECTED;
+
+  g_signal_connect_after(G_OBJECT(ladspa_browser->filename), "changed",
 			 G_CALLBACK(ags_ladspa_browser_plugin_filename_callback), ladspa_browser);
 
-  list = list->next->next;
-  g_signal_connect_after(G_OBJECT(list->data), "changed",
+  g_signal_connect_after(G_OBJECT(ladspa_browser->effect), "changed",
 			 G_CALLBACK(ags_ladspa_browser_plugin_effect_callback), ladspa_browser);
-
-  g_list_free(list_start);
 }
 
 void
 ags_ladspa_browser_disconnect(AgsConnectable *connectable)
 {
-  /* empty */
+  AgsLadspaBrowser *ladspa_browser;
+
+  ladspa_browser = AGS_LADSPA_BROWSER(connectable);
+
+  if((AGS_LADSPA_BROWSER_CONNECTED & (ladspa_browser->flags)) == 0){
+    return;
+  }
+
+  ladspa_browser->flags &= (~AGS_LADSPA_BROWSER_CONNECTED);
+
+  g_object_disconnect(G_OBJECT(ladspa_browser->filename),
+		      "any_signal::changed",
+		      G_CALLBACK(ags_ladspa_browser_plugin_filename_callback),
+		      ladspa_browser,
+		      NULL);
+
+  g_object_disconnect(G_OBJECT(ladspa_browser->effect),
+		      "any_signal::changed",
+		      G_CALLBACK(ags_ladspa_browser_plugin_effect_callback),
+		      ladspa_browser,
+		      NULL);
 }
 
 void
@@ -304,19 +330,16 @@ ags_ladspa_browser_reset(AgsApplicable *applicable)
  *
  * Returns: the active ladspa filename
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 gchar*
 ags_ladspa_browser_get_plugin_filename(AgsLadspaBrowser *ladspa_browser)
 {
-  GtkComboBoxText *filename;
-  GList *list;
-
-  list = gtk_container_get_children(GTK_CONTAINER(ladspa_browser->plugin));
-  filename = GTK_COMBO_BOX_TEXT(list->next->data);
-  g_list_free(list);
-
-  return(gtk_combo_box_text_get_active_text(filename));
+  if(!AGS_IS_LADSPA_BROWSER(ladspa_browser)){
+    return(NULL);
+  }
+  
+  return(gtk_combo_box_text_get_active_text(ladspa_browser->filename));
 }
 
 /**
@@ -327,30 +350,16 @@ ags_ladspa_browser_get_plugin_filename(AgsLadspaBrowser *ladspa_browser)
  *
  * Returns: the active ladspa effect
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 gchar*
 ags_ladspa_browser_get_plugin_effect(AgsLadspaBrowser *ladspa_browser)
 {
-  GtkComboBoxText *effect;
-  AgsLadspaPlugin *ladspa_plugin;
-  GList *list, *list_start;
-  gchar *effect_name;
+  if(!AGS_IS_LADSPA_BROWSER(ladspa_browser)){
+    return(NULL);
+  }
 
-  void *plugin_so;
-  LADSPA_Descriptor_Function ladspa_descriptor;
-  LADSPA_Descriptor *plugin_descriptor;
-  unsigned long index;
-
-  /* retrieve filename and effect */
-  list_start = 
-    list = gtk_container_get_children(GTK_CONTAINER(ladspa_browser->plugin));
-
-  effect = GTK_COMBO_BOX_TEXT(list->next->next->next->data);
-
-  g_list_free(list_start);
-
-  return(gtk_combo_box_text_get_active_text(effect));
+  return(gtk_combo_box_text_get_active_text(ladspa_browser->effect));
 }
 
 /**
@@ -360,7 +369,7 @@ ags_ladspa_browser_get_plugin_effect(AgsLadspaBrowser *ladspa_browser)
  *
  * Returns: a new #GtkComboBox
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 GtkWidget*
 ags_ladspa_browser_combo_box_output_boolean_controls_new()
@@ -385,7 +394,7 @@ ags_ladspa_browser_combo_box_output_boolean_controls_new()
  *
  * Returns: a new #GtkComboBox
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 GtkWidget*
 ags_ladspa_browser_combo_box_output_controls_new()
@@ -412,7 +421,7 @@ ags_ladspa_browser_combo_box_output_controls_new()
  *
  * Returns: a new #GtkComboBox
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 GtkWidget*
 ags_ladspa_browser_combo_box_boolean_controls_new()
@@ -439,7 +448,7 @@ ags_ladspa_browser_combo_box_boolean_controls_new()
  *
  * Returns: a new #GtkComboBox
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 GtkWidget*
 ags_ladspa_browser_combo_box_controls_new()
@@ -478,11 +487,11 @@ ags_ladspa_browser_preview_new()
 /**
  * ags_ladspa_browser_new:
  *
- * Creates an #AgsLadspaBrowser
+ * Create a new instance of #AgsLadspaBrowser
  *
- * Returns: a new #AgsLadspaBrowser
+ * Returns: the new #AgsLadspaBrowser
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsLadspaBrowser*
 ags_ladspa_browser_new()

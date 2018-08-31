@@ -1154,6 +1154,8 @@ ags_scale_draw(AgsScale *scale)
   guint width, height;
   guint x_start, y_start;
 
+  auto void ags_scale_draw_string(cairo_t *cr, gchar *str);
+  
   void ags_scale_draw_string(cairo_t *cr, gchar *str){
     PangoLayout *layout;
     PangoFontDescription *desc;

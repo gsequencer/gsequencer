@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -23,6 +23,9 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <ags/libags.h>
+
+#include <ags/audio/ags_recycling.h>
 #include <ags/audio/ags_recall_recycling.h>
 
 #define AGS_TYPE_VOLUME_RECYCLING                (ags_volume_recycling_get_type())
@@ -47,6 +50,6 @@ struct _AgsVolumeRecyclingClass
 
 GType ags_volume_recycling_get_type();
 
-AgsVolumeRecycling* ags_volume_recycling_new(AgsRecycling *recycling);
+AgsVolumeRecycling* ags_volume_recycling_new(AgsRecycling *source);
 
 #endif /*__AGS_VOLUME_RECYCLING_H__*/
