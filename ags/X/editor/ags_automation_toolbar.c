@@ -257,7 +257,20 @@ ags_automation_toolbar_init(AgsAutomationToolbar *automation_toolbar)
 			    (GtkWidget *) automation_toolbar->port,
 			    NULL,
 			    NULL);
+
+  /* opacity */
+  label = (GtkLabel *) gtk_label_new(i18n("opacity"));
+  gtk_container_add(GTK_CONTAINER(automation_toolbar),
+		    (GtkWidget *) label);
+
+  automation_toolbar->opacity = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, 1.0, 0.001);
+  gtk_spin_button_set_value(automation_toolbar->opacity, 0.3);
+  gtk_toolbar_append_widget((GtkToolbar *) automation_toolbar,
+			    (GtkWidget *) automation_toolbar->opacity,
+			    NULL,
+			    NULL);
 }
+
 
 void
 ags_automation_toolbar_connect(AgsConnectable *connectable)
@@ -345,6 +358,10 @@ ags_automation_toolbar_connect(AgsConnectable *connectable)
   /* port */
   g_signal_connect_after(automation_toolbar->port, "changed",
 			 G_CALLBACK(ags_automation_toolbar_port_callback), automation_toolbar);
+
+  /* opacity */
+  g_signal_connect_after((GObject *) automation_toolbar->opacity, "value-changed",
+			 G_CALLBACK(ags_automation_toolbar_opacity_callback), (gpointer) automation_toolbar);
 }
 
 void
@@ -440,6 +457,13 @@ ags_automation_toolbar_disconnect(AgsConnectable *connectable)
   g_object_disconnect(G_OBJECT(automation_toolbar->port),
 		      "any_signal::changed",
 		      G_CALLBACK(ags_automation_toolbar_port_callback),
+		      automation_toolbar,
+		      NULL);
+
+  /* opacity */
+  g_object_disconnect(G_OBJECT(automation_toolbar->opacity),
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_automation_toolbar_opacity_callback),
 		      automation_toolbar,
 		      NULL);
 }

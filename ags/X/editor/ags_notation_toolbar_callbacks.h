@@ -48,4 +48,6 @@ void ags_notation_toolbar_zoom_callback(GtkComboBox *combo_box, AgsNotationToolb
 
 void ags_notation_toolbar_mode_callback(GtkWidget *widget, AgsNotationToolbar *notation_toolbar);
 
+void ags_notation_toolbar_opacity_callback(GtkSpinButton *spin_button, AgsNotationToolbar *notation_toolbar);
+
 #endif /*__AGS_NOTATION_TOOLBAR_CALLBACKS_H__*/

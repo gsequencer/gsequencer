@@ -1675,6 +1675,7 @@ ags_notation_edit_draw_notation(AgsNotationEdit *notation_edit)
 
   GList *start_list_notation, *list_notation;
 
+  gdouble opacity;
   gdouble zoom;
   guint x0, x1;
   guint y0, y1;
@@ -1704,6 +1705,8 @@ ags_notation_edit_draw_notation(AgsNotationEdit *notation_edit)
     return;
   }
 
+  opacity = gtk_spin_button_get_value(notation_editor->notation_toolbar->opacity);
+  
   /* zoom */
   zoom = exp2((double) gtk_combo_box_get_active((GtkComboBox *) notation_toolbar->zoom) - 2.0);
 
@@ -1760,7 +1763,7 @@ ags_notation_edit_draw_notation(AgsNotationEdit *notation_edit)
 				    notation_edit_style->fg[0].red / white_gc,
 				    notation_edit_style->fg[0].green / white_gc,
 				    notation_edit_style->fg[0].blue / white_gc,
-				    0.8);
+				    opacity);
 
 	list_note = list_note->next;
       }

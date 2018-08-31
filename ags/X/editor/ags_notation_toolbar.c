@@ -217,6 +217,18 @@ ags_notation_toolbar_init(AgsNotationToolbar *notation_toolbar)
   notation_toolbar->zoom = (GtkComboBoxText *) ags_zoom_combo_box_new();
   gtk_combo_box_set_active((GtkComboBox *) notation_toolbar->zoom, 2);
   gtk_toolbar_append_widget((GtkToolbar *) notation_toolbar, (GtkWidget *) notation_toolbar->zoom, NULL , NULL);
+
+  /* opacity */
+  label = (GtkLabel *) gtk_label_new(i18n("opacity"));
+  gtk_container_add(GTK_CONTAINER(notation_toolbar),
+		    (GtkWidget *) label);
+
+  notation_toolbar->opacity = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, 1.0, 0.001);
+  gtk_spin_button_set_value(notation_toolbar->opacity, 0.8);
+  gtk_toolbar_append_widget((GtkToolbar *) notation_toolbar,
+			    (GtkWidget *) notation_toolbar->opacity,
+			    NULL,
+			    NULL);
 }
 
 void
@@ -298,6 +310,10 @@ ags_notation_toolbar_connect(AgsConnectable *connectable)
   /* zoom */
   g_signal_connect_after((GObject *) notation_toolbar->zoom, "changed",
 			 G_CALLBACK(ags_notation_toolbar_zoom_callback), (gpointer) notation_toolbar);
+
+  /* opacity */
+  g_signal_connect_after((GObject *) notation_toolbar->opacity, "value-changed",
+			 G_CALLBACK(ags_notation_toolbar_opacity_callback), (gpointer) notation_toolbar);
 }
 
 void
@@ -394,6 +410,14 @@ ags_notation_toolbar_disconnect(AgsConnectable *connectable)
   g_object_disconnect(G_OBJECT(notation_toolbar->zoom),
 		      "any_signal::changed",
 		      G_CALLBACK(ags_notation_toolbar_zoom_callback),
+		      notation_toolbar,
+		      NULL);
+
+
+  /* opacity */
+  g_object_disconnect(G_OBJECT(notation_toolbar->opacity),
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_notation_toolbar_opacity_callback),
 		      notation_toolbar,
 		      NULL);
 }

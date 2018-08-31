@@ -203,3 +203,14 @@ ags_notation_toolbar_zoom_callback(GtkComboBox *combo_box, AgsNotationToolbar *n
   
   gtk_widget_queue_draw((GtkWidget *) notation_edit->ruler);
 }
+
+void
+ags_notation_toolbar_opacity_callback(GtkSpinButton *spin_button, AgsNotationToolbar *notation_toolbar)
+{
+  AgsNotationEditor *notation_editor;
+
+  notation_editor = gtk_widget_get_ancestor(notation_toolbar,
+					    AGS_TYPE_NOTATION_EDITOR);
+  
+  gtk_widget_queue_draw(notation_editor->notation_edit);
+}

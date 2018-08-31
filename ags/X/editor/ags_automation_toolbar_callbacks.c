@@ -310,3 +310,51 @@ ags_automation_toolbar_port_callback(GtkComboBox *combo_box,
   
   automation_toolbar->flags &= (~AGS_AUTOMATION_TOOLBAR_RESET_PORT);
 }
+
+void
+ags_automation_toolbar_opacity_callback(GtkSpinButton *spin_button, AgsAutomationToolbar *automation_toolbar)
+{
+  AgsAutomationEditor *automation_editor;
+
+  GList *start_list, *list;
+  
+  automation_editor = gtk_widget_get_ancestor(automation_toolbar,
+					      AGS_TYPE_AUTOMATION_EDITOR);
+
+
+  /* queue draw */
+  switch(gtk_notebook_get_current_page(automation_editor->notebook)){
+  case 0:
+    {
+      list =
+	start_list = gtk_container_get_children(automation_editor->audio_scrolled_automation_edit_box->automation_edit_box);
+    }
+    break;
+  case 1:
+    {
+      list =
+	start_list = gtk_container_get_children(automation_editor->output_scrolled_automation_edit_box->automation_edit_box);
+    }
+    break;
+  case 2:
+    {
+      list =
+	start_list = gtk_container_get_children(automation_editor->input_scrolled_automation_edit_box->automation_edit_box);
+    }
+    break;
+  default:
+    {
+      list =
+	start_list = NULL;
+    }
+  }
+    
+  
+  while(list != NULL){
+    gtk_widget_queue_draw(list->data);
+
+    list = list->next;
+  }
+
+  g_list_free(start_list);
+}

@@ -66,6 +66,8 @@ struct _AgsNotationToolbar
   
   guint zoom_history;
   GtkComboBoxText *zoom;
+
+  GtkSpinButton *opacity;
 };
 
 struct _AgsNotationToolbarClass

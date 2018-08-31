@@ -54,4 +54,6 @@ void ags_automation_toolbar_zoom_callback(GtkComboBox *combo_box, AgsAutomationT
 void ags_automation_toolbar_port_callback(GtkComboBox *combo_box,
 					  AgsAutomationToolbar *automation_toolbar);
 
+void ags_automation_toolbar_opacity_callback(GtkSpinButton *spin_button, AgsAutomationToolbar *automation_toolbar);
+
 #endif /*__AGS_AUTOMATION_TOOLBAR_CALLBACKS_H__*/

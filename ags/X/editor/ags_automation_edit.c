@@ -1989,6 +1989,7 @@ ags_automation_edit_draw_automation(AgsAutomationEdit *automation_edit)
   GList *start_list_automation, *list_automation;
   GList *start_list_acceleration, *list_acceleration;
 
+  gdouble opacity;
   gdouble c_range;
   gdouble y_upper, y_value;
   guint x0, x1;
@@ -2018,6 +2019,8 @@ ags_automation_edit_draw_automation(AgsAutomationEdit *automation_edit)
   }
   
   automation_edit_style = gtk_widget_get_style(GTK_WIDGET(automation_edit->drawing_area));
+
+  opacity = gtk_spin_button_get_value(automation_editor->automation_toolbar->opacity);
 
   /* create cairo context */
   cr = gdk_cairo_create(GTK_WIDGET(automation_edit->drawing_area)->window);
@@ -2102,7 +2105,7 @@ ags_automation_edit_draw_automation(AgsAutomationEdit *automation_edit)
 					      automation_edit_style->fg[0].red / white_gc,
 					      automation_edit_style->fg[0].green / white_gc,
 					      automation_edit_style->fg[0].blue / white_gc,
-					      0.4);
+					      opacity);
 
 	/* iterate */
 	list_acceleration = list_acceleration->next;

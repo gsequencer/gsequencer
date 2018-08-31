@@ -202,7 +202,12 @@ ags_wave_toolbar_init(AgsWaveToolbar *wave_toolbar)
 			    NULL);
 
   /* opacity */
+  label = (GtkLabel *) gtk_label_new(i18n("opacity"));
+  gtk_container_add(GTK_CONTAINER(wave_toolbar),
+		    (GtkWidget *) label);
+
   wave_toolbar->opacity = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, 1.0, 0.001);
+  gtk_spin_button_set_value(wave_toolbar->opacity, 0.5);
   gtk_toolbar_append_widget((GtkToolbar *) wave_toolbar,
 			    (GtkWidget *) wave_toolbar->opacity,
 			    NULL,
