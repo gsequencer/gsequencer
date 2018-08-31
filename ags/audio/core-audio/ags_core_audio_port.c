@@ -106,7 +106,10 @@ static gpointer ags_core_audio_port_parent_class = NULL;
 
 static pthread_mutex_t ags_core_audio_port_class_mutex = PTHREAD_MUTEX_INITIALIZER;
 
-CFRunLoopRef run_loop = NULL;
+#ifdef AGS_WITH_CORE_AUDIO
+volatile gint ags_core_audio_port_run_loop_initialized;
+CFRunLoopRef ags_core_audio_port_run_loop = NULL;
+#endif
 
 GType
 ags_core_audio_port_get_type()
@@ -919,8 +922,11 @@ SetCurrentIOBufferFrameSize(AudioObjectID inDeviceID,
 void*
 ags_core_audio_port_output_thread(AgsCoreAudioPort *core_audio_port)
 {
-  run_loop = CFRunLoopGetCurrent();
+  ags_core_audio_port_run_loop = CFRunLoopGetCurrent();
 
+  g_atomic_int_set(&ags_core_audio_port_run_loop_initialized,
+		   TRUE);
+  
   do{
     CFRunLoopRunInMode(kCFRunLoopDefaultMode,
 		       0,
@@ -1081,15 +1087,20 @@ ags_core_audio_port_register(AgsCoreAudioPort *core_audio_port,
       }
 
 #ifdef AGS_WITH_CORE_AUDIO
+      g_atomic_int_set(&ags_core_audio_port_run_loop_initialized,
+		       FALSE);
       g_atomic_int_set(&(core_audio_port->running),
 		       TRUE);
       pthread_create(&thread, NULL, &ags_core_audio_port_output_thread, core_audio_port);
-      sleep(5);
+
+      while(!g_atomic_int_get(&ags_core_audio_port_run_loop_initialized)){
+	usleep(400);
+      }
       
       AudioQueueNewOutput(&(core_audio_port->data_format),
 			  ags_core_audio_port_handle_output_buffer,
 			  core_audio_port,
-			  run_loop, NULL,
+			  ags_core_audio_port_run_loop, NULL,
 			  0,
 			  &(core_audio_port->aq_ref));
       

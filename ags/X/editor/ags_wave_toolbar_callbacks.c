@@ -172,3 +172,27 @@ ags_wave_toolbar_zoom_callback(GtkComboBox *combo_box, AgsWaveToolbar *wave_tool
 
   ags_wave_editor_reset_scrollbar(wave_editor);
 }
+
+void
+ags_wave_toolbar_opacity_callback(GtkSpinButton *spin_button, AgsWaveToolbar *wave_toolbar)
+{
+  AgsWaveEditor *wave_editor;
+
+  GList *start_list, *list;
+  
+  wave_editor = gtk_widget_get_ancestor(wave_toolbar,
+					AGS_TYPE_WAVE_EDITOR);
+
+
+  /* queue draw */
+  list =
+    start_list = gtk_container_get_children(wave_editor->scrolled_wave_edit_box->wave_edit_box);
+
+  while(list != NULL){
+    gtk_widget_queue_draw(list->data);
+
+    list = list->next;
+  }
+
+  g_list_free(start_list);
+}

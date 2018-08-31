@@ -61,6 +61,8 @@ struct _AgsWaveToolbar
 
   guint zoom_history;
   GtkComboBox *zoom;
+
+  GtkSpinButton *opacity;
 };
 
 struct _AgsWaveToolbarClass

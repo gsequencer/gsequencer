@@ -40,4 +40,6 @@ void ags_wave_toolbar_tool_popup_position_cursor_callback(GtkWidget *item, AgsWa
 
 void ags_wave_toolbar_zoom_callback(GtkComboBox *combo_box, AgsWaveToolbar *wave_toolbar);
 
+void ags_wave_toolbar_opacity_callback(GtkSpinButton *spin_button, AgsWaveToolbar *wave_toolbar);
+
 #endif /*__AGS_WAVE_TOOLBAR_CALLBACKS_H__*/

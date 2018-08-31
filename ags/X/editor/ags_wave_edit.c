@@ -1636,6 +1636,7 @@ ags_wave_edit_draw_wave(AgsWaveEdit *wave_edit)
   GList *start_list_wave, *list_wave;
   GList *start_list_buffer, *list_buffer;
 
+  gdouble opacity;
   guint line;
   guint samplerate;
   gdouble bpm;
@@ -1680,6 +1681,8 @@ ags_wave_edit_draw_wave(AgsWaveEdit *wave_edit)
 
   list_wave = start_list_wave;
   line = wave_edit->line;
+
+  opacity = gtk_spin_button_get_value(wave_editor->wave_toolbar->opacity);
   
   cairo_push_group(cr);
 
@@ -1721,7 +1724,7 @@ ags_wave_edit_draw_wave(AgsWaveEdit *wave_edit)
 				wave_edit_style->fg[0].red / white_gc,
 				wave_edit_style->fg[0].green / white_gc,
 				wave_edit_style->fg[0].blue / white_gc,
-				0.4);
+				opacity);
 
       /* iterate */
       list_buffer = list_buffer->next;

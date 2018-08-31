@@ -200,6 +200,13 @@ ags_wave_toolbar_init(AgsWaveToolbar *wave_toolbar)
 			    (GtkWidget *) wave_toolbar->zoom,
 			    NULL,
 			    NULL);
+
+  /* opacity */
+  wave_toolbar->opacity = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, 1.0, 0.001);
+  gtk_toolbar_append_widget((GtkToolbar *) wave_toolbar,
+			    (GtkWidget *) wave_toolbar->opacity,
+			    NULL,
+			    NULL);
 }
 
 void
@@ -266,6 +273,10 @@ ags_wave_toolbar_connect(AgsConnectable *connectable)
   /* zoom */
   g_signal_connect_after((GObject *) wave_toolbar->zoom, "changed",
 			 G_CALLBACK(ags_wave_toolbar_zoom_callback), (gpointer) wave_toolbar);
+
+  /* opacity */
+  g_signal_connect_after((GObject *) wave_toolbar->opacity, "value-changed",
+			 G_CALLBACK(ags_wave_toolbar_opacity_callback), (gpointer) wave_toolbar);
 }
 
 void
@@ -334,6 +345,13 @@ ags_wave_toolbar_disconnect(AgsConnectable *connectable)
   g_object_disconnect(G_OBJECT(wave_toolbar->zoom),
 		      "any_signal::changed",
 		      G_CALLBACK(ags_wave_toolbar_zoom_callback),
+		      wave_toolbar,
+		      NULL);
+
+  /* opacity */
+  g_object_disconnect(G_OBJECT(wave_toolbar->opacity),
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_wave_toolbar_opacity_callback),
 		      wave_toolbar,
 		      NULL);
 }
