@@ -244,7 +244,7 @@ ags_play_wave_audio_init(AgsPlayWaveAudio *play_wave_audio)
 						NULL);
   g_object_ref(play_wave_audio->wave_loop_end);
   
-  play_wave_audio->wave_loop_end->port_value.ags_port_uint = 16.0 * (AGS_SOUNDCARD_DEFAULT_SAMPLERATE * (AGS_SOUNDCARD_DEFAULT_BPM / 60.0));
+  play_wave_audio->wave_loop_end->port_value.ags_port_uint = 64.0;
 
   /* add to port */
   port = g_list_prepend(port, play_wave_audio->wave_loop_end);

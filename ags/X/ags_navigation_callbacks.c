@@ -352,7 +352,7 @@ ags_navigation_loop_callback(GtkWidget *widget,
 
       /* do it so */
       g_object_get(audio,
-		   "recall", &list_start,
+		   "play", &list_start,
 		   NULL);
 
       list = list_start;

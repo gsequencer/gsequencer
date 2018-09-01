@@ -171,9 +171,12 @@ ags_play_wave_channel_run_run_inter(AgsRecall *recall)
   guint buffer_size;
   guint format;
   guint64 x_offset;
+  gdouble delay;
   gboolean do_playback;
+  gboolean do_loop;
   
   GValue do_playback_value = {0,};
+  GValue do_loop_value = {0,};
   GValue x_offset_value = {0,};
 
   pthread_mutex_t *audio_mutex;
@@ -289,6 +292,8 @@ ags_play_wave_channel_run_run_inter(AgsRecall *recall)
 	       "recall-channel", &play_wave_channel,
 	       "recall-audio-run", &play_wave_audio_run,
 	       NULL);
+
+  delay = ags_soundcard_get_delay(AGS_SOUNDCARD(output_soundcard));
   
   /* get do playback */
   g_object_get(play_wave_channel,
@@ -371,8 +376,58 @@ ags_play_wave_channel_run_run_inter(AgsRecall *recall)
     }
   }
 
+  /* check loop */
+  x_offset += buffer_size;
+  
+  g_object_get(play_wave_audio,
+	       "wave-loop", &port,
+	       NULL);
+
+  g_value_init(&do_loop_value,
+	       G_TYPE_BOOLEAN);
+
+  ags_port_safe_read(port,
+		     &do_loop_value);
+
+  do_loop = g_value_get_boolean(&do_loop_value);
+
+  if(do_loop){
+    guint64 loop_start, loop_end;
+    
+    GValue loop_start_value = {0,};
+    GValue loop_end_value = {0,};
+    
+    g_object_get(play_wave_audio,
+		 "wave-loop-end", &port,
+		 NULL);
+
+    g_value_init(&loop_end_value,
+		 G_TYPE_UINT64);
+
+    ags_port_safe_read(port,
+		       &loop_end_value);
+
+    loop_end = g_value_get_uint64(&loop_end_value);
+    
+    if(x_offset / buffer_size / delay >= loop_end){
+      g_object_get(play_wave_audio,
+		   "wave-loop-start", &port,
+		   NULL);
+
+      g_value_init(&loop_start_value,
+		   G_TYPE_UINT64);
+
+      ags_port_safe_read(port,
+			 &loop_start_value);
+      
+      loop_start = g_value_get_uint64(&loop_start_value);
+
+      x_offset = delay * buffer_size * loop_start;
+    }
+  }
+  
   /* new x offset */
-  play_wave_channel_run->x_offset += buffer_size;
+  play_wave_channel_run->x_offset = x_offset;
 
   g_object_get(play_wave_channel,
 	       "x-offset", &port,
@@ -382,7 +437,7 @@ ags_play_wave_channel_run_run_inter(AgsRecall *recall)
 	       G_TYPE_UINT64);
 
   g_value_set_uint64(&x_offset_value,
-		     play_wave_channel_run->x_offset);
+		     x_offset);
 
   ags_port_safe_write(port,
 		      &x_offset_value);
