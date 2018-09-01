@@ -19,12 +19,8 @@
 
 #include <ags/X/editor/ags_pattern_envelope_callbacks.h>
 
-#include <ags/object/ags_application_context.h>
-
-#include <ags/thread/ags_mutex_manager.h>
-
-#include <ags/audio/ags_audio.h>
-#include <ags/audio/ags_preset.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
 
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_machine.h>
@@ -32,51 +28,6 @@
 #include <ags/X/editor/ags_envelope_dialog.h>
 
 #include <ags/i18n.h>
-
-pthread_mutex_t* ags_pattern_envelope_get_audio_mutex(AgsPatternEnvelope *pattern_envelope);
-
-pthread_mutex_t*
-ags_pattern_envelope_get_audio_mutex(AgsPatternEnvelope *pattern_envelope)
-{
-  AgsEnvelopeDialog *envelope_dialog;
-
-  AgsWindow *window;
-  AgsMachine *machine;
-
-  AgsAudio *audio;
-
-  AgsMutexManager *mutex_manager;
-  
-  AgsApplicationContext *application_context;
-
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *audio_mutex;
-
-  envelope_dialog = (AgsEnvelopeDialog *) gtk_widget_get_ancestor(pattern_envelope,
-								  AGS_TYPE_ENVELOPE_DIALOG);
-
-  window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) envelope_dialog->machine,
-						 AGS_TYPE_WINDOW);
-  machine = envelope_dialog->machine;
-
-  audio = machine->audio;
-
-  /* application context and mutex manager */
-  application_context = window->application_context;
-
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-
-  /* get audio mutex */
-  pthread_mutex_lock(application_mutex);
-
-  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
-					 (GObject *) audio);
-  
-  pthread_mutex_unlock(application_mutex);
-
-  return(audio_mutex);
-}
 
 void
 ags_pattern_envelope_edit_callback(GtkCellRendererToggle *cell_renderer,
@@ -385,8 +336,6 @@ ags_pattern_envelope_attack_x_callback(GtkWidget *range,
 
   GError *error;
 
-  pthread_mutex_t *audio_mutex;
-
   if((AGS_PATTERN_ENVELOPE_NO_UPDATE & (pattern_envelope->flags)) != 0){
     return;
   }
@@ -397,16 +346,12 @@ ags_pattern_envelope_attack_x_callback(GtkWidget *range,
   if(preset == NULL){
     return;
   }
-
-  audio_mutex = ags_pattern_envelope_get_audio_mutex(pattern_envelope);
   
   /* get value and update preset */
   attack_x = gtk_range_get_value(GTK_RANGE(range));
 
   g_value_init(&value,
 	       AGS_TYPE_COMPLEX);
-
-  pthread_mutex_lock(audio_mutex);
 
   error = NULL;
   ags_preset_get_parameter(preset,
@@ -415,8 +360,6 @@ ags_pattern_envelope_attack_x_callback(GtkWidget *range,
 
   if(error != NULL){
     g_message("%s", error->message);
-
-    pthread_mutex_unlock(audio_mutex);
 
     return;
   }
@@ -428,8 +371,6 @@ ags_pattern_envelope_attack_x_callback(GtkWidget *range,
 
   ags_preset_add_parameter(preset,
 			   "attack", &value);
-
-  pthread_mutex_unlock(audio_mutex);
 
   /* plot */
   ags_pattern_envelope_plot(pattern_envelope);
@@ -449,8 +390,6 @@ ags_pattern_envelope_attack_y_callback(GtkWidget *range,
 
   GError *error;
 
-  pthread_mutex_t *audio_mutex;
-
   if((AGS_PATTERN_ENVELOPE_NO_UPDATE & (pattern_envelope->flags)) != 0){
     return;
   }
@@ -461,16 +400,12 @@ ags_pattern_envelope_attack_y_callback(GtkWidget *range,
   if(preset == NULL){
     return;
   }
-
-  audio_mutex = ags_pattern_envelope_get_audio_mutex(pattern_envelope);
   
   /* get value and update preset */
   attack_y = gtk_range_get_value((GtkRange *) range);
 
   g_value_init(&value,
 	       AGS_TYPE_COMPLEX);
-
-  pthread_mutex_lock(audio_mutex);
 
   error = NULL;
   ags_preset_get_parameter(preset,
@@ -479,8 +414,6 @@ ags_pattern_envelope_attack_y_callback(GtkWidget *range,
 
   if(error != NULL){
     g_message("%s", error->message);
-
-    pthread_mutex_unlock(audio_mutex);
 
     return;
   }
@@ -492,8 +425,6 @@ ags_pattern_envelope_attack_y_callback(GtkWidget *range,
 
   ags_preset_add_parameter(preset,
 			   "attack", &value);
-
-  pthread_mutex_unlock(audio_mutex);
 
   /* plot */
   ags_pattern_envelope_plot(pattern_envelope);
@@ -512,8 +443,6 @@ ags_pattern_envelope_decay_x_callback(GtkWidget *range,
   GValue value = {0,};
 
   GError *error;
-
-  pthread_mutex_t *audio_mutex;
   
   if((AGS_PATTERN_ENVELOPE_NO_UPDATE & (pattern_envelope->flags)) != 0){
     return;
@@ -525,16 +454,12 @@ ags_pattern_envelope_decay_x_callback(GtkWidget *range,
   if(preset == NULL){
     return;
   }
-
-  audio_mutex = ags_pattern_envelope_get_audio_mutex(pattern_envelope);
   
   /* get value and update preset */
   decay_x = gtk_range_get_value((GtkRange *) range);
 
   g_value_init(&value,
 	       AGS_TYPE_COMPLEX);
-
-  pthread_mutex_lock(audio_mutex);
 
   error = NULL;
   ags_preset_get_parameter(preset,
@@ -543,8 +468,6 @@ ags_pattern_envelope_decay_x_callback(GtkWidget *range,
 
   if(error != NULL){
     g_message("%s", error->message);
-
-    pthread_mutex_unlock(audio_mutex);
 
     return;
   }
@@ -556,8 +479,6 @@ ags_pattern_envelope_decay_x_callback(GtkWidget *range,
 
   ags_preset_add_parameter(preset,
 			   "decay", &value);
-
-  pthread_mutex_unlock(audio_mutex);
 
   /* plot */
   ags_pattern_envelope_plot(pattern_envelope);
@@ -577,8 +498,6 @@ ags_pattern_envelope_decay_y_callback(GtkWidget *range,
 
   GError *error;
   
-  pthread_mutex_t *audio_mutex;
-
   if((AGS_PATTERN_ENVELOPE_NO_UPDATE & (pattern_envelope->flags)) != 0){
     return;
   }
@@ -590,15 +509,11 @@ ags_pattern_envelope_decay_y_callback(GtkWidget *range,
     return;
   }
   
-  audio_mutex = ags_pattern_envelope_get_audio_mutex(pattern_envelope);
-
   /* get value and update preset */
   decay_y = gtk_range_get_value((GtkRange *) range);
 
   g_value_init(&value,
 	       AGS_TYPE_COMPLEX);
-
-  pthread_mutex_lock(audio_mutex);
 
   error = NULL;
   ags_preset_get_parameter(preset,
@@ -607,8 +522,6 @@ ags_pattern_envelope_decay_y_callback(GtkWidget *range,
 
   if(error != NULL){
     g_message("%s", error->message);
-
-    pthread_mutex_unlock(audio_mutex);
 
     return;
   }
@@ -620,8 +533,6 @@ ags_pattern_envelope_decay_y_callback(GtkWidget *range,
   
   ags_preset_add_parameter(preset,
 			   "decay", &value);
-
-  pthread_mutex_unlock(audio_mutex);
 
   /* plot */
   ags_pattern_envelope_plot(pattern_envelope);
@@ -640,8 +551,6 @@ ags_pattern_envelope_sustain_x_callback(GtkWidget *range,
   GValue value = {0,};
 
   GError *error;
-
-  pthread_mutex_t *audio_mutex;
   
   if((AGS_PATTERN_ENVELOPE_NO_UPDATE & (pattern_envelope->flags)) != 0){
     return;
@@ -654,15 +563,11 @@ ags_pattern_envelope_sustain_x_callback(GtkWidget *range,
     return;
   }
   
-  audio_mutex = ags_pattern_envelope_get_audio_mutex(pattern_envelope);
-
   /* get value and update preset */
   sustain_x = gtk_range_get_value((GtkRange *) range);
 
   g_value_init(&value,
 	       AGS_TYPE_COMPLEX);
-
-  pthread_mutex_lock(audio_mutex);
 
   error = NULL;
   ags_preset_get_parameter(preset,
@@ -671,8 +576,6 @@ ags_pattern_envelope_sustain_x_callback(GtkWidget *range,
 
   if(error != NULL){
     g_message("%s", error->message);
-
-    pthread_mutex_unlock(audio_mutex);
 
     return;
   }
@@ -684,8 +587,6 @@ ags_pattern_envelope_sustain_x_callback(GtkWidget *range,
   
   ags_preset_add_parameter(preset,
 			   "sustain", &value);
-
-  pthread_mutex_unlock(audio_mutex);
 
   /* plot */
   ags_pattern_envelope_plot(pattern_envelope);
@@ -704,8 +605,6 @@ ags_pattern_envelope_sustain_y_callback(GtkWidget *range,
   GValue value = {0,};
 
   GError *error;
-
-  pthread_mutex_t *audio_mutex;
   
   if((AGS_PATTERN_ENVELOPE_NO_UPDATE & (pattern_envelope->flags)) != 0){
     return;
@@ -718,15 +617,11 @@ ags_pattern_envelope_sustain_y_callback(GtkWidget *range,
     return;
   }
   
-  audio_mutex = ags_pattern_envelope_get_audio_mutex(pattern_envelope);
-
   /* get value and update preset */
   sustain_y = gtk_range_get_value((GtkRange *) range);
 
   g_value_init(&value,
 	       AGS_TYPE_COMPLEX);
-
-  pthread_mutex_lock(audio_mutex);
 
   error = NULL;
   ags_preset_get_parameter(preset,
@@ -735,8 +630,6 @@ ags_pattern_envelope_sustain_y_callback(GtkWidget *range,
 
   if(error != NULL){
     g_message("%s", error->message);
-
-    pthread_mutex_unlock(audio_mutex);
 
     return;
   }
@@ -748,8 +641,6 @@ ags_pattern_envelope_sustain_y_callback(GtkWidget *range,
   
   ags_preset_add_parameter(preset,
 			   "sustain", &value);
-
-  pthread_mutex_unlock(audio_mutex);
 
   /* plot */
   ags_pattern_envelope_plot(pattern_envelope);
@@ -769,8 +660,6 @@ ags_pattern_envelope_release_x_callback(GtkWidget *range,
 
   GError *error;
   
-  pthread_mutex_t *audio_mutex;
-
   if((AGS_PATTERN_ENVELOPE_NO_UPDATE & (pattern_envelope->flags)) != 0){
     return;
   }
@@ -782,15 +671,11 @@ ags_pattern_envelope_release_x_callback(GtkWidget *range,
     return;
   }
   
-  audio_mutex = ags_pattern_envelope_get_audio_mutex(pattern_envelope);
-
   /* get value and update preset */
   release_x = gtk_range_get_value((GtkRange *) range);
 
   g_value_init(&value,
 	       AGS_TYPE_COMPLEX);
-
-  pthread_mutex_lock(audio_mutex);
 
   error = NULL;
   ags_preset_get_parameter(preset,
@@ -799,8 +684,6 @@ ags_pattern_envelope_release_x_callback(GtkWidget *range,
 
   if(error != NULL){
     g_message("%s", error->message);
-
-    pthread_mutex_unlock(audio_mutex);
 
     return;
   }
@@ -812,8 +695,6 @@ ags_pattern_envelope_release_x_callback(GtkWidget *range,
   
   ags_preset_add_parameter(preset,
 			   "release", &value);
-
-  pthread_mutex_unlock(audio_mutex);
 
   /* plot */
   ags_pattern_envelope_plot(pattern_envelope);
@@ -833,8 +714,6 @@ ags_pattern_envelope_release_y_callback(GtkWidget *range,
 
   GError *error;
 
-  pthread_mutex_t *audio_mutex;
-  
   if((AGS_PATTERN_ENVELOPE_NO_UPDATE & (pattern_envelope->flags)) != 0){
     return;
   }
@@ -846,15 +725,11 @@ ags_pattern_envelope_release_y_callback(GtkWidget *range,
     return;
   }
   
-  audio_mutex = ags_pattern_envelope_get_audio_mutex(pattern_envelope);
-
   /* get value and update preset */
   release_y = gtk_range_get_value((GtkRange *) range);
 
   g_value_init(&value,
 	       AGS_TYPE_COMPLEX);
-
-  pthread_mutex_lock(audio_mutex);
 
   error = NULL;
   ags_preset_get_parameter(preset,
@@ -863,8 +738,6 @@ ags_pattern_envelope_release_y_callback(GtkWidget *range,
 
   if(error != NULL){
     g_message("%s", error->message);
-
-    pthread_mutex_unlock(audio_mutex);
 
     return;
   }
@@ -876,8 +749,6 @@ ags_pattern_envelope_release_y_callback(GtkWidget *range,
   
   ags_preset_add_parameter(preset,
 			   "release", &value);
-
-  pthread_mutex_unlock(audio_mutex);
 
   /* plot */
   ags_pattern_envelope_plot(pattern_envelope);
@@ -896,8 +767,6 @@ ags_pattern_envelope_ratio_callback(GtkWidget *range,
   GValue value = {0,};
 
   GError *error;
-
-  pthread_mutex_t *audio_mutex;
   
   if((AGS_PATTERN_ENVELOPE_NO_UPDATE & (pattern_envelope->flags)) != 0){
     return;
@@ -910,15 +779,11 @@ ags_pattern_envelope_ratio_callback(GtkWidget *range,
     return;
   }
   
-  audio_mutex = ags_pattern_envelope_get_audio_mutex(pattern_envelope);
-
   /* get value and update preset */
   ratio = gtk_range_get_value((GtkRange *) range);
 
   g_value_init(&value,
 	       AGS_TYPE_COMPLEX);
-
-  pthread_mutex_lock(audio_mutex);
 
   error = NULL;
   ags_preset_get_parameter(preset,
@@ -927,8 +792,6 @@ ags_pattern_envelope_ratio_callback(GtkWidget *range,
 
   if(error != NULL){
     g_message("%s", error->message);
-
-    pthread_mutex_unlock(audio_mutex);
 
     return;
   }
@@ -940,8 +803,6 @@ ags_pattern_envelope_ratio_callback(GtkWidget *range,
 
   ags_preset_add_parameter(preset,
 			   "ratio", &value);
-
-  pthread_mutex_unlock(audio_mutex);
 
   /* plot */
   ags_pattern_envelope_plot(pattern_envelope);
@@ -961,11 +822,10 @@ ags_pattern_envelope_preset_move_up_callback(GtkWidget *button,
 
   AgsAudio *audio;
   AgsPreset *current;
-  
-  AgsMutexManager *mutex_manager;
-  
+    
   AgsApplicationContext *application_context;
 
+  GList *start_preset;
   GList *preset, *prev;
 
   gchar *preset_name, *prev_name;
@@ -973,7 +833,6 @@ ags_pattern_envelope_preset_move_up_callback(GtkWidget *button,
   guint nth;
   gboolean do_edit;
 
-  pthread_mutex_t *application_mutex;
   pthread_mutex_t *audio_mutex;
 
   envelope_dialog = (AgsEnvelopeDialog *) gtk_widget_get_ancestor(pattern_envelope,
@@ -1015,16 +874,12 @@ ags_pattern_envelope_preset_move_up_callback(GtkWidget *button,
   /* application context and mutex manager */
   application_context = window->application_context;
 
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-
   /* get audio mutex */
-  pthread_mutex_lock(application_mutex);
+  pthread_mutex_lock(ags_audio_get_class_mutex());
 
-  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
-					 (GObject *) audio);
+  audio_mutex = audio->obj_mutex;
   
-  pthread_mutex_unlock(application_mutex);
+  pthread_mutex_unlock(ags_audio_get_class_mutex());
 
   /* get prev and current preset name */
   gtk_tree_model_get(model, &iter,
@@ -1040,17 +895,21 @@ ags_pattern_envelope_preset_move_up_callback(GtkWidget *button,
 		     -1);
 
   /* find preset */
-  pthread_mutex_lock(audio_mutex);
+  g_object_get(audio,
+	       "preset", &start_preset,
+	       NULL);
 
-  preset = ags_preset_find_name(audio->preset,
+  preset = ags_preset_find_name(start_preset,
 				preset_name);
 
-  prev = ags_preset_find_name(audio->preset,
+  prev = ags_preset_find_name(start_preset,
 			      prev_name);
 
   /* reorder list */
   current = preset->data;
   
+  pthread_mutex_lock(audio_mutex);
+
   audio->preset = g_list_delete_link(audio->preset,
 				     preset);
 
@@ -1059,6 +918,8 @@ ags_pattern_envelope_preset_move_up_callback(GtkWidget *button,
 				       current);
 
   pthread_mutex_unlock(audio_mutex);
+
+  g_list_free(start_preset);
   
   /* load preset */
   ags_envelope_dialog_load_preset(envelope_dialog);    
@@ -1078,11 +939,10 @@ ags_pattern_envelope_preset_move_down_callback(GtkWidget *button,
 
   AgsAudio *audio;
   AgsPreset *current;
-
-  AgsMutexManager *mutex_manager;
   
   AgsApplicationContext *application_context;
   
+  GList *start_preset;
   GList *preset, *next;
 
   gchar *preset_name, *next_name;
@@ -1090,7 +950,6 @@ ags_pattern_envelope_preset_move_down_callback(GtkWidget *button,
   guint nth;
   gboolean do_edit;
 
-  pthread_mutex_t *application_mutex;
   pthread_mutex_t *audio_mutex;
 
   envelope_dialog = (AgsEnvelopeDialog *) gtk_widget_get_ancestor(pattern_envelope,
@@ -1131,16 +990,12 @@ ags_pattern_envelope_preset_move_down_callback(GtkWidget *button,
   /* application context and mutex manager */
   application_context = window->application_context;
 
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-
   /* get audio mutex */
-  pthread_mutex_lock(application_mutex);
+  pthread_mutex_lock(ags_audio_get_class_mutex());
 
-  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
-					 (GObject *) audio);
+  audio_mutex = audio->obj_mutex;
   
-  pthread_mutex_unlock(application_mutex);
+  pthread_mutex_unlock(ags_audio_get_class_mutex());
 
   /* get next and current preset name */
   gtk_tree_model_get(model, &iter,
@@ -1156,17 +1011,21 @@ ags_pattern_envelope_preset_move_down_callback(GtkWidget *button,
 		     -1);
 
   /* find preset */
-  pthread_mutex_lock(audio_mutex);
-
-  preset = ags_preset_find_name(audio->preset,
+  g_object_get(audio,
+	       "preset", &start_preset,
+	       NULL);
+  
+  preset = ags_preset_find_name(start_preset,
 				preset_name);
 
-  next = ags_preset_find_name(audio->preset,
+  next = ags_preset_find_name(start_preset,
 			      next_name);
 
   /* reorder list */
   current = next->data;
   
+  pthread_mutex_lock(audio_mutex);
+
   audio->preset = g_list_delete_link(audio->preset,
 				     next);
 
@@ -1176,6 +1035,8 @@ ags_pattern_envelope_preset_move_down_callback(GtkWidget *button,
 
   pthread_mutex_unlock(audio_mutex);
 
+  g_list_free(start_preset);
+  
   /* load preset */
   ags_envelope_dialog_load_preset(envelope_dialog);    
 }

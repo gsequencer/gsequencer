@@ -271,6 +271,7 @@ ags_main_loop_interrupt
 ags_main_loop_monitor
 ags_main_loop_change_frequency
 ags_config_get_type
+ags_config_get_class_mutex
 ags_config_load_defaults
 ags_config_load_from_file
 ags_config_load_from_data

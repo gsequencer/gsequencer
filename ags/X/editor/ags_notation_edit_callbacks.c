@@ -511,14 +511,11 @@ ags_notation_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey 
   AgsNotationToolbar *notation_toolbar;
   AgsMachine *machine;
 
-  AgsMutexManager *mutex_manager;
-
   double zoom_factor;
   gint i;
   gboolean retval;
   gboolean do_feedback;
 
-  pthread_mutex_t *application_mutex;
   pthread_mutex_t *audio_mutex;
 
   notation_editor = (AgsNotationEditor *) gtk_widget_get_ancestor(GTK_WIDGET(notation_edit),
@@ -542,16 +539,12 @@ ags_notation_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey 
   }
 
   if(machine != NULL){
-    mutex_manager = ags_mutex_manager_get_instance();
-    application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-
     /* get audio mutex */
-    pthread_mutex_lock(application_mutex);  
+    pthread_mutex_lock(ags_audio_get_class_mutex());  
     
-    audio_mutex = ags_mutex_manager_lookup(mutex_manager,
-					   (GObject *) machine->audio);
+    audio_mutex = machine->audio->obj_mutex;
   
-    pthread_mutex_unlock(application_mutex);
+    pthread_mutex_unlock(ags_audio_get_class_mutex());
 
     /* do feedback - initial set */
     do_feedback = FALSE;

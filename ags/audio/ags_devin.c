@@ -3730,8 +3730,6 @@ ags_devin_alsa_free(AgsSoundcard *soundcard)
 
   AgsNotifySoundcard *notify_soundcard;
 
-  AgsMutexManager *mutex_manager;
-
   AgsApplicationContext *application_context;
 
   GList *poll_fd;

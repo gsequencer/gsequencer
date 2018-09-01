@@ -217,7 +217,7 @@ ags_reset_amplitude_launch(AgsTask *task)
  *
  * Add @analyse_channel.
  *
- * Since: 1.5.0
+ * Since: 2.0.0
  */
 void
 ags_reset_amplitude_add(AgsResetAmplitude *reset_amplitude,
@@ -239,7 +239,7 @@ ags_reset_amplitude_add(AgsResetAmplitude *reset_amplitude,
  *
  * Remove @analyse_channel.
  *
- * Since: 1.5.0
+ * Since: 2.0.0
  */
 void
 ags_reset_amplitude_remove(AgsResetAmplitude *reset_amplitude,
@@ -264,7 +264,7 @@ ags_reset_amplitude_remove(AgsResetAmplitude *reset_amplitude,
  *
  * Returns: the #AgsResetAmplitude
  *
- * Since: 1.5.0
+ * Since: 2.0.0
  */
 AgsResetAmplitude*
 ags_reset_amplitude_get_instance()
@@ -276,25 +276,16 @@ ags_reset_amplitude_get_instance()
   if(ags_reset_amplitude == NULL){
     AgsThread *main_loop;
     AgsTaskThread *task_thread;
-    AgsMutexManager *mutex_manager;
     
     AgsApplicationContext *application_context;
 
     gboolean no_soundcard;
-  
-    pthread_mutex_t *application_mutex;
 
     application_context = ags_application_context_get_instance();
 
-    mutex_manager = ags_mutex_manager_get_instance();
-    application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-
-    /* get main loop */
-    pthread_mutex_lock(application_mutex);
-
-    main_loop = application_context->main_loop;
-    
-    pthread_mutex_unlock(application_mutex);
+    g_object_get(application_context,
+		 "main-loop", &main_loop,
+		 NULL);
 
     /* get task thread */
     task_thread = (AgsTaskThread *) ags_thread_find_type(main_loop,
@@ -320,7 +311,7 @@ ags_reset_amplitude_get_instance()
  *
  * Returns: an new #AgsResetAmplitude.
  *
- * Since: 1.5.0
+ * Since: 2.0.0
  */
 AgsResetAmplitude*
 ags_reset_amplitude_new()

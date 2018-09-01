@@ -490,7 +490,6 @@ ags_gui_thread_run(AgsThread *thread)
 {
   AgsGuiThread *gui_thread;
 
-  AgsMutexManager *mutex_manager;
   AgsThread *main_loop;
   AgsPollingThread *polling_thread;
   AgsPollFd *poll_fd;
@@ -506,14 +505,10 @@ ags_gui_thread_run(AgsThread *thread)
 
   gboolean some_ready;
 
-  pthread_mutex_t *application_mutex;
   pthread_mutex_t *mutex;
 
   /*  */
   gui_thread = AGS_GUI_THREAD(thread);
-
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
     
   /* real-time setup */  
   main_loop = ags_thread_get_toplevel(thread);
@@ -870,28 +865,19 @@ ags_gui_thread_launch(AgsGuiThread *gui_thread,
 {
   AgsApplicationContext *application_context;
   
-  AgsMutexManager *mutex_manager;
   AgsThread *audio_loop, *task_thread;
 
   AgsConfig *config;
 
   GList *start_queue;  
 
-  pthread_mutex_t *application_mutex;
-
   application_context = ags_application_context_get_instance();
-
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
     
   /* get threads, thread pool and config */
-  pthread_mutex_lock(application_mutex);
-  
-  audio_loop = (AgsThread *) application_context->main_loop;
-
-  config = application_context->config;
-  
-  pthread_mutex_unlock(application_mutex);
+  g_object_get(application_context,
+	       "main-loop", &audio_loop,
+	       "config", &config,
+	       NULL);
 
   task_thread = ags_thread_find_type(audio_loop,
 				     AGS_TYPE_TASK_THREAD);
@@ -923,29 +909,20 @@ ags_gui_thread_launch_filename(AgsGuiThread *gui_thread,
 {
   AgsApplicationContext *application_context;
 
-  AgsMutexManager *mutex_manager;
   AgsThread *audio_loop, *task_thread;
 
   AgsConfig *config;
 
   GList *start_queue;  
 
-  pthread_mutex_t *application_mutex;
-
   application_context = ags_application_context_get_instance();
-
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
     
   /* get threads, thread pool and config */
-  pthread_mutex_lock(application_mutex);
-
-  audio_loop = (AgsThread *) application_context->main_loop;
-  task_thread = (AgsThread *) application_context->task_thread;
-
-  config = application_context->config;
-  
-  pthread_mutex_unlock(application_mutex);
+  g_object_get(application_context,
+	       "main-loop", &audio_loop,
+	       "task-thread", &task_thread,
+	       "config", &config,
+	       NULL);
 
   /* open file */
   if(g_strcmp0(ags_config_get_value(config,
@@ -1035,31 +1012,20 @@ ags_gui_thread_timer_launch(AgsGuiThread *gui_thread,
 {
   AgsApplicationContext *application_context;
   
-  AgsMutexManager *mutex_manager;
   AgsThread *audio_loop, *task_thread;
 
   AgsConfig *config;
 
   GList *start_queue;  
 
-  pthread_mutex_t *application_mutex;
-
   application_context = ags_application_context_get_instance();
 
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-
   /* get threads, thread pool and config */
-  pthread_mutex_lock(application_mutex);
-  
-  audio_loop = (AgsThread *) application_context->main_loop;
-
-  config = application_context->config;
-  
-  pthread_mutex_unlock(application_mutex);
-
-  task_thread = ags_thread_find_type(audio_loop,
-				     AGS_TYPE_TASK_THREAD);
+  g_object_get(application_context,
+	       "main-loop", &audio_loop,
+	       "task-thread", &task_thread,
+	       "config", &config,
+	       NULL);
   
   /* autosave thread */
   if(!g_strcmp0(ags_config_get_value(config,
@@ -1086,30 +1052,20 @@ ags_gui_thread_timer_launch_filename(AgsGuiThread *gui_thread,
 {
   AgsApplicationContext *application_context;
   
-  AgsMutexManager *mutex_manager;
-
   AgsThread *audio_loop, *task_thread;
 
   AgsConfig *config;
       
   GList *start_queue;
 
-  pthread_mutex_t *application_mutex;
-
   application_context = ags_application_context_get_instance();
   
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-
   /* get thread, thread pool and config */
-  pthread_mutex_lock(application_mutex);
-
-  audio_loop = (AgsThread *) application_context->main_loop;
-  task_thread = (AgsThread *) application_context->task_thread;
-
-  config = application_context->config;
-  
-  pthread_mutex_unlock(application_mutex);
+  g_object_get(application_context,
+	       "main-loop", &audio_loop,
+	       "task-thread", &task_thread,
+	       "config", &config,
+	       NULL);
 
   /* open file */
   if(g_strcmp0(ags_config_get_value(config,

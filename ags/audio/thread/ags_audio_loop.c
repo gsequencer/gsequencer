@@ -263,15 +263,12 @@ ags_audio_loop_main_loop_interface_init(AgsMainLoopInterface *main_loop)
 void
 ags_audio_loop_init(AgsAudioLoop *audio_loop)
 {
-  AgsMutexManager *mutex_manager;
   AgsThread *thread;
 
   AgsConfig *config;
   
   guint samplerate;
   guint buffer_size;
-
-  pthread_mutex_t *application_mutex;
 
   thread = (AgsThread *) audio_loop;
 

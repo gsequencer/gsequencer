@@ -255,8 +255,6 @@ ags_set_audio_channels_launch(AgsTask *task)
 {
   AgsSetAudioChannels *set_audio_channels;
 
-  AgsMutexManager *mutex_manager;
-
   guint channels;
   guint samplerate;
   guint buffer_size;
