@@ -40,6 +40,8 @@ static gpointer ags_turtle_manager_parent_class = NULL;
 
 AgsTurtleManager *ags_turtle_manager = NULL;
 
+static pthread_mutex_t ags_turtle_manager_class_mutex = PTHREAD_MUTEX_INITIALIZER;
+
 GType
 ags_turtle_manager_get_type (void)
 {
@@ -85,6 +87,21 @@ ags_turtle_manager_class_init(AgsTurtleManagerClass *turtle_manager)
 void
 ags_turtle_manager_init(AgsTurtleManager *turtle_manager)
 {
+  turtle_manager->obj_mutexattr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
+
+  pthread_mutexattr_init(turtle_manager->obj_mutexattr);
+  pthread_mutexattr_settype(turtle_manager->obj_mutexattr,
+			    PTHREAD_MUTEX_RECURSIVE);
+
+#ifdef __linux__
+  pthread_mutexattr_setprotocol(turtle_manager->obj_mutexattr,
+				PTHREAD_PRIO_INHERIT);
+#endif
+
+  
+  turtle_manager->obj_mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
+  pthread_mutex_init(turtle_manager->obj_mutex, turtle_manager->obj_mutexattr);
+
   turtle_manager->turtle = NULL;
 }
 
@@ -129,6 +146,21 @@ ags_turtle_manager_finalize(GObject *gobject)
   
   /* call parent */
   G_OBJECT_CLASS(ags_turtle_manager_parent_class)->finalize(gobject);
+}
+
+/**
+ * ags_turtle_manager_get_class_mutex:
+ * 
+ * Use this function's returned mutex to access mutex fields.
+ *
+ * Returns: the class mutex
+ * 
+ * Since: 2.0.0
+ */
+pthread_mutex_t*
+ags_turtle_manager_get_class_mutex()
+{
+  return(&ags_turtle_manager_class_mutex);
 }
 
 /**

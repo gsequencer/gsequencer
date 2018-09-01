@@ -90,7 +90,7 @@ ags_conversion_get_type(void)
 						 0);
   }
 
-  return (ags_type_conversion);
+  return(ags_type_conversion);
 }
 
 void
@@ -174,6 +174,21 @@ ags_conversion_class_init(AgsConversionClass *conversion)
 void
 ags_conversion_init(AgsConversion *conversion)
 {
+  conversion->obj_mutexattr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
+
+  pthread_mutexattr_init(conversion->obj_mutexattr);
+  pthread_mutexattr_settype(conversion->obj_mutexattr,
+			    PTHREAD_MUTEX_RECURSIVE);
+
+#ifdef __linux__
+  pthread_mutexattr_setprotocol(conversion->obj_mutexattr,
+				PTHREAD_PRIO_INHERIT);
+#endif
+
+  
+  conversion->obj_mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
+  pthread_mutex_init(conversion->obj_mutex, conversion->obj_mutexattr);
+
   conversion->name = NULL;
   conversion->description = NULL;
 }
