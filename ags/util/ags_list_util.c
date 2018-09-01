@@ -38,7 +38,7 @@
  * 
  * Returns: the next matching #GList-struct
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 GList*
 ags_list_util_find_type(GList *list,
@@ -68,7 +68,7 @@ ags_list_util_find_type(GList *list,
  * 
  * Returns: the start of the copied #GList-struct
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 GList*
 ags_list_util_copy_and_ref(GList *list)

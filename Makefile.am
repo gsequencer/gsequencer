@@ -482,8 +482,6 @@ libags_thread_h_sources = \
 	ags/thread/ags_thread_application_context.h \
 	ags/thread/ags_thread_pool.h \
 	ags/thread/ags_thread-posix.h \
-	ags/thread/ags_timestamp_factory.h \
-	ags/thread/ags_timestamp_thread.h \
 	ags/thread/ags_timestamp.h \
 	ags/thread/ags_worker_thread.h
 
@@ -510,8 +508,6 @@ libags_thread_c_sources = \
 	ags/thread/ags_thread_application_context.c \
 	ags/thread/ags_thread_pool.c \
 	ags/thread/ags_thread-posix.c \
-	ags/thread/ags_timestamp_factory.c \
-	ags/thread/ags_timestamp_thread.c \
 	ags/thread/ags_timestamp.c \
 	ags/thread/ags_worker_thread.c
 

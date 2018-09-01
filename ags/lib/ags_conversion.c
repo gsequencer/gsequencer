@@ -64,6 +64,8 @@ enum{
 static gpointer ags_conversion_parent_class = NULL;
 static guint conversion_signals[LAST_SIGNAL];
 
+static pthread_mutex_t ags_conversion_class_mutex = PTHREAD_MUTEX_INITIALIZER;
+
 GType
 ags_conversion_get_type(void)
 {
@@ -113,7 +115,7 @@ ags_conversion_class_init(AgsConversionClass *conversion)
    *
    * The name of the conversion.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_string("name",
 				   i18n_pspec("name of conversion"),
@@ -129,7 +131,7 @@ ags_conversion_class_init(AgsConversionClass *conversion)
    *
    * The description of the conversion.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_string("description",
 				   i18n_pspec("description of conversion"),
@@ -155,7 +157,7 @@ ags_conversion_class_init(AgsConversionClass *conversion)
    *
    * Returns: the converted value
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   conversion_signals[CONVERT] =
     g_signal_new("convert",
@@ -269,6 +271,21 @@ ags_conversion_finalize(GObject *gobject)
   G_OBJECT_CLASS(ags_conversion_parent_class)->finalize(gobject);
 }
 
+/**
+ * ags_conversion_get_class_mutex:
+ * 
+ * Use this function's returned mutex to access mutex fields.
+ *
+ * Returns: the class mutex
+ * 
+ * Since: 2.0.0
+ */
+pthread_mutex_t*
+ags_conversion_get_class_mutex()
+{
+  return(&ags_conversion_class_mutex);
+}
+
 gdouble
 ags_conversion_real_convert(AgsConversion *conversion,
 			    gdouble value,
@@ -288,7 +305,7 @@ ags_conversion_real_convert(AgsConversion *conversion,
  *
  * Returns: the converted value as gdouble
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 gdouble
 ags_conversion_convert(AgsConversion *conversion,
@@ -318,7 +335,7 @@ ags_conversion_convert(AgsConversion *conversion,
  *
  * Returns: the new instance
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsConversion*
 ags_conversion_new()

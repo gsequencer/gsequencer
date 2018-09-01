@@ -18,6 +18,7 @@
  */
 
 #include <ags/lib/ags_turtle_manager.h>
+
 #include <ags/lib/ags_turtle.h>
 
 void ags_turtle_manager_class_init(AgsTurtleManagerClass *turtle_manager);
@@ -137,13 +138,18 @@ ags_turtle_manager_finalize(GObject *gobject)
  * 
  * Find @filename in @turtle_manager.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 GObject*
 ags_turtle_manager_find(AgsTurtleManager *turtle_manager,
 			gchar *filename)
 {
   GList *turtle;
+
+  if(!AGS_IS_TURTLE_MANAGER(turtle_manager) ||
+     filename == NULL){
+    return(NULL);
+  }
 
   turtle = turtle_manager->turtle;
 
@@ -166,19 +172,23 @@ ags_turtle_manager_find(AgsTurtleManager *turtle_manager,
  * 
  * Adds @turtle to @turtle_manager.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_turtle_manager_add(AgsTurtleManager *turtle_manager,
 		       GObject *turtle)
 {
-  if(turtle_manager == NULL ||
-     turtle == NULL){
+  if(!AGS_IS_TURTLE_MANAGER(turtle_manager) ||
+     !AGS_IS_TURTLE(turtle)){
     return;
   }
 
-  turtle_manager->turtle = g_list_prepend(turtle_manager->turtle,
-					  turtle);
+  if(g_list_find(turtle_manager->turtle,
+		 turtle) != NULL){
+    turtle_manager->turtle = g_list_prepend(turtle_manager->turtle,
+					    turtle);
+    g_object_ref(turtle);
+  }
 }
 
 /**
@@ -188,7 +198,7 @@ ags_turtle_manager_add(AgsTurtleManager *turtle_manager,
  *
  * Returns: the #AgsTurtleManager
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsTurtleManager*
 ags_turtle_manager_get_instance()
@@ -199,12 +209,10 @@ ags_turtle_manager_get_instance()
 
   if(ags_turtle_manager == NULL){
     ags_turtle_manager = ags_turtle_manager_new();
-
-    pthread_mutex_unlock(&(mutex));
-  }else{
-    pthread_mutex_unlock(&(mutex));
   }
 
+  pthread_mutex_unlock(&(mutex));
+  
   return(ags_turtle_manager);
 }
 
@@ -215,7 +223,7 @@ ags_turtle_manager_get_instance()
  *
  * Returns: a new #AgsTurtleManager
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsTurtleManager*
 ags_turtle_manager_new()

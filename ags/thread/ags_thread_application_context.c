@@ -36,7 +36,6 @@
 #include <ags/thread/ags_autosave_thread.h>
 #include <ags/thread/ags_returnable_thread.h>
 #include <ags/thread/ags_task_thread.h>
-#include <ags/thread/ags_timestamp_thread.h>
 
 #include <ags/thread/file/ags_thread_file_xml.h>
 
@@ -463,8 +462,6 @@ ags_thread_application_context_register_types(AgsApplicationContext *application
   ags_thread_get_type();
 
   ags_task_thread_get_type();
-
-  ags_timestamp_thread_get_type();
 
   ags_thread_pool_get_type();
   ags_returnable_thread_get_type();

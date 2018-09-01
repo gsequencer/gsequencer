@@ -96,6 +96,7 @@ ags_function_new
 ags_parameter_grow
 ags_parameter_find
 ags_conversion_get_type
+ags_conversion_get_class_mutex
 ags_conversion_convert
 ags_conversion_new
 ags_complex_get_type

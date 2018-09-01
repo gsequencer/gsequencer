@@ -35,7 +35,7 @@
  * 
  * Run dispose and unref @gobject.
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_destroy_util_dispose_and_unref(GObject *gobject)

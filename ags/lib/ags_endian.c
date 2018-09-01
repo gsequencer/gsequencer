@@ -71,7 +71,7 @@ ags_endian_host_is_be()
  *
  * Returns: the byte-swapped float
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 gfloat
 ags_endian_swap_float(gfloat x)

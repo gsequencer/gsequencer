@@ -19,13 +19,7 @@
 
 #include <ags/audio/thread/ags_sequencer_thread.h>
 
-#include <ags/object/ags_application_context.h>
-#include <ags/object/ags_config.h>
-#include <ags/object/ags_connectable.h>
-
-#include <ags/object/ags_sequencer.h>
-
-#include <ags/thread/ags_timestamp_thread.h>
+#include <ags/libags.h>
 
 #include <ags/audio/ags_midiin.h>
 
