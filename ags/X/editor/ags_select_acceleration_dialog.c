@@ -474,14 +474,10 @@ ags_select_acceleration_dialog_apply(AgsApplicable *applicable)
 
   AgsAudio *audio;
 
-  AgsMutexManager *mutex_manager;
-
-  AgsApplicationContext *application_context;
-
   xmlDoc *clipboard;
   xmlNode *audio_node, *automation_node;
 
-  GList *list_automation;
+  GList *start_list_automation, *list_automation;
   GList *port, *port_start;
   GList *list;
   
@@ -506,10 +502,7 @@ ags_select_acceleration_dialog_apply(AgsApplicable *applicable)
   
   gboolean copy_selection;
   gboolean is_audio, is_output, is_input;
-  
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *audio_mutex;
-  
+    
   select_acceleration_dialog = AGS_SELECT_ACCELERATION_DIALOG(applicable);
 
   window = select_acceleration_dialog->main_window;
@@ -541,6 +534,10 @@ ags_select_acceleration_dialog_apply(AgsApplicable *applicable)
   
   audio = machine->audio;
 
+  g_object_get(audio,
+	       "automation", &start_list_automation,
+	       NULL);
+
   /* get some values */
   copy_selection = gtk_toggle_button_get_active(select_acceleration_dialog->copy_selection);
 
@@ -548,20 +545,6 @@ ags_select_acceleration_dialog_apply(AgsApplicable *applicable)
 
   x1 = (AGS_SELECT_ACCELERATION_DEFAULT_WIDTH / 16) * gtk_spin_button_get_value_as_int(select_acceleration_dialog->select_x1);
   
-  /* application context and mutex manager */
-  application_context = window->application_context;
-
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-
-  /* get audio mutex */
-  pthread_mutex_lock(application_mutex);
-
-  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
-					 (GObject *) audio);
-  
-  pthread_mutex_unlock(application_mutex);
-
   /* select acceleration */
   port =
     port_start = gtk_container_get_children(select_acceleration_dialog->port);
@@ -605,32 +588,52 @@ ags_select_acceleration_dialog_apply(AgsApplicable *applicable)
     
     while((line = ags_notebook_next_active_tab(notebook,
 					       line)) != -1){
-      list_automation = audio->automation;
+      list_automation = start_list_automation;
 
       while((list_automation = ags_automation_find_specifier_with_type_and_line(list_automation,
 										specifier[i],
 										channel_type,
 										line)) != NULL){
-	if(AGS_AUTOMATION(list_automation->data)->timestamp->timer.ags_offset.offset + AGS_AUTOMATION_DEFAULT_OFFSET < x0){
+	AgsAutomation *current_automation;
+	AgsPort *current_port;
+
+	AgsConversion *conversion;
+	
+	AgsTimestamp *timestamp;
+	
+	current_automation = list_automation->data;
+
+	g_object_get(current_automation,
+		     "timestamp", &timestamp,
+		     NULL);
+	
+	if(ags_timestamp_get_ags_offset(timestamp) + AGS_AUTOMATION_DEFAULT_OFFSET < x0){
 	  list_automation = list_automation->next;
 	  
 	  continue;
 	}
 
-	if(AGS_AUTOMATION(list_automation->data)->timestamp->timer.ags_offset.offset > x1){
+	if(ags_timestamp_get_ags_offset(timestamp) > x1){
 	  break;
 	}
-	
-	upper = AGS_AUTOMATION(list_automation->data)->upper;
-	lower = AGS_AUTOMATION(list_automation->data)->lower;
+
+	g_object_get(current_automation,
+		     "port", &current_port,
+		     "upper", &upper,
+		     "lower", &lower,
+		     NULL);
+
+	g_object_get(current_port,
+		     "conversion", &conversion,
+		     NULL);
 	
 	range = upper - lower;
 
-	if(AGS_PORT(AGS_AUTOMATION(list_automation->data)->port)->conversion != NULL){
-	  c_upper = ags_conversion_convert(AGS_PORT(AGS_AUTOMATION(list_automation->data)->port)->conversion,
+	if(conversion != NULL){
+	  c_upper = ags_conversion_convert(conversion,
 					   upper,
 					   FALSE);
-	  c_lower = ags_conversion_convert(AGS_PORT(AGS_AUTOMATION(list_automation->data)->port)->conversion,
+	  c_lower = ags_conversion_convert(conversion,
 					   lower,
 					   FALSE);
 	  c_range = c_upper - c_lower;
@@ -649,14 +652,16 @@ ags_select_acceleration_dialog_apply(AgsApplicable *applicable)
 	}
 	
 	/* check steps */
-	gui_y = AGS_AUTOMATION(list_automation->data)->steps;
+	g_object_get(current_automation,
+		     "steps", &gui_y,
+		     NULL);
 
-	val = c_lower + (gui_y * (c_range / AGS_AUTOMATION(list_automation->data)->steps));
+	val = c_lower + (gui_y * (c_range / gui_y));
 	c_y0 = val;
 
 	/* conversion */
-	if(AGS_PORT(AGS_AUTOMATION(list_automation->data)->port)->conversion != NULL){
-	  c_y0 = ags_conversion_convert(AGS_PORT(AGS_AUTOMATION(list_automation->data)->port)->conversion,
+	if(conversion != NULL){
+	  c_y0 = ags_conversion_convert(conversion,
 					c_y0,
 					TRUE);
 	}
@@ -664,18 +669,18 @@ ags_select_acceleration_dialog_apply(AgsApplicable *applicable)
 	/* check steps */
 	gui_y = 0;
 
-	val = c_lower + (gui_y * (c_range / AGS_AUTOMATION(list_automation->data)->steps));
+	val = c_lower + (gui_y * (c_range / gui_y));
 	c_y1 = val;
 
 	/* conversion */
-	if(AGS_PORT(AGS_AUTOMATION(list_automation->data)->port)->conversion != NULL){
-	  c_y1 = ags_conversion_convert(AGS_PORT(AGS_AUTOMATION(list_automation->data)->port)->conversion,
+	if(conversion != NULL){
+	  c_y1 = ags_conversion_convert(conversion,
 					c_y1,
 					TRUE);
 	}
 	    
 	/* select */
-	ags_automation_add_region_to_selection(list_automation->data,
+	ags_automation_add_region_to_selection(current_automation,
 					       x0 * AGS_SELECT_ACCELERATION_DEFAULT_WIDTH, c_y0,
 					       x1 * AGS_SELECT_ACCELERATION_DEFAULT_WIDTH, c_y1,
 					       TRUE);
@@ -696,6 +701,7 @@ ags_select_acceleration_dialog_apply(AgsApplicable *applicable)
     i++;
   }
 
+  g_list_free(start_list_automation);
   g_list_free(port_start);
 
   /* write to clipboard */

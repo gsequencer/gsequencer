@@ -23,6 +23,7 @@
 #include <ags/libags.h>
 #include <ags/libags-audio.h>
 
+#include <ags/X/ags_ui_provider.h>
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_notation_editor.h>
 #include <ags/X/ags_machine.h>
@@ -139,7 +140,7 @@ ags_crop_note_dialog_class_init(AgsCropNoteDialogClass *crop_note_dialog)
    *
    * The assigned #AgsApplicationContext to give control of application.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("application-context",
 				   i18n_pspec("assigned application context"),
@@ -155,7 +156,7 @@ ags_crop_note_dialog_class_init(AgsCropNoteDialogClass *crop_note_dialog)
    *
    * The assigned #AgsWindow.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("main-window",
 				   i18n_pspec("assigned main window"),
@@ -456,12 +457,11 @@ ags_crop_note_dialog_apply(AgsApplicable *applicable)
 
   AgsAudio *audio;
 
-  AgsMutexManager *mutex_manager;
   AgsGuiThread *gui_thread;
 
   AgsApplicationContext *application_context;
-
-  GList *notation;
+  
+  GList *start_notation, *notation;
   GList *selection;
   GList *task;
   
@@ -471,9 +471,6 @@ ags_crop_note_dialog_apply(AgsApplicable *applicable)
   gboolean absolute;
   gboolean in_place;
   gboolean do_resize;
-  
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *audio_mutex;
   
   crop_note_dialog = AGS_CROP_NOTE_DIALOG(applicable);
 
@@ -499,35 +496,33 @@ ags_crop_note_dialog_apply(AgsApplicable *applicable)
   
   /* application context and mutex manager */
   application_context = window->application_context;
-
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-
-  /* get task thread */
-  pthread_mutex_lock(application_mutex);
   
-  gui_thread = (AgsGuiThread *) ags_thread_find_type(application_context->main_loop,
-						     AGS_TYPE_GUI_THREAD);
-  
-  pthread_mutex_unlock(application_mutex);
-
-  /* get audio mutex */
-  pthread_mutex_lock(application_mutex);
-
-  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
-					 (GObject *) audio);
-  
-  pthread_mutex_unlock(application_mutex);
+  /* get task thread */  
+  gui_thread = ags_ui_provider_get_gui_thread(AGS_UI_PROVIDER(application_context));
 
   /* crop note */
-  pthread_mutex_lock(audio_mutex);
+  g_object_get(audio,
+	       "notation", &start_notation,
+	       NULL);
 
-  notation = audio->notation;
-
+  notation = start_notation;
   task = NULL;
 
   while(notation != NULL){
+    pthread_mutex_t *notation_mutex;
+
+    pthread_mutex_lock(ags_notation_get_class_mutex());
+
+    notation_mutex = AGS_NOTATION(notation->data)->obj_mutex;
+
+    pthread_mutex_unlock(ags_notation_get_class_mutex());
+
+    /* selection */
+    pthread_mutex_lock(notation_mutex);
+
     selection = AGS_NOTATION(notation->data)->selection;
+
+    pthread_mutex_unlock(notation_mutex);
 
     if(selection != NULL){
       crop_note = ags_crop_note_new(notation->data,
@@ -544,9 +539,9 @@ ags_crop_note_dialog_apply(AgsApplicable *applicable)
     
     notation = notation->next;
   }
-  
-  pthread_mutex_unlock(audio_mutex);
 
+  g_list_free(start_notation);
+  
   /* append tasks */
   ags_gui_thread_schedule_task_list(gui_thread,
 				    task);
@@ -576,7 +571,7 @@ ags_crop_note_dialog_delete_event(GtkWidget *widget, GdkEventAny *event)
  *
  * Returns: a new #AgsCropNoteDialog
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsCropNoteDialog*
 ags_crop_note_dialog_new(GtkWidget *main_window)

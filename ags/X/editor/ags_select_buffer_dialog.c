@@ -433,7 +433,124 @@ ags_select_buffer_dialog_set_update(AgsApplicable *applicable, gboolean update)
 void
 ags_select_buffer_dialog_apply(AgsApplicable *applicable)
 {
-  //TODO:JK: implement me
+  AgsSelectBufferDialog *select_buffer_dialog;
+
+  AgsWindow *window;
+  AgsWaveEditor *wave_editor;
+  AgsMachine *machine;
+
+  AgsAudio *audio;
+
+  AgsTimestamp *timestamp;
+
+  GObject *output_soundcard;
+  
+  xmlDoc *clipboard;
+  xmlNode *audio_node, *wave_node;
+
+  GList *start_list_wave, *list_wave;
+
+  xmlChar *buffer;
+
+  guint samplerate;
+  guint buffer_size;
+  gdouble delay;
+  guint64 relative_offset;
+  int size;
+  guint x0, y0;
+  guint x1, y1;
+  gint i;
+  
+  gboolean copy_selection;
+    
+  select_buffer_dialog = AGS_SELECT_BUFFER_DIALOG(applicable);
+
+  window = select_buffer_dialog->main_window;
+  wave_editor = window->wave_window->wave_editor;
+
+  machine = wave_editor->selected_machine;
+
+  if(machine == NULL){
+    return;
+  }
+
+  audio = machine->audio;
+
+  g_object_get(audio,
+	       "output-soundcard", &output_soundcard,
+	       "buffer-size", &buffer_size,
+	       "samplerate", &samplerate,
+	       "wave", &start_list_wave,
+	       NULL);
+
+  delay = ags_soundcard_get_delay(AGS_SOUNDCARD(output_soundcard));
+  
+  /* get some values */
+  copy_selection = gtk_toggle_button_get_active(select_buffer_dialog->copy_selection);
+
+  x0 = gtk_spin_button_get_value_as_int(select_buffer_dialog->select_x0);
+  x0 = delay * buffer_size * x0;
+  
+  x1 = gtk_spin_button_get_value_as_int(select_buffer_dialog->select_x1);
+  x1 = delay * buffer_size * x1;
+  
+  timestamp = ags_timestamp_new();
+
+  timestamp->flags &= (~AGS_TIMESTAMP_UNIX);
+  timestamp->flags |= AGS_TIMESTAMP_OFFSET;
+
+  relative_offset = samplerate * AGS_WAVE_DEFAULT_BUFFER_LENGTH;
+  
+  /* select buffer */
+  if(copy_selection){
+    /* create document */
+    clipboard = xmlNewDoc(BAD_CAST XML_DEFAULT_VERSION);
+  
+    /* create root node */
+    audio_node = xmlNewNode(NULL, BAD_CAST "audio");
+    xmlDocSetRootElement(clipboard, audio_node);
+  }
+  
+  i = 0;
+  
+  while((i = ags_notebook_next_active_tab(wave_editor->notebook,
+					  i)) != -1){
+    list_wave = start_list_wave;
+    timestamp->timer.ags_offset.offset = 0;
+
+    while((list_wave = ags_wave_find_near_timestamp(list_wave, i,
+						    timestamp)) != NULL){
+      ags_wave_add_region_to_selection(AGS_WAVE(list_wave->data),
+				       x0, x1,
+				       TRUE);
+      
+      if(copy_selection){
+	wave_node = ags_wave_copy_selection(AGS_WAVE(list_wave->data));
+	xmlAddChild(audio_node, wave_node);      
+      }
+
+      /* iterate */
+      timestamp->timer.ags_offset.offset += relative_offset;
+
+      list_wave = list_wave->next;
+    }
+
+    i++;
+  }    
+
+  g_object_unref(timestamp);
+  
+  g_list_free(start_list_wave);
+
+  /* write to clipboard */
+  if(copy_selection){
+    xmlDocDumpFormatMemoryEnc(clipboard, &buffer, &size, "UTF-8", TRUE);
+    gtk_clipboard_set_text(gtk_clipboard_get(GDK_SELECTION_CLIPBOARD),
+			   buffer, size);
+    gtk_clipboard_store(gtk_clipboard_get(GDK_SELECTION_CLIPBOARD));
+    
+    xmlFreeDoc(clipboard);
+  }
 }
 
 void
