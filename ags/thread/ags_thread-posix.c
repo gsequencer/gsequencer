@@ -25,8 +25,6 @@
 #include <ags/object/ags_async_queue.h>
 #include <ags/object/ags_marshal.h>
 
-#include <ags/thread/ags_mutex_manager.h>
-#include <ags/thread/ags_condition_manager.h>
 #include <ags/thread/ags_returnable_thread.h>
 
 #include <stdlib.h>
@@ -375,9 +373,6 @@ ags_thread_connectable_interface_init(AgsConnectableInterface *connectable)
 void
 ags_thread_init(AgsThread *thread)
 {
-  AgsMutexManager *mutex_manager;
-  AgsConditionManager *condition_manager;
-
   AgsConfig *config;
   
   gchar *str;
@@ -391,7 +386,7 @@ ags_thread_init(AgsThread *thread)
 
   config = ags_config_get_instance();
 
-  /* insert thread mutex */
+  /* thread mutex */
   thread->obj_mutexattr =
     attr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
 
@@ -413,33 +408,12 @@ ags_thread_init(AgsThread *thread)
   pthread_mutex_init(mutex,
 		     attr);
   
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-  
-  pthread_mutex_lock(application_mutex);
-
-  ags_mutex_manager_insert(mutex_manager,
-			   (GObject *) thread,
-			   mutex);
-  
-  pthread_mutex_unlock(application_mutex);
-
   /* the condition */
   thread->obj_condattr = NULL;
 
   thread->obj_cond =
     cond = (pthread_cond_t *) malloc(sizeof(pthread_cond_t));
   pthread_cond_init(cond, NULL);
-
-  condition_manager = ags_condition_manager_get_instance();
-  
-  pthread_mutex_lock(application_mutex);
-
-  ags_condition_manager_insert(condition_manager,
-			       (GObject *) thread,
-			       cond);
-  
-  pthread_mutex_unlock(application_mutex);
   
   /* fields */
   g_atomic_int_set(&(thread->flags),
@@ -584,16 +558,29 @@ ags_thread_set_property(GObject *gobject,
 {
   AgsThread *thread;
 
+  pthread_mutex_t *thread_mutex;
+
   thread = AGS_THREAD(gobject);
+
+  /* get thread mutex */
+  pthread_mutex_lock(ags_thread_get_class_mutex());
+  
+  thread_mutex = thread->obj_mutex;
+  
+  pthread_mutex_unlock(ags_thread_get_class_mutex());
 
   switch(prop_id){
   case PROP_FREQUENCY:
     {
       gdouble freq;
 
+      pthread_mutex_lock(thread_mutex);
+
       freq = g_value_get_double(value);
 
       if(freq == thread->freq){
+	pthread_mutex_unlock(thread_mutex);
+
 	return;
       }
 
@@ -608,6 +595,8 @@ ags_thread_set_property(GObject *gobject,
       }else{
 	thread->tic_delay = 0;
       }
+
+      pthread_mutex_unlock(thread_mutex);
     }
     break;
   case PROP_MAX_PRECISION:
@@ -615,9 +604,13 @@ ags_thread_set_property(GObject *gobject,
       gdouble max_precision;
       gdouble old_max_precision;
 
+      pthread_mutex_lock(thread_mutex);
+
       max_precision = g_value_get_double(value);
 
       if(max_precision == thread->max_precision){
+	pthread_mutex_unlock(thread_mutex);
+
 	return;
       }
 
@@ -636,6 +629,8 @@ ags_thread_set_property(GObject *gobject,
       }else{
 	thread->tic_delay = 0;
       }
+
+      pthread_mutex_unlock(thread_mutex);
     }
     break;
   default:
@@ -652,17 +647,34 @@ ags_thread_get_property(GObject *gobject,
 {
   AgsThread *thread;
 
+  pthread_mutex_t *thread_mutex;
+
   thread = AGS_THREAD(gobject);
+
+  /* get thread mutex */
+  pthread_mutex_lock(ags_thread_get_class_mutex());
+  
+  thread_mutex = thread->obj_mutex;
+  
+  pthread_mutex_unlock(ags_thread_get_class_mutex());
 
   switch(prop_id){
   case PROP_FREQUENCY:
     {
+      pthread_mutex_lock(thread_mutex);
+
       g_value_set_double(value, thread->freq);
+
+      pthread_mutex_unlock(thread_mutex);
     }
     break;
   case PROP_MAX_PRECISION:
     {
+      pthread_mutex_lock(thread_mutex);
+
       g_value_set_double(value, thread->max_precision);
+
+      pthread_mutex_unlock(thread_mutex);
     }
     break;
   default:
@@ -705,15 +717,12 @@ void
 ags_thread_finalize(GObject *gobject)
 {
   AgsThread *thread, *parent;
-  AgsMutexManager *mutex_manager;
-  AgsConditionManager *condition_manager;
   
   gboolean running;
   gboolean do_exit;
   
   pthread_t *thread_ptr;
   pthread_attr_t *thread_attr;
-  pthread_mutex_t *application_mutex;
 
   void *stackaddr;
   size_t stacksize;
@@ -749,21 +758,8 @@ ags_thread_finalize(GObject *gobject)
   }
 
   /*  */
-  mutex_manager = ags_mutex_manager_get_instance();
-  condition_manager = ags_condition_manager_get_instance();
-
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-  
-  pthread_mutex_lock(application_mutex);
-
-  ags_mutex_manager_remove(mutex_manager,
-			   (GObject *) thread);
-
   pthread_mutexattr_destroy(thread->obj_mutexattr);
   free(thread->obj_mutexattr);
-
-  ags_condition_manager_remove(condition_manager,
-			       (GObject *) thread);
   
   /*  */  
   free(thread->computing_time);
@@ -830,8 +826,6 @@ ags_thread_finalize(GObject *gobject)
     pthread_detach(*thread_ptr);
   }
   
-  pthread_mutex_unlock(application_mutex);
-
   pthread_attr_destroy(thread_attr);
   free(thread_attr);
 
@@ -1297,30 +1291,23 @@ ags_thread_reset_all(AgsThread *thread)
  * 
  * Locks the threads own mutex and sets the appropriate flag.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_thread_lock(AgsThread *thread)
 {
-  AgsMutexManager *mutex_manager;
-
-  pthread_mutex_t *application_mutex;
   pthread_mutex_t *mutex;
   
-  if(thread == NULL){
+  if(!AGS_IS_THREAD(thread)){
     return;
   }
 
-  /* lookup mutices */
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+  /* mutex */
+  pthread_mutex_lock(ags_thread_get_class_mutex());
 
-  pthread_mutex_lock(application_mutex);
-
-  mutex = ags_mutex_manager_lookup(mutex_manager,
-				   (GObject *) thread);
+  mutex = thread->obj_mutex;
   
-  pthread_mutex_unlock(application_mutex);
+  pthread_mutex_unlock(ags_thread_get_class_mutex());
 
   /* lock */
   pthread_mutex_lock(mutex);
@@ -1338,30 +1325,23 @@ ags_thread_lock(AgsThread *thread)
  *
  * Returns: %TRUE on success, otherwise %FALSE
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 gboolean
 ags_thread_trylock(AgsThread *thread)
 {
-  AgsMutexManager *mutex_manager;
-
-  pthread_mutex_t *application_mutex;
   pthread_mutex_t *mutex;
   
-  if(thread == NULL){
+  if(!AGS_IS_THREAD(thread)){
     return(FALSE);
   }
 
   /* lookup mutices */
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+  pthread_mutex_lock(ags_thread_get_class_mutex());
 
-  pthread_mutex_lock(application_mutex);
-
-  mutex = ags_mutex_manager_lookup(mutex_manager,
-				   (GObject *) thread);
+  mutex = thread->obj_mutex;
   
-  pthread_mutex_unlock(application_mutex);
+  pthread_mutex_unlock(ags_thread_get_class_mutex());
 
   /* lock */
   if(pthread_mutex_trylock(mutex) != 0){      
@@ -1385,25 +1365,18 @@ ags_thread_trylock(AgsThread *thread)
 void
 ags_thread_unlock(AgsThread *thread)
 {
-  AgsMutexManager *mutex_manager;
-
-  pthread_mutex_t *application_mutex;
   pthread_mutex_t *mutex;
   
-  if(thread == NULL){
+  if(!AGS_IS_THREAD(thread)){
     return;
   }
 
-  /* lookup mutices */
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+  /* mutex */
+  pthread_mutex_lock(ags_thread_get_class_mutex());
 
-  pthread_mutex_lock(application_mutex);
-
-  mutex = ags_mutex_manager_lookup(mutex_manager,
-				   (GObject *) thread);
+  mutex = thread->obj_mutex;
   
-  pthread_mutex_unlock(application_mutex);
+  pthread_mutex_unlock(ags_thread_get_class_mutex());
 
   /* unlock */
   g_atomic_int_and(&(thread->flags),
@@ -2549,7 +2522,6 @@ guint
 ags_thread_real_clock(AgsThread *thread)
 {
   AgsThread *main_loop, *async_queue;
-  AgsMutexManager *mutex_manager;
 
 #ifdef __APPLE__
   clock_serv_t cclock;
@@ -2771,18 +2743,13 @@ ags_thread_real_clock(AgsThread *thread)
     async_queue = NULL;
   }
   
-  /* lookup mutices */
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+  /* mutex */
+  pthread_mutex_lock(ags_thread_get_class_mutex());
 
-  pthread_mutex_lock(application_mutex);
+  main_loop_mutex = main_loop->obj_mutex;
+  mutex = thread->obj_mutex;
 
-  main_loop_mutex = ags_mutex_manager_lookup(mutex_manager,
-					     (GObject *) main_loop);
-  mutex = ags_mutex_manager_lookup(mutex_manager,
-				   (GObject *) thread);
-  
-  pthread_mutex_unlock(application_mutex);
+  pthread_mutex_unlock(ags_thread_get_class_mutex());
 
   /* calculate main loop delay */
   pthread_mutex_lock(main_loop_mutex);
@@ -3150,7 +3117,6 @@ ags_thread_loop(void *ptr)
 {
   AgsThread *thread, *main_loop;
   AgsThread *async_queue;
-  AgsMutexManager *mutex_manager;
   AgsThread *queued_thread;
   
   GList *start_start_queue, *start_queue, *start_queue_next;
@@ -3159,7 +3125,6 @@ ags_thread_loop(void *ptr)
   guint i, i_stop;
   gboolean wait_for_parent, wait_for_sibling, wait_for_children;
   
-  pthread_mutex_t *application_mutex;
   pthread_mutex_t *mutex;
   
   thread = (AgsThread *) ptr;
@@ -3173,16 +3138,13 @@ ags_thread_loop(void *ptr)
   if(!AGS_IS_MAIN_LOOP(main_loop)){
     main_loop = NULL;
   }
-  
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-  
-  pthread_mutex_lock(application_mutex);
 
-  mutex = ags_mutex_manager_lookup(mutex_manager,
-				   (GObject *) thread);
+  /* mutex */
+  pthread_mutex_lock(ags_thread_get_class_mutex());
+
+  mutex = thread->obj_mutex;
   
-  pthread_mutex_unlock(application_mutex);
+  pthread_mutex_unlock(ags_thread_get_class_mutex());
 
   if(main_loop != NULL){
     pthread_mutex_lock(ags_main_loop_get_tree_lock(AGS_MAIN_LOOP(main_loop)));

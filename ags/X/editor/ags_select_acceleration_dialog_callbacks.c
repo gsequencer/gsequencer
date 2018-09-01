@@ -22,8 +22,6 @@
 #include <ags/libags.h>
 #include <ags/libags-audio.h>
 
-#include <ags/thread/ags_mutex_manager.h>
-
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_automation_window.h>
 #include <ags/X/ags_automation_editor.h>
@@ -68,13 +66,10 @@ ags_select_acceleration_dialog_add_callback(GtkWidget *button,
   GtkButton *remove;
 
   AgsAudio *audio;
+
+  GList *start_list_automation;
   
-  AgsMutexManager *mutex_manager;
-
   gchar **specifier;
-
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *audio_mutex;
 
   window = AGS_WINDOW(select_acceleration_dialog->main_window);
   automation_editor = window->automation_window->automation_editor;
@@ -82,10 +77,6 @@ ags_select_acceleration_dialog_add_callback(GtkWidget *button,
   machine = automation_editor->selected_machine;
 
   audio = machine->audio;
-  
-  /* get mutex manager and application mutex */
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
 
   /* select automation */
   hbox = (GtkVBox *) gtk_hbox_new(FALSE,
@@ -102,26 +93,18 @@ ags_select_acceleration_dialog_add_callback(GtkWidget *button,
 		     FALSE, FALSE,
 		     0);
 
-  /* get audio mutex */
-  pthread_mutex_lock(application_mutex);
-
-  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
-					 (GObject *) audio);
-  
-  pthread_mutex_unlock(application_mutex);
-
   /*  */  
-  pthread_mutex_lock(audio_mutex);
+  g_object_get(audio,
+	       "automation", &start_list_automation,
+	       NULL);
 
-  specifier = ags_automation_get_specifier_unique(audio->automation);
+  specifier = ags_automation_get_specifier_unique(start_list_automation);
 
   for(; *specifier != NULL; specifier++){
     gtk_combo_box_text_append_text(combo_box,
 				   g_strdup(*specifier));
   }
   
-  pthread_mutex_unlock(audio_mutex);
-
   /* remove button */
   remove = (GtkCheckButton *) gtk_button_new_from_stock(GTK_STOCK_REMOVE);
   gtk_box_pack_start((GtkBox *) hbox,

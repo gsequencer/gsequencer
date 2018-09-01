@@ -536,12 +536,11 @@ ags_ramp_acceleration_dialog_apply(AgsApplicable *applicable)
   AgsAutomation *current;
   AgsAcceleration *acceleration;
 
-  AgsMutexManager *mutex_manager;
   AgsTimestamp *timestamp;
 
   AgsApplicationContext *application_context;
 
-  GList *list_automation;
+  GList *start_list_automation, *list_automation;
   GList *list_acceleration, *list_acceleration_start;
 
   gchar *specifier;
@@ -566,9 +565,6 @@ ags_ramp_acceleration_dialog_apply(AgsApplicable *applicable)
 
   gboolean is_audio, is_output, is_input;
   gboolean success;
-  
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *audio_mutex;
   
   ramp_acceleration_dialog = AGS_RAMP_ACCELERATION_DIALOG(applicable);
 
@@ -617,51 +613,64 @@ ags_ramp_acceleration_dialog_apply(AgsApplicable *applicable)
   /* application context and mutex manager */
   application_context = window->application_context;
 
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-
-  /* get audio mutex */
-  pthread_mutex_lock(application_mutex);
-
-  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
-					 (GObject *) audio);
-  
-  pthread_mutex_unlock(application_mutex);  
-
   /* remove acceleration of region */
   line = 0;
+
+  g_object_get(audio,
+	       "automation", &start_list_automation,
+	       NULL);
   
   while(notebook == NULL ||
 	(line = ags_notebook_next_active_tab(notebook,
 					     line)) != -1){
-    list_automation = audio->automation;
+    list_automation = start_list_automation;
 
     while((list_automation = ags_automation_find_specifier_with_type_and_line(list_automation,
 									      specifier,
 									      channel_type,
 									      line)) != NULL){
+      AgsPort *current_port;
+      
+      AgsTimestamp *current_timestamp;
+
+      AgsConversion *conversion;
+
+      guint steps;
+      
       current = AGS_AUTOMATION(list_automation->data);
 
-      if(current->timestamp->timer.ags_offset.offset < x0){
+      g_object_get(current,
+		   "timestamp", &current_timestamp,
+		   NULL);
+      
+      if(ags_timestamp_get_ags_offset(current_timestamp) < x0){
 	list_automation = list_automation->next;
 	
 	continue;
       }
 
-      if(current->timestamp->timer.ags_offset.offset > x1){
+      if(ags_timestamp_get_ags_offset(current_timestamp) > x1){
 	break;
       }
+
+      g_object_get(current,
+		   "port", &current_port,
+		   "upper", &upper,
+		   "lower", &lower,
+		   "steps", &steps,
+		   NULL);
+
+      g_object_get(current_port,
+		   "conversion", &conversion,
+		   NULL);
       
-      upper = current->upper;
-      lower = current->lower;
-	
       range = upper - lower;
 
-      if(AGS_PORT(current->port)->conversion != NULL){
-	c_upper = ags_conversion_convert(AGS_PORT(current->port)->conversion,
+      if(conversion != NULL){
+	c_upper = ags_conversion_convert(conversion,
 					 upper,
 					 FALSE);
-	c_lower = ags_conversion_convert(AGS_PORT(current->port)->conversion,
+	c_lower = ags_conversion_convert(conversion,
 					 lower,
 					 FALSE);
 	c_range = c_upper - c_lower;
@@ -680,14 +689,14 @@ ags_ramp_acceleration_dialog_apply(AgsApplicable *applicable)
       }
 	
       /* check steps */
-      gui_y = current->steps;
+      gui_y = steps;
 
-      val = c_lower + (gui_y * (c_range / current->steps));
+      val = c_lower + (gui_y * (c_range / steps));
       c_y0 = val;
 
       /* conversion */
-      if(AGS_PORT(current->port)->conversion != NULL){
-	c_y0 = ags_conversion_convert(AGS_PORT(current->port)->conversion,
+      if(conversion != NULL){
+	c_y0 = ags_conversion_convert(conversion,
 				      c_y0,
 				      TRUE);
       }
@@ -695,12 +704,12 @@ ags_ramp_acceleration_dialog_apply(AgsApplicable *applicable)
       /* check steps */
       gui_y = 0;
 
-      val = c_lower + (gui_y * (c_range / current->steps));
+      val = c_lower + (gui_y * (c_range / steps));
       c_y1 = val;
 
       /* conversion */
-      if(AGS_PORT(current->port)->conversion != NULL){
-	c_y1 = ags_conversion_convert(AGS_PORT(current->port)->conversion,
+      if(conversion != NULL){
+	c_y1 = ags_conversion_convert(conversion,
 				      c_y1,
 				      TRUE);
       }
@@ -752,7 +761,11 @@ ags_ramp_acceleration_dialog_apply(AgsApplicable *applicable)
     recall_port = NULL;
     
     if(channel_type == AGS_TYPE_OUTPUT){
-      channel = ags_channel_nth(machine->audio->output,
+      g_object_get(machine->audio,
+		   "output", &channel,
+		   NULL);
+      
+      channel = ags_channel_nth(channel,
 				line);
 
       play_port = ags_channel_collect_all_channel_ports_by_specifier_and_context(channel,
@@ -761,7 +774,11 @@ ags_ramp_acceleration_dialog_apply(AgsApplicable *applicable)
       recall_port = ags_channel_collect_all_channel_ports_by_specifier_and_context(channel,
 										   specifier, FALSE);
     }else if(channel_type == AGS_TYPE_INPUT){
-      channel = ags_channel_nth(machine->audio->input,
+      g_object_get(machine->audio,
+		   "input", &channel,
+		   NULL);
+
+      channel = ags_channel_nth(channel,
 				line);
 
       play_port = ags_channel_collect_all_channel_ports_by_specifier_and_context(channel,
@@ -992,13 +1009,10 @@ ags_ramp_acceleration_dialog_reset(AgsApplicable *applicable)
   AgsRampAccelerationDialog *ramp_acceleration_dialog;
 
   AgsAudio *audio;
+
+  GList *start_automation;
   
-  AgsMutexManager *mutex_manager;
-
   gchar **specifier;
-
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *audio_mutex;
 
   ramp_acceleration_dialog = AGS_RAMP_ACCELERATION_DIALOG(applicable);
 
@@ -1015,29 +1029,19 @@ ags_ramp_acceleration_dialog_reset(AgsApplicable *applicable)
   
   audio = machine->audio;
   
-  /* get mutex manager and application mutex */
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-  
-  /* get audio mutex */
-  pthread_mutex_lock(application_mutex);
-
-  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
-					 (GObject *) audio);
-  
-  pthread_mutex_unlock(application_mutex);
-
   /*  */  
-  pthread_mutex_lock(audio_mutex);
-
-  specifier = ags_automation_get_specifier_unique(audio->automation);
+  g_object_get(audio,
+	       "automation", &start_automation,
+	       NULL);
+  
+  specifier = ags_automation_get_specifier_unique(start_automation);
 
   for(; *specifier != NULL; specifier++){
     gtk_combo_box_text_append_text(ramp_acceleration_dialog->port,
 				   g_strdup(*specifier));
   }
 
-  pthread_mutex_unlock(audio_mutex);
+  g_list_free(start_automation);
 }
 
 gboolean
@@ -1054,11 +1058,11 @@ ags_ramp_acceleration_dialog_delete_event(GtkWidget *widget, GdkEventAny *event)
  * ags_ramp_acceleration_dialog_new:
  * @main_window: the #AgsWindow
  *
- * Create a new #AgsRampAccelerationDialog.
+ * Create a new instance of #AgsRampAccelerationDialog.
  *
- * Returns: a new #AgsRampAccelerationDialog
+ * Returns: the new #AgsRampAccelerationDialog
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsRampAccelerationDialog*
 ags_ramp_acceleration_dialog_new(GtkWidget *main_window)

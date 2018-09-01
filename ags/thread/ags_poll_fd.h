@@ -64,6 +64,9 @@ struct _AgsPollFd
 
   guint flags;
 
+  pthread_mutex_t *obj_mutex;
+  pthread_mutexattr_t *obj_mutexattr;
+
   AgsPollingThread *polling_thread;
   
   int fd;
@@ -82,6 +85,8 @@ struct _AgsPollFdClass
 };
 
 GType ags_poll_fd_get_type();
+
+pthread_mutex_t* ags_poll_fd_get_class_mutex();
 
 void ags_poll_fd_dispatch(AgsPollFd *poll_fd);
 

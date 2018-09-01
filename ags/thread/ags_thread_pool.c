@@ -22,7 +22,6 @@
 #include <ags/object/ags_connectable.h>
 #include <ags/object/ags_config.h>
 
-#include <ags/thread/ags_mutex_manager.h>
 #include <ags/thread/ags_returnable_thread.h>
 
 #include <stdlib.h>
@@ -402,27 +401,26 @@ ags_thread_pool_creation_thread(void *ptr)
 {
   AgsThreadPool *thread_pool;
   AgsThread *returnable_thread;
-  AgsMutexManager *mutex_manager;
 
   GList *start_queue;
   
   guint n_threads;
   guint i, i_stop;
 
-  pthread_mutex_t *application_mutex;
   pthread_mutex_t *parent_mutex;
 
   thread_pool = AGS_THREAD_POOL(ptr);
 
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+  /* get parent mutex */
+  if(thread_pool->parent != NULL){
+    pthread_mutex_lock(ags_thread_get_class_mutex());
 
-  pthread_mutex_lock(application_mutex);
-
-  parent_mutex = ags_mutex_manager_lookup(mutex_manager,
-					  (GObject *) thread_pool->parent);
+    parent_mutex = thread_pool->parent->obj_mutex;
   
-  pthread_mutex_unlock(application_mutex);
+    pthread_mutex_unlock(ags_thread_get_class_mutex());
+  }else{
+    parent_mutex = NULL;
+  }
 
   /* real-time setup */
 #ifdef AGS_WITH_RT
@@ -622,28 +620,21 @@ ags_thread_pool_pull(AgsThreadPool *thread_pool)
 void
 ags_thread_pool_real_start(AgsThreadPool *thread_pool)
 {
-  AgsMutexManager *mutex_manager;
-
   GList *list;
   GList *start_queue;
   
   gint n_threads;
   gint i;
 
-  pthread_mutex_t *application_mutex;
   pthread_mutex_t *parent_mutex;
-
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
 
   /* get parent mutex */
   if(thread_pool->parent != NULL){
-    pthread_mutex_lock(application_mutex);
-    
-    parent_mutex = ags_mutex_manager_lookup(mutex_manager,
-					  (GObject *) thread_pool->parent);
-    
-    pthread_mutex_unlock(application_mutex);
+    pthread_mutex_lock(ags_thread_get_class_mutex());
+
+    parent_mutex = thread_pool->parent->obj_mutex;
+  
+    pthread_mutex_unlock(ags_thread_get_class_mutex());
   }else{
     parent_mutex = NULL;
   }

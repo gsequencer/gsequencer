@@ -19,10 +19,8 @@
 
 #include <ags/X/editor/ags_ramp_acceleration_dialog_callbacks.h>
 
-#include <ags/object/ags_application_context.h>
-#include <ags/object/ags_applicable.h>
-
-#include <ags/thread/ags_mutex_manager.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
 
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_automation_window.h>
@@ -65,14 +63,10 @@ ags_ramp_acceleration_dialog_port_callback(GtkComboBox *combo_box,
 
   AgsAudio *audio;
   
-  AgsMutexManager *mutex_manager;
 
-  GList *list_automation;
+  GList *start_list_automation, *list_automation;
   
   gchar *specifier;
-  
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *audio_mutex;
 
   window = AGS_WINDOW(ramp_acceleration_dialog->main_window);
   automation_editor = window->automation_window->automation_editor;
@@ -85,18 +79,10 @@ ags_ramp_acceleration_dialog_port_callback(GtkComboBox *combo_box,
   
   audio = machine->audio;
 
-  /* get mutex manager and application mutex */
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+  g_object_get(audio,
+	       "automation", &start_list_automation,
+	       NULL);
   
-  /* get audio mutex */
-  pthread_mutex_lock(application_mutex);
-
-  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
-					 (GObject *) audio);
-  
-  pthread_mutex_unlock(application_mutex);
-
   /* specifier */
   list_automation = NULL;
   
@@ -104,37 +90,42 @@ ags_ramp_acceleration_dialog_port_callback(GtkComboBox *combo_box,
 
   if(specifier != NULL &&
      strlen(specifier) > 0){
-    pthread_mutex_lock(audio_mutex);
-    
-    list_automation = ags_automation_find_specifier(audio->automation,
+    list_automation = ags_automation_find_specifier(start_list_automation,
 						    specifier);
-    
-    pthread_mutex_unlock(audio_mutex);
   }
     
   /* reset range */
   if(list_automation != NULL){
     AgsAutomation *automation;
 
+    guint steps;
+    gdouble lower, upper;
+    
     automation = AGS_AUTOMATION(list_automation->data);
+
+    g_object_get(automation,
+		 "lower", &lower,
+		 "upper", &upper,
+		 "steps", &steps,
+		 NULL);
     
     gtk_spin_button_set_range(ramp_acceleration_dialog->ramp_y0,
-			      automation->lower,
-			      automation->upper);
+			      lower,
+			      upper);
     gtk_spin_button_set_increments(ramp_acceleration_dialog->ramp_y0,
-				   (automation->upper - automation->lower) / automation->steps,
-				   (automation->upper - automation->lower) / automation->steps);
+				   (upper - lower) / steps,
+				   (upper - lower) / steps);
     
     gtk_spin_button_set_range(ramp_acceleration_dialog->ramp_y1,
-			      automation->lower,
-			      automation->upper);
+			      lower,
+			      upper);
     gtk_spin_button_set_increments(ramp_acceleration_dialog->ramp_y1,
-				   (automation->upper - automation->lower) / automation->steps,
-				   (automation->upper - automation->lower) / automation->steps);
+				   (upper - lower) / steps,
+				   (upper - lower) / steps);
     
     gtk_spin_button_set_range(ramp_acceleration_dialog->ramp_step_count,
 			      0.0,
-			      automation->steps);
+			      steps);
   }else{
     gtk_spin_button_set_range(ramp_acceleration_dialog->ramp_y0,
 			      0.0,
@@ -154,6 +145,8 @@ ags_ramp_acceleration_dialog_port_callback(GtkComboBox *combo_box,
 			      0.0,
 			      0.0);
   }
+
+  g_list_free(start_list_automation);
 }
 
 void
