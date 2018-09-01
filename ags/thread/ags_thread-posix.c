@@ -1168,6 +1168,11 @@ ags_thread_set_sync_all(AgsThread *thread, guint tic)
     /* reset chaos tree */
     g_atomic_int_and(&(thread->flags),
 		    ~AGS_THREAD_IS_CHAOS_TREE);
+
+    if((AGS_THREAD_MARK_SYNCED & (g_atomic_int_get(&(thread->sync_flags)))) != 0){
+      g_atomic_int_or(&(thread->sync_flags),
+		      AGS_THREAD_SYNCED);
+    }
     
     /* descend */
     child = g_atomic_pointer_get(&(thread->children));
@@ -2573,6 +2578,9 @@ ags_thread_real_clock(AgsThread *thread)
     pthread_mutex_lock(ags_main_loop_get_tree_lock(AGS_MAIN_LOOP(main_loop)));
 
     if((AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(thread->flags)))) != 0){
+      g_atomic_int_or(&(thread->sync_flags),
+		      AGS_THREAD_MARK_SYNCED);
+      
       thread->current_tic = ags_main_loop_get_tic(AGS_MAIN_LOOP(main_loop));
 
       if((AGS_THREAD_START_SYNCED_FREQ & (g_atomic_int_get(&(thread->flags)))) != 0 &&
@@ -3006,6 +3014,10 @@ ags_thread_real_start(AgsThread *thread)
 		   (~(AGS_THREAD_WAIT_0 |
 		      AGS_THREAD_WAIT_1 |
 		      AGS_THREAD_WAIT_2)));
+
+  g_atomic_int_and(&(thread->sync_flags),
+		   (~(AGS_THREAD_MARK_SYNCED |
+		      AGS_THREAD_SYNCED)));
 
   g_atomic_int_and(&(thread->sync_flags),
 		   (~(AGS_THREAD_SYNCED_FREQ)));
@@ -3792,7 +3804,7 @@ ags_thread_stop(AgsThread *thread)
   if((AGS_THREAD_RUNNING & (g_atomic_int_get(&(thread->flags)))) == 0){
     return;
   }
-
+  
   g_object_ref(G_OBJECT(thread));
   g_signal_emit(G_OBJECT(thread),
 		thread_signal, 0);

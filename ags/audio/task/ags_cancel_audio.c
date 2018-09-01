@@ -26,6 +26,7 @@
 
 #include <ags/audio/thread/ags_audio_loop.h>
 #include <ags/audio/thread/ags_audio_thread.h>
+#include <ags/audio/thread/ags_channel_thread.h>
 
 #include <ags/i18n.h>
 
@@ -268,7 +269,9 @@ ags_cancel_audio_launch(AgsTask *task)
   AgsCancelAudio *cancel_audio;
 
   AgsAudioLoop *audio_loop;
-
+  AgsAudioThread *audio_thread;
+  AgsChannelThread *channel_thread;
+  
   AgsApplicationContext *application_context;
 
   GList *list_start, *list;
@@ -304,9 +307,13 @@ ags_cancel_audio_launch(AgsTask *task)
 				  sound_scope, staging_flags);
 
     /* stop audio thread */
-    ags_thread_stop(ags_playback_domain_get_audio_thread(playback_domain,
-							 sound_scope));
+    audio_thread = ags_playback_domain_get_audio_thread(playback_domain,
+							sound_scope);
 
+    if(audio_thread != NULL){
+      ags_thread_stop(audio_thread);
+    }
+    
     /* stop channel thread and unset recall id */
     list = list_start;
 
@@ -316,10 +323,14 @@ ags_cancel_audio_launch(AgsTask *task)
       g_object_get(list->data,
 		   "channel", &channel,
 		   NULL);
-	
-      ags_thread_stop(ags_playback_get_channel_thread(list->data,
-						      sound_scope));
-            
+
+      channel_thread = ags_playback_get_channel_thread(list->data,
+						       sound_scope);
+
+      if(channel_thread != NULL){
+	ags_thread_stop(channel_thread);
+      }
+      
       /* iterate */
       list = list->next;
     }
@@ -353,9 +364,13 @@ ags_cancel_audio_launch(AgsTask *task)
 				    i, staging_flags);
 
       /* stop audio thread */
-      ags_thread_stop(ags_playback_domain_get_audio_thread(playback_domain,
-							   i));
+      audio_thread = ags_playback_domain_get_audio_thread(playback_domain,
+							  i);
 
+      if(audio_thread != NULL){
+	ags_thread_stop(audio_thread);
+      }
+      
       /* stop channel thread and unset recall id */
       list = list_start;
 
@@ -365,9 +380,13 @@ ags_cancel_audio_launch(AgsTask *task)
 	g_object_get(list->data,
 		     "channel", &channel,
 		     NULL);
-	
-	ags_thread_stop(ags_playback_get_channel_thread(list->data,
-							i));
+
+	channel_thread = ags_playback_get_channel_thread(list->data,
+							 i);
+
+	if(channel_thread != NULL){
+	  ags_thread_stop(channel_thread);
+	}
 	
 	/* iterate */
 	list = list->next;

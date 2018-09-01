@@ -1153,7 +1153,6 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
   AgsThread *sequencer_thread;
   AgsDestroyWorker *destroy_worker;
   AgsThread *main_loop;
-  AgsMutexManager *mutex_manager;
 
   AgsLog *log;
   AgsConfig *config;
@@ -1179,9 +1178,7 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
   gboolean has_core_audio;
   gboolean has_pulse;
   gboolean has_jack;
-  
-  pthread_mutex_t *application_mutex;
-  
+    
   xorg_application_context = (AgsXorgApplicationContext *) application_context;
 
   audio_loop = AGS_APPLICATION_CONTEXT(xorg_application_context)->main_loop;
@@ -1191,14 +1188,9 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
   /* call parent */
   AGS_APPLICATION_CONTEXT_CLASS(ags_xorg_application_context_parent_class)->setup(application_context);
 
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-    
-  pthread_mutex_lock(application_mutex);
-
-  main_loop = AGS_APPLICATION_CONTEXT(xorg_application_context)->main_loop;
-  
-  pthread_mutex_unlock(application_mutex);
+  g_object_get(application_context,
+	       "main-loop", &main_loop,
+	       NULL);
 
   gui_thread = ags_thread_find_type(main_loop,
 				    AGS_TYPE_GUI_THREAD);
@@ -2009,8 +2001,6 @@ ags_xorg_application_context_quit(AgsApplicationContext *application_context)
 
   AgsJackServer *jack_server;
 
-  AgsMutexManager *mutex_manager;
-
   AgsConfig *config;
 
   GList *core_audio_client;
@@ -2022,13 +2012,6 @@ ags_xorg_application_context_quit(AgsApplicationContext *application_context)
 
   gboolean autosave_thread_enabled;
 
-  pthread_mutex_t *application_mutex;
-
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);  
-
-  pthread_mutex_lock(application_mutex);
-  
   config = application_context->config;
   
   /* autosave thread */
@@ -2165,8 +2148,6 @@ ags_xorg_application_context_quit(AgsApplicationContext *application_context)
     
     list = list->next;
   }
-
-  pthread_mutex_unlock(application_mutex);
   
   gtk_main_quit();
 }
@@ -2266,26 +2247,14 @@ ags_xorg_application_context_read(AgsFile *file, xmlNode *node, GObject **applic
 void
 ags_xorg_application_context_launch(AgsFileLaunch *launch, AgsXorgApplicationContext *application_context)
 {
-  AgsMutexManager *mutex_manager;
-  
   AgsThread *audio_loop, *task_thread, *gui_thread;
 
   GList *list;
   GList *start_queue;
 
-  pthread_mutex_t *audio_loop_mutex;
-  pthread_mutex_t *application_mutex;
-
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-    
-  pthread_mutex_lock(application_mutex);
-    
-  audio_loop = (AgsThread *) AGS_APPLICATION_CONTEXT(application_context)->main_loop;
-  audio_loop_mutex = ags_mutex_manager_lookup(mutex_manager,
-					      (GObject *) audio_loop);
-    
-  pthread_mutex_unlock(application_mutex);
+  g_object_get(application_context,
+	       "main-loop", &audio_loop,
+	       NULL);
 
   /* show all */
   gtk_widget_show_all((GtkWidget *) application_context->window);
@@ -2297,18 +2266,6 @@ ags_xorg_application_context_launch(AgsFileLaunch *launch, AgsXorgApplicationCon
 
   gui_thread = ags_thread_find_type(audio_loop,
 				    AGS_TYPE_GUI_THREAD);
-
-  pthread_mutex_lock(audio_loop_mutex);
-    
-  start_queue = NULL;
-  start_queue = g_list_prepend(start_queue,
-			       task_thread);
-  start_queue = g_list_prepend(start_queue,
-			       gui_thread);
-  g_atomic_pointer_set(&(audio_loop->start_queue),
-		       start_queue);
-
-  pthread_mutex_unlock(audio_loop_mutex);
 
   ags_thread_pool_start(application_context->thread_pool);
   ags_thread_start(audio_loop);

@@ -1817,6 +1817,14 @@ ags_machine_set_run_extended(AgsMachine *machine,
     /* append AgsCancelAudio */
     ags_gui_thread_schedule_task((AgsGuiThread *) gui_thread,
 				 cancel_audio);
+
+    /* create cancel task */
+    cancel_audio = ags_cancel_audio_new(machine->audio,
+					AGS_SOUND_SCOPE_WAVE);
+    
+    /* append AgsCancelAudio */
+    ags_gui_thread_schedule_task((AgsGuiThread *) gui_thread,
+				 cancel_audio);
   }
 }
 

@@ -180,6 +180,8 @@ typedef enum{
   AGS_THREAD_MONITORING              = 1 << 26,
   AGS_THREAD_WAIT_ASYNC_QUEUE        = 1 << 27,
   AGS_THREAD_DONE_ASYNC_QUEUE        = 1 << 28,
+  AGS_THREAD_MARK_SYNCED             = 1 << 29,
+  AGS_THREAD_SYNCED                  = 1 << 30,
 }AgsThreadSyncFlags;
 
 struct _AgsThread
