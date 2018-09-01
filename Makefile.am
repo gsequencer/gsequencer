@@ -39,6 +39,7 @@ libgsequencer_LTLIBRARIES = libgsequencer.la
 EXTRA_DIST = config.rpath \
 	COPYING.server \
 	COPYING.docs \
+	COPYING.stk-4.3 \
 	ags/config.h.in \
 	gtk-doc.make \
 	gsequencer.share \
