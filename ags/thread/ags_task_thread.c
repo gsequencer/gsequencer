@@ -31,12 +31,10 @@
 #include <math.h>
 
 void ags_task_thread_class_init(AgsTaskThreadClass *task_thread);
-void ags_task_thread_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_task_thread_async_queue_interface_init(AgsAsyncQueueInterface *async_queue);
 void ags_task_thread_init(AgsTaskThread *task_thread);
-void ags_task_thread_connect(AgsConnectable *connectable);
-void ags_task_thread_disconnect(AgsConnectable *connectable);
 void ags_task_thread_finalize(GObject *gobject);
+
 void ags_task_thread_set_run_mutex(AgsAsyncQueue *async_queue, pthread_mutex_t *run_mutex);
 pthread_mutex_t* ags_task_thread_get_run_mutex(AgsAsyncQueue *async_queue);
 void ags_task_thread_set_run_cond(AgsAsyncQueue *async_queue, pthread_cond_t *run_cond);
@@ -70,7 +68,6 @@ enum{
 };
 
 static gpointer ags_task_thread_parent_class = NULL;
-static AgsConnectableInterface *ags_task_thread_parent_connectable_interface;
 static guint task_thread_signals[LAST_SIGNAL];
 
 GType
@@ -90,12 +87,6 @@ ags_task_thread_get_type()
       0,    /* n_preallocs */
       (GInstanceInitFunc) ags_task_thread_init,
     };
-
-    static const GInterfaceInfo ags_connectable_interface_info = {
-      (GInterfaceInitFunc) ags_task_thread_connectable_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
     
     static const GInterfaceInfo ags_async_queue_interface_info = {
       (GInterfaceInitFunc) ags_task_thread_async_queue_interface_init,
@@ -108,10 +99,6 @@ ags_task_thread_get_type()
 						  &ags_task_thread_info,
 						  0);
     
-    g_type_add_interface_static(ags_type_task_thread,
-				AGS_TYPE_CONNECTABLE,
-				&ags_connectable_interface_info);
-
     g_type_add_interface_static(ags_type_task_thread,
 				AGS_TYPE_ASYNC_QUEUE,
 				&ags_async_queue_interface_info);
@@ -150,7 +137,7 @@ ags_task_thread_class_init(AgsTaskThreadClass *task_thread)
    * The ::clear-cache signal is invoked to clear the cache libraries
    * might have been allocated.
    *
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   task_thread_signals[CLEAR_CACHE] =
     g_signal_new("clear-cache",
@@ -161,15 +148,6 @@ ags_task_thread_class_init(AgsTaskThreadClass *task_thread)
 		 g_cclosure_marshal_VOID__VOID,
 		 G_TYPE_NONE, 0);
 
-}
-
-void
-ags_task_thread_connectable_interface_init(AgsConnectableInterface *connectable)
-{
-  ags_task_thread_parent_connectable_interface = g_type_interface_peek_parent(connectable);
-
-  connectable->connect = ags_task_thread_connect;
-  connectable->disconnect = ags_task_thread_disconnect;
 }
 
 void
@@ -310,22 +288,6 @@ ags_task_thread_init(AgsTaskThread *task_thread)
   /* thread pool */
   task_thread->thread_pool = ags_thread_pool_new((AgsThread *) task_thread);
   task_thread->thread_pool->parent = (AgsThread *) task_thread;
-}
-
-void
-ags_task_thread_connect(AgsConnectable *connectable)
-{
-  /* empty */
-
-  ags_task_thread_parent_connectable_interface->connect(connectable);
-}
-
-void
-ags_task_thread_disconnect(AgsConnectable *connectable)
-{
-  ags_task_thread_parent_connectable_interface->disconnect(connectable);
-
-  /* empty */
 }
 
 void
@@ -691,7 +653,7 @@ ags_task_thread_append_task_queue(AgsReturnableThread *returnable_thread, gpoint
  *
  * Adds the task to @task_thread.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_task_thread_append_task(AgsTaskThread *task_thread, AgsTask *task)
@@ -771,7 +733,7 @@ ags_task_thread_append_tasks_queue(AgsReturnableThread *returnable_thread, gpoin
  * Concats the list with @task_thread's internal task list. Don't
  * free the list you pass. It will be freed for you.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_task_thread_append_tasks(AgsTaskThread *task_thread, GList *list)
@@ -817,7 +779,7 @@ ags_task_thread_append_tasks(AgsTaskThread *task_thread, GList *list)
  *
  * Add cyclic task.
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_task_thread_append_cyclic_task(AgsTaskThread *task_thread,
@@ -839,7 +801,7 @@ ags_task_thread_append_cyclic_task(AgsTaskThread *task_thread,
  *
  * Remove cyclic task.
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_task_thread_remove_cyclic_task(AgsTaskThread *task_thread,
@@ -860,7 +822,7 @@ ags_task_thread_remove_cyclic_task(AgsTaskThread *task_thread,
  *
  * Clear cache signal.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_task_thread_clear_cache(AgsTaskThread *task_thread)
@@ -880,7 +842,7 @@ ags_task_thread_clear_cache(AgsTaskThread *task_thread)
  *
  * Returns: the new #AgsTaskThread
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */ 
 AgsTaskThread*
 ags_task_thread_new()

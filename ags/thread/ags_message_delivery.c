@@ -162,7 +162,7 @@ ags_message_delivery_get_class_mutex()
  *
  * Add @message_queue to @message_delivery.
  * 
- * Since: 1.2.0
+ * Since: 2.0.0
  */
 void
 ags_message_delivery_add_queue(AgsMessageDelivery *message_delivery,
@@ -188,7 +188,7 @@ ags_message_delivery_add_queue(AgsMessageDelivery *message_delivery,
  *
  * Remove @message_queue to @message_delivery.
  * 
- * Since: 1.2.0
+ * Since: 2.0.0
  */
 void
 ags_message_delivery_remove_queue(AgsMessageDelivery *message_delivery,
@@ -216,7 +216,7 @@ ags_message_delivery_remove_queue(AgsMessageDelivery *message_delivery,
  * 
  * Returns: the matching #AgsMessageQueue
  * 
- * Since: 1.2.0
+ * Since: 2.0.0
  */
 GObject*
 ags_message_delivery_find_namespace(AgsMessageDelivery *message_delivery,
@@ -275,7 +275,7 @@ ags_message_delivery_find_namespace(AgsMessageDelivery *message_delivery,
  * 
  * Add @message to an #AgsMessageQueue specified by @namespace.
  * 
- * Since: 1.2.0
+ * Since: 2.0.0
  */
 void
 ags_message_delivery_add_message(AgsMessageDelivery *message_delivery,
@@ -310,7 +310,7 @@ ags_message_delivery_add_message(AgsMessageDelivery *message_delivery,
  * 
  * Remove @message from an #AgsMessageQueue specified by @namespace.
  * 
- * Since: 1.2.0
+ * Since: 2.0.0
  */
 void
 ags_message_delivery_remove_message(AgsMessageDelivery *message_delivery,
@@ -342,7 +342,7 @@ ags_message_delivery_remove_message(AgsMessageDelivery *message_delivery,
  * 
  * Returns: all matching #AgsMessageEnvelope as #GList-struct
  * 
- * Since: 1.2.0
+ * Since: 2.0.0
  */
 GList*
 ags_message_delivery_find_sender(AgsMessageDelivery *message_delivery,
@@ -415,7 +415,7 @@ ags_message_delivery_find_sender(AgsMessageDelivery *message_delivery,
  * 
  * Returns: all matching #AgsMessageEnvelope as #GList-struct
  * 
- * Since: 1.2.0
+ * Since: 2.0.0
  */
 GList*
 ags_message_delivery_find_recipient(AgsMessageDelivery *message_delivery,
@@ -488,7 +488,7 @@ ags_message_delivery_find_recipient(AgsMessageDelivery *message_delivery,
  * 
  * Returns: all matching #AgsMessageEnvelope as #GList-struct
  * 
- * Since: 1.2.0
+ * Since: 2.0.0
  */
 GList*
 ags_message_delivery_query_message(AgsMessageDelivery *message_delivery,
@@ -557,7 +557,7 @@ ags_message_delivery_query_message(AgsMessageDelivery *message_delivery,
  *
  * Returns: the #AgsMessageDelivery
  *
- * Since: 1.2.0
+ * Since: 2.0.0
  */ 
 AgsMessageDelivery*
 ags_message_delivery_get_instance()
@@ -582,7 +582,7 @@ ags_message_delivery_get_instance()
  *
  * Returns: the new #AgsMessageDelivery
  *
- * Since: 1.2.0
+ * Since: 2.0.0
  */ 
 AgsMessageDelivery*
 ags_message_delivery_new()

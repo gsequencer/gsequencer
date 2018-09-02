@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015,2017 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -44,6 +44,9 @@ struct _AgsLv2OptionManager
 {
   GObject gobject;
 
+  pthread_mutex_t *obj_mutex;
+  pthread_mutexattr_t *obj_mutexattr;
+
   GHashTable *ressource;
 };
 
@@ -67,6 +70,8 @@ struct _AgsLv2OptionRessource{
 };
 
 GType ags_lv2_option_manager_get_type(void);
+
+pthread_mutex_t* ags_lv2_option_manager_get_class_mutex();
 
 /* option ressource */
 AgsLv2OptionRessource* ags_lv2_option_ressource_alloc();

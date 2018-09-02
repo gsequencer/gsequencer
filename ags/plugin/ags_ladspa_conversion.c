@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2016 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -25,6 +25,14 @@
 
 void ags_ladspa_conversion_class_init(AgsLadspaConversionClass *conversion);
 void ags_ladspa_conversion_init (AgsLadspaConversion *conversion);
+void ags_ladspa_conversion_set_property(GObject *gobject,
+					guint prop_id,
+					const GValue *value,
+					GParamSpec *param_spec);
+void ags_ladspa_conversion_get_property(GObject *gobject,
+					guint prop_id,
+					GValue *value,
+					GParamSpec *param_spec);
 void ags_ladspa_conversion_finalize(GObject *gobject);
 
 gdouble ags_ladspa_conversion_convert(AgsConversion *conversion,
@@ -40,6 +48,11 @@ gdouble ags_ladspa_conversion_convert(AgsConversion *conversion,
  *
  * The #AgsLadspaConversion converts values.
  */
+
+enum{
+  PROP_0,
+  PROP_SAMPLERATE,
+};
 
 static gpointer ags_ladspa_conversion_parent_class = NULL;
 
@@ -81,6 +94,9 @@ ags_ladspa_conversion_class_init(AgsLadspaConversionClass *ladspa_conversion)
 
   /* GObjectClass */
   gobject = (GObjectClass *) ladspa_conversion;
+
+  gobject->set_property = ags_ladspa_conversion_set_property;
+  gobject->get_property = ags_ladspa_conversion_get_property;
   
   gobject->finalize = ags_ladspa_conversion_finalize;
 
@@ -123,9 +139,191 @@ ags_ladspa_conversion_init(AgsLadspaConversion *ladspa_conversion)
 }
 
 void
+ags_ladspa_conversion_set_property(GObject *gobject,
+				   guint prop_id,
+				   const GValue *value,
+				   GParamSpec *param_spec)
+{
+  AgsLadspaConversion *ladspa_conversion;
+
+  pthread_mutex_t *conversion_mutex;
+
+  ladspa_conversion = AGS_LADSPA_CONVERSION(gobject);
+
+  /* get base plugin mutex */
+  pthread_mutex_lock(ags_conversion_get_class_mutex());
+  
+  conversion_mutex = AGS_CONVERSION(gobject)->obj_mutex;
+  
+  pthread_mutex_unlock(ags_conversion_get_class_mutex());
+
+  switch(prop_id){
+  case PROP_SAMPLERATE:
+    {
+      uint samplerate;
+
+      samplerate = g_value_get_uint(value);
+
+      pthread_mutex_lock(conversion_mutex);
+
+      ladspa_conversion->samplerate = samplerate;
+      
+      pthread_mutex_unlock(conversion_mutex);
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
+}
+
+void
+ags_ladspa_conversion_get_property(GObject *gobject,
+				   guint prop_id,
+				   GValue *value,
+				   GParamSpec *param_spec)
+{
+  AgsLadspaConversion *ladspa_conversion;
+
+  pthread_mutex_t *conversion_mutex;
+
+  ladspa_conversion = AGS_LADSPA_CONVERSION(gobject);
+
+  /* get base plugin mutex */
+  pthread_mutex_lock(ags_conversion_get_class_mutex());
+  
+  conversion_mutex = AGS_CONVERSION(gobject)->obj_mutex;
+  
+  pthread_mutex_unlock(ags_conversion_get_class_mutex());
+
+  switch(prop_id){
+  case PROP_SAMPLERATE:
+    {
+      pthread_mutex_lock(conversion_mutex);
+
+      g_value_set_uint(value, ladspa_conversion->samplerate);
+
+      pthread_mutex_unlock(conversion_mutex);
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
+}
+
+void
 ags_ladspa_conversion_finalize(GObject *gobject)
 {
   /* empty */
+
+  /* call parent */
+  G_OBJECT_CLASS(ags_ladspa_conversion_parent_class)->finalize(gobject);
+}
+
+/**
+ * ags_ladspa_conversion_test_flags:
+ * @ladspa_conversion: the #AgsLadspaConversion
+ * @flags: the flags
+ * 
+ * Test @flags to be set on @recall.
+ * 
+ * Returns: %TRUE if flags are set, else %FALSE
+ * 
+ * Since: 2.0.0
+ */
+gboolean
+ags_ladspa_conversion_test_flags(AgsLadspaConversion *ladspa_conversion, guint flags)
+{
+  gboolean retval;
+  
+  pthread_mutex_t *conversion_mutex;
+
+  if(!AGS_IS_LADSPA_CONVERSION(ladspa_conversion)){
+    return(FALSE);
+  }
+  
+  /* get base plugin mutex */
+  pthread_mutex_lock(ags_conversion_get_class_mutex());
+  
+  conversion_mutex = AGS_CONVERSION(ladspa_conversion)->obj_mutex;
+  
+  pthread_mutex_unlock(ags_conversion_get_class_mutex());
+
+  /* test flags */
+  pthread_mutex_lock(conversion_mutex);
+
+  retval = ((flags & (ladspa_conversion->flags)) != 0) ? TRUE: FALSE;
+  
+  pthread_mutex_unlock(conversion_mutex);
+
+  return(retval);
+}
+
+/**
+ * ags_ladspa_conversion_set_flags:
+ * @ladspa_conversion: the #AgsLadspaConversion
+ * @flags: the flags
+ *
+ * Set flags.
+ * 
+ * Since: 2.0.0
+ */
+void
+ags_ladspa_conversion_set_flags(AgsLadspaConversion *ladspa_conversion, guint flags)
+{
+  pthread_mutex_t *conversion_mutex;
+
+  if(!AGS_IS_LADSPA_CONVERSION(ladspa_conversion)){
+    return;
+  }
+  
+  /* get base plugin mutex */
+  pthread_mutex_lock(ags_conversion_get_class_mutex());
+  
+  conversion_mutex = AGS_CONVERSION(ladspa_conversion)->obj_mutex;
+  
+  pthread_mutex_unlock(ags_conversion_get_class_mutex());
+
+  /* set flags */
+  pthread_mutex_lock(conversion_mutex);
+
+  ladspa_conversion->flags |= flags;
+  
+  pthread_mutex_unlock(conversion_mutex);
+}
+
+/**
+ * ags_ladspa_conversion_unset_flags:
+ * @ladspa_conversion: the #AgsLadspaConversion
+ * @flags: the flags
+ *
+ * Unset flags.
+ * 
+ * Since: 2.0.0
+ */
+void
+ags_ladspa_conversion_unset_flags(AgsLadspaConversion *ladspa_conversion, guint flags)
+{
+  pthread_mutex_t *conversion_mutex;
+
+  if(!AGS_IS_LADSPA_CONVERSION(ladspa_conversion)){
+    return;
+  }
+  
+  /* get base plugin mutex */
+  pthread_mutex_lock(ags_conversion_get_class_mutex());
+  
+  conversion_mutex = AGS_CONVERSION(ladspa_conversion)->obj_mutex;
+  
+  pthread_mutex_unlock(ags_conversion_get_class_mutex());
+
+  /* unset flags */
+  pthread_mutex_lock(conversion_mutex);
+
+  ladspa_conversion->flags &= (~flags);
+  
+  pthread_mutex_unlock(conversion_mutex);
 }
 
 gdouble
@@ -138,19 +336,31 @@ ags_ladspa_conversion_convert(AgsConversion *conversion,
   ladspa_conversion = AGS_LADSPA_CONVERSION(conversion);
 
   if(reverse){
-    if((AGS_LADSPA_CONVERSION_SAMPLERATE & (ladspa_conversion->flags)) != 0){
-      value /= ladspa_conversion->samplerate;
+    if(ags_ladspa_conversion_test_flags(ladspa_conversion, AGS_LADSPA_CONVERSION_SAMPLERATE)){
+      guint samplerate;
+
+      g_object_get(ladspa_conversion,
+		   "samplerate", &samplerate,
+		   NULL);
+      
+      value /= samplerate;
     }
 
-    if((AGS_LADSPA_CONVERSION_LOGARITHMIC & (ladspa_conversion->flags)) != 0){
+    if(ags_ladspa_conversion_test_flags(ladspa_conversion, AGS_LADSPA_CONVERSION_LOGARITHMIC)){
       value = log(value);
     }
   }else{
-    if((AGS_LADSPA_CONVERSION_SAMPLERATE & (ladspa_conversion->flags)) != 0){
-      value *= ladspa_conversion->samplerate;
+    if(ags_ladspa_conversion_test_flags(ladspa_conversion, AGS_LADSPA_CONVERSION_SAMPLERATE)){
+      guint samplerate;
+
+      g_object_get(ladspa_conversion,
+		   "samplerate", &samplerate,
+		   NULL);
+
+      value *= samplerate;
     }
 
-    if((AGS_LADSPA_CONVERSION_LOGARITHMIC & (ladspa_conversion->flags)) != 0){
+    if(ags_ladspa_conversion_test_flags(ladspa_conversion, AGS_LADSPA_CONVERSION_LOGARITHMIC)){
       value = exp(value);
     }
   }
@@ -161,11 +371,11 @@ ags_ladspa_conversion_convert(AgsConversion *conversion,
 /**
  * ags_ladspa_conversion_new:
  *
- * Instantiate a new #AgsLadspaConversion.
+ * Create a new instance of #AgsLadspaConversion.
  *
- * Returns: the new instance
+ * Returns: the new #AgsLadspaConversion.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsLadspaConversion*
 ags_ladspa_conversion_new()

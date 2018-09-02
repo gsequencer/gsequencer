@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -22,10 +22,7 @@
 #include <ags/object/ags_connectable.h>
 
 void ags_lv2_uri_map_manager_class_init(AgsLv2UriMapManagerClass *lv2_uri_map_manager);
-void ags_lv2_uri_map_manager_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_lv2_uri_map_manager_init(AgsLv2UriMapManager *lv2_uri_map_manager);
-void ags_lv2_uri_map_manager_connect(AgsConnectable *connectable);
-void ags_lv2_uri_map_manager_disconnect(AgsConnectable *connectable);
 void ags_lv2_uri_map_manager_finalize(GObject *gobject);
 
 void ags_lv2_uri_map_manager_destroy_data(gpointer data);
@@ -42,6 +39,8 @@ void ags_lv2_uri_map_manager_destroy_data(gpointer data);
  */
 
 static gpointer ags_lv2_uri_map_manager_parent_class = NULL;
+
+static pthread_mutex_t ags_lv2_uri_map_manager_class_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 AgsLv2UriMapManager *ags_lv2_uri_map_manager = NULL;
 
@@ -63,20 +62,10 @@ ags_lv2_uri_map_manager_get_type()
       (GInstanceInitFunc) ags_lv2_uri_map_manager_init,
     };
 
-    const GInterfaceInfo ags_connectable_interface_info = {
-      (GInterfaceInitFunc) ags_lv2_uri_map_manager_connectable_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-
     ags_type_lv2_uri_map_manager = g_type_register_static(G_TYPE_OBJECT,
 							  "AgsLv2UriMapManager",
 							  &ags_lv2_uri_map_manager_info,
 							  0);
-
-    g_type_add_interface_static(ags_type_lv2_uri_map_manager,
-				AGS_TYPE_CONNECTABLE,
-				&ags_connectable_interface_info);
   }
   
   return(ags_type_lv2_uri_map_manager);
@@ -97,32 +86,28 @@ ags_lv2_uri_map_manager_class_init(AgsLv2UriMapManagerClass *lv2_uri_map_manager
 }
 
 void
-ags_lv2_uri_map_manager_connectable_interface_init(AgsConnectableInterface *connectable)
-{
-  connectable->connect = ags_lv2_uri_map_manager_connect;
-  connectable->disconnect = ags_lv2_uri_map_manager_disconnect;
-}
-
-void
 ags_lv2_uri_map_manager_init(AgsLv2UriMapManager *lv2_uri_map_manager)
 {
+  /* lv2 uri_map manager mutex */
+  lv2_uri_map_manager->obj_mutexattr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
+  pthread_mutexattr_init(lv2_uri_map_manager->obj_mutexattr);
+  pthread_mutexattr_settype(lv2_uri_map_manager->obj_mutexattr,
+			    PTHREAD_MUTEX_RECURSIVE);
+
+#ifdef __linux__
+  pthread_mutexattr_setprotocol(lv2_uri_map_manager->obj_mutexattr,
+				PTHREAD_PRIO_INHERIT);
+#endif
+
+  lv2_uri_map_manager->obj_mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
+  pthread_mutex_init(lv2_uri_map_manager->obj_mutex,
+		     lv2_uri_map_manager->obj_mutexattr);
+
   lv2_uri_map_manager->id_counter = 1;
 
   lv2_uri_map_manager->uri_map = g_hash_table_new_full(g_str_hash, g_str_equal,
 						       NULL,
 						       (GDestroyNotify) ags_lv2_uri_map_manager_destroy_data);
-}
-
-void
-ags_lv2_uri_map_manager_connect(AgsConnectable *connectable)
-{
-  /* empty */
-}
-
-void
-ags_lv2_uri_map_manager_disconnect(AgsConnectable *connectable)
-{
-  /* empty */
 }
 
 void
@@ -142,6 +127,21 @@ ags_lv2_uri_map_manager_finalize(GObject *gobject)
   G_OBJECT_CLASS(ags_lv2_uri_map_manager_parent_class)->finalize(gobject);
 }
 
+/**
+ * ags_lv2_uri_map_manager_get_class_mutex:
+ * 
+ * Get class mutex.
+ * 
+ * Returns: the class mutex of #AgsLv2UriMapManager
+ * 
+ * Since: 2.0.0
+ */
+pthread_mutex_t*
+ags_lv2_uri_map_manager_get_class_mutex()
+{
+  return(&ags_lv2_uri_map_manager_class_mutex);
+}
+
 void
 ags_lv2_uri_map_manager_destroy_data(gpointer data)
 {
@@ -158,20 +158,34 @@ ags_lv2_uri_map_manager_destroy_data(gpointer data)
  * 
  * Returns: %TRUE on success, otherwise %FALSE
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 gboolean
 ags_lv2_uri_map_manager_insert(AgsLv2UriMapManager *lv2_uri_map_manager,
 			       gchar *uri, GValue *id)
 {
+  pthread_mutex_t *lv2_uri_map_manager_mutex;
+
   if(!AGS_LV2_URI_MAP_MANAGER(lv2_uri_map_manager) ||
      uri == NULL ||
      id == NULL){
     return(FALSE);
   }
 
+  /* get lv2 uri map manager mutex */
+  pthread_mutex_lock(ags_lv2_uri_map_manager_get_class_mutex());
+  
+  lv2_uri_map_manager_mutex = lv2_uri_map_manager->obj_mutex;
+  
+  pthread_mutex_unlock(ags_lv2_uri_map_manager_get_class_mutex());
+
+  /*  */
+  pthread_mutex_lock(lv2_uri_map_manager_mutex);
+
   g_hash_table_insert(lv2_uri_map_manager->uri_map,
 		      uri, id);
+
+  pthread_mutex_unlock(lv2_uri_map_manager_mutex);
 
   return(TRUE);
 }
@@ -185,7 +199,7 @@ ags_lv2_uri_map_manager_insert(AgsLv2UriMapManager *lv2_uri_map_manager,
  *
  * Returns: %TRUE as successfully removed, otherwise %FALSE
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 gboolean
 ags_lv2_uri_map_manager_remove(AgsLv2UriMapManager *lv2_uri_map_manager,
@@ -193,10 +207,22 @@ ags_lv2_uri_map_manager_remove(AgsLv2UriMapManager *lv2_uri_map_manager,
 {
   GValue *id;
 
+  pthread_mutex_t *lv2_uri_map_manager_mutex;
+
   if(!AGS_LV2_URI_MAP_MANAGER(lv2_uri_map_manager)){
     return(FALSE);
   }
   
+  /* get lv2 uri map manager mutex */
+  pthread_mutex_lock(ags_lv2_uri_map_manager_get_class_mutex());
+  
+  lv2_uri_map_manager_mutex = lv2_uri_map_manager->obj_mutex;
+  
+  pthread_mutex_unlock(ags_lv2_uri_map_manager_get_class_mutex());
+
+  /*  */
+  pthread_mutex_lock(lv2_uri_map_manager_mutex);
+
   id = g_hash_table_lookup(lv2_uri_map_manager->uri_map,
 			   uri);
 
@@ -204,6 +230,8 @@ ags_lv2_uri_map_manager_remove(AgsLv2UriMapManager *lv2_uri_map_manager,
     g_hash_table_remove(lv2_uri_map_manager->uri_map,
 			uri);
   }
+
+  pthread_mutex_unlock(lv2_uri_map_manager_mutex);
   
   return(TRUE);
 }
@@ -217,7 +245,7 @@ ags_lv2_uri_map_manager_remove(AgsLv2UriMapManager *lv2_uri_map_manager,
  *
  * Returns: the id on success, else G_MAXUINT32
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 GValue*
 ags_lv2_uri_map_manager_lookup(AgsLv2UriMapManager *lv2_uri_map_manager,
@@ -225,9 +253,21 @@ ags_lv2_uri_map_manager_lookup(AgsLv2UriMapManager *lv2_uri_map_manager,
 {
   GValue *value;
 
+  pthread_mutex_t *lv2_uri_map_manager_mutex;
+
   if(!AGS_LV2_URI_MAP_MANAGER(lv2_uri_map_manager)){
     return(NULL);
   }
+
+  /* get lv2 uri map manager mutex */
+  pthread_mutex_lock(ags_lv2_uri_map_manager_get_class_mutex());
+  
+  lv2_uri_map_manager_mutex = lv2_uri_map_manager->obj_mutex;
+  
+  pthread_mutex_unlock(ags_lv2_uri_map_manager_get_class_mutex());
+
+  /*  */
+  pthread_mutex_lock(lv2_uri_map_manager_mutex);
 
   value = (GValue *) g_hash_table_lookup(lv2_uri_map_manager->uri_map,
 					 uri);
@@ -248,6 +288,8 @@ ags_lv2_uri_map_manager_lookup(AgsLv2UriMapManager *lv2_uri_map_manager,
 
     lv2_uri_map_manager->id_counter++;
   }
+
+  pthread_mutex_unlock(lv2_uri_map_manager_mutex);
   
   return(value);
 }
@@ -309,7 +351,7 @@ ags_lv2_uri_map_manager_uri_to_id(LV2_URI_Map_Callback_Data callback_data,
  *
  * Returns: an instance of #AgsLv2UriMapManager
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsLv2UriMapManager*
 ags_lv2_uri_map_manager_get_instance()
@@ -336,7 +378,7 @@ ags_lv2_uri_map_manager_get_instance()
  *
  * Returns: a new #AgsLv2UriMapManager
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsLv2UriMapManager*
 ags_lv2_uri_map_manager_new()

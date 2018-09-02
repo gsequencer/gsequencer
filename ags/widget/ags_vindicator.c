@@ -195,11 +195,11 @@ ags_vindicator_draw(AgsVIndicator *indicator)
 /**
  * ags_vindicator_new:
  *
- * Creates an #AgsVIndicator.
+ * Create a new instance of #AgsVIndicator.
  *
- * Returns: a new #AgsVIndicator
+ * Returns: the new #AgsVIndicator
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsVIndicator*
 ags_vindicator_new()

@@ -197,7 +197,7 @@ ags_hindicator_draw(AgsHIndicator *indicator)
  *
  * Returns: a new #AgsHIndicator
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsHIndicator*
 ags_hindicator_new()

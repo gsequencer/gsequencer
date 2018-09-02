@@ -109,7 +109,7 @@ ags_notebook_class_init(AgsNotebookClass *notebook)
    *
    * The prefix used to do enumerated labels.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_string("prefix",
 				   "enumeration prefix",
@@ -482,7 +482,7 @@ ags_notebook_scroll_next_callback(GtkWidget *button,
  * 
  * Returns: the newly allocated #AgsNotebookTab-struct
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsNotebookTab*
 ags_notebook_tab_alloc()
@@ -503,7 +503,7 @@ ags_notebook_tab_alloc()
  * 
  * Free @tab's memory.
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_notebook_tab_free(AgsNotebookTab *tab)
@@ -525,7 +525,7 @@ ags_notebook_tab_free(AgsNotebookTab *tab)
  * 
  * Set the data field of #AgsNotebookTab-struct at @position.
  * 
- * Since: 1.2.0
+ * Since: 2.0.0
  */
 void
 ags_notebook_tab_set_data(AgsNotebook *notebook,
@@ -557,7 +557,7 @@ ags_notebook_tab_set_data(AgsNotebook *notebook,
  * 
  * Returns: the position as integer
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 gint
 ags_notebook_tab_index(AgsNotebook *notebook,
@@ -592,7 +592,7 @@ ags_notebook_tab_index(AgsNotebook *notebook,
  * 
  * Returns: the position of next active tab as integer
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 gint
 ags_notebook_next_active_tab(AgsNotebook *notebook,
@@ -637,7 +637,7 @@ ags_notebook_next_active_tab(AgsNotebook *notebook,
  * 
  * Returns: the position as integer
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 gint
 ags_notebook_add_tab(AgsNotebook *notebook)
@@ -708,7 +708,7 @@ ags_notebook_add_tab(AgsNotebook *notebook)
  * 
  * Returns: the position as integer
  * 
- * Since: 1.2.0
+ * Since: 2.0.0
  */
 gint
 ags_notebook_add_tab_with_label(AgsNotebook *notebook,
@@ -743,7 +743,7 @@ ags_notebook_add_tab_with_label(AgsNotebook *notebook,
  * 
  * Insert a new #AgsNotebookTab-struct to @notebook.
  * 
- * Since: 1.2.0
+ * Since: 2.0.0
  */
 void
 ags_notebook_insert_tab(AgsNotebook *notebook,
@@ -796,7 +796,7 @@ ags_notebook_insert_tab(AgsNotebook *notebook,
  * 
  * Insert a new #AgsNotebookTab-struct to @notebook at @position and set specified @label.
  * 
- * Since: 1.2.0
+ * Since: 2.0.0
  */
 void
 ags_notebook_insert_tab_with_label(AgsNotebook *notebook,
@@ -829,7 +829,7 @@ ags_notebook_insert_tab_with_label(AgsNotebook *notebook,
  * 
  * Remove #AgsNotebookTab at @position.
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_notebook_remove_tab(AgsNotebook *notebook,
@@ -868,7 +868,7 @@ ags_notebook_remove_tab(AgsNotebook *notebook,
  * 
  * Remove #AgsNotebookTab assigned with @data.
  * 
- * Since: 1.2.0
+ * Since: 2.0.0
  */
 void
 ags_notebook_remove_tab_with_data(AgsNotebook *notebook,
@@ -893,7 +893,7 @@ ags_notebook_remove_tab_with_data(AgsNotebook *notebook,
  *
  * Returns: a new #AgsNotebook
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsNotebook*
 ags_notebook_new()

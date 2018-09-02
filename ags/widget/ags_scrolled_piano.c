@@ -106,7 +106,7 @@ ags_scrolled_piano_class_init(AgsScrolledPianoClass *scrolled_piano)
    *
    * The margin top.
    * 
-   * Since: 1.2.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_uint("margin-top",
 				 "margin top",
@@ -124,7 +124,7 @@ ags_scrolled_piano_class_init(AgsScrolledPianoClass *scrolled_piano)
    *
    * The margin bottom.
    * 
-   * Since: 1.2.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_uint("margin-bottom",
 				 "margin bottom",
@@ -142,7 +142,7 @@ ags_scrolled_piano_class_init(AgsScrolledPianoClass *scrolled_piano)
    *
    * The margin left.
    * 
-   * Since: 1.2.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_uint("margin-left",
 				 "margin left",
@@ -160,7 +160,7 @@ ags_scrolled_piano_class_init(AgsScrolledPianoClass *scrolled_piano)
    *
    * The margin right.
    * 
-   * Since: 1.2.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_uint("margin-right",
 				 "margin right",
@@ -365,7 +365,7 @@ ags_scrolled_piano_size_request(GtkWidget *widget,
  *
  * Returns: a new #AgsScrolledPiano
  *
- * Since: 1.2.0
+ * Since: 2.0.0
  */
 AgsScrolledPiano*
 ags_scrolled_piano_new()

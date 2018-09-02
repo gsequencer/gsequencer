@@ -29,7 +29,6 @@
 #include <ags/i18n.h>
 
 void ags_thread_pool_class_init(AgsThreadPoolClass *thread_pool);
-void ags_thread_pool_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_thread_pool_init(AgsThreadPool *thread_pool);
 void ags_thread_pool_set_property(GObject *gobject,
 				  guint prop_id,
@@ -39,8 +38,6 @@ void ags_thread_pool_get_property(GObject *gobject,
 				  guint prop_id,
 				  GValue *value,
 				  GParamSpec *param_spec);
-void ags_thread_pool_connect(AgsConnectable *connectable);
-void ags_thread_pool_disconnect(AgsConnectable *connectable);
 void ags_thread_pool_finalize(GObject *gobject);
 
 void* ags_thread_pool_creation_thread(void *ptr);
@@ -90,20 +87,10 @@ ags_thread_pool_get_type()
       (GInstanceInitFunc) ags_thread_pool_init,
     };
 
-    static const GInterfaceInfo ags_connectable_interface_info = {
-      (GInterfaceInitFunc) ags_thread_pool_connectable_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-
     ags_type_thread_pool = g_type_register_static(G_TYPE_OBJECT,
 						  "AgsThreadPool",
 						  &ags_thread_pool_info,
 						  0);
-
-    g_type_add_interface_static(ags_type_thread_pool,
-				AGS_TYPE_CONNECTABLE,
-				&ags_connectable_interface_info);
   }
 
   return (ags_type_thread_pool);
@@ -131,7 +118,7 @@ ags_thread_pool_class_init(AgsThreadPoolClass *thread_pool)
    *
    * The maximum amount of unused threads available.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_uint("max-unused-threads",
 				 i18n_pspec("maximum unused threads"),
@@ -148,7 +135,7 @@ ags_thread_pool_class_init(AgsThreadPoolClass *thread_pool)
    *
    * The maximum amount of threads available.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_uint("max-threads",
 				 i18n_pspec("maximum threads to use"),
@@ -170,7 +157,7 @@ ags_thread_pool_class_init(AgsThreadPoolClass *thread_pool)
    *
    * The ::start() signal is invoked in order to started the pool.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   thread_pool_signals[START] =
     g_signal_new("start",
@@ -180,13 +167,6 @@ ags_thread_pool_class_init(AgsThreadPoolClass *thread_pool)
 		 NULL, NULL,
 		 g_cclosure_marshal_VOID__VOID,
 		 G_TYPE_NONE, 0);
-}
-
-void
-ags_thread_pool_connectable_interface_init(AgsConnectableInterface *connectable)
-{
-  connectable->connect = ags_thread_pool_connect;
-  connectable->disconnect = ags_thread_pool_disconnect;
 }
 
 void
@@ -347,18 +327,6 @@ ags_thread_pool_get_property(GObject *gobject,
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
   }
-}
-
-void
-ags_thread_pool_connect(AgsConnectable *connectable)
-{
-  /* empty */
-}
-
-void
-ags_thread_pool_disconnect(AgsConnectable *connectable)
-{
-  /* empty */
 }
 
 void
@@ -559,7 +527,7 @@ ags_thread_pool_creation_thread(void *ptr)
  *
  * Returns: a new #AgsThread
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */    
 AgsThread*
 ags_thread_pool_pull(AgsThreadPool *thread_pool)
@@ -692,7 +660,7 @@ ags_thread_pool_real_start(AgsThreadPool *thread_pool)
  *
  * Start the thread pool.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_thread_pool_start(AgsThreadPool *thread_pool)
@@ -713,7 +681,7 @@ ags_thread_pool_start(AgsThreadPool *thread_pool)
  *
  * Returns: the new #AgsThreadPool
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsThreadPool*
 ags_thread_pool_new(AgsThread *parent)

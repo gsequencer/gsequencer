@@ -80,11 +80,11 @@ ags_vled_array_init(AgsVLedArray *vled_array)
 /**
  * ags_vled_array_new:
  *
- * Creates an #AgsVLedArray.
+ * Create a new instance of #AgsVLedArray.
  *
- * Returns: a new #AgsVLedArray
+ * Returns: the new #AgsVLedArray
  *
- * Since: 1.0.0.7
+ * Since: 2.0.0
  */
 AgsVLedArray*
 ags_vled_array_new()

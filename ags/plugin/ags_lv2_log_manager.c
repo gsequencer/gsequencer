@@ -22,10 +22,7 @@
 #include <ags/object/ags_connectable.h>
 
 void ags_lv2_log_manager_class_init(AgsLv2LogManagerClass *lv2_log_manager);
-void ags_lv2_log_manager_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_lv2_log_manager_init(AgsLv2LogManager *lv2_log_manager);
-void ags_lv2_log_manager_connect(AgsConnectable *connectable);
-void ags_lv2_log_manager_disconnect(AgsConnectable *connectable);
 void ags_lv2_log_manager_finalize(GObject *gobject);
 
 /**
@@ -60,20 +57,10 @@ ags_lv2_log_manager_get_type()
       (GInstanceInitFunc) ags_lv2_log_manager_init,
     };
 
-    const GInterfaceInfo ags_connectable_interface_info = {
-      (GInterfaceInitFunc) ags_lv2_log_manager_connectable_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-
     ags_type_lv2_log_manager = g_type_register_static(G_TYPE_OBJECT,
 						      "AgsLv2LogManager",
 						      &ags_lv2_log_manager_info,
 						      0);
-
-    g_type_add_interface_static(ags_type_lv2_log_manager,
-				AGS_TYPE_CONNECTABLE,
-				&ags_connectable_interface_info);
   }
   
   return(ags_type_lv2_log_manager);
@@ -94,26 +81,7 @@ ags_lv2_log_manager_class_init(AgsLv2LogManagerClass *lv2_log_manager)
 }
 
 void
-ags_lv2_log_manager_connectable_interface_init(AgsConnectableInterface *connectable)
-{
-  connectable->connect = ags_lv2_log_manager_connect;
-  connectable->disconnect = ags_lv2_log_manager_disconnect;
-}
-
-void
 ags_lv2_log_manager_init(AgsLv2LogManager *lv2_log_manager)
-{
-  /* empty */
-}
-
-void
-ags_lv2_log_manager_connect(AgsConnectable *connectable)
-{
-  /* empty */
-}
-
-void
-ags_lv2_log_manager_disconnect(AgsConnectable *connectable)
 {
   /* empty */
 }
@@ -137,6 +105,8 @@ ags_lv2_log_manager_finalize(GObject *gobject)
  * Print formatted.
  * 
  * Returns: 0
+ *
+ * Since: 2.0.0
  */
 int
 ags_lv2_log_manager_printf(LV2_Log_Handle handle,
@@ -166,7 +136,7 @@ ags_lv2_log_manager_printf(LV2_Log_Handle handle,
  *
  * Returns: 0
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 int
 ags_lv2_log_manager_vprintf(LV2_Log_Handle handle,
@@ -189,7 +159,7 @@ ags_lv2_log_manager_vprintf(LV2_Log_Handle handle,
  *
  * Returns: an instance of #AgsLv2LogManager
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsLv2LogManager*
 ags_lv2_log_manager_get_instance()
@@ -210,7 +180,7 @@ ags_lv2_log_manager_get_instance()
  *
  * Returns: a new #AgsLv2LogManager
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsLv2LogManager*
 ags_lv2_log_manager_new()

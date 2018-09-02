@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015,2017 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -26,10 +26,7 @@
 #include <string.h>
 
 void ags_lv2_option_manager_class_init(AgsLv2OptionManagerClass *lv2_option_manager);
-void ags_lv2_option_manager_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_lv2_option_manager_init(AgsLv2OptionManager *lv2_option_manager);
-void ags_lv2_option_manager_connect(AgsConnectable *connectable);
-void ags_lv2_option_manager_disconnect(AgsConnectable *connectable);
 void ags_lv2_option_manager_finalize(GObject *gobject);
 
 void ags_lv2_option_manager_real_get_option(AgsLv2OptionManager *option_manager,
@@ -65,6 +62,8 @@ enum{
 static gpointer ags_lv2_option_manager_parent_class = NULL;
 static guint lv2_option_manager_signals[LAST_SIGNAL];
 
+static pthread_mutex_t ags_lv2_option_manager_class_mutex = PTHREAD_MUTEX_INITIALIZER;
+
 AgsLv2OptionManager *ags_lv2_option_manager = NULL;
 
 GType
@@ -85,20 +84,10 @@ ags_lv2_option_manager_get_type()
       (GInstanceInitFunc) ags_lv2_option_manager_init,
     };
 
-    const GInterfaceInfo ags_connectable_interface_info = {
-      (GInterfaceInitFunc) ags_lv2_option_manager_connectable_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-
     ags_type_lv2_option_manager = g_type_register_static(G_TYPE_OBJECT,
 							 "AgsLv2OptionManager",
 							 &ags_lv2_option_manager_info,
 							 0);
-
-    g_type_add_interface_static(ags_type_lv2_option_manager,
-				AGS_TYPE_CONNECTABLE,
-				&ags_connectable_interface_info);
   }
   
   return(ags_type_lv2_option_manager);
@@ -131,7 +120,7 @@ ags_lv2_option_manager_class_init(AgsLv2OptionManagerClass *lv2_option_manager)
    *
    * The ::get-option signal gets options of the manager.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   lv2_option_manager_signals[GET_OPTION] =
     g_signal_new("get-option",
@@ -154,7 +143,7 @@ ags_lv2_option_manager_class_init(AgsLv2OptionManagerClass *lv2_option_manager)
    *
    * The ::set-option signal sets options for the manager.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   lv2_option_manager_signals[SET_OPTION] =
     g_signal_new("set-option",
@@ -170,31 +159,27 @@ ags_lv2_option_manager_class_init(AgsLv2OptionManagerClass *lv2_option_manager)
 }
 
 void
-ags_lv2_option_manager_connectable_interface_init(AgsConnectableInterface *connectable)
-{
-  connectable->connect = ags_lv2_option_manager_connect;
-  connectable->disconnect = ags_lv2_option_manager_disconnect;
-}
-
-void
 ags_lv2_option_manager_init(AgsLv2OptionManager *lv2_option_manager)
 {
+  /* lv2 option manager mutex */
+  lv2_option_manager->obj_mutexattr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
+  pthread_mutexattr_init(lv2_option_manager->obj_mutexattr);
+  pthread_mutexattr_settype(lv2_option_manager->obj_mutexattr,
+			    PTHREAD_MUTEX_RECURSIVE);
+
+#ifdef __linux__
+  pthread_mutexattr_setprotocol(lv2_option_manager->obj_mutexattr,
+				PTHREAD_PRIO_INHERIT);
+#endif
+
+  lv2_option_manager->obj_mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
+  pthread_mutex_init(lv2_option_manager->obj_mutex,
+		     lv2_option_manager->obj_mutexattr);
+
   lv2_option_manager->ressource = g_hash_table_new_full(g_direct_hash, (GEqualFunc) ags_lv2_option_ressource_equal,
 							NULL,
 							(GDestroyNotify) ags_lv2_option_manager_destroy_data);
   g_hash_table_ref(lv2_option_manager->ressource);
-}
-
-void
-ags_lv2_option_manager_connect(AgsConnectable *connectable)
-{
-  /* empty */
-}
-
-void
-ags_lv2_option_manager_disconnect(AgsConnectable *connectable)
-{
-  /* empty */
 }
 
 void
@@ -210,8 +195,29 @@ ags_lv2_option_manager_finalize(GObject *gobject)
     ags_lv2_option_manager = NULL;
   }
 
+  pthread_mutex_destroy(lv2_option_manager->obj_mutex);
+  free(lv2_option_manager->obj_mutex);
+
+  pthread_mutexattr_destroy(lv2_option_manager->obj_mutexattr);
+  free(lv2_option_manager->obj_mutexattr);
+
   /* call parent */
   G_OBJECT_CLASS(ags_lv2_option_manager_parent_class)->finalize(gobject);  
+}
+
+/**
+ * ags_lv2_option_manager_get_class_mutex:
+ * 
+ * Get class mutex.
+ * 
+ * Returns: the class mutex of #AgsLv2_OptionManager
+ * 
+ * Since: 2.0.0
+ */
+pthread_mutex_t*
+ags_lv2_option_manager_get_class_mutex()
+{
+  return(&ags_lv2_option_manager_class_mutex);
 }
 
 void
@@ -225,6 +231,8 @@ ags_lv2_option_ressource_equal(gpointer a, gpointer b)
 {
   AgsLv2OptionRessource *lv2_option_ressource, *requested_lv2_option_ressource;
 
+  pthread_mutex_t *lv2_option_manager_mutex;
+
   if(a == NULL ||
      b == NULL){
     return(FALSE);
@@ -232,7 +240,7 @@ ags_lv2_option_ressource_equal(gpointer a, gpointer b)
   
   lv2_option_ressource = AGS_LV2_OPTION_RESSOURCE(a);
   requested_lv2_option_ressource = AGS_LV2_OPTION_RESSOURCE(b);
-  
+
   if(lv2_option_ressource->instance == requested_lv2_option_ressource->instance &&
      lv2_option_ressource->option != NULL &&
      requested_lv2_option_ressource->option != NULL &&
@@ -240,7 +248,7 @@ ags_lv2_option_ressource_equal(gpointer a, gpointer b)
      lv2_option_ressource->option->key == requested_lv2_option_ressource->option->key){
     return(TRUE);
   }
-
+    
   return(FALSE);
 }
 
@@ -256,7 +264,7 @@ ags_lv2_option_ressource_finder(gpointer key, gpointer value, gpointer user_data
   
   if(lv2_option_ressource->instance == requested_lv2_option_ressource->instance &&
      lv2_option_ressource->option->subject == requested_lv2_option_ressource->option->subject &&
-     lv2_option_ressource->option->key == requested_lv2_option_ressource->option->key){
+     lv2_option_ressource->option->key == requested_lv2_option_ressource->option->key){    
     return(TRUE);
   }
 
@@ -270,7 +278,7 @@ ags_lv2_option_ressource_finder(gpointer key, gpointer value, gpointer user_data
  * 
  * Returns: the newly created #AgsLv2OptionRessource-struct
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsLv2OptionRessource*
 ags_lv2_option_ressource_alloc()
@@ -304,20 +312,34 @@ ags_lv2_option_ressource_alloc()
  * 
  * Returns: %TRUE on success, otherwise %FALSE
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 gboolean
 ags_lv2_option_manager_ressource_insert(AgsLv2OptionManager *lv2_option_manager,
 					AgsLv2OptionRessource *lv2_option_ressource, gpointer data)
 {
+  pthread_mutex_t *lv2_option_manager_mutex;
+
   if(!AGS_IS_LV2_OPTION_MANAGER(lv2_option_manager) ||
      lv2_option_ressource == NULL ||
      data == NULL){
     return(FALSE);
   }
 
+  /* get lv2 option manager mutex */
+  pthread_mutex_lock(ags_lv2_option_manager_get_class_mutex());
+  
+  lv2_option_manager_mutex = lv2_option_manager->obj_mutex;
+  
+  pthread_mutex_unlock(ags_lv2_option_manager_get_class_mutex());
+
+  /*  */
+  pthread_mutex_lock(lv2_option_manager_mutex);
+
   g_hash_table_insert(lv2_option_manager->ressource,
 		      (gpointer) lv2_option_ressource, data);
+
+  pthread_mutex_unlock(lv2_option_manager_mutex);
 
   return(TRUE);
 }
@@ -331,7 +353,7 @@ ags_lv2_option_manager_ressource_insert(AgsLv2OptionManager *lv2_option_manager,
  *
  * Returns: %TRUE as successfully removed, otherwise %FALSE
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 gboolean
 ags_lv2_option_manager_ressource_remove(AgsLv2OptionManager *lv2_option_manager,
@@ -339,14 +361,28 @@ ags_lv2_option_manager_ressource_remove(AgsLv2OptionManager *lv2_option_manager,
 {
   gpointer data;
 
+  pthread_mutex_t *lv2_option_manager_mutex;
+
   if(!AGS_IS_LV2_OPTION_MANAGER(lv2_option_manager) ||
      lv2_option_ressource == NULL){
     return(FALSE);
   }
 
+  /* get lv2 option manager mutex */
+  pthread_mutex_lock(ags_lv2_option_manager_get_class_mutex());
+  
+  lv2_option_manager_mutex = lv2_option_manager->obj_mutex;
+  
+  pthread_mutex_unlock(ags_lv2_option_manager_get_class_mutex());
+
+  /*  */
+  pthread_mutex_lock(lv2_option_manager_mutex);
+
   g_hash_table_remove(lv2_option_manager->ressource,
 		      lv2_option_ressource);
   
+  pthread_mutex_unlock(lv2_option_manager_mutex);
+
   return(TRUE);
 }
 
@@ -360,7 +396,7 @@ ags_lv2_option_manager_ressource_remove(AgsLv2OptionManager *lv2_option_manager,
  *
  * Returns: the pointer on success, else NULL
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 gpointer
 ags_lv2_option_manager_ressource_lookup(AgsLv2OptionManager *lv2_option_manager,
@@ -370,10 +406,22 @@ ags_lv2_option_manager_ressource_lookup(AgsLv2OptionManager *lv2_option_manager,
   
   gpointer data, tmp;
 
+  pthread_mutex_t *lv2_option_manager_mutex;
+
   if(!AGS_IS_LV2_OPTION_MANAGER(lv2_option_manager) ||
      lv2_option_ressource == NULL){
     return(NULL);
   }
+
+  /* get lv2 option manager mutex */
+  pthread_mutex_lock(ags_lv2_option_manager_get_class_mutex());
+  
+  lv2_option_manager_mutex = lv2_option_manager->obj_mutex;
+  
+  pthread_mutex_unlock(ags_lv2_option_manager_get_class_mutex());
+
+  /*  */
+  pthread_mutex_lock(lv2_option_manager_mutex);
 
   key_start = 
     key = g_hash_table_get_keys(lv2_option_manager->ressource);
@@ -395,6 +443,8 @@ ags_lv2_option_manager_ressource_lookup(AgsLv2OptionManager *lv2_option_manager,
   }
   
   g_list_free(key_start);
+
+  pthread_mutex_unlock(lv2_option_manager_mutex);
   
   return(data);
 }
@@ -411,7 +461,7 @@ ags_lv2_option_manager_ressource_lookup(AgsLv2OptionManager *lv2_option_manager,
  *
  * Returns: %TRUE if ressource found, else %FALSE
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 gboolean
 ags_lv2_option_manager_ressource_lookup_extended(AgsLv2OptionManager *lv2_option_manager,
@@ -421,6 +471,8 @@ ags_lv2_option_manager_ressource_lookup_extended(AgsLv2OptionManager *lv2_option
   GList *key, *key_start;
   
   gpointer data, tmp;
+
+  pthread_mutex_t *lv2_option_manager_mutex;
 
   if(orig_key != NULL){
     *orig_key = NULL;
@@ -434,6 +486,16 @@ ags_lv2_option_manager_ressource_lookup_extended(AgsLv2OptionManager *lv2_option
      lv2_option_ressource == NULL){
     return(FALSE);
   }
+
+  /* get lv2 option manager mutex */
+  pthread_mutex_lock(ags_lv2_option_manager_get_class_mutex());
+  
+  lv2_option_manager_mutex = lv2_option_manager->obj_mutex;
+  
+  pthread_mutex_unlock(ags_lv2_option_manager_get_class_mutex());
+
+  /*  */
+  pthread_mutex_lock(lv2_option_manager_mutex);
 
   key_start = 
     key = g_hash_table_get_keys(lv2_option_manager->ressource);
@@ -466,6 +528,8 @@ ags_lv2_option_manager_ressource_lookup_extended(AgsLv2OptionManager *lv2_option
   
   g_list_free(key_start);
 
+  pthread_mutex_unlock(lv2_option_manager_mutex);
+
   return(((data != NULL) ? TRUE: FALSE));  
 }
 
@@ -481,7 +545,7 @@ ags_lv2_option_manager_real_get_option(AgsLv2OptionManager *lv2_option_manager,
   gpointer key_ptr, value_ptr;
 
   uint32_t *ret;
-  
+
   /* initial set to success */
   ret = (uint32_t *) retval;
   
@@ -537,7 +601,7 @@ ags_lv2_option_manager_real_get_option(AgsLv2OptionManager *lv2_option_manager,
  * 
  * Get option.
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_lv2_option_manager_get_option(AgsLv2OptionManager *lv2_option_manager,
@@ -634,7 +698,7 @@ ags_lv2_option_manager_real_set_option(AgsLv2OptionManager *lv2_option_manager,
  * 
  * Set option.
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_lv2_option_manager_set_option(AgsLv2OptionManager *lv2_option_manager,
@@ -659,7 +723,7 @@ ags_lv2_option_manager_set_option(AgsLv2OptionManager *lv2_option_manager,
  * 
  * The LV2 options interface's get method.
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 uint32_t
 ags_lv2_option_manager_lv2_options_get(LV2_Handle instance,
@@ -702,7 +766,7 @@ ags_lv2_option_manager_lv2_options_get(LV2_Handle instance,
  * 
  * The LV2 options interface's set method.
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 uint32_t
 ags_lv2_option_manager_lv2_options_set(LV2_Handle instance,
@@ -745,7 +809,7 @@ ags_lv2_option_manager_lv2_options_set(LV2_Handle instance,
  *
  * Returns: an instance of #AgsLv2OptionManager
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsLv2OptionManager*
 ags_lv2_option_manager_get_instance()
@@ -772,7 +836,7 @@ ags_lv2_option_manager_get_instance()
  *
  * Returns: a new #AgsLv2OptionManager
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsLv2OptionManager*
 ags_lv2_option_manager_new()

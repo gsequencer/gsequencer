@@ -134,7 +134,7 @@ ags_lv2ui_plugin_class_init(AgsLv2uiPluginClass *lv2ui_plugin)
    *
    * The assigned GUI URI.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_string("gui-uri",
 				   "GUI URI of the plugin",
@@ -150,7 +150,7 @@ ags_lv2ui_plugin_class_init(AgsLv2uiPluginClass *lv2ui_plugin)
    *
    * The assigned manifest.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("manifest",
 				   "manifest of the plugin",
@@ -166,7 +166,7 @@ ags_lv2ui_plugin_class_init(AgsLv2uiPluginClass *lv2ui_plugin)
    *
    * The assigned GUI turtle.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("gui-turtle",
 				   "GUI turtle of the plugin",
@@ -182,7 +182,7 @@ ags_lv2ui_plugin_class_init(AgsLv2uiPluginClass *lv2ui_plugin)
    *
    * The assigned LV2 plugin.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("lv2-plugin",
 				   "LV2 plugin of the plugin",
@@ -220,7 +220,16 @@ ags_lv2ui_plugin_set_property(GObject *gobject,
 {
   AgsLv2uiPlugin *lv2ui_plugin;
 
+  pthread_mutex_t *base_plugin_mutex;
+
   lv2ui_plugin = AGS_LV2UI_PLUGIN(gobject);
+
+  /* get base plugin mutex */
+  pthread_mutex_lock(ags_base_plugin_get_class_mutex());
+  
+  base_plugin_mutex = AGS_BASE_PLUGIN(gobject)->obj_mutex;
+  
+  pthread_mutex_unlock(ags_base_plugin_get_class_mutex());
 
   switch(prop_id){
   case PROP_GUI_URI:
@@ -229,7 +238,11 @@ ags_lv2ui_plugin_set_property(GObject *gobject,
 
       gui_uri = (gchar *) g_value_get_string(value);
 
+      pthread_mutex_lock(base_plugin_mutex);
+
       if(lv2ui_plugin->gui_uri == gui_uri){
+	pthread_mutex_unlock(base_plugin_mutex);
+
 	return;
       }
       
@@ -238,6 +251,8 @@ ags_lv2ui_plugin_set_property(GObject *gobject,
       }
 
       lv2ui_plugin->gui_uri = g_strdup(gui_uri);
+
+      pthread_mutex_unlock(base_plugin_mutex);
     }
     break;
   case PROP_MANIFEST:
@@ -246,7 +261,11 @@ ags_lv2ui_plugin_set_property(GObject *gobject,
 
       manifest = (AgsTurtle *) g_value_get_object(value);
 
+      pthread_mutex_lock(base_plugin_mutex);
+
       if(lv2ui_plugin->manifest == manifest){
+	pthread_mutex_unlock(base_plugin_mutex);
+
 	return;
       }
 
@@ -259,6 +278,8 @@ ags_lv2ui_plugin_set_property(GObject *gobject,
       }
       
       lv2ui_plugin->manifest = manifest;
+
+      pthread_mutex_unlock(base_plugin_mutex);
     }
     break;
   case PROP_GUI_TURTLE:
@@ -267,7 +288,11 @@ ags_lv2ui_plugin_set_property(GObject *gobject,
 
       gui_turtle = (AgsTurtle *) g_value_get_object(value);
 
+      pthread_mutex_lock(base_plugin_mutex);
+
       if(lv2ui_plugin->gui_turtle == gui_turtle){
+	pthread_mutex_unlock(base_plugin_mutex);
+
 	return;
       }
 
@@ -280,6 +305,8 @@ ags_lv2ui_plugin_set_property(GObject *gobject,
       }
       
       lv2ui_plugin->gui_turtle = gui_turtle;
+
+      pthread_mutex_unlock(base_plugin_mutex);
     }
     break;
   case PROP_LV2_PLUGIN:
@@ -288,7 +315,11 @@ ags_lv2ui_plugin_set_property(GObject *gobject,
 
       lv2_plugin = (GObject *) g_value_get_object(value);
 
+      pthread_mutex_lock(base_plugin_mutex);
+
       if(lv2ui_plugin->lv2_plugin == lv2_plugin){
+	pthread_mutex_unlock(base_plugin_mutex);
+
 	return;
       }
 
@@ -301,6 +332,8 @@ ags_lv2ui_plugin_set_property(GObject *gobject,
       }
       
       lv2ui_plugin->lv2_plugin = lv2_plugin;
+
+      pthread_mutex_unlock(base_plugin_mutex);
     }
     break;
   default:
@@ -317,27 +350,52 @@ ags_lv2ui_plugin_get_property(GObject *gobject,
 {
   AgsLv2uiPlugin *lv2ui_plugin;
 
+  pthread_mutex_t *base_plugin_mutex;
+
   lv2ui_plugin = AGS_LV2UI_PLUGIN(gobject);
+
+  /* get base plugin mutex */
+  pthread_mutex_lock(ags_base_plugin_get_class_mutex());
+  
+  base_plugin_mutex = AGS_BASE_PLUGIN(gobject)->obj_mutex;
+  
+  pthread_mutex_unlock(ags_base_plugin_get_class_mutex());
 
   switch(prop_id){
   case PROP_GUI_URI:
     {
+      pthread_mutex_lock(base_plugin_mutex);
+
       g_value_set_string(value, lv2ui_plugin->gui_uri);
+
+      pthread_mutex_unlock(base_plugin_mutex);
     }
     break;
   case PROP_MANIFEST:
     {
+      pthread_mutex_lock(base_plugin_mutex);
+
       g_value_set_object(value, lv2ui_plugin->manifest);
+
+      pthread_mutex_unlock(base_plugin_mutex);
     }
     break;
   case PROP_GUI_TURTLE:
     {
+      pthread_mutex_lock(base_plugin_mutex);
+
       g_value_set_object(value, lv2ui_plugin->gui_turtle);
+
+      pthread_mutex_unlock(base_plugin_mutex);
     }
     break;
   case PROP_LV2_PLUGIN:
     {
+      pthread_mutex_lock(base_plugin_mutex);
+
       g_value_set_object(value, lv2ui_plugin->lv2_plugin);
+
+      pthread_mutex_unlock(base_plugin_mutex);
     }
     break;
   default:
@@ -415,7 +473,7 @@ ags_lv2ui_plugin_load_plugin(AgsBasePlugin *base_plugin)
  * 
  * Returns: the next matching #GList-struct
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 GList*
 ags_lv2ui_plugin_find_gui_uri(GList *lv2ui_plugin,
@@ -450,10 +508,14 @@ ags_lv2ui_plugin_find_gui_uri(GList *lv2ui_plugin,
  *
  * Returns: a new #AgsLv2uiPlugin
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsLv2uiPlugin*
-ags_lv2ui_plugin_new(AgsTurtle *gui_turtle, gchar *filename, gchar *effect, gchar *gui_uri, guint effect_index)
+ags_lv2ui_plugin_new(AgsTurtle *gui_turtle,
+		     gchar *filename,
+		     gchar *effect,
+		     gchar *gui_uri,
+		     guint effect_index)
 {
   AgsLv2uiPlugin *lv2ui_plugin;
 

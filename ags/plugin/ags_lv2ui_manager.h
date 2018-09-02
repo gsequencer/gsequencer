@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -47,6 +47,9 @@ struct _AgsLv2uiManager
 {
   GObject gobject;
 
+  pthread_mutex_t *obj_mutex;
+  pthread_mutexattr_t *obj_mutexattr;
+
   GList *lv2ui_plugin_blacklist;
   GList *lv2ui_plugin;
 };
@@ -57,6 +60,8 @@ struct _AgsLv2uiManagerClass
 };
 
 GType ags_lv2ui_manager_get_type(void);
+
+pthread_mutex_t* ags_lv2ui_manager_get_class_mutex();
 
 gchar** ags_lv2ui_manager_get_default_path();
 void ags_lv2ui_manager_set_default_path(gchar** default_path);

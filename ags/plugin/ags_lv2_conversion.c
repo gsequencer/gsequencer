@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2016 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -106,6 +106,111 @@ ags_lv2_conversion_finalize(GObject *gobject)
   /* empty */
 }
 
+/**
+ * ags_lv2_conversion_test_flags:
+ * @lv2_conversion: the #AgsLv2Conversion
+ * @flags: the flags
+ * 
+ * Test @flags to be set on @recall.
+ * 
+ * Returns: %TRUE if flags are set, else %FALSE
+ * 
+ * Since: 2.0.0
+ */
+gboolean
+ags_lv2_conversion_test_flags(AgsLv2Conversion *lv2_conversion, guint flags)
+{
+  gboolean retval;
+  
+  pthread_mutex_t *conversion_mutex;
+
+  if(!AGS_IS_LV2_CONVERSION(lv2_conversion)){
+    return(FALSE);
+  }
+  
+  /* get base plugin mutex */
+  pthread_mutex_lock(ags_conversion_get_class_mutex());
+  
+  conversion_mutex = AGS_CONVERSION(lv2_conversion)->obj_mutex;
+  
+  pthread_mutex_unlock(ags_conversion_get_class_mutex());
+
+  /* test flags */
+  pthread_mutex_lock(conversion_mutex);
+
+  retval = ((flags & (lv2_conversion->flags)) != 0) ? TRUE: FALSE;
+  
+  pthread_mutex_unlock(conversion_mutex);
+
+  return(retval);
+}
+
+/**
+ * ags_lv2_conversion_set_flags:
+ * @lv2_conversion: the #AgsLv2Conversion
+ * @flags: the flags
+ *
+ * Set flags.
+ * 
+ * Since: 2.0.0
+ */
+void
+ags_lv2_conversion_set_flags(AgsLv2Conversion *lv2_conversion, guint flags)
+{
+  pthread_mutex_t *conversion_mutex;
+
+  if(!AGS_IS_LV2_CONVERSION(lv2_conversion)){
+    return;
+  }
+  
+  /* get base plugin mutex */
+  pthread_mutex_lock(ags_conversion_get_class_mutex());
+  
+  conversion_mutex = AGS_CONVERSION(lv2_conversion)->obj_mutex;
+  
+  pthread_mutex_unlock(ags_conversion_get_class_mutex());
+
+  /* set flags */
+  pthread_mutex_lock(conversion_mutex);
+
+  lv2_conversion->flags |= flags;
+  
+  pthread_mutex_unlock(conversion_mutex);
+}
+
+/**
+ * ags_lv2_conversion_unset_flags:
+ * @lv2_conversion: the #AgsLv2Conversion
+ * @flags: the flags
+ *
+ * Unset flags.
+ * 
+ * Since: 2.0.0
+ */
+void
+ags_lv2_conversion_unset_flags(AgsLv2Conversion *lv2_conversion, guint flags)
+{
+  pthread_mutex_t *conversion_mutex;
+
+  if(!AGS_IS_LV2_CONVERSION(lv2_conversion)){
+    return;
+  }
+  
+  /* get base plugin mutex */
+  pthread_mutex_lock(ags_conversion_get_class_mutex());
+  
+  conversion_mutex = AGS_CONVERSION(lv2_conversion)->obj_mutex;
+  
+  pthread_mutex_unlock(ags_conversion_get_class_mutex());
+
+  /* unset flags */
+  pthread_mutex_lock(conversion_mutex);
+
+  lv2_conversion->flags &= (~flags);
+  
+  pthread_mutex_unlock(conversion_mutex);
+}
+
 gdouble
 ags_lv2_conversion_convert(AgsConversion *conversion,
 			   gdouble value,
@@ -116,11 +221,11 @@ ags_lv2_conversion_convert(AgsConversion *conversion,
   lv2_conversion = AGS_LV2_CONVERSION(conversion);
 
   if(reverse){
-    if((AGS_LV2_CONVERSION_LOGARITHMIC & (lv2_conversion->flags)) != 0){
+    if(ags_lv2_conversion_test_flags(lv2_conversion, AGS_LV2_CONVERSION_LOGARITHMIC)){
       value = log(value);
     }
   }else{
-    if((AGS_LV2_CONVERSION_LOGARITHMIC & (lv2_conversion->flags)) != 0){
+    if(ags_lv2_conversion_test_flags(lv2_conversion, AGS_LV2_CONVERSION_LOGARITHMIC)){
       value = exp(value);
     }
   }
@@ -131,11 +236,11 @@ ags_lv2_conversion_convert(AgsConversion *conversion,
 /**
  * ags_lv2_conversion_new:
  *
- * Instantiate a new #AgsLv2Conversion.
+ * Create a new instance of #AgsLv2Conversion.
  *
- * Returns: the new instance
+ * Returns: the new #AgsLv2Conversion
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsLv2Conversion*
 ags_lv2_conversion_new()

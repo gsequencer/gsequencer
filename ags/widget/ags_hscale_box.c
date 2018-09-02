@@ -79,7 +79,7 @@ ags_hscale_box_init(AgsHScaleBox *hscale_box)
  * 
  * Returns: the new #AgsHScaleBox instance
  * 
- * Since: 1.3.0
+ * Since: 2.0.0
  */
 AgsHScaleBox*
 ags_hscale_box_new()

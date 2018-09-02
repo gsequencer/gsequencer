@@ -160,7 +160,7 @@ ags_thread_application_context_class_init(AgsThreadApplicationContextClass *thre
    *
    * The assigned thread pool.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("autosave-thread",
 				   i18n_pspec("thread pool of thread application context"),
@@ -177,7 +177,7 @@ ags_thread_application_context_class_init(AgsThreadApplicationContextClass *thre
    *
    * The assigned thread pool.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("thread-pool",
 				   i18n_pspec("thread pool of thread application context"),
@@ -639,6 +639,15 @@ ags_thread_application_context_set_value_callback(AgsConfig *config, gchar *grou
   }
 }
 
+/**
+ * ags_thread_application_context_new:
+ *
+ * Create a new instance of #AgsThreadApplicationContext.
+ * 
+ * Returns: the new #AgsThreadApplicationContext
+ *
+ * Since: 2.0.0
+ */
 AgsThreadApplicationContext*
 ags_thread_application_context_new()
 {

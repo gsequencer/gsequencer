@@ -35,7 +35,6 @@
 #include <ags/i18n.h>
 
 void ags_returnable_thread_class_init(AgsReturnableThreadClass *returnable_thread);
-void ags_returnable_thread_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_returnable_thread_init(AgsReturnableThread *returnable_thread);
 void ags_returnable_thread_set_property(GObject *gobject,
 					guint prop_id,
@@ -45,8 +44,6 @@ void ags_returnable_thread_get_property(GObject *gobject,
 					guint prop_id,
 					GValue *value,
 					GParamSpec *param_spec);
-void ags_returnable_thread_connect(AgsConnectable *connectable);
-void ags_returnable_thread_disconnect(AgsConnectable *connectable);
 void ags_returnable_thread_dispose(GObject *gobject);
 void ags_returnable_thread_finalize(GObject *gobject);
 
@@ -78,7 +75,6 @@ enum{
 };
 
 static gpointer ags_returnable_thread_parent_class = NULL;
-static AgsConnectableInterface *ags_returnable_thread_parent_connectable_interface;
 static guint returnable_thread_signals[LAST_SIGNAL];
 
 GType
@@ -99,20 +95,10 @@ ags_returnable_thread_get_type()
       (GInstanceInitFunc) ags_returnable_thread_init,
     };
 
-    static const GInterfaceInfo ags_connectable_interface_info = {
-      (GInterfaceInitFunc) ags_returnable_thread_connectable_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-
     ags_type_returnable_thread = g_type_register_static(AGS_TYPE_THREAD,
 							"AgsReturnableThread",
 							&ags_returnable_thread_info,
 							0);
-
-    g_type_add_interface_static(ags_type_returnable_thread,
-				AGS_TYPE_CONNECTABLE,
-				&ags_connectable_interface_info);
   }
 
   return (ags_type_returnable_thread);
@@ -144,7 +130,7 @@ ags_returnable_thread_class_init(AgsReturnableThreadClass *returnable_thread)
    *
    * The assigned #AgsThreadPool providing default settings.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("thread-pool",
 				   i18n_pspec("assigned thread pool"),
@@ -174,7 +160,7 @@ ags_returnable_thread_class_init(AgsReturnableThreadClass *returnable_thread)
    * The ::safe-run is invoked durin AgsThread::run as
    * a context safe wrapper.
    *
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   returnable_thread_signals[SAFE_RUN] =
     g_signal_new("safe-run",
@@ -185,15 +171,6 @@ ags_returnable_thread_class_init(AgsReturnableThreadClass *returnable_thread)
 		 g_cclosure_marshal_VOID__VOID,
 		 G_TYPE_NONE, 0);
 
-}
-
-void
-ags_returnable_thread_connectable_interface_init(AgsConnectableInterface *connectable)
-{
-  ags_returnable_thread_parent_connectable_interface = g_type_interface_peek_parent(connectable);
-
-  connectable->connect = ags_returnable_thread_connect;
-  connectable->disconnect = ags_returnable_thread_disconnect;
 }
 
 void
@@ -279,22 +256,6 @@ ags_returnable_thread_get_property(GObject *gobject,
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
   }
-}
-
-void
-ags_returnable_thread_connect(AgsConnectable *connectable)
-{
-  ags_returnable_thread_parent_connectable_interface->connect(connectable);
-
-  /* empty */
-}
-
-void
-ags_returnable_thread_disconnect(AgsConnectable *connectable)
-{
-  ags_returnable_thread_parent_connectable_interface->disconnect(connectable);
-
-  /* empty */
 }
 
 void
@@ -477,7 +438,7 @@ ags_returnable_thread_unset_flags(AgsReturnableThread *returnable_thread, guint 
  *
  * Connects @callback to @thread.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_returnable_thread_connect_safe_run(AgsReturnableThread *returnable_thread, AgsReturnableThreadCallback callback)
@@ -496,7 +457,7 @@ ags_returnable_thread_connect_safe_run(AgsReturnableThread *returnable_thread, A
  *
  * Disconnects callback of @thread.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_returnable_thread_disconnect_safe_run(AgsReturnableThread *returnable_thread)
@@ -515,11 +476,11 @@ ags_returnable_thread_disconnect_safe_run(AgsReturnableThread *returnable_thread
  * ags_returnable_thread_new:
  * @thread_pool: the #AgsThreadPool
  *
- * Create a new #AgsReturnableThread.
+ * Create a new instance of #AgsReturnableThread.
  *
  * Returns: the new #AgsReturnableThread
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsReturnableThread*
 ags_returnable_thread_new(GObject *thread_pool)

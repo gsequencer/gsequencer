@@ -624,7 +624,7 @@ ags_ladspa_plugin_load_plugin(AgsBasePlugin *base_plugin)
  *
  * Returns: a new #AgsLadspaPlugin
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsLadspaPlugin*
 ags_ladspa_plugin_new(gchar *filename, gchar *effect, guint effect_index)

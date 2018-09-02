@@ -456,10 +456,10 @@ ags_lv2_manager_get_filenames(AgsLv2Manager *lv2_manager)
     }else{
 #ifdef HAVE_GLIB_2_44
       contains_filename = g_strv_contains(filenames,
-					  AGS_BASE_PLUGIN(lv2_plugin->data)->filename);
+					  filename);
 #else
       contains_filename = ags_strv_contains(filenames,
-					    AGS_BASE_PLUGIN(lv2_plugin->data)->filename);
+					    filename);
 #endif
       
       if(!contains_filename){
@@ -469,6 +469,8 @@ ags_lv2_manager_get_filenames(AgsLv2Manager *lv2_manager)
 	filenames[i + 1] = NULL;
 	
 	i++;
+      }else{
+	g_free(filename);
       }
     }
     

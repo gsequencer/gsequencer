@@ -65,7 +65,7 @@ ags_mutable_base_init(AgsMutableInterface *interface)
  *
  * Mute a class instance.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_mutable_set_muted(AgsMutable *mutable, gboolean muted)

@@ -467,11 +467,11 @@ ags_ruler_draw(AgsRuler *ruler)
 /**
  * ags_ruler_new:
  *
- * Creates an #AgsRuler
+ * Create a new instance of #AgsRuler
  *
- * Returns: a new #AgsRuler
+ * Returns: the new #AgsRuler
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsRuler*
 ags_ruler_new()

@@ -7,6 +7,7 @@ ags_task_launch
 ags_task_failure
 ags_task_new
 ags_message_delivery_get_type
+ags_message_delivery_get_class_mutex
 ags_message_delivery_add_queue
 ags_message_delivery_remove_queue
 ags_message_delivery_find_namespace

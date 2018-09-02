@@ -24,10 +24,7 @@
 #include <stdlib.h>
 
 void ags_destroy_worker_class_init(AgsDestroyWorkerClass *destroy_worker);
-void ags_destroy_worker_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_destroy_worker_init(AgsDestroyWorker *destroy_worker);
-void ags_destroy_worker_connect(AgsConnectable *connectable);
-void ags_destroy_worker_disconnect(AgsConnectable *connectable);
 void ags_destroy_worker_finalize(GObject *gobject);
 
 void ags_destroy_worker_start(AgsThread *thread);
@@ -66,20 +63,10 @@ ags_destroy_worker_get_type()
       (GInstanceInitFunc) ags_destroy_worker_init,
     };
 
-    static const GInterfaceInfo ags_connectable_interface_info = {
-      (GInterfaceInitFunc) ags_destroy_worker_connectable_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-
     ags_type_destroy_worker = g_type_register_static(AGS_TYPE_WORKER_THREAD,
 						     "AgsDestroyWorker",
 						     &ags_destroy_worker_info,
-						     0);
-    
-    g_type_add_interface_static(ags_type_destroy_worker,
-				AGS_TYPE_CONNECTABLE,
-				&ags_connectable_interface_info);
+						     0);    
   }
   
   return (ags_type_destroy_worker);
@@ -113,13 +100,6 @@ ags_destroy_worker_class_init(AgsDestroyWorkerClass *destroy_worker)
 }
 
 void
-ags_destroy_worker_connectable_interface_init(AgsConnectableInterface *connectable)
-{
-  connectable->connect = ags_destroy_worker_connect;
-  connectable->disconnect = ags_destroy_worker_disconnect;
-}
-
-void
 ags_destroy_worker_init(AgsDestroyWorker *destroy_worker)
 {
   destroy_worker->destroy_interval = (struct timespec *) malloc(sizeof(struct timespec));
@@ -139,18 +119,6 @@ ags_destroy_worker_init(AgsDestroyWorker *destroy_worker)
 
   /* destroy list */
   destroy_worker->destroy_list = NULL;
-}
-
-void
-ags_destroy_worker_connect(AgsConnectable *connectable)
-{
-  /* empty */
-}
-
-void
-ags_destroy_worker_disconnect(AgsConnectable *connectable)
-{
-  /* empty */
 }
 
 void
@@ -236,7 +204,7 @@ ags_destroy_worker_do_poll(AgsWorkerThread *worker_thread)
  * 
  * Returns: the allocated #AgsDestroyEntry
  * 
- * Since: 1.0.0.8
+ * Since: 2.0.0
  */
 AgsDestroyEntry*
 ags_destroy_entry_alloc(gpointer ptr, AgsDestroyFunc destroy_func)
@@ -259,7 +227,7 @@ ags_destroy_entry_alloc(gpointer ptr, AgsDestroyFunc destroy_func)
  * 
  * Add @ptr for destruction using @destroy_func.
  * 
- * Since: 1.0.0.8
+ * Since: 2.0.0
  */
 void
 ags_destroy_worker_add(AgsDestroyWorker *destroy_worker,
@@ -290,7 +258,7 @@ ags_destroy_worker_add(AgsDestroyWorker *destroy_worker,
  *
  * Returns: the new #AgsDestroyWorker
  *
- * Since: 1.0.0.8
+ * Since: 2.0.0
  */
 AgsDestroyWorker*
 ags_destroy_worker_new()

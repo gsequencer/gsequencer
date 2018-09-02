@@ -255,11 +255,11 @@ ags_led_unset_active(AgsLed *led)
 /**
  * ags_led_new:
  *
- * Creates an #AgsLed.
+ * Create a new instance of #AgsLed.
  *
- * Returns: a new #AgsLed
+ * Returns: the new #AgsLed
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsLed*
 ags_led_new()
