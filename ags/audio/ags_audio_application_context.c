@@ -241,13 +241,12 @@ ags_audio_application_context_class_init(AgsAudioApplicationContextClass *audio_
    *
    * The assigned soundcard.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
-  param_spec = g_param_spec_object("soundcard",
-				   i18n_pspec("soundcard of audio application context"),
-				   i18n_pspec("The soundcard which this audio application context assigned to"),
-				   G_TYPE_OBJECT,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  param_spec = g_param_spec_pointer("soundcard",
+				    i18n_pspec("soundcard of audio application context"),
+				    i18n_pspec("The soundcard which this audio application context assigned to"),
+				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_SOUNDCARD,
 				  param_spec);
@@ -804,7 +803,7 @@ ags_audio_application_context_set_property(GObject *gobject,
     {
       GObject *soundcard;
       
-      soundcard = (GObject *) g_value_get_object(value);
+      soundcard = (GObject *) g_value_get_pointer(value);
 
       if(soundcard == NULL){
 	return;

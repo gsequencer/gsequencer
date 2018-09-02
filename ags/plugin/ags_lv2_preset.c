@@ -19,7 +19,7 @@
 
 #include <ags/plugin/ags_lv2_preset.h>
 
-#include <ags/object/ags_connectable.h>
+#include <ags/libags.h>
 
 #include <ags/plugin/ags_lv2_plugin.h>
 
@@ -28,7 +28,6 @@
 #include <ags/i18n.h>
 
 void ags_lv2_preset_class_init(AgsLv2PresetClass *lv2_preset);
-void ags_lv2_preset_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_lv2_preset_init(AgsLv2Preset *lv2_preset);
 void ags_lv2_preset_set_property(GObject *gobject,
 				 guint prop_id,
@@ -38,8 +37,6 @@ void ags_lv2_preset_get_property(GObject *gobject,
 				 guint prop_id,
 				 GValue *value,
 				 GParamSpec *param_spec);
-void ags_lv2_preset_connect(AgsConnectable *connectable);
-void ags_lv2_preset_disconnect(AgsConnectable *connectable);
 void ags_lv2_preset_finalize(GObject *gobject);
 
 /**
@@ -62,7 +59,8 @@ enum{
 };
 
 static gpointer ags_lv2_preset_parent_class = NULL;
-static AgsConnectableInterface *ags_lv2_preset_parent_connectable_interface;
+
+static pthread_mutex_t ags_lv2_preset_class_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 GType
 ags_lv2_preset_get_type()
@@ -81,21 +79,11 @@ ags_lv2_preset_get_type()
       0,    /* n_preallocs */
       (GInstanceInitFunc) ags_lv2_preset_init,
     };
-
-    static const GInterfaceInfo ags_connectable_interface_info = {
-      (GInterfaceInitFunc) ags_lv2_preset_connectable_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
     
     ags_type_lv2_preset = g_type_register_static(G_TYPE_OBJECT,
 						 "AgsLv2Preset",
 						 &ags_lv2_preset_info,
-						 0);
-    
-    g_type_add_interface_static(ags_type_lv2_preset,
-				AGS_TYPE_CONNECTABLE,
-				&ags_connectable_interface_info);
+						 0);    
   }
   
   return (ags_type_lv2_preset);
@@ -123,7 +111,7 @@ ags_lv2_preset_class_init(AgsLv2PresetClass *lv2_preset)
    *
    * The assigned lv2 plugin.
    * 
-   * Since: 1.0.0.8
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("lv2-plugin",
 				   i18n_pspec("lv2 plugin of the preset"),
@@ -139,7 +127,7 @@ ags_lv2_preset_class_init(AgsLv2PresetClass *lv2_preset)
    *
    * The assigned uri.
    * 
-   * Since: 1.0.0.8
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_string("uri",
 				   i18n_pspec("uri of the preset"),
@@ -155,7 +143,7 @@ ags_lv2_preset_class_init(AgsLv2PresetClass *lv2_preset)
    *
    * The assigned bank.
    * 
-   * Since: 1.0.0.8
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_string("bank",
 				   i18n_pspec("bank of the preset"),
@@ -171,7 +159,7 @@ ags_lv2_preset_class_init(AgsLv2PresetClass *lv2_preset)
    *
    * The preset label.
    * 
-   * Since: 1.0.0.8
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_string("preset-label",
 				   i18n_pspec("preset label"),
@@ -187,7 +175,7 @@ ags_lv2_preset_class_init(AgsLv2PresetClass *lv2_preset)
    *
    * The assigned turtle.
    * 
-   * Since: 1.0.0.8
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("turtle",
 				   i18n_pspec("turtle of the preset"),
@@ -200,19 +188,25 @@ ags_lv2_preset_class_init(AgsLv2PresetClass *lv2_preset)
 }
 
 void
-ags_lv2_preset_connectable_interface_init(AgsConnectableInterface *connectable)
-{
-  ags_lv2_preset_parent_connectable_interface = g_type_interface_peek_parent(connectable);
-
-  connectable->connect = ags_lv2_preset_connect;
-  connectable->disconnect = ags_lv2_preset_disconnect;
-}
-
-void
 ags_lv2_preset_init(AgsLv2Preset *lv2_preset)
 {
   lv2_preset->flags = 0;
 
+  /* add lv2 preset mutex */
+  lv2_preset->obj_mutexattr =  (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
+  pthread_mutexattr_init(lv2_preset->obj_mutexattr);
+  pthread_mutexattr_settype(lv2_preset->obj_mutexattr,
+			    PTHREAD_MUTEX_RECURSIVE);
+
+#ifdef __linux__
+  pthread_mutexattr_setprotocol(lv2_preset->obj_mutexattr,
+				PTHREAD_PRIO_INHERIT);
+#endif
+
+  lv2_preset->obj_mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
+  pthread_mutex_init(lv2_preset->obj_mutex,
+		     lv2_preset->obj_mutexattr);
+  
   lv2_preset->lv2_plugin = NULL;
 
   lv2_preset->uri = NULL;
@@ -232,7 +226,16 @@ ags_lv2_preset_set_property(GObject *gobject,
 {
   AgsLv2Preset *lv2_preset;
 
+  pthread_mutex_t *lv2_preset_mutex;
+
   lv2_preset = AGS_LV2_PRESET(gobject);
+
+  /* get base plugin mutex */
+  pthread_mutex_lock(ags_lv2_preset_get_class_mutex());
+  
+  lv2_preset_mutex = lv2_preset->obj_mutex;
+  
+  pthread_mutex_unlock(ags_lv2_preset_get_class_mutex());
 
   switch(prop_id){
   case PROP_LV2_PLUGIN:
@@ -241,7 +244,11 @@ ags_lv2_preset_set_property(GObject *gobject,
 
       lv2_plugin = (AgsLv2Plugin *) g_value_get_object(value);
 
+      pthread_mutex_lock(lv2_preset_mutex);
+      
       if(lv2_preset->lv2_plugin == lv2_plugin){
+	pthread_mutex_unlock(lv2_preset_mutex);
+
 	return;
       }
 
@@ -254,6 +261,8 @@ ags_lv2_preset_set_property(GObject *gobject,
       }
       
       lv2_preset->lv2_plugin = lv2_plugin;
+
+      pthread_mutex_unlock(lv2_preset_mutex);
     }
     break;
   case PROP_URI:
@@ -262,7 +271,11 @@ ags_lv2_preset_set_property(GObject *gobject,
 
       uri = (gchar *) g_value_get_string(value);
 
+      pthread_mutex_lock(lv2_preset_mutex);
+
       if(lv2_preset->uri == uri){
+	pthread_mutex_unlock(lv2_preset_mutex);
+
 	return;
       }
       
@@ -271,6 +284,8 @@ ags_lv2_preset_set_property(GObject *gobject,
       }
 
       lv2_preset->uri = g_strdup(uri);
+
+      pthread_mutex_unlock(lv2_preset_mutex);
     }
     break;
   case PROP_BANK:
@@ -279,7 +294,11 @@ ags_lv2_preset_set_property(GObject *gobject,
 
       bank = (gchar *) g_value_get_string(value);
 
+      pthread_mutex_lock(lv2_preset_mutex);
+
       if(lv2_preset->bank == bank){
+	pthread_mutex_unlock(lv2_preset_mutex);
+
 	return;
       }
       
@@ -288,6 +307,8 @@ ags_lv2_preset_set_property(GObject *gobject,
       }
 
       lv2_preset->bank = g_strdup(bank);
+
+      pthread_mutex_unlock(lv2_preset_mutex);
     }
     break;
   case PROP_PRESET_LABEL:
@@ -296,7 +317,11 @@ ags_lv2_preset_set_property(GObject *gobject,
 
       preset_label = (gchar *) g_value_get_string(value);
 
+      pthread_mutex_lock(lv2_preset_mutex);
+
       if(lv2_preset->preset_label == preset_label){
+	pthread_mutex_unlock(lv2_preset_mutex);
+
 	return;
       }
       
@@ -305,6 +330,8 @@ ags_lv2_preset_set_property(GObject *gobject,
       }
 
       lv2_preset->preset_label = g_strdup(preset_label);
+
+      pthread_mutex_unlock(lv2_preset_mutex);
     }
     break;
   case PROP_TURTLE:
@@ -313,7 +340,11 @@ ags_lv2_preset_set_property(GObject *gobject,
 
       turtle = (AgsTurtle *) g_value_get_object(value);
 
+      pthread_mutex_lock(lv2_preset_mutex);
+
       if(lv2_preset->turtle == turtle){
+	pthread_mutex_unlock(lv2_preset_mutex);
+
 	return;
       }
 
@@ -326,6 +357,8 @@ ags_lv2_preset_set_property(GObject *gobject,
       }
       
       lv2_preset->turtle = turtle;
+
+      pthread_mutex_unlock(lv2_preset_mutex);
     }
     break;
   default:
@@ -342,50 +375,67 @@ ags_lv2_preset_get_property(GObject *gobject,
 {
   AgsLv2Preset *lv2_preset;
 
+  pthread_mutex_t *lv2_preset_mutex;
+
   lv2_preset = AGS_LV2_PRESET(gobject);
+
+  /* get base plugin mutex */
+  pthread_mutex_lock(ags_lv2_preset_get_class_mutex());
+  
+  lv2_preset_mutex = lv2_preset->obj_mutex;
+  
+  pthread_mutex_unlock(ags_lv2_preset_get_class_mutex());
 
   switch(prop_id){
   case PROP_LV2_PLUGIN:
     {
+      pthread_mutex_lock(lv2_preset_mutex);
+
       g_value_set_object(value, lv2_preset->lv2_plugin);
+
+      pthread_mutex_unlock(lv2_preset_mutex);
     }
     break;
   case PROP_URI:
     {
+      pthread_mutex_lock(lv2_preset_mutex);
+
       g_value_set_string(value, lv2_preset->uri);
+
+      pthread_mutex_unlock(lv2_preset_mutex);
     }
     break;
   case PROP_BANK:
     {
+      pthread_mutex_lock(lv2_preset_mutex);
+
       g_value_set_string(value, lv2_preset->bank);
+
+      pthread_mutex_unlock(lv2_preset_mutex);
     }
     break;
   case PROP_PRESET_LABEL:
     {
+      pthread_mutex_lock(lv2_preset_mutex);
+
       g_value_set_string(value, lv2_preset->preset_label);
+
+      pthread_mutex_unlock(lv2_preset_mutex);
     }
     break;
   case PROP_TURTLE:
     {
+      pthread_mutex_lock(lv2_preset_mutex);
+
       g_value_set_object(value, lv2_preset->turtle);
+
+      pthread_mutex_unlock(lv2_preset_mutex);
     }
     break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
   }
-}
-
-void
-ags_lv2_preset_connect(AgsConnectable *connectable)
-{
-  /* empty */
-}
-
-void
-ags_lv2_preset_disconnect(AgsConnectable *connectable)
-{
-  /* empty */
 }
 
 void
@@ -424,11 +474,44 @@ ags_lv2_preset_finalize(GObject *gobject)
     g_list_free_full(lv2_preset->port_preset,
 		     ags_lv2_port_preset_free);
   }
+
+  /* destroy object mutex */
+  pthread_mutex_destroy(lv2_preset->obj_mutex);
+  free(lv2_preset->obj_mutex);
+
+  pthread_mutexattr_destroy(lv2_preset->obj_mutexattr);
+  free(lv2_preset->obj_mutexattr);
   
   /* call parent */
   G_OBJECT_CLASS(ags_lv2_preset_parent_class)->finalize(gobject);
 }
 
+/**
+ * ags_lv2_preset_get_class_mutex:
+ * 
+ * Use this function's returned mutex to access mutex fields.
+ *
+ * Returns: the class mutex
+ * 
+ * Since: 2.0.0
+ */
+pthread_mutex_t*
+ags_lv2_preset_get_class_mutex()
+{
+  return(&ags_lv2_preset_class_mutex);
+}
+
+/**
+ * ags_lv2_port_preset_alloc:
+ * @port_symbol: the port symbol
+ * @port_type: the port type
+ * 
+ * Allocated #AgsLv2PortPreset-struct.
+ * 
+ * Returns: the new #AgsLv2PortPreset-struct.
+ * 
+ * Since: 2.0.0
+ */
 AgsLv2PortPreset*
 ags_lv2_port_preset_alloc(gchar *port_symbol,
 			  GType port_type)
@@ -450,9 +533,21 @@ ags_lv2_port_preset_alloc(gchar *port_symbol,
   return(lv2_port_preset);
 }
 
+/**
+ * ags_lv2_port_preset_free:
+ * @lv2_port_preset: the #AgsLv2PortPreset-struct
+ * 
+ * Free @lv2_port_preset.
+ * 
+ * Since: 2.0.0
+ */
 void
 ags_lv2_port_preset_free(AgsLv2PortPreset *lv2_port_preset)
 {
+  if(lv2_port_preset == NULL){
+    return;
+  }
+  
   if(lv2_port_preset->port_symbol != NULL){
     free(lv2_port_preset->port_symbol);
   }
@@ -466,10 +561,20 @@ ags_lv2_port_preset_free(AgsLv2PortPreset *lv2_port_preset)
   free(lv2_port_preset);
 }
 
+/**
+ * ags_lv2_preset_parse_turtle:
+ * @lv2_preset: the #AgsLv2Preset
+ * 
+ * Parse @lv2_preset.
+ * 
+ * Since: 2.0.0
+ */
 void
 ags_lv2_preset_parse_turtle(AgsLv2Preset *lv2_preset)
 {
   AgsLv2PortPreset *lv2_port_preset;
+
+  AgsTurtle *turtle;
   
   xmlNode *triple_node;
   xmlNode *port_node;
@@ -479,20 +584,31 @@ ags_lv2_preset_parse_turtle(AgsLv2Preset *lv2_preset)
   GList *bank_list;
   GList *port_list, *list;
 
+  gchar *uri;
+  
   gchar *str;
   gchar *xpath;
   
-  if(!AGS_LV2_PRESET(lv2_preset) ||
-     lv2_preset->turtle == NULL ||
-     lv2_preset->uri == NULL){
+  if(!AGS_LV2_PRESET(lv2_preset)){
     return;
   }
+  
+  g_object_get(lv2_preset,
+	       "turtle", &turtle,
+	       "uri", &uri,
+	       NULL);
+    
 
+  if(turtle == NULL ||
+     uri == NULL){
+    return;
+  }
+  
   /* retrieve triple by uri */
   xpath = g_strdup_printf("(//rdf-triple/rdf-subject/rdf-iri/rdf-iriref[text() = '%s'])/ancestor::*[self::rdf-triple][1]",
-			  lv2_preset->uri);
+			  uri);
     
-  list = ags_turtle_find_xpath(lv2_preset->turtle,
+  list = ags_turtle_find_xpath(turtle,
 			       xpath);
 
   free(xpath);
@@ -505,7 +621,7 @@ ags_lv2_preset_parse_turtle(AgsLv2Preset *lv2_preset)
     xpath = g_strdup_printf("//rdf-triple//rdf-iriref[text() = '<%s>']/ancestor::*[self::rdf-triple][1]",
 			    lv2_preset->uri);
     
-    list = ags_turtle_find_xpath(lv2_preset->turtle,
+    list = ags_turtle_find_xpath(turtle,
 				 xpath);
 
     free(xpath);
@@ -523,7 +639,7 @@ ags_lv2_preset_parse_turtle(AgsLv2Preset *lv2_preset)
 
   /* preset label */
   xpath = ".//rdf-pname-ln[text()='rdfs:label']/ancestor::*[self::rdf-verb][1]/following-sibling::*[self::rdf-object-list][1]//rdf-string";
-  label_list = ags_turtle_find_xpath_with_context_node(lv2_preset->turtle,
+  label_list = ags_turtle_find_xpath_with_context_node(turtle,
 						       xpath,
 						       triple_node);
 
@@ -535,7 +651,7 @@ ags_lv2_preset_parse_turtle(AgsLv2Preset *lv2_preset)
 
   /* bank */
   xpath = ".//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':bank') + 1) = ':bank']/ancestor::*[self::rdf-verb][1]/following-sibling::*[self::rdf-object-list][1]//rdf-iriref";
-  bank_list = ags_turtle_find_xpath_with_context_node(lv2_preset->turtle,
+  bank_list = ags_turtle_find_xpath_with_context_node(turtle,
 						      xpath,
 						      triple_node);
 
@@ -550,7 +666,7 @@ ags_lv2_preset_parse_turtle(AgsLv2Preset *lv2_preset)
 
   /* load ports */
   xpath = ".//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':port') + 1) = ':port']/ancestor::*[self::rdf-verb][1]/following-sibling::*[self::rdf-object-list]/rdf-object";
-  port_list = ags_turtle_find_xpath_with_context_node(lv2_preset->turtle,
+  port_list = ags_turtle_find_xpath_with_context_node(turtle,
 						      xpath,
 						      triple_node);
 
@@ -564,7 +680,7 @@ ags_lv2_preset_parse_turtle(AgsLv2Preset *lv2_preset)
     /* load symbol */
     xpath = g_ascii_strdown(".//rdf-object-list//rdf-string[ancestor::*[self::rdf-object-list][1]/preceding-sibling::*[self::rdf-verb][1]//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':symbol') + 1) = ':symbol']]",
 			    -1);
-    list = ags_turtle_find_xpath_with_context_node(lv2_preset->turtle,
+    list = ags_turtle_find_xpath_with_context_node(turtle,
 						   xpath,
 						   port_node);
 
@@ -585,7 +701,7 @@ ags_lv2_preset_parse_turtle(AgsLv2Preset *lv2_preset)
     /* port value */
     xpath = g_ascii_strdown(".//rdf-verb//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':value') + 1) = ':value']/ancestor::*[self::rdf-verb][1]/following-sibling::*[self::rdf-object-list][1]//rdf-numeric",
 			    -1);
-    list = ags_turtle_find_xpath_with_context_node(lv2_preset->turtle,
+    list = ags_turtle_find_xpath_with_context_node(turtle,
 						   xpath,
 						   port_node);
 
@@ -619,7 +735,7 @@ ags_lv2_preset_parse_turtle(AgsLv2Preset *lv2_preset)
  * 
  * Returns: the matching #GList-struct containing #AgsLv2Preset
  * 
- * Since: 1.0.0.8
+ * Since: 2.0.0
  */
 GList*
 ags_lv2_preset_find_preset_label(GList *lv2_preset,
@@ -651,7 +767,7 @@ ags_lv2_preset_find_preset_label(GList *lv2_preset,
  *
  * Returns: the new #AgsLv2Preset
  *
- * Since: 1.0.0.8
+ * Since: 2.0.0
  */ 
 AgsLv2Preset*
 ags_lv2_preset_new(GObject *lv2_plugin,

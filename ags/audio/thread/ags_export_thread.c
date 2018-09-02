@@ -134,7 +134,7 @@ ags_export_thread_class_init(AgsExportThreadClass *export_thread)
    *
    * The assigned #AgsSoundcard.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("soundcard",
 				   i18n_pspec("soundcard assigned to"),
@@ -150,7 +150,7 @@ ags_export_thread_class_init(AgsExportThreadClass *export_thread)
    *
    * The assigned #AgsAudioFile.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("audio-file",
 				   i18n_pspec("audio file to write"),
@@ -530,7 +530,7 @@ ags_export_thread_stop(AgsThread *thread)
  * Returns: the matching #AgsExportThread, if not
  * found %NULL.
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsExportThread*
 ags_export_thread_find_soundcard(AgsExportThread *export_thread,
@@ -558,11 +558,11 @@ ags_export_thread_find_soundcard(AgsExportThread *export_thread,
  * @soundcard: the #AgsSoundcard
  * @audio_file: the output file
  *
- * Create a new #AgsExportThread.
+ * Create a new instance of #AgsExportThread.
  *
  * Returns: the new #AgsExportThread
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsExportThread*
 ags_export_thread_new(GObject *soundcard, AgsAudioFile *audio_file)

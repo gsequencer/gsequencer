@@ -7394,11 +7394,11 @@ ags_recall_factory_create(AgsAudio *audio,
 /**
  * ags_recall_factory_new:
  *
- * Creates a #AgsRecallFactory
+ * Create a new instance of #AgsRecallFactory
  *
- * Returns: a new #AgsRecallFactory
+ * Returns: the new #AgsRecallFactory
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsRecallFactory*
 ags_recall_factory_new()

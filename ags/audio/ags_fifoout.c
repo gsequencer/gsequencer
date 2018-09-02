@@ -2459,7 +2459,7 @@ ags_fifoout_adjust_delay_and_attack(AgsFifoout *fifoout)
  *
  * Reallocate the internal audio buffer.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_fifoout_realloc_buffer(AgsFifoout *fifoout)

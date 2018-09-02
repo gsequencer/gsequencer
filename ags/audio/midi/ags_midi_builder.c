@@ -177,6 +177,8 @@ enum{
 static gpointer ags_midi_builder_parent_class = NULL;
 static guint midi_builder_signals[LAST_SIGNAL];
 
+static pthread_mutex_t ags_midi_builder_class_mutex = PTHREAD_MUTEX_INITIALIZER;
+
 GType
 ags_midi_builder_get_type(void)
 {
@@ -225,7 +227,7 @@ ags_midi_builder_class_init(AgsMidiBuilderClass *midi_builder)
    *
    * The file to parse data from.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_pointer("file",
 				    i18n_pspec("the file stream"),
@@ -268,7 +270,7 @@ ags_midi_builder_class_init(AgsMidiBuilderClass *midi_builder)
    *
    * The ::midi-putc signal is emited during putting char to file.
    *
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   midi_builder_signals[MIDI_PUTC] =
     g_signal_new("midi-putc",
@@ -287,7 +289,7 @@ ags_midi_builder_class_init(AgsMidiBuilderClass *midi_builder)
    *
    * The ::on-error signal is emited during building of event.
    *
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   midi_builder_signals[ON_ERROR] =
     g_signal_new("on-error",
@@ -312,7 +314,7 @@ ags_midi_builder_class_init(AgsMidiBuilderClass *midi_builder)
    *
    * The ::append-header signal is emited during building of header.
    *
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   midi_builder_signals[APPEND_HEADER] =
     g_signal_new("append-header",
@@ -336,7 +338,7 @@ ags_midi_builder_class_init(AgsMidiBuilderClass *midi_builder)
    *
    * The ::append-track signal is emited during building of track.
    *
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   midi_builder_signals[APPEND_TRACK] =
     g_signal_new("append-track",
@@ -358,7 +360,7 @@ ags_midi_builder_class_init(AgsMidiBuilderClass *midi_builder)
    *
    * The ::key-on signal is emited during building of event.
    *
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   midi_builder_signals[KEY_ON] =
     g_signal_new("key-on",
@@ -383,7 +385,7 @@ ags_midi_builder_class_init(AgsMidiBuilderClass *midi_builder)
    *
    * The ::key-off signal is emited during building of event.
    *
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   midi_builder_signals[KEY_OFF] =
     g_signal_new("key-off",
@@ -408,7 +410,7 @@ ags_midi_builder_class_init(AgsMidiBuilderClass *midi_builder)
    *
    * The ::key-pressure signal is emited during building of event.
    *
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   midi_builder_signals[KEY_PRESSURE] =
     g_signal_new("key-pressure",
@@ -433,7 +435,7 @@ ags_midi_builder_class_init(AgsMidiBuilderClass *midi_builder)
    *
    * The ::change-parameter signal is emited during building of event.
    *
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   midi_builder_signals[CHANGE_PARAMETER] =
     g_signal_new("change-parameter",
@@ -458,7 +460,7 @@ ags_midi_builder_class_init(AgsMidiBuilderClass *midi_builder)
    *
    * The ::change-pitch-bend signal is emited during building of event.
    *
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   midi_builder_signals[CHANGE_PITCH_BEND] =
     g_signal_new("change-pitch-bend",
@@ -482,7 +484,7 @@ ags_midi_builder_class_init(AgsMidiBuilderClass *midi_builder)
    *
    * The ::change-program signal is emited during building of event.
    *
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   midi_builder_signals[CHANGE_PROGRAM] =
     g_signal_new("change-program",
@@ -505,7 +507,7 @@ ags_midi_builder_class_init(AgsMidiBuilderClass *midi_builder)
    *
    * The ::change-channel-pressure signal is emited during building of event.
    *
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   midi_builder_signals[CHANGE_PRESSURE] =
     g_signal_new("change-channel-pressure",
@@ -528,7 +530,7 @@ ags_midi_builder_class_init(AgsMidiBuilderClass *midi_builder)
    *
    * The ::sysex signal is emited during building of event.
    *
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   midi_builder_signals[SYSEX] =
     g_signal_new("sysex",
@@ -551,7 +553,7 @@ ags_midi_builder_class_init(AgsMidiBuilderClass *midi_builder)
    *
    * The ::quarter-frame signal is emited during building of event.
    *
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   midi_builder_signals[QUARTER_FRAME] =
     g_signal_new("quarter-frame",
@@ -573,7 +575,7 @@ ags_midi_builder_class_init(AgsMidiBuilderClass *midi_builder)
    *
    * The ::song-position signal is emited during building of event.
    *
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   midi_builder_signals[SONG_POSITION] =
     g_signal_new("song-position",
@@ -594,7 +596,7 @@ ags_midi_builder_class_init(AgsMidiBuilderClass *midi_builder)
    *
    * The ::song-select signal is emited during building of event.
    *
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   midi_builder_signals[SONG_SELECT] =
     g_signal_new("song-select",
@@ -614,7 +616,7 @@ ags_midi_builder_class_init(AgsMidiBuilderClass *midi_builder)
    *
    * The ::tune-request signal is emited during building of event.
    *
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   midi_builder_signals[TUNE_REQUEST] =
     g_signal_new("tune-request",
@@ -635,7 +637,7 @@ ags_midi_builder_class_init(AgsMidiBuilderClass *midi_builder)
    *
    * The ::sequence-number signal is emited during building of event.
    *
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   midi_builder_signals[SEQUENCE_NUMBER] =
     g_signal_new("sequence-number",
@@ -660,7 +662,7 @@ ags_midi_builder_class_init(AgsMidiBuilderClass *midi_builder)
    *
    * The ::smtpe signal is emited during building of event.
    *
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   midi_builder_signals[SMTPE] =
     g_signal_new("smtpe",
@@ -685,7 +687,7 @@ ags_midi_builder_class_init(AgsMidiBuilderClass *midi_builder)
    *
    * The ::tempo signal is emited during building of event.
    *
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   midi_builder_signals[TEMPO] =
     g_signal_new("tempo",
@@ -709,7 +711,7 @@ ags_midi_builder_class_init(AgsMidiBuilderClass *midi_builder)
    *
    * The ::time-signature signal is emited during building of event.
    *
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   midi_builder_signals[TIME_SIGNATURE] =
     g_signal_new("time-signature",
@@ -734,7 +736,7 @@ ags_midi_builder_class_init(AgsMidiBuilderClass *midi_builder)
    * 
    * The ::key-signature signal is emited during building of event.
    *
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   midi_builder_signals[KEY_SIGNATURE] =
     g_signal_new("key-signature",
@@ -758,7 +760,7 @@ ags_midi_builder_class_init(AgsMidiBuilderClass *midi_builder)
    *
    * The ::sequencer-meta-event signal is emited during building of event.
    *
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   midi_builder_signals[SEQUENCER_META_EVENT] =
     g_signal_new("sequencer-meta-event",
@@ -782,7 +784,7 @@ ags_midi_builder_class_init(AgsMidiBuilderClass *midi_builder)
    *
    * The ::text-event signal is emited during building of event.
    *
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   midi_builder_signals[TEXT_EVENT] =
     g_signal_new("text-event",
@@ -801,6 +803,21 @@ void
 ags_midi_builder_init(AgsMidiBuilder *midi_builder)
 {
   midi_builder->flags = 0;
+
+  /* midi builder mutex */
+  midi_builder->obj_mutexattr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
+  pthread_mutexattr_init(midi_builder->obj_mutexattr);
+  pthread_mutexattr_settype(midi_builder->obj_mutexattr,
+			    PTHREAD_MUTEX_RECURSIVE);
+
+#ifdef __linux__
+  pthread_mutexattr_setprotocol(midi_builder->obj_mutexattr,
+				PTHREAD_PRIO_INHERIT);
+#endif
+
+  midi_builder->obj_mutex =  (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
+  pthread_mutex_init(midi_builder->obj_mutex,
+		     midi_builder->obj_mutexattr);
 
   midi_builder->data = NULL;
   midi_builder->length = 0;
@@ -821,12 +838,25 @@ ags_midi_builder_set_property(GObject *gobject,
 {
   AgsMidiBuilder *midi_builder;
 
+  pthread_mutex_t *midi_builder_mutex;
+
   midi_builder = AGS_MIDI_BUILDER(gobject);
+
+  /* get midi builder mutex */
+  pthread_mutex_lock(ags_midi_builder_get_class_mutex());
+  
+  midi_builder_mutex = midi_builder->obj_mutex;
+  
+  pthread_mutex_unlock(ags_midi_builder_get_class_mutex());
   
   switch(prop_id){
   case PROP_FILE:
     {
+      pthread_mutex_lock(midi_builder_mutex);
+
       midi_builder->file = g_value_get_pointer(value);
+
+      pthread_mutex_unlock(midi_builder_mutex);
     }
     break;
   default:
@@ -843,13 +873,26 @@ ags_midi_builder_get_property(GObject *gobject,
 {
   AgsMidiBuilder *midi_builder;
 
+  pthread_mutex_t *midi_builder_mutex;
+
   midi_builder = AGS_MIDI_BUILDER(gobject);
+
+  /* get midi builder mutex */
+  pthread_mutex_lock(ags_midi_builder_get_class_mutex());
+  
+  midi_builder_mutex = midi_builder->obj_mutex;
+  
+  pthread_mutex_unlock(ags_midi_builder_get_class_mutex());
   
   switch(prop_id){
   case PROP_FILE:
     {
+      pthread_mutex_lock(midi_builder_mutex);
+
       g_value_set_pointer(value,
 			  midi_builder->file);
+
+      pthread_mutex_unlock(midi_builder_mutex);
     }
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
@@ -860,7 +903,33 @@ ags_midi_builder_get_property(GObject *gobject,
 void
 ags_midi_builder_finalize(GObject *gobject)
 {
+  AgsMidiBuilder *midi_builder;
+    
+  midi_builder = (AgsMidiBuilder *) gobject;
+
+  pthread_mutex_destroy(midi_builder->obj_mutex);
+  free(midi_builder->obj_mutex);
+
+  pthread_mutexattr_destroy(midi_builder->obj_mutexattr);
+  free(midi_builder->obj_mutexattr);
+
+  /* call parent */
   G_OBJECT_CLASS(ags_midi_builder_parent_class)->finalize(gobject);
+}
+
+/**
+ * ags_midi_builder_get_class_mutex:
+ * 
+ * Use this function's returned mutex to access mutex fields.
+ *
+ * Returns: the class mutex
+ * 
+ * Since: 2.0.0
+ */
+pthread_mutex_t*
+ags_midi_builder_get_class_mutex()
+{
+  return(&ags_midi_builder_class_mutex);
 }
 
 /**
@@ -870,7 +939,7 @@ ags_midi_builder_finalize(GObject *gobject)
  * 
  * Returns: the newly allocated #AgsMidiBuilderHeader-struct
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsMidiBuilderHeader*
 ags_midi_builder_header_alloc()
@@ -899,7 +968,7 @@ ags_midi_builder_header_alloc()
  * 
  * Free MIDI builder header.
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_midi_builder_header_free(AgsMidiBuilderHeader *midi_builder_header)
@@ -918,7 +987,7 @@ ags_midi_builder_header_free(AgsMidiBuilderHeader *midi_builder_header)
  * 
  * Returns: the newly allocated #AgsMidiBuilderTrack-struct
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsMidiBuilderTrack*
 ags_midi_builder_track_alloc()
@@ -944,7 +1013,7 @@ ags_midi_builder_track_alloc()
  * 
  * Free MIDI builder track.
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_midi_builder_track_free(AgsMidiBuilderTrack *midi_builder_track)
@@ -974,7 +1043,7 @@ ags_midi_builder_track_free(AgsMidiBuilderTrack *midi_builder_track)
  * 
  * Returns: the matching #GList-struct
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 GList*
 ags_midi_builder_track_find_delta_time_with_track_name(GList *midi_builder_track,
@@ -1002,7 +1071,7 @@ ags_midi_builder_track_find_delta_time_with_track_name(GList *midi_builder_track
  * 
  * Insert MIDI message.
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_midi_builder_track_insert_midi_message(AgsMidiBuilderTrack *midi_builder_track,
@@ -1068,7 +1137,7 @@ ags_midi_builder_track_insert_midi_message(AgsMidiBuilderTrack *midi_builder_tra
  * 
  * Returns: the buffer position before @delta_time
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 unsigned char*
 ags_midi_builder_track_get_delta_time_offset(AgsMidiBuilderTrack *midi_builder_track,
@@ -1133,7 +1202,7 @@ ags_midi_builder_real_midi_putc(AgsMidiBuilder *midi_builder,
  *
  * Put char in MIDI file.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_midi_builder_midi_putc(AgsMidiBuilder *midi_builder,
@@ -1165,7 +1234,7 @@ ags_midi_builder_real_on_error(AgsMidiBuilder *midi_builder,
  *
  * Triggered as an error occurs.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_midi_builder_on_error(AgsMidiBuilder *midi_builder,
@@ -1227,7 +1296,7 @@ ags_midi_builder_real_append_header(AgsMidiBuilder *midi_builder,
  *
  * Appends MIDI header to @midi_builder.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_midi_builder_append_header(AgsMidiBuilder *midi_builder,
@@ -1295,7 +1364,7 @@ ags_midi_builder_real_append_track(AgsMidiBuilder *midi_builder,
  *
  * Append a track called @track_name to @midi_builder.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_midi_builder_append_track(AgsMidiBuilder *midi_builder,
@@ -1343,7 +1412,7 @@ ags_midi_builder_real_append_key_on(AgsMidiBuilder *midi_builder,
  *
  * Append key-on for @note to @midi_builder with key dynamics @velocity, at @delta_time.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_midi_builder_append_key_on(AgsMidiBuilder *midi_builder,
@@ -1397,7 +1466,7 @@ ags_midi_builder_real_append_key_off(AgsMidiBuilder *midi_builder,
  *
  * Append key-off for @note to @midi_builder with key dynamics @velocity, at @delta_time.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_midi_builder_append_key_off(AgsMidiBuilder *midi_builder,
@@ -1452,7 +1521,7 @@ ags_midi_builder_real_append_key_pressure(AgsMidiBuilder *midi_builder,
  *
  * Append key-pressure for @note to @midi_builder with key dynamics @pressure, at @delta_time.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_midi_builder_append_key_pressure(AgsMidiBuilder *midi_builder,
@@ -1506,7 +1575,7 @@ ags_midi_builder_real_append_change_parameter(AgsMidiBuilder *midi_builder,
  *
  * Appends change parameter.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_midi_builder_append_change_parameter(AgsMidiBuilder *midi_builder,
@@ -1560,7 +1629,7 @@ ags_midi_builder_real_append_change_pitch_bend(AgsMidiBuilder *midi_builder,
  *
  * Change pitch bend.
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_midi_builder_append_change_pitch_bend(AgsMidiBuilder *midi_builder,
@@ -1611,7 +1680,7 @@ ags_midi_builder_real_append_change_program(AgsMidiBuilder *midi_builder,
  *
  * Appends change program.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_midi_builder_append_change_program(AgsMidiBuilder *midi_builder,
@@ -1660,7 +1729,7 @@ ags_midi_builder_real_append_change_pressure(AgsMidiBuilder *midi_builder,
  * 
  * Appends change pressure.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_midi_builder_append_change_pressure(AgsMidiBuilder *midi_builder,
@@ -1707,7 +1776,7 @@ ags_midi_builder_real_append_sysex(AgsMidiBuilder *midi_builder,
  *
  * Appends sysex data.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_midi_builder_append_sysex(AgsMidiBuilder *midi_builder,
@@ -1754,7 +1823,7 @@ ags_midi_builder_real_append_quarter_frame(AgsMidiBuilder *midi_builder,
  *
  * Appends quarter frame.
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_midi_builder_append_quarter_frame(AgsMidiBuilder *midi_builder,
@@ -1799,7 +1868,7 @@ ags_midi_builder_real_append_song_position(AgsMidiBuilder *midi_builder,
  * 
  * Appends song position.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_midi_builder_append_song_position(AgsMidiBuilder *midi_builder,
@@ -1843,7 +1912,7 @@ ags_midi_builder_real_append_song_select(AgsMidiBuilder *midi_builder,
  * 
  * Appends song select.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_midi_builder_append_song_select(AgsMidiBuilder *midi_builder,
@@ -1884,7 +1953,7 @@ ags_midi_builder_real_append_tune_request(AgsMidiBuilder *midi_builder,
  * 
  * Appends tune request.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_midi_builder_append_tune_request(AgsMidiBuilder *midi_builder,
@@ -1926,7 +1995,7 @@ ags_midi_builder_real_append_sequence_number(AgsMidiBuilder *midi_builder,
  * 
  * Appends sequence number.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_midi_builder_append_sequence_number(AgsMidiBuilder *midi_builder,
@@ -1974,7 +2043,7 @@ ags_midi_builder_real_append_smtpe(AgsMidiBuilder *midi_builder,
  * 
  * Appends smtpe.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_midi_builder_append_smtpe(AgsMidiBuilder *midi_builder,
@@ -2019,7 +2088,7 @@ ags_midi_builder_real_append_tempo(AgsMidiBuilder *midi_builder,
  * 
  * Appends tempo.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_midi_builder_append_tempo(AgsMidiBuilder *midi_builder,
@@ -2066,7 +2135,7 @@ ags_midi_builder_real_append_time_signature(AgsMidiBuilder *midi_builder,
  *
  * Appends time signature.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_midi_builder_append_time_signature(AgsMidiBuilder *midi_builder,
@@ -2111,7 +2180,7 @@ ags_midi_builder_real_append_key_signature(AgsMidiBuilder *midi_builder,
  *
  * Appends key signature.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_midi_builder_append_key_signature(AgsMidiBuilder *midi_builder,
@@ -2157,7 +2226,7 @@ ags_midi_builder_real_append_sequencer_meta_event(AgsMidiBuilder *midi_builder,
  * 
  * Appends sequencer meta event.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_midi_builder_append_sequencer_meta_event(AgsMidiBuilder *midi_builder,
@@ -2208,7 +2277,7 @@ ags_midi_builder_real_append_text_event(AgsMidiBuilder *midi_builder,
  *
  * Appends text event.
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_midi_builder_append_text_event(AgsMidiBuilder *midi_builder,
@@ -2232,7 +2301,7 @@ ags_midi_builder_append_text_event(AgsMidiBuilder *midi_builder,
  * 
  * Append from XML node @node.
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_midi_builder_append_xml_node(AgsMidiBuilder *midi_builder,
@@ -3028,7 +3097,7 @@ ags_midi_builder_append_xml_node(AgsMidiBuilder *midi_builder,
  *
  * Builds from XML document @doc.
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_midi_builder_from_xml_doc(AgsMidiBuilder *midi_builder,
@@ -3071,7 +3140,7 @@ ags_midi_builder_from_xml_doc(AgsMidiBuilder *midi_builder,
  *
  * Build the MIDI data.
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_midi_builder_build(AgsMidiBuilder *midi_builder)
@@ -3148,11 +3217,11 @@ ags_midi_builder_build(AgsMidiBuilder *midi_builder)
  * ags_midi_builder_new:
  * @file: the FILE handle
  * 
- * Creates a new #AgsMidiBuilder
+ * Creates a new instance of #AgsMidiBuilder
  *
- * Returns: an #AgsMidiBuilder
+ * Returns: the new #AgsMidiBuilder
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsMidiBuilder*
 ags_midi_builder_new(FILE *file)

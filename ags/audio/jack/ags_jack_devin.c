@@ -1709,7 +1709,7 @@ ags_jack_devin_get_presets(AgsSoundcard *soundcard,
  *
  * List available soundcards.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_jack_devin_list_cards(AgsSoundcard *soundcard,

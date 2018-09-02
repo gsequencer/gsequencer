@@ -89,6 +89,9 @@ struct _AgsMidiFile
 
   guint flags;
 
+  pthread_mutex_t *obj_mutex;
+  pthread_mutexattr_t *obj_mutexattr;
+
   gchar *filename;
   FILE *file;
   
@@ -129,6 +132,8 @@ struct _AgsMidiFileTrack
 GType ags_midi_file_get_type(void);
 
 GQuark ags_midi_file_error_quark();
+
+pthread_mutex_t* ags_midi_file_get_class_mutex();
 
 gboolean ags_midi_file_open(AgsMidiFile *midi_file,
 			    gchar *filename);
