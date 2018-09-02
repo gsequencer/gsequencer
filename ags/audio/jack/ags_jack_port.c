@@ -707,7 +707,7 @@ ags_jack_port_unset_flags(AgsJackPort *jack_port, guint flags)
  *
  * Returns: the next matching #GList-struct or %NULL
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 GList*
 ags_jack_port_find(GList *jack_port,

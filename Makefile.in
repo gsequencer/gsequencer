@@ -242,8 +242,7 @@ am__objects_5 = $(am__objects_1) ags/file/libags_la-ags_file.lo \
 	ags/file/libags_la-ags_file_launch.lo \
 	ags/file/libags_la-ags_file_link.lo \
 	ags/file/libags_la-ags_file_lookup.lo \
-	ags/file/libags_la-ags_file_util.lo \
-	ags/file/libags_la-ags_xml_serialization_factory.lo
+	ags/file/libags_la-ags_file_util.lo
 am_libags_la_OBJECTS = $(am__objects_2) $(am__objects_3) \
 	$(am__objects_4) $(am__objects_5)
 libags_la_OBJECTS = $(am_libags_la_OBJECTS)
@@ -325,7 +324,6 @@ am__objects_8 = $(am__objects_1) \
 	ags/audio/file/libags_audio_la-ags_audio_file.lo \
 	ags/audio/file/libags_audio_la-ags_audio_file_link.lo \
 	ags/audio/file/libags_audio_la-ags_audio_file_xml.lo \
-	ags/audio/file/libags_audio_la-ags_audio_xml_serialization_factory.lo \
 	ags/audio/file/libags_audio_la-ags_ipatch.lo \
 	ags/audio/file/libags_audio_la-ags_ipatch_sample.lo \
 	ags/audio/file/libags_audio_la-ags_ipatch_dls2_reader.lo \
@@ -624,8 +622,7 @@ am__objects_21 = $(am__objects_1) \
 	ags/thread/libags_thread_la-ags_timestamp.lo \
 	ags/thread/libags_thread_la-ags_worker_thread.lo
 am__objects_22 = $(am__objects_1) \
-	ags/thread/file/libags_thread_la-ags_thread_file_xml.lo \
-	ags/thread/file/libags_thread_la-ags_thread_xml_serialization_factory.lo
+	ags/thread/file/libags_thread_la-ags_thread_file_xml.lo
 am_libags_thread_la_OBJECTS = $(am__objects_21) $(am__objects_22)
 libags_thread_la_OBJECTS = $(am_libags_thread_la_OBJECTS)
 libags_thread_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
@@ -3232,8 +3229,7 @@ libags_file_h_sources = \
 	ags/file/ags_file_link.h \
 	ags/file/ags_file_lookup.h \
 	ags/file/ags_file_stock.h \
-	ags/file/ags_file_util.h \
-	ags/file/ags_xml_serialization_factory.h
+	ags/file/ags_file_util.h
 
 deprecated_libags_file_c_sources = 
 libags_file_c_sources = \
@@ -3243,8 +3239,7 @@ libags_file_c_sources = \
 	ags/file/ags_file_launch.c \
 	ags/file/ags_file_link.c \
 	ags/file/ags_file_lookup.c \
-	ags/file/ags_file_util.c \
-	ags/file/ags_xml_serialization_factory.c
+	ags/file/ags_file_util.c
 
 
 # libags-thread all files
@@ -3303,14 +3298,12 @@ libags_thread_c_sources = \
 deprecated_libags_thread_file_h_sources = 
 libags_thread_file_h_sources = \
 	$(deprecated_libags_thread_file_h_sources) \
-	ags/thread/file/ags_thread_file_xml.h \
-	ags/thread/file/ags_thread_xml_serialization_factory.h
+	ags/thread/file/ags_thread_file_xml.h
 
 deprecated_libags_thread_file_c_sources = 
 libags_thread_file_c_sources = \
 	$(deprecated_libags_thread_file_c_sources) \
-	ags/thread/file/ags_thread_file_xml.c \
-	ags/thread/file/ags_thread_xml_serialization_factory.c
+	ags/thread/file/ags_thread_file_xml.c
 
 
 # libags-server all files
@@ -3610,7 +3603,6 @@ libags_audio_file_h_sources = \
 	ags/audio/file/ags_audio_file.h \
 	ags/audio/file/ags_audio_file_link.h \
 	ags/audio/file/ags_audio_file_xml.h \
-	ags/audio/file/ags_audio_xml_serialization_factory.h \
 	ags/audio/file/ags_ipatch.h \
 	ags/audio/file/ags_ipatch_sample.h \
 	ags/audio/file/ags_ipatch_dls2_reader.h \
@@ -3627,7 +3619,6 @@ libags_audio_file_c_sources = \
 	ags/audio/file/ags_audio_file.c \
 	ags/audio/file/ags_audio_file_link.c \
 	ags/audio/file/ags_audio_file_xml.c \
-	ags/audio/file/ags_audio_xml_serialization_factory.c \
 	ags/audio/file/ags_ipatch.c \
 	ags/audio/file/ags_ipatch_sample.c \
 	ags/audio/file/ags_ipatch_dls2_reader.c \
@@ -4907,8 +4898,6 @@ ags/file/libags_la-ags_file_lookup.lo: ags/file/$(am__dirstamp) \
 	ags/file/$(DEPDIR)/$(am__dirstamp)
 ags/file/libags_la-ags_file_util.lo: ags/file/$(am__dirstamp) \
 	ags/file/$(DEPDIR)/$(am__dirstamp)
-ags/file/libags_la-ags_xml_serialization_factory.lo:  \
-	ags/file/$(am__dirstamp) ags/file/$(DEPDIR)/$(am__dirstamp)
 
 libags.la: $(libags_la_OBJECTS) $(libags_la_DEPENDENCIES) $(EXTRA_libags_la_DEPENDENCIES) 
 	$(AM_V_CCLD)$(libags_la_LINK) -rpath $(libdir) $(libags_la_OBJECTS) $(libags_la_LIBADD) $(LIBS)
@@ -5062,9 +5051,6 @@ ags/audio/file/libags_audio_la-ags_audio_file_link.lo:  \
 	ags/audio/file/$(am__dirstamp) \
 	ags/audio/file/$(DEPDIR)/$(am__dirstamp)
 ags/audio/file/libags_audio_la-ags_audio_file_xml.lo:  \
-	ags/audio/file/$(am__dirstamp) \
-	ags/audio/file/$(DEPDIR)/$(am__dirstamp)
-ags/audio/file/libags_audio_la-ags_audio_xml_serialization_factory.lo:  \
 	ags/audio/file/$(am__dirstamp) \
 	ags/audio/file/$(DEPDIR)/$(am__dirstamp)
 ags/audio/file/libags_audio_la-ags_ipatch.lo:  \
@@ -5909,9 +5895,6 @@ ags/thread/file/$(DEPDIR)/$(am__dirstamp):
 	@$(MKDIR_P) ags/thread/file/$(DEPDIR)
 	@: > ags/thread/file/$(DEPDIR)/$(am__dirstamp)
 ags/thread/file/libags_thread_la-ags_thread_file_xml.lo:  \
-	ags/thread/file/$(am__dirstamp) \
-	ags/thread/file/$(DEPDIR)/$(am__dirstamp)
-ags/thread/file/libags_thread_la-ags_thread_xml_serialization_factory.lo:  \
 	ags/thread/file/$(am__dirstamp) \
 	ags/thread/file/$(DEPDIR)/$(am__dirstamp)
 
@@ -7653,7 +7636,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/file/$(DEPDIR)/libags_audio_la-ags_audio_file.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/file/$(DEPDIR)/libags_audio_la-ags_audio_file_link.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/file/$(DEPDIR)/libags_audio_la-ags_audio_file_xml.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@ags/audio/file/$(DEPDIR)/libags_audio_la-ags_audio_xml_serialization_factory.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/file/$(DEPDIR)/libags_audio_la-ags_ipatch.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/file/$(DEPDIR)/libags_audio_la-ags_ipatch_dls2_reader.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/file/$(DEPDIR)/libags_audio_la-ags_ipatch_gig_reader.Plo@am__quote@
@@ -7819,7 +7801,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@ags/file/$(DEPDIR)/libags_la-ags_file_link.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/file/$(DEPDIR)/libags_la-ags_file_lookup.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/file/$(DEPDIR)/libags_la-ags_file_util.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@ags/file/$(DEPDIR)/libags_la-ags_xml_serialization_factory.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/lib/$(DEPDIR)/libags_la-ags_buffer_util.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/lib/$(DEPDIR)/libags_la-ags_complex.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/lib/$(DEPDIR)/libags_la-ags_conversion.Plo@am__quote@
@@ -7992,7 +7973,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@ags/thread/$(DEPDIR)/libags_thread_la-ags_timestamp.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/thread/$(DEPDIR)/libags_thread_la-ags_worker_thread.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/thread/file/$(DEPDIR)/libags_thread_la-ags_thread_file_xml.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@ags/thread/file/$(DEPDIR)/libags_thread_la-ags_thread_xml_serialization_factory.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/util/$(DEPDIR)/libags_la-ags_destroy_util.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/util/$(DEPDIR)/libags_la-ags_id_generator.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@ags/util/$(DEPDIR)/libags_la-ags_list_util.Plo@am__quote@
@@ -8332,13 +8312,6 @@ ags/file/libags_la-ags_file_util.lo: ags/file/ags_file_util.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/file/ags_file_util.c' object='ags/file/libags_la-ags_file_util.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_la_CFLAGS) $(CFLAGS) -c -o ags/file/libags_la-ags_file_util.lo `test -f 'ags/file/ags_file_util.c' || echo '$(srcdir)/'`ags/file/ags_file_util.c
-
-ags/file/libags_la-ags_xml_serialization_factory.lo: ags/file/ags_xml_serialization_factory.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_la_CFLAGS) $(CFLAGS) -MT ags/file/libags_la-ags_xml_serialization_factory.lo -MD -MP -MF ags/file/$(DEPDIR)/libags_la-ags_xml_serialization_factory.Tpo -c -o ags/file/libags_la-ags_xml_serialization_factory.lo `test -f 'ags/file/ags_xml_serialization_factory.c' || echo '$(srcdir)/'`ags/file/ags_xml_serialization_factory.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/file/$(DEPDIR)/libags_la-ags_xml_serialization_factory.Tpo ags/file/$(DEPDIR)/libags_la-ags_xml_serialization_factory.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/file/ags_xml_serialization_factory.c' object='ags/file/libags_la-ags_xml_serialization_factory.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_la_CFLAGS) $(CFLAGS) -c -o ags/file/libags_la-ags_xml_serialization_factory.lo `test -f 'ags/file/ags_xml_serialization_factory.c' || echo '$(srcdir)/'`ags/file/ags_xml_serialization_factory.c
 
 ags/audio/libags_audio_la-ags_acceleration.lo: ags/audio/ags_acceleration.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -MT ags/audio/libags_audio_la-ags_acceleration.lo -MD -MP -MF ags/audio/$(DEPDIR)/libags_audio_la-ags_acceleration.Tpo -c -o ags/audio/libags_audio_la-ags_acceleration.lo `test -f 'ags/audio/ags_acceleration.c' || echo '$(srcdir)/'`ags/audio/ags_acceleration.c
@@ -8773,13 +8746,6 @@ ags/audio/file/libags_audio_la-ags_audio_file_xml.lo: ags/audio/file/ags_audio_f
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/audio/file/ags_audio_file_xml.c' object='ags/audio/file/libags_audio_la-ags_audio_file_xml.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -c -o ags/audio/file/libags_audio_la-ags_audio_file_xml.lo `test -f 'ags/audio/file/ags_audio_file_xml.c' || echo '$(srcdir)/'`ags/audio/file/ags_audio_file_xml.c
-
-ags/audio/file/libags_audio_la-ags_audio_xml_serialization_factory.lo: ags/audio/file/ags_audio_xml_serialization_factory.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -MT ags/audio/file/libags_audio_la-ags_audio_xml_serialization_factory.lo -MD -MP -MF ags/audio/file/$(DEPDIR)/libags_audio_la-ags_audio_xml_serialization_factory.Tpo -c -o ags/audio/file/libags_audio_la-ags_audio_xml_serialization_factory.lo `test -f 'ags/audio/file/ags_audio_xml_serialization_factory.c' || echo '$(srcdir)/'`ags/audio/file/ags_audio_xml_serialization_factory.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/audio/file/$(DEPDIR)/libags_audio_la-ags_audio_xml_serialization_factory.Tpo ags/audio/file/$(DEPDIR)/libags_audio_la-ags_audio_xml_serialization_factory.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/audio/file/ags_audio_xml_serialization_factory.c' object='ags/audio/file/libags_audio_la-ags_audio_xml_serialization_factory.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -c -o ags/audio/file/libags_audio_la-ags_audio_xml_serialization_factory.lo `test -f 'ags/audio/file/ags_audio_xml_serialization_factory.c' || echo '$(srcdir)/'`ags/audio/file/ags_audio_xml_serialization_factory.c
 
 ags/audio/file/libags_audio_la-ags_ipatch.lo: ags/audio/file/ags_ipatch.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -MT ags/audio/file/libags_audio_la-ags_ipatch.lo -MD -MP -MF ags/audio/file/$(DEPDIR)/libags_audio_la-ags_ipatch.Tpo -c -o ags/audio/file/libags_audio_la-ags_ipatch.lo `test -f 'ags/audio/file/ags_ipatch.c' || echo '$(srcdir)/'`ags/audio/file/ags_ipatch.c
@@ -10579,13 +10545,6 @@ ags/thread/file/libags_thread_la-ags_thread_file_xml.lo: ags/thread/file/ags_thr
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/thread/file/ags_thread_file_xml.c' object='ags/thread/file/libags_thread_la-ags_thread_file_xml.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_thread_la_CFLAGS) $(CFLAGS) -c -o ags/thread/file/libags_thread_la-ags_thread_file_xml.lo `test -f 'ags/thread/file/ags_thread_file_xml.c' || echo '$(srcdir)/'`ags/thread/file/ags_thread_file_xml.c
-
-ags/thread/file/libags_thread_la-ags_thread_xml_serialization_factory.lo: ags/thread/file/ags_thread_xml_serialization_factory.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_thread_la_CFLAGS) $(CFLAGS) -MT ags/thread/file/libags_thread_la-ags_thread_xml_serialization_factory.lo -MD -MP -MF ags/thread/file/$(DEPDIR)/libags_thread_la-ags_thread_xml_serialization_factory.Tpo -c -o ags/thread/file/libags_thread_la-ags_thread_xml_serialization_factory.lo `test -f 'ags/thread/file/ags_thread_xml_serialization_factory.c' || echo '$(srcdir)/'`ags/thread/file/ags_thread_xml_serialization_factory.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/thread/file/$(DEPDIR)/libags_thread_la-ags_thread_xml_serialization_factory.Tpo ags/thread/file/$(DEPDIR)/libags_thread_la-ags_thread_xml_serialization_factory.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/thread/file/ags_thread_xml_serialization_factory.c' object='ags/thread/file/libags_thread_la-ags_thread_xml_serialization_factory.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_thread_la_CFLAGS) $(CFLAGS) -c -o ags/thread/file/libags_thread_la-ags_thread_xml_serialization_factory.lo `test -f 'ags/thread/file/ags_thread_xml_serialization_factory.c' || echo '$(srcdir)/'`ags/thread/file/ags_thread_xml_serialization_factory.c
 
 ags/X/libgsequencer_la-ags_automation_editor.lo: ags/X/ags_automation_editor.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -MT ags/X/libgsequencer_la-ags_automation_editor.lo -MD -MP -MF ags/X/$(DEPDIR)/libgsequencer_la-ags_automation_editor.Tpo -c -o ags/X/libgsequencer_la-ags_automation_editor.lo `test -f 'ags/X/ags_automation_editor.c' || echo '$(srcdir)/'`ags/X/ags_automation_editor.c

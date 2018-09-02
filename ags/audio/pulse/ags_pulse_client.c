@@ -949,7 +949,7 @@ ags_pulse_client_find_uuid(GList *pulse_client,
  *
  * Returns: the next matching #GList-struct or %NULL
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 GList*
 ags_pulse_client_find(GList *pulse_client,

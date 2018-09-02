@@ -444,8 +444,7 @@ libags_file_h_sources = \
 	ags/file/ags_file_link.h \
 	ags/file/ags_file_lookup.h \
 	ags/file/ags_file_stock.h \
-	ags/file/ags_file_util.h \
-	ags/file/ags_xml_serialization_factory.h
+	ags/file/ags_file_util.h
 
 deprecated_libags_file_c_sources =
 
@@ -456,8 +455,7 @@ libags_file_c_sources = \
 	ags/file/ags_file_launch.c \
 	ags/file/ags_file_link.c \
 	ags/file/ags_file_lookup.c \
-	ags/file/ags_file_util.c \
-	ags/file/ags_xml_serialization_factory.c
+	ags/file/ags_file_util.c
 
 # libags-thread all files
 deprecated_libags_thread_h_sources =
@@ -517,15 +515,13 @@ deprecated_libags_thread_file_h_sources =
 
 libags_thread_file_h_sources = \
 	$(deprecated_libags_thread_file_h_sources) \
-	ags/thread/file/ags_thread_file_xml.h \
-	ags/thread/file/ags_thread_xml_serialization_factory.h
+	ags/thread/file/ags_thread_file_xml.h
 
 deprecated_libags_thread_file_c_sources =
 
 libags_thread_file_c_sources = \
 	$(deprecated_libags_thread_file_c_sources) \
-	ags/thread/file/ags_thread_file_xml.c \
-	ags/thread/file/ags_thread_xml_serialization_factory.c
+	ags/thread/file/ags_thread_file_xml.c
 
 # libags-server all files
 deprecated_libags_server_h_sources =
@@ -833,7 +829,6 @@ libags_audio_file_h_sources = \
 	ags/audio/file/ags_audio_file.h \
 	ags/audio/file/ags_audio_file_link.h \
 	ags/audio/file/ags_audio_file_xml.h \
-	ags/audio/file/ags_audio_xml_serialization_factory.h \
 	ags/audio/file/ags_ipatch.h \
 	ags/audio/file/ags_ipatch_sample.h \
 	ags/audio/file/ags_ipatch_dls2_reader.h \
@@ -851,7 +846,6 @@ libags_audio_file_c_sources = \
 	ags/audio/file/ags_audio_file.c \
 	ags/audio/file/ags_audio_file_link.c \
 	ags/audio/file/ags_audio_file_xml.c \
-	ags/audio/file/ags_audio_xml_serialization_factory.c \
 	ags/audio/file/ags_ipatch.c \
 	ags/audio/file/ags_ipatch_sample.c \
 	ags/audio/file/ags_ipatch_dls2_reader.c \

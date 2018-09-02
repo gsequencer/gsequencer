@@ -165,7 +165,7 @@ ags_play_lv2_audio_class_init(AgsPlayLv2AudioClass *play_lv2_audio)
    *
    * The uri's name.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec =  g_param_spec_string("uri",
 				    i18n_pspec("the uri"),
@@ -970,7 +970,7 @@ ags_play_lv2_audio_load(AgsPlayLv2Audio *play_lv2_audio)
  *
  * Returns: a #GList-struct containing #AgsPort
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 GList*
 ags_play_lv2_audio_load_ports(AgsPlayLv2Audio *play_lv2_audio)
@@ -1199,7 +1199,7 @@ ags_play_lv2_audio_load_ports(AgsPlayLv2Audio *play_lv2_audio)
  * 
  * Loads conversion object by using @plugin_port and sets in on @port.
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_play_lv2_audio_load_conversion(AgsPlayLv2Audio *play_lv2_audio,

@@ -1245,7 +1245,7 @@ ags_recall_container_remove(AgsRecallContainer *recall_container,
  *
  * Returns: the #AgsRecallAudio
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsRecall*
 ags_recall_container_get_recall_audio(AgsRecallContainer *recall_container)
@@ -1265,7 +1265,7 @@ ags_recall_container_get_recall_audio(AgsRecallContainer *recall_container)
  *
  * Returns: the #AgsRecallAudioRun as list
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 GList*
 ags_recall_container_get_recall_audio_run(AgsRecallContainer *recall_container)
@@ -1285,7 +1285,7 @@ ags_recall_container_get_recall_audio_run(AgsRecallContainer *recall_container)
  *
  * Returns: the #AgsRecallChannel
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 GList*
 ags_recall_container_get_recall_channel(AgsRecallContainer *recall_container)
@@ -1305,7 +1305,7 @@ ags_recall_container_get_recall_channel(AgsRecallContainer *recall_container)
  *
  * Returns: the #AgsRecall
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 GList*
 ags_recall_container_get_recall_channel_run(AgsRecallContainer *recall_container)
@@ -1328,7 +1328,7 @@ ags_recall_container_get_recall_channel_run(AgsRecallContainer *recall_container
  *
  * Returns: the matching recalls
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 GList*
 ags_recall_container_find(GList *recall_container,
@@ -1413,11 +1413,11 @@ ags_recall_container_find(GList *recall_container,
 /**
  * ags_recall_container_new:
  * 
- * Creates an #AgsRecallContainer
+ * Create a new instance of #AgsRecallContainer
  *
- * Returns: a new #AgsRecallContainer
+ * Returns: the new #AgsRecallContainer
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsRecallContainer*
 ags_recall_container_new()

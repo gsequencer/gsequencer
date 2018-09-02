@@ -584,7 +584,7 @@ ags_soundcard_thread_stopped_all_callback(AgsAudioLoop *audio_loop,
  * Returns: the matching #AgsSoundcardThread, if not
  * found %NULL.
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsSoundcardThread*
 ags_soundcard_thread_find_soundcard(AgsSoundcardThread *soundcard_thread,
@@ -611,11 +611,11 @@ ags_soundcard_thread_find_soundcard(AgsSoundcardThread *soundcard_thread,
  * ags_soundcard_thread_new:
  * @soundcard: the #AgsSoundcard
  *
- * Create a new #AgsSoundcardThread.
+ * Create a new instance of #AgsSoundcardThread.
  *
  * Returns: the new #AgsSoundcardThread
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsSoundcardThread*
 ags_soundcard_thread_new(GObject *soundcard)

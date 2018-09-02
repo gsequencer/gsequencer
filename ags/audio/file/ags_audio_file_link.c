@@ -138,7 +138,7 @@ ags_audio_file_link_class_init(AgsAudioFileLinkClass *audio_file_link)
    *
    * The assigned preset.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_string("preset",
 				   i18n_pspec("the preset"),
@@ -154,7 +154,7 @@ ags_audio_file_link_class_init(AgsAudioFileLinkClass *audio_file_link)
    *
    * The assigned instrument.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_string("instrument",
 				   i18n_pspec("the instrument"),
@@ -170,7 +170,7 @@ ags_audio_file_link_class_init(AgsAudioFileLinkClass *audio_file_link)
    *
    * The assigned sample.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_string("sample",
 				   i18n_pspec("the sample"),
@@ -186,7 +186,7 @@ ags_audio_file_link_class_init(AgsAudioFileLinkClass *audio_file_link)
    *
    * The assigned audio channel.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_uint("audio-channel",
 				 i18n_pspec("audio channel to read"),
@@ -203,7 +203,7 @@ ags_audio_file_link_class_init(AgsAudioFileLinkClass *audio_file_link)
    *
    * The assigned timestamp.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("timestamp",
 				   i18n_pspec("timestamp"),
@@ -244,7 +244,16 @@ ags_audio_file_link_set_property(GObject *gobject,
 {
   AgsAudioFileLink *audio_file_link;
 
+  pthread_mutex_t *file_link_mutex;
+
   audio_file_link = AGS_AUDIO_FILE_LINK(gobject);
+
+  /* get file link mutex */
+  pthread_mutex_lock(ags_file_link_get_class_mutex());
+  
+  file_link_mutex = AGS_FILE_LINK(audio_file_link)->obj_mutex;
+  
+  pthread_mutex_unlock(ags_file_link_get_class_mutex());
   
   switch(prop_id){
   case PROP_PRESET:
@@ -253,7 +262,11 @@ ags_audio_file_link_set_property(GObject *gobject,
 
       preset = (char *) g_value_get_string(value);
 
+      pthread_mutex_lock(file_link_mutex);
+
       if(preset == audio_file_link->preset){
+	pthread_mutex_unlock(file_link_mutex);
+
 	return;
       }
 
@@ -262,6 +275,8 @@ ags_audio_file_link_set_property(GObject *gobject,
       }
 	
       audio_file_link->preset = g_strdup(preset);
+
+      pthread_mutex_unlock(file_link_mutex);
     }
     break;
   case PROP_INSTRUMENT:
@@ -270,7 +285,11 @@ ags_audio_file_link_set_property(GObject *gobject,
 
       instrument = (char *) g_value_get_string(value);
 
+      pthread_mutex_lock(file_link_mutex);
+
       if(instrument == audio_file_link->instrument){
+	pthread_mutex_unlock(file_link_mutex);
+
 	return;
       }
 
@@ -279,6 +298,8 @@ ags_audio_file_link_set_property(GObject *gobject,
       }
 	
       audio_file_link->instrument = g_strdup(instrument);
+
+      pthread_mutex_unlock(file_link_mutex);
     }
     break;
   case PROP_SAMPLE:
@@ -287,7 +308,11 @@ ags_audio_file_link_set_property(GObject *gobject,
 
       sample = (char *) g_value_get_string(value);
 
+      pthread_mutex_lock(file_link_mutex);
+
       if(sample == audio_file_link->sample){
+	pthread_mutex_unlock(file_link_mutex);
+
 	return;
       }
 
@@ -296,11 +321,17 @@ ags_audio_file_link_set_property(GObject *gobject,
       }
 	
       audio_file_link->sample = g_strdup(sample);
+
+      pthread_mutex_unlock(file_link_mutex);
     }
     break;
   case PROP_AUDIO_CHANNEL:
     {
+      pthread_mutex_lock(file_link_mutex);
+
       audio_file_link->audio_channel = g_value_get_uint(value);
+
+      pthread_mutex_unlock(file_link_mutex);
     }
     break;
   case PROP_TIMESTAMP:
@@ -309,7 +340,11 @@ ags_audio_file_link_set_property(GObject *gobject,
 
       timestamp = (GObject *) g_value_get_object(value);
 
+      pthread_mutex_lock(file_link_mutex);
+
       if((AgsTimestamp *) timestamp == audio_file_link->timestamp){
+	pthread_mutex_unlock(file_link_mutex);
+
 	return;
       }
 
@@ -322,6 +357,8 @@ ags_audio_file_link_set_property(GObject *gobject,
       }
 
       audio_file_link->timestamp = (AgsTimestamp *) timestamp;
+
+      pthread_mutex_unlock(file_link_mutex);
     }
     break;
   default:
@@ -338,32 +375,61 @@ ags_audio_file_link_get_property(GObject *gobject,
 {
   AgsAudioFileLink *audio_file_link;
 
+  pthread_mutex_t *file_link_mutex;
+
   audio_file_link = AGS_AUDIO_FILE_LINK(gobject);
+
+  /* get file link mutex */
+  pthread_mutex_lock(ags_file_link_get_class_mutex());
+  
+  file_link_mutex = AGS_FILE_LINK(audio_file_link)->obj_mutex;
+  
+  pthread_mutex_unlock(ags_file_link_get_class_mutex());
   
   switch(prop_id){
   case PROP_PRESET:
     {
+      pthread_mutex_lock(file_link_mutex);
+
       g_value_set_string(value, audio_file_link->preset);
+
+      pthread_mutex_unlock(file_link_mutex);
     }
     break;
   case PROP_INSTRUMENT:
     {
+      pthread_mutex_lock(file_link_mutex);
+
       g_value_set_string(value, audio_file_link->instrument);
+
+      pthread_mutex_unlock(file_link_mutex);
     }
     break;
   case PROP_SAMPLE:
     {
+      pthread_mutex_lock(file_link_mutex);
+
       g_value_set_string(value, audio_file_link->sample);
+
+      pthread_mutex_unlock(file_link_mutex);
     }
     break;
   case PROP_AUDIO_CHANNEL:
     {
+      pthread_mutex_lock(file_link_mutex);
+
       g_value_set_uint(value, audio_file_link->audio_channel);
+
+      pthread_mutex_unlock(file_link_mutex);
     }
     break;
   case PROP_TIMESTAMP:
     {
+      pthread_mutex_lock(file_link_mutex);
+
       g_value_set_object(value, audio_file_link->timestamp);
+
+      pthread_mutex_unlock(file_link_mutex);
     }
     break;
   default:
@@ -638,11 +704,11 @@ ags_audio_file_link_read_launch(AgsFileLaunch *file_launch,
 /**
  * ags_audio_file_link_new:
  *
- * Creates an #AgsAudioFileLink
+ * Create a new instance of #AgsAudioFileLink
  *
- * Returns: a new #AgsAudioFileLink
+ * Returns: the new #AgsAudioFileLink
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsAudioFileLink*
 ags_audio_file_link_new()
