@@ -19,15 +19,23 @@
 
 #include <ags/thread/ags_generic_main_loop.h>
 
-#include <ags/object/ags_connectable.h>
 #include <ags/object/ags_main_loop.h>
 
+#include <ags/i18n.h>
+
 void ags_generic_main_loop_class_init(AgsGenericMainLoopClass *generic_main_loop);
-void ags_generic_main_loop_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_generic_main_loop_main_loop_interface_init(AgsMainLoopInterface *main_loop);
 void ags_generic_main_loop_init(AgsGenericMainLoop *generic_main_loop);
-void ags_generic_main_loop_connect(AgsConnectable *connectable);
-void ags_generic_main_loop_disconnect(AgsConnectable *connectable);
+void ags_generic_main_loop_set_property(GObject *gobject,
+					guint prop_id,
+					const GValue *value,
+					GParamSpec *param_spec);
+void ags_generic_main_loop_get_property(GObject *gobject,
+					guint prop_id,
+					GValue *value,
+					GParamSpec *param_spec);
+void ags_generic_main_loop_finalize(GObject *gobject);
+
 pthread_mutex_t* ags_generic_main_loop_get_tree_lock(AgsMainLoop *main_loop);
 void ags_generic_main_loop_set_async_queue(AgsMainLoop *main_loop, GObject *async_queue);
 GObject* ags_generic_main_loop_get_async_queue(AgsMainLoop *main_loop);
@@ -35,7 +43,6 @@ void ags_generic_main_loop_set_tic(AgsMainLoop *main_loop, guint tic);
 guint ags_generic_main_loop_get_tic(AgsMainLoop *main_loop);
 void ags_generic_main_loop_set_last_sync(AgsMainLoop *main_loop, guint last_sync);
 guint ags_generic_main_loop_get_last_sync(AgsMainLoop *main_loop);
-void ags_generic_main_loop_finalize(GObject *gobject);
 
 void ags_generic_main_loop_start(AgsThread *thread);
 
@@ -51,7 +58,11 @@ void ags_generic_main_loop_start(AgsThread *thread);
  */
 
 static gpointer ags_generic_main_loop_parent_class = NULL;
-static AgsConnectableInterface *ags_generic_main_loop_parent_connectable_interface;
+
+enum{
+  PROP_0,
+  PROP_APPLICATION_CONTEXT,
+};
 
 GType
 ags_generic_main_loop_get_type()
@@ -71,12 +82,6 @@ ags_generic_main_loop_get_type()
       (GInstanceInitFunc) ags_generic_main_loop_init,
     };
 
-    static const GInterfaceInfo ags_connectable_interface_info = {
-      (GInterfaceInitFunc) ags_generic_main_loop_connectable_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-
     static const GInterfaceInfo ags_main_loop_interface_info = {
       (GInterfaceInitFunc) ags_generic_main_loop_main_loop_interface_init,
       NULL, /* interface_finalize */
@@ -89,10 +94,6 @@ ags_generic_main_loop_get_type()
 						 0);
     
     g_type_add_interface_static(ags_type_generic_main_loop,
-				AGS_TYPE_CONNECTABLE,
-				&ags_connectable_interface_info);
-
-    g_type_add_interface_static(ags_type_generic_main_loop,
 				AGS_TYPE_MAIN_LOOP,
 				&ags_main_loop_interface_info);
   }
@@ -104,14 +105,37 @@ void
 ags_generic_main_loop_class_init(AgsGenericMainLoopClass *generic_main_loop)
 {
   GObjectClass *gobject;
+
   AgsThreadClass *thread;
 
+  GParamSpec *param_spec;
+  
   ags_generic_main_loop_parent_class = g_type_class_peek_parent(generic_main_loop);
 
   /* GObject */
   gobject = (GObjectClass *) generic_main_loop;
 
+  gobject->set_property = ags_generic_main_loop_set_property;
+  gobject->get_property = ags_generic_main_loop_get_property;
+
   gobject->finalize = ags_generic_main_loop_finalize;
+
+  /* properties */
+  /**
+   * AgsGenericMainLoop:application-context:
+   *
+   * The assigned #AgsApplicationContext
+   * 
+   * Since: 2.0.0
+   */
+  param_spec = g_param_spec_object("application-context",
+				   i18n_pspec("the application context object"),
+				   i18n_pspec("The application context object"),
+				   AGS_TYPE_APPLICATION_CONTEXT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_APPLICATION_CONTEXT,
+				  param_spec);
 
   /* AgsThread */
   thread = (AgsThreadClass *) generic_main_loop;
@@ -119,15 +143,6 @@ ags_generic_main_loop_class_init(AgsGenericMainLoopClass *generic_main_loop)
   thread->start = ags_generic_main_loop_start;
 
   /* AgsGenericMainLoop */
-}
-
-void
-ags_generic_main_loop_connectable_interface_init(AgsConnectableInterface *connectable)
-{
-  ags_generic_main_loop_parent_connectable_interface = g_type_interface_peek_parent(connectable);
-  
-  connectable->connect = ags_generic_main_loop_connect;
-  connectable->disconnect = ags_generic_main_loop_disconnect;
 }
 
 void
@@ -166,19 +181,98 @@ ags_generic_main_loop_init(AgsGenericMainLoop *generic_main_loop)
 }
 
 void
-ags_generic_main_loop_connect(AgsConnectable *connectable)
+ags_generic_main_loop_set_property(GObject *gobject,
+				   guint prop_id,
+				   const GValue *value,
+				   GParamSpec *param_spec)
 {
-  ags_generic_main_loop_parent_connectable_interface->connect(connectable);
+  AgsGenericMainLoop *generic_main_loop;
 
-  /* empty */
+  pthread_mutex_t *thread_mutex;
+
+  generic_main_loop = AGS_GENERIC_MAIN_LOOP(gobject);
+
+  /* get thread mutex */
+  pthread_mutex_lock(ags_thread_get_class_mutex());
+  
+  thread_mutex = AGS_THREAD(gobject)->obj_mutex;
+  
+  pthread_mutex_unlock(ags_thread_get_class_mutex());
+
+  switch(prop_id){
+  case PROP_APPLICATION_CONTEXT:
+    {
+      AgsApplicationContext *application_context;
+
+      application_context = (AgsApplicationContext *) g_value_get_object(value);
+
+      pthread_mutex_lock(thread_mutex);
+
+      if(generic_main_loop->application_context == (GObject *) application_context){
+	pthread_mutex_unlock(thread_mutex);
+
+	return;
+      }
+
+      if(generic_main_loop->application_context != NULL){
+	g_object_unref(G_OBJECT(generic_main_loop->application_context));
+      }
+
+      if(application_context != NULL){
+	g_object_ref(G_OBJECT(application_context));
+      }
+      
+      generic_main_loop->application_context = (GObject *) application_context;
+
+      pthread_mutex_unlock(thread_mutex);
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
 }
 
 void
-ags_generic_main_loop_disconnect(AgsConnectable *connectable)
+ags_generic_main_loop_get_property(GObject *gobject,
+				   guint prop_id,
+				   GValue *value,
+				   GParamSpec *param_spec)
 {
-  ags_generic_main_loop_parent_connectable_interface->disconnect(connectable);
+  AgsGenericMainLoop *generic_main_loop;
 
-  /* empty */
+  pthread_mutex_t *thread_mutex;
+
+  generic_main_loop = AGS_GENERIC_MAIN_LOOP(gobject);
+
+  /* get thread mutex */
+  pthread_mutex_lock(ags_thread_get_class_mutex());
+  
+  thread_mutex = AGS_THREAD(gobject)->obj_mutex;
+  
+  pthread_mutex_unlock(ags_thread_get_class_mutex());
+
+  switch(prop_id){
+  case PROP_APPLICATION_CONTEXT:
+    {
+      pthread_mutex_lock(thread_mutex);
+
+      g_value_set_object(value, generic_main_loop->application_context);
+
+      pthread_mutex_unlock(thread_mutex);
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
+}
+
+void
+ags_generic_main_loop_finalize(GObject *gobject)
+{
+  /* call parent */
+  G_OBJECT_CLASS(ags_generic_main_loop_parent_class)->finalize(gobject);
 }
 
 pthread_mutex_t*
@@ -230,13 +324,6 @@ ags_generic_main_loop_get_last_sync(AgsMainLoop *main_loop)
 }
 
 void
-ags_generic_main_loop_finalize(GObject *gobject)
-{
-  /* call parent */
-  G_OBJECT_CLASS(ags_generic_main_loop_parent_class)->finalize(gobject);
-}
-
-void
 ags_generic_main_loop_start(AgsThread *thread)
 {
   if((AGS_THREAD_SINGLE_LOOP & (g_atomic_int_get(&(thread->flags)))) == 0){
@@ -253,7 +340,7 @@ ags_generic_main_loop_start(AgsThread *thread)
  *
  * Returns: the new #AgsGenericMainLoop
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsGenericMainLoop*
 ags_generic_main_loop_new(GObject *application_context)
@@ -261,12 +348,8 @@ ags_generic_main_loop_new(GObject *application_context)
   AgsGenericMainLoop *generic_main_loop;
 
   generic_main_loop = (AgsGenericMainLoop *) g_object_new(AGS_TYPE_GENERIC_MAIN_LOOP,
+							  "application-context", application_context,
 							  NULL);
-
-  if(application_context != NULL){
-    g_object_ref(G_OBJECT(application_context));
-    generic_main_loop->application_context = application_context;
-  }
 
   return(generic_main_loop);
 }

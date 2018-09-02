@@ -1,4 +1,8 @@
 ags_task_get_type
+ags_task_get_class_mutex
+ags_task_test_flags
+ags_task_set_flags
+ags_task_unset_flags
 ags_task_launch
 ags_task_failure
 ags_task_new
@@ -17,6 +21,7 @@ ags_thread_application_context_get_type
 ags_thread_application_context_register_types
 ags_thread_application_context_new
 ags_message_queue_get_type
+ags_message_queue_get_class_mutex
 ags_message_envelope_alloc
 ags_message_envelope_free
 ags_message_queue_add_message
@@ -33,6 +38,10 @@ ags_concurrency_provider_get_thread_pool
 ags_concurrency_provider_get_worker
 ags_concurrency_provider_set_worker
 ags_task_completion_get_type
+ags_task_completion_get_class_mutex
+ags_task_completion_test_flags
+ags_task_completion_set_flags
+ags_task_completion_unset_flags
 ags_task_completion_complete
 ags_task_completion_new
 ags_task_thread_get_type

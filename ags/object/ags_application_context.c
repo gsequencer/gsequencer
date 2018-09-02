@@ -147,6 +147,7 @@ void
 ags_application_context_class_init(AgsApplicationContextClass *application_context)
 {
   GObjectClass *gobject;
+
   GParamSpec *param_spec;
 
   ags_application_context_parent_class = g_type_class_peek_parent(application_context);

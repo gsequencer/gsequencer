@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -22,6 +22,7 @@
 
 #include <pthread.h>
 
+#include <glib.h>
 #include <glib-object.h>
 
 #define AGS_TYPE_TASK                (ags_task_get_type())
@@ -53,6 +54,9 @@ struct _AgsTask
 
   guint flags;
 
+  pthread_mutex_t *obj_mutex;
+  pthread_mutexattr_t *obj_mutexattr;
+
   char *name;
 
   guint delay;
@@ -72,6 +76,12 @@ struct _AgsTaskClass
 };
 
 GType ags_task_get_type();
+
+pthread_mutex_t* ags_task_get_class_mutex();
+
+gboolean ags_task_test_flags(AgsTask *task, guint flags);
+void ags_task_set_flags(AgsTask *task, guint flags);
+void ags_task_unset_flags(AgsTask *task, guint flags);
 
 void ags_task_launch(AgsTask *task);
 void ags_task_failure(AgsTask *task, GError *error);

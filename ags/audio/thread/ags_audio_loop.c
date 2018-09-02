@@ -169,7 +169,7 @@ ags_audio_loop_class_init(AgsAudioLoopClass *audio_loop)
 
   /* properties */
   /**
-   * AgsDevout:application-context:
+   * AgsAudioLoop:application-context:
    *
    * The assigned #AgsApplicationContext
    * 
