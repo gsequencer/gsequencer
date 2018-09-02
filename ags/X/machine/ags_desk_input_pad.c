@@ -307,7 +307,7 @@ ags_desk_input_pad_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
  *
  * Returns: a new #AgsDeskInputPad
  *
- * Since: 1.5.0
+ * Since: 2.0.0
  */
 AgsDeskInputPad*
 ags_desk_input_pad_new(AgsChannel *channel)

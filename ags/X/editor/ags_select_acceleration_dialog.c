@@ -138,7 +138,7 @@ ags_select_acceleration_dialog_class_init(AgsSelectAccelerationDialogClass *sele
    *
    * The assigned #AgsApplicationContext to give control of application.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("application-context",
 				   i18n_pspec("assigned application context"),
@@ -154,7 +154,7 @@ ags_select_acceleration_dialog_class_init(AgsSelectAccelerationDialogClass *sele
    *
    * The assigned #AgsWindow.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("main-window",
 				   i18n_pspec("assigned main window"),
@@ -754,7 +754,7 @@ ags_select_acceleration_dialog_delete_event(GtkWidget *widget, GdkEventAny *even
  *
  * Returns: a new #AgsSelectAccelerationDialog
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsSelectAccelerationDialog*
 ags_select_acceleration_dialog_new(GtkWidget *main_window)

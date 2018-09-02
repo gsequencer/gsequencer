@@ -169,7 +169,7 @@ ags_front_controller_class_init(AgsFrontControllerClass *front_controller)
    * 
    * Returns: on success a new #AgsSecurityContext, otherwise %NULL
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   front_controller_signals[AUTHENTICATE] =
     g_signal_new("authenticate",
@@ -197,7 +197,7 @@ ags_front_controller_class_init(AgsFrontControllerClass *front_controller)
    * 
    * Returns: the response
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   front_controller_signals[DO_REQUEST] =
     g_signal_new("do-request",
@@ -583,7 +583,7 @@ ags_front_controller_real_authenticate(AgsFrontController *front_controller,
  * Returns: on success the #GParameter-struct containing user's uuid and security token,
  * otherwise %NULL.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 gpointer
 ags_front_controller_authenticate(AgsFrontController *front_controller,
@@ -728,7 +728,7 @@ ags_front_controller_real_do_request(AgsFrontController *front_controller,
  * 
  * Returns: the response, on success the #GParameter-struct containing requested parameters, otherwise %NULL.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 gpointer
 ags_front_controller_do_request(AgsFrontController *front_controller,
@@ -765,7 +765,7 @@ ags_front_controller_do_request(AgsFrontController *front_controller,
  * 
  * Returns: the #AgsFrontController
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsFrontController*
 ags_front_controller_new()

@@ -276,7 +276,7 @@ ags_simple_file_class_init(AgsSimpleFileClass *simple_file)
    *
    * The assigned filename to open and read from.
    *
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_string("filename",
 				   "filename to read or write",
@@ -292,7 +292,7 @@ ags_simple_file_class_init(AgsSimpleFileClass *simple_file)
    *
    * The charset encoding to use.
    *
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_string("encoding",
 				   "encoding to use",
@@ -308,7 +308,7 @@ ags_simple_file_class_init(AgsSimpleFileClass *simple_file)
    *
    * The format of embedded audio data.
    *
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_string("audio-format",
 				   "audio format to use",
@@ -324,7 +324,7 @@ ags_simple_file_class_init(AgsSimpleFileClass *simple_file)
    *
    * The encoding to use for embedding audio data.
    *
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_string("audio-encoding",
 				   "audio encoding to use",
@@ -340,7 +340,7 @@ ags_simple_file_class_init(AgsSimpleFileClass *simple_file)
    *
    * The assigned xml-doc.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_pointer("xml-doc",
 				    "xml document of file",
@@ -355,7 +355,7 @@ ags_simple_file_class_init(AgsSimpleFileClass *simple_file)
    *
    * The application context assigned with.
    *
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("application-context",
 				   "application context of file",
@@ -385,7 +385,7 @@ ags_simple_file_class_init(AgsSimpleFileClass *simple_file)
    * 
    * Open @simple_file with appropriate filename.
    *
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   simple_file_signals[OPEN] =
     g_signal_new("open",
@@ -406,7 +406,7 @@ ags_simple_file_class_init(AgsSimpleFileClass *simple_file)
    * 
    * Open @simple_file from a buffer containing the file.
    *
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   simple_file_signals[OPEN_FROM_DATA] =
     g_signal_new("open-from-data",
@@ -428,7 +428,7 @@ ags_simple_file_class_init(AgsSimpleFileClass *simple_file)
    * 
    * Open @simple_file in read-write mode.
    *
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   simple_file_signals[RW_OPEN] =
     g_signal_new("rw-open",
@@ -447,7 +447,7 @@ ags_simple_file_class_init(AgsSimpleFileClass *simple_file)
    * 
    * Write XML Document to disk.
    *
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   simple_file_signals[WRITE] =
     g_signal_new("write",
@@ -465,7 +465,7 @@ ags_simple_file_class_init(AgsSimpleFileClass *simple_file)
    * Resolve references and generate thus XPath expressions just
    * before writing to disk.
    *
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   simple_file_signals[WRITE_RESOLVE] =
     g_signal_new("write_resolve",
@@ -482,7 +482,7 @@ ags_simple_file_class_init(AgsSimpleFileClass *simple_file)
    *
    * Read a XML document from disk with specified simple_filename.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   simple_file_signals[READ] =
     g_signal_new("read",
@@ -500,7 +500,7 @@ ags_simple_file_class_init(AgsSimpleFileClass *simple_file)
    * Resolve XPath expressions to their counterpart the newly created
    * instances refering to.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   simple_file_signals[READ_RESOLVE] =
     g_signal_new("read_resolve",
@@ -517,7 +517,7 @@ ags_simple_file_class_init(AgsSimpleFileClass *simple_file)
    *
    * Hook after reading XML document to update or start the application.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   simple_file_signals[READ_START] =
     g_signal_new("read_start",
@@ -2090,7 +2090,7 @@ ags_simple_file_read_machine(AgsSimpleFile *simple_file, xmlNode *node, AgsMachi
   /* dispatch */
   while((wait_output && !wait_data[0]) ||
 	(wait_input && !wait_data[1])){
-    usleep(1000000 / 30);
+    usleep(2.0.000 / 30);
     g_main_context_iteration(NULL,
 			     FALSE);
   }

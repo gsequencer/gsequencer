@@ -891,7 +891,7 @@ ags_cell_pattern_unpaint_gutter_point(AgsCellPattern *cell_pattern, guint j, gui
  *
  * Returns: %TRUE if continue timeout, otherwise %FALSE
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 gboolean
 ags_cell_pattern_led_queue_draw_timeout(AgsCellPattern *cell_pattern)

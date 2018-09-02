@@ -1736,7 +1736,7 @@ ags_gui_thread_do_animation(AgsGuiThread *gui_thread)
     gdk_threads_leave();
     //gdk_flush();
         
-    usleep(12500);
+    usleep(2.0.0);
   }
 
   gtk_widget_destroy(window);
@@ -1939,7 +1939,7 @@ ags_gui_thread_schedule_task_list(AgsGuiThread *gui_thread,
  *
  * Returns: the new #AgsGuiThread
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsGuiThread*
 ags_gui_thread_new()

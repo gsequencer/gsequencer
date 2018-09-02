@@ -566,7 +566,7 @@ ags_spectrometer_x_label_func(gdouble value,
 
   gdouble correction;
   
-  correction = (double) 44100.0 / (double) AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
+  correction = (double) 442.0.0 / (double) AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
 
   format = g_strdup_printf("%%.%df",
 			   (guint) ceil(AGS_CARTESIAN(data)->x_label_precision));
@@ -665,7 +665,7 @@ ags_spectrometer_fg_plot_alloc(AgsSpectrometer *spectrometer,
  *
  * Returns: %TRUE if proceed with redraw, otherwise %FALSE
  *
- * Since: 1.5.0
+ * Since: 2.0.0
  */
 gboolean
 ags_spectrometer_cartesian_queue_draw_timeout(GtkWidget *widget)
@@ -695,7 +695,7 @@ ags_spectrometer_cartesian_queue_draw_timeout(GtkWidget *widget)
 					   AGS_TYPE_SPECTROMETER);
 
     fg_plot = spectrometer->fg_plot;
-    correction = (double) 44100.0 / (double) AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
+    correction = (double) 442.0.0 / (double) AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
 
     frequency_buffer_port = spectrometer->frequency_buffer_play_port;
     magnitude_buffer_port = spectrometer->magnitude_buffer_play_port;
@@ -766,7 +766,7 @@ ags_spectrometer_cartesian_queue_draw_timeout(GtkWidget *widget)
  *
  * Returns: a new #AgsSpectrometer
  *
- * Since: 1.5.0
+ * Since: 2.0.0
  */
 AgsSpectrometer*
 ags_spectrometer_new(GObject *soundcard)

@@ -55,7 +55,7 @@ ags_service_provider_class_init(AgsServiceProviderInterface *interface)
  *
  * Returns: %TRUE if operating, otherwise %FALSE
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 gboolean
 is_operating(AgsServiceProvider *service_provider)
@@ -77,7 +77,7 @@ is_operating(AgsServiceProvider *service_provider)
  *
  * Returns: the #AgsServerStatus
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsServerStatus*
 ags_service_provider_server_status(AgsServiceProvider *service_provider)
@@ -99,7 +99,7 @@ ags_service_provider_server_status(AgsServiceProvider *service_provider)
  *
  * Returns: the xmlrpc_env
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 gpointer
 ags_service_provider_get_env(AgsServiceProvider *service_provider)
@@ -120,7 +120,7 @@ ags_service_provider_get_env(AgsServiceProvider *service_provider)
  * 
  * Set registry.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_service_provider_set_registry(AgsServiceProvider *service_provider,
@@ -144,7 +144,7 @@ ags_service_provider_set_registry(AgsServiceProvider *service_provider,
  *
  * Returns: the #AgsRegistry
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 GObject*
 ags_service_provider_get_registry(AgsServiceProvider *service_provider)
@@ -165,7 +165,7 @@ ags_service_provider_get_registry(AgsServiceProvider *service_provider)
  * 
  * Set server.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_service_provider_set_server(AgsServiceProvider *service_provider,
@@ -189,7 +189,7 @@ ags_service_provider_set_server(AgsServiceProvider *service_provider,
  *
  * Returns: the #GList-struct containing #AgsServer
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 GList*
 ags_service_provider_get_server(AgsServiceProvider *service_provider)
@@ -210,7 +210,7 @@ ags_service_provider_get_server(AgsServiceProvider *service_provider)
  * 
  * Set certificate manager.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_service_provider_set_certificate_manager(AgsServiceProvider *service_provider,
@@ -234,7 +234,7 @@ ags_service_provider_set_certificate_manager(AgsServiceProvider *service_provide
  *
  * Returns: the #AgsCertificateManager
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsCertificateManager*
 ags_service_provider_get_certificate_manager(AgsServiceProvider *service_provider)
@@ -255,7 +255,7 @@ ags_service_provider_get_certificate_manager(AgsServiceProvider *service_provide
  * 
  * Set password store manager.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_service_provider_set_password_store_manager(AgsServiceProvider *service_provider,
@@ -279,7 +279,7 @@ ags_service_provider_set_password_store_manager(AgsServiceProvider *service_prov
  *
  * Returns: the #AgsPasswordStoreManager
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsPasswordStoreManager*
 ags_service_provider_get_password_store_manager(AgsServiceProvider *service_provider)
@@ -300,7 +300,7 @@ ags_service_provider_get_password_store_manager(AgsServiceProvider *service_prov
  * 
  * Set authentication manager.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_service_provider_set_authentication_manager(AgsServiceProvider *service_provider,
@@ -324,7 +324,7 @@ ags_service_provider_set_authentication_manager(AgsServiceProvider *service_prov
  *
  * Returns: the #AgsAuthenticationManager
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsAuthenticationManager*
 ags_service_provider_get_authentication_manager(AgsServiceProvider *service_provider)

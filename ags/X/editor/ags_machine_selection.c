@@ -251,7 +251,7 @@ ags_machine_selection_load_defaults(AgsMachineSelection *machine_selection)
  *
  * Returns: a new #AgsMachineSelection
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsMachineSelection*
 ags_machine_selection_new(AgsWindow *window)

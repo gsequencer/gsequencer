@@ -150,7 +150,7 @@ ags_password_store_manager_check_password(AgsPasswordStoreManager *password_stor
  *
  * Returns: the #AgsPasswordStoreManager
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsPasswordStoreManager*
 ags_password_store_manager_get_instance()
@@ -177,7 +177,7 @@ ags_password_store_manager_get_instance()
  *
  * Returns: a new #AgsPasswordStoreManager
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsPasswordStoreManager*
 ags_password_store_manager_new()

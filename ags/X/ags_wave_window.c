@@ -121,7 +121,7 @@ ags_wave_window_class_init(AgsWaveWindowClass *wave_window)
    *
    * The assigned #AgsSoundcard acting as default sink.
    * 
-   * Since: 1.2.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("soundcard",
 				   i18n_pspec("assigned soundcard"),
@@ -291,7 +291,7 @@ ags_wave_window_delete_event(GtkWidget *widget, GdkEventAny *event)
  * 
  * Returns: the new #AgsWaveWindow instance
  * 
- * Since: 1.2.0
+ * Since: 2.0.0
  */
 AgsWaveWindow*
 ags_wave_window_new(GtkWidget *parent_window)

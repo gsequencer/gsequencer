@@ -338,7 +338,7 @@ ags_xml_authentication_find_user_uuid(AgsXmlAuthentication *xml_authentication,
  *
  * Returns: the new #AgsXmlAuthentication instance
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsXmlAuthentication*
 ags_xml_authentication_new()

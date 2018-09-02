@@ -361,7 +361,7 @@ ags_desk_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
  *
  * Returns: a new #AgsDesk
  *
- * Since: 1.5.0
+ * Since: 2.0.0
  */
 AgsDesk*
 ags_desk_new(GObject *soundcard)

@@ -155,7 +155,7 @@ ags_simple_file_read_launch(AgsTask *task)
  *
  * Returns: the #AgsSimpleFileRead task
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsSimpleFileRead*
 ags_simple_file_read_new(AgsSimpleFile *simple_file)

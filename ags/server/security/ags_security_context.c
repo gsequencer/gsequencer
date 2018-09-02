@@ -101,7 +101,7 @@ ags_security_context_class_init(AgsSecurityContextClass *security_context)
    *
    * The assigned certificates as string.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_string("certs",
 				   i18n("certificates as string"),
@@ -230,7 +230,7 @@ ags_security_context_remove_server_context(AgsSecurityContext *security_context,
  *
  * Returns: the new #AgsSecurityContext instance
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsSecurityContext*
 ags_security_context_new()

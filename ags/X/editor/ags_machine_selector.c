@@ -115,7 +115,7 @@ ags_machine_selector_class_init(AgsMachineSelectorClass *machine_selector)
    *
    * The ::changed signal notifies changed #AgsMachine.
    *
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   machine_selector_signals[CHANGED] =
     g_signal_new("changed",
@@ -340,7 +340,7 @@ ags_machine_selector_link_index(AgsMachineSelector *machine_selector,
  *
  * Emitted as #AgsMachineSelector modified.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_machine_selector_changed(AgsMachineSelector *machine_selector, AgsMachine *machine)
@@ -361,7 +361,7 @@ ags_machine_selector_changed(AgsMachineSelector *machine_selector, AgsMachine *m
  *
  * Returns: a new #AgsMachineSelector
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsMachineSelector*
 ags_machine_selector_new()
@@ -382,7 +382,7 @@ ags_machine_selector_new()
  *
  * Returns: a new #GtkMenu suitable for #AgsMachineSelector
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 GtkMenu*
 ags_machine_selector_popup_new(AgsMachineSelector *machine_selector)

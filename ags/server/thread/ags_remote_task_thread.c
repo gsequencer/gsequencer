@@ -157,7 +157,7 @@ ags_remote_task_thread_run(AgsThread *thread)
  *
  * Returns: the new #AgsRemoteTaskThread
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsRemoteTaskThread*
 ags_remote_task_thread_new()

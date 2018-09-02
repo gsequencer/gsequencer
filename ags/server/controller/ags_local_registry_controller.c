@@ -99,7 +99,7 @@ ags_local_registry_controller_class_init(AgsLocalRegistryControllerClass *local_
    *
    * Returns: the response
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   local_registry_controller_signals[ENTRY_BULK] =
     g_signal_new("entry-bulk",
@@ -151,7 +151,7 @@ ags_local_registry_controller_real_entry_bulk(AgsLocalRegistryController *local_
  * 
  * Returns: the response
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 gpointer
 ags_local_registry_controller_entry_bulk(AgsLocalRegistryController *local_registry_controller)
@@ -177,7 +177,7 @@ ags_local_registry_controller_entry_bulk(AgsLocalRegistryController *local_regis
  * 
  * Returns: the #AgsLocalRegistryController
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsLocalRegistryController*
 ags_local_registry_controller_new()

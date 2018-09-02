@@ -105,7 +105,7 @@ ags_local_task_controller_class_init(AgsLocalTaskControllerClass *local_task_con
    *
    * Returns: the response
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   local_task_controller_signals[LAUNCH] =
     g_signal_new("launch",
@@ -127,7 +127,7 @@ ags_local_task_controller_class_init(AgsLocalTaskControllerClass *local_task_con
    *
    * Returns: the response
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   local_task_controller_signals[LAUNCH_TIMED] =
     g_signal_new("launch-timed",
@@ -185,7 +185,7 @@ ags_local_task_controller_real_launch(AgsLocalTaskController *local_task_control
  * 
  * Returns: the response
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 gpointer
 ags_local_task_controller_launch(AgsLocalTaskController *local_task_controller,
@@ -225,7 +225,7 @@ ags_local_task_controller_real_launch_timed(AgsLocalTaskController *local_task_c
  * 
  * Returns: the response
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 gpointer
 ags_local_task_controller_launch_timed(AgsLocalTaskController *local_task_controller,
@@ -254,7 +254,7 @@ ags_local_task_controller_launch_timed(AgsLocalTaskController *local_task_contro
  * 
  * Returns: the #AgsLocalTaskController
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsLocalTaskController*
 ags_local_task_controller_new()

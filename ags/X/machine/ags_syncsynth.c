@@ -1153,7 +1153,7 @@ ags_syncsynth_output_map_recall(AgsSyncsynth *syncsynth,
  * 
  * Add @oscillator to @synthsync.
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_syncsynth_add_oscillator(AgsSyncsynth *syncsynth,
@@ -1199,7 +1199,7 @@ ags_syncsynth_add_oscillator(AgsSyncsynth *syncsynth,
  * 
  * Remove nth oscillator.
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_syncsynth_remove_oscillator(AgsSyncsynth *syncsynth,
@@ -1241,7 +1241,7 @@ ags_syncsynth_remove_oscillator(AgsSyncsynth *syncsynth,
  * 
  * Reset loop spin buttons.
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_syncsynth_reset_loop(AgsSyncsynth *syncsynth)
@@ -1285,7 +1285,7 @@ ags_syncsynth_reset_loop(AgsSyncsynth *syncsynth)
  * 
  * Update audio data.
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_syncsynth_update(AgsSyncsynth *syncsynth)

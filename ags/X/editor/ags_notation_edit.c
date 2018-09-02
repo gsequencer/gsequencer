@@ -1850,7 +1850,7 @@ ags_notation_edit_draw(AgsNotationEdit *notation_edit)
  *
  * Returns: a new #AgsNotationEdit
  * 
- * Since: 1.2.0
+ * Since: 2.0.0
  */
 AgsNotationEdit*
 ags_notation_edit_new()

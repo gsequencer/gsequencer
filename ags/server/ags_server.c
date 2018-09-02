@@ -751,7 +751,7 @@ ags_server_real_start(AgsServer *server)
  * 
  * Start the XMLRPC-C abyss server.
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_server_start(AgsServer *server)
@@ -772,7 +772,7 @@ ags_server_start(AgsServer *server)
  *
  * Returns: the associated #AgsServer if found, else %NULL
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsServer*
 ags_server_lookup(AgsServerInfo *server_info)
@@ -808,7 +808,7 @@ ags_server_lookup(AgsServerInfo *server_info)
  * 
  * Returns: a new #AgsServer
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsServer*
 ags_server_new(GObject *application_context)

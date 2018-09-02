@@ -108,7 +108,7 @@ ags_scrolled_wave_edit_box_class_init(AgsScrolledWaveEditBoxClass *scrolled_wave
    *
    * The margin top.
    * 
-   * Since: 1.4.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_uint("margin-top",
 				 "margin top",
@@ -126,7 +126,7 @@ ags_scrolled_wave_edit_box_class_init(AgsScrolledWaveEditBoxClass *scrolled_wave
    *
    * The margin bottom.
    * 
-   * Since: 1.4.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_uint("margin-bottom",
 				 "margin bottom",
@@ -144,7 +144,7 @@ ags_scrolled_wave_edit_box_class_init(AgsScrolledWaveEditBoxClass *scrolled_wave
    *
    * The margin left.
    * 
-   * Since: 1.4.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_uint("margin-left",
 				 "margin left",
@@ -162,7 +162,7 @@ ags_scrolled_wave_edit_box_class_init(AgsScrolledWaveEditBoxClass *scrolled_wave
    *
    * The margin right.
    * 
-   * Since: 1.4.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_uint("margin-right",
 				 "margin right",
@@ -362,7 +362,7 @@ ags_scrolled_wave_edit_box_size_request(GtkWidget *widget,
  *
  * Returns: a new #AgsScrolledWaveEditBox
  *
- * Since: 1.4.0
+ * Since: 2.0.0
  */
 AgsScrolledWaveEditBox*
 ags_scrolled_wave_edit_box_new()

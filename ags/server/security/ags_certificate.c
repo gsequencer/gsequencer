@@ -68,7 +68,7 @@ ags_certificate_base_init(AgsCertificateInterface *interface)
  *
  * Returns: %TRUE on success, otherwise %FALSE
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 gboolean
 ags_certificate_verify(AgsCertificate *certificate,

@@ -149,7 +149,7 @@ ags_certificate_manager_verify_certificate(AgsCertificateManager *certificate_ma
  *
  * Returns: the #AgsCertificateManager
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsCertificateManager*
 ags_certificate_manager_get_instance()
@@ -176,7 +176,7 @@ ags_certificate_manager_get_instance()
  *
  * Returns: a new #AgsCertificateManager
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsCertificateManager*
 ags_certificate_manager_new()

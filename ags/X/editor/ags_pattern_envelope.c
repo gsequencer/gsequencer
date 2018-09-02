@@ -969,7 +969,7 @@ ags_pattern_envelope_y_label_func(gdouble value,
  * 
  * Returns: the matching #AgsPreset, if none selected %NULL
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsPreset*
 ags_pattern_envelope_get_active_preset(AgsPatternEnvelope *pattern_envelope)
@@ -1060,7 +1060,7 @@ ags_pattern_envelope_get_active_preset(AgsPatternEnvelope *pattern_envelope)
  *
  * Load preset.
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_pattern_envelope_load_preset(AgsPatternEnvelope *pattern_envelope)
@@ -1134,7 +1134,7 @@ ags_pattern_envelope_load_preset(AgsPatternEnvelope *pattern_envelope)
  * 
  * Set preset property.
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_pattern_envelope_set_preset_property(AgsPatternEnvelope *pattern_envelope,
@@ -1187,7 +1187,7 @@ ags_pattern_envelope_set_preset_property(AgsPatternEnvelope *pattern_envelope,
  *
  * Add preset.
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_pattern_envelope_add_preset(AgsPatternEnvelope *pattern_envelope,
@@ -1315,7 +1315,7 @@ ags_pattern_envelope_add_preset(AgsPatternEnvelope *pattern_envelope,
  *
  * Remove preset.
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_pattern_envelope_remove_preset(AgsPatternEnvelope *pattern_envelope,
@@ -1367,7 +1367,7 @@ ags_pattern_envelope_remove_preset(AgsPatternEnvelope *pattern_envelope,
  * 
  * Reset controls.
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_pattern_envelope_reset_control(AgsPatternEnvelope *pattern_envelope)
@@ -1569,7 +1569,7 @@ ags_pattern_envelope_reset_control(AgsPatternEnvelope *pattern_envelope)
  * 
  * Reset tree view.
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_pattern_envelope_reset_tree_view(AgsPatternEnvelope *pattern_envelope)
@@ -1669,7 +1669,7 @@ ags_pattern_envelope_reset_tree_view(AgsPatternEnvelope *pattern_envelope)
  * 
  * Plot envelope.
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_pattern_envelope_plot(AgsPatternEnvelope *pattern_envelope)
@@ -1900,7 +1900,7 @@ ags_pattern_envelope_plot(AgsPatternEnvelope *pattern_envelope)
  *
  * Returns: a new #AgsPatternEnvelope
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsPatternEnvelope*
 ags_pattern_envelope_new()

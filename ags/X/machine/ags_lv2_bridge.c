@@ -166,7 +166,7 @@ ags_lv2_bridge_class_init(AgsLv2BridgeClass *lv2_bridge)
    *
    * The plugin's filename.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec =  g_param_spec_string("filename",
 				    i18n_pspec("the object file"),
@@ -182,7 +182,7 @@ ags_lv2_bridge_class_init(AgsLv2BridgeClass *lv2_bridge)
    *
    * The effect's name.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec =  g_param_spec_string("effect",
 				    i18n_pspec("the effect"),
@@ -198,7 +198,7 @@ ags_lv2_bridge_class_init(AgsLv2BridgeClass *lv2_bridge)
    *
    * The uri's name.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec =  g_param_spec_string("uri",
 				    i18n_pspec("the uri"),
@@ -214,7 +214,7 @@ ags_lv2_bridge_class_init(AgsLv2BridgeClass *lv2_bridge)
    *
    * The uri's index.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec =  g_param_spec_ulong("index",
 				   i18n_pspec("index of uri"),
@@ -233,7 +233,7 @@ ags_lv2_bridge_class_init(AgsLv2BridgeClass *lv2_bridge)
    * If has-midi is set to %TRUE appropriate flag is set
    * to audio in order to become a sequencer.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec =  g_param_spec_boolean("has-midi",
 				     i18n_pspec("has-midi"),
@@ -250,7 +250,7 @@ ags_lv2_bridge_class_init(AgsLv2BridgeClass *lv2_bridge)
    * If has-gui is set to %TRUE 128 inputs are allocated and appropriate flag is set
    * to audio in order to become a sequencer.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec =  g_param_spec_boolean("has-gui",
 				     i18n_pspec("has-gui"),
@@ -266,7 +266,7 @@ ags_lv2_bridge_class_init(AgsLv2BridgeClass *lv2_bridge)
    *
    * The plugin's GUI filename.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec =  g_param_spec_string("gui-filename",
 				    i18n_pspec("the GUI object file"),
@@ -282,7 +282,7 @@ ags_lv2_bridge_class_init(AgsLv2BridgeClass *lv2_bridge)
    *
    * The GUI's uri name.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec =  g_param_spec_string("gui-uri",
 				    i18n_pspec("the gui-uri"),
@@ -1922,7 +1922,7 @@ ags_lv2_bridge_load(AgsLv2Bridge *lv2_bridge)
  *
  * Returns: %TRUE if proceed with redraw, otherwise %FALSE
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 gboolean
 ags_lv2_bridge_lv2ui_idle_timeout(GtkWidget *widget)

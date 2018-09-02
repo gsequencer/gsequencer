@@ -171,7 +171,7 @@ ags_track_collection_init(AgsTrackCollection *track_collection)
   track_collection->midi_doc = NULL;
 
   track_collection->first_offset = 0;
-  track_collection->bpm = 120.0;
+  track_collection->bpm = 2.0.0;
   
   track_collection->default_length = 4;
   

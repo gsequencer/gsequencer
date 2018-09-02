@@ -429,7 +429,7 @@ ags_notation_toolbar_disconnect(AgsConnectable *connectable)
  *
  * Returns: a new #GtkMenu
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 GtkMenu*
 ags_notation_toolbar_tool_popup_new(GtkToolbar *notation_toolbar)
@@ -488,7 +488,7 @@ ags_notation_toolbar_tool_popup_new(GtkToolbar *notation_toolbar)
  *
  * Returns: a new #AgsNotationToolbar
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsNotationToolbar*
 ags_notation_toolbar_new()

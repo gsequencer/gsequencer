@@ -111,7 +111,7 @@ ags_local_serialization_controller_class_init(AgsLocalSerializationControllerCla
    *
    * Returns: the response
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   local_serialization_controller_signals[SEND_OBJECT] =
     g_signal_new("send-object",
@@ -133,7 +133,7 @@ ags_local_serialization_controller_class_init(AgsLocalSerializationControllerCla
    *
    * Returns: the response
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   local_serialization_controller_signals[SEND_OBJECT_PROPERTY] =
     g_signal_new("send-object-property",
@@ -155,7 +155,7 @@ ags_local_serialization_controller_class_init(AgsLocalSerializationControllerCla
    *
    * Returns: the response
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   local_serialization_controller_signals[RECEIVE_OBJECT] =
     g_signal_new("receive-object",
@@ -177,7 +177,7 @@ ags_local_serialization_controller_class_init(AgsLocalSerializationControllerCla
    *
    * Returns: the response
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   local_serialization_controller_signals[RECEIVE_OBJECT_PROPERTY] =
     g_signal_new("receive-object-property",
@@ -235,7 +235,7 @@ ags_local_serialization_controller_real_send_object(AgsLocalSerializationControl
  * 
  * Returns: the response
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 gpointer
 ags_local_serialization_controller_send_object(AgsLocalSerializationController *local_serialization_controller,
@@ -275,7 +275,7 @@ ags_local_serialization_controller_real_send_object_property(AgsLocalSerializati
  * 
  * Returns: the response
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 gpointer
 ags_local_serialization_controller_send_object_property(AgsLocalSerializationController *local_serialization_controller,
@@ -315,7 +315,7 @@ ags_local_serialization_controller_real_receive_object(AgsLocalSerializationCont
  * 
  * Returns: the response
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 gpointer
 ags_local_serialization_controller_receive_object(AgsLocalSerializationController *local_serialization_controller,
@@ -355,7 +355,7 @@ ags_local_serialization_controller_real_receive_object_property(AgsLocalSerializ
  * 
  * Returns: the response
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 gpointer
 ags_local_serialization_controller_receive_object_property(AgsLocalSerializationController *local_serialization_controller,
@@ -384,7 +384,7 @@ ags_local_serialization_controller_receive_object_property(AgsLocalSerialization
  * 
  * Returns: the #AgsLocalSerializationController
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsLocalSerializationController*
 ags_local_serialization_controller_new()

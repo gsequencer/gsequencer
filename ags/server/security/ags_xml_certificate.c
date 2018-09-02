@@ -149,7 +149,7 @@ ags_xml_certificate_verify(AgsCertificate *certificate,
  *
  * Returns: the new #AgsXmlCertificate instance
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsXmlCertificate*
 ags_xml_certificate_new()

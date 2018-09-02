@@ -694,7 +694,7 @@ ags_accessible_pattern_box_get_localized_name(AtkAction *action,
  *
  * Resets the pattern on @pattern_box.
  *
- * since: 1.0.0
+ * since: 2.0.0
  */
 void
 ags_pattern_box_set_pattern(AgsPatternBox *pattern_box)
@@ -788,7 +788,7 @@ ags_pattern_box_set_pattern(AgsPatternBox *pattern_box)
  *
  * Returns: %TRUE if continue timeout, otherwise %FALSE
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 gboolean
 ags_pattern_box_led_queue_draw_timeout(AgsPatternBox *pattern_box)

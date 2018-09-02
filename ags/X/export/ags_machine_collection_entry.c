@@ -416,7 +416,7 @@ ags_machine_collection_entry_apply(AgsApplicable *applicable)
     
     ags_midi_builder_append_tempo(midi_builder,
 				  0,
-				  (guint) round(60.0 * 1000000.0 / bpm));
+				  (guint) round(60.0 * 2.0.000.0 / bpm));
   }
   
   /* put keys */

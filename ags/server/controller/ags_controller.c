@@ -106,7 +106,7 @@ ags_controller_class_init(AgsControllerClass *controller)
    *
    * The assigned #AgsServer
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("server",
 				   i18n("assigned server"),
@@ -122,7 +122,7 @@ ags_controller_class_init(AgsControllerClass *controller)
    *
    * The context path provided.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_string("context-path",
 				   i18n_pspec("context path to provide"),
@@ -264,7 +264,7 @@ ags_controller_finalize(GObject *gobject)
  * 
  * Returns: the newly allocated #AgsControllerResource-struct
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsControllerResource*
 ags_controller_resource_alloc(gchar *group_id, gchar *user_id,
@@ -288,7 +288,7 @@ ags_controller_resource_alloc(gchar *group_id, gchar *user_id,
  * 
  * Free @controller_resource.
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_controller_resource_free(AgsControllerResource *controller_resource)
@@ -311,7 +311,7 @@ ags_controller_resource_free(AgsControllerResource *controller_resource)
  * 
  * Add @controller_resource with key @resource_name to hash table.
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_controller_add_resource(AgsController *controller,
@@ -334,7 +334,7 @@ ags_controller_add_resource(AgsController *controller,
  * 
  * Remove key @resource_name from hash table.
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_controller_remove_resource(AgsController *controller,
@@ -358,7 +358,7 @@ ags_controller_remove_resource(AgsController *controller,
  * 
  * Returns: the matchin #AgsControllerResource-struct
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsControllerResource*
 ags_controller_lookup_resource(AgsController *controller,
@@ -387,7 +387,7 @@ ags_controller_lookup_resource(AgsController *controller,
  * 
  * Returns: %TRUE if allowed to proceed, otherwise %FALSE
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 gboolean
 ags_controller_query_security_context(AgsController *controller,
@@ -405,7 +405,7 @@ ags_controller_query_security_context(AgsController *controller,
  * 
  * Returns: the #AgsController
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsController*
 ags_controller_new()

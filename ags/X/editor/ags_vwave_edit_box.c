@@ -77,7 +77,7 @@ ags_vwave_edit_box_init(AgsVWaveEditBox *vwave_edit_box)
  * 
  * Returns: the new #AgsVWaveEditBox instance
  * 
- * Since: 1.4.0
+ * Since: 2.0.0
  */
 AgsVWaveEditBox*
 ags_vwave_edit_box_new()

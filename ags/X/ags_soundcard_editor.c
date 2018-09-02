@@ -276,7 +276,7 @@ ags_soundcard_editor_init(AgsSoundcardEditor *soundcard_editor)
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
 
-  soundcard_editor->samplerate = (GtkSpinButton *) gtk_spin_button_new_with_range(1.0, 192000.0, 1.0);
+  soundcard_editor->samplerate = (GtkSpinButton *) gtk_spin_button_new_with_range(1.0, 2.0.00.0, 1.0);
   gtk_spin_button_set_value(soundcard_editor->samplerate, 44100);
   gtk_table_attach(table,
 		   GTK_WIDGET(soundcard_editor->samplerate),
@@ -879,7 +879,7 @@ ags_soundcard_editor_reset(AgsApplicable *applicable)
       channels_min = 0.0;
       channels_max = 24.0;
       samplerate_min = 8000.0;
-      samplerate_max = 192000.0;
+      samplerate_max = 2.0.00.0;
       buffer_size_min = 2.0;
       buffer_size_max = 65535.0;
     }
@@ -887,7 +887,7 @@ ags_soundcard_editor_reset(AgsApplicable *applicable)
     channels_min = 0.0;
     channels_max = 24.0;
     samplerate_min = 8000.0;
-    samplerate_max = 192000.0;
+    samplerate_max = 2.0.00.0;
     buffer_size_min = 2.0;
     buffer_size_max = 65535.0;
   }

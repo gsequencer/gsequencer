@@ -140,7 +140,7 @@ ags_ramp_acceleration_dialog_class_init(AgsRampAccelerationDialogClass *ramp_acc
    *
    * The assigned #AgsApplicationContext to give control of application.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("application-context",
 				   i18n_pspec("assigned application context"),
@@ -156,7 +156,7 @@ ags_ramp_acceleration_dialog_class_init(AgsRampAccelerationDialogClass *ramp_acc
    *
    * The assigned #AgsWindow.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("main-window",
 				   i18n_pspec("assigned main window"),

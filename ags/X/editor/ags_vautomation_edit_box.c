@@ -77,7 +77,7 @@ ags_vautomation_edit_box_init(AgsVAutomationEditBox *vautomation_edit_box)
  * 
  * Returns: the new #AgsVAutomationEditBox instance
  * 
- * Since: 1.3.0
+ * Since: 2.0.0
  */
 AgsVAutomationEditBox*
 ags_vautomation_edit_box_new()

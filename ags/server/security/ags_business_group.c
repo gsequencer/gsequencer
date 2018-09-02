@@ -69,7 +69,7 @@ ags_business_group_base_init(AgsBusinessGroupInterface *interface)
  *
  * Set business group name.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_business_group_set_business_group_name(AgsBusinessGroup *business_group,
@@ -107,7 +107,7 @@ ags_business_group_set_business_group_name(AgsBusinessGroup *business_group,
  *
  * Returns: the business group name as string
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 gchar*
 ags_business_group_get_business_group_name(AgsBusinessGroup *business_group,
@@ -143,7 +143,7 @@ ags_business_group_get_business_group_name(AgsBusinessGroup *business_group,
  *
  * Set business group ids of users as string array.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_business_group_set_user_id(AgsBusinessGroup *business_group,
@@ -181,7 +181,7 @@ ags_business_group_set_user_id(AgsBusinessGroup *business_group,
  *
  * Returns: the business group's ids of users as string array
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 gchar**
 ags_business_group_get_user_id(AgsBusinessGroup *business_group,
@@ -217,7 +217,7 @@ ags_business_group_get_user_id(AgsBusinessGroup *business_group,
  *
  * Set business group context paths as string array.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_business_group_set_context_path_with_read_permission(AgsBusinessGroup *business_group,
@@ -255,7 +255,7 @@ ags_business_group_set_context_path_with_read_permission(AgsBusinessGroup *busin
  *
  * Returns: the business group's context paths as string array
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 gchar**
 ags_business_group_get_context_path_with_read_permission(AgsBusinessGroup *business_group,
@@ -291,7 +291,7 @@ ags_business_group_get_context_path_with_read_permission(AgsBusinessGroup *busin
  *
  * Set business group context paths as string array.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_business_group_set_context_path_with_write_permission(AgsBusinessGroup *business_group,
@@ -329,7 +329,7 @@ ags_business_group_set_context_path_with_write_permission(AgsBusinessGroup *busi
  *
  * Returns: the business group's context paths as string array
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 gchar**
 ags_business_group_get_context_path_with_write_permission(AgsBusinessGroup *business_group,
@@ -365,7 +365,7 @@ ags_business_group_get_context_path_with_write_permission(AgsBusinessGroup *busi
  *
  * Set business group context paths as string array.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_business_group_set_context_path_with_execute_permission(AgsBusinessGroup *business_group,
@@ -403,7 +403,7 @@ ags_business_group_set_context_path_with_execute_permission(AgsBusinessGroup *bu
  *
  * Returns: the business group's context paths as string array
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 gchar**
 ags_business_group_get_context_path_with_execute_permission(AgsBusinessGroup *business_group,

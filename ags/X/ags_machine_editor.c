@@ -428,7 +428,7 @@ ags_machine_editor_reset(AgsApplicable *applicable)
  *
  * Add all child editors.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_machine_editor_add_children(AgsMachineEditor *machine_editor)

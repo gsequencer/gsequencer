@@ -68,7 +68,7 @@ ags_password_store_base_init(AgsPasswordStoreInterface *interface)
  *
  * Set login name.
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_password_store_set_login_name(AgsPasswordStore *password_store,
@@ -103,7 +103,7 @@ ags_password_store_set_login_name(AgsPasswordStore *password_store,
  * 
  * Returns: the login name
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 gchar*
 ags_password_store_get_login_name(AgsPasswordStore *password_store,
@@ -136,7 +136,7 @@ ags_password_store_get_login_name(AgsPasswordStore *password_store,
  *
  * Set login name.
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_password_store_set_password(AgsPasswordStore *password_store,
@@ -171,7 +171,7 @@ ags_password_store_set_password(AgsPasswordStore *password_store,
  * 
  * Returns: the password
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 gchar*
 ags_password_store_get_password(AgsPasswordStore *password_store,
@@ -204,7 +204,7 @@ ags_password_store_get_password(AgsPasswordStore *password_store,
  *
  * Returns: the encrypted bytes
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 gchar*
 ags_password_store_encrypt_password(AgsPasswordStore *password_store,

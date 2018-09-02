@@ -156,7 +156,7 @@ ags_soundcard_editor_card_changed_callback(GtkComboBox *combo,
     gtk_widget_destroy(GTK_WIDGET(dialog));
 
     gtk_spin_button_set_range(soundcard_editor->audio_channels, 0.0, 24.0);
-    gtk_spin_button_set_range(soundcard_editor->samplerate, 1.0, 192000.0);
+    gtk_spin_button_set_range(soundcard_editor->samplerate, 1.0, 2.0.00.0);
     gtk_spin_button_set_range(soundcard_editor->buffer_size, 1.0, 65535.0);
 
     soundcard_editor->flags &= (~AGS_SOUNDCARD_EDITOR_BLOCK_CARD);

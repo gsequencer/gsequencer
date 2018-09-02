@@ -122,7 +122,7 @@ ags_registry_class_init(AgsRegistryClass *registry)
    *
    * The assigned #AgsServer
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("server",
 				   i18n("assigned server"),
@@ -319,7 +319,7 @@ ags_registry_finalize(GObject *gobject)
  * 
  * Returns: the newly allocated #AgsRegistryEntry-struct
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsRegistryEntry*
 ags_registry_entry_alloc()
@@ -344,7 +344,7 @@ ags_registry_entry_alloc()
  * 
  * Free @registry_entry
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_registry_entry_free(AgsRegistryEntry *registry_entry)
@@ -370,7 +370,7 @@ ags_registry_entry_free(AgsRegistryEntry *registry_entry)
  * 
  * Add @registry_entry to @registry.
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_registry_add_entry(AgsRegistry *registry,
@@ -391,7 +391,7 @@ ags_registry_add_entry(AgsRegistry *registry,
  * 
  * Find @id as #AgsRegistryEntry-struct in @registry.
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsRegistryEntry*
 ags_registry_find_entry(AgsRegistry *registry,

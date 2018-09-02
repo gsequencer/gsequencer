@@ -222,7 +222,7 @@ ags_authentication_manager_is_session_active(AgsAuthenticationManager *authentic
  *
  * Returns: the #AgsAuthenticationManager
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsAuthenticationManager*
 ags_authentication_manager_get_instance()
@@ -249,7 +249,7 @@ ags_authentication_manager_get_instance()
  *
  * Returns: a new #AgsAuthenticationManager
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsAuthenticationManager*
 ags_authentication_manager_new()
