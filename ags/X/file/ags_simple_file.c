@@ -2090,7 +2090,7 @@ ags_simple_file_read_machine(AgsSimpleFile *simple_file, xmlNode *node, AgsMachi
   /* dispatch */
   while((wait_output && !wait_data[0]) ||
 	(wait_input && !wait_data[1])){
-    usleep(2.0.000 / 30);
+    usleep(USEC_PER_SEC / 30);
     g_main_context_iteration(NULL,
 			     FALSE);
   }

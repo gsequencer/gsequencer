@@ -1872,7 +1872,12 @@ ags_machine_get_possible_audio_output_connections(AgsMachine *machine)
     list = ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(application_context));
 
     while(list != NULL){
-      if(list->data != machine){
+      guint soundcard_capability;
+
+      soundcard_capability = ags_soundcard_get_capability(AGS_SOUND_PROVIDER(application_context));
+      
+      if((AGS_SOUNDCARD_CAPABILITY_PLAYBACK & (soundcard_capability)) != 0 ||
+	 (AGS_SOUNDCARD_CAPABILITY_DUPLEX & (soundcard_capability)) != 0){
 	gtk_list_store_append(model, &iter);
 	gtk_list_store_set(model, &iter,
 			   0, g_strdup_printf("%s: %s", 
@@ -1933,7 +1938,12 @@ ags_machine_get_possible_audio_input_connections(AgsMachine *machine)
     list = ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(application_context));
 
     while(list != NULL){
-      if(list->data != machine){
+      guint soundcard_capability;
+
+      soundcard_capability = ags_soundcard_get_capability(AGS_SOUND_PROVIDER(application_context));
+
+      if((AGS_SOUNDCARD_CAPABILITY_CAPTURE & (soundcard_capability)) != 0 ||
+	 (AGS_SOUNDCARD_CAPABILITY_DUPLEX & (soundcard_capability)) != 0){
 	gtk_list_store_append(model, &iter);
 	gtk_list_store_set(model, &iter,
 			   0, g_strdup_printf("%s: %s", 

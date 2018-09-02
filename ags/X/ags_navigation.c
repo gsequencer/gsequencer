@@ -208,10 +208,10 @@ ags_navigation_init(AgsNavigation *navigation)
   gtk_box_pack_start((GtkBox*) hbox, (GtkWidget *) label, FALSE, FALSE, 2);
 
   navigation->bpm = (GtkSpinButton *) gtk_spin_button_new_with_range(1.0, 1000.0, 1.0);
-  navigation->bpm->adjustment->value = 2.0.0;
+  navigation->bpm->adjustment->value = 120.0;
   gtk_box_pack_start((GtkBox*) hbox, (GtkWidget *) navigation->bpm, FALSE, FALSE, 2);
 
-  navigation->current_bpm = 2.0.0;
+  navigation->current_bpm = 120.0;
 
   navigation->rewind = (GtkToggleButton *) g_object_new(GTK_TYPE_BUTTON,
 							"image", (GtkWidget *) gtk_image_new_from_stock(GTK_STOCK_MEDIA_REWIND, GTK_ICON_SIZE_LARGE_TOOLBAR),

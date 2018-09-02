@@ -205,28 +205,28 @@ ags_oscillator_init(AgsOscillator *oscillator)
   gtk_table_attach_defaults(table,
 			    (GtkWidget *) gtk_label_new(i18n("attack")),
 			    2, 3, 0, 1);
-  oscillator->attack = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, 2.0.00.0, 1.0);
+  oscillator->attack = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, 100000.0, 1.0);
   oscillator->attack->adjustment->value = 0.0;
   gtk_table_attach_defaults(table, (GtkWidget *) oscillator->attack, 3, 4, 0, 1);
 
   gtk_table_attach_defaults(table,
 			    (GtkWidget *) gtk_label_new(i18n("length")),
 			    4, 5, 0, 1);
-  oscillator->frame_count = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, 2.0.00.0, 1.0);
+  oscillator->frame_count = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, 100000.0, 1.0);
   oscillator->frame_count->adjustment->value = AGS_OSCILLATOR_DEFAULT_FRAME_COUNT;
   gtk_table_attach_defaults(table, (GtkWidget *) oscillator->frame_count, 5, 6, 0, 1);
 
   gtk_table_attach_defaults(table,
 			    (GtkWidget *) gtk_label_new(i18n("phase")),
 			    0, 1, 1, 2);
-  oscillator->phase = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, 2.0.00.0, 1.0);
+  oscillator->phase = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, 100000.0, 1.0);
   oscillator->phase->adjustment->value = 0.0;
   gtk_table_attach_defaults(table, (GtkWidget *) oscillator->phase, 1, 2, 1, 2);
 
   gtk_table_attach_defaults(table,
 			    (GtkWidget *) gtk_label_new(i18n("frequency")),
 			    2, 3, 1, 2);
-  oscillator->frequency = (GtkSpinButton *) gtk_spin_button_new_with_range(8.0, 2.0.00.0, 1.0);
+  oscillator->frequency = (GtkSpinButton *) gtk_spin_button_new_with_range(8.0, 100000.0, 1.0);
   gtk_spin_button_set_digits(oscillator->frequency,
 			     3);
   oscillator->frequency->adjustment->value = 27.5;
@@ -269,13 +269,13 @@ ags_oscillator_init(AgsOscillator *oscillator)
 		       FALSE, FALSE,
 		       0);
     
-    oscillator->sync_point[2 * i] = gtk_spin_button_new_with_range(0.0, 2.0.00.0, 1.0);
+    oscillator->sync_point[2 * i] = gtk_spin_button_new_with_range(0.0, 100000.0, 1.0);
     gtk_box_pack_start(sync_box,
 		       oscillator->sync_point[2 * i],
 		       FALSE, FALSE,
 		       0);
 
-    oscillator->sync_point[2 * i + 1] = gtk_spin_button_new_with_range(0.0, 2.0.00.0, 1.0);
+    oscillator->sync_point[2 * i + 1] = gtk_spin_button_new_with_range(0.0, 100000.0, 1.0);
     gtk_box_pack_start(sync_box,
 		       oscillator->sync_point[2 * i + 1],
 		       FALSE, FALSE,

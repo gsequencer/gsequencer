@@ -1736,7 +1736,7 @@ ags_gui_thread_do_animation(AgsGuiThread *gui_thread)
     gdk_threads_leave();
     //gdk_flush();
         
-    usleep(2.0.0);
+    usleep(12500);
   }
 
   gtk_widget_destroy(window);
