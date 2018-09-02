@@ -150,7 +150,7 @@ ags_pattern_class_init(AgsPatternClass *pattern)
    *
    * The pattern's port.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("port",
 				   "port of pattern",
@@ -166,7 +166,7 @@ ags_pattern_class_init(AgsPatternClass *pattern)
    *
    * Selected bank 0.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_uint("first-index",
 				 "the first index",
@@ -183,7 +183,7 @@ ags_pattern_class_init(AgsPatternClass *pattern)
    *
    * Selected bank 1.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_uint("second-index",
 				 "the second index",
@@ -200,7 +200,7 @@ ags_pattern_class_init(AgsPatternClass *pattern)
    *
    * Position of pattern.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_uint("offset",
 				 "the offset",
@@ -217,7 +217,7 @@ ags_pattern_class_init(AgsPatternClass *pattern)
    *
    * Offset of current position.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_boolean("current-bit",
 				    "current bit for offset",
@@ -233,7 +233,7 @@ ags_pattern_class_init(AgsPatternClass *pattern)
    *
    * The pattern's timestamp.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("timestamp",
 				   "timestamp of pattern",
@@ -326,7 +326,16 @@ ags_pattern_set_property(GObject *gobject,
 {
   AgsPattern *pattern;
 
+  pthread_mutex_t *pattern_mutex;
+
   pattern = AGS_PATTERN(gobject);
+
+  /* get pattern mutex */
+  pthread_mutex_lock(ags_pattern_get_class_mutex());
+  
+  pattern_mutex = pattern->obj_mutex;
+  
+  pthread_mutex_unlock(ags_pattern_get_class_mutex());
 
   switch(prop_id){
   case PROP_FIRST_INDEX:
@@ -335,7 +344,11 @@ ags_pattern_set_property(GObject *gobject,
 
       i = g_value_get_uint(value);
 
+      pthread_mutex_lock(pattern_mutex);
+
       pattern->i = i;
+
+      pthread_mutex_unlock(pattern_mutex);
     }
     break;
   case PROP_SECOND_INDEX:
@@ -344,7 +357,11 @@ ags_pattern_set_property(GObject *gobject,
 
       j = g_value_get_uint(value);
 
+      pthread_mutex_lock(pattern_mutex);
+
       pattern->j = j;
+
+      pthread_mutex_unlock(pattern_mutex);
     }
     break;
   case PROP_OFFSET:
@@ -353,7 +370,11 @@ ags_pattern_set_property(GObject *gobject,
 
       bit = g_value_get_uint(value);
 
+      pthread_mutex_lock(pattern_mutex);
+
       pattern->bit = bit;
+
+      pthread_mutex_unlock(pattern_mutex);
     }
     break;
   case PROP_TIMESTAMP:
@@ -362,7 +383,11 @@ ags_pattern_set_property(GObject *gobject,
 
       timestamp = (AgsTimestamp *) g_value_get_object(value);
 
+      pthread_mutex_lock(pattern_mutex);
+
       if(timestamp == (AgsTimestamp *) pattern->timestamp){
+	pthread_mutex_unlock(pattern_mutex);
+
 	return;
       }
 
@@ -375,6 +400,8 @@ ags_pattern_set_property(GObject *gobject,
       }
 
       pattern->timestamp = (GObject *) timestamp;
+
+      pthread_mutex_unlock(pattern_mutex);
     }
     break;
   default:
@@ -391,37 +418,82 @@ ags_pattern_get_property(GObject *gobject,
 {
   AgsPattern *pattern;
 
+  pthread_mutex_t *pattern_mutex;
+
   pattern = AGS_PATTERN(gobject);
+
+  /* get pattern mutex */
+  pthread_mutex_lock(ags_pattern_get_class_mutex());
+  
+  pattern_mutex = pattern->obj_mutex;
+  
+  pthread_mutex_unlock(ags_pattern_get_class_mutex());
 
   switch(prop_id){
   case PROP_PORT:
-    g_value_set_object(value, pattern->port);
+    {
+      pthread_mutex_lock(pattern_mutex);
+
+      g_value_set_object(value, pattern->port);
+
+      pthread_mutex_unlock(pattern_mutex);
+    }
     break;
   case PROP_FIRST_INDEX:
     {
+      pthread_mutex_lock(pattern_mutex);
+
       g_value_set_uint(value, pattern->i);
+
+      pthread_mutex_unlock(pattern_mutex);
     }
     break;
   case PROP_SECOND_INDEX:
     {
+      pthread_mutex_lock(pattern_mutex);
+
       g_value_set_uint(value, pattern->j);
+
+      pthread_mutex_unlock(pattern_mutex);
     }
     break;
   case PROP_OFFSET:
     {
+      pthread_mutex_lock(pattern_mutex);
+
       g_value_set_uint(value, pattern->bit);
+
+      pthread_mutex_unlock(pattern_mutex);
     }
     break;
   case PROP_CURRENT_BIT:
     {
+      guint i, j;
+      guint bit;
+
+      pthread_mutex_lock(pattern_mutex);
+
+      i = pattern->i;
+      j = pattern->j;
+      bit = pattern->bit;
+
+      pthread_mutex_unlock(pattern_mutex);
+
       g_value_set_boolean(value, ags_pattern_get_bit(pattern,
-						     pattern->i,
-						     pattern->j,
-						     pattern->bit));
+						     i,
+						     j,
+						     bit));
     }
     break;
   case PROP_TIMESTAMP:
-    g_value_set_object(value, pattern->timestamp);
+    {
+      pthread_mutex_lock(pattern_mutex);
+
+      g_value_set_object(value,
+			 pattern->timestamp);
+
+      pthread_mutex_unlock(pattern_mutex);
+    }
     break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
@@ -489,6 +561,12 @@ ags_pattern_finalize(GObject *gobject)
   if(pattern->port != NULL){
     g_object_unref(G_OBJECT(pattern->port));
   }
+
+  pthread_mutex_destroy(pattern->obj_mutex);
+  free(pattern->obj_mutex);
+
+  pthread_mutexattr_destroy(pattern->obj_mutexattr);
+  free(pattern->obj_mutexattr);
   
   /* call parent */
   G_OBJECT_CLASS(ags_pattern_parent_class)->finalize(gobject);
@@ -831,7 +909,7 @@ ags_pattern_change_bpm(AgsTactable *tactable, gdouble new_bpm, gdouble old_bpm)
  *
  * Returns: Next match.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 GList*
 ags_pattern_find_near_timestamp(GList *pattern, AgsTimestamp *timestamp)
@@ -843,12 +921,14 @@ ags_pattern_find_near_timestamp(GList *pattern, AgsTimestamp *timestamp)
   }
 
   while(pattern != NULL){
-    current_timestamp = (AgsTimestamp *) AGS_PATTERN(pattern->data)->timestamp;
+    g_object_get(pattern->data,
+		 "timestamp", &current_timestamp,
+		 NULL);
 
-    if((AGS_TIMESTAMP_UNIX & (AGS_TIMESTAMP(timestamp)->flags)) != 0){
-      if((AGS_TIMESTAMP_UNIX & (current_timestamp->flags)) != 0){
-	if(current_timestamp->timer.unix_time.time_val >= AGS_TIMESTAMP(timestamp)->timer.unix_time.time_val &&
-	   current_timestamp->timer.unix_time.time_val < AGS_TIMESTAMP(timestamp)->timer.unix_time.time_val + AGS_PATTERN_DEFAULT_DURATION){
+    if(ags_timestamp_test_flags(timestamp, AGS_TIMESTAMP_UNIX)){
+      if(ags_timestamp_test_flags(current_timestamp, AGS_TIMESTAMP_UNIX)){
+	if(ags_timestamp_get_unix_time(current_timestamp) >= ags_timestamp_get_unix_time(timestamp) &&
+	   ags_timestamp_get_unix_time(current_timestamp) < ags_timestamp_get_unix_time(timestamp) + AGS_PATTERN_DEFAULT_DURATION){
 	  return(pattern);
 	}
       }
@@ -869,7 +949,7 @@ ags_pattern_find_near_timestamp(GList *pattern, AgsTimestamp *timestamp)
  *
  * Reallocates the pattern's dimensions.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void 
 ags_pattern_set_dim(AgsPattern *pattern, guint dim0, guint dim1, guint length)
@@ -878,7 +958,25 @@ ags_pattern_set_dim(AgsPattern *pattern, guint dim0, guint dim1, guint length)
   guint i, j, k, j_set, k_set;
   guint bitmap_size;
 
+  pthread_mutex_t *pattern_mutex;
+
+  if(!AGS_IS_PATTERN(pattern)){
+    return;
+  }
+  
+  /* get pattern mutex */
+  pthread_mutex_lock(ags_pattern_get_class_mutex());
+  
+  pattern_mutex = pattern->obj_mutex;
+  
+  pthread_mutex_unlock(ags_pattern_get_class_mutex());
+
+  /* set dim*/
+  pthread_mutex_lock(pattern_mutex);
+
   if(dim0 == 0 && pattern->pattern == NULL){
+    pthread_mutex_unlock(pattern_mutex);
+    
     return;
   }
   
@@ -898,6 +996,8 @@ ags_pattern_set_dim(AgsPattern *pattern, guint dim0, guint dim1, guint length)
       pattern->pattern = NULL;
       pattern->dim[0] = 0;
 
+      pthread_mutex_unlock(pattern_mutex);
+    
       return;
     }else{
       pattern->pattern = (guint ***) realloc(pattern->pattern,
@@ -919,6 +1019,8 @@ ags_pattern_set_dim(AgsPattern *pattern, guint dim0, guint dim1, guint length)
 
       pattern->dim[1] = 0;
       
+      pthread_mutex_unlock(pattern_mutex);
+    
       return;
     }else{
       for(i = 0; i < pattern->dim[0]; i++){
@@ -1028,6 +1130,8 @@ ags_pattern_set_dim(AgsPattern *pattern, guint dim0, guint dim1, guint length)
 
     pattern->dim[2] = length;
   }
+
+  pthread_mutex_unlock(pattern_mutex);  
 }
 
 gboolean
@@ -1036,13 +1140,33 @@ ags_pattern_is_empty(AgsPattern *pattern, guint i, guint j)
   guint bitmap_length;
   guint n;
 
+  pthread_mutex_t *pattern_mutex;
+
+  if(!AGS_IS_PATTERN(pattern)){
+    return(TRUE);
+  }
+  
+  /* get pattern mutex */
+  pthread_mutex_lock(ags_pattern_get_class_mutex());
+  
+  pattern_mutex = pattern->obj_mutex;
+  
+  pthread_mutex_unlock(ags_pattern_get_class_mutex());
+
+  /* check */
+  pthread_mutex_lock(pattern_mutex);
+
   bitmap_length = (guint) ceil((double) pattern->dim[2] / (double) (sizeof(guint) * 8));
 
   for(n = 0; n < bitmap_length; n++){
     if(pattern->pattern[i][j][n] != 0){
+      pthread_mutex_unlock(pattern_mutex);
+      
       return(FALSE);
     }
   }
+
+  pthread_mutex_unlock(pattern_mutex);
 
   return(TRUE);
 }
@@ -1058,21 +1182,42 @@ ags_pattern_is_empty(AgsPattern *pattern, guint i, guint j)
  *
  * Returns: %TRUE if tone is enabled.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 gboolean
 ags_pattern_get_bit(AgsPattern *pattern, guint i, guint j, guint bit)
 {
   guint k, value;
 
+  pthread_mutex_t *pattern_mutex;
+
+  if(!AGS_IS_PATTERN(pattern)){
+    return(FALSE);
+  }
+
+  /* get pattern mutex */
+  pthread_mutex_lock(ags_pattern_get_class_mutex());
+  
+  pattern_mutex = pattern->obj_mutex;
+  
+  pthread_mutex_unlock(ags_pattern_get_class_mutex());
+
+  /* get bit */
+  pthread_mutex_lock(pattern_mutex);
+
   k = (guint) floor((double) bit / (double) (sizeof(guint) * 8));
   value = 1 << (bit % (sizeof(guint) * 8));
 
   //((1 << (bit % (sizeof(guint) *8))) & (pattern->pattern[i][j][(guint) floor((double) bit / (double) (sizeof(guint) * 8))])) != 0
-  if((value & (pattern->pattern[i][j][k])) != 0)
+  if((value & (pattern->pattern[i][j][k])) != 0){
+    pthread_mutex_unlock(pattern_mutex);
+    
     return(TRUE);
-  else
+  }else{
+    pthread_mutex_unlock(pattern_mutex);
+    
     return(FALSE);
+  }
 }
 
 /**
@@ -1084,38 +1229,58 @@ ags_pattern_get_bit(AgsPattern *pattern, guint i, guint j, guint bit)
  *
  * Toggle tone.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_pattern_toggle_bit(AgsPattern *pattern, guint i, guint j, guint bit)
 {
   guint k, value;
 
+  pthread_mutex_t *pattern_mutex;
+
+  if(!AGS_IS_PATTERN(pattern)){
+    return;
+  }
+
+  /* get pattern mutex */
+  pthread_mutex_lock(ags_pattern_get_class_mutex());
+  
+  pattern_mutex = pattern->obj_mutex;
+  
+  pthread_mutex_unlock(ags_pattern_get_class_mutex());
+
+  /* toggle */
+  pthread_mutex_lock(pattern_mutex);
+
   k = (guint) floor((double) bit / (double) (sizeof(guint) * 8));
   value = 1 << (bit % (sizeof(guint) * 8));
 
 
-  if(value & (pattern->pattern[i][j][k]))
+  if(value & (pattern->pattern[i][j][k])){
     pattern->pattern[i][j][k] &= (~value);
-  else
+  }else{
     pattern->pattern[i][j][k] |= value;
+  }
+
+  pthread_mutex_unlock(pattern_mutex);
 }
 
 /**
  * ags_pattern_new:
  *
- * Creates an #AgsPattern
+ * Creates a new instance of #AgsPattern
  *
- * Returns: a new #AgsPattern
+ * Returns: the new #AgsPattern
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsPattern*
 ags_pattern_new()
 {
   AgsPattern *pattern;
 
-  pattern = (AgsPattern *) g_object_new(AGS_TYPE_PATTERN, NULL);
+  pattern = (AgsPattern *) g_object_new(AGS_TYPE_PATTERN,
+					NULL);
 
   return(pattern);
 }

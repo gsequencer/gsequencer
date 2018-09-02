@@ -59,6 +59,8 @@ enum{
 static gpointer ags_file_launch_parent_class = NULL;
 static guint file_launch_signals[LAST_SIGNAL];
 
+static pthread_mutex_t ags_file_launch_class_mutex = PTHREAD_MUTEX_INITIALIZER;
+
 GType
 ags_file_launch_get_type (void)
 {
@@ -108,7 +110,7 @@ ags_file_launch_class_init(AgsFileLaunchClass *file_launch)
    *
    * The assigned xmlNode being refered by this #AgsFileLaunch.
    *
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_pointer("node",
 				    i18n_pspec("the node"),
@@ -123,7 +125,7 @@ ags_file_launch_class_init(AgsFileLaunchClass *file_launch)
    *
    * The object refered by this #AgsFileLaunch.
    *
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_pointer("reference",
 				    i18n_pspec("the reference"),
@@ -138,7 +140,7 @@ ags_file_launch_class_init(AgsFileLaunchClass *file_launch)
    *
    * The #AgsFile this #AgsFileLaunch belongs to.
    *
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("file",
 				   i18n_pspec("file assigned to"),
@@ -154,7 +156,7 @@ ags_file_launch_class_init(AgsFileLaunchClass *file_launch)
    *
    * The #AgsApplicationContext to be used.
    *
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("application-context",
 				   i18n_pspec("application context access"),
@@ -174,7 +176,7 @@ ags_file_launch_class_init(AgsFileLaunchClass *file_launch)
    * 
    * Signal ::start to notify about start :reference.
    *
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   file_launch_signals[START] =
     g_signal_new("start",
@@ -189,6 +191,21 @@ ags_file_launch_class_init(AgsFileLaunchClass *file_launch)
 void
 ags_file_launch_init(AgsFileLaunch *file_launch)
 {
+  /* add file launch mutex */
+  file_launch->obj_mutexattr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
+
+  pthread_mutexattr_init(file_launch->obj_mutexattr);
+  pthread_mutexattr_settype(file_launch->obj_mutexattr,
+			    PTHREAD_MUTEX_RECURSIVE);
+
+#ifdef __linux__
+  pthread_mutexattr_setprotocol(file_launch->obj_mutexattr,
+				PTHREAD_PRIO_INHERIT);
+#endif
+  
+  file_launch->obj_mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
+  pthread_mutex_init(file_launch->obj_mutex, file_launch->obj_mutexattr);
+
   file_launch->application_context = NULL;
 
   file_launch->reference = NULL;
@@ -205,7 +222,16 @@ ags_file_launch_set_property(GObject *gobject,
 {
   AgsFileLaunch *file_launch;
 
+  pthread_mutex_t *file_launch_mutex;
+
   file_launch = AGS_FILE_LAUNCH(gobject);
+
+  /* get file id ref mutex */
+  pthread_mutex_lock(ags_file_launch_get_class_mutex());
+  
+  file_launch_mutex = file_launch->obj_mutex;
+  
+  pthread_mutex_unlock(ags_file_launch_get_class_mutex());  
   
   switch(prop_id){
   case PROP_NODE:
@@ -214,7 +240,11 @@ ags_file_launch_set_property(GObject *gobject,
 
       node = (xmlNode *) g_value_get_pointer(value);
 
+      pthread_mutex_lock(file_launch_mutex);
+
       file_launch->node = node;
+
+      pthread_mutex_unlock(file_launch_mutex);
     }
     break;
   case PROP_REFERENCE:
@@ -223,7 +253,11 @@ ags_file_launch_set_property(GObject *gobject,
 
       ref = g_value_get_pointer(value);
 
+      pthread_mutex_lock(file_launch_mutex);
+
       file_launch->reference = ref;
+
+      pthread_mutex_unlock(file_launch_mutex);
     }
     break;
   case PROP_FILE:
@@ -232,13 +266,19 @@ ags_file_launch_set_property(GObject *gobject,
 
       file = (GObject *) g_value_get_object(value);
 
-      if(file_launch->file != NULL)
+      pthread_mutex_lock(file_launch_mutex);
+
+      if(file_launch->file != NULL){
 	g_object_unref(file_launch->file);
-
-      if(file != NULL)
+      }
+      
+      if(file != NULL){
 	g_object_ref(file);
-
+      }
+      
       file_launch->file = file;
+
+      pthread_mutex_unlock(file_launch_mutex);
     }
     break;
   case PROP_APPLICATION_CONTEXT:
@@ -247,13 +287,19 @@ ags_file_launch_set_property(GObject *gobject,
 
       application_context = (GObject *) g_value_get_object(value);
 
-      if(file_launch->application_context != NULL)
+      pthread_mutex_lock(file_launch_mutex);
+
+      if(file_launch->application_context != NULL){
 	g_object_unref(file_launch->application_context);
-
-      if(application_context != NULL)
+      }
+      
+      if(application_context != NULL){
 	g_object_ref(application_context);
-
+      }
+      
       file_launch->application_context = application_context;
+
+      pthread_mutex_unlock(file_launch_mutex);
     }
     break;
   default:
@@ -270,27 +316,52 @@ ags_file_launch_get_property(GObject *gobject,
 {
   AgsFileLaunch *file_launch;
 
+  pthread_mutex_t *file_launch_mutex;
+
   file_launch = AGS_FILE_LAUNCH(gobject);
+
+  /* get file id ref mutex */
+  pthread_mutex_lock(ags_file_launch_get_class_mutex());
   
+  file_launch_mutex = file_launch->obj_mutex;
+  
+  pthread_mutex_unlock(ags_file_launch_get_class_mutex());
+    
   switch(prop_id){
   case PROP_NODE:
     {
+      pthread_mutex_lock(file_launch_mutex);
+
       g_value_set_pointer(value, file_launch->node);
+
+      pthread_mutex_unlock(file_launch_mutex);
     }
     break;
   case PROP_REFERENCE:
     {
+      pthread_mutex_lock(file_launch_mutex);
+
       g_value_set_pointer(value, file_launch->reference);
+
+      pthread_mutex_unlock(file_launch_mutex);
     }
     break;
   case PROP_FILE:
     {
+      pthread_mutex_lock(file_launch_mutex);
+
       g_value_set_object(value, file_launch->file);
+
+      pthread_mutex_unlock(file_launch_mutex);
     }
     break;
   case PROP_APPLICATION_CONTEXT:
     {
+      pthread_mutex_lock(file_launch_mutex);
+
       g_value_set_object(value, file_launch->application_context);
+
+      pthread_mutex_unlock(file_launch_mutex);
     }
     break;
   default:
@@ -314,7 +385,29 @@ ags_file_launch_finalize(GObject *gobject)
     g_object_unref(file_launch->application_context);
   }
 
+  pthread_mutex_destroy(file_launch->obj_mutex);
+  free(file_launch->obj_mutex);
+
+  pthread_mutexattr_destroy(file_launch->obj_mutexattr);
+  free(file_launch->obj_mutexattr);
+
+  /* call parent */
   G_OBJECT_CLASS(ags_file_launch_parent_class)->finalize(gobject);
+}
+
+/**
+ * ags_file_launch_get_class_mutex:
+ * 
+ * Use this function's returned mutex to access mutex fields.
+ *
+ * Returns: the class mutex
+ * 
+ * Since: 2.0.0
+ */
+pthread_mutex_t*
+ags_file_launch_get_class_mutex()
+{
+  return(&ags_file_launch_class_mutex);
 }
 
 /**
@@ -323,7 +416,7 @@ ags_file_launch_finalize(GObject *gobject)
  * 
  * Start #AgsFileLaunch to fulfill a task.
  * 
- * Since: 1.0.0 
+ * Since: 2.0.0 
  */
 void
 ags_file_launch_start(AgsFileLaunch *file_launch)
@@ -339,11 +432,11 @@ ags_file_launch_start(AgsFileLaunch *file_launch)
 /**
  * ags_file_launch_new:
  *
- * Creates an #AgsFileLaunch
+ * Create a new instance of #AgsFileLaunch
  *
- * Returns: a new #AgsFileLaunch
+ * Returns: the new #AgsFileLaunch
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsFileLaunch*
 ags_file_launch_new()

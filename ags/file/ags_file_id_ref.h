@@ -46,6 +46,9 @@ struct _AgsFileIdRef
 {
   GObject object;
 
+  pthread_mutex_t *obj_mutex;
+  pthread_mutexattr_t *obj_mutexattr;
+
   GObject *application_context;
   GObject *file;
 
@@ -62,6 +65,8 @@ struct _AgsFileIdRefClass
 };
 
 GType ags_file_id_ref_get_type();
+
+pthread_mutex_t* ags_file_id_ref_get_class_mutex();
 
 void ags_file_id_ref_resolved(AgsFileIdRef *file_id_ref);
 

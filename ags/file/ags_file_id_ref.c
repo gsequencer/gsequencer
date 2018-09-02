@@ -62,6 +62,8 @@ static gpointer ags_file_id_ref_parent_class = NULL;
 
 static guint file_id_ref_signals[LAST_SIGNAL];
 
+static pthread_mutex_t ags_file_id_ref_class_mutex = PTHREAD_MUTEX_INITIALIZER;
+
 GType
 ags_file_id_ref_get_type()
 {
@@ -111,7 +113,7 @@ ags_file_id_ref_class_init(AgsFileIdRefClass *file_id_ref)
    *
    * The assigned xmlNode being refered by this #AgsFileIdRef.
    *
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_pointer("node",
 				    i18n_pspec("the node"),
@@ -126,7 +128,7 @@ ags_file_id_ref_class_init(AgsFileIdRefClass *file_id_ref)
    *
    * The XPath short-cut that can be used with this #AgsFileIdRef.
    *
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_string("xpath",
 				   i18n_pspec("the xpath"),
@@ -142,7 +144,7 @@ ags_file_id_ref_class_init(AgsFileIdRefClass *file_id_ref)
    *
    * The object refered by this #AgsFileIdRef.
    *
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_pointer("reference",
 				    i18n_pspec("reference of the locator"),
@@ -158,7 +160,7 @@ ags_file_id_ref_class_init(AgsFileIdRefClass *file_id_ref)
    *
    * The #AgsFile this #AgsFileIdRef belongs to.
    *
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("file",
 				   i18n_pspec("file assigned to"),
@@ -174,7 +176,7 @@ ags_file_id_ref_class_init(AgsFileIdRefClass *file_id_ref)
    *
    * The #AgsApplicationContext to be used.
    *
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("application-context",
 				   i18n_pspec("application context access"),
@@ -192,7 +194,7 @@ ags_file_id_ref_class_init(AgsFileIdRefClass *file_id_ref)
    * 
    * Signal ::resolved to notify about resolved :reference.
    *
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   file_id_ref_signals[RESOLVED] = 
     g_signal_new("resolved",
@@ -207,6 +209,22 @@ ags_file_id_ref_class_init(AgsFileIdRefClass *file_id_ref)
 void
 ags_file_id_ref_init(AgsFileIdRef *file_id_ref)
 {
+  /* add file id ref mutex */
+  file_id_ref->obj_mutexattr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
+
+  pthread_mutexattr_init(file_id_ref->obj_mutexattr);
+  pthread_mutexattr_settype(file_id_ref->obj_mutexattr,
+			    PTHREAD_MUTEX_RECURSIVE);
+
+#ifdef __linux__
+  pthread_mutexattr_setprotocol(file_id_ref->obj_mutexattr,
+				PTHREAD_PRIO_INHERIT);
+#endif
+
+  
+  file_id_ref->obj_mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
+  pthread_mutex_init(file_id_ref->obj_mutex, file_id_ref->obj_mutexattr);
+
   file_id_ref->application_context = NULL;
   file_id_ref->file = NULL;
 
@@ -224,7 +242,16 @@ ags_file_id_ref_set_property(GObject *gobject,
 {
   AgsFileIdRef *file_id_ref;
 
+  pthread_mutex_t *file_id_ref_mutex;
+
   file_id_ref = AGS_FILE_ID_REF(gobject);
+
+  /* get file id ref mutex */
+  pthread_mutex_lock(ags_file_id_ref_get_class_mutex());
+  
+  file_id_ref_mutex = file_id_ref->obj_mutex;
+  
+  pthread_mutex_unlock(ags_file_id_ref_get_class_mutex());
   
   switch(prop_id){
   case PROP_NODE:
@@ -233,7 +260,11 @@ ags_file_id_ref_set_property(GObject *gobject,
 
       node = (xmlNode *) g_value_get_pointer(value);
 
+      pthread_mutex_lock(file_id_ref_mutex);
+
       file_id_ref->node = node;
+
+      pthread_mutex_unlock(file_id_ref_mutex);
     }
     break;
   case PROP_XPATH:
@@ -242,10 +273,15 @@ ags_file_id_ref_set_property(GObject *gobject,
 
       xpath = (char *) g_value_get_string(value);
 
-      if(file_id_ref->xpath != NULL)
+      pthread_mutex_lock(file_id_ref_mutex);
+
+      if(file_id_ref->xpath != NULL){
 	g_free(file_id_ref->xpath);
+      }
 
       file_id_ref->xpath = xpath;
+
+      pthread_mutex_unlock(file_id_ref_mutex);
     }
     break;
   case PROP_REFERENCE:
@@ -254,7 +290,11 @@ ags_file_id_ref_set_property(GObject *gobject,
 
       ref = (gpointer) g_value_get_pointer(value);
 
+      pthread_mutex_lock(file_id_ref_mutex);
+
       file_id_ref->ref = ref;
+
+      pthread_mutex_unlock(file_id_ref_mutex);
     }
     break;
   case PROP_FILE:
@@ -263,13 +303,19 @@ ags_file_id_ref_set_property(GObject *gobject,
 
       file = (GObject *) g_value_get_object(value);
 
-      if(file_id_ref->file != NULL)
-	g_object_unref(file_id_ref->file);
+      pthread_mutex_lock(file_id_ref_mutex);
 
-      if(file != NULL)
+      if(file_id_ref->file != NULL){
+	g_object_unref(file_id_ref->file);
+      }
+
+      if(file != NULL){
 	g_object_ref(file);
+      }
 
       file_id_ref->file = file;
+
+      pthread_mutex_unlock(file_id_ref_mutex);
     }
     break;
   case PROP_APPLICATION_CONTEXT:
@@ -278,13 +324,19 @@ ags_file_id_ref_set_property(GObject *gobject,
 
       application_context = (GObject *) g_value_get_object(value);
 
-      if(file_id_ref->application_context != NULL)
+      pthread_mutex_lock(file_id_ref_mutex);
+
+      if(file_id_ref->application_context != NULL){
 	g_object_unref(file_id_ref->application_context);
+      }
 
-      if(application_context != NULL)
+      if(application_context != NULL){
 	g_object_ref(application_context);
-
+      }
+      
       file_id_ref->application_context = application_context;
+
+      pthread_mutex_unlock(file_id_ref_mutex);
     }
     break;
   default:
@@ -301,32 +353,61 @@ ags_file_id_ref_get_property(GObject *gobject,
 {
   AgsFileIdRef *file_id_ref;
 
+  pthread_mutex_t *file_id_ref_mutex;
+
   file_id_ref = AGS_FILE_ID_REF(gobject);
+
+  /* get file id ref mutex */
+  pthread_mutex_lock(ags_file_id_ref_get_class_mutex());
+  
+  file_id_ref_mutex = file_id_ref->obj_mutex;
+  
+  pthread_mutex_unlock(ags_file_id_ref_get_class_mutex());
   
   switch(prop_id){
   case PROP_NODE:
     {
+      pthread_mutex_lock(file_id_ref_mutex);
+
       g_value_set_pointer(value, file_id_ref->node);
+
+      pthread_mutex_unlock(file_id_ref_mutex);
     }
     break;
   case PROP_XPATH:
     {
+      pthread_mutex_lock(file_id_ref_mutex);
+
       g_value_set_string(value, file_id_ref->xpath);
+
+      pthread_mutex_unlock(file_id_ref_mutex);
     }
     break;
   case PROP_REFERENCE:
     {
+      pthread_mutex_lock(file_id_ref_mutex);
+
       g_value_set_pointer(value, file_id_ref->ref);
+
+      pthread_mutex_unlock(file_id_ref_mutex);
     }
     break;
   case PROP_FILE:
     {
+      pthread_mutex_lock(file_id_ref_mutex);
+
       g_value_set_object(value, file_id_ref->file);
+
+      pthread_mutex_unlock(file_id_ref_mutex);
     }
     break;
   case PROP_APPLICATION_CONTEXT:
     {
+      pthread_mutex_lock(file_id_ref_mutex);
+
       g_value_set_object(value, file_id_ref->application_context);
+
+      pthread_mutex_unlock(file_id_ref_mutex);
     }
     break;
   default:
@@ -358,7 +439,29 @@ ags_file_id_ref_finalize(GObject *gobject)
     g_object_unref(file_id_ref->application_context);
   }
 
+  /* file id ref mutex */
+  pthread_mutexattr_destroy(file_id_ref->obj_mutexattr);
+  free(file_id_ref->obj_mutexattr);
+
+  pthread_mutex_destroy(file_id_ref->obj_mutex);
+  free(file_id_ref->obj_mutex);
+
   G_OBJECT_CLASS(ags_file_id_ref_parent_class)->finalize(gobject);
+}
+
+/**
+ * ags_file_id_ref_get_class_mutex:
+ * 
+ * Use this function's returned mutex to access mutex fields.
+ *
+ * Returns: the class mutex
+ * 
+ * Since: 2.0.0
+ */
+pthread_mutex_t*
+ags_file_id_ref_get_class_mutex()
+{
+  return(&ags_file_id_ref_class_mutex);
 }
 
 /**
@@ -367,7 +470,7 @@ ags_file_id_ref_finalize(GObject *gobject)
  *
  * Notify about resolved reference.
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_file_id_ref_resolved(AgsFileIdRef *file_id_ref)
@@ -388,7 +491,7 @@ ags_file_id_ref_resolved(AgsFileIdRef *file_id_ref)
  *
  * Returns: a new #AgsFileIdRef
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsFileIdRef*
 ags_file_id_ref_new()

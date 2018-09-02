@@ -1277,7 +1277,7 @@ ags_wave_find_point(AgsWave *wave,
  *
  * Returns: the matching buffers as #GList.
  *
- * Since: 1.4.0
+ * Since: 2.0.0
  */
 GList*
 ags_wave_find_region(AgsWave *wave,

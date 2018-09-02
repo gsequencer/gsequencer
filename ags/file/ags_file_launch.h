@@ -39,6 +39,9 @@ struct _AgsFileLaunch
 {
   GObject object;
 
+  pthread_mutex_t *obj_mutex;
+  pthread_mutexattr_t *obj_mutexattr;
+
   GObject *application_context;
 
   gpointer reference;
@@ -55,6 +58,8 @@ struct _AgsFileLaunchClass
 };
 
 GType ags_file_launch_get_type(void);
+
+pthread_mutex_t* ags_file_launch_get_class_mutex();
 
 void ags_file_launch_start(AgsFileLaunch *file_launch);
 

@@ -761,7 +761,7 @@ ags_recall_ladspa_load_conversion(AgsRecallLadspa *recall_ladspa,
  *
  * Returns: Next matching #GList-struct or %NULL
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 GList*
 ags_recall_ladspa_find(GList *recall,

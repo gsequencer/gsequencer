@@ -334,7 +334,7 @@ ags_input_disconnect(AgsConnectable *connectable)
  * 
  * Returns: %TRUE if has a need to be processed, else %FALSE
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 gboolean
 ags_input_is_active(AgsInput *input,
@@ -487,7 +487,7 @@ ags_input_is_active(AgsInput *input,
  * 
  * Returns: next active #AgsInput, else %NULL if non available
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsInput*
 ags_input_next_active(AgsInput *input,
@@ -709,7 +709,7 @@ ags_input_remove_synth_generator(AgsInput *input,
  * 
  * Returns: %TRUE if open was successful, else %FALSE
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 gboolean
 ags_input_open_file(AgsInput *input,
@@ -800,16 +800,6 @@ ags_input_open_file(AgsInput *input,
   return(success);
 }
 
-void
-ags_input_apply_synth(AgsInput *input)
-{
-  if(!AGS_IS_INPUT(input)){
-    return;
-  }
-
-  //TODO:JK: implement me
-}
-
 /**
  * ags_input_new:
  * @audio: the #AgsAudio
@@ -818,7 +808,7 @@ ags_input_apply_synth(AgsInput *input)
  *
  * Returns: a new #AgsInput
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsInput*
 ags_input_new(GObject *audio)

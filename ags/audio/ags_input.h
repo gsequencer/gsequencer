@@ -75,9 +75,6 @@ gboolean ags_input_open_file(AgsInput *input,
 			     gchar *sample,
 			     guint audio_channel);
 
-/* apply synth */
-void ags_input_apply_synth(AgsInput *input);
-
 /* instantiate */
 AgsInput* ags_input_new(GObject *audio);
 

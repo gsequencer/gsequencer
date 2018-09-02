@@ -11016,7 +11016,7 @@ ags_channel_get_level(AgsChannel *channel)
  *
  * Recursive set property for #AgsChannel.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_channel_recursive_set_property(AgsChannel *channel,

@@ -131,7 +131,7 @@ ags_file_link_class_init(AgsFileLinkClass *file_link)
    *
    * The filename this #AgsFileLink refers.
    *
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_string("filename",
 				   i18n_pspec("the filename"),
@@ -147,7 +147,7 @@ ags_file_link_class_init(AgsFileLinkClass *file_link)
    *
    * The data this #AgsFileLink contains.
    *
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_string("data",
 				   i18n_pspec("the data"),
@@ -303,6 +303,9 @@ ags_file_link_finalize(GObject *gobject)
   if(file_link->data != NULL){
     g_free(file_link->data);
   }
+
+  /* call parent */
+  G_OBJECT_CLASS(ags_file_link_parent_class)->finalize(gobject);
 }
 
 /**
@@ -422,7 +425,7 @@ ags_file_link_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
  *
  * Returns: a new #AgsFileLink
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsFileLink*
 ags_file_link_new()

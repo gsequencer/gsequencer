@@ -82,6 +82,9 @@ struct _AgsFile
 
   guint flags;
 
+  pthread_mutex_t *obj_mutex;
+  pthread_mutexattr_t *obj_mutexattr;
+
   FILE *out;
   xmlChar *buffer;
 
@@ -137,6 +140,8 @@ struct _AgsFileClass
 };
 
 GType ags_file_get_type(void);
+
+pthread_mutex_t* ags_file_get_class_mutex();
 
 gchar* ags_file_str2md5(gchar *content, guint content_length);
 
