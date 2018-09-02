@@ -178,6 +178,90 @@ ags_automation_toolbar_tool_popup_position_cursor_callback(GtkWidget *item, AgsA
 }
 
 void
+ags_automation_toolbar_tool_popup_enable_all_lines_callback(GtkWidget *item, AgsAutomationToolbar *automation_toolbar)
+{
+  AgsAutomationEditor *automation_editor;
+  AgsNotebook *notebook;
+  
+  automation_editor = (AgsAutomationEditor *) gtk_widget_get_ancestor((GtkWidget *) automation_toolbar,
+								      AGS_TYPE_AUTOMATION_EDITOR);
+
+  notebook = NULL;
+  
+  /* queue draw */
+  switch(gtk_notebook_get_current_page(automation_editor->notebook)){
+  case 1:
+    {
+      notebook = automation_editor->output_notebook;
+    }
+    break;
+  case 2:
+    {
+      notebook = automation_editor->input_notebook;
+    }
+    break;
+  }
+
+  if(notebook != NULL){
+    GList *start_list, *list;
+
+    list =
+      start_list = g_list_copy(notebook->tab);
+
+    while(list != NULL){
+      gtk_toggle_button_set_active(AGS_NOTEBOOK_TAB(list->data)->toggle,
+				   TRUE);
+
+      list = list->next;
+    }
+    
+    g_list_free(start_list);
+  }
+}
+
+void
+ags_automation_toolbar_tool_popup_disable_all_lines_callback(GtkWidget *item, AgsAutomationToolbar *automation_toolbar)
+{
+  AgsAutomationEditor *automation_editor;
+  AgsNotebook *notebook;
+  
+  automation_editor = (AgsAutomationEditor *) gtk_widget_get_ancestor((GtkWidget *) automation_toolbar,
+								      AGS_TYPE_AUTOMATION_EDITOR);
+
+  notebook = NULL;
+  
+  /* queue draw */
+  switch(gtk_notebook_get_current_page(automation_editor->notebook)){
+  case 1:
+    {
+      notebook = automation_editor->output_notebook;
+    }
+    break;
+  case 2:
+    {
+      notebook = automation_editor->input_notebook;
+    }
+    break;
+  }
+
+  if(notebook != NULL){
+    GList *start_list, *list;
+
+    list =
+      start_list = g_list_copy(notebook->tab);
+
+    while(list != NULL){
+      gtk_toggle_button_set_active(AGS_NOTEBOOK_TAB(list->data)->toggle,
+				   FALSE);
+
+      list = list->next;
+    }
+
+    g_list_free(start_list);
+  }
+}
+
+void
 ags_automation_toolbar_zoom_callback(GtkComboBox *combo_box, AgsAutomationToolbar *automation_toolbar)
 {
   AgsAutomationEditor *automation_editor;

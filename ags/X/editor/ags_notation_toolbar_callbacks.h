@@ -44,6 +44,9 @@ void ags_notation_toolbar_tool_popup_crop_note_callback(GtkWidget *item, AgsNota
 void ags_notation_toolbar_tool_popup_select_note_callback(GtkWidget *item, AgsNotationToolbar *notation_toolbar);
 void ags_notation_toolbar_tool_popup_position_cursor_callback(GtkWidget *item, AgsNotationToolbar *notation_toolbar);
 
+void ags_notation_toolbar_tool_popup_enable_all_lines_callback(GtkWidget *item, AgsNotationToolbar *notation_toolbar);
+void ags_notation_toolbar_tool_popup_disable_all_lines_callback(GtkWidget *item, AgsNotationToolbar *notation_toolbar);
+
 void ags_notation_toolbar_zoom_callback(GtkComboBox *combo_box, AgsNotationToolbar *notation_toolbar);
 
 void ags_notation_toolbar_mode_callback(GtkWidget *widget, AgsNotationToolbar *notation_toolbar);

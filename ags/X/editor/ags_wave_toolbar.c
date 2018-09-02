@@ -386,6 +386,15 @@ ags_wave_toolbar_tool_popup_new(GtkToolbar *wave_toolbar)
   item = (GtkMenuItem *) gtk_menu_item_new_with_label(i18n("position cursor"));
   gtk_menu_shell_append((GtkMenuShell *) tool_popup, (GtkWidget *) item);
 
+  gtk_menu_shell_append((GtkMenuShell*) tool_popup,
+			(GtkWidget*) gtk_separator_menu_item_new());
+  
+  item = (GtkMenuItem *) gtk_menu_item_new_with_label(i18n("enable all lines"));
+  gtk_menu_shell_append((GtkMenuShell *) tool_popup, (GtkWidget *) item);
+
+  item = (GtkMenuItem *) gtk_menu_item_new_with_label(i18n("disable all lines"));
+  gtk_menu_shell_append((GtkMenuShell *) tool_popup, (GtkWidget *) item);
+
   /* connect */
   list_start = 
     list = gtk_container_get_children((GtkContainer *) tool_popup);
@@ -396,6 +405,14 @@ ags_wave_toolbar_tool_popup_new(GtkToolbar *wave_toolbar)
   list = list->next;
   g_signal_connect(G_OBJECT(list->data), "activate",
 		   G_CALLBACK(ags_wave_toolbar_tool_popup_position_cursor_callback), (gpointer) wave_toolbar);
+
+  list = list->next->next;
+  g_signal_connect(G_OBJECT(list->data), "activate",
+		   G_CALLBACK(ags_wave_toolbar_tool_popup_enable_all_lines_callback), (gpointer) wave_toolbar);
+
+  list = list->next;
+  g_signal_connect(G_OBJECT(list->data), "activate",
+		   G_CALLBACK(ags_wave_toolbar_tool_popup_disable_all_lines_callback), (gpointer) wave_toolbar);
 
   g_list_free(list_start);
 

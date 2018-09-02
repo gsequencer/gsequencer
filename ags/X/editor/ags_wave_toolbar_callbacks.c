@@ -119,6 +119,64 @@ ags_wave_toolbar_tool_popup_position_cursor_callback(GtkWidget *item, AgsWaveToo
 }
 
 void
+ags_wave_toolbar_tool_popup_enable_all_lines_callback(GtkWidget *item, AgsWaveToolbar *wave_toolbar)
+{
+  AgsWaveEditor *wave_editor;
+  AgsNotebook *notebook;
+  
+  wave_editor = (AgsWaveEditor *) gtk_widget_get_ancestor((GtkWidget *) wave_toolbar,
+							  AGS_TYPE_WAVE_EDITOR);
+
+  /* enable */
+  notebook = wave_editor->notebook;
+
+  if(notebook != NULL){
+    GList *start_list, *list;
+
+    list =
+      start_list = g_list_copy(notebook->tab);
+
+    while(list != NULL){
+      gtk_toggle_button_set_active(AGS_NOTEBOOK_TAB(list->data)->toggle,
+				   TRUE);
+
+      list = list->next;
+    }
+    
+    g_list_free(start_list);
+  }
+}
+
+void
+ags_wave_toolbar_tool_popup_disable_all_lines_callback(GtkWidget *item, AgsWaveToolbar *wave_toolbar)
+{
+  AgsWaveEditor *wave_editor;
+  AgsNotebook *notebook;
+  
+  wave_editor = (AgsWaveEditor *) gtk_widget_get_ancestor((GtkWidget *) wave_toolbar,
+							  AGS_TYPE_WAVE_EDITOR);
+
+  /* disable */
+  notebook = wave_editor->notebook;
+
+  if(notebook != NULL){
+    GList *start_list, *list;
+
+    list =
+      start_list = g_list_copy(notebook->tab);
+
+    while(list != NULL){
+      gtk_toggle_button_set_active(AGS_NOTEBOOK_TAB(list->data)->toggle,
+				   FALSE);
+
+      list = list->next;
+    }
+
+    g_list_free(start_list);
+  }
+}
+
+void
 ags_wave_toolbar_zoom_callback(GtkComboBox *combo_box, AgsWaveToolbar *wave_toolbar)
 {
   AgsWaveEditor *wave_editor;
@@ -152,7 +210,7 @@ ags_wave_toolbar_zoom_callback(GtkComboBox *combo_box, AgsWaveToolbar *wave_tool
   }
   
   wave_editor = (AgsWaveEditor *) gtk_widget_get_ancestor((GtkWidget *) wave_toolbar,
-								      AGS_TYPE_WAVE_EDITOR);
+							  AGS_TYPE_WAVE_EDITOR);
   
   /* zoom */
   zoom_factor = exp2(6.0 - (double) gtk_combo_box_get_active((GtkComboBox *) wave_toolbar->zoom));
