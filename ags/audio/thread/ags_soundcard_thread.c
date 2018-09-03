@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -22,12 +22,16 @@
 #include <ags/libags.h>
 
 #include <ags/audio/ags_devout.h>
+#include <ags/audio/ags_devin.h>
 
 #include <ags/audio/jack/ags_jack_devout.h>
+#include <ags/audio/jack/ags_jack_devin.h>
 
 #include <ags/audio/pulse/ags_pulse_devout.h>
+#include <ags/audio/pulse/ags_pulse_devin.h>
 
 #include <ags/audio/core-audio/ags_core_audio_devout.h>
+#include <ags/audio/core-audio/ags_core_audio_devin.h>
 
 #include <ags/audio/thread/ags_audio_loop.h>
 
@@ -74,6 +78,7 @@ static AgsConnectableInterface *ags_soundcard_thread_parent_connectable_interfac
 enum{
   PROP_0,
   PROP_SOUNDCARD,
+  PROP_SOUNDCARD_CAPABILITY,
 };
 
 GType
@@ -147,6 +152,24 @@ ags_soundcard_thread_class_init(AgsSoundcardThreadClass *soundcard_thread)
 				  PROP_SOUNDCARD,
 				  param_spec);
 
+  /**
+   * AgsSoundcardThread:soundcard-capability:
+   *
+   * The soundcard capability.
+   * 
+   * Since: 2.0.0
+   */
+  param_spec =  g_param_spec_uint("soundcard-capability",
+				  i18n_pspec("soundcard capability"),
+				  i18n_pspec("The soundcard capability"),
+				  0,
+				  G_MAXINT32,
+				  0,
+				  G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_SOUNDCARD_CAPABILITY,
+				  param_spec);
+
   /* AgsThread */
   thread = (AgsThreadClass *) soundcard_thread;
 
@@ -171,7 +194,8 @@ ags_soundcard_thread_init(AgsSoundcardThread *soundcard_thread)
 
   AgsConfig *config;
   
-  gchar *str0, *str1;
+  guint samplerate;
+  guint buffer_size;
   
   thread = (AgsThread *) soundcard_thread;
 
@@ -183,53 +207,16 @@ ags_soundcard_thread_init(AgsSoundcardThread *soundcard_thread)
   //		  AGS_THREAD_TIMING);
 
   config = ags_config_get_instance();
-
-  str0 = ags_config_get_value(config,
-			      AGS_CONFIG_SOUNDCARD,
-			      "samplerate");
-
-  if(str0 == NULL){
-    str0 = ags_config_get_value(config,
-				AGS_CONFIG_SOUNDCARD_0,
-				"samplerate");
-  }
   
-  str1 = ags_config_get_value(config,
-			      AGS_CONFIG_SOUNDCARD,
-			      "buffer-size");
+  samplerate = (guint) ags_soundcard_helper_config_get_samplerate(config);
+  buffer_size = (guint) ags_soundcard_helper_config_get_buffer_size(config);
 
-  if(str1 == NULL){
-    str1 = ags_config_get_value(config,
-				AGS_CONFIG_SOUNDCARD_0,
-				"buffer-size");
-  }
-
-  if(str0 == NULL || str1 == NULL){
-    thread->freq = AGS_SOUNDCARD_THREAD_DEFAULT_JIFFIE;
-  }else{
-    guint samplerate;
-    guint buffer_size;
-
-    samplerate = g_ascii_strtoull(str0,
-				  NULL,
-				  10);
-    buffer_size = g_ascii_strtoull(str1,
-				   NULL,
-				   10);
-
-    thread->freq = ceil((gdouble) samplerate / (gdouble) buffer_size) + AGS_SOUNDCARD_DEFAULT_OVERCLOCK;
-  }
-
-  g_free(str0);
-  g_free(str1);
+  thread->freq = ceil((gdouble) samplerate / (gdouble) buffer_size) + AGS_SOUNDCARD_DEFAULT_OVERCLOCK;
 
   /*  */
+  soundcard_thread->soundcard_capability = 0;
+
   soundcard_thread->soundcard = NULL;
-
-  soundcard_thread->timestamp_thread = NULL;
-  //  soundcard_thread->timestamp_thread = (AgsThread *) ags_timestamp_thread_new();
-  //  ags_thread_add_child(thread, soundcard_thread->timestamp_thread);
-
   soundcard_thread->error = NULL;
 }
 
@@ -270,6 +257,7 @@ ags_soundcard_thread_set_property(GObject *gobject,
 		     "frequency", ceil((gdouble) samplerate / (gdouble) buffer_size) + AGS_SOUNDCARD_DEFAULT_OVERCLOCK,
 		     NULL);
 
+	/* playback */
 	if(AGS_IS_DEVOUT(soundcard)){
 	  g_atomic_int_or(&(AGS_THREAD(soundcard_thread)->flags),
 			  (AGS_THREAD_INTERMEDIATE_POST_SYNC));
@@ -277,16 +265,34 @@ ags_soundcard_thread_set_property(GObject *gobject,
 		 AGS_IS_PULSE_DEVOUT(soundcard)){
 	  g_atomic_int_or(&(AGS_THREAD(soundcard_thread)->flags),
 			  (AGS_THREAD_INTERMEDIATE_POST_SYNC));
-
-	  //	  g_atomic_int_and(&(AGS_THREAD(soundcard_thread)->flags),
-	  //		   (~AGS_THREAD_INTERMEDIATE_POST_SYNC));
 	}else if(AGS_IS_CORE_AUDIO_DEVOUT(soundcard)){
 	  g_atomic_int_or(&(AGS_THREAD(soundcard_thread)->flags),
 	  		  (AGS_THREAD_INTERMEDIATE_POST_SYNC));
 	}
+
+	/* capture */
+	if(AGS_IS_DEVIN(soundcard)){
+	  g_atomic_int_or(&(AGS_THREAD(soundcard_thread)->flags),
+			  (AGS_THREAD_INTERMEDIATE_PRE_SYNC));
+	}else if(AGS_IS_JACK_DEVIN(soundcard) ||
+		 AGS_IS_PULSE_DEVIN(soundcard)){
+	  g_atomic_int_or(&(AGS_THREAD(soundcard_thread)->flags),
+			  (AGS_THREAD_INTERMEDIATE_PRE_SYNC));
+	}else if(AGS_IS_CORE_AUDIO_DEVIN(soundcard)){
+	  g_atomic_int_or(&(AGS_THREAD(soundcard_thread)->flags),
+	  		  (AGS_THREAD_INTERMEDIATE_PRE_SYNC));
+	}
+
+	/* duplex */
+	//TODO:JK: implement me
       }
 
       soundcard_thread->soundcard = G_OBJECT(soundcard);
+    }
+    break;
+  case PROP_SOUNDCARD_CAPABILITY:
+    {
+      soundcard_thread->soundcard_capability = g_value_get_uint(value);
     }
     break;
   default:
@@ -309,6 +315,12 @@ ags_soundcard_thread_get_property(GObject *gobject,
   case PROP_SOUNDCARD:
     {
       g_value_set_object(value, G_OBJECT(soundcard_thread->soundcard));
+    }
+    break;
+  case PROP_SOUNDCARD_CAPABILITY:
+    {
+      g_value_set_uint(value,
+		       soundcard_thread->soundcard_capability);
     }
     break;
   default:
@@ -441,7 +453,7 @@ ags_soundcard_thread_run(AgsThread *thread)
 
   GList *poll_fd;
   
-  gboolean is_playing;
+  gboolean is_playing, is_recording;
   
   GError *error;
 
@@ -467,19 +479,44 @@ ags_soundcard_thread_run(AgsThread *thread)
 #endif
 
   /* playback */
-  is_playing = ags_soundcard_is_playing(AGS_SOUNDCARD(soundcard));
+  if((AGS_SOUNDCARD_CAPABILITY_PLAYBACK & (soundcard_thread->soundcard_capability)) != 0){
+    is_playing = ags_soundcard_is_playing(AGS_SOUNDCARD(soundcard));
   
-  if(is_playing){
-    error = NULL;
-    ags_soundcard_play(AGS_SOUNDCARD(soundcard),
-		       &error);
+    if(is_playing){
+      error = NULL;
+      ags_soundcard_play(AGS_SOUNDCARD(soundcard),
+			 &error);
 
-    if(error != NULL){
-      //TODO:JK: implement me
+      if(error != NULL){
+	//TODO:JK: implement me
 
-      g_warning("%s",
-		error->message);
+	g_warning("%s",
+		  error->message);
+      }
     }
+  }
+
+  /* capture */
+  if((AGS_SOUNDCARD_CAPABILITY_CAPTURE & (soundcard_thread->soundcard_capability)) != 0){
+    is_recording = ags_soundcard_is_recording(AGS_SOUNDCARD(soundcard));
+  
+    if(is_recording){
+      error = NULL;
+      ags_soundcard_record(AGS_SOUNDCARD(soundcard),
+			   &error);
+
+      if(error != NULL){
+	//TODO:JK: implement me
+
+	g_warning("%s",
+		  error->message);
+      }
+    }
+  }
+
+  /* duplex */
+  if((AGS_SOUNDCARD_CAPABILITY_DUPLEX & (soundcard_thread->soundcard_capability)) != 0){
+    //TODO:JK: implement me
   }
 }
 
@@ -610,6 +647,7 @@ ags_soundcard_thread_find_soundcard(AgsSoundcardThread *soundcard_thread,
 /**
  * ags_soundcard_thread_new:
  * @soundcard: the #AgsSoundcard
+ * @soundcard_capability: see #AgsSoundcardCapability-enum
  *
  * Create a new instance of #AgsSoundcardThread.
  *
@@ -618,12 +656,14 @@ ags_soundcard_thread_find_soundcard(AgsSoundcardThread *soundcard_thread,
  * Since: 2.0.0
  */
 AgsSoundcardThread*
-ags_soundcard_thread_new(GObject *soundcard)
+ags_soundcard_thread_new(GObject *soundcard,
+			 guint soundcard_capability)
 {
   AgsSoundcardThread *soundcard_thread;
 
   soundcard_thread = (AgsSoundcardThread *) g_object_new(AGS_TYPE_SOUNDCARD_THREAD,
 							 "soundcard", soundcard,
+							 "soundcard-capability", soundcard_capability,
 							 NULL);
 
 

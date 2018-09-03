@@ -55,6 +55,7 @@
 #include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_channel_iter.h>
 #include <ags/audio/ags_devout.h>
+#include <ags/audio/ags_devin.h>
 #include <ags/audio/ags_effect.h>
 #include <ags/audio/ags_fifoout.h>
 #include <ags/audio/ags_input.h>
@@ -127,12 +128,14 @@
 /* audio core-audio */
 #include <ags/audio/core-audio/ags_core_audio_client.h>
 #include <ags/audio/core-audio/ags_core_audio_devout.h>
+#include <ags/audio/core-audio/ags_core_audio_devin.h>
 #include <ags/audio/core-audio/ags_core_audio_port.h>
 #include <ags/audio/core-audio/ags_core_audio_server.h>
 
 /* audio pulse */
 #include <ags/audio/pulse/ags_pulse_client.h>
 #include <ags/audio/pulse/ags_pulse_devout.h>
+#include <ags/audio/pulse/ags_pulse_devin.h>
 #include <ags/audio/pulse/ags_pulse_port.h>
 #include <ags/audio/pulse/ags_pulse_server.h>
 
@@ -140,6 +143,7 @@
 #include <ags/audio/jack/ags_jack_client.h>
 #include <ags/audio/jack/ags_jack_midiin.h>
 #include <ags/audio/jack/ags_jack_devout.h>
+#include <ags/audio/jack/ags_jack_devin.h>
 #include <ags/audio/jack/ags_jack_port.h>
 #include <ags/audio/jack/ags_jack_server.h>
 

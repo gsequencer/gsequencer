@@ -263,8 +263,7 @@ ags_audio_signal_class_init(AgsAudioSignalClass *audio_signal)
 				 G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_INPUT_SOUNDCARD_CHANNEL,
-				  param_spec);
-  
+				  param_spec);  
 
   /**
    * AgsAudioSignal:samplerate:

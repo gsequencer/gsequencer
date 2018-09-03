@@ -1737,7 +1737,8 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
   while(list != NULL){
     AgsNotifySoundcard *notify_soundcard;
     
-    soundcard_thread = (AgsThread *) ags_soundcard_thread_new(list->data);
+    soundcard_thread = (AgsThread *) ags_soundcard_thread_new(list->data,
+							      ags_soundcard_get_capability(AGS_SOUNDCARD(list->data)));
     ags_thread_add_child_extended(AGS_THREAD(audio_loop),
 				  (AgsThread *) soundcard_thread,
 				  TRUE, TRUE);

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -56,9 +56,11 @@ struct _AgsSoundcardEditor
   GtkComboBoxText *backend;  
   GtkComboBoxText *card;
   
-  GtkHBox *sink_hbox;
-  GtkButton *add_sink;
-  GtkButton *remove_sink;
+  GtkHBox *port_hbox;
+  GtkButton *add_port;
+  GtkButton *remove_port;
+
+  GtkComboBoxText *capability;
   
   GtkSpinButton *audio_channels;
   GtkSpinButton *samplerate;
@@ -75,9 +77,9 @@ struct _AgsSoundcardEditorClass
 
 GType ags_soundcard_editor_get_type(void);
 
-void ags_soundcard_editor_add_sink(AgsSoundcardEditor *soundcard_editor,
+void ags_soundcard_editor_add_port(AgsSoundcardEditor *soundcard_editor,
 				   gchar *device);
-void ags_soundcard_editor_remove_sink(AgsSoundcardEditor *soundcard_editor,
+void ags_soundcard_editor_remove_port(AgsSoundcardEditor *soundcard_editor,
 				      gchar *device);
 
 void ags_soundcard_editor_add_soundcard(AgsSoundcardEditor *soundcard_editor,
