@@ -24,6 +24,7 @@
 #include <ags/audio/ags_recycling.h>
 #include <ags/audio/ags_recall_id.h>
 #include <ags/audio/ags_recall_container.h>
+#include <ags/audio/ags_audio_buffer_util.h>
 
 #include <ags/audio/recall/ags_capture_wave_audio.h>
 #include <ags/audio/recall/ags_capture_wave_audio_run.h>
@@ -274,7 +275,7 @@ ags_capture_wave_channel_run_run_pre(AgsRecall *recall)
   guint samplerate, target_samplerate, file_samplerate;
   guint format, target_format, file_format;
   guint buffer_size, target_buffer_size, file_buffer_size;
-  gboolean do_playback, do_replace;
+  gboolean do_playback, do_replace, is_new_buffer;
   gboolean do_record;
   gboolean resample_target, resample_file;
   
@@ -397,8 +398,8 @@ ags_capture_wave_channel_run_run_pre(AgsRecall *recall)
       resample_target = TRUE;
     }
 
-    target_copy_mode = ags_audio_buffer_util_get_copy_mode(target_format,
-							   format);
+    target_copy_mode = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(target_format),
+							   ags_audio_buffer_util_format_from_soundcard(format));
 
     ags_timestamp_set_ags_offset(timestamp,
 				 relative_offset * floor(x_offset / relative_offset));
@@ -417,16 +418,20 @@ ags_capture_wave_channel_run_run_pre(AgsRecall *recall)
     }
 
     buffer = ags_wave_find_point(wave,
-				 x_offset,
+				 target_buffer_size * floor(x_offset / target_buffer_size),
 				 FALSE);
 
+    is_new_buffer = FALSE;
+    
     if(buffer == NULL){
       buffer = ags_buffer_new();
-      buffer->x = x_offset;
+      buffer->x = target_buffer_size * floor(x_offset / target_buffer_size);
 	
       ags_wave_add_buffer(wave,
 			  buffer,
 			  FALSE);
+
+      is_new_buffer = TRUE;
     }
 
     /* get buffer mutex */
@@ -435,13 +440,19 @@ ags_capture_wave_channel_run_run_pre(AgsRecall *recall)
     buffer_mutex = buffer->obj_mutex;
       
     pthread_mutex_unlock(ags_buffer_get_class_mutex());
+    
+    if(!is_new_buffer &&
+       do_replace){
+      ags_audio_buffer_util_clear_buffer(buffer->data, 1,
+					 target_buffer_size, ags_audio_buffer_util_format_from_soundcard(target_format));
+    }
       
     /* copy to buffer */
     pthread_mutex_lock(buffer_mutex);
       
     ags_audio_buffer_util_copy_buffer_to_buffer(buffer->data, target_audio_channels, line,
 						data, audio_channels, line,
-						target_buffer_size);
+						target_buffer_size, target_copy_mode);
 
     pthread_mutex_unlock(buffer_mutex);
 
@@ -496,12 +507,12 @@ ags_capture_wave_channel_run_run_pre(AgsRecall *recall)
       resample_file = TRUE;
     }
 
-    file_copy_mode = ags_audio_buffer_util_get_copy_mode(file_format,
-							 format);
+    file_copy_mode = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(file_format),
+							 ags_audio_buffer_util_format_from_soundcard(format));
     
     ags_audio_buffer_util_copy_buffer_to_buffer(file_data, file_audio_channels, line,
 						data, audio_channels, line,
-						file_buffer_size);
+						file_buffer_size, file_copy_mode);
 
     if(resample_file){
       g_free(data);
