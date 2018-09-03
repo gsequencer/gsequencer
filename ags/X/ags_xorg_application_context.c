@@ -1170,7 +1170,8 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
   gchar *soundcard_group;
   gchar *sequencer_group;
   gchar *str;
-      
+  gchar *capability;
+  
   uid_t uid;
   
   guint i;
@@ -1178,7 +1179,8 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
   gboolean has_core_audio;
   gboolean has_pulse;
   gboolean has_jack;
-    
+  gboolean is_output;
+  
   xorg_application_context = (AgsXorgApplicationContext *) application_context;
 
   audio_loop = AGS_APPLICATION_CONTEXT(xorg_application_context)->main_loop;
@@ -1466,6 +1468,18 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
     str = ags_config_get_value(config,
 			       soundcard_group,
 			       "backend");
+
+    capability = ags_config_get_value(config,
+				      soundcard_group,
+				      "capability");
+
+    is_output = TRUE;
+
+    if(!g_ascii_strncasecmp(capability,
+			    "capture",
+			    8)){
+      is_output = FALSE;
+    }
     
     /* change soundcard */
     if(str != NULL){
@@ -1473,35 +1487,51 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
 			      "core-audio",
 			      11)){
 	soundcard = ags_sound_server_register_soundcard(AGS_SOUND_SERVER(core_audio_server),
-							TRUE);
+							is_output);
 
 	has_core_audio = TRUE;
       }else if(!g_ascii_strncasecmp(str,
 			      "pulse",
 			      6)){
 	soundcard = ags_sound_server_register_soundcard(AGS_SOUND_SERVER(pulse_server),
-							TRUE);
+							is_output);
 
 	has_pulse = TRUE;
       }else if(!g_ascii_strncasecmp(str,
 			      "jack",
 			      5)){
 	soundcard = ags_sound_server_register_soundcard(AGS_SOUND_SERVER(jack_server),
-							TRUE);
+							is_output);
 
 	has_jack = TRUE;
       }else if(!g_ascii_strncasecmp(str,
 				    "alsa",
 				    5)){
-	soundcard = (GObject *) ags_devout_new((GObject *) xorg_application_context);
-	AGS_DEVOUT(soundcard)->flags &= (~AGS_DEVOUT_OSS);
-	AGS_DEVOUT(soundcard)->flags |= AGS_DEVOUT_ALSA;
+	if(is_output){
+	  soundcard = (GObject *) ags_devout_new((GObject *) xorg_application_context);
+	  
+	  AGS_DEVOUT(soundcard)->flags &= (~AGS_DEVOUT_OSS);
+	  AGS_DEVOUT(soundcard)->flags |= AGS_DEVOUT_ALSA;
+	}else{
+	  soundcard = (GObject *) ags_devin_new((GObject *) xorg_application_context);
+	  
+	  AGS_DEVIN(soundcard)->flags &= (~AGS_DEVIN_OSS);
+	  AGS_DEVIN(soundcard)->flags |= AGS_DEVIN_ALSA;
+	}
       }else if(!g_ascii_strncasecmp(str,
 				    "oss",
 				    4)){
-	soundcard = (GObject *) ags_devout_new((GObject *) xorg_application_context);
-	AGS_DEVOUT(soundcard)->flags &= (~AGS_DEVOUT_ALSA);
-	AGS_DEVOUT(soundcard)->flags |= AGS_DEVOUT_OSS;
+	if(is_output){
+	  soundcard = (GObject *) ags_devout_new((GObject *) xorg_application_context);
+
+	  AGS_DEVOUT(soundcard)->flags &= (~AGS_DEVOUT_ALSA);
+	  AGS_DEVOUT(soundcard)->flags |= AGS_DEVOUT_OSS;
+	}else{
+	  soundcard = (GObject *) ags_devin_new((GObject *) xorg_application_context);
+
+	  AGS_DEVIN(soundcard)->flags &= (~AGS_DEVIN_ALSA);
+	  AGS_DEVIN(soundcard)->flags |= AGS_DEVIN_OSS;	  
+	}
       }else{
 	g_warning(i18n("unknown soundcard backend - %s"), str);
 
@@ -1736,36 +1766,44 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
     
   while(list != NULL){
     AgsNotifySoundcard *notify_soundcard;
+
+    guint soundcard_capability;
+
+    soundcard_capability = ags_soundcard_get_capability(AGS_SOUNDCARD(list->data));
     
     soundcard_thread = (AgsThread *) ags_soundcard_thread_new(list->data,
-							      ags_soundcard_get_capability(AGS_SOUNDCARD(list->data)));
+							      soundcard_capability);
     ags_thread_add_child_extended(AGS_THREAD(audio_loop),
 				  (AgsThread *) soundcard_thread,
 				  TRUE, TRUE);
 
-    /* notify soundcard */
-    notify_soundcard = ags_notify_soundcard_new(soundcard_thread);
-    AGS_TASK(notify_soundcard)->task_thread = application_context->task_thread;
+    /* notify soundcard and export thread */
+    export_thread = NULL;
     
-    if(AGS_IS_DEVOUT(list->data)){
-      AGS_DEVOUT(list->data)->notify_soundcard = notify_soundcard;
-    }else if(AGS_IS_JACK_DEVOUT(list->data)){
-      AGS_JACK_DEVOUT(list->data)->notify_soundcard = notify_soundcard;
-    }else if(AGS_IS_PULSE_DEVOUT(list->data)){
-      AGS_PULSE_DEVOUT(list->data)->notify_soundcard = notify_soundcard;
-    }else if(AGS_IS_CORE_AUDIO_DEVOUT(list->data)){
-      AGS_CORE_AUDIO_DEVOUT(list->data)->notify_soundcard = notify_soundcard;
-    }
+    if(soundcard_capability == AGS_SOUNDCARD_CAPABILITY_PLAYBACK){
+      notify_soundcard = ags_notify_soundcard_new(soundcard_thread);
+      AGS_TASK(notify_soundcard)->task_thread = application_context->task_thread;
+    
+      if(AGS_IS_DEVOUT(list->data)){
+	AGS_DEVOUT(list->data)->notify_soundcard = notify_soundcard;
+      }else if(AGS_IS_JACK_DEVOUT(list->data)){
+	AGS_JACK_DEVOUT(list->data)->notify_soundcard = notify_soundcard;
+      }else if(AGS_IS_PULSE_DEVOUT(list->data)){
+	AGS_PULSE_DEVOUT(list->data)->notify_soundcard = notify_soundcard;
+      }else if(AGS_IS_CORE_AUDIO_DEVOUT(list->data)){
+	AGS_CORE_AUDIO_DEVOUT(list->data)->notify_soundcard = notify_soundcard;
+      }
 
-    ags_task_thread_append_cyclic_task(application_context->task_thread,
-				       notify_soundcard);
+      ags_task_thread_append_cyclic_task(application_context->task_thread,
+					 notify_soundcard);
 
-    /* export thread */
-    export_thread = (AgsThread *) ags_export_thread_new(list->data,
-							NULL);
-    ags_thread_add_child_extended(AGS_THREAD(audio_loop),
-				  (AgsThread *) export_thread,
-				  TRUE, TRUE);
+      /* export thread */
+      export_thread = (AgsThread *) ags_export_thread_new(list->data,
+							  NULL);
+      ags_thread_add_child_extended(AGS_THREAD(audio_loop),
+				    (AgsThread *) export_thread,
+				    TRUE, TRUE);
+    }    
 
     /* default soundcard thread */
     if(xorg_application_context->soundcard_thread == NULL){
@@ -1774,8 +1812,10 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
     }
 
     /* default export thread */
-    if(export_thread != NULL){
+    if(export_thread != NULL &&
+       xorg_application_context->export_thread == NULL){
       xorg_application_context->export_thread = export_thread;
+      g_object_ref(export_thread);
     }
 
     /* iterate */
