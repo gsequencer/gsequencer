@@ -726,7 +726,8 @@ ags_wave_editor_select_region(AgsWaveEditor *wave_editor,
   AgsTimestamp *timestamp;
 
   GObject *soundcard;
-  
+
+  GList *start_wave_edit, *wave_edit;
   GList *start_list_wave, *list_wave;
 
   gdouble bpm;
@@ -802,11 +803,15 @@ ags_wave_editor_select_region(AgsWaveEditor *wave_editor,
 
     timestamp->flags &= (~AGS_TIMESTAMP_UNIX);
     timestamp->flags |= AGS_TIMESTAMP_OFFSET;
-    
+
+    start_wave_edit = gtk_container_get_children(wave_editor->scrolled_wave_edit_box->wave_edit_box);
     i = 0;
 
     while((i = ags_notebook_next_active_tab(notebook,
-					    i)) != -1){      
+					    i)) != -1){
+      wave_edit = g_list_nth(start_wave_edit,
+			     i);
+      
       list_wave = start_list_wave;
       
       timestamp->timer.ags_offset.offset = relative_offset * floor(x0 / relative_offset);
@@ -825,14 +830,15 @@ ags_wave_editor_select_region(AgsWaveEditor *wave_editor,
 
 	timestamp->timer.ags_offset.offset += relative_offset;
       }
+
+      /* queue draw */
+      gtk_widget_queue_draw(wave_edit->data);
       
       i++;
     }
-    
-    g_list_free(start_list_wave);
 
-    /* queue draw */
-    gtk_widget_queue_draw(wave_editor->focused_wave_edit);
+    g_list_free(start_wave_edit);
+    g_list_free(start_list_wave);
   }
 }
 
