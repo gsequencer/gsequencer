@@ -694,7 +694,8 @@ ags_automation_editor_reset_audio_scrollbar(AgsAutomationEditor *automation_edit
   AgsAutomationToolbar *automation_toolbar;
 
   GList *list_start, *list;
-  
+
+  gdouble old_h_upper;
   gdouble v_upper, h_upper;
   double zoom_factor, zoom;
   double zoom_correction;
@@ -719,6 +720,10 @@ ags_automation_editor_reset_audio_scrollbar(AgsAutomationEditor *automation_edit
   
   /* reset horizontal scrollbar */
   zoom = exp2((double) gtk_combo_box_get_active((GtkComboBox *) automation_toolbar->zoom) - 2.0);
+
+  /* upper */
+  old_h_upper = GTK_RANGE(automation_editor->audio_hscrollbar)->adjustment->upper;
+
   zoom_correction = 1.0 / 16;
 
   map_width = ((double) AGS_AUTOMATION_EDITOR_MAX_CONTROLS * zoom * zoom_correction);
@@ -747,6 +752,12 @@ ags_automation_editor_reset_audio_scrollbar(AgsAutomationEditor *automation_edit
   }
 
   g_list_free(list_start);
+
+  /* reset value */
+  if(old_h_upper != 0.0){
+    gtk_adjustment_set_value(GTK_RANGE(automation_editor->audio_hscrollbar)->adjustment,
+			     GTK_RANGE(automation_editor->audio_hscrollbar)->adjustment->value / old_h_upper * h_upper);
+  }
 }
 
 void
@@ -756,6 +767,7 @@ ags_automation_editor_reset_output_scrollbar(AgsAutomationEditor *automation_edi
 
   GList *list_start, *list;
   
+  gdouble old_h_upper;
   gdouble v_upper, h_upper;
   double zoom_factor, zoom;
   double zoom_correction;
@@ -780,6 +792,10 @@ ags_automation_editor_reset_output_scrollbar(AgsAutomationEditor *automation_edi
 
   /* reset horizontal scrollbar */
   zoom = exp2((double) gtk_combo_box_get_active((GtkComboBox *) automation_toolbar->zoom) - 2.0);
+
+  /* upper */
+  old_h_upper = GTK_RANGE(automation_editor->output_hscrollbar)->adjustment->upper;
+
   zoom_correction = 1.0 / 16;
 
   map_width = ((double) AGS_AUTOMATION_EDITOR_MAX_CONTROLS * zoom * zoom_correction);
@@ -808,6 +824,12 @@ ags_automation_editor_reset_output_scrollbar(AgsAutomationEditor *automation_edi
   }
 
   g_list_free(list_start);
+
+  /* reset value */
+  if(old_h_upper != 0.0){
+    gtk_adjustment_set_value(GTK_RANGE(automation_editor->output_hscrollbar)->adjustment,
+			     GTK_RANGE(automation_editor->output_hscrollbar)->adjustment->value / old_h_upper * h_upper);
+  }
 }
 
 void
@@ -817,6 +839,7 @@ ags_automation_editor_reset_input_scrollbar(AgsAutomationEditor *automation_edit
 
   GList *list_start, *list;
   
+  gdouble old_h_upper;
   gdouble v_upper, h_upper;
   double zoom_factor, zoom;
   double zoom_correction;
@@ -841,6 +864,10 @@ ags_automation_editor_reset_input_scrollbar(AgsAutomationEditor *automation_edit
 
   /* reset horizontal scrollbar */
   zoom = exp2((double) gtk_combo_box_get_active((GtkComboBox *) automation_toolbar->zoom) - 2.0);
+
+  /* upper */
+  old_h_upper = GTK_RANGE(automation_editor->input_hscrollbar)->adjustment->upper;
+
   zoom_correction = 1.0 / 16;
 
   map_width = ((double) AGS_AUTOMATION_EDITOR_MAX_CONTROLS * zoom * zoom_correction);
@@ -869,6 +896,12 @@ ags_automation_editor_reset_input_scrollbar(AgsAutomationEditor *automation_edit
   }
 
   g_list_free(list_start);
+
+  /* reset value */
+  if(old_h_upper != 0.0){
+    gtk_adjustment_set_value(GTK_RANGE(automation_editor->input_hscrollbar)->adjustment,
+			     GTK_RANGE(automation_editor->input_hscrollbar)->adjustment->value / old_h_upper * h_upper);
+  }
 }
 
 void

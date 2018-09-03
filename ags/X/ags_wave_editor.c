@@ -487,7 +487,8 @@ ags_wave_editor_reset_scrollbar(AgsWaveEditor *wave_editor)
   AgsWaveToolbar *wave_toolbar;
 
   GList *list_start, *list;
-  
+
+  gdouble old_h_upper;
   gdouble v_upper, h_upper;
   double zoom_factor, zoom;
   double zoom_correction;
@@ -512,6 +513,10 @@ ags_wave_editor_reset_scrollbar(AgsWaveEditor *wave_editor)
 
   /* reset horizontal scrollbar */
   zoom = exp2((double) gtk_combo_box_get_active((GtkComboBox *) wave_toolbar->zoom) - 2.0);
+
+  /* upper */
+  old_h_upper = GTK_RANGE(wave_editor->hscrollbar)->adjustment->upper;
+
   zoom_correction = 1.0 / 16;
 
   map_width = ((double) AGS_WAVE_EDITOR_MAX_CONTROLS * zoom * zoom_correction);
@@ -540,6 +545,12 @@ ags_wave_editor_reset_scrollbar(AgsWaveEditor *wave_editor)
   }
 
   g_list_free(list_start);
+
+  /* reset value */
+  if(old_h_upper != 0.0){
+    gtk_adjustment_set_value(GTK_RANGE(wave_editor->hscrollbar)->adjustment,
+			     GTK_RANGE(wave_editor->hscrollbar)->adjustment->value / old_h_upper * h_upper);
+  }
 }
 
 void
