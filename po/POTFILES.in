@@ -344,6 +344,8 @@
 ./ags/audio/recall/ags_buffer_recycling.c
 ./ags/audio/recall/ags_capture_wave_audio.c
 ./ags/audio/recall/ags_capture_wave_audio_run.c
+./ags/audio/recall/ags_capture_wave_channel.c
+./ags/audio/recall/ags_capture_wave_channel_run.c
 ./ags/audio/recall/ags_copy_audio_signal.c
 ./ags/audio/recall/ags_copy_channel.c
 ./ags/audio/recall/ags_copy_channel_run.c

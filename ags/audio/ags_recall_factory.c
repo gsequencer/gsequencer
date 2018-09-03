@@ -41,6 +41,10 @@
 #include <ags/audio/recall/ags_play_channel_run.h>
 #include <ags/audio/recall/ags_delay_audio.h>
 #include <ags/audio/recall/ags_delay_audio_run.h>
+#include <ags/audio/recall/ags_capture_wave_audio.h>
+#include <ags/audio/recall/ags_capture_wave_audio_run.h>
+#include <ags/audio/recall/ags_capture_wave_channel.h>
+#include <ags/audio/recall/ags_capture_wave_channel_run.h>
 #include <ags/audio/recall/ags_count_beats_audio.h>
 #include <ags/audio/recall/ags_count_beats_audio_run.h>
 #include <ags/audio/recall/ags_loop_channel.h>
@@ -174,6 +178,12 @@ GList* ags_recall_factory_create_play_wave(AgsAudio *audio,
 					   guint start_audio_channel, guint stop_audio_channel,
 					   guint start_pad, guint stop_pad,
 					   guint create_flags, guint recall_flags);
+GList* ags_recall_factory_create_capture_wave(AgsAudio *audio,
+					      AgsRecallContainer *play_container, AgsRecallContainer *recall_container,
+					      gchar *plugin_name,
+					      guint start_audio_channel, guint stop_audio_channel,
+					      guint start_pad, guint stop_pad,
+					      guint create_flags, guint recall_flags);
 GList* ags_recall_factory_create_play_dssi(AgsAudio *audio,
 					   AgsRecallContainer *play_container, AgsRecallContainer *recall_container,
 					   gchar *plugin_name,
@@ -4259,6 +4269,442 @@ ags_recall_factory_create_play_wave(AgsAudio *audio,
 }
 
 GList*
+ags_recall_factory_create_capture_wave(AgsAudio *audio,
+				       AgsRecallContainer *play_container, AgsRecallContainer *recall_container,
+				       gchar *plugin_name,
+				       guint start_audio_channel, guint stop_audio_channel,
+				       guint start_pad, guint stop_pad,
+				       guint create_flags, guint recall_flags)
+{
+  AgsCaptureWaveAudio *capture_wave_audio;
+  AgsCaptureWaveAudioRun *capture_wave_audio_run;
+  AgsCaptureWaveChannel *capture_wave_channel;
+  AgsCaptureWaveChannelRun *capture_wave_channel_run;
+  AgsChannel *output, *input;
+  AgsChannel *start, *channel;
+  AgsPort *port;
+
+  GObject *output_soundcard;
+
+  GList *list_start, *list;
+  GList *recall;
+
+  guint audio_channels;
+  guint i, j;
+
+  pthread_mutex_t *audio_mutex;
+  pthread_mutex_t *channel_mutex;
+
+  if(!AGS_IS_AUDIO(audio)){
+    return(NULL);
+  }
+
+  /* get audio mutex */
+  pthread_mutex_lock(ags_audio_get_class_mutex());
+
+  audio_mutex = audio->obj_mutex;
+  
+  pthread_mutex_unlock(ags_audio_get_class_mutex());
+
+  /* get some fields */
+  pthread_mutex_lock(audio_mutex);
+
+  output_soundcard = audio->output_soundcard;
+
+  output = audio->output;
+  input = audio->input;
+  
+  audio_channels = audio->audio_channels;
+  
+  pthread_mutex_unlock(audio_mutex);
+
+  /* get channel */
+  if((AGS_RECALL_FACTORY_OUTPUT & (create_flags)) != 0){
+    start =
+      channel = ags_channel_nth(output,
+				start_pad * audio_channels);
+  }else{
+    start =
+      channel = ags_channel_nth(input,
+				start_pad * audio_channels);
+  }
+
+  recall = NULL;
+
+  /* play */
+  if((AGS_RECALL_FACTORY_PLAY & (create_flags)) != 0){
+    if((AGS_RECALL_FACTORY_REMAP & (create_flags)) == 0 ||
+       ags_recall_find_type(audio->play, AGS_TYPE_CAPTURE_WAVE_AUDIO) == NULL){
+      if(play_container == NULL){
+	play_container = ags_recall_container_new();
+      }
+
+      play_container->flags |= AGS_RECALL_CONTAINER_PLAY;
+      ags_audio_add_recall_container(audio, (GObject *) play_container);
+
+      /* AgsCaptureWaveAudio */
+      capture_wave_audio = (AgsCaptureWaveAudio *) g_object_new(AGS_TYPE_CAPTURE_WAVE_AUDIO,
+								"output-soundcard", output_soundcard,
+								"audio", audio,
+								"recall-container", play_container,
+								NULL);
+      ags_recall_set_flags(capture_wave_audio,
+			   (AGS_RECALL_TEMPLATE));
+      ags_recall_set_ability_flags(capture_wave_audio,
+				   (AGS_SOUND_ABILITY_WAVE));
+      ags_recall_set_behaviour_flags(capture_wave_audio,
+				     (((AGS_RECALL_FACTORY_OUTPUT & create_flags) != 0) ? AGS_SOUND_BEHAVIOUR_CHAINED_TO_OUTPUT: AGS_SOUND_BEHAVIOUR_CHAINED_TO_INPUT));
+
+      ags_audio_add_recall(audio, (GObject *) capture_wave_audio, TRUE);
+      recall = g_list_prepend(recall,
+			      capture_wave_audio);
+
+      g_object_set(play_container,
+		   "recall-audio", capture_wave_audio,
+		   NULL);
+
+      /* AgsCaptureWaveAudioRun */
+      capture_wave_audio_run = (AgsCaptureWaveAudioRun *) g_object_new(AGS_TYPE_CAPTURE_WAVE_AUDIO_RUN,
+								       "output-soundcard", output_soundcard,
+								       "audio", audio,
+								       "recall-container", play_container,
+								       "recall-audio", capture_wave_audio,
+								       //TODO:JK: add missing dependency "count_beats_audio_run"
+								       NULL);
+      ags_recall_set_flags(capture_wave_audio_run,
+			   (AGS_RECALL_TEMPLATE));
+      ags_recall_set_ability_flags(capture_wave_audio_run,
+				   (AGS_SOUND_ABILITY_WAVE));
+      ags_recall_set_behaviour_flags(capture_wave_audio_run,
+				     (((AGS_RECALL_FACTORY_OUTPUT & create_flags) != 0) ? AGS_SOUND_BEHAVIOUR_CHAINED_TO_OUTPUT: AGS_SOUND_BEHAVIOUR_CHAINED_TO_INPUT));
+
+      ags_audio_add_recall(audio, (GObject *) capture_wave_audio_run, TRUE);
+      recall = g_list_prepend(recall,
+			      capture_wave_audio_run);
+
+      g_object_set(play_container,
+		   "recall-audio-run", capture_wave_audio_run,
+		   NULL);
+    }else{
+      if(play_container == NULL){
+	g_object_get(audio,
+		     "play", &list_start,
+		     NULL);
+
+	list = ags_recall_find_type(list_start,
+				    AGS_TYPE_CAPTURE_WAVE_AUDIO);
+	capture_wave_audio = AGS_CAPTURE_WAVE_AUDIO(list->data);
+	g_list_free(list_start);
+	
+	recall = g_list_prepend(recall,
+				capture_wave_audio);
+
+	g_object_get(capture_wave_audio,
+		     "recall-container", &play_container,
+		     NULL);
+
+	g_object_get(play_container,
+		     "recall-audio-run", &list_start,
+		     NULL);
+	
+	list = ags_recall_find_template(list_start);
+	capture_wave_audio_run = AGS_CAPTURE_WAVE_AUDIO_RUN(list->data);
+	g_list_free(list_start);
+	
+	recall = g_list_prepend(recall,
+				capture_wave_audio_run);
+      }else{
+	g_object_get(play_container,
+		     "recall-audio", &capture_wave_audio,
+		     NULL);
+	recall = g_list_prepend(recall,
+				capture_wave_audio);
+
+	g_object_get(play_container,
+		     "recall-audio-run", &list_start,
+		     NULL);
+
+	list = ags_recall_find_template(list_start);
+	capture_wave_audio_run = AGS_CAPTURE_WAVE_AUDIO_RUN(list->data);
+	g_list_free(list_start);
+	
+	recall = g_list_prepend(recall,
+				capture_wave_audio_run);
+      }
+    }
+
+    for(i = 0; i < stop_pad - start_pad; i++){
+      channel = ags_channel_nth(channel,
+				start_audio_channel);
+      
+      for(j = 0; j < stop_audio_channel - start_audio_channel; j++){
+	/* get channel mutex */
+	pthread_mutex_lock(ags_channel_get_class_mutex());
+
+	channel_mutex = channel->obj_mutex;
+  
+	pthread_mutex_unlock(ags_channel_get_class_mutex());
+
+	/* add recall container */
+	ags_channel_add_recall_container(channel,
+					 (GObject *) play_container);
+
+	/* AgsCaptureWaveChannel in channel->recall */
+	capture_wave_channel = (AgsCaptureWaveChannel *) g_object_new(AGS_TYPE_CAPTURE_WAVE_CHANNEL,
+								      "output-soundcard", output_soundcard,
+								      "source", channel,
+								      // "destination", destination,
+								      "recall-container", play_container,
+								      "recall-audio", capture_wave_audio,
+								      // "pattern", channel->pattern->data,
+								      NULL);
+	ags_recall_set_flags(capture_wave_channel,
+			     (AGS_RECALL_TEMPLATE));
+	ags_recall_set_ability_flags(capture_wave_channel,
+				     (AGS_SOUND_ABILITY_WAVE));
+	ags_recall_set_behaviour_flags(capture_wave_channel,
+				       (((AGS_RECALL_FACTORY_OUTPUT & create_flags) != 0) ? AGS_SOUND_BEHAVIOUR_CHAINED_TO_OUTPUT: AGS_SOUND_BEHAVIOUR_CHAINED_TO_INPUT));
+
+	ags_channel_add_recall(channel, (GObject *) capture_wave_channel, TRUE);
+	recall = g_list_prepend(recall,
+				capture_wave_channel);
+
+	g_object_set(play_container,
+		     "recall-channel", capture_wave_channel,
+		     NULL);
+	ags_connectable_connect(AGS_CONNECTABLE(capture_wave_channel));
+
+	/* AgsCaptureWaveChannelRun */
+	capture_wave_channel_run = (AgsCaptureWaveChannelRun *) g_object_new(AGS_TYPE_CAPTURE_WAVE_CHANNEL_RUN,
+									     "output-soundcard", output_soundcard,
+									     "source", channel,
+									     // "destination", destination,
+									     // "recall_audio_run", capture_wave_audio_run,
+									     "recall-container", play_container,
+									     "recall-audio", capture_wave_audio,
+									     "recall-audio-run", capture_wave_audio_run,
+									     "recall-channel", capture_wave_channel,
+									     NULL);
+	ags_recall_set_flags(capture_wave_channel_run,
+			     (AGS_RECALL_TEMPLATE));
+	ags_recall_set_ability_flags(capture_wave_channel_run,
+				     (AGS_SOUND_ABILITY_WAVE));
+	ags_recall_set_behaviour_flags(capture_wave_channel_run,
+				       (((AGS_RECALL_FACTORY_OUTPUT & create_flags) != 0) ? AGS_SOUND_BEHAVIOUR_CHAINED_TO_OUTPUT: AGS_SOUND_BEHAVIOUR_CHAINED_TO_INPUT));
+
+	ags_channel_add_recall(channel, (GObject *) capture_wave_channel_run, TRUE);   
+	recall = g_list_prepend(recall,
+				capture_wave_channel_run);
+
+	g_object_set(play_container,
+		     "recall-channel-run", capture_wave_channel_run,
+		     NULL);
+	ags_connectable_connect(AGS_CONNECTABLE(capture_wave_channel_run));
+
+	/* iterate */
+	pthread_mutex_lock(channel_mutex);
+	
+	channel = channel->next;
+
+	pthread_mutex_unlock(channel_mutex);
+      }
+
+      channel = ags_channel_nth(channel,
+				audio_channels - stop_audio_channel);
+    }
+  }
+
+  /* recall */
+  if((AGS_RECALL_FACTORY_RECALL & (create_flags)) != 0){
+    channel = start;
+ 
+    if((AGS_RECALL_FACTORY_REMAP & (create_flags)) == 0 ||
+       ags_recall_find_type(audio->recall, AGS_TYPE_CAPTURE_WAVE_AUDIO) == NULL){
+      if(recall_container == NULL){
+	recall_container = ags_recall_container_new();
+      }
+
+      ags_audio_add_recall_container(audio, (GObject *) recall_container);
+
+      /* AgsCaptureWaveAudio */
+      capture_wave_audio = (AgsCaptureWaveAudio *) g_object_new(AGS_TYPE_CAPTURE_WAVE_AUDIO,
+								"output-soundcard", output_soundcard,
+								"audio", audio,
+								"recall-container", recall_container,
+								NULL);
+      ags_recall_set_flags(capture_wave_audio,
+			   (AGS_RECALL_TEMPLATE));
+      ags_recall_set_ability_flags(capture_wave_audio,
+				   (AGS_SOUND_ABILITY_WAVE));
+      ags_recall_set_behaviour_flags(capture_wave_audio,
+				     (((AGS_RECALL_FACTORY_OUTPUT & create_flags) != 0) ? AGS_SOUND_BEHAVIOUR_CHAINED_TO_OUTPUT: AGS_SOUND_BEHAVIOUR_CHAINED_TO_INPUT));
+
+      ags_audio_add_recall(audio, (GObject *) capture_wave_audio, FALSE);
+      recall = g_list_prepend(recall,
+			      capture_wave_audio);
+
+      g_object_set(recall_container,
+		   "recall-audio", capture_wave_audio,
+		   NULL);
+      
+      /* AgsCaptureWaveAudioRun */
+      capture_wave_audio_run = (AgsCaptureWaveAudioRun *) g_object_new(AGS_TYPE_CAPTURE_WAVE_AUDIO_RUN,
+								       "output-soundcard", output_soundcard,
+								       "recall-container", recall_container,
+								       "recall-audio", capture_wave_audio,
+								       //TODO:JK: add missing dependency "count_beats_audio_run"
+								       NULL);
+      ags_recall_set_flags(capture_wave_audio_run,
+			   (AGS_RECALL_TEMPLATE));
+      ags_recall_set_ability_flags(capture_wave_audio_run,
+				   (AGS_SOUND_ABILITY_WAVE));
+      ags_recall_set_behaviour_flags(capture_wave_audio_run,
+				     (((AGS_RECALL_FACTORY_OUTPUT & create_flags) != 0) ? AGS_SOUND_BEHAVIOUR_CHAINED_TO_OUTPUT: AGS_SOUND_BEHAVIOUR_CHAINED_TO_INPUT));
+
+      ags_audio_add_recall(audio, (GObject *) capture_wave_audio_run, FALSE);
+      recall = g_list_prepend(recall,
+			      capture_wave_audio_run);
+
+      g_object_set(recall_container,
+		   "recall-audio-run", capture_wave_audio_run,
+		   NULL);
+    }else{
+      if(recall_container == NULL){	
+	g_object_get(audio,
+		     "recall", &list_start,
+		     NULL);
+
+	list = ags_recall_find_type(list_start,
+				    AGS_TYPE_CAPTURE_WAVE_AUDIO);
+	capture_wave_audio = AGS_CAPTURE_WAVE_AUDIO(list->data);
+	g_list_free(list_start);
+	
+	recall = g_list_prepend(recall,
+				capture_wave_audio);
+
+	g_object_get(capture_wave_audio,
+		     "recall-container", &recall_container,
+		     NULL);
+
+	g_object_get(recall_container,
+		     "recall-audio-run", &list_start,
+		     NULL);
+	
+	list = ags_recall_find_template(list_start);
+	capture_wave_audio_run = AGS_CAPTURE_WAVE_AUDIO_RUN(list->data);
+	g_list_free(list_start);
+	
+	recall = g_list_prepend(recall,
+				capture_wave_audio_run);
+      }else{
+	g_object_get(recall_container,
+		     "recall-audio", &capture_wave_audio,
+		     NULL);
+	recall = g_list_prepend(recall,
+				capture_wave_audio);
+
+	g_object_get(recall_container,
+		     "recall-audio-run", &list_start,
+		     NULL);
+
+	list = ags_recall_template_find_type(list_start,
+					     AGS_TYPE_CAPTURE_WAVE_AUDIO_RUN);
+	capture_wave_audio_run = list->data;
+	recall = g_list_prepend(recall,
+				capture_wave_audio_run);
+
+	g_list_free(list_start);
+      }
+    }
+
+    for(i = 0; i < stop_pad - start_pad; i++){
+      channel = ags_channel_nth(channel,
+				start_audio_channel);
+      
+      for(j = 0; j < stop_audio_channel - start_audio_channel; j++){
+	/* get channel mutex */
+	pthread_mutex_lock(ags_channel_get_class_mutex());
+
+	channel_mutex = channel->obj_mutex;
+  
+	pthread_mutex_unlock(ags_channel_get_class_mutex());
+
+	/* add recall container */
+	ags_channel_add_recall_container(channel,
+					 (GObject *) recall_container);
+	
+	/* AgsCaptureWaveChannel in channel->recall */
+	capture_wave_channel = (AgsCaptureWaveChannel *) g_object_new(AGS_TYPE_CAPTURE_WAVE_CHANNEL,
+								      "output-soundcard", output_soundcard,
+								      "source", channel,
+								      // "destination", destination,
+								      "recall-container", recall_container,
+								      "recall-audio", capture_wave_audio,
+								      //"pattern", channel->pattern->data,
+								      NULL);
+	ags_recall_set_flags(capture_wave_channel,
+			     (AGS_RECALL_TEMPLATE));
+	ags_recall_set_ability_flags(capture_wave_channel,
+				     (AGS_SOUND_ABILITY_WAVE));
+	ags_recall_set_behaviour_flags(capture_wave_channel,
+				       (((AGS_RECALL_FACTORY_OUTPUT & create_flags) != 0) ? AGS_SOUND_BEHAVIOUR_CHAINED_TO_OUTPUT: AGS_SOUND_BEHAVIOUR_CHAINED_TO_INPUT));
+
+	ags_channel_add_recall(channel, (GObject *) capture_wave_channel, FALSE);
+	recall = g_list_prepend(recall,
+				capture_wave_channel);
+
+	g_object_set(recall_container,
+		     "recall-channel", capture_wave_channel,
+		     NULL);
+	ags_connectable_connect(AGS_CONNECTABLE(capture_wave_channel));
+
+	/* AgsCaptureWaveChannelRun */
+	capture_wave_channel_run = (AgsCaptureWaveChannelRun *) g_object_new(AGS_TYPE_CAPTURE_WAVE_CHANNEL_RUN,
+									     "output-soundcard", output_soundcard,
+									     "source", channel,
+									     // "destination", destination,
+									     // "recall_audio_run", capture_wave_audio_run,
+									     "recall-container", recall_container,
+									     "recall-audio", capture_wave_audio,
+									     "recall-audio-run", capture_wave_audio_run,
+									     "recall-channel", capture_wave_channel,
+									     NULL);
+	ags_recall_set_flags(capture_wave_channel_run,
+			     (AGS_RECALL_TEMPLATE));
+	ags_recall_set_ability_flags(capture_wave_channel_run,
+				     (AGS_SOUND_ABILITY_WAVE));
+	ags_recall_set_behaviour_flags(capture_wave_channel_run,
+				       (((AGS_RECALL_FACTORY_OUTPUT & create_flags) != 0) ? AGS_SOUND_BEHAVIOUR_CHAINED_TO_OUTPUT: AGS_SOUND_BEHAVIOUR_CHAINED_TO_INPUT));
+
+	ags_channel_add_recall(channel, (GObject *) capture_wave_channel_run, FALSE);   
+	recall = g_list_prepend(recall,
+				capture_wave_channel_run);
+
+	g_object_set(recall_container,
+		     "recall-channel-run", capture_wave_channel_run,
+		     NULL);
+	ags_connectable_connect(AGS_CONNECTABLE(capture_wave_channel_run));
+
+	/* iterate */
+	pthread_mutex_lock(channel_mutex);
+	
+	channel = channel->next;
+
+	pthread_mutex_unlock(channel_mutex);
+      }
+
+      channel = ags_channel_nth(channel,
+				audio_channels - stop_audio_channel);
+    }
+  }
+
+  /* return instantiated recall */
+  recall = g_list_reverse(recall);
+
+  return(recall);
+}
+
+GList*
 ags_recall_factory_create_play_dssi(AgsAudio *audio,
 				    AgsRecallContainer *play_container, AgsRecallContainer *recall_container,
 				    gchar *plugin_name,
@@ -7269,6 +7715,15 @@ ags_recall_factory_create(AgsAudio *audio,
 						 start_audio_channel, stop_audio_channel,
 						 start_pad, stop_pad,
 						 create_flags, recall_flags);
+  }else if(!strncmp(plugin_name,
+		    "ags-capture-wave",
+		    17)){
+    recall = ags_recall_factory_create_capture_wave(audio,
+						    play_container, recall_container,
+						    plugin_name,
+						    start_audio_channel, stop_audio_channel,
+						    start_pad, stop_pad,
+						    create_flags, recall_flags);
   }else if(!strncmp(plugin_name,
 		    "ags-play-dssi",
 		    14)){

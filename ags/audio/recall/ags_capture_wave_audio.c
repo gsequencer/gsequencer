@@ -21,6 +21,9 @@
 
 #include <ags/libags.h>
 
+#include <stdlib.h>
+#include <string.h>
+
 #include <ags/i18n.h>
 
 void ags_capture_wave_audio_class_init(AgsCaptureWaveAudioClass *capture_wave_audio);
@@ -51,12 +54,16 @@ void ags_capture_wave_audio_set_ports(AgsPlugin *plugin, GList *port);
 enum{
   PROP_0,
   PROP_PLAYBACK,
+  PROP_REPLACE,
   PROP_RECORD,
   PROP_FILENAME,
   PROP_FILE_AUDIO_CHANNELS,
   PROP_FILE_SAMPLERATE,
   PROP_FILE_BUFFER_SIZE,
   PROP_FILE_FORMAT,
+  PROP_WAVE_LOOP,
+  PROP_WAVE_LOOP_START,
+  PROP_WAVE_LOOP_END,
 };
 
 static gpointer ags_capture_wave_audio_parent_class = NULL;
@@ -65,22 +72,30 @@ static AgsPluginInterface *ags_capture_wave_audio_parent_plugin_interface;
 static const gchar *ags_capture_wave_audio_plugin_name = "ags-capture-wave";
 static const gchar *ags_capture_wave_audio_specifier[] = {
   "./playback[0]"
+  "./replace[0]"
   "./record[0]",
   "./filename[0]",
   "./file-audio-channels[0]",
   "./file-samplerate[0]",
   "./file-buffer-size[0]",
   "./file-format[0]",
+  "./wave_loop[0]",
+  "./wave_loop_start[0]",
+  "./wave_loop_end[0]",
 };
 
 static const gchar *ags_capture_wave_audio_control_port[] = {
-  "1/7",
-  "2/7",
-  "3/7",
-  "4/7",
-  "5/7",
-  "6/7",
-  "7/7",
+  "1/11",
+  "2/11",
+  "3/11",
+  "4/11",
+  "5/11",
+  "6/11",
+  "7/11",
+  "8/11",
+  "9/11",
+  "10/11",
+  "11/11",
 };
 
 GType
@@ -152,6 +167,22 @@ ags_capture_wave_audio_class_init(AgsCaptureWaveAudioClass *capture_wave_audio)
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_PLAYBACK,
+				  param_spec);
+
+  /**
+   * AgsCaptureWaveAudio:replace:
+   * 
+   * The replace port.
+   * 
+   * Since: 2.0.0
+   */
+  param_spec = g_param_spec_object("replace",
+				   i18n_pspec("if do replace"),
+				   i18n_pspec("If audio data should be replaced"),
+				   AGS_TYPE_PORT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_REPLACE,
 				  param_spec);
 
   /**
@@ -249,6 +280,54 @@ ags_capture_wave_audio_class_init(AgsCaptureWaveAudioClass *capture_wave_audio)
   g_object_class_install_property(gobject,
 				  PROP_FILE_FORMAT,
 				  param_spec);
+
+  /**
+   * AgsCaptureWaveAudio:wave-loop:
+   *
+   * Count until loop-end and start at loop-start.
+   * 
+   * Since: 2.0.0
+   */
+  param_spec = g_param_spec_object("wave-loop",
+				   i18n_pspec("wave loop capturing"),
+				   i18n_pspec("Capture wave in a endless loop"),
+				   AGS_TYPE_PORT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_WAVE_LOOP,
+				  param_spec);
+
+  /**
+   * AgsCaptureWaveAudio:wave-loop-start:
+   *
+   * The wave's loop-start.
+   * 
+   * Since: 2.0.0
+   */
+  param_spec = g_param_spec_object("wave_loop_start",
+				   i18n_pspec("start beat of loop"),
+				   i18n_pspec("The start beat of the wave loop"),
+				   AGS_TYPE_PORT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_WAVE_LOOP_START,
+				  param_spec);
+
+  /**
+   * AgsCaptureWaveAudio:wave-loop-end:
+   *
+   * The wave's loop-end.
+   * 
+   * Since: 2.0.0
+   */
+  param_spec = g_param_spec_object("wave-loop-end",
+				   i18n_pspec("end beat of wave loop"),
+				   i18n_pspec("The end beat of the wave loop"),
+				   AGS_TYPE_PORT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_WAVE_LOOP_END,
+				  param_spec);
 }
 
 void
@@ -264,18 +343,21 @@ ags_capture_wave_audio_init(AgsCaptureWaveAudio *capture_wave_audio)
 {
   GList *port;
 
+  guint i;
+  
   AGS_RECALL(capture_wave_audio)->name = "ags-capture-wave";
   AGS_RECALL(capture_wave_audio)->version = AGS_RECALL_DEFAULT_VERSION;
   AGS_RECALL(capture_wave_audio)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;
   AGS_RECALL(capture_wave_audio)->xml_type = "ags-capture-wave-audio";
 
   port = NULL;
-
+  i = 0;
+  
   /* playback */
   capture_wave_audio->playback = g_object_new(AGS_TYPE_PORT,
 					      "plugin-name", ags_capture_wave_audio_plugin_name,
-					      "specifier", ags_capture_wave_audio_specifier[0],
-					      "control-port", ags_capture_wave_audio_control_port[0],
+					      "specifier", ags_capture_wave_audio_specifier[i],
+					      "control-port", ags_capture_wave_audio_control_port[i],
 					      "port-value-is-pointer", FALSE,
 					      "port-value-type", G_TYPE_BOOLEAN,
 					      NULL);
@@ -286,12 +368,32 @@ ags_capture_wave_audio_init(AgsCaptureWaveAudio *capture_wave_audio)
   /* add to port */
   port = g_list_prepend(port, capture_wave_audio->playback);
   g_object_ref(capture_wave_audio->playback);
+
+  i++;
   
+  /* replace */
+  capture_wave_audio->replace = g_object_new(AGS_TYPE_PORT,
+					      "plugin-name", ags_capture_wave_audio_plugin_name,
+					      "specifier", ags_capture_wave_audio_specifier[i],
+					      "control-port", ags_capture_wave_audio_control_port[i],
+					      "port-value-is-pointer", FALSE,
+					      "port-value-type", G_TYPE_BOOLEAN,
+					      NULL);
+  g_object_ref(capture_wave_audio->replace);
+  
+  capture_wave_audio->replace->port_value.ags_port_boolean = TRUE;
+
+  /* add to port */
+  port = g_list_prepend(port, capture_wave_audio->replace);
+  g_object_ref(capture_wave_audio->replace);
+
+  i++;
+
   /* record */
   capture_wave_audio->record = g_object_new(AGS_TYPE_PORT,
 					    "plugin-name", ags_capture_wave_audio_plugin_name,
-					    "specifier", ags_capture_wave_audio_specifier[1],
-					    "control-port", ags_capture_wave_audio_control_port[1],
+					    "specifier", ags_capture_wave_audio_specifier[i],
+					    "control-port", ags_capture_wave_audio_control_port[i],
 					    "port-value-is-pointer", FALSE,
 					    "port-value-type", G_TYPE_BOOLEAN,
 					    NULL);
@@ -303,11 +405,13 @@ ags_capture_wave_audio_init(AgsCaptureWaveAudio *capture_wave_audio)
   port = g_list_prepend(port, capture_wave_audio->record);
   g_object_ref(capture_wave_audio->record);
 
+  i++;
+
   /* filename */
   capture_wave_audio->filename = g_object_new(AGS_TYPE_PORT,
 					      "plugin-name", ags_capture_wave_audio_plugin_name,
-					      "specifier", ags_capture_wave_audio_specifier[2],
-					      "control-port", ags_capture_wave_audio_control_port[2],
+					      "specifier", ags_capture_wave_audio_specifier[i],
+					      "control-port", ags_capture_wave_audio_control_port[i],
 					      "port-value-is-pointer", FALSE,
 					      "port-value-type", G_TYPE_POINTER,
 					      NULL);
@@ -319,11 +423,13 @@ ags_capture_wave_audio_init(AgsCaptureWaveAudio *capture_wave_audio)
   port = g_list_prepend(port, capture_wave_audio->filename);
   g_object_ref(capture_wave_audio->filename);
 
+  i++;
+
   /* audio channels */
   capture_wave_audio->file_audio_channels = g_object_new(AGS_TYPE_PORT,
 							 "plugin-name", ags_capture_wave_audio_plugin_name,
-							 "specifier", ags_capture_wave_audio_specifier[3],
-							 "control-port", ags_capture_wave_audio_control_port[3],
+							 "specifier", ags_capture_wave_audio_specifier[i],
+							 "control-port", ags_capture_wave_audio_control_port[i],
 							 "port-value-is-pointer", FALSE,
 							 "port-value-type", G_TYPE_UINT64,
 							 NULL);
@@ -335,11 +441,13 @@ ags_capture_wave_audio_init(AgsCaptureWaveAudio *capture_wave_audio)
   port = g_list_prepend(port, capture_wave_audio->file_audio_channels);
   g_object_ref(capture_wave_audio->file_audio_channels);
 
+  i++;
+
   /* samplerate */
   capture_wave_audio->file_samplerate = g_object_new(AGS_TYPE_PORT,
 						     "plugin-name", ags_capture_wave_audio_plugin_name,
-						     "specifier", ags_capture_wave_audio_specifier[5],
-						     "control-port", ags_capture_wave_audio_control_port[5],
+						     "specifier", ags_capture_wave_audio_specifier[i],
+						     "control-port", ags_capture_wave_audio_control_port[i],
 						     "port-value-is-pointer", FALSE,
 						     "port-value-type", G_TYPE_UINT64,
 						     NULL);
@@ -351,11 +459,13 @@ ags_capture_wave_audio_init(AgsCaptureWaveAudio *capture_wave_audio)
   port = g_list_prepend(port, capture_wave_audio->file_samplerate);
   g_object_ref(capture_wave_audio->file_samplerate);
 
+  i++;
+
   /* buffer size */
   capture_wave_audio->file_buffer_size = g_object_new(AGS_TYPE_PORT,
 						      "plugin-name", ags_capture_wave_audio_plugin_name,
-						      "specifier", ags_capture_wave_audio_specifier[6],
-						      "control-port", ags_capture_wave_audio_control_port[6],
+						      "specifier", ags_capture_wave_audio_specifier[i],
+						      "control-port", ags_capture_wave_audio_control_port[i],
 						      "port-value-is-pointer", FALSE,
 						      "port-value-type", G_TYPE_UINT64,
 						      NULL);
@@ -367,11 +477,13 @@ ags_capture_wave_audio_init(AgsCaptureWaveAudio *capture_wave_audio)
   port = g_list_prepend(port, capture_wave_audio->file_buffer_size);
   g_object_ref(capture_wave_audio->file_buffer_size);
 
+  i++;
+
   /* format */
   capture_wave_audio->file_format = g_object_new(AGS_TYPE_PORT,
 						 "plugin-name", ags_capture_wave_audio_plugin_name,
-						 "specifier", ags_capture_wave_audio_specifier[4],
-						 "control-port", ags_capture_wave_audio_control_port[4],
+						 "specifier", ags_capture_wave_audio_specifier[i],
+						 "control-port", ags_capture_wave_audio_control_port[i],
 						 "port-value-is-pointer", FALSE,
 						 "port-value-type", G_TYPE_UINT64,
 						 NULL);
@@ -383,8 +495,77 @@ ags_capture_wave_audio_init(AgsCaptureWaveAudio *capture_wave_audio)
   port = g_list_prepend(port, capture_wave_audio->file_format);
   g_object_ref(capture_wave_audio->file_format);
 
+  i++;
+
+  /* wave loop */
+  capture_wave_audio->wave_loop = g_object_new(AGS_TYPE_PORT,
+					    "plugin-name", ags_capture_wave_audio_plugin_name,
+					    "specifier", ags_capture_wave_audio_specifier[i],
+					    "control-port", ags_capture_wave_audio_control_port[i],
+					    "port-value-is-pointer", FALSE,
+					    "port-value-type", G_TYPE_BOOLEAN,
+					    "port-value-size", sizeof(gboolean),
+					    "port-value-length", 1,
+					    NULL);
+  g_object_ref(capture_wave_audio->wave_loop);
+  
+  capture_wave_audio->wave_loop->port_value.ags_port_boolean = FALSE;
+
+  /* add to port */
+  port = g_list_prepend(port, capture_wave_audio->wave_loop);
+  g_object_ref(capture_wave_audio->wave_loop);
+  
+  i++;
+
+  /* wave-loop-start  */
+  capture_wave_audio->wave_loop_start = g_object_new(AGS_TYPE_PORT,
+						  "plugin-name", ags_capture_wave_audio_plugin_name,
+						  "specifier", ags_capture_wave_audio_specifier[i],
+						  "control-port", ags_capture_wave_audio_control_port[i],
+						  "port-value-is-pointer", FALSE,
+						  "port-value-type", G_TYPE_UINT64,
+						  "port-value-size", sizeof(guint64),
+						  "port-value-length", 1,
+						  NULL);
+  g_object_ref(capture_wave_audio->wave_loop_start);
+  
+  capture_wave_audio->wave_loop_start->port_value.ags_port_uint = 0.0;
+
+  /* add to port */
+  port = g_list_prepend(port, capture_wave_audio->wave_loop_start);
+  g_object_ref(capture_wave_audio->wave_loop_start);
+  
+  i++;
+
+  /* wave-loop-end */
+  capture_wave_audio->wave_loop_end = g_object_new(AGS_TYPE_PORT,
+						"plugin-name", ags_capture_wave_audio_plugin_name,
+						"specifier", ags_capture_wave_audio_specifier[i],
+						"control-port", ags_capture_wave_audio_control_port[i],
+						"port-value-is-pointer", FALSE,
+						"port-value-type", G_TYPE_UINT64,
+						"port-value-size", sizeof(guint64),
+						"port-value-length", 1,
+						NULL);
+  g_object_ref(capture_wave_audio->wave_loop_end);
+  
+  capture_wave_audio->wave_loop_end->port_value.ags_port_uint = 64.0;
+
+  /* add to port */
+  port = g_list_prepend(port, capture_wave_audio->wave_loop_end);
+  g_object_ref(capture_wave_audio->wave_loop_end);
+  
+  i++;
+
   /* set port */
   AGS_RECALL(capture_wave_audio)->port = port;
+
+  /* the audio file */
+  capture_wave_audio->audio_file_mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
+  pthread_mutex_init(capture_wave_audio->audio_file_mutex,
+		     NULL);
+
+  capture_wave_audio->audio_file = NULL;
 }
 
 void
@@ -430,6 +611,33 @@ ags_capture_wave_audio_set_property(GObject *gobject,
       }
       
       capture_wave_audio->playback = playback;
+
+      pthread_mutex_unlock(recall_mutex);
+    }
+    break;
+  case PROP_REPLACE:
+    {
+      AgsPort *replace;
+
+      replace = (AgsPort *) g_value_get_object(value);
+
+      pthread_mutex_lock(recall_mutex);
+
+      if(capture_wave_audio->replace == replace){
+	pthread_mutex_unlock(recall_mutex);
+
+	return;
+      }
+
+      if(capture_wave_audio->replace != NULL){
+	g_object_unref(G_OBJECT(capture_wave_audio->replace));
+      }
+      
+      if(replace != NULL){
+	g_object_ref(G_OBJECT(replace));
+      }
+      
+      capture_wave_audio->replace = replace;
 
       pthread_mutex_unlock(recall_mutex);
     }
@@ -596,6 +804,87 @@ ags_capture_wave_audio_set_property(GObject *gobject,
       pthread_mutex_unlock(recall_mutex);
     }
     break;
+  case PROP_WAVE_LOOP:
+    {
+      AgsPort *port;
+
+      port = (AgsPort *) g_value_get_object(value);
+
+      pthread_mutex_lock(recall_mutex);
+
+      if(port == capture_wave_audio->wave_loop){
+	pthread_mutex_unlock(recall_mutex);
+
+	return;
+      }
+
+      if(capture_wave_audio->wave_loop != NULL){
+	g_object_unref(G_OBJECT(capture_wave_audio->wave_loop));
+      }
+      
+      if(port != NULL){
+	g_object_ref(G_OBJECT(port));
+      }
+
+      capture_wave_audio->wave_loop = port;
+
+      pthread_mutex_unlock(recall_mutex);
+    }
+    break;
+  case PROP_WAVE_LOOP_START:
+    {
+      AgsPort *port;
+
+      port = (AgsPort *) g_value_get_object(value);
+
+      pthread_mutex_lock(recall_mutex);
+
+      if(port == capture_wave_audio->wave_loop_start){
+	pthread_mutex_unlock(recall_mutex);
+
+	return;
+      }
+
+      if(capture_wave_audio->wave_loop_start != NULL){
+	g_object_unref(G_OBJECT(capture_wave_audio->wave_loop_start));
+      }
+      
+      if(port != NULL){
+	g_object_ref(G_OBJECT(port));
+      }
+
+      capture_wave_audio->wave_loop_start = port;
+
+      pthread_mutex_unlock(recall_mutex);
+    }
+    break;
+  case PROP_WAVE_LOOP_END:
+    {
+      AgsPort *port;
+
+      port = (AgsPort *) g_value_get_object(value);
+
+      pthread_mutex_lock(recall_mutex);
+
+      if(port == capture_wave_audio->wave_loop_end){
+	pthread_mutex_unlock(recall_mutex);
+
+	return;
+      }
+
+      if(capture_wave_audio->wave_loop_end != NULL){
+	g_object_unref(G_OBJECT(capture_wave_audio->wave_loop_end));
+      }
+      
+      if(port != NULL){
+	g_object_ref(G_OBJECT(port));
+      }
+
+      capture_wave_audio->wave_loop_end = port;
+
+      pthread_mutex_unlock(recall_mutex);
+    }
+    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -627,6 +916,15 @@ ags_capture_wave_audio_get_property(GObject *gobject,
       pthread_mutex_lock(recall_mutex);
 
       g_value_set_object(value, capture_wave_audio->playback);
+
+      pthread_mutex_unlock(recall_mutex);
+    }
+    break;
+  case PROP_REPLACE:
+    {
+      pthread_mutex_lock(recall_mutex);
+
+      g_value_set_object(value, capture_wave_audio->replace);
 
       pthread_mutex_unlock(recall_mutex);
     }
@@ -685,6 +983,33 @@ ags_capture_wave_audio_get_property(GObject *gobject,
       pthread_mutex_unlock(recall_mutex);
     }
     break;
+  case PROP_WAVE_LOOP:
+    {
+      pthread_mutex_lock(recall_mutex);
+
+      g_value_set_object(value, capture_wave_audio->wave_loop);
+
+      pthread_mutex_unlock(recall_mutex);
+    }
+    break;
+  case PROP_WAVE_LOOP_START:
+    {
+      pthread_mutex_lock(recall_mutex);
+
+      g_value_set_object(value, capture_wave_audio->wave_loop_start);
+
+      pthread_mutex_unlock(recall_mutex);
+    }
+    break;
+  case PROP_WAVE_LOOP_END:
+    {
+      pthread_mutex_lock(recall_mutex);
+
+      g_value_set_object(value, capture_wave_audio->wave_loop_end);
+
+      pthread_mutex_unlock(recall_mutex);
+    }
+    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -703,6 +1028,13 @@ ags_capture_wave_audio_dispose(GObject *gobject)
     g_object_unref(capture_wave_audio->playback);
 
     capture_wave_audio->playback = NULL;
+  }
+
+  /* replace */
+  if(capture_wave_audio->replace != NULL){
+    g_object_unref(capture_wave_audio->replace);
+
+    capture_wave_audio->replace = NULL;
   }
 
   /* record */
@@ -747,6 +1079,25 @@ ags_capture_wave_audio_dispose(GObject *gobject)
     capture_wave_audio->file_format = NULL;
   }
 
+  /* wave */
+  if(capture_wave_audio->wave_loop != NULL){
+    g_object_unref(G_OBJECT(capture_wave_audio->wave_loop));
+
+    capture_wave_audio->wave_loop = NULL;
+  }
+
+  if(capture_wave_audio->wave_loop_start != NULL){
+    g_object_unref(G_OBJECT(capture_wave_audio->wave_loop_start));
+
+    capture_wave_audio->wave_loop_start = NULL;
+  }
+
+  if(capture_wave_audio->wave_loop_end != NULL){
+    g_object_unref(G_OBJECT(capture_wave_audio->wave_loop_end));
+
+    capture_wave_audio->wave_loop_end = NULL;
+  }
+
   /* call parent */
   G_OBJECT_CLASS(ags_capture_wave_audio_parent_class)->dispose(gobject);
 }
@@ -761,6 +1112,11 @@ ags_capture_wave_audio_finalize(GObject *gobject)
   /* playback */
   if(capture_wave_audio->playback != NULL){
     g_object_unref(capture_wave_audio->playback);
+  }
+
+  /* replace */
+  if(capture_wave_audio->replace != NULL){
+    g_object_unref(capture_wave_audio->replace);
   }
 
   /* record */
@@ -793,6 +1149,26 @@ ags_capture_wave_audio_finalize(GObject *gobject)
     g_object_unref(capture_wave_audio->file_format);
   }
 
+  /* wave */
+  if(capture_wave_audio->wave_loop != NULL){
+    g_object_unref(G_OBJECT(capture_wave_audio->wave_loop));
+  }
+
+  if(capture_wave_audio->wave_loop_start != NULL){
+    g_object_unref(G_OBJECT(capture_wave_audio->wave_loop_start));
+  }
+
+  if(capture_wave_audio->wave_loop_end != NULL){
+    g_object_unref(G_OBJECT(capture_wave_audio->wave_loop_end));
+  }
+
+  pthread_mutex_destroy(capture_wave_audio->audio_file_mutex);
+  free(capture_wave_audio->audio_file_mutex);
+
+  if(capture_wave_audio->audio_file != NULL){
+    g_object_unref(capture_wave_audio->audio_file);
+  }
+  
   /* call parent */
   G_OBJECT_CLASS(ags_capture_wave_audio_parent_class)->finalize(gobject);
 }
@@ -806,6 +1182,12 @@ ags_capture_wave_audio_set_ports(AgsPlugin *plugin, GList *port)
 		11)){
       g_object_set(G_OBJECT(plugin),
 		   "playback", AGS_PORT(port->data),
+		   NULL);
+    }else if(!strncmp(AGS_PORT(port->data)->specifier,
+		"./replace[0]",
+		11)){
+      g_object_set(G_OBJECT(plugin),
+		   "replace", AGS_PORT(port->data),
 		   NULL);
     }else if(!strncmp(AGS_PORT(port->data)->specifier,
 		      "./record[0]",
@@ -842,6 +1224,24 @@ ags_capture_wave_audio_set_ports(AgsPlugin *plugin, GList *port)
 		      16)){
       g_object_set(G_OBJECT(plugin),
 		   "file-format", AGS_PORT(port->data),
+		   NULL);
+    }else if(!strncmp(AGS_PORT(port->data)->specifier,
+		"./wave-loop[0]",
+		19)){
+      g_object_set(G_OBJECT(plugin),
+		   "wave-loop", AGS_PORT(port->data),
+		   NULL);
+    }else if(!strncmp(AGS_PORT(port->data)->specifier,
+		      "./wave-loop-start[0]",
+		      24)){
+      g_object_set(G_OBJECT(plugin),
+		   "wave-loop-start", AGS_PORT(port->data),
+		   NULL);
+    }else if(!strncmp(AGS_PORT(port->data)->specifier,
+		      "./wave-loop-end[0]",
+		      22)){
+      g_object_set(G_OBJECT(plugin),
+		   "wave-loop-end", AGS_PORT(port->data),
 		   NULL);
     }
 

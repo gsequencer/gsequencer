@@ -29,6 +29,8 @@
 #include <ags/audio/ags_recall_audio.h>
 #include <ags/audio/ags_port.h>
 
+#include <ags/audio/file/ags_audio_file.h>
+
 #define AGS_TYPE_CAPTURE_WAVE_AUDIO                (ags_capture_wave_audio_get_type())
 #define AGS_CAPTURE_WAVE_AUDIO(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_CAPTURE_WAVE_AUDIO, AgsCaptureWaveAudio))
 #define AGS_CAPTURE_WAVE_AUDIO_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_CAPTURE_WAVE_AUDIO, AgsCaptureWaveAudio))
@@ -44,7 +46,8 @@ struct _AgsCaptureWaveAudio
   AgsRecallAudio recall_audio;
 
   AgsPort *playback;
-
+  AgsPort *replace;
+  
   AgsPort *record;
   AgsPort *filename;
 
@@ -52,6 +55,14 @@ struct _AgsCaptureWaveAudio
   AgsPort *file_samplerate;
   AgsPort *file_buffer_size;
   AgsPort *file_format;
+
+  AgsPort *wave_loop;
+  AgsPort *wave_loop_start;
+  AgsPort *wave_loop_end;
+
+  pthread_mutex_t *audio_file_mutex;
+  
+  AgsAudioFile *audio_file;
 };
 
 struct _AgsCaptureWaveAudioClass

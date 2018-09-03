@@ -1475,7 +1475,8 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
 
     is_output = TRUE;
 
-    if(!g_ascii_strncasecmp(capability,
+    if(capability != NULL &&
+       !g_ascii_strncasecmp(capability,
 			    "capture",
 			    8)){
       is_output = FALSE;

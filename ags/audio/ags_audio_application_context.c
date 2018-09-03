@@ -404,7 +404,8 @@ ags_audio_application_context_init(AgsAudioApplicationContext *audio_application
 
     is_output = TRUE;
 
-    if(!g_ascii_strncasecmp(capability,
+    if(capability != NULL &&
+       !g_ascii_strncasecmp(capability,
 			    "capture",
 			    8)){
       is_output = FALSE;
