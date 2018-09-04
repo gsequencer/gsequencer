@@ -110,9 +110,11 @@ static SF_VIRTUAL_IO *ags_sndfile_virtual_io = NULL;
 GType
 ags_sndfile_get_type()
 {
-  static GType ags_type_sndfile = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_sndfile){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_sndfile = 0;
+
     static const GTypeInfo ags_sndfile_info = {
       sizeof (AgsSndfileClass),
       NULL, /* base_init */
@@ -139,9 +141,11 @@ ags_sndfile_get_type()
     g_type_add_interface_static(ags_type_sndfile,
 				AGS_TYPE_SOUND_RESOURCE,
 				&ags_sound_resource_interface_info);
+
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_sndfile);
   }
-  
-  return (ags_type_sndfile);
+
+  return g_define_type_id__volatile;
 }
 
 void

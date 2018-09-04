@@ -54,9 +54,11 @@ static gpointer ags_prepare_audio_signal_parent_class = NULL;
 GType
 ags_prepare_audio_signal_get_type()
 {
-  static GType ags_type_prepare_audio_signal = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_prepare_audio_signal){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_prepare_audio_signal = 0;
+
     static const GTypeInfo ags_prepare_audio_signal_info = {
       sizeof (AgsPrepareAudioSignalClass),
       NULL, /* base_init */
@@ -73,9 +75,11 @@ ags_prepare_audio_signal_get_type()
 							   "AgsPrepareAudioSignal",
 							   &ags_prepare_audio_signal_info,
 							   0);
+
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_prepare_audio_signal);
   }
 
-  return(ags_type_prepare_audio_signal);
+  return g_define_type_id__volatile;
 }
 
 void

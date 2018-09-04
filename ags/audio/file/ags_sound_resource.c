@@ -44,9 +44,11 @@ void ags_sound_resource_base_init(AgsSoundResourceInterface *interface);
 GType
 ags_sound_resource_get_type()
 {
-  static GType ags_type_sound_resource = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_sound_resource){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_sound_resource = 0;
+
     static const GTypeInfo ags_sound_resource_info = {
       sizeof(AgsSoundResourceInterface),
       (GBaseInitFunc) ags_sound_resource_base_init,
@@ -56,9 +58,11 @@ ags_sound_resource_get_type()
     ags_type_sound_resource = g_type_register_static(G_TYPE_INTERFACE,
 						     "AgsSoundResource", &ags_sound_resource_info,
 						     0);
+
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_sound_resource);
   }
 
-  return(ags_type_sound_resource);
+  return g_define_type_id__volatile;
 }
 
 

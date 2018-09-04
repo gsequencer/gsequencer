@@ -42,9 +42,11 @@ static gpointer ags_stream_recycling_parent_class = NULL;
 GType
 ags_stream_recycling_get_type()
 {
-  static GType ags_type_stream_recycling = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_stream_recycling){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_stream_recycling = 0;
+
     static const GTypeInfo ags_stream_recycling_info = {
       sizeof (AgsStreamRecyclingClass),
       NULL, /* base_init */
@@ -61,9 +63,11 @@ ags_stream_recycling_get_type()
 						       "AgsStreamRecycling",
 						       &ags_stream_recycling_info,
 						       0);
+
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_stream_recycling);
   }
 
-  return (ags_type_stream_recycling);
+  return g_define_type_id__volatile;
 }
 
 void

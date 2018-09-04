@@ -91,9 +91,11 @@ static AgsSoundResourceInterface *ags_ipatch_sample_parent_sound_resource_interf
 GType
 ags_ipatch_sample_get_type()
 {
-  static GType ags_type_ipatch_sample = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_ipatch_sample){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_ipatch_sample = 0;
+
     static const GTypeInfo ags_ipatch_sample_info = {
       sizeof(AgsIpatchSampleClass),
       NULL, /* base_init */
@@ -120,9 +122,11 @@ ags_ipatch_sample_get_type()
     g_type_add_interface_static(ags_type_ipatch_sample,
 				AGS_TYPE_SOUND_RESOURCE,
 				&ags_sound_resource_interface_info);
+
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_ipatch_sample);
   }
-  
-  return(ags_type_ipatch_sample);
+
+  return g_define_type_id__volatile;
 }
 
 void

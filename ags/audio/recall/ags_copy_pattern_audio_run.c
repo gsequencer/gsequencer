@@ -75,9 +75,11 @@ static AgsPluginInterface *ags_copy_pattern_audio_run_parent_plugin_interface;
 GType
 ags_copy_pattern_audio_run_get_type()
 {
-  static GType ags_type_copy_pattern_audio_run = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_copy_pattern_audio_run){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_copy_pattern_audio_run = 0;
+
     static const GTypeInfo ags_copy_pattern_audio_run_info = {
       sizeof(AgsCopyPatternAudioRunClass),
       NULL, /* base_init */
@@ -104,9 +106,11 @@ ags_copy_pattern_audio_run_get_type()
     g_type_add_interface_static(ags_type_copy_pattern_audio_run,
 				AGS_TYPE_PLUGIN,
 				&ags_plugin_interface_info);
+
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_copy_pattern_audio_run);
   }
 
-  return(ags_type_copy_pattern_audio_run);
+  return g_define_type_id__volatile;
 }
 
 void

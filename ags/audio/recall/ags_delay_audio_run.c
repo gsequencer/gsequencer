@@ -74,9 +74,11 @@ static guint delay_audio_run_signals[LAST_SIGNAL];
 GType
 ags_delay_audio_run_get_type()
 {
-  static GType ags_type_delay_audio_run = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_delay_audio_run){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_delay_audio_run = 0;
+
     static const GTypeInfo ags_delay_audio_run_info = {
       sizeof(AgsDelayAudioRunClass),
       NULL, /* base_init */
@@ -93,9 +95,11 @@ ags_delay_audio_run_get_type()
 						      "AgsDelayAudioRun",
 						      &ags_delay_audio_run_info,
 						      0);
+
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_delay_audio_run);
   }
 
-  return(ags_type_delay_audio_run);
+  return g_define_type_id__volatile;
 }
 
 void

@@ -114,9 +114,11 @@ CFRunLoopRef ags_core_audio_port_run_loop = NULL;
 GType
 ags_core_audio_port_get_type()
 {
-  static GType ags_type_core_audio_port = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_core_audio_port){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_core_audio_port = 0;
+
     static const GTypeInfo ags_core_audio_port_info = {
       sizeof(AgsCoreAudioPortClass),
       NULL, /* base_init */
@@ -143,9 +145,11 @@ ags_core_audio_port_get_type()
     g_type_add_interface_static(ags_type_core_audio_port,
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
+
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_core_audio_port);
   }
 
-  return (ags_type_core_audio_port);
+  return g_define_type_id__volatile;
 }
 
 void

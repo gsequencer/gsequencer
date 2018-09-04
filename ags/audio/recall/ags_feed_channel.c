@@ -43,9 +43,11 @@ static const gchar *ags_feed_channel_plugin_name = "ags-feed";
 GType
 ags_feed_channel_get_type()
 {
-  static GType ags_type_feed_channel = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_feed_channel){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_feed_channel = 0;
+
     static const GTypeInfo ags_feed_channel_info = {
       sizeof (AgsFeedChannelClass),
       NULL, /* base_init */
@@ -62,9 +64,11 @@ ags_feed_channel_get_type()
 						   "AgsFeedChannel",
 						   &ags_feed_channel_info,
 						   0);    
+
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_feed_channel);
   }
 
-  return (ags_type_feed_channel);
+  return g_define_type_id__volatile;
 }
 
 void

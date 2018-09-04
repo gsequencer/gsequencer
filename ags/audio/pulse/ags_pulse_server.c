@@ -114,9 +114,11 @@ static pthread_mutex_t ags_pulse_server_class_mutex = PTHREAD_MUTEX_INITIALIZER;
 GType
 ags_pulse_server_get_type()
 {
-  static GType ags_type_pulse_server = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_pulse_server){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_pulse_server = 0;
+
     static const GTypeInfo ags_pulse_server_info = {
       sizeof(AgsPulseServerClass),
       NULL, /* base_init */
@@ -153,9 +155,11 @@ ags_pulse_server_get_type()
     g_type_add_interface_static(ags_type_pulse_server,
 				AGS_TYPE_SOUND_SERVER,
 				&ags_sound_server_interface_info);
+
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_pulse_server);
   }
 
-  return (ags_type_pulse_server);
+  return g_define_type_id__volatile;
 }
 
 void

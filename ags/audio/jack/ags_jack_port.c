@@ -79,9 +79,11 @@ static pthread_mutex_t ags_jack_port_class_mutex = PTHREAD_MUTEX_INITIALIZER;
 GType
 ags_jack_port_get_type()
 {
-  static GType ags_type_jack_port = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_jack_port){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_jack_port = 0;
+
     static const GTypeInfo ags_jack_port_info = {
       sizeof(AgsJackPortClass),
       NULL, /* base_init */
@@ -108,9 +110,11 @@ ags_jack_port_get_type()
     g_type_add_interface_static(ags_type_jack_port,
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
+
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_jack_port);
   }
 
-  return (ags_type_jack_port);
+  return g_define_type_id__volatile;
 }
 
 void

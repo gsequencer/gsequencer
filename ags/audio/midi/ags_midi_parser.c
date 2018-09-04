@@ -19,7 +19,7 @@
 
 #include <ags/audio/midi/ags_midi_parser.h>
 
-#include <ags/object/ags_marshal.h>
+#include <ags/libags.h>
 
 #include <string.h>
 
@@ -122,9 +122,11 @@ static pthread_mutex_t ags_midi_parser_class_mutex = PTHREAD_MUTEX_INITIALIZER;
 GType
 ags_midi_parser_get_type(void)
 {
-  static GType ags_type_midi_parser = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_midi_parser){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_midi_parser = 0;
+
     static const GTypeInfo ags_midi_parser_info = {
       sizeof (AgsMidiParserClass),
       NULL, /* base_init */
@@ -140,9 +142,11 @@ ags_midi_parser_get_type(void)
     ags_type_midi_parser = g_type_register_static(G_TYPE_OBJECT,
 						  "AgsMidiParser", &ags_midi_parser_info,
 						  0);
+
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_midi_parser);
   }
 
-  return(ags_type_midi_parser);
+  return g_define_type_id__volatile;
 }
 
 void
