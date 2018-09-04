@@ -34,17 +34,21 @@ void ags_sound_server_class_init(AgsSoundServerInterface *interface);
 GType
 ags_sound_server_get_type()
 {
-  static GType ags_type_sound_server = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_sound_server){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_sound_server = 0;
+
     ags_type_sound_server = g_type_register_static_simple(G_TYPE_INTERFACE,
 							  "AgsSoundServer",
 							  sizeof(AgsSoundServerInterface),
 							  (GClassInitFunc) ags_sound_server_class_init,
 							  0, NULL, 0);
+
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_sound_server);
   }
 
-  return(ags_type_sound_server);
+  return g_define_type_id__volatile;
 }
 
 void

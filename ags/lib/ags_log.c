@@ -41,9 +41,11 @@ AgsLog *ags_log = NULL;
 GType
 ags_log_get_type(void)
 {
-  static GType ags_type_log = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_log){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_log = 0;
+
     static const GTypeInfo ags_log_info = {
       sizeof (AgsLogClass),
       NULL, /* base_init */
@@ -60,9 +62,11 @@ ags_log_get_type(void)
 					  "AgsLog",
 					  &ags_log_info,
 					  0);
+
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_log);
   }
 
-  return (ags_type_log);
+  return g_define_type_id__volatile;
 }
 
 void

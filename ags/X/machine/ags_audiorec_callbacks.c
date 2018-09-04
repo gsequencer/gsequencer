@@ -103,45 +103,47 @@ ags_audiorec_keep_data_callback(GtkWidget *button, AgsAudiorec *audiorec)
   GValue playback_value = {0,};
   GValue replace_value = {0,};
 
-  g_value_init(&playback_value,
-	       G_TYPE_BOOLEAN);
+  if(gtk_toggle_button_get_active(button)){
+    g_value_init(&playback_value,
+		 G_TYPE_BOOLEAN);
 
-  g_value_set_boolean(&playback_value,
-		      FALSE);
+    g_value_set_boolean(&playback_value,
+			FALSE);
   
-  g_value_init(&replace_value,
-	       G_TYPE_BOOLEAN);
+    g_value_init(&replace_value,
+		 G_TYPE_BOOLEAN);
 
-  g_value_set_boolean(&replace_value,
-		      FALSE);
+    g_value_set_boolean(&replace_value,
+			FALSE);
 
-  g_object_get(AGS_MACHINE(audiorec)->audio,
-	       "play", &start_recall,
-	       NULL);
-
-  recall = ags_recall_template_find_type(start_recall,
-					 AGS_TYPE_CAPTURE_WAVE_AUDIO);
-
-  if(recall != NULL){
-    g_object_get(recall->data,
-		 "playback", &port,
+    g_object_get(AGS_MACHINE(audiorec)->audio,
+		 "play", &start_recall,
 		 NULL);
 
-    ags_port_safe_write(port,
-			&playback_value);
+    recall = ags_recall_template_find_type(start_recall,
+					   AGS_TYPE_CAPTURE_WAVE_AUDIO);
 
-    g_object_get(recall->data,
-		 "replace", &port,
-		 NULL);
+    if(recall != NULL){
+      g_object_get(recall->data,
+		   "playback", &port,
+		   NULL);
 
-    ags_port_safe_write(port,
-			&replace_value);
+      ags_port_safe_write(port,
+			  &playback_value);
+
+      g_object_get(recall->data,
+		   "replace", &port,
+		   NULL);
+
+      ags_port_safe_write(port,
+			  &replace_value);
+    }
+
+    g_value_unset(&playback_value);
+    g_value_unset(&replace_value);
+  
+    g_list_free(start_recall);
   }
-
-  g_value_unset(&playback_value);
-  g_value_unset(&replace_value);
-  
-  g_list_free(start_recall);
 }
 
 void
@@ -154,45 +156,47 @@ ags_audiorec_replace_data_callback(GtkWidget *button, AgsAudiorec *audiorec)
   GValue playback_value = {0,};
   GValue replace_value = {0,};
 
-  g_value_init(&playback_value,
-	       G_TYPE_BOOLEAN);
+  if(gtk_toggle_button_get_active(button)){
+    g_value_init(&playback_value,
+		 G_TYPE_BOOLEAN);
 
-  g_value_set_boolean(&playback_value,
-		      TRUE);
+    g_value_set_boolean(&playback_value,
+			TRUE);
   
-  g_value_init(&replace_value,
-	       G_TYPE_BOOLEAN);
+    g_value_init(&replace_value,
+		 G_TYPE_BOOLEAN);
 
-  g_value_set_boolean(&replace_value,
-		      TRUE);
+    g_value_set_boolean(&replace_value,
+			TRUE);
 
-  g_object_get(AGS_MACHINE(audiorec)->audio,
-	       "play", &start_recall,
-	       NULL);
-
-  recall = ags_recall_template_find_type(start_recall,
-					 AGS_TYPE_CAPTURE_WAVE_AUDIO);
-
-  if(recall != NULL){
-    g_object_get(recall->data,
-		 "playback", &port,
+    g_object_get(AGS_MACHINE(audiorec)->audio,
+		 "play", &start_recall,
 		 NULL);
 
-    ags_port_safe_write(port,
-			&playback_value);
+    recall = ags_recall_template_find_type(start_recall,
+					   AGS_TYPE_CAPTURE_WAVE_AUDIO);
 
-    g_object_get(recall->data,
-		 "replace", &port,
-		 NULL);
+    if(recall != NULL){
+      g_object_get(recall->data,
+		   "playback", &port,
+		   NULL);
 
-    ags_port_safe_write(port,
-			&replace_value);
+      ags_port_safe_write(port,
+			  &playback_value);
+
+      g_object_get(recall->data,
+		   "replace", &port,
+		   NULL);
+
+      ags_port_safe_write(port,
+			  &replace_value);
+    }
+
+    g_value_unset(&playback_value);
+    g_value_unset(&replace_value);
+  
+    g_list_free(start_recall);
   }
-
-  g_value_unset(&playback_value);
-  g_value_unset(&replace_value);
-  
-  g_list_free(start_recall);
 }
 
 void
@@ -205,43 +209,45 @@ ags_audiorec_mix_data_callback(GtkWidget *button, AgsAudiorec *audiorec)
   GValue playback_value = {0,};
   GValue replace_value = {0,};
 
-  g_value_init(&playback_value,
-	       G_TYPE_BOOLEAN);
+  if(gtk_toggle_button_get_active(button)){
+    g_value_init(&playback_value,
+		 G_TYPE_BOOLEAN);
 
-  g_value_set_boolean(&playback_value,
-		      TRUE);
+    g_value_set_boolean(&playback_value,
+			TRUE);
   
-  g_value_init(&replace_value,
-	       G_TYPE_BOOLEAN);
+    g_value_init(&replace_value,
+		 G_TYPE_BOOLEAN);
 
-  g_value_set_boolean(&replace_value,
-		      FALSE);
+    g_value_set_boolean(&replace_value,
+			FALSE);
 
-  g_object_get(AGS_MACHINE(audiorec)->audio,
-	       "play", &start_recall,
-	       NULL);
-
-  recall = ags_recall_template_find_type(start_recall,
-					 AGS_TYPE_CAPTURE_WAVE_AUDIO);
-
-  if(recall != NULL){
-    g_object_get(recall->data,
-		 "playback", &port,
+    g_object_get(AGS_MACHINE(audiorec)->audio,
+		 "play", &start_recall,
 		 NULL);
 
-    ags_port_safe_write(port,
-			&playback_value);
+    recall = ags_recall_template_find_type(start_recall,
+					   AGS_TYPE_CAPTURE_WAVE_AUDIO);
 
-    g_object_get(recall->data,
-		 "replace", &port,
-		 NULL);
+    if(recall != NULL){
+      g_object_get(recall->data,
+		   "playback", &port,
+		   NULL);
 
-    ags_port_safe_write(port,
-			&replace_value);
+      ags_port_safe_write(port,
+			  &playback_value);
+
+      g_object_get(recall->data,
+		   "replace", &port,
+		   NULL);
+
+      ags_port_safe_write(port,
+			  &replace_value);
+    }
+
+    g_value_unset(&playback_value);
+    g_value_unset(&replace_value);
+  
+    g_list_free(start_recall);
   }
-
-  g_value_unset(&playback_value);
-  g_value_unset(&replace_value);
-  
-  g_list_free(start_recall);
 }

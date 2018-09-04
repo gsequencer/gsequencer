@@ -44,17 +44,21 @@ static guint seekable_signals[LAST_SIGNAL];
 GType
 ags_seekable_get_type()
 {
-  static GType seekable_type = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!seekable_type){
-    seekable_type = g_type_register_static_simple(G_TYPE_INTERFACE,
-						  "AgsSeekable",
-						  sizeof (AgsSeekableInterface),
-						  (GClassInitFunc) ags_seekable_class_init,
-						  0, NULL, 0);
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_seekable = 0;
+
+    ags_type_seekable = g_type_register_static_simple(G_TYPE_INTERFACE,
+						      "AgsSeekable",
+						      sizeof (AgsSeekableInterface),
+						      (GClassInitFunc) ags_seekable_class_init,
+						      0, NULL, 0);
+
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_seekable);
   }
-  
-  return seekable_type;
+
+  return g_define_type_id__volatile;
 }
 
 void

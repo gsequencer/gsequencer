@@ -35,9 +35,11 @@ void ags_connectable_base_init(AgsConnectableInterface *interface);
 GType
 ags_connectable_get_type()
 {
-  static GType ags_type_connectable = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_connectable){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_connectable = 0;
+
     static const GTypeInfo ags_connectable_info = {
       sizeof(AgsConnectableInterface),
       (GBaseInitFunc) ags_connectable_base_init,
@@ -47,9 +49,11 @@ ags_connectable_get_type()
     ags_type_connectable = g_type_register_static(G_TYPE_INTERFACE,
 						  "AgsConnectable", &ags_connectable_info,
 						  0);
+
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_connectable);
   }
 
-  return(ags_type_connectable);
+  return g_define_type_id__volatile;
 }
 
 void

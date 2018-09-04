@@ -37,9 +37,11 @@ void ags_portlet_base_init(AgsPortletInterface *interface);
 GType
 ags_portlet_get_type()
 {
-  static GType ags_type_portlet = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_portlet){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_portlet = 0;
+
     static const GTypeInfo ags_portlet_info = {
       sizeof(AgsPortletInterface),
       (GBaseInitFunc) ags_portlet_base_init,
@@ -49,9 +51,11 @@ ags_portlet_get_type()
     ags_type_portlet = g_type_register_static(G_TYPE_INTERFACE,
 					      "AgsPortlet", &ags_portlet_info,
 					      0);
+
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_portlet);
   }
 
-  return(ags_type_portlet);
+  return g_define_type_id__volatile;
 }
 
 void

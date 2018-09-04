@@ -69,9 +69,11 @@ static pthread_mutex_t ags_conversion_class_mutex = PTHREAD_MUTEX_INITIALIZER;
 GType
 ags_conversion_get_type(void)
 {
-  static GType ags_type_conversion = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_conversion){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_conversion = 0;
+
     static const GTypeInfo ags_conversion_info = {
       sizeof (AgsConversionClass),
       NULL, /* base_init */
@@ -88,9 +90,11 @@ ags_conversion_get_type(void)
 						 "AgsConversion",
 						 &ags_conversion_info,
 						 0);
+
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_conversion);
   }
 
-  return(ags_type_conversion);
+  return g_define_type_id__volatile;
 }
 
 void
