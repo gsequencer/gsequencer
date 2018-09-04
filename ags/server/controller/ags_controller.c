@@ -59,9 +59,11 @@ static gpointer ags_controller_parent_class = NULL;
 GType
 ags_controller_get_type()
 {
-  static GType ags_type_controller = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_controller){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_controller = 0;
+
     static const GTypeInfo ags_controller_info = {
       sizeof (AgsControllerClass),
       NULL, /* base_init */
@@ -78,9 +80,11 @@ ags_controller_get_type()
 						 "AgsController",
 						 &ags_controller_info,
 						 0);
+
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_controller);
   }
 
-  return (ags_type_controller);
+  return g_define_type_id__volatile;
 }
 
 void

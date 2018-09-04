@@ -34,9 +34,11 @@ void ags_business_group_base_init(AgsBusinessGroupInterface *interface);
 GType
 ags_business_group_get_type()
 {
-  static GType ags_type_business_group = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_business_group){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_business_group = 0;
+
     static const GTypeInfo ags_business_group_info = {
       sizeof(AgsBusinessGroupInterface),
       (GBaseInitFunc) ags_business_group_base_init,
@@ -44,11 +46,13 @@ ags_business_group_get_type()
     };
 
     ags_type_business_group = g_type_register_static(G_TYPE_INTERFACE,
-						     "AgsBusinessGroup\0", &ags_business_group_info,
+						     "AgsBusinessGroup", &ags_business_group_info,
 						     0);
+
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_business_group);
   }
 
-  return(ags_type_business_group);
+  return g_define_type_id__volatile;
 }
 
 void

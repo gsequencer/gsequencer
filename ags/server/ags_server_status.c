@@ -47,9 +47,11 @@ static gpointer ags_server_status_parent_class = NULL;
 GType
 ags_server_status_get_type()
 {
-  static GType ags_type_server_status = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_server_status){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_server_status = 0;
+
     static const GTypeInfo ags_server_status_info = {
       sizeof (AgsServerStatusClass),
       NULL, /* base_init */
@@ -76,9 +78,11 @@ ags_server_status_get_type()
     g_type_add_interface_static(ags_type_server_status,
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
+
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_server_status);
   }
 
-  return (ags_type_server_status);
+  return g_define_type_id__volatile;
 }
 
 void

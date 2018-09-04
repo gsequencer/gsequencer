@@ -53,9 +53,11 @@ static gpointer ags_xml_certificate_parent_class = NULL;
 GType
 ags_xml_certificate_get_type()
 {
-  static GType ags_type_xml_certificate = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_xml_certificate){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_xml_certificate = 0;
+
     static const GTypeInfo ags_xml_certificate_info = {
       sizeof (AgsXmlCertificateClass),
       NULL, /* base_init */
@@ -75,16 +77,18 @@ ags_xml_certificate_get_type()
     };
     
     ags_type_xml_certificate = g_type_register_static(G_TYPE_OBJECT,
-						      "AgsXmlCertificate\0",
+						      "AgsXmlCertificate",
 						      &ags_xml_certificate_info,
 						      0);
 
     g_type_add_interface_static(ags_type_xml_certificate,
 				AGS_TYPE_CERTIFICATE,
 				&ags_certificate_interface_info);
+
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_xml_certificate);
   }
 
-  return (ags_type_xml_certificate);
+  return g_define_type_id__volatile;
 }
 
 void

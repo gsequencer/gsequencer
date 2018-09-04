@@ -40,9 +40,11 @@ AgsCertificateManager *ags_certificate_manager = NULL;
 GType
 ags_certificate_manager_get_type (void)
 {
-  static GType ags_type_certificate_manager = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_certificate_manager){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_certificate_manager = 0;
+
     static const GTypeInfo ags_certificate_manager_info = {
       sizeof (AgsCertificateManagerClass),
       NULL, /* base_init */
@@ -56,12 +58,14 @@ ags_certificate_manager_get_type (void)
     };
 
     ags_type_certificate_manager = g_type_register_static(G_TYPE_OBJECT,
-							  "AgsCertificateManager\0",
+							  "AgsCertificateManager",
 							  &ags_certificate_manager_info,
 							  0);
+
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_certificate_manager);
   }
 
-  return (ags_type_certificate_manager);
+  return g_define_type_id__volatile;
 }
 
 void

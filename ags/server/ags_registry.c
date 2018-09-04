@@ -65,9 +65,11 @@ static gpointer ags_registry_parent_class = NULL;
 GType
 ags_registry_get_type()
 {
-  static GType ags_type_registry = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_registry){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_registry = 0;
+
     static const GTypeInfo ags_registry_info = {
       sizeof (AgsRegistryClass),
       NULL, /* base_init */
@@ -94,9 +96,11 @@ ags_registry_get_type()
     g_type_add_interface_static(ags_type_registry,
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
+
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_registry);
   }
 
-  return (ags_type_registry);
+  return g_define_type_id__volatile;
 }
 
 void

@@ -82,9 +82,11 @@ static gpointer ags_xml_password_store_parent_class = NULL;
 GType
 ags_xml_password_store_get_type()
 {
-  static GType ags_type_xml_password_store = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_xml_password_store){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_xml_password_store = 0;
+
     static const GTypeInfo ags_xml_password_store_info = {
       sizeof (AgsXmlPasswordStoreClass),
       NULL, /* base_init */
@@ -104,16 +106,18 @@ ags_xml_password_store_get_type()
     };
     
     ags_type_xml_password_store = g_type_register_static(G_TYPE_OBJECT,
-							 "AgsXmlPasswordStore\0",
+							 "AgsXmlPasswordStore",
 							 &ags_xml_password_store_info,
 							 0);
 
     g_type_add_interface_static(ags_type_xml_password_store,
 				AGS_TYPE_PASSWORD_STORE,
 				&ags_password_store_interface_info);
+
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_xml_password_store);
   }
 
-  return (ags_type_xml_password_store);
+  return g_define_type_id__volatile;
 }
 
 void
