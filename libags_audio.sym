@@ -1447,11 +1447,6 @@ ags_channel_get_level
 ags_channel_recursive_set_property
 ags_channel_recursive_run_stage
 ags_channel_new
-ags_channel_iter_alloc
-ags_channel_iter_free
-ags_channel_iter_prev
-ags_channel_iter_next
-ags_channel_iter_init
 ags_output_get_type
 ags_output_find_first_input_recycling
 ags_output_find_last_input_recycling

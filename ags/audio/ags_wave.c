@@ -77,9 +77,11 @@ static pthread_mutex_t ags_wave_class_mutex = PTHREAD_MUTEX_INITIALIZER;
 GType
 ags_wave_get_type()
 {
-  static GType ags_type_wave = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_wave){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_wave = 0;
+
     static const GTypeInfo ags_wave_info = {
       sizeof(AgsWaveClass),
       NULL,
@@ -96,9 +98,11 @@ ags_wave_get_type()
 					   "AgsWave",
 					   &ags_wave_info,
 					   0);
+
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_wave);
   }
 
-  return(ags_type_wave);
+  return g_define_type_id__volatile;
 }
 
 void 

@@ -61,9 +61,11 @@ static pthread_mutex_t ags_recall_id_class_mutex = PTHREAD_MUTEX_INITIALIZER;
 GType
 ags_recall_id_get_type(void)
 {
-  static GType ags_type_recall_id = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_recall_id){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_recall_id = 0;
+
     static const GTypeInfo ags_recall_id_info = {
       sizeof(AgsRecallIDClass),
       NULL, /* base_init */
@@ -80,9 +82,11 @@ ags_recall_id_get_type(void)
 						"AgsRecallID",
 						&ags_recall_id_info,
 						0);
+
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_recall_id);
   }
 
-  return(ags_type_recall_id);
+  return g_define_type_id__volatile;
 }
 
 void

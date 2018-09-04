@@ -67,9 +67,11 @@ static pthread_mutex_t ags_recycling_context_class_mutex = PTHREAD_MUTEX_INITIAL
 GType
 ags_recycling_context_get_type (void)
 {
-  static GType ags_type_recycling_context = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_recycling_context){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_recycling_context = 0;
+
     static const GTypeInfo ags_recycling_context_info = {
       sizeof (AgsRecyclingContextClass),
       (GBaseInitFunc) NULL, /* base_init */
@@ -86,9 +88,11 @@ ags_recycling_context_get_type (void)
 							"AgsRecyclingContext",
 							&ags_recycling_context_info,
 							0);
+
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_recycling_context);
   }
 
-  return (ags_type_recycling_context);
+  return g_define_type_id__volatile;
 }
 
 void

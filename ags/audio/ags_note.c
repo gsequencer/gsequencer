@@ -74,9 +74,11 @@ static pthread_mutex_t ags_note_class_mutex = PTHREAD_MUTEX_INITIALIZER;
 GType
 ags_note_get_type()
 {
-  static GType ags_type_note = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_note){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_note = 0;
+
     static const GTypeInfo ags_note_info = {
       sizeof(AgsNoteClass),
       NULL,
@@ -93,9 +95,11 @@ ags_note_get_type()
 					   "AgsNote",
 					   &ags_note_info,
 					   0);
+
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_note);
   }
 
-  return(ags_type_note);
+  return g_define_type_id__volatile;
 }
 
 void 

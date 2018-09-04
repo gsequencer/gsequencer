@@ -52,10 +52,8 @@
 #include <ags/audio/ags_automation.h>
 #include <ags/audio/ags_buffer.h>
 #include <ags/audio/ags_channel.h>
-#include <ags/audio/ags_channel_iter.h>
 #include <ags/audio/ags_devout.h>
 #include <ags/audio/ags_devin.h>
-#include <ags/audio/ags_effect.h>
 #include <ags/audio/ags_fifoout.h>
 #include <ags/audio/ags_input.h>
 #include <ags/audio/ags_midiin.h>

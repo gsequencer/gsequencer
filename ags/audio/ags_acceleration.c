@@ -61,9 +61,11 @@ static pthread_mutex_t ags_acceleration_class_mutex = PTHREAD_MUTEX_INITIALIZER;
 GType
 ags_acceleration_get_type()
 {
-  static GType ags_type_acceleration = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_acceleration){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_acceleration = 0;
+
     static const GTypeInfo ags_acceleration_info = {
       sizeof(AgsAccelerationClass),
       NULL,
@@ -80,9 +82,11 @@ ags_acceleration_get_type()
 						   "AgsAcceleration",
 						   &ags_acceleration_info,
 						   0);
+
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_acceleration);
   }
 
-  return(ags_type_acceleration);
+  return g_define_type_id__volatile;
 }
 
 void 

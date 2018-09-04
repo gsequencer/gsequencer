@@ -640,11 +640,9 @@ libags_audio_h_sources = \
 	ags/audio/ags_automation.h \
 	ags/audio/ags_buffer.h \
 	ags/audio/ags_channel.h \
-	ags/audio/ags_channel_iter.h \
 	ags/audio/ags_char_buffer_util.h \
 	ags/audio/ags_devout.h \
 	ags/audio/ags_devin.h \
-	ags/audio/ags_effect.h \
 	ags/audio/ags_fifoout.h \
 	ags/audio/ags_generic_recall_channel_run.h \
 	ags/audio/ags_generic_recall_recycling.h \
@@ -698,7 +696,6 @@ libags_audio_c_sources = \
 	ags/audio/ags_automation.c \
 	ags/audio/ags_buffer.c \
 	ags/audio/ags_channel.c \
-	ags/audio/ags_channel_iter.c \
 	ags/audio/ags_char_buffer_util.c \
 	ags/audio/ags_devout.c \
 	ags/audio/ags_devin.c \

@@ -69,9 +69,11 @@ enum{
 GType
 ags_playback_get_type (void)
 {
-  static GType ags_type_playback = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_playback){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_playback = 0;
+
     static const GTypeInfo ags_playback_info = {
       sizeof(AgsPlaybackClass),
       NULL, /* base_init */
@@ -88,9 +90,11 @@ ags_playback_get_type (void)
 					       "AgsPlayback",
 					       &ags_playback_info,
 					       0);
+
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_playback);
   }
 
-  return(ags_type_playback);
+  return g_define_type_id__volatile;
 }
 
 void

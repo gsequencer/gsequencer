@@ -62,9 +62,11 @@ static pthread_mutex_t ags_track_class_mutex = PTHREAD_MUTEX_INITIALIZER;
 GType
 ags_track_get_type()
 {
-  static GType ags_type_track = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_track){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_track = 0;
+
     static const GTypeInfo ags_track_info = {
       sizeof(AgsTrackClass),
       NULL,
@@ -81,9 +83,11 @@ ags_track_get_type()
 					    "AgsTrack",
 					    &ags_track_info,
 					    0);
+
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_track);
   }
 
-  return(ags_type_track);
+  return g_define_type_id__volatile;
 }
 
 void 
