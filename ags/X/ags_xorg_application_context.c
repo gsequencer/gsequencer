@@ -1781,7 +1781,7 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
     /* notify soundcard and export thread */
     export_thread = NULL;
     
-    if(soundcard_capability == AGS_SOUNDCARD_CAPABILITY_PLAYBACK){
+    //    if(soundcard_capability == AGS_SOUNDCARD_CAPABILITY_PLAYBACK){
       notify_soundcard = ags_notify_soundcard_new(soundcard_thread);
       AGS_TASK(notify_soundcard)->task_thread = application_context->task_thread;
     
@@ -1793,6 +1793,14 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
 	AGS_PULSE_DEVOUT(list->data)->notify_soundcard = notify_soundcard;
       }else if(AGS_IS_CORE_AUDIO_DEVOUT(list->data)){
 	AGS_CORE_AUDIO_DEVOUT(list->data)->notify_soundcard = notify_soundcard;
+      }else if(AGS_IS_DEVIN(list->data)){
+	AGS_DEVIN(list->data)->notify_soundcard = notify_soundcard;
+      }else if(AGS_IS_JACK_DEVIN(list->data)){
+	AGS_JACK_DEVIN(list->data)->notify_soundcard = notify_soundcard;
+      }else if(AGS_IS_PULSE_DEVIN(list->data)){
+	AGS_PULSE_DEVIN(list->data)->notify_soundcard = notify_soundcard;
+      }else if(AGS_IS_CORE_AUDIO_DEVIN(list->data)){
+	AGS_CORE_AUDIO_DEVIN(list->data)->notify_soundcard = notify_soundcard;
       }
 
       ags_task_thread_append_cyclic_task(application_context->task_thread,
@@ -1804,7 +1812,7 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
       ags_thread_add_child_extended(AGS_THREAD(audio_loop),
 				    (AgsThread *) export_thread,
 				    TRUE, TRUE);
-    }    
+      // }    
 
     /* default soundcard thread */
     if(xorg_application_context->soundcard_thread == NULL){

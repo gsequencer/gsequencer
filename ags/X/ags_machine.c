@@ -1874,7 +1874,7 @@ ags_machine_get_possible_audio_output_connections(AgsMachine *machine)
     while(list != NULL){
       guint soundcard_capability;
 
-      soundcard_capability = ags_soundcard_get_capability(AGS_SOUND_PROVIDER(application_context));
+      soundcard_capability = ags_soundcard_get_capability(AGS_SOUNDCARD(list->data));
       
       if((AGS_SOUNDCARD_CAPABILITY_PLAYBACK & (soundcard_capability)) != 0 ||
 	 (AGS_SOUNDCARD_CAPABILITY_DUPLEX & (soundcard_capability)) != 0){
@@ -1940,7 +1940,7 @@ ags_machine_get_possible_audio_input_connections(AgsMachine *machine)
     while(list != NULL){
       guint soundcard_capability;
 
-      soundcard_capability = ags_soundcard_get_capability(AGS_SOUND_PROVIDER(application_context));
+      soundcard_capability = ags_soundcard_get_capability(AGS_SOUNDCARD(list->data));
 
       if((AGS_SOUNDCARD_CAPABILITY_CAPTURE & (soundcard_capability)) != 0 ||
 	 (AGS_SOUNDCARD_CAPABILITY_DUPLEX & (soundcard_capability)) != 0){

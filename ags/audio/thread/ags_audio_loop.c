@@ -735,13 +735,15 @@ ags_audio_loop_change_frequency(AgsMainLoop *main_loop,
 	       NULL);
 
   /* reset soundcard thread */
-  thread = audio_loop;
+  thread = ags_thread_find_type(audio_loop, AGS_TYPE_SOUNDCARD_THREAD);
 
-  while(ags_thread_find_type(thread, AGS_TYPE_SOUNDCARD_THREAD) != NULL){
-    g_object_set(thread,
-		 "frequency", frequency,
-		 NULL);
-
+  while(thread != NULL){
+    if(AGS_IS_SOUNDCARD_THREAD(thread)){
+      g_object_set(thread,
+		   "frequency", frequency,
+		   NULL);
+    }
+    
     thread = g_atomic_pointer_get(&(thread->next));
   }
 
@@ -899,12 +901,14 @@ ags_audio_loop_run(AgsThread *thread)
     AgsThread *export_thread;
 
     /* soundcard thread */
-    soundcard_thread = thread;
+    soundcard_thread = ags_thread_find_type(thread,
+					    AGS_TYPE_SOUNDCARD_THREAD);
 
-    while((soundcard_thread = ags_thread_find_type(soundcard_thread,
-						   AGS_TYPE_SOUNDCARD_THREAD)) != NULL){
-      if((AGS_THREAD_RUNNING & (g_atomic_int_get(&(soundcard_thread->flags)))) != 0){
-	ags_thread_stop(soundcard_thread);
+    while(soundcard_thread != NULL){
+      if(AGS_IS_SOUNDCARD_THREAD(soundcard_thread)){
+	if((AGS_THREAD_RUNNING & (g_atomic_int_get(&(soundcard_thread->flags)))) != 0){
+	  ags_thread_stop(soundcard_thread);
+	}
       }
 
       soundcard_thread = g_atomic_pointer_get(&(soundcard_thread->next));

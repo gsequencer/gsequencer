@@ -51,11 +51,6 @@ void ags_capture_wave_channel_run_run_pre(AgsRecall *recall);
 
 static gpointer ags_capture_wave_channel_run_parent_class = NULL;
 
-enum{
-  PROP_0,
-  PROP_TIMESTAMP,
-};
-
 GType
 ags_capture_wave_channel_run_get_type()
 {
@@ -128,94 +123,6 @@ ags_capture_wave_channel_run_init(AgsCaptureWaveChannelRun *capture_wave_channel
 }
 
 void
-ags_capture_wave_channel_run_set_property(GObject *gobject,
-					  guint prop_id,
-					  const GValue *value,
-					  GParamSpec *param_spec)
-{
-  AgsCaptureWaveChannelRun *capture_wave_channel_run;
-
-  pthread_mutex_t *recall_mutex;
-
-  capture_wave_channel_run = AGS_CAPTURE_WAVE_CHANNEL_RUN(gobject);
-
-  /* get recall mutex */
-  pthread_mutex_lock(ags_recall_get_class_mutex());
-  
-  recall_mutex = AGS_RECALL(gobject)->obj_mutex;
-
-  pthread_mutex_unlock(ags_recall_get_class_mutex());
-
-  switch(prop_id){
-  case PROP_TIMESTAMP:
-    {
-      AgsTimestamp *timestamp;
-
-      timestamp = (AgsTimestamp *) g_value_get_object(value);
-
-      pthread_mutex_lock(recall_mutex);
-
-      if(timestamp == capture_wave_channel_run->timestamp){
-	pthread_mutex_unlock(recall_mutex);
-
-	return;
-      }
-
-      if(capture_wave_channel_run->timestamp != NULL){
-	g_object_unref(G_OBJECT(capture_wave_channel_run->timestamp));
-      }
-      
-      if(timestamp != NULL){
-	g_object_ref(G_OBJECT(timestamp));
-      }
-
-      capture_wave_channel_run->timestamp = timestamp;
-
-      pthread_mutex_unlock(recall_mutex);
-    }
-    break;
-  default:
-    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
-    break;
-  }  
-}
-
-void
-ags_capture_wave_channel_run_get_property(GObject *gobject,
-					  guint prop_id,
-					  GValue *value,
-					  GParamSpec *param_spec)
-{
-  AgsCaptureWaveChannelRun *capture_wave_channel_run;
-
-  pthread_mutex_t *recall_mutex;
-
-  capture_wave_channel_run = AGS_CAPTURE_WAVE_CHANNEL_RUN(gobject);
-
-  /* get recall mutex */
-  pthread_mutex_lock(ags_recall_get_class_mutex());
-  
-  recall_mutex = AGS_RECALL(gobject)->obj_mutex;
-
-  pthread_mutex_unlock(ags_recall_get_class_mutex());
-
-  switch(prop_id){
-  case PROP_TIMESTAMP:
-    {
-      pthread_mutex_lock(recall_mutex);
-
-      g_value_set_object(value, capture_wave_channel_run->timestamp);
-
-      pthread_mutex_unlock(recall_mutex);
-    }
-    break;
-  default:
-    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
-    break;
-  }
-}
-
-void
 ags_capture_wave_channel_run_dispose(GObject *gobject)
 {
   AgsCaptureWaveChannelRun *capture_wave_channel_run;
@@ -247,6 +154,7 @@ ags_capture_wave_channel_run_run_pre(AgsRecall *recall)
 {
   AgsAudio *audio;
   AgsChannel *channel;
+  AgsChannel *input;
   AgsPort *port;
   AgsWave *wave;
   AgsBuffer *buffer;
@@ -305,9 +213,10 @@ ags_capture_wave_channel_run_run_pre(AgsRecall *recall)
 	       "recall-audio", &capture_wave_audio,
 	       "recall-audio-run", &capture_wave_audio_run,
 	       "recall-channel", &capture_wave_channel,
-	       "timestamp", &timestamp,
 	       NULL);
 
+  timestamp = capture_wave_channel_run->timestamp;
+  
   g_object_get(capture_wave_channel_run,
 	       "source", &channel,
 	       NULL);
@@ -315,7 +224,7 @@ ags_capture_wave_channel_run_run_pre(AgsRecall *recall)
   g_object_get(channel,
 	       "line", &line,
 	       NULL);
-  
+
   /* get audio and mutex */
   g_object_get(capture_wave_audio,
 	       "audio", &audio,
@@ -327,12 +236,23 @@ ags_capture_wave_channel_run_run_pre(AgsRecall *recall)
   
   pthread_mutex_unlock(ags_audio_get_class_mutex());
 
+  g_object_get(audio,
+	       "input", &input,
+	       NULL);
+  
   /* get soundcard */
-  g_object_get(recall,
+  input = ags_channel_nth(input,
+			  line);
+  
+  g_object_get(input,
 	       "output-soundcard", &output_soundcard,
 	       "input-soundcard", &input_soundcard,
 	       NULL);
   
+  if(input_soundcard == NULL){
+    return;
+  }
+
   data = ags_soundcard_get_prev_buffer(AGS_SOUNDCARD(input_soundcard));
   ags_soundcard_get_presets(AGS_SOUNDCARD(input_soundcard),
 			    &audio_channels,
@@ -352,8 +272,8 @@ ags_capture_wave_channel_run_run_pre(AgsRecall *recall)
 	       "playback", &port,
 	       NULL);
   
-  g_value_init(G_TYPE_BOOLEAN,
-	       &value);
+  g_value_init(&value,
+	       G_TYPE_BOOLEAN);
   ags_port_safe_read(port,
 		     &value);
 
@@ -366,8 +286,8 @@ ags_capture_wave_channel_run_run_pre(AgsRecall *recall)
 		 "replace", &port,
 		 NULL);
   
-    g_value_init(G_TYPE_BOOLEAN,
-		 &value);
+    g_value_init(&value,
+		 G_TYPE_BOOLEAN);
     ags_port_safe_read(port,
 		       &value);
 
@@ -389,6 +309,8 @@ ags_capture_wave_channel_run_run_pre(AgsRecall *recall)
     relative_offset = AGS_WAVE_DEFAULT_BUFFER_LENGTH * target_samplerate;
 
     /* check resample */
+    resample_target = FALSE;
+    
     if(target_samplerate != samplerate){
       data = ags_audio_buffer_util_resample(data, audio_channels,
 					    format, samplerate,
@@ -450,7 +372,7 @@ ags_capture_wave_channel_run_run_pre(AgsRecall *recall)
     /* copy to buffer */
     pthread_mutex_lock(buffer_mutex);
       
-    ags_audio_buffer_util_copy_buffer_to_buffer(buffer->data, target_audio_channels, line,
+    ags_audio_buffer_util_copy_buffer_to_buffer(buffer->data, 1, 0,
 						data, audio_channels, line,
 						target_buffer_size, target_copy_mode);
 
@@ -461,8 +383,6 @@ ags_capture_wave_channel_run_run_pre(AgsRecall *recall)
     if(resample_target){
       g_free(data);
     }
-
-    g_object_unref(timestamp);
   }
   
   /* read record */
@@ -470,8 +390,8 @@ ags_capture_wave_channel_run_run_pre(AgsRecall *recall)
 	       "record", &port,
 	       NULL);
   
-  g_value_init(G_TYPE_BOOLEAN,
-	       &value);
+  g_value_init(&value,
+	       G_TYPE_BOOLEAN);
   ags_port_safe_read(port,
 		     &value);
 

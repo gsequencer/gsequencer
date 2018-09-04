@@ -242,8 +242,8 @@ ags_capture_wave_audio_run_run_init_pre(AgsRecall *recall)
 	       "record", &port,
 	       NULL);
   
-  g_value_init(G_TYPE_BOOLEAN,
-	       &value);
+  g_value_init(&value,
+	       G_TYPE_BOOLEAN);
   ags_port_safe_read(port,
 		     &value);
 
@@ -276,8 +276,8 @@ ags_capture_wave_audio_run_run_init_pre(AgsRecall *recall)
 		 "file-audio-channels", &port,
 		 NULL);
 
-    g_value_init(G_TYPE_UINT64,
-		 &value);
+    g_value_init(&value,
+		 G_TYPE_UINT64);
     ags_port_safe_read(port,
 		       &value);
 
@@ -289,8 +289,8 @@ ags_capture_wave_audio_run_run_init_pre(AgsRecall *recall)
 		 "file-samplerate", &port,
 		 NULL);
 
-    g_value_init(G_TYPE_UINT64,
-		 &value);
+    g_value_init(&value,
+		 G_TYPE_UINT64);
     ags_port_safe_read(port,
 		       &value);
 
@@ -302,8 +302,8 @@ ags_capture_wave_audio_run_run_init_pre(AgsRecall *recall)
 		 "file-buffer-size", &port,
 		 NULL);
 
-    g_value_init(G_TYPE_UINT64,
-		 &value);
+    g_value_init(&value,
+		 G_TYPE_UINT64);
     ags_port_safe_read(port,
 		       &value);
 
@@ -315,8 +315,8 @@ ags_capture_wave_audio_run_run_init_pre(AgsRecall *recall)
 		 "file-format", &port,
 		 NULL);
 
-    g_value_init(G_TYPE_UINT64,
-		 &value);
+    g_value_init(&value,
+		 G_TYPE_UINT64);
     ags_port_safe_read(port,
 		       &value);
 
@@ -331,7 +331,11 @@ ags_capture_wave_audio_run_run_init_pre(AgsRecall *recall)
     g_object_get(recall,
 		 "input-soundcard", &input_soundcard,
 		 NULL);
-    
+
+    if(input_soundcard == NULL){
+      return;
+    }
+
     pthread_mutex_lock(capture_wave_audio->audio_file_mutex);
 
     if(capture_wave_audio->audio_file == NULL){
@@ -395,8 +399,8 @@ ags_capture_wave_audio_run_done(AgsRecall *recall)
   g_object_get(capture_wave_audio,
 	       "record", &port,
 	       NULL);
-  g_value_init(G_TYPE_BOOLEAN,
-	       &value);
+  g_value_init(&value,
+	       G_TYPE_BOOLEAN);
   ags_port_safe_read(port,
 		     &value);
 

@@ -96,6 +96,7 @@ void ags_jack_devin_pcm_info(AgsSoundcard *soundcard, gchar *card_id,
 			     guint *rate_min, guint *rate_max,
 			     guint *buffer_size_min, guint *buffer_size_max,
 			     GError **error);
+guint ags_jack_devin_get_capability(AgsSoundcard *soundcard);
 
 gboolean ags_jack_devin_is_starting(AgsSoundcard *soundcard);
 gboolean ags_jack_devin_is_recording(AgsSoundcard *soundcard);
@@ -508,6 +509,7 @@ ags_jack_devin_soundcard_interface_init(AgsSoundcardInterface *soundcard)
 
   soundcard->list_cards = ags_jack_devin_list_cards;
   soundcard->pcm_info = ags_jack_devin_pcm_info;
+  soundcard->get_capability = ags_jack_devin_get_capability;
 
   soundcard->get_poll_fd = NULL;
   soundcard->is_available = NULL;
@@ -1838,6 +1840,12 @@ ags_jack_devin_pcm_info(AgsSoundcard *soundcard,
   if(buffer_size_max != NULL){
     *buffer_size_max = 8192;
   }
+}
+
+guint
+ags_jack_devin_get_capability(AgsSoundcard *soundcard)
+{
+  return(AGS_SOUNDCARD_CAPABILITY_CAPTURE);
 }
 
 gboolean

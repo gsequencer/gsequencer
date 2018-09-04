@@ -448,6 +448,17 @@ ags_audiorec_map_recall(AgsMachine *machine)
 			     AGS_RECALL_FACTORY_PLAY),
 			    0);
 
+  /* ags-capture-wave */
+  ags_recall_factory_create(audio,
+			    NULL, NULL,
+			    "ags-capture-wave",
+			    0, 0,
+			    0, 0,
+			    (AGS_RECALL_FACTORY_OUTPUT |
+			     AGS_RECALL_FACTORY_ADD |
+			     AGS_RECALL_FACTORY_PLAY),
+			    0);
+  
   /* depending on destination */
   ags_audiorec_input_map_recall(audiorec, 0);
 
@@ -492,6 +503,17 @@ ags_audiorec_output_map_recall(AgsAudiorec *audiorec, guint output_pad_start)
   ags_recall_factory_create(audio,
 			    NULL, NULL,
 			    "ags-play-wave",
+			    0, audio_channels,
+			    output_pad_start, output_pads,
+			    (AGS_RECALL_FACTORY_OUTPUT |
+			     AGS_RECALL_FACTORY_PLAY |
+			     AGS_RECALL_FACTORY_ADD),
+			    0);
+
+  /* ags-capture-wave */
+  ags_recall_factory_create(audio,
+			    NULL, NULL,
+			    "ags-capture-wave",
 			    0, audio_channels,
 			    output_pad_start, output_pads,
 			    (AGS_RECALL_FACTORY_OUTPUT |
@@ -599,10 +621,21 @@ ags_audiorec_resize_audio_channels(AgsMachine *machine,
     
     if(output_pads > 0){
       /* AgsOutput */
-      /* ags-play */
+      /* ags-play-wave */
       ags_recall_factory_create(audio,
 				NULL, NULL,
 				"ags-play-wave",
+				audio_channels_old, audio_channels, 
+				0, output_pads,
+				(AGS_RECALL_FACTORY_OUTPUT |
+				 AGS_RECALL_FACTORY_PLAY |
+				 AGS_RECALL_FACTORY_ADD),
+				0);
+
+      /* ags-capture-wave */
+      ags_recall_factory_create(audio,
+				NULL, NULL,
+				"ags-capture-wave",
 				audio_channels_old, audio_channels, 
 				0, output_pads,
 				(AGS_RECALL_FACTORY_OUTPUT |

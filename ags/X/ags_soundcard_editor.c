@@ -901,19 +901,19 @@ ags_soundcard_editor_reset(AgsApplicable *applicable)
   switch(capability){
   case AGS_SOUNDCARD_CAPABILITY_PLAYBACK:
     {
-      gtk_combo_box_set_active(GTK_COMBO_BOX(soundcard_editor->card),
+      gtk_combo_box_set_active(GTK_COMBO_BOX(soundcard_editor->capability),
 			       0);
     }
     break;
   case AGS_SOUNDCARD_CAPABILITY_CAPTURE:
     {
-      gtk_combo_box_set_active(GTK_COMBO_BOX(soundcard_editor->card),
+      gtk_combo_box_set_active(GTK_COMBO_BOX(soundcard_editor->capability),
 			       1);
     }
     break;
   case AGS_SOUNDCARD_CAPABILITY_DUPLEX:
     {
-      gtk_combo_box_set_active(GTK_COMBO_BOX(soundcard_editor->card),
+      gtk_combo_box_set_active(GTK_COMBO_BOX(soundcard_editor->capability),
 			       2);
     }
     break;

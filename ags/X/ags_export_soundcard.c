@@ -440,6 +440,10 @@ ags_export_soundcard_set_backend(AgsExportSoundcard *export_soundcard,
   gchar *str;
   
   guint i;
+
+  if(backend == NULL){
+    return;
+  }
   
   model = gtk_combo_box_get_model(GTK_COMBO_BOX(export_soundcard->backend));
   i = 0;    

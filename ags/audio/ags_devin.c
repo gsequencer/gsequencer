@@ -107,6 +107,7 @@ void ags_devin_pcm_info(AgsSoundcard *soundcard, gchar *card_id,
 			guint *rate_min, guint *rate_max,
 			guint *buffer_size_min, guint *buffer_size_max,
 			GError **error);
+guint ags_devin_get_capability(AgsSoundcard *soundcard);
 
 GList* ags_devin_get_poll_fd(AgsSoundcard *soundcard);
 gboolean ags_devin_is_available(AgsSoundcard *soundcard);
@@ -502,6 +503,7 @@ ags_devin_soundcard_interface_init(AgsSoundcardInterface *soundcard)
 
   soundcard->list_cards = ags_devin_list_cards;
   soundcard->pcm_info = ags_devin_pcm_info;
+  soundcard->get_capability = ags_devin_get_capability;
 
   soundcard->get_poll_fd = ags_devin_get_poll_fd;
   soundcard->is_available = ags_devin_is_available;
@@ -2038,6 +2040,12 @@ ags_devin_pcm_info(AgsSoundcard *soundcard,
   pthread_mutex_unlock(devin_mutex);
 }
 
+guint
+ags_devin_get_capability(AgsSoundcard *soundcard)
+{
+  return(AGS_SOUNDCARD_CAPABILITY_CAPTURE);
+}
+
 GList*
 ags_devin_get_poll_fd(AgsSoundcard *soundcard)
 {
@@ -2710,12 +2718,11 @@ ags_devin_oss_record(AgsSoundcard *soundcard,
   
   pthread_mutex_unlock(ags_devin_get_class_mutex());
 
-  /* retrieve mutex */
-  application_context = ags_soundcard_get_application_context(soundcard);
-  
   /* lock */
   pthread_mutex_lock(devin_mutex);
 
+  application_context = devin->application_context;
+  
   notify_soundcard = AGS_NOTIFY_SOUNDCARD(devin->notify_soundcard);
   
   /* notify cyclic task */
@@ -3002,6 +3009,12 @@ ags_devin_alsa_init(AgsSoundcard *soundcard,
   /* retrieve word size */
   pthread_mutex_lock(devin_mutex);
 
+  if(devin->out.alsa.device == NULL){
+    pthread_mutex_unlock(devin_mutex);
+    
+    return;
+  }
+
   switch(devin->format){
   case AGS_SOUNDCARD_SIGNED_8_BIT:
     {
@@ -3081,6 +3094,8 @@ ags_devin_alsa_init(AgsSoundcard *soundcard,
   period_event = 0;
   
   /* Open PCM device for capture. */
+  handle = NULL;
+
   if ((err = snd_pcm_open(&handle, devin->out.alsa.device, SND_PCM_STREAM_CAPTURE, 0)) < 0) {
     pthread_mutex_unlock(devin_mutex);
 
@@ -3538,7 +3553,8 @@ ags_devin_alsa_record(AgsSoundcard *soundcard,
 
   /* lock */
   pthread_mutex_lock(devin_mutex);
-
+  
+  application_context = devin->application_context;
   notify_soundcard = AGS_NOTIFY_SOUNDCARD(devin->notify_soundcard);
 
   /* notify cyclic task */
@@ -3623,6 +3639,7 @@ ags_devin_alsa_record(AgsSoundcard *soundcard,
   /* wait until available */
   list = ags_soundcard_get_poll_fd(soundcard);
 
+#if 0
   if(!ags_soundcard_is_available(soundcard) &&
      !g_atomic_int_get(&(devin->available)) &&
      list != NULL){
@@ -3637,6 +3654,7 @@ ags_devin_alsa_record(AgsSoundcard *soundcard,
 	    NULL);
     }
   }
+#endif
   
   /* write ring buffer */
   devin->out.alsa.rc = snd_pcm_readi(devin->out.alsa.handle,

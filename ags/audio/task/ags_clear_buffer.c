@@ -309,13 +309,13 @@ ags_clear_buffer_launch(AgsTask *task)
 
     /* retrieve nth buffer */    
     if(ags_devin_test_flags(devin, AGS_DEVIN_BUFFER0)){
-      nth_buffer = 0;
-    }else if(ags_devin_test_flags(devin, AGS_DEVIN_BUFFER1)){
       nth_buffer = 1;
-    }else if(ags_devin_test_flags(devin, AGS_DEVIN_BUFFER2)){
+    }else if(ags_devin_test_flags(devin, AGS_DEVIN_BUFFER1)){
       nth_buffer = 2;
-    }else if(ags_devin_test_flags(devin, AGS_DEVIN_BUFFER3)){
+    }else if(ags_devin_test_flags(devin, AGS_DEVIN_BUFFER2)){
       nth_buffer = 3;
+    }else if(ags_devin_test_flags(devin, AGS_DEVIN_BUFFER3)){
+      nth_buffer = 0;
     }
     
     memset(devin->buffer[nth_buffer], 0, (size_t) pcm_channels * buffer_size * word_size);

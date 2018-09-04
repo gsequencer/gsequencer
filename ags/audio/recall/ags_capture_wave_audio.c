@@ -381,7 +381,7 @@ ags_capture_wave_audio_init(AgsCaptureWaveAudio *capture_wave_audio)
 					      NULL);
   g_object_ref(capture_wave_audio->replace);
   
-  capture_wave_audio->replace->port_value.ags_port_boolean = TRUE;
+  capture_wave_audio->replace->port_value.ags_port_boolean = FALSE;
 
   /* add to port */
   port = g_list_prepend(port, capture_wave_audio->replace);

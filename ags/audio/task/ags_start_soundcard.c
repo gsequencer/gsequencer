@@ -258,26 +258,38 @@ ags_start_soundcard_launch(AgsTask *task)
 	       "main-loop", &audio_loop,
 	       NULL);
 
-  soundcard_thread = audio_loop;
+  soundcard_thread = ags_thread_find_type(audio_loop,
+					  AGS_TYPE_SOUNDCARD_THREAD);
   
-  while((soundcard_thread = ags_thread_find_type(soundcard_thread,
-						 AGS_TYPE_SOUNDCARD_THREAD)) != NULL){
-    GObject *soundcard;
+  while(soundcard_thread != NULL){
+    if(AGS_IS_SOUNDCARD_THREAD(soundcard_thread)){
+      GObject *soundcard;
     
-    g_message("start soundcard");
+      guint soundcard_capability;
 
-    g_object_get(soundcard_thread,
-		 "soundcard", &soundcard,
-		 NULL);
-    
-    AGS_SOUNDCARD_THREAD(soundcard_thread)->error = NULL;
-    ags_soundcard_play_init(AGS_SOUNDCARD(soundcard),
-			    &(AGS_SOUNDCARD_THREAD(soundcard_thread)->error));
-    
-    /* append soundcard thread */
-    ags_thread_add_start_queue(audio_loop,
-			       soundcard_thread);
+      g_message("start soundcard");
 
+      g_object_get(soundcard_thread,
+		   "soundcard", &soundcard,
+		   NULL);
+    
+      soundcard_capability = ags_soundcard_get_capability(AGS_SOUNDCARD(soundcard));
+
+      AGS_SOUNDCARD_THREAD(soundcard_thread)->error = NULL;
+
+      if(soundcard_capability == AGS_SOUNDCARD_CAPABILITY_PLAYBACK){
+	ags_soundcard_play_init(AGS_SOUNDCARD(soundcard),
+				&(AGS_SOUNDCARD_THREAD(soundcard_thread)->error));
+      }else if(soundcard_capability == AGS_SOUNDCARD_CAPABILITY_CAPTURE){
+	ags_soundcard_record_init(AGS_SOUNDCARD(soundcard),
+				  &(AGS_SOUNDCARD_THREAD(soundcard_thread)->error));
+      }
+    
+      /* append soundcard thread */
+      ags_thread_add_start_queue(audio_loop,
+				 soundcard_thread);
+    }
+    
     soundcard_thread = g_atomic_pointer_get(&(soundcard_thread->next));
   }
 }
