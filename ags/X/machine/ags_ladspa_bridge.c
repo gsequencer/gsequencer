@@ -83,9 +83,11 @@ static AgsPluginInterface* ags_ladspa_bridge_parent_plugin_interface;
 GType
 ags_ladspa_bridge_get_type(void)
 {
-  static GType ags_type_ladspa_bridge = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_ladspa_bridge){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_ladspa_bridge = 0;
+
     static const GTypeInfo ags_ladspa_bridge_info = {
       sizeof(AgsLadspaBridgeClass),
       NULL, /* base_init */
@@ -121,9 +123,11 @@ ags_ladspa_bridge_get_type(void)
     g_type_add_interface_static(ags_type_ladspa_bridge,
 				AGS_TYPE_PLUGIN,
 				&ags_plugin_interface_info);
+
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_ladspa_bridge);
   }
 
-  return(ags_type_ladspa_bridge);
+  return g_define_type_id__volatile;
 }
 
 void

@@ -61,9 +61,11 @@ static AgsConnectableInterface *ags_desk_parent_connectable_interface;
 GType
 ags_desk_get_type(void)
 {
-  static GType ags_type_desk = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_desk){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_desk = 0;
+
     static const GTypeInfo ags_desk_info = {
       sizeof(AgsDeskClass),
       NULL, /* base_init */
@@ -99,9 +101,11 @@ ags_desk_get_type(void)
     g_type_add_interface_static(ags_type_desk,
 				AGS_TYPE_PLUGIN,
 				&ags_plugin_interface_info);
+
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_desk);
   }
 
-  return(ags_type_desk);
+  return g_define_type_id__volatile;
 }
 
 void

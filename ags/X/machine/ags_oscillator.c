@@ -56,9 +56,11 @@ static AgsConnectableInterface *ags_oscillator_parent_connectable_interface;
 GType
 ags_oscillator_get_type(void)
 {
-  static GType ags_type_oscillator = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_oscillator){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_oscillator = 0;
+
     static const GTypeInfo ags_oscillator_info = {
       sizeof(AgsOscillatorClass),
       NULL, /* base_init */
@@ -85,9 +87,11 @@ ags_oscillator_get_type(void)
     g_type_add_interface_static(ags_type_oscillator,
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
+
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_oscillator);
   }
 
-  return(ags_type_oscillator);
+  return g_define_type_id__volatile;
 }
 
 void

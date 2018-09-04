@@ -74,9 +74,11 @@ enum{
 GType
 ags_midi_export_wizard_get_type(void)
 {
-  static GType ags_type_midi_export_wizard = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_midi_export_wizard){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_midi_export_wizard = 0;
+
     static const GTypeInfo ags_midi_export_wizard_info = {
       sizeof (AgsMidiExportWizardClass),
       NULL, /* base_init */
@@ -112,9 +114,11 @@ ags_midi_export_wizard_get_type(void)
     g_type_add_interface_static(ags_type_midi_export_wizard,
 				AGS_TYPE_APPLICABLE,
 				&ags_applicable_interface_info);
+
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_midi_export_wizard);
   }
-  
-  return(ags_type_midi_export_wizard);
+
+  return g_define_type_id__volatile;
 }
 
 void
