@@ -66,9 +66,11 @@ enum{
 GType
 ags_cancel_audio_get_type()
 {
-  static GType ags_type_cancel_audio = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_cancel_audio){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_cancel_audio = 0;
+
     static const GTypeInfo ags_cancel_audio_info = {
       sizeof(AgsCancelAudioClass),
       NULL, /* base_init */
@@ -85,9 +87,11 @@ ags_cancel_audio_get_type()
 						   "AgsCancelAudio",
 						   &ags_cancel_audio_info,
 						   0);
+
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_cancel_audio);
   }
-  
-  return(ags_type_cancel_audio);
+
+  return g_define_type_id__volatile;
 }
 
 void

@@ -68,9 +68,11 @@ static AgsConnectableInterface *ags_set_muted_parent_connectable_interface;
 GType
 ags_set_muted_get_type()
 {
-  static GType ags_type_set_muted = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_set_muted){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_set_muted = 0;
+
     static const GTypeInfo ags_set_muted_info = {
       sizeof(AgsSetMutedClass),
       NULL, /* base_init */
@@ -87,9 +89,11 @@ ags_set_muted_get_type()
 						"AgsSetMuted",
 						&ags_set_muted_info,
 						0);
+
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_set_muted);
   }
-  
-  return(ags_type_set_muted);
+
+  return g_define_type_id__volatile;
 }
 
 void

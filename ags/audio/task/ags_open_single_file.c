@@ -66,9 +66,11 @@ enum{
 GType
 ags_open_single_file_get_type()
 {
-  static GType ags_type_open_single_file = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_open_single_file){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_open_single_file = 0;
+
     static const GTypeInfo ags_open_single_file_info = {
       sizeof(AgsOpenSingleFileClass),
       NULL, /* base_init */
@@ -85,9 +87,11 @@ ags_open_single_file_get_type()
 						       "AgsOpenSingleFile",
 						       &ags_open_single_file_info,
 						       0);
+
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_open_single_file);
   }
-  
-  return(ags_type_open_single_file);
+
+  return g_define_type_id__volatile;
 }
 
 void

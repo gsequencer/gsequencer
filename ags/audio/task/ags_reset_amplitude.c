@@ -24,10 +24,7 @@
 #include <ags/i18n.h>
 
 void ags_reset_amplitude_class_init(AgsResetAmplitudeClass *reset_amplitude);
-void ags_reset_amplitude_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_reset_amplitude_init(AgsResetAmplitude *reset_amplitude);
-void ags_reset_amplitude_connect(AgsConnectable *connectable);
-void ags_reset_amplitude_disconnect(AgsConnectable *connectable);
 void ags_reset_amplitude_dispose(GObject *gobject);
 void ags_reset_amplitude_finalize(GObject *gobject);
 
@@ -44,7 +41,6 @@ void ags_reset_amplitude_launch(AgsTask *task);
  */
 
 static gpointer ags_reset_amplitude_parent_class = NULL;
-static AgsConnectableInterface *ags_reset_amplitude_parent_connectable_interface;
 
 AgsResetAmplitude *ags_reset_amplitude = NULL;
 static pthread_mutex_t analyse_channel_mutex = PTHREAD_MUTEX_INITIALIZER;
@@ -52,9 +48,11 @@ static pthread_mutex_t analyse_channel_mutex = PTHREAD_MUTEX_INITIALIZER;
 GType
 ags_reset_amplitude_get_type()
 {
-  static GType ags_type_reset_amplitude = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_reset_amplitude){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_reset_amplitude = 0;
+
     static const GTypeInfo ags_reset_amplitude_info = {
       sizeof (AgsResetAmplitudeClass),
       NULL, /* base_init */
@@ -67,23 +65,15 @@ ags_reset_amplitude_get_type()
       (GInstanceInitFunc) ags_reset_amplitude_init,
     };
 
-    static const GInterfaceInfo ags_connectable_interface_info = {
-      (GInterfaceInitFunc) ags_reset_amplitude_connectable_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-
     ags_type_reset_amplitude = g_type_register_static(AGS_TYPE_TASK,
 						      "AgsResetAmplitude",
 						      &ags_reset_amplitude_info,
 						      0);
     
-    g_type_add_interface_static(ags_type_reset_amplitude,
-				AGS_TYPE_CONNECTABLE,
-				&ags_connectable_interface_info);
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_reset_amplitude);
   }
-  
-  return (ags_type_reset_amplitude);
+
+  return g_define_type_id__volatile;
 }
 
 void
@@ -108,36 +98,11 @@ ags_reset_amplitude_class_init(AgsResetAmplitudeClass *reset_amplitude)
 }
 
 void
-ags_reset_amplitude_connectable_interface_init(AgsConnectableInterface *connectable)
-{
-  ags_reset_amplitude_parent_connectable_interface = g_type_interface_peek_parent(connectable);
-
-  connectable->connect = ags_reset_amplitude_connect;
-  connectable->disconnect = ags_reset_amplitude_disconnect;
-}
-
-void
 ags_reset_amplitude_init(AgsResetAmplitude *reset_amplitude)
 {
   AGS_TASK(reset_amplitude)->flags |= AGS_TASK_CYCLIC;
   
   reset_amplitude->analyse_channel = NULL;
-}
-
-void
-ags_reset_amplitude_connect(AgsConnectable *connectable)
-{
-  ags_reset_amplitude_parent_connectable_interface->connect(connectable);
-
-  /* empty */
-}
-
-void
-ags_reset_amplitude_disconnect(AgsConnectable *connectable)
-{
-  ags_reset_amplitude_parent_connectable_interface->disconnect(connectable);
-
-  /* empty */
 }
 
 void

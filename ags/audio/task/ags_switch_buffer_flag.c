@@ -70,9 +70,11 @@ enum{
 GType
 ags_switch_buffer_flag_get_type()
 {
-  static GType ags_type_switch_buffer_flag = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_switch_buffer_flag){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_switch_buffer_flag = 0;
+
     static const GTypeInfo ags_switch_buffer_flag_info = {
       sizeof(AgsSwitchBufferFlagClass),
       NULL, /* base_init */
@@ -89,9 +91,11 @@ ags_switch_buffer_flag_get_type()
 							 "AgsSwitchBufferFlag",
 							 &ags_switch_buffer_flag_info,
 							 0);
+
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_switch_buffer_flag);
   }
-  
-  return(ags_type_switch_buffer_flag);
+
+  return g_define_type_id__volatile;
 }
 
 void

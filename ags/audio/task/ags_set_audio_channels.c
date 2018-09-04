@@ -57,9 +57,11 @@ enum{
 GType
 ags_set_audio_channels_get_type()
 {
-  static GType ags_type_set_audio_channels = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_set_audio_channels){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_set_audio_channels = 0;
+
     static const GTypeInfo ags_set_audio_channels_info = {
       sizeof(AgsSetAudioChannelsClass),
       NULL, /* base_init */
@@ -76,9 +78,11 @@ ags_set_audio_channels_get_type()
 							 "AgsSetAudioChannels",
 							 &ags_set_audio_channels_info,
 							 0);
+
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_set_audio_channels);
   }
-  
-  return(ags_type_set_audio_channels);
+
+  return g_define_type_id__volatile;
 }
 
 void

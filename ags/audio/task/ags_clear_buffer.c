@@ -70,9 +70,11 @@ enum{
 GType
 ags_clear_buffer_get_type()
 {
-  static GType ags_type_clear_buffer = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_clear_buffer){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_clear_buffer = 0;
+
     static const GTypeInfo ags_clear_buffer_info = {
       sizeof(AgsClearBufferClass),
       NULL, /* base_init */
@@ -89,9 +91,11 @@ ags_clear_buffer_get_type()
 						   "AgsClearBuffer",
 						   &ags_clear_buffer_info,
 						   0);
+
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_clear_buffer);
   }
-  
-  return (ags_type_clear_buffer);
+
+  return g_define_type_id__volatile;
 }
 
 void

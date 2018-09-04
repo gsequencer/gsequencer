@@ -63,9 +63,11 @@ enum{
 GType
 ags_cancel_channel_get_type()
 {
-  static GType ags_type_cancel_channel = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_cancel_channel){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_cancel_channel = 0;
+
     static const GTypeInfo ags_cancel_channel_info = {
       sizeof(AgsCancelChannelClass),
       NULL, /* base_init */
@@ -82,9 +84,11 @@ ags_cancel_channel_get_type()
 						     "AgsCancelChannel",
 						     &ags_cancel_channel_info,
 						     0);
+
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_cancel_channel);
   }
-  
-  return(ags_type_cancel_channel);
+
+  return g_define_type_id__volatile;
 }
 
 void

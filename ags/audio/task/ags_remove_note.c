@@ -61,9 +61,11 @@ enum{
 GType
 ags_remove_note_get_type()
 {
-  static GType ags_type_remove_note = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_remove_note){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_remove_note = 0;
+
     static const GTypeInfo ags_remove_note_info = {
       sizeof(AgsRemoveNoteClass),
       NULL, /* base_init */
@@ -80,9 +82,11 @@ ags_remove_note_get_type()
 						  "AgsRemoveNote",
 						  &ags_remove_note_info,
 						  0);
+
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_remove_note);
   }
-  
-  return (ags_type_remove_note);
+
+  return g_define_type_id__volatile;
 }
 
 void

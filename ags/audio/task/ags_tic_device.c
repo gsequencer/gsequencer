@@ -56,9 +56,11 @@ enum{
 GType
 ags_tic_device_get_type()
 {
-  static GType ags_type_tic_device = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_tic_device){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_tic_device = 0;
+
     static const GTypeInfo ags_tic_device_info = {
       sizeof(AgsTicDeviceClass),
       NULL, /* base_init */
@@ -75,9 +77,11 @@ ags_tic_device_get_type()
 						 "AgsTicDevice",
 						 &ags_tic_device_info,
 						 0);
+
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_tic_device);
   }
-  
-  return(ags_type_tic_device);
+
+  return g_define_type_id__volatile;
 }
 
 void
