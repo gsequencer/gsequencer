@@ -56,9 +56,11 @@ static AgsConnectableInterface* ags_input_listing_editor_parent_connectable_inte
 GType
 ags_input_listing_editor_get_type()
 {
-  static GType ags_type_input_listing_editor = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_input_listing_editor){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_input_listing_editor = 0;
+
     static const GTypeInfo ags_input_listing_editor_info = {
       sizeof (AgsInputListingEditorClass),
       NULL, /* base_init */
@@ -95,9 +97,11 @@ ags_input_listing_editor_get_type()
     g_type_add_interface_static(ags_type_input_listing_editor,
 				AGS_TYPE_APPLICABLE,
 				&ags_applicable_interface_info);
+
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_input_listing_editor);
   }
 
-  return(ags_type_input_listing_editor);
+  return g_define_type_id__volatile;
 }
 
 void

@@ -123,9 +123,11 @@ GHashTable *ags_line_indicator_queue_draw = NULL;
 GType
 ags_line_get_type(void)
 {
-  static GType ags_type_line = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_line){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_line = 0;
+
     static const GTypeInfo ags_line_info = {
       sizeof(AgsLineClass),
       NULL, /* base_init */
@@ -161,9 +163,11 @@ ags_line_get_type(void)
     g_type_add_interface_static(ags_type_line,
 				AGS_TYPE_PLUGIN,
 				&ags_plugin_interface_info);
+
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_line);
   }
 
-  return(ags_type_line);
+  return g_define_type_id__volatile;
 }
 
 void

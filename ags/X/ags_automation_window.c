@@ -69,9 +69,11 @@ static gpointer ags_automation_window_parent_class = NULL;
 GType
 ags_automation_window_get_type()
 {
-  static GType ags_type_automation_window = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_automation_window){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_automation_window = 0;
+
     static const GTypeInfo ags_automation_window_info = {
       sizeof (AgsAutomationWindowClass),
       NULL, /* base_init */
@@ -97,9 +99,11 @@ ags_automation_window_get_type()
     g_type_add_interface_static(ags_type_automation_window,
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
+
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_automation_window);
   }
 
-  return(ags_type_automation_window);
+  return g_define_type_id__volatile;
 }
 
 void
