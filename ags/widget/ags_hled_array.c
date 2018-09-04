@@ -37,9 +37,11 @@ static gpointer ags_hled_array_parent_class = NULL;
 GType
 ags_hled_array_get_type(void)
 {
-  static GType ags_type_hled_array = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_hled_array){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_hled_array = 0;
+
     static const GTypeInfo ags_hled_array_info = {
       sizeof(AgsHLedArrayClass),
       NULL, /* base_init */
@@ -56,9 +58,11 @@ ags_hled_array_get_type(void)
 						 "AgsHLedArray\0",
 						 &ags_hled_array_info,
 						 0);
+
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_hled_array);
   }
 
-  return(ags_type_hled_array);
+  return g_define_type_id__volatile;
 }
 
 void

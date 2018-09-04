@@ -134,9 +134,11 @@ static GQuark quark_accessible_object = 0;
 GType
 ags_piano_get_type(void)
 {
-  static GType ags_type_piano = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_piano){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_piano = 0;
+
     static const GTypeInfo ags_piano_info = {
       sizeof(AgsPianoClass),
       NULL, /* base_init */
@@ -152,9 +154,11 @@ ags_piano_get_type(void)
     ags_type_piano = g_type_register_static(GTK_TYPE_WIDGET,
 					    "AgsPiano", &ags_piano_info,
 					    0);
+
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_piano);
   }
 
-  return(ags_type_piano);
+  return g_define_type_id__volatile;
 }
 
 static GType

@@ -35,9 +35,11 @@ void ags_vscale_box_init(AgsVScaleBox *vscale_box);
 GType
 ags_vscale_box_get_type(void)
 {
-  static GType ags_type_vscale_box = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_vscale_box){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_vscale_box = 0;
+
     static const GTypeInfo ags_vscale_box_info = {
       sizeof (AgsVScaleBoxClass),
       NULL, /* base_init */
@@ -53,9 +55,11 @@ ags_vscale_box_get_type(void)
     ags_type_vscale_box = g_type_register_static(AGS_TYPE_SCALE_BOX,
 						 "AgsVScaleBox", &ags_vscale_box_info,
 						 0);
+
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_vscale_box);
   }
-  
-  return(ags_type_vscale_box);
+
+  return g_define_type_id__volatile;
 }
 
 void

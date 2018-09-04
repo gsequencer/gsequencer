@@ -58,9 +58,11 @@ static gpointer ags_indicator_parent_class = NULL;
 GType
 ags_indicator_get_type(void)
 {
-  static GType ags_type_indicator = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_indicator){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_indicator = 0;
+
     static const GTypeInfo ags_indicator_info = {
       sizeof(AgsIndicatorClass),
       NULL, /* base_init */
@@ -74,11 +76,13 @@ ags_indicator_get_type(void)
     };
 
     ags_type_indicator = g_type_register_static(GTK_TYPE_WIDGET,
-						"AgsIndicator\0", &ags_indicator_info,
+						"AgsIndicator", &ags_indicator_info,
 						0);
+
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_indicator);
   }
 
-  return(ags_type_indicator);
+  return g_define_type_id__volatile;
 }
 
 void
