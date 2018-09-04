@@ -5,5 +5,7 @@ Terminal=false
 Exec=gsequencer
 Icon=@datadir@/gsequencer/icons/ags.png
 Name=Advanced Gtk+ Sequencer
+GenericName=Sequencer
+Comment=Create effect processing tree and play audio by defined patterns or notes
 Categories=AudioVideo;Audio;Sequencer;
 Keywords=audio;sequencer;notation;editor;midi;synth;mixing;effects;

@@ -185,9 +185,11 @@ struct itimerspec its;
 GType
 ags_xorg_application_context_get_type()
 {
-  static GType ags_type_xorg_application_context = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_xorg_application_context){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_xorg_application_context = 0;
+
     static const GTypeInfo ags_xorg_application_context_info = {
       sizeof (AgsXorgApplicationContextClass),
       NULL, /* base_init */
@@ -244,9 +246,11 @@ ags_xorg_application_context_get_type()
     g_type_add_interface_static(ags_type_xorg_application_context,
 				AGS_TYPE_UI_PROVIDER,
 				&ags_ui_provider_interface_info);
+
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_xorg_application_context);
   }
 
-  return (ags_type_xorg_application_context);
+  return g_define_type_id__volatile;
 }
 
 #ifndef AGS_USE_TIMER

@@ -64,9 +64,11 @@ static gpointer ags_pattern_envelope_parent_class = NULL;
 GType
 ags_pattern_envelope_get_type(void)
 {
-  static GType ags_type_pattern_envelope = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_pattern_envelope){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_pattern_envelope = 0;
+
     static const GTypeInfo ags_pattern_envelope_info = {
       sizeof (AgsPatternEnvelopeClass),
       NULL, /* base_init */
@@ -102,9 +104,11 @@ ags_pattern_envelope_get_type(void)
     g_type_add_interface_static(ags_type_pattern_envelope,
 				AGS_TYPE_APPLICABLE,
 				&ags_applicable_interface_info);
+
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_pattern_envelope);
   }
-  
-  return(ags_type_pattern_envelope);
+
+  return g_define_type_id__volatile;
 }
 
 void
