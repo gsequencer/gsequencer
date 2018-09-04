@@ -338,14 +338,14 @@ ags_audiorec_connect(AgsConnectable *connectable)
 		   G_CALLBACK(ags_audiorec_open_callback), audiorec);
 
   /* mode */
-  g_signal_connect(audiorec->keep_data, "clicked",
-		   G_CALLBACK(ags_audiorec_keep_data_callback), audiorec);
+  g_signal_connect_after(audiorec->keep_data, "clicked",
+			 G_CALLBACK(ags_audiorec_keep_data_callback), audiorec);
 
-  g_signal_connect(audiorec->mix_data, "clicked",
-		   G_CALLBACK(ags_audiorec_mix_data_callback), audiorec);
+  g_signal_connect_after(audiorec->mix_data, "clicked",
+			 G_CALLBACK(ags_audiorec_mix_data_callback), audiorec);
 
-  g_signal_connect(audiorec->replace_data, "clicked",
-		   G_CALLBACK(ags_audiorec_replace_data_callback), audiorec);
+  g_signal_connect_after(audiorec->replace_data, "clicked",
+			 G_CALLBACK(ags_audiorec_replace_data_callback), audiorec);
 }
 
 void

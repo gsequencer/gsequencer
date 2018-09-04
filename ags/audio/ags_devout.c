@@ -3877,7 +3877,7 @@ ags_devout_alsa_free(AgsSoundcard *soundcard)
   pthread_mutex_unlock(devout_mutex);
   
 #ifdef AGS_WITH_ALSA
-  snd_pcm_drain(devout->out.alsa.handle);
+  //  snd_pcm_drain(devout->out.alsa.handle);
   snd_pcm_close(devout->out.alsa.handle);
   devout->out.alsa.handle = NULL;
 #endif
