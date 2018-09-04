@@ -80,9 +80,11 @@ static guint returnable_thread_signals[LAST_SIGNAL];
 GType
 ags_returnable_thread_get_type()
 {
-  static GType ags_type_returnable_thread = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_returnable_thread){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_returnable_thread = 0;
+
     static const GTypeInfo ags_returnable_thread_info = {
       sizeof (AgsReturnableThreadClass),
       NULL, /* base_init */
@@ -99,9 +101,11 @@ ags_returnable_thread_get_type()
 							"AgsReturnableThread",
 							&ags_returnable_thread_info,
 							0);
+
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_returnable_thread);
   }
 
-  return (ags_type_returnable_thread);
+  return g_define_type_id__volatile;
 }
 
 void

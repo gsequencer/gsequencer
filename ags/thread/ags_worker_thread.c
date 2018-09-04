@@ -51,9 +51,11 @@ static guint worker_thread_signals[LAST_SIGNAL];
 GType
 ags_worker_thread_get_type()
 {
-  static GType ags_type_worker_thread = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_worker_thread){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_worker_thread = 0;
+
     static const GTypeInfo ags_worker_thread_info = {
       sizeof (AgsWorkerThreadClass),
       NULL, /* base_init */
@@ -70,9 +72,11 @@ ags_worker_thread_get_type()
 						    "AgsWorkerThread",
 						    &ags_worker_thread_info,
 						    0);    
+
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_worker_thread);
   }
-  
-  return (ags_type_worker_thread);
+
+  return g_define_type_id__volatile;
 }
 
 void

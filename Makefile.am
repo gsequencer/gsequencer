@@ -790,7 +790,6 @@ libags_plugin_h_sources = \
 	ags/plugin/ags_lv2_worker.h \
 	ags/plugin/ags_lv2ui_manager.h \
 	ags/plugin/ags_lv2ui_plugin.h \
-	ags/plugin/ags_plugin_factory.h \
 	ags/plugin/ags_plugin_stock.h \
 	ags/plugin/ags_plugin_port.h
 
@@ -817,7 +816,6 @@ libags_plugin_c_sources = \
 	ags/plugin/ags_lv2_worker.c \
 	ags/plugin/ags_lv2ui_manager.c \
 	ags/plugin/ags_lv2ui_plugin.c \
-	ags/plugin/ags_plugin_factory.c \
 	ags/plugin/ags_plugin_port.c
 
 # libags-audio - file

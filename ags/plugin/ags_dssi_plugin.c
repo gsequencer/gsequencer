@@ -92,9 +92,11 @@ static guint dssi_plugin_signals[LAST_SIGNAL];
 GType
 ags_dssi_plugin_get_type (void)
 {
-  static GType ags_type_dssi_plugin = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_dssi_plugin){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_dssi_plugin = 0;
+
     static const GTypeInfo ags_dssi_plugin_info = {
       sizeof (AgsDssiPluginClass),
       NULL, /* dssi_init */
@@ -111,9 +113,11 @@ ags_dssi_plugin_get_type (void)
 						  "AgsDssiPlugin",
 						  &ags_dssi_plugin_info,
 						  0);
+
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_dssi_plugin);
   }
 
-  return (ags_type_dssi_plugin);
+  return g_define_type_id__volatile;
 }
 
 void

@@ -64,9 +64,11 @@ static gpointer ags_autosave_thread_parent_class = NULL;
 GType
 ags_autosave_thread_get_type()
 {
-  static GType ags_type_autosave_thread = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_autosave_thread){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_autosave_thread = 0;
+
     static const GTypeInfo ags_autosave_thread_info = {
       sizeof (AgsAutosaveThreadClass),
       NULL, /* base_init */
@@ -83,9 +85,11 @@ ags_autosave_thread_get_type()
 						      "AgsAutosaveThread",
 						      &ags_autosave_thread_info,
 						      0);
+
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_autosave_thread);
   }
-  
-  return (ags_type_autosave_thread);
+
+  return g_define_type_id__volatile;
 }
 
 void

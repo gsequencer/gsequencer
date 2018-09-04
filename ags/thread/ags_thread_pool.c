@@ -72,9 +72,11 @@ static guint thread_pool_signals[LAST_SIGNAL];
 GType
 ags_thread_pool_get_type()
 {
-  static GType ags_type_thread_pool = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_thread_pool){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_thread_pool = 0;
+
     static const GTypeInfo ags_thread_pool_info = {
       sizeof (AgsThreadPoolClass),
       NULL, /* base_init */
@@ -91,9 +93,11 @@ ags_thread_pool_get_type()
 						  "AgsThreadPool",
 						  &ags_thread_pool_info,
 						  0);
+
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_thread_pool);
   }
 
-  return (ags_type_thread_pool);
+  return g_define_type_id__volatile;
 }
 
 void

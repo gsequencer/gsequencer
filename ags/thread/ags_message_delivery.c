@@ -44,9 +44,11 @@ static pthread_mutex_t ags_message_delivery_class_mutex = PTHREAD_MUTEX_INITIALI
 GType
 ags_message_delivery_get_type()
 {
-  static GType ags_type_message_delivery = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_message_delivery){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_message_delivery = 0;
+
     static const GTypeInfo ags_message_delivery_info = {
       sizeof (AgsMessageDeliveryClass),
       NULL, /* base_init */
@@ -63,9 +65,11 @@ ags_message_delivery_get_type()
 						       "AgsMessageDelivery",
 						       &ags_message_delivery_info,
 						       0);    
+
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_message_delivery);
   }
-  
-  return(ags_type_message_delivery);
+
+  return g_define_type_id__volatile;
 }
 
 void

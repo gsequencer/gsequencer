@@ -48,9 +48,11 @@ static gpointer ags_destroy_worker_parent_class = NULL;
 GType
 ags_destroy_worker_get_type()
 {
-  static GType ags_type_destroy_worker = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_destroy_worker){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_destroy_worker = 0;
+
     static const GTypeInfo ags_destroy_worker_info = {
       sizeof (AgsDestroyWorkerClass),
       NULL, /* base_init */
@@ -67,9 +69,11 @@ ags_destroy_worker_get_type()
 						     "AgsDestroyWorker",
 						     &ags_destroy_worker_info,
 						     0);    
+
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_destroy_worker);
   }
-  
-  return (ags_type_destroy_worker);
+
+  return g_define_type_id__volatile;
 }
 
 void

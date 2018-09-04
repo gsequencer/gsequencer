@@ -27,7 +27,6 @@
 #include <ags/plugin/ags_ladspa_conversion.h>
 #include <ags/plugin/ags_ladspa_manager.h>
 #include <ags/plugin/ags_ladspa_plugin.h>
-#include <ags/plugin/ags_plugin_factory.h>
 #include <ags/plugin/ags_lv2_conversion.h>
 #include <ags/plugin/ags_lv2_manager.h>
 #include <ags/plugin/ags_lv2_plugin.h>

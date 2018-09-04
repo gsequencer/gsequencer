@@ -44,9 +44,11 @@ pthread_mutex_t *ags_application_mutex = NULL;
 GType
 ags_mutex_manager_get_type()
 {
-  static GType ags_type_mutex_manager = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_mutex_manager){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_mutex_manager = 0;
+
     const GTypeInfo ags_mutex_manager_info = {
       sizeof (AgsMutexManagerClass),
       NULL, /* base_init */
@@ -63,9 +65,11 @@ ags_mutex_manager_get_type()
 						    "AgsMutexManager",
 						    &ags_mutex_manager_info,
 						    0);
+
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_mutex_manager);
   }
-  
-  return(ags_type_mutex_manager);
+
+  return g_define_type_id__volatile;
 }
 
 void

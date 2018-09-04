@@ -84,9 +84,11 @@ static pthread_mutex_t ags_base_plugin_class_mutex = PTHREAD_MUTEX_INITIALIZER;
 GType
 ags_base_plugin_get_type (void)
 {
-  static GType ags_type_base_plugin = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_base_plugin){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_base_plugin = 0;
+
     static const GTypeInfo ags_base_plugin_info = {
       sizeof(AgsBasePluginClass),
       NULL, /* base_init */
@@ -103,9 +105,11 @@ ags_base_plugin_get_type (void)
 						  "AgsBasePlugin",
 						  &ags_base_plugin_info,
 						  0);
+
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_base_plugin);
   }
 
-  return (ags_type_base_plugin);
+  return g_define_type_id__volatile;
 }
 
 void

@@ -48,9 +48,11 @@ AgsLv2UridManager *ags_lv2_urid_manager = NULL;
 GType
 ags_lv2_urid_manager_get_type()
 {
-  static GType ags_type_lv2_urid_manager = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_lv2_urid_manager){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_lv2_urid_manager = 0;
+
     const GTypeInfo ags_lv2_urid_manager_info = {
       sizeof (AgsLv2UridManagerClass),
       NULL, /* base_init */
@@ -67,9 +69,11 @@ ags_lv2_urid_manager_get_type()
 						       "AgsLv2UridManager",
 						       &ags_lv2_urid_manager_info,
 						       0);
+
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_lv2_urid_manager);
   }
-  
-  return(ags_type_lv2_urid_manager);
+
+  return g_define_type_id__volatile;
 }
 
 void

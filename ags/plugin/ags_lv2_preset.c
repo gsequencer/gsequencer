@@ -65,9 +65,11 @@ static pthread_mutex_t ags_lv2_preset_class_mutex = PTHREAD_MUTEX_INITIALIZER;
 GType
 ags_lv2_preset_get_type()
 {
-  static GType ags_type_lv2_preset = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_lv2_preset){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_lv2_preset = 0;
+
     static const GTypeInfo ags_lv2_preset_info = {
       sizeof (AgsLv2PresetClass),
       NULL, /* base_init */
@@ -84,9 +86,11 @@ ags_lv2_preset_get_type()
 						 "AgsLv2Preset",
 						 &ags_lv2_preset_info,
 						 0);    
+
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_lv2_preset);
   }
-  
-  return (ags_type_lv2_preset);
+
+  return g_define_type_id__volatile;
 }
 
 void

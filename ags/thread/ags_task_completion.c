@@ -82,9 +82,11 @@ static pthread_mutex_t ags_task_completion_class_mutex = PTHREAD_MUTEX_INITIALIZ
 GType
 ags_task_completion_get_type()
 {
-  static GType ags_type_task_completion = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_task_completion){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_task_completion = 0;
+
     static const GTypeInfo ags_task_completion_info = {
       sizeof (AgsTaskCompletionClass),
       NULL, /* base_init */
@@ -111,9 +113,11 @@ ags_task_completion_get_type()
     g_type_add_interface_static(ags_type_task_completion,
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
+
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_task_completion);
   }
-  
-  return (ags_type_task_completion);
+
+  return g_define_type_id__volatile;
 }
 
 void

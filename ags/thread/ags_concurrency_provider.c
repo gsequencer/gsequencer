@@ -36,17 +36,21 @@ void ags_concurrency_provider_class_init(AgsConcurrencyProviderInterface *interf
 GType
 ags_concurrency_provider_get_type()
 {
-  static GType ags_type_concurrency_provider = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_concurrency_provider){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_concurrency_provider = 0;
+
     ags_type_concurrency_provider = g_type_register_static_simple(G_TYPE_INTERFACE,
 								  "AgsConcurrencyProvider",
 								  sizeof(AgsConcurrencyProviderInterface),
 								  (GClassInitFunc) ags_concurrency_provider_class_init,
 								  0, NULL, 0);
+
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_concurrency_provider);
   }
 
-  return(ags_type_concurrency_provider);
+  return g_define_type_id__volatile;
 }
 
 void
