@@ -1,6 +1,7 @@
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
 "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
 
+<!-- Copyright (C) 2005-2018 Jo\u00EBl Kr\u00E4hemann -->
 <!-- Copying and distribution of this file, with or without modification, -->
 <!-- are permitted in any medium without royalty provided the copyright -->
 <!-- notice and this notice are preserved.  This file is offered as-is, -->
@@ -16,7 +17,7 @@
     </copyright>
     <legalnotice>
       <para>
-	This manual page is part of GSequencer. License GPLv3+: GNU GPL version 3 or later &lt;http://gnu.org/licenses/gpl.html&gt;.
+	This manual page is part of GSequencer. License GPLv3+: GNU GPL version 3 or (at your option) any later &lt;http://gnu.org/licenses/gpl.html&gt;.
       </para>
       <para>
 	This is free software: you are free to change and redistribute it.  There is NO WARRANTY, to the extent permitted by law.
