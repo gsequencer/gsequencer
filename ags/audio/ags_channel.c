@@ -261,6 +261,7 @@ void
 ags_channel_class_init(AgsChannelClass *channel)
 {
   GObjectClass *gobject;
+
   GParamSpec *param_spec;
 
   ags_channel_parent_class = g_type_class_peek_parent(channel);
@@ -285,7 +286,7 @@ ags_channel_class_init(AgsChannelClass *channel)
   param_spec = g_param_spec_object("audio",
 				   i18n_pspec("assigned audio"),
 				   i18n_pspec("The audio it is assigned with"),
-				   G_TYPE_OBJECT,
+				   AGS_TYPE_AUDIO,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_AUDIO,

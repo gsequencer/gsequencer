@@ -26,6 +26,8 @@
 #include <ags/thread/ags_concurrency_provider.h>
 #include <ags/thread/ags_returnable_thread.h>
 
+#include <ags/i18n.h>
+
 #include <sys/types.h>
 
 #include <math.h>
@@ -33,6 +35,14 @@
 void ags_task_thread_class_init(AgsTaskThreadClass *task_thread);
 void ags_task_thread_async_queue_interface_init(AgsAsyncQueueInterface *async_queue);
 void ags_task_thread_init(AgsTaskThread *task_thread);
+void ags_task_thread_set_property(GObject *gobject,
+				  guint prop_id,
+				  const GValue *value,
+				  GParamSpec *param_spec);
+void ags_task_thread_get_property(GObject *gobject,
+				  guint prop_id,
+				  GValue *value,
+				  GParamSpec *param_spec);
 void ags_task_thread_finalize(GObject *gobject);
 
 void ags_task_thread_set_run_mutex(AgsAsyncQueue *async_queue, pthread_mutex_t *run_mutex);
@@ -65,6 +75,11 @@ void ags_task_thread_append_tasks_queue(AgsReturnableThread *returnable_thread, 
 enum{
   CLEAR_CACHE,
   LAST_SIGNAL,
+};
+
+enum{
+  PROP_0,
+  PROP_THREAD_POOL,
 };
 
 static gpointer ags_task_thread_parent_class = NULL;
@@ -117,12 +132,34 @@ ags_task_thread_class_init(AgsTaskThreadClass *task_thread)
   GObjectClass *gobject;
   AgsThreadClass *thread;
 
+  GParamSpec *param_spec;
+
   ags_task_thread_parent_class = g_type_class_peek_parent(task_thread);
 
   /* GObject */
   gobject = (GObjectClass *) task_thread;
 
+  gobject->set_property = ags_task_thread_set_property;
+  gobject->get_property = ags_task_thread_get_property;
+
   gobject->finalize = ags_task_thread_finalize;
+
+  /* properties */
+  /**
+   * AgsTaskThread:thread-pool:
+   *
+   * The assigned #AgsThreadPool to do non-blocking calls.
+   * 
+   * Since: 2.0.0
+   */
+  param_spec = g_param_spec_object("thread-pool",
+				   i18n_pspec("assigned thread_pool"),
+				   i18n_pspec("The thread pool it is assigned with"),
+				   AGS_TYPE_THREAD_POOL,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_THREAD_POOL,
+				  param_spec);
 
   /* AgsThread */
   thread = (AgsThreadClass *) task_thread;
@@ -292,6 +329,94 @@ ags_task_thread_init(AgsTaskThread *task_thread)
   /* thread pool */
   task_thread->thread_pool = ags_thread_pool_new((AgsThread *) task_thread);
   task_thread->thread_pool->parent = (AgsThread *) task_thread;
+}
+
+void
+ags_task_thread_set_property(GObject *gobject,
+			 guint prop_id,
+			 const GValue *value,
+			 GParamSpec *param_spec)
+{
+  AgsTaskThread *task_thread;
+  
+  pthread_mutex_t *thread_mutex;
+
+  task_thread = AGS_TASK_THREAD(gobject);
+
+  /* get task_thread mutex */
+  pthread_mutex_lock(ags_thread_get_class_mutex());
+  
+  thread_mutex = AGS_THREAD(task_thread)->obj_mutex;
+  
+  pthread_mutex_unlock(ags_thread_get_class_mutex());
+
+  switch(prop_id){
+  case PROP_THREAD_POOL:
+    {
+      AgsThreadPool *thread_pool;
+
+      thread_pool = (AgsThreadPool *) g_value_get_object(value);
+
+      pthread_mutex_lock(thread_mutex);
+
+      if((AgsThreadPool *) task_thread->thread_pool == thread_pool){
+	pthread_mutex_unlock(thread_mutex);
+	
+	return;
+      }
+
+      if(task_thread->thread_pool != NULL){
+	g_object_unref(G_OBJECT(task_thread->thread_pool));
+      }
+
+      if(thread_pool != NULL){
+	g_object_ref(G_OBJECT(thread_pool));
+      }
+
+      task_thread->thread_pool = (GObject *) thread_pool;
+
+      pthread_mutex_unlock(thread_mutex);
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
+}
+
+void
+ags_task_thread_get_property(GObject *gobject,
+			 guint prop_id,
+			 GValue *value,
+			 GParamSpec *param_spec)
+{
+  AgsTaskThread *task_thread;
+
+  pthread_mutex_t *thread_mutex;
+
+  task_thread = AGS_TASK_THREAD(gobject);
+
+  /* get task_thread mutex */
+  pthread_mutex_lock(ags_thread_get_class_mutex());
+  
+  thread_mutex = AGS_THREAD(task_thread)->obj_mutex;
+  
+  pthread_mutex_unlock(ags_thread_get_class_mutex());
+
+  switch(prop_id){
+  case PROP_THREAD_POOL:
+    {
+      pthread_mutex_lock(thread_mutex);
+
+      g_value_set_object(value, task_thread->thread_pool);
+
+      pthread_mutex_unlock(thread_mutex);
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
 }
 
 void

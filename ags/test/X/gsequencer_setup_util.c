@@ -712,7 +712,6 @@ ags_test_start_animation_thread(void *ptr)
 void
 ags_test_launch(gboolean single_thread)
 {
-  AgsMutexManager *mutex_manager;
   AgsThread *audio_loop, *polling_thread, *gui_thread, *task_thread;
   AgsThreadPool *thread_pool;
 
@@ -720,21 +719,15 @@ ags_test_launch(gboolean single_thread)
 
   GList *start_queue;  
 
-  pthread_mutex_t *application_mutex;
+  g_object_get(ags_application_context,
+	       "config", &config,
+	       "main-loop", &audio_loop,
+	       "task-thread", &task_thread,
+	       NULL);
 
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-    
-  /* get threads, thread pool and config */
-  pthread_mutex_lock(application_mutex);
-  
-  audio_loop = (AgsThread *) ags_application_context->main_loop;
-  task_thread = (AgsThread *) ags_application_context->task_thread;
-  thread_pool = AGS_TASK_THREAD(task_thread)->thread_pool;
-
-  config = ags_application_context->config;
-  
-  pthread_mutex_unlock(application_mutex);
+  g_object_get(task_thread,
+	       "thread-pool", &thread_pool,
+	       NULL);
   
   polling_thread = ags_thread_find_type(audio_loop,
 					AGS_TYPE_POLLING_THREAD);
@@ -855,29 +848,23 @@ void
 ags_test_launch_filename(gchar *filename,
 			 gboolean single_thread)
 {
-  AgsMutexManager *mutex_manager;
   AgsThread *audio_loop, *polling_thread, *gui_thread, *task_thread;
   AgsThreadPool *thread_pool;
 
   AgsConfig *config;
 
   GList *start_queue;  
-
-  pthread_mutex_t *application_mutex;
-
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
     
   /* get threads, thread pool and config */
-  pthread_mutex_lock(application_mutex);
+  g_object_get(ags_application_context,
+	       "config", &config,
+	       "main-loop", &audio_loop,
+	       "task-thread", &task_thread,
+	       NULL);
 
-  audio_loop = (AgsThread *) ags_application_context->main_loop;
-  task_thread =(AgsThread *)  ags_application_context->task_thread;
-  thread_pool = AGS_TASK_THREAD(task_thread)->thread_pool;
-
-  config = ags_application_context->config;
-  
-  pthread_mutex_unlock(application_mutex);
+  g_object_get(task_thread,
+	       "thread-pool", &thread_pool,
+	       NULL);
 
   polling_thread = ags_thread_find_type(audio_loop,
 					AGS_TYPE_POLLING_THREAD);

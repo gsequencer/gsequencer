@@ -50,8 +50,6 @@ pthread_t *ags_functional_test_util_thread = NULL;
 
 extern AgsApplicationContext *ags_application_context;
 
-extern AgsMutexManager *ags_mutex_manager;
-
 extern AgsLadspaManager *ags_ladspa_manager;
 extern AgsDssiManager *ags_dssi_manager;
 extern AgsLv2Manager *ags_lv2_manager;

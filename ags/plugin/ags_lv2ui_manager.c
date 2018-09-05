@@ -536,6 +536,13 @@ ags_lv2ui_manager_find_lv2ui_plugin_with_index(AgsLv2uiManager *lv2ui_manager,
   while(list != NULL){
     lv2ui_plugin = AGS_LV2UI_PLUGIN(list->data);
     
+    /* get base plugin mutex */
+    pthread_mutex_lock(ags_base_plugin_get_class_mutex());
+  
+    base_plugin_mutex = AGS_BASE_PLUGIN(lv2ui_plugin)->obj_mutex;
+    
+    pthread_mutex_unlock(ags_base_plugin_get_class_mutex());
+
     /* check filename and ui effect index */
     pthread_mutex_lock(base_plugin_mutex);
 

@@ -71,6 +71,7 @@ void ags_functional_audio_test_playback();
   "auto-sense=true\n"					\
   "\n"
 
+extern AgsApplicationContext *ags_application_context;
 AgsAudioApplicationContext *audio_application_context;
 
 /* The suite initialization function.
@@ -86,7 +87,9 @@ ags_functional_audio_test_init_suite()
   ags_config_load_from_data(config,
 			    AGS_FUNCTIONAL_AUDIO_TEST_CONFIG,
 			    strlen(AGS_FUNCTIONAL_AUDIO_TEST_CONFIG));
-  audio_application_context = ags_audio_application_context_get_instance();
+  audio_application_context = 
+    ags_application_context = (AgsApplicationContext *) ags_audio_application_context_new();
+  g_object_ref(audio_application_context);
   
   return(0);
 }
