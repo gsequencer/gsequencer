@@ -19,9 +19,7 @@ ags_scale_get_type
 ags_scrolled_level_box_get_type
 ags_scrolled_piano_get_type
 ags_scrolled_scale_box_get_type
-ags_table_get_type
 ags_vindicator_get_type
 ags_vled_array_get_type
 ags_vlevel_box_get_type
 ags_vscale_box_get_type
-ags_waveform_get_type

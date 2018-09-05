@@ -31,9 +31,9 @@
 
 #include <ags/X/ags_machine.h>
 
-#include <ags/X/sheet/ags_notation_toolbar.h>
-#include <ags/X/sheet/ags_machine_selector.h>
-#include <ags/X/sheet/ags_notation_page.h>
+#include <ags/X/editor/ags_notation_toolbar.h>
+#include <ags/X/editor/ags_machine_selector.h>
+//#include <ags/X/editor/ags_notation_page.h>
 
 #define AGS_TYPE_NOTATION_SHEET                (ags_notation_sheet_get_type ())
 #define AGS_NOTATION_SHEET(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_NOTATION_SHEET, AgsNotationSheet))
@@ -75,7 +75,7 @@ struct _AgsNotationSheet
   
   GtkHPaned *paned;
 
-  AgsToolbar *notation_toolbar;
+  AgsNotationToolbar *notation_toolbar;
   
   AgsMachineSelector *machine_selector;
   AgsMachine *selected_machine;
@@ -84,7 +84,7 @@ struct _AgsNotationSheet
 
   AgsScrolledPiano *scrolled_piano;
   
-  AgsNotationPage *notation_page;
+  //  AgsNotationPage *notation_page;
 };
 
 struct _AgsNotationSheetClass

@@ -1362,6 +1362,7 @@ libgsequencer_h_sources = \
 	ags/X/ags_navigation.h \
 	ags/X/ags_notation_editor_callbacks.h \
 	ags/X/ags_notation_editor.h \
+	ags/X/ags_notation_sheet.h \
 	ags/X/ags_output_collection_editor_callbacks.h \
 	ags/X/ags_output_collection_editor.h \
 	ags/X/ags_output_editor_callbacks.h \
@@ -1475,6 +1476,7 @@ libgsequencer_c_sources = \
 	ags/X/ags_navigation_callbacks.c \
 	ags/X/ags_notation_editor.c \
 	ags/X/ags_notation_editor_callbacks.c \
+	ags/X/ags_notation_sheet.c \
 	ags/X/ags_output_collection_editor_callbacks.c \
 	ags/X/ags_output_collection_editor.c \
 	ags/X/ags_output_editor_callbacks.c \
@@ -2022,6 +2024,42 @@ clean-local:
 	rm -f $(top_builddir)/docs/reference/libags-gui/Makefile
 	rm -f $(top_builddir)/docs/reference/libgsequencer/Makefile
 	rm -f $(top_builddir)/functional-system-tests.mk
+	rm -f docs/reference/libags-audio/libags_audio-decl-list.txt
+	rm -f docs/reference/libags-audio/libags_audio-decl.txt
+	rm -f docs/reference/libags-audio/libags_audio-undeclared.txt
+	rm -f docs/reference/libags-audio/libags_audio-undocumented.txt
+	rm -f docs/reference/libags-audio/libags_audio-unused.txt
+	rm -f docs/reference/libags-audio/libags_audio.args
+	rm -f docs/reference/libags-audio/libags_audio.hierarchy
+	rm -f docs/reference/libags-audio/libags_audio.prerequisites
+	rm -f docs/reference/libags-audio/libags_audio.signals
+	rm -f docs/reference/libags-gui/libags_gui-decl-list.txt
+	rm -f docs/reference/libags-gui/libags_gui-decl.txt
+	rm -f docs/reference/libags-gui/libags_gui-undeclared.txt
+	rm -f docs/reference/libags-gui/libags_gui-undocumented.txt
+	rm -f docs/reference/libags-gui/libags_gui-unused.txt
+	rm -f docs/reference/libags-gui/libags_gui.args
+	rm -f docs/reference/libags-gui/libags_gui.hierarchy
+	rm -f docs/reference/libags-gui/libags_gui.prerequisites
+	rm -f docs/reference/libags-gui/libags_gui.signals
+	rm -f docs/reference/libags/libags-decl-list.txt
+	rm -f docs/reference/libags/libags-decl.txt
+	rm -f docs/reference/libags/libags-undeclared.txt
+	rm -f docs/reference/libags/libags-undocumented.txt
+	rm -f docs/reference/libags/libags-unused.txt
+	rm -f docs/reference/libags/libags.args
+	rm -f docs/reference/libags/libags.hierarchy
+	rm -f docs/reference/libags/libags.prerequisites
+	rm -f docs/reference/libags/libags.signals
+	rm -f docs/reference/libgsequencer/libgsequencer-decl-list.txt
+	rm -f docs/reference/libgsequencer/libgsequencer-decl.txt
+	rm -f docs/reference/libgsequencer/libgsequencer-undeclared.txt
+	rm -f docs/reference/libgsequencer/libgsequencer-undocumented.txt
+	rm -f docs/reference/libgsequencer/libgsequencer-unused.txt
+	rm -f docs/reference/libgsequencer/libgsequencer.args
+	rm -f docs/reference/libgsequencer/libgsequencer.hierarchy
+	rm -f docs/reference/libgsequencer/libgsequencer.prerequisites
+	rm -f docs/reference/libgsequencer/libgsequencer.signals
 
 gen-symbols-ags:
 	rm -f libags.sym

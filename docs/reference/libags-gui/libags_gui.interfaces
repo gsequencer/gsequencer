@@ -15,7 +15,6 @@ AgsScrolledPiano AtkImplementorIface GtkBuildable
 AgsScrolledScaleBox AtkImplementorIface GtkBuildable
 GtkTable AtkImplementorIface GtkBuildable
 AgsExpanderSet AtkImplementorIface GtkBuildable
-AgsTable AtkImplementorIface GtkBuildable
 GtkBox AtkImplementorIface GtkBuildable GtkOrientable
 AgsLevelBox AtkImplementorIface GtkBuildable GtkOrientable
 AgsHLevelBox AtkImplementorIface GtkBuildable GtkOrientable
@@ -32,4 +31,3 @@ AgsLevel AtkImplementorIface GtkBuildable
 AgsPiano AtkImplementorIface GtkBuildable
 AgsRuler AtkImplementorIface GtkBuildable
 AgsScale AtkImplementorIface GtkBuildable
-AgsWaveform AtkImplementorIface GtkBuildable
