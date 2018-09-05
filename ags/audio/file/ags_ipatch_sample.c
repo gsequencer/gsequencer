@@ -335,6 +335,8 @@ ags_ipatch_sample_get_property(GObject *gobject,
 {
   AgsIpatchSample *ipatch_sample;
 
+  ipatch_sample = (AgsIpatchSample *) gobject;
+  
   switch(prop_id){
   case PROP_BUFFER_SIZE:
     {

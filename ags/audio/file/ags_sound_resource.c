@@ -508,7 +508,7 @@ ags_sound_resource_read_audio_signal(AgsSoundResource *sound_resource,
 				buffer_size, format);
 
 	target_data = ags_audio_buffer_util_resample(data, 1,
-						     format, samplerate,
+						     ags_audio_buffer_util_format_from_soundcard(format), samplerate,
 						     buffer_size,
 						     target_samplerate);
 
@@ -704,7 +704,7 @@ ags_sound_resource_read_wave(AgsSoundResource *sound_resource,
 					   buffer_size, format);
 
 	target_data = ags_audio_buffer_util_resample(data, 1,
-						     format, samplerate,
+						     ags_audio_buffer_util_format_from_soundcard(format), samplerate,
 						     buffer_size,
 						     target_samplerate);
 

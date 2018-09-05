@@ -14,6 +14,11 @@
 
 @SET_MAKE@
 
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.
+
 
 
 
@@ -2401,8 +2406,8 @@ EXTRA_DIST = config.rpath COPYING.server COPYING.docs COPYING.stk-4.3 \
 	docs/reference/libags-gui/README docs/reference/libags/README \
 	docs/reference/libgsequencer/README \
 	gsequencer.share/icons/README gsequencer.share/images/README \
-	m4/README po/README functional-system-tests.mk.am \
-	functional-system-tests.mk.in \
+	gsequencer.share/styles/README m4/README po/README \
+	functional-system-tests.mk.am functional-system-tests.mk.in \
 	docs/reference/libags/libags-sections.txt \
 	docs/reference/libags/libags.types \
 	docs/reference/libags/libags.interfaces \

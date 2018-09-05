@@ -94,13 +94,13 @@ ags_functional_machine_add_and_destroy_test_add_test()
      (CU_add_test(pSuite, "functional test of GSequencer machine add and destroy AgsEqualizer10", ags_functional_machine_add_and_destroy_test_equalizer10) == NULL) ||
      (CU_add_test(pSuite, "functional test of GSequencer machine add and destroy AgsDrum", ags_functional_machine_add_and_destroy_test_drum) == NULL) ||
      (CU_add_test(pSuite, "functional test of GSequencer machine add and destroy AgsMatrix", ags_functional_machine_add_and_destroy_test_matrix) == NULL) ||
-     (CU_add_test(pSuite, "functional test of GSequencer machine add and destroy AgsSynth", ags_functional_machine_add_and_destroy_test_synth) == NULL)
+     (CU_add_test(pSuite, "functional test of GSequencer machine add and destroy AgsSynth", ags_functional_machine_add_and_destroy_test_synth) == NULL) ||
      (CU_add_test(pSuite, "functional test of GSequencer machine add and destroy AgsSyncsynth", ags_functional_machine_add_and_destroy_test_syncsynth) == NULL)
 #ifdef AGS_WITH_LIBINSTPATCH
      ||
      (CU_add_test(pSuite, "functional test of GSequencer machine add and destroy AgsFFPlayer", ags_functional_machine_add_and_destroy_test_ffplayer) == NULL)
 #endif
-     (CU_add_test(pSuite, "functional test of GSequencer machine add and destroy Audiorec", ags_functional_machine_add_and_destroy_test_audiorec) == NULL)
+     || (CU_add_test(pSuite, "functional test of GSequencer machine add and destroy Audiorec", ags_functional_machine_add_and_destroy_test_audiorec) == NULL)
      ){
     
     CU_cleanup_registry();
