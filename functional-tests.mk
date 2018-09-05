@@ -1,3 +1,8 @@
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.
+
 libgsequencer_test_LIBADD = @LIBGSEQUENCER_TEST_LIBADD@
 gsequencer_functional_test_LDADD = @GSEQUENCER_FUNCTIONAL_TEST_LDADD@
 

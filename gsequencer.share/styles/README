@@ -1,4 +1,4 @@
-The Advanced Gtk+ Sequencer GtkRC file is used by the final binary hence it is applied under the GNU General Public License as published by
+The GtkRC file is used by the final binary hence it is applied under the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or (at your option) any later version. This are the mentioned files (GtkRC File):
 
 * ags.rc (Copyright (C) 2005-2018 Joël Krähemann, GPLv3+)
