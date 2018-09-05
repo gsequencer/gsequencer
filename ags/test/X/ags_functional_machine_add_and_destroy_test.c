@@ -42,13 +42,16 @@ int ags_functional_machine_add_and_destroy_test_clean_suite();
 
 void ags_functional_machine_add_and_destroy_test_panel();
 void ags_functional_machine_add_and_destroy_test_mixer();
+void ags_functional_machine_add_and_destroy_test_spectrometer();
+void ags_functional_machine_add_and_destroy_test_equalizer10();
 void ags_functional_machine_add_and_destroy_test_drum();
 void ags_functional_machine_add_and_destroy_test_matrix();
 void ags_functional_machine_add_and_destroy_test_synth();
-
 #ifdef AGS_WITH_LIBINSTPATCH
 void ags_functional_machine_add_and_destroy_test_ffplayer();
 #endif
+void ags_functional_machine_add_and_destroy_test_syncsynth();
+void ags_functional_machine_add_and_destroy_test_audiorec();
 
 #define AGS_FUNCTIONAL_MACHINE_ADD_AND_DESTROY_TEST_CONFIG "[generic]\n" \
   "autosave-thread=false\n"			       \
@@ -85,15 +88,19 @@ void
 ags_functional_machine_add_and_destroy_test_add_test()
 {  
   /* add the tests to the suite */
-  if((CU_add_test(pSuite, "functional test of GSequencer machine add and destroy AgsPanel\0", ags_functional_machine_add_and_destroy_test_panel) == NULL) ||
-     (CU_add_test(pSuite, "functional test of GSequencer machine add and destroy AgsMixer\0", ags_functional_machine_add_and_destroy_test_mixer) == NULL) ||
-     (CU_add_test(pSuite, "functional test of GSequencer machine add and destroy AgsDrum\0", ags_functional_machine_add_and_destroy_test_drum) == NULL) ||
-     (CU_add_test(pSuite, "functional test of GSequencer machine add and destroy AgsMatrix\0", ags_functional_machine_add_and_destroy_test_matrix) == NULL) ||
-     (CU_add_test(pSuite, "functional test of GSequencer machine add and destroy AgsSynth\0", ags_functional_machine_add_and_destroy_test_synth) == NULL)
+  if((CU_add_test(pSuite, "functional test of GSequencer machine add and destroy AgsPanel", ags_functional_machine_add_and_destroy_test_panel) == NULL) ||
+     (CU_add_test(pSuite, "functional test of GSequencer machine add and destroy AgsMixer", ags_functional_machine_add_and_destroy_test_mixer) == NULL) ||
+     (CU_add_test(pSuite, "functional test of GSequencer machine add and destroy AgsSpectrometer", ags_functional_machine_add_and_destroy_test_spectrometer) == NULL) ||
+     (CU_add_test(pSuite, "functional test of GSequencer machine add and destroy AgsEqualizer10", ags_functional_machine_add_and_destroy_test_equalizer10) == NULL) ||
+     (CU_add_test(pSuite, "functional test of GSequencer machine add and destroy AgsDrum", ags_functional_machine_add_and_destroy_test_drum) == NULL) ||
+     (CU_add_test(pSuite, "functional test of GSequencer machine add and destroy AgsMatrix", ags_functional_machine_add_and_destroy_test_matrix) == NULL) ||
+     (CU_add_test(pSuite, "functional test of GSequencer machine add and destroy AgsSynth", ags_functional_machine_add_and_destroy_test_synth) == NULL)
+     (CU_add_test(pSuite, "functional test of GSequencer machine add and destroy AgsSyncsynth", ags_functional_machine_add_and_destroy_test_syncsynth) == NULL)
 #ifdef AGS_WITH_LIBINSTPATCH
      ||
-     (CU_add_test(pSuite, "functional test of GSequencer machine add and destroy AgsFFPlayer\0", ags_functional_machine_add_and_destroy_test_ffplayer) == NULL)
+     (CU_add_test(pSuite, "functional test of GSequencer machine add and destroy AgsFFPlayer", ags_functional_machine_add_and_destroy_test_ffplayer) == NULL)
 #endif
+     (CU_add_test(pSuite, "functional test of GSequencer machine add and destroy Audiorec", ags_functional_machine_add_and_destroy_test_audiorec) == NULL)
      ){
     
     CU_cleanup_registry();
@@ -173,6 +180,40 @@ ags_functional_machine_add_and_destroy_test_mixer()
 }
 
 void
+ags_functional_machine_add_and_destroy_test_spectrometer()
+{
+  gboolean success;
+
+  /* add spectrometer */
+  success = ags_functional_test_util_add_machine(NULL,
+						 "Spectrometer");
+
+  CU_ASSERT(success == TRUE);
+
+  /* destroy spectrometer */
+  success = ags_functional_test_util_machine_destroy(0);
+  
+  CU_ASSERT(success == TRUE);
+}
+
+void
+ags_functional_machine_add_and_destroy_test_equalizer10()
+{
+  gboolean success;
+
+  /* add equalizer10 */
+  success = ags_functional_test_util_add_machine(NULL,
+						 "Equalizer10");
+
+  CU_ASSERT(success == TRUE);
+
+  /* destroy equalizer10 */
+  success = ags_functional_test_util_machine_destroy(0);
+  
+  CU_ASSERT(success == TRUE);
+}
+
+void
 ags_functional_machine_add_and_destroy_test_drum()
 {
   gboolean success;
@@ -224,6 +265,23 @@ ags_functional_machine_add_and_destroy_test_synth()
 }
 
 void
+ags_functional_machine_add_and_destroy_test_syncsynth()
+{
+  gboolean success;
+
+  /* add syncsynth */
+  success = ags_functional_test_util_add_machine(NULL,
+						 "Syncsynth");
+
+  CU_ASSERT(success == TRUE);
+
+  /* destroy syncsynth */
+  success = ags_functional_test_util_machine_destroy(0);
+  
+  CU_ASSERT(success == TRUE);
+}
+
+void
 ags_functional_machine_add_and_destroy_test_ffplayer()
 {
   gboolean success;
@@ -240,6 +298,23 @@ ags_functional_machine_add_and_destroy_test_ffplayer()
   CU_ASSERT(success == TRUE);
 }
 
+void
+ags_functional_machine_add_and_destroy_test_audiorec()
+{
+  gboolean success;
+
+  /* add audiorec */
+  success = ags_functional_test_util_add_machine(NULL,
+						 "Audiorec");
+
+  CU_ASSERT(success == TRUE);
+
+  /* destroy audiorec */
+  success = ags_functional_test_util_machine_destroy(0);
+  
+  CU_ASSERT(success == TRUE);
+}
+
 int
 main(int argc, char **argv)
 {  
@@ -249,7 +324,7 @@ main(int argc, char **argv)
   }
 
   /* add a suite to the registry */
-  pSuite = CU_add_suite("AgsFuncitonalMachineAddAndDestroyTest\0", ags_functional_machine_add_and_destroy_test_init_suite, ags_functional_machine_add_and_destroy_test_clean_suite);
+  pSuite = CU_add_suite("AgsFuncitonalMachineAddAndDestroyTest", ags_functional_machine_add_and_destroy_test_init_suite, ags_functional_machine_add_and_destroy_test_clean_suite);
   
   if(pSuite == NULL){
     CU_cleanup_registry();

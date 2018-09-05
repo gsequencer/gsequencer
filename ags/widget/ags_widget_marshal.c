@@ -1,4 +1,24 @@
-#include <glib-object.h>
+/* GSequencer - Advanced GTK Sequencer
+ * Copyright (C) 2005-2018 Joël Krähemann
+ *
+ * This file is part of GSequencer.
+ *
+ * GSequencer is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * GSequencer is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+#include	<glib-object.h>
+
 
 #ifdef G_ENABLE_DEBUG
 #define g_marshal_value_peek_boolean(v)  g_value_get_boolean (v)
@@ -46,7 +66,8 @@
 #define g_marshal_value_peek_variant(v)  (v)->data[0].v_pointer
 #endif /* !G_ENABLE_DEBUG */
 
-/* VOID:STRING,INT (ags_widget_marshallers.list:1) */
+
+/* VOID:STRING,INT (ags/widget/ags_widget_marshallers.list:1) */
 void
 ags_widget_cclosure_marshal_VOID__STRING_INT (GClosure     *closure,
                                               GValue       *return_value G_GNUC_UNUSED,
@@ -55,13 +76,13 @@ ags_widget_cclosure_marshal_VOID__STRING_INT (GClosure     *closure,
                                               gpointer      invocation_hint G_GNUC_UNUSED,
                                               gpointer      marshal_data)
 {
-  typedef void (*GMarshalFunc_VOID__STRING_INT) (gpointer data1,
-                                                 gpointer arg1,
-                                                 gint arg2,
-                                                 gpointer data2);
-  GCClosure *cc = (GCClosure *) closure;
-  gpointer data1, data2;
+  typedef void (*GMarshalFunc_VOID__STRING_INT) (gpointer     data1,
+                                                 gpointer     arg_1,
+                                                 gint         arg_2,
+                                                 gpointer     data2);
   GMarshalFunc_VOID__STRING_INT callback;
+  GCClosure *cc = (GCClosure*) closure;
+  gpointer data1, data2;
 
   g_return_if_fail (n_param_values == 3);
 

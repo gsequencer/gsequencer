@@ -143,8 +143,8 @@ As well the desktop file:
 The generated symbol files have the very same license as their origin:
 
 * libags.sym (GPLv3+ and AGPLv3+)
-* libags-audio.sym (GPLv3+)
-* libags-gui.sym (GPLv3+)
+* libags_audio.sym (GPLv3+)
+* libags_gui.sym (GPLv3+)
 
 And so for the glib-object marshallers file:
 

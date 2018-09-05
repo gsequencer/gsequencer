@@ -2057,6 +2057,18 @@ gen-symbols-ags-gui:
 gen-symbols-all: gen-symbols-ags gen-symbols-ags-thread gen-symbols-ags-server gen-symbols-ags-audio gen-symbols-ags-gui
 	echo "Generated all symbols"
 
+gen-marshallers:
+	cat ags_license_header > ags/object/ags_marshal.h
+	glib-genmarshal --prefix=ags_cclosure_marshal --header ags/object/ags_marshallers.list >> ags/object/ags_marshal.h
+	cat ags_license_header > ags/object/ags_marshal.c
+	glib-genmarshal --prefix=ags_cclosure_marshal --body ags/object/ags_marshallers.list >> ags/object/ags_marshal.c
+	echo "generated marshallers in ags/object/"
+	cat ags_license_header > ags/widget/ags_widget_marshal.h
+	glib-genmarshal --prefix=ags_widget_cclosure_marshal --header ags/widget/ags_widget_marshallers.list >> ags/widget/ags_widget_marshal.h
+	cat ags_license_header > ags/widget/ags_widget_marshal.c
+	glib-genmarshal --prefix=ags_widget_cclosure_marshal --body ags/widget/ags_widget_marshallers.list >> ags/widget/ags_widget_marshal.c
+	echo "generated marshallers in ags/widget/"
+
 check-gettext:
 	@if test x$(USE_NLS) != "xyes" ; then echo "Missing gettext. Rerun configure and check for" \
 	"'checking whether to use NLS... yes'!" ; exit 1 ; fi
