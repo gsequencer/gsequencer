@@ -2132,7 +2132,7 @@ ags_lv2_plugin_event_buffer_realloc_data(LV2_Event_Buffer *event_buffer,
   uint32_t padded_buffer_size;
 
   if(buffer_size > G_MAXUINT16){
-    return(NULL);
+    return;
   }
   
   if(buffer_size < 8){
