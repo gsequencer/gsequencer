@@ -32,6 +32,9 @@
 
 #include <ags/i18n.h>
 
+void ags_effect_bulk_editor_plugin_browser_response_destroy_entry(GtkWidget *widget);
+GtkWidget* ags_effect_bulk_plugin_browser_response_create_entry(gchar *filename, gchar *effect);
+
 void
 ags_effect_bulk_add_callback(GtkWidget *button,
 			     AgsEffectBulk *effect_bulk)
@@ -40,41 +43,83 @@ ags_effect_bulk_add_callback(GtkWidget *button,
 }
 
 void
+ags_effect_bulk_editor_plugin_browser_response_destroy_entry(GtkWidget *bulk_member)
+{
+  /* destroy bulk member entry */
+  gtk_widget_destroy(bulk_member);
+}
+
+void
 ags_effect_bulk_remove_callback(GtkWidget *button,
 				AgsEffectBulk *effect_bulk)
 {
-  GList *bulk_member;
-  GList *children;
+  GList *start_bulk_member, *bulk_member;
+  GList *start_list, *list;
   guint nth;
-  
-  auto void ags_effect_bulk_editor_plugin_browser_response_destroy_entry();
-  
-  void ags_effect_bulk_editor_plugin_browser_response_destroy_entry(){
-    /* destroy bulk member entry */
-    gtk_widget_destroy(GTK_WIDGET(bulk_member->data));
-  }
-  
+    
   if(button == NULL ||
      effect_bulk == NULL){
     return;
   }
 
-  bulk_member = gtk_container_get_children((GtkContainer *) effect_bulk->bulk_member);
+  bulk_member =
+    start_bulk_member = gtk_container_get_children((GtkContainer *) effect_bulk->bulk_member);
   
-  /* iterate bulk member */
+  /* check destroy bulk member */
   for(nth = 0; bulk_member != NULL; nth++){
-    children = gtk_container_get_children(GTK_CONTAINER(bulk_member->data));
+    list =
+      start_list = gtk_container_get_children(GTK_CONTAINER(bulk_member->data));
 
-    if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(children->data))){
-      ags_effect_bulk_editor_plugin_browser_response_destroy_entry();
+    if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(list->data))){
+      ags_effect_bulk_editor_plugin_browser_response_destroy_entry(bulk_member->data);
 	
       /* remove effect */
       ags_effect_bulk_remove_effect(effect_bulk,
 				    nth);
     }
-      
+
+    g_list_free(start_list);
+
+    /* iterate */
     bulk_member = bulk_member->next;
   }
+
+  g_list_free(start_bulk_member);
+}
+
+GtkWidget*
+ags_effect_bulk_plugin_browser_response_create_entry(gchar *filename, gchar *effect)
+{
+  GtkHBox *hbox;
+  GtkCheckButton *check_button;
+  GtkLabel *label;
+
+  gchar *str;
+    
+  /* create entry */
+  hbox = (GtkHBox *) gtk_hbox_new(FALSE, 0);
+      
+  check_button = (GtkCheckButton *) gtk_check_button_new();
+  gtk_box_pack_start(GTK_BOX(hbox),
+		     GTK_WIDGET(check_button),
+		     FALSE, FALSE,
+		     0);
+
+  //TODO:JK: ugly
+  str = g_strdup_printf("%s - %s",
+			filename,
+			effect);
+  label = (GtkLabel *) gtk_label_new(str);
+  gtk_box_pack_start(GTK_BOX(hbox),
+		     GTK_WIDGET(label),
+		     FALSE, FALSE,
+		     0);
+
+  g_free(str);
+    
+  gtk_widget_show_all((GtkWidget *) hbox);
+
+  return(hbox);
 }
 
 void
@@ -82,44 +127,9 @@ ags_effect_bulk_plugin_browser_response_callback(GtkDialog *dialog,
 						 gint response,
 						 AgsEffectBulk *effect_bulk)
 {
+  GtkWidget *entry;
+
   gchar *filename, *effect;
-  
-  auto void ags_effect_bulk_plugin_browser_response_create_entry();
-  
-  void ags_effect_bulk_plugin_browser_response_create_entry(){
-    GtkHBox *hbox;
-    GtkCheckButton *check_button;
-    GtkLabel *label;
-
-    gchar *str;
-    
-    /* create entry */
-    hbox = (GtkHBox *) gtk_hbox_new(FALSE, 0);
-    gtk_box_pack_start(GTK_BOX(effect_bulk->bulk_member),
-		       GTK_WIDGET(hbox),
-		       FALSE, FALSE,
-		       0);
-      
-    check_button = (GtkCheckButton *) gtk_check_button_new();
-    gtk_box_pack_start(GTK_BOX(hbox),
-		       GTK_WIDGET(check_button),
-		       FALSE, FALSE,
-		       0);
-
-    //TODO:JK: ugly
-    str = g_strdup_printf("%s - %s",
-			  filename,
-			  effect);
-    label = (GtkLabel *) gtk_label_new(str);
-    gtk_box_pack_start(GTK_BOX(hbox),
-		       GTK_WIDGET(label),
-		       FALSE, FALSE,
-		       0);
-
-    g_free(str);
-    
-    gtk_widget_show_all((GtkWidget *) hbox);
-  }
   
   switch(response){
   case GTK_RESPONSE_ACCEPT:
@@ -128,7 +138,11 @@ ags_effect_bulk_plugin_browser_response_callback(GtkDialog *dialog,
       filename = ags_plugin_browser_get_plugin_filename((AgsPluginBrowser *) effect_bulk->plugin_browser);
       effect = ags_plugin_browser_get_plugin_effect((AgsPluginBrowser *) effect_bulk->plugin_browser);
 
-      ags_effect_bulk_plugin_browser_response_create_entry();
+      entry = ags_effect_bulk_plugin_browser_response_create_entry(filename, effect);
+      gtk_box_pack_start(GTK_BOX(effect_bulk->bulk_member),
+			 entry,
+			 FALSE, FALSE,
+			 0);
 	
       /* add effect */
       ags_effect_bulk_add_effect(effect_bulk,

@@ -40,7 +40,7 @@ typedef struct _AgsMenuBarClass AgsMenuBarClass;
 
 typedef enum{
   AGS_MENU_BAR_CONNECTED        = 1,
-};
+}AgsMenuBarFlags;
 
 struct _AgsMenuBar
 {

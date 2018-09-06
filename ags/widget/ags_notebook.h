@@ -46,7 +46,7 @@ typedef struct _AgsNotebookTab AgsNotebookTab;
 typedef enum{
   AGS_NOTEBOOK_TAB_PREFIXED_LABEL   = 1,
   AGS_NOTEBOOK_TAB_ENUMERATE        = 1 <<  1,
-};
+}AgsNotebookFlags;
 
 struct _AgsNotebook
 {

@@ -48,8 +48,14 @@ void ags_bulk_member_finalize(GObject *gobject);
 void ags_bulk_member_connect(AgsConnectable *connectable);
 void ags_bulk_member_disconnect(AgsConnectable *connectable);
 
+void ags_bulk_member_real_change_port_iter(AgsBulkMember *bulk_member,
+					   GList *list,
+					   gpointer port_data);
 void ags_bulk_member_real_change_port(AgsBulkMember *bulk_member,
 				      gpointer port_data);
+
+AgsPort* ags_bulk_member_real_find_port_specifier(GList *recall,
+						  gchar *specifier);
 GList* ags_bulk_member_real_find_port(AgsBulkMember *bulk_member);
 
 /**
@@ -1067,6 +1073,201 @@ ags_bulk_member_set_label(AgsBulkMember *bulk_member,
 }
 
 void
+ags_bulk_member_real_change_port_iter(AgsBulkMember *bulk_member,
+				      GList *list,
+				      gpointer port_data){
+  AgsPort *port;
+
+  pthread_mutex_t *port_mutex;
+    
+  while(list != NULL){
+    GValue value = {0,};
+
+    port = AGS_BULK_PORT(list->data)->port;
+
+    /* get port mutex */
+    pthread_mutex_lock(ags_port_get_class_mutex());
+
+    port_mutex = port->obj_mutex;
+      
+    pthread_mutex_unlock(ags_port_get_class_mutex());
+
+    /* change */
+    pthread_mutex_lock(port_mutex);
+
+    if(!port->port_value_is_pointer){
+      if(port->port_value_type == G_TYPE_BOOLEAN){
+	g_value_init(&value,
+		     G_TYPE_BOOLEAN);
+
+	g_value_set_boolean(&value,
+			    ((gboolean *) port_data)[0]);
+      }else if(port->port_value_type == G_TYPE_INT64){
+	g_value_init(&value,
+		     G_TYPE_INT64);
+	g_value_set_int64(&value,
+			  ((gint *) port_data)[0]);
+      }else if(port->port_value_type == G_TYPE_UINT64){
+	g_value_init(&value,
+		     G_TYPE_UINT64);
+
+	g_value_set_uint64(&value,
+			   ((guint *) port_data)[0]);
+      }else if(port->port_value_type == G_TYPE_FLOAT){
+	gfloat val;
+	  
+	if(GTK_IS_TOGGLE_BUTTON(gtk_bin_get_child((GtkBin *) bulk_member))){
+	  if(((gboolean *) port_data)[0]){
+	    val = 1.0;
+	  }else{
+	    val = 0.0;
+	  }
+	}else{
+	  val = ((gdouble *) port_data)[0];
+	}
+	  
+	if(bulk_member->conversion != NULL){
+	  gfloat upper, lower, range, step;
+	  gfloat c_upper, c_lower, c_range;
+
+	  gboolean success;
+
+	  success = FALSE;
+	    
+	  if(AGS_IS_DIAL(gtk_bin_get_child(GTK_BIN(bulk_member)))){
+	    AgsDial *dial;
+
+	    dial = (AgsDial *) gtk_bin_get_child(GTK_BIN(bulk_member));
+
+	    upper = dial->adjustment->upper;
+	    lower = dial->adjustment->lower;
+
+	    success = TRUE;
+	  }else{
+	    g_warning("unsupported child type in conversion");
+	  }
+
+	  if(success){
+	    range = upper - lower;
+	    step = range / val;
+
+	    val = ags_conversion_convert(bulk_member->conversion,
+					 val,
+					 FALSE);
+	    c_upper = ags_conversion_convert(bulk_member->conversion,
+					     upper,
+					     FALSE);
+	    c_lower = ags_conversion_convert(bulk_member->conversion,
+					     lower,
+					     FALSE);
+	    c_range = c_upper - c_lower;
+	    
+	    val = ags_conversion_convert(bulk_member->conversion,
+					 c_lower + (c_range / step),
+					 TRUE);
+	  }
+	}
+	  
+	g_value_init(&value,
+		     G_TYPE_FLOAT);
+
+	g_value_set_float(&value,
+			  val);
+      }else if(port->port_value_type == G_TYPE_DOUBLE){
+	gdouble val;
+	  
+	if(GTK_IS_TOGGLE_BUTTON(gtk_bin_get_child((GtkBin *) bulk_member))){
+	  if(((gboolean *) port_data)[0]){
+	    val = 1.0;
+	  }else{
+	    val = 0.0;
+	  }
+	}else{
+	  val = ((gdouble *) port_data)[0];
+	}
+	  
+	if(bulk_member->conversion != NULL){
+	  gdouble upper, lower, range, step;
+	  gdouble c_upper, c_lower, c_range;
+
+	  gboolean success;
+
+	  success = FALSE;
+	    
+	  if(AGS_IS_DIAL(gtk_bin_get_child(GTK_BIN(bulk_member)))){
+	    AgsDial *dial;
+
+	    dial = (AgsDial *) gtk_bin_get_child(GTK_BIN(bulk_member));
+
+	    upper = dial->adjustment->upper;
+	    lower = dial->adjustment->lower;
+
+	    success = TRUE;
+	  }else{
+	    g_warning("unsupported child type in conversion");
+	  }
+
+	  if(success){
+	    range = upper - lower;
+	    step = range / val;
+
+	    val = ags_conversion_convert(bulk_member->conversion,
+					 val,
+					 FALSE);
+	    c_upper = ags_conversion_convert(bulk_member->conversion,
+					     upper,
+					     FALSE);
+	    c_lower = ags_conversion_convert(bulk_member->conversion,
+					     lower,
+					     FALSE);
+	    c_range = c_upper - c_lower;
+
+	    val = ags_conversion_convert(bulk_member->conversion,
+					 c_lower + (c_range / step),
+					 TRUE);
+	  }
+	}
+
+	g_value_init(&value,
+		     G_TYPE_DOUBLE);
+
+	g_value_set_double(&value,
+			   ((gdouble *) port_data)[0]);
+      }
+    }else{
+      if(port->port_value_type == G_TYPE_OBJECT){
+	g_value_init(&value,
+		     G_TYPE_OBJECT);
+	g_value_set_object(&value,
+			   port_data);
+      }else{
+	if(port->port_value_type == G_TYPE_BOOLEAN ||
+	   port->port_value_type == G_TYPE_INT64 ||
+	   port->port_value_type == G_TYPE_UINT64 ||
+	   port->port_value_type == G_TYPE_FLOAT ||
+	   port->port_value_type == G_TYPE_DOUBLE ||
+	   port->port_value_type == G_TYPE_POINTER){
+	  g_value_init(&value,
+		       G_TYPE_POINTER);
+
+	  g_value_set_pointer(&value,
+			      port_data);
+
+	}
+      }
+    }
+
+    pthread_mutex_unlock(port_mutex);
+      
+    //      g_message("change %f", g_value_get_float(&value));
+    ags_port_safe_write(port,
+			&value);
+
+    list = list->next;
+  }
+}
+
+void
 ags_bulk_member_real_change_port(AgsBulkMember *bulk_member,
 				 gpointer port_data)
 {
@@ -1075,200 +1276,6 @@ ags_bulk_member_real_change_port(AgsBulkMember *bulk_member,
   AgsGuiThread *gui_thread;
   
   AgsApplicationContext *application_context;
-
-  auto void ags_bulk_member_real_change_port_iter(GList *list);
-
-  void ags_bulk_member_real_change_port_iter(GList *list){
-    AgsPort *port;
-
-    pthread_mutex_t *port_mutex;
-    
-    while(list != NULL){
-      GValue value = {0,};
-
-      port = AGS_BULK_PORT(list->data)->port;
-
-      /* get port mutex */
-      pthread_mutex_lock(ags_port_get_class_mutex());
-
-      port_mutex = port->obj_mutex;
-      
-      pthread_mutex_unlock(ags_port_get_class_mutex());
-
-      /* change */
-      pthread_mutex_lock(port_mutex);
-
-      if(!port->port_value_is_pointer){
-	if(port->port_value_type == G_TYPE_BOOLEAN){
-	  g_value_init(&value,
-		       G_TYPE_BOOLEAN);
-
-	  g_value_set_boolean(&value,
-			      ((gboolean *) port_data)[0]);
-	}else if(port->port_value_type == G_TYPE_INT64){
-	  g_value_init(&value,
-		       G_TYPE_INT64);
-	  g_value_set_int64(&value,
-			    ((gint *) port_data)[0]);
-	}else if(port->port_value_type == G_TYPE_UINT64){
-	  g_value_init(&value,
-		       G_TYPE_UINT64);
-
-	  g_value_set_uint64(&value,
-			     ((guint *) port_data)[0]);
-	}else if(port->port_value_type == G_TYPE_FLOAT){
-	  gfloat val;
-	  
-	  if(GTK_IS_TOGGLE_BUTTON(gtk_bin_get_child((GtkBin *) bulk_member))){
-	    if(((gboolean *) port_data)[0]){
-	      val = 1.0;
-	    }else{
-	      val = 0.0;
-	    }
-	  }else{
-	    val = ((gdouble *) port_data)[0];
-	  }
-	  
-	  if(bulk_member->conversion != NULL){
-	    gfloat upper, lower, range, step;
-	    gfloat c_upper, c_lower, c_range;
-
-	    gboolean success;
-
-	    success = FALSE;
-	    
-	    if(AGS_IS_DIAL(gtk_bin_get_child(GTK_BIN(bulk_member)))){
-	      AgsDial *dial;
-
-	      dial = (AgsDial *) gtk_bin_get_child(GTK_BIN(bulk_member));
-
-	      upper = dial->adjustment->upper;
-	      lower = dial->adjustment->lower;
-
-	      success = TRUE;
-	    }else{
-	      g_warning("unsupported child type in conversion");
-	    }
-
-	    if(success){
-	      range = upper - lower;
-	      step = range / val;
-
-	      val = ags_conversion_convert(bulk_member->conversion,
-					   val,
-					   FALSE);
-	      c_upper = ags_conversion_convert(bulk_member->conversion,
-					       upper,
-					       FALSE);
-	      c_lower = ags_conversion_convert(bulk_member->conversion,
-					       lower,
-					       FALSE);
-	      c_range = c_upper - c_lower;
-	    
-	      val = ags_conversion_convert(bulk_member->conversion,
-					   c_lower + (c_range / step),
-					   TRUE);
-	    }
-	  }
-	  
-	  g_value_init(&value,
-		       G_TYPE_FLOAT);
-
-	  g_value_set_float(&value,
-			    val);
-	}else if(port->port_value_type == G_TYPE_DOUBLE){
-	  gdouble val;
-	  
-	  if(GTK_IS_TOGGLE_BUTTON(gtk_bin_get_child((GtkBin *) bulk_member))){
-	    if(((gboolean *) port_data)[0]){
-	      val = 1.0;
-	    }else{
-	      val = 0.0;
-	    }
-	  }else{
-	    val = ((gdouble *) port_data)[0];
-	  }
-	  
-	  if(bulk_member->conversion != NULL){
-	    gdouble upper, lower, range, step;
-	    gdouble c_upper, c_lower, c_range;
-
-	    gboolean success;
-
-	    success = FALSE;
-	    
-	    if(AGS_IS_DIAL(gtk_bin_get_child(GTK_BIN(bulk_member)))){
-	      AgsDial *dial;
-
-	      dial = (AgsDial *) gtk_bin_get_child(GTK_BIN(bulk_member));
-
-	      upper = dial->adjustment->upper;
-	      lower = dial->adjustment->lower;
-
-	      success = TRUE;
-	    }else{
-	      g_warning("unsupported child type in conversion");
-	    }
-
-	    if(success){
-	      range = upper - lower;
-	      step = range / val;
-
-	      val = ags_conversion_convert(bulk_member->conversion,
-					   val,
-					   FALSE);
-	      c_upper = ags_conversion_convert(bulk_member->conversion,
-					       upper,
-					       FALSE);
-	      c_lower = ags_conversion_convert(bulk_member->conversion,
-					       lower,
-					       FALSE);
-	      c_range = c_upper - c_lower;
-
-	      val = ags_conversion_convert(bulk_member->conversion,
-					   c_lower + (c_range / step),
-					   TRUE);
-	    }
-	  }
-
-	  g_value_init(&value,
-		       G_TYPE_DOUBLE);
-
-	  g_value_set_double(&value,
-			     ((gdouble *) port_data)[0]);
-	}
-      }else{
-	if(port->port_value_type == G_TYPE_OBJECT){
-	  g_value_init(&value,
-		       G_TYPE_OBJECT);
-	  g_value_set_object(&value,
-			     port_data);
-	}else{
-	  if(port->port_value_type == G_TYPE_BOOLEAN ||
-	     port->port_value_type == G_TYPE_INT64 ||
-	     port->port_value_type == G_TYPE_UINT64 ||
-	     port->port_value_type == G_TYPE_FLOAT ||
-	     port->port_value_type == G_TYPE_DOUBLE ||
-	     port->port_value_type == G_TYPE_POINTER){
-	    g_value_init(&value,
-			 G_TYPE_POINTER);
-
-	    g_value_set_pointer(&value,
-				port_data);
-
-	  }
-	}
-      }
-
-      pthread_mutex_unlock(port_mutex);
-      
-      //      g_message("change %f", g_value_get_float(&value));
-      ags_port_safe_write(port,
-			  &value);
-
-      list = list->next;
-    }
-  }
   
   window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) bulk_member,
 						 AGS_TYPE_WINDOW);
@@ -1278,10 +1285,14 @@ ags_bulk_member_real_change_port(AgsBulkMember *bulk_member,
   gui_thread = ags_ui_provider_get_gui_thread(AGS_UI_PROVIDER(application_context));
   
   if((AGS_BULK_MEMBER_RESET_BY_ATOMIC & (bulk_member->flags)) != 0){
-    ags_bulk_member_real_change_port_iter(bulk_member->bulk_port);
+    ags_bulk_member_real_change_port_iter(bulk_member,
+					  bulk_member->bulk_port,
+					  port_data);
 
     if((AGS_BULK_MEMBER_APPLY_RECALL & (bulk_member->flags)) != 0){
-      ags_bulk_member_real_change_port_iter(bulk_member->recall_bulk_port);
+      ags_bulk_member_real_change_port_iter(bulk_member,
+					    bulk_member->recall_bulk_port,
+					    port_data);
     }
   }
 
@@ -1324,6 +1335,50 @@ ags_bulk_member_change_port(AgsBulkMember *bulk_member,
   g_object_unref((GObject *) bulk_member);
 }
 
+AgsPort*
+ags_bulk_member_real_find_port_specifier(GList *recall,
+					 gchar *specifier){
+  AgsPort *current_port;
+    
+  GList *start_port, *port;
+
+  current_port = NULL;
+    
+  while(recall != NULL){
+    if(!ags_recall_test_behaviour_flags(recall->data, AGS_SOUND_BEHAVIOUR_BULK_MODE)){
+      recall = recall->next;
+
+      continue;
+    }
+
+    g_object_get(recall->data,
+		 "port", &start_port,
+		 NULL);
+
+    port = ags_port_find_specifier(start_port,
+				   specifier);
+      
+#ifdef AGS_DEBUG
+    g_message("search port in %s", G_OBJECT_TYPE_NAME(recall->data));
+#endif
+
+    if(port != NULL){
+      current_port = port->data;
+    }
+
+    g_list_free(start_port);
+
+    if(current_port != NULL){
+      break;
+    }
+
+    /* iterate */
+    recall = recall->next;
+  }
+
+  return(current_port);
+}
+
 GList*
 ags_bulk_member_real_find_port(AgsBulkMember *bulk_member)
 {
@@ -1335,50 +1390,6 @@ ags_bulk_member_real_find_port(AgsBulkMember *bulk_member)
   AgsPort *recall_audio_port, *recall_channel_port;
   
   gchar *specifier;
-
-  auto AgsPort* ags_bulk_member_find_specifier(GList *recall);
-
-  AgsPort* ags_bulk_member_find_specifier(GList *recall){
-    AgsPort *current_port;
-    
-    GList *start_port, *port;
-
-    current_port = NULL;
-    
-    while(recall != NULL){
-      if(!ags_recall_test_behaviour_flags(recall->data, AGS_SOUND_BEHAVIOUR_BULK_MODE)){
-	recall = recall->next;
-
-	continue;
-      }
-
-      g_object_get(recall->data,
-		   "port", &start_port,
-		   NULL);
-
-      port = ags_port_find_specifier(start_port,
-				     specifier);
-      
-#ifdef AGS_DEBUG
-      g_message("search port in %s", G_OBJECT_TYPE_NAME(recall->data));
-#endif
-
-      if(port != NULL){
-	current_port = port->data;
-      }
-
-      g_list_free(start_port);
-
-      if(current_port != NULL){
-	break;
-      }
-
-      /* iterate */
-      recall = recall->next;
-    }
-
-    return(current_port);
-  }
 
   if(!AGS_IS_BULK_MEMBER(bulk_member)){
     return(NULL);
@@ -1426,7 +1437,8 @@ ags_bulk_member_real_find_port(AgsBulkMember *bulk_member)
 		 "play", &list_start,
 		 NULL);
     
-    channel_port = ags_bulk_member_find_specifier(list_start);
+    channel_port = ags_bulk_member_real_find_port_specifier(list_start,
+							    specifier);
 
     if(channel_port != NULL &&
        ags_bulk_port_find(bulk_member->bulk_port, channel_port) == NULL){
@@ -1442,7 +1454,8 @@ ags_bulk_member_real_find_port(AgsBulkMember *bulk_member)
 		 "recall", &list_start,
 		 NULL);
     
-    recall_channel_port = ags_bulk_member_find_specifier(list_start);
+    recall_channel_port = ags_bulk_member_real_find_port_specifier(list_start,
+								   specifier);
     
     if(recall_channel_port != NULL &&
        ags_bulk_port_find(bulk_member->recall_bulk_port, recall_channel_port) == NULL){
@@ -1469,7 +1482,8 @@ ags_bulk_member_real_find_port(AgsBulkMember *bulk_member)
 		 "play", &list_start,
 		 NULL);
 
-    audio_port = ags_bulk_member_find_specifier(list_start);
+    audio_port = ags_bulk_member_real_find_port_specifier(list_start,
+							  specifier);
 
     if(audio_port != NULL &&
        ags_bulk_port_find(bulk_member->bulk_port, audio_port) == NULL){
@@ -1485,7 +1499,8 @@ ags_bulk_member_real_find_port(AgsBulkMember *bulk_member)
 		 "recall", &list_start,
 		 NULL);
 
-    recall_audio_port = ags_bulk_member_find_specifier(list_start);
+    recall_audio_port = ags_bulk_member_real_find_port_specifier(list_start,
+								 specifier);
     
     if(recall_audio_port != NULL &&
        ags_bulk_port_find(bulk_member->recall_bulk_port, recall_audio_port) == NULL){
