@@ -1578,7 +1578,7 @@ ags_notation_copy_selection(AgsNotation *notation)
   pthread_mutex_t *notation_mutex;
 
   if(!AGS_IS_NOTATION(notation)){
-    return;
+    return(NULL);
   }
 
   /* get notation mutex */
@@ -1700,7 +1700,7 @@ ags_notation_cut_selection(AgsNotation *notation)
   pthread_mutex_t *notation_mutex;
 
   if(!AGS_IS_NOTATION(notation)){
-    return;
+    return(NULL);
   }
 
   /* get notation mutex */
