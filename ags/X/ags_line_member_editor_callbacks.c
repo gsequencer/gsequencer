@@ -48,11 +48,45 @@
 
 #include <ladspa.h>
 
+GtkWidget* ags_line_member_editor_plugin_browser_response_create_entry(AgsLineMemberEditor *line_member_editor,
+								       gchar *filename, gchar *effect);
+void ags_line_member_editor_plugin_browser_response_destroy_entry(GtkWidget *widget);
+
 void
 ags_line_member_editor_add_callback(GtkWidget *button,
 				    AgsLineMemberEditor *line_member_editor)
 {
   gtk_widget_show_all((GtkWidget *) line_member_editor->plugin_browser);
+}
+
+GtkWidget*
+ags_line_member_editor_plugin_browser_response_create_entry(AgsLineMemberEditor *line_member_editor,
+							    gchar *filename, gchar *effect)
+{
+  GtkHBox *hbox;
+  GtkCheckButton *check_button;
+  GtkLabel *label;
+
+  /* create entry */
+  hbox = (GtkHBox *) gtk_hbox_new(FALSE, 0);
+      
+  check_button = (GtkCheckButton *) gtk_check_button_new();
+  gtk_box_pack_start(GTK_BOX(hbox),
+		     GTK_WIDGET(check_button),
+		     FALSE, FALSE,
+		     0);
+
+  //TODO:JK: ugly
+  label = (GtkLabel *) gtk_label_new(g_strdup_printf("%s - %s",
+						     filename,
+						     effect));
+  gtk_box_pack_start(GTK_BOX(hbox),
+		     GTK_WIDGET(label),
+		     FALSE, FALSE,
+		     0);
+  gtk_widget_show_all((GtkWidget *) hbox);
+
+  return(hbox);
 }
 
 void
@@ -64,7 +98,8 @@ ags_line_member_editor_plugin_browser_response_callback(GtkDialog *dialog,
   AgsMachine *machine;
   AgsMachineEditor *machine_editor;
   AgsLineEditor *line_editor;
-
+  GtkWidget *entry;
+  
   AgsThread *gui_thread;
   
   AgsApplicationContext *application_context;
@@ -76,38 +111,7 @@ ags_line_member_editor_plugin_browser_response_callback(GtkDialog *dialog,
 
   gboolean has_bridge;
   gboolean is_output;
-  
-  auto void ags_line_member_editor_plugin_browser_response_create_entry();
-  
-  void ags_line_member_editor_plugin_browser_response_create_entry(){
-    GtkHBox *hbox;
-    GtkCheckButton *check_button;
-    GtkLabel *label;
-
-    /* create entry */
-    hbox = (GtkHBox *) gtk_hbox_new(FALSE, 0);
-    gtk_box_pack_start(GTK_BOX(line_member_editor->line_member),
-		       GTK_WIDGET(hbox),
-		       FALSE, FALSE,
-		       0);
       
-    check_button = (GtkCheckButton *) gtk_check_button_new();
-    gtk_box_pack_start(GTK_BOX(hbox),
-		       GTK_WIDGET(check_button),
-		       FALSE, FALSE,
-		       0);
-
-    //TODO:JK: ugly
-    label = (GtkLabel *) gtk_label_new(g_strdup_printf("%s - %s",
-						       filename,
-						       effect));
-    gtk_box_pack_start(GTK_BOX(hbox),
-		       GTK_WIDGET(label),
-		       FALSE, FALSE,
-		       0);
-    gtk_widget_show_all((GtkWidget *) hbox);
-  }
-  
   switch(response){
   case GTK_RESPONSE_ACCEPT:
     {
@@ -196,7 +200,12 @@ ags_line_member_editor_plugin_browser_response_callback(GtkDialog *dialog,
 						   NULL,
 						   filename,
 						   effect) == NULL){
-	    ags_line_member_editor_plugin_browser_response_create_entry();
+	    entry = ags_line_member_editor_plugin_browser_response_create_entry(line_member_editor,
+										filename, effect);
+	    gtk_box_pack_start(GTK_BOX(line_member_editor->line_member),
+			       entry,
+			       FALSE, FALSE,
+			       0);
 	    
 	    /* add effect */
 	    add_effect = ags_add_effect_new(line->channel,
@@ -270,7 +279,12 @@ ags_line_member_editor_plugin_browser_response_callback(GtkDialog *dialog,
 						   NULL,
 						   filename,
 						   effect) == NULL){
-	    ags_line_member_editor_plugin_browser_response_create_entry();
+	    entry = ags_line_member_editor_plugin_browser_response_create_entry(line_member_editor,
+										filename, effect);
+	    gtk_box_pack_start(GTK_BOX(line_member_editor->line_member),
+			       entry,
+			       FALSE, FALSE,
+			       0);
 
 	    /* add effect */
 	    add_effect = ags_add_effect_new(effect_line->channel,
@@ -288,6 +302,12 @@ ags_line_member_editor_plugin_browser_response_callback(GtkDialog *dialog,
     break;      
   }
 }
+  
+void
+ags_line_member_editor_plugin_browser_response_destroy_entry(GtkWidget *widget){
+  /* destroy line member editor entry */
+  gtk_widget_destroy(widget);
+}
 
 void
 ags_line_member_editor_remove_callback(GtkWidget *button,
@@ -299,18 +319,11 @@ ags_line_member_editor_remove_callback(GtkWidget *button,
 
   GList *line_member, *line_member_next;
   GList *list, *list_start, *pad, *pad_start;
-  GList *children;
+  GList *start_children, *children;
 
   guint nth;
   gboolean has_bridge;
   gboolean is_output;
-  
-  auto void ags_line_member_editor_plugin_browser_response_destroy_entry();
-  
-  void ags_line_member_editor_plugin_browser_response_destroy_entry(){
-    /* destroy line member editor entry */
-    gtk_widget_destroy(GTK_WIDGET(line_member->data));
-  }
   
   if(button == NULL ||
      line_member_editor == NULL){
@@ -375,21 +388,25 @@ ags_line_member_editor_remove_callback(GtkWidget *button,
 
     g_list_free(pad_start);
 
-    /* iterate line member */
+    /* check destroy line member */
     if(line != NULL){
       for(nth = 0; line_member != NULL; nth++){
 	line_member_next = line_member->next;
 	
-	children = gtk_container_get_children((GtkContainer *) GTK_CONTAINER(line_member->data));
+	children =
+	  start_children = gtk_container_get_children((GtkContainer *) GTK_CONTAINER(line_member->data));
 
 	if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(children->data))){
-	  ags_line_member_editor_plugin_browser_response_destroy_entry();
+	  ags_line_member_editor_plugin_browser_response_destroy_entry(GTK_WIDGET(line_member->data));
 
 	  /* remove effect */
 	  ags_line_remove_effect(line,
 				 nth);
 	}
-      
+
+	g_list_free(start_children);
+	
+	/* iterate */
 	line_member = line_member_next;
       }
     }
@@ -431,20 +448,24 @@ ags_line_member_editor_remove_callback(GtkWidget *button,
 
     g_list_free(pad_start);
 
-    /* iterate line member */
+    /* check destroy line member */
     if(effect_line != NULL){
       for(nth = 0; line_member != NULL; nth++){
 
-	children = gtk_container_get_children(GTK_CONTAINER(line_member->data));
+	children =
+	  start_children = gtk_container_get_children(GTK_CONTAINER(line_member->data));
 
 	if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(children->data))){
-	  ags_line_member_editor_plugin_browser_response_destroy_entry();
+	  ags_line_member_editor_plugin_browser_response_destroy_entry(GTK_WIDGET(line_member->data));
 	
 	  /* remove effect */
 	  ags_effect_line_remove_effect(effect_line,
 					nth);
 	}
-      
+
+	g_list_free(start_children);
+	
+	/* iterate */
 	line_member = line_member->next;
       }
     }

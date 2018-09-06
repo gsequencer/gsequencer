@@ -91,6 +91,8 @@ void ags_file_read_machine_selector_resolve_parameter(AgsFileLookup *file_lookup
 void ags_file_read_navigation_resolve_soundcard(AgsFileLookup *file_lookup,
 					     AgsNavigation *navigation);
 
+GParameter* ags_file_write_machine_selector_parameter(GList *list, GParameter *parameter, gchar *prop, gint *n_params);
+
 void
 ags_file_read_widget(AgsFile *file, xmlNode *node, GtkWidget *widget)
 {
@@ -5153,6 +5155,48 @@ ags_file_read_machine_selector_resolve_parameter(AgsFileLookup *file_lookup,
   }
 }
 
+GParameter*
+ags_file_write_machine_selector_parameter(GList *list, GParameter *parameter, gchar *prop, gint *n_params)
+{
+  gint i;
+
+  if(n_params == NULL){
+    i = 0;
+  }else{
+    i = *n_params;
+  }
+
+  while(list != NULL){
+    if(!AGS_IS_MACHINE_RADIO_BUTTON(list->data)){
+      list = list->next;
+      continue;
+    }
+
+    if(parameter == NULL){
+      parameter = (GParameter *) malloc(sizeof(GParameter));
+    }else{
+      parameter = (GParameter *) realloc(parameter,
+					 (i + 1) * sizeof(GParameter));
+    }
+
+    parameter[i].name = prop;
+
+    memset(&(parameter[i].value), 0, sizeof(GValue));
+    g_value_init(&(parameter[i].value), G_TYPE_OBJECT);
+    g_value_set_object(&(parameter[i].value),
+		       G_OBJECT(AGS_MACHINE_RADIO_BUTTON(list->data)->machine));
+
+    list = list->next;
+    i++;
+  }
+
+  if(n_params != NULL){
+    *n_params = i;
+  }
+
+  return(parameter);
+}
+
 xmlNode*
 ags_file_write_machine_selector(AgsFile *file, xmlNode *parent, AgsMachineSelector *machine_selector)
 {
@@ -5161,48 +5205,6 @@ ags_file_write_machine_selector(AgsFile *file, xmlNode *parent, AgsMachineSelect
   GList *list;
   gchar *id;
   gint n_params;
-
-  auto GParameter* ags_file_write_machine_selector_parameter(GList *list, GParameter *parameter, gchar *prop, gint *n_params);
-
-  GParameter* ags_file_write_machine_selector_parameter(GList *list, GParameter *parameter, gchar *prop, gint *n_params){
-    gint i;
-
-    if(n_params == NULL){
-      i = 0;
-    }else{
-      i = *n_params;
-    }
-
-    while(list != NULL){
-      if(!AGS_IS_MACHINE_RADIO_BUTTON(list->data)){
-	list = list->next;
-	continue;
-      }
-
-      if(parameter == NULL){
-	parameter = (GParameter *) malloc(sizeof(GParameter));
-      }else{
-	parameter = (GParameter *) realloc(parameter,
-					   (i + 1) * sizeof(GParameter));
-      }
-
-      parameter[i].name = prop;
-
-      memset(&(parameter[i].value), 0, sizeof(GValue));
-      g_value_init(&(parameter[i].value), G_TYPE_OBJECT);
-      g_value_set_object(&(parameter[i].value),
-			 G_OBJECT(AGS_MACHINE_RADIO_BUTTON(list->data)->machine));
-
-      list = list->next;
-      i++;
-    }
-
-    if(n_params != NULL){
-      *n_params = i;
-    }
-
-    return(parameter);
-  }
 
   id = ags_id_generator_create_uuid();
 

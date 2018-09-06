@@ -33,6 +33,9 @@
 #include <math.h>
 
 void ags_cell_pattern_start_channel_launch_callback(AgsTask *task, AgsNote *note);
+  
+void ags_cell_pattern_drawing_area_key_release_event_play_channel(AgsWindow *window,
+								  AgsChannel *channel);
 
 gboolean
 ags_cell_pattern_focus_in_callback(GtkWidget *widget, GdkEvent *event, AgsCellPattern *cell_pattern)
@@ -167,6 +170,56 @@ ags_cell_pattern_drawing_area_key_press_event(GtkWidget *widget, GdkEventKey *ev
   return(TRUE);
 }
 
+void
+ags_cell_pattern_drawing_area_key_release_event_play_channel(AgsWindow *window,
+							     AgsChannel *channel)
+{
+  AgsGuiThread *gui_thread;
+    
+  AgsAudio *audio;
+    
+  AgsStartSoundcard *start_soundcard;
+  AgsStartChannel *start_channel;
+
+  AgsApplicationContext *application_context;
+
+  GObject *soundcard;
+    
+  GList *task;
+
+  application_context = (AgsApplicationContext *) window->application_context;
+    
+  gui_thread = ags_ui_provider_get_gui_thread(AGS_UI_PROVIDER(application_context));
+
+  /* get soundcard */
+  g_object_get(channel,
+	       "output-soundcard", &soundcard,
+	       "audio", &audio,
+	       NULL);
+
+  if(soundcard == NULL){
+    return;
+  }
+
+  task = NULL;
+
+  /* start playback */
+  start_channel = ags_start_channel_new(channel,
+					AGS_SOUND_SCOPE_PLAYBACK);
+  task = g_list_prepend(task,
+			start_channel);
+
+  /* create start task */
+  start_soundcard = ags_start_soundcard_new(application_context);
+  task = g_list_prepend(task,
+			start_soundcard);
+
+  /* perform playback */
+  task = g_list_reverse(task);
+  ags_gui_thread_schedule_task_list(gui_thread,
+				    task);
+}
+
 gboolean
 ags_cell_pattern_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *event, AgsCellPattern *cell_pattern)
 {
@@ -182,55 +235,6 @@ ags_cell_pattern_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *
   guint input_lines;
 
   pthread_mutex_t *channel_mutex;
-  
-  auto void ags_cell_pattern_drawing_area_key_release_event_play_channel(AgsChannel *channel);
-
-  void ags_cell_pattern_drawing_area_key_release_event_play_channel(AgsChannel *channel){
-    AgsGuiThread *gui_thread;
-    
-    AgsAudio *audio;
-    
-    AgsStartSoundcard *start_soundcard;
-    AgsStartChannel *start_channel;
-
-    AgsApplicationContext *application_context;
-
-    GObject *soundcard;
-    
-    GList *task;
-
-    application_context = (AgsApplicationContext *) window->application_context;
-    
-    gui_thread = ags_ui_provider_get_gui_thread(AGS_UI_PROVIDER(application_context));
-
-    /* get soundcard */
-    g_object_get(channel,
-		 "output-soundcard", &soundcard,
-		 "audio", &audio,
-		 NULL);
-
-    if(soundcard == NULL){
-      return;
-    }
-
-    task = NULL;
-
-    /* start playback */
-    start_channel = ags_start_channel_new(channel,
-					  AGS_SOUND_SCOPE_PLAYBACK);
-    task = g_list_prepend(task,
-			  start_channel);
-
-    /* create start task */
-    start_soundcard = ags_start_soundcard_new(application_context);
-    task = g_list_prepend(task,
-			  start_soundcard);
-
-    /* perform playback */
-    task = g_list_reverse(task);
-    ags_gui_thread_schedule_task_list(gui_thread,
-				      task);
-  }
   
   if(event->keyval == GDK_KEY_Tab){
     return(FALSE);
@@ -293,7 +297,8 @@ ags_cell_pattern_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *
 					 0, machine->bank_1, cell_pattern->cursor_x)) ? TRUE: FALSE;
 	
 	if(bit_is_on){
-	  ags_cell_pattern_drawing_area_key_release_event_play_channel(channel);
+	  ags_cell_pattern_drawing_area_key_release_event_play_channel(window,
+								       channel);
 	}
       }
     }
@@ -330,7 +335,8 @@ ags_cell_pattern_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *
 					0, machine->bank_1, cell_pattern->cursor_x);
 	
 	if(bit_is_on){
-	  ags_cell_pattern_drawing_area_key_release_event_play_channel(channel);
+	  ags_cell_pattern_drawing_area_key_release_event_play_channel(window,
+								       channel);
 	}
       }
     }
@@ -367,7 +373,8 @@ ags_cell_pattern_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *
 					 0, machine->bank_1, cell_pattern->cursor_x)) ? TRUE: FALSE;
 	
 	if(bit_is_on){
-	  ags_cell_pattern_drawing_area_key_release_event_play_channel(channel);
+	  ags_cell_pattern_drawing_area_key_release_event_play_channel(window,
+								       channel);
 	}
       }
 
@@ -409,7 +416,8 @@ ags_cell_pattern_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *
 					 0, machine->bank_1, cell_pattern->cursor_x)) ? TRUE: FALSE;
 		
 	if(bit_is_on){
-	  ags_cell_pattern_drawing_area_key_release_event_play_channel(channel);
+	  ags_cell_pattern_drawing_area_key_release_event_play_channel(window,
+								       channel);
 	}
       }
 
@@ -455,7 +463,8 @@ ags_cell_pattern_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *
       /* play pattern */
       if(!ags_pattern_get_bit(pattern,
 			      0, index1, j)){
-	ags_cell_pattern_drawing_area_key_release_event_play_channel(channel);
+	ags_cell_pattern_drawing_area_key_release_event_play_channel(window,
+								     channel);
       }
 
       /* queue draw */

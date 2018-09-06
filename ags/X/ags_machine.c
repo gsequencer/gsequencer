@@ -67,6 +67,9 @@ GList* ags_machine_real_find_port(AgsMachine *machine);
 
 GtkMenu* ags_machine_popup_new(AgsMachine *machine);
 
+xmlNode* ags_machine_copy_pattern_to_notation(AgsMachine *machine,
+					      AgsChannel *current);
+
 /**
  * SECTION:ags_machine
  * @short_description: visualize audio object.
@@ -2092,6 +2095,116 @@ ags_machine_open_files(AgsMachine *machine,
 			       open_file);
 }
 
+xmlNode*
+ags_machine_copy_pattern_to_notation(AgsMachine *machine, AgsChannel *current)
+{
+  AgsPattern *pattern;
+
+  xmlNode *notation_node, *current_note;
+
+  GList *start_list;
+
+  guint input_pads;
+  guint x_boundary, y_boundary;
+  guint bank_0, bank_1, k;
+    
+  g_object_get(machine->audio,
+	       "input-pads", &input_pads,
+	       NULL);
+
+  /* create root node */
+  notation_node = xmlNewNode(NULL, BAD_CAST "notation");
+
+  xmlNewProp(notation_node, BAD_CAST "program", BAD_CAST "ags");
+  xmlNewProp(notation_node, BAD_CAST "type", BAD_CAST AGS_NOTATION_CLIPBOARD_TYPE);
+  xmlNewProp(notation_node, BAD_CAST "version", BAD_CAST AGS_NOTATION_CLIPBOARD_VERSION);
+  xmlNewProp(notation_node, BAD_CAST "format", BAD_CAST AGS_NOTATION_CLIPBOARD_FORMAT);
+  xmlNewProp(notation_node, BAD_CAST "base_frequency", BAD_CAST g_strdup("0"));
+  xmlNewProp(notation_node, BAD_CAST "audio-channel", BAD_CAST g_strdup_printf("%u", current->audio_channel));
+
+  bank_0 = machine->bank_0;
+  bank_1 = machine->bank_1;
+    
+  x_boundary = G_MAXUINT;
+  y_boundary = G_MAXUINT;
+
+  while(current != NULL){
+    guint length;
+      
+    pthread_mutex_t *pattern_mutex;
+      
+    g_object_get(current,
+		 "pattern", &start_list,
+		 NULL);
+
+    pattern = start_list->data;
+    g_list_free(start_list);
+
+    /* get pattern mutex */
+    pthread_mutex_lock(ags_pattern_get_class_mutex());
+
+    pattern_mutex = pattern->obj_mutex;
+      
+    pthread_mutex_unlock(ags_pattern_get_class_mutex());
+
+    /* get length */
+    pthread_mutex_lock(pattern_mutex);
+
+    length = pattern->dim[2];
+      
+    pthread_mutex_unlock(pattern_mutex);
+      
+    for(k = 0; k < length; k++){
+      guint current_pad;
+
+      g_object_get(current,
+		   "pad", &current_pad,
+		   NULL);
+	
+      if(ags_pattern_get_bit(pattern, bank_0, bank_1, k)){
+	current_note = xmlNewChild(notation_node, NULL, BAD_CAST "note", NULL);
+	  
+	xmlNewProp(current_note, BAD_CAST "x", BAD_CAST g_strdup_printf("%u", k));
+	xmlNewProp(current_note, BAD_CAST "x1", BAD_CAST g_strdup_printf("%u", k + 1));
+
+	if((AGS_MACHINE_REVERSE_NOTATION & (machine->flags)) != 0){
+	  xmlNewProp(current_note, BAD_CAST "y", BAD_CAST g_strdup_printf("%u", input_pads - current_pad - 1));
+	}else{
+	  xmlNewProp(current_note, BAD_CAST "y", BAD_CAST g_strdup_printf("%u", current_pad));
+	}
+	  
+	if(x_boundary > k){
+	  x_boundary = k;
+	}
+      
+	if((AGS_MACHINE_REVERSE_NOTATION & (machine->flags)) != 0){
+	  guint tmp;
+
+	  tmp = input_pads - current_pad - 1;
+	    
+	  if(y_boundary > tmp){
+	    y_boundary = tmp;
+	  }
+	}else{
+	  if(y_boundary > current->pad){
+	    y_boundary = current->pad;
+	  }
+	}
+      }
+    }
+
+    /* iterate */
+    g_object_get(current,
+		 "next", &current,
+		 NULL);
+  }
+
+  xmlNewProp(notation_node, BAD_CAST "x_boundary", BAD_CAST g_strdup_printf("%u", x_boundary));
+  xmlNewProp(notation_node, BAD_CAST "y_boundary", BAD_CAST g_strdup_printf("%u", y_boundary));
+
+  return(notation_node);
+}
+
 void
 ags_machine_copy_pattern(AgsMachine *machine)
 {
@@ -2104,114 +2217,8 @@ ags_machine_copy_pattern(AgsMachine *machine)
   xmlChar *buffer;
 
   guint audio_channels;
-  guint input_pads;
   int size;
   gint i;
-
-  auto xmlNode* ags_machine_copy_pattern_to_notation(AgsChannel *current);
-
-  xmlNode* ags_machine_copy_pattern_to_notation(AgsChannel *current){
-    AgsPattern *pattern;
-
-    xmlNode *notation_node, *current_note;
-
-    GList *start_list;
-    
-    guint x_boundary, y_boundary;
-    guint bank_0, bank_1, k;
-    
-    /* create root node */
-    notation_node = xmlNewNode(NULL, BAD_CAST "notation");
-
-    xmlNewProp(notation_node, BAD_CAST "program", BAD_CAST "ags");
-    xmlNewProp(notation_node, BAD_CAST "type", BAD_CAST AGS_NOTATION_CLIPBOARD_TYPE);
-    xmlNewProp(notation_node, BAD_CAST "version", BAD_CAST AGS_NOTATION_CLIPBOARD_VERSION);
-    xmlNewProp(notation_node, BAD_CAST "format", BAD_CAST AGS_NOTATION_CLIPBOARD_FORMAT);
-    xmlNewProp(notation_node, BAD_CAST "base_frequency", BAD_CAST g_strdup("0"));
-    xmlNewProp(notation_node, BAD_CAST "audio-channel", BAD_CAST g_strdup_printf("%u", current->audio_channel));
-
-    bank_0 = machine->bank_0;
-    bank_1 = machine->bank_1;
-    
-    x_boundary = G_MAXUINT;
-    y_boundary = G_MAXUINT;
-
-    while(current != NULL){
-      guint length;
-      
-      pthread_mutex_t *pattern_mutex;
-      
-      g_object_get(current,
-		   "pattern", &start_list,
-		   NULL);
-
-      pattern = start_list->data;
-      g_list_free(start_list);
-
-      /* get pattern mutex */
-      pthread_mutex_lock(ags_pattern_get_class_mutex());
-
-      pattern_mutex = pattern->obj_mutex;
-      
-      pthread_mutex_unlock(ags_pattern_get_class_mutex());
-
-      /* get length */
-      pthread_mutex_lock(pattern_mutex);
-
-      length = pattern->dim[2];
-      
-      pthread_mutex_unlock(pattern_mutex);
-      
-      for(k = 0; k < length; k++){
-	guint current_pad;
-
-	g_object_get(current,
-		     "pad", &current_pad,
-		     NULL);
-	
-	if(ags_pattern_get_bit(pattern, bank_0, bank_1, k)){
-	  current_note = xmlNewChild(notation_node, NULL, BAD_CAST "note", NULL);
-	  
-	  xmlNewProp(current_note, BAD_CAST "x", BAD_CAST g_strdup_printf("%u", k));
-	  xmlNewProp(current_note, BAD_CAST "x1", BAD_CAST g_strdup_printf("%u", k + 1));
-
-	  if((AGS_MACHINE_REVERSE_NOTATION & (machine->flags)) != 0){
-	    xmlNewProp(current_note, BAD_CAST "y", BAD_CAST g_strdup_printf("%u", input_pads - current_pad - 1));
-	  }else{
-	    xmlNewProp(current_note, BAD_CAST "y", BAD_CAST g_strdup_printf("%u", current_pad));
-	  }
-	  
-	  if(x_boundary > k){
-	    x_boundary = k;
-	  }
-      
-	  if((AGS_MACHINE_REVERSE_NOTATION & (machine->flags)) != 0){
-	    guint tmp;
-
-	    tmp = input_pads - current_pad - 1;
-	    
-	    if(y_boundary > tmp){
-	      y_boundary = tmp;
-	    }
-	  }else{
-	    if(y_boundary > current->pad){
-	      y_boundary = current->pad;
-	    }
-	  }
-	}
-      }
-
-      /* iterate */
-      g_object_get(current,
-		   "next", &current,
-		   NULL);
-    }
-
-    xmlNewProp(notation_node, BAD_CAST "x_boundary", BAD_CAST g_strdup_printf("%u", x_boundary));
-    xmlNewProp(notation_node, BAD_CAST "y_boundary", BAD_CAST g_strdup_printf("%u", y_boundary));
-
-    return(notation_node);
-  }
   
   /* create document */
   clipboard = xmlNewDoc(BAD_CAST XML_DEFAULT_VERSION);
@@ -2231,13 +2238,13 @@ ags_machine_copy_pattern(AgsMachine *machine)
   /* copy to clipboard */
   g_object_get(audio,
 	       "audio-channels", &audio_channels,
-	       "input-pads", &input_pads,
 	       "input", &channel,
 	       NULL);
 
   for(i = 0; i < audio_channels; i++){
     /* do it so */
-    notation_node = ags_machine_copy_pattern_to_notation(channel);
+    notation_node = ags_machine_copy_pattern_to_notation(machine,
+							 channel);
     xmlAddChild(notation_list_node,
 		notation_node);
 

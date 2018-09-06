@@ -39,6 +39,8 @@ void ags_file_selection_real_add_entry(AgsFileSelection *file_selection, GtkWidg
 void ags_file_selection_real_remove_entry(AgsFileSelection *file_selection, GtkWidget *widget);
 void ags_file_selection_real_completed(AgsFileSelection *file_selection);
 
+GtkTable* ags_file_selection_set_entry_new_entry(AgsFileSelectionEntry *entry);
+
 enum{
   ADD_ENTRY,
   REMOVE_ENTRY,
@@ -244,6 +246,108 @@ ags_file_selection_show(GtkWidget *widget)
   GTK_WIDGET_CLASS(ags_file_selection_parent_class)->show(widget);
 }
 
+GtkTable*
+ags_file_selection_set_entry_new_entry(AgsFileSelectionEntry *entry)
+{
+  GtkTable *table;
+  GtkTable *range_table;
+  GtkLabel *label;
+  GtkButton *remove;
+  AgsInlinePlayer *inline_player;
+
+  table = (GtkTable *) gtk_table_new(3, 3, FALSE);
+
+  /* the range buttons */
+  range_table = (GtkTable *) gtk_table_new(2, 3, FALSE);
+  gtk_table_attach(table,
+		   GTK_WIDGET(range_table),
+		   1, 3,
+		   0, 1,
+		   GTK_FILL, GTK_FILL,
+		   0, 0);
+
+  label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
+				    "label", "nth sample: ",
+				    "xalign", 0.0,
+				    NULL);
+  gtk_table_attach(range_table,
+		   GTK_WIDGET(label),
+		   0, 1,
+		   0, 1,
+		   GTK_FILL, GTK_FILL,
+		   0, 0);
+
+  label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
+				    "label", "nth channel: ",
+				    "xalign", 0.0,
+				    NULL);
+  gtk_table_attach(range_table,
+		   GTK_WIDGET(label),
+		   0, 1,
+		   1, 2,
+		   GTK_FILL, GTK_FILL,
+		   0, 0);
+
+  label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
+				    "label", "count: ",
+				    "xalign", 0.0,
+				    NULL);
+  gtk_table_attach(range_table,
+		   GTK_WIDGET(label),
+		   0, 1,
+		   2, 3,
+		   GTK_FILL, GTK_FILL,
+		   0, 0);
+
+  entry->nth_sample = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, 65534.0, 1.0);
+  gtk_table_attach(range_table,
+		   GTK_WIDGET(entry->nth_sample),
+		   1, 2,
+		   0, 1,
+		   GTK_FILL, GTK_FILL,
+		   0, 0);
+
+  entry->nth_channel = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, 65534.0, 1.0);
+  gtk_table_attach(range_table,
+		   GTK_WIDGET(entry->nth_channel),
+		   1, 2,
+		   1, 2,
+		   GTK_FILL, GTK_FILL,
+		   0, 0);
+
+  entry->count = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, 65534.0, 1.0);
+  gtk_table_attach(range_table,
+		   GTK_WIDGET(entry->count),
+		   1, 2,
+		   2, 3,
+		   GTK_FILL, GTK_FILL,
+		   0, 0);
+
+  /* the remove button */
+  remove = (GtkButton *) gtk_button_new_from_stock(GTK_STOCK_REMOVE);
+  gtk_table_attach(table,
+		   GTK_WIDGET(remove),
+		   2, 3,
+		   1, 2,
+		   GTK_FILL, GTK_FILL,
+		   0, 0);
+
+  /* and it's callback */
+  g_signal_connect(G_OBJECT(remove), "clicked",
+		   G_CALLBACK(ags_file_selection_remove_callback), table);
+
+  /* create an AgsInlinePlayer */
+  inline_player = ags_inline_player_new();
+  gtk_table_attach(table,
+		   GTK_WIDGET(inline_player),
+		   0, 1,
+		   2, 3,
+		   GTK_FILL|GTK_EXPAND, GTK_FILL|GTK_EXPAND,
+		   0, 0);    
+
+  return(table);
+}
+
 /**
  * ags_file_selection_set_entry:
  * @file_selection: an #AgsFileSelection
@@ -256,113 +360,11 @@ ags_file_selection_set_entry(AgsFileSelection *file_selection, GList *entry_list
 {
   AgsFileSelectionEntry *entry;
 
-  auto GtkTable* ags_file_selection_set_entry_new_entry();
-
-  GtkTable* ags_file_selection_set_entry_new_entry(){
-    GtkTable *table;
-    GtkTable *range_table;
-    GtkLabel *label;
-    GtkButton *remove;
-    AgsInlinePlayer *inline_player;
-
-    table = (GtkTable *) gtk_table_new(3, 3, FALSE);
-
-    /* the range buttons */
-    range_table = (GtkTable *) gtk_table_new(2, 3, FALSE);
-    gtk_table_attach(table,
-		     GTK_WIDGET(range_table),
-		     1, 3,
-		     0, 1,
-		     GTK_FILL, GTK_FILL,
-		     0, 0);
-
-    label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
-				      "label", "nth sample: ",
-				      "xalign", 0.0,
-				      NULL);
-    gtk_table_attach(range_table,
-		     GTK_WIDGET(label),
-		     0, 1,
-		     0, 1,
-		     GTK_FILL, GTK_FILL,
-		     0, 0);
-
-    label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
-				      "label", "nth channel: ",
-				      "xalign", 0.0,
-				      NULL);
-    gtk_table_attach(range_table,
-		     GTK_WIDGET(label),
-		     0, 1,
-		     1, 2,
-		     GTK_FILL, GTK_FILL,
-		     0, 0);
-
-    label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
-				      "label", "count: ",
-				      "xalign", 0.0,
-				      NULL);
-    gtk_table_attach(range_table,
-		     GTK_WIDGET(label),
-		     0, 1,
-		     2, 3,
-		     GTK_FILL, GTK_FILL,
-		     0, 0);
-
-    entry->nth_sample = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, 65534.0, 1.0);
-    gtk_table_attach(range_table,
-		     GTK_WIDGET(entry->nth_sample),
-		     1, 2,
-		     0, 1,
-		     GTK_FILL, GTK_FILL,
-		     0, 0);
-
-    entry->nth_channel = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, 65534.0, 1.0);
-    gtk_table_attach(range_table,
-		     GTK_WIDGET(entry->nth_channel),
-		     1, 2,
-		     1, 2,
-		     GTK_FILL, GTK_FILL,
-		     0, 0);
-
-    entry->count = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, 65534.0, 1.0);
-    gtk_table_attach(range_table,
-		     GTK_WIDGET(entry->count),
-		     1, 2,
-		     2, 3,
-		     GTK_FILL, GTK_FILL,
-		     0, 0);
-
-    /* the remove button */
-    remove = (GtkButton *) gtk_button_new_from_stock(GTK_STOCK_REMOVE);
-    gtk_table_attach(table,
-		     GTK_WIDGET(remove),
-		     2, 3,
-		     1, 2,
-		     GTK_FILL, GTK_FILL,
-		     0, 0);
-
-    /* and it's callback */
-    g_signal_connect(G_OBJECT(remove), "clicked",
-		     G_CALLBACK(ags_file_selection_remove_callback), table);
-
-    /* create an AgsInlinePlayer */
-    inline_player = ags_inline_player_new();
-    gtk_table_attach(table,
-		     GTK_WIDGET(inline_player),
-		     0, 1,
-		     2, 3,
-		     GTK_FILL|GTK_EXPAND, GTK_FILL|GTK_EXPAND,
-		     0, 0);    
-
-    return(table);
-  }
-
   while(entry_list != NULL){
     if(g_str_has_suffix(AGS_FILE_SELECTION_ENTRY(entry_list->data)->filename, ".sf2")){
       entry = AGS_FILE_SELECTION_ENTRY(entry_list->data);
 
-      entry->table = ags_file_selection_set_entry_new_entry();
+      entry->table = ags_file_selection_set_entry_new_entry(entry);
 
       entry->entry = (GtkWidget *) ags_sf2_chooser_new();
       gtk_table_attach(entry->table,
