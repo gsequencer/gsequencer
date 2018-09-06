@@ -37,6 +37,13 @@ void ags_function_get_property(GObject *gobject,
 			       GParamSpec *param_spec);
 void ags_function_finalize(GObject *gobject);
 
+gchar* ags_function_literal_solve_expand_functions(AgsFunction *function,
+						   gchar *transformed_function);
+gchar* ags_function_literal_solve_numeric_exponent_only(AgsFunction *function,
+							gchar *transformed_function);
+guint ags_function_literal_solve_find_max_exponent(AgsFunction *function,
+						   gchar *transformed_function);
+
 /**
  * SECTION:ags_function
  * @short_description: Function to translate values
@@ -509,6 +516,129 @@ ags_function_find_literals(AgsFunction *function,
   return(literals);
 }
 
+gchar*
+ags_function_literal_solve_expand_functions(AgsFunction *function,
+					    gchar *transformed_function)
+{
+  regmatch_t match_arr[1];
+    
+  gchar *expanded_functions;
+  gchar *offset, *close_offset;
+  gchar *str;
+  gchar *open_paranthesis, *close_paranthesis, *tmp_paranthesis;
+
+  int regexec_result;
+    
+  static gboolean regex_compiled = FALSE;
+
+  static regex_t function_regex;
+
+  static const char *function_pattern = "^(sin|cos|tan|asin|acos|atan)";
+
+  static const size_t max_matches = 1;
+    
+  /* compile regex */
+  pthread_mutex_lock(&regex_mutex);
+
+  if(!regex_compiled){
+    regex_compiled = TRUE;
+
+    regcomp(&function_regex, function_pattern, REG_EXTENDED);
+  }
+
+  pthread_mutex_unlock(&regex_mutex);
+
+  /*  */
+  expanded_functions = NULL;
+
+  str =
+    offset = g_strdup(transformed_function);
+  close_offset = NULL;
+
+  regexec_result = 0;
+    
+  while(regexec_result != REG_NOMATCH){
+    if((regexec_result = regexec(&function_regex, offset, max_matches, match_arr, 0)) == 0){
+      if(close_offset == NULL ||
+	 close_offset > match_arr[0].rm_so){
+	offset = (gchar *) match_arr[0].rm_so;
+
+	/* find close paranthesis */
+	open_paranthesis = offset;
+	  
+	while((open_paranthesis = strchr(open_paranthesis, '(')) != NULL &&
+	      close_paranthesis == NULL){
+	  close_paranthesis = strchr(open_paranthesis, ')');
+	  tmp_paranthesis = strchr(open_paranthesis, '(');
+
+	  if(tmp_paranthesis < close_paranthesis){
+	    close_paranthesis = NULL;
+	  }
+	}
+
+	close_offset = close_paranthesis;
+      }else{
+	if(close_offset != NULL){
+	  if(!g_strcmp0(offset,
+			"sin")){
+	  }else if(!g_strcmp0(offset,
+			      "cos")){
+	  }else if(!g_strcmp0(offset,
+			      "tan")){
+	  }else if(!g_strcmp0(offset,
+			      "asin")){
+	  }else if(!g_strcmp0(offset,
+			      "acos")){
+	  }else if(!g_strcmp0(offset,
+			      "atan")){
+	  }
+
+	    
+	}else{
+	  //NOTE:JK: you should report paranthesis mismatch
+	    
+	  break;
+	}
+      }
+    }
+  }
+
+  return(expanded_functions);
+}
+
+gchar*
+ags_function_literal_solve_numeric_exponent_only(AgsFunction *function,
+						 gchar *transformed_function)
+{
+  gchar *numeric_exponent_only;
+    
+  guint n_terms;
+
+  numeric_exponent_only = NULL;
+
+  return(numeric_exponent_only);
+}
+  
+guint
+ags_function_literal_solve_find_max_exponent(AgsFunction *function,
+					     gchar *transformed_function)
+{
+  regmatch_t match_arr[5];
+
+  static gboolean regex_compiled = FALSE;
+
+  static regex_t exponent_regex;
+
+  static const char *exponent_pattern = AGS_FUNCTION_EXPONENT_PATTERN;
+    
+  static const size_t max_matches = 5;
+    
+  max_exponent = 1;
+
+
+  return(max_exponent);
+}
+
 /**
  * ags_function_literal_solve:
  * @function: the #AgsFunction
@@ -527,124 +657,6 @@ ags_function_literal_solve(AgsFunction *function)
   
   guint max_exponent, available_exponent;
   guint i, j;
-
-  auto gchar* ags_function_literal_solve_expand_functions(gchar *transformed_function);
-  auto gchar* ags_function_literal_solve_numeric_exponent_only(gchar *transformed_function);
-  auto guint ags_function_literal_solve_find_max_exponent(gchar *transformed_function);
-
-  gchar* ags_function_literal_solve_expand_functions(gchar *transformed_function){
-    regmatch_t match_arr[1];
-    
-    gchar *expanded_functions;
-    gchar *offset, *close_offset;
-    gchar *str;
-    gchar *open_paranthesis, *close_paranthesis, *tmp_paranthesis;
-
-    int regexec_result;
-    
-    static gboolean regex_compiled = FALSE;
-
-    static regex_t function_regex;
-
-    static const char *function_pattern = "^(sin|cos|tan|asin|acos|atan)";
-
-    static const size_t max_matches = 1;
-    
-    /* compile regex */
-    pthread_mutex_lock(&regex_mutex);
-
-    if(!regex_compiled){
-      regex_compiled = TRUE;
-
-      regcomp(&function_regex, function_pattern, REG_EXTENDED);
-    }
-
-    pthread_mutex_unlock(&regex_mutex);
-
-    /*  */
-    expanded_functions = NULL;
-
-    str =
-      offset = g_strdup(transformed_function);
-    close_offset = NULL;
-
-    regexec_result = 0;
-    
-    while(regexec_result != REG_NOMATCH){
-      if((regexec_result = regexec(&function_regex, offset, max_matches, match_arr, 0)) == 0){
-	if(close_offset == NULL ||
-	   close_offset > match_arr[0].rm_so){
-	  offset = (gchar *) match_arr[0].rm_so;
-
-	  /* find close paranthesis */
-	  open_paranthesis = offset;
-	  
-	  while((open_paranthesis = strchr(open_paranthesis, '(')) != NULL &&
-		close_paranthesis == NULL){
-	    close_paranthesis = strchr(open_paranthesis, ')');
-	    tmp_paranthesis = strchr(open_paranthesis, '(');
-
-	    if(tmp_paranthesis < close_paranthesis){
-	      close_paranthesis = NULL;
-	    }
-	  }
-
-	  close_offset = close_paranthesis;
-	}else{
-	  if(close_offset != NULL){
-	    if(!g_strcmp0(offset,
-			  "sin")){
-	    }else if(!g_strcmp0(offset,
-				"cos")){
-	    }else if(!g_strcmp0(offset,
-				"tan")){
-	    }else if(!g_strcmp0(offset,
-				"asin")){
-	    }else if(!g_strcmp0(offset,
-				"acos")){
-	    }else if(!g_strcmp0(offset,
-				"atan")){
-	    }
-
-	    
-	  }else{
-	    //NOTE:JK: you should report paranthesis mismatch
-	    
-	    break;
-	  }
-	}
-      }
-    }
-
-    return(expanded_functions);
-  }
-
-  gchar* ags_function_literal_solve_numeric_exponent_only(gchar *transformed_function){
-    gchar *numeric_exponent_only;
-    
-    guint n_terms;
-
-    numeric_exponent_only = NULL;
-
-    return(numeric_exponent_only);
-  }
-  
-  guint ags_function_literal_solve_find_max_exponent(gchar *transformed_function){
-    regmatch_t match_arr[5];
-
-    static gboolean regex_compiled = FALSE;
-
-    static regex_t exponent_regex;
-
-    static const char *exponent_pattern = AGS_FUNCTION_EXPONENT_PATTERN;
-    
-    static const size_t max_matches = 5;
-    
-    max_exponent = 1;
-
-
-    return(max_exponent);
-  }
 
   normalized_function = NULL;
   

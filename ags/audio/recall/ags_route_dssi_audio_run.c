@@ -75,6 +75,11 @@ void ags_route_dssi_audio_run_read_resolve_dependency(AgsFileLookup *file_lookup
 void ags_route_dssi_audio_run_feed_midi(AgsRecall *recall,
 					AgsNote *note);
 
+void ags_route_dssi_audio_run_alloc_input_callback_feed_note(AgsRouteDssiAudioRun *route_dssi_audio_run,
+							     AgsNotation *notation,
+							     guint audio_start_mapping, guint audio_end_mapping,
+							     guint64 notation_counter);
+
 /**
  * SECTION:ags_route_dssi_audio_run
  * @short_description: route MIDI
@@ -1023,6 +1028,76 @@ ags_route_dssi_audio_run_feed_midi(AgsRecall *recall,
 }
 
 void
+ags_route_dssi_audio_run_alloc_input_callback_feed_note(AgsRouteDssiAudioRun *route_dssi_audio_run,
+							AgsNotation *notation,
+							guint audio_start_mapping, guint audio_end_mapping,
+							guint64 notation_counter)
+{
+  AgsNote *current_note;
+    
+  GList *start_note, *note;
+  GList *start_list, *list;
+
+  guint note_y;
+  guint note_x0;
+
+  if(!AGS_IS_NOTATION(notation)){
+    return;
+  }
+
+  start_list = NULL;    
+
+  g_object_get(notation,
+	       "note", &start_note,
+	       NULL);
+
+  note = start_note;
+    
+  while(note != NULL){
+    current_note = AGS_NOTE(note->data);
+
+    g_object_get(note,
+		 "x0", &note_x0,
+		 "y", &note_y,
+		 NULL);
+    
+    //    g_message("--- %f %f ; %d %d",
+    //	      note->stream_delay, delay,
+    //	      note_x0, route_dssi_audio_run->count_beats_audio_run->notation_counter);
+
+    //FIXME:JK: should consider delay
+    if(note_y >= audio_start_mapping &&
+       note_y < audio_end_mapping &&
+       note_x0 == notation_counter){ // && floor(note->stream_delay) == floor(delay)
+      start_list = g_list_prepend(start_list,
+				  current_note);
+      g_object_ref(current_note);
+    }else if(note_x0 > notation_counter){
+      break;
+    }
+    
+    /* iterate */    
+    note = note->next;
+  }
+
+  start_list = g_list_reverse(start_list);
+    
+  /* feed midi */
+  list = start_list;
+    
+  while(list != NULL){
+    ags_route_dssi_audio_run_feed_midi((AgsRecall *) route_dssi_audio_run,
+				       list->data);
+    g_object_unref(list->data);
+      
+    list = list->next;
+  }
+
+  g_list_free(start_note);
+  g_list_free(start_list);
+}
+
+void
 ags_route_dssi_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_run,
 					      guint nth_run,
 					      gdouble delay, guint attack,
@@ -1041,74 +1116,7 @@ ags_route_dssi_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_run,
 
   guint audio_channel;
   guint64 notation_counter;
-  guint audio_start_mapping, audio_end_mapping;
-  
-  auto void ags_route_dssi_audio_run_alloc_input_callback_feed_note(AgsNotation *notation);
-
-  void ags_route_dssi_audio_run_alloc_input_callback_feed_note(AgsNotation *notation){
-    AgsNote *current_note;
-    
-    GList *start_note, *note;
-    GList *start_list, *list;
-
-    guint note_y;
-    guint note_x0;
-
-    if(!AGS_IS_NOTATION(notation)){
-      return;
-    }
-
-    start_list = NULL;    
-
-    g_object_get(notation,
-		 "note", &start_note,
-		 NULL);
-
-    note = start_note;
-    
-    while(note != NULL){
-      current_note = AGS_NOTE(note->data);
-
-      g_object_get(note,
-		   "x0", &note_x0,
-		   "y", &note_y,
-		   NULL);
-    
-      //    g_message("--- %f %f ; %d %d",
-      //	      note->stream_delay, delay,
-      //	      note_x0, route_dssi_audio_run->count_beats_audio_run->notation_counter);
-
-      //FIXME:JK: should consider delay
-      if(note_y >= audio_start_mapping &&
-	 note_y < audio_end_mapping &&
-	 note_x0 == notation_counter){ // && floor(note->stream_delay) == floor(delay)
-	start_list = g_list_prepend(start_list,
-				    current_note);
-	g_object_ref(current_note);
-      }else if(note_x0 > notation_counter){
-	break;
-      }
-    
-      /* iterate */    
-      note = note->next;
-    }
-
-    start_list = g_list_reverse(start_list);
-    
-    /* feed midi */
-    list = start_list;
-    
-    while(list != NULL){
-      ags_route_dssi_audio_run_feed_midi((AgsRecall *) route_dssi_audio_run,
-					 list->data);
-      g_object_unref(list->data);
-      
-      list = list->next;
-    }
-
-    g_list_free(start_note);
-    g_list_free(start_list);
-  }
+  guint audio_start_mapping, audio_end_mapping; 
   
   if((guint) floor(delay) != 0){
     //    g_message("d %f", delay);
@@ -1143,7 +1151,10 @@ ags_route_dssi_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_run,
     notation = list->data;
   }
   
-  ags_route_dssi_audio_run_alloc_input_callback_feed_note(notation);
+  ags_route_dssi_audio_run_alloc_input_callback_feed_note(route_dssi_audio_run,
+							  notation,
+							  audio_start_mapping, audio_end_mapping,
+							  notation_counter);
   
   /* feed note - second attempt */
   if(route_dssi_audio_run->timestamp->timer.ags_offset.offset != 0){
@@ -1157,7 +1168,10 @@ ags_route_dssi_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_run,
       notation = list->data;
     }
 
-    ags_route_dssi_audio_run_alloc_input_callback_feed_note(notation);
+    ags_route_dssi_audio_run_alloc_input_callback_feed_note(route_dssi_audio_run,
+							    notation,
+							    audio_start_mapping, audio_end_mapping,
+							    notation_counter);
   }
 
   g_list_free(start_list);

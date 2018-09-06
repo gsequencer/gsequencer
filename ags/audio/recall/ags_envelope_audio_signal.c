@@ -45,6 +45,12 @@ void ags_envelope_audio_signal_finalize(GObject *gobject);
 
 void ags_envelope_audio_signal_run_inter(AgsRecall *recall);
 
+gdouble ags_envelope_audio_signal_run_inter_get_ratio(guint x0, gdouble y0,
+						      guint x1, gdouble y1);
+gdouble ags_envelope_audio_signal_run_inter_get_volume(gdouble volume, gdouble ratio,
+						       guint start_x, guint current_x,
+						       guint length);
+
 /**
  * SECTION:ags_envelope_audio_signal
  * @short_description: envelopes audio signal
@@ -145,6 +151,29 @@ ags_envelope_audio_signal_finalize(GObject *gobject)
   G_OBJECT_CLASS(ags_envelope_audio_signal_parent_class)->finalize(gobject);
 }
 
+gdouble
+ags_envelope_audio_signal_run_inter_get_ratio(guint x0, gdouble y0,
+					      guint x1, gdouble y1)
+{
+  if(x1 - x0 == 0){
+    return(1.0);
+  }else{
+    return((y1 - y0) / (x1 - x0));
+  }
+}
+
+gdouble
+ags_envelope_audio_signal_run_inter_get_volume(gdouble volume, gdouble ratio,
+					       guint start_x, guint current_x,
+					       guint length)
+{
+  if(current_x - start_x == 0){
+    return(volume);
+  }else{
+    return(volume + ratio * (length / (current_x - start_x)));
+  }
+}
+
 void
 ags_envelope_audio_signal_run_inter(AgsRecall *recall)
 {
@@ -179,32 +208,7 @@ ags_envelope_audio_signal_run_inter(AgsRecall *recall)
   void (*parent_class_run_inter)(AgsRecall *recall);
   
   pthread_mutex_t *recall_mutex;
-
-  auto gdouble ags_envelope_audio_signal_run_inter_get_ratio(guint x0, gdouble y0,
-							     guint x1, gdouble y1);
-  auto gdouble ags_envelope_audio_signal_run_inter_get_volume(gdouble volume, gdouble ratio,
-							      guint start_x, guint current_x,
-							      guint length);
     
-  gdouble ags_envelope_audio_signal_run_inter_get_ratio(guint x0, gdouble y0,
-							guint x1, gdouble y1){
-    if(x1 - x0 == 0){
-      return(1.0);
-    }else{
-      return((y1 - y0) / (x1 - x0));
-    }
-  }
-
-  gdouble ags_envelope_audio_signal_run_inter_get_volume(gdouble volume, gdouble ratio,
-							 guint start_x, guint current_x,
-							 guint length){
-    if(current_x - start_x == 0){
-      return(volume);
-    }else{
-      return(volume + ratio * (length / (current_x - start_x)));
-    }
-  }
-
   envelope_audio_signal = AGS_ENVELOPE_AUDIO_SIGNAL(recall);
 
   /* get mutex */

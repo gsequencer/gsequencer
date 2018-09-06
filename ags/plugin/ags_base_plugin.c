@@ -41,6 +41,8 @@ void ags_base_plugin_get_property(GObject *gobject,
 void ags_base_plugin_dispose(GObject *gobject);
 void ags_base_plugin_finalize(GObject *gobject);
 
+gint ags_base_plugin_sort_compare_function(gpointer a, gpointer b);
+
 /**
  * SECTION:ags_base_plugin
  * @short_description: The base plugin class
@@ -1164,6 +1166,56 @@ ags_base_plugin_find_ui_effect_index(GList *base_plugin, gchar *ui_filename, gui
   return(NULL);
 }
 
+gint
+ags_base_plugin_sort_compare_function(gpointer a, gpointer b)
+{
+  AgsBasePlugin *a_plugin;
+  AgsBasePlugin *b_plugin;
+    
+  gchar *a_effect;
+  gchar *b_effect;
+
+  gint retval;
+    
+  pthread_mutex_t *a_plugin_mutex;
+  pthread_mutex_t *b_plugin_mutex;
+
+  /* a and b */
+  a_plugin = AGS_BASE_PLUGIN(a);
+  b_plugin = AGS_BASE_PLUGIN(b);
+    
+  /* get base plugin mutex - a and b */
+  pthread_mutex_lock(ags_base_plugin_get_class_mutex());
+  
+  a_plugin_mutex = a_plugin->obj_mutex;
+  b_plugin_mutex = b_plugin->obj_mutex;
+  
+  pthread_mutex_unlock(ags_base_plugin_get_class_mutex());
+
+  /* duplicate effect - a */
+  pthread_mutex_lock(a_plugin_mutex);
+
+  a_effect = g_strdup(a_plugin->effect);
+    
+  pthread_mutex_unlock(a_plugin_mutex);
+
+  /* duplicate effect - b */
+  pthread_mutex_lock(b_plugin_mutex);
+
+  b_effect = g_strdup(b_plugin->effect);
+    
+  pthread_mutex_unlock(b_plugin_mutex);
+
+  /* compare and free */
+  retval = strcmp(a_effect,
+		  b_effect);
+
+  g_free(a_effect);
+  g_free(b_effect);
+    
+  return(retval);
+}
+
 /**
  * ags_base_plugin_sort:
  * @base_plugin: the #GList-struct containing #AgsBasePlugin
@@ -1179,56 +1231,6 @@ ags_base_plugin_sort(GList *base_plugin)
 {  
   GList *start;
   
-  auto gint ags_base_plugin_sort_compare_function(gpointer a, gpointer b);
-
-  gint ags_base_plugin_sort_compare_function(gpointer a, gpointer b){
-    AgsBasePlugin *a_plugin;
-    AgsBasePlugin *b_plugin;
-    
-    gchar *a_effect;
-    gchar *b_effect;
-
-    gint retval;
-    
-    pthread_mutex_t *a_plugin_mutex;
-    pthread_mutex_t *b_plugin_mutex;
-
-    /* a and b */
-    a_plugin = AGS_BASE_PLUGIN(a);
-    b_plugin = AGS_BASE_PLUGIN(b);
-    
-    /* get base plugin mutex - a and b */
-    pthread_mutex_lock(ags_base_plugin_get_class_mutex());
-  
-    a_plugin_mutex = a_plugin->obj_mutex;
-    b_plugin_mutex = b_plugin->obj_mutex;
-  
-    pthread_mutex_unlock(ags_base_plugin_get_class_mutex());
-
-    /* duplicate effect - a */
-    pthread_mutex_lock(a_plugin_mutex);
-
-    a_effect = g_strdup(a_plugin->effect);
-    
-    pthread_mutex_unlock(a_plugin_mutex);
-
-    /* duplicate effect - b */
-    pthread_mutex_lock(b_plugin_mutex);
-
-    b_effect = g_strdup(b_plugin->effect);
-    
-    pthread_mutex_unlock(b_plugin_mutex);
-
-    /* compare and free */
-    retval = strcmp(a_effect,
-		    b_effect);
-
-    g_free(a_effect);
-    g_free(b_effect);
-    
-    return(retval);
-  }
-
   if(base_plugin == NULL){
     return(NULL);
   }

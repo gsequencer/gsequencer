@@ -69,6 +69,18 @@ void ags_play_notation_audio_run_write_resolve_dependency(AgsFileLookup *file_lo
 void ags_play_notation_audio_run_read_resolve_dependency(AgsFileLookup *file_lookup,
 							 GObject *recall);
 
+void ags_play_notation_audio_run_alloc_input_callback_play_notation(AgsAudio *audio,
+								    AgsChannel *channel,
+								    GObject *output_soundcard,
+								    AgsNotation *notation,
+								    AgsDelayAudio *delay_audio,
+								    AgsRecyclingContext *recycling_context,
+								    GList *start_current_position,
+								    guint notation_counter,
+								    guint pads,
+								    guint samplerate,
+								    guint attack);
+
 /**
  * SECTION:ags_play_notation_audio_run
  * @short_description: play notation
@@ -826,6 +838,211 @@ ags_play_notation_audio_run_resolve_dependency(AgsRecall *recall)
 }
 
 void
+ags_play_notation_audio_run_alloc_input_callback_play_notation(AgsAudio *audio,
+							       AgsChannel *channel,
+							       GObject *output_soundcard,
+							       AgsNotation *notation,
+							       AgsDelayAudio *delay_audio,
+							       AgsRecyclingContext *recycling_context,
+							       GList *start_current_position,
+							       guint notation_counter,
+							       guint pads,
+							       guint samplerate,
+							       guint attack)
+{
+  AgsChannel *selected_channel, *next_pad;
+  AgsRecycling *recycling, *last_recycling;
+  AgsRecycling *end_recycling;
+  AgsAudioSignal *audio_signal;
+  AgsPort *port;
+  AgsNote *note;
+    
+  GList *current_position;
+
+  gdouble notation_delay;
+
+  GValue value = {0,};
+
+  /* get notation delay */
+  g_object_get(delay_audio,
+	       "notation-delay", &port,
+	       NULL);
+    
+  g_value_init(&value,
+	       G_TYPE_DOUBLE);
+    
+  ags_port_safe_read(port,
+		     &value);
+
+  notation_delay = g_value_get_double(&value);
+  g_value_unset(&value);
+
+  /*  */
+  g_object_get(notation,
+	       "note", &start_current_position,
+	       NULL);
+
+  current_position = start_current_position;
+    
+  while(current_position != NULL){
+    AgsRecallID *child_recall_id;
+
+    GList *start_list, *list;
+
+    guint note_x0;
+          
+    note = AGS_NOTE(current_position->data);
+
+    g_object_get(note,
+		 "x0", &note_x0,
+		 NULL);
+  
+    if(note_x0 == notation_counter){      
+      if(ags_audio_test_behaviour_flags(audio, AGS_SOUND_BEHAVIOUR_REVERSE_MAPPING)){
+	selected_channel = ags_channel_pad_nth(channel,
+					       pads - note->y - 1);
+      }else{
+	selected_channel = ags_channel_pad_nth(channel,
+					       note->y);
+      }
+
+      if(selected_channel == NULL){
+	current_position = current_position->next;
+
+	continue;
+      }
+
+      /* get child recall id */
+      g_object_get(selected_channel,
+		   "recall-id", &start_list,
+		   NULL);
+
+      list = start_list;
+      child_recall_id = NULL;
+
+      while(list != NULL){
+	AgsRecallID *current_recall_id;
+	AgsRecyclingContext *current_recycling_context, *current_parent_recycling_context;
+
+	g_object_get(list->data,
+		     "recycling-context", &current_recycling_context,
+		     NULL);
+
+	g_object_get(current_recycling_context,
+		     "parent", &current_parent_recycling_context,
+		     NULL);
+	  
+	if(current_parent_recycling_context == recycling_context){
+	  child_recall_id = (AgsRecallID *) list->data;
+	    
+	  break;
+	}
+
+	/* iterate */
+	list = list->next;
+      }
+
+      g_list_free(start_list);
+
+      /* recycling */
+      g_object_get(selected_channel,
+		   "first-recycling", &recycling,
+		   "last-recycling", &last_recycling,
+		   NULL);
+
+      g_object_get(last_recycling,
+		   "next", &end_recycling,
+		   NULL);
+	
+      g_object_set(note,
+		   "rt-attack", attack,
+		   NULL);
+
+#ifdef AGS_DEBUG	
+      g_message("playing[%u|%u]: %u | %u\n", audio_channel, selected_channel->pad, note->x[0], note->y);
+#endif
+	
+      while(recycling != end_recycling){
+	if(!ags_recall_global_get_rt_safe()){
+	  /* create audio signal */
+	  audio_signal = ags_audio_signal_new((GObject *) output_soundcard,
+					      (GObject *) recycling,
+					      (GObject *) child_recall_id);
+	  g_object_set(audio_signal,
+		       "note", note,
+		       NULL);
+	  
+	  if(ags_audio_test_behaviour_flags(audio, AGS_SOUND_BEHAVIOUR_PATTERN_MODE)){
+	    ags_recycling_create_audio_signal_with_defaults(recycling,
+							    audio_signal,
+							    0.0, 0);
+	  }else{
+	    guint note_x0, note_x1;
+
+	    g_object_get(note,
+			 "x0", &note_x0,
+			 "x1", &note_x1,
+			 NULL);
+	      
+	    /* create audio signal with frame count */
+	    ags_recycling_create_audio_signal_with_frame_count(recycling,
+							       audio_signal,
+							       (guint) (((gdouble) samplerate / notation_delay) * (gdouble) (note_x1 - note_x0)),
+							       0.0, 0);
+	  }
+	  
+	  audio_signal->stream_current = audio_signal->stream;
+	    
+	  ags_connectable_connect(AGS_CONNECTABLE(audio_signal));
+
+	  /* lock and add */
+	  ags_recycling_add_audio_signal(recycling,
+					 audio_signal);
+	  //	g_object_unref(audio_signal);
+	}else{
+	  GList *start_list, *list;
+
+	  g_object_get(recycling,
+		       "audio-signal", &start_list,
+		       NULL);
+	    
+	  audio_signal = NULL;
+	  list = ags_audio_signal_find_by_recall_id(start_list,
+						    child_recall_id);
+	    
+	  if(list != NULL){
+	    audio_signal = list->data;
+
+	    g_object_set(audio_signal,
+			 "delay", notation_delay,
+			 "note", note,
+			 NULL);
+	  }
+
+	  g_object_set(note,
+		       "rt-offset", 0,
+		       NULL);
+
+	  g_list_free(start_list);
+	}
+	  
+	/* iterate */
+	g_object_get(recycling,
+		     "next", &recycling,
+		     NULL);
+      }
+    }else if(note_x0 > notation_counter){
+      break;
+    }
+
+    /* iterate */
+    current_position = current_position->next;
+  }
+
+  g_list_free(start_current_position);
+}
+
+void
 ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_run,
 						 guint nth_run,
 						 gdouble delay, guint attack,
@@ -833,12 +1050,8 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
 {
   AgsAudio *audio;
   AgsChannel *output, *input;
-  AgsChannel *selected_channel, *channel, *next_pad;
-  AgsRecycling *recycling, *last_recycling;
-  AgsRecycling *end_recycling;
-  AgsAudioSignal *audio_signal;
+  AgsChannel *channel;
   AgsNotation *notation;
-  AgsNote *note;
   AgsRecallID *recall_id;
   AgsRecyclingContext *recycling_context;
   AgsPlayNotationAudio *play_notation_audio;
@@ -865,195 +1078,6 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
   pthread_mutex_t *audio_mutex;
   pthread_mutex_t *channel_mutex;
   pthread_mutex_t *recycling_mutex;
-
-  auto void ags_play_notation_audio_run_alloc_input_callback_play_notation(AgsNotation *notation);
-
-  void ags_play_notation_audio_run_alloc_input_callback_play_notation(AgsNotation *notation)
-  {
-    AgsPort *port;
-    
-    gdouble notation_delay;
-
-    GValue value = {0,};
-
-    /* get notation delay */
-    g_object_get(delay_audio,
-		 "notation-delay", &port,
-		 NULL);
-    
-    g_value_init(&value,
-		 G_TYPE_DOUBLE);
-    
-    ags_port_safe_read(port,
-		       &value);
-
-    notation_delay = g_value_get_double(&value);
-    g_value_unset(&value);
-
-    /*  */
-    g_object_get(notation,
-		 "note", &start_current_position,
-		 NULL);
-
-    current_position = start_current_position;
-    
-    while(current_position != NULL){
-      AgsRecallID *child_recall_id;
-
-      GList *start_list, *list;
-
-      guint note_x0;
-          
-      note = AGS_NOTE(current_position->data);
-
-      g_object_get(note,
-		   "x0", &note_x0,
-		   NULL);
-  
-      if(note_x0 == notation_counter){      
-	if(ags_audio_test_behaviour_flags(audio, AGS_SOUND_BEHAVIOUR_REVERSE_MAPPING)){
-	  selected_channel = ags_channel_pad_nth(channel,
-						 pads - note->y - 1);
-	}else{
-	  selected_channel = ags_channel_pad_nth(channel,
-						 note->y);
-	}
-
-	if(selected_channel == NULL){
-	  current_position = current_position->next;
-
-	  continue;
-	}
-
-	/* get child recall id */
-	g_object_get(selected_channel,
-		     "recall-id", &start_list,
-		     NULL);
-
-	list = start_list;
-	child_recall_id = NULL;
-
-	while(list != NULL){
-	  AgsRecallID *current_recall_id;
-	  AgsRecyclingContext *current_recycling_context, *current_parent_recycling_context;
-
-	  g_object_get(list->data,
-		       "recycling-context", &current_recycling_context,
-		       NULL);
-
-	  g_object_get(current_recycling_context,
-		       "parent", &current_parent_recycling_context,
-		       NULL);
-	  
-	  if(current_parent_recycling_context == recycling_context){
-	    child_recall_id = (AgsRecallID *) list->data;
-	    
-	    break;
-	  }
-
-	  /* iterate */
-	  list = list->next;
-	}
-
-	g_list_free(start_list);
-
-	/* recycling */
-	g_object_get(selected_channel,
-		     "first-recycling", &recycling,
-		     "last-recycling", &last_recycling,
-		     NULL);
-
-	g_object_get(last_recycling,
-		     "next", &end_recycling,
-		     NULL);
-	
-	g_object_set(note,
-		     "rt-attack", attack,
-		     NULL);
-
-#ifdef AGS_DEBUG	
-	g_message("playing[%u|%u]: %u | %u\n", audio_channel, selected_channel->pad, note->x[0], note->y);
-#endif
-	
-	while(recycling != end_recycling){
-	  if(!ags_recall_global_get_rt_safe()){
-	    /* create audio signal */
-	    audio_signal = ags_audio_signal_new((GObject *) output_soundcard,
-						(GObject *) recycling,
-						(GObject *) child_recall_id);
-	    g_object_set(audio_signal,
-			 "note", note,
-			 NULL);
-	  
-	    if(ags_audio_test_behaviour_flags(audio, AGS_SOUND_BEHAVIOUR_PATTERN_MODE)){
-	      ags_recycling_create_audio_signal_with_defaults(recycling,
-							      audio_signal,
-							      0.0, 0);
-	    }else{
-	      guint note_x0, note_x1;
-
-	      g_object_get(note,
-			   "x0", &note_x0,
-			   "x1", &note_x1,
-			   NULL);
-	      
-	      /* create audio signal with frame count */
-	      ags_recycling_create_audio_signal_with_frame_count(recycling,
-								 audio_signal,
-								 (guint) (((gdouble) samplerate / notation_delay) * (gdouble) (note_x1 - note_x0)),
-								 0.0, 0);
-	    }
-	  
-	    audio_signal->stream_current = audio_signal->stream;
-	    
-	    ags_connectable_connect(AGS_CONNECTABLE(audio_signal));
-
-	    /* lock and add */
-	    ags_recycling_add_audio_signal(recycling,
-					   audio_signal);
-	    //	g_object_unref(audio_signal);
-	  }else{
-	    GList *start_list, *list;
-
-	    g_object_get(recycling,
-			 "audio-signal", &start_list,
-			 NULL);
-	    
-	    audio_signal = NULL;
-	    list = ags_audio_signal_find_by_recall_id(start_list,
-						      child_recall_id);
-	    
-	    if(list != NULL){
-	      audio_signal = list->data;
-
-	      g_object_set(audio_signal,
-			   "delay", notation_delay,
-			   "note", note,
-			   NULL);
-	    }
-
-	    g_object_set(note,
-			 "rt-offset", 0,
-			 NULL);
-
-	    g_list_free(start_list);
-	  }
-	  
-	  /* iterate */
-	  g_object_get(recycling,
-		       "next", &recycling,
-		       NULL);
-	}
-      }else if(note_x0 > notation_counter){
-	break;
-      }
-
-      /* iterate */
-      current_position = current_position->next;
-    }
-
-    g_list_free(start_current_position);
-  }
   
   if(delay != 0.0){
     //    g_message("d %f", delay);
@@ -1142,7 +1166,17 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
   }
 
   if(notation != NULL){
-    ags_play_notation_audio_run_alloc_input_callback_play_notation(notation);
+    ags_play_notation_audio_run_alloc_input_callback_play_notation(audio,
+								   channel,
+								   output_soundcard,
+								   notation,
+								   delay_audio,
+								   recycling_context,
+								   start_current_position,
+								   notation_counter,
+								   pads,
+								   samplerate,
+								   attack);
   }  
 
   g_list_free(start_list);

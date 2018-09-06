@@ -69,6 +69,10 @@ void ags_file_read_port_resolve_port_value(AgsFileLookup *file_lookup,
 void ags_file_read_task_resolve_parameter(AgsFileLookup *file_lookup,
 					  AgsTask *task);
 
+GParameter* ags_file_write_recall_container_parameter(GList *list, GParameter *parameter, gchar *prop, gint *n_params);
+
+void ags_file_read_stream_list_sort(GList **stream, guint *index);
+
 void
 ags_file_read_soundcard(AgsFile *file, xmlNode *node, GObject **soundcard)
 {
@@ -2151,6 +2155,48 @@ ags_file_read_recall_container_resolve_value(AgsFileLookup *file_lookup,
   }
 }
 
+GParameter*
+ags_file_write_recall_container_parameter(GList *list, GParameter *parameter, gchar *prop, gint *n_params)
+{
+  gint i;
+
+  if(n_params == NULL){
+    i = 0;
+  }else{
+    i = *n_params;
+  }
+
+  while(list != NULL){
+    if((AGS_RECALL_TEMPLATE & (AGS_RECALL(list->data)->flags)) == 0){
+      list = list->next;
+      continue;
+    }
+
+    if(parameter == NULL){
+      parameter = (GParameter *) malloc(sizeof(GParameter));
+    }else{
+      parameter = (GParameter *) realloc(parameter,
+					 (i + 1) * sizeof(GParameter));
+    }
+
+    parameter[i].name = prop;
+
+    memset(&(parameter[i].value), 0, sizeof(GValue));
+    g_value_init(&(parameter[i].value), G_TYPE_OBJECT);
+    g_value_set_object(&(parameter[i].value),
+		       G_OBJECT(list->data));
+
+    list = list->next;
+    i++;
+  }
+
+  if(n_params != NULL){
+    *n_params = i;
+  }
+
+  return(parameter);
+}
+
 xmlNode*
 ags_file_write_recall_container(AgsFile *file, xmlNode *parent, AgsRecallContainer *recall_container)
 {
@@ -2159,48 +2205,6 @@ ags_file_write_recall_container(AgsFile *file, xmlNode *parent, AgsRecallContain
   GList *list;
   gchar *id;
   gint n_params;
-
-  auto GParameter* ags_file_write_recall_container_parameter(GList *list, GParameter *parameter, gchar *prop, gint *n_params);
-
-  GParameter* ags_file_write_recall_container_parameter(GList *list, GParameter *parameter, gchar *prop, gint *n_params){
-    gint i;
-
-    if(n_params == NULL){
-      i = 0;
-    }else{
-      i = *n_params;
-    }
-
-    while(list != NULL){
-      if((AGS_RECALL_TEMPLATE & (AGS_RECALL(list->data)->flags)) == 0){
-	list = list->next;
-	continue;
-      }
-
-      if(parameter == NULL){
-	parameter = (GParameter *) malloc(sizeof(GParameter));
-      }else{
-	parameter = (GParameter *) realloc(parameter,
-					   (i + 1) * sizeof(GParameter));
-      }
-
-      parameter[i].name = prop;
-
-      memset(&(parameter[i].value), 0, sizeof(GValue));
-      g_value_init(&(parameter[i].value), G_TYPE_OBJECT);
-      g_value_set_object(&(parameter[i].value),
-			 G_OBJECT(list->data));
-
-      list = list->next;
-      i++;
-    }
-
-    if(n_params != NULL){
-      *n_params = i;
-    }
-
-    return(parameter);
-  }
 
   id = ags_id_generator_create_uuid();
 
@@ -3675,6 +3679,44 @@ ags_file_write_stream(AgsFile *file, xmlNode *parent,
 }
 
 void
+ags_file_read_stream_list_sort(GList **stream, guint *index)
+{
+  GList *start, *list;
+  GList *sorted;
+  guint stream_length;
+  guint i, i_stop;
+  guint j, k;
+
+  start =
+    list = *stream;
+
+  stream_length = 
+    i_stop = g_list_length(list);
+
+  sorted = NULL;
+
+  while(list != NULL){
+    j = index[stream_length - i_stop];
+
+    for(i = 0; i < stream_length - i_stop; i++){
+      if(j < index[i]){
+	break;
+      }
+    }
+      
+    sorted = g_list_insert(sorted,
+			   list->data,
+			   i);
+      
+    i_stop--;
+    list = list->next;
+  }
+
+  *stream = sorted;
+  g_list_free(start);
+}
+
+void
 ags_file_read_stream_list(AgsFile *file, xmlNode *node,
 			  GList **stream,
 			  guint buffer_size)
@@ -3684,45 +3726,7 @@ ags_file_read_stream_list(AgsFile *file, xmlNode *node,
   GList *list;
   guint *index;
   guint i;
-
-  auto void ags_file_read_stream_list_sort(GList **stream, guint *index);
-
-  void ags_file_read_stream_list_sort(GList **stream, guint *index){
-    GList *start, *list;
-    GList *sorted;
-    guint stream_length;
-    guint i, i_stop;
-    guint j, k;
-
-    start =
-      list = *stream;
-
-    stream_length = 
-      i_stop = g_list_length(list);
-
-    sorted = NULL;
-
-    while(list != NULL){
-      j = index[stream_length - i_stop];
-
-      for(i = 0; i < stream_length - i_stop; i++){
-	if(j < index[i]){
-	  break;
-	}
-      }
-      
-      sorted = g_list_insert(sorted,
-			     list->data,
-			     i);
-      
-      i_stop--;
-      list = list->next;
-    }
-
-    *stream = sorted;
-    g_list_free(start);
-  }
-
+  
   child = node->children;
 
   list = NULL;
