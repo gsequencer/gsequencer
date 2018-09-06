@@ -252,11 +252,10 @@ ags_pulse_server_class_init(AgsPulseServerClass *pulse_server)
    * 
    * Since: 2.0.0
    */
-  param_spec = g_param_spec_object("pulse-client",
-				   i18n_pspec("pulse client list"),
-				   i18n_pspec("The pulse client list"),
-				   AGS_TYPE_PULSE_CLIENT,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  param_spec = g_param_spec_pointer("pulse-client",
+				    i18n_pspec("pulse client list"),
+				    i18n_pspec("The pulse client list"),
+				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_PULSE_CLIENT,
 				  param_spec);
@@ -483,7 +482,7 @@ ags_pulse_server_set_property(GObject *gobject,
     {
       GObject *client;
 
-      client = (GObject *) g_value_get_object(value);
+      client = (GObject *) g_value_get_pointer(value);
 
       pthread_mutex_lock(pulse_server_mutex);
 
@@ -1335,6 +1334,13 @@ ags_pulse_server_register_soundcard(AgsSoundServer *sound_server,
 			  "ags-default-client");
     initial_set = TRUE;    
   }
+
+  /* get pulse client mutex */
+  pthread_mutex_lock(ags_pulse_client_get_class_mutex());
+  
+  pulse_client_mutex = default_client->obj_mutex;
+  
+  pthread_mutex_unlock(ags_pulse_client_get_class_mutex());
 
   /* get context */
   pthread_mutex_lock(pulse_client_mutex);

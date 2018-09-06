@@ -1171,7 +1171,7 @@ ags_pulse_client_activate(AgsPulseClient *pulse_client)
   if(!AGS_IS_PULSE_CLIENT(pulse_client)){
     return;
   }
-  
+
   /* get pulse client mutex */
   pthread_mutex_lock(ags_pulse_client_get_class_mutex());
   

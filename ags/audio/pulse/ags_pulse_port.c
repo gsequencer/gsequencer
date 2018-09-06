@@ -1119,7 +1119,7 @@ ags_pulse_port_register(AgsPulsePort *pulse_port,
   }
 
 #ifdef AGS_WITH_PULSE
-  if(is_audio){  
+  if(is_audio){
     ags_pulse_port_set_flags(pulse_port, AGS_PULSE_PORT_IS_AUDIO);
 
     pa_stream_set_write_callback(stream,
@@ -1235,7 +1235,7 @@ ags_pulse_port_stream_request_callback(pa_stream *stream, size_t length, AgsPuls
   pthread_mutex_t *device_mutex;
   pthread_mutex_t *callback_mutex;
   pthread_mutex_t *callback_finish_mutex;
-  
+    
   if(pulse_port == NULL){
     return;
   }
