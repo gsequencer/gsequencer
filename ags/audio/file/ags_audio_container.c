@@ -937,7 +937,7 @@ ags_audio_container_read_audio_signal(AgsAudioContainer *audio_container)
   GList *list;
 
   if(!AGS_IS_AUDIO_CONTAINER(audio_container)){
-    return;
+    return(NULL);
   }
 
   sound_resource =
