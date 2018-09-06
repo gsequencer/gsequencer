@@ -722,7 +722,10 @@ ags_buffer_set_buffer_size(AgsBuffer *buffer,
     }
     break;
   default:
+    pthread_mutex_unlock(buffer_mutex);
+
     g_warning("ags_buffer_set_buffer_size(): unsupported word size");
+    
     return;
   }
 
