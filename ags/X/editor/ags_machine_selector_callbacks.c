@@ -174,6 +174,10 @@ ags_machine_selector_popup_reverse_mapping_callback(GtkWidget *menu_item, AgsMac
 {
   AgsNotationEditor *notation_editor;
 
+  if((AGS_MACHINE_SELECTOR_BLOCK_REVERSE_MAPPING & (machine_selector->flags)) != 0){
+    return;
+  }
+  
   notation_editor = (AgsNotationEditor *) gtk_widget_get_ancestor((GtkWidget *) machine_selector,
 								  AGS_TYPE_NOTATION_EDITOR);
   

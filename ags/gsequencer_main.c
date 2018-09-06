@@ -386,7 +386,7 @@ main(int argc, char **argv)
   		       G_LOG_LEVEL_CRITICAL);
 
   g_log_set_fatal_mask("GLib-GObject",
-  		       G_LOG_LEVEL_CRITICAL);
+  		       G_LOG_LEVEL_WARNING | G_LOG_LEVEL_CRITICAL);
 
   g_log_set_fatal_mask(NULL,
   		       G_LOG_LEVEL_WARNING | G_LOG_LEVEL_CRITICAL);  

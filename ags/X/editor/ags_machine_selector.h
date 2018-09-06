@@ -44,6 +44,7 @@ typedef enum{
   AGS_MACHINE_SELECTOR_NOTATION               = 1 <<  3,
   AGS_MACHINE_SELECTOR_AUTOMATION             = 1 <<  4,
   AGS_MACHINE_SELECTOR_WAVE                   = 1 <<  5,
+  AGS_MACHINE_SELECTOR_BLOCK_REVERSE_MAPPING  = 1 <<  6,
 }AgsMachineSelectorFlags;
 
 struct _AgsMachineSelector
