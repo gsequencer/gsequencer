@@ -3063,6 +3063,9 @@ ags_channel_set_ability_flags(AgsChannel *channel, guint ability_flags)
 
       channel_thread = ags_channel_thread_new(soundcard,
 					      channel);
+      ags_channel_thread_set_sound_scope(channel_thread,
+					 AGS_SOUND_SCOPE_PLAYBACK);
+
       g_object_set(channel_thread,
 		   "frequency", ceil((gdouble) samplerate / (gdouble) buffer_size) + AGS_SOUNDCARD_DEFAULT_OVERCLOCK,
 		   NULL);
@@ -3075,31 +3078,9 @@ ags_channel_set_ability_flags(AgsChannel *channel, guint ability_flags)
       audio_thread = ags_playback_domain_get_audio_thread(playback_domain,
 							  AGS_SOUND_SCOPE_PLAYBACK);
 
-      ags_thread_add_child(audio_thread,
-			   channel_thread);
-    }
-
-    /* notation ability */
-    if((AGS_SOUND_ABILITY_NOTATION & (ability_flags)) != 0 &&
-       (AGS_SOUND_ABILITY_NOTATION & (channel_ability_flags)) == 0){
-      AgsAudioThread *audio_thread;
-      AgsChannelThread *channel_thread;
-      
-      channel_thread = ags_channel_thread_new(soundcard,
-					      channel);
-      g_object_set(channel_thread,
-		   "frequency", ceil((gdouble) samplerate / (gdouble) buffer_size) + AGS_SOUNDCARD_DEFAULT_OVERCLOCK,
-		   NULL);
-    
-      ags_playback_set_channel_thread(playback,
-				      channel_thread,
-				      AGS_SOUND_SCOPE_NOTATION);    
-
-      /* set thread child */
-      audio_thread = ags_playback_domain_get_audio_thread(playback_domain,
-							  AGS_SOUND_SCOPE_NOTATION);      
-      ags_thread_add_child(audio_thread,
-			   channel_thread);
+      ags_thread_add_child_extended(audio_thread,
+				    channel_thread,
+				    TRUE, TRUE);
     }
 
     /* sequencer ability */
@@ -3110,6 +3091,9 @@ ags_channel_set_ability_flags(AgsChannel *channel, guint ability_flags)
 
       channel_thread = ags_channel_thread_new(soundcard,
 					      channel);
+      ags_channel_thread_set_sound_scope(channel_thread,
+					 AGS_SOUND_SCOPE_SEQUENCER);
+
       g_object_set(channel_thread,
 		   "frequency", ceil((gdouble) samplerate / (gdouble) buffer_size) + AGS_SOUNDCARD_DEFAULT_OVERCLOCK,
 		   NULL);
@@ -3122,8 +3106,36 @@ ags_channel_set_ability_flags(AgsChannel *channel, guint ability_flags)
       audio_thread = ags_playback_domain_get_audio_thread(playback_domain,
 							  AGS_SOUND_SCOPE_SEQUENCER);
 
-      ags_thread_add_child(audio_thread,
-			   channel_thread);
+      ags_thread_add_child_extended(audio_thread,
+				    channel_thread,
+				    TRUE, TRUE);
+    }
+
+    /* notation ability */
+    if((AGS_SOUND_ABILITY_NOTATION & (ability_flags)) != 0 &&
+       (AGS_SOUND_ABILITY_NOTATION & (channel_ability_flags)) == 0){
+      AgsAudioThread *audio_thread;
+      AgsChannelThread *channel_thread;
+      
+      channel_thread = ags_channel_thread_new(soundcard,
+					      channel);
+      ags_channel_thread_set_sound_scope(channel_thread,
+					 AGS_SOUND_SCOPE_NOTATION);
+
+      g_object_set(channel_thread,
+		   "frequency", ceil((gdouble) samplerate / (gdouble) buffer_size) + AGS_SOUNDCARD_DEFAULT_OVERCLOCK,
+		   NULL);
+    
+      ags_playback_set_channel_thread(playback,
+				      channel_thread,
+				      AGS_SOUND_SCOPE_NOTATION);    
+
+      /* set thread child */
+      audio_thread = ags_playback_domain_get_audio_thread(playback_domain,
+							  AGS_SOUND_SCOPE_NOTATION);      
+      ags_thread_add_child_extended(audio_thread,
+				    channel_thread,
+				    TRUE, TRUE);
     }
 
     /* wave ability */
@@ -3134,6 +3146,9 @@ ags_channel_set_ability_flags(AgsChannel *channel, guint ability_flags)
 
       channel_thread = ags_channel_thread_new(soundcard,
 					      channel);
+      ags_channel_thread_set_sound_scope(channel_thread,
+					 AGS_SOUND_SCOPE_WAVE);
+
       g_object_set(channel_thread,
 		   "frequency", ceil((gdouble) samplerate / (gdouble) buffer_size) + AGS_SOUNDCARD_DEFAULT_OVERCLOCK,
 		   NULL);
@@ -3146,8 +3161,9 @@ ags_channel_set_ability_flags(AgsChannel *channel, guint ability_flags)
       audio_thread = ags_playback_domain_get_audio_thread(playback_domain,
 							  AGS_SOUND_SCOPE_WAVE);
 
-      ags_thread_add_child(audio_thread,
-			   channel_thread);
+      ags_thread_add_child_extended(audio_thread,
+				    channel_thread,
+				    TRUE, TRUE);
     }
 
     /* midi ability */
@@ -3158,6 +3174,9 @@ ags_channel_set_ability_flags(AgsChannel *channel, guint ability_flags)
 
       channel_thread = ags_channel_thread_new(soundcard,
 					      channel);
+      ags_channel_thread_set_sound_scope(channel_thread,
+					 AGS_SOUND_SCOPE_MIDI);
+
       g_object_set(channel_thread,
 		   "frequency", ceil((gdouble) samplerate / (gdouble) buffer_size) + AGS_SOUNDCARD_DEFAULT_OVERCLOCK,
 		   NULL);
@@ -3170,8 +3189,9 @@ ags_channel_set_ability_flags(AgsChannel *channel, guint ability_flags)
       audio_thread = ags_playback_domain_get_audio_thread(playback_domain,
 							  AGS_SOUND_SCOPE_MIDI);
 
-      ags_thread_add_child(audio_thread,
-			   channel_thread);
+      ags_thread_add_child_extended(audio_thread,
+				    channel_thread,
+				    TRUE, TRUE);
     }
   }
     
@@ -13733,7 +13753,7 @@ ags_channel_real_recursive_run_stage(AgsChannel *channel,
 						 sound_scope, AGS_CHANNEL_RECURSIVE_PREPARE_STAGING_DUPLICATE);
 
       /* resolve */
-      ags_channel_recursive_prepare_run_stage_down(link,
+      ags_channel_recursive_prepare_run_stage_down(channel,
 						   recycling_context,
 						   sound_scope, AGS_CHANNEL_RECURSIVE_PREPARE_STAGING_RESOLVE);
       ags_channel_recursive_prepare_run_stage_up(link,

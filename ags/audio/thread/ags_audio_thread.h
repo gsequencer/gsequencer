@@ -71,7 +71,8 @@ struct _AgsAudioThread
   pthread_cond_t *done_cond;
 
   GObject *audio;
-
+  gint sound_scope;
+  
   GList *sync_thread;
 };
 
@@ -81,6 +82,9 @@ struct _AgsAudioThreadClass
 };
 
 GType ags_audio_thread_get_type();
+
+void ags_audio_thread_set_sound_scope(AgsAudioThread *audio_thread,
+				      gint sound_scope);
 
 AgsAudioThread* ags_audio_thread_new(GObject *default_output_soundcard,
 				     GObject *audio);

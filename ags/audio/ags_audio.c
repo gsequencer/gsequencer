@@ -4477,6 +4477,9 @@ ags_audio_set_ability_flags(AgsAudio *audio, guint ability_flags)
 
       audio_thread = ags_audio_thread_new(soundcard,
 					  audio);
+      ags_audio_thread_set_sound_scope(audio_thread,
+				       AGS_SOUND_SCOPE_PLAYBACK);
+      
       g_object_set(audio_thread,
 		   "frequency", ceil((gdouble) samplerate / (gdouble) buffer_size) + AGS_SOUNDCARD_DEFAULT_OVERCLOCK,
 		   NULL);
@@ -4498,6 +4501,9 @@ ags_audio_set_ability_flags(AgsAudio *audio, guint ability_flags)
 
       audio_thread = ags_audio_thread_new(soundcard,
 					  audio);
+      ags_audio_thread_set_sound_scope(audio_thread,
+				       AGS_SOUND_SCOPE_SEQUENCER);
+
       g_object_set(audio_thread,
 		   "frequency", ceil((gdouble) samplerate / (gdouble) buffer_size) + AGS_SOUNDCARD_DEFAULT_OVERCLOCK,
 		   NULL);
@@ -4519,6 +4525,9 @@ ags_audio_set_ability_flags(AgsAudio *audio, guint ability_flags)
 
       audio_thread = ags_audio_thread_new(soundcard,
 					  audio);
+      ags_audio_thread_set_sound_scope(audio_thread,
+				       AGS_SOUND_SCOPE_NOTATION);
+
       g_object_set(audio_thread,
 		   "frequency", ceil((gdouble) samplerate / (gdouble) buffer_size) + AGS_SOUNDCARD_DEFAULT_OVERCLOCK,
 		   NULL);
@@ -4540,6 +4549,9 @@ ags_audio_set_ability_flags(AgsAudio *audio, guint ability_flags)
 
       audio_thread = ags_audio_thread_new(soundcard,
 					  audio);
+      ags_audio_thread_set_sound_scope(audio_thread,
+				       AGS_SOUND_SCOPE_WAVE);
+
       g_object_set(audio_thread,
 		   "frequency", ceil((gdouble) samplerate / (gdouble) buffer_size) + AGS_SOUNDCARD_DEFAULT_OVERCLOCK,
 		   NULL);
@@ -4561,6 +4573,9 @@ ags_audio_set_ability_flags(AgsAudio *audio, guint ability_flags)
 
       audio_thread = ags_audio_thread_new(soundcard,
 					  audio);
+      ags_audio_thread_set_sound_scope(audio_thread,
+				       AGS_SOUND_SCOPE_MIDI);
+
       g_object_set(audio_thread,
 		   "frequency", ceil((gdouble) samplerate / (gdouble) buffer_size) + AGS_SOUNDCARD_DEFAULT_OVERCLOCK,
 		   NULL);
@@ -5161,11 +5176,14 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
   void ags_audio_set_audio_channels_grow(GType type){
     AgsChannel *channel, *start, *current, *pad_next;
     AgsRecycling *first_recycling, *last_recycling;
-	  
+    AgsPlaybackDomain *playback_domain;
+    
     guint pads;
     guint i, j;
 
     pthread_mutex_lock(audio_mutex);
+
+    playback_domain = audio->playback_domain;
     
     if(type == AGS_TYPE_OUTPUT){
       /* AGS_TYPE_OUTPUT */
@@ -5190,6 +5208,8 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
       }
 
       for(i = audio_channels_old; i < audio_channels; i++){
+	AgsPlayback *playback;
+	
 	channel = (AgsChannel *) g_object_new(type,
 					      "audio", (GObject *) audio,
 					      "output-soundcard", output_soundcard,
@@ -5200,6 +5220,11 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
 					      "buffer-size", buffer_size,
 					      NULL);
 	g_object_ref(channel);
+
+	playback = channel->playback;
+	g_object_set(playback,
+		     "playback-domain", playback_domain,
+		     NULL);
 	
 	if(alloc_pattern){
 	  channel->pattern = g_list_alloc();
@@ -6051,11 +6076,14 @@ ags_audio_real_set_pads(AgsAudio *audio,
   void ags_audio_set_pads_grow(){
     AgsChannel *start, *channel;
     AgsRecycling *first_recycling, *last_recycling;
-
+    AgsPlaybackDomain *playback_domain;
+    
     guint i, j;
 
     pthread_mutex_lock(audio_mutex);
 
+    playback_domain = audio->playback_domain;
+    
     if(channel_type == AGS_TYPE_OUTPUT){
       start = audio->output;
     }else{
@@ -6065,6 +6093,8 @@ ags_audio_real_set_pads(AgsAudio *audio,
     pthread_mutex_unlock(audio_mutex);
 
     for(j = pads_old; j < pads; j++){
+      AgsPlayback *playback;
+      
       for(i = 0; i < audio_channels; i++){
 	channel = (AgsChannel *) g_object_new(channel_type,
 					      "audio", (GObject *) audio,
@@ -6077,6 +6107,11 @@ ags_audio_real_set_pads(AgsAudio *audio,
 					      "format", format,
 					      NULL);
 	g_object_ref(channel);
+
+	playback = channel->playback;
+	g_object_set(playback,
+		     "playback-domain", playback_domain,
+		     NULL);
 
 	if(alloc_pattern){
 	  channel->pattern = g_list_alloc();

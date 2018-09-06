@@ -1,11 +1,3 @@
-ags_plugin_factory_get_type
-ags_plugin_factory_read_file
-ags_plugin_factory_list_by_name
-ags_plugin_factory_add
-ags_plugin_factory_create
-ags_plugin_factory_get_instance
-ags_plugin_factory_new_from_file
-ags_plugin_factory_new
 ags_lv2_plugin_get_type
 ags_lv2_plugin_test_flags
 ags_lv2_plugin_set_flags
@@ -1833,6 +1825,7 @@ ags_audio_loop_add_channel
 ags_audio_loop_remove_channel
 ags_audio_loop_new
 ags_channel_thread_get_type
+ags_channel_thread_set_sound_scope
 ags_channel_thread_new
 ags_sequencer_thread_get_type
 ags_sequencer_thread_interval_timeout
@@ -1845,4 +1838,5 @@ ags_soundcard_thread_get_type
 ags_soundcard_thread_find_soundcard
 ags_soundcard_thread_new
 ags_audio_thread_get_type
+ags_audio_thread_set_sound_scope
 ags_audio_thread_new

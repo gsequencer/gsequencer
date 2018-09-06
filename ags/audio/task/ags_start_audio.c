@@ -365,8 +365,7 @@ ags_start_audio_launch(AgsTask *task)
 				 sound_scope);
 
       /* add to start queue */
-      ags_thread_add_start_queue(ags_playback_domain_get_audio_thread(playback_domain,
-								      sound_scope),
+      ags_thread_add_start_queue(audio_loop,
 				 ags_playback_get_channel_thread(list->data,
 								 sound_scope));
       

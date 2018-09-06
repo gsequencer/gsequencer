@@ -60,6 +60,7 @@ enum{
   PROP_0,
   PROP_DEFAULT_OUTPUT_SOUNDCARD,
   PROP_CHANNEL,
+  PROP_SOUND_SCOPE,
 };
 
 static gpointer ags_channel_thread_parent_class = NULL;
@@ -132,7 +133,7 @@ ags_channel_thread_class_init(AgsChannelThreadClass *channel_thread)
 				   i18n_pspec("default output soundcard assigned to"),
 				   i18n_pspec("The default output AgsSoundcard it is assigned to"),
 				   G_TYPE_OBJECT,
-				   G_PARAM_WRITABLE);
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_DEFAULT_OUTPUT_SOUNDCARD,
 				  param_spec);
@@ -148,11 +149,12 @@ ags_channel_thread_class_init(AgsChannelThreadClass *channel_thread)
 				   i18n_pspec("channel assigned to"),
 				   i18n_pspec("The AgsChannel it is assigned to."),
 				   AGS_TYPE_CHANNEL,
-				   G_PARAM_WRITABLE);
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_CHANNEL,
 				  param_spec);
 
+  
   /* AgsThread */
   thread = (AgsThreadClass *) channel_thread;
 
@@ -217,6 +219,10 @@ ags_channel_thread_init(AgsChannelThread *channel_thread)
   
   channel_thread->done_cond = (pthread_cond_t *) malloc(sizeof(pthread_cond_t));
   pthread_cond_init(channel_thread->done_cond, NULL);
+
+  /* channel and sound scope */
+  channel_thread->channel = NULL;
+  channel_thread->sound_scope = -1;
 }
 
 void
@@ -448,7 +454,8 @@ ags_channel_thread_run(AgsThread *thread)
   }
 #endif
 
-  if((AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(thread->flags)))) != 0){
+  if((AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(thread->flags)))) != 0 ||
+     (AGS_THREAD_SYNCED & (g_atomic_int_get(&(thread->sync_flags)))) == 0){
     return;
   }
 
@@ -487,7 +494,9 @@ ags_channel_thread_run(AgsThread *thread)
   /* 
    * do audio processing
    */  
-  for(sound_scope = 0; sound_scope < AGS_SOUND_SCOPE_LAST; sound_scope++){
+  if(channel_thread->sound_scope >= 0){
+    sound_scope = channel_thread->sound_scope;
+
     if((recall_id = ags_channel_check_scope(channel, sound_scope)) != NULL){
       ags_channel_recursive_run_stage(channel,
 				      sound_scope, (AGS_SOUND_STAGING_FEED_INPUT_QUEUE |
@@ -504,8 +513,27 @@ ags_channel_thread_run(AgsThread *thread)
 	  
       g_list_free(recall_id);
     }
-  }
+  }else{
+    for(sound_scope = 0; sound_scope < AGS_SOUND_SCOPE_LAST; sound_scope++){
+      if((recall_id = ags_channel_check_scope(channel, sound_scope)) != NULL){
+	ags_channel_recursive_run_stage(channel,
+					sound_scope, (AGS_SOUND_STAGING_FEED_INPUT_QUEUE |
+						      AGS_SOUND_STAGING_AUTOMATE |
+						      AGS_SOUND_STAGING_RUN_PRE));
 
+	ags_channel_recursive_run_stage(channel,
+					sound_scope, (AGS_SOUND_STAGING_RUN_INTER));
+
+	ags_channel_recursive_run_stage(channel,
+					sound_scope, (AGS_SOUND_STAGING_RUN_POST |
+						      AGS_SOUND_STAGING_DO_FEEDBACK |
+						      AGS_SOUND_STAGING_FEED_OUTPUT_QUEUE));
+	  
+	g_list_free(recall_id);
+      }
+    }
+  }
+  
   /* sync */
   pthread_mutex_lock(channel_thread->done_mutex);
   
@@ -547,6 +575,39 @@ ags_channel_thread_stop(AgsThread *thread)
   }
 
   pthread_mutex_unlock(channel_thread->done_mutex);
+}
+
+/**
+ * ags_channel_thread_set_sound_scope:
+ * @channel_thread: the #AgsChannelThread
+ * @sound_scope: the sound scope
+ * 
+ * Set sound scope.
+ * 
+ * Since: 2.0.0
+ */
+void
+ags_channel_thread_set_sound_scope(AgsChannelThread *channel_thread,
+				   gint sound_scope)
+{
+  pthread_mutex_t *thread_mutex;
+  
+  if(!AGS_IS_CHANNEL_THREAD(channel_thread)){
+    return;
+  }
+
+  pthread_mutex_lock(ags_thread_get_class_mutex());
+  
+  thread_mutex = AGS_THREAD(channel_thread)->obj_mutex;
+
+  pthread_mutex_unlock(ags_thread_get_class_mutex());
+
+  /* set scope */
+  pthread_mutex_lock(thread_mutex);
+
+  channel_thread->sound_scope = sound_scope;
+  
+  pthread_mutex_unlock(thread_mutex);
 }
 
 /**

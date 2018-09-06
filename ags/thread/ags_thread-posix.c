@@ -27,6 +27,8 @@
 
 #include <ags/thread/ags_returnable_thread.h>
 
+#include <ags/audio/thread/ags_channel_thread.h>
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <unistd.h>
@@ -3027,17 +3029,17 @@ ags_thread_add_start_queue(AgsThread *thread,
     return;
   }
   
-  pthread_mutex_lock(thread->start_mutex);
+  pthread_mutex_lock(thread->mutex);
   
   g_atomic_pointer_set(&(thread->start_queue),
 		       g_list_prepend(g_atomic_pointer_get(&(thread->start_queue)),
 				      child));
   
-  pthread_mutex_unlock(thread->start_mutex);
+  pthread_mutex_unlock(thread->mutex);
 }
 
 /**
- * ags_thread_add_start_queue:
+ * ags_thread_add_start_queue_all:
  * @thread: the #AgsThread
  * @child: the children as #GList-struct containing #AgsThread to start
  *
@@ -3051,16 +3053,22 @@ ags_thread_add_start_queue_all(AgsThread *thread,
 {
   GList *start_queue;
   
-  pthread_mutex_lock(thread->start_mutex);
+  pthread_mutex_lock(thread->mutex);
   
   start_queue = g_atomic_pointer_get(&(thread->start_queue));
-  start_queue = g_list_concat(start_queue,
-			      g_list_copy(child));
 
-  g_atomic_pointer_set(&(thread->start_queue),
-		       start_queue);
-  
-  pthread_mutex_unlock(thread->start_mutex);
+  if(start_queue == NULL){
+    g_atomic_pointer_set(&(thread->start_queue),
+			 g_list_copy(child));
+  }else{
+    start_queue = g_list_concat(start_queue,
+				g_list_copy(child));
+    
+    g_atomic_pointer_set(&(thread->start_queue),
+			 start_queue);
+  }
+    
+  pthread_mutex_unlock(thread->mutex);
 }
 
 /**
@@ -3148,7 +3156,7 @@ ags_thread_loop(void *ptr)
   mutex = thread->obj_mutex;
   
   pthread_mutex_unlock(ags_thread_get_class_mutex());
-
+  
   if(main_loop != NULL){
     pthread_mutex_lock(ags_main_loop_get_tree_lock(AGS_MAIN_LOOP(main_loop)));
     
@@ -3195,7 +3203,7 @@ ags_thread_loop(void *ptr)
 			 NULL);
 
     pthread_mutex_unlock(mutex);
-
+    
     while(start_queue != NULL){
       start_queue_next = start_queue->next;
       
