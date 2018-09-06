@@ -3108,7 +3108,7 @@ ags_recall_get_sound_scope(AgsRecall *recall)
   pthread_mutex_t *recall_mutex;
 
   if(!AGS_IS_RECALL(recall)){
-    return;
+    return(-1);
   }
 
   /* get recall mutex */
