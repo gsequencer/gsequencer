@@ -431,6 +431,8 @@ ags_export_soundcard_disconnect(AgsConnectable *connectable)
  * 
  * Set backend.
  * 
+ * Returns: %TRUE on success, otherwise %FALSE
+ * 
  * Since: 2.0.0
  */
 gboolean
@@ -446,7 +448,7 @@ ags_export_soundcard_set_backend(AgsExportSoundcard *export_soundcard,
   guint i;
 
   if(backend == NULL){
-    return;
+    return(FALSE);
   }
   
   model = gtk_combo_box_get_model(GTK_COMBO_BOX(export_soundcard->backend));
