@@ -253,11 +253,10 @@ ags_core_audio_server_class_init(AgsCoreAudioServerClass *core_audio_server)
    * 
    * Since: 2.0.0
    */
-  param_spec = g_param_spec_object("core-audio-client",
-				   i18n_pspec("core audio client list"),
-				   i18n_pspec("The core audio client list"),
-				   AGS_TYPE_CORE_AUDIO_CLIENT,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  param_spec = g_param_spec_pointer("core-audio-client",
+				    i18n_pspec("core audio client list"),
+				    i18n_pspec("The core audio client list"),
+				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_CORE_AUDIO_CLIENT,
 				  param_spec);
@@ -476,7 +475,7 @@ ags_core_audio_server_set_property(GObject *gobject,
     {
       GObject *client;
 
-      client = (GObject *) g_value_get_object(value);
+      client = (GObject *) g_value_get_pointer(value);
 
       pthread_mutex_lock(core_audio_server_mutex);
 
@@ -1435,7 +1434,7 @@ ags_core_audio_server_register_soundcard(AgsSoundServer *sound_server,
     ags_core_audio_port_register(core_audio_port,
 				 str,
 				 TRUE, FALSE,
-				 TRUE);
+				 FALSE);
 
     ags_core_audio_devin_realloc_buffer(core_audio_devin);
 

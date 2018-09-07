@@ -31,6 +31,7 @@
 #include <ags/audio/pulse/ags_pulse_devin.h>
 
 #include <ags/audio/core-audio/ags_core_audio_devout.h>
+#include <ags/audio/core-audio/ags_core_audio_devin.h>
 #include <ags/audio/core-audio/ags_core_audio_midiin.h>
 
 #include <ags/i18n.h>
@@ -432,6 +433,31 @@ ags_clear_buffer_launch(AgsTask *task)
     }
       
     memset(core_audio_devout->buffer[nth_buffer], 0, (size_t) pcm_channels * buffer_size * word_size);
+  }else if(AGS_IS_CORE_AUDIO_DEVIN(clear_buffer->device)){
+    AgsCoreAudioDevin *core_audio_devin;
+    
+    core_audio_devin = clear_buffer->device;
+
+    /* retrieve nth buffer */    
+    if((AGS_CORE_AUDIO_DEVIN_BUFFER0 & (core_audio_devin->flags)) != 0){
+      nth_buffer = 2;
+    }else if((AGS_CORE_AUDIO_DEVIN_BUFFER1 & (core_audio_devin->flags)) != 0){
+      nth_buffer = 3;
+    }else if((AGS_CORE_AUDIO_DEVIN_BUFFER2 & (core_audio_devin->flags)) != 0){
+      nth_buffer = 4;
+    }else if((AGS_CORE_AUDIO_DEVIN_BUFFER3 & (core_audio_devin->flags)) != 0){
+      nth_buffer = 5;
+    }else if((AGS_CORE_AUDIO_DEVIN_BUFFER4 & (core_audio_devin->flags)) != 0){
+      nth_buffer = 6;
+    }else if((AGS_CORE_AUDIO_DEVIN_BUFFER5 & (core_audio_devin->flags)) != 0){
+      nth_buffer = 7;
+    }else if((AGS_CORE_AUDIO_DEVIN_BUFFER6 & (core_audio_devin->flags)) != 0){
+      nth_buffer = 0;
+    }else if((AGS_CORE_AUDIO_DEVIN_BUFFER7 & (core_audio_devin->flags)) != 0){
+      nth_buffer = 1;
+    }
+      
+    //memset(core_audio_devin->buffer[nth_buffer], 0, (size_t) pcm_channels * buffer_size * word_size);
   }else if(AGS_IS_MIDIIN(clear_buffer->device)){
     //TODO:JK: implement me
   }else if(AGS_IS_JACK_MIDIIN(clear_buffer->device)){
