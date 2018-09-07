@@ -239,8 +239,8 @@ ags_play_wave_audio_init(AgsPlayWaveAudio *play_wave_audio)
   /* wave-loop-end */
   play_wave_audio->wave_loop_end = g_object_new(AGS_TYPE_PORT,
 						"plugin-name", ags_play_wave_audio_plugin_name,
-						"specifier", ags_play_wave_audio_specifier[3],
-						"control-port", ags_play_wave_audio_control_port[3],
+						"specifier", ags_play_wave_audio_specifier[2],
+						"control-port", ags_play_wave_audio_control_port[2],
 						"port-value-is-pointer", FALSE,
 						"port-value-type", G_TYPE_UINT64,
 						"port-value-size", sizeof(guint64),
