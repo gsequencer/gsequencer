@@ -230,7 +230,7 @@ ags_play_wave_audio_init(AgsPlayWaveAudio *play_wave_audio)
 						  NULL);
   g_object_ref(play_wave_audio->wave_loop_start);
   
-  play_wave_audio->wave_loop_start->port_value.ags_port_uint = 0.0;
+  play_wave_audio->wave_loop_start->port_value.ags_port_uint = 0;
 
   /* add to port */
   port = g_list_prepend(port, play_wave_audio->wave_loop_start);
@@ -248,7 +248,7 @@ ags_play_wave_audio_init(AgsPlayWaveAudio *play_wave_audio)
 						NULL);
   g_object_ref(play_wave_audio->wave_loop_end);
   
-  play_wave_audio->wave_loop_end->port_value.ags_port_uint = 64.0;
+  play_wave_audio->wave_loop_end->port_value.ags_port_uint = 64;
 
   /* add to port */
   port = g_list_prepend(port, play_wave_audio->wave_loop_end);

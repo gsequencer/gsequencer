@@ -71,8 +71,8 @@ static AgsPluginInterface *ags_capture_wave_audio_parent_plugin_interface;
 
 static const gchar *ags_capture_wave_audio_plugin_name = "ags-capture-wave";
 static const gchar *ags_capture_wave_audio_specifier[] = {
-  "./playback[0]"
-  "./replace[0]"
+  "./playback[0]",
+  "./replace[0]",
   "./record[0]",
   "./filename[0]",
   "./file-audio-channels[0]",
@@ -533,7 +533,7 @@ ags_capture_wave_audio_init(AgsCaptureWaveAudio *capture_wave_audio)
 						  NULL);
   g_object_ref(capture_wave_audio->wave_loop_start);
   
-  capture_wave_audio->wave_loop_start->port_value.ags_port_uint = 0.0;
+  capture_wave_audio->wave_loop_start->port_value.ags_port_uint = 0;
 
   /* add to port */
   port = g_list_prepend(port, capture_wave_audio->wave_loop_start);
@@ -553,7 +553,7 @@ ags_capture_wave_audio_init(AgsCaptureWaveAudio *capture_wave_audio)
 						NULL);
   g_object_ref(capture_wave_audio->wave_loop_end);
   
-  capture_wave_audio->wave_loop_end->port_value.ags_port_uint = 64.0;
+  capture_wave_audio->wave_loop_end->port_value.ags_port_uint = 64;
 
   /* add to port */
   port = g_list_prepend(port, capture_wave_audio->wave_loop_end);
