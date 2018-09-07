@@ -181,11 +181,10 @@ ags_core_audio_client_class_init(AgsCoreAudioClientClass *core_audio_client)
    * 
    * Since: 2.0.0
    */
-  param_spec = g_param_spec_object("device",
-				   i18n_pspec("assigned device"),
-				   i18n_pspec("The assigned device"),
-				   G_TYPE_OBJECT,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  param_spec = g_param_spec_pointer("device",
+				    i18n_pspec("assigned device"),
+				    i18n_pspec("The assigned device"),
+				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_DEVICE,
 				  param_spec);
@@ -197,11 +196,10 @@ ags_core_audio_client_class_init(AgsCoreAudioClientClass *core_audio_client)
    * 
    * Since: 2.0.0
    */
-  param_spec = g_param_spec_object("port",
-				   i18n_pspec("assigned port"),
-				   i18n_pspec("The assigned port"),
-				   G_TYPE_OBJECT,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  param_spec = g_param_spec_pointer("port",
+				    i18n_pspec("assigned port"),
+				    i18n_pspec("The assigned port"),
+				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_PORT,
 				  param_spec);
@@ -335,7 +333,7 @@ ags_core_audio_client_set_property(GObject *gobject,
     {
       GObject *device;
 
-      device = (GObject *) g_value_get_object(value);
+      device = (GObject *) g_value_get_pointer(value);
 
       pthread_mutex_lock(core_audio_client_mutex);
 
@@ -359,7 +357,7 @@ ags_core_audio_client_set_property(GObject *gobject,
     {
       GObject *port;
 
-      port = (GObject *) g_value_get_object(value);
+      port = (GObject *) g_value_get_pointer(value);
 
       pthread_mutex_lock(core_audio_client_mutex);
 
