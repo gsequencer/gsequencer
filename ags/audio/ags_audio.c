@@ -11564,9 +11564,9 @@ ags_audio_recursive_set_property_down(AgsChannel *channel,
 }
     
 void
-audio_recursive_set_property_down_input(AgsChannel *channel,
-					gint n_params,
-					const gchar *parameter_name[], const GValue value[])
+ags_audio_recursive_set_property_down_input(AgsChannel *channel,
+					    gint n_params,
+					    const gchar *parameter_name[], const GValue value[])
 {
   AgsAudio *audio;
   AgsChannel *input;

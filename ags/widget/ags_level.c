@@ -94,6 +94,9 @@ gboolean ags_level_motion_notify(GtkWidget *widget,
 
 void ags_level_draw(AgsLevel *level);
 
+void ags_level_draw_string(AgsLevel *level,
+			   cairo_t *cr, gchar *str);
+  
 /**
  * SECTION:ags_level
  * @short_description: A level widget
@@ -1078,6 +1081,30 @@ ags_level_motion_notify(GtkWidget *widget,
 }
 
 void
+ags_level_draw_string(AgsLevel *level,
+		      cairo_t *cr, gchar *str)
+{
+  PangoLayout *layout;
+  PangoFontDescription *desc;
+
+  layout = pango_cairo_create_layout(cr);
+  pango_layout_set_text(layout, str, -1);
+  desc = pango_font_description_from_string("Sans Slant"); //pango_font_description_copy_static("Georgia Bold 11");
+  pango_font_description_set_size(desc,
+				  level->font_size * PANGO_SCALE);
+  pango_layout_set_font_description(layout, desc);
+  pango_font_description_free(desc);
+
+  pango_cairo_update_layout(cr, layout);
+  pango_cairo_show_layout(cr, layout);
+
+#ifndef __APPLE__
+  pango_fc_font_map_cache_clear(pango_cairo_font_map_get_default());
+#endif
+  g_object_unref(layout);
+}
+
+void
 ags_level_draw(AgsLevel *level)
 {
   cairo_t *cr;
@@ -1086,29 +1113,6 @@ ags_level_draw(AgsLevel *level)
   
   guint width, height;
   guint x_start, y_start;
-
-  auto void ags_level_draw_string(cairo_t *cr, gchar *str);
-  
-  void ags_level_draw_string(cairo_t *cr, gchar *str){
-    PangoLayout *layout;
-    PangoFontDescription *desc;
-
-    layout = pango_cairo_create_layout(cr);
-    pango_layout_set_text(layout, str, -1);
-    desc = pango_font_description_from_string("Sans Slant"); //pango_font_description_copy_static("Georgia Bold 11");
-    pango_font_description_set_size(desc,
-				    level->font_size * PANGO_SCALE);
-    pango_layout_set_font_description(layout, desc);
-    pango_font_description_free(desc);
-
-    pango_cairo_update_layout(cr, layout);
-    pango_cairo_show_layout(cr, layout);
-
-#ifndef __APPLE__
-    pango_fc_font_map_cache_clear(pango_cairo_font_map_get_default());
-#endif
-    g_object_unref(layout);
-  }
   
   static const gdouble white_gc = 65535.0;
 
@@ -1168,7 +1172,8 @@ ags_level_draw(AgsLevel *level)
 		  x_start + level->font_size, y_start + 1.0);
   }
   
-  ags_level_draw_string(cr,
+  ags_level_draw_string(level,
+			cr,
 			str);
 
   cairo_pop_group_to_source(cr);

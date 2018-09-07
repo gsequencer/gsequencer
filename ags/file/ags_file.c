@@ -77,6 +77,8 @@ void ags_file_real_read(AgsFile *file);
 void ags_file_real_read_resolve(AgsFile *file);
 void ags_file_real_read_start(AgsFile *file);
 
+void ags_file_destroy_node(xmlNode *node);
+
 /**
  * SECTION:ags_file
  * @short_description: read/write XML file
@@ -700,20 +702,23 @@ ags_file_get_property(GObject *gobject,
 }
 
 void
+ags_file_destroy_node(xmlNode *node)
+{
+  xmlNodePtr child;
+
+  child = node->children;
+
+  while(child != NULL){
+    ags_file_destroy_node(child);
+      
+    child = child->next;
+  }
+}
+
+void
 ags_file_finalize(GObject *gobject)
 {
   AgsFile *file;
-  void ags_file_destroy_node(xmlNodePtr node){
-    xmlNodePtr child;
-
-    child = node->children;
-
-    while(child != NULL){
-      ags_file_destroy_node(child);
-      
-      child = child->next;
-    }
-  }
 
   file = (AgsFile *) gobject;
 
