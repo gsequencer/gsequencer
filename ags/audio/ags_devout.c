@@ -3494,8 +3494,10 @@ ags_devout_alsa_init(AgsSoundcard *soundcard,
 void
 ags_devout_alsa_play_fill_ring_buffer(void *buffer, guint ags_format, unsigned char *ring_buffer, guint channels, guint buffer_size)
 {
+#ifdef AGS_WITH_ALSA
   snd_pcm_format_t format;
-
+#endif
+  
   int format_bits;
 
   unsigned int max_val;
