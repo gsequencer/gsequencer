@@ -1709,12 +1709,9 @@ ags_pulse_port_stream_request_callback(pa_stream *stream, size_t length, AgsPuls
     }
   }else if(pulse_devin != NULL){
     if(!empty_run){
-      pa_stream_read(stream,
-		     pulse_devout->buffer[nth_buffer],
-		     count,
-		     NULL,
-		     0,
-		     PA_SEEK_RELATIVE);
+      pa_stream_peek(stream,
+		     &(pulse_devin->buffer[nth_buffer]),
+		     count);
       
       g_atomic_int_set(&(pulse_port->is_empty),
 		       FALSE);
@@ -1761,7 +1758,9 @@ ags_pulse_port_stream_request_callback(pa_stream *stream, size_t length, AgsPuls
 
 	pulse_port->nth_empty_buffer = nth_empty_buffer;
 
-	pa_stream_read(stream, empty_buffer, count, NULL, 0, PA_SEEK_RELATIVE);
+	pa_stream_peek(stream,
+		       &empty_buffer,
+		       count);
 	
 	pthread_mutex_unlock(pulse_port_mutex);
 	
