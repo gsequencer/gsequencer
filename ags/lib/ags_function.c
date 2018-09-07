@@ -42,7 +42,8 @@ gchar* ags_function_literal_solve_expand_functions(AgsFunction *function,
 gchar* ags_function_literal_solve_numeric_exponent_only(AgsFunction *function,
 							gchar *transformed_function);
 guint ags_function_literal_solve_find_max_exponent(AgsFunction *function,
-						   gchar *transformed_function);
+						   gchar *transformed_function,
+						   guint *max_exponent);
 
 /**
  * SECTION:ags_function
@@ -621,7 +622,8 @@ ags_function_literal_solve_numeric_exponent_only(AgsFunction *function,
   
 guint
 ags_function_literal_solve_find_max_exponent(AgsFunction *function,
-					     gchar *transformed_function)
+					     gchar *transformed_function,
+					     guint *max_exponent)
 {
   regmatch_t match_arr[5];
 
@@ -633,10 +635,10 @@ ags_function_literal_solve_find_max_exponent(AgsFunction *function,
     
   static const size_t max_matches = 5;
     
-  max_exponent = 1;
+  max_exponent[0] = 1;
 
 
-  return(max_exponent);
+  return(max_exponent[0]);
 }
 
 /**
@@ -666,18 +668,22 @@ ags_function_literal_solve(AgsFunction *function)
 
   /* step #0 of normalization - eliminate trigonometric functions */
   str = transformed_function;
-  transformed_function = ags_function_literal_solve_expand_functions(transformed_function);
+  transformed_function = ags_function_literal_solve_expand_functions(function,
+								     transformed_function);
 
   g_free(str);
 
   /* step #1 of normalization - numeric only exponents */
   str = transformed_function;
-  transformed_function = ags_function_literal_solve_numeric_exponent_only(transformed_function);
+  transformed_function = ags_function_literal_solve_numeric_exponent_only(function,
+									  transformed_function);
 
   g_free(str);
   
   /* find maximum exponent */
-  available_exponent = ags_function_literal_solve_find_max_exponent(transformed_function);
+  available_exponent = ags_function_literal_solve_find_max_exponent(function,
+								    transformed_function,
+								    &max_exponent);
 
   if(max_exponent < available_exponent){
     max_exponent = available_exponent;

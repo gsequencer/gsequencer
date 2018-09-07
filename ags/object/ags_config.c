@@ -353,7 +353,7 @@ ags_config_get_version(AgsConfig *config)
   pthread_mutex_t *config_mutex;
 
   if(!AGS_IS_CONFIG(config)){
-    return;
+    return(NULL);
   }
   
   pthread_mutex_lock(ags_config_get_class_mutex());
@@ -403,7 +403,7 @@ ags_config_get_build_id(AgsConfig *config)
   pthread_mutex_t *config_mutex;
 
   if(!AGS_IS_CONFIG(config)){
-    return;
+    return(NULL);
   }
   
   pthread_mutex_lock(ags_config_get_class_mutex());
