@@ -1288,11 +1288,6 @@ ags_core_audio_server_register_soundcard(AgsSoundServer *sound_server,
   pthread_mutex_t *core_audio_server_mutex;
   pthread_mutex_t *core_audio_client_mutex;
   
-  if(!is_output){
-    g_warning("GSequencer - audio input not implemented");
-    return(NULL);
-  }
-
   core_audio_server = AGS_CORE_AUDIO_SERVER(sound_server);
 
   /* get core audio server mutex */
