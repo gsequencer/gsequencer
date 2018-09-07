@@ -551,6 +551,14 @@ ags_core_audio_devin_soundcard_interface_init(AgsSoundcardInterface *soundcard)
 void
 ags_core_audio_devin_init(AgsCoreAudioDevin *core_audio_devin)
 {
+  AgsConfig *config;
+
+  gchar *str;
+  gchar *segmentation;
+
+  guint denumerator, numerator;
+  guint i;
+  
   pthread_mutex_t *mutex;
   pthread_mutexattr_t *attr;
 
@@ -574,7 +582,113 @@ ags_core_audio_devin_init(AgsCoreAudioDevin *core_audio_devin)
   /* parent */
   core_audio_devin->application_context = NULL;
 
-  //TODO:JK: implement me
+  /* uuid */
+  core_audio_devin->uuid = ags_uuid_alloc();
+  ags_uuid_generate(core_audio_devin->uuid);
+
+  /* presets */
+  config = ags_config_get_instance();
+
+  core_audio_devin->dsp_channels = ags_soundcard_helper_config_get_dsp_channels(config);
+  core_audio_devin->pcm_channels = ags_soundcard_helper_config_get_pcm_channels(config);
+
+  core_audio_devin->samplerate = ags_soundcard_helper_config_get_samplerate(config);
+  core_audio_devin->buffer_size = ags_soundcard_helper_config_get_buffer_size(config);
+  core_audio_devin->format = ags_soundcard_helper_config_get_format(config);
+
+  /*  */
+  core_audio_devin->card_uri = NULL;
+  core_audio_devin->core_audio_client = NULL;
+
+  core_audio_devin->port_name = NULL;
+  core_audio_devin->core_audio_port = NULL;
+
+  /* buffer */
+  core_audio_devin->buffer_mutex = (pthread_mutex_t **) malloc(8 * sizeof(pthread_mutex_t *));
+
+  for(i = 0; i < 8; i++){
+    core_audio_devin->buffer_mutex[i] = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
+
+    pthread_mutex_init(core_audio_devin->buffer_mutex[i],
+		       NULL);
+  }
+
+  core_audio_devin->buffer = (void **) malloc(8 * sizeof(void*));
+
+  core_audio_devin->buffer[0] = NULL;
+  core_audio_devin->buffer[1] = NULL;
+  core_audio_devin->buffer[2] = NULL;
+  core_audio_devin->buffer[3] = NULL;
+  core_audio_devin->buffer[4] = NULL;
+  core_audio_devin->buffer[5] = NULL;
+  core_audio_devin->buffer[6] = NULL;
+  core_audio_devin->buffer[7] = NULL;
+  
+  ags_core_audio_devin_realloc_buffer(core_audio_devin);
+  
+  /* bpm */
+  core_audio_devin->bpm = AGS_SOUNDCARD_DEFAULT_BPM;
+
+  /* delay factor */
+  core_audio_devin->delay_factor = AGS_SOUNDCARD_DEFAULT_DELAY_FACTOR;
+  
+  /* segmentation */
+  segmentation = ags_config_get_value(config,
+				      AGS_CONFIG_GENERIC,
+				      "segmentation");
+
+  if(segmentation != NULL){
+    sscanf(segmentation, "%d/%d",
+	   &denumerator,
+	   &numerator);
+    
+    core_audio_devin->delay_factor = 1.0 / numerator * (numerator / denumerator);
+
+    g_free(segmentation);
+  }
+
+  /* delay and attack */
+  core_audio_devin->delay = (gdouble *) malloc((int) 2 * AGS_SOUNDCARD_DEFAULT_PERIOD *
+						sizeof(gdouble));
+  
+  core_audio_devin->attack = (guint *) malloc((int) 2 * AGS_SOUNDCARD_DEFAULT_PERIOD *
+					       sizeof(guint));
+
+  ags_core_audio_devin_adjust_delay_and_attack(core_audio_devin);
+  
+  /* counters */
+  core_audio_devin->tact_counter = 0.0;
+  core_audio_devin->delay_counter = 0;
+  core_audio_devin->tic_counter = 0;
+
+  core_audio_devin->note_offset = 0;
+  core_audio_devin->note_offset_absolute = 0;
+
+  core_audio_devin->loop_left = AGS_SOUNDCARD_DEFAULT_LOOP_LEFT;
+  core_audio_devin->loop_right = AGS_SOUNDCARD_DEFAULT_LOOP_RIGHT;
+
+  core_audio_devin->do_loop = FALSE;
+
+  core_audio_devin->loop_offset = 0;
+
+  /* callback mutex */
+  core_audio_devin->callback_mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
+  pthread_mutex_init(core_audio_devin->callback_mutex,
+		     NULL);
+
+  core_audio_devin->callback_cond = (pthread_cond_t *) malloc(sizeof(pthread_cond_t));
+  pthread_cond_init(core_audio_devin->callback_cond, NULL);
+
+  /* callback finish mutex */
+  core_audio_devin->callback_finish_mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
+  pthread_mutex_init(core_audio_devin->callback_finish_mutex,
+		     NULL);
+
+  core_audio_devin->callback_finish_cond = (pthread_cond_t *) malloc(sizeof(pthread_cond_t));
+  pthread_cond_init(core_audio_devin->callback_finish_cond, NULL);
+
+  /*  */
+  core_audio_devin->notify_soundcard = NULL;
 }
 
 void
