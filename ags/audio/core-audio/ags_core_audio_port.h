@@ -98,7 +98,11 @@ struct _AgsCoreAudioPort
   AudioQueueRef aq_ref;
   AudioStreamBasicDescription data_format;
 
-  AudioQueueBufferRef buf_ref[8];
+  AudioQueueRef record_aq_ref;
+  AudioStreamBasicDescription record_format;
+
+  AudioQueueBufferRef buf_ref[16];
+  AudioQueueBufferRef record_buf_ref[16];
   
   MIDIClientRef *midi_client;
   MIDIPortRef *midi_port;
