@@ -131,9 +131,9 @@ void* ags_core_audio_devout_get_next_buffer(AgsSoundcard *soundcard);
 void* ags_core_audio_devout_get_prev_buffer(AgsSoundcard *soundcard);
 
 void ags_core_audio_devout_lock_buffer(AgsSoundcard *soundcard,
-				  void *buffer);
+				       void *buffer);
 void ags_core_audio_devout_unlock_buffer(AgsSoundcard *soundcard,
-				    void *buffer);
+					 void *buffer);
 
 guint ags_core_audio_devout_get_delay_counter(AgsSoundcard *soundcard);
 
@@ -2866,7 +2866,7 @@ ags_core_audio_devout_unlock_buffer(AgsSoundcard *soundcard,
     pthread_mutex_unlock(buffer_mutex);
   }
 }
-
+x
 guint
 ags_core_audio_devout_get_delay_counter(AgsSoundcard *soundcard)
 {
