@@ -175,6 +175,7 @@ ags_capture_wave_channel_run_run_pre(AgsRecall *recall)
   
   void *data, *file_data;
 
+  gint input_soundcard_channel;
   guint line;
   guint64 relative_offset;
   guint note_offset;
@@ -227,8 +228,13 @@ ags_capture_wave_channel_run_run_pre(AgsRecall *recall)
 
   g_object_get(channel,
 	       "line", &line,
+	       "input-soundcard-channel", &input_soundcard_channel,
 	       NULL);
 
+  if(input_soundcard_channel == -1){
+    input_soundcard_channel = line;
+  }
+  
   /* get audio and mutex */
   g_object_get(capture_wave_audio,
 	       "audio", &audio,
@@ -375,11 +381,13 @@ ags_capture_wave_channel_run_run_pre(AgsRecall *recall)
       
     /* copy to buffer */
     pthread_mutex_lock(buffer_mutex);
-      
+    ags_soundcard_lock_buffer(AGS_SOUNDCARD(input_soundcard), data);
+    
     ags_audio_buffer_util_copy_buffer_to_buffer(buffer->data, 1, 0,
-						data, audio_channels, line,
+						data, audio_channels, input_soundcard_channel,
 						target_buffer_size, target_copy_mode);
 
+    ags_soundcard_unlock_buffer(AGS_SOUNDCARD(input_soundcard), data);
     pthread_mutex_unlock(buffer_mutex);
 
     g_list_free(list_start);
@@ -434,9 +442,13 @@ ags_capture_wave_channel_run_run_pre(AgsRecall *recall)
     file_copy_mode = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(file_format),
 							 ags_audio_buffer_util_format_from_soundcard(format));
     
+    ags_soundcard_lock_buffer(AGS_SOUNDCARD(input_soundcard), data);
+
     ags_audio_buffer_util_copy_buffer_to_buffer(file_data, file_audio_channels, line,
-						data, audio_channels, line,
+						data, audio_channels, input_soundcard_channel,
 						file_buffer_size, file_copy_mode);
+
+    ags_soundcard_unlock_buffer(AGS_SOUNDCARD(input_soundcard), data);
 
     if(resample_file){
       g_free(data);
