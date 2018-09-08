@@ -119,7 +119,9 @@ ags_ffplayer_preset_changed_callback(GtkComboBox *preset, AgsFFPlayer *ffplayer)
   
   gint position;
   
-  if((AGS_FFPLAYER_NO_LOAD & (ffplayer->flags)) != 0){
+  if((AGS_FFPLAYER_NO_LOAD & (ffplayer->flags)) != 0 ||
+     ffplayer->audio_container == NULL||
+     ffplayer->audio_container->sound_container == NULL){
     return;
   }
 
@@ -161,7 +163,9 @@ ags_ffplayer_instrument_changed_callback(GtkComboBox *instrument, AgsFFPlayer *f
   
   GError *error;
 
-  if((AGS_FFPLAYER_NO_LOAD & (ffplayer->flags)) != 0){
+  if((AGS_FFPLAYER_NO_LOAD & (ffplayer->flags)) != 0 ||
+     ffplayer->audio_container == NULL||
+     ffplayer->audio_container->sound_container == NULL){
     return;
   }
   

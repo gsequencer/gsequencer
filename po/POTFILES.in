@@ -256,7 +256,6 @@
 ./ags/audio/ags_automation.c
 ./ags/audio/ags_buffer.c
 ./ags/audio/ags_channel.c
-./ags/audio/ags_channel_iter.c
 ./ags/audio/ags_char_buffer_util.c
 ./ags/audio/ags_devin.c
 ./ags/audio/ags_devout.c
@@ -526,7 +525,6 @@
 ./ags/plugin/ags_lv2_worker_manager.c
 ./ags/plugin/ags_lv2ui_manager.c
 ./ags/plugin/ags_lv2ui_plugin.c
-./ags/plugin/ags_plugin_factory.c
 ./ags/plugin/ags_plugin_port.c
 ./ags/server/ags_registry.c
 ./ags/server/ags_server.c
