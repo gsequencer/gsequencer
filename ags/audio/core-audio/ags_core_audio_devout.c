@@ -2866,7 +2866,7 @@ ags_core_audio_devout_unlock_buffer(AgsSoundcard *soundcard,
     pthread_mutex_unlock(buffer_mutex);
   }
 }
-x
+
 guint
 ags_core_audio_devout_get_delay_counter(AgsSoundcard *soundcard)
 {

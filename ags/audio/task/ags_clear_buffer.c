@@ -431,7 +431,7 @@ ags_clear_buffer_launch(AgsTask *task)
     
     memset(pulse_devin->buffer[nth_buffer], 0, (size_t) pcm_channels * buffer_size * word_size);
 
-    ags_soundcard_unlock_buffer(AGS_SOUNDCARD(clear_buffer->device), pulse_devout->buffer[nth_buffer]);
+    ags_soundcard_unlock_buffer(AGS_SOUNDCARD(clear_buffer->device), pulse_devin->buffer[nth_buffer]);
   }else if(AGS_IS_CORE_AUDIO_DEVOUT(clear_buffer->device)){
     AgsCoreAudioDevout *core_audio_devout;
     
