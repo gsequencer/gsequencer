@@ -38,6 +38,9 @@ ags_soundcard_editor_backend_changed_callback(GtkComboBox *combo,
 {
   gchar *str;
 
+  gtk_widget_set_sensitive(soundcard_editor->capability,
+			   TRUE);
+  
   str = gtk_combo_box_text_get_active_text(GTK_COMBO_BOX_TEXT(combo));
 
   if(str != NULL){
@@ -50,6 +53,11 @@ ags_soundcard_editor_backend_changed_callback(GtkComboBox *combo,
     }else if(!g_ascii_strncasecmp(str,
 			    "pulse",
 			    6)){
+      gtk_combo_box_set_active(soundcard_editor->capability,
+			       0);
+      gtk_widget_set_sensitive(soundcard_editor->capability,
+			       FALSE);
+      
       ags_soundcard_editor_load_pulse_card(soundcard_editor);
 
       gtk_widget_show_all((GtkWidget *) soundcard_editor->port_hbox);

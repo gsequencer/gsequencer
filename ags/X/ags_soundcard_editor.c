@@ -804,6 +804,10 @@ ags_soundcard_editor_reset(AgsApplicable *applicable)
       gtk_combo_box_set_active(GTK_COMBO_BOX(soundcard_editor->backend),
 			       0);
       
+      gtk_combo_box_set_active(soundcard_editor->capability,
+			       0);
+      gtk_widget_set_sensitive(soundcard_editor->capability,
+			       FALSE);
       //      ags_soundcard_editor_load_pulse_card(soundcard_editor);
     }else if(!g_ascii_strncasecmp(backend,
 			    "jack",
