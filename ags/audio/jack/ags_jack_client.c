@@ -1723,9 +1723,13 @@ ags_jack_client_process_callback(jack_nframes_t nframes, void *ptr)
 				    jack_devin->buffer_size);
 	
 	  if(!no_event && in != NULL){
+	    ags_soundcard_lock_buffer(AGS_SOUNDCARD(jack_devin), jack_devin->buffer[nth_buffer]);
+	    
 	    ags_audio_buffer_util_copy_buffer_to_buffer(jack_devin->buffer[nth_buffer], jack_devin->pcm_channels, i,
 							in, 1, 0,
 							jack_devin->buffer_size, copy_mode);
+	    
+	    ags_soundcard_unlock_buffer(AGS_SOUNDCARD(jack_devin), jack_devin->buffer[nth_buffer]);	    
 	  }
 
 	  port = port->next;
@@ -1981,9 +1985,13 @@ ags_jack_client_process_callback(jack_nframes_t nframes, void *ptr)
 				   jack_devout->buffer_size);
 	
 	if(!no_event && out != NULL){
+	  ags_soundcard_lock_buffer(AGS_SOUNDCARD(jack_devout), jack_devout->buffer[nth_buffer]);
+	    
 	  ags_audio_buffer_util_copy_buffer_to_buffer(out, 1, 0,
 						      jack_devout->buffer[nth_buffer], jack_devout->pcm_channels, i,
 						      jack_devout->buffer_size, copy_mode);
+	  
+	  ags_soundcard_unlock_buffer(AGS_SOUNDCARD(jack_devout), jack_devout->buffer[nth_buffer]);	    
 	}
 
 	port = port->next;

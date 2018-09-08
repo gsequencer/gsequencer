@@ -1641,12 +1641,16 @@ ags_pulse_port_stream_request_callback(pa_stream *stream, size_t length, AgsPuls
       //    g_message("%d", ags_synth_util_get_xcross_count_s16(pulse_devout->buffer[nth_buffer],
       //							pulse_devout->pcm_channels * pulse_devout->buffer_size));
 
+      ags_soundcard_lock_buffer(AGS_SOUNDCARD(pulse_devout), pulse_devout->buffer[nth_buffer]);	    
+
       pa_stream_write(stream,
 		      pulse_devout->buffer[nth_buffer],
 		      count,
 		      NULL,
 		      0,
 		      PA_SEEK_RELATIVE);
+	  
+      ags_soundcard_unlock_buffer(AGS_SOUNDCARD(pulse_devout), pulse_devout->buffer[nth_buffer]);	    
 
       g_atomic_int_set(&(pulse_port->is_empty),
 		       FALSE);
