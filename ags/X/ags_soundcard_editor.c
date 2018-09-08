@@ -1031,8 +1031,9 @@ ags_soundcard_editor_add_port(AgsSoundcardEditor *soundcard_editor,
   GList *card_name, *card_uri;
 
   gchar *backend;
-  
+
   gboolean use_core_audio, use_pulse, use_jack;
+  gboolean is_output;
   gboolean initial_soundcard;
 
   preferences = (AgsPreferences *) gtk_widget_get_ancestor(GTK_WIDGET(soundcard_editor),
@@ -1060,6 +1061,8 @@ ags_soundcard_editor_add_port(AgsSoundcardEditor *soundcard_editor,
   use_pulse = FALSE;
   use_jack = FALSE;
 
+  is_output = (gtk_combo_box_get_active(soundcard_editor->capability) == 0) ? TRUE: FALSE;
+  
   initial_soundcard = FALSE;
 
   /* determine backend */
@@ -1091,28 +1094,28 @@ ags_soundcard_editor_add_port(AgsSoundcardEditor *soundcard_editor,
   sound_server = ags_sound_provider_get_sound_server(AGS_SOUND_PROVIDER(application_context));
 
   if((sound_server = ags_list_util_find_type(sound_server,
-						    server_type)) != NULL){
+					     server_type)) != NULL){
     if(use_core_audio){
       core_audio_server = AGS_CORE_AUDIO_SERVER(sound_server->data);
 
       soundcard = 
 	core_audio_devout = (AgsCoreAudioDevout *) ags_sound_server_register_soundcard(AGS_SOUND_SERVER(core_audio_server),
-											      TRUE);
+										       is_output);
     }else if(use_pulse){
       pulse_server = AGS_PULSE_SERVER(sound_server->data);
 
       soundcard = 
 	pulse_devout = (AgsPulseDevout *) ags_sound_server_register_soundcard(AGS_SOUND_SERVER(pulse_server),
-										     TRUE);
+									      is_output);
     }else if(use_jack){
       jack_server = AGS_JACK_SERVER(sound_server->data);
 
       soundcard = 
 	jack_devout = (AgsJackDevout *) ags_sound_server_register_soundcard(AGS_SOUND_SERVER(jack_server),
-										   TRUE);
+									    is_output);
     }
   }else{
-    g_warning("distributed manager not found");
+    g_warning("sound server not found");
     
     return;
   }
@@ -1321,7 +1324,7 @@ ags_soundcard_editor_remove_port(AgsSoundcardEditor *soundcard_editor,
 	jack_server = AGS_JACK_SERVER(sound_server->data);
     }
   }else{
-    g_warning("distributed manager not found");
+    g_warning("sound server not found");
     
     return;
   }
@@ -1689,7 +1692,7 @@ ags_soundcard_editor_load_core_audio_card(AgsSoundcardEditor *soundcard_editor)
   sound_server = ags_sound_provider_get_sound_server(AGS_SOUND_PROVIDER(application_context));
 
   if(sound_server == NULL){
-    g_warning("distributed manager not found");
+    g_warning("sound server not found");
 
     return;
   }
@@ -1754,7 +1757,7 @@ ags_soundcard_editor_load_pulse_card(AgsSoundcardEditor *soundcard_editor)
   sound_server = ags_sound_provider_get_sound_server(AGS_SOUND_PROVIDER(application_context));
 
   if(sound_server == NULL){
-    g_warning("distributed manager not found");
+    g_warning("sound server not found");
 
     return;
   }
@@ -1819,7 +1822,7 @@ ags_soundcard_editor_load_jack_card(AgsSoundcardEditor *soundcard_editor)
   sound_server = ags_sound_provider_get_sound_server(AGS_SOUND_PROVIDER(application_context));
 
   if(sound_server == NULL){
-    g_warning("distributed manager not found");
+    g_warning("sound server not found");
 
     return;
   }
