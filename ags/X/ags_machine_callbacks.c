@@ -310,7 +310,7 @@ ags_machine_popup_connection_editor_callback(GtkWidget *widget, AgsMachine *mach
   AgsConnectionEditor *connection_editor;
   
   if(machine->connection_editor == NULL){
-    connection_editor = ags_connection_editor_new(machine);
+    connection_editor = ags_connection_editor_new(NULL);
 
     if((AGS_MACHINE_SHOW_AUDIO_OUTPUT_CONNECTION & (machine->connection_flags)) != 0){
       connection_editor->flags |= AGS_CONNECTION_EDITOR_SHOW_OUTPUT;
@@ -319,7 +319,9 @@ ags_machine_popup_connection_editor_callback(GtkWidget *widget, AgsMachine *mach
     if((AGS_MACHINE_SHOW_AUDIO_INPUT_CONNECTION & (machine->connection_flags)) != 0){
       connection_editor->flags |= AGS_CONNECTION_EDITOR_SHOW_INPUT;
     }
-    
+
+    ags_connection_editor_set_machine(connection_editor, machine);
+	  
     machine->connection_editor = (GtkDialog *) connection_editor;
     
     ags_connectable_connect(AGS_CONNECTABLE(connection_editor));
