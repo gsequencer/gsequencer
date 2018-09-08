@@ -44,7 +44,7 @@ ags_cartesian_linear_y_label_func
 ags_cartesian_reallocate_label
 ags_cartesian_fill_label
 ags_cartesian_new
-<SUBSECTION Standard>
+<SUBSECTION Public>
 AGS_CARTESIAN
 AGS_CARTESIAN_CLASS
 AGS_CARTESIAN_GET_CLASS
@@ -77,7 +77,7 @@ ags_dial_draw
 ags_dial_value_changed
 ags_dial_set_value
 ags_dial_new
-<SUBSECTION Standard>
+<SUBSECTION Public>
 AGS_DIAL
 AGS_DIAL_CLASS
 AGS_DIAL_GET_CLASS
@@ -100,7 +100,7 @@ ags_expander_child_find
 ags_expander_add
 ags_expander_remove
 ags_expander_new
-<SUBSECTION Standard>
+<SUBSECTION Public>
 AGS_EXPANDER
 AGS_EXPANDER_CLASS
 AGS_EXPANDER_GET_CLASS
@@ -124,7 +124,7 @@ ags_expander_set_set_flags
 ags_expander_set_add
 ags_expander_set_remove
 ags_expander_set_new
-<SUBSECTION Standard>
+<SUBSECTION Public>
 AGS_EXPANDER_SET
 AGS_EXPANDER_SET_CLASS
 AGS_EXPANDER_SET_GET_CLASS
@@ -140,7 +140,7 @@ ags_expander_set_get_type
 <FILE>ags_hindicator</FILE>
 <TITLE>AgsHIndicator</TITLE>
 ags_hindicator_new
-<SUBSECTION Standard>
+<SUBSECTION Public>
 AGS_HINDICATOR
 AGS_HINDICATOR_CLASS
 AGS_HINDICATOR_GET_CLASS
@@ -156,7 +156,7 @@ ags_hindicator_get_type
 <FILE>ags_hled_array</FILE>
 <TITLE>AgsHLedArray</TITLE>
 ags_hled_array_new
-<SUBSECTION Standard>
+<SUBSECTION Public>
 AGS_HLED_ARRAY
 AGS_HLED_ARRAY_CLASS
 AGS_HLED_ARRAY_GET_CLASS
@@ -172,7 +172,7 @@ ags_hled_array_get_type
 <FILE>ags_hlevel_box</FILE>
 <TITLE>AgsHLevelBox</TITLE>
 ags_hlevel_box_new
-<SUBSECTION Standard>
+<SUBSECTION Public>
 AGS_HLEVEL_BOX
 AGS_HLEVEL_BOX_CLASS
 AGS_HLEVEL_BOX_GET_CLASS
@@ -188,7 +188,7 @@ ags_hlevel_box_get_type
 <FILE>ags_hscale_box</FILE>
 <TITLE>AgsHScaleBox</TITLE>
 ags_hscale_box_new
-<SUBSECTION Standard>
+<SUBSECTION Public>
 AGS_HSCALE_BOX
 AGS_HSCALE_BOX_CLASS
 AGS_HSCALE_BOX_GET_CLASS
@@ -204,7 +204,7 @@ ags_hscale_box_get_type
 <FILE>ags_indicator</FILE>
 <TITLE>AgsIndicator</TITLE>
 ags_indicator_new
-<SUBSECTION Standard>
+<SUBSECTION Public>
 AGS_INDICATOR
 AGS_INDICATOR_CLASS
 AGS_INDICATOR_GET_CLASS
@@ -225,7 +225,7 @@ AgsLedFlags
 ags_led_set_active
 ags_led_unset_active
 ags_led_new
-<SUBSECTION Standard>
+<SUBSECTION Public>
 AGS_IS_LED
 AGS_IS_LED_CLASS
 AGS_LED
@@ -245,7 +245,7 @@ ags_led_array_set_led_count
 ags_led_array_unset_all
 ags_led_array_set_nth
 ags_led_array_new
-<SUBSECTION Standard>
+<SUBSECTION Public>
 AGS_IS_LED_ARRAY
 AGS_IS_LED_ARRAY_CLASS
 AGS_LED_ARRAY
@@ -275,7 +275,7 @@ AgsLevelLayout
 AgsLevelAction
 ags_level_value_changed
 ags_level_new
-<SUBSECTION Standard>
+<SUBSECTION Public>
 AGS_IS_LEVEL
 AGS_IS_LEVEL_CLASS
 AGS_LEVEL
@@ -294,7 +294,7 @@ AGS_LEVEL_BOX_DEFAULT_FIXED_LEVEL_WIDTH
 AGS_LEVEL_BOX_DEFAULT_FIXED_LEVEL_HEIGHT
 AgsLevelBoxFlags
 ags_level_box_new
-<SUBSECTION Standard>
+<SUBSECTION Public>
 AGS_IS_LEVEL_BOX
 AGS_IS_LEVEL_BOX_CLASS
 AGS_LEVEL_BOX
@@ -326,7 +326,7 @@ ags_notebook_insert_tab_with_label
 ags_notebook_remove_tab
 ags_notebook_remove_tab_with_data
 ags_notebook_new
-<SUBSECTION Standard>
+<SUBSECTION Public>
 AGS_IS_NOTEBOOK
 AGS_IS_NOTEBOOK_CLASS
 AGS_NOTEBOOK
@@ -357,7 +357,7 @@ ags_piano_key_released
 ags_piano_key_clicked
 ags_piano_get_active_key
 ags_piano_new
-<SUBSECTION Standard>
+<SUBSECTION Public>
 AGS_IS_PIANO
 AGS_IS_PIANO_CLASS
 AGS_PIANO
@@ -514,7 +514,7 @@ AGS_RULER_DEFAULT_STEP
 AGS_RULER_LARGE_STEP
 AGS_RULER_SMALL_STEP
 ags_ruler_new
-<SUBSECTION Standard>
+<SUBSECTION Public>
 AGS_IS_RULER
 AGS_IS_RULER_CLASS
 AGS_RULER
@@ -543,7 +543,7 @@ AgsScaleLayout
 AgsScaleAction
 ags_scale_value_changed
 ags_scale_new
-<SUBSECTION Standard>
+<SUBSECTION Public>
 AGS_IS_SCALE
 AGS_IS_SCALE_CLASS
 AGS_SCALE
@@ -562,7 +562,7 @@ AGS_SCALE_BOX_DEFAULT_FIXED_SCALE_WIDTH
 AGS_SCALE_BOX_DEFAULT_FIXED_SCALE_HEIGHT
 AgsScaleBoxFlags
 ags_scale_box_new
-<SUBSECTION Standard>
+<SUBSECTION Public>
 AGS_IS_SCALE_BOX
 AGS_IS_SCALE_BOX_CLASS
 AGS_SCALE_BOX
@@ -578,7 +578,7 @@ ags_scale_box_get_type
 <FILE>ags_scrolled_level_box</FILE>
 <TITLE>AgsScrolledLevelBox</TITLE>
 ags_scrolled_level_box_new
-<SUBSECTION Standard>
+<SUBSECTION Public>
 AGS_IS_SCROLLED_LEVEL_BOX
 AGS_IS_SCROLLED_LEVEL_BOX_CLASS
 AGS_SCROLLED_LEVEL_BOX
@@ -594,7 +594,7 @@ ags_scrolled_level_box_get_type
 <FILE>ags_scrolled_piano</FILE>
 <TITLE>AgsScrolledPiano</TITLE>
 ags_scrolled_piano_new
-<SUBSECTION Standard>
+<SUBSECTION Public>
 AGS_IS_SCROLLED_PIANO
 AGS_IS_SCROLLED_PIANO_CLASS
 AGS_SCROLLED_PIANO
@@ -610,7 +610,7 @@ ags_scrolled_piano_get_type
 <FILE>ags_scrolled_scale_box</FILE>
 <TITLE>AgsScrolledScaleBox</TITLE>
 ags_scrolled_scale_box_new
-<SUBSECTION Standard>
+<SUBSECTION Public>
 AGS_IS_SCROLLED_SCALE_BOX
 AGS_IS_SCROLLED_SCALE_BOX_CLASS
 AGS_SCROLLED_SCALE_BOX
@@ -626,7 +626,7 @@ ags_scrolled_scale_box_get_type
 <FILE>ags_vindicator</FILE>
 <TITLE>AgsVIndicator</TITLE>
 ags_vindicator_new
-<SUBSECTION Standard>
+<SUBSECTION Public>
 AGS_IS_VINDICATOR
 AGS_IS_VINDICATOR_CLASS
 AGS_TYPE_VINDICATOR
@@ -642,7 +642,7 @@ ags_vindicator_get_type
 <FILE>ags_vled_array</FILE>
 <TITLE>AgsVLedArray</TITLE>
 ags_vled_array_new
-<SUBSECTION Standard>
+<SUBSECTION Public>
 AGS_IS_VLED_ARRAY
 AGS_IS_VLED_ARRAY_CLASS
 AGS_TYPE_VLED_ARRAY
@@ -658,7 +658,7 @@ ags_vled_array_get_type
 <FILE>ags_vlevel_box</FILE>
 <TITLE>AgsVLevelBox</TITLE>
 ags_vlevel_box_new
-<SUBSECTION Standard>
+<SUBSECTION Public>
 AGS_IS_VLEVEL_BOX
 AGS_IS_VLEVEL_BOX_CLASS
 AGS_TYPE_VLEVEL_BOX
@@ -674,7 +674,7 @@ ags_vlevel_box_get_type
 <FILE>ags_vscale_box</FILE>
 <TITLE>AgsVScaleBox</TITLE>
 ags_vscale_box_new
-<SUBSECTION Standard>
+<SUBSECTION Public>
 AGS_IS_VSCALE_BOX
 AGS_IS_VSCALE_BOX_CLASS
 AGS_TYPE_VSCALE_BOX
