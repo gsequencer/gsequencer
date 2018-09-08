@@ -130,6 +130,11 @@ void* ags_core_audio_devin_get_buffer(AgsSoundcard *soundcard);
 void* ags_core_audio_devin_get_next_buffer(AgsSoundcard *soundcard);
 void* ags_core_audio_devin_get_prev_buffer(AgsSoundcard *soundcard);
 
+void ags_core_audio_devin_lock_buffer(AgsSoundcard *soundcard,
+				      void *buffer);
+void ags_core_audio_devin_unlock_buffer(AgsSoundcard *soundcard,
+					void *buffer);
+
 guint ags_core_audio_devin_get_delay_counter(AgsSoundcard *soundcard);
 
 void ags_core_audio_devin_set_note_offset(AgsSoundcard *soundcard,
@@ -533,6 +538,9 @@ ags_core_audio_devin_soundcard_interface_init(AgsSoundcardInterface *soundcard)
   soundcard->get_buffer = ags_core_audio_devin_get_buffer;
   soundcard->get_next_buffer = ags_core_audio_devin_get_next_buffer;
   soundcard->get_prev_buffer = ags_core_audio_devin_get_prev_buffer;
+  
+  soundcard->lock_buffer = ags_core_audio_devin_lock_buffer;
+  soundcard->unlock_buffer = ags_core_audio_devin_unlock_buffer;
 
   soundcard->get_delay_counter = ags_core_audio_devin_get_delay_counter;
 
@@ -2529,6 +2537,80 @@ ags_core_audio_devin_get_prev_buffer(AgsSoundcard *soundcard)
   }
 
   return(buffer);
+}
+
+void
+ags_core_audio_devin_lock_buffer(AgsSoundcard *soundcard,
+				  void *buffer)
+{
+  AgsCoreAudioDevin *core_audio_devin;
+
+  pthread_mutex_t *buffer_mutex;
+  
+  core_audio_devin = AGS_CORE_AUDIO_DEVIN(soundcard);
+
+  buffer_mutex = NULL;
+
+  if(core_audio_devin->buffer != NULL){
+    if(buffer == core_audio_devin->buffer[0]){
+      buffer_mutex = core_audio_devin->buffer_mutex[0];
+    }else if(buffer == core_audio_devin->buffer[1]){
+      buffer_mutex = core_audio_devin->buffer_mutex[1];
+    }else if(buffer == core_audio_devin->buffer[2]){
+      buffer_mutex = core_audio_devin->buffer_mutex[2];
+    }else if(buffer == core_audio_devin->buffer[3]){
+      buffer_mutex = core_audio_devin->buffer_mutex[3];
+    }else if(buffer == core_audio_devin->buffer[4]){
+      buffer_mutex = core_audio_devin->buffer_mutex[4];
+    }else if(buffer == core_audio_devin->buffer[5]){
+      buffer_mutex = core_audio_devin->buffer_mutex[5];
+    }else if(buffer == core_audio_devin->buffer[6]){
+      buffer_mutex = core_audio_devin->buffer_mutex[6];
+    }else if(buffer == core_audio_devin->buffer[7]){
+      buffer_mutex = core_audio_devin->buffer_mutex[7];
+    }
+  }
+  
+  if(buffer_mutex != NULL){
+    pthread_mutex_lock(buffer_mutex);
+  }
+}
+
+void
+ags_core_audio_devin_unlock_buffer(AgsSoundcard *soundcard,
+				    void *buffer)
+{
+  AgsCoreAudioDevin *core_audio_devin;
+
+  pthread_mutex_t *buffer_mutex;
+  
+  core_audio_devin = AGS_CORE_AUDIO_DEVIN(soundcard);
+
+  buffer_mutex = NULL;
+
+  if(core_audio_devin->buffer != NULL){
+    if(buffer == core_audio_devin->buffer[0]){
+      buffer_mutex = core_audio_devin->buffer_mutex[0];
+    }else if(buffer == core_audio_devin->buffer[1]){
+      buffer_mutex = core_audio_devin->buffer_mutex[1];
+    }else if(buffer == core_audio_devin->buffer[2]){
+      buffer_mutex = core_audio_devin->buffer_mutex[2];
+    }else if(buffer == core_audio_devin->buffer[3]){
+      buffer_mutex = core_audio_devin->buffer_mutex[3];
+    }else if(buffer == core_audio_devin->buffer[4]){
+      buffer_mutex = core_audio_devin->buffer_mutex[4];
+    }else if(buffer == core_audio_devin->buffer[5]){
+      buffer_mutex = core_audio_devin->buffer_mutex[5];
+    }else if(buffer == core_audio_devin->buffer[6]){
+      buffer_mutex = core_audio_devin->buffer_mutex[6];
+    }else if(buffer == core_audio_devin->buffer[7]){
+      buffer_mutex = core_audio_devin->buffer_mutex[7];
+    }
+  }
+
+  if(buffer_mutex != NULL){
+    pthread_mutex_unlock(buffer_mutex);
+  }
 }
 
 guint

@@ -305,8 +305,12 @@ ags_clear_buffer_launch(AgsTask *task)
     }else if(ags_devout_test_flags(devout, AGS_DEVOUT_BUFFER3)){
       nth_buffer = 3;
     }
+
+    ags_soundcard_lock_buffer(AGS_SOUNDCARD(clear_buffer->device), devout->buffer[nth_buffer]);
     
     memset(devout->buffer[nth_buffer], 0, (size_t) pcm_channels * buffer_size * word_size);
+
+    ags_soundcard_unlock_buffer(AGS_SOUNDCARD(clear_buffer->device), devout->buffer[nth_buffer]);
   }else if(AGS_IS_DEVIN(clear_buffer->device)){
     AgsDevin *devin;
 
@@ -323,7 +327,11 @@ ags_clear_buffer_launch(AgsTask *task)
       nth_buffer = 0;
     }
     
+    ags_soundcard_lock_buffer(AGS_SOUNDCARD(clear_buffer->device), devin->buffer[nth_buffer]);
+    
     memset(devin->buffer[nth_buffer], 0, (size_t) pcm_channels * buffer_size * word_size);
+
+    ags_soundcard_unlock_buffer(AGS_SOUNDCARD(clear_buffer->device), devin->buffer[nth_buffer]);
   }else if(AGS_IS_JACK_DEVOUT(clear_buffer->device)){
     AgsJackDevout *jack_devout;
     
@@ -340,7 +348,11 @@ ags_clear_buffer_launch(AgsTask *task)
       nth_buffer = 1;
     }
             
+    ags_soundcard_lock_buffer(AGS_SOUNDCARD(clear_buffer->device), jack_devout->buffer[nth_buffer]);
+    
     memset(jack_devout->buffer[nth_buffer], 0, (size_t) pcm_channels * buffer_size * word_size);
+
+    ags_soundcard_unlock_buffer(AGS_SOUNDCARD(clear_buffer->device), jack_devout->buffer[nth_buffer]);
   }else if(AGS_IS_JACK_DEVIN(clear_buffer->device)){
     AgsJackDevin *jack_devin;
     
@@ -357,7 +369,11 @@ ags_clear_buffer_launch(AgsTask *task)
       nth_buffer = 1;
     }
     
+    ags_soundcard_lock_buffer(AGS_SOUNDCARD(clear_buffer->device), jack_devin->buffer[nth_buffer]);
+    
     memset(jack_devin->buffer[nth_buffer], 0, (size_t) pcm_channels * buffer_size * word_size);
+
+    ags_soundcard_unlock_buffer(AGS_SOUNDCARD(clear_buffer->device), jack_devin->buffer[nth_buffer]);
   }else if(AGS_IS_PULSE_DEVOUT(clear_buffer->device)){
     AgsPulseDevout *pulse_devout;
     
@@ -382,7 +398,11 @@ ags_clear_buffer_launch(AgsTask *task)
       nth_buffer = 1;
     }
       
+    ags_soundcard_lock_buffer(AGS_SOUNDCARD(clear_buffer->device), pulse_devout->buffer[nth_buffer]);
+    
     memset(pulse_devout->buffer[nth_buffer], 0, (size_t) pcm_channels * buffer_size * word_size);
+
+    ags_soundcard_unlock_buffer(AGS_SOUNDCARD(clear_buffer->device), pulse_devout->buffer[nth_buffer]);
   }else if(AGS_IS_PULSE_DEVIN(clear_buffer->device)){
     AgsPulseDevin *pulse_devin;
     
@@ -407,57 +427,69 @@ ags_clear_buffer_launch(AgsTask *task)
       nth_buffer = 1;
     }
       
+    ags_soundcard_lock_buffer(AGS_SOUNDCARD(clear_buffer->device), pulse_devin->buffer[nth_buffer]);
+    
     memset(pulse_devin->buffer[nth_buffer], 0, (size_t) pcm_channels * buffer_size * word_size);
+
+    ags_soundcard_unlock_buffer(AGS_SOUNDCARD(clear_buffer->device), pulse_devout->buffer[nth_buffer]);
   }else if(AGS_IS_CORE_AUDIO_DEVOUT(clear_buffer->device)){
     AgsCoreAudioDevout *core_audio_devout;
     
     core_audio_devout = clear_buffer->device;
 
     /* retrieve nth buffer */    
-    if((AGS_CORE_AUDIO_DEVOUT_BUFFER0 & (core_audio_devout->flags)) != 0){
+    if(ags_core_audio_devout_test_flags(core_audio_devout, AGS_CORE_AUDIO_DEVOUT_BUFFER0)){
       nth_buffer = 2;
-    }else if((AGS_CORE_AUDIO_DEVOUT_BUFFER1 & (core_audio_devout->flags)) != 0){
+    }else if(ags_core_audio_devout_test_flags(core_audio_devout, AGS_CORE_AUDIO_DEVOUT_BUFFER1)){
       nth_buffer = 3;
-    }else if((AGS_CORE_AUDIO_DEVOUT_BUFFER2 & (core_audio_devout->flags)) != 0){
+    }else if(ags_core_audio_devout_test_flags(core_audio_devout, AGS_CORE_AUDIO_DEVOUT_BUFFER2)){
       nth_buffer = 4;
-    }else if((AGS_CORE_AUDIO_DEVOUT_BUFFER3 & (core_audio_devout->flags)) != 0){
+    }else if(ags_core_audio_devout_test_flags(core_audio_devout, AGS_CORE_AUDIO_DEVOUT_BUFFER3)){
       nth_buffer = 5;
-    }else if((AGS_CORE_AUDIO_DEVOUT_BUFFER4 & (core_audio_devout->flags)) != 0){
+    }else if(ags_core_audio_devout_test_flags(core_audio_devout, AGS_CORE_AUDIO_DEVOUT_BUFFER4)){
       nth_buffer = 6;
-    }else if((AGS_CORE_AUDIO_DEVOUT_BUFFER5 & (core_audio_devout->flags)) != 0){
+    }else if(ags_core_audio_devout_test_flags(core_audio_devout, AGS_CORE_AUDIO_DEVOUT_BUFFER5)){
       nth_buffer = 7;
-    }else if((AGS_CORE_AUDIO_DEVOUT_BUFFER6 & (core_audio_devout->flags)) != 0){
+    }else if(ags_core_audio_devout_test_flags(core_audio_devout, AGS_CORE_AUDIO_DEVOUT_BUFFER6)){
       nth_buffer = 0;
-    }else if((AGS_CORE_AUDIO_DEVOUT_BUFFER7 & (core_audio_devout->flags)) != 0){
+    }else if(ags_core_audio_devout_test_flags(core_audio_devout, AGS_CORE_AUDIO_DEVOUT_BUFFER7)){
       nth_buffer = 1;
     }
       
+    ags_soundcard_lock_buffer(AGS_SOUNDCARD(clear_buffer->device), core_audio_devout->buffer[nth_buffer]);
+    
     memset(core_audio_devout->buffer[nth_buffer], 0, (size_t) pcm_channels * buffer_size * word_size);
+
+    ags_soundcard_unlock_buffer(AGS_SOUNDCARD(clear_buffer->device), core_audio_devout->buffer[nth_buffer]);
   }else if(AGS_IS_CORE_AUDIO_DEVIN(clear_buffer->device)){
     AgsCoreAudioDevin *core_audio_devin;
     
     core_audio_devin = clear_buffer->device;
 
     /* retrieve nth buffer */    
-    if((AGS_CORE_AUDIO_DEVIN_BUFFER0 & (core_audio_devin->flags)) != 0){
+    if(ags_core_audio_devin_test_flags(core_audio_devin, AGS_CORE_AUDIO_DEVIN_BUFFER0)){
       nth_buffer = 2;
-    }else if((AGS_CORE_AUDIO_DEVIN_BUFFER1 & (core_audio_devin->flags)) != 0){
+    }else if(ags_core_audio_devin_test_flags(core_audio_devin, AGS_CORE_AUDIO_DEVIN_BUFFER1)){
       nth_buffer = 3;
-    }else if((AGS_CORE_AUDIO_DEVIN_BUFFER2 & (core_audio_devin->flags)) != 0){
+    }else if(ags_core_audio_devin_test_flags(core_audio_devin, AGS_CORE_AUDIO_DEVIN_BUFFER2)){
       nth_buffer = 4;
-    }else if((AGS_CORE_AUDIO_DEVIN_BUFFER3 & (core_audio_devin->flags)) != 0){
+    }else if(ags_core_audio_devin_test_flags(core_audio_devin, AGS_CORE_AUDIO_DEVIN_BUFFER3)){
       nth_buffer = 5;
-    }else if((AGS_CORE_AUDIO_DEVIN_BUFFER4 & (core_audio_devin->flags)) != 0){
+    }else if(ags_core_audio_devin_test_flags(core_audio_devin, AGS_CORE_AUDIO_DEVIN_BUFFER4)){
       nth_buffer = 6;
-    }else if((AGS_CORE_AUDIO_DEVIN_BUFFER5 & (core_audio_devin->flags)) != 0){
+    }else if(ags_core_audio_devin_test_flags(core_audio_devin, AGS_CORE_AUDIO_DEVIN_BUFFER5)){
       nth_buffer = 7;
-    }else if((AGS_CORE_AUDIO_DEVIN_BUFFER6 & (core_audio_devin->flags)) != 0){
+    }else if(ags_core_audio_devin_test_flags(core_audio_devin, AGS_CORE_AUDIO_DEVIN_BUFFER6)){
       nth_buffer = 0;
-    }else if((AGS_CORE_AUDIO_DEVIN_BUFFER7 & (core_audio_devin->flags)) != 0){
+    }else if(ags_core_audio_devin_test_flags(core_audio_devin, AGS_CORE_AUDIO_DEVIN_BUFFER7)){
       nth_buffer = 1;
     }
       
-    //memset(core_audio_devin->buffer[nth_buffer], 0, (size_t) pcm_channels * buffer_size * word_size);
+    ags_soundcard_lock_buffer(AGS_SOUNDCARD(clear_buffer->device), core_audio_devin->buffer[nth_buffer]);
+    
+    memset(core_audio_devin->buffer[nth_buffer], 0, (size_t) pcm_channels * buffer_size * word_size);
+
+    ags_soundcard_unlock_buffer(AGS_SOUNDCARD(clear_buffer->device), core_audio_devin->buffer[nth_buffer]);
   }else if(AGS_IS_MIDIIN(clear_buffer->device)){
     //TODO:JK: implement me
   }else if(AGS_IS_JACK_MIDIIN(clear_buffer->device)){

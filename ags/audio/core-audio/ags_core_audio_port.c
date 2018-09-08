@@ -1565,9 +1565,13 @@ ags_core_audio_port_handle_output_buffer(AgsCoreAudioPort *core_audio_port,
     copy_mode = ags_audio_buffer_util_get_copy_mode(AGS_AUDIO_BUFFER_UTIL_S16,
 						    ags_audio_buffer_util_format_from_soundcard(core_audio_devout->format));
 
+    ags_soundcard_lock_buffer(AGS_SOUNDCARD(core_audio_devout), core_audio_devout->buffer[nth_buffer]);
+    
     ags_audio_buffer_util_copy_buffer_to_buffer(in_buffer->mAudioData, 1, 0,
 						core_audio_devout->buffer[nth_buffer], 1, 0,
 						core_audio_port->pcm_channels * core_audio_port->buffer_size, copy_mode);
+
+    ags_soundcard_unlock_buffer(AGS_SOUNDCARD(core_audio_devout), core_audio_devout->buffer[nth_buffer]);
   }
 
   AudioQueueEnqueueBuffer(core_audio_port->aq_ref,
@@ -1855,9 +1859,14 @@ ags_core_audio_port_handle_input_buffer(AgsCoreAudioPort *core_audio_port,
 	      ((gint16 *) in_buffer->mAudioData)[2],
 	      ((gint16 *) in_buffer->mAudioData)[3]);
 #endif
+
+    ags_soundcard_lock_buffer(AGS_SOUNDCARD(core_audio_devin), core_audio_devin->buffer[nth_buffer]);
+    
     ags_audio_buffer_util_copy_buffer_to_buffer(core_audio_devin->buffer[nth_buffer], 1, 0,
 						in_buffer->mAudioData, 1, 0,
 						core_audio_port->pcm_channels * core_audio_port->buffer_size, copy_mode);
+    
+    ags_soundcard_unlock_buffer(AGS_SOUNDCARD(core_audio_devin), core_audio_devin->buffer[nth_buffer]);    
   }
 
   in_buffer->mAudioDataByteSize = core_audio_port->pcm_channels * core_audio_port->buffer_size * sizeof(gint16);
