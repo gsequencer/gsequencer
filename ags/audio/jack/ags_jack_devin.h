@@ -119,7 +119,8 @@ struct _AgsJackDevin
   guint format;
   guint buffer_size;
   guint samplerate;
-
+  
+  pthread_mutex_t **buffer_mutex;
   void** buffer;
 
   double bpm; // beats per minute

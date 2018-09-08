@@ -1474,7 +1474,7 @@ ags_jack_server_register_soundcard(AgsSoundServer *sound_server,
       ags_jack_port_register(jack_port,
 			     str,
 			     TRUE, FALSE,
-			     TRUE);
+			     FALSE);
 
       g_free(str);
     }
