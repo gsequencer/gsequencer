@@ -1564,12 +1564,6 @@ ags_jack_client_process_callback(jack_nframes_t nframes, void *ptr)
       device_mutex = AGS_JACK_MIDIIN(device->data)->obj_mutex;
 
       pthread_mutex_unlock(ags_jack_midiin_get_class_mutex());
-    }else if(AGS_IS_JACK_DEVIN(device->data)){
-      pthread_mutex_lock(ags_jack_devin_get_class_mutex());
-
-      device_mutex = AGS_JACK_DEVIN(device->data)->obj_mutex;
-
-      pthread_mutex_unlock(ags_jack_devin_get_class_mutex());
     }else{
       device = device->next;
 
@@ -1579,45 +1573,9 @@ ags_jack_client_process_callback(jack_nframes_t nframes, void *ptr)
     /*  */
     pthread_mutex_lock(device_mutex);
 
-    jack_devin = NULL;
     jack_midiin = NULL;
 
-    if(AGS_IS_JACK_DEVIN(device->data)){
-      jack_devin = (AgsJackDevin *) device->data;
-
-      /* wait callback */      
-      no_event = TRUE;
-      
-      if((AGS_JACK_DEVIN_PASS_THROUGH & (g_atomic_int_get(&(jack_devin->sync_flags)))) == 0){
-	callback_mutex = jack_devin->callback_mutex;
-
-	pthread_mutex_unlock(device_mutex);
-	
-	/* give back computing time until ready */
-	pthread_mutex_lock(callback_mutex);
-    
-	if((AGS_JACK_DEVIN_CALLBACK_DONE & (g_atomic_int_get(&(jack_devin->sync_flags)))) == 0){
-	  g_atomic_int_or(&(jack_devin->sync_flags),
-			  AGS_JACK_DEVIN_CALLBACK_WAIT);
-    
-	  while((AGS_JACK_DEVIN_CALLBACK_DONE & (g_atomic_int_get(&(jack_devin->sync_flags)))) == 0 &&
-		(AGS_JACK_DEVIN_CALLBACK_WAIT & (g_atomic_int_get(&(jack_devin->sync_flags)))) != 0){
-	    pthread_cond_wait(jack_devin->callback_cond,
-			      callback_mutex);
-	  }
-	}
-    
-	g_atomic_int_and(&(jack_devin->sync_flags),
-			 (~(AGS_JACK_DEVIN_CALLBACK_WAIT |
-			    AGS_JACK_DEVIN_CALLBACK_DONE)));
-	  
-	pthread_mutex_unlock(callback_mutex);
-
-	no_event = FALSE;
-	
-	pthread_mutex_lock(device_mutex);
-      }      
-    }else if(AGS_IS_JACK_MIDIIN(device->data)){
+    if(AGS_IS_JACK_MIDIIN(device->data)){
       jack_midiin = (AgsJackMidiin *) device->data;
 
       /* wait callback */      
@@ -1651,122 +1609,6 @@ ags_jack_client_process_callback(jack_nframes_t nframes, void *ptr)
 	no_event = FALSE;
 	
 	pthread_mutex_lock(device_mutex);
-      }
-
-      /* audio input */
-      if(jack_devin != NULL){      
-	/* get buffer */
-	if((AGS_JACK_DEVIN_BUFFER0 & (jack_devin->flags)) != 0){
-	  nth_buffer = 3;
-	}else if((AGS_JACK_DEVIN_BUFFER1 & (jack_devin->flags)) != 0){
-	  nth_buffer = 0;
-	}else if((AGS_JACK_DEVIN_BUFFER2 & (jack_devin->flags)) != 0){
-	  nth_buffer = 1;
-	}else if((AGS_JACK_DEVIN_BUFFER3 & jack_devin->flags) != 0){
-	  nth_buffer = 2;
-	}else{
-	  /* iterate */
-	  pthread_mutex_unlock(device_mutex);
-	  
-	  device = device->next;
-	
-	  continue;
-	}
-
-	/* get copy mode */
-	copy_mode = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(jack_devin->format),
-							AGS_AUDIO_BUFFER_UTIL_FLOAT);
-
-	/* check buffer flag */
-	switch(jack_devin->format){
-	case AGS_SOUNDCARD_SIGNED_8_BIT:
-	  {
-	    word_size = sizeof(signed char);
-	  }
-	  break;
-	case AGS_SOUNDCARD_SIGNED_16_BIT:
-	  {
-	    word_size = sizeof(signed short);
-	  }
-	  break;
-	case AGS_SOUNDCARD_SIGNED_24_BIT:
-	  {
-	    word_size = sizeof(signed long);
-	  }
-	  break;
-	case AGS_SOUNDCARD_SIGNED_32_BIT:
-	  {
-	    word_size = sizeof(signed long);
-	  }
-	  break;
-	case AGS_SOUNDCARD_SIGNED_64_BIT:
-	  {
-	    word_size = sizeof(signed long long);
-	  }
-	  break;
-	default:
-	  /* iterate */
-	  device = device->next;
-
-	  pthread_mutex_unlock(device_mutex);
-	
-	  continue;
-	}
-
-	/* retrieve buffer */
-	port = jack_devin->jack_port;
-      
-	for(i = 0; port != NULL; i++){
-	  jack_port = port->data;
-	
-	  in = jack_port_get_buffer(jack_port->port,
-				    jack_devin->buffer_size);
-	
-	  if(!no_event && in != NULL){
-	    ags_soundcard_lock_buffer(AGS_SOUNDCARD(jack_devin), jack_devin->buffer[nth_buffer]);
-	    
-	    ags_audio_buffer_util_copy_buffer_to_buffer(jack_devin->buffer[nth_buffer], jack_devin->pcm_channels, i,
-							in, 1, 0,
-							jack_devin->buffer_size, copy_mode);
-	    
-	    ags_soundcard_unlock_buffer(AGS_SOUNDCARD(jack_devin), jack_devin->buffer[nth_buffer]);	    
-	  }
-
-	  port = port->next;
-	}
-
-	/* clear buffer */
-	port = jack_devin->jack_port;
-      
-	for(i = 0; port != NULL; i++){
-	  jack_port = port->data;
-	
-	  in = jack_port_get_buffer(jack_port->port,
-				    jack_devin->buffer_size);
-
-	  if(in != NULL){
-	    ags_audio_buffer_util_clear_float(in, 1,
-					      jack_devin->buffer_size);
-	  }
-
-	  port = port->next;
-	}
-	  
-	if(!no_event){
-	  /* signal finish */
-	  callback_finish_mutex = jack_devin->callback_finish_mutex;
-	
-	  pthread_mutex_lock(callback_finish_mutex);
-
-	  g_atomic_int_or(&(jack_devin->sync_flags),
-			  AGS_JACK_DEVIN_CALLBACK_FINISH_DONE);
-    
-	  if((AGS_JACK_DEVIN_CALLBACK_FINISH_WAIT & (g_atomic_int_get(&(jack_devin->sync_flags)))) != 0){
-	    pthread_cond_signal(jack_devin->callback_finish_cond);
-	  }
-
-	  pthread_mutex_unlock(callback_finish_mutex);
-	}
       }
       
       /* MIDI input */
@@ -1831,6 +1673,186 @@ ags_jack_client_process_callback(jack_nframes_t nframes, void *ptr)
 
 	  pthread_mutex_unlock(callback_finish_mutex);
 	}
+      }
+    }
+        
+    pthread_mutex_unlock(device_mutex);
+
+    /* iterate */
+    device = device->next;
+  }
+
+  /*
+   * process audio input
+   */
+  /* get device */
+  device = device_start;  
+
+  while(device != NULL){
+    if(AGS_IS_JACK_DEVIN(device->data)){
+      pthread_mutex_lock(ags_jack_devin_get_class_mutex());
+
+      device_mutex = AGS_JACK_DEVIN(device->data)->obj_mutex;
+
+      pthread_mutex_unlock(ags_jack_devin_get_class_mutex());
+    }else{
+      device = device->next;
+
+      continue;
+    }
+
+    /*  */
+    pthread_mutex_lock(device_mutex);
+
+    jack_devin = NULL;
+    
+    if(AGS_IS_JACK_DEVIN(device->data)){
+      jack_devin = (AgsJackDevin *) device->data;
+
+      /* wait callback */      
+      no_event = TRUE;
+
+      if((AGS_JACK_DEVIN_PASS_THROUGH & (g_atomic_int_get(&(jack_devin->sync_flags)))) == 0){
+	callback_mutex = jack_devin->callback_mutex;
+
+	pthread_mutex_unlock(device_mutex);
+	
+	/* give back computing time until ready */
+	pthread_mutex_lock(callback_mutex);
+    
+	if((AGS_JACK_DEVIN_CALLBACK_DONE & (g_atomic_int_get(&(jack_devin->sync_flags)))) == 0){
+	  g_atomic_int_or(&(jack_devin->sync_flags),
+			  AGS_JACK_DEVIN_CALLBACK_WAIT);
+    
+	  while((AGS_JACK_DEVIN_CALLBACK_DONE & (g_atomic_int_get(&(jack_devin->sync_flags)))) == 0 &&
+		(AGS_JACK_DEVIN_CALLBACK_WAIT & (g_atomic_int_get(&(jack_devin->sync_flags)))) != 0){
+	    pthread_cond_wait(jack_devin->callback_cond,
+			      callback_mutex);
+	  }
+	}
+    
+	g_atomic_int_and(&(jack_devin->sync_flags),
+			 (~(AGS_JACK_DEVIN_CALLBACK_WAIT |
+			    AGS_JACK_DEVIN_CALLBACK_DONE)));
+    
+	pthread_mutex_unlock(callback_mutex);
+
+	no_event = FALSE;
+
+	pthread_mutex_lock(device_mutex);
+      }
+      
+      /* get buffer */
+      if((AGS_JACK_DEVIN_BUFFER0 & (jack_devin->flags)) != 0){
+	nth_buffer = 1;
+      }else if((AGS_JACK_DEVIN_BUFFER1 & (jack_devin->flags)) != 0){
+	nth_buffer = 2;
+      }else if((AGS_JACK_DEVIN_BUFFER2 & (jack_devin->flags)) != 0){
+	nth_buffer = 3;
+      }else if((AGS_JACK_DEVIN_BUFFER3 & jack_devin->flags) != 0){
+	nth_buffer = 0;
+      }else{
+	/* iterate */
+	pthread_mutex_unlock(device_mutex);
+	
+	device = device->next;
+	
+	continue;
+      }
+
+      /* get copy mode */
+      copy_mode = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(jack_devin->format),
+						      AGS_AUDIO_BUFFER_UTIL_FLOAT);
+
+      /* check buffer flag */
+      switch(jack_devin->format){
+      case AGS_SOUNDCARD_SIGNED_8_BIT:
+	{
+	  word_size = sizeof(signed char);
+	}
+	break;
+      case AGS_SOUNDCARD_SIGNED_16_BIT:
+	{
+	  word_size = sizeof(signed short);
+	}
+	break;
+      case AGS_SOUNDCARD_SIGNED_24_BIT:
+	{
+	  word_size = sizeof(signed long);
+	}
+	break;
+      case AGS_SOUNDCARD_SIGNED_32_BIT:
+	{
+	  word_size = sizeof(signed long);
+	}
+	break;
+      case AGS_SOUNDCARD_SIGNED_64_BIT:
+	{
+	  word_size = sizeof(signed long long);
+	}
+	break;
+      default:
+	pthread_mutex_unlock(device_mutex);
+	
+	/* iterate */
+	device = device->next;
+	
+	continue;
+      }
+
+      /* retrieve buffer */
+      port = jack_devin->jack_port;
+      
+      for(i = 0; port != NULL; i++){
+	jack_port = port->data;
+	
+	in = jack_port_get_buffer(jack_port->port,
+				  jack_devin->buffer_size);
+	
+	if(!no_event && in != NULL){
+	  ags_soundcard_lock_buffer(AGS_SOUNDCARD(jack_devin), jack_devin->buffer[nth_buffer]);
+	    
+	  ags_audio_buffer_util_copy_buffer_to_buffer(jack_devin->buffer[nth_buffer], jack_devin->pcm_channels, i,
+						      in, 1, 0,
+						      jack_devin->buffer_size, copy_mode);
+	    
+	  ags_soundcard_unlock_buffer(AGS_SOUNDCARD(jack_devin), jack_devin->buffer[nth_buffer]);	    
+	}
+
+	port = port->next;
+      }
+
+      /* clear buffer */
+      port = jack_devin->jack_port;
+      
+      for(i = 0; port != NULL; i++){
+	jack_port = port->data;
+	
+	out = jack_port_get_buffer(jack_port->port,
+				   jack_devin->buffer_size);
+
+	if(out != NULL){
+	  ags_audio_buffer_util_clear_float(out, 1,
+					    jack_devin->buffer_size);
+	}
+
+	port = port->next;
+      }
+    
+      if(!no_event){
+	/* signal finish */
+	callback_finish_mutex = jack_devin->callback_finish_mutex;
+	
+	pthread_mutex_lock(callback_finish_mutex);
+
+	g_atomic_int_or(&(jack_devin->sync_flags),
+			AGS_JACK_DEVIN_CALLBACK_FINISH_DONE);
+    
+	if((AGS_JACK_DEVIN_CALLBACK_FINISH_WAIT & (g_atomic_int_get(&(jack_devin->sync_flags)))) != 0){
+	  pthread_cond_signal(jack_devin->callback_finish_cond);
+	}
+
+	pthread_mutex_unlock(callback_finish_mutex);
       }
     }
         
