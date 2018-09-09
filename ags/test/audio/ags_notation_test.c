@@ -24,11 +24,10 @@
 #include <CUnit/Automated.h>
 #include <CUnit/Basic.h>
 
-#include <ags/object/ags_soundcard.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
 
-#include <ags/audio/ags_devout.h>
-#include <ags/audio/ags_audio.h>
-#include <ags/audio/ags_notation.h>
+#include <stdlib.h>
 
 int ags_notation_test_init_suite();
 int ags_notation_test_clean_suite();
@@ -751,8 +750,8 @@ main(int argc, char **argv)
 {
   CU_pSuite pSuite = NULL;
 
-  putenv("LC_ALL=C\0");
-  putenv("LANG=C\0");
+  putenv("LC_ALL=C");
+  putenv("LANG=C");
   
   /* initialize the CUnit test registry */
   if(CUE_SUCCESS != CU_initialize_registry()){
@@ -760,7 +759,7 @@ main(int argc, char **argv)
   }
 
   /* add a suite to the registry */
-  pSuite = CU_add_suite("AgsNotationTest\0", ags_notation_test_init_suite, ags_notation_test_clean_suite);
+  pSuite = CU_add_suite("AgsNotationTest", ags_notation_test_init_suite, ags_notation_test_clean_suite);
   
   if(pSuite == NULL){
     CU_cleanup_registry();
@@ -769,21 +768,21 @@ main(int argc, char **argv)
   }
 
   /* add the tests to the suite */
-  if((CU_add_test(pSuite, "test of AgsNotation find near timestamp\0", ags_notation_test_find_near_timestamp) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsNotation add note\0", ags_notation_test_add_note) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsNotation remove note at position\0", ags_notation_test_remove_note_at_position) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsNotation is note selected\0", ags_notation_test_is_note_selected) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsNotation find point\0", ags_notation_test_find_point) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsNotation find region\0", ags_notation_test_find_region) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsNotation free selection\0", ags_notation_test_free_selection) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsNotation add all to selection\0", ags_notation_test_add_all_to_selection) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsNotation add point to selection\0", ags_notation_test_add_point_to_selection) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsNotation remove point from selection\0", ags_notation_test_remove_point_from_selection) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsNotation add region to selection\0", ags_notation_test_add_region_to_selection) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsNotation remove region from selection\0", ags_notation_test_remove_region_from_selection) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsNotation copy selection\0", ags_notation_test_copy_selection) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsNotation cut selection\0", ags_notation_test_cut_selection) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsNotation insert from clipboard\0", ags_notation_test_insert_from_clipboard) == NULL)){
+  if((CU_add_test(pSuite, "test of AgsNotation find near timestamp", ags_notation_test_find_near_timestamp) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsNotation add note", ags_notation_test_add_note) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsNotation remove note at position", ags_notation_test_remove_note_at_position) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsNotation is note selected", ags_notation_test_is_note_selected) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsNotation find point", ags_notation_test_find_point) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsNotation find region", ags_notation_test_find_region) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsNotation free selection", ags_notation_test_free_selection) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsNotation add all to selection", ags_notation_test_add_all_to_selection) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsNotation add point to selection", ags_notation_test_add_point_to_selection) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsNotation remove point from selection", ags_notation_test_remove_point_from_selection) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsNotation add region to selection", ags_notation_test_add_region_to_selection) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsNotation remove region from selection", ags_notation_test_remove_region_from_selection) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsNotation copy selection", ags_notation_test_copy_selection) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsNotation cut selection", ags_notation_test_cut_selection) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsNotation insert from clipboard", ags_notation_test_insert_from_clipboard) == NULL)){
     CU_cleanup_registry();
       
       return CU_get_error();
