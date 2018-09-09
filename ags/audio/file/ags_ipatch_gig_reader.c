@@ -262,6 +262,8 @@ ags_ipatch_gig_reader_load(AgsIpatchGigReader *ipatch_gig_reader,
 			   IpatchFileHandle *handle)
 {
   //TODO:JK: implement me
+
+  return(FALSE);
 }
 
 gboolean
@@ -269,6 +271,8 @@ ags_ipatch_gig_reader_select_instrument(AgsIpatchGigReader *ipatch_gig_reader,
 					guint instrument_index)
 {
   //TODO:JK: implement me
+
+  return(FALSE);
 }
 
 gboolean
@@ -276,18 +280,24 @@ ags_ipatch_gig_reader_select_sample(AgsIpatchGigReader *ipatch_gig_reader,
 				    guint sample_index)
 {
   //TODO:JK: implement me
+
+  return(FALSE);
 }
 
 gchar**
 ags_ipatch_gig_reader_get_instrument_all(AgsIpatchGigReader *ipatch_gig_reader)
 {
   //TODO:JK: implement me
+
+  return(NULL);
 }
 
 gchar**
 ags_ipatch_gig_reader_get_sample_all(AgsIpatchGigReader *ipatch_gig_reader)
 {
   //TODO:JK: implement me
+
+  return(NULL);
 }
 
 gchar**
@@ -295,6 +305,8 @@ ags_ipatch_gig_reader_get_sample_by_instrument_index(AgsIpatchGigReader *ipatch_
 						     guint instrument_index)
 {
   //TODO:JK: implement me
+
+  return(NULL);
 }
 
 /**

@@ -976,6 +976,8 @@ ags_audio_container_read_wave(AgsAudioContainer *audio_container,
   g_message("missing implementation");
 
   //TODO:JK: implement me
+
+  return(NULL);
 }
 
 void

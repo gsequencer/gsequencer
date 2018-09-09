@@ -260,6 +260,8 @@ ags_ipatch_dls2_reader_load(AgsIpatchDLS2Reader *ipatch_dls2_reader,
 			    IpatchFileHandle *handle)
 {
   //TODO:JK: implement me
+
+  return(FALSE);
 }
 
 gboolean
@@ -267,6 +269,8 @@ ags_ipatch_dls2_reader_select_instrument(AgsIpatchDLS2Reader *ipatch_dls2_reader
 					 guint instrument_index)
 {
   //TODO:JK: implement me
+
+  return(FALSE);
 }
 
 gboolean
@@ -274,18 +278,24 @@ ags_ipatch_dls2_reader_select_sample(AgsIpatchDLS2Reader *ipatch_dls2_reader,
 				     guint sample_index)
 {
   //TODO:JK: implement me
+
+  return(FALSE);
 }
 
 gchar**
 ags_ipatch_dls2_reader_get_instrument_all(AgsIpatchDLS2Reader *ipatch_dls2_reader)
 {
   //TODO:JK: implement me
+
+  return(NULL);
 }
 
 gchar**
 ags_ipatch_dls2_reader_get_sample_all(AgsIpatchDLS2Reader *ipatch_dls2_reader)
 {
   //TODO:JK: implement me
+
+  return(NULL);
 }
 
 gchar**
@@ -293,6 +303,8 @@ ags_ipatch_dls2_reader_get_sample_by_instrument_index(AgsIpatchDLS2Reader *ipatc
 						      guint instrument_index)
 {
   //TODO:JK: implement me
+
+  return(NULL);
 }
 
 /**

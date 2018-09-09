@@ -3378,8 +3378,8 @@ ags_channel_unset_ability_flags(AgsChannel *channel, guint ability_flags)
 			    channel_thread);    
 
     ags_playback_set_channel_thread(playback,
-				    AGS_SOUND_SCOPE_PLAYBACK,
-				    NULL);
+				    NULL,
+				    AGS_SOUND_SCOPE_PLAYBACK);
   }
 
   /* notation ability */
@@ -3396,8 +3396,8 @@ ags_channel_unset_ability_flags(AgsChannel *channel, guint ability_flags)
 			    channel_thread);    
 
     ags_playback_set_channel_thread(playback,
-				    AGS_SOUND_SCOPE_NOTATION,
-				    NULL);
+				    NULL,
+				    AGS_SOUND_SCOPE_NOTATION);
   }
 
   /* sequencer ability */
@@ -3414,8 +3414,8 @@ ags_channel_unset_ability_flags(AgsChannel *channel, guint ability_flags)
 			    channel_thread);    
 
     ags_playback_set_channel_thread(playback,
-				    AGS_SOUND_SCOPE_SEQUENCER,
-				    NULL);
+				    NULL,
+				    AGS_SOUND_SCOPE_SEQUENCER);
   }
 
   /* wave ability */
@@ -3432,8 +3432,8 @@ ags_channel_unset_ability_flags(AgsChannel *channel, guint ability_flags)
 			    channel_thread);    
 
     ags_playback_set_channel_thread(playback,
-				    AGS_SOUND_SCOPE_WAVE,
-				    NULL);
+				    NULL,
+				    AGS_SOUND_SCOPE_WAVE);
   }
 
   /* midi ability */
@@ -3450,8 +3450,8 @@ ags_channel_unset_ability_flags(AgsChannel *channel, guint ability_flags)
 			    channel_thread);    
 
     ags_playback_set_channel_thread(playback,
-				    AGS_SOUND_SCOPE_MIDI,
-				    NULL);
+				    NULL,
+				    AGS_SOUND_SCOPE_MIDI);
   }
 
   /* unset flags */

@@ -1466,6 +1466,10 @@ ags_ffplayer_open_filename(AgsFFPlayer *ffplayer,
 						window->soundcard,
 						-1);
     ags_audio_container_open(audio_container);
+
+    if(audio_container->sound_container == NULL){
+      return;
+    }
     
     ags_sound_container_select_level_by_index(AGS_SOUND_CONTAINER(audio_container->sound_container), 0);
     AGS_IPATCH(audio_container->sound_container)->nesting_level += 1;
@@ -1483,7 +1487,9 @@ ags_ffplayer_load_preset(AgsFFPlayer *ffplayer)
 
   GError *error;
 
-  if(!AGS_IS_FFPLAYER(ffplayer)){
+  if(!AGS_IS_FFPLAYER(ffplayer) ||
+     ffplayer->audio_container == NULL ||
+     ffplayer->audio_container->sound_container == NULL){
     return;
   }
 
@@ -1514,7 +1520,9 @@ ags_ffplayer_load_instrument(AgsFFPlayer *ffplayer)
   
   GError *error;
   
-  if(!AGS_IS_FFPLAYER(ffplayer)){
+  if(!AGS_IS_FFPLAYER(ffplayer) ||
+     ffplayer->audio_container == NULL ||
+     ffplayer->audio_container->sound_container == NULL){
     return;
   }
 
