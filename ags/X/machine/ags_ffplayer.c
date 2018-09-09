@@ -1488,6 +1488,7 @@ ags_ffplayer_load_preset(AgsFFPlayer *ffplayer)
   GError *error;
 
   if(!AGS_IS_FFPLAYER(ffplayer) ||
+     ffplayer->audio_container == NULL ||
      ffplayer->audio_container->sound_container == NULL){
     return;
   }
@@ -1520,6 +1521,7 @@ ags_ffplayer_load_instrument(AgsFFPlayer *ffplayer)
   GError *error;
   
   if(!AGS_IS_FFPLAYER(ffplayer) ||
+     ffplayer->audio_container == NULL ||
      ffplayer->audio_container->sound_container == NULL){
     return;
   }

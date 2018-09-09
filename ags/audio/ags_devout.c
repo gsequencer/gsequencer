@@ -3846,7 +3846,8 @@ ags_devout_alsa_free(AgsSoundcard *soundcard)
   /* remove poll fd */
   pthread_mutex_lock(devout_mutex);
 
-  poll_fd = g_list_copy(devout->poll_fd);
+  poll_fd =
+    start_poll_fd = g_list_copy(devout->poll_fd);
 
   pthread_mutex_unlock(devout_mutex);
   

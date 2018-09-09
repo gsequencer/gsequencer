@@ -505,7 +505,7 @@ ags_task_completion_connect(AgsConnectable *connectable)
 
   task_completion = AGS_TASK_COMPLETION(connectable);
 
-  ags_task_completion_set_flags(task_completion->flags,
+  ags_task_completion_set_flags(task_completion,
 				AGS_TASK_COMPLETION_QUEUED);
   
   g_signal_connect_after(task_completion->task, "launch",
