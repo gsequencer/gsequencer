@@ -56,6 +56,9 @@ void ags_thread_test_suspend();
 void ags_thread_test_timelock();
 void ags_thread_test_stop();
 
+void* ags_thread_test_sync_waiter_thread(void *ptr);
+void* ags_thread_test_lock_assert_locked(void *ptr);
+
 #define AGS_THREAD_TEST_SYNC_N_THREADS (16)
 
 #define AGS_THREAD_TEST_LOCK_N_THREADS (4)
@@ -81,6 +84,8 @@ void ags_thread_test_stop();
 AgsThread *main_loop;
 
 pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+
+volatile guint test_sync_n_waiting;
 
 /* The suite initialization function.
  * Opens the temporary file used by the tests.
@@ -115,42 +120,39 @@ ags_thread_test_clean_suite()
   return(0);
 }
 
+void* ags_thread_test_sync_waiter_thread(void *ptr){
+  AgsThread *thread;
+
+  thread = (AgsThread *) ptr;
+
+  pthread_mutex_lock(thread->mutex);
+
+  g_atomic_int_inc(&test_sync_n_waiting);
+    
+  while(((AGS_THREAD_WAIT_0 & (g_atomic_int_get(&(thread->flags)))) != 0) ||
+	((AGS_THREAD_WAIT_1 & (g_atomic_int_get(&(thread->flags)))) != 0) ||
+	((AGS_THREAD_WAIT_2 & (g_atomic_int_get(&(thread->flags)))) != 0)){
+    pthread_cond_wait(thread->cond,
+		      thread->mutex);
+  }
+    
+  pthread_mutex_unlock(thread->mutex);
+
+  pthread_exit(NULL);
+}
+
 void
 ags_thread_test_sync()
 {
   AgsThread *main_loop;
   AgsThread **thread;
 
-  volatile guint n_waiting;
   guint i;
-
-  auto void* ags_thread_test_sync_waiter_thread(void *ptr);
-
-  void* ags_thread_test_sync_waiter_thread(void *ptr){
-    AgsThread *thread;
-
-    thread = (AgsThread *) ptr;
-
-    pthread_mutex_lock(thread->mutex);
-
-    g_atomic_int_inc(&n_waiting);
-    
-    while(((AGS_THREAD_WAIT_0 & (g_atomic_int_get(&(thread->flags)))) != 0) ||
-	  ((AGS_THREAD_WAIT_1 & (g_atomic_int_get(&(thread->flags)))) != 0) ||
-	  ((AGS_THREAD_WAIT_2 & (g_atomic_int_get(&(thread->flags)))) != 0)){
-      pthread_cond_wait(thread->cond,
-			thread->mutex);
-    }
-    
-    pthread_mutex_unlock(thread->mutex);
-
-    pthread_exit(NULL);
-  }
   
   main_loop = ags_generic_main_loop_new(application_context);
   ags_main_loop_set_async_queue(AGS_MAIN_LOOP(main_loop),
 				ags_task_thread_new());
-  g_atomic_int_set(&n_waiting,
+  g_atomic_int_set(&test_sync_n_waiting,
 		   0);
   
   thread = (AgsThread **) malloc(AGS_THREAD_TEST_SYNC_N_THREADS * sizeof(AgsThread*));
@@ -178,7 +180,7 @@ ags_thread_test_sync()
   }
 
   /* wait until all waiting */
-  while(n_waiting < AGS_THREAD_TEST_SYNC_N_THREADS + 1){
+  while(test_sync_n_waiting < AGS_THREAD_TEST_SYNC_N_THREADS + 1){
     usleep(4);
   }
 
@@ -209,7 +211,7 @@ ags_thread_test_sync()
   }
 
   /* wait until all waiting */
-  while(n_waiting < AGS_THREAD_TEST_SYNC_N_THREADS + 1){
+  while(test_sync_n_waiting < AGS_THREAD_TEST_SYNC_N_THREADS + 1){
     usleep(4);
   }
 
@@ -240,7 +242,7 @@ ags_thread_test_sync()
   }
 
   /* wait until all waiting */
-  while(n_waiting < AGS_THREAD_TEST_SYNC_N_THREADS + 1){
+  while(test_sync_n_waiting < AGS_THREAD_TEST_SYNC_N_THREADS + 1){
     usleep(4);
   }
 
@@ -256,6 +258,21 @@ ags_thread_test_sync()
   }
 }
 
+void*
+ags_thread_test_lock_assert_locked(void *ptr){
+  AgsThread **thread;
+
+  guint i;
+
+  thread = (AgsThread **) ptr;
+
+  for(i = 0; i < AGS_THREAD_TEST_LOCK_N_THREADS; i++){
+    CU_ASSERT(ags_thread_trylock(thread[i]) == FALSE);
+  }
+
+  pthread_exit(NULL);
+}
+
 void
 ags_thread_test_lock()
 {
@@ -265,22 +282,6 @@ ags_thread_test_lock()
   
   pthread_t assert_thread;
   
-  auto void* ags_thread_test_lock_assert_locked(void *ptr);
-
-  void* ags_thread_test_lock_assert_locked(void *ptr){
-    AgsThread **thread;
-
-    guint i;
-
-    thread = (AgsThread **) ptr;
-
-    for(i = 0; i < AGS_THREAD_TEST_LOCK_N_THREADS; i++){
-      CU_ASSERT(ags_thread_trylock(thread[i]) == FALSE);
-    }
-
-    pthread_exit(NULL);
-  }
-
   thread = (AgsThread **) malloc(AGS_THREAD_TEST_LOCK_N_THREADS * sizeof(AgsThread*));
   
   for(i = 0; i < AGS_THREAD_TEST_LOCK_N_THREADS; i++){
@@ -1233,6 +1234,45 @@ ags_thread_test_lock_parent()
   CU_ASSERT(success == TRUE);
 }
 
+gboolean
+ags_thread_test_lock_sibling_assert(AgsThread *parent, AgsThread *current)
+{
+  AgsThread *iter;
+    
+  gboolean success;
+    
+  /* assert sibling */
+  iter = g_atomic_pointer_get(&(parent->children));
+  success = TRUE;
+
+  while(iter != NULL){
+    if(iter == current){
+      if((AGS_THREAD_LOCKED & (g_atomic_int_get(&(iter->flags)))) == 0 ||
+	 (AGS_THREAD_WAITING_FOR_SIBLING & (g_atomic_int_get(&(iter->sync_flags)))) != 0){
+	success = FALSE;
+	  
+	break;
+      }
+	
+      iter = g_atomic_pointer_get(&(iter->next));
+
+      continue;
+    }
+    
+    if((AGS_THREAD_LOCKED & (g_atomic_int_get(&(iter->flags)))) == 0 ||
+       (AGS_THREAD_WAITING_FOR_SIBLING & (g_atomic_int_get(&(iter->sync_flags)))) == 0){
+      success = FALSE;
+
+      break;
+    }
+    
+    iter = g_atomic_pointer_get(&(iter->next));
+  }
+
+
+  return(success);
+}
+
 void
 ags_thread_test_lock_sibling()
 {
@@ -1241,43 +1281,6 @@ ags_thread_test_lock_sibling()
 
   guint nth;
   guint i;
-
-  auto gboolean ags_thread_test_lock_sibling_assert(AgsThread *parent, AgsThread *current){
-    AgsThread *iter;
-    
-    gboolean success;
-    
-    /* assert sibling */
-    iter = g_atomic_pointer_get(&(parent->children));
-    success = TRUE;
-
-    while(iter != NULL){
-      if(iter == current){
-	if((AGS_THREAD_LOCKED & (g_atomic_int_get(&(iter->flags)))) == 0 ||
-	   (AGS_THREAD_WAITING_FOR_SIBLING & (g_atomic_int_get(&(iter->sync_flags)))) != 0){
-	  success = FALSE;
-	  
-	  break;
-	}
-	
-	iter = g_atomic_pointer_get(&(iter->next));
-
-	continue;
-      }
-    
-      if((AGS_THREAD_LOCKED & (g_atomic_int_get(&(iter->flags)))) == 0 ||
-	 (AGS_THREAD_WAITING_FOR_SIBLING & (g_atomic_int_get(&(iter->sync_flags)))) == 0){
-	success = FALSE;
-
-	break;
-      }
-    
-      iter = g_atomic_pointer_get(&(iter->next));
-    }
-
-
-    return(success);
-  }
   
   toplevel = ags_thread_new(NULL);
 
