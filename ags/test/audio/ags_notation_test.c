@@ -106,6 +106,7 @@ int
 ags_notation_test_init_suite()
 {
   audio = ags_audio_new(NULL);
+  g_object_ref(audio);
   
   return(0);
 }
@@ -187,7 +188,7 @@ ags_notation_test_add_note()
     
     note = ags_note_new_with_offset(x0, x0 + 1,
 				    y,
-				    0.0, 0);
+				    0.0, 0.0);
 
     ags_notation_add_note(notation,
 			  note,

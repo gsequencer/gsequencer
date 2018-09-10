@@ -2493,8 +2493,8 @@ ags_recall_factory_create_buffer(AgsAudio *audio,
     channel = start;
     
     for(i = 0; i < stop_pad - start_pad; i++){
-      channel = ags_channel_nth(channel,
-				start_audio_channel);
+      channel = ags_channel_nth(start,
+				i * audio_channels + start_audio_channel);
       
       for(j = 0; j < stop_audio_channel - start_audio_channel; j++){
 	current = ags_channel_nth(output,
@@ -2635,9 +2635,6 @@ ags_recall_factory_create_buffer(AgsAudio *audio,
 
 	pthread_mutex_unlock(channel_mutex);
       }
-
-      channel = ags_channel_nth(channel,
-				audio_channels - stop_audio_channel);
     }
   }
 
@@ -2648,8 +2645,8 @@ ags_recall_factory_create_buffer(AgsAudio *audio,
     channel = start;
     
     for(i = 0; i < stop_pad - start_pad; i++){
-      channel = ags_channel_nth(channel,
-				start_audio_channel);
+      channel = ags_channel_nth(start,
+				i * audio_channels + start_audio_channel);
       
       for(j = 0; j < stop_audio_channel - start_audio_channel; j++){
 	current = ags_channel_nth(output,
@@ -2789,9 +2786,6 @@ ags_recall_factory_create_buffer(AgsAudio *audio,
 
 	pthread_mutex_unlock(channel_mutex);
       }
-
-      channel = ags_channel_nth(channel,
-				audio_channels - stop_audio_channel);
     }
   }
 
