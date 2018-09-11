@@ -35,6 +35,8 @@
 #include "../gsequencer_setup_util.h"
 #include "../ags_functional_test_util.h"
 
+#include <unistd.h>
+
 void ags_functional_ffplayer_test_add_test();
 
 int ags_functional_ffplayer_test_init_suite();
@@ -48,6 +50,7 @@ void ags_functional_ffplayer_test_resize_audio_channels();
 
 #define AGS_FUNCTIONAL_FFPLAYER_TEST_OPEN_SF2_PATH "/usr/share/sounds/sf2"
 #define AGS_FUNCTIONAL_FFPLAYER_TEST_OPEN_SF2_FILENAME "/usr/share/sounds/sf2/FluidR3_GM.sf2"
+#define AGS_FUNCTIONAL_FFPLAYER_TEST_OPEN_SF2_DELAY (30)
 
 #define AGS_FUNCTIONAL_FFPLAYER_TEST_RESIZE_OUTPUT_PADS (5)
 #define AGS_FUNCTIONAL_FFPLAYER_TEST_RESIZE_INPUT_PADS (15)
@@ -199,6 +202,8 @@ ags_functional_ffplayer_test_open_sf2()
   CU_ASSERT(success == TRUE);
 
   /* destroy ffplayer */
+  sleep(AGS_FUNCTIONAL_FFPLAYER_TEST_OPEN_SF2_DELAY);
+  
   success = ags_functional_test_util_machine_destroy(0);
   
   CU_ASSERT(success == TRUE);
@@ -388,7 +393,7 @@ main(int argc, char **argv)
   ags_functional_test_util_do_run(argc, argv,
 				  ags_functional_ffplayer_test_add_test, &is_available);
 
-  pthread_join(ags_functional_test_util_self(),
+  pthread_join(ags_functional_test_util_self()[0],
 	       NULL);
 
   return(-1);

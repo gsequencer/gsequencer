@@ -2,6 +2,11 @@ ags (2.0.2)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* fixed ags_note_new_with_offset() prototype
+	* fixed ags_recall_factory_create_buffer() to do safe iteration
+	* fixed ags_functional_ffplayer_test to use correct parameter for pthread_join()
+	* fixed ags_functional_test_util.c to check if realized
+	* fixed use of unitialized value in ags_effect_bulk_real_resize_pads()
+	* implemented ags_functional_test_util_idle_test_widget_realized()
 
 ags (2.0.1)
 

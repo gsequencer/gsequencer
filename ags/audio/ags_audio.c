@@ -6984,7 +6984,8 @@ ags_audio_set_pads(AgsAudio *audio,
   g_object_ref((GObject *) audio);
   g_signal_emit(G_OBJECT(audio),
 		audio_signals[SET_PADS], 0,
-		channel_type, pads, pads_old);
+		channel_type,
+		pads, pads_old);
   g_object_unref((GObject *) audio);  
 }
 

@@ -932,14 +932,14 @@ ags_ffplayer_resize_pads(AgsMachine *machine, GType type,
       /* depending on destination */
       ags_ffplayer_input_map_recall(ffplayer, pads_old);
     }else{
-      ffplayer->mapped_input_pad = input_pads;
+      ffplayer->mapped_input_pad = pads;
     }
   }else{
     if(grow){
       /* depending on destination */
       ags_ffplayer_output_map_recall(ffplayer, pads_old);
     }else{
-      ffplayer->mapped_output_pad = output_pads;
+      ffplayer->mapped_output_pad = pads;
     }
   }
 }

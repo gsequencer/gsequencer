@@ -78,6 +78,7 @@ void ags_functional_test_util_idle_condition_and_timeout(AgsFunctionalTestUtilId
 
 gboolean ags_functional_test_util_idle_test_widget_visible(GtkWidget **widget);
 gboolean ags_functional_test_util_idle_test_widget_hidden(GtkWidget **widget);
+gboolean ags_functional_test_util_idle_test_widget_realized(GtkWidget **widget);
 gboolean ags_functional_test_util_idle_test_container_children_count(AgsFunctionalTestUtilContainerTest *container_test);
 gboolean ags_functional_test_util_idle_test_null(GtkWidget **widget);
 

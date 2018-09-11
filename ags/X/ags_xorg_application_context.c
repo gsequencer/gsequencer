@@ -1041,7 +1041,7 @@ ags_xorg_application_context_prepare(AgsApplicationContext *application_context)
   xorg_application_context = (AgsXorgApplicationContext *) application_context;
 
   /* call parent */
-  AGS_APPLICATION_CONTEXT_CLASS(ags_xorg_application_context_parent_class)->prepare(application_context);
+  //  AGS_APPLICATION_CONTEXT_CLASS(ags_xorg_application_context_parent_class)->prepare(application_context);
   
   /* register types */
   ags_application_context_register_types(xorg_application_context);
@@ -1192,7 +1192,7 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
   config = ags_config_get_instance();
 
   /* call parent */
-  AGS_APPLICATION_CONTEXT_CLASS(ags_xorg_application_context_parent_class)->setup(application_context);
+  //  AGS_APPLICATION_CONTEXT_CLASS(ags_xorg_application_context_parent_class)->setup(application_context);
 
   g_object_get(application_context,
 	       "main-loop", &main_loop,

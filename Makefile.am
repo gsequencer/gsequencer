@@ -1,3 +1,5 @@
+# Copyright (C) 2005-2018 Jo\u00EBl Kr\u00E4hemann
+# 
 # Copying and distribution of this file, with or without modification,
 # are permitted in any medium without royalty provided the copyright
 # notice and this notice are preserved.  This file is offered as-is,
@@ -56,6 +58,7 @@ EXTRA_DIST = config.rpath \
 	ags/i18n.h \
 	ags/gettext.h \
 	ags/object/README \
+	ags/widget/README \
 	docs/images/README \
 	docs/listings/README \
 	docs/reference/libags-audio/README \

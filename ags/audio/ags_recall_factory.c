@@ -2475,13 +2475,9 @@ ags_recall_factory_create_buffer(AgsAudio *audio,
 
   /* get channel */
   if((AGS_RECALL_FACTORY_OUTPUT & (create_flags)) != 0){
-    start =
-      channel = ags_channel_nth(output,
-				start_pad * audio_channels);
+    start = output;
   }else{
-    start =
-      channel = ags_channel_nth(input,
-				start_pad * audio_channels);
+    start = input;
   }
 
   recall = NULL;
@@ -2489,14 +2485,16 @@ ags_recall_factory_create_buffer(AgsAudio *audio,
   /* play */
   if((AGS_RECALL_FACTORY_PLAY & (create_flags)) != 0){
     gboolean found_buffer;
-
-    channel = start;
     
-    for(i = 0; i < stop_pad - start_pad; i++){
-      channel = ags_channel_nth(start,
-				i * audio_channels + start_audio_channel);
-      
+    for(i = start_pad; i < stop_pad; i++){
       for(j = 0; j < stop_audio_channel - start_audio_channel; j++){
+	channel = ags_channel_nth(start,
+				  i * audio_channels + start_audio_channel + j);
+
+	if(channel == NULL){
+	  break;
+	}
+	  
 	current = ags_channel_nth(output,
 				  start_audio_channel + j);
 	
@@ -2627,13 +2625,6 @@ ags_recall_factory_create_buffer(AgsAudio *audio,
 
 	  pthread_mutex_unlock(current_mutex);
 	}
-
-	/* iterate */
-	pthread_mutex_lock(channel_mutex);
-	
-	channel = channel->next;
-
-	pthread_mutex_unlock(channel_mutex);
       }
     }
   }
@@ -2641,14 +2632,16 @@ ags_recall_factory_create_buffer(AgsAudio *audio,
   /* recall */
   if((AGS_RECALL_FACTORY_RECALL & (create_flags)) != 0){
     gboolean found_buffer;
-    
-    channel = start;
-    
-    for(i = 0; i < stop_pad - start_pad; i++){
-      channel = ags_channel_nth(start,
-				i * audio_channels + start_audio_channel);
-      
+
+    for(i = start_pad; i < stop_pad; i++){
       for(j = 0; j < stop_audio_channel - start_audio_channel; j++){
+	channel = ags_channel_nth(start,
+				  i * audio_channels + start_audio_channel + j);
+      
+	if(channel == NULL){
+	  break;
+	}
+
 	current = ags_channel_nth(output,
 				  start_audio_channel + j);
 	
@@ -2778,13 +2771,6 @@ ags_recall_factory_create_buffer(AgsAudio *audio,
 
 	  pthread_mutex_unlock(current_mutex);
 	}
-	
-	/* iterate */
-	pthread_mutex_lock(channel_mutex);
-	
-	channel = channel->next;
-
-	pthread_mutex_unlock(channel_mutex);
       }
     }
   }
