@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gsequencer 2.0.2\n"
 "Report-Msgid-Bugs-To: jkraehemann-guest@users.alioth.debian.org\n"
-"POT-Creation-Date: 2018-09-11 02:35+0200\n"
+"POT-Creation-Date: 2018-09-11 19:45+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -46,7 +46,7 @@ msgid "audio"
 msgstr ""
 
 #: ags/X/ags_automation_editor.c:346 ags/X/ags_connection_editor.c:423
-#: ags/X/ags_machine_editor.c:225
+#: ags/X/ags_machine_editor.c:228
 msgid "output"
 msgstr ""
 
@@ -56,7 +56,7 @@ msgid "line"
 msgstr ""
 
 #: ags/X/ags_automation_editor.c:430 ags/X/ags_connection_editor.c:443
-#: ags/X/ags_machine_editor.c:232
+#: ags/X/ags_machine_editor.c:235
 msgid "input"
 msgstr ""
 
@@ -352,7 +352,7 @@ msgstr ""
 msgid "rename"
 msgstr ""
 
-#: ags/X/ags_machine.c:2439 ags/X/ags_machine_editor.c:204
+#: ags/X/ags_machine.c:2439 ags/X/ags_machine_editor.c:207
 msgid "properties"
 msgstr ""
 
@@ -389,15 +389,15 @@ msgstr ""
 msgid "MIDI dialog"
 msgstr ""
 
-#: ags/X/ags_machine_editor.c:240
+#: ags/X/ags_machine_editor.c:243
 msgid "link output"
 msgstr ""
 
-#: ags/X/ags_machine_editor.c:247
+#: ags/X/ags_machine_editor.c:250
 msgid "link input"
 msgstr ""
 
-#: ags/X/ags_machine_editor.c:253
+#: ags/X/ags_machine_editor.c:256
 msgid "resize channels"
 msgstr ""
 
@@ -680,7 +680,7 @@ msgid "pattern"
 msgstr ""
 
 #: ags/X/editor/ags_envelope_editor.c:180
-#: ags/X/editor/ags_pattern_envelope.c:244 ags/X/machine/ags_ffplayer.c:278
+#: ags/X/editor/ags_pattern_envelope.c:244 ags/X/machine/ags_ffplayer.c:279
 #: ags/X/machine/ags_live_lv2_bridge.c:1510 ags/X/machine/ags_lv2_bridge.c:1797
 msgid "preset"
 msgstr ""
@@ -944,7 +944,7 @@ msgid "instrument: "
 msgstr ""
 
 #: ags/X/import/ags_track_collection_mapper.c:342
-#: ags/X/machine/ags_ffplayer.c:293
+#: ags/X/machine/ags_ffplayer.c:294
 msgid "instrument"
 msgstr ""
 

@@ -24,7 +24,10 @@
 #include <ags/libags-audio.h>
 #include <ags/libags-gui.h>
 
+#include <ags/X/ags_listing_editor.h>
+#include <ags/X/ags_property_collection_editor.h>
 #include <ags/X/ags_link_collection_editor.h>
+#include <ags/X/ags_resize_editor.h>
 
 #include <ags/i18n.h>
 
@@ -482,7 +485,7 @@ ags_machine_editor_add_children(AgsMachineEditor *machine_editor)
 					(GtkWidget *) machine_editor->input_link_editor);
 
   /* resize editor */
-  machine_editor->resize_editor = ags_resize_editor_new(AGS_TYPE_OUTPUT);
+  machine_editor->resize_editor = ags_resize_editor_new();
   gtk_scrolled_window_add_with_viewport(machine_editor->resize_editor_scrolled_window,
 					(GtkWidget *) machine_editor->resize_editor);
 }

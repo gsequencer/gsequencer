@@ -163,6 +163,7 @@ ags_ffplayer_connectable_interface_init(AgsConnectableInterface *connectable)
   ags_ffplayer_parent_connectable_interface = g_type_interface_peek_parent(connectable);
 
   connectable->connect = ags_ffplayer_connect;
+  connectable->disconnect = ags_ffplayer_disconnect;
 }
 
 void
@@ -895,7 +896,7 @@ ags_ffplayer_resize_audio_channels(AgsMachine *machine,
 }
 
 void
-ags_ffplayer_resize_pads(AgsMachine *machine, GType type,
+ags_ffplayer_resize_pads(AgsMachine *machine, GType channel_type,
 			 guint pads, guint pads_old,
 			 gpointer data)
 {
@@ -927,20 +928,22 @@ ags_ffplayer_resize_pads(AgsMachine *machine, GType type,
     grow = FALSE;
   }
   
-  if(type == AGS_TYPE_INPUT){
+  if(channel_type == AGS_TYPE_INPUT){
     if(grow){
       /* depending on destination */
       ags_ffplayer_input_map_recall(ffplayer, pads_old);
     }else{
       ffplayer->mapped_input_pad = pads;
     }
-  }else{
+  }else if(channel_type == AGS_TYPE_OUTPUT){
     if(grow){
       /* depending on destination */
       ags_ffplayer_output_map_recall(ffplayer, pads_old);
     }else{
       ffplayer->mapped_output_pad = pads;
     }
+  }else{
+    g_critical("unknown channel type");
   }
 }
 

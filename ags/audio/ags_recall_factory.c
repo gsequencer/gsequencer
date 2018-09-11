@@ -2444,6 +2444,7 @@ ags_recall_factory_create_buffer(AgsAudio *audio,
   GList *recall;
 
   guint audio_channels;
+  guint output_pads, input_pads;
   guint i, j;
 
   pthread_mutex_t *audio_mutex;
@@ -2470,6 +2471,9 @@ ags_recall_factory_create_buffer(AgsAudio *audio,
   input = audio->input;
   
   audio_channels = audio->audio_channels;
+
+  output_pads = audio->output_pads;
+  input_pads = audio->input_pads;
   
   pthread_mutex_unlock(audio_mutex);
 
@@ -2486,7 +2490,7 @@ ags_recall_factory_create_buffer(AgsAudio *audio,
   if((AGS_RECALL_FACTORY_PLAY & (create_flags)) != 0){
     gboolean found_buffer;
     
-    for(i = start_pad; i < stop_pad; i++){
+    for(i = start_pad; i < stop_pad && i < input_pads; i++){
       for(j = 0; j < stop_audio_channel - start_audio_channel; j++){
 	channel = ags_channel_nth(start,
 				  i * audio_channels + start_audio_channel + j);
@@ -2633,7 +2637,7 @@ ags_recall_factory_create_buffer(AgsAudio *audio,
   if((AGS_RECALL_FACTORY_RECALL & (create_flags)) != 0){
     gboolean found_buffer;
 
-    for(i = start_pad; i < stop_pad; i++){
+    for(i = start_pad; i < stop_pad && i < input_pads; i++){
       for(j = 0; j < stop_audio_channel - start_audio_channel; j++){
 	channel = ags_channel_nth(start,
 				  i * audio_channels + start_audio_channel + j);

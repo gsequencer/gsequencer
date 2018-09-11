@@ -204,8 +204,9 @@ ags_property_collection_editor_apply(AgsApplicable *applicable)
 
   property_collection_editor = AGS_PROPERTY_COLLECTION_EDITOR(applicable);
 
-  if((AGS_PROPERTY_EDITOR_ENABLED & (AGS_PROPERTY_EDITOR(property_collection_editor)->flags)) == 0)
+  if((AGS_PROPERTY_EDITOR_ENABLED & (AGS_PROPERTY_EDITOR(property_collection_editor)->flags)) == 0){
     return;
+  }
 
   list_start = 
     list = gtk_container_get_children(GTK_CONTAINER(property_collection_editor->child));

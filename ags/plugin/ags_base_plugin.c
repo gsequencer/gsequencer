@@ -872,7 +872,9 @@ ags_base_plugin_finalize(GObject *gobject)
   free(base_plugin->obj_mutexattr);
 
   /* uuid */
-  ags_uuid_free(base_plugin->uuid);
+  if(base_plugin->uuid != NULL){
+    ags_uuid_free(base_plugin->uuid);
+  }
   
   /* filename and effect */
   g_free(base_plugin->filename);

@@ -1986,8 +1986,6 @@ ags_pulse_server_connect_client(AgsPulseServer *pulse_server)
   GList *client_start, *client;
 
   gchar *client_name;
-
-  pthread_mutex_t *pulse_client_mutex;
   
   if(!AGS_IS_PULSE_SERVER(pulse_server)){
     return;
@@ -2000,26 +1998,15 @@ ags_pulse_server_connect_client(AgsPulseServer *pulse_server)
   client = client_start;
 
   while(client != NULL){
-    /* get pulse client mutex */
-    pthread_mutex_lock(ags_pulse_client_get_class_mutex());
-  
-    pulse_client_mutex = AGS_PULSE_CLIENT(client->data)->obj_mutex;
-  
-    pthread_mutex_unlock(ags_pulse_client_get_class_mutex());
-
     /* client name */
-    pthread_mutex_lock(pulse_client_mutex);
-
-    client_name = g_strdup(client_name);
+    g_object_get(client->data,
+		 "client-name", &client_name,
+		 NULL);
     
-    pthread_mutex_unlock(pulse_client_mutex);
-
     /* open */
     ags_pulse_client_open((AgsPulseClient *) client->data,
 			  client_name);
     ags_pulse_client_activate(client->data);
-
-    g_free(client_name);
     
     /* iterate */
     client = client->next;
