@@ -7696,7 +7696,7 @@ ags_recall_factory_create(AgsAudio *audio,
 						    create_flags, recall_flags);
   }else if(!strncmp(plugin_name,
 		    "ags-play-wave",
-		    13)){
+		    14)){
     recall = ags_recall_factory_create_play_wave(audio,
 						 play_container, recall_container,
 						 plugin_name,
@@ -7768,7 +7768,7 @@ ags_recall_factory_create(AgsAudio *audio,
 					      create_flags, recall_flags);
   }else if(!strncmp(plugin_name,
 		    "ags-envelope",
-		    11)){
+		    13)){
     recall = ags_recall_factory_create_envelope(audio,
 						play_container, recall_container,
 						plugin_name,

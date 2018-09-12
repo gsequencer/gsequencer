@@ -2292,7 +2292,7 @@ ags_machine_message_monitor_timeout(AgsMachine *machine)
 	if(!xmlStrncmp(xmlGetProp(root_node,
 				  "method"),
 		       "AgsAudio::set-audio-channels",
-		       28)){
+		       29)){
 	  guint audio_channels, audio_channels_old;
 	  gint position;
 	  
