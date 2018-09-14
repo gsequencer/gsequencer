@@ -1099,8 +1099,6 @@ ags_dssi_bridge_map_recall(AgsMachine *machine)
   }
 
   g_list_free(start_play);
-
-  g_list_free(start_play);
   
   /* ags-route-dssi */
   ags_recall_factory_create(audio,
@@ -1137,8 +1135,6 @@ ags_dssi_bridge_map_recall(AgsMachine *machine)
   }
 
   g_list_free(start_recall);
-
-  g_list_free(start_recall);
   
   /* ags-record-midi */
   ags_recall_factory_create(audio,
@@ -1173,8 +1169,6 @@ ags_dssi_bridge_map_recall(AgsMachine *machine)
   }  
 
   g_list_free(start_recall);
-
-  g_list_free(start_recall);
   
   /* ags-play-notation */
   ags_recall_factory_create(audio,
@@ -1207,8 +1201,6 @@ ags_dssi_bridge_map_recall(AgsMachine *machine)
 		 "count-beats-audio-run", play_count_beats_audio_run,
 		 NULL);
   }
-
-  g_list_free(start_recall);
 
   g_list_free(start_recall);
   
