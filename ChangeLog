@@ -1,3 +1,8 @@
+ags (2.0.4)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed missing trailing audio after open wave
+
 ags (2.0.3)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
