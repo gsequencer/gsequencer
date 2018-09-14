@@ -1502,7 +1502,7 @@ ags_lv2_bridge_input_map_recall(AgsLv2Bridge *lv2_bridge,
 		   "recall", &start_list,
 		   NULL);
 
-      list = ags_recall_template_find_type(current->recall,
+      list = ags_recall_template_find_type(start_list,
 					   AGS_TYPE_ENVELOPE_CHANNEL);
 
       if(list != NULL){
