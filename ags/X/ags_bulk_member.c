@@ -798,9 +798,6 @@ ags_bulk_member_finalize(GObject *gobject)
   g_free(bulk_member->plugin_name);
   g_free(bulk_member->control_port);
 
-  g_free(bulk_member->control_port);
-
-
   if(bulk_member->conversion != NULL){
     g_object_unref(bulk_member->conversion);
   }
