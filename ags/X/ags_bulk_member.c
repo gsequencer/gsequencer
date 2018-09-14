@@ -605,7 +605,6 @@ ags_bulk_member_set_property(GObject *gobject,
       if(bulk_member->control_port != NULL){
 	g_free(bulk_member->control_port);
       }
-
       
       bulk_member->control_port = g_strdup(control_port);
     }
@@ -803,9 +802,6 @@ ags_bulk_member_finalize(GObject *gobject)
 
   g_free(bulk_member->plugin_name);
   g_free(bulk_member->control_port);
-
-  g_free(bulk_member->control_port);
-
 
   if(bulk_member->conversion != NULL){
     g_object_unref(bulk_member->conversion);
