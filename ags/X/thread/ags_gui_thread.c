@@ -59,7 +59,6 @@
 
 #include <gdk/gdk.h>
 
-#include <fontconfig/fontconfig.h>
 #include <math.h>
 
 void ags_gui_thread_signal_handler(int signr);

@@ -1,34 +1,48 @@
+ags (2.0.5)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed missing audio data after capture default duration
+
+ags (2.0.4)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed missing trailing audio after open wave
+
+ags (2.0.3)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed wrong recall access in AgsDssiBridge, AgsLv2Bridge, AgsLiveDssiBridge and AgsLiveLv2Bridge
+
+ags (2.0.2)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed ags_note_new_with_offset() prototype
+	* fixed ags_recall_factory_create_buffer() to do safe iteration
+	* fixed ags_functional_ffplayer_test to use correct parameter for pthread_join()
+	* fixed ags_functional_test_util.c to check if realized
+	* fixed use of unitialized value in ags_effect_bulk_real_resize_pads()
+	* fixed NULL pointer dereference of AgsApplicationClass in ags_xorg_application_context.c
+	* implemented ags_functional_test_util_idle_test_widget_realized()
+
+ags (2.0.1)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* minor bug-fixes
+
 ags (2.0.0)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* implemented AgsChannel to listen to AgsRecall::child-done()
 	* implemented AgsInputCollectionEditor, AgsInputListingEditor and AgsInputEditor
-	* TODO:JK: improved ags-feed recall thread-safety
-	* TODO:JK: improved ags_audio_signal_feed() reduce over-head
-	* TODO:JK: improved AgsApplySynth thread-safety
 	* implemented ags_soundcard_lock_buffer() and ags_soundcard_unlock_buffer()
-	* TODO:JK: implemented AgsFunction
-	* TODO:JK: implemented AgsServer, AgsRegistry and AgsServerStatus
-	* TODO:JK: implemented AgsXmlAuthentication, AgsXmlCertificate and AgsXmlPasswordStore
-	* TODO:JK: implemented AgsFrontController, AgsFactoryController, AgsLocalRegistryController, AgsLocalSerializationController and AgsLocalTaskController
-	* TODO:JK: implemented audio input properties
-	* TODO:JK: refactored AgsAutomationEditor to be more light-weight
-	* TODO:JK: implemented AgsCartesian properties
-	* TODO:JK: implemented AgsConnectable:disconnect() to all implementing objects
-	* TODO:JK: implemented AgsPlaybackDomain properties
-	* TODO:JK: implemented AgsPlayback properties
-	* TODO:JK: implemented AgsScaleArea properties
-	* TODO:JK: implemented AgsApplicationContext properties
-	* TODO:JK: implement AgsConnectable properly
-	* TODO:JK: implemented AgsWaveWindow, AgsWaveEditor, AgsWaveToolbar and AgsWaveEdit
-	* TODO:JK: implemented AgsSelectBuffer and AgsPositionWaveCursor
+	* implemented audio input properties
+	* implemented AgsWaveWindow, AgsWaveEditor, AgsWaveToolbar and AgsWaveEdit
+	* implemented AgsSelectBuffer and AgsPositionWaveCursor
 	* implemented AgsWave and AgsBuffer
-	* TODO:JK: implemented ags-play-wave recall
-	* implemented ags-capture-sound recall
+	* implemented ags-play-wave recall
+	* implemented ags-capture-wave recall
 	* implemented ags-copy-pattern recall plugin port for automation
-	* TODO:JK: implemented AgsAudiorec
-	* TODO:JK: implemented damping/vibration of AgsAudioSignal
-	* TODO:JK: implemented exponential curve option for ags-envelope recall
+	* implemented AgsAudiorec
 	* new ags_globals.[ch]
 	* new ags_uuid.[ch]
 	* new ags_midi.[ch]
@@ -42,7 +56,7 @@ ags (2.0.0)
 	* incompatible AgsBasePlugin::instantiate() function prototype
 	* added ags_connectable_has_resource()
 	* added ags_audio_done_recall()
-	* TODO:JK: replaced AgsDistributedManager by AgsSoundServer
+	* replaced AgsDistributedManager by AgsSoundServer
 	* added propertiy :output-soundcard to AgsAudio, AgsChannel, AgsRecycling, AgsAudioSignal and AgsRecall
 	* added propertiy :input-soundcard to AgsAudio, AgsChannel, AgsRecycling, AgsAudioSignal and AgsRecall
 	* replaced use of GParameter by string vector and value array of AgsMessageEnvelope
@@ -63,7 +77,6 @@ ags (2.0.0)
 	* renamed ags_audio_signal_find_stream_current()
 	* removed ags_connection_manager.[ch]
 	* removed ags_connection.[ch]
-	* TODO:JK: removed ags_id_generator.[ch]
 	* removed ags_packable.[ch]
 	* removed ags_recall_load_automation() and ags_recall_unload_automation()
 	* removed property :soundcard from AgsAudio, AgsChannel, AgsRecycling, AgsAudioSignal and AgsRecall

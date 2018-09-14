@@ -1337,6 +1337,8 @@ ags_wave_edit_draw_selection(AgsWaveEdit *wave_edit)
 
   GtkStyle *wave_edit_style;
 
+  GObject *soundcard;
+
   cairo_t *cr;
 
   double zoom, zoom_factor;
@@ -1352,7 +1354,13 @@ ags_wave_edit_draw_selection(AgsWaveEdit *wave_edit)
   
   wave_toolbar = wave_editor->wave_toolbar;
 
+  wave_toolbar = wave_editor->wave_toolbar;
+  
   wave_edit_style = gtk_widget_get_style(GTK_WIDGET(wave_edit->drawing_area));
+
+  g_object_get(wave_editor->selected_machine->audio,
+	       "output-soundcard", &soundcard,
+	       NULL);
 
   /* create cairo context */
   cr = gdk_cairo_create(GTK_WIDGET(wave_edit->drawing_area)->window);
@@ -1632,20 +1640,26 @@ ags_wave_edit_draw_wave(AgsWaveEdit *wave_edit)
   AgsWindow *window;
   AgsWaveWindow *wave_window;
   AgsWaveEditor *wave_editor;
+  AgsWaveToolbar *wave_toolbar;
 
   GtkStyle *wave_edit_style;
-
+  
+  GObject *soundcard;
+  
   cairo_t *cr;
 
   GList *start_list_wave, *list_wave;
   GList *start_list_buffer, *list_buffer;
 
+  double zoom, zoom_factor;
+  gdouble delay_factor;
   gdouble opacity;
   guint line;
   guint samplerate;
   gdouble bpm;
   guint x0, x1;
-
+  guint x_cut;
+  
   static const gdouble white_gc = 65535.0;
   
   if(!AGS_IS_WAVE_EDIT(wave_edit)){
@@ -1663,8 +1677,14 @@ ags_wave_edit_draw_wave(AgsWaveEdit *wave_edit)
 					AGS_TYPE_WAVE_WINDOW);
   window = wave_window->parent_window;  
 
+  wave_toolbar = wave_editor->wave_toolbar;
+  
   wave_edit_style = gtk_widget_get_style(GTK_WIDGET(wave_edit->drawing_area));
 
+  g_object_get(wave_editor->selected_machine->audio,
+	       "output-soundcard", &soundcard,
+	       NULL);
+  
   /* create cairo context */
   cr = gdk_cairo_create(GTK_WIDGET(wave_edit->drawing_area)->window);
 
@@ -1673,11 +1693,19 @@ ags_wave_edit_draw_wave(AgsWaveEdit *wave_edit)
   }
 
   bpm = gtk_spin_button_get_value(window->navigation->bpm);
-  
+    
+  /* zoom */
+  zoom = exp2((double) gtk_combo_box_get_active((GtkComboBox *) wave_toolbar->zoom) - 2.0);
+  zoom_factor = exp2(6.0 - (double) gtk_combo_box_get_active((GtkComboBox *) wave_toolbar->zoom));
+
+  delay_factor = ags_soundcard_get_delay_factor(AGS_SOUNDCARD(soundcard));
+
   /* get visisble region */
   x0 = (guint) GTK_RANGE(wave_edit->hscrollbar)->adjustment->value;
-  x1 = ((guint) GTK_RANGE(wave_edit->hscrollbar)->adjustment->value + GTK_WIDGET(wave_edit->drawing_area)->allocation.width);
+  x1 = ((guint) GTK_RANGE(wave_edit->hscrollbar)->adjustment->value + GTK_WIDGET(wave_edit->drawing_area)->allocation.width * zoom_factor);
 
+  x_cut = x0;
+  
   /* draw wave */
   g_object_get(wave_editor->selected_machine->audio,
 	       "wave", &start_list_wave,
@@ -1710,7 +1738,7 @@ ags_wave_edit_draw_wave(AgsWaveEdit *wave_edit)
     offset = ags_timestamp_get_ags_offset(timestamp);
     
     if(timestamp != NULL &&
-       ((60.0 / bpm) * ((double) offset / (double) samplerate)) * AGS_WAVE_EDIT_X_RESOLUTION > x1){
+       ((((double) (offset) / samplerate * (bpm / 60.0) / delay_factor) * 64.0)) / zoom_factor - x_cut > GTK_WIDGET(wave_edit->drawing_area)->allocation.width){
       break;
     }
 

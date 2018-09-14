@@ -1233,6 +1233,20 @@ ags_route_dssi_audio_run_run_post(AgsRecall *recall)
 
   g_value_unset(&value);
 
+  /* get bpm */
+  g_object_get(delay_audio,
+	       "bpm", &port,
+	       NULL);
+  
+  g_value_init(&value, G_TYPE_DOUBLE);
+
+  ags_port_safe_read(port,
+		     &value);
+
+  bpm = g_value_get_double(&value);
+
+  g_value_unset(&value);
+
   /*  */
   x = (((notation_counter * notation_delay) + notation_counter) * buffer_size);
   

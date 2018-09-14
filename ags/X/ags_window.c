@@ -46,7 +46,7 @@
 #include <ags/X/thread/ags_gui_thread.h>
 
 #ifdef AGS_WITH_QUARTZ
-#include <gtkmacintegration-gtk2/gtkosxapplication.h>
+#include <gtkmacintegration/gtkosxapplication.h>
 #endif
 
 #include <stdlib.h>

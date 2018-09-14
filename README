@@ -53,88 +53,88 @@ General Notes on Licensing
 Following images are used by the documentation and hence are distributed under the GNU Free Documentation License, Version 1.3 or
 (at your option) any later version published by the Free Software Foundation.
 
-* docs/images/ags_ffplayer.png (GFDLv1.3+)
-* docs/images/ags_navigation.png (GFDLv1.3+)
-* docs/images/ags_performance_preferences.png (GFDLv1.3+)
-* docs/images/ags_midi_preferences.png (GFDLv1.3+)
-* docs/images/ags_machine_properties-link_input.png (GFDLv1.3+)
-* docs/images/ags_machine_properties-input.png (GFDLv1.3+)
-* docs/images/ags_mixer.png (GFDLv1.3+)
-* docs/images/ags_select_accelerations_dialog.png (GFDLv1.3+)
-* docs/images/ags_machine_properties-resize_channels.png (GFDLv1.3+)
-* docs/images/ags_server_preferences.png (GFDLv1.3+)
-* docs/images/ags_midi_import_wizard_no2.png (GFDLv1.3+)
-* docs/images/ags_machine_envelope_info.png (GFDLv1.3+)
-* docs/images/ags_drum.png (GFDLv1.3+)
-* docs/images/ags_matrix.png (GFDLv1.3+)
-* docs/images/ags_midi_export_wizard_no1.png (GFDLv1.3+)
-* docs/images/ags_crop_notes_dialog.png (GFDLv1.3+)
-* docs/images/AGS_super-threaded.png (GFDLv1.3+)
-* docs/images/ags_midi_import_wizard_no1.png (GFDLv1.3+)
-* docs/images/AGS_recall_lifecycle.png (GFDLv1.3+)
-* docs/images/AGS_linking.png (GFDLv1.3+)
-* docs/images/AGS_iterator.png (GFDLv1.3+)
-* docs/images/ags_automation_window_drum.png (GFDLv1.3+)
-* docs/images/ags_audio_connection_output_line.png (GFDLv1.3+)
-* docs/images/ags_machine_envelope_editor.png (GFDLv1.3+)
-* docs/images/ags_select_notes_dialog.png (GFDLv1.3+)
-* docs/images/ags_move_notes_dialog.png (GFDLv1.3+)
-* docs/images/ags_ladspa_browser.png (GFDLv1.3+)
-* docs/images/ags-automation-toolbar.png (GFDLv1.3+)
-* docs/images/ags_ramp_accelerations_dialog.png (GFDLv1.3+)
-* docs/images/ags_export_window.png (GFDLv1.3+)
-* docs/images/ags_midi_export_wizard_no2.png (GFDLv1.3+)
-* docs/images/ags_audio_connection_output_bulk.png (GFDLv1.3+)
-* docs/images/ags_machine_envelope_pattern.png (GFDLv1.3+)
-* docs/images/ags-toolbar.png (GFDLv1.3+)
-* docs/images/ags_midi_dialog.png (GFDLv1.3+)
-* docs/images/ags_machine_properties-output.png (GFDLv1.3+)
-* docs/images/ags_syncsynth.png (GFDLv1.3+)
-* docs/images/ags_generic_preferences.png (GFDLv1.3+)
-* docs/images/ags_panel.png (GFDLv1.3+)
-* docs/images/ags_audio_preferences.png (GFDLv1.3+)
-* docs/images/ags_synth.png (GFDLv1.3+)
-* docs/images/ags_position_notation_cursor_dialog.png (GFDLv1.3+)
-* docs/images/ags_position_automation_cursor_dialog.png (GFDLv1.3+)
+* docs/images/ags_ffplayer.png (Copyright (C) 2005-2018 Joël Krähemann, GFDLv1.3+)
+* docs/images/ags_navigation.png (Copyright (C) 2005-2018 Joël Krähemann, GFDLv1.3+)
+* docs/images/ags_performance_preferences.png (Copyright (C) 2005-2018 Joël Krähemann, GFDLv1.3+)
+* docs/images/ags_midi_preferences.png (Copyright (C) 2005-2018 Joël Krähemann, GFDLv1.3+)
+* docs/images/ags_machine_properties-link_input.png (Copyright (C) 2005-2018 Joël Krähemann, GFDLv1.3+)
+* docs/images/ags_machine_properties-input.png (Copyright (C) 2005-2018 Joël Krähemann, GFDLv1.3+)
+* docs/images/ags_mixer.png (Copyright (C) 2005-2018 Joël Krähemann, GFDLv1.3+)
+* docs/images/ags_select_accelerations_dialog.png (Copyright (C) 2005-2018 Joël Krähemann, GFDLv1.3+)
+* docs/images/ags_machine_properties-resize_channels.png (Copyright (C) 2005-2018 Joël Krähemann, GFDLv1.3+)
+* docs/images/ags_server_preferences.png (Copyright (C) 2005-2018 Joël Krähemann, GFDLv1.3+)
+* docs/images/ags_midi_import_wizard_no2.png (Copyright (C) 2005-2018 Joël Krähemann, GFDLv1.3+)
+* docs/images/ags_machine_envelope_info.png (Copyright (C) 2005-2018 Joël Krähemann, GFDLv1.3+)
+* docs/images/ags_drum.png (Copyright (C) 2005-2018 Joël Krähemann, GFDLv1.3+)
+* docs/images/ags_matrix.png (Copyright (C) 2005-2018 Joël Krähemann, GFDLv1.3+)
+* docs/images/ags_midi_export_wizard_no1.png (Copyright (C) 2005-2018 Joël Krähemann, GFDLv1.3+)
+* docs/images/ags_crop_notes_dialog.png (Copyright (C) 2005-2018 Joël Krähemann, GFDLv1.3+)
+* docs/images/AGS_super-threaded.png (Copyright (C) 2005-2018 Joël Krähemann, GFDLv1.3+)
+* docs/images/ags_midi_import_wizard_no1.png (Copyright (C) 2005-2018 Joël Krähemann, GFDLv1.3+)
+* docs/images/AGS_recall_lifecycle.png (Copyright (C) 2005-2018 Joël Krähemann, GFDLv1.3+)
+* docs/images/AGS_linking.png (Copyright (C) 2005-2018 Joël Krähemann, GFDLv1.3+)
+* docs/images/AGS_iterator.png (Copyright (C) 2005-2018 Joël Krähemann, GFDLv1.3+)
+* docs/images/ags_automation_window_drum.png (Copyright (C) 2005-2018 Joël Krähemann, GFDLv1.3+)
+* docs/images/ags_audio_connection_output_line.png (Copyright (C) 2005-2018 Joël Krähemann, GFDLv1.3+)
+* docs/images/ags_machine_envelope_editor.png (Copyright (C) 2005-2018 Joël Krähemann, GFDLv1.3+)
+* docs/images/ags_select_notes_dialog.png (Copyright (C) 2005-2018 Joël Krähemann, GFDLv1.3+)
+* docs/images/ags_move_notes_dialog.png (Copyright (C) 2005-2018 Joël Krähemann, GFDLv1.3+)
+* docs/images/ags_ladspa_browser.png (Copyright (C) 2005-2018 Joël Krähemann, GFDLv1.3+)
+* docs/images/ags-automation-toolbar.png (Copyright (C) 2005-2018 Joël Krähemann, GFDLv1.3+)
+* docs/images/ags_ramp_accelerations_dialog.png (Copyright (C) 2005-2018 Joël Krähemann, GFDLv1.3+)
+* docs/images/ags_export_window.png (Copyright (C) 2005-2018 Joël Krähemann, GFDLv1.3+)
+* docs/images/ags_midi_export_wizard_no2.png (Copyright (C) 2005-2018 Joël Krähemann, GFDLv1.3+)
+* docs/images/ags_audio_connection_output_bulk.png (Copyright (C) 2005-2018 Joël Krähemann, GFDLv1.3+)
+* docs/images/ags_machine_envelope_pattern.png (Copyright (C) 2005-2018 Joël Krähemann, GFDLv1.3+)
+* docs/images/ags-toolbar.png (Copyright (C) 2005-2018 Joël Krähemann, GFDLv1.3+)
+* docs/images/ags_midi_dialog.png (Copyright (C) 2005-2018 Joël Krähemann, GFDLv1.3+)
+* docs/images/ags_machine_properties-output.png (Copyright (C) 2005-2018 Joël Krähemann, GFDLv1.3+)
+* docs/images/ags_syncsynth.png (Copyright (C) 2005-2018 Joël Krähemann, GFDLv1.3+)
+* docs/images/ags_generic_preferences.png (Copyright (C) 2005-2018 Joël Krähemann, GFDLv1.3+)
+* docs/images/ags_panel.png (Copyright (C) 2005-2018 Joël Krähemann, GFDLv1.3+)
+* docs/images/ags_audio_preferences.png (Copyright (C) 2005-2018 Joël Krähemann, GFDLv1.3+)
+* docs/images/ags_synth.png (Copyright (C) 2005-2018 Joël Krähemann, GFDLv1.3+)
+* docs/images/ags_position_notation_cursor_dialog.png (Copyright (C) 2005-2018 Joël Krähemann, GFDLv1.3+)
+* docs/images/ags_position_automation_cursor_dialog.png (Copyright (C) 2005-2018 Joël Krähemann, GFDLv1.3+)
 
 Following listings are used by the documentation and hence are distributed under the GNU Free Documentation License, Version 1.3 or
 (at your option) any later version published by the Free Software Foundation.
 
-* docs/listings/effects_echo_channel.c (GFDLv1.3+)
-* docs/listings/file_property.c (GFDLv1.3+)
-* docs/listings/effects_echo_audio.c (GFDLv1.3+)
-* docs/listings/linking_prerequisites.c (GFDLv1.3+)
-* docs/listings/linking_safe.c (GFDLv1.3+)
-* docs/listings/effects_echo_audio_run.c (GFDLv1.3+)
-* docs/listings/effects_recall_container.c (GFDLv1.3+)
-* docs/listings/file_write.c (GFDLv1.3+)
-* docs/listings/add_pattern.c (GFDLv1.3+)
-* docs/listings/linking_unsafe.c (GFDLv1.3+)
-* docs/listings/thread_application_context.c (GFDLv1.3+)
-* docs/listings/effects_echo_channel_run.c (GFDLv1.3+)
-* docs/listings/audio.c (GFDLv1.3+)
-* docs/listings/pull_thread.c (GFDLv1.3+)
-* docs/listings/application_mutex.c (GFDLv1.3+)
-* docs/listings/audio_application_context.c (GFDLv1.3+)
-* docs/listings/recycling.c (GFDLv1.3+)
-* docs/listings/config.c (GFDLv1.3+)
-* docs/listings/pcm_info.c (GFDLv1.3+)
-* docs/listings/start_thread.c (GFDLv1.3+)
-* docs/listings/file_read.c (GFDLv1.3+)
-* docs/listings/complete_example.c (GFDLv1.3+)
+* docs/listings/effects_echo_channel.c (Copyright (C) 2005-2018 Joël Krähemann, GFDLv1.3+)
+* docs/listings/file_property.c (Copyright (C) 2005-2018 Joël Krähemann, GFDLv1.3+)
+* docs/listings/effects_echo_audio.c (Copyright (C) 2005-2018 Joël Krähemann, GFDLv1.3+)
+* docs/listings/linking_prerequisites.c (Copyright (C) 2005-2018 Joël Krähemann, GFDLv1.3+)
+* docs/listings/linking_safe.c (Copyright (C) 2005-2018 Joël Krähemann, GFDLv1.3+)
+* docs/listings/effects_echo_audio_run.c (Copyright (C) 2005-2018 Joël Krähemann, GFDLv1.3+)
+* docs/listings/effects_recall_container.c (Copyright (C) 2005-2018 Joël Krähemann, GFDLv1.3+)
+* docs/listings/file_write.c (Copyright (C) 2005-2018 Joël Krähemann, GFDLv1.3+)
+* docs/listings/add_pattern.c (Copyright (C) 2005-2018 Joël Krähemann, GFDLv1.3+)
+* docs/listings/linking_unsafe.c (Copyright (C) 2005-2018 Joël Krähemann, GFDLv1.3+)
+* docs/listings/thread_application_context.c (Copyright (C) 2005-2018 Joël Krähemann, GFDLv1.3+)
+* docs/listings/effects_echo_channel_run.c (Copyright (C) 2005-2018 Joël Krähemann, GFDLv1.3+)
+* docs/listings/audio.c (Copyright (C) 2005-2018 Joël Krähemann, GFDLv1.3+)
+* docs/listings/pull_thread.c (Copyright (C) 2005-2018 Joël Krähemann, GFDLv1.3+)
+* docs/listings/application_mutex.c (Copyright (C) 2005-2018 Joël Krähemann, GFDLv1.3+)
+* docs/listings/audio_application_context.c (Copyright (C) 2005-2018 Joël Krähemann, GFDLv1.3+)
+* docs/listings/recycling.c (Copyright (C) 2005-2018 Joël Krähemann, GFDLv1.3+)
+* docs/listings/config.c (Copyright (C) 2005-2018 Joël Krähemann, GFDLv1.3+)
+* docs/listings/pcm_info.c (Copyright (C) 2005-2018 Joël Krähemann, GFDLv1.3+)
+* docs/listings/start_thread.c (Copyright (C) 2005-2018 Joël Krähemann, GFDLv1.3+)
+* docs/listings/file_read.c (Copyright (C) 2005-2018 Joël Krähemann, GFDLv1.3+)
+* docs/listings/complete_example.c (Copyright (C) 2005-2018 Joël Krähemann, GFDLv1.3+)
 
 The Advanced Gtk+ Sequencer logo and splash screen are used by the final binary hence it is applied under the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or (at your option) any later version. This are the mentioned files (logo and splash screen):
 
-* gsequencer.share/images/ags.png (GPLv3+)
-* gsequencer.share/images/ags_supermoon-800x450.png (GPLv3+)
+* gsequencer.share/images/ags.png (Copyright (C) 2005-2018 Joël Krähemann, GPLv3+)
+* gsequencer.share/images/ags_supermoon-800x450.png (Copyright (C) 2005-2018 Joël Krähemann, GPLv3+)
 
 Other images used by the binary applied under the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
 
-* gsequencer.share/icons/ags.png (GPLv3+)
-* gsequencer.share/icons/ags.xpm (GPLv3+)
-* gsequencer.share/icons/jumper.png (GPLv3+)
+* gsequencer.share/icons/ags.png (Copyright (C) 2005-2018 Joël Krähemann, GPLv3+)
+* gsequencer.share/icons/ags.xpm (Copyright (C) 2005-2018 Joël Krähemann, GPLv3+)
+* gsequencer.share/icons/jumper.png (Copyright (C) 2005-2018 Joël Krähemann, GPLv3+)
 
 The GtkRC file is used by the final binary hence it is applied under the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or (at your option) any later version. This are the mentioned files (GtkRC File):
@@ -143,26 +143,26 @@ the Free Software Foundation, either version 3 of the License, or (at your optio
 
 As well the desktop file:
 
-* gsequencer.desktop.in (GPLv3+)
+* gsequencer.desktop.in (Copyright (C) 2005-2018 Joël Krähemann, GPLv3+)
 
 The generated symbol files have the very same license as their origin:
 
-* libags.sym (GPLv3+ and AGPLv3+)
-* libags_audio.sym (GPLv3+)
-* libags_gui.sym (GPLv3+)
+* libags.sym (Copyright (C) 2005-2018 Joël Krähemann, GPLv3+ and AGPLv3+)
+* libags_audio.sym (Copyright (C) 2005-2018 Joël Krähemann, GPLv3+)
+* libags_gui.sym (Copyright (C) 2005-2018 Joël Krähemann, GPLv3+)
 
 And so for the glib-object marshallers file:
 
-* ags/object/ags_marshallers.list (GPLv3+)
+* ags/object/ags_marshallers.list (Copyright (C) 2005-2018 Joël Krähemann, GPLv3+)
 
 Third-party files of gtk-doc licensed under the terms of GNU GPLv3+, copyright provided by James Henstridge and Stefan Sauer
 
-* docs/reference/libags/gtk-doc.make (GPLv3+)
-* docs/reference/libags-audio/gtk-doc.make (GPLv3+)
-* docs/reference/libags-gui/gtk-doc.make (GPLv3+)
-* docs/reference/libgsequencer/gtk-doc.make (GPLv3+)
-* gtk-doc.make (GPLv3+)
-* m4/gtk-doc.m4 (GPLv3+)
+* docs/reference/libags/gtk-doc.make (Copyright (C) 2005-2018 Joël Krähemann, GPLv3+)
+* docs/reference/libags-audio/gtk-doc.make (Copyright (C) 2005-2018 Joël Krähemann, GPLv3+)
+* docs/reference/libags-gui/gtk-doc.make (Copyright (C) 2005-2018 Joël Krähemann, GPLv3+)
+* docs/reference/libgsequencer/gtk-doc.make (Copyright (C) 2005-2018 Joël Krähemann, GPLv3+)
+* gtk-doc.make (Copyright (C) 2005-2018 Joël Krähemann, GPLv3+)
+* m4/gtk-doc.m4 (Copyright (C) 2005-2018 Joël Krähemann, GPLv3+)
 
 Third-party files of gtk-doc permissive licensed see specific files for warranty disclaimer and a notice preservation requirement, copyright provided by James Henstridge, Damon Chaplin and Stefan Sauer
 
@@ -173,10 +173,10 @@ Third-party files of gtk-doc permissive licensed see specific files for warranty
 
 Third-party files of gtk-doc licensed under the terms of GNU GPLv3+, copyright provided by Stefan Sauer
 
-* docs/reference/libags/Makefile.am (GPLv3+)
-* docs/reference/libags-audio/Makefile.am (GPLv3+)
-* docs/reference/libags-gui/Makefile.am (GPLv3+)
-* docs/reference/libgsequencer/Makefile.am (GPLv3+)
+* docs/reference/libags/Makefile.am (Copyright (C) 2005-2018 Joël Krähemann, GPLv3+)
+* docs/reference/libags-audio/Makefile.am (Copyright (C) 2005-2018 Joël Krähemann, GPLv3+)
+* docs/reference/libags-gui/Makefile.am (Copyright (C) 2005-2018 Joël Krähemann, GPLv3+)
+* docs/reference/libgsequencer/Makefile.am (Copyright (C) 2005-2018 Joël Krähemann, GPLv3+)
 
 Third-party files of autotools permissive licensed see specific files for warranty disclaimer and a notice preservation requirement, copyright provided by http://www.fsf.org:
 
@@ -196,7 +196,7 @@ Third-party files of autotools permissive licensed see specific files for warran
 
 Derived files of gsequencer licensed under the terms of GNU GPLv3+, copyright provided by http://www.nongnu.org/gsequencer:
 
-* po/gsequencer.pot (GPLv3+)
+* po/gsequencer.pot (Copyright (C) 2005-2018 Joël Krähemann, GPLv3+)
 
 Third-party files of Ulrich Drepper (gettext) without any copyrightable content:
 

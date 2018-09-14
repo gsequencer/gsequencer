@@ -55,8 +55,6 @@
 #include <stdio.h>
 #include <sys/stat.h>
 
-#include <X11/Xlib.h>
-
 void ags_menu_action_open_response_callback(GtkFileChooserDialog *file_chooser, gint response, gpointer data);
 
 void

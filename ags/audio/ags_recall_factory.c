@@ -2194,6 +2194,7 @@ ags_recall_factory_create_rt_stream(AgsAudio *audio,
   GList *recall;
 
   guint audio_channels;
+  guint output_pads, input_pads;
   guint i, j;
 
   pthread_mutex_t *audio_mutex;
@@ -2219,18 +2220,17 @@ ags_recall_factory_create_rt_stream(AgsAudio *audio,
   input = audio->input;
   
   audio_channels = audio->audio_channels;
+
+  output_pads = audio->output_pads;
+  input_pads = audio->input_pads;
   
   pthread_mutex_unlock(audio_mutex);
 
   /* get channel */
   if((AGS_RECALL_FACTORY_OUTPUT & (create_flags)) != 0){
-    start =
-      channel = ags_channel_nth(output,
-				start_pad * audio_channels);
+    start = output;
   }else{
-    start =
-      channel = ags_channel_nth(input,
-				start_pad * audio_channels);
+    start = input;
   }
 
   recall = NULL;
@@ -2444,6 +2444,7 @@ ags_recall_factory_create_buffer(AgsAudio *audio,
   GList *recall;
 
   guint audio_channels;
+  guint output_pads, input_pads;
   guint i, j;
 
   pthread_mutex_t *audio_mutex;
@@ -2470,18 +2471,17 @@ ags_recall_factory_create_buffer(AgsAudio *audio,
   input = audio->input;
   
   audio_channels = audio->audio_channels;
+
+  output_pads = audio->output_pads;
+  input_pads = audio->input_pads;
   
   pthread_mutex_unlock(audio_mutex);
 
   /* get channel */
   if((AGS_RECALL_FACTORY_OUTPUT & (create_flags)) != 0){
-    start =
-      channel = ags_channel_nth(output,
-				start_pad * audio_channels);
+    start = output;
   }else{
-    start =
-      channel = ags_channel_nth(input,
-				start_pad * audio_channels);
+    start = input;
   }
 
   recall = NULL;
@@ -2489,14 +2489,16 @@ ags_recall_factory_create_buffer(AgsAudio *audio,
   /* play */
   if((AGS_RECALL_FACTORY_PLAY & (create_flags)) != 0){
     gboolean found_buffer;
-
-    channel = start;
     
-    for(i = 0; i < stop_pad - start_pad; i++){
-      channel = ags_channel_nth(channel,
-				start_audio_channel);
-      
+    for(i = start_pad; i < stop_pad && i < input_pads; i++){
       for(j = 0; j < stop_audio_channel - start_audio_channel; j++){
+	channel = ags_channel_nth(start,
+				  i * audio_channels + start_audio_channel + j);
+
+	if(channel == NULL){
+	  break;
+	}
+	  
 	current = ags_channel_nth(output,
 				  start_audio_channel + j);
 	
@@ -2627,31 +2629,23 @@ ags_recall_factory_create_buffer(AgsAudio *audio,
 
 	  pthread_mutex_unlock(current_mutex);
 	}
-
-	/* iterate */
-	pthread_mutex_lock(channel_mutex);
-	
-	channel = channel->next;
-
-	pthread_mutex_unlock(channel_mutex);
       }
-
-      channel = ags_channel_nth(channel,
-				audio_channels - stop_audio_channel);
     }
   }
 
   /* recall */
   if((AGS_RECALL_FACTORY_RECALL & (create_flags)) != 0){
     gboolean found_buffer;
-    
-    channel = start;
-    
-    for(i = 0; i < stop_pad - start_pad; i++){
-      channel = ags_channel_nth(channel,
-				start_audio_channel);
-      
+
+    for(i = start_pad; i < stop_pad && i < input_pads; i++){
       for(j = 0; j < stop_audio_channel - start_audio_channel; j++){
+	channel = ags_channel_nth(start,
+				  i * audio_channels + start_audio_channel + j);
+      
+	if(channel == NULL){
+	  break;
+	}
+
 	current = ags_channel_nth(output,
 				  start_audio_channel + j);
 	
@@ -2781,17 +2775,7 @@ ags_recall_factory_create_buffer(AgsAudio *audio,
 
 	  pthread_mutex_unlock(current_mutex);
 	}
-	
-	/* iterate */
-	pthread_mutex_lock(channel_mutex);
-	
-	channel = channel->next;
-
-	pthread_mutex_unlock(channel_mutex);
       }
-
-      channel = ags_channel_nth(channel,
-				audio_channels - stop_audio_channel);
     }
   }
 
@@ -7712,7 +7696,7 @@ ags_recall_factory_create(AgsAudio *audio,
 						    create_flags, recall_flags);
   }else if(!strncmp(plugin_name,
 		    "ags-play-wave",
-		    13)){
+		    14)){
     recall = ags_recall_factory_create_play_wave(audio,
 						 play_container, recall_container,
 						 plugin_name,
@@ -7784,7 +7768,7 @@ ags_recall_factory_create(AgsAudio *audio,
 					      create_flags, recall_flags);
   }else if(!strncmp(plugin_name,
 		    "ags-envelope",
-		    11)){
+		    13)){
     recall = ags_recall_factory_create_envelope(audio,
 						play_container, recall_container,
 						plugin_name,

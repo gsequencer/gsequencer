@@ -657,7 +657,7 @@ ags_sound_resource_read_wave(AgsSoundResource *sound_resource,
 		 "timestamp", &timestamp,
 		 NULL);
     
-    relative_offset = AGS_WAVE_DEFAULT_BUFFER_LENGTH * samplerate;
+    relative_offset = AGS_WAVE_DEFAULT_BUFFER_LENGTH * target_samplerate;
     
     offset = x_offset;
     frame_count = target_buffer_size;
@@ -713,6 +713,8 @@ ags_sound_resource_read_wave(AgsSoundResource *sound_resource,
 						    frame_count, copy_mode);
 
 	free(target_data);
+
+	num_read = ceil(num_read / buffer_size * frame_count);
       }else{
 	num_read = ags_sound_resource_read(AGS_SOUND_RESOURCE(sound_resource),
 					   buffer->data, 1,
@@ -728,29 +730,34 @@ ags_sound_resource_read_wave(AgsSoundResource *sound_resource,
       if(create_wave){
 	wave = ags_wave_new(NULL,
 			    i);
+	//	g_message("create %d", offset + frame_count);
 	g_object_set(wave,
 		     "samplerate", target_samplerate,
 		     "buffer-size", target_buffer_size,
 		     "format", target_format,
 		     NULL);
 
-	start_list = ags_wave_add(start_list,
-				  wave);
-
 	g_object_get(wave,
 		     "timestamp", &timestamp,
 		     NULL);
 	ags_timestamp_set_ags_offset(timestamp,
-				     offset);
+				     offset + frame_count);
+	
+	start_list = ags_wave_add(start_list,
+				  wave);
 
 	frame_count = target_buffer_size;
       }
       
       /* iterate */
-      offset += target_buffer_size;
+      offset += frame_count;
 
-      if(num_read != buffer_size){
+      if(num_read < frame_count){
 	success = FALSE;
+      }
+
+      if(frame_count != target_buffer_size){
+	frame_count = target_buffer_size;
       }
     }
   }

@@ -1715,7 +1715,7 @@ ags_pulse_port_stream_request_callback(pa_stream *stream, size_t length, AgsPuls
     if(!empty_run){
       pa_stream_peek(stream,
 		     &(pulse_devin->buffer[nth_buffer]),
-		     count);
+		     &count);
       
       g_atomic_int_set(&(pulse_port->is_empty),
 		       FALSE);
@@ -1764,7 +1764,7 @@ ags_pulse_port_stream_request_callback(pa_stream *stream, size_t length, AgsPuls
 
 	pa_stream_peek(stream,
 		       &empty_buffer,
-		       count);
+		       &count);
 	
 	pthread_mutex_unlock(pulse_port_mutex);
 	

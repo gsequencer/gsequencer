@@ -768,19 +768,22 @@ ags_lv2ui_manager_load_file_ui_plugin(AgsLv2uiManager *lv2ui_manager,
       continue;
     }
 
-    xpath = "/rdf-turtle-doc/rdf-statement/rdf-triple//rdf-verb//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':binary') + 1) = ':binary']/ancestor::*[self::rdf-verb][1]/following-sibling::*[self::rdf-object-list][1]//rdf-iriref[substring(text(), string-length(text()) - string-length('.so>') + 1) = '.so>']";
+    xpath = "/rdf-turtle-doc/rdf-statement/rdf-triple//rdf-verb//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':binary') + 1) = ':binary']/ancestor::*[self::rdf-verb][1]/following-sibling::*[self::rdf-object-list][1]//rdf-iriref[substring(text(), string-length(text()) - string-length('.dylib>') + 1) = '.dylib>']";
     binary_list = ags_turtle_find_xpath_with_context_node(turtle,
 							  xpath,
 							  list->data);
 
     /* load */
+    ui_filename = NULL;
+    
     while(binary_list != NULL){
       gchar *tmp;
 	
       /* read filename of binary */
       str = xmlNodeGetContent((xmlNode *) binary_list->data);
 	
-      if(str == NULL){
+      if(str == NULL ||
+	 strlen(str) < 2){
 	binary_list = binary_list->next;
 	continue;
       }
@@ -1057,7 +1060,7 @@ ags_lv2ui_manager_load_default_directory(AgsLv2uiManager *lv2ui_manager)
 
 	/* read binary from turtle */
 	binary_list = ags_turtle_find_xpath(manifest,
-					    "/rdf-turtle-doc/rdf-statement/rdf-triple/rdf-predicate-object-list/rdf-verb//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':binary') + 1) = ':binary']/ancestor::*[self::rdf-verb][1]/following-sibling::*[self::rdf-object-list][1]//rdf-iriref[substring(text(), string-length(text()) - string-length('.so>') + 1) = '.so>']");
+					    "/rdf-turtle-doc/rdf-statement/rdf-triple/rdf-predicate-object-list/rdf-verb//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':binary') + 1) = ':binary']/ancestor::*[self::rdf-verb][1]/following-sibling::*[self::rdf-object-list][1]//rdf-iriref[substring(text(), string-length(text()) - string-length('.dylib>') + 1) = '.dylib>']");
 
 	/* persist XML */
 	//NOTE:JK: no need for it

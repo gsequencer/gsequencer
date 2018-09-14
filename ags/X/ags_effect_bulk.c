@@ -2959,7 +2959,7 @@ ags_effect_bulk_real_resize_pads(AgsEffectBulk *effect_bulk,
   }
   
   /* collect bulk member */
-  list = gtk_container_get_children((GtkContainer *) effect_bulk->table);
+  start_list = gtk_container_get_children((GtkContainer *) effect_bulk->table);
    
   if(new_size > old_size){ 
     /* add effect */

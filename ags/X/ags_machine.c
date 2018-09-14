@@ -218,7 +218,6 @@ ags_machine_class_init(AgsMachineClass *machine)
   /**
    * AgsMachine::resize-audio-channels:
    * @machine: the #AgsMachine to modify
-   * @channel: the #AgsChannel to set
    * @new_size: the new size
    * @old_size: the old size
    *
@@ -241,7 +240,6 @@ ags_machine_class_init(AgsMachineClass *machine)
   /**
    * AgsMachine::resize-pads:
    * @machine: the #AgsMachine to modify
-   * @channel: the #AgsChannel to set
    * @channel_type: either %AGS_TYPE_INPUT or %AGS_TYPE_OUTPUT
    * @new_size: the new size
    * @old_size: the old size
@@ -2301,7 +2299,7 @@ ags_machine_message_monitor_timeout(AgsMachine *machine)
 	if(!xmlStrncmp(xmlGetProp(root_node,
 				  "method"),
 		       "AgsAudio::set-audio-channels",
-		       28)){
+		       29)){
 	  guint audio_channels, audio_channels_old;
 	  gint position;
 	  

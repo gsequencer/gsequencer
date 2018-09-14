@@ -1034,10 +1034,6 @@ ags_live_dssi_bridge_map_recall(AgsMachine *machine)
   live_dssi_bridge = (AgsLiveDssiBridge *) machine;
 
   audio = machine->audio;
-  g_object_get(audio,
-	       "play", &start_play,
-	       "recall", &start_recall,
-	       NULL);
 
   /* ags-delay */
   ags_recall_factory_create(audio,
@@ -1051,6 +1047,10 @@ ags_live_dssi_bridge_map_recall(AgsMachine *machine)
 			     AGS_RECALL_FACTORY_RECALL),
 			    0);
 
+  g_object_get(audio,
+	       "play", &start_play,
+	       NULL);
+  
   play = ags_recall_find_type(start_play,
 			      AGS_TYPE_DELAY_AUDIO_RUN);
 
@@ -1061,6 +1061,8 @@ ags_live_dssi_bridge_map_recall(AgsMachine *machine)
     play_delay_audio_run = NULL;
   }
 
+  g_list_free(start_play);
+  
   /* ags-count-beats */
   ags_recall_factory_create(audio,
 			    NULL, NULL,
@@ -1073,6 +1075,10 @@ ags_live_dssi_bridge_map_recall(AgsMachine *machine)
 			     AGS_RECALL_FACTORY_RECALL),
 			    0);
 
+  g_object_get(audio,
+	       "play", &start_play,
+	       NULL);
+    
   play = ags_recall_find_type(start_play,
 			      AGS_TYPE_COUNT_BEATS_AUDIO_RUN);
 
@@ -1090,6 +1096,8 @@ ags_live_dssi_bridge_map_recall(AgsMachine *machine)
     play_count_beats_audio_run = NULL;
   }
 
+  g_list_free(start_play);
+  
   /* ags-record-midi */
   ags_recall_factory_create(audio,
 			    NULL, NULL,
@@ -1101,6 +1109,10 @@ ags_live_dssi_bridge_map_recall(AgsMachine *machine)
 			     AGS_RECALL_FACTORY_RECALL),
 			    0);
 
+  g_object_get(audio,
+	       "recall", &start_recall,
+	       NULL);
+  
   recall = ags_recall_find_type(start_recall,
 				AGS_TYPE_RECORD_MIDI_AUDIO_RUN);
 
@@ -1118,6 +1130,8 @@ ags_live_dssi_bridge_map_recall(AgsMachine *machine)
 		 NULL);
   }  
 
+  g_list_free(start_recall);
+  
   /* ags-play-dssi */
   ags_recall_factory_create(audio,
 			    NULL, NULL,
@@ -1130,6 +1144,10 @@ ags_live_dssi_bridge_map_recall(AgsMachine *machine)
 			     AGS_RECALL_FACTORY_BULK),
 			    0);
 
+  g_object_get(audio,
+	       "play", &start_play,
+	       NULL);
+    
   play = ags_recall_find_type(start_play,
 			      AGS_TYPE_PLAY_DSSI_AUDIO);
   
@@ -1162,6 +1180,8 @@ ags_live_dssi_bridge_map_recall(AgsMachine *machine)
 		 NULL);
   }
 
+  g_list_free(start_play);
+ 
   /* depending on destination */
   ags_live_dssi_bridge_input_map_recall(live_dssi_bridge,
 					0,

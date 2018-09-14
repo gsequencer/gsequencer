@@ -845,6 +845,8 @@ ags_audio_container_open_from_data(AgsAudioContainer *audio_container, gchar *da
   g_message("missing implementation");
 
   //TODO:JK: implement me
+
+  return(FALSE);
 }
 
 gboolean
@@ -854,6 +856,8 @@ ags_audio_container_rw_open(AgsAudioContainer *audio_container,
   g_message("missing implementation");
 
   //TODO:JK: implement me
+
+  return(FALSE);
 }
 
 /**
@@ -966,6 +970,8 @@ ags_audio_container_read_audio_signal(AgsAudioContainer *audio_container)
   g_list_free(start_sound_resource);
   
   audio_container->audio_signal = list;
+
+  return(g_list_copy(list));
 }
 
 GList*
