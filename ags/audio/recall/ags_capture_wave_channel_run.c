@@ -188,9 +188,12 @@ ags_capture_wave_channel_run_run_pre(AgsRecall *recall)
   guint samplerate, target_samplerate, file_samplerate;
   guint format, target_format, file_format;
   guint buffer_size, target_buffer_size, file_buffer_size;
+  guint frame_count;
+  guint attack;
   gboolean do_playback, do_replace, is_new_buffer;
   gboolean do_record;
   gboolean resample_target, resample_file;
+  gboolean create_wave;
   
   GValue value = {0,};
   GValue do_loop_value = {0,};
@@ -270,6 +273,8 @@ ags_capture_wave_channel_run_run_pre(AgsRecall *recall)
 			    &buffer_size,
 			    &format);
 
+  frame_count = buffer_size;
+  
   note_offset = ags_soundcard_get_note_offset(AGS_SOUNDCARD(output_soundcard));
   delay = ags_soundcard_get_delay(AGS_SOUNDCARD(output_soundcard));
 
@@ -312,12 +317,24 @@ ags_capture_wave_channel_run_run_pre(AgsRecall *recall)
     target_buffer_size = audio->buffer_size;
     target_format = audio->format;
 
+    frame_count = target_buffer_size;
+    
     list_start = g_list_copy(audio->wave);
     
     pthread_mutex_unlock(audio_mutex);
 
     relative_offset = AGS_WAVE_DEFAULT_BUFFER_LENGTH * target_samplerate;
 
+    create_wave = FALSE;
+    
+    if(x_offset + frame_count >= relative_offset * floor(x_offset / relative_offset) + relative_offset){
+      frame_count = relative_offset * floor(x_offset / relative_offset) + relative_offset - x_offset;
+      
+      create_wave = TRUE;
+    }
+
+    attack = target_buffer_size - frame_count;
+    
     /* check resample */
     resample_target = FALSE;
     
@@ -343,22 +360,31 @@ ags_capture_wave_channel_run_run_pre(AgsRecall *recall)
     if(list != NULL){
       wave = list->data;
     }else{
+      AgsTimestamp *current_timestamp;
+      
       wave = ags_wave_new(audio,
 			  line);
+
+      g_object_get(wave,
+		   "timestamp", &current_timestamp,
+		   NULL);
+      ags_timestamp_set_ags_offset(current_timestamp,
+				   relative_offset * floor(x_offset / relative_offset));
+      
       ags_audio_add_wave(audio,
 			 wave);
     }
 
     buffer = ags_wave_find_point(wave,
-				 target_buffer_size * floor(x_offset / target_buffer_size),
+				 x_offset,
 				 FALSE);
 
     is_new_buffer = FALSE;
     
     if(buffer == NULL){
       buffer = ags_buffer_new();
-      buffer->x = target_buffer_size * floor(x_offset / target_buffer_size);
-	
+      buffer->x = x_offset;
+      
       ags_wave_add_buffer(wave,
 			  buffer,
 			  FALSE);
@@ -375,23 +401,140 @@ ags_capture_wave_channel_run_run_pre(AgsRecall *recall)
     
     if(!is_new_buffer &&
        do_replace){
-      ags_audio_buffer_util_clear_buffer(buffer->data, 1,
-					 target_buffer_size, ags_audio_buffer_util_format_from_soundcard(target_format));
+      void *data;
+      
+      switch(target_format){
+      case AGS_SOUNDCARD_SIGNED_8_BIT:
+	{
+	  data = ((gint8 *) buffer->data) + attack;
+	}
+	break;
+      case AGS_SOUNDCARD_SIGNED_16_BIT:
+	{
+	  data = ((gint16 *) buffer->data) + attack;
+	}
+	break;
+      case AGS_SOUNDCARD_SIGNED_24_BIT:
+	{
+	  data = ((gint32 *) buffer->data) + attack;
+	}
+	break;
+      case AGS_SOUNDCARD_SIGNED_32_BIT:
+	{
+	  data = ((gint32 *) buffer->data) + attack;
+	}
+	break;
+      case AGS_SOUNDCARD_SIGNED_64_BIT:
+	{
+	  data = ((gint64 *) buffer->data) + attack;
+	}
+	break;
+      }
+      
+      pthread_mutex_lock(buffer_mutex);
+      
+      ags_audio_buffer_util_clear_buffer(data, 1,
+					 frame_count, ags_audio_buffer_util_format_from_soundcard(target_format));
+
+      pthread_mutex_unlock(buffer_mutex);
     }
       
     /* copy to buffer */
     pthread_mutex_lock(buffer_mutex);
     ags_soundcard_lock_buffer(AGS_SOUNDCARD(input_soundcard), data);
     
-    ags_audio_buffer_util_copy_buffer_to_buffer(buffer->data, 1, 0,
+    ags_audio_buffer_util_copy_buffer_to_buffer(buffer->data, 1, attack,
 						data, audio_channels, input_soundcard_channel,
-						target_buffer_size, target_copy_mode);
+						frame_count, target_copy_mode);
 
     ags_soundcard_unlock_buffer(AGS_SOUNDCARD(input_soundcard), data);
     pthread_mutex_unlock(buffer_mutex);
-
+    
     g_list_free(list_start);
     
+    /* 2nd attempt */
+    if(attack != 0){
+      pthread_mutex_lock(audio_mutex);
+
+      list_start = g_list_copy(audio->wave);
+    
+      pthread_mutex_unlock(audio_mutex);
+
+      if(create_wave){
+	ags_timestamp_set_ags_offset(timestamp,
+				     relative_offset * floor((x_offset + frame_count) / relative_offset));
+
+	/* play */
+	list = ags_wave_find_near_timestamp(list_start, line,
+					    timestamp);
+
+	if(list != NULL){
+	  wave = list->data;
+	}else{
+	  AgsTimestamp *current_timestamp;
+	  
+	  wave = ags_wave_new(audio,
+			      line);
+
+	  g_object_get(wave,
+		       "timestamp", &current_timestamp,
+		       NULL);
+	  ags_timestamp_set_ags_offset(current_timestamp,
+				       relative_offset * floor((x_offset + frame_count) / relative_offset));
+
+	  ags_audio_add_wave(audio,
+			     wave);
+	}
+      }
+    
+      buffer = ags_wave_find_point(wave,
+				   x_offset + frame_count,
+				   FALSE);
+
+      is_new_buffer = FALSE;
+    
+      if(buffer == NULL){
+	buffer = ags_buffer_new();
+	buffer->x = x_offset + frame_count;
+      
+	ags_wave_add_buffer(wave,
+			    buffer,
+			    FALSE);
+
+	is_new_buffer = TRUE;
+      }
+
+      /* get buffer mutex */
+      pthread_mutex_lock(ags_buffer_get_class_mutex());
+
+      buffer_mutex = buffer->obj_mutex;
+      
+      pthread_mutex_unlock(ags_buffer_get_class_mutex());
+    
+      if(!is_new_buffer &&
+	 do_replace){
+	pthread_mutex_lock(buffer_mutex);
+      
+	ags_audio_buffer_util_clear_buffer(buffer->data, 1,
+					   attack, ags_audio_buffer_util_format_from_soundcard(target_format));
+
+	pthread_mutex_unlock(buffer_mutex);
+      }
+      
+      /* copy to buffer */
+      pthread_mutex_lock(buffer_mutex);
+      ags_soundcard_lock_buffer(AGS_SOUNDCARD(input_soundcard), data);
+    
+      ags_audio_buffer_util_copy_buffer_to_buffer(buffer->data, 1, 0,
+						  data, audio_channels, input_soundcard_channel,
+						  attack, target_copy_mode);
+
+      ags_soundcard_unlock_buffer(AGS_SOUNDCARD(input_soundcard), data);
+      pthread_mutex_unlock(buffer_mutex);
+
+      g_list_free(list_start);
+    }
+
     if(resample_target){
       g_free(data);
     }
@@ -465,7 +608,7 @@ ags_capture_wave_channel_run_run_pre(AgsRecall *recall)
   }
 
   /* check loop */
-  x_offset += buffer_size;
+  x_offset += frame_count;
   
   g_object_get(capture_wave_audio,
 	       "wave-loop", &port,
@@ -510,7 +653,7 @@ ags_capture_wave_channel_run_run_pre(AgsRecall *recall)
       
       loop_start = g_value_get_uint64(&loop_start_value);
 
-      x_offset = delay * buffer_size * loop_start;
+      x_offset = (relative_offset * floor((delay * buffer_size * loop_start) / relative_offset)) + ((guint64) (delay * buffer_size * loop_start) % relative_offset);
     }
   }
   

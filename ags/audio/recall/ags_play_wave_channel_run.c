@@ -175,6 +175,7 @@ ags_play_wave_channel_run_run_inter(AgsRecall *recall)
   guint buffer_size;
   guint format;
   guint64 x_offset;
+  guint64 relative_offset;
   gdouble delay;
   gboolean do_playback;
   gboolean do_loop;
@@ -319,7 +320,7 @@ ags_play_wave_channel_run_run_inter(AgsRecall *recall)
   }
 
   x_offset = play_wave_channel_run->x_offset;
-
+  
   /* get some fields */
   g_object_get(play_wave_audio_run,
 	       "audio", &audio,
@@ -339,6 +340,8 @@ ags_play_wave_channel_run_run_inter(AgsRecall *recall)
   g_object_get(channel,
 	       "line", &line,
 	       NULL);
+
+  relative_offset = AGS_WAVE_DEFAULT_BUFFER_LENGTH * samplerate;
 
   /* clear */
   if(play_wave_channel_run->audio_signal != NULL){
@@ -426,7 +429,7 @@ ags_play_wave_channel_run_run_inter(AgsRecall *recall)
       
       loop_start = g_value_get_uint64(&loop_start_value);
 
-      x_offset = delay * buffer_size * loop_start;
+      x_offset = (relative_offset * floor((delay * buffer_size * loop_start) / relative_offset)) + ((guint64) (delay * buffer_size * loop_start) % relative_offset);
     }
   }
   
