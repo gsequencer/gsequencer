@@ -1063,7 +1063,7 @@ ags_bulk_member_set_label(AgsBulkMember *bulk_member,
   }
 
 
-  bulk_member->widget_label = label;
+  bulk_member->widget_label = g_strdup(label);
 }
 
 void
