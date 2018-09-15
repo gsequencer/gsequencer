@@ -488,12 +488,15 @@ ags_matrix_resize_pads(AgsMachine *machine, GType type,
       source = ags_channel_nth(source,
 			       pads_old);
 
-      if(source != NULL){
+      while(source != NULL){
 	AgsRecycling *recycling;
 	AgsAudioSignal *audio_signal;
 
 	GObject *output_soundcard;
 
+	ags_channel_set_ability_flags(source, (AGS_SOUND_ABILITY_SEQUENCER |
+						AGS_SOUND_ABILITY_NOTATION));
+	
 	g_object_get(audio,
 		     "output-soundcard", &output_soundcard,
 		     NULL);
@@ -510,6 +513,11 @@ ags_matrix_resize_pads(AgsMachine *machine, GType type,
 	audio_signal->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;
 	ags_recycling_add_audio_signal(recycling,
 				       audio_signal);
+
+	/* iterate */
+	g_object_get(source,
+		     "next", &source,
+		     NULL);
       }
 
       if((AGS_MACHINE_MAPPED_RECALL & (machine->flags)) != 0){

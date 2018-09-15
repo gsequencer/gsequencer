@@ -1039,6 +1039,8 @@ ags_lv2_bridge_resize_audio_channels(AgsMachine *machine,
 		     NULL);
 
 	if(first_recycling != NULL){
+	  ags_channel_set_ability_flags(channel, (AGS_SOUND_ABILITY_NOTATION));
+
 	  /* audio signal */
 	  audio_signal = ags_audio_signal_new(output_soundcard,
 					      (GObject *) first_recycling,
@@ -1166,6 +1168,8 @@ ags_lv2_bridge_resize_pads(AgsMachine *machine, GType channel_type,
 		     NULL);
 
 	if(first_recycling != NULL){
+	  ags_channel_set_ability_flags(channel, (AGS_SOUND_ABILITY_NOTATION));
+
 	  /* audio signal */
 	  audio_signal = ags_audio_signal_new(output_soundcard,
 					      (GObject *) first_recycling,

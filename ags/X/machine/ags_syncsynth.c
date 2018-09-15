@@ -779,6 +779,8 @@ ags_syncsynth_resize_audio_channels(AgsMachine *machine,
   AgsSyncsynth *syncsynth;
 
   AgsAudio *audio;
+  AgsChannel *output;
+  AgsChannel *channel, *next_pad;
 
   guint output_pads, input_pads;
 
@@ -790,9 +792,54 @@ ags_syncsynth_resize_audio_channels(AgsMachine *machine,
   g_object_get(audio,
 	       "output-pads", &output_pads,
 	       "input-pads", &input_pads,
+	       "output", &output,
 	       NULL);
 
   if(audio_channels > audio_channels_old){
+    /* AgsOutput */
+    channel = output;
+
+    while(channel != NULL){
+      /* get some fields */
+      g_object_get(channel,
+		   "next-pad", &next_pad,
+		   NULL);
+
+      channel = ags_channel_pad_nth(channel,
+				    audio_channels_old);
+
+      while(channel != next_pad){
+	AgsRecycling *recycling;
+	AgsAudioSignal *audio_signal;
+
+	GObject *output_soundcard;
+
+	ags_channel_set_ability_flags(channel, (AGS_SOUND_ABILITY_NOTATION));
+		
+	g_object_get(audio,
+		     "output-soundcard", &output_soundcard,
+		     NULL);
+
+	/* get recycling */
+	g_object_get(channel,
+		     "first-recycling", &recycling,
+		     NULL);
+
+	/* instantiate template audio signal */
+	audio_signal = ags_audio_signal_new(output_soundcard,
+					    (GObject *) recycling,
+					    NULL);
+	audio_signal->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;
+	ags_recycling_add_audio_signal(recycling,
+				       audio_signal);
+
+	/* iterate */
+	g_object_get(channel,
+		     "next", &channel,
+		     NULL);
+      }
+    }
+
     if(ags_recall_global_get_rt_safe() ||
        ags_recall_global_get_performance_mode()){
       /* ags-copy */
@@ -941,6 +988,8 @@ ags_syncsynth_resize_pads(AgsMachine *machine, GType type,
 	AgsAudioSignal *audio_signal;
 
 	GObject *output_soundcard;
+	
+	ags_channel_set_ability_flags(source, (AGS_SOUND_ABILITY_NOTATION));
 	
 	g_object_get(audio,
 		     "output-soundcard", &output_soundcard,

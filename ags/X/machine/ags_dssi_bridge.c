@@ -811,6 +811,8 @@ ags_dssi_bridge_resize_audio_channels(AgsMachine *machine,
 				audio_channels_old);
       
       while(channel != next_pad){
+	ags_channel_set_ability_flags(channel, (AGS_SOUND_ABILITY_NOTATION));
+	
 	/* get some fields */
 	g_object_get(channel,
 		     "output-soundcard", &output_soundcard,
@@ -971,6 +973,8 @@ ags_dssi_bridge_resize_pads(AgsMachine *machine, GType type,
 				    pads_old);
 
       while(channel != NULL){
+	ags_channel_set_ability_flags(channel, (AGS_SOUND_ABILITY_NOTATION));
+
 	/* get some fields */
 	g_object_get(channel,
 		     "output-soundcard", &output_soundcard,

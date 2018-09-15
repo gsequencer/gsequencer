@@ -791,19 +791,67 @@ ags_ffplayer_resize_audio_channels(AgsMachine *machine,
 				   guint audio_channels, guint audio_channels_old,
 				   gpointer data)
 {
-  AgsAudio *audio;
+  AgsAudio *audio;  
+  AgsChannel *output;
+  AgsChannel *channel, *next_pad;
   
-  guint input_pads;
+  guint output_pads, input_pads;
 
   audio = machine->audio;
 
   /* get some fields */
   g_object_get(audio,
 	       "input-pads", &input_pads,
+	       "output-pads", &output_pads,
+	       "output", &output,
 	       NULL);
 
   /*  */
   if(audio_channels > audio_channels_old){  
+    /* AgsOutput */
+    channel = output;
+
+    while(channel != NULL){
+      /* get some fields */
+      g_object_get(channel,
+		   "next-pad", &next_pad,
+		   NULL);
+
+      channel = ags_channel_pad_nth(channel,
+				    audio_channels_old);
+
+      while(channel != next_pad){
+	AgsRecycling *recycling;
+	AgsAudioSignal *audio_signal;
+
+	GObject *output_soundcard;
+
+	ags_channel_set_ability_flags(channel, (AGS_SOUND_ABILITY_NOTATION));
+		
+	g_object_get(audio,
+		     "output-soundcard", &output_soundcard,
+		     NULL);
+
+	/* get recycling */
+	g_object_get(channel,
+		     "first-recycling", &recycling,
+		     NULL);
+
+	/* instantiate template audio signal */
+	audio_signal = ags_audio_signal_new(output_soundcard,
+					    (GObject *) recycling,
+					    NULL);
+	audio_signal->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;
+	ags_recycling_add_audio_signal(recycling,
+				       audio_signal);
+
+	/* iterate */
+	g_object_get(channel,
+		     "next", &channel,
+		     NULL);
+      }
+    }
+
     if(ags_recall_global_get_rt_safe() ||
        ags_recall_global_get_performance_mode()){
       /* ags-copy */
@@ -903,6 +951,8 @@ ags_ffplayer_resize_pads(AgsMachine *machine, GType channel_type,
   AgsFFPlayer *ffplayer;
 
   AgsAudio *audio;
+  AgsChannel *output;
+  AgsChannel *channel;
 
   guint output_pads, input_pads;
   gboolean grow;
@@ -919,6 +969,7 @@ ags_ffplayer_resize_pads(AgsMachine *machine, GType channel_type,
   g_object_get(audio,
 	       "output-pads", &output_pads,
 	       "input-pads", &input_pads,
+	       "output", &output,
 	       NULL);
 
   /* check grow */
@@ -937,6 +988,19 @@ ags_ffplayer_resize_pads(AgsMachine *machine, GType channel_type,
     }
   }else if(channel_type == AGS_TYPE_OUTPUT){
     if(grow){
+      /* AgsOutput */
+      channel = ags_channel_pad_nth(output,
+				    pads_old);
+
+      while(channel != NULL){
+	ags_channel_set_ability_flags(channel, (AGS_SOUND_ABILITY_NOTATION));
+
+	/* iterate */
+	g_object_get(channel,
+		     "next", &channel,
+		     NULL);
+      }
+
       /* depending on destination */
       ags_ffplayer_output_map_recall(ffplayer, pads_old);
     }else{

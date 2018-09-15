@@ -1374,8 +1374,8 @@ ags_jack_server_register_soundcard(AgsSoundServer *sound_server,
 			    n_soundcards,
 			    i);
       
-      g_message("%s %x", str, default_client);
 #ifdef AGS_DEBUG
+      g_message("%s %x", str, default_client);
 #endif
       
       jack_port = ags_jack_port_new((GObject *) default_client);
@@ -1450,8 +1450,8 @@ ags_jack_server_register_soundcard(AgsSoundServer *sound_server,
 			    n_soundcards,
 			    i);
       
-      g_message("%s %x", str, default_client);
 #ifdef AGS_DEBUG
+      g_message("%s %x", str, default_client);
 #endif
       
       jack_port = ags_jack_port_new((GObject *) default_client);
