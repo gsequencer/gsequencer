@@ -327,7 +327,7 @@ ags_capture_wave_channel_run_run_pre(AgsRecall *recall)
 
     create_wave = FALSE;
     
-    if(x_offset + frame_count >= relative_offset * floor(x_offset / relative_offset) + relative_offset){
+    if(x_offset + frame_count == relative_offset * floor(x_offset / relative_offset) + relative_offset){
       frame_count = relative_offset * floor(x_offset / relative_offset) + relative_offset - x_offset;
       
       create_wave = TRUE;
