@@ -1611,15 +1611,16 @@ ags_jack_devin_set_device(AgsSoundcard *soundcard,
   jack_devin->card_uri = g_strdup(device);
 
   /* apply name to port */
+  pthread_mutex_unlock(jack_devin_mutex);
+  
+#if 0
   pcm_channels = jack_devin->pcm_channels;
   
   jack_port_start = 
     jack_port = g_list_copy(jack_devin->jack_port);
-
-  pthread_mutex_unlock(jack_devin_mutex);
   
-  for(i = 0; i < pcm_channels; i++){
-    str = g_strdup_printf("ags-soundcard%d-%04d",
+  for(i = 0; i < pcm_channels && jack_port != NULL; i++){
+    str = g_strdup_printf("ags%d-%04d",
 			  nth_card,
 			  i);
     
@@ -1632,6 +1633,7 @@ ags_jack_devin_set_device(AgsSoundcard *soundcard,
   }
 
   g_list_free(jack_port_start);
+#endif
 }
 
 gchar*
@@ -3313,7 +3315,7 @@ ags_jack_devin_realloc_buffer(AgsJackDevin *jack_devin)
     pthread_mutex_unlock(jack_devin_mutex);
     
     for(i = port_count; i < pcm_channels; i++){
-      str = g_strdup_printf("ags-soundcard%d-%04d",
+      str = g_strdup_printf("ags%d-%04d",
 			    nth_soundcard,
 			    i);
       
@@ -3340,7 +3342,7 @@ ags_jack_devin_realloc_buffer(AgsJackDevin *jack_devin)
       ags_jack_port_register(jack_port,
 			     str,
 			     TRUE, FALSE,
-			     TRUE);
+			     FALSE);
     }
 
     jack_devin->port_name[jack_devin->pcm_channels] = NULL;    

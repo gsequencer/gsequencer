@@ -298,7 +298,7 @@ ags_jack_port_set_property(GObject *gobject,
       if(jack_port->port != NULL){
 	jack_port_set_name(jack_port->port,
 			   port_name);
-      }
+      }      
 #endif
 
       pthread_mutex_unlock(jack_port_mutex);

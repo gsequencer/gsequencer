@@ -557,7 +557,7 @@ ags_pulse_server_get_property(GObject *gobject,
     {
       pthread_mutex_lock(pulse_server_mutex);
 
-      g_value_set_object(value, pulse_server->default_soundcard);
+      g_value_set_object(value, pulse_server->default_client);
 
       pthread_mutex_unlock(pulse_server_mutex);
     }

@@ -1,6 +1,14 @@
 ags (2.0.6)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed some properties of AgsJackServer and AgsJackClient
+	* fixed some properties of AgsPulseServer and AgsJackClient
+	* fixed some properties of AgsCoreAudioServer
+	* work-around for jack_port_set_name() resulting conflict as ags_soundcard_set_device()
+
+ags (2.0.6)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* fixed not thread-safe access to recall in ags_lv2_bridge.c
 	* fixed freed not duplicated string
 	* fixed double free in ags_bulk_member_finalize()

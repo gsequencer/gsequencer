@@ -549,7 +549,7 @@ ags_jack_server_get_property(GObject *gobject,
     {
       pthread_mutex_lock(jack_server_mutex);
 
-      g_value_set_object(value, jack_server->default_soundcard);
+      g_value_set_object(value, jack_server->default_client);
 
       pthread_mutex_unlock(jack_server_mutex);
     }
@@ -1370,12 +1370,12 @@ ags_jack_server_register_soundcard(AgsSoundServer *sound_server,
     
     /* register ports */
     for(i = 0; i < jack_devout->pcm_channels; i++){
-      str = g_strdup_printf("ags-soundcard%d-%04d",
+      str = g_strdup_printf("ags%d-%04d",
 			    n_soundcards,
 			    i);
       
+      g_message("%s %x", str, default_client);
 #ifdef AGS_DEBUG
-      g_message("%s", str);
 #endif
       
       jack_port = ags_jack_port_new((GObject *) default_client);
@@ -1446,12 +1446,12 @@ ags_jack_server_register_soundcard(AgsSoundServer *sound_server,
     
     /* register ports */
     for(i = 0; i < jack_devin->pcm_channels; i++){
-      str = g_strdup_printf("ags-soundcard%d-%04d",
+      str = g_strdup_printf("ags%d-%04d",
 			    n_soundcards,
 			    i);
       
+      g_message("%s %x", str, default_client);
 #ifdef AGS_DEBUG
-      g_message("%s", str);
 #endif
       
       jack_port = ags_jack_port_new((GObject *) default_client);
@@ -2251,7 +2251,7 @@ ags_jack_server_connect_client(AgsJackServer *jack_server)
 
     /* open */
     ags_jack_client_open((AgsJackClient *) client->data,
-			 client_name);
+    			 client_name);
     ags_jack_client_activate(client->data);
 
     g_free(client_name);

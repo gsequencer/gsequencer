@@ -1578,7 +1578,7 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
 			       str);
       g_free(str);
     }
-
+    
     /* presets */
     pcm_channels = AGS_SOUNDCARD_DEFAULT_PCM_CHANNELS;
     buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
@@ -1595,7 +1595,6 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
 				      10);
       g_free(str);
     }
-
 
     str = ags_config_get_value(config,
 			       soundcard_group,
