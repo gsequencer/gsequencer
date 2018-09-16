@@ -200,6 +200,8 @@ ags_lv2_urid_manager_insert(AgsLv2UridManager *lv2_urid_manager,
   g_hash_table_insert(lv2_urid_manager->urid,
 		      uri, id);
 
+  pthread_mutex_unlock(lv2_urid_manager_mutex);
+
   return(TRUE);
 }
 
@@ -276,6 +278,8 @@ ags_lv2_urid_manager_lookup(AgsLv2UridManager *lv2_urid_manager,
 
   value = (GValue *) g_hash_table_lookup(lv2_urid_manager->urid,
 					 uri);
+  
+  pthread_mutex_unlock(lv2_urid_manager_mutex);
 
   if(value == NULL){
     g_message("new uri %s", uri);

@@ -581,6 +581,13 @@ ags_recall_lv2_set_ports(AgsPlugin *plugin, GList *port)
   g_free(filename);
   g_free(effect);
 
+  /* set port */
+  pthread_mutex_lock(recall_mutex);
+
+  recall_lv2->plugin = lv2_plugin;
+
+  pthread_mutex_unlock(recall_mutex);
+  
   /* get base plugin mutex */
   pthread_mutex_lock(ags_base_plugin_get_class_mutex());
   
@@ -1021,6 +1028,13 @@ ags_recall_lv2_load_ports(AgsRecallLv2 *recall_lv2)
   g_free(filename);
   g_free(effect);
   
+  /* set lv2 plugin */
+  pthread_mutex_lock(recall_mutex);
+
+  recall_lv2->plugin = lv2_plugin;
+
+  pthread_mutex_unlock(recall_mutex);
+
   /* get base plugin mutex */
   pthread_mutex_lock(ags_base_plugin_get_class_mutex());
   

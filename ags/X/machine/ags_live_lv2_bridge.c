@@ -1277,7 +1277,7 @@ ags_live_lv2_bridge_map_recall(AgsMachine *machine)
 
   if(play != NULL){
     recall_record_midi_audio_run = AGS_RECORD_MIDI_AUDIO_RUN(play->data);
-    
+   
     /* set dependency */
     g_object_set(G_OBJECT(recall_record_midi_audio_run),
 		 "delay-audio-run", play_delay_audio_run,

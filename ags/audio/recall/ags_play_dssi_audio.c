@@ -545,9 +545,10 @@ ags_play_dssi_audio_load(AgsPlayDssiAudio *play_dssi_audio)
   /* get some fields */
   g_object_get(play_dssi_audio,
 	       "effect-index", &effect_index,
-	       "plugin", &dssi_plugin,
 	       NULL);
 
+  play_dssi_audio->plugin = dssi_plugin;
+  
   g_object_get(dssi_plugin,
 	       "plugin-so", &plugin_so,
 	       NULL);
@@ -558,6 +559,8 @@ ags_play_dssi_audio_load(AgsPlayDssiAudio *play_dssi_audio)
 						       "dssi_descriptor");
 
     if(dlerror() == NULL && dssi_descriptor){
+      g_message("suces");
+      
       pthread_mutex_lock(recall_mutex);
       
       play_dssi_audio->plugin_descriptor = 
@@ -654,7 +657,7 @@ ags_play_dssi_audio_load_ports(AgsPlayDssiAudio *play_dssi_audio)
       if(ags_plugin_port_test_flags(plugin_port->data, AGS_PLUGIN_PORT_CONTROL)){
 	gchar *specifier;
 
-	GValue value = {0,};
+	GValue *value;
 	
 	pthread_mutex_t *plugin_port_mutex;
 
@@ -711,11 +714,11 @@ ags_play_dssi_audio_load_ports(AgsPlayDssiAudio *play_dssi_audio)
 					    (GObject *) current,
 					    (GObject *) plugin_port->data);
 
-	g_object_get_property(plugin_port->data,
-			      "default-value",
-			      &value);
+	g_object_get(plugin_port->data,
+		     "default-value", &value,
+		     NULL);
 	
-	current->port_value.ags_port_ladspa = g_value_get_float(&value);
+	current->port_value.ags_port_ladspa = g_value_get_float(value);
 	//	g_message("connecting port: %d/%d %f", i, port_count, current->port_value.ags_port_float);
 
 	start_port = g_list_prepend(start_port,

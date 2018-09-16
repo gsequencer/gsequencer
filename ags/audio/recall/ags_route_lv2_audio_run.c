@@ -964,6 +964,10 @@ ags_route_lv2_audio_run_feed_midi(AgsRecall *recall,
 	}
 
 	g_object_get(generic_channel_recall->data,
+		     "recall-channel", &recall_lv2,
+		     NULL);
+	
+	g_object_get(generic_channel_recall->data,
 		     "child", &start_generic_recycling_recall,
 		     NULL);
 
@@ -1007,12 +1011,12 @@ ags_route_lv2_audio_run_feed_midi(AgsRecall *recall,
 	      g_object_ref(note);
 		
 	      /* write to port */
-	      if((AGS_RECALL_LV2_HAS_ATOM_PORT & (recall_lv2->flags)) != 0){
+	      if(ags_recall_lv2_test_flags(recall_lv2, AGS_RECALL_LV2_HAS_ATOM_PORT)){
 		ags_lv2_plugin_atom_sequence_append_midi(recall_lv2_run->atom_port,
 							 AGS_RECALL_LV2_DEFAULT_MIDI_LENGHT,
 							 seq_event,
 							 1);
-	      }else if((AGS_RECALL_LV2_HAS_EVENT_PORT & (recall_lv2->flags)) != 0){
+	      }else if(ags_recall_lv2_test_flags(recall_lv2, AGS_RECALL_LV2_HAS_EVENT_PORT)){
 		ags_lv2_plugin_event_buffer_append_midi(recall_lv2_run->event_port,
 							AGS_RECALL_LV2_DEFAULT_MIDI_LENGHT,
 							seq_event,
@@ -1090,11 +1094,13 @@ ags_route_lv2_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_run,
 		   "x0", &note_x0,
 		   "y", &note_y,
 		   NULL);
-    
+
+#if 0
       g_message("--- %f %f ; %d %d",
 		current_note->stream_delay, delay,
 		note_x0, route_lv2_audio_run->count_beats_audio_run->notation_counter);
-
+#endif
+      
       //FIXME:JK: should consider delay
       if(note_y >= audio_start_mapping &&
 	 note_y < audio_end_mapping &&

@@ -1042,7 +1042,7 @@ ags_play_lv2_audio_load_ports(AgsPlayLv2Audio *play_lv2_audio)
     for(i = 0; i < port_count; i++){
       gchar *specifier;
 
-      GValue value = {0,};
+      GValue *value;
 	
       pthread_mutex_t *plugin_port_mutex;
 
@@ -1123,11 +1123,11 @@ ags_play_lv2_audio_load_ports(AgsPlayLv2Audio *play_lv2_audio)
 					   (GObject *) current,
 					   (GObject *) plugin_port->data);
 
-	g_object_get_property(plugin_port->data,
-			      "default-value",
-			      &value);
+	g_object_get(plugin_port->data,
+		     "default-value", &value,
+		      NULL);
 
-	current->port_value.ags_port_ladspa = g_value_get_float(&value);
+	current->port_value.ags_port_ladspa = g_value_get_float(value);
 
 #ifdef AGS_DEBUG
 	g_message("connecting port: %s %d/%d", specifier, i, port_count);
