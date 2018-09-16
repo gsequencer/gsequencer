@@ -327,10 +327,12 @@ ags_capture_wave_channel_run_run_pre(AgsRecall *recall)
 
     create_wave = FALSE;
     
-    if(x_offset + frame_count == relative_offset * floor(x_offset / relative_offset) + relative_offset){
+    if(x_offset + frame_count > relative_offset * floor(x_offset / relative_offset) + relative_offset){
       frame_count = relative_offset * floor(x_offset / relative_offset) + relative_offset - x_offset;
       
       create_wave = TRUE;
+    }else{
+      frame_count = (x_offset % relative_offset) % target_buffer_size;
     }
 
     attack = target_buffer_size - frame_count;
@@ -453,40 +455,42 @@ ags_capture_wave_channel_run_run_pre(AgsRecall *recall)
     g_list_free(list_start);
     
     /* 2nd attempt */
-    if(attack != 0){
-      pthread_mutex_lock(audio_mutex);
+    pthread_mutex_lock(audio_mutex);
 
-      list_start = g_list_copy(audio->wave);
+    list_start = g_list_copy(audio->wave);
     
-      pthread_mutex_unlock(audio_mutex);
+    pthread_mutex_unlock(audio_mutex);
 
-      if(create_wave){
-	ags_timestamp_set_ags_offset(timestamp,
+    if(create_wave){
+      ags_timestamp_set_ags_offset(timestamp,
+				   relative_offset * floor((x_offset + frame_count) / relative_offset));
+
+      /* play */
+      list = ags_wave_find_near_timestamp(list_start, line,
+					  timestamp);
+
+      if(list != NULL){
+	wave = list->data;
+      }else{
+	AgsTimestamp *current_timestamp;
+	  
+	wave = ags_wave_new(audio,
+			    line);
+
+	g_object_get(wave,
+		     "timestamp", &current_timestamp,
+		     NULL);
+	ags_timestamp_set_ags_offset(current_timestamp,
 				     relative_offset * floor((x_offset + frame_count) / relative_offset));
 
-	/* play */
-	list = ags_wave_find_near_timestamp(list_start, line,
-					    timestamp);
-
-	if(list != NULL){
-	  wave = list->data;
-	}else{
-	  AgsTimestamp *current_timestamp;
-	  
-	  wave = ags_wave_new(audio,
-			      line);
-
-	  g_object_get(wave,
-		       "timestamp", &current_timestamp,
-		       NULL);
-	  ags_timestamp_set_ags_offset(current_timestamp,
-				       relative_offset * floor((x_offset + frame_count) / relative_offset));
-
-	  ags_audio_add_wave(audio,
-			     wave);
-	}
+	ags_audio_add_wave(audio,
+			   wave);
       }
+    }
+
+    g_list_free(list_start);
     
+    if(attack != 0){    
       buffer = ags_wave_find_point(wave,
 				   x_offset + frame_count,
 				   FALSE);
@@ -531,8 +535,6 @@ ags_capture_wave_channel_run_run_pre(AgsRecall *recall)
 
       ags_soundcard_unlock_buffer(AGS_SOUNDCARD(input_soundcard), data);
       pthread_mutex_unlock(buffer_mutex);
-
-      g_list_free(list_start);
     }
 
     if(resample_target){
@@ -608,7 +610,7 @@ ags_capture_wave_channel_run_run_pre(AgsRecall *recall)
   }
 
   /* check loop */
-  x_offset += frame_count;
+  x_offset += target_buffer_size;
   
   g_object_get(capture_wave_audio,
 	       "wave-loop", &port,

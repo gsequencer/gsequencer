@@ -1,3 +1,10 @@
+ags (2.0.9)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* reverted previously introduced but in ags-capture-wave
+	* fixed ags-play-wave wrong offset calculation
+	* fixed output/input soundcard editor to reset audio channel to -1 if no soundcard
+
 ags (2.0.8)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

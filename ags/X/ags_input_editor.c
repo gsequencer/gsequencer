@@ -374,15 +374,20 @@ ags_input_editor_check(AgsInputEditor *input_editor)
 		       1, &input_soundcard,
 		       -1);
 
-    ags_soundcard_get_presets(AGS_SOUNDCARD(input_soundcard),
- 			      &audio_channels,
-			      NULL,
-			      NULL,
-			      NULL);
+    if(input_soundcard != NULL){
+      ags_soundcard_get_presets(AGS_SOUNDCARD(input_soundcard),
+				&audio_channels,
+				NULL,
+				NULL,
+				NULL);
 
-    gtk_spin_button_set_range(input_editor->audio_channel,
-			      0.0,
-			      audio_channels - 1.0);
+      gtk_spin_button_set_range(input_editor->audio_channel,
+				0.0,
+				audio_channels - 1.0);
+    }else{
+      gtk_spin_button_set_range(input_editor->audio_channel,
+				-1.0, -1.0);
+    }
   }else{
     gtk_spin_button_set_range(input_editor->audio_channel,
 			      -1.0, -1.0);
