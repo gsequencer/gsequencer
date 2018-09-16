@@ -1837,8 +1837,9 @@ ags_automation_edit_draw_acceleration(AgsAutomationEdit *automation_edit,
   gdouble y_upper;
   double zoom, zoom_factor;
   double viewport_x, viewport_y;
-  double x, y;
-  double a_x, b_x, a_y, b_y;
+  guint x, y;
+  guint a_x, b_x;
+  gdouble a_y, b_y;
   double width, height;
   
   static const gdouble white_gc = 65535.0;
@@ -1883,7 +1884,7 @@ ags_automation_edit_draw_acceleration(AgsAutomationEdit *automation_edit,
 	       "x", &a_x,
 	       "y", &a_y,
 	       NULL);
-  
+ 
   x = ((double) a_x) - viewport_x;
 
   if((AGS_AUTOMATION_EDIT_LOGARITHMIC & (automation_edit->flags)) != 0){
@@ -1901,7 +1902,7 @@ ags_automation_edit_draw_acceleration(AgsAutomationEdit *automation_edit,
   }else{
     width = 1.0;
   }
-  
+
   height = GTK_WIDGET(automation_edit->drawing_area)->allocation.height - y;
 
   /* apply zoom */

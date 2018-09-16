@@ -739,7 +739,10 @@ ags_automation_toolbar_apply_port(AgsAutomationToolbar *automation_toolbar,
   GtkTreeModel *model;
   GtkTreeIter iter;
 
+  AgsChannel *channel;
+
   GList *start_automation, *automation;
+  GList *start_port, *port;
   
   guint length;
   gboolean contains_specifier;
@@ -775,12 +778,98 @@ ags_automation_toolbar_apply_port(AgsAutomationToolbar *automation_toolbar,
     if(!g_ascii_strcasecmp("audio",
 			   str)){
       scope = G_TYPE_NONE;
+
+      port = ags_audio_collect_all_audio_ports_by_specifier_and_context(machine->audio,
+									control_name,
+									TRUE);
+      start_port = port;
+      
+      port = ags_audio_collect_all_audio_ports_by_specifier_and_context(machine->audio,
+									control_name,
+									FALSE);
+
+      if(start_port != NULL){
+	start_port = g_list_concat(start_port,
+				   port);
+      }else{
+	start_port = port;
+      }
+
+      port = start_port;
     }else if(!g_ascii_strcasecmp("output",
 				 str)){
       scope = AGS_TYPE_OUTPUT;
+
+      g_object_get(machine->audio,
+		   "output", &channel,
+		   NULL);
+
+      start_port = NULL;
+      
+      while(channel != NULL){
+	port = ags_channel_collect_all_channel_ports_by_specifier_and_context(channel,
+									      control_name,
+									      TRUE);
+	if(start_port != NULL){
+	  start_port = g_list_concat(start_port,
+				     port);
+	}else{
+	  start_port = port;
+	}
+      
+	port = ags_channel_collect_all_channel_ports_by_specifier_and_context(channel,
+									      control_name,
+									      FALSE);
+
+	if(start_port != NULL){
+	  start_port = g_list_concat(start_port,
+				     port);
+	}else{
+	  start_port = port;
+	}
+
+	/* iterate */
+	g_object_get(channel,
+		     "next", &channel,
+		     NULL);
+      }
     }else if(!g_ascii_strcasecmp("input",
 				 str)){
       scope = AGS_TYPE_INPUT;
+
+      g_object_get(machine->audio,
+		   "input", &channel,
+		   NULL);
+
+      start_port = NULL;
+      
+      while(channel != NULL){
+	port = ags_channel_collect_all_channel_ports_by_specifier_and_context(channel,
+									      control_name,
+									      TRUE);
+	if(start_port != NULL){
+	  start_port = g_list_concat(start_port,
+				     port);
+	}else{
+	  start_port = port;
+	}
+      
+	port = ags_channel_collect_all_channel_ports_by_specifier_and_context(channel,
+									      control_name,
+									      FALSE);
+
+	if(start_port != NULL){
+	  start_port = g_list_concat(start_port,
+				     port);
+	}else{
+	  start_port = port;
+	}
+
+	/* iterate */
+	g_object_get(channel,
+		     "next", &channel,
+		     NULL);
+      }
     }
 
     if(scope == channel_type &&
@@ -823,117 +912,117 @@ ags_automation_toolbar_apply_port(AgsAutomationToolbar *automation_toolbar,
   if(contains_specifier){
     AgsAutomationEdit *automation_edit;
     AgsScale *scale;
+
+    AgsPluginPort *plugin_port;
+
+    gchar *specifier;
+
+    gdouble upper, lower;
+    gdouble default_value;
+
+    GValue *upper_value, *lower_value;
+    GValue *value;
     
-    gboolean create_audio_automation_edit;
-    gboolean create_output_automation_edit;
-    gboolean create_input_automation_edit;
+    /* scale */
+    scale = ags_scale_new();
 
-    /* audio */
-    create_audio_automation_edit = ((automation = ags_automation_find_specifier_with_type_and_line(start_automation,
-												   control_name,
-												   channel_type,
-												   0)) != NULL) ? TRUE: FALSE;
+    /* get some fields */
+    plugin_port = NULL;
+    
+    if(start_port != NULL){
+      g_object_get(start_port->data,
+		   "plugin-port", &plugin_port,
+		   NULL);      
+    }
 
-    if(create_audio_automation_edit){
-      gchar *specifier;
-
-      gdouble upper, lower;
-      gdouble default_value;
-      
-      pthread_mutex_t *automation_mutex;
-      
-      /* scale */
-      scale = ags_scale_new();
-
-      /* get automation mutex */
-      pthread_mutex_lock(ags_automation_get_class_mutex());
-
-      automation_mutex = AGS_AUTOMATION(automation->data)->obj_mutex;
-      
-      pthread_mutex_unlock(ags_automation_get_class_mutex());
-
-      /* get some fields */
-      g_object_get(automation->data,
-		   "upper", &upper,
-		   "lower", &lower,
-		   "default-value", &default_value,
+    if(plugin_port != NULL){
+      g_object_get(plugin_port,
+		   "upper-value", &upper_value,
+		   "lower-value", &lower_value,
+		   "default-value", &value,
 		   NULL);
 
-      pthread_mutex_lock(automation_mutex);
-      
-      specifier = g_strdup(AGS_AUTOMATION(automation->data)->control_name);
-      
-      pthread_mutex_unlock(automation_mutex);
+      upper = g_value_get_float(upper_value);
+      lower = g_value_get_float(lower_value);
 
-      /* apply scale */
-      g_object_set(scale,
-		   "control-name", specifier,
-		   "upper", upper,
-		   "lower", lower,
-		   "default-value", default_value,
-		   NULL);
-
-      if(channel_type == G_TYPE_NONE){
-	gtk_box_pack_start(automation_editor->audio_scrolled_scale_box->scale_box,
-			   scale,
-			   FALSE, FALSE,
-			   AGS_AUTOMATION_EDIT_DEFAULT_PADDING);
-      }else if(channel_type == AGS_TYPE_OUTPUT){
-	gtk_box_pack_start(automation_editor->output_scrolled_scale_box->scale_box,
-			   scale,
-			   FALSE, FALSE,
-			   AGS_AUTOMATION_EDIT_DEFAULT_PADDING);
-      }else if(channel_type == AGS_TYPE_INPUT){
-	gtk_box_pack_start(automation_editor->input_scrolled_scale_box->scale_box,
-			   scale,
-			   FALSE, FALSE,
-			   AGS_AUTOMATION_EDIT_DEFAULT_PADDING);
-      }
+      default_value = g_value_get_float(value);
+    }else{
+      upper = 1.0;
+      lower = 0.0;
       
-      gtk_widget_show(scale);
+      default_value = 1.0;
+    }    
+      
+    specifier = g_strdup(control_name);
+
+    /* apply scale */
+    g_object_set(scale,
+		 "control-name", specifier,
+		 "upper", upper,
+		 "lower", lower,
+		 "default-value", default_value,
+		 NULL);
+
+    if(channel_type == G_TYPE_NONE){
+      gtk_box_pack_start(automation_editor->audio_scrolled_scale_box->scale_box,
+			 scale,
+			 FALSE, FALSE,
+			 AGS_AUTOMATION_EDIT_DEFAULT_PADDING);
+    }else if(channel_type == AGS_TYPE_OUTPUT){
+      gtk_box_pack_start(automation_editor->output_scrolled_scale_box->scale_box,
+			 scale,
+			 FALSE, FALSE,
+			 AGS_AUTOMATION_EDIT_DEFAULT_PADDING);
+    }else if(channel_type == AGS_TYPE_INPUT){
+      gtk_box_pack_start(automation_editor->input_scrolled_scale_box->scale_box,
+			 scale,
+			 FALSE, FALSE,
+			 AGS_AUTOMATION_EDIT_DEFAULT_PADDING);
+    }
+      
+    gtk_widget_show(scale);
 	  
-      /* automation edit */
-      automation_edit = ags_automation_edit_new();
+    /* automation edit */
+    automation_edit = ags_automation_edit_new();
 
-      g_object_set(automation_edit,
-		   "channel-type", channel_type,
-		   "control-specifier", specifier,
-		   "control-name", control_name,
-		   "upper", upper,
-		   "lower", lower,
-		   "default-value", default_value,
-		   NULL);
+    g_object_set(automation_edit,
+		 "channel-type", channel_type,
+		 "control-specifier", specifier,
+		 "control-name", control_name,
+		 "upper", upper,
+		 "lower", lower,
+		 "default-value", default_value,
+		 NULL);
 
-      if(channel_type == G_TYPE_NONE){
-	gtk_box_pack_start(automation_editor->audio_scrolled_automation_edit_box->automation_edit_box,
-			   automation_edit,
-			   FALSE, FALSE,
-			   AGS_AUTOMATION_EDIT_DEFAULT_PADDING);
-      }else if(channel_type == AGS_TYPE_OUTPUT){
-	gtk_box_pack_start(automation_editor->output_scrolled_automation_edit_box->automation_edit_box,
-			   automation_edit,
-			   FALSE, FALSE,
-			   AGS_AUTOMATION_EDIT_DEFAULT_PADDING);
-      }else if(channel_type == AGS_TYPE_INPUT){
-	gtk_box_pack_start(automation_editor->input_scrolled_automation_edit_box->automation_edit_box,
-			   automation_edit,
-			   FALSE, FALSE,
-			   AGS_AUTOMATION_EDIT_DEFAULT_PADDING);
-      }
+    if(channel_type == G_TYPE_NONE){
+      gtk_box_pack_start(automation_editor->audio_scrolled_automation_edit_box->automation_edit_box,
+			 automation_edit,
+			 FALSE, FALSE,
+			 AGS_AUTOMATION_EDIT_DEFAULT_PADDING);
+    }else if(channel_type == AGS_TYPE_OUTPUT){
+      gtk_box_pack_start(automation_editor->output_scrolled_automation_edit_box->automation_edit_box,
+			 automation_edit,
+			 FALSE, FALSE,
+			 AGS_AUTOMATION_EDIT_DEFAULT_PADDING);
+    }else if(channel_type == AGS_TYPE_INPUT){
+      gtk_box_pack_start(automation_editor->input_scrolled_automation_edit_box->automation_edit_box,
+			 automation_edit,
+			 FALSE, FALSE,
+			 AGS_AUTOMATION_EDIT_DEFAULT_PADDING);
+    }
       
-      ags_connectable_connect(AGS_CONNECTABLE(automation_edit));
-      gtk_widget_show(automation_edit);    
+    ags_connectable_connect(AGS_CONNECTABLE(automation_edit));
+    gtk_widget_show(automation_edit);    
 
-      if(channel_type == G_TYPE_NONE){
-	g_signal_connect_after((GObject *) automation_edit->hscrollbar, "value-changed",
-			       G_CALLBACK(ags_automation_editor_audio_automation_edit_hscrollbar_value_changed), (gpointer) automation_editor);
-      }else if(channel_type == AGS_TYPE_OUTPUT){
-	g_signal_connect_after((GObject *) automation_edit->hscrollbar, "value-changed",
-			       G_CALLBACK(ags_automation_editor_output_automation_edit_hscrollbar_value_changed), (gpointer) automation_editor);
-      }else if(channel_type == AGS_TYPE_INPUT){
-	g_signal_connect_after((GObject *) automation_edit->hscrollbar, "value-changed",
-			       G_CALLBACK(ags_automation_editor_input_automation_edit_hscrollbar_value_changed), (gpointer) automation_editor);
-      }
+    if(channel_type == G_TYPE_NONE){
+      g_signal_connect_after((GObject *) automation_edit->hscrollbar, "value-changed",
+			     G_CALLBACK(ags_automation_editor_audio_automation_edit_hscrollbar_value_changed), (gpointer) automation_editor);
+    }else if(channel_type == AGS_TYPE_OUTPUT){
+      g_signal_connect_after((GObject *) automation_edit->hscrollbar, "value-changed",
+			     G_CALLBACK(ags_automation_editor_output_automation_edit_hscrollbar_value_changed), (gpointer) automation_editor);
+    }else if(channel_type == AGS_TYPE_INPUT){
+      g_signal_connect_after((GObject *) automation_edit->hscrollbar, "value-changed",
+			     G_CALLBACK(ags_automation_editor_input_automation_edit_hscrollbar_value_changed), (gpointer) automation_editor);
     }
     
     /* unset bypass */

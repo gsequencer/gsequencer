@@ -385,9 +385,7 @@ ags_automation_toolbar_port_callback(GtkComboBox *combo_box,
   }
 
   if(control_name != NULL &&
-     g_ascii_strncasecmp(control_name,
-			 "",
-			 1)){
+     strlen(control_name) > 0){
     ags_automation_toolbar_apply_port(automation_toolbar,
 				      channel_type, control_name);
   }

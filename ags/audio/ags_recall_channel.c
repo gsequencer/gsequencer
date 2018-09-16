@@ -467,6 +467,7 @@ void
 ags_recall_channel_automate(AgsRecall *recall)
 {
   AgsAudio *audio;
+  AgsChannel *channel;
   
   GObject *soundcard;
 
@@ -482,13 +483,17 @@ ags_recall_channel_automate(AgsRecall *recall)
   double x, step;
   guint ret_x;
   gboolean return_prev_on_failure;
-
+  
   g_object_get(recall,
+	       "source", &channel,
+	       NULL);
+
+  g_object_get(channel,
 	       "audio", &audio,
 	       NULL);
   
   g_object_get(audio,
-	       "soundcard", &soundcard,
+	       "output-soundcard", &soundcard,
 	       NULL);
   
   g_object_get(recall,

@@ -310,7 +310,7 @@ ags_recall_audio_automate(AgsRecall *recall)
 	       NULL);
   
   g_object_get(audio,
-	       "soundcard", &soundcard,
+	       "output-soundcard", &soundcard,
 	       NULL);
   
   g_object_get(recall,

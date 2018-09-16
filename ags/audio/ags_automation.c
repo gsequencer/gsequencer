@@ -328,7 +328,7 @@ ags_automation_init(AgsAutomation *automation)
   pthread_mutex_t *mutex;
   pthread_mutexattr_t *attr;
 
-  automation->flags = AGS_AUTOMATION_BYPASS;
+  automation->flags = 0; // AGS_AUTOMATION_BYPASS
 
   /* add automation mutex */
   automation->obj_mutexattr = 

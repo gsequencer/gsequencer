@@ -6,6 +6,7 @@ ags (2.0.9)
 	* fixed output/input soundcard editor to reset audio channel to -1 if no soundcard
 	* fixed automation editor SIGSEGV due to NULL pointer dereference
 	* fixed missing port in automation editor
+	* fixed all sorts of automation related issues
 
 ags (2.0.8)
 

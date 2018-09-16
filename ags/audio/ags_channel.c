@@ -9644,8 +9644,27 @@ ags_channel_real_play_recall(AgsChannel *channel,
       list_start = g_list_reverse(list_start);
   }
   
-  /* play  */
+  /* automate and play  */
   staging_flags = staging_mask & staging_flags;
+
+  if((AGS_SOUND_STAGING_AUTOMATE & (staging_flags)) != 0){
+    while(list != NULL){
+      recall = AGS_RECALL(list->data);
+    
+      /* play stages */
+      if(AGS_IS_RECALL_CHANNEL(recall)){
+	ags_recall_set_staging_flags(recall,
+				     AGS_SOUND_STAGING_AUTOMATE);
+	ags_recall_unset_staging_flags(recall,
+				       AGS_SOUND_STAGING_AUTOMATE);
+      }
+      
+      list = list->next;
+    }
+  }
+
+  staging_flags &= (~AGS_SOUND_STAGING_AUTOMATE);
+  list = list_start;
   
   while((list = ags_recall_find_recycling_context(list,
 						  (GObject *) recycling_context)) != NULL){
