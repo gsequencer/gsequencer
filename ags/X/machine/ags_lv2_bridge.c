@@ -1243,8 +1243,7 @@ ags_lv2_bridge_map_recall(AgsMachine *machine)
 			      0, 0,
 			      (AGS_RECALL_FACTORY_OUTPUT |
 			       AGS_RECALL_FACTORY_ADD |
-			       AGS_RECALL_FACTORY_PLAY |
-			       AGS_RECALL_FACTORY_RECALL),
+			       AGS_RECALL_FACTORY_PLAY),
 			      0);
 
     g_object_get(audio,
@@ -1271,8 +1270,7 @@ ags_lv2_bridge_map_recall(AgsMachine *machine)
 			      0, 0,
 			      (AGS_RECALL_FACTORY_OUTPUT |
 			       AGS_RECALL_FACTORY_ADD |
-			       AGS_RECALL_FACTORY_PLAY |
-			       AGS_RECALL_FACTORY_RECALL),
+			       AGS_RECALL_FACTORY_PLAY),
 			      0);
   
     g_object_get(audio,
@@ -1306,18 +1304,18 @@ ags_lv2_bridge_map_recall(AgsMachine *machine)
 			      0, 0,
 			      (AGS_RECALL_FACTORY_INPUT |
 			       AGS_RECALL_FACTORY_ADD |
-			       AGS_RECALL_FACTORY_RECALL),
+			       AGS_RECALL_FACTORY_PLAY),
 			      0);
 
     g_object_get(audio,
-		 "recall", &start_recall,
+		 "play", &start_play,
 		 NULL);
 
-    recall = ags_recall_find_type(start_recall,
-				  AGS_TYPE_RECORD_MIDI_AUDIO_RUN);
+    play = ags_recall_find_type(start_play,
+				AGS_TYPE_RECORD_MIDI_AUDIO_RUN);
 
-    if(recall != NULL){
-      recall_record_midi_audio_run = AGS_RECORD_MIDI_AUDIO_RUN(recall->data);
+    if(play != NULL){
+      recall_record_midi_audio_run = AGS_RECORD_MIDI_AUDIO_RUN(play->data);
     
       /* set dependency */
       g_object_set(G_OBJECT(recall_record_midi_audio_run),
@@ -1330,7 +1328,41 @@ ags_lv2_bridge_map_recall(AgsMachine *machine)
 		   NULL);
     }  
 
-    g_list_free(start_recall);
+    g_list_free(start_play);
+
+    /* ags-play-notation */
+    ags_recall_factory_create(audio,
+			      NULL, NULL,
+			      "ags-play-notation",
+			      0, 0,
+			      0, 0,
+			      (AGS_RECALL_FACTORY_INPUT |
+			       AGS_RECALL_FACTORY_ADD |
+			       AGS_RECALL_FACTORY_PLAY),
+			      0);
+    
+    g_object_get(audio,
+		 "play", &start_play,
+		 NULL);
+
+    play = ags_recall_find_type(start_play,
+				AGS_TYPE_PLAY_NOTATION_AUDIO_RUN);
+
+    if(play != NULL){
+      recall_notation_audio_run = AGS_PLAY_NOTATION_AUDIO_RUN(play->data);
+
+      /* set dependency */
+      g_object_set(G_OBJECT(recall_notation_audio_run),
+		   "delay-audio-run", play_delay_audio_run,
+		   NULL);
+
+      /* set dependency */
+      g_object_set(G_OBJECT(recall_notation_audio_run),
+		   "count-beats-audio-run", play_count_beats_audio_run,
+		   NULL);
+    }
+    
+    g_list_free(start_play);
 
     /* ags-route-lv2 */
     ags_recall_factory_create(audio,
@@ -1340,18 +1372,18 @@ ags_lv2_bridge_map_recall(AgsMachine *machine)
 			      0, 0,
 			      (AGS_RECALL_FACTORY_INPUT |
 			       AGS_RECALL_FACTORY_ADD |
-			       AGS_RECALL_FACTORY_RECALL),
+			       AGS_RECALL_FACTORY_PLAY),
 			      0);
     
     g_object_get(audio,
-		 "recall", &start_recall,
+		 "play", &start_play,
 		 NULL);
 
-    recall = ags_recall_find_type(start_recall,
-				  AGS_TYPE_ROUTE_LV2_AUDIO_RUN);
+    play = ags_recall_find_type(start_play,
+				AGS_TYPE_ROUTE_LV2_AUDIO_RUN);
 
-    if(recall != NULL){
-      recall_route_lv2_audio_run = AGS_ROUTE_LV2_AUDIO_RUN(recall->data);
+    if(play != NULL){
+      recall_route_lv2_audio_run = AGS_ROUTE_LV2_AUDIO_RUN(play->data);
 
       /* set dependency */
       g_object_set(G_OBJECT(recall_route_lv2_audio_run),
@@ -1366,41 +1398,7 @@ ags_lv2_bridge_map_recall(AgsMachine *machine)
       recall_route_lv2_audio_run = NULL;
     }
 
-    g_list_free(start_recall);
-
-    /* ags-play-notation */
-    ags_recall_factory_create(audio,
-			      NULL, NULL,
-			      "ags-play-notation",
-			      0, 0,
-			      0, 0,
-			      (AGS_RECALL_FACTORY_INPUT |
-			       AGS_RECALL_FACTORY_ADD |
-			       AGS_RECALL_FACTORY_RECALL),
-			      0);
-    
-    g_object_get(audio,
-		 "recall", &start_recall,
-		 NULL);
-
-    recall = ags_recall_find_type(start_recall,
-				  AGS_TYPE_PLAY_NOTATION_AUDIO_RUN);
-
-    if(recall != NULL){
-      recall_notation_audio_run = AGS_PLAY_NOTATION_AUDIO_RUN(recall->data);
-
-      /* set dependency */
-      g_object_set(G_OBJECT(recall_notation_audio_run),
-		   "delay-audio-run", play_delay_audio_run,
-		   NULL);
-
-      /* set dependency */
-      g_object_set(G_OBJECT(recall_notation_audio_run),
-		   "count-beats-audio-run", play_count_beats_audio_run,
-		   NULL);
-    }
-    
-    g_list_free(start_recall);
+    g_list_free(start_play);
   }
 
   /* depending on destination */

@@ -1204,8 +1204,7 @@ ags_live_lv2_bridge_map_recall(AgsMachine *machine)
 			    0, 0,
 			    (AGS_RECALL_FACTORY_OUTPUT |
 			     AGS_RECALL_FACTORY_ADD |
-			     AGS_RECALL_FACTORY_PLAY |
-			     AGS_RECALL_FACTORY_RECALL),
+			     AGS_RECALL_FACTORY_PLAY),
 			    0);
 
   g_object_get(audio,
@@ -1232,8 +1231,7 @@ ags_live_lv2_bridge_map_recall(AgsMachine *machine)
 			    0, 0,
 			    (AGS_RECALL_FACTORY_OUTPUT |
 			     AGS_RECALL_FACTORY_ADD |
-			     AGS_RECALL_FACTORY_PLAY |
-			     AGS_RECALL_FACTORY_RECALL),
+			     AGS_RECALL_FACTORY_PLAY),
 			    0);
   
   g_object_get(audio,
@@ -1267,18 +1265,18 @@ ags_live_lv2_bridge_map_recall(AgsMachine *machine)
 			    0, 0,
 			    (AGS_RECALL_FACTORY_INPUT |
 			     AGS_RECALL_FACTORY_ADD |
-			     AGS_RECALL_FACTORY_RECALL),
+			     AGS_RECALL_FACTORY_PLAY),
 			    0);
 
   g_object_get(audio,
-	       "recall", &start_recall,
+	       "play", &start_play,
 	       NULL);
 
-  recall = ags_recall_find_type(start_recall,
-				AGS_TYPE_RECORD_MIDI_AUDIO_RUN);
+  play = ags_recall_find_type(start_play,
+			      AGS_TYPE_RECORD_MIDI_AUDIO_RUN);
 
-  if(recall != NULL){
-    recall_record_midi_audio_run = AGS_RECORD_MIDI_AUDIO_RUN(recall->data);
+  if(play != NULL){
+    recall_record_midi_audio_run = AGS_RECORD_MIDI_AUDIO_RUN(play->data);
     
     /* set dependency */
     g_object_set(G_OBJECT(recall_record_midi_audio_run),
@@ -1291,7 +1289,7 @@ ags_live_lv2_bridge_map_recall(AgsMachine *machine)
 		 NULL);
   }  
 
-  g_list_free(start_recall);
+  g_list_free(start_play);
   
   /* ags-play-lv2 */
   ags_recall_factory_create(audio,

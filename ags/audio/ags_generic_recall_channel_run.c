@@ -317,7 +317,7 @@ ags_generic_recall_channel_run_duplicate(AgsRecall *recall,
 
   /* set child type on AgsRecallRecycling */
   g_object_get(copy_generic_recall_channel_run,
-	       "children", &list_start,
+	       "child", &list_start,
 	       NULL);
 
   list = list_start;

@@ -560,7 +560,7 @@ ags_midi_dialog_apply(AgsApplicable *applicable)
 	       "audio-end-mapping", gtk_spin_button_get_value_as_int(midi_dialog->audio_end),
 	       "midi-start-mapping", gtk_spin_button_get_value_as_int(midi_dialog->midi_start),
 	       "midi-end-mapping", gtk_spin_button_get_value_as_int(midi_dialog->midi_end),
-	       "sequencer", sequencer,
+	       "input-sequencer", sequencer,
 	       NULL);
 }
 
@@ -602,7 +602,7 @@ ags_midi_dialog_reset(AgsApplicable *applicable)
 	       "audio-end-mapping", &audio_end,
 	       "midi-start-mapping", &midi_start,
 	       "midi-end-mapping", &midi_end,
-	       "sequencer", &sequencer,
+	       "input-sequencer", &sequencer,
 	       NULL);
   
   /* mapping */

@@ -743,9 +743,11 @@ ags_effect_bridge_real_resize_audio_channels(AgsEffectBridge *effect_bridge,
 					     guint old_size)
 {
   GtkTable *table;
+
   AgsAudio *audio;
   AgsChannel *start, *current;
-  GList *list;
+
+  GList *start_list, *list;
   
   audio = effect_bridge->audio;
 
@@ -755,7 +757,8 @@ ags_effect_bridge_real_resize_audio_channels(AgsEffectBridge *effect_bridge,
   }
 
   /* output */
-  list = gtk_container_get_children((GtkContainer *) effect_bridge->output);
+  list =
+    start_list = gtk_container_get_children((GtkContainer *) effect_bridge->output);
 
   while(list != NULL){
     ags_effect_pad_resize_lines(AGS_EFFECT_PAD(list->data), effect_bridge->output_line_type,
@@ -763,9 +766,12 @@ ags_effect_bridge_real_resize_audio_channels(AgsEffectBridge *effect_bridge,
 
     list = list->next;
   }
+
+  g_list_free(start_list);
   
   /* input */
-  list = gtk_container_get_children((GtkContainer *) effect_bridge->input);
+  list =
+    start_list = gtk_container_get_children((GtkContainer *) effect_bridge->input);
 
   while(list != NULL){
     ags_effect_pad_resize_lines(AGS_EFFECT_PAD(list->data), effect_bridge->input_line_type,
@@ -773,6 +779,8 @@ ags_effect_bridge_real_resize_audio_channels(AgsEffectBridge *effect_bridge,
 
     list = list->next;
   }
+
+  g_list_free(start_list);
 }
 
 /**
@@ -893,7 +901,8 @@ ags_effect_bridge_real_resize_pads(AgsEffectBridge *effect_bridge,
   }else{
     GList *start_list, *list;
 
-    list = NULL;
+    list = 
+      start_list = NULL;
     
     if(channel_type == AGS_TYPE_OUTPUT){
       if(effect_bridge->output != NULL){

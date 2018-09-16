@@ -1,3 +1,10 @@
+ags (2.0.10)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed AgsMidiDialog non existing property use correct one "input-sequencer"
+	* fixed free of unitialized GList in ags_effect_bridge.c
+	* fixed DSSI and LV2 machines to use correct recall context
+
 ags (2.0.9)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
