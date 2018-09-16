@@ -489,10 +489,14 @@ ags_automation_toolbar_load_port(AgsAutomationToolbar *automation_toolbar)
   GtkListStore *list_store;
   GtkTreeIter iter;
 
-  GList *start_automation;
+  AgsChannel *channel;
   
-  gchar **start_specifier, **specifier;
+  GList *start_port, *port;
 
+  gchar **collected_specifier;
+
+  guint length;
+  
   automation_editor = (AgsAutomationEditor *) gtk_widget_get_ancestor((GtkWidget *) automation_toolbar,
 								      AGS_TYPE_AUTOMATION_EDITOR);
   machine = automation_editor->selected_machine;
@@ -511,80 +515,198 @@ ags_automation_toolbar_load_port(AgsAutomationToolbar *automation_toolbar)
   gtk_combo_box_set_model(automation_toolbar->port,
 			  GTK_TREE_MODEL(list_store));
 
-  g_object_get(machine->audio,
-	       "automation", &start_automation,
-	       NULL);
+  collected_specifier = (gchar **) malloc(sizeof(gchar*));
+
+  collected_specifier[0] = NULL;
+  length = 1;
   
-  /* audio */ 
-  specifier =
-    start_specifier = ags_automation_get_specifier_unique_with_channel_type(start_automation,
-									    G_TYPE_NONE);
+  /* audio */
+  port =
+    start_port = ags_audio_collect_all_audio_ports(machine->audio);
 
-  for(; *specifier != NULL; specifier++){
+  while(port != NULL){
+    AgsPluginPort *plugin_port;
+
+    gchar *specifier;
+
     gboolean is_enabled;
+    gboolean contains_control_name;
     
-    gtk_list_store_append(list_store, &iter);
+    g_object_get(port->data,
+		 "specifier", &specifier,
+		 "plugin-port", &plugin_port,
+		 NULL);
 
-    is_enabled = (ags_machine_automation_port_find_channel_type_with_control_name(machine->enabled_automation_port,
-										  G_TYPE_NONE,
-										  *specifier)) ? TRUE: FALSE;
+#ifdef HAVE_GLIB_2_44
+    contains_control_name = g_strv_contains(collected_specifier,
+					    specifier);
+#else
+    contains_control_name = ags_strv_contains(collected_specifier,
+					      specifier);
+#endif
+
+    if(plugin_port != NULL &&
+       !contains_control_name){
+      /* create list store entry */
+      is_enabled = (ags_machine_automation_port_find_channel_type_with_control_name(machine->enabled_automation_port,
+										    G_TYPE_NONE,
+										    specifier)) ? TRUE: FALSE;
+
+      gtk_list_store_append(list_store, &iter);
+      gtk_list_store_set(list_store, &iter,
+			 0, is_enabled,
+			 1, g_strdup("audio"),
+			 2, g_strdup(specifier),
+			 -1);      
+
+      /* add to collected specifier */
+      collected_specifier = (gchar **) realloc(collected_specifier,
+				     (length + 1) * sizeof(gchar *));
+      collected_specifier[length - 1] = g_strdup(specifier);
+      collected_specifier[length] = NULL;
+
+      length++;
+    }
     
-    gtk_list_store_set(list_store, &iter,
-		       0, is_enabled,
-		       1, g_strdup("audio"),
-		       2, g_strdup(*specifier),
-		       -1);
+    /* iterate */
+    port = port->next;
   }
 
-  g_strfreev(start_specifier);
-  
+  g_list_free(start_port);
+    
   /* output */
-  specifier =
-    start_specifier = ags_automation_get_specifier_unique_with_channel_type(start_automation,
-									    AGS_TYPE_OUTPUT);
+  g_object_get(machine->audio,
+	       "output", &channel,
+	       NULL);
 
-  for(; *specifier != NULL; specifier++){
-    gboolean is_enabled;
-    
-    gtk_list_store_append(list_store, &iter);
+  while(channel != NULL){
+    /* output */
+    port =
+      start_port = ags_channel_collect_all_channel_ports(channel);
 
-    is_enabled = (ags_machine_automation_port_find_channel_type_with_control_name(machine->enabled_automation_port,
-										  AGS_TYPE_OUTPUT,
-										  *specifier)) ? TRUE: FALSE;
+    while(port != NULL){
+      AgsPluginPort *plugin_port;
+
+      gchar *specifier;
+
+      gboolean is_enabled;
+      gboolean contains_control_name;
     
-    gtk_list_store_set(list_store, &iter,
-		       0, is_enabled,
-		       1, g_strdup("output"),
-		       2, g_strdup(*specifier),
-		       -1);
+      g_object_get(port->data,
+		   "specifier", &specifier,
+		   "plugin-port", &plugin_port,
+		   NULL);
+
+#ifdef HAVE_GLIB_2_44
+      contains_control_name = g_strv_contains(collected_specifier,
+					      specifier);
+#else
+      contains_control_name = ags_strv_contains(collected_specifier,
+						specifier);
+#endif
+
+      if(plugin_port != NULL &&
+	 !contains_control_name){
+	/* create list store entry */
+	is_enabled = (ags_machine_automation_port_find_channel_type_with_control_name(machine->enabled_automation_port,
+										      AGS_TYPE_OUTPUT,
+										      specifier)) ? TRUE: FALSE;
+    
+	gtk_list_store_append(list_store, &iter);
+	gtk_list_store_set(list_store, &iter,
+			   0, is_enabled,
+			   1, g_strdup("output"),
+			   2, g_strdup(specifier),
+			   -1);      
+
+	/* add to collected specifier */
+	collected_specifier = (gchar **) realloc(collected_specifier,
+						 (length + 1) * sizeof(gchar *));
+	collected_specifier[length - 1] = g_strdup(specifier);
+	collected_specifier[length] = NULL;
+
+	length++;
+      }
+    
+      /* iterate */
+      port = port->next;
+    }
+
+    g_list_free(start_port);
+    
+    /* iterate */
+    g_object_get(channel,
+		 "next", &channel,
+		 NULL);
   }
-
-  g_strfreev(start_specifier);
-
+  
   /* input */
-  specifier =
-    start_specifier = ags_automation_get_specifier_unique_with_channel_type(start_automation,
-									    AGS_TYPE_INPUT);
+  g_object_get(machine->audio,
+	       "input", &channel,
+	       NULL);
 
-  for(; *specifier != NULL; specifier++){
-    gboolean is_enabled;
-    
-    gtk_list_store_append(list_store, &iter);
+  while(channel != NULL){
+    /* input */
+    port =
+      start_port = ags_channel_collect_all_channel_ports(channel);
 
-    is_enabled = (ags_machine_automation_port_find_channel_type_with_control_name(machine->enabled_automation_port,
-										  AGS_TYPE_INPUT,
-										  *specifier)) ? TRUE: FALSE;
+    while(port != NULL){
+      AgsPluginPort *plugin_port;
+
+      gchar *specifier;
+
+      gboolean is_enabled;
+      gboolean contains_control_name;
     
-    gtk_list_store_set(list_store, &iter,
-		       0, is_enabled,
-		       1, g_strdup("input"),
-		       2, g_strdup(*specifier),
-		       -1);
+      g_object_get(port->data,
+		   "specifier", &specifier,
+		   "plugin-port", &plugin_port,
+		   NULL);
+
+#ifdef HAVE_GLIB_2_44
+      contains_control_name = g_strv_contains(collected_specifier,
+					      specifier);
+#else
+      contains_control_name = ags_strv_contains(collected_specifier,
+						specifier);
+#endif
+
+      if(plugin_port != NULL &&
+	 !contains_control_name){
+	/* create list store entry */
+	is_enabled = (ags_machine_automation_port_find_channel_type_with_control_name(machine->enabled_automation_port,
+										      AGS_TYPE_INPUT,
+										      specifier)) ? TRUE: FALSE;
+    
+	gtk_list_store_append(list_store, &iter);
+	gtk_list_store_set(list_store, &iter,
+			   0, is_enabled,
+			   1, g_strdup("input"),
+			   2, g_strdup(specifier),
+			   -1);      
+
+	/* add to collected specifier */
+	collected_specifier = (gchar **) realloc(collected_specifier,
+						 (length + 1) * sizeof(gchar *));
+	collected_specifier[length - 1] = g_strdup(specifier);
+	collected_specifier[length] = NULL;
+
+	length++;
+      }
+    
+      /* iterate */
+      port = port->next;
+    }
+
+    g_list_free(start_port);
+    
+    /* iterate */
+    g_object_get(channel,
+		 "next", &channel,
+		 NULL);
   }
-
-  g_strfreev(start_specifier);
-
-  g_list_free(start_automation);
+  
+  g_strfreev(collected_specifier);
   
   gtk_list_store_append(list_store, &iter);
   gtk_list_store_set(list_store, &iter,
