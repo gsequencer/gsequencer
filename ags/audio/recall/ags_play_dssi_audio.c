@@ -700,7 +700,7 @@ ags_play_dssi_audio_load_ports(AgsPlayDssiAudio *play_dssi_audio)
   dssi_plugin = ags_dssi_manager_find_dssi_plugin(ags_dssi_manager_get_instance(),
 						  filename, effect);
 
-  play_dssi_audio->plugin = dssi_plugin;
+   play_dssi_audio->plugin = dssi_plugin;
 
   /* get plugin port */
   g_object_get(dssi_plugin,

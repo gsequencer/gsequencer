@@ -501,7 +501,10 @@ ags_recall_lv2_run_run_init_pre(AgsRecall *recall)
   
   pthread_mutex_unlock(recall_lv2_mutex);
   
-  /* set up buffer */ 
+  /* set up buffer */
+  input = NULL;
+  output = NULL;
+  
   if(input_lines > 0){
     input = (float *) malloc(input_lines *
 			     buffer_size *
@@ -516,12 +519,8 @@ ags_recall_lv2_run_run_init_pre(AgsRecall *recall)
   recall_lv2_run->input = input;
   
   /* instantiate lv2 */  
-  pthread_mutex_lock(recall_lv2_mutex);
-
   lv2_handle = (LV2_Handle *) ags_base_plugin_instantiate(lv2_plugin,
 							  samplerate, buffer_size);
-
-  pthread_mutex_unlock(recall_lv2_mutex);
 
   recall_lv2_run->lv2_handle = lv2_handle;
   

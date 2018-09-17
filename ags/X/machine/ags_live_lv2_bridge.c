@@ -1684,6 +1684,8 @@ ags_live_lv2_bridge_load(AgsLiveLv2Bridge *live_lv2_bridge)
 	       "plugin-port", &start_plugin_port,
 	       NULL);
 
+  plugin_port = start_plugin_port;
+  
   port_count = g_list_length(start_plugin_port);
   k = 0;
 

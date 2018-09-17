@@ -931,14 +931,15 @@ ags_play_lv2_audio_load(AgsPlayLv2Audio *play_lv2_audio)
   
   /* find AgsLv2Plugin */
   lv2_plugin = ags_lv2_manager_find_lv2_plugin(ags_lv2_manager_get_instance(),
-						  filename, effect);
+					       filename, effect);
 
   /* get some fields */
   g_object_get(play_lv2_audio,
 	       "effect-index", &effect_index,
-	       "plugin", &lv2_plugin,
 	       NULL);
 
+  play_lv2_audio->plugin = lv2_plugin;
+  
   g_object_get(lv2_plugin,
 	       "plugin-so", &plugin_so,
 	       NULL);
@@ -1014,6 +1015,8 @@ ags_play_lv2_audio_load_ports(AgsPlayLv2Audio *play_lv2_audio)
   lv2_plugin = ags_lv2_manager_find_lv2_plugin(ags_lv2_manager_get_instance(),
 						  filename, effect);
 
+  play_lv2_audio->plugin = lv2_plugin;
+ 
   /* get plugin port */
   g_object_get(lv2_plugin,
 	       "plugin-port", &start_plugin_port,
