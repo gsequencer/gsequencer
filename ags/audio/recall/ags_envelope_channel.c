@@ -306,7 +306,7 @@ ags_envelope_channel_init(AgsEnvelopeChannel *envelope_channel)
 						   NULL);
   g_object_ref(envelope_channel->use_note_length);
   
-  envelope_channel->use_note_length->port_value.ags_port_boolean = FALSE;
+  envelope_channel->use_note_length->port_value.ags_port_boolean = TRUE;
 
   /* use fixed length */
   envelope_channel->use_fixed_length = g_object_new(AGS_TYPE_PORT,

@@ -283,7 +283,7 @@ ags_stream_audio_signal_run_post(AgsRecall *recall)
     }
 
     source->stream_current = source->stream_current->next;
-
+      
     /* call parent */
     parent_class_run_post(recall);
   }else{

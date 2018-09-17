@@ -2,6 +2,7 @@ ags (2.0.11)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* added missing AGS_SOUND_ABILITY_PLAYBACK of plugin bridge's AgsAudio
+	* partial rewrite of ags_envelope_audio_signal_run_inter()
 
 ags (2.0.10)
 

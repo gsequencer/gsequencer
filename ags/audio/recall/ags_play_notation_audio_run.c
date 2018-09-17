@@ -976,6 +976,10 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
 #endif
 	
 	while(recycling != end_recycling){
+	  g_object_set(note,
+		       "rt-offset", 0,
+		       NULL);
+	  
 	  if(!ags_recall_global_get_rt_safe()){
 	    /* create audio signal */
 	    audio_signal = ags_audio_signal_new((GObject *) output_soundcard,
@@ -1031,10 +1035,6 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
 			   "note", note,
 			   NULL);
 	    }
-
-	    g_object_set(note,
-			 "rt-offset", 0,
-			 NULL);
 
 	    g_list_free(start_list);
 	  }
