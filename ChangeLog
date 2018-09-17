@@ -1,3 +1,8 @@
+ags (2.0.11)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* added missing AGS_SOUND_ABILITY_PLAYBACK of plugin bridge's AgsAudio
+
 ags (2.0.10)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
