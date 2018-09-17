@@ -5,6 +5,7 @@ ags (2.0.10)
 	* fixed free of unitialized GList in ags_effect_bridge.c
 	* fixed DSSI and LV2 machines to use correct recall context
 	* fixed dead-lock in ags_lv2_urid_manager.c
+	* implemented missing properties AgsPlayDssi:bank and AgsPlayDssi:program
 
 ags (2.0.9)
 

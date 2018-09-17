@@ -273,7 +273,8 @@ ags_live_dssi_bridge_init(AgsLiveDssiBridge *live_dssi_bridge)
 			      AGS_AUDIO_INPUT_HAS_RECYCLING |
 			      AGS_AUDIO_SKIP_INPUT));
   ags_audio_set_ability_flags(audio, (AGS_SOUND_ABILITY_NOTATION));
-  ags_audio_set_behaviour_flags(audio, (AGS_SOUND_BEHAVIOUR_REVERSE_MAPPING));
+  ags_audio_set_behaviour_flags(audio, (AGS_SOUND_BEHAVIOUR_REVERSE_MAPPING |
+					AGS_SOUND_BEHAVIOUR_DEFAULTS_TO_INPUT));
   //  audio->flags &= (~AGS_AUDIO_NOTATION_DEFAULT);
   
   g_object_set(audio,

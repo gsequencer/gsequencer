@@ -1524,7 +1524,7 @@ ags_play_lv2_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_run,
     notation = list->data;
 
     g_object_get(notation,
-		 "note", start_current_position,
+		 "note", &start_current_position,
 		 NULL);
     
     current_position = start_current_position;
