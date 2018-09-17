@@ -3034,9 +3034,9 @@ ags_audio_signal_feed(AgsAudioSignal *audio_signal,
 void
 ags_audio_signal_real_add_note(AgsAudioSignal *audio_signal,
 			       GObject *note)
-{  
+{
   if(g_list_find(audio_signal->note, note) == NULL){
-    g_object_ref(note);  
+    g_object_ref(note);
     audio_signal->note = g_list_prepend(audio_signal->note,
 					note);
   }

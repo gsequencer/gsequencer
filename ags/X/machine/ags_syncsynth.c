@@ -981,10 +981,10 @@ ags_syncsynth_resize_pads(AgsMachine *machine, GType type,
 		   "output", &source,
 		   NULL);
 
-      source = ags_channel_nth(source,
-			       pads_old);
+      source = ags_channel_pad_nth(source,
+				   pads_old);
 
-      if(source != NULL){
+      while(source != NULL){
 	AgsRecycling *recycling;
 	AgsAudioSignal *audio_signal;
 
@@ -1008,6 +1008,11 @@ ags_syncsynth_resize_pads(AgsMachine *machine, GType type,
 	audio_signal->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;
 	ags_recycling_add_audio_signal(recycling,
 				       audio_signal);
+
+	/* iterate */
+	g_object_get(source,
+		     "next-pad", &source,
+		     NULL);
       }
 
       if((AGS_MACHINE_MAPPED_RECALL & (machine->flags)) != 0){
@@ -1140,7 +1145,6 @@ ags_syncsynth_output_map_recall(AgsSyncsynth *syncsynth,
 {
   AgsAudio *audio;
 
-  guint input_pad_start;
   guint output_pads, input_pads;
   guint audio_channels;
 
@@ -1165,7 +1169,7 @@ ags_syncsynth_output_map_recall(AgsSyncsynth *syncsynth,
 			      NULL, NULL,
 			      "ags-copy",
 			      0, audio_channels, 
-			      input_pad_start, input_pads,
+			      0, input_pads,
 			      (AGS_RECALL_FACTORY_INPUT |
 			       AGS_RECALL_FACTORY_RECALL |
 			       AGS_RECALL_FACTORY_ADD),
@@ -1176,7 +1180,7 @@ ags_syncsynth_output_map_recall(AgsSyncsynth *syncsynth,
 			      NULL, NULL,
 			      "ags-buffer",
 			      0, audio_channels, 
-			      input_pad_start, input_pads,
+			      0, input_pads,
 			      (AGS_RECALL_FACTORY_INPUT |
 			       AGS_RECALL_FACTORY_RECALL |
 			       AGS_RECALL_FACTORY_ADD),

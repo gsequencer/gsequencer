@@ -280,7 +280,7 @@ ags_envelope_audio_signal_run_inter(AgsRecall *recall)
   note = note_start;
   
   while(note != NULL){
-    if(ags_note_test_flags(note->data, AGS_NOTE_ENVELOPE)){
+    if(ags_note_test_flags(AGS_NOTE(note->data), AGS_NOTE_ENVELOPE)){
       AgsNote *current;
       
       guint64 rt_offset;
@@ -295,7 +295,7 @@ ags_envelope_audio_signal_run_inter(AgsRecall *recall)
       guint start_frame, first_frame, buffer_size;
       guint current_frame, current_buffer_size;
       guint offset, prev_offset;
-
+      
       current = note->data;
             
       g_object_get(current,
@@ -337,6 +337,8 @@ ags_envelope_audio_signal_run_inter(AgsRecall *recall)
 	frame_count = current_fixed_length * (delay * buffer_size);
       }
       
+      g_message("note@%x[%d]", note->data, frame_count);
+
       /* get offsets */
       start_position = floor((delay * rt_offset) / frame_count);
 
@@ -366,6 +368,8 @@ ags_envelope_audio_signal_run_inter(AgsRecall *recall)
 
       offset = x1 * frame_count;
       current_frame = first_frame;
+
+      g_message("attack - first-frame: %d -> %d", offset, start_frame);
     
       if(offset >= start_frame){
 	if(current_frame + x1 * frame_count > buffer_size){
@@ -401,6 +405,8 @@ ags_envelope_audio_signal_run_inter(AgsRecall *recall)
 
       prev_offset = offset;
       offset += (x1 * frame_count);
+
+      g_message("decay - first-frame: %d -> %d", offset, start_frame);
 
       if(offset >= start_frame &&
 	 prev_offset < start_frame + buffer_size){
@@ -438,6 +444,8 @@ ags_envelope_audio_signal_run_inter(AgsRecall *recall)
       prev_offset = offset;
       offset += (x1 * frame_count);
 
+      g_message("sustain - first-frame: %d -> %d", offset, start_frame);
+
       if(offset >= start_frame &&
 	 prev_offset < start_frame + buffer_size){
 	if(current_frame + x1 * frame_count > buffer_size){
@@ -474,6 +482,8 @@ ags_envelope_audio_signal_run_inter(AgsRecall *recall)
       prev_offset = offset;
       offset += (x1 * frame_count);
     
+      g_message("release - first-frame: %d -> %d", offset, start_frame);
+
       if(offset >= start_frame &&
 	 prev_offset < start_frame + buffer_size){
 	if(current_frame + x1 * frame_count > buffer_size){
