@@ -6,6 +6,7 @@ ags (2.0.10)
 	* fixed DSSI and LV2 machines to use correct recall context
 	* fixed dead-lock in ags_lv2_urid_manager.c
 	* implemented missing properties AgsPlayDssi:bank and AgsPlayDssi:program
+	* added missing AGS_SOUND_ABILITY_PLAYBACK of instrument's AgsAudio
 
 ags (2.0.9)
 

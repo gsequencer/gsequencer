@@ -207,7 +207,8 @@ ags_drum_init(AgsDrum *drum)
 			      AGS_AUDIO_OUTPUT_HAS_RECYCLING |
 			      AGS_AUDIO_INPUT_HAS_RECYCLING |
 			      AGS_AUDIO_INPUT_HAS_FILE));
-  ags_audio_set_ability_flags(audio, (AGS_SOUND_ABILITY_SEQUENCER |
+  ags_audio_set_ability_flags(audio, (AGS_SOUND_ABILITY_PLAYBACK |
+				      AGS_SOUND_ABILITY_SEQUENCER |
 				      AGS_SOUND_ABILITY_NOTATION));
   ags_audio_set_behaviour_flags(audio, (AGS_SOUND_BEHAVIOUR_PATTERN_MODE |
 					AGS_SOUND_BEHAVIOUR_REVERSE_MAPPING |
