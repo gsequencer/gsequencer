@@ -4902,7 +4902,7 @@ ags_channel_set_link(AgsChannel *channel, AgsChannel *link,
 
     pthread_mutex_t *mutex;
     
-    if(AGS_IS_OUTPUT(channel)){
+    if(AGS_IS_INPUT(channel)){
       current = channel;
       current_link = link;
 
@@ -4964,10 +4964,9 @@ ags_channel_set_link(AgsChannel *channel, AgsChannel *link,
     parameter_name[4] = NULL;
 
     /* recursive set property */
-    //FIXME:JK: doesn't work as expected
-    //    ags_channel_recursive_set_property(current_link,
-    //				       n_params,
-    //				       parameter_name, value);
+    ags_channel_recursive_set_property(current_link,
+				       n_params,
+				       parameter_name, value);
   }
 
   /* unset recall id - old channel */

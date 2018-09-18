@@ -1,3 +1,8 @@
+ags (2.0.12)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* enabled recursive property reset during ags_channel_set_link() and fixed apply on output
+
 ags (2.0.11)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
