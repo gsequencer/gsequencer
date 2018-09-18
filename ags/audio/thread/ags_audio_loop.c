@@ -1066,6 +1066,12 @@ ags_audio_loop_play_channel(AgsAudioLoop *audio_loop)
       /* not super threaded */
       sound_scope = AGS_SOUND_SCOPE_PLAYBACK;
       
+      if(ags_playback_get_recall_id(playback, sound_scope) == NULL){
+	list_play = list_play->next;
+	
+	continue;
+      }
+    
       if((recall_id = ags_channel_check_scope(channel, sound_scope)) != NULL){
 	ags_channel_recursive_run_stage(channel,
 					sound_scope, playback_staging_flags);

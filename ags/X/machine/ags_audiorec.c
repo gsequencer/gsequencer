@@ -317,6 +317,13 @@ ags_audiorec_init(AgsAudiorec *audiorec)
 void
 ags_audiorec_finalize(GObject *gobject)
 {
+  AgsAudiorec *audiorec;
+
+  audiorec = gobject;
+  
+  g_hash_table_remove(ags_audiorec_indicator_queue_draw,
+		      audiorec);
+  
   /* call parent */
   G_OBJECT_CLASS(ags_audiorec_parent_class)->finalize(gobject);
 }

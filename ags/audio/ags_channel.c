@@ -4964,9 +4964,10 @@ ags_channel_set_link(AgsChannel *channel, AgsChannel *link,
     parameter_name[4] = NULL;
 
     /* recursive set property */
-    ags_channel_recursive_set_property(current_link,
-				       n_params,
-				       parameter_name, value);
+    //FIXME:JK: doesn't work as expected
+    //    ags_channel_recursive_set_property(current_link,
+    //				       n_params,
+    //				       parameter_name, value);
   }
 
   /* unset recall id - old channel */
@@ -7400,14 +7401,53 @@ ags_channel_remove_recall_container(AgsChannel *channel, GObject *recall_contain
 void
 ags_channel_add_recall(AgsChannel *channel, GObject *recall, gboolean play_context)
 {
+  GObject *output_soundcard, *input_soundcard;
+
+  gint output_soundcard_channel, input_soundcard_channel;
+  guint samplerate;
+  guint buffer_size;
+  guint format;
   gboolean success;
+
+  pthread_mutex_t *channel_mutex;
   
   if(!AGS_IS_CHANNEL(channel) ||
      !AGS_IS_RECALL(recall)){
     return;
   }
 
+  /* get channel mutex */
+  pthread_mutex_lock(ags_channel_get_class_mutex());
+
+  channel_mutex = channel->obj_mutex;
+  
+  pthread_mutex_unlock(ags_channel_get_class_mutex());
+
+  /* get some fields */
+  pthread_mutex_lock(channel_mutex);
+
+  output_soundcard = channel->output_soundcard;
+  output_soundcard_channel = channel->output_soundcard_channel;
+
+  input_soundcard = channel->input_soundcard;
+  input_soundcard_channel = channel->input_soundcard_channel;
+
+  samplerate = channel->samplerate;
+  buffer_size = channel->buffer_size;
+  format = channel->format; 
+  
+  pthread_mutex_unlock(channel_mutex);
+  
   success = FALSE;
+  g_object_set(recall,
+	       "output-soundcard", output_soundcard,
+	       "output-soundcard-channel", output_soundcard_channel,
+	       "input-soundcard", input_soundcard,
+	       "input-soundcard-channel", input_soundcard_channel,
+	       "samplerate", samplerate,
+	       "buffer-size", buffer_size,
+	       "format", format,
+	       NULL);
   
   if(play_context){
     pthread_mutex_t *play_mutex;
@@ -11364,6 +11404,10 @@ ags_channel_real_recursive_run_stage(AgsChannel *channel,
     current_channel = channel;
 
     if(AGS_IS_OUTPUT(channel)){
+      g_object_get(channel,
+		   "audio", &current_audio,
+		   NULL);
+      
       goto ags_channel_recursive_prepare_run_stage_up_OUTPUT;
     }
 
@@ -11973,6 +12017,10 @@ ags_channel_real_recursive_run_stage(AgsChannel *channel,
     current_channel = channel;
 
     if(AGS_IS_OUTPUT(channel)){
+      g_object_get(channel,
+		   "audio", &current_audio,
+		   NULL);
+      
       goto ags_channel_recursive_prepare_run_stage_up_OUTPUT;
     }
 
@@ -12521,8 +12569,12 @@ ags_channel_real_recursive_run_stage(AgsChannel *channel,
     }
 
     current_channel = channel;
-    
+
     if(AGS_IS_OUTPUT(channel)){
+      g_object_get(channel,
+		   "audio", &current_audio,
+		   NULL);
+      
       goto ags_channel_recursive_do_run_stage_up_OUTPUT;
     }
 
