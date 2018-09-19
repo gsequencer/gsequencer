@@ -100,6 +100,7 @@
 #include <ags/audio/thread/ags_sequencer_thread.h>
 #include <ags/audio/thread/ags_soundcard_thread.h>
 #include <ags/audio/thread/ags_export_thread.h>
+#include <ags/audio/thread/ags_wave_loader.h>
 
 /* audio file */
 #include <ags/audio/file/ags_audio_container.h>

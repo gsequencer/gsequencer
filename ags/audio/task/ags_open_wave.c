@@ -379,7 +379,6 @@ ags_open_wave_launch(AgsTask *task)
 
   guint n_pads, current_pads;
   guint n_audio_channels, current_audio_channels;
-  guint i;
 
   open_wave = task;
 

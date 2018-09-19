@@ -859,61 +859,18 @@ void
 ags_audiorec_open_filename(AgsAudiorec *audiorec,
 			   gchar *filename)
 {
-  AgsAudioFile *audio_file;
-
-  AgsOpenWave *open_wave;
-
-  AgsGuiThread *gui_thread;
-  
-  AgsApplicationContext *application_context;
-  
-  GObject *output_soundcard;
-
-  GList *start_wave, *wave;
+  AgsWaveLoader *wave_loader;
   
   if(!AGS_IS_AUDIOREC(audiorec) ||
      filename == NULL){
     return;
   }
 
-  application_context = ags_application_context_get_instance();
+  wave_loader = ags_wave_loader_new(AGS_MACHINE(audiorec)->audio,
+				    filename,
+				    TRUE);
 
-  gui_thread = ags_ui_provider_get_gui_thread(AGS_UI_PROVIDER(application_context));
-  
-  g_object_get(AGS_MACHINE(audiorec)->audio,
-	       "output-soundcard", &output_soundcard,
-	       NULL);
-
-  g_object_get(AGS_MACHINE(audiorec)->audio,
-	       "wave", &start_wave,
-	       NULL);
-
-  wave = start_wave;
-
-  while(wave != NULL){
-    ags_audio_remove_wave(AGS_MACHINE(audiorec)->audio,
-			  wave->data);
-    
-    wave = wave->next;
-  }
-
-  g_list_free(start_wave);
-  
-  audio_file = ags_audio_file_new(filename,
-				  output_soundcard,
-				  -1);
-  ags_audio_file_open(audio_file);
-
-  g_object_set(AGS_MACHINE(audiorec)->audio,
-	       "input-audio-file", audio_file,
-	       NULL);
-
-  open_wave = ags_open_wave_new(AGS_MACHINE(audiorec)->audio,
-				audio_file,
-				NULL,
-				0);
-  ags_gui_thread_schedule_task(gui_thread,
-			       open_wave);
+  ags_wave_loader_start(wave_loader);
 }
 
 /**

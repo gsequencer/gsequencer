@@ -754,7 +754,8 @@ libags_audio_thread_h_sources = \
 	ags/audio/thread/ags_channel_thread.h \
 	ags/audio/thread/ags_sequencer_thread.h \
 	ags/audio/thread/ags_soundcard_thread.h \
-	ags/audio/thread/ags_export_thread.h
+	ags/audio/thread/ags_export_thread.h \
+	ags/audio/thread/ags_wave_loader.h
 
 deprecated_libags_audio_thread_c_sources =
 
@@ -765,7 +766,8 @@ libags_audio_thread_c_sources = \
 	ags/audio/thread/ags_channel_thread.c \
 	ags/audio/thread/ags_sequencer_thread.c \
 	ags/audio/thread/ags_soundcard_thread.c \
-	ags/audio/thread/ags_export_thread.c
+	ags/audio/thread/ags_export_thread.c \
+	ags/audio/thread/ags_wave_loader.c
 
 # libags-audio - plugin
 deprecated_libags_plugin_h_sources =

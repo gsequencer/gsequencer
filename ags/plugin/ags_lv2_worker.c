@@ -334,7 +334,7 @@ ags_lv2_worker_set_property(GObject *gobject,
 	g_object_ref(returnable_thread);
       }
 
-      lv2_worker->returnable_thread == returnable_thread;
+      lv2_worker->returnable_thread = returnable_thread;
       
       pthread_mutex_unlock(lv2_worker_mutex);
     }
