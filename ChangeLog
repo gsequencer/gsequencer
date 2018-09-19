@@ -2,7 +2,8 @@ ags (2.0.13)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* implemented AgsWaveLoader
-	* fixed set property of AgsLv2Worker:returnable-thread 
+	* implemented AgsAudiorec file loading animation
+	* fixed set property of AgsLv2Worker:returnable-thread
 
 ags (2.0.12)
 

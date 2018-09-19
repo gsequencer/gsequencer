@@ -49,9 +49,14 @@ struct _AgsAudiorec
 
   gchar *name;
   gchar *xml_type;
-
+  
   GtkEntry *filename;
   GtkButton *open;
+
+  AgsWaveLoader *wave_loader;
+
+  gint position;
+  GtkLabel *loading;
 
   GtkRadioButton *keep_data;
   GtkRadioButton *mix_data;
@@ -72,6 +77,7 @@ GType ags_audiorec_get_type(void);
 void ags_audiorec_open_filename(AgsAudiorec *audiorec,
 				gchar *filename);
 
+gboolean ags_audiorec_wave_loader_completed_timeout(AgsAudiorec *audiorec);
 gboolean ags_audiorec_indicator_queue_draw_timeout(AgsAudiorec *audiorec);
 
 AgsAudiorec* ags_audiorec_new(GObject *soundcard);
