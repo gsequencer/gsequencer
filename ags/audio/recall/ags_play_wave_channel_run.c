@@ -280,6 +280,10 @@ ags_play_wave_channel_run_run_inter(AgsRecall *recall)
 
   frame_count = buffer_size - attack;
 
+  if(x_offset + frame_count > relative_offset * floor(x_offset / relative_offset) + relative_offset){
+    frame_count = relative_offset * floor((x_offset + frame_count) / relative_offset) - x_offset;
+  }
+  
   /* clear */
   if(play_wave_channel_run->audio_signal != NULL){
     ags_audio_buffer_util_clear_buffer(play_wave_channel_run->audio_signal->stream_current->data, 1,
@@ -364,7 +368,7 @@ ags_play_wave_channel_run_run_inter(AgsRecall *recall)
 	
 	ags_audio_buffer_util_copy_buffer_to_buffer(play_wave_channel_run->audio_signal->stream_current->data, 1, frame_count,
 						    buffer->data, 1, 0,
-						    attack, copy_mode);
+						    buffer_size - frame_count, copy_mode);
       }
     }
   }

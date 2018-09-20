@@ -331,7 +331,7 @@ ags_capture_wave_channel_run_run_pre(AgsRecall *recall)
     create_wave = FALSE;
     
     if(x_offset + frame_count > relative_offset * floor(x_offset / relative_offset) + relative_offset){
-      frame_count = floor(x_offset / relative_offset) + relative_offset - x_offset;
+      frame_count = relative_offset * floor((x_offset + frame_count) / relative_offset) - x_offset;
       create_wave = TRUE;
     }else if(x_offset + frame_count == relative_offset * floor(x_offset / relative_offset) + relative_offset){
       create_wave = TRUE;
@@ -438,7 +438,7 @@ ags_capture_wave_channel_run_run_pre(AgsRecall *recall)
       pthread_mutex_lock(buffer_mutex);
       
       ags_audio_buffer_util_clear_buffer(data, 1,
-					 frame_count, ags_audio_buffer_util_format_from_soundcard(target_format));
+					 target_buffer_size - attack, ags_audio_buffer_util_format_from_soundcard(target_format));
 
       pthread_mutex_unlock(buffer_mutex);
     }
@@ -524,7 +524,7 @@ ags_capture_wave_channel_run_run_pre(AgsRecall *recall)
 	pthread_mutex_lock(buffer_mutex);
       
 	ags_audio_buffer_util_clear_buffer(buffer->data, 1,
-					   attack, ags_audio_buffer_util_format_from_soundcard(target_format));
+					   target_buffer_size - frame_count, ags_audio_buffer_util_format_from_soundcard(target_format));
 
 	pthread_mutex_unlock(buffer_mutex);
       }
@@ -535,7 +535,7 @@ ags_capture_wave_channel_run_run_pre(AgsRecall *recall)
     
       ags_audio_buffer_util_copy_buffer_to_buffer(buffer->data, 1, 0,
 						  data, audio_channels, (frame_count * audio_channels) + input_soundcard_channel,
-						  attack, target_copy_mode);
+						  target_buffer_size - frame_count, target_copy_mode);
 
       ags_soundcard_unlock_buffer(AGS_SOUNDCARD(input_soundcard), data);
       pthread_mutex_unlock(buffer_mutex);

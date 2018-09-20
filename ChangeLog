@@ -1,3 +1,8 @@
+ags (2.0.15)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed wrong one more offset calculation problem in ags-capture-wave and ags-play-wave
+
 ags (2.0.14)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
