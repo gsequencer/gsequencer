@@ -175,6 +175,7 @@ ags_play_wave_channel_run_run_inter(AgsRecall *recall)
   guint buffer_size;
   guint format;
   guint64 x_offset;
+  guint64 x_point_offset;
   guint64 relative_offset;
   gdouble delay;
   guint frame_count;
@@ -275,13 +276,9 @@ ags_play_wave_channel_run_run_inter(AgsRecall *recall)
   
   relative_offset = AGS_WAVE_DEFAULT_BUFFER_LENGTH * samplerate;
 
-  if(x_offset + frame_count > relative_offset * floor(x_offset / relative_offset) + relative_offset){
-    frame_count = relative_offset * floor(x_offset / relative_offset) + relative_offset - x_offset;
-  }else{
-    frame_count = (x_offset % relative_offset) % buffer_size;
-  }
+  attack = (x_offset % relative_offset) % buffer_size;
 
-  attack = buffer_size - frame_count;
+  frame_count = buffer_size - attack;
 
   /* clear */
   if(play_wave_channel_run->audio_signal != NULL){
@@ -304,8 +301,9 @@ ags_play_wave_channel_run_run_inter(AgsRecall *recall)
 
     wave = list->data;
 
+    x_point_offset = x_offset - attack;
     buffer = ags_wave_find_point(wave,
-				 x_offset,
+				 x_point_offset,
 				 FALSE);
 
     if(buffer != NULL){
@@ -334,7 +332,8 @@ ags_play_wave_channel_run_run_inter(AgsRecall *recall)
 			       relative_offset * floor((x_offset + frame_count) / relative_offset));
   
   /* play */
-  if(attack != 0){
+  if(attack != 0 ||
+     frame_count != buffer_size){
     list = ags_wave_find_near_timestamp(start_list, line,
 					play_wave_channel_run->timestamp);
 
@@ -343,8 +342,9 @@ ags_play_wave_channel_run_run_inter(AgsRecall *recall)
 
       wave = list->data;
 
+      x_point_offset = x_offset + frame_count;
       buffer = ags_wave_find_point(wave,
-				   x_offset,
+				   x_point_offset,
 				   FALSE);
 
       if(buffer != NULL){
@@ -362,7 +362,7 @@ ags_play_wave_channel_run_run_inter(AgsRecall *recall)
 	copy_mode = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(format),
 							ags_audio_buffer_util_format_from_soundcard(current_format));
 	
-	ags_audio_buffer_util_copy_buffer_to_buffer(play_wave_channel_run->audio_signal->stream_current->data, 1, 0,
+	ags_audio_buffer_util_copy_buffer_to_buffer(play_wave_channel_run->audio_signal->stream_current->data, 1, frame_count,
 						    buffer->data, 1, 0,
 						    attack, copy_mode);
       }
