@@ -287,19 +287,6 @@ ags_buffer_audio_signal_run_inter(AgsRecall *recall)
   /* call parent */
   parent_class_run_inter(recall);
 
-  /* initialize some variables */
-  g_object_get(recall,
-	       "parent", &buffer_recycling,
-	       NULL);
-
-  g_object_get(buffer_recycling,
-	       "parent", &buffer_channel_run,
-	       NULL);
-
-  g_object_get(buffer_channel_run,
-	       "recall-channel", &buffer_channel,
-	       NULL);
-
   g_object_get(buffer_audio_signal,
 	       "source", &source,
 	       "destination", &destination,
@@ -312,6 +299,19 @@ ags_buffer_audio_signal_run_inter(AgsRecall *recall)
 
     return;
   }
+
+  /* initialize some variables */
+  g_object_get(recall,
+	       "parent", &buffer_recycling,
+	       NULL);
+
+  g_object_get(buffer_recycling,
+	       "parent", &buffer_channel_run,
+	       NULL);
+
+  g_object_get(buffer_channel_run,
+	       "recall-channel", &buffer_channel,
+	       NULL);
 
   /* check muted */
   g_object_get(buffer_channel,

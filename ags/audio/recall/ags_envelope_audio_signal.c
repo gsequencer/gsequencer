@@ -190,7 +190,7 @@ ags_envelope_audio_signal_run_inter(AgsRecall *recall)
 							guint x1, gdouble y1)
   {
     if(x1 - x0 == 0){
-      return(1.0);
+      return(0.0);
     }else{
       return((y1 - y0) / (x1 - x0));
     }
@@ -344,6 +344,9 @@ ags_envelope_audio_signal_run_inter(AgsRecall *recall)
       release[0] = current->release[0];
       release[1] = current->release[1];
       
+      ratio[0] = current->ratio[0];
+      ratio[1] = current->ratio[1];
+
       pthread_mutex_unlock(note_mutex);
 
       /* set frame count */

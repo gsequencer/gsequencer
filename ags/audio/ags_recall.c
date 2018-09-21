@@ -3927,8 +3927,8 @@ ags_recall_add_child(AgsRecall *parent, AgsRecall *child)
 	       "recall_id", parent->recall_id,
 	       NULL);
 
-  g_signal_connect(G_OBJECT(child), "done",
-		   G_CALLBACK(ags_recall_child_done), parent);
+  g_signal_connect_after(G_OBJECT(child), "done",
+			 G_CALLBACK(ags_recall_child_done), parent);
 
   ags_recall_child_added(parent,
 			 child);

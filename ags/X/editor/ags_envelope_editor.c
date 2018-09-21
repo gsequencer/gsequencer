@@ -751,10 +751,10 @@ ags_envelope_editor_apply(AgsApplicable *applicable)
       ags_complex_set(&(current_note->release),
 		      z);
 
-      z = I * ratio;
+      z = 0.0 + I * ratio;
       ags_complex_set(&(current_note->ratio),
 		      z);
-
+      
       pthread_mutex_unlock(note_mutex);
 
       /* iterate */

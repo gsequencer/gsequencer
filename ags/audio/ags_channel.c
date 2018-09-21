@@ -9654,7 +9654,7 @@ ags_channel_real_play_recall(AgsChannel *channel,
     /* copy play context */
     pthread_mutex_lock(play_mutex);
 
-    list_start = g_list_copy(channel->play);
+    list_start = ags_list_util_copy_and_ref(channel->play);
 
     pthread_mutex_unlock(play_mutex);
 
@@ -9674,7 +9674,7 @@ ags_channel_real_play_recall(AgsChannel *channel,
     /* copy recall context */
     pthread_mutex_lock(recall_mutex);
 
-    list_start = g_list_copy(channel->recall);
+    list_start = ags_list_util_copy_and_ref(channel->recall);
     
     pthread_mutex_unlock(recall_mutex);
 
@@ -9718,7 +9718,8 @@ ags_channel_real_play_recall(AgsChannel *channel,
     list = list->next;
   }
   
-  g_list_free(list_start);
+  g_list_free_full(list_start,
+		   g_object_unref);
 
   //FIXME:JK: uncomment
   //  ags_channel_set_staging_flags(channel, sound_scope,
