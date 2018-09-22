@@ -326,7 +326,7 @@ ags_envelope_editor_init(AgsEnvelopeEditor *envelope_editor)
   gtk_scale_set_draw_value(envelope_editor->attack_y,
 			   TRUE);
   gtk_range_set_value((GtkRange *) envelope_editor->attack_y,
-		      1.0);
+		      0.0);
   gtk_box_pack_start((GtkBox *) control,
 		     (GtkWidget *) envelope_editor->attack_y,
 		     FALSE, FALSE,
@@ -368,7 +368,7 @@ ags_envelope_editor_init(AgsEnvelopeEditor *envelope_editor)
   gtk_scale_set_draw_value(envelope_editor->decay_y,
 			   TRUE);
   gtk_range_set_value((GtkRange *) envelope_editor->decay_y,
-		      1.0);
+		      0.0);
   gtk_box_pack_start((GtkBox *) control,
 		     (GtkWidget *) envelope_editor->decay_y,
 		     FALSE, FALSE,
@@ -410,7 +410,7 @@ ags_envelope_editor_init(AgsEnvelopeEditor *envelope_editor)
   gtk_scale_set_draw_value(envelope_editor->sustain_y,
 			   TRUE);
   gtk_range_set_value((GtkRange *) envelope_editor->sustain_y,
-		      1.0);
+		      0.0);
   gtk_box_pack_start((GtkBox *) control,
 		     (GtkWidget *) envelope_editor->sustain_y,
 		     FALSE, FALSE,
@@ -452,7 +452,7 @@ ags_envelope_editor_init(AgsEnvelopeEditor *envelope_editor)
   gtk_scale_set_draw_value(envelope_editor->release_y,
 			   TRUE);
   gtk_range_set_value((GtkRange *) envelope_editor->release_y,
-		      1.0);
+		      0.0);
   gtk_box_pack_start((GtkBox *) control,
 		     (GtkWidget *) envelope_editor->release_y,
 		     FALSE, FALSE,
@@ -475,7 +475,7 @@ ags_envelope_editor_init(AgsEnvelopeEditor *envelope_editor)
   gtk_scale_set_draw_value(envelope_editor->ratio,
 			   TRUE);
   gtk_range_set_value((GtkRange *) envelope_editor->ratio,
-		      0.0);
+		      1.0);
   gtk_table_attach(table,
 		   GTK_WIDGET(envelope_editor->ratio),
 		   1, 2,
@@ -1015,7 +1015,7 @@ ags_envelope_editor_add_preset(AgsEnvelopeEditor *envelope_editor,
   /* preset - attack */
   val = ags_complex_alloc();
   ags_complex_set(val,
-		  0.25 + I * 1.0);
+		  0.25 + I * 0.0);
   
   g_value_init(&value,
 	       AGS_TYPE_COMPLEX);
@@ -1028,7 +1028,7 @@ ags_envelope_editor_add_preset(AgsEnvelopeEditor *envelope_editor,
   /* preset - decay */
   val = ags_complex_alloc();
   ags_complex_set(val,
-		  0.25 + I * 1.0);
+		  0.25 + I * 0.0);
   
   g_value_reset(&value);
   g_value_set_boxed(&value,
@@ -1040,7 +1040,7 @@ ags_envelope_editor_add_preset(AgsEnvelopeEditor *envelope_editor,
   /* preset - sustain */
   val = ags_complex_alloc();
   ags_complex_set(val,
-		  0.25 + I * 1.0);
+		  0.25 + I * 0.0);
   
   g_value_reset(&value);
   g_value_set_boxed(&value,
@@ -1052,7 +1052,7 @@ ags_envelope_editor_add_preset(AgsEnvelopeEditor *envelope_editor,
   /* preset - release */
   val = ags_complex_alloc();
   ags_complex_set(val,
-		  0.25 + I * 1.0);
+		  0.25 + I * 0.0);
   
   g_value_reset(&value);
   g_value_set_boxed(&value,
@@ -1064,7 +1064,7 @@ ags_envelope_editor_add_preset(AgsEnvelopeEditor *envelope_editor,
   /* preset - ratio */
   val = ags_complex_alloc();
   ags_complex_set(val,
-		  0.0);
+		  0.0 + I * 1.0);
   
   g_value_reset(&value);
   g_value_set_boxed(&value,

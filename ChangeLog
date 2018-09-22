@@ -3,6 +3,7 @@ ags (2.0.16)
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* fixed ags_audio_buffer_util_envelope_*() to compute correct current volume
 	* fixed ags-envelope recall read missing ratio value
+	* fixed AgsEnvelopeDialog initial values
 
 ags (2.0.15)
 

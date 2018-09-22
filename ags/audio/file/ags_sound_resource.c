@@ -565,6 +565,8 @@ ags_sound_resource_read_wave(AgsSoundResource *sound_resource,
   void *target_data, *data;
 
   guint copy_mode;
+  guint64 relative_offset;
+  guint64 x_point_offset;
   guint frame_count;
   guint audio_channels;
   guint target_samplerate, samplerate;
@@ -633,9 +635,6 @@ ags_sound_resource_read_wave(AgsSoundResource *sound_resource,
 
     AgsTimestamp *timestamp;
 
-    guint64 offset;
-    guint64 relative_offset;
-    guint frame_count;
     gboolean success;
 
     ags_sound_resource_seek(AGS_SOUND_RESOURCE(sound_resource),
@@ -658,10 +657,11 @@ ags_sound_resource_read_wave(AgsSoundResource *sound_resource,
 		 NULL);
     
     relative_offset = AGS_WAVE_DEFAULT_BUFFER_LENGTH * target_samplerate;
-    
-    offset = x_offset;
+        
     frame_count = target_buffer_size;
-    
+
+    x_point_offset = x_offset;
+      
     success = TRUE;
     
     while(success){
@@ -671,16 +671,18 @@ ags_sound_resource_read_wave(AgsSoundResource *sound_resource,
       gboolean create_wave;
       
       create_wave = FALSE;
+      
+      if(x_point_offset + frame_count > relative_offset * floor(x_point_offset / relative_offset) + relative_offset){
+	frame_count = relative_offset * floor((x_point_offset + frame_count) / relative_offset) - x_point_offset;
 
-      if(offset + frame_count >= ags_timestamp_get_ags_offset(timestamp) + relative_offset){
 	create_wave = TRUE;
-
-	frame_count = ags_timestamp_get_ags_offset(timestamp) + relative_offset - offset;
+      }else if(x_point_offset + frame_count == relative_offset * floor(x_point_offset / relative_offset) + relative_offset){
+	create_wave = TRUE;
       }
       
       buffer = ags_buffer_new();
       g_object_set(buffer,
-		   "x", offset,
+		   "x", x_point_offset,
 		   "samplerate", target_samplerate,
 		   "buffer-size", target_buffer_size,
 		   "format", target_format,
@@ -740,17 +742,15 @@ ags_sound_resource_read_wave(AgsSoundResource *sound_resource,
 		     "timestamp", &timestamp,
 		     NULL);
 	ags_timestamp_set_ags_offset(timestamp,
-				     offset + frame_count);
+				     x_point_offset + frame_count);
 
 
 	start_list = ags_wave_add(start_list,
 				  wave);
-
-	frame_count = target_buffer_size;
       }
       
       /* iterate */
-      offset += target_buffer_size;
+      x_point_offset += frame_count;
 
       if(num_read < frame_count){
 	success = FALSE;

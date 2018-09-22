@@ -272,8 +272,6 @@ ags_play_wave_channel_run_run_inter(AgsRecall *recall)
 	       "line", &line,
 	       NULL);
 
-  frame_count = buffer_size;
-  
   relative_offset = AGS_WAVE_DEFAULT_BUFFER_LENGTH * samplerate;
 
   attack = (x_offset % relative_offset) % buffer_size;

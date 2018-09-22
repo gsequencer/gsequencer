@@ -489,7 +489,7 @@ ags_pattern_envelope_init(AgsPatternEnvelope *pattern_envelope)
   gtk_scale_set_draw_value(pattern_envelope->attack_y,
 			   TRUE);
   gtk_range_set_value((GtkRange *) pattern_envelope->attack_y,
-		      1.0);
+		      0.0);
   gtk_box_pack_start((GtkBox *) control,
 		     (GtkWidget *) pattern_envelope->attack_y,
 		     FALSE, FALSE,
@@ -531,7 +531,7 @@ ags_pattern_envelope_init(AgsPatternEnvelope *pattern_envelope)
   gtk_scale_set_draw_value(pattern_envelope->decay_y,
 			   TRUE);
   gtk_range_set_value((GtkRange *) pattern_envelope->decay_y,
-		      1.0);
+		      0.0);
   gtk_box_pack_start((GtkBox *) control,
 		     (GtkWidget *) pattern_envelope->decay_y,
 		     FALSE, FALSE,
@@ -573,7 +573,7 @@ ags_pattern_envelope_init(AgsPatternEnvelope *pattern_envelope)
   gtk_scale_set_draw_value(pattern_envelope->sustain_y,
 			   TRUE);
   gtk_range_set_value((GtkRange *) pattern_envelope->sustain_y,
-		      1.0);
+		      0.0);
   gtk_box_pack_start((GtkBox *) control,
 		     (GtkWidget *) pattern_envelope->sustain_y,
 		     FALSE, FALSE,
@@ -615,7 +615,7 @@ ags_pattern_envelope_init(AgsPatternEnvelope *pattern_envelope)
   gtk_scale_set_draw_value(pattern_envelope->release_y,
 			   TRUE);
   gtk_range_set_value((GtkRange *) pattern_envelope->release_y,
-		      1.0);
+		      0.0);
   gtk_box_pack_start((GtkBox *) control,
 		     (GtkWidget *) pattern_envelope->release_y,
 		     FALSE, FALSE,
@@ -638,7 +638,7 @@ ags_pattern_envelope_init(AgsPatternEnvelope *pattern_envelope)
   gtk_scale_set_draw_value(pattern_envelope->ratio,
 			   TRUE);
   gtk_range_set_value((GtkRange *) pattern_envelope->ratio,
-		      0.0);
+		      1.0);
   gtk_table_attach(table,
 		   GTK_WIDGET(pattern_envelope->ratio),
 		   1, 2,
@@ -1251,7 +1251,7 @@ ags_pattern_envelope_add_preset(AgsPatternEnvelope *pattern_envelope,
   /* preset - ratio */
   val = ags_complex_alloc();
   ags_complex_set(val,
-		  0.0);
+		  0.0 + 1.0 * I);
   
   g_value_init(&value,
 	       AGS_TYPE_COMPLEX);
@@ -1264,7 +1264,7 @@ ags_pattern_envelope_add_preset(AgsPatternEnvelope *pattern_envelope,
   /* preset - attack */
   val = ags_complex_alloc();
   ags_complex_set(val,
-		  0.25 + 1.0 * I);
+		  0.25 + 0.0 * I);
   
   g_value_reset(&value);
   g_value_set_boxed(&value,
@@ -1276,7 +1276,7 @@ ags_pattern_envelope_add_preset(AgsPatternEnvelope *pattern_envelope,
   /* preset - decay */
   val = ags_complex_alloc();
   ags_complex_set(val,
-		  0.25 + 1.0 * I);
+		  0.25 + 0.0 * I);
   
   g_value_reset(&value);
   g_value_set_boxed(&value,
@@ -1288,7 +1288,7 @@ ags_pattern_envelope_add_preset(AgsPatternEnvelope *pattern_envelope,
   /* preset - sustain */
   val = ags_complex_alloc();
   ags_complex_set(val,
-		  0.25 + 1.0 * I);
+		  0.25 + 0.0 * I);
   
   g_value_reset(&value);
   g_value_set_boxed(&value,
@@ -1300,7 +1300,7 @@ ags_pattern_envelope_add_preset(AgsPatternEnvelope *pattern_envelope,
   /* preset - release */
   val = ags_complex_alloc();
   ags_complex_set(val,
-		  0.25 + 1.0 * I);
+		  0.25 + 0.0 * I);
   
   g_value_reset(&value);
   g_value_set_boxed(&value,
@@ -1308,8 +1308,6 @@ ags_pattern_envelope_add_preset(AgsPatternEnvelope *pattern_envelope,
 
   ags_preset_add_parameter(preset,
 			   "release", &value);
-
-  /* release mutex */
 }
 
 /**
