@@ -1,3 +1,9 @@
+ags (2.0.19)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed notation editor missing segments as zoom bigger than 1:1
+	* fixed timestamp issue in notation eidtor
+
 ags (2.0.18)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

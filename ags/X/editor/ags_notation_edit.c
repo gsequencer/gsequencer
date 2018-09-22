@@ -1680,7 +1680,7 @@ ags_notation_edit_draw_notation(AgsNotationEdit *notation_edit)
   GList *start_list_notation, *list_notation;
 
   gdouble opacity;
-  gdouble zoom;
+  gdouble zoom, zoom_factor;
   guint x0, x1;
   guint y0, y1;
   guint offset;
@@ -1713,10 +1713,11 @@ ags_notation_edit_draw_notation(AgsNotationEdit *notation_edit)
   
   /* zoom */
   zoom = exp2((double) gtk_combo_box_get_active((GtkComboBox *) notation_toolbar->zoom) - 2.0);
+  zoom_factor = exp2(6.0 - (double) gtk_combo_box_get_active((GtkComboBox *) notation_toolbar->zoom));
 
   /* get visisble region */
-  x0 = GTK_RANGE(notation_edit->hscrollbar)->adjustment->value / notation_edit->control_width;
-  x1 = (GTK_RANGE(notation_edit->hscrollbar)->adjustment->value / notation_edit->control_width) + (GTK_WIDGET(notation_edit->drawing_area)->allocation.width * zoom);
+  x0 = (zoom_factor * GTK_RANGE(notation_edit->hscrollbar)->adjustment->value) / notation_edit->control_width;
+  x1 = ((zoom_factor * GTK_RANGE(notation_edit->hscrollbar)->adjustment->value) / notation_edit->control_width) + (GTK_WIDGET(notation_edit->drawing_area)->allocation.width * zoom);
 
   y0 = GTK_RANGE(notation_edit->vscrollbar)->adjustment->value / notation_edit->control_height;
   y1 = (GTK_RANGE(notation_edit->vscrollbar)->adjustment->value + GTK_WIDGET(notation_edit->drawing_area)->allocation.height) / notation_edit->control_height;
@@ -1741,7 +1742,7 @@ ags_notation_edit_draw_notation(AgsNotationEdit *notation_edit)
       GList *start_list_note, *list_note;
 
       notation = AGS_NOTATION(list_notation->data);
-      
+
       if(notation->timestamp != NULL &&
 	 AGS_TIMESTAMP(notation->timestamp)->timer.ags_offset.offset > x1){	
 	break;
