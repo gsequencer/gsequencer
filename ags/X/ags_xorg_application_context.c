@@ -1810,12 +1810,16 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
 					 notify_soundcard);
 
       /* export thread */
-      export_thread = (AgsThread *) ags_export_thread_new(list->data,
-							  NULL);
-      ags_thread_add_child_extended(AGS_THREAD(audio_loop),
-				    (AgsThread *) export_thread,
-				    TRUE, TRUE);
-      // }    
+      if(AGS_IS_DEVOUT(list->data) ||
+	 AGS_IS_JACK_DEVOUT(list->data) ||
+	 AGS_IS_PULSE_DEVOUT(list->data) ||
+	 AGS_IS_CORE_AUDIO_DEVOUT(list->data)){
+	export_thread = (AgsThread *) ags_export_thread_new(list->data,
+							    NULL);
+	ags_thread_add_child_extended(AGS_THREAD(audio_loop),
+				      (AgsThread *) export_thread,
+				      TRUE, TRUE);
+      }    
 
     /* default soundcard thread */
     if(xorg_application_context->soundcard_thread == NULL){

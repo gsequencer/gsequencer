@@ -21,6 +21,7 @@
 
 #include <ags/audio/thread/ags_audio_loop.h>
 #include <ags/audio/thread/ags_soundcard_thread.h>
+#include <ags/audio/thread/ags_export_thread.h>
 
 #include <ags/i18n.h>
 
@@ -250,6 +251,7 @@ ags_start_soundcard_launch(AgsTask *task)
 
   AgsThread *audio_loop;
   AgsThread *soundcard_thread;
+  AgsThread *export_thread;
 
   AgsApplicationContext *application_context;
 
@@ -295,6 +297,25 @@ ags_start_soundcard_launch(AgsTask *task)
     }
     
     soundcard_thread = g_atomic_pointer_get(&(soundcard_thread->next));
+  }
+
+  export_thread = ags_thread_find_type(audio_loop,
+				       AGS_TYPE_EXPORT_THREAD);
+  
+  while(export_thread != NULL){
+    if(AGS_IS_EXPORT_THREAD(export_thread)){
+      GObject *export;
+    
+      guint export_capability;
+
+      g_message("start export");
+
+      /* append export thread */
+      ags_thread_add_start_queue(audio_loop,
+				 export_thread);
+    }
+    
+    export_thread = g_atomic_pointer_get(&(export_thread->next));
   }
 }
 

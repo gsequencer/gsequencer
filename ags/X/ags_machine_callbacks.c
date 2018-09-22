@@ -533,8 +533,7 @@ ags_machine_play_callback(GtkWidget *toggle_button, AgsMachine *machine)
   }
 
   if(GTK_TOGGLE_BUTTON(toggle_button)->active){
-    if((AGS_MACHINE_BLOCK_PLAY & (machine->flags)) != 0){
-      
+    if((AGS_MACHINE_BLOCK_PLAY & (machine->flags)) != 0){      
       return;
     }
 
@@ -549,7 +548,6 @@ ags_machine_play_callback(GtkWidget *toggle_button, AgsMachine *machine)
     machine->flags &= (~AGS_MACHINE_BLOCK_PLAY);
   }else{
     if((AGS_MACHINE_BLOCK_STOP & (machine->flags)) != 0){
-      
       return;
     }
 
@@ -687,6 +685,32 @@ ags_machine_stop_callback(AgsMachine *machine,
   if(reset_active){
     gtk_toggle_button_set_active(machine->play, FALSE);
   }
-  
+
+#if 0
+  if(sound_scope == AGS_SOUND_SCOPE_SEQUENCER){
+    ags_machine_set_run_extended(machine,
+				 FALSE,
+				 TRUE, FALSE, FALSE, FALSE);
+  }
+
+  if(sound_scope == AGS_SOUND_SCOPE_NOTATION){
+    ags_machine_set_run_extended(machine,
+				 FALSE,
+				 FALSE, TRUE, FALSE, FALSE);
+  }
+
+  if(sound_scope == AGS_SOUND_SCOPE_WAVE){
+    ags_machine_set_run_extended(machine,
+				 FALSE,
+				 FALSE, FALSE, TRUE, FALSE);
+  }
+
+  if(sound_scope == AGS_SOUND_SCOPE_MIDI){
+    ags_machine_set_run_extended(machine,
+				 FALSE,
+				 FALSE, FALSE, FALSE, TRUE);
+  }
+#endif
+
   machine->flags &= (~AGS_MACHINE_BLOCK_STOP);
 }

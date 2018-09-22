@@ -279,7 +279,8 @@ ags_cancel_audio_launch(AgsTask *task)
   AgsApplicationContext *application_context;
 
   GList *list_start, *list;
-
+  GList *sequencer, *notation, *wave, *midi;
+  
   gint sound_scope;
 
   static const guint staging_flags = (AGS_SOUND_STAGING_CANCEL |
@@ -422,18 +423,30 @@ ags_cancel_audio_launch(AgsTask *task)
   }
 
   /* add channel to AgsAudioLoop */
-  list_start = ags_audio_check_scope(audio,
-				     (AGS_SOUND_SCOPE_SEQUENCER |
-				      AGS_SOUND_SCOPE_NOTATION |
-				      AGS_SOUND_SCOPE_WAVE |
-				      AGS_SOUND_SCOPE_MIDI));
+  sequencer = ags_audio_check_scope(audio,
+				    (AGS_SOUND_SCOPE_SEQUENCER));
+
+  notation = ags_audio_check_scope(audio,
+				   (AGS_SOUND_SCOPE_NOTATION));
+
+  wave = ags_audio_check_scope(audio,
+			       (AGS_SOUND_SCOPE_WAVE));
+
+  midi = ags_audio_check_scope(audio,
+			       (AGS_SOUND_SCOPE_MIDI));
   
-  if(list_start == NULL){
+  if(sequencer == NULL &&
+     notation == NULL &&
+     wave == NULL &&
+     midi == NULL){
     ags_audio_loop_remove_audio(audio_loop,
 				(GObject *) audio);
   }
 
-  g_list_free(list_start);
+  g_list_free(sequencer);
+  g_list_free(notation);
+  g_list_free(wave);
+  g_list_free(midi);
 }
 
 /**

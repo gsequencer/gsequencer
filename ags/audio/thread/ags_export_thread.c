@@ -140,7 +140,7 @@ ags_export_thread_class_init(AgsExportThreadClass *export_thread)
 				   i18n_pspec("soundcard assigned to"),
 				   i18n_pspec("The AgsSoundcard it is assigned to"),
 				   G_TYPE_OBJECT,
-				   G_PARAM_WRITABLE);
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_SOUNDCARD,
 				  param_spec);
@@ -209,6 +209,9 @@ ags_export_thread_init(AgsExportThread *export_thread)
 
   g_atomic_int_or(&(thread->flags),
 		  (AGS_THREAD_START_SYNCED_FREQ));
+
+  g_atomic_int_or(&(thread->flags),
+		  (AGS_THREAD_INTERMEDIATE_POST_SYNC));
   
   config = ags_config_get_instance();
   
@@ -269,49 +272,43 @@ ags_export_thread_set_property(GObject *gobject,
 {
   AgsExportThread *export_thread;
 
+  pthread_mutex_t *thread_mutex;
+
   export_thread = AGS_EXPORT_THREAD(gobject);
+
+  /* get thread mutex */
+  pthread_mutex_lock(ags_thread_get_class_mutex());
+  
+  thread_mutex = AGS_THREAD(gobject)->obj_mutex;
+  
+  pthread_mutex_unlock(ags_thread_get_class_mutex());
 
   switch(prop_id){
   case PROP_SOUNDCARD:
     {
       GObject *soundcard;
 
-      guint samplerate;
-      guint buffer_size;
-
       soundcard = (GObject *) g_value_get_object(value);
 
+      pthread_mutex_lock(thread_mutex);
+
+      if(export_thread->soundcard == soundcard){
+	pthread_mutex_unlock(thread_mutex);
+
+	return;
+      }
+      
       if(export_thread->soundcard != NULL){
 	g_object_unref(G_OBJECT(export_thread->soundcard));
       }
 
       if(soundcard != NULL){
 	g_object_ref(G_OBJECT(soundcard));
-
-	ags_soundcard_get_presets(AGS_SOUNDCARD(soundcard),
-				  NULL,
-				  &samplerate,
-				  &buffer_size,
-				  NULL);
-	
-	g_object_set(export_thread,
-		     "frequency", ceil((gdouble) samplerate / (gdouble) buffer_size) + AGS_SOUNDCARD_DEFAULT_OVERCLOCK,
-		     NULL);
-
-	if(AGS_IS_DEVOUT(soundcard)){
-	  g_atomic_int_or(&(AGS_THREAD(export_thread)->flags),
-			  (AGS_THREAD_INTERMEDIATE_POST_SYNC));
-	}else if(AGS_IS_JACK_DEVOUT(soundcard) ||
-		 AGS_IS_PULSE_DEVOUT(soundcard)){
-	  g_atomic_int_and(&(AGS_THREAD(export_thread)->flags),
-			   (~AGS_THREAD_INTERMEDIATE_POST_SYNC));
-	}else if(AGS_IS_CORE_AUDIO_DEVOUT(soundcard)){
-	  g_atomic_int_or(&(AGS_THREAD(export_thread)->flags),
-			  (AGS_THREAD_INTERMEDIATE_POST_SYNC));
-	}
       }
+      
+      export_thread->soundcard = soundcard;
 
-      export_thread->soundcard = G_OBJECT(soundcard);
+      pthread_mutex_unlock(thread_mutex);
     }
     break;
   case PROP_AUDIO_FILE:
@@ -320,7 +317,11 @@ ags_export_thread_set_property(GObject *gobject,
 
       audio_file = g_value_get_object(value);
 
+      pthread_mutex_lock(thread_mutex);
+
       if(export_thread->audio_file == audio_file){
+	pthread_mutex_unlock(thread_mutex);
+
 	return;
       }
 
@@ -333,11 +334,17 @@ ags_export_thread_set_property(GObject *gobject,
       }
 
       export_thread->audio_file = audio_file;
+
+      pthread_mutex_unlock(thread_mutex);
     }
     break;
   case PROP_TIC:
     {
+      pthread_mutex_lock(thread_mutex);
+
       export_thread->tic = g_value_get_uint(value);
+
+      pthread_mutex_unlock(thread_mutex);
     }
     break;
   default:
@@ -354,22 +361,43 @@ ags_export_thread_get_property(GObject *gobject,
 {
   AgsExportThread *export_thread;
 
+  pthread_mutex_t *thread_mutex;
+
   export_thread = AGS_EXPORT_THREAD(gobject);
+
+  /* get thread mutex */
+  pthread_mutex_lock(ags_thread_get_class_mutex());
+  
+  thread_mutex = AGS_THREAD(gobject)->obj_mutex;
+  
+  pthread_mutex_unlock(ags_thread_get_class_mutex());
 
   switch(prop_id){
   case PROP_SOUNDCARD:
     {
+      pthread_mutex_lock(thread_mutex);
+
       g_value_set_object(value, G_OBJECT(export_thread->soundcard));
+
+      pthread_mutex_unlock(thread_mutex);
     }
     break;
   case PROP_AUDIO_FILE:
     {
+      pthread_mutex_lock(thread_mutex);
+
       g_value_set_object(value, export_thread->audio_file);
+
+      pthread_mutex_unlock(thread_mutex);
     }
     break;
   case PROP_TIC:
     {
+      pthread_mutex_lock(thread_mutex);
+
       g_value_set_uint(value, export_thread->tic);
+
+      pthread_mutex_unlock(thread_mutex);
     }
     break;
   default:
@@ -445,9 +473,6 @@ ags_export_thread_start(AgsThread *thread)
 {
   AgsExportThread *export_thread;
   
-  //TODO:JK: implement me
-  g_message("export start");
-
   export_thread = (AgsExportThread *) thread;
   
   export_thread->counter = 0;
@@ -473,6 +498,10 @@ ags_export_thread_run(AgsThread *thread)
   
   export_thread = AGS_EXPORT_THREAD(thread);
 
+  if(export_thread->audio_file == NULL){
+    return;
+  }
+  
   if(export_thread->counter == export_thread->tic){
     ags_thread_stop(thread);
   }else{
@@ -520,6 +549,8 @@ ags_export_thread_stop(AgsThread *thread)
 
   ags_audio_file_flush(export_thread->audio_file);
   ags_audio_file_close(export_thread->audio_file);
+
+  export_thread->audio_file = NULL;
 }
 
 /**
@@ -542,9 +573,16 @@ ags_export_thread_find_soundcard(AgsExportThread *export_thread,
   }
   
   while(export_thread != NULL){
-    if(AGS_IS_EXPORT_THREAD(export_thread) &&
-       export_thread->soundcard == soundcard){
-      return(export_thread);
+    if(AGS_IS_EXPORT_THREAD(export_thread)){
+      GObject *current_soundcard;
+      
+      g_object_get(export_thread,
+		   "soundcard", &current_soundcard,
+		   NULL);
+      
+      if(current_soundcard == soundcard){
+	return(export_thread);
+      }
     }
     
     export_thread = g_atomic_pointer_get(&(((AgsThread *) export_thread)->next));

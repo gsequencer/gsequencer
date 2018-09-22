@@ -915,24 +915,28 @@ ags_audio_loop_run(AgsThread *thread)
     }
 
     /* sequencer thread */
-    sequencer_thread = thread;
+    sequencer_thread = ags_thread_find_type(thread,
+					    AGS_TYPE_SEQUENCER_THREAD);
 
-    while((sequencer_thread = ags_thread_find_type(sequencer_thread,
-						   AGS_TYPE_SEQUENCER_THREAD)) != NULL){
-      if((AGS_THREAD_RUNNING & (g_atomic_int_get(&(sequencer_thread->flags)))) != 0){
-	ags_thread_stop(sequencer_thread);
+    while(sequencer_thread != NULL){
+      if(AGS_IS_SEQUENCER_THREAD(sequencer_thread)){
+	if((AGS_THREAD_RUNNING & (g_atomic_int_get(&(sequencer_thread->flags)))) != 0){
+	  ags_thread_stop(sequencer_thread);
+	}
       }
 
       sequencer_thread = g_atomic_pointer_get(&(sequencer_thread->next));
     }
 
     /* export thread */
-    export_thread = thread;
+    export_thread = ags_thread_find_type(thread,
+					 AGS_TYPE_EXPORT_THREAD);
 
-    while((export_thread = ags_thread_find_type(export_thread,
-						AGS_TYPE_EXPORT_THREAD)) != NULL){
-      if((AGS_THREAD_RUNNING & (g_atomic_int_get(&(export_thread->flags)))) != 0){
-	ags_thread_stop(export_thread);
+    while(export_thread != NULL){
+      if(AGS_IS_EXPORT_THREAD(export_thread)){
+	if((AGS_THREAD_RUNNING & (g_atomic_int_get(&(export_thread->flags)))) != 0){
+	  ags_thread_stop(export_thread);
+	}
       }
 
       export_thread = g_atomic_pointer_get(&(export_thread->next));

@@ -473,36 +473,15 @@ ags_export_output_launch(AgsTask *task)
 			 TRUE);
   //TODO:JK: more formats
 
-#ifdef AGS_DEBUG
   g_message("export output");
+#ifdef AGS_DEBUG
 #endif
 
   /* start export thread */
   g_object_set(G_OBJECT(export_thread),
-	       "soundcard", soundcard,
 	       "audio-file", audio_file,
 	       "tic", tic,
 	       NULL);
-
-  if((AGS_THREAD_SINGLE_LOOP & (g_atomic_int_get(&(AGS_THREAD(export_thread)->flags)))) == 0){
-    AgsThread *parent;
-    
-    GList *start_queue;
-
-    parent = g_atomic_pointer_get(&(AGS_THREAD(export_thread)->parent));
-    
-    pthread_mutex_lock(parent->start_mutex);
-    
-    start_queue = g_atomic_pointer_get(&(parent->start_queue));
-    g_atomic_pointer_set(&(parent->start_queue),
-			 g_list_prepend(start_queue,
-					export_thread));
-    
-    pthread_mutex_unlock(parent->start_mutex);
-  }else{
-    g_atomic_int_or(&(AGS_THREAD(export_thread)->flags),
-		    AGS_THREAD_RUNNING);
-  }
 }
 
 /**

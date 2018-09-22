@@ -1804,29 +1804,45 @@ ags_machine_set_run_extended(AgsMachine *machine,
   }else{
     AgsCancelAudio *cancel_audio;
 
-    /* create cancel task */
-    cancel_audio = ags_cancel_audio_new(machine->audio,
-					AGS_SOUND_SCOPE_SEQUENCER);
+    if(sequencer){
+      /* create cancel task */
+      cancel_audio = ags_cancel_audio_new(machine->audio,
+					  AGS_SOUND_SCOPE_SEQUENCER);
     
-    /* append AgsCancelAudio */
-    ags_gui_thread_schedule_task((AgsGuiThread *) gui_thread,
-				 cancel_audio);
+      /* append AgsCancelAudio */
+      ags_gui_thread_schedule_task((AgsGuiThread *) gui_thread,
+				   cancel_audio);
+    }
 
-    /* create cancel task */
-    cancel_audio = ags_cancel_audio_new(machine->audio,
-					AGS_SOUND_SCOPE_NOTATION);
+    if(notation){
+      /* create cancel task */
+      cancel_audio = ags_cancel_audio_new(machine->audio,
+					  AGS_SOUND_SCOPE_NOTATION);
     
-    /* append AgsCancelAudio */
-    ags_gui_thread_schedule_task((AgsGuiThread *) gui_thread,
-				 cancel_audio);
+      /* append AgsCancelAudio */
+      ags_gui_thread_schedule_task((AgsGuiThread *) gui_thread,
+				   cancel_audio);
+    }
 
-    /* create cancel task */
-    cancel_audio = ags_cancel_audio_new(machine->audio,
-					AGS_SOUND_SCOPE_WAVE);
+    if(wave){
+      /* create cancel task */
+      cancel_audio = ags_cancel_audio_new(machine->audio,
+					  AGS_SOUND_SCOPE_WAVE);
     
-    /* append AgsCancelAudio */
-    ags_gui_thread_schedule_task((AgsGuiThread *) gui_thread,
-				 cancel_audio);
+      /* append AgsCancelAudio */
+      ags_gui_thread_schedule_task((AgsGuiThread *) gui_thread,
+				   cancel_audio);
+    }
+
+    if(midi){
+      /* create cancel task */
+      cancel_audio = ags_cancel_audio_new(machine->audio,
+					  AGS_SOUND_SCOPE_MIDI);
+    
+      /* append AgsCancelAudio */
+      ags_gui_thread_schedule_task((AgsGuiThread *) gui_thread,
+				   cancel_audio);
+    }
   }
 }
 
