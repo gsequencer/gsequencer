@@ -1432,8 +1432,6 @@ ags_play_lv2_audio_run_run_pre(AgsRecall *recall)
 
   if(play_lv2_audio_run->key_on != 0 &&
      play_lv2_audio_run->lv2_handle != NULL){
-    g_message("run");
-    
     run(play_lv2_audio_run->lv2_handle[0],
 	(uint32_t) buffer_size);
   }

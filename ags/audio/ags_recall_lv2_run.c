@@ -63,7 +63,7 @@ void ags_recall_lv2_run_get_property(GObject *gobject,
 void ags_recall_lv2_run_finalize(GObject *gobject);
 
 void ags_recall_lv2_run_run_init_pre(AgsRecall *recall);
-void ags_recall_lv2_run_feed_input_queue(AgsRecall *recall);
+void ags_recall_lv2_run_run_pre(AgsRecall *recall);
 void ags_recall_lv2_run_run_inter(AgsRecall *recall);
 
 void ags_recall_lv2_run_load_ports(AgsRecallLv2Run *recall_lv2_run);
@@ -191,7 +191,7 @@ ags_recall_lv2_run_class_init(AgsRecallLv2RunClass *recall_lv2_run)
   recall = (AgsRecallClass *) recall_lv2_run;
 
   recall->run_init_pre = ags_recall_lv2_run_run_init_pre;
-  recall->feed_input_queue = ags_recall_lv2_run_feed_input_queue;
+  recall->run_pre = ags_recall_lv2_run_run_pre;
   recall->run_inter = ags_recall_lv2_run_run_inter;
 }
 
@@ -729,7 +729,7 @@ ags_recall_lv2_run_run_init_pre(AgsRecall *recall)
 }
 
 void
-ags_recall_lv2_run_feed_input_queue(AgsRecall *recall)
+ags_recall_lv2_run_run_pre(AgsRecall *recall)
 {
   AgsRecallLv2 *recall_lv2;
   AgsRecallChannelRun *recall_channel_run;
@@ -757,7 +757,7 @@ ags_recall_lv2_run_feed_input_queue(AgsRecall *recall)
   guint buffer_size;
   guint i;
 
-  void (*parent_class_feed_input_queue)(AgsRecall *recall);
+  void (*parent_class_run_pre)(AgsRecall *recall);
 
   void (*run)(LV2_Handle instance,
 	      uint32_t sample_count);
@@ -770,12 +770,12 @@ ags_recall_lv2_run_feed_input_queue(AgsRecall *recall)
   /* get parent class */
   pthread_mutex_lock(ags_recall_get_class_mutex());
 
-  parent_class_feed_input_queue = AGS_RECALL_CLASS(ags_recall_lv2_run_parent_class)->feed_input_queue;
+  parent_class_run_pre = AGS_RECALL_CLASS(ags_recall_lv2_run_parent_class)->run_pre;
   
   pthread_mutex_unlock(ags_recall_get_class_mutex());
 
   /* call parent */
-  parent_class_feed_input_queue(recall);
+  parent_class_run_pre(recall);
 
   g_object_get(recall,
 	       "recall-id", &recall_id,
@@ -864,7 +864,7 @@ ags_recall_lv2_run_feed_input_queue(AgsRecall *recall)
 		   "x1", &x1,
 		   NULL);
        	
-      if((x1 <= notation_counter &&
+      if((x1 + 1 <= notation_counter &&
 	  !ags_note_test_flags(note->data, AGS_NOTE_FEED)) ||
 	 x0 > notation_counter){
 	recall_lv2_run->note = g_list_remove(recall_lv2_run->note,
@@ -883,7 +883,7 @@ ags_recall_lv2_run_feed_input_queue(AgsRecall *recall)
 		 NULL);
     
     if(audio_signal->stream_current == NULL ||
-       (x1 <= notation_counter &&
+       (x1 + 1 <= notation_counter &&
 	!ags_note_test_flags(note_start->data, AGS_NOTE_FEED)) ||
        x0 > notation_counter){
       //    g_message("done");

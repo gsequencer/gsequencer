@@ -1,3 +1,11 @@
+ags (2.0.17)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed unsafe child access in ags_recall.c
+	* fixed ags-route-lv2 recall no playback
+	* fixed ags-dssi recall no playback for note length 1
+	* fixed ags-lv2 recall no playback for note length 1
+
 ags (2.0.16)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
