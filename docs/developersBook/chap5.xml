@@ -186,5 +186,64 @@
       create_channels to allow instantiate new channels. The boolean parameters can be combined
       as you want.
     </para>
+    
+    <sect2>
+      <title>Audio container</title>
+      <para>
+	The AgsAudioContainer object can open Soundfont2, Gig and DLS2 files by using libinstpatch. The AgsAudioContainer:sound-container
+	field implements AgsSoundContainer and provides you many functions to dealing with container formats.
+      </para>
+
+      <para>
+	There are convenient functions to obtain a GObject subtype implementing AgsSoundResource:
+      </para>
+
+      <itemizedlist>
+	<listitem>
+	  GList* ags_sound_container_get_resource_all()
+	</listitem>
+	<listitem>
+	  GList* ags_sound_container_get_resource_by_name()
+	</listitem>
+	<listitem>
+	  GList* ags_sound_container_get_resource_by_index()
+	</listitem>
+	<listitem>
+	  GList* ags_sound_container_get_resource_current()
+	</listitem>
+      </itemizedlist>
+    </sect2>
+
+    <sect2>
+      <title>Audio file</title>
+      <para>
+	The AgsAudioFile object can open FLAC, WAV, AIFF and OGG using libsndfile. The AgsAudioFile:sound-resource
+	field implements AgsSoundResource and provides you many functions to dealing with audio file formats.
+      </para>
+
+      <itemizedlist>
+	<listitem>
+	  void ags_sound_resource_info()
+	</listitem>
+	<listitem>
+	  void ags_sound_resource_set_presets()
+	</listitem>
+	<listitem>
+	  void ags_sound_resource_get_presets()
+	</listitem>
+	<listitem>
+	  guint ags_sound_resource_read()
+	</listitem>
+	<listitem>
+	  void ags_sound_resource_write()
+	</listitem>
+	<listitem>
+	  void ags_sound_resource_flush()
+	</listitem>
+	<listitem>
+	  void ags_sound_resource_seek()
+	</listitem>
+      </itemizedlist>
+    </sect2>
   </sect1>
 </chapter>
