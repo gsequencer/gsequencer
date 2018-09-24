@@ -294,8 +294,8 @@
 	</listitem>
 	<listitem>
 	  <para>
-	    recall_class-&gt;automate, recall_class-&gt;run_pre, recall_class-&gt;run_inter &amp;
-	    recall_class-&gt;run_post
+	    recall_class-&gt;automate, recall_class-&gt;feed_input_queue, recall_class-&gt;run_pre, recall_class-&gt;run_inter,
+	    recall_class-&gt;run_post &amp; recall_class-&gt;feed_output_queue
 	  </para>
 	</listitem>
       </itemizedlist>

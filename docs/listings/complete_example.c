@@ -47,7 +47,7 @@ setup_master(AgsApplicationContext *application_context)
   /* add ags-play-master recall */
   ags_recall_factory_create(audio,
                             NULL, NULL,
-                            "ags-play-master\0",
+                            "ags-play-master",
                             0, n_audio_channels,
                             0, n_output_pads,
                             (AGS_RECALL_FACTORY_INPUT,
@@ -111,9 +111,14 @@ setup_slave(AgsApplicationContext *application_context)
 
   /* create master playback */
   audio = ags_audio_new(soundcard);
-  audio->flags |= (AGS_AUDIO_OUTPUT_HAS_RECYCLING |
-                   AGS_AUDIO_INPUT_HAS_RECYCLING);
-  
+  ags_audio_set_flags(audio,
+		      (AGS_AUDIO_OUTPUT_HAS_RECYCLING |
+		       AGS_AUDIO_INPUT_HAS_RECYCLING));
+  ags_audio_set_ability_flags(audio, (AGS_SOUND_ABILITY_SEQUENCER));
+  ags_audio_set_behaviour_flags(audio, (AGS_SOUND_BEHAVIOUR_PATTERN_MODE |
+					AGS_SOUND_BEHAVIOUR_REVERSE_MAPPING |
+					AGS_SOUND_BEHAVIOUR_DEFAULTS_TO_INPUT));
+
   n_audio_channels = 2;
 
   n_output_pads = 1;
@@ -129,6 +134,15 @@ setup_slave(AgsApplicationContext *application_context)
                      AGS_TYPE_INPUT,
                      n_input_pads);
 
+  /* add pattern and generate sound */
+  channel = audio->output;
+
+  while(channel != NULL){
+    ags_channel_set_ability_flags(channel, (AGS_SOUND_ABILITY_SEQUENCER));
+
+    channel = channel->next;
+  }
+  
   /* add pattern and generate sound */
   channel = audio->input;
   
@@ -183,7 +197,7 @@ setup_slave(AgsApplicationContext *application_context)
   /* add ags-delay recall */
   ags_recall_factory_create(audio,
                             NULL, NULL,
-                            "ags-delay\0",
+                            "ags-delay",
                             0, 0,
                             0, 0,
                             (AGS_RECALL_FACTORY_OUTPUT |
@@ -200,7 +214,7 @@ setup_slave(AgsApplicationContext *application_context)
   /* ags-count-beats */
   ags_recall_factory_create(audio,
                             NULL, NULL,
-                            "ags-count-beats\0",
+                            "ags-count-beats",
                             0, 0,
                             0, 0,
                             (AGS_RECALL_FACTORY_OUTPUT |
@@ -215,7 +229,7 @@ setup_slave(AgsApplicationContext *application_context)
 
     /* set dependency */  
     g_object_set(G_OBJECT(play_count_beats_audio_run),
-                 "delay-audio-run\0", play_delay_audio_run,
+                 "delay-audio-run", play_delay_audio_run,
                  NULL);
 
     /* make it loop */
@@ -229,7 +243,7 @@ setup_slave(AgsApplicationContext *application_context)
   /* ags-copy-pattern */
   ags_recall_factory_create(audio,
                             NULL, NULL,
-                            "ags-copy-pattern\0",
+                            "ags-copy-pattern",
                             0, n_audio_channels,
                             0, n_input_pads,
                             (AGS_RECALL_FACTORY_INPUT |
@@ -244,8 +258,8 @@ setup_slave(AgsApplicationContext *application_context)
 
     /* set dependency */
     g_object_set(G_OBJECT(recall_copy_pattern_audio_run),
-                 "delay-audio-run\0", play_delay_audio_run,
-                 "count-beats-audio-run\0", play_count_beats_audio_run,
+                 "delay-audio-run", play_delay_audio_run,
+                 "count-beats-audio-run", play_count_beats_audio_run,
                  NULL);
 
   }
@@ -278,49 +292,37 @@ main(int argc, char **argv)
 {
   AgsAudio *master, *slave;
   AgsChannel *output, *input;
+
+  AgsStartAudio *start_audio;
   
   AgsThread *main_loop;
+  AgsTaskThread *task_thread;
   
   AgsApplicationContext *application_context;
   AgsConfig *config;
 
-  GList *playback;
-  GList *start_queue;
-  
   GError *error;
-
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *main_loop_mutex;
-  pthread_mutex_t *audio_thread_mutex;
 
   /* create application context */
   application_context = ags_audio_application_context_new();
-
+  g_object_get(application_context,
+	       "task-thread", &task_thread,
+	       NULL);
+  
   /* set config */
   config = application_context->config;
 
   ags_config_set_value(config,
                        AGS_CONFIG_THREAD,
-                       "model\0",
-                       "super-threaded\0");
+                       "model",
+                       "super-threaded");
   ags_config_set_value(config,
                        AGS_CONFIG_THREAD,
-                       "super-threaded-scope\0",
-                       "channel\0");
-
-  /* get mutex manager and application mutex */
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+                       "super-threaded-scope",
+                       "channel");
 
   /* main loop */
   main_loop = application_context->main_loop;
-
-  pthread_mutex_lock(application_mutex);
-
-  main_loop_mutex = ags_mutex_manager_lookup(mutex_manager,
-                                             main_loop);
-  
-  pthread_mutex_unlock(application_mutex);
 
   /* setup audio tree */
   master = setup_master(application_context);
@@ -338,124 +340,25 @@ main(int argc, char **argv)
                          &error);
 
     if(error != NULL){
-      g_message("%s\0", error->message);
+      g_message("%s", error->message);
     }
     
     input = input->next;
     output = output->next;
   }
 
-  /* initialize tree */
-  g_atomic_int_or(&(AGS_PLAYBACK_DOMAIN(audio->playback_domain)->flags),
-                  AGS_PLAYBACK_DOMAIN_SEQUENCER);
+  start_audio = ags_start_audio_new(slave,
+				    AGS_SOUND_SCOPE_SEQUENCER);
 
-  playback = AGS_PLAYBACK_DOMAIN(audio->playback_domain)->playback;
-
-  list = ags_audio_recursive_play_init(audio,
-                                       FALSE, TRUE, FALSE);
-
-  while(playback != NULL){
-    g_atomic_int_or(&(AGS_PLAYBACK(playback->data)->flags),
-                    AGS_PLAYBACK_SEQUENCER);
-      
-    playback = playback->next;
-  }
-
-  /* parent mutex */
-  pthread_mutex_lock(application_mutex);
-
-  audio_thread_mutex = ags_mutex_manager_lookup(mutex_manager,
-                                                AGS_PLAYBACK_DOMAIN(slave->playback_domain)->audio_thread[1]);
-  
-  pthread_mutex_unlock(application_mutex);
-
-  /* append to AgsAudioLoop */
-  ags_audio_loop_add_audio(main_loop,
-                           slave);
-  
-  /* add audio and channel threads */
-  output = slave->output;
-
-  start_queue = NULL;
-        
-  while(output != NULL){
-    g_atomic_int_or(&(AGS_CHANNEL_THREAD(AGS_PLAYBACK(output->playback)->channel_thread[1])->flags),
-                    (AGS_CHANNEL_THREAD_WAIT |
-                     AGS_CHANNEL_THREAD_DONE |
-                     AGS_CHANNEL_THREAD_WAIT_SYNC |
-                     AGS_CHANNEL_THREAD_DONE_SYNC));
-    start_queue = g_list_prepend(start_queue,
-                                 AGS_PLAYBACK(output->playback)->channel_thread[1]);
-
-    if(AGS_PLAYBACK(output->playback)->channel_thread[1]->parent == NULL){
-      ags_thread_add_child_extended(AGS_PLAYBACK_DOMAIN(audio->playback_domain)->audio_thread[1],
-                                    AGS_PLAYBACK(output->playback)->channel_thread[1],
-                                    TRUE, TRUE);
-      ags_connectable_connect(AGS_CONNECTABLE(AGS_PLAYBACK(output->playback)->channel_thread[1]));
-    }
-          
-    output = output->next;
-  }
-
-  /* start queue */
-  start_queue = g_list_reverse(start_queue);
-
-  pthread_mutex_lock(audio_thread_mutex);
-
-  if(start_queue != NULL){
-    if(g_atomic_pointer_get(&(AGS_PLAYBACK_DOMAIN(audio->playback_domain)->audio_thread[1]->start_queue)) != NULL){
-      g_atomic_pointer_set(&(AGS_PLAYBACK_DOMAIN(audio->playback_domain)->audio_thread[1]->start_queue),
-                           g_list_concat(start_queue,
-                                         g_atomic_pointer_get(&(AGS_PLAYBACK_DOMAIN(audio->playback_domain)->audio_thread[1]->start_queue))));
-    }else{
-      g_atomic_pointer_set(&(AGS_PLAYBACK_DOMAIN(audio->playback_domain)->audio_thread[1]->start_queue),
-                           start_queue);
-    }
-  }
-
-  pthread_mutex_unlock(audio_thread_mutex);
-
-  /* super threaded setup - audio */
-  start_queue = NULL;
-
-  if(append_audio->do_sequencer){
-    g_atomic_int_or(&(AGS_AUDIO_THREAD(AGS_PLAYBACK_DOMAIN(audio->playback_domain)->audio_thread[1])->flags),
-                    (AGS_AUDIO_THREAD_WAIT |
-                     AGS_AUDIO_THREAD_DONE |
-                     AGS_AUDIO_THREAD_WAIT_SYNC |
-                     AGS_AUDIO_THREAD_DONE_SYNC));
-    start_queue = g_list_prepend(start_queue,
-                                 AGS_PLAYBACK_DOMAIN(audio->playback_domain)->audio_thread[1]);
-
-    if(AGS_PLAYBACK_DOMAIN(audio->playback_domain)->audio_thread[1]->parent == NULL){
-      ags_thread_add_child_extended(main_loop,
-                                    AGS_PLAYBACK_DOMAIN(audio->playback_domain)->audio_thread[1],
-                                    TRUE, TRUE);
-      ags_connectable_connect(AGS_CONNECTABLE(AGS_PLAYBACK_DOMAIN(audio->playback_domain)->audio_thread[1]));
-    }
-  }
-
-  /* start queue */
-  start_queue = g_list_reverse(start_queue);
-
-  pthread_mutex_lock(main_loop_mutex);
-
-  if(start_queue != NULL){
-    if(g_atomic_pointer_get(&(AGS_THREAD(main_loop)->start_queue)) != NULL){
-      g_atomic_pointer_set(&(AGS_THREAD(main_loop)->start_queue),
-                           g_list_concat(start_queue,
-                                         g_atomic_pointer_get(&(AGS_THREAD(main_loop)->start_queue))));
-    }else{
-      g_atomic_pointer_set(&(AGS_THREAD(main_loop)->start_queue),
-                           start_queue);
-    }
-  }
-
-  pthread_mutex_unlock(main_loop_mutex);
-
-  /* start threads and join main loop */
+  /* start threads */
   ags_thread_start(main_loop);
-  
+
+  /* launch task */
+  sleep(3);
+  ags_task_thread_append_task(task_thread,
+			      start_audio);
+
+  /* join main loop */
   pthread_join(*(main_loop->thread),
                NULL);
 

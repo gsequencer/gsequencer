@@ -192,8 +192,8 @@
 
     <para>
       The AgsConnectable interface provides 2 new
-      functions: <code language="C">void ags_connectable_connect_connection()</code> and
-      <code language="C">void ags_connectable_disconnect_connection()</code>.
+      functions: <code language="C">void ags_connectable_connect_connection(AgsConnectable*, GObject*)</code> and
+      <code language="C">void ags_connectable_disconnect_connection(AgsConnectable*, GObject*)</code>.
     </para>
 
     <para>

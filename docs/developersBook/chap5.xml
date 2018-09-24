@@ -116,6 +116,23 @@
       </listitem>
     </itemizedlist>
   </sect1>
+
+  <sect1>
+    <title>AgsWave and AgsBuffer</title>
+    <para>
+      The wave objects stores your buffers as a GList. There are analogous
+      to notation functions to add or remove buffers.
+    </para>
+    
+    <itemizedlist mark="bullet">
+      <listitem>
+	<code language="C">void ags_wave_add_buffer(AgsWave*, AgsBuffer*, gboolean)</code>
+      </listitem>
+      <listitem>
+	<code language="C">gboolean ags_wave_remove_buffer(AgsWave*, AgsBuffer*, gboolean)</code>
+      </listitem>
+    </itemizedlist>
+  </sect1>
   
   <sect1>
     <title>AgsRecallID and AgsRecyclingContext</title>
@@ -150,11 +167,8 @@
     </para>
     
     <para>
-      You can initialize the sound processing tree with
-      <code language="C">AgsRecallID* ags_audio_recursive_play_init(AgsAudio, gint, gboolean, gboolean, gboolean, gboolean, AgsRecallID*)</code>.
-      This invokes successive <code language="C">void ags_audio_init_recall(AgsAudio*, gint, AgsRecallID*)</code>,
-      <code language="C">void ags_channel_init_recall(AgsAudio*, gint, AgsRecallID*)</code> and related
-      within your tree.
+      All audio processing is performed by one single function. Wheter you want to initialize, run or cancel playback.
+      This is all done by <code language="C">void ags_channel_recursive_run_stage(AgsChannel*, gint, guint)</code>.
     </para>
 
     <para>

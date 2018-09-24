@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE book [
 <!ENTITY libagsso "libags.so.1">
-<!ENTITY libagsthreadso "libags_thread.so.1">
-<!ENTITY libagsserverso "libags_server.so.1">
-<!ENTITY libagsaudioso "libags_audio.so.1">
+<!ENTITY libagsthreadso "libags_thread.so.2">
+<!ENTITY libagsserverso "libags_server.so.2">
+<!ENTITY libagsaudioso "libags_audio.so.2">
 ]>
 
 <!-- Copyright (C) 2005-2018 Jo\u00EBl Kr\u00E4hemann -->
