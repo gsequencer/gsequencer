@@ -1,3 +1,9 @@
+ags (2.0.22)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed missing includes
+	* fixed missing thread-safe properties of AgsTask
+
 ags (2.0.21)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

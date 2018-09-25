@@ -19,6 +19,8 @@
 
 #include <ags/thread/ags_poll_fd.h>
 
+#include <stdlib.h>
+
 void ags_poll_fd_class_init(AgsPollFdClass *poll_fd);
 void ags_poll_fd_init(AgsPollFd *poll_fd);
 void ags_poll_fd_finalize(GObject *gobject);

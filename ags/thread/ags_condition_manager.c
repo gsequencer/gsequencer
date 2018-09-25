@@ -19,6 +19,8 @@
 
 #include <ags/thread/ags_condition_manager.h>
 
+#include <stdlib.h>
+
 void ags_condition_manager_class_init(AgsConditionManagerClass *condition_manager);
 void ags_condition_manager_init(AgsConditionManager *condition_manager);
 void ags_condition_manager_finalize(GObject *gobject);
@@ -149,7 +151,7 @@ ags_condition_manager_insert(AgsConditionManager *condition_manager,
  * @condition_manager: the #AgsConditionManager
  * @lock_object: the object to remove
  * 
- * Removes a lock associated with @lock_object.3
+ * Removes a condition associated with @lock_object.
  *
  * Returns: %TRUE as successfully removed, otherwise %FALSE
  *
@@ -171,6 +173,7 @@ ags_condition_manager_remove(AgsConditionManager *condition_manager,
   g_hash_table_remove(condition_manager->lock_object,
 		      lock_object);
 
+  pthread_cond_destroy(cond);
   free(cond);
   
   return(TRUE);

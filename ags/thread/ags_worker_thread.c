@@ -19,6 +19,8 @@
 
 #include <ags/thread/ags_worker_thread.h>
 
+#include <stdlib.h>
+
 void ags_worker_thread_class_init(AgsWorkerThreadClass *worker_thread);
 void ags_worker_thread_init(AgsWorkerThread *worker_thread);
 void ags_worker_thread_finalize(GObject *gobject);

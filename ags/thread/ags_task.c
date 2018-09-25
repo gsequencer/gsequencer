@@ -20,6 +20,8 @@
 #include <ags/thread/ags_task.h>
 #include <ags/thread/ags_task_thread.h>
 
+#include <stdlib.h>
+
 #include <ags/i18n.h>
 
 void ags_task_class_init(AgsTaskClass *task);
@@ -210,7 +212,16 @@ ags_task_set_property(GObject *gobject,
 {
   AgsTask *task;
 
+  pthread_mutex_t *task_mutex;
+  
   task = AGS_TASK(gobject);
+
+  /* get task mutex */
+  pthread_mutex_lock(ags_task_get_class_mutex());
+
+  task_mutex = task->obj_mutex;
+  
+  pthread_mutex_unlock(ags_task_get_class_mutex());
 
   switch(prop_id){
   case PROP_TASK_THREAD:
@@ -219,7 +230,11 @@ ags_task_set_property(GObject *gobject,
 
       task_thread = (AgsTaskThread *) g_value_get_object(value);
 
+      pthread_mutex_lock(task_mutex);
+      
       if(task->task_thread == (GObject *) task_thread){
+	pthread_mutex_unlock(task_mutex);
+
 	return;
       }
 
@@ -232,6 +247,8 @@ ags_task_set_property(GObject *gobject,
       }
       
       task->task_thread = (GObject *) task_thread;
+
+      pthread_mutex_unlock(task_mutex);
     }
     break;
   default:
@@ -248,12 +265,25 @@ ags_task_get_property(GObject *gobject,
 {
   AgsTask *task;
 
+  pthread_mutex_t *task_mutex;
+
   task = AGS_TASK(gobject);
+
+  /* get task mutex */
+  pthread_mutex_lock(ags_task_get_class_mutex());
+
+  task_mutex = task->obj_mutex;
+  
+  pthread_mutex_unlock(ags_task_get_class_mutex());
 
   switch(prop_id){
   case PROP_TASK_THREAD:
     {
+      pthread_mutex_lock(task_mutex);
+
       g_value_set_object(value, task->task_thread);
+
+      pthread_mutex_unlock(task_mutex);
     }
     break;
   default:

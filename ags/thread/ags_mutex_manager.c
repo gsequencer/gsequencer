@@ -19,6 +19,8 @@
 
 #include <ags/thread/ags_mutex_manager.h>
 
+#include <stdlib.h>
+
 void ags_mutex_manager_class_init(AgsMutexManagerClass *mutex_manager);
 void ags_mutex_manager_init(AgsMutexManager *mutex_manager);
 void ags_mutex_manager_finalize(GObject *gobject);
@@ -186,7 +188,7 @@ ags_mutex_manager_insert(AgsMutexManager *mutex_manager,
  * @mutex_manager: the #AgsMutexManager
  * @lock_object: the object to remove
  * 
- * Removes a lock associated with @lock_object.3
+ * Removes a lock associated with @lock_object.
  *
  * Returns: %TRUE as successfully removed, otherwise %FALSE
  *

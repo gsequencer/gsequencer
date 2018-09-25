@@ -19,6 +19,8 @@
 
 #include <ags/thread/ags_timestamp.h>
 
+#include <stdlib.h>
+
 void ags_timestamp_class_init(AgsTimestampClass *timestamp);
 void ags_timestamp_init (AgsTimestamp *timestamp);
 void ags_timestamp_finalize(GObject *gobject);
