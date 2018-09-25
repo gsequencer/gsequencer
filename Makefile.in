@@ -3199,6 +3199,7 @@ userdoc = \
 	docs/usersBook/chap3.xml \
 	docs/usersBook/chap4.xml \
 	docs/usersBook/chap5.xml \
+	docs/usersBook/chap6.xml \
 	docs/usersBook/preface.xml
 
 devdoc = \
