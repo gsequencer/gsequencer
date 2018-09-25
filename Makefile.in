@@ -3295,6 +3295,7 @@ userdocimages = \
 	$(top_srcdir)/docs/images/ags_select_accelerations_dialog.png \
 	$(top_srcdir)/docs/images/ags_select_buffers_dialog.png \
 	$(top_srcdir)/docs/images/ags_ramp_accelerations_dialog.png \
+	$(top_srcdir)/docs/images/ags-wave-toolbar.png \
 	$(top_srcdir)/docs/images/ags_wave_window_audiorec.png
 
 

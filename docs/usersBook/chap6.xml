@@ -17,7 +17,7 @@
 <!-- Free Documentation License". -->
 
 <chapter xmlns="http://docbook.org/ns/docbook" version="5.0">
-  <title>The automation window</title>
+  <title>The wave window</title>
   <mediaobject>
     <imageobject>
       <imagedata fileref="../images/ags_wave_window_audiorec.png" />
