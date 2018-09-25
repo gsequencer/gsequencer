@@ -181,8 +181,8 @@
   <sect1>
     <title>Audio connection dialog</title>
     <para>
-      The audio connection dialog allows you to specify to what soundcard to output. This can be
-      modified either by assigning single channels or in bulk mode.
+      The audio connection dialog allows you to specify to what soundcard to write output to or read input from.
+      This can be modified either by assigning single channels or in bulk mode.
     </para>
 
     <sect2>
