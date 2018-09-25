@@ -573,7 +573,7 @@ ags_automation_toolbar_load_port(AgsAutomationToolbar *automation_toolbar)
   }
 
   g_list_free(start_port);
-    
+  
   /* output */
   g_object_get(machine->audio,
 	       "output", &channel,

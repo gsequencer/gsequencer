@@ -1151,8 +1151,6 @@ ags_pattern_envelope_set_preset_property(AgsPatternEnvelope *pattern_envelope,
   AgsMachine *machine;
 
   AgsAudio *audio;
-
-  GList *start_preset;
   
   AgsApplicationContext *application_context;
     
@@ -1173,11 +1171,7 @@ ags_pattern_envelope_set_preset_property(AgsPatternEnvelope *pattern_envelope,
   application_context = window->application_context;
 
   /* set property */  
-  g_object_get(audio,
-	       "preset", &start_preset,
-	       NULL);
-
-  g_object_set_property(start_preset,
+  g_object_set_property(preset,
 			property_name, value);
   
   /* reset */

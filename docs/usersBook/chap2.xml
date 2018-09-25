@@ -390,6 +390,40 @@
   </sect1>
 
   <sect1>
+    <title>Spectrometer</title>
+    <mediaobject>
+      <imageobject>
+	<imagedata fileref="../images/ags_spectrometer.png" />
+      </imageobject>
+      <caption>
+	<para>
+	  The spectrometer screenshot
+	</para>
+      </caption>
+    </mediaobject>
+    <para>
+      Visualize input by plotting it using FFTW3 library.
+    </para>
+  </sect1>
+
+  <sect1>
+    <title>Equalizer10</title>
+    <mediaobject>
+      <imageobject>
+	<imagedata fileref="../images/ags_equalizer10.png" />
+      </imageobject>
+      <caption>
+	<para>
+	  The equalizer10 screenshot
+	</para>
+      </caption>
+    </mediaobject>
+    <para>
+      Adjust a 10 band equalizer with additional pressure control.
+    </para>
+  </sect1>
+
+  <sect1>
     <title>Drum</title>
     <mediaobject>
       <imageobject>
@@ -730,6 +764,24 @@
       The ffplayer contains recently the bridge widget. You can add plugins in bulk mode by
       click Add or Remove within AgsFFPlayer's bridge, what you can collapse/expand. To add an effect
       to a line, you have open as usual input/output of machine properties.
+    </para>
+  </sect1>
+  
+  <sect1>
+    <title>Audiorec</title>
+    <mediaobject>
+      <imageobject>
+	<imagedata fileref="../images/ags_audiorec.png" />
+      </imageobject>
+      <caption>
+	<para>
+	  The audiorec screenshot
+	</para>
+      </caption>
+    </mediaobject>
+    <para>
+      Open large audio files and manipulate the wave form using wave window. You might want
+      to capture sound using it. By either replacing or mixing existing audio data.
     </para>
   </sect1>
 

@@ -756,7 +756,7 @@ ags_ramp_acceleration_dialog_apply(AgsApplicable *applicable)
 	(line = ags_notebook_next_active_tab(notebook,
 					     line)) != -1){
     AgsChannel *channel;
-    AgsPort *play_port, *recall_port;
+    GList *play_port, *recall_port;
 
     guint j;
     guint tmp;
@@ -816,7 +816,7 @@ ags_ramp_acceleration_dialog_apply(AgsApplicable *applicable)
       timestamp->timer.ags_offset.offset = AGS_AUTOMATION_DEFAULT_OFFSET * floor(x0 / AGS_AUTOMATION_DEFAULT_OFFSET);
 
       for(nth_match = 0; nth_match < match_count; nth_match++){
-	list_automation = play_port->automation;
+	list_automation = AGS_PORT(play_port->data)->automation;
 	list_automation = ags_automation_find_near_timestamp(list_automation, line,
 							     timestamp);
 
@@ -825,15 +825,15 @@ ags_ramp_acceleration_dialog_apply(AgsApplicable *applicable)
 				       line,
 				       channel_type, specifier);
 	  g_object_set(current,
-		       "port", play_port,
+		       "port", play_port->data,
 		       NULL);
 
 	  current->timestamp->timer.ags_offset.offset = timestamp->timer.ags_offset.offset;
 
 	  ags_audio_add_automation(machine->audio,
 				   current);
-	  play_port->automation = ags_automation_add(play_port->automation,
-						     current);	  
+	  ags_port_add_automation(AGS_PORT(play_port->data),
+				  current);
 	}else{
 	  current = list_automation->data;
 	}
@@ -915,7 +915,7 @@ ags_ramp_acceleration_dialog_apply(AgsApplicable *applicable)
       timestamp->timer.ags_offset.offset = AGS_AUTOMATION_DEFAULT_OFFSET * floor(x0 / AGS_AUTOMATION_DEFAULT_OFFSET);
 
       for(nth_match = 0; nth_match < match_count; nth_match++){
-	list_automation = recall_port->automation;
+	list_automation = AGS_PORT(recall_port->data)->automation;
 	list_automation = ags_automation_find_near_timestamp(list_automation, line,
 							     timestamp);
 
@@ -924,15 +924,15 @@ ags_ramp_acceleration_dialog_apply(AgsApplicable *applicable)
 				       line,
 				       channel_type, specifier);
 	  g_object_set(current,
-		       "port", recall_port,
+		       "port", recall_port->data,
 		       NULL);
 
 	  current->timestamp->timer.ags_offset.offset = timestamp->timer.ags_offset.offset;
 
 	  ags_audio_add_automation(machine->audio,
 				   current);
-	  recall_port->automation = ags_automation_add(recall_port->automation,
-						       current);	  
+	  ags_port_add_automation(AGS_PORT(recall_port->data),
+				  current);
 	}else{
 	  current = list_automation->data;
 	}
@@ -982,9 +982,9 @@ ags_ramp_acceleration_dialog_apply(AgsApplicable *applicable)
 	  acceleration->x = ((gdouble) x0 + (gdouble) ((gdouble) (x1 - x0) * (gdouble) ((gdouble) (i) / ((gdouble) step_count))));
 	  acceleration->y = ((gdouble) y0 + ((gdouble) (y1 - y0) * (gdouble) ((gdouble) (i + 1) / ((gdouble) step_count))));
 
-	  //#ifdef AGS_DEBUG
+#ifdef AGS_DEBUG
 	  g_message("line %d - %d %f", line, acceleration->x, acceleration->y);
-	  //#endif
+#endif
 	
 	  ags_automation_add_acceleration(current,
 					  acceleration,

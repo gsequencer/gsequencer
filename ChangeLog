@@ -2,11 +2,11 @@ ags (2.0.20)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* updated the docs user's and developer's handbook
+	* added new AgsSpectrometer, AgsEqualizer10 and AgsAudiorec machines to the user's handbook
 	* replaced most of the screenshot for the user's handbook
-	* TODO:JK: added new AgsSpectrometer, AgsEqualizer10 and AgsAudiorec machines to the user's handbook
 	* fixed missing gtkrc entry of AgsSelectBufferDialog and AgsPositionWaveCursorDialog
-	* TODO:JK: fixed AgsPatternEnvelope
-	* TODO:JK: fixed AgsRampAccelerationDialog
+	* fixed ags_pattern_envelope_set_preset_property()
+	* fixed AgsRampAccelerationDialog
 
 ags (2.0.19)
 
