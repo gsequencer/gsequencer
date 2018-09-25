@@ -171,6 +171,43 @@
     </sect2>
 
     <sect2>
+      <title>Position cursor</title>
+      <mediaobject>
+	<imageobject>
+	  <imagedata fileref="../images/ags_position_automation_cursor_dialog.png" />
+	</imageobject>
+	<caption>
+	  <para>
+	    The positon automation cursor dialog screenshot
+	  </para>
+	</caption>
+      </mediaobject>
+      <para>
+	The position automation cursor dialog allows you to position the cursor.
+      </para>
+
+      <table>
+	<title>AGS position automation cursor dialog controls.</title>
+	<tgroup cols="2" align="left" colsep='1' rowsep='1'>
+	  <thead>
+	    <row>
+	      <entry>control</entry>
+	      <entry>description</entry>
+	    </row>
+	  </thead>
+	  <tbody>
+	    <row>
+	      <entry>position x</entry>
+	      <entry>
+		Set the cursor at position x.
+	      </entry>
+	    </row>
+	  </tbody>
+	</tgroup>
+      </table>      
+    </sect2>
+    
+    <sect2>
       <title>Select accelerations</title>
       <mediaobject>
 	<imageobject>

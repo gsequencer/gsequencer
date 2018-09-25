@@ -222,6 +222,43 @@
       </para>    
     </sect2>
     
+    <sect2>
+      <title>Audio connection input line</title>
+      <mediaobject>
+	<imageobject>
+	  <imagedata fileref="../images/ags_audio_connection_input_line.png" />
+	</imageobject>
+	<caption>
+	  <para>
+	    The audio connection input line screenshot
+	  </para>
+	</caption>
+      </mediaobject>
+      
+      <para>
+	Select the desired soundcard and don't forget to click enable. In order apply your modifications.
+	After click OK.
+      </para>    
+    </sect2>
+
+    <sect2>
+      <title>Audio connection input bulk</title>
+      <mediaobject>
+	<imageobject>
+	  <imagedata fileref="../images/ags_audio_connection_input_bulk.png" />
+	</imageobject>
+	<caption>
+	  <para>
+	    The audio connection input bulk screenshot
+	  </para>
+	</caption>
+      </mediaobject>
+      
+      <para>
+	The input connection tab allows you to link a bunch of channel at once.
+      </para>    
+    </sect2>
+
   </sect1>
 
   <sect1>

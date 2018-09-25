@@ -1,0 +1,234 @@
+<?xml version='1.0' encoding="utf-8"?>
+<!DOCTYPE book [
+<!ENTITY indexMenuIcon "/usr/share/icons/Adwaita/32x32/actions/system-run.png">
+<!ENTITY cursorIcon "/usr/share/icons/Adwaita/32x32/actions/go-jump.png">
+<!ENTITY selectIcon "/usr/share/icons/Adwaita/32x32/actions/edit-select-all.png">
+<!ENTITY copyIcon "/usr/share/icons/Adwaita/32x32/actions/edit-copy.png">
+<!ENTITY cutIcon "/usr/share/icons/Adwaita/32x32/actions/edit-cut.png">
+<!ENTITY pasteIcon "/usr/share/icons/Adwaita/32x32/actions/edit-paste.png">
+]>
+
+<!-- Copyright (C) 2005-2018 Jo\u00EBl Kr\u00E4hemann -->
+<!-- Permission is granted to copy, distribute and/or modify this document -->
+<!-- under the terms of the GNU Free Documentation License, Version 1.3 -->
+<!-- or any later version published by the Free Software Foundation; -->
+<!-- with no Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts. -->
+<!-- A copy of the license is included in the section entitled "GNU -->
+<!-- Free Documentation License". -->
+
+<chapter xmlns="http://docbook.org/ns/docbook" version="5.0">
+  <title>The automation window</title>
+  <mediaobject>
+    <imageobject>
+      <imagedata fileref="../images/ags_wave_window_audiorec.png" />
+    </imageobject>
+    <caption>
+      <para>
+	The wave window screenshot showing audio recorder
+      </para>
+    </caption>
+  </mediaobject>
+  <para>
+    The wave window is accessed by edit menu item wave. There are basic edit tools
+    available to manipulate the wave form. You can use keyboard bindings to do your tasks are select
+    appropriate edit tool of toolbar. The wave editor shows all audio channels in vertical alignment
+    and are grouped by default.
+  </para>
+
+  <itemizedlist mark="bullet">
+    <listitem>
+      <para>
+	Position cursor. Use arrow keys. Page-Up and Page-Down switches the wave area.
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+	Select wave. Alternatively do select all, note selects everything visible within scope tab.
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+	Copy wave. Control-C key-stroke.
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+	Cut wave. Control-X key-stroke.
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+	Paste wave. Control-V key-stroke.
+      </para>
+    </listitem>
+  </itemizedlist>
+
+  <para>
+    Adjust zoom by combo-box and add/remove wave area to editor by combo-box selection.
+  </para>
+
+  <sect1>
+    <title>Wave toolbar</title>
+    <mediaobject>
+      <imageobject>
+	<imagedata fileref="../images/ags-wave-toolbar.png" />
+      </imageobject>
+      <caption>
+	<para>
+	  The wave editor's toolbar screenshot
+	</para>
+      </caption>
+    </mediaobject>
+    <para>
+      In the table below are the various buttons explained you may use for editing.
+    </para>
+    
+    <table>
+      <title>AGS wave editor toolbar controls table.</title>
+      <tgroup cols="3" align="left" colsep='1' rowsep='1'>
+	<thead>
+	  <row>
+	    <entry>icon</entry>
+	    <entry>action</entry>
+	    <entry>description</entry>
+	  </row>
+	</thead>
+	<tbody>
+	  <row>
+	    <entry><imagedata fileref="&cursorIcon;" /></entry>
+	    <entry>cursor</entry>
+	    <entry>
+	      You may want to set the cursor to paste buffers at the position where it
+	      is located.
+	    </entry>
+	  </row>
+	  <row>
+	    <entry><imagedata fileref="&selectIcon;" /></entry>
+	    <entry>select</entry>
+	    <entry>
+	      Select buffers to copy or cut them.
+	    </entry>
+	  </row>
+	  <row>
+	    <entry><imagedata fileref="&copyIcon;" /></entry>
+	    <entry>copy</entry>
+	    <entry>
+	      Copy buffers to the clipboard.
+	    </entry>
+	  </row>
+	  <row>
+	    <entry><imagedata fileref="&cutIcon;" /></entry>
+	    <entry>cut</entry>
+	    <entry>
+	      Cut buffers to the clipboard.
+	    </entry>
+	  </row>
+	  <row>
+	    <entry><imagedata fileref="&pasteIcon;" /></entry>
+	    <entry>paste</entry>
+	    <entry>
+	      Paste the previously copied or cutted buffers at the cursor position or
+	      just insert them where they are/were located. 
+	    </entry>
+	  </row>
+	</tbody>
+      </tgroup>
+    </table>
+
+    <sect2>
+      <title>Editing tools</title>
+      <para>
+	The tools menu button contains items that opens dialogs to do common editing tasks. Like move,
+	crop or select buffers.
+      </para>
+    </sect2>
+
+    <sect2>
+      <title>Position cursor</title>
+      <mediaobject>
+	<imageobject>
+	  <imagedata fileref="../images/ags_position_wave_cursor_dialog.png" />
+	</imageobject>
+	<caption>
+	  <para>
+	    The position wave cursor dialog screenshot
+	  </para>
+	</caption>
+      </mediaobject>
+      <para>
+	The position wave cursor dialog allows you to position the cursor.
+      </para>
+
+      <table>
+	<title>AGS position wave cursor dialog controls.</title>
+	<tgroup cols="2" align="left" colsep='1' rowsep='1'>
+	  <thead>
+	    <row>
+	      <entry>control</entry>
+	      <entry>description</entry>
+	    </row>
+	  </thead>
+	  <tbody>
+	    <row>
+	      <entry>position x</entry>
+	      <entry>
+		Set the cursor at position x.
+	      </entry>
+	    </row>
+	  </tbody>
+	</tgroup>
+      </table>      
+    </sect2>
+    
+    <sect2>
+      <title>Select buffers</title>
+      <mediaobject>
+	<imageobject>
+	  <imagedata fileref="../images/ags_select_buffers_dialog.png" />
+	</imageobject>
+	<caption>
+	  <para>
+	    The select buffer dialog screenshot
+	  </para>
+	</caption>
+      </mediaobject>
+      <para>
+	The select buffer dialog allows you to select buffers of given position.
+      </para>
+
+      <table>
+	<title>AGS select buffer dialog controls.</title>
+	<tgroup cols="2" align="left" colsep='1' rowsep='1'>
+	  <thead>
+	    <row>
+	      <entry>control</entry>
+	      <entry>description</entry>
+	    </row>
+	  </thead>
+	  <tbody>
+	    <row>
+	      <entry>copy selection</entry>
+	      <entry>
+		Check button to say if you would like to copy selection to clipboard.
+	      </entry>
+	    </row>
+	    <row>
+	      <entry>select x0</entry>
+	      <entry>
+		Set the x0 offset of region to select.
+	      </entry>
+	    </row>
+	    <row>
+	      <entry>select x1</entry>
+	      <entry>
+		Set the x1 offset of region to select.
+	      </entry>
+	    </row>
+	  </tbody>
+	</tgroup>
+      </table>      
+    </sect2>
+    
+  </sect1>
+
+</chapter>

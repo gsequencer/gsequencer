@@ -56,9 +56,6 @@ struct _AgsSelectBufferDialog
 
   GtkCheckButton *copy_selection;
 
-  GtkVBox *port;
-  GtkButton *add;
-
   GtkSpinButton *select_x0;
 
   GtkSpinButton *select_x1;

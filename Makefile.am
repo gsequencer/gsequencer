@@ -218,17 +218,19 @@ devdocimages = \
 	$(top_srcdir)/docs/images/AGS_linking.png
 
 userdocimages = \
+	$(top_srcdir)/docs/images/ags_audiorec.png \
 	$(top_srcdir)/docs/images/ags-automation-toolbar.png \
 	$(top_srcdir)/docs/images/ags_automation_window_drum.png \
+	$(top_srcdir)/docs/images/ags_equalizer10.png \
 	$(top_srcdir)/docs/images/ags_export_window.png \
 	$(top_srcdir)/docs/images/ags_machine_properties-input.png \
 	$(top_srcdir)/docs/images/ags_machine_properties-resize_channels.png \
 	$(top_srcdir)/docs/images/ags_navigation.png \
-	$(top_srcdir)/docs/images/ags_synth.png \
-	$(top_srcdir)/docs/images/ags_syncsynth.png \
 	$(top_srcdir)/docs/images/ags_audio_preferences.png \
 	$(top_srcdir)/docs/images/ags_audio_connection_output_bulk.png \
 	$(top_srcdir)/docs/images/ags_audio_connection_output_line.png \
+	$(top_srcdir)/docs/images/ags_audio_connection_input_bulk.png \
+	$(top_srcdir)/docs/images/ags_audio_connection_input_line.png \
 	$(top_srcdir)/docs/images/ags_midi_dialog.png \
 	$(top_srcdir)/docs/images/ags_midi_export_wizard_no1.png \
 	$(top_srcdir)/docs/images/ags_midi_export_wizard_no2.png \
@@ -240,6 +242,9 @@ userdocimages = \
 	$(top_srcdir)/docs/images/ags_machine_properties-link_input.png \
 	$(top_srcdir)/docs/images/ags_matrix.png \
 	$(top_srcdir)/docs/images/ags_panel.png \
+	$(top_srcdir)/docs/images/ags_spectrometer.png \
+	$(top_srcdir)/docs/images/ags_synth.png \
+	$(top_srcdir)/docs/images/ags_syncsynth.png \
 	$(top_srcdir)/docs/images/ags-toolbar.png \
 	$(top_srcdir)/docs/images/ags_drum.png \
 	$(top_srcdir)/docs/images/ags_generic_preferences.png \
@@ -254,9 +259,13 @@ userdocimages = \
 	$(top_srcdir)/docs/images/ags_crop_notes_dialog.png \
 	$(top_srcdir)/docs/images/ags_position_notation_cursor_dialog.png \
 	$(top_srcdir)/docs/images/ags_position_automation_cursor_dialog.png \
+	$(top_srcdir)/docs/images/ags_position_wave_cursor_dialog.png \
 	$(top_srcdir)/docs/images/ags_select_notes_dialog.png \
 	$(top_srcdir)/docs/images/ags_select_accelerations_dialog.png \
-	$(top_srcdir)/docs/images/ags_ramp_accelerations_dialog.png
+	$(top_srcdir)/docs/images/ags_select_buffers_dialog.png \
+	$(top_srcdir)/docs/images/ags_ramp_accelerations_dialog.png \
+	$(top_srcdir)/docs/images/ags_wave_window_audiorec.png
+
 
 EXTRA_DIST += $(manpages) $(userdoc) $(userdocimages) $(devdoc) $(devdocimages) $(devdoclistings)
 
@@ -1957,6 +1966,10 @@ fix-local-html: html
 	find $(top_srcdir)/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec sed -i 's/\.\.\/libags-html/\/usr\/share\/doc\/libags-doc\/api/g' {} \;
 	find $(top_srcdir)/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec sed -i 's/\.\.\/libags-audio-html/\/usr\/share\/doc\/libags-audio-doc\/api/g' {} \;
 	find $(top_srcdir)/docs/reference/libgsequencer/libgsequencer-html -name "*.html" -type f -exec sed -i 's/\.\.\/libags-gui-html/\/usr\/share\/doc\/libags-gui-doc\/api/g' {} \;
+
+fix-online-books-html: html
+	find $(top_srcdir)/html/ -name "*.html" -type f -exec sed -i 's/\/usr\/share\/icons\/Adwaita\/32x32\/actions/..\/images/g' {} \;
+	find $(top_srcdir)/html/ -name "*.html" -type f -exec sed -i 's/\/usr\/share\/icons\/Adwaita\/32x32\/apps/..\/images/g' {} \;
 
 fix-online-html: html
 	find $(top_srcdir)/docs/reference/libags/libags-html -name "*.html" -type f -exec sed -i 's/\.\.\/gobject/https\:\/\/developer\.gnome\.org\/gobject\/stable/g' {} \;
