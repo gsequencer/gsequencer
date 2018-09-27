@@ -218,27 +218,27 @@ ags_ramp_acceleration_dialog_port_callback(GtkComboBox *combo_box,
       steps = upper - lower;
     }
 
-    if(scale_steps == -1){
-      scale_steps = AGS_AUTOMATION_EDIT_DEFAULT_HEIGHT;
+    if(steps == -1){
+      steps = AGS_AUTOMATION_EDIT_DEFAULT_HEIGHT;
     }
     
     gtk_spin_button_set_range(ramp_acceleration_dialog->ramp_y0,
 			      lower,
 			      upper);
     gtk_spin_button_set_increments(ramp_acceleration_dialog->ramp_y0,
-				   (upper - lower) / scale_steps,
-				   (upper - lower) / scale_steps);
+				   (upper - lower) / steps,
+				   (upper - lower) / steps);
     
     gtk_spin_button_set_range(ramp_acceleration_dialog->ramp_y1,
 			      lower,
 			      upper);
     gtk_spin_button_set_increments(ramp_acceleration_dialog->ramp_y1,
-				   (upper - lower) / scale_steps,
-				   (upper - lower) / scale_steps);
+				   (upper - lower) / steps,
+				   (upper - lower) / steps);
     
     gtk_spin_button_set_range(ramp_acceleration_dialog->ramp_step_count,
 			      0.0,
-			      scale_steps);
+			      steps);
   }else{
     gtk_spin_button_set_range(ramp_acceleration_dialog->ramp_y0,
 			      0.0,
