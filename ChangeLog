@@ -1,3 +1,9 @@
+ags (2.0.23)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* disabled gtk fatal mask
+	* improved AgsRampAccelerationDialog to use proper step count
+
 ags (2.0.22)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

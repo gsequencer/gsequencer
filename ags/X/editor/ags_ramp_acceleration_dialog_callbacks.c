@@ -194,7 +194,7 @@ ags_ramp_acceleration_dialog_port_callback(GtkComboBox *combo_box,
   }
 
   if(plugin_port != NULL){
-    gint scale_steps;
+    gint steps;
     gdouble lower, upper;
 
     GValue *upper_value, *lower_value;
@@ -203,11 +203,20 @@ ags_ramp_acceleration_dialog_port_callback(GtkComboBox *combo_box,
     g_object_get(plugin_port,
 		 "upper-value", &upper_value,
 		 "lower-value", &lower_value,
-		 "scale-steps", &scale_steps,
 		 NULL);
     
     upper = g_value_get_float(upper_value);
     lower = g_value_get_float(lower_value);
+
+    steps = -1;
+
+    if(ags_plugin_port_test_flags(plugin_port, AGS_PLUGIN_PORT_TOGGLED)){
+      steps = 1;
+    }
+    
+    if(ags_plugin_port_test_flags(plugin_port, AGS_PLUGIN_PORT_INTEGER)){
+      steps = upper - lower;
+    }
 
     if(scale_steps == -1){
       scale_steps = AGS_AUTOMATION_EDIT_DEFAULT_HEIGHT;
