@@ -80,6 +80,9 @@ ags_ffplayer_open_clicked_callback(GtkWidget *widget, AgsFFPlayer *ffplayer)
   GtkFileChooserDialog *file_chooser;
 
   file_chooser = ags_machine_file_chooser_dialog_new(AGS_MACHINE(ffplayer));
+  gtk_file_chooser_add_shortcut_folder_uri(file_chooser,
+					   "file:///usr/share/sounds/sf2",
+					   NULL);
   ffplayer->open_dialog = (GtkWidget *) file_chooser;
   gtk_file_chooser_set_select_multiple(GTK_FILE_CHOOSER(file_chooser),
 				       FALSE);

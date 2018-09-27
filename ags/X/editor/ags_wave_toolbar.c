@@ -176,7 +176,7 @@ ags_wave_toolbar_init(AgsWaveToolbar *wave_toolbar)
   
   /* menu tool */
   wave_toolbar->menu_tool = (GtkMenuToolButton *) g_object_new(GTK_TYPE_MENU_TOOL_BUTTON,
-							       "label", i18n("tool"),
+							       "label", i18n("Tool"),
 							       "stock-id", GTK_STOCK_EXECUTE,
 							       NULL);
   gtk_toolbar_append_widget((GtkToolbar *) wave_toolbar, (GtkWidget *) wave_toolbar->menu_tool, i18n("additional tools"), NULL);
@@ -193,7 +193,7 @@ ags_wave_toolbar_init(AgsWaveToolbar *wave_toolbar)
   /*  */
   wave_toolbar->zoom_history = 4;
   
-  label = (GtkLabel *) gtk_label_new(i18n("zoom"));
+  label = (GtkLabel *) gtk_label_new(i18n("Zoom"));
   gtk_container_add(GTK_CONTAINER(wave_toolbar),
 		    (GtkWidget *) label);
 
@@ -206,7 +206,7 @@ ags_wave_toolbar_init(AgsWaveToolbar *wave_toolbar)
 			    NULL);
 
   /* opacity */
-  label = (GtkLabel *) gtk_label_new(i18n("opacity"));
+  label = (GtkLabel *) gtk_label_new(i18n("Opacity"));
   gtk_container_add(GTK_CONTAINER(wave_toolbar),
 		    (GtkWidget *) label);
 

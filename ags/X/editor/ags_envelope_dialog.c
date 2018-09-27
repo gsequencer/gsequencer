@@ -180,6 +180,11 @@ ags_envelope_dialog_init(AgsEnvelopeDialog *envelope_dialog)
   gtk_window_set_title((GtkWindow *) envelope_dialog,
 		       i18n("Envelope"));
 
+  g_object_set(envelope_dialog,
+	       "default-width", 400,
+	       "default-height", 450,
+	       NULL);
+
   envelope_dialog->flags = 0;
 
   envelope_dialog->version = AGS_ENVELOPE_DIALOG_DEFAULT_VERSION;

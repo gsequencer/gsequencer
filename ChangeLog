@@ -1,3 +1,11 @@
+ags (2.0.25)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* added shortcuts to fluid soundfonts and hydrogen drumkits
+	* fixed check child == NULL in ags_output_listing_editor.c and ags_input_listing_editor.c
+	* improved default size of AgsConnectionEditor
+	* improved all labels upper-case of AgsNotationToolbar, AgsAutomationToolbar and AgsWaveToolbar
+
 ags (2.0.24)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

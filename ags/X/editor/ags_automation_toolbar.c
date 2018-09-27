@@ -201,7 +201,7 @@ ags_automation_toolbar_init(AgsAutomationToolbar *automation_toolbar)
   
   /* menu tool */
   automation_toolbar->menu_tool = (GtkMenuToolButton *) g_object_new(GTK_TYPE_MENU_TOOL_BUTTON,
-								     "label", i18n("tool"),
+								     "label", i18n("Tool"),
 								     "stock-id", GTK_STOCK_EXECUTE,
 								     NULL);
   gtk_toolbar_append_widget((GtkToolbar *) automation_toolbar, (GtkWidget *) automation_toolbar->menu_tool, i18n("additional tools"), NULL);
@@ -219,7 +219,7 @@ ags_automation_toolbar_init(AgsAutomationToolbar *automation_toolbar)
   /*  */
   automation_toolbar->zoom_history = 4;
   
-  label = (GtkLabel *) gtk_label_new(i18n("zoom"));
+  label = (GtkLabel *) gtk_label_new(i18n("Zoom"));
   gtk_container_add(GTK_CONTAINER(automation_toolbar),
 		    (GtkWidget *) label);
 
@@ -232,7 +232,7 @@ ags_automation_toolbar_init(AgsAutomationToolbar *automation_toolbar)
 			    NULL);
 
   /*  */
-  label = (GtkLabel *) gtk_label_new(i18n("port"));
+  label = (GtkLabel *) gtk_label_new(i18n("Port"));
   gtk_container_add(GTK_CONTAINER(automation_toolbar),
 		    (GtkWidget *) label);
 
@@ -263,7 +263,7 @@ ags_automation_toolbar_init(AgsAutomationToolbar *automation_toolbar)
 			    NULL);
 
   /* opacity */
-  label = (GtkLabel *) gtk_label_new(i18n("opacity"));
+  label = (GtkLabel *) gtk_label_new(i18n("Opacity"));
   gtk_container_add(GTK_CONTAINER(automation_toolbar),
 		    (GtkWidget *) label);
 

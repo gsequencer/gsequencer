@@ -191,13 +191,13 @@ ags_notation_toolbar_init(AgsNotationToolbar *notation_toolbar)
   notation_toolbar->invert = (GtkButton *) g_object_new(GTK_TYPE_TOOL_BUTTON,
 							"icon-widget", (GtkWidget *) gtk_image_new_from_icon_name("object-flip-vertical",
 														  GTK_ICON_SIZE_LARGE_TOOLBAR),
-							"label", i18n("invert"),
+							"label", i18n("Invert"),
 							NULL);
   gtk_toolbar_append_widget((GtkToolbar *) notation_toolbar, (GtkWidget *) notation_toolbar->invert, i18n("invert notes"), NULL);
 
   /* menu tool */
   notation_toolbar->menu_tool = (GtkMenuToolButton *) g_object_new(GTK_TYPE_MENU_TOOL_BUTTON,
-								   "label", i18n("tool"),
+								   "label", i18n("Tool"),
 								   "stock-id", GTK_STOCK_EXECUTE,
 								   NULL);
   gtk_toolbar_append_widget((GtkToolbar *) notation_toolbar, (GtkWidget *) notation_toolbar->menu_tool, i18n("additional tools"), NULL);
@@ -214,7 +214,7 @@ ags_notation_toolbar_init(AgsNotationToolbar *notation_toolbar)
   notation_toolbar->position_notation_cursor = ags_position_notation_cursor_dialog_new(NULL);
   
   /* zoom */
-  label = (GtkLabel *) gtk_label_new(i18n("zoom"));
+  label = (GtkLabel *) gtk_label_new(i18n("Zoom"));
   gtk_toolbar_append_widget((GtkToolbar *) notation_toolbar, (GtkWidget *) label, NULL, NULL);
 
   notation_toolbar->zoom_history = 2;
@@ -223,7 +223,7 @@ ags_notation_toolbar_init(AgsNotationToolbar *notation_toolbar)
   gtk_toolbar_append_widget((GtkToolbar *) notation_toolbar, (GtkWidget *) notation_toolbar->zoom, NULL , NULL);
 
   /* opacity */
-  label = (GtkLabel *) gtk_label_new(i18n("opacity"));
+  label = (GtkLabel *) gtk_label_new(i18n("Opacity"));
   gtk_container_add(GTK_CONTAINER(notation_toolbar),
 		    (GtkWidget *) label);
 

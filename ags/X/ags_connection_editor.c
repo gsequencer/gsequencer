@@ -205,6 +205,11 @@ ags_connection_editor_init(AgsConnectionEditor *connection_editor)
   gtk_window_set_title((GtkWindow *) connection_editor,
 		       i18n("connections"));
 
+  g_object_set(connection_editor,
+	       "default-width", 400,
+	       "default-height", 450,
+	       NULL);
+
   connection_editor->flags = 0;
 
   connection_editor->version = AGS_CONNECTION_EDITOR_DEFAULT_VERSION;

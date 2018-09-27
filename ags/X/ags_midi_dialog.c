@@ -262,7 +262,7 @@ ags_midi_dialog_init(AgsMidiDialog *midi_dialog)
 		   GTK_WIDGET(label),
 		   0, 1,
 		   0, 1,
-		   GTK_FILL, GTK_FILL,
+		   GTK_FILL|GTK_EXPAND, GTK_FILL,
 		   0, 0);
   
   midi_dialog->audio_start = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0,
@@ -284,7 +284,7 @@ ags_midi_dialog_init(AgsMidiDialog *midi_dialog)
 		   GTK_WIDGET(label),
 		   0, 1,
 		   1, 2,
-		   GTK_FILL, GTK_FILL,
+		   GTK_FILL|GTK_EXPAND, GTK_FILL,
 		   0, 0);
   
   midi_dialog->audio_end = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0,
@@ -306,7 +306,7 @@ ags_midi_dialog_init(AgsMidiDialog *midi_dialog)
 		   GTK_WIDGET(label),
 		   0, 1,
 		   2, 3,
-		   GTK_FILL, GTK_FILL,
+		   GTK_FILL|GTK_EXPAND, GTK_FILL,
 		   0, 0);
   
   midi_dialog->midi_start = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0,
@@ -328,7 +328,7 @@ ags_midi_dialog_init(AgsMidiDialog *midi_dialog)
 		   GTK_WIDGET(label),
 		   0, 1,
 		   3, 4,
-		   GTK_FILL, GTK_FILL,
+		   GTK_FILL|GTK_EXPAND, GTK_FILL,
 		   0, 0);
   
   midi_dialog->midi_end = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0,
@@ -348,7 +348,7 @@ ags_midi_dialog_init(AgsMidiDialog *midi_dialog)
 		     FALSE, FALSE,
 		     0);
 
-  table = (GtkTable *) gtk_table_new(8, 2,
+  table = (GtkTable *) gtk_table_new(1, 2,
 				     FALSE);
   gtk_box_pack_start((GtkBox *) midi_dialog->device,
 		     GTK_WIDGET(table),
@@ -364,7 +364,7 @@ ags_midi_dialog_init(AgsMidiDialog *midi_dialog)
 		   GTK_WIDGET(label),
 		   0, 1,
 		   1, 2,
-		   GTK_FILL, GTK_FILL,
+		   GTK_FILL|GTK_EXPAND, GTK_FILL,
 		   0, 0);
   
   midi_dialog->midi_device = (GtkComboBoxText *) gtk_combo_box_text_new();

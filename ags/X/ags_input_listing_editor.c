@@ -165,16 +165,18 @@ ags_input_listing_editor_connect(AgsConnectable *connectable)
   }
 
   /* AgsPadEditor */
-  pad_editor_start = 
-    pad_editor = gtk_container_get_children(GTK_CONTAINER(input_listing_editor->child));
+  if(input_listing_editor->child != NULL){
+    pad_editor_start = 
+      pad_editor = gtk_container_get_children(input_listing_editor->child);
 
-  while(pad_editor != NULL){
-    ags_connectable_connect(AGS_CONNECTABLE(pad_editor->data));
+    while(pad_editor != NULL){
+      ags_connectable_connect(AGS_CONNECTABLE(pad_editor->data));
 
-    pad_editor = pad_editor->next;
-  }
+      pad_editor = pad_editor->next;
+    }
   
-  g_list_free(pad_editor_start);
+    g_list_free(pad_editor_start);
+  }
 }
 
 void
@@ -206,16 +208,18 @@ ags_input_listing_editor_disconnect(AgsConnectable *connectable)
   }
 
   /* AgsPadEditor */
-  pad_editor_start = 
-    pad_editor = gtk_container_get_children(GTK_CONTAINER(input_listing_editor->child));
+  if(input_listing_editor->child != NULL){
+    pad_editor_start = 
+      pad_editor = gtk_container_get_children(input_listing_editor->child);
 
-  while(pad_editor != NULL){
-    ags_connectable_disconnect(AGS_CONNECTABLE(pad_editor->data));
+    while(pad_editor != NULL){
+      ags_connectable_disconnect(AGS_CONNECTABLE(pad_editor->data));
 
-    pad_editor = pad_editor->next;
-  }
+      pad_editor = pad_editor->next;
+    }
   
-  g_list_free(pad_editor_start);
+    g_list_free(pad_editor_start);
+  }
 }
 
 void
@@ -227,16 +231,18 @@ ags_input_listing_editor_set_update(AgsApplicable *applicable, gboolean update)
 
   input_listing_editor = AGS_INPUT_LISTING_EDITOR(applicable);
 
-  pad_editor_start = 
-    pad_editor = gtk_container_get_children(GTK_CONTAINER(input_listing_editor->child));
+  if(input_listing_editor->child != NULL){
+    pad_editor_start = 
+      pad_editor = gtk_container_get_children(GTK_CONTAINER(input_listing_editor->child));
 
-  while(pad_editor != NULL){
-    ags_applicable_set_update(AGS_APPLICABLE(pad_editor->data), update);
+    while(pad_editor != NULL){
+      ags_applicable_set_update(AGS_APPLICABLE(pad_editor->data), update);
 
-    pad_editor = pad_editor->next;
+      pad_editor = pad_editor->next;
+    }
+
+    g_list_free(pad_editor_start);
   }
-
-  g_list_free(pad_editor_start);
 }
 
 void
@@ -252,16 +258,18 @@ ags_input_listing_editor_apply(AgsApplicable *applicable)
     return;
   }
 
-  pad_editor_start = 
-    pad_editor = gtk_container_get_children(GTK_CONTAINER(input_listing_editor->child));
+  if(input_listing_editor->child != NULL){
+    pad_editor_start = 
+      pad_editor = gtk_container_get_children(GTK_CONTAINER(input_listing_editor->child));
 
-  while(pad_editor != NULL){
-    ags_applicable_apply(AGS_APPLICABLE(pad_editor->data));
+    while(pad_editor != NULL){
+      ags_applicable_apply(AGS_APPLICABLE(pad_editor->data));
 
-    pad_editor = pad_editor->next;
-  }
+      pad_editor = pad_editor->next;
+    }
   
-  g_list_free(pad_editor_start);
+    g_list_free(pad_editor_start);
+  }
 }
 
 void
@@ -273,16 +281,18 @@ ags_input_listing_editor_reset(AgsApplicable *applicable)
 
   input_listing_editor = AGS_INPUT_LISTING_EDITOR(applicable);
 
-  pad_editor_start = 
-    pad_editor = gtk_container_get_children(GTK_CONTAINER(input_listing_editor->child));
+  if(input_listing_editor->child != NULL){
+    pad_editor_start = 
+      pad_editor = gtk_container_get_children(GTK_CONTAINER(input_listing_editor->child));
 
-  while(pad_editor != NULL){
-    ags_applicable_reset(AGS_APPLICABLE(pad_editor->data));
+    while(pad_editor != NULL){
+      ags_applicable_reset(AGS_APPLICABLE(pad_editor->data));
 
-    pad_editor = pad_editor->next;
+      pad_editor = pad_editor->next;
+    }
+
+    g_list_free(pad_editor_start);
   }
-
-  g_list_free(pad_editor_start);
 }
 
 /**
