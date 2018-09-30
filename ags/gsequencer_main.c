@@ -35,6 +35,9 @@
 #include <libxml/xmlmemory.h>
 #include <libxml/xmlsave.h>
 
+#define _GNU_SOURCE
+#include <locale.h>
+
 #include <ags/libags.h>
 #include <ags/libags-audio.h>
 #include <ags/libags-gui.h>
@@ -387,10 +390,10 @@ main(int argc, char **argv)
 
   g_log_set_fatal_mask(NULL,
   		       G_LOG_LEVEL_WARNING | G_LOG_LEVEL_CRITICAL);  
-#endif
 
   g_log_set_fatal_mask("Gtk",
   		       G_LOG_LEVEL_CRITICAL);
+#endif
 
   /* setup */
   wdir = g_strdup_printf("%s/%s",
