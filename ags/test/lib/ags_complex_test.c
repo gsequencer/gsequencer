@@ -17,7 +17,7 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <ags/lib/ags_complex.h>
+#include <ags/libags.h>
 
 #include <glib.h>
 #include <glib-object.h>
@@ -189,7 +189,7 @@ main(int argc, char **argv)
   }
 
   /* add a suite to the registry */
-  pSuite = CU_add_suite("AgsComplexTest\0", ags_complex_test_init_suite, ags_complex_test_clean_suite);
+  pSuite = CU_add_suite("AgsComplexTest", ags_complex_test_init_suite, ags_complex_test_clean_suite);
   
   if(pSuite == NULL){
     CU_cleanup_registry();
@@ -198,9 +198,9 @@ main(int argc, char **argv)
   }
 
   /* add the tests to the suite */
-  if((CU_add_test(pSuite, "test of AgsComplex copy\0", ags_complex_test_copy) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsComplex get\0", ags_complex_test_get) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsComplex set\0", ags_complex_test_set) == NULL)){
+  if((CU_add_test(pSuite, "test of AgsComplex copy", ags_complex_test_copy) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsComplex get", ags_complex_test_get) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsComplex set", ags_complex_test_set) == NULL)){
     CU_cleanup_registry();
     
     return CU_get_error();

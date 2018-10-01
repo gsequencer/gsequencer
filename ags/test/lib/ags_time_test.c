@@ -62,10 +62,10 @@ ags_time_test_get_uptime_from_offset()
   guint offset_4_times_delay = 4 * delay;
   guint offset_16_times_delay = 16 * delay;
   
-  gchar *offset_0_str = "0000:00.000\0";
-  gchar *offset_1_times_delay_str = "0000:00.125\0";
-  gchar *offset_4_times_delay_str = "0000:00.500\0";
-  gchar *offset_16_times_delay_str = "0000:02.000\0";
+  gchar *offset_0_str = "0000:00.000";
+  gchar *offset_1_times_delay_str = "0000:00.125";
+  gchar *offset_4_times_delay_str = "0000:00.500";
+  gchar *offset_16_times_delay_str = "0000:02.000";
   gchar *str;
 
   /* assert offset 0 */
@@ -118,8 +118,8 @@ main(int argc, char **argv)
 {
   CU_pSuite pSuite = NULL;
 
-  putenv("LC_ALL=C\0");
-  putenv("LANG=C\0");
+  putenv("LC_ALL=C");
+  putenv("LANG=C");
   
   /* initialize the CUnit test registry */
   if(CUE_SUCCESS != CU_initialize_registry()){
@@ -127,7 +127,7 @@ main(int argc, char **argv)
   }
 
   /* add a suite to the registry */
-  pSuite = CU_add_suite("AgsTimeTest\0", ags_time_test_init_suite, ags_time_test_clean_suite);
+  pSuite = CU_add_suite("AgsTimeTest", ags_time_test_init_suite, ags_time_test_clean_suite);
   
   if(pSuite == NULL){
     CU_cleanup_registry();
@@ -136,7 +136,7 @@ main(int argc, char **argv)
   }
 
   /* add the tests to the suite */
-  if((CU_add_test(pSuite, "test of ags_time.c get uptime from offset\0", ags_time_test_get_uptime_from_offset) == NULL)){
+  if((CU_add_test(pSuite, "test of ags_time.c get uptime from offset", ags_time_test_get_uptime_from_offset) == NULL)){
     CU_cleanup_registry();
     
     return CU_get_error();

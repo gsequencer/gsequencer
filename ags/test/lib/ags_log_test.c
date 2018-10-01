@@ -17,7 +17,7 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <ags/lib/ags_log.h>
+#include <ags/libags.h>
 
 #include <glib.h>
 #include <glib-object.h>
@@ -162,7 +162,7 @@ main(int argc, char **argv)
   }
 
   /* add a suite to the registry */
-  pSuite = CU_add_suite("AgsLogTest\0", ags_log_test_init_suite, ags_log_test_clean_suite);
+  pSuite = CU_add_suite("AgsLogTest", ags_log_test_init_suite, ags_log_test_clean_suite);
   
   if(pSuite == NULL){
     CU_cleanup_registry();
@@ -171,8 +171,8 @@ main(int argc, char **argv)
   }
 
   /* add the tests to the suite */
-  if((CU_add_test(pSuite, "test of AgsLog add message\0", ags_log_test_add_message) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsLog get messages\0", ags_log_test_get_messages) == NULL)){
+  if((CU_add_test(pSuite, "test of AgsLog add message", ags_log_test_add_message) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsLog get messages", ags_log_test_get_messages) == NULL)){
     CU_cleanup_registry();
     
     return CU_get_error();

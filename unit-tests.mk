@@ -1,5 +1,11 @@
 # unit tests
 check_PROGRAMS += \
+	ags_complex_test \
+	ags_conversion_test \
+	ags_log_test \
+	ags_time_test \
+	ags_turtle_manager_test \
+	ags_turtle_test \
 	ags_application_context_test \
 	ags_config_test \
 	ags_condition_manager_test \
@@ -18,10 +24,7 @@ check_PROGRAMS += \
 	ags_file_id_ref_test \
 	ags_file_launch_test \
 	ags_file_lookup_test \
-	ags_complex_test \
 	ags_log_test \
-	ags_turtle_test \
-	ags_turtle_manager_test \
 	ags_base_plugin_test \
 	ags_dssi_manager_test \
 	ags_dssi_plugin_test \
@@ -61,6 +64,42 @@ check_PROGRAMS += \
 	ags_midi_buffer_util_test \
 	ags_midi_builder_test \
 	ags_xorg_application_context_test
+
+# complex unit test
+ags_complex_test_SOURCES = ags/test/lib/ags_complex_test.c
+ags_complex_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS)
+ags_complex_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_complex_test_LDADD = libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS)
+
+# conversion unit test
+ags_conversion_test_SOURCES = ags/test/lib/ags_conversion_test.c
+ags_conversion_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS)
+ags_conversion_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_conversion_test_LDADD = libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS)
+
+# log unit test
+ags_log_test_SOURCES = ags/test/lib/ags_log_test.c
+ags_log_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS)
+ags_log_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_log_test_LDADD = libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS)
+
+# time unit test
+ags_time_test_SOURCES = ags/test/lib/ags_time_test.c
+ags_time_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS)
+ags_time_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_time_test_LDADD = libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS)
+
+# turtle_manager unit test
+ags_turtle_manager_test_SOURCES = ags/test/lib/ags_turtle_manager_test.c
+ags_turtle_manager_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS)
+ags_turtle_manager_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_turtle_manager_test_LDADD = libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS)
+
+# turtle unit test
+ags_turtle_test_SOURCES = ags/test/lib/ags_turtle_test.c
+ags_turtle_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS)
+ags_turtle_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_turtle_test_LDADD = libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS)
 
 # application context unit test
 ags_application_context_test_SOURCES = ags/test/object/ags_application_context_test.c
@@ -169,30 +208,6 @@ ags_file_lookup_test_SOURCES = ags/test/file/ags_file_lookup_test.c
 ags_file_lookup_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS)
 ags_file_lookup_test_LDFLAGS = -pthread $(LDFLAGS)
 ags_file_lookup_test_LDADD = libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS)
-
-# complex unit test
-ags_complex_test_SOURCES = ags/test/lib/ags_complex_test.c
-ags_complex_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS)
-ags_complex_test_LDFLAGS = -pthread $(LDFLAGS)
-ags_complex_test_LDADD = libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS)
-
-# log unit test
-ags_log_test_SOURCES = ags/test/lib/ags_log_test.c
-ags_log_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS)
-ags_log_test_LDFLAGS = -pthread $(LDFLAGS)
-ags_log_test_LDADD = libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS)
-
-# turtle unit test
-ags_turtle_test_SOURCES = ags/test/lib/ags_turtle_test.c
-ags_turtle_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS)
-ags_turtle_test_LDFLAGS = -pthread $(LDFLAGS)
-ags_turtle_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS)
-
-# turtle manager unit test
-ags_turtle_manager_test_SOURCES = ags/test/lib/ags_turtle_manager_test.c
-ags_turtle_manager_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS)
-ags_turtle_manager_test_LDFLAGS = -pthread $(LDFLAGS)
-ags_turtle_manager_test_LDADD = libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS)
 
 # base plugin unit test
 ags_base_plugin_test_SOURCES = ags/test/plugin/ags_base_plugin_test.c
