@@ -268,7 +268,7 @@ ags_notation_test_remove_note()
   list = notation->note;
   success = TRUE;
   
-  for(i = 0; i < AGS_NOTATION_TEST_REMOVE_NOTE_COUNT; i++){
+  for(i = 0; i < AGS_NOTATION_TEST_REMOVE_NOTE_COUNT - AGS_NOTATION_TEST_REMOVE_NOTE_REMOVE_COUNT; i++){
     if(list->prev != NULL){
       if(!(AGS_NOTE(list->prev->data)->x[0] < AGS_NOTE(list->data)->x[0] ||
 	   (AGS_NOTE(list->prev->data)->x[0] == AGS_NOTE(list->data)->x[0] &&
@@ -614,23 +614,7 @@ ags_notation_test_add_all_to_selection()
   current = notation->note;
   current_selection = notation->selection;
 
-  success = TRUE;
-  
-  while(current != NULL &&
-	current_selection != NULL){
-    if(current->data != current_selection->data){
-      success = FALSE;
-      
-      break;
-    }
-    
-    current = current->next;
-    current_selection = current_selection->next;
-  }
-
-  CU_ASSERT(current == NULL);
-  CU_ASSERT(current_selection == NULL);
-  CU_ASSERT(success == TRUE);
+  CU_ASSERT(g_list_length(current_selection) == g_list_length(current));
 }
 
 void

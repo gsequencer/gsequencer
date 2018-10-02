@@ -193,7 +193,7 @@ ags_wave_test_add_buffer()
   
   for(i = 0; i < AGS_WAVE_TEST_ADD_BUFFER_COUNT; i++){
     if(list->prev != NULL){
-      if(AGS_BUFFER(list->prev->data)->x < AGS_BUFFER(list->data)->x){
+      if(AGS_BUFFER(list->prev->data)->x > AGS_BUFFER(list->data)->x){
 	success = FALSE;
 
 	break;
@@ -256,9 +256,9 @@ ags_wave_test_remove_buffer()
   list = wave->buffer;
   success = TRUE;
   
-  for(i = 0; i < AGS_WAVE_TEST_REMOVE_BUFFER_COUNT; i++){
+  for(i = 0; i < AGS_WAVE_TEST_REMOVE_BUFFER_COUNT - AGS_WAVE_TEST_REMOVE_BUFFER_REMOVE_COUNT; i++){
     if(list->prev != NULL){
-      if(AGS_BUFFER(list->prev->data)->x < AGS_BUFFER(list->data)->x){
+      if(AGS_BUFFER(list->prev->data)->x > AGS_BUFFER(list->data)->x){
 	success = FALSE;
 
 	break;
@@ -330,7 +330,7 @@ ags_wave_test_is_buffer_selected()
   
   for(i = 0; i < AGS_WAVE_TEST_IS_BUFFER_SELECTED_COUNT; i++){
     if(list->prev != NULL){
-      if(AGS_BUFFER(list->prev->data)->x < AGS_BUFFER(list->data)->x){
+      if(AGS_BUFFER(list->prev->data)->x > AGS_BUFFER(list->data)->x){
 	success = FALSE;
 
 	break;
@@ -374,7 +374,7 @@ ags_wave_test_find_point()
 		 "x", x, 
 		 NULL);
     
-    ags_wave_find_point(wave,
+    ags_wave_add_buffer(wave,
 			buffer,
 			FALSE);
   }
