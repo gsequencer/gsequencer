@@ -607,6 +607,9 @@ ags_notation_test_add_all_to_selection()
 			  FALSE);
   }
 
+  /* select all */
+  ags_notation_add_all_to_selection(notation);
+  
   /* assert all present */
   current = notation->note;
   current_selection = notation->selection;
@@ -625,6 +628,8 @@ ags_notation_test_add_all_to_selection()
     current_selection = current_selection->next;
   }
 
+  CU_ASSERT(current == NULL);
+  CU_ASSERT(current_selection == NULL);
   CU_ASSERT(success == TRUE);
 }
 

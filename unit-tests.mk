@@ -1,5 +1,6 @@
 # unit tests
 check_PROGRAMS += \
+	ags_buffer_util_test \
 	ags_complex_test \
 	ags_conversion_test \
 	ags_log_test \
@@ -65,6 +66,12 @@ check_PROGRAMS += \
 	ags_midi_buffer_util_test \
 	ags_midi_builder_test \
 	ags_xorg_application_context_test
+
+# buffer util unit test
+ags_buffer_util_test_SOURCES = ags/test/lib/ags_buffer_util_test.c
+ags_buffer_util_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS)
+ags_buffer_util_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_buffer_util_test_LDADD = libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS)
 
 # complex unit test
 ags_complex_test_SOURCES = ags/test/lib/ags_complex_test.c

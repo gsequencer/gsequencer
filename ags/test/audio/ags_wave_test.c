@@ -71,6 +71,13 @@ void ags_wave_test_insert_from_clipboard_extended();
 #define AGS_WAVE_TEST_FIND_REGION_N_ATTEMPTS (128)
 #define AGS_WAVE_TEST_FIND_REGION_SELECTION_WIDTH (128)
 
+#define AGS_WAVE_TEST_FREE_SELECTION_BUFFER_SIZE (1024)
+#define AGS_WAVE_TEST_FREE_SELECTION_COUNT (1024)
+#define AGS_WAVE_TEST_FREE_SELECTION_SELECTION_COUNT (64)
+
+#define AGS_WAVE_TEST_ADD_ALL_TO_SELECTION_BUFFER_SIZE (1024)
+#define AGS_WAVE_TEST_ADD_ALL_TO_SELECTION_COUNT (1024)
+
 AgsAudio *audio;
 
 /* The suite initialization function.
@@ -307,8 +314,8 @@ ags_wave_test_is_buffer_selected()
   }
 
   /* select buffers */
-  for(i = 0; i < AGS_WAVE_TEST_REMOVE_BUFFER_REMOVE_COUNT; i++){
-    nth = rand() % (AGS_WAVE_TEST_REMOVE_BUFFER_COUNT - i);
+  for(i = 0; i < AGS_WAVE_TEST_IS_BUFFER_SELECTED_COUNT; i++){
+    nth = rand() % (AGS_WAVE_TEST_IS_BUFFER_SELECTED_COUNT - i);
     current = g_list_nth(wave->buffer,
 			 nth);
     
@@ -321,7 +328,7 @@ ags_wave_test_is_buffer_selected()
   list = wave->selection;
   success = TRUE;
   
-  for(i = 0; i < AGS_WAVE_TEST_REMOVE_BUFFER_COUNT; i++){
+  for(i = 0; i < AGS_WAVE_TEST_IS_BUFFER_SELECTED_COUNT; i++){
     if(list->prev != NULL){
       if(AGS_BUFFER(list->prev->data)->x < AGS_BUFFER(list->data)->x){
 	success = FALSE;
@@ -463,7 +470,55 @@ ags_wave_test_find_region()
 void
 ags_wave_test_free_selection()
 {
-  //TODO:JK: implement me
+  AgsWave *wave;
+  AgsBuffer *buffer;
+
+  GList *list;
+  GList *current;
+
+  guint64 nth;
+  guint64 x;
+  guint i;
+  gboolean success;
+  
+  /* create wave */
+  wave = ags_wave_new(audio,
+		      0);
+  g_object_set(wave,
+	       "buffer-size", AGS_WAVE_TEST_FREE_SELECTION_BUFFER_SIZE,
+	       NULL);
+  
+  for(i = 0; i < AGS_WAVE_TEST_FREE_SELECTION_COUNT; i++){
+    x = i * AGS_WAVE_TEST_FREE_SELECTION_BUFFER_SIZE;
+    
+    buffer = ags_buffer_new();
+    g_object_set(buffer,
+		 "buffer-size", AGS_WAVE_TEST_FREE_SELECTION_BUFFER_SIZE,
+		 "x", x, 
+		 NULL);
+    
+    ags_wave_add_buffer(wave,
+			buffer,
+			FALSE);
+  }
+
+  /* select buffers */
+  for(i = 0; i < AGS_WAVE_TEST_FREE_SELECTION_COUNT; i++){
+    nth = rand() % (AGS_WAVE_TEST_FREE_SELECTION_COUNT - i);
+    current = g_list_nth(wave->buffer,
+			 nth);
+    
+    ags_wave_add_buffer(wave,
+			current->data,
+			TRUE);
+  }
+
+  /* assert free slection */
+  CU_ASSERT(wave->selection != NULL);
+
+  ags_wave_free_selection(wave);
+  
+  CU_ASSERT(wave->selection == NULL);
 }
 
 void
@@ -481,7 +536,61 @@ ags_wave_test_remove_region_from_selection()
 void
 ags_wave_test_add_all_to_selection()
 {
-  //TODO:JK: implement me
+  AgsWave *wave;
+  AgsBuffer *buffer;
+
+  GList *list, *current, *current_selection;
+  
+  guint64 x;
+  guint nth;
+  guint i;
+  gboolean success;
+
+  /* create wave */
+  wave = ags_wave_new(audio,
+		      0);
+  g_object_set(wave,
+	       "buffer-size", AGS_WAVE_TEST_FREE_SELECTION_BUFFER_SIZE,
+	       NULL);
+  
+  for(i = 0; i < AGS_WAVE_TEST_FREE_SELECTION_COUNT; i++){
+    x = i * AGS_WAVE_TEST_FREE_SELECTION_BUFFER_SIZE;
+    
+    buffer = ags_buffer_new();
+    g_object_set(buffer,
+		 "buffer-size", AGS_WAVE_TEST_FREE_SELECTION_BUFFER_SIZE,
+		 "x", x, 
+		 NULL);
+    
+    ags_wave_add_buffer(wave,
+			buffer,
+			FALSE);
+  }
+
+  /* select all */
+  ags_wave_add_all_to_selection(wave);
+
+  /* assert all present */
+  current = wave->buffer;
+  current_selection = wave->selection;
+
+  success = TRUE;
+  
+  while(current != NULL &&
+	current_selection != NULL){
+    if(current->data != current_selection->data){
+      success = FALSE;
+      
+      break;
+    }
+    
+    current = current->next;
+    current_selection = current_selection->next;
+  }
+
+  CU_ASSERT(current == NULL);
+  CU_ASSERT(current_selection == NULL);
+  CU_ASSERT(success == TRUE);
 }
 
 void

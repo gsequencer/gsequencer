@@ -97,11 +97,12 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 bin_PROGRAMS = gsequencer$(EXEEXT) midi2xml$(EXEEXT)
-check_PROGRAMS = ags_complex_test$(EXEEXT) \
-	ags_conversion_test$(EXEEXT) ags_log_test$(EXEEXT) \
-	ags_time_test$(EXEEXT) ags_turtle_manager_test$(EXEEXT) \
-	ags_turtle_test$(EXEEXT) ags_application_context_test$(EXEEXT) \
-	ags_config_test$(EXEEXT) ags_condition_manager_test$(EXEEXT) \
+check_PROGRAMS = ags_buffer_util_test$(EXEEXT) \
+	ags_complex_test$(EXEEXT) ags_conversion_test$(EXEEXT) \
+	ags_log_test$(EXEEXT) ags_time_test$(EXEEXT) \
+	ags_turtle_manager_test$(EXEEXT) ags_turtle_test$(EXEEXT) \
+	ags_application_context_test$(EXEEXT) ags_config_test$(EXEEXT) \
+	ags_condition_manager_test$(EXEEXT) \
 	ags_destroy_worker_test$(EXEEXT) \
 	ags_mutex_manager_test$(EXEEXT) ags_poll_fd_test$(EXEEXT) \
 	ags_polling_thread_test$(EXEEXT) \
@@ -1018,6 +1019,16 @@ ags_buffer_test_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
 	$(ags_buffer_test_CFLAGS) $(CFLAGS) $(ags_buffer_test_LDFLAGS) \
 	$(LDFLAGS) -o $@
+am_ags_buffer_util_test_OBJECTS =  \
+	ags/test/lib/buffer_util_test-ags_buffer_util_test.$(OBJEXT)
+ags_buffer_util_test_OBJECTS = $(am_ags_buffer_util_test_OBJECTS)
+ags_buffer_util_test_DEPENDENCIES = libags_server.la libags_thread.la \
+	libags.la libags_thread.la $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1)
+ags_buffer_util_test_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
+	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
+	$(ags_buffer_util_test_CFLAGS) $(CFLAGS) \
+	$(ags_buffer_util_test_LDFLAGS) $(LDFLAGS) -o $@
 am_ags_channel_test_OBJECTS =  \
 	ags/test/audio/channel_test-ags_channel_test.$(OBJEXT)
 ags_channel_test_OBJECTS = $(am_ags_channel_test_OBJECTS)
@@ -2396,6 +2407,7 @@ am__depfiles_remade = ags/$(DEPDIR)/gsequencer-gsequencer_main.Po \
 	ags/test/file/$(DEPDIR)/file_launch_test-ags_file_launch_test.Po \
 	ags/test/file/$(DEPDIR)/file_lookup_test-ags_file_lookup_test.Po \
 	ags/test/file/$(DEPDIR)/file_test-ags_file_test.Po \
+	ags/test/lib/$(DEPDIR)/buffer_util_test-ags_buffer_util_test.Po \
 	ags/test/lib/$(DEPDIR)/complex_test-ags_complex_test.Po \
 	ags/test/lib/$(DEPDIR)/conversion_test-ags_conversion_test.Po \
 	ags/test/lib/$(DEPDIR)/log_test-ags_log_test.Po \
@@ -2510,8 +2522,8 @@ SOURCES = $(libags_la_SOURCES) $(libags_audio_la_SOURCES) \
 	$(ags_audio_application_context_test_SOURCES) \
 	$(ags_audio_signal_test_SOURCES) $(ags_audio_test_SOURCES) \
 	$(ags_automation_test_SOURCES) $(ags_base_plugin_test_SOURCES) \
-	$(ags_buffer_test_SOURCES) $(ags_channel_test_SOURCES) \
-	$(ags_complex_test_SOURCES) \
+	$(ags_buffer_test_SOURCES) $(ags_buffer_util_test_SOURCES) \
+	$(ags_channel_test_SOURCES) $(ags_complex_test_SOURCES) \
 	$(ags_condition_manager_test_SOURCES) \
 	$(ags_config_test_SOURCES) $(ags_conversion_test_SOURCES) \
 	$(ags_destroy_worker_test_SOURCES) $(ags_devout_test_SOURCES) \
@@ -2573,8 +2585,8 @@ DIST_SOURCES = $(libags_la_SOURCES) $(libags_audio_la_SOURCES) \
 	$(ags_audio_application_context_test_SOURCES) \
 	$(ags_audio_signal_test_SOURCES) $(ags_audio_test_SOURCES) \
 	$(ags_automation_test_SOURCES) $(ags_base_plugin_test_SOURCES) \
-	$(ags_buffer_test_SOURCES) $(ags_channel_test_SOURCES) \
-	$(ags_complex_test_SOURCES) \
+	$(ags_buffer_test_SOURCES) $(ags_buffer_util_test_SOURCES) \
+	$(ags_channel_test_SOURCES) $(ags_complex_test_SOURCES) \
 	$(ags_condition_manager_test_SOURCES) \
 	$(ags_config_test_SOURCES) $(ags_conversion_test_SOURCES) \
 	$(ags_destroy_worker_test_SOURCES) $(ags_devout_test_SOURCES) \
@@ -3400,6 +3412,12 @@ libgsequencer_la_LIBADD = libags_audio.la libags_server.la libags_gui.la libags_
 # gsequencer
 gsequencer_SOURCES = $(gsequencer_c_sources) $(gsequencerheaders)
 gsequencer_LDADD = libgsequencer.la libags_audio.la libags_server.la libags_gui.la libags_thread.la libags.la -ldl -lm $(RT_LIBS) $(X11_LIBS) $(CORE_AUDIO_CFLAGS) $(LIBASOUND2_LIBS) $(LIBAO_LIBS) $(LIBXML2_LIBS) $(OPENSSL_LIBS) $(XMLRPC_LIBS) $(XMLRPC_UTIL_LIBS) $(XMLRPC_SERVER_ABYSS_LIBS) $(XMLRPC_SERVER_CGI_LIBS) $(XMLRPC_SERVER_LIBS) $(SNDFILE_LIBS) $(JACK_LIBS) $(PULSE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(FONTCONFIG_LIBS) $(GDKPIXBUF_LIBS) $(CAIRO_LIBS) $(GTK_LIBS) $(GTK_MAC_INTEGRATION_LIBS)
+
+# buffer util unit test
+ags_buffer_util_test_SOURCES = ags/test/lib/ags_buffer_util_test.c
+ags_buffer_util_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS)
+ags_buffer_util_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_buffer_util_test_LDADD = libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS)
 
 # complex unit test
 ags_complex_test_SOURCES = ags/test/lib/ags_complex_test.c
@@ -7512,6 +7530,19 @@ ags/test/audio/buffer_test-ags_buffer_test.$(OBJEXT):  \
 ags_buffer_test$(EXEEXT): $(ags_buffer_test_OBJECTS) $(ags_buffer_test_DEPENDENCIES) $(EXTRA_ags_buffer_test_DEPENDENCIES) 
 	@rm -f ags_buffer_test$(EXEEXT)
 	$(AM_V_CCLD)$(ags_buffer_test_LINK) $(ags_buffer_test_OBJECTS) $(ags_buffer_test_LDADD) $(LIBS)
+ags/test/lib/$(am__dirstamp):
+	@$(MKDIR_P) ags/test/lib
+	@: > ags/test/lib/$(am__dirstamp)
+ags/test/lib/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) ags/test/lib/$(DEPDIR)
+	@: > ags/test/lib/$(DEPDIR)/$(am__dirstamp)
+ags/test/lib/buffer_util_test-ags_buffer_util_test.$(OBJEXT):  \
+	ags/test/lib/$(am__dirstamp) \
+	ags/test/lib/$(DEPDIR)/$(am__dirstamp)
+
+ags_buffer_util_test$(EXEEXT): $(ags_buffer_util_test_OBJECTS) $(ags_buffer_util_test_DEPENDENCIES) $(EXTRA_ags_buffer_util_test_DEPENDENCIES) 
+	@rm -f ags_buffer_util_test$(EXEEXT)
+	$(AM_V_CCLD)$(ags_buffer_util_test_LINK) $(ags_buffer_util_test_OBJECTS) $(ags_buffer_util_test_LDADD) $(LIBS)
 ags/test/audio/channel_test-ags_channel_test.$(OBJEXT):  \
 	ags/test/audio/$(am__dirstamp) \
 	ags/test/audio/$(DEPDIR)/$(am__dirstamp)
@@ -7519,12 +7550,6 @@ ags/test/audio/channel_test-ags_channel_test.$(OBJEXT):  \
 ags_channel_test$(EXEEXT): $(ags_channel_test_OBJECTS) $(ags_channel_test_DEPENDENCIES) $(EXTRA_ags_channel_test_DEPENDENCIES) 
 	@rm -f ags_channel_test$(EXEEXT)
 	$(AM_V_CCLD)$(ags_channel_test_LINK) $(ags_channel_test_OBJECTS) $(ags_channel_test_LDADD) $(LIBS)
-ags/test/lib/$(am__dirstamp):
-	@$(MKDIR_P) ags/test/lib
-	@: > ags/test/lib/$(am__dirstamp)
-ags/test/lib/$(DEPDIR)/$(am__dirstamp):
-	@$(MKDIR_P) ags/test/lib/$(DEPDIR)
-	@: > ags/test/lib/$(DEPDIR)/$(am__dirstamp)
 ags/test/lib/complex_test-ags_complex_test.$(OBJEXT):  \
 	ags/test/lib/$(am__dirstamp) \
 	ags/test/lib/$(DEPDIR)/$(am__dirstamp)
@@ -8727,6 +8752,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/file/$(DEPDIR)/file_launch_test-ags_file_launch_test.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/file/$(DEPDIR)/file_lookup_test-ags_file_lookup_test.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/file/$(DEPDIR)/file_test-ags_file_test.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@ags/test/lib/$(DEPDIR)/buffer_util_test-ags_buffer_util_test.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/lib/$(DEPDIR)/complex_test-ags_complex_test.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/lib/$(DEPDIR)/conversion_test-ags_conversion_test.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/lib/$(DEPDIR)/log_test-ags_log_test.Po@am__quote@ # am--include-marker
@@ -13212,6 +13238,20 @@ ags/test/audio/buffer_test-ags_buffer_test.obj: ags/test/audio/ags_buffer_test.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_buffer_test_CFLAGS) $(CFLAGS) -c -o ags/test/audio/buffer_test-ags_buffer_test.obj `if test -f 'ags/test/audio/ags_buffer_test.c'; then $(CYGPATH_W) 'ags/test/audio/ags_buffer_test.c'; else $(CYGPATH_W) '$(srcdir)/ags/test/audio/ags_buffer_test.c'; fi`
 
+ags/test/lib/buffer_util_test-ags_buffer_util_test.o: ags/test/lib/ags_buffer_util_test.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_buffer_util_test_CFLAGS) $(CFLAGS) -MT ags/test/lib/buffer_util_test-ags_buffer_util_test.o -MD -MP -MF ags/test/lib/$(DEPDIR)/buffer_util_test-ags_buffer_util_test.Tpo -c -o ags/test/lib/buffer_util_test-ags_buffer_util_test.o `test -f 'ags/test/lib/ags_buffer_util_test.c' || echo '$(srcdir)/'`ags/test/lib/ags_buffer_util_test.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/test/lib/$(DEPDIR)/buffer_util_test-ags_buffer_util_test.Tpo ags/test/lib/$(DEPDIR)/buffer_util_test-ags_buffer_util_test.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/test/lib/ags_buffer_util_test.c' object='ags/test/lib/buffer_util_test-ags_buffer_util_test.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_buffer_util_test_CFLAGS) $(CFLAGS) -c -o ags/test/lib/buffer_util_test-ags_buffer_util_test.o `test -f 'ags/test/lib/ags_buffer_util_test.c' || echo '$(srcdir)/'`ags/test/lib/ags_buffer_util_test.c
+
+ags/test/lib/buffer_util_test-ags_buffer_util_test.obj: ags/test/lib/ags_buffer_util_test.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_buffer_util_test_CFLAGS) $(CFLAGS) -MT ags/test/lib/buffer_util_test-ags_buffer_util_test.obj -MD -MP -MF ags/test/lib/$(DEPDIR)/buffer_util_test-ags_buffer_util_test.Tpo -c -o ags/test/lib/buffer_util_test-ags_buffer_util_test.obj `if test -f 'ags/test/lib/ags_buffer_util_test.c'; then $(CYGPATH_W) 'ags/test/lib/ags_buffer_util_test.c'; else $(CYGPATH_W) '$(srcdir)/ags/test/lib/ags_buffer_util_test.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/test/lib/$(DEPDIR)/buffer_util_test-ags_buffer_util_test.Tpo ags/test/lib/$(DEPDIR)/buffer_util_test-ags_buffer_util_test.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/test/lib/ags_buffer_util_test.c' object='ags/test/lib/buffer_util_test-ags_buffer_util_test.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_buffer_util_test_CFLAGS) $(CFLAGS) -c -o ags/test/lib/buffer_util_test-ags_buffer_util_test.obj `if test -f 'ags/test/lib/ags_buffer_util_test.c'; then $(CYGPATH_W) 'ags/test/lib/ags_buffer_util_test.c'; else $(CYGPATH_W) '$(srcdir)/ags/test/lib/ags_buffer_util_test.c'; fi`
+
 ags/test/audio/channel_test-ags_channel_test.o: ags/test/audio/ags_channel_test.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_channel_test_CFLAGS) $(CFLAGS) -MT ags/test/audio/channel_test-ags_channel_test.o -MD -MP -MF ags/test/audio/$(DEPDIR)/channel_test-ags_channel_test.Tpo -c -o ags/test/audio/channel_test-ags_channel_test.o `test -f 'ags/test/audio/ags_channel_test.c' || echo '$(srcdir)/'`ags/test/audio/ags_channel_test.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/test/audio/$(DEPDIR)/channel_test-ags_channel_test.Tpo ags/test/audio/$(DEPDIR)/channel_test-ags_channel_test.Po
@@ -14621,6 +14661,13 @@ recheck: all $(check_PROGRAMS) $(check_LTLIBRARIES)
 	        am__force_recheck=am--force-recheck \
 	        TEST_LOGS="$$log_list"; \
 	exit $$?
+ags_buffer_util_test.log: ags_buffer_util_test$(EXEEXT)
+	@p='ags_buffer_util_test$(EXEEXT)'; \
+	b='ags_buffer_util_test'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
 ags_complex_test.log: ags_complex_test$(EXEEXT)
 	@p='ags_complex_test$(EXEEXT)'; \
 	b='ags_complex_test'; \
@@ -16106,6 +16153,7 @@ distclean: distclean-recursive
 	-rm -f ags/test/file/$(DEPDIR)/file_launch_test-ags_file_launch_test.Po
 	-rm -f ags/test/file/$(DEPDIR)/file_lookup_test-ags_file_lookup_test.Po
 	-rm -f ags/test/file/$(DEPDIR)/file_test-ags_file_test.Po
+	-rm -f ags/test/lib/$(DEPDIR)/buffer_util_test-ags_buffer_util_test.Po
 	-rm -f ags/test/lib/$(DEPDIR)/complex_test-ags_complex_test.Po
 	-rm -f ags/test/lib/$(DEPDIR)/conversion_test-ags_conversion_test.Po
 	-rm -f ags/test/lib/$(DEPDIR)/log_test-ags_log_test.Po
@@ -16838,6 +16886,7 @@ maintainer-clean: maintainer-clean-recursive
 	-rm -f ags/test/file/$(DEPDIR)/file_launch_test-ags_file_launch_test.Po
 	-rm -f ags/test/file/$(DEPDIR)/file_lookup_test-ags_file_lookup_test.Po
 	-rm -f ags/test/file/$(DEPDIR)/file_test-ags_file_test.Po
+	-rm -f ags/test/lib/$(DEPDIR)/buffer_util_test-ags_buffer_util_test.Po
 	-rm -f ags/test/lib/$(DEPDIR)/complex_test-ags_complex_test.Po
 	-rm -f ags/test/lib/$(DEPDIR)/conversion_test-ags_conversion_test.Po
 	-rm -f ags/test/lib/$(DEPDIR)/log_test-ags_log_test.Po
