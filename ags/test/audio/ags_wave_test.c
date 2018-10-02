@@ -51,6 +51,26 @@ void ags_wave_test_insert_from_clipboard_extended();
 #define AGS_WAVE_TEST_FIND_NEAR_TIMESTAMP_N_WAVE (8)
 #define AGS_WAVE_TEST_FIND_NEAR_TIMESTAMP_SAMPLERATE (44100)
 
+#define AGS_WAVE_TEST_ADD_BUFFER_BUFFER_SIZE (1024)
+#define AGS_WAVE_TEST_ADD_BUFFER_COUNT (1024)
+
+#define AGS_WAVE_TEST_REMOVE_BUFFER_BUFFER_SIZE (1024)
+#define AGS_WAVE_TEST_REMOVE_BUFFER_COUNT (1024)
+#define AGS_WAVE_TEST_REMOVE_BUFFER_REMOVE_COUNT (256)
+
+#define AGS_WAVE_TEST_IS_BUFFER_SELECTED_BUFFER_SIZE (1024)
+#define AGS_WAVE_TEST_IS_BUFFER_SELECTED_COUNT (1024)
+#define AGS_WAVE_TEST_IS_BUFFER_SELECTED_SELECTION_COUNT (128)
+
+#define AGS_WAVE_TEST_FIND_POINT_BUFFER_SIZE (1024)
+#define AGS_WAVE_TEST_FIND_POINT_COUNT (1024)
+#define AGS_WAVE_TEST_FIND_POINT_N_ATTEMPTS (128)
+
+#define AGS_WAVE_TEST_FIND_REGION_BUFFER_SIZE (1024)
+#define AGS_WAVE_TEST_FIND_REGION_COUNT (1024)
+#define AGS_WAVE_TEST_FIND_REGION_N_ATTEMPTS (128)
+#define AGS_WAVE_TEST_FIND_REGION_SELECTION_WIDTH (128)
+
 AgsAudio *audio;
 
 /* The suite initialization function.
@@ -129,13 +149,120 @@ ags_wave_test_find_near_timestamp()
 void
 ags_wave_test_add_buffer()
 {
-  //TODO:JK: implement me
+  AgsWave *wave;
+  AgsBuffer *buffer;
+
+  GList *list;
+  GList *current;
+
+  guint64 x;
+  guint i;
+  gboolean success;
+  
+  /* create wave */
+  wave = ags_wave_new(audio,
+		      0);
+  g_object_set(wave,
+	       "buffer-size", AGS_WAVE_TEST_ADD_BUFFER_BUFFER_SIZE,
+	       NULL);
+  
+  for(i = 0; i < AGS_WAVE_TEST_ADD_BUFFER_COUNT; i++){
+    x = i * AGS_WAVE_TEST_ADD_BUFFER_BUFFER_SIZE;
+    
+    buffer = ags_buffer_new();
+    g_object_set(buffer,
+		 "buffer-size", AGS_WAVE_TEST_ADD_BUFFER_BUFFER_SIZE,
+		 "x", x, 
+		 NULL);
+    
+    ags_wave_add_buffer(wave,
+			buffer,
+			FALSE);
+  }
+
+  /* assert position */
+  list = wave->buffer;
+  success = TRUE;
+  
+  for(i = 0; i < AGS_WAVE_TEST_ADD_BUFFER_COUNT; i++){
+    if(list->prev != NULL){
+      if(AGS_BUFFER(list->prev->data)->x < AGS_BUFFER(list->data)->x){
+	success = FALSE;
+
+	break;
+      }
+    }
+    
+    list = list->next;
+  }
+
+  CU_ASSERT(success == TRUE);
+  CU_ASSERT(list == NULL);
 }
 
 void
 ags_wave_test_remove_buffer()
 {
-  //TODO:JK: implement me
+  AgsWave *wave;
+  AgsBuffer *buffer;
+
+  GList *list;
+  GList *current;
+  
+  guint64 nth;
+  guint64 x;
+  guint i;
+  gboolean success;
+  
+  /* create wave */
+  wave = ags_wave_new(audio,
+		      0);
+  g_object_set(wave,
+	       "buffer-size", AGS_WAVE_TEST_REMOVE_BUFFER_BUFFER_SIZE,
+	       NULL);
+  
+  for(i = 0; i < AGS_WAVE_TEST_REMOVE_BUFFER_COUNT; i++){
+    x = i * AGS_WAVE_TEST_REMOVE_BUFFER_BUFFER_SIZE;
+    
+    buffer = ags_buffer_new();
+    g_object_set(buffer,
+		 "buffer-size", AGS_WAVE_TEST_REMOVE_BUFFER_BUFFER_SIZE,
+		 "x", x, 
+		 NULL);
+    
+    ags_wave_add_buffer(wave,
+			buffer,
+			FALSE);
+  }
+  
+  for(i = 0; i < AGS_WAVE_TEST_REMOVE_BUFFER_REMOVE_COUNT; i++){
+    nth = rand() % (AGS_WAVE_TEST_REMOVE_BUFFER_COUNT - i);
+    current = g_list_nth(wave->buffer,
+			 nth);
+    
+    ags_wave_remove_buffer(wave,
+			   current->data,
+			   FALSE);
+  }
+
+  /* assert position */
+  list = wave->buffer;
+  success = TRUE;
+  
+  for(i = 0; i < AGS_WAVE_TEST_REMOVE_BUFFER_COUNT; i++){
+    if(list->prev != NULL){
+      if(AGS_BUFFER(list->prev->data)->x < AGS_BUFFER(list->data)->x){
+	success = FALSE;
+
+	break;
+      }
+    }
+    
+    list = list->next;
+  }
+
+  CU_ASSERT(success == TRUE);
+  CU_ASSERT(list == NULL);
 }
 
 void
@@ -147,19 +274,190 @@ ags_wave_test_get_selection()
 void
 ags_wave_test_is_buffer_selected()
 {
-  //TODO:JK: implement me
+  AgsWave *wave;
+  AgsBuffer *buffer;
+
+  GList *list;
+  GList *current;
+  
+  guint64 nth;
+  guint64 x;
+  guint i;
+  gboolean success;
+  
+  /* create wave */
+  wave = ags_wave_new(audio,
+		      0);
+  g_object_set(wave,
+	       "buffer-size", AGS_WAVE_TEST_IS_BUFFER_SELECTED_BUFFER_SIZE,
+	       NULL);
+  
+  for(i = 0; i < AGS_WAVE_TEST_IS_BUFFER_SELECTED_COUNT; i++){
+    x = i * AGS_WAVE_TEST_IS_BUFFER_SELECTED_BUFFER_SIZE;
+    
+    buffer = ags_buffer_new();
+    g_object_set(buffer,
+		 "buffer-size", AGS_WAVE_TEST_IS_BUFFER_SELECTED_BUFFER_SIZE,
+		 "x", x, 
+		 NULL);
+    
+    ags_wave_add_buffer(wave,
+			buffer,
+			FALSE);
+  }
+
+  /* select buffers */
+  for(i = 0; i < AGS_WAVE_TEST_REMOVE_BUFFER_REMOVE_COUNT; i++){
+    nth = rand() % (AGS_WAVE_TEST_REMOVE_BUFFER_COUNT - i);
+    current = g_list_nth(wave->buffer,
+			 nth);
+    
+    ags_wave_add_buffer(wave,
+			current->data,
+			TRUE);
+  }
+
+  /* assert position */
+  list = wave->selection;
+  success = TRUE;
+  
+  for(i = 0; i < AGS_WAVE_TEST_REMOVE_BUFFER_COUNT; i++){
+    if(list->prev != NULL){
+      if(AGS_BUFFER(list->prev->data)->x < AGS_BUFFER(list->data)->x){
+	success = FALSE;
+
+	break;
+      }
+    }
+    
+    list = list->next;
+  }
+
+  CU_ASSERT(success == TRUE);
+  CU_ASSERT(list == NULL);
 }
 
 void
 ags_wave_test_find_point()
 {
-  //TODO:JK: implement me
+  AgsWave *wave;
+  AgsBuffer *buffer;
+
+  GList *list;
+  GList *current;
+
+  guint64 nth;
+  guint64 x;
+  guint i;
+  gboolean success;
+  
+  /* create wave */
+  wave = ags_wave_new(audio,
+		      0);
+  g_object_set(wave,
+	       "buffer-size", AGS_WAVE_TEST_FIND_POINT_BUFFER_SIZE,
+	       NULL);
+  
+  for(i = 0; i < AGS_WAVE_TEST_FIND_POINT_COUNT; i++){
+    x = i * AGS_WAVE_TEST_FIND_POINT_BUFFER_SIZE;
+    
+    buffer = ags_buffer_new();
+    g_object_set(buffer,
+		 "buffer-size", AGS_WAVE_TEST_FIND_POINT_BUFFER_SIZE,
+		 "x", x, 
+		 NULL);
+    
+    ags_wave_find_point(wave,
+			buffer,
+			FALSE);
+  }
+
+  /* assert find point */
+  success = TRUE;
+
+  for(i = 0; i < AGS_WAVE_TEST_FIND_POINT_N_ATTEMPTS; i++){
+    nth = rand() % AGS_WAVE_TEST_FIND_POINT_COUNT;
+    current = g_list_nth(wave->buffer,
+			 nth);
+    
+    buffer = ags_wave_find_point(wave,
+				 AGS_BUFFER(current->data)->x,
+				 FALSE);
+    
+    if(buffer->x != AGS_BUFFER(current->data)->x){
+      success = FALSE;
+
+      break;
+    }
+  }
+
+  CU_ASSERT(success == TRUE);
 }
 
 void
 ags_wave_test_find_region()
 {
-  //TODO:JK: implement me
+  AgsWave *wave;
+  AgsBuffer *buffer;
+
+  GList *list;
+  GList *region;
+  GList *current;
+
+  guint64 nth;
+  guint64 x;
+  guint i;
+  gboolean success;
+  
+  /* create wave */
+  wave = ags_wave_new(audio,
+		      0);
+  g_object_set(wave,
+	       "buffer-size", AGS_WAVE_TEST_FIND_REGION_BUFFER_SIZE,
+	       NULL);
+  
+  for(i = 0; i < AGS_WAVE_TEST_FIND_REGION_COUNT; i++){
+    x = i * AGS_WAVE_TEST_FIND_REGION_BUFFER_SIZE;
+    
+    buffer = ags_buffer_new();
+    g_object_set(buffer,
+		 "buffer-size", AGS_WAVE_TEST_FIND_REGION_BUFFER_SIZE,
+		 "x", x, 
+		 NULL);
+    
+    ags_wave_add_buffer(wave,
+			buffer,
+			FALSE);
+  }
+
+  /* assert find region */
+  success = TRUE;
+
+  for(i = 0;
+      i < AGS_WAVE_TEST_FIND_REGION_N_ATTEMPTS &&
+	success;
+      i++){
+    nth = rand() % AGS_WAVE_TEST_FIND_REGION_COUNT;
+    current = g_list_nth(wave->buffer,
+			 nth);
+    
+    region = ags_wave_find_region(wave,
+				  AGS_BUFFER(current->data)->x,
+				  AGS_BUFFER(current->data)->x + AGS_WAVE_TEST_FIND_REGION_SELECTION_WIDTH,
+				  FALSE);
+    while(region != NULL){
+      if(!(AGS_BUFFER(region->data)->x >= AGS_BUFFER(current->data)->x &&
+	   AGS_BUFFER(current->data)->x < AGS_BUFFER(current->data)->x + AGS_WAVE_TEST_FIND_REGION_SELECTION_WIDTH)){
+	success = FALSE;
+	
+	break;
+      }
+      
+      region = region->next;
+    }
+  }
+
+  CU_ASSERT(success == TRUE);
 }
 
 void
@@ -261,4 +559,3 @@ main(int argc, char **argv)
   
   return(CU_get_error());
 }
-

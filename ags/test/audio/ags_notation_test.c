@@ -34,6 +34,7 @@ int ags_notation_test_clean_suite();
 
 void ags_notation_test_find_near_timestamp();
 void ags_notation_test_add_note();
+void ags_notation_test_remove_note();
 void ags_notation_test_remove_note_at_position();
 void ags_notation_test_is_note_selected();
 void ags_notation_test_find_point();
@@ -53,6 +54,11 @@ void ags_notation_test_insert_from_clipboard();
 #define AGS_NOTATION_TEST_ADD_NOTE_WIDTH (4096)
 #define AGS_NOTATION_TEST_ADD_NOTE_HEIGHT (88)
 #define AGS_NOTATION_TEST_ADD_NOTE_COUNT (1024)
+
+#define AGS_NOTATION_TEST_REMOVE_NOTE_WIDTH (4096)
+#define AGS_NOTATION_TEST_REMOVE_NOTE_HEIGHT (88)
+#define AGS_NOTATION_TEST_REMOVE_NOTE_COUNT (1024)
+#define AGS_NOTATION_TEST_REMOVE_NOTE_REMOVE_COUNT (256)
 
 #define AGS_NOTATION_TEST_REMOVE_NOTE_AT_POSITION_WIDTH (4096)
 #define AGS_NOTATION_TEST_REMOVE_NOTE_AT_POSITION_HEIGHT (88)
@@ -200,6 +206,69 @@ ags_notation_test_add_note()
   success = TRUE;
   
   for(i = 0; i < AGS_NOTATION_TEST_ADD_NOTE_COUNT; i++){
+    if(list->prev != NULL){
+      if(!(AGS_NOTE(list->prev->data)->x[0] < AGS_NOTE(list->data)->x[0] ||
+	   (AGS_NOTE(list->prev->data)->x[0] == AGS_NOTE(list->data)->x[0] &&
+	    (AGS_NOTE(list->prev->data)->y <= AGS_NOTE(list->data)->y)))){
+	success = FALSE;
+
+	break;
+      }
+    }
+    
+    list = list->next;
+  }
+
+  CU_ASSERT(success == TRUE);
+  CU_ASSERT(list == NULL);
+}
+
+void
+ags_notation_test_remove_note()
+{
+  AgsNotation *notation;
+  AgsNote *note;
+
+  GList *list;
+  GList *current;
+  
+  guint nth;
+  guint x0, y;
+  guint i;
+  gboolean success;
+
+  /* create notation */
+  notation = ags_notation_new(audio,
+			      0);
+
+  for(i = 0; i < AGS_NOTATION_TEST_REMOVE_NOTE_COUNT; i++){
+    x0 = rand() % AGS_NOTATION_TEST_REMOVE_NOTE_WIDTH;
+    y = rand() % AGS_NOTATION_TEST_REMOVE_NOTE_HEIGHT;
+    
+    note = ags_note_new_with_offset(x0, x0 + 1,
+				    y,
+				    0.0, 0.0);
+
+    ags_notation_add_note(notation,
+			  note,
+			  FALSE);
+  }
+
+  for(i = 0; i < AGS_NOTATION_TEST_REMOVE_NOTE_REMOVE_COUNT; i++){
+    nth = rand() % (AGS_NOTATION_TEST_REMOVE_NOTE_COUNT - i);
+    current = g_list_nth(notation->note,
+			 nth);
+    
+    ags_notation_remove_note(notation,
+			     current->data,
+			     FALSE);
+  }
+
+  /* assert position */
+  list = notation->note;
+  success = TRUE;
+  
+  for(i = 0; i < AGS_NOTATION_TEST_REMOVE_NOTE_COUNT; i++){
     if(list->prev != NULL){
       if(!(AGS_NOTE(list->prev->data)->x[0] < AGS_NOTE(list->data)->x[0] ||
 	   (AGS_NOTE(list->prev->data)->x[0] == AGS_NOTE(list->data)->x[0] &&
@@ -771,6 +840,7 @@ main(int argc, char **argv)
   /* add the tests to the suite */
   if((CU_add_test(pSuite, "test of AgsNotation find near timestamp", ags_notation_test_find_near_timestamp) == NULL) ||
      (CU_add_test(pSuite, "test of AgsNotation add note", ags_notation_test_add_note) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsNotation remove note", ags_notation_test_remove_note) == NULL) ||
      (CU_add_test(pSuite, "test of AgsNotation remove note at position", ags_notation_test_remove_note_at_position) == NULL) ||
      (CU_add_test(pSuite, "test of AgsNotation is note selected", ags_notation_test_is_note_selected) == NULL) ||
      (CU_add_test(pSuite, "test of AgsNotation find point", ags_notation_test_find_point) == NULL) ||

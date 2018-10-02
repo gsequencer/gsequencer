@@ -52,7 +52,7 @@ ags_ladspa_browser_plugin_filename_callback(GtkComboBoxText *combo_box,
   filename = ladspa_browser->filename;
   effect = ladspa_browser->effect;
 
-  gtk_list_store_clear(GTK_LIST_STORE(effect));
+  gtk_list_store_clear(GTK_LIST_STORE(gtk_combo_box_get_model((GtkComboBox *) effect)));
 
   ladspa_manager = ags_ladspa_manager_get_instance();
 

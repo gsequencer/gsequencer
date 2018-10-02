@@ -1,3 +1,8 @@
+ags (2.0.27)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed ags_ladspa_browser_callbacks.c to obtain GtkComboBox model
+
 ags (2.0.26)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
