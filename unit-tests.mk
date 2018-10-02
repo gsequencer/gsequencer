@@ -24,7 +24,6 @@ check_PROGRAMS += \
 	ags_file_id_ref_test \
 	ags_file_launch_test \
 	ags_file_lookup_test \
-	ags_log_test \
 	ags_base_plugin_test \
 	ags_dssi_manager_test \
 	ags_dssi_plugin_test \
@@ -61,6 +60,8 @@ check_PROGRAMS += \
 	ags_note_test \
 	ags_automation_test \
 	ags_acceleration_test \
+	ags_wave_test \
+	ags_buffer_test \
 	ags_midi_buffer_util_test \
 	ags_midi_builder_test \
 	ags_xorg_application_context_test
@@ -424,6 +425,18 @@ ags_acceleration_test_SOURCES = ags/test/audio/ags_acceleration_test.c
 ags_acceleration_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
 ags_acceleration_test_LDFLAGS = -pthread $(LDFLAGS)
 ags_acceleration_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
+
+# wave unit test
+ags_wave_test_SOURCES = ags/test/audio/ags_wave_test.c
+ags_wave_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
+ags_wave_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_wave_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lm -lrt $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
+
+# buffer unit test
+ags_buffer_test_SOURCES = ags/test/audio/ags_buffer_test.c
+ags_buffer_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
+ags_buffer_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_buffer_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
 
 # midi buffer util unit test
 ags_midi_buffer_util_test_SOURCES = ags/test/audio/midi/ags_midi_buffer_util_test.c

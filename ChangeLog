@@ -2,6 +2,8 @@ ags (2.0.26)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* added ags_conversion_test.c
+	* added ags_wave_test.c
+	* added ags_buffer_test.c
 
 ags (2.0.25)
 
