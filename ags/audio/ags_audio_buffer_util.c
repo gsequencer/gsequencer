@@ -19,7 +19,7 @@
 
 #include <ags/audio/ags_audio_buffer_util.h>
 
-#include <ags/object/ags_soundcard.h>
+#include <ags/libags.h>
 
 #include <samplerate.h>
 
@@ -79,217 +79,243 @@ guint
 ags_audio_buffer_util_get_copy_mode(guint destination_format,
 				    guint source_format)
 {
-  switch(source_format){
-  case AGS_AUDIO_BUFFER_UTIL_S8:
-    {
-      /* signed 8 bit source*/
-      switch(destination_format){
-      case AGS_AUDIO_BUFFER_UTIL_S8:
-	return(AGS_AUDIO_BUFFER_UTIL_COPY_S8_TO_S8);
-      case AGS_AUDIO_BUFFER_UTIL_S16:
-	return(AGS_AUDIO_BUFFER_UTIL_COPY_S8_TO_S16);
-      case AGS_AUDIO_BUFFER_UTIL_S24:
-	return(AGS_AUDIO_BUFFER_UTIL_COPY_S8_TO_S24);
-      case AGS_AUDIO_BUFFER_UTIL_S32:
-	return(AGS_AUDIO_BUFFER_UTIL_COPY_S8_TO_S32);
-      case AGS_AUDIO_BUFFER_UTIL_S64:
-	return(AGS_AUDIO_BUFFER_UTIL_COPY_S8_TO_S64);
-      case AGS_AUDIO_BUFFER_UTIL_FLOAT:
-	return(AGS_AUDIO_BUFFER_UTIL_COPY_S8_TO_FLOAT);
-      case AGS_AUDIO_BUFFER_UTIL_DOUBLE:
-	return(AGS_AUDIO_BUFFER_UTIL_COPY_S8_TO_DOUBLE);
+  guint copy_mode;
+
+  copy_mode = 0;
+
+  if(source_format == AGS_AUDIO_BUFFER_UTIL_S8){
+    /* signed 8 bit source */
+    switch(destination_format){
+    case AGS_AUDIO_BUFFER_UTIL_S8:
+      copy_mode = AGS_AUDIO_BUFFER_UTIL_COPY_S8_TO_S8;
+      break;
+    case AGS_AUDIO_BUFFER_UTIL_S16:
+      copy_mode = AGS_AUDIO_BUFFER_UTIL_COPY_S8_TO_S16;
+      break;
+    case AGS_AUDIO_BUFFER_UTIL_S24:
+      copy_mode = AGS_AUDIO_BUFFER_UTIL_COPY_S8_TO_S24;
+      break;
+    case AGS_AUDIO_BUFFER_UTIL_S32:
+      copy_mode = AGS_AUDIO_BUFFER_UTIL_COPY_S8_TO_S32;
+      break;
+    case AGS_AUDIO_BUFFER_UTIL_S64:
+      copy_mode = AGS_AUDIO_BUFFER_UTIL_COPY_S8_TO_S64;
+      break;
+    case AGS_AUDIO_BUFFER_UTIL_FLOAT:
+      copy_mode = AGS_AUDIO_BUFFER_UTIL_COPY_S8_TO_FLOAT;
+      break;
+    case AGS_AUDIO_BUFFER_UTIL_DOUBLE:
+      copy_mode = AGS_AUDIO_BUFFER_UTIL_COPY_S8_TO_DOUBLE;
+      break;
 #ifdef __APPLE__
-      case AGS_AUDIO_BUFFER_UTIL_FLOAT32:
-	return(AGS_AUDIO_BUFFER_UTIL_COPY_S8_TO_FLOAT32);
+    case AGS_AUDIO_BUFFER_UTIL_FLOAT32:
+      copy_mode = AGS_AUDIO_BUFFER_UTIL_COPY_S8_TO_FLOAT32;
+      break;
 #endif
-      default:
-	{
-	  g_warning("ags_audio_buffer_util_get_copy_mode() - unsupported destination buffer format");
-	  
-	  return(0);
-	}
+    default:
+      {
+	g_warning("ags_audio_buffer_util_get_copy_mode() - unsupported destination buffer format");
       }
     }
-  case AGS_AUDIO_BUFFER_UTIL_S16:
-    {    
-      /* signed 16 bit source */  
-      switch(destination_format){
-      case AGS_AUDIO_BUFFER_UTIL_S8:
-	return(AGS_AUDIO_BUFFER_UTIL_COPY_S16_TO_S8);
-      case AGS_AUDIO_BUFFER_UTIL_S16:
-	return(AGS_AUDIO_BUFFER_UTIL_COPY_S16_TO_S16);
-      case AGS_AUDIO_BUFFER_UTIL_S24:
-	return(AGS_AUDIO_BUFFER_UTIL_COPY_S16_TO_S24);
-      case AGS_AUDIO_BUFFER_UTIL_S32:
-	return(AGS_AUDIO_BUFFER_UTIL_COPY_S16_TO_S32);
-      case AGS_AUDIO_BUFFER_UTIL_S64:
-	return(AGS_AUDIO_BUFFER_UTIL_COPY_S16_TO_S64);
-      case AGS_AUDIO_BUFFER_UTIL_FLOAT:
-	return(AGS_AUDIO_BUFFER_UTIL_COPY_S16_TO_FLOAT);
-      case AGS_AUDIO_BUFFER_UTIL_DOUBLE:
-	return(AGS_AUDIO_BUFFER_UTIL_COPY_S16_TO_DOUBLE);
+  }else if(source_format == AGS_AUDIO_BUFFER_UTIL_S16){    
+    /* signed 16 bit source */  
+    switch(destination_format){
+    case AGS_AUDIO_BUFFER_UTIL_S8:
+      copy_mode = AGS_AUDIO_BUFFER_UTIL_COPY_S16_TO_S8;
+      break;
+    case AGS_AUDIO_BUFFER_UTIL_S16:
+      copy_mode = AGS_AUDIO_BUFFER_UTIL_COPY_S16_TO_S16;
+      break;
+    case AGS_AUDIO_BUFFER_UTIL_S24:
+      copy_mode = AGS_AUDIO_BUFFER_UTIL_COPY_S16_TO_S24;
+      break;
+    case AGS_AUDIO_BUFFER_UTIL_S32:
+      copy_mode = AGS_AUDIO_BUFFER_UTIL_COPY_S16_TO_S32;
+      break;
+    case AGS_AUDIO_BUFFER_UTIL_S64:
+      copy_mode = AGS_AUDIO_BUFFER_UTIL_COPY_S16_TO_S64;
+      break;
+    case AGS_AUDIO_BUFFER_UTIL_FLOAT:
+      copy_mode = AGS_AUDIO_BUFFER_UTIL_COPY_S16_TO_FLOAT;
+      break;
+    case AGS_AUDIO_BUFFER_UTIL_DOUBLE:
+      copy_mode = AGS_AUDIO_BUFFER_UTIL_COPY_S16_TO_DOUBLE;
+      break;
 #ifdef __APPLE__
-      case AGS_AUDIO_BUFFER_UTIL_FLOAT32:
-	return(AGS_AUDIO_BUFFER_UTIL_COPY_S16_TO_FLOAT32);
+    case AGS_AUDIO_BUFFER_UTIL_FLOAT32:
+      copy_mode = AGS_AUDIO_BUFFER_UTIL_COPY_S16_TO_FLOAT32;
+      break;
 #endif
-      default:
-	{
-	  g_warning("ags_audio_buffer_util_get_copy_mode() - unsupported destination buffer format");
-	  
-	  return(0);
-	}
+    default:
+      {
+	g_warning("ags_audio_buffer_util_get_copy_mode() - unsupported destination buffer format");
       }
     }
-  case AGS_AUDIO_BUFFER_UTIL_S24:
-    {    
-      
-      /* signed 24 bit source */
-      switch(destination_format){
-      case AGS_AUDIO_BUFFER_UTIL_S8:
-	return(AGS_AUDIO_BUFFER_UTIL_COPY_S24_TO_S8);
-      case AGS_AUDIO_BUFFER_UTIL_S16:
-	return(AGS_AUDIO_BUFFER_UTIL_COPY_S24_TO_S16);
-      case AGS_AUDIO_BUFFER_UTIL_S24:
-	return(AGS_AUDIO_BUFFER_UTIL_COPY_S24_TO_S24);
-      case AGS_AUDIO_BUFFER_UTIL_S32:
-	return(AGS_AUDIO_BUFFER_UTIL_COPY_S24_TO_S32);
-      case AGS_AUDIO_BUFFER_UTIL_S64:
-	return(AGS_AUDIO_BUFFER_UTIL_COPY_S24_TO_S64);
-      case AGS_AUDIO_BUFFER_UTIL_FLOAT:
-	return(AGS_AUDIO_BUFFER_UTIL_COPY_S24_TO_FLOAT);
-      case AGS_AUDIO_BUFFER_UTIL_DOUBLE:
-	return(AGS_AUDIO_BUFFER_UTIL_COPY_S24_TO_DOUBLE);
+  }else if(source_format == AGS_AUDIO_BUFFER_UTIL_S24){    
+    /* signed 24 bit source */
+    switch(destination_format){
+    case AGS_AUDIO_BUFFER_UTIL_S8:
+      copy_mode = AGS_AUDIO_BUFFER_UTIL_COPY_S24_TO_S8;
+      break;
+    case AGS_AUDIO_BUFFER_UTIL_S16:
+      copy_mode = AGS_AUDIO_BUFFER_UTIL_COPY_S24_TO_S16;
+      break;
+    case AGS_AUDIO_BUFFER_UTIL_S24:
+      copy_mode = AGS_AUDIO_BUFFER_UTIL_COPY_S24_TO_S24;
+      break;
+    case AGS_AUDIO_BUFFER_UTIL_S32:
+      copy_mode = AGS_AUDIO_BUFFER_UTIL_COPY_S24_TO_S32;
+      break;
+    case AGS_AUDIO_BUFFER_UTIL_S64:
+      copy_mode = AGS_AUDIO_BUFFER_UTIL_COPY_S24_TO_S64;
+      break;
+    case AGS_AUDIO_BUFFER_UTIL_FLOAT:
+      copy_mode = AGS_AUDIO_BUFFER_UTIL_COPY_S24_TO_FLOAT;
+      break;
+    case AGS_AUDIO_BUFFER_UTIL_DOUBLE:
+      copy_mode = AGS_AUDIO_BUFFER_UTIL_COPY_S24_TO_DOUBLE;
+      break;
 #ifdef __APPLE__
-      case AGS_AUDIO_BUFFER_UTIL_FLOAT32:
-	return(AGS_AUDIO_BUFFER_UTIL_COPY_S24_TO_FLOAT32);
+    case AGS_AUDIO_BUFFER_UTIL_FLOAT32:
+      copy_mode = AGS_AUDIO_BUFFER_UTIL_COPY_S24_TO_FLOAT32;
+      break;
 #endif
-      default:
-	{
-	  g_warning("ags_audio_buffer_util_get_copy_mode() - unsupported destination buffer format");
-	  
-	  return(0);
-	}
+    default:
+      {
+	g_warning("ags_audio_buffer_util_get_copy_mode() - unsupported destination buffer format");
       }
     }
-  case AGS_AUDIO_BUFFER_UTIL_S32:
-    {    
-      /* signed 32 bit source */
-      switch(destination_format){
-      case AGS_AUDIO_BUFFER_UTIL_S8:
-	return(AGS_AUDIO_BUFFER_UTIL_COPY_S32_TO_S8);
-      case AGS_AUDIO_BUFFER_UTIL_S16:
-	return(AGS_AUDIO_BUFFER_UTIL_COPY_S32_TO_S16);
-      case AGS_AUDIO_BUFFER_UTIL_S24:
-	return(AGS_AUDIO_BUFFER_UTIL_COPY_S32_TO_S24);
-      case AGS_AUDIO_BUFFER_UTIL_S32:
-	return(AGS_AUDIO_BUFFER_UTIL_COPY_S32_TO_S32);
-      case AGS_AUDIO_BUFFER_UTIL_S64:
-	return(AGS_AUDIO_BUFFER_UTIL_COPY_S32_TO_S64);
-      case AGS_AUDIO_BUFFER_UTIL_FLOAT:
-	return(AGS_AUDIO_BUFFER_UTIL_COPY_S32_TO_FLOAT);
-      case AGS_AUDIO_BUFFER_UTIL_DOUBLE:
-	return(AGS_AUDIO_BUFFER_UTIL_COPY_S32_TO_DOUBLE);
+  }else if(source_format == AGS_AUDIO_BUFFER_UTIL_S32){    
+    /* signed 32 bit source */
+    switch(destination_format){
+    case AGS_AUDIO_BUFFER_UTIL_S8:
+      copy_mode = AGS_AUDIO_BUFFER_UTIL_COPY_S32_TO_S8;
+      break;
+    case AGS_AUDIO_BUFFER_UTIL_S16:
+      copy_mode = AGS_AUDIO_BUFFER_UTIL_COPY_S32_TO_S16;
+      break;
+    case AGS_AUDIO_BUFFER_UTIL_S24:
+      copy_mode = AGS_AUDIO_BUFFER_UTIL_COPY_S32_TO_S24;
+      break;
+    case AGS_AUDIO_BUFFER_UTIL_S32:
+      copy_mode = AGS_AUDIO_BUFFER_UTIL_COPY_S32_TO_S32;
+      break;
+    case AGS_AUDIO_BUFFER_UTIL_S64:
+      copy_mode = AGS_AUDIO_BUFFER_UTIL_COPY_S32_TO_S64;
+      break;
+    case AGS_AUDIO_BUFFER_UTIL_FLOAT:
+      copy_mode = AGS_AUDIO_BUFFER_UTIL_COPY_S32_TO_FLOAT;
+      break;
+    case AGS_AUDIO_BUFFER_UTIL_DOUBLE:
+      copy_mode = AGS_AUDIO_BUFFER_UTIL_COPY_S32_TO_DOUBLE;
+      break;
 #ifdef __APPLE__
-      case AGS_AUDIO_BUFFER_UTIL_FLOAT32:
-	return(AGS_AUDIO_BUFFER_UTIL_COPY_S32_TO_FLOAT32);
+    case AGS_AUDIO_BUFFER_UTIL_FLOAT32:
+      copy_mode = AGS_AUDIO_BUFFER_UTIL_COPY_S32_TO_FLOAT32;
+      break;
 #endif
-      default:
-	{
-	  g_warning("ags_audio_buffer_util_get_copy_mode() - unsupported destination buffer format");
-	  
-	  return(0);
-	}
+    default:
+      {
+	g_warning("ags_audio_buffer_util_get_copy_mode() - unsupported destination buffer format");
       }
     }
-  case AGS_AUDIO_BUFFER_UTIL_S64:
-    {    
-      /* signed 64 bit source */
-      switch(destination_format){
-      case AGS_AUDIO_BUFFER_UTIL_S8:
-	return(AGS_AUDIO_BUFFER_UTIL_COPY_S64_TO_S8);
-      case AGS_AUDIO_BUFFER_UTIL_S16:
-	return(AGS_AUDIO_BUFFER_UTIL_COPY_S64_TO_S16);
-      case AGS_AUDIO_BUFFER_UTIL_S24:
-	return(AGS_AUDIO_BUFFER_UTIL_COPY_S64_TO_S24);
-      case AGS_AUDIO_BUFFER_UTIL_S32:
-	return(AGS_AUDIO_BUFFER_UTIL_COPY_S64_TO_S32);
-      case AGS_AUDIO_BUFFER_UTIL_S64:
-	return(AGS_AUDIO_BUFFER_UTIL_COPY_S64_TO_S64);
-      case AGS_AUDIO_BUFFER_UTIL_FLOAT:
-	return(AGS_AUDIO_BUFFER_UTIL_COPY_S64_TO_FLOAT);
-      case AGS_AUDIO_BUFFER_UTIL_DOUBLE:
-	return(AGS_AUDIO_BUFFER_UTIL_COPY_S64_TO_DOUBLE);
+  }else if(source_format == AGS_AUDIO_BUFFER_UTIL_S64){    
+    /* signed 64 bit source */
+    switch(destination_format){
+    case AGS_AUDIO_BUFFER_UTIL_S8:
+      copy_mode = AGS_AUDIO_BUFFER_UTIL_COPY_S64_TO_S8;
+      break;
+    case AGS_AUDIO_BUFFER_UTIL_S16:
+      copy_mode = AGS_AUDIO_BUFFER_UTIL_COPY_S64_TO_S16;
+      break;
+    case AGS_AUDIO_BUFFER_UTIL_S24:
+      copy_mode = AGS_AUDIO_BUFFER_UTIL_COPY_S64_TO_S24;
+      break;
+    case AGS_AUDIO_BUFFER_UTIL_S32:
+      copy_mode = AGS_AUDIO_BUFFER_UTIL_COPY_S64_TO_S32;
+      break;
+    case AGS_AUDIO_BUFFER_UTIL_S64:
+      copy_mode = AGS_AUDIO_BUFFER_UTIL_COPY_S64_TO_S64;
+      break;
+    case AGS_AUDIO_BUFFER_UTIL_FLOAT:
+      copy_mode = AGS_AUDIO_BUFFER_UTIL_COPY_S64_TO_FLOAT;
+      break;
+    case AGS_AUDIO_BUFFER_UTIL_DOUBLE:
+      copy_mode = AGS_AUDIO_BUFFER_UTIL_COPY_S64_TO_DOUBLE;
+      break;
 #ifdef __APPLE__
-      case AGS_AUDIO_BUFFER_UTIL_FLOAT32:
-	return(AGS_AUDIO_BUFFER_UTIL_COPY_S64_TO_FLOAT32);
+    case AGS_AUDIO_BUFFER_UTIL_FLOAT32:
+      copy_mode = AGS_AUDIO_BUFFER_UTIL_COPY_S64_TO_FLOAT32;
+      break;
 #endif
-      default:
-	{
-	  g_warning("ags_audio_buffer_util_get_copy_mode() - unsupported destination buffer format");
-	  
-	  return(0);
-	}
+    default:
+      {
+	g_warning("ags_audio_buffer_util_get_copy_mode() - unsupported destination buffer format");
       }
     }
-  case AGS_AUDIO_BUFFER_UTIL_FLOAT:
-    {    
-      /* float source */
-      switch(destination_format){
-      case AGS_AUDIO_BUFFER_UTIL_S8:
-	return(AGS_AUDIO_BUFFER_UTIL_COPY_FLOAT_TO_S8);
-      case AGS_AUDIO_BUFFER_UTIL_S16:
-	return(AGS_AUDIO_BUFFER_UTIL_COPY_FLOAT_TO_S16);
-      case AGS_AUDIO_BUFFER_UTIL_S24:
-	return(AGS_AUDIO_BUFFER_UTIL_COPY_FLOAT_TO_S24);
-      case AGS_AUDIO_BUFFER_UTIL_S32:
-	return(AGS_AUDIO_BUFFER_UTIL_COPY_FLOAT_TO_S32);
-      case AGS_AUDIO_BUFFER_UTIL_S64:
-	return(AGS_AUDIO_BUFFER_UTIL_COPY_FLOAT_TO_S64);
-      case AGS_AUDIO_BUFFER_UTIL_FLOAT:
-	return(AGS_AUDIO_BUFFER_UTIL_COPY_FLOAT_TO_FLOAT);
-      case AGS_AUDIO_BUFFER_UTIL_DOUBLE:
-	return(AGS_AUDIO_BUFFER_UTIL_COPY_FLOAT_TO_DOUBLE);
-      default:
-	{
-	  g_warning("ags_audio_buffer_util_get_copy_mode() - unsupported destination buffer format");
-	  
-	  return(0);
-	}
+  }else if(source_format == AGS_AUDIO_BUFFER_UTIL_FLOAT){    
+    /* float source */
+    switch(destination_format){
+    case AGS_AUDIO_BUFFER_UTIL_S8:
+      copy_mode = AGS_AUDIO_BUFFER_UTIL_COPY_FLOAT_TO_S8;
+      break;
+    case AGS_AUDIO_BUFFER_UTIL_S16:
+      copy_mode = AGS_AUDIO_BUFFER_UTIL_COPY_FLOAT_TO_S16;
+      break;
+    case AGS_AUDIO_BUFFER_UTIL_S24:
+      copy_mode = AGS_AUDIO_BUFFER_UTIL_COPY_FLOAT_TO_S24;
+      break;
+    case AGS_AUDIO_BUFFER_UTIL_S32:
+      copy_mode = AGS_AUDIO_BUFFER_UTIL_COPY_FLOAT_TO_S32;
+      break;
+    case AGS_AUDIO_BUFFER_UTIL_S64:
+      copy_mode = AGS_AUDIO_BUFFER_UTIL_COPY_FLOAT_TO_S64;
+      break;
+    case AGS_AUDIO_BUFFER_UTIL_FLOAT:
+      copy_mode = AGS_AUDIO_BUFFER_UTIL_COPY_FLOAT_TO_FLOAT;
+      break;
+    case AGS_AUDIO_BUFFER_UTIL_DOUBLE:
+      copy_mode = AGS_AUDIO_BUFFER_UTIL_COPY_FLOAT_TO_DOUBLE;
+      break;
+    default:
+      {
+	g_warning("ags_audio_buffer_util_get_copy_mode() - unsupported destination buffer format");
       }
     }
-  case AGS_AUDIO_BUFFER_UTIL_DOUBLE:
-    {    
-      /* double source */
-      switch(destination_format){
-      case AGS_AUDIO_BUFFER_UTIL_S8:
-	return(AGS_AUDIO_BUFFER_UTIL_COPY_DOUBLE_TO_S8);
-      case AGS_AUDIO_BUFFER_UTIL_S16:
-	return(AGS_AUDIO_BUFFER_UTIL_COPY_DOUBLE_TO_S16);
-      case AGS_AUDIO_BUFFER_UTIL_S24:
-	return(AGS_AUDIO_BUFFER_UTIL_COPY_DOUBLE_TO_S24);
-      case AGS_AUDIO_BUFFER_UTIL_S32:
-	return(AGS_AUDIO_BUFFER_UTIL_COPY_DOUBLE_TO_S32);
-      case AGS_AUDIO_BUFFER_UTIL_S64:
-	return(AGS_AUDIO_BUFFER_UTIL_COPY_DOUBLE_TO_S64);
-      case AGS_AUDIO_BUFFER_UTIL_FLOAT:
-	return(AGS_AUDIO_BUFFER_UTIL_COPY_DOUBLE_TO_FLOAT);
-      case AGS_AUDIO_BUFFER_UTIL_DOUBLE:
-	return(AGS_AUDIO_BUFFER_UTIL_COPY_DOUBLE_TO_DOUBLE);
-      default:
-	{
-	  g_warning("ags_audio_buffer_util_get_copy_mode() - unsupported destination buffer format");
-	  
-	  return(0);
-	}
+  }else if(source_format == AGS_AUDIO_BUFFER_UTIL_DOUBLE){    
+    /* double source */
+    switch(destination_format){
+    case AGS_AUDIO_BUFFER_UTIL_S8:
+      copy_mode = AGS_AUDIO_BUFFER_UTIL_COPY_DOUBLE_TO_S8;
+      break;
+    case AGS_AUDIO_BUFFER_UTIL_S16:
+      copy_mode = AGS_AUDIO_BUFFER_UTIL_COPY_DOUBLE_TO_S16;
+      break;
+    case AGS_AUDIO_BUFFER_UTIL_S24:
+      copy_mode = AGS_AUDIO_BUFFER_UTIL_COPY_DOUBLE_TO_S24;
+      break;
+    case AGS_AUDIO_BUFFER_UTIL_S32:
+      copy_mode = AGS_AUDIO_BUFFER_UTIL_COPY_DOUBLE_TO_S32;
+      break;
+    case AGS_AUDIO_BUFFER_UTIL_S64:
+      copy_mode = AGS_AUDIO_BUFFER_UTIL_COPY_DOUBLE_TO_S64;
+      break;
+    case AGS_AUDIO_BUFFER_UTIL_FLOAT:
+      copy_mode = AGS_AUDIO_BUFFER_UTIL_COPY_DOUBLE_TO_FLOAT;
+      break;
+    case AGS_AUDIO_BUFFER_UTIL_DOUBLE:
+      copy_mode = AGS_AUDIO_BUFFER_UTIL_COPY_DOUBLE_TO_DOUBLE;
+      break;
+    default:
+      {
+	g_warning("ags_audio_buffer_util_get_copy_mode() - unsupported destination buffer format");
       }
     }
-  default:
-    {
-      g_warning("ags_audio_buffer_util_get_copy_mode() - unsupported source buffer format");
-      
-      return(0);
-    }
+  }else{
+    g_warning("ags_audio_buffer_util_get_copy_mode() - unsupported source buffer format");
   }
+
+  return(copy_mode);
 }
 
 /**
