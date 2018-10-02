@@ -1,3 +1,8 @@
+ags (2.0.26)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* added ags_conversion_test.c
+
 ags (2.0.25)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

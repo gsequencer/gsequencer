@@ -322,10 +322,19 @@ ags_conversion_finalize(GObject *gobject)
   
   conversion = AGS_CONVERSION(gobject);
 
+  /* conversion mutex */
+  pthread_mutexattr_destroy(conversion->obj_mutexattr);
+  free(conversion->obj_mutexattr);
+
+  pthread_mutex_destroy(conversion->obj_mutex);
+  free(conversion->obj_mutex);
+
+  /* name */
   if(conversion->name != NULL){
     g_free(conversion->name);
   }
 
+  /* description */
   if(conversion->description != NULL){
     g_free(conversion->description);
   }

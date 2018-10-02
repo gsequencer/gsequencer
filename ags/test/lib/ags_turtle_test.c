@@ -17,7 +17,7 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <ags/lib/ags_turtle.h>
+#include <ags/libags.h>
 
 #include <glib.h>
 #include <glib-object.h>
@@ -591,7 +591,7 @@ ags_turtle_test_read_echar()
 
   /* assert escaped characters */
   current[0] = '\\';
-  current[2] = '';
+  current[2] = '\0';
 
   success = TRUE;
 
@@ -632,7 +632,7 @@ ags_turtle_test_read_ws()
   gboolean success;
 
   /* assert white-space */
-  current[1] = '';
+  current[1] = '\0';
   
   success = TRUE;
 

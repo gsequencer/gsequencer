@@ -254,7 +254,16 @@ ags_config_set_property(GObject *gobject,
 {
   AgsConfig *config;
 
+  pthread_mutex_t *config_mutex;
+
   config = AGS_CONFIG(gobject);
+
+  /* get config mutex */
+  pthread_mutex_lock(ags_config_get_class_mutex());
+  
+  config_mutex = config->obj_mutex;
+
+  pthread_mutex_unlock(ags_config_get_class_mutex());
 
   switch(prop_id){
   case PROP_APPLICATION_CONTEXT:
@@ -263,7 +272,11 @@ ags_config_set_property(GObject *gobject,
       
       application_context = (AgsApplicationContext *) g_value_get_object(value);
 
+      pthread_mutex_lock(config_mutex);
+      
       if(application_context == ((AgsApplicationContext *) config->application_context)){
+	pthread_mutex_unlock(config_mutex);
+	
 	return;
       }
 
@@ -276,6 +289,8 @@ ags_config_set_property(GObject *gobject,
       }
       
       config->application_context = (GObject *) application_context;
+
+      pthread_mutex_unlock(config_mutex);
     }
     break;
   default:
@@ -292,12 +307,25 @@ ags_config_get_property(GObject *gobject,
 {
   AgsConfig *config;
 
+  pthread_mutex_t *config_mutex;
+
   config = AGS_CONFIG(gobject);
 
+  /* get config mutex */
+  pthread_mutex_lock(ags_config_get_class_mutex());
+  
+  config_mutex = config->obj_mutex;
+
+  pthread_mutex_unlock(ags_config_get_class_mutex());
+  
   switch(prop_id){
   case PROP_APPLICATION_CONTEXT:
     {
+      pthread_mutex_lock(config_mutex);
+
       g_value_set_object(value, config->application_context);
+
+      pthread_mutex_unlock(config_mutex);
     }
     break;
   default:
@@ -328,15 +356,25 @@ ags_config_finalize(GObject *gobject)
   AgsConfig *config;
 
   config = (AgsConfig *) gobject;
-  
+
+  /* config mutex */
+  pthread_mutexattr_destroy(config->obj_mutexattr);
+  free(config->obj_mutexattr);
+
+  pthread_mutex_destroy(config->obj_mutex);
+  free(config->obj_mutex);
+
+  /* application context */
   if(config->application_context != NULL){
     g_object_unref(config->application_context);
   }
 
+  /* key file */
   if(config->key_file != NULL){
     g_key_file_unref(config->key_file);
   }
 
+  /* global variable */
   if(ags_config == config){
     ags_config = NULL;
   }

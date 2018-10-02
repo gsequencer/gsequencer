@@ -102,7 +102,6 @@ ags_turtle_manager_init(AgsTurtleManager *turtle_manager)
 				PTHREAD_PRIO_INHERIT);
 #endif
 
-  
   turtle_manager->obj_mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
   pthread_mutex_init(turtle_manager->obj_mutex, turtle_manager->obj_mutexattr);
 
@@ -137,6 +136,14 @@ ags_turtle_manager_finalize(GObject *gobject)
 
   turtle_manager = AGS_TURTLE_MANAGER(gobject);
 
+  /* turtle manager mutex */
+  pthread_mutexattr_destroy(turtle_manager->obj_mutexattr);
+  free(turtle_manager->obj_mutexattr);
+
+  pthread_mutex_destroy(turtle_manager->obj_mutex);
+  free(turtle_manager->obj_mutex);
+
+  /* turtle */
   turtle = turtle_manager->turtle;
 
   if(turtle != NULL){

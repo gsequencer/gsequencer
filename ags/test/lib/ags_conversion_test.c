@@ -55,6 +55,26 @@ gdouble ags_conversion_test_stub_convert(AgsConversion *conversion,
 gboolean ags_conversion_test_finalize_invoked = FALSE;
 guint ags_conversion_test_convert_invoked = 0;
 
+/* The suite initialization function.
+ * Opens the temporary file used by the tests.
+ * Returns zero on success, non-zero otherwise.
+ */
+int
+ags_conversion_test_init_suite()
+{
+  return(0);
+}
+
+/* The suite cleanup function.
+ * Closes the temporary file used by the tests.
+ * Returns zero on success, non-zero otherwise.
+ */
+int
+ags_conversion_test_clean_suite()
+{
+  return(0);
+}
+
 void
 ags_conversion_test_property()
 {
