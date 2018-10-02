@@ -2,8 +2,10 @@ ags (2.0.27)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* fixed ags_ladspa_browser_callbacks.c to obtain GtkComboBox model
+	* fixed missing property AgsLadspaConversion:samplerate
 	* added ags_buffer_util_test.c
 	* added ags_ladspa_conversion_test.c
+	* added ags_lv2_conversion_test.c
 
 ags (2.0.26)
 

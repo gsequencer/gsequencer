@@ -63,7 +63,21 @@ ags_ladspa_conversion_test_test_flags()
   AgsLadspaConversion *ladspa_conversion;
 
   ladspa_conversion = ags_ladspa_conversion_new();
+  ladspa_conversion->flags = 0;
+  
+  /* test flags - samplerate */
+  CU_ASSERT(!ags_ladspa_conversion_test_flags(ladspa_conversion, AGS_LADSPA_CONVERSION_SAMPLERATE));
 
+  /* test flags - bounded below */
+  CU_ASSERT(!ags_ladspa_conversion_test_flags(ladspa_conversion, AGS_LADSPA_CONVERSION_BOUNDED_BELOW));
+
+  /* test flags - bounded above */
+  CU_ASSERT(!ags_ladspa_conversion_test_flags(ladspa_conversion, AGS_LADSPA_CONVERSION_BOUNDED_ABOVE));
+
+  /* test flags - logarithmic */
+  CU_ASSERT(!ags_ladspa_conversion_test_flags(ladspa_conversion, AGS_LADSPA_CONVERSION_LOGARITHMIC));
+
+  /* set flags */
   ladspa_conversion->flags = (AGS_LADSPA_CONVERSION_SAMPLERATE |
 			      AGS_LADSPA_CONVERSION_BOUNDED_BELOW |
 			      AGS_LADSPA_CONVERSION_BOUNDED_ABOVE |

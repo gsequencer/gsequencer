@@ -19,7 +19,7 @@
 
 #include <ags/plugin/ags_lv2_conversion.h>
 
-#include <ags/object/ags_soundcard.h>
+#include <ags/libags.h>
 
 #include <math.h>
 
@@ -97,17 +97,14 @@ ags_lv2_conversion_class_init(AgsLv2ConversionClass *lv2_conversion)
 void
 ags_lv2_conversion_init(AgsLv2Conversion *lv2_conversion)
 {
-  AgsConfig *config;
-
-  gchar *str;
-  
   lv2_conversion->flags = 0;
 }
 
 void
 ags_lv2_conversion_finalize(GObject *gobject)
 {
-  /* empty */
+  /* call parent */
+  G_OBJECT_CLASS(ags_lv2_conversion_parent_class)->finalize(gobject);
 }
 
 /**

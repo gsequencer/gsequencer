@@ -23,7 +23,7 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#include <ags/lib/ags_conversion.h>
+#include <ags/libags.h>
 
 #define AGS_TYPE_LADSPA_CONVERSION                (ags_ladspa_conversion_get_type())
 #define AGS_LADSPA_CONVERSION(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_CONVERSION, AgsLadspaConversion))

@@ -19,7 +19,7 @@
 
 #include <ags/plugin/ags_ladspa_conversion.h>
 
-#include <ags/object/ags_soundcard.h>
+#include <ags/libags.h>
 
 #include <math.h>
 
@@ -221,8 +221,6 @@ ags_ladspa_conversion_get_property(GObject *gobject,
 void
 ags_ladspa_conversion_finalize(GObject *gobject)
 {
-  /* empty */
-
   /* call parent */
   G_OBJECT_CLASS(ags_ladspa_conversion_parent_class)->finalize(gobject);
 }
