@@ -28,6 +28,7 @@ check_PROGRAMS += \
 	ags_base_plugin_test \
 	ags_dssi_manager_test \
 	ags_dssi_plugin_test \
+	ags_ladspa_conversion_test \
 	ags_ladspa_manager_test \
 	ags_lv2_manager_test \
 	ags_lv2_option_manager_test \
@@ -234,6 +235,12 @@ ags_dssi_plugin_test_SOURCES = ags/test/plugin/ags_dssi_plugin_test.c
 ags_dssi_plugin_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
 ags_dssi_plugin_test_LDFLAGS = $(LDFLAGS) -pthread
 ags_dssi_plugin_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
+
+# ladspa conversion unit test
+ags_ladspa_conversion_test_SOURCES = ags/test/plugin/ags_ladspa_conversion_test.c
+ags_ladspa_conversion_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
+ags_ladspa_conversion_test_LDFLAGS = $(LDFLAGS) -pthread
+ags_ladspa_conversion_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
 
 # ladspa manager unit test
 ags_ladspa_manager_test_SOURCES = ags/test/plugin/ags_ladspa_manager_test.c

@@ -593,7 +593,6 @@ ags_buffer_util_test_swap_bytes()
   //TODO:JK: implement me
 }
 
-
 int
 main(int argc, char **argv)
 {

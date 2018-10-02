@@ -23,6 +23,8 @@
 
 #include <math.h>
 
+#include <ags/i18n.h>
+
 void ags_ladspa_conversion_class_init(AgsLadspaConversionClass *conversion);
 void ags_ladspa_conversion_init (AgsLadspaConversion *conversion);
 void ags_ladspa_conversion_set_property(GObject *gobject,
@@ -92,6 +94,7 @@ ags_ladspa_conversion_class_init(AgsLadspaConversionClass *ladspa_conversion)
 {
   AgsConversionClass *conversion;
   GObjectClass *gobject;
+
   GParamSpec *param_spec;
   
   ags_ladspa_conversion_parent_class = g_type_class_peek_parent(ladspa_conversion);
@@ -104,6 +107,25 @@ ags_ladspa_conversion_class_init(AgsLadspaConversionClass *ladspa_conversion)
   
   gobject->finalize = ags_ladspa_conversion_finalize;
 
+  /* properties */
+  /**
+   * AgsLadspaConversion:samplerate:
+   *
+   * The samplerate to be used.
+   * 
+   * Since: 2.0.0
+   */
+  param_spec = g_param_spec_uint("samplerate",
+				 i18n_pspec("using samplerate"),
+				 i18n_pspec("The samplerate to be used"),
+				 0,
+				 G_MAXUINT32,
+				 0,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_SAMPLERATE,
+				  param_spec);
+
   /* AgsConversionClass */
   conversion = (AgsConversionClass *) ladspa_conversion;
     
@@ -115,31 +137,11 @@ ags_ladspa_conversion_init(AgsLadspaConversion *ladspa_conversion)
 {
   AgsConfig *config;
 
-  gchar *str;
-  
   ladspa_conversion->flags = 0;
 
   config = ags_config_get_instance();
-
-  str = ags_config_get_value(config,
-			     AGS_CONFIG_SOUNDCARD,
-			     "samplerate");
-
-  if(str == NULL){
-    str = ags_config_get_value(config,
-			       AGS_CONFIG_SOUNDCARD_0,
-			       "samplerate");
-  }
   
-  if(str != NULL){
-    ladspa_conversion->samplerate = g_ascii_strtoull(str,
-						     NULL,
-						     10);
-    
-    free(str);
-  }else{
-    ladspa_conversion->samplerate = AGS_SOUNDCARD_DEFAULT_SAMPLERATE;
-  }
+  ladspa_conversion->samplerate = ags_soundcard_helper_config_get_samplerate(config);
 }
 
 void
