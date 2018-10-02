@@ -6,6 +6,7 @@ ags (2.0.27)
 	* added ags_buffer_util_test.c
 	* added ags_ladspa_conversion_test.c
 	* added ags_lv2_conversion_test.c
+	* added ags_plugin_port_test.c
 
 ags (2.0.26)
 
