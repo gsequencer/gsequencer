@@ -35,7 +35,7 @@
  * Since: 2.0.0
  */
 guint
-ags_synth_util_get_xcross_count_s8(signed char *buffer,
+ags_synth_util_get_xcross_count_s8(gint8 *buffer,
 				   guint buffer_size)
 {
   guint count;
@@ -79,7 +79,7 @@ ags_synth_util_get_xcross_count_s8(signed char *buffer,
  * Since: 2.0.0
  */
 guint
-ags_synth_util_get_xcross_count_s16(signed short *buffer,
+ags_synth_util_get_xcross_count_s16(gint16 *buffer,
 				    guint buffer_size)
 {
   guint count;
@@ -123,7 +123,7 @@ ags_synth_util_get_xcross_count_s16(signed short *buffer,
  * Since: 2.0.0
  */
 guint
-ags_synth_util_get_xcross_count_s24(signed long *buffer,
+ags_synth_util_get_xcross_count_s24(gint32 *buffer,
 				    guint buffer_size)
 {
   guint count;
@@ -167,7 +167,7 @@ ags_synth_util_get_xcross_count_s24(signed long *buffer,
  * Since: 2.0.0
  */
 guint
-ags_synth_util_get_xcross_count_s32(signed long *buffer,
+ags_synth_util_get_xcross_count_s32(gint32 *buffer,
 				    guint buffer_size)
 {
   guint count;
@@ -211,7 +211,7 @@ ags_synth_util_get_xcross_count_s32(signed long *buffer,
  * Since: 2.0.0
  */
 guint
-ags_synth_util_get_xcross_count_s64(signed long long *buffer,
+ags_synth_util_get_xcross_count_s64(gint64 *buffer,
 				    guint buffer_size)
 {
   guint count;
@@ -356,31 +356,31 @@ ags_synth_util_get_xcross_count(void *buffer,
   switch(audio_buffer_util_format){
   case AGS_AUDIO_BUFFER_UTIL_S8:
     {
-      ags_synth_util_get_xcross_count_s8((signed char *) buffer,
+      ags_synth_util_get_xcross_count_s8((gint8 *) buffer,
 					 buffer_size);
     }
     break;
   case AGS_AUDIO_BUFFER_UTIL_S16:
     {
-      ags_synth_util_get_xcross_count_s16((signed short *) buffer,
+      ags_synth_util_get_xcross_count_s16((gint16 *) buffer,
 					  buffer_size);
     }
     break;
   case AGS_AUDIO_BUFFER_UTIL_S24:
     {
-      ags_synth_util_get_xcross_count_s24((signed long *) buffer,
+      ags_synth_util_get_xcross_count_s24((gint32 *) buffer,
 					  buffer_size);
     }
     break;
   case AGS_AUDIO_BUFFER_UTIL_S32:
     {
-      ags_synth_util_get_xcross_count_s32((signed long *) buffer,
+      ags_synth_util_get_xcross_count_s32((gint32 *) buffer,
 					  buffer_size);
     }
     break;
   case AGS_AUDIO_BUFFER_UTIL_S64:
     {
-      ags_synth_util_get_xcross_count_s64((signed long long *) buffer,
+      ags_synth_util_get_xcross_count_s64((gint64 *) buffer,
 					  buffer_size);
     }
     break;
@@ -420,7 +420,7 @@ ags_synth_util_get_xcross_count(void *buffer,
  * Since: 2.0.0
  */
 void
-ags_synth_util_sin_s8(signed char *buffer,
+ags_synth_util_sin_s8(gint8 *buffer,
 		      gdouble freq, gdouble phase, gdouble volume,
 		      guint samplerate,
 		      guint offset, guint n_frames)
@@ -429,7 +429,7 @@ ags_synth_util_sin_s8(signed char *buffer,
   guint i;
 
   for (i = offset; i < offset + n_frames; i++){
-    buffer[i] = (signed char) (0xff & ((signed short) buffer[i] + (signed short) (sin((gdouble) (i + phase) * 2.0 * M_PI * freq / (gdouble) samplerate) * scale * volume)));
+    buffer[i] = (gint8) (0xff & ((gint16) buffer[i] + (gint16) (sin((gdouble) (i + phase) * 2.0 * M_PI * freq / (gdouble) samplerate) * scale * volume)));
   }
 }
 
@@ -448,7 +448,7 @@ ags_synth_util_sin_s8(signed char *buffer,
  * Since: 2.0.0
  */
 void
-ags_synth_util_sin_s16(signed short *buffer,
+ags_synth_util_sin_s16(gint16 *buffer,
 		       gdouble freq, gdouble phase, gdouble volume,
 		       guint samplerate,
 		       guint offset, guint n_frames)
@@ -457,7 +457,7 @@ ags_synth_util_sin_s16(signed short *buffer,
   guint i;
 
   for (i = offset; i < offset + n_frames; i++){
-    buffer[i] = (signed short) (0xffff & ((signed long) buffer[i] + (signed long) (sin((gdouble) (i + phase) * 2.0 * M_PI * freq / (gdouble) samplerate) * scale * volume)));
+    buffer[i] = (gint16) (0xffff & ((gint32) buffer[i] + (gint32) (sin((gdouble) (i + phase) * 2.0 * M_PI * freq / (gdouble) samplerate) * scale * volume)));
   }
 }
 
@@ -476,7 +476,7 @@ ags_synth_util_sin_s16(signed short *buffer,
  * Since: 2.0.0
  */
 void
-ags_synth_util_sin_s24(signed long *buffer,
+ags_synth_util_sin_s24(gint32 *buffer,
 		       gdouble freq, gdouble phase, gdouble volume,
 		       guint samplerate,
 		       guint offset, guint n_frames)
@@ -485,7 +485,7 @@ ags_synth_util_sin_s24(signed long *buffer,
   guint i;
 
   for (i = offset; i < offset + n_frames; i++){
-    buffer[i] = (signed long) (0xffffff & ((signed long) buffer[i] + (signed long) (sin((gdouble) (i + phase) * 2.0 * M_PI * freq / (gdouble) samplerate) * scale * volume)));
+    buffer[i] = (gint32) (0xffffff & ((gint32) buffer[i] + (gint32) (sin((gdouble) (i + phase) * 2.0 * M_PI * freq / (gdouble) samplerate) * scale * volume)));
   }
 }
 
@@ -504,7 +504,7 @@ ags_synth_util_sin_s24(signed long *buffer,
  * Since: 2.0.0
  */
 void
-ags_synth_util_sin_s32(signed long *buffer,
+ags_synth_util_sin_s32(gint32 *buffer,
 		       gdouble freq, gdouble phase, gdouble volume,
 		       guint samplerate,
 		       guint offset, guint n_frames)
@@ -513,7 +513,7 @@ ags_synth_util_sin_s32(signed long *buffer,
   guint i;
 
   for (i = offset; i < offset + n_frames; i++){
-    buffer[i] = (signed long) (0xffffffff & ((signed long long) buffer[i] + (signed long long) (sin((gdouble) (i + phase) * 2.0 * M_PI * freq / (gdouble) samplerate) * scale * volume)));
+    buffer[i] = (gint32) (0xffffffff & ((gint64) buffer[i] + (gint64) (sin((gdouble) (i + phase) * 2.0 * M_PI * freq / (gdouble) samplerate) * scale * volume)));
   }
 }
 
@@ -532,7 +532,7 @@ ags_synth_util_sin_s32(signed long *buffer,
  * Since: 2.0.0
  */
 void
-ags_synth_util_sin_s64(signed long long *buffer,
+ags_synth_util_sin_s64(gint64 *buffer,
 		       gdouble freq, gdouble phase, gdouble volume,
 		       guint samplerate,
 		       guint offset, guint n_frames)
@@ -541,7 +541,7 @@ ags_synth_util_sin_s64(signed long long *buffer,
   guint i;
 
   for (i = offset; i < offset + n_frames; i++){
-    buffer[i] = (signed long long) (0xffffffffffff & ((signed long long) buffer[i] + (signed long long) (sin((gdouble) (i + phase) * 2.0 * M_PI * freq / (gdouble) samplerate) * scale * volume)));
+    buffer[i] = (gint64) (0xffffffffffff & ((gint64) buffer[i] + (gint64) (sin((gdouble) (i + phase) * 2.0 * M_PI * freq / (gdouble) samplerate) * scale * volume)));
   }
 }
 
@@ -614,7 +614,7 @@ ags_synth_util_sin_double(double *buffer,
  * Since: 2.0.0
  */
 void
-ags_synth_util_sawtooth_s8(signed char *buffer,
+ags_synth_util_sawtooth_s8(gint8 *buffer,
 			   gdouble freq, gdouble phase, gdouble volume,
 			   guint samplerate,
 			   guint offset, guint n_frames)
@@ -626,7 +626,7 @@ ags_synth_util_sawtooth_s8(signed char *buffer,
   phase = (phase / freq) * (samplerate / freq);
 
   for (i = offset; i < n_frames; i++){
-    buffer[i] = (signed char) (0xff & ((signed short) buffer[i] + (signed short) (((((int) (i + phase) % (int) (samplerate / freq)) * 2.0 * freq / samplerate) - 1.0) * scale * volume)));
+    buffer[i] = (gint8) (0xff & ((gint16) buffer[i] + (gint16) (((((int) (i + phase) % (int) (samplerate / freq)) * 2.0 * freq / samplerate) - 1.0) * scale * volume)));
   }
 }
 
@@ -645,7 +645,7 @@ ags_synth_util_sawtooth_s8(signed char *buffer,
  * Since: 2.0.0
  */
 void
-ags_synth_util_sawtooth_s16(signed short *buffer,
+ags_synth_util_sawtooth_s16(gint16 *buffer,
 			    gdouble freq, gdouble phase, gdouble volume,
 			    guint samplerate,
 			    guint offset, guint n_frames)
@@ -657,7 +657,7 @@ ags_synth_util_sawtooth_s16(signed short *buffer,
   phase = (phase / freq) * (samplerate / freq);
 
   for (i = offset; i < n_frames; i++){
-    buffer[i] = (signed short) (0xffff & ((signed long) buffer[i] + (signed long) (((((int) (i + phase) % (int) (samplerate / freq)) * 2.0 * freq / samplerate) - 1.0) * scale * volume)));
+    buffer[i] = (gint16) (0xffff & ((gint32) buffer[i] + (gint32) (((((int) (i + phase) % (int) (samplerate / freq)) * 2.0 * freq / samplerate) - 1.0) * scale * volume)));
   }
 }
 
@@ -676,7 +676,7 @@ ags_synth_util_sawtooth_s16(signed short *buffer,
  * Since: 2.0.0
  */
 void
-ags_synth_util_sawtooth_s24(signed long *buffer,
+ags_synth_util_sawtooth_s24(gint32 *buffer,
 			    gdouble freq, gdouble phase, gdouble volume,
 			    guint samplerate,
 			    guint offset, guint n_frames)
@@ -688,7 +688,7 @@ ags_synth_util_sawtooth_s24(signed long *buffer,
   phase = (phase / freq) * (samplerate / freq);
 
   for (i = offset; i < n_frames; i++){
-    buffer[i] = (signed long) (0xffffff & ((signed long) buffer[i] + (signed long) (((((int) (i + phase) % (int) (samplerate / freq)) * 2.0 * freq / samplerate) - 1.0) * scale * volume)));
+    buffer[i] = (gint32) (0xffffff & ((gint32) buffer[i] + (gint32) (((((int) (i + phase) % (int) (samplerate / freq)) * 2.0 * freq / samplerate) - 1.0) * scale * volume)));
   }
 }
 
@@ -707,7 +707,7 @@ ags_synth_util_sawtooth_s24(signed long *buffer,
  * Since: 2.0.0
  */
 void
-ags_synth_util_sawtooth_s32(signed long *buffer,
+ags_synth_util_sawtooth_s32(gint32 *buffer,
 			    gdouble freq, gdouble phase, gdouble volume,
 			    guint samplerate,
 			    guint offset, guint n_frames)
@@ -719,7 +719,7 @@ ags_synth_util_sawtooth_s32(signed long *buffer,
   phase = (phase / freq) * (samplerate / freq);
 
   for (i = offset; i < n_frames; i++){
-    buffer[i] = (signed long) (0xffffffff & ((signed long long) buffer[i] + (signed long long) (((((int) (i + phase) % (int) (samplerate / freq)) * 2.0 * freq / samplerate) - 1.0) * scale * volume)));
+    buffer[i] = (gint32) (0xffffffff & ((gint64) buffer[i] + (gint64) (((((int) (i + phase) % (int) (samplerate / freq)) * 2.0 * freq / samplerate) - 1.0) * scale * volume)));
   }
 }
 
@@ -738,7 +738,7 @@ ags_synth_util_sawtooth_s32(signed long *buffer,
  * Since: 2.0.0
  */
 void
-ags_synth_util_sawtooth_s64(signed long long *buffer,
+ags_synth_util_sawtooth_s64(gint64 *buffer,
 			    gdouble freq, gdouble phase, gdouble volume,
 			    guint samplerate,
 			    guint offset, guint n_frames)
@@ -750,7 +750,7 @@ ags_synth_util_sawtooth_s64(signed long long *buffer,
   phase = (phase / freq) * (samplerate / freq);
 
   for (i = offset; i < n_frames; i++){
-    buffer[i] = (signed long long) (0xffffffffffffffff & ((signed long long) buffer[i] + (signed long long) (((((int) (i + phase) % (int) (samplerate / freq)) * 2.0 * freq / samplerate) - 1.0) * scale * volume)));
+    buffer[i] = (gint64) (0xffffffffffffffff & ((gint64) buffer[i] + (gint64) (((((int) (i + phase) % (int) (samplerate / freq)) * 2.0 * freq / samplerate) - 1.0) * scale * volume)));
   }
 }
 
@@ -829,7 +829,7 @@ ags_synth_util_sawtooth_double(double *buffer,
  * Since: 2.0.0
  */
 void
-ags_synth_util_triangle_s8(signed char *buffer,
+ags_synth_util_triangle_s8(gint8 *buffer,
 			   gdouble freq, gdouble phase, gdouble volume,
 			   guint samplerate,
 			   guint offset, guint n_frames)
@@ -841,7 +841,7 @@ ags_synth_util_triangle_s8(signed char *buffer,
   phase = (phase / freq) * (samplerate / freq);
 
   for (i = offset; i < n_frames; i++){
-    buffer[i] = (signed char) (0xff & ((signed short) buffer[i] + (signed short) ((((phase + i) * freq / samplerate * 2.0) - ((int) ((double) ((int) ((phase + i) * freq / samplerate)) / 2.0) * 2) - 1.0) * scale * volume)));
+    buffer[i] = (gint8) (0xff & ((gint16) buffer[i] + (gint16) ((((phase + i) * freq / samplerate * 2.0) - ((int) ((double) ((int) ((phase + i) * freq / samplerate)) / 2.0) * 2) - 1.0) * scale * volume)));
   }
 }
 
@@ -860,7 +860,7 @@ ags_synth_util_triangle_s8(signed char *buffer,
  * Since: 2.0.0
  */
 void
-ags_synth_util_triangle_s16(signed short *buffer,
+ags_synth_util_triangle_s16(gint16 *buffer,
 			    gdouble freq, gdouble phase, gdouble volume,
 			    guint samplerate,
 			    guint offset, guint n_frames)
@@ -872,7 +872,7 @@ ags_synth_util_triangle_s16(signed short *buffer,
   phase = (phase / freq) * (samplerate / freq);
 
   for (i = offset; i < n_frames; i++){
-    buffer[i] = (signed short) (0xffff & ((signed long) buffer[i] + (signed long) ((((phase + i) * freq / samplerate * 2.0) - ((int) ((double) ((int) ((phase + i) * freq / samplerate)) / 2.0) * 2) - 1.0) * scale * volume)));
+    buffer[i] = (gint16) (0xffff & ((gint32) buffer[i] + (gint32) ((((phase + i) * freq / samplerate * 2.0) - ((int) ((double) ((int) ((phase + i) * freq / samplerate)) / 2.0) * 2) - 1.0) * scale * volume)));
   }
 }
 
@@ -891,7 +891,7 @@ ags_synth_util_triangle_s16(signed short *buffer,
  * Since: 2.0.0
  */
 void
-ags_synth_util_triangle_s24(signed long *buffer,
+ags_synth_util_triangle_s24(gint32 *buffer,
 			    gdouble freq, gdouble phase, gdouble volume,
 			    guint samplerate,
 			    guint offset, guint n_frames)
@@ -903,7 +903,7 @@ ags_synth_util_triangle_s24(signed long *buffer,
   phase = (phase / freq) * (samplerate / freq);
 
   for (i = offset; i < n_frames; i++){
-    buffer[i] = (signed long) (0xffffff & ((signed long) buffer[i] + (signed long) ((((phase + i) * freq / samplerate * 2.0) - ((int) ((double) ((int) ((phase + i) * freq / samplerate)) / 2.0) * 2) - 1.0) * scale * volume)));
+    buffer[i] = (gint32) (0xffffff & ((gint32) buffer[i] + (gint32) ((((phase + i) * freq / samplerate * 2.0) - ((int) ((double) ((int) ((phase + i) * freq / samplerate)) / 2.0) * 2) - 1.0) * scale * volume)));
   }
 }
 
@@ -922,7 +922,7 @@ ags_synth_util_triangle_s24(signed long *buffer,
  * Since: 2.0.0
  */
 void
-ags_synth_util_triangle_s32(signed long *buffer,
+ags_synth_util_triangle_s32(gint32 *buffer,
 			    gdouble freq, gdouble phase, gdouble volume,
 			    guint samplerate,
 			    guint offset, guint n_frames)
@@ -934,7 +934,7 @@ ags_synth_util_triangle_s32(signed long *buffer,
   phase = (phase / freq) * (samplerate / freq);
 
   for (i = offset; i < n_frames; i++){
-    buffer[i] = (signed long) (0xffffffff & ((signed long long) buffer[i] + (signed long long) ((((phase + i) * freq / samplerate * 2.0) - ((int) ((double) ((int) ((phase + i) * freq / samplerate)) / 2.0) * 2) - 1.0) * scale * volume)));
+    buffer[i] = (gint32) (0xffffffff & ((gint64) buffer[i] + (gint64) ((((phase + i) * freq / samplerate * 2.0) - ((int) ((double) ((int) ((phase + i) * freq / samplerate)) / 2.0) * 2) - 1.0) * scale * volume)));
   }
 }
 
@@ -953,7 +953,7 @@ ags_synth_util_triangle_s32(signed long *buffer,
  * Since: 2.0.0
  */
 void
-ags_synth_util_triangle_s64(signed long long *buffer,
+ags_synth_util_triangle_s64(gint64 *buffer,
 			    gdouble freq, gdouble phase, gdouble volume,
 			    guint samplerate,
 			    guint offset, guint n_frames)
@@ -965,7 +965,7 @@ ags_synth_util_triangle_s64(signed long long *buffer,
   phase = (phase / freq) * (samplerate / freq);
 
   for (i = offset; i < n_frames; i++){
-    buffer[i] = (signed long long) (0xffffffffffffffff & ((signed long long) buffer[i] + (signed long long) ((((phase + i) * freq / samplerate * 2.0) - ((int) ((double) ((int) ((phase + i) * freq / samplerate)) / 2.0) * 2) - 1.0) * scale * volume)));
+    buffer[i] = (gint64) (0xffffffffffffffff & ((gint64) buffer[i] + (gint64) ((((phase + i) * freq / samplerate * 2.0) - ((int) ((double) ((int) ((phase + i) * freq / samplerate)) / 2.0) * 2) - 1.0) * scale * volume)));
   }
 }
 
@@ -1044,7 +1044,7 @@ ags_synth_util_triangle_double(double *buffer,
  * Since: 2.0.0
  */
 void
-ags_synth_util_square_s8(signed char *buffer,
+ags_synth_util_square_s8(gint8 *buffer,
 			 gdouble freq, gdouble phase, gdouble volume,
 			 guint samplerate,
 			 guint offset, guint n_frames)
@@ -1057,9 +1057,9 @@ ags_synth_util_square_s8(signed char *buffer,
 
   for (i = offset; i < n_frames; i++){
     if (sin(i + phase) >= 0.0){
-      buffer[i] = (signed char) (0xff & ((signed short) buffer[i] + (signed short) (1.0 * scale * volume)));
+      buffer[i] = (gint8) (0xff & ((gint16) buffer[i] + (gint16) (1.0 * scale * volume)));
     }else{
-      buffer[i] = (signed char) (0xff & ((signed short) buffer[i] + (signed short) (-1.0 * scale * volume)));
+      buffer[i] = (gint8) (0xff & ((gint16) buffer[i] + (gint16) (-1.0 * scale * volume)));
     }
   }
 }
@@ -1079,7 +1079,7 @@ ags_synth_util_square_s8(signed char *buffer,
  * Since: 2.0.0
  */
 void
-ags_synth_util_square_s16(signed short *buffer,
+ags_synth_util_square_s16(gint16 *buffer,
 			  gdouble freq, gdouble phase, gdouble volume,
 			  guint samplerate,
 			  guint offset, guint n_frames)
@@ -1092,9 +1092,9 @@ ags_synth_util_square_s16(signed short *buffer,
 
   for (i = offset; i < n_frames; i++){
     if (sin(i + phase) >= 0.0){
-      buffer[i] = (signed short) (0xffff & ((signed long) buffer[i] + (signed long) (1.0 * scale * volume)));
+      buffer[i] = (gint16) (0xffff & ((gint32) buffer[i] + (gint32) (1.0 * scale * volume)));
     }else{
-      buffer[i] = (signed short) (0xffff & ((signed long) buffer[i] + (signed long) (-1.0 * scale * volume)));
+      buffer[i] = (gint16) (0xffff & ((gint32) buffer[i] + (gint32) (-1.0 * scale * volume)));
     }
   }
 }
@@ -1114,7 +1114,7 @@ ags_synth_util_square_s16(signed short *buffer,
  * Since: 2.0.0
  */
 void
-ags_synth_util_square_s24(signed long *buffer,
+ags_synth_util_square_s24(gint32 *buffer,
 			  gdouble freq, gdouble phase, gdouble volume,
 			  guint samplerate,
 			  guint offset, guint n_frames)
@@ -1127,9 +1127,9 @@ ags_synth_util_square_s24(signed long *buffer,
 
   for (i = offset; i < n_frames; i++){
     if (sin(i + phase) >= 0.0){
-      buffer[i] = (signed long) (0xffffff & ((signed long) buffer[i] + (signed long) (1.0 * scale * volume)));
+      buffer[i] = (gint32) (0xffffff & ((gint32) buffer[i] + (gint32) (1.0 * scale * volume)));
     }else{
-      buffer[i] = (signed long) (0xffffff & ((signed long) buffer[i] + (signed long) (-1.0 * scale * volume)));
+      buffer[i] = (gint32) (0xffffff & ((gint32) buffer[i] + (gint32) (-1.0 * scale * volume)));
     }
   }
 }
@@ -1149,7 +1149,7 @@ ags_synth_util_square_s24(signed long *buffer,
  * Since: 2.0.0
  */
 void
-ags_synth_util_square_s32(signed long *buffer,
+ags_synth_util_square_s32(gint32 *buffer,
 			  gdouble freq, gdouble phase, gdouble volume,
 			  guint samplerate,
 			  guint offset, guint n_frames)
@@ -1162,9 +1162,9 @@ ags_synth_util_square_s32(signed long *buffer,
 
   for (i = offset; i < n_frames; i++){
     if (sin(i + phase) >= 0.0){
-      buffer[i] = (signed long) (0xffffffff & ((signed long long) buffer[i] + (signed long long) (1.0 * scale * volume)));
+      buffer[i] = (gint32) (0xffffffff & ((gint64) buffer[i] + (gint64) (1.0 * scale * volume)));
     }else{
-      buffer[i] = (signed long) (0xffffffff & ((signed long long) buffer[i] + (signed long long) (-1.0 * scale * volume)));
+      buffer[i] = (gint32) (0xffffffff & ((gint64) buffer[i] + (gint64) (-1.0 * scale * volume)));
     }
   }
 }
@@ -1184,7 +1184,7 @@ ags_synth_util_square_s32(signed long *buffer,
  * Since: 2.0.0
  */
 void
-ags_synth_util_square_s64(signed long long *buffer,
+ags_synth_util_square_s64(gint64 *buffer,
 			  gdouble freq, gdouble phase, gdouble volume,
 			  guint samplerate,
 			  guint offset, guint n_frames)
@@ -1197,9 +1197,9 @@ ags_synth_util_square_s64(signed long long *buffer,
 
   for (i = offset; i < n_frames; i++){
     if (sin(i + phase) >= 0.0){
-      buffer[i] = (signed long long) (0xffffffffffffffff & ((signed long long) buffer[i] + (signed long long) (1.0 * scale * volume)));
+      buffer[i] = (gint64) (0xffffffffffffffff & ((gint64) buffer[i] + (gint64) (1.0 * scale * volume)));
     }else{
-      buffer[i] = (signed long long) (0xffffffffffffffff & ((signed long long) buffer[i] + (signed long long) (-1.0 * scale * volume)));
+      buffer[i] = (gint64) (0xffffffffffffffff & ((gint64) buffer[i] + (gint64) (-1.0 * scale * volume)));
     }
   }
 }
@@ -1296,7 +1296,7 @@ ags_synth_util_sin(void *buffer,
   switch(audio_buffer_util_format){
   case AGS_AUDIO_BUFFER_UTIL_S8:
     {
-      ags_synth_util_sin_s8((signed char *) buffer,
+      ags_synth_util_sin_s8((gint8 *) buffer,
 			    freq, phase, volume,
 			    samplerate,
 			    offset, n_frames);
@@ -1304,7 +1304,7 @@ ags_synth_util_sin(void *buffer,
     break;
   case AGS_AUDIO_BUFFER_UTIL_S16:
     {
-      ags_synth_util_sin_s16((signed short *) buffer,
+      ags_synth_util_sin_s16((gint16 *) buffer,
 			     freq, phase, volume,
 			     samplerate,
 			     offset, n_frames);
@@ -1312,7 +1312,7 @@ ags_synth_util_sin(void *buffer,
     break;
   case AGS_AUDIO_BUFFER_UTIL_S24:
     {
-      ags_synth_util_sin_s24((signed long *) buffer,
+      ags_synth_util_sin_s24((gint32 *) buffer,
 			     freq, phase, volume,
 			     samplerate,
 			     offset, n_frames);
@@ -1320,7 +1320,7 @@ ags_synth_util_sin(void *buffer,
     break;
   case AGS_AUDIO_BUFFER_UTIL_S32:
     {
-      ags_synth_util_sin_s32((signed long *) buffer,
+      ags_synth_util_sin_s32((gint32 *) buffer,
 			     freq, phase, volume,
 			     samplerate,
 			     offset, n_frames);
@@ -1328,7 +1328,7 @@ ags_synth_util_sin(void *buffer,
     break;
   case AGS_AUDIO_BUFFER_UTIL_S64:
     {
-      ags_synth_util_sin_s64((signed long long *) buffer,
+      ags_synth_util_sin_s64((gint64 *) buffer,
 			     freq, phase, volume,
 			     samplerate,
 			     offset, n_frames);
@@ -1381,7 +1381,7 @@ ags_synth_util_sawtooth(void *buffer,
   switch(audio_buffer_util_format){
   case AGS_AUDIO_BUFFER_UTIL_S8:
     {
-      ags_synth_util_sawtooth_s8((signed char *) buffer,
+      ags_synth_util_sawtooth_s8((gint8 *) buffer,
 				 freq, phase, volume,
 				 samplerate,
 				 offset, n_frames);
@@ -1389,7 +1389,7 @@ ags_synth_util_sawtooth(void *buffer,
     break;
   case AGS_AUDIO_BUFFER_UTIL_S16:
     {
-      ags_synth_util_sawtooth_s16((signed short *) buffer,
+      ags_synth_util_sawtooth_s16((gint16 *) buffer,
 				  freq, phase, volume,
 				  samplerate,
 				  offset, n_frames);
@@ -1397,7 +1397,7 @@ ags_synth_util_sawtooth(void *buffer,
     break;
   case AGS_AUDIO_BUFFER_UTIL_S24:
     {
-      ags_synth_util_sawtooth_s24((signed long *) buffer,
+      ags_synth_util_sawtooth_s24((gint32 *) buffer,
 				  freq, phase, volume,
 				  samplerate,
 				  offset, n_frames);
@@ -1405,7 +1405,7 @@ ags_synth_util_sawtooth(void *buffer,
     break;
   case AGS_AUDIO_BUFFER_UTIL_S32:
     {
-      ags_synth_util_sawtooth_s32((signed long *) buffer,
+      ags_synth_util_sawtooth_s32((gint32 *) buffer,
 				  freq, phase, volume,
 				  samplerate,
 				  offset, n_frames);
@@ -1413,7 +1413,7 @@ ags_synth_util_sawtooth(void *buffer,
     break;
   case AGS_AUDIO_BUFFER_UTIL_S64:
     {
-      ags_synth_util_sawtooth_s64((signed long long *) buffer,
+      ags_synth_util_sawtooth_s64((gint64 *) buffer,
 				  freq, phase, volume,
 				  samplerate,
 				  offset, n_frames);
@@ -1466,7 +1466,7 @@ ags_synth_util_triangle(void *buffer,
   switch(audio_buffer_util_format){
   case AGS_AUDIO_BUFFER_UTIL_S8:
     {
-      ags_synth_util_triangle_s8((signed char *) buffer,
+      ags_synth_util_triangle_s8((gint8 *) buffer,
 				 freq, phase, volume,
 				 samplerate,
 				 offset, n_frames);
@@ -1474,7 +1474,7 @@ ags_synth_util_triangle(void *buffer,
     break;
   case AGS_AUDIO_BUFFER_UTIL_S16:
     {
-      ags_synth_util_triangle_s16((signed short *) buffer,
+      ags_synth_util_triangle_s16((gint16 *) buffer,
 				  freq, phase, volume,
 				  samplerate,
 				  offset, n_frames);
@@ -1482,7 +1482,7 @@ ags_synth_util_triangle(void *buffer,
     break;
   case AGS_AUDIO_BUFFER_UTIL_S24:
     {
-      ags_synth_util_triangle_s24((signed long *) buffer,
+      ags_synth_util_triangle_s24((gint32 *) buffer,
 				  freq, phase, volume,
 				  samplerate,
 				  offset, n_frames);
@@ -1490,7 +1490,7 @@ ags_synth_util_triangle(void *buffer,
     break;
   case AGS_AUDIO_BUFFER_UTIL_S32:
     {
-      ags_synth_util_triangle_s32((signed long *) buffer,
+      ags_synth_util_triangle_s32((gint32 *) buffer,
 				  freq, phase, volume,
 				  samplerate,
 				  offset, n_frames);
@@ -1498,7 +1498,7 @@ ags_synth_util_triangle(void *buffer,
     break;
   case AGS_AUDIO_BUFFER_UTIL_S64:
     {
-      ags_synth_util_triangle_s64((signed long long *) buffer,
+      ags_synth_util_triangle_s64((gint64 *) buffer,
 				  freq, phase, volume,
 				  samplerate,
 				  offset, n_frames);
@@ -1551,7 +1551,7 @@ ags_synth_util_square(void *buffer,
   switch(audio_buffer_util_format){
   case AGS_AUDIO_BUFFER_UTIL_S8:
     {
-      ags_synth_util_square_s8((signed char *) buffer,
+      ags_synth_util_square_s8((gint8 *) buffer,
 			       freq, phase, volume,
 			       samplerate,
 			       offset, n_frames);
@@ -1559,7 +1559,7 @@ ags_synth_util_square(void *buffer,
     break;
   case AGS_AUDIO_BUFFER_UTIL_S16:
     {
-      ags_synth_util_square_s16((signed short *) buffer,
+      ags_synth_util_square_s16((gint16 *) buffer,
 				freq, phase, volume,
 				samplerate,
 				offset, n_frames);
@@ -1567,7 +1567,7 @@ ags_synth_util_square(void *buffer,
     break;
   case AGS_AUDIO_BUFFER_UTIL_S24:
     {
-      ags_synth_util_square_s24((signed long *) buffer,
+      ags_synth_util_square_s24((gint32 *) buffer,
 				freq, phase, volume,
 				samplerate,
 				offset, n_frames);
@@ -1575,7 +1575,7 @@ ags_synth_util_square(void *buffer,
     break;
   case AGS_AUDIO_BUFFER_UTIL_S32:
     {
-      ags_synth_util_square_s32((signed long *) buffer,
+      ags_synth_util_square_s32((gint32 *) buffer,
 				freq, phase, volume,
 				samplerate,
 				offset, n_frames);
@@ -1583,7 +1583,7 @@ ags_synth_util_square(void *buffer,
     break;
   case AGS_AUDIO_BUFFER_UTIL_S64:
     {
-      ags_synth_util_square_s64((signed long long *) buffer,
+      ags_synth_util_square_s64((gint64 *) buffer,
 				freq, phase, volume,
 				samplerate,
 				offset, n_frames);
