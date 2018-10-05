@@ -3,6 +3,7 @@ ags (2.0.28)
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* fixed wrong types in ags_buffer.c
 	* fixed wrong types in ags_jack_client.c
+	* populated partially ags_audio_buffer_util_test.c
 
 ags (2.0.27)
 
