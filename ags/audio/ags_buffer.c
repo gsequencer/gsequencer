@@ -684,6 +684,12 @@ ags_buffer_set_buffer_size(AgsBuffer *buffer,
   
   buffer->buffer_size = buffer_size;
 
+  if(old_buffer_size == buffer->buffer_size){
+    pthread_mutex_unlock(buffer_mutex);    
+
+    return;
+  }
+  
   switch(buffer->format){
   case AGS_SOUNDCARD_SIGNED_8_BIT:
     {
@@ -769,6 +775,12 @@ ags_buffer_set_format(AgsBuffer *buffer,
   /* set format */
   pthread_mutex_lock(buffer_mutex);
 
+  if(buffer->format == format){
+    pthread_mutex_unlock(buffer_mutex);
+
+    return:
+  }
+  
   data = ags_stream_alloc(buffer->buffer_size,
 			  format);
 

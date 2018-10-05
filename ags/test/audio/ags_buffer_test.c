@@ -67,12 +67,12 @@ ags_buffer_test_duplicate()
 
   /* create buffer - #0 */
   buffer = g_object_new(AGS_TYPE_BUFFER,
-			"x", AGS_BUFFER_TEST_DUPLICATE_X_0,
+			"x", (guint64) AGS_BUFFER_TEST_DUPLICATE_X_0,
 			"samplerate", AGS_BUFFER_TEST_DUPLICATE_SAMPLERATE_0,
 			"buffer-size", AGS_BUFFER_TEST_DUPLICATE_BUFFER_SIZE_0,
 			"format", AGS_BUFFER_TEST_DUPLICATE_FORMAT_0,
 			NULL);
-
+  
   /* assert duplicate - #0 */
   copy_buffer = ags_buffer_duplicate(buffer);
 
@@ -84,7 +84,7 @@ ags_buffer_test_duplicate()
 
   /* create buffer - #1 */
   buffer = g_object_new(AGS_TYPE_BUFFER,
-			"x", AGS_BUFFER_TEST_DUPLICATE_X_1,
+			"x", (guint64) AGS_BUFFER_TEST_DUPLICATE_X_1,
 			"samplerate", AGS_BUFFER_TEST_DUPLICATE_SAMPLERATE_1,
 			"buffer-size", AGS_BUFFER_TEST_DUPLICATE_BUFFER_SIZE_1,
 			"format", AGS_BUFFER_TEST_DUPLICATE_FORMAT_1,

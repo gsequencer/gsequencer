@@ -1,3 +1,8 @@
+ags (2.0.29)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed ags_buffer_test_duplicate() to pass on x86 systems
+
 ags (2.0.28)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
