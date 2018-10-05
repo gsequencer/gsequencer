@@ -687,38 +687,38 @@ ags_buffer_set_buffer_size(AgsBuffer *buffer,
   switch(buffer->format){
   case AGS_SOUNDCARD_SIGNED_8_BIT:
     {
-      buffer->data = (signed char *) realloc(buffer->data,
-					     buffer_size * sizeof(signed char));
-      word_size = sizeof(signed char);
+      buffer->data = (gint8 *) realloc(buffer->data,
+				       buffer_size * sizeof(gint8));
+      word_size = sizeof(gint8);
     }
     break;
   case AGS_SOUNDCARD_SIGNED_16_BIT:
     {
-      buffer->data = (signed short *) realloc(buffer->data,
-					      buffer_size * sizeof(signed short));
-      word_size = sizeof(signed short);
+      buffer->data = (gint16 *) realloc(buffer->data,
+					buffer_size * sizeof(gint16));
+      word_size = sizeof(gint16);
     }
     break;
   case AGS_SOUNDCARD_SIGNED_24_BIT:
     {
-      buffer->data = (signed long *) realloc(buffer->data,
-					     buffer_size * sizeof(signed long));
+      buffer->data = (gint32 *) realloc(buffer->data,
+					buffer_size * sizeof(gint32));
       //NOTE:JK: The 24-bit linear samples use 32-bit physical space
-      word_size = sizeof(signed long);
+      word_size = sizeof(gint32);
     }
     break;
   case AGS_SOUNDCARD_SIGNED_32_BIT:
     {
-      buffer->data = (signed long *) realloc(buffer->data,
-					     buffer_size * sizeof(signed long));
-      word_size = sizeof(signed long);
+      buffer->data = (gint32 *) realloc(buffer->data,
+					buffer_size * sizeof(gint32));
+      word_size = sizeof(gint32);
     }
     break;
   case AGS_SOUNDCARD_SIGNED_64_BIT:
     {
-      buffer->data = (signed long long *) realloc(buffer->data,
-						  buffer_size * sizeof(signed long long));
-      word_size = sizeof(signed long long);
+      buffer->data = (gint64 *) realloc(buffer->data,
+					buffer_size * sizeof(gint64));
+      word_size = sizeof(gint64);
     }
     break;
   default:

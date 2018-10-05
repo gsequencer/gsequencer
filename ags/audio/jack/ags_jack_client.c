@@ -1766,27 +1766,27 @@ ags_jack_client_process_callback(jack_nframes_t nframes, void *ptr)
       switch(jack_devin->format){
       case AGS_SOUNDCARD_SIGNED_8_BIT:
 	{
-	  word_size = sizeof(signed char);
+	  word_size = sizeof(gint8);
 	}
 	break;
       case AGS_SOUNDCARD_SIGNED_16_BIT:
 	{
-	  word_size = sizeof(signed short);
+	  word_size = sizeof(gint16);
 	}
 	break;
       case AGS_SOUNDCARD_SIGNED_24_BIT:
 	{
-	  word_size = sizeof(signed long);
+	  word_size = sizeof(gint32);
 	}
 	break;
       case AGS_SOUNDCARD_SIGNED_32_BIT:
 	{
-	  word_size = sizeof(signed long);
+	  word_size = sizeof(gint32);
 	}
 	break;
       case AGS_SOUNDCARD_SIGNED_64_BIT:
 	{
-	  word_size = sizeof(signed long long);
+	  word_size = sizeof(gint64);
 	}
 	break;
       default:
@@ -1963,27 +1963,27 @@ ags_jack_client_process_callback(jack_nframes_t nframes, void *ptr)
       switch(jack_devout->format){
       case AGS_SOUNDCARD_SIGNED_8_BIT:
 	{
-	  word_size = sizeof(signed char);
+	  word_size = sizeof(gint8);
 	}
 	break;
       case AGS_SOUNDCARD_SIGNED_16_BIT:
 	{
-	  word_size = sizeof(signed short);
+	  word_size = sizeof(gint16);
 	}
 	break;
       case AGS_SOUNDCARD_SIGNED_24_BIT:
 	{
-	  word_size = sizeof(signed long);
+	  word_size = sizeof(gint32);
 	}
 	break;
       case AGS_SOUNDCARD_SIGNED_32_BIT:
 	{
-	  word_size = sizeof(signed long);
+	  word_size = sizeof(gint32);
 	}
 	break;
       case AGS_SOUNDCARD_SIGNED_64_BIT:
 	{
-	  word_size = sizeof(signed long long);
+	  word_size = sizeof(gint64);
 	}
 	break;
       default:
