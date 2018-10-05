@@ -1,3 +1,9 @@
+ags (2.0.31)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* populated partially ags_audio_buffer_util_test.c
+
+
 ags (2.0.30)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
