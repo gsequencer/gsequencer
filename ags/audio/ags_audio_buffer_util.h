@@ -296,29 +296,29 @@ void ags_audio_buffer_util_volume(void *buffer, guint channels,
 
 /* resample */
 gint8* ags_audio_buffer_util_resample_s8(gint8 *buffer, guint channels,
-					       guint samplerate,
-					       guint buffer_length,
-					       guint target_samplerate);
+					 guint samplerate,
+					 guint buffer_length,
+					 guint target_samplerate);
 gint16* ags_audio_buffer_util_resample_s16(gint16 *buffer, guint channels,
-						 guint samplerate,
-						 guint buffer_length,
-						 guint target_samplerate);
+					   guint samplerate,
+					   guint buffer_length,
+					   guint target_samplerate);
 gint32* ags_audio_buffer_util_resample_s24(gint32 *buffer, guint channels,
-						guint samplerate,
-						guint buffer_length,
-						guint target_samplerate);
+					   guint samplerate,
+					   guint buffer_length,
+					   guint target_samplerate);
 gint32* ags_audio_buffer_util_resample_s32(gint32 *buffer, guint channels,
-						guint samplerate,
-						guint buffer_length,
-						guint target_samplerate);
+					   guint samplerate,
+					   guint buffer_length,
+					   guint target_samplerate);
 gint64* ags_audio_buffer_util_resample_s64(gint64 *buffer, guint channels,
-						     guint samplerate,
-						     guint buffer_length,
-						     guint target_samplerate);
+					   guint samplerate,
+					   guint buffer_length,
+					   guint target_samplerate);
 gfloat* ags_audio_buffer_util_resample_float(gfloat *buffer, guint channels,
-					    guint samplerate,
-					    guint buffer_length,
-					    guint target_samplerate);
+					     guint samplerate,
+					     guint buffer_length,
+					     guint target_samplerate);
 double* ags_audio_buffer_util_resample_double(gdouble *buffer, guint channels,
 					      guint samplerate,
 					      guint buffer_length,
