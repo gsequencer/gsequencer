@@ -1,3 +1,8 @@
+ags (2.0.30)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed compiler error
+
 ags (2.0.29)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

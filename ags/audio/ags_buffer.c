@@ -778,7 +778,7 @@ ags_buffer_set_format(AgsBuffer *buffer,
   if(buffer->format == format){
     pthread_mutex_unlock(buffer_mutex);
 
-    return:
+    return;
   }
   
   data = ags_stream_alloc(buffer->buffer_size,
