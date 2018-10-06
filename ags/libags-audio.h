@@ -56,6 +56,7 @@
 #include <ags/audio/ags_devin.h>
 #include <ags/audio/ags_fifoout.h>
 #include <ags/audio/ags_input.h>
+#include <ags/audio/ags_midi.h>
 #include <ags/audio/ags_midiin.h>
 #include <ags/audio/ags_notation.h>
 #include <ags/audio/ags_note.h>
@@ -91,6 +92,7 @@
 #include <ags/audio/ags_soundcard_util.h>
 #include <ags/audio/ags_synth_generator.h>
 #include <ags/audio/ags_synth_util.h>
+#include <ags/audio/ags_track.h>
 #include <ags/audio/ags_wave.h>
 
 /* audio thread */

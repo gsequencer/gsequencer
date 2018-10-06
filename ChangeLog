@@ -4,6 +4,9 @@ ags (2.0.31)
 	* populated ags_audio_buffer_util_test.c
 	* added ags_char_buffer_util_test.c skelleton
 	* added ags_devin_test.c
+	* added ags_fifoout_test.c
+	* added ags_midi_test.c
+	* added ags_track_test.c
 
 ags (2.0.30)
 

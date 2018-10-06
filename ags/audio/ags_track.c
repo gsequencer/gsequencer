@@ -456,9 +456,40 @@ ags_track_sort_func(gconstpointer a,
 AgsTrack*
 ags_track_duplicate(AgsTrack *track)
 {
+  AgsTrack *track_copy;
+
+  guint copy_mode;
+
+  pthread_mutex_t *track_mutex;
+
+  if(!AGS_IS_TRACK(track)){
+    return(NULL);
+  }
+  
+  /* get track mutex */
+  pthread_mutex_lock(ags_track_get_class_mutex());
+  
+  track_mutex = track->obj_mutex;
+  
+  pthread_mutex_unlock(ags_track_get_class_mutex());
+
+  /* instantiate track */  
+  track_copy = ags_track_new();
+
+  track_copy->flags = 0;
+
+  pthread_mutex_lock(track_mutex);
+
+  track_copy->x = track->x;
+
+  g_object_set(track_copy,
+	       NULL);
+
   //TODO:JK: implement me
 
-  return(NULL);
+  pthread_mutex_unlock(track_mutex);
+
+  return(track_copy);
 }
 
 /**
