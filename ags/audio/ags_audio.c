@@ -168,8 +168,11 @@ enum{
   PROP_BUFFER_SIZE,
   PROP_FORMAT,
   PROP_BPM,
+  PROP_MIN_AUDIO_CHANNELS,
   PROP_MAX_AUDIO_CHANNELS,
+  PROP_MIN_OUTPUT_PADS,
   PROP_MAX_OUTPUT_PADS,
+  PROP_MIN_INPUT_PADS,
   PROP_MAX_INPUT_PADS,
   PROP_AUDIO_CHANNELS,
   PROP_OUTPUT_PADS,
@@ -412,6 +415,24 @@ ags_audio_class_init(AgsAudioClass *audio)
 				  param_spec);
 
   /**
+   * AgsAudio:min-audio-channels:
+   *
+   * The minimum audio channels count.
+   * 
+   * Since: 2.0.31
+   */
+  param_spec = g_param_spec_uint("min-audio-channels",
+				 i18n_pspec("minimum audio channels count"),
+				 i18n_pspec("The minimum count of audio channels of audio"),
+				 0,
+				 G_MINUINT32,
+				 0,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_MIN_AUDIO_CHANNELS,
+				  param_spec);
+
+  /**
    * AgsAudio:max-audio-channels:
    *
    * The maximum audio channels count.
@@ -430,6 +451,24 @@ ags_audio_class_init(AgsAudioClass *audio)
 				  param_spec);
 
   /**
+   * AgsAudio:min-output-pads:
+   *
+   * The minimum output pads count.
+   * 
+   * Since: 2.0.31
+   */
+  param_spec = g_param_spec_uint("min-output-pads",
+				 i18n_pspec("minimum output pads count"),
+				 i18n_pspec("The minimum count of output pads of audio"),
+				 0,
+				 G_MINUINT32,
+				 0,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_MIN_OUTPUT_PADS,
+				  param_spec);
+
+  /**
    * AgsAudio:max-output-pads:
    *
    * The maximum output pads count.
@@ -445,6 +484,24 @@ ags_audio_class_init(AgsAudioClass *audio)
 				 G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_MAX_OUTPUT_PADS,
+				  param_spec);
+
+  /**
+   * AgsAudio:min-input-pads:
+   *
+   * The minimum input pads count.
+   * 
+   * Since: 2.0.31
+   */
+  param_spec = g_param_spec_uint("min-input-pads",
+				 i18n_pspec("minimum input pads count"),
+				 i18n_pspec("The minimum count of input pads of audio"),
+				 0,
+				 G_MINUINT32,
+				 0,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_MIN_INPUT_PADS,
 				  param_spec);
 
   /**
@@ -1711,6 +1768,19 @@ ags_audio_set_property(GObject *gobject,
       pthread_mutex_unlock(audio_mutex);
     }
     break;
+  case PROP_MIN_AUDIO_CHANNELS:
+    {
+      guint min_audio_channels;
+
+      min_audio_channels = g_value_get_uint(value);
+
+      pthread_mutex_lock(audio_mutex);
+      
+      audio->min_audio_channels = min_audio_channels;
+
+      pthread_mutex_unlock(audio_mutex);
+    }
+    break;
   case PROP_MAX_AUDIO_CHANNELS:
     {
       guint max_audio_channels;
@@ -1719,6 +1789,19 @@ ags_audio_set_property(GObject *gobject,
 
       ags_audio_set_max_audio_channels(audio,
 				       max_audio_channels);
+    }
+    break;
+  case PROP_MIN_OUTPUT_PADS:
+    {
+      guint min_output_pads;
+
+      min_output_pads = g_value_get_uint(value);
+
+      pthread_mutex_lock(audio_mutex);
+      
+      audio->min_output_pads = min_output_pads;
+
+      pthread_mutex_unlock(audio_mutex);
     }
     break;
   case PROP_MAX_OUTPUT_PADS:
@@ -1730,6 +1813,19 @@ ags_audio_set_property(GObject *gobject,
       ags_audio_set_max_pads(audio,
 			     AGS_TYPE_OUTPUT,
 			     max_output_pads);
+    }
+    break;
+  case PROP_MIN_INPUT_PADS:
+    {
+      guint min_input_pads;
+
+      min_input_pads = g_value_get_uint(value);
+
+      pthread_mutex_lock(audio_mutex);
+      
+      audio->min_input_pads = min_input_pads;
+
+      pthread_mutex_unlock(audio_mutex);
     }
     break;
   case PROP_MAX_INPUT_PADS:
@@ -2482,6 +2578,16 @@ ags_audio_get_property(GObject *gobject,
       pthread_mutex_unlock(audio_mutex);
     }
     break;
+  case PROP_MIN_AUDIO_CHANNELS:
+    {
+      pthread_mutex_lock(audio_mutex);
+
+      g_value_set_uint(value,
+		       audio->min_audio_channels);
+
+      pthread_mutex_unlock(audio_mutex);
+    }
+    break;
   case PROP_MAX_AUDIO_CHANNELS:
     {
       pthread_mutex_lock(audio_mutex);
@@ -2492,12 +2598,32 @@ ags_audio_get_property(GObject *gobject,
       pthread_mutex_unlock(audio_mutex);
     }
     break;
+  case PROP_MIN_OUTPUT_PADS:
+    {
+      pthread_mutex_lock(audio_mutex);
+
+      g_value_set_uint(value,
+		       audio->min_output_pads);
+
+      pthread_mutex_unlock(audio_mutex);
+    }
+    break;
   case PROP_MAX_OUTPUT_PADS:
     {
       pthread_mutex_lock(audio_mutex);
 
       g_value_set_uint(value,
 		       audio->max_output_pads);
+
+      pthread_mutex_unlock(audio_mutex);
+    }
+    break;
+  case PROP_MIN_INPUT_PADS:
+    {
+      pthread_mutex_lock(audio_mutex);
+
+      g_value_set_uint(value,
+		       audio->min_input_pads);
 
       pthread_mutex_unlock(audio_mutex);
     }

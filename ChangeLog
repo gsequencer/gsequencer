@@ -1,6 +1,7 @@
 ags (2.0.31)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented missing properties AgsAudio:min-audio-channels, AgsAudio:min-output-pads and AgsAudio:min-input-pads
 	* populated ags_audio_buffer_util_test.c
 	* added ags_char_buffer_util_test.c skelleton
 	* added ags_devin_test.c

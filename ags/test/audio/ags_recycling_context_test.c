@@ -69,7 +69,62 @@ ags_recycling_context_test_clean_suite()
 void
 ags_recycling_context_test_find_scope()
 {
-  //TODO:JK: implement me
+  AgsRecyclingContext **recycling_context;
+
+  GList *list;
+  GList *current;
+
+  recycling_context = (AgsRecyclingContext **) malloc(AGS_SOUND_SCOPE_LAST * sizeof(AgsRecyclingContext *));
+
+  list = NULL;
+  
+  recycling_context[AGS_SOUND_SCOPE_PLAYBACK] = ags_recycling_context_new(0);
+  recycling_context[AGS_SOUND_SCOPE_PLAYBACK]->sound_scope = AGS_SOUND_SCOPE_PLAYBACK;
+  list = g_list_prepend(list,
+			recycling_context[AGS_SOUND_SCOPE_PLAYBACK]);
+  
+  recycling_context[AGS_SOUND_SCOPE_SEQUENCER] = ags_recycling_context_new(0);
+  recycling_context[AGS_SOUND_SCOPE_SEQUENCER]->sound_scope = AGS_SOUND_SCOPE_SEQUENCER;
+  list = g_list_prepend(list,
+			recycling_context[AGS_SOUND_SCOPE_SEQUENCER]);
+
+  recycling_context[AGS_SOUND_SCOPE_NOTATION] = ags_recycling_context_new(0);
+  recycling_context[AGS_SOUND_SCOPE_NOTATION]->sound_scope = AGS_SOUND_SCOPE_NOTATION;
+  list = g_list_prepend(list,
+			recycling_context[AGS_SOUND_SCOPE_NOTATION]);
+
+  recycling_context[AGS_SOUND_SCOPE_WAVE] = ags_recycling_context_new(0);
+  recycling_context[AGS_SOUND_SCOPE_WAVE]->sound_scope = AGS_SOUND_SCOPE_WAVE;
+  list = g_list_prepend(list,
+			recycling_context[AGS_SOUND_SCOPE_WAVE]);
+
+  recycling_context[AGS_SOUND_SCOPE_MIDI] = ags_recycling_context_new(0);
+  recycling_context[AGS_SOUND_SCOPE_MIDI]->sound_scope = AGS_SOUND_SCOPE_MIDI;
+  list = g_list_prepend(list,
+			recycling_context[AGS_SOUND_SCOPE_MIDI]);
+
+  list = g_list_reverse(list);
+
+  /* test */
+  current = ags_recycling_context_find_scope(list,
+					     AGS_SOUND_SCOPE_PLAYBACK);
+  CU_ASSERT(current->data == recycling_context[AGS_SOUND_SCOPE_PLAYBACK]);
+
+  current = ags_recycling_context_find_scope(list,
+					     AGS_SOUND_SCOPE_SEQUENCER);
+  CU_ASSERT(current->data == recycling_context[AGS_SOUND_SCOPE_SEQUENCER]);
+
+  current = ags_recycling_context_find_scope(list,
+					     AGS_SOUND_SCOPE_NOTATION);
+  CU_ASSERT(current->data == recycling_context[AGS_SOUND_SCOPE_NOTATION]);
+  
+  current = ags_recycling_context_find_scope(list,
+					     AGS_SOUND_SCOPE_WAVE);
+  CU_ASSERT(current->data == recycling_context[AGS_SOUND_SCOPE_WAVE]);
+
+  current = ags_recycling_context_find_scope(list,
+					     AGS_SOUND_SCOPE_MIDI);
+  CU_ASSERT(current->data == recycling_context[AGS_SOUND_SCOPE_MIDI]);
 }
 
 void
