@@ -11,6 +11,7 @@ GREEN='\033[0;32m'
 RED='\033[0;31m'
 NC='\033[0m'
 
+# check C source files
 files=`find ags/ -name "*.[ch]"`
 check_files=()
 
@@ -47,6 +48,22 @@ do
 	check_files+=("$f")
     fi
 done
+
+for f in ${check_files[*]}
+do
+    echo "Verify: $f"
+done
+
+# filter other files
+all_files=( `find ags/ -type f` )
+
+other_files=" ${all_files[*]} "
+
+for item in ${files[@]}; do
+  other_files=${other_files/ ${item} / }
+done
+
+check_files=( $other_files )
 
 for f in ${check_files[*]}
 do
