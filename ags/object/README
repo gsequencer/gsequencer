@@ -3,7 +3,7 @@ the Free Software Foundation, either version 3 of the License, or (at your optio
 
 * ags_marshallers.list (Copyright (C) 2005-2018 Joël Krähemann, GPLv3+)
 
-Generated files by glib-genmarshal licensed under the terms of GNU LGPLv2.1+, copyright provided by http://www.gnome.org:
+Generated files by glib-genmarshal licensed under the terms of GNU LGPLv2.1+ or what ever license I want, copyright provided by http://www.gnome.org:
 
-* ags_marshal.c (LGPLv2.1+)
-* ags_marshal.h (LGPLv2.1+)
+* ags_marshal.c (see file)
+* ags_marshal.h (see file)
