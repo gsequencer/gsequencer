@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -26,15 +26,15 @@
 #include <ags/libags.h>
 #include <ags/libags-audio.h>
 
-int ags_devout_test_init_suite();
-int ags_devout_test_clean_suite();
+int ags_devin_test_init_suite();
+int ags_devin_test_clean_suite();
 
-void ags_devout_test_dispose();
-void ags_devout_test_finalize();
+void ags_devin_test_dispose();
+void ags_devin_test_finalize();
 
-void ags_devout_test_finalize_stub(GObject *gobject);
+void ags_devin_test_finalize_stub(GObject *gobject);
 
-#define AGS_DEVOUT_TEST_CONFIG "[generic]\n" \
+#define AGS_DEVIN_TEST_CONFIG "[generic]\n" \
   "autosave-thread=false\n"			       \
   "simple-file=true\n"				       \
   "disable-feature=experimental\n"		       \
@@ -52,21 +52,21 @@ void ags_devout_test_finalize_stub(GObject *gobject);
 
 
 AgsAudioApplicationContext *audio_application_context;
-gboolean devout_test_finalized;
+gboolean devin_test_finalized;
 
 /* The suite initialization function.
  * Opens the temporary file used by the tests.
  * Returns zero on success, non-zero otherwise.
  */
 int
-ags_devout_test_init_suite()
+ags_devin_test_init_suite()
 {
   AgsConfig *config;
 
   config = ags_config_get_instance();
   ags_config_load_from_data(config,
-			    AGS_DEVOUT_TEST_CONFIG,
-			    strlen(AGS_DEVOUT_TEST_CONFIG));
+			    AGS_DEVIN_TEST_CONFIG,
+			    strlen(AGS_DEVIN_TEST_CONFIG));
   
   audio_application_context = ags_audio_application_context_new();
   g_object_ref(audio_application_context);
@@ -79,7 +79,7 @@ ags_devout_test_init_suite()
  * Returns zero on success, non-zero otherwise.
  */
 int
-ags_devout_test_clean_suite()
+ags_devin_test_clean_suite()
 {
   g_object_unref(audio_application_context);
   
@@ -87,9 +87,9 @@ ags_devout_test_clean_suite()
 }
 
 void
-ags_devout_test_dispose()
+ags_devin_test_dispose()
 {
-  AgsDevout *devout;
+  AgsDevin *devin;
   AgsAudio *audio;
   
   GList *list, *list_start;
@@ -97,51 +97,51 @@ ags_devout_test_dispose()
   guint i;
   gboolean success;
   
-  devout = g_object_new(AGS_TYPE_DEVOUT,
+  devin = g_object_new(AGS_TYPE_DEVIN,
 			"application-context", audio_application_context,
 			NULL);
-  g_object_ref(devout);
+  g_object_ref(devin);
   
 
   /* run dispose */
-  g_object_run_dispose(devout);
+  g_object_run_dispose(devin);
 
   /* assert no application context */
-  CU_ASSERT(ags_soundcard_get_application_context(AGS_SOUNDCARD(devout)) == NULL);
+  CU_ASSERT(ags_soundcard_get_application_context(AGS_SOUNDCARD(devin)) == NULL);
   
   /* assert */
   CU_ASSERT(success == TRUE);
 }
 
 void
-ags_devout_test_finalize()
+ags_devin_test_finalize()
 {
-  AgsDevout *devout;
+  AgsDevin *devin;
   AgsAudio *audio;
     
   guint i;
   
-  devout = g_object_new(AGS_TYPE_DEVOUT,
+  devin = g_object_new(AGS_TYPE_DEVIN,
 			"application-context", audio_application_context,
 			NULL);
 
   /* run dispose */
-  g_object_run_dispose(devout);
+  g_object_run_dispose(devin);
 
   /* stub finalize */
-  devout_test_finalized = FALSE;
-  G_OBJECT_GET_CLASS(devout)->finalize = ags_devout_test_finalize_stub;
+  devin_test_finalized = FALSE;
+  G_OBJECT_GET_CLASS(devin)->finalize = ags_devin_test_finalize_stub;
 
   /* unref and assert */
-  g_object_unref(devout);
+  g_object_unref(devin);
   
-  CU_ASSERT(devout_test_finalized == TRUE);
+  CU_ASSERT(devin_test_finalized == TRUE);
 }
 
 void
-ags_devout_test_finalize_stub(GObject *gobject)
+ags_devin_test_finalize_stub(GObject *gobject)
 {
-  devout_test_finalized = TRUE;
+  devin_test_finalized = TRUE;
 }
 
 int
@@ -158,7 +158,7 @@ main(int argc, char **argv)
   }
 
   /* add a suite to the registry */
-  pSuite = CU_add_suite("AgsDevoutTest", ags_devout_test_init_suite, ags_devout_test_clean_suite);
+  pSuite = CU_add_suite("AgsDevinTest", ags_devin_test_init_suite, ags_devin_test_clean_suite);
   
   if(pSuite == NULL){
     CU_cleanup_registry();
@@ -167,8 +167,8 @@ main(int argc, char **argv)
   }
 
   /* add the tests to the suite */
-  if((CU_add_test(pSuite, "test of AgsDevout doing dispose", ags_devout_test_dispose) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsDevout doing finalize", ags_devout_test_finalize) == NULL)){
+  if((CU_add_test(pSuite, "test of AgsDevin doing dispose", ags_devin_test_dispose) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsDevin doing finalize", ags_devin_test_finalize) == NULL)){
       CU_cleanup_registry();
       
       return CU_get_error();

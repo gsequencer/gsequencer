@@ -2,6 +2,8 @@ ags (2.0.31)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* populated ags_audio_buffer_util_test.c
+	* added ags_char_buffer_util_test.c skelleton
+	* added ags_devin_test.c
 
 ags (2.0.30)
 
