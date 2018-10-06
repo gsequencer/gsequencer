@@ -837,7 +837,7 @@ ags_recall_id_find_parent_recycling_context(GList *recall_id,
 		   NULL);
       
       if(current_parent_recycling_context == parent_recycling_context){
-	return(recall_id);
+	return(recall_id->data);
       }
     }
 
