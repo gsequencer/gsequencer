@@ -7,15 +7,22 @@
 # notice and this notice are preserved.  This file is offered as-is,
 # without any warranty.
 
+GNU_GPL_3_0_C=`cat license-notice-gnu-gpl-3-0+-c.txt`
+GNU_AGPL_3_0_C=`cat license-notice-gnu-agpl-3-0+-c.txt`
+
+GNU_FDL_1_3_XML=`cat license-notice-gnu-fdl-1-3-xml.txt`
+PERMISSIVE_XML=`cat license-notice-permissive-xml.txt`
+
 GREEN='\033[0;32m'
 RED='\033[0;31m'
 NC='\033[0m'
 
-# check C source files
-files=`find ags/ -name "*.[ch]"`
 check_files=()
 
-for f in $files
+# check C source files
+c_files=`find ./ -name "*.[ch]"`
+
+for f in $c_files[@]
 do
     success="yes"
     echo $f
@@ -32,10 +39,10 @@ do
 	fi
     fi
 
-    if grep -q "You should have received a copy of the GNU General Public License" $f; then
+    if grep -q "$GNU_GPL_3_0_C" $f; then
 	printf "license: ${GREEN}OK${NC}\n"
     else
-	if grep -q "You should have received a copy of the GNU Affero General Public License" $f; then
+	if grep -q "$GNU_AGPL_3_0_C" $f; then
 	    printf "license: ${GREEN}OK${NC}\n"
 	else
 	    printf "license:  ${RED}missing!${NC}\n"
@@ -49,23 +56,66 @@ do
     fi
 done
 
-for f in ${check_files[*]}
+# check XML files
+xml_files=( `find ./ -name "*.xml"` `find ./ -name "*.dtd"` `find ./ -name "*.xsl"` `find ./ -name "*.xsd"`)
+
+for f in ${xml_files[@]}
 do
-    echo "Verify: $f"
+    success="yes"
+    echo $f
+
+    if grep -q "Copyright (C) 20[0-9][0-9]-20[0-9][0-9]" $f; then
+	printf "copyright: ${GREEN}OK${NC}\n"
+    else
+	if grep -q "Copyright (C) 20[0-9][0-9]" $f; then
+	    printf "copyright: ${GREEN}OK${NC}\n"
+	else
+	    printf "copyright:  ${RED}missing!${NC}\n"
+
+	    success="no"
+	fi
+    fi
+
+    if grep -q "$GNU_FDL_1_3_XML" $f; then
+	printf "license: ${GREEN}OK${NC}\n"
+    else
+	if grep -q "$PERMISSIVE_XML" $f; then
+	    printf "license: ${GREEN}OK${NC}\n"
+	else
+	    printf "license:  ${RED}missing!${NC}\n"
+
+    	    success="no"
+	fi
+    fi
+
+    if [ "$success" = "no" ]; then
+	check_files+=("$f")
+    fi
 done
 
-# filter other files
-all_files=( `find ags/ -type f` )
+# filter all files
+echo -e "Summary of suspicious files:\n================================"
 
-other_files=" ${all_files[*]} "
+all_files=( `find ./ -not -path "./.git/*" -type f` )
 
-for item in ${files[@]}; do
+other_files=" ${all_files[@]} "
+
+# filter C files
+for item in ${c_files[@]}; do
   other_files=${other_files/ ${item} / }
 done
 
+# filter XML files
+for item in ${xml_files[@]}; do
+  other_files=${other_files/ ${item} / }
+done
+
+# notice to verify file
 check_files=( $other_files )
 
-for f in ${check_files[*]}
+for f in ${check_files[@]}
 do
     echo "Verify: $f"
 done
+
+echo "================================"
