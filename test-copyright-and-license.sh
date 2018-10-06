@@ -22,10 +22,10 @@ check_files=()
 # check C source files
 c_files=`find ./ -name "*.[ch]"`
 
-for f in $c_files[@]
+for f in ${c_files[@]}
 do
-    success="yes"
     echo $f
+    success="yes"
 
     if grep -q "Copyright (C) 20[0-9][0-9]-20[0-9][0-9]" $f; then
 	printf "copyright: ${GREEN}OK${NC}\n"
@@ -61,8 +61,8 @@ xml_files=( `find ./ -name "*.xml"` `find ./ -name "*.dtd"` `find ./ -name "*.xs
 
 for f in ${xml_files[@]}
 do
-    success="yes"
     echo $f
+    success="yes"
 
     if grep -q "Copyright (C) 20[0-9][0-9]-20[0-9][0-9]" $f; then
 	printf "copyright: ${GREEN}OK${NC}\n"
@@ -93,9 +93,16 @@ do
     fi
 done
 
-# filter all files
+# result
 echo -e "Summary of suspicious files:\n================================"
 
+# notice to verify file
+for f in ${check_files[@]}
+do
+    echo "Verify: $f"
+done
+
+# filter all files
 all_files=( `find ./ -not -path "./.git/*" -type f` )
 
 other_files=" ${all_files[@]} "
