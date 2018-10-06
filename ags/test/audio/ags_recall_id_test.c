@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2017 Joël Krähemann
+ * Copyright (C) 2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *

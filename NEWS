@@ -1,3 +1,18 @@
+Overview of Changes in AGS 2.0.0
+================================
+
+* Implemented wave form editor with basic editing capabilities. Like copy &
+  paste, cursor positioning and editing dialogs.
+* New machines available AgsEqualizer10, AgsSpectrometer and AgsAudiorec.
+  You can now have a built-in 10 band equalizer, a spectrometer visualizing
+  the frequency using FFTW3 library and the ability to edit or record audio
+  data.
+* Refactored libags*.so by providing many API improvements. Grained control
+  of sound file resources. New lock strategy and many objects are thread-safe,
+  now.
+* Implemented AgsWave and AgsBuffer to contain large amount of audio data.
+* Added AgsMidi and AgsTrack skelleton.
+
 Overview of Changes in AGS 1.3.0
 ================================
 
