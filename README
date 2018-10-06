@@ -255,11 +255,10 @@ All files listed:
 * acsite.m4 (see file)
 * ags-simple.xsl (see file)
 * ags.xsl (see file)
-* ags_example.xml !!!
-* ags_functional_notation_edit_test.xml !!!
-* ags_license_header
+* ags_example.xml (Copyright (C) 2005-2018 Joël Krähemann, permissive)
+* ags_functional_notation_edit_test.xml (Copyright (C) 2005-2018 Joël Krähemann, permissive)
+* ags_license_header (this is the GPLv3+ license header for *.c and *.h files)
 * apple_script.sh (see file)
-* autom4te.cache !!!
 * clean-gtk-doc.sh (see file)
 * compile (see file)
 * config.guess (see file)
