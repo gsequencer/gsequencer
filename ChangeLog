@@ -2,6 +2,7 @@ ags (2.0.31)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* implemented missing properties AgsAudio:min-audio-channels, AgsAudio:min-output-pads and AgsAudio:min-input-pads
+	* fixed ags_recycling_context_remove() potential memory corruption
 	* populated ags_audio_buffer_util_test.c
 	* added ags_char_buffer_util_test.c skelleton
 	* added ags_devin_test.c
@@ -9,6 +10,7 @@ ags (2.0.31)
 	* added ags_midi_test.c
 	* added ags_track_test.c
 	* added ags_recall_id_test.c
+	* added ags_recycling_context_test.c
 
 ags (2.0.30)
 

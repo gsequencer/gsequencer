@@ -225,8 +225,8 @@ ags_recycling_context_test_remove()
 				 recycling[i]);
 
     if(recycling_context->length != 0){
-      for(j = 0; j < AGS_RECYCLING_CONTEXT_TEST_REMOVE_RECYCLING_COUNT - i - 1; j++){
-	if(recycling_context->recycling[j] != recycling[j]){
+      for(j = 0; AGS_RECYCLING_CONTEXT_TEST_REMOVE_RECYCLING_COUNT - (j + i + 1) > 1; j++){
+	if(recycling_context->recycling[j] != recycling[i + j + 1]){
 	  success = FALSE;
 	
 	  break;

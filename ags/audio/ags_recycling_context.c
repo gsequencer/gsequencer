@@ -677,7 +677,7 @@ ags_recycling_context_remove(AgsRecyclingContext *recycling_context,
   pthread_mutex_lock(recycling_context_mutex);
 
   for(i = 0, j = 0; i < new_length; i++){
-    if(recycling_context->recycling[j] != recycling){
+    if(old_context[i] != recycling){
       recycling_context->recycling[j] = old_context[i];
       j++;
     }
