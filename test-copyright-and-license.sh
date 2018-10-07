@@ -7,6 +7,28 @@
 # notice and this notice are preserved.  This file is offered as-is,
 # without any warranty.
 
+# ==============================================================================
+# title:           Test copyright and license
+# description:     This script tests recursive all files to have valid copyright
+#                  and license notice.
+#                  C header and body files can be either GNU General Public
+#                  License v3.0+ or GNU Affero General Public License v3.0+.
+#                  XML, DTD, XSL or XSD files can be either GNU Free
+#                  Documentation License v1.3 or permissive with copyright
+#                  attribution licensed.
+#                  Other files are checked against README files in current
+#                  current directory to have an external copyright and license
+#                  notice.
+#                  Obviously only the most common files and license combination
+#                  are tested. Not matching files are listed and the end of
+#                  output as "Verify: <filename>". They have a need for manual
+#                  review.
+# author:          Jo\u00EBl Kr\u00E4hemann
+# date:            Sun Oct  7 00:17:53 UTC 2018
+# version:         v1.0.0
+# usage:           bash test-copyright-and-license.sh
+# ==============================================================================
+
 GNU_GPL_3_0_C=`cat license-notice-gnu-gpl-3-0+-c.txt`
 GNU_AGPL_3_0_C=`cat license-notice-gnu-agpl-3-0+-c.txt`
 
