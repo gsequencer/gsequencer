@@ -1,9 +1,9 @@
 Files used for code generation applied under the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
 
-* ags_gui_marshallers.list (Copyright (C) 2005-2018 Joël Krähemann, GPLv3+)
+* ags_widget_marshallers.list (Copyright (C) 2005-2018 Joël Krähemann, GPLv3+)
 
 Generated files by glib-genmarshal licensed under the terms of GNU LGPLv2.1+ or what ever license I want, copyright provided by http://www.gnome.org:
 
-* ags_gui_marshal.c (see file)
-* ags_gui_marshal.h (see file)
+* ags_widget_marshal.c (see file)
+* ags_widget_marshal.h (see file)
