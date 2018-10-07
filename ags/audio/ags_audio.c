@@ -425,7 +425,7 @@ ags_audio_class_init(AgsAudioClass *audio)
 				 i18n_pspec("minimum audio channels count"),
 				 i18n_pspec("The minimum count of audio channels of audio"),
 				 0,
-				 G_MINUINT32,
+				 G_MAXUINT32,
 				 0,
 				 G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -461,7 +461,7 @@ ags_audio_class_init(AgsAudioClass *audio)
 				 i18n_pspec("minimum output pads count"),
 				 i18n_pspec("The minimum count of output pads of audio"),
 				 0,
-				 G_MINUINT32,
+				 G_MAXUINT32,
 				 0,
 				 G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -497,7 +497,7 @@ ags_audio_class_init(AgsAudioClass *audio)
 				 i18n_pspec("minimum input pads count"),
 				 i18n_pspec("The minimum count of input pads of audio"),
 				 0,
-				 G_MINUINT32,
+				 G_MAXUINT32,
 				 0,
 				 G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,

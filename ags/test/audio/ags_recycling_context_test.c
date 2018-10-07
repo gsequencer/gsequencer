@@ -46,6 +46,14 @@ void ags_recycling_context_test_remove_child();
 void ags_recycling_context_test_get_child_recall_id();
 void ags_recycling_context_test_reset_recycling();
 
+#define AGS_RECYCLING_CONTEXT_TEST_REPLACE_RECYCLING_COUNT (9)
+
+#define AGS_RECYCLING_CONTEXT_TEST_ADD_RECYCLING_COUNT (7)
+
+#define AGS_RECYCLING_CONTEXT_TEST_REMOVE_RECYCLING_COUNT (7)
+
+#define AGS_RECYCLING_CONTEXT_TEST_INSERT_RECYCLING_COUNT (88)
+
 /* The suite initialization function.
  * Opens the temporary file used by the tests.
  * Returns zero on success, non-zero otherwise.
@@ -130,25 +138,155 @@ ags_recycling_context_test_find_scope()
 void
 ags_recycling_context_test_replace()
 {
-  //TODO:JK: implement me
+  AgsRecycling **recycling;
+  AgsRecyclingContext *recycling_context;
+
+  guint i;
+  gboolean success;
+  
+  recycling = (AgsRecycling **) malloc(AGS_RECYCLING_CONTEXT_TEST_REPLACE_RECYCLING_COUNT * sizeof(AgsRecycling));
+  
+  recycling_context = ags_recycling_context_new(AGS_RECYCLING_CONTEXT_TEST_REPLACE_RECYCLING_COUNT);
+
+  success = TRUE;
+  
+  for(i = 0; i < AGS_RECYCLING_CONTEXT_TEST_REPLACE_RECYCLING_COUNT; i++){
+    recycling[i] = ags_recycling_new(NULL);
+    ags_recycling_context_replace(recycling_context,
+				  recycling[i],
+				  i);
+
+    if(recycling_context->recycling[i] != recycling[i]){
+      success = FALSE;
+
+      break;
+    }
+  }
+
+  CU_ASSERT(success);
 }
 
 void
 ags_recycling_context_test_add()
 {
-  //TODO:JK: implement me
+  AgsRecycling **recycling;
+  AgsRecyclingContext *recycling_context;
+
+  guint i;
+  gboolean success;
+  
+  recycling = (AgsRecycling **) malloc(AGS_RECYCLING_CONTEXT_TEST_ADD_RECYCLING_COUNT * sizeof(AgsRecycling));
+  
+  recycling_context = ags_recycling_context_new(0);
+
+  success = TRUE;
+  
+  for(i = 0; i < AGS_RECYCLING_CONTEXT_TEST_ADD_RECYCLING_COUNT; i++){
+    recycling[i] = ags_recycling_new(NULL);
+    ags_recycling_context_add(recycling_context,
+			      recycling[i]);
+
+    if(recycling_context->recycling[i] != recycling[i] ||
+       recycling_context->length != i + 1){
+      success = FALSE;
+
+      break;
+    }
+  }
+
+  CU_ASSERT(success);
 }
 
 void
 ags_recycling_context_test_remove()
 {
-  //TODO:JK: implement me
+  AgsRecycling **recycling;
+  AgsRecyclingContext *recycling_context;
+
+  guint i, j;
+  gboolean success;
+  
+  recycling = (AgsRecycling **) malloc(AGS_RECYCLING_CONTEXT_TEST_REMOVE_RECYCLING_COUNT * sizeof(AgsRecycling));
+  
+  recycling_context = ags_recycling_context_new(AGS_RECYCLING_CONTEXT_TEST_REMOVE_RECYCLING_COUNT);
+
+  for(i = 0; i < AGS_RECYCLING_CONTEXT_TEST_REMOVE_RECYCLING_COUNT; i++){
+    recycling[i] = ags_recycling_new(NULL);
+    ags_recycling_context_replace(recycling_context,
+				  recycling[i],
+				  i);
+  }
+
+  /* test */
+  success = TRUE;
+
+  for(i = 0; i < AGS_RECYCLING_CONTEXT_TEST_REMOVE_RECYCLING_COUNT && success; i++){
+    ags_recycling_context_remove(recycling_context,
+				 recycling[i]);
+
+    if(recycling_context->length != 0){
+      for(j = 0; j < AGS_RECYCLING_CONTEXT_TEST_REMOVE_RECYCLING_COUNT - i - 1; j++){
+	if(recycling_context->recycling[j] != recycling[j]){
+	  success = FALSE;
+	
+	  break;
+	}
+      }
+    }
+    
+    if(recycling_context->length == 0){
+      if(recycling_context->recycling != NULL){
+	success = FALSE;
+
+	break;
+      }
+    }
+  }
+  
+  CU_ASSERT(success);
 }
 
 void
 ags_recycling_context_test_insert()
 {
-  //TODO:JK: implement me
+  AgsRecycling **recycling;
+  AgsRecyclingContext *recycling_context;
+
+  gint position;
+  guint i, j;
+  gboolean success;
+  
+  recycling = (AgsRecycling **) malloc(AGS_RECYCLING_CONTEXT_TEST_INSERT_RECYCLING_COUNT * sizeof(AgsRecycling));
+  
+  recycling_context = ags_recycling_context_new(0);
+
+  success = TRUE;
+  
+  for(i = 0; i < AGS_RECYCLING_CONTEXT_TEST_INSERT_RECYCLING_COUNT; i++){
+    recycling[i] = ags_recycling_new(NULL);
+  }
+
+  /* test */
+  for(i = 0; i < AGS_RECYCLING_CONTEXT_TEST_INSERT_RECYCLING_COUNT; i++){
+    if(i > 0){
+      position = rand() % i;
+    }else{
+      position = 0;
+    }
+    
+    ags_recycling_context_insert(recycling_context,
+				 recycling[i],
+				 position);
+
+    
+    if(recycling_context->recycling[position] != recycling[i]){
+      success = FALSE;
+      
+      break;
+    }
+  }
+  
+  CU_ASSERT(success);
 }
 
 void
@@ -194,7 +332,10 @@ ags_recycling_context_test_get_child_recall_id()
 }
 
 void
-ags_recycling_context_test_reset_recycling();
+ags_recycling_context_test_reset_recycling()
+{
+  //TODO:JK: implement me
+}
 
 int
 main(int argc, char **argv)

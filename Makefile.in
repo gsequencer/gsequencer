@@ -153,7 +153,8 @@ check_PROGRAMS = ags_buffer_util_test$(EXEEXT) \
 	ags_recall_channel_run_test$(EXEEXT) \
 	ags_recall_container_test$(EXEEXT) \
 	ags_recall_dependency_test$(EXEEXT) \
-	ags_recall_id_test$(EXEEXT) ags_port_test$(EXEEXT) \
+	ags_recall_id_test$(EXEEXT) \
+	ags_recycling_context_test$(EXEEXT) ags_port_test$(EXEEXT) \
 	ags_pattern_test$(EXEEXT) ags_notation_test$(EXEEXT) \
 	ags_note_test$(EXEEXT) ags_automation_test$(EXEEXT) \
 	ags_acceleration_test$(EXEEXT) ags_wave_test$(EXEEXT) \
@@ -1765,6 +1766,18 @@ ags_recall_test_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
 	$(ags_recall_test_CFLAGS) $(CFLAGS) $(ags_recall_test_LDFLAGS) \
 	$(LDFLAGS) -o $@
+am_ags_recycling_context_test_OBJECTS = ags/test/audio/recycling_context_test-ags_recycling_context_test.$(OBJEXT)
+ags_recycling_context_test_OBJECTS =  \
+	$(am_ags_recycling_context_test_OBJECTS)
+ags_recycling_context_test_DEPENDENCIES = libags_audio.la \
+	libags_server.la libags_thread.la libags.la libags_thread.la \
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
+ags_recycling_context_test_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
+	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
+	$(ags_recycling_context_test_CFLAGS) $(CFLAGS) \
+	$(ags_recycling_context_test_LDFLAGS) $(LDFLAGS) -o $@
 am_ags_recycling_test_OBJECTS =  \
 	ags/test/audio/recycling_test-ags_recycling_test.$(OBJEXT)
 ags_recycling_test_OBJECTS = $(am_ags_recycling_test_OBJECTS)
@@ -2547,6 +2560,7 @@ am__depfiles_remade = ags/$(DEPDIR)/gsequencer-gsequencer_main.Po \
 	ags/test/audio/$(DEPDIR)/recall_dependency_test-ags_recall_dependency_test.Po \
 	ags/test/audio/$(DEPDIR)/recall_id_test-ags_recall_id_test.Po \
 	ags/test/audio/$(DEPDIR)/recall_test-ags_recall_test.Po \
+	ags/test/audio/$(DEPDIR)/recycling_context_test-ags_recycling_context_test.Po \
 	ags/test/audio/$(DEPDIR)/recycling_test-ags_recycling_test.Po \
 	ags/test/audio/$(DEPDIR)/track_test-ags_track_test.Po \
 	ags/test/audio/$(DEPDIR)/wave_test-ags_wave_test.Po \
@@ -2724,6 +2738,7 @@ SOURCES = $(libags_la_SOURCES) $(libags_audio_la_SOURCES) \
 	$(ags_recall_container_test_SOURCES) \
 	$(ags_recall_dependency_test_SOURCES) \
 	$(ags_recall_id_test_SOURCES) $(ags_recall_test_SOURCES) \
+	$(ags_recycling_context_test_SOURCES) \
 	$(ags_recycling_test_SOURCES) \
 	$(ags_returnable_thread_test_SOURCES) $(ags_task_test_SOURCES) \
 	$(ags_task_thread_test_SOURCES) \
@@ -2793,6 +2808,7 @@ DIST_SOURCES = $(libags_la_SOURCES) $(libags_audio_la_SOURCES) \
 	$(ags_recall_container_test_SOURCES) \
 	$(ags_recall_dependency_test_SOURCES) \
 	$(ags_recall_id_test_SOURCES) $(ags_recall_test_SOURCES) \
+	$(ags_recycling_context_test_SOURCES) \
 	$(ags_recycling_test_SOURCES) \
 	$(ags_returnable_thread_test_SOURCES) $(ags_task_test_SOURCES) \
 	$(ags_task_thread_test_SOURCES) \
@@ -3947,6 +3963,12 @@ ags_recall_id_test_SOURCES = ags/test/audio/ags_recall_id_test.c
 ags_recall_id_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
 ags_recall_id_test_LDFLAGS = -pthread $(LDFLAGS)
 ags_recall_id_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
+
+# recycling context unit test
+ags_recycling_context_test_SOURCES = ags/test/audio/ags_recycling_context_test.c
+ags_recycling_context_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
+ags_recycling_context_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_recycling_context_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
 
 # port unit test
 ags_port_test_SOURCES = ags/test/audio/ags_port_test.c
@@ -8239,6 +8261,13 @@ ags/test/audio/recall_test-ags_recall_test.$(OBJEXT):  \
 ags_recall_test$(EXEEXT): $(ags_recall_test_OBJECTS) $(ags_recall_test_DEPENDENCIES) $(EXTRA_ags_recall_test_DEPENDENCIES) 
 	@rm -f ags_recall_test$(EXEEXT)
 	$(AM_V_CCLD)$(ags_recall_test_LINK) $(ags_recall_test_OBJECTS) $(ags_recall_test_LDADD) $(LIBS)
+ags/test/audio/recycling_context_test-ags_recycling_context_test.$(OBJEXT):  \
+	ags/test/audio/$(am__dirstamp) \
+	ags/test/audio/$(DEPDIR)/$(am__dirstamp)
+
+ags_recycling_context_test$(EXEEXT): $(ags_recycling_context_test_OBJECTS) $(ags_recycling_context_test_DEPENDENCIES) $(EXTRA_ags_recycling_context_test_DEPENDENCIES) 
+	@rm -f ags_recycling_context_test$(EXEEXT)
+	$(AM_V_CCLD)$(ags_recycling_context_test_LINK) $(ags_recycling_context_test_OBJECTS) $(ags_recycling_context_test_LDADD) $(LIBS)
 ags/test/audio/recycling_test-ags_recycling_test.$(OBJEXT):  \
 	ags/test/audio/$(am__dirstamp) \
 	ags/test/audio/$(DEPDIR)/$(am__dirstamp)
@@ -9037,6 +9066,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/audio/$(DEPDIR)/recall_dependency_test-ags_recall_dependency_test.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/audio/$(DEPDIR)/recall_id_test-ags_recall_id_test.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/audio/$(DEPDIR)/recall_test-ags_recall_test.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@ags/test/audio/$(DEPDIR)/recycling_context_test-ags_recycling_context_test.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/audio/$(DEPDIR)/recycling_test-ags_recycling_test.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/audio/$(DEPDIR)/track_test-ags_track_test.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/audio/$(DEPDIR)/wave_test-ags_wave_test.Po@am__quote@ # am--include-marker
@@ -14459,6 +14489,20 @@ ags/test/audio/recall_test-ags_recall_test.obj: ags/test/audio/ags_recall_test.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_recall_test_CFLAGS) $(CFLAGS) -c -o ags/test/audio/recall_test-ags_recall_test.obj `if test -f 'ags/test/audio/ags_recall_test.c'; then $(CYGPATH_W) 'ags/test/audio/ags_recall_test.c'; else $(CYGPATH_W) '$(srcdir)/ags/test/audio/ags_recall_test.c'; fi`
 
+ags/test/audio/recycling_context_test-ags_recycling_context_test.o: ags/test/audio/ags_recycling_context_test.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_recycling_context_test_CFLAGS) $(CFLAGS) -MT ags/test/audio/recycling_context_test-ags_recycling_context_test.o -MD -MP -MF ags/test/audio/$(DEPDIR)/recycling_context_test-ags_recycling_context_test.Tpo -c -o ags/test/audio/recycling_context_test-ags_recycling_context_test.o `test -f 'ags/test/audio/ags_recycling_context_test.c' || echo '$(srcdir)/'`ags/test/audio/ags_recycling_context_test.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/test/audio/$(DEPDIR)/recycling_context_test-ags_recycling_context_test.Tpo ags/test/audio/$(DEPDIR)/recycling_context_test-ags_recycling_context_test.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/test/audio/ags_recycling_context_test.c' object='ags/test/audio/recycling_context_test-ags_recycling_context_test.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_recycling_context_test_CFLAGS) $(CFLAGS) -c -o ags/test/audio/recycling_context_test-ags_recycling_context_test.o `test -f 'ags/test/audio/ags_recycling_context_test.c' || echo '$(srcdir)/'`ags/test/audio/ags_recycling_context_test.c
+
+ags/test/audio/recycling_context_test-ags_recycling_context_test.obj: ags/test/audio/ags_recycling_context_test.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_recycling_context_test_CFLAGS) $(CFLAGS) -MT ags/test/audio/recycling_context_test-ags_recycling_context_test.obj -MD -MP -MF ags/test/audio/$(DEPDIR)/recycling_context_test-ags_recycling_context_test.Tpo -c -o ags/test/audio/recycling_context_test-ags_recycling_context_test.obj `if test -f 'ags/test/audio/ags_recycling_context_test.c'; then $(CYGPATH_W) 'ags/test/audio/ags_recycling_context_test.c'; else $(CYGPATH_W) '$(srcdir)/ags/test/audio/ags_recycling_context_test.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/test/audio/$(DEPDIR)/recycling_context_test-ags_recycling_context_test.Tpo ags/test/audio/$(DEPDIR)/recycling_context_test-ags_recycling_context_test.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/test/audio/ags_recycling_context_test.c' object='ags/test/audio/recycling_context_test-ags_recycling_context_test.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_recycling_context_test_CFLAGS) $(CFLAGS) -c -o ags/test/audio/recycling_context_test-ags_recycling_context_test.obj `if test -f 'ags/test/audio/ags_recycling_context_test.c'; then $(CYGPATH_W) 'ags/test/audio/ags_recycling_context_test.c'; else $(CYGPATH_W) '$(srcdir)/ags/test/audio/ags_recycling_context_test.c'; fi`
+
 ags/test/audio/recycling_test-ags_recycling_test.o: ags/test/audio/ags_recycling_test.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_recycling_test_CFLAGS) $(CFLAGS) -MT ags/test/audio/recycling_test-ags_recycling_test.o -MD -MP -MF ags/test/audio/$(DEPDIR)/recycling_test-ags_recycling_test.Tpo -c -o ags/test/audio/recycling_test-ags_recycling_test.o `test -f 'ags/test/audio/ags_recycling_test.c' || echo '$(srcdir)/'`ags/test/audio/ags_recycling_test.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/test/audio/$(DEPDIR)/recycling_test-ags_recycling_test.Tpo ags/test/audio/$(DEPDIR)/recycling_test-ags_recycling_test.Po
@@ -15535,6 +15579,13 @@ ags_recall_dependency_test.log: ags_recall_dependency_test$(EXEEXT)
 ags_recall_id_test.log: ags_recall_id_test$(EXEEXT)
 	@p='ags_recall_id_test$(EXEEXT)'; \
 	b='ags_recall_id_test'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+ags_recycling_context_test.log: ags_recycling_context_test$(EXEEXT)
+	@p='ags_recycling_context_test$(EXEEXT)'; \
+	b='ags_recycling_context_test'; \
 	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
@@ -16658,6 +16709,7 @@ distclean: distclean-recursive
 	-rm -f ags/test/audio/$(DEPDIR)/recall_dependency_test-ags_recall_dependency_test.Po
 	-rm -f ags/test/audio/$(DEPDIR)/recall_id_test-ags_recall_id_test.Po
 	-rm -f ags/test/audio/$(DEPDIR)/recall_test-ags_recall_test.Po
+	-rm -f ags/test/audio/$(DEPDIR)/recycling_context_test-ags_recycling_context_test.Po
 	-rm -f ags/test/audio/$(DEPDIR)/recycling_test-ags_recycling_test.Po
 	-rm -f ags/test/audio/$(DEPDIR)/track_test-ags_track_test.Po
 	-rm -f ags/test/audio/$(DEPDIR)/wave_test-ags_wave_test.Po
@@ -17401,6 +17453,7 @@ maintainer-clean: maintainer-clean-recursive
 	-rm -f ags/test/audio/$(DEPDIR)/recall_dependency_test-ags_recall_dependency_test.Po
 	-rm -f ags/test/audio/$(DEPDIR)/recall_id_test-ags_recall_id_test.Po
 	-rm -f ags/test/audio/$(DEPDIR)/recall_test-ags_recall_test.Po
+	-rm -f ags/test/audio/$(DEPDIR)/recycling_context_test-ags_recycling_context_test.Po
 	-rm -f ags/test/audio/$(DEPDIR)/recycling_test-ags_recycling_test.Po
 	-rm -f ags/test/audio/$(DEPDIR)/track_test-ags_track_test.Po
 	-rm -f ags/test/audio/$(DEPDIR)/wave_test-ags_wave_test.Po

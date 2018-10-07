@@ -70,6 +70,7 @@ check_PROGRAMS += \
 	ags_recall_container_test \
 	ags_recall_dependency_test \
 	ags_recall_id_test \
+	ags_recycling_context_test \
 	ags_port_test \
 	ags_pattern_test \
 	ags_notation_test \
@@ -461,6 +462,12 @@ ags_recall_id_test_SOURCES = ags/test/audio/ags_recall_id_test.c
 ags_recall_id_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
 ags_recall_id_test_LDFLAGS = -pthread $(LDFLAGS)
 ags_recall_id_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
+
+# recycling context unit test
+ags_recycling_context_test_SOURCES = ags/test/audio/ags_recycling_context_test.c
+ags_recycling_context_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
+ags_recycling_context_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_recycling_context_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
 
 # port unit test
 ags_port_test_SOURCES = ags/test/audio/ags_port_test.c

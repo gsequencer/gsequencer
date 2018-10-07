@@ -288,9 +288,12 @@ ags_recycling_context_set_property(GObject *gobject,
       length = g_value_get_uint64(value);
 
       if(length == 0){
-	g_free(recycling_context->recycling);
-
+	if(recycling_context->recycling != NULL){
+	  free(recycling_context->recycling);
+	}
+	
 	recycling_context->recycling = NULL;
+	recycling_context->length = 0;
 
 	return;
       }
@@ -1110,7 +1113,7 @@ ags_recycling_context_get_child_recall_id(AgsRecyclingContext *recycling_context
     
     if(AGS_RECYCLING_CONTEXT(child->data)->recall_id != NULL){
       recall_id_list = g_list_prepend(recall_id_list,
-				     AGS_RECYCLING_CONTEXT(child->data)->recall_id);
+				      AGS_RECYCLING_CONTEXT(child->data)->recall_id);
     }
 
     pthread_mutex_unlock(child_mutex);
