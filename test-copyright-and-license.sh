@@ -99,7 +99,19 @@ echo -e "Summary of suspicious files:\n================================"
 # notice to verify file
 for f in ${check_files[@]}
 do
-    echo "Verify: $f"
+    dir_path=$(dirname "${f}")
+    file_path=$(basename "${f}")
+
+    
+    if [ ! -f "${dir_path}/README" ] ; then
+	echo "Verify: $f"
+    else
+	if [ "$file_path" != "README" ] ; then
+	    if !(grep -q -E "${file_path} \(Copyright \(C\) 20[0-9][0-9]-20[0-9][0-9] [^\s]+ [^\s]+, GPLv3\+|GFDLv1.3\+" ${dir_path}/README || grep -q -E "${file_path} \(Copyright \(C\) 20[0-9][0-9] [^\s]+ [^\s]+, GPLv3\+|GFDLv1.3\+" ${dir_path}/README) ; then
+		echo "Verify: $f"
+	    fi
+	fi
+    fi
 done
 
 # filter all files
@@ -122,7 +134,20 @@ check_files=( $other_files )
 
 for f in ${check_files[@]}
 do
-    echo "Verify: $f"
+    dir_path=$(dirname "${f}")
+    file_path=$(basename "${f}")
+
+    
+    if [ ! -f "${dir_path}/README" ] ; then
+	echo "Verify: $f"
+    else
+	if [ "$file_path" != "README" ] ; then
+	    if !(grep -q -E "${file_path} \(Copyright \(C\) 20[0-9][0-9]-20[0-9][0-9] [^\s]+ [^\s]+, GPLv3\+|GFDLv1.3\+" ${dir_path}/README || grep -q -E "${file_path} \(Copyright \(C\) 20[0-9][0-9] [^\s]+ [^\s]+, GPLv3\+|GFDLv1.3\+" ${dir_path}/README) ; then
+		echo "Verify: $f"
+	    fi
+	fi
+    fi
 done
 
 echo "================================"
+
