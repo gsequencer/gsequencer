@@ -17,8 +17,7 @@
 #                  Documentation License v1.3 or permissive with copyright
 #                  attribution licensed.
 #                  Other files are checked against README files in current
-#                  current directory to have an external copyright and license
-#                  notice.
+#                  directory to have an external copyright and license notice.
 #                  Obviously only the most common files and license combination
 #                  are tested. Not matching files are listed and the end of
 #                  output as "Verify: <filename>". They have a need for manual
