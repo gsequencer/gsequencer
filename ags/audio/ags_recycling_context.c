@@ -260,27 +260,22 @@ ags_recycling_context_set_property(GObject *gobject,
     break;
   case PROP_PARENT:
     {
-      AgsRecyclingContext *parent, *old_parent;
+      AgsRecyclingContext *parent;
 
       parent = (AgsRecyclingContext *) g_value_get_object(value);
 
       pthread_mutex_lock(recycling_context_mutex);
 
-      old_parent = recycling_context->parent;
+      if(recycling_context->parent == parent){
+	pthread_mutex_unlock(recycling_context_mutex);
 
-      pthread_mutex_unlock(recycling_context_mutex);
-      
-      if(old_parent == parent){
 	return;
       }
 
-      if(old_parent != NULL){
-	ags_recycling_context_remove_child(old_parent,
-					   recycling_context);
+      if(recycling_context->parent != NULL){
+	g_object_unref(recycling_context->parent);
       }
       
-      pthread_mutex_lock(recycling_context_mutex);
-
       if(parent != NULL){
 	g_object_ref(parent);
       }
@@ -1112,7 +1107,7 @@ ags_recycling_context_remove_child(AgsRecyclingContext *parent,
   /* remove child */
   pthread_mutex_lock(parent_mutex);
 
-  if(g_list_find(parent->children, child) == NULL){
+  if(g_list_find(parent->children, child) != NULL){
     parent->children = g_list_remove(parent->children,
 				     child);
     g_object_unref(child);

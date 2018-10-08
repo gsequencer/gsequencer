@@ -54,12 +54,20 @@ void ags_recycling_context_test_reset_recycling();
 
 #define AGS_RECYCLING_CONTEXT_TEST_INSERT_RECYCLING_COUNT (88)
 
-#define RECYCLING_CONTEXT_TEST_GET_TOPLEVEL_NESTING_LEVEL (5)
+#define AGS_RECYCLING_CONTEXT_TEST_GET_TOPLEVEL_NESTING_LEVEL (5)
 
 #define AGS_RECYCLING_CONTEXT_TEST_FIND_RECYCLING_COUNT (88)
 
 #define AGS_RECYCLING_CONTEXT_TEST_FIND_CHILD_CHILD_COUNT (5)
 #define AGS_RECYCLING_CONTEXT_TEST_FIND_CHILD_RECYCLING_COUNT (4)
+
+#define AGS_RECYCLING_CONTEXT_TEST_FIND_PARENT_CHILD_COUNT (5)
+#define AGS_RECYCLING_CONTEXT_TEST_FIND_PARENT_RECYCLING_COUNT (4)
+
+#define AGS_RECYCLING_CONTEXT_TEST_GET_CHILD_RECALL_ID_CHILD_COUNT (5)
+#define AGS_RECYCLING_CONTEXT_TEST_GET_CHILD_RECALL_ID_RECYCLING_COUNT (4)
+
+#define AGS_RECYCLING_CONTEXT_TEST_RESET_RECYCLING_RECYCLING_COUNT (4)
 
 /* The suite initialization function.
  * Opens the temporary file used by the tests.
@@ -377,7 +385,7 @@ ags_recycling_context_test_find_child()
   recycling = (AgsRecycling ***) malloc(AGS_RECYCLING_CONTEXT_TEST_FIND_CHILD_CHILD_COUNT * sizeof(AgsRecycling **));
 
   for(i = 0; i < AGS_RECYCLING_CONTEXT_TEST_FIND_CHILD_CHILD_COUNT; i++){
-    child[i] = ags_recycling_context_new(0);
+    child[i] = ags_recycling_context_new(AGS_RECYCLING_CONTEXT_TEST_FIND_CHILD_RECYCLING_COUNT);
     ags_recycling_context_add_child(recycling_context,
 				    child[i]);
 
@@ -386,8 +394,8 @@ ags_recycling_context_test_find_child()
     for(j = 0; j < AGS_RECYCLING_CONTEXT_TEST_FIND_CHILD_RECYCLING_COUNT; j++){
       recycling[i][j] = ags_recycling_new(NULL);
       ags_recycling_context_replace(child[i],
-				    recycling[i],
-				    i);
+				    recycling[i][j],
+				    j);
     }
   }
 
@@ -399,7 +407,7 @@ ags_recycling_context_test_find_child()
       position = ags_recycling_context_find_child(recycling_context,
 						  recycling[i][j]);
 
-      if(position != i){
+      if(position == -1){
 	success = FALSE;
 
 	break;
@@ -413,31 +421,202 @@ ags_recycling_context_test_find_child()
 void
 ags_recycling_context_test_find_parent()
 {
-  //TODO:JK: implement me
+  AgsRecycling **recycling;
+  AgsRecyclingContext *recycling_context;
+  AgsRecyclingContext **child;
+
+  gint position;
+  guint i;
+  gboolean success;
+  
+  recycling_context = ags_recycling_context_new(AGS_RECYCLING_CONTEXT_TEST_FIND_PARENT_RECYCLING_COUNT);
+  child = (AgsRecyclingContext **) malloc(AGS_RECYCLING_CONTEXT_TEST_FIND_PARENT_CHILD_COUNT * sizeof(AgsRecyclingContext *));
+
+  recycling = (AgsRecycling **) malloc(AGS_RECYCLING_CONTEXT_TEST_FIND_PARENT_RECYCLING_COUNT * sizeof(AgsRecycling *));
+
+  for(i = 0; i < AGS_RECYCLING_CONTEXT_TEST_FIND_PARENT_RECYCLING_COUNT; i++){
+    recycling[i] = ags_recycling_new(NULL);
+    ags_recycling_context_replace(recycling_context,
+				  recycling[i],
+				  i);
+  }
+
+  for(i = 0; i < AGS_RECYCLING_CONTEXT_TEST_FIND_PARENT_CHILD_COUNT; i++){
+    child[i] = ags_recycling_context_new(0);
+    ags_recycling_context_add_child(recycling_context,
+				    child[i]);
+
+  }
+
+  /* test */
+  success = TRUE;
+
+  for(i = 0; i < AGS_RECYCLING_CONTEXT_TEST_FIND_PARENT_RECYCLING_COUNT; i++){
+    position = ags_recycling_context_find_parent(child[rand() % AGS_RECYCLING_CONTEXT_TEST_FIND_PARENT_CHILD_COUNT],
+						 recycling[i]);
+
+    if(position == -1){
+      success = FALSE;
+
+      break;
+    }
+  }
+  
+  CU_ASSERT(success == TRUE);
 }
 
 void
 ags_recycling_context_test_add_child()
 {
-  //TODO:JK: implement me
+  AgsRecyclingContext *recycling_context;
+  AgsRecyclingContext *child;
+  
+  recycling_context = ags_recycling_context_new(0);
+  
+  child = ags_recycling_context_new(0);
+  ags_recycling_context_add_child(recycling_context,
+				  child);
+
+  CU_ASSERT(child->parent == recycling_context);
+  CU_ASSERT(g_list_find(recycling_context->children, child) != NULL);
 }
 
 void
 ags_recycling_context_test_remove_child()
 {
-  //TODO:JK: implement me
+  AgsRecyclingContext *recycling_context;
+  AgsRecyclingContext *child;
+  
+  recycling_context = ags_recycling_context_new(0);
+  
+  child = ags_recycling_context_new(0);
+  ags_recycling_context_add_child(recycling_context,
+				  child);
+
+  /* test */
+  ags_recycling_context_remove_child(recycling_context,
+				     child);
+
+  CU_ASSERT(child->parent == NULL);
+  CU_ASSERT(g_list_find(recycling_context->children, child) == NULL);
 }
 
 void
 ags_recycling_context_test_get_child_recall_id()
 {
-  //TODO:JK: implement me
+  AgsRecallID *recall_id;
+  AgsRecallID **child_recall_id;
+  AgsRecyclingContext *recycling_context;
+  AgsRecyclingContext **child;
+
+  GList *list;
+  
+  gint position;
+  guint i, j;
+  gboolean success;
+
+  recall_id = ags_recall_id_new();
+  
+  recycling_context = ags_recycling_context_new(0);
+  g_object_set(recycling_context,
+	       "recall-id", recall_id,
+	       NULL);
+
+  g_object_set(recall_id,
+	       "recycling-context", recycling_context,
+	       NULL);
+  
+  child_recall_id = (AgsRecallID **) malloc(AGS_RECYCLING_CONTEXT_TEST_GET_CHILD_RECALL_ID_CHILD_COUNT * sizeof(AgsRecallID *));
+  
+  child = (AgsRecyclingContext **) malloc(AGS_RECYCLING_CONTEXT_TEST_GET_CHILD_RECALL_ID_CHILD_COUNT * sizeof(AgsRecyclingContext *));
+
+  for(i = 0; i < AGS_RECYCLING_CONTEXT_TEST_GET_CHILD_RECALL_ID_CHILD_COUNT; i++){
+    child_recall_id[i] = ags_recall_id_new();
+    
+    child[i] = ags_recycling_context_new(0);
+    ags_recycling_context_add_child(recycling_context,
+				    child[i]);
+
+    g_object_set(child[i],
+		 "recall-id", child_recall_id[i],
+		 NULL);
+
+    g_object_set(child_recall_id[i],
+		 "recycling-context", child[i],
+		 NULL);
+  }
+
+  /* test */
+  success = TRUE;
+  
+  list = ags_recycling_context_get_child_recall_id(recycling_context);
+
+  CU_ASSERT(list != NULL);
+
+  for(i = 0; i < AGS_RECYCLING_CONTEXT_TEST_GET_CHILD_RECALL_ID_CHILD_COUNT; i++){
+    if(g_list_find(list, child_recall_id[i]) == NULL){
+      success = FALSE;
+
+      break;
+    }
+  }
+
+  CU_ASSERT(success == TRUE);
 }
 
 void
 ags_recycling_context_test_reset_recycling()
 {
-  //TODO:JK: implement me
+  AgsRecycling *first_recycling, *last_recycling;
+  AgsRecycling *recycling;
+  AgsRecyclingContext *new_recycling_context, *recycling_context;
+
+  guint i;
+  gboolean success;
+  
+  recycling_context = ags_recycling_context_new(0);
+
+  first_recycling =
+    recycling = ags_recycling_new(NULL);
+
+  for(i = 1; i < AGS_RECYCLING_CONTEXT_TEST_RESET_RECYCLING_RECYCLING_COUNT; i++){
+    g_object_set(recycling,
+		 "next", ags_recycling_new(NULL),
+		 NULL);
+    
+    g_object_set(recycling->next,
+		 "prev", recycling,
+		 NULL);
+
+    recycling = recycling->next;
+  }
+
+  last_recycling = recycling;
+  
+  /* test */
+  success = TRUE;
+  
+  new_recycling_context = ags_recycling_context_reset_recycling(recycling_context,
+								NULL, NULL,
+								first_recycling, last_recycling);
+
+  CU_ASSERT(new_recycling_context != NULL);
+  CU_ASSERT(new_recycling_context != recycling_context);
+  CU_ASSERT(AGS_IS_RECYCLING_CONTEXT(new_recycling_context));
+
+  recycling = first_recycling;
+  
+  for(i = 0; i < AGS_RECYCLING_CONTEXT_TEST_RESET_RECYCLING_RECYCLING_COUNT; i++){
+    if(new_recycling_context->recycling[i] != recycling){
+      success = FALSE;
+
+      break;
+    }
+
+    recycling = recycling->next;
+  }
+
+  CU_ASSERT(success == TRUE);
 }
 
 int
