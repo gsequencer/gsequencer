@@ -1259,16 +1259,34 @@ ags_functional_test_util_file_default_editor_resize()
 }
 
 gboolean
+ags_functional_test_util_file_default_automation_window_resize()
+{
+  AgsXorgApplicationContext *xorg_application_context;
+  AgsWindow *window;
+
+  ags_test_enter();
+    
+  xorg_application_context = ags_application_context_get_instance();
+  window = xorg_application_context->window;
+
+  gdk_window_move_resize(gtk_widget_get_window(window->automation_window),
+			 64, 0,
+			 1920 - 128, 1080 - 64);
+    
+  ags_test_leave();
+
+  ags_functional_test_util_reaction_time_long();
+
+  return(TRUE);
+}
+
+gboolean
 ags_functional_test_util_file_default_automation_editor_resize()
 {
   AgsXorgApplicationContext *xorg_application_context;
   AgsWindow *window;
   AgsAutomationEditor *automation_editor;
-  GtkMenu *edit_menu;
-  
-  GdkEvent *delete_event;
 
-  GtkPaned *main_paned;
   GtkPaned *editor_paned;
   
   GdkRectangle allocation;
@@ -1277,39 +1295,19 @@ ags_functional_test_util_file_default_automation_editor_resize()
     
   xorg_application_context = ags_application_context_get_instance();
   window = xorg_application_context->window;
-  automation_editor = window->automation_window->automation_editor;
-  edit_menu = window->menu_bar->edit;
 
-  main_paned = window->paned;
+  automation_editor = window->automation_window->automation_editor;
+
   editor_paned = automation_editor->paned;
 
   ags_test_leave();
 
-  /* open automation window */
-  ags_functional_test_util_menu_bar_click(GTK_STOCK_EDIT);
-  ags_functional_test_util_menu_click(edit_menu,
-				      "Automation");
-
   /* resize */
   ags_test_enter();
-
-  gtk_paned_set_position(main_paned,
-			 (1080 - 64) * (2.0 / 3.0));
 
   gtk_paned_set_position(editor_paned,
 			 (1920 - 128) / 6);
 
-  ags_test_leave();
-
-  ags_functional_test_util_reaction_time_long();
-
-  /* close automation window */
-  ags_test_enter();
-
-  delete_event = gdk_event_new(GDK_DELETE);
-  gtk_widget_event((GtkWidget *) window->automation_window,
-		   (GdkEvent *) delete_event);
-  
   ags_test_leave();
 
   ags_functional_test_util_reaction_time_long();

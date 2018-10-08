@@ -39,42 +39,42 @@
 #include "gsequencer_setup_util.h"
 #include "ags_functional_test_util.h"
 
-void ags_functional_editor_workflow_test_add_test();
+void ags_functional_notation_editor_workflow_test_add_test();
 
-int ags_functional_editor_workflow_test_init_suite();
-int ags_functional_editor_workflow_test_clean_suite();
+int ags_functional_notation_editor_workflow_test_init_suite();
+int ags_functional_notation_editor_workflow_test_clean_suite();
 
-void ags_functional_editor_workflow_test_drum();
-void ags_functional_editor_workflow_test_matrix();
+void ags_functional_notation_editor_workflow_test_drum();
+void ags_functional_notation_editor_workflow_test_matrix();
 #ifdef AGS_WITH_LIBINSTPATCH
-void ags_functional_editor_workflow_test_ffplayer();
+void ags_functional_notation_editor_workflow_test_ffplayer();
 #endif
-void ags_functional_editor_workflow_test_edit_all();
-void ags_functional_editor_workflow_test_fill_all();
+void ags_functional_notation_editor_workflow_test_edit_all();
+void ags_functional_notation_editor_workflow_test_fill_all();
 
-#define AGS_FUNCTIONAL_EDITOR_WORKFLOW_TEST_CONFIG "[generic]\n" \
-  "autosave-thread=false\n"			       \
-  "simple-file=true\n"				       \
-  "disable-feature=experimental\n"		       \
-  "segmentation=4/4\n"				       \
-  "\n"						       \
-  "[thread]\n"					       \
-  "model=super-threaded\n"			       \
-  "super-threaded-scope=channel\n"		       \
-  "lock-global=ags-thread\n"			       \
-  "lock-parent=ags-recycling-thread\n"		       \
-  "\n"						       \
-  "[soundcard-0]\n"				       \
-  "backend=alsa\n"                                     \
-  "device=default\n"				       \
-  "samplerate=44100\n"				       \
-  "buffer-size=1024\n"				       \
-  "pcm-channels=2\n"				       \
-  "dsp-channels=2\n"				       \
-  "format=16\n"					       \
-  "\n"						       \
-  "[recall]\n"					       \
-  "auto-sense=true\n"				       \
+#define AGS_FUNCTIONAL_NOTATION_EDITOR_WORKFLOW_TEST_CONFIG "[generic]\n" \
+  "autosave-thread=false\n"						\
+  "simple-file=true\n"							\
+  "disable-feature=experimental\n"					\
+  "segmentation=4/4\n"							\
+  "\n"									\
+  "[thread]\n"								\
+  "model=super-threaded\n"						\
+  "super-threaded-scope=channel\n"					\
+  "lock-global=ags-thread\n"						\
+  "lock-parent=ags-recycling-thread\n"					\
+  "\n"									\
+  "[soundcard-0]\n"							\
+  "backend=alsa\n"							\
+  "device=default\n"							\
+  "samplerate=44100\n"							\
+  "buffer-size=1024\n"							\
+  "pcm-channels=2\n"							\
+  "dsp-channels=2\n"							\
+  "format=16\n"								\
+  "\n"									\
+  "[recall]\n"								\
+  "auto-sense=true\n"							\
   "\n"
 
 CU_pSuite pSuite = NULL;
@@ -85,16 +85,16 @@ extern AgsApplicationContext *ags_application_context;
 AgsGuiThread *gui_thread;
 AgsTaskThread *task_thread;
 
-void ags_functional_editor_workflow_test_add_test()
+void ags_functional_notation_editor_workflow_test_add_test()
 {
   /* add the tests to the suite */
-  if((CU_add_test(pSuite, "functional test of GSequencer editor workflow AgsDrum", ags_functional_editor_workflow_test_drum) == NULL) ||
-     (CU_add_test(pSuite, "functional test of GSequencer editor workflow AgsMatrix", ags_functional_editor_workflow_test_matrix) == NULL) ||
+  if((CU_add_test(pSuite, "functional test of GSequencer editor workflow AgsDrum", ags_functional_notation_editor_workflow_test_drum) == NULL) ||
+     (CU_add_test(pSuite, "functional test of GSequencer editor workflow AgsMatrix", ags_functional_notation_editor_workflow_test_matrix) == NULL) ||
 #ifdef AGS_WITH_LIBINSTPATCH
-     (CU_add_test(pSuite, "functional test of GSequencer editor workflow AgsFFPlayer", ags_functional_editor_workflow_test_ffplayer) == NULL) ||
+     (CU_add_test(pSuite, "functional test of GSequencer editor workflow AgsFFPlayer", ags_functional_notation_editor_workflow_test_ffplayer) == NULL) ||
 #endif
-     (CU_add_test(pSuite, "functional test of GSequencer editor workflow edit all", ags_functional_editor_workflow_test_edit_all) == NULL) ||
-     (CU_add_test(pSuite, "functional test of GSequencer editor workflow fill all", ags_functional_editor_workflow_test_fill_all) == NULL)){
+     (CU_add_test(pSuite, "functional test of GSequencer editor workflow edit all", ags_functional_notation_editor_workflow_test_edit_all) == NULL) ||
+     (CU_add_test(pSuite, "functional test of GSequencer editor workflow fill all", ags_functional_notation_editor_workflow_test_fill_all) == NULL)){
     CU_cleanup_registry();
       
     exit(CU_get_error());
@@ -116,7 +116,7 @@ void ags_functional_editor_workflow_test_add_test()
  * Returns zero on success, non-zero otherwise.
  */
 int
-ags_functional_editor_workflow_test_init_suite()
+ags_functional_notation_editor_workflow_test_init_suite()
 {
   /* get gui thread */
   gui_thread = ags_thread_find_type(ags_application_context->main_loop,
@@ -139,13 +139,13 @@ ags_functional_editor_workflow_test_init_suite()
  * Returns zero on success, non-zero otherwise.
  */
 int
-ags_functional_editor_workflow_test_clean_suite()
+ags_functional_notation_editor_workflow_test_clean_suite()
 {  
   return(0);
 }
 
 void
-ags_functional_editor_workflow_test_drum()
+ags_functional_notation_editor_workflow_test_drum()
 {
   AgsXorgApplicationContext *xorg_application_context;
   AgsWindow *window;
@@ -239,7 +239,7 @@ ags_functional_editor_workflow_test_drum()
 }
 
 void
-ags_functional_editor_workflow_test_matrix()
+ags_functional_notation_editor_workflow_test_matrix()
 {
   AgsXorgApplicationContext *xorg_application_context;
   AgsWindow *window;
@@ -334,7 +334,7 @@ ags_functional_editor_workflow_test_matrix()
 
 #ifdef AGS_WITH_LIBINSTPATCH
 void
-ags_functional_editor_workflow_test_ffplayer()
+ags_functional_notation_editor_workflow_test_ffplayer()
 {
   AgsXorgApplicationContext *xorg_application_context;
   AgsWindow *window;
@@ -429,7 +429,7 @@ ags_functional_editor_workflow_test_ffplayer()
 #endif
 
 void
-ags_functional_editor_workflow_test_edit_all()
+ags_functional_notation_editor_workflow_test_edit_all()
 {
   guint nth_machine;
   guint i, j;
@@ -549,7 +549,7 @@ ags_functional_editor_workflow_test_edit_all()
 }
 
 void
-ags_functional_editor_workflow_test_fill_all()
+ags_functional_notation_editor_workflow_test_fill_all()
 {
   guint nth_machine;
 
@@ -564,7 +564,7 @@ main(int argc, char **argv)
   }
 
   /* add a suite to the registry */
-  pSuite = CU_add_suite("AgsFunctionalEditorWorkflowTest", ags_functional_editor_workflow_test_init_suite, ags_functional_editor_workflow_test_clean_suite);
+  pSuite = CU_add_suite("AgsFunctionalNotationEditorWorkflowTest", ags_functional_notation_editor_workflow_test_init_suite, ags_functional_notation_editor_workflow_test_clean_suite);
   
   if(pSuite == NULL){
     CU_cleanup_registry();
@@ -576,9 +576,9 @@ main(int argc, char **argv)
 		   FALSE);
   
   ags_test_init(&argc, &argv,
-		AGS_FUNCTIONAL_EDITOR_WORKFLOW_TEST_CONFIG);
+		AGS_FUNCTIONAL_NOTATION_EDITOR_WORKFLOW_TEST_CONFIG);
   ags_functional_test_util_do_run(argc, argv,
-				  ags_functional_editor_workflow_test_add_test, &is_available);
+				  ags_functional_notation_editor_workflow_test_add_test, &is_available);
 
   pthread_join(ags_functional_test_util_self(),
 	       NULL);

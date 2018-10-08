@@ -116,6 +116,8 @@ gboolean ags_functional_test_util_file_chooser_select_all(GtkFileChooser *file_c
 /* UI control */
 gboolean ags_functional_test_util_file_default_window_resize();
 gboolean ags_functional_test_util_file_default_editor_resize();
+
+gboolean ags_functional_test_util_file_default_automation_window_resize();
 gboolean ags_functional_test_util_file_default_automation_editor_resize();
 
 /* file */
