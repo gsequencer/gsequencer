@@ -356,44 +356,44 @@ ags_synth_util_get_xcross_count(void *buffer,
   switch(audio_buffer_util_format){
   case AGS_AUDIO_BUFFER_UTIL_S8:
     {
-      ags_synth_util_get_xcross_count_s8((gint8 *) buffer,
-					 buffer_size);
+      count = ags_synth_util_get_xcross_count_s8((gint8 *) buffer,
+						 buffer_size);
     }
     break;
   case AGS_AUDIO_BUFFER_UTIL_S16:
     {
-      ags_synth_util_get_xcross_count_s16((gint16 *) buffer,
-					  buffer_size);
+      count = ags_synth_util_get_xcross_count_s16((gint16 *) buffer,
+						  buffer_size);
     }
     break;
   case AGS_AUDIO_BUFFER_UTIL_S24:
     {
-      ags_synth_util_get_xcross_count_s24((gint32 *) buffer,
-					  buffer_size);
+      count = ags_synth_util_get_xcross_count_s24((gint32 *) buffer,
+						  buffer_size);
     }
     break;
   case AGS_AUDIO_BUFFER_UTIL_S32:
     {
-      ags_synth_util_get_xcross_count_s32((gint32 *) buffer,
-					  buffer_size);
+      count = ags_synth_util_get_xcross_count_s32((gint32 *) buffer,
+						  buffer_size);
     }
     break;
   case AGS_AUDIO_BUFFER_UTIL_S64:
     {
-      ags_synth_util_get_xcross_count_s64((gint64 *) buffer,
-					  buffer_size);
+      count = ags_synth_util_get_xcross_count_s64((gint64 *) buffer,
+						  buffer_size);
     }
     break;
   case AGS_AUDIO_BUFFER_UTIL_FLOAT:
     {
-      ags_synth_util_get_xcross_count_float((float *) buffer,
-					    buffer_size);
+      count = ags_synth_util_get_xcross_count_float((float *) buffer,
+						    buffer_size);
     }
     break;
   case AGS_AUDIO_BUFFER_UTIL_DOUBLE:
     {
-      ags_synth_util_get_xcross_count_double((double *) buffer,
-					     buffer_size);
+      count = ags_synth_util_get_xcross_count_double((double *) buffer,
+						     buffer_size);
     }
     break;
   default:

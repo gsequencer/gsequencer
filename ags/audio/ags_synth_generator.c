@@ -747,9 +747,15 @@ ags_synth_generator_compute(AgsSynthGenerator *synth_generator,
     default:
       g_message("unknown oscillator");
     }
-    
-    current_phase = (guint) ((offset + current_count) + phase) % (guint) floor(samplerate / current_frequency);
 
+    if(current_frequency == 0.0){
+      current_phase = (guint) ((offset + current_count) + phase);
+    }else if(floor(samplerate / current_frequency) == 0){
+      current_phase = (guint) ((offset + current_count) + phase);
+    }else{
+      current_phase = (guint) ((offset + current_count) + phase) % (guint) floor(samplerate / current_frequency);
+    }
+    
     if(sync_point != NULL){
       if(floor(sync_point[j][0][0]) > 0.0 &&
 	 last_sync + sync_point[j][0][0] < offset + current_count){

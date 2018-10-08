@@ -1,7 +1,10 @@
 ags (2.0.32)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
-	* 
+	* fixed possible infinite loop in ags_recycling_context.c
+	* fixed possible floating point exception in ags_synth_generator.c
+	* completed ags_recycling_context_test.c
+	* added ags_synth_generator_test.c
 
 ags (2.0.31)
 
