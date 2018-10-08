@@ -54,6 +54,13 @@ void ags_recycling_context_test_reset_recycling();
 
 #define AGS_RECYCLING_CONTEXT_TEST_INSERT_RECYCLING_COUNT (88)
 
+#define RECYCLING_CONTEXT_TEST_GET_TOPLEVEL_NESTING_LEVEL (5)
+
+#define AGS_RECYCLING_CONTEXT_TEST_FIND_RECYCLING_COUNT (88)
+
+#define AGS_RECYCLING_CONTEXT_TEST_FIND_CHILD_CHILD_COUNT (5)
+#define AGS_RECYCLING_CONTEXT_TEST_FIND_CHILD_RECYCLING_COUNT (4)
+
 /* The suite initialization function.
  * Opens the temporary file used by the tests.
  * Returns zero on success, non-zero otherwise.
@@ -144,7 +151,7 @@ ags_recycling_context_test_replace()
   guint i;
   gboolean success;
   
-  recycling = (AgsRecycling **) malloc(AGS_RECYCLING_CONTEXT_TEST_REPLACE_RECYCLING_COUNT * sizeof(AgsRecycling));
+  recycling = (AgsRecycling **) malloc(AGS_RECYCLING_CONTEXT_TEST_REPLACE_RECYCLING_COUNT * sizeof(AgsRecycling *));
   
   recycling_context = ags_recycling_context_new(AGS_RECYCLING_CONTEXT_TEST_REPLACE_RECYCLING_COUNT);
 
@@ -175,7 +182,7 @@ ags_recycling_context_test_add()
   guint i;
   gboolean success;
   
-  recycling = (AgsRecycling **) malloc(AGS_RECYCLING_CONTEXT_TEST_ADD_RECYCLING_COUNT * sizeof(AgsRecycling));
+  recycling = (AgsRecycling **) malloc(AGS_RECYCLING_CONTEXT_TEST_ADD_RECYCLING_COUNT * sizeof(AgsRecycling *));
   
   recycling_context = ags_recycling_context_new(0);
 
@@ -206,7 +213,7 @@ ags_recycling_context_test_remove()
   guint i, j;
   gboolean success;
   
-  recycling = (AgsRecycling **) malloc(AGS_RECYCLING_CONTEXT_TEST_REMOVE_RECYCLING_COUNT * sizeof(AgsRecycling));
+  recycling = (AgsRecycling **) malloc(AGS_RECYCLING_CONTEXT_TEST_REMOVE_RECYCLING_COUNT * sizeof(AgsRecycling *));
   
   recycling_context = ags_recycling_context_new(AGS_RECYCLING_CONTEXT_TEST_REMOVE_RECYCLING_COUNT);
 
@@ -256,7 +263,7 @@ ags_recycling_context_test_insert()
   guint i, j;
   gboolean success;
   
-  recycling = (AgsRecycling **) malloc(AGS_RECYCLING_CONTEXT_TEST_INSERT_RECYCLING_COUNT * sizeof(AgsRecycling));
+  recycling = (AgsRecycling **) malloc(AGS_RECYCLING_CONTEXT_TEST_INSERT_RECYCLING_COUNT * sizeof(AgsRecycling *));
   
   recycling_context = ags_recycling_context_new(0);
 
@@ -292,19 +299,115 @@ ags_recycling_context_test_insert()
 void
 ags_recycling_context_test_get_toplevel()
 {
-  //TODO:JK: implement me
+  AgsRecyclingContext *toplevel;
+  AgsRecyclingContext *recycling_context, *current;
+
+  guint i;
+  
+  toplevel = ags_recycling_context_new(0);
+
+  current = toplevel;
+
+  for(i = 0; i < AGS_RECYCLING_CONTEXT_TEST_GET_TOPLEVEL_NESTING_LEVEL; i++){
+    recycling_context = ags_recycling_context_new(0);
+    ags_recycling_context_add_child(current,
+				    recycling_context);
+
+    current = recycling_context;
+  }
+
+  CU_ASSERT(ags_recycling_context_get_toplevel(toplevel) == toplevel);
+  CU_ASSERT(ags_recycling_context_get_toplevel(current) == toplevel);
 }
 
 void
 ags_recycling_context_test_find()
 {
-  //TODO:JK: implement me
+  AgsRecycling **recycling;
+  AgsRecyclingContext *recycling_context;
+
+  gint position;
+  guint i;
+  gboolean success;
+  
+  recycling = (AgsRecycling **) malloc(AGS_RECYCLING_CONTEXT_TEST_FIND_RECYCLING_COUNT * sizeof(AgsRecycling *));
+  
+  recycling_context = ags_recycling_context_new(AGS_RECYCLING_CONTEXT_TEST_FIND_RECYCLING_COUNT);
+
+  for(i = 0; i < AGS_RECYCLING_CONTEXT_TEST_FIND_RECYCLING_COUNT; i++){
+    recycling[i] = ags_recycling_new(NULL);
+    ags_recycling_context_replace(recycling_context,
+				  recycling[i],
+				  i);
+  }
+
+  /* test */
+  success = TRUE;
+
+  for(i = 0; i < AGS_RECYCLING_CONTEXT_TEST_FIND_RECYCLING_COUNT; i++){
+    position = ags_recycling_context_find(recycling_context,
+					  recycling[i]);
+
+    if(position != i){
+      success = FALSE;
+      
+      break;
+    }
+  }
+
+  CU_ASSERT(success);
+
+  CU_ASSERT(ags_recycling_context_find(recycling_context, NULL) == -1);
 }
 
 void
 ags_recycling_context_test_find_child()
 {
-  //TODO:JK: implement me
+  AgsRecycling ***recycling;
+  AgsRecyclingContext *recycling_context;
+  AgsRecyclingContext **child;
+
+  gint position;
+  guint i, j;
+  gboolean success;
+  
+  recycling_context = ags_recycling_context_new(0);
+  child = (AgsRecyclingContext **) malloc(AGS_RECYCLING_CONTEXT_TEST_FIND_CHILD_CHILD_COUNT * sizeof(AgsRecyclingContext *));
+
+  recycling = (AgsRecycling ***) malloc(AGS_RECYCLING_CONTEXT_TEST_FIND_CHILD_CHILD_COUNT * sizeof(AgsRecycling **));
+
+  for(i = 0; i < AGS_RECYCLING_CONTEXT_TEST_FIND_CHILD_CHILD_COUNT; i++){
+    child[i] = ags_recycling_context_new(0);
+    ags_recycling_context_add_child(recycling_context,
+				    child[i]);
+
+    recycling[i] = (AgsRecycling **) malloc(AGS_RECYCLING_CONTEXT_TEST_FIND_CHILD_RECYCLING_COUNT * sizeof(AgsRecycling *));
+    
+    for(j = 0; j < AGS_RECYCLING_CONTEXT_TEST_FIND_CHILD_RECYCLING_COUNT; j++){
+      recycling[i][j] = ags_recycling_new(NULL);
+      ags_recycling_context_replace(child[i],
+				    recycling[i],
+				    i);
+    }
+  }
+
+  /* test */
+  success = TRUE;
+
+  for(i = 0; i < AGS_RECYCLING_CONTEXT_TEST_FIND_CHILD_CHILD_COUNT; i++){
+    for(j = 0; j < AGS_RECYCLING_CONTEXT_TEST_FIND_CHILD_RECYCLING_COUNT; j++){
+      position = ags_recycling_context_find_child(recycling_context,
+						  recycling[i][j]);
+
+      if(position != i){
+	success = FALSE;
+
+	break;
+      }
+    }
+  }
+  
+  CU_ASSERT(success == TRUE);
 }
 
 void

@@ -219,7 +219,16 @@ ags_recycling_context_set_property(GObject *gobject,
 {
   AgsRecyclingContext *recycling_context;
 
+  pthread_mutex_t *recycling_context_mutex;
+
   recycling_context = AGS_RECYCLING_CONTEXT(gobject);
+
+  /* get recycling context mutex */
+  pthread_mutex_lock(ags_recycling_context_get_class_mutex());
+  
+  recycling_context_mutex = recycling_context->obj_mutex;
+  
+  pthread_mutex_unlock(ags_recycling_context_get_class_mutex());
 
   switch(prop_id){
   case PROP_RECALL_ID:
@@ -228,7 +237,11 @@ ags_recycling_context_set_property(GObject *gobject,
 
       recall_id = (AgsRecallID *) g_value_get_object(value);
 
+      pthread_mutex_lock(recycling_context_mutex);
+      
       if(recycling_context->recall_id == (GObject *) recall_id){
+	pthread_mutex_unlock(recycling_context_mutex);
+      
 	return;
       }
 
@@ -241,28 +254,40 @@ ags_recycling_context_set_property(GObject *gobject,
       }
 
       recycling_context->recall_id = (GObject *) recall_id;
+      
+      pthread_mutex_unlock(recycling_context_mutex);      
     }
     break;
   case PROP_PARENT:
     {
-      AgsRecyclingContext *parent;
+      AgsRecyclingContext *parent, *old_parent;
 
       parent = (AgsRecyclingContext *) g_value_get_object(value);
 
-      if(recycling_context->parent == parent){
+      pthread_mutex_lock(recycling_context_mutex);
+
+      old_parent = recycling_context->parent;
+
+      pthread_mutex_unlock(recycling_context_mutex);
+      
+      if(old_parent == parent){
 	return;
       }
-      
-      if(recycling_context->parent != NULL){
-	ags_recycling_context_remove_child(recycling_context->parent,
+
+      if(old_parent != NULL){
+	ags_recycling_context_remove_child(old_parent,
 					   recycling_context);
       }
+      
+      pthread_mutex_lock(recycling_context_mutex);
 
       if(parent != NULL){
 	g_object_ref(parent);
       }
 
       recycling_context->parent = parent;
+
+      pthread_mutex_unlock(recycling_context_mutex);
     }
     break;
   case PROP_CHILD:
@@ -271,10 +296,16 @@ ags_recycling_context_set_property(GObject *gobject,
 
       child = (AgsRecyclingContext *) g_value_get_pointer(value);
 
+      pthread_mutex_lock(recycling_context_mutex);
+      
       if(!AGS_IS_RECYCLING_CONTEXT(child) ||
 	 g_list_find(recycling_context->children, child) != NULL){
+	pthread_mutex_unlock(recycling_context_mutex);
+
 	return;
       }
+
+      pthread_mutex_unlock(recycling_context_mutex);
 
       ags_recycling_context_add_child(recycling_context,
 				      child);
@@ -287,6 +318,8 @@ ags_recycling_context_set_property(GObject *gobject,
 
       length = g_value_get_uint64(value);
 
+      pthread_mutex_lock(recycling_context_mutex);
+      
       if(length == 0){
 	if(recycling_context->recycling != NULL){
 	  free(recycling_context->recycling);
@@ -294,6 +327,8 @@ ags_recycling_context_set_property(GObject *gobject,
 	
 	recycling_context->recycling = NULL;
 	recycling_context->length = 0;
+
+	pthread_mutex_unlock(recycling_context_mutex);
 
 	return;
       }
@@ -312,6 +347,8 @@ ags_recycling_context_set_property(GObject *gobject,
       for(i = old_length; i < length; i++){
 	recycling_context->recycling[i] = NULL;
       }
+
+      pthread_mutex_unlock(recycling_context_mutex);
     }
     break;
   default:
@@ -328,27 +365,52 @@ ags_recycling_context_get_property(GObject *gobject,
 {
   AgsRecyclingContext *recycling_context;
 
+  pthread_mutex_t *recycling_context_mutex;
+
   recycling_context = AGS_RECYCLING_CONTEXT(gobject);
+
+  /* get recycling context mutex */
+  pthread_mutex_lock(ags_recycling_context_get_class_mutex());
+  
+  recycling_context_mutex = recycling_context->obj_mutex;
+  
+  pthread_mutex_unlock(ags_recycling_context_get_class_mutex());
 
   switch(prop_id){
   case PROP_RECALL_ID:
     {
+      pthread_mutex_lock(recycling_context_mutex);
+      
       g_value_set_object(value, recycling_context->recall_id);
+
+      pthread_mutex_unlock(recycling_context_mutex);
     }
     break;
   case PROP_PARENT:
     {
+      pthread_mutex_lock(recycling_context_mutex);
+      
       g_value_set_object(value, recycling_context->parent);
+
+      pthread_mutex_unlock(recycling_context_mutex);
     }
     break;
   case PROP_CHILD:
     {
+      pthread_mutex_lock(recycling_context_mutex);
+      
       g_value_set_pointer(value, g_list_copy(recycling_context->children));
+
+      pthread_mutex_unlock(recycling_context_mutex);
     }
     break;
   case PROP_LENGTH:
     {
+      pthread_mutex_lock(recycling_context_mutex);
+      
       g_value_set_uint64(value, recycling_context->length);
+
+      pthread_mutex_unlock(recycling_context_mutex);
     }
     break;
   default:
