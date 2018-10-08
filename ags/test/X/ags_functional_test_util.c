@@ -1259,6 +1259,65 @@ ags_functional_test_util_file_default_editor_resize()
 }
 
 gboolean
+ags_functional_test_util_file_default_automation_editor_resize()
+{
+  AgsXorgApplicationContext *xorg_application_context;
+  AgsWindow *window;
+  AgsAutomationEditor *automation_editor;
+  GtkMenu *edit_menu;
+  
+  GdkEvent *delete_event;
+
+  GtkPaned *main_paned;
+  GtkPaned *editor_paned;
+  
+  GdkRectangle allocation;
+  
+  ags_test_enter();
+    
+  xorg_application_context = ags_application_context_get_instance();
+  window = xorg_application_context->window;
+  automation_editor = window->automation_window->automation_editor;
+  edit_menu = window->menu_bar->edit;
+
+  main_paned = window->paned;
+  editor_paned = automation_editor->paned;
+
+  ags_test_leave();
+
+  /* open automation window */
+  ags_functional_test_util_menu_bar_click(GTK_STOCK_EDIT);
+  ags_functional_test_util_menu_click(edit_menu,
+				      "Automation");
+
+  /* resize */
+  ags_test_enter();
+
+  gtk_paned_set_position(main_paned,
+			 (1080 - 64) * (2.0 / 3.0));
+
+  gtk_paned_set_position(editor_paned,
+			 (1920 - 128) / 6);
+
+  ags_test_leave();
+
+  ags_functional_test_util_reaction_time_long();
+
+  /* close automation window */
+  ags_test_enter();
+
+  delete_event = gdk_event_new(GDK_DELETE);
+  gtk_widget_event((GtkWidget *) window->automation_window,
+		   (GdkEvent *) delete_event);
+  
+  ags_test_leave();
+
+  ags_functional_test_util_reaction_time_long();
+
+  return(TRUE);
+}
+
+gboolean
 ags_functional_test_util_open()
 {
   AgsXorgApplicationContext *xorg_application_context;
@@ -2232,11 +2291,11 @@ ags_functional_test_util_notation_toolbar_zoom(guint nth_zoom)
 }
 
 gboolean
-ags_functional_test_util_machine_selector_select(guint nth_index)
+ags_functional_test_util_machine_selector_select(gchar *editor_type,
+						 guint nth_index)
 {
   AgsXorgApplicationContext *xorg_application_context;
   AgsWindow *window;
-  AgsNotationEditor *notation_editor;
   AgsMachineSelector *machine_selector;
   AgsMachineRadioButton *machine_radio_button;
   
@@ -2249,8 +2308,28 @@ ags_functional_test_util_machine_selector_select(guint nth_index)
   xorg_application_context = ags_application_context_get_instance();
 
   window = xorg_application_context->window;
-  notation_editor = window->notation_editor;
-  machine_selector = notation_editor->machine_selector;
+
+  machine_selector = NULL;
+  
+  if(!g_strcmp0(editor_type,
+		"AgsNotationEditor")){
+    AgsNotationEditor *notation_editor;
+    
+    notation_editor = window->notation_editor;
+    machine_selector = notation_editor->machine_selector;
+  }else if(!g_strcmp0(editor_type,
+		      "AgsAutomationEditor")){
+    AgsAutomationEditor *automation_editor;
+    
+    automation_editor = window->automation_window->automation_editor;
+    machine_selector = automation_editor->machine_selector;
+  }else if(!g_strcmp0(editor_type,
+		      "AgsWaveEditor")){
+    AgsWaveEditor *wave_editor;
+    
+    wave_editor = window->wave_window->wave_editor;
+    machine_selector = wave_editor->machine_selector;
+  }  
   
   list_start = gtk_container_get_children(machine_selector);
 
@@ -2274,11 +2353,11 @@ ags_functional_test_util_machine_selector_select(guint nth_index)
 }
 
 gboolean
-ags_functional_test_util_machine_selection_select(gchar *machine)
+ags_functional_test_util_machine_selection_select(gchar *editor_type,
+						  gchar *machine)
 {
   AgsXorgApplicationContext *xorg_application_context;
   AgsWindow *window;
-  AgsNotationEditor *notation_editor;
   AgsMachineSelector *machine_selector;
   AgsMachineSelection *machine_selection;
 
@@ -2297,8 +2376,29 @@ ags_functional_test_util_machine_selection_select(gchar *machine)
   xorg_application_context = ags_application_context_get_instance();
 
   window = xorg_application_context->window;
-  notation_editor = window->notation_editor;
-  machine_selector = notation_editor->machine_selector;
+
+  machine_selector = NULL;
+  
+  if(!g_strcmp0(editor_type,
+		"AgsNotationEditor")){
+    AgsNotationEditor *notation_editor;
+    
+    notation_editor = window->notation_editor;
+    machine_selector = notation_editor->machine_selector;
+  }else if(!g_strcmp0(editor_type,
+		      "AgsAutomationEditor")){
+    AgsAutomationEditor *automation_editor;
+    
+    automation_editor = window->automation_window->automation_editor;
+    machine_selector = automation_editor->machine_selector;
+  }else if(!g_strcmp0(editor_type,
+		      "AgsWaveEditor")){
+    AgsWaveEditor *wave_editor;
+    
+    wave_editor = window->wave_window->wave_editor;
+    machine_selector = wave_editor->machine_selector;
+  }  
+
   machine_selection = machine_selector->machine_selection;
 
   list = 
@@ -2341,11 +2441,10 @@ ags_functional_test_util_machine_selection_select(gchar *machine)
 }
 
 gboolean
-ags_functional_test_util_machine_selection_remove_index()
+ags_functional_test_util_machine_selection_remove_index(gchar *editor_type)
 {
   AgsXorgApplicationContext *xorg_application_context;
   AgsWindow *window;
-  AgsNotationEditor *notation_editor;
   AgsMachineSelector *machine_selector;
   
   GtkButton *menu_tool_button;
@@ -2358,8 +2457,28 @@ ags_functional_test_util_machine_selection_remove_index()
   xorg_application_context = ags_application_context_get_instance();
 
   window = xorg_application_context->window;
-  notation_editor = window->notation_editor;
-  machine_selector = notation_editor->machine_selector;
+
+  machine_selector = NULL;
+  
+  if(!g_strcmp0(editor_type,
+		"AgsNotationEditor")){
+    AgsNotationEditor *notation_editor;
+    
+    notation_editor = window->notation_editor;
+    machine_selector = notation_editor->machine_selector;
+  }else if(!g_strcmp0(editor_type,
+		      "AgsAutomationEditor")){
+    AgsAutomationEditor *automation_editor;
+    
+    automation_editor = window->automation_window->automation_editor;
+    machine_selector = automation_editor->machine_selector;
+  }else if(!g_strcmp0(editor_type,
+		      "AgsWaveEditor")){
+    AgsWaveEditor *wave_editor;
+    
+    wave_editor = window->wave_window->wave_editor;
+    machine_selector = wave_editor->machine_selector;
+  }  
   
   menu_tool_button = machine_selector->menu_button;
   popup = machine_selector->popup;
@@ -2383,11 +2502,10 @@ ags_functional_test_util_machine_selection_remove_index()
 }
 
 gboolean
-ags_functional_test_util_machine_selection_add_index()
+ags_functional_test_util_machine_selection_add_index(gchar *editor_type)
 {
   AgsXorgApplicationContext *xorg_application_context;
   AgsWindow *window;
-  AgsNotationEditor *notation_editor;
   AgsMachineSelector *machine_selector;
   
   GtkButton *menu_tool_button;
@@ -2400,8 +2518,28 @@ ags_functional_test_util_machine_selection_add_index()
   xorg_application_context = ags_application_context_get_instance();
 
   window = xorg_application_context->window;
-  notation_editor = window->notation_editor;
-  machine_selector = notation_editor->machine_selector;
+
+  machine_selector = NULL;
+  
+  if(!g_strcmp0(editor_type,
+		"AgsNotationEditor")){
+    AgsNotationEditor *notation_editor;
+    
+    notation_editor = window->notation_editor;
+    machine_selector = notation_editor->machine_selector;
+  }else if(!g_strcmp0(editor_type,
+		      "AgsAutomationEditor")){
+    AgsAutomationEditor *automation_editor;
+    
+    automation_editor = window->automation_window->automation_editor;
+    machine_selector = automation_editor->machine_selector;
+  }else if(!g_strcmp0(editor_type,
+		      "AgsWaveEditor")){
+    AgsWaveEditor *wave_editor;
+    
+    wave_editor = window->wave_window->wave_editor;
+    machine_selector = wave_editor->machine_selector;
+  }  
   
   menu_tool_button = machine_selector->menu_button;
   popup = machine_selector->popup;
@@ -2425,11 +2563,10 @@ ags_functional_test_util_machine_selection_add_index()
 }
 
 gboolean
-ags_functional_test_util_machine_selection_link_index()
+ags_functional_test_util_machine_selection_link_index(gchar *editor_type)
 {
   AgsXorgApplicationContext *xorg_application_context;
   AgsWindow *window;
-  AgsNotationEditor *notation_editor;
   AgsMachineSelector *machine_selector;
   
   GtkButton *menu_tool_button;
@@ -2442,8 +2579,28 @@ ags_functional_test_util_machine_selection_link_index()
   xorg_application_context = ags_application_context_get_instance();
 
   window = xorg_application_context->window;
-  notation_editor = window->notation_editor;
-  machine_selector = notation_editor->machine_selector;
+
+  machine_selector = NULL;
+  
+  if(!g_strcmp0(editor_type,
+		"AgsNotationEditor")){
+    AgsNotationEditor *notation_editor;
+    
+    notation_editor = window->notation_editor;
+    machine_selector = notation_editor->machine_selector;
+  }else if(!g_strcmp0(editor_type,
+		      "AgsAutomationEditor")){
+    AgsAutomationEditor *automation_editor;
+    
+    automation_editor = window->automation_window->automation_editor;
+    machine_selector = automation_editor->machine_selector;
+  }else if(!g_strcmp0(editor_type,
+		      "AgsWaveEditor")){
+    AgsWaveEditor *wave_editor;
+    
+    wave_editor = window->wave_window->wave_editor;
+    machine_selector = wave_editor->machine_selector;
+  }  
   
   menu_tool_button = machine_selector->menu_button;
   popup = machine_selector->popup;

@@ -116,6 +116,7 @@ gboolean ags_functional_test_util_file_chooser_select_all(GtkFileChooser *file_c
 /* UI control */
 gboolean ags_functional_test_util_file_default_window_resize();
 gboolean ags_functional_test_util_file_default_editor_resize();
+gboolean ags_functional_test_util_file_default_automation_editor_resize();
 
 /* file */
 gboolean ags_functional_test_util_open();
@@ -192,14 +193,17 @@ gboolean ags_functional_test_util_notation_toolbar_cut_click();
 gboolean ags_functional_test_util_notation_toolbar_zoom(guint nth_zoom);
 
 /* machine selector */
-gboolean ags_functional_test_util_machine_selector_select(guint nth_index);
+gboolean ags_functional_test_util_machine_selector_select(gchar *editor_type,
+							  guint nth_index);
 
 /* machine selection */
-gboolean ags_functional_test_util_machine_selection_select(gchar *machine);
+gboolean ags_functional_test_util_machine_selection_select(gchar *editor_type,
+							   gchar *machine);
 
-gboolean ags_functional_test_util_machine_selection_remove_index();
-gboolean ags_functional_test_util_machine_selection_add_index();
-gboolean ags_functional_test_util_machine_selection_link_index();
+gboolean ags_functional_test_util_machine_selection_remove_index(gchar *editor_type);
+gboolean ags_functional_test_util_machine_selection_add_index(gchar *editor_type);
+gboolean ags_functional_test_util_machine_selection_link_index(gchar *editor_type);
+
 gboolean ags_functional_test_util_machine_selection_reverse_mapping();
 gboolean ags_functional_test_util_machine_selection_shift_piano(guint nth_shift);
 

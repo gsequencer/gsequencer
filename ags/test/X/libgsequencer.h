@@ -76,6 +76,9 @@
 #include <ags/X/ags_navigation_callbacks.h>
 #include <ags/X/ags_plugin_preferences.h>
 #include <ags/X/machine/ags_synth.h>
+#include <ags/X/machine/ags_spectrometer.h>
+#include <ags/X/machine/ags_audiorec.h>
+#include <ags/X/machine/ags_equalizer10.h>
 #include <ags/X/machine/ags_matrix_bridge.h>
 #include <ags/X/machine/ags_drum_output_line.h>
 #include <ags/X/machine/ags_pattern_box_callbacks.h>

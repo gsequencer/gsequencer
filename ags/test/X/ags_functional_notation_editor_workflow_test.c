@@ -88,13 +88,13 @@ AgsTaskThread *task_thread;
 void ags_functional_editor_workflow_test_add_test()
 {
   /* add the tests to the suite */
-  if((CU_add_test(pSuite, "functional test of GSequencer editor workflow AgsDrum\0", ags_functional_editor_workflow_test_drum) == NULL) ||
-     (CU_add_test(pSuite, "functional test of GSequencer editor workflow AgsMatrix\0", ags_functional_editor_workflow_test_matrix) == NULL) ||
+  if((CU_add_test(pSuite, "functional test of GSequencer editor workflow AgsDrum", ags_functional_editor_workflow_test_drum) == NULL) ||
+     (CU_add_test(pSuite, "functional test of GSequencer editor workflow AgsMatrix", ags_functional_editor_workflow_test_matrix) == NULL) ||
 #ifdef AGS_WITH_LIBINSTPATCH
-     (CU_add_test(pSuite, "functional test of GSequencer editor workflow AgsFFPlayer\0", ags_functional_editor_workflow_test_ffplayer) == NULL) ||
+     (CU_add_test(pSuite, "functional test of GSequencer editor workflow AgsFFPlayer", ags_functional_editor_workflow_test_ffplayer) == NULL) ||
 #endif
-     (CU_add_test(pSuite, "functional test of GSequencer editor workflow edit all\0", ags_functional_editor_workflow_test_edit_all) == NULL) ||
-     (CU_add_test(pSuite, "functional test of GSequencer editor workflow fill all\0", ags_functional_editor_workflow_test_fill_all) == NULL)){
+     (CU_add_test(pSuite, "functional test of GSequencer editor workflow edit all", ags_functional_editor_workflow_test_edit_all) == NULL) ||
+     (CU_add_test(pSuite, "functional test of GSequencer editor workflow fill all", ags_functional_editor_workflow_test_fill_all) == NULL)){
     CU_cleanup_registry();
       
     exit(CU_get_error());
@@ -203,15 +203,16 @@ ags_functional_editor_workflow_test_drum()
   ags_test_leave();
 
   /* add index and link */
-  success = ags_functional_test_util_machine_selection_add_index();
+  success = ags_functional_test_util_machine_selection_add_index("AgsNotationEditor");
 
   CU_ASSERT(success == TRUE);
 
-  success = ags_functional_test_util_machine_selector_select(nth_machine);
+  success = ags_functional_test_util_machine_selector_select("AgsNotationEditor",
+							     nth_machine);
   
   CU_ASSERT(success == TRUE);
 
-  success = ags_functional_test_util_machine_selection_link_index();
+  success = ags_functional_test_util_machine_selection_link_index("AgsNotationEditor");
 
   CU_ASSERT(success == TRUE);
 
@@ -221,13 +222,14 @@ ags_functional_editor_workflow_test_drum()
   machine_selector = notation_editor->machine_selector;
   machine_selection = machine_selector->machine_selection;
 
-  machine_str = g_strdup_printf("%s: %s\0",
+  machine_str = g_strdup_printf("%s: %s",
 				G_OBJECT_TYPE_NAME(machine),
 				machine->machine_name);
   
   ags_test_leave();
 
-  success = ags_functional_test_util_machine_selection_select(machine_str);
+  success = ags_functional_test_util_machine_selection_select("AgsNotationEditor",
+							      machine_str);
   
   CU_ASSERT(success == TRUE);
 
@@ -295,15 +297,16 @@ ags_functional_editor_workflow_test_matrix()
   ags_test_leave();
 
   /* add index set link */
-  success = ags_functional_test_util_machine_selection_add_index();
+  success = ags_functional_test_util_machine_selection_add_index("AgsNotationEditor");
 
   CU_ASSERT(success == TRUE);
 
-  success = ags_functional_test_util_machine_selector_select(nth_machine);
+  success = ags_functional_test_util_machine_selector_select("AgsNotationEditor",
+							     nth_machine);
   
   CU_ASSERT(success == TRUE);
 
-  success = ags_functional_test_util_machine_selection_link_index();
+  success = ags_functional_test_util_machine_selection_link_index("AgsNotationEditor");
 
   CU_ASSERT(success == TRUE);
 
@@ -313,13 +316,14 @@ ags_functional_editor_workflow_test_matrix()
   machine_selector = notation_editor->machine_selector;
   machine_selection = machine_selector->machine_selection;
 
-  machine_str = g_strdup_printf("%s: %s\0",
+  machine_str = g_strdup_printf("%s: %s",
 				G_OBJECT_TYPE_NAME(machine),
 				machine->machine_name);
   
   ags_test_leave();
   
-  success = ags_functional_test_util_machine_selection_select(machine_str);
+  success = ags_functional_test_util_machine_selection_select("AgsNotationEditor",
+							      machine_str);
   
   CU_ASSERT(success == TRUE);
 
@@ -388,15 +392,16 @@ ags_functional_editor_workflow_test_ffplayer()
   ags_test_leave();
 
   /* add index and link */
-  success = ags_functional_test_util_machine_selection_add_index();
+  success = ags_functional_test_util_machine_selection_add_index("AgsNotationEditor");
 
   CU_ASSERT(success == TRUE);
 
-  success = ags_functional_test_util_machine_selector_select(nth_machine);
+  success = ags_functional_test_util_machine_selector_select("AgsNotationEditor",
+							     nth_machine);
   
   CU_ASSERT(success == TRUE);
 
-  success = ags_functional_test_util_machine_selection_link_index();
+  success = ags_functional_test_util_machine_selection_link_index("AgsNotationEditor");
 
   CU_ASSERT(success == TRUE);
 
@@ -406,13 +411,14 @@ ags_functional_editor_workflow_test_ffplayer()
   machine_selector = notation_editor->machine_selector;
   machine_selection = machine_selector->machine_selection;
 
-  machine_str = g_strdup_printf("%s: %s\0",
+  machine_str = g_strdup_printf("%s: %s",
 				G_OBJECT_TYPE_NAME(machine),
 				machine->machine_name);
   
   ags_test_leave();
 
-  success = ags_functional_test_util_machine_selection_select(machine_str);
+  success = ags_functional_test_util_machine_selection_select("AgsNotationEditor",
+							      machine_str);
   
   CU_ASSERT(success == TRUE);
 
@@ -446,7 +452,8 @@ ags_functional_editor_workflow_test_edit_all()
   CU_ASSERT(success == TRUE);
 
   /* select index */
-  success = ags_functional_test_util_machine_selector_select(nth_machine);
+  success = ags_functional_test_util_machine_selector_select("AgsNotationEditor",
+							     nth_machine);
   
   CU_ASSERT(success == TRUE);
 
@@ -476,7 +483,8 @@ ags_functional_editor_workflow_test_edit_all()
   nth_machine = 1;
 
   /* select index */
-  success = ags_functional_test_util_machine_selector_select(nth_machine);
+  success = ags_functional_test_util_machine_selector_select("AgsNotationEditor",
+							     nth_machine);
   
   CU_ASSERT(success == TRUE);
 
@@ -516,7 +524,8 @@ ags_functional_editor_workflow_test_edit_all()
   nth_machine = 2;
 
   /* select index */
-  success = ags_functional_test_util_machine_selector_select(nth_machine);
+  success = ags_functional_test_util_machine_selector_select("AgsNotationEditor",
+							     nth_machine);
   
   CU_ASSERT(success == TRUE);
 
@@ -555,7 +564,7 @@ main(int argc, char **argv)
   }
 
   /* add a suite to the registry */
-  pSuite = CU_add_suite("AgsFuncitonalEditorWorkflowTest\0", ags_functional_editor_workflow_test_init_suite, ags_functional_editor_workflow_test_clean_suite);
+  pSuite = CU_add_suite("AgsFunctionalEditorWorkflowTest", ags_functional_editor_workflow_test_init_suite, ags_functional_editor_workflow_test_clean_suite);
   
   if(pSuite == NULL){
     CU_cleanup_registry();
