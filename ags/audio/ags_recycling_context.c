@@ -667,7 +667,7 @@ ags_recycling_context_add(AgsRecyclingContext *recycling_context,
 
   /* resize */
   g_object_set(recycling_context,
-	       "length", new_length,
+	       "length", (guint64) new_length,
 	       NULL);
   
   /*  */
@@ -727,7 +727,7 @@ ags_recycling_context_remove(AgsRecyclingContext *recycling_context,
 
   /* resize */
   g_object_set(recycling_context,
-	       "length", new_length,
+	       "length", (guint64) new_length,
 	       NULL);
 
   /* reset */
@@ -799,7 +799,7 @@ ags_recycling_context_insert(AgsRecyclingContext *recycling_context,
 
   /* resize */
   g_object_set(recycling_context,
-	       "length", new_length,
+	       "length", (guint64) new_length,
 	       NULL);
 
   /* reset */
@@ -1228,9 +1228,9 @@ ags_recycling_context_reset_recycling(AgsRecyclingContext *recycling_context,
 
   /* instantiate */
   new_recycling_context = g_object_new(AGS_TYPE_RECYCLING_CONTEXT,
-				       "length", new_length,
+				       "length", (guint64) new_length,
 				       NULL);
-
+  
   recycling = new_first_recycling;
   
   for(i = 0; i < new_length; i++){
@@ -1275,11 +1275,13 @@ ags_recycling_context_reset_recycling(AgsRecyclingContext *recycling_context,
 
     child = child->next;
   }
-  
-  g_object_set(parent,
-	       "child", new_recycling_context,
-	       NULL);
 
+  if(parent != NULL){
+    g_object_set(parent,
+		 "child", new_recycling_context,
+		 NULL);
+  }
+  
   /* dispose old recycling context */
   g_object_run_dispose(recycling_context);
     
