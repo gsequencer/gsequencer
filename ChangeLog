@@ -1,3 +1,8 @@
+ags (2.0.33)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* added guint64 casts passing to ags_recycling_context_new() in unit-tests
+
 ags (2.0.32)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

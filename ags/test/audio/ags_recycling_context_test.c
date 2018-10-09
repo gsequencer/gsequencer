@@ -161,7 +161,7 @@ ags_recycling_context_test_replace()
   
   recycling = (AgsRecycling **) malloc(AGS_RECYCLING_CONTEXT_TEST_REPLACE_RECYCLING_COUNT * sizeof(AgsRecycling *));
   
-  recycling_context = ags_recycling_context_new(AGS_RECYCLING_CONTEXT_TEST_REPLACE_RECYCLING_COUNT);
+  recycling_context = ags_recycling_context_new((guint64) AGS_RECYCLING_CONTEXT_TEST_REPLACE_RECYCLING_COUNT);
 
   success = TRUE;
   
@@ -223,7 +223,7 @@ ags_recycling_context_test_remove()
   
   recycling = (AgsRecycling **) malloc(AGS_RECYCLING_CONTEXT_TEST_REMOVE_RECYCLING_COUNT * sizeof(AgsRecycling *));
   
-  recycling_context = ags_recycling_context_new(AGS_RECYCLING_CONTEXT_TEST_REMOVE_RECYCLING_COUNT);
+  recycling_context = ags_recycling_context_new((guint64) AGS_RECYCLING_CONTEXT_TEST_REMOVE_RECYCLING_COUNT);
 
   for(i = 0; i < AGS_RECYCLING_CONTEXT_TEST_REMOVE_RECYCLING_COUNT; i++){
     recycling[i] = ags_recycling_new(NULL);
@@ -340,7 +340,7 @@ ags_recycling_context_test_find()
   
   recycling = (AgsRecycling **) malloc(AGS_RECYCLING_CONTEXT_TEST_FIND_RECYCLING_COUNT * sizeof(AgsRecycling *));
   
-  recycling_context = ags_recycling_context_new(AGS_RECYCLING_CONTEXT_TEST_FIND_RECYCLING_COUNT);
+  recycling_context = ags_recycling_context_new((guint64) AGS_RECYCLING_CONTEXT_TEST_FIND_RECYCLING_COUNT);
 
   for(i = 0; i < AGS_RECYCLING_CONTEXT_TEST_FIND_RECYCLING_COUNT; i++){
     recycling[i] = ags_recycling_new(NULL);
@@ -385,7 +385,7 @@ ags_recycling_context_test_find_child()
   recycling = (AgsRecycling ***) malloc(AGS_RECYCLING_CONTEXT_TEST_FIND_CHILD_CHILD_COUNT * sizeof(AgsRecycling **));
 
   for(i = 0; i < AGS_RECYCLING_CONTEXT_TEST_FIND_CHILD_CHILD_COUNT; i++){
-    child[i] = ags_recycling_context_new(AGS_RECYCLING_CONTEXT_TEST_FIND_CHILD_RECYCLING_COUNT);
+    child[i] = ags_recycling_context_new((guint64) AGS_RECYCLING_CONTEXT_TEST_FIND_CHILD_RECYCLING_COUNT);
     ags_recycling_context_add_child(recycling_context,
 				    child[i]);
 
@@ -429,7 +429,7 @@ ags_recycling_context_test_find_parent()
   guint i;
   gboolean success;
   
-  recycling_context = ags_recycling_context_new(AGS_RECYCLING_CONTEXT_TEST_FIND_PARENT_RECYCLING_COUNT);
+  recycling_context = ags_recycling_context_new((guint64) AGS_RECYCLING_CONTEXT_TEST_FIND_PARENT_RECYCLING_COUNT);
   child = (AgsRecyclingContext **) malloc(AGS_RECYCLING_CONTEXT_TEST_FIND_PARENT_CHILD_COUNT * sizeof(AgsRecyclingContext *));
 
   recycling = (AgsRecycling **) malloc(AGS_RECYCLING_CONTEXT_TEST_FIND_PARENT_RECYCLING_COUNT * sizeof(AgsRecycling *));
