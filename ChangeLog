@@ -1,12 +1,14 @@
 ags (2.0.32)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed AgsSpectrometer and AgsEqualizer10 missing recall factory effects
 	* fixed possible infinite loop in ags_recycling_context.c
 	* fixed possible floating point exception in ags_synth_generator.c
 	* completed ags_recycling_context_test.c
 	* renamed ags_functional_editor_workflow_test.c to ags_functional_notation_editor_workflow_test.c
-	* added ags_synth_generator_test.c
 	* added ags_functional_automation_editor_workflow_test.c
+	* added ags_synth_generator_test.c
+	* added ags_analyse_audio_signal_test.c
 
 ags (2.0.31)
 

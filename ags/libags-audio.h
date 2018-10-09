@@ -148,6 +148,10 @@
 #include <ags/audio/jack/ags_jack_server.h>
 
 /* audio recall */
+#include <ags/audio/recall/ags_analyse_audio_signal.h>
+#include <ags/audio/recall/ags_analyse_channel.h>
+#include <ags/audio/recall/ags_analyse_channel_run.h>
+#include <ags/audio/recall/ags_analyse_recycling.h>
 #include <ags/audio/recall/ags_buffer_audio_signal.h>
 #include <ags/audio/recall/ags_buffer_channel.h>
 #include <ags/audio/recall/ags_buffer_channel_run.h>
@@ -166,6 +170,10 @@
 #include <ags/audio/recall/ags_count_beats_audio_run.h>
 #include <ags/audio/recall/ags_delay_audio.h>
 #include <ags/audio/recall/ags_delay_audio_run.h>
+#include <ags/audio/recall/ags_eq10_audio_signal.h>
+#include <ags/audio/recall/ags_eq10_channel.h>
+#include <ags/audio/recall/ags_eq10_channel_run.h>
+#include <ags/audio/recall/ags_eq10_recycling.h>
 #include <ags/audio/recall/ags_envelope_audio_signal.h>
 #include <ags/audio/recall/ags_envelope_channel.h>
 #include <ags/audio/recall/ags_envelope_channel_run.h>

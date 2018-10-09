@@ -5,7 +5,7 @@
 # notice and this notice are preserved.  This file is offered as-is,
 # without any warranty.
 
-# unit tests
+# unit tests - libags
 check_PROGRAMS += \
 	ags_buffer_util_test \
 	ags_complex_test \
@@ -31,7 +31,10 @@ check_PROGRAMS += \
 	ags_file_test \
 	ags_file_id_ref_test \
 	ags_file_launch_test \
-	ags_file_lookup_test \
+	ags_file_lookup_test
+
+# unit tests - libags-audio
+check_PROGRAMS += \
 	ags_base_plugin_test \
 	ags_dssi_manager_test \
 	ags_dssi_plugin_test \
@@ -47,7 +50,9 @@ check_PROGRAMS += \
 	ags_lv2_worker_manager_test \
 	ags_lv2ui_manager_test \
 	ags_lv2ui_plugin_test \
-	ags_plugin_port_test \
+	ags_plugin_port_test
+
+check_PROGRAMS += \
 	ags_audio_application_context_test \
 	ags_devin_test \
 	ags_devout_test \
@@ -83,7 +88,13 @@ check_PROGRAMS += \
 	ags_midi_test \
 	ags_track_test \
 	ags_midi_buffer_util_test \
-	ags_midi_builder_test \
+	ags_midi_builder_test
+
+check_PROGRAMS += \
+	ags_analyse_audio_signal_test
+
+# unit tests - libgsequencer
+check_PROGRAMS += \
 	ags_xorg_application_context_test
 
 # buffer util unit test
@@ -547,6 +558,12 @@ ags_midi_builder_test_SOURCES = ags/test/audio/midi/ags_midi_builder_test.c
 ags_midi_builder_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
 ags_midi_builder_test_LDFLAGS = -pthread $(LDFLAGS)
 ags_midi_builder_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lm -lrt  $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
+
+# analyse audio signal unit test
+ags_analyse_audio_signal_test_SOURCES = ags/test/audio/recall/ags_analyse_audio_signal_test.c
+ags_analyse_audio_signal_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
+ags_analyse_audio_signal_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_analyse_audio_signal_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
 
 # xorg application context unit test
 ags_xorg_application_context_test_SOURCES = ags/test/X/ags_xorg_application_context_test.c

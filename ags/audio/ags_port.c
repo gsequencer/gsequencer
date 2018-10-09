@@ -1252,7 +1252,7 @@ ags_port_real_safe_read(AgsPort *port, GValue *value)
     }else if(port->port_value_type == G_TYPE_OBJECT){
       data = port->port_value.ags_port_object;
     }else{
-      data = (gpointer) malloc(overall_size);
+      data = (gpointer) g_value_get_pointer(value);
 
       if(port->port_value_type == G_TYPE_BOOLEAN){
 	memcpy(data, port->port_value.ags_port_boolean_ptr, overall_size);
@@ -1264,12 +1264,14 @@ ags_port_real_safe_read(AgsPort *port, GValue *value)
 	guint i;
 
 	for(i = 0; i < port->port_value_length; i++){
+	  //	  g_message("port[0x%x]: %f", port, port->port_value.ags_port_float_ptr[i]);
 	  ((gfloat *) data)[i] = port->port_value.ags_port_float_ptr[i];
 	}
       }else if(port->port_value_type == G_TYPE_DOUBLE){
 	guint i;
 
 	for(i = 0; i < port->port_value_length; i++){
+	  //	  g_message("port[0x%x]: %f", port, port->port_value.ags_port_double_ptr[i]);
 	  ((gdouble *) data)[i] = port->port_value.ags_port_double_ptr[i];
 	}
       }

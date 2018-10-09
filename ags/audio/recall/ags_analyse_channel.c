@@ -482,6 +482,33 @@ ags_analyse_channel_set_property(GObject *gobject,
       pthread_mutex_unlock(recall_mutex);
     }
     break;
+  case PROP_BUFFER_COMPUTED:
+    {
+      AgsPort *port;
+
+      port = (AgsPort *) g_value_get_object(value);
+
+      pthread_mutex_lock(recall_mutex);
+
+      if(port == analyse_channel->buffer_computed){
+	pthread_mutex_unlock(recall_mutex);
+
+	return;
+      }
+
+      if(analyse_channel->buffer_computed != NULL){
+	g_object_unref(G_OBJECT(analyse_channel->buffer_computed));
+      }
+      
+      if(port != NULL){
+	g_object_ref(G_OBJECT(port));
+      }
+
+      analyse_channel->buffer_computed = port;
+
+      pthread_mutex_unlock(recall_mutex);
+    }
+    break;
   case PROP_FREQUENCY_BUFFER:
     {
       AgsPort *port;
@@ -588,6 +615,15 @@ ags_analyse_channel_get_property(GObject *gobject,
 
       g_value_set_uint(value,
 		       analyse_channel->cache_format);
+
+      pthread_mutex_unlock(recall_mutex);
+    }
+    break;
+  case PROP_BUFFER_COMPUTED:
+    {
+      pthread_mutex_lock(recall_mutex);
+
+      g_value_set_object(value, analyse_channel->buffer_computed);
 
       pthread_mutex_unlock(recall_mutex);
     }
@@ -848,6 +884,7 @@ ags_analyse_channel_retrieve_frequency_and_magnitude(AgsAnalyseChannel *analyse_
   for(i = 0; i < cache_buffer_size / 2; i++){
     frequency = i * correction;
     magnitude = sqrt(out[i] * out[i] + out[(cache_buffer_size / 2) + 1 - i] * out[(cache_buffer_size / 2) + 1 - i]);
+    //    g_message("analyse[%d]: %f %f", i, frequency, magnitude);
 
     analyse_channel->frequency_pre_buffer[i] = frequency;
     analyse_channel->magnitude_pre_buffer[i] = magnitude;

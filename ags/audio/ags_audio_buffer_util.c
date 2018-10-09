@@ -493,6 +493,18 @@ ags_audio_buffer_util_clear_buffer(void *buffer, guint channels,
       memset((gint64 *) buffer, 0, channels * count * sizeof(gint64));
     }
     break;
+  case AGS_AUDIO_BUFFER_UTIL_FLOAT:
+    {
+      ags_audio_buffer_util_clear_float(buffer, channels,
+					count);
+    }
+    break;
+  case AGS_AUDIO_BUFFER_UTIL_DOUBLE:
+    {
+      ags_audio_buffer_util_clear_double(buffer, channels,
+					 count);
+    }
+    break;
   default:
     g_critical("unsupported audio buffer format");
   }

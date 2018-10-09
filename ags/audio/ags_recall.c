@@ -3349,11 +3349,11 @@ ags_recall_set_staging_flags(AgsRecall *recall, guint staging_flags)
 #endif
   
   /* apply flags */
-  pthread_mutex_lock(ags_recall_get_class_mutex());
+  pthread_mutex_lock(recall_mutex);
 
   recall->staging_flags |= staging_flags;
 
-  pthread_mutex_unlock(ags_recall_get_class_mutex());
+  pthread_mutex_unlock(recall_mutex);
 }
 
 /**

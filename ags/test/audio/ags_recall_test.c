@@ -24,16 +24,8 @@
 #include <CUnit/Automated.h>
 #include <CUnit/Basic.h>
 
-#include <ags/object/ags_soundcard.h>
-
-#include <ags/audio/ags_devout.h>
-#include <ags/audio/ags_channel.h>
-#include <ags/audio/ags_recycling.h>
-#include <ags/audio/ags_recall.h>
-#include <ags/audio/ags_recall_ladspa.h>
-#include <ags/audio/ags_recall_container.h>
-#include <ags/audio/ags_recall_id.h>
-#include <ags/audio/ags_recycling_context.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
 
 int ags_recall_test_init_suite();
 int ags_recall_test_clean_suite();
@@ -115,6 +107,7 @@ ags_recall_test_init_suite()
 {
   devout = g_object_new(AGS_TYPE_DEVOUT,
 			NULL);
+  g_object_ref(devout);
 
   return(0);
 }

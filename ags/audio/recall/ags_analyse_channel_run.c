@@ -142,6 +142,10 @@ ags_analyse_channel_run_run_pre(AgsRecall *recall)
 
   analyse_channel_run = AGS_ANALYSE_CHANNEL_RUN(recall);
 
+  g_object_get(recall,
+	       "recall-channel", &analyse_channel,
+	       NULL);
+  
   /* get mutex and buffer mutex */
   pthread_mutex_lock(ags_recall_get_class_mutex());
 
@@ -156,8 +160,7 @@ ags_analyse_channel_run_run_pre(AgsRecall *recall)
   parent_class_run_pre(recall);
 
   /* get some fields */
-  g_object_get(recall,
-	       "recall-channel", &analyse_channel,
+  g_object_get(analyse_channel,
 	       "buffer-computed", &buffer_computed,
 	       "cache-buffer-size", &cache_buffer_size,
 	       "cache-format", &cache_format,

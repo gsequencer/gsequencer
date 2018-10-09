@@ -271,7 +271,12 @@ ags_spectrometer_init(AgsSpectrometer *spectrometer)
   spectrometer->buffer_size = ceil(buffer_size / 2.0);
   
   spectrometer->frequency_buffer = (double *) malloc(ceil(buffer_size / 2.0) * sizeof(double));
+  ags_audio_buffer_util_clear_double(spectrometer->frequency_buffer, 1,
+				     ceil(buffer_size / 2.0));
+  
   spectrometer->magnitude_buffer = (double *) malloc(ceil(buffer_size / 2.0) * sizeof(double));
+  ags_audio_buffer_util_clear_double(spectrometer->magnitude_buffer, 1,
+				     ceil(buffer_size / 2.0));
   
   /* queue draw */
   g_hash_table_insert(ags_spectrometer_cartesian_queue_draw,
@@ -731,8 +736,9 @@ ags_spectrometer_cartesian_queue_draw_timeout(GtkWidget *widget)
 	k++;
 	
 	if(frequency > ((correction / 2.0) * (exp(((nth / spectrometer->buffer_size) * 18.0) / 12.0) - 1.0))){
-	  if(k != 0){
+	  if(nth - 1 != 0){
 	    AGS_PLOT(fg_plot->data)->point[j][1] = 20.0 * log10(((double) magnitude / (double) k) + 1.0) * AGS_SPECTROMETER_EXTRA_SCALE;
+	    //	    g_message("plot[%d]: %f %f", j, frequency, magnitude);
 	  }
 	  
 	  j++;

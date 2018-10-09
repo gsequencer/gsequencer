@@ -142,7 +142,7 @@ ags_analyse_audio_signal_run_inter(AgsRecall *recall)
 
   /* call parent */
   parent_class_run_inter(recall);
-
+  
   /* get some fields */
   g_object_get(analyse_audio_signal,
 	       "source", &source,
