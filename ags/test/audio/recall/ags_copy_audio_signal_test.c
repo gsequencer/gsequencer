@@ -27,14 +27,14 @@
 #include <ags/libags.h>
 #include <ags/libags-audio.h>
 
-int ags_analyse_audio_signal_test_init_suite();
-int ags_analyse_audio_signal_test_clean_suite();
+int ags_copy_audio_signal_test_init_suite();
+int ags_copy_audio_signal_test_clean_suite();
 
-void ags_analyse_audio_signal_test_run_inter();
+void ags_copy_audio_signal_test_run_inter();
 
-void ags_analyse_audio_signal_test_run_inter_callback(AgsRecall *recall, gpointer data);
+void ags_copy_audio_signal_test_run_inter_callback(AgsRecall *recall, gpointer data);
 
-#define AGS_ANALYSE_AUDIO_SIGNAL_TEST_RUN_INTER_AUDIO_SIGNAL_LENGTH (24)
+#define AGS_COPY_AUDIO_SIGNAL_TEST_RUN_INTER_AUDIO_SIGNAL_LENGTH (24)
 
 AgsDevout *devout;
 AgsAudio *audio;
@@ -50,7 +50,7 @@ extern AgsApplicationContext *ags_application_context;
  * Returns zero on success, non-zero otherwise.
  */
 int
-ags_analyse_audio_signal_test_init_suite()
+ags_copy_audio_signal_test_init_suite()
 {
   ags_application_context = ags_audio_application_context_new();
   
@@ -91,10 +91,10 @@ ags_analyse_audio_signal_test_init_suite()
   ags_connectable_connect(AGS_CONNECTABLE(audio->output));
   ags_connectable_connect(AGS_CONNECTABLE(audio->input));
   
-  /* create ags-analyse */
+  /* create ags-copy */
   recall = ags_recall_factory_create(audio,
 				     NULL, NULL,
-				     "ags-analyse",
+				     "ags-copy",
 				     0, 1,
 				     0, 1,
 				     (AGS_RECALL_FACTORY_INPUT |
@@ -111,7 +111,7 @@ ags_analyse_audio_signal_test_init_suite()
  * Returns zero on success, non-zero otherwise.
  */
 int
-ags_analyse_audio_signal_test_clean_suite()
+ags_copy_audio_signal_test_clean_suite()
 {
   g_object_run_dispose(devout);
   g_object_unref(devout);
@@ -123,13 +123,13 @@ ags_analyse_audio_signal_test_clean_suite()
 }
 
 void
-ags_analyse_audio_signal_test_run_inter_callback(AgsRecall *recall, gpointer data)
+ags_copy_audio_signal_test_run_inter_callback(AgsRecall *recall, gpointer data)
 {
   test_run_inter_invoke_count += 1;
 }
 
 void
-ags_analyse_audio_signal_test_run_inter()
+ags_copy_audio_signal_test_run_inter()
 {
   AgsChannel *output;
   AgsChannel *input;
@@ -251,7 +251,7 @@ ags_analyse_audio_signal_test_run_inter()
 				      recycling,
 				      input_recall_id);
   ags_audio_signal_stream_resize(audio_signal,
-				 AGS_ANALYSE_AUDIO_SIGNAL_TEST_RUN_INTER_AUDIO_SIGNAL_LENGTH);
+				 AGS_COPY_AUDIO_SIGNAL_TEST_RUN_INTER_AUDIO_SIGNAL_LENGTH);
 
   audio_signal->stream_current = audio_signal->stream;
   ags_recycling_add_audio_signal(recycling,
@@ -263,7 +263,7 @@ ags_analyse_audio_signal_test_run_inter()
 	       NULL);
 
   list = ags_recall_find_type_with_recycling_context(start_list,
-						     AGS_TYPE_ANALYSE_CHANNEL_RUN,
+						     AGS_TYPE_COPY_CHANNEL_RUN,
 						     input_recycling_context);
 
   g_object_get(list->data,
@@ -282,13 +282,14 @@ ags_analyse_audio_signal_test_run_inter()
 									input_recycling_context);
 
   CU_ASSERT(recall_audio_signal != NULL);
-  CU_ASSERT(AGS_IS_ANALYSE_AUDIO_SIGNAL(recall_audio_signal->data));
-  CU_ASSERT(AGS_RECALL_CLASS(AGS_ANALYSE_AUDIO_SIGNAL_GET_CLASS(recall_audio_signal->data))->run_inter != NULL);
+  CU_ASSERT(AGS_IS_COPY_AUDIO_SIGNAL(recall_audio_signal->data));
+  CU_ASSERT(AGS_RECALL_CLASS(AGS_COPY_AUDIO_SIGNAL_GET_CLASS(recall_audio_signal->data))->run_inter != NULL);
 
   g_signal_connect(recall_audio_signal->data, "run-inter",
-		   G_CALLBACK(ags_analyse_audio_signal_test_run_inter_callback), NULL);
+		   G_CALLBACK(ags_copy_audio_signal_test_run_inter_callback), NULL);
 
-  for(i = 0; i < AGS_ANALYSE_AUDIO_SIGNAL_TEST_RUN_INTER_AUDIO_SIGNAL_LENGTH; i++){
+  for(i = 0; i < AGS_COPY_AUDIO_SIGNAL_TEST_RUN_INTER_AUDIO_SIGNAL_LENGTH; i++){
+    ags_recall_run_pre(recall_audio_signal->data);
     ags_recall_run_inter(recall_audio_signal->data);
 
     if(audio_signal->stream_current != NULL){
@@ -296,7 +297,7 @@ ags_analyse_audio_signal_test_run_inter()
     }
   }
 
-  CU_ASSERT(test_run_inter_invoke_count == AGS_ANALYSE_AUDIO_SIGNAL_TEST_RUN_INTER_AUDIO_SIGNAL_LENGTH);
+  CU_ASSERT(test_run_inter_invoke_count == AGS_COPY_AUDIO_SIGNAL_TEST_RUN_INTER_AUDIO_SIGNAL_LENGTH);
 }
 
 int
@@ -313,7 +314,7 @@ main(int argc, char **argv)
   }
 
   /* add a suite to the registry */
-  pSuite = CU_add_suite("AgsAnalyseAudioSignalTest", ags_analyse_audio_signal_test_init_suite, ags_analyse_audio_signal_test_clean_suite);
+  pSuite = CU_add_suite("AgsCopyAudioSignalTest", ags_copy_audio_signal_test_init_suite, ags_copy_audio_signal_test_clean_suite);
   
   if(pSuite == NULL){
     CU_cleanup_registry();
@@ -322,7 +323,7 @@ main(int argc, char **argv)
   }
 
   /* add the tests to the suite */
-  if((CU_add_test(pSuite, "test of AgsAnalyseAudioSignal run inter", ags_analyse_audio_signal_test_run_inter) == NULL)){
+  if((CU_add_test(pSuite, "test of AgsCopyAudioSignal run inter", ags_copy_audio_signal_test_run_inter) == NULL)){
     CU_cleanup_registry();
     
     return CU_get_error();
@@ -336,4 +337,3 @@ main(int argc, char **argv)
   
   return(CU_get_error());
 }
-

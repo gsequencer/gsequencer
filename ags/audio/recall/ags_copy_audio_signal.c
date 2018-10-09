@@ -422,7 +422,7 @@ ags_copy_audio_signal_run_inter(AgsRecall *recall)
 	       NULL);
 
   g_object_get(copy_channel_run,
-	       "recall-channel", &copy_channel_run,
+	       "recall-channel", &copy_channel,
 	       NULL);
   
   /* check muted */

@@ -1,7 +1,10 @@
 ags (2.0.33)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
-	* added fixed 32/64 bit issues in ags_recycling_context.c
+	* fixed 32/64 bit issues in ags_recycling_context.c
+	* fixed ags-copy recall
+	* added ags_buffer_audio_signal_test.c
+	* added ags_copy_audio_signal_test.c
 
 ags (2.0.32)
 
