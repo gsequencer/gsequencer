@@ -8148,6 +8148,15 @@ ags_recall_factory_create(AgsAudio *audio,
 						 start_pad, stop_pad,
 						 create_flags, recall_flags);
   }else if(!strncmp(plugin_name,
+		    "ags-feed",
+		    9)){
+    recall = ags_recall_factory_create_feed(audio,
+					    play_container, recall_container,
+					    plugin_name,
+					    start_audio_channel, stop_audio_channel,
+					    start_pad, stop_pad,
+					    create_flags, recall_flags);
+  }else if(!strncmp(plugin_name,
 		    "ags-loop",
 		    9)){
     recall = ags_recall_factory_create_loop(audio,

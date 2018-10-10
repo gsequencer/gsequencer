@@ -1,3 +1,17 @@
+ags (2.0.34)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed missing ags-feed recall in factory
+	* added ags_envelope_audio_signal_test.c
+	* added ags_eq10_audio_signal_test.c
+	* added ags_feed_audio_signal_test.c
+	* added ags_mute_audio_signal_test.c
+	* added ags_peak_audio_signal_test.c
+	* added ags_play_audio_signal_test.c
+	* added ags_prepare_audio_signal_test.c
+	* added ags_stream_audio_signal_test.c
+	* added ags_volume_audio_signal_test.c
+
 ags (2.0.33)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

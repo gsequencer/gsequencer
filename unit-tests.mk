@@ -93,8 +93,16 @@ check_PROGRAMS += \
 check_PROGRAMS += \
 	ags_analyse_audio_signal_test \
 	ags_buffer_audio_signal_test \
-	ags_copy_audio_signal_test
-
+	ags_copy_audio_signal_test \
+	ags_envelope_audio_signal_test \
+	ags_eq10_audio_signal_test \
+	ags_feed_audio_signal_test \
+	ags_mute_audio_signal_test \
+	ags_peak_audio_signal_test \
+	ags_play_audio_signal_test \
+	ags_prepare_audio_signal_test \
+	ags_stream_audio_signal_test \
+	ags_volume_audio_signal_test
 
 # unit tests - libgsequencer
 check_PROGRAMS += \
@@ -579,6 +587,60 @@ ags_copy_audio_signal_test_SOURCES = ags/test/audio/recall/ags_copy_audio_signal
 ags_copy_audio_signal_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
 ags_copy_audio_signal_test_LDFLAGS = -pthread $(LDFLAGS)
 ags_copy_audio_signal_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
+
+# envelope audio signal unit test
+ags_envelope_audio_signal_test_SOURCES = ags/test/audio/recall/ags_envelope_audio_signal_test.c
+ags_envelope_audio_signal_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
+ags_envelope_audio_signal_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_envelope_audio_signal_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
+
+# eq10 audio signal unit test
+ags_eq10_audio_signal_test_SOURCES = ags/test/audio/recall/ags_eq10_audio_signal_test.c
+ags_eq10_audio_signal_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
+ags_eq10_audio_signal_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_eq10_audio_signal_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
+
+# feed audio signal unit test
+ags_feed_audio_signal_test_SOURCES = ags/test/audio/recall/ags_feed_audio_signal_test.c
+ags_feed_audio_signal_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
+ags_feed_audio_signal_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_feed_audio_signal_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
+
+# mute audio signal unit test
+ags_mute_audio_signal_test_SOURCES = ags/test/audio/recall/ags_mute_audio_signal_test.c
+ags_mute_audio_signal_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
+ags_mute_audio_signal_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_mute_audio_signal_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
+
+# peak audio signal unit test
+ags_peak_audio_signal_test_SOURCES = ags/test/audio/recall/ags_peak_audio_signal_test.c
+ags_peak_audio_signal_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
+ags_peak_audio_signal_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_peak_audio_signal_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
+
+# play audio signal unit test
+ags_play_audio_signal_test_SOURCES = ags/test/audio/recall/ags_play_audio_signal_test.c
+ags_play_audio_signal_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
+ags_play_audio_signal_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_play_audio_signal_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
+
+# prepare audio signal unit test
+ags_prepare_audio_signal_test_SOURCES = ags/test/audio/recall/ags_prepare_audio_signal_test.c
+ags_prepare_audio_signal_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
+ags_prepare_audio_signal_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_prepare_audio_signal_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
+
+# stream audio signal unit test
+ags_stream_audio_signal_test_SOURCES = ags/test/audio/recall/ags_stream_audio_signal_test.c
+ags_stream_audio_signal_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
+ags_stream_audio_signal_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_stream_audio_signal_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
+
+# volume audio signal unit test
+ags_volume_audio_signal_test_SOURCES = ags/test/audio/recall/ags_volume_audio_signal_test.c
+ags_volume_audio_signal_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
+ags_volume_audio_signal_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_volume_audio_signal_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
 
 # xorg application context unit test
 ags_xorg_application_context_test_SOURCES = ags/test/X/ags_xorg_application_context_test.c

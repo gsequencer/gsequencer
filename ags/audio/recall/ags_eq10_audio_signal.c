@@ -305,7 +305,7 @@ ags_eq10_audio_signal_run_inter(AgsRecall *recall)
 	       NULL);
 
   g_object_get(eq10_channel_run,
-	       "recall-channel", &eq10_channel_run,
+	       "recall-channel", &eq10_channel,
 	       NULL);
 
   /* copy mode */
