@@ -2,6 +2,7 @@ ags (2.0.34)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* fixed missing ags-feed recall in factory
+	* added ags_recall_recycling_test.c
 	* added ags_envelope_audio_signal_test.c
 	* added ags_eq10_audio_signal_test.c
 	* added ags_feed_audio_signal_test.c
