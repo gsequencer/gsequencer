@@ -173,7 +173,9 @@ check_PROGRAMS = ags_buffer_util_test$(EXEEXT) \
 	ags_copy_pattern_audio_test$(EXEEXT) \
 	ags_copy_pattern_channel_test$(EXEEXT) \
 	ags_count_beats_audio_test$(EXEEXT) \
+	ags_delay_audio_test$(EXEEXT) \
 	ags_envelope_audio_signal_test$(EXEEXT) \
+	ags_envelope_channel_test$(EXEEXT) \
 	ags_eq10_audio_signal_test$(EXEEXT) \
 	ags_feed_audio_signal_test$(EXEEXT) \
 	ags_mute_audio_signal_test$(EXEEXT) \
@@ -1283,6 +1285,17 @@ ags_count_beats_audio_test_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
 	$(ags_count_beats_audio_test_CFLAGS) $(CFLAGS) \
 	$(ags_count_beats_audio_test_LDFLAGS) $(LDFLAGS) -o $@
+am_ags_delay_audio_test_OBJECTS = ags/test/audio/recall/delay_audio_test-ags_delay_audio_test.$(OBJEXT)
+ags_delay_audio_test_OBJECTS = $(am_ags_delay_audio_test_OBJECTS)
+ags_delay_audio_test_DEPENDENCIES = libags_audio.la libags_server.la \
+	libags_thread.la libags.la libags_thread.la \
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
+ags_delay_audio_test_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
+	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
+	$(ags_delay_audio_test_CFLAGS) $(CFLAGS) \
+	$(ags_delay_audio_test_LDFLAGS) $(LDFLAGS) -o $@
 am_ags_destroy_worker_test_OBJECTS = ags/test/thread/destroy_worker_test-ags_destroy_worker_test.$(OBJEXT)
 ags_destroy_worker_test_OBJECTS =  \
 	$(am_ags_destroy_worker_test_OBJECTS)
@@ -1351,6 +1364,18 @@ ags_envelope_audio_signal_test_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
 	$(ags_envelope_audio_signal_test_CFLAGS) $(CFLAGS) \
 	$(ags_envelope_audio_signal_test_LDFLAGS) $(LDFLAGS) -o $@
+am_ags_envelope_channel_test_OBJECTS = ags/test/audio/recall/envelope_channel_test-ags_envelope_channel_test.$(OBJEXT)
+ags_envelope_channel_test_OBJECTS =  \
+	$(am_ags_envelope_channel_test_OBJECTS)
+ags_envelope_channel_test_DEPENDENCIES = libags_audio.la \
+	libags_server.la libags_thread.la libags.la libags_thread.la \
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
+ags_envelope_channel_test_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
+	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
+	$(ags_envelope_channel_test_CFLAGS) $(CFLAGS) \
+	$(ags_envelope_channel_test_LDFLAGS) $(LDFLAGS) -o $@
 am_ags_eq10_audio_signal_test_OBJECTS = ags/test/audio/recall/eq10_audio_signal_test-ags_eq10_audio_signal_test.$(OBJEXT)
 ags_eq10_audio_signal_test_OBJECTS =  \
 	$(am_ags_eq10_audio_signal_test_OBJECTS)
@@ -2879,7 +2904,9 @@ am__depfiles_remade = ags/$(DEPDIR)/gsequencer-gsequencer_main.Po \
 	ags/test/audio/recall/$(DEPDIR)/copy_pattern_audio_test-ags_copy_pattern_audio_test.Po \
 	ags/test/audio/recall/$(DEPDIR)/copy_pattern_channel_test-ags_copy_pattern_channel_test.Po \
 	ags/test/audio/recall/$(DEPDIR)/count_beats_audio_test-ags_count_beats_audio_test.Po \
+	ags/test/audio/recall/$(DEPDIR)/delay_audio_test-ags_delay_audio_test.Po \
 	ags/test/audio/recall/$(DEPDIR)/envelope_audio_signal_test-ags_envelope_audio_signal_test.Po \
+	ags/test/audio/recall/$(DEPDIR)/envelope_channel_test-ags_envelope_channel_test.Po \
 	ags/test/audio/recall/$(DEPDIR)/eq10_audio_signal_test-ags_eq10_audio_signal_test.Po \
 	ags/test/audio/recall/$(DEPDIR)/feed_audio_signal_test-ags_feed_audio_signal_test.Po \
 	ags/test/audio/recall/$(DEPDIR)/mute_audio_signal_test-ags_mute_audio_signal_test.Po \
@@ -3028,10 +3055,12 @@ SOURCES = $(libags_la_SOURCES) $(libags_audio_la_SOURCES) \
 	$(ags_copy_pattern_audio_test_SOURCES) \
 	$(ags_copy_pattern_channel_test_SOURCES) \
 	$(ags_count_beats_audio_test_SOURCES) \
+	$(ags_delay_audio_test_SOURCES) \
 	$(ags_destroy_worker_test_SOURCES) $(ags_devin_test_SOURCES) \
 	$(ags_devout_test_SOURCES) $(ags_dssi_manager_test_SOURCES) \
 	$(ags_dssi_plugin_test_SOURCES) \
 	$(ags_envelope_audio_signal_test_SOURCES) \
+	$(ags_envelope_channel_test_SOURCES) \
 	$(ags_eq10_audio_signal_test_SOURCES) \
 	$(ags_feed_audio_signal_test_SOURCES) \
 	$(ags_fifoout_test_SOURCES) $(ags_file_id_ref_test_SOURCES) \
@@ -3124,10 +3153,12 @@ DIST_SOURCES = $(libags_la_SOURCES) $(libags_audio_la_SOURCES) \
 	$(ags_copy_pattern_audio_test_SOURCES) \
 	$(ags_copy_pattern_channel_test_SOURCES) \
 	$(ags_count_beats_audio_test_SOURCES) \
+	$(ags_delay_audio_test_SOURCES) \
 	$(ags_destroy_worker_test_SOURCES) $(ags_devin_test_SOURCES) \
 	$(ags_devout_test_SOURCES) $(ags_dssi_manager_test_SOURCES) \
 	$(ags_dssi_plugin_test_SOURCES) \
 	$(ags_envelope_audio_signal_test_SOURCES) \
+	$(ags_envelope_channel_test_SOURCES) \
 	$(ags_eq10_audio_signal_test_SOURCES) \
 	$(ags_feed_audio_signal_test_SOURCES) \
 	$(ags_fifoout_test_SOURCES) $(ags_file_id_ref_test_SOURCES) \
@@ -4494,11 +4525,23 @@ ags_count_beats_audio_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAG
 ags_count_beats_audio_test_LDFLAGS = -pthread $(LDFLAGS)
 ags_count_beats_audio_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
 
+# delay audio unit test
+ags_delay_audio_test_SOURCES = ags/test/audio/recall/ags_delay_audio_test.c
+ags_delay_audio_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
+ags_delay_audio_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_delay_audio_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
+
 # envelope audio signal unit test
 ags_envelope_audio_signal_test_SOURCES = ags/test/audio/recall/ags_envelope_audio_signal_test.c
 ags_envelope_audio_signal_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
 ags_envelope_audio_signal_test_LDFLAGS = -pthread $(LDFLAGS)
 ags_envelope_audio_signal_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
+
+# envelope channel unit test
+ags_envelope_channel_test_SOURCES = ags/test/audio/recall/ags_envelope_channel_test.c
+ags_envelope_channel_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
+ags_envelope_channel_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_envelope_channel_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
 
 # eq10 audio signal unit test
 ags_eq10_audio_signal_test_SOURCES = ags/test/audio/recall/ags_eq10_audio_signal_test.c
@@ -8433,6 +8476,13 @@ ags/test/audio/recall/count_beats_audio_test-ags_count_beats_audio_test.$(OBJEXT
 ags_count_beats_audio_test$(EXEEXT): $(ags_count_beats_audio_test_OBJECTS) $(ags_count_beats_audio_test_DEPENDENCIES) $(EXTRA_ags_count_beats_audio_test_DEPENDENCIES) 
 	@rm -f ags_count_beats_audio_test$(EXEEXT)
 	$(AM_V_CCLD)$(ags_count_beats_audio_test_LINK) $(ags_count_beats_audio_test_OBJECTS) $(ags_count_beats_audio_test_LDADD) $(LIBS)
+ags/test/audio/recall/delay_audio_test-ags_delay_audio_test.$(OBJEXT):  \
+	ags/test/audio/recall/$(am__dirstamp) \
+	ags/test/audio/recall/$(DEPDIR)/$(am__dirstamp)
+
+ags_delay_audio_test$(EXEEXT): $(ags_delay_audio_test_OBJECTS) $(ags_delay_audio_test_DEPENDENCIES) $(EXTRA_ags_delay_audio_test_DEPENDENCIES) 
+	@rm -f ags_delay_audio_test$(EXEEXT)
+	$(AM_V_CCLD)$(ags_delay_audio_test_LINK) $(ags_delay_audio_test_OBJECTS) $(ags_delay_audio_test_LDADD) $(LIBS)
 ags/test/thread/destroy_worker_test-ags_destroy_worker_test.$(OBJEXT):  \
 	ags/test/thread/$(am__dirstamp) \
 	ags/test/thread/$(DEPDIR)/$(am__dirstamp)
@@ -8475,6 +8525,13 @@ ags/test/audio/recall/envelope_audio_signal_test-ags_envelope_audio_signal_test.
 ags_envelope_audio_signal_test$(EXEEXT): $(ags_envelope_audio_signal_test_OBJECTS) $(ags_envelope_audio_signal_test_DEPENDENCIES) $(EXTRA_ags_envelope_audio_signal_test_DEPENDENCIES) 
 	@rm -f ags_envelope_audio_signal_test$(EXEEXT)
 	$(AM_V_CCLD)$(ags_envelope_audio_signal_test_LINK) $(ags_envelope_audio_signal_test_OBJECTS) $(ags_envelope_audio_signal_test_LDADD) $(LIBS)
+ags/test/audio/recall/envelope_channel_test-ags_envelope_channel_test.$(OBJEXT):  \
+	ags/test/audio/recall/$(am__dirstamp) \
+	ags/test/audio/recall/$(DEPDIR)/$(am__dirstamp)
+
+ags_envelope_channel_test$(EXEEXT): $(ags_envelope_channel_test_OBJECTS) $(ags_envelope_channel_test_DEPENDENCIES) $(EXTRA_ags_envelope_channel_test_DEPENDENCIES) 
+	@rm -f ags_envelope_channel_test$(EXEEXT)
+	$(AM_V_CCLD)$(ags_envelope_channel_test_LINK) $(ags_envelope_channel_test_OBJECTS) $(ags_envelope_channel_test_LDADD) $(LIBS)
 ags/test/audio/recall/eq10_audio_signal_test-ags_eq10_audio_signal_test.$(OBJEXT):  \
 	ags/test/audio/recall/$(am__dirstamp) \
 	ags/test/audio/recall/$(DEPDIR)/$(am__dirstamp)
@@ -9767,7 +9824,9 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/audio/recall/$(DEPDIR)/copy_pattern_audio_test-ags_copy_pattern_audio_test.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/audio/recall/$(DEPDIR)/copy_pattern_channel_test-ags_copy_pattern_channel_test.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/audio/recall/$(DEPDIR)/count_beats_audio_test-ags_count_beats_audio_test.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@ags/test/audio/recall/$(DEPDIR)/delay_audio_test-ags_delay_audio_test.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/audio/recall/$(DEPDIR)/envelope_audio_signal_test-ags_envelope_audio_signal_test.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@ags/test/audio/recall/$(DEPDIR)/envelope_channel_test-ags_envelope_channel_test.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/audio/recall/$(DEPDIR)/eq10_audio_signal_test-ags_eq10_audio_signal_test.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/audio/recall/$(DEPDIR)/feed_audio_signal_test-ags_feed_audio_signal_test.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/audio/recall/$(DEPDIR)/mute_audio_signal_test-ags_mute_audio_signal_test.Po@am__quote@ # am--include-marker
@@ -14535,6 +14594,20 @@ ags/test/audio/recall/count_beats_audio_test-ags_count_beats_audio_test.obj: ags
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_count_beats_audio_test_CFLAGS) $(CFLAGS) -c -o ags/test/audio/recall/count_beats_audio_test-ags_count_beats_audio_test.obj `if test -f 'ags/test/audio/recall/ags_count_beats_audio_test.c'; then $(CYGPATH_W) 'ags/test/audio/recall/ags_count_beats_audio_test.c'; else $(CYGPATH_W) '$(srcdir)/ags/test/audio/recall/ags_count_beats_audio_test.c'; fi`
 
+ags/test/audio/recall/delay_audio_test-ags_delay_audio_test.o: ags/test/audio/recall/ags_delay_audio_test.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_delay_audio_test_CFLAGS) $(CFLAGS) -MT ags/test/audio/recall/delay_audio_test-ags_delay_audio_test.o -MD -MP -MF ags/test/audio/recall/$(DEPDIR)/delay_audio_test-ags_delay_audio_test.Tpo -c -o ags/test/audio/recall/delay_audio_test-ags_delay_audio_test.o `test -f 'ags/test/audio/recall/ags_delay_audio_test.c' || echo '$(srcdir)/'`ags/test/audio/recall/ags_delay_audio_test.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/test/audio/recall/$(DEPDIR)/delay_audio_test-ags_delay_audio_test.Tpo ags/test/audio/recall/$(DEPDIR)/delay_audio_test-ags_delay_audio_test.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/test/audio/recall/ags_delay_audio_test.c' object='ags/test/audio/recall/delay_audio_test-ags_delay_audio_test.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_delay_audio_test_CFLAGS) $(CFLAGS) -c -o ags/test/audio/recall/delay_audio_test-ags_delay_audio_test.o `test -f 'ags/test/audio/recall/ags_delay_audio_test.c' || echo '$(srcdir)/'`ags/test/audio/recall/ags_delay_audio_test.c
+
+ags/test/audio/recall/delay_audio_test-ags_delay_audio_test.obj: ags/test/audio/recall/ags_delay_audio_test.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_delay_audio_test_CFLAGS) $(CFLAGS) -MT ags/test/audio/recall/delay_audio_test-ags_delay_audio_test.obj -MD -MP -MF ags/test/audio/recall/$(DEPDIR)/delay_audio_test-ags_delay_audio_test.Tpo -c -o ags/test/audio/recall/delay_audio_test-ags_delay_audio_test.obj `if test -f 'ags/test/audio/recall/ags_delay_audio_test.c'; then $(CYGPATH_W) 'ags/test/audio/recall/ags_delay_audio_test.c'; else $(CYGPATH_W) '$(srcdir)/ags/test/audio/recall/ags_delay_audio_test.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/test/audio/recall/$(DEPDIR)/delay_audio_test-ags_delay_audio_test.Tpo ags/test/audio/recall/$(DEPDIR)/delay_audio_test-ags_delay_audio_test.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/test/audio/recall/ags_delay_audio_test.c' object='ags/test/audio/recall/delay_audio_test-ags_delay_audio_test.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_delay_audio_test_CFLAGS) $(CFLAGS) -c -o ags/test/audio/recall/delay_audio_test-ags_delay_audio_test.obj `if test -f 'ags/test/audio/recall/ags_delay_audio_test.c'; then $(CYGPATH_W) 'ags/test/audio/recall/ags_delay_audio_test.c'; else $(CYGPATH_W) '$(srcdir)/ags/test/audio/recall/ags_delay_audio_test.c'; fi`
+
 ags/test/thread/destroy_worker_test-ags_destroy_worker_test.o: ags/test/thread/ags_destroy_worker_test.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_destroy_worker_test_CFLAGS) $(CFLAGS) -MT ags/test/thread/destroy_worker_test-ags_destroy_worker_test.o -MD -MP -MF ags/test/thread/$(DEPDIR)/destroy_worker_test-ags_destroy_worker_test.Tpo -c -o ags/test/thread/destroy_worker_test-ags_destroy_worker_test.o `test -f 'ags/test/thread/ags_destroy_worker_test.c' || echo '$(srcdir)/'`ags/test/thread/ags_destroy_worker_test.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/test/thread/$(DEPDIR)/destroy_worker_test-ags_destroy_worker_test.Tpo ags/test/thread/$(DEPDIR)/destroy_worker_test-ags_destroy_worker_test.Po
@@ -14618,6 +14691,20 @@ ags/test/audio/recall/envelope_audio_signal_test-ags_envelope_audio_signal_test.
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/test/audio/recall/ags_envelope_audio_signal_test.c' object='ags/test/audio/recall/envelope_audio_signal_test-ags_envelope_audio_signal_test.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_envelope_audio_signal_test_CFLAGS) $(CFLAGS) -c -o ags/test/audio/recall/envelope_audio_signal_test-ags_envelope_audio_signal_test.obj `if test -f 'ags/test/audio/recall/ags_envelope_audio_signal_test.c'; then $(CYGPATH_W) 'ags/test/audio/recall/ags_envelope_audio_signal_test.c'; else $(CYGPATH_W) '$(srcdir)/ags/test/audio/recall/ags_envelope_audio_signal_test.c'; fi`
+
+ags/test/audio/recall/envelope_channel_test-ags_envelope_channel_test.o: ags/test/audio/recall/ags_envelope_channel_test.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_envelope_channel_test_CFLAGS) $(CFLAGS) -MT ags/test/audio/recall/envelope_channel_test-ags_envelope_channel_test.o -MD -MP -MF ags/test/audio/recall/$(DEPDIR)/envelope_channel_test-ags_envelope_channel_test.Tpo -c -o ags/test/audio/recall/envelope_channel_test-ags_envelope_channel_test.o `test -f 'ags/test/audio/recall/ags_envelope_channel_test.c' || echo '$(srcdir)/'`ags/test/audio/recall/ags_envelope_channel_test.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/test/audio/recall/$(DEPDIR)/envelope_channel_test-ags_envelope_channel_test.Tpo ags/test/audio/recall/$(DEPDIR)/envelope_channel_test-ags_envelope_channel_test.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/test/audio/recall/ags_envelope_channel_test.c' object='ags/test/audio/recall/envelope_channel_test-ags_envelope_channel_test.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_envelope_channel_test_CFLAGS) $(CFLAGS) -c -o ags/test/audio/recall/envelope_channel_test-ags_envelope_channel_test.o `test -f 'ags/test/audio/recall/ags_envelope_channel_test.c' || echo '$(srcdir)/'`ags/test/audio/recall/ags_envelope_channel_test.c
+
+ags/test/audio/recall/envelope_channel_test-ags_envelope_channel_test.obj: ags/test/audio/recall/ags_envelope_channel_test.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_envelope_channel_test_CFLAGS) $(CFLAGS) -MT ags/test/audio/recall/envelope_channel_test-ags_envelope_channel_test.obj -MD -MP -MF ags/test/audio/recall/$(DEPDIR)/envelope_channel_test-ags_envelope_channel_test.Tpo -c -o ags/test/audio/recall/envelope_channel_test-ags_envelope_channel_test.obj `if test -f 'ags/test/audio/recall/ags_envelope_channel_test.c'; then $(CYGPATH_W) 'ags/test/audio/recall/ags_envelope_channel_test.c'; else $(CYGPATH_W) '$(srcdir)/ags/test/audio/recall/ags_envelope_channel_test.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/test/audio/recall/$(DEPDIR)/envelope_channel_test-ags_envelope_channel_test.Tpo ags/test/audio/recall/$(DEPDIR)/envelope_channel_test-ags_envelope_channel_test.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/test/audio/recall/ags_envelope_channel_test.c' object='ags/test/audio/recall/envelope_channel_test-ags_envelope_channel_test.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_envelope_channel_test_CFLAGS) $(CFLAGS) -c -o ags/test/audio/recall/envelope_channel_test-ags_envelope_channel_test.obj `if test -f 'ags/test/audio/recall/ags_envelope_channel_test.c'; then $(CYGPATH_W) 'ags/test/audio/recall/ags_envelope_channel_test.c'; else $(CYGPATH_W) '$(srcdir)/ags/test/audio/recall/ags_envelope_channel_test.c'; fi`
 
 ags/test/audio/recall/eq10_audio_signal_test-ags_eq10_audio_signal_test.o: ags/test/audio/recall/ags_eq10_audio_signal_test.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_eq10_audio_signal_test_CFLAGS) $(CFLAGS) -MT ags/test/audio/recall/eq10_audio_signal_test-ags_eq10_audio_signal_test.o -MD -MP -MF ags/test/audio/recall/$(DEPDIR)/eq10_audio_signal_test-ags_eq10_audio_signal_test.Tpo -c -o ags/test/audio/recall/eq10_audio_signal_test-ags_eq10_audio_signal_test.o `test -f 'ags/test/audio/recall/ags_eq10_audio_signal_test.c' || echo '$(srcdir)/'`ags/test/audio/recall/ags_eq10_audio_signal_test.c
@@ -16791,9 +16878,23 @@ ags_count_beats_audio_test.log: ags_count_beats_audio_test$(EXEEXT)
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
 	"$$tst" $(AM_TESTS_FD_REDIRECT)
+ags_delay_audio_test.log: ags_delay_audio_test$(EXEEXT)
+	@p='ags_delay_audio_test$(EXEEXT)'; \
+	b='ags_delay_audio_test'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
 ags_envelope_audio_signal_test.log: ags_envelope_audio_signal_test$(EXEEXT)
 	@p='ags_envelope_audio_signal_test$(EXEEXT)'; \
 	b='ags_envelope_audio_signal_test'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+ags_envelope_channel_test.log: ags_envelope_channel_test$(EXEEXT)
+	@p='ags_envelope_channel_test$(EXEEXT)'; \
+	b='ags_envelope_channel_test'; \
 	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
@@ -17918,7 +18019,9 @@ distclean: distclean-recursive
 	-rm -f ags/test/audio/recall/$(DEPDIR)/copy_pattern_audio_test-ags_copy_pattern_audio_test.Po
 	-rm -f ags/test/audio/recall/$(DEPDIR)/copy_pattern_channel_test-ags_copy_pattern_channel_test.Po
 	-rm -f ags/test/audio/recall/$(DEPDIR)/count_beats_audio_test-ags_count_beats_audio_test.Po
+	-rm -f ags/test/audio/recall/$(DEPDIR)/delay_audio_test-ags_delay_audio_test.Po
 	-rm -f ags/test/audio/recall/$(DEPDIR)/envelope_audio_signal_test-ags_envelope_audio_signal_test.Po
+	-rm -f ags/test/audio/recall/$(DEPDIR)/envelope_channel_test-ags_envelope_channel_test.Po
 	-rm -f ags/test/audio/recall/$(DEPDIR)/eq10_audio_signal_test-ags_eq10_audio_signal_test.Po
 	-rm -f ags/test/audio/recall/$(DEPDIR)/feed_audio_signal_test-ags_feed_audio_signal_test.Po
 	-rm -f ags/test/audio/recall/$(DEPDIR)/mute_audio_signal_test-ags_mute_audio_signal_test.Po
@@ -18685,7 +18788,9 @@ maintainer-clean: maintainer-clean-recursive
 	-rm -f ags/test/audio/recall/$(DEPDIR)/copy_pattern_audio_test-ags_copy_pattern_audio_test.Po
 	-rm -f ags/test/audio/recall/$(DEPDIR)/copy_pattern_channel_test-ags_copy_pattern_channel_test.Po
 	-rm -f ags/test/audio/recall/$(DEPDIR)/count_beats_audio_test-ags_count_beats_audio_test.Po
+	-rm -f ags/test/audio/recall/$(DEPDIR)/delay_audio_test-ags_delay_audio_test.Po
 	-rm -f ags/test/audio/recall/$(DEPDIR)/envelope_audio_signal_test-ags_envelope_audio_signal_test.Po
+	-rm -f ags/test/audio/recall/$(DEPDIR)/envelope_channel_test-ags_envelope_channel_test.Po
 	-rm -f ags/test/audio/recall/$(DEPDIR)/eq10_audio_signal_test-ags_eq10_audio_signal_test.Po
 	-rm -f ags/test/audio/recall/$(DEPDIR)/feed_audio_signal_test-ags_feed_audio_signal_test.Po
 	-rm -f ags/test/audio/recall/$(DEPDIR)/mute_audio_signal_test-ags_mute_audio_signal_test.Po

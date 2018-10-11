@@ -4369,9 +4369,11 @@ ags_audio_unset_flags(AgsAudio *audio, guint flags)
       pthread_mutex_unlock(channel_mutex);
       
       /* remove recycling */
-      g_object_run_dispose(first_recycling);
-      g_object_unref(first_recycling);
-	  
+      if(first_recycling != NULL){
+	g_object_run_dispose(first_recycling);
+	g_object_unref(first_recycling);
+      }
+      
       ags_channel_reset_recycling(channel,
 				  NULL, NULL);
       
@@ -4424,9 +4426,11 @@ ags_audio_unset_flags(AgsAudio *audio, guint flags)
 	pthread_mutex_unlock(channel_mutex);
       
 	/* remove recycling */
-	g_object_run_dispose(first_recycling);
-	g_object_unref(first_recycling);
-	  
+	if(first_recycling != NULL){
+	  g_object_run_dispose(first_recycling);
+	  g_object_unref(first_recycling);
+	}
+	
 	ags_channel_reset_recycling(channel,
 				    NULL, NULL);
       }

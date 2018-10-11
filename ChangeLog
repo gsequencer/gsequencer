@@ -23,6 +23,8 @@ ags (2.0.34)
 	* added ags_copy_pattern_audio_test.c
 	* added ags_copy_pattern_channel_test.c
 	* added ags_count_beats_audio_test.c
+	* added ags_delay_audio_test.c
+	* added ags_envelope_channel_test.c
 
 ags (2.0.33)
 

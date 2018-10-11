@@ -545,9 +545,6 @@ main(int argc, char **argv)
 {
   CU_pSuite pSuite = NULL;
   
-  g_log_set_fatal_mask("GLib-GObject",
-  		       G_LOG_LEVEL_WARNING | G_LOG_LEVEL_CRITICAL);
-
   /* initialize the CUnit test registry */
   if(CUE_SUCCESS != CU_initialize_registry()){
     return CU_get_error();
