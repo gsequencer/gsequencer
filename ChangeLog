@@ -32,6 +32,8 @@ ags (2.0.34)
 	* added ags_peak_channel_test.c
 	* added ags_play_audio_test.c
 	* added ags_play_channel_test.c
+	* added ags_play_wave_audio_test.c
+	* added ags_play_wave_channel_test.c
 
 ags (2.0.33)
 

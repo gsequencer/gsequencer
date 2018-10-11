@@ -117,6 +117,8 @@ check_PROGRAMS += \
 	ags_play_audio_test \
 	ags_play_audio_signal_test \
 	ags_play_channel_test \
+	ags_play_wave_audio_test \
+	ags_play_wave_channel_test \
 	ags_prepare_audio_signal_test \
 	ags_stream_audio_signal_test \
 	ags_volume_audio_signal_test
@@ -742,6 +744,18 @@ ags_play_channel_test_SOURCES = ags/test/audio/recall/ags_play_channel_test.c
 ags_play_channel_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
 ags_play_channel_test_LDFLAGS = -pthread $(LDFLAGS)
 ags_play_channel_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
+
+# play wave audio unit test
+ags_play_wave_audio_test_SOURCES = ags/test/audio/recall/ags_play_wave_audio_test.c
+ags_play_wave_audio_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
+ags_play_wave_audio_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_play_wave_audio_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
+
+# play wave channel unit test
+ags_play_wave_channel_test_SOURCES = ags/test/audio/recall/ags_play_wave_channel_test.c
+ags_play_wave_channel_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
+ags_play_wave_channel_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_play_wave_channel_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
 
 # prepare audio signal unit test
 ags_prepare_audio_signal_test_SOURCES = ags/test/audio/recall/ags_prepare_audio_signal_test.c
