@@ -34,6 +34,10 @@ ags (2.0.34)
 	* added ags_play_channel_test.c
 	* added ags_play_wave_audio_test.c
 	* added ags_play_wave_channel_test.c
+	* added ags_record_midi_audio_test.c
+	* added ags_route_dssi_audio_test.c
+	* added ags_route_lv2_audio_test.c
+	* added ags_volume_channel_test.c
 
 ags (2.0.33)
 

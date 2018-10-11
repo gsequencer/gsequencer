@@ -120,8 +120,12 @@ check_PROGRAMS += \
 	ags_play_wave_audio_test \
 	ags_play_wave_channel_test \
 	ags_prepare_audio_signal_test \
+	ags_record_midi_audio_test \
+	ags_route_dssi_audio_test \
+	ags_route_lv2_audio_test \
 	ags_stream_audio_signal_test \
-	ags_volume_audio_signal_test
+	ags_volume_audio_signal_test \
+	ags_volume_channel_test
 
 # unit tests - libgsequencer
 check_PROGRAMS += \
@@ -763,6 +767,24 @@ ags_prepare_audio_signal_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CF
 ags_prepare_audio_signal_test_LDFLAGS = -pthread $(LDFLAGS)
 ags_prepare_audio_signal_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
 
+# record midi audio unit test
+ags_record_midi_audio_test_SOURCES = ags/test/audio/recall/ags_record_midi_audio_test.c
+ags_record_midi_audio_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
+ags_record_midi_audio_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_record_midi_audio_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
+
+# route dssi audio unit test
+ags_route_dssi_audio_test_SOURCES = ags/test/audio/recall/ags_route_dssi_audio_test.c
+ags_route_dssi_audio_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
+ags_route_dssi_audio_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_route_dssi_audio_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
+
+# route lv2 audio unit test
+ags_route_lv2_audio_test_SOURCES = ags/test/audio/recall/ags_route_lv2_audio_test.c
+ags_route_lv2_audio_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
+ags_route_lv2_audio_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_route_lv2_audio_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
+
 # stream audio signal unit test
 ags_stream_audio_signal_test_SOURCES = ags/test/audio/recall/ags_stream_audio_signal_test.c
 ags_stream_audio_signal_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
@@ -774,6 +796,12 @@ ags_volume_audio_signal_test_SOURCES = ags/test/audio/recall/ags_volume_audio_si
 ags_volume_audio_signal_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
 ags_volume_audio_signal_test_LDFLAGS = -pthread $(LDFLAGS)
 ags_volume_audio_signal_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
+
+# volume channel unit test
+ags_volume_channel_test_SOURCES = ags/test/audio/recall/ags_volume_channel_test.c
+ags_volume_channel_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
+ags_volume_channel_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_volume_channel_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
 
 # xorg application context unit test
 ags_xorg_application_context_test_SOURCES = ags/test/X/ags_xorg_application_context_test.c
