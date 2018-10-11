@@ -15,6 +15,7 @@ ags (2.0.34)
 	* added ags_volume_audio_signal_test.c
 	* added ags_analyse_channel_test.c
 	* added ags_buffer_channel_test.c
+	* added ags_capture_wave_audio_test.c
 
 ags (2.0.33)
 
