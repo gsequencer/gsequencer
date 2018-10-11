@@ -30,6 +30,8 @@ ags (2.0.34)
 	* added ags_mute_audio_test.c
 	* added ags_mute_channel_test.c
 	* added ags_peak_channel_test.c
+	* added ags_play_audio_test.c
+	* added ags_play_channel_test.c
 
 ags (2.0.33)
 
