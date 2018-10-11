@@ -100,6 +100,8 @@ check_PROGRAMS += \
 	ags_capture_wave_channel_test \
 	ags_copy_audio_signal_test \
 	ags_copy_channel_test \
+	ags_copy_pattern_audio_test \
+	ags_copy_pattern_channel_test \
 	ags_envelope_audio_signal_test \
 	ags_eq10_audio_signal_test \
 	ags_feed_audio_signal_test \
@@ -629,6 +631,18 @@ ags_copy_channel_test_SOURCES = ags/test/audio/recall/ags_copy_channel_test.c
 ags_copy_channel_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
 ags_copy_channel_test_LDFLAGS = -pthread $(LDFLAGS)
 ags_copy_channel_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
+
+# copy audio pattern unit test
+ags_copy_pattern_audio_test_SOURCES = ags/test/audio/recall/ags_copy_pattern_audio_test.c
+ags_copy_pattern_audio_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
+ags_copy_pattern_audio_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_copy_pattern_audio_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
+
+# copy channel pattern unit test
+ags_copy_pattern_channel_test_SOURCES = ags/test/audio/recall/ags_copy_pattern_channel_test.c
+ags_copy_pattern_channel_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
+ags_copy_pattern_channel_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_copy_pattern_channel_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
 
 # envelope audio signal unit test
 ags_envelope_audio_signal_test_SOURCES = ags/test/audio/recall/ags_envelope_audio_signal_test.c

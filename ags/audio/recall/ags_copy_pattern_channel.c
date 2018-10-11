@@ -345,7 +345,7 @@ ags_copy_pattern_channel_new(AgsChannel *destination,
 
   copy_pattern_channel = (AgsCopyPatternChannel *) g_object_new(AGS_TYPE_COPY_PATTERN_CHANNEL,
 								"destination", destination,
-								"channel", source,
+								"source", source,
 								NULL);
 
   return(copy_pattern_channel);

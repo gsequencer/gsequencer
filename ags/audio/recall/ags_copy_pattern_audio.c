@@ -545,13 +545,13 @@ ags_copy_pattern_audio_new(AgsAudio *audio,
   /* apply bank index */
   value = g_new0(GValue,
 		 1);
-  g_value_init(value, G_TYPE_UINT64);
+  g_value_init(value, G_TYPE_FLOAT);
 
   g_object_get(copy_pattern_audio,
 	       "bank-index-0" , &port,
 	       NULL);
   
-  g_value_set_uint64(value, bank_index_0);
+  g_value_set_float(value, bank_index_0);
   ags_port_safe_write(port,
 		      value);
 
@@ -559,7 +559,8 @@ ags_copy_pattern_audio_new(AgsAudio *audio,
 	       "bank-index-1" , &port,
 	       NULL);
 
-  g_value_set_uint64(value, bank_index_1);
+  g_value_reset(value);
+  g_value_set_float(value, bank_index_1);
   ags_port_safe_write(copy_pattern_audio->bank_index_1,
 		      value);
 
