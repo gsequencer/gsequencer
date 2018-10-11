@@ -2,7 +2,8 @@ ags (2.0.34)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* fixed missing ags-feed recall in factory
-	* fixed missing property of AgsAnalyseChannel
+	* fixed missing property AgsAnalyseChannel:buffer-cleared
+	* fixed ags_copy_channel_new() to use correct property AgsRecallChannel:source
 	* added ags_recall_recycling_test.c
 	* added ags_envelope_audio_signal_test.c
 	* added ags_eq10_audio_signal_test.c
@@ -16,6 +17,8 @@ ags (2.0.34)
 	* added ags_analyse_channel_test.c
 	* added ags_buffer_channel_test.c
 	* added ags_capture_wave_audio_test.c
+	* added ags_capture_wave_channel_test.c
+	* added ags_copy_channel_test.c
 
 ags (2.0.33)
 

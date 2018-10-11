@@ -380,7 +380,7 @@ ags_copy_channel_new(AgsChannel *destination,
 
   copy_channel = (AgsCopyChannel *) g_object_new(AGS_TYPE_COPY_CHANNEL,
 						 "destination", destination,
-						 "channel", source,
+						 "source", source,
 						 NULL);
 
   return(copy_channel);

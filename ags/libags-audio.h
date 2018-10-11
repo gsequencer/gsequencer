@@ -158,6 +158,8 @@
 #include <ags/audio/recall/ags_buffer_recycling.h>
 #include <ags/audio/recall/ags_capture_wave_audio.h>
 #include <ags/audio/recall/ags_capture_wave_audio_run.h>
+#include <ags/audio/recall/ags_capture_wave_channel.h>
+#include <ags/audio/recall/ags_capture_wave_channel_run.h>
 #include <ags/audio/recall/ags_copy_audio_signal.h>
 #include <ags/audio/recall/ags_copy_channel.h>
 #include <ags/audio/recall/ags_copy_channel_run.h>
