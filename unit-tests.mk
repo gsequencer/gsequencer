@@ -109,8 +109,11 @@ check_PROGRAMS += \
 	ags_eq10_audio_signal_test \
 	ags_eq10_channel_test \
 	ags_feed_audio_signal_test \
+	ags_mute_audio_test \
+	ags_mute_channel_test \
 	ags_mute_audio_signal_test \
 	ags_peak_audio_signal_test \
+	ags_peak_channel_test \
 	ags_play_audio_signal_test \
 	ags_prepare_audio_signal_test \
 	ags_stream_audio_signal_test \
@@ -690,17 +693,35 @@ ags_feed_audio_signal_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAG
 ags_feed_audio_signal_test_LDFLAGS = -pthread $(LDFLAGS)
 ags_feed_audio_signal_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
 
+# mute audio unit test
+ags_mute_audio_test_SOURCES = ags/test/audio/recall/ags_mute_audio_test.c
+ags_mute_audio_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
+ags_mute_audio_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_mute_audio_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
+
 # mute audio signal unit test
 ags_mute_audio_signal_test_SOURCES = ags/test/audio/recall/ags_mute_audio_signal_test.c
 ags_mute_audio_signal_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
 ags_mute_audio_signal_test_LDFLAGS = -pthread $(LDFLAGS)
 ags_mute_audio_signal_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
 
+# mute channel unit test
+ags_mute_channel_test_SOURCES = ags/test/audio/recall/ags_mute_channel_test.c
+ags_mute_channel_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
+ags_mute_channel_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_mute_channel_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
+
 # peak audio signal unit test
 ags_peak_audio_signal_test_SOURCES = ags/test/audio/recall/ags_peak_audio_signal_test.c
 ags_peak_audio_signal_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
 ags_peak_audio_signal_test_LDFLAGS = -pthread $(LDFLAGS)
 ags_peak_audio_signal_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
+
+# peak channel unit test
+ags_peak_channel_test_SOURCES = ags/test/audio/recall/ags_peak_channel_test.c
+ags_peak_channel_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
+ags_peak_channel_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_peak_channel_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
 
 # play audio signal unit test
 ags_play_audio_signal_test_SOURCES = ags/test/audio/recall/ags_play_audio_signal_test.c

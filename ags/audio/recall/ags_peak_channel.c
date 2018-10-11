@@ -963,7 +963,7 @@ ags_peak_channel_new(AgsChannel *source)
   AgsPeakChannel *peak_channel;
 
   peak_channel = (AgsPeakChannel *) g_object_new(AGS_TYPE_PEAK_CHANNEL,
-						 "channel", source,
+						 "source", source,
 						 NULL);
 
   return(peak_channel);
