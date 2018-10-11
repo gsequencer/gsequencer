@@ -482,6 +482,33 @@ ags_analyse_channel_set_property(GObject *gobject,
       pthread_mutex_unlock(recall_mutex);
     }
     break;
+  case PROP_BUFFER_CLEARED:
+    {
+      AgsPort *port;
+
+      port = (AgsPort *) g_value_get_object(value);
+
+      pthread_mutex_lock(recall_mutex);
+
+      if(port == analyse_channel->buffer_cleared){
+	pthread_mutex_unlock(recall_mutex);
+
+	return;
+      }
+
+      if(analyse_channel->buffer_cleared != NULL){
+	g_object_unref(G_OBJECT(analyse_channel->buffer_cleared));
+      }
+      
+      if(port != NULL){
+	g_object_ref(G_OBJECT(port));
+      }
+
+      analyse_channel->buffer_cleared = port;
+
+      pthread_mutex_unlock(recall_mutex);
+    }
+    break;
   case PROP_BUFFER_COMPUTED:
     {
       AgsPort *port;
@@ -615,6 +642,15 @@ ags_analyse_channel_get_property(GObject *gobject,
 
       g_value_set_uint(value,
 		       analyse_channel->cache_format);
+
+      pthread_mutex_unlock(recall_mutex);
+    }
+    break;
+  case PROP_BUFFER_CLEARED:
+    {
+      pthread_mutex_lock(recall_mutex);
+
+      g_value_set_object(value, analyse_channel->buffer_cleared);
 
       pthread_mutex_unlock(recall_mutex);
     }

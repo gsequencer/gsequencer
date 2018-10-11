@@ -93,6 +93,7 @@ check_PROGRAMS += \
 
 check_PROGRAMS += \
 	ags_analyse_audio_signal_test \
+	ags_analyse_channel_test \
 	ags_buffer_audio_signal_test \
 	ags_copy_audio_signal_test \
 	ags_envelope_audio_signal_test \
@@ -582,6 +583,12 @@ ags_analyse_audio_signal_test_SOURCES = ags/test/audio/recall/ags_analyse_audio_
 ags_analyse_audio_signal_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
 ags_analyse_audio_signal_test_LDFLAGS = -pthread $(LDFLAGS)
 ags_analyse_audio_signal_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
+
+# analyse channel unit test
+ags_analyse_channel_test_SOURCES = ags/test/audio/recall/ags_analyse_channel_test.c
+ags_analyse_channel_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
+ags_analyse_channel_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_analyse_channel_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
 
 # buffer audio signal unit test
 ags_buffer_audio_signal_test_SOURCES = ags/test/audio/recall/ags_buffer_audio_signal_test.c
