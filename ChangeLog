@@ -13,6 +13,8 @@ ags (2.0.35)
 	* added ags_apply_presets_test.c
 	* added ags_apply_sequencer_length_test.c
 	* added ags_apply_synth_test.c
+	* added ags_apply_tact_test.c
+	* added ags_clear_audio_signal_test.c
 
 ags (2.0.34)
 
