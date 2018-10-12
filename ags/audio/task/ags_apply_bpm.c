@@ -323,8 +323,8 @@ ags_apply_bpm_recall(AgsApplyBpm *apply_bpm, AgsRecall *recall)
 {
   if(AGS_IS_TACTABLE(recall)){
     ags_tactable_change_bpm(AGS_TACTABLE(recall),
-			    ags_tactable_get_bpm(AGS_TACTABLE(recall)),
-			    apply_bpm->bpm);
+			    apply_bpm->bpm,
+			    ags_tactable_get_bpm(AGS_TACTABLE(recall)));
   }
 }
 
@@ -390,6 +390,11 @@ ags_apply_bpm_audio(AgsApplyBpm *apply_bpm, AgsAudio *audio)
 
   pthread_mutex_unlock(audio_mutex);
 
+  /* set bpm */
+  g_object_set(audio,
+	       "bpm", apply_bpm->bpm,
+	       NULL);
+  
   /* apply bpm - play */
   g_object_get(audio,
 	       "play", &list_start,

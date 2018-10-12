@@ -197,6 +197,7 @@ check_PROGRAMS = ags_buffer_util_test$(EXEEXT) \
 	ags_volume_channel_test$(EXEEXT) ags_add_audio_test$(EXEEXT) \
 	ags_add_audio_signal_test$(EXEEXT) \
 	ags_add_effect_test$(EXEEXT) ags_add_note_test$(EXEEXT) \
+	ags_add_soundcard_test$(EXEEXT) ags_apply_bpm_test$(EXEEXT) \
 	ags_xorg_application_context_test$(EXEEXT) \
 	ags_functional_audio_test$(EXEEXT) \
 	ags_functional_machine_add_and_destroy_test$(EXEEXT) \
@@ -1047,6 +1048,17 @@ ags_add_note_test_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
 	$(ags_add_note_test_CFLAGS) $(CFLAGS) \
 	$(ags_add_note_test_LDFLAGS) $(LDFLAGS) -o $@
+am_ags_add_soundcard_test_OBJECTS = ags/test/audio/task/add_soundcard_test-ags_add_soundcard_test.$(OBJEXT)
+ags_add_soundcard_test_OBJECTS = $(am_ags_add_soundcard_test_OBJECTS)
+ags_add_soundcard_test_DEPENDENCIES = libags_audio.la libags_server.la \
+	libags_thread.la libags.la libags_thread.la \
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
+ags_add_soundcard_test_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
+	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
+	$(ags_add_soundcard_test_CFLAGS) $(CFLAGS) \
+	$(ags_add_soundcard_test_LDFLAGS) $(LDFLAGS) -o $@
 am_ags_analyse_audio_signal_test_OBJECTS = ags/test/audio/recall/analyse_audio_signal_test-ags_analyse_audio_signal_test.$(OBJEXT)
 ags_analyse_audio_signal_test_OBJECTS =  \
 	$(am_ags_analyse_audio_signal_test_OBJECTS)
@@ -1081,6 +1093,17 @@ ags_application_context_test_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
 	$(ags_application_context_test_CFLAGS) $(CFLAGS) \
 	$(ags_application_context_test_LDFLAGS) $(LDFLAGS) -o $@
+am_ags_apply_bpm_test_OBJECTS = ags/test/audio/task/apply_bpm_test-ags_apply_bpm_test.$(OBJEXT)
+ags_apply_bpm_test_OBJECTS = $(am_ags_apply_bpm_test_OBJECTS)
+ags_apply_bpm_test_DEPENDENCIES = libags_audio.la libags_server.la \
+	libags_thread.la libags.la libags_thread.la \
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
+ags_apply_bpm_test_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
+	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
+	$(ags_apply_bpm_test_CFLAGS) $(CFLAGS) \
+	$(ags_apply_bpm_test_LDFLAGS) $(LDFLAGS) -o $@
 am_ags_audio_application_context_test_OBJECTS = ags/test/audio/audio_application_context_test-ags_audio_application_context_test.$(OBJEXT)
 ags_audio_application_context_test_OBJECTS =  \
 	$(am_ags_audio_application_context_test_OBJECTS)
@@ -3128,6 +3151,8 @@ am__depfiles_remade = ags/$(DEPDIR)/gsequencer-gsequencer_main.Po \
 	ags/test/audio/task/$(DEPDIR)/add_audio_test-ags_add_audio_test.Po \
 	ags/test/audio/task/$(DEPDIR)/add_effect_test-ags_add_effect_test.Po \
 	ags/test/audio/task/$(DEPDIR)/add_note_test-ags_add_note_test.Po \
+	ags/test/audio/task/$(DEPDIR)/add_soundcard_test-ags_add_soundcard_test.Po \
+	ags/test/audio/task/$(DEPDIR)/apply_bpm_test-ags_apply_bpm_test.Po \
 	ags/test/file/$(DEPDIR)/file_id_ref_test-ags_file_id_ref_test.Po \
 	ags/test/file/$(DEPDIR)/file_launch_test-ags_file_launch_test.Po \
 	ags/test/file/$(DEPDIR)/file_lookup_test-ags_file_lookup_test.Po \
@@ -3248,10 +3273,11 @@ SOURCES = $(libags_la_SOURCES) $(libags_audio_la_SOURCES) \
 	$(ags_acceleration_test_SOURCES) \
 	$(ags_add_audio_signal_test_SOURCES) \
 	$(ags_add_audio_test_SOURCES) $(ags_add_effect_test_SOURCES) \
-	$(ags_add_note_test_SOURCES) \
+	$(ags_add_note_test_SOURCES) $(ags_add_soundcard_test_SOURCES) \
 	$(ags_analyse_audio_signal_test_SOURCES) \
 	$(ags_analyse_channel_test_SOURCES) \
 	$(ags_application_context_test_SOURCES) \
+	$(ags_apply_bpm_test_SOURCES) \
 	$(ags_audio_application_context_test_SOURCES) \
 	$(ags_audio_buffer_util_test_SOURCES) \
 	$(ags_audio_signal_test_SOURCES) $(ags_audio_test_SOURCES) \
@@ -3361,10 +3387,11 @@ DIST_SOURCES = $(libags_la_SOURCES) $(libags_audio_la_SOURCES) \
 	$(ags_acceleration_test_SOURCES) \
 	$(ags_add_audio_signal_test_SOURCES) \
 	$(ags_add_audio_test_SOURCES) $(ags_add_effect_test_SOURCES) \
-	$(ags_add_note_test_SOURCES) \
+	$(ags_add_note_test_SOURCES) $(ags_add_soundcard_test_SOURCES) \
 	$(ags_analyse_audio_signal_test_SOURCES) \
 	$(ags_analyse_channel_test_SOURCES) \
 	$(ags_application_context_test_SOURCES) \
+	$(ags_apply_bpm_test_SOURCES) \
 	$(ags_audio_application_context_test_SOURCES) \
 	$(ags_audio_buffer_util_test_SOURCES) \
 	$(ags_audio_signal_test_SOURCES) $(ags_audio_test_SOURCES) \
@@ -4929,6 +4956,18 @@ ags_add_note_test_SOURCES = ags/test/audio/task/ags_add_note_test.c
 ags_add_note_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
 ags_add_note_test_LDFLAGS = -pthread $(LDFLAGS)
 ags_add_note_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
+
+# add soundcard unit test
+ags_add_soundcard_test_SOURCES = ags/test/audio/task/ags_add_soundcard_test.c
+ags_add_soundcard_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
+ags_add_soundcard_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_add_soundcard_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
+
+# apply bpm unit test
+ags_apply_bpm_test_SOURCES = ags/test/audio/task/ags_apply_bpm_test.c
+ags_apply_bpm_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
+ags_apply_bpm_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_apply_bpm_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
 
 # xorg application context unit test
 ags_xorg_application_context_test_SOURCES = ags/test/X/ags_xorg_application_context_test.c
@@ -8637,6 +8676,13 @@ ags/test/audio/task/add_note_test-ags_add_note_test.$(OBJEXT):  \
 ags_add_note_test$(EXEEXT): $(ags_add_note_test_OBJECTS) $(ags_add_note_test_DEPENDENCIES) $(EXTRA_ags_add_note_test_DEPENDENCIES) 
 	@rm -f ags_add_note_test$(EXEEXT)
 	$(AM_V_CCLD)$(ags_add_note_test_LINK) $(ags_add_note_test_OBJECTS) $(ags_add_note_test_LDADD) $(LIBS)
+ags/test/audio/task/add_soundcard_test-ags_add_soundcard_test.$(OBJEXT):  \
+	ags/test/audio/task/$(am__dirstamp) \
+	ags/test/audio/task/$(DEPDIR)/$(am__dirstamp)
+
+ags_add_soundcard_test$(EXEEXT): $(ags_add_soundcard_test_OBJECTS) $(ags_add_soundcard_test_DEPENDENCIES) $(EXTRA_ags_add_soundcard_test_DEPENDENCIES) 
+	@rm -f ags_add_soundcard_test$(EXEEXT)
+	$(AM_V_CCLD)$(ags_add_soundcard_test_LINK) $(ags_add_soundcard_test_OBJECTS) $(ags_add_soundcard_test_LDADD) $(LIBS)
 ags/test/audio/recall/$(am__dirstamp):
 	@$(MKDIR_P) ags/test/audio/recall
 	@: > ags/test/audio/recall/$(am__dirstamp)
@@ -8670,6 +8716,13 @@ ags/test/object/application_context_test-ags_application_context_test.$(OBJEXT):
 ags_application_context_test$(EXEEXT): $(ags_application_context_test_OBJECTS) $(ags_application_context_test_DEPENDENCIES) $(EXTRA_ags_application_context_test_DEPENDENCIES) 
 	@rm -f ags_application_context_test$(EXEEXT)
 	$(AM_V_CCLD)$(ags_application_context_test_LINK) $(ags_application_context_test_OBJECTS) $(ags_application_context_test_LDADD) $(LIBS)
+ags/test/audio/task/apply_bpm_test-ags_apply_bpm_test.$(OBJEXT):  \
+	ags/test/audio/task/$(am__dirstamp) \
+	ags/test/audio/task/$(DEPDIR)/$(am__dirstamp)
+
+ags_apply_bpm_test$(EXEEXT): $(ags_apply_bpm_test_OBJECTS) $(ags_apply_bpm_test_DEPENDENCIES) $(EXTRA_ags_apply_bpm_test_DEPENDENCIES) 
+	@rm -f ags_apply_bpm_test$(EXEEXT)
+	$(AM_V_CCLD)$(ags_apply_bpm_test_LINK) $(ags_apply_bpm_test_OBJECTS) $(ags_apply_bpm_test_LDADD) $(LIBS)
 ags/test/audio/audio_application_context_test-ags_audio_application_context_test.$(OBJEXT):  \
 	ags/test/audio/$(am__dirstamp) \
 	ags/test/audio/$(DEPDIR)/$(am__dirstamp)
@@ -10309,6 +10362,8 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/audio/task/$(DEPDIR)/add_audio_test-ags_add_audio_test.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/audio/task/$(DEPDIR)/add_effect_test-ags_add_effect_test.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/audio/task/$(DEPDIR)/add_note_test-ags_add_note_test.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@ags/test/audio/task/$(DEPDIR)/add_soundcard_test-ags_add_soundcard_test.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@ags/test/audio/task/$(DEPDIR)/apply_bpm_test-ags_apply_bpm_test.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/file/$(DEPDIR)/file_id_ref_test-ags_file_id_ref_test.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/file/$(DEPDIR)/file_launch_test-ags_file_launch_test.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/file/$(DEPDIR)/file_lookup_test-ags_file_lookup_test.Po@am__quote@ # am--include-marker
@@ -14760,6 +14815,20 @@ ags/test/audio/task/add_note_test-ags_add_note_test.obj: ags/test/audio/task/ags
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_add_note_test_CFLAGS) $(CFLAGS) -c -o ags/test/audio/task/add_note_test-ags_add_note_test.obj `if test -f 'ags/test/audio/task/ags_add_note_test.c'; then $(CYGPATH_W) 'ags/test/audio/task/ags_add_note_test.c'; else $(CYGPATH_W) '$(srcdir)/ags/test/audio/task/ags_add_note_test.c'; fi`
 
+ags/test/audio/task/add_soundcard_test-ags_add_soundcard_test.o: ags/test/audio/task/ags_add_soundcard_test.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_add_soundcard_test_CFLAGS) $(CFLAGS) -MT ags/test/audio/task/add_soundcard_test-ags_add_soundcard_test.o -MD -MP -MF ags/test/audio/task/$(DEPDIR)/add_soundcard_test-ags_add_soundcard_test.Tpo -c -o ags/test/audio/task/add_soundcard_test-ags_add_soundcard_test.o `test -f 'ags/test/audio/task/ags_add_soundcard_test.c' || echo '$(srcdir)/'`ags/test/audio/task/ags_add_soundcard_test.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/test/audio/task/$(DEPDIR)/add_soundcard_test-ags_add_soundcard_test.Tpo ags/test/audio/task/$(DEPDIR)/add_soundcard_test-ags_add_soundcard_test.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/test/audio/task/ags_add_soundcard_test.c' object='ags/test/audio/task/add_soundcard_test-ags_add_soundcard_test.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_add_soundcard_test_CFLAGS) $(CFLAGS) -c -o ags/test/audio/task/add_soundcard_test-ags_add_soundcard_test.o `test -f 'ags/test/audio/task/ags_add_soundcard_test.c' || echo '$(srcdir)/'`ags/test/audio/task/ags_add_soundcard_test.c
+
+ags/test/audio/task/add_soundcard_test-ags_add_soundcard_test.obj: ags/test/audio/task/ags_add_soundcard_test.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_add_soundcard_test_CFLAGS) $(CFLAGS) -MT ags/test/audio/task/add_soundcard_test-ags_add_soundcard_test.obj -MD -MP -MF ags/test/audio/task/$(DEPDIR)/add_soundcard_test-ags_add_soundcard_test.Tpo -c -o ags/test/audio/task/add_soundcard_test-ags_add_soundcard_test.obj `if test -f 'ags/test/audio/task/ags_add_soundcard_test.c'; then $(CYGPATH_W) 'ags/test/audio/task/ags_add_soundcard_test.c'; else $(CYGPATH_W) '$(srcdir)/ags/test/audio/task/ags_add_soundcard_test.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/test/audio/task/$(DEPDIR)/add_soundcard_test-ags_add_soundcard_test.Tpo ags/test/audio/task/$(DEPDIR)/add_soundcard_test-ags_add_soundcard_test.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/test/audio/task/ags_add_soundcard_test.c' object='ags/test/audio/task/add_soundcard_test-ags_add_soundcard_test.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_add_soundcard_test_CFLAGS) $(CFLAGS) -c -o ags/test/audio/task/add_soundcard_test-ags_add_soundcard_test.obj `if test -f 'ags/test/audio/task/ags_add_soundcard_test.c'; then $(CYGPATH_W) 'ags/test/audio/task/ags_add_soundcard_test.c'; else $(CYGPATH_W) '$(srcdir)/ags/test/audio/task/ags_add_soundcard_test.c'; fi`
+
 ags/test/audio/recall/analyse_audio_signal_test-ags_analyse_audio_signal_test.o: ags/test/audio/recall/ags_analyse_audio_signal_test.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_analyse_audio_signal_test_CFLAGS) $(CFLAGS) -MT ags/test/audio/recall/analyse_audio_signal_test-ags_analyse_audio_signal_test.o -MD -MP -MF ags/test/audio/recall/$(DEPDIR)/analyse_audio_signal_test-ags_analyse_audio_signal_test.Tpo -c -o ags/test/audio/recall/analyse_audio_signal_test-ags_analyse_audio_signal_test.o `test -f 'ags/test/audio/recall/ags_analyse_audio_signal_test.c' || echo '$(srcdir)/'`ags/test/audio/recall/ags_analyse_audio_signal_test.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/test/audio/recall/$(DEPDIR)/analyse_audio_signal_test-ags_analyse_audio_signal_test.Tpo ags/test/audio/recall/$(DEPDIR)/analyse_audio_signal_test-ags_analyse_audio_signal_test.Po
@@ -14801,6 +14870,20 @@ ags/test/object/application_context_test-ags_application_context_test.obj: ags/t
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/test/object/ags_application_context_test.c' object='ags/test/object/application_context_test-ags_application_context_test.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_application_context_test_CFLAGS) $(CFLAGS) -c -o ags/test/object/application_context_test-ags_application_context_test.obj `if test -f 'ags/test/object/ags_application_context_test.c'; then $(CYGPATH_W) 'ags/test/object/ags_application_context_test.c'; else $(CYGPATH_W) '$(srcdir)/ags/test/object/ags_application_context_test.c'; fi`
+
+ags/test/audio/task/apply_bpm_test-ags_apply_bpm_test.o: ags/test/audio/task/ags_apply_bpm_test.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_apply_bpm_test_CFLAGS) $(CFLAGS) -MT ags/test/audio/task/apply_bpm_test-ags_apply_bpm_test.o -MD -MP -MF ags/test/audio/task/$(DEPDIR)/apply_bpm_test-ags_apply_bpm_test.Tpo -c -o ags/test/audio/task/apply_bpm_test-ags_apply_bpm_test.o `test -f 'ags/test/audio/task/ags_apply_bpm_test.c' || echo '$(srcdir)/'`ags/test/audio/task/ags_apply_bpm_test.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/test/audio/task/$(DEPDIR)/apply_bpm_test-ags_apply_bpm_test.Tpo ags/test/audio/task/$(DEPDIR)/apply_bpm_test-ags_apply_bpm_test.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/test/audio/task/ags_apply_bpm_test.c' object='ags/test/audio/task/apply_bpm_test-ags_apply_bpm_test.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_apply_bpm_test_CFLAGS) $(CFLAGS) -c -o ags/test/audio/task/apply_bpm_test-ags_apply_bpm_test.o `test -f 'ags/test/audio/task/ags_apply_bpm_test.c' || echo '$(srcdir)/'`ags/test/audio/task/ags_apply_bpm_test.c
+
+ags/test/audio/task/apply_bpm_test-ags_apply_bpm_test.obj: ags/test/audio/task/ags_apply_bpm_test.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_apply_bpm_test_CFLAGS) $(CFLAGS) -MT ags/test/audio/task/apply_bpm_test-ags_apply_bpm_test.obj -MD -MP -MF ags/test/audio/task/$(DEPDIR)/apply_bpm_test-ags_apply_bpm_test.Tpo -c -o ags/test/audio/task/apply_bpm_test-ags_apply_bpm_test.obj `if test -f 'ags/test/audio/task/ags_apply_bpm_test.c'; then $(CYGPATH_W) 'ags/test/audio/task/ags_apply_bpm_test.c'; else $(CYGPATH_W) '$(srcdir)/ags/test/audio/task/ags_apply_bpm_test.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/test/audio/task/$(DEPDIR)/apply_bpm_test-ags_apply_bpm_test.Tpo ags/test/audio/task/$(DEPDIR)/apply_bpm_test-ags_apply_bpm_test.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/test/audio/task/ags_apply_bpm_test.c' object='ags/test/audio/task/apply_bpm_test-ags_apply_bpm_test.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_apply_bpm_test_CFLAGS) $(CFLAGS) -c -o ags/test/audio/task/apply_bpm_test-ags_apply_bpm_test.obj `if test -f 'ags/test/audio/task/ags_apply_bpm_test.c'; then $(CYGPATH_W) 'ags/test/audio/task/ags_apply_bpm_test.c'; else $(CYGPATH_W) '$(srcdir)/ags/test/audio/task/ags_apply_bpm_test.c'; fi`
 
 ags/test/audio/audio_application_context_test-ags_audio_application_context_test.o: ags/test/audio/ags_audio_application_context_test.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_audio_application_context_test_CFLAGS) $(CFLAGS) -MT ags/test/audio/audio_application_context_test-ags_audio_application_context_test.o -MD -MP -MF ags/test/audio/$(DEPDIR)/audio_application_context_test-ags_audio_application_context_test.Tpo -c -o ags/test/audio/audio_application_context_test-ags_audio_application_context_test.o `test -f 'ags/test/audio/ags_audio_application_context_test.c' || echo '$(srcdir)/'`ags/test/audio/ags_audio_application_context_test.c
@@ -17765,6 +17848,20 @@ ags_add_note_test.log: ags_add_note_test$(EXEEXT)
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
 	"$$tst" $(AM_TESTS_FD_REDIRECT)
+ags_add_soundcard_test.log: ags_add_soundcard_test$(EXEEXT)
+	@p='ags_add_soundcard_test$(EXEEXT)'; \
+	b='ags_add_soundcard_test'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+ags_apply_bpm_test.log: ags_apply_bpm_test$(EXEEXT)
+	@p='ags_apply_bpm_test$(EXEEXT)'; \
+	b='ags_apply_bpm_test'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
 ags_xorg_application_context_test.log: ags_xorg_application_context_test$(EXEEXT)
 	@p='ags_xorg_application_context_test$(EXEEXT)'; \
 	b='ags_xorg_application_context_test'; \
@@ -18858,6 +18955,8 @@ distclean: distclean-recursive
 	-rm -f ags/test/audio/task/$(DEPDIR)/add_audio_test-ags_add_audio_test.Po
 	-rm -f ags/test/audio/task/$(DEPDIR)/add_effect_test-ags_add_effect_test.Po
 	-rm -f ags/test/audio/task/$(DEPDIR)/add_note_test-ags_add_note_test.Po
+	-rm -f ags/test/audio/task/$(DEPDIR)/add_soundcard_test-ags_add_soundcard_test.Po
+	-rm -f ags/test/audio/task/$(DEPDIR)/apply_bpm_test-ags_apply_bpm_test.Po
 	-rm -f ags/test/file/$(DEPDIR)/file_id_ref_test-ags_file_id_ref_test.Po
 	-rm -f ags/test/file/$(DEPDIR)/file_launch_test-ags_file_launch_test.Po
 	-rm -f ags/test/file/$(DEPDIR)/file_lookup_test-ags_file_lookup_test.Po
@@ -19643,6 +19742,8 @@ maintainer-clean: maintainer-clean-recursive
 	-rm -f ags/test/audio/task/$(DEPDIR)/add_audio_test-ags_add_audio_test.Po
 	-rm -f ags/test/audio/task/$(DEPDIR)/add_effect_test-ags_add_effect_test.Po
 	-rm -f ags/test/audio/task/$(DEPDIR)/add_note_test-ags_add_note_test.Po
+	-rm -f ags/test/audio/task/$(DEPDIR)/add_soundcard_test-ags_add_soundcard_test.Po
+	-rm -f ags/test/audio/task/$(DEPDIR)/apply_bpm_test-ags_apply_bpm_test.Po
 	-rm -f ags/test/file/$(DEPDIR)/file_id_ref_test-ags_file_id_ref_test.Po
 	-rm -f ags/test/file/$(DEPDIR)/file_launch_test-ags_file_launch_test.Po
 	-rm -f ags/test/file/$(DEPDIR)/file_lookup_test-ags_file_lookup_test.Po
