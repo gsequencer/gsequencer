@@ -1,12 +1,16 @@
 ags (2.0.35)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed ags_apply_bpm_recall() wrong parameter order
+	* modified default buffer size in config
+	* modified default buffer size in ags_soundcard.h
 	* added ags_add_audio_test.c
 	* added ags_add_audio_signal_test.c
 	* added ags_add_effect_test.c
 	* added ags_add_note_test.c
 	* added ags_add_soundcard_test.c
 	* added ags_apply_bpm_test.c
+	* added ags_apply_presets_test.c
 
 ags (2.0.34)
 
