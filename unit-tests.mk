@@ -138,9 +138,12 @@ check_PROGRAMS += \
 	ags_apply_sequencer_length_test \
 	ags_apply_synth_test \
 	ags_apply_tact_test \
+	ags_cancel_audio_test \
+	ags_cancel_channel_test \
 	ags_clear_audio_signal_test \
 	ags_clear_buffer_test \
-	ags_crop_note_test
+	ags_crop_note_test \
+	ags_export_output_test
 
 # unit tests - libgsequencer
 check_PROGRAMS += \
@@ -878,6 +881,18 @@ ags_apply_tact_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LI
 ags_apply_tact_test_LDFLAGS = -pthread $(LDFLAGS)
 ags_apply_tact_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
 
+# cancel audio unit test
+ags_cancel_audio_test_SOURCES = ags/test/audio/task/ags_cancel_audio_test.c
+ags_cancel_audio_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
+ags_cancel_audio_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_cancel_audio_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
+
+# cancel channel unit test
+ags_cancel_channel_test_SOURCES = ags/test/audio/task/ags_cancel_channel_test.c
+ags_cancel_channel_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
+ags_cancel_channel_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_cancel_channel_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
+
 # clear audio signal unit test
 ags_clear_audio_signal_test_SOURCES = ags/test/audio/task/ags_clear_audio_signal_test.c
 ags_clear_audio_signal_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
@@ -895,6 +910,12 @@ ags_crop_note_test_SOURCES = ags/test/audio/task/ags_crop_note_test.c
 ags_crop_note_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
 ags_crop_note_test_LDFLAGS = -pthread $(LDFLAGS)
 ags_crop_note_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
+
+# export output unit test
+ags_export_output_test_SOURCES = ags/test/audio/task/ags_export_output_test.c
+ags_export_output_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
+ags_export_output_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_export_output_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
 
 # xorg application context unit test
 ags_xorg_application_context_test_SOURCES = ags/test/X/ags_xorg_application_context_test.c
