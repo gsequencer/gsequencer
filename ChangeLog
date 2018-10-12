@@ -1,3 +1,9 @@
+ags (2.0.35)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* added ags_add_audio_test.c
+	* added ags_add_audio_signal_test.c
+
 ags (2.0.34)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

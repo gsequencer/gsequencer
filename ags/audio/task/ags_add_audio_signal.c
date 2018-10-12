@@ -465,11 +465,12 @@ ags_add_audio_signal_launch(AgsTask *task)
 
   /* create audio signal */
   if(audio_signal == NULL){
-      audio_signal =
-	add_audio_signal->audio_signal = ags_audio_signal_new((GObject *) soundcard,
-							      (GObject *) recycling,
-							      (GObject *) recall_id);
-    audio_signal->flags = add_audio_signal->audio_signal_flags;
+    audio_signal =
+      add_audio_signal->audio_signal = ags_audio_signal_new((GObject *) soundcard,
+							    (GObject *) recycling,
+							    (GObject *) recall_id);
+    ags_audio_signal_set_flags(audio_signal,
+			       add_audio_signal->audio_signal_flags);
   }
 
   /* delay and attack */
