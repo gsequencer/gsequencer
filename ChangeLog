@@ -20,6 +20,8 @@ ags (2.0.35)
 	* added ags_clear_buffer_test.c
 	* added ags_crop_note_test.c
 	* added ags_export_output_test.c
+	* added ags_free_selection_test.c
+	* added ags_link_channel_test.c
 
 ags (2.0.34)
 
