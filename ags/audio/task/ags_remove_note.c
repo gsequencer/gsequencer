@@ -399,6 +399,8 @@ ags_remove_note_launch(AgsTask *task)
   }
 
   /* remove note */
+  notation = list->data;
+  
   ags_notation_remove_note(notation,
 			   note,
 			   remove_note->use_selection_list);

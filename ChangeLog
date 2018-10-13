@@ -2,6 +2,7 @@ ags (2.0.35)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* fixed ags_apply_bpm_recall() wrong parameter order
+	* fixed AgsRemoveNote task
 	* modified default buffer size in config
 	* modified default buffer size in ags_soundcard.h
 	* added ags_add_audio_test.c
@@ -24,6 +25,10 @@ ags (2.0.35)
 	* added ags_link_channel_test.c
 	* added ags_move_note_test.c
 	* added ags_notify_soundcard_test.c
+	* added ags_remove_audio_test.c
+	* added ags_remove_audio_signal_test.c
+	* added ags_remove_note_test.c
+	* added ags_remove_soundcard_test.c
 
 ags (2.0.34)
 
