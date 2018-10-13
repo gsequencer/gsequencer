@@ -145,7 +145,9 @@ check_PROGRAMS += \
 	ags_crop_note_test \
 	ags_export_output_test \
 	ags_free_selection_test \
-	ags_link_channel_test
+	ags_link_channel_test \
+	ags_move_note_test \
+	ags_notify_soundcard_test
 
 # unit tests - libgsequencer
 check_PROGRAMS += \
@@ -930,6 +932,18 @@ ags_link_channel_test_SOURCES = ags/test/audio/task/ags_link_channel_test.c
 ags_link_channel_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
 ags_link_channel_test_LDFLAGS = -pthread $(LDFLAGS)
 ags_link_channel_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
+
+# move note unit test
+ags_move_note_test_SOURCES = ags/test/audio/task/ags_move_note_test.c
+ags_move_note_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
+ags_move_note_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_move_note_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
+
+# notify soundcard unit test
+ags_notify_soundcard_test_SOURCES = ags/test/audio/task/ags_notify_soundcard_test.c
+ags_notify_soundcard_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
+ags_notify_soundcard_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_notify_soundcard_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
 
 # xorg application context unit test
 ags_xorg_application_context_test_SOURCES = ags/test/X/ags_xorg_application_context_test.c
