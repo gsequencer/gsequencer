@@ -16,6 +16,7 @@ check_PROGRAMS += \
 	ags_turtle_test \
 	ags_application_context_test \
 	ags_config_test \
+	ags_connectable_test \
 	ags_condition_manager_test \
 	ags_destroy_worker_test \
 	ags_mutex_manager_test \
@@ -210,6 +211,12 @@ ags_config_test_SOURCES = ags/test/object/ags_config_test.c
 ags_config_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS)
 ags_config_test_LDFLAGS = -pthread $(LDFLAGS)
 ags_config_test_LDADD = libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS)
+
+# connectable unit test
+ags_connectable_test_SOURCES = ags/test/object/ags_connectable_test.c
+ags_connectable_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
+ags_connectable_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_connectable_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
 
 # condition manager unit test
 ags_condition_manager_test_SOURCES = ags/test/thread/ags_condition_manager_test.c

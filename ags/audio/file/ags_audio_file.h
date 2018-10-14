@@ -23,6 +23,8 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <ags/libags.h>
+
 #define AGS_TYPE_AUDIO_FILE                (ags_audio_file_get_type())
 #define AGS_AUDIO_FILE(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_AUDIO_FILE, AgsAudioFile))
 #define AGS_AUDIO_FILE_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_AUDIO_FILE, AgsAudioFileClass))
@@ -33,9 +35,29 @@
 typedef struct _AgsAudioFile AgsAudioFile;
 typedef struct _AgsAudioFileClass AgsAudioFileClass;
 
+/**
+ * AgsAudioFileFlags:
+ * @AGS_AUDIO_FILE_ADDED_TO_REGISTRY: the audio file was added to registry, see #AgsConnectable::add_to_registry()
+ * @AGS_AUDIO_FILE_CONNECTED: indicates the audio file was connected by calling #AgsConnectable::connect()
+ * 
+ * Enum values to control the behavior or indicate internal state of #AgsAudioFile by
+ * enable/disable as flags.
+ */
+typedef enum{
+  AGS_AUDIO_FILE_ADDED_TO_REGISTRY    = 1,
+  AGS_AUDIO_FILE_CONNECTED            = 1 <<  1,
+}AgsAudioFileFlags;
+
 struct _AgsAudioFile
 {
   GObject object;
+
+  guint flags;
+
+  pthread_mutex_t *obj_mutex;
+  pthread_mutexattr_t *obj_mutexattr;
+
+  AgsUUID *uuid;
 
   GObject *soundcard;
 
@@ -63,6 +85,12 @@ struct _AgsAudioFileClass
 };
 
 GType ags_audio_file_get_type();
+
+pthread_mutex_t* ags_audio_file_get_class_mutex();
+
+gboolean ags_audio_file_test_flags(AgsAudioFile *audio_file, guint flags);
+void ags_audio_file_set_flags(AgsAudioFile *audio_file, guint flags);
+void ags_audio_file_unset_flags(AgsAudioFile *audio_file, guint flags);
 
 gboolean ags_audio_file_check_suffix(gchar *filename);
 

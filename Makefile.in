@@ -118,6 +118,7 @@ check_PROGRAMS = ags_buffer_util_test$(EXEEXT) \
 	ags_log_test$(EXEEXT) ags_time_test$(EXEEXT) \
 	ags_turtle_manager_test$(EXEEXT) ags_turtle_test$(EXEEXT) \
 	ags_application_context_test$(EXEEXT) ags_config_test$(EXEEXT) \
+	ags_connectable_test$(EXEEXT) \
 	ags_condition_manager_test$(EXEEXT) \
 	ags_destroy_worker_test$(EXEEXT) \
 	ags_mutex_manager_test$(EXEEXT) ags_poll_fd_test$(EXEEXT) \
@@ -1404,6 +1405,17 @@ ags_config_test_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
 	$(ags_config_test_CFLAGS) $(CFLAGS) $(ags_config_test_LDFLAGS) \
 	$(LDFLAGS) -o $@
+am_ags_connectable_test_OBJECTS = ags/test/object/connectable_test-ags_connectable_test.$(OBJEXT)
+ags_connectable_test_OBJECTS = $(am_ags_connectable_test_OBJECTS)
+ags_connectable_test_DEPENDENCIES = libags_audio.la libags_server.la \
+	libags_thread.la libags.la libags_thread.la \
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
+ags_connectable_test_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
+	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
+	$(ags_connectable_test_CFLAGS) $(CFLAGS) \
+	$(ags_connectable_test_LDFLAGS) $(LDFLAGS) -o $@
 am_ags_conversion_test_OBJECTS =  \
 	ags/test/lib/conversion_test-ags_conversion_test.$(OBJEXT)
 ags_conversion_test_OBJECTS = $(am_ags_conversion_test_OBJECTS)
@@ -3404,6 +3416,7 @@ am__depfiles_remade = ags/$(DEPDIR)/gsequencer-gsequencer_main.Po \
 	ags/test/lib/$(DEPDIR)/turtle_test-ags_turtle_test.Po \
 	ags/test/object/$(DEPDIR)/application_context_test-ags_application_context_test.Po \
 	ags/test/object/$(DEPDIR)/config_test-ags_config_test.Po \
+	ags/test/object/$(DEPDIR)/connectable_test-ags_connectable_test.Po \
 	ags/test/plugin/$(DEPDIR)/base_plugin_test-ags_base_plugin_test.Po \
 	ags/test/plugin/$(DEPDIR)/dssi_manager_test-ags_dssi_manager_test.Po \
 	ags/test/plugin/$(DEPDIR)/dssi_plugin_test-ags_dssi_plugin_test.Po \
@@ -3535,7 +3548,8 @@ SOURCES = $(libags_la_SOURCES) $(libags_audio_la_SOURCES) \
 	$(ags_clear_audio_signal_test_SOURCES) \
 	$(ags_clear_buffer_test_SOURCES) $(ags_complex_test_SOURCES) \
 	$(ags_condition_manager_test_SOURCES) \
-	$(ags_config_test_SOURCES) $(ags_conversion_test_SOURCES) \
+	$(ags_config_test_SOURCES) $(ags_connectable_test_SOURCES) \
+	$(ags_conversion_test_SOURCES) \
 	$(ags_copy_audio_signal_test_SOURCES) \
 	$(ags_copy_channel_test_SOURCES) \
 	$(ags_copy_pattern_audio_test_SOURCES) \
@@ -3662,7 +3676,8 @@ DIST_SOURCES = $(libags_la_SOURCES) $(libags_audio_la_SOURCES) \
 	$(ags_clear_audio_signal_test_SOURCES) \
 	$(ags_clear_buffer_test_SOURCES) $(ags_complex_test_SOURCES) \
 	$(ags_condition_manager_test_SOURCES) \
-	$(ags_config_test_SOURCES) $(ags_conversion_test_SOURCES) \
+	$(ags_config_test_SOURCES) $(ags_connectable_test_SOURCES) \
+	$(ags_conversion_test_SOURCES) \
 	$(ags_copy_audio_signal_test_SOURCES) \
 	$(ags_copy_channel_test_SOURCES) \
 	$(ags_copy_pattern_audio_test_SOURCES) \
@@ -4578,6 +4593,12 @@ ags_config_test_SOURCES = ags/test/object/ags_config_test.c
 ags_config_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS)
 ags_config_test_LDFLAGS = -pthread $(LDFLAGS)
 ags_config_test_LDADD = libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS)
+
+# connectable unit test
+ags_connectable_test_SOURCES = ags/test/object/ags_connectable_test.c
+ags_connectable_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
+ags_connectable_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_connectable_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
 
 # condition manager unit test
 ags_condition_manager_test_SOURCES = ags/test/thread/ags_condition_manager_test.c
@@ -9288,6 +9309,13 @@ ags/test/object/config_test-ags_config_test.$(OBJEXT):  \
 ags_config_test$(EXEEXT): $(ags_config_test_OBJECTS) $(ags_config_test_DEPENDENCIES) $(EXTRA_ags_config_test_DEPENDENCIES) 
 	@rm -f ags_config_test$(EXEEXT)
 	$(AM_V_CCLD)$(ags_config_test_LINK) $(ags_config_test_OBJECTS) $(ags_config_test_LDADD) $(LIBS)
+ags/test/object/connectable_test-ags_connectable_test.$(OBJEXT):  \
+	ags/test/object/$(am__dirstamp) \
+	ags/test/object/$(DEPDIR)/$(am__dirstamp)
+
+ags_connectable_test$(EXEEXT): $(ags_connectable_test_OBJECTS) $(ags_connectable_test_DEPENDENCIES) $(EXTRA_ags_connectable_test_DEPENDENCIES) 
+	@rm -f ags_connectable_test$(EXEEXT)
+	$(AM_V_CCLD)$(ags_connectable_test_LINK) $(ags_connectable_test_OBJECTS) $(ags_connectable_test_LDADD) $(LIBS)
 ags/test/lib/conversion_test-ags_conversion_test.$(OBJEXT):  \
 	ags/test/lib/$(am__dirstamp) \
 	ags/test/lib/$(DEPDIR)/$(am__dirstamp)
@@ -10893,6 +10921,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/lib/$(DEPDIR)/turtle_test-ags_turtle_test.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/object/$(DEPDIR)/application_context_test-ags_application_context_test.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/object/$(DEPDIR)/config_test-ags_config_test.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@ags/test/object/$(DEPDIR)/connectable_test-ags_connectable_test.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/plugin/$(DEPDIR)/base_plugin_test-ags_base_plugin_test.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/plugin/$(DEPDIR)/dssi_manager_test-ags_dssi_manager_test.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/plugin/$(DEPDIR)/dssi_plugin_test-ags_dssi_plugin_test.Po@am__quote@ # am--include-marker
@@ -15751,6 +15780,20 @@ ags/test/object/config_test-ags_config_test.obj: ags/test/object/ags_config_test
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_config_test_CFLAGS) $(CFLAGS) -c -o ags/test/object/config_test-ags_config_test.obj `if test -f 'ags/test/object/ags_config_test.c'; then $(CYGPATH_W) 'ags/test/object/ags_config_test.c'; else $(CYGPATH_W) '$(srcdir)/ags/test/object/ags_config_test.c'; fi`
 
+ags/test/object/connectable_test-ags_connectable_test.o: ags/test/object/ags_connectable_test.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_connectable_test_CFLAGS) $(CFLAGS) -MT ags/test/object/connectable_test-ags_connectable_test.o -MD -MP -MF ags/test/object/$(DEPDIR)/connectable_test-ags_connectable_test.Tpo -c -o ags/test/object/connectable_test-ags_connectable_test.o `test -f 'ags/test/object/ags_connectable_test.c' || echo '$(srcdir)/'`ags/test/object/ags_connectable_test.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/test/object/$(DEPDIR)/connectable_test-ags_connectable_test.Tpo ags/test/object/$(DEPDIR)/connectable_test-ags_connectable_test.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/test/object/ags_connectable_test.c' object='ags/test/object/connectable_test-ags_connectable_test.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_connectable_test_CFLAGS) $(CFLAGS) -c -o ags/test/object/connectable_test-ags_connectable_test.o `test -f 'ags/test/object/ags_connectable_test.c' || echo '$(srcdir)/'`ags/test/object/ags_connectable_test.c
+
+ags/test/object/connectable_test-ags_connectable_test.obj: ags/test/object/ags_connectable_test.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_connectable_test_CFLAGS) $(CFLAGS) -MT ags/test/object/connectable_test-ags_connectable_test.obj -MD -MP -MF ags/test/object/$(DEPDIR)/connectable_test-ags_connectable_test.Tpo -c -o ags/test/object/connectable_test-ags_connectable_test.obj `if test -f 'ags/test/object/ags_connectable_test.c'; then $(CYGPATH_W) 'ags/test/object/ags_connectable_test.c'; else $(CYGPATH_W) '$(srcdir)/ags/test/object/ags_connectable_test.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/test/object/$(DEPDIR)/connectable_test-ags_connectable_test.Tpo ags/test/object/$(DEPDIR)/connectable_test-ags_connectable_test.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/test/object/ags_connectable_test.c' object='ags/test/object/connectable_test-ags_connectable_test.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_connectable_test_CFLAGS) $(CFLAGS) -c -o ags/test/object/connectable_test-ags_connectable_test.obj `if test -f 'ags/test/object/ags_connectable_test.c'; then $(CYGPATH_W) 'ags/test/object/ags_connectable_test.c'; else $(CYGPATH_W) '$(srcdir)/ags/test/object/ags_connectable_test.c'; fi`
+
 ags/test/lib/conversion_test-ags_conversion_test.o: ags/test/lib/ags_conversion_test.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_conversion_test_CFLAGS) $(CFLAGS) -MT ags/test/lib/conversion_test-ags_conversion_test.o -MD -MP -MF ags/test/lib/$(DEPDIR)/conversion_test-ags_conversion_test.Tpo -c -o ags/test/lib/conversion_test-ags_conversion_test.o `test -f 'ags/test/lib/ags_conversion_test.c' || echo '$(srcdir)/'`ags/test/lib/ags_conversion_test.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/test/lib/$(DEPDIR)/conversion_test-ags_conversion_test.Tpo ags/test/lib/$(DEPDIR)/conversion_test-ags_conversion_test.Po
@@ -17867,6 +17910,13 @@ ags_config_test.log: ags_config_test$(EXEEXT)
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
 	"$$tst" $(AM_TESTS_FD_REDIRECT)
+ags_connectable_test.log: ags_connectable_test$(EXEEXT)
+	@p='ags_connectable_test$(EXEEXT)'; \
+	b='ags_connectable_test'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
 ags_condition_manager_test.log: ags_condition_manager_test$(EXEEXT)
 	@p='ags_condition_manager_test$(EXEEXT)'; \
 	b='ags_condition_manager_test'; \
@@ -19882,6 +19932,7 @@ distclean: distclean-recursive
 	-rm -f ags/test/lib/$(DEPDIR)/turtle_test-ags_turtle_test.Po
 	-rm -f ags/test/object/$(DEPDIR)/application_context_test-ags_application_context_test.Po
 	-rm -f ags/test/object/$(DEPDIR)/config_test-ags_config_test.Po
+	-rm -f ags/test/object/$(DEPDIR)/connectable_test-ags_connectable_test.Po
 	-rm -f ags/test/plugin/$(DEPDIR)/base_plugin_test-ags_base_plugin_test.Po
 	-rm -f ags/test/plugin/$(DEPDIR)/dssi_manager_test-ags_dssi_manager_test.Po
 	-rm -f ags/test/plugin/$(DEPDIR)/dssi_plugin_test-ags_dssi_plugin_test.Po
@@ -20687,6 +20738,7 @@ maintainer-clean: maintainer-clean-recursive
 	-rm -f ags/test/lib/$(DEPDIR)/turtle_test-ags_turtle_test.Po
 	-rm -f ags/test/object/$(DEPDIR)/application_context_test-ags_application_context_test.Po
 	-rm -f ags/test/object/$(DEPDIR)/config_test-ags_config_test.Po
+	-rm -f ags/test/object/$(DEPDIR)/connectable_test-ags_connectable_test.Po
 	-rm -f ags/test/plugin/$(DEPDIR)/base_plugin_test-ags_base_plugin_test.Po
 	-rm -f ags/test/plugin/$(DEPDIR)/dssi_manager_test-ags_dssi_manager_test.Po
 	-rm -f ags/test/plugin/$(DEPDIR)/dssi_plugin_test-ags_dssi_plugin_test.Po

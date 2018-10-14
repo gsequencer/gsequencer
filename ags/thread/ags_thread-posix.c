@@ -54,9 +54,20 @@ void ags_thread_get_property(GObject *gobject,
 			     guint prop_id,
 			     GValue *value,
 			     GParamSpec *param_spec);
+void ags_thread_finalize(GObject *gobject);
+
+AgsUUID* ags_thread_get_uuid(AgsConnectable *connectable);
+gboolean ags_thread_has_resource(AgsConnectable *connectable);
+gboolean ags_thread_is_ready(AgsConnectable *connectable);
+void ags_thread_add_to_registry(AgsConnectable *connectable);
+void ags_thread_remove_from_registry(AgsConnectable *connectable);
+xmlNode* ags_thread_list_resource(AgsConnectable *connectable);
+xmlNode* ags_thread_xml_compose(AgsConnectable *connectable);
+void ags_thread_xml_parse(AgsConnectable *connectable,
+			  xmlNode *node);
+gboolean ags_thread_is_connected(AgsConnectable *connectable);
 void ags_thread_connect(AgsConnectable *connectable);
 void ags_thread_disconnect(AgsConnectable *connectable);
-void ags_thread_finalize(GObject *gobject);
 
 guint ags_thread_real_clock(AgsThread *thread);
 
@@ -369,10 +380,23 @@ ags_thread_class_init(AgsThreadClass *thread)
 void
 ags_thread_connectable_interface_init(AgsConnectableInterface *connectable)
 {
-  connectable->is_ready = NULL;
-  connectable->is_connected = NULL;
+  connectable->get_uuid = ags_thread_get_uuid;
+  connectable->has_resource = ags_thread_has_resource;
+
+  connectable->is_ready = ags_thread_is_ready;
+  connectable->add_to_registry = ags_thread_add_to_registry;
+  connectable->remove_from_registry = ags_thread_remove_from_registry;
+
+  connectable->list_resource = ags_thread_list_resource;
+  connectable->xml_compose = ags_thread_xml_compose;
+  connectable->xml_parse = ags_thread_xml_parse;
+
+  connectable->is_connected = ags_thread_is_connected;
   connectable->connect = ags_thread_connect;
   connectable->disconnect = ags_thread_disconnect;
+
+  connectable->connect_connection = NULL;
+  connectable->disconnect_connection = NULL;
 }
 
 void
@@ -425,7 +449,11 @@ ags_thread_init(AgsThread *thread)
 		   0);
   g_atomic_int_set(&(thread->sync_flags),
 		   0);
-  
+
+  /* uuid */
+  thread->uuid = ags_uuid_alloc();
+  ags_uuid_generate(thread->uuid);
+    
   /* clock */
   thread->delay = 0;
   thread->tic_delay = 0;
@@ -689,36 +717,6 @@ ags_thread_get_property(GObject *gobject,
 }
 
 void
-ags_thread_connect(AgsConnectable *connectable)
-{
-  AgsThread *thread, *child;
-
-  thread = AGS_THREAD(connectable);
-  
-  if((AGS_THREAD_CONNECTED & (g_atomic_int_get(&(thread->flags)))) != 0){
-    return;
-  }  
-
-#ifdef AGS_DEBUG
-  g_message("connecting thread");
-#endif
-
-  child = g_atomic_pointer_get(&(thread->children));
-
-  while(child != NULL){
-    ags_connectable_connect(AGS_CONNECTABLE(child));
-
-    child = g_atomic_pointer_get(&(child->next));
-  }
-}
-
-void
-ags_thread_disconnect(AgsConnectable *connectable)
-{
-  /* empty */
-}
-
-void
 ags_thread_finalize(GObject *gobject)
 {
   AgsThread *thread, *parent;
@@ -843,6 +841,195 @@ ags_thread_finalize(GObject *gobject)
   
   if(do_exit){
     pthread_exit(NULL);
+  }
+}
+
+AgsUUID*
+ags_thread_get_uuid(AgsConnectable *connectable)
+{
+  AgsThread *thread;
+  
+  AgsUUID *ptr;
+
+  pthread_mutex_t *thread_mutex;
+
+  thread = AGS_THREAD(connectable);
+
+  /* get thread mutex */
+  pthread_mutex_lock(ags_thread_get_class_mutex());
+  
+  thread_mutex = thread->obj_mutex;
+  
+  pthread_mutex_unlock(ags_thread_get_class_mutex());
+
+  /* get UUID */
+  pthread_mutex_lock(thread_mutex);
+
+  ptr = thread->uuid;
+
+  pthread_mutex_unlock(thread_mutex);
+  
+  return(ptr);
+}
+
+gboolean
+ags_thread_has_resource(AgsConnectable *connectable)
+{
+  return(FALSE);
+}
+
+gboolean
+ags_thread_is_ready(AgsConnectable *connectable)
+{
+  AgsThread *thread;
+  
+  gboolean is_ready;
+
+  pthread_mutex_t *thread_mutex;
+
+  thread = AGS_THREAD(connectable);
+
+  /* get thread mutex */
+  pthread_mutex_lock(ags_thread_get_class_mutex());
+  
+  thread_mutex = thread->obj_mutex;
+  
+  pthread_mutex_unlock(ags_thread_get_class_mutex());
+
+  /* check is added */
+  pthread_mutex_lock(thread_mutex);
+
+  is_ready = (((AGS_THREAD_ADDED_TO_REGISTRY & (thread->flags)) != 0) ? TRUE: FALSE);
+
+  pthread_mutex_unlock(thread_mutex);
+  
+  return(is_ready);
+}
+
+void
+ags_thread_add_to_registry(AgsConnectable *connectable)
+{
+  AgsThread *thread;
+
+  if(ags_connectable_is_ready(connectable)){
+    return;
+  }
+  
+  thread = AGS_THREAD(connectable);
+
+  ags_thread_set_flags(thread, AGS_THREAD_ADDED_TO_REGISTRY);
+}
+
+void
+ags_thread_remove_from_registry(AgsConnectable *connectable)
+{
+  if(!ags_connectable_is_ready(connectable)){
+    return;
+  }
+
+  //TODO:JK: implement me
+}
+
+xmlNode*
+ags_thread_list_resource(AgsConnectable *connectable)
+{
+  xmlNode *node;
+  
+  node = NULL;
+
+  //TODO:JK: implement me
+  
+  return(node);
+}
+
+xmlNode*
+ags_thread_xml_compose(AgsConnectable *connectable)
+{
+  xmlNode *node;
+  
+  node = NULL;
+
+  //TODO:JK: implement me
+  
+  return(node);
+}
+
+void
+ags_thread_xml_parse(AgsConnectable *connectable,
+		    xmlNode *node)
+{
+  //TODO:JK: implement me
+}
+
+gboolean
+ags_thread_is_connected(AgsConnectable *connectable)
+{
+  AgsThread *thread;
+  
+  gboolean is_connected;
+
+  pthread_mutex_t *thread_mutex;
+
+  thread = AGS_THREAD(connectable);
+
+  /* get thread mutex */
+  pthread_mutex_lock(ags_thread_get_class_mutex());
+  
+  thread_mutex = thread->obj_mutex;
+  
+  pthread_mutex_unlock(ags_thread_get_class_mutex());
+
+  /* check is connected */
+  pthread_mutex_lock(thread_mutex);
+
+  is_connected = (((AGS_THREAD_CONNECTED & (thread->flags)) != 0) ? TRUE: FALSE);
+  
+  pthread_mutex_unlock(thread_mutex);
+  
+  return(is_connected);
+}
+
+void
+ags_thread_connect(AgsConnectable *connectable)
+{
+  AgsThread *thread, *child;
+
+  if(ags_connectable_is_connected(connectable)){
+    return;
+  }
+
+  thread = AGS_THREAD(connectable);
+
+  ags_thread_set_flags(thread, AGS_THREAD_CONNECTED);
+
+  child = g_atomic_pointer_get(&(thread->children));
+
+  while(child != NULL){
+    ags_connectable_connect(AGS_CONNECTABLE(child));
+
+    child = g_atomic_pointer_get(&(child->next));
+  }
+}
+
+void
+ags_thread_disconnect(AgsConnectable *connectable)
+{
+  AgsThread *thread, *child;
+
+  if(!ags_connectable_is_connected(connectable)){
+    return;
+  }
+
+  thread = AGS_THREAD(connectable);
+
+  ags_thread_unset_flags(thread, AGS_THREAD_CONNECTED);
+
+  child = g_atomic_pointer_get(&(thread->children));
+
+  while(child != NULL){
+    ags_connectable_disconnect(AGS_CONNECTABLE(child));
+
+    child = g_atomic_pointer_get(&(child->next));
   }
 }
 

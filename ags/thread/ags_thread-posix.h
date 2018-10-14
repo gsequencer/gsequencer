@@ -23,6 +23,7 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <ags/lib/ags_uuid.h>
 #include <ags/lib/ags_time.h>
 
 #define _GNU_SOURCE
@@ -64,6 +65,7 @@ typedef struct _AgsThreadClass AgsThreadClass;
 
 /**
  * AgsThreadFlags:
+ * @AGS_THREAD_ADDED_TO_REGISTRY: the thread was added to registry, see #AgsConnectable::add_to_registry()
  * @AGS_THREAD_CONNECTED: the thread was connected by #AgsConnectable::connect()
  * @AGS_THREAD_SINGLE_LOOP: the thread doesn't actually run in its owns thread
  * @AGS_THREAD_INITIAL_SYNC: initial sync indicates the thread wasn't synced before
@@ -88,25 +90,26 @@ typedef struct _AgsThreadClass AgsThreadClass;
  * enable/disable as flags.
  */
 typedef enum{
-  AGS_THREAD_CONNECTED               = 1,
-  AGS_THREAD_SINGLE_LOOP             = 1 <<  1,
-  AGS_THREAD_INITIAL_SYNC            = 1 <<  2,
-  AGS_THREAD_INITIAL_RUN             = 1 <<  3,
-  AGS_THREAD_RT_SETUP                = 1 <<  4,
-  AGS_THREAD_WAITING                 = 1 <<  5,
-  AGS_THREAD_RUNNING                 = 1 <<  6,
-  AGS_THREAD_IDLE                    = 1 <<  7,
-  AGS_THREAD_LOCKED                  = 1 <<  8,
-  AGS_THREAD_SUSPENDED               = 1 <<  9,
-  AGS_THREAD_READY                   = 1 << 10,
-  AGS_THREAD_UNREF_ON_EXIT           = 1 << 11,
-  AGS_THREAD_IS_CHAOS_TREE           = 1 << 12,
-  AGS_THREAD_IMMEDIATE_SYNC          = 1 << 13,
-  AGS_THREAD_RECOVER_INTERRUPTED     = 1 << 14,
-  AGS_THREAD_RESUME_INTERRUPTED      = 1 << 15,
-  AGS_THREAD_TIMING                  = 1 << 16,
-  AGS_THREAD_INTERMEDIATE_PRE_SYNC   = 1 << 17,
-  AGS_THREAD_INTERMEDIATE_POST_SYNC  = 1 << 18,
+  AGS_THREAD_ADDED_TO_REGISTRY       = 1,
+  AGS_THREAD_CONNECTED               = 1 <<  1,
+  AGS_THREAD_SINGLE_LOOP             = 1 <<  2,
+  AGS_THREAD_INITIAL_SYNC            = 1 <<  3,
+  AGS_THREAD_INITIAL_RUN             = 1 <<  4,
+  AGS_THREAD_RT_SETUP                = 1 <<  5,
+  AGS_THREAD_WAITING                 = 1 <<  6,
+  AGS_THREAD_RUNNING                 = 1 <<  7,
+  AGS_THREAD_IDLE                    = 1 <<  8,
+  AGS_THREAD_LOCKED                  = 1 <<  9,
+  AGS_THREAD_SUSPENDED               = 1 << 10,
+  AGS_THREAD_READY                   = 1 << 11,
+  AGS_THREAD_UNREF_ON_EXIT           = 1 << 12,
+  AGS_THREAD_IS_CHAOS_TREE           = 1 << 13,
+  AGS_THREAD_IMMEDIATE_SYNC          = 1 << 14,
+  AGS_THREAD_RECOVER_INTERRUPTED     = 1 << 15,
+  AGS_THREAD_RESUME_INTERRUPTED      = 1 << 16,
+  AGS_THREAD_TIMING                  = 1 << 17,
+  AGS_THREAD_INTERMEDIATE_PRE_SYNC   = 1 << 18,
+  AGS_THREAD_INTERMEDIATE_POST_SYNC  = 1 << 19,
 }AgsThreadFlags;
 
 /**
@@ -198,6 +201,8 @@ struct _AgsThread
 
   pthread_mutex_t *obj_cond;
   pthread_mutexattr_t *obj_condattr;
+
+  AgsUUID *uuid;
 
   guint delay;
   guint tic_delay;
