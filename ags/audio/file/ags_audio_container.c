@@ -383,7 +383,24 @@ ags_audio_container_class_init(AgsAudioContainerClass *audio_container)
 void
 ags_audio_container_connectable_interface_init(AgsConnectableInterface *connectable)
 {
-  ags_audio_container_parent_connectable_interface = g_type_interface_peek_parent(connectable);
+  connectable->get_uuid = ags_audio_container_get_uuid;
+  connectable->has_resource = ags_audio_container_has_resource;
+  connectable->is_ready = ags_audio_container_is_ready;
+
+  connectable->add_to_registry = ags_audio_container_add_to_registry;
+  connectable->remove_from_registry = ags_audio_container_remove_from_registry;
+
+  connectable->list_resource = ags_audio_container_list_resource;
+  connectable->xml_compose = ags_audio_container_xml_compose;
+  connectable->xml_parse = ags_audio_container_xml_parse;
+
+  connectable->is_connected = ags_audio_container_is_connected;
+  
+  connectable->connect = ags_audio_container_connect;
+  connectable->disconnect = ags_audio_container_disconnect;
+
+  connectable->connect_connection = NULL;
+  connectable->disconnect_connection = NULL;
 }
 
 void

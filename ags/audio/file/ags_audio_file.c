@@ -93,7 +93,6 @@ enum{
  */
 
 static gpointer ags_audio_file_parent_class = NULL;
-static AgsConnectableInterface *ags_audio_file_parent_connectable_interface;
 static guint signals[LAST_SIGNAL];
 
 static pthread_mutex_t ags_audio_file_class_mutex = PTHREAD_MUTEX_INITIALIZER;
@@ -343,7 +342,24 @@ ags_audio_file_class_init(AgsAudioFileClass *audio_file)
 void
 ags_audio_file_connectable_interface_init(AgsConnectableInterface *connectable)
 {
-  ags_audio_file_parent_connectable_interface = g_type_interface_peek_parent(connectable);
+  connectable->get_uuid = ags_audio_file_get_uuid;
+  connectable->has_resource = ags_audio_file_has_resource;
+  connectable->is_ready = ags_audio_file_is_ready;
+
+  connectable->add_to_registry = ags_audio_file_add_to_registry;
+  connectable->remove_from_registry = ags_audio_file_remove_from_registry;
+
+  connectable->list_resource = ags_audio_file_list_resource;
+  connectable->xml_compose = ags_audio_file_xml_compose;
+  connectable->xml_parse = ags_audio_file_xml_parse;
+
+  connectable->is_connected = ags_audio_file_is_connected;
+  
+  connectable->connect = ags_audio_file_connect;
+  connectable->disconnect = ags_audio_file_disconnect;
+
+  connectable->connect_connection = NULL;
+  connectable->disconnect_connection = NULL;
 }
 
 void

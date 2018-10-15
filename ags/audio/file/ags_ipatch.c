@@ -46,6 +46,19 @@ void ags_ipatch_get_property(GObject *gobject,
 			     GParamSpec *param_spec);
 void ags_ipatch_finalize(GObject *gobject);
 
+AgsUUID* ags_ipatch_get_uuid(AgsConnectable *connectable);
+gboolean ags_ipatch_has_resource(AgsConnectable *connectable);
+gboolean ags_ipatch_is_ready(AgsConnectable *connectable);
+void ags_ipatch_add_to_registry(AgsConnectable *connectable);
+void ags_ipatch_remove_from_registry(AgsConnectable *connectable);
+xmlNode* ags_ipatch_list_resource(AgsConnectable *connectable);
+xmlNode* ags_ipatch_xml_compose(AgsConnectable *connectable);
+void ags_ipatch_xml_parse(AgsConnectable *connectable,
+			  xmlNode *node);
+gboolean ags_ipatch_is_connected(AgsConnectable *connectable);
+void ags_ipatch_connect(AgsConnectable *connectable);
+void ags_ipatch_disconnect(AgsConnectable *connectable);
+
 gboolean ags_ipatch_open(AgsSoundContainer *sound_container, gchar *filename);
 guint ags_ipatch_get_level_count(AgsSoundContainer *sound_container);
 guint ags_ipatch_get_nesting_level(AgsSoundContainer *sound_container);
@@ -75,9 +88,6 @@ void ags_ipatch_close(AgsSoundContainer *sound_container);
  *
  * #AgsIpatch is the base object to ineract with libinstpatch.
  */
-
-static gpointer ags_ipatch_parent_class = NULL;
-static AgsSoundContainerInterface *ags_ipatch_parent_sound_container_interface;
  
 enum{
   PROP_0,
@@ -85,6 +95,10 @@ enum{
   PROP_FILENAME,
   PROP_MODE,
 };
+
+static gpointer ags_ipatch_parent_class = NULL;
+
+static pthread_mutex_t ags_ipatch_class_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 GType
 ags_ipatch_get_type()
@@ -106,6 +120,12 @@ ags_ipatch_get_type()
       (GInstanceInitFunc) ags_ipatch_init,
     };
 
+    static const GInterfaceInfo ags_connectable_interface_info = {
+      (GInterfaceInitFunc) ags_ipatch_connectable_interface_init,
+      NULL, /* interface_finalize */
+      NULL, /* interface_data */
+    };
+
     static const GInterfaceInfo ags_sound_container_interface_info = {
       (GInterfaceInitFunc) ags_ipatch_sound_container_interface_init,
       NULL, /* interface_finalize */
@@ -116,6 +136,10 @@ ags_ipatch_get_type()
 					      "AgsIpatch",
 					      &ags_ipatch_info,
 					      0);
+
+    g_type_add_interface_static(ags_type_ipatch,
+				AGS_TYPE_CONNECTABLE,
+				&ags_connectable_interface_info);
 
     g_type_add_interface_static(ags_type_ipatch,
 				AGS_TYPE_SOUND_CONTAINER,
@@ -194,10 +218,31 @@ ags_ipatch_class_init(AgsIpatchClass *ipatch)
 }
 
 void
+ags_ipatch_connectable_interface_init(AgsConnectableInterface *connectable)
+{
+  connectable->get_uuid = ags_ipatch_get_uuid;
+  connectable->has_resource = ags_ipatch_has_resource;
+  connectable->is_ready = ags_ipatch_is_ready;
+
+  connectable->add_to_registry = ags_ipatch_add_to_registry;
+  connectable->remove_from_registry = ags_ipatch_remove_from_registry;
+
+  connectable->list_resource = ags_ipatch_list_resource;
+  connectable->xml_compose = ags_ipatch_xml_compose;
+  connectable->xml_parse = ags_ipatch_xml_parse;
+
+  connectable->is_connected = ags_ipatch_is_connected;
+  
+  connectable->connect = ags_ipatch_connect;
+  connectable->disconnect = ags_ipatch_disconnect;
+
+  connectable->connect_connection = NULL;
+  connectable->disconnect_connection = NULL;
+}
+
+void
 ags_ipatch_sound_container_interface_init(AgsSoundContainerInterface *sound_container)
 {
-  ags_ipatch_parent_sound_container_interface = g_type_interface_peek_parent(sound_container);
-
   sound_container->open = ags_ipatch_open;
   
   sound_container->get_level_count = ags_ipatch_get_level_count;
@@ -223,7 +268,31 @@ ags_ipatch_sound_container_interface_init(AgsSoundContainerInterface *sound_cont
 void
 ags_ipatch_init(AgsIpatch *ipatch)
 {
+  pthread_mutex_t *mutex;
+  pthread_mutexattr_t *attr;
+
   ipatch->flags = 0;
+
+  /* add audio file mutex */
+  ipatch->obj_mutexattr = 
+    attr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
+  pthread_mutexattr_init(attr);
+  pthread_mutexattr_settype(attr,
+			    PTHREAD_MUTEX_RECURSIVE);
+
+#ifdef __linux__
+  pthread_mutexattr_setprotocol(attr,
+				PTHREAD_PRIO_INHERIT);
+#endif
+
+  ipatch->obj_mutex = 
+    mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
+  pthread_mutex_init(mutex,
+		     attr);  
+
+  /* uuid */
+  ipatch->uuid = ags_uuid_alloc();
+  ags_uuid_generate(ipatch->uuid);
 
   ipatch->soundcard = NULL;
 
@@ -252,7 +321,16 @@ ags_ipatch_set_property(GObject *gobject,
 {
   AgsIpatch *ipatch;
 
+  pthread_mutex_t *ipatch_mutex;
+
   ipatch = AGS_IPATCH(gobject);
+
+  /* get audio file mutex */
+  pthread_mutex_lock(ags_ipatch_get_class_mutex());
+  
+  ipatch_mutex = ipatch->obj_mutex;
+  
+  pthread_mutex_unlock(ags_ipatch_get_class_mutex());
 
   switch(prop_id){
   case PROP_SOUNDCARD:
@@ -261,7 +339,11 @@ ags_ipatch_set_property(GObject *gobject,
       
       soundcard = (GObject *) g_value_get_object(value);
 
+      pthread_mutex_lock(ipatch_mutex);
+
       if(soundcard == ((GObject *) ipatch->soundcard)){
+	pthread_mutex_unlock(ipatch_mutex);
+
 	return;
       }
 
@@ -274,6 +356,8 @@ ags_ipatch_set_property(GObject *gobject,
       }
       
       ipatch->soundcard = (GObject *) soundcard;
+
+      pthread_mutex_unlock(ipatch_mutex);
     }
     break;
   case PROP_FILENAME:
@@ -287,19 +371,31 @@ ags_ipatch_set_property(GObject *gobject,
     break;
   case PROP_MODE:
     {
+#ifdef AGS_WITH_LIBINSTPATCH      
+      IpatchFileHandle *handle;
+#else
+      gpointer handle;
+#endif
+
       gchar *mode;
       
       mode = (gchar *) g_value_get_string(value);
+
+      pthread_mutex_lock(ipatch_mutex);
       
       ipatch->mode = mode;
 
+      handle = ipatch->handle;
+      
+      pthread_mutex_lock(ipatch_mutex);
+
 #ifdef AGS_WITH_LIBINSTPATCH      
-      if(ipatch->handle != NULL){
+      if(handle != NULL){
 	GError *error;
 
 	error = NULL;
 
-	ipatch_file_default_open_method(ipatch->handle,
+	ipatch_file_default_open_method(handle,
 					mode,
 					&error);
 
@@ -324,22 +420,43 @@ ags_ipatch_get_property(GObject *gobject,
 {
   AgsIpatch *ipatch;
 
+  pthread_mutex_t *ipatch_mutex;
+
   ipatch = AGS_IPATCH(gobject);
+
+  /* get audio file mutex */
+  pthread_mutex_lock(ags_ipatch_get_class_mutex());
+  
+  ipatch_mutex = ipatch->obj_mutex;
+  
+  pthread_mutex_unlock(ags_ipatch_get_class_mutex());
 
   switch(prop_id){
   case PROP_SOUNDCARD:
     {
+      pthread_mutex_lock(ipatch_mutex);
+
       g_value_set_object(value, ipatch->soundcard);
+
+      pthread_mutex_unlock(ipatch_mutex);
     }
     break;
   case PROP_FILENAME:
     {
+      pthread_mutex_lock(ipatch_mutex);
+
       g_value_set_string(value, ipatch->filename);
+
+      pthread_mutex_unlock(ipatch_mutex);
     }
     break;
   case PROP_MODE:
     {
+      pthread_mutex_lock(ipatch_mutex);
+
       g_value_set_string(value, ipatch->mode);
+
+      pthread_mutex_unlock(ipatch_mutex);
     }
     break;
   default:
@@ -354,6 +471,12 @@ ags_ipatch_finalize(GObject *gobject)
   AgsIpatch *ipatch;
 
   ipatch = AGS_IPATCH(gobject);
+
+  pthread_mutex_destroy(ipatch->obj_mutex);
+  free(ipatch->obj_mutex);
+
+  pthread_mutexattr_destroy(ipatch->obj_mutexattr);
+  free(ipatch->obj_mutexattr);
   
   if(ipatch->soundcard != NULL){
     g_object_unref(ipatch->soundcard);
@@ -373,26 +496,361 @@ ags_ipatch_finalize(GObject *gobject)
   G_OBJECT_CLASS(ags_ipatch_parent_class)->finalize(gobject);
 }
 
+AgsUUID*
+ags_ipatch_get_uuid(AgsConnectable *connectable)
+{
+  AgsIpatch *ipatch;
+  
+  AgsUUID *ptr;
+
+  pthread_mutex_t *ipatch_mutex;
+
+  ipatch = AGS_IPATCH(connectable);
+
+  /* get audio file mutex */
+  pthread_mutex_lock(ags_ipatch_get_class_mutex());
+  
+  ipatch_mutex = ipatch->obj_mutex;
+  
+  pthread_mutex_unlock(ags_ipatch_get_class_mutex());
+
+  /* get UUID */
+  pthread_mutex_lock(ipatch_mutex);
+
+  ptr = ipatch->uuid;
+
+  pthread_mutex_unlock(ipatch_mutex);
+  
+  return(ptr);
+}
+
+gboolean
+ags_ipatch_has_resource(AgsConnectable *connectable)
+{
+  return(TRUE);
+}
+
+gboolean
+ags_ipatch_is_ready(AgsConnectable *connectable)
+{
+  AgsIpatch *ipatch;
+  
+  gboolean is_ready;
+
+  pthread_mutex_t *ipatch_mutex;
+
+  ipatch = AGS_IPATCH(connectable);
+
+  /* get audio file mutex */
+  pthread_mutex_lock(ags_ipatch_get_class_mutex());
+  
+  ipatch_mutex = ipatch->obj_mutex;
+  
+  pthread_mutex_unlock(ags_ipatch_get_class_mutex());
+
+  /* check is ready */
+  pthread_mutex_lock(ipatch_mutex);
+  
+  is_ready = (((AGS_IPATCH_ADDED_TO_REGISTRY & (ipatch->flags)) != 0) ? TRUE: FALSE);
+  
+  pthread_mutex_unlock(ipatch_mutex);
+
+  return(is_ready);
+}
+
+void
+ags_ipatch_add_to_registry(AgsConnectable *connectable)
+{
+  AgsIpatch *ipatch;
+
+  AgsRegistry *registry;
+  AgsRegistryEntry *entry;
+
+  AgsApplicationContext *application_context;
+
+  if(ags_connectable_is_ready(connectable)){
+    return;
+  }
+
+  ipatch = AGS_IPATCH(connectable);
+
+  ags_ipatch_set_flags(ipatch, AGS_IPATCH_ADDED_TO_REGISTRY);
+
+  application_context = ags_application_context_get_instance();
+
+  registry = ags_service_provider_get_registry(AGS_SERVICE_PROVIDER(application_context));
+
+  if(registry != NULL){
+    entry = ags_registry_entry_alloc(registry);
+    g_value_set_object(&(entry->entry),
+		       (gpointer) ipatch);
+    ags_registry_add_entry(registry,
+			   entry);
+  }  
+}
+
+void
+ags_ipatch_remove_from_registry(AgsConnectable *connectable)
+{
+  if(!ags_connectable_is_ready(connectable)){
+    return;
+  }
+
+  //TODO:JK: implement me
+}
+
+xmlNode*
+ags_ipatch_list_resource(AgsConnectable *connectable)
+{
+  xmlNode *node;
+  
+  node = NULL;
+
+  //TODO:JK: implement me
+  
+  return(node);
+}
+
+xmlNode*
+ags_ipatch_xml_compose(AgsConnectable *connectable)
+{
+  xmlNode *node;
+  
+  node = NULL;
+
+  //TODO:JK: implement me
+  
+  return(node);
+}
+
+void
+ags_ipatch_xml_parse(AgsConnectable *connectable,
+			      xmlNode *node)
+{
+  //TODO:JK: implement me  
+}
+
+gboolean
+ags_ipatch_is_connected(AgsConnectable *connectable)
+{
+  AgsIpatch *ipatch;
+  
+  gboolean is_connected;
+
+  pthread_mutex_t *ipatch_mutex;
+
+  ipatch = AGS_IPATCH(connectable);
+
+  /* get audio file mutex */
+  pthread_mutex_lock(ags_ipatch_get_class_mutex());
+  
+  ipatch_mutex = ipatch->obj_mutex;
+  
+  pthread_mutex_unlock(ags_ipatch_get_class_mutex());
+
+  /* check is connected */
+  pthread_mutex_lock(ipatch_mutex);
+
+  is_connected = (((AGS_IPATCH_CONNECTED & (ipatch->flags)) != 0) ? TRUE: FALSE);
+  
+  pthread_mutex_unlock(ipatch_mutex);
+
+  return(is_connected);
+}
+
+void
+ags_ipatch_connect(AgsConnectable *connectable)
+{
+  AgsIpatch *ipatch;
+
+  if(ags_connectable_is_connected(connectable)){
+    return;
+  }
+
+  ipatch = AGS_IPATCH(connectable);
+  
+  ags_ipatch_set_flags(ipatch, AGS_IPATCH_CONNECTED);
+}
+
+void
+ags_ipatch_disconnect(AgsConnectable *connectable)
+{
+  AgsIpatch *ipatch;
+
+  if(!ags_connectable_is_connected(connectable)){
+    return;
+  }
+
+  ipatch = AGS_IPATCH(connectable);
+
+  ags_ipatch_unset_flags(ipatch, AGS_IPATCH_CONNECTED);
+}
+
+/**
+ * ags_ipatch_get_class_mutex:
+ * 
+ * Use this function's returned mutex to access mutex fields.
+ *
+ * Returns: the class mutex
+ * 
+ * Since: 2.0.36
+ */
+pthread_mutex_t*
+ags_ipatch_get_class_mutex()
+{
+  return(&ags_ipatch_class_mutex);
+}
+
+/**
+ * ags_ipatch_test_flags:
+ * @ipatch: the #AgsIpatch
+ * @flags: the flags
+ *
+ * Test @flags to be set on @ipatch.
+ * 
+ * Returns: %TRUE if flags are set, else %FALSE
+ *
+ * Since: 2.0.36
+ */
+gboolean
+ags_ipatch_test_flags(AgsIpatch *ipatch, guint flags)
+{
+  gboolean retval;  
+  
+  pthread_mutex_t *ipatch_mutex;
+
+  if(!AGS_IS_IPATCH(ipatch)){
+    return(FALSE);
+  }
+
+  /* get ipatch mutex */
+  pthread_mutex_lock(ags_ipatch_get_class_mutex());
+  
+  ipatch_mutex = ipatch->obj_mutex;
+  
+  pthread_mutex_unlock(ags_ipatch_get_class_mutex());
+
+  /* test */
+  pthread_mutex_lock(ipatch_mutex);
+
+  retval = (flags & (ipatch->flags)) ? TRUE: FALSE;
+  
+  pthread_mutex_unlock(ipatch_mutex);
+
+  return(retval);
+}
+
+/**
+ * ags_ipatch_set_flags:
+ * @ipatch: the #AgsIpatch
+ * @flags: see #AgsIpatchFlags-enum
+ *
+ * Enable a feature of @ipatch.
+ *
+ * Since: 2.0.36
+ */
+void
+ags_ipatch_set_flags(AgsIpatch *ipatch, guint flags)
+{
+  pthread_mutex_t *ipatch_mutex;
+
+  if(!AGS_IS_IPATCH(ipatch)){
+    return;
+  }
+
+  /* get ipatch mutex */
+  pthread_mutex_lock(ags_ipatch_get_class_mutex());
+  
+  ipatch_mutex = ipatch->obj_mutex;
+  
+  pthread_mutex_unlock(ags_ipatch_get_class_mutex());
+
+  //TODO:JK: add more?
+
+  /* set flags */
+  pthread_mutex_lock(ipatch_mutex);
+
+  ipatch->flags |= flags;
+  
+  pthread_mutex_unlock(ipatch_mutex);
+}
+    
+/**
+ * ags_ipatch_unset_flags:
+ * @ipatch: the #AgsIpatch
+ * @flags: see #AgsIpatchFlags-enum
+ *
+ * Disable a feature of @ipatch.
+ *
+ * Since: 2.0.36
+ */
+void
+ags_ipatch_unset_flags(AgsIpatch *ipatch, guint flags)
+{  
+  pthread_mutex_t *ipatch_mutex;
+
+  if(!AGS_IS_IPATCH(ipatch)){
+    return;
+  }
+
+  /* get ipatch mutex */
+  pthread_mutex_lock(ags_ipatch_get_class_mutex());
+  
+  ipatch_mutex = ipatch->obj_mutex;
+  
+  pthread_mutex_unlock(ags_ipatch_get_class_mutex());
+
+  //TODO:JK: add more?
+
+  /* unset flags */
+  pthread_mutex_lock(ipatch_mutex);
+
+  ipatch->flags &= (~flags);
+  
+  pthread_mutex_unlock(ipatch_mutex);
+}
+
 gboolean
 ags_ipatch_open(AgsSoundContainer *sound_container, gchar *filename)
 {
   AgsIpatch *ipatch;
 
 #ifdef AGS_WITH_LIBINSTPATCH
+  IpatchFileHandle *handle;
   IpatchFileIOFuncs *io_funcs;
 #endif
 
+  GObject *reader;
+  
+  gchar *old_filename;
+  
   gboolean retval;
   
   GError *error;
 
+  pthread_mutex_t *ipatch_mutex;
+
   ipatch = AGS_IPATCH(sound_container);
 
+  /* get ipatch mutex */
+  pthread_mutex_lock(ags_ipatch_get_class_mutex());
+  
+  ipatch_mutex = ipatch->obj_mutex;
+  
+  pthread_mutex_unlock(ags_ipatch_get_class_mutex());
+
+  /* get some fields */
+  pthread_mutex_lock(ipatch_mutex);
+
+  old_filename = ipatch->filename;
+  
+  pthread_mutex_unlock(ipatch_mutex);
+
   /* close current */
-  if(ipatch->filename != NULL){
+  if(old_filename != NULL){
     ags_sound_container_close(sound_container);
     
-    g_free(ipatch->filename);
+    g_free(old_filename);
   }
 
   /* check suffix */
@@ -405,51 +863,64 @@ ags_ipatch_open(AgsSoundContainer *sound_container, gchar *filename)
   error = NULL;
 
 #ifdef AGS_WITH_LIBINSTPATCH
-  ipatch->handle = ipatch_file_identify_open(ipatch->filename,
-					     &error);
+  handle = ipatch_file_identify_open(filename,
+				     &error);
+
+  pthread_mutex_lock(ipatch_mutex);
+
+  ipatch->handle = handle;
+
+  pthread_mutex_unlock(ipatch_mutex);
 #endif
   
   if(error != NULL){
     g_warning("%s", error->message);
   }
 
-  if(ipatch->handle == NULL){
+  if(handle == NULL){
     return(FALSE);
   }
 
+  reader = NULL;
   retval = FALSE;
   
-  if(IPATCH_IS_DLS_FILE(ipatch->handle->file)){
-    ipatch->flags |= AGS_IPATCH_DLS2;
+  if(IPATCH_IS_DLS_FILE(handle->file)){
+    ags_ipatch_set_flags(ipatch, AGS_IPATCH_DLS2);
 
     /* dls2 */
-    ipatch->reader = (GObject *) ags_ipatch_dls2_reader_new(ipatch);
+    reader = (GObject *) ags_ipatch_dls2_reader_new(ipatch);
 
-    if(ags_ipatch_dls2_reader_load(ipatch->reader,
-				   ipatch->handle)){
+    if(ags_ipatch_dls2_reader_load(reader,
+				   handle)){
       retval = TRUE;
     }    
-  }else if(IPATCH_IS_SF2_FILE(ipatch->handle->file)){
-    ipatch->flags |= AGS_IPATCH_SF2;
+  }else if(IPATCH_IS_SF2_FILE(handle->file)){
+    ags_ipatch_set_flags(ipatch, AGS_IPATCH_SF2);
 
     /* sf2 */
-    ipatch->reader = (GObject *) ags_ipatch_sf2_reader_new(ipatch);
+    reader = (GObject *) ags_ipatch_sf2_reader_new(ipatch);
 
-    if(ags_ipatch_sf2_reader_load(ipatch->reader,
-				  ipatch->handle)){
+    if(ags_ipatch_sf2_reader_load(reader,
+				  handle)){
       retval = TRUE;
     }
-  }else if(IPATCH_IS_GIG_FILE(ipatch->handle->file)){
-    ipatch->flags |= AGS_IPATCH_GIG;
+  }else if(IPATCH_IS_GIG_FILE(handle->file)){
+    ags_ipatch_set_flags(ipatch, AGS_IPATCH_GIG);
 
     /* gig */
-    ipatch->reader = (GObject *) ags_ipatch_gig_reader_new(ipatch);
+    reader = (GObject *) ags_ipatch_gig_reader_new(ipatch);
 
-    if(ags_ipatch_gig_reader_load(ipatch->reader,
-				  ipatch->handle)){
+    if(ags_ipatch_gig_reader_load(reader,
+				  handle)){
       retval = TRUE;
     }
   }
+
+  pthread_mutex_lock(ipatch_mutex);
+
+  ipatch->reader = reader;
+
+  pthread_mutex_unlock(ipatch_mutex);
 
   return(retval);
 }
@@ -461,11 +932,11 @@ ags_ipatch_get_level_count(AgsSoundContainer *sound_container)
 
   ipatch = AGS_IPATCH(sound_container);
 
-  if((AGS_IPATCH_DLS2 & (ipatch->flags)) != 0){
+  if(ags_ipatch_test_flags(ipatch, AGS_IPATCH_DLS2)){
     return(3);
-  }else if((AGS_IPATCH_SF2 & (ipatch->flags)) != 0){
+  }else if(ags_ipatch_test_flags(ipatch, AGS_IPATCH_SF2)){
     return(4);
-  }else if((AGS_IPATCH_GIG & (ipatch->flags)) != 0){
+  }else if(ags_ipatch_test_flags(ipatch, AGS_IPATCH_GIG)){
     return(3);
   }
 
@@ -477,9 +948,27 @@ ags_ipatch_get_nesting_level(AgsSoundContainer *sound_container)
 {
   AgsIpatch *ipatch;
 
-  ipatch = AGS_IPATCH(sound_container);
+  guint nesting_level;
+
+  pthread_mutex_t *ipatch_mutex;
   
-  return(ipatch->nesting_level);
+  ipatch = AGS_IPATCH(sound_container);
+
+  /* get ipatch mutex */
+  pthread_mutex_lock(ags_ipatch_get_class_mutex());
+  
+  ipatch_mutex = ipatch->obj_mutex;
+  
+  pthread_mutex_unlock(ags_ipatch_get_class_mutex());
+
+  /* get nesting level */
+  pthread_mutex_lock(ipatch_mutex);
+
+  nesting_level = ipatch->nesting_level;
+
+  pthread_mutex_unlock(ipatch_mutex);
+  
+  return(nesting_level);
 }
 
 gchar*
@@ -487,9 +976,27 @@ ags_ipatch_get_level_id(AgsSoundContainer *sound_container)
 {
   AgsIpatch *ipatch;
 
-  ipatch = AGS_IPATCH(sound_container);
+  gchar *level_id;
+
+  pthread_mutex_t *ipatch_mutex;
   
-  return(ipatch->level_id);
+  ipatch = AGS_IPATCH(sound_container);
+
+  /* get ipatch mutex */
+  pthread_mutex_lock(ags_ipatch_get_class_mutex());
+  
+  ipatch_mutex = ipatch->obj_mutex;
+  
+  pthread_mutex_unlock(ags_ipatch_get_class_mutex());
+
+  /* get level id */
+  pthread_mutex_lock(ipatch_mutex);
+
+  level_id = ipatch->level_id;
+
+  pthread_mutex_unlock(ipatch_mutex);
+  
+  return(level_id);
 }
 
 guint
@@ -497,9 +1004,27 @@ ags_ipatch_get_level_index(AgsSoundContainer *sound_container)
 {
   AgsIpatch *ipatch;
 
-  ipatch = AGS_IPATCH(sound_container);
+  guint level_index;
+
+  pthread_mutex_t *ipatch_mutex;
   
-  return(ipatch->level_index);
+  ipatch = AGS_IPATCH(sound_container);
+
+  /* get ipatch mutex */
+  pthread_mutex_lock(ags_ipatch_get_class_mutex());
+  
+  ipatch_mutex = ipatch->obj_mutex;
+  
+  pthread_mutex_unlock(ags_ipatch_get_class_mutex());
+  
+  /* get nesting level */
+  pthread_mutex_lock(ipatch_mutex);
+
+  level_index = ipatch->level_index;
+
+  pthread_mutex_unlock(ipatch_mutex);
+  
+  return(level_index);
 }
 
 gchar**
@@ -508,16 +1033,30 @@ ags_ipatch_get_sublevel_name(AgsSoundContainer *sound_container)
   AgsIpatch *ipatch;
 
   guint sublevel;
+
+  pthread_mutex_t *ipatch_mutex;
   
   ipatch = AGS_IPATCH(sound_container);
 
-  sublevel = ipatch->nesting_level;
+  /* get ipatch mutex */
+  pthread_mutex_lock(ags_ipatch_get_class_mutex());
+  
+  ipatch_mutex = ipatch->obj_mutex;
+  
+  pthread_mutex_unlock(ags_ipatch_get_class_mutex());
+
+  /* sublevel */
+  sublevel = ags_ipatch_get_nesting_level(ipatch);
   
 #ifdef AGS_WITH_LIBINSTPATCH  
-  if((AGS_IPATCH_DLS2 & (ipatch->flags)) != 0){
+  if(ags_ipatch_test_flags(ipatch, AGS_IPATCH_DLS2)){
     AgsIpatchDLS2Reader *ipatch_dls2_reader;
     
+    pthread_mutex_lock(ipatch_mutex);
+
     ipatch_dls2_reader = AGS_IPATCH_DLS2_READER(ipatch->reader);
+
+    pthread_mutex_unlock(ipatch_mutex);
 
     switch(sublevel){
     case AGS_DLS2_FILENAME:
@@ -541,10 +1080,14 @@ ags_ipatch_get_sublevel_name(AgsSoundContainer *sound_container)
 								     ipatch_dls2_reader->index_selected[1]));
       }
     };
-  }else if((AGS_IPATCH_SF2 & (ipatch->flags)) != 0){
+  }else if(ags_ipatch_test_flags(ipatch, AGS_IPATCH_SF2)){
     AgsIpatchSF2Reader *ipatch_sf2_reader;
     
+    pthread_mutex_lock(ipatch_mutex);
+
     ipatch_sf2_reader = AGS_IPATCH_SF2_READER(ipatch->reader);
+
+    pthread_mutex_unlock(ipatch_mutex);
     
     switch(sublevel){
     case AGS_SF2_FILENAME:
@@ -573,10 +1116,14 @@ ags_ipatch_get_sublevel_name(AgsSoundContainer *sound_container)
 									       ipatch_sf2_reader->index_selected[1], ipatch_sf2_reader->index_selected[2]));
       }
     };
-  }else if((AGS_IPATCH_GIG & (ipatch->flags)) != 0){
+  }else if(ags_ipatch_test_flags(ipatch, AGS_IPATCH_GIG)){
     AgsIpatchGigReader *ipatch_gig_reader;
     
+    pthread_mutex_lock(ipatch_mutex);
+
     ipatch_gig_reader = AGS_IPATCH_GIG_READER(ipatch->reader);
+
+    pthread_mutex_unlock(ipatch_mutex);
 
     switch(sublevel){
     case AGS_GIG_FILENAME:
@@ -613,21 +1160,41 @@ ags_ipatch_level_up(AgsSoundContainer *sound_container,
   AgsIpatch *ipatch;
   
   guint retval;
-  
-  ipatch = AGS_IPATCH(sound_container);
 
+  pthread_mutex_t *ipatch_mutex;
+  
   if(level_count == 0){
     return(0);
   }
 
-  if(ipatch->nesting_level >= level_count){
+  ipatch = AGS_IPATCH(sound_container);
+
+  /* get ipatch mutex */
+  pthread_mutex_lock(ags_ipatch_get_class_mutex());
+  
+  ipatch_mutex = ipatch->obj_mutex;
+  
+  pthread_mutex_unlock(ags_ipatch_get_class_mutex());
+
+  /* check boundaries */
+  if(ags_ipatch_get_nesting_level(ipatch) >= level_count){
+    /* level up */
+    pthread_mutex_lock(ipatch_mutex);
+
     retval = level_count;
-    
+
     ipatch->nesting_level -= level_count;
+
+    pthread_mutex_unlock(ipatch_mutex);
   }else{
+    /* level up */
+    pthread_mutex_lock(ipatch_mutex);
+
     retval = ipatch->nesting_level;
     
     ipatch->nesting_level = 0;
+
+    pthread_mutex_unlock(ipatch_mutex);
   }
 
   return(retval);
@@ -648,17 +1215,31 @@ ags_ipatch_select_level_by_index(AgsSoundContainer *sound_container,
 
   guint sublevel;
   guint retval;
+
+  pthread_mutex_t *ipatch_mutex;
   
   ipatch = AGS_IPATCH(sound_container);
 
-  sublevel = ipatch->nesting_level;
+  /* get ipatch mutex */
+  pthread_mutex_lock(ags_ipatch_get_class_mutex());
+  
+  ipatch_mutex = ipatch->obj_mutex;
+  
+  pthread_mutex_unlock(ags_ipatch_get_class_mutex());
+
+  /* sublevel */
+  sublevel = ags_ipatch_get_nesting_level(ipatch);
   retval = 0;
   
 #ifdef AGS_WITH_LIBINSTPATCH
-  if((AGS_IPATCH_DLS2 & (ipatch->flags)) != 0){
+  if(ags_ipatch_test_flags(ipatch, AGS_IPATCH_DLS2)){
     AgsIpatchDLS2Reader *ipatch_dls2_reader;
     
+    pthread_mutex_lock(ipatch_mutex);
+
     ipatch_dls2_reader = AGS_IPATCH_DLS2_READER(ipatch->reader);
+
+    pthread_mutex_unlock(ipatch_mutex);
     
     switch(sublevel){
     case AGS_DLS2_FILENAME:
@@ -681,10 +1262,14 @@ ags_ipatch_select_level_by_index(AgsSoundContainer *sound_container,
       }
       break;
     };
-  }else if((AGS_IPATCH_SF2 & (ipatch->flags)) != 0){
+  }else if(ags_ipatch_test_flags(ipatch, AGS_IPATCH_SF2)){
     AgsIpatchSF2Reader *ipatch_sf2_reader;
     
+    pthread_mutex_lock(ipatch_mutex);
+
     ipatch_sf2_reader = AGS_IPATCH_SF2_READER(ipatch->reader);
+
+    pthread_mutex_unlock(ipatch_mutex);
     
     switch(sublevel){
     case AGS_SF2_FILENAME:
@@ -714,10 +1299,14 @@ ags_ipatch_select_level_by_index(AgsSoundContainer *sound_container,
       }
       break;
     };
-  }else if((AGS_IPATCH_GIG & (ipatch->flags)) != 0){
+  }else if(ags_ipatch_test_flags(ipatch, AGS_IPATCH_GIG)){
     AgsIpatchGigReader *ipatch_gig_reader;
     
+    pthread_mutex_lock(ipatch_mutex);
+
     ipatch_gig_reader = AGS_IPATCH_GIG_READER(ipatch->reader);
+
+    pthread_mutex_unlock(ipatch_mutex);
     
     switch(sublevel){
     case AGS_GIG_FILENAME:
@@ -758,11 +1347,11 @@ ags_ipatch_get_resource_all(AgsSoundContainer *sound_container)
   resource = NULL;
   
 #ifdef AGS_WITH_LIBINSTPATCH
-  if((AGS_IPATCH_DLS2 & (ipatch->flags)) != 0){
+  if(ags_ipatch_test_flags(ipatch, AGS_IPATCH_DLS2)){
     //TODO:JK: implement me
-  }else if((AGS_IPATCH_SF2 & (ipatch->flags)) != 0){
+  }else if(ags_ipatch_test_flags(ipatch, AGS_IPATCH_SF2)){
     //TODO:JK: implement me
-  }else if((AGS_IPATCH_GIG & (ipatch->flags)) != 0){
+  }else if(ags_ipatch_test_flags(ipatch, AGS_IPATCH_GIG)){
     //TODO:JK: implement me
   }
 #endif
@@ -792,7 +1381,6 @@ GList*
 ags_ipatch_get_resource_current(AgsSoundContainer *sound_container)
 {
   AgsIpatch *ipatch;
-  AgsIpatchSF2Reader *ipatch_sf2_reader;
 
 #ifdef AGS_WITH_LIBINSTPATCH
   IpatchItem *ipatch_item;
@@ -805,38 +1393,132 @@ ags_ipatch_get_resource_current(AgsSoundContainer *sound_container)
 
   guint i, i_stop;
   
+  pthread_mutex_t *ipatch_mutex;
+  
   ipatch = AGS_IPATCH(sound_container);
-  ipatch_sf2_reader = ipatch->reader;
 
+  /* get ipatch mutex */
+  pthread_mutex_lock(ags_ipatch_get_class_mutex());
+  
+  ipatch_mutex = ipatch->obj_mutex;
+  
+  pthread_mutex_unlock(ags_ipatch_get_class_mutex());
+
+  /* get sound resource */
   sound_resource = NULL;
+
+  if(ags_ipatch_test_flags(ipatch, AGS_IPATCH_DLS2)){
+    AgsIpatchDLS2Reader *ipatch_dls2_reader;
+    
+    /* get dls2 reader */
+    pthread_mutex_lock(ipatch_mutex);
+
+    ipatch_dls2_reader = ipatch->reader;
+
+    pthread_mutex_unlock(ipatch_mutex);
   
 #ifdef AGS_WITH_LIBINSTPATCH
-  ipatch_list = ipatch_sf2_inst_get_zones(ipatch_sf2_reader->instrument);
+    ipatch_list = ipatch_dls2_inst_get_regions(ipatch_dls2_reader->instrument);
 
-  if(ipatch_list != NULL){
-    ipatch_list_init_iter(ipatch_list, &sample_iter);
-    ipatch_iter_first(&sample_iter);
+    if(ipatch_list != NULL){
+      ipatch_list_init_iter(ipatch_list, &sample_iter);
+      ipatch_iter_first(&sample_iter);
 
-    i_stop = ipatch_iter_count(&sample_iter);
+      i_stop = ipatch_iter_count(&sample_iter);
     
-    for(i  = 0; i < i_stop; i++){
-      AgsIpatchSample *ipatch_sample;
+      for(i  = 0; i < i_stop; i++){
+	AgsIpatchSample *ipatch_sample;
 
-      ipatch_item = ipatch_sf2_izone_get_sample(ipatch_iter_get(&sample_iter));
+	ipatch_item = ipatch_dls2_region_get_sample(ipatch_iter_get(&sample_iter));
 
-      ipatch_sample = ags_ipatch_sample_new();
-      g_object_set(ipatch_sample,
-		   "sample", ipatch_item,
-		   NULL);
+	ipatch_sample = ags_ipatch_sample_new();
+	g_object_set(ipatch_sample,
+		     "sample", ipatch_item,
+		     NULL);
 
-      sound_resource = g_list_prepend(sound_resource,
-				      ipatch_sample);
+	sound_resource = g_list_prepend(sound_resource,
+					ipatch_sample);
 	
-      /* iterate */
-      ipatch_iter_next(&sample_iter);
+	/* iterate */
+	ipatch_iter_next(&sample_iter);
+      }
     }
-  }
 #endif
+  }else if(ags_ipatch_test_flags(ipatch, AGS_IPATCH_SF2)){
+    AgsIpatchSF2Reader *ipatch_sf2_reader;
+    
+    /* get sf2 reader */
+    pthread_mutex_lock(ipatch_mutex);
+
+    ipatch_sf2_reader = ipatch->reader;
+
+    pthread_mutex_unlock(ipatch_mutex);
+  
+#ifdef AGS_WITH_LIBINSTPATCH
+    ipatch_list = ipatch_sf2_inst_get_zones(ipatch_sf2_reader->instrument);
+
+    if(ipatch_list != NULL){
+      ipatch_list_init_iter(ipatch_list, &sample_iter);
+      ipatch_iter_first(&sample_iter);
+
+      i_stop = ipatch_iter_count(&sample_iter);
+    
+      for(i  = 0; i < i_stop; i++){
+	AgsIpatchSample *ipatch_sample;
+
+	ipatch_item = ipatch_sf2_izone_get_sample(ipatch_iter_get(&sample_iter));
+
+	ipatch_sample = ags_ipatch_sample_new();
+	g_object_set(ipatch_sample,
+		     "sample", ipatch_item,
+		     NULL);
+
+	sound_resource = g_list_prepend(sound_resource,
+					ipatch_sample);
+	
+	/* iterate */
+	ipatch_iter_next(&sample_iter);
+      }
+    }
+#endif
+  }else if(ags_ipatch_test_flags(ipatch, AGS_IPATCH_GIG)){
+    AgsIpatchGigReader *ipatch_gig_reader;
+    
+    /* get gig reader */
+    pthread_mutex_lock(ipatch_mutex);
+
+    ipatch_gig_reader = ipatch->reader;
+
+    pthread_mutex_unlock(ipatch_mutex);
+  
+#ifdef AGS_WITH_LIBINSTPATCH
+    ipatch_list = ipatch_dls2_inst_get_regions(ipatch_gig_reader->instrument);
+
+    if(ipatch_list != NULL){
+      ipatch_list_init_iter(ipatch_list, &sample_iter);
+      ipatch_iter_first(&sample_iter);
+
+      i_stop = ipatch_iter_count(&sample_iter);
+    
+      for(i  = 0; i < i_stop; i++){
+	AgsIpatchSample *ipatch_sample;
+
+	ipatch_item = ipatch_dls2_region_get_sample(ipatch_iter_get(&sample_iter));
+
+	ipatch_sample = ags_ipatch_sample_new();
+	g_object_set(ipatch_sample,
+		     "sample", ipatch_item,
+		     NULL);
+
+	sound_resource = g_list_prepend(sound_resource,
+					ipatch_sample);
+	
+	/* iterate */
+	ipatch_iter_next(&sample_iter);
+      }
+    }
+#endif
+  }
 
   sound_resource = g_list_reverse(sound_resource);
   

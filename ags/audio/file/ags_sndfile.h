@@ -23,6 +23,8 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <ags/libags.h>
+
 #include <sndfile.h>
 
 #define AGS_TYPE_SNDFILE                (ags_sndfile_get_type())
@@ -37,14 +39,18 @@ typedef struct _AgsSndfileClass AgsSndfileClass;
 
 /**
  * AgsSndfileFlags:
+ * @AGS_SNDFILE_ADDED_TO_REGISTRY: the sndfile was added to registry, see #AgsConnectable::add_to_registry()
+ * @AGS_SNDFILE_CONNECTED: indicates the sndfile was connected by calling #AgsConnectable::connect()
  * @AGS_SNDFILE_VIRTUAL: virtual IO
  * 
  * Enum values to control the behavior or indicate internal state of #AgsSndfile by
  * enable/disable as flags.
  */
 typedef enum{
-  AGS_SNDFILE_VIRTUAL       = 1,
-  AGS_SNDFILE_FILL_CACHE    = 1 <<  1,
+  AGS_SNDFILE_ADDED_TO_REGISTRY    = 1,
+  AGS_SNDFILE_CONNECTED            = 1 <<  1,
+  AGS_SNDFILE_VIRTUAL              = 1 <<  2,
+  AGS_SNDFILE_FILL_CACHE           = 1 <<  3,
 }AgsSndfileFlags;
 
 struct _AgsSndfile
@@ -52,6 +58,11 @@ struct _AgsSndfile
   GObject object;
 
   guint flags;
+
+  pthread_mutex_t *obj_mutex;
+  pthread_mutexattr_t *obj_mutexattr;
+
+  AgsUUID *uuid;
 
   guint audio_channels;
   gint64 *audio_channel_written;
@@ -79,6 +90,12 @@ struct _AgsSndfileClass
 };
 
 GType ags_sndfile_get_type();
+
+pthread_mutex_t* ags_sndfile_get_class_mutex();
+
+gboolean ags_sndfile_test_flags(AgsSndfile *sndfile, guint flags);
+void ags_sndfile_set_flags(AgsSndfile *sndfile, guint flags);
+void ags_sndfile_unset_flags(AgsSndfile *sndfile, guint flags);
 
 AgsSndfile* ags_sndfile_new();
 

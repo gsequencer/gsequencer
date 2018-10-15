@@ -1,7 +1,10 @@
 ags (2.0.36)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented AgsConnectable interface of AgsAudioContainer and AgsAudioFile
+	* implemented AgsConnectable interface of AgsIpatch and AgsSndfile
 	* implemented thread-safety of AgsAudioContainer and AgsAudioFile
+	* implemented thread-safety of AgsIpatch and AgsSndfile
 	* added ags_connectable_test.c
 	* added ags_soundcard_test.c
 	* added ags_reset_peak_test.c
