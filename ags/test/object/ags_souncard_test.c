@@ -77,6 +77,23 @@ void ags_soundcard_test_get_loop_offset();
 
 #define AGS_SOUNDCARD_TEST_SET_DEVICE_DEVICE "ags-test-default-0"
 
+#define AGS_SOUNDCARD_TEST_SET_PRESETS_CHANNELS (2)
+#define AGS_SOUNDCARD_TEST_SET_PRESETS_SAMPLERATE (44100)
+#define AGS_SOUNDCARD_TEST_SET_PRESETS_BUFFER_SIZE (512)
+#define AGS_SOUNDCARD_TEST_SET_PRESETS_FORMAT (AGS_SOUNDCARD_SIGNED_16_BIT)
+
+#define AGS_SOUNDCARD_TEST_SET_BPM_BPM (145.0)
+
+#define AGS_SOUNDCARD_TEST_SET_DELAY_FACTOR_DELAY_FACTOR (1.0 / 8.0)
+
+#define AGS_SOUNDCARD_TEST_SET_NOTE_OFFSET_NOTE_OFFSET (16 * 64)
+
+#define AGS_SOUNDCARD_TEST_SET_NOTE_OFFSET_ABSOLUTE_NOTE_OFFSET (16 * 64)
+
+#define AGS_SOUNDCARD_TEST_SET_LOOP_LOOP_LEFT (0)
+#define AGS_SOUNDCARD_TEST_SET_LOOP_LOOP_RIGHT (16 * 4)
+#define AGS_SOUNDCARD_TEST_SET_DO_LOOP (TRUE)
+  
 GType soundcard_test_types[10];
  
 /* The suite initialization function.
@@ -140,7 +157,7 @@ ags_soundcard_test_set_application_context()
       success = FALSE;
     }
     
-    ags_soundcard_set_application_context(current,
+    ags_soundcard_set_application_context(AGS_SOUNDCARD(current),
 					  application_context);
   }
 
@@ -168,7 +185,7 @@ ags_soundcard_test_get_application_context()
     current = g_object_new(soundcard_test_types[i],
 			   NULL);
 
-    ags_soundcard_set_application_context(current,
+    ags_soundcard_set_application_context(AGS_SOUNDCARD(current),
 					  application_context);
 
     if(AGS_SOUNDCARD_GET_INTERFACE(AGS_SOUNDCARD(current))->get_application_context == NULL){
@@ -177,7 +194,7 @@ ags_soundcard_test_get_application_context()
       success = FALSE;
     }
 
-    retval = ags_soundcard_get_application_context(current);
+    retval = ags_soundcard_get_application_context(AGS_SOUNDCARD(current));
 
     if(retval != application_context){
       g_message("AgsSoundcard::get-application-context failed: %s", G_OBJECT_TYPE_NAME(current));
@@ -192,16 +209,12 @@ ags_soundcard_test_get_application_context()
 void
 ags_soundcard_test_set_device()
 {
-  AgsApplicationContext *application_context;
-  
   GObject *current;
   
   GType current_type;
 
   guint i;
   gboolean success;
-
-  application_context = ags_thread_application_context_new();
 
   success = TRUE;
   
@@ -215,7 +228,7 @@ ags_soundcard_test_set_device()
       success = FALSE;
     }
     
-    ags_soundcard_set_device(current,
+    ags_soundcard_set_device(AGS_SOUNDCARD(current),
 			     AGS_SOUNDCARD_TEST_SET_DEVICE_DEVICE);
   }
 
@@ -225,8 +238,6 @@ ags_soundcard_test_set_device()
 void
 ags_soundcard_test_get_device()
 {
-  AgsApplicationContext *application_context;
-  
   GObject *current;
   
   GType current_type;
@@ -235,8 +246,6 @@ ags_soundcard_test_get_device()
   
   guint i;
   gboolean success;
-
-  application_context = ags_thread_application_context_new();
 
   success = TRUE;
   
@@ -250,7 +259,7 @@ ags_soundcard_test_get_device()
       success = FALSE;
     }
     
-    retval = ags_soundcard_get_device(current);
+    retval = ags_soundcard_get_device(AGS_SOUNDCARD(current));
 
     if(retval == NULL){
       g_message("AgsSoundcard::get-device returns NULL: %s", G_OBJECT_TYPE_NAME(current));
@@ -265,8 +274,6 @@ ags_soundcard_test_get_device()
 void
 ags_soundcard_test_pcm_info()
 {
-  AgsApplicationContext *application_context;
-  
   GObject *current;
   
   GType current_type;
@@ -277,8 +284,6 @@ ags_soundcard_test_pcm_info()
   gboolean success;
 
   GError *error;
-  
-  application_context = ags_thread_application_context_new();
 
   success = TRUE;
   
@@ -287,13 +292,13 @@ ags_soundcard_test_pcm_info()
 			   NULL);
 
     if(AGS_SOUNDCARD_GET_INTERFACE(AGS_SOUNDCARD(current))->pcm_info == NULL){
-      g_message("AgsSoundcard::get-device missing: %s", G_OBJECT_TYPE_NAME(current));
+      g_message("AgsSoundcard::pcm-info missing: %s", G_OBJECT_TYPE_NAME(current));
       
       success = FALSE;
     }
 
     error = NULL;
-    retval = ags_soundcard_pcm_info(current,
+    retval = ags_soundcard_pcm_info(AGS_SOUNDCARD(current),
 				    NULL,
 				    NULL, NULL,
 				    NULL, NULL,
@@ -311,121 +316,640 @@ ags_soundcard_test_pcm_info()
 void
 ags_soundcard_test_get_capability()
 {
-  //TODO:JK: implement me
+  GObject *current;
+  
+  GType current_type;
+
+  guint retval;
+  guint i;
+  gboolean success;
+
+  success = TRUE;
+  
+  for(i = 0; soundcard_test_types[i] != G_TYPE_NONE; i++){
+    current = g_object_new(soundcard_test_types[i],
+			   NULL);
+
+    if(AGS_SOUNDCARD_GET_INTERFACE(AGS_SOUNDCARD(current))->get_capability == NULL){
+      g_message("AgsSoundcard::get-capability missing: %s", G_OBJECT_TYPE_NAME(current));
+      
+      success = FALSE;
+    }
+
+    retval = ags_soundcard_get_capability(AGS_SOUNDCARD(current));
+
+    if(!(retval == AGS_SOUNDCARD_CAPABILITY_PLAYBACK ||
+	 retval == AGS_SOUNDCARD_CAPABILITY_CAPTURE)){
+      g_message("AgsSoundcard::get-capability failed: %s", G_OBJECT_TYPE_NAME(current));
+
+      success = FALSE;
+    }
+  }
+
+  CU_ASSERT(success);
 }
 
 void
 ags_soundcard_test_set_presets()
 {
-  //TODO:JK: implement me
+  GObject *current;
+  
+  GType current_type;
+
+  guint i;
+  gboolean success;
+
+  success = TRUE;
+  
+  for(i = 0; soundcard_test_types[i] != G_TYPE_NONE; i++){
+    current = g_object_new(soundcard_test_types[i],
+			   NULL);
+
+    if(AGS_SOUNDCARD_GET_INTERFACE(AGS_SOUNDCARD(current))->set_presets == NULL){
+      g_message("AgsSoundcard::set-presets missing: %s", G_OBJECT_TYPE_NAME(current));
+      
+      success = FALSE;
+    }
+
+    ags_soundcard_set_presets(AGS_SOUNDCARD(current),
+			      AGS_SOUNDCARD_TEST_SET_PRESETS_CHANNELS,
+			      AGS_SOUNDCARD_TEST_SET_PRESETS_SAMPLERATE,
+			      AGS_SOUNDCARD_TEST_SET_PRESETS_BUFFER_SIZE,
+			      AGS_SOUNDCARD_TEST_SET_PRESETS_FORMAT);
+  }
+
+  CU_ASSERT(success);
 }
 
 void
 ags_soundcard_test_get_presets()
 {
-  //TODO:JK: implement me
+  GObject *current;
+  
+  GType current_type;
+
+  guint channels;
+  guint samplerate;
+  guint buffer_size;
+  guint format;
+    
+  guint i;
+  gboolean success;
+
+  success = TRUE;
+  
+  for(i = 0; soundcard_test_types[i] != G_TYPE_NONE; i++){
+    current = g_object_new(soundcard_test_types[i],
+			   NULL);
+
+    if(AGS_SOUNDCARD_GET_INTERFACE(AGS_SOUNDCARD(current))->get_presets == NULL){
+      g_message("AgsSoundcard::get-presets missing: %s", G_OBJECT_TYPE_NAME(current));
+      
+      success = FALSE;
+    }
+
+    ags_soundcard_get_presets(AGS_SOUNDCARD(current),
+			      &channels,
+			      &samplerate,
+			      &buffer_size,
+			      &format);
+  }
+
+  CU_ASSERT(success);
 }
 
 void
 ags_soundcard_test_list_cards()
 {
-  //TODO:JK: implement me
+  AgsApplicationContext *application_context;
+  
+  GObject *current;
+  
+  GType current_type;
+
+  GList *card_id, *card_name;
+  
+  guint i;
+  gboolean success;
+
+  application_context = ags_audio_application_context_new();
+
+  success = TRUE;
+  
+  for(i = 0; soundcard_test_types[i] != G_TYPE_NONE; i++){
+    current = g_object_new(soundcard_test_types[i],
+			   NULL);
+
+    if(AGS_SOUNDCARD_GET_INTERFACE(AGS_SOUNDCARD(current))->list_cards == NULL){
+      g_message("AgsSoundcard::list-cards missing: %s", G_OBJECT_TYPE_NAME(current));
+      
+      success = FALSE;
+    }
+
+    card_id = NULL;
+    card_name = NULL;
+    
+    ags_soundcard_list_cards(AGS_SOUNDCARD(current),
+			     &card_id, &card_name);
+  }
+
+  CU_ASSERT(success);
 }
 
 void
 ags_soundcard_test_get_poll_fd()
 {
-  //TODO:JK: implement me
+  AgsApplicationContext *application_context;
+  
+  GObject *current;
+  
+  GType current_type;
+
+  guint i;
+  gboolean success;
+
+  application_context = ags_audio_application_context_new();
+
+  success = TRUE;
+  
+  for(i = 0; soundcard_test_types[i] != G_TYPE_NONE; i++){
+    current = g_object_new(soundcard_test_types[i],
+			   NULL);
+    
+    ags_soundcard_get_poll_fd(AGS_SOUNDCARD(current));
+  }
+
+  CU_ASSERT(success);
 }
 
 void
 ags_soundcard_test_is_available()
 {
-  //TODO:JK: implement me
+  AgsApplicationContext *application_context;
+  
+  GObject *current;
+  
+  GType current_type;
+  
+  guint i;
+  gboolean success;
+
+  application_context = ags_audio_application_context_new();
+
+  success = TRUE;
+  
+  for(i = 0; soundcard_test_types[i] != G_TYPE_NONE; i++){
+    current = g_object_new(soundcard_test_types[i],
+			   NULL);
+    
+    ags_soundcard_is_available(AGS_SOUNDCARD(current));
+  }
+
+  CU_ASSERT(success);
 }
 
 void
 ags_soundcard_test_is_starting()
 {
-  //TODO:JK: implement me
+  AgsApplicationContext *application_context;
+  
+  GObject *current;
+  
+  GType current_type;
+  
+  guint i;
+  gboolean success;
+
+  application_context = ags_audio_application_context_new();
+
+  success = TRUE;
+  
+  for(i = 0; soundcard_test_types[i] != G_TYPE_NONE; i++){
+    current = g_object_new(soundcard_test_types[i],
+			   NULL);
+    
+    if(AGS_SOUNDCARD_GET_INTERFACE(AGS_SOUNDCARD(current))->is_starting == NULL){
+      g_message("AgsSoundcard::is-starting missing: %s", G_OBJECT_TYPE_NAME(current));
+      
+      success = FALSE;
+    }
+
+    ags_soundcard_is_starting(AGS_SOUNDCARD(current));
+  }
+
+  CU_ASSERT(success);
 }
 
 void
 ags_soundcard_test_is_playing()
 {
-  //TODO:JK: implement me
+  AgsApplicationContext *application_context;
+  
+  GObject *current;
+  
+  GType current_type;
+  
+  guint i;
+  gboolean success;
+
+  application_context = ags_audio_application_context_new();
+
+  success = TRUE;
+  
+  for(i = 0; soundcard_test_types[i] != G_TYPE_NONE; i++){
+    current = g_object_new(soundcard_test_types[i],
+			   NULL);
+    
+    if(ags_soundcard_get_capability(AGS_SOUNDCARD(current)) == AGS_SOUNDCARD_CAPABILITY_PLAYBACK &&
+       AGS_SOUNDCARD_GET_INTERFACE(AGS_SOUNDCARD(current))->is_playing == NULL){
+      g_message("AgsSoundcard::is-playing missing: %s", G_OBJECT_TYPE_NAME(current));
+      
+      success = FALSE;
+    }
+
+    ags_soundcard_get_is_playing(AGS_SOUNDCARD(current));
+  }
+
+  CU_ASSERT(success);
 }
 
 void
 ags_soundcard_test_is_recording()
 {
-  //TODO:JK: implement me
+  AgsApplicationContext *application_context;
+  
+  GObject *current;
+  
+  GType current_type;
+  
+  guint i;
+  gboolean success;
+
+  application_context = ags_audio_application_context_new();
+
+  success = TRUE;
+  
+  for(i = 0; soundcard_test_types[i] != G_TYPE_NONE; i++){
+    current = g_object_new(soundcard_test_types[i],
+			   NULL);
+    
+    if(ags_soundcard_get_capability(AGS_SOUNDCARD(current)) == AGS_SOUNDCARD_CAPABILITY_CAPTURE &&
+       AGS_SOUNDCARD_GET_INTERFACE(AGS_SOUNDCARD(current))->is_recording == NULL){
+      g_message("AgsSoundcard::is-recording missing: %s", G_OBJECT_TYPE_NAME(current));
+      
+      success = FALSE;
+    }
+
+    ags_soundcard_get_is_recording(AGS_SOUNDCARD(current));
+  }
+
+  CU_ASSERT(success);
 }
 
 void
 ags_soundcard_test_get_uptime()
 {
-  //TODO:JK: implement me
+  AgsApplicationContext *application_context;
+  
+  GObject *current;
+  
+  GType current_type;
+  
+  guint i;
+  gboolean success;
+
+  application_context = ags_audio_application_context_new();
+
+  success = TRUE;
+  
+  for(i = 0; soundcard_test_types[i] != G_TYPE_NONE; i++){
+    current = g_object_new(soundcard_test_types[i],
+			   NULL);
+    
+    if(AGS_SOUNDCARD_GET_INTERFACE(AGS_SOUNDCARD(current))->get_uptime == NULL){
+      g_message("AgsSoundcard::get-uptime missing: %s", G_OBJECT_TYPE_NAME(current));
+      
+      success = FALSE;
+    }
+
+    ags_soundcard_get_uptime(AGS_SOUNDCARD(current));
+  }
+
+  CU_ASSERT(success);
 }
 
 void
 ags_soundcard_test_play_init()
 {
-  //TODO:JK: implement me
+  AgsApplicationContext *application_context;
+  
+  GObject *current;
+  
+  GType current_type;
+  
+  guint i;
+  gboolean success;
+
+  application_context = ags_audio_application_context_new();
+
+  success = TRUE;
+  
+  for(i = 0; soundcard_test_types[i] != G_TYPE_NONE; i++){
+    current = g_object_new(soundcard_test_types[i],
+			   NULL);
+    
+    if(ags_soundcard_get_capability(AGS_SOUNDCARD(current)) == AGS_SOUNDCARD_CAPABILITY_PLAYBACK &&
+       AGS_SOUNDCARD_GET_INTERFACE(AGS_SOUNDCARD(current))->play_init == NULL){
+      g_message("AgsSoundcard::play-init missing: %s", G_OBJECT_TYPE_NAME(current));
+      
+      success = FALSE;
+    }
+  }
+
+  CU_ASSERT(success);
 }
 
 void
 ags_soundcard_test_play()
 {
-  //TODO:JK: implement me
+  AgsApplicationContext *application_context;
+  
+  GObject *current;
+  
+  GType current_type;
+  
+  guint i;
+  gboolean success;
+
+  application_context = ags_audio_application_context_new();
+
+  success = TRUE;
+  
+  for(i = 0; soundcard_test_types[i] != G_TYPE_NONE; i++){
+    current = g_object_new(soundcard_test_types[i],
+			   NULL);
+    
+    if(ags_soundcard_get_capability(AGS_SOUNDCARD(current)) == AGS_SOUNDCARD_CAPABILITY_PLAYBACK &&
+       AGS_SOUNDCARD_GET_INTERFACE(AGS_SOUNDCARD(current))->play == NULL){
+      g_message("AgsSoundcard::play missing: %s", G_OBJECT_TYPE_NAME(current));
+      
+      success = FALSE;
+    }
+  }
+
+  CU_ASSERT(success);
 }
 
 void
 ags_soundcard_test_record_init()
 {
-  //TODO:JK: implement me
+  AgsApplicationContext *application_context;
+  
+  GObject *current;
+  
+  GType current_type;
+  
+  guint i;
+  gboolean success;
+
+  application_context = ags_audio_application_context_new();
+
+  success = TRUE;
+  
+  for(i = 0; soundcard_test_types[i] != G_TYPE_NONE; i++){
+    current = g_object_new(soundcard_test_types[i],
+			   NULL);
+    
+    if(ags_soundcard_get_capability(AGS_SOUNDCARD(current)) == AGS_SOUNDCARD_CAPABILITY_CAPTURE &&
+       AGS_SOUNDCARD_GET_INTERFACE(AGS_SOUNDCARD(current))->record_init == NULL){
+      g_message("AgsSoundcard::record-init missing: %s", G_OBJECT_TYPE_NAME(current));
+      
+      success = FALSE;
+    }
+  }
+
+  CU_ASSERT(success);
 }
 
 void
 ags_soundcard_test_record()
 {
-  //TODO:JK: implement me
+  AgsApplicationContext *application_context;
+  
+  GObject *current;
+  
+  GType current_type;
+  
+  guint i;
+  gboolean success;
+
+  application_context = ags_audio_application_context_new();
+
+  success = TRUE;
+  
+  for(i = 0; soundcard_test_types[i] != G_TYPE_NONE; i++){
+    current = g_object_new(soundcard_test_types[i],
+			   NULL);
+    
+    if(ags_soundcard_get_capability(AGS_SOUNDCARD(current)) == AGS_SOUNDCARD_CAPABILITY_CAPTURE &&
+       AGS_SOUNDCARD_GET_INTERFACE(AGS_SOUNDCARD(current))->record == NULL){
+      g_message("AgsSoundcard::record missing: %s", G_OBJECT_TYPE_NAME(current));
+      
+      success = FALSE;
+    }
+  }
+
+  CU_ASSERT(success);
 }
 
 void
 ags_soundcard_test_stop()
 {
-  //TODO:JK: implement me
+  AgsApplicationContext *application_context;
+  
+  GObject *current;
+  
+  GType current_type;
+  
+  guint i;
+  gboolean success;
+
+  application_context = ags_audio_application_context_new();
+
+  success = TRUE;
+  
+  for(i = 0; soundcard_test_types[i] != G_TYPE_NONE; i++){
+    current = g_object_new(soundcard_test_types[i],
+			   NULL);
+    
+    if(AGS_SOUNDCARD_GET_INTERFACE(AGS_SOUNDCARD(current))->stop == NULL){
+      g_message("AgsSoundcard::stop missing: %s", G_OBJECT_TYPE_NAME(current));
+      
+      success = FALSE;
+    }
+  }
+
+  CU_ASSERT(success);
 }
 
 void
 ags_soundcard_test_tic()
 {
-  //TODO:JK: implement me
+  AgsApplicationContext *application_context;
+  
+  GObject *current;
+  
+  GType current_type;
+  
+  guint i;
+  gboolean success;
+
+  application_context = ags_audio_application_context_new();
+
+  success = TRUE;
+  
+  for(i = 0; soundcard_test_types[i] != G_TYPE_NONE; i++){
+    current = g_object_new(soundcard_test_types[i],
+			   NULL);
+    
+    if(AGS_SOUNDCARD_GET_INTERFACE(AGS_SOUNDCARD(current))->tic == NULL){
+      g_message("AgsSoundcard::tic missing: %s", G_OBJECT_TYPE_NAME(current));
+      
+      success = FALSE;
+    }
+
+    ags_soundcard_tic(AGS_SOUNDCARD(current));
+  }
+
+  CU_ASSERT(success);
 }
 
 void
 ags_soundcard_test_offset_changed()
 {
-  //TODO:JK: implement me
+  AgsApplicationContext *application_context;
+  
+  GObject *current;
+  
+  GType current_type;
+  
+  guint i;
+  gboolean success;
+
+  application_context = ags_audio_application_context_new();
+
+  success = TRUE;
+  
+  for(i = 0; soundcard_test_types[i] != G_TYPE_NONE; i++){
+    current = g_object_new(soundcard_test_types[i],
+			   NULL);
+    
+    if(AGS_SOUNDCARD_GET_INTERFACE(AGS_SOUNDCARD(current))->offset_changed == NULL){
+      g_message("AgsSoundcard::offset-changed missing: %s", G_OBJECT_TYPE_NAME(current));
+      
+      success = FALSE;
+    }
+
+    ags_soundcard_offset_changed(AGS_SOUNDCARD(current));
+  }
+
+  CU_ASSERT(success);
 }
 
 void
 ags_soundcard_test_get_buffer()
 {
-  //TODO:JK: implement me
+  AgsApplicationContext *application_context;
+  
+  GObject *current;
+  
+  GType current_type;
+  
+  guint i;
+  gboolean success;
+
+  application_context = ags_audio_application_context_new();
+
+  success = TRUE;
+  
+  for(i = 0; soundcard_test_types[i] != G_TYPE_NONE; i++){
+    current = g_object_new(soundcard_test_types[i],
+			   NULL);
+    
+    if(AGS_SOUNDCARD_GET_INTERFACE(AGS_SOUNDCARD(current))->get_buffer == NULL){
+      g_message("AgsSoundcard::get-buffer missing: %s", G_OBJECT_TYPE_NAME(current));
+      
+      success = FALSE;
+    }
+
+    ags_soundcard_get_buffer(AGS_SOUNDCARD(current));
+  }
+
+  CU_ASSERT(success);
 }
 
 void
 ags_soundcard_test_get_next_buffer()
 {
-  //TODO:JK: implement me
+  AgsApplicationContext *application_context;
+  
+  GObject *current;
+  
+  GType current_type;
+  
+  guint i;
+  gboolean success;
+
+  application_context = ags_audio_application_context_new();
+
+  success = TRUE;
+  
+  for(i = 0; soundcard_test_types[i] != G_TYPE_NONE; i++){
+    current = g_object_new(soundcard_test_types[i],
+			   NULL);
+    
+    if(AGS_SOUNDCARD_GET_INTERFACE(AGS_SOUNDCARD(current))->get_next_buffer == NULL){
+      g_message("AgsSoundcard::get-next-buffer missing: %s", G_OBJECT_TYPE_NAME(current));
+      
+      success = FALSE;
+    }
+
+    ags_soundcard_get_next_buffer(AGS_SOUNDCARD(current));
+  }
+
+  CU_ASSERT(success);
 }
 
 void
 ags_soundcard_test_get_prev_buffer()
 {
-  //TODO:JK: implement me
+  AgsApplicationContext *application_context;
+  
+  GObject *current;
+  
+  GType current_type;
+  
+  guint i;
+  gboolean success;
+
+  application_context = ags_audio_application_context_new();
+
+  success = TRUE;
+  
+  for(i = 0; soundcard_test_types[i] != G_TYPE_NONE; i++){
+    current = g_object_new(soundcard_test_types[i],
+			   NULL);
+    
+    if(AGS_SOUNDCARD_GET_INTERFACE(AGS_SOUNDCARD(current))->get_prev_buffer == NULL){
+      g_message("AgsSoundcard::get-prev-buffer missing: %s", G_OBJECT_TYPE_NAME(current));
+      
+      success = FALSE;
+    }
+
+    ags_soundcard_get_prev_buffer(AGS_SOUNDCARD(current));
+  }
+
+  CU_ASSERT(success);
 }
 
 void
@@ -443,91 +967,502 @@ ags_soundcard_test_unlock_buffer()
 void
 ags_soundcard_test_set_bpm()
 {
-  //TODO:JK: implement me
+  AgsApplicationContext *application_context;
+  
+  GObject *current;
+  
+  GType current_type;
+  
+  guint i;
+  gboolean success;
+
+  application_context = ags_audio_application_context_new();
+
+  success = TRUE;
+  
+  for(i = 0; soundcard_test_types[i] != G_TYPE_NONE; i++){
+    current = g_object_new(soundcard_test_types[i],
+			   NULL);
+    
+    if(AGS_SOUNDCARD_GET_INTERFACE(AGS_SOUNDCARD(current))->set_bpm == NULL){
+      g_message("AgsSoundcard::set-bpm missing: %s", G_OBJECT_TYPE_NAME(current));
+      
+      success = FALSE;
+    }
+
+    ags_soundcard_set_bpm(AGS_SOUNDCARD(current),
+			  AGS_SOUNDCARD_TEST_SET_BPM_BPM);
+  }
+
+  CU_ASSERT(success);
 }
 
 void
 ags_soundcard_test_get_bpm()
 {
-  //TODO:JK: implement me
+  AgsApplicationContext *application_context;
+  
+  GObject *current;
+  
+  GType current_type;
+
+  gdouble retval;
+  guint i;
+  gboolean success;
+
+  application_context = ags_audio_application_context_new();
+
+  success = TRUE;
+  
+  for(i = 0; soundcard_test_types[i] != G_TYPE_NONE; i++){
+    current = g_object_new(soundcard_test_types[i],
+			   NULL);
+    
+    if(AGS_SOUNDCARD_GET_INTERFACE(AGS_SOUNDCARD(current))->get_bpm == NULL){
+      g_message("AgsSoundcard::get-bpm missing: %s", G_OBJECT_TYPE_NAME(current));
+      
+      success = FALSE;
+    }
+
+    retval = ags_soundcard_get_bpm(AGS_SOUNDCARD(current));
+  }
+
+  CU_ASSERT(success);
 }
 
 void
 ags_soundcard_test_set_delay_factor()
 {
-  //TODO:JK: implement me
+  AgsApplicationContext *application_context;
+  
+  GObject *current;
+  
+  GType current_type;
+  
+  guint i;
+  gboolean success;
+
+  application_context = ags_audio_application_context_new();
+
+  success = TRUE;
+  
+  for(i = 0; soundcard_test_types[i] != G_TYPE_NONE; i++){
+    current = g_object_new(soundcard_test_types[i],
+			   NULL);
+    
+    if(AGS_SOUNDCARD_GET_INTERFACE(AGS_SOUNDCARD(current))->set_delay_factor == NULL){
+      g_message("AgsSoundcard::set-delay-factor missing: %s", G_OBJECT_TYPE_NAME(current));
+      
+      success = FALSE;
+    }
+
+    ags_soundcard_set_delay_factor(AGS_SOUNDCARD(current),
+				   AGS_SOUNDCARD_TEST_SET_DELAY_FACTOR_DELAY_FACTOR);
+  }
+
+  CU_ASSERT(success);
 }
 
 void
 ags_soundcard_test_get_delay_factor()
 {
-  //TODO:JK: implement me
+  AgsApplicationContext *application_context;
+  
+  GObject *current;
+  
+  GType current_type;
+
+  gdouble retval;
+  guint i;
+  gboolean success;
+
+  application_context = ags_audio_application_context_new();
+
+  success = TRUE;
+  
+  for(i = 0; soundcard_test_types[i] != G_TYPE_NONE; i++){
+    current = g_object_new(soundcard_test_types[i],
+			   NULL);
+    
+    if(AGS_SOUNDCARD_GET_INTERFACE(AGS_SOUNDCARD(current))->get_delay_factor == NULL){
+      g_message("AgsSoundcard::get-delay-factor missing: %s", G_OBJECT_TYPE_NAME(current));
+      
+      success = FALSE;
+    }
+
+    retval = ags_soundcard_get_delay_factor(AGS_SOUNDCARD(current));
+  }
+
+  CU_ASSERT(success);
 }
 
 void
 ags_soundcard_test_get_absolute_delay()
 {
-  //TODO:JK: implement me
+  AgsApplicationContext *application_context;
+  
+  GObject *current;
+  
+  GType current_type;
+
+  gdouble retval;
+  guint i;
+  gboolean success;
+
+  application_context = ags_audio_application_context_new();
+
+  success = TRUE;
+  
+  for(i = 0; soundcard_test_types[i] != G_TYPE_NONE; i++){
+    current = g_object_new(soundcard_test_types[i],
+			   NULL);
+    
+    if(AGS_SOUNDCARD_GET_INTERFACE(AGS_SOUNDCARD(current))->get_absolute_delay == NULL){
+      g_message("AgsSoundcard::get-absolute-delay missing: %s", G_OBJECT_TYPE_NAME(current));
+      
+      success = FALSE;
+    }
+
+    retval = ags_soundcard_get_absolute_delay(AGS_SOUNDCARD(current));
+  }
+
+  CU_ASSERT(success);
 }
 
 void
 ags_soundcard_test_get_delay()
 {
-  //TODO:JK: implement me
+  AgsApplicationContext *application_context;
+  
+  GObject *current;
+  
+  GType current_type;
+
+  gdouble retval;
+  guint i;
+  gboolean success;
+
+  application_context = ags_audio_application_context_new();
+
+  success = TRUE;
+  
+  for(i = 0; soundcard_test_types[i] != G_TYPE_NONE; i++){
+    current = g_object_new(soundcard_test_types[i],
+			   NULL);
+    
+    if(AGS_SOUNDCARD_GET_INTERFACE(AGS_SOUNDCARD(current))->get_delay == NULL){
+      g_message("AgsSoundcard::get-delay missing: %s", G_OBJECT_TYPE_NAME(current));
+      
+      success = FALSE;
+    }
+
+    retval = ags_soundcard_get_delay(AGS_SOUNDCARD(current));
+  }
+
+  CU_ASSERT(success);
 }
 
 void
 ags_soundcard_test_get_attack()
 {
-  //TODO:JK: implement me
+  AgsApplicationContext *application_context;
+  
+  GObject *current;
+  
+  GType current_type;
+
+  guint retval;
+  guint i;
+  gboolean success;
+
+  application_context = ags_audio_application_context_new();
+
+  success = TRUE;
+  
+  for(i = 0; soundcard_test_types[i] != G_TYPE_NONE; i++){
+    current = g_object_new(soundcard_test_types[i],
+			   NULL);
+    
+    if(AGS_SOUNDCARD_GET_INTERFACE(AGS_SOUNDCARD(current))->get_attack == NULL){
+      g_message("AgsSoundcard::get-attack missing: %s", G_OBJECT_TYPE_NAME(current));
+      
+      success = FALSE;
+    }
+
+    retval = ags_soundcard_get_attack(AGS_SOUNDCARD(current));
+  }
+
+  CU_ASSERT(success);
 }
 
 void
 ags_soundcard_test_get_delay_counter()
 {
-  //TODO:JK: implement me
+  AgsApplicationContext *application_context;
+  
+  GObject *current;
+  
+  GType current_type;
+
+  guint retval;
+  guint i;
+  gboolean success;
+
+  application_context = ags_audio_application_context_new();
+
+  success = TRUE;
+  
+  for(i = 0; soundcard_test_types[i] != G_TYPE_NONE; i++){
+    current = g_object_new(soundcard_test_types[i],
+			   NULL);
+    
+    if(AGS_SOUNDCARD_GET_INTERFACE(AGS_SOUNDCARD(current))->get_delay_counter == NULL){
+      g_message("AgsSoundcard::get-delay-counter missing: %s", G_OBJECT_TYPE_NAME(current));
+      
+      success = FALSE;
+    }
+
+    retval = ags_soundcard_get_delay_counter(AGS_SOUNDCARD(current));
+  }
+
+  CU_ASSERT(success);
 }
 
 void
 ags_soundcard_test_set_note_offset()
 {
-  //TODO:JK: implement me
+  AgsApplicationContext *application_context;
+  
+  GObject *current;
+  
+  GType current_type;
+  
+  guint i;
+  gboolean success;
+
+  application_context = ags_audio_application_context_new();
+
+  success = TRUE;
+  
+  for(i = 0; soundcard_test_types[i] != G_TYPE_NONE; i++){
+    current = g_object_new(soundcard_test_types[i],
+			   NULL);
+    
+    if(AGS_SOUNDCARD_GET_INTERFACE(AGS_SOUNDCARD(current))->set_note_offset == NULL){
+      g_message("AgsSoundcard::set-note-offset missing: %s", G_OBJECT_TYPE_NAME(current));
+      
+      success = FALSE;
+    }
+
+    ags_soundcard_set_note_offset(AGS_SOUNDCARD(current),
+				  AGS_SOUNDCARD_TEST_SET_NOTE_OFFSET_NOTE_OFFSET);
+  }
+
+  CU_ASSERT(success);
 }
 
 void
 ags_soundcard_test_get_note_offset()
 {
-  //TODO:JK: implement me
+  AgsApplicationContext *application_context;
+  
+  GObject *current;
+  
+  GType current_type;
+
+  guint retval;
+  guint i;
+  gboolean success;
+
+  application_context = ags_audio_application_context_new();
+
+  success = TRUE;
+  
+  for(i = 0; soundcard_test_types[i] != G_TYPE_NONE; i++){
+    current = g_object_new(soundcard_test_types[i],
+			   NULL);
+    
+    if(AGS_SOUNDCARD_GET_INTERFACE(AGS_SOUNDCARD(current))->get_note_offset == NULL){
+      g_message("AgsSoundcard::get-note-offset missing: %s", G_OBJECT_TYPE_NAME(current));
+      
+      success = FALSE;
+    }
+
+    retval = ags_soundcard_get_note_offset(AGS_SOUNDCARD(current));
+  }
+
+  CU_ASSERT(success);
 }
 
 void
 ags_soundcard_test_set_note_offset_absolute()
 {
-  //TODO:JK: implement me
+  AgsApplicationContext *application_context;
+  
+  GObject *current;
+  
+  GType current_type;
+  
+  guint i;
+  gboolean success;
+
+  application_context = ags_audio_application_context_new();
+
+  success = TRUE;
+  
+  for(i = 0; soundcard_test_types[i] != G_TYPE_NONE; i++){
+    current = g_object_new(soundcard_test_types[i],
+			   NULL);
+    
+    if(AGS_SOUNDCARD_GET_INTERFACE(AGS_SOUNDCARD(current))->set_note_offset_absolute == NULL){
+      g_message("AgsSoundcard::set-note-offset-absolute missing: %s", G_OBJECT_TYPE_NAME(current));
+      
+      success = FALSE;
+    }
+
+    ags_soundcard_set_note_offset_absolute(AGS_SOUNDCARD(current),
+					   AGS_SOUNDCARD_TEST_SET_NOTE_OFFSET_ABSOLUTE_NOTE_OFFSET);
+  }
+
+  CU_ASSERT(success);
 }
 
 void
 ags_soundcard_test_get_note_offset_absolute()
 {
-  //TODO:JK: implement me
+  AgsApplicationContext *application_context;
+  
+  GObject *current;
+  
+  GType current_type;
+
+  guint retval;
+  guint i;
+  gboolean success;
+
+  application_context = ags_audio_application_context_new();
+
+  success = TRUE;
+  
+  for(i = 0; soundcard_test_types[i] != G_TYPE_NONE; i++){
+    current = g_object_new(soundcard_test_types[i],
+			   NULL);
+    
+    if(AGS_SOUNDCARD_GET_INTERFACE(AGS_SOUNDCARD(current))->get_note_offset_absolute == NULL){
+      g_message("AgsSoundcard::get-note-offset-absolute missing: %s", G_OBJECT_TYPE_NAME(current));
+      
+      success = FALSE;
+    }
+
+    retval = ags_soundcard_get_note_offset_absolute(AGS_SOUNDCARD(current));
+  }
+
+  CU_ASSERT(success);
 }
 
 void
 ags_soundcard_test_set_loop()
 {
-  //TODO:JK: implement me
+  AgsApplicationContext *application_context;
+  
+  GObject *current;
+  
+  GType current_type;
+
+  guint loop_left, loop_right;
+  gboolean do_loop;
+  guint i;
+  gboolean success;
+
+  application_context = ags_audio_application_context_new();
+
+  success = TRUE;
+  
+  for(i = 0; soundcard_test_types[i] != G_TYPE_NONE; i++){
+    current = g_object_new(soundcard_test_types[i],
+			   NULL);
+    
+    if(AGS_SOUNDCARD_GET_INTERFACE(AGS_SOUNDCARD(current))->set_loop == NULL){
+      g_message("AgsSoundcard::set-loop missing: %s", G_OBJECT_TYPE_NAME(current));
+      
+      success = FALSE;
+    }
+
+    ags_soundcard_set_loop(AGS_SOUNDCARD(current),
+			   AGS_SOUNDCARD_TEST_SET_LOOP_LOOP_LEFT, AGS_SOUNDCARD_TEST_SET_LOOP_LOOP_RIGHT,
+			   AGS_SOUNDCARD_TEST_SET_DO_LOOP);
+  }
+
+  CU_ASSERT(success);
 }
 
 void
 ags_soundcard_test_get_loop()
 {
-  //TODO:JK: implement me
+  AgsApplicationContext *application_context;
+  
+  GObject *current;
+  
+  GType current_type;
+
+  guint loop_left, loop_right;
+  gboolean do_loop;
+  guint i;
+  gboolean success;
+
+  application_context = ags_audio_application_context_new();
+
+  success = TRUE;
+  
+  for(i = 0; soundcard_test_types[i] != G_TYPE_NONE; i++){
+    current = g_object_new(soundcard_test_types[i],
+			   NULL);
+    
+    if(AGS_SOUNDCARD_GET_INTERFACE(AGS_SOUNDCARD(current))->get_loop == NULL){
+      g_message("AgsSoundcard::get-loop missing: %s", G_OBJECT_TYPE_NAME(current));
+      
+      success = FALSE;
+    }
+
+    ags_soundcard_get_loop(AGS_SOUNDCARD(current),
+			   &loop_left, &loop_right,
+			   &do_loop);
+  }
+
+  CU_ASSERT(success);
 }
 
 void
 ags_soundcard_test_get_loop_offset()
 {
-  //TODO:JK: implement me
+  AgsApplicationContext *application_context;
+  
+  GObject *current;
+  
+  GType current_type;
+
+  guint retval;
+  guint i;
+  gboolean success;
+
+  application_context = ags_audio_application_context_new();
+
+  success = TRUE;
+  
+  for(i = 0; soundcard_test_types[i] != G_TYPE_NONE; i++){
+    current = g_object_new(soundcard_test_types[i],
+			   NULL);
+    
+    if(AGS_SOUNDCARD_GET_INTERFACE(AGS_SOUNDCARD(current))->get_loop_offset == NULL){
+      g_message("AgsSoundcard::get-loop-offset missing: %s", G_OBJECT_TYPE_NAME(current));
+      
+      success = FALSE;
+    }
+
+    retval = ags_soundcard_get_loop_offset(AGS_SOUNDCARD(current));
+  }
+
+  CU_ASSERT(success);
 }
 
 
