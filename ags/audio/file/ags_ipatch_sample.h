@@ -25,6 +25,8 @@
 
 #include <ags/config.h>
 
+#include <ags/libags.h>
+
 #ifdef AGS_WITH_LIBINSTPATCH
 #include <libinstpatch/libinstpatch.h>
 #endif
@@ -39,9 +41,29 @@
 typedef struct _AgsIpatchSample AgsIpatchSample;
 typedef struct _AgsIpatchSampleClass AgsIpatchSampleClass;
 
+/**
+ * AgsIpatchSampleFlags:
+ * @AGS_IPATCH_SAMPLE_ADDED_TO_REGISTRY: the ipatch sample was added to registry, see #AgsConnectable::add_to_registry()
+ * @AGS_IPATCH_SAMPLE_CONNECTED: indicates the ipatch sample was connected by calling #AgsConnectable::connect()
+ * 
+ * Enum values to control the behavior or indicate internal state of #AgsIpatchSample by
+ * enable/disable as flags.
+ */
+typedef enum{
+  AGS_IPATCH_SAMPLE_ADDED_TO_REGISTRY    = 1,
+  AGS_IPATCH_SAMPLE_CONNECTED            = 1 <<  1,
+}AgsIpatchSampleFlags;
+
 struct _AgsIpatchSample
 {
   GObject object;
+
+  guint flags;
+
+  pthread_mutex_t *obj_mutex;
+  pthread_mutexattr_t *obj_mutexattr;
+
+  AgsUUID *uuid;
 
   guint audio_channels;
   gint64 *audio_channel_written;
@@ -72,6 +94,12 @@ struct _AgsIpatchSampleClass
 };
 
 GType ags_ipatch_sample_get_type();
+
+pthread_mutex_t* ags_ipatch_sample_get_class_mutex();
+
+gboolean ags_ipatch_sample_test_flags(AgsIpatchSample *ipatch_sample, guint flags);
+void ags_ipatch_sample_set_flags(AgsIpatchSample *ipatch_sample, guint flags);
+void ags_ipatch_sample_unset_flags(AgsIpatchSample *ipatch_sample, guint flags);
 
 /* instantiate */
 AgsIpatchSample* ags_ipatch_sample_new();

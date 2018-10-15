@@ -30,6 +30,7 @@
 #include <ags/audio/file/ags_audio_file.h>
 #include <ags/audio/file/ags_sound_container.h>
 #include <ags/audio/file/ags_sound_resource.h>
+#include <ags/audio/file/ags_ipatch.h>
 
 #include <ags/i18n.h>
 

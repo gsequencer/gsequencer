@@ -29,6 +29,8 @@
 #include <ags/audio/recall/ags_play_wave_audio_run.h>
 #include <ags/audio/recall/ags_play_wave_channel.h>
 
+#include <math.h>
+
 #include <ags/i18n.h>
 
 void ags_play_wave_channel_run_class_init(AgsPlayWaveChannelRunClass *play_wave_channel_run);

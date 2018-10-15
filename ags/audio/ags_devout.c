@@ -40,6 +40,7 @@
 
 #define _GNU_SOURCE
 #include <signal.h>
+#define _GNU_SOURCE
 #include <poll.h>
 
 #include <string.h>

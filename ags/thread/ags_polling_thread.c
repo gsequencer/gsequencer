@@ -28,6 +28,7 @@
 
 #define _GNU_SOURCE
 #include <signal.h>
+#define _GNU_SOURCE
 #include <poll.h>
 
 void ags_polling_thread_class_init(AgsPollingThreadClass *polling_thread);
