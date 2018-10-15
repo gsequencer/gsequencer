@@ -17,6 +17,7 @@ check_PROGRAMS += \
 	ags_application_context_test \
 	ags_config_test \
 	ags_connectable_test \
+	ags_soundcard_test \
 	ags_condition_manager_test \
 	ags_destroy_worker_test \
 	ags_mutex_manager_test \
@@ -152,7 +153,9 @@ check_PROGRAMS += \
 	ags_remove_audio_test \
 	ags_remove_audio_signal_test \
 	ags_remove_note_test \
-	ags_remove_soundcard_test
+	ags_remove_soundcard_test \
+	ags_reset_amplitude_test \
+	ags_reset_peak_test
 
 # unit tests - libgsequencer
 check_PROGRAMS += \
@@ -217,6 +220,12 @@ ags_connectable_test_SOURCES = ags/test/object/ags_connectable_test.c
 ags_connectable_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
 ags_connectable_test_LDFLAGS = -pthread $(LDFLAGS)
 ags_connectable_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
+
+# soundcard unit test
+ags_soundcard_test_SOURCES = ags/test/object/ags_soundcard_test.c
+ags_soundcard_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
+ags_soundcard_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_soundcard_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
 
 # condition manager unit test
 ags_condition_manager_test_SOURCES = ags/test/thread/ags_condition_manager_test.c
@@ -979,6 +988,18 @@ ags_remove_soundcard_test_SOURCES = ags/test/audio/task/ags_remove_soundcard_tes
 ags_remove_soundcard_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
 ags_remove_soundcard_test_LDFLAGS = -pthread $(LDFLAGS)
 ags_remove_soundcard_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
+
+# reset amplitude unit test
+ags_reset_amplitude_test_SOURCES = ags/test/audio/task/ags_reset_amplitude_test.c
+ags_reset_amplitude_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
+ags_reset_amplitude_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_reset_amplitude_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
+
+# reset peak unit test
+ags_reset_peak_test_SOURCES = ags/test/audio/task/ags_reset_peak_test.c
+ags_reset_peak_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
+ags_reset_peak_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_reset_peak_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
 
 # xorg application context unit test
 ags_xorg_application_context_test_SOURCES = ags/test/X/ags_xorg_application_context_test.c

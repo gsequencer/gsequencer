@@ -118,7 +118,7 @@ check_PROGRAMS = ags_buffer_util_test$(EXEEXT) \
 	ags_log_test$(EXEEXT) ags_time_test$(EXEEXT) \
 	ags_turtle_manager_test$(EXEEXT) ags_turtle_test$(EXEEXT) \
 	ags_application_context_test$(EXEEXT) ags_config_test$(EXEEXT) \
-	ags_connectable_test$(EXEEXT) \
+	ags_connectable_test$(EXEEXT) ags_soundcard_test$(EXEEXT) \
 	ags_condition_manager_test$(EXEEXT) \
 	ags_destroy_worker_test$(EXEEXT) \
 	ags_mutex_manager_test$(EXEEXT) ags_poll_fd_test$(EXEEXT) \
@@ -214,6 +214,7 @@ check_PROGRAMS = ags_buffer_util_test$(EXEEXT) \
 	ags_remove_audio_signal_test$(EXEEXT) \
 	ags_remove_note_test$(EXEEXT) \
 	ags_remove_soundcard_test$(EXEEXT) \
+	ags_reset_amplitude_test$(EXEEXT) ags_reset_peak_test$(EXEEXT) \
 	ags_xorg_application_context_test$(EXEEXT) \
 	ags_functional_audio_test$(EXEEXT) \
 	ags_functional_machine_add_and_destroy_test$(EXEEXT) \
@@ -2494,6 +2495,29 @@ ags_remove_soundcard_test_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
 	$(ags_remove_soundcard_test_CFLAGS) $(CFLAGS) \
 	$(ags_remove_soundcard_test_LDFLAGS) $(LDFLAGS) -o $@
+am_ags_reset_amplitude_test_OBJECTS = ags/test/audio/task/reset_amplitude_test-ags_reset_amplitude_test.$(OBJEXT)
+ags_reset_amplitude_test_OBJECTS =  \
+	$(am_ags_reset_amplitude_test_OBJECTS)
+ags_reset_amplitude_test_DEPENDENCIES = libags_audio.la \
+	libags_server.la libags_thread.la libags.la libags_thread.la \
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
+ags_reset_amplitude_test_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
+	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
+	$(ags_reset_amplitude_test_CFLAGS) $(CFLAGS) \
+	$(ags_reset_amplitude_test_LDFLAGS) $(LDFLAGS) -o $@
+am_ags_reset_peak_test_OBJECTS = ags/test/audio/task/reset_peak_test-ags_reset_peak_test.$(OBJEXT)
+ags_reset_peak_test_OBJECTS = $(am_ags_reset_peak_test_OBJECTS)
+ags_reset_peak_test_DEPENDENCIES = libags_audio.la libags_server.la \
+	libags_thread.la libags.la libags_thread.la \
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
+ags_reset_peak_test_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
+	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
+	$(ags_reset_peak_test_CFLAGS) $(CFLAGS) \
+	$(ags_reset_peak_test_LDFLAGS) $(LDFLAGS) -o $@
 am_ags_returnable_thread_test_OBJECTS = ags/test/thread/returnable_thread_test-ags_returnable_thread_test.$(OBJEXT)
 ags_returnable_thread_test_OBJECTS =  \
 	$(am_ags_returnable_thread_test_OBJECTS)
@@ -2528,6 +2552,18 @@ ags_route_lv2_audio_test_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
 	$(ags_route_lv2_audio_test_CFLAGS) $(CFLAGS) \
 	$(ags_route_lv2_audio_test_LDFLAGS) $(LDFLAGS) -o $@
+am_ags_soundcard_test_OBJECTS =  \
+	ags/test/object/soundcard_test-ags_soundcard_test.$(OBJEXT)
+ags_soundcard_test_OBJECTS = $(am_ags_soundcard_test_OBJECTS)
+ags_soundcard_test_DEPENDENCIES = libags_audio.la libags_server.la \
+	libags_thread.la libags.la libags_thread.la \
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
+ags_soundcard_test_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
+	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
+	$(ags_soundcard_test_CFLAGS) $(CFLAGS) \
+	$(ags_soundcard_test_LDFLAGS) $(LDFLAGS) -o $@
 am_ags_stream_audio_signal_test_OBJECTS = ags/test/audio/recall/stream_audio_signal_test-ags_stream_audio_signal_test.$(OBJEXT)
 ags_stream_audio_signal_test_OBJECTS =  \
 	$(am_ags_stream_audio_signal_test_OBJECTS)
@@ -3403,6 +3439,8 @@ am__depfiles_remade = ags/$(DEPDIR)/gsequencer-gsequencer_main.Po \
 	ags/test/audio/task/$(DEPDIR)/remove_audio_test-ags_remove_audio_test.Po \
 	ags/test/audio/task/$(DEPDIR)/remove_note_test-ags_remove_note_test.Po \
 	ags/test/audio/task/$(DEPDIR)/remove_soundcard_test-ags_remove_soundcard_test.Po \
+	ags/test/audio/task/$(DEPDIR)/reset_amplitude_test-ags_reset_amplitude_test.Po \
+	ags/test/audio/task/$(DEPDIR)/reset_peak_test-ags_reset_peak_test.Po \
 	ags/test/file/$(DEPDIR)/file_id_ref_test-ags_file_id_ref_test.Po \
 	ags/test/file/$(DEPDIR)/file_launch_test-ags_file_launch_test.Po \
 	ags/test/file/$(DEPDIR)/file_lookup_test-ags_file_lookup_test.Po \
@@ -3417,6 +3455,7 @@ am__depfiles_remade = ags/$(DEPDIR)/gsequencer-gsequencer_main.Po \
 	ags/test/object/$(DEPDIR)/application_context_test-ags_application_context_test.Po \
 	ags/test/object/$(DEPDIR)/config_test-ags_config_test.Po \
 	ags/test/object/$(DEPDIR)/connectable_test-ags_connectable_test.Po \
+	ags/test/object/$(DEPDIR)/soundcard_test-ags_soundcard_test.Po \
 	ags/test/plugin/$(DEPDIR)/base_plugin_test-ags_base_plugin_test.Po \
 	ags/test/plugin/$(DEPDIR)/dssi_manager_test-ags_dssi_manager_test.Po \
 	ags/test/plugin/$(DEPDIR)/dssi_plugin_test-ags_dssi_plugin_test.Po \
@@ -3630,9 +3669,12 @@ SOURCES = $(libags_la_SOURCES) $(libags_audio_la_SOURCES) \
 	$(ags_remove_audio_test_SOURCES) \
 	$(ags_remove_note_test_SOURCES) \
 	$(ags_remove_soundcard_test_SOURCES) \
+	$(ags_reset_amplitude_test_SOURCES) \
+	$(ags_reset_peak_test_SOURCES) \
 	$(ags_returnable_thread_test_SOURCES) \
 	$(ags_route_dssi_audio_test_SOURCES) \
 	$(ags_route_lv2_audio_test_SOURCES) \
+	$(ags_soundcard_test_SOURCES) \
 	$(ags_stream_audio_signal_test_SOURCES) \
 	$(ags_synth_generator_test_SOURCES) $(ags_task_test_SOURCES) \
 	$(ags_task_thread_test_SOURCES) \
@@ -3758,9 +3800,12 @@ DIST_SOURCES = $(libags_la_SOURCES) $(libags_audio_la_SOURCES) \
 	$(ags_remove_audio_test_SOURCES) \
 	$(ags_remove_note_test_SOURCES) \
 	$(ags_remove_soundcard_test_SOURCES) \
+	$(ags_reset_amplitude_test_SOURCES) \
+	$(ags_reset_peak_test_SOURCES) \
 	$(ags_returnable_thread_test_SOURCES) \
 	$(ags_route_dssi_audio_test_SOURCES) \
 	$(ags_route_lv2_audio_test_SOURCES) \
+	$(ags_soundcard_test_SOURCES) \
 	$(ags_stream_audio_signal_test_SOURCES) \
 	$(ags_synth_generator_test_SOURCES) $(ags_task_test_SOURCES) \
 	$(ags_task_thread_test_SOURCES) \
@@ -4600,6 +4645,12 @@ ags_connectable_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(L
 ags_connectable_test_LDFLAGS = -pthread $(LDFLAGS)
 ags_connectable_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
 
+# soundcard unit test
+ags_soundcard_test_SOURCES = ags/test/object/ags_soundcard_test.c
+ags_soundcard_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
+ags_soundcard_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_soundcard_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
+
 # condition manager unit test
 ags_condition_manager_test_SOURCES = ags/test/thread/ags_condition_manager_test.c
 ags_condition_manager_test_CFLAGS = $(CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS)
@@ -5361,6 +5412,18 @@ ags_remove_soundcard_test_SOURCES = ags/test/audio/task/ags_remove_soundcard_tes
 ags_remove_soundcard_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
 ags_remove_soundcard_test_LDFLAGS = -pthread $(LDFLAGS)
 ags_remove_soundcard_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
+
+# reset amplitude unit test
+ags_reset_amplitude_test_SOURCES = ags/test/audio/task/ags_reset_amplitude_test.c
+ags_reset_amplitude_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
+ags_reset_amplitude_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_reset_amplitude_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
+
+# reset peak unit test
+ags_reset_peak_test_SOURCES = ags/test/audio/task/ags_reset_peak_test.c
+ags_reset_peak_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
+ags_reset_peak_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_reset_peak_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
 
 # xorg application context unit test
 ags_xorg_application_context_test_SOURCES = ags/test/X/ags_xorg_application_context_test.c
@@ -10006,6 +10069,20 @@ ags/test/audio/task/remove_soundcard_test-ags_remove_soundcard_test.$(OBJEXT):  
 ags_remove_soundcard_test$(EXEEXT): $(ags_remove_soundcard_test_OBJECTS) $(ags_remove_soundcard_test_DEPENDENCIES) $(EXTRA_ags_remove_soundcard_test_DEPENDENCIES) 
 	@rm -f ags_remove_soundcard_test$(EXEEXT)
 	$(AM_V_CCLD)$(ags_remove_soundcard_test_LINK) $(ags_remove_soundcard_test_OBJECTS) $(ags_remove_soundcard_test_LDADD) $(LIBS)
+ags/test/audio/task/reset_amplitude_test-ags_reset_amplitude_test.$(OBJEXT):  \
+	ags/test/audio/task/$(am__dirstamp) \
+	ags/test/audio/task/$(DEPDIR)/$(am__dirstamp)
+
+ags_reset_amplitude_test$(EXEEXT): $(ags_reset_amplitude_test_OBJECTS) $(ags_reset_amplitude_test_DEPENDENCIES) $(EXTRA_ags_reset_amplitude_test_DEPENDENCIES) 
+	@rm -f ags_reset_amplitude_test$(EXEEXT)
+	$(AM_V_CCLD)$(ags_reset_amplitude_test_LINK) $(ags_reset_amplitude_test_OBJECTS) $(ags_reset_amplitude_test_LDADD) $(LIBS)
+ags/test/audio/task/reset_peak_test-ags_reset_peak_test.$(OBJEXT):  \
+	ags/test/audio/task/$(am__dirstamp) \
+	ags/test/audio/task/$(DEPDIR)/$(am__dirstamp)
+
+ags_reset_peak_test$(EXEEXT): $(ags_reset_peak_test_OBJECTS) $(ags_reset_peak_test_DEPENDENCIES) $(EXTRA_ags_reset_peak_test_DEPENDENCIES) 
+	@rm -f ags_reset_peak_test$(EXEEXT)
+	$(AM_V_CCLD)$(ags_reset_peak_test_LINK) $(ags_reset_peak_test_OBJECTS) $(ags_reset_peak_test_LDADD) $(LIBS)
 ags/test/thread/returnable_thread_test-ags_returnable_thread_test.$(OBJEXT):  \
 	ags/test/thread/$(am__dirstamp) \
 	ags/test/thread/$(DEPDIR)/$(am__dirstamp)
@@ -10027,6 +10104,13 @@ ags/test/audio/recall/route_lv2_audio_test-ags_route_lv2_audio_test.$(OBJEXT):  
 ags_route_lv2_audio_test$(EXEEXT): $(ags_route_lv2_audio_test_OBJECTS) $(ags_route_lv2_audio_test_DEPENDENCIES) $(EXTRA_ags_route_lv2_audio_test_DEPENDENCIES) 
 	@rm -f ags_route_lv2_audio_test$(EXEEXT)
 	$(AM_V_CCLD)$(ags_route_lv2_audio_test_LINK) $(ags_route_lv2_audio_test_OBJECTS) $(ags_route_lv2_audio_test_LDADD) $(LIBS)
+ags/test/object/soundcard_test-ags_soundcard_test.$(OBJEXT):  \
+	ags/test/object/$(am__dirstamp) \
+	ags/test/object/$(DEPDIR)/$(am__dirstamp)
+
+ags_soundcard_test$(EXEEXT): $(ags_soundcard_test_OBJECTS) $(ags_soundcard_test_DEPENDENCIES) $(EXTRA_ags_soundcard_test_DEPENDENCIES) 
+	@rm -f ags_soundcard_test$(EXEEXT)
+	$(AM_V_CCLD)$(ags_soundcard_test_LINK) $(ags_soundcard_test_OBJECTS) $(ags_soundcard_test_LDADD) $(LIBS)
 ags/test/audio/recall/stream_audio_signal_test-ags_stream_audio_signal_test.$(OBJEXT):  \
 	ags/test/audio/recall/$(am__dirstamp) \
 	ags/test/audio/recall/$(DEPDIR)/$(am__dirstamp)
@@ -10908,6 +10992,8 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/audio/task/$(DEPDIR)/remove_audio_test-ags_remove_audio_test.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/audio/task/$(DEPDIR)/remove_note_test-ags_remove_note_test.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/audio/task/$(DEPDIR)/remove_soundcard_test-ags_remove_soundcard_test.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@ags/test/audio/task/$(DEPDIR)/reset_amplitude_test-ags_reset_amplitude_test.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@ags/test/audio/task/$(DEPDIR)/reset_peak_test-ags_reset_peak_test.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/file/$(DEPDIR)/file_id_ref_test-ags_file_id_ref_test.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/file/$(DEPDIR)/file_launch_test-ags_file_launch_test.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/file/$(DEPDIR)/file_lookup_test-ags_file_lookup_test.Po@am__quote@ # am--include-marker
@@ -10922,6 +11008,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/object/$(DEPDIR)/application_context_test-ags_application_context_test.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/object/$(DEPDIR)/config_test-ags_config_test.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/object/$(DEPDIR)/connectable_test-ags_connectable_test.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@ags/test/object/$(DEPDIR)/soundcard_test-ags_soundcard_test.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/plugin/$(DEPDIR)/base_plugin_test-ags_base_plugin_test.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/plugin/$(DEPDIR)/dssi_manager_test-ags_dssi_manager_test.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/plugin/$(DEPDIR)/dssi_plugin_test-ags_dssi_plugin_test.Po@am__quote@ # am--include-marker
@@ -17138,6 +17225,34 @@ ags/test/audio/task/remove_soundcard_test-ags_remove_soundcard_test.obj: ags/tes
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_remove_soundcard_test_CFLAGS) $(CFLAGS) -c -o ags/test/audio/task/remove_soundcard_test-ags_remove_soundcard_test.obj `if test -f 'ags/test/audio/task/ags_remove_soundcard_test.c'; then $(CYGPATH_W) 'ags/test/audio/task/ags_remove_soundcard_test.c'; else $(CYGPATH_W) '$(srcdir)/ags/test/audio/task/ags_remove_soundcard_test.c'; fi`
 
+ags/test/audio/task/reset_amplitude_test-ags_reset_amplitude_test.o: ags/test/audio/task/ags_reset_amplitude_test.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_reset_amplitude_test_CFLAGS) $(CFLAGS) -MT ags/test/audio/task/reset_amplitude_test-ags_reset_amplitude_test.o -MD -MP -MF ags/test/audio/task/$(DEPDIR)/reset_amplitude_test-ags_reset_amplitude_test.Tpo -c -o ags/test/audio/task/reset_amplitude_test-ags_reset_amplitude_test.o `test -f 'ags/test/audio/task/ags_reset_amplitude_test.c' || echo '$(srcdir)/'`ags/test/audio/task/ags_reset_amplitude_test.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/test/audio/task/$(DEPDIR)/reset_amplitude_test-ags_reset_amplitude_test.Tpo ags/test/audio/task/$(DEPDIR)/reset_amplitude_test-ags_reset_amplitude_test.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/test/audio/task/ags_reset_amplitude_test.c' object='ags/test/audio/task/reset_amplitude_test-ags_reset_amplitude_test.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_reset_amplitude_test_CFLAGS) $(CFLAGS) -c -o ags/test/audio/task/reset_amplitude_test-ags_reset_amplitude_test.o `test -f 'ags/test/audio/task/ags_reset_amplitude_test.c' || echo '$(srcdir)/'`ags/test/audio/task/ags_reset_amplitude_test.c
+
+ags/test/audio/task/reset_amplitude_test-ags_reset_amplitude_test.obj: ags/test/audio/task/ags_reset_amplitude_test.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_reset_amplitude_test_CFLAGS) $(CFLAGS) -MT ags/test/audio/task/reset_amplitude_test-ags_reset_amplitude_test.obj -MD -MP -MF ags/test/audio/task/$(DEPDIR)/reset_amplitude_test-ags_reset_amplitude_test.Tpo -c -o ags/test/audio/task/reset_amplitude_test-ags_reset_amplitude_test.obj `if test -f 'ags/test/audio/task/ags_reset_amplitude_test.c'; then $(CYGPATH_W) 'ags/test/audio/task/ags_reset_amplitude_test.c'; else $(CYGPATH_W) '$(srcdir)/ags/test/audio/task/ags_reset_amplitude_test.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/test/audio/task/$(DEPDIR)/reset_amplitude_test-ags_reset_amplitude_test.Tpo ags/test/audio/task/$(DEPDIR)/reset_amplitude_test-ags_reset_amplitude_test.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/test/audio/task/ags_reset_amplitude_test.c' object='ags/test/audio/task/reset_amplitude_test-ags_reset_amplitude_test.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_reset_amplitude_test_CFLAGS) $(CFLAGS) -c -o ags/test/audio/task/reset_amplitude_test-ags_reset_amplitude_test.obj `if test -f 'ags/test/audio/task/ags_reset_amplitude_test.c'; then $(CYGPATH_W) 'ags/test/audio/task/ags_reset_amplitude_test.c'; else $(CYGPATH_W) '$(srcdir)/ags/test/audio/task/ags_reset_amplitude_test.c'; fi`
+
+ags/test/audio/task/reset_peak_test-ags_reset_peak_test.o: ags/test/audio/task/ags_reset_peak_test.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_reset_peak_test_CFLAGS) $(CFLAGS) -MT ags/test/audio/task/reset_peak_test-ags_reset_peak_test.o -MD -MP -MF ags/test/audio/task/$(DEPDIR)/reset_peak_test-ags_reset_peak_test.Tpo -c -o ags/test/audio/task/reset_peak_test-ags_reset_peak_test.o `test -f 'ags/test/audio/task/ags_reset_peak_test.c' || echo '$(srcdir)/'`ags/test/audio/task/ags_reset_peak_test.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/test/audio/task/$(DEPDIR)/reset_peak_test-ags_reset_peak_test.Tpo ags/test/audio/task/$(DEPDIR)/reset_peak_test-ags_reset_peak_test.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/test/audio/task/ags_reset_peak_test.c' object='ags/test/audio/task/reset_peak_test-ags_reset_peak_test.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_reset_peak_test_CFLAGS) $(CFLAGS) -c -o ags/test/audio/task/reset_peak_test-ags_reset_peak_test.o `test -f 'ags/test/audio/task/ags_reset_peak_test.c' || echo '$(srcdir)/'`ags/test/audio/task/ags_reset_peak_test.c
+
+ags/test/audio/task/reset_peak_test-ags_reset_peak_test.obj: ags/test/audio/task/ags_reset_peak_test.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_reset_peak_test_CFLAGS) $(CFLAGS) -MT ags/test/audio/task/reset_peak_test-ags_reset_peak_test.obj -MD -MP -MF ags/test/audio/task/$(DEPDIR)/reset_peak_test-ags_reset_peak_test.Tpo -c -o ags/test/audio/task/reset_peak_test-ags_reset_peak_test.obj `if test -f 'ags/test/audio/task/ags_reset_peak_test.c'; then $(CYGPATH_W) 'ags/test/audio/task/ags_reset_peak_test.c'; else $(CYGPATH_W) '$(srcdir)/ags/test/audio/task/ags_reset_peak_test.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/test/audio/task/$(DEPDIR)/reset_peak_test-ags_reset_peak_test.Tpo ags/test/audio/task/$(DEPDIR)/reset_peak_test-ags_reset_peak_test.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/test/audio/task/ags_reset_peak_test.c' object='ags/test/audio/task/reset_peak_test-ags_reset_peak_test.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_reset_peak_test_CFLAGS) $(CFLAGS) -c -o ags/test/audio/task/reset_peak_test-ags_reset_peak_test.obj `if test -f 'ags/test/audio/task/ags_reset_peak_test.c'; then $(CYGPATH_W) 'ags/test/audio/task/ags_reset_peak_test.c'; else $(CYGPATH_W) '$(srcdir)/ags/test/audio/task/ags_reset_peak_test.c'; fi`
+
 ags/test/thread/returnable_thread_test-ags_returnable_thread_test.o: ags/test/thread/ags_returnable_thread_test.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_returnable_thread_test_CFLAGS) $(CFLAGS) -MT ags/test/thread/returnable_thread_test-ags_returnable_thread_test.o -MD -MP -MF ags/test/thread/$(DEPDIR)/returnable_thread_test-ags_returnable_thread_test.Tpo -c -o ags/test/thread/returnable_thread_test-ags_returnable_thread_test.o `test -f 'ags/test/thread/ags_returnable_thread_test.c' || echo '$(srcdir)/'`ags/test/thread/ags_returnable_thread_test.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/test/thread/$(DEPDIR)/returnable_thread_test-ags_returnable_thread_test.Tpo ags/test/thread/$(DEPDIR)/returnable_thread_test-ags_returnable_thread_test.Po
@@ -17179,6 +17294,20 @@ ags/test/audio/recall/route_lv2_audio_test-ags_route_lv2_audio_test.obj: ags/tes
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/test/audio/recall/ags_route_lv2_audio_test.c' object='ags/test/audio/recall/route_lv2_audio_test-ags_route_lv2_audio_test.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_route_lv2_audio_test_CFLAGS) $(CFLAGS) -c -o ags/test/audio/recall/route_lv2_audio_test-ags_route_lv2_audio_test.obj `if test -f 'ags/test/audio/recall/ags_route_lv2_audio_test.c'; then $(CYGPATH_W) 'ags/test/audio/recall/ags_route_lv2_audio_test.c'; else $(CYGPATH_W) '$(srcdir)/ags/test/audio/recall/ags_route_lv2_audio_test.c'; fi`
+
+ags/test/object/soundcard_test-ags_soundcard_test.o: ags/test/object/ags_soundcard_test.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_soundcard_test_CFLAGS) $(CFLAGS) -MT ags/test/object/soundcard_test-ags_soundcard_test.o -MD -MP -MF ags/test/object/$(DEPDIR)/soundcard_test-ags_soundcard_test.Tpo -c -o ags/test/object/soundcard_test-ags_soundcard_test.o `test -f 'ags/test/object/ags_soundcard_test.c' || echo '$(srcdir)/'`ags/test/object/ags_soundcard_test.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/test/object/$(DEPDIR)/soundcard_test-ags_soundcard_test.Tpo ags/test/object/$(DEPDIR)/soundcard_test-ags_soundcard_test.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/test/object/ags_soundcard_test.c' object='ags/test/object/soundcard_test-ags_soundcard_test.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_soundcard_test_CFLAGS) $(CFLAGS) -c -o ags/test/object/soundcard_test-ags_soundcard_test.o `test -f 'ags/test/object/ags_soundcard_test.c' || echo '$(srcdir)/'`ags/test/object/ags_soundcard_test.c
+
+ags/test/object/soundcard_test-ags_soundcard_test.obj: ags/test/object/ags_soundcard_test.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_soundcard_test_CFLAGS) $(CFLAGS) -MT ags/test/object/soundcard_test-ags_soundcard_test.obj -MD -MP -MF ags/test/object/$(DEPDIR)/soundcard_test-ags_soundcard_test.Tpo -c -o ags/test/object/soundcard_test-ags_soundcard_test.obj `if test -f 'ags/test/object/ags_soundcard_test.c'; then $(CYGPATH_W) 'ags/test/object/ags_soundcard_test.c'; else $(CYGPATH_W) '$(srcdir)/ags/test/object/ags_soundcard_test.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/test/object/$(DEPDIR)/soundcard_test-ags_soundcard_test.Tpo ags/test/object/$(DEPDIR)/soundcard_test-ags_soundcard_test.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/test/object/ags_soundcard_test.c' object='ags/test/object/soundcard_test-ags_soundcard_test.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_soundcard_test_CFLAGS) $(CFLAGS) -c -o ags/test/object/soundcard_test-ags_soundcard_test.obj `if test -f 'ags/test/object/ags_soundcard_test.c'; then $(CYGPATH_W) 'ags/test/object/ags_soundcard_test.c'; else $(CYGPATH_W) '$(srcdir)/ags/test/object/ags_soundcard_test.c'; fi`
 
 ags/test/audio/recall/stream_audio_signal_test-ags_stream_audio_signal_test.o: ags/test/audio/recall/ags_stream_audio_signal_test.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_stream_audio_signal_test_CFLAGS) $(CFLAGS) -MT ags/test/audio/recall/stream_audio_signal_test-ags_stream_audio_signal_test.o -MD -MP -MF ags/test/audio/recall/$(DEPDIR)/stream_audio_signal_test-ags_stream_audio_signal_test.Tpo -c -o ags/test/audio/recall/stream_audio_signal_test-ags_stream_audio_signal_test.o `test -f 'ags/test/audio/recall/ags_stream_audio_signal_test.c' || echo '$(srcdir)/'`ags/test/audio/recall/ags_stream_audio_signal_test.c
@@ -17913,6 +18042,13 @@ ags_config_test.log: ags_config_test$(EXEEXT)
 ags_connectable_test.log: ags_connectable_test$(EXEEXT)
 	@p='ags_connectable_test$(EXEEXT)'; \
 	b='ags_connectable_test'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+ags_soundcard_test.log: ags_soundcard_test$(EXEEXT)
+	@p='ags_soundcard_test$(EXEEXT)'; \
+	b='ags_soundcard_test'; \
 	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
@@ -18802,6 +18938,20 @@ ags_remove_note_test.log: ags_remove_note_test$(EXEEXT)
 ags_remove_soundcard_test.log: ags_remove_soundcard_test$(EXEEXT)
 	@p='ags_remove_soundcard_test$(EXEEXT)'; \
 	b='ags_remove_soundcard_test'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+ags_reset_amplitude_test.log: ags_reset_amplitude_test$(EXEEXT)
+	@p='ags_reset_amplitude_test$(EXEEXT)'; \
+	b='ags_reset_amplitude_test'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+ags_reset_peak_test.log: ags_reset_peak_test$(EXEEXT)
+	@p='ags_reset_peak_test$(EXEEXT)'; \
+	b='ags_reset_peak_test'; \
 	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
@@ -19919,6 +20069,8 @@ distclean: distclean-recursive
 	-rm -f ags/test/audio/task/$(DEPDIR)/remove_audio_test-ags_remove_audio_test.Po
 	-rm -f ags/test/audio/task/$(DEPDIR)/remove_note_test-ags_remove_note_test.Po
 	-rm -f ags/test/audio/task/$(DEPDIR)/remove_soundcard_test-ags_remove_soundcard_test.Po
+	-rm -f ags/test/audio/task/$(DEPDIR)/reset_amplitude_test-ags_reset_amplitude_test.Po
+	-rm -f ags/test/audio/task/$(DEPDIR)/reset_peak_test-ags_reset_peak_test.Po
 	-rm -f ags/test/file/$(DEPDIR)/file_id_ref_test-ags_file_id_ref_test.Po
 	-rm -f ags/test/file/$(DEPDIR)/file_launch_test-ags_file_launch_test.Po
 	-rm -f ags/test/file/$(DEPDIR)/file_lookup_test-ags_file_lookup_test.Po
@@ -19933,6 +20085,7 @@ distclean: distclean-recursive
 	-rm -f ags/test/object/$(DEPDIR)/application_context_test-ags_application_context_test.Po
 	-rm -f ags/test/object/$(DEPDIR)/config_test-ags_config_test.Po
 	-rm -f ags/test/object/$(DEPDIR)/connectable_test-ags_connectable_test.Po
+	-rm -f ags/test/object/$(DEPDIR)/soundcard_test-ags_soundcard_test.Po
 	-rm -f ags/test/plugin/$(DEPDIR)/base_plugin_test-ags_base_plugin_test.Po
 	-rm -f ags/test/plugin/$(DEPDIR)/dssi_manager_test-ags_dssi_manager_test.Po
 	-rm -f ags/test/plugin/$(DEPDIR)/dssi_plugin_test-ags_dssi_plugin_test.Po
@@ -20725,6 +20878,8 @@ maintainer-clean: maintainer-clean-recursive
 	-rm -f ags/test/audio/task/$(DEPDIR)/remove_audio_test-ags_remove_audio_test.Po
 	-rm -f ags/test/audio/task/$(DEPDIR)/remove_note_test-ags_remove_note_test.Po
 	-rm -f ags/test/audio/task/$(DEPDIR)/remove_soundcard_test-ags_remove_soundcard_test.Po
+	-rm -f ags/test/audio/task/$(DEPDIR)/reset_amplitude_test-ags_reset_amplitude_test.Po
+	-rm -f ags/test/audio/task/$(DEPDIR)/reset_peak_test-ags_reset_peak_test.Po
 	-rm -f ags/test/file/$(DEPDIR)/file_id_ref_test-ags_file_id_ref_test.Po
 	-rm -f ags/test/file/$(DEPDIR)/file_launch_test-ags_file_launch_test.Po
 	-rm -f ags/test/file/$(DEPDIR)/file_lookup_test-ags_file_lookup_test.Po
@@ -20739,6 +20894,7 @@ maintainer-clean: maintainer-clean-recursive
 	-rm -f ags/test/object/$(DEPDIR)/application_context_test-ags_application_context_test.Po
 	-rm -f ags/test/object/$(DEPDIR)/config_test-ags_config_test.Po
 	-rm -f ags/test/object/$(DEPDIR)/connectable_test-ags_connectable_test.Po
+	-rm -f ags/test/object/$(DEPDIR)/soundcard_test-ags_soundcard_test.Po
 	-rm -f ags/test/plugin/$(DEPDIR)/base_plugin_test-ags_base_plugin_test.Po
 	-rm -f ags/test/plugin/$(DEPDIR)/dssi_manager_test-ags_dssi_manager_test.Po
 	-rm -f ags/test/plugin/$(DEPDIR)/dssi_plugin_test-ags_dssi_plugin_test.Po

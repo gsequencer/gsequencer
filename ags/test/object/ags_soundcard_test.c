@@ -75,8 +75,6 @@ void ags_soundcard_test_set_loop();
 void ags_soundcard_test_get_loop();
 void ags_soundcard_test_get_loop_offset();
 
-#define AGS_SOUNDCARD_TEST_SET_DEVICE_DEVICE "ags-test-default-0"
-
 GType soundcard_test_types[10];
  
 /* The suite initialization function.
@@ -150,162 +148,25 @@ ags_soundcard_test_set_application_context()
 void
 ags_soundcard_test_get_application_context()
 {
-  AgsApplicationContext *application_context;
-  AgsApplicationContext *retval;
-  
-  GObject *current;
-  
-  GType current_type;
-
-  guint i;
-  gboolean success;
-
-  application_context = ags_thread_application_context_new();
-
-  success = TRUE;
-  
-  for(i = 0; soundcard_test_types[i] != G_TYPE_NONE; i++){
-    current = g_object_new(soundcard_test_types[i],
-			   NULL);
-
-    ags_soundcard_set_application_context(current,
-					  application_context);
-
-    if(AGS_SOUNDCARD_GET_INTERFACE(AGS_SOUNDCARD(current))->get_application_context == NULL){
-      g_message("AgsSoundcard::get-application-context missing: %s", G_OBJECT_TYPE_NAME(current));
-      
-      success = FALSE;
-    }
-
-    retval = ags_soundcard_get_application_context(current);
-
-    if(retval != application_context){
-      g_message("AgsSoundcard::get-application-context failed: %s", G_OBJECT_TYPE_NAME(current));
-      
-      success = FALSE;
-    }
-  }
-
-  CU_ASSERT(success);
+  //TODO:JK: implement me
 }
 
 void
 ags_soundcard_test_set_device()
 {
-  AgsApplicationContext *application_context;
-  
-  GObject *current;
-  
-  GType current_type;
-
-  guint i;
-  gboolean success;
-
-  application_context = ags_thread_application_context_new();
-
-  success = TRUE;
-  
-  for(i = 0; soundcard_test_types[i] != G_TYPE_NONE; i++){
-    current = g_object_new(soundcard_test_types[i],
-			   NULL);
-
-    if(AGS_SOUNDCARD_GET_INTERFACE(AGS_SOUNDCARD(current))->set_device == NULL){
-      g_message("AgsSoundcard::set-device missing: %s", G_OBJECT_TYPE_NAME(current));
-      
-      success = FALSE;
-    }
-    
-    ags_soundcard_set_device(current,
-			     AGS_SOUNDCARD_TEST_SET_DEVICE_DEVICE);
-  }
-
-  CU_ASSERT(success);
+  //TODO:JK: implement me
 }
 
 void
 ags_soundcard_test_get_device()
 {
-  AgsApplicationContext *application_context;
-  
-  GObject *current;
-  
-  GType current_type;
-
-  gchar *retval;
-  
-  guint i;
-  gboolean success;
-
-  application_context = ags_thread_application_context_new();
-
-  success = TRUE;
-  
-  for(i = 0; soundcard_test_types[i] != G_TYPE_NONE; i++){
-    current = g_object_new(soundcard_test_types[i],
-			   NULL);
-
-    if(AGS_SOUNDCARD_GET_INTERFACE(AGS_SOUNDCARD(current))->get_device == NULL){
-      g_message("AgsSoundcard::get-device missing: %s", G_OBJECT_TYPE_NAME(current));
-      
-      success = FALSE;
-    }
-    
-    retval = ags_soundcard_get_device(current);
-
-    if(retval == NULL){
-      g_message("AgsSoundcard::get-device returns NULL: %s", G_OBJECT_TYPE_NAME(current));
-
-      success = FALSE;
-    }
-  }
-
-  CU_ASSERT(success);
+  //TODO:JK: implement me
 }
 
 void
 ags_soundcard_test_pcm_info()
 {
-  AgsApplicationContext *application_context;
-  
-  GObject *current;
-  
-  GType current_type;
-
-  gchar *retval;
-  
-  guint i;
-  gboolean success;
-
-  GError *error;
-  
-  application_context = ags_thread_application_context_new();
-
-  success = TRUE;
-  
-  for(i = 0; soundcard_test_types[i] != G_TYPE_NONE; i++){
-    current = g_object_new(soundcard_test_types[i],
-			   NULL);
-
-    if(AGS_SOUNDCARD_GET_INTERFACE(AGS_SOUNDCARD(current))->pcm_info == NULL){
-      g_message("AgsSoundcard::get-device missing: %s", G_OBJECT_TYPE_NAME(current));
-      
-      success = FALSE;
-    }
-
-    error = NULL;
-    retval = ags_soundcard_pcm_info(current,
-				    NULL,
-				    NULL, NULL,
-				    NULL, NULL,
-				    NULL, NULL,
-				    &error);
-
-    if(error != NULL){
-      g_message("%s", error->message);
-    }
-  }
-
-  CU_ASSERT(success);
+  //TODO:JK: implement me
 }
 
 void

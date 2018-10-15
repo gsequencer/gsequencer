@@ -262,6 +262,8 @@
 #include <ags/audio/task/ags_remove_note.h>
 #include <ags/audio/task/ags_remove_soundcard.h>
 #include <ags/audio/task/ags_resize_audio.h>
+#include <ags/audio/task/ags_reset_amplitude.h>
+#include <ags/audio/task/ags_reset_peak.h>
 #include <ags/audio/task/ags_seek_soundcard.h>
 #include <ags/audio/task/ags_set_audio_channels.h>
 #include <ags/audio/task/ags_set_buffer_size.h>
