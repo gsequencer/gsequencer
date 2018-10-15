@@ -3,6 +3,7 @@ ags (2.0.36)
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* implemented thread-safety of AgsAudioContainer and AgsAudioFile
 	* added ags_connectable_test.c
+	* added ags_soundcard_test.c
 
 ags (2.0.35)
 
