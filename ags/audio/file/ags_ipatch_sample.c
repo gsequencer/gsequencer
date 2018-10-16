@@ -101,7 +101,6 @@ enum{
 };
 
 static gpointer ags_ipatch_sample_parent_class = NULL;
-static AgsSoundResourceInterface *ags_ipatch_sample_parent_sound_resource_interface;
 
 static pthread_mutex_t ags_ipatch_sample_class_mutex = PTHREAD_MUTEX_INITIALIZER;
 
@@ -253,8 +252,6 @@ ags_ipatch_sample_connectable_interface_init(AgsConnectableInterface *connectabl
 void
 ags_ipatch_sample_sound_resource_interface_init(AgsSoundResourceInterface *sound_resource)
 {
-  ags_ipatch_sample_parent_sound_resource_interface = g_type_interface_peek_parent(sound_resource);
-
   sound_resource->open = NULL;
   sound_resource->rw_open = NULL;
 
@@ -1106,7 +1103,6 @@ ags_ipatch_sample_seek(AgsSoundResource *sound_resource,
     }
   }
 }
-
 
 /**
  * ags_ipatch_sample_get_class_mutex:
