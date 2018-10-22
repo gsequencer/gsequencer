@@ -670,52 +670,356 @@ gboolean
 ags_ipatch_dls2_reader_load(AgsIpatchDLS2Reader *ipatch_dls2_reader,
 			    IpatchFileHandle *handle)
 {
-  //TODO:JK: implement me
+  if(!AGS_IS_IPATCH_DLS2_READER(ipatch_dls2_reader)){
+    return(FALSE);
+  }
 
-  return(FALSE);
+  ipatch_dls2_reader->reader = ipatch_dls_reader_new(handle);
+
+  ipatch_dls2_reader->error = NULL;
+  ipatch_dls2_reader->base = (IpatchBase *) ipatch_dls_reader_load(ipatch_dls2_reader->reader,
+								   &(ipatch_dls2_reader->error));
+
+  if(ipatch_dls2_reader->error != NULL){
+    g_warning("%s", ipatch_dls2_reader->error->message);
+    
+    return(FALSE);
+  }
+  
+  ipatch_dls2_reader->error = NULL;
+  ipatch_dls2_reader->dls2 = (IpatchDLS2 *) ipatch_convert_object_to_type((GObject *) handle->file,
+									  IPATCH_TYPE_DLS2,
+									  &(ipatch_dls2_reader->error));
+
+  if(ipatch_dls2_reader->error != NULL){
+    g_warning("%s", ipatch_dls2_reader->error->message);
+    
+    return(FALSE);
+  }
+
+  while(g_static_rec_mutex_unlock_full(((IpatchItem *) (ipatch_dls2_reader->base))->mutex) != 0);
+
+  return(TRUE);
 }
 
 gboolean
 ags_ipatch_dls2_reader_select_instrument(AgsIpatchDLS2Reader *ipatch_dls2_reader,
 					 guint instrument_index)
 {
-  //TODO:JK: implement me
+#ifdef AGS_WITH_LIBINSTPATCH
+  IpatchDLS2 *dls2;
+  IpatchItem *ipatch_item;
+  IpatchList *ipatch_list;
 
-  return(FALSE);
+  IpatchIter instrument_iter;
+#endif
+  
+  gboolean success;
+
+  if(!AGS_IS_IPATCH_DLS2_READER(ipatch_dls2_reader)){
+    return(FALSE);
+  }
+
+  success = FALSE;
+
+#ifdef AGS_WITH_LIBINSTPATCH
+  dls2 = ipatch_dls2_reader->dls2;
+
+  ipatch_list = ipatch_container_get_children(dls2, IPATCH_TYPE_DLS2_INST);
+
+  if(ipatch_list != NULL){
+    ipatch_list_init_iter(ipatch_list, &instrument_iter);
+    
+    if(instrument_index < ipatch_iter_count(&instrument_iter)){
+      int bank, program;
+	
+      success = TRUE;
+
+      ipatch_iter_index(&instrument_iter, instrument_index);
+      ipatch_item = ipatch_dls2_inst_get_regions(ipatch_iter_get(&instrument_iter));
+
+      /* selected index and name */
+      ipatch_dls2_reader->index_selected[AGS_DLS2_IHDR] = instrument_index;
+
+      ipatch_dls2_reader->index_selected[AGS_DLS2_SHDR] = 0;
+
+      g_free(ipatch_dls2_reader->name_selected[AGS_DLS2_IHDR]);
+      ipatch_dls2_inst_get_midi_locale(ipatch_item,
+				       &bank, &program);
+      ipatch_dls2_reader->name_selected[AGS_DLS2_IHDR] = g_strdup_printf("bank=%d; program=%d;", bank, program);
+      
+      g_free(ipatch_dls2_reader->name_selected[AGS_DLS2_SHDR]);
+      ipatch_dls2_reader->name_selected[AGS_DLS2_SHDR] = NULL;
+
+      /* container */
+      ipatch_dls2_reader->instrument = ipatch_item;
+      
+      ipatch_dls2_reader->sample = NULL;
+    }
+  }
+#endif
+  
+  return(success);
 }
 
 gboolean
 ags_ipatch_dls2_reader_select_sample(AgsIpatchDLS2Reader *ipatch_dls2_reader,
 				     guint sample_index)
 {
-  //TODO:JK: implement me
+#ifdef AGS_WITH_LIBINSTPATCH
+  IpatchDLS2 *dls2;
+  IpatchItem *ipatch_item;
+  IpatchList *ipatch_list;
 
-  return(FALSE);
+  IpatchIter sample_iter;
+#endif
+  
+  gboolean success;
+
+  if(!AGS_IS_IPATCH_DLS2_READER(ipatch_dls2_reader)){
+    return(FALSE);
+  }
+
+  success = FALSE;
+
+#ifdef AGS_WITH_LIBINSTPATCH
+  dls2 = ipatch_dls2_reader->dls2;
+
+  ipatch_list = ipatch_dls2_inst_get_regions(ipatch_dls2_reader->instrument);
+
+  if(ipatch_list != NULL){
+    ipatch_list_init_iter(ipatch_list, &sample_iter);
+    
+    if(sample_index < ipatch_iter_count(&sample_iter)){
+      success = TRUE;
+
+      ipatch_iter_index(&sample_iter, sample_index);
+      ipatch_item = ipatch_dls2_region_get_sample(ipatch_iter_get(&sample_iter));
+
+      /* selected index and name */
+      ipatch_dls2_reader->index_selected[AGS_DLS2_SHDR] = sample_index;
+
+      g_free(ipatch_dls2_reader->name_selected[AGS_DLS2_SHDR]);
+
+      if(IPATCH_DLS2_SAMPLE(ipatch_item)->dlid != NULL){
+	ipatch_dls2_reader->name_selected[AGS_DLS2_SHDR] = g_strdup_printf("id=0x%x%x",
+									   IPATCH_DLS2_SAMPLE(ipatch_item)->dlid[1],
+									   IPATCH_DLS2_SAMPLE(ipatch_item)->dlid[0]);
+      }else{
+	ipatch_dls2_reader->name_selected[AGS_DLS2_SHDR] = g_strdup("(null)");
+      }
+      
+      /* container */
+      ipatch_dls2_reader->sample = ipatch_item;
+    }
+  }
+#endif
+  
+  return(success);
 }
 
 gchar**
 ags_ipatch_dls2_reader_get_instrument_all(AgsIpatchDLS2Reader *ipatch_dls2_reader)
 {
-  //TODO:JK: implement me
+#ifdef AGS_WITH_LIBINSTPATCH
+  IpatchDLS2 *dls2;
+  IpatchItem *ipatch_item;
+  IpatchList *ipatch_list;
+  
+  IpatchIter instrument_iter;
+#endif
+  
+  gchar **instrument;
+  
+  guint i, i_stop;
+  
+  if(!AGS_IS_IPATCH_DLS2_READER(ipatch_dls2_reader)){
+    return(NULL);
+  }
+  
+  instrument = NULL;
 
-  return(NULL);
+#ifdef AGS_WITH_LIBINSTPATCH
+  dls2 = ipatch_dls2_reader->dls2;
+  
+  ipatch_list = ipatch_container_get_children(dls2, IPATCH_TYPE_DLS2_INST);
+  
+  if(ipatch_list != NULL){
+    ipatch_list_init_iter(ipatch_list, &instrument_iter);
+
+    i_stop = ipatch_iter_count(&instrument_iter);
+
+    if(i_stop > 0){
+      instrument = (gchar **) malloc((i_stop + 1) * sizeof(gchar *));
+
+      ipatch_iter_first(&instrument_iter);
+      
+      for(i = 0; i < i_stop; i++){
+	int bank, program;
+	
+	ipatch_item = ipatch_iter_get(&instrument_iter);
+
+	ipatch_dls2_inst_get_midi_locale(ipatch_item,
+					 &bank, &program);
+	instrument[i] = g_strdup_printf("bank=%d; program=%d;", bank, program);
+
+	/* iterate */
+	ipatch_iter_next(&instrument_iter);
+      }
+
+      instrument[i] = NULL;
+    }
+  }
+  
+  //FIXME:JK: still needed?
+  while(g_static_rec_mutex_unlock_full(((IpatchItem *) (dls2))->mutex) != 0);
+#endif
+  
+  return(instrument);
 }
 
 gchar**
 ags_ipatch_dls2_reader_get_sample_all(AgsIpatchDLS2Reader *ipatch_dls2_reader)
 {
-  //TODO:JK: implement me
+#ifdef AGS_WITH_LIBINSTPATCH
+  IpatchDLS2 *dls2;
+  IpatchItem *ipatch_item;
+  IpatchList *ipatch_list;
+  
+  IpatchIter sample_iter;
+#endif
+  
+  gchar **sample;
+  
+  guint i, i_stop;
+  
+  if(!AGS_IS_IPATCH_DLS2_READER(ipatch_dls2_reader)){
+    return(NULL);
+  }
+  
+  sample = NULL;
 
-  return(NULL);
+#ifdef AGS_WITH_LIBINSTPATCH
+  dls2 = ipatch_dls2_reader->dls2;
+  
+  ipatch_list = ipatch_container_get_children(dls2, IPATCH_TYPE_DLS2_SAMPLE);
+  
+  if(ipatch_list != NULL){
+    ipatch_list_init_iter(ipatch_list, &sample_iter);
+
+    i_stop = ipatch_iter_count(&sample_iter);
+
+    if(i_stop > 0){
+      sample = (gchar **) malloc((i_stop + 1) * sizeof(gchar *));
+
+      ipatch_iter_first(&sample_iter);
+      
+      for(i = 0; i < i_stop; i++){
+	ipatch_item = ipatch_iter_get(&sample_iter);
+
+	if(IPATCH_DLS2_SAMPLE(ipatch_item)->dlid != NULL){
+	  sample[i] = g_strdup_printf("id=0x%x%x",
+				      IPATCH_DLS2_SAMPLE(ipatch_item)->dlid[1],
+				      IPATCH_DLS2_SAMPLE(ipatch_item)->dlid[0]);
+	}else{
+	  sample[i] = g_strdup("(null)");
+	}
+
+	/* iterate */
+	ipatch_iter_next(&sample_iter);
+      }
+
+      sample[i] = NULL;
+    }
+  }
+  
+  //FIXME:JK: still needed?
+  while(g_static_rec_mutex_unlock_full(((IpatchItem *) (dls2))->mutex) != 0);
+#endif
+  
+  return(sample);
 }
 
 gchar**
 ags_ipatch_dls2_reader_get_sample_by_instrument_index(AgsIpatchDLS2Reader *ipatch_dls2_reader,
 						      guint instrument_index)
 {
-  //TODO:JK: implement me
+#ifdef AGS_WITH_LIBINSTPATCH
+  IpatchDLS2 *dls2;
+  IpatchContainer *instrument;
+  
+  IpatchItem *ipatch_item;
+  IpatchList *ipatch_list;
+  
+  IpatchIter instrument_iter, sample_iter;
+#endif
 
-  return(NULL);
+  gchar **sample;
+
+  guint i, i_stop;
+  guint j, j_stop;
+  guint count;
+
+  if(!AGS_IS_IPATCH_DLS2_READER(ipatch_dls2_reader)){
+    return(NULL);
+  }
+  
+  sample = NULL;
+  
+#ifdef AGS_WITH_LIBINSTPATCH
+  dls2 = ipatch_dls2_reader->dls2;
+  
+  /* instruments */
+  ipatch_list = ipatch_container_get_children(dls2, IPATCH_TYPE_DLS2_INST);
+  
+  if(ipatch_list != NULL){
+    ipatch_list_init_iter(ipatch_list, &instrument_iter);
+    
+    i_stop = ipatch_iter_count(&instrument_iter);
+
+    if(i_stop > 0 && instrument_index < i_stop){
+      ipatch_iter_index(&instrument_iter, instrument_index);
+
+      instrument = ipatch_iter_get(&instrument_iter);
+
+      /* samples */
+      ipatch_list = ipatch_dls2_inst_get_regions(instrument);
+
+      if(ipatch_list != NULL){
+	ipatch_list_init_iter(ipatch_list, &sample_iter);
+
+	j_stop = ipatch_iter_count(&sample_iter);
+
+	if(j_stop > 0){
+	  sample = (gchar **) malloc((j_stop + 1) * sizeof(gchar *));
+	    
+	  for(j = 0, count = 0; j < j_stop; j++){
+	    ipatch_item = ipatch_dls2_region_get_sample(ipatch_iter_get(&sample_iter));
+
+	    if(IPATCH_DLS2_SAMPLE(ipatch_item)->dlid != NULL){
+	      sample[count] = g_strdup_printf("id=0x%x%x",
+					  IPATCH_DLS2_SAMPLE(ipatch_item)->dlid[1],
+					  IPATCH_DLS2_SAMPLE(ipatch_item)->dlid[0]);
+	    }else{
+	      sample[count] = g_strdup("(null)");
+	    }
+	    
+	    /* iterate */
+	    ipatch_iter_next(&sample_iter);
+	    count++;
+	  }
+
+	  sample[count] = NULL;
+	}
+      }
+    }
+  }
+
+  //FIXME:JK: still needed?
+  while(g_static_rec_mutex_unlock_full(((IpatchItem *) (dls2))->mutex) != 0);
+#endif
+
+  return(sample);
 }
 
 /**
