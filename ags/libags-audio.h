@@ -109,11 +109,13 @@
 #include <ags/audio/file/ags_audio_file.h>
 #include <ags/audio/file/ags_audio_file_link.h>
 #include <ags/audio/file/ags_audio_file_xml.h>
+#ifdef AGS_WITH_LIBINSTPATCH
 #include <ags/audio/file/ags_ipatch.h>
 #include <ags/audio/file/ags_ipatch_gig_reader.h>
 #include <ags/audio/file/ags_ipatch_dls2_reader.h>
 #include <ags/audio/file/ags_ipatch_sf2_reader.h>
 #include <ags/audio/file/ags_ipatch_sample.h>
+#endif
 #include <ags/audio/file/ags_sndfile.h>
 #include <ags/audio/file/ags_sound_container.h>
 #include <ags/audio/file/ags_sound_resource.h>

@@ -241,6 +241,7 @@ AS_IF([test "x$enable_libinstpatch" != xno],
       AC_SUBST(LIBINSTPATCH_LIBS)
       AC_DEFINE([AGS_WITH_LIBINSTPATCH], [1], [Disable if you don't want libinstpatch])],
       AC_MSG_NOTICE([libinstpatch disabled]))
+AM_CONDITIONAL([AGS_WITH_LIBINSTPATCH], [test "x$enable_libinstpatch" != xno])
 
 PKG_CHECK_MODULES([FONTCONFIG], [fontconfig >= 2.9.0])
 AC_SUBST(FONTCONFIG_CFLAGS)

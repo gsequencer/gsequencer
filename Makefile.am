@@ -281,6 +281,9 @@ EXTRA_DIST += \
 	$(top_srcdir)/ags/X/file/ags_simple_file.dtd \
 	$(top_srcdir)/ags.xsl $(top_srcdir)/ags-simple.xsl $(top_srcdir)/ags/object/ags_marshallers.list
 
+# conditional objects
+
+
 # libraries and gsequencer
 libags_la_SOURCES = $(libags_c_sources) $(libags_util_c_sources) $(libags_object_c_sources) $(libags_file_c_sources) $(libags_file_task_c_sources)
 libags_la_HEADERS_0 = ags/libags.h $(libags_h_sources) $(libags_util_h_sources) $(libags_object_h_sources) $(libags_file_h_sources) $(libags_file_task_h_sources)
@@ -842,11 +845,13 @@ libags_audio_file_h_sources = \
 	ags/audio/file/ags_audio_file.h \
 	ags/audio/file/ags_audio_file_link.h \
 	ags/audio/file/ags_audio_file_xml.h \
+if AGS_WITH_LIBINSTPATCH
 	ags/audio/file/ags_ipatch.h \
 	ags/audio/file/ags_ipatch_sample.h \
 	ags/audio/file/ags_ipatch_dls2_reader.h \
 	ags/audio/file/ags_ipatch_gig_reader.h \
 	ags/audio/file/ags_ipatch_sf2_reader.h \
+endif
 	ags/audio/file/ags_sound_container.h \
 	ags/audio/file/ags_sound_resource.h \
 	ags/audio/file/ags_sndfile.h
@@ -859,11 +864,13 @@ libags_audio_file_c_sources = \
 	ags/audio/file/ags_audio_file.c \
 	ags/audio/file/ags_audio_file_link.c \
 	ags/audio/file/ags_audio_file_xml.c \
+if AGS_WITH_LIBINSTPATCH
 	ags/audio/file/ags_ipatch.c \
 	ags/audio/file/ags_ipatch_sample.c \
 	ags/audio/file/ags_ipatch_dls2_reader.c \
 	ags/audio/file/ags_ipatch_gig_reader.c \
 	ags/audio/file/ags_ipatch_sf2_reader.c \
+endif
 	ags/audio/file/ags_sound_container.c \
 	ags/audio/file/ags_sound_resource.c \
 	ags/audio/file/ags_sndfile.c
