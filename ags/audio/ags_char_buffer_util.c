@@ -19,6 +19,8 @@
 
 #include <ags/audio/ags_char_buffer_util.h>
 
+#include <ags/libags.h>
+
 /**
  * ags_char_buffer_util_copy_s8_to_cbuffer:
  * @destination: destination buffer
@@ -38,7 +40,125 @@ ags_char_buffer_util_copy_s8_to_cbuffer(guchar *destination, guint word_size, gu
 					gint8 *source, guint schannels,
 					guint frame_count, guint byte_order)
 {
-  //TODO:JK: implement me
+  gdouble scale_factor;
+  guint i;
+  gboolean swap_bytes;
+
+  scale_factor = (((guint64) 1 << (word_size * 8 - 1)) - 1) / G_MAXINT8;
+  
+  swap_bytes = FALSE;
+
+  if(ags_endian_host_is_le() &&
+     byte_order == AGS_BYTE_ORDER_BE){
+    swap_bytes = TRUE;
+  }else if(ags_endian_host_is_be() &&
+	   byte_order == AGS_BYTE_ORDER_LE){
+    swap_bytes = TRUE;
+  }
+  
+  for(i = 0; i < frame_count; i++){
+    switch(word_size){
+    case 1:
+      {
+	if((ags_endian_host_is_le() &&
+	    !swap_bytes) ||
+	   (ags_endian_host_is_be() &&
+	    swap_bytes)){
+	  ags_buffer_util_char_buffer_write_s8(destination,
+					       source[0],
+					       AGS_BYTE_ORDER_LE);
+	}else{
+	  ags_buffer_util_char_buffer_write_s8(destination,
+					       source[0],
+					       AGS_BYTE_ORDER_BE);
+	}
+      }
+      break;
+    case 2:
+      {
+	gint16 res;
+
+	res = scale_factor * source[0];
+	
+	if((ags_endian_host_is_le() &&
+	    !swap_bytes) ||
+	   (ags_endian_host_is_be() &&
+	    swap_bytes)){
+	  ags_buffer_util_char_buffer_write_s16(destination,
+						res,
+						AGS_BYTE_ORDER_LE);
+	}else{
+	  ags_buffer_util_char_buffer_write_s16(destination,
+						res,
+						AGS_BYTE_ORDER_BE);
+	}	
+      }
+      break;
+    case 3:
+      {
+	gint32 res;
+
+	res = scale_factor * source[0];
+	
+	if((ags_endian_host_is_le() &&
+	    !swap_bytes) ||
+	   (ags_endian_host_is_be() &&
+	    swap_bytes)){
+	  ags_buffer_util_char_buffer_write_s24(destination,
+						res,
+						AGS_BYTE_ORDER_LE);
+	}else{
+	  ags_buffer_util_char_buffer_write_s24(destination,
+						res,
+						AGS_BYTE_ORDER_BE);
+	}	
+      }
+      break;
+    case 4:
+      {
+	gint32 res;
+
+	res = scale_factor * source[0];
+	
+	if((ags_endian_host_is_le() &&
+	    !swap_bytes) ||
+	   (ags_endian_host_is_be() &&
+	    swap_bytes)){
+	  ags_buffer_util_char_buffer_write_s32(destination,
+						res,
+						AGS_BYTE_ORDER_LE);
+	}else{
+	  ags_buffer_util_char_buffer_write_s32(destination,
+						res,
+						AGS_BYTE_ORDER_BE);
+	}	
+      }
+      break;
+    case 8:
+      {
+	gint64 res;
+
+	res = scale_factor * source[0];
+	
+	if((ags_endian_host_is_le() &&
+	    !swap_bytes) ||
+	   (ags_endian_host_is_be() &&
+	    swap_bytes)){
+	  ags_buffer_util_char_buffer_write_s64(destination,
+						res,
+						AGS_BYTE_ORDER_LE);
+	}else{
+	  ags_buffer_util_char_buffer_write_s64(destination,
+						res,
+						AGS_BYTE_ORDER_BE);
+	}	
+      }
+      break;
+    }
+    
+    destination += dchannels;
+    source += schannels;
+  }
 }
 
 /**
@@ -60,7 +180,125 @@ ags_char_buffer_util_copy_s16_to_cbuffer(guchar *destination, guint word_size, g
 					 gint16 *source, guint schannels,
 					 guint frame_count, guint byte_order)
 {
-  //TODO:JK: implement me
+  gdouble scale_factor;
+  guint i;
+  gboolean swap_bytes;
+
+  scale_factor = (((guint64) 1 << (word_size * 8 - 1)) - 1) / G_MAXINT16;
+  
+  swap_bytes = FALSE;
+
+  if(ags_endian_host_is_le() &&
+     byte_order == AGS_BYTE_ORDER_BE){
+    swap_bytes = TRUE;
+  }else if(ags_endian_host_is_be() &&
+	   byte_order == AGS_BYTE_ORDER_LE){
+    swap_bytes = TRUE;
+  }
+  
+  for(i = 0; i < frame_count; i++){
+    switch(word_size){
+    case 1:
+      {
+	gint8 res;
+
+	res = scale_factor * source[0];
+
+	if((ags_endian_host_is_le() &&
+	    !swap_bytes) ||
+	   (ags_endian_host_is_be() &&
+	    swap_bytes)){
+	  ags_buffer_util_char_buffer_write_s8(destination,
+					       res,
+					       AGS_BYTE_ORDER_LE);
+	}else{
+	  ags_buffer_util_char_buffer_write_s8(destination,
+					       res,
+					       AGS_BYTE_ORDER_BE);
+	}
+      }
+      break;
+    case 2:
+      {
+	if((ags_endian_host_is_le() &&
+	    !swap_bytes) ||
+	   (ags_endian_host_is_be() &&
+	    swap_bytes)){
+	  ags_buffer_util_char_buffer_write_s16(destination,
+						source[0],
+						AGS_BYTE_ORDER_LE);
+	}else{
+	  ags_buffer_util_char_buffer_write_s16(destination,
+						source[0],
+						AGS_BYTE_ORDER_BE);
+	}	
+      }
+      break;
+    case 3:
+      {
+	gint32 res;
+
+	res = scale_factor * source[0];
+	
+	if((ags_endian_host_is_le() &&
+	    !swap_bytes) ||
+	   (ags_endian_host_is_be() &&
+	    swap_bytes)){
+	  ags_buffer_util_char_buffer_write_s24(destination,
+						res,
+						AGS_BYTE_ORDER_LE);
+	}else{
+	  ags_buffer_util_char_buffer_write_s24(destination,
+						res,
+						AGS_BYTE_ORDER_BE);
+	}	
+      }
+      break;
+    case 4:
+      {
+	gint32 res;
+
+	res = scale_factor * source[0];
+	
+	if((ags_endian_host_is_le() &&
+	    !swap_bytes) ||
+	   (ags_endian_host_is_be() &&
+	    swap_bytes)){
+	  ags_buffer_util_char_buffer_write_s32(destination,
+						res,
+						AGS_BYTE_ORDER_LE);
+	}else{
+	  ags_buffer_util_char_buffer_write_s32(destination,
+						res,
+						AGS_BYTE_ORDER_BE);
+	}	
+      }
+      break;
+    case 8:
+      {
+	gint64 res;
+
+	res = scale_factor * source[0];
+	
+	if((ags_endian_host_is_le() &&
+	    !swap_bytes) ||
+	   (ags_endian_host_is_be() &&
+	    swap_bytes)){
+	  ags_buffer_util_char_buffer_write_s64(destination,
+						res,
+						AGS_BYTE_ORDER_LE);
+	}else{
+	  ags_buffer_util_char_buffer_write_s64(destination,
+						res,
+						AGS_BYTE_ORDER_BE);
+	}	
+      }
+      break;
+    }
+    
+    destination += dchannels;
+    source += schannels;
+  }
 }
 
 /**
@@ -82,7 +320,125 @@ ags_char_buffer_util_copy_s24_to_cbuffer(guchar *destination, guint word_size, g
 					 gint32 *source, guint schannels,
 					 guint frame_count, guint byte_order)
 {
-  //TODO:JK: implement me
+  gdouble scale_factor;
+  guint i;
+  gboolean swap_bytes;
+
+  scale_factor = (((guint64) 1 << (word_size * 8 - 1)) - 1) / ((1 << 23) - 1);
+  
+  swap_bytes = FALSE;
+
+  if(ags_endian_host_is_le() &&
+     byte_order == AGS_BYTE_ORDER_BE){
+    swap_bytes = TRUE;
+  }else if(ags_endian_host_is_be() &&
+	   byte_order == AGS_BYTE_ORDER_LE){
+    swap_bytes = TRUE;
+  }
+  
+  for(i = 0; i < frame_count; i++){
+    switch(word_size){
+    case 1:
+      {
+	gint8 res;
+
+	res = scale_factor * source[0];
+
+	if((ags_endian_host_is_le() &&
+	    !swap_bytes) ||
+	   (ags_endian_host_is_be() &&
+	    swap_bytes)){
+	  ags_buffer_util_char_buffer_write_s8(destination,
+					       res,
+					       AGS_BYTE_ORDER_LE);
+	}else{
+	  ags_buffer_util_char_buffer_write_s8(destination,
+					       res,
+					       AGS_BYTE_ORDER_BE);
+	}
+      }
+      break;
+    case 2:
+      {
+	gint16 res;
+
+	res = scale_factor * source[0];
+	
+	if((ags_endian_host_is_le() &&
+	    !swap_bytes) ||
+	   (ags_endian_host_is_be() &&
+	    swap_bytes)){
+	  ags_buffer_util_char_buffer_write_s16(destination,
+						res,
+						AGS_BYTE_ORDER_LE);
+	}else{
+	  ags_buffer_util_char_buffer_write_s16(destination,
+						res,
+						AGS_BYTE_ORDER_BE);
+	}	
+      }
+      break;
+    case 3:
+      {
+	if((ags_endian_host_is_le() &&
+	    !swap_bytes) ||
+	   (ags_endian_host_is_be() &&
+	    swap_bytes)){
+	  ags_buffer_util_char_buffer_write_s24(destination,
+						source[0],
+						AGS_BYTE_ORDER_LE);
+	}else{
+	  ags_buffer_util_char_buffer_write_s24(destination,
+						source[0],
+						AGS_BYTE_ORDER_BE);
+	}	
+      }
+      break;
+    case 4:
+      {
+	gint32 res;
+
+	res = scale_factor * source[0];
+	
+	if((ags_endian_host_is_le() &&
+	    !swap_bytes) ||
+	   (ags_endian_host_is_be() &&
+	    swap_bytes)){
+	  ags_buffer_util_char_buffer_write_s32(destination,
+						res,
+						AGS_BYTE_ORDER_LE);
+	}else{
+	  ags_buffer_util_char_buffer_write_s32(destination,
+						res,
+						AGS_BYTE_ORDER_BE);
+	}	
+      }
+      break;
+    case 8:
+      {
+	gint64 res;
+
+	res = scale_factor * source[0];
+	
+	if((ags_endian_host_is_le() &&
+	    !swap_bytes) ||
+	   (ags_endian_host_is_be() &&
+	    swap_bytes)){
+	  ags_buffer_util_char_buffer_write_s64(destination,
+						res,
+						AGS_BYTE_ORDER_LE);
+	}else{
+	  ags_buffer_util_char_buffer_write_s64(destination,
+						res,
+						AGS_BYTE_ORDER_BE);
+	}	
+      }
+      break;
+    }
+    
+    destination += dchannels;
+    source += schannels;
+  }
 }
 
 /**
@@ -104,7 +460,125 @@ ags_char_buffer_util_copy_s32_to_cbuffer(guchar *destination, guint word_size, g
 					 gint32 *source, guint schannels,
 					 guint frame_count, guint byte_order)
 {
-  //TODO:JK: implement me
+  gdouble scale_factor;
+  guint i;
+  gboolean swap_bytes;
+
+  scale_factor = (((guint64) 1 << (word_size * 8 - 1)) - 1) / G_MAXINT32;
+  
+  swap_bytes = FALSE;
+
+  if(ags_endian_host_is_le() &&
+     byte_order == AGS_BYTE_ORDER_BE){
+    swap_bytes = TRUE;
+  }else if(ags_endian_host_is_be() &&
+	   byte_order == AGS_BYTE_ORDER_LE){
+    swap_bytes = TRUE;
+  }
+  
+  for(i = 0; i < frame_count; i++){
+    switch(word_size){
+    case 1:
+      {
+	gint8 res;
+
+	res = scale_factor * source[0];
+
+	if((ags_endian_host_is_le() &&
+	    !swap_bytes) ||
+	   (ags_endian_host_is_be() &&
+	    swap_bytes)){
+	  ags_buffer_util_char_buffer_write_s8(destination,
+					       res,
+					       AGS_BYTE_ORDER_LE);
+	}else{
+	  ags_buffer_util_char_buffer_write_s8(destination,
+					       res,
+					       AGS_BYTE_ORDER_BE);
+	}
+      }
+      break;
+    case 2:
+      {
+	gint16 res;
+
+	res = scale_factor * source[0];
+	
+	if((ags_endian_host_is_le() &&
+	    !swap_bytes) ||
+	   (ags_endian_host_is_be() &&
+	    swap_bytes)){
+	  ags_buffer_util_char_buffer_write_s16(destination,
+						res,
+						AGS_BYTE_ORDER_LE);
+	}else{
+	  ags_buffer_util_char_buffer_write_s16(destination,
+						res,
+						AGS_BYTE_ORDER_BE);
+	}	
+      }
+      break;
+    case 3:
+      {
+	gint32 res;
+
+	res = scale_factor * source[0];
+	
+	if((ags_endian_host_is_le() &&
+	    !swap_bytes) ||
+	   (ags_endian_host_is_be() &&
+	    swap_bytes)){
+	  ags_buffer_util_char_buffer_write_s24(destination,
+						res,
+						AGS_BYTE_ORDER_LE);
+	}else{
+	  ags_buffer_util_char_buffer_write_s24(destination,
+						res,
+						AGS_BYTE_ORDER_BE);
+	}	
+      }
+      break;
+    case 4:
+      {
+	if((ags_endian_host_is_le() &&
+	    !swap_bytes) ||
+	   (ags_endian_host_is_be() &&
+	    swap_bytes)){
+	  ags_buffer_util_char_buffer_write_s32(destination,
+						source[0],
+						AGS_BYTE_ORDER_LE);
+	}else{
+	  ags_buffer_util_char_buffer_write_s32(destination,
+						source[0],
+						AGS_BYTE_ORDER_BE);
+	}	
+      }
+      break;
+    case 8:
+      {
+	gint64 res;
+
+	res = scale_factor * source[0];
+	
+	if((ags_endian_host_is_le() &&
+	    !swap_bytes) ||
+	   (ags_endian_host_is_be() &&
+	    swap_bytes)){
+	  ags_buffer_util_char_buffer_write_s64(destination,
+						res,
+						AGS_BYTE_ORDER_LE);
+	}else{
+	  ags_buffer_util_char_buffer_write_s64(destination,
+						res,
+						AGS_BYTE_ORDER_BE);
+	}	
+      }
+      break;
+    }
+    
+    destination += dchannels;
+    source += schannels;
+  }
 }
 
 /**
@@ -126,7 +600,125 @@ ags_char_buffer_util_copy_s64_to_cbuffer(guchar *destination, guint word_size, g
 					 gint64 *source, guint schannels,
 					 guint frame_count, guint byte_order)
 {
-  //TODO:JK: implement me
+  gdouble scale_factor;
+  guint i;
+  gboolean swap_bytes;
+
+  scale_factor = (((guint64) 1 << (word_size * 8 - 1)) - 1) / G_MAXINT64;
+  
+  swap_bytes = FALSE;
+
+  if(ags_endian_host_is_le() &&
+     byte_order == AGS_BYTE_ORDER_BE){
+    swap_bytes = TRUE;
+  }else if(ags_endian_host_is_be() &&
+	   byte_order == AGS_BYTE_ORDER_LE){
+    swap_bytes = TRUE;
+  }
+  
+  for(i = 0; i < frame_count; i++){
+    switch(word_size){
+    case 1:
+      {
+	gint8 res;
+
+	res = scale_factor * source[0];
+
+	if((ags_endian_host_is_le() &&
+	    !swap_bytes) ||
+	   (ags_endian_host_is_be() &&
+	    swap_bytes)){
+	  ags_buffer_util_char_buffer_write_s8(destination,
+					       res,
+					       AGS_BYTE_ORDER_LE);
+	}else{
+	  ags_buffer_util_char_buffer_write_s8(destination,
+					       res,
+					       AGS_BYTE_ORDER_BE);
+	}
+      }
+      break;
+    case 2:
+      {
+	gint16 res;
+
+	res = scale_factor * source[0];
+	
+	if((ags_endian_host_is_le() &&
+	    !swap_bytes) ||
+	   (ags_endian_host_is_be() &&
+	    swap_bytes)){
+	  ags_buffer_util_char_buffer_write_s16(destination,
+						res,
+						AGS_BYTE_ORDER_LE);
+	}else{
+	  ags_buffer_util_char_buffer_write_s16(destination,
+						res,
+						AGS_BYTE_ORDER_BE);
+	}	
+      }
+      break;
+    case 3:
+      {
+	gint32 res;
+
+	res = scale_factor * source[0];
+	
+	if((ags_endian_host_is_le() &&
+	    !swap_bytes) ||
+	   (ags_endian_host_is_be() &&
+	    swap_bytes)){
+	  ags_buffer_util_char_buffer_write_s24(destination,
+						res,
+						AGS_BYTE_ORDER_LE);
+	}else{
+	  ags_buffer_util_char_buffer_write_s24(destination,
+						res,
+						AGS_BYTE_ORDER_BE);
+	}	
+      }
+      break;
+    case 4:
+      {
+	gint32 res;
+
+	res = scale_factor * source[0];
+	
+	if((ags_endian_host_is_le() &&
+	    !swap_bytes) ||
+	   (ags_endian_host_is_be() &&
+	    swap_bytes)){
+	  ags_buffer_util_char_buffer_write_s32(destination,
+						res,
+						AGS_BYTE_ORDER_LE);
+	}else{
+	  ags_buffer_util_char_buffer_write_s32(destination,
+						res,
+						AGS_BYTE_ORDER_BE);
+	}	
+      }
+      break;
+    case 8:
+      {
+	if((ags_endian_host_is_le() &&
+	    !swap_bytes) ||
+	   (ags_endian_host_is_be() &&
+	    swap_bytes)){
+	  ags_buffer_util_char_buffer_write_s64(destination,
+						source[0],
+						AGS_BYTE_ORDER_LE);
+	}else{
+	  ags_buffer_util_char_buffer_write_s64(destination,
+						source[0],
+						AGS_BYTE_ORDER_BE);
+	}	
+      }
+      break;
+    }
+    
+    destination += dchannels;
+    source += schannels;
+  }
 }
 
 /**
@@ -148,7 +740,129 @@ ags_char_buffer_util_copy_float_to_cbuffer(guchar *destination, guint word_size,
 					   float *source, guint schannels,
 					   guint frame_count, guint byte_order)
 {
-  //TODO:JK: implement me
+  gdouble scale_factor;
+  guint i;
+  gboolean swap_bytes;
+
+  scale_factor = (((guint64) 1 << (word_size * 8 - 1)) - 1);
+  
+  swap_bytes = FALSE;
+
+  if(ags_endian_host_is_le() &&
+     byte_order == AGS_BYTE_ORDER_BE){
+    swap_bytes = TRUE;
+  }else if(ags_endian_host_is_be() &&
+	   byte_order == AGS_BYTE_ORDER_LE){
+    swap_bytes = TRUE;
+  }
+  
+  for(i = 0; i < frame_count; i++){
+    switch(word_size){
+    case 1:
+      {
+	gint8 res;
+
+	res = scale_factor * source[0];
+
+	if((ags_endian_host_is_le() &&
+	    !swap_bytes) ||
+	   (ags_endian_host_is_be() &&
+	    swap_bytes)){
+	  ags_buffer_util_char_buffer_write_s8(destination,
+					       res,
+					       AGS_BYTE_ORDER_LE);
+	}else{
+	  ags_buffer_util_char_buffer_write_s8(destination,
+					       res,
+					       AGS_BYTE_ORDER_BE);
+	}
+      }
+      break;
+    case 2:
+      {
+	gint16 res;
+
+	res = scale_factor * source[0];
+	
+	if((ags_endian_host_is_le() &&
+	    !swap_bytes) ||
+	   (ags_endian_host_is_be() &&
+	    swap_bytes)){
+	  ags_buffer_util_char_buffer_write_s16(destination,
+						res,
+						AGS_BYTE_ORDER_LE);
+	}else{
+	  ags_buffer_util_char_buffer_write_s16(destination,
+						res,
+						AGS_BYTE_ORDER_BE);
+	}	
+      }
+      break;
+    case 3:
+      {
+	gint32 res;
+
+	res = scale_factor * source[0];
+	
+	if((ags_endian_host_is_le() &&
+	    !swap_bytes) ||
+	   (ags_endian_host_is_be() &&
+	    swap_bytes)){
+	  ags_buffer_util_char_buffer_write_s24(destination,
+						res,
+						AGS_BYTE_ORDER_LE);
+	}else{
+	  ags_buffer_util_char_buffer_write_s24(destination,
+						res,
+						AGS_BYTE_ORDER_BE);
+	}	
+      }
+      break;
+    case 4:
+      {
+	gint32 res;
+
+	res = scale_factor * source[0];
+	
+	if((ags_endian_host_is_le() &&
+	    !swap_bytes) ||
+	   (ags_endian_host_is_be() &&
+	    swap_bytes)){
+	  ags_buffer_util_char_buffer_write_s32(destination,
+						res,
+						AGS_BYTE_ORDER_LE);
+	}else{
+	  ags_buffer_util_char_buffer_write_s32(destination,
+						res,
+						AGS_BYTE_ORDER_BE);
+	}	
+      }
+      break;
+    case 8:
+      {
+	gint64 res;
+
+	res = scale_factor * source[0];
+	
+	if((ags_endian_host_is_le() &&
+	    !swap_bytes) ||
+	   (ags_endian_host_is_be() &&
+	    swap_bytes)){
+	  ags_buffer_util_char_buffer_write_s64(destination,
+						res,
+						AGS_BYTE_ORDER_LE);
+	}else{
+	  ags_buffer_util_char_buffer_write_s64(destination,
+						res,
+						AGS_BYTE_ORDER_BE);
+	}	
+      }
+      break;
+    }
+    
+    destination += dchannels;
+    source += schannels;
+  }
 }
 
 /**
@@ -170,7 +884,129 @@ ags_char_buffer_util_copy_double_to_cbuffer(guchar *destination, guint word_size
 					    double *source, guint schannels,
 					    guint frame_count, guint byte_order)
 {
-  //TODO:JK: implement me
+  gdouble scale_factor;
+  guint i;
+  gboolean swap_bytes;
+
+  scale_factor = (((guint64) 1 << (word_size * 8 - 1)) - 1);
+  
+  swap_bytes = FALSE;
+
+  if(ags_endian_host_is_le() &&
+     byte_order == AGS_BYTE_ORDER_BE){
+    swap_bytes = TRUE;
+  }else if(ags_endian_host_is_be() &&
+	   byte_order == AGS_BYTE_ORDER_LE){
+    swap_bytes = TRUE;
+  }
+  
+  for(i = 0; i < frame_count; i++){
+    switch(word_size){
+    case 1:
+      {
+	gint8 res;
+
+	res = scale_factor * source[0];
+
+	if((ags_endian_host_is_le() &&
+	    !swap_bytes) ||
+	   (ags_endian_host_is_be() &&
+	    swap_bytes)){
+	  ags_buffer_util_char_buffer_write_s8(destination,
+					       res,
+					       AGS_BYTE_ORDER_LE);
+	}else{
+	  ags_buffer_util_char_buffer_write_s8(destination,
+					       res,
+					       AGS_BYTE_ORDER_BE);
+	}
+      }
+      break;
+    case 2:
+      {
+	gint16 res;
+
+	res = scale_factor * source[0];
+	
+	if((ags_endian_host_is_le() &&
+	    !swap_bytes) ||
+	   (ags_endian_host_is_be() &&
+	    swap_bytes)){
+	  ags_buffer_util_char_buffer_write_s16(destination,
+						res,
+						AGS_BYTE_ORDER_LE);
+	}else{
+	  ags_buffer_util_char_buffer_write_s16(destination,
+						res,
+						AGS_BYTE_ORDER_BE);
+	}	
+      }
+      break;
+    case 3:
+      {
+	gint32 res;
+
+	res = scale_factor * source[0];
+	
+	if((ags_endian_host_is_le() &&
+	    !swap_bytes) ||
+	   (ags_endian_host_is_be() &&
+	    swap_bytes)){
+	  ags_buffer_util_char_buffer_write_s24(destination,
+						res,
+						AGS_BYTE_ORDER_LE);
+	}else{
+	  ags_buffer_util_char_buffer_write_s24(destination,
+						res,
+						AGS_BYTE_ORDER_BE);
+	}	
+      }
+      break;
+    case 4:
+      {
+	gint32 res;
+
+	res = scale_factor * source[0];
+	
+	if((ags_endian_host_is_le() &&
+	    !swap_bytes) ||
+	   (ags_endian_host_is_be() &&
+	    swap_bytes)){
+	  ags_buffer_util_char_buffer_write_s32(destination,
+						res,
+						AGS_BYTE_ORDER_LE);
+	}else{
+	  ags_buffer_util_char_buffer_write_s32(destination,
+						res,
+						AGS_BYTE_ORDER_BE);
+	}	
+      }
+      break;
+    case 8:
+      {
+	gint64 res;
+
+	res = scale_factor * source[0];
+	
+	if((ags_endian_host_is_le() &&
+	    !swap_bytes) ||
+	   (ags_endian_host_is_be() &&
+	    swap_bytes)){
+	  ags_buffer_util_char_buffer_write_s64(destination,
+						res,
+						AGS_BYTE_ORDER_LE);
+	}else{
+	  ags_buffer_util_char_buffer_write_s64(destination,
+						res,
+						AGS_BYTE_ORDER_BE);
+	}	
+      }
+      break;
+    }
+    
+    destination += dchannels;
+    source += schannels;
+  }
 }
 
 /**

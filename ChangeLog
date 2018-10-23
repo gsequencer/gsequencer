@@ -7,6 +7,7 @@ ags (2.0.36)
 	* implemented thread-safety of AgsIpatch and AgsSndfile
 	* implemented thread-safety of AgsIpatchDLS2Reader, AgsIpatchGigReader and AgsIpatchSF2Reader
 	* implemented missing functions of AgsIpatchDLS2Reader and AgsIpatchGigReader
+	* TODO:JK: implemented ags_char_buffer_util.c
 	* added ags_connectable_test.c
 	* added ags_soundcard_test.c
 	* added ags_reset_peak_test.c
