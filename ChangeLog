@@ -3,10 +3,10 @@ ags (2.0.36)
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* implemented AgsConnectable interface of AgsAudioContainer and AgsAudioFile
 	* implemented AgsConnectable interface of AgsIpatch and AgsSndfile
+	* implemented AgsConnectable interface of AgsIpatchDLS2Reader, AgsIpatchGigReader and AgsIpatchSF2Reader
 	* implemented thread-safety of AgsAudioContainer and AgsAudioFile
 	* implemented thread-safety of AgsIpatch and AgsSndfile
 	* implemented thread-safety of AgsIpatchDLS2Reader, AgsIpatchGigReader and AgsIpatchSF2Reader
-	* implemented missing functions of AgsIpatchDLS2Reader and AgsIpatchGigReader
 	* TODO:JK: implemented ags_char_buffer_util.c
 	* added ags_connectable_test.c
 	* added ags_soundcard_test.c

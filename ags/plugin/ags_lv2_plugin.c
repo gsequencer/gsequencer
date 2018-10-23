@@ -21,6 +21,8 @@
 
 #include <ags/libags.h>
 
+#include <lv2/lv2plug.in/ns/lv2ext/lv2_programs.h>
+
 #include <ags/plugin/ags_lv2_plugin.h>
 #include <ags/plugin/ags_lv2_preset.h>
 #include <ags/plugin/ags_lv2_manager.h>

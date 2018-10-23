@@ -1894,7 +1894,7 @@ libgsequencer_editor_c_sources = \
 	ags/X/editor/ags_wave_toolbar.c \
 	ags/X/editor/ags_wave_toolbar_callbacks.c
 
-# libgsequencer all files
+# gsequencer all files
 gsequencerheaders = \
 	ags/gsequencer_main.h
 
@@ -1937,6 +1937,7 @@ html:
 	cd $(top_srcdir)
 
 install-data-local:
+	touch $(DESTDIR)/include/ags/config.h
 	mkdir -p $(DESTDIR)/$(datadir)/doc-base
 	mkdir -p $(DESTDIR)/$(datadir)/gsequencer/icons
 	mkdir -p $(DESTDIR)/$(datadir)/gsequencer/images

@@ -23,6 +23,8 @@
 #include <gdk/gdk.h>
 #include <pango/pangocairo.h>
 
+#include <gtk/gtk.h>
+
 #ifdef AGS_WITH_LIBINSTPATCH
 #include <libinstpatch/libinstpatch.h>
 #endif

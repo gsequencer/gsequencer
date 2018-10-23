@@ -45,8 +45,6 @@
 #include <lv2/lv2plug.in/ns/ext/buf-size/buf-size.h>
 #include <lv2/lv2plug.in/ns/ext/options/options.h>
 
-#include <lv2/lv2plug.in/ns/lv2ext/lv2_programs.h>
-
 #define AGS_TYPE_LV2_PLUGIN                (ags_lv2_plugin_get_type())
 #define AGS_LV2_PLUGIN(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_LV2_PLUGIN, AgsLv2Plugin))
 #define AGS_LV2_PLUGIN_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_LV2_PLUGIN, AgsLv2PluginClass))

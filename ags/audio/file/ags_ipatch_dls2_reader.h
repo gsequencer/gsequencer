@@ -122,8 +122,10 @@ gboolean ags_ipatch_dls2_reader_test_flags(AgsIpatchDLS2Reader *ipatch_dls2_read
 void ags_ipatch_dls2_reader_set_flags(AgsIpatchDLS2Reader *ipatch_dls2_reader, guint flags);
 void ags_ipatch_dls2_reader_unset_flags(AgsIpatchDLS2Reader *ipatch_dls2_reader, guint flags);
 
+#ifdef AGS_WITH_LIBINSTPATCH
 gboolean ags_ipatch_dls2_reader_load(AgsIpatchDLS2Reader *ipatch_dls2_reader,
 				     IpatchFileHandle *handle);
+#endif
 
 /* select sample */
 gboolean ags_ipatch_dls2_reader_select_instrument(AgsIpatchDLS2Reader *ipatch_dls2_reader,
