@@ -27,7 +27,10 @@
 
 #include <ags/audio/file/ags_sound_container.h>
 #include <ags/audio/file/ags_sound_resource.h>
+
+#ifdef AGS_WITH_LIBINSTPATCH
 #include <ags/audio/file/ags_ipatch.h>
+#endif
 
 #include <ags/i18n.h>
 

@@ -2038,8 +2038,10 @@ ags_xorg_application_context_register_types(AgsApplicationContext *application_c
   ags_synth_input_pad_get_type();
   ags_synth_input_line_get_type();
 
+#ifdef AGS_WITH_LIBINSTPATCH
   ags_ffplayer_get_type();
-
+#endif
+  
   ags_ladspa_bridge_get_type();
   ags_lv2_bridge_get_type();
   ags_dssi_bridge_get_type();
