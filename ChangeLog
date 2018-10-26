@@ -7,7 +7,7 @@ ags (2.0.36)
 	* implemented thread-safety of AgsAudioContainer and AgsAudioFile
 	* implemented thread-safety of AgsIpatch and AgsSndfile
 	* implemented thread-safety of AgsIpatchDLS2Reader, AgsIpatchGigReader and AgsIpatchSF2Reader
-	* TODO:JK: implemented ags_char_buffer_util.c
+	* implemented ags_char_buffer_util.c
 	* TODO:JK: install ags/config.h
 	* added ags_connectable_test.c
 	* added ags_soundcard_test.c

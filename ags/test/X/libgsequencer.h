@@ -230,6 +230,7 @@
 #include <ags/X/machine/ags_dssi_bridge_callbacks.h>
 #include <ags/X/machine/ags_equalizer10.h>
 #include <ags/X/machine/ags_equalizer10_callbacks.h>
+#ifdef AGS_WITH_LIBINSTPATCH
 #include <ags/X/machine/ags_ffplayer.h>
 #include <ags/X/machine/ags_ffplayer_bridge.h>
 #include <ags/X/machine/ags_ffplayer_bridge_callbacks.h>
@@ -240,6 +241,7 @@
 #include <ags/X/machine/ags_ffplayer_input_line_callbacks.h>
 #include <ags/X/machine/ags_ffplayer_input_pad.h>
 #include <ags/X/machine/ags_ffplayer_input_pad_callbacks.h>
+#endif
 #include <ags/X/machine/ags_ladspa_bridge.h>
 #include <ags/X/machine/ags_ladspa_bridge_callbacks.h>
 #include <ags/X/machine/ags_live_dssi_bridge.h>

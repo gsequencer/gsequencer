@@ -1660,6 +1660,7 @@ libgsequencer_machine_h_sources = \
 	ags/X/machine/ags_dssi_bridge.h \
 	ags/X/machine/ags_equalizer10.h \
 	ags/X/machine/ags_equalizer10_callbacks.h \
+if AGS_WITH_LIBINSTPATCH
 	ags/X/machine/ags_ffplayer_callbacks.h \
 	ags/X/machine/ags_ffplayer.h \
 	ags/X/machine/ags_ffplayer_bridge_callbacks.h \
@@ -1670,6 +1671,7 @@ libgsequencer_machine_h_sources = \
 	ags/X/machine/ags_ffplayer_input_line.h \
 	ags/X/machine/ags_ffplayer_input_pad_callbacks.h \
 	ags/X/machine/ags_ffplayer_input_pad.h \
+endif
 	ags/X/machine/ags_ladspa_bridge_callbacks.h \
 	ags/X/machine/ags_ladspa_bridge.h \
 	ags/X/machine/ags_live_dssi_bridge_callbacks.h \
