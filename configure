@@ -857,6 +857,7 @@ with_gnu_ld
 enable_rpath
 with_libiconv_prefix
 with_libintl_prefix
+enable_strip_rt_events
 enable_rt
 enable_alsa
 enable_oss
@@ -866,6 +867,7 @@ enable_core_audio
 enable_libinstpatch
 enable_xmlrpc
 enable_quartz
+enable_run_functional_tests
 enable_shared
 enable_static
 with_pic
@@ -1568,7 +1570,8 @@ Optional Features:
   --disable-dependency-tracking
                           speeds up one-time build
   --disable-rpath         do not hardcode runtime library paths
-  --strip-rt-events       strip rt events (default is yes)
+  --enable-strip-rt-events
+                          strip rt events (default is yes)
   --enable-rt             enable rt (default is yes)
   --enable-alsa           enable alsa (default is yes)
   --enable-oss            enable oss (default is no)
@@ -1578,7 +1581,8 @@ Optional Features:
   --enable-libinstpatch   enable libinstpatch (default is yes)
   --enable-xmlrpc         enable xmlrpc (default is no)
   --enable-quartz         enable quartz (default is no)
-  --run-functional-tests  run functional tests (default is no)
+  --enable-run-functional-tests
+                          run functional tests (default is no)
   --enable-shared[=PKGS]  build shared libraries [default=yes]
   --enable-static[=PKGS]  build static libraries [default=yes]
   --enable-fast-install[=PKGS]
@@ -6729,11 +6733,11 @@ $as_echo "#define HAVE_DCGETTEXT 1" >>confdefs.h
 
 
 # options
-# Check whether --enable-rt was given.
-if test "${enable_rt+set}" = set; then :
-  enableval=$enable_rt;
+# Check whether --enable-strip-rt-events was given.
+if test "${enable_strip_rt_events+set}" = set; then :
+  enableval=$enable_strip_rt_events;
 else
-  strip_rt_events=yes
+  enable_strip_rt_events=yes
 fi
 
 
@@ -6809,11 +6813,11 @@ else
 fi
 
 
-# Check whether --enable-rt was given.
-if test "${enable_rt+set}" = set; then :
-  enableval=$enable_rt;
+# Check whether --enable-run-functional-tests was given.
+if test "${enable_run_functional_tests+set}" = set; then :
+  enableval=$enable_run_functional_tests;
 else
-  run_functional_tests=no
+  enable_run_functional_tests=no
 fi
 
 
@@ -15822,7 +15826,7 @@ else
 fi
 
 
-if test "x$strip_rt_events" != xno; then :
+if test "x$enable_strip_rt_events" != xno; then :
 
 $as_echo "#define AGS_STRIP_RT_EVENTS 1" >>confdefs.h
 
@@ -18395,14 +18399,14 @@ else
 $as_echo "$as_me: xmlrpc-c disabled" >&6;}
 fi
 
-if test "x$run_functional_tests" == xyes; then :
+if test "x$enable_run_functional_tests" == xyes; then :
   { $as_echo "$as_me:${as_lineno-$LINENO}: run functional tests enabled" >&5
 $as_echo "$as_me: run functional tests enabled" >&6;}
 else
   { $as_echo "$as_me:${as_lineno-$LINENO}: run functional tests disabled" >&5
 $as_echo "$as_me: run functional tests disabled" >&6;}
 fi
- if test "x$run_functional_tests" == xyes; then
+ if test "x$enable_run_functional_tests" == xyes; then
   RUN_FUNCTIONAL_TESTS_TRUE=
   RUN_FUNCTIONAL_TESTS_FALSE='#'
 else

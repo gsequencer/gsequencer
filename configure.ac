@@ -19,10 +19,10 @@ AM_GNU_GETTEXT([external])
 AM_GNU_GETTEXT_VERSION([0.19.7])
 
 # options
-AC_ARG_ENABLE(rt, [AS_HELP_STRING([--strip-rt-events],
+AC_ARG_ENABLE(strip-rt-events, [AS_HELP_STRING([--enable-strip-rt-events],
 			          [strip rt events (default is yes)])],
 	      [],
-	      [strip_rt_events=yes])
+	      [enable_strip_rt_events=yes])
 
 AC_ARG_ENABLE(rt, [AS_HELP_STRING([--enable-rt],
 			          [enable rt (default is yes)])],
@@ -69,10 +69,10 @@ AC_ARG_ENABLE(quartz, [AS_HELP_STRING([--enable-quartz],
 	      [],
 	      [enable_quartz=no])
 
-AC_ARG_ENABLE(rt, [AS_HELP_STRING([--run-functional-tests],
+AC_ARG_ENABLE(run-functional-tests, [AS_HELP_STRING([--enable-run-functional-tests],
 			          [run functional tests (default is no)])],
 	      [],
-	      [run_functional_tests=no])
+	      [enable_run_functional_tests=no])
 
 # Checks for programs.
 AC_PROG_CC
@@ -114,7 +114,7 @@ AC_CHECK_LIB([dl], [main], , AC_MSG_ERROR("No dl library present"))
 # FIXME: Replace `main' with a function in `-lm':
 AC_CHECK_LIB([m], [main], , AC_MSG_ERROR("No math library present"))
 
-AS_IF([test "x$strip_rt_events" != xno],
+AS_IF([test "x$enable_strip_rt_events" != xno],
       [AC_DEFINE([AGS_STRIP_RT_EVENTS], [1], [striping rt-events enabled])
       AC_MSG_NOTICE([striping rt-events enabled])],
       [AC_MSG_NOTICE([striping rt-events disabled])
@@ -281,10 +281,10 @@ AS_IF([test "x$enable_xmlrpc" != xno],
       AC_DEFINE([AGS_WITH_XMLRPC_C], [1], [Disable if you don't want xmlrpc-c])],
       AC_MSG_NOTICE([xmlrpc-c disabled]))
 
-AS_IF([test "x$run_functional_tests" == xyes],
+AS_IF([test "x$enable_run_functional_tests" == xyes],
       [AC_MSG_NOTICE([run functional tests enabled])],
       AC_MSG_NOTICE([run functional tests disabled]))
-AM_CONDITIONAL([RUN_FUNCTIONAL_TESTS], [test "x$run_functional_tests" == xyes])
+AM_CONDITIONAL([RUN_FUNCTIONAL_TESTS], [test "x$enable_run_functional_tests" == xyes])
 
 # Checks for library functions.
 AC_FUNC_MALLOC

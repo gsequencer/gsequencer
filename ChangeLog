@@ -1,3 +1,8 @@
+ags (2.0.38)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed configure argument enable_run_functional_tests
+
 ags (2.0.37)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
