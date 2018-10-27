@@ -42,9 +42,7 @@ void ags_menu_action_add_matrix_callback(GtkWidget *menu_item, gpointer data);
 void ags_menu_action_add_synth_callback(GtkWidget *menu_item, gpointer data);
 void ags_menu_action_add_syncsynth_callback(GtkWidget *menu_item, gpointer data);
 
-#ifdef AGS_WITH_LIBINSTPATCH
 void ags_menu_action_add_ffplayer_callback(GtkWidget *menu_item, gpointer data);
-#endif
 
 void ags_menu_action_add_audiorec_callback(GtkWidget *menu_item, gpointer data);
 

@@ -8,10 +8,11 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.69])
-AC_INIT([gsequencer],[2.0.35],[jkraehemann@gmail.com])
+AC_INIT([gsequencer],[2.0.36],[jkraehemann@gmail.com])
 AM_INIT_AUTOMAKE([subdir-objects])
 AC_CONFIG_SRCDIR([ags/config.h.in])
 AC_CONFIG_HEADERS([ags/config.h])
+AC_CONFIG_HEADERS([ags/ags_config.h])
 AC_CONFIG_MACRO_DIR([m4])
 
 AM_GNU_GETTEXT([external])
@@ -67,6 +68,11 @@ AC_ARG_ENABLE(quartz, [AS_HELP_STRING([--enable-quartz],
 				      [enable quartz (default is no)])],
 	      [],
 	      [enable_quartz=no])
+
+AC_ARG_ENABLE(rt, [AS_HELP_STRING([--run-functional-tests],
+			          [run functional tests (default is no)])],
+	      [],
+	      [run_functional_tests=no])
 
 # Checks for programs.
 AC_PROG_CC
@@ -241,7 +247,7 @@ AS_IF([test "x$enable_libinstpatch" != xno],
       AC_SUBST(LIBINSTPATCH_LIBS)
       AC_DEFINE([AGS_WITH_LIBINSTPATCH], [1], [Disable if you don't want libinstpatch])],
       AC_MSG_NOTICE([libinstpatch disabled]))
-AM_CONDITIONAL([AGS_WITH_LIBINSTPATCH], [test "x$enable_libinstpatch" != xno])
+AM_CONDITIONAL([WITH_LIBINSTPATCH], [test "x$enable_libinstpatch" == xyes])
 
 PKG_CHECK_MODULES([FONTCONFIG], [fontconfig >= 2.9.0])
 AC_SUBST(FONTCONFIG_CFLAGS)
@@ -274,6 +280,11 @@ AS_IF([test "x$enable_xmlrpc" != xno],
       AC_MSG_NOTICE([xmlrpc-c enabled])
       AC_DEFINE([AGS_WITH_XMLRPC_C], [1], [Disable if you don't want xmlrpc-c])],
       AC_MSG_NOTICE([xmlrpc-c disabled]))
+
+AS_IF([test "x$run_functional_tests" == xyes],
+      [AC_MSG_NOTICE([run functional tests enabled])],
+      AC_MSG_NOTICE([run functional tests disabled]))
+AM_CONDITIONAL([RUN_FUNCTIONAL_TESTS], [test "x$run_functional_tests" == xyes])
 
 # Checks for library functions.
 AC_FUNC_MALLOC

@@ -1,6 +1,8 @@
 ags (2.0.36)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* install ags/config.h in include directory
+	* implemented AgsIpatchDLS2Reader and AgsIpatchGigReader
 	* implemented AgsConnectable interface of AgsAudioContainer and AgsAudioFile
 	* implemented AgsConnectable interface of AgsIpatch and AgsSndfile
 	* implemented AgsConnectable interface of AgsIpatchDLS2Reader, AgsIpatchGigReader and AgsIpatchSF2Reader
@@ -9,6 +11,7 @@ ags (2.0.36)
 	* implemented thread-safety of AgsIpatchDLS2Reader, AgsIpatchGigReader and AgsIpatchSF2Reader
 	* implemented ags_char_buffer_util.c
 	* improved conditional compilation with libinstpatch and exclude AgsFFPlayer
+	* added configure option to enable functional tests
 	* added ags_connectable_test.c
 	* added ags_soundcard_test.c
 	* added ags_reset_peak_test.c

@@ -11,6 +11,9 @@ SUBDIRS = po
 ACLOCAL_AMFLAGS = -I m4
 AM_CPPFLAGS = -std=gnu99 -include errno.h -I$(top_srcdir) -DSRCDIR=\"$(srcdir)\" -DDESTDIR=\"$(DESTDIR)$(datadir)\" -DPACKAGE_VERSION=\"$(PACKAGE_VERSION)\" -DAGS_REDUCE_RT_EVENTS=1 -DAGS_LIBRARY_SUFFIX=\".so\" -D_FORTIFY_SOURCE=2 -Wformat -Werror=format-security
 # -msse2 -O3 -ftree-vectorize -ftree-slp-vectorize -ffast-math -ftree-vectorizer-verbose=2
+if WITH_LIBINSTPATCH
+AM_CPPFLAGS += -DAGS_WITH_LIBINSTPATCH=1
+endif
 
 # what flags you want to pass to the C compiler & linker
 CFLAGS =  @CFLAGS@
@@ -44,6 +47,7 @@ EXTRA_DIST = config.rpath \
 	COPYING.docs \
 	COPYING.stk-4.3 \
 	ags/config.h.in \
+	ags/ags_config.h.in \
 	gtk-doc.make \
 	gsequencer.share \
 	acsite.m4 \
@@ -343,7 +347,10 @@ gsequencer_LDADD = libgsequencer.la libags_audio.la libags_server.la libags_gui.
 check_PROGRAMS = 
 
 include $(top_srcdir)/unit-tests.mk
+
+if RUN_FUNCTIONAL_TESTS
 include $(top_srcdir)/functional-tests.mk
+endif
 
 TESTS = $(check_PROGRAMS)
 
@@ -845,16 +852,18 @@ libags_audio_file_h_sources = \
 	ags/audio/file/ags_audio_file.h \
 	ags/audio/file/ags_audio_file_link.h \
 	ags/audio/file/ags_audio_file_xml.h \
-if AGS_WITH_LIBINSTPATCH
+	ags/audio/file/ags_sound_container.h \
+	ags/audio/file/ags_sound_resource.h \
+	ags/audio/file/ags_sndfile.h
+
+if WITH_LIBINSTPATCH
+libags_audio_file_h_sources += \
 	ags/audio/file/ags_ipatch.h \
 	ags/audio/file/ags_ipatch_sample.h \
 	ags/audio/file/ags_ipatch_dls2_reader.h \
 	ags/audio/file/ags_ipatch_gig_reader.h \
-	ags/audio/file/ags_ipatch_sf2_reader.h \
+	ags/audio/file/ags_ipatch_sf2_reader.h
 endif
-	ags/audio/file/ags_sound_container.h \
-	ags/audio/file/ags_sound_resource.h \
-	ags/audio/file/ags_sndfile.h
 
 deprecated_libags_audio_file_c_sources =
 
@@ -864,16 +873,18 @@ libags_audio_file_c_sources = \
 	ags/audio/file/ags_audio_file.c \
 	ags/audio/file/ags_audio_file_link.c \
 	ags/audio/file/ags_audio_file_xml.c \
-if AGS_WITH_LIBINSTPATCH
+	ags/audio/file/ags_sound_container.c \
+	ags/audio/file/ags_sound_resource.c \
+	ags/audio/file/ags_sndfile.c
+
+if WITH_LIBINSTPATCH
+libags_audio_file_c_sources += \
 	ags/audio/file/ags_ipatch.c \
 	ags/audio/file/ags_ipatch_sample.c \
 	ags/audio/file/ags_ipatch_dls2_reader.c \
 	ags/audio/file/ags_ipatch_gig_reader.c \
-	ags/audio/file/ags_ipatch_sf2_reader.c \
+	ags/audio/file/ags_ipatch_sf2_reader.c
 endif
-	ags/audio/file/ags_sound_container.c \
-	ags/audio/file/ags_sound_resource.c \
-	ags/audio/file/ags_sndfile.c
 
 # libags-audio - midi
 deprecated_libags_audio_midi_h_sources =
@@ -1169,10 +1180,6 @@ libags_audio_task_h_sources = \
 	ags/audio/task/ags_move_note.h \
 	ags/audio/task/ags_notify_soundcard.h \
 	ags/audio/task/ags_open_file.h \
-if AGS_WITH_LIBINSTPATCH
-	ags/audio/task/ags_open_sf2_instrument.h \
-	ags/audio/task/ags_open_sf2_sample.h \
-endif
 	ags/audio/task/ags_open_single_file.h \
 	ags/audio/task/ags_open_wave.h \
 	ags/audio/task/ags_remove_audio.h \
@@ -1199,6 +1206,12 @@ endif
 	ags/audio/task/ags_reset_peak.h \
 	ags/audio/task/ags_set_muted.h
 
+if WITH_LIBINSTPATCH
+libags_audio_task_h_sources += \
+	ags/audio/task/ags_open_sf2_instrument.h \
+	ags/audio/task/ags_open_sf2_sample.h
+endif
+
 deprecated_libags_audio_task_c_sources =
 
 libags_audio_task_c_sources = \
@@ -1221,10 +1234,6 @@ libags_audio_task_c_sources = \
 	ags/audio/task/ags_move_note.c \
 	ags/audio/task/ags_notify_soundcard.c \
 	ags/audio/task/ags_open_file.c \
-if AGS_WITH_LIBINSTPATCH
-	ags/audio/task/ags_open_sf2_instrument.c \
-	ags/audio/task/ags_open_sf2_sample.c \
-endif
 	ags/audio/task/ags_open_single_file.c \
 	ags/audio/task/ags_open_wave.c \
 	ags/audio/task/ags_remove_audio.c \
@@ -1250,6 +1259,12 @@ endif
 	ags/audio/task/ags_reset_amplitude.c \
 	ags/audio/task/ags_reset_peak.c \
 	ags/audio/task/ags_set_muted.c
+
+if WITH_LIBINSTPATCH
+libags_audio_task_c_sources += \
+	ags/audio/task/ags_open_sf2_instrument.c \
+	ags/audio/task/ags_open_sf2_sample.c
+endif
 
 # libags-gui all files
 deprecated_libags_gui_h_sources =
@@ -1664,18 +1679,6 @@ libgsequencer_machine_h_sources = \
 	ags/X/machine/ags_dssi_bridge.h \
 	ags/X/machine/ags_equalizer10.h \
 	ags/X/machine/ags_equalizer10_callbacks.h \
-if AGS_WITH_LIBINSTPATCH
-	ags/X/machine/ags_ffplayer_callbacks.h \
-	ags/X/machine/ags_ffplayer.h \
-	ags/X/machine/ags_ffplayer_bridge_callbacks.h \
-	ags/X/machine/ags_ffplayer_bridge.h \
-	ags/X/machine/ags_ffplayer_bulk_input_callbacks.h \
-	ags/X/machine/ags_ffplayer_bulk_input.h \
-	ags/X/machine/ags_ffplayer_input_line_callbacks.h \
-	ags/X/machine/ags_ffplayer_input_line.h \
-	ags/X/machine/ags_ffplayer_input_pad_callbacks.h \
-	ags/X/machine/ags_ffplayer_input_pad.h \
-endif
 	ags/X/machine/ags_ladspa_bridge_callbacks.h \
 	ags/X/machine/ags_ladspa_bridge.h \
 	ags/X/machine/ags_live_dssi_bridge_callbacks.h \
@@ -1713,6 +1716,20 @@ endif
 	ags/X/machine/ags_spectrometer.h \
 	ags/X/machine/ags_spectrometer_callbacks.h
 
+if WITH_LIBINSTPATCH
+libgsequencer_machine_h_sources += \
+	ags/X/machine/ags_ffplayer_callbacks.h \
+	ags/X/machine/ags_ffplayer.h \
+	ags/X/machine/ags_ffplayer_bridge_callbacks.h \
+	ags/X/machine/ags_ffplayer_bridge.h \
+	ags/X/machine/ags_ffplayer_bulk_input_callbacks.h \
+	ags/X/machine/ags_ffplayer_bulk_input.h \
+	ags/X/machine/ags_ffplayer_input_line_callbacks.h \
+	ags/X/machine/ags_ffplayer_input_line.h \
+	ags/X/machine/ags_ffplayer_input_pad_callbacks.h \
+	ags/X/machine/ags_ffplayer_input_pad.h
+endif
+
 deprecated_libgsequencer_machine_c_sources =
 
 libgsequencer_machine_c_sources = \
@@ -1739,16 +1756,6 @@ libgsequencer_machine_c_sources = \
 	ags/X/machine/ags_dssi_bridge_callbacks.c \
 	ags/X/machine/ags_equalizer10.c \
 	ags/X/machine/ags_equalizer10_callbacks.c \
-	ags/X/machine/ags_ffplayer.c \
-	ags/X/machine/ags_ffplayer_callbacks.c \
-	ags/X/machine/ags_ffplayer_bridge.c \
-	ags/X/machine/ags_ffplayer_bridge_callbacks.c \
-	ags/X/machine/ags_ffplayer_bulk_input.c \
-	ags/X/machine/ags_ffplayer_bulk_input_callbacks.c \
-	ags/X/machine/ags_ffplayer_input_line.c \
-	ags/X/machine/ags_ffplayer_input_line_callbacks.c \
-	ags/X/machine/ags_ffplayer_input_pad.c \
-	ags/X/machine/ags_ffplayer_input_pad_callbacks.c \
 	ags/X/machine/ags_ladspa_bridge.c \
 	ags/X/machine/ags_ladspa_bridge_callbacks.c \
 	ags/X/machine/ags_live_dssi_bridge.c \
@@ -1785,6 +1792,20 @@ libgsequencer_machine_c_sources = \
 	ags/X/machine/ags_synth_input_pad.c \
 	ags/X/machine/ags_spectrometer.c \
 	ags/X/machine/ags_spectrometer_callbacks.c
+
+if WITH_LIBINSTPATCH
+libgsequencer_machine_c_sources += \
+	ags/X/machine/ags_ffplayer.c \
+	ags/X/machine/ags_ffplayer_callbacks.c \
+	ags/X/machine/ags_ffplayer_bridge.c \
+	ags/X/machine/ags_ffplayer_bridge_callbacks.c \
+	ags/X/machine/ags_ffplayer_bulk_input.c \
+	ags/X/machine/ags_ffplayer_bulk_input_callbacks.c \
+	ags/X/machine/ags_ffplayer_input_line.c \
+	ags/X/machine/ags_ffplayer_input_line_callbacks.c \
+	ags/X/machine/ags_ffplayer_input_pad.c \
+	ags/X/machine/ags_ffplayer_input_pad_callbacks.c
+endif
 
 # libgsequencer - editor
 deprecated_libgsequencer_editor_h_sources =
@@ -1950,7 +1971,8 @@ html:
 	cd $(top_srcdir)
 
 install-data-local:
-	touch $(DESTDIR)/include/ags/config.h
+	mkdir -p $(DESTDIR)/$(includedir)/ags
+	install -c -p -m 644 $(top_builddir)/ags/ags_config.h $(DESTDIR)/$(includedir)/ags/config.h
 	mkdir -p $(DESTDIR)/$(datadir)/doc-base
 	mkdir -p $(DESTDIR)/$(datadir)/gsequencer/icons
 	mkdir -p $(DESTDIR)/$(datadir)/gsequencer/images
@@ -2024,6 +2046,7 @@ install-html: fix-local-html
 	install -c -p -m 644 $(top_srcdir)/docs/reference/libgsequencer/libgsequencer-html/* $(DESTDIR)/$(datadir)/doc/libgsequencer-doc/api
 
 uninstall-hook:
+	rm -rf $(DESTDIR)/$(includedir)/ags/config.h
 	rm -rf $(DESTDIR)/$(datadir)/gsequencer
 	rm -rf $(DESTDIR)/$(docdir)
 	rm -rf $(DESTDIR)/$(datadir)/xml/gsequencer

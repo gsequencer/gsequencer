@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: gsequencer 2.0.35\n"
-"Report-Msgid-Bugs-To: jkraehemann-guest@users.alioth.debian.org\n"
-"POT-Creation-Date: 2018-10-13 16:36+0200\n"
+"Project-Id-Version: gsequencer 2.0.36\n"
+"Report-Msgid-Bugs-To: jkraehemann@gmail.com\n"
+"POT-Creation-Date: 2018-10-26 18:24+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -495,7 +495,7 @@ msgstr ""
 
 #: ags/X/ags_property_editor.c:106 ags/X/editor/ags_envelope_editor.c:170
 #: ags/X/export/ags_machine_collection_entry.c:179
-#: ags/X/import/ags_track_collection_mapper.c:226
+#: ags/X/import/ags_track_collection_mapper.c:229
 msgid "enabled"
 msgstr ""
 
@@ -685,7 +685,7 @@ msgstr ""
 
 #: ags/X/editor/ags_envelope_editor.c:180
 #: ags/X/editor/ags_pattern_envelope.c:244 ags/X/machine/ags_ffplayer.c:280
-#: ags/X/machine/ags_live_lv2_bridge.c:1533 ags/X/machine/ags_lv2_bridge.c:1823
+#: ags/X/machine/ags_live_lv2_bridge.c:1535 ags/X/machine/ags_lv2_bridge.c:1825
 msgid "preset"
 msgstr ""
 
@@ -735,7 +735,7 @@ msgstr ""
 msgid "Note:y"
 msgstr ""
 
-#: ags/X/editor/ags_machine_selection.c:128
+#: ags/X/editor/ags_machine_selection.c:132
 msgid "select machines"
 msgstr ""
 
@@ -939,20 +939,20 @@ msgid "select audio data"
 msgstr ""
 
 #: ags/X/export/ags_machine_collection_entry.c:222
-#: ags/X/import/ags_track_collection_mapper.c:255
+#: ags/X/import/ags_track_collection_mapper.c:258
 msgid "sequence: "
 msgstr ""
 
-#: ags/X/import/ags_track_collection_mapper.c:245
+#: ags/X/import/ags_track_collection_mapper.c:248
 msgid "instrument: "
 msgstr ""
 
-#: ags/X/import/ags_track_collection_mapper.c:342
+#: ags/X/import/ags_track_collection_mapper.c:345
 #: ags/X/machine/ags_ffplayer.c:295
 msgid "instrument"
 msgstr ""
 
-#: ags/X/import/ags_track_collection_mapper.c:375
+#: ags/X/import/ags_track_collection_mapper.c:378
 msgid "sequence"
 msgstr ""
 
@@ -997,7 +997,7 @@ msgid "channel: "
 msgstr ""
 
 #: ags/X/machine/ags_dssi_bridge.c:326 ags/X/machine/ags_live_dssi_bridge.c:329
-#: ags/X/machine/ags_live_lv2_bridge.c:1472 ags/X/machine/ags_lv2_bridge.c:1762
+#: ags/X/machine/ags_live_lv2_bridge.c:1474 ags/X/machine/ags_lv2_bridge.c:1764
 msgid "program"
 msgstr ""
 
@@ -1045,7 +1045,7 @@ msgstr ""
 msgid "pressure"
 msgstr ""
 
-#: ags/X/machine/ags_live_lv2_bridge.c:463 ags/X/machine/ags_lv2_bridge.c:439
+#: ags/X/machine/ags_live_lv2_bridge.c:465 ags/X/machine/ags_lv2_bridge.c:441
 msgid "show GUI"
 msgstr ""
 
