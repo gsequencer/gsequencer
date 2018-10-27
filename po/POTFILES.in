@@ -470,6 +470,7 @@
 ./ags/audio/thread/ags_export_thread.c
 ./ags/audio/thread/ags_sequencer_thread.c
 ./ags/audio/thread/ags_soundcard_thread.c
+./ags/audio/thread/ags_wave_loader.c
 ./ags/file/ags_file.c
 ./ags/file/ags_file_id_ref.c
 ./ags/file/ags_file_launch.c
