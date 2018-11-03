@@ -31,7 +31,7 @@
 
 PROGRAM=libtool
 PACKAGE=libtool
-VERSION="2.4.6 Debian-2.4.6-2.1"
+VERSION="2.4.6 Debian-2.4.6-6"
 package_revision=2.4.6
 
 
@@ -64,7 +64,7 @@ package_revision=2.4.6
 # libraries, which are installed to $pkgauxdir.
 
 # Set a version string for this script.
-scriptversion=2015-10-12.13; # UTC
+scriptversion=2015-10-04.22; # UTC
 
 # General shell script boiler plate, and helper functions.
 # Written by Gary V. Vaughan, 2004
@@ -1091,24 +1091,79 @@ func_relative_path ()
 }
 
 
-# func_quote_portable EVAL ARG
-# ----------------------------
-# Internal function to portably implement func_quote_arg.  Note that we still
-# keep attention to performance here so we as much as possible try to avoid
-# calling sed binary (so far O(N) complexity as long as func_append is O(1)).
-func_quote_portable ()
+# func_quote ARG
+# --------------
+# Aesthetically quote one ARG, store the result into $func_quote_result.  Note
+# that we keep attention to performance here (so far O(N) complexity as long as
+# func_append is O(1)).
+func_quote ()
 {
     $debug_cmd
 
-    func_quote_portable_result=$2
+    func_quote_result=$1
 
-    # one-time-loop (easy break)
-    while true
-    do
-      if $1; then
-        func_quote_portable_result=`$ECHO "$2" | $SED \
-          -e "$sed_double_quote_subst" -e "$sed_double_backslash"`
-        break
+    case $func_quote_result in
+      *[\\\`\"\$]*)
+        case $func_quote_result in
+          *[\[\*\?]*)
+            func_quote_result=`$ECHO "$func_quote_result" | $SED "$sed_quote_subst"`
+            return 0
+            ;;
+        esac
+
+        func_quote_old_IFS=$IFS
+        for _G_char in '\' '`' '"' '$'
+        do
+          # STATE($1) PREV($2) SEPARATOR($3)
+          set start "" ""
+          func_quote_result=dummy"$_G_char$func_quote_result$_G_char"dummy
+          IFS=$_G_char
+          for _G_part in $func_quote_result
+          do
+            case $1 in
+            quote)
+              func_append func_quote_result "$3$2"
+              set quote "$_G_part" "\\$_G_char"
+              ;;
+            start)
+              set first "" ""
+              func_quote_result=
+              ;;
+            first)
+              set quote "$_G_part" ""
+              ;;
+            esac
+          done
+          IFS=$func_quote_old_IFS
+        done
+        ;;
+      *) ;;
+    esac
+}
+
+
+# func_quote_for_eval ARG...
+# --------------------------
+# Aesthetically quote ARGs to be evaled later.
+# This function returns two values:
+#   i) func_quote_for_eval_result
+#      double-quoted, suitable for a subsequent eval
+#  ii) func_quote_for_eval_unquoted_result
+#      has all characters that are still active within double
+#      quotes backslashified.
+func_quote_for_eval ()
+{
+    $debug_cmd
+
+    func_quote_for_eval_unquoted_result=
+    func_quote_for_eval_result=
+    while test 0 -lt $#; do
+      func_quote "$1"
+      _G_unquoted_arg=$func_quote_result
+      if test -n "$func_quote_for_eval_unquoted_result"; then
+	func_append func_quote_for_eval_unquoted_result " $_G_unquoted_arg"
+      else
+        func_append func_quote_for_eval_unquoted_result "$_G_unquoted_arg"
       fi
 
       # Quote for eval.
@@ -1466,7 +1521,7 @@ func_lt_ver ()
 #! /bin/sh
 
 # Set a version string for this script.
-scriptversion=2015-10-12.13; # UTC
+scriptversion=2015-10-07.11; # UTC
 
 # A portable, pluggable option parser for Bourne shell.
 # Written by Gary V. Vaughan, 2010
@@ -1676,8 +1731,8 @@ func_run_hooks ()
 #    '
 #        # No change in '$@' (ignored completely by this hook).  There is
 #        # no need to do the equivalent (but slower) action:
-#        # func_quote eval ${1+"$@"}
-#        # my_options_prep_result=$func_quote_result
+#        # func_quote_for_eval ${1+"$@"}
+#        # my_options_prep_result=$func_quote_for_eval_result
 #        false
 #    }
 #    func_add_hook func_options_prep my_options_prep
@@ -1713,8 +1768,8 @@ func_run_hooks ()
 #        done
 #
 #        if $args_changed; then
-#          func_quote eval ${1+"$@"}
-#          my_silent_option_result=$func_quote_result
+#          func_quote_for_eval ${1+"$@"}
+#          my_silent_option_result=$func_quote_for_eval_result
 #        fi
 #
 #        $args_changed
@@ -1781,8 +1836,8 @@ func_options ()
     if $_G_rc_options; then
       func_options_result=$_G_res_var
     else
-      func_quote eval ${1+"$@"}
-      func_options_result=$func_quote_result
+      func_quote_for_eval ${1+"$@"}
+      func_options_result=$func_quote_for_eval_result
     fi
 
     $_G_rc_options
@@ -1925,8 +1980,8 @@ func_parse_options ()
 
     if $_G_rc_parse_options; then
       # save modified positional parameters for caller
-      func_quote eval ${1+"$@"}
-      func_parse_options_result=$func_quote_result
+      func_quote_for_eval ${1+"$@"}
+      func_parse_options_result=$func_quote_for_eval_result
     fi
 
     $_G_rc_parse_options
@@ -2237,7 +2292,7 @@ include the following information:
        compiler:       $LTCC
        compiler flags: $LTCFLAGS
        linker:         $LD (gnu? $with_gnu_ld)
-       version:        $progname $scriptversion Debian-2.4.6-2.1
+       version:        $progname $scriptversion Debian-2.4.6-6
        automake:       `($AUTOMAKE --version) 2>/dev/null |$SED 1q`
        autoconf:       `($AUTOCONF --version) 2>/dev/null |$SED 1q`
 
@@ -2471,8 +2526,8 @@ libtool_options_prep ()
 
     if $_G_rc_lt_options_prep; then
       # Pass back the list of options.
-      func_quote eval ${1+"$@"}
-      libtool_options_prep_result=$func_quote_result
+      func_quote_for_eval ${1+"$@"}
+      libtool_options_prep_result=$func_quote_for_eval_result
     fi
 
     $_G_rc_lt_options_prep
@@ -2578,8 +2633,8 @@ libtool_parse_options ()
 
     if $_G_rc_lt_parse_options; then
       # save modified positional parameters for caller
-      func_quote eval ${1+"$@"}
-      libtool_parse_options_result=$func_quote_result
+      func_quote_for_eval ${1+"$@"}
+      libtool_parse_options_result=$func_quote_for_eval_result
     fi
 
     $_G_rc_lt_parse_options
@@ -5446,8 +5501,8 @@ else
   if test \"\$libtool_execute_magic\" != \"$magic\"; then
     file=\"\$0\""
 
-    func_quote_arg pretty "$ECHO"
-    qECHO=$func_quote_arg_result
+    func_quote "$ECHO"
+    qECHO=$func_quote_result
     $ECHO "\
 
 # A function that is used when there is no print builtin or printf.
@@ -10704,8 +10759,8 @@ EOF
 	    relink_command="$var=$func_quote_arg_result; export $var; $relink_command"
 	  fi
 	done
-	func_quote_arg pretty,unquoted "(cd `pwd`; $relink_command)"
-	relink_command=$func_quote_arg_unquoted_result
+	func_quote "(cd `pwd`; $relink_command)"
+	relink_command=$func_quote_result
       fi
 
       # Only actually do things if not in dry run mode.
@@ -10951,8 +11006,8 @@ EOF
       done
       # Quote the link command for shipping.
       relink_command="(cd `pwd`; $SHELL \"$progpath\" $preserve_args --mode=relink $libtool_args @inst_prefix_dir@)"
-      func_quote_arg pretty,unquoted "$relink_command"
-      relink_command=$func_quote_arg_unquoted_result
+      func_quote "$relink_command"
+      relink_command=$func_quote_result
       if test yes = "$hardcode_automatic"; then
 	relink_command=
       fi

@@ -56,7 +56,7 @@ ags_file_selection_get_type(void)
   static volatile gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
-    GType ags_type_file_selection;
+    GType ags_type_file_selection = 0;
 
     static const GTypeInfo ags_file_selection_info = {
       sizeof (AgsFileSelectionClass),
@@ -84,7 +84,7 @@ ags_file_selection_get_type(void)
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
 
-    g_once_init_leave (&g_define_type_id__volatile, ags_type_file_selection);
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_file_selection);
   }
 
   return g_define_type_id__volatile;

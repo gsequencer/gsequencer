@@ -74,9 +74,11 @@ static const gchar *ags_play_wave_audio_control_port[] = {
 GType
 ags_play_wave_audio_get_type()
 {
-  static GType ags_type_play_wave_audio = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_play_wave_audio){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_play_wave_audio = 0;
+
     static const GTypeInfo ags_play_wave_audio_info = {
       sizeof (AgsPlayWaveAudioClass),
       NULL, /* base_init */
@@ -103,9 +105,11 @@ ags_play_wave_audio_get_type()
     g_type_add_interface_static(ags_type_play_wave_audio,
 				AGS_TYPE_PLUGIN,
 				&ags_plugin_interface_info);
+
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_play_wave_audio);
   }
 
-  return(ags_type_play_wave_audio);
+  return g_define_type_id__volatile;
 }
 
 void
@@ -226,7 +230,7 @@ ags_play_wave_audio_init(AgsPlayWaveAudio *play_wave_audio)
 						  NULL);
   g_object_ref(play_wave_audio->wave_loop_start);
   
-  play_wave_audio->wave_loop_start->port_value.ags_port_uint = 0.0;
+  play_wave_audio->wave_loop_start->port_value.ags_port_uint = 0;
 
   /* add to port */
   port = g_list_prepend(port, play_wave_audio->wave_loop_start);
@@ -235,8 +239,8 @@ ags_play_wave_audio_init(AgsPlayWaveAudio *play_wave_audio)
   /* wave-loop-end */
   play_wave_audio->wave_loop_end = g_object_new(AGS_TYPE_PORT,
 						"plugin-name", ags_play_wave_audio_plugin_name,
-						"specifier", ags_play_wave_audio_specifier[3],
-						"control-port", ags_play_wave_audio_control_port[3],
+						"specifier", ags_play_wave_audio_specifier[2],
+						"control-port", ags_play_wave_audio_control_port[2],
 						"port-value-is-pointer", FALSE,
 						"port-value-type", G_TYPE_UINT64,
 						"port-value-size", sizeof(guint64),
@@ -244,7 +248,7 @@ ags_play_wave_audio_init(AgsPlayWaveAudio *play_wave_audio)
 						NULL);
   g_object_ref(play_wave_audio->wave_loop_end);
   
-  play_wave_audio->wave_loop_end->port_value.ags_port_uint = 16.0 * (AGS_SOUNDCARD_DEFAULT_SAMPLERATE * (AGS_SOUNDCARD_DEFAULT_BPM / 60.0));
+  play_wave_audio->wave_loop_end->port_value.ags_port_uint = 64;
 
   /* add to port */
   port = g_list_prepend(port, play_wave_audio->wave_loop_end);

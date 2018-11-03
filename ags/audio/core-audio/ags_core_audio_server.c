@@ -24,6 +24,7 @@
 #include <ags/libags.h>
 
 #include <ags/audio/core-audio/ags_core_audio_devout.h>
+#include <ags/audio/core-audio/ags_core_audio_devin.h>
 #include <ags/audio/core-audio/ags_core_audio_midiin.h>
 
 #include <string.h>
@@ -117,7 +118,7 @@ ags_core_audio_server_get_type()
   static volatile gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
-    GType ags_type_core_audio_server;
+    GType ags_type_core_audio_server = 0;
 
     static const GTypeInfo ags_core_audio_server_info = {
       sizeof(AgsCoreAudioServerClass),
@@ -155,6 +156,8 @@ ags_core_audio_server_get_type()
     g_type_add_interface_static(ags_type_core_audio_server,
 				AGS_TYPE_SOUND_SERVER,
 				&ags_sound_server_interface_info);
+
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_core_audio_server);
   }
 
   return g_define_type_id__volatile;
@@ -250,11 +253,10 @@ ags_core_audio_server_class_init(AgsCoreAudioServerClass *core_audio_server)
    * 
    * Since: 2.0.0
    */
-  param_spec = g_param_spec_object("core-audio-client",
-				   i18n_pspec("core audio client list"),
-				   i18n_pspec("The core audio client list"),
-				   AGS_TYPE_CORE_AUDIO_CLIENT,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  param_spec = g_param_spec_pointer("core-audio-client",
+				    i18n_pspec("core audio client list"),
+				    i18n_pspec("The core audio client list"),
+				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_CORE_AUDIO_CLIENT,
 				  param_spec);
@@ -473,7 +475,7 @@ ags_core_audio_server_set_property(GObject *gobject,
     {
       GObject *client;
 
-      client = (GObject *) g_value_get_object(value);
+      client = (GObject *) g_value_get_pointer(value);
 
       pthread_mutex_lock(core_audio_server_mutex);
 
@@ -548,7 +550,7 @@ ags_core_audio_server_get_property(GObject *gobject,
     {
       pthread_mutex_lock(core_audio_server_mutex);
 
-      g_value_set_object(value, core_audio_server->default_soundcard);
+      g_value_set_object(value, core_audio_server->default_client);
 
       pthread_mutex_unlock(core_audio_server_mutex);
     }
@@ -1266,6 +1268,7 @@ ags_core_audio_server_register_soundcard(AgsSoundServer *sound_server,
   AgsCoreAudioClient *default_client;
   AgsCoreAudioPort *core_audio_port;
   AgsCoreAudioDevout *core_audio_devout;
+  AgsCoreAudioDevin *core_audio_devin;
 
   AgsApplicationContext *application_context;
 
@@ -1285,11 +1288,6 @@ ags_core_audio_server_register_soundcard(AgsSoundServer *sound_server,
 
   pthread_mutex_t *core_audio_server_mutex;
   pthread_mutex_t *core_audio_client_mutex;
-  
-  if(!is_output){
-    g_warning("GSequencer - audio input not implemented");
-    return(NULL);
-  }
 
   core_audio_server = AGS_CORE_AUDIO_SERVER(sound_server);
 
@@ -1400,6 +1398,56 @@ ags_core_audio_server_register_soundcard(AgsSoundServer *sound_server,
     core_audio_server->n_soundcards += 1;
 
     pthread_mutex_unlock(core_audio_server_mutex);
+  }else{
+    soundcard = 
+      core_audio_devin = ags_core_audio_devin_new(core_audio_server->application_context);
+    
+    str = g_strdup_printf("ags-core-audio-devin-%d",
+			  n_soundcards);
+    
+    g_object_set(AGS_CORE_AUDIO_DEVIN(core_audio_devin),
+		 "core-audio-client", default_client,
+		 "device", str,
+		 NULL);
+    g_free(str);
+        
+    /* register ports */      
+    core_audio_port = ags_core_audio_port_new((GObject *) default_client);
+
+    str = g_strdup_printf("ags-soundcard%d",
+			  n_soundcards);
+    
+    g_object_set(core_audio_port,
+		 "core-audio-device", core_audio_devin,
+		 NULL);
+    ags_core_audio_client_add_port(default_client,
+				   (GObject *) core_audio_port);
+
+    g_object_set(core_audio_devin,
+		 "core-audio-port", core_audio_port,
+		 NULL);
+    
+    core_audio_devin->port_name = (gchar **) malloc(2 * sizeof(gchar *));
+    core_audio_devin->port_name[0] = g_strdup(str);
+    core_audio_devin->port_name[1] = NULL;
+    
+    ags_core_audio_port_register(core_audio_port,
+				 str,
+				 TRUE, FALSE,
+				 FALSE);
+
+    ags_core_audio_devin_realloc_buffer(core_audio_devin);
+
+    g_object_set(default_client,
+		 "device", core_audio_devin,
+		 NULL);
+
+    /* increment n-soundcards */
+    pthread_mutex_lock(core_audio_server_mutex);
+
+    core_audio_server->n_soundcards += 1;
+
+    pthread_mutex_unlock(core_audio_server_mutex);
   }
   
   return(soundcard);
@@ -1444,6 +1492,22 @@ ags_core_audio_server_unregister_soundcard(AgsSoundServer *sound_server,
   }
   
   if(AGS_IS_CORE_AUDIO_DEVOUT(soundcard)){
+    g_object_get(soundcard,
+		 "core-audio-port", &list_start,
+		 NULL);
+
+    list = list_start;
+
+    while(list != NULL){
+      ags_core_audio_port_unregister(list->data);
+      ags_core_audio_client_remove_port(default_client,
+				   list->data);
+    
+      list = list->next;
+    }
+
+    g_list_free(list_start);
+  }else if(AGS_IS_CORE_AUDIO_DEVIN(soundcard)){
     g_object_get(soundcard,
 		 "core-audio-port", &list_start,
 		 NULL);

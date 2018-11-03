@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -40,6 +40,9 @@ struct _AgsLv2UridManager
 {
   GObject gobject;
 
+  pthread_mutex_t *obj_mutex;
+  pthread_mutexattr_t *obj_mutexattr;
+
   uint32_t id_counter;
   
   GHashTable *urid;  
@@ -51,6 +54,8 @@ struct _AgsLv2UridManagerClass
 };
 
 GType ags_lv2_urid_manager_get_type(void);
+
+pthread_mutex_t* ags_lv2_urid_manager_get_class_mutex();
 
 gboolean ags_lv2_urid_manager_insert(AgsLv2UridManager *lv2_urid_manager,
 				     gchar *uri, GValue *id);

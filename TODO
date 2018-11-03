@@ -1,1 +1,21 @@
-* improve thread-safety to LADSPA and DSSI
+* TODO:JK: implemented resample AgsAudioSignal on presets modified
+* TODO:JK: implemented ags_char_buffer_util.c
+* TODO:JK: improve thread-safety to LADSPA and DSSI
+* TODO:JK: removed ags_id_generator.[ch]
+* TODO:JK: improved ags-feed recall thread-safety
+* TODO:JK: improved ags_audio_signal_feed() reduce over-head
+* TODO:JK: improved AgsApplySynth thread-safety
+* TODO:JK: implemented AgsFunction
+* TODO:JK: implemented AgsServer, AgsRegistry and AgsServerStatus
+* TODO:JK: implemented AgsXmlAuthentication, AgsXmlCertificate and AgsXmlPasswordStore
+* TODO:JK: implemented AgsFrontController, AgsFactoryController, AgsLocalRegistryController, AgsLocalSerializationController and AgsLocalTaskController
+* TODO:JK: refactored AgsAutomationEditor to be more light-weight
+* TODO:JK: implemented AgsCartesian properties
+* TODO:JK: implemented AgsConnectable:disconnect() to all implementing objects
+* TODO:JK: implemented AgsPlaybackDomain properties
+* TODO:JK: implemented AgsPlayback properties
+* TODO:JK: implemented AgsScaleArea properties
+* TODO:JK: implemented AgsApplicationContext properties
+* TODO:JK: implement AgsConnectable properly
+* TODO:JK: implemented damping/vibration of AgsAudioSignal
+* TODO:JK: implemented exponential curve option for ags-envelope recall

@@ -59,8 +59,8 @@ ags_loop_channel_get_type()
   static volatile gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
-    GType ags_type_loop_channel;
-    
+    GType ags_type_loop_channel = 0;
+
     static const GTypeInfo ags_loop_channel_info = {
       sizeof (AgsLoopChannelClass),
       NULL, /* base_init */
@@ -77,9 +77,11 @@ ags_loop_channel_get_type()
 						   "AgsLoopChannel",
 						   &ags_loop_channel_info,
 						   0);
+
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_loop_channel);
   }
 
-  return(ags_type_loop_channel);
+  return g_define_type_id__volatile;
 }
 
 void

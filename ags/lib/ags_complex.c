@@ -34,16 +34,20 @@
 GType
 ags_complex_get_type(void)
 {
-  static GType ags_type_complex = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_complex){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_complex = 0;
+
     ags_type_complex =
       g_boxed_type_register_static("AgsComplex",
 				   (GBoxedCopyFunc) ags_complex_copy,
 				   (GBoxedFreeFunc) ags_complex_free);
+
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_complex);
   }
-  
-  return(ags_type_complex);
+
+  return g_define_type_id__volatile;
 }
 
 /**

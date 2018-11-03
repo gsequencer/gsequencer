@@ -56,7 +56,7 @@ ags_led_get_type(void)
   static volatile gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
-    GType ags_type_led;
+    GType ags_type_led = 0;
 
     static const GTypeInfo ags_led_info = {
       sizeof(AgsLedClass),
@@ -74,7 +74,7 @@ ags_led_get_type(void)
 					  "AgsLed", &ags_led_info,
 					  0);
 
-    g_once_init_leave (&g_define_type_id__volatile, ags_type_led);
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_led);
   }
 
   return g_define_type_id__volatile;
@@ -259,11 +259,11 @@ ags_led_unset_active(AgsLed *led)
 /**
  * ags_led_new:
  *
- * Creates an #AgsLed.
+ * Create a new instance of #AgsLed.
  *
- * Returns: a new #AgsLed
+ * Returns: the new #AgsLed
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsLed*
 ags_led_new()

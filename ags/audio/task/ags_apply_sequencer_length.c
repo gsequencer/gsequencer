@@ -70,7 +70,7 @@ ags_apply_sequencer_length_get_type()
   static volatile gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
-    GType ags_type_apply_sequencer_length;
+    GType ags_type_apply_sequencer_length = 0;
 
     static const GTypeInfo ags_apply_sequencer_length_info = {
       sizeof(AgsApplySequencerLengthClass),
@@ -88,9 +88,11 @@ ags_apply_sequencer_length_get_type()
 							     "AgsApplySequencerLength",
 							     &ags_apply_sequencer_length_info,
 							     0);
+
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_apply_sequencer_length);
   }
-  
-  return(ags_type_apply_sequencer_length);
+
+  return g_define_type_id__volatile;
 }
 
 void

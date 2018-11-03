@@ -89,7 +89,7 @@ ags_recall_dssi_get_type (void)
   static volatile gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
-    GType ags_type_recall_dssi;
+    GType ags_type_recall_dssi = 0;
 
     static const GTypeInfo ags_recall_dssi_info = {
       sizeof (AgsRecallDssiClass),
@@ -128,7 +128,7 @@ ags_recall_dssi_get_type (void)
 				AGS_TYPE_PLUGIN,
 				&ags_plugin_interface_info);
 
-    g_once_init_leave (&g_define_type_id__volatile, ags_type_recall_dssi);
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_recall_dssi);
   }
 
   return g_define_type_id__volatile;
@@ -216,7 +216,7 @@ ags_recall_dssi_init(AgsRecallDssi *recall_dssi)
   
   recall_dssi->bank = 0;
   recall_dssi->program = 0;
-  
+
   recall_dssi->plugin = NULL;
   recall_dssi->plugin_descriptor = NULL;
 
@@ -376,7 +376,14 @@ ags_recall_dssi_set_ports(AgsPlugin *plugin, GList *port)
 
   g_free(filename);
   g_free(effect);
+
+  /* set dssi plugin */
+  pthread_mutex_lock(recall_mutex);
+
+  recall_dssi->plugin = dssi_plugin;
   
+  pthread_mutex_unlock(recall_mutex);
+
   /* get base plugin mutex */
   pthread_mutex_lock(ags_base_plugin_get_class_mutex());
   
@@ -682,6 +689,13 @@ ags_recall_dssi_load_ports(AgsRecallDssi *recall_dssi)
 						  filename, effect);
   g_free(filename);
   g_free(effect);
+
+  /* set dssi plugin */
+  pthread_mutex_lock(recall_mutex);
+
+  recall_dssi->plugin = dssi_plugin;
+  
+  pthread_mutex_unlock(recall_mutex);
 
   /* get base plugin mutex */
   pthread_mutex_lock(ags_base_plugin_get_class_mutex());

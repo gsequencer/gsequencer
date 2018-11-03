@@ -86,7 +86,7 @@ ags_ffplayer_get_type(void)
   static volatile gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
-    GType ags_type_ffplayer;
+    GType ags_type_ffplayer = 0;
 
     static const GTypeInfo ags_ffplayer_info = {
       sizeof(AgsFFPlayerClass),
@@ -124,7 +124,7 @@ ags_ffplayer_get_type(void)
 				AGS_TYPE_PLUGIN,
 				&ags_plugin_interface_info);
 
-    g_once_init_leave (&g_define_type_id__volatile, ags_type_ffplayer);
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_ffplayer);
   }
 
   return g_define_type_id__volatile;
@@ -163,6 +163,7 @@ ags_ffplayer_connectable_interface_init(AgsConnectableInterface *connectable)
   ags_ffplayer_parent_connectable_interface = g_type_interface_peek_parent(connectable);
 
   connectable->connect = ags_ffplayer_connect;
+  connectable->disconnect = ags_ffplayer_disconnect;
 }
 
 void
@@ -200,7 +201,8 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
 			      AGS_AUDIO_OUTPUT_HAS_RECYCLING |
 			      AGS_AUDIO_INPUT_HAS_RECYCLING |
 			      AGS_AUDIO_INPUT_HAS_FILE));
-  ags_audio_set_ability_flags(audio, (AGS_SOUND_ABILITY_NOTATION));
+  ags_audio_set_ability_flags(audio, (AGS_SOUND_ABILITY_PLAYBACK |
+				      AGS_SOUND_ABILITY_NOTATION));
   ags_audio_set_behaviour_flags(audio, (AGS_SOUND_BEHAVIOUR_REVERSE_MAPPING |
 					AGS_SOUND_BEHAVIOUR_DEFAULTS_TO_INPUT));
   g_object_set(audio,
@@ -790,19 +792,79 @@ ags_ffplayer_resize_audio_channels(AgsMachine *machine,
 				   guint audio_channels, guint audio_channels_old,
 				   gpointer data)
 {
-  AgsAudio *audio;
+  AgsAudio *audio;  
+  AgsChannel *output;
+  AgsChannel *channel, *next_pad;
   
-  guint input_pads;
+  guint output_pads, input_pads;
 
   audio = machine->audio;
 
   /* get some fields */
   g_object_get(audio,
 	       "input-pads", &input_pads,
+	       "output-pads", &output_pads,
+	       "output", &output,
 	       NULL);
 
   /*  */
   if(audio_channels > audio_channels_old){  
+    /* AgsOutput */
+    channel = output;
+
+    while(channel != NULL){
+      /* get some fields */
+      g_object_get(channel,
+		   "next-pad", &next_pad,
+		   NULL);
+
+      channel = ags_channel_pad_nth(channel,
+				    audio_channels_old);
+
+      while(channel != next_pad){
+	AgsRecycling *recycling;
+	AgsAudioSignal *audio_signal;
+
+	GObject *output_soundcard;
+
+	ags_channel_set_ability_flags(channel, (AGS_SOUND_ABILITY_NOTATION));
+		
+	g_object_get(audio,
+		     "output-soundcard", &output_soundcard,
+		     NULL);
+
+	/* get recycling */
+	g_object_get(channel,
+		     "first-recycling", &recycling,
+		     NULL);
+
+	/* instantiate template audio signal */
+	audio_signal = ags_audio_signal_new(output_soundcard,
+					    (GObject *) recycling,
+					    NULL);
+	audio_signal->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;
+	ags_recycling_add_audio_signal(recycling,
+				       audio_signal);
+
+	/* iterate */
+	g_object_get(channel,
+		     "next", &channel,
+		     NULL);
+      }
+    }
+
+    /* ags-envelope */
+    ags_recall_factory_create(audio,
+			      NULL, NULL,
+			      "ags-envelope",
+			      audio_channels_old, audio_channels, 
+			      0, input_pads,
+			      (AGS_RECALL_FACTORY_INPUT |
+			       AGS_RECALL_FACTORY_PLAY |
+			       AGS_RECALL_FACTORY_RECALL | 
+			       AGS_RECALL_FACTORY_ADD),
+			      0);
+
     if(ags_recall_global_get_rt_safe() ||
        ags_recall_global_get_performance_mode()){
       /* ags-copy */
@@ -836,18 +898,6 @@ ags_ffplayer_resize_audio_channels(AgsMachine *machine,
 			      0, input_pads,
 			      (AGS_RECALL_FACTORY_INPUT |
 			       AGS_RECALL_FACTORY_PLAY |
-			       AGS_RECALL_FACTORY_ADD),
-			      0);
-
-    /* ags-envelope */
-    ags_recall_factory_create(audio,
-			      NULL, NULL,
-			      "ags-envelope",
-			      audio_channels_old, audio_channels, 
-			      0, input_pads,
-			      (AGS_RECALL_FACTORY_INPUT |
-			       AGS_RECALL_FACTORY_PLAY |
-			       AGS_RECALL_FACTORY_RECALL | 
 			       AGS_RECALL_FACTORY_ADD),
 			      0);
 
@@ -895,13 +945,15 @@ ags_ffplayer_resize_audio_channels(AgsMachine *machine,
 }
 
 void
-ags_ffplayer_resize_pads(AgsMachine *machine, GType type,
+ags_ffplayer_resize_pads(AgsMachine *machine, GType channel_type,
 			 guint pads, guint pads_old,
 			 gpointer data)
 {
   AgsFFPlayer *ffplayer;
 
   AgsAudio *audio;
+  AgsChannel *output;
+  AgsChannel *channel;
 
   guint output_pads, input_pads;
   gboolean grow;
@@ -918,6 +970,7 @@ ags_ffplayer_resize_pads(AgsMachine *machine, GType type,
   g_object_get(audio,
 	       "output-pads", &output_pads,
 	       "input-pads", &input_pads,
+	       "output", &output,
 	       NULL);
 
   /* check grow */
@@ -927,20 +980,35 @@ ags_ffplayer_resize_pads(AgsMachine *machine, GType type,
     grow = FALSE;
   }
   
-  if(type == AGS_TYPE_INPUT){
+  if(channel_type == AGS_TYPE_INPUT){
     if(grow){
       /* depending on destination */
       ags_ffplayer_input_map_recall(ffplayer, pads_old);
     }else{
-      ffplayer->mapped_input_pad = input_pads;
+      ffplayer->mapped_input_pad = pads;
     }
-  }else{
+  }else if(channel_type == AGS_TYPE_OUTPUT){
     if(grow){
+      /* AgsOutput */
+      channel = ags_channel_pad_nth(output,
+				    pads_old);
+
+      while(channel != NULL){
+	ags_channel_set_ability_flags(channel, (AGS_SOUND_ABILITY_NOTATION));
+
+	/* iterate */
+	g_object_get(channel,
+		     "next", &channel,
+		     NULL);
+      }
+
       /* depending on destination */
       ags_ffplayer_output_map_recall(ffplayer, pads_old);
     }else{
-      ffplayer->mapped_output_pad = output_pads;
+      ffplayer->mapped_output_pad = pads;
     }
+  }else{
+    g_critical("unknown channel type");
   }
 }
 
@@ -1145,6 +1213,18 @@ ags_ffplayer_input_map_recall(AgsFFPlayer *ffplayer, guint input_pad_start)
 	       "audio-channels", &audio_channels,
 	       NULL);
 
+  /* ags-envelope */
+  ags_recall_factory_create(audio,
+			    NULL, NULL,
+			    "ags-envelope",
+			    0, audio_channels,
+			    input_pad_start, input_pads,
+			    (AGS_RECALL_FACTORY_INPUT |
+			     AGS_RECALL_FACTORY_PLAY |
+			     AGS_RECALL_FACTORY_RECALL | 
+			     AGS_RECALL_FACTORY_ADD),
+			    0);
+
   /* remap for input */
   if(ags_recall_global_get_rt_safe() ||
      ags_recall_global_get_performance_mode()){
@@ -1194,17 +1274,6 @@ ags_ffplayer_input_map_recall(AgsFFPlayer *ffplayer, guint input_pad_start)
 			     AGS_RECALL_FACTORY_ADD),
 			    0);
 
-  /* ags-envelope */
-  ags_recall_factory_create(audio,
-			    NULL, NULL,
-			    "ags-envelope",
-			    0, audio_channels,
-			    input_pad_start, input_pads,
-			    (AGS_RECALL_FACTORY_INPUT |
-			     AGS_RECALL_FACTORY_PLAY |
-			     AGS_RECALL_FACTORY_RECALL | 
-			     AGS_RECALL_FACTORY_ADD),
-			    0);
   /* ags-stream */
   if(!ags_recall_global_get_rt_safe()){
     ags_recall_factory_create(audio,
@@ -1466,6 +1535,10 @@ ags_ffplayer_open_filename(AgsFFPlayer *ffplayer,
 						window->soundcard,
 						-1);
     ags_audio_container_open(audio_container);
+
+    if(audio_container->sound_container == NULL){
+      return;
+    }
     
     ags_sound_container_select_level_by_index(AGS_SOUND_CONTAINER(audio_container->sound_container), 0);
     AGS_IPATCH(audio_container->sound_container)->nesting_level += 1;
@@ -1483,7 +1556,9 @@ ags_ffplayer_load_preset(AgsFFPlayer *ffplayer)
 
   GError *error;
 
-  if(!AGS_IS_FFPLAYER(ffplayer)){
+  if(!AGS_IS_FFPLAYER(ffplayer) ||
+     ffplayer->audio_container == NULL ||
+     ffplayer->audio_container->sound_container == NULL){
     return;
   }
 
@@ -1514,7 +1589,9 @@ ags_ffplayer_load_instrument(AgsFFPlayer *ffplayer)
   
   GError *error;
   
-  if(!AGS_IS_FFPLAYER(ffplayer)){
+  if(!AGS_IS_FFPLAYER(ffplayer) ||
+     ffplayer->audio_container == NULL ||
+     ffplayer->audio_container->sound_container == NULL){
     return;
   }
 

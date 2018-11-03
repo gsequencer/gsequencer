@@ -71,7 +71,7 @@ ags_recall_audio_get_type()
   static volatile gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
-    GType ags_type_recall_audio;
+    GType ags_type_recall_audio = 0;
 
     static const GTypeInfo ags_recall_audio_info = {
       sizeof (AgsRecallAudioClass),
@@ -99,6 +99,8 @@ ags_recall_audio_get_type()
     g_type_add_interface_static(ags_type_recall_audio,
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
+
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_recall_audio);
   }
 
   return g_define_type_id__volatile;
@@ -308,7 +310,7 @@ ags_recall_audio_automate(AgsRecall *recall)
 	       NULL);
   
   g_object_get(audio,
-	       "soundcard", &soundcard,
+	       "output-soundcard", &soundcard,
 	       NULL);
   
   g_object_get(recall,

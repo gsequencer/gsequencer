@@ -21,6 +21,8 @@
 
 #include <ags/object/ags_marshal.h>
 
+#include <stdlib.h>
+
 #include <ags/i18n.h>
 
 void ags_conversion_class_init(AgsConversionClass *conversion);
@@ -64,12 +66,16 @@ enum{
 static gpointer ags_conversion_parent_class = NULL;
 static guint conversion_signals[LAST_SIGNAL];
 
+static pthread_mutex_t ags_conversion_class_mutex = PTHREAD_MUTEX_INITIALIZER;
+
 GType
 ags_conversion_get_type(void)
 {
-  static GType ags_type_conversion = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_conversion){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_conversion = 0;
+
     static const GTypeInfo ags_conversion_info = {
       sizeof (AgsConversionClass),
       NULL, /* base_init */
@@ -86,9 +92,11 @@ ags_conversion_get_type(void)
 						 "AgsConversion",
 						 &ags_conversion_info,
 						 0);
+
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_conversion);
   }
 
-  return (ags_type_conversion);
+  return g_define_type_id__volatile;
 }
 
 void
@@ -113,7 +121,7 @@ ags_conversion_class_init(AgsConversionClass *conversion)
    *
    * The name of the conversion.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_string("name",
 				   i18n_pspec("name of conversion"),
@@ -129,7 +137,7 @@ ags_conversion_class_init(AgsConversionClass *conversion)
    *
    * The description of the conversion.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_string("description",
 				   i18n_pspec("description of conversion"),
@@ -155,7 +163,7 @@ ags_conversion_class_init(AgsConversionClass *conversion)
    *
    * Returns: the converted value
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   conversion_signals[CONVERT] =
     g_signal_new("convert",
@@ -172,6 +180,21 @@ ags_conversion_class_init(AgsConversionClass *conversion)
 void
 ags_conversion_init(AgsConversion *conversion)
 {
+  conversion->obj_mutexattr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
+
+  pthread_mutexattr_init(conversion->obj_mutexattr);
+  pthread_mutexattr_settype(conversion->obj_mutexattr,
+			    PTHREAD_MUTEX_RECURSIVE);
+
+#ifdef __linux__
+  pthread_mutexattr_setprotocol(conversion->obj_mutexattr,
+				PTHREAD_PRIO_INHERIT);
+#endif
+
+  
+  conversion->obj_mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
+  pthread_mutex_init(conversion->obj_mutex, conversion->obj_mutexattr);
+
   conversion->name = NULL;
   conversion->description = NULL;
 }
@@ -184,8 +207,17 @@ ags_conversion_set_property(GObject *gobject,
 {
   AgsConversion *conversion;
 
+  pthread_mutex_t *conversion_mutex;
+  
   conversion = AGS_CONVERSION(gobject);
 
+  /* get conversion mutex */
+  pthread_mutex_lock(ags_conversion_get_class_mutex());
+  
+  conversion_mutex = conversion->obj_mutex;
+
+  pthread_mutex_unlock(ags_conversion_get_class_mutex());
+  
   switch(prop_id){
   case PROP_NAME:
     {
@@ -193,7 +225,11 @@ ags_conversion_set_property(GObject *gobject,
 
       name = (gchar *) g_value_get_string(value);
 
+      pthread_mutex_lock(conversion_mutex);
+      
       if(conversion->name == name){
+	pthread_mutex_unlock(conversion_mutex);
+	
 	return;
       }
       
@@ -202,6 +238,8 @@ ags_conversion_set_property(GObject *gobject,
       }
 
       conversion->name = g_strdup(name);
+
+      pthread_mutex_unlock(conversion_mutex);
     }
     break;
   case PROP_DESCRIPTION:
@@ -210,7 +248,11 @@ ags_conversion_set_property(GObject *gobject,
 
       description = (gchar *) g_value_get_string(value);
 
+      pthread_mutex_lock(conversion_mutex);
+
       if(conversion->description == description){
+	pthread_mutex_unlock(conversion_mutex);
+
 	return;
       }
       
@@ -219,6 +261,8 @@ ags_conversion_set_property(GObject *gobject,
       }
 
       conversion->description = g_strdup(description);
+
+      pthread_mutex_unlock(conversion_mutex);
     }
     break;
   default:
@@ -235,14 +279,35 @@ ags_conversion_get_property(GObject *gobject,
 {
   AgsConversion *conversion;
 
+  pthread_mutex_t *conversion_mutex;
+  
   conversion = AGS_CONVERSION(gobject);
+
+  /* get conversion mutex */
+  pthread_mutex_lock(ags_conversion_get_class_mutex());
+  
+  conversion_mutex = conversion->obj_mutex;
+
+  pthread_mutex_unlock(ags_conversion_get_class_mutex());
 
   switch(prop_id){
   case PROP_NAME:
-    g_value_set_string(value, conversion->name);
+    {
+      pthread_mutex_lock(conversion_mutex);
+
+      g_value_set_string(value, conversion->name);
+
+      pthread_mutex_unlock(conversion_mutex);
+    }
     break;
   case PROP_DESCRIPTION:
-    g_value_set_string(value, conversion->description);
+    {
+      pthread_mutex_lock(conversion_mutex);
+
+      g_value_set_string(value, conversion->description);
+
+      pthread_mutex_unlock(conversion_mutex);
+    }
     break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
@@ -257,16 +322,40 @@ ags_conversion_finalize(GObject *gobject)
   
   conversion = AGS_CONVERSION(gobject);
 
+  /* conversion mutex */
+  pthread_mutexattr_destroy(conversion->obj_mutexattr);
+  free(conversion->obj_mutexattr);
+
+  pthread_mutex_destroy(conversion->obj_mutex);
+  free(conversion->obj_mutex);
+
+  /* name */
   if(conversion->name != NULL){
     g_free(conversion->name);
   }
 
+  /* description */
   if(conversion->description != NULL){
     g_free(conversion->description);
   }
 
   /* call parent */
   G_OBJECT_CLASS(ags_conversion_parent_class)->finalize(gobject);
+}
+
+/**
+ * ags_conversion_get_class_mutex:
+ * 
+ * Use this function's returned mutex to access mutex fields.
+ *
+ * Returns: the class mutex
+ * 
+ * Since: 2.0.0
+ */
+pthread_mutex_t*
+ags_conversion_get_class_mutex()
+{
+  return(&ags_conversion_class_mutex);
 }
 
 gdouble
@@ -288,7 +377,7 @@ ags_conversion_real_convert(AgsConversion *conversion,
  *
  * Returns: the converted value as gdouble
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 gdouble
 ags_conversion_convert(AgsConversion *conversion,
@@ -318,7 +407,7 @@ ags_conversion_convert(AgsConversion *conversion,
  *
  * Returns: the new instance
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsConversion*
 ags_conversion_new()

@@ -21,6 +21,7 @@
 
 #include <ags/audio/thread/ags_audio_loop.h>
 #include <ags/audio/thread/ags_soundcard_thread.h>
+#include <ags/audio/thread/ags_export_thread.h>
 
 #include <ags/i18n.h>
 
@@ -62,7 +63,7 @@ ags_start_soundcard_get_type()
   static volatile gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
-    GType ags_type_start_soundcard;
+    GType ags_type_start_soundcard = 0;
 
     static const GTypeInfo ags_start_soundcard_info = {
       sizeof(AgsStartSoundcardClass),
@@ -80,9 +81,11 @@ ags_start_soundcard_get_type()
 						      "AgsStartSoundcard",
 						      &ags_start_soundcard_info,
 						      0);
+
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_start_soundcard);
   }
-  
-  return(ags_type_start_soundcard);
+
+  return g_define_type_id__volatile;
 }
 
 void
@@ -248,6 +251,7 @@ ags_start_soundcard_launch(AgsTask *task)
 
   AgsThread *audio_loop;
   AgsThread *soundcard_thread;
+  AgsThread *export_thread;
 
   AgsApplicationContext *application_context;
 
@@ -260,27 +264,58 @@ ags_start_soundcard_launch(AgsTask *task)
 	       "main-loop", &audio_loop,
 	       NULL);
 
-  soundcard_thread = audio_loop;
+  soundcard_thread = ags_thread_find_type(audio_loop,
+					  AGS_TYPE_SOUNDCARD_THREAD);
   
-  while((soundcard_thread = ags_thread_find_type(soundcard_thread,
-						 AGS_TYPE_SOUNDCARD_THREAD)) != NULL){
-    GObject *soundcard;
+  while(soundcard_thread != NULL){
+    if(AGS_IS_SOUNDCARD_THREAD(soundcard_thread)){
+      GObject *soundcard;
     
-    g_message("start soundcard");
+      guint soundcard_capability;
 
-    g_object_get(soundcard_thread,
-		 "soundcard", &soundcard,
-		 NULL);
-    
-    AGS_SOUNDCARD_THREAD(soundcard_thread)->error = NULL;
-    ags_soundcard_play_init(AGS_SOUNDCARD(soundcard),
-			    &(AGS_SOUNDCARD_THREAD(soundcard_thread)->error));
-    
-    /* append soundcard thread */
-    ags_thread_add_start_queue(audio_loop,
-			       soundcard_thread);
+      g_message("start soundcard");
 
+      g_object_get(soundcard_thread,
+		   "soundcard", &soundcard,
+		   NULL);
+    
+      soundcard_capability = ags_soundcard_get_capability(AGS_SOUNDCARD(soundcard));
+
+      AGS_SOUNDCARD_THREAD(soundcard_thread)->error = NULL;
+
+      if(soundcard_capability == AGS_SOUNDCARD_CAPABILITY_PLAYBACK){
+	ags_soundcard_play_init(AGS_SOUNDCARD(soundcard),
+				&(AGS_SOUNDCARD_THREAD(soundcard_thread)->error));
+      }else if(soundcard_capability == AGS_SOUNDCARD_CAPABILITY_CAPTURE){
+	ags_soundcard_record_init(AGS_SOUNDCARD(soundcard),
+				  &(AGS_SOUNDCARD_THREAD(soundcard_thread)->error));
+      }
+    
+      /* append soundcard thread */
+      ags_thread_add_start_queue(audio_loop,
+				 soundcard_thread);
+    }
+    
     soundcard_thread = g_atomic_pointer_get(&(soundcard_thread->next));
+  }
+
+  export_thread = ags_thread_find_type(audio_loop,
+				       AGS_TYPE_EXPORT_THREAD);
+  
+  while(export_thread != NULL){
+    if(AGS_IS_EXPORT_THREAD(export_thread)){
+      GObject *export;
+    
+      guint export_capability;
+
+      g_message("start export");
+
+      /* append export thread */
+      ags_thread_add_start_queue(audio_loop,
+				 export_thread);
+    }
+    
+    export_thread = g_atomic_pointer_get(&(export_thread->next));
   }
 }
 

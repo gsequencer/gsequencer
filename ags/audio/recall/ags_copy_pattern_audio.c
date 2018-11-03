@@ -83,7 +83,7 @@ ags_copy_pattern_audio_get_type()
   static volatile gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
-    GType ags_type_copy_pattern_audio;
+    GType ags_type_copy_pattern_audio = 0;
 
     static const GTypeInfo ags_copy_pattern_audio_info = {
       sizeof(AgsCopyPatternAudioClass),
@@ -112,7 +112,7 @@ ags_copy_pattern_audio_get_type()
 				AGS_TYPE_PLUGIN,
 				&ags_plugin_interface_info);
 
-    g_once_init_leave (&g_define_type_id__volatile, ags_type_copy_pattern_audio);
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_copy_pattern_audio);
   }
 
   return g_define_type_id__volatile;
@@ -545,13 +545,13 @@ ags_copy_pattern_audio_new(AgsAudio *audio,
   /* apply bank index */
   value = g_new0(GValue,
 		 1);
-  g_value_init(value, G_TYPE_UINT64);
+  g_value_init(value, G_TYPE_FLOAT);
 
   g_object_get(copy_pattern_audio,
 	       "bank-index-0" , &port,
 	       NULL);
   
-  g_value_set_uint64(value, bank_index_0);
+  g_value_set_float(value, bank_index_0);
   ags_port_safe_write(port,
 		      value);
 
@@ -559,7 +559,8 @@ ags_copy_pattern_audio_new(AgsAudio *audio,
 	       "bank-index-1" , &port,
 	       NULL);
 
-  g_value_set_uint64(value, bank_index_1);
+  g_value_reset(value);
+  g_value_set_float(value, bank_index_1);
   ags_port_safe_write(copy_pattern_audio->bank_index_1,
 		      value);
 

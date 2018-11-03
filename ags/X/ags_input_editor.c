@@ -57,9 +57,11 @@ static gpointer ags_input_editor_parent_class = NULL;
 GType
 ags_input_editor_get_type(void)
 {
-  static GType ags_type_input_editor = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_input_editor){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_input_editor = 0;
+
     static const GTypeInfo ags_input_editor_info = {
       sizeof (AgsInputEditorClass),
       NULL, /* base_init */
@@ -95,9 +97,11 @@ ags_input_editor_get_type(void)
     g_type_add_interface_static(ags_type_input_editor,
 				AGS_TYPE_APPLICABLE,
 				&ags_applicable_interface_info);
+
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_input_editor);
   }
-  
-  return(ags_type_input_editor);
+
+  return g_define_type_id__volatile;
 }
 
 void
@@ -370,15 +374,20 @@ ags_input_editor_check(AgsInputEditor *input_editor)
 		       1, &input_soundcard,
 		       -1);
 
-    ags_soundcard_get_presets(AGS_SOUNDCARD(input_soundcard),
- 			      &audio_channels,
-			      NULL,
-			      NULL,
-			      NULL);
+    if(input_soundcard != NULL){
+      ags_soundcard_get_presets(AGS_SOUNDCARD(input_soundcard),
+				&audio_channels,
+				NULL,
+				NULL,
+				NULL);
 
-    gtk_spin_button_set_range(input_editor->audio_channel,
-			      0.0,
-			      audio_channels - 1.0);
+      gtk_spin_button_set_range(input_editor->audio_channel,
+				0.0,
+				audio_channels - 1.0);
+    }else{
+      gtk_spin_button_set_range(input_editor->audio_channel,
+				-1.0, -1.0);
+    }
   }else{
     gtk_spin_button_set_range(input_editor->audio_channel,
 			      -1.0, -1.0);

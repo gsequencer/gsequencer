@@ -67,7 +67,7 @@ ags_panel_input_pad_get_type()
   static volatile gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
-    GType ags_type_panel_input_pad;
+    GType ags_type_panel_input_pad = 0;
 
     static const GTypeInfo ags_panel_input_pad_info = {
       sizeof(AgsPanelInputPadClass),
@@ -105,7 +105,7 @@ ags_panel_input_pad_get_type()
 				AGS_TYPE_PLUGIN,
 				&ags_plugin_interface_info);
 
-    g_once_init_leave (&g_define_type_id__volatile, ags_type_panel_input_pad);
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_panel_input_pad);
   }
 
   return g_define_type_id__volatile;

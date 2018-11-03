@@ -78,7 +78,7 @@ ags_midi_dialog_get_type(void)
   static volatile gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
-    GType ags_type_midi_dialog;
+    GType ags_type_midi_dialog = 0;
 
     static const GTypeInfo ags_midi_dialog_info = {
       sizeof (AgsMidiDialogClass),
@@ -116,7 +116,7 @@ ags_midi_dialog_get_type(void)
 				AGS_TYPE_APPLICABLE,
 				&ags_applicable_interface_info);
 
-    g_once_init_leave (&g_define_type_id__volatile, ags_type_midi_dialog);
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_midi_dialog);
   }
 
   return g_define_type_id__volatile;
@@ -262,7 +262,7 @@ ags_midi_dialog_init(AgsMidiDialog *midi_dialog)
 		   GTK_WIDGET(label),
 		   0, 1,
 		   0, 1,
-		   GTK_FILL, GTK_FILL,
+		   GTK_FILL|GTK_EXPAND, GTK_FILL,
 		   0, 0);
   
   midi_dialog->audio_start = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0,
@@ -284,7 +284,7 @@ ags_midi_dialog_init(AgsMidiDialog *midi_dialog)
 		   GTK_WIDGET(label),
 		   0, 1,
 		   1, 2,
-		   GTK_FILL, GTK_FILL,
+		   GTK_FILL|GTK_EXPAND, GTK_FILL,
 		   0, 0);
   
   midi_dialog->audio_end = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0,
@@ -306,7 +306,7 @@ ags_midi_dialog_init(AgsMidiDialog *midi_dialog)
 		   GTK_WIDGET(label),
 		   0, 1,
 		   2, 3,
-		   GTK_FILL, GTK_FILL,
+		   GTK_FILL|GTK_EXPAND, GTK_FILL,
 		   0, 0);
   
   midi_dialog->midi_start = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0,
@@ -328,7 +328,7 @@ ags_midi_dialog_init(AgsMidiDialog *midi_dialog)
 		   GTK_WIDGET(label),
 		   0, 1,
 		   3, 4,
-		   GTK_FILL, GTK_FILL,
+		   GTK_FILL|GTK_EXPAND, GTK_FILL,
 		   0, 0);
   
   midi_dialog->midi_end = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0,
@@ -348,7 +348,7 @@ ags_midi_dialog_init(AgsMidiDialog *midi_dialog)
 		     FALSE, FALSE,
 		     0);
 
-  table = (GtkTable *) gtk_table_new(8, 2,
+  table = (GtkTable *) gtk_table_new(1, 2,
 				     FALSE);
   gtk_box_pack_start((GtkBox *) midi_dialog->device,
 		     GTK_WIDGET(table),
@@ -364,7 +364,7 @@ ags_midi_dialog_init(AgsMidiDialog *midi_dialog)
 		   GTK_WIDGET(label),
 		   0, 1,
 		   1, 2,
-		   GTK_FILL, GTK_FILL,
+		   GTK_FILL|GTK_EXPAND, GTK_FILL,
 		   0, 0);
   
   midi_dialog->midi_device = (GtkComboBoxText *) gtk_combo_box_text_new();
@@ -560,7 +560,7 @@ ags_midi_dialog_apply(AgsApplicable *applicable)
 	       "audio-end-mapping", gtk_spin_button_get_value_as_int(midi_dialog->audio_end),
 	       "midi-start-mapping", gtk_spin_button_get_value_as_int(midi_dialog->midi_start),
 	       "midi-end-mapping", gtk_spin_button_get_value_as_int(midi_dialog->midi_end),
-	       "sequencer", sequencer,
+	       "input-sequencer", sequencer,
 	       NULL);
 }
 
@@ -602,7 +602,7 @@ ags_midi_dialog_reset(AgsApplicable *applicable)
 	       "audio-end-mapping", &audio_end,
 	       "midi-start-mapping", &midi_start,
 	       "midi-end-mapping", &midi_end,
-	       "sequencer", &sequencer,
+	       "input-sequencer", &sequencer,
 	       NULL);
   
   /* mapping */

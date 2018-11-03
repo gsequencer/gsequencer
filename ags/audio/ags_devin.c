@@ -107,6 +107,7 @@ void ags_devin_pcm_info(AgsSoundcard *soundcard, gchar *card_id,
 			guint *rate_min, guint *rate_max,
 			guint *buffer_size_min, guint *buffer_size_max,
 			GError **error);
+guint ags_devin_get_capability(AgsSoundcard *soundcard);
 
 GList* ags_devin_get_poll_fd(AgsSoundcard *soundcard);
 gboolean ags_devin_is_available(AgsSoundcard *soundcard);
@@ -154,6 +155,11 @@ guint ags_devin_get_attack(AgsSoundcard *soundcard);
 void* ags_devin_get_buffer(AgsSoundcard *soundcard);
 void* ags_devin_get_next_buffer(AgsSoundcard *soundcard);
 void* ags_devin_get_prev_buffer(AgsSoundcard *soundcard);
+
+void ags_devin_lock_buffer(AgsSoundcard *soundcard,
+			   void *buffer);
+void ags_devin_unlock_buffer(AgsSoundcard *soundcard,
+			     void *buffer);
 
 guint ags_devin_get_delay_counter(AgsSoundcard *soundcard);
 
@@ -209,7 +215,7 @@ ags_devin_get_type (void)
   static volatile gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
-    GType ags_type_devin;
+    GType ags_type_devin = 0;
 
     static const GTypeInfo ags_devin_info = {
       sizeof(AgsDevinClass),
@@ -247,6 +253,8 @@ ags_devin_get_type (void)
     g_type_add_interface_static(ags_type_devin,
 				AGS_TYPE_SOUNDCARD,
 				&ags_soundcard_interface_info);
+
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_devin);
   }
 
   return g_define_type_id__volatile;
@@ -504,6 +512,7 @@ ags_devin_soundcard_interface_init(AgsSoundcardInterface *soundcard)
 
   soundcard->list_cards = ags_devin_list_cards;
   soundcard->pcm_info = ags_devin_pcm_info;
+  soundcard->get_capability = ags_devin_get_capability;
 
   soundcard->get_poll_fd = ags_devin_get_poll_fd;
   soundcard->is_available = ags_devin_is_available;
@@ -540,6 +549,9 @@ ags_devin_soundcard_interface_init(AgsSoundcardInterface *soundcard)
   soundcard->get_next_buffer = ags_devin_get_next_buffer;
   soundcard->get_prev_buffer = ags_devin_get_prev_buffer;
 
+  soundcard->lock_buffer = ags_devin_lock_buffer;
+  soundcard->unlock_buffer = ags_devin_unlock_buffer;
+
   soundcard->get_delay_counter = ags_devin_get_delay_counter;
 
   soundcard->set_note_offset = ags_devin_set_note_offset;
@@ -563,6 +575,7 @@ ags_devin_init(AgsDevin *devin)
   gchar *segmentation;
 
   guint denumerator, numerator;
+  guint i;
   gboolean use_alsa;  
   
   pthread_mutex_t *mutex;
@@ -646,6 +659,15 @@ ags_devin_init(AgsDevin *devin)
   }
 
   /* buffer */
+  devin->buffer_mutex = (pthread_mutex_t **) malloc(4 * sizeof(pthread_mutex_t *));
+
+  for(i = 0; i < 4; i++){
+    devin->buffer_mutex[i] = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
+
+    pthread_mutex_init(devin->buffer_mutex[i],
+		       NULL);
+  }
+
   devin->buffer = (void **) malloc(4 * sizeof(void*));
 
   devin->buffer[0] = NULL;
@@ -2040,6 +2062,12 @@ ags_devin_pcm_info(AgsSoundcard *soundcard,
   pthread_mutex_unlock(devin_mutex);
 }
 
+guint
+ags_devin_get_capability(AgsSoundcard *soundcard)
+{
+  return(AGS_SOUNDCARD_CAPABILITY_CAPTURE);
+}
+
 GList*
 ags_devin_get_poll_fd(AgsSoundcard *soundcard)
 {
@@ -2373,7 +2401,7 @@ ags_devin_oss_init(AgsSoundcard *soundcard,
       format = AFMT_U8;
 #endif
       
-      word_size = sizeof(signed char);
+      word_size = sizeof(gint8);
     }
     break;
   case AGS_SOUNDCARD_SIGNED_16_BIT:
@@ -2382,7 +2410,7 @@ ags_devin_oss_init(AgsSoundcard *soundcard,
       format = AFMT_S16_NE;
 #endif
       
-      word_size = sizeof(signed short);
+      word_size = sizeof(gint16);
     }
     break;
   case AGS_SOUNDCARD_SIGNED_24_BIT:
@@ -2391,7 +2419,7 @@ ags_devin_oss_init(AgsSoundcard *soundcard,
       format = AFMT_S24_NE;
 #endif
       
-      word_size = sizeof(signed long);
+      word_size = sizeof(gint32);
     }
     break;
   case AGS_SOUNDCARD_SIGNED_32_BIT:
@@ -2400,12 +2428,12 @@ ags_devin_oss_init(AgsSoundcard *soundcard,
       format = AFMT_S32_NE;
 #endif
       
-      word_size = sizeof(signed long);
+      word_size = sizeof(gint32);
     }
     break;
   case AGS_SOUNDCARD_SIGNED_64_BIT:
     {
-      word_size = sizeof(signed long long);
+      word_size = sizeof(gint64);
     }
   default:
     g_warning("ags_devin_oss_init(): unsupported word size");
@@ -2620,9 +2648,9 @@ ags_devin_oss_record(AgsSoundcard *soundcard,
     250,
   };
   
-  auto void ags_devin_oss_record_fill_ring_buffer(void *buffer, guint ags_format, unsigned char *ring_buffer, guint channels, guint buffer_size);
+  auto void ags_devin_oss_record_fill_buffer(void *buffer, guint ags_format, unsigned char *ring_buffer, guint channels, guint buffer_size);
 
-  void ags_devin_oss_record_fill_ring_buffer(void *buffer, guint ags_format, unsigned char *ring_buffer, guint channels, guint buffer_size){
+  void ags_devin_oss_record_fill_buffer(void *buffer, guint ags_format, unsigned char *ring_buffer, guint channels, guint buffer_size){
     int format_bits;
     guint word_size;
 
@@ -2664,39 +2692,41 @@ ags_devin_oss_record(AgsSoundcard *soundcard,
     /* fill the channel areas */
     for(count = 0; count < buffer_size; count++){
       for(chn = 0; chn < channels; chn++){
+	/* Generate data in native endian format */
+	res = 0;
+	
+	if(ags_endian_host_is_be()){
+	  for(i = 0; i < bps; i++){
+	    res |= (int) (*(ring_buffer + chn * bps + word_size - 1 - i)) << (i * 8);
+	  }
+	}else{
+	  for(i = 0; i < bps; i++){
+	    res |= (int) (*(ring_buffer + chn * bps + i)) << (i * 8);
+	  }
+	}	
+
 	switch(ags_format){
 	case AGS_SOUNDCARD_SIGNED_8_BIT:
 	  {
-	    res = (int) ((signed char *) buffer)[count * channels + chn];
+	    ((gint8 *) buffer)[count * channels + chn] = res;
 	  }
 	  break;
 	case AGS_SOUNDCARD_SIGNED_16_BIT:
 	  {
-	    res = (int) ((signed short *) buffer)[count * channels + chn];
+	    ((gint16 *) buffer)[count * channels + chn] = res;
 	  }
 	  break;
 	case AGS_SOUNDCARD_SIGNED_24_BIT:
 	  {
-	    res = (int) ((signed long *) buffer)[count * channels + chn];
+	    ((gint32 *) buffer)[count * channels + chn] = res;
 	  }
 	  break;
 	case AGS_SOUNDCARD_SIGNED_32_BIT:
 	  {
-	    res = (int) ((signed long *) buffer)[count * channels + chn];
+	    ((gint32 *) buffer)[count * channels + chn] = res;
 	  }
 	  break;
 	}
-	
-	/* Generate data in native endian format */
-	if(ags_endian_host_is_be()){
-	  for(i = 0; i < bps; i++){
-	    *(ring_buffer + chn * bps + word_size - 1 - i) = (res >> i * 8) & 0xff;
-	  }
-	}else{
-	  for(i = 0; i < bps; i++){
-	    *(ring_buffer + chn * bps + i) = (res >>  i * 8) & 0xff;
-	  }
-	}	
       }
 
       ring_buffer += channels * bps;
@@ -2712,12 +2742,11 @@ ags_devin_oss_record(AgsSoundcard *soundcard,
   
   pthread_mutex_unlock(ags_devin_get_class_mutex());
 
-  /* retrieve mutex */
-  application_context = ags_soundcard_get_application_context(soundcard);
-  
   /* lock */
   pthread_mutex_lock(devin_mutex);
 
+  application_context = devin->application_context;
+  
   notify_soundcard = AGS_NOTIFY_SOUNDCARD(devin->notify_soundcard);
   
   /* notify cyclic task */
@@ -2736,27 +2765,27 @@ ags_devin_oss_record(AgsSoundcard *soundcard,
   switch(devin->format){
   case AGS_SOUNDCARD_SIGNED_8_BIT:
     {
-      word_size = sizeof(signed char);
+      word_size = sizeof(gint8);
     }
     break;
   case AGS_SOUNDCARD_SIGNED_16_BIT:
     {
-      word_size = sizeof(signed short);
+      word_size = sizeof(gint16);
     }
     break;
   case AGS_SOUNDCARD_SIGNED_24_BIT:
     {
-      word_size = sizeof(signed long);
+      word_size = sizeof(gint32);
     }
     break;
   case AGS_SOUNDCARD_SIGNED_32_BIT:
     {
-      word_size = sizeof(signed long);
+      word_size = sizeof(gint32);
     }
     break;
   case AGS_SOUNDCARD_SIGNED_64_BIT:
     {
-      word_size = sizeof(signed long long);
+      word_size = sizeof(gint64);
     }
     //NOTE:JK: not available    break;
   default:
@@ -2784,14 +2813,7 @@ ags_devin_oss_record(AgsSoundcard *soundcard,
     nth_buffer = 3;
   }
 
-#ifdef AGS_WITH_OSS    
-  /* fill ring buffer */
-  ags_devin_oss_record_fill_ring_buffer(devin->buffer[nth_buffer],
-					devin->format,
-					devin->ring_buffer[devin->nth_ring_buffer],
-					devin->pcm_channels,
-					devin->buffer_size);
-
+#ifdef AGS_WITH_OSS
   /* wait until available */
   list = ags_soundcard_get_poll_fd(soundcard);
 
@@ -2814,6 +2836,19 @@ ags_devin_oss_record(AgsSoundcard *soundcard,
   n_write = read(devin->out.oss.device_fd,
 		 devin->ring_buffer[devin->nth_ring_buffer],
 		 devin->pcm_channels * devin->buffer_size * word_size * sizeof (char));
+
+  /* fill buffer */
+  ags_soundcard_lock_buffer(soundcard,
+			    devin->buffer[nth_buffer]);
+
+  ags_devin_oss_record_fill_buffer(devin->buffer[nth_buffer],
+				   devin->format,
+				   devin->ring_buffer[devin->nth_ring_buffer],
+				   devin->pcm_channels,
+				   devin->buffer_size);
+
+  ags_soundcard_unlock_buffer(soundcard,
+			      devin->buffer[nth_buffer]);
 
   g_atomic_int_set(&(devin->available),
 		   FALSE);
@@ -3004,6 +3039,12 @@ ags_devin_alsa_init(AgsSoundcard *soundcard,
   /* retrieve word size */
   pthread_mutex_lock(devin_mutex);
 
+  if(devin->out.alsa.device == NULL){
+    pthread_mutex_unlock(devin_mutex);
+    
+    return;
+  }
+
   switch(devin->format){
   case AGS_SOUNDCARD_SIGNED_8_BIT:
     {
@@ -3011,7 +3052,7 @@ ags_devin_alsa_init(AgsSoundcard *soundcard,
       format = SND_PCM_FORMAT_S8;
 #endif
 
-      word_size = sizeof(signed char);
+      word_size = sizeof(gint8);
     }
     break;
   case AGS_SOUNDCARD_SIGNED_16_BIT:
@@ -3020,7 +3061,7 @@ ags_devin_alsa_init(AgsSoundcard *soundcard,
       format = SND_PCM_FORMAT_S16;
 #endif
       
-      word_size = sizeof(signed short);
+      word_size = sizeof(gint16);
     }
     break;
   case AGS_SOUNDCARD_SIGNED_24_BIT:
@@ -3030,7 +3071,7 @@ ags_devin_alsa_init(AgsSoundcard *soundcard,
 #endif
       
       //NOTE:JK: The 24-bit linear samples use 32-bit physical space
-      word_size = sizeof(signed long);
+      word_size = sizeof(gint32);
     }
     break;
   case AGS_SOUNDCARD_SIGNED_32_BIT:
@@ -3039,12 +3080,12 @@ ags_devin_alsa_init(AgsSoundcard *soundcard,
       format = SND_PCM_FORMAT_S32;
 #endif
       
-      word_size = sizeof(signed long);
+      word_size = sizeof(gint32);
     }
     break;
   case AGS_SOUNDCARD_SIGNED_64_BIT:
     {
-      word_size = sizeof(signed long long);
+      word_size = sizeof(gint64);
     }
     break;
   default:
@@ -3055,11 +3096,11 @@ ags_devin_alsa_init(AgsSoundcard *soundcard,
     return;
   }
 
-  /* prepare for capture */
+  /* prepare for playback */
   devin->flags |= (AGS_DEVIN_BUFFER3 |
-		   AGS_DEVIN_START_RECORD |
-		   AGS_DEVIN_RECORD |
-		   AGS_DEVIN_NONBLOCKING);
+		    AGS_DEVIN_START_RECORD |
+		    AGS_DEVIN_RECORD |
+		    AGS_DEVIN_NONBLOCKING);
 
   memset(devin->buffer[0], 0, devin->pcm_channels * devin->buffer_size * word_size);
   memset(devin->buffer[1], 0, devin->pcm_channels * devin->buffer_size * word_size);
@@ -3075,31 +3116,40 @@ ags_devin_alsa_init(AgsSoundcard *soundcard,
 
   for(i = 0; i < devin->ring_buffer_size; i++){
     devin->ring_buffer[i] = (unsigned char *) malloc(devin->pcm_channels *
-						     devin->buffer_size * (snd_pcm_format_physical_width(format) / 8) *
-						     sizeof(unsigned char));
+						      devin->buffer_size * (snd_pcm_format_physical_width(format) / 8) *
+						      sizeof(unsigned char));
   }
  
   /*  */
   period_event = 0;
   
-  /* Open PCM device for capture. */
-  if ((err = snd_pcm_open(&handle, devin->out.alsa.device, SND_PCM_STREAM_CAPTURE, 0)) < 0) {
-    pthread_mutex_unlock(devin_mutex);
+  /* Open PCM device for playback. */  
+  handle = NULL;
 
-    str = snd_strerror(err);
-    g_warning("Capture open error: %s", str);
-
-    if(error != NULL){
-      g_set_error(error,
-		  AGS_DEVIN_ERROR,
-		  AGS_DEVIN_ERROR_LOCKED_SOUNDCARD,
-		  "unable to open pcm device: %s",
-		  str);
-    }
+  if((err = snd_pcm_open(&handle, devin->out.alsa.device, SND_PCM_STREAM_CAPTURE, 0)) < 0){
+    gchar *device_fixup;
     
-    //    free(str);
+    str = snd_strerror(err);
+    g_warning("Playback open error (attempting fixup): %s", str);
+    
+    device_fixup = g_strdup_printf("%s,0",
+				   devin->out.alsa.device);
 
-    return;
+    handle = NULL;
+    
+    if((err = snd_pcm_open(&handle, device_fixup, SND_PCM_STREAM_CAPTURE, 0)) < 0){
+      pthread_mutex_unlock(devin_mutex);
+      
+      if(error != NULL){
+	g_set_error(error,
+		    AGS_DEVIN_ERROR,
+		    AGS_DEVIN_ERROR_LOCKED_SOUNDCARD,
+		    "unable to open pcm device: %s",
+		    str);
+      }
+      
+      return;
+    }
   }
 
   snd_pcm_hw_params_alloca(&hwparams);
@@ -3112,7 +3162,7 @@ ags_devin_alsa_init(AgsSoundcard *soundcard,
     pthread_mutex_unlock(devin_mutex);
 
     str = snd_strerror(err);
-    g_warning("Broken configuration for capture: no configurations available: %s", str);
+    g_warning("Broken configuration for playback: no configurations available: %s", str);
 
     if(error != NULL){
       g_set_error(error,
@@ -3135,7 +3185,7 @@ ags_devin_alsa_init(AgsSoundcard *soundcard,
      pthread_mutex_unlock(devin_mutex);
 
      str = snd_strerror(err);
-     g_warning("Resampling setup failed for capture: %s\n", str);
+     g_warning("Resampling setup failed for playback: %s\n", str);
 
      //    free(str);
     
@@ -3149,7 +3199,7 @@ ags_devin_alsa_init(AgsSoundcard *soundcard,
     pthread_mutex_unlock(devin_mutex);
 
     str = snd_strerror(err);
-    g_warning("Access type not available for capture: %s", str);
+    g_warning("Access type not available for playback: %s", str);
 
     if(error != NULL){
       g_set_error(error,
@@ -3172,7 +3222,7 @@ ags_devin_alsa_init(AgsSoundcard *soundcard,
     pthread_mutex_unlock(devin_mutex);
 
     str = snd_strerror(err);
-    g_warning("Sample format not available for capture: %s", str);
+    g_warning("Sample format not available for playback: %s", str);
 
     if(error != NULL){
       g_set_error(error,
@@ -3196,7 +3246,7 @@ ags_devin_alsa_init(AgsSoundcard *soundcard,
     pthread_mutex_unlock(devin_mutex);
 
     str = snd_strerror(err);
-    g_warning("Channels count (%i) not available for capture: %s", channels, str);
+    g_warning("Channels count (%i) not available for playbacks: %s", channels, str);
 
     if(error != NULL){
       g_set_error(error,
@@ -3221,7 +3271,7 @@ ags_devin_alsa_init(AgsSoundcard *soundcard,
     pthread_mutex_unlock(devin_mutex);
 
     str = snd_strerror(err);
-    g_warning("Rate %iHz not available for capture: %s", rate, str);
+    g_warning("Rate %iHz not available for playback: %s", rate, str);
 
     if(error != NULL){
       g_set_error(error,
@@ -3262,7 +3312,7 @@ ags_devin_alsa_init(AgsSoundcard *soundcard,
     pthread_mutex_unlock(devin_mutex);
 
     str = snd_strerror(err);
-    g_warning("Unable to set buffer size %lu for capture: %s", size, str);
+    g_warning("Unable to set buffer size %lu for playback: %s", size, str);
 
     if(error != NULL){
       g_set_error(error,
@@ -3286,7 +3336,7 @@ ags_devin_alsa_init(AgsSoundcard *soundcard,
      pthread_mutex_unlock(devin_mutex);
 
      str = snd_strerror(err);
-     g_warning("Unable to get period size for capture: %s\n", str);
+     g_warning("Unable to get period size for playback: %s\n", str);
 
      //    free(str);
     
@@ -3296,11 +3346,12 @@ ags_devin_alsa_init(AgsSoundcard *soundcard,
   
   /* write the parameters to device */
   err = snd_pcm_hw_params(handle, hwparams);
+
   if (err < 0) {
     pthread_mutex_unlock(devin_mutex);
 
     str = snd_strerror(err);
-    g_warning("Unable to set hw params for capture: %s", str);
+    g_warning("Unable to set hw params for playback: %s", str);
 
     if(error != NULL){
       g_set_error(error,
@@ -3323,7 +3374,7 @@ ags_devin_alsa_init(AgsSoundcard *soundcard,
      pthread_mutex_unlock(devin_mutex);
 
      str = snd_strerror(err);
-     g_warning("Unable to determine current swparams for capture: %s\n", str);
+     g_warning("Unable to determine current swparams for playback: %s\n", str);
 
      //    free(str);
     
@@ -3337,7 +3388,7 @@ ags_devin_alsa_init(AgsSoundcard *soundcard,
      pthread_mutex_unlock(devin_mutex);
 
      str = snd_strerror(err);
-     g_warning("Unable to set start threshold mode for capture: %s\n", str);
+     g_warning("Unable to set start threshold mode for playback: %s\n", str);
     
      //    free(str);
     
@@ -3351,20 +3402,20 @@ ags_devin_alsa_init(AgsSoundcard *soundcard,
      pthread_mutex_unlock(devin_mutex);
 
      str = snd_strerror(err);
-     g_warning("Unable to set avail min for capture: %s\n", str);
+     g_warning("Unable to set avail min for playback: %s\n", str);
 
      //    free(str);
     
      return;
      }
 
-     /* write the parameters to the capture device * /
+     /* write the parameters to the playback device * /
      err = snd_pcm_sw_params(handle, swparams);
      if (err < 0) {
      pthread_mutex_unlock(devin_mutex);
 
      str = snd_strerror(err);
-     g_warning("Unable to set sw params for capture: %s\n", str);
+     g_warning("Unable to set sw params for playback: %s\n", str);
 
      //    free(str);
     
@@ -3389,8 +3440,8 @@ ags_devin_alsa_init(AgsSoundcard *soundcard,
 #endif
   devin->flags |= AGS_DEVIN_BUFFER0;
   devin->flags &= (~(AGS_DEVIN_BUFFER1 |
-		     AGS_DEVIN_BUFFER2 |
-		     AGS_DEVIN_BUFFER3));
+		      AGS_DEVIN_BUFFER2 |
+		      AGS_DEVIN_BUFFER3));
   
   pthread_mutex_unlock(devin_mutex);
 }
@@ -3427,9 +3478,9 @@ ags_devin_alsa_record(AgsSoundcard *soundcard,
   };
   
 #ifdef AGS_WITH_ALSA
-  auto void ags_devin_alsa_record_fill_ring_buffer(void *buffer, guint ags_format, unsigned char *ring_buffer, guint channels, guint buffer_size);
+  auto void ags_devin_alsa_record_fill_buffer(void *buffer, guint ags_format, unsigned char *ring_buffer, guint channels, guint buffer_size);
 
-  void ags_devin_alsa_record_fill_ring_buffer(void *buffer, guint ags_format, unsigned char *ring_buffer, guint channels, guint buffer_size){
+  void ags_devin_alsa_record_fill_buffer(void *buffer, guint ags_format, unsigned char *ring_buffer, guint channels, guint buffer_size){
     snd_pcm_format_t format;
 
     int format_bits;
@@ -3486,42 +3537,44 @@ ags_devin_alsa_record(AgsSoundcard *soundcard,
 
     /* fill the channel areas */
     for(count = 0; count < buffer_size; count++){
-      for(chn = 0; chn < channels; chn++){
+      for(chn = 0; chn < channels; chn++){	
+	/* Generate data in native endian format */
+	res = 0;
+	
+	if (big_endian) {
+	  for (i = 0; i < bps; i++)
+	    res |= (int) (*(ring_buffer + chn * bps + phys_bps - 1 - i) << (i * 8));
+	} else {
+	  for (i = 0; i < bps; i++)
+	    res |= (int) (*(ring_buffer + chn * bps + i) << (i * 8));
+	}	
+
+	if(to_unsigned){
+	  res |= 1U << (format_bits - 1);
+	}
+	
 	switch(ags_format){
 	case AGS_SOUNDCARD_SIGNED_8_BIT:
 	  {
-	    res = (int) ((signed char *) buffer)[count * channels + chn];
+	    ((gint8 *) buffer)[count * channels + chn] = res;
 	  }
 	  break;
 	case AGS_SOUNDCARD_SIGNED_16_BIT:
 	  {
-	    res = (int) ((signed short *) buffer)[count * channels + chn];
+	    ((gint16 *) buffer)[count * channels + chn] = res;
 	  }
 	  break;
 	case AGS_SOUNDCARD_SIGNED_24_BIT:
 	  {
-	    res = (int) ((signed long *) buffer)[count * channels + chn];
+	    ((gint32 *) buffer)[count * channels + chn] = res;
 	  }
 	  break;
 	case AGS_SOUNDCARD_SIGNED_32_BIT:
 	  {
-	    res = (int) ((signed long *) buffer)[count * channels + chn];
+	    ((gint32 *) buffer)[count * channels + chn] = res;
 	  }
 	  break;
 	}
-
-	if(to_unsigned){
-	  res ^= 1U << (format_bits - 1);
-	}
-	
-	/* Generate data in native endian format */
-	if (big_endian) {
-	  for (i = 0; i < bps; i++)
-	    *(ring_buffer + chn * bps + phys_bps - 1 - i) = (res >> i * 8) & 0xff;
-	} else {
-	  for (i = 0; i < bps; i++)
-	    *(ring_buffer + chn * bps + i) = (res >>  i * 8) & 0xff;
-	}	
       }
 
       ring_buffer += channels * bps;
@@ -3540,7 +3593,8 @@ ags_devin_alsa_record(AgsSoundcard *soundcard,
 
   /* lock */
   pthread_mutex_lock(devin_mutex);
-
+  
+  application_context = devin->application_context;
   notify_soundcard = AGS_NOTIFY_SOUNDCARD(devin->notify_soundcard);
 
   /* notify cyclic task */
@@ -3559,27 +3613,27 @@ ags_devin_alsa_record(AgsSoundcard *soundcard,
   switch(devin->format){
   case AGS_SOUNDCARD_SIGNED_8_BIT:
     {
-      word_size = sizeof(signed char);
+      word_size = sizeof(gint8);
     }
     break;
   case AGS_SOUNDCARD_SIGNED_16_BIT:
     {
-      word_size = sizeof(signed short);
+      word_size = sizeof(gint16);
     }
     break;
   case AGS_SOUNDCARD_SIGNED_24_BIT:
     {
-      word_size = sizeof(signed long);
+      word_size = sizeof(gint32);
     }
     break;
   case AGS_SOUNDCARD_SIGNED_32_BIT:
     {
-      word_size = sizeof(signed long);
+      word_size = sizeof(gint32);
     }
     break;
   case AGS_SOUNDCARD_SIGNED_64_BIT:
     {
-      word_size = sizeof(signed long long);
+      word_size = sizeof(gint64);
     }
     break;
   default:
@@ -3616,15 +3670,10 @@ ags_devin_alsa_record(AgsSoundcard *soundcard,
   }
 
 #ifdef AGS_WITH_ALSA
-
-  /* fill ring buffer */
-  ags_devin_alsa_record_fill_ring_buffer(devin->buffer[nth_buffer], devin->format,
-					 devin->ring_buffer[devin->nth_ring_buffer],
-					 devin->pcm_channels, devin->buffer_size);
-
   /* wait until available */
   list = ags_soundcard_get_poll_fd(soundcard);
 
+#if 0
   if(!ags_soundcard_is_available(soundcard) &&
      !g_atomic_int_get(&(devin->available)) &&
      list != NULL){
@@ -3639,12 +3688,25 @@ ags_devin_alsa_record(AgsSoundcard *soundcard,
 	    NULL);
     }
   }
+#endif
   
   /* write ring buffer */
   devin->out.alsa.rc = snd_pcm_readi(devin->out.alsa.handle,
 				     devin->ring_buffer[devin->nth_ring_buffer],
 				     (snd_pcm_uframes_t) (devin->buffer_size));
 
+
+  /* fill buffer */
+  ags_soundcard_lock_buffer(soundcard,
+			    devin->buffer[nth_buffer]);
+  
+  ags_devin_alsa_record_fill_buffer(devin->buffer[nth_buffer], devin->format,
+				    devin->ring_buffer[devin->nth_ring_buffer],
+				    devin->pcm_channels, devin->buffer_size);
+
+  ags_soundcard_unlock_buffer(soundcard,
+			      devin->buffer[nth_buffer]);
+  
   g_atomic_int_set(&(devin->available),
 		   FALSE);
   
@@ -3732,8 +3794,6 @@ ags_devin_alsa_free(AgsSoundcard *soundcard)
 
   AgsNotifySoundcard *notify_soundcard;
 
-  AgsMutexManager *mutex_manager;
-
   AgsApplicationContext *application_context;
 
   GList *poll_fd;
@@ -3773,14 +3833,15 @@ ags_devin_alsa_free(AgsSoundcard *soundcard)
 
   notify_soundcard = AGS_NOTIFY_SOUNDCARD(devin->notify_soundcard);
 
-  if((AGS_DEVIN_INITIALIZED & (devin->flags)) == 0){
+  if((AGS_DEVIN_INITIALIZED & (devin->flags)) == 0 ||
+     devin->out.alsa.handle == NULL){
     pthread_mutex_unlock(devin_mutex);
     
     return;
   }
   
 #ifdef AGS_WITH_ALSA
-  snd_pcm_drain(devin->out.alsa.handle);
+  //  snd_pcm_drain(devin->out.alsa.handle);
   snd_pcm_close(devin->out.alsa.handle);
   devin->out.alsa.handle = NULL;
 #endif
@@ -4197,6 +4258,64 @@ ags_devin_get_prev_buffer(AgsSoundcard *soundcard)
   }
 
   return(buffer);
+}
+
+void
+ags_devin_lock_buffer(AgsSoundcard *soundcard,
+		       void *buffer)
+{
+  AgsDevin *devin;
+
+  pthread_mutex_t *buffer_mutex;
+  
+  devin = AGS_DEVIN(soundcard);
+
+  buffer_mutex = NULL;
+
+  if(devin->buffer != NULL){
+    if(buffer == devin->buffer[0]){
+      buffer_mutex = devin->buffer_mutex[0];
+    }else if(buffer == devin->buffer[1]){
+      buffer_mutex = devin->buffer_mutex[1];
+    }else if(buffer == devin->buffer[2]){
+      buffer_mutex = devin->buffer_mutex[2];
+    }else if(buffer == devin->buffer[3]){
+      buffer_mutex = devin->buffer_mutex[3];
+    }
+  }
+  
+  if(buffer_mutex != NULL){
+    pthread_mutex_lock(buffer_mutex);
+  }
+}
+
+void
+ags_devin_unlock_buffer(AgsSoundcard *soundcard,
+			 void *buffer)
+{
+  AgsDevin *devin;
+
+  pthread_mutex_t *buffer_mutex;
+  
+  devin = AGS_DEVIN(soundcard);
+
+  buffer_mutex = NULL;
+
+  if(devin->buffer != NULL){
+    if(buffer == devin->buffer[0]){
+      buffer_mutex = devin->buffer_mutex[0];
+    }else if(buffer == devin->buffer[1]){
+      buffer_mutex = devin->buffer_mutex[1];
+    }else if(buffer == devin->buffer[2]){
+      buffer_mutex = devin->buffer_mutex[2];
+    }else if(buffer == devin->buffer[3]){
+      buffer_mutex = devin->buffer_mutex[3];
+    }
+  }
+
+  if(buffer_mutex != NULL){
+    pthread_mutex_unlock(buffer_mutex);
+  }
 }
 
 guint

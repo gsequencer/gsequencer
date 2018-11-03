@@ -87,7 +87,7 @@ ags_pattern_box_get_type(void)
   static volatile gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
-    GType ags_type_pattern_box;
+    GType ags_type_pattern_box = 0;
 
     static const GTypeInfo ags_pattern_box_info = {
       sizeof(AgsPatternBoxClass),
@@ -115,7 +115,7 @@ ags_pattern_box_get_type(void)
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
 
-    g_once_init_leave (&g_define_type_id__volatile, ags_type_pattern_box);
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_pattern_box);
   }
 
   return g_define_type_id__volatile;
@@ -702,7 +702,7 @@ ags_accessible_pattern_box_get_localized_name(AtkAction *action,
  *
  * Resets the pattern on @pattern_box.
  *
- * since: 1.0.0
+ * since: 2.0.0
  */
 void
 ags_pattern_box_set_pattern(AgsPatternBox *pattern_box)
@@ -796,7 +796,7 @@ ags_pattern_box_set_pattern(AgsPatternBox *pattern_box)
  *
  * Returns: %TRUE if continue timeout, otherwise %FALSE
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 gboolean
 ags_pattern_box_led_queue_draw_timeout(AgsPatternBox *pattern_box)

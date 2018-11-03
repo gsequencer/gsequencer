@@ -71,7 +71,7 @@ ags_export_window_get_type()
   static volatile gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
-    GType ags_type_export_window;
+    GType ags_type_export_window = 0;
 
     static const GTypeInfo ags_export_window_info = {
       sizeof (AgsExportWindowClass),
@@ -99,7 +99,7 @@ ags_export_window_get_type()
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
 
-    g_once_init_leave (&g_define_type_id__volatile, ags_type_export_window);
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_export_window);
   }
 
   return g_define_type_id__volatile;
@@ -597,81 +597,87 @@ ags_export_window_reload_soundcard_editor(AgsExportWindow *export_window)
 
   /* create export soundcard */
   for(i = 0; list != NULL; i++){
-    /* create GtkHBox */
-    hbox = (GtkHBox *) gtk_hbox_new(FALSE,
-				    0);
-    gtk_box_pack_start((GtkBox *) export_window->export_soundcard,
-		       (GtkWidget *) hbox,
-		       FALSE, FALSE,
-		       0);
-    
-    /* instantiate export soundcard */
-    export_soundcard = (AgsExportSoundcard *) g_object_new(AGS_TYPE_EXPORT_SOUNDCARD,
-							   "soundcard", list->data,
-							   NULL);
-    gtk_box_pack_start((GtkBox *) hbox,
-		       (GtkWidget *) export_soundcard,
-		       FALSE, FALSE,
-		       0);
-    ags_connectable_connect(AGS_CONNECTABLE(export_soundcard));
-    
-    /* remove button */
-    alignment = (GtkAlignment *) gtk_alignment_new(0.5, 1.0,
-						   0.0, 0.0);
-    gtk_box_pack_start((GtkBox *) hbox,
-		       (GtkWidget *) alignment,
-		       FALSE, FALSE,
-		       0);
-    
-    remove_button = (GtkButton *) gtk_button_new_from_stock(GTK_STOCK_REMOVE);
-    gtk_container_add((GtkContainer *) alignment,
-		      (GtkWidget *) remove_button);
-    
-    g_signal_connect(G_OBJECT(remove_button), "clicked",
-		     G_CALLBACK(ags_export_window_remove_export_soundcard_callback), export_window);
-    
-    /* set backend */
-    backend = NULL;
+    guint soundcard_capability;
 
-    if(AGS_IS_DEVOUT(list->data)){
-      if(ags_devout_test_flags(AGS_DEVOUT(list->data), AGS_DEVOUT_ALSA)){
-	backend = "alsa";
-      }else if(ags_devout_test_flags(AGS_DEVOUT(list->data), AGS_DEVOUT_OSS)){
-	backend = "oss";
+    soundcard_capability = ags_soundcard_get_capability(AGS_SOUNDCARD(list->data));
+    
+    if(soundcard_capability == AGS_SOUNDCARD_CAPABILITY_PLAYBACK){
+      /* create GtkHBox */
+      hbox = (GtkHBox *) gtk_hbox_new(FALSE,
+				      0);
+      gtk_box_pack_start((GtkBox *) export_window->export_soundcard,
+			 (GtkWidget *) hbox,
+			 FALSE, FALSE,
+			 0);
+    
+      /* instantiate export soundcard */
+      export_soundcard = (AgsExportSoundcard *) g_object_new(AGS_TYPE_EXPORT_SOUNDCARD,
+							     "soundcard", list->data,
+							     NULL);
+      gtk_box_pack_start((GtkBox *) hbox,
+			 (GtkWidget *) export_soundcard,
+			 FALSE, FALSE,
+			 0);
+      ags_connectable_connect(AGS_CONNECTABLE(export_soundcard));
+    
+      /* remove button */
+      alignment = (GtkAlignment *) gtk_alignment_new(0.5, 1.0,
+						     0.0, 0.0);
+      gtk_box_pack_start((GtkBox *) hbox,
+			 (GtkWidget *) alignment,
+			 FALSE, FALSE,
+			 0);
+    
+      remove_button = (GtkButton *) gtk_button_new_from_stock(GTK_STOCK_REMOVE);
+      gtk_container_add((GtkContainer *) alignment,
+			(GtkWidget *) remove_button);
+    
+      g_signal_connect(G_OBJECT(remove_button), "clicked",
+		       G_CALLBACK(ags_export_window_remove_export_soundcard_callback), export_window);
+    
+      /* set backend */
+      backend = NULL;
+
+      if(AGS_IS_DEVOUT(list->data)){
+	if(ags_devout_test_flags(AGS_DEVOUT(list->data), AGS_DEVOUT_ALSA)){
+	  backend = "alsa";
+	}else if(ags_devout_test_flags(AGS_DEVOUT(list->data), AGS_DEVOUT_OSS)){
+	  backend = "oss";
+	}
+      }else if(AGS_IS_JACK_DEVOUT(list->data)){
+	backend = "jack";
+      }else if(AGS_IS_PULSE_DEVOUT(list->data)){
+	backend = "pulse";
+      }else if(AGS_IS_CORE_AUDIO_DEVOUT(list->data)){
+	backend = "core-audio";
       }
-    }else if(AGS_IS_JACK_DEVOUT(list->data)){
-      backend = "jack";
-    }else if(AGS_IS_PULSE_DEVOUT(list->data)){
-      backend = "pulse";
-    }else if(AGS_IS_CORE_AUDIO_DEVOUT(list->data)){
-      backend = "core-audio";
+
+      ags_export_soundcard_set_backend(export_soundcard,
+				       backend);
+      ags_export_soundcard_refresh_card(export_soundcard);
+    
+      /* set card */
+      str = ags_soundcard_get_device(AGS_SOUNDCARD(list->data));
+
+      ags_export_soundcard_set_card(export_soundcard,
+				    str);
+
+      /* filename */
+      str = g_strdup_printf("out-%d.wav",
+			    i);
+    
+      ags_export_soundcard_set_filename(export_soundcard,
+					str);
+    
+      g_free(str);
+
+      /* set format */
+      ags_export_soundcard_set_format(export_soundcard,
+				      AGS_EXPORT_SOUNDCARD_FORMAT_WAV);
+
+      /* show all */
+      gtk_widget_show_all((GtkWidget *) hbox);
     }
-
-    ags_export_soundcard_set_backend(export_soundcard,
-				     backend);
-    ags_export_soundcard_refresh_card(export_soundcard);
-    
-    /* set card */
-    str = ags_soundcard_get_device(AGS_SOUNDCARD(list->data));
-
-    ags_export_soundcard_set_card(export_soundcard,
-				  str);
-
-    /* filename */
-    str = g_strdup_printf("out-%d.wav",
-			  i);
-    
-    ags_export_soundcard_set_filename(export_soundcard,
-				      str);
-    
-    g_free(str);
-
-    /* set format */
-    ags_export_soundcard_set_format(export_soundcard,
-				    AGS_EXPORT_SOUNDCARD_FORMAT_WAV);
-
-    /* show all */
-    gtk_widget_show_all((GtkWidget *) hbox);
     
     /* iterate */
     list = list->next;

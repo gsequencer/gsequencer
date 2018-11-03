@@ -26,3 +26,21 @@ Third-party files of Ulrich Drepper (gettext) all-permissive licensed, copyright
 * en@quot.header
 * en@boldquot.header
 * insert-header.sin
+
+All files listed:
+
+* '*.po' (FIXME:JK: unsure)
+* ChangeLog (see above)
+* Makefile.in.in (see above)
+* Makevars (see above)
+* Makevars.template (see above)
+* POTFILES.in (see above)
+* Rules-quot (see above)
+* boldquot.sed (see above)
+* en@boldquot.header (see above)
+* en@quot.header (see above)
+* gsequencer.pot (Copyright (C) 2005-2018 Joël Krähemann, GPLv3+)
+* insert-header.sin (see above)
+* quot.sed (see above)
+* remove-potcdate.sin (see above)
+* stamp-po (see above)

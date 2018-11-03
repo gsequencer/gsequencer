@@ -88,7 +88,7 @@ ags_drum_get_type(void)
   static volatile gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
-    GType ags_type_drum;
+    GType ags_type_drum = 0;
 
     static const GTypeInfo ags_drum_info = {
       sizeof(AgsDrumClass),
@@ -126,7 +126,7 @@ ags_drum_get_type(void)
 				AGS_TYPE_PLUGIN,
 				&ags_plugin_interface_info);
 
-    g_once_init_leave (&g_define_type_id__volatile, ags_type_drum);
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_drum);
   }
 
   return g_define_type_id__volatile;
@@ -207,7 +207,8 @@ ags_drum_init(AgsDrum *drum)
 			      AGS_AUDIO_OUTPUT_HAS_RECYCLING |
 			      AGS_AUDIO_INPUT_HAS_RECYCLING |
 			      AGS_AUDIO_INPUT_HAS_FILE));
-  ags_audio_set_ability_flags(audio, (AGS_SOUND_ABILITY_SEQUENCER |
+  ags_audio_set_ability_flags(audio, (AGS_SOUND_ABILITY_PLAYBACK |
+				      AGS_SOUND_ABILITY_SEQUENCER |
 				      AGS_SOUND_ABILITY_NOTATION));
   ags_audio_set_behaviour_flags(audio, (AGS_SOUND_BEHAVIOUR_PATTERN_MODE |
 					AGS_SOUND_BEHAVIOUR_REVERSE_MAPPING |

@@ -183,7 +183,7 @@ static guint recall_signals[LAST_SIGNAL];
 
 static pthread_mutex_t ags_recall_class_mutex = PTHREAD_MUTEX_INITIALIZER;
 
-static gboolean ags_recall_global_children_lock_free = TRUE;
+static gboolean ags_recall_global_children_lock_free = FALSE;
 static gboolean ags_recall_global_omit_event = TRUE;
 static gboolean ags_recall_global_performance_mode = FALSE;
 static gboolean ags_recall_global_rt_safe = FALSE;
@@ -194,8 +194,8 @@ ags_recall_get_type(void)
   static volatile gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
-    GType ags_type_recall;
-    
+    GType ags_type_recall = 0;
+
     static const GTypeInfo ags_recall_info = {
       sizeof(AgsRecallClass),
       NULL, /* base_init */
@@ -233,7 +233,7 @@ ags_recall_get_type(void)
 				AGS_TYPE_PLUGIN,
 				&ags_plugin_interface_info);
 
-    g_once_init_leave (&g_define_type_id__volatile, ags_type_recall);
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_recall);
   }
 
   return g_define_type_id__volatile;
@@ -3110,7 +3110,7 @@ ags_recall_get_sound_scope(AgsRecall *recall)
   pthread_mutex_t *recall_mutex;
 
   if(!AGS_IS_RECALL(recall)){
-    return;
+    return(-1);
   }
 
   /* get recall mutex */
@@ -3351,11 +3351,11 @@ ags_recall_set_staging_flags(AgsRecall *recall, guint staging_flags)
 #endif
   
   /* apply flags */
-  pthread_mutex_lock(ags_recall_get_class_mutex());
+  pthread_mutex_lock(recall_mutex);
 
   recall->staging_flags |= staging_flags;
 
-  pthread_mutex_unlock(ags_recall_get_class_mutex());
+  pthread_mutex_unlock(recall_mutex);
 }
 
 /**
@@ -3929,8 +3929,8 @@ ags_recall_add_child(AgsRecall *parent, AgsRecall *child)
 	       "recall_id", parent->recall_id,
 	       NULL);
 
-  g_signal_connect(G_OBJECT(child), "done",
-		   G_CALLBACK(ags_recall_child_done), parent);
+  g_signal_connect_after(G_OBJECT(child), "done",
+			 G_CALLBACK(ags_recall_child_done), parent);
 
   ags_recall_child_added(parent,
 			 child);
@@ -4489,7 +4489,7 @@ ags_recall_real_run_init_pre(AgsRecall *recall)
 
   if(!children_lock_free){
     list =
-      list_start = g_list_copy(recall->children);
+      list_start = ags_list_util_copy_and_ref(recall->children);
   }else{
     list = recall->children;
   }
@@ -4507,7 +4507,8 @@ ags_recall_real_run_init_pre(AgsRecall *recall)
   }
 
   if(!children_lock_free){
-    g_list_free(list_start);
+    g_list_free_full(list_start,
+		     g_object_unref);
   }
 }
 
@@ -4561,7 +4562,7 @@ ags_recall_real_run_init_inter(AgsRecall *recall)
 
   if(!children_lock_free){
     list =
-      list_start = g_list_copy(recall->children);
+      list_start = ags_list_util_copy_and_ref(recall->children);
   }else{
     list = recall->children;
   }
@@ -4579,7 +4580,8 @@ ags_recall_real_run_init_inter(AgsRecall *recall)
   }
 
   if(!children_lock_free){
-    g_list_free(list_start);
+    g_list_free_full(list_start,
+		     g_object_unref);
   }
 }
 
@@ -4633,7 +4635,7 @@ ags_recall_real_run_init_post(AgsRecall *recall)
 
   if(!children_lock_free){
     list =
-      list_start = g_list_copy(recall->children);
+      list_start = ags_list_util_copy_and_ref(recall->children);
   }else{
     list = recall->children;
   }
@@ -4651,7 +4653,8 @@ ags_recall_real_run_init_post(AgsRecall *recall)
   }
 
   if(!children_lock_free){
-    g_list_free(list_start);
+    g_list_free_full(list_start,
+		     g_object_unref);
   }
   
   /* set active */
@@ -4713,7 +4716,7 @@ ags_recall_real_feed_input_queue(AgsRecall *recall)
 
   if(!children_lock_free){
     list =
-      list_start = g_list_copy(recall->children);
+      list_start = ags_list_util_copy_and_ref(recall->children);
   }else{
     list = recall->children;
   }
@@ -4731,7 +4734,8 @@ ags_recall_real_feed_input_queue(AgsRecall *recall)
   }
 
   if(!children_lock_free){
-    g_list_free(list_start);
+    g_list_free_full(list_start,
+		     g_object_unref);
   }
 }
 
@@ -4784,7 +4788,7 @@ ags_recall_real_automate(AgsRecall *recall)
   }
 
   list =
-    list_start = g_list_copy(recall->children);
+    list_start = ags_list_util_copy_and_ref(recall->children);
   
   pthread_mutex_unlock(recall_mutex);
 
@@ -4798,7 +4802,8 @@ ags_recall_real_automate(AgsRecall *recall)
     list = list->next;
   }
 
-  g_list_free(list_start);
+  g_list_free_full(list_start,
+		   g_object_unref);
 }
 
 /**
@@ -4851,7 +4856,7 @@ ags_recall_real_run_pre(AgsRecall *recall)
 
   if(!children_lock_free){
     list =
-      list_start = g_list_copy(recall->children);
+      list_start = ags_list_util_copy_and_ref(recall->children);
   }else{
     list = recall->children;
   }
@@ -4869,7 +4874,8 @@ ags_recall_real_run_pre(AgsRecall *recall)
   }
 
   if(!children_lock_free){
-    g_list_free(list_start);
+    g_list_free_full(list_start,
+		     g_object_unref);
   }
 }
 
@@ -4997,7 +5003,7 @@ ags_recall_real_run_post(AgsRecall *recall)
 
   if(!children_lock_free){
     list =
-      list_start = g_list_copy(recall->children);
+      list_start = ags_list_util_copy_and_ref(recall->children);
   }else{
     list = recall->children;
   }
@@ -5015,7 +5021,8 @@ ags_recall_real_run_post(AgsRecall *recall)
   }
 
   if(!children_lock_free){
-    g_list_free(list_start);
+    g_list_free_full(list_start,
+		     g_object_unref);
   }
 }
 
@@ -5069,7 +5076,7 @@ ags_recall_real_do_feedback(AgsRecall *recall)
 
   if(!children_lock_free){
     list =
-      list_start = g_list_copy(recall->children);
+      list_start = ags_list_util_copy_and_ref(recall->children);
   }else{
     list = recall->children;
   }
@@ -5087,7 +5094,8 @@ ags_recall_real_do_feedback(AgsRecall *recall)
   }
 
   if(!children_lock_free){
-    g_list_free(list_start);
+    g_list_free_full(list_start,
+		     g_object_unref);
   }
 }
 
@@ -5143,7 +5151,7 @@ ags_recall_real_feed_output_queue(AgsRecall *recall)
 
   if(!children_lock_free){
     list =
-      list_start = g_list_copy(recall->children);
+      list_start = ags_list_util_copy_and_ref(recall->children);
   }else{
     list = recall->children;
   }
@@ -5161,7 +5169,8 @@ ags_recall_real_feed_output_queue(AgsRecall *recall)
   }
 
   if(!children_lock_free){
-    g_list_free(list_start);
+    g_list_free_full(list_start,
+		     g_object_unref);
   }
 }
 

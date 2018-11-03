@@ -131,9 +131,9 @@ void* ags_core_audio_devout_get_next_buffer(AgsSoundcard *soundcard);
 void* ags_core_audio_devout_get_prev_buffer(AgsSoundcard *soundcard);
 
 void ags_core_audio_devout_lock_buffer(AgsSoundcard *soundcard,
-				  void *buffer);
+				       void *buffer);
 void ags_core_audio_devout_unlock_buffer(AgsSoundcard *soundcard,
-				    void *buffer);
+					 void *buffer);
 
 guint ags_core_audio_devout_get_delay_counter(AgsSoundcard *soundcard);
 
@@ -192,8 +192,8 @@ ags_core_audio_devout_get_type (void)
   static volatile gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
-    GType ags_type_core_audio_devout;
-
+    GType ags_type_core_audio_devout = 0;
+ 
     static const GTypeInfo ags_core_audio_devout_info = {
       sizeof(AgsCoreAudioDevoutClass),
       NULL, /* base_init */
@@ -231,7 +231,7 @@ ags_core_audio_devout_get_type (void)
 				AGS_TYPE_SOUNDCARD,
 				&ags_soundcard_interface_info);
 
-    g_once_init_leave (&g_define_type_id__volatile, ags_type_core_audio_devout);
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_core_audio_devout);
   }
 
   return g_define_type_id__volatile;
@@ -2118,12 +2118,6 @@ ags_core_audio_devout_port_play(AgsSoundcard *soundcard,
   /* do playback */  
   core_audio_devout->flags &= (~AGS_CORE_AUDIO_DEVOUT_START_PLAY);
   notify_soundcard = AGS_NOTIFY_SOUNDCARD(core_audio_devout->notify_soundcard);
-  
-  if((AGS_CORE_AUDIO_DEVOUT_INITIALIZED & (core_audio_devout->flags)) == 0){
-    pthread_mutex_unlock(core_audio_devout_mutex);
-    
-    return;
-  }
 
   switch(core_audio_devout->format){
   case AGS_SOUNDCARD_SIGNED_16_BIT:
@@ -2172,7 +2166,7 @@ ags_core_audio_devout_port_play(AgsSoundcard *soundcard,
     }
     
     /* signal */
-    //    if((AGS_CORE_AUDIO_DEVOUT_INITIAL_CALLBACK & (g_atomic_int_get(&(core_audio_devout->sync_flags)))) == 0){
+    if((AGS_CORE_AUDIO_DEVOUT_INITIAL_CALLBACK & (g_atomic_int_get(&(core_audio_devout->sync_flags)))) == 0){
       pthread_mutex_lock(callback_mutex);
 
       g_atomic_int_or(&(core_audio_devout->sync_flags),
@@ -2197,17 +2191,17 @@ ags_core_audio_devout_port_play(AgsSoundcard *soundcard,
 	  pthread_cond_wait(core_audio_devout->callback_finish_cond,
 			    callback_finish_mutex);
 	}
-    
+      }
+      
       g_atomic_int_and(&(core_audio_devout->sync_flags),
 		       (~(AGS_CORE_AUDIO_DEVOUT_CALLBACK_FINISH_WAIT |
 			  AGS_CORE_AUDIO_DEVOUT_CALLBACK_FINISH_DONE)));
     
       pthread_mutex_unlock(callback_finish_mutex);
-      }
-      //   }else{
-      //g_atomic_int_and(&(core_audio_devout->sync_flags),
-      //	       (~AGS_CORE_AUDIO_DEVOUT_INITIAL_CALLBACK));
-      //  }
+    }else{
+      g_atomic_int_and(&(core_audio_devout->sync_flags),
+		       (~AGS_CORE_AUDIO_DEVOUT_INITIAL_CALLBACK));
+    }
   }
 
   /* notify cyclic task */

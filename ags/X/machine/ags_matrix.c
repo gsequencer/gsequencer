@@ -84,7 +84,7 @@ ags_matrix_get_type(void)
   static volatile gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
-    GType ags_type_matrix;
+    GType ags_type_matrix = 0;
 
     static const GTypeInfo ags_matrix_info = {
       sizeof(AgsMatrixClass),
@@ -122,7 +122,7 @@ ags_matrix_get_type(void)
 				AGS_TYPE_PLUGIN,
 				&ags_plugin_interface_info);
 
-    g_once_init_leave (&g_define_type_id__volatile, ags_type_matrix);
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_matrix);
   }
 
   return g_define_type_id__volatile;
@@ -192,7 +192,8 @@ ags_matrix_init(AgsMatrix *matrix)
 			      AGS_AUDIO_ASYNC |
 			      AGS_AUDIO_OUTPUT_HAS_RECYCLING |
 			      AGS_AUDIO_INPUT_HAS_RECYCLING));
-  ags_audio_set_ability_flags(audio, (AGS_SOUND_ABILITY_SEQUENCER |
+  ags_audio_set_ability_flags(audio, (AGS_SOUND_ABILITY_PLAYBACK |
+				      AGS_SOUND_ABILITY_SEQUENCER |
 				      AGS_SOUND_ABILITY_NOTATION));
   ags_audio_set_behaviour_flags(audio, (AGS_SOUND_BEHAVIOUR_PATTERN_MODE |
 					AGS_SOUND_BEHAVIOUR_REVERSE_MAPPING |
@@ -488,12 +489,15 @@ ags_matrix_resize_pads(AgsMachine *machine, GType type,
       source = ags_channel_nth(source,
 			       pads_old);
 
-      if(source != NULL){
+      while(source != NULL){
 	AgsRecycling *recycling;
 	AgsAudioSignal *audio_signal;
 
 	GObject *output_soundcard;
 
+	ags_channel_set_ability_flags(source, (AGS_SOUND_ABILITY_SEQUENCER |
+						AGS_SOUND_ABILITY_NOTATION));
+	
 	g_object_get(audio,
 		     "output-soundcard", &output_soundcard,
 		     NULL);
@@ -510,6 +514,11 @@ ags_matrix_resize_pads(AgsMachine *machine, GType type,
 	audio_signal->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;
 	ags_recycling_add_audio_signal(recycling,
 				       audio_signal);
+
+	/* iterate */
+	g_object_get(source,
+		     "next", &source,
+		     NULL);
       }
 
       if((AGS_MACHINE_MAPPED_RECALL & (machine->flags)) != 0){
@@ -896,6 +905,18 @@ ags_matrix_input_map_recall(AgsMatrix *matrix,
 		   NULL);
     }
   }
+
+  /* ags-envelope */
+  ags_recall_factory_create(audio,
+			    NULL, NULL,
+			    "ags-envelope",
+			    0, audio_channels, 
+			    input_pad_start, input_pads,
+			    (AGS_RECALL_FACTORY_INPUT |
+			     AGS_RECALL_FACTORY_PLAY |
+			     AGS_RECALL_FACTORY_RECALL | 
+			     AGS_RECALL_FACTORY_ADD),
+			    0);
   
   /* remap for input */
   if(ags_recall_global_get_rt_safe() ||
@@ -931,18 +952,6 @@ ags_matrix_input_map_recall(AgsMatrix *matrix,
 			    input_pad_start, input_pads,
 			    (AGS_RECALL_FACTORY_INPUT |
 			     AGS_RECALL_FACTORY_PLAY |
-			     AGS_RECALL_FACTORY_ADD),
-			    0);
-
-  /* ags-envelope */
-  ags_recall_factory_create(audio,
-			    NULL, NULL,
-			    "ags-envelope",
-			    0, audio_channels, 
-			    input_pad_start, input_pads,
-			    (AGS_RECALL_FACTORY_INPUT |
-			     AGS_RECALL_FACTORY_PLAY |
-			     AGS_RECALL_FACTORY_RECALL | 
 			     AGS_RECALL_FACTORY_ADD),
 			    0);
 

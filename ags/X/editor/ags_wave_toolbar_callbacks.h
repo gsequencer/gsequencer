@@ -38,6 +38,9 @@ void ags_wave_toolbar_match_line_callback(GtkWidget *widget, AgsWaveToolbar *wav
 void ags_wave_toolbar_tool_popup_select_buffer_callback(GtkWidget *item, AgsWaveToolbar *wave_toolbar);
 void ags_wave_toolbar_tool_popup_position_cursor_callback(GtkWidget *item, AgsWaveToolbar *wave_toolbar);
 
+void ags_wave_toolbar_tool_popup_enable_all_lines_callback(GtkWidget *item, AgsWaveToolbar *wave_toolbar);
+void ags_wave_toolbar_tool_popup_disable_all_lines_callback(GtkWidget *item, AgsWaveToolbar *wave_toolbar);
+
 void ags_wave_toolbar_zoom_callback(GtkComboBox *combo_box, AgsWaveToolbar *wave_toolbar);
 
 void ags_wave_toolbar_opacity_callback(GtkSpinButton *spin_button, AgsWaveToolbar *wave_toolbar);

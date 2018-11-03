@@ -142,7 +142,7 @@ ags_sequencer_thread_class_init(AgsSequencerThreadClass *sequencer_thread)
    *
    * The assigned #AgsSequencer.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("sequencer",
 				   i18n_pspec("sequencer assigned to"),
@@ -494,7 +494,7 @@ ags_sequencer_thread_interval_timeout(AgsSequencerThread *sequencer_thread)
  * Returns: the matching #AgsSequencerThread, if not
  * found %NULL.
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsSequencerThread*
 ags_sequencer_thread_find_sequencer(AgsSequencerThread *sequencer_thread,
@@ -521,11 +521,11 @@ ags_sequencer_thread_find_sequencer(AgsSequencerThread *sequencer_thread,
  * ags_sequencer_thread_new:
  * @sequencer: the #AgsSequencer
  *
- * Create a new #AgsSequencerThread.
+ * Create a new instance of #AgsSequencerThread.
  *
  * Returns: the new #AgsSequencerThread
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsSequencerThread*
 ags_sequencer_thread_new(GObject *sequencer)

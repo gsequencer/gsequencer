@@ -185,9 +185,11 @@ struct itimerspec its;
 GType
 ags_xorg_application_context_get_type()
 {
-  static GType ags_type_xorg_application_context = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_xorg_application_context){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_xorg_application_context = 0;
+
     static const GTypeInfo ags_xorg_application_context_info = {
       sizeof (AgsXorgApplicationContextClass),
       NULL, /* base_init */
@@ -244,9 +246,11 @@ ags_xorg_application_context_get_type()
     g_type_add_interface_static(ags_type_xorg_application_context,
 				AGS_TYPE_UI_PROVIDER,
 				&ags_ui_provider_interface_info);
+
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_xorg_application_context);
   }
 
-  return (ags_type_xorg_application_context);
+  return g_define_type_id__volatile;
 }
 
 #ifndef AGS_USE_TIMER
@@ -315,7 +319,7 @@ ags_xorg_application_context_class_init(AgsXorgApplicationContextClass *xorg_app
    *
    * The assigned window.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("window",
 				   i18n_pspec("window of xorg application context"),
@@ -1049,7 +1053,7 @@ ags_xorg_application_context_prepare(AgsApplicationContext *application_context)
 			NULL);
   
   /* call parent */
-  AGS_APPLICATION_CONTEXT_CLASS(ags_xorg_application_context_parent_class)->prepare(application_context);
+  //  AGS_APPLICATION_CONTEXT_CLASS(ags_xorg_application_context_parent_class)->prepare(application_context);
   
   /* register types */
   ags_application_context_register_types(xorg_application_context);
@@ -1164,7 +1168,6 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
   AgsThread *sequencer_thread;
   AgsDestroyWorker *destroy_worker;
   AgsThread *main_loop;
-  AgsMutexManager *mutex_manager;
 
   AgsLog *log;
   AgsConfig *config;
@@ -1182,7 +1185,8 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
   gchar *soundcard_group;
   gchar *sequencer_group;
   gchar *str;
-      
+  gchar *capability;
+  
   uid_t uid;
   
   guint i;
@@ -1190,8 +1194,7 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
   gboolean has_core_audio;
   gboolean has_pulse;
   gboolean has_jack;
-  
-  pthread_mutex_t *application_mutex;
+  gboolean is_output;
   
   xorg_application_context = (AgsXorgApplicationContext *) application_context;
 
@@ -1200,16 +1203,11 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
   config = ags_config_get_instance();
 
   /* call parent */
-  AGS_APPLICATION_CONTEXT_CLASS(ags_xorg_application_context_parent_class)->setup(application_context);
+  //  AGS_APPLICATION_CONTEXT_CLASS(ags_xorg_application_context_parent_class)->setup(application_context);
 
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-    
-  pthread_mutex_lock(application_mutex);
-
-  main_loop = AGS_APPLICATION_CONTEXT(xorg_application_context)->main_loop;
-  
-  pthread_mutex_unlock(application_mutex);
+  g_object_get(application_context,
+	       "main-loop", &main_loop,
+	       NULL);
 
   gui_thread = ags_thread_find_type(main_loop,
 				    AGS_TYPE_GUI_THREAD);
@@ -1485,6 +1483,19 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
     str = ags_config_get_value(config,
 			       soundcard_group,
 			       "backend");
+
+    capability = ags_config_get_value(config,
+				      soundcard_group,
+				      "capability");
+
+    is_output = TRUE;
+
+    if(capability != NULL &&
+       !g_ascii_strncasecmp(capability,
+			    "capture",
+			    8)){
+      is_output = FALSE;
+    }
     
     /* change soundcard */
     if(str != NULL){
@@ -1492,35 +1503,51 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
 			      "core-audio",
 			      11)){
 	soundcard = ags_sound_server_register_soundcard(AGS_SOUND_SERVER(core_audio_server),
-							TRUE);
+							is_output);
 
 	has_core_audio = TRUE;
       }else if(!g_ascii_strncasecmp(str,
 			      "pulse",
 			      6)){
 	soundcard = ags_sound_server_register_soundcard(AGS_SOUND_SERVER(pulse_server),
-							TRUE);
+							is_output);
 
 	has_pulse = TRUE;
       }else if(!g_ascii_strncasecmp(str,
 			      "jack",
 			      5)){
 	soundcard = ags_sound_server_register_soundcard(AGS_SOUND_SERVER(jack_server),
-							TRUE);
+							is_output);
 
 	has_jack = TRUE;
       }else if(!g_ascii_strncasecmp(str,
 				    "alsa",
 				    5)){
-	soundcard = (GObject *) ags_devout_new((GObject *) xorg_application_context);
-	AGS_DEVOUT(soundcard)->flags &= (~AGS_DEVOUT_OSS);
-	AGS_DEVOUT(soundcard)->flags |= AGS_DEVOUT_ALSA;
+	if(is_output){
+	  soundcard = (GObject *) ags_devout_new((GObject *) xorg_application_context);
+	  
+	  AGS_DEVOUT(soundcard)->flags &= (~AGS_DEVOUT_OSS);
+	  AGS_DEVOUT(soundcard)->flags |= AGS_DEVOUT_ALSA;
+	}else{
+	  soundcard = (GObject *) ags_devin_new((GObject *) xorg_application_context);
+	  
+	  AGS_DEVIN(soundcard)->flags &= (~AGS_DEVIN_OSS);
+	  AGS_DEVIN(soundcard)->flags |= AGS_DEVIN_ALSA;
+	}
       }else if(!g_ascii_strncasecmp(str,
 				    "oss",
 				    4)){
-	soundcard = (GObject *) ags_devout_new((GObject *) xorg_application_context);
-	AGS_DEVOUT(soundcard)->flags &= (~AGS_DEVOUT_ALSA);
-	AGS_DEVOUT(soundcard)->flags |= AGS_DEVOUT_OSS;
+	if(is_output){
+	  soundcard = (GObject *) ags_devout_new((GObject *) xorg_application_context);
+
+	  AGS_DEVOUT(soundcard)->flags &= (~AGS_DEVOUT_ALSA);
+	  AGS_DEVOUT(soundcard)->flags |= AGS_DEVOUT_OSS;
+	}else{
+	  soundcard = (GObject *) ags_devin_new((GObject *) xorg_application_context);
+
+	  AGS_DEVIN(soundcard)->flags &= (~AGS_DEVIN_ALSA);
+	  AGS_DEVIN(soundcard)->flags |= AGS_DEVIN_OSS;	  
+	}
       }else{
 	g_warning(i18n("unknown soundcard backend - %s"), str);
 
@@ -1562,7 +1589,7 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
 			       str);
       g_free(str);
     }
-
+    
     /* presets */
     pcm_channels = AGS_SOUNDCARD_DEFAULT_PCM_CHANNELS;
     buffer_size = AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
@@ -1579,7 +1606,6 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
 				      10);
       g_free(str);
     }
-
 
     str = ags_config_get_value(config,
 			       soundcard_group,
@@ -1744,35 +1770,56 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
     
   while(list != NULL){
     AgsNotifySoundcard *notify_soundcard;
+
+    guint soundcard_capability;
+
+    soundcard_capability = ags_soundcard_get_capability(AGS_SOUNDCARD(list->data));
     
-    soundcard_thread = (AgsThread *) ags_soundcard_thread_new(list->data);
+    soundcard_thread = (AgsThread *) ags_soundcard_thread_new(list->data,
+							      soundcard_capability);
     ags_thread_add_child_extended(AGS_THREAD(audio_loop),
 				  (AgsThread *) soundcard_thread,
 				  TRUE, TRUE);
 
-    /* notify soundcard */
-    notify_soundcard = ags_notify_soundcard_new(soundcard_thread);
-    AGS_TASK(notify_soundcard)->task_thread = application_context->task_thread;
+    /* notify soundcard and export thread */
+    export_thread = NULL;
     
-    if(AGS_IS_DEVOUT(list->data)){
-      AGS_DEVOUT(list->data)->notify_soundcard = notify_soundcard;
-    }else if(AGS_IS_JACK_DEVOUT(list->data)){
-      AGS_JACK_DEVOUT(list->data)->notify_soundcard = notify_soundcard;
-    }else if(AGS_IS_PULSE_DEVOUT(list->data)){
-      AGS_PULSE_DEVOUT(list->data)->notify_soundcard = notify_soundcard;
-    }else if(AGS_IS_CORE_AUDIO_DEVOUT(list->data)){
-      AGS_CORE_AUDIO_DEVOUT(list->data)->notify_soundcard = notify_soundcard;
-    }
+    //    if(soundcard_capability == AGS_SOUNDCARD_CAPABILITY_PLAYBACK){
+      notify_soundcard = ags_notify_soundcard_new(soundcard_thread);
+      AGS_TASK(notify_soundcard)->task_thread = application_context->task_thread;
+    
+      if(AGS_IS_DEVOUT(list->data)){
+	AGS_DEVOUT(list->data)->notify_soundcard = notify_soundcard;
+      }else if(AGS_IS_JACK_DEVOUT(list->data)){
+	AGS_JACK_DEVOUT(list->data)->notify_soundcard = notify_soundcard;
+      }else if(AGS_IS_PULSE_DEVOUT(list->data)){
+	AGS_PULSE_DEVOUT(list->data)->notify_soundcard = notify_soundcard;
+      }else if(AGS_IS_CORE_AUDIO_DEVOUT(list->data)){
+	AGS_CORE_AUDIO_DEVOUT(list->data)->notify_soundcard = notify_soundcard;
+      }else if(AGS_IS_DEVIN(list->data)){
+	AGS_DEVIN(list->data)->notify_soundcard = notify_soundcard;
+      }else if(AGS_IS_JACK_DEVIN(list->data)){
+	AGS_JACK_DEVIN(list->data)->notify_soundcard = notify_soundcard;
+      }else if(AGS_IS_PULSE_DEVIN(list->data)){
+	AGS_PULSE_DEVIN(list->data)->notify_soundcard = notify_soundcard;
+      }else if(AGS_IS_CORE_AUDIO_DEVIN(list->data)){
+	AGS_CORE_AUDIO_DEVIN(list->data)->notify_soundcard = notify_soundcard;
+      }
 
-    ags_task_thread_append_cyclic_task(application_context->task_thread,
-				       notify_soundcard);
+      ags_task_thread_append_cyclic_task(application_context->task_thread,
+					 notify_soundcard);
 
-    /* export thread */
-    export_thread = (AgsThread *) ags_export_thread_new(list->data,
-							NULL);
-    ags_thread_add_child_extended(AGS_THREAD(audio_loop),
-				  (AgsThread *) export_thread,
-				  TRUE, TRUE);
+      /* export thread */
+      if(AGS_IS_DEVOUT(list->data) ||
+	 AGS_IS_JACK_DEVOUT(list->data) ||
+	 AGS_IS_PULSE_DEVOUT(list->data) ||
+	 AGS_IS_CORE_AUDIO_DEVOUT(list->data)){
+	export_thread = (AgsThread *) ags_export_thread_new(list->data,
+							    NULL);
+	ags_thread_add_child_extended(AGS_THREAD(audio_loop),
+				      (AgsThread *) export_thread,
+				      TRUE, TRUE);
+      }    
 
     /* default soundcard thread */
     if(xorg_application_context->soundcard_thread == NULL){
@@ -1781,8 +1828,10 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
     }
 
     /* default export thread */
-    if(export_thread != NULL){
+    if(export_thread != NULL &&
+       xorg_application_context->export_thread == NULL){
       xorg_application_context->export_thread = export_thread;
+      g_object_ref(export_thread);
     }
 
     /* iterate */
@@ -2023,8 +2072,10 @@ ags_xorg_application_context_register_types(AgsApplicationContext *application_c
   ags_synth_input_pad_get_type();
   ags_synth_input_line_get_type();
 
+#ifdef AGS_WITH_LIBINSTPATCH
   ags_ffplayer_get_type();
-
+#endif
+  
   ags_ladspa_bridge_get_type();
   ags_lv2_bridge_get_type();
   ags_dssi_bridge_get_type();
@@ -2043,8 +2094,6 @@ ags_xorg_application_context_quit(AgsApplicationContext *application_context)
 
   AgsJackServer *jack_server;
 
-  AgsMutexManager *mutex_manager;
-
   AgsConfig *config;
 
   GList *core_audio_client;
@@ -2056,13 +2105,6 @@ ags_xorg_application_context_quit(AgsApplicationContext *application_context)
 
   gboolean autosave_thread_enabled;
 
-  pthread_mutex_t *application_mutex;
-
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);  
-
-  pthread_mutex_lock(application_mutex);
-  
   config = application_context->config;
   
   /* autosave thread */
@@ -2199,8 +2241,6 @@ ags_xorg_application_context_quit(AgsApplicationContext *application_context)
     
     list = list->next;
   }
-
-  pthread_mutex_unlock(application_mutex);
   
   gtk_main_quit();
 }
@@ -2300,26 +2340,14 @@ ags_xorg_application_context_read(AgsFile *file, xmlNode *node, GObject **applic
 void
 ags_xorg_application_context_launch(AgsFileLaunch *launch, AgsXorgApplicationContext *application_context)
 {
-  AgsMutexManager *mutex_manager;
-  
   AgsThread *audio_loop, *task_thread, *gui_thread;
 
   GList *list;
   GList *start_queue;
 
-  pthread_mutex_t *audio_loop_mutex;
-  pthread_mutex_t *application_mutex;
-
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-    
-  pthread_mutex_lock(application_mutex);
-    
-  audio_loop = (AgsThread *) AGS_APPLICATION_CONTEXT(application_context)->main_loop;
-  audio_loop_mutex = ags_mutex_manager_lookup(mutex_manager,
-					      (GObject *) audio_loop);
-    
-  pthread_mutex_unlock(application_mutex);
+  g_object_get(application_context,
+	       "main-loop", &audio_loop,
+	       NULL);
 
   /* show all */
   gtk_widget_show_all((GtkWidget *) application_context->window);
@@ -2331,18 +2359,6 @@ ags_xorg_application_context_launch(AgsFileLaunch *launch, AgsXorgApplicationCon
 
   gui_thread = ags_thread_find_type(audio_loop,
 				    AGS_TYPE_GUI_THREAD);
-
-  pthread_mutex_lock(audio_loop_mutex);
-    
-  start_queue = NULL;
-  start_queue = g_list_prepend(start_queue,
-			       task_thread);
-  start_queue = g_list_prepend(start_queue,
-			       gui_thread);
-  g_atomic_pointer_set(&(audio_loop->start_queue),
-		       start_queue);
-
-  pthread_mutex_unlock(audio_loop_mutex);
 
   ags_thread_pool_start(application_context->thread_pool);
   ags_thread_start(audio_loop);

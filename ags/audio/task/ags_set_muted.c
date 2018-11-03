@@ -71,7 +71,7 @@ ags_set_muted_get_type()
   static volatile gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
-    GType ags_type_set_muted;
+    GType ags_type_set_muted = 0;
 
     static const GTypeInfo ags_set_muted_info = {
       sizeof(AgsSetMutedClass),
@@ -89,9 +89,11 @@ ags_set_muted_get_type()
 						"AgsSetMuted",
 						&ags_set_muted_info,
 						0);
+
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_set_muted);
   }
-  
-  return(ags_type_set_muted);
+
+  return g_define_type_id__volatile;
 }
 
 void

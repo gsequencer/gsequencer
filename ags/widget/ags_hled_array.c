@@ -40,7 +40,7 @@ ags_hled_array_get_type(void)
   static volatile gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
-    GType ags_type_hled_array;
+    GType ags_type_hled_array = 0;
 
     static const GTypeInfo ags_hled_array_info = {
       sizeof(AgsHLedArrayClass),
@@ -59,7 +59,7 @@ ags_hled_array_get_type(void)
 						 &ags_hled_array_info,
 						 0);
 
-    g_once_init_leave (&g_define_type_id__volatile, ags_type_hled_array);
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_hled_array);
   }
 
   return g_define_type_id__volatile;
@@ -88,7 +88,7 @@ ags_hled_array_init(AgsHLedArray *hled_array)
  *
  * Returns: a new #AgsHLedArray
  *
- * Since: 1.0.0.7
+ * Since: 2.0.0
  */
 AgsHLedArray*
 ags_hled_array_new()

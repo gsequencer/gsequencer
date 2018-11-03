@@ -113,7 +113,7 @@ ags_automation_edit_get_type(void)
   static volatile gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
-    GType ags_type_automation_edit;
+    GType ags_type_automation_edit = 0;
 
     static const GTypeInfo ags_automation_edit_info = {
       sizeof (AgsAutomationEditClass),
@@ -141,7 +141,7 @@ ags_automation_edit_get_type(void)
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
 
-    g_once_init_leave (&g_define_type_id__volatile, ags_type_automation_edit);
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_automation_edit);
   }
 
   return g_define_type_id__volatile;
@@ -1841,8 +1841,9 @@ ags_automation_edit_draw_acceleration(AgsAutomationEdit *automation_edit,
   gdouble y_upper;
   double zoom, zoom_factor;
   double viewport_x, viewport_y;
-  double x, y;
-  double a_x, b_x, a_y, b_y;
+  guint x, y;
+  guint a_x, b_x;
+  gdouble a_y, b_y;
   double width, height;
   
   static const gdouble white_gc = 65535.0;
@@ -1887,7 +1888,7 @@ ags_automation_edit_draw_acceleration(AgsAutomationEdit *automation_edit,
 	       "x", &a_x,
 	       "y", &a_y,
 	       NULL);
-  
+ 
   x = ((double) a_x) - viewport_x;
 
   if((AGS_AUTOMATION_EDIT_LOGARITHMIC & (automation_edit->flags)) != 0){
@@ -1905,7 +1906,7 @@ ags_automation_edit_draw_acceleration(AgsAutomationEdit *automation_edit,
   }else{
     width = 1.0;
   }
-  
+
   height = GTK_WIDGET(automation_edit->drawing_area)->allocation.height - y;
 
   /* apply zoom */
@@ -1997,6 +1998,7 @@ ags_automation_edit_draw_automation(AgsAutomationEdit *automation_edit)
   GList *start_list_automation, *list_automation;
   GList *start_list_acceleration, *list_acceleration;
 
+  gdouble opacity;
   gdouble c_range;
   gdouble y_upper, y_value;
   guint x0, x1;
@@ -2026,6 +2028,8 @@ ags_automation_edit_draw_automation(AgsAutomationEdit *automation_edit)
   }
   
   automation_edit_style = gtk_widget_get_style(GTK_WIDGET(automation_edit->drawing_area));
+
+  opacity = gtk_spin_button_get_value(automation_editor->automation_toolbar->opacity);
 
   /* create cairo context */
   cr = gdk_cairo_create(GTK_WIDGET(automation_edit->drawing_area)->window);
@@ -2110,7 +2114,7 @@ ags_automation_edit_draw_automation(AgsAutomationEdit *automation_edit)
 					      automation_edit_style->fg[0].red / white_gc,
 					      automation_edit_style->fg[0].green / white_gc,
 					      automation_edit_style->fg[0].blue / white_gc,
-					      0.4);
+					      opacity);
 
 	/* iterate */
 	list_acceleration = list_acceleration->next;

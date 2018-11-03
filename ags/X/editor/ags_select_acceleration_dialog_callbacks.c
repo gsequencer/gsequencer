@@ -22,8 +22,6 @@
 #include <ags/libags.h>
 #include <ags/libags-audio.h>
 
-#include <ags/thread/ags_mutex_manager.h>
-
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_automation_window.h>
 #include <ags/X/ags_automation_editor.h>
@@ -68,13 +66,13 @@ ags_select_acceleration_dialog_add_callback(GtkWidget *button,
   GtkButton *remove;
 
   AgsAudio *audio;
+  AgsChannel *channel;
   
-  AgsMutexManager *mutex_manager;
+  GList *start_port, *port;
 
-  gchar **specifier;
+  gchar **collected_specifier;
 
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *audio_mutex;
+  guint length;
 
   window = AGS_WINDOW(select_acceleration_dialog->main_window);
   automation_editor = window->automation_window->automation_editor;
@@ -82,10 +80,6 @@ ags_select_acceleration_dialog_add_callback(GtkWidget *button,
   machine = automation_editor->selected_machine;
 
   audio = machine->audio;
-  
-  /* get mutex manager and application mutex */
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
 
   /* select automation */
   hbox = (GtkVBox *) gtk_hbox_new(FALSE,
@@ -102,26 +96,173 @@ ags_select_acceleration_dialog_add_callback(GtkWidget *button,
 		     FALSE, FALSE,
 		     0);
 
-  /* get audio mutex */
-  pthread_mutex_lock(application_mutex);
-
-  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
-					 (GObject *) audio);
-  
-  pthread_mutex_unlock(application_mutex);
-
   /*  */  
-  pthread_mutex_lock(audio_mutex);
+  collected_specifier = (gchar **) malloc(sizeof(gchar*));
 
-  specifier = ags_automation_get_specifier_unique(audio->automation);
+  collected_specifier[0] = NULL;
+  length = 1;
+  
+  /* audio */
+  port =
+    start_port = ags_audio_collect_all_audio_ports(audio);
 
-  for(; *specifier != NULL; specifier++){
-    gtk_combo_box_text_append_text(combo_box,
-				   g_strdup(*specifier));
+  while(port != NULL){
+    AgsPluginPort *plugin_port;
+
+    gchar *specifier;
+
+    gboolean is_enabled;
+    gboolean contains_control_name;
+    
+    g_object_get(port->data,
+		 "specifier", &specifier,
+		 "plugin-port", &plugin_port,
+		 NULL);
+
+#ifdef HAVE_GLIB_2_44
+    contains_control_name = g_strv_contains(collected_specifier,
+					    specifier);
+#else
+    contains_control_name = ags_strv_contains(collected_specifier,
+					      specifier);
+#endif
+
+    if(plugin_port != NULL &&
+       !contains_control_name){
+      gtk_combo_box_text_append_text(combo_box,
+				     g_strdup(specifier));
+
+      /* add to collected specifier */
+      collected_specifier = (gchar **) realloc(collected_specifier,
+				     (length + 1) * sizeof(gchar *));
+      collected_specifier[length - 1] = g_strdup(specifier);
+      collected_specifier[length] = NULL;
+
+      length++;
+    }
+    
+    /* iterate */
+    port = port->next;
+  }
+
+  g_list_free(start_port);
+    
+  /* output */
+  g_object_get(audio,
+	       "output", &channel,
+	       NULL);
+
+  while(channel != NULL){
+    /* output */
+    port =
+      start_port = ags_channel_collect_all_channel_ports(channel);
+
+    while(port != NULL){
+      AgsPluginPort *plugin_port;
+
+      gchar *specifier;
+
+      gboolean is_enabled;
+      gboolean contains_control_name;
+    
+      g_object_get(port->data,
+		   "specifier", &specifier,
+		   "plugin-port", &plugin_port,
+		   NULL);
+
+#ifdef HAVE_GLIB_2_44
+      contains_control_name = g_strv_contains(collected_specifier,
+					      specifier);
+#else
+      contains_control_name = ags_strv_contains(collected_specifier,
+						specifier);
+#endif
+
+      if(plugin_port != NULL &&
+	 !contains_control_name){
+	gtk_combo_box_text_append_text(combo_box,
+				       g_strdup(specifier));
+
+	/* add to collected specifier */
+	collected_specifier = (gchar **) realloc(collected_specifier,
+						 (length + 1) * sizeof(gchar *));
+	collected_specifier[length - 1] = g_strdup(specifier);
+	collected_specifier[length] = NULL;
+
+	length++;
+      }
+    
+      /* iterate */
+      port = port->next;
+    }
+
+    g_list_free(start_port);
+    
+    /* iterate */
+    g_object_get(channel,
+		 "next", &channel,
+		 NULL);
   }
   
-  pthread_mutex_unlock(audio_mutex);
+  /* input */
+  g_object_get(audio,
+	       "input", &channel,
+	       NULL);
 
+  while(channel != NULL){
+    /* input */
+    port =
+      start_port = ags_channel_collect_all_channel_ports(channel);
+
+    while(port != NULL){
+      AgsPluginPort *plugin_port;
+
+      gchar *specifier;
+
+      gboolean is_enabled;
+      gboolean contains_control_name;
+    
+      g_object_get(port->data,
+		   "specifier", &specifier,
+		   "plugin-port", &plugin_port,
+		   NULL);
+
+#ifdef HAVE_GLIB_2_44
+      contains_control_name = g_strv_contains(collected_specifier,
+					      specifier);
+#else
+      contains_control_name = ags_strv_contains(collected_specifier,
+						specifier);
+#endif
+
+      if(plugin_port != NULL &&
+	 !contains_control_name){
+	gtk_combo_box_text_append_text(combo_box,
+				       g_strdup(specifier));
+
+	/* add to collected specifier */
+	collected_specifier = (gchar **) realloc(collected_specifier,
+						 (length + 1) * sizeof(gchar *));
+	collected_specifier[length - 1] = g_strdup(specifier);
+	collected_specifier[length] = NULL;
+
+	length++;
+      }
+    
+      /* iterate */
+      port = port->next;
+    }
+
+    g_list_free(start_port);
+    
+    /* iterate */
+    g_object_get(channel,
+		 "next", &channel,
+		 NULL);
+  }
+  
+  g_strfreev(collected_specifier);
+  
   /* remove button */
   remove = (GtkCheckButton *) gtk_button_new_from_stock(GTK_STOCK_REMOVE);
   gtk_box_pack_start((GtkBox *) hbox,

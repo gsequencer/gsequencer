@@ -86,8 +86,6 @@
 #include <ags/thread/ags_thread_application_context.h>
 #include <ags/thread/ags_thread_pool.h>
 #include <ags/thread/ags_thread-posix.h>
-#include <ags/thread/ags_timestamp_factory.h>
-#include <ags/thread/ags_timestamp_thread.h>
 #include <ags/thread/ags_timestamp.h>
 #include <ags/thread/ags_worker_thread.h>
 

@@ -39,8 +39,8 @@ ags_applicable_get_type()
   static volatile gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
-    GType ags_type_applicable;
-    
+    GType ags_type_applicable = 0;
+
     static const GTypeInfo ags_applicable_info = {
       sizeof(AgsApplicableInterface),
       (GBaseInitFunc) ags_applicable_base_init,
@@ -51,7 +51,7 @@ ags_applicable_get_type()
 						 "AgsApplicable", &ags_applicable_info,
 						 0);
 
-    g_once_init_leave (&g_define_type_id__volatile, ags_type_applicable);
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_applicable);
   }
 
   return g_define_type_id__volatile;
@@ -70,7 +70,7 @@ ags_applicable_base_init(AgsApplicableInterface *interface)
  *
  * Update behaviour.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_applicable_set_update(AgsApplicable *applicable, gboolean update)
@@ -89,7 +89,7 @@ ags_applicable_set_update(AgsApplicable *applicable, gboolean update)
  *
  * Apply all changes done so far.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_applicable_apply(AgsApplicable *applicable)
@@ -108,7 +108,7 @@ ags_applicable_apply(AgsApplicable *applicable)
  *
  * Reset all changes within the user interface.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_applicable_reset(AgsApplicable *applicable)

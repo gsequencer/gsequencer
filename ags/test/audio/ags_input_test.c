@@ -30,7 +30,6 @@ int ags_input_test_init_suite();
 int ags_input_test_clean_suite();
 
 void ags_input_test_open_file();
-void ags_input_test_apply_synth();
 void ags_input_test_is_active();
 void ags_input_test_next_active();
 
@@ -79,25 +78,6 @@ ags_input_test_open_file()
   
   CU_ASSERT(success == TRUE &&
 	    input->file_link != NULL &&
-	    AGS_CHANNEL(input)->first_recycling->audio_signal != NULL);
-}
-
-void
-ags_input_test_apply_synth()
-{
-  AgsInput *input;
-
-  input = g_object_new(AGS_TYPE_INPUT,
-		       NULL);
-  ags_input_add_synth_generator(input,
-				ags_synth_generator_new());
-  AGS_CHANNEL(input)->first_recycling =
-    AGS_CHANNEL(input)->last_recycling = g_object_new(AGS_TYPE_RECYCLING,
-						      NULL);
-  
-  ags_input_apply_synth(input);
-  
-  CU_ASSERT(input->synth_generator != NULL &&
 	    AGS_CHANNEL(input)->first_recycling->audio_signal != NULL);
 }
 
@@ -275,7 +255,6 @@ main(int argc, char **argv)
   
   /* add the tests to the suite */
   if((CU_add_test(pSuite, "test of AgsInput open file", ags_input_test_open_file) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsInput apply synth", ags_input_test_apply_synth) == NULL) ||
      (CU_add_test(pSuite, "test of AgsInput is active", ags_input_test_is_active) == NULL) ||
      (CU_add_test(pSuite, "test of AgsInput next active", ags_input_test_next_active) == NULL)){
     CU_cleanup_registry();

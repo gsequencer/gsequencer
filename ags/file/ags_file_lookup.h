@@ -41,6 +41,9 @@ struct _AgsFileLookup
 {
   GObject object;
 
+  pthread_mutex_t *obj_mutex;
+  pthread_mutexattr_t *obj_mutexattr;
+
   AgsFile *file;
 
   xmlNode *node;
@@ -55,6 +58,8 @@ struct _AgsFileLookupClass
 };
 
 GType ags_file_lookup_get_type(void);
+
+pthread_mutex_t* ags_file_lookup_get_class_mutex();
 
 GList* ags_file_lookup_find_by_node(GList *file_lookup,
 				    xmlNode *node);

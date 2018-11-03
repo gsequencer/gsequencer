@@ -39,7 +39,6 @@
 
 #include <ags/audio/file/ags_audio_file_link.h>
 #include <ags/audio/file/ags_audio_file.h>
-#include <ags/audio/file/ags_ipatch.h>
 
 #include <ags/i18n.h>
 
@@ -92,7 +91,7 @@ ags_apply_presets_get_type()
   static volatile gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
-    GType ags_type_apply_presets;
+    GType ags_type_apply_presets = 0;
 
     static const GTypeInfo ags_apply_presets_info = {
       sizeof(AgsApplyPresetsClass),
@@ -110,9 +109,11 @@ ags_apply_presets_get_type()
 						    "AgsApplyPresets",
 						    &ags_apply_presets_info,
 						    0);
+
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_apply_presets);
   }
-  
-  return(ags_type_apply_presets);
+
+  return g_define_type_id__volatile;
 }
 
 void
@@ -441,27 +442,31 @@ ags_apply_presets_soundcard(AgsApplyPresets *apply_presets,
 	       NULL);
     
   /* reset export thread frequency */
-  export_thread = main_loop;
+  export_thread = ags_thread_find_type(main_loop,
+				       AGS_TYPE_EXPORT_THREAD);
   
-  while((export_thread = ags_thread_find_type(export_thread,
-					      AGS_TYPE_EXPORT_THREAD)) != NULL){
-    g_object_set(export_thread,
-		 "frequency", freq,
-		 NULL);
-
+  while(export_thread != NULL){
+    if(AGS_IS_EXPORT_THREAD(export_thread)){
+      g_object_set(export_thread,
+		   "frequency", freq,
+		   NULL);
+    }
+    
     /* iterate */
     export_thread = g_atomic_pointer_get(&(export_thread->next));
   }
 
   /* reset soundcard thread frequency */
-  soundcard_thread = main_loop;
+  soundcard_thread = ags_thread_find_type(main_loop,
+					  AGS_TYPE_SOUNDCARD_THREAD);
   
-  while((soundcard_thread = ags_thread_find_type(soundcard_thread,
-						 AGS_TYPE_SOUNDCARD_THREAD)) != NULL){
-    g_object_set(soundcard_thread,
-		 "frequency", freq,
-		 NULL);
-
+  while(soundcard_thread != NULL){
+    if(AGS_IS_SOUNDCARD_THREAD(export_thread)){
+      g_object_set(soundcard_thread,
+		   "frequency", freq,
+		   NULL);
+    }
+    
     /* iterate */
     soundcard_thread = g_atomic_pointer_get(&(soundcard_thread->next));
   }

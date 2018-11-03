@@ -97,6 +97,7 @@ void ags_pulse_devin_pcm_info(AgsSoundcard *soundcard, gchar *card_id,
 			      guint *rate_min, guint *rate_max,
 			      guint *buffer_size_min, guint *buffer_size_max,
 			      GError **error);
+guint ags_pulse_devin_get_capability(AgsSoundcard *soundcard);
 
 gboolean ags_pulse_devin_is_starting(AgsSoundcard *soundcard);
 gboolean ags_pulse_devin_is_recording(AgsSoundcard *soundcard);
@@ -186,7 +187,7 @@ ags_pulse_devin_get_type(void)
   static volatile gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
-    GType ags_type_pulse_devin;
+    GType ags_type_pulse_devin = 0;
 
     static const GTypeInfo ags_pulse_devin_info = {
       sizeof(AgsPulseDevinClass),
@@ -225,7 +226,7 @@ ags_pulse_devin_get_type(void)
 				AGS_TYPE_SOUNDCARD,
 				&ags_soundcard_interface_info);
 
-    g_once_init_leave (&g_define_type_id__volatile, ags_type_pulse_devin);
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_pulse_devin);
   }
 
   return g_define_type_id__volatile;
@@ -512,6 +513,7 @@ ags_pulse_devin_soundcard_interface_init(AgsSoundcardInterface *soundcard)
 
   soundcard->list_cards = ags_pulse_devin_list_cards;
   soundcard->pcm_info = ags_pulse_devin_pcm_info;
+  soundcard->get_capability = ags_pulse_devin_get_capability;
 
   soundcard->get_poll_fd = NULL;
   soundcard->is_available = NULL;
@@ -1864,6 +1866,12 @@ ags_pulse_devin_pcm_info(AgsSoundcard *soundcard,
   if(buffer_size_max != NULL){
     *buffer_size_max = 8192;
   }
+}
+
+guint
+ags_pulse_devin_get_capability(AgsSoundcard *soundcard)
+{
+  return(AGS_SOUNDCARD_CAPABILITY_CAPTURE);
 }
 
 gboolean

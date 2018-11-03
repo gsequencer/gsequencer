@@ -62,9 +62,11 @@ static pthread_mutex_t ags_track_class_mutex = PTHREAD_MUTEX_INITIALIZER;
 GType
 ags_track_get_type()
 {
-  static GType ags_type_track = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_track){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_track = 0;
+
     static const GTypeInfo ags_track_info = {
       sizeof(AgsTrackClass),
       NULL,
@@ -81,9 +83,11 @@ ags_track_get_type()
 					    "AgsTrack",
 					    &ags_track_info,
 					    0);
+
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_track);
   }
 
-  return(ags_type_track);
+  return g_define_type_id__volatile;
 }
 
 void 
@@ -452,9 +456,40 @@ ags_track_sort_func(gconstpointer a,
 AgsTrack*
 ags_track_duplicate(AgsTrack *track)
 {
+  AgsTrack *track_copy;
+
+  guint copy_mode;
+
+  pthread_mutex_t *track_mutex;
+
+  if(!AGS_IS_TRACK(track)){
+    return(NULL);
+  }
+  
+  /* get track mutex */
+  pthread_mutex_lock(ags_track_get_class_mutex());
+  
+  track_mutex = track->obj_mutex;
+  
+  pthread_mutex_unlock(ags_track_get_class_mutex());
+
+  /* instantiate track */  
+  track_copy = ags_track_new();
+
+  track_copy->flags = 0;
+
+  pthread_mutex_lock(track_mutex);
+
+  track_copy->x = track->x;
+
+  g_object_set(track_copy,
+	       NULL);
+
   //TODO:JK: implement me
 
-  return(NULL);
+  pthread_mutex_unlock(track_mutex);
+
+  return(track_copy);
 }
 
 /**

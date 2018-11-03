@@ -101,7 +101,7 @@ ags_line_member_get_type(void)
   static volatile gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
-    GType ags_type_line_member;
+    GType ags_type_line_member = 0;
 
     static const GTypeInfo ags_line_member_info = {
       sizeof(AgsLineMemberClass),
@@ -129,7 +129,7 @@ ags_line_member_get_type(void)
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
 
-    g_once_init_leave (&g_define_type_id__volatile, ags_type_line_member);
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_line_member);
   }
 
   return g_define_type_id__volatile;

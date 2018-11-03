@@ -28,6 +28,7 @@
 
 #define _GNU_SOURCE
 #include <signal.h>
+#define _GNU_SOURCE
 #include <poll.h>
 
 void ags_polling_thread_class_init(AgsPollingThreadClass *polling_thread);
@@ -63,8 +64,8 @@ ags_polling_thread_get_type()
   static volatile gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
-    GType ags_type_polling_thread;
-    
+    GType ags_type_polling_thread = 0;
+
     static const GTypeInfo ags_polling_thread_info = {
       sizeof(AgsPollingThreadClass),
       NULL, /* base_init */
@@ -92,7 +93,7 @@ ags_polling_thread_get_type()
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
 
-    g_once_init_leave (&g_define_type_id__volatile, ags_type_polling_thread);
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_polling_thread);
   }
 
   return g_define_type_id__volatile;
@@ -366,7 +367,7 @@ ags_polling_thread_interrupted(AgsThread *thread,
  *
  * Returns: the position if found, otherwise -1
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 gint
 ags_polling_thread_fd_position(AgsPollingThread *polling_thread,
@@ -401,7 +402,7 @@ ags_polling_thread_fd_position(AgsPollingThread *polling_thread,
  *
  * Add a @gobject to #AgsPollingThread.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_polling_thread_add_poll_fd(AgsPollingThread *polling_thread,
@@ -457,7 +458,7 @@ ags_polling_thread_add_poll_fd(AgsPollingThread *polling_thread,
  *
  * Remove @gobject from #AgsPollingThread.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_polling_thread_remove_poll_fd(AgsPollingThread *polling_thread,
@@ -523,7 +524,7 @@ ags_polling_thread_remove_poll_fd(AgsPollingThread *polling_thread,
  *
  * Returns: the new #AgsPollingThread
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsPollingThread*
 ags_polling_thread_new()

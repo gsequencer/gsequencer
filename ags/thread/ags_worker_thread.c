@@ -19,13 +19,10 @@
 
 #include <ags/thread/ags_worker_thread.h>
 
-#include <ags/object/ags_connectable.h>
+#include <stdlib.h>
 
 void ags_worker_thread_class_init(AgsWorkerThreadClass *worker_thread);
-void ags_worker_thread_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_worker_thread_init(AgsWorkerThread *worker_thread);
-void ags_worker_thread_connect(AgsConnectable *connectable);
-void ags_worker_thread_disconnect(AgsConnectable *connectable);
 void ags_worker_thread_finalize(GObject *gobject);
 
 void ags_worker_thread_start(AgsThread *thread);
@@ -59,7 +56,7 @@ ags_worker_thread_get_type()
   static volatile gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
-    GType ags_type_worker_thread;
+    GType ags_type_worker_thread = 0;
 
     static const GTypeInfo ags_worker_thread_info = {
       sizeof(AgsWorkerThreadClass),
@@ -73,22 +70,12 @@ ags_worker_thread_get_type()
       (GInstanceInitFunc) ags_worker_thread_init,
     };
 
-    static const GInterfaceInfo ags_connectable_interface_info = {
-      (GInterfaceInitFunc) ags_worker_thread_connectable_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-
     ags_type_worker_thread = g_type_register_static(AGS_TYPE_THREAD,
 						    "AgsWorkerThread",
 						    &ags_worker_thread_info,
-						    0);
-    
-    g_type_add_interface_static(ags_type_worker_thread,
-				AGS_TYPE_CONNECTABLE,
-				&ags_connectable_interface_info);
+						    0);    
 
-    g_once_init_leave (&g_define_type_id__volatile, ags_type_worker_thread);
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_worker_thread);
   }
 
   return g_define_type_id__volatile;
@@ -125,7 +112,7 @@ ags_worker_thread_class_init(AgsWorkerThreadClass *worker_thread)
    * The ::do_poll() signal runs independently of ::run() but
    * might be synchronized using a conditional lock.
    * 
-   * Since: 1.0.0.8
+   * Since: 2.0.0
    */
   worker_thread_signals[DO_POLL] =
     g_signal_new("do-poll",
@@ -135,13 +122,6 @@ ags_worker_thread_class_init(AgsWorkerThreadClass *worker_thread)
 		 NULL, NULL,
 		 g_cclosure_marshal_VOID__VOID,
 		 G_TYPE_NONE, 0);
-}
-
-void
-ags_worker_thread_connectable_interface_init(AgsConnectableInterface *connectable)
-{
-  connectable->connect = ags_worker_thread_connect;
-  connectable->disconnect = ags_worker_thread_disconnect;
 }
 
 void
@@ -170,18 +150,6 @@ ags_worker_thread_init(AgsWorkerThread *worker_thread)
 
   /* worker thread */
   worker_thread->worker_thread = (pthread_t *) malloc(sizeof(pthread_t));  
-}
-
-void
-ags_worker_thread_connect(AgsConnectable *connectable)
-{
-  /* empty */
-}
-
-void
-ags_worker_thread_disconnect(AgsConnectable *connectable)
-{
-  /* empty */
 }
 
 void
@@ -313,7 +281,7 @@ ags_worker_thread_stop(AgsThread *thread)
  * Do loop and invoke ags_worker_thread_do_poll() unless flag
  * AGS_WORKER_THREAD_RUNNING was unset.
  * 
- * Since: 1.0.0.8
+ * Since: 2.0.0
  */
 void*
 ags_woker_thread_do_poll_loop(void *ptr)
@@ -335,7 +303,7 @@ ags_woker_thread_do_poll_loop(void *ptr)
  *
  * Do poll your work. It is called of the worker thread.
  *
- * Since: 1.0.0.8
+ * Since: 2.0.0
  */
 void
 ags_worker_thread_do_poll(AgsWorkerThread *worker_thread)
@@ -350,11 +318,11 @@ ags_worker_thread_do_poll(AgsWorkerThread *worker_thread)
 /**
  * ags_worker_thread_new:
  *
- * Create a new #AgsWorkerThread.
+ * Create a new instance of #AgsWorkerThread.
  *
  * Returns: the new #AgsWorkerThread
  *
- * Since: 1.0.0.8
+ * Since: 2.0.0
  */
 AgsWorkerThread*
 ags_worker_thread_new()

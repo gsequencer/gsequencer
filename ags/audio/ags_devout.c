@@ -40,6 +40,7 @@
 
 #define _GNU_SOURCE
 #include <signal.h>
+#define _GNU_SOURCE
 #include <poll.h>
 
 #include <string.h>
@@ -215,7 +216,7 @@ ags_devout_get_type (void)
   static volatile gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
-    GType ags_type_devout;
+    GType ags_type_devout = 0;
 
     static const GTypeInfo ags_devout_info = {
       sizeof(AgsDevoutClass),
@@ -253,6 +254,8 @@ ags_devout_get_type (void)
     g_type_add_interface_static(ags_type_devout,
 				AGS_TYPE_SOUNDCARD,
 				&ags_soundcard_interface_info);
+
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_devout);
   }
 
   return g_define_type_id__volatile;
@@ -3844,7 +3847,8 @@ ags_devout_alsa_free(AgsSoundcard *soundcard)
   /* remove poll fd */
   pthread_mutex_lock(devout_mutex);
 
-  poll_fd = g_list_copy(devout->poll_fd);
+  poll_fd =
+    start_poll_fd = g_list_copy(devout->poll_fd);
 
   pthread_mutex_unlock(devout_mutex);
   
@@ -3879,7 +3883,7 @@ ags_devout_alsa_free(AgsSoundcard *soundcard)
   pthread_mutex_unlock(devout_mutex);
   
 #ifdef AGS_WITH_ALSA
-  snd_pcm_drain(devout->out.alsa.handle);
+  //  snd_pcm_drain(devout->out.alsa.handle);
   snd_pcm_close(devout->out.alsa.handle);
   devout->out.alsa.handle = NULL;
 #endif

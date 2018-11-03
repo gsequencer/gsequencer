@@ -45,10 +45,8 @@ struct _AgsCaptureWaveAudioRun
   AgsRecallAudioRun recall_audio_run;
 
   void *file_buffer;
-
-  AgsAudioFile *audio_file;
-
-  AgsTimestamp *timestamp;
+  
+  guint64 x_offset;
 };
 
 struct _AgsCaptureWaveAudioRunClass

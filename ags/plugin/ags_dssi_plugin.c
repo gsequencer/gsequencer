@@ -95,8 +95,8 @@ ags_dssi_plugin_get_type()
   static volatile gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
-    GType ags_type_dssi_plugin;
-    
+    GType ags_type_dssi_plugin = 0;
+
     static const GTypeInfo ags_dssi_plugin_info = {
       sizeof(AgsDssiPluginClass),
       NULL, /* dssi_init */
@@ -114,7 +114,7 @@ ags_dssi_plugin_get_type()
 						  &ags_dssi_plugin_info,
 						  0);
 
-    g_once_init_leave (&g_define_type_id__volatile, ags_type_dssi_plugin);
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_dssi_plugin);
   }
 
   return g_define_type_id__volatile;

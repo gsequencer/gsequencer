@@ -35,9 +35,11 @@ void ags_certificate_base_init(AgsCertificateInterface *interface);
 GType
 ags_certificate_get_type()
 {
-  static GType ags_type_certificate = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_certificate){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_certificate = 0;
+
     static const GTypeInfo ags_certificate_info = {
       sizeof(AgsCertificateInterface),
       (GBaseInitFunc) ags_certificate_base_init,
@@ -45,11 +47,13 @@ ags_certificate_get_type()
     };
 
     ags_type_certificate = g_type_register_static(G_TYPE_INTERFACE,
-						  "AgsCertificate\0", &ags_certificate_info,
+						  "AgsCertificate", &ags_certificate_info,
 						  0);
+
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_certificate);
   }
 
-  return(ags_type_certificate);
+  return g_define_type_id__volatile;
 }
 
 void
@@ -68,7 +72,7 @@ ags_certificate_base_init(AgsCertificateInterface *interface)
  *
  * Returns: %TRUE on success, otherwise %FALSE
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 gboolean
 ags_certificate_verify(AgsCertificate *certificate,

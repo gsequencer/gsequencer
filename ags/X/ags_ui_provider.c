@@ -37,15 +37,15 @@ ags_ui_provider_get_type()
   static volatile gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
-    GType ags_type_ui_provider;
-
+    GType ags_type_ui_provider = 0;
+    
     ags_type_ui_provider = g_type_register_static_simple(G_TYPE_INTERFACE,
 							 "AgsUiProvider",
 							 sizeof(AgsUiProviderInterface),
 							 (GClassInitFunc) ags_ui_provider_class_init,
 							 0, NULL, 0);
 
-    g_once_init_leave (&g_define_type_id__volatile, ags_type_ui_provider);
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_ui_provider);
   }
 
   return g_define_type_id__volatile;

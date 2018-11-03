@@ -49,9 +49,14 @@ void ags_automation_toolbar_tool_popup_select_acceleration_callback(GtkWidget *i
 void ags_automation_toolbar_tool_popup_ramp_acceleration_callback(GtkWidget *item, AgsAutomationToolbar *automation_toolbar);
 void ags_automation_toolbar_tool_popup_position_cursor_callback(GtkWidget *item, AgsAutomationToolbar *automation_toolbar);
 
+void ags_automation_toolbar_tool_popup_enable_all_lines_callback(GtkWidget *item, AgsAutomationToolbar *automation_toolbar);
+void ags_automation_toolbar_tool_popup_disable_all_lines_callback(GtkWidget *item, AgsAutomationToolbar *automation_toolbar);
+
 void ags_automation_toolbar_zoom_callback(GtkComboBox *combo_box, AgsAutomationToolbar *automation_toolbar);
 
 void ags_automation_toolbar_port_callback(GtkComboBox *combo_box,
 					  AgsAutomationToolbar *automation_toolbar);
+
+void ags_automation_toolbar_opacity_callback(GtkSpinButton *spin_button, AgsAutomationToolbar *automation_toolbar);
 
 #endif /*__AGS_AUTOMATION_TOOLBAR_CALLBACKS_H__*/

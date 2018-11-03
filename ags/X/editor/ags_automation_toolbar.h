@@ -70,6 +70,8 @@ struct _AgsAutomationToolbar
   GtkComboBox *zoom;
 
   GtkComboBox *port;
+
+  GtkSpinButton *opacity;
 };
 
 struct _AgsAutomationToolbarClass

@@ -64,7 +64,7 @@ ags_machine_radio_button_get_type(void)
   static volatile gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
-    GType ags_type_machine_radio_button;
+    GType ags_type_machine_radio_button = 0;
 
     static const GTypeInfo ags_machine_radio_button_info = {
       sizeof (AgsMachineRadioButtonClass),
@@ -92,7 +92,7 @@ ags_machine_radio_button_get_type(void)
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
 
-    g_once_init_leave (&g_define_type_id__volatile, ags_type_machine_radio_button);
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_machine_radio_button);
   }
 
   return g_define_type_id__volatile;
@@ -129,7 +129,7 @@ ags_machine_radio_button_class_init(AgsMachineRadioButtonClass *machine_radio_bu
    *
    * The assigned #AgsMachine
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("machine",
 				   i18n_pspec("assigned machine"),
@@ -255,7 +255,7 @@ ags_machine_radio_button_finalize(GObject *gobject)
  *
  * Returns: a new #AgsMachineRadioButton
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsMachineRadioButton*
 ags_machine_radio_button_new()

@@ -92,7 +92,7 @@ ags_envelope_channel_get_type()
   static volatile gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
-    GType ags_type_envelope_channel;
+    GType ags_type_envelope_channel = 0;
 
     static const GTypeInfo ags_envelope_channel_info = {
       sizeof (AgsEnvelopeChannelClass),
@@ -121,7 +121,7 @@ ags_envelope_channel_get_type()
 				AGS_TYPE_PLUGIN,
 				&ags_plugin_interface_info);
 
-    g_once_init_leave (&g_define_type_id__volatile, ags_type_envelope_channel);
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_envelope_channel);
   }
 
   return g_define_type_id__volatile;
@@ -306,7 +306,7 @@ ags_envelope_channel_init(AgsEnvelopeChannel *envelope_channel)
 						   NULL);
   g_object_ref(envelope_channel->use_note_length);
   
-  envelope_channel->use_note_length->port_value.ags_port_boolean = FALSE;
+  envelope_channel->use_note_length->port_value.ags_port_boolean = TRUE;
 
   /* use fixed length */
   envelope_channel->use_fixed_length = g_object_new(AGS_TYPE_PORT,

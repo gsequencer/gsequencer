@@ -98,7 +98,11 @@ struct _AgsCoreAudioPort
   AudioQueueRef aq_ref;
   AudioStreamBasicDescription data_format;
 
-  AudioQueueBufferRef buf_ref[8];
+  AudioQueueRef record_aq_ref;
+  AudioStreamBasicDescription record_format;
+
+  AudioQueueBufferRef buf_ref[16];
+  AudioQueueBufferRef record_buf_ref[16];
   
   MIDIClientRef *midi_client;
   MIDIPortRef *midi_port;
@@ -114,7 +118,8 @@ struct _AgsCoreAudioPort
 
   unsigned int midi_port_number;
 
-  volatile gboolean running;
+  volatile gboolean output_running;
+  volatile gboolean input_running;
   volatile gboolean is_empty;
   volatile guint queued;
 };

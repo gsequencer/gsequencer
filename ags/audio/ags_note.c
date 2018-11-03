@@ -77,7 +77,7 @@ ags_note_get_type()
   static volatile gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
-    GType ags_type_note;
+    GType ags_type_note = 0;
 
     static const GTypeInfo ags_note_info = {
       sizeof(AgsNoteClass),
@@ -95,6 +95,8 @@ ags_note_get_type()
 					   "AgsNote",
 					   &ags_note_info,
 					   0);
+
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_note);
   }
 
   return g_define_type_id__volatile;
@@ -1652,7 +1654,7 @@ ags_note_new()
 AgsNote*
 ags_note_new_with_offset(guint x0, guint x1,
 			 guint y,
-			 gdouble stream_delay, guint stream_attack)
+			 gdouble stream_delay, gdouble stream_attack)
 {
   AgsNote *note;
 

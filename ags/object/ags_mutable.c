@@ -38,8 +38,8 @@ ags_mutable_get_type()
   static volatile gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
-    GType ags_type_mutable;
-    
+    GType ags_type_mutable = 0;
+
     static const GTypeInfo ags_mutable_info = {
       sizeof(AgsMutableInterface),
       (GBaseInitFunc) ags_mutable_base_init,
@@ -50,7 +50,7 @@ ags_mutable_get_type()
 					       "AgsMutable", &ags_mutable_info,
 					       0);
 
-    g_once_init_leave (&g_define_type_id__volatile, ags_type_mutable);
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_mutable);
   }
 
   return g_define_type_id__volatile;
@@ -69,7 +69,7 @@ ags_mutable_base_init(AgsMutableInterface *interface)
  *
  * Mute a class instance.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_mutable_set_muted(AgsMutable *mutable, gboolean muted)

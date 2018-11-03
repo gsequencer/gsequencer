@@ -223,8 +223,8 @@ ags_channel_get_type()
   static volatile gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
-    GType ags_type_channel;
-    
+    GType ags_type_channel = 0;
+
     static const GTypeInfo ags_channel_info = {
       sizeof(AgsChannelClass),
       NULL, /* base_init */
@@ -251,7 +251,7 @@ ags_channel_get_type()
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
 
-    g_once_init_leave (&g_define_type_id__volatile, ags_type_channel);
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_channel);
   }
 
   return g_define_type_id__volatile;
@@ -261,6 +261,7 @@ void
 ags_channel_class_init(AgsChannelClass *channel)
 {
   GObjectClass *gobject;
+
   GParamSpec *param_spec;
 
   ags_channel_parent_class = g_type_class_peek_parent(channel);
@@ -285,7 +286,7 @@ ags_channel_class_init(AgsChannelClass *channel)
   param_spec = g_param_spec_object("audio",
 				   i18n_pspec("assigned audio"),
 				   i18n_pspec("The audio it is assigned with"),
-				   G_TYPE_OBJECT,
+				   AGS_TYPE_AUDIO,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_AUDIO,
@@ -3062,6 +3063,9 @@ ags_channel_set_ability_flags(AgsChannel *channel, guint ability_flags)
 
       channel_thread = ags_channel_thread_new(soundcard,
 					      channel);
+      ags_channel_thread_set_sound_scope(channel_thread,
+					 AGS_SOUND_SCOPE_PLAYBACK);
+
       g_object_set(channel_thread,
 		   "frequency", ceil((gdouble) samplerate / (gdouble) buffer_size) + AGS_SOUNDCARD_DEFAULT_OVERCLOCK,
 		   NULL);
@@ -3074,31 +3078,9 @@ ags_channel_set_ability_flags(AgsChannel *channel, guint ability_flags)
       audio_thread = ags_playback_domain_get_audio_thread(playback_domain,
 							  AGS_SOUND_SCOPE_PLAYBACK);
 
-      ags_thread_add_child(audio_thread,
-			   channel_thread);
-    }
-
-    /* notation ability */
-    if((AGS_SOUND_ABILITY_NOTATION & (ability_flags)) != 0 &&
-       (AGS_SOUND_ABILITY_NOTATION & (channel_ability_flags)) == 0){
-      AgsAudioThread *audio_thread;
-      AgsChannelThread *channel_thread;
-      
-      channel_thread = ags_channel_thread_new(soundcard,
-					      channel);
-      g_object_set(channel_thread,
-		   "frequency", ceil((gdouble) samplerate / (gdouble) buffer_size) + AGS_SOUNDCARD_DEFAULT_OVERCLOCK,
-		   NULL);
-    
-      ags_playback_set_channel_thread(playback,
-				      channel_thread,
-				      AGS_SOUND_SCOPE_NOTATION);    
-
-      /* set thread child */
-      audio_thread = ags_playback_domain_get_audio_thread(playback_domain,
-							  AGS_SOUND_SCOPE_NOTATION);      
-      ags_thread_add_child(audio_thread,
-			   channel_thread);
+      ags_thread_add_child_extended(audio_thread,
+				    channel_thread,
+				    TRUE, TRUE);
     }
 
     /* sequencer ability */
@@ -3109,6 +3091,9 @@ ags_channel_set_ability_flags(AgsChannel *channel, guint ability_flags)
 
       channel_thread = ags_channel_thread_new(soundcard,
 					      channel);
+      ags_channel_thread_set_sound_scope(channel_thread,
+					 AGS_SOUND_SCOPE_SEQUENCER);
+
       g_object_set(channel_thread,
 		   "frequency", ceil((gdouble) samplerate / (gdouble) buffer_size) + AGS_SOUNDCARD_DEFAULT_OVERCLOCK,
 		   NULL);
@@ -3121,8 +3106,36 @@ ags_channel_set_ability_flags(AgsChannel *channel, guint ability_flags)
       audio_thread = ags_playback_domain_get_audio_thread(playback_domain,
 							  AGS_SOUND_SCOPE_SEQUENCER);
 
-      ags_thread_add_child(audio_thread,
-			   channel_thread);
+      ags_thread_add_child_extended(audio_thread,
+				    channel_thread,
+				    TRUE, TRUE);
+    }
+
+    /* notation ability */
+    if((AGS_SOUND_ABILITY_NOTATION & (ability_flags)) != 0 &&
+       (AGS_SOUND_ABILITY_NOTATION & (channel_ability_flags)) == 0){
+      AgsAudioThread *audio_thread;
+      AgsChannelThread *channel_thread;
+      
+      channel_thread = ags_channel_thread_new(soundcard,
+					      channel);
+      ags_channel_thread_set_sound_scope(channel_thread,
+					 AGS_SOUND_SCOPE_NOTATION);
+
+      g_object_set(channel_thread,
+		   "frequency", ceil((gdouble) samplerate / (gdouble) buffer_size) + AGS_SOUNDCARD_DEFAULT_OVERCLOCK,
+		   NULL);
+    
+      ags_playback_set_channel_thread(playback,
+				      channel_thread,
+				      AGS_SOUND_SCOPE_NOTATION);    
+
+      /* set thread child */
+      audio_thread = ags_playback_domain_get_audio_thread(playback_domain,
+							  AGS_SOUND_SCOPE_NOTATION);      
+      ags_thread_add_child_extended(audio_thread,
+				    channel_thread,
+				    TRUE, TRUE);
     }
 
     /* wave ability */
@@ -3133,6 +3146,9 @@ ags_channel_set_ability_flags(AgsChannel *channel, guint ability_flags)
 
       channel_thread = ags_channel_thread_new(soundcard,
 					      channel);
+      ags_channel_thread_set_sound_scope(channel_thread,
+					 AGS_SOUND_SCOPE_WAVE);
+
       g_object_set(channel_thread,
 		   "frequency", ceil((gdouble) samplerate / (gdouble) buffer_size) + AGS_SOUNDCARD_DEFAULT_OVERCLOCK,
 		   NULL);
@@ -3145,8 +3161,9 @@ ags_channel_set_ability_flags(AgsChannel *channel, guint ability_flags)
       audio_thread = ags_playback_domain_get_audio_thread(playback_domain,
 							  AGS_SOUND_SCOPE_WAVE);
 
-      ags_thread_add_child(audio_thread,
-			   channel_thread);
+      ags_thread_add_child_extended(audio_thread,
+				    channel_thread,
+				    TRUE, TRUE);
     }
 
     /* midi ability */
@@ -3157,6 +3174,9 @@ ags_channel_set_ability_flags(AgsChannel *channel, guint ability_flags)
 
       channel_thread = ags_channel_thread_new(soundcard,
 					      channel);
+      ags_channel_thread_set_sound_scope(channel_thread,
+					 AGS_SOUND_SCOPE_MIDI);
+
       g_object_set(channel_thread,
 		   "frequency", ceil((gdouble) samplerate / (gdouble) buffer_size) + AGS_SOUNDCARD_DEFAULT_OVERCLOCK,
 		   NULL);
@@ -3169,8 +3189,9 @@ ags_channel_set_ability_flags(AgsChannel *channel, guint ability_flags)
       audio_thread = ags_playback_domain_get_audio_thread(playback_domain,
 							  AGS_SOUND_SCOPE_MIDI);
 
-      ags_thread_add_child(audio_thread,
-			   channel_thread);
+      ags_thread_add_child_extended(audio_thread,
+				    channel_thread,
+				    TRUE, TRUE);
     }
   }
     
@@ -3250,8 +3271,8 @@ ags_channel_unset_ability_flags(AgsChannel *channel, guint ability_flags)
 			    channel_thread);    
 
     ags_playback_set_channel_thread(playback,
-				    AGS_SOUND_SCOPE_PLAYBACK,
-				    NULL);
+				    NULL,
+				    AGS_SOUND_SCOPE_PLAYBACK);
   }
 
   /* notation ability */
@@ -3268,8 +3289,8 @@ ags_channel_unset_ability_flags(AgsChannel *channel, guint ability_flags)
 			    channel_thread);    
 
     ags_playback_set_channel_thread(playback,
-				    AGS_SOUND_SCOPE_NOTATION,
-				    NULL);
+				    NULL,
+				    AGS_SOUND_SCOPE_NOTATION);
   }
 
   /* sequencer ability */
@@ -3286,8 +3307,8 @@ ags_channel_unset_ability_flags(AgsChannel *channel, guint ability_flags)
 			    channel_thread);    
 
     ags_playback_set_channel_thread(playback,
-				    AGS_SOUND_SCOPE_SEQUENCER,
-				    NULL);
+				    NULL,
+				    AGS_SOUND_SCOPE_SEQUENCER);
   }
 
   /* wave ability */
@@ -3304,8 +3325,8 @@ ags_channel_unset_ability_flags(AgsChannel *channel, guint ability_flags)
 			    channel_thread);    
 
     ags_playback_set_channel_thread(playback,
-				    AGS_SOUND_SCOPE_WAVE,
-				    NULL);
+				    NULL,
+				    AGS_SOUND_SCOPE_WAVE);
   }
 
   /* midi ability */
@@ -3322,8 +3343,8 @@ ags_channel_unset_ability_flags(AgsChannel *channel, guint ability_flags)
 			    channel_thread);    
 
     ags_playback_set_channel_thread(playback,
-				    AGS_SOUND_SCOPE_MIDI,
-				    NULL);
+				    NULL,
+				    AGS_SOUND_SCOPE_MIDI);
   }
 
   /* unset flags */
@@ -4881,7 +4902,7 @@ ags_channel_set_link(AgsChannel *channel, AgsChannel *link,
 
     pthread_mutex_t *mutex;
     
-    if(AGS_IS_OUTPUT(channel)){
+    if(AGS_IS_INPUT(channel)){
       current = channel;
       current_link = link;
 
@@ -7379,14 +7400,53 @@ ags_channel_remove_recall_container(AgsChannel *channel, GObject *recall_contain
 void
 ags_channel_add_recall(AgsChannel *channel, GObject *recall, gboolean play_context)
 {
+  GObject *output_soundcard, *input_soundcard;
+
+  gint output_soundcard_channel, input_soundcard_channel;
+  guint samplerate;
+  guint buffer_size;
+  guint format;
   gboolean success;
+
+  pthread_mutex_t *channel_mutex;
   
   if(!AGS_IS_CHANNEL(channel) ||
      !AGS_IS_RECALL(recall)){
     return;
   }
 
+  /* get channel mutex */
+  pthread_mutex_lock(ags_channel_get_class_mutex());
+
+  channel_mutex = channel->obj_mutex;
+  
+  pthread_mutex_unlock(ags_channel_get_class_mutex());
+
+  /* get some fields */
+  pthread_mutex_lock(channel_mutex);
+
+  output_soundcard = channel->output_soundcard;
+  output_soundcard_channel = channel->output_soundcard_channel;
+
+  input_soundcard = channel->input_soundcard;
+  input_soundcard_channel = channel->input_soundcard_channel;
+
+  samplerate = channel->samplerate;
+  buffer_size = channel->buffer_size;
+  format = channel->format; 
+  
+  pthread_mutex_unlock(channel_mutex);
+  
   success = FALSE;
+  g_object_set(recall,
+	       "output-soundcard", output_soundcard,
+	       "output-soundcard-channel", output_soundcard_channel,
+	       "input-soundcard", input_soundcard,
+	       "input-soundcard-channel", input_soundcard_channel,
+	       "samplerate", samplerate,
+	       "buffer-size", buffer_size,
+	       "format", format,
+	       NULL);
   
   if(play_context){
     pthread_mutex_t *play_mutex;
@@ -9594,7 +9654,7 @@ ags_channel_real_play_recall(AgsChannel *channel,
     /* copy play context */
     pthread_mutex_lock(play_mutex);
 
-    list_start = g_list_copy(channel->play);
+    list_start = ags_list_util_copy_and_ref(channel->play);
 
     pthread_mutex_unlock(play_mutex);
 
@@ -9614,7 +9674,7 @@ ags_channel_real_play_recall(AgsChannel *channel,
     /* copy recall context */
     pthread_mutex_lock(recall_mutex);
 
-    list_start = g_list_copy(channel->recall);
+    list_start = ags_list_util_copy_and_ref(channel->recall);
     
     pthread_mutex_unlock(recall_mutex);
 
@@ -9623,8 +9683,27 @@ ags_channel_real_play_recall(AgsChannel *channel,
       list_start = g_list_reverse(list_start);
   }
   
-  /* play  */
+  /* automate and play  */
   staging_flags = staging_mask & staging_flags;
+
+  if((AGS_SOUND_STAGING_AUTOMATE & (staging_flags)) != 0){
+    while(list != NULL){
+      recall = AGS_RECALL(list->data);
+    
+      /* play stages */
+      if(AGS_IS_RECALL_CHANNEL(recall)){
+	ags_recall_set_staging_flags(recall,
+				     AGS_SOUND_STAGING_AUTOMATE);
+	ags_recall_unset_staging_flags(recall,
+				       AGS_SOUND_STAGING_AUTOMATE);
+      }
+      
+      list = list->next;
+    }
+  }
+
+  staging_flags &= (~AGS_SOUND_STAGING_AUTOMATE);
+  list = list_start;
   
   while((list = ags_recall_find_recycling_context(list,
 						  (GObject *) recycling_context)) != NULL){
@@ -9639,7 +9718,8 @@ ags_channel_real_play_recall(AgsChannel *channel,
     list = list->next;
   }
   
-  g_list_free(list_start);
+  g_list_free_full(list_start,
+		   g_object_unref);
 
   //FIXME:JK: uncomment
   //  ags_channel_set_staging_flags(channel, sound_scope,
@@ -11020,7 +11100,7 @@ ags_channel_get_level(AgsChannel *channel)
  *
  * Recursive set property for #AgsChannel.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_channel_recursive_set_property(AgsChannel *channel,
@@ -11324,6 +11404,10 @@ ags_channel_real_recursive_run_stage(AgsChannel *channel,
     current_channel = channel;
 
     if(AGS_IS_OUTPUT(channel)){
+      g_object_get(channel,
+		   "audio", &current_audio,
+		   NULL);
+      
       goto ags_channel_recursive_prepare_run_stage_up_OUTPUT;
     }
 
@@ -11933,6 +12017,10 @@ ags_channel_real_recursive_run_stage(AgsChannel *channel,
     current_channel = channel;
 
     if(AGS_IS_OUTPUT(channel)){
+      g_object_get(channel,
+		   "audio", &current_audio,
+		   NULL);
+      
       goto ags_channel_recursive_prepare_run_stage_up_OUTPUT;
     }
 
@@ -12481,8 +12569,12 @@ ags_channel_real_recursive_run_stage(AgsChannel *channel,
     }
 
     current_channel = channel;
-    
+
     if(AGS_IS_OUTPUT(channel)){
+      g_object_get(channel,
+		   "audio", &current_audio,
+		   NULL);
+      
       goto ags_channel_recursive_do_run_stage_up_OUTPUT;
     }
 
@@ -13732,7 +13824,7 @@ ags_channel_real_recursive_run_stage(AgsChannel *channel,
 						 sound_scope, AGS_CHANNEL_RECURSIVE_PREPARE_STAGING_DUPLICATE);
 
       /* resolve */
-      ags_channel_recursive_prepare_run_stage_down(link,
+      ags_channel_recursive_prepare_run_stage_down(channel,
 						   recycling_context,
 						   sound_scope, AGS_CHANNEL_RECURSIVE_PREPARE_STAGING_RESOLVE);
       ags_channel_recursive_prepare_run_stage_up(link,

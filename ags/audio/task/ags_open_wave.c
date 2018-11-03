@@ -69,9 +69,11 @@ enum{
 GType
 ags_open_wave_get_type()
 {
-  static GType ags_type_open_wave = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_open_wave){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_open_wave = 0;
+
     static const GTypeInfo ags_open_wave_info = {
       sizeof(AgsOpenWaveClass),
       NULL, /* base_init */
@@ -88,9 +90,11 @@ ags_open_wave_get_type()
 						"AgsOpenWave",
 						&ags_open_wave_info,
 						0);
+
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_open_wave);
   }
-  
-  return(ags_type_open_wave);
+
+  return g_define_type_id__volatile;
 }
 
 void
@@ -375,7 +379,6 @@ ags_open_wave_launch(AgsTask *task)
 
   guint n_pads, current_pads;
   guint n_audio_channels, current_audio_channels;
-  guint i;
 
   open_wave = task;
 

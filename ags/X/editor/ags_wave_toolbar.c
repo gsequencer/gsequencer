@@ -57,7 +57,7 @@ ags_wave_toolbar_get_type(void)
   static volatile gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
-    GType ags_type_wave_toolbar;
+    GType ags_type_wave_toolbar = 0;
 
     static const GTypeInfo ags_wave_toolbar_info = {
       sizeof (AgsWaveToolbarClass),
@@ -85,7 +85,7 @@ ags_wave_toolbar_get_type(void)
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
 
-    g_once_init_leave (&g_define_type_id__volatile, ags_type_wave_toolbar);
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_wave_toolbar);
   }
 
   return g_define_type_id__volatile;
@@ -176,7 +176,7 @@ ags_wave_toolbar_init(AgsWaveToolbar *wave_toolbar)
   
   /* menu tool */
   wave_toolbar->menu_tool = (GtkMenuToolButton *) g_object_new(GTK_TYPE_MENU_TOOL_BUTTON,
-							       "label", i18n("tool"),
+							       "label", i18n("Tool"),
 							       "stock-id", GTK_STOCK_EXECUTE,
 							       NULL);
   gtk_toolbar_append_widget((GtkToolbar *) wave_toolbar, (GtkWidget *) wave_toolbar->menu_tool, i18n("additional tools"), NULL);
@@ -193,7 +193,7 @@ ags_wave_toolbar_init(AgsWaveToolbar *wave_toolbar)
   /*  */
   wave_toolbar->zoom_history = 4;
   
-  label = (GtkLabel *) gtk_label_new(i18n("zoom"));
+  label = (GtkLabel *) gtk_label_new(i18n("Zoom"));
   gtk_container_add(GTK_CONTAINER(wave_toolbar),
 		    (GtkWidget *) label);
 
@@ -206,7 +206,12 @@ ags_wave_toolbar_init(AgsWaveToolbar *wave_toolbar)
 			    NULL);
 
   /* opacity */
+  label = (GtkLabel *) gtk_label_new(i18n("Opacity"));
+  gtk_container_add(GTK_CONTAINER(wave_toolbar),
+		    (GtkWidget *) label);
+
   wave_toolbar->opacity = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, 1.0, 0.001);
+  gtk_spin_button_set_value(wave_toolbar->opacity, 0.5);
   gtk_toolbar_append_widget((GtkToolbar *) wave_toolbar,
 			    (GtkWidget *) wave_toolbar->opacity,
 			    NULL,
@@ -367,7 +372,7 @@ ags_wave_toolbar_disconnect(AgsConnectable *connectable)
  *
  * Returns: a new #GtkMenu
  *
- * Since: 1.2.0
+ * Since: 2.0.0
  */
 GtkMenu*
 ags_wave_toolbar_tool_popup_new(GtkToolbar *wave_toolbar)
@@ -385,6 +390,15 @@ ags_wave_toolbar_tool_popup_new(GtkToolbar *wave_toolbar)
   item = (GtkMenuItem *) gtk_menu_item_new_with_label(i18n("position cursor"));
   gtk_menu_shell_append((GtkMenuShell *) tool_popup, (GtkWidget *) item);
 
+  gtk_menu_shell_append((GtkMenuShell*) tool_popup,
+			(GtkWidget*) gtk_separator_menu_item_new());
+  
+  item = (GtkMenuItem *) gtk_menu_item_new_with_label(i18n("enable all lines"));
+  gtk_menu_shell_append((GtkMenuShell *) tool_popup, (GtkWidget *) item);
+
+  item = (GtkMenuItem *) gtk_menu_item_new_with_label(i18n("disable all lines"));
+  gtk_menu_shell_append((GtkMenuShell *) tool_popup, (GtkWidget *) item);
+
   /* connect */
   list_start = 
     list = gtk_container_get_children((GtkContainer *) tool_popup);
@@ -395,6 +409,14 @@ ags_wave_toolbar_tool_popup_new(GtkToolbar *wave_toolbar)
   list = list->next;
   g_signal_connect(G_OBJECT(list->data), "activate",
 		   G_CALLBACK(ags_wave_toolbar_tool_popup_position_cursor_callback), (gpointer) wave_toolbar);
+
+  list = list->next->next;
+  g_signal_connect(G_OBJECT(list->data), "activate",
+		   G_CALLBACK(ags_wave_toolbar_tool_popup_enable_all_lines_callback), (gpointer) wave_toolbar);
+
+  list = list->next;
+  g_signal_connect(G_OBJECT(list->data), "activate",
+		   G_CALLBACK(ags_wave_toolbar_tool_popup_disable_all_lines_callback), (gpointer) wave_toolbar);
 
   g_list_free(list_start);
 
@@ -411,7 +433,7 @@ ags_wave_toolbar_tool_popup_new(GtkToolbar *wave_toolbar)
  *
  * Returns: a new #AgsWaveToolbar
  *
- * Since: 1.2.0
+ * Since: 2.0.0
  */
 AgsWaveToolbar*
 ags_wave_toolbar_new()

@@ -256,7 +256,6 @@
 ./ags/audio/ags_automation.c
 ./ags/audio/ags_buffer.c
 ./ags/audio/ags_channel.c
-./ags/audio/ags_channel_iter.c
 ./ags/audio/ags_char_buffer_util.c
 ./ags/audio/ags_devin.c
 ./ags/audio/ags_devout.c
@@ -310,7 +309,6 @@
 ./ags/audio/file/ags_audio_file.c
 ./ags/audio/file/ags_audio_file_link.c
 ./ags/audio/file/ags_audio_file_xml.c
-./ags/audio/file/ags_audio_xml_serialization_factory.c
 ./ags/audio/file/ags_ipatch.c
 ./ags/audio/file/ags_ipatch_dls2_reader.c
 ./ags/audio/file/ags_ipatch_gig_reader.c
@@ -345,6 +343,8 @@
 ./ags/audio/recall/ags_buffer_recycling.c
 ./ags/audio/recall/ags_capture_wave_audio.c
 ./ags/audio/recall/ags_capture_wave_audio_run.c
+./ags/audio/recall/ags_capture_wave_channel.c
+./ags/audio/recall/ags_capture_wave_channel_run.c
 ./ags/audio/recall/ags_copy_audio_signal.c
 ./ags/audio/recall/ags_copy_channel.c
 ./ags/audio/recall/ags_copy_channel_run.c
@@ -470,13 +470,13 @@
 ./ags/audio/thread/ags_export_thread.c
 ./ags/audio/thread/ags_sequencer_thread.c
 ./ags/audio/thread/ags_soundcard_thread.c
+./ags/audio/thread/ags_wave_loader.c
 ./ags/file/ags_file.c
 ./ags/file/ags_file_id_ref.c
 ./ags/file/ags_file_launch.c
 ./ags/file/ags_file_link.c
 ./ags/file/ags_file_lookup.c
 ./ags/file/ags_file_util.c
-./ags/file/ags_xml_serialization_factory.c
 ./ags/lib/ags_buffer_util.c
 ./ags/lib/ags_complex.c
 ./ags/lib/ags_conversion.c
@@ -526,7 +526,6 @@
 ./ags/plugin/ags_lv2_worker_manager.c
 ./ags/plugin/ags_lv2ui_manager.c
 ./ags/plugin/ags_lv2ui_plugin.c
-./ags/plugin/ags_plugin_factory.c
 ./ags/plugin/ags_plugin_port.c
 ./ags/server/ags_registry.c
 ./ags/server/ags_server.c
@@ -572,11 +571,8 @@
 ./ags/thread/ags_thread_application_context.c
 ./ags/thread/ags_thread_pool.c
 ./ags/thread/ags_timestamp.c
-./ags/thread/ags_timestamp_factory.c
-./ags/thread/ags_timestamp_thread.c
 ./ags/thread/ags_worker_thread.c
 ./ags/thread/file/ags_thread_file_xml.c
-./ags/thread/file/ags_thread_xml_serialization_factory.c
 ./ags/util/ags_destroy_util.c
 ./ags/util/ags_id_generator.c
 ./ags/util/ags_list_util.c
@@ -590,7 +586,6 @@
 ./ags/widget/ags_hled_array.c
 ./ags/widget/ags_hlevel_box.c
 ./ags/widget/ags_hscale_box.c
-./ags/widget/ags_htimebar.c
 ./ags/widget/ags_indicator.c
 ./ags/widget/ags_led.c
 ./ags/widget/ags_led_array.c
@@ -604,11 +599,8 @@
 ./ags/widget/ags_scrolled_level_box.c
 ./ags/widget/ags_scrolled_piano.c
 ./ags/widget/ags_scrolled_scale_box.c
-./ags/widget/ags_table.c
-./ags/widget/ags_timebar.c
 ./ags/widget/ags_vindicator.c
 ./ags/widget/ags_vled_array.c
 ./ags/widget/ags_vlevel_box.c
 ./ags/widget/ags_vscale_box.c
-./ags/widget/ags_waveform.c
 ./ags/widget/ags_widget_marshal.c

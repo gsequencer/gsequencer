@@ -51,7 +51,7 @@ ags_feed_audio_signal_get_type()
   static volatile gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
-    GType ags_type_feed_audio_signal;
+    GType ags_type_feed_audio_signal = 0;
 
     static const GTypeInfo ags_feed_audio_signal_info = {
       sizeof (AgsFeedAudioSignalClass),
@@ -69,9 +69,11 @@ ags_feed_audio_signal_get_type()
 							"AgsFeedAudioSignal",
 							&ags_feed_audio_signal_info,
 							0);
+
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_feed_audio_signal);
   }
 
-  return(ags_type_feed_audio_signal);
+  return g_define_type_id__volatile;
 }
 
 void

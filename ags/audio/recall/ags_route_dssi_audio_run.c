@@ -1069,15 +1069,16 @@ ags_route_dssi_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_run,
     while(note != NULL){
       current_note = AGS_NOTE(note->data);
 
-      g_object_get(note,
+      g_object_get(current_note,
 		   "x0", &note_x0,
 		   "y", &note_y,
 		   NULL);
-    
-      //    g_message("--- %f %f ; %d %d",
-      //	      note->stream_delay, delay,
-      //	      note_x0, route_dssi_audio_run->count_beats_audio_run->notation_counter);
-
+#if 0    
+      g_message("--- %f %f ; %d %d",
+		current_note->stream_delay, delay,
+		note_x0, route_dssi_audio_run->count_beats_audio_run->notation_counter);
+#endif
+      
       //FIXME:JK: should consider delay
       if(note_y >= audio_start_mapping &&
 	 note_y < audio_end_mapping &&
@@ -1119,7 +1120,7 @@ ags_route_dssi_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_run,
 	       "audio", &audio,
 	       "audio-channel", &audio_channel,
 	       "recall-audio", &route_dssi_audio,
-	       "count-beats-aduio-run", &count_beats_audio_run,
+	       "count-beats-audio-run", &count_beats_audio_run,
 	       NULL);
 
   /* feed note - first attempt */
@@ -1216,6 +1217,20 @@ ags_route_dssi_audio_run_run_post(AgsRecall *recall)
 		     &value);
 
   notation_delay = g_value_get_double(&value);
+
+  g_value_unset(&value);
+
+  /* get bpm */
+  g_object_get(delay_audio,
+	       "bpm", &port,
+	       NULL);
+  
+  g_value_init(&value, G_TYPE_DOUBLE);
+
+  ags_port_safe_read(port,
+		     &value);
+
+  bpm = g_value_get_double(&value);
 
   g_value_unset(&value);
 

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -60,6 +60,9 @@ struct _AgsConfig
   GObject object;
 
   guint flags;
+
+  pthread_mutex_t *obj_mutex;
+  pthread_mutexattr_t *obj_mutexattr;
   
   gchar *version;
   gchar *build_id;
@@ -80,6 +83,8 @@ struct _AgsConfigClass
 };
 
 GType ags_config_get_type();
+
+pthread_mutex_t* ags_config_get_class_mutex();
 
 void ags_config_load_defaults(AgsConfig *config);
 void ags_config_load_from_file(AgsConfig *config, gchar *filename);

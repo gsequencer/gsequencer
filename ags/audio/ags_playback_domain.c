@@ -75,7 +75,7 @@ ags_playback_domain_get_type (void)
   static volatile gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
-    GType ags_type_playback_domain;
+    GType ags_type_playback_domain = 0;
 
     static const GTypeInfo ags_playback_domain_info = {
       sizeof(AgsPlaybackDomainClass),
@@ -93,6 +93,8 @@ ags_playback_domain_get_type (void)
 						      "AgsPlaybackDomain",
 						      &ags_playback_domain_info,
 						      0);
+
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_playback_domain);
   }
 
   return g_define_type_id__volatile;
@@ -166,8 +168,6 @@ ags_playback_domain_class_init(AgsPlaybackDomainClass *playback_domain)
 void
 ags_playback_domain_init(AgsPlaybackDomain *playback_domain)
 {
-  AgsMutexManager *mutex_manager;
-
   AgsConfig *config;
 
   gchar *thread_model, *super_threaded_scope;
@@ -175,8 +175,7 @@ ags_playback_domain_init(AgsPlaybackDomain *playback_domain)
   gboolean super_threaded_audio;
   guint i;
 
-  pthread_mutex_t *application_mutex;
-
+  pthread_mutex_t *config_mutex;
   pthread_mutex_t *mutex;
   pthread_mutexattr_t *attr;
 
@@ -200,15 +199,18 @@ ags_playback_domain_init(AgsPlaybackDomain *playback_domain)
 		     attr);
 
   /* config */
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-
   config = ags_config_get_instance();
+
+  pthread_mutex_lock(ags_config_get_class_mutex());
+  
+  config_mutex = config->obj_mutex;
+
+  pthread_mutex_unlock(ags_config_get_class_mutex());
 
   /* thread model */
   super_threaded_audio = FALSE;
   
-  pthread_mutex_lock(application_mutex);
+  pthread_mutex_lock(config_mutex);
 
   thread_model = ags_config_get_value(config,
 				      AGS_CONFIG_THREAD,
@@ -236,7 +238,7 @@ ags_playback_domain_init(AgsPlaybackDomain *playback_domain)
 
   g_free(thread_model);
 
-  pthread_mutex_unlock(application_mutex);
+  pthread_mutex_unlock(config_mutex);
     
   /* default flags */
   if(super_threaded_audio){

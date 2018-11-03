@@ -191,7 +191,7 @@ ags_fifoout_get_type (void)
   static volatile gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
-    GType ags_type_fifoout;
+    GType ags_type_fifoout = 0;
 
     static const GTypeInfo ags_fifoout_info = {
       sizeof(AgsFifooutClass),
@@ -229,6 +229,8 @@ ags_fifoout_get_type (void)
     g_type_add_interface_static(ags_type_fifoout,
 				AGS_TYPE_SOUNDCARD,
 				&ags_soundcard_interface_info);
+
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_fifoout);
   }
 
   return g_define_type_id__volatile;
@@ -2461,7 +2463,7 @@ ags_fifoout_adjust_delay_and_attack(AgsFifoout *fifoout)
  *
  * Reallocate the internal audio buffer.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_fifoout_realloc_buffer(AgsFifoout *fifoout)

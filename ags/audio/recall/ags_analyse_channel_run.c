@@ -50,9 +50,11 @@ static gpointer ags_analyse_channel_run_parent_class = NULL;
 GType
 ags_analyse_channel_run_get_type()
 {
-  static GType ags_type_analyse_channel_run = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_analyse_channel_run){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_analyse_channel_run = 0;
+
     static const GTypeInfo ags_analyse_channel_run_info = {
       sizeof (AgsAnalyseChannelRunClass),
       NULL, /* base_init */
@@ -69,9 +71,11 @@ ags_analyse_channel_run_get_type()
 							  "AgsAnalyseChannelRun",
 							  &ags_analyse_channel_run_info,
 							  0);
+
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_analyse_channel_run);
   }
 
-  return (ags_type_analyse_channel_run);
+  return g_define_type_id__volatile;
 }
 
 void
@@ -138,6 +142,10 @@ ags_analyse_channel_run_run_pre(AgsRecall *recall)
 
   analyse_channel_run = AGS_ANALYSE_CHANNEL_RUN(recall);
 
+  g_object_get(recall,
+	       "recall-channel", &analyse_channel,
+	       NULL);
+  
   /* get mutex and buffer mutex */
   pthread_mutex_lock(ags_recall_get_class_mutex());
 
@@ -152,8 +160,7 @@ ags_analyse_channel_run_run_pre(AgsRecall *recall)
   parent_class_run_pre(recall);
 
   /* get some fields */
-  g_object_get(recall,
-	       "recall-channel", &analyse_channel,
+  g_object_get(analyse_channel,
 	       "buffer-computed", &buffer_computed,
 	       "cache-buffer-size", &cache_buffer_size,
 	       "cache-format", &cache_format,

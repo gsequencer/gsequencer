@@ -87,7 +87,7 @@ ags_recall_container_get_type (void)
   static volatile gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
-    GType ags_type_recall_container;
+    GType ags_type_recall_container = 0;
 
     static const GTypeInfo ags_recall_container_info = {
       sizeof (AgsRecallContainerClass),
@@ -116,7 +116,7 @@ ags_recall_container_get_type (void)
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
 
-    g_once_init_leave (&g_define_type_id__volatile, ags_type_recall_container);
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_recall_container);
   }
 
   return g_define_type_id__volatile;
@@ -1249,7 +1249,7 @@ ags_recall_container_remove(AgsRecallContainer *recall_container,
  *
  * Returns: the #AgsRecallAudio
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsRecall*
 ags_recall_container_get_recall_audio(AgsRecallContainer *recall_container)
@@ -1269,7 +1269,7 @@ ags_recall_container_get_recall_audio(AgsRecallContainer *recall_container)
  *
  * Returns: the #AgsRecallAudioRun as list
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 GList*
 ags_recall_container_get_recall_audio_run(AgsRecallContainer *recall_container)
@@ -1289,7 +1289,7 @@ ags_recall_container_get_recall_audio_run(AgsRecallContainer *recall_container)
  *
  * Returns: the #AgsRecallChannel
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 GList*
 ags_recall_container_get_recall_channel(AgsRecallContainer *recall_container)
@@ -1309,7 +1309,7 @@ ags_recall_container_get_recall_channel(AgsRecallContainer *recall_container)
  *
  * Returns: the #AgsRecall
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 GList*
 ags_recall_container_get_recall_channel_run(AgsRecallContainer *recall_container)
@@ -1332,7 +1332,7 @@ ags_recall_container_get_recall_channel_run(AgsRecallContainer *recall_container
  *
  * Returns: the matching recalls
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 GList*
 ags_recall_container_find(GList *recall_container,
@@ -1417,11 +1417,11 @@ ags_recall_container_find(GList *recall_container,
 /**
  * ags_recall_container_new:
  * 
- * Creates an #AgsRecallContainer
+ * Create a new instance of #AgsRecallContainer
  *
- * Returns: a new #AgsRecallContainer
+ * Returns: the new #AgsRecallContainer
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsRecallContainer*
 ags_recall_container_new()

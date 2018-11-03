@@ -100,7 +100,7 @@ ags_pulse_port_get_type()
   static volatile gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
-    GType ags_type_pulse_port;
+    GType ags_type_pulse_port = 0;
 
     static const GTypeInfo ags_pulse_port_info = {
       sizeof(AgsPulsePortClass),
@@ -129,7 +129,7 @@ ags_pulse_port_get_type()
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
 
-    g_once_init_leave (&g_define_type_id__volatile, ags_type_pulse_port);
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_pulse_port);
   }
 
   return g_define_type_id__volatile;
@@ -1119,7 +1119,7 @@ ags_pulse_port_register(AgsPulsePort *pulse_port,
   }
 
 #ifdef AGS_WITH_PULSE
-  if(is_audio){  
+  if(is_audio){
     ags_pulse_port_set_flags(pulse_port, AGS_PULSE_PORT_IS_AUDIO);
 
     pa_stream_set_write_callback(stream,
@@ -1235,7 +1235,7 @@ ags_pulse_port_stream_request_callback(pa_stream *stream, size_t length, AgsPuls
   pthread_mutex_t *device_mutex;
   pthread_mutex_t *callback_mutex;
   pthread_mutex_t *callback_finish_mutex;
-  
+    
   if(pulse_port == NULL){
     return;
   }
@@ -1641,12 +1641,16 @@ ags_pulse_port_stream_request_callback(pa_stream *stream, size_t length, AgsPuls
       //    g_message("%d", ags_synth_util_get_xcross_count_s16(pulse_devout->buffer[nth_buffer],
       //							pulse_devout->pcm_channels * pulse_devout->buffer_size));
 
+      ags_soundcard_lock_buffer(AGS_SOUNDCARD(pulse_devout), pulse_devout->buffer[nth_buffer]);	    
+
       pa_stream_write(stream,
 		      pulse_devout->buffer[nth_buffer],
 		      count,
 		      NULL,
 		      0,
 		      PA_SEEK_RELATIVE);
+	  
+      ags_soundcard_unlock_buffer(AGS_SOUNDCARD(pulse_devout), pulse_devout->buffer[nth_buffer]);	    
 
       g_atomic_int_set(&(pulse_port->is_empty),
 		       FALSE);
@@ -1709,12 +1713,9 @@ ags_pulse_port_stream_request_callback(pa_stream *stream, size_t length, AgsPuls
     }
   }else if(pulse_devin != NULL){
     if(!empty_run){
-      pa_stream_read(stream,
-		     pulse_devout->buffer[nth_buffer],
-		     count,
-		     NULL,
-		     0,
-		     PA_SEEK_RELATIVE);
+      pa_stream_peek(stream,
+		     &(pulse_devin->buffer[nth_buffer]),
+		     &count);
       
       g_atomic_int_set(&(pulse_port->is_empty),
 		       FALSE);
@@ -1761,7 +1762,9 @@ ags_pulse_port_stream_request_callback(pa_stream *stream, size_t length, AgsPuls
 
 	pulse_port->nth_empty_buffer = nth_empty_buffer;
 
-	pa_stream_read(stream, empty_buffer, count, NULL, 0, PA_SEEK_RELATIVE);
+	pa_stream_peek(stream,
+		       &empty_buffer,
+		       &count);
 	
 	pthread_mutex_unlock(pulse_port_mutex);
 	

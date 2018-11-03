@@ -96,7 +96,7 @@ ags_play_notation_audio_run_get_type()
   static volatile gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
-    GType ags_type_play_notation_audio_run;
+    GType ags_type_play_notation_audio_run = 0;
 
     static const GTypeInfo ags_play_notation_audio_run_info = {
       sizeof (AgsPlayNotationAudioRunClass),
@@ -135,7 +135,7 @@ ags_play_notation_audio_run_get_type()
 				AGS_TYPE_PLUGIN,
 				&ags_plugin_interface_info);
 
-    g_once_init_leave (&g_define_type_id__volatile, ags_type_play_notation_audio_run);
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_play_notation_audio_run);
   }
 
   return g_define_type_id__volatile;
@@ -985,6 +985,10 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
 						 (GObject *) last_recycling);
 	
 	while(recycling != end_recycling){
+	  g_object_set(note,
+		       "rt-offset", 0,
+		       NULL);
+	  
 	  if(!ags_recall_global_get_rt_safe()){
 	    /* create audio signal */
 	    audio_signal = ags_audio_signal_new((GObject *) output_soundcard,
@@ -1040,10 +1044,6 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
 			   "note", note,
 			   NULL);
 	    }
-
-	    g_object_set(note,
-			 "rt-offset", 0,
-			 NULL);
 
 	    g_list_free(start_list);
 	  }

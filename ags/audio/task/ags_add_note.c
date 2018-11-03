@@ -64,7 +64,7 @@ ags_add_note_get_type()
   static volatile gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
-    GType ags_type_add_note;
+    GType ags_type_add_note = 0;
 
     static const GTypeInfo ags_add_note_info = {
       sizeof(AgsAddNoteClass),
@@ -82,6 +82,8 @@ ags_add_note_get_type()
 					       "AgsAddNote",
 					       &ags_add_note_info,
 					       0);
+
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_add_note);
   }
 
   return g_define_type_id__volatile;

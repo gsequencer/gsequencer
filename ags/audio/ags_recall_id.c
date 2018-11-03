@@ -64,7 +64,7 @@ ags_recall_id_get_type(void)
   static volatile gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
-    GType ags_type_recall_id;
+    GType ags_type_recall_id = 0;
 
     static const GTypeInfo ags_recall_id_info = {
       sizeof(AgsRecallIDClass),
@@ -82,9 +82,11 @@ ags_recall_id_get_type(void)
 						"AgsRecallID",
 						&ags_recall_id_info,
 						0);
+
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_recall_id);
   }
 
-  return(ags_type_recall_id);
+  return g_define_type_id__volatile;
 }
 
 void
@@ -835,7 +837,7 @@ ags_recall_id_find_parent_recycling_context(GList *recall_id,
 		   NULL);
       
       if(current_parent_recycling_context == parent_recycling_context){
-	return(recall_id);
+	return(recall_id->data);
       }
     }
 

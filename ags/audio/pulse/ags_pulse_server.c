@@ -117,7 +117,7 @@ ags_pulse_server_get_type()
   static volatile gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
-    GType ags_type_pulse_server;
+    GType ags_type_pulse_server = 0;
 
     static const GTypeInfo ags_pulse_server_info = {
       sizeof(AgsPulseServerClass),
@@ -155,6 +155,8 @@ ags_pulse_server_get_type()
     g_type_add_interface_static(ags_type_pulse_server,
 				AGS_TYPE_SOUND_SERVER,
 				&ags_sound_server_interface_info);
+
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_pulse_server);
   }
 
   return g_define_type_id__volatile;
@@ -250,11 +252,10 @@ ags_pulse_server_class_init(AgsPulseServerClass *pulse_server)
    * 
    * Since: 2.0.0
    */
-  param_spec = g_param_spec_object("pulse-client",
-				   i18n_pspec("pulse client list"),
-				   i18n_pspec("The pulse client list"),
-				   AGS_TYPE_PULSE_CLIENT,
-				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  param_spec = g_param_spec_pointer("pulse-client",
+				    i18n_pspec("pulse client list"),
+				    i18n_pspec("The pulse client list"),
+				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_PULSE_CLIENT,
 				  param_spec);
@@ -481,7 +482,7 @@ ags_pulse_server_set_property(GObject *gobject,
     {
       GObject *client;
 
-      client = (GObject *) g_value_get_object(value);
+      client = (GObject *) g_value_get_pointer(value);
 
       pthread_mutex_lock(pulse_server_mutex);
 
@@ -556,7 +557,7 @@ ags_pulse_server_get_property(GObject *gobject,
     {
       pthread_mutex_lock(pulse_server_mutex);
 
-      g_value_set_object(value, pulse_server->default_soundcard);
+      g_value_set_object(value, pulse_server->default_client);
 
       pthread_mutex_unlock(pulse_server_mutex);
     }
@@ -1334,6 +1335,13 @@ ags_pulse_server_register_soundcard(AgsSoundServer *sound_server,
     initial_set = TRUE;    
   }
 
+  /* get pulse client mutex */
+  pthread_mutex_lock(ags_pulse_client_get_class_mutex());
+  
+  pulse_client_mutex = default_client->obj_mutex;
+  
+  pthread_mutex_unlock(ags_pulse_client_get_class_mutex());
+
   /* get context */
   pthread_mutex_lock(pulse_client_mutex);
 
@@ -1978,8 +1986,6 @@ ags_pulse_server_connect_client(AgsPulseServer *pulse_server)
   GList *client_start, *client;
 
   gchar *client_name;
-
-  pthread_mutex_t *pulse_client_mutex;
   
   if(!AGS_IS_PULSE_SERVER(pulse_server)){
     return;
@@ -1992,26 +1998,15 @@ ags_pulse_server_connect_client(AgsPulseServer *pulse_server)
   client = client_start;
 
   while(client != NULL){
-    /* get pulse client mutex */
-    pthread_mutex_lock(ags_pulse_client_get_class_mutex());
-  
-    pulse_client_mutex = AGS_PULSE_CLIENT(client->data)->obj_mutex;
-  
-    pthread_mutex_unlock(ags_pulse_client_get_class_mutex());
-
     /* client name */
-    pthread_mutex_lock(pulse_client_mutex);
-
-    client_name = g_strdup(client_name);
+    g_object_get(client->data,
+		 "client-name", &client_name,
+		 NULL);
     
-    pthread_mutex_unlock(pulse_client_mutex);
-
     /* open */
     ags_pulse_client_open((AgsPulseClient *) client->data,
 			  client_name);
     ags_pulse_client_activate(client->data);
-
-    g_free(client_name);
     
     /* iterate */
     client = client->next;

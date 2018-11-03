@@ -61,7 +61,7 @@ ags_indicator_get_type(void)
   static volatile gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
-    GType ags_type_indicator;
+    GType ags_type_indicator = 0;
 
     static const GTypeInfo ags_indicator_info = {
       sizeof(AgsIndicatorClass),
@@ -79,7 +79,7 @@ ags_indicator_get_type(void)
 						"AgsIndicator", &ags_indicator_info,
 						0);
 
-    g_once_init_leave (&g_define_type_id__volatile, ags_type_indicator);
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_indicator);
   }
 
   return g_define_type_id__volatile;
@@ -114,7 +114,7 @@ ags_indicator_class_init(AgsIndicatorClass *indicator)
    *
    * The adjustment giving indicator value.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("adjustment",
 				   "assigned adjustment",
@@ -294,7 +294,7 @@ ags_indicator_size_allocate(GtkWidget *widget,
  *
  * Returns: a new #AgsIndicator
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsIndicator*
 ags_indicator_new()

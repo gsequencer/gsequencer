@@ -65,7 +65,7 @@ ags_add_audio_signal_get_type()
   static volatile gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
-    GType ags_type_add_audio_signal;
+    GType ags_type_add_audio_signal = 0;
 
     static const GTypeInfo ags_add_audio_signal_info = {
       sizeof (AgsAddAudioSignalClass),
@@ -83,6 +83,8 @@ ags_add_audio_signal_get_type()
 						       "AgsAddAudioSignal",
 						       &ags_add_audio_signal_info,
 						       0);
+
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_add_audio_signal);
   }
 
   return g_define_type_id__volatile;
@@ -463,11 +465,12 @@ ags_add_audio_signal_launch(AgsTask *task)
 
   /* create audio signal */
   if(audio_signal == NULL){
-      audio_signal =
-	add_audio_signal->audio_signal = ags_audio_signal_new((GObject *) soundcard,
-							      (GObject *) recycling,
-							      (GObject *) recall_id);
-    audio_signal->flags = add_audio_signal->audio_signal_flags;
+    audio_signal =
+      add_audio_signal->audio_signal = ags_audio_signal_new((GObject *) soundcard,
+							    (GObject *) recycling,
+							    (GObject *) recall_id);
+    ags_audio_signal_set_flags(audio_signal,
+			       add_audio_signal->audio_signal_flags);
   }
 
   /* delay and attack */

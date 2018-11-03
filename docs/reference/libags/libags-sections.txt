@@ -24,14 +24,14 @@ AGS_BUILD_ID
 AGS_DEFAULT_DIRECTORY
 AGS_DEFAULT_CONFIG
 AgsApplicationContextFlags
+ags_application_context_get_class_mutex
+ags_application_context_test_flags
+ags_application_context_set_flags
+ags_application_context_unset_flags
 ags_application_context_load_config
 ags_application_context_prepare
 ags_application_context_setup
 ags_application_context_register_types
-ags_application_context_add_sibling
-ags_application_context_remove_sibling
-ags_application_context_find_default
-ags_application_context_find_main_loop
 ags_application_context_quit
 ags_application_context_get_instance
 ags_application_context_new
@@ -39,7 +39,9 @@ ags_application_context_new
 AGS_APPLICATION_CONTEXT
 AGS_APPLICATION_CONTEXT_CLASS
 AGS_APPLICATION_CONTEXT_GET_CLASS
+AGS_INIT_CONTEXT_TSD_APPLICATION_CONTEXT
 AGS_IS_APPLICATION_CONTEXT
+AGS_IS_APPLICATION_CONTEXT_CLASS
 AGS_TYPE_APPLICATION_CONTEXT
 AgsApplicationContext
 AgsApplicationContextClass
@@ -108,6 +110,7 @@ AGS_AUTHENTICATION_MANAGER
 AGS_AUTHENTICATION_MANAGER_CLASS
 AGS_AUTHENTICATION_MANAGER_GET_CLASS
 AGS_IS_AUTHENTICATION_MANAGER
+AGS_IS_AUTHENTICATION_MANAGER_CLASS
 AGS_TYPE_AUTHENTICATION_MANAGER
 AgsAuthenticationManager
 AgsAuthenticationManagerClass
@@ -125,6 +128,7 @@ AGS_AUTOSAVE_THREAD
 AGS_AUTOSAVE_THREAD_CLASS
 AGS_AUTOSAVE_THREAD_GET_CLASS
 AGS_IS_AUTOSAVE_THREAD
+AGS_IS_AUTOSAVE_THREAD_CLASS
 AGS_TYPE_AUTOSAVE_THREAD
 AgsAutosaveThread
 AgsAutosaveThreadClass
@@ -138,11 +142,30 @@ ags_buffer_util_s16_to_char_buffer
 ags_buffer_util_s24_to_char_buffer
 ags_buffer_util_s32_to_char_buffer
 ags_buffer_util_s64_to_char_buffer
+ags_buffer_util_float_to_char_buffer
+ags_buffer_util_double_to_char_buffer
 ags_buffer_util_char_buffer_to_s8
 ags_buffer_util_char_buffer_to_s16
 ags_buffer_util_char_buffer_to_s24
 ags_buffer_util_char_buffer_to_s32
 ags_buffer_util_char_buffer_to_s64
+ags_buffer_util_char_buffer_to_float
+ags_buffer_util_char_buffer_to_double
+ags_buffer_util_char_buffer_read_s8
+ags_buffer_util_char_buffer_read_s16
+ags_buffer_util_char_buffer_read_s24
+ags_buffer_util_char_buffer_read_s32
+ags_buffer_util_char_buffer_read_s64
+ags_buffer_util_char_buffer_read_float
+ags_buffer_util_char_buffer_read_double
+ags_buffer_util_char_buffer_write_s8
+ags_buffer_util_char_buffer_write_s16
+ags_buffer_util_char_buffer_write_s24
+ags_buffer_util_char_buffer_write_s32
+ags_buffer_util_char_buffer_write_s64
+ags_buffer_util_char_buffer_write_float
+ags_buffer_util_char_buffer_write_double
+ags_buffer_util_char_buffer_swap_bytes
 </SECTION>
 
 <SECTION>
@@ -200,6 +223,7 @@ AGS_CERTIFICATE_MANAGER
 AGS_CERTIFICATE_MANAGER_CLASS
 AGS_CERTIFICATE_MANAGER_GET_CLASS
 AGS_IS_CERTIFICATE_MANAGER
+AGS_IS_CERTIFICATE_MANAGER_CLASS
 AGS_TYPE_CERTIFICATE_MANAGER
 AgsCertificateManager
 AgsCertificateManagerClass
@@ -241,27 +265,6 @@ ags_concurrency_provider_get_type
 </SECTION>
 
 <SECTION>
-<FILE>ags_concurrent_tree</FILE>
-<TITLE>AgsConcurrentTree</TITLE>
-ags_concurrent_tree_set_parent_locked
-ags_concurrent_tree_get_parent_locked
-ags_concurrent_tree_get_lock
-ags_concurrent_tree_get_parent_lock
-ags_concurrent_tree_lock_context
-ags_concurrent_tree_unlock_context
-<SUBSECTION Public>
-AGS_CONCURRENT_TREE
-AGS_CONCURRENT_TREE_GET_INTERFACE
-AGS_CONCURRENT_TREE_INTERFACE
-AGS_IS_CONCURRENT_TREE
-AGS_IS_CONCURRENT_TREE_INTERFACE
-AGS_TYPE_CONCURRENT_TREE
-AgsConcurrentTree
-AgsConcurrentTreeInterface
-ags_concurrent_tree_get_type
-</SECTION>
-
-<SECTION>
 <FILE>ags_condition_manager</FILE>
 <TITLE>AgsConditionManager</TITLE>
 ags_condition_manager_insert
@@ -274,6 +277,7 @@ AGS_CONDITION_MANAGER
 AGS_CONDITION_MANAGER_CLASS
 AGS_CONDITION_MANAGER_GET_CLASS
 AGS_IS_CONDITION_MANAGER
+AGS_IS_CONDITION_MANAGER_CLASS
 AGS_TYPE_CONDITION_MANAGER
 AgsConditionManager
 AgsConditionManagerClass
@@ -293,6 +297,7 @@ AGS_CONFIG_SEQUENCER
 AGS_CONFIG_SEQUENCER_0
 AGS_CONFIG_RECALL
 AgsConfigFlags
+ags_config_get_class_mutex
 ags_config_load_defaults
 ags_config_load_from_file
 ags_config_load_from_data
@@ -308,6 +313,7 @@ AGS_CONFIG
 AGS_CONFIG_CLASS
 AGS_CONFIG_GET_CLASS
 AGS_IS_CONFIG
+AGS_IS_CONFIG_CLASS
 AGS_TYPE_CONFIG
 AgsConfig
 AgsConfigClass
@@ -317,15 +323,19 @@ ags_config_get_type
 <SECTION>
 <FILE>ags_connectable</FILE>
 <TITLE>AgsConnectable</TITLE>
+ags_connectable_get_uuid
+ags_connectable_has_resource
+ags_connectable_is_ready
 ags_connectable_add_to_registry
 ags_connectable_remove_from_registry
-ags_connectable_update
-ags_connectable_is_ready
+ags_connectable_list_resource
+ags_connectable_xml_compose
+ags_connectable_xml_parse
 ags_connectable_is_connected
 ags_connectable_connect
 ags_connectable_disconnect
-ags_connectable_connect_scope
-ags_connectable_disconnect_scope
+ags_connectable_connect_connection
+ags_connectable_disconnect_connection
 <SUBSECTION Public>
 AGS_CONNECTABLE
 AGS_CONNECTABLE_GET_INTERFACE
@@ -336,42 +346,6 @@ AGS_TYPE_CONNECTABLE
 AgsConnectable
 AgsConnectableInterface
 ags_connectable_get_type
-</SECTION>
-
-<SECTION>
-<FILE>ags_connection</FILE>
-<TITLE>AgsConnection</TITLE>
-ags_connection_find_type
-ags_connection_find_type_and_data_object_type
-ags_connection_new
-<SUBSECTION Public>
-AGS_CONNECTION
-AGS_CONNECTION_CLASS
-AGS_CONNECTION_GET_CLASS
-AGS_IS_CONNECTION
-AGS_TYPE_CONNECTION
-AgsConnection
-AgsConnectionClass
-ags_connection_get_type
-</SECTION>
-
-<SECTION>
-<FILE>ags_connection_manager</FILE>
-<TITLE>AgsConnectionManager</TITLE>
-ags_connection_manager_get_connection
-ags_connection_manager_add_connection
-ags_connection_manager_remove_connection
-ags_connection_manager_get_instance
-ags_connection_manager_new
-<SUBSECTION Public>
-AGS_CONNECTION_MANAGER
-AGS_CONNECTION_MANAGER_CLASS
-AGS_CONNECTION_MANAGER_GET_CLASS
-AGS_IS_CONNECTION_MANAGER
-AGS_TYPE_CONNECTION_MANAGER
-AgsConnectionManager
-AgsConnectionManagerClass
-ags_connection_manager_get_type
 </SECTION>
 
 <SECTION>
@@ -391,6 +365,7 @@ AGS_CONTROLLER
 AGS_CONTROLLER_CLASS
 AGS_CONTROLLER_GET_CLASS
 AGS_IS_CONTROLLER
+AGS_IS_CONTROLLER_CLASS
 AGS_TYPE_CONTROLLER
 AgsController
 AgsControllerClass
@@ -400,6 +375,7 @@ ags_controller_get_type
 <SECTION>
 <FILE>ags_conversion</FILE>
 <TITLE>AgsConversion</TITLE>
+ags_conversion_get_class_mutex
 ags_conversion_convert
 ags_conversion_new
 <SUBSECTION Public>
@@ -407,6 +383,7 @@ AGS_CONVERSION
 AGS_CONVERSION_CLASS
 AGS_CONVERSION_GET_CLASS
 AGS_IS_CONVERSION
+AGS_IS_CONVERSION_CLASS
 AGS_TYPE_CONVERSION
 AgsConversion
 AgsConversionClass
@@ -416,8 +393,10 @@ ags_conversion_get_type
 <SECTION>
 <FILE>ags_countable</FILE>
 <TITLE>AgsCountable</TITLE>
-ags_countable_get_notation_counter
 ags_countable_get_sequencer_counter
+ags_countable_get_notation_counter
+ags_countable_get_wave_counter
+ags_countable_get_midi_counter
 <SUBSECTION Public>
 AGS_COUNTABLE
 AGS_COUNTABLE_GET_INTERFACE
@@ -449,6 +428,7 @@ AGS_DESTROY_WORKER
 AGS_DESTROY_WORKER_CLASS
 AGS_DESTROY_WORKER_GET_CLASS
 AGS_IS_DESTROY_WORKER
+AGS_IS_DESTROY_WORKER_CLASS
 AGS_TYPE_DESTROY_WORKER
 AgsDestroyWorker
 AgsDestroyWorkerClass
@@ -456,51 +436,10 @@ ags_destroy_worker_get_type
 </SECTION>
 
 <SECTION>
-<FILE>ags_distributed_manager</FILE>
-<TITLE>AgsDistributedManager</TITLE>
-ags_distributed_manager_set_url
-ags_distributed_manager_get_url
-ags_distributed_manager_set_ports
-ags_distributed_manager_get_ports
-ags_distributed_manager_set_soundcard
-ags_distributed_manager_get_soundcard
-ags_distributed_manager_set_sequencer
-ags_distributed_manager_get_sequencer
-ags_distributed_manager_register_soundcard
-ags_distributed_manager_unregister_soundcard
-ags_distributed_manager_register_sequencer
-ags_distributed_manager_unregister_sequencer
-<SUBSECTION Public>
-AGS_DISTRIBUTED_MANAGER
-AGS_DISTRIBUTED_MANAGER_GET_INTERFACE
-AGS_DISTRIBUTED_MANAGER_INTERFACE
-AGS_IS_DISTRIBUTED_MANAGER
-AGS_IS_DISTRIBUTED_MANAGER_INTERFACE
-AGS_TYPE_DISTRIBUTED_MANAGER
-AgsDistributedManager
-AgsDistributedManagerInterface
-ags_distributed_manager_get_type
-</SECTION>
-
-<SECTION>
-<FILE>ags_dynamic_connectable</FILE>
-<TITLE>AgsDynamicConnectable</TITLE>
-ags_dynamic_connectable_connect_dynamic
-ags_dynamic_connectable_disconnect_dynamic
-<SUBSECTION Public>
-AGS_DYNAMIC_CONNECTABLE
-AGS_DYNAMIC_CONNECTABLE_GET_INTERFACE
-AGS_DYNAMIC_CONNECTABLE_INTERFACE
-AGS_IS_DYNAMIC_CONNECTABLE
-AGS_IS_DYNAMIC_CONNECTABLE_INTERFACE
-AGS_TYPE_DYNAMIC_CONNECTABLE
-AgsDynamicConnectable
-AgsDynamicConnectableInterface
-ags_dynamic_connectable_get_type
-</SECTION>
-
-<SECTION>
 <FILE>ags_endian</FILE>
+AgsByteOrder
+ags_endian_host_is_le
+ags_endian_host_is_be
 ags_endian_swap_float
 </SECTION>
 
@@ -515,6 +454,7 @@ AGS_FILE_DEFAULT_AUDIO_ENCODING
 AgsFileFlags
 AGS_FILE_ERROR
 AgsFileError
+ags_file_get_class_mutex
 ags_file_str2md5
 ags_file_add_id_ref
 ags_file_find_id_ref_by_node
@@ -543,6 +483,7 @@ AGS_FILE
 AGS_FILE_CLASS
 AGS_FILE_GET_CLASS
 AGS_IS_FILE
+AGS_IS_FILE_CLASS
 AGS_TYPE_FILE
 AgsFile
 AgsFileClass
@@ -556,6 +497,7 @@ AGS_FILE_RESOLVE
 AGS_FILE_ID_REF_SERIALIZE_DATA
 AGS_FILE_ID_REF_RESOLVE_DATA
 AgsFileResolve
+ags_file_id_ref_get_class_mutex
 ags_file_id_ref_resolved
 ags_file_id_ref_new
 <SUBSECTION Public>
@@ -563,6 +505,7 @@ AGS_FILE_ID_REF
 AGS_FILE_ID_REF_CLASS
 AGS_FILE_ID_REF_GET_CLASS
 AGS_IS_FILE_ID_REF
+AGS_IS_FILE_ID_REF_CLASS
 AGS_TYPE_FILE_ID_REF
 AgsFileIdRef
 AgsFileIdRefClass
@@ -572,6 +515,7 @@ ags_file_id_ref_get_type
 <SECTION>
 <FILE>ags_file_launch</FILE>
 <TITLE>AgsFileLaunch</TITLE>
+ags_file_launch_get_class_mutex
 ags_file_launch_start
 ags_file_launch_new
 <SUBSECTION Public>
@@ -579,6 +523,7 @@ AGS_FILE_LAUNCH
 AGS_FILE_LAUNCH_CLASS
 AGS_FILE_LAUNCH_GET_CLASS
 AGS_IS_FILE_LAUNCH
+AGS_IS_FILE_LAUNCH_CLASS
 AGS_TYPE_FILE_LAUNCH
 AgsFileLaunch
 AgsFileLaunchClass
@@ -590,12 +535,14 @@ ags_file_launch_get_type
 <TITLE>AgsFileLink</TITLE>
 AGS_FILE_LINK_DEFAULT_VERSION
 AGS_FILE_LINK_DEFAULT_BUILD_ID
+ags_file_link_get_class_mutex
 ags_file_link_new
 <SUBSECTION Public>
 AGS_FILE_LINK
 AGS_FILE_LINK_CLASS
 AGS_FILE_LINK_GET_CLASS
 AGS_IS_FILE_LINK
+AGS_IS_FILE_LINK_CLASS
 AGS_TYPE_FILE_LINK
 AgsFileLink
 AgsFileLinkClass
@@ -605,6 +552,7 @@ ags_file_link_get_type
 <SECTION>
 <FILE>ags_file_lookup</FILE>
 <TITLE>AgsFileLookup</TITLE>
+ags_file_lookup_get_class_mutex
 ags_file_lookup_find_by_node
 ags_file_lookup_find_by_reference
 ags_file_lookup_resolve
@@ -614,6 +562,7 @@ AGS_FILE_LOOKUP
 AGS_FILE_LOOKUP_CLASS
 AGS_FILE_LOOKUP_GET_CLASS
 AGS_IS_FILE_LOOKUP
+AGS_IS_FILE_LOOKUP_CLASS
 AGS_TYPE_FILE_LOOKUP
 AgsFileLookup
 AgsFileLookupClass
@@ -681,6 +630,7 @@ AGS_FRONT_CONTROLLER
 AGS_FRONT_CONTROLLER_CLASS
 AGS_FRONT_CONTROLLER_GET_CLASS
 AGS_IS_FRONT_CONTROLLER
+AGS_IS_FRONT_CONTROLLER_CLASS
 AGS_TYPE_FRONT_CONTROLLER
 AgsFrontController
 AgsFrontControllerClass
@@ -714,6 +664,7 @@ AGS_FUNCTION
 AGS_FUNCTION_CLASS
 AGS_FUNCTION_GET_CLASS
 AGS_IS_FUNCTION
+AGS_IS_FUNCTION_CLASS
 AGS_TYPE_FUNCTION
 AgsFunction
 AgsFunctionClass
@@ -730,10 +681,19 @@ AGS_GENERIC_MAIN_LOOP
 AGS_GENERIC_MAIN_LOOP_CLASS
 AGS_GENERIC_MAIN_LOOP_GET_CLASS
 AGS_IS_GENERIC_MAIN_LOOP
+AGS_IS_GENERIC_MAIN_LOOP_CLASS
 AGS_TYPE_GENERIC_MAIN_LOOP
 AgsGenericMainLoop
 AgsGenericMainLoopClass
 ags_generic_main_loop_get_type
+</SECTION>
+
+<SECTION>
+<FILE>ags_globals</FILE>
+ags_globals_get_class_mutex
+ags_globals_get_hash_table
+ags_globals_set
+ags_globals_get
 </SECTION>
 
 <SECTION>
@@ -746,6 +706,7 @@ AGS_HISTORY
 AGS_HISTORY_CLASS
 AGS_HISTORY_GET_CLASS
 AGS_IS_HISTORY
+AGS_IS_HISTORY_CLASS
 AGS_TYPE_HISTORY
 AgsHistory
 AgsHistoryClass
@@ -772,6 +733,7 @@ ags_local_factory_controller_create_instance
 ags_local_factory_controller_new
 <SUBSECTION Public>
 AGS_IS_LOCAL_FACTORY_CONTROLLER
+AGS_IS_LOCAL_FACTORY_CONTROLLER_CLASS
 AGS_LOCAL_FACTORY_CONTROLLER
 AGS_LOCAL_FACTORY_CONTROLLER_CLASS
 AGS_LOCAL_FACTORY_CONTROLLER_GET_CLASS
@@ -789,6 +751,7 @@ ags_local_registry_controller_entry_bulk
 ags_local_registry_controller_new
 <SUBSECTION Public>
 AGS_IS_LOCAL_REGISTRY_CONTROLLER
+AGS_IS_LOCAL_REGISTRY_CONTROLLER_CLASS
 AGS_LOCAL_REGISTRY_CONTROLLER
 AGS_LOCAL_REGISTRY_CONTROLLER_CLASS
 AGS_LOCAL_REGISTRY_CONTROLLER_GET_CLASS
@@ -809,6 +772,7 @@ ags_local_serialization_controller_receive_object_property
 ags_local_serialization_controller_new
 <SUBSECTION Public>
 AGS_IS_LOCAL_SERIALIZATION_CONTROLLER
+AGS_IS_LOCAL_SERIALIZATION_CONTROLLER_CLASS
 AGS_LOCAL_SERIALIZATION_CONTROLLER
 AGS_LOCAL_SERIALIZATION_CONTROLLER_CLASS
 AGS_LOCAL_SERIALIZATION_CONTROLLER_GET_CLASS
@@ -827,6 +791,7 @@ ags_local_task_controller_launch_timed
 ags_local_task_controller_new
 <SUBSECTION Public>
 AGS_IS_LOCAL_TASK_CONTROLLER
+AGS_IS_LOCAL_TASK_CONTROLLER_CLASS
 AGS_LOCAL_TASK_CONTROLLER
 AGS_LOCAL_TASK_CONTROLLER_CLASS
 AGS_LOCAL_TASK_CONTROLLER_GET_CLASS
@@ -845,6 +810,7 @@ ags_log_get_instance
 ags_log_new
 <SUBSECTION Public>
 AGS_IS_LOG
+AGS_IS_LOG_CLASS
 AGS_LOG
 AGS_LOG_CLASS
 AGS_LOG_GET_CLASS
@@ -888,72 +854,84 @@ ags_main_loop_get_type
 
 <SECTION>
 <FILE>ags_marshal</FILE>
-g_cclosure_user_marshal_VOID__BOOLEAN_POINTER
-g_cclosure_user_marshal_VOID__INT_UINT_POINTER
-g_cclosure_user_marshal_VOID__UINT_BOOLEAN
-g_cclosure_user_marshal_VOID__UINT_UINT
-g_cclosure_user_marshal_VOID__UINT_UINT_BOOLEAN
-g_cclosure_user_marshal_VOID__UINT_UINT_UINT
-g_cclosure_user_marshal_VOID__UINT_UINT_UINT_UINT
-g_cclosure_user_marshal_VOID__UINT_UINT_UINT_UINT_UINT
-g_cclosure_user_marshal_VOID__UINT_UINT_UINT_UINT_UINT_UINT
-g_cclosure_user_marshal_VOID__UINT_UINT_UINT_UINT_UINT_UINT_UINT
-g_cclosure_user_marshal_VOID__UINT_DOUBLE_UINT
-g_cclosure_user_marshal_VOID__UINT_INT
-g_cclosure_user_marshal_VOID__UINT_DOUBLE
-g_cclosure_user_marshal_VOID__UINT_STRING_UINT
-g_cclosure_user_marshal_VOID__UINT_POINTER_UINT
-g_cclosure_user_marshal_VOID__ULONG_UINT
-g_cclosure_user_marshal_VOID__ULONG_UINT_BOOLEAN
-g_cclosure_user_marshal_VOID__DOUBLE_DOUBLE
-g_cclosure_user_marshal_VOID__ULONG_UINT_UINT
-g_cclosure_user_marshal_VOID__STRING_UINT
-g_cclosure_user_marshal_VOID__STRING_UINT_DOUBLE
-g_cclosure_user_marshal_VOID__STRING_UINT_POINTER
-g_cclosure_user_marshal_VOID__STRING_UINT_STRING_DOUBLE
-g_cclosure_user_marshal_VOID__STRING_POINTER
-g_cclosure_user_marshal_VOID__STRING_STRING_STRING
-g_cclosure_user_marshal_VOID__POINTER_UINT
-g_cclosure_user_marshal_VOID__POINTER_UINT_UINT
-g_cclosure_user_marshal_VOID__POINTER_UINT_POINTER
-g_cclosure_user_marshal_VOID__POINTER_POINTER_UINT
-g_cclosure_user_marshal_VOID__POINTER_POINTER_POINTER
-g_cclosure_user_marshal_VOID__OBJECT_UINT
-g_cclosure_user_marshal_VOID__OBJECT_OBJECT
-g_cclosure_user_marshal_VOID__OBJECT_OBJECT_OBJECT_INT_BOOLEAN
-g_cclosure_user_marshal_VOID__OBJECT_OBJECT_OBJECT_OBJECT_OBJECT_OBJECT_UINT_INT_BOOLEAN
-g_cclosure_user_marshal_VOID__OBJECT_OBJECT_OBJECT_OBJECT_OBJECT_OBJECT_OBJECT_OBJECT
-g_cclosure_user_marshal_ULONG__VOID
-g_cclosure_user_marshal_INT__VOID
-g_cclosure_user_marshal_UINT__VOID
-g_cclosure_user_marshal_BOOLEAN__UINT_POINTER
-g_cclosure_user_marshal_BOOLEAN__OBJECT_OBJECT
-g_cclosure_user_marshal_UINT__INT_UINT_POINTER
-g_cclosure_user_marshal_DOUBLE__DOUBLE_BOOLEAN
-g_cclosure_user_marshal_STRING__STRING_STRING
-g_cclosure_user_marshal_STRING__ULONG_STRING_STRING_STRING_STRING_UINT_POINTER
-g_cclosure_user_marshal_POINTER__VOID
-g_cclosure_user_marshal_POINTER__UINT
-g_cclosure_user_marshal_POINTER__POINTER_UINT
-g_cclosure_user_marshal_POINTER__STRING_STRING
-g_cclosure_user_marshal_POINTER__STRING_STRING_STRING
-g_cclosure_user_marshal_POINTER__STRING_STRING_STRING_STRING
-g_cclosure_user_marshal_POINTER__ULONG_POINTER_UINT
-g_cclosure_user_marshal_POINTER__OBJECT
-g_cclosure_user_marshal_POINTER__OBJECT_OBJECT
-g_cclosure_user_marshal_POINTER__OBJECT_STRING_STRING_STRING_POINTER
-g_cclosure_user_marshal_POINTER__OBJECT_STRING_STRING_STRING_STRING_POINTER
-g_cclosure_user_marshal_POINTER__POINTER_STRING_STRING
-g_cclosure_user_marshal_OBJECT__VOID
-g_cclosure_user_marshal_OBJECT__OBJECT
-g_cclosure_user_marshal_OBJECT__STRING_STRING_STRING
-g_cclosure_user_marshal_OBJECT__OBJECT_POINTER_POINTER
-g_cclosure_user_marshal_OBJECT__OBJECT_OBJECT
+ags_cclosure_marshal_VOID__UINT64
+ags_cclosure_marshal_VOID__BOOLEAN_POINTER
+ags_cclosure_marshal_VOID__INT_UINT
+ags_cclosure_marshal_VOID__INT_UINT_POINTER
+ags_cclosure_marshal_VOID__UINT_BOOLEAN
+ags_cclosure_marshal_VOID__UINT_UINT
+ags_cclosure_marshal_VOID__UINT_UINT_BOOLEAN
+ags_cclosure_marshal_VOID__UINT_UINT_UINT
+ags_cclosure_marshal_VOID__UINT_UINT_UINT_UINT
+ags_cclosure_marshal_VOID__UINT_UINT_UINT_UINT_UINT
+ags_cclosure_marshal_VOID__UINT_UINT_UINT_UINT_UINT_UINT
+ags_cclosure_marshal_VOID__UINT_UINT_UINT_UINT_UINT_UINT_UINT
+ags_cclosure_marshal_VOID__UINT_DOUBLE_UINT
+ags_cclosure_marshal_VOID__UINT_INT
+ags_cclosure_marshal_VOID__UINT_DOUBLE
+ags_cclosure_marshal_VOID__UINT_STRING_UINT
+ags_cclosure_marshal_VOID__UINT_POINTER_UINT
+ags_cclosure_marshal_VOID__INT64_UINT
+ags_cclosure_marshal_VOID__ULONG_UINT
+ags_cclosure_marshal_VOID__ULONG_UINT_BOOLEAN
+ags_cclosure_marshal_VOID__DOUBLE_DOUBLE
+ags_cclosure_marshal_VOID__ULONG_UINT_UINT
+ags_cclosure_marshal_VOID__STRING_UINT
+ags_cclosure_marshal_VOID__STRING_UINT_DOUBLE
+ags_cclosure_marshal_VOID__STRING_UINT_POINTER
+ags_cclosure_marshal_VOID__STRING_UINT_STRING_DOUBLE
+ags_cclosure_marshal_VOID__STRING_POINTER
+ags_cclosure_marshal_VOID__STRING_STRING_STRING
+ags_cclosure_marshal_VOID__POINTER_INT
+ags_cclosure_marshal_VOID__POINTER_UINT
+ags_cclosure_marshal_VOID__POINTER_UINT_UINT
+ags_cclosure_marshal_VOID__POINTER_UINT_POINTER
+ags_cclosure_marshal_VOID__POINTER_POINTER_UINT
+ags_cclosure_marshal_VOID__POINTER_POINTER_POINTER
+ags_cclosure_marshal_VOID__OBJECT_UINT
+ags_cclosure_marshal_VOID__OBJECT_UINT_UINT_UINT
+ags_cclosure_marshal_VOID__OBJECT_OBJECT
+ags_cclosure_marshal_VOID__OBJECT_OBJECT_OBJECT_INT_BOOLEAN
+ags_cclosure_marshal_VOID__OBJECT_OBJECT_OBJECT_OBJECT_OBJECT_OBJECT_UINT_INT_BOOLEAN
+ags_cclosure_marshal_VOID__OBJECT_OBJECT_OBJECT_OBJECT_OBJECT_OBJECT_OBJECT_OBJECT
+ags_cclosure_marshal_ULONG__VOID
+ags_cclosure_marshal_INT__VOID
+ags_cclosure_marshal_UINT__VOID
+ags_cclosure_marshal_BOOLEAN__UINT_POINTER
+ags_cclosure_marshal_BOOLEAN__OBJECT_OBJECT
+ags_cclosure_marshal_UINT__INT_UINT_POINTER
+ags_cclosure_marshal_DOUBLE__DOUBLE_BOOLEAN
+ags_cclosure_marshal_STRING__STRING_STRING
+ags_cclosure_marshal_STRING__ULONG_STRING_STRING_STRING_STRING_UINT_POINTER
+ags_cclosure_marshal_POINTER__VOID
+ags_cclosure_marshal_POINTER__INT
+ags_cclosure_marshal_POINTER__UINT
+ags_cclosure_marshal_POINTER__INT_UINT
+ags_cclosure_marshal_POINTER__UINT_UINT
+ags_cclosure_marshal_POINTER__UINT_POINTER
+ags_cclosure_marshal_POINTER__POINTER_UINT
+ags_cclosure_marshal_POINTER__STRING_STRING
+ags_cclosure_marshal_POINTER__STRING_STRING_STRING
+ags_cclosure_marshal_POINTER__STRING_STRING_STRING_STRING
+ags_cclosure_marshal_POINTER__ULONG_POINTER_UINT
+ags_cclosure_marshal_POINTER__OBJECT
+ags_cclosure_marshal_POINTER__OBJECT_OBJECT
+ags_cclosure_marshal_POINTER__OBJECT_STRING_STRING_STRING_POINTER
+ags_cclosure_marshal_POINTER__OBJECT_STRING_STRING_STRING_STRING_POINTER
+ags_cclosure_marshal_POINTER__POINTER_STRING_STRING
+ags_cclosure_marshal_OBJECT__VOID
+ags_cclosure_marshal_OBJECT__UINT_POINTER
+ags_cclosure_marshal_OBJECT__STRING_STRING_STRING
+ags_cclosure_marshal_OBJECT__OBJECT
+ags_cclosure_marshal_OBJECT__OBJECT_POINTER_POINTER
+ags_cclosure_marshal_OBJECT__OBJECT_POINTER_POINTER_POINTER
+ags_cclosure_marshal_OBJECT__OBJECT_OBJECT
 </SECTION>
 
 <SECTION>
 <FILE>ags_message_delivery</FILE>
 <TITLE>AgsMessageDelivery</TITLE>
+ags_message_delivery_get_class_mutex
 ags_message_delivery_add_queue
 ags_message_delivery_remove_queue
 ags_message_delivery_find_namespace
@@ -966,6 +944,7 @@ ags_message_delivery_get_instance
 ags_message_delivery_new
 <SUBSECTION Public>
 AGS_IS_MESSAGE_DELIVERY
+AGS_IS_MESSAGE_DELIVERY_CLASS
 AGS_MESSAGE_DELIVERY
 AGS_MESSAGE_DELIVERY_CLASS
 AGS_MESSAGE_DELIVERY_GET_CLASS
@@ -980,6 +959,7 @@ ags_message_delivery_get_type
 <TITLE>AgsMessageQueue</TITLE>
 AGS_MESSAGE_ENVELOPE
 AgsMessageEnvelope
+ags_message_queue_get_class_mutex
 ags_message_envelope_alloc
 ags_message_envelope_free
 ags_message_queue_add_message
@@ -990,6 +970,7 @@ ags_message_queue_query_message
 ags_message_queue_new
 <SUBSECTION Public>
 AGS_IS_MESSAGE_QUEUE
+AGS_IS_MESSAGE_QUEUE_CLASS
 AGS_MESSAGE_QUEUE
 AGS_MESSAGE_QUEUE_CLASS
 AGS_MESSAGE_QUEUE_GET_CLASS
@@ -1026,6 +1007,7 @@ ags_mutex_manager_get_instance
 ags_mutex_manager_new
 <SUBSECTION Public>
 AGS_IS_MUTEX_MANAGER
+AGS_IS_MUTEX_MANAGER_CLASS
 AGS_MUTEX_MANAGER
 AGS_MUTEX_MANAGER_CLASS
 AGS_MUTEX_MANAGER_GET_CLASS
@@ -1033,23 +1015,6 @@ AGS_TYPE_MUTEX_MANAGER
 AgsMutexManager
 AgsMutexManagerClass
 ags_mutex_manager_get_type
-</SECTION>
-
-<SECTION>
-<FILE>ags_packable</FILE>
-<TITLE>AgsPackable</TITLE>
-ags_packable_pack
-ags_packable_unpack
-<SUBSECTION Public>
-AGS_IS_PACKABLE
-AGS_IS_PACKABLE_INTERFACE
-AGS_PACKABLE
-AGS_PACKABLE_GET_INTERFACE
-AGS_PACKABLE_INTERFACE
-AGS_TYPE_PACKABLE
-AgsPackable
-AgsPackableInterface
-ags_packable_get_type
 </SECTION>
 
 <SECTION>
@@ -1089,6 +1054,7 @@ ags_password_store_manager_get_instance
 ags_password_store_manager_new
 <SUBSECTION Public>
 AGS_IS_PASSWORD_STORE_MANAGER
+AGS_IS_PASSWORD_STORE_MANAGER_CLASS
 AGS_PASSWORD_STORE_MANAGER
 AGS_PASSWORD_STORE_MANAGER_CLASS
 AGS_PASSWORD_STORE_MANAGER_GET_CLASS
@@ -1129,10 +1095,12 @@ ags_plugin_get_type
 <FILE>ags_poll_fd</FILE>
 <TITLE>AgsPollFd</TITLE>
 AgsPollFdFlags
+ags_poll_fd_get_class_mutex
 ags_poll_fd_dispatch
 ags_poll_fd_new
 <SUBSECTION Public>
 AGS_IS_POLL_FD
+AGS_IS_POLL_FD_CLASS
 AGS_POLL_FD
 AGS_POLL_FD_CLASS
 AGS_POLL_FD_GET_CLASS
@@ -1155,6 +1123,7 @@ ags_polling_thread_remove_poll_fd
 ags_polling_thread_new
 <SUBSECTION Public>
 AGS_IS_POLLING_THREAD
+AGS_IS_POLLING_THREAD_CLASS
 AGS_POLLING_THREAD
 AGS_POLLING_THREAD_CLASS
 AGS_POLLING_THREAD_GET_CLASS
@@ -1193,7 +1162,6 @@ ags_regexec
 <SECTION>
 <FILE>ags_registry</FILE>
 <TITLE>AgsRegistry</TITLE>
-AGS_REGISTRY_DEFAULT_ID_LENGTH
 AgsRegistryFlags
 AgsRegistryEntry
 ags_registry_entry_alloc
@@ -1203,6 +1171,7 @@ ags_registry_find_entry
 ags_registry_new
 <SUBSECTION Public>
 AGS_IS_REGISTRY
+AGS_IS_REGISTRY_CLASS
 AGS_REGISTRY
 AGS_REGISTRY_CLASS
 AGS_REGISTRY_GET_CLASS
@@ -1220,6 +1189,7 @@ ags_remote_task_launch_timed
 ags_remote_task_new
 <SUBSECTION Public>
 AGS_IS_REMOTE_TASK
+AGS_IS_REMOTE_TASK_CLASS
 AGS_REMOTE_TASK
 AGS_REMOTE_TASK_CLASS
 AGS_REMOTE_TASK_GET_CLASS
@@ -1237,6 +1207,7 @@ AGS_REMOTE_TASK_THREAD_DEFAULT_JIFFIE
 ags_remote_task_thread_new
 <SUBSECTION Public>
 AGS_IS_REMOTE_TASK_THREAD
+AGS_IS_REMOTE_TASK_THREAD_CLASS
 AGS_REMOTE_TASK_THREAD
 AGS_REMOTE_TASK_THREAD_CLASS
 AGS_REMOTE_TASK_THREAD_GET_CLASS
@@ -1252,12 +1223,16 @@ ags_remote_task_thread_get_type
 AGS_RETURNABLE_THREAD_DEFAULT_JIFFIE
 AgsReturnableThreadCallback
 AgsReturnableThreadFlags
+ags_returnable_thread_test_flags
+ags_returnable_thread_set_flags
+ags_returnable_thread_unset_flags
 ags_returnable_thread_safe_run
 ags_returnable_thread_connect_safe_run
 ags_returnable_thread_disconnect_safe_run
 ags_returnable_thread_new
 <SUBSECTION Public>
 AGS_IS_RETURNABLE_THREAD
+AGS_IS_RETURNABLE_THREAD_CLASS
 AGS_RETURNABLE_THREAD
 AGS_RETURNABLE_THREAD_CLASS
 AGS_RETURNABLE_THREAD_GET_CLASS
@@ -1276,6 +1251,7 @@ ags_security_context_remove_server_context
 ags_security_context_new
 <SUBSECTION Public>
 AGS_IS_SECURITY_CONTEXT
+AGS_IS_SECURITY_CONTEXT_CLASS
 AGS_SECURITY_CONTEXT
 AGS_SECURITY_CONTEXT_CLASS
 AGS_SECURITY_CONTEXT_GET_CLASS
@@ -1288,6 +1264,7 @@ ags_security_context_get_type
 <SECTION>
 <FILE>ags_seekable</FILE>
 <TITLE>AgsSeekable</TITLE>
+AgsSeekType
 ags_seekable_seek
 <SUBSECTION Public>
 AGS_IS_SEEKABLE
@@ -1319,8 +1296,6 @@ AGS_SEQUENCER_DEFAULT_PERIOD
 AGS_SEQUENCER_DEFAULT_LATENCY
 ags_sequencer_set_application_context
 ags_sequencer_get_application_context
-ags_sequencer_set_application_mutex
-ags_sequencer_get_application_mutex
 ags_sequencer_set_device
 ags_sequencer_get_device
 ags_sequencer_list_cards
@@ -1336,14 +1311,14 @@ ags_sequencer_tic
 ags_sequencer_offset_changed
 ags_sequencer_get_buffer
 ags_sequencer_get_next_buffer
+ags_sequencer_lock_buffer
+ags_sequencer_unlock_buffer
 ags_sequencer_set_bpm
 ags_sequencer_get_bpm
 ags_sequencer_set_delay_factor
 ags_sequencer_get_delay_factor
 ags_sequencer_set_note_offset
 ags_sequencer_get_note_offset
-ags_sequencer_set_audio
-ags_sequencer_get_audio
 <SUBSECTION Public>
 AGS_IS_SEQUENCER
 AGS_IS_SEQUENCER_INTERFACE
@@ -1362,12 +1337,17 @@ ags_sequencer_get_type
 AGS_SERVER_DEFAULT_AUTH_MODULE
 AgsServerFlags
 AgsServerInfo
+ags_server_get_class_mutex
+ags_server_test_flags
+ags_server_set_flags
+ags_server_unset_flags
 ags_server_info_alloc
 ags_server_start
 ags_server_lookup
 ags_server_new
 <SUBSECTION Public>
 AGS_IS_SERVER
+AGS_IS_SERVER_CLASS
 AGS_SERVER
 AGS_SERVER_CLASS
 AGS_SERVER_GET_CLASS
@@ -1386,6 +1366,7 @@ AgsServerApplicationContextFlags
 ags_server_application_context_new
 <SUBSECTION Public>
 AGS_IS_SERVER_APPLICATION_CONTEXT
+AGS_IS_SERVER_APPLICATION_CONTEXT_CLASS
 AGS_SERVER_APPLICATION_CONTEXT
 AGS_SERVER_APPLICATION_CONTEXT_CLASS
 AGS_SERVER_APPLICATION_CONTEXT_GET_CLASS
@@ -1402,6 +1383,7 @@ AgsServerStatusFlags
 ags_server_status_new
 <SUBSECTION Public>
 AGS_IS_SERVER_STATUS
+AGS_IS_SERVER_STATUS_CLASS
 AGS_SERVER_STATUS
 AGS_SERVER_STATUS_CLASS
 AGS_SERVER_STATUS_GET_CLASS
@@ -1446,6 +1428,7 @@ AGS_SINGLE_THREAD_DEFAULT_JIFFIE
 ags_single_thread_new
 <SUBSECTION Public>
 AGS_IS_SINGLE_THREAD
+AGS_IS_SINGLE_THREAD_CLASS
 AGS_SINGLE_THREAD
 AGS_SINGLE_THREAD_CLASS
 AGS_SINGLE_THREAD_GET_CLASS
@@ -1456,13 +1439,48 @@ ags_single_thread_get_type
 </SECTION>
 
 <SECTION>
+<FILE>ags_sound_server</FILE>
+<TITLE>AgsSoundServer</TITLE>
+ags_sound_server_set_url
+ags_sound_server_get_url
+ags_sound_server_set_ports
+ags_sound_server_get_ports
+ags_sound_server_set_soundcard
+ags_sound_server_get_soundcard
+ags_sound_server_set_sequencer
+ags_sound_server_get_sequencer
+ags_sound_server_register_soundcard
+ags_sound_server_unregister_soundcard
+ags_sound_server_register_sequencer
+ags_sound_server_unregister_sequencer
+<SUBSECTION Public>
+AGS_IS_SOUND_SERVER
+AGS_IS_SOUND_SERVER_INTERFACE
+AGS_SOUND_SERVER
+AGS_SOUND_SERVER_GET_INTERFACE
+AGS_SOUND_SERVER_INTERFACE
+AGS_TYPE_SOUND_SERVER
+AgsSoundServer
+AgsSoundServerInterface
+ags_sound_server_get_type
+</SECTION>
+
+<SECTION>
 <FILE>ags_soundcard</FILE>
 <TITLE>AgsSoundcard</TITLE>
 AGS_SOUNDCARD_DEFAULT_DSP_CHANNELS
+AGS_SOUNDCARD_MIN_DSP_CHANNELS
+AGS_SOUNDCARD_MAX_DSP_CHANNELS
 AGS_SOUNDCARD_DEFAULT_PCM_CHANNELS
+AGS_SOUNDCARD_MIN_PCM_CHANNELS
+AGS_SOUNDCARD_MAX_PCM_CHANNELS
 AGS_SOUNDCARD_DEFAULT_SAMPLERATE
+AGS_SOUNDCARD_MIN_SAMPLERATE
+AGS_SOUNDCARD_MAX_SAMPLERATE
 AGS_SOUNDCARD_DEFAULT_FORMAT
 AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE
+AGS_SOUNDCARD_MIN_BUFFER_SIZE
+AGS_SOUNDCARD_MAX_BUFFER_SIZE
 AGS_SOUNDCARD_DEFAULT_BPM
 AGS_SOUNDCARD_DEFAULT_DELAY_FACTOR
 AGS_SOUNDCARD_DEFAULT_JIFFIE
@@ -1476,16 +1494,16 @@ AGS_SOUNDCARD_DEFAULT_LOOP_LEFT
 AGS_SOUNDCARD_DEFAULT_LOOP_RIGHT
 AGS_SOUNDCARD_DEFAULT_OVERCLOCK
 AgsSoundcardFormat
+AgsSoundcardCapability
 ags_soundcard_set_application_context
 ags_soundcard_get_application_context
-ags_soundcard_set_application_mutex
-ags_soundcard_get_application_mutex
 ags_soundcard_set_device
 ags_soundcard_get_device
 ags_soundcard_set_presets
 ags_soundcard_get_presets
 ags_soundcard_list_cards
 ags_soundcard_pcm_info
+ags_soundcard_get_capability
 ags_soundcard_get_poll_fd
 ags_soundcard_is_available
 ags_soundcard_is_starting
@@ -1502,6 +1520,8 @@ ags_soundcard_offset_changed
 ags_soundcard_get_buffer
 ags_soundcard_get_next_buffer
 ags_soundcard_get_prev_buffer
+ags_soundcard_lock_buffer
+ags_soundcard_unlock_buffer
 ags_soundcard_set_bpm
 ags_soundcard_get_bpm
 ags_soundcard_set_delay_factor
@@ -1517,8 +1537,6 @@ ags_soundcard_get_note_offset_absolute
 ags_soundcard_set_loop
 ags_soundcard_get_loop
 ags_soundcard_get_loop_offset
-ags_soundcard_set_audio
-ags_soundcard_get_audio
 <SUBSECTION Public>
 AGS_IS_SOUNDCARD
 AGS_IS_SOUNDCARD_INTERFACE
@@ -1532,10 +1550,20 @@ ags_soundcard_get_type
 </SECTION>
 
 <SECTION>
+<FILE>ags_soundcard_helper</FILE>
+ags_soundcard_helper_config_get_dsp_channels
+ags_soundcard_helper_config_get_pcm_channels
+ags_soundcard_helper_config_get_samplerate
+ags_soundcard_helper_config_get_buffer_size
+ags_soundcard_helper_config_get_format
+</SECTION>
+
+<SECTION>
 <FILE>ags_string_util</FILE>
 ags_string_util_escape_single_quote
 ags_strv_length
 ags_strv_contains
+ags_strv_index
 </SECTION>
 
 <SECTION>
@@ -1543,12 +1571,16 @@ ags_strv_contains
 <TITLE>AgsTactable</TITLE>
 ags_tactable_get_sequencer_duration
 ags_tactable_get_notation_duration
-ags_tactable_get_tact
+ags_tactable_get_wave_duration
+ags_tactable_get_midi_duration
 ags_tactable_get_bpm
+ags_tactable_get_tact
 ags_tactable_change_sequencer_duration
 ags_tactable_change_notation_duration
-ags_tactable_change_tact
+ags_tactable_change_wave_duration
+ags_tactable_change_midi_duration
 ags_tactable_change_bpm
+ags_tactable_change_tact
 <SUBSECTION Public>
 AGS_IS_TACTABLE
 AGS_IS_TACTABLE_INTERFACE
@@ -1565,11 +1597,16 @@ ags_tactable_get_type
 <FILE>ags_task</FILE>
 <TITLE>AgsTask</TITLE>
 AgsTaskFlags
+ags_task_get_class_mutex
+ags_task_test_flags
+ags_task_set_flags
+ags_task_unset_flags
 ags_task_launch
 ags_task_failure
 ags_task_new
 <SUBSECTION Public>
 AGS_IS_TASK
+AGS_IS_TASK_CLASS
 AGS_TASK
 AGS_TASK_CLASS
 AGS_TASK_GET_CLASS
@@ -1583,10 +1620,15 @@ ags_task_get_type
 <FILE>ags_task_completion</FILE>
 <TITLE>AgsTaskCompletion</TITLE>
 AgsTaskCompletionFlags
+ags_task_completion_get_class_mutex
+ags_task_completion_test_flags
+ags_task_completion_set_flags
+ags_task_completion_unset_flags
 ags_task_completion_complete
 ags_task_completion_new
 <SUBSECTION Public>
 AGS_IS_TASK_COMPLETION
+AGS_IS_TASK_COMPLETION_CLASS
 AGS_TASK_COMPLETION
 AGS_TASK_COMPLETION_CLASS
 AGS_TASK_COMPLETION_GET_CLASS
@@ -1611,6 +1653,7 @@ ags_task_thread_clear_cache
 ags_task_thread_new
 <SUBSECTION Public>
 AGS_IS_TASK_THREAD
+AGS_IS_TASK_THREAD_CLASS
 AGS_TASK_THREAD
 AGS_TASK_THREAD_CLASS
 AGS_TASK_THREAD_GET_CLASS
@@ -1635,6 +1678,13 @@ AGS_THREAD_DEFAULT_ATTACK
 AGS_THREAD_TOLERANCE
 AgsThreadFlags
 AgsThreadSyncFlags
+ags_thread_get_class_mutex
+ags_thread_test_flags
+ags_thread_set_flags
+ags_thread_unset_flags
+ags_thread_test_sync_flags
+ags_thread_set_sync_flags
+ags_thread_unset_sync_flags
 ags_thread_resume_handler
 ags_thread_suspend_handler
 ags_thread_set_sync
@@ -1674,6 +1724,7 @@ ags_thread_signal_children
 ags_thread_clock
 ags_thread_add_start_queue
 ags_thread_add_start_queue_all
+ags_thread_is_running
 ags_thread_start
 ags_thread_run
 ags_thread_suspend
@@ -1689,6 +1740,7 @@ ags_thread_is_chaos_tree
 ags_thread_new
 <SUBSECTION Public>
 AGS_IS_THREAD
+AGS_IS_THREAD_CLASS
 AGS_THREAD
 AGS_THREAD_CLASS
 AGS_THREAD_GET_CLASS
@@ -1708,6 +1760,7 @@ ags_thread_application_context_register_types
 ags_thread_application_context_new
 <SUBSECTION Public>
 AGS_IS_THREAD_APPLICATION_CONTEXT
+AGS_IS_THREAD_APPLICATION_CONTEXT_CLASS
 AGS_THREAD_APPLICATION_CONTEXT
 AGS_THREAD_APPLICATION_CONTEXT_CLASS
 AGS_THREAD_APPLICATION_CONTEXT_GET_CLASS
@@ -1734,6 +1787,8 @@ ags_file_write_timestamp_list
 <SECTION>
 <FILE>ags_thread_pool</FILE>
 <TITLE>AgsThreadPool</TITLE>
+AGS_THREAD_POOL_DEFAULT_MAX_UNUSED_THREADS
+AGS_THREAD_POOL_DEFAULT_MAX_THREADS
 AGS_THREAD_POOL_RT_PRIORITY
 AgsThreadPoolFlags
 ags_thread_pool_pull
@@ -1741,6 +1796,7 @@ ags_thread_pool_start
 ags_thread_pool_new
 <SUBSECTION Public>
 AGS_IS_THREAD_POOL
+AGS_IS_THREAD_POOL_CLASS
 AGS_THREAD_POOL
 AGS_THREAD_POOL_CLASS
 AGS_THREAD_POOL_GET_CLASS
@@ -1748,23 +1804,6 @@ AGS_TYPE_THREAD_POOL
 AgsThreadPool
 AgsThreadPoolClass
 ags_thread_pool_get_type
-</SECTION>
-
-<SECTION>
-<FILE>ags_thread_xml_serialization_factory</FILE>
-<TITLE>AgsThreadXmlSerializationFactory</TITLE>
-ags_thread_xml_serialization_factory_create
-ags_thread_xml_serialization_factory_get_instance
-ags_thread_xml_serialization_factory_new
-<SUBSECTION Public>
-AGS_IS_THREAD_XML_SERIALIZATION_FACTORY
-AGS_THREAD_XML_SERIALIZATION_FACTORY
-AGS_THREAD_XML_SERIALIZATION_FACTORY_CLASS
-AGS_THREAD_XML_SERIALIZATION_FACTORY_GET_CLASS
-AGS_TYPE_THREAD_XML_SERIALIZATION_FACTORY
-AgsThreadXmlSerializationFactory
-AgsThreadXmlSerializationFactoryClass
-ags_thread_xml_serialization_factory_get_type
 </SECTION>
 
 <SECTION>
@@ -1779,9 +1818,18 @@ ags_time_get_uptime_from_offset
 <FILE>ags_timestamp</FILE>
 <TITLE>AgsTimestamp</TITLE>
 AgsTimestampFlags
+ags_timestamp_get_class_mutex
+ags_timestamp_test_flags
+ags_timestamp_set_flags
+ags_timestamp_unset_flags
+ags_timestamp_get_unix_time
+ags_timestamp_set_unix_time
+ags_timestamp_get_ags_offset
+ags_timestamp_set_ags_offset
 ags_timestamp_new
 <SUBSECTION Public>
 AGS_IS_TIMESTAMP
+AGS_IS_TIMESTAMP_CLASS
 AGS_TIMESTAMP
 AGS_TIMESTAMP_CLASS
 AGS_TIMESTAMP_GET_CLASS
@@ -1789,62 +1837,6 @@ AGS_TYPE_TIMESTAMP
 AgsTimestamp
 AgsTimestampClass
 ags_timestamp_get_type
-</SECTION>
-
-<SECTION>
-<FILE>ags_timestamp_factory</FILE>
-<TITLE>AgsTimestampFactory</TITLE>
-AgsTimestampFactoryFlags
-<SUBSECTION Public>
-AGS_IS_TIMESTAMP_FACTORY
-AGS_TIMESTAMP_FACTORY
-AGS_TIMESTAMP_FACTORY_CLASS
-AGS_TIMESTAMP_FACTORY_GET_CLASS
-AGS_TYPE_TIMESTAMP_FACTORY
-AgsTimestampFactory
-AgsTimestampFactoryClass
-</SECTION>
-
-<SECTION>
-<FILE>ags_timestamp_thread</FILE>
-<TITLE>AgsTimestampThread</TITLE>
-AGS_MICROSECONDS_PER_SECOND
-AGS_TIMESTAMP_THREAD_DEFAULT_BPM
-AGS_TIMESTAMP_THREAD_DEFAULT_SAMPLERATE
-AGS_TIMESTAMP_THREAD_DEFAULT_BUFFER_SIZE
-AGS_TIMESTAMP_THREAD_DEFAULT_JIFFIE
-AGS_TIMESTAMP_THREAD_DEFAULT_TIC
-ags_timestamp_thread_new
-<SUBSECTION Public>
-AGS_IS_TIMESTAMP_THREAD
-AGS_TIMESTAMP_THREAD
-AGS_TIMESTAMP_THREAD_CLASS
-AGS_TIMESTAMP_THREAD_GET_CLASS
-AGS_TYPE_TIMESTAMP_THREAD
-AgsTimestampThread
-AgsTimestampThreadClass
-ags_timestamp_thread_get_type
-</SECTION>
-
-<SECTION>
-<FILE>ags_tree_iterator</FILE>
-<TITLE>AgsTreeIterator</TITLE>
-ags_tree_iterator_set_inverse_mode
-ags_tree_iterator_is_inverse_mode
-ags_tree_iterator_iterate
-ags_tree_iterator_iterate_nested
-ags_tree_iterator_safe_iterate
-ags_tree_iterator_safe_iterate_nested
-<SUBSECTION Public>
-AGS_IS_TREE_ITERATOR
-AGS_IS_TREE_ITERATOR_INTERFACE
-AGS_TREE_ITERATOR
-AGS_TREE_ITERATOR_GET_INTERFACE
-AGS_TREE_ITERATOR_INTERFACE
-AGS_TYPE_TREE_ITERATOR
-AgsTreeIterator
-AgsTreeIteratorInterface
-ags_tree_iterator_get_type
 </SECTION>
 
 <SECTION>
@@ -1888,6 +1880,7 @@ ags_turtle_load
 ags_turtle_new
 <SUBSECTION Public>
 AGS_IS_TURTLE
+AGS_IS_TURTLE_CLASS
 AGS_TURTLE
 AGS_TURTLE_CLASS
 AGS_TURTLE_GET_CLASS
@@ -1900,12 +1893,14 @@ ags_turtle_get_type
 <SECTION>
 <FILE>ags_turtle_manager</FILE>
 <TITLE>AgsTurtleManager</TITLE>
+ags_turtle_manager_get_class_mutex
 ags_turtle_manager_find
 ags_turtle_manager_add
 ags_turtle_manager_get_instance
 ags_turtle_manager_new
 <SUBSECTION Public>
 AGS_IS_TURTLE_MANAGER
+AGS_IS_TURTLE_MANAGER_CLASS
 AGS_TURTLE_MANAGER
 AGS_TURTLE_MANAGER_CLASS
 AGS_TURTLE_MANAGER_GET_CLASS
@@ -1913,6 +1908,23 @@ AGS_TYPE_TURTLE_MANAGER
 AgsTurtleManager
 AgsTurtleManagerClass
 ags_turtle_manager_get_type
+</SECTION>
+
+<SECTION>
+<FILE>ags_uuid</FILE>
+AGS_UUID_DEFAULT_LENGTH
+AGS_UUID_STRING_DEFAULT_LENGTH
+ags_uuid_alloc
+ags_uuid_copy
+ags_uuid_free
+ags_uuid_generate
+ags_uuid_compare
+ags_uuid_to_string
+ags_uuid_from_string
+<SUBSECTION Public>
+AGS_TYPE_UUID
+AgsUUID
+ags_uuid_get_type
 </SECTION>
 
 <SECTION>
@@ -1925,6 +1937,7 @@ ags_worker_thread_do_poll
 ags_worker_thread_new
 <SUBSECTION Public>
 AGS_IS_WORKER_THREAD
+AGS_IS_WORKER_THREAD_CLASS
 AGS_TYPE_WORKER_THREAD
 AGS_WORKER_THREAD
 AGS_WORKER_THREAD_CLASS
@@ -1941,6 +1954,7 @@ ags_xml_authentication_find_user_uuid
 ags_xml_authentication_new
 <SUBSECTION Public>
 AGS_IS_XML_AUTHENTICATION
+AGS_IS_XML_AUTHENTICATION_CLASS
 AGS_TYPE_XML_AUTHENTICATION
 AGS_XML_AUTHENTICATION
 AGS_XML_AUTHENTICATION_CLASS
@@ -1956,6 +1970,7 @@ ags_xml_authentication_get_type
 ags_xml_certificate_new
 <SUBSECTION Public>
 AGS_IS_XML_CERTIFICATE
+AGS_IS_XML_CERTIFICATE_CLASS
 AGS_TYPE_XML_CERTIFICATE
 AGS_XML_CERTIFICATE
 AGS_XML_CERTIFICATE_CLASS
@@ -1972,6 +1987,7 @@ ags_xml_password_store_find_login
 ags_xml_password_store_new
 <SUBSECTION Public>
 AGS_IS_XML_PASSWORD_STORE
+AGS_IS_XML_PASSWORD_STORE_CLASS
 AGS_TYPE_XML_PASSWORD_STORE
 AGS_XML_PASSWORD_STORE
 AGS_XML_PASSWORD_STORE_CLASS
@@ -1979,22 +1995,5 @@ AGS_XML_PASSWORD_STORE_GET_CLASS
 AgsXmlPasswordStore
 AgsXmlPasswordStoreClass
 ags_xml_password_store_get_type
-</SECTION>
-
-<SECTION>
-<FILE>ags_xml_serialization_factory</FILE>
-<TITLE>AgsXmlSerializationFactory</TITLE>
-ags_xml_serialization_factory_create
-ags_xml_serialization_factory_get_instance
-ags_xml_serialization_factory_new
-<SUBSECTION Public>
-AGS_IS_XML_SERIALIZATION_FACTORY
-AGS_TYPE_XML_SERIALIZATION_FACTORY
-AGS_XML_SERIALIZATION_FACTORY
-AGS_XML_SERIALIZATION_FACTORY_CLASS
-AGS_XML_SERIALIZATION_FACTORY_GET_CLASS
-AgsXmlSerializationFactory
-AgsXmlSerializationFactoryClass
-ags_xml_serialization_factory_get_type
 </SECTION>
 

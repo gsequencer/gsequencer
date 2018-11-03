@@ -78,8 +78,8 @@ ags_file_link_get_type()
   static volatile gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
-    GType ags_type_file_link;
-    
+    GType ags_type_file_link = 0;
+
     static const GTypeInfo ags_file_link_info = {
       sizeof (AgsFileLinkClass),
       NULL, /* base_init */
@@ -107,7 +107,7 @@ ags_file_link_get_type()
 				AGS_TYPE_PLUGIN,
 				&ags_plugin_interface_info);
 
-    g_once_init_leave (&g_define_type_id__volatile, ags_type_file_link);
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_file_link);
   }
 
   return g_define_type_id__volatile;
@@ -135,7 +135,7 @@ ags_file_link_class_init(AgsFileLinkClass *file_link)
    *
    * The filename this #AgsFileLink refers.
    *
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_string("filename",
 				   i18n_pspec("the filename"),
@@ -151,7 +151,7 @@ ags_file_link_class_init(AgsFileLinkClass *file_link)
    *
    * The data this #AgsFileLink contains.
    *
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_string("data",
 				   i18n_pspec("the data"),
@@ -219,7 +219,16 @@ ags_file_link_set_property(GObject *gobject,
 {
   AgsFileLink *file_link;
 
+  pthread_mutex_t *file_link_mutex;
+
   file_link = AGS_FILE_LINK(gobject);
+
+  /* get file link mutex */
+  pthread_mutex_lock(ags_file_link_get_class_mutex());
+  
+  file_link_mutex = file_link->obj_mutex;
+  
+  pthread_mutex_unlock(ags_file_link_get_class_mutex());
   
   switch(prop_id){
   case PROP_FILENAME:
@@ -228,7 +237,11 @@ ags_file_link_set_property(GObject *gobject,
 
       filename = (char *) g_value_get_string(value);
 
+      pthread_mutex_lock(file_link_mutex);
+
       if(filename == file_link->filename){
+	pthread_mutex_unlock(file_link_mutex);
+
 	return;
       }
 
@@ -237,6 +250,8 @@ ags_file_link_set_property(GObject *gobject,
       }
 	
       file_link->filename = g_strdup(filename);
+
+      pthread_mutex_unlock(file_link_mutex);
     }
     break;
   case PROP_DATA:
@@ -245,11 +260,17 @@ ags_file_link_set_property(GObject *gobject,
 
       data = (char *) g_value_get_string(value);
 
+      pthread_mutex_lock(file_link_mutex);
+
       if(data == file_link->data){
+	pthread_mutex_unlock(file_link_mutex);
+
 	return;
       }
 
       file_link->data = g_strdup(data);
+
+      pthread_mutex_unlock(file_link_mutex);
     }
     break;
   default:
@@ -266,17 +287,34 @@ ags_file_link_get_property(GObject *gobject,
 {
   AgsFileLink *file_link;
 
+  pthread_mutex_t *file_link_mutex;
+
   file_link = AGS_FILE_LINK(gobject);
   
+  /* get file link mutex */
+  pthread_mutex_lock(ags_file_link_get_class_mutex());
+  
+  file_link_mutex = file_link->obj_mutex;
+  
+  pthread_mutex_unlock(ags_file_link_get_class_mutex());
+
   switch(prop_id){
   case PROP_FILENAME:
     {
+      pthread_mutex_lock(file_link_mutex);
+
       g_value_set_string(value, file_link->filename);
+
+      pthread_mutex_unlock(file_link_mutex);
     }
     break;
   case PROP_DATA:
     {
+      pthread_mutex_lock(file_link_mutex);
+
       g_value_set_string(value, file_link->data);
+
+      pthread_mutex_unlock(file_link_mutex);
     }
     break;
   default:
@@ -307,6 +345,9 @@ ags_file_link_finalize(GObject *gobject)
   if(file_link->data != NULL){
     g_free(file_link->data);
   }
+
+  /* call parent */
+  G_OBJECT_CLASS(ags_file_link_parent_class)->finalize(gobject);
 }
 
 /**
@@ -426,7 +467,7 @@ ags_file_link_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
  *
  * Returns: a new #AgsFileLink
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsFileLink*
 ags_file_link_new()

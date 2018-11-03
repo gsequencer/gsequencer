@@ -22,10 +22,7 @@
 #include <ags/libags.h>
 
 void ags_lv2_event_manager_class_init(AgsLv2EventManagerClass *lv2_event_manager);
-void ags_lv2_event_manager_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_lv2_event_manager_init(AgsLv2EventManager *lv2_event_manager);
-void ags_lv2_event_manager_connect(AgsConnectable *connectable);
-void ags_lv2_event_manager_disconnect(AgsConnectable *connectable);
 void ags_lv2_event_manager_finalize(GObject *gobject);
 
 /**
@@ -48,8 +45,8 @@ ags_lv2_event_manager_get_type()
   static volatile gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
-    GType ags_type_lv2_event_manager;
-    
+    GType ags_type_lv2_event_manager = 0;
+
     const GTypeInfo ags_lv2_event_manager_info = {
       sizeof(AgsLv2EventManagerClass),
       NULL, /* base_init */
@@ -62,22 +59,12 @@ ags_lv2_event_manager_get_type()
       (GInstanceInitFunc) ags_lv2_event_manager_init,
     };
 
-    const GInterfaceInfo ags_connectable_interface_info = {
-      (GInterfaceInitFunc) ags_lv2_event_manager_connectable_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-
     ags_type_lv2_event_manager = g_type_register_static(G_TYPE_OBJECT,
 							"AgsLv2EventManager",
 							&ags_lv2_event_manager_info,
 							0);
 
-    g_type_add_interface_static(ags_type_lv2_event_manager,
-				AGS_TYPE_CONNECTABLE,
-				&ags_connectable_interface_info);
-
-    g_once_init_leave (&g_define_type_id__volatile, ags_type_lv2_event_manager);
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_lv2_event_manager);
   }
 
   return g_define_type_id__volatile;
@@ -98,27 +85,8 @@ ags_lv2_event_manager_class_init(AgsLv2EventManagerClass *lv2_event_manager)
 }
 
 void
-ags_lv2_event_manager_connectable_interface_init(AgsConnectableInterface *connectable)
-{
-  connectable->connect = ags_lv2_event_manager_connect;
-  connectable->disconnect = ags_lv2_event_manager_disconnect;
-}
-
-void
 ags_lv2_event_manager_init(AgsLv2EventManager *event_manager)
 {  
-  /* empty */
-}
-
-void
-ags_lv2_event_manager_connect(AgsConnectable *connectable)
-{
-  /* empty */
-}
-
-void
-ags_lv2_event_manager_disconnect(AgsConnectable *connectable)
-{
   /* empty */
 }
 
@@ -156,7 +124,7 @@ ags_lv2_event_manager_lv2_event_unref(LV2_Event_Callback_Data callback_data,
  *
  * Returns: an instance of #AgsLv2EventManager
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsLv2EventManager*
 ags_lv2_event_manager_get_instance()
@@ -177,7 +145,7 @@ ags_lv2_event_manager_get_instance()
  *
  * Returns: a new #AgsLv2EventManager
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsLv2EventManager*
 ags_lv2_event_manager_new()

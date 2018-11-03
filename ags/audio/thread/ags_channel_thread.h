@@ -71,6 +71,7 @@ struct _AgsChannelThread
   pthread_cond_t *done_cond;
 
   GObject *channel;
+  gint sound_scope;
 };
 
 struct _AgsChannelThreadClass
@@ -79,6 +80,9 @@ struct _AgsChannelThreadClass
 };
 
 GType ags_channel_thread_get_type();
+
+void ags_channel_thread_set_sound_scope(AgsChannelThread *channel_thread,
+					gint sound_scope);
 
 AgsChannelThread* ags_channel_thread_new(GObject *default_output_soundcard,
 					 GObject *channel);

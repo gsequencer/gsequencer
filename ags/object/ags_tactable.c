@@ -51,15 +51,15 @@ ags_tactable_get_type()
   static volatile gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
-    GType ags_type_tactable;
-    
+    GType ags_type_tactable = 0;
+
     ags_type_tactable = g_type_register_static_simple(G_TYPE_INTERFACE,
 						      "AgsTactable",
 						      sizeof (AgsTactableInterface),
 						      (GClassInitFunc) ags_tactable_class_init,
 						      0, NULL, 0);
 
-    g_once_init_leave (&g_define_type_id__volatile, ags_type_tactable);
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_tactable);
   }
 
   return g_define_type_id__volatile;

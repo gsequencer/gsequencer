@@ -23,6 +23,8 @@
 #include <gdk/gdk.h>
 #include <pango/pangocairo.h>
 
+#include <gtk/gtk.h>
+
 #ifdef AGS_WITH_LIBINSTPATCH
 #include <libinstpatch/libinstpatch.h>
 #endif
@@ -34,6 +36,9 @@
 #include <libxml/xmlIO.h>
 #include <libxml/xmlmemory.h>
 #include <libxml/xmlsave.h>
+
+#define _GNU_SOURCE
+#include <locale.h>
 
 #include <ags/libags.h>
 #include <ags/libags-audio.h>
@@ -267,7 +272,7 @@ main(int argc, char **argv)
       printf("GSequencer %s\n\n", AGS_VERSION);
       
       printf("%s\n%s\n%s\n\n",
-	     "Copyright (C) 2005-2017 Joël Krähemann",
+	     "Copyright (C) 2005-2018 Joël Krähemann",
 	     "This is free software; see the source for copying conditions.  There is NO",
 	     "warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.");
       
@@ -345,19 +350,21 @@ main(int argc, char **argv)
 #endif
   
 #if 0
-  g_log_set_fatal_mask("Gtk",
-  		       G_LOG_LEVEL_CRITICAL);
-
-  g_log_set_fatal_mask("GLib-GObject",
+  g_log_set_fatal_mask("GLib",
   		       G_LOG_LEVEL_CRITICAL);
 
   g_log_set_fatal_mask("libInstPatch",
   		       G_LOG_LEVEL_CRITICAL);
 
+  g_log_set_fatal_mask("GLib-GObject",
+  		       G_LOG_LEVEL_WARNING | G_LOG_LEVEL_CRITICAL);
+
   g_log_set_fatal_mask(NULL,
   		       G_LOG_LEVEL_WARNING | G_LOG_LEVEL_CRITICAL);  
-#endif
 
+  g_log_set_fatal_mask("Gtk",
+  		       G_LOG_LEVEL_CRITICAL);
+#endif
 
   /* setup */
   wdir = g_strdup_printf("%s/%s",

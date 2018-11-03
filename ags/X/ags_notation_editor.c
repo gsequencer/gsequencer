@@ -93,7 +93,7 @@ ags_notation_editor_get_type(void)
   static volatile gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
-    GType ags_type_notation_editor;
+    GType ags_type_notation_editor = 0;
 
     static const GTypeInfo ags_notation_editor_info = {
       sizeof (AgsNotationEditorClass),
@@ -121,7 +121,7 @@ ags_notation_editor_get_type(void)
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
 
-    g_once_init_leave (&g_define_type_id__volatile, ags_type_notation_editor);
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_notation_editor);
   }
 
   return g_define_type_id__volatile;
@@ -626,6 +626,8 @@ ags_notation_editor_add_note(AgsNotationEditor *notation_editor,
       }else{
 	notation = ags_notation_new(machine->audio,
 				    i);
+	AGS_TIMESTAMP(notation->timestamp)->timer.ags_offset.offset = timestamp->timer.ags_offset.offset;
+	
 	ags_audio_add_notation(machine->audio,
 			       notation);
       }

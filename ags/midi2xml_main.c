@@ -16,12 +16,12 @@
  * You should have received a copy of the GNU General Public License
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 #include <glib.h>
 #include <glib-object.h>
 
-#include <ags/object/ags_marshal.h>
-
-#include <ags/audio/midi/ags_midi_parser.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
 
 #include <stdio.h>
 
@@ -54,9 +54,14 @@ main(int argc, char **argv)
   size_t length;
 
   if(argc == 2){
-
     if(!g_ascii_strncasecmp(argv[1], "--help", 7)){
-      midi2xml_print_usage();
+      printf("midi2xml converts MIDI to XML\n\n");
+
+      printf("Usage:\n\t%s\n\t%s\n\t%s\n\t%s\n\n",
+	     "Report bugs to <jkraehemann@gmail.com>\n",
+	     "--help              display this help and exit",
+	     "--version           output version information and exit",
+	     "<file>              the file to be processed");
       
       exit(0);
     }else if(!g_ascii_strncasecmp(argv[1], "--version", 10)){

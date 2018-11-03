@@ -39,15 +39,15 @@ ags_concurrency_provider_get_type()
   static volatile gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
-    GType ags_type_concurrency_provider;
-    
+    GType ags_type_concurrency_provider = 0;
+
     ags_type_concurrency_provider = g_type_register_static_simple(G_TYPE_INTERFACE,
 								  "AgsConcurrencyProvider",
 								  sizeof(AgsConcurrencyProviderInterface),
 								  (GClassInitFunc) ags_concurrency_provider_class_init,
 								  0, NULL, 0);
 
-    g_once_init_leave (&g_define_type_id__volatile, ags_type_concurrency_provider);
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_concurrency_provider);
   }
 
   return g_define_type_id__volatile;
@@ -67,7 +67,7 @@ ags_concurrency_provider_class_init(AgsConcurrencyProviderInterface *interface)
  *
  * Returns: the assigned #AgsMutexManager
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsMutexManager*
 ags_concurrency_provider_get_mutex_manager(AgsConcurrencyProvider *concurrency_provider)
@@ -89,7 +89,7 @@ ags_concurrency_provider_get_mutex_manager(AgsConcurrencyProvider *concurrency_p
  *
  * Returns: the #AgsThread implementing #AgsMainLoop interface
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsThread*
 ags_concurrency_provider_get_main_loop(AgsConcurrencyProvider *concurrency_provider)
@@ -111,7 +111,7 @@ ags_concurrency_provider_get_main_loop(AgsConcurrencyProvider *concurrency_provi
  *
  * Returns: the #AgsThread implementing #AgsAsyncQueue interface
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsThread*
 ags_concurrency_provider_get_task_thread(AgsConcurrencyProvider *concurrency_provider)
@@ -133,7 +133,7 @@ ags_concurrency_provider_get_task_thread(AgsConcurrencyProvider *concurrency_pro
  *
  * Returns: the #AgsThreadPool
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsThreadPool*
 ags_concurrency_provider_get_thread_pool(AgsConcurrencyProvider *concurrency_provider)
@@ -155,7 +155,7 @@ ags_concurrency_provider_get_thread_pool(AgsConcurrencyProvider *concurrency_pro
  *
  * Returns: the #GList-struct containing workers
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 GList*
 ags_concurrency_provider_get_worker(AgsConcurrencyProvider *concurrency_provider)
@@ -176,7 +176,7 @@ ags_concurrency_provider_get_worker(AgsConcurrencyProvider *concurrency_provider
  * 
  * Set workers of application context.
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_concurrency_provider_set_worker(AgsConcurrencyProvider *concurrency_provider,

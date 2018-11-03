@@ -71,7 +71,7 @@ ags_set_format_get_type()
   static volatile gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
-    GType ags_type_set_format;
+    GType ags_type_set_format = 0;
 
     static const GTypeInfo ags_set_format_info = {
       sizeof(AgsSetFormatClass),
@@ -89,9 +89,11 @@ ags_set_format_get_type()
 						 "AgsSetFormat",
 						 &ags_set_format_info,
 						 0);
+
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_set_format);
   }
-  
-  return(ags_type_set_format);
+
+  return g_define_type_id__volatile;
 }
 
 void

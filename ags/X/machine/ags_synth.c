@@ -83,7 +83,7 @@ ags_synth_get_type(void)
   static volatile gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
-    GType ags_type_synth;
+    GType ags_type_synth = 0;
 
     static const GTypeInfo ags_synth_info = {
       sizeof(AgsSynthClass),
@@ -121,7 +121,7 @@ ags_synth_get_type(void)
 				AGS_TYPE_PLUGIN,
 				&ags_plugin_interface_info);
 
-    g_once_init_leave (&g_define_type_id__volatile, ags_type_synth);
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_synth);
   }
 
   return g_define_type_id__volatile;

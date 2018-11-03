@@ -63,7 +63,7 @@ ags_resize_editor_get_type(void)
   static volatile gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
-    GType ags_type_resize_editor;
+    GType ags_type_resize_editor = 0;
 
     static const GTypeInfo ags_resize_editor_info = {
       sizeof (AgsResizeEditorClass),
@@ -102,7 +102,7 @@ ags_resize_editor_get_type(void)
 				AGS_TYPE_APPLICABLE,
 				&ags_applicable_interface_info);
 
-    g_once_init_leave (&g_define_type_id__volatile, ags_type_resize_editor);
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_resize_editor);
   }
 
   return g_define_type_id__volatile;
@@ -259,6 +259,9 @@ ags_resize_editor_apply(AgsApplicable *applicable)
   AgsResizeAudio *resize_audio;
   
   AgsApplicationContext *application_context;
+
+  guint audio_channels;
+  guint output_pads, input_pads;
   
   resize_editor = AGS_RESIZE_EDITOR(applicable);
 
@@ -280,10 +283,15 @@ ags_resize_editor_apply(AgsApplicable *applicable)
   audio = machine_editor->machine->audio;
 
   /* create task */
+  audio_channels = gtk_spin_button_get_value_as_int(resize_editor->audio_channels);
+  
+  output_pads = gtk_spin_button_get_value_as_int(resize_editor->output_pads);
+  input_pads = gtk_spin_button_get_value_as_int(resize_editor->input_pads);
+  
   resize_audio = ags_resize_audio_new(audio,
-				      (guint) gtk_spin_button_get_value_as_int(resize_editor->output_pads),
-				      (guint) gtk_spin_button_get_value_as_int(resize_editor->input_pads),
-				      (guint) gtk_spin_button_get_value_as_int(resize_editor->audio_channels));
+				      output_pads,
+				      input_pads,
+				      audio_channels);
       
   /* append AgsResizeAudio */
   ags_gui_thread_schedule_task(gui_thread,
@@ -298,13 +306,21 @@ ags_resize_editor_reset(AgsApplicable *applicable)
 
   AgsAudio *audio;
 
+  guint audio_channels;
+  guint output_pads, input_pads;
+
   resize_editor = AGS_RESIZE_EDITOR(applicable);
 
   machine_editor = AGS_MACHINE_EDITOR(gtk_widget_get_ancestor(GTK_WIDGET(resize_editor),
 							      AGS_TYPE_MACHINE_EDITOR));
 
   audio = machine_editor->machine->audio;
-
+  g_object_get(audio,
+	       "audio-channels", &audio_channels,
+	       "output-pads", &output_pads,
+	       "input-pads", &input_pads,
+	       NULL);
+  
   /* reset */
   if((AGS_MACHINE_MONO & (machine_editor->machine->mapping_flags)) != 0){
     gtk_spin_button_set_range(resize_editor->audio_channels,
@@ -312,10 +328,10 @@ ags_resize_editor_reset(AgsApplicable *applicable)
   }
 
   gtk_spin_button_set_value(resize_editor->audio_channels,
-			    audio->audio_channels);
+			    (gdouble) audio_channels);
 
   gtk_spin_button_set_value(resize_editor->input_pads,
-			    audio->input_pads);
+			    (gdouble) input_pads);
 
   if((AGS_AUDIO_OUTPUT_HAS_RECYCLING & (machine_editor->machine->audio->flags)) == 0){
     gtk_spin_button_set_range(resize_editor->output_pads,
@@ -323,7 +339,7 @@ ags_resize_editor_reset(AgsApplicable *applicable)
   }
   
   gtk_spin_button_set_value(resize_editor->output_pads,
-			    audio->output_pads);
+			    (gdouble) output_pads);
 }
 
 /**

@@ -53,12 +53,12 @@ void ags_functional_line_member_add_and_destroy_test_synth();
 void ags_functional_line_member_add_and_destroy_test_ffplayer();
 #endif
 
-#define AGS_FUNCTIONAL_LINE_MEMBER_ADD_AND_DESTROY_TEST_LADSPA_CMT "/usr/lib/ladspa/cmt.so\0"
-#define AGS_FUNCTIONAL_LINE_MEMBER_ADD_AND_DESTROY_TEST_LADSPA_CMT_DELAY "Echo Delay Line (Maximum Delay 1s)\0"
-#define AGS_FUNCTIONAL_LINE_MEMBER_ADD_AND_DESTROY_TEST_LADSPA_CMT_FREEVERB "Freeverb (Version 3)\0"
+#define AGS_FUNCTIONAL_LINE_MEMBER_ADD_AND_DESTROY_TEST_LADSPA_CMT "/usr/lib/ladspa/cmt.so"
+#define AGS_FUNCTIONAL_LINE_MEMBER_ADD_AND_DESTROY_TEST_LADSPA_CMT_DELAY "Echo Delay Line (Maximum Delay 1s)"
+#define AGS_FUNCTIONAL_LINE_MEMBER_ADD_AND_DESTROY_TEST_LADSPA_CMT_FREEVERB "Freeverb (Version 3)"
 
-#define AGS_FUNCTIONAL_LINE_MEMBER_ADD_AND_DESTROY_TEST_LV2_SWH "/usr/lib/lv2/gverb-swh.lv2/plugin-linux.so\0"
-#define AGS_FUNCTIONAL_LINE_MEMBER_ADD_AND_DESTROY_TEST_LV2_SWH_GVERB "GVerb\0"
+#define AGS_FUNCTIONAL_LINE_MEMBER_ADD_AND_DESTROY_TEST_LV2_SWH "/usr/lib/lv2/gverb-swh.lv2/plugin-linux.so"
+#define AGS_FUNCTIONAL_LINE_MEMBER_ADD_AND_DESTROY_TEST_LV2_SWH_GVERB "GVerb"
 
 #define AGS_FUNCTIONAL_LINE_MEMBER_ADD_AND_DESTROY_TEST_CONFIG "[generic]\n" \
   "autosave-thread=false\n"			       \
@@ -98,13 +98,13 @@ ags_functional_line_member_add_and_destroy_test_add_test()
 {
 
   /* add the tests to the suite */
-  if((CU_add_test(pSuite, "functional test of GSequencer line member add and destroy AgsPanel\0", ags_functional_line_member_add_and_destroy_test_panel) == NULL) ||
-     (CU_add_test(pSuite, "functional test of GSequencer line member add and destroy AgsMixer\0", ags_functional_line_member_add_and_destroy_test_mixer) == NULL) ||
-     (CU_add_test(pSuite, "functional test of GSequencer line member add and destroy AgsDrum\0", ags_functional_line_member_add_and_destroy_test_drum) == NULL) ||
-     (CU_add_test(pSuite, "functional test of GSequencer line member add and destroy AgsMatrix\0", ags_functional_line_member_add_and_destroy_test_matrix) == NULL) ||
-     (CU_add_test(pSuite, "functional test of GSequencer line member add and destroy AgsSynth\0", ags_functional_line_member_add_and_destroy_test_synth) == NULL)
+  if((CU_add_test(pSuite, "functional test of GSequencer line member add and destroy AgsPanel", ags_functional_line_member_add_and_destroy_test_panel) == NULL) ||
+     (CU_add_test(pSuite, "functional test of GSequencer line member add and destroy AgsMixer", ags_functional_line_member_add_and_destroy_test_mixer) == NULL) ||
+     (CU_add_test(pSuite, "functional test of GSequencer line member add and destroy AgsDrum", ags_functional_line_member_add_and_destroy_test_drum) == NULL) ||
+     (CU_add_test(pSuite, "functional test of GSequencer line member add and destroy AgsMatrix", ags_functional_line_member_add_and_destroy_test_matrix) == NULL) ||
+     (CU_add_test(pSuite, "functional test of GSequencer line member add and destroy AgsSynth", ags_functional_line_member_add_and_destroy_test_synth) == NULL)
 #ifdef AGS_WITH_LIBINSTPATCH
-     || (CU_add_test(pSuite, "functional test of GSequencer line member add and destroy AgsFFPlayer\0", ags_functional_line_member_add_and_destroy_test_ffplayer) == NULL)
+     || (CU_add_test(pSuite, "functional test of GSequencer line member add and destroy AgsFFPlayer", ags_functional_line_member_add_and_destroy_test_ffplayer) == NULL)
 #endif
      ){
     CU_cleanup_registry();
@@ -220,7 +220,7 @@ ags_functional_line_member_add_and_destroy_test_panel()
   /* ladspa */
   success = ags_functional_test_util_machine_properties_effect_plugin_type(nth_machine,
 									   nth_pad, nth_audio_channel,
-									   "LADSPA\0");
+									   "LADSPA");
 
   CU_ASSERT(success == TRUE);
 
@@ -266,7 +266,7 @@ ags_functional_line_member_add_and_destroy_test_panel()
   /* ladspa */
   success = ags_functional_test_util_machine_properties_effect_plugin_type(nth_machine,
 									   nth_pad, nth_audio_channel,
-									   "LADSPA\0");
+									   "LADSPA");
 
   CU_ASSERT(success == TRUE);
 
@@ -331,7 +331,7 @@ ags_functional_line_member_add_and_destroy_test_panel()
   /* lv2 */
   success = ags_functional_test_util_machine_properties_effect_plugin_type(nth_machine,
 									   nth_pad, nth_audio_channel,
-									   "Lv2\0");
+									   "Lv2");
 
   CU_ASSERT(success == TRUE);
 
@@ -497,7 +497,7 @@ ags_functional_line_member_add_and_destroy_test_mixer()
   /* ladspa */
   success = ags_functional_test_util_machine_properties_effect_plugin_type(nth_machine,
 									   nth_pad, nth_audio_channel,
-									   "LADSPA\0");
+									   "LADSPA");
 
   CU_ASSERT(success == TRUE);
 
@@ -543,7 +543,7 @@ ags_functional_line_member_add_and_destroy_test_mixer()
   /* ladspa */
   success = ags_functional_test_util_machine_properties_effect_plugin_type(nth_machine,
 									   nth_pad, nth_audio_channel,
-									   "LADSPA\0");
+									   "LADSPA");
 
   CU_ASSERT(success == TRUE);
 
@@ -608,7 +608,7 @@ ags_functional_line_member_add_and_destroy_test_mixer()
   /* lv2 */
   success = ags_functional_test_util_machine_properties_effect_plugin_type(nth_machine,
 									   nth_pad, nth_audio_channel,
-									   "Lv2\0");
+									   "Lv2");
 
   CU_ASSERT(success == TRUE);
 
@@ -774,7 +774,7 @@ ags_functional_line_member_add_and_destroy_test_drum()
   /* ladspa */
   success = ags_functional_test_util_machine_properties_effect_plugin_type(nth_machine,
 									   nth_pad, nth_audio_channel,
-									   "LADSPA\0");
+									   "LADSPA");
 
   CU_ASSERT(success == TRUE);
 
@@ -820,7 +820,7 @@ ags_functional_line_member_add_and_destroy_test_drum()
   /* ladspa */
   success = ags_functional_test_util_machine_properties_effect_plugin_type(nth_machine,
 									   nth_pad, nth_audio_channel,
-									   "LADSPA\0");
+									   "LADSPA");
 
   CU_ASSERT(success == TRUE);
 
@@ -885,7 +885,7 @@ ags_functional_line_member_add_and_destroy_test_drum()
   /* lv2 */
   success = ags_functional_test_util_machine_properties_effect_plugin_type(nth_machine,
 									   nth_pad, nth_audio_channel,
-									   "Lv2\0");
+									   "Lv2");
 
   CU_ASSERT(success == TRUE);
 
@@ -1148,7 +1148,7 @@ ags_functional_line_member_add_and_destroy_test_ffplayer()
   /* ladspa */
   success = ags_functional_test_util_machine_properties_effect_plugin_type(nth_machine,
 									   nth_pad, nth_audio_channel,
-									   "LADSPA\0");
+									   "LADSPA");
 
   CU_ASSERT(success == TRUE);
 
@@ -1194,7 +1194,7 @@ ags_functional_line_member_add_and_destroy_test_ffplayer()
   /* ladspa */
   success = ags_functional_test_util_machine_properties_effect_plugin_type(nth_machine,
 									   nth_pad, nth_audio_channel,
-									   "LADSPA\0");
+									   "LADSPA");
 
   CU_ASSERT(success == TRUE);
 
@@ -1259,7 +1259,7 @@ ags_functional_line_member_add_and_destroy_test_ffplayer()
   /* lv2 */
   success = ags_functional_test_util_machine_properties_effect_plugin_type(nth_machine,
 									   nth_pad, nth_audio_channel,
-									   "Lv2\0");
+									   "Lv2");
 
   CU_ASSERT(success == TRUE);
 
@@ -1366,7 +1366,7 @@ main(int argc, char **argv)
   }
 
   /* add a suite to the registry */
-  pSuite = CU_add_suite("AgsFuncitonalLineMemberAddAndDestroyTest\0", ags_functional_line_member_add_and_destroy_test_init_suite, ags_functional_line_member_add_and_destroy_test_clean_suite);
+  pSuite = CU_add_suite("AgsFuncitonalLineMemberAddAndDestroyTest", ags_functional_line_member_add_and_destroy_test_init_suite, ags_functional_line_member_add_and_destroy_test_clean_suite);
   
   if(pSuite == NULL){
     CU_cleanup_registry();

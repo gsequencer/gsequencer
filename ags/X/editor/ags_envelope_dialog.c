@@ -71,7 +71,7 @@ ags_envelope_dialog_get_type(void)
   static volatile gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
-    static GType ags_type_envelope_dialog;
+    GType ags_type_envelope_dialog = 0;
 
     static const GTypeInfo ags_envelope_dialog_info = {
       sizeof (AgsEnvelopeDialogClass),
@@ -109,7 +109,7 @@ ags_envelope_dialog_get_type(void)
 				AGS_TYPE_APPLICABLE,
 				&ags_applicable_interface_info);
 
-    g_once_init_leave (&g_define_type_id__volatile, ags_type_envelope_dialog);
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_envelope_dialog);
   }
 
   return g_define_type_id__volatile;
@@ -136,7 +136,7 @@ ags_envelope_dialog_class_init(AgsEnvelopeDialogClass *envelope_dialog)
    *
    * The #AgsMachine to edit.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("machine",
 				   i18n_pspec("assigned machine"),
@@ -179,6 +179,11 @@ ags_envelope_dialog_init(AgsEnvelopeDialog *envelope_dialog)
   
   gtk_window_set_title((GtkWindow *) envelope_dialog,
 		       i18n("Envelope"));
+
+  g_object_set(envelope_dialog,
+	       "default-width", 400,
+	       "default-height", 450,
+	       NULL);
 
   envelope_dialog->flags = 0;
 
@@ -415,7 +420,7 @@ ags_envelope_dialog_reset(AgsApplicable *applicable)
  * 
  * Load presets.
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_envelope_dialog_load_preset(AgsEnvelopeDialog *envelope_dialog)
@@ -433,7 +438,7 @@ ags_envelope_dialog_load_preset(AgsEnvelopeDialog *envelope_dialog)
  * 
  * Add pattern tab.
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_envelope_dialog_add_pattern_tab(AgsEnvelopeDialog *envelope_dialog)
@@ -467,7 +472,7 @@ ags_envelope_dialog_add_pattern_tab(AgsEnvelopeDialog *envelope_dialog)
  *
  * Returns: a new #AgsEnvelopeDialog
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsEnvelopeDialog*
 ags_envelope_dialog_new(AgsMachine *machine)

@@ -73,7 +73,7 @@ ags_drum_input_line_get_type()
   static volatile gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
-    GType ags_type_drum_input_line;
+    GType ags_type_drum_input_line = 0;
 
     static const GTypeInfo ags_drum_input_line_info = {
       sizeof(AgsDrumInputLineClass),
@@ -111,7 +111,7 @@ ags_drum_input_line_get_type()
 				AGS_TYPE_PLUGIN,
 				&ags_plugin_interface_info);
 
-    g_once_init_leave (&g_define_type_id__volatile, ags_type_drum_input_line);
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_drum_input_line);
   }
 
   return g_define_type_id__volatile;
@@ -641,7 +641,7 @@ ags_drum_input_line_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
  *
  * Returns: a new #AgsDrumInputLine
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsDrumInputLine*
 ags_drum_input_line_new(AgsChannel *channel)

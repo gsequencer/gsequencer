@@ -75,7 +75,7 @@ ags_simple_autosave_thread_get_type()
   static volatile gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
-    GType ags_type_simple_autosave_thread;
+    GType ags_type_simple_autosave_thread = 0;
 
     static const GTypeInfo ags_simple_autosave_thread_info = {
       sizeof (AgsSimpleAutosaveThreadClass),
@@ -104,7 +104,7 @@ ags_simple_autosave_thread_get_type()
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
 
-    g_once_init_leave (&g_define_type_id__volatile, ags_type_simple_autosave_thread);
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_simple_autosave_thread);
   }
 
   return g_define_type_id__volatile;
@@ -333,7 +333,7 @@ ags_simple_autosave_thread_run(AgsThread *thread)
  *
  * Returns: the new #AgsSimpleAutosaveThread
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsSimpleAutosaveThread*
 ags_simple_autosave_thread_new(GObject *application_context)

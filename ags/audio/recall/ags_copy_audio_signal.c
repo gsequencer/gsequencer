@@ -63,7 +63,7 @@ ags_copy_audio_signal_get_type()
   static volatile gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
-    GType ags_type_copy_audio_signal;
+    GType ags_type_copy_audio_signal = 0;
 
     static const GTypeInfo ags_copy_audio_signal_info = {
       sizeof(AgsCopyAudioSignalClass),
@@ -81,6 +81,8 @@ ags_copy_audio_signal_get_type()
 							"AgsCopyAudioSignal",
 							&ags_copy_audio_signal_info,
 							0);
+
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_copy_audio_signal);
   }
 
   return g_define_type_id__volatile;
@@ -420,7 +422,7 @@ ags_copy_audio_signal_run_inter(AgsRecall *recall)
 	       NULL);
 
   g_object_get(copy_channel_run,
-	       "recall-channel", &copy_channel_run,
+	       "recall-channel", &copy_channel,
 	       NULL);
   
   /* check muted */

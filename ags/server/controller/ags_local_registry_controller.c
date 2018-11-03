@@ -50,9 +50,11 @@ static guint local_registry_controller_signals[LAST_SIGNAL];
 GType
 ags_local_registry_controller_get_type()
 {
-  static GType ags_type_local_registry_controller = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_local_registry_controller){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_local_registry_controller = 0;
+
     static const GTypeInfo ags_local_registry_controller_info = {
       sizeof (AgsLocalRegistryControllerClass),
       NULL, /* base_init */
@@ -69,9 +71,11 @@ ags_local_registry_controller_get_type()
 								"AgsLocalRegistryController",
 								&ags_local_registry_controller_info,
 								0);
+
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_local_registry_controller);
   }
 
-  return (ags_type_local_registry_controller);
+  return g_define_type_id__volatile;
 }
 
 void
@@ -99,7 +103,7 @@ ags_local_registry_controller_class_init(AgsLocalRegistryControllerClass *local_
    *
    * Returns: the response
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   local_registry_controller_signals[ENTRY_BULK] =
     g_signal_new("entry-bulk",
@@ -151,7 +155,7 @@ ags_local_registry_controller_real_entry_bulk(AgsLocalRegistryController *local_
  * 
  * Returns: the response
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 gpointer
 ags_local_registry_controller_entry_bulk(AgsLocalRegistryController *local_registry_controller)
@@ -177,7 +181,7 @@ ags_local_registry_controller_entry_bulk(AgsLocalRegistryController *local_regis
  * 
  * Returns: the #AgsLocalRegistryController
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsLocalRegistryController*
 ags_local_registry_controller_new()

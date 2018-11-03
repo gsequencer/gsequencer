@@ -92,7 +92,7 @@ ags_effect_bridge_get_type(void)
   static volatile gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
-    GType ags_type_effect_bridge;
+    GType ags_type_effect_bridge = 0;
 
     static const GTypeInfo ags_effect_bridge_info = {
       sizeof(AgsEffectBridgeClass),
@@ -130,7 +130,7 @@ ags_effect_bridge_get_type(void)
 				AGS_TYPE_PLUGIN,
 				&ags_plugin_interface_info);
 
-    g_once_init_leave (&g_define_type_id__volatile, ags_type_effect_bridge);
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_effect_bridge);
   }
 
   return g_define_type_id__volatile;
@@ -743,9 +743,11 @@ ags_effect_bridge_real_resize_audio_channels(AgsEffectBridge *effect_bridge,
 					     guint old_size)
 {
   GtkTable *table;
+
   AgsAudio *audio;
   AgsChannel *start, *current;
-  GList *list;
+
+  GList *start_list, *list;
   
   audio = effect_bridge->audio;
 
@@ -755,7 +757,8 @@ ags_effect_bridge_real_resize_audio_channels(AgsEffectBridge *effect_bridge,
   }
 
   /* output */
-  list = gtk_container_get_children((GtkContainer *) effect_bridge->output);
+  list =
+    start_list = gtk_container_get_children((GtkContainer *) effect_bridge->output);
 
   while(list != NULL){
     ags_effect_pad_resize_lines(AGS_EFFECT_PAD(list->data), effect_bridge->output_line_type,
@@ -763,9 +766,12 @@ ags_effect_bridge_real_resize_audio_channels(AgsEffectBridge *effect_bridge,
 
     list = list->next;
   }
+
+  g_list_free(start_list);
   
   /* input */
-  list = gtk_container_get_children((GtkContainer *) effect_bridge->input);
+  list =
+    start_list = gtk_container_get_children((GtkContainer *) effect_bridge->input);
 
   while(list != NULL){
     ags_effect_pad_resize_lines(AGS_EFFECT_PAD(list->data), effect_bridge->input_line_type,
@@ -773,6 +779,8 @@ ags_effect_bridge_real_resize_audio_channels(AgsEffectBridge *effect_bridge,
 
     list = list->next;
   }
+
+  g_list_free(start_list);
 }
 
 /**
@@ -893,7 +901,8 @@ ags_effect_bridge_real_resize_pads(AgsEffectBridge *effect_bridge,
   }else{
     GList *start_list, *list;
 
-    list = NULL;
+    list = 
+      start_list = NULL;
     
     if(channel_type == AGS_TYPE_OUTPUT){
       if(effect_bridge->output != NULL){

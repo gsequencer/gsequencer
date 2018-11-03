@@ -72,6 +72,8 @@ void ags_play_dssi_audio_set_ports(AgsPlugin *plugin, GList *port);
 
 enum{
   PROP_0,
+  PROP_BANK,
+  PROP_PROGRAM,
   PROP_PLUGIN,
   PROP_INPUT_LINES,
   PROP_OUTPUT_LINES,
@@ -145,6 +147,43 @@ ags_play_dssi_audio_class_init(AgsPlayDssiAudioClass *play_dssi_audio)
   gobject->finalize = ags_play_dssi_audio_finalize;
 
   /* properties */
+  /**
+   * AgsPlayDssi:bank:
+   *
+   * The selected bank.
+   * 
+   * Since: 2.0.0
+   */
+  param_spec = g_param_spec_uint("bank",
+				 i18n_pspec("bank"),
+				 i18n_pspec("The selected bank"),
+				 0,
+				 G_MAXUINT32,
+				 0,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_BANK,
+				  param_spec);
+
+  /**
+   * AgsPlayDssi:program:
+   *
+   * The selected program.
+   * 
+   * Since: 2.0.0
+   */
+  param_spec = g_param_spec_uint("program",
+				 i18n_pspec("program"),
+				 i18n_pspec("The selected program"),
+				 0,
+				 G_MAXUINT32,
+				 0,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_PROGRAM,
+				  param_spec);
+
+
   /**
    * AgsPlayDssiAudio:plugin:
    *
@@ -249,6 +288,24 @@ ags_play_dssi_audio_set_property(GObject *gobject,
   pthread_mutex_unlock(ags_recall_get_class_mutex());
 
   switch(prop_id){
+  case PROP_BANK:
+    {
+      pthread_mutex_lock(recall_mutex);
+
+      play_dssi_audio->bank = g_value_get_uint(value);
+      
+      pthread_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_PROGRAM:
+    {
+      pthread_mutex_lock(recall_mutex);
+
+      play_dssi_audio->program = g_value_get_uint(value);
+      
+      pthread_mutex_unlock(recall_mutex);	
+    }
+    break;
   case PROP_PLUGIN:
     {
       AgsDssiPlugin *dssi_plugin;
@@ -340,6 +397,24 @@ ags_play_dssi_audio_get_property(GObject *gobject,
   pthread_mutex_unlock(ags_recall_get_class_mutex());
 
   switch(prop_id){
+  case PROP_BANK:
+    {
+      pthread_mutex_lock(recall_mutex);
+      
+      g_value_set_uint(value, play_dssi_audio->bank);
+
+      pthread_mutex_unlock(recall_mutex);
+    }
+    break;
+  case PROP_PROGRAM:
+    {
+      pthread_mutex_lock(recall_mutex);
+      
+      g_value_set_uint(value, play_dssi_audio->program);
+
+      pthread_mutex_unlock(recall_mutex);
+    }
+    break;
   case PROP_PLUGIN:
     {
       pthread_mutex_lock(recall_mutex);
@@ -511,7 +586,7 @@ ags_play_dssi_audio_load(AgsPlayDssiAudio *play_dssi_audio)
 
   gchar *filename, *effect;
 
-  unsigned long effect_index;
+  guint effect_index;
   
   void *plugin_so;
   DSSI_Descriptor_Function dssi_descriptor;
@@ -545,9 +620,10 @@ ags_play_dssi_audio_load(AgsPlayDssiAudio *play_dssi_audio)
   /* get some fields */
   g_object_get(play_dssi_audio,
 	       "effect-index", &effect_index,
-	       "plugin", &dssi_plugin,
 	       NULL);
 
+  play_dssi_audio->plugin = dssi_plugin;
+  
   g_object_get(dssi_plugin,
 	       "plugin-so", &plugin_so,
 	       NULL);
@@ -561,7 +637,7 @@ ags_play_dssi_audio_load(AgsPlayDssiAudio *play_dssi_audio)
       pthread_mutex_lock(recall_mutex);
       
       play_dssi_audio->plugin_descriptor = 
-	plugin_descriptor = dssi_descriptor(effect_index);
+	plugin_descriptor = dssi_descriptor((unsigned long) effect_index);
 
       pthread_mutex_unlock(recall_mutex);
     }
@@ -624,6 +700,8 @@ ags_play_dssi_audio_load_ports(AgsPlayDssiAudio *play_dssi_audio)
   dssi_plugin = ags_dssi_manager_find_dssi_plugin(ags_dssi_manager_get_instance(),
 						  filename, effect);
 
+   play_dssi_audio->plugin = dssi_plugin;
+
   /* get plugin port */
   g_object_get(dssi_plugin,
 	       "plugin-port", &start_plugin_port,
@@ -654,7 +732,7 @@ ags_play_dssi_audio_load_ports(AgsPlayDssiAudio *play_dssi_audio)
       if(ags_plugin_port_test_flags(plugin_port->data, AGS_PLUGIN_PORT_CONTROL)){
 	gchar *specifier;
 
-	GValue value = {0,};
+	GValue *value;
 	
 	pthread_mutex_t *plugin_port_mutex;
 
@@ -711,11 +789,11 @@ ags_play_dssi_audio_load_ports(AgsPlayDssiAudio *play_dssi_audio)
 					    (GObject *) current,
 					    (GObject *) plugin_port->data);
 
-	g_object_get_property(plugin_port->data,
-			      "default-value",
-			      &value);
+	g_object_get(plugin_port->data,
+		     "default-value", &value,
+		     NULL);
 	
-	current->port_value.ags_port_ladspa = g_value_get_float(&value);
+	current->port_value.ags_port_ladspa = g_value_get_float(value);
 	//	g_message("connecting port: %d/%d %f", i, port_count, current->port_value.ags_port_float);
 
 	start_port = g_list_prepend(start_port,
@@ -726,11 +804,11 @@ ags_play_dssi_audio_load_ports(AgsPlayDssiAudio *play_dssi_audio)
 	  pthread_mutex_lock(recall_mutex);
 	  
 	  if(play_dssi_audio->input_port == NULL){
-	    play_dssi_audio->input_port = (unsigned long *) malloc(sizeof(unsigned long));
+	    play_dssi_audio->input_port = (guint *) malloc(sizeof(guint));
 	    play_dssi_audio->input_port[0] = i;
 	  }else{
-	    play_dssi_audio->input_port = (unsigned long *) realloc(play_dssi_audio->input_port,
-								    (play_dssi_audio->input_lines + 1) * sizeof(unsigned long));
+	    play_dssi_audio->input_port = (guint *) realloc(play_dssi_audio->input_port,
+							    (play_dssi_audio->input_lines + 1) * sizeof(guint));
 	    play_dssi_audio->input_port[play_dssi_audio->input_lines] = i;
 	  }
 	  
@@ -741,11 +819,11 @@ ags_play_dssi_audio_load_ports(AgsPlayDssiAudio *play_dssi_audio)
 	  pthread_mutex_lock(recall_mutex);
 	  
 	  if(play_dssi_audio->output_port == NULL){
-	    play_dssi_audio->output_port = (unsigned long *) malloc(sizeof(unsigned long));
+	    play_dssi_audio->output_port = (guint *) malloc(sizeof(guint));
 	    play_dssi_audio->output_port[0] = i;
 	  }else{
-	    play_dssi_audio->output_port = (unsigned long *) realloc(play_dssi_audio->output_port,
-								     (play_dssi_audio->output_lines + 1) * sizeof(unsigned long));
+	    play_dssi_audio->output_port = (guint *) realloc(play_dssi_audio->output_port,
+							     (play_dssi_audio->output_lines + 1) * sizeof(guint));
 	    play_dssi_audio->output_port[play_dssi_audio->output_lines] = i;
 	  }
 	  

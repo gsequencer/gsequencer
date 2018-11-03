@@ -63,7 +63,7 @@ ags_ladspa_browser_get_type(void)
   static volatile gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
-    GType ags_type_ladspa_browser;
+    GType ags_type_ladspa_browser = 0;
 
     static const GTypeInfo ags_ladspa_browser_info = {
       sizeof (AgsLadspaBrowserClass),
@@ -101,7 +101,7 @@ ags_ladspa_browser_get_type(void)
 				AGS_TYPE_APPLICABLE,
 				&ags_applicable_interface_info);
 
-    g_once_init_leave (&g_define_type_id__volatile, ags_type_ladspa_browser);
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_ladspa_browser);
   }
 
   return g_define_type_id__volatile;

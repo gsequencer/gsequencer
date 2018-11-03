@@ -165,7 +165,7 @@ ags_play_lv2_audio_class_init(AgsPlayLv2AudioClass *play_lv2_audio)
    *
    * The uri's name.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec =  g_param_spec_string("uri",
 				    i18n_pspec("the uri"),
@@ -931,14 +931,15 @@ ags_play_lv2_audio_load(AgsPlayLv2Audio *play_lv2_audio)
   
   /* find AgsLv2Plugin */
   lv2_plugin = ags_lv2_manager_find_lv2_plugin(ags_lv2_manager_get_instance(),
-						  filename, effect);
+					       filename, effect);
 
   /* get some fields */
   g_object_get(play_lv2_audio,
 	       "effect-index", &effect_index,
-	       "plugin", &lv2_plugin,
 	       NULL);
 
+  play_lv2_audio->plugin = lv2_plugin;
+  
   g_object_get(lv2_plugin,
 	       "plugin-so", &plugin_so,
 	       NULL);
@@ -970,7 +971,7 @@ ags_play_lv2_audio_load(AgsPlayLv2Audio *play_lv2_audio)
  *
  * Returns: a #GList-struct containing #AgsPort
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 GList*
 ags_play_lv2_audio_load_ports(AgsPlayLv2Audio *play_lv2_audio)
@@ -1014,6 +1015,8 @@ ags_play_lv2_audio_load_ports(AgsPlayLv2Audio *play_lv2_audio)
   lv2_plugin = ags_lv2_manager_find_lv2_plugin(ags_lv2_manager_get_instance(),
 						  filename, effect);
 
+  play_lv2_audio->plugin = lv2_plugin;
+ 
   /* get plugin port */
   g_object_get(lv2_plugin,
 	       "plugin-port", &start_plugin_port,
@@ -1042,7 +1045,7 @@ ags_play_lv2_audio_load_ports(AgsPlayLv2Audio *play_lv2_audio)
     for(i = 0; i < port_count; i++){
       gchar *specifier;
 
-      GValue value = {0,};
+      GValue *value;
 	
       pthread_mutex_t *plugin_port_mutex;
 
@@ -1123,11 +1126,11 @@ ags_play_lv2_audio_load_ports(AgsPlayLv2Audio *play_lv2_audio)
 					   (GObject *) current,
 					   (GObject *) plugin_port->data);
 
-	g_object_get_property(plugin_port->data,
-			      "default-value",
-			      &value);
+	g_object_get(plugin_port->data,
+		     "default-value", &value,
+		      NULL);
 
-	current->port_value.ags_port_ladspa = g_value_get_float(&value);
+	current->port_value.ags_port_ladspa = g_value_get_float(value);
 
 #ifdef AGS_DEBUG
 	g_message("connecting port: %s %d/%d", specifier, i, port_count);
@@ -1199,7 +1202,7 @@ ags_play_lv2_audio_load_ports(AgsPlayLv2Audio *play_lv2_audio)
  * 
  * Loads conversion object by using @plugin_port and sets in on @port.
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_play_lv2_audio_load_conversion(AgsPlayLv2Audio *play_lv2_audio,

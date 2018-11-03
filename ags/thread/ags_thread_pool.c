@@ -22,7 +22,6 @@
 #include <ags/object/ags_connectable.h>
 #include <ags/object/ags_config.h>
 
-#include <ags/thread/ags_mutex_manager.h>
 #include <ags/thread/ags_returnable_thread.h>
 
 #include <stdlib.h>
@@ -30,7 +29,6 @@
 #include <ags/i18n.h>
 
 void ags_thread_pool_class_init(AgsThreadPoolClass *thread_pool);
-void ags_thread_pool_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_thread_pool_init(AgsThreadPool *thread_pool);
 void ags_thread_pool_set_property(GObject *gobject,
 				  guint prop_id,
@@ -40,8 +38,6 @@ void ags_thread_pool_get_property(GObject *gobject,
 				  guint prop_id,
 				  GValue *value,
 				  GParamSpec *param_spec);
-void ags_thread_pool_connect(AgsConnectable *connectable);
-void ags_thread_pool_disconnect(AgsConnectable *connectable);
 void ags_thread_pool_finalize(GObject *gobject);
 
 void* ags_thread_pool_creation_thread(void *ptr);
@@ -79,8 +75,8 @@ ags_thread_pool_get_type()
   static volatile gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
-    GType ags_type_thread_pool;
-    
+    GType ags_type_thread_pool = 0;
+
     static const GTypeInfo ags_thread_pool_info = {
       sizeof(AgsThreadPoolClass),
       NULL, /* base_init */
@@ -93,22 +89,12 @@ ags_thread_pool_get_type()
       (GInstanceInitFunc) ags_thread_pool_init,
     };
 
-    static const GInterfaceInfo ags_connectable_interface_info = {
-      (GInterfaceInitFunc) ags_thread_pool_connectable_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-
     ags_type_thread_pool = g_type_register_static(G_TYPE_OBJECT,
 						  "AgsThreadPool",
 						  &ags_thread_pool_info,
 						  0);
 
-    g_type_add_interface_static(ags_type_thread_pool,
-				AGS_TYPE_CONNECTABLE,
-				&ags_connectable_interface_info);
-
-    g_once_init_leave (&g_define_type_id__volatile, ags_type_thread_pool);
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_thread_pool);
   }
 
   return g_define_type_id__volatile;
@@ -136,7 +122,7 @@ ags_thread_pool_class_init(AgsThreadPoolClass *thread_pool)
    *
    * The maximum amount of unused threads available.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_uint("max-unused-threads",
 				 i18n_pspec("maximum unused threads"),
@@ -153,7 +139,7 @@ ags_thread_pool_class_init(AgsThreadPoolClass *thread_pool)
    *
    * The maximum amount of threads available.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_uint("max-threads",
 				 i18n_pspec("maximum threads to use"),
@@ -175,7 +161,7 @@ ags_thread_pool_class_init(AgsThreadPoolClass *thread_pool)
    *
    * The ::start() signal is invoked in order to started the pool.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   thread_pool_signals[START] =
     g_signal_new("start",
@@ -185,13 +171,6 @@ ags_thread_pool_class_init(AgsThreadPoolClass *thread_pool)
 		 NULL, NULL,
 		 g_cclosure_marshal_VOID__VOID,
 		 G_TYPE_NONE, 0);
-}
-
-void
-ags_thread_pool_connectable_interface_init(AgsConnectableInterface *connectable)
-{
-  connectable->connect = ags_thread_pool_connect;
-  connectable->disconnect = ags_thread_pool_disconnect;
 }
 
 void
@@ -355,18 +334,6 @@ ags_thread_pool_get_property(GObject *gobject,
 }
 
 void
-ags_thread_pool_connect(AgsConnectable *connectable)
-{
-  /* empty */
-}
-
-void
-ags_thread_pool_disconnect(AgsConnectable *connectable)
-{
-  /* empty */
-}
-
-void
 ags_thread_pool_finalize(GObject *gobject)
 {
   AgsThreadPool *thread_pool;
@@ -411,27 +378,26 @@ ags_thread_pool_creation_thread(void *ptr)
 {
   AgsThreadPool *thread_pool;
   AgsThread *returnable_thread;
-  AgsMutexManager *mutex_manager;
 
   GList *start_queue;
   
   guint n_threads;
   guint i, i_stop;
 
-  pthread_mutex_t *application_mutex;
   pthread_mutex_t *parent_mutex;
 
   thread_pool = AGS_THREAD_POOL(ptr);
 
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+  /* get parent mutex */
+  if(thread_pool->parent != NULL){
+    pthread_mutex_lock(ags_thread_get_class_mutex());
 
-  pthread_mutex_lock(application_mutex);
-
-  parent_mutex = ags_mutex_manager_lookup(mutex_manager,
-					  (GObject *) thread_pool->parent);
+    parent_mutex = thread_pool->parent->obj_mutex;
   
-  pthread_mutex_unlock(application_mutex);
+    pthread_mutex_unlock(ags_thread_get_class_mutex());
+  }else{
+    parent_mutex = NULL;
+  }
 
   /* real-time setup */
 #ifdef AGS_WITH_RT
@@ -573,7 +539,7 @@ ags_thread_pool_creation_thread(void *ptr)
  *
  * Returns: a new #AgsThread
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */    
 AgsThread*
 ags_thread_pool_pull(AgsThreadPool *thread_pool)
@@ -634,28 +600,21 @@ ags_thread_pool_pull(AgsThreadPool *thread_pool)
 void
 ags_thread_pool_real_start(AgsThreadPool *thread_pool)
 {
-  AgsMutexManager *mutex_manager;
-
   GList *list;
   GList *start_queue;
   
   gint n_threads;
   gint i;
 
-  pthread_mutex_t *application_mutex;
   pthread_mutex_t *parent_mutex;
-
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
 
   /* get parent mutex */
   if(thread_pool->parent != NULL){
-    pthread_mutex_lock(application_mutex);
-    
-    parent_mutex = ags_mutex_manager_lookup(mutex_manager,
-					  (GObject *) thread_pool->parent);
-    
-    pthread_mutex_unlock(application_mutex);
+    pthread_mutex_lock(ags_thread_get_class_mutex());
+
+    parent_mutex = thread_pool->parent->obj_mutex;
+  
+    pthread_mutex_unlock(ags_thread_get_class_mutex());
   }else{
     parent_mutex = NULL;
   }
@@ -713,7 +672,7 @@ ags_thread_pool_real_start(AgsThreadPool *thread_pool)
  *
  * Start the thread pool.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_thread_pool_start(AgsThreadPool *thread_pool)
@@ -734,7 +693,7 @@ ags_thread_pool_start(AgsThreadPool *thread_pool)
  *
  * Returns: the new #AgsThreadPool
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsThreadPool*
 ags_thread_pool_new(AgsThread *parent)

@@ -24,6 +24,8 @@
 #include <ags/libags-audio.h>
 #include <ags/libags-gui.h>
 
+#include <lv2/lv2plug.in/ns/lv2ext/lv2_programs.h>
+
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_machine.h>
 #include <ags/X/ags_effect_bridge.h>
@@ -106,7 +108,7 @@ ags_live_lv2_bridge_get_type(void)
   static volatile gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
-    GType ags_type_live_lv2_bridge;
+    GType ags_type_live_lv2_bridge = 0;
 
     static const GTypeInfo ags_live_lv2_bridge_info = {
       sizeof(AgsLiveLv2BridgeClass),
@@ -144,7 +146,7 @@ ags_live_lv2_bridge_get_type(void)
 				AGS_TYPE_PLUGIN,
 				&ags_plugin_interface_info);
 
-    g_once_init_leave (&g_define_type_id__volatile, ags_type_live_lv2_bridge);
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_live_lv2_bridge);
   }
 
   return g_define_type_id__volatile;
@@ -173,7 +175,7 @@ ags_live_lv2_bridge_class_init(AgsLiveLv2BridgeClass *live_lv2_bridge)
    *
    * The plugin's filename.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec =  g_param_spec_string("filename",
 				    "the object file",
@@ -189,7 +191,7 @@ ags_live_lv2_bridge_class_init(AgsLiveLv2BridgeClass *live_lv2_bridge)
    *
    * The effect's name.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec =  g_param_spec_string("effect",
 				    "the effect",
@@ -205,7 +207,7 @@ ags_live_lv2_bridge_class_init(AgsLiveLv2BridgeClass *live_lv2_bridge)
    *
    * The uri's name.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec =  g_param_spec_string("uri",
 				    "the uri",
@@ -221,7 +223,7 @@ ags_live_lv2_bridge_class_init(AgsLiveLv2BridgeClass *live_lv2_bridge)
    *
    * The uri's index.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec =  g_param_spec_ulong("index",
 				   "index of uri",
@@ -240,7 +242,7 @@ ags_live_lv2_bridge_class_init(AgsLiveLv2BridgeClass *live_lv2_bridge)
    * If has-midi is set to %TRUE appropriate flag is set
    * to audio in order to become a sequencer.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec =  g_param_spec_boolean("has-midi",
 				     "has-midi",
@@ -257,7 +259,7 @@ ags_live_lv2_bridge_class_init(AgsLiveLv2BridgeClass *live_lv2_bridge)
    * If has-gui is set to %TRUE 128 inputs are allocated and appropriate flag is set
    * to audio in order to become a sequencer.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec =  g_param_spec_boolean("has-gui",
 				     "has-gui",
@@ -273,7 +275,7 @@ ags_live_lv2_bridge_class_init(AgsLiveLv2BridgeClass *live_lv2_bridge)
    *
    * The plugin's GUI filename.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec =  g_param_spec_string("gui-filename",
 				    "the GUI object file",
@@ -289,7 +291,7 @@ ags_live_lv2_bridge_class_init(AgsLiveLv2BridgeClass *live_lv2_bridge)
    *
    * The GUI's uri name.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec =  g_param_spec_string("gui-uri",
 				    "the gui-uri",
@@ -364,7 +366,8 @@ ags_live_lv2_bridge_init(AgsLiveLv2Bridge *live_lv2_bridge)
 			      AGS_AUDIO_INPUT_HAS_RECYCLING |
 			      AGS_AUDIO_SKIP_INPUT));
   ags_audio_set_ability_flags(audio, (AGS_SOUND_ABILITY_NOTATION));
-  ags_audio_set_behaviour_flags(audio, (AGS_SOUND_BEHAVIOUR_REVERSE_MAPPING));
+  ags_audio_set_behaviour_flags(audio, (AGS_SOUND_BEHAVIOUR_REVERSE_MAPPING |
+					AGS_SOUND_BEHAVIOUR_DEFAULTS_TO_INPUT));
   //  audio->flags &= (~AGS_AUDIO_NOTATION_DEFAULT);
   
   g_object_set(audio,
@@ -1005,6 +1008,8 @@ ags_live_lv2_bridge_resize_audio_channels(AgsMachine *machine,
 				    audio_channels_old);
 
       while(channel != next_pad){
+	ags_channel_set_ability_flags(channel, (AGS_SOUND_ABILITY_NOTATION));
+
 	/* get some fields */
 	g_object_get(channel,
 		     "output-soundcard", &output_soundcard,
@@ -1126,6 +1131,8 @@ ags_live_lv2_bridge_resize_pads(AgsMachine *machine, GType channel_type,
 				    pads_old);
 
       while(channel != NULL){
+	ags_channel_set_ability_flags(channel, (AGS_SOUND_ABILITY_NOTATION));
+
 	/* get some fields */
 	g_object_get(channel,
 		     "output-soundcard", &output_soundcard,
@@ -1191,10 +1198,6 @@ ags_live_lv2_bridge_map_recall(AgsMachine *machine)
   live_lv2_bridge = (AgsLiveLv2Bridge *) machine;
 
   audio = machine->audio;
-  g_object_get(audio,
-	       "play", &start_play,
-	       "recall", &start_recall,
-	       NULL);
 
   /* ags-delay */
   ags_recall_factory_create(audio,
@@ -1204,9 +1207,12 @@ ags_live_lv2_bridge_map_recall(AgsMachine *machine)
 			    0, 0,
 			    (AGS_RECALL_FACTORY_OUTPUT |
 			     AGS_RECALL_FACTORY_ADD |
-			     AGS_RECALL_FACTORY_PLAY |
-			     AGS_RECALL_FACTORY_RECALL),
+			     AGS_RECALL_FACTORY_PLAY),
 			    0);
+
+  g_object_get(audio,
+	       "play", &start_play,
+	       NULL);
 
   play = ags_recall_find_type(start_play,
 			      AGS_TYPE_DELAY_AUDIO_RUN);
@@ -1218,6 +1224,8 @@ ags_live_lv2_bridge_map_recall(AgsMachine *machine)
     play_delay_audio_run = NULL;
   }
 
+  g_list_free(start_play);
+  
   /* ags-count-beats */
   ags_recall_factory_create(audio,
 			    NULL, NULL,
@@ -1226,10 +1234,13 @@ ags_live_lv2_bridge_map_recall(AgsMachine *machine)
 			    0, 0,
 			    (AGS_RECALL_FACTORY_OUTPUT |
 			     AGS_RECALL_FACTORY_ADD |
-			     AGS_RECALL_FACTORY_PLAY |
-			     AGS_RECALL_FACTORY_RECALL),
+			     AGS_RECALL_FACTORY_PLAY),
 			    0);
   
+  g_object_get(audio,
+	       "play", &start_play,
+	       NULL);
+
   play = ags_recall_find_type(start_play,
 			      AGS_TYPE_COUNT_BEATS_AUDIO_RUN);
 
@@ -1247,6 +1258,8 @@ ags_live_lv2_bridge_map_recall(AgsMachine *machine)
     play_count_beats_audio_run = NULL;
   }
 
+  g_list_free(start_play);
+  
   /* ags-record-midi */
   ags_recall_factory_create(audio,
 			    NULL, NULL,
@@ -1255,15 +1268,19 @@ ags_live_lv2_bridge_map_recall(AgsMachine *machine)
 			    0, 0,
 			    (AGS_RECALL_FACTORY_INPUT |
 			     AGS_RECALL_FACTORY_ADD |
-			     AGS_RECALL_FACTORY_RECALL),
+			     AGS_RECALL_FACTORY_PLAY),
 			    0);
 
-  recall = ags_recall_find_type(start_recall,
-				AGS_TYPE_RECORD_MIDI_AUDIO_RUN);
+  g_object_get(audio,
+	       "play", &start_play,
+	       NULL);
 
-  if(recall != NULL){
-    recall_record_midi_audio_run = AGS_RECORD_MIDI_AUDIO_RUN(recall->data);
-    
+  play = ags_recall_find_type(start_play,
+			      AGS_TYPE_RECORD_MIDI_AUDIO_RUN);
+
+  if(play != NULL){
+    recall_record_midi_audio_run = AGS_RECORD_MIDI_AUDIO_RUN(play->data);
+   
     /* set dependency */
     g_object_set(G_OBJECT(recall_record_midi_audio_run),
 		 "delay-audio-run", play_delay_audio_run,
@@ -1275,6 +1292,8 @@ ags_live_lv2_bridge_map_recall(AgsMachine *machine)
 		 NULL);
   }  
 
+  g_list_free(start_play);
+  
   /* ags-play-lv2 */
   ags_recall_factory_create(audio,
 			    NULL, NULL,
@@ -1286,6 +1305,10 @@ ags_live_lv2_bridge_map_recall(AgsMachine *machine)
 			     AGS_RECALL_FACTORY_PLAY |
 			     AGS_RECALL_FACTORY_BULK),
 			    0);
+
+  g_object_get(audio,
+	       "play", &start_play,
+	       NULL);
 
   play = ags_recall_find_type(start_play,
 			      AGS_TYPE_PLAY_LV2_AUDIO);
@@ -1319,6 +1342,8 @@ ags_live_lv2_bridge_map_recall(AgsMachine *machine)
 		 NULL);
   }
 
+  g_list_free(start_play);
+  
   /* depending on destination */
   ags_live_lv2_bridge_input_map_recall(live_lv2_bridge,
 				       0,
@@ -1661,6 +1686,8 @@ ags_live_lv2_bridge_load(AgsLiveLv2Bridge *live_lv2_bridge)
 	       "plugin-port", &start_plugin_port,
 	       NULL);
 
+  plugin_port = start_plugin_port;
+  
   port_count = g_list_length(start_plugin_port);
   k = 0;
 
@@ -1844,7 +1871,7 @@ ags_live_lv2_bridge_load(AgsLiveLv2Bridge *live_lv2_bridge)
  *
  * Returns: %TRUE if proceed with redraw, otherwise %FALSE
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 gboolean
 ags_live_lv2_bridge_lv2ui_idle_timeout(GtkWidget *widget)

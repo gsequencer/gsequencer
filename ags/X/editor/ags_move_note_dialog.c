@@ -23,6 +23,7 @@
 #include <ags/libags.h>
 #include <ags/libags-audio.h>
 
+#include <ags/X/ags_ui_provider.h>
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_notation_editor.h>
 #include <ags/X/ags_machine.h>
@@ -75,7 +76,7 @@ ags_move_note_dialog_get_type(void)
   static volatile gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
-    GType ags_type_move_note_dialog;
+    GType ags_type_move_note_dialog = 0;
 
     static const GTypeInfo ags_move_note_dialog_info = {
       sizeof (AgsMoveNoteDialogClass),
@@ -113,7 +114,7 @@ ags_move_note_dialog_get_type(void)
 				AGS_TYPE_APPLICABLE,
 				&ags_applicable_interface_info);
 
-    g_once_init_leave (&g_define_type_id__volatile, ags_type_move_note_dialog);
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_move_note_dialog);
   }
 
   return g_define_type_id__volatile;
@@ -143,7 +144,7 @@ ags_move_note_dialog_class_init(AgsMoveNoteDialogClass *move_note_dialog)
    *
    * The assigned #AgsApplicationContext to give control of application.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("application-context",
 				   i18n_pspec("assigned application context"),
@@ -159,7 +160,7 @@ ags_move_note_dialog_class_init(AgsMoveNoteDialogClass *move_note_dialog)
    *
    * The assigned #AgsWindow.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("main-window",
 				   i18n_pspec("assigned main window"),
@@ -460,13 +461,12 @@ ags_move_note_dialog_apply(AgsApplicable *applicable)
   
   AgsAudio *audio;
 
-  AgsMutexManager *mutex_manager;
   AgsGuiThread *gui_thread;
   
   AgsApplicationContext *application_context;
 
-  GList *notation;
-  GList *selection;
+  GList *start_notation, *notation;
+  GList *start_selection, *selection;
   GList *task;
 
   guint first_x;
@@ -476,9 +476,6 @@ ags_move_note_dialog_apply(AgsApplicable *applicable)
   
   gboolean relative;
   gboolean absolute;
-  
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *audio_mutex;
   
   move_note_dialog = AGS_MOVE_NOTE_DIALOG(applicable);
 
@@ -503,63 +500,86 @@ ags_move_note_dialog_apply(AgsApplicable *applicable)
   /* application context and mutex manager */
   application_context = window->application_context;
 
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-
-  /* get task thread */
-  pthread_mutex_lock(application_mutex);
-
-  gui_thread = (AgsGuiThread *) ags_thread_find_type(application_context->main_loop,
-						     AGS_TYPE_GUI_THREAD);
-  
-  pthread_mutex_unlock(application_mutex);
-
-  /* get audio mutex */
-  pthread_mutex_lock(application_mutex);
-
-  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
-					 (GObject *) audio);
-  
-  pthread_mutex_unlock(application_mutex);
+  /* get task thread */  
+  gui_thread = ags_ui_provider_get_gui_thread(AGS_UI_PROVIDER(application_context));
 
   /* get position and move note */
-  pthread_mutex_lock(audio_mutex);
+  g_object_get(audio,
+	       "notation", &start_notation,
+	       NULL);
+
+  notation = start_notation;
 
   first_x = 0;
   first_y = 0;
   
   if(absolute){
-    notation = audio->notation;
+    notation = start_notation;
 
     first_x = G_MAXUINT;
     first_y = G_MAXUINT;
   
     while(notation != NULL){
-      selection = AGS_NOTATION(notation->data);
+      pthread_mutex_t *notation_mutex;
+
+      pthread_mutex_lock(ags_notation_get_class_mutex());
+
+      notation_mutex = AGS_NOTATION(notation->data)->obj_mutex;
+
+      pthread_mutex_unlock(ags_notation_get_class_mutex());
+
+      /* selection */
+      pthread_mutex_lock(notation_mutex);
+
+      selection =
+	start_selection = g_list_copy(AGS_NOTATION(notation->data)->selection);
+
+      pthread_mutex_unlock(notation_mutex);
 
       while(selection != NULL){
-	if(AGS_NOTE(selection->data)->x[0] < first_x){
+	guint x0, y;
+
+	g_object_get(selection->data,
+		     "x0", &x0,
+		     "y", &y,
+		     NULL);
+	if(x0 < first_x){
 	  first_x = AGS_NOTE(selection->data)->x[0];
 	}
 
-	if(AGS_NOTE(selection->data)->y < first_y){
+	if(y < first_y){
 	  first_y = AGS_NOTE(selection->data)->y;
 	}
 
 	selection = selection->next;
       }
 
+      g_list_free(start_selection);
+
       notation = notation->next;
     }
   }
 
   /* create move note task */
-  notation = audio->notation;
+  notation = start_notation;
 
   task = NULL;
   
   while(notation != NULL){
+    pthread_mutex_t *notation_mutex;
+
+    pthread_mutex_lock(ags_notation_get_class_mutex());
+
+    notation_mutex = AGS_NOTATION(notation->data)->obj_mutex;
+
+    pthread_mutex_unlock(ags_notation_get_class_mutex());
+
+    /* selection */
+    pthread_mutex_lock(notation_mutex);
+
     selection = AGS_NOTATION(notation->data)->selection;
+
+    pthread_mutex_unlock(notation_mutex);
 
     if(selection != NULL){
       move_note = ags_move_note_new(notation->data,
@@ -577,7 +597,7 @@ ags_move_note_dialog_apply(AgsApplicable *applicable)
     notation = notation->next;
   }
 
-  pthread_mutex_unlock(audio_mutex);
+  g_list_free(start_notation);
 
   /* append tasks */
   ags_gui_thread_schedule_task_list(gui_thread,
@@ -608,7 +628,7 @@ ags_move_note_dialog_delete_event(GtkWidget *widget, GdkEventAny *event)
  *
  * Returns: a new #AgsMoveNoteDialog
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsMoveNoteDialog*
 ags_move_note_dialog_new(GtkWidget *main_window)

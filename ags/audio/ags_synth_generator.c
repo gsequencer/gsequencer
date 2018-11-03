@@ -84,7 +84,7 @@ ags_synth_generator_get_type()
   static volatile gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
-    GType ags_type_synth_generator;
+    GType ags_type_synth_generator = 0;
 
     static const GTypeInfo ags_synth_generator_info = {
       sizeof (AgsSynthGeneratorClass),
@@ -113,7 +113,7 @@ ags_synth_generator_get_type()
 				AGS_TYPE_PLUGIN,
 				&ags_plugin_interface_info);
 
-    g_once_init_leave (&g_define_type_id__volatile, ags_type_synth_generator);
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_synth_generator);
   }
 
   return g_define_type_id__volatile;
@@ -747,9 +747,15 @@ ags_synth_generator_compute(AgsSynthGenerator *synth_generator,
     default:
       g_message("unknown oscillator");
     }
-    
-    current_phase = (guint) ((offset + current_count) + phase) % (guint) floor(samplerate / current_frequency);
 
+    if(current_frequency == 0.0){
+      current_phase = (guint) ((offset + current_count) + phase);
+    }else if(floor(samplerate / current_frequency) == 0){
+      current_phase = (guint) ((offset + current_count) + phase);
+    }else{
+      current_phase = (guint) ((offset + current_count) + phase) % (guint) floor(samplerate / current_frequency);
+    }
+    
     if(sync_point != NULL){
       if(floor(sync_point[j][0][0]) > 0.0 &&
 	 last_sync + sync_point[j][0][0] < offset + current_count){

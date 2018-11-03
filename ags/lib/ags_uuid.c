@@ -20,6 +20,7 @@
 #include <ags/lib/ags_uuid.h>
 
 #include <stdlib.h>
+#include <string.h>
 
 /**
  * SECTION:ags_uuid

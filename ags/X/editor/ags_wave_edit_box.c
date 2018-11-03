@@ -59,7 +59,7 @@ ags_wave_edit_box_get_type(void)
   static volatile gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
-    GType ags_type_wave_edit_box;
+    GType ags_type_wave_edit_box = 0;
 
     static const GTypeInfo ags_wave_edit_box_info = {
       sizeof (AgsWaveEditBoxClass),
@@ -77,7 +77,7 @@ ags_wave_edit_box_get_type(void)
 						    "AgsWaveEditBox", &ags_wave_edit_box_info,
 						    0);
 
-    g_once_init_leave (&g_define_type_id__volatile, ags_type_wave_edit_box);
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_wave_edit_box);
   }
 
   return g_define_type_id__volatile;
@@ -108,7 +108,7 @@ ags_wave_edit_box_class_init(AgsWaveEditBoxClass *wave_edit_box)
    *
    * The fixed height of a edit.
    * 
-   * Since: 1.4.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_uint("fixed-edit-height",
 				 "fixed edit height",
@@ -207,7 +207,7 @@ GType ags_wave_edit_box_child_type(GtkContainer *container)
  * 
  * Returns: the new #AgsWaveEditBox instance
  * 
- * Since: 1.4.0
+ * Since: 2.0.0
  */
 AgsWaveEditBox*
 ags_wave_edit_box_new()

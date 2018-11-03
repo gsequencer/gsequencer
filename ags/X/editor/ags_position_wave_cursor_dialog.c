@@ -76,9 +76,11 @@ static gpointer ags_position_wave_cursor_dialog_parent_class = NULL;
 GType
 ags_position_wave_cursor_dialog_get_type(void)
 {
-  static GType ags_type_position_wave_cursor_dialog = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if (!ags_type_position_wave_cursor_dialog){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_position_wave_cursor_dialog = 0;
+
     static const GTypeInfo ags_position_wave_cursor_dialog_info = {
       sizeof (AgsPositionWaveCursorDialogClass),
       NULL, /* base_init */
@@ -114,9 +116,11 @@ ags_position_wave_cursor_dialog_get_type(void)
     g_type_add_interface_static(ags_type_position_wave_cursor_dialog,
 				AGS_TYPE_APPLICABLE,
 				&ags_applicable_interface_info);
+
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_position_wave_cursor_dialog);
   }
 
-  return (ags_type_position_wave_cursor_dialog);
+  return g_define_type_id__volatile;
 }
 
 void
@@ -143,7 +147,7 @@ ags_position_wave_cursor_dialog_class_init(AgsPositionWaveCursorDialogClass *pos
    *
    * The assigned #AgsApplicationContext to give control of application.
    * 
-   * Since: 1.1.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("application-context",
 				   i18n_pspec("assigned application context"),
@@ -159,7 +163,7 @@ ags_position_wave_cursor_dialog_class_init(AgsPositionWaveCursorDialogClass *pos
    *
    * The assigned #AgsWindow.
    * 
-   * Since: 1.1.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("main-window",
 				   i18n_pspec("assigned main window"),
@@ -486,7 +490,7 @@ ags_position_wave_cursor_dialog_delete_event(GtkWidget *widget, GdkEventAny *eve
  *
  * Returns: a new #AgsPositionWaveCursorDialog
  *
- * Since: 1.1.0
+ * Since: 2.0.0
  */
 AgsPositionWaveCursorDialog*
 ags_position_wave_cursor_dialog_new(GtkWidget *main_window)

@@ -88,7 +88,7 @@ ags_play_channel_run_get_type()
   static volatile gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
-    GType ags_type_play_channel_run;
+    GType ags_type_play_channel_run = 0;
 
     static const GTypeInfo ags_play_channel_run_info = {
       sizeof (AgsPlayChannelRunClass),
@@ -106,6 +106,8 @@ ags_play_channel_run_get_type()
 						       "AgsPlayChannelRun",
 						       &ags_play_channel_run_info,
 						       0);
+
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_play_channel_run);
   }
 
   return g_define_type_id__volatile;

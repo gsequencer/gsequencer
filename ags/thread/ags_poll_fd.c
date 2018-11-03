@@ -19,15 +19,10 @@
 
 #include <ags/thread/ags_poll_fd.h>
 
-#include <ags/object/ags_connectable.h>
-
-#include <ags/thread/ags_mutex_manager.h>
+#include <stdlib.h>
 
 void ags_poll_fd_class_init(AgsPollFdClass *poll_fd);
-void ags_poll_fd_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_poll_fd_init(AgsPollFd *poll_fd);
-void ags_poll_fd_connect(AgsConnectable *connectable);
-void ags_poll_fd_disconnect(AgsConnectable *connectable);
 void ags_poll_fd_finalize(GObject *gobject);
 
 /**
@@ -48,14 +43,16 @@ enum{
 static gpointer ags_poll_fd_parent_class = NULL;
 static guint poll_fd_signals[LAST_SIGNAL];
 
+static pthread_mutex_t ags_poll_fd_class_mutex = PTHREAD_MUTEX_INITIALIZER;
+
 GType
 ags_poll_fd_get_type()
 {
   static volatile gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
-    GType ags_type_poll_fd;
-    
+    GType ags_type_poll_fd = 0;
+
     static const GTypeInfo ags_poll_fd_info = {
       sizeof(AgsPollFdClass),
       NULL, /* base_init */
@@ -68,22 +65,12 @@ ags_poll_fd_get_type()
       (GInstanceInitFunc) ags_poll_fd_init,
     };
 
-    static const GInterfaceInfo ags_connectable_interface_info = {
-      (GInterfaceInitFunc) ags_poll_fd_connectable_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-
     ags_type_poll_fd = g_type_register_static(G_TYPE_OBJECT,
 					      "AgsPollFd",
 					      &ags_poll_fd_info,
 					      0);
 
-    g_type_add_interface_static(ags_type_poll_fd,
-				AGS_TYPE_CONNECTABLE,
-				&ags_connectable_interface_info);
-
-    g_once_init_leave (&g_define_type_id__volatile, ags_type_poll_fd);
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_poll_fd);
   }
 
   return g_define_type_id__volatile;
@@ -110,7 +97,7 @@ ags_poll_fd_class_init(AgsPollFdClass *poll_fd)
    *
    * The ::dispatch signal is emited during poll
    *
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   poll_fd_signals[DISPATCH] =
     g_signal_new("dispatch",
@@ -123,47 +110,40 @@ ags_poll_fd_class_init(AgsPollFdClass *poll_fd)
 }
 
 void
-ags_poll_fd_connectable_interface_init(AgsConnectableInterface *connectable)
-{
-  connectable->is_ready = NULL;
-  connectable->is_connected = NULL;
-  connectable->connect = ags_poll_fd_connect;
-  connectable->disconnect = ags_poll_fd_disconnect;
-}
-
-void
 ags_poll_fd_init(AgsPollFd *poll_fd)
 {
-  AgsMutexManager *mutex_manager;
-
-  pthread_mutex_t *application_mutex;
   pthread_mutex_t *mutex;
-  pthread_mutexattr_t attr;
+  pthread_mutexattr_t *attr;
 
-  /* insert devout mutex */
-  //FIXME:JK: memory leak
-  pthread_mutexattr_init(&attr);
-  pthread_mutexattr_settype(&attr,
-			    PTHREAD_MUTEX_RECURSIVE);
-
-  mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
-  pthread_mutex_init(mutex,
-		     &attr);
-
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+#ifdef __linux__
+  int err;
+#endif
   
-  pthread_mutex_lock(application_mutex);
-
-  ags_mutex_manager_insert(mutex_manager,
-			   (GObject *) poll_fd,
-			   mutex);
-  
-  pthread_mutex_unlock(application_mutex);
-
-  /*   */
   poll_fd->flags = 0;
 
+  /* thread mutex */
+  poll_fd->obj_mutexattr =
+    attr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
+
+  pthread_mutexattr_init(attr);
+  pthread_mutexattr_settype(attr,
+			    PTHREAD_MUTEX_RECURSIVE);
+
+#ifdef __linux__
+  err = pthread_mutexattr_setprotocol(attr,
+				      PTHREAD_PRIO_INHERIT);
+
+  if(err != 0){
+    g_warning("no priority inheritance");
+  }
+#endif
+  
+  poll_fd->obj_mutex =
+    mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
+  pthread_mutex_init(mutex,
+		     attr);
+
+  /*   */
   poll_fd->polling_thread = NULL;
 
   poll_fd->poll_fd = NULL;
@@ -171,18 +151,6 @@ ags_poll_fd_init(AgsPollFd *poll_fd)
   /*  */
   poll_fd->delay = 0.0;
   poll_fd->delay_counter = 0.0;
-}
-
-void
-ags_poll_fd_connect(AgsConnectable *connectable)
-{
-  /* empty */
-}
-
-void
-ags_poll_fd_disconnect(AgsConnectable *connectable)
-{
-  /* empty */
 }
 
 void
@@ -194,30 +162,38 @@ ags_poll_fd_finalize(GObject *gobject)
 }
 
 /**
+ * ags_poll_fd_get_class_mutex:
+ * 
+ * Use this function's returned mutex to access mutex fields.
+ *
+ * Returns: the class mutex
+ * 
+ * Since: 2.0.0
+ */
+pthread_mutex_t*
+ags_poll_fd_get_class_mutex()
+{
+  return(&ags_poll_fd_class_mutex);
+}
+
+/**
  * ags_poll_fd_dispatch:
  * @poll_fd: the #AgsPollFd
  *
  * Dispatch IO.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_poll_fd_dispatch(AgsPollFd *poll_fd)
 {
-  AgsMutexManager *mutex_manager;
-
-  pthread_mutex_t *application_mutex;
   pthread_mutex_t *mutex;
+
+  pthread_mutex_lock(ags_poll_fd_get_class_mutex());
   
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+  mutex = poll_fd->obj_mutex;
   
-  pthread_mutex_lock(application_mutex);
-  
-  mutex = ags_mutex_manager_lookup(mutex_manager,
-				   (GObject *) poll_fd);
-  
-  pthread_mutex_unlock(application_mutex);
+  pthread_mutex_unlock(ags_poll_fd_get_class_mutex());
 
   pthread_mutex_lock(mutex);
   
@@ -234,11 +210,11 @@ ags_poll_fd_dispatch(AgsPollFd *poll_fd)
 /**
  * ags_poll_fd_new:
  *
- * Creates a #AgsPollFd
+ * Create a new instance of #AgsPollFd
  *
- * Returns: a new #AgsPollFd
+ * Returns: the new #AgsPollFd
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsPollFd*
 ags_poll_fd_new()

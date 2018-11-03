@@ -72,7 +72,7 @@ ags_stream_channel_get_type()
   static volatile gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
-    GType ags_type_stream_channel;
+    GType ags_type_stream_channel = 0;
 
     static const GTypeInfo ags_stream_channel_info = {
       sizeof (AgsStreamChannelClass),
@@ -101,7 +101,7 @@ ags_stream_channel_get_type()
 				AGS_TYPE_PLUGIN,
 				&ags_plugin_interface_info);
 
-    g_once_init_leave (&g_define_type_id__volatile, ags_type_stream_channel);
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_stream_channel);
   }
 
   return g_define_type_id__volatile;

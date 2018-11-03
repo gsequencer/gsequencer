@@ -31,6 +31,7 @@
 #include <ags/audio/pulse/ags_pulse_devin.h>
 
 #include <ags/audio/core-audio/ags_core_audio_devout.h>
+#include <ags/audio/core-audio/ags_core_audio_devin.h>
 #include <ags/audio/core-audio/ags_core_audio_midiin.h>
 
 #include <ags/i18n.h>
@@ -73,7 +74,7 @@ ags_switch_buffer_flag_get_type()
   static volatile gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
-    GType ags_type_switch_buffer_flag;
+    GType ags_type_switch_buffer_flag = 0;
 
     static const GTypeInfo ags_switch_buffer_flag_info = {
       sizeof(AgsSwitchBufferFlagClass),
@@ -91,9 +92,11 @@ ags_switch_buffer_flag_get_type()
 							 "AgsSwitchBufferFlag",
 							 &ags_switch_buffer_flag_info,
 							 0);
+
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_switch_buffer_flag);
   }
-  
-  return(ags_type_switch_buffer_flag);
+
+  return g_define_type_id__volatile;
 }
 
 void
@@ -258,6 +261,8 @@ ags_switch_buffer_flag_launch(AgsTask *task)
     ags_pulse_devin_switch_buffer_flag(switch_buffer_flag->device);
   }else if(AGS_IS_CORE_AUDIO_DEVOUT(switch_buffer_flag->device)){
     ags_core_audio_devout_switch_buffer_flag(switch_buffer_flag->device);
+  }else if(AGS_IS_CORE_AUDIO_DEVIN(switch_buffer_flag->device)){
+    ags_core_audio_devin_switch_buffer_flag(switch_buffer_flag->device);
   }else if(AGS_IS_MIDIIN(switch_buffer_flag->device)){
     ags_midiin_switch_buffer_flag(switch_buffer_flag->device);
   }else if(AGS_IS_JACK_MIDIIN(switch_buffer_flag->device)){

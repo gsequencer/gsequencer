@@ -55,9 +55,11 @@ static gpointer ags_security_context_parent_class = NULL;
 GType
 ags_security_context_get_type()
 {
-  static GType ags_type_security_context = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_security_context){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_security_context = 0;
+
     static const GTypeInfo ags_security_context_info = {
       sizeof (AgsSecurityContextClass),
       NULL, /* base_init */
@@ -71,12 +73,14 @@ ags_security_context_get_type()
     };
 
     ags_type_security_context = g_type_register_static(G_TYPE_OBJECT,
-						       "AgsSecurityContext\0",
+						       "AgsSecurityContext",
 						       &ags_security_context_info,
 						       0);
+
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_security_context);
   }
 
-  return (ags_type_security_context);
+  return g_define_type_id__volatile;
 }
 
 void
@@ -101,7 +105,7 @@ ags_security_context_class_init(AgsSecurityContextClass *security_context)
    *
    * The assigned certificates as string.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_string("certs",
 				   i18n("certificates as string"),
@@ -230,7 +234,7 @@ ags_security_context_remove_server_context(AgsSecurityContext *security_context,
  *
  * Returns: the new #AgsSecurityContext instance
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsSecurityContext*
 ags_security_context_new()

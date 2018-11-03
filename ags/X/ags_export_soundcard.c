@@ -70,7 +70,7 @@ ags_export_soundcard_get_type()
   static volatile gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
-    GType ags_type_export_soundcard;
+    GType ags_type_export_soundcard = 0;
 
     static const GTypeInfo ags_export_soundcard_info = {
       sizeof (AgsExportSoundcardClass),
@@ -98,7 +98,7 @@ ags_export_soundcard_get_type()
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
 
-    g_once_init_leave (&g_define_type_id__volatile, ags_type_export_soundcard);
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_export_soundcard);
   }
 
   return g_define_type_id__volatile;
@@ -428,6 +428,8 @@ ags_export_soundcard_disconnect(AgsConnectable *connectable)
  * 
  * Set backend.
  * 
+ * Returns: %TRUE on success, otherwise %FALSE
+ * 
  * Since: 2.0.0
  */
 gboolean
@@ -441,6 +443,10 @@ ags_export_soundcard_set_backend(AgsExportSoundcard *export_soundcard,
   gchar *str;
   
   guint i;
+
+  if(backend == NULL){
+    return(FALSE);
+  }
   
   model = gtk_combo_box_get_model(GTK_COMBO_BOX(export_soundcard->backend));
   i = 0;    

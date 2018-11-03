@@ -25,7 +25,11 @@
 #include <ags/X/machine/ags_drum.h>
 #include <ags/X/machine/ags_matrix.h>
 #include <ags/X/machine/ags_synth.h>
+
+#ifdef AGS_WITH_LIBINSTPATCH
 #include <ags/X/machine/ags_ffplayer.h>
+#endif
+
 #include <ags/X/machine/ags_dssi_bridge.h>
 #include <ags/X/machine/ags_lv2_bridge.h>
 
@@ -174,6 +178,10 @@ ags_machine_selector_popup_reverse_mapping_callback(GtkWidget *menu_item, AgsMac
 {
   AgsNotationEditor *notation_editor;
 
+  if((AGS_MACHINE_SELECTOR_BLOCK_REVERSE_MAPPING & (machine_selector->flags)) != 0){
+    return;
+  }
+  
   notation_editor = (AgsNotationEditor *) gtk_widget_get_ancestor((GtkWidget *) machine_selector,
 								  AGS_TYPE_NOTATION_EDITOR);
   

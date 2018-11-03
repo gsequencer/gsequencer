@@ -54,9 +54,11 @@ static guint local_task_controller_signals[LAST_SIGNAL];
 GType
 ags_local_task_controller_get_type()
 {
-  static GType ags_type_local_task_controller = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_local_task_controller){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_local_task_controller = 0;
+
     static const GTypeInfo ags_local_task_controller_info = {
       sizeof (AgsLocalTaskControllerClass),
       NULL, /* base_init */
@@ -73,9 +75,11 @@ ags_local_task_controller_get_type()
 							    "AgsLocalTaskController",
 							    &ags_local_task_controller_info,
 							    0);
+
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_local_task_controller);
   }
 
-  return (ags_type_local_task_controller);
+  return g_define_type_id__volatile;
 }
 
 void
@@ -105,7 +109,7 @@ ags_local_task_controller_class_init(AgsLocalTaskControllerClass *local_task_con
    *
    * Returns: the response
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   local_task_controller_signals[LAUNCH] =
     g_signal_new("launch",
@@ -127,7 +131,7 @@ ags_local_task_controller_class_init(AgsLocalTaskControllerClass *local_task_con
    *
    * Returns: the response
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   local_task_controller_signals[LAUNCH_TIMED] =
     g_signal_new("launch-timed",
@@ -185,7 +189,7 @@ ags_local_task_controller_real_launch(AgsLocalTaskController *local_task_control
  * 
  * Returns: the response
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 gpointer
 ags_local_task_controller_launch(AgsLocalTaskController *local_task_controller,
@@ -225,7 +229,7 @@ ags_local_task_controller_real_launch_timed(AgsLocalTaskController *local_task_c
  * 
  * Returns: the response
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 gpointer
 ags_local_task_controller_launch_timed(AgsLocalTaskController *local_task_controller,
@@ -254,7 +258,7 @@ ags_local_task_controller_launch_timed(AgsLocalTaskController *local_task_contro
  * 
  * Returns: the #AgsLocalTaskController
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsLocalTaskController*
 ags_local_task_controller_new()

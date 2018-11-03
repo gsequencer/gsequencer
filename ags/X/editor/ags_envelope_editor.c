@@ -68,7 +68,7 @@ ags_envelope_editor_get_type(void)
   static volatile gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
-    GType ags_type_envelope_editor;
+    GType ags_type_envelope_editor = 0;
 
     static const GTypeInfo ags_envelope_editor_info = {
       sizeof (AgsEnvelopeEditorClass),
@@ -106,7 +106,7 @@ ags_envelope_editor_get_type(void)
 				AGS_TYPE_APPLICABLE,
 				&ags_applicable_interface_info);
 
-    g_once_init_leave (&g_define_type_id__volatile, ags_type_envelope_editor);
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_envelope_editor);
   }
 
   return g_define_type_id__volatile;
@@ -326,7 +326,7 @@ ags_envelope_editor_init(AgsEnvelopeEditor *envelope_editor)
   gtk_scale_set_draw_value(envelope_editor->attack_y,
 			   TRUE);
   gtk_range_set_value((GtkRange *) envelope_editor->attack_y,
-		      1.0);
+		      0.0);
   gtk_box_pack_start((GtkBox *) control,
 		     (GtkWidget *) envelope_editor->attack_y,
 		     FALSE, FALSE,
@@ -368,7 +368,7 @@ ags_envelope_editor_init(AgsEnvelopeEditor *envelope_editor)
   gtk_scale_set_draw_value(envelope_editor->decay_y,
 			   TRUE);
   gtk_range_set_value((GtkRange *) envelope_editor->decay_y,
-		      1.0);
+		      0.0);
   gtk_box_pack_start((GtkBox *) control,
 		     (GtkWidget *) envelope_editor->decay_y,
 		     FALSE, FALSE,
@@ -410,7 +410,7 @@ ags_envelope_editor_init(AgsEnvelopeEditor *envelope_editor)
   gtk_scale_set_draw_value(envelope_editor->sustain_y,
 			   TRUE);
   gtk_range_set_value((GtkRange *) envelope_editor->sustain_y,
-		      1.0);
+		      0.0);
   gtk_box_pack_start((GtkBox *) control,
 		     (GtkWidget *) envelope_editor->sustain_y,
 		     FALSE, FALSE,
@@ -452,7 +452,7 @@ ags_envelope_editor_init(AgsEnvelopeEditor *envelope_editor)
   gtk_scale_set_draw_value(envelope_editor->release_y,
 			   TRUE);
   gtk_range_set_value((GtkRange *) envelope_editor->release_y,
-		      1.0);
+		      0.0);
   gtk_box_pack_start((GtkBox *) control,
 		     (GtkWidget *) envelope_editor->release_y,
 		     FALSE, FALSE,
@@ -475,7 +475,7 @@ ags_envelope_editor_init(AgsEnvelopeEditor *envelope_editor)
   gtk_scale_set_draw_value(envelope_editor->ratio,
 			   TRUE);
   gtk_range_set_value((GtkRange *) envelope_editor->ratio,
-		      0.0);
+		      1.0);
   gtk_table_attach(table,
 		   GTK_WIDGET(envelope_editor->ratio),
 		   1, 2,
@@ -648,13 +648,11 @@ ags_envelope_editor_apply(AgsApplicable *applicable)
   AgsMachine *machine;
 
   AgsAudio *audio;
-
-  AgsMutexManager *mutex_manager;
   
   AgsApplicationContext *application_context;
 
-  GList *notation;
-  GList *selection;
+  GList *start_notation, *notation;
+  GList *start_selection, *selection;
 
   double attack_x, attack_y;
   double decay_x, decay_y;
@@ -663,9 +661,6 @@ ags_envelope_editor_apply(AgsApplicable *applicable)
   double ratio;
   
   complex z;
-
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *audio_mutex;
   
   envelope_editor = AGS_ENVELOPE_EDITOR(applicable);
   envelope_dialog = gtk_widget_get_ancestor(envelope_editor,
@@ -679,17 +674,6 @@ ags_envelope_editor_apply(AgsApplicable *applicable)
 
   /* application context and mutex manager */
   application_context = window->application_context;
-
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-
-  /* get audio mutex */
-  pthread_mutex_lock(application_mutex);
-
-  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
-					 (GObject *) audio);
-  
-  pthread_mutex_unlock(application_mutex);
 
   /* get z */
   attack_x = gtk_range_get_value(GTK_RANGE(envelope_editor->attack_x));
@@ -707,44 +691,82 @@ ags_envelope_editor_apply(AgsApplicable *applicable)
   ratio = gtk_range_get_value(GTK_RANGE(envelope_editor->ratio));
 
   /* notation */
-  pthread_mutex_lock(audio_mutex);
+  g_object_get(audio,
+	       "notation", &start_notation,
+	       NULL);
 
-  notation = audio->notation;
+  notation = start_notation;
 
   /* set attack, decay, sustain and release */
   while(notation != NULL){
-    selection = AGS_NOTATION(notation->data)->selection;
+    pthread_mutex_t *notation_mutex;
+
+    /* get notation mutex */
+    pthread_mutex_lock(ags_notation_get_class_mutex());
+  
+    notation_mutex = AGS_NOTATION(notation->data)->obj_mutex;
+  
+    pthread_mutex_unlock(ags_notation_get_class_mutex());
+
+    /**/
+    pthread_mutex_lock(notation_mutex);
+
+    selection =
+      start_selection = g_list_copy(AGS_NOTATION(notation->data)->selection);
+
+    pthread_mutex_unlock(notation_mutex);
 
     while(selection != NULL){
-      AGS_NOTE(selection->data)->flags |= AGS_NOTE_ENVELOPE;
+      AgsNote *current_note;
+
+      pthread_mutex_t *note_mutex;
+      
+      current_note = AGS_NOTE(selection->data);
+
+      /* get note mutex */
+      pthread_mutex_lock(ags_note_get_class_mutex());
+  
+      note_mutex = current_note->obj_mutex;
+  
+      pthread_mutex_unlock(ags_note_get_class_mutex());
+
+      /* apply */
+      pthread_mutex_lock(note_mutex);
+
+      current_note->flags |= AGS_NOTE_ENVELOPE;
       
       z = attack_x + I * attack_y;
-      ags_complex_set(&(AGS_NOTE(selection->data)->attack),
+      ags_complex_set(&(current_note->attack),
 		      z);
 
       z = decay_x + I * decay_y;
-      ags_complex_set(&(AGS_NOTE(selection->data)->decay),
+      ags_complex_set(&(current_note->decay),
 		      z);
 
       z = sustain_x + I * sustain_y;
-      ags_complex_set(&(AGS_NOTE(selection->data)->sustain),
+      ags_complex_set(&(current_note->sustain),
 		      z);
 
       z = release_x + I * release_y;
-      ags_complex_set(&(AGS_NOTE(selection->data)->release),
+      ags_complex_set(&(current_note->release),
 		      z);
 
-      z = I * ratio;
-      ags_complex_set(&(AGS_NOTE(selection->data)->ratio),
+      z = 0.0 + I * ratio;
+      ags_complex_set(&(current_note->ratio),
 		      z);
+      
+      pthread_mutex_unlock(note_mutex);
 
+      /* iterate */
       selection = selection->next;
     }
+
+    g_list_free(start_selection);
     
     notation = notation->next;
   }
 
-  pthread_mutex_unlock(audio_mutex);
+  g_list_free(start_notation);
 }
 
 void
@@ -799,7 +821,7 @@ ags_envelope_editor_y_label_func(gdouble value,
  * 
  * Returns: the matching #AgsPreset, if none selected %NULL
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsPreset*
 ags_envelope_editor_get_active_preset(AgsEnvelopeEditor *envelope_editor)
@@ -811,17 +833,12 @@ ags_envelope_editor_get_active_preset(AgsEnvelopeEditor *envelope_editor)
 
   AgsAudio *audio;
   AgsPreset *current;
-  
-  AgsMutexManager *mutex_manager;
-  
+    
   AgsApplicationContext *application_context;
 
-  GList *preset;
+  GList *start_preset, *preset;
 
   gchar *preset_name;
-
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *audio_mutex;
   
   if(!AGS_IS_ENVELOPE_EDITOR(envelope_editor)){
     return(NULL);
@@ -839,24 +856,15 @@ ags_envelope_editor_get_active_preset(AgsEnvelopeEditor *envelope_editor)
   /* application context and mutex manager */
   application_context = window->application_context;
 
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-
-  /* get audio mutex */
-  pthread_mutex_lock(application_mutex);
-
-  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
-					 (GObject *) audio);
-  
-  pthread_mutex_unlock(application_mutex);
-
   /* preset name */
   preset_name = gtk_combo_box_text_get_active_text(envelope_editor->preset);
   
   /* find preset */
-  pthread_mutex_lock(audio_mutex);
-
-  preset = audio->preset;  
+  g_object_get(audio,
+	       "preset", &start_preset,
+	       NULL);
+  
+  preset = start_preset;  
   current = NULL;
   
   preset = ags_preset_find_name(preset,
@@ -868,8 +876,8 @@ ags_envelope_editor_get_active_preset(AgsEnvelopeEditor *envelope_editor)
     current = preset->data;
   }
 
-  pthread_mutex_unlock(audio_mutex);
-
+  g_list_free(start_preset);
+  
   return(current);
 }
 
@@ -879,7 +887,7 @@ ags_envelope_editor_get_active_preset(AgsEnvelopeEditor *envelope_editor)
  *
  * Load preset.
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_envelope_editor_load_preset(AgsEnvelopeEditor *envelope_editor)
@@ -892,15 +900,10 @@ ags_envelope_editor_load_preset(AgsEnvelopeEditor *envelope_editor)
   GtkTreeModel *model;
 
   AgsAudio *audio;
-
-  AgsMutexManager *mutex_manager;
   
   AgsApplicationContext *application_context;
   
-  GList *preset;
-
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *audio_mutex;
+  GList *start_preset, *preset;
   
   if(!AGS_IS_ENVELOPE_EDITOR(envelope_editor)){
     return;
@@ -918,17 +921,6 @@ ags_envelope_editor_load_preset(AgsEnvelopeEditor *envelope_editor)
   /* application context and mutex manager */
   application_context = window->application_context;
 
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-
-  /* get audio mutex */
-  pthread_mutex_lock(application_mutex);
-
-  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
-					 (GObject *) audio);
-  
-  pthread_mutex_unlock(application_mutex);
-
   /* get model */
   model = GTK_TREE_MODEL(gtk_combo_box_get_model(envelope_editor->preset));
 
@@ -936,9 +928,11 @@ ags_envelope_editor_load_preset(AgsEnvelopeEditor *envelope_editor)
   gtk_list_store_clear(GTK_LIST_STORE(model));
 
   /* create new */
-  pthread_mutex_lock(audio_mutex);
-
-  preset = audio->preset;
+  g_object_get(audio,
+	       "preset", &start_preset,
+	       NULL);
+  
+  preset = start_preset;
 
   while(preset != NULL){
     if(AGS_PRESET(preset->data)->preset_name != NULL){
@@ -949,7 +943,7 @@ ags_envelope_editor_load_preset(AgsEnvelopeEditor *envelope_editor)
     preset = preset->next;
   }
 
-  pthread_mutex_unlock(audio_mutex);
+  g_list_free(start_preset);
 }
 
 /**
@@ -959,7 +953,7 @@ ags_envelope_editor_load_preset(AgsEnvelopeEditor *envelope_editor)
  *
  * Add preset.
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_envelope_editor_add_preset(AgsEnvelopeEditor *envelope_editor,
@@ -972,17 +966,14 @@ ags_envelope_editor_add_preset(AgsEnvelopeEditor *envelope_editor,
 
   AgsAudio *audio;
   AgsPreset *preset;
-
-  AgsMutexManager *mutex_manager;
   
   AgsApplicationContext *application_context;
 
+  GList *start_preset;
+  
   AgsComplex *val;
   
   GValue value = {0,};
-
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *audio_mutex;
   
   if(!AGS_IS_ENVELOPE_EDITOR(envelope_editor) ||
      preset_name == NULL){
@@ -1001,23 +992,14 @@ ags_envelope_editor_add_preset(AgsEnvelopeEditor *envelope_editor,
   /* application context and mutex manager */
   application_context = window->application_context;
 
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-
-  /* get audio mutex */
-  pthread_mutex_lock(application_mutex);
-
-  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
-					 (GObject *) audio);
+  g_object_get(audio,
+	       "preset", &start_preset,
+	       NULL);
   
-  pthread_mutex_unlock(application_mutex);
-
   /* check if already present */
-  pthread_mutex_lock(audio_mutex);
-
-  if(ags_preset_find_name(audio->preset,
-			  preset_name) != NULL){
-    pthread_mutex_unlock(audio_mutex);
+  if(ags_preset_find_name(start_preset,
+			  preset_name) != NULL){    
+    g_list_free(start_preset);
     
     return;
   }
@@ -1033,7 +1015,7 @@ ags_envelope_editor_add_preset(AgsEnvelopeEditor *envelope_editor,
   /* preset - attack */
   val = ags_complex_alloc();
   ags_complex_set(val,
-		  0.25 + I * 1.0);
+		  0.25 + I * 0.0);
   
   g_value_init(&value,
 	       AGS_TYPE_COMPLEX);
@@ -1046,7 +1028,7 @@ ags_envelope_editor_add_preset(AgsEnvelopeEditor *envelope_editor,
   /* preset - decay */
   val = ags_complex_alloc();
   ags_complex_set(val,
-		  0.25 + I * 1.0);
+		  0.25 + I * 0.0);
   
   g_value_reset(&value);
   g_value_set_boxed(&value,
@@ -1058,7 +1040,7 @@ ags_envelope_editor_add_preset(AgsEnvelopeEditor *envelope_editor,
   /* preset - sustain */
   val = ags_complex_alloc();
   ags_complex_set(val,
-		  0.25 + I * 1.0);
+		  0.25 + I * 0.0);
   
   g_value_reset(&value);
   g_value_set_boxed(&value,
@@ -1070,7 +1052,7 @@ ags_envelope_editor_add_preset(AgsEnvelopeEditor *envelope_editor,
   /* preset - release */
   val = ags_complex_alloc();
   ags_complex_set(val,
-		  0.25 + I * 1.0);
+		  0.25 + I * 0.0);
   
   g_value_reset(&value);
   g_value_set_boxed(&value,
@@ -1082,7 +1064,7 @@ ags_envelope_editor_add_preset(AgsEnvelopeEditor *envelope_editor,
   /* preset - ratio */
   val = ags_complex_alloc();
   ags_complex_set(val,
-		  0.0);
+		  0.0 + I * 1.0);
   
   g_value_reset(&value);
   g_value_set_boxed(&value,
@@ -1091,8 +1073,7 @@ ags_envelope_editor_add_preset(AgsEnvelopeEditor *envelope_editor,
   ags_preset_add_parameter(preset,
 			   "ratio", &value);
 
-  /* release mutex */
-  pthread_mutex_unlock(audio_mutex);
+  g_list_free(start_preset);
 }
 
 /**
@@ -1102,7 +1083,7 @@ ags_envelope_editor_add_preset(AgsEnvelopeEditor *envelope_editor,
  *
  * Remove preset.
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_envelope_editor_remove_preset(AgsEnvelopeEditor *envelope_editor,
@@ -1115,13 +1096,10 @@ ags_envelope_editor_remove_preset(AgsEnvelopeEditor *envelope_editor,
 
   AgsAudio *audio;
   AgsPreset *preset;
-
-  AgsMutexManager *mutex_manager;
   
   AgsApplicationContext *application_context;
 
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *audio_mutex;
+  GList *start_preset;
   
   if(!AGS_IS_ENVELOPE_EDITOR(envelope_editor)){
     return;
@@ -1139,24 +1117,14 @@ ags_envelope_editor_remove_preset(AgsEnvelopeEditor *envelope_editor,
   /* application context and mutex manager */
   application_context = window->application_context;
 
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-
-  /* get audio mutex */
-  pthread_mutex_lock(application_mutex);
-
-  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
-					 (GObject *) audio);
-  
-  pthread_mutex_unlock(application_mutex);
-
   /* remove preset */
-  pthread_mutex_lock(audio_mutex);
-
-  preset = g_list_nth_data(audio->preset,
+  g_object_get(audio,
+	       "preset", &start_preset,
+	       NULL);
+  preset = g_list_nth_data(start_preset,
 			   nth);
 
-  pthread_mutex_unlock(audio_mutex);
+  g_list_free(start_preset);
 
   ags_audio_remove_preset(audio,
 			  preset);
@@ -1168,7 +1136,7 @@ ags_envelope_editor_remove_preset(AgsEnvelopeEditor *envelope_editor,
  * 
  * Reset controls.
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_envelope_editor_reset_control(AgsEnvelopeEditor *envelope_editor)
@@ -1180,8 +1148,6 @@ ags_envelope_editor_reset_control(AgsEnvelopeEditor *envelope_editor)
 
   AgsAudio *audio;
   AgsPreset *preset;
-
-  AgsMutexManager *mutex_manager;
   
   AgsApplicationContext *application_context;
 
@@ -1192,9 +1158,6 @@ ags_envelope_editor_reset_control(AgsEnvelopeEditor *envelope_editor)
   GValue value = {0,};
 
   GError *error;
-
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *audio_mutex;
   
   if(!AGS_IS_ENVELOPE_EDITOR(envelope_editor)){
     return;
@@ -1224,20 +1187,7 @@ ags_envelope_editor_reset_control(AgsEnvelopeEditor *envelope_editor)
   /* application context and mutex manager */
   application_context = window->application_context;
 
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-
-  /* get audio mutex */
-  pthread_mutex_lock(application_mutex);
-
-  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
-					 (GObject *) audio);
-  
-  pthread_mutex_unlock(application_mutex);
-
   /* attack */
-  pthread_mutex_lock(audio_mutex);
-
   g_value_init(&value,
 	       AGS_TYPE_COMPLEX);
 
@@ -1250,8 +1200,6 @@ ags_envelope_editor_reset_control(AgsEnvelopeEditor *envelope_editor)
     g_warning("%s", error->message);
 
     envelope_editor->flags &= (~AGS_ENVELOPE_EDITOR_NO_UPDATE);
-
-    pthread_mutex_unlock(audio_mutex);
 
     return;
   }
@@ -1277,8 +1225,6 @@ ags_envelope_editor_reset_control(AgsEnvelopeEditor *envelope_editor)
 
     envelope_editor->flags &= (~AGS_ENVELOPE_EDITOR_NO_UPDATE);
 
-    pthread_mutex_unlock(audio_mutex);
-
     return;
   }
 
@@ -1303,8 +1249,6 @@ ags_envelope_editor_reset_control(AgsEnvelopeEditor *envelope_editor)
 
     envelope_editor->flags &= (~AGS_ENVELOPE_EDITOR_NO_UPDATE);
 
-    pthread_mutex_unlock(audio_mutex);
-
     return;
   }
 
@@ -1328,8 +1272,6 @@ ags_envelope_editor_reset_control(AgsEnvelopeEditor *envelope_editor)
     g_warning("%s", error->message);
 
     envelope_editor->flags &= (~AGS_ENVELOPE_EDITOR_NO_UPDATE);
-
-    pthread_mutex_unlock(audio_mutex);
    
     return;
   }
@@ -1355,8 +1297,6 @@ ags_envelope_editor_reset_control(AgsEnvelopeEditor *envelope_editor)
 
     envelope_editor->flags &= (~AGS_ENVELOPE_EDITOR_NO_UPDATE);
 
-    pthread_mutex_unlock(audio_mutex);
-
     return;
   }
 
@@ -1368,8 +1308,6 @@ ags_envelope_editor_reset_control(AgsEnvelopeEditor *envelope_editor)
 
   /* unset no update */
   envelope_editor->flags &= (~AGS_ENVELOPE_EDITOR_NO_UPDATE);
-
-  pthread_mutex_unlock(audio_mutex);
 }
 
 /**
@@ -1378,7 +1316,7 @@ ags_envelope_editor_reset_control(AgsEnvelopeEditor *envelope_editor)
  * 
  * Plot envelope.
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_envelope_editor_plot(AgsEnvelopeEditor *envelope_editor)
@@ -1453,11 +1391,11 @@ ags_envelope_editor_plot(AgsEnvelopeEditor *envelope_editor)
 /**
  * ags_envelope_editor_new:
  *
- * Creates an #AgsEnvelopeEditor
+ * Create a new instance of #AgsEnvelopeEditor
  *
- * Returns: a new #AgsEnvelopeEditor
+ * Returns: the new #AgsEnvelopeEditor
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsEnvelopeEditor*
 ags_envelope_editor_new()

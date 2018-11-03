@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 
+<!-- Copyright (C) 2005-2018 Jo\u00EBl Kr\u00E4hemann -->
 <!-- Permission is granted to copy, distribute and/or modify this document -->
 <!-- under the terms of the GNU Free Documentation License, Version 1.3 -->
 <!-- or any later version published by the Free Software Foundation; -->
@@ -165,6 +166,28 @@
 
     <varlistentry>
       <term>
+	<code>ags-analyse</code>
+      </term>
+      <listitem>
+	<para>
+	  Get frequency hints using FFTW3.
+	</para>
+      </listitem>
+    </varlistentry>
+
+    <varlistentry>
+      <term>
+	<code>ags-eq10</code>
+      </term>
+      <listitem>
+	<para>
+	  Adjust 10 band equalizer.
+	</para>
+      </listitem>
+    </varlistentry>
+    
+    <varlistentry>
+      <term>
 	<code>ags-ladspa</code>
       </term>
       <listitem>
@@ -225,6 +248,28 @@
       <listitem>
 	<para>
 	  Record MIDI data and convert to notation.
+	</para>
+      </listitem>
+    </varlistentry>
+
+    <varlistentry>
+      <term>
+	<code>ags-play-wave</code>
+      </term>
+      <listitem>
+	<para>
+	  Play wave objects.
+	</para>
+      </listitem>
+    </varlistentry>
+
+    <varlistentry>
+      <term>
+	<code>ags-capture-wave</code>
+      </term>
+      <listitem>
+	<para>
+	  Capture audio date and store it in wave objects.
 	</para>
       </listitem>
     </varlistentry>

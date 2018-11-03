@@ -37,6 +37,9 @@ struct _AgsConversion
 {
   GObject gobject;
 
+  pthread_mutex_t *obj_mutex;
+  pthread_mutexattr_t *obj_mutexattr;
+
   gchar *name;
   gchar *description;
 };
@@ -51,6 +54,8 @@ struct _AgsConversionClass
 };
 
 GType ags_conversion_get_type(void);
+
+pthread_mutex_t* ags_conversion_get_class_mutex();
 
 gdouble ags_conversion_convert(AgsConversion *conversion,
 			       gdouble value,

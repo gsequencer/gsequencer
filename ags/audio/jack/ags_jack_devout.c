@@ -191,7 +191,7 @@ ags_jack_devout_get_type (void)
   static volatile gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
-    GType ags_type_jack_devout;
+    GType ags_type_jack_devout = 0;
 
     static const GTypeInfo ags_jack_devout_info = {
       sizeof(AgsJackDevoutClass),
@@ -230,7 +230,7 @@ ags_jack_devout_get_type (void)
 				AGS_TYPE_SOUNDCARD,
 				&ags_soundcard_interface_info);
 
-    g_once_init_leave (&g_define_type_id__volatile, ags_type_jack_devout);
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_jack_devout);
   }
 
   return g_define_type_id__volatile;
@@ -1635,15 +1635,16 @@ ags_jack_devout_set_device(AgsSoundcard *soundcard,
   jack_devout->card_uri = g_strdup(device);
 
   /* apply name to port */
+  pthread_mutex_unlock(jack_devout_mutex);
+  
+#if 0
   pcm_channels = jack_devout->pcm_channels;
   
   jack_port_start = 
     jack_port = g_list_copy(jack_devout->jack_port);
 
-  pthread_mutex_unlock(jack_devout_mutex);
-  
-  for(i = 0; i < pcm_channels; i++){
-    str = g_strdup_printf("ags-soundcard%d-%04d",
+  for(i = 0; i < pcm_channels && jack_port != NULL; i++){
+    str = g_strdup_printf("ags%d-%04d",
 			  nth_card,
 			  i);
     
@@ -1656,6 +1657,7 @@ ags_jack_devout_set_device(AgsSoundcard *soundcard,
   }
 
   g_list_free(jack_port_start);
+#endif
 }
 
 gchar*
@@ -3328,7 +3330,7 @@ ags_jack_devout_realloc_buffer(AgsJackDevout *jack_devout)
     pthread_mutex_unlock(jack_devout_mutex);
     
     for(i = port_count; i < pcm_channels; i++){
-      str = g_strdup_printf("ags-soundcard%d-%04d",
+      str = g_strdup_printf("ags%d-%04d",
 			    nth_soundcard,
 			    i);
       

@@ -72,7 +72,7 @@ ags_drum_input_pad_get_type()
   static volatile gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
-    GType ags_type_drum_input_pad;
+    GType ags_type_drum_input_pad = 0;
 
     static const GTypeInfo ags_drum_input_pad_info = {
       sizeof(AgsDrumInputPadClass),
@@ -110,7 +110,7 @@ ags_drum_input_pad_get_type()
 				AGS_TYPE_PLUGIN,
 				&ags_plugin_interface_info);
 
-    g_once_init_leave (&g_define_type_id__volatile, ags_type_drum_input_pad);
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_drum_input_pad);
   }
 
   return g_define_type_id__volatile;
@@ -385,7 +385,7 @@ ags_drum_input_pad_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
  *
  * Returns: a new #AgsDrumInputPad
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsDrumInputPad*
 ags_drum_input_pad_new(AgsChannel *channel)

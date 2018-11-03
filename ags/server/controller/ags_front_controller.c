@@ -105,9 +105,11 @@ static guint front_controller_signals[LAST_SIGNAL];
 GType
 ags_front_controller_get_type()
 {
-  static GType ags_type_front_controller = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_front_controller){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_front_controller = 0;
+
     static const GTypeInfo ags_front_controller_info = {
       sizeof (AgsFrontControllerClass),
       NULL, /* base_init */
@@ -134,9 +136,11 @@ ags_front_controller_get_type()
     g_type_add_interface_static(ags_type_front_controller,
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
+
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_front_controller);
   }
 
-  return (ags_type_front_controller);
+  return g_define_type_id__volatile;
 }
 
 void
@@ -169,7 +173,7 @@ ags_front_controller_class_init(AgsFrontControllerClass *front_controller)
    * 
    * Returns: on success a new #AgsSecurityContext, otherwise %NULL
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   front_controller_signals[AUTHENTICATE] =
     g_signal_new("authenticate",
@@ -197,7 +201,7 @@ ags_front_controller_class_init(AgsFrontControllerClass *front_controller)
    * 
    * Returns: the response
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   front_controller_signals[DO_REQUEST] =
     g_signal_new("do-request",
@@ -583,7 +587,7 @@ ags_front_controller_real_authenticate(AgsFrontController *front_controller,
  * Returns: on success the #GParameter-struct containing user's uuid and security token,
  * otherwise %NULL.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 gpointer
 ags_front_controller_authenticate(AgsFrontController *front_controller,
@@ -728,7 +732,7 @@ ags_front_controller_real_do_request(AgsFrontController *front_controller,
  * 
  * Returns: the response, on success the #GParameter-struct containing requested parameters, otherwise %NULL.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 gpointer
 ags_front_controller_do_request(AgsFrontController *front_controller,
@@ -765,7 +769,7 @@ ags_front_controller_do_request(AgsFrontController *front_controller,
  * 
  * Returns: the #AgsFrontController
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsFrontController*
 ags_front_controller_new()

@@ -107,7 +107,7 @@ ags_live_dssi_bridge_get_type(void)
   static volatile gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
-    GType ags_type_live_dssi_bridge;
+    GType ags_type_live_dssi_bridge = 0;
 
     static const GTypeInfo ags_live_dssi_bridge_info = {
       sizeof(AgsLiveDssiBridgeClass),
@@ -145,7 +145,7 @@ ags_live_dssi_bridge_get_type(void)
 				AGS_TYPE_PLUGIN,
 				&ags_plugin_interface_info);
 
-    g_once_init_leave (&g_define_type_id__volatile, ags_type_live_dssi_bridge);
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_live_dssi_bridge);
   }
 
   return g_define_type_id__volatile;
@@ -174,7 +174,7 @@ ags_live_dssi_bridge_class_init(AgsLiveDssiBridgeClass *live_dssi_bridge)
    *
    * The plugins filename.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec =  g_param_spec_string("filename",
 				    i18n_pspec("the object file"),
@@ -190,7 +190,7 @@ ags_live_dssi_bridge_class_init(AgsLiveDssiBridgeClass *live_dssi_bridge)
    *
    * The effect's name.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec =  g_param_spec_string("effect",
 				    i18n_pspec("the effect"),
@@ -206,7 +206,7 @@ ags_live_dssi_bridge_class_init(AgsLiveDssiBridgeClass *live_dssi_bridge)
    *
    * The effect's index.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec =  g_param_spec_uint("index",
 				  i18n_pspec("index of effect"),
@@ -273,7 +273,8 @@ ags_live_dssi_bridge_init(AgsLiveDssiBridge *live_dssi_bridge)
 			      AGS_AUDIO_INPUT_HAS_RECYCLING |
 			      AGS_AUDIO_SKIP_INPUT));
   ags_audio_set_ability_flags(audio, (AGS_SOUND_ABILITY_NOTATION));
-  ags_audio_set_behaviour_flags(audio, (AGS_SOUND_BEHAVIOUR_REVERSE_MAPPING));
+  ags_audio_set_behaviour_flags(audio, (AGS_SOUND_BEHAVIOUR_REVERSE_MAPPING |
+					AGS_SOUND_BEHAVIOUR_DEFAULTS_TO_INPUT));
   //  audio->flags &= (~AGS_AUDIO_NOTATION_DEFAULT);
   
   g_object_set(audio,
@@ -812,6 +813,8 @@ ags_live_dssi_bridge_resize_audio_channels(AgsMachine *machine,
 				audio_channels_old);
 
       while(channel != next_pad){
+	ags_channel_set_ability_flags(channel, (AGS_SOUND_ABILITY_NOTATION));
+
 	/* get some fields */
 	g_object_get(channel,
 		     "output-soundcard", &output_soundcard,
@@ -969,6 +972,8 @@ ags_live_dssi_bridge_resize_pads(AgsMachine *machine, GType type,
 				    pads_old);
 
       while(channel != NULL){
+	ags_channel_set_ability_flags(channel, (AGS_SOUND_ABILITY_NOTATION));
+
 	/* get some fields */
 	g_object_get(channel,
 		     "output-soundcard", &output_soundcard,
@@ -1034,10 +1039,6 @@ ags_live_dssi_bridge_map_recall(AgsMachine *machine)
   live_dssi_bridge = (AgsLiveDssiBridge *) machine;
 
   audio = machine->audio;
-  g_object_get(audio,
-	       "play", &start_play,
-	       "recall", &start_recall,
-	       NULL);
 
   /* ags-delay */
   ags_recall_factory_create(audio,
@@ -1047,9 +1048,12 @@ ags_live_dssi_bridge_map_recall(AgsMachine *machine)
 			    0, 0,
 			    (AGS_RECALL_FACTORY_OUTPUT |
 			     AGS_RECALL_FACTORY_ADD |
-			     AGS_RECALL_FACTORY_PLAY |
-			     AGS_RECALL_FACTORY_RECALL),
+			     AGS_RECALL_FACTORY_PLAY),
 			    0);
+
+  g_object_get(audio,
+	       "play", &start_play,
+	       NULL);
 
   play = ags_recall_find_type(start_play,
 			      AGS_TYPE_DELAY_AUDIO_RUN);
@@ -1061,6 +1065,8 @@ ags_live_dssi_bridge_map_recall(AgsMachine *machine)
     play_delay_audio_run = NULL;
   }
 
+  g_list_free(start_play);
+  
   /* ags-count-beats */
   ags_recall_factory_create(audio,
 			    NULL, NULL,
@@ -1070,8 +1076,12 @@ ags_live_dssi_bridge_map_recall(AgsMachine *machine)
 			    (AGS_RECALL_FACTORY_OUTPUT |
 			     AGS_RECALL_FACTORY_ADD |
 			     AGS_RECALL_FACTORY_PLAY |
-			     AGS_RECALL_FACTORY_RECALL),
+			     AGS_RECALL_FACTORY_PLAY),
 			    0);
+
+  g_object_get(audio,
+	       "play", &start_play,
+	       NULL);
 
   play = ags_recall_find_type(start_play,
 			      AGS_TYPE_COUNT_BEATS_AUDIO_RUN);
@@ -1090,6 +1100,8 @@ ags_live_dssi_bridge_map_recall(AgsMachine *machine)
     play_count_beats_audio_run = NULL;
   }
 
+  g_list_free(start_play);
+  
   /* ags-record-midi */
   ags_recall_factory_create(audio,
 			    NULL, NULL,
@@ -1098,14 +1110,18 @@ ags_live_dssi_bridge_map_recall(AgsMachine *machine)
 			    0, 0,
 			    (AGS_RECALL_FACTORY_INPUT |
 			     AGS_RECALL_FACTORY_ADD |
-			     AGS_RECALL_FACTORY_RECALL),
+			     AGS_RECALL_FACTORY_PLAY),
 			    0);
 
-  recall = ags_recall_find_type(start_recall,
-				AGS_TYPE_RECORD_MIDI_AUDIO_RUN);
+  g_object_get(audio,
+	       "play", &start_play,
+	       NULL);
 
-  if(recall != NULL){
-    recall_record_midi_audio_run = AGS_RECORD_MIDI_AUDIO_RUN(recall->data);
+  play = ags_recall_find_type(start_play,
+			      AGS_TYPE_RECORD_MIDI_AUDIO_RUN);
+
+  if(play != NULL){
+    recall_record_midi_audio_run = AGS_RECORD_MIDI_AUDIO_RUN(play->data);
     
     /* set dependency */
     g_object_set(G_OBJECT(recall_record_midi_audio_run),
@@ -1118,6 +1134,8 @@ ags_live_dssi_bridge_map_recall(AgsMachine *machine)
 		 NULL);
   }  
 
+  g_list_free(start_play);
+  
   /* ags-play-dssi */
   ags_recall_factory_create(audio,
 			    NULL, NULL,
@@ -1129,6 +1147,10 @@ ags_live_dssi_bridge_map_recall(AgsMachine *machine)
 			     AGS_RECALL_FACTORY_PLAY |
 			     AGS_RECALL_FACTORY_BULK),
 			    0);
+
+  g_object_get(audio,
+	       "play", &start_play,
+	       NULL);
 
   play = ags_recall_find_type(start_play,
 			      AGS_TYPE_PLAY_DSSI_AUDIO);
@@ -1162,6 +1184,8 @@ ags_live_dssi_bridge_map_recall(AgsMachine *machine)
 		 NULL);
   }
 
+  g_list_free(start_play);
+
   /* depending on destination */
   ags_live_dssi_bridge_input_map_recall(live_dssi_bridge,
 					0,
@@ -1171,9 +1195,6 @@ ags_live_dssi_bridge_map_recall(AgsMachine *machine)
   ags_live_dssi_bridge_output_map_recall(live_dssi_bridge,
 					 0,
 					 0);
-
-  g_list_free(start_play);
-  g_list_free(start_recall);
 
   /* call parent */
   AGS_MACHINE_CLASS(ags_live_dssi_bridge_parent_class)->map_recall(machine);
@@ -1214,6 +1235,8 @@ ags_live_dssi_bridge_output_map_recall(AgsLiveDssiBridge *live_dssi_bridge,
 void
 ags_live_dssi_bridge_load(AgsLiveDssiBridge *live_dssi_bridge)
 {
+  AgsEffectBulk *effect_bulk;
+  AgsBulkMember *bulk_member;
   GtkListStore *model;
 
   GtkTreeIter iter;
@@ -1227,8 +1250,9 @@ ags_live_dssi_bridge_load(AgsLiveDssiBridge *live_dssi_bridge)
   LADSPA_PortDescriptor *port_descriptor;
   LADSPA_PortRangeHintDescriptor hint_descriptor;
 
+  GList *start_list, *list;
   GList *start_plugin_port, *plugin_port;
-
+  
   unsigned long samplerate;
   unsigned long effect_index;
   gdouble step;
@@ -1331,6 +1355,226 @@ ags_live_dssi_bridge_load(AgsLiveDssiBridge *live_dssi_bridge)
   
   gtk_combo_box_set_model(GTK_COMBO_BOX(live_dssi_bridge->program),
 			  GTK_TREE_MODEL(model));
+
+  effect_bulk = AGS_EFFECT_BRIDGE(AGS_MACHINE(live_dssi_bridge)->bridge)->bulk_output;
+
+  /* retrieve position within table  */
+  x = 0;
+  y = 0;
+  
+  list = effect_bulk->table->children;
+
+  while(list != NULL){
+    if(y <= ((GtkTableChild *) list->data)->top_attach){
+      y = ((GtkTableChild *) list->data)->top_attach + 1;
+    }
+
+    list = list->next;
+  }
+
+  /* load ports */
+  g_object_get(dssi_plugin,
+	       "plugin-port", &start_plugin_port,
+	       NULL);
+  
+  plugin_port = start_plugin_port;
+
+  port_count = g_list_length(start_plugin_port);
+  k = 0;
+
+  while(plugin_port != NULL){
+    if(ags_plugin_port_test_flags(plugin_port->data, AGS_PLUGIN_PORT_CONTROL)){
+      GtkWidget *child_widget;
+
+      AgsLadspaConversion *ladspa_conversion;
+      
+      GType widget_type;
+
+      gchar *plugin_name;
+      gchar *control_port;
+      
+      guint step_count;
+      gboolean disable_seemless;
+
+      disable_seemless = FALSE;
+      
+      if(x == AGS_EFFECT_BULK_COLUMNS_COUNT){
+	x = 0;
+	y++;
+	gtk_table_resize(effect_bulk->table,
+			 y + 1, AGS_EFFECT_BULK_COLUMNS_COUNT);
+      }
+
+      if(ags_plugin_port_test_flags(plugin_port->data, AGS_PLUGIN_PORT_TOGGLED)){
+	if(ags_plugin_port_test_flags(plugin_port->data, AGS_PLUGIN_PORT_OUTPUT)){
+	  widget_type = AGS_TYPE_LED;
+	}else{
+	  widget_type = GTK_TYPE_TOGGLE_BUTTON;
+	}
+      }else{
+	if(ags_plugin_port_test_flags(plugin_port->data, AGS_PLUGIN_PORT_OUTPUT)){
+	  widget_type = AGS_TYPE_HINDICATOR;
+	}else{
+	  widget_type = AGS_TYPE_DIAL;
+	}
+      }
+
+      step_count = AGS_DIAL_DEFAULT_PRECISION;
+
+      if(ags_plugin_port_test_flags(plugin_port->data, AGS_PLUGIN_PORT_INTEGER)){
+	step_count = AGS_PLUGIN_PORT(plugin_port->data)->scale_steps;
+
+	disable_seemless = TRUE;	
+      }
+
+      /* add bulk member */
+      plugin_name = g_strdup_printf("dssi-%u",
+				    dssi_plugin->unique_id);
+      control_port = g_strdup_printf("%u/%u",
+				     k,
+				     port_count);
+      bulk_member = (AgsBulkMember *) g_object_new(AGS_TYPE_BULK_MEMBER,
+						   "widget-type", widget_type,
+						   "widget-label", AGS_PLUGIN_PORT(plugin_port->data)->port_name,
+						   "plugin-name", plugin_name,
+						   "filename", live_dssi_bridge->filename,
+						   "effect", live_dssi_bridge->effect,
+						   "specifier", AGS_PLUGIN_PORT(plugin_port->data)->port_name,
+						   "control-port", control_port,
+						   "steps", step_count,
+						   NULL);
+      child_widget = ags_bulk_member_get_widget(bulk_member);
+
+      g_free(plugin_name);
+      g_free(control_port);
+      
+      /* ladspa conversion */
+      ladspa_conversion = NULL;
+
+      if(ags_plugin_port_test_flags(plugin_port->data, AGS_PLUGIN_PORT_BOUNDED_BELOW)){
+	if(ladspa_conversion == NULL ||
+	   !AGS_IS_LADSPA_CONVERSION(ladspa_conversion)){
+	  ladspa_conversion = ags_ladspa_conversion_new();
+	}
+
+	ladspa_conversion->flags |= AGS_LADSPA_CONVERSION_BOUNDED_BELOW;
+      }
+
+      if(ags_plugin_port_test_flags(plugin_port->data, AGS_PLUGIN_PORT_BOUNDED_ABOVE)){
+	if(ladspa_conversion == NULL ||
+	   !AGS_IS_LADSPA_CONVERSION(ladspa_conversion)){
+	  ladspa_conversion = ags_ladspa_conversion_new();
+	}
+
+	ladspa_conversion->flags |= AGS_LADSPA_CONVERSION_BOUNDED_ABOVE;
+      }
+      
+      if(ags_plugin_port_test_flags(plugin_port->data, AGS_PLUGIN_PORT_SAMPLERATE)){
+	if(ladspa_conversion == NULL ||
+	   !AGS_IS_LADSPA_CONVERSION(ladspa_conversion)){
+	  ladspa_conversion = ags_ladspa_conversion_new();
+	}
+
+	ladspa_conversion->flags |= AGS_LADSPA_CONVERSION_SAMPLERATE;
+      }
+
+      if(ags_plugin_port_test_flags(plugin_port->data, AGS_PLUGIN_PORT_LOGARITHMIC)){
+	if(ladspa_conversion == NULL ||
+	   !AGS_IS_LADSPA_CONVERSION(ladspa_conversion)){
+	  ladspa_conversion = ags_ladspa_conversion_new();
+	}
+    
+	ladspa_conversion->flags |= AGS_LADSPA_CONVERSION_LOGARITHMIC;
+      }
+
+      bulk_member->conversion = (AgsConversion *) ladspa_conversion;
+
+      /* child widget */
+      if(ags_plugin_port_test_flags(plugin_port->data, AGS_PLUGIN_PORT_TOGGLED)){
+	bulk_member->port_flags = AGS_BULK_MEMBER_PORT_BOOLEAN;
+      }
+      
+      if(ags_plugin_port_test_flags(plugin_port->data, AGS_PLUGIN_PORT_INTEGER)){
+	bulk_member->port_flags = AGS_BULK_MEMBER_PORT_INTEGER;
+      }
+
+      if(AGS_IS_DIAL(child_widget)){
+	AgsDial *dial;
+	GtkAdjustment *adjustment;
+
+	LADSPA_Data lower_bound, upper_bound;
+	LADSPA_Data default_value;
+	
+	dial = (AgsDial *) child_widget;
+
+	if(disable_seemless){
+	  dial->flags &= (~AGS_DIAL_SEEMLESS_MODE);
+	}
+
+	/* add controls of ports and apply range  */
+	lower_bound = g_value_get_float(AGS_PLUGIN_PORT(plugin_port->data)->lower_value);
+	upper_bound = g_value_get_float(AGS_PLUGIN_PORT(plugin_port->data)->upper_value);
+
+	adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 0.1, 0.1, 0.0);
+	g_object_set(dial,
+		     "adjustment", adjustment,
+		     NULL);
+
+	if(upper_bound >= 0.0 && lower_bound >= 0.0){
+	  step = (upper_bound - lower_bound) / step_count;
+	}else if(upper_bound < 0.0 && lower_bound < 0.0){
+	  step = -1.0 * (lower_bound - upper_bound) / step_count;
+	}else{
+	  step = (upper_bound - lower_bound) / step_count;
+	}
+
+	gtk_adjustment_set_step_increment(adjustment,
+					  step);
+	gtk_adjustment_set_lower(adjustment,
+				 lower_bound);
+	gtk_adjustment_set_upper(adjustment,
+				 upper_bound);
+
+	default_value = (LADSPA_Data) g_value_get_float(AGS_PLUGIN_PORT(plugin_port->data)->default_value);
+
+	if(ladspa_conversion != NULL){
+	  //	  default_value = ags_ladspa_conversion_convert(ladspa_conversion,
+	  //						default_value,
+	  //						TRUE);
+	}
+	
+	gtk_adjustment_set_value(adjustment,
+				 default_value);
+
+#ifdef AGS_DEBUG
+	g_message("dssi bounds: %f %f", lower_bound, upper_bound);
+#endif
+      }else if(AGS_IS_INDICATOR(child_widget) ||
+	       AGS_IS_LED(child_widget)){
+	g_hash_table_insert(ags_effect_bulk_indicator_queue_draw,
+			    child_widget, ags_effect_bulk_indicator_queue_draw_timeout);
+	effect_bulk->queued_drawing = g_list_prepend(effect_bulk->queued_drawing,
+						     child_widget);
+	g_timeout_add(1000 / 30, (GSourceFunc) ags_effect_bulk_indicator_queue_draw_timeout, (gpointer) child_widget);
+      }
+
+      gtk_table_attach(effect_bulk->table,
+		       (GtkWidget *) bulk_member,
+		       x, x + 1,
+		       y, y + 1,
+		       GTK_FILL, GTK_FILL,
+		       0, 0);
+      ags_connectable_connect(AGS_CONNECTABLE(bulk_member));
+      gtk_widget_show_all((GtkWidget *) effect_bulk->table);
+
+      x++;
+    }
+
+    plugin_port = plugin_port->next;    
+    k++;
+  }
+
+  g_list_free(start_plugin_port);
 }
 
 /**

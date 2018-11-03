@@ -95,7 +95,7 @@ ags_bulk_member_get_type(void)
   static volatile gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
-    GType ags_type_bulk_member;
+    GType ags_type_bulk_member = 0;
 
     static const GTypeInfo ags_bulk_member_info = {
       sizeof(AgsBulkMemberClass),
@@ -123,7 +123,7 @@ ags_bulk_member_get_type(void)
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
 
-    g_once_init_leave (&g_define_type_id__volatile, ags_type_bulk_member);
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_bulk_member);
   }
 
   return g_define_type_id__volatile;
@@ -798,9 +798,6 @@ ags_bulk_member_finalize(GObject *gobject)
   g_free(bulk_member->plugin_name);
   g_free(bulk_member->control_port);
 
-  g_free(bulk_member->control_port);
-
-
   if(bulk_member->conversion != NULL){
     g_object_unref(bulk_member->conversion);
   }
@@ -1063,7 +1060,7 @@ ags_bulk_member_set_label(AgsBulkMember *bulk_member,
   }
 
 
-  bulk_member->widget_label = label;
+  bulk_member->widget_label = g_strdup(label);
 }
 
 void

@@ -76,7 +76,7 @@ ags_apply_bpm_get_type()
   static volatile gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
-    GType ags_type_apply_bpm;
+    GType ags_type_apply_bpm = 0;
 
     static const GTypeInfo ags_apply_bpm_info = {
       sizeof (AgsApplyBpmClass),
@@ -94,6 +94,8 @@ ags_apply_bpm_get_type()
 						"AgsApplyBpm",
 						&ags_apply_bpm_info,
 						0);
+
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_apply_bpm);
   }
 
   return g_define_type_id__volatile;
@@ -321,8 +323,8 @@ ags_apply_bpm_recall(AgsApplyBpm *apply_bpm, AgsRecall *recall)
 {
   if(AGS_IS_TACTABLE(recall)){
     ags_tactable_change_bpm(AGS_TACTABLE(recall),
-			    ags_tactable_get_bpm(AGS_TACTABLE(recall)),
-			    apply_bpm->bpm);
+			    apply_bpm->bpm,
+			    ags_tactable_get_bpm(AGS_TACTABLE(recall)));
   }
 }
 
@@ -388,6 +390,11 @@ ags_apply_bpm_audio(AgsApplyBpm *apply_bpm, AgsAudio *audio)
 
   pthread_mutex_unlock(audio_mutex);
 
+  /* set bpm */
+  g_object_set(audio,
+	       "bpm", apply_bpm->bpm,
+	       NULL);
+  
   /* apply bpm - play */
   g_object_get(audio,
 	       "play", &list_start,

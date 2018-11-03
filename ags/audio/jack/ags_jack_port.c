@@ -82,7 +82,7 @@ ags_jack_port_get_type()
   static volatile gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
-    GType ags_type_jack_port;
+    GType ags_type_jack_port = 0;
 
     static const GTypeInfo ags_jack_port_info = {
       sizeof(AgsJackPortClass),
@@ -111,7 +111,7 @@ ags_jack_port_get_type()
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
 
-    g_once_init_leave (&g_define_type_id__volatile, ags_type_jack_port);
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_jack_port);
   }
 
   return g_define_type_id__volatile;
@@ -298,7 +298,7 @@ ags_jack_port_set_property(GObject *gobject,
       if(jack_port->port != NULL){
 	jack_port_set_name(jack_port->port,
 			   port_name);
-      }
+      }      
 #endif
 
       pthread_mutex_unlock(jack_port_mutex);
@@ -711,7 +711,7 @@ ags_jack_port_unset_flags(AgsJackPort *jack_port, guint flags)
  *
  * Returns: the next matching #GList-struct or %NULL
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 GList*
 ags_jack_port_find(GList *jack_port,

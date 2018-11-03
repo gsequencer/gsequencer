@@ -61,7 +61,7 @@ ags_listing_editor_get_type(void)
   static volatile gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
-    GType ags_type_listing_editor;
+    GType ags_type_listing_editor = 0;
 
     static const GTypeInfo ags_listing_editor_info = {
       sizeof (AgsListingEditorClass),
@@ -100,7 +100,7 @@ ags_listing_editor_get_type(void)
 				AGS_TYPE_APPLICABLE,
 				&ags_applicable_interface_info);
 
-    g_once_init_leave (&g_define_type_id__volatile, ags_type_listing_editor);
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_listing_editor);
   }
 
   return g_define_type_id__volatile;

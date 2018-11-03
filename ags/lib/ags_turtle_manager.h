@@ -37,6 +37,9 @@ struct _AgsTurtleManager
 {
   GObject object;
 
+  pthread_mutex_t *obj_mutex;
+  pthread_mutexattr_t *obj_mutexattr;
+
   GList *turtle;
 };
 
@@ -46,6 +49,8 @@ struct _AgsTurtleManagerClass
 };
 
 GType ags_turtle_manager_get_type(void);
+
+pthread_mutex_t* ags_turtle_manager_get_class_mutex();
 
 GObject* ags_turtle_manager_find(AgsTurtleManager *turtle_manager,
 				 gchar *filename);

@@ -69,7 +69,7 @@ ags_recall_ladspa_get_type (void)
   static volatile gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
-    GType ags_type_recall_ladspa;
+    GType ags_type_recall_ladspa = 0;
 
     static const GTypeInfo ags_recall_ladspa_info = {
       sizeof (AgsRecallLadspaClass),
@@ -108,7 +108,7 @@ ags_recall_ladspa_get_type (void)
 				AGS_TYPE_PLUGIN,
 				&ags_plugin_interface_info);
 
-    g_once_init_leave (&g_define_type_id__volatile, ags_type_recall_ladspa);
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_recall_ladspa);
   }
 
   return g_define_type_id__volatile;
@@ -765,7 +765,7 @@ ags_recall_ladspa_load_conversion(AgsRecallLadspa *recall_ladspa,
  *
  * Returns: Next matching #GList-struct or %NULL
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 GList*
 ags_recall_ladspa_find(GList *recall,

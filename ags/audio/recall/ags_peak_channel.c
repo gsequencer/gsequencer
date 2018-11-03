@@ -96,7 +96,7 @@ ags_peak_channel_get_type()
   static volatile gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
-    GType ags_type_peak_channel;
+    GType ags_type_peak_channel = 0;
 
     static const GTypeInfo ags_peak_channel_info = {
       sizeof (AgsPeakChannelClass),
@@ -125,7 +125,7 @@ ags_peak_channel_get_type()
 				AGS_TYPE_PLUGIN,
 				&ags_plugin_interface_info);
 
-    g_once_init_leave (&g_define_type_id__volatile, ags_type_peak_channel);
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_peak_channel);
   }
 
   return g_define_type_id__volatile;
@@ -963,7 +963,7 @@ ags_peak_channel_new(AgsChannel *source)
   AgsPeakChannel *peak_channel;
 
   peak_channel = (AgsPeakChannel *) g_object_new(AGS_TYPE_PEAK_CHANNEL,
-						 "channel", source,
+						 "source", source,
 						 NULL);
 
   return(peak_channel);

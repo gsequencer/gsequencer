@@ -35,7 +35,7 @@ ags_mute_channel_run_get_type()
   static volatile gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
-    GType ags_type_mute_channel_run;
+    GType ags_type_mute_channel_run = 0;
 
     static const GTypeInfo ags_mute_channel_run_info = {
       sizeof (AgsMuteChannelRunClass),
@@ -53,6 +53,8 @@ ags_mute_channel_run_get_type()
 						       "AgsMuteChannelRun",
 						       &ags_mute_channel_run_info,
 						       0);
+
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_mute_channel_run);
   }
 
   return g_define_type_id__volatile;

@@ -106,8 +106,8 @@ ags_port_get_type(void)
   static volatile gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
-    GType ags_type_port;
-    
+    GType ags_type_port = 0;
+
     static const GTypeInfo ags_port_info = {
       sizeof(AgsPortClass),
       NULL, /* base_init */
@@ -135,7 +135,7 @@ ags_port_get_type(void)
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
 
-    g_once_init_leave (&g_define_type_id__volatile, ags_type_port);
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_port);
   }
 
   return g_define_type_id__volatile;
@@ -1252,7 +1252,7 @@ ags_port_real_safe_read(AgsPort *port, GValue *value)
     }else if(port->port_value_type == G_TYPE_OBJECT){
       data = port->port_value.ags_port_object;
     }else{
-      data = (gpointer) malloc(overall_size);
+      data = (gpointer) g_value_get_pointer(value);
 
       if(port->port_value_type == G_TYPE_BOOLEAN){
 	memcpy(data, port->port_value.ags_port_boolean_ptr, overall_size);
@@ -1264,12 +1264,14 @@ ags_port_real_safe_read(AgsPort *port, GValue *value)
 	guint i;
 
 	for(i = 0; i < port->port_value_length; i++){
+	  //	  g_message("port[0x%x]: %f", port, port->port_value.ags_port_float_ptr[i]);
 	  ((gfloat *) data)[i] = port->port_value.ags_port_float_ptr[i];
 	}
       }else if(port->port_value_type == G_TYPE_DOUBLE){
 	guint i;
 
 	for(i = 0; i < port->port_value_length; i++){
+	  //	  g_message("port[0x%x]: %f", port, port->port_value.ags_port_double_ptr[i]);
 	  ((gdouble *) data)[i] = port->port_value.ags_port_double_ptr[i];
 	}
       }

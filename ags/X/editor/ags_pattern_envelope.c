@@ -67,7 +67,7 @@ ags_pattern_envelope_get_type(void)
   static volatile gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
-    GType ags_type_pattern_envelope;
+    GType ags_type_pattern_envelope = 0;
 
     static const GTypeInfo ags_pattern_envelope_info = {
       sizeof (AgsPatternEnvelopeClass),
@@ -105,7 +105,7 @@ ags_pattern_envelope_get_type(void)
 				AGS_TYPE_APPLICABLE,
 				&ags_applicable_interface_info);
 
-    g_once_init_leave (&g_define_type_id__volatile, ags_type_pattern_envelope);
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_pattern_envelope);
   }
 
   return g_define_type_id__volatile;
@@ -489,7 +489,7 @@ ags_pattern_envelope_init(AgsPatternEnvelope *pattern_envelope)
   gtk_scale_set_draw_value(pattern_envelope->attack_y,
 			   TRUE);
   gtk_range_set_value((GtkRange *) pattern_envelope->attack_y,
-		      1.0);
+		      0.0);
   gtk_box_pack_start((GtkBox *) control,
 		     (GtkWidget *) pattern_envelope->attack_y,
 		     FALSE, FALSE,
@@ -531,7 +531,7 @@ ags_pattern_envelope_init(AgsPatternEnvelope *pattern_envelope)
   gtk_scale_set_draw_value(pattern_envelope->decay_y,
 			   TRUE);
   gtk_range_set_value((GtkRange *) pattern_envelope->decay_y,
-		      1.0);
+		      0.0);
   gtk_box_pack_start((GtkBox *) control,
 		     (GtkWidget *) pattern_envelope->decay_y,
 		     FALSE, FALSE,
@@ -573,7 +573,7 @@ ags_pattern_envelope_init(AgsPatternEnvelope *pattern_envelope)
   gtk_scale_set_draw_value(pattern_envelope->sustain_y,
 			   TRUE);
   gtk_range_set_value((GtkRange *) pattern_envelope->sustain_y,
-		      1.0);
+		      0.0);
   gtk_box_pack_start((GtkBox *) control,
 		     (GtkWidget *) pattern_envelope->sustain_y,
 		     FALSE, FALSE,
@@ -615,7 +615,7 @@ ags_pattern_envelope_init(AgsPatternEnvelope *pattern_envelope)
   gtk_scale_set_draw_value(pattern_envelope->release_y,
 			   TRUE);
   gtk_range_set_value((GtkRange *) pattern_envelope->release_y,
-		      1.0);
+		      0.0);
   gtk_box_pack_start((GtkBox *) control,
 		     (GtkWidget *) pattern_envelope->release_y,
 		     FALSE, FALSE,
@@ -638,7 +638,7 @@ ags_pattern_envelope_init(AgsPatternEnvelope *pattern_envelope)
   gtk_scale_set_draw_value(pattern_envelope->ratio,
 			   TRUE);
   gtk_range_set_value((GtkRange *) pattern_envelope->ratio,
-		      0.0);
+		      1.0);
   gtk_table_attach(table,
 		   GTK_WIDGET(pattern_envelope->ratio),
 		   1, 2,
@@ -973,7 +973,7 @@ ags_pattern_envelope_y_label_func(gdouble value,
  * 
  * Returns: the matching #AgsPreset, if none selected %NULL
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsPreset*
 ags_pattern_envelope_get_active_preset(AgsPatternEnvelope *pattern_envelope)
@@ -988,19 +988,14 @@ ags_pattern_envelope_get_active_preset(AgsPatternEnvelope *pattern_envelope)
 
   AgsAudio *audio;
   AgsPreset *current;
-  
-  AgsMutexManager *mutex_manager;
-  
+    
   AgsApplicationContext *application_context;
 
-  GList *preset;
+  GList *start_preset, *preset;
 
   gchar *preset_name;
   
   gboolean do_edit;
-
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *audio_mutex;
 
   if(!AGS_IS_PATTERN_ENVELOPE(pattern_envelope)){
     return(NULL);
@@ -1017,17 +1012,6 @@ ags_pattern_envelope_get_active_preset(AgsPatternEnvelope *pattern_envelope)
 
   /* application context and mutex manager */
   application_context = window->application_context;
-
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-
-  /* get audio mutex */
-  pthread_mutex_lock(application_mutex);
-
-  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
-					 (GObject *) audio);
-  
-  pthread_mutex_unlock(application_mutex);
 
   /* get model */
   model = gtk_tree_view_get_model(pattern_envelope->tree_view);
@@ -1057,9 +1041,11 @@ ags_pattern_envelope_get_active_preset(AgsPatternEnvelope *pattern_envelope)
 		     -1);
 
   /* find preset */
-  pthread_mutex_lock(audio_mutex);
+  g_object_get(audio,
+	       "preset", &start_preset,
+	       NULL);
 
-  preset = audio->preset;
+  preset = start_preset;
   current = NULL;
   
   preset = ags_preset_find_name(preset,
@@ -1068,8 +1054,6 @@ ags_pattern_envelope_get_active_preset(AgsPatternEnvelope *pattern_envelope)
   if(preset != NULL){
     current = preset->data;
   }
-
-  pthread_mutex_unlock(audio_mutex);
 
   return(current);
 }
@@ -1080,7 +1064,7 @@ ags_pattern_envelope_get_active_preset(AgsPatternEnvelope *pattern_envelope)
  *
  * Load preset.
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_pattern_envelope_load_preset(AgsPatternEnvelope *pattern_envelope)
@@ -1094,15 +1078,10 @@ ags_pattern_envelope_load_preset(AgsPatternEnvelope *pattern_envelope)
   GtkTreeIter iter;
 
   AgsAudio *audio;
-
-  AgsMutexManager *mutex_manager;
   
   AgsApplicationContext *application_context;
   
-  GList *preset;
-
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *audio_mutex;
+  GList *start_preset, *preset;
   
   if(!AGS_IS_PATTERN_ENVELOPE(pattern_envelope)){
     return;
@@ -1119,17 +1098,6 @@ ags_pattern_envelope_load_preset(AgsPatternEnvelope *pattern_envelope)
 
   /* application context and mutex manager */
   application_context = window->application_context;
-
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-
-  /* get audio mutex */
-  pthread_mutex_lock(application_mutex);
-
-  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
-					 (GObject *) audio);
-  
-  pthread_mutex_unlock(application_mutex);
   
   /* get model */
   model = GTK_LIST_STORE(gtk_tree_view_get_model(pattern_envelope->tree_view));
@@ -1138,9 +1106,11 @@ ags_pattern_envelope_load_preset(AgsPatternEnvelope *pattern_envelope)
   gtk_list_store_clear(model);
 
   /* create new */
-  pthread_mutex_lock(audio_mutex);
+  g_object_get(audio,
+	       "preset", &start_preset,
+	       NULL);
 
-  preset = audio->preset;
+  preset = start_preset;
 
   while(preset != NULL){
     gtk_list_store_append(model,
@@ -1157,8 +1127,6 @@ ags_pattern_envelope_load_preset(AgsPatternEnvelope *pattern_envelope)
 
     preset = preset->next;
   }
-
-  pthread_mutex_unlock(audio_mutex);
 }
 
 /**
@@ -1170,7 +1138,7 @@ ags_pattern_envelope_load_preset(AgsPatternEnvelope *pattern_envelope)
  * 
  * Set preset property.
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_pattern_envelope_set_preset_property(AgsPatternEnvelope *pattern_envelope,
@@ -1183,14 +1151,9 @@ ags_pattern_envelope_set_preset_property(AgsPatternEnvelope *pattern_envelope,
   AgsMachine *machine;
 
   AgsAudio *audio;
-
-  AgsMutexManager *mutex_manager;
   
   AgsApplicationContext *application_context;
-  
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *audio_mutex;
-  
+    
   if(!AGS_IS_PATTERN_ENVELOPE(pattern_envelope)){
     return;
   }
@@ -1207,24 +1170,9 @@ ags_pattern_envelope_set_preset_property(AgsPatternEnvelope *pattern_envelope,
   /* application context and mutex manager */
   application_context = window->application_context;
 
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-
-  /* get audio mutex */
-  pthread_mutex_lock(application_mutex);
-
-  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
-					 (GObject *) audio);
-  
-  pthread_mutex_unlock(application_mutex);
-
   /* set property */  
-  pthread_mutex_lock(audio_mutex);
-
   g_object_set_property(preset,
 			property_name, value);
-
-  pthread_mutex_unlock(audio_mutex);
   
   /* reset */
   ags_pattern_envelope_reset_tree_view(pattern_envelope);
@@ -1237,7 +1185,7 @@ ags_pattern_envelope_set_preset_property(AgsPatternEnvelope *pattern_envelope,
  *
  * Add preset.
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_pattern_envelope_add_preset(AgsPatternEnvelope *pattern_envelope,
@@ -1250,17 +1198,14 @@ ags_pattern_envelope_add_preset(AgsPatternEnvelope *pattern_envelope,
 
   AgsAudio *audio;
   AgsPreset *preset;
-
-  AgsMutexManager *mutex_manager;
   
   AgsApplicationContext *application_context;
 
+  GList *start_preset;
+  
   AgsComplex *val;
   
   GValue value = {0,};
-
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *audio_mutex;
   
   if(!AGS_IS_PATTERN_ENVELOPE(pattern_envelope) ||
      preset_name == NULL){
@@ -1279,24 +1224,13 @@ ags_pattern_envelope_add_preset(AgsPatternEnvelope *pattern_envelope,
   /* application context and mutex manager */
   application_context = window->application_context;
 
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-
-  /* get audio mutex */
-  pthread_mutex_lock(application_mutex);
-
-  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
-					 (GObject *) audio);
-  
-  pthread_mutex_unlock(application_mutex);
-
   /* check if already present */
-  pthread_mutex_lock(audio_mutex);
+  g_object_get(audio,
+	       "preset", &start_preset,
+	       NULL);
 
-  if(ags_preset_find_name(audio->preset,
+  if(ags_preset_find_name(start_preset,
 			  preset_name) != NULL){
-    pthread_mutex_unlock(audio_mutex);
-    
     return;
   }
   
@@ -1311,7 +1245,7 @@ ags_pattern_envelope_add_preset(AgsPatternEnvelope *pattern_envelope,
   /* preset - ratio */
   val = ags_complex_alloc();
   ags_complex_set(val,
-		  0.0);
+		  0.0 + 1.0 * I);
   
   g_value_init(&value,
 	       AGS_TYPE_COMPLEX);
@@ -1324,7 +1258,7 @@ ags_pattern_envelope_add_preset(AgsPatternEnvelope *pattern_envelope,
   /* preset - attack */
   val = ags_complex_alloc();
   ags_complex_set(val,
-		  0.25 + 1.0 * I);
+		  0.25 + 0.0 * I);
   
   g_value_reset(&value);
   g_value_set_boxed(&value,
@@ -1336,7 +1270,7 @@ ags_pattern_envelope_add_preset(AgsPatternEnvelope *pattern_envelope,
   /* preset - decay */
   val = ags_complex_alloc();
   ags_complex_set(val,
-		  0.25 + 1.0 * I);
+		  0.25 + 0.0 * I);
   
   g_value_reset(&value);
   g_value_set_boxed(&value,
@@ -1348,7 +1282,7 @@ ags_pattern_envelope_add_preset(AgsPatternEnvelope *pattern_envelope,
   /* preset - sustain */
   val = ags_complex_alloc();
   ags_complex_set(val,
-		  0.25 + 1.0 * I);
+		  0.25 + 0.0 * I);
   
   g_value_reset(&value);
   g_value_set_boxed(&value,
@@ -1360,7 +1294,7 @@ ags_pattern_envelope_add_preset(AgsPatternEnvelope *pattern_envelope,
   /* preset - release */
   val = ags_complex_alloc();
   ags_complex_set(val,
-		  0.25 + 1.0 * I);
+		  0.25 + 0.0 * I);
   
   g_value_reset(&value);
   g_value_set_boxed(&value,
@@ -1368,9 +1302,6 @@ ags_pattern_envelope_add_preset(AgsPatternEnvelope *pattern_envelope,
 
   ags_preset_add_parameter(preset,
 			   "release", &value);
-
-  /* release mutex */
-  pthread_mutex_unlock(audio_mutex);
 }
 
 /**
@@ -1380,7 +1311,7 @@ ags_pattern_envelope_add_preset(AgsPatternEnvelope *pattern_envelope,
  *
  * Remove preset.
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_pattern_envelope_remove_preset(AgsPatternEnvelope *pattern_envelope,
@@ -1393,13 +1324,10 @@ ags_pattern_envelope_remove_preset(AgsPatternEnvelope *pattern_envelope,
 
   AgsAudio *audio;
   AgsPreset *preset;
-
-  AgsMutexManager *mutex_manager;
   
   AgsApplicationContext *application_context;
 
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *audio_mutex;
+  GList *start_preset;
   
   if(!AGS_IS_PATTERN_ENVELOPE(pattern_envelope)){
     return;
@@ -1417,24 +1345,13 @@ ags_pattern_envelope_remove_preset(AgsPatternEnvelope *pattern_envelope,
   /* application context and mutex manager */
   application_context = window->application_context;
 
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-
-  /* get audio mutex */
-  pthread_mutex_lock(application_mutex);
-
-  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
-					 (GObject *) audio);
-  
-  pthread_mutex_unlock(application_mutex);
-
   /* create preset */
-  pthread_mutex_lock(audio_mutex);
+  g_object_get(audio,
+	       "preset", &start_preset,
+	       NULL);
 
-  preset = g_list_nth_data(audio->preset,
+  preset = g_list_nth_data(start_preset,
 			   nth);
-  
-  pthread_mutex_unlock(audio_mutex);
 
   ags_audio_remove_preset(audio,
 			  preset);
@@ -1446,7 +1363,7 @@ ags_pattern_envelope_remove_preset(AgsPatternEnvelope *pattern_envelope,
  * 
  * Reset controls.
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_pattern_envelope_reset_control(AgsPatternEnvelope *pattern_envelope)
@@ -1458,8 +1375,6 @@ ags_pattern_envelope_reset_control(AgsPatternEnvelope *pattern_envelope)
 
   AgsAudio *audio;
   AgsPreset *preset;
-
-  AgsMutexManager *mutex_manager;
   
   AgsApplicationContext *application_context;
 
@@ -1472,9 +1387,6 @@ ags_pattern_envelope_reset_control(AgsPatternEnvelope *pattern_envelope)
   GValue value = {0,};
 
   GError *error;
-
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *audio_mutex;
   
   if(!AGS_IS_PATTERN_ENVELOPE(pattern_envelope)){
     return;
@@ -1504,20 +1416,7 @@ ags_pattern_envelope_reset_control(AgsPatternEnvelope *pattern_envelope)
   /* application context and mutex manager */
   application_context = window->application_context;
 
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-
-  /* get audio mutex */
-  pthread_mutex_lock(application_mutex);
-
-  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
-					 (GObject *) audio);
-  
-  pthread_mutex_unlock(application_mutex);
-
   /* get preset properties  */
-  pthread_mutex_lock(audio_mutex);
-
   g_object_get(preset,
 	       "audio-channel-start", &audio_channel_start,
 	       "audio-channel-end", &audio_channel_end,
@@ -1556,8 +1455,6 @@ ags_pattern_envelope_reset_control(AgsPatternEnvelope *pattern_envelope)
 
     pattern_envelope->flags &= (~AGS_PATTERN_ENVELOPE_NO_UPDATE);
     
-    pthread_mutex_unlock(audio_mutex);
-
     return;
   }
 
@@ -1580,8 +1477,6 @@ ags_pattern_envelope_reset_control(AgsPatternEnvelope *pattern_envelope)
     g_warning("%s", error->message);
 
     pattern_envelope->flags &= (~AGS_PATTERN_ENVELOPE_NO_UPDATE);
-
-    pthread_mutex_unlock(audio_mutex);
 
     return;
   }
@@ -1606,8 +1501,6 @@ ags_pattern_envelope_reset_control(AgsPatternEnvelope *pattern_envelope)
 
     pattern_envelope->flags &= (~AGS_PATTERN_ENVELOPE_NO_UPDATE);
 
-    pthread_mutex_unlock(audio_mutex);
-
     return;
   }
 
@@ -1630,8 +1523,6 @@ ags_pattern_envelope_reset_control(AgsPatternEnvelope *pattern_envelope)
     g_warning("%s", error->message);
 
     pattern_envelope->flags &= (~AGS_PATTERN_ENVELOPE_NO_UPDATE);
-
-    pthread_mutex_unlock(audio_mutex);
 
     return;
   }
@@ -1656,8 +1547,6 @@ ags_pattern_envelope_reset_control(AgsPatternEnvelope *pattern_envelope)
 
     pattern_envelope->flags &= (~AGS_PATTERN_ENVELOPE_NO_UPDATE);
 
-    pthread_mutex_unlock(audio_mutex);
-
     return;
   }
 
@@ -1668,9 +1557,6 @@ ags_pattern_envelope_reset_control(AgsPatternEnvelope *pattern_envelope)
 
   /* unset no update */
   pattern_envelope->flags &= (~AGS_PATTERN_ENVELOPE_NO_UPDATE);
-
-  /* release mutex */
-  pthread_mutex_unlock(audio_mutex);
 }
 
 /**
@@ -1679,7 +1565,7 @@ ags_pattern_envelope_reset_control(AgsPatternEnvelope *pattern_envelope)
  * 
  * Reset tree view.
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_pattern_envelope_reset_tree_view(AgsPatternEnvelope *pattern_envelope)
@@ -1694,15 +1580,10 @@ ags_pattern_envelope_reset_tree_view(AgsPatternEnvelope *pattern_envelope)
 
   AgsAudio *audio;
   AgsPreset *preset;
-
-  AgsMutexManager *mutex_manager;
   
   AgsApplicationContext *application_context;
 
   gboolean do_edit;
-
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *audio_mutex;
 
   if(!AGS_IS_PATTERN_ENVELOPE(pattern_envelope)){
     return;
@@ -1732,17 +1613,6 @@ ags_pattern_envelope_reset_tree_view(AgsPatternEnvelope *pattern_envelope)
   /* application context and mutex manager */
   application_context = window->application_context;
 
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-
-  /* get audio mutex */
-  pthread_mutex_lock(application_mutex);
-
-  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
-					 (GObject *) audio);
-  
-  pthread_mutex_unlock(application_mutex);
-
   /* get model and get editing iter */
   model = gtk_tree_view_get_model(pattern_envelope->tree_view);
 
@@ -1765,9 +1635,7 @@ ags_pattern_envelope_reset_tree_view(AgsPatternEnvelope *pattern_envelope)
     guint audio_channel_start, audio_channel_end;
     guint pad_start, pad_end;
     guint x_start, x_end;
-    
-    pthread_mutex_lock(audio_mutex);
-    
+        
     g_object_get(preset,
 		 "audio-channel-start", &audio_channel_start,
 		 "audio-channel-end", &audio_channel_end,
@@ -1785,8 +1653,6 @@ ags_pattern_envelope_reset_tree_view(AgsPatternEnvelope *pattern_envelope)
 		       AGS_PATTERN_ENVELOPE_COLUMN_X_START, x_start,
 		       AGS_PATTERN_ENVELOPE_COLUMN_X_END, x_end,
 		       -1);
-
-    pthread_mutex_unlock(audio_mutex);
   }
   
   /* unset no update */
@@ -1799,7 +1665,7 @@ ags_pattern_envelope_reset_tree_view(AgsPatternEnvelope *pattern_envelope)
  * 
  * Plot envelope.
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_pattern_envelope_plot(AgsPatternEnvelope *pattern_envelope)
@@ -1816,8 +1682,6 @@ ags_pattern_envelope_plot(AgsPatternEnvelope *pattern_envelope)
   GtkTreeIter iter;
 
   AgsAudio *audio;
-
-  AgsMutexManager *mutex_manager;
   
   AgsApplicationContext *application_context;
 
@@ -1834,9 +1698,6 @@ ags_pattern_envelope_plot(AgsPatternEnvelope *pattern_envelope)
   GValue value = {0,};
 
   GError *error;
-
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *audio_mutex;
   
   if(!AGS_IS_PATTERN_ENVELOPE(pattern_envelope)){
     return;
@@ -1853,17 +1714,6 @@ ags_pattern_envelope_plot(AgsPatternEnvelope *pattern_envelope)
 
   /* application context and mutex manager */
   application_context = window->application_context;
-
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-
-  /* get audio mutex */
-  pthread_mutex_lock(application_mutex);
-
-  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
-					 (GObject *) audio);
-  
-  pthread_mutex_unlock(application_mutex);
 
   /* get dimension of cartesian */
   cartesian = pattern_envelope->cartesian;
@@ -1884,9 +1734,7 @@ ags_pattern_envelope_plot(AgsPatternEnvelope *pattern_envelope)
 
   /* plot */
   if(gtk_tree_model_get_iter_first(model,
-				   &iter)){
-    pthread_mutex_lock(audio_mutex);
-    
+				   &iter)){    
     g_value_init(&value,
 		 AGS_TYPE_COMPLEX);
     
@@ -2035,8 +1883,6 @@ ags_pattern_envelope_plot(AgsPatternEnvelope *pattern_envelope)
       }
     }while(gtk_tree_model_iter_next(model,
 				    &iter));
-
-    pthread_mutex_unlock(audio_mutex);
   }
 
   /* queue draw */
@@ -2050,7 +1896,7 @@ ags_pattern_envelope_plot(AgsPatternEnvelope *pattern_envelope)
  *
  * Returns: a new #AgsPatternEnvelope
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsPatternEnvelope*
 ags_pattern_envelope_new()

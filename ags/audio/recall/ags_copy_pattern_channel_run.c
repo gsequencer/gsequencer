@@ -89,7 +89,7 @@ ags_copy_pattern_channel_run_get_type()
   static volatile gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
-    GType ags_type_copy_pattern_channel_run;
+    GType ags_type_copy_pattern_channel_run = 0;
 
     static const GTypeInfo ags_copy_pattern_channel_run_info = {
       sizeof (AgsCopyPatternChannelRunClass),
@@ -128,7 +128,7 @@ ags_copy_pattern_channel_run_get_type()
 				AGS_TYPE_PLUGIN,
 				&ags_plugin_interface_info);
 
-    g_once_init_leave (&g_define_type_id__volatile, ags_type_copy_pattern_channel_run);
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_copy_pattern_channel_run);
   }
 
   return g_define_type_id__volatile;
@@ -725,7 +725,8 @@ ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *delay_au
 
     guint pad;
     guint audio_channel;	  
-
+    guint note_offset;
+    
     //    g_message("ags_copy_pattern_channel_run_sequencer_alloc_callback - playing channel: %u; playing pattern: %u",
     //	      AGS_RECALL_CHANNEL(copy_pattern_channel)->source->line,
     //	      copy_pattern_audio_run->count_beats_audio_run->sequencer_counter);
@@ -744,6 +745,8 @@ ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *delay_au
     g_object_get(copy_pattern_channel_run,
 		 "output-soundcard", &output_soundcard,
 		 NULL);
+
+    note_offset = ags_soundcard_get_note_offset(AGS_SOUNDCARD(output_soundcard));
     
     /* source fields */
     g_object_get(source,
@@ -814,9 +817,17 @@ ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *delay_au
       AgsRecallID *child_recall_id;
       
       while(recycling != end_recycling){
+	AgsNote *copy_note;
+
 	child_recall_id = AGS_RECALL(copy_pattern_channel_run)->recall_id;
 
 	/* apply preset */
+	copy_note = ags_note_duplicate(note);
+	g_object_set(copy_note,
+		     "x0", note_offset,
+		     "x1", note_offset + 1,
+		     NULL);
+
 	if(current_preset != NULL){
 	  AgsComplex *val;
 	  
@@ -824,7 +835,7 @@ ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *delay_au
 
 	  GError *error;
 	  
-	  ags_note_set_flags(note,
+	  ags_note_set_flags(copy_note,
 			     AGS_NOTE_ENVELOPE);
 	  
 	  /* get attack */
@@ -837,7 +848,7 @@ ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *delay_au
 				   &error);
 
 	  if(error == NULL){
-	    g_object_set_property(note,
+	    g_object_set_property(copy_note,
 				  "attack",
 				  &value);
 	  }
@@ -851,7 +862,7 @@ ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *delay_au
 				   &error);
 
 	  if(error == NULL){
-	    g_object_set_property(note,
+	    g_object_set_property(copy_note,
 				  "decay",
 				  &value);
 	  }
@@ -865,7 +876,7 @@ ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *delay_au
 				   &error);
 
 	  if(error == NULL){
-	    g_object_set_property(note,
+	    g_object_set_property(copy_note,
 				  "sustain",
 				  &value);
 	  }
@@ -879,7 +890,7 @@ ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *delay_au
 				   &error);
 
 	  if(error == NULL){
-	    g_object_set_property(note,
+	    g_object_set_property(copy_note,
 				  "release",
 				  &value);
 	  }
@@ -893,12 +904,12 @@ ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *delay_au
 				   &error);
 
 	  if(error == NULL){
-	    g_object_set_property(note,
+	    g_object_set_property(copy_note,
 				  "ratio",
 				  &value);
 	  }
 	}
-	
+		  
 	if(!ags_recall_global_get_rt_safe()){
 	  /* create audio signal */
 	  audio_signal = ags_audio_signal_new(output_soundcard,
@@ -916,15 +927,12 @@ ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *delay_au
 
 	  ags_recycling_add_audio_signal(recycling,
 					 audio_signal);
-
+	  
 	  g_object_set(audio_signal,
-		       "note", note,
+		       "note", copy_note,
 		       NULL);
 	}else{
 	  GList *list_start, *list;
-
-	  ags_note_unset_flags(note,
-			       AGS_NOTE_ENVELOPE);
 
 	  audio_signal = NULL;
 
@@ -939,7 +947,7 @@ ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *delay_au
 	    audio_signal = list->data;
 
 	    g_object_set(audio_signal,
-			 "note", note,
+			 "note", copy_note,
 			 NULL);
 	  }
 

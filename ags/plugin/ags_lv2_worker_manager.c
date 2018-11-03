@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -20,15 +20,10 @@
 #include <ags/plugin/ags_lv2_worker_manager.h>
 #include <ags/plugin/ags_lv2_worker.h>
 
-#include <ags/object/ags_connectable.h>
-
 #include <ags/thread/ags_returnable_thread.h>
 
 void ags_lv2_worker_manager_class_init(AgsLv2WorkerManagerClass *lv2_worker_manager);
-void ags_lv2_worker_manager_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_lv2_worker_manager_init(AgsLv2WorkerManager *lv2_worker_manager);
-void ags_lv2_worker_manager_connect(AgsConnectable *connectable);
-void ags_lv2_worker_manager_disconnect(AgsConnectable *connectable);
 void ags_lv2_worker_manager_finalize(GObject *gobject);
 
 /**
@@ -51,8 +46,8 @@ ags_lv2_worker_manager_get_type()
   static volatile gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
-    GType ags_type_lv2_worker_manager;
-    
+    GType ags_type_lv2_worker_manager = 0;
+
     const GTypeInfo ags_lv2_worker_manager_info = {
       sizeof (AgsLv2WorkerManagerClass),
       NULL, /* base_init */
@@ -65,22 +60,12 @@ ags_lv2_worker_manager_get_type()
       (GInstanceInitFunc) ags_lv2_worker_manager_init,
     };
 
-    const GInterfaceInfo ags_connectable_interface_info = {
-      (GInterfaceInitFunc) ags_lv2_worker_manager_connectable_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-
     ags_type_lv2_worker_manager = g_type_register_static(G_TYPE_OBJECT,
 						      "AgsLv2WorkerManager",
 						      &ags_lv2_worker_manager_info,
 						      0);
 
-    g_type_add_interface_static(ags_type_lv2_worker_manager,
-				AGS_TYPE_CONNECTABLE,
-				&ags_connectable_interface_info);
-
-    g_once_init_leave (&g_define_type_id__volatile, ags_type_lv2_worker_manager);
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_lv2_worker_manager);
   }
 
   return g_define_type_id__volatile;
@@ -101,13 +86,6 @@ ags_lv2_worker_manager_class_init(AgsLv2WorkerManagerClass *lv2_worker_manager)
 }
 
 void
-ags_lv2_worker_manager_connectable_interface_init(AgsConnectableInterface *connectable)
-{
-  connectable->connect = ags_lv2_worker_manager_connect;
-  connectable->disconnect = ags_lv2_worker_manager_disconnect;
-}
-
-void
 ags_lv2_worker_manager_init(AgsLv2WorkerManager *worker_manager)
 {
   worker_manager->thread_pool = NULL;
@@ -115,18 +93,6 @@ ags_lv2_worker_manager_init(AgsLv2WorkerManager *worker_manager)
   g_atomic_pointer_set(&(worker_manager->worker),
 		       NULL);
   
-  /* empty */
-}
-
-void
-ags_lv2_worker_manager_connect(AgsConnectable *connectable)
-{
-  /* empty */
-}
-
-void
-ags_lv2_worker_manager_disconnect(AgsConnectable *connectable)
-{
   /* empty */
 }
 
@@ -192,7 +158,7 @@ ags_lv2_worker_manager_pull_worker(AgsLv2WorkerManager *worker_manager)
  *
  * Returns: an instance of #AgsLv2WorkerManager
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsLv2WorkerManager*
 ags_lv2_worker_manager_get_instance()
@@ -219,7 +185,7 @@ ags_lv2_worker_manager_get_instance()
  *
  * Returns: a new #AgsLv2WorkerManager
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsLv2WorkerManager*
 ags_lv2_worker_manager_new()

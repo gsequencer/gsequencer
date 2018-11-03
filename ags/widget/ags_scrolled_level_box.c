@@ -65,7 +65,7 @@ ags_scrolled_level_box_get_type(void)
   static volatile gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
-    GType ags_type_scrolled_level_box;
+    GType ags_type_scrolled_level_box = 0;
 
     static const GTypeInfo ags_scrolled_level_box_info = {
       sizeof (AgsScrolledLevelBoxClass),
@@ -83,7 +83,7 @@ ags_scrolled_level_box_get_type(void)
 							 "AgsScrolledLevelBox", &ags_scrolled_level_box_info,
 							 0);
 
-    g_once_init_leave (&g_define_type_id__volatile, ags_type_scrolled_level_box);
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_scrolled_level_box);
   }
 
   return g_define_type_id__volatile;
@@ -113,7 +113,7 @@ ags_scrolled_level_box_class_init(AgsScrolledLevelBoxClass *scrolled_level_box)
    *
    * The margin top.
    * 
-   * Since: 1.4.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_uint("margin-top",
 				 "margin top",
@@ -131,7 +131,7 @@ ags_scrolled_level_box_class_init(AgsScrolledLevelBoxClass *scrolled_level_box)
    *
    * The margin bottom.
    * 
-   * Since: 1.4.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_uint("margin-bottom",
 				 "margin bottom",
@@ -149,7 +149,7 @@ ags_scrolled_level_box_class_init(AgsScrolledLevelBoxClass *scrolled_level_box)
    *
    * The margin left.
    * 
-   * Since: 1.4.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_uint("margin-left",
 				 "margin left",
@@ -167,7 +167,7 @@ ags_scrolled_level_box_class_init(AgsScrolledLevelBoxClass *scrolled_level_box)
    *
    * The margin right.
    * 
-   * Since: 1.4.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_uint("margin-right",
 				 "margin right",
@@ -361,7 +361,7 @@ ags_scrolled_level_box_size_request(GtkWidget *widget,
  *
  * Returns: a new #AgsScrolledLevelBox
  *
- * Since: 1.4.0
+ * Since: 2.0.0
  */
 AgsScrolledLevelBox*
 ags_scrolled_level_box_new()

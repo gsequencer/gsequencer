@@ -93,7 +93,7 @@ ags_automation_get_type()
   static volatile gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
-    GType ags_type_automation;
+    GType ags_type_automation = 0;
 
     static const GTypeInfo ags_automation_info = {
       sizeof(AgsAutomationClass),
@@ -111,6 +111,8 @@ ags_automation_get_type()
 						 "AgsAutomation",
 						 &ags_automation_info,
 						 0);
+
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_automation);
   }
 
   return g_define_type_id__volatile;
@@ -326,7 +328,7 @@ ags_automation_init(AgsAutomation *automation)
   pthread_mutex_t *mutex;
   pthread_mutexattr_t *attr;
 
-  automation->flags = AGS_AUTOMATION_BYPASS;
+  automation->flags = 0; // AGS_AUTOMATION_BYPASS
 
   /* add automation mutex */
   automation->obj_mutexattr = 

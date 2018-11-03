@@ -23,6 +23,8 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <ags/libags.h>
+
 #define AGS_TYPE_AUDIO_CONTAINER                (ags_audio_container_get_type())
 #define AGS_AUDIO_CONTAINER(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_AUDIO_CONTAINER, AgsAudioContainer))
 #define AGS_AUDIO_CONTAINER_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_AUDIO_CONTAINER, AgsAudioContainerClass))
@@ -33,10 +35,30 @@
 typedef struct _AgsAudioContainer AgsAudioContainer;
 typedef struct _AgsAudioContainerClass AgsAudioContainerClass;
 
+/**
+ * AgsAudioContainerFlags:
+ * @AGS_AUDIO_CONTAINER_ADDED_TO_REGISTRY: the audio container was added to registry, see #AgsConnectable::add_to_registry()
+ * @AGS_AUDIO_CONTAINER_CONNECTED: indicates the audio container was connected by calling #AgsConnectable::connect()
+ * 
+ * Enum values to control the behavior or indicate internal state of #AgsAudioContainer by
+ * enable/disable as flags.
+ */
+typedef enum{
+  AGS_AUDIO_CONTAINER_ADDED_TO_REGISTRY    = 1,
+  AGS_AUDIO_CONTAINER_CONNECTED            = 1 <<  1,
+}AgsAudioContainerFlags;
+
 struct _AgsAudioContainer
 {
   GObject object;
 
+  guint flags;
+
+  pthread_mutex_t *obj_mutex;
+  pthread_mutexattr_t *obj_mutexattr;
+
+  AgsUUID *uuid;
+  
   GObject *soundcard;
 
   gchar *filename;
@@ -66,6 +88,12 @@ struct _AgsAudioContainerClass
 };
 
 GType ags_audio_container_get_type();
+
+pthread_mutex_t* ags_audio_container_get_class_mutex();
+
+gboolean ags_audio_container_test_flags(AgsAudioContainer *audio_container, guint flags);
+void ags_audio_container_set_flags(AgsAudioContainer *audio_container, guint flags);
+void ags_audio_container_unset_flags(AgsAudioContainer *audio_container, guint flags);
 
 gboolean ags_audio_container_check_suffix(gchar *filename);
 

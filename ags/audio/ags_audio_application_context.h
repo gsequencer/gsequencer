@@ -55,7 +55,7 @@ typedef enum{
 
 struct _AgsAudioApplicationContext
 {
-  AgsApplicationContext appliacation_context;
+  AgsApplicationContext application_context;
 
   guint flags;
 
@@ -83,7 +83,7 @@ struct _AgsAudioApplicationContext
 
 struct _AgsAudioApplicationContextClass
 {
-  AgsApplicationContextClass appliacation_context;
+  AgsApplicationContextClass application_context;
 };
 
 GType ags_audio_application_context_get_type();

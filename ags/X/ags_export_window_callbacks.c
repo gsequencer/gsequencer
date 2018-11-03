@@ -159,7 +159,7 @@ ags_export_window_export_callback(GtkWidget *toggle_button,
     AgsExportThread *export_thread, *current_export_thread;
 
     GList *export_soundcard, *export_soundcard_start;
-    GList *child_start;
+    GList *child, *child_start;
     GList *machines;
     GList *all_filename;
     GList *remove_filename;
@@ -174,8 +174,8 @@ ags_export_window_export_callback(GtkWidget *toggle_button,
     export_thread = (AgsExportThread *) ags_thread_find_type(main_loop,
 							     AGS_TYPE_EXPORT_THREAD);
 
-    export_soundcard_start = 
-      export_soundcard = gtk_container_get_children(GTK_CONTAINER(export_window->export_soundcard));
+    export_soundcard =
+      export_soundcard_start = gtk_container_get_children(GTK_CONTAINER(export_window->export_soundcard));
     
     all_filename = NULL;
     remove_filename = NULL;
@@ -183,25 +183,45 @@ ags_export_window_export_callback(GtkWidget *toggle_button,
     file_exists = FALSE;
 
     while(export_soundcard != NULL){
-      child_start = gtk_container_get_children(GTK_CONTAINER(export_soundcard->data));
+      child = 
+	child_start = gtk_container_get_children(GTK_CONTAINER(export_soundcard->data));
+
+      while(child != NULL){
+	if(AGS_IS_EXPORT_SOUNDCARD(child->data)){
+	  break;
+	}
+
+	child = child->next;
+      }
+	
+      if(!AGS_IS_EXPORT_SOUNDCARD(child->data)){
+	export_soundcard = export_soundcard->next;
+	g_list_free(child_start);
+	  
+	continue;
+      }
       
-      filename = gtk_entry_get_text(AGS_EXPORT_SOUNDCARD(child_start->data)->filename);
+      filename = gtk_entry_get_text(AGS_EXPORT_SOUNDCARD(child->data)->filename);
       all_filename = g_list_prepend(all_filename,
 				    filename);
       
       /* test filename */
       if(filename == NULL ||
 	 strlen(filename) == 0){
-	return;
+	export_soundcard = export_soundcard->next;
+	g_list_free(child_start);
+	  
+	continue;
       }
       
       if(g_file_test(filename,
 		     G_FILE_TEST_EXISTS)){      
 	if(g_file_test(filename,
 		       (G_FILE_TEST_IS_DIR | G_FILE_TEST_IS_SYMLINK))){
-	  //TODO:JK: improve me
+	  export_soundcard = export_soundcard->next;
+	  g_list_free(child_start);
 	  
-	  return;
+	  continue;
 	}
 
 	remove_filename = g_list_prepend(remove_filename,
@@ -300,18 +320,38 @@ ags_export_window_export_callback(GtkWidget *toggle_button,
       task = NULL;
       
       while(export_soundcard != NULL){
-	child_start = gtk_container_get_children(GTK_CONTAINER(export_soundcard->data));
-      
-	filename = gtk_entry_get_text(AGS_EXPORT_SOUNDCARD(child_start->data)->filename);
+	child =
+	  child_start = gtk_container_get_children(GTK_CONTAINER(export_soundcard->data));
+
+	while(child != NULL){
+	  if(AGS_IS_EXPORT_SOUNDCARD(child->data)){
+	    break;
+	  }
+
+	  child = child->next;
+	}
 	
-	export_output = ags_export_output_new(ags_export_thread_find_soundcard(export_thread,
-									       AGS_EXPORT_SOUNDCARD(child_start->data)->soundcard),
-					      AGS_EXPORT_SOUNDCARD(child_start->data)->soundcard,
+	if(!AGS_IS_EXPORT_SOUNDCARD(child->data)){
+	  export_soundcard = export_soundcard->next;
+	  g_list_free(child_start);
+	  
+	  continue;
+	}
+
+	current_export_thread = ags_export_thread_find_soundcard(export_thread,
+								 AGS_EXPORT_SOUNDCARD(child->data)->soundcard);
+	
+	
+	filename = gtk_entry_get_text(AGS_EXPORT_SOUNDCARD(child->data)->filename);
+
+	g_message("do");
+	export_output = ags_export_output_new(current_export_thread,
+					      AGS_EXPORT_SOUNDCARD(child->data)->soundcard,
 					      filename,
 					      tic,
 					      live_performance);
 
-	str = gtk_combo_box_text_get_active_text(AGS_EXPORT_SOUNDCARD(child_start->data)->output_format);
+	str = gtk_combo_box_text_get_active_text(AGS_EXPORT_SOUNDCARD(child->data)->output_format);
 	format = 0;
 
 	if(!g_ascii_strncasecmp(str,
@@ -335,8 +375,8 @@ ags_export_window_export_callback(GtkWidget *toggle_button,
 	task = g_list_prepend(task,
 			      export_output);
 	
-	if(AGS_EXPORT_SOUNDCARD(child_start->data)->soundcard == window->soundcard){
-	  g_signal_connect(export_thread, "stop",
+	if(AGS_EXPORT_SOUNDCARD(child->data)->soundcard == window->soundcard){
+	  g_signal_connect(current_export_thread, "stop",
 			   G_CALLBACK(ags_export_window_stop_callback), export_window);
 	}
 
@@ -368,10 +408,11 @@ ags_export_window_export_callback(GtkWidget *toggle_button,
 
       if((AGS_MACHINE_IS_SEQUENCER & (machine->flags)) !=0 ||
 	 (AGS_MACHINE_IS_SYNTHESIZER & (machine->flags)) != 0){
-	printf("found machine to stop!");
+	g_message("found machine to stop!");
     
-	ags_machine_set_run(machine,
-			    FALSE);
+	ags_machine_set_run_extended(machine,
+				     FALSE,
+				     TRUE, TRUE, FALSE, FALSE);
 	
 	success = TRUE;
       }else if((AGS_MACHINE_IS_WAVE_PLAYER & (machine->flags)) != 0){

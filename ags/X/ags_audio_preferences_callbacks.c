@@ -248,8 +248,6 @@ ags_audio_preferences_start_jack_callback(GtkButton *button,
 
   //  gchar *driver_name;
   
-  pthread_mutex_t *application_mutex;
-
   window = AGS_WINDOW(AGS_PREFERENCES(gtk_widget_get_ancestor(GTK_WIDGET(audio_preferences),
 							      AGS_TYPE_PREFERENCES))->window);
 
@@ -304,8 +302,6 @@ ags_audio_preferences_stop_jack_callback(GtkButton *button,
 
   AgsJackServer *jack_server;
   
-  AgsMutexManager *mutex_manager;
-
   AgsApplicationContext *application_context;
 
   GList *start_list, *list;

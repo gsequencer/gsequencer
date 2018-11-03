@@ -19,13 +19,10 @@
 
 #include <ags/thread/ags_condition_manager.h>
 
-#include <ags/object/ags_connectable.h>
+#include <stdlib.h>
 
 void ags_condition_manager_class_init(AgsConditionManagerClass *condition_manager);
-void ags_condition_manager_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_condition_manager_init(AgsConditionManager *condition_manager);
-void ags_condition_manager_connect(AgsConnectable *connectable);
-void ags_condition_manager_disconnect(AgsConnectable *connectable);
 void ags_condition_manager_finalize(GObject *gobject);
 
 void ags_condition_manager_destroy_data(gpointer data);
@@ -51,8 +48,8 @@ ags_condition_manager_get_type()
   static volatile gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
-    GType ags_type_condition_manager;
-    
+    GType ags_type_condition_manager = 0;
+
     const GTypeInfo ags_condition_manager_info = {
       sizeof (AgsConditionManagerClass),
       NULL, /* base_init */
@@ -65,22 +62,12 @@ ags_condition_manager_get_type()
       (GInstanceInitFunc) ags_condition_manager_init,
     };
 
-    const GInterfaceInfo ags_connectable_interface_info = {
-      (GInterfaceInitFunc) ags_condition_manager_connectable_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-
     ags_type_condition_manager = g_type_register_static(G_TYPE_OBJECT,
 							"AgsConditionManager",
 							&ags_condition_manager_info,
 							0);
 
-    g_type_add_interface_static(ags_type_condition_manager,
-				AGS_TYPE_CONNECTABLE,
-				&ags_connectable_interface_info);
-
-    g_once_init_leave (&g_define_type_id__volatile, ags_type_condition_manager);
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_condition_manager);
   }
 
   return g_define_type_id__volatile;
@@ -101,30 +88,11 @@ ags_condition_manager_class_init(AgsConditionManagerClass *condition_manager)
 }
 
 void
-ags_condition_manager_connectable_interface_init(AgsConnectableInterface *connectable)
-{
-  connectable->connect = ags_condition_manager_connect;
-  connectable->disconnect = ags_condition_manager_disconnect;
-}
-
-void
 ags_condition_manager_init(AgsConditionManager *condition_manager)
 {
   condition_manager->lock_object = g_hash_table_new_full(g_direct_hash, g_direct_equal,
 							 NULL,
 							 (GDestroyNotify) ags_condition_manager_destroy_data);
-}
-
-void
-ags_condition_manager_connect(AgsConnectable *connectable)
-{
-  /* empty */
-}
-
-void
-ags_condition_manager_disconnect(AgsConnectable *connectable)
-{
-  /* empty */
 }
 
 void
@@ -160,7 +128,7 @@ ags_condition_manager_destroy_data(gpointer data)
  * 
  * Returns: %TRUE on success, otherwise %FALSE
  *
- * Since: 1.0.0.8
+ * Since: 2.0.0
  */
 gboolean
 ags_condition_manager_insert(AgsConditionManager *condition_manager,
@@ -183,11 +151,11 @@ ags_condition_manager_insert(AgsConditionManager *condition_manager,
  * @condition_manager: the #AgsConditionManager
  * @lock_object: the object to remove
  * 
- * Removes a lock associated with @lock_object.3
+ * Removes a condition associated with @lock_object.
  *
  * Returns: %TRUE as successfully removed, otherwise %FALSE
  *
- * Since: 1.0.0.8
+ * Since: 2.0.0
  */
 gboolean
 ags_condition_manager_remove(AgsConditionManager *condition_manager,
@@ -205,6 +173,7 @@ ags_condition_manager_remove(AgsConditionManager *condition_manager,
   g_hash_table_remove(condition_manager->lock_object,
 		      lock_object);
 
+  pthread_cond_destroy(cond);
   free(cond);
   
   return(TRUE);
@@ -219,7 +188,7 @@ ags_condition_manager_remove(AgsConditionManager *condition_manager,
  *
  * Returns: the condition on success, else %NULL
  *
- * Since: 1.0.0.8
+ * Since: 2.0.0
  */
 pthread_cond_t*
 ags_condition_manager_lookup(AgsConditionManager *condition_manager,
@@ -240,7 +209,7 @@ ags_condition_manager_lookup(AgsConditionManager *condition_manager,
  *
  * Returns: an instance of #AgsConditionManager
  *
- * Since: 1.0.0.8
+ * Since: 2.0.0
  */
 AgsConditionManager*
 ags_condition_manager_get_instance()
@@ -259,7 +228,7 @@ ags_condition_manager_get_instance()
  *
  * Returns: a new #AgsConditionManager
  *
- * Since: 1.0.0.8
+ * Since: 2.0.0
  */
 AgsConditionManager*
 ags_condition_manager_new()

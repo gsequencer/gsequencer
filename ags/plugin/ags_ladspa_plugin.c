@@ -88,7 +88,7 @@ ags_ladspa_plugin_get_type()
   static volatile gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
-    GType ags_type_ladspa_plugin;
+    GType ags_type_ladspa_plugin = 0;
 
     static const GTypeInfo ags_ladspa_plugin_info = {
       sizeof(AgsLadspaPluginClass),
@@ -107,7 +107,7 @@ ags_ladspa_plugin_get_type()
 						    &ags_ladspa_plugin_info,
 						    0);
 
-    g_once_init_leave (&g_define_type_id__volatile, ags_type_ladspa_plugin);
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_ladspa_plugin);
   }
 
   return g_define_type_id__volatile;
@@ -632,7 +632,7 @@ ags_ladspa_plugin_load_plugin(AgsBasePlugin *base_plugin)
  *
  * Returns: a new #AgsLadspaPlugin
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsLadspaPlugin*
 ags_ladspa_plugin_new(gchar *filename, gchar *effect, guint effect_index)

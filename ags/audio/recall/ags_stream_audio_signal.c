@@ -50,7 +50,7 @@ ags_stream_audio_signal_get_type()
   static volatile gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
-    GType ags_type_stream_audio_signal;
+    GType ags_type_stream_audio_signal = 0;
 
     static const GTypeInfo ags_stream_audio_signal_info = {
       sizeof (AgsStreamAudioSignalClass),
@@ -68,9 +68,11 @@ ags_stream_audio_signal_get_type()
 							  "AgsStreamAudioSignal",
 							  &ags_stream_audio_signal_info,
 							  0);
+
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_stream_audio_signal);
   }
 
-  return(ags_type_stream_audio_signal);
+  return g_define_type_id__volatile;
 }
 
 void
@@ -281,7 +283,7 @@ ags_stream_audio_signal_run_post(AgsRecall *recall)
     }
 
     source->stream_current = source->stream_current->next;
-
+      
     /* call parent */
     parent_class_run_post(recall);
   }else{

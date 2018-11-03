@@ -81,7 +81,7 @@ ags_notation_get_type()
   static volatile gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
-    GType ags_type_notation;
+    GType ags_type_notation = 0;
 
     static const GTypeInfo ags_notation_info = {
       sizeof(AgsNotationClass),
@@ -99,6 +99,8 @@ ags_notation_get_type()
 					       "AgsNotation",
 					       &ags_notation_info,
 					       0);
+
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_notation);
   }
 
   return g_define_type_id__volatile;
@@ -1580,7 +1582,7 @@ ags_notation_copy_selection(AgsNotation *notation)
   pthread_mutex_t *notation_mutex;
 
   if(!AGS_IS_NOTATION(notation)){
-    return;
+    return(NULL);
   }
 
   /* get notation mutex */
@@ -1702,7 +1704,7 @@ ags_notation_cut_selection(AgsNotation *notation)
   pthread_mutex_t *notation_mutex;
 
   if(!AGS_IS_NOTATION(notation)){
-    return;
+    return(NULL);
   }
 
   /* get notation mutex */

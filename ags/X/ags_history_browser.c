@@ -66,7 +66,7 @@ ags_history_browser_get_type()
   static volatile gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
-    GType ags_type_history_browser;
+    GType ags_type_history_browser = 0;
 
     static const GTypeInfo ags_history_browser_info = {
       sizeof (AgsHistoryBrowserClass),
@@ -94,7 +94,7 @@ ags_history_browser_get_type()
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
 
-    g_once_init_leave (&g_define_type_id__volatile, ags_type_history_browser);
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_history_browser);
   }
 
   return g_define_type_id__volatile;
@@ -123,7 +123,7 @@ ags_history_browser_class_init(AgsHistoryBrowserClass *history_browser)
    *
    * The assigned #AgsApplicationContext to give control of application.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("application-context",
 				   i18n_pspec("assigned application context"),

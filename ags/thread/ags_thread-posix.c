@@ -25,9 +25,9 @@
 #include <ags/object/ags_async_queue.h>
 #include <ags/object/ags_marshal.h>
 
-#include <ags/thread/ags_mutex_manager.h>
-#include <ags/thread/ags_condition_manager.h>
 #include <ags/thread/ags_returnable_thread.h>
+
+#include <ags/audio/thread/ags_channel_thread.h>
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -54,9 +54,20 @@ void ags_thread_get_property(GObject *gobject,
 			     guint prop_id,
 			     GValue *value,
 			     GParamSpec *param_spec);
+void ags_thread_finalize(GObject *gobject);
+
+AgsUUID* ags_thread_get_uuid(AgsConnectable *connectable);
+gboolean ags_thread_has_resource(AgsConnectable *connectable);
+gboolean ags_thread_is_ready(AgsConnectable *connectable);
+void ags_thread_add_to_registry(AgsConnectable *connectable);
+void ags_thread_remove_from_registry(AgsConnectable *connectable);
+xmlNode* ags_thread_list_resource(AgsConnectable *connectable);
+xmlNode* ags_thread_xml_compose(AgsConnectable *connectable);
+void ags_thread_xml_parse(AgsConnectable *connectable,
+			  xmlNode *node);
+gboolean ags_thread_is_connected(AgsConnectable *connectable);
 void ags_thread_connect(AgsConnectable *connectable);
 void ags_thread_disconnect(AgsConnectable *connectable);
-void ags_thread_finalize(GObject *gobject);
 
 guint ags_thread_real_clock(AgsThread *thread);
 
@@ -119,8 +130,8 @@ ags_thread_get_type()
   static volatile gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
-    GType ags_type_thread;
-    
+    GType ags_type_thread = 0;
+
     const GTypeInfo ags_thread_info = {
       sizeof(AgsThreadClass),
       NULL, /* base_init */
@@ -148,7 +159,7 @@ ags_thread_get_type()
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
 
-    g_once_init_leave (&g_define_type_id__volatile, ags_type_thread);
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_thread);
   }
 
   return g_define_type_id__volatile;
@@ -176,7 +187,7 @@ ags_thread_class_init(AgsThreadClass *thread)
    *
    * The frequency to run at in Hz.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_double("frequency",
 				   i18n_pspec("frequency as JIFFIE"),
@@ -194,7 +205,7 @@ ags_thread_class_init(AgsThreadClass *thread)
    *
    * The max-frequency to run at in Hz.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_double("max-precision",
 				   i18n_pspec("max precision as JIFFIE"),
@@ -227,7 +238,7 @@ ags_thread_class_init(AgsThreadClass *thread)
    *
    * Returns: the number of cycles to perform
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   thread_signals[CLOCK] =
     g_signal_new("clock",
@@ -245,7 +256,7 @@ ags_thread_class_init(AgsThreadClass *thread)
    *
    * The ::start() signal is invoked as thread started.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   thread_signals[START] =
     g_signal_new("start",
@@ -262,7 +273,7 @@ ags_thread_class_init(AgsThreadClass *thread)
    *
    * The ::run() signal is invoked during run loop.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   thread_signals[RUN] =
     g_signal_new("run",
@@ -279,7 +290,7 @@ ags_thread_class_init(AgsThreadClass *thread)
    *
    * The ::suspend() signal is invoked during suspending.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   thread_signals[SUSPEND] =
     g_signal_new("suspend",
@@ -296,7 +307,7 @@ ags_thread_class_init(AgsThreadClass *thread)
    *
    * The ::resume() signal is invoked during resuming.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   thread_signals[RESUME] =
     g_signal_new("resume",
@@ -314,7 +325,7 @@ ags_thread_class_init(AgsThreadClass *thread)
    * The ::timelock() signal is invoked as standard compution
    * time exceeded.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   thread_signals[TIMELOCK] =
     g_signal_new("timelock",
@@ -331,7 +342,7 @@ ags_thread_class_init(AgsThreadClass *thread)
    *
    * The ::stop() signal is invoked as @thread stopped.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   thread_signals[STOP] =
     g_signal_new("stop",
@@ -353,7 +364,7 @@ ags_thread_class_init(AgsThreadClass *thread)
    *
    * Returns: the time spent
    *
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   thread_signals[INTERRUPTED] =
     g_signal_new("interrupted",
@@ -369,18 +380,28 @@ ags_thread_class_init(AgsThreadClass *thread)
 void
 ags_thread_connectable_interface_init(AgsConnectableInterface *connectable)
 {
-  connectable->is_ready = NULL;
-  connectable->is_connected = NULL;
+  connectable->get_uuid = ags_thread_get_uuid;
+  connectable->has_resource = ags_thread_has_resource;
+
+  connectable->is_ready = ags_thread_is_ready;
+  connectable->add_to_registry = ags_thread_add_to_registry;
+  connectable->remove_from_registry = ags_thread_remove_from_registry;
+
+  connectable->list_resource = ags_thread_list_resource;
+  connectable->xml_compose = ags_thread_xml_compose;
+  connectable->xml_parse = ags_thread_xml_parse;
+
+  connectable->is_connected = ags_thread_is_connected;
   connectable->connect = ags_thread_connect;
   connectable->disconnect = ags_thread_disconnect;
+
+  connectable->connect_connection = NULL;
+  connectable->disconnect_connection = NULL;
 }
 
 void
 ags_thread_init(AgsThread *thread)
 {
-  AgsMutexManager *mutex_manager;
-  AgsConditionManager *condition_manager;
-
   AgsConfig *config;
   
   gchar *str;
@@ -394,7 +415,7 @@ ags_thread_init(AgsThread *thread)
 
   config = ags_config_get_instance();
 
-  /* insert thread mutex */
+  /* thread mutex */
   thread->obj_mutexattr =
     attr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
 
@@ -416,40 +437,23 @@ ags_thread_init(AgsThread *thread)
   pthread_mutex_init(mutex,
 		     attr);
   
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-  
-  pthread_mutex_lock(application_mutex);
-
-  ags_mutex_manager_insert(mutex_manager,
-			   (GObject *) thread,
-			   mutex);
-  
-  pthread_mutex_unlock(application_mutex);
-
   /* the condition */
   thread->obj_condattr = NULL;
 
   thread->obj_cond =
     cond = (pthread_cond_t *) malloc(sizeof(pthread_cond_t));
   pthread_cond_init(cond, NULL);
-
-  condition_manager = ags_condition_manager_get_instance();
-  
-  pthread_mutex_lock(application_mutex);
-
-  ags_condition_manager_insert(condition_manager,
-			       (GObject *) thread,
-			       cond);
-  
-  pthread_mutex_unlock(application_mutex);
   
   /* fields */
   g_atomic_int_set(&(thread->flags),
 		   0);
   g_atomic_int_set(&(thread->sync_flags),
 		   0);
-  
+
+  /* uuid */
+  thread->uuid = ags_uuid_alloc();
+  ags_uuid_generate(thread->uuid);
+    
   /* clock */
   thread->delay = 0;
   thread->tic_delay = 0;
@@ -587,16 +591,29 @@ ags_thread_set_property(GObject *gobject,
 {
   AgsThread *thread;
 
+  pthread_mutex_t *thread_mutex;
+
   thread = AGS_THREAD(gobject);
+
+  /* get thread mutex */
+  pthread_mutex_lock(ags_thread_get_class_mutex());
+  
+  thread_mutex = thread->obj_mutex;
+  
+  pthread_mutex_unlock(ags_thread_get_class_mutex());
 
   switch(prop_id){
   case PROP_FREQUENCY:
     {
       gdouble freq;
 
+      pthread_mutex_lock(thread_mutex);
+
       freq = g_value_get_double(value);
 
       if(freq == thread->freq){
+	pthread_mutex_unlock(thread_mutex);
+
 	return;
       }
 
@@ -611,6 +628,8 @@ ags_thread_set_property(GObject *gobject,
       }else{
 	thread->tic_delay = 0;
       }
+
+      pthread_mutex_unlock(thread_mutex);
     }
     break;
   case PROP_MAX_PRECISION:
@@ -618,9 +637,13 @@ ags_thread_set_property(GObject *gobject,
       gdouble max_precision;
       gdouble old_max_precision;
 
+      pthread_mutex_lock(thread_mutex);
+
       max_precision = g_value_get_double(value);
 
       if(max_precision == thread->max_precision){
+	pthread_mutex_unlock(thread_mutex);
+
 	return;
       }
 
@@ -639,6 +662,8 @@ ags_thread_set_property(GObject *gobject,
       }else{
 	thread->tic_delay = 0;
       }
+
+      pthread_mutex_unlock(thread_mutex);
     }
     break;
   default:
@@ -655,17 +680,34 @@ ags_thread_get_property(GObject *gobject,
 {
   AgsThread *thread;
 
+  pthread_mutex_t *thread_mutex;
+
   thread = AGS_THREAD(gobject);
+
+  /* get thread mutex */
+  pthread_mutex_lock(ags_thread_get_class_mutex());
+  
+  thread_mutex = thread->obj_mutex;
+  
+  pthread_mutex_unlock(ags_thread_get_class_mutex());
 
   switch(prop_id){
   case PROP_FREQUENCY:
     {
+      pthread_mutex_lock(thread_mutex);
+
       g_value_set_double(value, thread->freq);
+
+      pthread_mutex_unlock(thread_mutex);
     }
     break;
   case PROP_MAX_PRECISION:
     {
+      pthread_mutex_lock(thread_mutex);
+
       g_value_set_double(value, thread->max_precision);
+
+      pthread_mutex_unlock(thread_mutex);
     }
     break;
   default:
@@ -675,48 +717,15 @@ ags_thread_get_property(GObject *gobject,
 }
 
 void
-ags_thread_connect(AgsConnectable *connectable)
-{
-  AgsThread *thread, *child;
-
-  thread = AGS_THREAD(connectable);
-  
-  if((AGS_THREAD_CONNECTED & (g_atomic_int_get(&(thread->flags)))) != 0){
-    return;
-  }  
-
-#ifdef AGS_DEBUG
-  g_message("connecting thread");
-#endif
-
-  child = g_atomic_pointer_get(&(thread->children));
-
-  while(child != NULL){
-    ags_connectable_connect(AGS_CONNECTABLE(child));
-
-    child = g_atomic_pointer_get(&(child->next));
-  }
-}
-
-void
-ags_thread_disconnect(AgsConnectable *connectable)
-{
-  /* empty */
-}
-
-void
 ags_thread_finalize(GObject *gobject)
 {
   AgsThread *thread, *parent;
-  AgsMutexManager *mutex_manager;
-  AgsConditionManager *condition_manager;
   
   gboolean running;
   gboolean do_exit;
   
   pthread_t *thread_ptr;
   pthread_attr_t *thread_attr;
-  pthread_mutex_t *application_mutex;
 
   void *stackaddr;
   size_t stacksize;
@@ -752,21 +761,8 @@ ags_thread_finalize(GObject *gobject)
   }
 
   /*  */
-  mutex_manager = ags_mutex_manager_get_instance();
-  condition_manager = ags_condition_manager_get_instance();
-
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-  
-  pthread_mutex_lock(application_mutex);
-
-  ags_mutex_manager_remove(mutex_manager,
-			   (GObject *) thread);
-
   pthread_mutexattr_destroy(thread->obj_mutexattr);
   free(thread->obj_mutexattr);
-
-  ags_condition_manager_remove(condition_manager,
-			       (GObject *) thread);
   
   /*  */  
   free(thread->computing_time);
@@ -833,8 +829,6 @@ ags_thread_finalize(GObject *gobject)
     pthread_detach(*thread_ptr);
   }
   
-  pthread_mutex_unlock(application_mutex);
-
   pthread_attr_destroy(thread_attr);
   free(thread_attr);
 
@@ -847,6 +841,195 @@ ags_thread_finalize(GObject *gobject)
   
   if(do_exit){
     pthread_exit(NULL);
+  }
+}
+
+AgsUUID*
+ags_thread_get_uuid(AgsConnectable *connectable)
+{
+  AgsThread *thread;
+  
+  AgsUUID *ptr;
+
+  pthread_mutex_t *thread_mutex;
+
+  thread = AGS_THREAD(connectable);
+
+  /* get thread mutex */
+  pthread_mutex_lock(ags_thread_get_class_mutex());
+  
+  thread_mutex = thread->obj_mutex;
+  
+  pthread_mutex_unlock(ags_thread_get_class_mutex());
+
+  /* get UUID */
+  pthread_mutex_lock(thread_mutex);
+
+  ptr = thread->uuid;
+
+  pthread_mutex_unlock(thread_mutex);
+  
+  return(ptr);
+}
+
+gboolean
+ags_thread_has_resource(AgsConnectable *connectable)
+{
+  return(FALSE);
+}
+
+gboolean
+ags_thread_is_ready(AgsConnectable *connectable)
+{
+  AgsThread *thread;
+  
+  gboolean is_ready;
+
+  pthread_mutex_t *thread_mutex;
+
+  thread = AGS_THREAD(connectable);
+
+  /* get thread mutex */
+  pthread_mutex_lock(ags_thread_get_class_mutex());
+  
+  thread_mutex = thread->obj_mutex;
+  
+  pthread_mutex_unlock(ags_thread_get_class_mutex());
+
+  /* check is added */
+  pthread_mutex_lock(thread_mutex);
+
+  is_ready = (((AGS_THREAD_ADDED_TO_REGISTRY & (thread->flags)) != 0) ? TRUE: FALSE);
+
+  pthread_mutex_unlock(thread_mutex);
+  
+  return(is_ready);
+}
+
+void
+ags_thread_add_to_registry(AgsConnectable *connectable)
+{
+  AgsThread *thread;
+
+  if(ags_connectable_is_ready(connectable)){
+    return;
+  }
+  
+  thread = AGS_THREAD(connectable);
+
+  ags_thread_set_flags(thread, AGS_THREAD_ADDED_TO_REGISTRY);
+}
+
+void
+ags_thread_remove_from_registry(AgsConnectable *connectable)
+{
+  if(!ags_connectable_is_ready(connectable)){
+    return;
+  }
+
+  //TODO:JK: implement me
+}
+
+xmlNode*
+ags_thread_list_resource(AgsConnectable *connectable)
+{
+  xmlNode *node;
+  
+  node = NULL;
+
+  //TODO:JK: implement me
+  
+  return(node);
+}
+
+xmlNode*
+ags_thread_xml_compose(AgsConnectable *connectable)
+{
+  xmlNode *node;
+  
+  node = NULL;
+
+  //TODO:JK: implement me
+  
+  return(node);
+}
+
+void
+ags_thread_xml_parse(AgsConnectable *connectable,
+		    xmlNode *node)
+{
+  //TODO:JK: implement me
+}
+
+gboolean
+ags_thread_is_connected(AgsConnectable *connectable)
+{
+  AgsThread *thread;
+  
+  gboolean is_connected;
+
+  pthread_mutex_t *thread_mutex;
+
+  thread = AGS_THREAD(connectable);
+
+  /* get thread mutex */
+  pthread_mutex_lock(ags_thread_get_class_mutex());
+  
+  thread_mutex = thread->obj_mutex;
+  
+  pthread_mutex_unlock(ags_thread_get_class_mutex());
+
+  /* check is connected */
+  pthread_mutex_lock(thread_mutex);
+
+  is_connected = (((AGS_THREAD_CONNECTED & (thread->flags)) != 0) ? TRUE: FALSE);
+  
+  pthread_mutex_unlock(thread_mutex);
+  
+  return(is_connected);
+}
+
+void
+ags_thread_connect(AgsConnectable *connectable)
+{
+  AgsThread *thread, *child;
+
+  if(ags_connectable_is_connected(connectable)){
+    return;
+  }
+
+  thread = AGS_THREAD(connectable);
+
+  ags_thread_set_flags(thread, AGS_THREAD_CONNECTED);
+
+  child = g_atomic_pointer_get(&(thread->children));
+
+  while(child != NULL){
+    ags_connectable_connect(AGS_CONNECTABLE(child));
+
+    child = g_atomic_pointer_get(&(child->next));
+  }
+}
+
+void
+ags_thread_disconnect(AgsConnectable *connectable)
+{
+  AgsThread *thread, *child;
+
+  if(!ags_connectable_is_connected(connectable)){
+    return;
+  }
+
+  thread = AGS_THREAD(connectable);
+
+  ags_thread_unset_flags(thread, AGS_THREAD_CONNECTED);
+
+  child = g_atomic_pointer_get(&(thread->children));
+
+  while(child != NULL){
+    ags_connectable_disconnect(AGS_CONNECTABLE(child));
+
+    child = g_atomic_pointer_get(&(child->next));
   }
 }
 
@@ -1037,7 +1220,7 @@ ags_thread_suspend_handler(int sig)
  * Unsets AGS_THREAD_WAIT_0, AGS_THREAD_WAIT_1 or AGS_THREAD_WAIT_2.
  * Additionaly the thread is woken up by this function if waiting.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_thread_set_sync(AgsThread *thread, guint tic)
@@ -1155,7 +1338,7 @@ ags_thread_set_sync(AgsThread *thread, guint tic)
  * 
  * Calls ags_thread_set_sync() on all threads.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_thread_set_sync_all(AgsThread *thread, guint tic)
@@ -1171,6 +1354,11 @@ ags_thread_set_sync_all(AgsThread *thread, guint tic)
     /* reset chaos tree */
     g_atomic_int_and(&(thread->flags),
 		    ~AGS_THREAD_IS_CHAOS_TREE);
+
+    if((AGS_THREAD_MARK_SYNCED & (g_atomic_int_get(&(thread->sync_flags)))) != 0){
+      g_atomic_int_or(&(thread->sync_flags),
+		      AGS_THREAD_SYNCED);
+    }
     
     /* descend */
     child = g_atomic_pointer_get(&(thread->children));
@@ -1221,7 +1409,7 @@ ags_thread_set_sync_all(AgsThread *thread, guint tic)
  * Reset all threads. E.g. suspended threads. A synchronization
  * stage after #AgsAsyncQueue run.
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_thread_reset_all(AgsThread *thread)
@@ -1295,30 +1483,23 @@ ags_thread_reset_all(AgsThread *thread)
  * 
  * Locks the threads own mutex and sets the appropriate flag.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_thread_lock(AgsThread *thread)
 {
-  AgsMutexManager *mutex_manager;
-
-  pthread_mutex_t *application_mutex;
   pthread_mutex_t *mutex;
   
-  if(thread == NULL){
+  if(!AGS_IS_THREAD(thread)){
     return;
   }
 
-  /* lookup mutices */
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+  /* mutex */
+  pthread_mutex_lock(ags_thread_get_class_mutex());
 
-  pthread_mutex_lock(application_mutex);
-
-  mutex = ags_mutex_manager_lookup(mutex_manager,
-				   (GObject *) thread);
+  mutex = thread->obj_mutex;
   
-  pthread_mutex_unlock(application_mutex);
+  pthread_mutex_unlock(ags_thread_get_class_mutex());
 
   /* lock */
   pthread_mutex_lock(mutex);
@@ -1336,30 +1517,23 @@ ags_thread_lock(AgsThread *thread)
  *
  * Returns: %TRUE on success, otherwise %FALSE
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 gboolean
 ags_thread_trylock(AgsThread *thread)
 {
-  AgsMutexManager *mutex_manager;
-
-  pthread_mutex_t *application_mutex;
   pthread_mutex_t *mutex;
   
-  if(thread == NULL){
+  if(!AGS_IS_THREAD(thread)){
     return(FALSE);
   }
 
   /* lookup mutices */
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+  pthread_mutex_lock(ags_thread_get_class_mutex());
 
-  pthread_mutex_lock(application_mutex);
-
-  mutex = ags_mutex_manager_lookup(mutex_manager,
-				   (GObject *) thread);
+  mutex = thread->obj_mutex;
   
-  pthread_mutex_unlock(application_mutex);
+  pthread_mutex_unlock(ags_thread_get_class_mutex());
 
   /* lock */
   if(pthread_mutex_trylock(mutex) != 0){      
@@ -1378,30 +1552,23 @@ ags_thread_trylock(AgsThread *thread)
  *
  * Unlocks the threads own mutex and unsets the appropriate flag.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_thread_unlock(AgsThread *thread)
 {
-  AgsMutexManager *mutex_manager;
-
-  pthread_mutex_t *application_mutex;
   pthread_mutex_t *mutex;
   
-  if(thread == NULL){
+  if(!AGS_IS_THREAD(thread)){
     return;
   }
 
-  /* lookup mutices */
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+  /* mutex */
+  pthread_mutex_lock(ags_thread_get_class_mutex());
 
-  pthread_mutex_lock(application_mutex);
-
-  mutex = ags_mutex_manager_lookup(mutex_manager,
-				   (GObject *) thread);
+  mutex = thread->obj_mutex;
   
-  pthread_mutex_unlock(application_mutex);
+  pthread_mutex_unlock(ags_thread_get_class_mutex());
 
   /* unlock */
   g_atomic_int_and(&(thread->flags),
@@ -1418,7 +1585,7 @@ ags_thread_unlock(AgsThread *thread)
  *
  * Returns: the toplevevel #AgsThread
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsThread*
 ags_thread_get_toplevel(AgsThread *thread)
@@ -1442,7 +1609,7 @@ ags_thread_get_toplevel(AgsThread *thread)
  *
  * Returns: the very first #AgsThread within same tree level
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsThread*
 ags_thread_first(AgsThread *thread)
@@ -1466,7 +1633,7 @@ ags_thread_first(AgsThread *thread)
  *
  * Returns: the very last @AgsThread within same tree level
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsThread*
 ags_thread_last(AgsThread *thread)
@@ -1489,7 +1656,7 @@ ags_thread_last(AgsThread *thread)
  * 
  * Remove child of thread.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_thread_remove_child(AgsThread *thread, AgsThread *child)
@@ -1541,7 +1708,7 @@ ags_thread_remove_child(AgsThread *thread, AgsThread *child)
  * 
  * Add child to thread.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_thread_add_child(AgsThread *thread, AgsThread *child)
@@ -1559,7 +1726,7 @@ ags_thread_add_child(AgsThread *thread, AgsThread *child)
  * 
  * Add child to thread.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_thread_add_child_extended(AgsThread *thread, AgsThread *child,
@@ -1644,7 +1811,7 @@ ags_thread_add_child_extended(AgsThread *thread, AgsThread *child,
  *
  * Returns: %TRUE if locked otherwise %FALSE
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 gboolean
 ags_thread_parental_is_locked(AgsThread *thread, AgsThread *parent)
@@ -1677,7 +1844,7 @@ ags_thread_parental_is_locked(AgsThread *thread, AgsThread *parent)
  *
  * Returns: %TRUE if locked otherwise %FALSE
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 gboolean
 ags_thread_sibling_is_locked(AgsThread *thread)
@@ -1711,7 +1878,7 @@ ags_thread_sibling_is_locked(AgsThread *thread)
  *
  * Returns: %TRUE if locked otherwise %FALSE
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 gboolean
 ags_thread_children_is_locked(AgsThread *thread)
@@ -1946,7 +2113,7 @@ ags_thread_is_tree_ready(AgsThread *thread,
  *
  * Returns: next matching #AgsThread
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsThread*
 ags_thread_next_parent_locked(AgsThread *thread, AgsThread *parent)
@@ -1978,7 +2145,7 @@ ags_thread_next_parent_locked(AgsThread *thread, AgsThread *parent)
  *
  * Returns: next matching #AgsThread
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsThread*
 ags_thread_next_sibling_locked(AgsThread *thread)
@@ -2016,7 +2183,7 @@ ags_thread_next_sibling_locked(AgsThread *thread)
  *
  * Returns: next matching #AgsThread
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsThread*
 ags_thread_next_children_locked(AgsThread *thread)
@@ -2059,7 +2226,7 @@ ags_thread_next_children_locked(AgsThread *thread)
  *
  * Lock parent tree structure.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_thread_lock_parent(AgsThread *thread, AgsThread *parent)
@@ -2089,7 +2256,7 @@ ags_thread_lock_parent(AgsThread *thread, AgsThread *parent)
  *
  * Lock sibling tree structure.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_thread_lock_sibling(AgsThread *thread)
@@ -2125,7 +2292,7 @@ ags_thread_lock_sibling(AgsThread *thread)
  *
  * Lock child tree structure.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_thread_lock_children(AgsThread *thread)
@@ -2168,7 +2335,7 @@ ags_thread_lock_all(AgsThread *thread)
  *
  * Unlock parent tree structure.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_thread_unlock_parent(AgsThread *thread, AgsThread *parent)
@@ -2205,7 +2372,7 @@ ags_thread_unlock_parent(AgsThread *thread, AgsThread *parent)
  *
  * Unlock sibling tree structure.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_thread_unlock_sibling(AgsThread *thread)
@@ -2248,7 +2415,7 @@ ags_thread_unlock_sibling(AgsThread *thread)
  *
  * Unlock child tree structure.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_thread_unlock_children(AgsThread *thread)
@@ -2310,7 +2477,7 @@ ags_thread_unlock_all(AgsThread *thread)
  *
  * Wait on parent tree structure.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_thread_wait_parent(AgsThread *thread, AgsThread *parent)
@@ -2348,7 +2515,7 @@ ags_thread_wait_parent(AgsThread *thread, AgsThread *parent)
  *
  * Wait on sibling tree structure.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_thread_wait_sibling(AgsThread *thread)
@@ -2392,7 +2559,7 @@ ags_thread_wait_sibling(AgsThread *thread)
  *
  * Wait on child tree structure.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_thread_wait_children(AgsThread *thread)
@@ -2450,7 +2617,7 @@ ags_thread_wait_children(AgsThread *thread)
  *
  * Signals the tree in higher levels.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_thread_signal_parent(AgsThread *thread, AgsThread *parent,
@@ -2480,7 +2647,7 @@ ags_thread_signal_parent(AgsThread *thread, AgsThread *parent,
  *
  * Signals the tree on same level.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_thread_signal_sibling(AgsThread *thread, gboolean broadcast)
@@ -2509,7 +2676,7 @@ ags_thread_signal_sibling(AgsThread *thread, gboolean broadcast)
  *
  * Signals the tree in lower levels.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_thread_signal_children(AgsThread *thread, gboolean broadcast)
@@ -2547,7 +2714,6 @@ guint
 ags_thread_real_clock(AgsThread *thread)
 {
   AgsThread *main_loop, *async_queue;
-  AgsMutexManager *mutex_manager;
 
 #ifdef __APPLE__
   clock_serv_t cclock;
@@ -2576,6 +2742,9 @@ ags_thread_real_clock(AgsThread *thread)
     pthread_mutex_lock(ags_main_loop_get_tree_lock(AGS_MAIN_LOOP(main_loop)));
 
     if((AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(thread->flags)))) != 0){
+      g_atomic_int_or(&(thread->sync_flags),
+		      AGS_THREAD_MARK_SYNCED);
+      
       thread->current_tic = ags_main_loop_get_tic(AGS_MAIN_LOOP(main_loop));
 
       if((AGS_THREAD_START_SYNCED_FREQ & (g_atomic_int_get(&(thread->flags)))) != 0 &&
@@ -2766,18 +2935,13 @@ ags_thread_real_clock(AgsThread *thread)
     async_queue = NULL;
   }
   
-  /* lookup mutices */
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+  /* mutex */
+  pthread_mutex_lock(ags_thread_get_class_mutex());
 
-  pthread_mutex_lock(application_mutex);
+  main_loop_mutex = main_loop->obj_mutex;
+  mutex = thread->obj_mutex;
 
-  main_loop_mutex = ags_mutex_manager_lookup(mutex_manager,
-					     (GObject *) main_loop);
-  mutex = ags_mutex_manager_lookup(mutex_manager,
-				   (GObject *) thread);
-  
-  pthread_mutex_unlock(application_mutex);
+  pthread_mutex_unlock(ags_thread_get_class_mutex());
 
   /* calculate main loop delay */
   pthread_mutex_lock(main_loop_mutex);
@@ -2963,7 +3127,7 @@ ags_thread_real_clock(AgsThread *thread)
  *
  * Returns: the cycles to be performed
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 guint
 ags_thread_clock(AgsThread *thread)
@@ -3011,6 +3175,10 @@ ags_thread_real_start(AgsThread *thread)
 		      AGS_THREAD_WAIT_2)));
 
   g_atomic_int_and(&(thread->sync_flags),
+		   (~(AGS_THREAD_MARK_SYNCED |
+		      AGS_THREAD_SYNCED)));
+
+  g_atomic_int_and(&(thread->sync_flags),
 		   (~(AGS_THREAD_SYNCED_FREQ)));
 
 #ifdef AGS_DEBUG
@@ -3048,23 +3216,23 @@ ags_thread_add_start_queue(AgsThread *thread,
     return;
   }
   
-  pthread_mutex_lock(thread->start_mutex);
+  pthread_mutex_lock(thread->mutex);
   
   g_atomic_pointer_set(&(thread->start_queue),
 		       g_list_prepend(g_atomic_pointer_get(&(thread->start_queue)),
 				      child));
   
-  pthread_mutex_unlock(thread->start_mutex);
+  pthread_mutex_unlock(thread->mutex);
 }
 
 /**
- * ags_thread_add_start_queue:
+ * ags_thread_add_start_queue_all:
  * @thread: the #AgsThread
  * @child: the children as #GList-struct containing #AgsThread to start
  *
  * Add @child to @thread's start queue.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_thread_add_start_queue_all(AgsThread *thread,
@@ -3072,16 +3240,22 @@ ags_thread_add_start_queue_all(AgsThread *thread,
 {
   GList *start_queue;
   
-  pthread_mutex_lock(thread->start_mutex);
+  pthread_mutex_lock(thread->mutex);
   
   start_queue = g_atomic_pointer_get(&(thread->start_queue));
-  start_queue = g_list_concat(start_queue,
-			      g_list_copy(child));
 
-  g_atomic_pointer_set(&(thread->start_queue),
-		       start_queue);
-  
-  pthread_mutex_unlock(thread->start_mutex);
+  if(start_queue == NULL){
+    g_atomic_pointer_set(&(thread->start_queue),
+			 g_list_copy(child));
+  }else{
+    start_queue = g_list_concat(start_queue,
+				g_list_copy(child));
+    
+    g_atomic_pointer_set(&(thread->start_queue),
+			 start_queue);
+  }
+    
+  pthread_mutex_unlock(thread->mutex);
 }
 
 /**
@@ -3108,7 +3282,7 @@ ags_thread_is_running(AgsThread *thread)
  *
  * Start the thread.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_thread_start(AgsThread *thread)
@@ -3141,7 +3315,6 @@ ags_thread_loop(void *ptr)
 {
   AgsThread *thread, *main_loop;
   AgsThread *async_queue;
-  AgsMutexManager *mutex_manager;
   AgsThread *queued_thread;
   
   GList *start_start_queue, *start_queue, *start_queue_next;
@@ -3150,7 +3323,6 @@ ags_thread_loop(void *ptr)
   guint i, i_stop;
   gboolean wait_for_parent, wait_for_sibling, wait_for_children;
   
-  pthread_mutex_t *application_mutex;
   pthread_mutex_t *mutex;
   
   thread = (AgsThread *) ptr;
@@ -3164,17 +3336,14 @@ ags_thread_loop(void *ptr)
   if(!AGS_IS_MAIN_LOOP(main_loop)){
     main_loop = NULL;
   }
-  
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-  
-  pthread_mutex_lock(application_mutex);
 
-  mutex = ags_mutex_manager_lookup(mutex_manager,
-				   (GObject *) thread);
-  
-  pthread_mutex_unlock(application_mutex);
+  /* mutex */
+  pthread_mutex_lock(ags_thread_get_class_mutex());
 
+  mutex = thread->obj_mutex;
+  
+  pthread_mutex_unlock(ags_thread_get_class_mutex());
+  
   if(main_loop != NULL){
     pthread_mutex_lock(ags_main_loop_get_tree_lock(AGS_MAIN_LOOP(main_loop)));
     
@@ -3221,7 +3390,7 @@ ags_thread_loop(void *ptr)
 			 NULL);
 
     pthread_mutex_unlock(mutex);
-
+    
     while(start_queue != NULL){
       start_queue_next = start_queue->next;
       
@@ -3644,7 +3813,7 @@ ags_thread_loop(void *ptr)
  * Only for internal use of ags_thread_loop but you may want to set the your very own
  * class function namely your thread's routine.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_thread_run(AgsThread *thread)
@@ -3782,7 +3951,7 @@ ags_thread_real_stop(AgsThread *thread)
  * 
  * Stop the threads loop by unsetting AGS_THREAD_RUNNING flag.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_thread_stop(AgsThread *thread)
@@ -3795,7 +3964,7 @@ ags_thread_stop(AgsThread *thread)
   if((AGS_THREAD_RUNNING & (g_atomic_int_get(&(thread->flags)))) == 0){
     return;
   }
-
+  
   g_object_ref(G_OBJECT(thread));
   g_signal_emit(G_OBJECT(thread),
 		thread_signal, 0);
@@ -3813,7 +3982,7 @@ ags_thread_stop(AgsThread *thread)
  * 
  * Returns: the time spent
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 guint
 ags_thread_interrupted(AgsThread *thread,
@@ -3852,7 +4021,7 @@ ags_thread_interrupted(AgsThread *thread,
  *
  * Performs hangcheck of thread.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_thread_hangcheck(AgsThread *thread)
@@ -4010,7 +4179,7 @@ ags_thread_self(void)
  *
  * Returns: the first ordered thread
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsThread*
 ags_thread_chaos_tree(AgsThread *thread)
@@ -4033,7 +4202,7 @@ ags_thread_chaos_tree(AgsThread *thread)
  *
  * Returns: %TRUE if tree is in chaos, otherwise %FALSE
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 gboolean
 ags_thread_is_chaos_tree(AgsThread *thread,
@@ -4101,12 +4270,12 @@ ags_thread_is_chaos_tree(AgsThread *thread,
  * ags_thread_new:
  * @data: an #GObject
  *
- * Create a new #AgsThread you may provide a #gpointer as @data
+ * Create a new instance of #AgsThread you may provide a #gpointer as @data
  * to your thread routine.
  *
  * Returns: the new #AgsThread
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsThread*
 ags_thread_new(gpointer data)

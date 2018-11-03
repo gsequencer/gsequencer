@@ -72,7 +72,7 @@ ags_automation_window_get_type()
   static volatile gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
-    GType ags_type_automation_window;
+    GType ags_type_automation_window = 0;
 
     static const GTypeInfo ags_automation_window_info = {
       sizeof (AgsAutomationWindowClass),
@@ -100,7 +100,7 @@ ags_automation_window_get_type()
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
 
-    g_once_init_leave (&g_define_type_id__volatile, ags_type_automation_window);
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_automation_window);
   }
 
   return g_define_type_id__volatile;

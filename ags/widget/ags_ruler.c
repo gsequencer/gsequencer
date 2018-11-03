@@ -73,7 +73,7 @@ ags_ruler_get_type()
   static volatile gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
-    GType ags_type_ruler;
+    GType ags_type_ruler = 0;
 
     static const GTypeInfo ags_ruler_info = {
       sizeof(AgsRulerClass),
@@ -91,7 +91,7 @@ ags_ruler_get_type()
 					    "AgsRuler", &ags_ruler_info,
 					    0);
 
-    g_once_init_leave (&g_define_type_id__volatile, ags_type_ruler);
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_ruler);
   }
 
   return g_define_type_id__volatile;
@@ -358,9 +358,6 @@ ags_ruler_draw(AgsRuler *ruler)
     pango_cairo_update_layout(cr, layout);
     pango_cairo_show_layout(cr, layout);
 
-#ifndef __APPLE__
-    pango_fc_font_map_cache_clear(pango_cairo_font_map_get_default());
-#endif
     g_object_unref(layout);
   }
   
@@ -471,11 +468,11 @@ ags_ruler_draw(AgsRuler *ruler)
 /**
  * ags_ruler_new:
  *
- * Creates an #AgsRuler
+ * Create a new instance of #AgsRuler
  *
- * Returns: a new #AgsRuler
+ * Returns: the new #AgsRuler
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsRuler*
 ags_ruler_new()

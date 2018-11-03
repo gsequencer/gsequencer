@@ -137,7 +137,7 @@ ags_effect_bulk_get_type(void)
   static volatile gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
-    GType ags_type_effect_bulk;
+    GType ags_type_effect_bulk = 0;
 
     static const GTypeInfo ags_effect_bulk_info = {
       sizeof(AgsEffectBulkClass),
@@ -175,7 +175,7 @@ ags_effect_bulk_get_type(void)
 				AGS_TYPE_PLUGIN,
 				&ags_plugin_interface_info);
 
-    g_once_init_leave (&g_define_type_id__volatile, ags_type_effect_bulk);
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_effect_bulk);
   }
 
   return g_define_type_id__volatile;
@@ -2959,7 +2959,7 @@ ags_effect_bulk_real_resize_pads(AgsEffectBulk *effect_bulk,
   }
   
   /* collect bulk member */
-  list = gtk_container_get_children((GtkContainer *) effect_bulk->table);
+  start_list = gtk_container_get_children((GtkContainer *) effect_bulk->table);
    
   if(new_size > old_size){ 
     /* add effect */

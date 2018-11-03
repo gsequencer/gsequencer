@@ -58,7 +58,7 @@ ags_scale_box_get_type(void)
   static volatile gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
-    GType ags_type_scale_box;
+    GType ags_type_scale_box = 0;
 
     static const GTypeInfo ags_scale_box_info = {
       sizeof (AgsScaleBoxClass),
@@ -76,7 +76,7 @@ ags_scale_box_get_type(void)
 						"AgsScaleBox", &ags_scale_box_info,
 						0);
 
-    g_once_init_leave (&g_define_type_id__volatile, ags_type_scale_box);
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_scale_box);
   }
 
   return g_define_type_id__volatile;
@@ -107,7 +107,7 @@ ags_scale_box_class_init(AgsScaleBoxClass *scale_box)
    *
    * The fixed width of a scale.
    * 
-   * Since: 1.3.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_uint("fixed-scale-width",
 				 "fixed scale width",
@@ -125,7 +125,7 @@ ags_scale_box_class_init(AgsScaleBoxClass *scale_box)
    *
    * The fixed height of a scale.
    * 
-   * Since: 1.3.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_uint("fixed-scale-height",
 				 "fixed scale height",
@@ -237,7 +237,7 @@ ags_scale_box_child_type(GtkContainer *container)
  * 
  * Returns: the new #AgsScaleBox instance
  * 
- * Since: 1.3.0
+ * Since: 2.0.0
  */
 AgsScaleBox*
 ags_scale_box_new()

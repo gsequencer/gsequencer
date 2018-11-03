@@ -71,7 +71,7 @@ ags_open_file_get_type()
   static volatile gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
-    GType ags_type_open_file;
+    GType ags_type_open_file = 0;
 
     static const GTypeInfo ags_open_file_info = {
       sizeof(AgsOpenFileClass),
@@ -89,9 +89,11 @@ ags_open_file_get_type()
 						"AgsOpenFile",
 						&ags_open_file_info,
 						0);
+
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_open_file);
   }
-  
-  return(ags_type_open_file);
+
+  return g_define_type_id__volatile;
 }
 
 void

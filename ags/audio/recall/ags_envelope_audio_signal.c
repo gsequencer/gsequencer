@@ -64,7 +64,7 @@ ags_envelope_audio_signal_get_type()
   static volatile gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
-    GType ags_type_envelope_audio_signal;
+    GType ags_type_envelope_audio_signal = 0;
 
     static const GTypeInfo ags_envelope_audio_signal_info = {
       sizeof (AgsEnvelopeAudioSignalClass),
@@ -92,6 +92,8 @@ ags_envelope_audio_signal_get_type()
     g_type_add_interface_static(ags_type_envelope_audio_signal,
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
+
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_envelope_audio_signal);
   }
 
   return g_define_type_id__volatile;
@@ -163,8 +165,8 @@ ags_envelope_audio_signal_run_inter(AgsRecall *recall)
   guint frame_count;
   guint buffer_size;
   guint format;
+  guint note_offset, delay_counter;
   gdouble delay;
-  gdouble current_volume, current_ratio;
 
   guint i, j;
 
@@ -185,9 +187,10 @@ ags_envelope_audio_signal_run_inter(AgsRecall *recall)
 							      guint length);
     
   gdouble ags_envelope_audio_signal_run_inter_get_ratio(guint x0, gdouble y0,
-							guint x1, gdouble y1){
+							guint x1, gdouble y1)
+  {
     if(x1 - x0 == 0){
-      return(1.0);
+      return(0.0);
     }else{
       return((y1 - y0) / (x1 - x0));
     }
@@ -195,11 +198,20 @@ ags_envelope_audio_signal_run_inter(AgsRecall *recall)
 
   gdouble ags_envelope_audio_signal_run_inter_get_volume(gdouble volume, gdouble ratio,
 							 guint start_x, guint current_x,
-							 guint length){
-    if(current_x - start_x == 0){
+							 guint length)
+  {
+    gdouble current_volume;
+    
+    if(length == 0){
       return(volume);
     }else{
-      return(volume + ratio * (length / (current_x - start_x)));
+      current_volume = volume + (ratio * (current_x - start_x));
+
+#if 0
+      g_message("envelope get volume %f %f -> %f", volume, ratio, current_volume);
+#endif
+      
+      return(current_volume);
     }
   }
 
@@ -254,7 +266,6 @@ ags_envelope_audio_signal_run_inter(AgsRecall *recall)
   
   do_use_note_length = g_value_get_boolean(&value);
 
-
   /* get use fixed length port */
   g_value_reset(&value);
 
@@ -273,47 +284,75 @@ ags_envelope_audio_signal_run_inter(AgsRecall *recall)
 	       "format", &format,
 	       NULL);
 
-  delay = ags_soundcard_get_delay(AGS_SOUNDCARD(output_soundcard));
+  note_offset = ags_soundcard_get_note_offset(AGS_SOUNDCARD(output_soundcard));
+  delay_counter = ags_soundcard_get_delay_counter(AGS_SOUNDCARD(output_soundcard));
+  
+  delay = ags_soundcard_get_absolute_delay(AGS_SOUNDCARD(output_soundcard));
 
   note = note_start;
   
   while(note != NULL){
-    if(ags_note_test_flags(note->data, AGS_NOTE_ENVELOPE)){
+    if(ags_note_test_flags(AGS_NOTE(note->data), AGS_NOTE_ENVELOPE)){
       AgsNote *current;
       
-      guint64 rt_offset;
       AgsComplex attack;
       AgsComplex decay;
       AgsComplex sustain;
       AgsComplex release;  
       AgsComplex ratio;  
+
       gdouble x0, y0;
       gdouble x1, y1;
-      guint start_position;
-      guint start_frame, first_frame, buffer_size;
-      guint current_frame, current_buffer_size;
-      guint offset, prev_offset;
+      gdouble current_x;
+      
+      guint key_x0, key_x1;
+      guint offset;
+      guint current_frame;
+      guint start_frame, end_frame;      
+      guint current_frame_count, trailing_frame_count;
+      
+      gdouble current_volume, current_ratio;
 
+      pthread_mutex_t *note_mutex;
+      
       current = note->data;
             
       g_object_get(current,
-		   "rt-offset", &rt_offset,
-		   "attack", &attack,
-		   "decay", &decay,
-		   "sustain", &sustain,
-		   "release", &release,
-		   "ratio", &ratio,
+		   "x0", &key_x0,
+		   "x1", &key_x1,
 		   NULL);
-     
-      /* set frame count */
-      if(do_use_note_length){
-	guint key_x0, key_x1;
-	
-	g_object_get(current,
-		     "x0", &key_x0,
-		     "x1", &key_x1,
-		     NULL);
       
+      /* get note mutex */
+      pthread_mutex_lock(ags_note_get_class_mutex());
+  
+      note_mutex = current->obj_mutex;
+  
+      pthread_mutex_unlock(ags_note_get_class_mutex());
+
+      /*  */
+      pthread_mutex_lock(note_mutex);
+
+      attack[0] = current->attack[0];
+      attack[1] = current->attack[1];
+
+      decay[0] = current->decay[0];
+      decay[1] = current->decay[1];
+
+      sustain[0] = current->sustain[0];
+      sustain[1] = current->sustain[1];
+
+      release[0] = current->release[0];
+      release[1] = current->release[1];
+      
+      ratio[0] = current->ratio[0];
+      ratio[1] = current->ratio[1];
+
+      pthread_mutex_unlock(note_mutex);
+
+      /* set frame count */
+      frame_count = (key_x1 - key_x0) * (delay * buffer_size);
+
+      if(do_use_note_length){
 	frame_count = (key_x1 - key_x0) * (delay * buffer_size);
       }else if(do_use_fixed_length){
 	gdouble current_fixed_length;
@@ -334,27 +373,55 @@ ags_envelope_audio_signal_run_inter(AgsRecall *recall)
 	/* calculuate frame count */
 	frame_count = current_fixed_length * (delay * buffer_size);
       }
+
+      offset = 0;
       
-      /* get offsets */
-      start_position = floor((delay * rt_offset) / frame_count);
+      current_frame = ((note_offset - key_x0 - 1) * delay + delay_counter) * buffer_size;
 
-      if(start_position == 0){
-	g_object_get(source,
-		     "first-frame", &first_frame,
-		     NULL);
+#if 0
+      g_message("note@%x[%d] -- %d", note->data, frame_count, current_frame);
+#endif
+      
+      /* special case release - #0 key offset bigger than note offset */
+      if(key_x1 < note_offset){
+	current_x = attack[0] + decay[0];
 	
-	start_frame = 0;
-	buffer_size = buffer_size - first_frame;
-      }else{
-	g_object_get(source,
-		     "first-frame", &first_frame,
-		     NULL);
+	x0 = sustain[0];
+	y0 = sustain[1] + ratio[1];
 
-	start_frame = start_position * buffer_size - first_frame;
-	first_frame = 0;
-	buffer_size = buffer_size;
+	x1 = release[0];
+	y1 = release[1] + ratio[1];
+
+	start_frame = (current_x + x0) * frame_count;
+	end_frame = (current_x + x0 + x1) * frame_count;
+    	
+	current_ratio = ags_envelope_audio_signal_run_inter_get_ratio(0, y0,
+								      end_frame - start_frame, y1);
+	current_volume = ags_envelope_audio_signal_run_inter_get_volume(y0, current_ratio,
+									0, end_frame - start_frame,
+									end_frame - start_frame);
+
+	ags_audio_buffer_util_volume(stream_source->data, 1,
+				     ags_audio_buffer_util_format_from_soundcard(format),
+				     buffer_size,
+				     current_volume);
+	
+	/* iterate */
+	note = note->next;
+
+	continue;
       }
 
+      /* special case not applicable - #0 key offset lower than note offset */
+      if(key_x0 > note_offset){
+	/* iterate */
+	note = note->next;
+
+	continue;
+      }
+
+      current_x = 0.0;
+      
       /* attack */
       x0 = 0.0;
       y0 = ratio[1];
@@ -362,34 +429,45 @@ ags_envelope_audio_signal_run_inter(AgsRecall *recall)
       x1 = attack[0];
       y1 = attack[1] + ratio[1];
 
-      offset = x1 * frame_count;
-      current_frame = first_frame;
-    
-      if(offset >= start_frame){
-	if(current_frame + x1 * frame_count > buffer_size){
-	  current_buffer_size = buffer_size - current_frame;
+      start_frame = (current_x + x0) * frame_count;
+      end_frame = (current_x + x0 + x1) * frame_count;
+
+#if 0
+      g_message("attack - first-frame: %d -> %d::%d", offset, start_frame, end_frame);
+#endif
+      
+      if(start_frame <= current_frame &&
+	 end_frame > current_frame){
+	if(end_frame - current_frame < buffer_size){
+	  current_frame_count = end_frame - current_frame;
 	}else{
-	  if(x1 * frame_count > buffer_size){
-	    current_buffer_size = buffer_size;
-	  }else{
-	    current_buffer_size = x1 * frame_count;
-	  }
+	  current_frame_count = buffer_size;
 	}
       
 	current_ratio = ags_envelope_audio_signal_run_inter_get_ratio(0, y0,
-								      x1 * frame_count, y1);
+								      end_frame - start_frame, y1);
 	current_volume = ags_envelope_audio_signal_run_inter_get_volume(y0, current_ratio,
-									0, start_frame,
-									x1 * frame_count);
-	ags_audio_buffer_util_envelope(stream_source->data + current_frame, 1,
+									0, current_frame - start_frame,
+									end_frame - start_frame);
+	ags_audio_buffer_util_envelope(stream_source->data + offset, 1,
 				       ags_audio_buffer_util_format_from_soundcard(format),
-				       current_buffer_size,
+				       current_frame_count,
 				       current_volume,
 				       current_ratio);
 
-	current_frame += current_buffer_size;
+	current_frame += current_frame_count;
+	offset += current_frame_count;
+      }    
+      
+      if(offset >= buffer_size){
+	/* iterate */
+	note = note->next;
+
+	continue;
       }
-    
+
+      current_x = 0.0;
+
       /* decay */
       x0 = attack[0];
       y0 = attack[1] + ratio[1];
@@ -397,34 +475,44 @@ ags_envelope_audio_signal_run_inter(AgsRecall *recall)
       x1 = decay[0];
       y1 = decay[1] + ratio[1];
 
-      prev_offset = offset;
-      offset += (x1 * frame_count);
+      start_frame = (current_x + x0) * frame_count;
+      end_frame = (current_x + x0 + x1) * frame_count;
 
-      if(offset >= start_frame &&
-	 prev_offset < start_frame + buffer_size){
-	if(current_frame + x1 * frame_count > buffer_size){
-	  current_buffer_size = buffer_size - current_frame;
+#if 0
+      g_message("decay - first-frame: %d -> %d::%d", offset, start_frame, end_frame);
+#endif
+      
+      if(start_frame <= current_frame &&
+	 end_frame > current_frame){
+	if(end_frame - current_frame < buffer_size){
+	  current_frame_count = end_frame - current_frame;
 	}else{
-	  if(x1 * frame_count > buffer_size){
-	    current_buffer_size = buffer_size;
-	  }else{
-	    current_buffer_size = x1 * frame_count;
-	  }
+	  current_frame_count = buffer_size - offset;
 	}
       
 	current_ratio = ags_envelope_audio_signal_run_inter_get_ratio(0, y0,
-								      x1 * frame_count, y1);
+								      end_frame - start_frame, y1);
 	current_volume = ags_envelope_audio_signal_run_inter_get_volume(y0, current_ratio,
-									0, prev_offset + current_frame,
-									x1 * frame_count);
-	ags_audio_buffer_util_envelope(stream_source->data + current_frame, 1,
+									0, current_frame - start_frame,
+									end_frame - start_frame);
+	ags_audio_buffer_util_envelope(stream_source->data + offset, 1,
 				       ags_audio_buffer_util_format_from_soundcard(format),
-				       current_buffer_size,
+				       current_frame_count,
 				       current_volume,
 				       current_ratio);
 
-	current_frame += current_buffer_size;
+	current_frame += current_frame_count;
+	offset += current_frame_count;
+      }    
+
+      if(offset >= buffer_size){
+	/* iterate */
+	note = note->next;
+
+	continue;
       }
+
+      current_x = attack[0];
 
       /* sustain */
       x0 = decay[0];
@@ -433,35 +521,45 @@ ags_envelope_audio_signal_run_inter(AgsRecall *recall)
       x1 = sustain[0];
       y1 = sustain[1] + ratio[1];
 
-      prev_offset = offset;
-      offset += (x1 * frame_count);
+      start_frame = (current_x + x0) * frame_count;
+      end_frame = (current_x + x0 + x1) * frame_count;
 
-      if(offset >= start_frame &&
-	 prev_offset < start_frame + buffer_size){
-	if(current_frame + x1 * frame_count > buffer_size){
-	  current_buffer_size = buffer_size - current_frame;
+#if 0
+      g_message("sustain - first-frame: %d -> %d::%d", offset, start_frame, end_frame);
+#endif
+      
+      if(start_frame <= current_frame &&
+	 end_frame > current_frame){
+	if(end_frame - current_frame < buffer_size){
+	  current_frame_count = end_frame - current_frame;
 	}else{
-	  if(x1 * frame_count > buffer_size){
-	    current_buffer_size = buffer_size;
-	  }else{
-	    current_buffer_size = x1 * frame_count;
-	  }
+	  current_frame_count = buffer_size - offset;
 	}
       
 	current_ratio = ags_envelope_audio_signal_run_inter_get_ratio(0, y0,
-								      x1 * frame_count, y1);
+								      end_frame - start_frame, y1);
 	current_volume = ags_envelope_audio_signal_run_inter_get_volume(y0, current_ratio,
-									0, prev_offset + current_frame,
-									x1 * frame_count);
-	ags_audio_buffer_util_envelope(stream_source->data + current_frame, 1,
+									0, current_frame - start_frame,
+									end_frame - start_frame);
+	ags_audio_buffer_util_envelope(stream_source->data + offset, 1,
 				       ags_audio_buffer_util_format_from_soundcard(format),
-				       current_buffer_size,
+				       current_frame_count,
 				       current_volume,
 				       current_ratio);
 
-	current_frame += current_buffer_size;
-      }
+	current_frame += current_frame_count;
+	offset += current_frame_count;
+      }    
     
+      if(offset >= buffer_size){
+	/* iterate */
+	note = note->next;
+
+	continue;
+      }
+
+      current_x = decay[0] + sustain[0];
+
       /* release */
       x0 = sustain[0];
       y0 = sustain[1] + ratio[1];
@@ -469,33 +567,48 @@ ags_envelope_audio_signal_run_inter(AgsRecall *recall)
       x1 = release[0];
       y1 = release[1] + ratio[1];
 
-      prev_offset = offset;
-      offset += (x1 * frame_count);
+      start_frame = (current_x + x0) * frame_count;
+      end_frame = (current_x + x0 + x1) * frame_count;
     
-      if(offset >= start_frame &&
-	 prev_offset < start_frame + buffer_size){
-	if(current_frame + x1 * frame_count > buffer_size){
-	  current_buffer_size = buffer_size - current_frame;
+#if 0
+      g_message("release - first-frame: %d -> %d::%d", offset, start_frame, end_frame);
+#endif
+      
+      if(start_frame <= current_frame &&
+	 end_frame > current_frame){
+	trailing_frame_count = 0;
+
+	if(end_frame - current_frame < buffer_size){
+	  current_frame_count = end_frame - current_frame;
+
+	  trailing_frame_count = buffer_size - current_frame_count;
 	}else{
-	  if(x1 * frame_count > buffer_size){
-	    current_buffer_size = buffer_size;
-	  }else{
-	    current_buffer_size = x1 * frame_count;
-	  }
+	  current_frame_count = buffer_size - offset;
 	}
       
 	current_ratio = ags_envelope_audio_signal_run_inter_get_ratio(0, y0,
-								      x1 * frame_count, y1);
+								      end_frame - start_frame, y1);
 	current_volume = ags_envelope_audio_signal_run_inter_get_volume(y0, current_ratio,
-									0, prev_offset + current_frame,
-									x1 * frame_count);
-	ags_audio_buffer_util_envelope(stream_source->data + current_frame, 1,
+									0, current_frame - start_frame,
+									end_frame - start_frame);
+	ags_audio_buffer_util_envelope(stream_source->data + offset, 1,
 				       ags_audio_buffer_util_format_from_soundcard(format),
-				       current_buffer_size,
+				       current_frame_count,
 				       current_volume,
 				       current_ratio);
-	
-	current_frame += current_buffer_size;
+
+	offset += current_frame_count;
+
+	if(trailing_frame_count != 0){
+	  current_volume = ags_envelope_audio_signal_run_inter_get_volume(y0, current_ratio,
+									  0, end_frame - start_frame,
+									  end_frame);
+
+	  ags_audio_buffer_util_volume(stream_source->data + offset, 1,
+				       ags_audio_buffer_util_format_from_soundcard(format),
+				       trailing_frame_count,
+				       current_volume);
+	}
       }
     }
 

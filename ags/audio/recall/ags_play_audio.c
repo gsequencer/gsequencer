@@ -78,7 +78,7 @@ ags_play_audio_get_type()
   static volatile gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
-    GType ags_type_play_audio;
+    GType ags_type_play_audio = 0;
 
     static const GTypeInfo ags_play_audio_info = {
       sizeof (AgsPlayAudioClass),
@@ -116,6 +116,8 @@ ags_play_audio_get_type()
     g_type_add_interface_static(ags_type_play_audio,
 				AGS_TYPE_PLUGIN,
 				&ags_plugin_interface_info);
+
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_play_audio);
   }
 
   return g_define_type_id__volatile;

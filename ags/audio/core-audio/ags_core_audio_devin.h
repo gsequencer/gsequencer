@@ -50,9 +50,9 @@ typedef struct _AgsCoreAudioDevinClass AgsCoreAudioDevinClass;
  * @AGS_CORE_AUDIO_DEVIN_BUFFER6: ring-buffer 6
  * @AGS_CORE_AUDIO_DEVIN_BUFFER7: ring-buffer 7
  * @AGS_CORE_AUDIO_DEVIN_ATTACK_FIRST: use first attack, instead of second one
- * @AGS_CORE_AUDIO_DEVIN_PLAY: do playback
- * @AGS_CORE_AUDIO_DEVIN_SHUTDOWN: stop playback
- * @AGS_CORE_AUDIO_DEVIN_START_PLAY: playback starting
+ * @AGS_CORE_AUDIO_DEVIN_RECORD: do capture
+ * @AGS_CORE_AUDIO_DEVIN_SHUTDOWN: stop capture
+ * @AGS_CORE_AUDIO_DEVIN_START_RECORD: capture starting
  * @AGS_CORE_AUDIO_DEVIN_NONBLOCKING: do non-blocking calls
  * @AGS_CORE_AUDIO_DEVIN_INITIALIZED: the soundcard was initialized
  *
@@ -74,9 +74,9 @@ typedef enum{
 
   AGS_CORE_AUDIO_DEVIN_ATTACK_FIRST                   = 1 << 10,
 
-  AGS_CORE_AUDIO_DEVIN_PLAY                           = 1 << 11,
+  AGS_CORE_AUDIO_DEVIN_RECORD                         = 1 << 11,
   AGS_CORE_AUDIO_DEVIN_SHUTDOWN                       = 1 << 12,
-  AGS_CORE_AUDIO_DEVIN_START_PLAY                     = 1 << 13,
+  AGS_CORE_AUDIO_DEVIN_START_RECORD                   = 1 << 13,
 
   AGS_CORE_AUDIO_DEVIN_NONBLOCKING                    = 1 << 14,
   AGS_CORE_AUDIO_DEVIN_INITIALIZED                    = 1 << 15,
@@ -128,6 +128,7 @@ struct _AgsCoreAudioDevin
   guint buffer_size;
   guint samplerate;
 
+  pthread_mutex_t **buffer_mutex;
   void** buffer;
 
   double bpm; // beats per minute

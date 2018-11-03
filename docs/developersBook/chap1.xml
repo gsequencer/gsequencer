@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE book [
-<!ENTITY libagsthreadso "libags_thread.so.1">
-<!ENTITY libagsaudioso "libags_audio.so.1">
-<!ENTITY libagsso "libags.so.1">
+<!ENTITY libagsthreadso "libags_thread.so.2">
+<!ENTITY libagsaudioso "libags_audio.so.2">
+<!ENTITY libagsso "libags.so.2">
 <!ENTITY chap3 "chapter 3">
 ]>
 
+<!-- Copyright (C) 2005-2018 Jo\u00EBl Kr\u00E4hemann -->
 <!-- Permission is granted to copy, distribute and/or modify this document -->
 <!-- under the terms of the GNU Free Documentation License, Version 1.3 -->
 <!-- or any later version published by the Free Software Foundation; -->
@@ -78,7 +79,10 @@
       <para>
 	As it shall be implemented by AGS_TYPE_THREAD subtypes, this parent object provides
 	a mutex to properly lock the object. You should obtain the pthread_mutex_t pointer
-	by calling <code language="C">pthread_mutex_t* ags_mutex_manager_lookup(AgsMutexManager*, GObject*)</code>.
+	by accessing its field:
+      <programlisting language="C">
+<xi:include href="../listings/thread_obj_mutex.c" parse="text" />
+      </programlisting>
       </para>
 
       <para>
@@ -160,18 +164,9 @@
   <sect1>
     <title>The application mutex</title>
     <para>
-      The probably most important property is :application-mutex. You should get it and copy
-      to your very own toplevel object. Since all access to AgsApplicationContext should be
-      protected by the mutex of concurrent access. This property is provided by AgsMutexManager,
-      too.
+      As version 2.0.x the application mutex was superseeded by the class mutices and a common field
+      :obj-mutex used by various types. The AgsMutexManager is still around but with less importance.
     </para>
-
-    <example>
-      <title>The application mutex</title>
-      <programlisting language="C">
-<xi:include href="../listings/application_mutex.c" parse="text" />
-      </programlisting>
-    </example>
   </sect1>
 
   <sect1>
@@ -191,16 +186,18 @@
   <sect1>
     <title>Abstract data connection</title>
     <para>
-      AgsDataConnectionManager is a singleton you can retrieve its instance by calling
-      <code language="C">AgsConnectionManager* ags_connection_manager_get_instance()</code>.
-      It usually provides AGS_TYPE_CONNECTION subtypes, like AgsAudioConnection which does
-      provide about assigned soundcard and its channel mapping.
+      AgsDataConnectionManager and AgsConnection are removed in 2.0.x. The object was somehow
+      overhelming because you can have properties.
     </para>
 
     <para>
-      AgsConnection contains one single property :data-object. As you provide a message queue
-      consuming &libagsso;, you can retrieve modifications asynchronously. How the message
-      queue is polled is explained in &chap3;.
+      The AgsConnectable interface provides 2 new
+      functions: <code language="C">void ags_connectable_connect_connection(AgsConnectable*, GObject*)</code> and
+      <code language="C">void ags_connectable_disconnect_connection(AgsConnectable*, GObject*)</code>.
+    </para>
+
+    <para>
+      Dependencies not know an instantiation time can be later connected.
     </para>
   </sect1>
 

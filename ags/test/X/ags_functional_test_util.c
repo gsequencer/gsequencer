@@ -50,8 +50,6 @@ pthread_t *ags_functional_test_util_thread = NULL;
 
 extern AgsApplicationContext *ags_application_context;
 
-extern AgsMutexManager *ags_mutex_manager;
-
 extern AgsLadspaManager *ags_ladspa_manager;
 extern AgsDssiManager *ags_dssi_manager;
 extern AgsLv2Manager *ags_lv2_manager;
@@ -404,6 +402,26 @@ ags_functional_test_util_idle_test_widget_hidden(GtkWidget **widget)
 }
 
 gboolean
+ags_functional_test_util_idle_test_widget_realized(GtkWidget **widget)
+{
+  gboolean do_idle;
+
+  do_idle = TRUE;
+  
+  ags_test_enter();
+  
+  if(*widget != NULL &&
+     GTK_IS_WIDGET(*widget) &&
+     GTK_WIDGET_REALIZED(*widget)){
+    do_idle = FALSE;
+  }
+
+  ags_test_leave();
+  
+  return(do_idle);
+}
+
+gboolean
 ags_functional_test_util_idle_test_null(GtkWidget **widget)
 {
   gboolean do_idle;
@@ -489,13 +507,13 @@ ags_functional_test_util_submenu_find(GtkMenu *menu,
     if(GTK_IS_MENU_ITEM(list->data)){
       str = NULL;
       g_object_get(list->data,
-		   "label\0", &str,
+		   "label", &str,
 		   NULL);
 
       if(!g_ascii_strcasecmp(str,
 			     item_label)){
 	g_object_get(list->data,
-		     "submenu\0", &submenu,
+		     "submenu", &submenu,
 		     NULL);
 
 	break;
@@ -543,7 +561,7 @@ ags_functional_test_util_menu_bar_click(gchar *item_label)
     if(GTK_IS_MENU_ITEM(list->data)){
       str = NULL;
       g_object_get(list->data,
-		   "label\0", &str,
+		   "label", &str,
 		   NULL);
 
       if(!g_ascii_strcasecmp(str,
@@ -608,7 +626,7 @@ ags_functional_test_util_menu_bar_click(gchar *item_label)
 	ags_test_enter();
 
 	g_signal_emit_by_name(widget,
-			      "activate-item\0");
+			      "activate-item");
 	
 	ags_test_leave();
 
@@ -644,6 +662,10 @@ ags_functional_test_util_menu_click(GtkMenu *menu,
     return(FALSE);
   }
 
+  ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_widget_realized),
+						      &ags_functional_test_util_default_timeout,
+						      &menu);
+
   ags_test_enter();
 
   list =
@@ -656,7 +678,7 @@ ags_functional_test_util_menu_click(GtkMenu *menu,
     if(GTK_IS_MENU_ITEM(list->data)){
       str = NULL;
       g_object_get(list->data,
-		   "label\0", &str,
+		   "label", &str,
 		   NULL);
 
       if(!g_ascii_strcasecmp(str,
@@ -667,57 +689,66 @@ ags_functional_test_util_menu_click(GtkMenu *menu,
 	
 	gint x, y;
 	gint origin_x, origin_y;
+	gboolean is_realized;
 	
 	widget = GTK_WIDGET(list->data);
 
-	if(!GTK_WIDGET_REALIZED(widget)){
-	  ags_functional_test_util_reaction_time_long();
-	}
+	ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_widget_realized),
+							    &ags_functional_test_util_default_timeout,
+							    &widget);
 
 	/*  */
 	ags_test_enter();
 
-	window = gtk_widget_get_window(widget);
-
-	x = widget->allocation.x + widget->allocation.width / 2.0;
-	y = widget->allocation.y + widget->allocation.height / 2.0;
-
-	gdk_window_get_origin(window, &origin_x, &origin_y);
-
-	gdk_display_warp_pointer(gtk_widget_get_display(widget),
-				 gtk_widget_get_screen(widget),
-				 origin_x + x + 15, origin_y + y + 5);
-
+	is_realized = GTK_WIDGET_REALIZED(widget);
+	
 	ags_test_leave();
 
-	ags_functional_test_util_reaction_time();
+	if(is_realized){
+	  ags_test_enter();
+
+	  window = gtk_widget_get_window(widget);
+
+	  x = widget->allocation.x + widget->allocation.width / 2.0;
+	  y = widget->allocation.y + widget->allocation.height / 2.0;
+
+	  gdk_window_get_origin(window, &origin_x, &origin_y);
+
+	  gdk_display_warp_pointer(gtk_widget_get_display(widget),
+				   gtk_widget_get_screen(widget),
+				   origin_x + x + 15, origin_y + y + 5);
+
+	  ags_test_leave();
+
+	  ags_functional_test_util_reaction_time();
 	
-	gdk_test_simulate_button(window,
-				 x + 5,
-				 y + 5,
-				 1,
-				 GDK_BUTTON1_MASK,
-				 GDK_BUTTON_PRESS);
+	  gdk_test_simulate_button(window,
+				   x + 5,
+				   y + 5,
+				   1,
+				   GDK_BUTTON1_MASK,
+				   GDK_BUTTON_PRESS);
 
 
-	ags_functional_test_util_reaction_time();
+	  ags_functional_test_util_reaction_time();
 
-	gdk_test_simulate_button(window,
-				 x + 5,
-				 y + 5,
-				 1,
-				 GDK_BUTTON1_MASK,
-				 GDK_BUTTON_RELEASE);
+	  gdk_test_simulate_button(window,
+				   x + 5,
+				   y + 5,
+				   1,
+				   GDK_BUTTON1_MASK,
+				   GDK_BUTTON_RELEASE);
   	
-	ags_functional_test_util_reaction_time();
-
+	  ags_functional_test_util_reaction_time();
+	}
+	
 	success = TRUE;
 
 	/*  */
 	ags_test_enter();
 
 	g_signal_emit_by_name(widget,
-			      "activate-item\0");
+			      "activate-item");
 	
 	ags_test_leave();
 
@@ -753,9 +784,9 @@ ags_functional_test_util_combo_box_click(GtkComboBox *combo_box,
 
   widget = combo_box;
 
-  if(!GTK_WIDGET_REALIZED(widget)){
-    ags_functional_test_util_reaction_time_long();
-  }
+  ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_widget_realized),
+						      &ags_functional_test_util_default_timeout,
+						      &widget);
   
   /*  */
   ags_test_enter();
@@ -818,7 +849,8 @@ ags_functional_test_util_button_click(GtkButton *button)
 
   gint x, y;
   gint origin_x, origin_y;
-	
+  gboolean is_realized;
+  
   if(button == NULL ||
      !GTK_IS_BUTTON(button)){
     return(FALSE);
@@ -826,9 +858,9 @@ ags_functional_test_util_button_click(GtkButton *button)
   
   widget = button;
 
-  if(!GTK_WIDGET_REALIZED(widget)){
-    ags_functional_test_util_reaction_time_long();
-  }
+  ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_widget_realized),
+						      &ags_functional_test_util_default_timeout,
+						      &widget);
   
   /*  */
   ags_test_enter();
@@ -889,22 +921,26 @@ ags_functional_test_util_menu_tool_button_click(GtkButton *button)
     return(FALSE);
   }
   
-  widget = button;
+  ags_test_enter();
 
   if(arrow_button == NULL){
     arrow_button = gtk_container_get_children(gtk_bin_get_child(button))->next->data;
   }
-  
-  if(!GTK_WIDGET_REALIZED(widget)){
-    ags_functional_test_util_reaction_time_long();
-  }
-  
+
+  ags_test_leave();
+
+  widget = arrow_button;
+
+  ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_widget_realized),
+						      &ags_functional_test_util_default_timeout,
+						      &widget);
+
   ags_test_enter();
 
   window = gtk_widget_get_window(widget);
 
-  x = widget->allocation.x + widget->allocation.width - (arrow_button->allocation.width / 2.0);
-  y = widget->allocation.y + widget->allocation.height - (arrow_button->allocation.height / 2.0);
+  x = widget->allocation.x + (arrow_button->allocation.width / 2.0);
+  y = widget->allocation.y + (arrow_button->allocation.height / 2.0);
 
   gdk_window_get_origin(window, &origin_x, &origin_y);
 
@@ -935,17 +971,20 @@ ags_functional_test_util_menu_tool_button_click(GtkButton *button)
   	
   ags_functional_test_util_reaction_time_long();
 
-#if 0
-  /*  */
   ags_test_enter();
 
-  g_signal_emit_by_name(widget,
-			"clicked\0");
+  if(!GTK_WIDGET_REALIZED(widget)){
+    /*  */
+
+    g_signal_emit_by_name(widget,
+                          "clicked");
+  }
 
   ags_test_leave();
 
-  ags_functional_test_util_idle();
+  ags_functional_test_util_reaction_time_long();
 
+#if 0
   /*  */
   ags_test_enter();
 
@@ -1220,6 +1259,63 @@ ags_functional_test_util_file_default_editor_resize()
 }
 
 gboolean
+ags_functional_test_util_file_default_automation_window_resize()
+{
+  AgsXorgApplicationContext *xorg_application_context;
+  AgsWindow *window;
+
+  ags_test_enter();
+    
+  xorg_application_context = ags_application_context_get_instance();
+  window = xorg_application_context->window;
+
+  gdk_window_move_resize(gtk_widget_get_window(window->automation_window),
+			 64, 0,
+			 1920 - 128, 1080 - 64);
+    
+  ags_test_leave();
+
+  ags_functional_test_util_reaction_time_long();
+
+  return(TRUE);
+}
+
+gboolean
+ags_functional_test_util_file_default_automation_editor_resize()
+{
+  AgsXorgApplicationContext *xorg_application_context;
+  AgsWindow *window;
+  AgsAutomationEditor *automation_editor;
+
+  GtkPaned *editor_paned;
+  
+  GdkRectangle allocation;
+  
+  ags_test_enter();
+    
+  xorg_application_context = ags_application_context_get_instance();
+  window = xorg_application_context->window;
+
+  automation_editor = window->automation_window->automation_editor;
+
+  editor_paned = automation_editor->paned;
+
+  ags_test_leave();
+
+  /* resize */
+  ags_test_enter();
+
+  gtk_paned_set_position(editor_paned,
+			 (1920 - 128) / 6);
+
+  ags_test_leave();
+
+  ags_functional_test_util_reaction_time_long();
+
+  return(TRUE);
+}
+
+gboolean
 ags_functional_test_util_open()
 {
   AgsXorgApplicationContext *xorg_application_context;
@@ -1238,7 +1334,7 @@ ags_functional_test_util_open()
   menu = xorg_application_context->window->menu_bar->file;
   
   success = ags_functional_test_util_menu_click(menu,
-						"open\0");
+						"open");
 
   ags_test_leave();
 
@@ -1266,7 +1362,7 @@ ags_functional_test_util_save()
   menu = xorg_application_context->window->menu_bar->file;
   
   success = ags_functional_test_util_menu_click(menu,
-						"save\0");
+						"save");
 
   ags_test_leave();
 
@@ -1294,7 +1390,7 @@ ags_functional_test_util_save_as()
   menu = xorg_application_context->window->menu_bar->file;
   
   success = ags_functional_test_util_menu_click(menu,
-						"save as\0");
+						"save as");
   
   ags_test_leave();
   
@@ -1327,7 +1423,7 @@ ags_functional_test_util_export_open()
   ags_test_leave();
   
   success = ags_functional_test_util_menu_click(menu,
-						"export\0");
+						"export");
   
   ags_functional_test_util_reaction_time_long();
   ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_widget_visible),
@@ -2193,11 +2289,11 @@ ags_functional_test_util_notation_toolbar_zoom(guint nth_zoom)
 }
 
 gboolean
-ags_functional_test_util_machine_selector_select(guint nth_index)
+ags_functional_test_util_machine_selector_select(gchar *editor_type,
+						 guint nth_index)
 {
   AgsXorgApplicationContext *xorg_application_context;
   AgsWindow *window;
-  AgsNotationEditor *notation_editor;
   AgsMachineSelector *machine_selector;
   AgsMachineRadioButton *machine_radio_button;
   
@@ -2210,8 +2306,28 @@ ags_functional_test_util_machine_selector_select(guint nth_index)
   xorg_application_context = ags_application_context_get_instance();
 
   window = xorg_application_context->window;
-  notation_editor = window->notation_editor;
-  machine_selector = notation_editor->machine_selector;
+
+  machine_selector = NULL;
+  
+  if(!g_strcmp0(editor_type,
+		"AgsNotationEditor")){
+    AgsNotationEditor *notation_editor;
+    
+    notation_editor = window->notation_editor;
+    machine_selector = notation_editor->machine_selector;
+  }else if(!g_strcmp0(editor_type,
+		      "AgsAutomationEditor")){
+    AgsAutomationEditor *automation_editor;
+    
+    automation_editor = window->automation_window->automation_editor;
+    machine_selector = automation_editor->machine_selector;
+  }else if(!g_strcmp0(editor_type,
+		      "AgsWaveEditor")){
+    AgsWaveEditor *wave_editor;
+    
+    wave_editor = window->wave_window->wave_editor;
+    machine_selector = wave_editor->machine_selector;
+  }  
   
   list_start = gtk_container_get_children(machine_selector);
 
@@ -2235,11 +2351,11 @@ ags_functional_test_util_machine_selector_select(guint nth_index)
 }
 
 gboolean
-ags_functional_test_util_machine_selection_select(gchar *machine)
+ags_functional_test_util_machine_selection_select(gchar *editor_type,
+						  gchar *machine)
 {
   AgsXorgApplicationContext *xorg_application_context;
   AgsWindow *window;
-  AgsNotationEditor *notation_editor;
   AgsMachineSelector *machine_selector;
   AgsMachineSelection *machine_selection;
 
@@ -2258,8 +2374,29 @@ ags_functional_test_util_machine_selection_select(gchar *machine)
   xorg_application_context = ags_application_context_get_instance();
 
   window = xorg_application_context->window;
-  notation_editor = window->notation_editor;
-  machine_selector = notation_editor->machine_selector;
+
+  machine_selector = NULL;
+  
+  if(!g_strcmp0(editor_type,
+		"AgsNotationEditor")){
+    AgsNotationEditor *notation_editor;
+    
+    notation_editor = window->notation_editor;
+    machine_selector = notation_editor->machine_selector;
+  }else if(!g_strcmp0(editor_type,
+		      "AgsAutomationEditor")){
+    AgsAutomationEditor *automation_editor;
+    
+    automation_editor = window->automation_window->automation_editor;
+    machine_selector = automation_editor->machine_selector;
+  }else if(!g_strcmp0(editor_type,
+		      "AgsWaveEditor")){
+    AgsWaveEditor *wave_editor;
+    
+    wave_editor = window->wave_window->wave_editor;
+    machine_selector = wave_editor->machine_selector;
+  }  
+
   machine_selection = machine_selector->machine_selection;
 
   list = 
@@ -2302,11 +2439,10 @@ ags_functional_test_util_machine_selection_select(gchar *machine)
 }
 
 gboolean
-ags_functional_test_util_machine_selection_remove_index()
+ags_functional_test_util_machine_selection_remove_index(gchar *editor_type)
 {
   AgsXorgApplicationContext *xorg_application_context;
   AgsWindow *window;
-  AgsNotationEditor *notation_editor;
   AgsMachineSelector *machine_selector;
   
   GtkButton *menu_tool_button;
@@ -2319,8 +2455,28 @@ ags_functional_test_util_machine_selection_remove_index()
   xorg_application_context = ags_application_context_get_instance();
 
   window = xorg_application_context->window;
-  notation_editor = window->notation_editor;
-  machine_selector = notation_editor->machine_selector;
+
+  machine_selector = NULL;
+  
+  if(!g_strcmp0(editor_type,
+		"AgsNotationEditor")){
+    AgsNotationEditor *notation_editor;
+    
+    notation_editor = window->notation_editor;
+    machine_selector = notation_editor->machine_selector;
+  }else if(!g_strcmp0(editor_type,
+		      "AgsAutomationEditor")){
+    AgsAutomationEditor *automation_editor;
+    
+    automation_editor = window->automation_window->automation_editor;
+    machine_selector = automation_editor->machine_selector;
+  }else if(!g_strcmp0(editor_type,
+		      "AgsWaveEditor")){
+    AgsWaveEditor *wave_editor;
+    
+    wave_editor = window->wave_window->wave_editor;
+    machine_selector = wave_editor->machine_selector;
+  }  
   
   menu_tool_button = machine_selector->menu_button;
   popup = machine_selector->popup;
@@ -2336,7 +2492,7 @@ ags_functional_test_util_machine_selection_remove_index()
   ags_functional_test_util_reaction_time_long();
   
   success = ags_functional_test_util_menu_click(popup,
-						"remove index\0");
+						"remove index");
   
   ags_functional_test_util_reaction_time_long();
 
@@ -2344,11 +2500,10 @@ ags_functional_test_util_machine_selection_remove_index()
 }
 
 gboolean
-ags_functional_test_util_machine_selection_add_index()
+ags_functional_test_util_machine_selection_add_index(gchar *editor_type)
 {
   AgsXorgApplicationContext *xorg_application_context;
   AgsWindow *window;
-  AgsNotationEditor *notation_editor;
   AgsMachineSelector *machine_selector;
   
   GtkButton *menu_tool_button;
@@ -2361,8 +2516,28 @@ ags_functional_test_util_machine_selection_add_index()
   xorg_application_context = ags_application_context_get_instance();
 
   window = xorg_application_context->window;
-  notation_editor = window->notation_editor;
-  machine_selector = notation_editor->machine_selector;
+
+  machine_selector = NULL;
+  
+  if(!g_strcmp0(editor_type,
+		"AgsNotationEditor")){
+    AgsNotationEditor *notation_editor;
+    
+    notation_editor = window->notation_editor;
+    machine_selector = notation_editor->machine_selector;
+  }else if(!g_strcmp0(editor_type,
+		      "AgsAutomationEditor")){
+    AgsAutomationEditor *automation_editor;
+    
+    automation_editor = window->automation_window->automation_editor;
+    machine_selector = automation_editor->machine_selector;
+  }else if(!g_strcmp0(editor_type,
+		      "AgsWaveEditor")){
+    AgsWaveEditor *wave_editor;
+    
+    wave_editor = window->wave_window->wave_editor;
+    machine_selector = wave_editor->machine_selector;
+  }  
   
   menu_tool_button = machine_selector->menu_button;
   popup = machine_selector->popup;
@@ -2378,7 +2553,7 @@ ags_functional_test_util_machine_selection_add_index()
   ags_functional_test_util_reaction_time_long();
   
   success = ags_functional_test_util_menu_click(popup,
-						"add index\0");
+						"add index");
   
   ags_functional_test_util_reaction_time_long();
 
@@ -2386,11 +2561,10 @@ ags_functional_test_util_machine_selection_add_index()
 }
 
 gboolean
-ags_functional_test_util_machine_selection_link_index()
+ags_functional_test_util_machine_selection_link_index(gchar *editor_type)
 {
   AgsXorgApplicationContext *xorg_application_context;
   AgsWindow *window;
-  AgsNotationEditor *notation_editor;
   AgsMachineSelector *machine_selector;
   
   GtkButton *menu_tool_button;
@@ -2403,8 +2577,28 @@ ags_functional_test_util_machine_selection_link_index()
   xorg_application_context = ags_application_context_get_instance();
 
   window = xorg_application_context->window;
-  notation_editor = window->notation_editor;
-  machine_selector = notation_editor->machine_selector;
+
+  machine_selector = NULL;
+  
+  if(!g_strcmp0(editor_type,
+		"AgsNotationEditor")){
+    AgsNotationEditor *notation_editor;
+    
+    notation_editor = window->notation_editor;
+    machine_selector = notation_editor->machine_selector;
+  }else if(!g_strcmp0(editor_type,
+		      "AgsAutomationEditor")){
+    AgsAutomationEditor *automation_editor;
+    
+    automation_editor = window->automation_window->automation_editor;
+    machine_selector = automation_editor->machine_selector;
+  }else if(!g_strcmp0(editor_type,
+		      "AgsWaveEditor")){
+    AgsWaveEditor *wave_editor;
+    
+    wave_editor = window->wave_window->wave_editor;
+    machine_selector = wave_editor->machine_selector;
+  }  
   
   menu_tool_button = machine_selector->menu_button;
   popup = machine_selector->popup;
@@ -2420,7 +2614,7 @@ ags_functional_test_util_machine_selection_link_index()
   ags_functional_test_util_reaction_time_long();
   
   success = ags_functional_test_util_menu_click(popup,
-						"link index\0");
+						"link index");
   
   ags_functional_test_util_reaction_time_long();
 
@@ -2462,7 +2656,7 @@ ags_functional_test_util_machine_selection_reverse_mapping()
   ags_functional_test_util_reaction_time_long();
   
   success = ags_functional_test_util_menu_click(popup,
-						"reverse mapping\0");
+						"reverse mapping");
   
   ags_functional_test_util_reaction_time_long();
 
@@ -2775,7 +2969,7 @@ ags_functional_test_util_machine_hide(guint nth_machine)
   ags_functional_test_util_reaction_time_long();
   
   success = ags_functional_test_util_menu_click(popup,
-						"hide\0");
+						"hide");
   ags_functional_test_util_reaction_time_long();
 
   return(success);
@@ -2824,7 +3018,7 @@ ags_functional_test_util_machine_show(guint nth_machine)
   ags_functional_test_util_reaction_time_long();
 
   success = ags_functional_test_util_menu_click(popup,
-						"show\0");
+						"show");
   ags_functional_test_util_reaction_time_long();
 
   return(success);
@@ -2879,9 +3073,10 @@ ags_functional_test_util_machine_destroy(guint nth_machine)
   
   /* activate destroy */
   success = ags_functional_test_util_menu_tool_button_click(machine->menu_tool_button);
-
+  ags_functional_test_util_reaction_time_long();
+  
   success = ags_functional_test_util_menu_click(popup,
-						"destroy\0");
+						"destroy");
 
   ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_container_children_count),
 						      &ags_functional_test_util_default_timeout,
@@ -3013,9 +3208,10 @@ ags_functional_test_util_machine_properties_open(guint nth_machine)
   ags_test_leave();
   
   success = ags_functional_test_util_menu_tool_button_click(menu_tool_button);
-
+  ags_functional_test_util_reaction_time_long();
+  
   success = ags_functional_test_util_menu_click(machine->popup,
-						"properties\0");
+						"properties");
 
   ags_functional_test_util_reaction_time_long();
   ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_widget_visible),
@@ -4462,7 +4658,7 @@ ags_functional_test_util_machine_properties_bulk_link(guint nth_machine,
     g_list_free(list_start);
 
     link_collection_editor = g_object_get_data(table,
-					       "AgsChild\0");
+					       "AgsChild");
   }else{
     g_list_free(list_start);
 
@@ -4577,7 +4773,7 @@ ags_functional_test_util_machine_properties_bulk_first_line(guint nth_machine,
     g_list_free(list_start);
 
     link_collection_editor = g_object_get_data(table,
-					       "AgsChild\0");
+					       "AgsChild");
   }else{
     g_list_free(list_start);
 
@@ -4674,7 +4870,7 @@ ags_functional_test_util_machine_properties_bulk_link_line(guint nth_machine,
     g_list_free(list_start);
 
     link_collection_editor = g_object_get_data(table,
-					       "AgsChild\0");
+					       "AgsChild");
   }else{
     g_list_free(list_start);
 
@@ -4770,7 +4966,7 @@ ags_functional_test_util_machine_properties_bulk_count(guint nth_machine,
     g_list_free(list_start);
 
     link_collection_editor = g_object_get_data(table,
-					       "AgsChild\0");
+					       "AgsChild");
   }else{
     g_list_free(list_start);
 

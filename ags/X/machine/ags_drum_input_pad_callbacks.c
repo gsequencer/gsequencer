@@ -59,6 +59,9 @@ ags_drum_input_pad_open_callback(GtkWidget *widget, AgsDrumInputPad *drum_input_
 									GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
 									GTK_STOCK_OPEN, GTK_RESPONSE_ACCEPT,
 									NULL);
+  gtk_file_chooser_add_shortcut_folder_uri(file_chooser,
+					   "file:///usr/share/hydrogen/data/drumkits",
+					   NULL);
   gtk_file_chooser_set_select_multiple(GTK_FILE_CHOOSER(file_chooser),
 				       FALSE);
   g_object_set_data((GObject *) file_chooser, (char *) g_type_name(AGS_TYPE_AUDIO_FILE), NULL);

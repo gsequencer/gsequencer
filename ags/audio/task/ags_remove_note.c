@@ -64,7 +64,7 @@ ags_remove_note_get_type()
   static volatile gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
-    GType ags_type_remove_note;
+    GType ags_type_remove_note = 0;
 
     static const GTypeInfo ags_remove_note_info = {
       sizeof(AgsRemoveNoteClass),
@@ -82,6 +82,8 @@ ags_remove_note_get_type()
 						  "AgsRemoveNote",
 						  &ags_remove_note_info,
 						  0);
+
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_remove_note);
   }
 
   return g_define_type_id__volatile;
@@ -397,6 +399,8 @@ ags_remove_note_launch(AgsTask *task)
   }
 
   /* remove note */
+  notation = list->data;
+  
   ags_notation_remove_note(notation,
 			   note,
 			   remove_note->use_selection_list);

@@ -168,8 +168,11 @@ enum{
   PROP_BUFFER_SIZE,
   PROP_FORMAT,
   PROP_BPM,
+  PROP_MIN_AUDIO_CHANNELS,
   PROP_MAX_AUDIO_CHANNELS,
+  PROP_MIN_OUTPUT_PADS,
   PROP_MAX_OUTPUT_PADS,
+  PROP_MIN_INPUT_PADS,
   PROP_MAX_INPUT_PADS,
   PROP_AUDIO_CHANNELS,
   PROP_OUTPUT_PADS,
@@ -223,8 +226,8 @@ ags_audio_get_type()
   static volatile gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
-    GType ags_type_audio;
-    
+    GType ags_type_audio = 0;
+
     static const GTypeInfo ags_audio_info = {
       sizeof(AgsAudioClass),
       NULL, /* base_init */
@@ -251,7 +254,7 @@ ags_audio_get_type()
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
 
-    g_once_init_leave (&g_define_type_id__volatile, ags_type_audio);
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_audio);
   }
 
   return g_define_type_id__volatile;
@@ -412,6 +415,24 @@ ags_audio_class_init(AgsAudioClass *audio)
 				  param_spec);
 
   /**
+   * AgsAudio:min-audio-channels:
+   *
+   * The minimum audio channels count.
+   * 
+   * Since: 2.0.31
+   */
+  param_spec = g_param_spec_uint("min-audio-channels",
+				 i18n_pspec("minimum audio channels count"),
+				 i18n_pspec("The minimum count of audio channels of audio"),
+				 0,
+				 G_MAXUINT32,
+				 0,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_MIN_AUDIO_CHANNELS,
+				  param_spec);
+
+  /**
    * AgsAudio:max-audio-channels:
    *
    * The maximum audio channels count.
@@ -430,6 +451,24 @@ ags_audio_class_init(AgsAudioClass *audio)
 				  param_spec);
 
   /**
+   * AgsAudio:min-output-pads:
+   *
+   * The minimum output pads count.
+   * 
+   * Since: 2.0.31
+   */
+  param_spec = g_param_spec_uint("min-output-pads",
+				 i18n_pspec("minimum output pads count"),
+				 i18n_pspec("The minimum count of output pads of audio"),
+				 0,
+				 G_MAXUINT32,
+				 0,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_MIN_OUTPUT_PADS,
+				  param_spec);
+
+  /**
    * AgsAudio:max-output-pads:
    *
    * The maximum output pads count.
@@ -445,6 +484,24 @@ ags_audio_class_init(AgsAudioClass *audio)
 				 G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_MAX_OUTPUT_PADS,
+				  param_spec);
+
+  /**
+   * AgsAudio:min-input-pads:
+   *
+   * The minimum input pads count.
+   * 
+   * Since: 2.0.31
+   */
+  param_spec = g_param_spec_uint("min-input-pads",
+				 i18n_pspec("minimum input pads count"),
+				 i18n_pspec("The minimum count of input pads of audio"),
+				 0,
+				 G_MAXUINT32,
+				 0,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_MIN_INPUT_PADS,
 				  param_spec);
 
   /**
@@ -1711,6 +1768,19 @@ ags_audio_set_property(GObject *gobject,
       pthread_mutex_unlock(audio_mutex);
     }
     break;
+  case PROP_MIN_AUDIO_CHANNELS:
+    {
+      guint min_audio_channels;
+
+      min_audio_channels = g_value_get_uint(value);
+
+      pthread_mutex_lock(audio_mutex);
+      
+      audio->min_audio_channels = min_audio_channels;
+
+      pthread_mutex_unlock(audio_mutex);
+    }
+    break;
   case PROP_MAX_AUDIO_CHANNELS:
     {
       guint max_audio_channels;
@@ -1719,6 +1789,19 @@ ags_audio_set_property(GObject *gobject,
 
       ags_audio_set_max_audio_channels(audio,
 				       max_audio_channels);
+    }
+    break;
+  case PROP_MIN_OUTPUT_PADS:
+    {
+      guint min_output_pads;
+
+      min_output_pads = g_value_get_uint(value);
+
+      pthread_mutex_lock(audio_mutex);
+      
+      audio->min_output_pads = min_output_pads;
+
+      pthread_mutex_unlock(audio_mutex);
     }
     break;
   case PROP_MAX_OUTPUT_PADS:
@@ -1730,6 +1813,19 @@ ags_audio_set_property(GObject *gobject,
       ags_audio_set_max_pads(audio,
 			     AGS_TYPE_OUTPUT,
 			     max_output_pads);
+    }
+    break;
+  case PROP_MIN_INPUT_PADS:
+    {
+      guint min_input_pads;
+
+      min_input_pads = g_value_get_uint(value);
+
+      pthread_mutex_lock(audio_mutex);
+      
+      audio->min_input_pads = min_input_pads;
+
+      pthread_mutex_unlock(audio_mutex);
     }
     break;
   case PROP_MAX_INPUT_PADS:
@@ -2482,6 +2578,16 @@ ags_audio_get_property(GObject *gobject,
       pthread_mutex_unlock(audio_mutex);
     }
     break;
+  case PROP_MIN_AUDIO_CHANNELS:
+    {
+      pthread_mutex_lock(audio_mutex);
+
+      g_value_set_uint(value,
+		       audio->min_audio_channels);
+
+      pthread_mutex_unlock(audio_mutex);
+    }
+    break;
   case PROP_MAX_AUDIO_CHANNELS:
     {
       pthread_mutex_lock(audio_mutex);
@@ -2492,12 +2598,32 @@ ags_audio_get_property(GObject *gobject,
       pthread_mutex_unlock(audio_mutex);
     }
     break;
+  case PROP_MIN_OUTPUT_PADS:
+    {
+      pthread_mutex_lock(audio_mutex);
+
+      g_value_set_uint(value,
+		       audio->min_output_pads);
+
+      pthread_mutex_unlock(audio_mutex);
+    }
+    break;
   case PROP_MAX_OUTPUT_PADS:
     {
       pthread_mutex_lock(audio_mutex);
 
       g_value_set_uint(value,
 		       audio->max_output_pads);
+
+      pthread_mutex_unlock(audio_mutex);
+    }
+    break;
+  case PROP_MIN_INPUT_PADS:
+    {
+      pthread_mutex_lock(audio_mutex);
+
+      g_value_set_uint(value,
+		       audio->min_input_pads);
 
       pthread_mutex_unlock(audio_mutex);
     }
@@ -4243,9 +4369,11 @@ ags_audio_unset_flags(AgsAudio *audio, guint flags)
       pthread_mutex_unlock(channel_mutex);
       
       /* remove recycling */
-      g_object_run_dispose(first_recycling);
-      g_object_unref(first_recycling);
-	  
+      if(first_recycling != NULL){
+	g_object_run_dispose(first_recycling);
+	g_object_unref(first_recycling);
+      }
+      
       ags_channel_reset_recycling(channel,
 				  NULL, NULL);
       
@@ -4298,9 +4426,11 @@ ags_audio_unset_flags(AgsAudio *audio, guint flags)
 	pthread_mutex_unlock(channel_mutex);
       
 	/* remove recycling */
-	g_object_run_dispose(first_recycling);
-	g_object_unref(first_recycling);
-	  
+	if(first_recycling != NULL){
+	  g_object_run_dispose(first_recycling);
+	  g_object_unref(first_recycling);
+	}
+	
 	ags_channel_reset_recycling(channel,
 				    NULL, NULL);
       }
@@ -4477,6 +4607,9 @@ ags_audio_set_ability_flags(AgsAudio *audio, guint ability_flags)
 
       audio_thread = ags_audio_thread_new(soundcard,
 					  audio);
+      ags_audio_thread_set_sound_scope(audio_thread,
+				       AGS_SOUND_SCOPE_PLAYBACK);
+      
       g_object_set(audio_thread,
 		   "frequency", ceil((gdouble) samplerate / (gdouble) buffer_size) + AGS_SOUNDCARD_DEFAULT_OVERCLOCK,
 		   NULL);
@@ -4498,6 +4631,9 @@ ags_audio_set_ability_flags(AgsAudio *audio, guint ability_flags)
 
       audio_thread = ags_audio_thread_new(soundcard,
 					  audio);
+      ags_audio_thread_set_sound_scope(audio_thread,
+				       AGS_SOUND_SCOPE_SEQUENCER);
+
       g_object_set(audio_thread,
 		   "frequency", ceil((gdouble) samplerate / (gdouble) buffer_size) + AGS_SOUNDCARD_DEFAULT_OVERCLOCK,
 		   NULL);
@@ -4519,6 +4655,9 @@ ags_audio_set_ability_flags(AgsAudio *audio, guint ability_flags)
 
       audio_thread = ags_audio_thread_new(soundcard,
 					  audio);
+      ags_audio_thread_set_sound_scope(audio_thread,
+				       AGS_SOUND_SCOPE_NOTATION);
+
       g_object_set(audio_thread,
 		   "frequency", ceil((gdouble) samplerate / (gdouble) buffer_size) + AGS_SOUNDCARD_DEFAULT_OVERCLOCK,
 		   NULL);
@@ -4540,6 +4679,9 @@ ags_audio_set_ability_flags(AgsAudio *audio, guint ability_flags)
 
       audio_thread = ags_audio_thread_new(soundcard,
 					  audio);
+      ags_audio_thread_set_sound_scope(audio_thread,
+				       AGS_SOUND_SCOPE_WAVE);
+
       g_object_set(audio_thread,
 		   "frequency", ceil((gdouble) samplerate / (gdouble) buffer_size) + AGS_SOUNDCARD_DEFAULT_OVERCLOCK,
 		   NULL);
@@ -4561,6 +4703,9 @@ ags_audio_set_ability_flags(AgsAudio *audio, guint ability_flags)
 
       audio_thread = ags_audio_thread_new(soundcard,
 					  audio);
+      ags_audio_thread_set_sound_scope(audio_thread,
+				       AGS_SOUND_SCOPE_MIDI);
+
       g_object_set(audio_thread,
 		   "frequency", ceil((gdouble) samplerate / (gdouble) buffer_size) + AGS_SOUNDCARD_DEFAULT_OVERCLOCK,
 		   NULL);
@@ -4680,8 +4825,8 @@ ags_audio_unset_ability_flags(AgsAudio *audio, guint ability_flags)
 			    audio_thread);
     
     ags_playback_domain_set_audio_thread(playback_domain,
-					 AGS_SOUND_SCOPE_PLAYBACK,
-					 NULL);
+					 NULL,
+					 AGS_SOUND_SCOPE_PLAYBACK);
   }
 
   /* notation ability */
@@ -4695,8 +4840,8 @@ ags_audio_unset_ability_flags(AgsAudio *audio, guint ability_flags)
 			    audio_thread);    
 
     ags_playback_domain_set_audio_thread(playback_domain,
-					 AGS_SOUND_SCOPE_NOTATION,
-					 NULL);
+					 NULL,
+					 AGS_SOUND_SCOPE_NOTATION);
   }
 
   /* sequencer ability */
@@ -4710,8 +4855,8 @@ ags_audio_unset_ability_flags(AgsAudio *audio, guint ability_flags)
 			    audio_thread);    
 
     ags_playback_domain_set_audio_thread(playback_domain,
-					 AGS_SOUND_SCOPE_SEQUENCER,
-					 NULL);
+					 NULL,
+					 AGS_SOUND_SCOPE_SEQUENCER);
   }
 
   /* wave ability */
@@ -4725,8 +4870,8 @@ ags_audio_unset_ability_flags(AgsAudio *audio, guint ability_flags)
 			    audio_thread);    
 
     ags_playback_domain_set_audio_thread(playback_domain,
-					 AGS_SOUND_SCOPE_WAVE,
-					 NULL);
+					 NULL,
+					 AGS_SOUND_SCOPE_WAVE);
   }
 
   /* midi ability */
@@ -4740,8 +4885,8 @@ ags_audio_unset_ability_flags(AgsAudio *audio, guint ability_flags)
 			    audio_thread);    
 
     ags_playback_domain_set_audio_thread(playback_domain,
-					 AGS_SOUND_SCOPE_MIDI,
-					 NULL);
+					 NULL,
+					 AGS_SOUND_SCOPE_MIDI);
   }
 
   /* channel */
@@ -5161,11 +5306,14 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
   void ags_audio_set_audio_channels_grow(GType type){
     AgsChannel *channel, *start, *current, *pad_next;
     AgsRecycling *first_recycling, *last_recycling;
-	  
+    AgsPlaybackDomain *playback_domain;
+    
     guint pads;
     guint i, j;
 
     pthread_mutex_lock(audio_mutex);
+
+    playback_domain = audio->playback_domain;
     
     if(type == AGS_TYPE_OUTPUT){
       /* AGS_TYPE_OUTPUT */
@@ -5190,6 +5338,8 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
       }
 
       for(i = audio_channels_old; i < audio_channels; i++){
+	AgsPlayback *playback;
+	
 	channel = (AgsChannel *) g_object_new(type,
 					      "audio", (GObject *) audio,
 					      "output-soundcard", output_soundcard,
@@ -5200,6 +5350,11 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
 					      "buffer-size", buffer_size,
 					      NULL);
 	g_object_ref(channel);
+
+	playback = channel->playback;
+	g_object_set(playback,
+		     "playback-domain", playback_domain,
+		     NULL);
 	
 	if(alloc_pattern){
 	  channel->pattern = g_list_alloc();
@@ -6051,11 +6206,14 @@ ags_audio_real_set_pads(AgsAudio *audio,
   void ags_audio_set_pads_grow(){
     AgsChannel *start, *channel;
     AgsRecycling *first_recycling, *last_recycling;
-
+    AgsPlaybackDomain *playback_domain;
+    
     guint i, j;
 
     pthread_mutex_lock(audio_mutex);
 
+    playback_domain = audio->playback_domain;
+    
     if(channel_type == AGS_TYPE_OUTPUT){
       start = audio->output;
     }else{
@@ -6065,6 +6223,8 @@ ags_audio_real_set_pads(AgsAudio *audio,
     pthread_mutex_unlock(audio_mutex);
 
     for(j = pads_old; j < pads; j++){
+      AgsPlayback *playback;
+      
       for(i = 0; i < audio_channels; i++){
 	channel = (AgsChannel *) g_object_new(channel_type,
 					      "audio", (GObject *) audio,
@@ -6077,6 +6237,11 @@ ags_audio_real_set_pads(AgsAudio *audio,
 					      "format", format,
 					      NULL);
 	g_object_ref(channel);
+
+	playback = channel->playback;
+	g_object_set(playback,
+		     "playback-domain", playback_domain,
+		     NULL);
 
 	if(alloc_pattern){
 	  channel->pattern = g_list_alloc();
@@ -6949,7 +7114,8 @@ ags_audio_set_pads(AgsAudio *audio,
   g_object_ref((GObject *) audio);
   g_signal_emit(G_OBJECT(audio),
 		audio_signals[SET_PADS], 0,
-		channel_type, pads, pads_old);
+		channel_type,
+		pads, pads_old);
   g_object_unref((GObject *) audio);  
 }
 
@@ -9461,9 +9627,28 @@ ags_audio_real_play_recall(AgsAudio *audio,
       list_start = g_list_reverse(list_start);
   }
 
-  /* play  */
+  /* automate and play  */
   staging_flags = staging_mask & staging_flags;
   
+  if((AGS_SOUND_STAGING_AUTOMATE & (staging_flags)) != 0){
+    while(list != NULL){
+      recall = AGS_RECALL(list->data);
+      
+      /* play stages */
+      if(AGS_IS_RECALL_AUDIO(recall)){
+	ags_recall_set_staging_flags(recall,
+				     AGS_SOUND_STAGING_AUTOMATE);
+	ags_recall_unset_staging_flags(recall,
+				       AGS_SOUND_STAGING_AUTOMATE);
+      }
+      
+      list = list->next;
+    }
+  }
+
+  staging_flags &= (~AGS_SOUND_STAGING_AUTOMATE);
+  list = list_start;
+
   while((list = ags_recall_find_recycling_context(list,
 						  (GObject *) recycling_context)) != NULL){
     recall = AGS_RECALL(list->data);

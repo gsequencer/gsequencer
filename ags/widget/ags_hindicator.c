@@ -48,7 +48,7 @@ ags_hindicator_get_type(void)
   static volatile gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
-    GType ags_type_hindicator;
+    GType ags_type_hindicator = 0;
 
     static const GTypeInfo ags_hindicator_info = {
       sizeof(AgsHIndicatorClass),
@@ -66,7 +66,7 @@ ags_hindicator_get_type(void)
 						 "AgsHIndicator", &ags_hindicator_info,
 						 0);
 
-    g_once_init_leave (&g_define_type_id__volatile, ags_type_hindicator);
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_hindicator);
   }
 
   return g_define_type_id__volatile;
@@ -201,7 +201,7 @@ ags_hindicator_draw(AgsHIndicator *indicator)
  *
  * Returns: a new #AgsHIndicator
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsHIndicator*
 ags_hindicator_new()

@@ -74,7 +74,7 @@ ags_buffer_get_type()
   static volatile gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
-    GType ags_type_buffer;
+    GType ags_type_buffer = 0;
 
     static const GTypeInfo ags_buffer_info = {
       sizeof(AgsBufferClass),
@@ -92,6 +92,8 @@ ags_buffer_get_type()
 					     "AgsBuffer",
 					     &ags_buffer_info,
 					     0);
+
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_buffer);
   }
 
   return g_define_type_id__volatile;
@@ -682,46 +684,55 @@ ags_buffer_set_buffer_size(AgsBuffer *buffer,
   
   buffer->buffer_size = buffer_size;
 
+  if(old_buffer_size == buffer->buffer_size){
+    pthread_mutex_unlock(buffer_mutex);    
+
+    return;
+  }
+  
   switch(buffer->format){
   case AGS_SOUNDCARD_SIGNED_8_BIT:
     {
-      buffer->data = (signed char *) realloc(buffer->data,
-					     buffer_size * sizeof(signed char));
-      word_size = sizeof(signed char);
+      buffer->data = (gint8 *) realloc(buffer->data,
+				       buffer_size * sizeof(gint8));
+      word_size = sizeof(gint8);
     }
     break;
   case AGS_SOUNDCARD_SIGNED_16_BIT:
     {
-      buffer->data = (signed short *) realloc(buffer->data,
-					      buffer_size * sizeof(signed short));
-      word_size = sizeof(signed short);
+      buffer->data = (gint16 *) realloc(buffer->data,
+					buffer_size * sizeof(gint16));
+      word_size = sizeof(gint16);
     }
     break;
   case AGS_SOUNDCARD_SIGNED_24_BIT:
     {
-      buffer->data = (signed long *) realloc(buffer->data,
-					     buffer_size * sizeof(signed long));
+      buffer->data = (gint32 *) realloc(buffer->data,
+					buffer_size * sizeof(gint32));
       //NOTE:JK: The 24-bit linear samples use 32-bit physical space
-      word_size = sizeof(signed long);
+      word_size = sizeof(gint32);
     }
     break;
   case AGS_SOUNDCARD_SIGNED_32_BIT:
     {
-      buffer->data = (signed long *) realloc(buffer->data,
-					     buffer_size * sizeof(signed long));
-      word_size = sizeof(signed long);
+      buffer->data = (gint32 *) realloc(buffer->data,
+					buffer_size * sizeof(gint32));
+      word_size = sizeof(gint32);
     }
     break;
   case AGS_SOUNDCARD_SIGNED_64_BIT:
     {
-      buffer->data = (signed long long *) realloc(buffer->data,
-						  buffer_size * sizeof(signed long long));
-      word_size = sizeof(signed long long);
+      buffer->data = (gint64 *) realloc(buffer->data,
+					buffer_size * sizeof(gint64));
+      word_size = sizeof(gint64);
     }
     break;
   default:
+    pthread_mutex_unlock(buffer_mutex);
+    
     g_warning("ags_buffer_set_buffer_size(): unsupported word size");
-    return(NULL);
+
+    return;
   }
 
   if(old_buffer_size < buffer_size){
@@ -764,6 +775,12 @@ ags_buffer_set_format(AgsBuffer *buffer,
   /* set format */
   pthread_mutex_lock(buffer_mutex);
 
+  if(buffer->format == format){
+    pthread_mutex_unlock(buffer_mutex);
+
+    return;
+  }
+  
   data = ags_stream_alloc(buffer->buffer_size,
 			  format);
 

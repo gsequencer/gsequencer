@@ -105,7 +105,7 @@ ags_machine_get_type(void)
   static volatile gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
-    GType ags_type_machine;
+    GType ags_type_machine = 0;
 
     static const GTypeInfo ags_machine_info = {
       sizeof (AgsMachineClass),
@@ -143,7 +143,7 @@ ags_machine_get_type(void)
 				AGS_TYPE_PLUGIN,
 				&ags_plugin_interface_info);
 
-    g_once_init_leave (&g_define_type_id__volatile, ags_type_machine);
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_machine);
   }
 
   return g_define_type_id__volatile;
@@ -215,7 +215,6 @@ ags_machine_class_init(AgsMachineClass *machine)
   /**
    * AgsMachine::resize-audio-channels:
    * @machine: the #AgsMachine to modify
-   * @channel: the #AgsChannel to set
    * @new_size: the new size
    * @old_size: the old size
    *
@@ -238,7 +237,6 @@ ags_machine_class_init(AgsMachineClass *machine)
   /**
    * AgsMachine::resize-pads:
    * @machine: the #AgsMachine to modify
-   * @channel: the #AgsChannel to set
    * @channel_type: either %AGS_TYPE_INPUT or %AGS_TYPE_OUTPUT
    * @new_size: the new size
    * @old_size: the old size
@@ -1806,21 +1804,45 @@ ags_machine_set_run_extended(AgsMachine *machine,
   }else{
     AgsCancelAudio *cancel_audio;
 
-    /* create cancel task */
-    cancel_audio = ags_cancel_audio_new(machine->audio,
-					AGS_SOUND_SCOPE_SEQUENCER);
+    if(sequencer){
+      /* create cancel task */
+      cancel_audio = ags_cancel_audio_new(machine->audio,
+					  AGS_SOUND_SCOPE_SEQUENCER);
     
-    /* append AgsCancelAudio */
-    ags_gui_thread_schedule_task((AgsGuiThread *) gui_thread,
-				 cancel_audio);
+      /* append AgsCancelAudio */
+      ags_gui_thread_schedule_task((AgsGuiThread *) gui_thread,
+				   cancel_audio);
+    }
 
-    /* create cancel task */
-    cancel_audio = ags_cancel_audio_new(machine->audio,
-					AGS_SOUND_SCOPE_NOTATION);
+    if(notation){
+      /* create cancel task */
+      cancel_audio = ags_cancel_audio_new(machine->audio,
+					  AGS_SOUND_SCOPE_NOTATION);
     
-    /* append AgsCancelAudio */
-    ags_gui_thread_schedule_task((AgsGuiThread *) gui_thread,
-				 cancel_audio);
+      /* append AgsCancelAudio */
+      ags_gui_thread_schedule_task((AgsGuiThread *) gui_thread,
+				   cancel_audio);
+    }
+
+    if(wave){
+      /* create cancel task */
+      cancel_audio = ags_cancel_audio_new(machine->audio,
+					  AGS_SOUND_SCOPE_WAVE);
+    
+      /* append AgsCancelAudio */
+      ags_gui_thread_schedule_task((AgsGuiThread *) gui_thread,
+				   cancel_audio);
+    }
+
+    if(midi){
+      /* create cancel task */
+      cancel_audio = ags_cancel_audio_new(machine->audio,
+					  AGS_SOUND_SCOPE_MIDI);
+    
+      /* append AgsCancelAudio */
+      ags_gui_thread_schedule_task((AgsGuiThread *) gui_thread,
+				   cancel_audio);
+    }
   }
 }
 
@@ -1868,7 +1890,12 @@ ags_machine_get_possible_audio_output_connections(AgsMachine *machine)
     list = ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(application_context));
 
     while(list != NULL){
-      if(list->data != machine){
+      guint soundcard_capability;
+
+      soundcard_capability = ags_soundcard_get_capability(AGS_SOUNDCARD(list->data));
+      
+      if((AGS_SOUNDCARD_CAPABILITY_PLAYBACK & (soundcard_capability)) != 0 ||
+	 (AGS_SOUNDCARD_CAPABILITY_DUPLEX & (soundcard_capability)) != 0){
 	gtk_list_store_append(model, &iter);
 	gtk_list_store_set(model, &iter,
 			   0, g_strdup_printf("%s: %s", 
@@ -1929,7 +1956,12 @@ ags_machine_get_possible_audio_input_connections(AgsMachine *machine)
     list = ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(application_context));
 
     while(list != NULL){
-      if(list->data != machine){
+      guint soundcard_capability;
+
+      soundcard_capability = ags_soundcard_get_capability(AGS_SOUNDCARD(list->data));
+
+      if((AGS_SOUNDCARD_CAPABILITY_CAPTURE & (soundcard_capability)) != 0 ||
+	 (AGS_SOUNDCARD_CAPABILITY_DUPLEX & (soundcard_capability)) != 0){
 	gtk_list_store_append(model, &iter);
 	gtk_list_store_set(model, &iter,
 			   0, g_strdup_printf("%s: %s", 
@@ -2276,7 +2308,7 @@ ags_machine_message_monitor_timeout(AgsMachine *machine)
 	if(!xmlStrncmp(xmlGetProp(root_node,
 				  "method"),
 		       "AgsAudio::set-audio-channels",
-		       28)){
+		       29)){
 	  guint audio_channels, audio_channels_old;
 	  gint position;
 	  

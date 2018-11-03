@@ -41,8 +41,8 @@ struct _AgsMessageDelivery
 {
   GObject gobject;
 
-  pthread_mutexattr_t *mutexattr;
-  pthread_mutex_t *mutex;
+  pthread_mutexattr_t *obj_mutexattr;
+  pthread_mutex_t *obj_mutex;
 
   GList *message_queue;
 };
@@ -53,6 +53,8 @@ struct _AgsMessageDeliveryClass
 };
 
 GType ags_message_delivery_get_type();
+
+pthread_mutex_t* ags_message_delivery_get_class_mutex();
 
 void ags_message_delivery_add_queue(AgsMessageDelivery *message_delivery,
 				    GObject *message_queue);

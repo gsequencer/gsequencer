@@ -65,7 +65,7 @@ ags_seek_soundcard_get_type()
   static volatile gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
-    GType ags_type_seek_soundcard;
+    GType ags_type_seek_soundcard = 0;
 
     static const GTypeInfo ags_seek_soundcard_info = {
       sizeof(AgsSeekSoundcardClass),
@@ -84,6 +84,8 @@ ags_seek_soundcard_get_type()
 						     "AgsSeekSoundcard",
 						     &ags_seek_soundcard_info,
 						     0);
+
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_seek_soundcard);
   }
 
   return g_define_type_id__volatile;

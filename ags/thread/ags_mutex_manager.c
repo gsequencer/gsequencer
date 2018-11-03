@@ -19,15 +19,12 @@
 
 #include <ags/thread/ags_mutex_manager.h>
 
-#include <ags/object/ags_connectable.h>
+#include <stdlib.h>
 
 #include <pthread.h>
 
 void ags_mutex_manager_class_init(AgsMutexManagerClass *mutex_manager);
-void ags_mutex_manager_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_mutex_manager_init(AgsMutexManager *mutex_manager);
-void ags_mutex_manager_connect(AgsConnectable *connectable);
-void ags_mutex_manager_disconnect(AgsConnectable *connectable);
 void ags_mutex_manager_finalize(GObject *gobject);
 
 void ags_mutex_manager_destroy_data(gpointer data);
@@ -54,8 +51,8 @@ ags_mutex_manager_get_type()
   static volatile gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
-    GType ags_type_mutex_manager;
-    
+    GType ags_type_mutex_manager = 0;
+
     const GTypeInfo ags_mutex_manager_info = {
       sizeof(AgsMutexManagerClass),
       NULL, /* base_init */
@@ -68,22 +65,12 @@ ags_mutex_manager_get_type()
       (GInstanceInitFunc) ags_mutex_manager_init,
     };
 
-    const GInterfaceInfo ags_connectable_interface_info = {
-      (GInterfaceInitFunc) ags_mutex_manager_connectable_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-
     ags_type_mutex_manager = g_type_register_static(G_TYPE_OBJECT,
 						    "AgsMutexManager",
 						    &ags_mutex_manager_info,
 						    0);
 
-    g_type_add_interface_static(ags_type_mutex_manager,
-				AGS_TYPE_CONNECTABLE,
-				&ags_connectable_interface_info);
-
-    g_once_init_leave (&g_define_type_id__volatile, ags_type_mutex_manager);
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_mutex_manager);
   }
 
   return g_define_type_id__volatile;
@@ -104,30 +91,11 @@ ags_mutex_manager_class_init(AgsMutexManagerClass *mutex_manager)
 }
 
 void
-ags_mutex_manager_connectable_interface_init(AgsConnectableInterface *connectable)
-{
-  connectable->connect = ags_mutex_manager_connect;
-  connectable->disconnect = ags_mutex_manager_disconnect;
-}
-
-void
 ags_mutex_manager_init(AgsMutexManager *mutex_manager)
 {
   mutex_manager->lock_object = g_hash_table_new_full(g_direct_hash, g_direct_equal,
 						     NULL,
 						     (GDestroyNotify) ags_mutex_manager_destroy_data);
-}
-
-void
-ags_mutex_manager_connect(AgsConnectable *connectable)
-{
-  /* empty */
-}
-
-void
-ags_mutex_manager_disconnect(AgsConnectable *connectable)
-{
-  /* empty */
 }
 
 void
@@ -161,7 +129,7 @@ ags_mutex_manager_destroy_data(gpointer data)
  *
  * Returns: the application mutex
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 pthread_mutex_t*
 ags_mutex_manager_get_application_mutex(AgsMutexManager *mutex_manager)
@@ -199,7 +167,7 @@ ags_mutex_manager_get_application_mutex(AgsMutexManager *mutex_manager)
  * 
  * Returns: %TRUE on success, otherwise %FALSE
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 gboolean
 ags_mutex_manager_insert(AgsMutexManager *mutex_manager,
@@ -222,11 +190,11 @@ ags_mutex_manager_insert(AgsMutexManager *mutex_manager,
  * @mutex_manager: the #AgsMutexManager
  * @lock_object: the object to remove
  * 
- * Removes a lock associated with @lock_object.3
+ * Removes a lock associated with @lock_object.
  *
  * Returns: %TRUE as successfully removed, otherwise %FALSE
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 gboolean
 ags_mutex_manager_remove(AgsMutexManager *mutex_manager,
@@ -262,7 +230,7 @@ ags_mutex_manager_remove(AgsMutexManager *mutex_manager,
  *
  * Returns: the mutex on success, else %NULL
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 pthread_mutex_t*
 ags_mutex_manager_lookup(AgsMutexManager *mutex_manager,
@@ -283,7 +251,7 @@ ags_mutex_manager_lookup(AgsMutexManager *mutex_manager,
  *
  * Returns: an instance of #AgsMutexManager
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsMutexManager*
 ags_mutex_manager_get_instance()
@@ -302,7 +270,7 @@ ags_mutex_manager_get_instance()
  *
  * Returns: a new #AgsMutexManager
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsMutexManager*
 ags_mutex_manager_new()

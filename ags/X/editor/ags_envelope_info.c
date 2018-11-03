@@ -69,7 +69,7 @@ ags_envelope_info_get_type(void)
   static volatile gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
-    GType ags_type_envelope_info;
+    GType ags_type_envelope_info = 0;
 
     static const GTypeInfo ags_envelope_info_info = {
       sizeof (AgsEnvelopeInfoClass),
@@ -107,7 +107,7 @@ ags_envelope_info_get_type(void)
 				AGS_TYPE_APPLICABLE,
 				&ags_applicable_interface_info);
 
-    g_once_init_leave (&g_define_type_id__volatile, ags_type_envelope_info);
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_envelope_info);
   }
 
   return g_define_type_id__volatile;
@@ -325,16 +325,11 @@ ags_envelope_info_reset(AgsApplicable *applicable)
   GtkTreeIter iter;
   
   AgsAudio *audio;
-
-  AgsMutexManager *mutex_manager;
   
   AgsApplicationContext *application_context;
 
-  GList *notation;
-  GList *selection;
-
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *audio_mutex;
+  GList *start_notation, *notation;
+  GList *start_selection, *selection;
 
   envelope_info = AGS_ENVELOPE_INFO(applicable);
   envelope_dialog = gtk_widget_get_ancestor(envelope_info,
@@ -349,27 +344,35 @@ ags_envelope_info_reset(AgsApplicable *applicable)
   /* application context and mutex manager */
   application_context = window->application_context;
 
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-
-  /* get audio mutex */
-  pthread_mutex_lock(application_mutex);
-
-  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
-					 (GObject *) audio);
-  
-  pthread_mutex_unlock(application_mutex);
-
   /* get tree model */
   model = GTK_LIST_STORE(gtk_tree_view_get_model(envelope_info->tree_view));
 
   /* fill tree view */
-  pthread_mutex_lock(audio_mutex);
-
-  notation = audio->notation;
+  g_object_get(audio,
+	       "notation", &start_notation,
+	       NULL);
+  
+  notation = start_notation;
 
   while(notation != NULL){
-    selection = AGS_NOTATION(notation->data)->selection;
+    guint audio_channel;
+
+    pthread_mutex_t *notation_mutex;
+
+    /* get notation mutex */
+    pthread_mutex_lock(ags_notation_get_class_mutex());
+  
+    notation_mutex = AGS_NOTATION(notation->data)->obj_mutex;
+  
+    pthread_mutex_unlock(ags_notation_get_class_mutex());
+
+    /**/
+    pthread_mutex_lock(notation_mutex);
+
+    selection =
+      start_selection = g_list_copy(AGS_NOTATION(notation->data)->selection);
+
+    pthread_mutex_unlock(notation_mutex);
 
     if(envelope_info->selection == NULL){
       envelope_info->selection = ags_list_util_copy_and_ref(selection);
@@ -377,24 +380,48 @@ ags_envelope_info_reset(AgsApplicable *applicable)
       envelope_info->selection = g_list_concat(envelope_info->selection,
 					       ags_list_util_copy_and_ref(selection));
     }
-    
+
+    g_object_get(AGS_NOTATION(notation->data),
+		 "audio-channel", &audio_channel,
+		 NULL);
+          
     while(selection != NULL){
+      AgsNote *current_note;
+      
+      pthread_mutex_t *note_mutex;
+      
+      current_note = AGS_NOTE(selection->data);
+
+      /* get note mutex */
+      pthread_mutex_lock(ags_note_get_class_mutex());
+  
+      note_mutex = current_note->obj_mutex;
+  
+      pthread_mutex_unlock(ags_note_get_class_mutex());
+
+      /* apply */
+      pthread_mutex_lock(note_mutex);
+
       gtk_list_store_append(model,
 			    &iter);
       gtk_list_store_set(model, &iter,
-			 AGS_ENVELOPE_INFO_COLUMN_AUDIO_CHANNEL, AGS_NOTATION(notation->data)->audio_channel,
-			 AGS_ENVELOPE_INFO_COLUMN_NOTE_X0, AGS_NOTE(selection->data)->x[0],
-			 AGS_ENVELOPE_INFO_COLUMN_NOTE_X1, AGS_NOTE(selection->data)->x[1],
-			 AGS_ENVELOPE_INFO_COLUMN_NOTE_Y, AGS_NOTE(selection->data)->y,
+			 AGS_ENVELOPE_INFO_COLUMN_AUDIO_CHANNEL, audio_channel,
+			 AGS_ENVELOPE_INFO_COLUMN_NOTE_X0, current_note->x[0],
+			 AGS_ENVELOPE_INFO_COLUMN_NOTE_X1, current_note->x[1],
+			 AGS_ENVELOPE_INFO_COLUMN_NOTE_Y, current_note->y,
 			 -1);
+      
+      pthread_mutex_unlock(note_mutex);
       
       selection = selection->next;
     }
 
+    g_list_free(start_selection);
+
     notation = notation->next;
   }
 
-  pthread_mutex_unlock(audio_mutex);
+  g_list_free(start_notation);
 }
 
 gchar*
@@ -437,7 +464,7 @@ ags_envelope_info_y_label_func(gdouble value,
  * 
  * Plot envelope.
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_envelope_info_plot(AgsEnvelopeInfo *envelope_info)
@@ -455,8 +482,6 @@ ags_envelope_info_plot(AgsEnvelopeInfo *envelope_info)
 
   AgsAudio *audio;
   AgsNote *note;
-
-  AgsMutexManager *mutex_manager;
   
   AgsApplicationContext *application_context;
   
@@ -466,9 +491,6 @@ ags_envelope_info_plot(AgsEnvelopeInfo *envelope_info)
   gdouble default_width, default_height;
   gdouble offset;
   gboolean do_plot;
-
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *audio_mutex;
 
   if(!AGS_IS_ENVELOPE_INFO(envelope_info)){
     return;
@@ -485,17 +507,6 @@ ags_envelope_info_plot(AgsEnvelopeInfo *envelope_info)
 
   /* application context and mutex manager */
   application_context = window->application_context;
-
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-
-  /* get audio mutex */
-  pthread_mutex_lock(application_mutex);
-
-  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
-					 (GObject *) audio);
-  
-  pthread_mutex_unlock(application_mutex);
 
   /* cartesian */
   cartesian = envelope_info->cartesian;
@@ -515,9 +526,7 @@ ags_envelope_info_plot(AgsEnvelopeInfo *envelope_info)
   
   /* plot */
   if(gtk_tree_model_get_iter_first(model,
-				   &iter)){
-    pthread_mutex_lock(audio_mutex);
-    
+				   &iter)){    
     selection = envelope_info->selection;
 
     while(selection != NULL){
@@ -529,7 +538,16 @@ ags_envelope_info_plot(AgsEnvelopeInfo *envelope_info)
       if(do_plot){
 	gdouble ratio;
 	
+	pthread_mutex_t *note_mutex;
+      
 	note = AGS_NOTE(selection->data);
+
+	/* get note mutex */
+	pthread_mutex_lock(ags_note_get_class_mutex());
+  
+	note_mutex = note->obj_mutex;
+  
+	pthread_mutex_unlock(ags_note_get_class_mutex());
 
 	/* AgsPlot struct */
 	plot = ags_plot_alloc(5, 0, 0);
@@ -556,6 +574,8 @@ ags_envelope_info_plot(AgsEnvelopeInfo *envelope_info)
 	plot->point_color[4][2] = 1.0;
 
 	/* set plot points */
+	pthread_mutex_lock(note_mutex);
+	
 	z = ags_complex_get(&(note->ratio));
 	ratio = cimag(z);
 	
@@ -588,6 +608,8 @@ ags_envelope_info_plot(AgsEnvelopeInfo *envelope_info)
 	plot->point[4][0] = offset + default_width * creal(z);
 	plot->point[4][1] = default_height * (cimag(z) + ratio);
 
+	pthread_mutex_unlock(note_mutex);
+	
 	/* add plot */
 	ags_cartesian_add_plot(cartesian,
 			       plot);
@@ -601,8 +623,6 @@ ags_envelope_info_plot(AgsEnvelopeInfo *envelope_info)
 	break;
       }
     }
-
-    pthread_mutex_unlock(audio_mutex);
   }
 
   /* queue draw */
@@ -612,11 +632,11 @@ ags_envelope_info_plot(AgsEnvelopeInfo *envelope_info)
 /**
  * ags_envelope_info_new:
  *
- * Creates an #AgsEnvelopeInfo
+ * Create a new instance of #AgsEnvelopeInfo
  *
  * Returns: a new #AgsEnvelopeInfo
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsEnvelopeInfo*
 ags_envelope_info_new()

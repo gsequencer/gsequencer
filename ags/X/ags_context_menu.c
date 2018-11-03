@@ -68,7 +68,7 @@ ags_context_menu_get_type(void)
   static volatile gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
-    GType ags_type_context_menu;
+    GType ags_type_context_menu = 0;
 
     static const GTypeInfo ags_context_menu_info = {
       sizeof (AgsContextMenuClass),
@@ -96,7 +96,7 @@ ags_context_menu_get_type(void)
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
 
-    g_once_init_leave (&g_define_type_id__volatile, ags_type_context_menu);
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_context_menu);
   }
 
   return g_define_type_id__volatile;

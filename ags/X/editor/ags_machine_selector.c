@@ -37,6 +37,8 @@ void ags_machine_selector_connect(AgsConnectable *connectable);
 void ags_machine_selector_disconnect(AgsConnectable *connectable);
 void ags_machine_selector_show(GtkWidget *widget);
 
+void ags_machine_selector_real_changed(AgsMachineSelector *machine_selector, AgsMachine *machine);
+
 /**
  * SECTION:ags_machine_selector
  * @short_description: machine radio buttons
@@ -61,7 +63,7 @@ ags_machine_selector_get_type(void)
   static volatile gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
-    GType ags_type_machine_selector;
+    GType ags_type_machine_selector = 0;
 
     static const GTypeInfo ags_machine_selector_info = {
       sizeof (AgsMachineSelectorClass),
@@ -89,7 +91,7 @@ ags_machine_selector_get_type(void)
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
 
-    g_once_init_leave (&g_define_type_id__volatile, ags_type_machine_selector);
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_machine_selector);
   }
 
   return g_define_type_id__volatile;
@@ -110,7 +112,7 @@ ags_machine_selector_class_init(AgsMachineSelectorClass *machine_selector)
   ags_machine_selector_parent_class = g_type_class_peek_parent(machine_selector);
 
   /* AgsMachineSelectorClass */
-  machine_selector->changed = NULL;
+  machine_selector->changed = ags_machine_selector_real_changed;
 
   /**
    * AgsMachineSelector::changed:
@@ -119,7 +121,7 @@ ags_machine_selector_class_init(AgsMachineSelectorClass *machine_selector)
    *
    * The ::changed signal notifies changed #AgsMachine.
    *
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   machine_selector_signals[CHANGED] =
     g_signal_new("changed",
@@ -337,6 +339,40 @@ ags_machine_selector_link_index(AgsMachineSelector *machine_selector,
   }
 }
 
+void
+ags_machine_selector_real_changed(AgsMachineSelector *machine_selector, AgsMachine *machine)
+{
+  if((AGS_MACHINE_SELECTOR_SHOW_REVERSE_MAPPING & (machine_selector->flags)) != 0){
+    GtkMenuItem *menu_item;
+    
+    GList *start_list;
+
+    machine_selector->flags |= AGS_MACHINE_SELECTOR_BLOCK_REVERSE_MAPPING;
+    
+    start_list = gtk_container_get_children((GtkContainer *) machine_selector->popup);
+    menu_item = g_list_nth_data(start_list,
+				3);
+
+    if(machine != NULL){
+      if(ags_audio_test_behaviour_flags(machine->audio,
+					AGS_SOUND_BEHAVIOUR_REVERSE_MAPPING)){
+	gtk_check_menu_item_set_active((GtkCheckMenuItem *) menu_item,
+				       TRUE);
+      }else{
+	gtk_check_menu_item_set_active((GtkCheckMenuItem *) menu_item,
+				       FALSE);
+      }
+    }else{
+      gtk_check_menu_item_set_active((GtkCheckMenuItem *) menu_item,
+				     FALSE);
+    }
+
+    g_list_free(start_list);
+
+    machine_selector->flags &= (~AGS_MACHINE_SELECTOR_BLOCK_REVERSE_MAPPING);
+  }
+}
+
 /**
  * ags_machine_selector_changed:
  * @machine_selector: the #AgsMachineSelector
@@ -344,7 +380,7 @@ ags_machine_selector_link_index(AgsMachineSelector *machine_selector,
  *
  * Emitted as #AgsMachineSelector modified.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_machine_selector_changed(AgsMachineSelector *machine_selector, AgsMachine *machine)
@@ -365,7 +401,7 @@ ags_machine_selector_changed(AgsMachineSelector *machine_selector, AgsMachine *m
  *
  * Returns: a new #AgsMachineSelector
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsMachineSelector*
 ags_machine_selector_new()
@@ -386,7 +422,7 @@ ags_machine_selector_new()
  *
  * Returns: a new #GtkMenu suitable for #AgsMachineSelector
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 GtkMenu*
 ags_machine_selector_popup_new(AgsMachineSelector *machine_selector)

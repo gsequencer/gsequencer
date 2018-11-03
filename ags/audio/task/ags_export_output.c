@@ -69,7 +69,7 @@ ags_export_output_get_type()
   static volatile gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
-    GType ags_type_export_output;
+    GType ags_type_export_output = 0;
 
     static const GTypeInfo ags_export_output_info = {
       sizeof(AgsExportOutputClass),
@@ -87,9 +87,11 @@ ags_export_output_get_type()
 						    "AgsExportOutput",
 						    &ags_export_output_info,
 						    0);
+
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_export_output);
   }
-  
-  return(ags_type_export_output);
+
+  return g_define_type_id__volatile;
 }
 
 void
@@ -471,36 +473,15 @@ ags_export_output_launch(AgsTask *task)
 			 TRUE);
   //TODO:JK: more formats
 
-#ifdef AGS_DEBUG
   g_message("export output");
+#ifdef AGS_DEBUG
 #endif
 
   /* start export thread */
   g_object_set(G_OBJECT(export_thread),
-	       "soundcard", soundcard,
 	       "audio-file", audio_file,
 	       "tic", tic,
 	       NULL);
-
-  if((AGS_THREAD_SINGLE_LOOP & (g_atomic_int_get(&(AGS_THREAD(export_thread)->flags)))) == 0){
-    AgsThread *parent;
-    
-    GList *start_queue;
-
-    parent = g_atomic_pointer_get(&(AGS_THREAD(export_thread)->parent));
-    
-    pthread_mutex_lock(parent->start_mutex);
-    
-    start_queue = g_atomic_pointer_get(&(parent->start_queue));
-    g_atomic_pointer_set(&(parent->start_queue),
-			 g_list_prepend(start_queue,
-					export_thread));
-    
-    pthread_mutex_unlock(parent->start_mutex);
-  }else{
-    g_atomic_int_or(&(AGS_THREAD(export_thread)->flags),
-		    AGS_THREAD_RUNNING);
-  }
 }
 
 /**

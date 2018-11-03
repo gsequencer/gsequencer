@@ -60,7 +60,7 @@ ags_led_array_get_type(void)
   static volatile gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
-    GType ags_type_led_array;
+    GType ags_type_led_array = 0;
 
     static const GTypeInfo ags_led_array_info = {
       sizeof(AgsLedArrayClass),
@@ -79,7 +79,7 @@ ags_led_array_get_type(void)
 						&ags_led_array_info,
 						0);
 
-    g_once_init_leave (&g_define_type_id__volatile, ags_type_led_array);
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_led_array);
   }
 
   return g_define_type_id__volatile;
@@ -108,7 +108,7 @@ ags_led_array_class_init(AgsLedArrayClass *led_array)
    *
    * The width of one led.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_uint("led-width",
 				 "width of led",
@@ -126,7 +126,7 @@ ags_led_array_class_init(AgsLedArrayClass *led_array)
    *
    * The height of one led.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_uint("led-height",
 				 "height of led",
@@ -144,7 +144,7 @@ ags_led_array_class_init(AgsLedArrayClass *led_array)
    *
    * The count of leds available.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_uint("led-count",
 				 "count of leds",
@@ -340,12 +340,12 @@ ags_led_array_set_nth(AgsLedArray *led_array,
 /**
  * ags_led_array_new:
  *
- * Creates an #AgsLedArray. Note, use rather its implementation #AgsVLedArray or
+ * Create a new instance of #AgsLedArray. Note, use rather its implementation #AgsVLedArray or
  * #AgsHLedArray.
  *
- * Returns: a new #AgsLedArray
+ * Returns: the new #AgsLedArray
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsLedArray*
 ags_led_array_new()

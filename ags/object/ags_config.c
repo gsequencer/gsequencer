@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -19,12 +19,8 @@
 
 #include <ags/object/ags_config.h>
 
-#include <ags/object/ags_connectable.h>
-
 #include <ags/object/ags_marshal.h>
 #include <ags/object/ags_application_context.h>
-
-#include <ags/thread/ags_mutex_manager.h>
 
 #include <gio/gio.h>
 
@@ -40,7 +36,6 @@
 #include <ags/i18n.h>
 
 void ags_config_class_init(AgsConfigClass *config_class);
-void ags_config_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_config_init(AgsConfig *config);
 void ags_config_set_property(GObject *gobject,
 			     guint prop_id,
@@ -50,13 +45,9 @@ void ags_config_get_property(GObject *gobject,
 			     guint prop_id,
 			     GValue *value,
 			     GParamSpec *param_spec);
-void ags_config_add_to_registry(AgsConnectable *connectable);
-void ags_config_remove_from_registry(AgsConnectable *connectable);
-gboolean ags_config_is_connected(AgsConnectable *connectable);
-void ags_config_connect(AgsConnectable *connectable);
-void ags_config_disconnect(AgsConnectable *connectable);
 void ags_config_dispose(GObject *gobject);
 void ags_config_finalize(GObject *gobject);
+
 gchar* ags_config_get_version(AgsConfig *config);
 void ags_config_set_version(AgsConfig *config, gchar *version);
 gchar* ags_config_get_build_id(AgsConfig *config);
@@ -93,14 +84,16 @@ static guint config_signals[LAST_SIGNAL];
 
 AgsConfig *ags_config = NULL;
 
+static pthread_mutex_t ags_config_class_mutex = PTHREAD_MUTEX_INITIALIZER;
+
 GType
 ags_config_get_type()
 {
   static volatile gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
-    GType ags_type_config;
-    
+    GType ags_type_config = 0;
+
     static const GTypeInfo ags_config_info = {
       sizeof(AgsConfigClass),
       NULL, /* base_init */
@@ -113,22 +106,12 @@ ags_config_get_type()
       (GInstanceInitFunc) ags_config_init,
     };
 
-    static const GInterfaceInfo ags_connectable_interface_info = {
-      (GInterfaceInitFunc) ags_config_connectable_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-
     ags_type_config = g_type_register_static(G_TYPE_OBJECT,
 					     "AgsConfig",
 					     &ags_config_info,
 					     0);
 
-    g_type_add_interface_static(ags_type_config,
-				AGS_TYPE_CONNECTABLE,
-				&ags_connectable_interface_info);
-
-    g_once_init_leave (&g_define_type_id__volatile, ags_type_config);
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_config);
   }
 
   return g_define_type_id__volatile;
@@ -157,7 +140,7 @@ ags_config_class_init(AgsConfigClass *config)
    *
    * The assigned application context.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("application-context",
 				   i18n_pspec("application context of config"),
@@ -180,7 +163,7 @@ ags_config_class_init(AgsConfigClass *config)
    *
    * The ::load-defaults signal notifies about loading defaults
    *
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   config_signals[LOAD_DEFAULTS] =
     g_signal_new("load-defaults",
@@ -200,7 +183,7 @@ ags_config_class_init(AgsConfigClass *config)
    *
    * The ::set-value signal notifies about value been setting.
    *
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   config_signals[SET_VALUE] =
     g_signal_new("set-value",
@@ -222,7 +205,7 @@ ags_config_class_init(AgsConfigClass *config)
    *
    * Returns: the value
    *
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   config_signals[GET_VALUE] =
     g_signal_new("get-value",
@@ -236,24 +219,28 @@ ags_config_class_init(AgsConfigClass *config)
 }
 
 void
-ags_config_connectable_interface_init(AgsConnectableInterface *connectable)
-{
-  connectable->add_to_registry = ags_config_add_to_registry;
-  connectable->remove_from_registry = ags_config_remove_from_registry;
-
-  connectable->is_ready = NULL;
-  connectable->is_connected = ags_config_is_connected;
-  connectable->connect = ags_config_connect;
-  connectable->disconnect = ags_config_disconnect;
-}
-
-void
 ags_config_init(AgsConfig *config)
 {
   config->flags = 0;
   
-  config->version = AGS_CONFIG_DEFAULT_VERSION;
-  config->build_id = AGS_CONFIG_DEFAULT_BUILD_ID;
+  config->obj_mutexattr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
+
+  pthread_mutexattr_init(config->obj_mutexattr);
+  pthread_mutexattr_settype(config->obj_mutexattr,
+			    PTHREAD_MUTEX_RECURSIVE);
+
+#ifdef __linux__
+  pthread_mutexattr_setprotocol(config->obj_mutexattr,
+				PTHREAD_PRIO_INHERIT);
+#endif
+
+  
+  config->obj_mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
+  pthread_mutex_init(config->obj_mutex, config->obj_mutexattr);
+
+  /* version and build id */
+  config->version = g_strdup(AGS_CONFIG_DEFAULT_VERSION);
+  config->build_id = g_strdup(AGS_CONFIG_DEFAULT_BUILD_ID);
 
   config->application_context == NULL;
 
@@ -269,7 +256,16 @@ ags_config_set_property(GObject *gobject,
 {
   AgsConfig *config;
 
+  pthread_mutex_t *config_mutex;
+
   config = AGS_CONFIG(gobject);
+
+  /* get config mutex */
+  pthread_mutex_lock(ags_config_get_class_mutex());
+  
+  config_mutex = config->obj_mutex;
+
+  pthread_mutex_unlock(ags_config_get_class_mutex());
 
   switch(prop_id){
   case PROP_APPLICATION_CONTEXT:
@@ -278,7 +274,11 @@ ags_config_set_property(GObject *gobject,
       
       application_context = (AgsApplicationContext *) g_value_get_object(value);
 
+      pthread_mutex_lock(config_mutex);
+      
       if(application_context == ((AgsApplicationContext *) config->application_context)){
+	pthread_mutex_unlock(config_mutex);
+	
 	return;
       }
 
@@ -291,6 +291,8 @@ ags_config_set_property(GObject *gobject,
       }
       
       config->application_context = (GObject *) application_context;
+
+      pthread_mutex_unlock(config_mutex);
     }
     break;
   default:
@@ -307,12 +309,25 @@ ags_config_get_property(GObject *gobject,
 {
   AgsConfig *config;
 
+  pthread_mutex_t *config_mutex;
+
   config = AGS_CONFIG(gobject);
 
+  /* get config mutex */
+  pthread_mutex_lock(ags_config_get_class_mutex());
+  
+  config_mutex = config->obj_mutex;
+
+  pthread_mutex_unlock(ags_config_get_class_mutex());
+  
   switch(prop_id){
   case PROP_APPLICATION_CONTEXT:
     {
+      pthread_mutex_lock(config_mutex);
+
       g_value_set_object(value, config->application_context);
+
+      pthread_mutex_unlock(config_mutex);
     }
     break;
   default:
@@ -320,41 +335,6 @@ ags_config_get_property(GObject *gobject,
     break;
   }
 }
-
-void
-ags_config_add_to_registry(AgsConnectable *connectable)
-{
-  //TODO:JK: implement me
-}
-
-void
-ags_config_remove_from_registry(AgsConnectable *connectable)
-{
-  //TODO:JK: implement me
-}
-
-gboolean
-ags_config_is_connected(AgsConnectable *connectable)
-{
-  if((AGS_CONFIG_CONNECTED & (AGS_CONFIG(connectable)->flags)) != 0){
-    return(TRUE);
-  }else{
-    return(FALSE);
-  }
-}
-
-void
-ags_config_connect(AgsConnectable *connectable)
-{
-  //TODO:JK: implement me
-}
-
-void
-ags_config_disconnect(AgsConnectable *connectable)
-{
-  //TODO:JK: implement me
-}
-
 void
 ags_config_dispose(GObject *gobject)
 {
@@ -378,15 +358,25 @@ ags_config_finalize(GObject *gobject)
   AgsConfig *config;
 
   config = (AgsConfig *) gobject;
-  
+
+  /* config mutex */
+  pthread_mutexattr_destroy(config->obj_mutexattr);
+  free(config->obj_mutexattr);
+
+  pthread_mutex_destroy(config->obj_mutex);
+  free(config->obj_mutex);
+
+  /* application context */
   if(config->application_context != NULL){
     g_object_unref(config->application_context);
   }
 
+  /* key file */
   if(config->key_file != NULL){
     g_key_file_unref(config->key_file);
   }
 
+  /* global variable */
   if(ags_config == config){
     ags_config = NULL;
   }
@@ -398,30 +388,133 @@ ags_config_finalize(GObject *gobject)
 gchar*
 ags_config_get_version(AgsConfig *config)
 {
-  return(config->version);
+  gchar *version;
+  
+  pthread_mutex_t *config_mutex;
+
+  if(!AGS_IS_CONFIG(config)){
+    return(NULL);
+  }
+  
+  pthread_mutex_lock(ags_config_get_class_mutex());
+  
+  config_mutex = config->obj_mutex;
+
+  pthread_mutex_unlock(ags_config_get_class_mutex());
+
+  /* get version */
+  pthread_mutex_lock(config_mutex);
+
+  version = config->version;
+  
+  pthread_mutex_unlock(config_mutex);
+
+  return(version);
 }
 
 void
 ags_config_set_version(AgsConfig *config, gchar *version)
 {
-  config->version = version;
+  pthread_mutex_t *config_mutex;
+
+  if(!AGS_IS_CONFIG(config)){
+    return;
+  }
+  
+  pthread_mutex_lock(ags_config_get_class_mutex());
+  
+  config_mutex = config->obj_mutex;
+
+  pthread_mutex_unlock(ags_config_get_class_mutex());
+
+  /* set version */
+  pthread_mutex_lock(config_mutex);
+
+  config->version = g_strdup(version);
+  
+  pthread_mutex_unlock(config_mutex);
 }
 
 gchar*
 ags_config_get_build_id(AgsConfig *config)
 {
-  return(config->build_id);
+  gchar *build_id;
+  
+  pthread_mutex_t *config_mutex;
+
+  if(!AGS_IS_CONFIG(config)){
+    return(NULL);
+  }
+  
+  pthread_mutex_lock(ags_config_get_class_mutex());
+  
+  config_mutex = config->obj_mutex;
+
+  pthread_mutex_unlock(ags_config_get_class_mutex());
+
+  /* get build id */
+  pthread_mutex_lock(config_mutex);
+
+  build_id = config->build_id;
+  
+  pthread_mutex_unlock(config_mutex);
+
+  return(build_id);
 }
 
 void
 ags_config_set_build_id(AgsConfig *config, gchar *build_id)
 {
-  config->build_id = build_id;
+  pthread_mutex_t *config_mutex;
+
+  if(!AGS_IS_CONFIG(config)){
+    return;
+  }
+  
+  pthread_mutex_lock(ags_config_get_class_mutex());
+  
+  config_mutex = config->obj_mutex;
+
+  pthread_mutex_unlock(ags_config_get_class_mutex());
+
+  /* set version */
+  pthread_mutex_lock(config_mutex);
+
+  config->build_id = g_strdup(build_id);
+  
+  pthread_mutex_unlock(config_mutex);
+}
+
+/**
+ * ags_config_get_class_mutex:
+ * 
+ * Use this function's returned mutex to access mutex fields.
+ *
+ * Returns: the class mutex
+ * 
+ * Since: 2.0.0
+ */
+pthread_mutex_t*
+ags_config_get_class_mutex()
+{
+  return(&ags_config_class_mutex);
 }
 
 void
 ags_config_real_load_defaults(AgsConfig *config)
 {
+
+  pthread_mutex_t *config_mutex;
+  
+  pthread_mutex_lock(ags_config_get_class_mutex());
+  
+  config_mutex = config->obj_mutex;
+
+  pthread_mutex_unlock(ags_config_get_class_mutex());
+
+  /* load defaults */
+  pthread_mutex_lock(config_mutex);
+
   ags_config_set_value(config, AGS_CONFIG_GENERIC, "autosave-thread", "false");
   ags_config_set_value(config, AGS_CONFIG_GENERIC, "simple-file", "true");
   ags_config_set_value(config, AGS_CONFIG_GENERIC, "disable-feature", "experimental");
@@ -442,7 +535,7 @@ ags_config_real_load_defaults(AgsConfig *config)
 #endif
   
   ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "pcm-channels", "2");
-  ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "samplerate", "44100");
+  ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "samplerate", "48000");
   ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "buffer-size", "2048");
   ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "format", "16");
 
@@ -450,6 +543,8 @@ ags_config_real_load_defaults(AgsConfig *config)
   //ags_config_set_value(config, AGS_CONFIG_SEQUENCER_0, "device", "ags-jack-midiin-0");
 
   ags_config_set_value(config, AGS_CONFIG_RECALL, "auto-sense", "true");
+
+  pthread_mutex_unlock(config_mutex);
 }
 
 /**
@@ -458,7 +553,7 @@ ags_config_real_load_defaults(AgsConfig *config)
  *
  * Load configuration from default values.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_config_load_defaults(AgsConfig *config)
@@ -478,17 +573,25 @@ ags_config_load_defaults(AgsConfig *config)
  *
  * Load configuration from @filename.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_config_load_from_file(AgsConfig *config, gchar *filename)
 {
   GFile *file;
 
-  if(config == NULL){
+  pthread_mutex_t *config_mutex;
+
+  if(!AGS_IS_CONFIG(config)){
     return;
   }
   
+  pthread_mutex_lock(ags_config_get_class_mutex());
+  
+  config_mutex = config->obj_mutex;
+
+  pthread_mutex_unlock(ags_config_get_class_mutex());
+
   file = g_file_new_for_path(filename);
 
   g_message("loading preferences for: %s", filename);
@@ -503,6 +606,8 @@ ags_config_load_from_file(AgsConfig *config, gchar *filename)
     gchar *value;
 
     GError *error;
+
+    pthread_mutex_lock(config_mutex);
 
     error = NULL;
     
@@ -549,6 +654,8 @@ ags_config_load_from_file(AgsConfig *config, gchar *filename)
 
     g_strfreev(groups_start);
     g_key_file_unref(key_file);
+
+    pthread_mutex_unlock(config_mutex);
   }
 
   g_object_unref(file);
@@ -562,12 +669,26 @@ ags_config_load_from_file(AgsConfig *config, gchar *filename)
  *
  * Read configuration in memory.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_config_load_from_data(AgsConfig *config,
 			  char *buffer, gsize buffer_length)
 {
+
+  pthread_mutex_t *config_mutex;
+
+  if(!AGS_IS_CONFIG(config)){
+    return;
+  }
+  
+  pthread_mutex_lock(ags_config_get_class_mutex());
+  
+  config_mutex = config->obj_mutex;
+
+  pthread_mutex_unlock(ags_config_get_class_mutex());
+
+  /* load from data */
   //#ifdef AGS_DEBUG
   g_message("loading preferences from data[0x%x]", (unsigned int) buffer);
   //#endif
@@ -585,6 +706,8 @@ ags_config_load_from_data(AgsConfig *config,
     guint i, j;
 
     GError *error;
+
+    pthread_mutex_lock(config_mutex);
 
     error = NULL;
 
@@ -629,6 +752,8 @@ ags_config_load_from_data(AgsConfig *config,
     
     g_strfreev(groups);
     g_key_file_unref(key_file);
+
+    pthread_mutex_unlock(config_mutex);
   }
 }
 
@@ -640,7 +765,7 @@ ags_config_load_from_data(AgsConfig *config,
  *
  * Save configuration.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_config_to_data(AgsConfig *config,
@@ -650,6 +775,21 @@ ags_config_to_data(AgsConfig *config,
   gsize length;
 
   GError *error;
+
+  pthread_mutex_t *config_mutex;
+
+  if(!AGS_IS_CONFIG(config)){
+    return;
+  }
+  
+  pthread_mutex_lock(ags_config_get_class_mutex());
+  
+  config_mutex = config->obj_mutex;
+
+  pthread_mutex_unlock(ags_config_get_class_mutex());
+
+  /* to data */
+  pthread_mutex_lock(config_mutex);
 
   error = NULL;
   data = g_key_file_to_data(config->key_file,
@@ -667,6 +807,8 @@ ags_config_to_data(AgsConfig *config,
   if(buffer_length != NULL){
     *buffer_length = length;
   }
+
+  pthread_mutex_unlock(config_mutex);
 }
 
 /**
@@ -675,17 +817,34 @@ ags_config_to_data(AgsConfig *config,
  *
  * Save configuration.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_config_save(AgsConfig *config)
 {
   struct passwd *pw;
+
   uid_t uid;
   gchar *path, *filename;
   gchar *content;
   gsize length;
+
   GError *error;
+
+  pthread_mutex_t *config_mutex;
+
+  if(!AGS_IS_CONFIG(config)){
+    return;
+  }
+  
+  pthread_mutex_lock(ags_config_get_class_mutex());
+  
+  config_mutex = config->obj_mutex;
+
+  pthread_mutex_unlock(ags_config_get_class_mutex());
+
+  /* save */
+  pthread_mutex_lock(config_mutex);
 
   uid = getuid();
   pw = getpwuid(uid);
@@ -726,27 +885,27 @@ ags_config_save(AgsConfig *config)
   }
 
   g_free(path);
+
+  pthread_mutex_unlock(config_mutex);
 }
 
 void
 ags_config_real_set_value(AgsConfig *config, gchar *group, gchar *key, gchar *value)
 {
-  AgsMutexManager *mutex_manager;
+  pthread_mutex_t *config_mutex;
   
-  pthread_mutex_t *application_mutex;
-
-  if(config == NULL){
-    return;
-  }
+  pthread_mutex_lock(ags_config_get_class_mutex());
   
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
+  config_mutex = config->obj_mutex;
 
-  pthread_mutex_lock(application_mutex);
+  pthread_mutex_unlock(ags_config_get_class_mutex());
+
+  /* set value */
+  pthread_mutex_lock(config_mutex);
   
   g_key_file_set_value(config->key_file, group, key, value);
 
-  pthread_mutex_unlock(application_mutex);
+  pthread_mutex_unlock(config_mutex);
 }
 
 /**
@@ -758,7 +917,7 @@ ags_config_real_set_value(AgsConfig *config, gchar *group, gchar *key, gchar *va
  *
  * Set config by @group and @key, applying @value.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_config_set_value(AgsConfig *config, gchar *group, gchar *key, gchar *value)
@@ -778,15 +937,22 @@ ags_config_real_get_value(AgsConfig *config, gchar *group, gchar *key)
   gchar *str;
   GError *error;
   
-  static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+  pthread_mutex_t *config_mutex;
+  
+  pthread_mutex_lock(ags_config_get_class_mutex());
+  
+  config_mutex = config->obj_mutex;
 
-  pthread_mutex_lock(&mutex);
+  pthread_mutex_unlock(ags_config_get_class_mutex());
+
+  /* get value */
+  pthread_mutex_lock(config_mutex);
   
   error = NULL;
 
   str = g_key_file_get_value(config->key_file, group, key, &error);
 
-  pthread_mutex_unlock(&mutex);
+  pthread_mutex_unlock(config_mutex);
 
   return(str);
 }
@@ -801,7 +967,7 @@ ags_config_real_get_value(AgsConfig *config, gchar *group, gchar *key)
  *
  * Returns: the property's value
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 gchar*
 ags_config_get_value(AgsConfig *config, gchar *group, gchar *key)
@@ -826,7 +992,7 @@ ags_config_get_value(AgsConfig *config, gchar *group, gchar *key)
  *
  * Clears configuration.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_config_clear(AgsConfig *config)
@@ -835,7 +1001,22 @@ ags_config_clear(AgsConfig *config)
 
   gsize n_group;
   guint i;
+
+  pthread_mutex_t *config_mutex;
+
+  if(!AGS_IS_CONFIG(config)){
+    return;
+  }
+    
+  pthread_mutex_lock(ags_config_get_class_mutex());
   
+  config_mutex = config->obj_mutex;
+
+  pthread_mutex_unlock(ags_config_get_class_mutex());
+  
+  /* clear */
+  pthread_mutex_lock(config_mutex);
+
   group = g_key_file_get_groups(config->key_file,
 				&n_group);
 
@@ -844,6 +1025,8 @@ ags_config_clear(AgsConfig *config)
     			    group[i],
     			    NULL);
   }
+
+  pthread_mutex_unlock(config_mutex);
 }
 
 /**
@@ -875,11 +1058,11 @@ ags_config_get_instance()
  * ags_config_new:
  * @application_context: the #AgsApplicationContext
  *
- * Creates an #AgsConfig.
+ * Create a new instance of #AgsConfig.
  *
- * Returns: a new #AgsConfig.
+ * Returns: the new #AgsConfig.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsConfig*
 ags_config_new(GObject *application_context)

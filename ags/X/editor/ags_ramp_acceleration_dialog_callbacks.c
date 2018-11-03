@@ -19,10 +19,8 @@
 
 #include <ags/X/editor/ags_ramp_acceleration_dialog_callbacks.h>
 
-#include <ags/object/ags_application_context.h>
-#include <ags/object/ags_applicable.h>
-
-#include <ags/thread/ags_mutex_manager.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
 
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_automation_window.h>
@@ -64,15 +62,13 @@ ags_ramp_acceleration_dialog_port_callback(GtkComboBox *combo_box,
   AgsMachine *machine;
 
   AgsAudio *audio;
+  AgsChannel *channel;
   
-  AgsMutexManager *mutex_manager;
+  AgsPluginPort *plugin_port;
 
-  GList *list_automation;
-  
+  GList *start_port, *port;
+
   gchar *specifier;
-  
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *audio_mutex;
 
   window = AGS_WINDOW(ramp_acceleration_dialog->main_window);
   automation_editor = window->automation_window->automation_editor;
@@ -85,56 +81,164 @@ ags_ramp_acceleration_dialog_port_callback(GtkComboBox *combo_box,
   
   audio = machine->audio;
 
-  /* get mutex manager and application mutex */
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-  
-  /* get audio mutex */
-  pthread_mutex_lock(application_mutex);
-
-  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
-					 (GObject *) audio);
-  
-  pthread_mutex_unlock(application_mutex);
-
   /* specifier */
-  list_automation = NULL;
-  
   specifier = gtk_combo_box_text_get_active_text(ramp_acceleration_dialog->port);
 
-  if(specifier != NULL &&
-     strlen(specifier) > 0){
-    pthread_mutex_lock(audio_mutex);
-    
-    list_automation = ags_automation_find_specifier(audio->automation,
-						    specifier);
-    
-    pthread_mutex_unlock(audio_mutex);
-  }
-    
-  /* reset range */
-  if(list_automation != NULL){
-    AgsAutomation *automation;
+  switch(gtk_notebook_get_current_page(automation_editor->notebook)){
+  case 0:
+    {
+      port = ags_audio_collect_all_audio_ports_by_specifier_and_context(machine->audio,
+									specifier,
+									TRUE);
+      start_port = port;
+      
+      port = ags_audio_collect_all_audio_ports_by_specifier_and_context(machine->audio,
+									specifier,
+									FALSE);
 
-    automation = AGS_AUTOMATION(list_automation->data);
+      if(start_port != NULL){
+	start_port = g_list_concat(start_port,
+				   port);
+      }else{
+	start_port = port;
+      }
+
+      port = start_port;
+    }
+    break;
+  case 1:
+    {
+      g_object_get(machine->audio,
+		   "output", &channel,
+		   NULL);
+
+      start_port = NULL;
+      
+      while(channel != NULL){
+	port = ags_channel_collect_all_channel_ports_by_specifier_and_context(channel,
+									      specifier,
+									      TRUE);
+	if(start_port != NULL){
+	  start_port = g_list_concat(start_port,
+				     port);
+	}else{
+	  start_port = port;
+	}
+      
+	port = ags_channel_collect_all_channel_ports_by_specifier_and_context(channel,
+									      specifier,
+									      FALSE);
+
+	if(start_port != NULL){
+	  start_port = g_list_concat(start_port,
+				     port);
+	}else{
+	  start_port = port;
+	}
+
+	/* iterate */
+	g_object_get(channel,
+		     "next", &channel,
+		     NULL);
+      }
+    }
+    break;
+  case 2:
+    {
+      g_object_get(machine->audio,
+		   "input", &channel,
+		   NULL);
+
+      start_port = NULL;
+      
+      while(channel != NULL){
+	port = ags_channel_collect_all_channel_ports_by_specifier_and_context(channel,
+									      specifier,
+									      TRUE);
+	if(start_port != NULL){
+	  start_port = g_list_concat(start_port,
+				     port);
+	}else{
+	  start_port = port;
+	}
+      
+	port = ags_channel_collect_all_channel_ports_by_specifier_and_context(channel,
+									      specifier,
+									      FALSE);
+
+	if(start_port != NULL){
+	  start_port = g_list_concat(start_port,
+				     port);
+	}else{
+	  start_port = port;
+	}
+
+	/* iterate */
+	g_object_get(channel,
+		     "next", &channel,
+		     NULL);
+      }
+    }
+    break;
+  }
+  
+  /* reset range */
+  plugin_port = NULL;
+    
+  if(start_port != NULL){
+    g_object_get(start_port->data,
+		 "plugin-port", &plugin_port,
+		 NULL);      
+
+    g_list_free(start_port);
+  }
+
+  if(plugin_port != NULL){
+    gint steps;
+    gdouble lower, upper;
+
+    GValue *upper_value, *lower_value;
+    
+    /* get some fields */
+    g_object_get(plugin_port,
+		 "upper-value", &upper_value,
+		 "lower-value", &lower_value,
+		 NULL);
+    
+    upper = g_value_get_float(upper_value);
+    lower = g_value_get_float(lower_value);
+
+    steps = -1;
+
+    if(ags_plugin_port_test_flags(plugin_port, AGS_PLUGIN_PORT_TOGGLED)){
+      steps = 1;
+    }
+    
+    if(ags_plugin_port_test_flags(plugin_port, AGS_PLUGIN_PORT_INTEGER)){
+      steps = upper - lower;
+    }
+
+    if(steps == -1){
+      steps = AGS_AUTOMATION_EDIT_DEFAULT_HEIGHT;
+    }
     
     gtk_spin_button_set_range(ramp_acceleration_dialog->ramp_y0,
-			      automation->lower,
-			      automation->upper);
+			      lower,
+			      upper);
     gtk_spin_button_set_increments(ramp_acceleration_dialog->ramp_y0,
-				   (automation->upper - automation->lower) / automation->steps,
-				   (automation->upper - automation->lower) / automation->steps);
+				   (upper - lower) / steps,
+				   (upper - lower) / steps);
     
     gtk_spin_button_set_range(ramp_acceleration_dialog->ramp_y1,
-			      automation->lower,
-			      automation->upper);
+			      lower,
+			      upper);
     gtk_spin_button_set_increments(ramp_acceleration_dialog->ramp_y1,
-				   (automation->upper - automation->lower) / automation->steps,
-				   (automation->upper - automation->lower) / automation->steps);
+				   (upper - lower) / steps,
+				   (upper - lower) / steps);
     
     gtk_spin_button_set_range(ramp_acceleration_dialog->ramp_step_count,
 			      0.0,
-			      automation->steps);
+			      steps);
   }else{
     gtk_spin_button_set_range(ramp_acceleration_dialog->ramp_y0,
 			      0.0,

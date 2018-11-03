@@ -46,7 +46,7 @@ static GParamSpecPool *pspec_pool = NULL;
  *
  * Returns: the resized GParameter array
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 GParameter*
 ags_parameter_grow(GType object_type,
@@ -118,7 +118,7 @@ ags_parameter_grow(GType object_type,
  * 
  * Returns: the matching #GValue-struct or %NULL if not found
  * 
- * Since: 1.2.0
+ * Since: 2.0.0
  */
 GValue*
 ags_parameter_find(GParameter *params, guint n_params,

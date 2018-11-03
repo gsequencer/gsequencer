@@ -42,8 +42,13 @@
 #include <ags/X/machine/ags_matrix.h>
 #include <ags/X/machine/ags_synth.h>
 #include <ags/X/machine/ags_syncsynth.h>
+
+#ifdef AGS_WITH_LIBINSTPATCH
 #include <ags/X/machine/ags_ffplayer.h>
+#endif
+
 #include <ags/X/machine/ags_audiorec.h>
+
 #include <ags/X/machine/ags_ladspa_bridge.h>
 #include <ags/X/machine/ags_dssi_bridge.h>
 #include <ags/X/machine/ags_lv2_bridge.h>
@@ -670,6 +675,7 @@ ags_menu_action_add_syncsynth_callback(GtkWidget *menu_item, gpointer data)
   gtk_widget_show_all((GtkWidget *) syncsynth);
 }
 
+#ifdef AGS_WITH_LIBINSTPATCH
 void
 ags_menu_action_add_ffplayer_callback(GtkWidget *menu_item, gpointer data)
 {
@@ -714,6 +720,7 @@ ags_menu_action_add_ffplayer_callback(GtkWidget *menu_item, gpointer data)
 
   gtk_widget_show_all((GtkWidget *) ffplayer);
 }
+#endif
 
 void
 ags_menu_action_add_audiorec_callback(GtkWidget *menu_item, gpointer data)

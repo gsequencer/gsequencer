@@ -59,7 +59,7 @@ ags_oscillator_get_type(void)
   static volatile gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
-    GType ags_type_oscillator;
+    GType ags_type_oscillator = 0;
 
     static const GTypeInfo ags_oscillator_info = {
       sizeof(AgsOscillatorClass),
@@ -88,7 +88,7 @@ ags_oscillator_get_type(void)
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
 
-    g_once_init_leave (&g_define_type_id__volatile, ags_type_oscillator);
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_oscillator);
   }
 
   return g_define_type_id__volatile;
@@ -112,7 +112,7 @@ ags_oscillator_class_init(AgsOscillatorClass *oscillator)
    *
    * The ::control-change signal notifies about controls modified.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   oscillator_signals[CONTROL_CHANGED] =
     g_signal_new("control-changed",
@@ -517,7 +517,7 @@ ags_file_write_oscillator(AgsFile *file, xmlNode *parent, AgsOscillator *oscilla
  * 
  * The control changed event notifies about changed controls.
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_oscillator_control_changed(AgsOscillator *oscillator)

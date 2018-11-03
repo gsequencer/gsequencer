@@ -67,7 +67,7 @@ ags_lv2_worker_get_type()
   static volatile gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
-    GType ags_type_lv2_worker;
+    GType ags_type_lv2_worker = 0;
 
     static const GTypeInfo ags_lv2_worker_info = {
       sizeof(AgsLv2WorkerClass),
@@ -96,10 +96,10 @@ ags_lv2_worker_get_type()
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
 
-    g_once_init_leave (&g_define_type_id__volatile, ags_type_lv2_worker);
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_lv2_worker);
   }
-  
-  return(ags_type_lv2_worker);
+
+  return g_define_type_id__volatile;
 }
 
 void
@@ -334,7 +334,7 @@ ags_lv2_worker_set_property(GObject *gobject,
 	g_object_ref(returnable_thread);
       }
 
-      lv2_worker->returnable_thread == returnable_thread;
+      lv2_worker->returnable_thread = returnable_thread;
       
       pthread_mutex_unlock(lv2_worker_mutex);
     }

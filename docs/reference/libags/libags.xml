@@ -7,6 +7,7 @@
   %gtkdocentities;
 ]>
 
+<!-- Copyright (C) 2005-2018 Jo\u00EBl Kr\u00E4hemann -->
 <!-- Permission is granted to copy, distribute and/or modify this document -->
 <!-- under the terms of the GNU Free Documentation License, Version 1.3 -->
 <!-- or any later version published by the Free Software Foundation; -->
@@ -39,6 +40,7 @@
     <xi:include href="xml/ags_time.xml"/>
     <xi:include href="xml/ags_turtle.xml"/>
     <xi:include href="xml/ags_turtle_manager.xml"/>
+    <xi:include href="xml/ags_uuid.xml"/>
   </part>
 
   <part id="util">
@@ -56,24 +58,21 @@
     <xi:include href="xml/ags_applicable.xml"/>
     <xi:include href="xml/ags_application_context.xml"/>
     <xi:include href="xml/ags_async_queue.xml"/>
-    <xi:include href="xml/ags_concurrent_tree.xml"/>
     <xi:include href="xml/ags_config.xml"/>
     <xi:include href="xml/ags_connectable.xml"/>
     <xi:include href="xml/ags_countable.xml"/>
-    <xi:include href="xml/ags_distributed_manager.xml"/>
-    <xi:include href="xml/ags_dynamic_connectable.xml"/>
+    <xi:include href="xml/ags_globals.xml"/>
     <xi:include href="xml/ags_macros.xml"/>
     <xi:include href="xml/ags_main_loop.xml"/>
     <xi:include href="xml/ags_marshal.xml"/>
     <xi:include href="xml/ags_mutable.xml"/>
-    <xi:include href="xml/ags_packable.xml"/>
     <xi:include href="xml/ags_plugin.xml"/>
     <xi:include href="xml/ags_portlet.xml"/>
     <xi:include href="xml/ags_seekable.xml"/>
     <xi:include href="xml/ags_sequencer.xml"/>
     <xi:include href="xml/ags_soundcard.xml"/>
+    <xi:include href="xml/ags_sound_server.xml"/>
     <xi:include href="xml/ags_tactable.xml"/>
-    <xi:include href="xml/ags_tree_iterator.xml"/>
   </part>
   
   <part id="xml-io">
@@ -86,7 +85,6 @@
     <xi:include href="xml/ags_file_lookup.xml"/>
     <xi:include href="xml/ags_file_launch.xml"/>
     <xi:include href="xml/ags_file_util.xml"/>
-    <xi:include href="xml/ags_xml_serialization_factory.xml"/>
   </part>
 
   <part id="thread">
@@ -108,18 +106,16 @@
     <xi:include href="xml/ags_task.xml"/>
     <xi:include href="xml/ags_task_completion.xml"/>
     <xi:include href="xml/ags_task_thread.xml"/>
-    <xi:include href="xml/ags_timestamp.xml"/>
-    <xi:include href="xml/ags_timestamp_thread.xml"/>
     <xi:include href="xml/ags_thread-posix.xml"/>
     <xi:include href="xml/ags_thread_application_context.xml"/>
     <xi:include href="xml/ags_thread_pool.xml"/>
+    <xi:include href="xml/ags_timestamp.xml"/>
     <xi:include href="xml/ags_worker_thread.xml"/>
 
     <chapter id="thread-file">
       <title>Thread files - Reading/Writing audio data from disk</title>
       
       <xi:include href="xml/ags_thread_file_xml.xml"/>
-      <xi:include href="xml/ags_thread_xml_serialization_factory.xml"/>
     </chapter>
   </part>
 

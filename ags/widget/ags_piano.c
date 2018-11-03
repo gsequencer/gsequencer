@@ -137,7 +137,7 @@ ags_piano_get_type(void)
   static volatile gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
-    GType ags_type_piano;
+    GType ags_type_piano = 0;
 
     static const GTypeInfo ags_piano_info = {
       sizeof(AgsPianoClass),
@@ -155,7 +155,7 @@ ags_piano_get_type(void)
 					    "AgsPiano", &ags_piano_info,
 					    0);
 
-    g_once_init_leave (&g_define_type_id__volatile, ags_type_piano);
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_piano);
   }
 
   return g_define_type_id__volatile;
@@ -236,7 +236,7 @@ ags_piano_class_init(AgsPianoClass *piano)
    *
    * The base note to use as lower.
    * 
-   * Since: 1.2.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_string("base-note",
 				   "base note",
@@ -252,7 +252,7 @@ ags_piano_class_init(AgsPianoClass *piano)
    *
    * The base key code.
    * 
-   * Since: 1.2.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_uint("base-key-code",
 				 "base key code",
@@ -270,7 +270,7 @@ ags_piano_class_init(AgsPianoClass *piano)
    *
    * The key width to use for drawing a key.
    * 
-   * Since: 1.2.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_uint("key-width",
 				 "key width",
@@ -288,7 +288,7 @@ ags_piano_class_init(AgsPianoClass *piano)
    *
    * The key height to use for drawing a key.
    * 
-   * Since: 1.2.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_uint("key-height",
 				 "key height",
@@ -306,7 +306,7 @@ ags_piano_class_init(AgsPianoClass *piano)
    *
    * The count of keys to be drawn.
    * 
-   * Since: 1.2.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_uint("key-count",
 				 "key count",
@@ -350,7 +350,7 @@ ags_piano_class_init(AgsPianoClass *piano)
    *
    * The ::key-pressed signal notifies about key pressed.
    *
-   * Since: 1.2.0
+   * Since: 2.0.0
    */
   piano_signals[KEY_PRESSED] =
     g_signal_new("key-pressed",
@@ -371,7 +371,7 @@ ags_piano_class_init(AgsPianoClass *piano)
    *
    * The ::key-released signal notifies about key released.
    *
-   * Since: 1.2.0
+   * Since: 2.0.0
    */
   piano_signals[KEY_RELEASED] =
     g_signal_new("key-released",
@@ -392,7 +392,7 @@ ags_piano_class_init(AgsPianoClass *piano)
    *
    * The ::key-clicked signal notifies about key clicked.
    *
-   * Since: 1.2.0
+   * Since: 2.0.0
    */
   piano_signals[KEY_CLICKED] =
     g_signal_new("key-clicked",
@@ -1313,7 +1313,7 @@ ags_piano_draw(AgsPiano *piano)
  * 
  * Returns: the note as string
  * 
- * Since: 1.2.0 
+ * Since: 2.0.0 
  */
 gchar*
 ags_piano_key_code_to_note(gint key_code)
@@ -1435,7 +1435,7 @@ ags_piano_real_key_pressed(AgsPiano *piano,
  * 
  * Emits ::key-pressed event.
  * 
- * Since: 1.2.0
+ * Since: 2.0.0
  */
 void
 ags_piano_key_pressed(AgsPiano *piano,
@@ -1504,7 +1504,7 @@ ags_piano_real_key_released(AgsPiano *piano,
  * 
  * Emits ::key-released event.
  * 
- * Since: 1.2.0
+ * Since: 2.0.0
  */
 void
 ags_piano_key_released(AgsPiano *piano,
@@ -1527,7 +1527,7 @@ ags_piano_key_released(AgsPiano *piano,
  * 
  * Emits ::key-clicked event.
  * 
- * Since: 1.2.0
+ * Since: 2.0.0
  */
 void
 ags_piano_key_clicked(AgsPiano *piano,
@@ -1551,7 +1551,7 @@ ags_piano_key_clicked(AgsPiano *piano,
  * 
  * Returns: the active keys as gint array
  * 
- * Since: 1.2.0
+ * Since: 2.0.0
  */
 gint*
 ags_piano_get_active_key(AgsPiano *piano,
@@ -1588,7 +1588,7 @@ ags_piano_get_active_key(AgsPiano *piano,
  * 
  * Returns: the new #AgsPiano instance
  * 
- * Since: 1.2.0
+ * Since: 2.0.0
  */
 AgsPiano*
 ags_piano_new()

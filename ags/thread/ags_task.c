@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -20,12 +20,11 @@
 #include <ags/thread/ags_task.h>
 #include <ags/thread/ags_task_thread.h>
 
-#include <ags/object/ags_connectable.h>
+#include <stdlib.h>
 
 #include <ags/i18n.h>
 
 void ags_task_class_init(AgsTaskClass *task);
-void ags_task_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_task_init(AgsTask *task);
 void ags_task_set_property(GObject *gobject,
 			   guint prop_id,
@@ -35,8 +34,6 @@ void ags_task_get_property(GObject *gobject,
 			   guint prop_id,
 			   GValue *value,
 			   GParamSpec *param_spec);
-void ags_task_connect(AgsConnectable *connectable);
-void ags_task_disconnect(AgsConnectable *connectable);
 void ags_task_finalize(GObject *gobject);
 
 /**
@@ -63,14 +60,16 @@ enum{
 static gpointer ags_task_parent_class = NULL;
 static guint task_signals[LAST_SIGNAL];
 
+static pthread_mutex_t ags_task_class_mutex = PTHREAD_MUTEX_INITIALIZER;
+
 GType
 ags_task_get_type()
 {
   static volatile gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
-    GType ags_type_task;
-    
+    GType ags_type_task = 0;
+
     static const GTypeInfo ags_task_info = {
       sizeof(AgsTaskClass),
       NULL, /* base_init */
@@ -83,22 +82,12 @@ ags_task_get_type()
       (GInstanceInitFunc) ags_task_init,
     };
 
-    static const GInterfaceInfo ags_connectable_interface_info = {
-      (GInterfaceInitFunc) ags_task_connectable_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-
     ags_type_task = g_type_register_static(G_TYPE_OBJECT,
 					   "AgsTask",
 					   &ags_task_info,
 					   0);
 
-    g_type_add_interface_static(ags_type_task,
-				AGS_TYPE_CONNECTABLE,
-				&ags_connectable_interface_info);
-
-    g_once_init_leave (&g_define_type_id__volatile, ags_type_task);
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_task);
   }
 
   return g_define_type_id__volatile;
@@ -126,7 +115,7 @@ ags_task_class_init(AgsTaskClass *task)
    *
    * The assigned #AgsTaskThread
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("task-thread",
 				   i18n_pspec("the task thread object"),
@@ -148,7 +137,7 @@ ags_task_class_init(AgsTaskClass *task)
    *
    * The ::launch signal is emited in a thread safe context
    *
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   task_signals[LAUNCH] =
     g_signal_new("launch",
@@ -166,7 +155,7 @@ ags_task_class_init(AgsTaskClass *task)
    *
    * The ::failure signal is emited if ::launch fails
    *
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   task_signals[FAILURE] =
     g_signal_new("failure",
@@ -180,19 +169,32 @@ ags_task_class_init(AgsTaskClass *task)
 }
 
 void
-ags_task_connectable_interface_init(AgsConnectableInterface *connectable)
-{
-  connectable->is_ready = NULL;
-  connectable->is_connected = NULL;
-  connectable->connect = ags_task_connect;
-  connectable->disconnect = ags_task_disconnect;
-}
-
-void
 ags_task_init(AgsTask *task)
 {
+  int err;
+  
   task->flags = 0;
 
+  /* task mutex */
+  task->obj_mutexattr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
+
+  pthread_mutexattr_init(task->obj_mutexattr);
+  pthread_mutexattr_settype(task->obj_mutexattr,
+			    PTHREAD_MUTEX_RECURSIVE);
+
+#ifdef __linux__
+  err = pthread_mutexattr_setprotocol(task->obj_mutexattr,
+				      PTHREAD_PRIO_INHERIT);
+
+  if(err != 0){
+    g_warning("no priority inheritance");
+  }
+#endif
+  
+  task->obj_mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
+  pthread_mutex_init(task->obj_mutex,
+		     task->obj_mutexattr);
+  
   task->name = NULL;
 
   task->delay = 0;
@@ -210,7 +212,16 @@ ags_task_set_property(GObject *gobject,
 {
   AgsTask *task;
 
+  pthread_mutex_t *task_mutex;
+  
   task = AGS_TASK(gobject);
+
+  /* get task mutex */
+  pthread_mutex_lock(ags_task_get_class_mutex());
+
+  task_mutex = task->obj_mutex;
+  
+  pthread_mutex_unlock(ags_task_get_class_mutex());
 
   switch(prop_id){
   case PROP_TASK_THREAD:
@@ -219,7 +230,11 @@ ags_task_set_property(GObject *gobject,
 
       task_thread = (AgsTaskThread *) g_value_get_object(value);
 
+      pthread_mutex_lock(task_mutex);
+      
       if(task->task_thread == (GObject *) task_thread){
+	pthread_mutex_unlock(task_mutex);
+
 	return;
       }
 
@@ -232,6 +247,8 @@ ags_task_set_property(GObject *gobject,
       }
       
       task->task_thread = (GObject *) task_thread;
+
+      pthread_mutex_unlock(task_mutex);
     }
     break;
   default:
@@ -248,30 +265,31 @@ ags_task_get_property(GObject *gobject,
 {
   AgsTask *task;
 
+  pthread_mutex_t *task_mutex;
+
   task = AGS_TASK(gobject);
+
+  /* get task mutex */
+  pthread_mutex_lock(ags_task_get_class_mutex());
+
+  task_mutex = task->obj_mutex;
+  
+  pthread_mutex_unlock(ags_task_get_class_mutex());
 
   switch(prop_id){
   case PROP_TASK_THREAD:
     {
+      pthread_mutex_lock(task_mutex);
+
       g_value_set_object(value, task->task_thread);
+
+      pthread_mutex_unlock(task_mutex);
     }
     break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
   }
-}
-
-void
-ags_task_connect(AgsConnectable *connectable)
-{
-  /* empty */
-}
-
-void
-ags_task_disconnect(AgsConnectable *connectable)
-{
-  /* empty */
 }
 
 void
@@ -286,8 +304,140 @@ ags_task_finalize(GObject *gobject)
   }
 
   pthread_cond_destroy(&(task->wait_sync_task_cond));
+  
+  /* task mutex */
+  pthread_mutexattr_destroy(task->obj_mutexattr);
+  free(task->obj_mutexattr);
 
+  pthread_mutex_destroy(task->obj_mutex);
+  free(task->obj_mutex);
+
+  /* call parent */
   G_OBJECT_CLASS(ags_task_parent_class)->finalize(gobject);
+}
+
+/**
+ * ags_task_get_class_mutex:
+ * 
+ * Use this function's returned mutex to access mutex fields.
+ *
+ * Returns: the class mutex
+ * 
+ * Since: 2.0.0
+ */
+pthread_mutex_t*
+ags_task_get_class_mutex()
+{
+  return(&ags_task_class_mutex);
+}
+
+/**
+ * ags_task_test_flags:
+ * @task: the #AgsTask
+ * @flags: the flags
+ *
+ * Test @flags to be set on @task.
+ * 
+ * Returns: %TRUE if flags are set, else %FALSE
+ *
+ * Since: 2.0.0
+ */
+gboolean
+ags_task_test_flags(AgsTask *task, guint flags)
+{
+  gboolean retval;  
+  
+  pthread_mutex_t *task_mutex;
+
+  if(!AGS_IS_TASK(task)){
+    return(FALSE);
+  }
+
+  /* get task mutex */
+  pthread_mutex_lock(ags_task_get_class_mutex());
+  
+  task_mutex = task->obj_mutex;
+  
+  pthread_mutex_unlock(ags_task_get_class_mutex());
+
+  /* test */
+  pthread_mutex_lock(task_mutex);
+
+  retval = (flags & (task->flags)) ? TRUE: FALSE;
+  
+  pthread_mutex_unlock(task_mutex);
+
+  return(retval);
+}
+
+/**
+ * ags_task_set_flags:
+ * @task: the #AgsTask
+ * @flags: see enum AgsTaskFlags
+ *
+ * Enable a feature of #AgsTask.
+ *
+ * Since: 2.0.0
+ */
+void
+ags_task_set_flags(AgsTask *task, guint flags)
+{
+  guint task_flags;
+  
+  pthread_mutex_t *task_mutex;
+
+  if(!AGS_IS_TASK(task)){
+    return;
+  }
+
+  /* get task mutex */
+  pthread_mutex_lock(ags_task_get_class_mutex());
+  
+  task_mutex = task->obj_mutex;
+  
+  pthread_mutex_unlock(ags_task_get_class_mutex());
+
+  /* set flags */
+  pthread_mutex_lock(task_mutex);
+
+  task->flags |= flags;
+  
+  pthread_mutex_unlock(task_mutex);
+}
+    
+/**
+ * ags_task_unset_flags:
+ * @task: the #AgsTask
+ * @flags: see enum AgsTaskFlags
+ *
+ * Disable a feature of AgsTask.
+ *
+ * Since: 2.0.0
+ */
+void
+ags_task_unset_flags(AgsTask *task, guint flags)
+{
+  guint task_flags;
+  
+  pthread_mutex_t *task_mutex;
+
+  if(!AGS_IS_TASK(task)){
+    return;
+  }
+
+  /* get task mutex */
+  pthread_mutex_lock(ags_task_get_class_mutex());
+  
+  task_mutex = task->obj_mutex;
+  
+  pthread_mutex_unlock(ags_task_get_class_mutex());
+
+  /* unset flags */
+  pthread_mutex_lock(task_mutex);
+
+  task->flags &= (~flags);
+  
+  pthread_mutex_unlock(task_mutex);
 }
 
 /**
@@ -296,7 +446,7 @@ ags_task_finalize(GObject *gobject)
  *
  * Intercept task.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_task_launch(AgsTask *task)
@@ -316,7 +466,7 @@ ags_task_launch(AgsTask *task)
  *
  * Signals failure of task.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_task_failure(AgsTask *task, GError *error)
@@ -337,7 +487,7 @@ ags_task_failure(AgsTask *task, GError *error)
  *
  * Returns: a new #AgsTask
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsTask*
 ags_task_new()

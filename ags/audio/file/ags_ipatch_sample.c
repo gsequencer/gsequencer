@@ -22,6 +22,7 @@
 #include <ags/libags.h>
 
 #include <ags/audio/ags_audio_signal.h>
+#include <ags/audio/ags_audio_buffer_util.h>
 
 #include <ags/audio/file/ags_sound_resource.h>
 
@@ -30,6 +31,7 @@
 #include <ags/i18n.h>
 
 void ags_ipatch_sample_class_init(AgsIpatchSampleClass *ipatch_sample);
+void ags_ipatch_sample_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_ipatch_sample_sound_resource_interface_init(AgsSoundResourceInterface *sound_resource);
 void ags_ipatch_sample_init(AgsIpatchSample *ipatch_sample);
 void ags_ipatch_sample_set_property(GObject *gobject,
@@ -42,6 +44,19 @@ void ags_ipatch_sample_get_property(GObject *gobject,
 				    GParamSpec *param_spec);
 void ags_ipatch_sample_dispose(GObject *gobject);
 void ags_ipatch_sample_finalize(GObject *gobject);
+
+AgsUUID* ags_ipatch_sample_get_uuid(AgsConnectable *connectable);
+gboolean ags_ipatch_sample_has_resource(AgsConnectable *connectable);
+gboolean ags_ipatch_sample_is_ready(AgsConnectable *connectable);
+void ags_ipatch_sample_add_to_registry(AgsConnectable *connectable);
+void ags_ipatch_sample_remove_from_registry(AgsConnectable *connectable);
+xmlNode* ags_ipatch_sample_list_resource(AgsConnectable *connectable);
+xmlNode* ags_ipatch_sample_xml_compose(AgsConnectable *connectable);
+void ags_ipatch_sample_xml_parse(AgsConnectable *connectable,
+				   xmlNode *node);
+gboolean ags_ipatch_sample_is_connected(AgsConnectable *connectable);
+void ags_ipatch_sample_connect(AgsConnectable *connectable);
+void ags_ipatch_sample_disconnect(AgsConnectable *connectable);
 
 gboolean ags_ipatch_sample_info(AgsSoundResource *sound_resource,
 				guint *frame_count,
@@ -86,14 +101,17 @@ enum{
 };
 
 static gpointer ags_ipatch_sample_parent_class = NULL;
-static AgsSoundResourceInterface *ags_ipatch_sample_parent_sound_resource_interface;
+
+static pthread_mutex_t ags_ipatch_sample_class_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 GType
 ags_ipatch_sample_get_type()
 {
-  static GType ags_type_ipatch_sample = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_ipatch_sample){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_ipatch_sample = 0;
+
     static const GTypeInfo ags_ipatch_sample_info = {
       sizeof(AgsIpatchSampleClass),
       NULL, /* base_init */
@@ -104,6 +122,12 @@ ags_ipatch_sample_get_type()
       sizeof(AgsIpatchSample),
       0,    /* n_preallocs */
       (GInstanceInitFunc) ags_ipatch_sample_init,
+    };
+
+    static const GInterfaceInfo ags_connectable_interface_info = {
+      (GInterfaceInitFunc) ags_ipatch_sample_connectable_interface_init,
+      NULL, /* interface_finalize */
+      NULL, /* interface_data */
     };
 
     static const GInterfaceInfo ags_sound_resource_interface_info = {
@@ -118,11 +142,17 @@ ags_ipatch_sample_get_type()
 						    0);
 
     g_type_add_interface_static(ags_type_ipatch_sample,
+				AGS_TYPE_CONNECTABLE,
+				&ags_connectable_interface_info);
+
+    g_type_add_interface_static(ags_type_ipatch_sample,
 				AGS_TYPE_SOUND_RESOURCE,
 				&ags_sound_resource_interface_info);
+
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_ipatch_sample);
   }
-  
-  return(ags_type_ipatch_sample);
+
+  return g_define_type_id__volatile;
 }
 
 void
@@ -197,10 +227,31 @@ ags_ipatch_sample_class_init(AgsIpatchSampleClass *ipatch_sample)
 }
 
 void
+ags_ipatch_sample_connectable_interface_init(AgsConnectableInterface *connectable)
+{
+  connectable->get_uuid = ags_ipatch_sample_get_uuid;
+  connectable->has_resource = ags_ipatch_sample_has_resource;
+  connectable->is_ready = ags_ipatch_sample_is_ready;
+
+  connectable->add_to_registry = ags_ipatch_sample_add_to_registry;
+  connectable->remove_from_registry = ags_ipatch_sample_remove_from_registry;
+
+  connectable->list_resource = ags_ipatch_sample_list_resource;
+  connectable->xml_compose = ags_ipatch_sample_xml_compose;
+  connectable->xml_parse = ags_ipatch_sample_xml_parse;
+
+  connectable->is_connected = ags_ipatch_sample_is_connected;
+  
+  connectable->connect = ags_ipatch_sample_connect;
+  connectable->disconnect = ags_ipatch_sample_disconnect;
+
+  connectable->connect_connection = NULL;
+  connectable->disconnect_connection = NULL;
+}
+
+void
 ags_ipatch_sample_sound_resource_interface_init(AgsSoundResourceInterface *sound_resource)
 {
-  ags_ipatch_sample_parent_sound_resource_interface = g_type_interface_peek_parent(sound_resource);
-
   sound_resource->open = NULL;
   sound_resource->rw_open = NULL;
 
@@ -225,6 +276,32 @@ void
 ags_ipatch_sample_init(AgsIpatchSample *ipatch_sample)
 {
   AgsConfig *config;
+
+  pthread_mutex_t *mutex;
+  pthread_mutexattr_t *attr;
+
+  ipatch_sample->flags = 0;
+
+  /* add audio file mutex */
+  ipatch_sample->obj_mutexattr = 
+    attr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
+  pthread_mutexattr_init(attr);
+  pthread_mutexattr_settype(attr,
+			    PTHREAD_MUTEX_RECURSIVE);
+
+#ifdef __linux__
+  pthread_mutexattr_setprotocol(attr,
+				PTHREAD_PRIO_INHERIT);
+#endif
+
+  ipatch_sample->obj_mutex = 
+    mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
+  pthread_mutex_init(mutex,
+		     attr);  
+
+  /* uuid */
+  ipatch_sample->uuid = ags_uuid_alloc();
+  ags_uuid_generate(ipatch_sample->uuid);
 
   config = ags_config_get_instance();
 
@@ -258,7 +335,16 @@ ags_ipatch_sample_set_property(GObject *gobject,
 {
   AgsIpatchSample *ipatch_sample;
 
+  pthread_mutex_t *ipatch_sample_mutex;
+
   ipatch_sample = AGS_IPATCH_SAMPLE(gobject);
+
+  /* get ipatch sample mutex */
+  pthread_mutex_lock(ags_ipatch_sample_get_class_mutex());
+  
+  ipatch_sample_mutex = ipatch_sample->obj_mutex;
+  
+  pthread_mutex_unlock(ags_ipatch_sample_get_class_mutex());
 
   switch(prop_id){
   case PROP_BUFFER_SIZE:
@@ -267,7 +353,11 @@ ags_ipatch_sample_set_property(GObject *gobject,
 
       buffer_size = g_value_get_uint(value);
 
+      pthread_mutex_lock(ipatch_sample_mutex);
+
       if(buffer_size == ipatch_sample->buffer_size){
+	pthread_mutex_unlock(ipatch_sample_mutex);
+
 	return;	
       }
       
@@ -276,6 +366,8 @@ ags_ipatch_sample_set_property(GObject *gobject,
       ipatch_sample->buffer_size = buffer_size;
       ipatch_sample->buffer = ags_stream_alloc(ipatch_sample->buffer_size,
 					       ipatch_sample->format);
+
+      pthread_mutex_unlock(ipatch_sample_mutex);
     }
     break;
   case PROP_FORMAT:
@@ -284,7 +376,11 @@ ags_ipatch_sample_set_property(GObject *gobject,
 
       format = g_value_get_uint(value);
 
+      pthread_mutex_lock(ipatch_sample_mutex);
+
       if(format == ipatch_sample->format){
+	pthread_mutex_unlock(ipatch_sample_mutex);
+
 	return;	
       }
 
@@ -293,6 +389,8 @@ ags_ipatch_sample_set_property(GObject *gobject,
       ipatch_sample->format = format;
       ipatch_sample->buffer = ags_stream_alloc(ipatch_sample->buffer_size,
 					       ipatch_sample->format);
+
+      pthread_mutex_unlock(ipatch_sample_mutex);
     }
     break;
   case PROP_SAMPLE:
@@ -302,7 +400,11 @@ ags_ipatch_sample_set_property(GObject *gobject,
 
       sample = g_value_get_object(value);
 
+      pthread_mutex_lock(ipatch_sample_mutex);
+
       if(ipatch_sample->sample == sample){
+	pthread_mutex_unlock(ipatch_sample_mutex);
+      
 	return;
       }
 
@@ -315,6 +417,8 @@ ags_ipatch_sample_set_property(GObject *gobject,
       }
       
       ipatch_sample->sample = sample;
+
+      pthread_mutex_unlock(ipatch_sample_mutex);
 #endif
     }
     break;
@@ -331,20 +435,43 @@ ags_ipatch_sample_get_property(GObject *gobject,
 {
   AgsIpatchSample *ipatch_sample;
 
+  pthread_mutex_t *ipatch_sample_mutex;
+
+  ipatch_sample = (AgsIpatchSample *) gobject;
+
+  /* get ipatch sample mutex */
+  pthread_mutex_lock(ags_ipatch_sample_get_class_mutex());
+  
+  ipatch_sample_mutex = ipatch_sample->obj_mutex;
+  
+  pthread_mutex_unlock(ags_ipatch_sample_get_class_mutex());
+  
   switch(prop_id){
   case PROP_BUFFER_SIZE:
     {
+      pthread_mutex_lock(ipatch_sample_mutex);
+
       g_value_set_uint(value, ipatch_sample->buffer_size);
+
+      pthread_mutex_unlock(ipatch_sample_mutex);
     }
     break;
   case PROP_FORMAT:
     {
+      pthread_mutex_lock(ipatch_sample_mutex);
+
       g_value_set_uint(value, ipatch_sample->format);
+
+      pthread_mutex_unlock(ipatch_sample_mutex);
     }
     break;
   case PROP_SAMPLE:
     {
+      pthread_mutex_lock(ipatch_sample_mutex);
+
       g_value_set_object(value, ipatch_sample->sample);
+
+      pthread_mutex_unlock(ipatch_sample_mutex);
     }
     break;
   default:
@@ -376,6 +503,12 @@ ags_ipatch_sample_finalize(GObject *gobject)
 
   ipatch_sample = AGS_IPATCH_SAMPLE(gobject);
 
+  pthread_mutex_destroy(ipatch_sample->obj_mutex);
+  free(ipatch_sample->obj_mutex);
+
+  pthread_mutexattr_destroy(ipatch_sample->obj_mutexattr);
+  free(ipatch_sample->obj_mutexattr);
+
   ags_stream_free(ipatch_sample->buffer);
 
   if(ipatch_sample->sample != NULL){
@@ -384,6 +517,196 @@ ags_ipatch_sample_finalize(GObject *gobject)
   
   /* call parent */  
   G_OBJECT_CLASS(ags_ipatch_sample_parent_class)->finalize(gobject);
+}
+
+AgsUUID*
+ags_ipatch_sample_get_uuid(AgsConnectable *connectable)
+{
+  AgsIpatchSample *ipatch_sample;
+  
+  AgsUUID *ptr;
+
+  pthread_mutex_t *ipatch_sample_mutex;
+
+  ipatch_sample = AGS_IPATCH_SAMPLE(connectable);
+
+  /* get audio file mutex */
+  pthread_mutex_lock(ags_ipatch_sample_get_class_mutex());
+  
+  ipatch_sample_mutex = ipatch_sample->obj_mutex;
+  
+  pthread_mutex_unlock(ags_ipatch_sample_get_class_mutex());
+
+  /* get UUID */
+  pthread_mutex_lock(ipatch_sample_mutex);
+
+  ptr = ipatch_sample->uuid;
+
+  pthread_mutex_unlock(ipatch_sample_mutex);
+  
+  return(ptr);
+}
+
+gboolean
+ags_ipatch_sample_has_resource(AgsConnectable *connectable)
+{
+  return(TRUE);
+}
+
+gboolean
+ags_ipatch_sample_is_ready(AgsConnectable *connectable)
+{
+  AgsIpatchSample *ipatch_sample;
+  
+  gboolean is_ready;
+
+  pthread_mutex_t *ipatch_sample_mutex;
+
+  ipatch_sample = AGS_IPATCH_SAMPLE(connectable);
+
+  /* get audio file mutex */
+  pthread_mutex_lock(ags_ipatch_sample_get_class_mutex());
+  
+  ipatch_sample_mutex = ipatch_sample->obj_mutex;
+  
+  pthread_mutex_unlock(ags_ipatch_sample_get_class_mutex());
+
+  /* check is ready */
+  pthread_mutex_lock(ipatch_sample_mutex);
+  
+  is_ready = (((AGS_IPATCH_SAMPLE_ADDED_TO_REGISTRY & (ipatch_sample->flags)) != 0) ? TRUE: FALSE);
+  
+  pthread_mutex_unlock(ipatch_sample_mutex);
+
+  return(is_ready);
+}
+
+void
+ags_ipatch_sample_add_to_registry(AgsConnectable *connectable)
+{
+  AgsIpatchSample *ipatch_sample;
+
+  AgsRegistry *registry;
+  AgsRegistryEntry *entry;
+
+  AgsApplicationContext *application_context;
+
+  if(ags_connectable_is_ready(connectable)){
+    return;
+  }
+
+  ipatch_sample = AGS_IPATCH_SAMPLE(connectable);
+
+  ags_ipatch_sample_set_flags(ipatch_sample, AGS_IPATCH_SAMPLE_ADDED_TO_REGISTRY);
+
+  application_context = ags_application_context_get_instance();
+
+  registry = ags_service_provider_get_registry(AGS_SERVICE_PROVIDER(application_context));
+
+  if(registry != NULL){
+    entry = ags_registry_entry_alloc(registry);
+    g_value_set_object(&(entry->entry),
+		       (gpointer) ipatch_sample);
+    ags_registry_add_entry(registry,
+			   entry);
+  }  
+}
+
+void
+ags_ipatch_sample_remove_from_registry(AgsConnectable *connectable)
+{
+  if(!ags_connectable_is_ready(connectable)){
+    return;
+  }
+
+  //TODO:JK: implement me
+}
+
+xmlNode*
+ags_ipatch_sample_list_resource(AgsConnectable *connectable)
+{
+  xmlNode *node;
+  
+  node = NULL;
+
+  //TODO:JK: implement me
+  
+  return(node);
+}
+
+xmlNode*
+ags_ipatch_sample_xml_compose(AgsConnectable *connectable)
+{
+  xmlNode *node;
+  
+  node = NULL;
+
+  //TODO:JK: implement me
+  
+  return(node);
+}
+
+void
+ags_ipatch_sample_xml_parse(AgsConnectable *connectable,
+			      xmlNode *node)
+{
+  //TODO:JK: implement me  
+}
+
+gboolean
+ags_ipatch_sample_is_connected(AgsConnectable *connectable)
+{
+  AgsIpatchSample *ipatch_sample;
+  
+  gboolean is_connected;
+
+  pthread_mutex_t *ipatch_sample_mutex;
+
+  ipatch_sample = AGS_IPATCH_SAMPLE(connectable);
+
+  /* get audio file mutex */
+  pthread_mutex_lock(ags_ipatch_sample_get_class_mutex());
+  
+  ipatch_sample_mutex = ipatch_sample->obj_mutex;
+  
+  pthread_mutex_unlock(ags_ipatch_sample_get_class_mutex());
+
+  /* check is connected */
+  pthread_mutex_lock(ipatch_sample_mutex);
+
+  is_connected = (((AGS_IPATCH_SAMPLE_CONNECTED & (ipatch_sample->flags)) != 0) ? TRUE: FALSE);
+  
+  pthread_mutex_unlock(ipatch_sample_mutex);
+
+  return(is_connected);
+}
+
+void
+ags_ipatch_sample_connect(AgsConnectable *connectable)
+{
+  AgsIpatchSample *ipatch_sample;
+
+  if(ags_connectable_is_connected(connectable)){
+    return;
+  }
+
+  ipatch_sample = AGS_IPATCH_SAMPLE(connectable);
+  
+  ags_ipatch_sample_set_flags(ipatch_sample, AGS_IPATCH_SAMPLE_CONNECTED);
+}
+
+void
+ags_ipatch_sample_disconnect(AgsConnectable *connectable)
+{
+  AgsIpatchSample *ipatch_sample;
+
+  if(!ags_connectable_is_connected(connectable)){
+    return;
+  }
+
+  ipatch_sample = AGS_IPATCH_SAMPLE(connectable);
+
+  ags_ipatch_sample_unset_flags(ipatch_sample, AGS_IPATCH_SAMPLE_CONNECTED);
 }
 
 gboolean
@@ -779,6 +1102,130 @@ ags_ipatch_sample_seek(AgsSoundResource *sound_resource,
       }
     }
   }
+}
+
+/**
+ * ags_ipatch_sample_get_class_mutex:
+ * 
+ * Use this function's returned mutex to access mutex fields.
+ *
+ * Returns: the class mutex
+ * 
+ * Since: 2.0.36
+ */
+pthread_mutex_t*
+ags_ipatch_sample_get_class_mutex()
+{
+  return(&ags_ipatch_sample_class_mutex);
+}
+
+/**
+ * ags_ipatch_sample_test_flags:
+ * @ipatch_sample: the #AgsIpatchSample
+ * @flags: the flags
+ *
+ * Test @flags to be set on @ipatch_sample.
+ * 
+ * Returns: %TRUE if flags are set, else %FALSE
+ *
+ * Since: 2.0.36
+ */
+gboolean
+ags_ipatch_sample_test_flags(AgsIpatchSample *ipatch_sample, guint flags)
+{
+  gboolean retval;  
+  
+  pthread_mutex_t *ipatch_sample_mutex;
+
+  if(!AGS_IS_IPATCH_SAMPLE(ipatch_sample)){
+    return(FALSE);
+  }
+
+  /* get ipatch_sample mutex */
+  pthread_mutex_lock(ags_ipatch_sample_get_class_mutex());
+  
+  ipatch_sample_mutex = ipatch_sample->obj_mutex;
+  
+  pthread_mutex_unlock(ags_ipatch_sample_get_class_mutex());
+
+  /* test */
+  pthread_mutex_lock(ipatch_sample_mutex);
+
+  retval = (flags & (ipatch_sample->flags)) ? TRUE: FALSE;
+  
+  pthread_mutex_unlock(ipatch_sample_mutex);
+
+  return(retval);
+}
+
+/**
+ * ags_ipatch_sample_set_flags:
+ * @ipatch_sample: the #AgsIpatchSample
+ * @flags: see #AgsIpatchSampleFlags-enum
+ *
+ * Enable a feature of @ipatch_sample.
+ *
+ * Since: 2.0.36
+ */
+void
+ags_ipatch_sample_set_flags(AgsIpatchSample *ipatch_sample, guint flags)
+{
+  pthread_mutex_t *ipatch_sample_mutex;
+
+  if(!AGS_IS_IPATCH_SAMPLE(ipatch_sample)){
+    return;
+  }
+
+  /* get ipatch_sample mutex */
+  pthread_mutex_lock(ags_ipatch_sample_get_class_mutex());
+  
+  ipatch_sample_mutex = ipatch_sample->obj_mutex;
+  
+  pthread_mutex_unlock(ags_ipatch_sample_get_class_mutex());
+
+  //TODO:JK: add more?
+
+  /* set flags */
+  pthread_mutex_lock(ipatch_sample_mutex);
+
+  ipatch_sample->flags |= flags;
+  
+  pthread_mutex_unlock(ipatch_sample_mutex);
+}
+    
+/**
+ * ags_ipatch_sample_unset_flags:
+ * @ipatch_sample: the #AgsIpatchSample
+ * @flags: see #AgsIpatchSampleFlags-enum
+ *
+ * Disable a feature of @ipatch_sample.
+ *
+ * Since: 2.0.36
+ */
+void
+ags_ipatch_sample_unset_flags(AgsIpatchSample *ipatch_sample, guint flags)
+{  
+  pthread_mutex_t *ipatch_sample_mutex;
+
+  if(!AGS_IS_IPATCH_SAMPLE(ipatch_sample)){
+    return;
+  }
+
+  /* get ipatch_sample mutex */
+  pthread_mutex_lock(ags_ipatch_sample_get_class_mutex());
+  
+  ipatch_sample_mutex = ipatch_sample->obj_mutex;
+  
+  pthread_mutex_unlock(ags_ipatch_sample_get_class_mutex());
+
+  //TODO:JK: add more?
+
+  /* unset flags */
+  pthread_mutex_lock(ipatch_sample_mutex);
+
+  ipatch_sample->flags &= (~flags);
+  
+  pthread_mutex_unlock(ipatch_sample_mutex);
 }
 
 /**

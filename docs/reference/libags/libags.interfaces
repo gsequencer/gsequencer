@@ -2,7 +2,7 @@ AgsApplicationContext AgsConnectable
 AgsServerApplicationContext AgsConnectable AgsConcurrencyProvider AgsServiceProvider
 AgsThreadApplicationContext AgsConnectable AgsConcurrencyProvider
 AgsThread AgsConnectable
-AgsAutosaveThread AgsConnectable AgsMainLoop
+AgsAutosaveThread AgsConnectable
 AgsWorkerThread AgsConnectable
 AgsDestroyWorker AgsConnectable
 AgsGenericMainLoop AgsConnectable AgsMainLoop
@@ -11,25 +11,14 @@ AgsTaskThread AgsConnectable AgsAsyncQueue
 AgsRemoteTaskThread AgsConnectable AgsAsyncQueue
 AgsReturnableThread AgsConnectable
 AgsSingleThread AgsConnectable
-AgsTimestampThread AgsConnectable
-AgsConditionManager AgsConnectable
-AgsConfig AgsConnectable
 AgsFileLink AgsPlugin
 AgsFrontController AgsConnectable
 AgsHistory AgsConnectable
-AgsMessageDelivery AgsConnectable
-AgsMessageQueue AgsConnectable
-AgsMutexManager AgsConnectable
-AgsPollFd AgsConnectable
 AgsRegistry AgsConnectable
 AgsRemoteTask AgsConnectable
 AgsServer AgsConnectable
 AgsServerStatus AgsConnectable
 AgsTaskCompletion AgsConnectable
-AgsTask AgsConnectable
-AgsThreadPool AgsConnectable
-AgsThreadXmlSerializationFactory AgsConnectable
 AgsXmlAuthentication AgsAuthentication
 AgsXmlCertificate AgsCertificate
 AgsXmlPasswordStore AgsPasswordStore
-AgsXmlSerializationFactory AgsConnectable

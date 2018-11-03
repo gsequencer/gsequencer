@@ -33,7 +33,11 @@
 #include <ags/X/machine/ags_matrix.h>
 #include <ags/X/machine/ags_synth.h>
 #include <ags/X/machine/ags_syncsynth.h>
+
+#ifdef AGS_WITH_LIBINSTPATCH
 #include <ags/X/machine/ags_ffplayer.h>
+#endif
+
 #include <ags/X/machine/ags_audiorec.h>
 #include <ags/X/machine/ags_ladspa_bridge.h>
 #include <ags/X/machine/ags_dssi_bridge.h>
@@ -97,7 +101,7 @@ ags_window_get_type()
   static volatile gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
-    GType ags_type_window;
+    GType ags_type_window = 0;
 
     static const GTypeInfo ags_window_info = {
       sizeof (AgsWindowClass),
@@ -124,8 +128,8 @@ ags_window_get_type()
     g_type_add_interface_static(ags_type_window,
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
-    
-    g_once_init_leave (&g_define_type_id__volatile, ags_type_window);
+
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_window);
   }
 
   return g_define_type_id__volatile;
@@ -646,9 +650,13 @@ ags_window_standard_machine_counter_alloc()
   machine_counter = g_list_prepend(machine_counter,
 				   ags_machine_counter_alloc(AGS_RECALL_DEFAULT_VERSION, AGS_RECALL_DEFAULT_BUILD_ID,
 							     AGS_TYPE_SYNCSYNTH, 0));
+
+#ifdef AGS_WITH_LIBINSTPATCH
   machine_counter = g_list_prepend(machine_counter,
 				   ags_machine_counter_alloc(AGS_RECALL_DEFAULT_VERSION, AGS_RECALL_DEFAULT_BUILD_ID,
 							     AGS_TYPE_FFPLAYER, 0));
+#endif
+  
   machine_counter = g_list_prepend(machine_counter,
 				   ags_machine_counter_alloc(AGS_RECALL_DEFAULT_VERSION, AGS_RECALL_DEFAULT_BUILD_ID,
 							     AGS_TYPE_AUDIOREC, 0));

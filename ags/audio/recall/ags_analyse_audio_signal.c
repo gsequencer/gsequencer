@@ -50,9 +50,11 @@ static gpointer ags_analyse_audio_signal_parent_class = NULL;
 GType
 ags_analyse_audio_signal_get_type()
 {
-  static GType ags_type_analyse_audio_signal = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_analyse_audio_signal){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_analyse_audio_signal = 0;
+
     static const GTypeInfo ags_analyse_audio_signal_info = {
       sizeof (AgsAnalyseAudioSignalClass),
       NULL, /* base_init */
@@ -69,9 +71,11 @@ ags_analyse_audio_signal_get_type()
 							   "AgsAnalyseAudioSignal",
 							   &ags_analyse_audio_signal_info,
 							   0);
+
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_analyse_audio_signal);
   }
 
-  return(ags_type_analyse_audio_signal);
+  return g_define_type_id__volatile;
 }
 
 void
@@ -138,7 +142,7 @@ ags_analyse_audio_signal_run_inter(AgsRecall *recall)
 
   /* call parent */
   parent_class_run_inter(recall);
-
+  
   /* get some fields */
   g_object_get(analyse_audio_signal,
 	       "source", &source,

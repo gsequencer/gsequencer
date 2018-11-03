@@ -178,6 +178,64 @@ ags_notation_toolbar_tool_popup_position_cursor_callback(GtkWidget *item, AgsNot
 }
 
 void
+ags_notation_toolbar_tool_popup_enable_all_lines_callback(GtkWidget *item, AgsNotationToolbar *notation_toolbar)
+{
+  AgsNotationEditor *notation_editor;
+  AgsNotebook *notebook;
+  
+  notation_editor = (AgsNotationEditor *) gtk_widget_get_ancestor((GtkWidget *) notation_toolbar,
+								  AGS_TYPE_NOTATION_EDITOR);
+
+  /* enable */
+  notebook = notation_editor->notebook;
+
+  if(notebook != NULL){
+    GList *start_list, *list;
+
+    list =
+      start_list = g_list_copy(notebook->tab);
+
+    while(list != NULL){
+      gtk_toggle_button_set_active(AGS_NOTEBOOK_TAB(list->data)->toggle,
+				   TRUE);
+
+      list = list->next;
+    }
+    
+    g_list_free(start_list);
+  }
+}
+
+void
+ags_notation_toolbar_tool_popup_disable_all_lines_callback(GtkWidget *item, AgsNotationToolbar *notation_toolbar)
+{
+  AgsNotationEditor *notation_editor;
+  AgsNotebook *notebook;
+  
+  notation_editor = (AgsNotationEditor *) gtk_widget_get_ancestor((GtkWidget *) notation_toolbar,
+								  AGS_TYPE_NOTATION_EDITOR);
+
+  /* disable */
+  notebook = notation_editor->notebook;
+
+  if(notebook != NULL){
+    GList *start_list, *list;
+
+    list =
+      start_list = g_list_copy(notebook->tab);
+
+    while(list != NULL){
+      gtk_toggle_button_set_active(AGS_NOTEBOOK_TAB(list->data)->toggle,
+				   FALSE);
+
+      list = list->next;
+    }
+
+    g_list_free(start_list);
+  }
+}
+
+void
 ags_notation_toolbar_zoom_callback(GtkComboBox *combo_box, AgsNotationToolbar *notation_toolbar)
 {
   AgsNotationEditor *notation_editor;
@@ -202,4 +260,15 @@ ags_notation_toolbar_zoom_callback(GtkComboBox *combo_box, AgsNotationToolbar *n
   notation_edit->ruler->scale_precision = 1.0 / zoom;
   
   gtk_widget_queue_draw((GtkWidget *) notation_edit->ruler);
+}
+
+void
+ags_notation_toolbar_opacity_callback(GtkSpinButton *spin_button, AgsNotationToolbar *notation_toolbar)
+{
+  AgsNotationEditor *notation_editor;
+
+  notation_editor = gtk_widget_get_ancestor(notation_toolbar,
+					    AGS_TYPE_NOTATION_EDITOR);
+  
+  gtk_widget_queue_draw(notation_editor->notation_edit);
 }

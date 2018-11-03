@@ -64,7 +64,7 @@ ags_drum_output_pad_get_type()
   static volatile gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
-    GType ags_type_drum_output_pad;
+    GType ags_type_drum_output_pad = 0;
 
     static const GTypeInfo ags_drum_output_pad_info = {
       sizeof(AgsDrumOutputPadClass),
@@ -102,7 +102,7 @@ ags_drum_output_pad_get_type()
 				AGS_TYPE_PLUGIN,
 				&ags_plugin_interface_info);
 
-    g_once_init_leave (&g_define_type_id__volatile, ags_type_drum_output_pad);
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_drum_output_pad);
   }
 
   return g_define_type_id__volatile;
@@ -223,7 +223,7 @@ ags_drum_output_pad_resize_lines(AgsPad *pad, GType line_type,
  *
  * Returns: the new #AgsDrumOutputPad
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsDrumOutputPad*
 ags_drum_output_pad_new(AgsChannel *channel)

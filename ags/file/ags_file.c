@@ -114,13 +114,15 @@ enum{
 static gpointer ags_file_parent_class = NULL;
 static guint file_signals[LAST_SIGNAL] = { 0 };
 
+static pthread_mutex_t ags_file_class_mutex = PTHREAD_MUTEX_INITIALIZER;
+
 GType
 ags_file_get_type()
 {
   static volatile gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
-    GType ags_type_file;
+    GType ags_type_file = 0;
 
     static const GTypeInfo ags_file_info = {
       sizeof(AgsFileClass),
@@ -139,7 +141,7 @@ ags_file_get_type()
 					   &ags_file_info,
 					   0);
 
-    g_once_init_leave (&g_define_type_id__volatile, ags_type_file);
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_file);
   }
 
   return g_define_type_id__volatile;
@@ -167,7 +169,7 @@ ags_file_class_init(AgsFileClass *file)
    *
    * The assigned filename to open and read from.
    *
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_string("filename",
 				   i18n_pspec("filename to read or write"),
@@ -183,7 +185,7 @@ ags_file_class_init(AgsFileClass *file)
    *
    * The charset encoding to use.
    *
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_string("encoding",
 				   i18n_pspec("encoding to use"),
@@ -199,7 +201,7 @@ ags_file_class_init(AgsFileClass *file)
    *
    * The format of embedded audio data.
    *
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_string("audio-format",
 				   i18n_pspec("audio format to use"),
@@ -215,7 +217,7 @@ ags_file_class_init(AgsFileClass *file)
    *
    * The encoding to use for embedding audio data.
    *
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_string("audio-encoding",
 				   i18n_pspec("audio encoding to use"),
@@ -231,7 +233,7 @@ ags_file_class_init(AgsFileClass *file)
    *
    * The assigned xml-doc.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_pointer("xml-doc",
 				    i18n_pspec("xml document of file"),
@@ -246,7 +248,7 @@ ags_file_class_init(AgsFileClass *file)
    *
    * The application context assigned with.
    *
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("application-context",
 				   i18n_pspec("application context of file"),
@@ -277,7 +279,7 @@ ags_file_class_init(AgsFileClass *file)
    * 
    * Open @file with appropriate filename.
    *
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   file_signals[OPEN] =
     g_signal_new("open",
@@ -298,7 +300,7 @@ ags_file_class_init(AgsFileClass *file)
    * 
    * Open @file from a buffer containing the file.
    *
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   file_signals[OPEN_FROM_DATA] =
     g_signal_new("open-from-data",
@@ -320,7 +322,7 @@ ags_file_class_init(AgsFileClass *file)
    * 
    * Open @file in read-write mode.
    *
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   file_signals[RW_OPEN] =
     g_signal_new("rw-open",
@@ -339,7 +341,7 @@ ags_file_class_init(AgsFileClass *file)
    * 
    * Write XML Document to disk.
    *
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   file_signals[WRITE] =
     g_signal_new("write",
@@ -366,7 +368,7 @@ ags_file_class_init(AgsFileClass *file)
    * Resolve references and generate thus XPath expressions just
    * before writing to disk.
    *
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   file_signals[WRITE_RESOLVE] =
     g_signal_new("write_resolve",
@@ -383,7 +385,7 @@ ags_file_class_init(AgsFileClass *file)
    *
    * Read a XML document from disk with specified filename.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   file_signals[READ] =
     g_signal_new("read",
@@ -401,7 +403,7 @@ ags_file_class_init(AgsFileClass *file)
    * Resolve XPath expressions to their counterpart the newly created
    * instances refering to.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   file_signals[READ_RESOLVE] =
     g_signal_new("read_resolve",
@@ -418,7 +420,7 @@ ags_file_class_init(AgsFileClass *file)
    *
    * Hook after reading XML document to update or start the application.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   file_signals[READ_START] =
     g_signal_new("read_start",
@@ -439,7 +441,24 @@ ags_file_error_quark()
 void
 ags_file_init(AgsFile *file)
 {
+  
   file->flags = 0;
+
+  /* add file mutex */
+  file->obj_mutexattr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
+
+  pthread_mutexattr_init(file->obj_mutexattr);
+  pthread_mutexattr_settype(file->obj_mutexattr,
+			    PTHREAD_MUTEX_RECURSIVE);
+
+#ifdef __linux__
+  pthread_mutexattr_setprotocol(file->obj_mutexattr,
+				PTHREAD_PRIO_INHERIT);
+#endif
+
+  
+  file->obj_mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
+  pthread_mutex_init(file->obj_mutex, file->obj_mutexattr);
 
   file->out = NULL;
   file->buffer = NULL;
@@ -480,7 +499,16 @@ ags_file_set_property(GObject *gobject,
 {
   AgsFile *file;
 
+  pthread_mutex_t *file_mutex;
+
   file = AGS_FILE(gobject);
+
+  /* get file mutex */
+  pthread_mutex_lock(ags_file_get_class_mutex());
+  
+  file_mutex = file->obj_mutex;
+  
+  pthread_mutex_unlock(ags_file_get_class_mutex());
 
   switch(prop_id){
   case PROP_FILENAME:
@@ -489,7 +517,11 @@ ags_file_set_property(GObject *gobject,
 
       filename = g_value_get_string(value);
 
+      pthread_mutex_lock(file_mutex);
+
       if(file->filename == filename){
+	pthread_mutex_unlock(file_mutex);
+	
 	return;
       }
 
@@ -498,6 +530,8 @@ ags_file_set_property(GObject *gobject,
       }
       
       file->filename = g_strdup(filename);
+
+      pthread_mutex_unlock(file_mutex);
     }
     break;
   case PROP_ENCODING:
@@ -506,7 +540,11 @@ ags_file_set_property(GObject *gobject,
 
       encoding = g_value_get_string(value);
 
+      pthread_mutex_lock(file_mutex);
+
       file->encoding = encoding;
+
+      pthread_mutex_unlock(file_mutex);
     }
     break;
   case PROP_AUDIO_FORMAT:
@@ -515,7 +553,11 @@ ags_file_set_property(GObject *gobject,
 
       audio_format = g_value_get_string(value);
 
+      pthread_mutex_lock(file_mutex);
+
       file->audio_format = audio_format;
+
+      pthread_mutex_unlock(file_mutex);
     }
     break;
   case PROP_AUDIO_ENCODING:
@@ -524,7 +566,11 @@ ags_file_set_property(GObject *gobject,
 
       audio_encoding = g_value_get_string(value);
 
+      pthread_mutex_lock(file_mutex);
+
       file->audio_encoding = audio_encoding;
+
+      pthread_mutex_unlock(file_mutex);
     }
     break;
   case PROP_XML_DOC:
@@ -533,7 +579,11 @@ ags_file_set_property(GObject *gobject,
 
       doc = (xmlDoc *) g_value_get_pointer(value);
       
+      pthread_mutex_lock(file_mutex);
+
       file->doc = doc;
+
+      pthread_mutex_unlock(file_mutex);
     }
     break;
   case PROP_APPLICATION_CONTEXT:
@@ -542,7 +592,11 @@ ags_file_set_property(GObject *gobject,
 
       application_context = g_value_get_object(value);
 
+      pthread_mutex_lock(file_mutex);
+
       if(file->application_context == application_context){
+	pthread_mutex_unlock(file_mutex);
+
 	return;
       }
 
@@ -555,6 +609,8 @@ ags_file_set_property(GObject *gobject,
       }
 
       file->application_context = application_context;
+
+      pthread_mutex_unlock(file_mutex);
     }
     break;
   default:
@@ -571,37 +627,70 @@ ags_file_get_property(GObject *gobject,
 {
   AgsFile *file;
 
+  pthread_mutex_t *file_mutex;
+
   file = AGS_FILE(gobject);
+
+  /* get file mutex */
+  pthread_mutex_lock(ags_file_get_class_mutex());
+  
+  file_mutex = file->obj_mutex;
+  
+  pthread_mutex_unlock(ags_file_get_class_mutex());
 
   switch(prop_id){
   case PROP_FILENAME:
     {
+      pthread_mutex_lock(file_mutex);
+
       g_value_set_string(value, file->filename);
+
+      pthread_mutex_unlock(file_mutex);
     }
     break;
   case PROP_ENCODING:
     {
+      pthread_mutex_lock(file_mutex);
+
       g_value_set_string(value, file->encoding);
+
+      pthread_mutex_unlock(file_mutex);
     }
     break;
   case PROP_AUDIO_FORMAT:
     {
+      pthread_mutex_lock(file_mutex);
+
       g_value_set_string(value, file->audio_format);
+
+      pthread_mutex_unlock(file_mutex);
     }
     break;
   case PROP_AUDIO_ENCODING:
     {
+      pthread_mutex_lock(file_mutex);
+
       g_value_set_string(value, file->audio_encoding);
+
+      pthread_mutex_unlock(file_mutex);
     }
     break;
   case PROP_XML_DOC:
     {
+      pthread_mutex_lock(file_mutex);
+
       g_value_set_pointer(value, file->doc);
+
+      pthread_mutex_unlock(file_mutex);
     }
     break;
   case PROP_APPLICATION_CONTEXT:
     {
+      pthread_mutex_lock(file_mutex);
+
       g_value_set_object(value, file->application_context);
+
+      pthread_mutex_unlock(file_mutex);
     }
     break;
   default:
@@ -638,7 +727,29 @@ ags_file_finalize(GObject *gobject)
   //  xmlCleanupParser();
   //  xmlMemoryDump();
 
+  /* file mutex */
+  pthread_mutexattr_destroy(file->obj_mutexattr);
+  free(file->obj_mutexattr);
+
+  pthread_mutex_destroy(file->obj_mutex);
+  free(file->obj_mutex);
+
   G_OBJECT_CLASS(ags_file_parent_class)->finalize(gobject);
+}
+
+/**
+ * ags_file_get_class_mutex:
+ * 
+ * Use this function's returned mutex to access mutex fields.
+ *
+ * Returns: the class mutex
+ * 
+ * Since: 2.0.0
+ */
+pthread_mutex_t*
+ags_file_get_class_mutex()
+{
+  return(&ags_file_class_mutex);
 }
 
 /**
@@ -650,7 +761,7 @@ ags_file_finalize(GObject *gobject)
  *
  * Returns: the md5 checksum
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 gchar*
 ags_file_str2md5(gchar *content, guint content_length)
@@ -672,18 +783,36 @@ ags_file_str2md5(gchar *content, guint content_length)
  *
  * Adds @id_ref to @file.
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_file_add_id_ref(AgsFile *file, GObject *id_ref)
 {
-  if(id_ref == NULL)
+  pthread_mutex_t *file_mutex;
+
+  if(!AGS_IS_FILE(file) ||
+     !AGS_IS_FILE_ID_REF(id_ref)){
     return;
+  }
 
-  g_object_ref(id_ref);
+  /* get file mutex */
+  pthread_mutex_lock(ags_file_get_class_mutex());
+  
+  file_mutex = file->obj_mutex;
+  
+  pthread_mutex_unlock(ags_file_get_class_mutex());
 
-  file->id_refs = g_list_prepend(file->id_refs,
-				 id_ref);
+  /* add */
+  pthread_mutex_lock(file_mutex);
+  
+  if(g_list_find(file->id_refs,
+		 id_ref) == NULL){
+    g_object_ref(id_ref);
+    file->id_refs = g_list_prepend(file->id_refs,
+				   id_ref);
+  }
+
+  pthread_mutex_unlock(file_mutex);
 }
 
 /**
@@ -695,27 +824,58 @@ ags_file_add_id_ref(AgsFile *file, GObject *id_ref)
  * 
  * Returns: the matching #GObject
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 GObject*
 ags_file_find_id_ref_by_node(AgsFile *file, xmlNode *node)
 {
   AgsFileIdRef *file_id_ref;
-  GList *list;
 
-  list = file->id_refs;
+  xmlNode *current_node;
+  
+  GList *start_list, *list;
+
+  pthread_mutex_t *file_mutex;
+
+  if(!AGS_IS_FILE(file) ||
+     node == NULL){
+    return(NULL);
+  }
+
+  /* get file mutex */
+  pthread_mutex_lock(ags_file_get_class_mutex());
+  
+  file_mutex = file->obj_mutex;
+  
+  pthread_mutex_unlock(ags_file_get_class_mutex());
+
+  /* find */
+  file_id_ref = NULL;
+  
+  pthread_mutex_lock(file_mutex);
+
+  list =
+    start_list = g_list_copy(file->id_refs);
+
+  pthread_mutex_unlock(file_mutex);
 
   while(list != NULL){
-    file_id_ref = AGS_FILE_ID_REF(list->data);
+    g_object_get(list->data,
+		 "node", &current_node,
+		 NULL);
 
-    if(file_id_ref->node == node){
-      return((GObject *) file_id_ref);
+    if(current_node == node){
+      file_id_ref = AGS_FILE_ID_REF(list->data);
+
+      break;
     }
 
     list = list->next;
   }
 
-  return(NULL);
+  g_list_free(start_list);
+
+  return(file_id_ref);
 }
 
 /**
@@ -727,18 +887,20 @@ ags_file_find_id_ref_by_node(AgsFile *file, xmlNode *node)
  * 
  * Returns: the matching #GObject
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 GObject*
 ags_file_find_id_ref_by_xpath(AgsFile *file, gchar *xpath)
 {
   AgsFileIdRef *file_id_ref;
+
   xmlXPathContext *xpath_context; 
   xmlXPathObject *xpath_object;
   xmlNode **node;
+
   guint i;
 
-  if(file == NULL || xpath == NULL || !g_str_has_prefix(xpath, "xpath=")){
+  if(!AGS_IS_FILE(file) || xpath == NULL || !g_str_has_prefix(xpath, "xpath=")){
     g_message("invalid xpath: %s", xpath);
 
     return(NULL);
@@ -788,27 +950,57 @@ ags_file_find_id_ref_by_xpath(AgsFile *file, gchar *xpath)
  * 
  * Returns: the matching #GObject
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 GObject*
 ags_file_find_id_ref_by_reference(AgsFile *file, gpointer ref)
 {
   AgsFileIdRef *file_id_ref;
-  GList *list;
 
-  list = file->id_refs;
+  GList *start_list, *list;
+
+  gchar *current_ref;
+  
+  pthread_mutex_t *file_mutex;
+
+  if(!AGS_IS_FILE(file)){
+    return(NULL);
+  }  
+
+  /* get file mutex */
+  pthread_mutex_lock(ags_file_get_class_mutex());
+  
+  file_mutex = file->obj_mutex;
+  
+  pthread_mutex_unlock(ags_file_get_class_mutex());
+
+  /* find */
+  file_id_ref = NULL;
+  
+  pthread_mutex_lock(file_mutex);
+
+  list =
+    start_list = g_list_copy(file->id_refs);
+
+  pthread_mutex_unlock(file_mutex);
 
   while(list != NULL){
-    file_id_ref = AGS_FILE_ID_REF(list->data);
+    g_object_get(list->data,
+		 "reference", &current_ref,
+		 NULL);
 
-    if(file_id_ref->ref == ref){
-      return((GObject *) file_id_ref);
+    if(current_ref == ref){
+      file_id_ref = AGS_FILE_ID_REF(list->data);
+
+      break;
     }
 
     list = list->next;
   }
 
-  return(NULL);
+  g_list_free(start_list);
+
+  return(file_id_ref);
 }
 
 /**
@@ -818,19 +1010,36 @@ ags_file_find_id_ref_by_reference(AgsFile *file, gpointer ref)
  *
  * Add @file_lookup for later invoking.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_file_add_lookup(AgsFile *file, GObject *file_lookup)
-{
-  if(file == NULL || file_lookup == NULL){
+{  
+  pthread_mutex_t *file_mutex;
+
+  if(!AGS_IS_FILE(file) || !AGS_IS_FILE_LOOKUP(file_lookup)){
     return;
   }
 
-  g_object_ref(G_OBJECT(file_lookup));
+  /* get file mutex */
+  pthread_mutex_lock(ags_file_get_class_mutex());
+  
+  file_mutex = file->obj_mutex;
+  
+  pthread_mutex_unlock(ags_file_get_class_mutex());
 
-  file->lookup = g_list_prepend(file->lookup,
-				file_lookup);
+  /* add */
+  pthread_mutex_lock(file_mutex);
+
+  if(g_list_find(file->lookup,
+		 file_lookup) == NULL){
+    g_object_ref(G_OBJECT(file_lookup));
+    
+    file->lookup = g_list_prepend(file->lookup,
+				  file_lookup);
+  }
+
+  pthread_mutex_unlock(file_mutex);
 }
 
 /**
@@ -840,33 +1049,65 @@ ags_file_add_lookup(AgsFile *file, GObject *file_lookup)
  *
  * Add @file_launch for later invoking.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_file_add_launch(AgsFile *file, GObject *file_launch)
 {
-  if(file == NULL || file_launch == NULL){
+  pthread_mutex_t *file_mutex;
+
+  if(!AGS_IS_FILE(file) || !AGS_IS_FILE_LAUNCH(file_launch)){
     return;
   }
 
-  g_object_ref(G_OBJECT(file_launch));
+  /* get file mutex */
+  pthread_mutex_lock(ags_file_get_class_mutex());
+  
+  file_mutex = file->obj_mutex;
+  
+  pthread_mutex_unlock(ags_file_get_class_mutex());
 
-  file->launch = g_list_prepend(file->launch,
-				file_launch);
+  /* add */
+  pthread_mutex_lock(file_mutex);
+
+  if(g_list_find(file->launch,
+		 file_launch) == NULL){
+    g_object_ref(G_OBJECT(file_launch));
+
+    file->launch = g_list_prepend(file->launch,
+				  file_launch);
+  }
+  
+  pthread_mutex_unlock(file_mutex);
 }
 
 void
 ags_file_real_open(AgsFile *file,
 		   GError **error)
 {
-  if(file == NULL){
+  xmlDoc *doc;
+  
+  pthread_mutex_t *file_mutex;
+
+  if(!AGS_IS_FILE(file)){
     return;
   }
 
-  /* parse the file and get the DOM */
-  file->doc = xmlReadFile(file->filename, NULL, 0);
+  /* get file mutex */
+  pthread_mutex_lock(ags_file_get_class_mutex());
+  
+  file_mutex = file->obj_mutex;
+  
+  pthread_mutex_unlock(ags_file_get_class_mutex());
 
-  if(file->doc == NULL){
+  /* parse the file and get the DOM */
+  doc = xmlReadFile(file->filename, NULL, 0);
+
+  pthread_mutex_lock(file_mutex);
+
+  file->doc = doc;
+  
+  if(doc == NULL){
     g_warning("ags_file.c - failed to read XML document %s", file->filename);
 
     if(error != NULL){
@@ -880,6 +1121,8 @@ ags_file_real_open(AgsFile *file,
     /*Get the root element node */
     file->root_node = xmlDocGetRootElement(file->doc);
   }
+
+  pthread_mutex_unlock(file_mutex);
 }
 
 /**
@@ -889,7 +1132,7 @@ ags_file_real_open(AgsFile *file,
  *
  * Opens the file specified by :filename property.
  *
- * Since: 1.0.0 
+ * Since: 2.0.0 
  */
 void
 ags_file_open(AgsFile *file,
@@ -909,11 +1152,27 @@ ags_file_real_open_from_data(AgsFile *file,
 			     gchar *data, guint length,
 			     GError **error)
 {
-  if(file == NULL){
+  xmlDoc *doc;
+  
+  pthread_mutex_t *file_mutex;
+
+  if(!AGS_IS_FILE(file)){
     return;
   }
 
-  file->doc = xmlReadMemory(data, length, file->filename, NULL, 0);
+  /* get file mutex */
+  pthread_mutex_lock(ags_file_get_class_mutex());
+  
+  file_mutex = file->obj_mutex;
+  
+  pthread_mutex_unlock(ags_file_get_class_mutex());
+
+  /* parse */
+  doc = xmlReadMemory(data, length, file->filename, NULL, 0);
+
+  pthread_mutex_lock(file_mutex);
+
+  file->doc = doc;
 
   if(file->doc == NULL){
     g_warning("ags_file.c - failed to read XML document %s", file->filename);
@@ -929,6 +1188,8 @@ ags_file_real_open_from_data(AgsFile *file,
     /*Get the root element node */
     file->root_node = xmlDocGetRootElement(file->doc);
   }
+
+  pthread_mutex_unlock(file_mutex);
 }
 
 /**
@@ -940,7 +1201,7 @@ ags_file_real_open_from_data(AgsFile *file,
  *
  * Opens the file provided by @data.
  *
- * Since: 1.0.0 
+ * Since: 2.0.0 
  */
 void
 ags_file_open_from_data(AgsFile *file,
@@ -962,15 +1223,29 @@ ags_file_real_rw_open(AgsFile *file,
 		      gboolean create,
 		      GError **error)
 {
-  if(file == NULL){
+  pthread_mutex_t *file_mutex;
+
+  if(!AGS_IS_FILE(file)){
     return;
   }
+
+  /* get file mutex */
+  pthread_mutex_lock(ags_file_get_class_mutex());
+  
+  file_mutex = file->obj_mutex;
+  
+  pthread_mutex_unlock(ags_file_get_class_mutex());
+
+  /* create */
+  pthread_mutex_lock(file_mutex);
 
   file->out = fopen(file->filename, "w+");
 
   file->doc = xmlNewDoc("1.0");
   file->root_node = xmlNewNode(NULL, "ags");
   xmlDocSetRootElement(file->doc, file->root_node);
+
+  pthread_mutex_unlock(file_mutex);
 }
 
 /**
@@ -981,7 +1256,7 @@ ags_file_real_rw_open(AgsFile *file,
  *
  * Opens the file specified by :filename property in read-write mode.
  *
- * Since: 1.0.0 
+ * Since: 2.0.0 
  */
 void
 ags_file_rw_open(AgsFile *file,
@@ -1005,19 +1280,37 @@ ags_file_rw_open(AgsFile *file,
  *
  * Opens the file specified by @filename property.
  *
- * Since: 1.0.0 
+ * Since: 2.0.0 
  */
 void
 ags_file_open_filename(AgsFile *file,
 		       gchar *filename)
 {
-  GError *error;
+  gchar *current_filename;
   
-  if(file == NULL){
+  GError *error;
+
+  pthread_mutex_t *file_mutex;
+  
+  if(!AGS_IS_FILE(file)){
     return;
   }
 
-  if(file->filename != NULL){
+  /* get file mutex */
+  pthread_mutex_lock(ags_file_get_class_mutex());
+  
+  file_mutex = file->obj_mutex;
+  
+  pthread_mutex_unlock(ags_file_get_class_mutex());
+
+  /* check close */
+  pthread_mutex_lock(file_mutex);
+
+  current_filename = file->filename;
+  
+  pthread_mutex_unlock(file_mutex);
+
+  if(current_filename != NULL){
     ags_file_close(file);
   }
 
@@ -1034,21 +1327,35 @@ ags_file_open_filename(AgsFile *file,
  * @file: the #AgsFile
  *
  * Closes @file.
+ *
+ * Since: 2.0.0 
  */
 void
 ags_file_close(AgsFile *file)
 {
-  if(file == NULL){
+  pthread_mutex_t *file_mutex;
+
+  if(!AGS_IS_FILE(file)){
     return;
   }
+
+  /* get file mutex */
+  pthread_mutex_lock(ags_file_get_class_mutex());
+  
+  file_mutex = file->obj_mutex;
+  
+  pthread_mutex_unlock(ags_file_get_class_mutex());
+
+  /* close */
+  pthread_mutex_lock(file_mutex);
 
   if(file->out != NULL){
     fclose(file->out);
   }
-  
-  /*free the document */
-  xmlFreeDoc(file->doc);
 
+  /* free the document */
+  xmlFreeDoc(file->doc);
+  
   /*
    *Free the global variables that may
    *have been allocated by the parser.
@@ -1061,14 +1368,27 @@ ags_file_close(AgsFile *file)
   xmlMemoryDump();
 
   file->filename = NULL;
+
+  pthread_mutex_unlock(file_mutex);
 }
 
 void
 ags_file_real_write(AgsFile *file)
 {
   AgsApplicationContext *application_context;
+
   GList *list;
+
   int size;
+
+  pthread_mutex_t *file_mutex;
+
+  /* get file mutex */
+  pthread_mutex_lock(ags_file_get_class_mutex());
+  
+  file_mutex = file->obj_mutex;
+  
+  pthread_mutex_unlock(ags_file_get_class_mutex());
 
   //  ags_file_rw_open(file,
   //		   TRUE);
@@ -1121,7 +1441,7 @@ ags_file_real_write(AgsFile *file)
  *
  * Write the XML document to disk.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_file_write(AgsFile *file)
@@ -1230,17 +1550,35 @@ ags_file_write_concurrent(AgsFile *file)
 void
 ags_file_real_write_resolve(AgsFile *file)
 {
-  GList *list;
+  GList *start_list, *list;
+
+  pthread_mutex_t *file_mutex;
+
+  /* get file mutex */
+  pthread_mutex_lock(ags_file_get_class_mutex());
+  
+  file_mutex = file->obj_mutex;
+  
+  pthread_mutex_unlock(ags_file_get_class_mutex());
+
+  /* resolve */
+  pthread_mutex_lock(file_mutex);
 
   file->lookup = g_list_prepend(file->lookup,
 				NULL);
-  list = file->lookup;
+  
+  list =
+    start_list = g_list_copy(file->lookup);
+
+  pthread_mutex_unlock(file_mutex);
 
   while(list != NULL){
     ags_file_lookup_resolve(AGS_FILE_LOOKUP(list->data));
 
     list = list->next;
   }
+
+  g_list_free(start_list);
 }
 
 /**
@@ -1249,7 +1587,7 @@ ags_file_real_write_resolve(AgsFile *file)
  *
  * Resolve references to XPath expressions.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_file_write_resolve(AgsFile *file)
@@ -1266,15 +1604,31 @@ void
 ags_file_real_read(AgsFile *file)
 {
   AgsApplicationContext *application_context;
+
   xmlNode *root_node, *child;
+
   pid_t pid_num;
 
-  root_node = file->root_node;
+  pthread_mutex_t *file_mutex;
+
+  /* get file mutex */
+  pthread_mutex_lock(ags_file_get_class_mutex());
+  
+  file_mutex = file->obj_mutex;
+  
+  pthread_mutex_unlock(ags_file_get_class_mutex());
+
   
   /* child elements */
+  pthread_mutex_lock(file_mutex);
+
+  root_node = file->root_node;
+
   child = root_node->children;
   application_context = (AgsApplicationContext *) file->application_context;
   
+  pthread_mutex_unlock(file_mutex);
+
   while(child != NULL){
     if(child->type == XML_ELEMENT_NODE){
       if(!xmlStrncmp("ags-main",
@@ -1320,7 +1674,7 @@ ags_file_real_read(AgsFile *file)
  *
  * Read XML document from disk.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_file_read(AgsFile *file)
@@ -1336,26 +1690,43 @@ ags_file_read(AgsFile *file)
 void
 ags_file_real_read_resolve(AgsFile *file)
 {
-  GList *list;
+  GList *start_list, *list;
+
+  pthread_mutex_t *file_mutex;
+
+  /* get file mutex */
+  pthread_mutex_lock(ags_file_get_class_mutex());
+  
+  file_mutex = file->obj_mutex;
+  
+  pthread_mutex_unlock(ags_file_get_class_mutex());
+
+  /* resolve */
+  pthread_mutex_lock(file_mutex);
 
   file->lookup = g_list_prepend(file->lookup,
 				NULL);
-  list = g_list_reverse(file->lookup);
+  list =
+    start_list = g_list_reverse(g_list_copy(file->lookup));
   
+  pthread_mutex_unlock(file_mutex);
+
   while(list != NULL){
     ags_file_lookup_resolve(AGS_FILE_LOOKUP(list->data));
 
     list = list->next;
   }
+
+  g_list_free(start_list);
 }
 
 /**
- * ags_file_read:
+ * ags_file_resolve:
  * @file: the #AgsFile
  *
  * Resolve XPath expressions to references.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_file_read_resolve(AgsFile *file)
@@ -1371,24 +1742,41 @@ ags_file_read_resolve(AgsFile *file)
 void
 ags_file_real_read_start(AgsFile *file)
 {
-  GList *list;
+  GList *start_list, *list;
 
-  list = g_list_reverse(file->launch);
+  pthread_mutex_t *file_mutex;
 
+  /* get file mutex */
+  pthread_mutex_lock(ags_file_get_class_mutex());
+  
+  file_mutex = file->obj_mutex;
+  
+  pthread_mutex_unlock(ags_file_get_class_mutex());
+
+  /* start */
+  pthread_mutex_lock(file_mutex);
+
+  list =
+    start_list = g_list_reverse(g_list_copy(file->launch));
+
+  pthread_mutex_unlock(file_mutex);
+  
   while(list != NULL){
     ags_file_launch_start(AGS_FILE_LAUNCH(list->data));
 
     list = list->next;
   }
+
+  g_list_free(start_list);
 }
 
 /**
- * ags_file_read:
+ * ags_file_read_start:
  * @file: the #AgsFile
  *
  * Update or start the application.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_file_read_start(AgsFile *file)
@@ -1508,7 +1896,7 @@ ags_file_write_application_context(AgsFile *file, xmlNode *parent, GObject *appl
  *
  * Returns: a new #AgsFile
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsFile*
 ags_file_new()

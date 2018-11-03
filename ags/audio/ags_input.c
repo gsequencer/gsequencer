@@ -30,6 +30,7 @@
 #include <ags/audio/file/ags_audio_file.h>
 #include <ags/audio/file/ags_sound_container.h>
 #include <ags/audio/file/ags_sound_resource.h>
+#include <ags/audio/file/ags_ipatch.h>
 
 #include <ags/i18n.h>
 
@@ -76,7 +77,7 @@ ags_input_get_type (void)
   static volatile gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
-    GType ags_type_input;
+    GType ags_type_input = 0;
 
     static const GTypeInfo ags_input_info = {
       sizeof (AgsInputClass),
@@ -105,7 +106,7 @@ ags_input_get_type (void)
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
 
-    g_once_init_leave (&g_define_type_id__volatile, ags_type_input);
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_input);
   }
 
   return g_define_type_id__volatile;
@@ -338,7 +339,7 @@ ags_input_disconnect(AgsConnectable *connectable)
  * 
  * Returns: %TRUE if has a need to be processed, else %FALSE
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 gboolean
 ags_input_is_active(AgsInput *input,
@@ -491,7 +492,7 @@ ags_input_is_active(AgsInput *input,
  * 
  * Returns: next active #AgsInput, else %NULL if non available
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsInput*
 ags_input_next_active(AgsInput *input,
@@ -713,7 +714,7 @@ ags_input_remove_synth_generator(AgsInput *input,
  * 
  * Returns: %TRUE if open was successful, else %FALSE
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 gboolean
 ags_input_open_file(AgsInput *input,
@@ -804,16 +805,6 @@ ags_input_open_file(AgsInput *input,
   return(success);
 }
 
-void
-ags_input_apply_synth(AgsInput *input)
-{
-  if(!AGS_IS_INPUT(input)){
-    return;
-  }
-
-  //TODO:JK: implement me
-}
-
 /**
  * ags_input_new:
  * @audio: the #AgsAudio
@@ -822,7 +813,7 @@ ags_input_apply_synth(AgsInput *input)
  *
  * Returns: a new #AgsInput
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsInput*
 ags_input_new(GObject *audio)

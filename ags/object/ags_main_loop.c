@@ -51,15 +51,15 @@ ags_main_loop_get_type()
   static volatile gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
-    GType ags_type_main_loop;
-    
+    GType ags_type_main_loop = 0;
+
     ags_type_main_loop = g_type_register_static_simple(G_TYPE_INTERFACE,
 						       "AgsMainLoop",
 						       sizeof (AgsMainLoopInterface),
 						       (GClassInitFunc) ags_main_loop_class_init,
 						       0, NULL, 0);
 
-    g_once_init_leave (&g_define_type_id__volatile, ags_type_main_loop);
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_main_loop);
   }
 
   return g_define_type_id__volatile;
@@ -77,7 +77,7 @@ ags_main_loop_class_init(AgsMainLoopInterface *interface)
    *
    * Notify about interrupt threads.
    *
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   main_loop_signals[INTERRUPT] = 
     g_signal_new("interrupt",
@@ -99,7 +99,7 @@ ags_main_loop_class_init(AgsMainLoopInterface *interface)
    *
    * Returns: if monitor is allowed
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   main_loop_signals[MONITOR] =
     g_signal_new("monitor",
@@ -118,7 +118,7 @@ ags_main_loop_class_init(AgsMainLoopInterface *interface)
    *
    * Change frequency.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   main_loop_signals[CHANGE_FREQUENCY] =
     g_signal_new("change-frequency",
@@ -139,7 +139,7 @@ ags_main_loop_class_init(AgsMainLoopInterface *interface)
  *
  * Returns: the mutex
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 pthread_mutex_t*
 ags_main_loop_get_tree_lock(AgsMainLoop *main_loop)
@@ -160,7 +160,7 @@ ags_main_loop_get_tree_lock(AgsMainLoop *main_loop)
  *
  * Sets the application context.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_main_loop_set_application_context(AgsMainLoop *main_loop, AgsApplicationContext *application_context)
@@ -181,7 +181,7 @@ ags_main_loop_set_application_context(AgsMainLoop *main_loop, AgsApplicationCont
  *
  * Returns: the #AgsApplicationContext
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsApplicationContext*
 ags_main_loop_get_application_context(AgsMainLoop *main_loop)
@@ -201,7 +201,7 @@ ags_main_loop_get_application_context(AgsMainLoop *main_loop)
  *
  * Sets the asynchronous queue.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_main_loop_set_async_queue(AgsMainLoop *main_loop, GObject *async_queue)
@@ -222,7 +222,7 @@ ags_main_loop_set_async_queue(AgsMainLoop *main_loop, GObject *async_queue)
  *
  * Returns: the #AgsAsyncQueue
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 GObject*
 ags_main_loop_get_async_queue(AgsMainLoop *main_loop)
@@ -243,7 +243,7 @@ ags_main_loop_get_async_queue(AgsMainLoop *main_loop)
  *
  * Sets tic to @tic. 
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_main_loop_set_tic(AgsMainLoop *main_loop, guint tic)
@@ -264,7 +264,7 @@ ags_main_loop_set_tic(AgsMainLoop *main_loop, guint tic)
  *
  * Returns: current tic
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 guint
 ags_main_loop_get_tic(AgsMainLoop *main_loop)
@@ -285,7 +285,7 @@ ags_main_loop_get_tic(AgsMainLoop *main_loop)
  *
  * Sets last sync to @last_sync. 
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_main_loop_set_last_sync(AgsMainLoop *main_loop, guint last_sync)
@@ -306,7 +306,7 @@ ags_main_loop_set_last_sync(AgsMainLoop *main_loop, guint last_sync)
  *
  * Returns: last synced tic
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 guint
 ags_main_loop_get_last_sync(AgsMainLoop *main_loop)
@@ -329,7 +329,7 @@ ags_main_loop_get_last_sync(AgsMainLoop *main_loop)
  * 
  * Notify about interrupt threads.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_main_loop_interrupt(AgsMainLoop *main_loop,
@@ -354,7 +354,7 @@ ags_main_loop_interrupt(AgsMainLoop *main_loop,
  *
  * Returns: if monitor is allowed
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 gboolean
 ags_main_loop_monitor(AgsMainLoop *main_loop,
@@ -379,7 +379,7 @@ ags_main_loop_monitor(AgsMainLoop *main_loop,
  *
  * Change frequency.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_main_loop_change_frequency(AgsMainLoop *main_loop,

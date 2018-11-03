@@ -25,6 +25,8 @@
 
 #include <ags/config.h>
 
+#include <ags/libags.h>
+
 #ifdef AGS_WITH_LIBINSTPATCH
 #include <libinstpatch/libinstpatch.h>
 #endif
@@ -42,7 +44,20 @@ typedef struct _AgsIpatchDLS2Reader AgsIpatchDLS2Reader;
 typedef struct _AgsIpatchDLS2ReaderClass AgsIpatchDLS2ReaderClass;
 
 /**
- * AgsDLS2Levels:
+ * AgsIpatchDLS2ReaderFlags:
+ * @AGS_IPATCH_DLS2_READER_ADDED_TO_REGISTRY: the ipatch sample was added to registry, see #AgsConnectable::add_to_registry()
+ * @AGS_IPATCH_DLS2_READER_CONNECTED: indicates the ipatch sample was connected by calling #AgsConnectable::connect()
+ * 
+ * Enum values to control the behavior or indicate internal state of #AgsIpatchDLS2Reader by
+ * enable/disable as flags.
+ */
+typedef enum{
+  AGS_IPATCH_DLS2_READER_ADDED_TO_REGISTRY    = 1,
+  AGS_IPATCH_DLS2_READER_CONNECTED            = 1 <<  1,
+}AgsIpatchDLS2ReaderFlags;
+
+/**
+ * AgsDLS2Level:
  * @AGS_DLS2_FILENAME: filename
  * @AGS_DLS2_IHDR: instrument header
  * @AGS_DLS2_SHDR: sample header
@@ -53,11 +68,18 @@ typedef enum{
   AGS_DLS2_FILENAME = 0,
   AGS_DLS2_IHDR = 1,
   AGS_DLS2_SHDR = 2,
-}AgsDLS2Levels;
+}AgsDLS2Level;
 
 struct _AgsIpatchDLS2Reader
 {
   GObject object;
+
+  guint flags;
+
+  pthread_mutex_t *obj_mutex;
+  pthread_mutexattr_t *obj_mutexattr;
+
+  AgsUUID *uuid;
 
   guint level;
   
@@ -94,8 +116,16 @@ struct _AgsIpatchDLS2ReaderClass
 
 GType ags_ipatch_dls2_reader_get_type();
 
+pthread_mutex_t* ags_ipatch_dls2_reader_get_class_mutex();
+
+gboolean ags_ipatch_dls2_reader_test_flags(AgsIpatchDLS2Reader *ipatch_dls2_reader, guint flags);
+void ags_ipatch_dls2_reader_set_flags(AgsIpatchDLS2Reader *ipatch_dls2_reader, guint flags);
+void ags_ipatch_dls2_reader_unset_flags(AgsIpatchDLS2Reader *ipatch_dls2_reader, guint flags);
+
+#ifdef AGS_WITH_LIBINSTPATCH
 gboolean ags_ipatch_dls2_reader_load(AgsIpatchDLS2Reader *ipatch_dls2_reader,
 				     IpatchFileHandle *handle);
+#endif
 
 /* select sample */
 gboolean ags_ipatch_dls2_reader_select_instrument(AgsIpatchDLS2Reader *ipatch_dls2_reader,

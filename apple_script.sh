@@ -1,32 +1,23 @@
 #!/bin/bash
-
-# GSequencer - Advanced GTK Sequencer
-# Copyright (C) 2005-2018 Joël Krähemann
-#
-# This file is part of GSequencer.
-#
-# GSequencer is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# GSequencer is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
+# 
+# Copyright (C) 2005-2018 Jo\u00EBl Kr\u00E4hemann
+# 
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.
 
 # binary
-files=`otool -L /Users/joelkraehemann/GSequencer.app/Contents/MacOS/GSequencer | grep /opt/gsequencer/usr/lib | awk '{ print $1 }' `
+files=`otool -L /Users/joelkraehemann/GSequencer.app/Contents/MacOS/GSequencer-bin | grep /Users/joelkraehemann/gtk/inst/lib | awk '{ print $1 }' `
 
 for f in $files
 do
     echo $f
 
-    install_name_tool -change $f @executable_path/../Frameworks/$(basename $f) Contents/MacOS/gsequencer
+    install_name_tool -change $f @executable_path/../Resources/lib/$(basename $f) Contents/MacOS/GSequencer-bin
 done
+
+install_name_tool -change libinstpatch-1.0.0.dylib @executable_path/../Resources/lib/libinstpatch-1.0.0.dylib Contents/MacOS/GSequencer-bin
 
 files=(libgsequencer.dylib libags_gui.dylib libags_server.dylib libags_thread.dylib libags.dylib)
 
@@ -34,7 +25,82 @@ for f in ${files[*]}
 do
     echo $f
 
-    install_name_tool -change $f @executable_path/../Frameworks/$(basename $f) Contents/MacOS/gsequencer
+    install_name_tool -change $f @executable_path/../Resources/lib/$(basename $f) Contents/MacOS/GSequencer-bin
+done
+
+files=`otool -L /Users/joelkraehemann/GSequencer.app/Contents/Resources/lib/libags.dylib | grep /Users/joelkraehemann/gtk/inst/lib | awk '{ print $1 }' `
+
+for f in $files
+do
+    echo $f
+
+    install_name_tool -change $f @executable_path/../Resources/lib/$(basename $f) Contents/Resources/lib/libags.dylib
+    install_name_tool -change $f @executable_path/../Resources/lib/$(basename $f) Contents/Resources/lib/libags.2.dylib
+done
+
+files=`otool -L /Users/joelkraehemann/GSequencer.app/Contents/Resources/lib/libags_thread.dylib | grep /Users/joelkraehemann/gtk/inst/lib | awk '{ print $1 }' `
+
+for f in $files
+do
+    echo $f
+
+    install_name_tool -change $f @executable_path/../Resources/lib/$(basename $f) Contents/Resources/lib/libags_thread.dylib
+    install_name_tool -change $f @executable_path/../Resources/lib/$(basename $f) Contents/Resources/lib/libags_thread.2.dylib
+done
+
+files=`otool -L /Users/joelkraehemann/GSequencer.app/Contents/Resources/lib/libags_server.dylib | grep /Users/joelkraehemann/gtk/inst/lib | awk '{ print $1 }' `
+
+for f in $files
+do
+    echo $f
+
+    install_name_tool -change $f @executable_path/../Resources/lib/$(basename $f) Contents/Resources/lib/libags_server.dylib
+    install_name_tool -change $f @executable_path/../Resources/lib/$(basename $f) Contents/Resources/lib/libags_server.2.dylib
+done
+
+files=`otool -L /Users/joelkraehemann/GSequencer.app/Contents/Resources/lib/libags_audio.dylib | grep /Users/joelkraehemann/gtk/inst/lib | awk '{ print $1 }' `
+
+for f in $files
+do
+    echo $f
+
+    install_name_tool -change $f @executable_path/../Resources/lib/$(basename $f) Contents/Resources/lib/libags_audio.dylib
+    install_name_tool -change $f @executable_path/../Resources/lib/$(basename $f) Contents/Resources/lib/libags_audio.2.dylib
+done
+
+install_name_tool -change libinstpatch-1.0.0.dylib @executable_path/../Resources/lib/libinstpatch-1.0.0.dylib Contents/Resources/lib/libags_audio.dylib
+install_name_tool -change libinstpatch-1.0.0.dylib @executable_path/../Resources/lib/libinstpatch-1.0.0.dylib Contents/Resources/lib/libags_audio.2.dylib
+
+files=`otool -L /Users/joelkraehemann/GSequencer.app/Contents/Resources/lib/libags_gui.dylib | grep /Users/joelkraehemann/gtk/inst/lib | awk '{ print $1 }' `
+
+for f in $files
+do
+    echo $f
+
+    install_name_tool -change $f @executable_path/../Resources/lib/$(basename $f) Contents/Resources/lib/libags_gui.dylib
+    install_name_tool -change $f @executable_path/../Resources/lib/$(basename $f) Contents/Resources/lib/libags_gui.2.dylib
+done
+
+files=`otool -L /Users/joelkraehemann/GSequencer.app/Contents/Resources/lib/libgsequencer.dylib | grep /Users/joelkraehemann/gtk/inst/lib | awk '{ print $1 }' `
+
+for f in $files
+do
+    echo $f
+
+    install_name_tool -change $f @executable_path/../Resources/lib/$(basename $f) Contents/Resources/lib/libgsequencer.dylib
+    install_name_tool -change $f @executable_path/../Resources/lib/$(basename $f) Contents/Resources/lib/libgsequencer.0.dylib
+done
+
+install_name_tool -change libinstpatch-1.0.0.dylib @executable_path/../Resources/lib/libinstpatch-1.0.0.dylib Contents/Resources/lib/libgsequencer.dylib
+install_name_tool -change libinstpatch-1.0.0.dylib @executable_path/../Resources/lib/libinstpatch-1.0.0.dylib Contents/Resources/lib/libgsequencer.0.dylib
+
+files=(libgsequencer.dylib libags_gui.dylib libags_server.dylib libags_thread.dylib libags.dylib)
+
+for f in ${files[*]}
+do
+    echo $f
+
+    install_name_tool -change $f @executable_path/../Resources/lib/$(basename $f) Contents/MacOS/GSequencer-bin
 done
 
 # libgsequencer
@@ -44,7 +110,8 @@ for f in ${files[*]}
 do
     echo $f
 
-    install_name_tool -change $f @executable_path/../Frameworks/$(basename $f) Contents/Frameworks/libgsequencer.dylib
+    install_name_tool -change $f @executable_path/../Resources/lib/$(basename $f) Contents/Resources/lib/libgsequencer.dylib
+    install_name_tool -change $f @executable_path/../Resources/lib/$(basename $f) Contents/Resources/lib/libgsequencer.0.dylib
 done
 
 # libags_gui
@@ -54,7 +121,8 @@ for f in ${files[*]}
 do
     echo $f
 
-    install_name_tool -change $f @executable_path/../Frameworks/$(basename $f) Contents/Frameworks/libags_gui.dylib
+    install_name_tool -change $f @executable_path/../Resources/lib/$(basename $f) Contents/Resources/lib/libags_gui.dylib
+    install_name_tool -change $f @executable_path/../Resources/lib/$(basename $f) Contents/Resources/lib/libags_gui.2.dylib
 done
 
 # libags_audio
@@ -64,8 +132,8 @@ for f in ${files[*]}
 do
     echo $f
 
-    install_name_tool -change $f @executable_path/../Frameworks/$(basename $f) Contents/Frameworks/libags_audio.dylib
-    install_name_tool -change $f @executable_path/../Frameworks/$(basename $f) Contents/Frameworks/libags_audio.0.dylib
+    install_name_tool -change $f @executable_path/../Resources/lib/$(basename $f) Contents/Resources/lib/libags_audio.dylib
+    install_name_tool -change $f @executable_path/../Resources/lib/$(basename $f) Contents/Resources/lib/libags_audio.2.dylib
 done
 
 # libags_server
@@ -75,8 +143,8 @@ for f in ${files[*]}
 do
     echo $f
 
-    install_name_tool -change $f @executable_path/../Frameworks/$(basename $f) Contents/Frameworks/libags_server.dylib
-    install_name_tool -change $f @executable_path/../Frameworks/$(basename $f) Contents/Frameworks/libags_server.0.dylib
+    install_name_tool -change $f @executable_path/../Resources/lib/$(basename $f) Contents/Resources/lib/libags_server.dylib
+    install_name_tool -change $f @executable_path/../Resources/lib/$(basename $f) Contents/Resources/lib/libags_server.2.dylib
 done
 
 # libags_thread
@@ -86,8 +154,8 @@ for f in ${files[*]}
 do
     echo $f
 
-    install_name_tool -change $f @executable_path/../Frameworks/$(basename $f) Contents/Frameworks/libags_thread.dylib
-    install_name_tool -change $f @executable_path/../Frameworks/$(basename $f) Contents/Frameworks/libags_thread.0.dylib
+    install_name_tool -change $f @executable_path/../Resources/lib/$(basename $f) Contents/Resources/lib/libags_thread.dylib
+    install_name_tool -change $f @executable_path/../Resources/lib/$(basename $f) Contents/Resources/lib/libags_thread.2.dylib
 done
 
 # libags
@@ -97,86 +165,6 @@ for f in ${files[*]}
 do
     echo $f
 
-    install_name_tool -change $f @executable_path/../Frameworks/$(basename $f) Contents/Frameworks/libags.dylib
-    install_name_tool -change $f @executable_path/../Frameworks/$(basename $f) Contents/Frameworks/libags.0.dylib
-done
-
-# dylib
-libs=`ls Contents/Frameworks/*.dylib`
-
-for l in $libs
-do
-    echo $l
-    files=`otool -L $l | grep /opt/gsequencer/usr/lib | awk '{ print $1 }' `
-    
-    for f in $files
-    do
-	echo $f
-
-	install_name_tool -change $f @executable_path/../Frameworks/$(basename $f) $l
-    done
-done
-
-# ladspa
-plugins=`ls Contents/Plugins/ladspa/*.dylib`
-
-for p in $plugins
-do
-    echo $p
-    files=`otool -L $p | grep /opt/gsequencer/usr/lib | awk '{ print $1 }' `
-    
-    for f in $files
-    do
-	echo $f
-
-	install_name_tool -change $f @executable_path/../Frameworks/$(basename $f) $p
-    done
-done
-
-# dssi
-plugins=`ls Contents/Plugins/dssi/*.dylib`
-
-for p in $plugins
-do
-    echo $p
-    files=`otool -L $p | grep /opt/gsequencer/usr/lib | awk '{ print $1 }' `
-    
-    for f in $files
-    do
-	echo $f
-
-	install_name_tool -change $f @executable_path/../Frameworks/$(basename $f) $p
-    done
-done
-
-# lv2
-plugins=`ls Contents/Plugins/lv2/*/*.dylib`
-
-for p in $plugins
-do
-    echo $p
-    files=`otool -L $p | grep /opt/gsequencer/usr/lib | awk '{ print $1 }' `
-    
-    for f in $files
-    do
-	echo $f
-
-	install_name_tool -change $f @executable_path/../Frameworks/$(basename $f) $p
-    done
-done
-
-# gdk-pixbuf
-loaders=`ls Contents/Frameworks/gdk-pixbuf-2.0/2.10.0/loaders/*.so`
-
-for m in $loaders
-do
-    echo $m
-    files=`otool -L $m | grep /opt/gsequencer/usr/lib | awk '{ print $1 }' `
-    
-    for f in $files
-    do
-	echo $f
-
-	install_name_tool -change $f @executable_path/../Frameworks/$(basename $f) $m
-    done
+    install_name_tool -change $f @executable_path/../Resources/lib/$(basename $f) Contents/Resources/lib/libags.dylib
+    install_name_tool -change $f @executable_path/../Resources/lib/$(basename $f) Contents/Resources/lib/libags.2.dylib
 done

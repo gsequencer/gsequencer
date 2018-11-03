@@ -71,7 +71,7 @@ ags_preset_get_type (void)
   static volatile gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
-    GType ags_type_preset;
+    GType ags_type_preset = 0;
 
     static const GTypeInfo ags_preset_info = {
       sizeof (AgsPresetClass),
@@ -90,7 +90,7 @@ ags_preset_get_type (void)
 					     &ags_preset_info,
 					     0);
 
-    g_once_init_leave (&g_define_type_id__volatile, ags_type_preset);
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_preset);
   }
 
   return g_define_type_id__volatile;

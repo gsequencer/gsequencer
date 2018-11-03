@@ -36,7 +36,6 @@
 #include <ags/thread/ags_autosave_thread.h>
 #include <ags/thread/ags_returnable_thread.h>
 #include <ags/thread/ags_task_thread.h>
-#include <ags/thread/ags_timestamp_thread.h>
 
 #include <ags/thread/file/ags_thread_file_xml.h>
 
@@ -98,8 +97,8 @@ ags_thread_application_context_get_type()
   static volatile gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
-    GType ags_type_thread_application_context;
-    
+    GType ags_type_thread_application_context = 0;
+
     static const GTypeInfo ags_thread_application_context_info = {
       sizeof(AgsThreadApplicationContextClass),
       NULL, /* base_init */
@@ -137,7 +136,7 @@ ags_thread_application_context_get_type()
 				AGS_TYPE_CONCURRENCY_PROVIDER,
 				&ags_concurrency_provider_interface_info);
 
-    g_once_init_leave (&g_define_type_id__volatile, ags_type_thread_application_context);
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_thread_application_context);
   }
 
   return g_define_type_id__volatile;
@@ -165,7 +164,7 @@ ags_thread_application_context_class_init(AgsThreadApplicationContextClass *thre
    *
    * The assigned thread pool.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("autosave-thread",
 				   i18n_pspec("thread pool of thread application context"),
@@ -182,7 +181,7 @@ ags_thread_application_context_class_init(AgsThreadApplicationContextClass *thre
    *
    * The assigned thread pool.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("thread-pool",
 				   i18n_pspec("thread pool of thread application context"),
@@ -468,8 +467,6 @@ ags_thread_application_context_register_types(AgsApplicationContext *application
 
   ags_task_thread_get_type();
 
-  ags_timestamp_thread_get_type();
-
   ags_thread_pool_get_type();
   ags_returnable_thread_get_type();
 }
@@ -646,6 +643,15 @@ ags_thread_application_context_set_value_callback(AgsConfig *config, gchar *grou
   }
 }
 
+/**
+ * ags_thread_application_context_new:
+ *
+ * Create a new instance of #AgsThreadApplicationContext.
+ * 
+ * Returns: the new #AgsThreadApplicationContext
+ *
+ * Since: 2.0.0
+ */
 AgsThreadApplicationContext*
 ags_thread_application_context_new()
 {

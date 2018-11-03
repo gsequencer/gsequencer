@@ -82,7 +82,7 @@ ags_cell_pattern_get_type(void)
   static volatile gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
-    GType ags_type_cell_pattern;
+    GType ags_type_cell_pattern = 0;
 
     static const GTypeInfo ags_cell_pattern_info = {
       sizeof(AgsCellPatternClass),
@@ -110,7 +110,7 @@ ags_cell_pattern_get_type(void)
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
 
-    g_once_init_leave (&g_define_type_id__volatile, ags_type_cell_pattern);
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_cell_pattern);
   }
 
   return g_define_type_id__volatile;
@@ -899,7 +899,7 @@ ags_cell_pattern_unpaint_gutter_point(AgsCellPattern *cell_pattern, guint j, gui
  *
  * Returns: %TRUE if continue timeout, otherwise %FALSE
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 gboolean
 ags_cell_pattern_led_queue_draw_timeout(AgsCellPattern *cell_pattern)

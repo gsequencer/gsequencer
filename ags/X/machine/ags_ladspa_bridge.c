@@ -86,7 +86,7 @@ ags_ladspa_bridge_get_type(void)
   static volatile gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
-    GType ags_type_ladspa_bridge;
+    GType ags_type_ladspa_bridge = 0;
 
     static const GTypeInfo ags_ladspa_bridge_info = {
       sizeof(AgsLadspaBridgeClass),
@@ -124,7 +124,7 @@ ags_ladspa_bridge_get_type(void)
 				AGS_TYPE_PLUGIN,
 				&ags_plugin_interface_info);
 
-    g_once_init_leave (&g_define_type_id__volatile, ags_type_ladspa_bridge);
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_ladspa_bridge);
   }
 
   return g_define_type_id__volatile;
@@ -152,7 +152,7 @@ ags_ladspa_bridge_class_init(AgsLadspaBridgeClass *ladspa_bridge)
    *
    * The plugins filename.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec =  g_param_spec_string("filename",
 				    i18n_pspec("the object file"),
@@ -168,7 +168,7 @@ ags_ladspa_bridge_class_init(AgsLadspaBridgeClass *ladspa_bridge)
    *
    * The effect's name.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec =  g_param_spec_string("effect",
 				    i18n_pspec("the effect"),
@@ -184,7 +184,7 @@ ags_ladspa_bridge_class_init(AgsLadspaBridgeClass *ladspa_bridge)
    *
    * The effect's index.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec =  g_param_spec_ulong("index",
 				   i18n_pspec("index of effect"),
@@ -638,7 +638,7 @@ ags_ladspa_bridge_load(AgsLadspaBridge *ladspa_bridge)
  *
  * Returns: a new #AgsLadspaBridge
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsLadspaBridge*
 ags_ladspa_bridge_new(GObject *soundcard,

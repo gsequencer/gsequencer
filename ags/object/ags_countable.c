@@ -41,8 +41,8 @@ ags_countable_get_type()
   static volatile gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
-    GType ags_type_countable;
-    
+    GType ags_type_countable = 0;
+
     static const GTypeInfo ags_countable_info = {
       sizeof(AgsCountableInterface),
       (GBaseInitFunc) ags_countable_base_init,
@@ -53,7 +53,7 @@ ags_countable_get_type()
 						 "AgsCountable", &ags_countable_info,
 						 0);
 
-    g_once_init_leave (&g_define_type_id__volatile, ags_type_countable);
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_countable);
   }
 
   return g_define_type_id__volatile;

@@ -69,7 +69,7 @@ ags_wave_window_get_type()
   static volatile gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
-    GType ags_type_wave_window;
+    GType ags_type_wave_window = 0;
 
     static const GTypeInfo ags_wave_window_info = {
       sizeof (AgsWaveWindowClass),
@@ -97,7 +97,7 @@ ags_wave_window_get_type()
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
 
-    g_once_init_leave (&g_define_type_id__volatile, ags_type_wave_window);
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_wave_window);
   }
 
   return g_define_type_id__volatile;
@@ -125,7 +125,7 @@ ags_wave_window_class_init(AgsWaveWindowClass *wave_window)
    *
    * The assigned #AgsSoundcard acting as default sink.
    * 
-   * Since: 1.2.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("soundcard",
 				   i18n_pspec("assigned soundcard"),
@@ -295,7 +295,7 @@ ags_wave_window_delete_event(GtkWidget *widget, GdkEventAny *event)
  * 
  * Returns: the new #AgsWaveWindow instance
  * 
- * Since: 1.2.0
+ * Since: 2.0.0
  */
 AgsWaveWindow*
 ags_wave_window_new(GtkWidget *parent_window)

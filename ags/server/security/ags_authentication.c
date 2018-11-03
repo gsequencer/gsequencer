@@ -34,9 +34,11 @@ void ags_authentication_base_init(AgsAuthenticationInterface *interface);
 GType
 ags_authentication_get_type()
 {
-  static GType ags_type_authentication = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_authentication){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_authentication = 0;
+
     static const GTypeInfo ags_authentication_info = {
       sizeof(AgsAuthenticationInterface),
       (GBaseInitFunc) ags_authentication_base_init,
@@ -44,11 +46,13 @@ ags_authentication_get_type()
     };
 
     ags_type_authentication = g_type_register_static(G_TYPE_INTERFACE,
-						     "AgsAuthentication\0", &ags_authentication_info,
+						     "AgsAuthentication", &ags_authentication_info,
 						     0);
+
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_authentication);
   }
 
-  return(ags_type_authentication);
+  return g_define_type_id__volatile;
 }
 
 void
@@ -65,7 +69,7 @@ ags_authentication_base_init(AgsAuthenticationInterface *interface)
  *
  * Returns: a %NULL terminated array of strings of available authentication modules
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 gchar**
 ags_authentication_get_authentication_module(AgsAuthentication *authentication)
@@ -92,7 +96,7 @@ ags_authentication_get_authentication_module(AgsAuthentication *authentication)
  *
  * Returns: %TRUE on success, otherwise %FALSE
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 gboolean
 ags_authentication_login(AgsAuthentication *authentication,
@@ -125,7 +129,7 @@ ags_authentication_login(AgsAuthentication *authentication,
  *
  * Returns: %TRUE on success, otherwise %FALSE
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 gboolean
 ags_authentication_logout(AgsAuthentication *authentication,
@@ -156,7 +160,7 @@ ags_authentication_logout(AgsAuthentication *authentication,
  *
  * Returns: the generated token
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 gchar*
 ags_authentication_generate_token(AgsAuthentication *authentication,
@@ -184,7 +188,7 @@ ags_authentication_generate_token(AgsAuthentication *authentication,
  * 
  * Returns: a %NULL-terminated string array containing groups
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 gchar**
 ags_authentication_get_groups(AgsAuthentication *authentication,
@@ -219,7 +223,7 @@ ags_authentication_get_groups(AgsAuthentication *authentication,
  *
  * Returns: one or more of 'r', 'w' and 'x'.
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 gchar*
 ags_authentication_get_permission(AgsAuthentication *authentication,
@@ -255,7 +259,7 @@ ags_authentication_get_permission(AgsAuthentication *authentication,
  *
  * Returns: %TRUE if session active, otherwise %FALSE
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 gboolean
 ags_authentication_is_session_active(AgsAuthentication *authentication,

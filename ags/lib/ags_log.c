@@ -46,8 +46,8 @@ ags_log_get_type()
   static volatile gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
-    GType ags_type_log;
-    
+    GType ags_type_log = 0;
+
     static const GTypeInfo ags_log_info = {
       sizeof(AgsLogClass),
       NULL, /* base_init */
@@ -65,7 +65,7 @@ ags_log_get_type()
 					  &ags_log_info,
 					  0);
 
-    g_once_init_leave (&g_define_type_id__volatile, ags_type_log);
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_log);
   }
 
   return g_define_type_id__volatile;
@@ -131,7 +131,7 @@ ags_log_finalize(GObject *gobject)
  *
  * Returns: the #AgsLog instance
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsLog*
 ags_log_get_instance()
@@ -156,7 +156,7 @@ ags_log_get_instance()
  * 
  * Add a message to @log.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_log_add_message(AgsLog *log,
@@ -179,7 +179,7 @@ ags_log_add_message(AgsLog *log,
  *
  * Returns: the #GList-struct containing log messages
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 GList*
 ags_log_get_messages(AgsLog *log)
@@ -194,7 +194,7 @@ ags_log_get_messages(AgsLog *log)
  *
  * Returns: the new instance
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsLog*
 ags_log_new()

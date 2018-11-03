@@ -40,8 +40,8 @@ ags_portlet_get_type()
   static volatile gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
-    GType ags_type_portlet;
-    
+    GType ags_type_portlet = 0;
+
     static const GTypeInfo ags_portlet_info = {
       sizeof(AgsPortletInterface),
       (GBaseInitFunc) ags_portlet_base_init,
@@ -52,7 +52,7 @@ ags_portlet_get_type()
 					      "AgsPortlet", &ags_portlet_info,
 					      0);
 
-    g_once_init_leave (&g_define_type_id__volatile, ags_type_portlet);
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_portlet);
   }
 
   return g_define_type_id__volatile;
@@ -71,7 +71,7 @@ ags_portlet_base_init(AgsPortletInterface *interface)
  *
  * Set port.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_portlet_set_port(AgsPortlet *portlet, GObject *port)
@@ -92,7 +92,7 @@ ags_portlet_set_port(AgsPortlet *portlet, GObject *port)
  *
  * Returns: the #GObject
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 GObject*
 ags_portlet_get_port(AgsPortlet *portlet)
@@ -113,7 +113,7 @@ ags_portlet_get_port(AgsPortlet *portlet)
  *
  * Returns: a #GList containing properties
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 GList*
 ags_portlet_list_safe_properties(AgsPortlet *portlet)
@@ -134,7 +134,7 @@ ags_portlet_list_safe_properties(AgsPortlet *portlet)
  *
  * Get property thread safe.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_portlet_safe_get_property(AgsPortlet *portlet, gchar *property_name, GValue *value)
@@ -155,7 +155,7 @@ ags_portlet_safe_get_property(AgsPortlet *portlet, gchar *property_name, GValue 
  *
  * Set property thread safe.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_portlet_safe_set_property(AgsPortlet *portlet, gchar *property_name, GValue *value)

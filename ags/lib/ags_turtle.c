@@ -78,8 +78,8 @@ ags_turtle_get_type()
   static volatile gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
-    GType ags_type_turtle;
-    
+    GType ags_type_turtle = 0;
+
     static const GTypeInfo ags_turtle_info = {
       sizeof(AgsTurtleClass),
       NULL, /* base_init */
@@ -97,7 +97,7 @@ ags_turtle_get_type()
 					     &ags_turtle_info,
 					     0);
 
-    g_once_init_leave (&g_define_type_id__volatile, ags_type_turtle);
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_turtle);
   }
 
   return g_define_type_id__volatile;
@@ -125,7 +125,7 @@ ags_turtle_class_init(AgsTurtleClass *turtle)
    *
    * The assigned filename.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_string("filename",
 				   i18n_pspec("filename of turtle"),
@@ -141,7 +141,7 @@ ags_turtle_class_init(AgsTurtleClass *turtle)
    *
    * The assigned xml-doc.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_pointer("xml-doc",
 				    i18n_pspec("xml document of turtle"),
@@ -261,7 +261,7 @@ ags_turtle_finalize(GObject *gobject)
  *
  * Returns: a string on success otherwise %NULL
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 gchar*
 ags_turtle_read_iriref(gchar *offset,
@@ -313,7 +313,7 @@ ags_turtle_read_iriref(gchar *offset,
  *
  * Returns: a string on success otherwise %NULL
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 gchar*
 ags_turtle_read_pname_ns(gchar *offset,
@@ -354,7 +354,7 @@ ags_turtle_read_pname_ns(gchar *offset,
  *
  * Returns: a string on success otherwise %NULL
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 gchar*
 ags_turtle_read_pname_ln(gchar *offset,
@@ -402,7 +402,7 @@ ags_turtle_read_pname_ln(gchar *offset,
  *
  * Returns: a string on success otherwise %NULL
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 gchar*
 ags_turtle_read_blank_node_label(gchar *offset,
@@ -507,7 +507,7 @@ ags_turtle_read_blank_node_label(gchar *offset,
  *
  * Returns: a string on success otherwise %NULL
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 gchar*
 ags_turtle_read_langtag(gchar *offset,
@@ -556,7 +556,7 @@ ags_turtle_read_langtag(gchar *offset,
  *
  * Returns: a string on success otherwise %NULL
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 gchar*
 ags_turtle_read_boolean(gchar *offset,
@@ -603,7 +603,7 @@ ags_turtle_read_boolean(gchar *offset,
  *
  * Returns: a string on success otherwise %NULL
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 gchar*
 ags_turtle_read_integer(gchar *offset,
@@ -650,7 +650,7 @@ ags_turtle_read_integer(gchar *offset,
  *
  * Returns: a string on success otherwise %NULL
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 gchar*
 ags_turtle_read_decimal(gchar *offset,
@@ -697,7 +697,7 @@ ags_turtle_read_decimal(gchar *offset,
  *
  * Returns: a string on success otherwise %NULL
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 gchar*
 ags_turtle_read_double(gchar *offset,
@@ -744,7 +744,7 @@ ags_turtle_read_double(gchar *offset,
  *
  * Returns: a string on success otherwise %NULL
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 gchar*
 ags_turtle_read_exponent(gchar *offset,
@@ -791,7 +791,7 @@ ags_turtle_read_exponent(gchar *offset,
  *
  * Returns: a string on success otherwise %NULL
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 gchar*
 ags_turtle_read_string(gchar *offset,
@@ -839,7 +839,7 @@ ags_turtle_read_string(gchar *offset,
  *
  * Returns: a string on success otherwise %NULL
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 gchar*
 ags_turtle_read_string_literal_quote(gchar *offset,
@@ -890,7 +890,7 @@ ags_turtle_read_string_literal_quote(gchar *offset,
  *
  * Returns: a string on success otherwise %NULL
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 gchar*
 ags_turtle_read_string_literal_single_quote(gchar *offset,
@@ -941,7 +941,7 @@ ags_turtle_read_string_literal_single_quote(gchar *offset,
  *
  * Returns: a string on success otherwise %NULL
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 gchar*
 ags_turtle_read_string_literal_long_quote(gchar *offset,
@@ -979,7 +979,7 @@ ags_turtle_read_string_literal_long_quote(gchar *offset,
  *
  * Returns: a string on success otherwise %NULL
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 gchar*
 ags_turtle_read_string_literal_long_single_quote(gchar *offset,
@@ -1017,7 +1017,7 @@ ags_turtle_read_string_literal_long_single_quote(gchar *offset,
  *
  * Returns: a string on success otherwise %NULL
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 gchar*
 ags_turtle_read_uchar(gchar *offset,
@@ -1072,7 +1072,7 @@ ags_turtle_read_uchar(gchar *offset,
  *
  * Returns: a string on success otherwise %NULL
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 gchar*
 ags_turtle_read_echar(gchar *offset,
@@ -1108,7 +1108,7 @@ ags_turtle_read_echar(gchar *offset,
  *
  * Returns: a string on success otherwise %NULL
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 gchar*
 ags_turtle_read_ws(gchar *offset,
@@ -1138,7 +1138,7 @@ ags_turtle_read_ws(gchar *offset,
  *
  * Returns: a string on success otherwise %NULL
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 gchar*
 ags_turtle_read_anon(gchar *offset,
@@ -1224,7 +1224,7 @@ ags_turtle_read_anon(gchar *offset,
  *
  * Returns: a string on success otherwise %NULL
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 gchar*
 ags_turtle_read_pn_chars_base(gchar *offset,
@@ -1278,7 +1278,7 @@ ags_turtle_read_pn_chars_base(gchar *offset,
  *
  * Returns: a string on success otherwise %NULL
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 gchar*
 ags_turtle_read_pn_chars_u(gchar *offset,
@@ -1307,7 +1307,7 @@ ags_turtle_read_pn_chars_u(gchar *offset,
  *
  * Returns: a string on success otherwise %NULL
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 gchar*
 ags_turtle_read_pn_chars(gchar *offset,
@@ -1364,7 +1364,7 @@ ags_turtle_read_pn_chars(gchar *offset,
  *
  * Returns: a string on success otherwise %NULL
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 gchar*
 ags_turtle_read_pn_prefix(gchar *offset,
@@ -1429,7 +1429,7 @@ ags_turtle_read_pn_prefix(gchar *offset,
  *
  * Returns: a string on success otherwise %NULL
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 gchar*
 ags_turtle_read_pn_local(gchar *offset,
@@ -1536,7 +1536,7 @@ ags_turtle_read_pn_local(gchar *offset,
  *
  * Returns: a string on success otherwise %NULL
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 gchar*
 ags_turtle_read_plx(gchar *offset,
@@ -1564,7 +1564,7 @@ ags_turtle_read_plx(gchar *offset,
  *
  * Returns: a string on success otherwise %NULL
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 gchar*
 ags_turtle_read_percent(gchar *offset,
@@ -1595,7 +1595,7 @@ ags_turtle_read_percent(gchar *offset,
  *
  * Returns: a string on success otherwise %NULL
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 gchar*
 ags_turtle_read_hex(gchar *offset,
@@ -1622,7 +1622,7 @@ ags_turtle_read_hex(gchar *offset,
  *
  * Returns: a string on success otherwise %NULL
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 gchar*
 ags_turtle_read_pn_local_esc(gchar *offset,
@@ -1654,7 +1654,7 @@ ags_turtle_read_pn_local_esc(gchar *offset,
  *
  * Returns: a #GList-struct containing xmlNode
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 GList*
 ags_turtle_find_xpath(AgsTurtle *turtle,
@@ -1699,7 +1699,7 @@ ags_turtle_find_xpath(AgsTurtle *turtle,
  *
  * Returns: a #GList-struct containing xmlNode
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 GList*
 ags_turtle_find_xpath_with_context_node(AgsTurtle *turtle,
@@ -1765,7 +1765,7 @@ ags_turtle_string_convert(AgsTurtle *turtle, gchar *str)
  *
  * Returns: a #xmlDoc pointer
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 xmlDoc*
 ags_turtle_load(AgsTurtle *turtle,
@@ -3212,13 +3212,12 @@ ags_turtle_load(AgsTurtle *turtle,
  *
  * Returns: the new instance
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsTurtle*
 ags_turtle_new(gchar *filename)
 {
   AgsTurtle *turtle;
-  gchar **str;
   
   turtle = g_object_new(AGS_TYPE_TURTLE,
 			"filename", filename,

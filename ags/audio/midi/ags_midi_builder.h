@@ -55,6 +55,9 @@ struct _AgsMidiBuilder
 
   guint flags;
 
+  pthread_mutex_t *obj_mutex;
+  pthread_mutexattr_t *obj_mutexattr;
+
   unsigned char *data;
   guint length;
   
@@ -189,6 +192,8 @@ struct _AgsMidiBuilderTrack
 };
 
 GType ags_midi_builder_get_type(void);
+
+pthread_mutex_t* ags_midi_builder_get_class_mutex();
 
 AgsMidiBuilderHeader* ags_midi_builder_header_alloc();
 void ags_midi_builder_header_free(AgsMidiBuilderHeader *midi_builder_header);

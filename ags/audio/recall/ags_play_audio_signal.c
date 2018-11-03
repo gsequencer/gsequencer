@@ -61,7 +61,7 @@ ags_play_audio_signal_get_type()
   static volatile gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
-    GType ags_type_play_audio_signal;
+    GType ags_type_play_audio_signal = 0;
 
     static const GTypeInfo ags_play_audio_signal_info = {
       sizeof (AgsPlayAudioSignalClass),
@@ -79,6 +79,8 @@ ags_play_audio_signal_get_type()
 							"AgsPlayAudioSignal",
 							&ags_play_audio_signal_info,
 							0);
+
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_play_audio_signal);
   }
 
   return g_define_type_id__volatile;
@@ -120,6 +122,7 @@ ags_play_audio_signal_finalize(GObject *gobject)
 void
 ags_play_audio_signal_run_inter(AgsRecall *recall)
 {
+  AgsChannel *channel;
   AgsAudioSignal *source;
   AgsAudioSignal *rt_template;
   AgsPort *muted;
@@ -137,7 +140,8 @@ ags_play_audio_signal_run_inter(AgsRecall *recall)
   void *buffer0, *buffer1;
   
   gboolean current_muted;
-  guint audio_channel, pcm_channels;
+  gint audio_channel;
+  guint pcm_channels;
   guint samplerate, soundcard_samplerate;
   guint buffer_size, soundcard_buffer_size;
   guint format, soundcard_format;
@@ -216,7 +220,7 @@ ags_play_audio_signal_run_inter(AgsRecall *recall)
     g_object_get(play_channel,
 		 "muted", &muted,
 		 NULL);
-    
+
     g_value_init(&muted_value,
 		 G_TYPE_FLOAT);
     
@@ -230,14 +234,24 @@ ags_play_audio_signal_run_inter(AgsRecall *recall)
       return;
     }
 
-    g_value_init(&audio_channel_value,
-		 G_TYPE_UINT64);
-    
-    ags_port_safe_read(play_channel->audio_channel,
-		       &audio_channel_value);
+    g_object_get(play_channel,
+		 "source", &channel,
+		 NULL);
 
-    audio_channel = g_value_get_uint64(&audio_channel_value);
-    g_value_unset(&audio_channel_value);
+    g_object_get(channel,
+		 "output-soundcard-channel", &audio_channel,
+		 NULL);
+
+    if(audio_channel == -1){
+      g_value_init(&audio_channel_value,
+		   G_TYPE_UINT64);
+    
+      ags_port_safe_read(play_channel->audio_channel,
+			 &audio_channel_value);
+
+      audio_channel = g_value_get_uint64(&audio_channel_value);
+      g_value_unset(&audio_channel_value);
+    }
   }
 
   buffer_size = source->buffer_size;

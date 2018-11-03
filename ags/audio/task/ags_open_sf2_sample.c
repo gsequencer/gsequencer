@@ -78,7 +78,7 @@ ags_open_sf2_sample_get_type()
   static volatile gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
-    GType ags_type_open_sf2_sample;
+    GType ags_type_open_sf2_sample = 0;
 
     static const GTypeInfo ags_open_sf2_sample_info = {
       sizeof(AgsOpenSf2SampleClass),
@@ -96,9 +96,11 @@ ags_open_sf2_sample_get_type()
 						"AgsOpenSf2Sample",
 						&ags_open_sf2_sample_info,
 						0);
+
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_open_sf2_sample);
   }
-  
-  return(ags_type_open_sf2_sample);
+
+  return g_define_type_id__volatile;
 }
 
 void

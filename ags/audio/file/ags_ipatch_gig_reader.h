@@ -25,6 +25,8 @@
 
 #include <ags/config.h>
 
+#include <ags/libags.h>
+
 #ifdef AGS_WITH_LIBINSTPATCH
 #include <libinstpatch/libinstpatch.h>
 #endif
@@ -42,7 +44,20 @@ typedef struct _AgsIpatchGigReader AgsIpatchGigReader;
 typedef struct _AgsIpatchGigReaderClass AgsIpatchGigReaderClass;
 
 /**
- * AgsGIGLevels:
+ * AgsIpatchGigReaderFlags:
+ * @AGS_IPATCH_GIG_READER_ADDED_TO_REGISTRY: the ipatch sample was added to registry, see #AgsConnectable::add_to_registry()
+ * @AGS_IPATCH_GIG_READER_CONNECTED: indicates the ipatch sample was connected by calling #AgsConnectable::connect()
+ * 
+ * Enum values to control the behavior or indicate internal state of #AgsIpatchGigReader by
+ * enable/disable as flags.
+ */
+typedef enum{
+  AGS_IPATCH_GIG_READER_ADDED_TO_REGISTRY    = 1,
+  AGS_IPATCH_GIG_READER_CONNECTED            = 1 <<  1,
+}AgsIpatchGigReaderFlags;
+
+/**
+ * AgsGigLevel:
  * @AGS_GIG_FILENAME: filename
  * @AGS_GIG_IHDR: instrument header
  * @AGS_GIG_SHDR: sample header
@@ -53,11 +68,18 @@ typedef enum{
   AGS_GIG_FILENAME = 0,
   AGS_GIG_IHDR = 1,
   AGS_GIG_SHDR = 2,
-}AgsGIGLevel;
+}AgsGigLevel;
 
 struct _AgsIpatchGigReader
 {
   GObject object;
+
+  guint flags;
+
+  pthread_mutex_t *obj_mutex;
+  pthread_mutexattr_t *obj_mutexattr;
+
+  AgsUUID *uuid;
 
   guint level;
   
@@ -94,8 +116,16 @@ struct _AgsIpatchGigReaderClass
 
 GType ags_ipatch_gig_reader_get_type();
 
+pthread_mutex_t* ags_ipatch_gig_reader_get_class_mutex();
+
+gboolean ags_ipatch_gig_reader_test_flags(AgsIpatchGigReader *ipatch_gig_reader, guint flags);
+void ags_ipatch_gig_reader_set_flags(AgsIpatchGigReader *ipatch_gig_reader, guint flags);
+void ags_ipatch_gig_reader_unset_flags(AgsIpatchGigReader *ipatch_gig_reader, guint flags);
+
+#ifdef AGS_WITH_LIBINSTPATCH
 gboolean ags_ipatch_gig_reader_load(AgsIpatchGigReader *ipatch_gig_reader,
 				    IpatchFileHandle *handle);
+#endif
 
 /* select sample */
 gboolean ags_ipatch_gig_reader_select_instrument(AgsIpatchGigReader *ipatch_gig_reader,

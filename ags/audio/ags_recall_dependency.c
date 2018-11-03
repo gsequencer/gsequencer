@@ -70,7 +70,7 @@ ags_recall_dependency_get_type(void)
   static volatile gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
-    GType ags_type_recall_dependency;
+    GType ags_type_recall_dependency = 0;
 
     static const GTypeInfo ags_recall_dependency_info = {
       sizeof(AgsRecallDependencyClass),
@@ -88,6 +88,8 @@ ags_recall_dependency_get_type(void)
 							"AgsRecallDependency",
 							&ags_recall_dependency_info,
 							0);
+
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_recall_dependency);
   }
 
   return g_define_type_id__volatile;

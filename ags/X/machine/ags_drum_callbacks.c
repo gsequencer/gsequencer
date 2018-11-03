@@ -104,6 +104,9 @@ ags_drum_open_callback(GtkWidget *toggle_button, AgsDrum *drum)
 								      GTK_STOCK_OK, GTK_RESPONSE_ACCEPT,
 								      GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL, 
 								      NULL);
+  gtk_file_chooser_add_shortcut_folder_uri(file_chooser,
+					   "file:///usr/share/hydrogen/data/drumkits",
+					   NULL);  
   drum->open_dialog = (GtkWidget *) file_chooser;
   gtk_file_chooser_set_select_multiple(GTK_FILE_CHOOSER(file_chooser), TRUE);
 

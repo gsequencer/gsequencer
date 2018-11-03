@@ -79,8 +79,8 @@ ags_lv2_manager_get_type()
   static volatile gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
-    GType ags_type_lv2_manager;
-    
+    GType ags_type_lv2_manager = 0;
+
     static const GTypeInfo ags_lv2_manager_info = {
       sizeof(AgsLv2ManagerClass),
       NULL, /* base_init */
@@ -98,7 +98,7 @@ ags_lv2_manager_get_type()
 						  &ags_lv2_manager_info,
 						  0);
 
-    g_once_init_leave (&g_define_type_id__volatile, ags_type_lv2_manager);
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_lv2_manager);
   }
 
   return g_define_type_id__volatile;
@@ -474,10 +474,10 @@ ags_lv2_manager_get_filenames(AgsLv2Manager *lv2_manager)
     }else{
 #ifdef HAVE_GLIB_2_44
       contains_filename = g_strv_contains(filenames,
-					  AGS_BASE_PLUGIN(lv2_plugin->data)->filename);
+					  filename);
 #else
       contains_filename = ags_strv_contains(filenames,
-					    AGS_BASE_PLUGIN(lv2_plugin->data)->filename);
+					    filename);
 #endif
       
       if(!contains_filename){
@@ -487,6 +487,8 @@ ags_lv2_manager_get_filenames(AgsLv2Manager *lv2_manager)
 	filenames[i + 1] = NULL;
 	
 	i++;
+      }else{
+	g_free(filename);
       }
     }
     

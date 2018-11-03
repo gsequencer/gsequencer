@@ -131,7 +131,7 @@ ags_audio_signal_get_type()
   static volatile gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
-    GType ags_type_audio_signal;
+    GType ags_type_audio_signal = 0;
 
     static const GTypeInfo ags_audio_signal_info = {
       sizeof(AgsAudioSignalClass),
@@ -160,7 +160,7 @@ ags_audio_signal_get_type()
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
 
-    g_once_init_leave (&g_define_type_id__volatile, ags_type_audio_signal);
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_audio_signal);
   }
 
   return g_define_type_id__volatile;
@@ -267,8 +267,7 @@ ags_audio_signal_class_init(AgsAudioSignalClass *audio_signal)
 				 G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_INPUT_SOUNDCARD_CHANNEL,
-				  param_spec);
-  
+				  param_spec);  
 
   /**
    * AgsAudioSignal:samplerate:
@@ -3035,9 +3034,9 @@ ags_audio_signal_feed(AgsAudioSignal *audio_signal,
 void
 ags_audio_signal_real_add_note(AgsAudioSignal *audio_signal,
 			       GObject *note)
-{  
+{
   if(g_list_find(audio_signal->note, note) == NULL){
-    g_object_ref(note);  
+    g_object_ref(note);
     audio_signal->note = g_list_prepend(audio_signal->note,
 					note);
   }

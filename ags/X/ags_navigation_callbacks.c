@@ -87,7 +87,7 @@ ags_navigation_bpm_callback(GtkWidget *widget,
   gui_thread = (AgsThread *) ags_ui_provider_get_gui_thread(AGS_UI_PROVIDER(application_context));
 
   /* get task thread */
-  apply_bpm = ags_apply_bpm_new(window->soundcard,
+  apply_bpm = ags_apply_bpm_new(window->application_context,
 				navigation->bpm->adjustment->value);
   
   ags_gui_thread_schedule_task(gui_thread,
@@ -468,7 +468,7 @@ ags_navigation_loop_callback(GtkWidget *widget,
 
       /* do it so */
       g_object_get(audio,
-		   "recall", &list_start,
+		   "play", &list_start,
 		   NULL);
 
       list = list_start;

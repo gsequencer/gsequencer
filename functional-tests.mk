@@ -1,3 +1,10 @@
+# Copyright (C) 2005-2018 Jo\u00EBl Kr\u00E4hemann
+# 
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.
+
 libgsequencer_test_LIBADD = @LIBGSEQUENCER_TEST_LIBADD@
 gsequencer_functional_test_LDADD = @GSEQUENCER_FUNCTIONAL_TEST_LDADD@
 
@@ -15,7 +22,8 @@ check_PROGRAMS += \
 	ags_functional_machine_add_and_destroy_test \
 	ags_functional_machine_link_test \
 	ags_functional_line_member_add_and_destroy_test \
-	ags_functional_editor_workflow_test \
+	ags_functional_notation_editor_workflow_test \
+	ags_functional_automation_editor_workflow_test \
 	ags_functional_panel_test \
 	ags_functional_mixer_test \
 	ags_functional_drum_test \
@@ -58,12 +66,19 @@ ags_functional_line_member_add_and_destroy_test_CPPFLAGS = -DSRCDIR=\"$(srcdir)\
 ags_functional_line_member_add_and_destroy_test_LDFLAGS = -pthread $(LDFLAGS)
 ags_functional_line_member_add_and_destroy_test_LDADD = $(gsequencer_functional_test_LDADD)
 
-# functional editor workflow test
-ags_functional_editor_workflow_test_SOURCES = ags/test/X/ags_functional_editor_workflow_test.c
-ags_functional_editor_workflow_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS) $(FONTCONFIG_CFLAGS) $(GDKPIXBUF_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS)
-ags_functional_editor_workflow_test_CPPFLAGS = -DSRCDIR=\"$(srcdir)\" -DDESTDIR=\"gsequencer.share\"
-ags_functional_editor_workflow_test_LDFLAGS = -pthread $(LDFLAGS)
-ags_functional_editor_workflow_test_LDADD = $(gsequencer_functional_test_LDADD)
+# functional notation editor workflow test
+ags_functional_notation_editor_workflow_test_SOURCES = ags/test/X/ags_functional_notation_editor_workflow_test.c
+ags_functional_notation_editor_workflow_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS) $(FONTCONFIG_CFLAGS) $(GDKPIXBUF_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS)
+ags_functional_notation_editor_workflow_test_CPPFLAGS = -DSRCDIR=\"$(srcdir)\" -DDESTDIR=\"gsequencer.share\"
+ags_functional_notation_editor_workflow_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_functional_notation_editor_workflow_test_LDADD = $(gsequencer_functional_test_LDADD)
+
+# functional automation editor workflow test
+ags_functional_automation_editor_workflow_test_SOURCES = ags/test/X/ags_functional_automation_editor_workflow_test.c
+ags_functional_automation_editor_workflow_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS) $(FONTCONFIG_CFLAGS) $(GDKPIXBUF_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS)
+ags_functional_automation_editor_workflow_test_CPPFLAGS = -DSRCDIR=\"$(srcdir)\" -DDESTDIR=\"gsequencer.share\"
+ags_functional_automation_editor_workflow_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_functional_automation_editor_workflow_test_LDADD = $(gsequencer_functional_test_LDADD)
 
 # functional panel test
 ags_functional_panel_test_SOURCES = ags/test/X/machine/ags_functional_panel_test.c

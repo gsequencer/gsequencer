@@ -38,7 +38,7 @@ ags_vlevel_box_get_type(void)
   static volatile gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
-    GType ags_type_vlevel_box;
+    GType ags_type_vlevel_box = 0;
 
     static const GTypeInfo ags_vlevel_box_info = {
       sizeof (AgsVLevelBoxClass),
@@ -56,7 +56,7 @@ ags_vlevel_box_get_type(void)
 						 "AgsVLevelBox", &ags_vlevel_box_info,
 						 0);
 
-    g_once_init_leave (&g_define_type_id__volatile, ags_type_vlevel_box);
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_vlevel_box);
   }
 
   return g_define_type_id__volatile;
@@ -81,7 +81,7 @@ ags_vlevel_box_init(AgsVLevelBox *vlevel_box)
  * 
  * Returns: the new #AgsVLevelBox instance
  * 
- * Since: 1.4.0
+ * Since: 2.0.0
  */
 AgsVLevelBox*
 ags_vlevel_box_new()

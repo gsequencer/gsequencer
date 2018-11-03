@@ -59,9 +59,11 @@ static guint local_factory_controller_signals[LAST_SIGNAL];
 GType
 ags_local_factory_controller_get_type()
 {
-  static GType ags_type_local_factory_controller = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_local_factory_controller){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_local_factory_controller = 0;
+
     static const GTypeInfo ags_local_factory_controller_info = {
       sizeof (AgsLocalFactoryControllerClass),
       NULL, /* base_init */
@@ -78,9 +80,11 @@ ags_local_factory_controller_get_type()
 							       "AgsLocalFactoryController",
 							       &ags_local_factory_controller_info,
 							       0);
+
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_local_factory_controller);
   }
 
-  return (ags_type_local_factory_controller);
+  return g_define_type_id__volatile;
 }
 
 void
@@ -111,7 +115,7 @@ ags_local_factory_controller_class_init(AgsLocalFactoryControllerClass *local_fa
    *
    * Returns: the response
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   local_factory_controller_signals[CREATE_INSTANCE] =
     g_signal_new("create-instance",
@@ -207,7 +211,7 @@ ags_local_factory_controller_real_create_instance(AgsLocalFactoryController *loc
  * 
  * Returns: the response
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 gpointer
 ags_local_factory_controller_create_instance(AgsLocalFactoryController *local_factory_controller,
@@ -239,7 +243,7 @@ ags_local_factory_controller_create_instance(AgsLocalFactoryController *local_fa
  * 
  * Returns: the #AgsLocalFactoryController
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsLocalFactoryController*
 ags_local_factory_controller_new()

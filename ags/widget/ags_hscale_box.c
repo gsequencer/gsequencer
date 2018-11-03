@@ -40,7 +40,7 @@ ags_hscale_box_get_type(void)
   static volatile gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
-    GType ags_type_hscale_box;
+    GType ags_type_hscale_box = 0;
 
     static const GTypeInfo ags_hscale_box_info = {
       sizeof (AgsHScaleBoxClass),
@@ -58,7 +58,7 @@ ags_hscale_box_get_type(void)
 						 "AgsHScaleBox", &ags_hscale_box_info,
 						 0);
 
-    g_once_init_leave (&g_define_type_id__volatile, ags_type_hscale_box);
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_hscale_box);
   }
 
   return g_define_type_id__volatile;
@@ -83,7 +83,7 @@ ags_hscale_box_init(AgsHScaleBox *hscale_box)
  * 
  * Returns: the new #AgsHScaleBox instance
  * 
- * Since: 1.3.0
+ * Since: 2.0.0
  */
 AgsHScaleBox*
 ags_hscale_box_new()

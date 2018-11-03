@@ -128,8 +128,8 @@ ags_scale_get_type(void)
   static volatile gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
-    GType ags_type_scale;
-
+    GType ags_type_scale = 0;
+ 
     static const GTypeInfo ags_scale_info = {
       sizeof(AgsScaleClass),
       NULL, /* base_init */
@@ -146,7 +146,7 @@ ags_scale_get_type(void)
 					    "AgsScale", &ags_scale_info,
 					    0);
 
-    g_once_init_leave (&g_define_type_id__volatile, ags_type_scale);
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_scale);
   }
 
   return g_define_type_id__volatile;
@@ -227,7 +227,7 @@ ags_scale_class_init(AgsScaleClass *scale)
    *
    * The scale's control name.
    * 
-   * Since: 1.3.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_string("control-name",
 				   "control name",
@@ -243,7 +243,7 @@ ags_scale_class_init(AgsScaleClass *scale)
    *
    * The scale's lower range.
    * 
-   * Since: 1.3.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_double("lower",
 				   "lower",
@@ -261,7 +261,7 @@ ags_scale_class_init(AgsScaleClass *scale)
    *
    * The scale's upper range.
    * 
-   * Since: 1.3.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_double("upper",
 				   "upper",
@@ -279,7 +279,7 @@ ags_scale_class_init(AgsScaleClass *scale)
    *
    * The scale's default value.
    * 
-   * Since: 1.3.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_double("default-value",
 				   "default value",
@@ -319,7 +319,7 @@ ags_scale_class_init(AgsScaleClass *scale)
    *
    * The ::value-changed signal notifies about modified default value.
    *
-   * Since: 1.3.0
+   * Since: 2.0.0
    */
   scale_signals[VALUE_CHANGED] =
     g_signal_new("value-changed",
@@ -1250,7 +1250,7 @@ ags_scale_draw(AgsScale *scale)
  * 
  * Emits ::value-changed event.
  * 
- * Since: 1.3.0
+ * Since: 2.0.0
  */
 void
 ags_scale_value_changed(AgsScale *scale,
@@ -1272,7 +1272,7 @@ ags_scale_value_changed(AgsScale *scale,
  * 
  * Returns: the new #AgsScale instance
  * 
- * Since: 1.3.0
+ * Since: 2.0.0
  */
 AgsScale*
 ags_scale_new()

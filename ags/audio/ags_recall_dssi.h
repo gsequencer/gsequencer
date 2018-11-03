@@ -30,6 +30,8 @@
 #include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_recall_channel.h>
 
+#include <ags/plugin/ags_dssi_plugin.h>
+
 #define AGS_TYPE_RECALL_DSSI                (ags_recall_dssi_get_type())
 #define AGS_RECALL_DSSI(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_RECALL_DSSI, AgsRecallDssi))
 #define AGS_RECALL_DSSI_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_RECALL_DSSI, AgsRecallDssiClass))

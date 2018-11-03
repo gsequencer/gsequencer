@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 
+<!-- Copyright (C) 2005-2018 Jo\u00EBl Kr\u00E4hemann -->
 <!-- Permission is granted to copy, distribute and/or modify this document -->
 <!-- under the terms of the GNU Free Documentation License, Version 1.3 -->
 <!-- or any later version published by the Free Software Foundation; -->
@@ -115,6 +116,23 @@
       </listitem>
     </itemizedlist>
   </sect1>
+
+  <sect1>
+    <title>AgsWave and AgsBuffer</title>
+    <para>
+      The wave objects stores your buffers as a GList. There are analogous
+      to notation functions to add or remove buffers.
+    </para>
+    
+    <itemizedlist mark="bullet">
+      <listitem>
+	<code language="C">void ags_wave_add_buffer(AgsWave*, AgsBuffer*, gboolean)</code>
+      </listitem>
+      <listitem>
+	<code language="C">gboolean ags_wave_remove_buffer(AgsWave*, AgsBuffer*, gboolean)</code>
+      </listitem>
+    </itemizedlist>
+  </sect1>
   
   <sect1>
     <title>AgsRecallID and AgsRecyclingContext</title>
@@ -149,11 +167,8 @@
     </para>
     
     <para>
-      You can initialize the sound processing tree with
-      <code language="C">AgsRecallID* ags_audio_recursive_play_init(AgsAudio, gint, gboolean, gboolean, gboolean, gboolean, AgsRecallID*)</code>.
-      This invokes successive <code language="C">void ags_audio_init_recall(AgsAudio*, gint, AgsRecallID*)</code>,
-      <code language="C">void ags_channel_init_recall(AgsAudio*, gint, AgsRecallID*)</code> and related
-      within your tree.
+      All audio processing is performed by one single function. Wheter you want to initialize, run or cancel playback.
+      This is all done by <code language="C">void ags_channel_recursive_run_stage(AgsChannel*, gint, guint)</code>.
     </para>
 
     <para>
@@ -171,5 +186,64 @@
       create_channels to allow instantiate new channels. The boolean parameters can be combined
       as you want.
     </para>
+    
+    <sect2>
+      <title>Audio container</title>
+      <para>
+	The AgsAudioContainer object can open Soundfont2, Gig and DLS2 files by using libinstpatch. The AgsAudioContainer:sound-container
+	field implements AgsSoundContainer and provides you many functions to dealing with container formats.
+      </para>
+
+      <para>
+	There are convenient functions to obtain a GObject subtype implementing AgsSoundResource:
+      </para>
+
+      <itemizedlist>
+	<listitem>
+	  GList* ags_sound_container_get_resource_all()
+	</listitem>
+	<listitem>
+	  GList* ags_sound_container_get_resource_by_name()
+	</listitem>
+	<listitem>
+	  GList* ags_sound_container_get_resource_by_index()
+	</listitem>
+	<listitem>
+	  GList* ags_sound_container_get_resource_current()
+	</listitem>
+      </itemizedlist>
+    </sect2>
+
+    <sect2>
+      <title>Audio file</title>
+      <para>
+	The AgsAudioFile object can open FLAC, WAV, AIFF and OGG using libsndfile. The AgsAudioFile:sound-resource
+	field implements AgsSoundResource and provides you many functions to dealing with audio file formats.
+      </para>
+
+      <itemizedlist>
+	<listitem>
+	  void ags_sound_resource_info()
+	</listitem>
+	<listitem>
+	  void ags_sound_resource_set_presets()
+	</listitem>
+	<listitem>
+	  void ags_sound_resource_get_presets()
+	</listitem>
+	<listitem>
+	  guint ags_sound_resource_read()
+	</listitem>
+	<listitem>
+	  void ags_sound_resource_write()
+	</listitem>
+	<listitem>
+	  void ags_sound_resource_flush()
+	</listitem>
+	<listitem>
+	  void ags_sound_resource_seek()
+	</listitem>
+      </itemizedlist>
+    </sect2>
   </sect1>
 </chapter>

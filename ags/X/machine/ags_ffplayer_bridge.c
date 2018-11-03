@@ -57,7 +57,7 @@ ags_ffplayer_bridge_get_type(void)
   static volatile gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
-    GType ags_type_ffplayer_bridge;
+    GType ags_type_ffplayer_bridge = 0;
 
     static const GTypeInfo ags_ffplayer_bridge_info = {
       sizeof(AgsFFPlayerBridgeClass),
@@ -95,7 +95,7 @@ ags_ffplayer_bridge_get_type(void)
 				AGS_TYPE_PLUGIN,
 				&ags_plugin_interface_info);
 
-    g_once_init_leave (&g_define_type_id__volatile, ags_type_ffplayer_bridge);
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_ffplayer_bridge);
   }
 
   return g_define_type_id__volatile;
@@ -203,7 +203,7 @@ ags_ffplayer_bridge_disconnect(AgsConnectable *connectable)
  *
  * Returns: a new #AgsFFPlayerBridge
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsFFPlayerBridge*
 ags_ffplayer_bridge_new(AgsAudio *audio)

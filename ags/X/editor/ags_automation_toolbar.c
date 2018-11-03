@@ -62,7 +62,7 @@ ags_automation_toolbar_get_type(void)
   static volatile gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
-    GType ags_type_automation_toolbar;
+    GType ags_type_automation_toolbar = 0;
 
     static const GTypeInfo ags_automation_toolbar_info = {
       sizeof (AgsAutomationToolbarClass),
@@ -90,7 +90,7 @@ ags_automation_toolbar_get_type(void)
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
 
-    g_once_init_leave (&g_define_type_id__volatile, ags_type_automation_toolbar);
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_automation_toolbar);
   }
 
   return g_define_type_id__volatile;
@@ -201,7 +201,7 @@ ags_automation_toolbar_init(AgsAutomationToolbar *automation_toolbar)
   
   /* menu tool */
   automation_toolbar->menu_tool = (GtkMenuToolButton *) g_object_new(GTK_TYPE_MENU_TOOL_BUTTON,
-								     "label", i18n("tool"),
+								     "label", i18n("Tool"),
 								     "stock-id", GTK_STOCK_EXECUTE,
 								     NULL);
   gtk_toolbar_append_widget((GtkToolbar *) automation_toolbar, (GtkWidget *) automation_toolbar->menu_tool, i18n("additional tools"), NULL);
@@ -219,7 +219,7 @@ ags_automation_toolbar_init(AgsAutomationToolbar *automation_toolbar)
   /*  */
   automation_toolbar->zoom_history = 4;
   
-  label = (GtkLabel *) gtk_label_new(i18n("zoom"));
+  label = (GtkLabel *) gtk_label_new(i18n("Zoom"));
   gtk_container_add(GTK_CONTAINER(automation_toolbar),
 		    (GtkWidget *) label);
 
@@ -232,7 +232,7 @@ ags_automation_toolbar_init(AgsAutomationToolbar *automation_toolbar)
 			    NULL);
 
   /*  */
-  label = (GtkLabel *) gtk_label_new(i18n("port"));
+  label = (GtkLabel *) gtk_label_new(i18n("Port"));
   gtk_container_add(GTK_CONTAINER(automation_toolbar),
 		    (GtkWidget *) label);
 
@@ -261,7 +261,20 @@ ags_automation_toolbar_init(AgsAutomationToolbar *automation_toolbar)
 			    (GtkWidget *) automation_toolbar->port,
 			    NULL,
 			    NULL);
+
+  /* opacity */
+  label = (GtkLabel *) gtk_label_new(i18n("Opacity"));
+  gtk_container_add(GTK_CONTAINER(automation_toolbar),
+		    (GtkWidget *) label);
+
+  automation_toolbar->opacity = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, 1.0, 0.001);
+  gtk_spin_button_set_value(automation_toolbar->opacity, 0.3);
+  gtk_toolbar_append_widget((GtkToolbar *) automation_toolbar,
+			    (GtkWidget *) automation_toolbar->opacity,
+			    NULL,
+			    NULL);
 }
+
 
 void
 ags_automation_toolbar_connect(AgsConnectable *connectable)
@@ -349,6 +362,10 @@ ags_automation_toolbar_connect(AgsConnectable *connectable)
   /* port */
   g_signal_connect_after(automation_toolbar->port, "changed",
 			 G_CALLBACK(ags_automation_toolbar_port_callback), automation_toolbar);
+
+  /* opacity */
+  g_signal_connect_after((GObject *) automation_toolbar->opacity, "value-changed",
+			 G_CALLBACK(ags_automation_toolbar_opacity_callback), (gpointer) automation_toolbar);
 }
 
 void
@@ -446,6 +463,13 @@ ags_automation_toolbar_disconnect(AgsConnectable *connectable)
 		      G_CALLBACK(ags_automation_toolbar_port_callback),
 		      automation_toolbar,
 		      NULL);
+
+  /* opacity */
+  g_object_disconnect(G_OBJECT(automation_toolbar->opacity),
+		      "any_signal::value-changed",
+		      G_CALLBACK(ags_automation_toolbar_opacity_callback),
+		      automation_toolbar,
+		      NULL);
 }
 
 /**
@@ -465,10 +489,14 @@ ags_automation_toolbar_load_port(AgsAutomationToolbar *automation_toolbar)
   GtkListStore *list_store;
   GtkTreeIter iter;
 
-  GList *start_automation;
+  AgsChannel *channel;
   
-  gchar **start_specifier, **specifier;
+  GList *start_port, *port;
 
+  gchar **collected_specifier;
+
+  guint length;
+  
   automation_editor = (AgsAutomationEditor *) gtk_widget_get_ancestor((GtkWidget *) automation_toolbar,
 								      AGS_TYPE_AUTOMATION_EDITOR);
   machine = automation_editor->selected_machine;
@@ -487,80 +515,198 @@ ags_automation_toolbar_load_port(AgsAutomationToolbar *automation_toolbar)
   gtk_combo_box_set_model(automation_toolbar->port,
 			  GTK_TREE_MODEL(list_store));
 
-  g_object_get(machine->audio,
-	       "automation", &start_automation,
-	       NULL);
+  collected_specifier = (gchar **) malloc(sizeof(gchar*));
+
+  collected_specifier[0] = NULL;
+  length = 1;
   
-  /* audio */ 
-  specifier =
-    start_specifier = ags_automation_get_specifier_unique_with_channel_type(start_automation,
-									    G_TYPE_NONE);
+  /* audio */
+  port =
+    start_port = ags_audio_collect_all_audio_ports(machine->audio);
 
-  for(; *specifier != NULL; specifier++){
+  while(port != NULL){
+    AgsPluginPort *plugin_port;
+
+    gchar *specifier;
+
     gboolean is_enabled;
+    gboolean contains_control_name;
     
-    gtk_list_store_append(list_store, &iter);
+    g_object_get(port->data,
+		 "specifier", &specifier,
+		 "plugin-port", &plugin_port,
+		 NULL);
 
-    is_enabled = (ags_machine_automation_port_find_channel_type_with_control_name(machine->enabled_automation_port,
-										  G_TYPE_NONE,
-										  *specifier)) ? TRUE: FALSE;
+#ifdef HAVE_GLIB_2_44
+    contains_control_name = g_strv_contains(collected_specifier,
+					    specifier);
+#else
+    contains_control_name = ags_strv_contains(collected_specifier,
+					      specifier);
+#endif
+
+    if(plugin_port != NULL &&
+       !contains_control_name){
+      /* create list store entry */
+      is_enabled = (ags_machine_automation_port_find_channel_type_with_control_name(machine->enabled_automation_port,
+										    G_TYPE_NONE,
+										    specifier)) ? TRUE: FALSE;
+
+      gtk_list_store_append(list_store, &iter);
+      gtk_list_store_set(list_store, &iter,
+			 0, is_enabled,
+			 1, g_strdup("audio"),
+			 2, g_strdup(specifier),
+			 -1);      
+
+      /* add to collected specifier */
+      collected_specifier = (gchar **) realloc(collected_specifier,
+				     (length + 1) * sizeof(gchar *));
+      collected_specifier[length - 1] = g_strdup(specifier);
+      collected_specifier[length] = NULL;
+
+      length++;
+    }
     
-    gtk_list_store_set(list_store, &iter,
-		       0, is_enabled,
-		       1, g_strdup("audio"),
-		       2, g_strdup(*specifier),
-		       -1);
+    /* iterate */
+    port = port->next;
   }
 
-  g_strfreev(start_specifier);
+  g_list_free(start_port);
   
   /* output */
-  specifier =
-    start_specifier = ags_automation_get_specifier_unique_with_channel_type(start_automation,
-									    AGS_TYPE_OUTPUT);
+  g_object_get(machine->audio,
+	       "output", &channel,
+	       NULL);
 
-  for(; *specifier != NULL; specifier++){
-    gboolean is_enabled;
-    
-    gtk_list_store_append(list_store, &iter);
+  while(channel != NULL){
+    /* output */
+    port =
+      start_port = ags_channel_collect_all_channel_ports(channel);
 
-    is_enabled = (ags_machine_automation_port_find_channel_type_with_control_name(machine->enabled_automation_port,
-										  AGS_TYPE_OUTPUT,
-										  *specifier)) ? TRUE: FALSE;
+    while(port != NULL){
+      AgsPluginPort *plugin_port;
+
+      gchar *specifier;
+
+      gboolean is_enabled;
+      gboolean contains_control_name;
     
-    gtk_list_store_set(list_store, &iter,
-		       0, is_enabled,
-		       1, g_strdup("output"),
-		       2, g_strdup(*specifier),
-		       -1);
+      g_object_get(port->data,
+		   "specifier", &specifier,
+		   "plugin-port", &plugin_port,
+		   NULL);
+
+#ifdef HAVE_GLIB_2_44
+      contains_control_name = g_strv_contains(collected_specifier,
+					      specifier);
+#else
+      contains_control_name = ags_strv_contains(collected_specifier,
+						specifier);
+#endif
+
+      if(plugin_port != NULL &&
+	 !contains_control_name){
+	/* create list store entry */
+	is_enabled = (ags_machine_automation_port_find_channel_type_with_control_name(machine->enabled_automation_port,
+										      AGS_TYPE_OUTPUT,
+										      specifier)) ? TRUE: FALSE;
+    
+	gtk_list_store_append(list_store, &iter);
+	gtk_list_store_set(list_store, &iter,
+			   0, is_enabled,
+			   1, g_strdup("output"),
+			   2, g_strdup(specifier),
+			   -1);      
+
+	/* add to collected specifier */
+	collected_specifier = (gchar **) realloc(collected_specifier,
+						 (length + 1) * sizeof(gchar *));
+	collected_specifier[length - 1] = g_strdup(specifier);
+	collected_specifier[length] = NULL;
+
+	length++;
+      }
+    
+      /* iterate */
+      port = port->next;
+    }
+
+    g_list_free(start_port);
+    
+    /* iterate */
+    g_object_get(channel,
+		 "next", &channel,
+		 NULL);
   }
-
-  g_strfreev(start_specifier);
-
+  
   /* input */
-  specifier =
-    start_specifier = ags_automation_get_specifier_unique_with_channel_type(start_automation,
-									    AGS_TYPE_INPUT);
+  g_object_get(machine->audio,
+	       "input", &channel,
+	       NULL);
 
-  for(; *specifier != NULL; specifier++){
-    gboolean is_enabled;
-    
-    gtk_list_store_append(list_store, &iter);
+  while(channel != NULL){
+    /* input */
+    port =
+      start_port = ags_channel_collect_all_channel_ports(channel);
 
-    is_enabled = (ags_machine_automation_port_find_channel_type_with_control_name(machine->enabled_automation_port,
-										  AGS_TYPE_INPUT,
-										  *specifier)) ? TRUE: FALSE;
+    while(port != NULL){
+      AgsPluginPort *plugin_port;
+
+      gchar *specifier;
+
+      gboolean is_enabled;
+      gboolean contains_control_name;
     
-    gtk_list_store_set(list_store, &iter,
-		       0, is_enabled,
-		       1, g_strdup("input"),
-		       2, g_strdup(*specifier),
-		       -1);
+      g_object_get(port->data,
+		   "specifier", &specifier,
+		   "plugin-port", &plugin_port,
+		   NULL);
+
+#ifdef HAVE_GLIB_2_44
+      contains_control_name = g_strv_contains(collected_specifier,
+					      specifier);
+#else
+      contains_control_name = ags_strv_contains(collected_specifier,
+						specifier);
+#endif
+
+      if(plugin_port != NULL &&
+	 !contains_control_name){
+	/* create list store entry */
+	is_enabled = (ags_machine_automation_port_find_channel_type_with_control_name(machine->enabled_automation_port,
+										      AGS_TYPE_INPUT,
+										      specifier)) ? TRUE: FALSE;
+    
+	gtk_list_store_append(list_store, &iter);
+	gtk_list_store_set(list_store, &iter,
+			   0, is_enabled,
+			   1, g_strdup("input"),
+			   2, g_strdup(specifier),
+			   -1);      
+
+	/* add to collected specifier */
+	collected_specifier = (gchar **) realloc(collected_specifier,
+						 (length + 1) * sizeof(gchar *));
+	collected_specifier[length - 1] = g_strdup(specifier);
+	collected_specifier[length] = NULL;
+
+	length++;
+      }
+    
+      /* iterate */
+      port = port->next;
+    }
+
+    g_list_free(start_port);
+    
+    /* iterate */
+    g_object_get(channel,
+		 "next", &channel,
+		 NULL);
   }
-
-  g_strfreev(start_specifier);
-
-  g_list_free(start_automation);
+  
+  g_strfreev(collected_specifier);
   
   gtk_list_store_append(list_store, &iter);
   gtk_list_store_set(list_store, &iter,
@@ -593,7 +739,10 @@ ags_automation_toolbar_apply_port(AgsAutomationToolbar *automation_toolbar,
   GtkTreeModel *model;
   GtkTreeIter iter;
 
+  AgsChannel *channel;
+
   GList *start_automation, *automation;
+  GList *start_port, *port;
   
   guint length;
   gboolean contains_specifier;
@@ -629,12 +778,98 @@ ags_automation_toolbar_apply_port(AgsAutomationToolbar *automation_toolbar,
     if(!g_ascii_strcasecmp("audio",
 			   str)){
       scope = G_TYPE_NONE;
+
+      port = ags_audio_collect_all_audio_ports_by_specifier_and_context(machine->audio,
+									control_name,
+									TRUE);
+      start_port = port;
+      
+      port = ags_audio_collect_all_audio_ports_by_specifier_and_context(machine->audio,
+									control_name,
+									FALSE);
+
+      if(start_port != NULL){
+	start_port = g_list_concat(start_port,
+				   port);
+      }else{
+	start_port = port;
+      }
+
+      port = start_port;
     }else if(!g_ascii_strcasecmp("output",
 				 str)){
       scope = AGS_TYPE_OUTPUT;
+
+      g_object_get(machine->audio,
+		   "output", &channel,
+		   NULL);
+
+      start_port = NULL;
+      
+      while(channel != NULL){
+	port = ags_channel_collect_all_channel_ports_by_specifier_and_context(channel,
+									      control_name,
+									      TRUE);
+	if(start_port != NULL){
+	  start_port = g_list_concat(start_port,
+				     port);
+	}else{
+	  start_port = port;
+	}
+      
+	port = ags_channel_collect_all_channel_ports_by_specifier_and_context(channel,
+									      control_name,
+									      FALSE);
+
+	if(start_port != NULL){
+	  start_port = g_list_concat(start_port,
+				     port);
+	}else{
+	  start_port = port;
+	}
+
+	/* iterate */
+	g_object_get(channel,
+		     "next", &channel,
+		     NULL);
+      }
     }else if(!g_ascii_strcasecmp("input",
 				 str)){
       scope = AGS_TYPE_INPUT;
+
+      g_object_get(machine->audio,
+		   "input", &channel,
+		   NULL);
+
+      start_port = NULL;
+      
+      while(channel != NULL){
+	port = ags_channel_collect_all_channel_ports_by_specifier_and_context(channel,
+									      control_name,
+									      TRUE);
+	if(start_port != NULL){
+	  start_port = g_list_concat(start_port,
+				     port);
+	}else{
+	  start_port = port;
+	}
+      
+	port = ags_channel_collect_all_channel_ports_by_specifier_and_context(channel,
+									      control_name,
+									      FALSE);
+
+	if(start_port != NULL){
+	  start_port = g_list_concat(start_port,
+				     port);
+	}else{
+	  start_port = port;
+	}
+
+	/* iterate */
+	g_object_get(channel,
+		     "next", &channel,
+		     NULL);
+      }
     }
 
     if(scope == channel_type &&
@@ -677,117 +912,117 @@ ags_automation_toolbar_apply_port(AgsAutomationToolbar *automation_toolbar,
   if(contains_specifier){
     AgsAutomationEdit *automation_edit;
     AgsScale *scale;
+
+    AgsPluginPort *plugin_port;
+
+    gchar *specifier;
+
+    gdouble upper, lower;
+    gdouble default_value;
+
+    GValue *upper_value, *lower_value;
+    GValue *value;
     
-    gboolean create_audio_automation_edit;
-    gboolean create_output_automation_edit;
-    gboolean create_input_automation_edit;
+    /* scale */
+    scale = ags_scale_new();
 
-    /* audio */
-    create_audio_automation_edit = ((automation = ags_automation_find_specifier_with_type_and_line(start_automation,
-												   control_name,
-												   channel_type,
-												   0)) != NULL) ? TRUE: FALSE;
+    /* get some fields */
+    plugin_port = NULL;
+    
+    if(start_port != NULL){
+      g_object_get(start_port->data,
+		   "plugin-port", &plugin_port,
+		   NULL);      
+    }
 
-    if(create_audio_automation_edit){
-      gchar *specifier;
-
-      gdouble upper, lower;
-      gdouble default_value;
-      
-      pthread_mutex_t *automation_mutex;
-      
-      /* scale */
-      scale = ags_scale_new();
-
-      /* get automation mutex */
-      pthread_mutex_lock(ags_automation_get_class_mutex());
-
-      automation_mutex = AGS_AUTOMATION(automation->data)->obj_mutex;
-      
-      pthread_mutex_unlock(ags_automation_get_class_mutex());
-
-      /* get some fields */
-      g_object_get(automation->data,
-		   "upper", &upper,
-		   "lower", &lower,
-		   "default-value", &default_value,
+    if(plugin_port != NULL){
+      g_object_get(plugin_port,
+		   "upper-value", &upper_value,
+		   "lower-value", &lower_value,
+		   "default-value", &value,
 		   NULL);
 
-      pthread_mutex_lock(automation_mutex);
-      
-      specifier = g_strdup(AGS_AUTOMATION(automation->data)->control_name);
-      
-      pthread_mutex_unlock(automation_mutex);
+      upper = g_value_get_float(upper_value);
+      lower = g_value_get_float(lower_value);
 
-      /* apply scale */
-      g_object_set(scale,
-		   "control-name", specifier,
-		   "upper", upper,
-		   "lower", lower,
-		   "default-value", default_value,
-		   NULL);
-
-      if(channel_type == G_TYPE_NONE){
-	gtk_box_pack_start(automation_editor->audio_scrolled_scale_box->scale_box,
-			   scale,
-			   FALSE, FALSE,
-			   AGS_AUTOMATION_EDIT_DEFAULT_PADDING);
-      }else if(channel_type == AGS_TYPE_OUTPUT){
-	gtk_box_pack_start(automation_editor->output_scrolled_scale_box->scale_box,
-			   scale,
-			   FALSE, FALSE,
-			   AGS_AUTOMATION_EDIT_DEFAULT_PADDING);
-      }else if(channel_type == AGS_TYPE_INPUT){
-	gtk_box_pack_start(automation_editor->input_scrolled_scale_box->scale_box,
-			   scale,
-			   FALSE, FALSE,
-			   AGS_AUTOMATION_EDIT_DEFAULT_PADDING);
-      }
+      default_value = g_value_get_float(value);
+    }else{
+      upper = 1.0;
+      lower = 0.0;
       
-      gtk_widget_show(scale);
+      default_value = 1.0;
+    }    
+      
+    specifier = g_strdup(control_name);
+
+    /* apply scale */
+    g_object_set(scale,
+		 "control-name", specifier,
+		 "upper", upper,
+		 "lower", lower,
+		 "default-value", default_value,
+		 NULL);
+
+    if(channel_type == G_TYPE_NONE){
+      gtk_box_pack_start(automation_editor->audio_scrolled_scale_box->scale_box,
+			 scale,
+			 FALSE, FALSE,
+			 AGS_AUTOMATION_EDIT_DEFAULT_PADDING);
+    }else if(channel_type == AGS_TYPE_OUTPUT){
+      gtk_box_pack_start(automation_editor->output_scrolled_scale_box->scale_box,
+			 scale,
+			 FALSE, FALSE,
+			 AGS_AUTOMATION_EDIT_DEFAULT_PADDING);
+    }else if(channel_type == AGS_TYPE_INPUT){
+      gtk_box_pack_start(automation_editor->input_scrolled_scale_box->scale_box,
+			 scale,
+			 FALSE, FALSE,
+			 AGS_AUTOMATION_EDIT_DEFAULT_PADDING);
+    }
+      
+    gtk_widget_show(scale);
 	  
-      /* automation edit */
-      automation_edit = ags_automation_edit_new();
+    /* automation edit */
+    automation_edit = ags_automation_edit_new();
 
-      g_object_set(automation_edit,
-		   "channel-type", channel_type,
-		   "control-specifier", specifier,
-		   "control-name", control_name,
-		   "upper", upper,
-		   "lower", lower,
-		   "default-value", default_value,
-		   NULL);
+    g_object_set(automation_edit,
+		 "channel-type", channel_type,
+		 "control-specifier", specifier,
+		 "control-name", control_name,
+		 "upper", upper,
+		 "lower", lower,
+		 "default-value", default_value,
+		 NULL);
 
-      if(channel_type == G_TYPE_NONE){
-	gtk_box_pack_start(automation_editor->audio_scrolled_automation_edit_box->automation_edit_box,
-			   automation_edit,
-			   FALSE, FALSE,
-			   AGS_AUTOMATION_EDIT_DEFAULT_PADDING);
-      }else if(channel_type == AGS_TYPE_OUTPUT){
-	gtk_box_pack_start(automation_editor->output_scrolled_automation_edit_box->automation_edit_box,
-			   automation_edit,
-			   FALSE, FALSE,
-			   AGS_AUTOMATION_EDIT_DEFAULT_PADDING);
-      }else if(channel_type == AGS_TYPE_INPUT){
-	gtk_box_pack_start(automation_editor->input_scrolled_automation_edit_box->automation_edit_box,
-			   automation_edit,
-			   FALSE, FALSE,
-			   AGS_AUTOMATION_EDIT_DEFAULT_PADDING);
-      }
+    if(channel_type == G_TYPE_NONE){
+      gtk_box_pack_start(automation_editor->audio_scrolled_automation_edit_box->automation_edit_box,
+			 automation_edit,
+			 FALSE, FALSE,
+			 AGS_AUTOMATION_EDIT_DEFAULT_PADDING);
+    }else if(channel_type == AGS_TYPE_OUTPUT){
+      gtk_box_pack_start(automation_editor->output_scrolled_automation_edit_box->automation_edit_box,
+			 automation_edit,
+			 FALSE, FALSE,
+			 AGS_AUTOMATION_EDIT_DEFAULT_PADDING);
+    }else if(channel_type == AGS_TYPE_INPUT){
+      gtk_box_pack_start(automation_editor->input_scrolled_automation_edit_box->automation_edit_box,
+			 automation_edit,
+			 FALSE, FALSE,
+			 AGS_AUTOMATION_EDIT_DEFAULT_PADDING);
+    }
       
-      ags_connectable_connect(AGS_CONNECTABLE(automation_edit));
-      gtk_widget_show(automation_edit);    
+    ags_connectable_connect(AGS_CONNECTABLE(automation_edit));
+    gtk_widget_show(automation_edit);    
 
-      if(channel_type == G_TYPE_NONE){
-	g_signal_connect_after((GObject *) automation_edit->hscrollbar, "value-changed",
-			       G_CALLBACK(ags_automation_editor_audio_automation_edit_hscrollbar_value_changed), (gpointer) automation_editor);
-      }else if(channel_type == AGS_TYPE_OUTPUT){
-	g_signal_connect_after((GObject *) automation_edit->hscrollbar, "value-changed",
-			       G_CALLBACK(ags_automation_editor_output_automation_edit_hscrollbar_value_changed), (gpointer) automation_editor);
-      }else if(channel_type == AGS_TYPE_INPUT){
-	g_signal_connect_after((GObject *) automation_edit->hscrollbar, "value-changed",
-			       G_CALLBACK(ags_automation_editor_input_automation_edit_hscrollbar_value_changed), (gpointer) automation_editor);
-      }
+    if(channel_type == G_TYPE_NONE){
+      g_signal_connect_after((GObject *) automation_edit->hscrollbar, "value-changed",
+			     G_CALLBACK(ags_automation_editor_audio_automation_edit_hscrollbar_value_changed), (gpointer) automation_editor);
+    }else if(channel_type == AGS_TYPE_OUTPUT){
+      g_signal_connect_after((GObject *) automation_edit->hscrollbar, "value-changed",
+			     G_CALLBACK(ags_automation_editor_output_automation_edit_hscrollbar_value_changed), (gpointer) automation_editor);
+    }else if(channel_type == AGS_TYPE_INPUT){
+      g_signal_connect_after((GObject *) automation_edit->hscrollbar, "value-changed",
+			     G_CALLBACK(ags_automation_editor_input_automation_edit_hscrollbar_value_changed), (gpointer) automation_editor);
     }
     
     /* unset bypass */
@@ -903,6 +1138,15 @@ ags_automation_toolbar_tool_popup_new(GtkToolbar *automation_toolbar)
   item = (GtkMenuItem *) gtk_menu_item_new_with_label(i18n("position cursor"));
   gtk_menu_shell_append((GtkMenuShell *) tool_popup, (GtkWidget *) item);
 
+  gtk_menu_shell_append((GtkMenuShell*) tool_popup,
+			(GtkWidget*) gtk_separator_menu_item_new());
+  
+  item = (GtkMenuItem *) gtk_menu_item_new_with_label(i18n("enable all lines"));
+  gtk_menu_shell_append((GtkMenuShell *) tool_popup, (GtkWidget *) item);
+
+  item = (GtkMenuItem *) gtk_menu_item_new_with_label(i18n("disable all lines"));
+  gtk_menu_shell_append((GtkMenuShell *) tool_popup, (GtkWidget *) item);
+  
   /* connect */
   list_start = 
     list = gtk_container_get_children((GtkContainer *) tool_popup);
@@ -917,6 +1161,14 @@ ags_automation_toolbar_tool_popup_new(GtkToolbar *automation_toolbar)
   list = list->next;
   g_signal_connect(G_OBJECT(list->data), "activate",
 		   G_CALLBACK(ags_automation_toolbar_tool_popup_position_cursor_callback), (gpointer) automation_toolbar);
+
+  list = list->next->next;
+  g_signal_connect(G_OBJECT(list->data), "activate",
+		   G_CALLBACK(ags_automation_toolbar_tool_popup_enable_all_lines_callback), (gpointer) automation_toolbar);
+
+  list = list->next;
+  g_signal_connect(G_OBJECT(list->data), "activate",
+		   G_CALLBACK(ags_automation_toolbar_tool_popup_disable_all_lines_callback), (gpointer) automation_toolbar);
 
   g_list_free(list_start);
 

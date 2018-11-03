@@ -25,6 +25,8 @@
 
 #include <ags/config.h>
 
+#include <ags/libags.h>
+
 #ifdef AGS_WITH_LIBINSTPATCH
 #include <libinstpatch/libinstpatch.h>
 #endif
@@ -42,7 +44,20 @@ typedef struct _AgsIpatchSF2Reader AgsIpatchSF2Reader;
 typedef struct _AgsIpatchSF2ReaderClass AgsIpatchSF2ReaderClass;
 
 /**
- * AgsSF2Levels:
+ * AgsIpatchSF2ReaderFlags:
+ * @AGS_IPATCH_SF2_READER_ADDED_TO_REGISTRY: the ipatch sample was added to registry, see #AgsConnectable::add_to_registry()
+ * @AGS_IPATCH_SF2_READER_CONNECTED: indicates the ipatch sample was connected by calling #AgsConnectable::connect()
+ * 
+ * Enum values to control the behavior or indicate internal state of #AgsIpatchSF2Reader by
+ * enable/disable as flags.
+ */
+typedef enum{
+  AGS_IPATCH_SF2_READER_ADDED_TO_REGISTRY    = 1,
+  AGS_IPATCH_SF2_READER_CONNECTED            = 1 <<  1,
+}AgsIpatchSF2ReaderFlags;
+
+/**
+ * AgsSF2Level:
  * @AGS_SF2_FILENAME: filename
  * @AGS_SF2_PHDR: preset header
  * @AGS_SF2_IHDR: instrument header
@@ -60,6 +75,13 @@ typedef enum{
 struct _AgsIpatchSF2Reader
 {
   GObject object;
+
+  guint flags;
+
+  pthread_mutex_t *obj_mutex;
+  pthread_mutexattr_t *obj_mutexattr;
+
+  AgsUUID *uuid;
 
   guint level;
   
@@ -98,8 +120,16 @@ struct _AgsIpatchSF2ReaderClass
 
 GType ags_ipatch_sf2_reader_get_type();
 
+pthread_mutex_t* ags_ipatch_sf2_reader_get_class_mutex();
+
+gboolean ags_ipatch_sf2_reader_test_flags(AgsIpatchSF2Reader *ipatch_sf2_reader, guint flags);
+void ags_ipatch_sf2_reader_set_flags(AgsIpatchSF2Reader *ipatch_sf2_reader, guint flags);
+void ags_ipatch_sf2_reader_unset_flags(AgsIpatchSF2Reader *ipatch_sf2_reader, guint flags);
+
+#ifdef AGS_WITH_LIBINSTPATCH
 gboolean ags_ipatch_sf2_reader_load(AgsIpatchSF2Reader *ipatch_sf2_reader,
 				    IpatchFileHandle *handle);
+#endif
 
 /* select sample */
 gboolean ags_ipatch_sf2_reader_select_preset(AgsIpatchSF2Reader *ipatch_sf2_reader,

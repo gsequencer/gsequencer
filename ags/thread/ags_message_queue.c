@@ -19,8 +19,6 @@
 
 #include <ags/thread/ags_message_queue.h>
 
-#include <ags/object/ags_connectable.h>
-
 #include <libxml/parser.h>
 #include <libxml/xlink.h>
 #include <libxml/xpath.h>
@@ -28,7 +26,6 @@
 #include <ags/i18n.h>
 
 void ags_message_queue_class_init(AgsMessageQueueClass *message_queue);
-void ags_message_queue_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_message_queue_init(AgsMessageQueue *message_queue);
 void ags_message_queue_set_property(GObject *gobject,
 				    guint prop_id,
@@ -38,8 +35,6 @@ void ags_message_queue_get_property(GObject *gobject,
 				    guint prop_id,
 				    GValue *value,
 				    GParamSpec *param_spec);
-void ags_message_queue_connect(AgsConnectable *connectable);
-void ags_message_queue_disconnect(AgsConnectable *connectable);
 void ags_message_queue_dispose(GObject *gobject);
 void ags_message_queue_finalize(GObject *gobject);
 
@@ -59,7 +54,8 @@ enum{
 };
 
 static gpointer ags_message_queue_parent_class = NULL;
-static AgsConnectableInterface *ags_message_queue_parent_connectable_interface;
+
+static pthread_mutex_t ags_message_queue_class_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 GType
 ags_message_queue_get_type()
@@ -67,8 +63,8 @@ ags_message_queue_get_type()
   static volatile gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
-    GType ags_type_message_queue;
-    
+    GType ags_type_message_queue = 0;
+
     static const GTypeInfo ags_message_queue_info = {
       sizeof(AgsMessageQueueClass),
       NULL, /* base_init */
@@ -81,22 +77,12 @@ ags_message_queue_get_type()
       (GInstanceInitFunc) ags_message_queue_init,
     };
 
-    static const GInterfaceInfo ags_connectable_interface_info = {
-      (GInterfaceInitFunc) ags_message_queue_connectable_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-
     ags_type_message_queue = g_type_register_static(G_TYPE_OBJECT,
 						    "AgsMessageQueue",
 						    &ags_message_queue_info,
 						    0);
-    
-    g_type_add_interface_static(ags_type_message_queue,
-				AGS_TYPE_CONNECTABLE,
-				&ags_connectable_interface_info);
 
-    g_once_init_leave (&g_define_type_id__volatile, ags_type_message_queue);
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_message_queue);
   }
 
   return g_define_type_id__volatile;
@@ -126,7 +112,7 @@ ags_message_queue_class_init(AgsMessageQueueClass *message_queue)
    *
    * The assigned namespace.
    * 
-   * Since: 1.2.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_string("namespace",
 				   i18n_pspec("namespace of message queue"),
@@ -139,27 +125,18 @@ ags_message_queue_class_init(AgsMessageQueueClass *message_queue)
 }
 
 void
-ags_message_queue_connectable_interface_init(AgsConnectableInterface *connectable)
-{
-  ags_message_queue_parent_connectable_interface = g_type_interface_peek_parent(connectable);
-
-  connectable->connect = ags_message_queue_connect;
-  connectable->disconnect = ags_message_queue_disconnect;
-}
-
-void
 ags_message_queue_init(AgsMessageQueue *message_queue)
 {
   message_queue->namespace = NULL;
   
-  message_queue->mutexattr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
-  pthread_mutexattr_init(message_queue->mutexattr);
-  pthread_mutexattr_settype(message_queue->mutexattr,
+  message_queue->obj_mutexattr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
+  pthread_mutexattr_init(message_queue->obj_mutexattr);
+  pthread_mutexattr_settype(message_queue->obj_mutexattr,
 			    PTHREAD_MUTEX_RECURSIVE);
 
-  message_queue->mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
-  pthread_mutex_init(message_queue->mutex,
-		     message_queue->mutexattr);
+  message_queue->obj_mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
+  pthread_mutex_init(message_queue->obj_mutex,
+		     message_queue->obj_mutexattr);
 
   message_queue->message = NULL;
 }
@@ -221,22 +198,6 @@ ags_message_queue_get_property(GObject *gobject,
 }
 
 void
-ags_message_queue_connect(AgsConnectable *connectable)
-{
-  /* empty */
-
-  ags_message_queue_parent_connectable_interface->connect(connectable);
-}
-
-void
-ags_message_queue_disconnect(AgsConnectable *connectable)
-{
-  ags_message_queue_parent_connectable_interface->disconnect(connectable);
-
-  /* empty */
-}
-
-void
 ags_message_queue_dispose(GObject *gobject)
 {
   AgsMessageQueue *message_queue;
@@ -257,11 +218,11 @@ ags_message_queue_finalize(GObject *gobject)
   g_free(message_queue->namespace);
 
   /* mutex */
-  pthread_mutexattr_destroy(message_queue->mutexattr);
-  free(message_queue->mutexattr);
+  pthread_mutexattr_destroy(message_queue->obj_mutexattr);
+  free(message_queue->obj_mutexattr);
 
-  pthread_mutex_destroy(message_queue->mutex);
-  free(message_queue->mutex);
+  pthread_mutex_destroy(message_queue->obj_mutex);
+  free(message_queue->obj_mutex);
 
   /* message */
   if(message_queue->message != NULL){
@@ -274,6 +235,21 @@ ags_message_queue_finalize(GObject *gobject)
 }
 
 /**
+ * ags_message_queue_get_class_mutex:
+ * 
+ * Use this function's returned mutex to access mutex fields.
+ *
+ * Returns: the class mutex
+ * 
+ * Since: 2.0.0
+ */
+pthread_mutex_t*
+ags_message_queue_get_class_mutex()
+{
+  return(&ags_message_queue_class_mutex);
+}
+
+/**
  * ags_message_envelope_alloc:
  * @sender: the sender as #GObject
  * @recipient: the recipient as #GObject
@@ -281,7 +257,7 @@ ags_message_queue_finalize(GObject *gobject)
  * 
  * Allocate #AgsMessageEnvelope.
  * 
- * Since: 1.2.0
+ * Since: 2.0.0
  */
 AgsMessageEnvelope*
 ags_message_envelope_alloc(GObject *sender,
@@ -320,7 +296,7 @@ ags_message_envelope_alloc(GObject *sender,
  * 
  * Free @message.
  * 
- * Since: 1.2.0
+ * Since: 2.0.0
  */
 void
 ags_message_envelope_free(AgsMessageEnvelope *message)
@@ -354,7 +330,7 @@ ags_message_envelope_free(AgsMessageEnvelope *message)
  * 
  * Add @message to @message_queue.
  * 
- * Since: 1.2.0
+ * Since: 2.0.0
  */
 void
 ags_message_queue_add_message(AgsMessageQueue *message_queue,
@@ -365,12 +341,12 @@ ags_message_queue_add_message(AgsMessageQueue *message_queue,
     return;
   }
 
-  pthread_mutex_lock(message_queue->mutex);
+  pthread_mutex_lock(message_queue->obj_mutex);
 
   message_queue->message = g_list_prepend(message_queue->message,
 					  message);
   
-  pthread_mutex_unlock(message_queue->mutex);
+  pthread_mutex_unlock(message_queue->obj_mutex);
 }
 
 /**
@@ -380,7 +356,7 @@ ags_message_queue_add_message(AgsMessageQueue *message_queue,
  * 
  * Remove @message from @message_queue.
  * 
- * Since: 1.2.0
+ * Since: 2.0.0
  */
 void
 ags_message_queue_remove_message(AgsMessageQueue *message_queue,
@@ -392,12 +368,12 @@ ags_message_queue_remove_message(AgsMessageQueue *message_queue,
   }
 
 
-  pthread_mutex_lock(message_queue->mutex);
+  pthread_mutex_lock(message_queue->obj_mutex);
 
   message_queue->message = g_list_remove(message_queue->message,
 					 message);
   
-  pthread_mutex_unlock(message_queue->mutex);
+  pthread_mutex_unlock(message_queue->obj_mutex);
 }
 
 /**
@@ -409,7 +385,7 @@ ags_message_queue_remove_message(AgsMessageQueue *message_queue,
  * 
  * Returns: all matching #AgsMessageEnvelope as #GList-struct
  * 
- * Since: 1.2.0
+ * Since: 2.0.0
  */
 GList*
 ags_message_queue_find_sender(AgsMessageQueue *message_queue,
@@ -424,7 +400,7 @@ ags_message_queue_find_sender(AgsMessageQueue *message_queue,
 
   match = NULL;
 
-  pthread_mutex_lock(message_queue->mutex);
+  pthread_mutex_lock(message_queue->obj_mutex);
  
   message = message_queue->message;
 
@@ -437,7 +413,7 @@ ags_message_queue_find_sender(AgsMessageQueue *message_queue,
     message = message->next;
   }
   
-  pthread_mutex_unlock(message_queue->mutex);
+  pthread_mutex_unlock(message_queue->obj_mutex);
 
   return(match);
 }
@@ -451,7 +427,7 @@ ags_message_queue_find_sender(AgsMessageQueue *message_queue,
  * 
  * Returns: all matching #AgsMessageEnvelope as #GList-struct
  * 
- * Since: 1.2.0
+ * Since: 2.0.0
  */
 GList*
 ags_message_queue_find_recipient(AgsMessageQueue *message_queue,
@@ -466,7 +442,7 @@ ags_message_queue_find_recipient(AgsMessageQueue *message_queue,
 
   match = NULL;
 
-  pthread_mutex_lock(message_queue->mutex);
+  pthread_mutex_lock(message_queue->obj_mutex);
  
   message = message_queue->message;
 
@@ -479,7 +455,7 @@ ags_message_queue_find_recipient(AgsMessageQueue *message_queue,
     message = message->next;
   }
   
-  pthread_mutex_unlock(message_queue->mutex);
+  pthread_mutex_unlock(message_queue->obj_mutex);
 
   return(match);
 }
@@ -493,7 +469,7 @@ ags_message_queue_find_recipient(AgsMessageQueue *message_queue,
  * 
  * Returns: all matching #AgsMessageEnvelope as #GList-struct
  * 
- * Since: 1.2.0
+ * Since: 2.0.0
  */
 GList*
 ags_message_queue_query_message(AgsMessageQueue *message_queue,
@@ -508,7 +484,7 @@ ags_message_queue_query_message(AgsMessageQueue *message_queue,
 
   match = NULL;
 
-  pthread_mutex_lock(message_queue->mutex);
+  pthread_mutex_lock(message_queue->obj_mutex);
  
   message = message_queue->message;
 
@@ -540,19 +516,20 @@ ags_message_queue_query_message(AgsMessageQueue *message_queue,
     message = message->next;
   }
   
-  pthread_mutex_unlock(message_queue->mutex);
+  pthread_mutex_unlock(message_queue->obj_mutex);
 
   return(match);
 }
 
 /**
  * ags_message_queue_new:
+ * @namespace: the namespace
  *
- * Create a new #AgsMessageQueue.
+ * Create a new instance of #AgsMessageQueue.
  *
  * Returns: the new #AgsMessageQueue
  *
- * Since: 1.2.0
+ * Since: 2.0.0
  */ 
 AgsMessageQueue*
 ags_message_queue_new(gchar *namespace)

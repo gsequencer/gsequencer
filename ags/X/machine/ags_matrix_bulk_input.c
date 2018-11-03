@@ -53,8 +53,8 @@ ags_matrix_bulk_input_get_type(void)
   static volatile gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
-    GType ags_type_matrix_bulk_input;
-
+    GType ags_type_matrix_bulk_input = 0;
+ 
     static const GTypeInfo ags_matrix_bulk_input_info = {
       sizeof(AgsMatrixBulkInputClass),
       NULL, /* base_init */
@@ -91,7 +91,7 @@ ags_matrix_bulk_input_get_type(void)
 				AGS_TYPE_PLUGIN,
 				&ags_plugin_interface_info);
 
-    g_once_init_leave (&g_define_type_id__volatile, ags_type_matrix_bulk_input);
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_matrix_bulk_input);
   }
 
   return g_define_type_id__volatile;

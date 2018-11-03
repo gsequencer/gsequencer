@@ -45,7 +45,7 @@ ags_feed_recycling_get_type()
   static volatile gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
-    GType ags_type_feed_recycling;
+    GType ags_type_feed_recycling = 0;
 
     static const GTypeInfo ags_feed_recycling_info = {
       sizeof (AgsFeedRecyclingClass),
@@ -63,9 +63,11 @@ ags_feed_recycling_get_type()
 						     "AgsFeedRecycling",
 						     &ags_feed_recycling_info,
 						     0);
+
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_feed_recycling);
   }
 
-  return(ags_type_feed_recycling);
+  return g_define_type_id__volatile;
 }
 
 void

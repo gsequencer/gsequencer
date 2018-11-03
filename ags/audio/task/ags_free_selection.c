@@ -59,7 +59,7 @@ ags_free_selection_get_type()
   static volatile gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
-    GType ags_type_free_selection;
+    GType ags_type_free_selection = 0;
 
     static const GTypeInfo ags_free_selection_info = {
       sizeof(AgsFreeSelectionClass),
@@ -77,9 +77,11 @@ ags_free_selection_get_type()
 						     "AgsFreeSelection",
 						     &ags_free_selection_info,
 						     0);
+
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_free_selection);
   }
-  
-  return(ags_type_free_selection);
+
+  return g_define_type_id__volatile;
 }
 
 void

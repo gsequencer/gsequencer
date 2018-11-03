@@ -59,7 +59,7 @@ ags_buffer_audio_signal_get_type()
   static volatile gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
-    GType ags_type_buffer_audio_signal;
+    GType ags_type_buffer_audio_signal = 0;
 
     static const GTypeInfo ags_buffer_audio_signal_info = {
       sizeof(AgsBufferAudioSignalClass),
@@ -77,9 +77,11 @@ ags_buffer_audio_signal_get_type()
 							  "AgsBufferAudioSignal",
 							  &ags_buffer_audio_signal_info,
 							  0);
+
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_buffer_audio_signal);
   }
 
-  return(ags_type_buffer_audio_signal);
+  return g_define_type_id__volatile;
 }
 
 void
@@ -285,19 +287,6 @@ ags_buffer_audio_signal_run_inter(AgsRecall *recall)
   /* call parent */
   parent_class_run_inter(recall);
 
-  /* initialize some variables */
-  g_object_get(recall,
-	       "parent", &buffer_recycling,
-	       NULL);
-
-  g_object_get(buffer_recycling,
-	       "parent", &buffer_channel_run,
-	       NULL);
-
-  g_object_get(buffer_channel_run,
-	       "recall-channel", &buffer_channel,
-	       NULL);
-
   g_object_get(buffer_audio_signal,
 	       "source", &source,
 	       "destination", &destination,
@@ -310,6 +299,19 @@ ags_buffer_audio_signal_run_inter(AgsRecall *recall)
 
     return;
   }
+
+  /* initialize some variables */
+  g_object_get(recall,
+	       "parent", &buffer_recycling,
+	       NULL);
+
+  g_object_get(buffer_recycling,
+	       "parent", &buffer_channel_run,
+	       NULL);
+
+  g_object_get(buffer_channel_run,
+	       "recall-channel", &buffer_channel,
+	       NULL);
 
   /* check muted */
   g_object_get(buffer_channel,

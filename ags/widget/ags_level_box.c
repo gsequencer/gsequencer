@@ -58,7 +58,7 @@ ags_level_box_get_type(void)
   static volatile gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
-    GType ags_type_level_box;
+    GType ags_type_level_box = 0;
 
     static const GTypeInfo ags_level_box_info = {
       sizeof (AgsLevelBoxClass),
@@ -76,7 +76,7 @@ ags_level_box_get_type(void)
 						"AgsLevelBox", &ags_level_box_info,
 						0);
 
-    g_once_init_leave (&g_define_type_id__volatile, ags_type_level_box);
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_level_box);
   }
 
   return g_define_type_id__volatile;
@@ -107,7 +107,7 @@ ags_level_box_class_init(AgsLevelBoxClass *level_box)
    *
    * The fixed width of a level.
    * 
-   * Since: 1.4.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_uint("fixed-level-width",
 				 "fixed level width",
@@ -125,7 +125,7 @@ ags_level_box_class_init(AgsLevelBoxClass *level_box)
    *
    * The fixed height of a level.
    * 
-   * Since: 1.4.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_uint("fixed-level-height",
 				 "fixed level height",
@@ -237,7 +237,7 @@ ags_level_box_child_type(GtkContainer *container)
  * 
  * Returns: the new #AgsLevelBox instance
  * 
- * Since: 1.4.0
+ * Since: 2.0.0
  */
 AgsLevelBox*
 ags_level_box_new()

@@ -79,7 +79,7 @@ ags_position_automation_cursor_dialog_get_type(void)
   static volatile gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
-    GType ags_type_position_automation_cursor_dialog;
+    GType ags_type_position_automation_cursor_dialog = 0;
 
     static const GTypeInfo ags_position_automation_cursor_dialog_info = {
       sizeof (AgsPositionAutomationCursorDialogClass),
@@ -117,7 +117,7 @@ ags_position_automation_cursor_dialog_get_type(void)
 				AGS_TYPE_APPLICABLE,
 				&ags_applicable_interface_info);
 
-    g_once_init_leave (&g_define_type_id__volatile, ags_type_position_automation_cursor_dialog);
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_position_automation_cursor_dialog);
   }
 
   return g_define_type_id__volatile;
@@ -147,7 +147,7 @@ ags_position_automation_cursor_dialog_class_init(AgsPositionAutomationCursorDial
    *
    * The assigned #AgsApplicationContext to give control of application.
    * 
-   * Since: 1.1.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("application-context",
 				   i18n_pspec("assigned application context"),
@@ -163,7 +163,7 @@ ags_position_automation_cursor_dialog_class_init(AgsPositionAutomationCursorDial
    *
    * The assigned #AgsWindow.
    * 
-   * Since: 1.1.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("main-window",
 				   i18n_pspec("assigned main window"),
@@ -490,7 +490,7 @@ ags_position_automation_cursor_dialog_delete_event(GtkWidget *widget, GdkEventAn
  *
  * Returns: a new #AgsPositionAutomationCursorDialog
  *
- * Since: 1.1.0
+ * Since: 2.0.0
  */
 AgsPositionAutomationCursorDialog*
 ags_position_automation_cursor_dialog_new(GtkWidget *main_window)

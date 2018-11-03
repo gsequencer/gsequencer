@@ -58,6 +58,9 @@ struct _AgsLv2Preset
 
   guint flags;
   
+  pthread_mutex_t *obj_mutex;
+  pthread_mutexattr_t *obj_mutexattr;
+
   GObject *lv2_plugin;
 
   gchar *uri;
@@ -83,6 +86,8 @@ struct _AgsLv2PortPreset
 };
 
 GType ags_lv2_preset_get_type(void);
+
+pthread_mutex_t* ags_lv2_preset_get_class_mutex();
 
 AgsLv2PortPreset* ags_lv2_port_preset_alloc(gchar *port_symobl,
 					    GType port_type);

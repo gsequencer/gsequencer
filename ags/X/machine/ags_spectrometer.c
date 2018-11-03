@@ -71,9 +71,11 @@ extern GHashTable *ags_spectrometer_cartesian_queue_draw = NULL;
 GType
 ags_spectrometer_get_type(void)
 {
-  static GType ags_type_spectrometer = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_spectrometer){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_spectrometer = 0;
+
     static const GTypeInfo ags_spectrometer_info = {
       sizeof(AgsSpectrometerClass),
       NULL, /* base_init */
@@ -109,9 +111,11 @@ ags_spectrometer_get_type(void)
     g_type_add_interface_static(ags_type_spectrometer,
 				AGS_TYPE_PLUGIN,
 				&ags_plugin_interface_info);
+
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_spectrometer);
   }
 
-  return(ags_type_spectrometer);
+  return g_define_type_id__volatile;
 }
 
 void
@@ -267,7 +271,12 @@ ags_spectrometer_init(AgsSpectrometer *spectrometer)
   spectrometer->buffer_size = ceil(buffer_size / 2.0);
   
   spectrometer->frequency_buffer = (double *) malloc(ceil(buffer_size / 2.0) * sizeof(double));
+  ags_audio_buffer_util_clear_double(spectrometer->frequency_buffer, 1,
+				     ceil(buffer_size / 2.0));
+  
   spectrometer->magnitude_buffer = (double *) malloc(ceil(buffer_size / 2.0) * sizeof(double));
+  ags_audio_buffer_util_clear_double(spectrometer->magnitude_buffer, 1,
+				     ceil(buffer_size / 2.0));
   
   /* queue draw */
   g_hash_table_insert(ags_spectrometer_cartesian_queue_draw,
@@ -665,7 +674,7 @@ ags_spectrometer_fg_plot_alloc(AgsSpectrometer *spectrometer,
  *
  * Returns: %TRUE if proceed with redraw, otherwise %FALSE
  *
- * Since: 1.5.0
+ * Since: 2.0.0
  */
 gboolean
 ags_spectrometer_cartesian_queue_draw_timeout(GtkWidget *widget)
@@ -727,8 +736,9 @@ ags_spectrometer_cartesian_queue_draw_timeout(GtkWidget *widget)
 	k++;
 	
 	if(frequency > ((correction / 2.0) * (exp(((nth / spectrometer->buffer_size) * 18.0) / 12.0) - 1.0))){
-	  if(k != 0){
+	  if(nth - 1 != 0){
 	    AGS_PLOT(fg_plot->data)->point[j][1] = 20.0 * log10(((double) magnitude / (double) k) + 1.0) * AGS_SPECTROMETER_EXTRA_SCALE;
+	    //	    g_message("plot[%d]: %f %f", j, frequency, magnitude);
 	  }
 	  
 	  j++;
@@ -766,7 +776,7 @@ ags_spectrometer_cartesian_queue_draw_timeout(GtkWidget *widget)
  *
  * Returns: a new #AgsSpectrometer
  *
- * Since: 1.5.0
+ * Since: 2.0.0
  */
 AgsSpectrometer*
 ags_spectrometer_new(GObject *soundcard)

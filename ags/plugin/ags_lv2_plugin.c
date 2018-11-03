@@ -21,6 +21,8 @@
 
 #include <ags/libags.h>
 
+#include <lv2/lv2plug.in/ns/lv2ext/lv2_programs.h>
+
 #include <ags/plugin/ags_lv2_plugin.h>
 #include <ags/plugin/ags_lv2_preset.h>
 #include <ags/plugin/ags_lv2_manager.h>
@@ -118,7 +120,7 @@ ags_lv2_plugin_get_type (void)
   static volatile gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
-    GType ags_type_lv2_plugin;
+    GType ags_type_lv2_plugin = 0;
 
     static const GTypeInfo ags_lv2_plugin_info = {
       sizeof(AgsLv2PluginClass),
@@ -137,7 +139,7 @@ ags_lv2_plugin_get_type (void)
 						 &ags_lv2_plugin_info,
 						 0);
 
-    g_once_init_leave (&g_define_type_id__volatile, ags_type_lv2_plugin);
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_lv2_plugin);
   }
 
   return g_define_type_id__volatile;
@@ -2138,7 +2140,7 @@ ags_lv2_plugin_event_buffer_realloc_data(LV2_Event_Buffer *event_buffer,
   uint32_t padded_buffer_size;
 
   if(buffer_size > G_MAXUINT16){
-    return(NULL);
+    return;
   }
   
   if(buffer_size < 8){

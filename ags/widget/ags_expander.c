@@ -84,7 +84,7 @@ ags_expander_get_type(void)
   static volatile gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
-    GType ags_type_expander;
+    GType ags_type_expander = 0;
 
     static const GTypeInfo ags_expander_info = {
       sizeof(AgsExpanderClass),
@@ -99,10 +99,10 @@ ags_expander_get_type(void)
     };
 
     ags_type_expander = g_type_register_static(GTK_TYPE_EXPANDER,
-					       "AgsExpander\0", &ags_expander_info,
+					       "AgsExpander", &ags_expander_info,
 					       0);
 
-    g_once_init_leave (&g_define_type_id__volatile, ags_type_expander);
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_expander);
   }
 
   return g_define_type_id__volatile;
@@ -481,7 +481,7 @@ ags_expander_remove_child(AgsExpander *expander,
  *
  * Adds a #GtkWidget to #AgsExpander
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_expander_add(AgsExpander *expander,
@@ -510,7 +510,7 @@ ags_expander_add(AgsExpander *expander,
  *
  * Removes a #GtkWidget of #AgsExpander
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_expander_remove(AgsExpander *expander,
@@ -530,7 +530,7 @@ ags_expander_remove(AgsExpander *expander,
  *
  * Returns: a new #AgsExpander
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsExpander*
 ags_expander_new(guint width, guint height)

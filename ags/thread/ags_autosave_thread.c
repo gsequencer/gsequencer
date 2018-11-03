@@ -30,8 +30,6 @@
 #include <ags/i18n.h>
 
 void ags_autosave_thread_class_init(AgsAutosaveThreadClass *autosave_thread);
-void ags_autosave_thread_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_autosave_thread_main_loop_interface_init(AgsMainLoopInterface *main_loop);
 void ags_autosave_thread_init(AgsAutosaveThread *autosave_thread);
 void ags_autosave_thread_set_property(GObject *gobject,
 				      guint prop_id,
@@ -41,12 +39,6 @@ void ags_autosave_thread_get_property(GObject *gobject,
 				      guint prop_id,
 				      GValue *value,
 				      GParamSpec *param_spec);
-void ags_autosave_thread_connect(AgsConnectable *connectable);
-void ags_autosave_thread_disconnect(AgsConnectable *connectable);
-void ags_autosave_thread_set_tic(AgsMainLoop *main_loop, guint tic);
-guint ags_autosave_thread_get_tic(AgsMainLoop *main_loop);
-void ags_autosave_thread_set_last_sync(AgsMainLoop *main_loop, guint last_sync);
-guint ags_autosave_thread_get_last_sync(AgsMainLoop *main_loop);
 void ags_autosave_thread_finalize(GObject *gobject);
 
 void ags_autosave_thread_start(AgsThread *thread);
@@ -68,7 +60,6 @@ enum{
 };
 
 static gpointer ags_autosave_thread_parent_class = NULL;
-static AgsConnectableInterface *ags_autosave_thread_parent_connectable_interface;
 
 GType
 ags_autosave_thread_get_type()
@@ -76,8 +67,8 @@ ags_autosave_thread_get_type()
   static volatile gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
-    GType ags_type_autosave_thread;
-    
+    GType ags_type_autosave_thread = 0;
+
     static const GTypeInfo ags_autosave_thread_info = {
       sizeof(AgsAutosaveThreadClass),
       NULL, /* base_init */
@@ -90,32 +81,12 @@ ags_autosave_thread_get_type()
       (GInstanceInitFunc) ags_autosave_thread_init,
     };
 
-    static const GInterfaceInfo ags_connectable_interface_info = {
-      (GInterfaceInitFunc) ags_autosave_thread_connectable_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-
-    static const GInterfaceInfo ags_main_loop_interface_info = {
-      (GInterfaceInitFunc) ags_autosave_thread_main_loop_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-
     ags_type_autosave_thread = g_type_register_static(AGS_TYPE_THREAD,
 						      "AgsAutosaveThread",
 						      &ags_autosave_thread_info,
 						      0);
-    
-    g_type_add_interface_static(ags_type_autosave_thread,
-				AGS_TYPE_CONNECTABLE,
-				&ags_connectable_interface_info);
 
-    g_type_add_interface_static(ags_type_autosave_thread,
-				AGS_TYPE_MAIN_LOOP,
-				&ags_main_loop_interface_info);
-
-    g_once_init_leave (&g_define_type_id__volatile, ags_type_autosave_thread);
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_autosave_thread);
   }
 
   return g_define_type_id__volatile;
@@ -153,24 +124,6 @@ ags_autosave_thread_class_init(AgsAutosaveThreadClass *autosave_thread)
 
   thread->start = ags_autosave_thread_start;
   thread->run = ags_autosave_thread_run;
-}
-
-void
-ags_autosave_thread_connectable_interface_init(AgsConnectableInterface *connectable)
-{
-  ags_autosave_thread_parent_connectable_interface = g_type_interface_peek_parent(connectable);
-
-  connectable->connect = ags_autosave_thread_connect;
-  connectable->disconnect = ags_autosave_thread_disconnect;
-}
-
-void
-ags_autosave_thread_main_loop_interface_init(AgsMainLoopInterface *main_loop)
-{
-  main_loop->set_tic = ags_autosave_thread_set_tic;
-  main_loop->get_tic = ags_autosave_thread_get_tic;
-  main_loop->set_last_sync = ags_autosave_thread_set_last_sync;
-  main_loop->get_last_sync = ags_autosave_thread_get_last_sync;
 }
 
 void
@@ -250,52 +203,6 @@ ags_autosave_thread_get_property(GObject *gobject,
 }
 
 void
-ags_autosave_thread_connect(AgsConnectable *connectable)
-{
-  ags_autosave_thread_parent_connectable_interface->connect(connectable);
-
-  /* empty */
-}
-
-void
-ags_autosave_thread_disconnect(AgsConnectable *connectable)
-{
-  ags_autosave_thread_parent_connectable_interface->disconnect(connectable);
-
-  /* empty */
-}
-
-void
-ags_autosave_thread_set_tic(AgsMainLoop *main_loop, guint tic)
-{
-  g_atomic_int_set(&(AGS_AUTOSAVE_THREAD(main_loop)->tic),
-		   tic);
-}
-
-guint
-ags_autosave_thread_get_tic(AgsMainLoop *main_loop)
-{
-  return(g_atomic_int_get(&(AGS_AUTOSAVE_THREAD(main_loop)->tic)));
-}
-
-void
-ags_autosave_thread_set_last_sync(AgsMainLoop *main_loop, guint last_sync)
-{
-  g_atomic_int_set(&(AGS_AUTOSAVE_THREAD(main_loop)->last_sync),
-		   last_sync);
-}
-
-guint
-ags_autosave_thread_get_last_sync(AgsMainLoop *main_loop)
-{
-  gint val;
-
-  val = g_atomic_int_get(&(AGS_AUTOSAVE_THREAD(main_loop)->last_sync));
-
-  return(val);
-}
-
-void
 ags_autosave_thread_finalize(GObject *gobject)
 {
   G_OBJECT_CLASS(ags_autosave_thread_parent_class)->finalize(gobject);
@@ -355,11 +262,11 @@ ags_autosave_thread_run(AgsThread *thread)
  * ags_autosave_thread_new:
  * @application_context: the #AgsApplicationContext
  *
- * Create a new #AgsAutosaveThread.
+ * Create a new instance of #AgsAutosaveThread.
  *
  * Returns: the new #AgsAutosaveThread
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsAutosaveThread*
 ags_autosave_thread_new(GObject *application_context)

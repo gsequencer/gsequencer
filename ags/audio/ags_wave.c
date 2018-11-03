@@ -80,7 +80,7 @@ ags_wave_get_type()
   static volatile gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
-    GType ags_type_wave;
+    GType ags_type_wave = 0;
 
     static const GTypeInfo ags_wave_info = {
       sizeof(AgsWaveClass),
@@ -98,6 +98,8 @@ ags_wave_get_type()
 					   "AgsWave",
 					   &ags_wave_info,
 					   0);
+
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_wave);
   }
 
   return g_define_type_id__volatile;
@@ -1279,7 +1281,7 @@ ags_wave_find_point(AgsWave *wave,
  *
  * Returns: the matching buffers as #GList.
  *
- * Since: 1.4.0
+ * Since: 2.0.0
  */
 GList*
 ags_wave_find_region(AgsWave *wave,

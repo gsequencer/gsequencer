@@ -61,9 +61,11 @@ static guint local_serialization_controller_signals[LAST_SIGNAL];
 GType
 ags_local_serialization_controller_get_type()
 {
-  static GType ags_type_local_serialization_controller = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_local_serialization_controller){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_local_serialization_controller = 0;
+
     static const GTypeInfo ags_local_serialization_controller_info = {
       sizeof (AgsLocalSerializationControllerClass),
       NULL, /* base_init */
@@ -80,9 +82,11 @@ ags_local_serialization_controller_get_type()
 								     "AgsLocalSerializationController",
 								     &ags_local_serialization_controller_info,
 								     0);
+
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_local_serialization_controller);
   }
 
-  return (ags_type_local_serialization_controller);
+  return g_define_type_id__volatile;
 }
 
 void
@@ -111,7 +115,7 @@ ags_local_serialization_controller_class_init(AgsLocalSerializationControllerCla
    *
    * Returns: the response
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   local_serialization_controller_signals[SEND_OBJECT] =
     g_signal_new("send-object",
@@ -133,7 +137,7 @@ ags_local_serialization_controller_class_init(AgsLocalSerializationControllerCla
    *
    * Returns: the response
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   local_serialization_controller_signals[SEND_OBJECT_PROPERTY] =
     g_signal_new("send-object-property",
@@ -155,7 +159,7 @@ ags_local_serialization_controller_class_init(AgsLocalSerializationControllerCla
    *
    * Returns: the response
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   local_serialization_controller_signals[RECEIVE_OBJECT] =
     g_signal_new("receive-object",
@@ -177,7 +181,7 @@ ags_local_serialization_controller_class_init(AgsLocalSerializationControllerCla
    *
    * Returns: the response
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   local_serialization_controller_signals[RECEIVE_OBJECT_PROPERTY] =
     g_signal_new("receive-object-property",
@@ -235,7 +239,7 @@ ags_local_serialization_controller_real_send_object(AgsLocalSerializationControl
  * 
  * Returns: the response
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 gpointer
 ags_local_serialization_controller_send_object(AgsLocalSerializationController *local_serialization_controller,
@@ -275,7 +279,7 @@ ags_local_serialization_controller_real_send_object_property(AgsLocalSerializati
  * 
  * Returns: the response
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 gpointer
 ags_local_serialization_controller_send_object_property(AgsLocalSerializationController *local_serialization_controller,
@@ -315,7 +319,7 @@ ags_local_serialization_controller_real_receive_object(AgsLocalSerializationCont
  * 
  * Returns: the response
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 gpointer
 ags_local_serialization_controller_receive_object(AgsLocalSerializationController *local_serialization_controller,
@@ -355,7 +359,7 @@ ags_local_serialization_controller_real_receive_object_property(AgsLocalSerializ
  * 
  * Returns: the response
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 gpointer
 ags_local_serialization_controller_receive_object_property(AgsLocalSerializationController *local_serialization_controller,
@@ -384,7 +388,7 @@ ags_local_serialization_controller_receive_object_property(AgsLocalSerialization
  * 
  * Returns: the #AgsLocalSerializationController
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsLocalSerializationController*
 ags_local_serialization_controller_new()

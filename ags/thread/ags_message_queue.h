@@ -46,8 +46,8 @@ struct _AgsMessageQueue
 
   gchar *namespace;
 
-  pthread_mutexattr_t *mutexattr;
-  pthread_mutex_t *mutex;
+  pthread_mutexattr_t *obj_mutexattr;
+  pthread_mutex_t *obj_mutex;
 
   GList *message;
 };
@@ -70,6 +70,8 @@ struct _AgsMessageEnvelope
 };
 
 GType ags_message_queue_get_type();
+
+pthread_mutex_t* ags_message_queue_get_class_mutex();
 
 AgsMessageEnvelope* ags_message_envelope_alloc(GObject *sender,
 					       GObject *recipient,

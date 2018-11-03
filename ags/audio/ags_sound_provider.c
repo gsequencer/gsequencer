@@ -37,7 +37,7 @@ ags_sound_provider_get_type()
   static volatile gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
-    GType ags_type_sound_provider;
+    GType ags_type_sound_provider = 0;
 
     ags_type_sound_provider = g_type_register_static_simple(G_TYPE_INTERFACE,
 							    "AgsSoundProvider",
@@ -45,7 +45,7 @@ ags_sound_provider_get_type()
 							    (GClassInitFunc) ags_sound_provider_class_init,
 							    0, NULL, 0);
 
-    g_once_init_leave (&g_define_type_id__volatile, ags_type_sound_provider);
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_sound_provider);
   }
 
   return g_define_type_id__volatile;
@@ -66,7 +66,7 @@ ags_sound_provider_class_init(AgsSoundProviderInterface *interface)
  *
  * Returns: the #AgsThread
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_sound_provider_set_default_soundcard_thread(AgsSoundProvider *sound_provider,
@@ -90,7 +90,7 @@ ags_sound_provider_set_default_soundcard_thread(AgsSoundProvider *sound_provider
  *
  * Returns: the #AgsThread
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 GObject*
 ags_sound_provider_get_default_soundcard_thread(AgsSoundProvider *sound_provider)
@@ -111,7 +111,7 @@ ags_sound_provider_get_default_soundcard_thread(AgsSoundProvider *sound_provider
  * 
  * Set soundcards.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_sound_provider_set_soundcard(AgsSoundProvider *sound_provider,
@@ -135,7 +135,7 @@ ags_sound_provider_set_soundcard(AgsSoundProvider *sound_provider,
  *
  * Returns: a #GList-struct containing #AgsSoundcard
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 GList*
 ags_sound_provider_get_soundcard(AgsSoundProvider *sound_provider)
@@ -156,7 +156,7 @@ ags_sound_provider_get_soundcard(AgsSoundProvider *sound_provider)
  * 
  * Set sequencers.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_sound_provider_set_sequencer(AgsSoundProvider *sound_provider,
@@ -180,7 +180,7 @@ ags_sound_provider_set_sequencer(AgsSoundProvider *sound_provider,
  *
  * Returns: a #GList-struct containing #AgsSequencer
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 GList*
 ags_sound_provider_get_sequencer(AgsSoundProvider *sound_provider)

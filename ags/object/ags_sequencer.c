@@ -39,15 +39,15 @@ ags_sequencer_get_type()
   static volatile gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
-    GType ags_type_sequencer;
-    
+    GType ags_type_sequencer = 0;
+
     ags_type_sequencer = g_type_register_static_simple(G_TYPE_INTERFACE,
 						       "AgsSequencer",
 						       sizeof(AgsSequencerInterface),
 						       (GClassInitFunc) ags_sequencer_class_init,
 						       0, NULL, 0);
 
-    g_once_init_leave (&g_define_type_id__volatile, ags_type_sequencer);
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_sequencer);
   }
 
   return g_define_type_id__volatile;

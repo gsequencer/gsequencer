@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -59,6 +59,10 @@ struct _AgsLv2ConversionClass
 };
 
 GType ags_lv2_conversion_get_type(void);
+
+gboolean ags_lv2_conversion_test_flags(AgsLv2Conversion *lv2_conversion, guint flags);
+void ags_lv2_conversion_set_flags(AgsLv2Conversion *lv2_conversion, guint flags);
+void ags_lv2_conversion_unset_flags(AgsLv2Conversion *lv2_conversion, guint flags);
 
 AgsLv2Conversion* ags_lv2_conversion_new();
 

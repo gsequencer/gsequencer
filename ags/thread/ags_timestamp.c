@@ -19,6 +19,8 @@
 
 #include <ags/thread/ags_timestamp.h>
 
+#include <stdlib.h>
+
 void ags_timestamp_class_init(AgsTimestampClass *timestamp);
 void ags_timestamp_init (AgsTimestamp *timestamp);
 void ags_timestamp_finalize(GObject *gobject);
@@ -43,8 +45,8 @@ ags_timestamp_get_type()
   static volatile gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
-    GType ags_type_timestamp;
-    
+    GType ags_type_timestamp = 0;
+
     static const GTypeInfo ags_timestamp_info = {
       sizeof(AgsTimestampClass),
       NULL, /* base_init */
@@ -62,7 +64,7 @@ ags_timestamp_get_type()
 						&ags_timestamp_info,
 						0);
 
-    g_once_init_leave (&g_define_type_id__volatile, ags_type_timestamp);
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_timestamp);
   }
 
   return g_define_type_id__volatile;

@@ -34,9 +34,11 @@ void ags_password_store_base_init(AgsPasswordStoreInterface *interface);
 GType
 ags_password_store_get_type()
 {
-  static GType ags_type_password_store = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_password_store){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_password_store = 0;
+
     static const GTypeInfo ags_password_store_info = {
       sizeof(AgsPasswordStoreInterface),
       (GBaseInitFunc) ags_password_store_base_init,
@@ -44,11 +46,13 @@ ags_password_store_get_type()
     };
 
     ags_type_password_store = g_type_register_static(G_TYPE_INTERFACE,
-						     "AgsPasswordStore\0", &ags_password_store_info,
+						     "AgsPasswordStore", &ags_password_store_info,
 						     0);
+
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_password_store);
   }
 
-  return(ags_type_password_store);
+  return g_define_type_id__volatile;
 }
 
 void
@@ -68,7 +72,7 @@ ags_password_store_base_init(AgsPasswordStoreInterface *interface)
  *
  * Set login name.
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_password_store_set_login_name(AgsPasswordStore *password_store,
@@ -103,7 +107,7 @@ ags_password_store_set_login_name(AgsPasswordStore *password_store,
  * 
  * Returns: the login name
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 gchar*
 ags_password_store_get_login_name(AgsPasswordStore *password_store,
@@ -136,7 +140,7 @@ ags_password_store_get_login_name(AgsPasswordStore *password_store,
  *
  * Set login name.
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_password_store_set_password(AgsPasswordStore *password_store,
@@ -171,7 +175,7 @@ ags_password_store_set_password(AgsPasswordStore *password_store,
  * 
  * Returns: the password
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 gchar*
 ags_password_store_get_password(AgsPasswordStore *password_store,
@@ -204,7 +208,7 @@ ags_password_store_get_password(AgsPasswordStore *password_store,
  *
  * Returns: the encrypted bytes
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 gchar*
 ags_password_store_encrypt_password(AgsPasswordStore *password_store,

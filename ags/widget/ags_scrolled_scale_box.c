@@ -65,7 +65,7 @@ ags_scrolled_scale_box_get_type(void)
   static volatile gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
-    GType ags_type_scrolled_scale_box;
+    GType ags_type_scrolled_scale_box = 0;
 
     static const GTypeInfo ags_scrolled_scale_box_info = {
       sizeof (AgsScrolledScaleBoxClass),
@@ -83,7 +83,7 @@ ags_scrolled_scale_box_get_type(void)
 							 "AgsScrolledScaleBox", &ags_scrolled_scale_box_info,
 							 0);
 
-    g_once_init_leave (&g_define_type_id__volatile, ags_type_scrolled_scale_box);
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_scrolled_scale_box);
   }
 
   return g_define_type_id__volatile;
@@ -113,7 +113,7 @@ ags_scrolled_scale_box_class_init(AgsScrolledScaleBoxClass *scrolled_scale_box)
    *
    * The margin top.
    * 
-   * Since: 1.3.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_uint("margin-top",
 				 "margin top",
@@ -131,7 +131,7 @@ ags_scrolled_scale_box_class_init(AgsScrolledScaleBoxClass *scrolled_scale_box)
    *
    * The margin bottom.
    * 
-   * Since: 1.3.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_uint("margin-bottom",
 				 "margin bottom",
@@ -149,7 +149,7 @@ ags_scrolled_scale_box_class_init(AgsScrolledScaleBoxClass *scrolled_scale_box)
    *
    * The margin left.
    * 
-   * Since: 1.3.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_uint("margin-left",
 				 "margin left",
@@ -167,7 +167,7 @@ ags_scrolled_scale_box_class_init(AgsScrolledScaleBoxClass *scrolled_scale_box)
    *
    * The margin right.
    * 
-   * Since: 1.3.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_uint("margin-right",
 				 "margin right",
@@ -357,11 +357,11 @@ ags_scrolled_scale_box_size_request(GtkWidget *widget,
 /**
  * ags_scrolled_scale_box_new:
  *
- * Create a new #AgsScrolledScaleBox.
+ * Create a new instance of #AgsScrolledScaleBox.
  *
- * Returns: a new #AgsScrolledScaleBox
+ * Returns: the new #AgsScrolledScaleBox
  *
- * Since: 1.3.0
+ * Since: 2.0.0
  */
 AgsScrolledScaleBox*
 ags_scrolled_scale_box_new()

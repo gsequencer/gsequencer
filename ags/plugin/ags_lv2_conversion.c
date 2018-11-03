@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2016 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -19,7 +19,7 @@
 
 #include <ags/plugin/ags_lv2_conversion.h>
 
-#include <ags/object/ags_soundcard.h>
+#include <ags/libags.h>
 
 #include <math.h>
 
@@ -49,7 +49,7 @@ ags_lv2_conversion_get_type()
   static volatile gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
-    GType ags_type_lv2_conversion;
+    GType ags_type_lv2_conversion = 0;
 
     static const GTypeInfo ags_lv2_conversion_info = {
       sizeof(AgsLv2ConversionClass),
@@ -68,7 +68,7 @@ ags_lv2_conversion_get_type()
 						     &ags_lv2_conversion_info,
 						     0);
 
-    g_once_init_leave (&g_define_type_id__volatile, ags_type_lv2_conversion);
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_lv2_conversion);
   }
 
   return g_define_type_id__volatile;
@@ -97,17 +97,119 @@ ags_lv2_conversion_class_init(AgsLv2ConversionClass *lv2_conversion)
 void
 ags_lv2_conversion_init(AgsLv2Conversion *lv2_conversion)
 {
-  AgsConfig *config;
-
-  gchar *str;
-  
   lv2_conversion->flags = 0;
 }
 
 void
 ags_lv2_conversion_finalize(GObject *gobject)
 {
-  /* empty */
+  /* call parent */
+  G_OBJECT_CLASS(ags_lv2_conversion_parent_class)->finalize(gobject);
+}
+
+/**
+ * ags_lv2_conversion_test_flags:
+ * @lv2_conversion: the #AgsLv2Conversion
+ * @flags: the flags
+ * 
+ * Test @flags to be set on @recall.
+ * 
+ * Returns: %TRUE if flags are set, else %FALSE
+ * 
+ * Since: 2.0.0
+ */
+gboolean
+ags_lv2_conversion_test_flags(AgsLv2Conversion *lv2_conversion, guint flags)
+{
+  gboolean retval;
+  
+  pthread_mutex_t *conversion_mutex;
+
+  if(!AGS_IS_LV2_CONVERSION(lv2_conversion)){
+    return(FALSE);
+  }
+  
+  /* get base plugin mutex */
+  pthread_mutex_lock(ags_conversion_get_class_mutex());
+  
+  conversion_mutex = AGS_CONVERSION(lv2_conversion)->obj_mutex;
+  
+  pthread_mutex_unlock(ags_conversion_get_class_mutex());
+
+  /* test flags */
+  pthread_mutex_lock(conversion_mutex);
+
+  retval = ((flags & (lv2_conversion->flags)) != 0) ? TRUE: FALSE;
+  
+  pthread_mutex_unlock(conversion_mutex);
+
+  return(retval);
+}
+
+/**
+ * ags_lv2_conversion_set_flags:
+ * @lv2_conversion: the #AgsLv2Conversion
+ * @flags: the flags
+ *
+ * Set flags.
+ * 
+ * Since: 2.0.0
+ */
+void
+ags_lv2_conversion_set_flags(AgsLv2Conversion *lv2_conversion, guint flags)
+{
+  pthread_mutex_t *conversion_mutex;
+
+  if(!AGS_IS_LV2_CONVERSION(lv2_conversion)){
+    return;
+  }
+  
+  /* get base plugin mutex */
+  pthread_mutex_lock(ags_conversion_get_class_mutex());
+  
+  conversion_mutex = AGS_CONVERSION(lv2_conversion)->obj_mutex;
+  
+  pthread_mutex_unlock(ags_conversion_get_class_mutex());
+
+  /* set flags */
+  pthread_mutex_lock(conversion_mutex);
+
+  lv2_conversion->flags |= flags;
+  
+  pthread_mutex_unlock(conversion_mutex);
+}
+
+/**
+ * ags_lv2_conversion_unset_flags:
+ * @lv2_conversion: the #AgsLv2Conversion
+ * @flags: the flags
+ *
+ * Unset flags.
+ * 
+ * Since: 2.0.0
+ */
+void
+ags_lv2_conversion_unset_flags(AgsLv2Conversion *lv2_conversion, guint flags)
+{
+  pthread_mutex_t *conversion_mutex;
+
+  if(!AGS_IS_LV2_CONVERSION(lv2_conversion)){
+    return;
+  }
+  
+  /* get base plugin mutex */
+  pthread_mutex_lock(ags_conversion_get_class_mutex());
+  
+  conversion_mutex = AGS_CONVERSION(lv2_conversion)->obj_mutex;
+  
+  pthread_mutex_unlock(ags_conversion_get_class_mutex());
+
+  /* unset flags */
+  pthread_mutex_lock(conversion_mutex);
+
+  lv2_conversion->flags &= (~flags);
+  
+  pthread_mutex_unlock(conversion_mutex);
 }
 
 gdouble
@@ -120,11 +222,11 @@ ags_lv2_conversion_convert(AgsConversion *conversion,
   lv2_conversion = AGS_LV2_CONVERSION(conversion);
 
   if(reverse){
-    if((AGS_LV2_CONVERSION_LOGARITHMIC & (lv2_conversion->flags)) != 0){
+    if(ags_lv2_conversion_test_flags(lv2_conversion, AGS_LV2_CONVERSION_LOGARITHMIC)){
       value = log(value);
     }
   }else{
-    if((AGS_LV2_CONVERSION_LOGARITHMIC & (lv2_conversion->flags)) != 0){
+    if(ags_lv2_conversion_test_flags(lv2_conversion, AGS_LV2_CONVERSION_LOGARITHMIC)){
       value = exp(value);
     }
   }
@@ -135,11 +237,11 @@ ags_lv2_conversion_convert(AgsConversion *conversion,
 /**
  * ags_lv2_conversion_new:
  *
- * Instantiate a new #AgsLv2Conversion.
+ * Create a new instance of #AgsLv2Conversion.
  *
- * Returns: the new instance
+ * Returns: the new #AgsLv2Conversion
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsLv2Conversion*
 ags_lv2_conversion_new()

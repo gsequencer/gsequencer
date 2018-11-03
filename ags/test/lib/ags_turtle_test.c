@@ -17,7 +17,7 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <ags/lib/ags_turtle.h>
+#include <ags/libags.h>
 
 #include <glib.h>
 #include <glib-object.h>
@@ -91,8 +91,8 @@ ags_turtle_test_clean_suite()
 void
 ags_turtle_test_read_iriref()
 {
-  gchar *iriref_lv2 = "<lv2>\0";
-  gchar *no_iriref = "<nongnu dot org>\0";
+  gchar *iriref_lv2 = "<lv2>";
+  gchar *no_iriref = "<nongnu dot org>";
   gchar *str;
 
   /* assert iriref lv2 */
@@ -101,7 +101,7 @@ ags_turtle_test_read_iriref()
 
   CU_ASSERT(str != NULL &&
 	    !g_ascii_strncasecmp(str,
-				 "<lv2>\0",
+				 "<lv2>",
 				 6));
 
   /* assert no iriref */
@@ -114,9 +114,9 @@ ags_turtle_test_read_iriref()
 void
 ags_turtle_test_read_pname_ns()
 {
-  gchar *pname_ns_port = ":port\0";
-  gchar *pname_ns_swh_plugin = "swh:plugin\0";
-  gchar *no_pname_ns = "port\0";
+  gchar *pname_ns_port = ":port";
+  gchar *pname_ns_swh_plugin = "swh:plugin";
+  gchar *no_pname_ns = "port";
   gchar *str;
 
   /* assert pname ns port */
@@ -125,7 +125,7 @@ ags_turtle_test_read_pname_ns()
 
   CU_ASSERT(str != NULL &&
 	    !g_ascii_strncasecmp(str,
-				 ":\0",
+				 ":",
 				 2));
 
   /* assert pname ns swh plugin */
@@ -134,7 +134,7 @@ ags_turtle_test_read_pname_ns()
 
   CU_ASSERT(str != NULL &&
 	    !g_ascii_strncasecmp(str,
-				 "swh:\0",
+				 "swh:",
 				 5));
 
   /* assert no pname ns */
@@ -147,9 +147,9 @@ ags_turtle_test_read_pname_ns()
 void
 ags_turtle_test_read_pname_ln()
 {
-  gchar *pname_ln_port = ":port\0";
-  gchar *pname_ln_swh_plugin = "swh:plugin\0";
-  gchar *no_pname_ln = "port\0";
+  gchar *pname_ln_port = ":port";
+  gchar *pname_ln_swh_plugin = "swh:plugin";
+  gchar *no_pname_ln = "port";
   gchar *str;
 
   /* assert pname ln port */
@@ -158,7 +158,7 @@ ags_turtle_test_read_pname_ln()
 
   CU_ASSERT(str != NULL &&
 	    !g_ascii_strncasecmp(str,
-				 ":port\0",
+				 ":port",
 				 6));
 
   /* assert pname ln swh plugin */
@@ -167,7 +167,7 @@ ags_turtle_test_read_pname_ln()
 
   CU_ASSERT(str != NULL &&
 	    !g_ascii_strncasecmp(str,
-				 "swh:plugin\0",
+				 "swh:plugin",
 				 11));
 
   /* assert no pname ln */
@@ -180,8 +180,8 @@ ags_turtle_test_read_pname_ln()
 void
 ags_turtle_test_read_blank_node_label()
 {
-  gchar *blank_node_myid = "_:myid\0";
-  gchar *no_blank_node = "_ no id\0";
+  gchar *blank_node_myid = "_:myid";
+  gchar *no_blank_node = "_ no id";
   gchar *str;
 
   /* assert blank node myid */
@@ -190,7 +190,7 @@ ags_turtle_test_read_blank_node_label()
 
   CU_ASSERT(str != NULL &&
 	    !g_ascii_strncasecmp(str,
-				 "_:myid\0",
+				 "_:myid",
 				 6));
 
   /* assert no blank_node */
@@ -203,10 +203,10 @@ ags_turtle_test_read_blank_node_label()
 void
 ags_turtle_test_read_langtag()
 {
-  gchar *langtag_DE = "@DE\0";
-  gchar *langtag_DE_CH = "@DE-CH\0";
-  gchar *langtag_DE_AT = "@DE-AT\0";
-  gchar *no_langtag = "Fr\0";
+  gchar *langtag_DE = "@DE";
+  gchar *langtag_DE_CH = "@DE-CH";
+  gchar *langtag_DE_AT = "@DE-AT";
+  gchar *no_langtag = "Fr";
   gchar *str;
 
   /* assert DE */
@@ -245,8 +245,8 @@ ags_turtle_test_read_langtag()
 void
 ags_turtle_test_read_boolean()
 {
-  gchar *boolean_true = "true\0";
-  gchar *boolean_false = "false\0";
+  gchar *boolean_true = "true";
+  gchar *boolean_false = "false";
   gchar *not_boolean_0 = "0";
   gchar *not_boolean_1 = "1";
   gchar *str;
@@ -286,7 +286,7 @@ void
 ags_turtle_test_read_integer()
 {
   gchar *str, *tmp;
-  gchar *no_integer = "!0\0";
+  gchar *no_integer = "!0";
   
   guint i;
   gboolean success;
@@ -295,7 +295,7 @@ ags_turtle_test_read_integer()
   success = TRUE;
   
   for(i = 0; i < AGS_TURTLE_TEST_READ_INTEGER_COUNT; i++){
-    tmp = g_strdup_printf("%d\0", rand() % 4294967296 - 2147483648);
+    tmp = g_strdup_printf("%d", rand() % 4294967296 - 2147483648);
     str = ags_turtle_read_integer(tmp,
 				  tmp + strlen(tmp));
 
@@ -323,7 +323,7 @@ void
 ags_turtle_test_read_decimal()
 {
   gchar *str, *tmp;
-  gchar *no_double = "!0\0";
+  gchar *no_double = "!0";
   
   guint i;
   gboolean success;
@@ -332,7 +332,7 @@ ags_turtle_test_read_decimal()
   success = TRUE;
   
   for(i = 0; i < AGS_TURTLE_TEST_READ_DECIMAL_COUNT; i++){
-    tmp = g_strdup_printf("%.5f\0", (rand() % 4294967296 - 2147483648) / 31.0);
+    tmp = g_strdup_printf("%.5f", (rand() % 4294967296 - 2147483648) / 31.0);
     str = ags_turtle_read_decimal(tmp,
 				  tmp + strlen(tmp));
 
@@ -360,7 +360,7 @@ void
 ags_turtle_test_read_double()
 {
   gchar *str, *tmp;
-  gchar *no_double = "!0E12\0";
+  gchar *no_double = "!0E12";
 
   gdouble val_0;
   guint i;
@@ -372,7 +372,7 @@ ags_turtle_test_read_double()
   for(i = 0; i < AGS_TURTLE_TEST_READ_DOUBLE_COUNT; i++){
     val_0 = (rand() % 4294967296 - 2147483648) / 31.0;
     
-    tmp = g_strdup_printf("%01.5fE11\0", val_0);
+    tmp = g_strdup_printf("%01.5fE11", val_0);
     str = ags_turtle_read_double(tmp,
 				 tmp + strlen(tmp));
 
@@ -399,9 +399,9 @@ ags_turtle_test_read_double()
 void
 ags_turtle_test_read_exponent()
 {
-  gchar *exponent_e10 = "e+10\0";
-  gchar *exponent_E10 = "E-10\0";
-  gchar *no_exponent = "e 10\0";
+  gchar *exponent_e10 = "e+10";
+  gchar *exponent_E10 = "E-10";
+  gchar *no_exponent = "e 10";
   gchar *str;
   
   /* assert e+10 */
@@ -426,10 +426,10 @@ ags_turtle_test_read_exponent()
 void
 ags_turtle_test_read_string()
 {
-  gchar *string_literal_quote_MY_TURTLE = "\"MY Turtle\"\0";
-  gchar *string_literal_single_quote_MY_TURTLE = "\'MY Turtle\'\0";
-  gchar *string_literal_long_quote_MY_TURTLE = "\"\"\"MY Turtle\nis just looking at the mirror\nand is waiting to get feed\"\"\"\0";
-  gchar *string_literal_long_single_quote_MY_TURTLE = "'''MY Turtle\nis just looking at the mirror\nand is waiting to get feed'''\0";
+  gchar *string_literal_quote_MY_TURTLE = "\"MY Turtle\"";
+  gchar *string_literal_single_quote_MY_TURTLE = "\'MY Turtle\'";
+  gchar *string_literal_long_quote_MY_TURTLE = "\"\"\"MY Turtle\nis just looking at the mirror\nand is waiting to get feed\"\"\"";
+  gchar *string_literal_long_single_quote_MY_TURTLE = "'''MY Turtle\nis just looking at the mirror\nand is waiting to get feed'''";
   gchar *str;
 
   /* assert my turtle quote */
@@ -472,7 +472,7 @@ ags_turtle_test_read_string()
 void
 ags_turtle_test_read_string_literal_quote()
 {
-  gchar *string_literal_quote_MY_TURTLE = "\"MY Turtle\"\0";
+  gchar *string_literal_quote_MY_TURTLE = "\"MY Turtle\"";
   gchar *str;
 
   /* assert my turtle quote */
@@ -488,7 +488,7 @@ ags_turtle_test_read_string_literal_quote()
 void
 ags_turtle_test_read_string_literal_single_quote()
 {
-  gchar *string_literal_single_quote_MY_TURTLE = "\'MY Turtle\'\0";
+  gchar *string_literal_single_quote_MY_TURTLE = "\'MY Turtle\'";
   gchar *str;
 
   /* assert my turtle single quote */
@@ -504,7 +504,7 @@ ags_turtle_test_read_string_literal_single_quote()
 void
 ags_turtle_test_read_string_literal_long_quote()
 {
-  gchar *string_literal_long_quote_MY_TURTLE = "\"\"\"MY Turtle\nis just looking at the mirror\nand is waiting to get feed\"\"\"\0";
+  gchar *string_literal_long_quote_MY_TURTLE = "\"\"\"MY Turtle\nis just looking at the mirror\nand is waiting to get feed\"\"\"";
   gchar *str;
 
   /* assert my turtle long quote */
@@ -520,7 +520,7 @@ ags_turtle_test_read_string_literal_long_quote()
 void
 ags_turtle_test_read_string_literal_long_single_quote()
 {
-  gchar *string_literal_long_single_quote_MY_TURTLE = "'''MY Turtle\nis just looking at the mirror\nand is waiting to get feed'''\0";
+  gchar *string_literal_long_single_quote_MY_TURTLE = "'''MY Turtle\nis just looking at the mirror\nand is waiting to get feed'''";
   gchar *str;
 
   /* assert my turtle long single quote */
@@ -536,10 +536,10 @@ ags_turtle_test_read_string_literal_long_single_quote()
 void
 ags_turtle_test_read_uchar()
 {
-  gchar *uchar_2_A = "\\u0041\0";
-  gchar *uchar_2_e_diaresis = "\\u00eb\0";
-  gchar *uchar_4_A = "\\Uffef0041\0";
-  gchar *uchar_4_e_diaresis = "\\Uffef00eb\0";
+  gchar *uchar_2_A = "\\u0041";
+  gchar *uchar_2_e_diaresis = "\\u00eb";
+  gchar *uchar_4_A = "\\Uffef0041";
+  gchar *uchar_4_e_diaresis = "\\Uffef00eb";
   gchar *str;
 
   /* assert 2 byte capital A */
@@ -583,7 +583,7 @@ void
 ags_turtle_test_read_echar()
 {
   gchar current[3];
-  gchar *echar = "tbnrf\"\0";
+  gchar *echar = "tbnrf\"";
   gchar *str;
   
   guint i;
@@ -625,7 +625,7 @@ void
 ags_turtle_test_read_ws()
 {
   gchar current[2];
-  gchar *ws = "\x20\x09\x0D\x0A\0";
+  gchar *ws = "\x20\x09\x0D\x0A";
   gchar *str;
   
   guint i;
@@ -665,10 +665,10 @@ ags_turtle_test_read_ws()
 void
 ags_turtle_test_read_anon()
 {
-  gchar *anon_empty = "[]\0";
-  gchar *anon_ws = "[ ]\0";
-  gchar *anon_tab = "[\t\t\t]\0";
-  gchar *anon_mixed = "[\t \t ]\0";
+  gchar *anon_empty = "[]";
+  gchar *anon_ws = "[ ]";
+  gchar *anon_tab = "[\t\t\t]";
+  gchar *anon_mixed = "[\t \t ]";
   gchar *str;
   
   /* assert anon empty */
@@ -984,7 +984,7 @@ ags_turtle_test_read_pn_chars_base()
 void
 ags_turtle_test_read_pn_chars_u()
 {
-  gchar *underscore = "_\0";
+  gchar *underscore = "_";
   gchar *str;
   
   str = ags_turtle_read_pn_chars_u(underscore,
@@ -999,10 +999,10 @@ ags_turtle_test_read_pn_chars_u()
 void
 ags_turtle_test_read_pn_chars()
 {
-  gchar *dash = "-\0";
-  gchar *bullet = "\xC2\xB7\0";
-  gchar *key_0 = "\xE2\x80\xBF\0";
-  gchar *key_1 = "\xE2\x81\x80\0";
+  gchar *dash = "-";
+  gchar *bullet = "\xC2\xB7";
+  gchar *key_0 = "\xE2\x80\xBF";
+  gchar *key_1 = "\xE2\x81\x80";
   gchar current[25];  
   gchar *str;
   
@@ -1118,14 +1118,14 @@ ags_turtle_test_read_pn_chars()
 void
 ags_turtle_test_read_pn_prefix()
 {
-  gchar *no_prefix = ".\0";
+  gchar *no_prefix = ".";
   gchar *str;
 
   static const gchar *prefix[] = {
-    "aa.\0",
-    "aaa...\0",
-    "aaa.zzz\0",
-    "aaa...zzz\0",
+    "aa.",
+    "aaa...",
+    "aaa.zzz",
+    "aaa...zzz",
   };
   
   /* test prefix 0 */  
@@ -1174,19 +1174,19 @@ ags_turtle_test_read_pn_prefix()
 void
 ags_turtle_test_read_pn_local()
 {
-  gchar *no_local = "%\0";
+  gchar *no_local = "%";
   gchar *str;
 
   static const gchar *local[] = {
-    "::\0",
-    "_:\0",
-    ":_\0",
-    "_a\0",
-    ":%00:\0",
-    ":%ff:\0",
-    "zzz:\0",
-    "000.999\0",
-    "0xff\0",
+    "::",
+    "_:",
+    ":_",
+    "_a",
+    ":%00:",
+    ":%ff:",
+    "zzz:",
+    "000.999",
+    "0xff",
   };
 
   guint i;
@@ -1219,7 +1219,7 @@ void
 ags_turtle_test_read_percent()
 {
   gchar percent[4];
-  gchar *hex = "0123456789abcdef\0";
+  gchar *hex = "0123456789abcdef";
   gchar *str;
   
   guint i, j;
@@ -1264,7 +1264,7 @@ void
 ags_turtle_test_read_pn_local_esc()
 {
   gchar local_esc[3];
-  gchar *escapes = "\\_~.-!$&()*+,;=/?#@%\0";
+  gchar *escapes = "\\_~.-!$&()*+,;=/?#@%";
   gchar *str;
 
   guint i;
@@ -1289,8 +1289,8 @@ main(int argc, char **argv)
 {
   CU_pSuite pSuite = NULL;
 
-  putenv("LC_ALL=C\0");
-  putenv("LANG=C\0");
+  putenv("LC_ALL=C");
+  putenv("LANG=C");
   
   /* initialize the CUnit test registry */
   if(CUE_SUCCESS != CU_initialize_registry()){
@@ -1298,7 +1298,7 @@ main(int argc, char **argv)
   }
 
   /* add a suite to the registry */
-  pSuite = CU_add_suite("AgsTurtleTest\0", ags_turtle_test_init_suite, ags_turtle_test_clean_suite);
+  pSuite = CU_add_suite("AgsTurtleTest", ags_turtle_test_init_suite, ags_turtle_test_clean_suite);
   
   if(pSuite == NULL){
     CU_cleanup_registry();
@@ -1307,34 +1307,34 @@ main(int argc, char **argv)
   }
 
   /* add the tests to the suite */
-  if((CU_add_test(pSuite, "test of AgsTurtle read iriref\0", ags_turtle_test_read_iriref) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsTurtle read prefixed name namespace\0", ags_turtle_test_read_pname_ns) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsTurtle read prefixed name localized name\0", ags_turtle_test_read_pname_ln) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsTurtle read blank node label\0", ags_turtle_test_read_blank_node_label) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsTurtle read language tag\0", ags_turtle_test_read_langtag) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsTurtle read boolean\0", ags_turtle_test_read_boolean) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsTurtle read integer\0", ags_turtle_test_read_integer) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsTurtle read decimal\0", ags_turtle_test_read_decimal) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsTurtle read double\0", ags_turtle_test_read_double) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsTurtle read exponent\0", ags_turtle_test_read_exponent) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsTurtle read string\0", ags_turtle_test_read_string) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsTurtle read string literal quote\0", ags_turtle_test_read_string_literal_quote) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsTurtle read string literal single quote\0", ags_turtle_test_read_string_literal_single_quote) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsTurtle read string literal long quote\0", ags_turtle_test_read_string_literal_long_quote) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsTurtle read string literal long single quote\0", ags_turtle_test_read_string_literal_long_single_quote) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsTurtle read uchar\0", ags_turtle_test_read_uchar) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsTurtle read echar\0", ags_turtle_test_read_echar) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsTurtle read ws\0", ags_turtle_test_read_ws) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsTurtle read anon\0", ags_turtle_test_read_anon) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsTurtle read pn-chars base\0", ags_turtle_test_read_pn_chars_base) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsTurtle read pn-chars u\0", ags_turtle_test_read_pn_chars_u) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsTurtle read pn-chars\0", ags_turtle_test_read_pn_chars) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsTurtle read pn-prefix\0", ags_turtle_test_read_pn_prefix) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsTurtle read pn-local\0", ags_turtle_test_read_pn_local) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsTurtle read plx\0", ags_turtle_test_read_plx) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsTurtle read percent\0", ags_turtle_test_read_percent) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsTurtle read hex\0", ags_turtle_test_read_hex) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsTurtle read pn-local esc\0", ags_turtle_test_read_pn_local_esc) == NULL)){
+  if((CU_add_test(pSuite, "test of AgsTurtle read iriref", ags_turtle_test_read_iriref) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsTurtle read prefixed name namespace", ags_turtle_test_read_pname_ns) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsTurtle read prefixed name localized name", ags_turtle_test_read_pname_ln) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsTurtle read blank node label", ags_turtle_test_read_blank_node_label) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsTurtle read language tag", ags_turtle_test_read_langtag) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsTurtle read boolean", ags_turtle_test_read_boolean) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsTurtle read integer", ags_turtle_test_read_integer) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsTurtle read decimal", ags_turtle_test_read_decimal) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsTurtle read double", ags_turtle_test_read_double) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsTurtle read exponent", ags_turtle_test_read_exponent) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsTurtle read string", ags_turtle_test_read_string) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsTurtle read string literal quote", ags_turtle_test_read_string_literal_quote) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsTurtle read string literal single quote", ags_turtle_test_read_string_literal_single_quote) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsTurtle read string literal long quote", ags_turtle_test_read_string_literal_long_quote) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsTurtle read string literal long single quote", ags_turtle_test_read_string_literal_long_single_quote) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsTurtle read uchar", ags_turtle_test_read_uchar) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsTurtle read echar", ags_turtle_test_read_echar) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsTurtle read ws", ags_turtle_test_read_ws) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsTurtle read anon", ags_turtle_test_read_anon) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsTurtle read pn-chars base", ags_turtle_test_read_pn_chars_base) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsTurtle read pn-chars u", ags_turtle_test_read_pn_chars_u) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsTurtle read pn-chars", ags_turtle_test_read_pn_chars) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsTurtle read pn-prefix", ags_turtle_test_read_pn_prefix) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsTurtle read pn-local", ags_turtle_test_read_pn_local) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsTurtle read plx", ags_turtle_test_read_plx) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsTurtle read percent", ags_turtle_test_read_percent) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsTurtle read hex", ags_turtle_test_read_hex) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsTurtle read pn-local esc", ags_turtle_test_read_pn_local_esc) == NULL)){
     CU_cleanup_registry();
     
     return CU_get_error();

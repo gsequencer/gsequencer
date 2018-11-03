@@ -75,7 +75,7 @@ ags_copy_channel_get_type()
   static volatile gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
-    GType ags_type_copy_channel;
+    GType ags_type_copy_channel = 0;
 
     static const GTypeInfo ags_copy_channel_info = {
       sizeof(AgsCopyChannelClass),
@@ -114,7 +114,7 @@ ags_copy_channel_get_type()
 				AGS_TYPE_PLUGIN,
 				&ags_plugin_interface_info);
 
-    g_once_init_leave (&g_define_type_id__volatile, ags_type_copy_channel);
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_copy_channel);
   }
 
   return g_define_type_id__volatile;
@@ -380,7 +380,7 @@ ags_copy_channel_new(AgsChannel *destination,
 
   copy_channel = (AgsCopyChannel *) g_object_new(AGS_TYPE_COPY_CHANNEL,
 						 "destination", destination,
-						 "channel", source,
+						 "source", source,
 						 NULL);
 
   return(copy_channel);

@@ -18,7 +18,7 @@
  */
 
 #include <ags/X/ags_notation_sheet.h>
-#include <ags/X/ags_notation_sheet_callbacks.h>
+//#include <ags/X/ags_notation_sheet_callbacks.h>
 
 #include <ags/i18n.h>
 
@@ -67,9 +67,11 @@ static guint notation_sheet_signals[LAST_SIGNAL];
 GType
 ags_notation_sheet_get_type(void)
 {
-  static GType ags_type_notation_sheet = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_notation_sheet){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_notation_sheet = 0;
+
     static const GTypeInfo ags_notation_sheet_info = {
       sizeof (AgsNotationSheetClass),
       NULL, /* base_init */
@@ -95,9 +97,11 @@ ags_notation_sheet_get_type(void)
     g_type_add_interface_static(ags_type_notation_sheet,
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
+
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_notation_sheet);
   }
 
-  return(ags_type_notation_sheet);
+  return g_define_type_id__volatile;
 }
 
 void
@@ -245,8 +249,8 @@ ags_notation_sheet_connect(AgsConnectable *connectable)
 
   notation_sheet->flags |= AGS_NOTATION_SHEET_CONNECTED;  
   
-  g_signal_connect((GObject *) notation_sheet->machine_selector, "changed",
-		   G_CALLBACK(ags_notation_sheet_machine_changed_callback), (gpointer) notation_sheet);
+  //  g_signal_connect((GObject *) notation_sheet->machine_selector, "changed",
+  //		   G_CALLBACK(ags_notation_sheet_machine_changed_callback), (gpointer) notation_sheet);
 
   /* toolbar */
   ags_connectable_connect(AGS_CONNECTABLE(notation_sheet->notation_toolbar));
@@ -255,7 +259,7 @@ ags_notation_sheet_connect(AgsConnectable *connectable)
   ags_connectable_connect(AGS_CONNECTABLE(notation_sheet->machine_selector));
 
   /* notation page */
-  ags_connectable_connect(AGS_CONNECTABLE(notation_sheet->notation_page));
+  //  ags_connectable_connect(AGS_CONNECTABLE(notation_sheet->notation_page));
 }
 
 void
@@ -272,7 +276,7 @@ ags_notation_sheet_disconnect(AgsConnectable *connectable)
   ags_connectable_disconnect(AGS_CONNECTABLE(notation_sheet->machine_selector));
 
   /* notation page */
-  ags_connectable_disconnect(AGS_CONNECTABLE(notation_sheet->notation_page));
+  //  ags_connectable_disconnect(AGS_CONNECTABLE(notation_sheet->notation_page));
 }
 
 void

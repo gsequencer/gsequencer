@@ -73,7 +73,7 @@ ags_select_note_dialog_get_type(void)
   static volatile gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
-    GType ags_type_select_note_dialog;
+    GType ags_type_select_note_dialog = 0;
 
     static const GTypeInfo ags_select_note_dialog_info = {
       sizeof (AgsSelectNoteDialogClass),
@@ -111,7 +111,7 @@ ags_select_note_dialog_get_type(void)
 				AGS_TYPE_APPLICABLE,
 				&ags_applicable_interface_info);
 
-    g_once_init_leave (&g_define_type_id__volatile, ags_type_select_note_dialog);
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_select_note_dialog);
   }
 
   return g_define_type_id__volatile;
@@ -141,7 +141,7 @@ ags_select_note_dialog_class_init(AgsSelectNoteDialogClass *select_note_dialog)
    *
    * The assigned #AgsApplicationContext to give control of application.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("application-context",
 				   i18n_pspec("assigned application context"),
@@ -157,7 +157,7 @@ ags_select_note_dialog_class_init(AgsSelectNoteDialogClass *select_note_dialog)
    *
    * The assigned #AgsWindow.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("main-window",
 				   i18n_pspec("assigned main window"),
@@ -481,14 +481,12 @@ ags_select_note_dialog_apply(AgsApplicable *applicable)
 
   AgsAudio *audio;
 
-  AgsMutexManager *mutex_manager;
-
-  AgsApplicationContext *application_context;
+  AgsTimestamp *timestamp;
 
   xmlDoc *clipboard;
   xmlNode *audio_node, *notation_node;
 
-  GList *list_notation;
+  GList *start_list_notation, *list_notation;
 
   xmlChar *buffer;
   
@@ -498,9 +496,6 @@ ags_select_note_dialog_apply(AgsApplicable *applicable)
   gint i;
   
   gboolean copy_selection;
-  
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *audio_mutex;
   
   select_note_dialog = AGS_SELECT_NOTE_DIALOG(applicable);
 
@@ -515,6 +510,10 @@ ags_select_note_dialog_apply(AgsApplicable *applicable)
 
   audio = machine->audio;
 
+  g_object_get(audio,
+	       "notation", &start_list_notation,
+	       NULL);
+
   /* get some values */
   copy_selection = gtk_toggle_button_get_active(select_note_dialog->copy_selection);
 
@@ -524,23 +523,12 @@ ags_select_note_dialog_apply(AgsApplicable *applicable)
   x1 = gtk_spin_button_get_value_as_int(select_note_dialog->select_x1);
   y1 = gtk_spin_button_get_value_as_int(select_note_dialog->select_y1);
   
-  /* application context and mutex manager */
-  application_context = window->application_context;
+  timestamp = ags_timestamp_new();
 
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-
-  /* get audio mutex */
-  pthread_mutex_lock(application_mutex);
-
-  audio_mutex = ags_mutex_manager_lookup(mutex_manager,
-					 (GObject *) audio);
-  
-  pthread_mutex_unlock(application_mutex);
+  timestamp->flags &= (~AGS_TIMESTAMP_UNIX);
+  timestamp->flags |= AGS_TIMESTAMP_OFFSET;
 
   /* select note */
-  pthread_mutex_lock(audio_mutex);
-
   if(copy_selection){
     /* create document */
     clipboard = xmlNewDoc(BAD_CAST XML_DEFAULT_VERSION);
@@ -550,29 +538,40 @@ ags_select_note_dialog_apply(AgsApplicable *applicable)
     xmlDocSetRootElement(clipboard, audio_node);
   }
   
-  list_notation = audio->notation;
-
   i = 0;
   
   while((i = ags_notebook_next_active_tab(notation_editor->notebook,
 					  i)) != -1){
-    list_notation = g_list_nth(audio->notation,
-			       i);
-    ags_notation_add_region_to_selection(AGS_NOTATION(list_notation->data),
-					 x0, y0,
-					 x1, y1,
-					 TRUE);
+    list_notation = start_list_notation;
+    
+    timestamp->timer.ags_offset.offset = 0;
+    
+    while((list_notation = ags_notation_find_near_timestamp(list_notation, i,
+							    timestamp)) != NULL){
+      ags_notation_add_region_to_selection(AGS_NOTATION(list_notation->data),
+					   x0, y0,
+					   x1, y1,
+					   TRUE);
+    
+      
+      if(copy_selection){
+	notation_node = ags_notation_copy_selection(AGS_NOTATION(list_notation->data));
+	xmlAddChild(audio_node, notation_node);      
+      }
 
-    if(copy_selection){
-      notation_node = ags_notation_copy_selection(AGS_NOTATION(list_notation->data));
-      xmlAddChild(audio_node, notation_node);      
+      /* iterate */
+      timestamp->timer.ags_offset.offset += AGS_NOTATION_DEFAULT_OFFSET;
+
+      list_notation = list_notation->next;
     }
 
     i++;
   }
-    
-  pthread_mutex_unlock(audio_mutex);
 
+  g_object_unref(timestamp);
+  
+  g_list_free(start_list_notation);
+  
   /* write to clipboard */
   if(copy_selection){
     xmlDocDumpFormatMemoryEnc(clipboard, &buffer, &size, "UTF-8", TRUE);
@@ -608,7 +607,7 @@ ags_select_note_dialog_delete_event(GtkWidget *widget, GdkEventAny *event)
  *
  * Returns: a new #AgsSelectNoteDialog
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 AgsSelectNoteDialog*
 ags_select_note_dialog_new(GtkWidget *main_window)

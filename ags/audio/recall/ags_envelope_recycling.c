@@ -48,7 +48,7 @@ ags_envelope_recycling_get_type()
   static volatile gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
-    GType ags_type_envelope_recycling;
+    GType ags_type_envelope_recycling = 0;
 
     static const GTypeInfo ags_envelope_recycling_info = {
       sizeof (AgsEnvelopeRecyclingClass),
@@ -66,6 +66,8 @@ ags_envelope_recycling_get_type()
 							 "AgsEnvelopeRecycling",
 							 &ags_envelope_recycling_info,
 							 0);
+
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_envelope_recycling);
   }
 
   return g_define_type_id__volatile;

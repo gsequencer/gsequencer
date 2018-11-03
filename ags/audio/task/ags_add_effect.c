@@ -65,7 +65,7 @@ ags_add_effect_get_type()
   static volatile gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
-    GType ags_type_add_effect;
+    GType ags_type_add_effect = 0;
 
     static const GTypeInfo ags_add_effect_info = {
       sizeof (AgsAddEffectClass),
@@ -94,7 +94,7 @@ ags_add_effect_get_type()
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
 
-    g_once_init_leave (&g_define_type_id__volatile, ags_type_add_effect);
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_add_effect);
   }
 
   return g_define_type_id__volatile;
@@ -124,7 +124,7 @@ ags_add_effect_class_init(AgsAddEffectClass *add_effect)
    *
    * The assigned #AgsChannel
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_object("channel",
 				   i18n_pspec("channel of add effect"),
@@ -140,7 +140,7 @@ ags_add_effect_class_init(AgsAddEffectClass *add_effect)
    *
    * The assigned filename.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_string("filename",
 				   i18n_pspec("the filename"),
@@ -156,7 +156,7 @@ ags_add_effect_class_init(AgsAddEffectClass *add_effect)
    *
    * The assigned effect.
    * 
-   * Since: 1.0.0
+   * Since: 2.0.0
    */
   param_spec = g_param_spec_string("effect",
 				   i18n_pspec("the effect"),
@@ -378,9 +378,9 @@ ags_add_effect_launch(AgsTask *task)
  * @filename: the filename including @effect
  * @effect: the effect's name
  *
- * Creates an #AgsAddEffect.
+ * Create a new instance of #AgsAddEffect.
  *
- * Returns: an new #AgsAddEffect.
+ * Returns: the new #AgsAddEffect.
  *
  * Since: 2.0.0
  */

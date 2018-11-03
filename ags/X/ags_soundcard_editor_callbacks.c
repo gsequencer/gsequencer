@@ -38,6 +38,9 @@ ags_soundcard_editor_backend_changed_callback(GtkComboBox *combo,
 {
   gchar *str;
 
+  gtk_widget_set_sensitive(soundcard_editor->capability,
+			   TRUE);
+  
   str = gtk_combo_box_text_get_active_text(GTK_COMBO_BOX_TEXT(combo));
 
   if(str != NULL){
@@ -46,31 +49,36 @@ ags_soundcard_editor_backend_changed_callback(GtkComboBox *combo,
 			    6)){
       ags_soundcard_editor_load_core_audio_card(soundcard_editor);
 
-      gtk_widget_show_all((GtkWidget *) soundcard_editor->sink_hbox);
+      gtk_widget_show_all((GtkWidget *) soundcard_editor->port_hbox);
     }else if(!g_ascii_strncasecmp(str,
 			    "pulse",
 			    6)){
+      gtk_combo_box_set_active(soundcard_editor->capability,
+			       0);
+      gtk_widget_set_sensitive(soundcard_editor->capability,
+			       FALSE);
+      
       ags_soundcard_editor_load_pulse_card(soundcard_editor);
 
-      gtk_widget_show_all((GtkWidget *) soundcard_editor->sink_hbox);
+      gtk_widget_show_all((GtkWidget *) soundcard_editor->port_hbox);
     }else if(!g_ascii_strncasecmp(str,
 			    "jack",
 			    5)){
       ags_soundcard_editor_load_jack_card(soundcard_editor);
 
-      gtk_widget_show_all((GtkWidget *) soundcard_editor->sink_hbox);
+      gtk_widget_show_all((GtkWidget *) soundcard_editor->port_hbox);
     }else if(!g_ascii_strncasecmp(str,
 				  "alsa",
 				  5)){
       ags_soundcard_editor_load_alsa_card(soundcard_editor);
 
-      gtk_widget_hide((GtkWidget *) soundcard_editor->sink_hbox);
+      gtk_widget_hide((GtkWidget *) soundcard_editor->port_hbox);
     }else if(!g_ascii_strncasecmp(str,
 				  "oss",
 				  4)){
       ags_soundcard_editor_load_oss_card(soundcard_editor);
 
-      gtk_widget_hide((GtkWidget *) soundcard_editor->sink_hbox);
+      gtk_widget_hide((GtkWidget *) soundcard_editor->port_hbox);
     }
   }
 }
@@ -180,18 +188,18 @@ ags_soundcard_editor_card_changed_callback(GtkComboBox *combo,
 }
 
 void
-ags_soundcard_editor_add_sink_callback(GtkWidget *button,
+ags_soundcard_editor_add_port_callback(GtkWidget *button,
 				       AgsSoundcardEditor *soundcard_editor)
 {
-  ags_soundcard_editor_add_sink(soundcard_editor,
+  ags_soundcard_editor_add_port(soundcard_editor,
 				NULL);
 }
 
 void
-ags_soundcard_editor_remove_sink_callback(GtkWidget *button,
+ags_soundcard_editor_remove_port_callback(GtkWidget *button,
 					  AgsSoundcardEditor *soundcard_editor)
 {
-  ags_soundcard_editor_remove_sink(soundcard_editor,
+  ags_soundcard_editor_remove_port(soundcard_editor,
 				   gtk_combo_box_text_get_active_text(soundcard_editor->card));
 }
 

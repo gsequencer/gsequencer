@@ -45,7 +45,7 @@ ags_prepare_recycling_get_type()
   static volatile gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
-    GType ags_type_prepare_recycling;
+    GType ags_type_prepare_recycling = 0;
 
     static const GTypeInfo ags_prepare_recycling_info = {
       sizeof (AgsPrepareRecyclingClass),
@@ -63,6 +63,8 @@ ags_prepare_recycling_get_type()
 							"AgsPrepareRecycling",
 							&ags_prepare_recycling_info,
 							0);
+
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_prepare_recycling);
   }
 
   return g_define_type_id__volatile;

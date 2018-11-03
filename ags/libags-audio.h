@@ -27,7 +27,6 @@
 #include <ags/plugin/ags_ladspa_conversion.h>
 #include <ags/plugin/ags_ladspa_manager.h>
 #include <ags/plugin/ags_ladspa_plugin.h>
-#include <ags/plugin/ags_plugin_factory.h>
 #include <ags/plugin/ags_lv2_conversion.h>
 #include <ags/plugin/ags_lv2_manager.h>
 #include <ags/plugin/ags_lv2_plugin.h>
@@ -53,11 +52,11 @@
 #include <ags/audio/ags_automation.h>
 #include <ags/audio/ags_buffer.h>
 #include <ags/audio/ags_channel.h>
-#include <ags/audio/ags_channel_iter.h>
 #include <ags/audio/ags_devout.h>
-#include <ags/audio/ags_effect.h>
+#include <ags/audio/ags_devin.h>
 #include <ags/audio/ags_fifoout.h>
 #include <ags/audio/ags_input.h>
+#include <ags/audio/ags_midi.h>
 #include <ags/audio/ags_midiin.h>
 #include <ags/audio/ags_notation.h>
 #include <ags/audio/ags_note.h>
@@ -93,6 +92,7 @@
 #include <ags/audio/ags_soundcard_util.h>
 #include <ags/audio/ags_synth_generator.h>
 #include <ags/audio/ags_synth_util.h>
+#include <ags/audio/ags_track.h>
 #include <ags/audio/ags_wave.h>
 
 /* audio thread */
@@ -102,17 +102,20 @@
 #include <ags/audio/thread/ags_sequencer_thread.h>
 #include <ags/audio/thread/ags_soundcard_thread.h>
 #include <ags/audio/thread/ags_export_thread.h>
+#include <ags/audio/thread/ags_wave_loader.h>
 
 /* audio file */
 #include <ags/audio/file/ags_audio_container.h>
 #include <ags/audio/file/ags_audio_file.h>
 #include <ags/audio/file/ags_audio_file_link.h>
 #include <ags/audio/file/ags_audio_file_xml.h>
+#ifdef AGS_WITH_LIBINSTPATCH
 #include <ags/audio/file/ags_ipatch.h>
 #include <ags/audio/file/ags_ipatch_gig_reader.h>
 #include <ags/audio/file/ags_ipatch_dls2_reader.h>
 #include <ags/audio/file/ags_ipatch_sf2_reader.h>
 #include <ags/audio/file/ags_ipatch_sample.h>
+#endif
 #include <ags/audio/file/ags_sndfile.h>
 #include <ags/audio/file/ags_sound_container.h>
 #include <ags/audio/file/ags_sound_resource.h>
@@ -127,6 +130,7 @@
 /* audio core-audio */
 #include <ags/audio/core-audio/ags_core_audio_client.h>
 #include <ags/audio/core-audio/ags_core_audio_devout.h>
+#include <ags/audio/core-audio/ags_core_audio_devin.h>
 #include <ags/audio/core-audio/ags_core_audio_midiin.h>
 #include <ags/audio/core-audio/ags_core_audio_port.h>
 #include <ags/audio/core-audio/ags_core_audio_server.h>
@@ -134,6 +138,7 @@
 /* audio pulse */
 #include <ags/audio/pulse/ags_pulse_client.h>
 #include <ags/audio/pulse/ags_pulse_devout.h>
+#include <ags/audio/pulse/ags_pulse_devin.h>
 #include <ags/audio/pulse/ags_pulse_port.h>
 #include <ags/audio/pulse/ags_pulse_server.h>
 
@@ -141,16 +146,23 @@
 #include <ags/audio/jack/ags_jack_client.h>
 #include <ags/audio/jack/ags_jack_midiin.h>
 #include <ags/audio/jack/ags_jack_devout.h>
+#include <ags/audio/jack/ags_jack_devin.h>
 #include <ags/audio/jack/ags_jack_port.h>
 #include <ags/audio/jack/ags_jack_server.h>
 
 /* audio recall */
+#include <ags/audio/recall/ags_analyse_audio_signal.h>
+#include <ags/audio/recall/ags_analyse_channel.h>
+#include <ags/audio/recall/ags_analyse_channel_run.h>
+#include <ags/audio/recall/ags_analyse_recycling.h>
 #include <ags/audio/recall/ags_buffer_audio_signal.h>
 #include <ags/audio/recall/ags_buffer_channel.h>
 #include <ags/audio/recall/ags_buffer_channel_run.h>
 #include <ags/audio/recall/ags_buffer_recycling.h>
 #include <ags/audio/recall/ags_capture_wave_audio.h>
 #include <ags/audio/recall/ags_capture_wave_audio_run.h>
+#include <ags/audio/recall/ags_capture_wave_channel.h>
+#include <ags/audio/recall/ags_capture_wave_channel_run.h>
 #include <ags/audio/recall/ags_copy_audio_signal.h>
 #include <ags/audio/recall/ags_copy_channel.h>
 #include <ags/audio/recall/ags_copy_channel_run.h>
@@ -163,6 +175,10 @@
 #include <ags/audio/recall/ags_count_beats_audio_run.h>
 #include <ags/audio/recall/ags_delay_audio.h>
 #include <ags/audio/recall/ags_delay_audio_run.h>
+#include <ags/audio/recall/ags_eq10_audio_signal.h>
+#include <ags/audio/recall/ags_eq10_channel.h>
+#include <ags/audio/recall/ags_eq10_channel_run.h>
+#include <ags/audio/recall/ags_eq10_recycling.h>
 #include <ags/audio/recall/ags_envelope_audio_signal.h>
 #include <ags/audio/recall/ags_envelope_channel.h>
 #include <ags/audio/recall/ags_envelope_channel_run.h>
@@ -248,6 +264,8 @@
 #include <ags/audio/task/ags_remove_note.h>
 #include <ags/audio/task/ags_remove_soundcard.h>
 #include <ags/audio/task/ags_resize_audio.h>
+#include <ags/audio/task/ags_reset_amplitude.h>
+#include <ags/audio/task/ags_reset_peak.h>
 #include <ags/audio/task/ags_seek_soundcard.h>
 #include <ags/audio/task/ags_set_audio_channels.h>
 #include <ags/audio/task/ags_set_buffer_size.h>

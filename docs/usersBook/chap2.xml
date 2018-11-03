@@ -1,5 +1,6 @@
 <?xml version='1.0' encoding="utf-8"?>
 
+<!-- Copyright (C) 2005-2018 Jo\u00EBl Kr\u00E4hemann -->
 <!-- Permission is granted to copy, distribute and/or modify this document -->
 <!-- under the terms of the GNU Free Documentation License, Version 1.3 -->
 <!-- or any later version published by the Free Software Foundation; -->
@@ -180,8 +181,8 @@
   <sect1>
     <title>Audio connection dialog</title>
     <para>
-      The audio connection dialog allows you to specify to what soundcard to output. This can be
-      modified either by assigning single channels or in bulk mode.
+      The audio connection dialog allows you to specify to what soundcard to write output to or read input from.
+      This can be modified either by assigning single channels or in bulk mode.
     </para>
 
     <sect2>
@@ -221,6 +222,43 @@
       </para>    
     </sect2>
     
+    <sect2>
+      <title>Audio connection input line</title>
+      <mediaobject>
+	<imageobject>
+	  <imagedata fileref="../images/ags_audio_connection_input_line.png" />
+	</imageobject>
+	<caption>
+	  <para>
+	    The audio connection input line screenshot
+	  </para>
+	</caption>
+      </mediaobject>
+      
+      <para>
+	Select the desired soundcard and don't forget to click enable. In order apply your modifications.
+	After click OK.
+      </para>    
+    </sect2>
+
+    <sect2>
+      <title>Audio connection input bulk</title>
+      <mediaobject>
+	<imageobject>
+	  <imagedata fileref="../images/ags_audio_connection_input_bulk.png" />
+	</imageobject>
+	<caption>
+	  <para>
+	    The audio connection input bulk screenshot
+	  </para>
+	</caption>
+      </mediaobject>
+      
+      <para>
+	The input connection tab allows you to link a bunch of channel at once.
+      </para>    
+    </sect2>
+
   </sect1>
 
   <sect1>
@@ -348,6 +386,40 @@
       Due the limitation of recycling it is just able to handle multiple input lines and only one
       output pad. Whereas the output is hidden. They are locate just below the machine's menu tool
       button. 
+    </para>
+  </sect1>
+
+  <sect1>
+    <title>Spectrometer</title>
+    <mediaobject>
+      <imageobject>
+	<imagedata fileref="../images/ags_spectrometer.png" />
+      </imageobject>
+      <caption>
+	<para>
+	  The spectrometer screenshot
+	</para>
+      </caption>
+    </mediaobject>
+    <para>
+      Visualize input by plotting it using FFTW3 library.
+    </para>
+  </sect1>
+
+  <sect1>
+    <title>Equalizer10</title>
+    <mediaobject>
+      <imageobject>
+	<imagedata fileref="../images/ags_equalizer10.png" />
+      </imageobject>
+      <caption>
+	<para>
+	  The equalizer10 screenshot
+	</para>
+      </caption>
+    </mediaobject>
+    <para>
+      Adjust a 10 band equalizer with additional pressure control.
     </para>
   </sect1>
 
@@ -692,6 +764,24 @@
       The ffplayer contains recently the bridge widget. You can add plugins in bulk mode by
       click Add or Remove within AgsFFPlayer's bridge, what you can collapse/expand. To add an effect
       to a line, you have open as usual input/output of machine properties.
+    </para>
+  </sect1>
+  
+  <sect1>
+    <title>Audiorec</title>
+    <mediaobject>
+      <imageobject>
+	<imagedata fileref="../images/ags_audiorec.png" />
+      </imageobject>
+      <caption>
+	<para>
+	  The audiorec screenshot
+	</para>
+      </caption>
+    </mediaobject>
+    <para>
+      Open large audio files and manipulate the wave form using wave window. You might want
+      to capture sound using it. By either replacing or mixing existing audio data.
     </para>
   </sect1>
 

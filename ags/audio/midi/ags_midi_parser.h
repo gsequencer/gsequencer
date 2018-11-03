@@ -63,6 +63,9 @@ struct _AgsMidiParser
 
   guint flags;
 
+  pthread_mutex_t *obj_mutex;
+  pthread_mutexattr_t *obj_mutexattr;
+
   FILE *file;
   guint nth_chunk;
 
@@ -118,6 +121,8 @@ struct _AgsMidiParserClass
 };
 
 GType ags_midi_parser_get_type(void);
+
+pthread_mutex_t* ags_midi_parser_get_class_mutex();
 
 gint16 ags_midi_parser_read_gint16(AgsMidiParser *midi_parser);
 gint32 ags_midi_parser_read_gint24(AgsMidiParser *midi_parser);

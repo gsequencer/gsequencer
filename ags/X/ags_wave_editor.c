@@ -85,7 +85,7 @@ ags_wave_editor_get_type(void)
   static volatile gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
-    GType ags_type_wave_editor;
+    GType ags_type_wave_editor = 0;
 
     static const GTypeInfo ags_wave_editor_info = {
       sizeof (AgsWaveEditorClass),
@@ -113,7 +113,7 @@ ags_wave_editor_get_type(void)
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
 
-    g_once_init_leave (&g_define_type_id__volatile, ags_type_wave_editor);
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_wave_editor);
   }
 
   return g_define_type_id__volatile;
@@ -491,7 +491,8 @@ ags_wave_editor_reset_scrollbar(AgsWaveEditor *wave_editor)
   AgsWaveToolbar *wave_toolbar;
 
   GList *list_start, *list;
-  
+
+  gdouble old_h_upper;
   gdouble v_upper, h_upper;
   double zoom_factor, zoom;
   double zoom_correction;
@@ -516,6 +517,10 @@ ags_wave_editor_reset_scrollbar(AgsWaveEditor *wave_editor)
 
   /* reset horizontal scrollbar */
   zoom = exp2((double) gtk_combo_box_get_active((GtkComboBox *) wave_toolbar->zoom) - 2.0);
+
+  /* upper */
+  old_h_upper = GTK_RANGE(wave_editor->hscrollbar)->adjustment->upper;
+
   zoom_correction = 1.0 / 16;
 
   map_width = ((double) AGS_WAVE_EDITOR_MAX_CONTROLS * zoom * zoom_correction);
@@ -544,6 +549,12 @@ ags_wave_editor_reset_scrollbar(AgsWaveEditor *wave_editor)
   }
 
   g_list_free(list_start);
+
+  /* reset value */
+  if(old_h_upper != 0.0){
+    gtk_adjustment_set_value(GTK_RANGE(wave_editor->hscrollbar)->adjustment,
+			     GTK_RANGE(wave_editor->hscrollbar)->adjustment->value / old_h_upper * h_upper);
+  }
 }
 
 void
@@ -719,7 +730,8 @@ ags_wave_editor_select_region(AgsWaveEditor *wave_editor,
   AgsTimestamp *timestamp;
 
   GObject *soundcard;
-  
+
+  GList *start_wave_edit, *wave_edit;
   GList *start_list_wave, *list_wave;
 
   gdouble bpm;
@@ -795,11 +807,15 @@ ags_wave_editor_select_region(AgsWaveEditor *wave_editor,
 
     timestamp->flags &= (~AGS_TIMESTAMP_UNIX);
     timestamp->flags |= AGS_TIMESTAMP_OFFSET;
-    
+
+    start_wave_edit = gtk_container_get_children(wave_editor->scrolled_wave_edit_box->wave_edit_box);
     i = 0;
 
     while((i = ags_notebook_next_active_tab(notebook,
-					    i)) != -1){      
+					    i)) != -1){
+      wave_edit = g_list_nth(start_wave_edit,
+			     i);
+      
       list_wave = start_list_wave;
       
       timestamp->timer.ags_offset.offset = relative_offset * floor(x0 / relative_offset);
@@ -818,14 +834,15 @@ ags_wave_editor_select_region(AgsWaveEditor *wave_editor,
 
 	timestamp->timer.ags_offset.offset += relative_offset;
       }
+
+      /* queue draw */
+      gtk_widget_queue_draw(wave_edit->data);
       
       i++;
     }
-    
-    g_list_free(start_list_wave);
 
-    /* queue draw */
-    gtk_widget_queue_draw(wave_editor->focused_wave_edit);
+    g_list_free(start_wave_edit);
+    g_list_free(start_list_wave);
   }
 }
 

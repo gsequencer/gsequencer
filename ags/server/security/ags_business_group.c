@@ -34,9 +34,11 @@ void ags_business_group_base_init(AgsBusinessGroupInterface *interface);
 GType
 ags_business_group_get_type()
 {
-  static GType ags_type_business_group = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_business_group){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_business_group = 0;
+
     static const GTypeInfo ags_business_group_info = {
       sizeof(AgsBusinessGroupInterface),
       (GBaseInitFunc) ags_business_group_base_init,
@@ -44,11 +46,13 @@ ags_business_group_get_type()
     };
 
     ags_type_business_group = g_type_register_static(G_TYPE_INTERFACE,
-						     "AgsBusinessGroup\0", &ags_business_group_info,
+						     "AgsBusinessGroup", &ags_business_group_info,
 						     0);
+
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_business_group);
   }
 
-  return(ags_type_business_group);
+  return g_define_type_id__volatile;
 }
 
 void
@@ -69,7 +73,7 @@ ags_business_group_base_init(AgsBusinessGroupInterface *interface)
  *
  * Set business group name.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_business_group_set_business_group_name(AgsBusinessGroup *business_group,
@@ -107,7 +111,7 @@ ags_business_group_set_business_group_name(AgsBusinessGroup *business_group,
  *
  * Returns: the business group name as string
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 gchar*
 ags_business_group_get_business_group_name(AgsBusinessGroup *business_group,
@@ -143,7 +147,7 @@ ags_business_group_get_business_group_name(AgsBusinessGroup *business_group,
  *
  * Set business group ids of users as string array.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_business_group_set_user_id(AgsBusinessGroup *business_group,
@@ -181,7 +185,7 @@ ags_business_group_set_user_id(AgsBusinessGroup *business_group,
  *
  * Returns: the business group's ids of users as string array
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 gchar**
 ags_business_group_get_user_id(AgsBusinessGroup *business_group,
@@ -217,7 +221,7 @@ ags_business_group_get_user_id(AgsBusinessGroup *business_group,
  *
  * Set business group context paths as string array.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_business_group_set_context_path_with_read_permission(AgsBusinessGroup *business_group,
@@ -255,7 +259,7 @@ ags_business_group_set_context_path_with_read_permission(AgsBusinessGroup *busin
  *
  * Returns: the business group's context paths as string array
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 gchar**
 ags_business_group_get_context_path_with_read_permission(AgsBusinessGroup *business_group,
@@ -291,7 +295,7 @@ ags_business_group_get_context_path_with_read_permission(AgsBusinessGroup *busin
  *
  * Set business group context paths as string array.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_business_group_set_context_path_with_write_permission(AgsBusinessGroup *business_group,
@@ -329,7 +333,7 @@ ags_business_group_set_context_path_with_write_permission(AgsBusinessGroup *busi
  *
  * Returns: the business group's context paths as string array
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 gchar**
 ags_business_group_get_context_path_with_write_permission(AgsBusinessGroup *business_group,
@@ -365,7 +369,7 @@ ags_business_group_get_context_path_with_write_permission(AgsBusinessGroup *busi
  *
  * Set business group context paths as string array.
  *
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 void
 ags_business_group_set_context_path_with_execute_permission(AgsBusinessGroup *business_group,
@@ -403,7 +407,7 @@ ags_business_group_set_context_path_with_execute_permission(AgsBusinessGroup *bu
  *
  * Returns: the business group's context paths as string array
  * 
- * Since: 1.0.0
+ * Since: 2.0.0
  */
 gchar**
 ags_business_group_get_context_path_with_execute_permission(AgsBusinessGroup *business_group,

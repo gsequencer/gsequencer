@@ -60,9 +60,11 @@ static AgsConnectableInterface *ags_equalizer10_parent_connectable_interface;
 GType
 ags_equalizer10_get_type(void)
 {
-  static GType ags_type_equalizer10 = 0;
+  static volatile gsize g_define_type_id__volatile = 0;
 
-  if(!ags_type_equalizer10){
+  if(g_once_init_enter (&g_define_type_id__volatile)){
+    GType ags_type_equalizer10 = 0;
+
     static const GTypeInfo ags_equalizer10_info = {
       sizeof(AgsEqualizer10Class),
       NULL, /* base_init */
@@ -98,9 +100,11 @@ ags_equalizer10_get_type(void)
     g_type_add_interface_static(ags_type_equalizer10,
 				AGS_TYPE_PLUGIN,
 				&ags_plugin_interface_info);
+
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_equalizer10);
   }
 
-  return(ags_type_equalizer10);
+  return g_define_type_id__volatile;
 }
 
 void
@@ -1109,7 +1113,7 @@ ags_equalizer10_find_specifier(GList *recall, gchar *specifier)
  *
  * Returns: a new #AgsEqualizer10
  *
- * Since: 1.5.0
+ * Since: 2.0.0
  */
 AgsEqualizer10*
 ags_equalizer10_new(GObject *soundcard)

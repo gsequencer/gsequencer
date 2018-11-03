@@ -60,7 +60,7 @@ ags_set_audio_channels_get_type()
   static volatile gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
-    GType ags_type_set_audio_channels;
+    GType ags_type_set_audio_channels = 0;
 
     static const GTypeInfo ags_set_audio_channels_info = {
       sizeof(AgsSetAudioChannelsClass),
@@ -78,9 +78,11 @@ ags_set_audio_channels_get_type()
 							 "AgsSetAudioChannels",
 							 &ags_set_audio_channels_info,
 							 0);
+
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_set_audio_channels);
   }
-  
-  return(ags_type_set_audio_channels);
+
+  return g_define_type_id__volatile;
 }
 
 void
@@ -256,8 +258,6 @@ void
 ags_set_audio_channels_launch(AgsTask *task)
 {
   AgsSetAudioChannels *set_audio_channels;
-
-  AgsMutexManager *mutex_manager;
 
   guint channels;
   guint samplerate;

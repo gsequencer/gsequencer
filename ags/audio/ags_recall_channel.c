@@ -80,7 +80,7 @@ ags_recall_channel_get_type()
   static volatile gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
-    GType ags_type_recall_channel;
+    GType ags_type_recall_channel = 0;
 
     static const GTypeInfo ags_recall_channel_info = {
       sizeof (AgsRecallChannelClass),
@@ -108,6 +108,8 @@ ags_recall_channel_get_type()
     g_type_add_interface_static(ags_type_recall_channel,
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
+
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_recall_channel);
   }
 
   return g_define_type_id__volatile;
@@ -465,6 +467,7 @@ void
 ags_recall_channel_automate(AgsRecall *recall)
 {
   AgsAudio *audio;
+  AgsChannel *channel;
   
   GObject *soundcard;
 
@@ -480,13 +483,17 @@ ags_recall_channel_automate(AgsRecall *recall)
   double x, step;
   guint ret_x;
   gboolean return_prev_on_failure;
-
+  
   g_object_get(recall,
+	       "source", &channel,
+	       NULL);
+
+  g_object_get(channel,
 	       "audio", &audio,
 	       NULL);
   
   g_object_get(audio,
-	       "soundcard", &soundcard,
+	       "output-soundcard", &soundcard,
 	       NULL);
   
   g_object_get(recall,
