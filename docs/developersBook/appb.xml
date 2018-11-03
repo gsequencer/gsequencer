@@ -46,6 +46,14 @@
     </listitem>
     </varlistentry>
 
+    <varlistentry><term><filename>FFTW3</filename></term>
+    <listitem>
+      <para>
+	Fastest Fourier Transform of the West - <link xlink:href="http://www.fftw.org/">http://www.fftw.org</link>
+      </para>
+    </listitem>
+    </varlistentry>
+
     <varlistentry><term><filename>Alsa</filename></term>
     <listitem>
       <para>
