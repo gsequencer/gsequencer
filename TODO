@@ -1,5 +1,4 @@
 * TODO:JK: implemented resample AgsAudioSignal on presets modified
-* TODO:JK: implemented ags_char_buffer_util.c
 * TODO:JK: improve thread-safety to LADSPA and DSSI
 * TODO:JK: removed ags_id_generator.[ch]
 * TODO:JK: improved ags-feed recall thread-safety
