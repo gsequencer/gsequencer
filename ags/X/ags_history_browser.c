@@ -20,7 +20,8 @@
 #include <ags/X/ags_history_browser.h>
 #include <ags/X/ags_history_browser_callbacks.h>
 
-#include <ags/libags.h>
+#include <ags/object/ags_application_context.h>
+#include <ags/object/ags_connectable.h>
 
 #include <stdlib.h>
 

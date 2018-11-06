@@ -99,36 +99,11 @@ ags_navigation_rewind_callback(GtkWidget *widget,
 			       AgsNavigation *navigation)
 {
   AgsWindow *window;
-
-  AgsMutexManager *mutex_manager;
-
-  gdouble note_offset;
   gdouble tact;
-
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *soundcard_mutex;
-
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
 
   window = AGS_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(navigation)));
 
-  /* get soundcard mutex */
-  pthread_mutex_lock(application_mutex);
-
-  soundcard_mutex = ags_mutex_manager_lookup(mutex_manager,
-					     window->soundcard);
-					     
-  pthread_mutex_unlock(application_mutex);
-
-  /* move */
-  pthread_mutex_lock(soundcard_mutex);
-
-  note_offset = ags_soundcard_get_note_offset(AGS_SOUNDCARD(window->soundcard));
-
-  pthread_mutex_unlock(soundcard_mutex);
-  
-  tact = note_offset / 16.0;
+  tact = ags_soundcard_get_note_offset(AGS_SOUNDCARD(window->soundcard)) / 16.0;
   
   gtk_spin_button_set_value(navigation->position_tact,
 			    tact +
@@ -140,36 +115,11 @@ ags_navigation_prev_callback(GtkWidget *widget,
 			     AgsNavigation *navigation)
 {
   AgsWindow *window;
-
-  AgsMutexManager *mutex_manager;
-
-  gdouble note_offset;
   gdouble tact;
-
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *soundcard_mutex;
-
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
 
   window = AGS_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(navigation)));
 
-  /* get soundcard mutex */
-  pthread_mutex_lock(application_mutex);
-
-  soundcard_mutex = ags_mutex_manager_lookup(mutex_manager,
-					     window->soundcard);
-					     
-  pthread_mutex_unlock(application_mutex);
-
-  /* move */
-  pthread_mutex_lock(soundcard_mutex);
-
-  note_offset = ags_soundcard_get_note_offset(AGS_SOUNDCARD(window->soundcard));
-
-  pthread_mutex_unlock(soundcard_mutex);
-  
-  tact = note_offset / 16.0;
+  tact = ags_soundcard_get_note_offset(AGS_SOUNDCARD(window->soundcard)) / 16.0;
   
   gtk_spin_button_set_value(navigation->position_tact,
 			    tact +
@@ -299,36 +249,11 @@ ags_navigation_next_callback(GtkWidget *widget,
 			     AgsNavigation *navigation)
 {
   AgsWindow *window;
-
-  AgsMutexManager *mutex_manager;
-
-  gdouble note_offset;
   gdouble tact;
-
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *soundcard_mutex;
-
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
 
   window = AGS_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(navigation)));
 
-  /* get soundcard mutex */
-  pthread_mutex_lock(application_mutex);
-
-  soundcard_mutex = ags_mutex_manager_lookup(mutex_manager,
-					     window->soundcard);
-					     
-  pthread_mutex_unlock(application_mutex);
-
-  /* move */
-  pthread_mutex_lock(soundcard_mutex);
-
-  note_offset = ags_soundcard_get_note_offset(AGS_SOUNDCARD(window->soundcard));
-
-  pthread_mutex_unlock(soundcard_mutex);
-
-  tact = note_offset / 16.0;
+  tact = ags_soundcard_get_note_offset(AGS_SOUNDCARD(window->soundcard)) / 16.0;
 
   gtk_spin_button_set_value(navigation->position_tact,
 			    tact +
@@ -340,37 +265,11 @@ ags_navigation_forward_callback(GtkWidget *widget,
 				AgsNavigation *navigation)
 {
   AgsWindow *window;
-
-  AgsMutexManager *mutex_manager;
-
-  gdouble note_offset;
   gdouble tact;
-
-  pthread_mutex_t *application_mutex;
-  pthread_mutex_t *soundcard_mutex;
-
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
 
   window = AGS_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(navigation)));
 
-  /* get soundcard mutex */
-  pthread_mutex_lock(application_mutex);
-
-  soundcard_mutex = ags_mutex_manager_lookup(mutex_manager,
-					     window->soundcard);
-					     
-  pthread_mutex_unlock(application_mutex);
-
-
-  /* move */
-  pthread_mutex_lock(soundcard_mutex);
-
-  note_offset = ags_soundcard_get_note_offset(AGS_SOUNDCARD(window->soundcard));
-
-  pthread_mutex_unlock(soundcard_mutex);
-
-  tact = note_offset / 16.0;
+  tact = ags_soundcard_get_note_offset(AGS_SOUNDCARD(window->soundcard)) / 16.0;
 
   gtk_spin_button_set_value(navigation->position_tact,
 			    tact +
@@ -394,31 +293,16 @@ ags_navigation_loop_callback(GtkWidget *widget,
   
   GValue do_loop_value = {0,};
   
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-
   window = AGS_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(navigation)));
   machines_start = 
     machines = gtk_container_get_children(GTK_CONTAINER(window->machines));
 
-  /* get soundcard mutex */
-  pthread_mutex_lock(application_mutex);
-
-  soundcard_mutex = ags_mutex_manager_lookup(mutex_manager,
-					     window->soundcard);
-					     
-  pthread_mutex_unlock(application_mutex);
-
   loop_left = 16 * navigation->loop_left_tact->adjustment->value;
   loop_right = 16 * navigation->loop_right_tact->adjustment->value;
   
-  pthread_mutex_lock(soundcard_mutex);
-
   ags_soundcard_set_loop(AGS_SOUNDCARD(window->soundcard),
 			 loop_left, loop_right,
 			 gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(widget)));
-
-  pthread_mutex_unlock(soundcard_mutex);
 			 
   g_value_init(&do_loop_value, G_TYPE_BOOLEAN);
   g_value_set_boolean(&do_loop_value,
@@ -533,31 +417,16 @@ ags_navigation_loop_left_tact_callback(GtkWidget *widget,
 
   GValue value = {0,};
 
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-
   window = AGS_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(navigation)));
   machines_start = 
     machines = gtk_container_get_children(GTK_CONTAINER(window->machines));
 
-  /* get soundcard mutex */
-  pthread_mutex_lock(application_mutex);
-
-  soundcard_mutex = ags_mutex_manager_lookup(mutex_manager,
-					     window->soundcard);
-					     
-  pthread_mutex_unlock(application_mutex);
-
   loop_left = 16 * navigation->loop_left_tact->adjustment->value;
   loop_right = 16 * navigation->loop_right_tact->adjustment->value;
   
-  pthread_mutex_lock(soundcard_mutex);
-
   ags_soundcard_set_loop(AGS_SOUNDCARD(window->soundcard),
 			 loop_left, loop_right,
 			 gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(navigation->loop)));
-
-  pthread_mutex_unlock(soundcard_mutex);
 
   g_value_init(&value, G_TYPE_DOUBLE);
   g_value_set_double(&value,
@@ -652,31 +521,16 @@ ags_navigation_loop_right_tact_callback(GtkWidget *widget,
 
   GValue value = {0,};
 
-  mutex_manager = ags_mutex_manager_get_instance();
-  application_mutex = ags_mutex_manager_get_application_mutex(mutex_manager);
-
   window = AGS_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(navigation)));
   machines_start = 
     machines = gtk_container_get_children(GTK_CONTAINER(window->machines));
 
-  /* get soundcard mutex */
-  pthread_mutex_lock(application_mutex);
-
-  soundcard_mutex = ags_mutex_manager_lookup(mutex_manager,
-					     window->soundcard);
-					     
-  pthread_mutex_unlock(application_mutex);
-
   loop_left = 16 * navigation->loop_left_tact->adjustment->value;
   loop_right = 16 * navigation->loop_right_tact->adjustment->value;
   
-  pthread_mutex_lock(soundcard_mutex);
-
   ags_soundcard_set_loop(AGS_SOUNDCARD(window->soundcard),
 			 loop_left, loop_right,
 			 gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(navigation->loop)));
-
-  pthread_mutex_unlock(soundcard_mutex);
 
   g_value_init(&value, G_TYPE_DOUBLE);
   g_value_set_double(&value,

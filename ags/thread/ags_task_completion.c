@@ -88,13 +88,13 @@ ags_task_completion_get_type()
     GType ags_type_task_completion = 0;
 
     static const GTypeInfo ags_task_completion_info = {
-      sizeof(AgsTaskCompletionClass),
+      sizeof (AgsTaskCompletionClass),
       NULL, /* base_init */
       NULL, /* base_finalize */
       (GClassInitFunc) ags_task_completion_class_init,
       NULL, /* class_finalize */
       NULL, /* class_data */
-      sizeof(AgsTaskCompletion),
+      sizeof (AgsTaskCompletion),
       0,    /* n_preallocs */
       (GInstanceInitFunc) ags_task_completion_init,
     };

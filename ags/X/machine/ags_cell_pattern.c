@@ -119,11 +119,9 @@ ags_cell_pattern_get_type(void)
 static GType
 ags_accessible_cell_pattern_get_type(void)
 {
-  static volatile gsize g_define_type_id__volatile = 0;
+  static GType ags_type_accessible_cell_pattern = 0;
 
-  if(g_once_init_enter (&g_define_type_id__volatile)){
-    GType ags_type_accessible_cell_pattern;
-
+  if(!ags_type_accessible_cell_pattern){
     const GTypeInfo ags_accesssible_cell_pattern_info = {
       sizeof(GtkAccessibleClass),
       NULL,           /* base_init */
@@ -149,11 +147,9 @@ ags_accessible_cell_pattern_get_type(void)
     g_type_add_interface_static(ags_type_accessible_cell_pattern,
 				ATK_TYPE_ACTION,
 				&atk_action_interface_info);
-
-    g_once_init_leave (&g_define_type_id__volatile, ags_type_accessible_cell_pattern);
   }
-
-  return g_define_type_id__volatile;
+  
+  return(ags_type_accessible_cell_pattern);
 }
 
 void

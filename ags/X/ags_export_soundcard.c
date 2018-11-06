@@ -208,7 +208,10 @@ ags_export_soundcard_init(AgsExportSoundcard *export_soundcard)
   gtk_combo_box_text_append_text(export_soundcard->backend,
 				 "oss");
 #endif
- 
+
+  gtk_combo_box_set_active(GTK_COMBO_BOX(export_soundcard->backend),
+			   0);
+  
   /* sound card */
   label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
 				    "label", i18n("soundcard"),

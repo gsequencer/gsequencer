@@ -26,8 +26,6 @@
 #include <ags/libags.h>
 #include <ags/libags-audio.h>
 
-#include <ags/X/ags_window.h>
-
 #include <ags/X/file/ags_simple_file.h>
 
 #include <unistd.h>

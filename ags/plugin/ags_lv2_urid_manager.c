@@ -19,9 +19,7 @@
 
 #include <ags/plugin/ags_lv2_urid_manager.h>
 
-#include <ags/libags.h>
-
-#include <pthread.h>
+#include <ags/object/ags_connectable.h>
 
 void ags_lv2_urid_manager_class_init(AgsLv2UridManagerClass *lv2_urid_manager);
 void ags_lv2_urid_manager_init(AgsLv2UridManager *lv2_urid_manager);
@@ -56,13 +54,13 @@ ags_lv2_urid_manager_get_type()
     GType ags_type_lv2_urid_manager = 0;
 
     const GTypeInfo ags_lv2_urid_manager_info = {
-      sizeof(AgsLv2UridManagerClass),
+      sizeof (AgsLv2UridManagerClass),
       NULL, /* base_init */
       NULL, /* base_finalize */
       (GClassInitFunc) ags_lv2_urid_manager_class_init,
       NULL, /* class_finalize */
       NULL, /* class_data */
-      sizeof(AgsLv2UridManager),
+      sizeof (AgsLv2UridManager),
       0,    /* n_preallocs */
       (GInstanceInitFunc) ags_lv2_urid_manager_init,
     };

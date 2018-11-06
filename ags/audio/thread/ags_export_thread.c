@@ -76,11 +76,9 @@ static AgsConnectableInterface *ags_export_thread_parent_connectable_interface;
 GType
 ags_export_thread_get_type()
 {
-  static volatile gsize g_define_type_id__volatile = 0;
+  static GType ags_type_export_thread = 0;
 
-  if(g_once_init_enter (&g_define_type_id__volatile)){
-    GType ags_type_export_thread;
-
+  if(!ags_type_export_thread){
     static const GTypeInfo ags_export_thread_info = {
       sizeof (AgsExportThreadClass),
       NULL, /* base_init */
@@ -107,11 +105,9 @@ ags_export_thread_get_type()
     g_type_add_interface_static(ags_type_export_thread,
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
-
-    g_once_init_leave (&g_define_type_id__volatile, ags_type_export_thread);
   }
-
-  return g_define_type_id__volatile;
+  
+  return (ags_type_export_thread);
 }
 
 void
@@ -515,10 +511,12 @@ ags_export_thread_run(AgsThread *thread)
   /*  */
   soundcard = AGS_SOUNDCARD(export_thread->soundcard);
 
-  if(AGS_IS_JACK_DEVOUT(soundcard) ||
-     AGS_IS_PULSE_DEVOUT(soundcard)){
+  if(AGS_IS_DEVOUT(soundcard)){
+    soundcard_buffer = ags_soundcard_get_buffer(soundcard);
+  }else if(AGS_IS_JACK_DEVOUT(soundcard) ||
+	   AGS_IS_PULSE_DEVOUT(soundcard)){
     soundcard_buffer = ags_soundcard_get_prev_buffer(soundcard);
-  }else{
+  }else if(AGS_IS_CORE_AUDIO_DEVOUT(soundcard)){
     soundcard_buffer = ags_soundcard_get_buffer(soundcard);
   }
   

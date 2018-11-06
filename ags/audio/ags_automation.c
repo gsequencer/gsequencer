@@ -1298,7 +1298,6 @@ ags_automation_add_acceleration(AgsAutomation *automation,
   pthread_mutex_lock(automation_mutex);
 
   if(use_selection_list){
-    acceleration->flags |= AGS_ACCELERATION_IS_SELECTED;
     automation->selection = g_list_insert_sorted(automation->selection,
 						 acceleration,
 						 (GCompareFunc) ags_acceleration_sort_func);
@@ -1835,9 +1834,6 @@ ags_automation_add_point_to_selection(AgsAutomation *automation,
     if(replace_current_selection){
       GList *list;
 
-      acceleration->flags |= AGS_ACCELERATION_IS_SELECTED;
-      g_object_ref(acceleration);
-      
       list = g_list_alloc();
       list->data = acceleration;
       g_object_ref(acceleration);
@@ -2549,8 +2545,8 @@ ags_automation_insert_from_clipboard_extended(AgsAutomation *automation,
 		    format) ||
 	 !xmlStrcmp(AGS_AUTOMATION_CLIPBOARD_LEGACY_FORMAT,
 		    format)){
-	x_boundary = xmlGetProp(automation_node, "x-boundary");
-	y_boundary = xmlGetProp(automation_node, "y-boundary");
+	x_boundary = xmlGetProp(automation_node, "x_boundary");
+	y_boundary = xmlGetProp(automation_node, "y_boundary");
 
 	ags_automation_insert_native_scale_from_clipboard(automation,
 							  automation_node, version,

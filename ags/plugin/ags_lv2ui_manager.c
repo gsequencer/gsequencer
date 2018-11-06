@@ -36,8 +36,6 @@
 
 #include <stdio.h>
 
-#include <pthread.h>
-
 #include <ags/config.h>
 
 void ags_lv2ui_manager_class_init(AgsLv2uiManagerClass *lv2ui_manager);

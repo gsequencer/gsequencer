@@ -32,8 +32,6 @@
 #include <string.h>
 #include <pwd.h>
 
-#include <pthread.h>
-
 #include <ags/i18n.h>
 
 void ags_application_context_class_init(AgsApplicationContextClass *application_context);
@@ -117,13 +115,13 @@ ags_application_context_get_type()
     GType ags_type_application_context = 0;
 
     static const GTypeInfo ags_application_context_info = {
-      sizeof(AgsApplicationContextClass),
+      sizeof (AgsApplicationContextClass),
       NULL, /* base_init */
       NULL, /* base_finalize */
       (GClassInitFunc) ags_application_context_class_init,
       NULL, /* class_finalize */
       NULL, /* class_data */
-      sizeof(AgsApplicationContext),
+      sizeof (AgsApplicationContext),
       0,    /* n_preallocs */
       (GInstanceInitFunc) ags_application_context_init,
     };

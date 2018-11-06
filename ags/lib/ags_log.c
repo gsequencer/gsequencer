@@ -21,8 +21,6 @@
 
 #include <stdlib.h>
 
-#include <pthread.h>
-
 void ags_log_class_init(AgsLogClass *log);
 void ags_log_init (AgsLog *log);
 void ags_log_finalize(GObject *gobject);
@@ -41,7 +39,7 @@ static gpointer ags_log_parent_class = NULL;
 AgsLog *ags_log = NULL;
 
 GType
-ags_log_get_type()
+ags_log_get_type(void)
 {
   static volatile gsize g_define_type_id__volatile = 0;
 
@@ -49,13 +47,13 @@ ags_log_get_type()
     GType ags_type_log = 0;
 
     static const GTypeInfo ags_log_info = {
-      sizeof(AgsLogClass),
+      sizeof (AgsLogClass),
       NULL, /* base_init */
       NULL, /* base_finalize */
       (GClassInitFunc) ags_log_class_init,
       NULL, /* class_finalize */
       NULL, /* class_data */
-      sizeof(AgsLog),
+      sizeof (AgsLog),
       0,    /* n_preallocs */
       (GInstanceInitFunc) ags_log_init,
     };

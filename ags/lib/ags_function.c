@@ -22,7 +22,6 @@
 #include <stdlib.h>
 
 #include <regex.h>
-#include <pthread.h>
 
 #include <ags/i18n.h>
 
@@ -129,7 +128,7 @@ static gpointer ags_function_parent_class = NULL;
 static pthread_mutex_t regex_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 GType
-ags_function_get_type()
+ags_function_get_type(void)
 {
   static volatile gsize g_define_type_id__volatile = 0;
 
@@ -137,13 +136,13 @@ ags_function_get_type()
     GType ags_type_function = 0;
 
     static const GTypeInfo ags_function_info = {
-      sizeof(AgsFunctionClass),
+      sizeof (AgsFunctionClass),
       NULL, /* base_init */
       NULL, /* base_finalize */
       (GClassInitFunc) ags_function_class_init,
       NULL, /* class_finalize */
       NULL, /* class_data */
-      sizeof(AgsFunction),
+      sizeof (AgsFunction),
       0,    /* n_preallocs */
       (GInstanceInitFunc) ags_function_init,
     };

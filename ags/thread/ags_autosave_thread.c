@@ -70,13 +70,13 @@ ags_autosave_thread_get_type()
     GType ags_type_autosave_thread = 0;
 
     static const GTypeInfo ags_autosave_thread_info = {
-      sizeof(AgsAutosaveThreadClass),
+      sizeof (AgsAutosaveThreadClass),
       NULL, /* base_init */
       NULL, /* base_finalize */
       (GClassInitFunc) ags_autosave_thread_class_init,
       NULL, /* class_finalize */
       NULL, /* class_data */
-      sizeof(AgsAutosaveThread),
+      sizeof (AgsAutosaveThread),
       0,    /* n_preallocs */
       (GInstanceInitFunc) ags_autosave_thread_init,
     };

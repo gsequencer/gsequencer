@@ -116,9 +116,9 @@ ags_indicator_class_init(AgsIndicatorClass *indicator)
    * 
    * Since: 2.0.0
    */
-  param_spec = g_param_spec_object("adjustment",
-				   "assigned adjustment",
-				   "The adjustment it is assigned with",
+  param_spec = g_param_spec_object("adjustment\0",
+				   "assigned adjustment\0",
+				   "The adjustment it is assigned with\0",
 				   G_TYPE_OBJECT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -130,7 +130,7 @@ void
 ags_indicator_init(AgsIndicator *indicator)
 {
   g_object_set(G_OBJECT(indicator),
-	       "app-paintable", TRUE,
+	       "app-paintable\0", TRUE,
 	       NULL);
 
   indicator->adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 10.0, 1.0, 1.0, 10.0);

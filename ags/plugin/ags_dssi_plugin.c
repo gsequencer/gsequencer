@@ -90,7 +90,7 @@ static gpointer ags_dssi_plugin_parent_class = NULL;
 static guint dssi_plugin_signals[LAST_SIGNAL];
 
 GType
-ags_dssi_plugin_get_type()
+ags_dssi_plugin_get_type (void)
 {
   static volatile gsize g_define_type_id__volatile = 0;
 
@@ -98,13 +98,13 @@ ags_dssi_plugin_get_type()
     GType ags_type_dssi_plugin = 0;
 
     static const GTypeInfo ags_dssi_plugin_info = {
-      sizeof(AgsDssiPluginClass),
+      sizeof (AgsDssiPluginClass),
       NULL, /* dssi_init */
       NULL, /* dssi_finalize */
       (GClassInitFunc) ags_dssi_plugin_class_init,
       NULL, /* class_finalize */
       NULL, /* class_data */
-      sizeof(AgsDssiPlugin),
+      sizeof (AgsDssiPlugin),
       0,    /* n_preallocs */
       (GInstanceInitFunc) ags_dssi_plugin_init,
     };
@@ -369,8 +369,6 @@ ags_dssi_plugin_instantiate(AgsBasePlugin *base_plugin,
   ptr = instantiate(ladspa_descriptor,
 		    (unsigned long) samplerate);
 
-  pthread_mutex_unlock(base_plugin_mutex);
-
   return(ptr);
 }
 
@@ -431,8 +429,6 @@ ags_dssi_plugin_activate(AgsBasePlugin *base_plugin,
   if(activate != NULL){
     activate((LADSPA_Handle) plugin_handle);
   }
-  
-  pthread_mutex_unlock(base_plugin_mutex);
 }
 
 void
@@ -460,8 +456,6 @@ ags_dssi_plugin_deactivate(AgsBasePlugin *base_plugin,
   if(deactivate != NULL){
     deactivate((LADSPA_Handle) plugin_handle);
   }
-
-  pthread_mutex_unlock(base_plugin_mutex);
 }
 
 void

@@ -117,7 +117,7 @@ static guint file_signals[LAST_SIGNAL] = { 0 };
 static pthread_mutex_t ags_file_class_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 GType
-ags_file_get_type()
+ags_file_get_type (void)
 {
   static volatile gsize g_define_type_id__volatile = 0;
 
@@ -125,13 +125,13 @@ ags_file_get_type()
     GType ags_type_file = 0;
 
     static const GTypeInfo ags_file_info = {
-      sizeof(AgsFileClass),
+      sizeof (AgsFileClass),
       NULL, /* base_init */
       NULL, /* base_finalize */
       (GClassInitFunc) ags_file_class_init,
       NULL, /* class_finalize */
       NULL, /* class_data */
-      sizeof(AgsFile),
+      sizeof (AgsFile),
       0,    /* n_preallocs */
       (GInstanceInitFunc) ags_file_init,
     };

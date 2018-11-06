@@ -71,13 +71,13 @@ ags_task_get_type()
     GType ags_type_task = 0;
 
     static const GTypeInfo ags_task_info = {
-      sizeof(AgsTaskClass),
+      sizeof (AgsTaskClass),
       NULL, /* base_init */
       NULL, /* base_finalize */
       (GClassInitFunc) ags_task_class_init,
       NULL, /* class_finalize */
       NULL, /* class_data */
-      sizeof(AgsTask),
+      sizeof (AgsTask),
       0,    /* n_preallocs */
       (GInstanceInitFunc) ags_task_init,
     };

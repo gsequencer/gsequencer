@@ -19,7 +19,7 @@
 
 #include <ags/X/task/ags_simple_file_write.h>
 
-#include <ags/libags.h>
+#include <ags/object/ags_connectable.h>
 
 #include <gdk/gdk.h>
 

@@ -40,29 +40,23 @@ ags_sequencer_editor_backend_changed_callback(GtkComboBox *combo,
 
   if(str != NULL){
     if(!g_ascii_strncasecmp(str,
-			    "core-audio",
-			    5)){
-      ags_sequencer_editor_load_core_audio_card(sequencer_editor);
-
-      gtk_widget_show_all((GtkWidget *) sequencer_editor->source_hbox);
-    }else if(!g_ascii_strncasecmp(str,
 			    "jack",
 			    5)){
       ags_sequencer_editor_load_jack_card(sequencer_editor);
 
-      gtk_widget_show_all((GtkWidget *) sequencer_editor->source_hbox);
+      gtk_widget_show_all((GtkWidget *) sequencer_editor->jack_hbox);
     }else if(!g_ascii_strncasecmp(str,
 				  "alsa",
 				  5)){
       ags_sequencer_editor_load_alsa_card(sequencer_editor);
 
-      gtk_widget_hide((GtkWidget *) sequencer_editor->source_hbox);
+      gtk_widget_hide((GtkWidget *) sequencer_editor->jack_hbox);
     }else if(!g_ascii_strncasecmp(str,
 				  "oss",
 				  4)){
       ags_sequencer_editor_load_oss_card(sequencer_editor);
 
-      gtk_widget_hide((GtkWidget *) sequencer_editor->source_hbox);
+      gtk_widget_hide((GtkWidget *) sequencer_editor->jack_hbox);
     }
   }
 }
@@ -96,9 +90,7 @@ ags_sequencer_editor_card_changed_callback(GtkComboBox *combo,
 
   str = NULL;
   
-  if(AGS_IS_CORE_AUDIO_MIDIIN(sequencer)){
-    str = "core-audio";
-  }else if(AGS_IS_JACK_MIDIIN(sequencer)){
+  if(AGS_IS_JACK_MIDIIN(sequencer)){
     str = "jack";
   }else if(AGS_IS_MIDIIN(sequencer)){
     if((AGS_MIDIIN_ALSA & (AGS_MIDIIN(sequencer)->flags)) != 0){
@@ -138,7 +130,7 @@ ags_sequencer_editor_card_changed_callback(GtkComboBox *combo,
 }
 
 void
-ags_sequencer_editor_add_source_callback(GtkWidget *button,
+ags_sequencer_editor_add_jack_callback(GtkWidget *button,
 				       AgsSequencerEditor *sequencer_editor)
 {
   ags_sequencer_editor_add_source(sequencer_editor,
@@ -146,7 +138,7 @@ ags_sequencer_editor_add_source_callback(GtkWidget *button,
 }
 
 void
-ags_sequencer_editor_remove_source_callback(GtkWidget *button,
+ags_sequencer_editor_remove_jack_callback(GtkWidget *button,
 					  AgsSequencerEditor *sequencer_editor)
 {
   ags_sequencer_editor_remove_source(sequencer_editor,

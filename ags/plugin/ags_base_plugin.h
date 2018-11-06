@@ -53,11 +53,6 @@ struct _AgsBasePlugin
   GObject gobject;
 
   guint flags;
-
-  pthread_mutexattr_t *obj_mutexattr;
-  pthread_mutex_t *obj_mutex;
-
-  gchar *id;
   
   pthread_mutex_t *obj_mutex;
   pthread_mutexattr_t *obj_mutexattr;
@@ -66,7 +61,7 @@ struct _AgsBasePlugin
 
   gchar *filename;
   gchar *effect;
-  
+
   guint port_group_count;
   guint *port_group;
   GList *plugin_port;

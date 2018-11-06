@@ -1814,8 +1814,6 @@ ags_automation_editor_paste(AgsAutomationEditor *automation_editor)
     /*  */
     i = 0;
 		
-    first_x = -1;
-
     while(notebook == NULL ||
 	  (i = ags_notebook_next_active_tab(notebook,
 					    i)) != -1){		  

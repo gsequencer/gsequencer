@@ -73,13 +73,13 @@ ags_generic_main_loop_get_type()
     GType ags_type_generic_main_loop = 0;
 
     static const GTypeInfo ags_generic_main_loop_info = {
-      sizeof(AgsGenericMainLoopClass),
+      sizeof (AgsGenericMainLoopClass),
       NULL, /* base_init */
       NULL, /* base_finalize */
       (GClassInitFunc) ags_generic_main_loop_class_init,
       NULL, /* class_finalize */
       NULL, /* class_data */
-      sizeof(AgsGenericMainLoop),
+      sizeof (AgsGenericMainLoop),
       0,    /* n_preallocs */
       (GInstanceInitFunc) ags_generic_main_loop_init,
     };

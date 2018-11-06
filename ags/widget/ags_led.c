@@ -100,7 +100,7 @@ void
 ags_led_init(AgsLed *led)
 {
   g_object_set(G_OBJECT(led),
-	       "app-paintable", TRUE,
+	       "app-paintable\0", TRUE,
 	       NULL);
 
   led->flags = 0;

@@ -1231,8 +1231,6 @@ ags_recall_lv2_load_ports(AgsRecallLv2 *recall_lv2)
     
     pthread_mutex_unlock(recall_mutex);
   }
-
-  pthread_mutex_unlock(base_plugin_mutex);
   
   g_list_free(plugin_port_start);
 

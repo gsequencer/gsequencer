@@ -1406,11 +1406,6 @@ ags_play_lv2_audio_run_run_pre(AgsRecall *recall)
   copy_mode_out = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(format),
 						      AGS_AUDIO_BUFFER_UTIL_FLOAT);
   
-  if(play_lv2_audio_run->input != NULL){
-    ags_audio_buffer_util_clear_float(play_lv2_audio_run->input, input_lines,
-				      input_lines * buffer_size);
-  }
-
   if(play_lv2_audio_run->output != NULL){
     ags_audio_buffer_util_clear_float(play_lv2_audio_run->output, output_lines,
 				      buffer_size);
@@ -1459,7 +1454,6 @@ ags_play_lv2_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_run,
   AgsChannel *output, *input;
   AgsChannel *channel;
   AgsChannel *selected_channel;
-  AgsRecycling *recycling;
   AgsNotation *notation;
   AgsNote *note;
   AgsPlayLv2Audio *play_lv2_audio;

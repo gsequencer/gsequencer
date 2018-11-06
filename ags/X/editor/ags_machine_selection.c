@@ -19,7 +19,7 @@
 
 #include <ags/X/editor/ags_machine_selection.h>
 
-#include <ags/libags.h>
+#include <ags/object/ags_connectable.h>
 
 #include <ags/X/editor/ags_machine_selector.h>
 #include <ags/X/editor/ags_machine_radio_button.h>

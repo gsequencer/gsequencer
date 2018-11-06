@@ -19,9 +19,7 @@
 
 #include <ags/plugin/ags_lv2_uri_map_manager.h>
 
-#include <ags/libags.h>
-
-#include <pthread.h>
+#include <ags/object/ags_connectable.h>
 
 void ags_lv2_uri_map_manager_class_init(AgsLv2UriMapManagerClass *lv2_uri_map_manager);
 void ags_lv2_uri_map_manager_init(AgsLv2UriMapManager *lv2_uri_map_manager);
@@ -55,13 +53,13 @@ ags_lv2_uri_map_manager_get_type()
     GType ags_type_lv2_uri_map_manager = 0;
 
     const GTypeInfo ags_lv2_uri_map_manager_info = {
-      sizeof(AgsLv2UriMapManagerClass),
+      sizeof (AgsLv2UriMapManagerClass),
       NULL, /* base_init */
       NULL, /* base_finalize */
       (GClassInitFunc) ags_lv2_uri_map_manager_class_init,
       NULL, /* class_finalize */
       NULL, /* class_data */
-      sizeof(AgsLv2UriMapManager),
+      sizeof (AgsLv2UriMapManager),
       0,    /* n_preallocs */
       (GInstanceInitFunc) ags_lv2_uri_map_manager_init,
     };

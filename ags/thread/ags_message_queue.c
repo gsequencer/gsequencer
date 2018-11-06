@@ -66,13 +66,13 @@ ags_message_queue_get_type()
     GType ags_type_message_queue = 0;
 
     static const GTypeInfo ags_message_queue_info = {
-      sizeof(AgsMessageQueueClass),
+      sizeof (AgsMessageQueueClass),
       NULL, /* base_init */
       NULL, /* base_finalize */
       (GClassInitFunc) ags_message_queue_class_init,
       NULL, /* class_finalize */
       NULL, /* class_data */
-      sizeof(AgsMessageQueue),
+      sizeof (AgsMessageQueue),
       0,    /* n_preallocs */
       (GInstanceInitFunc) ags_message_queue_init,
     };

@@ -1496,7 +1496,6 @@ ags_play_dssi_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_run,
   AgsChannel *output, *input;
   AgsChannel *channel;
   AgsChannel *selected_channel;
-  AgsRecycling *recycling;
   AgsNotation *notation;
   AgsNote *note;
   AgsPlayDssiAudio *play_dssi_audio;
@@ -1513,7 +1512,6 @@ ags_play_dssi_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_run,
   GList *start_append_note, *append_note;
   GList *start_remove_note, *remove_note;
 
-  guint audio_flags;
   guint audio_start_mapping;
   guint midi_start_mapping, midi_end_mapping;
   guint notation_counter;

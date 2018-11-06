@@ -76,15 +76,13 @@ enum{
   PROP_UI_PLUGIN,
 };
 
-pthread_mutex_t ags_base_plugin_class_mutex = PTHREAD_MUTEX_INITIALIZER;
-
 static gpointer ags_base_plugin_parent_class = NULL;
 static guint base_plugin_signals[LAST_SIGNAL];
 
 static pthread_mutex_t ags_base_plugin_class_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 GType
-ags_base_plugin_get_type()
+ags_base_plugin_get_type (void)
 {
   static volatile gsize g_define_type_id__volatile = 0;
 
@@ -897,12 +895,6 @@ ags_base_plugin_finalize(GObject *gobject)
   
   /* call parent */
   G_OBJECT_CLASS(ags_base_plugin_parent_class)->finalize(gobject);
-}
-
-pthread_mutex_t*
-ags_base_plugin_get_class_mutex()
-{
-  return(&ags_base_plugin_class_mutex);
 }
 
 /**

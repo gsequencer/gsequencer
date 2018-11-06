@@ -40,7 +40,7 @@ static gpointer ags_timestamp_parent_class = NULL;
 static pthread_mutex_t ags_timestamp_class_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 GType
-ags_timestamp_get_type()
+ags_timestamp_get_type (void)
 {
   static volatile gsize g_define_type_id__volatile = 0;
 

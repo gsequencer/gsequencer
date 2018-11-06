@@ -32,8 +32,6 @@
 
 #include <string.h>
 
-#include <pthread.h>
-
 #include <dssi.h>
 
 #include <ags/config.h>
@@ -61,7 +59,7 @@ AgsDssiManager *ags_dssi_manager = NULL;
 gchar **ags_dssi_default_path = NULL;
 
 GType
-ags_dssi_manager_get_type()
+ags_dssi_manager_get_type (void)
 {
   static volatile gsize g_define_type_id__volatile = 0;
 
@@ -69,13 +67,13 @@ ags_dssi_manager_get_type()
     GType ags_type_dssi_manager = 0;
 
     static const GTypeInfo ags_dssi_manager_info = {
-      sizeof(AgsDssiManagerClass),
+      sizeof (AgsDssiManagerClass),
       NULL, /* base_init */
       NULL, /* base_finalize */
       (GClassInitFunc) ags_dssi_manager_class_init,
       NULL, /* class_finalize */
       NULL, /* class_data */
-      sizeof(AgsDssiManager),
+      sizeof (AgsDssiManager),
       0,    /* n_preallocs */
       (GInstanceInitFunc) ags_dssi_manager_init,
     };

@@ -954,9 +954,6 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
 	  /* iterate */
 	  list = list->next;
 	}
-	  
-	recall_id = recall_id->next;
-      }
 
 	g_list_free(start_list);
 
@@ -975,14 +972,8 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
 		     NULL);
 
 #ifdef AGS_DEBUG	
-      g_message("playing[%u|%u]: %u | %u\n", audio_channel, selected_channel->pad, note_x0, note_y);
+	g_message("playing[%u|%u]: %u | %u\n", audio_channel, selected_channel->pad, note->x[0], note->y);
 #endif
-
-      /* lookup recycling mutex */
-      pthread_mutex_lock(application_mutex);
-
-      recycling_mutex = ags_mutex_manager_lookup(mutex_manager,
-						 (GObject *) last_recycling);
 	
 	while(recycling != end_recycling){
 	  g_object_set(note,
@@ -1053,13 +1044,8 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
 		       "next", &recycling,
 		       NULL);
 	}
-	  
-	/* iterate */
-	pthread_mutex_lock(recycling_mutex);
-	  
-	recycling = recycling->next;
-
-	pthread_mutex_unlock(recycling_mutex);
+      }else if(note_x0 > notation_counter){
+	break;
       }
 
       /* iterate */

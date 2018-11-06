@@ -19,7 +19,9 @@
 
 #include <ags/plugin/ags_lv2_event_manager.h>
 
-#include <ags/libags.h>
+#include <ags/object/ags_connectable.h>
+
+#include <ags/thread/ags_returnable_thread.h>
 
 void ags_lv2_event_manager_class_init(AgsLv2EventManagerClass *lv2_event_manager);
 void ags_lv2_event_manager_init(AgsLv2EventManager *lv2_event_manager);
@@ -48,13 +50,13 @@ ags_lv2_event_manager_get_type()
     GType ags_type_lv2_event_manager = 0;
 
     const GTypeInfo ags_lv2_event_manager_info = {
-      sizeof(AgsLv2EventManagerClass),
+      sizeof (AgsLv2EventManagerClass),
       NULL, /* base_init */
       NULL, /* base_finalize */
       (GClassInitFunc) ags_lv2_event_manager_class_init,
       NULL, /* class_finalize */
       NULL, /* class_data */
-      sizeof(AgsLv2EventManager),
+      sizeof (AgsLv2EventManager),
       0,    /* n_preallocs */
       (GInstanceInitFunc) ags_lv2_event_manager_init,
     };

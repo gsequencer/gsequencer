@@ -23,7 +23,6 @@
 #include <ags/libags.h>
 
 #include <ags/plugin/ags_lv2_manager.h>
-#include <ags/plugin/ags_base_plugin.h>
 #include <ags/plugin/ags_lv2_plugin.h>
 #include <ags/plugin/ags_plugin_port.h>
 #include <ags/plugin/ags_lv2_worker.h>
@@ -472,25 +471,6 @@ ags_recall_lv2_run_run_init_pre(AgsRecall *recall)
 	       "recall-channel", &recall_lv2,
 	       NULL);
 
-  /* recall mutex */
-  pthread_mutex_lock(ags_recall_get_class_mutex());
-
-  recall_mutex = AGS_RECALL(recall_lv2)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_recall_get_class_mutex());
-
-  /* get some fields */
-  pthread_mutex_lock(recall_mutex);
-
-  lv2_plugin = recall_lv2->plugin;
-
-  plugin_descriptor = recall_lv2->plugin_descriptor;
-  
-  output_lines = recall_lv2->output_lines;
-  input_lines = recall_lv2->input_lines;
-  
-  pthread_mutex_unlock(recall_mutex);
-
   /* set up buffer */
   g_object_get(recall_lv2_run,
 	       "source", &audio_signal,
@@ -691,16 +671,6 @@ ags_recall_lv2_run_run_init_pre(AgsRecall *recall)
       plugin_port = plugin_port->next;
     }
 
-    pthread_mutex_unlock(recall_mutex);
-
-    /* change program */
-    pthread_mutex_lock(recall_mutex);
-
-    bank = recall_lv2->bank;
-    program = recall_lv2->program;
-    
-    pthread_mutex_unlock(recall_mutex);
-
     ags_lv2_plugin_change_program(lv2_plugin,
 				  recall_lv2_run->lv2_handle[0],
 				  bank,
@@ -803,9 +773,6 @@ ags_recall_lv2_run_run_pre(AgsRecall *recall)
   parent_class_run_pre = AGS_RECALL_CLASS(ags_recall_lv2_run_parent_class)->run_pre;
   
   pthread_mutex_unlock(ags_recall_get_class_mutex());
-
-  pthread_mutex_t *recall_mutex;
-  pthread_mutex_t *base_plugin_mutex;
 
   /* call parent */
   parent_class_run_pre(recall);
@@ -953,12 +920,12 @@ ags_recall_lv2_run_run_pre(AgsRecall *recall)
   
   if(recall_lv2_run->output != NULL){
     ags_audio_buffer_util_clear_float(recall_lv2_run->output, 1,
-				      output_lines * buffer_size);
+				      recall_lv2->output_lines * buffer_size);
   }
 
   if(recall_lv2_run->input != NULL){
     ags_audio_buffer_util_clear_float(recall_lv2_run->input, 1,
-				      input_lines * buffer_size);
+				      recall_lv2->input_lines * buffer_size);
   }
 
   /* copy data  */
@@ -1035,9 +1002,6 @@ ags_recall_lv2_run_run_inter(AgsRecall *recall)
   parent_class_run_inter = AGS_RECALL_CLASS(ags_recall_lv2_run_parent_class)->run_inter;
   
   pthread_mutex_unlock(ags_recall_get_class_mutex());
-
-  pthread_mutex_t *recall_mutex;
-  pthread_mutex_t *base_plugin_mutex;
 
   /* call parent */
   parent_class_run_inter(recall);

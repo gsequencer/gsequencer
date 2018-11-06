@@ -50,13 +50,13 @@ ags_message_delivery_get_type()
     GType ags_type_message_delivery = 0;
 
     static const GTypeInfo ags_message_delivery_info = {
-      sizeof(AgsMessageDeliveryClass),
+      sizeof (AgsMessageDeliveryClass),
       NULL, /* base_init */
       NULL, /* base_finalize */
       (GClassInitFunc) ags_message_delivery_class_init,
       NULL, /* class_finalize */
       NULL, /* class_data */
-      sizeof(AgsMessageDelivery),
+      sizeof (AgsMessageDelivery),
       0,    /* n_preallocs */
       (GInstanceInitFunc) ags_message_delivery_init,
     };

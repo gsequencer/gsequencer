@@ -44,7 +44,7 @@ gdouble ags_lv2_conversion_convert(AgsConversion *conversion,
 static gpointer ags_lv2_conversion_parent_class = NULL;
 
 GType
-ags_lv2_conversion_get_type()
+ags_lv2_conversion_get_type(void)
 {
   static volatile gsize g_define_type_id__volatile = 0;
 
@@ -52,13 +52,13 @@ ags_lv2_conversion_get_type()
     GType ags_type_lv2_conversion = 0;
 
     static const GTypeInfo ags_lv2_conversion_info = {
-      sizeof(AgsLv2ConversionClass),
+      sizeof (AgsLv2ConversionClass),
       NULL, /* base_init */
       NULL, /* base_finalize */
       (GClassInitFunc) ags_lv2_conversion_class_init,
       NULL, /* class_finalize */
       NULL, /* class_data */
-      sizeof(AgsLv2Conversion),
+      sizeof (AgsLv2Conversion),
       0,    /* n_preallocs */
       (GInstanceInitFunc) ags_lv2_conversion_init,
     };

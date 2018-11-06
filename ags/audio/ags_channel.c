@@ -218,7 +218,7 @@ static guint channel_signals[LAST_SIGNAL];
 static pthread_mutex_t ags_channel_class_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 GType
-ags_channel_get_type()
+ags_channel_get_type (void)
 {
   static volatile gsize g_define_type_id__volatile = 0;
 
@@ -226,13 +226,13 @@ ags_channel_get_type()
     GType ags_type_channel = 0;
 
     static const GTypeInfo ags_channel_info = {
-      sizeof(AgsChannelClass),
+      sizeof (AgsChannelClass),
       NULL, /* base_init */
       NULL, /* base_finalize */
       (GClassInitFunc) ags_channel_class_init,
       NULL, /* class_finalize */
       NULL, /* class_data */
-      sizeof(AgsChannel),
+      sizeof (AgsChannel),
       0,    /* n_preallocs */
       (GInstanceInitFunc) ags_channel_init,
     };
@@ -2216,7 +2216,7 @@ ags_channel_finalize(GObject *gobject)
       recycling = recycling_next;
     }
   }
-  
+
   /* key string */
   if(channel->note_key != NULL){
     free(channel->note_key);

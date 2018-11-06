@@ -59,7 +59,7 @@ enum{
 static gpointer ags_ladspa_conversion_parent_class = NULL;
 
 GType
-ags_ladspa_conversion_get_type()
+ags_ladspa_conversion_get_type(void)
 {
   static volatile gsize g_define_type_id__volatile = 0;
 
@@ -67,13 +67,13 @@ ags_ladspa_conversion_get_type()
     GType ags_type_ladspa_conversion = 0;
 
     static const GTypeInfo ags_ladspa_conversion_info = {
-      sizeof(AgsLadspaConversionClass),
+      sizeof (AgsLadspaConversionClass),
       NULL, /* base_init */
       NULL, /* base_finalize */
       (GClassInitFunc) ags_ladspa_conversion_class_init,
       NULL, /* class_finalize */
       NULL, /* class_data */
-      sizeof(AgsLadspaConversion),
+      sizeof (AgsLadspaConversion),
       0,    /* n_preallocs */
       (GInstanceInitFunc) ags_ladspa_conversion_init,
     };

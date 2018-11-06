@@ -44,7 +44,6 @@
 #include <ags/libags-audio.h>
 #include <ags/libags-gui.h>
 
-#include <ags/X/ags_window.h>
 #include <ags/X/ags_xorg_application_context.h>
 
 #include <ags/X/thread/ags_gui_thread.h>
@@ -82,6 +81,40 @@ premain()
     base_dir = strndup(path,
 		       rindex(path, '/') - path);
     printf("base dir %s\n", base_dir);
+
+    sprintf(path, "%s/../Frameworks",
+	    base_dir);
+    gdk_pixbuf_module_file = realpath(path,
+				      NULL);
+    str = malloc(PATH_MAX * sizeof(gchar));
+    sprintf(str,
+	    "GDK_PIXBUF_MODULE_FILE=%s/gdk-pixbuf-2.0/2.10.0/loaders.cache",
+	    gdk_pixbuf_module_file);
+    putenv(str);
+
+    ld_library_path = realpath(path,
+			       NULL);
+    str = malloc(PATH_MAX * sizeof(gchar));
+    sprintf(str,
+	    "DT_RUNPATH=%s/gdk-pixbuf-2.0/2.10.0/loaders",
+	    ld_library_path);
+    putenv(str);
+
+    frameworks_dir = realpath(path,
+			      NULL);
+    str = malloc(PATH_MAX * sizeof(gchar));
+    sprintf(str,
+	    "DYLD_FALLBACK_LIBRARY_PATH=%s",
+	    frameworks_dir);
+    putenv(str);
+
+    str = malloc(PATH_MAX * sizeof(gchar));
+    sprintf(str,
+	    "GDK_PIXBUF_MODULEDIR=%s",
+	    frameworks_dir);
+    putenv(str);
+
+    printf(".. %s", str);
     
     sprintf(path, "%s/../Resources",
 	    base_dir);
@@ -328,8 +361,6 @@ main(int argc, char **argv)
   //  g_thread_init(NULL);
   ags_gui_init(&argc, &argv);  
   gtk_init(&argc, &argv);
-  
-  ags_window_get_type();
   
   if(!builtin_theme_disabled){
     g_object_set(gtk_settings_get_default(),

@@ -34,8 +34,6 @@
 
 #include <string.h>
 
-#include <pthread.h>
-
 #include <ags/config.h>
 
 void ags_lv2_manager_class_init(AgsLv2ManagerClass *lv2_manager);
@@ -74,7 +72,7 @@ AgsLv2Manager *ags_lv2_manager = NULL;
 gchar **ags_lv2_default_path = NULL;
 
 GType
-ags_lv2_manager_get_type()
+ags_lv2_manager_get_type (void)
 {
   static volatile gsize g_define_type_id__volatile = 0;
 
@@ -82,13 +80,13 @@ ags_lv2_manager_get_type()
     GType ags_type_lv2_manager = 0;
 
     static const GTypeInfo ags_lv2_manager_info = {
-      sizeof(AgsLv2ManagerClass),
+      sizeof (AgsLv2ManagerClass),
       NULL, /* base_init */
       NULL, /* base_finalize */
       (GClassInitFunc) ags_lv2_manager_class_init,
       NULL, /* class_finalize */
       NULL, /* class_data */
-      sizeof(AgsLv2Manager),
+      sizeof (AgsLv2Manager),
       0,    /* n_preallocs */
       (GInstanceInitFunc) ags_lv2_manager_init,
     };
@@ -203,26 +201,14 @@ ags_lv2_manager_init(AgsLv2Manager *lv2_manager)
       guint i;
 
 #ifdef __APPLE__
-#ifdef AGS_MAC_BUNDLE
-      if((home_dir = getenv("HOME")) != NULL){
-	ags_lv2_default_path = (gchar **) malloc(6 * sizeof(gchar *));
-      }else{
-	ags_lv2_default_path = (gchar **) malloc(5 * sizeof(gchar *));
-      }
-#else
       if((home_dir = getenv("HOME")) != NULL){
 	ags_lv2_default_path = (gchar **) malloc(5 * sizeof(gchar *));
       }else{
 	ags_lv2_default_path = (gchar **) malloc(4 * sizeof(gchar *));
-      }    
-#endif
+      }
+    
       i = 0;
     
-#ifdef AGS_MAC_BUNDLE
-      ags_lv2_default_path[i++] = g_strdup_printf("%s/lv2",
-						  getenv("GSEQUENCER_PLUGIN_DIR"));
-#endif
-
       ags_lv2_default_path[i++] = g_strdup("/Library/Audio/Plug-Ins/LV2");
       ags_lv2_default_path[i++] = g_strdup("/usr/lib/lv2");
       ags_lv2_default_path[i++] = g_strdup("/usr/local/lib/lv2");

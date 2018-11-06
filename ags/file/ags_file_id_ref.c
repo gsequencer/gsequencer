@@ -73,13 +73,13 @@ ags_file_id_ref_get_type()
     GType ags_type_file_id_ref = 0;
 
     static const GTypeInfo ags_file_id_ref_info = {
-      sizeof(AgsFileIdRefClass),
+      sizeof (AgsFileIdRefClass),
       NULL, /* base_init */
       NULL, /* base_finalize */
       (GClassInitFunc) ags_file_id_ref_class_init,
       NULL, /* class_finalize */
       NULL, /* class_data */
-      sizeof(AgsFileIdRef),
+      sizeof (AgsFileIdRef),
       0,    /* n_preallocs */
       (GInstanceInitFunc) ags_file_id_ref_init,
     };

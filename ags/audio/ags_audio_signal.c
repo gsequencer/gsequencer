@@ -126,7 +126,7 @@ static guint audio_signal_signals[LAST_SIGNAL];
 static pthread_mutex_t ags_audio_signal_class_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 GType
-ags_audio_signal_get_type()
+ags_audio_signal_get_type(void)
 {
   static volatile gsize g_define_type_id__volatile = 0;
 
@@ -134,13 +134,13 @@ ags_audio_signal_get_type()
     GType ags_type_audio_signal = 0;
 
     static const GTypeInfo ags_audio_signal_info = {
-      sizeof(AgsAudioSignalClass),
+      sizeof (AgsAudioSignalClass),
       NULL, /* base_init */
       NULL, /* base_finalize */
       (GClassInitFunc) ags_audio_signal_class_init,
       NULL, /* class_finalize */
       NULL, /* class_data */
-      sizeof(AgsAudioSignal),
+      sizeof (AgsAudioSignal),
       0,    /* n_preallocs */
       (GInstanceInitFunc) ags_audio_signal_init,
     };

@@ -54,13 +54,13 @@ ags_destroy_worker_get_type()
     GType ags_type_destroy_worker = 0;
 
     static const GTypeInfo ags_destroy_worker_info = {
-      sizeof(AgsDestroyWorkerClass),
+      sizeof (AgsDestroyWorkerClass),
       NULL, /* base_init */
       NULL, /* base_finalize */
       (GClassInitFunc) ags_destroy_worker_class_init,
       NULL, /* class_finalize */
       NULL, /* class_data */
-      sizeof(AgsDestroyWorker),
+      sizeof (AgsDestroyWorker),
       0,    /* n_preallocs */
       (GInstanceInitFunc) ags_destroy_worker_init,
     };

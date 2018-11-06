@@ -63,13 +63,13 @@ ags_single_thread_get_type()
     GType ags_type_single_thread = 0;
 
     static const GTypeInfo ags_single_thread_info = {
-      sizeof(AgsSingleThreadClass),
+      sizeof (AgsSingleThreadClass),
       NULL, /* base_init */
       NULL, /* base_finalize */
       (GClassInitFunc) ags_single_thread_class_init,
       NULL, /* class_finalize */
       NULL, /* class_data */
-      sizeof(AgsSingleThread),
+      sizeof (AgsSingleThread),
       0,    /* n_preallocs */
       (GInstanceInitFunc) ags_single_thread_init,
     };

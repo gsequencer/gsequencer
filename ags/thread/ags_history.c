@@ -46,13 +46,13 @@ ags_history_get_type()
     GType ags_type_history = 0;
 
     static const GTypeInfo ags_history_info = {
-      sizeof(AgsHistoryClass),
+      sizeof (AgsHistoryClass),
       NULL, /* base_init */
       NULL, /* base_finalize */
       (GClassInitFunc) ags_history_class_init,
       NULL, /* class_finalize */
       NULL, /* class_data */
-      sizeof(AgsHistory),
+      sizeof (AgsHistory),
       0,    /* n_preallocs */
       (GInstanceInitFunc) ags_history_init,
     };

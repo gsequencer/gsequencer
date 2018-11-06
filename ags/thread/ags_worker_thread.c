@@ -59,13 +59,13 @@ ags_worker_thread_get_type()
     GType ags_type_worker_thread = 0;
 
     static const GTypeInfo ags_worker_thread_info = {
-      sizeof(AgsWorkerThreadClass),
+      sizeof (AgsWorkerThreadClass),
       NULL, /* base_init */
       NULL, /* base_finalize */
       (GClassInitFunc) ags_worker_thread_class_init,
       NULL, /* class_finalize */
       NULL, /* class_data */
-      sizeof(AgsWorkerThread),
+      sizeof (AgsWorkerThread),
       0,    /* n_preallocs */
       (GInstanceInitFunc) ags_worker_thread_init,
     };

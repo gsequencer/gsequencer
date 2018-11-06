@@ -61,7 +61,7 @@ static guint file_lookup_signals[LAST_SIGNAL];
 static pthread_mutex_t ags_file_lookup_class_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 GType
-ags_file_lookup_get_type()
+ags_file_lookup_get_type (void)
 {
   static volatile gsize g_define_type_id__volatile = 0;
 
@@ -69,13 +69,13 @@ ags_file_lookup_get_type()
     GType ags_type_file_lookup = 0;
 
     static const GTypeInfo ags_file_lookup_info = {
-      sizeof(AgsFileLookupClass),
+      sizeof (AgsFileLookupClass),
       NULL, /* base_init */
       NULL, /* base_finalize */
       (GClassInitFunc) ags_file_lookup_class_init,
       NULL, /* class_finalize */
       NULL, /* class_data */
-      sizeof(AgsFileLookup),
+      sizeof (AgsFileLookup),
       0,    /* n_preallocs */
       (GInstanceInitFunc) ags_file_lookup_init,
     };

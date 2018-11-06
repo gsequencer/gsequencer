@@ -138,7 +138,7 @@ ags_vindicator_draw(AgsVIndicator *indicator)
     return;
   }
   
-  //  g_message("draw %f", adjustment->value);
+  //  g_message("draw %f\0", adjustment->value);
 
   cr = gdk_cairo_create(widget->window);
 
@@ -214,7 +214,7 @@ ags_vindicator_new()
   adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 0.1, 0.1, 0.0);
 
   indicator = (AgsVIndicator *) g_object_new(AGS_TYPE_VINDICATOR,
-					     "adjustment", adjustment,
+					     "adjustment\0", adjustment,
 					     NULL);
   
   return(indicator);

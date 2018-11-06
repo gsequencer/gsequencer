@@ -133,13 +133,13 @@ ags_thread_get_type()
     GType ags_type_thread = 0;
 
     const GTypeInfo ags_thread_info = {
-      sizeof(AgsThreadClass),
+      sizeof (AgsThreadClass),
       NULL, /* base_init */
       NULL, /* base_finalize */
       (GClassInitFunc) ags_thread_class_init,
       NULL, /* class_finalize */
       NULL, /* class_data */
-      sizeof(AgsThread),
+      sizeof (AgsThread),
       0,    /* n_preallocs */
       (GInstanceInitFunc) ags_thread_init,
     };
@@ -1745,7 +1745,7 @@ ags_thread_add_child_extended(AgsThread *thread, AgsThread *child,
   if(AGS_IS_MAIN_LOOP(main_loop)){
     pthread_mutex_lock(ags_main_loop_get_tree_lock(AGS_MAIN_LOOP(main_loop)));
 
-    g_signal_connect(G_OBJECT(main_loop), "interrupt",
+    g_signal_connect(AGS_MAIN_LOOP(main_loop), "interrupt",
 		     G_CALLBACK(ags_thread_interrupt_callback), child);
   }
   
@@ -3463,7 +3463,7 @@ ags_thread_loop(void *ptr)
     pthread_mutex_lock(thread->start_mutex);
       
     g_atomic_int_set(&(thread->start_done),
-		     TRUE);
+		     TRUE);    
       
     if(g_atomic_int_get(&(thread->start_wait)) == TRUE){
       pthread_cond_broadcast(thread->start_cond);

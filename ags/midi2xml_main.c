@@ -27,20 +27,6 @@
 
 #include <libxml/tree.h>
 
-void midi2xml_print_usage();
-
-void
-midi2xml_print_usage()
-{
-  printf("midi2xml converts MIDI to XML\n\n");
-
-  printf("Usage:\n\t%s\n\t%s\n\t%s\n\t%s\n\n",
-	 "Report bugs to <jkraehemann@gmail.com>\n",
-	 "--help              display this help and exit",
-	 "--version           output version information and exit",
-	 "<file>              the file to be processed");
-}
-
 int
 main(int argc, char **argv)
 {
@@ -78,8 +64,6 @@ main(int argc, char **argv)
       filename = argv[1];
     }
   }else{
-    midi2xml_print_usage();
-    
     return(-1);
   }
 

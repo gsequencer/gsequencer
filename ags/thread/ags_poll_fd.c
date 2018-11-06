@@ -54,13 +54,13 @@ ags_poll_fd_get_type()
     GType ags_type_poll_fd = 0;
 
     static const GTypeInfo ags_poll_fd_info = {
-      sizeof(AgsPollFdClass),
+      sizeof (AgsPollFdClass),
       NULL, /* base_init */
       NULL, /* base_finalize */
       (GClassInitFunc) ags_poll_fd_class_init,
       NULL, /* class_finalize */
       NULL, /* class_data */
-      sizeof(AgsPollFd),
+      sizeof (AgsPollFd),
       0,    /* n_preallocs */
       (GInstanceInitFunc) ags_poll_fd_init,
     };

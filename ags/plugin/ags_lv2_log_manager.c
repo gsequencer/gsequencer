@@ -19,7 +19,7 @@
 
 #include <ags/plugin/ags_lv2_log_manager.h>
 
-#include <ags/libags.h>
+#include <ags/object/ags_connectable.h>
 
 void ags_lv2_log_manager_class_init(AgsLv2LogManagerClass *lv2_log_manager);
 void ags_lv2_log_manager_init(AgsLv2LogManager *lv2_log_manager);
@@ -48,13 +48,13 @@ ags_lv2_log_manager_get_type()
     GType ags_type_lv2_log_manager = 0;
 
     const GTypeInfo ags_lv2_log_manager_info = {
-      sizeof(AgsLv2LogManagerClass),
+      sizeof (AgsLv2LogManagerClass),
       NULL, /* base_init */
       NULL, /* base_finalize */
       (GClassInitFunc) ags_lv2_log_manager_class_init,
       NULL, /* class_finalize */
       NULL, /* class_data */
-      sizeof(AgsLv2LogManager),
+      sizeof (AgsLv2LogManager),
       0,    /* n_preallocs */
       (GInstanceInitFunc) ags_lv2_log_manager_init,
     };

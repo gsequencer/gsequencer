@@ -100,13 +100,13 @@ ags_thread_application_context_get_type()
     GType ags_type_thread_application_context = 0;
 
     static const GTypeInfo ags_thread_application_context_info = {
-      sizeof(AgsThreadApplicationContextClass),
+      sizeof (AgsThreadApplicationContextClass),
       NULL, /* base_init */
       NULL, /* base_finalize */
       (GClassInitFunc) ags_thread_application_context_class_init,
       NULL, /* class_finalize */
       NULL, /* class_data */
-      sizeof(AgsThreadApplicationContext),
+      sizeof (AgsThreadApplicationContext),
       0,    /* n_preallocs */
       (GInstanceInitFunc) ags_thread_application_context_init,
     };

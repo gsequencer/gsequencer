@@ -94,13 +94,13 @@ ags_task_thread_get_type()
     GType ags_type_task_thread = 0;
 
     static const GTypeInfo ags_task_thread_info = {
-      sizeof(AgsTaskThreadClass),
+      sizeof (AgsTaskThreadClass),
       NULL, /* base_init */
       NULL, /* base_finalize */
       (GClassInitFunc) ags_task_thread_class_init,
       NULL, /* class_finalize */
       NULL, /* class_data */
-      sizeof(AgsTaskThread),
+      sizeof (AgsTaskThread),
       0,    /* n_preallocs */
       (GInstanceInitFunc) ags_task_thread_init,
     };

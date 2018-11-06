@@ -105,7 +105,7 @@ static guint recycling_signals[LAST_SIGNAL];
 static pthread_mutex_t ags_recycling_class_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 GType
-ags_recycling_get_type()
+ags_recycling_get_type(void)
 {
   static volatile gsize g_define_type_id__volatile = 0;
 
@@ -113,13 +113,13 @@ ags_recycling_get_type()
     GType ags_type_recycling = 0;
 
     static const GTypeInfo ags_recycling_info = {
-      sizeof(AgsRecyclingClass),
+      sizeof (AgsRecyclingClass),
       NULL, /* base_init */
       NULL, /* base_finalize */
       (GClassInitFunc) ags_recycling_class_init,
       NULL, /* class_finalize */
       NULL, /* class_data */
-      sizeof(AgsRecycling),
+      sizeof (AgsRecycling),
       0,    /* n_preallocs */
       (GInstanceInitFunc) ags_recycling_init,
     };

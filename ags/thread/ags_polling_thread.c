@@ -67,13 +67,13 @@ ags_polling_thread_get_type()
     GType ags_type_polling_thread = 0;
 
     static const GTypeInfo ags_polling_thread_info = {
-      sizeof(AgsPollingThreadClass),
+      sizeof (AgsPollingThreadClass),
       NULL, /* base_init */
       NULL, /* base_finalize */
       (GClassInitFunc) ags_polling_thread_class_init,
       NULL, /* class_finalize */
       NULL, /* class_data */
-      sizeof(AgsPollingThread),
+      sizeof (AgsPollingThread),
       0,    /* n_preallocs */
       (GInstanceInitFunc) ags_polling_thread_init,
     };

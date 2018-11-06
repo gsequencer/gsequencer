@@ -105,11 +105,9 @@ static AgsConnectableInterface *ags_audio_loop_parent_connectable_interface;
 GType
 ags_audio_loop_get_type()
 {
-  static volatile gsize g_define_type_id__volatile = 0;
+  static GType ags_type_audio_loop = 0;
 
-  if(g_once_init_enter (&g_define_type_id__volatile)){
-    GType ags_type_audio_loop;
-
+  if(!ags_type_audio_loop){
     static const GTypeInfo ags_audio_loop_info = {
       sizeof (AgsAudioLoopClass),
       NULL, /* base_init */
@@ -146,11 +144,9 @@ ags_audio_loop_get_type()
     g_type_add_interface_static(ags_type_audio_loop,
 				AGS_TYPE_MAIN_LOOP,
 				&ags_main_loop_interface_info);
-
-    g_once_init_leave (&g_define_type_id__volatile, ags_type_audio_loop);
   }
-
-  return g_define_type_id__volatile;
+  
+  return (ags_type_audio_loop);
 }
 
 void

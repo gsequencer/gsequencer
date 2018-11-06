@@ -221,7 +221,7 @@ static guint audio_signals[LAST_SIGNAL];
 static pthread_mutex_t ags_audio_class_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 GType
-ags_audio_get_type()
+ags_audio_get_type (void)
 {
   static volatile gsize g_define_type_id__volatile = 0;
 

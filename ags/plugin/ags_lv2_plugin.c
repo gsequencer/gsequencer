@@ -123,13 +123,13 @@ ags_lv2_plugin_get_type (void)
     GType ags_type_lv2_plugin = 0;
 
     static const GTypeInfo ags_lv2_plugin_info = {
-      sizeof(AgsLv2PluginClass),
+      sizeof (AgsLv2PluginClass),
       NULL, /* lv2_init */
       NULL, /* lv2_finalize */
       (GClassInitFunc) ags_lv2_plugin_class_init,
       NULL, /* class_finalize */
       NULL, /* class_data */
-      sizeof(AgsLv2Plugin),
+      sizeof (AgsLv2Plugin),
       0,    /* n_preallocs */
       (GInstanceInitFunc) ags_lv2_plugin_init,
     };
@@ -1158,8 +1158,6 @@ ags_lv2_plugin_instantiate(AgsBasePlugin *base_plugin,
 
   free(path);
   
-  pthread_mutex_unlock(base_plugin_mutex);
-
   return(lv2_handle);
 }
 
@@ -1221,8 +1219,6 @@ ags_lv2_plugin_activate(AgsBasePlugin *base_plugin,
   if(activate != NULL){
     activate((LV2_Handle) plugin_handle);
   }
-
-  pthread_mutex_unlock(base_plugin_mutex);
 }
 
 void
@@ -1251,8 +1247,6 @@ ags_lv2_plugin_deactivate(AgsBasePlugin *base_plugin,
   if(deactivate != NULL){
     deactivate((LV2_Handle) plugin_handle);
   }
-
-  pthread_mutex_unlock(base_plugin_mutex);
 }
 
 void

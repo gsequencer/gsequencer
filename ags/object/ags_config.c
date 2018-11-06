@@ -30,8 +30,6 @@
 #include <string.h>
 #include <pwd.h>
 
-#include <pthread.h>
-
 #include <ags/config.h>
 #include <ags/i18n.h>
 
@@ -87,7 +85,7 @@ AgsConfig *ags_config = NULL;
 static pthread_mutex_t ags_config_class_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 GType
-ags_config_get_type()
+ags_config_get_type (void)
 {
   static volatile gsize g_define_type_id__volatile = 0;
 
@@ -95,13 +93,13 @@ ags_config_get_type()
     GType ags_type_config = 0;
 
     static const GTypeInfo ags_config_info = {
-      sizeof(AgsConfigClass),
+      sizeof (AgsConfigClass),
       NULL, /* base_init */
       NULL, /* base_finalize */
       (GClassInitFunc) ags_config_class_init,
       NULL, /* class_finalize */
       NULL, /* class_data */
-      sizeof(AgsConfig),
+      sizeof (AgsConfig),
       0,    /* n_preallocs */
       (GInstanceInitFunc) ags_config_init,
     };

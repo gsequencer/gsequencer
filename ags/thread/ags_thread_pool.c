@@ -78,13 +78,13 @@ ags_thread_pool_get_type()
     GType ags_type_thread_pool = 0;
 
     static const GTypeInfo ags_thread_pool_info = {
-      sizeof(AgsThreadPoolClass),
+      sizeof (AgsThreadPoolClass),
       NULL, /* base_init */
       NULL, /* base_finalize */
       (GClassInitFunc) ags_thread_pool_class_init,
       NULL, /* class_finalize */
       NULL, /* class_data */
-      sizeof(AgsThreadPool),
+      sizeof (AgsThreadPool),
       0,    /* n_preallocs */
       (GInstanceInitFunc) ags_thread_pool_init,
     };
@@ -360,11 +360,6 @@ ags_thread_pool_finalize(GObject *gobject)
   pthread_cond_destroy(thread_pool->idle_cond);
   free(thread_pool->idle_cond);
 
-  /* parent */
-  if(thread_pool->parent != NULL){
-    g_object_unref(thread_pool->parent);
-  }
-  
   /* returnable thread */
   g_list_free_full(g_atomic_pointer_get(&(thread_pool->returnable_thread)),
 		   g_object_unref);
@@ -470,23 +465,20 @@ ags_thread_pool_creation_thread(void *ptr)
       ags_connectable_connect(AGS_CONNECTABLE(returnable_thread));
 
       ags_thread_start(returnable_thread);
-      
+
       /* wait returnable_thread */
       pthread_mutex_lock(returnable_thread->start_mutex);
 
-      if(g_atomic_int_get(&(returnable_thread->start_done)) == FALSE){
-	g_atomic_int_set(&(returnable_thread->start_wait),
-			 TRUE);
+      g_atomic_int_set(&(returnable_thread->start_wait),
+		       TRUE);
 	
+      if(g_atomic_int_get(&(returnable_thread->start_wait)) == TRUE &&
+	 g_atomic_int_get(&(returnable_thread->start_done)) == FALSE){
 	while(g_atomic_int_get(&(returnable_thread->start_wait)) == TRUE &&
 	      g_atomic_int_get(&(returnable_thread->start_done)) == FALSE){
 	  pthread_cond_wait(returnable_thread->start_cond,
 			    returnable_thread->start_mutex);
 	}
-
-	g_atomic_int_set(&(returnable_thread->start_wait),
-			 FALSE);
-      
       }
 
       pthread_mutex_unlock(returnable_thread->start_mutex);
@@ -561,9 +553,9 @@ ags_thread_pool_pull(AgsThreadPool *thread_pool)
   /*  */
   pthread_mutex_lock(thread_pool->creation_mutex);
 
-  g_atomic_int_inc(&(thread_pool->queued));
-
   if(g_atomic_pointer_get(&(thread_pool->returnable_thread)) == NULL){
+    g_atomic_int_inc(&(thread_pool->queued));
+
     while(g_atomic_int_get(&(thread_pool->queued)) != 0 &&
 	  g_atomic_pointer_get(&(thread_pool->returnable_thread)) == NULL){
       pthread_cond_wait(thread_pool->creation_cond,
@@ -575,8 +567,8 @@ ags_thread_pool_pull(AgsThreadPool *thread_pool)
   returnable_thread = list->data;
   g_atomic_pointer_set(&(thread_pool->returnable_thread),
 		       g_list_remove(g_atomic_pointer_get(&(thread_pool->returnable_thread)),
-				     returnable_thread));
-  
+							  returnable_thread));
+
   g_atomic_int_dec_and_test(&(thread_pool->queued));
   pthread_mutex_unlock(thread_pool->creation_mutex);
 
@@ -624,7 +616,7 @@ ags_thread_pool_real_start(AgsThreadPool *thread_pool)
 		  AGS_THREAD_POOL_RUNNING);
 
   pthread_create(thread_pool->thread, NULL,
-		 ags_thread_pool_creation_thread, thread_pool);
+		 &(ags_thread_pool_creation_thread), thread_pool);
 
   list = g_atomic_pointer_get(&(thread_pool->returnable_thread));
   
@@ -703,10 +695,7 @@ ags_thread_pool_new(AgsThread *parent)
   thread_pool = (AgsThreadPool *) g_object_new(AGS_TYPE_THREAD_POOL,
 					       NULL);
 
-  if(thread_pool->parent != NULL){
-    thread_pool->parent = parent;
-    g_object_ref(parent);
-  }
-  
+  thread_pool->parent = parent;
+
   return(thread_pool);
 }

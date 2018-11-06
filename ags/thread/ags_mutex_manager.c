@@ -21,8 +21,6 @@
 
 #include <stdlib.h>
 
-#include <pthread.h>
-
 void ags_mutex_manager_class_init(AgsMutexManagerClass *mutex_manager);
 void ags_mutex_manager_init(AgsMutexManager *mutex_manager);
 void ags_mutex_manager_finalize(GObject *gobject);
@@ -54,13 +52,13 @@ ags_mutex_manager_get_type()
     GType ags_type_mutex_manager = 0;
 
     const GTypeInfo ags_mutex_manager_info = {
-      sizeof(AgsMutexManagerClass),
+      sizeof (AgsMutexManagerClass),
       NULL, /* base_init */
       NULL, /* base_finalize */
       (GClassInitFunc) ags_mutex_manager_class_init,
       NULL, /* class_finalize */
       NULL, /* class_data */
-      sizeof(AgsMutexManager),
+      sizeof (AgsMutexManager),
       0,    /* n_preallocs */
       (GInstanceInitFunc) ags_mutex_manager_init,
     };

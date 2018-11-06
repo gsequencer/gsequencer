@@ -88,7 +88,7 @@ ags_ruler_get_type()
     };
 
     ags_type_ruler = g_type_register_static(GTK_TYPE_WIDGET,
-					    "AgsRuler", &ags_ruler_info,
+					    "AgsRuler\0", &ags_ruler_info,
 					    0);
 
     g_once_init_leave(&g_define_type_id__volatile, ags_type_ruler);
@@ -123,9 +123,9 @@ ags_ruler_class_init(AgsRulerClass *ruler)
   widget->show = ags_ruler_show;
 
   /* properties */
-  param_spec = g_param_spec_object("adjustment",
-				   "assigned adjustment",
-				   "The adjustment it is assigned with",
+  param_spec = g_param_spec_object("adjustment\0",
+				   "assigned adjustment\0",
+				   "The adjustment it is assigned with\0",
 				   G_TYPE_OBJECT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -137,7 +137,7 @@ void
 ags_ruler_init(AgsRuler *ruler)
 {
   g_object_set(G_OBJECT(ruler),
-  	       "app-paintable", TRUE,
+  	       "app-paintable\0", TRUE,
   	       NULL);
 
   ruler->flags = 0;
@@ -419,7 +419,7 @@ ags_ruler_draw(AgsRuler *ruler)
 		    (double) (i * step - x0),
 		    (double) (widget->allocation.height - AGS_RULER_LARGE_STEP - (ruler->font_size + AGS_RULER_FREE_SPACE)));
       
-      str = g_strdup_printf("%u",
+      str = g_strdup_printf("%u\0",
 			    (guint) ((gdouble) z / tact));
       ags_ruler_draw_string(cr, str);
       
@@ -439,7 +439,7 @@ ags_ruler_draw(AgsRuler *ruler)
 		      (double) (i * step - x0),
 		      (double) (widget->allocation.height - AGS_RULER_LARGE_STEP - (ruler->font_size + AGS_RULER_FREE_SPACE)));
 
-	str = g_strdup_printf("%u",
+	str = g_strdup_printf("%u\0",
 			      (guint) ((gdouble) z / tact));
 	ags_ruler_draw_string(cr, str);
       
@@ -483,7 +483,7 @@ ags_ruler_new()
   adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 0.1, 0.1, 0.0);
 
   ruler = (AgsRuler *) g_object_new(AGS_TYPE_RULER,
-				    "adjustment", adjustment,
+				    "adjustment\0", adjustment,
 				    NULL);
 
   return(ruler);

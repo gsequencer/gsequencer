@@ -19,7 +19,7 @@
 
 #include <ags/X/editor/ags_scrolled_wave_edit_box.h>
 
-#include <ags/libags-gui.h>
+#include <ags/widget/ags_level.h>
 
 void ags_scrolled_wave_edit_box_class_init(AgsScrolledWaveEditBoxClass *scrolled_wave_edit_box);
 void ags_scrolled_wave_edit_box_init(AgsScrolledWaveEditBox *scrolled_wave_edit_box);

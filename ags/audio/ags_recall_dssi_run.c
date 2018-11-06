@@ -444,11 +444,6 @@ ags_recall_dssi_run_run_init_pre(AgsRecall *recall)
 	       "recall-channel", &recall_dssi,
 	       NULL);
   
-  output_lines = recall_dssi->output_lines;
-  input_lines = recall_dssi->input_lines;
-  
-  pthread_mutex_unlock(recall_mutex);
-
   /* set up buffer */
   g_object_get(recall_dssi_run,
 	       "source", &audio_signal,
@@ -566,8 +561,6 @@ ags_recall_dssi_run_run_pre(AgsRecall *recall)
   
   AgsCountBeatsAudioRun *count_beats_audio_run;
   AgsRouteDssiAudioRun *route_dssi_audio_run;
-
-  AgsDssiPlugin *dssi_plugin;
     
   GList *list_start, *list;
   GList *port;
@@ -866,15 +859,6 @@ ags_recall_dssi_run_run_pre(AgsRecall *recall)
       //      g_message("b p %u %u", bank, program);
     }
   }
-    
-  for(i = 0; i < i_stop; i++){
-    ags_dssi_plugin_real_change_program(dssi_plugin,
-					recall_dssi_run->ladspa_handle[i],
-					bank,
-					program);
-
-    //      g_message("b p %u %u", recall_dssi->bank, recall_dssi->program);
-  }
 
   /* reset port data */    
   for(i = 0; i < port_count; i++){
@@ -1073,21 +1057,6 @@ ags_recall_dssi_run_load_ports(AgsRecallDssiRun *recall_dssi_run)
   /* get some fields */
   pthread_mutex_lock(base_plugin_mutex);
 
-  input_lines = recall_dssi->input_lines;
-  output_lines = recall_dssi->output_lines;
-
-  pthread_mutex_unlock(recall_mutex);
-  
-  /* base plugin mutex */
-  pthread_mutex_lock(ags_base_plugin_get_class_mutex());
-
-  base_plugin_mutex = AGS_BASE_PLUGIN(dssi_plugin)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_base_plugin_get_class_mutex());
-
-  /* get some fields */
-  pthread_mutex_lock(base_plugin_mutex);
-
   port_count = plugin_descriptor->LADSPA_Plugin->PortCount;
   
   port_descriptor = plugin_descriptor->LADSPA_Plugin->PortDescriptors;
@@ -1113,8 +1082,6 @@ ags_recall_dssi_run_load_ports(AgsRecallDssiRun *recall_dssi_run)
       if(LADSPA_IS_PORT_INPUT(current_port_descriptor) ||
 	 LADSPA_IS_PORT_OUTPUT(current_port_descriptor)){
 	LADSPA_Data *port_pointer;
-
-	pthread_mutex_lock(base_plugin_mutex);
 	
 	pthread_mutex_lock(base_plugin_mutex);
 

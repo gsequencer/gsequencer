@@ -176,8 +176,6 @@ enum{
   PROP_CHILD,
 };
 
-pthread_mutex_t ags_recall_class_mutex = PTHREAD_MUTEX_INITIALIZER;
-
 static gpointer ags_recall_parent_class = NULL;
 static guint recall_signals[LAST_SIGNAL];
 
@@ -197,13 +195,13 @@ ags_recall_get_type(void)
     GType ags_type_recall = 0;
 
     static const GTypeInfo ags_recall_info = {
-      sizeof(AgsRecallClass),
+      sizeof (AgsRecallClass),
       NULL, /* base_init */
       NULL, /* base_finalize */
       (GClassInitFunc) ags_recall_class_init,
       NULL, /* class_finalize */
       NULL, /* class_data */
-      sizeof(AgsRecall),
+      sizeof (AgsRecall),
       0,    /* n_preallocs */
       (GInstanceInitFunc) ags_recall_init,
     };
@@ -5110,9 +5108,7 @@ ags_recall_real_do_feedback(AgsRecall *recall)
 void
 ags_recall_do_feedback(AgsRecall *recall)
 {
-  if((AGS_RECALL_DONE & (recall->flags)) != 0){
-    return;
-  }
+  g_return_if_fail(AGS_IS_RECALL(recall));
 
   g_object_ref(G_OBJECT(recall));
   g_signal_emit(G_OBJECT(recall),

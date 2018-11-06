@@ -55,7 +55,7 @@ ags_hled_array_get_type(void)
     };
 
     ags_type_hled_array = g_type_register_static(AGS_TYPE_LED_ARRAY,
-						 "AgsHLedArray",
+						 "AgsHLedArray\0",
 						 &ags_hled_array_info,
 						 0);
 

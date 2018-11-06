@@ -762,7 +762,6 @@ ags_notation_add_note(AgsNotation *notation,
   pthread_mutex_lock(notation_mutex);
 
   if(use_selection_list){
-    note->flags |= AGS_NOTE_IS_SELECTED;
     notation->selection = g_list_insert_sorted(notation->selection,
 					       note,
 					       (GCompareFunc) ags_note_sort_func);
@@ -1296,9 +1295,6 @@ ags_notation_add_point_to_selection(AgsNotation *notation,
 
     if(replace_current_selection){
       GList *list;
-
-      note->flags |= AGS_NOTE_IS_SELECTED;
-      g_object_ref(note);
 
       list = g_list_alloc();
       list->data = note;

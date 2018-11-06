@@ -133,7 +133,6 @@ AgsMachineCounter* ags_machine_counter_alloc(gchar *version, gchar *build_id,
 void ags_window_show_error(AgsWindow *window,
 			   gchar *message);
 
-gboolean ags_window_load_libags_audio_timeout(AgsWindow *window);
 gboolean ags_window_load_file_timeout(AgsWindow *window);
 
 AgsWindow* ags_window_new(GObject *application_context);

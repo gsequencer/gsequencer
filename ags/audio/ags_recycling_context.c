@@ -496,9 +496,6 @@ ags_recycling_context_finalize(GObject *gobject)
     }
   
     free(recycling_context->recycling);
-
-    recycling_context->recycling = NULL;
-    recycling_context->length = 0;
   }
   
   /* children */
@@ -619,10 +616,6 @@ ags_recycling_context_replace(AgsRecyclingContext *recycling_context,
   
   old_recycling = recycling_context->recycling[position];
   recycling_context->recycling[position] = recycling;
-
-  if(recycling != NULL){
-    g_object_ref(recycling);
-  }
   
   pthread_mutex_unlock(recycling_context_mutex);
 

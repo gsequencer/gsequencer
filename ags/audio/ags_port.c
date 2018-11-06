@@ -109,13 +109,13 @@ ags_port_get_type(void)
     GType ags_type_port = 0;
 
     static const GTypeInfo ags_port_info = {
-      sizeof(AgsPortClass),
+      sizeof (AgsPortClass),
       NULL, /* base_init */
       NULL, /* base_finalize */
       (GClassInitFunc) ags_port_class_init,
       NULL, /* class_finalize */
       NULL, /* class_data */
-      sizeof(AgsPort),
+      sizeof (AgsPort),
       0,    /* n_preallocs */
       (GInstanceInitFunc) ags_port_init,
     };
@@ -1286,7 +1286,7 @@ ags_port_real_safe_read(AgsPort *port, GValue *value)
 /**
  * ags_port_safe_read:
  * @port: an #AgsPort
- * @value: the #GValue-struct to store result
+ * @value: the #GValue to store result
  *
  * Perform safe read.
  *
@@ -1494,7 +1494,7 @@ ags_port_real_safe_write(AgsPort *port, GValue *value)
 /**
  * ags_port_safe_write:
  * @port: an #AgsPort
- * @value: the #GValue-struct containing data
+ * @value: the #GValue containing data
  *
  * Perform safe write.
  *
@@ -1511,15 +1511,6 @@ ags_port_safe_write(AgsPort *port, GValue *value)
   g_object_unref(G_OBJECT(port));
 }
 
-/**
- * ags_port_safe_write_raw:
- * @port: an #AgsPort
- * @value: the #GValue-struct containing data
- *
- * Perform safe write without conversion.
- *
- * Since: 1.0.0
- */
 void
 ags_port_safe_write_raw(AgsPort *port, GValue *value)
 {

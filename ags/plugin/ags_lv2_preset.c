@@ -71,13 +71,13 @@ ags_lv2_preset_get_type()
     GType ags_type_lv2_preset = 0;
 
     static const GTypeInfo ags_lv2_preset_info = {
-      sizeof(AgsLv2PresetClass),
+      sizeof (AgsLv2PresetClass),
       NULL, /* base_init */
       NULL, /* base_finalize */
       (GClassInitFunc) ags_lv2_preset_class_init,
       NULL, /* class_finalize */
       NULL, /* class_data */
-      sizeof(AgsLv2Preset),
+      sizeof (AgsLv2Preset),
       0,    /* n_preallocs */
       (GInstanceInitFunc) ags_lv2_preset_init,
     };

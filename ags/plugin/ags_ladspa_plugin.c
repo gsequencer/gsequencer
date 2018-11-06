@@ -83,7 +83,7 @@ enum{
 static gpointer ags_ladspa_plugin_parent_class = NULL;
 
 GType
-ags_ladspa_plugin_get_type()
+ags_ladspa_plugin_get_type (void)
 {
   static volatile gsize g_define_type_id__volatile = 0;
 
@@ -91,13 +91,13 @@ ags_ladspa_plugin_get_type()
     GType ags_type_ladspa_plugin = 0;
 
     static const GTypeInfo ags_ladspa_plugin_info = {
-      sizeof(AgsLadspaPluginClass),
+      sizeof (AgsLadspaPluginClass),
       NULL, /* ladspa_init */
       NULL, /* ladspa_finalize */
       (GClassInitFunc) ags_ladspa_plugin_class_init,
       NULL, /* class_finalize */
       NULL, /* class_data */
-      sizeof(AgsLadspaPlugin),
+      sizeof (AgsLadspaPlugin),
       0,    /* n_preallocs */
       (GInstanceInitFunc) ags_ladspa_plugin_init,
     };
@@ -340,8 +340,6 @@ ags_ladspa_plugin_activate(AgsBasePlugin *base_plugin,
   if(activate != NULL){
     activate((LADSPA_Handle) plugin_handle);
   }
-
-  pthread_mutex_unlock(base_plugin_mutex);
 }
 
 void
@@ -369,8 +367,6 @@ ags_ladspa_plugin_deactivate(AgsBasePlugin *base_plugin,
   if(deactivate != NULL){
     deactivate((LADSPA_Handle) plugin_handle);
   }
-
-  pthread_mutex_unlock(base_plugin_mutex);
 }
 
 void

@@ -62,7 +62,7 @@
 #endif
 
 #ifdef AGS_WITH_QUARTZ
-#include <gtkmacintegration/gtkosxapplication.h>
+#include <gtkmacintegration-gtk2/gtkosxapplication.h>
 #endif
 
 #include <sys/types.h>
@@ -1031,8 +1031,7 @@ void
 ags_xorg_application_context_prepare(AgsApplicationContext *application_context)
 {
   AgsXorgApplicationContext *xorg_application_context;
-  AgsWindow *window;
-  
+
   AgsThread *audio_loop, *polling_thread, *task_thread;
   AgsThread *gui_thread;
   AgsThreadPool *thread_pool;
@@ -1041,17 +1040,6 @@ ags_xorg_application_context_prepare(AgsApplicationContext *application_context)
   
   xorg_application_context = (AgsXorgApplicationContext *) application_context;
 
-#ifdef AGS_WITH_QUARTZ
-    g_object_new(GTKOSX_TYPE_APPLICATION,
-		 NULL);
-#endif
-
-  window = g_object_new(AGS_TYPE_WINDOW,
-			"app-paintable", TRUE,
-			"type", GTK_WINDOW_TOPLEVEL,    
-			"application-context", application_context,
-			NULL);
-  
   /* call parent */
   //  AGS_APPLICATION_CONTEXT_CLASS(ags_xorg_application_context_parent_class)->prepare(application_context);
   
@@ -1142,6 +1130,7 @@ void
 ags_xorg_application_context_setup(AgsApplicationContext *application_context)
 {
   AgsXorgApplicationContext *xorg_application_context;
+  AgsWindow *window;
 
   AgsGuiThread *gui_thread;
   
@@ -1688,13 +1677,6 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
     /* change sequencer */
     if(str != NULL){
       if(!g_ascii_strncasecmp(str,
-			      "core-audio",
-			      5)){
-	sequencer = ags_distributed_manager_register_sequencer(AGS_DISTRIBUTED_MANAGER(core_audio_server),
-							       FALSE);
-
-	has_core_audio = TRUE;
-      }else if(!g_ascii_strncasecmp(str,
 			      "jack",
 			      5)){
 	sequencer = ags_sound_server_register_sequencer(AGS_SOUND_SERVER(jack_server),
@@ -1756,10 +1738,28 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
   }
 
   g_free(sequencer_group);
-    
+  
+  /* AgsWindow */
+#ifdef AGS_WITH_QUARTZ
+  g_object_new(GTKOSX_TYPE_APPLICATION,
+	       NULL);
+#endif
+  window = g_object_new(AGS_TYPE_WINDOW,
+			"soundcard", soundcard,
+			"application-context", xorg_application_context,
+			NULL);
+  g_object_set(xorg_application_context,
+	       "window", window,
+	       NULL);
+
+  gtk_window_set_default_size((GtkWindow *) window, 500, 500);
+  gtk_paned_set_position((GtkPaned *) window->paned, 300);
+
+  ags_connectable_connect(AGS_CONNECTABLE(window));
+
   /* stop animation */
-  ags_ui_provider_set_show_animation(AGS_UI_PROVIDER(xorg_application_context),
-				     FALSE);
+  g_atomic_int_set(&(xorg_application_context->show_animation),
+		   FALSE);  
 
   /* AgsServer */
   xorg_application_context->server = ags_server_new((GObject *) xorg_application_context);
@@ -1898,44 +1898,10 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
   if(has_jack){
     ags_jack_server_connect_client(jack_server);
   }
-
-  /* emit message */
-  message_delivery = ags_message_delivery_get_instance();
-
-  message_queue = ags_message_delivery_find_namespace(message_delivery,
-						      "libags-audio");
-
-  if(message_queue != NULL){
-    AgsMessageEnvelope *message;
-
-    xmlDoc *doc;
-    xmlNode *root_node;
-
-    /* specify message body */
-    doc = xmlNewDoc("1.0");
-
-    root_node = xmlNewNode(NULL,
-			   "ags-command");
-    xmlDocSetRootElement(doc, root_node);    
-
-    xmlNewProp(root_node,
-	       "method",
-	       "AgsSoundProvider::config-read");
-
-    /* add message */
-    message = ags_message_envelope_alloc(application_context,
-					 NULL,
-					 doc);
-
-    /* add message */
-    ags_message_delivery_add_message(message_delivery,
-				     "libags-audio",
-				     message);
-  }
   
-  //  if(filename != NULL){
-  //    window->filename = filename;
-  //  }
+  if(filename != NULL){
+    window->filename = filename;
+  }
   //  pthread_mutex_unlock(ags_gui_thread_get_dispatch_mutex());
 }
 

@@ -19,12 +19,11 @@
 
 #include <ags/plugin/ags_lv2_option_manager.h>
 
-#include <ags/libags.h>
+#include <ags/object/ags_connectable.h>
+#include <ags/object/ags_marshal.h>
 
 #include <stdlib.h>
 #include <string.h>
-
-#include <pthread.h>
 
 void ags_lv2_option_manager_class_init(AgsLv2OptionManagerClass *lv2_option_manager);
 void ags_lv2_option_manager_init(AgsLv2OptionManager *lv2_option_manager);
@@ -76,13 +75,13 @@ ags_lv2_option_manager_get_type()
     GType ags_type_lv2_option_manager = 0;
 
     const GTypeInfo ags_lv2_option_manager_info = {
-      sizeof(AgsLv2OptionManagerClass),
+      sizeof (AgsLv2OptionManagerClass),
       NULL, /* base_init */
       NULL, /* base_finalize */
       (GClassInitFunc) ags_lv2_option_manager_class_init,
       NULL, /* class_finalize */
       NULL, /* class_data */
-      sizeof(AgsLv2OptionManager),
+      sizeof (AgsLv2OptionManager),
       0,    /* n_preallocs */
       (GInstanceInitFunc) ags_lv2_option_manager_init,
     };

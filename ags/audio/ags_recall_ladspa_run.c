@@ -227,9 +227,6 @@ ags_recall_ladspa_run_run_init_pre(AgsRecall *recall)
   
   pthread_mutex_unlock(ags_recall_get_class_mutex());
 
-  pthread_mutex_t *recall_mutex;
-  pthread_mutex_t *base_plugin_mutex;
-
   /* call parent */
   parent_class_run_init_pre(recall);
 
@@ -247,32 +244,6 @@ ags_recall_ladspa_run_run_init_pre(AgsRecall *recall)
 	       "recall-channel", &recall_ladspa,
 	       NULL);
   
-  pthread_mutex_unlock(ags_recall_get_class_mutex());
-
-  /* get some fields */
-  pthread_mutex_lock(recall_mutex);
-
-  ladspa_plugin = recall_ladspa->plugin;
-
-  output_lines = recall_ladspa->output_lines;
-  input_lines = recall_ladspa->input_lines;
-  
-  pthread_mutex_unlock(recall_mutex);
-
-  /* base plugin mutex */
-  pthread_mutex_lock(ags_base_plugin_get_class_mutex());
-
-  base_plugin_mutex = AGS_BASE_PLUGIN(ladspa_plugin)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_base_plugin_get_class_mutex());
-  
-  /* get some fields */
-  pthread_mutex_lock(base_plugin_mutex);
-  
-  port_descriptor = plugin_descriptor->PortDescriptors;
-
-  pthread_mutex_unlock(base_plugin_mutex);
-
   /* set up buffer */
   g_object_get(recall_ladspa_run,
 	       "source", &audio_signal,
@@ -401,9 +372,6 @@ ags_recall_ladspa_run_run_inter(AgsRecall *recall)
   parent_class_run_inter = AGS_RECALL_CLASS(ags_recall_ladspa_run_parent_class)->run_inter;
   
   pthread_mutex_unlock(ags_recall_get_class_mutex());
-
-  pthread_mutex_t *recall_mutex;
-  pthread_mutex_t *base_plugin_mutex;  
 
   /* call parent */
   parent_class_run_inter(recall);
@@ -599,21 +567,6 @@ ags_recall_ladspa_run_load_ports(AgsRecallLadspaRun *recall_ladspa_run)
   list_start = g_list_copy(AGS_RECALL(recall_ladspa)->port);
 
   plugin_descriptor = recall_ladspa->plugin_descriptor;
-
-  input_lines = recall_ladspa->input_lines;
-  output_lines = recall_ladspa->output_lines;
-
-  pthread_mutex_unlock(recall_mutex);
-
-  /* base plugin mutex */
-  pthread_mutex_lock(ags_base_plugin_get_class_mutex());
-
-  base_plugin_mutex = AGS_BASE_PLUGIN(ladspa_plugin)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_base_plugin_get_class_mutex());
-
-  /* get some fields */
-  pthread_mutex_lock(base_plugin_mutex);
 
   port_count = plugin_descriptor->PortCount;
   
