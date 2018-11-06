@@ -480,7 +480,7 @@ ags_osc_buffer_util_put_message(unsigned char *buffer,
  * Since: 2.1.0
  */
 guint
-ags_osc_buffer_util_check_message_value_count(unsigned char *buffer);
+ags_osc_buffer_util_check_message_value_count(unsigned char *buffer)
 {
   //TODO:JK: implement me
 
