@@ -225,7 +225,7 @@ ags_midi_builder_class_init(AgsMidiBuilderClass *midi_builder)
 
   gobject->finalize = ags_midi_builder_finalize;
 
-
+  /* properties */
   /**
    * AgsMidiBuilder:file:
    *
@@ -355,14 +355,14 @@ ags_midi_builder_class_init(AgsMidiBuilderClass *midi_builder)
 		 G_TYPE_STRING);
 
   /**
-   * AgsMidiBuilder::key-on:
+   * AgsMidiBuilder::append-key-on:
    * @midi_builder: the builder
    * @delta_time: delta-time
    * @audio_channel: the audio channel
    * @note: the note to play from 0 to 128
    * @velocity: key dynamics
    *
-   * The ::key-on signal is emited during building of event.
+   * The ::append-key-on signal is emited during building of event.
    *
    * Since: 2.0.0
    */
@@ -380,14 +380,14 @@ ags_midi_builder_class_init(AgsMidiBuilderClass *midi_builder)
 		 G_TYPE_UINT);
 
   /**
-   * AgsMidiBuilder::key-off:
+   * AgsMidiBuilder::append-key-off:
    * @midi_builder: the builders
    * @delta_time: delta-time
    * @audio_channel: the audio channel
    * @note: the note to stop play from 0 to 128
    * @velocity: key dynamics
    *
-   * The ::key-off signal is emited during building of event.
+   * The ::append-key-off signal is emited during building of event.
    *
    * Since: 2.0.0
    */
@@ -405,14 +405,14 @@ ags_midi_builder_class_init(AgsMidiBuilderClass *midi_builder)
 		 G_TYPE_UINT);
 
   /**
-   * AgsMidiBuilder::key-pressure:
+   * AgsMidiBuilder::append-key-pressure:
    * @midi_builder: the builder
    * @delta_time: delta-time
    * @audio_channel: the audio channel
    * @note: the note to press from 0 to 128
    * @pressure: the amount of the pressure
    *
-   * The ::key-pressure signal is emited during building of event.
+   * The ::append-key-pressure signal is emited during building of event.
    *
    * Since: 2.0.0
    */
@@ -430,14 +430,14 @@ ags_midi_builder_class_init(AgsMidiBuilderClass *midi_builder)
 		 G_TYPE_UINT);
 
   /**
-   * AgsMidiBuilder::change-parameter:
+   * AgsMidiBuilder::append-change-parameter:
    * @midi_builder: the builder
    * @delta_time: delta-time
    * @channel: the audio channel
    * @control: the control
    * @value: and its value
    *
-   * The ::change-parameter signal is emited during building of event.
+   * The ::append-change-parameter signal is emited during building of event.
    *
    * Since: 2.0.0
    */
@@ -455,14 +455,14 @@ ags_midi_builder_class_init(AgsMidiBuilderClass *midi_builder)
 		 G_TYPE_UINT);
 
   /**
-   * AgsMidiBuilder::change-pitch-bend:
+   * AgsMidiBuilder::append-change-pitch-bend:
    * @midi_builder: the builder
    * @delta_time: delta-time
    * @channel: the audio channel
    * @pitch: amount of pitch as 14 bit quantifier, 0, 0x2000 to 0x3fff
    * @transmitter: sensitivy of the wheel
    *
-   * The ::change-pitch-bend signal is emited during building of event.
+   * The ::append-change-pitch-bend signal is emited during building of event.
    *
    * Since: 2.0.0
    */
@@ -480,13 +480,13 @@ ags_midi_builder_class_init(AgsMidiBuilderClass *midi_builder)
 		 G_TYPE_UINT);
 
   /**
-   * AgsMidiBuilder::change-program:
+   * AgsMidiBuilder::append-change-program:
    * @midi_builder: the builder
    * @delta_time: delta-time
    * @channel: the audio channel
    * @program: the new programm
    *
-   * The ::change-program signal is emited during building of event.
+   * The ::append-change-program signal is emited during building of event.
    *
    * Since: 2.0.0
    */
@@ -503,13 +503,13 @@ ags_midi_builder_class_init(AgsMidiBuilderClass *midi_builder)
 		 G_TYPE_UINT);
 
   /**
-   * AgsMidiBuilder::change-channel-pressure:
+   * AgsMidiBuilder::append-change-channel-pressure:
    * @midi_builder: the builder
    * @delta_time: delta-time
    * @channel: the audio channel
    * @pressure: the new pressure, aftertouch
    *
-   * The ::change-channel-pressure signal is emited during building of event.
+   * The ::append-change-channel-pressure signal is emited during building of event.
    *
    * Since: 2.0.0
    */
@@ -526,13 +526,13 @@ ags_midi_builder_class_init(AgsMidiBuilderClass *midi_builder)
 		 G_TYPE_UINT);
 
   /**
-   * AgsMidiBuilder::sysex:
+   * AgsMidiBuilder::append-sysex:
    * @midi_builder: the builder
    * @delta_time: delta-time
    * @sysex_data: the data array
    * @length: the length of the array
    *
-   * The ::sysex signal is emited during building of event.
+   * The ::append-sysex signal is emited during building of event.
    *
    * Since: 2.0.0
    */
@@ -549,13 +549,13 @@ ags_midi_builder_class_init(AgsMidiBuilderClass *midi_builder)
 		 G_TYPE_UINT);
 
   /**
-   * AgsMidiBuilder::quarter-frame:
+   * AgsMidiBuilder::append-quarter-frame:
    * @midi_builder: the builder
    * @delta_time: the delta time
    * @message_type: the message type
    * @values: the values
    *
-   * The ::quarter-frame signal is emited during building of event.
+   * The ::append-quarter-frame signal is emited during building of event.
    *
    * Since: 2.0.0
    */
@@ -572,12 +572,12 @@ ags_midi_builder_class_init(AgsMidiBuilderClass *midi_builder)
 		 G_TYPE_UINT);
 
   /**
-   * AgsMidiBuilder::song-position:
+   * AgsMidiBuilder::append-song-position:
    * @midi_builder: the builder
    * @delta_time: delta-time
    * @song_position: the current position from 0x0 to 0x3fff
    *
-   * The ::song-position signal is emited during building of event.
+   * The ::append-song-position signal is emited during building of event.
    *
    * Since: 2.0.0
    */
@@ -593,12 +593,12 @@ ags_midi_builder_class_init(AgsMidiBuilderClass *midi_builder)
 		 G_TYPE_UINT);
 
   /**
-   * AgsMidiBuilder::song-select:
+   * AgsMidiBuilder::append-song-select:
    * @midi_builder: the builder
    * @delta_time: delta-time
    * @song_select: the song or sequence
    *
-   * The ::song-select signal is emited during building of event.
+   * The ::append-song-select signal is emited during building of event.
    *
    * Since: 2.0.0
    */
@@ -614,11 +614,11 @@ ags_midi_builder_class_init(AgsMidiBuilderClass *midi_builder)
 		 G_TYPE_UINT);
 
   /**
-   * AgsMidiBuilder::tune-request:
+   * AgsMidiBuilder::append-tune-request:
    * @midi_builder: the builder
    * @delta_time: delta-time
    *
-   * The ::tune-request signal is emited during building of event.
+   * The ::append-tune-request signal is emited during building of event.
    *
    * Since: 2.0.0
    */
@@ -634,12 +634,12 @@ ags_midi_builder_class_init(AgsMidiBuilderClass *midi_builder)
 
 
   /**
-   * AgsMidiBuilder::sequence-number:
+   * AgsMidiBuilder::append-sequence-number:
    * @midi_builder: the builder
    * @delta_time: delta-time
    * @sequence: the nth sequence
    *
-   * The ::sequence-number signal is emited during building of event.
+   * The ::append-sequence-number signal is emited during building of event.
    *
    * Since: 2.0.0
    */
@@ -655,7 +655,7 @@ ags_midi_builder_class_init(AgsMidiBuilderClass *midi_builder)
 		 G_TYPE_UINT);
   
   /**
-   * AgsMidiBuilder::smtpe:
+   * AgsMidiBuilder::append-smtpe:
    * @midi_builder: the builder
    * @delta_time: delta-time
    * @hr: hours
@@ -664,7 +664,7 @@ ags_midi_builder_class_init(AgsMidiBuilderClass *midi_builder)
    * @fr: frame number
    * @ff: frequency
    *
-   * The ::smtpe signal is emited during building of event.
+   * The ::append-smtpe signal is emited during building of event.
    *
    * Since: 2.0.0
    */
@@ -684,12 +684,12 @@ ags_midi_builder_class_init(AgsMidiBuilderClass *midi_builder)
 		 G_TYPE_UINT);
 
   /**
-   * AgsMidiBuilder::tempo:
+   * AgsMidiBuilder::append-tempo:
    * @midi_builder: the builder
    * @delta_time: delta-time
    * @tempo: the tempo number as 24-bit quantifier
    *
-   * The ::tempo signal is emited during building of event.
+   * The ::append-tempo signal is emited during building of event.
    *
    * Since: 2.0.0
    */
@@ -705,7 +705,7 @@ ags_midi_builder_class_init(AgsMidiBuilderClass *midi_builder)
 		 G_TYPE_UINT);
 
   /**
-   * AgsMidiBuilder::time-signature:
+   * AgsMidiBuilder::append-time-signature:
    * @midi_builder: the builder
    * @delta_time: delta time
    * @nn: numerator
@@ -713,7 +713,7 @@ ags_midi_builder_class_init(AgsMidiBuilderClass *midi_builder)
    * @cc: ticks per metronome click
    * @bb: 32nd per quarter note
    *
-   * The ::time-signature signal is emited during building of event.
+   * The ::append-time-signature signal is emited during building of event.
    *
    * Since: 2.0.0
    */
@@ -732,13 +732,13 @@ ags_midi_builder_class_init(AgsMidiBuilderClass *midi_builder)
 		 G_TYPE_UINT);
 
   /**
-   * AgsMidiBuilder::key-signature:
+   * AgsMidiBuilder::append-key-signature:
    * @midi_builder: the builder
    * @delta_time: delta-time
    * @sf: signature frame
    * @mi: if %TRUE minor else major
    * 
-   * The ::key-signature signal is emited during building of event.
+   * The ::append-key-signature signal is emited during building of event.
    *
    * Since: 2.0.0
    */
@@ -755,14 +755,14 @@ ags_midi_builder_class_init(AgsMidiBuilderClass *midi_builder)
 		 G_TYPE_BOOLEAN);
 
   /**
-   * AgsMidiBuilder::sequencer-meta-event:
+   * AgsMidiBuilder::append-sequencer-meta-event:
    * @midi_builder: the builder
    * @delta_time: delta-time
    * @len: length
    * @id: identifier
    * @data: buffer
    *
-   * The ::sequencer-meta-event signal is emited during building of event.
+   * The ::append-sequencer-meta-event signal is emited during building of event.
    *
    * Since: 2.0.0
    */
@@ -780,13 +780,13 @@ ags_midi_builder_class_init(AgsMidiBuilderClass *midi_builder)
 		 G_TYPE_UINT);
 
   /**
-   * AgsMidiBuilder::text-event:
+   * AgsMidiBuilder::append-text-event:
    * @midi_builder: the builder
    * @delta_time: delta-time
    * @text: the text
    * @length: length
    *
-   * The ::text-event signal is emited during building of event.
+   * The ::append-text-event signal is emited during building of event.
    *
    * Since: 2.0.0
    */
