@@ -54,23 +54,16 @@ void ags_osc_buffer_util_get_packet(unsigned char *buffer,
 				    gint32 *packet_size, unsigned char **packet);
 
 void ags_osc_buffer_util_put_packets(unsigned char *buffer,
-				     gint32 packet_size, va_list var_args);
-guint ags_osc_buffer_util_check_packet_count(unsigned char *buffer);
-void ags_osc_buffer_util_get_packets(unsigned char *buffer,
-				     gint32 *packet_size, va_list var_args);
+				     gint32 packet_size, ...);
 
 void ags_osc_buffer_util_put_message(unsigned char *buffer,
-				     gchar *address_pattern, gchar *type_tag, va_list var_args);
-guint ags_osc_buffer_util_check_message_value_count(unsigned char *buffer);
+				     gchar *address_pattern, gchar *type_tag);
 void ags_osc_buffer_util_get_message(unsigned char *buffer,
-				     gchar **address_pattern, gchar **type_tag, va_list var_args);
+				     gchar **address_pattern, gchar **type_tag);
 
 void ags_osc_buffer_util_put_bundle(unsigned char *buffer,
-				    gint32 tv_secs, gint32 tv_fraction, gboolean immediately,
-				    gint32 content_size, va_list var_args);
-guint ags_osc_buffer_util_check_bundle_content_count(unsigned char *buffer);
+				    gint32 tv_secs, gint32 tv_fraction, gboolean immediately);
 void ags_osc_buffer_util_get_bundle(unsigned char *buffer,
-				    gint32 *tv_secs, gint32 *tv_fraction, gboolean *immediately,
-				    gint32 content_size, va_list var_args);
+				    gint32 *tv_secs, gint32 *tv_fraction, gboolean *immediately);
 
 #endif /*__AGS_OSC_BUFFER_UTIL_H__*/

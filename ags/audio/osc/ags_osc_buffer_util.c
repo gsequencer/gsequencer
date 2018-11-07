@@ -21,8 +21,13 @@
 
 #include <ags/libags.h>
 
+#include <ags/audio/osc/ags_osc_util.h>
+
 #include <stdlib.h>
 #include <string.h>
+#include <strings.h>
+
+#include <stdarg.h>
 
 /**
  * ags_osc_buffer_util_put_int32:
@@ -235,10 +240,14 @@ ags_osc_buffer_util_put_string(unsigned char *buffer,
 			       gchar *str, gsize length)
 {
   if(buffer == NULL ||
-     length <= 0){
+     length == 0){
     return;
   }
 
+  if(length == -1){
+    length = strlen(str);
+  }
+  
   memcpy(buffer,
 	 str,
 	 length * sizeof(unsigned char));
@@ -304,7 +313,8 @@ ags_osc_buffer_util_put_blob(unsigned char *buffer,
   guint padding;
   guint i;
   
-  if(buffer == NULL){
+  if(buffer == NULL ||
+     data_size < 0){
     return;
   }
 
@@ -356,12 +366,16 @@ ags_osc_buffer_util_get_blob(unsigned char *buffer,
   }
 
   if(data != NULL){
-    blob = (unsigned char *) malloc(tmp * sizeof(unsigned char));
-    memcpy(blob,
-	   buffer + 4,
-	   tmp);
+    if(tmp > 0){
+      blob = (unsigned char *) malloc(tmp * sizeof(unsigned char));
+      memcpy(blob,
+	     buffer + 4,
+	     tmp);
     
-    *data = blob;
+      *data = blob;
+    }else{
+      *data = NULL;
+    }
   }
 }
 
@@ -379,7 +393,30 @@ void
 ags_osc_buffer_util_put_packet(unsigned char *buffer,
 			       gint32 packet_size, unsigned char *packet)
 {
-  //TODO:JK: implement me
+  guint padding;
+  guint i;
+  
+  if(buffer == NULL ||
+     packet_size < 0){
+    return;
+  }
+
+  if(packet_size % 4 != 0){
+    padding = 4 - (packet_size % 4);
+  }else{
+    padding = 0;
+  }
+
+  ags_osc_buffer_util_put_int32(buffer,
+				packet_size + padding);
+  
+  memcpy(buffer + 4,
+	 packet,
+	 packet_size);
+
+  for(i = 0; i < padding; i++){
+    buffer[4 + packet_size + i] = 0x0;
+  }
 }
 
 /**
@@ -396,14 +433,37 @@ void
 ags_osc_buffer_util_get_packet(unsigned char *buffer,
 			       gint32 *packet_size, unsigned char **packet)
 {
-  //TODO:JK: implement me
+  unsigned char *data;
+  
+  gint32 tmp;
+
+  if(buffer == NULL){
+    return;
+  }
+
+  if(packet_size != NULL){
+    *packet_size = tmp;
+  }
+
+  if(packet != NULL){
+    if(tmp > 0){
+      data = (unsigned char *) malloc(tmp * sizeof(unsigned char));
+      memcpy(data,
+	     buffer + 4,
+	     tmp);
+    
+      *packet = data;
+    }else{
+      *packet = NULL;
+    }
+  }
 }
 
 /**
  * ags_osc_buffer_util_put_packets:
  * @buffer: the unsigned char buffer
  * @packet_size: the packet size or -1 if no packet
- * @var_args: the packets followed by packet size until it is -1
+ * @...: the packets followed by packet size until it is -1
  * 
  * Put packets to @buffer.
  * 
@@ -411,44 +471,32 @@ ags_osc_buffer_util_get_packet(unsigned char *buffer,
  */
 void
 ags_osc_buffer_util_put_packets(unsigned char *buffer,
-				gint32 packet_size, va_list var_args)
+				gint32 packet_size, ...)
 {
-  //TODO:JK: implement me
-}
+  va_list var_args;
+  
+  unsigned char *packet;
+  
+  if(buffer == NULL ||
+     packet_size < 0){
+    return;
+  }
 
-/**
- * ags_osc_buffer_util_check_packet_count:
- * @buffer: the unsigned char buffer
- * 
- * Check packet count.
- * 
- * Returns: the packet's count available
- * 
- * Since: 2.1.0
- */
-guint
-ags_osc_buffer_util_check_packet_count(unsigned char *buffer)
-{
-  //TODO:JK: implement me
+  va_start(var_args, packet_size);
 
-  return(0);
-}
+  while(packet_size >= 0){
+    packet = va_arg(var_args, unsigned char *);
 
-/**
- * ags_osc_buffer_util_get_packets:
- * @buffer: the unsigned char buffer
- * @packet_size: return location of the packet size or -1 if no packet
- * @var_args: return locations of the packets followed by packet size until it is -1
- * 
- * Get packets from @buffer.
- * 
- * Since: 2.1.0
- */
-void
-ags_osc_buffer_util_get_packets(unsigned char *buffer,
-				gint32 *packet_size, va_list var_args)
-{
-  //TODO:JK: implement me
+    ags_osc_buffer_util_put_packet(buffer,
+				   packet_size, packet);
+
+    /* iterate */
+    buffer += (4 + packet_size);
+
+    packet_size = va_arg(var_args, gint32);
+  }
+
+  va_end(var_args);
 }
 
 /**
@@ -456,35 +504,36 @@ ags_osc_buffer_util_get_packets(unsigned char *buffer,
  * @buffer: the unsigned char buffer
  * @address_pattern: the address pattern
  * @type_tag: the type tag
- * @var_args: the values specified by type tag
  * 
- * Put message to @buffer.
+ * Put message heading to @buffer. Note you have to put following arguments
+ * yourself.
  * 
  * Since: 2.1.0
  */
 void
 ags_osc_buffer_util_put_message(unsigned char *buffer,
-				gchar *address_pattern, gchar *type_tag, va_list var_args)
+				gchar *address_pattern, gchar *type_tag)
 {
-  //TODO:JK: implement me
-}
+  gsize address_pattern_length;
+  gsize type_tag_length;
+  
+  if(buffer == NULL ||
+     address_pattern[0] != '/' ||
+     type_tag[0] != ','){
+    return;
+  }
 
-/**
- * ags_osc_buffer_util_check_message_value_count:
- * @buffer: the unsigned char buffer
- * 
- * Check message's value count.
- * 
- * Returns: the value count
- * 
- * Since: 2.1.0
- */
-guint
-ags_osc_buffer_util_check_message_value_count(unsigned char *buffer)
-{
-  //TODO:JK: implement me
+  address_pattern_length = strlen(address_pattern);
+  ags_osc_buffer_util_put_string(buffer,
+				 address_pattern, address_pattern_length);
 
-  return(0);
+  buffer += (address_pattern_length + 1);
+  
+  type_tag_length = strlen(type_tag);
+  ags_osc_buffer_util_put_string(buffer,
+				 type_tag, type_tag_length);
+
+  buffer += (type_tag_length + 1);
 }
 
 /**
@@ -492,17 +541,59 @@ ags_osc_buffer_util_check_message_value_count(unsigned char *buffer)
  * @buffer: the unsigned char buffer
  * @address_pattern: return location of the address pattern
  * @type_tag: return location of the type tag
- * @var_args: return location of the values specified by type tag
  * 
- * Get message from @buffer.
+ * Get message heading from @buffer. Note you have to get following arguments
+ * yourself.
  * 
  * Since: 2.1.0
  */
 void
 ags_osc_buffer_util_get_message(unsigned char *buffer,
-				gchar **address_pattern, gchar **type_tag, va_list var_args)
+				gchar **address_pattern, gchar **type_tag)
 {
-  //TODO:JK: implement me
+  gchar *str;
+
+  gsize length;
+  
+  if(buffer == NULL){
+    return;
+  }
+
+  if(buffer[0] == '/'){
+    ags_osc_buffer_util_get_string(buffer,
+				   &str, &length);
+  }else{
+    if(address_pattern != NULL){
+      *address_pattern = NULL;
+    }
+
+    if(type_tag != NULL){
+      *type_tag = NULL;
+    }
+    
+    return;
+  }
+  
+  if(address_pattern != NULL){
+    *address_pattern = str;
+  }else{
+    g_free(str);
+  }
+
+  buffer += (length + 1);
+
+  if(buffer[0] == ','){
+    ags_osc_buffer_util_get_string(buffer,
+				   &str, &length);
+  }else{
+    str = NULL;
+  }
+
+  if(type_tag != NULL){
+    *type_tag = str;
+  }else{
+    g_free(str);
+  }
 }
 
 /**
@@ -511,8 +602,6 @@ ags_osc_buffer_util_get_message(unsigned char *buffer,
  * @tv_secs: number of seconds since midnight on January 1, 1900
  * @tv_fraction: fraction of seconds to a precision of about 200 picoseconds
  * @immediately: if %TRUE apply immediately, otherwise %FALSE not immediately
- * @content_size: the content size
- * @var_args: the bundle followed by content size until it is -1
  * 
  * Put bundle to @buffer.
  * 
@@ -520,28 +609,20 @@ ags_osc_buffer_util_get_message(unsigned char *buffer,
  */
 void
 ags_osc_buffer_util_put_bundle(unsigned char *buffer,
-			       gint32 tv_secs, gint32 tv_fraction, gboolean immediately,
-			       gint32 content_size, va_list var_args)
+			       gint32 tv_secs, gint32 tv_fraction, gboolean immediately)
 {
-  //TODO:JK: implement me
-}
+  if(buffer == NULL){
+    return;
+  }
 
-/**
- * ags_osc_buffer_util_check_bundle_content_count:
- * @buffer: the unsigned char buffer
- *
- * Check bundle's content count.
- * 
- * Returns: the bundle's content count
- * 
- * Since: 2.1.0
- */
-guint
-ags_osc_buffer_util_check_bundle_content_count(unsigned char *buffer)
-{
-  //TODO:JK: implement me
+  memcpy(buffer,
+	 "#bundle",
+	 7 * sizeof(unsigned char));  
 
-  return(0);
+  buffer += 7;
+  
+  ags_osc_buffer_util_put_timetag(buffer,
+				  tv_secs, tv_fraction, immediately);
 }
 
 /**
@@ -550,8 +631,6 @@ ags_osc_buffer_util_check_bundle_content_count(unsigned char *buffer)
  * @tv_secs: return location of number of seconds since midnight on January 1, 1900
  * @tv_fraction: return location of fraction of seconds to a precision of about 200 picoseconds
  * @immediately: return location of if %TRUE apply immediately, otherwise %FALSE not immediately
- * @content_size: return location the content size
- * @var_args: return location of the bundle followed by content size until it is -1
  *
  * Get bundle from @buffer.
  * 
@@ -559,8 +638,32 @@ ags_osc_buffer_util_check_bundle_content_count(unsigned char *buffer)
  */
 void
 ags_osc_buffer_util_get_bundle(unsigned char *buffer,
-			       gint32 *tv_secs, gint32 *tv_fraction, gboolean *immediately,
-			       gint32 content_size, va_list var_args)
+			       gint32 *tv_secs, gint32 *tv_fraction, gboolean *immediately)
 {
-  //TODO:JK: implement me
+  gboolean success;
+  
+  if(buffer == NULL){
+    return;
+  }
+  
+  success = (!strncmp(buffer, "#bundle", 7)) ? TRUE: FALSE;
+  
+  if(!success){
+    if(tv_secs != NULL){
+      *tv_secs = -1;
+    }
+
+    if(tv_fraction != NULL){
+      *tv_fraction = -1;
+    }
+
+    if(immediately != NULL){
+      *immediately = FALSE;
+    }
+  }
+
+  buffer += 7;
+
+  ags_osc_buffer_util_get_timetag(buffer,
+				  tv_secs, tv_fraction, immediately);
 }

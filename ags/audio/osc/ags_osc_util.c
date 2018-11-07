@@ -21,3 +21,35 @@
 
 #include <ags/libags.h>
 
+#include <string.h>
+
+/**
+ * ags_osc_util_type_tag_string_count_type:
+ * @type_tag: the type tag string
+ * 
+ * Count types in @type_tag.
+ * 
+ * Returns: the count of types specified
+ * 
+ * Since: 2.1.0
+ */
+guint
+ags_osc_util_type_tag_string_count_type(gchar *type_tag)
+{
+  gsize count;
+
+  if(type_tag == NULL ||
+     type_tag[0] != ','){
+    return(0);
+  }
+  
+  count = strlen(type_tag);
+
+  if(count <= 0){
+    return(0);
+  }
+
+  count -= 1;
+  
+  return(count);
+}
