@@ -35,6 +35,27 @@ void ags_osc_builder_get_property(GObject *gobject,
 				  GParamSpec *param_spec);
 void ags_osc_builder_finalize(GObject *gobject);
 
+void ags_osc_builder_real_osc_putc(AgsOscBuilder *osc_builder,
+				   gint c);
+void ags_osc_builder_real_on_error(AgsOscBuilder *osc_builder,
+				   GError **error);
+
+void ags_osc_builder_real_append_packet(AgsOscBuilder *osc_builder);
+
+void ags_osc_builder_real_append_bundle(AgsOscBuilder *osc_builder,
+					AgsOscBuilderBundle *parent_bundle,
+					gint tv_secs, gint tv_fraction, gboolean immediately);
+
+void ags_osc_builder_real_append_message(AgsOscBuilder *osc_builder,
+					 AgsOscBuilderBundle *parent_bundle,
+					 gchar *address_pattern,
+					 gchar *type_tag);
+
+void ags_osc_builder_real_append_value(AgsOscBuilder *osc_builder,
+				       AgsOscBuilderMessage *message,
+				       gint type,
+				       GValue *value);
+
 /**
  * SECTION:ags_osc_builder
  * @short_description: OSC buidler
@@ -110,6 +131,142 @@ ags_osc_builder_class_init(AgsOscBuilderClass *osc_builder)
   gobject->get_property = ags_osc_builder_get_property;  
 
   gobject->finalize = ags_osc_builder_finalize;
+
+  /* properties */
+
+  /* AgsOscBuilderClass */
+  osc_builder->osc_putc = ags_osc_builder_real_osc_putc;
+  osc_builder->on_error = ags_osc_builder_real_on_error;
+
+  osc_builder->append_packet = ags_osc_builder_real_append_packet;
+  osc_builder->append_bundle = ags_osc_builder_real_append_bundle;
+  osc_builder->append_message = ags_osc_builder_real_append_message;
+  osc_builder->append_value = ags_osc_builder_real_append_value;
+
+  /* signals */
+  /**
+   * AgsOscBuilder::osc-putc:
+   * @osc_builder: the builder
+   * @error: the #GError
+   *
+   * The ::osc-putc signal is emited during putting char to file.
+   *
+   * Since: 2.1.0
+   */
+  osc_builder_signals[OSC_PUTC] =
+    g_signal_new("osc-putc",
+		 G_TYPE_FROM_CLASS(osc_builder),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsOscBuilderClass, osc_putc),
+		 NULL, NULL,
+		 g_cclosure_marshal_VOID__INT,
+		 G_TYPE_NONE, 1,
+		 G_TYPE_INT);
+
+  /**
+   * AgsOscBuilder::on-error:
+   * @osc_builder: the builder
+   * @error: the #GError
+   *
+   * The ::on-error signal is emited during building of event.
+   *
+   * Since: 2.1.0
+   */
+  osc_builder_signals[ON_ERROR] =
+    g_signal_new("on-error",
+		 G_TYPE_FROM_CLASS(osc_builder),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsOscBuilderClass, on_error),
+		 NULL, NULL,
+		 g_cclosure_marshal_VOID__POINTER,
+		 G_TYPE_NONE, 1,
+		 G_TYPE_POINTER);
+
+  /**
+   * AgsOscBuilder::append-packet:
+   * @osc_builder: the builder
+   *
+   * The ::append-packet signal is emited during building packet.
+   *
+   * Since: 2.1.0
+   */
+  osc_builder_signals[APPEND_PACKET] =
+    g_signal_new("append-packet",
+		 G_TYPE_FROM_CLASS(osc_builder),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsOscBuilderClass, append_packet),
+		 NULL, NULL,
+		 g_cclosure_marshal_VOID__VOID,
+		 G_TYPE_NONE, 0);
+
+  /**
+   * AgsOscBuilder::append-bundle:
+   * @osc_builder: the builder
+   * @parent_bundle: the parent #AgsOscBuilderBundle-struct or %NULL
+   * @tv_secs: time value secondes since midnight January 1900
+   * @tv_fraction: time value fractions of second
+   * @immediately: if %TRUE apply immediately, otherwise %FALSE
+   *
+   * The ::append-bundle signal is emited during building bundle.
+   *
+   * Since: 2.1.0
+   */
+  osc_builder_signals[APPEND_BUNDLE] =
+    g_signal_new("append-bundle",
+		 G_TYPE_FROM_CLASS(osc_builder),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsOscBuilderClass, append_bundle),
+		 NULL, NULL,
+		 ags_cclosure_marshal_VOID__POINTER_INT_INT_BOOLEAN,
+		 G_TYPE_NONE, 4,
+		 G_TYPE_POINTER,
+		 G_TYPE_INT,
+		 G_TYPE_INT,
+		 G_TYPE_BOOLEAN);
+
+  /**
+   * AgsOscBuilder::append-message:
+   * @osc_builder: the builder
+   * @parent_bundle: the parent #AgsOscBuilderBundle-struct or %NULL
+   * @address_pattern: the address pattern string
+   * @type_tag: the type tag string
+   *
+   * The ::append-message signal is emited during building message.
+   *
+   * Since: 2.1.0
+   */
+  osc_builder_signals[APPEND_MESSAGE] =
+    g_signal_new("append-message",
+		 G_TYPE_FROM_CLASS(osc_builder),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsOscBuilderClass, append_message),
+		 NULL, NULL,
+		 ags_cclosure_marshal_VOID__POINTER_POINTER_POINTER,
+		 G_TYPE_NONE, 3,
+		 G_TYPE_POINTER,
+		 G_TYPE_POINTER,
+		 G_TYPE_POINTER);
+
+  /**
+   * AgsOscBuilder::append-value:
+   * @osc_builder: the builder
+   * @type: the type as ASCII char
+   * @value: the #GValue-struct
+   *
+   * The ::append-value signal is emited during building value.
+   *
+   * Since: 2.1.0
+   */
+  osc_builder_signals[APPEND_VALUE] =
+    g_signal_new("append-value",
+		 G_TYPE_FROM_CLASS(osc_builder),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsOscBuilderClass, append_value),
+		 NULL, NULL,
+		 ags_cclosure_marshal_VOID__INT_POINTER,
+		 G_TYPE_NONE, 2,
+		 G_TYPE_INT,
+		 G_TYPE_POINTER);
 }
 
 void
@@ -138,6 +295,9 @@ ags_osc_builder_init(AgsOscBuilder *osc_builder)
   osc_builder->offset = 0;
   
   osc_builder->packet = NULL;
+
+  osc_builder->current_type_tag = NULL;
+  osc_builder->offset_type_tag = NULL;
 }
 
 void
@@ -385,6 +545,13 @@ ags_osc_builder_message_free(AgsOscBuilderMessage *message)
   free(message);
 }
 
+void
+ags_osc_builder_real_osc_putc(AgsOscBuilder *osc_builder,
+			      gint c)
+{
+  //TODO:JK: implement me
+}
+
 /**
  * ags_osc_builder_osc_putc:
  * @osc_builder: the #AgsOscBuilder
@@ -397,6 +564,19 @@ ags_osc_builder_message_free(AgsOscBuilderMessage *message)
 void
 ags_osc_builder_osc_putc(AgsOscBuilder *osc_builder,
 			 gint c)
+{
+  g_return_if_fail(AGS_IS_OSC_BUILDER(osc_builder));
+  
+  g_object_ref((GObject *) osc_builder);
+  g_signal_emit(G_OBJECT(osc_builder),
+		osc_builder_signals[OSC_PUTC], 0,
+		c);
+  g_object_unref((GObject *) osc_builder);
+}
+
+void
+ags_osc_builder_real_on_error(AgsOscBuilder *osc_builder,
+			      GError **error)
 {
   //TODO:JK: implement me
 }
@@ -414,6 +594,18 @@ void
 ags_osc_builder_on_error(AgsOscBuilder *osc_builder,
 			 GError **error)
 {
+  g_return_if_fail(AGS_IS_OSC_BUILDER(osc_builder));
+  
+  g_object_ref((GObject *) osc_builder);
+  g_signal_emit(G_OBJECT(osc_builder),
+		osc_builder_signals[ON_ERROR], 0,
+		error);
+  g_object_unref((GObject *) osc_builder);
+}
+
+void
+ags_osc_builder_real_append_packet(AgsOscBuilder *osc_builder)
+{
   //TODO:JK: implement me
 }
 
@@ -425,6 +617,19 @@ ags_osc_builder_on_error(AgsOscBuilder *osc_builder,
  */
 void
 ags_osc_builder_append_packet(AgsOscBuilder *osc_builder)
+{
+  g_return_if_fail(AGS_IS_OSC_BUILDER(osc_builder));
+  
+  g_object_ref((GObject *) osc_builder);
+  g_signal_emit(G_OBJECT(osc_builder),
+		osc_builder_signals[APPEND_PACKET], 0);
+  g_object_unref((GObject *) osc_builder);
+}
+
+void
+ags_osc_builder_real_append_bundle(AgsOscBuilder *osc_builder,
+				   AgsOscBuilderBundle *parent_bundle,
+				   gint tv_secs, gint tv_fraction, gboolean immediately)
 {
   //TODO:JK: implement me
 }
@@ -444,7 +649,23 @@ ags_osc_builder_append_packet(AgsOscBuilder *osc_builder)
 void
 ags_osc_builder_append_bundle(AgsOscBuilder *osc_builder,
 			      AgsOscBuilderBundle *parent_bundle,
-			      gint32 tv_secs, gint32 tv_fraction, gboolean immediately)
+			      gint tv_secs, gint tv_fraction, gboolean immediately)
+{
+  g_return_if_fail(AGS_IS_OSC_BUILDER(osc_builder));
+  
+  g_object_ref((GObject *) osc_builder);
+  g_signal_emit(G_OBJECT(osc_builder),
+		osc_builder_signals[APPEND_BUNDLE], 0,
+		parent_bundle,
+		tv_secs, tv_fraction, immediately);
+  g_object_unref((GObject *) osc_builder);
+}
+
+void
+ags_osc_builder_real_append_message(AgsOscBuilder *osc_builder,
+				    AgsOscBuilderBundle *parent_bundle,
+				    gchar *address_pattern,
+				    gchar *type_tag)
 {
   //TODO:JK: implement me
 }
@@ -466,6 +687,22 @@ ags_osc_builder_append_message(AgsOscBuilder *osc_builder,
 			       gchar *address_pattern,
 			       gchar *type_tag)
 {
+  g_return_if_fail(AGS_IS_OSC_BUILDER(osc_builder));
+  
+  g_object_ref((GObject *) osc_builder);
+  g_signal_emit(G_OBJECT(osc_builder),
+		osc_builder_signals[APPEND_MESSAGE], 0,
+		parent_bundle,
+		address_pattern, type_tag);
+  g_object_unref((GObject *) osc_builder);
+}
+
+void
+ags_osc_builder_real_append_value(AgsOscBuilder *osc_builder,
+				  AgsOscBuilderMessage *message,
+				  gint type,
+				  GValue *value)
+{
   //TODO:JK: implement me
 }
 
@@ -482,10 +719,16 @@ ags_osc_builder_append_message(AgsOscBuilder *osc_builder,
 void
 ags_osc_builder_append_value(AgsOscBuilder *osc_builder,
 			     AgsOscBuilderMessage *message,
-			     gchar type,
+			     gint type,
 			     GValue *value)
 {
-  //TODO:JK: implement me
+  g_return_if_fail(AGS_IS_OSC_BUILDER(osc_builder));
+  
+  g_object_ref((GObject *) osc_builder);
+  g_signal_emit(G_OBJECT(osc_builder),
+		osc_builder_signals[APPEND_VALUE], 0,
+		type, value);
+  g_object_unref((GObject *) osc_builder);
 }
 
 /**

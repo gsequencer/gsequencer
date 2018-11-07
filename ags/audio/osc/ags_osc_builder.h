@@ -37,6 +37,10 @@ typedef struct _AgsOscBuilderPacket AgsOscBuilderPacket;
 typedef struct _AgsOscBuilderBundle AgsOscBuilderBundle;
 typedef struct _AgsOscBuilderMessage AgsOscBuilderMessage;
 
+typedef enum{
+  AGS_OSC_BUILDER_ADD_VALUE            = 1,
+}AgsOscBuilderFlags;
+
 struct _AgsOscBuilder
 {
   GObject gobject;
@@ -52,6 +56,9 @@ struct _AgsOscBuilder
   guint64 offset;
 
   GList *packet;
+
+  gchar *current_type_tag;
+  gchar *offset_type_tag;
 };
 
 struct _AgsOscBuilderClass
@@ -68,7 +75,7 @@ struct _AgsOscBuilderClass
 
   void (*append_bundle)(AgsOscBuilder *osc_builder,
 			AgsOscBuilderBundle *parent_bundle,
-			gint32 tv_secs, gint32 tv_fraction, gboolean immediately);
+			gint tv_secs, gint tv_fraction, gboolean immediately);
 
   void (*append_message)(AgsOscBuilder *osc_builder,
 			 AgsOscBuilderBundle *parent_bundle,
@@ -77,7 +84,7 @@ struct _AgsOscBuilderClass
 
   void (*append_value)(AgsOscBuilder *osc_builder,
 		       AgsOscBuilderMessage *message,
-		       gchar type,
+		       gint type,
 		       GValue *value);
 };
 
@@ -139,7 +146,7 @@ void ags_osc_builder_append_packet(AgsOscBuilder *osc_builder);
 
 void ags_osc_builder_append_bundle(AgsOscBuilder *osc_builder,
 				   AgsOscBuilderBundle *parent_bundle,
-				   gint32 tv_secs, gint32 tv_fraction, gboolean immediately);
+				   gint tv_secs, gint tv_fraction, gboolean immediately);
 
 void ags_osc_builder_append_message(AgsOscBuilder *osc_builder,
 				    AgsOscBuilderBundle *parent_bundle,
@@ -148,7 +155,7 @@ void ags_osc_builder_append_message(AgsOscBuilder *osc_builder,
 
 void ags_osc_builder_append_value(AgsOscBuilder *osc_builder,
 				  AgsOscBuilderMessage *message,
-				  gchar type,
+				  gint type,
 				  GValue *value);
 
 /*  */
