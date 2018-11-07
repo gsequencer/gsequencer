@@ -48,6 +48,31 @@ void ags_osc_buffer_util_put_blob(unsigned char *buffer,
 void ags_osc_buffer_util_get_blob(unsigned char *buffer,
 				  gint32 *data_size, unsigned char **data);
 
+void ags_osc_buffer_util_put_int64(unsigned char *buffer,
+				   gint64 val);
+void ags_osc_buffer_util_get_int64(unsigned char *buffer,
+				   gint64 *val);
+
+void ags_osc_buffer_util_put_double(unsigned char *buffer,
+				    gdouble val);
+void ags_osc_buffer_util_get_double(unsigned char *buffer,
+				    gdouble *val);
+
+void ags_osc_buffer_util_put_char(unsigned char *buffer,
+				  gchar val);
+void ags_osc_buffer_util_get_char(unsigned char *buffer,
+				  gchar *val);
+
+void ags_osc_buffer_util_put_rgba(unsigned char *buffer,
+				  gint8 r, gint8 g, gint8 b, gint8 a);
+void ags_osc_buffer_util_get_rgba(unsigned char *buffer,
+				  gint8 *r, gint8 *g, gint8 *b, gint8 *a);
+
+void ags_osc_buffer_util_put_midi(unsigned char *buffer,
+				  gint8 port, gint8 status_byte, gint8 data0, gint8 data1);
+void ags_osc_buffer_util_get_midi(unsigned char *buffer,
+				  gint8 *port, gint8 *status_byte, gint8 *data0, gint8 *data1);
+
 void ags_osc_buffer_util_put_packet(unsigned char *buffer,
 				    gint32 packet_size, unsigned char *packet);
 void ags_osc_buffer_util_get_packet(unsigned char *buffer,

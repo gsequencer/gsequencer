@@ -380,6 +380,311 @@ ags_osc_buffer_util_get_blob(unsigned char *buffer,
 }
 
 /**
+ * ags_osc_buffer_util_put_int64:
+ * @buffer: the unsigned char buffer
+ * @val: the 64 bit integer
+ * 
+ * Put @val to @buffer.
+ * 
+ * Since: 2.1.0
+ */
+void
+ags_osc_buffer_util_put_int64(unsigned char *buffer,
+			      gint64 val)
+{
+  if(buffer == NULL){
+    return;
+  }
+
+  buffer[0] = (val & (0xff << 56)) >> 56;
+  buffer[1] = (val & (0xff << 48)) >> 48;
+  buffer[2] = (val & (0xff << 40)) >> 40;
+  buffer[3] = (val & (0xff << 32)) >> 32;
+  buffer[4] = (val & (0xff << 24)) >> 24;
+  buffer[5] = (val & (0xff << 16)) >> 16;
+  buffer[6] = (val & (0xff << 8)) >> 8;
+  buffer[7] = val & 0xff;
+}
+
+/**
+ * ags_osc_buffer_util_get_int64:
+ * @buffer: the unsigned char buffer
+ * @val: the return location of 64 bit integer
+ * 
+ * Get @val from @buffer.
+ * 
+ * Since: 2.1.0
+ */
+void
+ags_osc_buffer_util_get_int64(unsigned char *buffer,
+			      gint64 *val)
+{
+  gint64 tmp;
+  
+  if(buffer == NULL){
+    return;
+  }
+
+  tmp = (buffer[0] & 0xff);
+  tmp = (tmp << 8) + (buffer[1] & 0xff);
+  tmp = (tmp << 8) + (buffer[2] & 0xff);
+  tmp = (tmp << 8) + (buffer[3] & 0xff);
+  tmp = (tmp << 8) + (buffer[4] & 0xff);
+  tmp = (tmp << 8) + (buffer[5] & 0xff);
+  tmp = (tmp << 8) + (buffer[6] & 0xff);
+  tmp = (tmp << 8) + (buffer[7] & 0xff);
+  
+  if(val != NULL){
+    *val = tmp;
+  }
+}
+
+/**
+ * ags_osc_buffer_util_put_double:
+ * @buffer: the unsigned char buffer
+ * @val: the double floating point value
+ * 
+ * Put @val to @buffer.
+ * 
+ * Since: 2.1.0
+ */
+void
+ags_osc_buffer_util_put_double(unsigned char *buffer,
+			       gdouble val)
+{
+  union{
+    guint64 val;
+    GDoubleIEEE754 ieee_double;
+  }data;
+
+  if(buffer == NULL){
+    return;
+  }
+
+  data.ieee_double.v_double = val;
+
+  buffer[0] = (data.val & (0xff << 56)) >> 56;
+  buffer[1] = (data.val & (0xff << 48)) >> 48;
+  buffer[2] = (data.val & (0xff << 40)) >> 40;
+  buffer[3] = (data.val & (0xff << 32)) >> 32;
+  buffer[4] = (data.val & (0xff << 24)) >> 24;
+  buffer[5] = (data.val & (0xff << 16)) >> 16;
+  buffer[6] = (data.val & (0xff << 8)) >> 8;
+  buffer[7] = data.val & 0xff;
+}
+
+/**
+ * ags_osc_buffer_util_get_double:
+ * @buffer: the unsigned char buffer
+ * @val: the return location of double floating point value
+ * 
+ * Get @val from @buffer.
+ * 
+ * Since: 2.1.0
+ */
+void
+ags_osc_buffer_util_get_double(unsigned char *buffer,
+			       gdouble *val)
+{
+  union{
+    guint64 val;
+    GDoubleIEEE754 ieee_double;
+  }data;
+
+  if(buffer == NULL){
+    return;
+  }
+
+  data.val = (buffer[0] & 0xff);
+  data.val = (data.val << 8) + (buffer[1] & 0xff);
+  data.val = (data.val << 8) + (buffer[2] & 0xff);
+  data.val = (data.val << 8) + (buffer[3] & 0xff);
+  data.val = (data.val << 8) + (buffer[4] & 0xff);
+  data.val = (data.val << 8) + (buffer[5] & 0xff);
+  data.val = (data.val << 8) + (buffer[6] & 0xff);
+  data.val = (data.val << 8) + (buffer[7] & 0xff);
+
+  if(val != NULL){
+    *val = data.ieee_double.v_double;
+  }
+}
+
+/**
+ * ags_osc_buffer_util_put_char:
+ * @buffer: the unsigned char buffer
+ * @val: the ASCII char
+ * 
+ * Put @val to @buffer.
+ * 
+ * Since: 2.1.0
+ */
+void
+ags_osc_buffer_util_put_char(unsigned char *buffer,
+			     gchar val)
+{
+  if(buffer == NULL){
+    return;
+  }
+  
+  buffer[0] = 0x0;
+  buffer[1] = 0x0;
+  buffer[2] = 0x0;
+  buffer[3] = val;
+}
+
+/**
+ * ags_osc_buffer_util_get_char:
+ * @buffer: the unsigned char buffer
+ * @val: the return location of ASCII char
+ * 
+ * Get @val from @buffer.
+ * 
+ * Since: 2.1.0
+ */
+void
+ags_osc_buffer_util_get_char(unsigned char *buffer,
+			     gchar *val)
+{
+  gint32 tmp;
+  
+  if(buffer == NULL){
+    return;
+  }
+
+  tmp = (buffer[3] & 0xff);
+
+  if(val != NULL){
+    *val = tmp;
+  }
+}
+
+/**
+ * ags_osc_buffer_util_put_rgba:
+ * @buffer: the unsigned char buffer
+ * @r: the red value
+ * @g: the green value
+ * @b: the blue value
+ * @a: the alpha value
+ * 
+ * Put RGBA color specified by @r, @g, @b and @a to @buffer.
+ * 
+ * Since: 2.1.0
+ */
+void
+ags_osc_buffer_util_put_rgba(unsigned char *buffer,
+			     gint8 r, gint8 g, gint8 b, gint8 a)
+{
+  if(buffer == NULL){
+    return;
+  }
+
+  buffer[0] = r;
+  buffer[1] = g;
+  buffer[2] = b;
+  buffer[3] = a;
+}
+
+/**
+ * ags_osc_buffer_util_get_rgba:
+ * @buffer: the unsigned char buffer
+ * @r: the return location of red value
+ * @g: the return location of green value
+ * @b: the return location of blue value
+ * @a: the return location of alpha value
+ * 
+ * Get RGBA color specified by @r, @g, @b and @a from @buffer.
+ * 
+ * Since: 2.1.0
+ */
+void
+ags_osc_buffer_util_get_rgba(unsigned char *buffer,
+			     gint8 *r, gint8 *g, gint8 *b, gint8 *a)
+{  
+  if(buffer == NULL){
+    return;
+  }
+ 
+  if(r != NULL){
+    *r = buffer[0];
+  }
+
+  if(g != NULL){
+    *g = buffer[0];
+  }
+
+  if(b != NULL){
+    *b = buffer[0];
+  }
+
+  if(a != NULL){
+    *a = buffer[0];
+  }
+}
+
+/**
+ * ags_osc_buffer_util_put_midi:
+ * @buffer: the unsigned char buffer
+ * @port: the port
+ * @status_byte: the status byte
+ * @data0: the first piece of data
+ * @data1: the second piece of data
+ * 
+ * Put MIDI to @buffer.
+ * 
+ * Since: 2.1.0
+ */
+void
+ags_osc_buffer_util_put_midi(unsigned char *buffer,
+			     gint8 port, gint8 status_byte, gint8 data0, gint8 data1)
+{
+  if(buffer == NULL){
+    return;
+  }
+
+  buffer[0] = port;
+  buffer[1] = status_byte;
+  buffer[2] = data0;
+  buffer[3] = data1;
+}
+
+/**
+ * ags_osc_buffer_util_get_midi:
+ * @buffer: the unsigned char buffer
+ * @port: the return location of port
+ * @status_byte: the return location of status byte
+ * @data0: the return location of first piece of data
+ * @data1: the return location of second piece of data
+ * 
+ * Get MIDI from @buffer.
+ * 
+ * Since: 2.1.0
+ */
+void
+ags_osc_buffer_util_get_midi(unsigned char *buffer,
+			     gint8 *port, gint8 *status_byte, gint8 *data0, gint8 *data1)
+{
+  if(buffer == NULL){
+    return;
+  }
+ 
+  if(port != NULL){
+    *port = buffer[0];
+  }
+
+  if(status_byte != NULL){
+    *status_byte = buffer[0];
+  }
+
+  if(data0 != NULL){
+    *data0 = buffer[0];
+  }
+
+  if(data1 != NULL){
+    *data1 = buffer[0];
+  }
+}
+
+/**
  * ags_osc_buffer_util_put_packet:
  * @buffer: the unsigned char buffer
  * @packet_size: the packet's size
@@ -660,6 +965,8 @@ ags_osc_buffer_util_get_bundle(unsigned char *buffer,
     if(immediately != NULL){
       *immediately = FALSE;
     }
+
+    return;
   }
 
   buffer += 7;
