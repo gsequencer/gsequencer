@@ -281,6 +281,7 @@ EXTRA_DIST += \
 	$(top_srcdir)/ags/server/security/ags_certificate.dtd \
 	$(top_srcdir)/ags/server/security/ags_password_store.dtd \
 	$(top_srcdir)/ags/audio/midi/ags_midi_file.dtd \
+	$(top_srcdir)/ags/audio/osc/ags_osc_file.dtd \
 	$(top_srcdir)/ags/file/ags_file.dtd \
 	$(top_srcdir)/ags/X/file/ags_simple_file.dtd \
 	$(top_srcdir)/ags.xsl $(top_srcdir)/ags-simple.xsl $(top_srcdir)/ags/object/ags_marshallers.list
@@ -913,6 +914,8 @@ deprecated_libags_audio_osc_h_sources =
 libags_audio_osc_h_sources = \
 	$(deprecated_libags_audio_osc_h_sources) \
 	ags/audio/osc/ags_osc_buffer_util.h \
+	ags/audio/osc/ags_osc_builder.h \
+	ags/audio/osc/ags_osc_parser.h \
 	ags/audio/osc/ags_osc_util.h
 
 deprecated_libags_audio_osc_c_sources =
@@ -920,6 +923,8 @@ deprecated_libags_audio_osc_c_sources =
 libags_audio_osc_c_sources = \
 	$(deprecated_libags_audio_osc_c_sources) \
 	ags/audio/osc/ags_osc_buffer_util.c \
+	ags/audio/osc/ags_osc_builder.c \
+	ags/audio/osc/ags_osc_parser.c \
 	ags/audio/osc/ags_osc_util.c
 
 # libags-audio - jack
@@ -2001,6 +2006,7 @@ install-data-local:
 	install -c -p -m 644 $(top_srcdir)/gsequencer.share/styles/ags.rc $(DESTDIR)/$(datadir)/gsequencer/styles/ags.rc
 	install -c -p -m 644 $(top_srcdir)/ags/X/file/ags_simple_file.dtd $(DESTDIR)/$(datadir)/xml/gsequencer/schema/dtd/$(PACKAGE_VERSION)/
 	install -c -p -m 644 $(top_srcdir)/ags/audio/midi/ags_midi_file.dtd $(DESTDIR)/$(datadir)/xml/gsequencer/schema/dtd/$(PACKAGE_VERSION)/
+	install -c -p -m 644 $(top_srcdir)/ags/audio/osc/ags_osc_file.dtd $(DESTDIR)/$(datadir)/xml/gsequencer/schema/dtd/$(PACKAGE_VERSION)/
 	install -c -p -m 644 $(top_srcdir)/ags/file/ags_file.dtd $(DESTDIR)/$(datadir)/xml/gsequencer/schema/dtd/$(PACKAGE_VERSION)/
 	install -c -p -m 644 $(top_srcdir)/ags.xsl $(DESTDIR)/$(datadir)/xml/gsequencer/stylesheet/ags-xsl/midi-xml/
 	install -c -p -m 644 $(top_srcdir)/ags-simple.xsl $(DESTDIR)/$(datadir)/xml/gsequencer/stylesheet/ags-xsl/midi-xml/

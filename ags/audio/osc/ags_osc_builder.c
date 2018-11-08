@@ -21,6 +21,7 @@
 
 #include <ags/libags.h>
 
+#include <ags/audio/osc/ags_osc_util.h>
 #include <ags/audio/osc/ags_osc_buffer_util.h>
 
 void ags_osc_builder_class_init(AgsOscBuilderClass *osc_builder);
@@ -79,7 +80,7 @@ enum{
 };
 
 enum{
-  PUTC,
+  OSC_PUTC,
   ON_ERROR,
   APPEND_PACKET,
   APPEND_BUNDLE,
@@ -603,8 +604,8 @@ ags_osc_builder_message_alloc(guint64 offset)
 
   message->data = NULL;
   
-  bundle->packet = NULL;  
-  bundle->parent_bundle = NULL;
+  message->packet = NULL;  
+  message->parent_bundle = NULL;
 
   return(message);
 }
@@ -941,7 +942,8 @@ ags_osc_builder_real_append_value(AgsOscBuilder *osc_builder,
 					   length + 1);
 
       ags_osc_buffer_util_put_string(message->data + message->data_length,
-				     str);
+				     str,
+				     -1);
 
       message->data_length += (length + 1);
       osc_builder->offset += (length + 1);
@@ -1036,7 +1038,8 @@ ags_osc_builder_real_append_value(AgsOscBuilder *osc_builder,
 					   length + 1);
 
       ags_osc_buffer_util_put_string(message->data + message->data_length,
-				     str);
+				     str,
+				     -1);
 
       message->data_length += (length + 1);
       osc_builder->offset += (length + 1);
@@ -1192,7 +1195,7 @@ ags_osc_builder_build(AgsOscBuilder *osc_builder)
 					  AgsOscBuilderMessage *message);
 
   void ags_osc_builder_build_bundle(AgsOscBuilder *osc_builder,
-				    AgsOscBuilderBundle *bundle)
+				    AgsOscBuilderBundle *current_bundle)
   {
     GList *message_start, *message;
     GList *bundle_start, *bundle;
@@ -1205,16 +1208,16 @@ ags_osc_builder_build(AgsOscBuilder *osc_builder)
     offset += 8;
 
     /* time tag */
-    ags_osc_buffer_util_put_timetag(data + offsedt,
-				    bundle->tv_secs, bundle->tv_fraction, bundle->immediately);
+    ags_osc_buffer_util_put_timetag(data + offset,
+				    current_bundle->tv_secs, current_bundle->tv_fraction, current_bundle->immediately);
     
     offset += 8;
 
     /* content */
-    message_start = g_list_copy(AGS_OSC_BUILDER_BUNDLE(bundle->data)->message);
+    message_start = g_list_copy(current_bundle->message);
     message_start = g_list_reverse(message_start);
 
-    bundle_start = g_list_copy(AGS_OSC_BUILDER_BUNDLE(bundle->data)->bundle);
+    bundle_start = g_list_copy(current_bundle->bundle);
     bundle_start = g_list_reverse(bundle_start);
 
     message = message_start;
@@ -1348,6 +1351,9 @@ ags_osc_builder_build(AgsOscBuilder *osc_builder)
   }
 
   g_list_free(packet_start);
+
+  osc_builder->data = data;
+  osc_builder->length = offset;
 }
 
 /**

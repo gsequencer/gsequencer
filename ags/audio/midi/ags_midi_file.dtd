@@ -7,7 +7,7 @@
 <!-- root node -->
 <!ELEMENT midi (midi-header, midi-tracks)>
 
-<!ELEMENT midi-header
+<!ELEMENT midi-header EMPTY>
 <!ATTLIST midi-header
 	  offset             NMTOKEN      #REQUIRED
 	  format             NMTOKEN      #REQUIRED

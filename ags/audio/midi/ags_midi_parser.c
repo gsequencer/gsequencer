@@ -165,6 +165,7 @@ ags_midi_parser_class_init(AgsMidiParserClass *midi_parser)
   
   gobject->finalize = ags_midi_parser_finalize;
 
+  /* properties */
   /**
    * AgsMidiParser:file:
    *
