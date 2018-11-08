@@ -40,6 +40,17 @@ void ags_osc_parser_real_on_error(AgsOscParser *osc_parser,
 				  GError **error);
 
 xmlDoc* ags_osc_parser_real_parse_full(AgsOscParser *osc_parser);
+xmlNode* ags_osc_parser_real_parse_bytes(AgsOscParser *osc_parser,
+					 unsigned char *osc_buffer,
+					 guint buffer_length);
+
+xmlNode* ags_osc_parser_real_packet(AgsOscParser *osc_parser);
+
+xmlNode* ags_osc_parser_real_bundle(AgsOscParser *osc_parser);
+
+xmlNode* ags_osc_parser_real_message(AgsOscParser *osc_parser);
+
+xmlNode* ags_osc_parser_real_value(AgsOscParser *osc_parser);
 
 /**
  * SECTION:ags_osc_parser
@@ -123,6 +134,15 @@ ags_osc_parser_class_init(AgsOscParserClass *osc_parser)
   osc_parser->on_error = ags_osc_parser_real_on_error;
 
   osc_parser->parse_full = ags_osc_parser_real_parse_full;
+  osc_parser->parse_bytes = ags_osc_parser_real_parse_bytes;
+
+  osc_parser->packet = ags_osc_parser_real_packet;
+
+  osc_parser->bundle = ags_osc_parser_real_bundle;
+
+  osc_parser->packet = ags_osc_parser_real_packet;
+
+  osc_parser->value = ags_osc_parser_real_value;
 
   /* signals */
   /**
@@ -161,6 +181,124 @@ ags_osc_parser_class_init(AgsOscParserClass *osc_parser)
 		 g_cclosure_marshal_VOID__POINTER,
 		 G_TYPE_NONE, 1,
 		 G_TYPE_POINTER);
+
+  /**
+   * AgsOscParser::parse-full:
+   * @osc_parser: the parser
+   *
+   * The ::parse-full signal is emited during parsing of osc file.
+   *
+   * Returns: The XML doc
+   *
+   * Since: 2.1.0
+   */
+  osc_parser_signals[PARSE_FULL] =
+    g_signal_new("parse-full",
+		 G_TYPE_FROM_CLASS(osc_parser),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsOscParserClass, parse_full),
+		 NULL, NULL,
+		 ags_cclosure_marshal_POINTER__VOID,
+		 G_TYPE_POINTER, 0);
+
+  /**
+   * AgsOscParser::parse-bytes:
+   * @osc_parser: the parser
+   * @buffer: the OSC data
+   * @buffer_length: the buffer's length
+   *
+   * The ::parse-bytes signal is emited during parsing of bytes.
+   *
+   * Returns: The XML node representing the event
+   *
+   * Since: 2.1.0
+   */
+  osc_parser_signals[PARSE_BYTES] =
+    g_signal_new("parse-bytes",
+		 G_TYPE_FROM_CLASS(osc_parser),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsOscParserClass, parse_bytes),
+		 NULL, NULL,
+		 ags_cclosure_marshal_POINTER__POINTER_UINT,
+		 G_TYPE_POINTER, 2,
+		 G_TYPE_POINTER,
+		 G_TYPE_UINT);
+  
+  /**
+   * AgsOscParser::packet:
+   * @osc_parser: the parser
+   *
+   * The ::packet signal is emited during parsing.
+   *
+   * Returns: The XML node representing packet
+   *
+   * Since: 2.1.0
+   */
+  osc_parser_signals[PACKET] =
+    g_signal_new("packet",
+		 G_TYPE_FROM_CLASS(osc_parser),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsOscParserClass, packet),
+		 NULL, NULL,
+		 ags_cclosure_marshal_POINTER__VOID,
+		 G_TYPE_POINTER, 0);
+
+  /**
+   * AgsOscParser::bundle:
+   * @osc_parser: the parser
+   *
+   * The ::bundle signal is emited during parsing.
+   *
+   * Returns: The XML node representing bundle
+   *
+   * Since: 2.1.0
+   */
+  osc_parser_signals[BUNDLE] =
+    g_signal_new("bundle",
+		 G_TYPE_FROM_CLASS(osc_parser),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsOscParserClass, bundle),
+		 NULL, NULL,
+		 ags_cclosure_marshal_POINTER__VOID,
+		 G_TYPE_POINTER, 0);
+
+  /**
+   * AgsOscParser::message:
+   * @osc_parser: the parser
+   *
+   * The ::message signal is emited during parsing.
+   *
+   * Returns: The XML node representing message
+   *
+   * Since: 2.1.0
+   */
+  osc_parser_signals[MESSAGE] =
+    g_signal_new("message",
+		 G_TYPE_FROM_CLASS(osc_parser),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsOscParserClass, message),
+		 NULL, NULL,
+		 ags_cclosure_marshal_POINTER__VOID,
+		 G_TYPE_POINTER, 0);
+
+  /**
+   * AgsOscParser::value:
+   * @osc_parser: the parser
+   *
+   * The ::value signal is emited during parsing.
+   *
+   * Returns: The XML node representing value
+   *
+   * Since: 2.1.0
+   */
+  osc_parser_signals[VALUE] =
+    g_signal_new("value",
+		 G_TYPE_FROM_CLASS(osc_parser),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsOscParserClass, value),
+		 NULL, NULL,
+		 ags_cclosure_marshal_POINTER__VOID,
+		 G_TYPE_POINTER, 0);
 }
 
 void
@@ -272,10 +410,216 @@ ags_osc_parser_get_class_mutex()
   return(&ags_osc_parser_class_mutex);
 }
 
+/**
+ * ags_osc_parser_read_gint32:
+ * @osc_parser: the #AgsOscParser
+ * 
+ * Read 32 bit integer.
+ * 
+ * Returns: the gint32 read
+ * 
+ * Since: 2.1.0
+ */
+gint32
+ags_osc_parser_read_gint32(AgsOscParser *osc_parser)
+{
+  char str[4];
+  gint32 value;
+  
+  str[0] = (char) 0xff & ags_osc_parser_osc_getc(osc_parser);
+  str[1] = (char) 0xff & ags_osc_parser_osc_getc(osc_parser);
+  str[2] = (char) 0xff & ags_osc_parser_osc_getc(osc_parser);
+  str[3] = (char) 0xff & ags_osc_parser_osc_getc(osc_parser);
+
+  value = (str[0] & 0xff);
+  value = (value<<8) + (str[1] & 0xff);
+  value = (value<<8) + (str[2] & 0xff);
+  value = (value<<8) + (str[3] & 0xff);
+  
+  return(value);
+}
+
+/**
+ * ags_osc_parser_read_gint64:
+ * @osc_parser: the #AgsOscParser
+ * 
+ * Read 64 bit integer.
+ * 
+ * Returns: the gint64 read
+ * 
+ * Since: 2.1.0
+ */
+gint64
+ags_osc_parser_read_gint64(AgsOscParser *osc_parser)
+{
+  char str[8];
+  gint64 value;
+  
+  str[0] = (char) 0xff & ags_osc_parser_osc_getc(osc_parser);
+  str[1] = (char) 0xff & ags_osc_parser_osc_getc(osc_parser);
+  str[2] = (char) 0xff & ags_osc_parser_osc_getc(osc_parser);
+  str[3] = (char) 0xff & ags_osc_parser_osc_getc(osc_parser);
+  str[4] = (char) 0xff & ags_osc_parser_osc_getc(osc_parser);
+  str[5] = (char) 0xff & ags_osc_parser_osc_getc(osc_parser);
+  str[6] = (char) 0xff & ags_osc_parser_osc_getc(osc_parser);
+  str[7] = (char) 0xff & ags_osc_parser_osc_getc(osc_parser);
+
+  value = (str[0] & 0xff);
+  value = (value << 8) + (str[1] & 0xff);
+  value = (value << 8) + (str[2] & 0xff);
+  value = (value << 8) + (str[3] & 0xff);
+  value = (value << 8) + (str[4] & 0xff);
+  value = (value << 8) + (str[5] & 0xff);
+  value = (value << 8) + (str[6] & 0xff);
+  value = (value << 8) + (str[7] & 0xff);
+  
+  return(value);
+}
+
+/**
+ * ags_osc_parser_read_gfloat:
+ * @osc_parser: the #AgsOscParser
+ * 
+ * Read floating point value.
+ * 
+ * Returns: the gfloat read
+ * 
+ * Since: 2.1.0
+ */
+gfloat
+ags_osc_parser_read_gfloat(AgsOscParser *osc_parser)
+{
+  char str[4];
+  union{
+    guint32 val;
+    GFloatIEEE754 ieee_float;
+  }data;
+  
+  str[0] = (char) 0xff & ags_osc_parser_osc_getc(osc_parser);
+  str[1] = (char) 0xff & ags_osc_parser_osc_getc(osc_parser);
+  str[2] = (char) 0xff & ags_osc_parser_osc_getc(osc_parser);
+  str[3] = (char) 0xff & ags_osc_parser_osc_getc(osc_parser);
+
+  data.val = (str[0] & 0xff);
+  data.val = (data.val<<8) + (str[1] & 0xff);
+  data.val = (data.val<<8) + (str[2] & 0xff);
+  data.val = (data.val<<8) + (str[3] & 0xff);
+  
+  return(data.ieee_float.v_float);
+}
+
+/**
+ * ags_osc_parser_read_gdouble:
+ * @osc_parser: the #AgsOscParser
+ * 
+ * Read double precision floating point value.
+ * 
+ * Returns: the gdouble read
+ * 
+ * Since: 2.1.0
+ */
+gdouble
+ags_osc_parser_read_gdouble(AgsOscParser *osc_parser)
+{
+  char str[8];
+  union{
+    guint64 val;
+    GDoubleIEEE754 ieee_double;
+  }data;
+  
+  str[0] = (char) 0xff & ags_osc_parser_osc_getc(osc_parser);
+  str[1] = (char) 0xff & ags_osc_parser_osc_getc(osc_parser);
+  str[2] = (char) 0xff & ags_osc_parser_osc_getc(osc_parser);
+  str[3] = (char) 0xff & ags_osc_parser_osc_getc(osc_parser);
+  str[4] = (char) 0xff & ags_osc_parser_osc_getc(osc_parser);
+  str[5] = (char) 0xff & ags_osc_parser_osc_getc(osc_parser);
+  str[6] = (char) 0xff & ags_osc_parser_osc_getc(osc_parser);
+  str[7] = (char) 0xff & ags_osc_parser_osc_getc(osc_parser);
+
+  data.val = (str[0] & 0xff);
+  data.val = (data.val << 8) + (str[1] & 0xff);
+  data.val = (data.val << 8) + (str[2] & 0xff);
+  data.val = (data.val << 8) + (str[3] & 0xff);
+  data.val = (data.val << 8) + (str[4] & 0xff);
+  data.val = (data.val << 8) + (str[5] & 0xff);
+  data.val = (data.val << 8) + (str[6] & 0xff);
+  data.val = (data.val << 8) + (str[7] & 0xff);
+  
+  return(data.ieee_double.v_double);
+}
+
+/**
+ * ags_osc_parser_read_text:
+ * @osc_parser: the #AgsOscParser
+ * @length: the length
+ * 
+ * Read text.
+ * 
+ * Returns: the text read as string
+ * 
+ * Since: 2.1.0
+ */
+gchar*
+ags_osc_parser_read_text(AgsOscParser *osc_parser,
+			 gint length)
+{
+  gchar text[AGS_OSC_PARSER_MAX_TEXT_LENGTH + 1];
+
+  gchar c;
+  guint i;
+  
+  memset(text, 0, AGS_OSC_PARSER_MAX_TEXT_LENGTH * sizeof(char));
+  i = 0;
+
+  while((length <= 0 ||
+	 i < length) &&
+	(AGS_OSC_PARSER_EOF & (osc_parser->flags)) == 0 &&
+	i < AGS_OSC_PARSER_MAX_TEXT_LENGTH){
+    (c = (char) 0xff & (ags_osc_parser_osc_getc(osc_parser)));
+    
+    if(c == '\0'){
+      break;
+    }
+
+    text[i] = c;
+    i++;
+  }
+
+  text[i] = '\0';
+    
+  return(g_strdup(text));
+}
+
 int
 ags_osc_parser_real_osc_getc(AgsOscParser *osc_parser)
 {
   //TODO:JK: implement me
+}
+
+/**
+ * ags_osc_parser_osc_getc:
+ * @osc_parser: the #AgsOscParser
+ * 
+ * Read byte.
+ * 
+ * Returns: the byte read
+ * 
+ * Since: 2.1.0
+ */
+int
+ags_osc_parser_osc_getc(AgsOscParser *osc_parser)
+{
+  int c;
+  
+  g_return_val_if_fail(AGS_IS_OSC_PARSER(osc_parser), '\0');
+  
+  g_object_ref((GObject *) osc_parser);
+  g_signal_emit(G_OBJECT(osc_parser),
+		osc_parser_signals[OSC_GETC], 0,
+		&c);
+  g_object_unref((GObject *) osc_parser);
+
+  return(c);
 }
 
 void
@@ -285,10 +629,230 @@ ags_osc_parser_real_on_error(AgsOscParser *osc_parser,
   //TODO:JK: implement me
 }
 
+/**
+ * ags_osc_parser_on_error:
+ * @osc_parser: the #AgsOscParser
+ * @error: the #GError-struct return location
+ * 
+ * On error event.
+ * 
+ * Since: 2.1.0
+ */
+void
+ags_osc_parser_on_error(AgsOscParser *osc_parser,
+			GError **error)
+{
+  g_return_if_fail(AGS_IS_OSC_PARSER(osc_parser));
+  
+  g_object_ref((GObject *) osc_parser);
+  g_signal_emit(G_OBJECT(osc_parser),
+		osc_parser_signals[ON_ERROR], 0,
+		error);
+  g_object_unref((GObject *) osc_parser);
+}
+
 xmlDoc*
 ags_osc_parser_real_parse_full(AgsOscParser *osc_parser)
 {
   //TODO:JK: implement me
+}
+
+/**
+ * ags_osc_parser_parse_full:
+ * @osc_parser: the #AgsOscParser
+ * 
+ * Parse full document.
+ * 
+ * Returns: the parsed XML doc
+ * 
+ * Since: 2.1.0
+ */
+xmlDoc*
+ags_osc_parser_parse_full(AgsOscParser *osc_parser)
+{
+  xmlDoc *doc;
+  
+  g_return_val_if_fail(AGS_IS_OSC_PARSER(osc_parser), NULL);
+  
+  g_object_ref((GObject *) osc_parser);
+  g_signal_emit(G_OBJECT(osc_parser),
+		osc_parser_signals[PARSE_FULL], 0,
+		&doc);
+  g_object_unref((GObject *) osc_parser);
+
+  return(doc);
+}
+
+xmlNode*
+ags_osc_parser_real_parse_bytes(AgsOscParser *osc_parser,
+				unsigned char *osc_buffer,
+				guint buffer_length)
+{
+  xmlNode *node;
+
+  node = NULL;
+  
+  //TODO:JK: implement me
+
+  return(node);
+}
+
+/**
+ * ags_osc_parser_parse_bytes:
+ * @osc_parser: the #AgsOscParser
+ * @osc_buffer: the data buffer
+ * @buffer_length: the length of data buffer
+ * 
+ * Parse bytes.
+ * 
+ * Returns: the parsed XML node
+ * 
+ * Since: 2.1.0
+ */
+xmlNode*
+ags_osc_parser_parse_bytes(AgsOscParser *osc_parser,
+			   unsigned char *osc_buffer,
+			   guint buffer_length)
+{
+  xmlNode *node;
+  
+  g_return_val_if_fail(AGS_IS_OSC_PARSER(osc_parser), NULL);
+  
+  g_object_ref((GObject *) osc_parser);
+  g_signal_emit(G_OBJECT(osc_parser),
+		osc_parser_signals[PARSE_BYTES], 0,
+		&node);
+  g_object_unref((GObject *) osc_parser);
+
+  return(node);
+}
+
+xmlNode*
+ags_osc_parser_real_packet(AgsOscParser *osc_parser)
+{
+  //TODO:JK: implement me
+}
+
+/**
+ * ags_osc_parser_packet:
+ * @osc_parser: the #AgsOscParser
+ * 
+ * Parse OSC packet.
+ * 
+ * Returns: the parsed XML node
+ * 
+ * Since: 2.1.0
+ */
+xmlNode*
+ags_osc_parser_packet(AgsOscParser *osc_parser)
+{
+  xmlNode *node;
+  
+  g_return_val_if_fail(AGS_IS_OSC_PARSER(osc_parser), NULL);
+  
+  g_object_ref((GObject *) osc_parser);
+  g_signal_emit(G_OBJECT(osc_parser),
+		osc_parser_signals[PACKET], 0,
+		&node);
+  g_object_unref((GObject *) osc_parser);
+
+  return(node);
+}
+
+xmlNode*
+ags_osc_parser_real_bundle(AgsOscParser *osc_parser)
+{
+  //TODO:JK: implement me
+}
+
+/**
+ * ags_osc_parser_bundle:
+ * @osc_parser: the #AgsOscParser
+ * 
+ * Parse OSC bundle.
+ * 
+ * Returns: the parsed XML node
+ * 
+ * Since: 2.1.0
+ */
+xmlNode*
+ags_osc_parser_bundle(AgsOscParser *osc_parser)
+{
+  xmlNode *node;
+  
+  g_return_val_if_fail(AGS_IS_OSC_PARSER(osc_parser), NULL);
+  
+  g_object_ref((GObject *) osc_parser);
+  g_signal_emit(G_OBJECT(osc_parser),
+		osc_parser_signals[BUNDLE], 0,
+		&node);
+  g_object_unref((GObject *) osc_parser);
+
+  return(node);
+}
+
+xmlNode*
+ags_osc_parser_real_message(AgsOscParser *osc_parser)
+{
+  //TODO:JK: implement me
+}
+
+/**
+ * ags_osc_parser_message:
+ * @osc_parser: the #AgsOscParser
+ * 
+ * Parse OSC message.
+ * 
+ * Returns: the parsed XML node
+ * 
+ * Since: 2.1.0
+ */
+xmlNode*
+ags_osc_parser_message(AgsOscParser *osc_parser)
+{
+  xmlNode *node;
+  
+  g_return_val_if_fail(AGS_IS_OSC_PARSER(osc_parser), NULL);
+  
+  g_object_ref((GObject *) osc_parser);
+  g_signal_emit(G_OBJECT(osc_parser),
+		osc_parser_signals[MESSAGE], 0,
+		&node);
+  g_object_unref((GObject *) osc_parser);
+
+  return(node);
+}
+
+xmlNode*
+ags_osc_parser_real_value(AgsOscParser *osc_parser)
+{
+  //TODO:JK: implement me
+}
+
+/**
+ * ags_osc_parser_value:
+ * @osc_parser: the #AgsOscParser
+ * 
+ * Parse OSC value.
+ * 
+ * Returns: the parsed XML node
+ * 
+ * Since: 2.1.0
+ */
+xmlNode*
+ags_osc_parser_value(AgsOscParser *osc_parser)
+{
+  xmlNode *node;
+  
+  g_return_val_if_fail(AGS_IS_OSC_PARSER(osc_parser), NULL);
+  
+  g_object_ref((GObject *) osc_parser);
+  g_signal_emit(G_OBJECT(osc_parser),
+		osc_parser_signals[VALUE], 0,
+		&node);
+  g_object_unref((GObject *) osc_parser);
+
+  return(node);
 }
 
 /**

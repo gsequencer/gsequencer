@@ -32,8 +32,14 @@
 #define AGS_IS_OSC_PARSER_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_OSC_PARSER))
 #define AGS_OSC_PARSER_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_OSC_PARSER, AgsOscParserClass))
 
+#define AGS_OSC_PARSER_MAX_TEXT_LENGTH (4096)
+
 typedef struct _AgsOscParser AgsOscParser;
 typedef struct _AgsOscParserClass AgsOscParserClass;
+
+typedef enum{
+  AGS_OSC_PARSER_EOF  = 1,
+}AgsOscParserFlags;
 
 struct _AgsOscParser
 {
@@ -80,8 +86,15 @@ pthread_mutex_t* ags_osc_parser_get_class_mutex();
 gint32 ags_osc_parser_read_gint32(AgsOscParser *osc_parser);
 gint64 ags_osc_parser_read_gint64(AgsOscParser *osc_parser);
 
+gfloat ags_osc_parser_read_gfloat(AgsOscParser *osc_parser);
+gdouble ags_osc_parser_read_gdouble(AgsOscParser *osc_parser);
+
 gchar* ags_osc_parser_read_text(AgsOscParser *osc_parser,
 				gint length);
+
+int ags_osc_parser_osc_getc(AgsOscParser *osc_parser);
+void ags_osc_parser_on_error(AgsOscParser *osc_parser,
+			     GError **error);
 
 xmlDoc* ags_osc_parser_parse_full(AgsOscParser *osc_parser);
 xmlNode* ags_osc_parser_parse_bytes(AgsOscParser *osc_parser,

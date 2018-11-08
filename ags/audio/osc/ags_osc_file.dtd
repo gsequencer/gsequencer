@@ -27,5 +27,22 @@
 
 <!ELEMENT osc-value (#PCDATA)>
 <!ATTLIST osc-value
-	  type               CDATA        #REQUIRED	  
+	  type               CDATA        #REQUIRED
+	  int32              NMTOKEN      #IMPLIED
+	  tv-secs            NMTOKEN      #IMPLIED
+	  tv-fraction        NMTOKEN      #IMPLIED
+	  immediately        CDATA        #IMPLIED
+	  float              NMTOKEN      #IMPLIED
+	  string             CDATA        #IMPLIED
+	  int64              NMTOKEN      #IMPLIED
+	  double             NMTOKEN      #IMPLIED
+	  char               CDATA        #IMPLIED
+	  red                NMTOKEN      #IMPLIED
+	  green              NMTOKEN      #IMPLIED
+	  blue               NMTOKEN      #IMPLIED
+	  alpha              NMTOKEN      #IMPLIED
+	  port               NMTOKEN      #IMPLIED
+	  status_byte        NMTOKEN      #IMPLIED
+	  data0              NMTOKEN      #IMPLIED
+	  data1              NMTOKEN      #IMPLIED
 	  >

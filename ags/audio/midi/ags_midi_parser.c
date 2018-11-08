@@ -250,14 +250,13 @@ ags_midi_parser_class_init(AgsMidiParserClass *midi_parser)
 		 G_TYPE_NONE, 1,
 		 G_TYPE_POINTER);
 
-
   /**
    * AgsMidiParser::parse-full:
    * @midi_parser: the parser
    *
    * The ::parse-full signal is emited during parsing of midi file.
    *
-   * Returns: The XML node representing the event
+   * Returns: The XML doc
    *
    * Since: 2.0.0
    */
@@ -877,7 +876,7 @@ ags_midi_parser_read_gint16(AgsMidiParser *midi_parser)
   str[1] = (char) 0xff & ags_midi_parser_midi_getc(midi_parser);
 
   value = (str[0] & 0xff);
-  value = (value<<8) + (str[1] & 0xff);
+  value = (value << 8) + (str[1] & 0xff);
   
   return(value);
 }
@@ -903,9 +902,9 @@ ags_midi_parser_read_gint24(AgsMidiParser *midi_parser)
   str[2] = (char) 0xff & ags_midi_parser_midi_getc(midi_parser);
   str[3] = (char) 0xff & ags_midi_parser_midi_getc(midi_parser);
 
-  value = (value<<8) + (str[1] & 0xff);
-  value = (value<<8) + (str[2] & 0xff);
-  value = (value<<8) + (str[3] & 0xff);
+  value = (value << 8) + (str[1] & 0xff);
+  value = (value << 8) + (str[2] & 0xff);
+  value = (value << 8) + (str[3] & 0xff);
   
   return(value);
 }
@@ -932,9 +931,9 @@ ags_midi_parser_read_gint32(AgsMidiParser *midi_parser)
   str[3] = (char) 0xff & ags_midi_parser_midi_getc(midi_parser);
 
   value = (str[0] & 0xff);
-  value = (value<<8) + (str[1] & 0xff);
-  value = (value<<8) + (str[2] & 0xff);
-  value = (value<<8) + (str[3] & 0xff);
+  value = (value << 8) + (str[1] & 0xff);
+  value = (value << 8) + (str[2] & 0xff);
+  value = (value << 8) + (str[3] & 0xff);
   
   return(value);
 }
@@ -989,6 +988,7 @@ ags_midi_parser_read_text(AgsMidiParser *midi_parser,
 			  gint length)
 {
   gchar text[AGS_MIDI_PARSER_MAX_TEXT_LENGTH + 1];
+
   gchar c;
   guint i;
   
@@ -997,7 +997,8 @@ ags_midi_parser_read_text(AgsMidiParser *midi_parser,
   
   while((length <= 0 ||
 	 i < length) &&
-	(AGS_MIDI_PARSER_EOF & (midi_parser->flags)) == 0){
+	(AGS_MIDI_PARSER_EOF & (midi_parser->flags)) == 0 &&
+	i < AGS_MIDI_PARSER_MAX_TEXT_LENGTH){
     (c = (char) 0xff & (ags_midi_parser_midi_getc(midi_parser)));
     
     if(c == '\0' || !(g_ascii_isalnum(c) ||
