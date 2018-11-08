@@ -53,8 +53,16 @@ void ags_osc_builder_real_append_message(AgsOscBuilder *osc_builder,
 
 void ags_osc_builder_real_append_value(AgsOscBuilder *osc_builder,
 				       AgsOscBuilderMessage *message,
-				       gint type,
+				       gint v_type,
 				       GValue *value);
+
+void ags_osc_builder_skip_empty_types(AgsOscBuilder *osc_builder);
+void ags_osc_builder_bundle_resize(AgsOscBuilder *osc_builder,
+				   AgsOscBuilderBundle *parent_bundle,
+				   gsize grow_data);
+void ags_osc_builder_message_check_resize(AgsOscBuilder *osc_builder,
+					  AgsOscBuilderMessage *message,
+					  gsize append_size);
 
 /**
  * SECTION:ags_osc_builder
@@ -250,7 +258,7 @@ ags_osc_builder_class_init(AgsOscBuilderClass *osc_builder)
   /**
    * AgsOscBuilder::append-value:
    * @osc_builder: the builder
-   * @type: the type as ASCII char
+   * @v_type: the type as ASCII char
    * @value: the #GValue-struct
    *
    * The ::append-value signal is emited during building value.
@@ -376,6 +384,74 @@ ags_osc_builder_finalize(GObject *gobject)
   G_OBJECT_CLASS(ags_osc_builder_parent_class)->finalize(gobject);
 }
 
+void
+ags_osc_builder_skip_empty_types(AgsOscBuilder *osc_builder)
+{
+  gchar *iter;
+  
+  if(!AGS_IS_OSC_BUILDER(osc_builder)){
+    return;
+  }
+
+  for(iter = osc_builder->offset_type_tag; iter[0] != '\0'; iter++){
+    if(!(iter[0] == 'T' || iter[0] == 'F' || iter[0] == 'N' || iter[0] == 'I' || iter[0] == '[' || iter[0] == ']')){
+      break;
+    }
+  }
+
+  if(iter[0] != '\0'){
+    osc_builder->offset_type_tag = iter;
+  }else{
+    osc_builder->current_type_tag = NULL;
+    osc_builder->offset_type_tag = NULL;
+  }
+}
+
+void
+ags_osc_builder_bundle_resize(AgsOscBuilder *osc_builder,
+			      AgsOscBuilderBundle *parent_bundle,
+			      gsize grow_data)
+{
+  if(parent_bundle == NULL){
+    return;
+  }
+  
+  do{
+    parent_bundle->bundle_size += grow_data;
+
+    parent_bundle = parent_bundle->parent_bundle;
+  }while(parent_bundle->parent_bundle != NULL);
+
+  parent_bundle->packet->packet_size += grow_data;
+}
+
+void
+ags_osc_builder_message_check_resize(AgsOscBuilder *osc_builder,
+				     AgsOscBuilderMessage *message,
+				     gsize append_size)
+{
+  if(message->data_length + append_size > message->data_allocated_length){
+    gsize new_data_allocated_length;
+
+    new_data_allocated_length = message->data_allocated_length + AGS_OSC_BUILDER_MESSAGE_DEFAULT_CHUNK_SIZE;
+
+    if(message->data == NULL){
+      message->data = (unsigned char *) malloc(AGS_OSC_BUILDER_MESSAGE_DEFAULT_CHUNK_SIZE * sizeof(unsigned char));
+      memset(message->data,
+	     0,
+	     AGS_OSC_BUILDER_MESSAGE_DEFAULT_CHUNK_SIZE * sizeof(unsigned char));
+    }else{
+      message->data = (unsigned char *) realloc(message->data,
+						new_data_allocated_length * sizeof(unsigned char));
+      memset(message->data + (new_data_allocated_length - AGS_OSC_BUILDER_MESSAGE_DEFAULT_CHUNK_SIZE),
+	     0,
+	     AGS_OSC_BUILDER_MESSAGE_DEFAULT_CHUNK_SIZE * sizeof(unsigned char));
+    }
+
+    message->data_allocated_length = new_data_allocated_length;
+  }
+}
+
 /**
  * ags_osc_builder_get_class_mutex:
  * 
@@ -409,6 +485,10 @@ ags_osc_builder_packet_alloc(guint64 offset)
   packet = (AgsOscBuilderPacket *) malloc(sizeof(AgsOscBuilderPacket));
 
   packet->offset = offset;
+
+  packet->packet_size = 0;
+
+  packet->builder = NULL;
 
   packet->message = NULL;
   packet->bundle = NULL;
@@ -463,9 +543,12 @@ ags_osc_builder_bundle_alloc(guint64 offset)
   bundle->tv_fraction = -1;
   bundle->immediately = FALSE;
 
+  bundle->packet = NULL;  
+  bundle->parent_bundle = NULL;
+  
   bundle->message = NULL;
   bundle->bundle = NULL;
-  
+
   return(bundle);
 }
 
@@ -511,6 +594,17 @@ ags_osc_builder_message_alloc(guint64 offset)
   message = (AgsOscBuilderMessage *) malloc(sizeof(AgsOscBuilderMessage));
 
   message->offset = offset;
+
+  message->address_pattern = NULL;
+  message->type_tag = NULL;
+
+  message->data_allocated_length = 0;
+  message->data_length = 0;
+
+  message->data = NULL;
+  
+  bundle->packet = NULL;  
+  bundle->parent_bundle = NULL;
 
   return(message);
 }
@@ -578,7 +672,10 @@ void
 ags_osc_builder_real_on_error(AgsOscBuilder *osc_builder,
 			      GError **error)
 {
-  //TODO:JK: implement me
+  if(error != NULL &&
+     *error != NULL){
+    g_warning("%s", (*error)->message);
+  }
 }
 
 /**
@@ -606,7 +703,19 @@ ags_osc_builder_on_error(AgsOscBuilder *osc_builder,
 void
 ags_osc_builder_real_append_packet(AgsOscBuilder *osc_builder)
 {
-  //TODO:JK: implement me
+  AgsOscBuilderPacket *packet;
+
+  if(osc_builder->current_type_tag != NULL){
+    g_critical("current type tag != NULL - complete values first");
+    
+    return;
+  }
+  
+  packet = ags_osc_builder_packet_alloc(osc_builder->offset);
+  osc_builder->packet = g_list_prepend(osc_builder->packet,
+				       packet);
+  
+  osc_builder->offset += 4;
 }
 
 /**
@@ -631,7 +740,41 @@ ags_osc_builder_real_append_bundle(AgsOscBuilder *osc_builder,
 				   AgsOscBuilderBundle *parent_bundle,
 				   gint tv_secs, gint tv_fraction, gboolean immediately)
 {
-  //TODO:JK: implement me
+  AgsOscBuilderBundle *bundle;
+
+  if(osc_builder->current_type_tag != NULL){
+    g_critical("current type tag != NULL - complete values first");
+    
+    return;
+  }
+  
+  bundle = ags_osc_builder_bundle_alloc(osc_builder->offset);
+
+  bundle->tv_secs = tv_secs;
+  bundle->tv_fraction = tv_fraction;
+  bundle->immediately = immediately;
+  
+  if(parent_bundle == NULL){
+    if(osc_builder->packet != NULL){
+      bundle->packet = osc_builder->packet->data;
+      bundle->packet->bundle = g_list_prepend(bundle->packet->bundle,
+					      bundle);
+
+      bundle->packet->packet_size += 16;
+    }else{
+      g_warning("can't append OSC bundle because no package available");
+
+      return;
+    }
+  }else{
+    bundle->parent_bundle = parent_bundle;
+    parent_bundle->bundle = g_list_prepend(parent_bundle->bundle,
+					   bundle);
+    
+    ags_osc_builder_bundle_resize(osc_builder,
+				  parent_bundle,
+				  16);
+  }
 }
 
 /**
@@ -667,7 +810,47 @@ ags_osc_builder_real_append_message(AgsOscBuilder *osc_builder,
 				    gchar *address_pattern,
 				    gchar *type_tag)
 {
-  //TODO:JK: implement me
+  AgsOscBuilderMessage *message;
+
+  guint64 address_pattern_length;
+  guint64 type_tag_length;
+
+  if(osc_builder->current_type_tag != NULL){
+    g_critical("current type tag != NULL - complete values first");
+    
+    return;
+  }
+  
+  message = ags_osc_builder_message_alloc(osc_builder->offset);
+
+  message->address_pattern = g_strdup(address_pattern);
+  address_pattern_length = strlen(address_pattern);  
+  
+  message->type_tag = g_strdup(type_tag);
+  type_tag_length = strlen(type_tag);
+
+  osc_builder->current_type_tag = message->type_tag;
+  osc_builder->offset_type_tag = message->type_tag;
+
+  ags_osc_builder_skip_empty_types(osc_builder);
+  
+  if(parent_bundle == NULL){
+    if(osc_builder->packet != NULL){
+      message->packet = osc_builder->packet->data;
+      message->packet->message = g_list_prepend(message->packet->message,
+						message);
+
+      message->packet->packet_size += (address_pattern_length + 1) + (type_tag_length + 1);
+    }else{
+      g_warning("can't append OSC message because no package available");
+
+      return;
+    }
+  }else{
+    ags_osc_builder_bundle_resize(osc_builder,
+				  parent_bundle,
+				  (address_pattern_length + 1) + (type_tag_length + 1));
+  }  
 }
 
 /**
@@ -700,16 +883,270 @@ ags_osc_builder_append_message(AgsOscBuilder *osc_builder,
 void
 ags_osc_builder_real_append_value(AgsOscBuilder *osc_builder,
 				  AgsOscBuilderMessage *message,
-				  gint type,
+				  gint v_type,
 				  GValue *value)
 {
-  //TODO:JK: implement me
+  if(osc_builder->offset_type_tag[0] != v_type){
+    g_critical("message's value type not matching");
+    
+    return;
+  }
+  
+  switch(v_type){
+  case AGS_OSC_UTIL_TYPE_TAG_STRING_INT32:
+    {
+      gint32 val;
+
+      val = g_value_get_int(value);
+
+      ags_osc_builder_message_check_resize(osc_builder,
+					   message,
+					   4);
+
+      ags_osc_buffer_util_put_int32(message->data + message->data_length,
+				    val);
+
+      message->data_length += 4;
+      osc_builder->offset += 4;
+    }
+    break;
+  case AGS_OSC_UTIL_TYPE_TAG_STRING_FLOAT:
+    {
+      gfloat val;
+
+      val = g_value_get_float(value);
+
+      ags_osc_builder_message_check_resize(osc_builder,
+					   message,
+					   4);
+
+      ags_osc_buffer_util_put_float(message->data + message->data_length,
+				    val);
+
+      message->data_length += 4;
+      osc_builder->offset += 4;
+    }
+    break;
+  case AGS_OSC_UTIL_TYPE_TAG_STRING_STRING:
+    {
+      gchar *str;
+
+      guint64 length;
+
+      str = g_value_get_string(value);
+      length = strlen(str);
+      
+      ags_osc_builder_message_check_resize(osc_builder,
+					   message,
+					   length + 1);
+
+      ags_osc_buffer_util_put_string(message->data + message->data_length,
+				     str);
+
+      message->data_length += (length + 1);
+      osc_builder->offset += (length + 1);
+    }
+    break;
+  case AGS_OSC_UTIL_TYPE_TAG_STRING_BLOB:
+    {
+      unsigned char *data;
+      
+      gint32 data_size;
+
+      data_size = g_value_get_int(&(value[0]));
+      data = g_value_get_pointer(&(value[1]));
+
+      ags_osc_builder_message_check_resize(osc_builder,
+					   message,
+					   data_size + 4);
+
+      ags_osc_buffer_util_put_blob(message->data + message->data_length,
+				   data_size, data);
+      
+      message->data_length += (data_size + 4);
+      osc_builder->offset += (data_size + 4);
+    }
+    break;
+  case AGS_OSC_UTIL_TYPE_TAG_STRING_INT64:
+    {
+      gint64 val;
+
+      val = g_value_get_int64(value);
+
+      ags_osc_builder_message_check_resize(osc_builder,
+					   message,
+					   8);
+
+      ags_osc_buffer_util_put_int64(message->data + message->data_length,
+				    val);
+
+      message->data_length += 8;
+      osc_builder->offset += 8;
+    }
+    break;
+  case AGS_OSC_UTIL_TYPE_TAG_STRING_TIMETAG:
+    {
+      gint32 tv_secs;
+      gint32 tv_fraction;
+      gboolean immediately;
+
+      tv_secs = g_value_get_int(&(value[0]));
+      tv_fraction = g_value_get_int(&(value[1]));
+      immediately = g_value_get_boolean(&(value[2]));
+
+      ags_osc_builder_message_check_resize(osc_builder,
+					   message,
+					   8);
+
+      ags_osc_buffer_util_put_timetag(message->data + message->data_length,
+				      tv_secs, tv_fraction, immediately);
+      
+      message->data_length += 8;
+      osc_builder->offset += 8;
+    }
+    break;
+  case AGS_OSC_UTIL_TYPE_TAG_STRING_DOUBLE:
+    {
+      gdouble val;
+
+      val = g_value_get_double(value);
+
+      ags_osc_builder_message_check_resize(osc_builder,
+					   message,
+					   8);
+
+      ags_osc_buffer_util_put_double(message->data + message->data_length,
+				     val);
+
+      message->data_length += 8;
+      osc_builder->offset += 8;
+    }
+    break;
+  case AGS_OSC_UTIL_TYPE_TAG_STRING_SYMBOL:
+    {
+      gchar *str;
+
+      guint64 length;
+
+      str = g_value_get_string(value);
+      length = strlen(str);
+      
+      ags_osc_builder_message_check_resize(osc_builder,
+					   message,
+					   length + 1);
+
+      ags_osc_buffer_util_put_string(message->data + message->data_length,
+				     str);
+
+      message->data_length += (length + 1);
+      osc_builder->offset += (length + 1);
+    }
+    break;
+  case AGS_OSC_UTIL_TYPE_TAG_STRING_CHAR:
+    {
+      gint32 val;
+
+      val = g_value_get_int(value);
+
+      ags_osc_builder_message_check_resize(osc_builder,
+					   message,
+					   4);
+
+      ags_osc_buffer_util_put_char(message->data + message->data_length,
+				   val);
+
+      message->data_length += 4;
+      osc_builder->offset += 4;
+    }
+    break;
+  case AGS_OSC_UTIL_TYPE_TAG_STRING_RGBA:
+    {
+      gint8 r, g, b, a;
+
+      r = g_value_get_int(&(value[0]));
+      g = g_value_get_int(&(value[1]));
+      b = g_value_get_int(&(value[2]));
+      a = g_value_get_int(&(value[3]));
+
+      ags_osc_builder_message_check_resize(osc_builder,
+					   message,
+					   8);
+
+      ags_osc_buffer_util_put_rgba(message->data + message->data_length,
+				   r, g, b, a);
+      
+      message->data_length += 8;
+      osc_builder->offset += 8;
+    }
+    break;
+  case AGS_OSC_UTIL_TYPE_TAG_STRING_MIDI:
+    {
+      gint8 port;
+      gint8 status_byte;
+      gint8 data0, data1;
+
+      port = g_value_get_int(&(value[0]));
+      status_byte = g_value_get_int(&(value[1]));
+      data0 = g_value_get_int(&(value[2]));
+      data1 = g_value_get_int(&(value[3]));
+
+      ags_osc_builder_message_check_resize(osc_builder,
+					   message,
+					   8);
+
+      ags_osc_buffer_util_put_midi(message->data + message->data_length,
+				   port, status_byte, data0, data1);
+      
+      message->data_length += 8;
+      osc_builder->offset += 8;
+    }
+    break;
+  case AGS_OSC_UTIL_TYPE_TAG_STRING_TRUE:
+    {
+      //empty
+    }
+    break;
+  case AGS_OSC_UTIL_TYPE_TAG_STRING_FALSE:
+    {
+      //empty
+    }
+    break;
+  case AGS_OSC_UTIL_TYPE_TAG_STRING_NIL:
+    {
+      //empty
+    }
+    break;
+  case AGS_OSC_UTIL_TYPE_TAG_STRING_INFINITE:
+    {
+      //empty
+    }
+    break;
+  case AGS_OSC_UTIL_TYPE_TAG_STRING_ARRAY_START:
+    {
+      //empty
+    }
+    break;
+  case AGS_OSC_UTIL_TYPE_TAG_STRING_ARRAY_END:
+    {
+      //empty
+    }
+    break;
+  default:
+    {
+      g_warning("unknown type");
+
+      return;
+    }
+  }
+
+  osc_builder->offset_type_tag += 1;
+  ags_osc_builder_skip_empty_types(osc_builder);
 }
 
 /**
  * ags_osc_builder_append_value:
  * @osc_builder: the #AgsOscBuilder
- * @type: the type as char
+ * @v_type: the type as char
  * @value: the #GValue-struct containinig value
  * 
  * Append value.
@@ -719,7 +1156,7 @@ ags_osc_builder_real_append_value(AgsOscBuilder *osc_builder,
 void
 ags_osc_builder_append_value(AgsOscBuilder *osc_builder,
 			     AgsOscBuilderMessage *message,
-			     gint type,
+			     gint v_type,
 			     GValue *value)
 {
   g_return_if_fail(AGS_IS_OSC_BUILDER(osc_builder));
@@ -727,7 +1164,7 @@ ags_osc_builder_append_value(AgsOscBuilder *osc_builder,
   g_object_ref((GObject *) osc_builder);
   g_signal_emit(G_OBJECT(osc_builder),
 		osc_builder_signals[APPEND_VALUE], 0,
-		type, value);
+		v_type, value);
   g_object_unref((GObject *) osc_builder);
 }
 

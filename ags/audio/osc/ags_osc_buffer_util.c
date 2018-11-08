@@ -922,9 +922,9 @@ ags_osc_buffer_util_put_bundle(unsigned char *buffer,
 
   memcpy(buffer,
 	 "#bundle",
-	 7 * sizeof(unsigned char));  
+	 8 * sizeof(unsigned char));  
 
-  buffer += 7;
+  buffer += 8;
   
   ags_osc_buffer_util_put_timetag(buffer,
 				  tv_secs, tv_fraction, immediately);
@@ -951,7 +951,7 @@ ags_osc_buffer_util_get_bundle(unsigned char *buffer,
     return;
   }
   
-  success = (!strncmp(buffer, "#bundle", 7)) ? TRUE: FALSE;
+  success = (!strncmp(buffer, "#bundle", 8)) ? TRUE: FALSE;
   
   if(!success){
     if(tv_secs != NULL){
@@ -969,7 +969,7 @@ ags_osc_buffer_util_get_bundle(unsigned char *buffer,
     return;
   }
 
-  buffer += 7;
+  buffer += 8;
 
   ags_osc_buffer_util_get_timetag(buffer,
 				  tv_secs, tv_fraction, immediately);

@@ -31,6 +31,12 @@
 #define AGS_IS_OSC_BUILDER_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_OSC_BUILDER))
 #define AGS_OSC_BUILDER_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_OSC_BUILDER, AgsOscBuilderClass))
 
+#define AGS_OSC_BUILDER_PACKET(x) ((AgsOscBuilderPacket *)(x))
+#define AGS_OSC_BUILDER_BUNDLE(x) ((AgsOscBuilderBundle *)(x))
+#define AGS_OSC_BUILDER_MESSAGE(x) ((AgsOscBuilderMessage *)(x))
+
+#define AGS_OSC_BUILDER_MESSAGE_DEFAULT_CHUNK_SIZE (8192)
+
 typedef struct _AgsOscBuilder AgsOscBuilder;
 typedef struct _AgsOscBuilderClass AgsOscBuilderClass;
 typedef struct _AgsOscBuilderPacket AgsOscBuilderPacket;
@@ -84,13 +90,17 @@ struct _AgsOscBuilderClass
 
   void (*append_value)(AgsOscBuilder *osc_builder,
 		       AgsOscBuilderMessage *message,
-		       gint type,
+		       gint v_type,
 		       GValue *value);
 };
 
 struct _AgsOscBuilderPacket
 {
   guint64 offset;
+
+  gsize packet_size;
+  
+  AgsOscBuilder *builder;
   
   AgsOscBuilderMessage *message;
   AgsOscBuilderBundle *bundle;
@@ -105,7 +115,10 @@ struct _AgsOscBuilderBundle
   gint32 tv_secs;
   gint32 tv_fraction;
   gboolean immediately;
-  
+
+  AgsOscBuilderPacket *packet;
+  AgsOscBuilderPacket *parent_bundle;
+
   GList *message;
   GList *bundle;
 };
@@ -120,6 +133,9 @@ struct _AgsOscBuilderMessage
   gsize data_allocated_length;
   gsize data_length;
   unsigned char *data;
+
+  AgsOscBuilderPacket *packet;
+  AgsOscBuilderPacket *parent_bundle;
 };
 
 GType ags_osc_builder_get_type(void);
@@ -155,7 +171,7 @@ void ags_osc_builder_append_message(AgsOscBuilder *osc_builder,
 
 void ags_osc_builder_append_value(AgsOscBuilder *osc_builder,
 				  AgsOscBuilderMessage *message,
-				  gint type,
+				  gint v_type,
 				  GValue *value);
 
 /*  */
