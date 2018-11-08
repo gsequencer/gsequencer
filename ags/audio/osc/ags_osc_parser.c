@@ -57,7 +57,7 @@ xmlNode* ags_osc_parser_real_value(AgsOscParser *osc_parser,
 
 /**
  * SECTION:ags_osc_parser
- * @short_description: the menu bar.
+ * @short_description: the OSC parser
  * @title: AgsOscParser
  * @section_id:
  * @include: ags/audio/osc/ags_osc_parser.h
@@ -325,8 +325,14 @@ ags_osc_parser_init(AgsOscParser *osc_parser)
   pthread_mutex_init(osc_parser->obj_mutex,
 		     osc_parser->obj_mutexattr);
 
+  osc_parser->buffer = NULL;
+
+  osc_parser->file_length = 0;
   osc_parser->offset = 0;
 
+  osc_parser->start_offset = 0;
+  osc_parser->packet_size = 0;
+  
   osc_parser->doc = NULL;
 }
 
@@ -597,7 +603,18 @@ ags_osc_parser_read_text(AgsOscParser *osc_parser,
 int
 ags_osc_parser_real_osc_getc(AgsOscParser *osc_parser)
 {
-  //TODO:JK: implement me
+  int c;
+  
+  if(osc_parser->offset >= osc_parser->file_length){
+    osc_parser->flags |= AGS_OSC_PARSER_EOF;
+
+    return(-1);
+  }
+
+  c = (int) osc_parser->buffer[osc_parser->offset];
+  osc_parser->offset += 1;
+
+  return(c);
 }
 
 /**
@@ -783,8 +800,6 @@ ags_osc_parser_real_packet(AgsOscParser *osc_parser)
 	     g_strdup_printf("%u", packet_size));
 
   current_byte = ags_osc_parser_osc_getc(osc_parser);
-
-  osc_parser->offset += 4;
 
   start_offset = 
     osc_parser->start_offset = osc_parser->offset;

@@ -72,12 +72,12 @@ xmlNode* ags_midi_parser_real_text_event(AgsMidiParser *midi_parser, guint meta_
 
 /**
  * SECTION:ags_midi_parser
- * @short_description: the menu bar.
+ * @short_description: the MIDI parser
  * @title: AgsMidiParser
  * @section_id:
  * @include: ags/audio/midi/ags_midi_parser.h
  *
- * #AgsMidiParser reads your midi parsers.
+ * #AgsMidiParser parses your midi.
  */
 
 enum{

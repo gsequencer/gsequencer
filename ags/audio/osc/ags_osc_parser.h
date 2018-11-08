@@ -38,7 +38,7 @@ typedef struct _AgsOscParser AgsOscParser;
 typedef struct _AgsOscParserClass AgsOscParserClass;
 
 typedef enum{
-  AGS_OSC_PARSER_EOF  = 1,
+  AGS_OSC_PARSER_EOF        = 1,
 }AgsOscParserFlags;
 
 struct _AgsOscParser
@@ -52,6 +52,7 @@ struct _AgsOscParser
 
   unsigned char *buffer;
   
+  size_t file_length;
   size_t offset;
 
   gsize start_offset;
