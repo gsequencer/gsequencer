@@ -16,9 +16,9 @@
 	  track-count        NMTOKEN      #REQUIRED
 	  >
 
-<!ELEMENT midi-tracks (midi-track)>
+<!ELEMENT midi-tracks (midi-track*)>
 
-<!ELEMENT midi-track (midi-message)>
+<!ELEMENT midi-track (midi-message*, midi-system-common*, meta-event*)>
 <!ATTLIST midi-track
 	  offset            NMTOKEN      #IMPLIED
 	  >

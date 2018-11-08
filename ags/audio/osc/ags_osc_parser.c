@@ -21,6 +21,8 @@
 
 #include <ags/libags.h>
 
+#include <ags/audio/osc/ags_osc_util.h>
+
 #include <string.h>
 
 void ags_osc_parser_class_init(AgsOscParserClass *osc_parser);
@@ -50,7 +52,8 @@ xmlNode* ags_osc_parser_real_bundle(AgsOscParser *osc_parser);
 
 xmlNode* ags_osc_parser_real_message(AgsOscParser *osc_parser);
 
-xmlNode* ags_osc_parser_real_value(AgsOscParser *osc_parser);
+xmlNode* ags_osc_parser_real_value(AgsOscParser *osc_parser,
+				   guint v_type);
 
 /**
  * SECTION:ags_osc_parser
@@ -297,8 +300,9 @@ ags_osc_parser_class_init(AgsOscParserClass *osc_parser)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsOscParserClass, value),
 		 NULL, NULL,
-		 ags_cclosure_marshal_POINTER__VOID,
-		 G_TYPE_POINTER, 0);
+		 ags_cclosure_marshal_POINTER__UINT,
+		 G_TYPE_POINTER, 1,
+		 G_TYPE_UINT);
 }
 
 void
@@ -654,7 +658,41 @@ ags_osc_parser_on_error(AgsOscParser *osc_parser,
 xmlDoc*
 ags_osc_parser_real_parse_full(AgsOscParser *osc_parser)
 {
-  //TODO:JK: implement me
+  xmlDoc *doc;
+  xmlNode *root_node;
+  xmlNode *packets_node;
+  xmlNode *current;
+
+  /* create xmlDoc and set root node */
+  osc_parser->doc = 
+    doc = xmlNewDoc("1.0");
+  root_node = xmlNewNode(NULL, "osc");
+  xmlDocSetRootElement(doc, root_node);
+
+  /* create packets node */
+  packets_node = xmlNewNode(NULL, "osc-packets");
+
+  /* parse packets */
+  xmlAddChild(root_node,
+	      packets_node);
+
+  osc_parser->offset = 0;
+  
+  while(((AGS_OSC_PARSER_EOF & (osc_parser->flags))) == 0){
+    current = ags_osc_parser_packet(osc_parser);
+    
+    if(current != NULL){
+      xmlAddChild(packets_node,
+		  current);
+#ifdef AGS_DEBUG
+      g_message("parsed packet");
+#endif
+    }else{
+      g_warning("skipped input");
+    }
+  }
+
+  return(doc);
 }
 
 /**
@@ -730,7 +768,45 @@ ags_osc_parser_parse_bytes(AgsOscParser *osc_parser,
 xmlNode*
 ags_osc_parser_real_packet(AgsOscParser *osc_parser)
 {
-  //TODO:JK: implement me
+  xmlNode *node, *current;
+
+  gsize start_offset;
+  gint32 packet_size;
+  gchar current_byte;
+  
+  node = xmlNewNode(NULL, "osc-packet");
+
+  packet_size =
+    osc_parser->packet_size = ags_osc_parser_read_gint32(osc_parser);
+  xmlNewProp(node,
+	     "packet-size",
+	     g_strdup_printf("%u", packet_size));
+
+  current_byte = ags_osc_parser_osc_getc(osc_parser);
+
+  osc_parser->offset += 4;
+
+  start_offset = 
+    osc_parser->start_offset = osc_parser->offset;
+  
+  while(osc_parser->offset < start_offset + packet_size){
+    if(current_byte == '#'){
+      current = ags_osc_parser_bundle(osc_parser);
+    }else if(current_byte == '/'){
+      current = ags_osc_parser_message(osc_parser);
+    }else{
+      current = NULL;
+
+      g_warning("failed to read bundle or message");
+    }
+
+    if(current != NULL){
+      xmlAddChild(node,
+		  current);
+    }
+  }
+
+  return(node);
 }
 
 /**
@@ -762,7 +838,74 @@ ags_osc_parser_packet(AgsOscParser *osc_parser)
 xmlNode*
 ags_osc_parser_real_bundle(AgsOscParser *osc_parser)
 {
-  //TODO:JK: implement me
+  xmlNode *node, *current;
+
+  gint32 tv_secs;
+  gint32 tv_fraction;
+  gboolean immediately;
+  guint i;
+  gchar current_byte;
+
+  static gchar bundle[] = "#bundle";
+
+  for(i = 0; i < 7; i++){
+    gchar c;
+    
+    c = ags_osc_parser_osc_getc(osc_parser);
+
+    if(c != bundle[i + 1]){
+      g_warning("bad byte");
+      
+      return(NULL);
+    }
+  }
+
+  node = xmlNewNode(NULL,
+		    "osc-bundle");
+
+  /* read time tag */
+  tv_secs = ags_osc_parser_read_gint32(osc_parser);
+  tv_fraction = ags_osc_parser_read_gint32(osc_parser);
+
+  immediately = FALSE;
+  
+  if((0x1 & (tv_fraction)) != 0){
+    immediately = TRUE;
+  }
+
+  /* add prop */
+  xmlNewProp(node,
+	     "tv-secs",
+	     g_strdup_printf("%u", tv_secs));
+
+  xmlNewProp(node,
+	     "tv-fraction",
+	     g_strdup_printf("%u", tv_fraction));
+
+  xmlNewProp(node,
+	     "immediately",
+	     g_strdup_printf("%s", ((immediately) ? "true": "false")));
+
+  while(osc_parser->offset < osc_parser->start_offset + osc_parser->packet_size){
+    current_byte = ags_osc_parser_osc_getc(osc_parser);
+
+    if(current_byte == '#'){
+      current = ags_osc_parser_bundle(osc_parser);
+    }else if(current_byte == '/'){
+      current = ags_osc_parser_message(osc_parser);
+    }else{
+      current = NULL;
+
+      g_warning("failed to read bundle or message");
+    }
+
+    if(current != NULL){
+      xmlAddChild(node,
+		  current);
+    }
+  }
+  
+  return(node);
 }
 
 /**
@@ -794,7 +937,116 @@ ags_osc_parser_bundle(AgsOscParser *osc_parser)
 xmlNode*
 ags_osc_parser_real_message(AgsOscParser *osc_parser)
 {
-  //TODO:JK: implement me
+  xmlNode *node, *current;
+  
+  gchar *address_pattern;
+  gchar *type_tag;
+  gchar *str;
+  gchar current_byte;
+
+  node = xmlNewNode(NULL,
+		    "osc-message");
+
+  str = ags_osc_parser_read_text(osc_parser,
+				 -1);
+
+  address_pattern = g_strdup_printf("/%s", str);
+  g_free(str);
+  
+  xmlNewProp(node,
+	     "address-pattern",
+	     address_pattern);
+
+  current_byte = ags_osc_parser_osc_getc(osc_parser);
+
+  if(current_byte != ','){
+    unsigned char *blob;
+    
+    char str[4];
+    gint32 value;
+    guint i;
+    
+    /* no type tag - provide blob */
+    str[0] = (char) 0xff & current_byte;
+    str[1] = (char) 0xff & ags_osc_parser_osc_getc(osc_parser);
+    str[2] = (char) 0xff & ags_osc_parser_osc_getc(osc_parser);
+    str[3] = (char) 0xff & ags_osc_parser_osc_getc(osc_parser);
+    
+    value = (str[0] & 0xff);
+    value = (value<<8) + (str[1] & 0xff);
+    value = (value<<8) + (str[2] & 0xff);
+    value = (value<<8) + (str[3] & 0xff);
+    
+    current = xmlNewNode(NULL,
+		      "osc-value");
+
+    blob = (unsigned char *) malloc(value * sizeof(unsigned char));
+    
+    for(i = 0; i < value; i++){
+      blob[i] = ags_osc_parser_osc_getc(osc_parser);
+    }
+
+    xmlNodeSetContent(current,
+		      g_base64_encode(blob,
+				      value));
+
+    free(blob);
+    
+    xmlAddChild(node,
+		current);
+  }else{
+    gchar *iter;
+    
+    /* has got type tag */
+    str = ags_osc_parser_read_text(osc_parser,
+				   -1);
+
+    type_tag = g_strdup_printf(",%s", str);
+    g_free(str);
+    
+    xmlNewProp(node,
+	       "type-tag",
+	       type_tag);
+
+    for(iter = type_tag + 1; iter[0] != '\0'; iter++){
+      switch(iter[0]){
+      case AGS_OSC_UTIL_TYPE_TAG_STRING_INT32:
+      case AGS_OSC_UTIL_TYPE_TAG_STRING_FLOAT:
+      case AGS_OSC_UTIL_TYPE_TAG_STRING_STRING:
+      case AGS_OSC_UTIL_TYPE_TAG_STRING_BLOB:
+      case AGS_OSC_UTIL_TYPE_TAG_STRING_INT64:
+      case AGS_OSC_UTIL_TYPE_TAG_STRING_TIMETAG:
+      case AGS_OSC_UTIL_TYPE_TAG_STRING_DOUBLE:
+      case AGS_OSC_UTIL_TYPE_TAG_STRING_SYMBOL:
+      case AGS_OSC_UTIL_TYPE_TAG_STRING_CHAR:
+      case AGS_OSC_UTIL_TYPE_TAG_STRING_RGBA:
+      case AGS_OSC_UTIL_TYPE_TAG_STRING_MIDI:
+	{
+	  current = ags_osc_parser_value(osc_parser,
+					 iter[0]);
+	  
+	  if(current != NULL){
+	    xmlAddChild(node,
+			current);
+	  }
+	}
+	break;
+      case AGS_OSC_UTIL_TYPE_TAG_STRING_TRUE:
+      case AGS_OSC_UTIL_TYPE_TAG_STRING_FALSE:
+      case AGS_OSC_UTIL_TYPE_TAG_STRING_INFINITE:
+      case AGS_OSC_UTIL_TYPE_TAG_STRING_NIL:
+      case AGS_OSC_UTIL_TYPE_TAG_STRING_ARRAY_START:
+      case AGS_OSC_UTIL_TYPE_TAG_STRING_ARRAY_END:
+	break;
+      default:
+	{
+	  g_warning("unknown type");
+	}
+      }
+    }
+  }
+
+  return(node);
 }
 
 /**
@@ -824,9 +1076,173 @@ ags_osc_parser_message(AgsOscParser *osc_parser)
 }
 
 xmlNode*
-ags_osc_parser_real_value(AgsOscParser *osc_parser)
+ags_osc_parser_real_value(AgsOscParser *osc_parser,
+			  guint v_type)
 {
-  //TODO:JK: implement me
+  xmlNode *node;
+  
+  node = xmlNewNode(NULL,
+		    "osc-value");
+
+  switch(v_type){
+  case AGS_OSC_UTIL_TYPE_TAG_STRING_INT32:
+    {
+      xmlNewProp(node,
+		 "int32",
+		 g_strdup_printf("%d", ags_osc_parser_read_gint32(osc_parser)));
+    }
+    break;
+  case AGS_OSC_UTIL_TYPE_TAG_STRING_FLOAT:
+    {
+      xmlNewProp(node,
+		 "float",
+		 g_strdup_printf("%f", ags_osc_parser_read_gfloat(osc_parser)));
+    }
+    break;
+  case AGS_OSC_UTIL_TYPE_TAG_STRING_STRING:
+    {
+      xmlNewProp(node,
+		 "text",
+		 ags_osc_parser_read_text(osc_parser,
+					  -1));
+    }
+    break;
+  case AGS_OSC_UTIL_TYPE_TAG_STRING_BLOB:
+    {
+      unsigned char *blob;
+      
+      gint32 data_size;
+      guint i;
+      
+      data_size = ags_osc_parser_read_gint32(osc_parser);
+
+      blob = (unsigned char *) malloc(data_size * sizeof(unsigned char));
+      
+      for(i = 0; i < data_size; i++){
+	blob[i] = ags_osc_parser_osc_getc(osc_parser);
+      }
+      
+      xmlNodeSetContent(node,
+			g_base64_encode(blob,
+					data_size));
+
+      free(blob);
+    }
+    break;
+  case AGS_OSC_UTIL_TYPE_TAG_STRING_INT64:
+    {
+      xmlNewProp(node,
+		 "int64",
+		 g_strdup_printf("%d", ags_osc_parser_read_gint64(osc_parser)));
+    }
+    break;
+  case AGS_OSC_UTIL_TYPE_TAG_STRING_TIMETAG:
+    {
+      gint32 tv_secs;
+      gint32 tv_fraction;
+      gboolean immediately;
+
+      tv_secs = ags_osc_parser_read_gint32(osc_parser);
+      tv_fraction = ags_osc_parser_read_gint32(osc_parser);
+
+      immediately = (0x1 & (tv_fraction)) ? TRUE: FALSE;
+
+      xmlNewProp(node,
+		 "tv-secs",
+		 g_strdup_printf("%d", tv_secs));
+
+      xmlNewProp(node,
+		 "tv-fraction",
+		 g_strdup_printf("%d", tv_fraction));
+
+      xmlNewProp(node,
+		 "immediately",
+		 g_strdup_printf("%s", ((immediately) ? "true": "false")));
+    }
+    break;
+  case AGS_OSC_UTIL_TYPE_TAG_STRING_DOUBLE:
+    {
+      xmlNewProp(node,
+		 "double",
+		 g_strdup_printf("%f", ags_osc_parser_read_gdouble(osc_parser)));
+    }
+    break;
+  case AGS_OSC_UTIL_TYPE_TAG_STRING_SYMBOL:
+    {
+      xmlNewProp(node,
+		 "symbol",
+		 ags_osc_parser_read_text(osc_parser,
+					  -1));
+    }
+    break;
+  case AGS_OSC_UTIL_TYPE_TAG_STRING_CHAR:
+    {
+      gint32 c;
+
+      c = ags_osc_parser_read_gint32(osc_parser);
+
+      xmlNewProp(node,
+		 "char",
+		 g_strdup_printf("%c", c));
+    }
+    break;
+  case AGS_OSC_UTIL_TYPE_TAG_STRING_RGBA:
+    {
+      guint8 r, g, b, a;
+
+      r = 0xff & (ags_osc_parser_osc_getc(osc_parser));
+      g = 0xff & (ags_osc_parser_osc_getc(osc_parser));
+      b = 0xff & (ags_osc_parser_osc_getc(osc_parser));
+      a = 0xff & (ags_osc_parser_osc_getc(osc_parser));
+      
+      xmlNewProp(node,
+		 "red",
+		 g_strdup_printf("%u", r));
+
+      xmlNewProp(node,
+		 "green",
+		 g_strdup_printf("%u", g));
+
+      xmlNewProp(node,
+		 "blue",
+		 g_strdup_printf("%u", b));
+
+      xmlNewProp(node,
+		 "alpha",
+		 g_strdup_printf("%u", a));
+    }
+    break;
+  case AGS_OSC_UTIL_TYPE_TAG_STRING_MIDI:
+    {
+      guint8 port;
+      guint8 status_byte;
+      guint8 data0, data1;
+
+      port = 0xff & (ags_osc_parser_osc_getc(osc_parser));
+      status_byte = 0xff & (ags_osc_parser_osc_getc(osc_parser));
+      data0 = 0xff & (ags_osc_parser_osc_getc(osc_parser));
+      data1 = 0xff & (ags_osc_parser_osc_getc(osc_parser));
+      
+      xmlNewProp(node,
+		 "port",
+		 g_strdup_printf("%u", port));
+
+      xmlNewProp(node,
+		 "status-byte",
+		 g_strdup_printf("%u", status_byte));
+
+      xmlNewProp(node,
+		 "data0",
+		 g_strdup_printf("%u", data0));
+
+      xmlNewProp(node,
+		 "data1",
+		 g_strdup_printf("%u", data1));
+    }
+    break;
+  }
+
+  return(node);
 }
 
 /**
@@ -840,7 +1256,8 @@ ags_osc_parser_real_value(AgsOscParser *osc_parser)
  * Since: 2.1.0
  */
 xmlNode*
-ags_osc_parser_value(AgsOscParser *osc_parser)
+ags_osc_parser_value(AgsOscParser *osc_parser,
+		     guint v_type)
 {
   xmlNode *node;
   
@@ -849,6 +1266,7 @@ ags_osc_parser_value(AgsOscParser *osc_parser)
   g_object_ref((GObject *) osc_parser);
   g_signal_emit(G_OBJECT(osc_parser),
 		osc_parser_signals[VALUE], 0,
+		v_type,
 		&node);
   g_object_unref((GObject *) osc_parser);
 

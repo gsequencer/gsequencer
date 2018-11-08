@@ -3,7 +3,7 @@ ags (2.1.0)
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* TODO:JK: implemented ags_osc_util.c
 	* implemented ags_osc_buffer_util.c
-	* TODO:JK: implemented ags_osc_parser.c
+	* implemented ags_osc_parser.c
 	* implemented ags_osc_builder.c
 	* TODO:JK: implemented ags_osc_client.c
 	* TODO:JK: implemented ags_osc_server.c

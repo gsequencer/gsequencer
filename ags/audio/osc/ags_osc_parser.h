@@ -53,6 +53,9 @@ struct _AgsOscParser
   unsigned char *buffer;
   
   size_t offset;
+
+  gsize start_offset;
+  gint32 packet_size;
   
   xmlDoc *doc;
 };
@@ -76,7 +79,8 @@ struct _AgsOscParserClass
 
   xmlNode* (*message)(AgsOscParser *osc_parser);
 
-  xmlNode* (*value)(AgsOscParser *osc_parser);
+  xmlNode* (*value)(AgsOscParser *osc_parser,
+		    guint v_type);
 };
 
 GType ags_osc_parser_get_type(void);
@@ -107,7 +111,8 @@ xmlNode* ags_osc_parser_bundle(AgsOscParser *osc_parser);
 
 xmlNode* ags_osc_parser_message(AgsOscParser *osc_parser);
 
-xmlNode* ags_osc_parser_value(AgsOscParser *osc_parser);
+xmlNode* ags_osc_parser_value(AgsOscParser *osc_parser,
+			      guint v_type);
 
 AgsOscParser* ags_osc_parser_new();
 

@@ -7,12 +7,14 @@
 <!-- root node -->
 <!ELEMENT osc (osc-packet*)>
 
-<!ELEMENT osc-packet (osc-bundle*, osc-message)>
+<!ELEMENT osc-packets (osc-packets*)>
+
+<!ELEMENT osc-packet (osc-bundle, osc-message)>
 <!ATTLIST osc-packet
 	  packet-size        NMTOKEN      #REQUIRED
 	  >
 
-<!ELEMENT osc-bundle (osc-bundle*, osc-message)>
+<!ELEMENT osc-bundle (osc-bundle, osc-message)>
 <!ATTLIST osc-bundle
 	  tv-secs            NMTOKEN      #REQUIRED
 	  tv-fraction        NMTOKEN      #REQUIRED
@@ -42,7 +44,7 @@
 	  blue               NMTOKEN      #IMPLIED
 	  alpha              NMTOKEN      #IMPLIED
 	  port               NMTOKEN      #IMPLIED
-	  status_byte        NMTOKEN      #IMPLIED
+	  status-byte        NMTOKEN      #IMPLIED
 	  data0              NMTOKEN      #IMPLIED
 	  data1              NMTOKEN      #IMPLIED
 	  >
