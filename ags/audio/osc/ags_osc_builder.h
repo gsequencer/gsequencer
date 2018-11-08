@@ -35,6 +35,7 @@
 #define AGS_OSC_BUILDER_BUNDLE(x) ((AgsOscBuilderBundle *)(x))
 #define AGS_OSC_BUILDER_MESSAGE(x) ((AgsOscBuilderMessage *)(x))
 
+#define AGS_OSC_BUILDER_DEFAULT_CHUNK_SIZE (8192)
 #define AGS_OSC_BUILDER_MESSAGE_DEFAULT_CHUNK_SIZE (8192)
 
 typedef struct _AgsOscBuilder AgsOscBuilder;

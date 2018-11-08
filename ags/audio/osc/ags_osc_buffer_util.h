@@ -64,14 +64,14 @@ void ags_osc_buffer_util_get_char(unsigned char *buffer,
 				  gchar *val);
 
 void ags_osc_buffer_util_put_rgba(unsigned char *buffer,
-				  gint8 r, gint8 g, gint8 b, gint8 a);
+				  guint8 r, guint8 g, guint8 b, guint8 a);
 void ags_osc_buffer_util_get_rgba(unsigned char *buffer,
-				  gint8 *r, gint8 *g, gint8 *b, gint8 *a);
+				  guint8 *r, guint8 *g, guint8 *b, guint8 *a);
 
 void ags_osc_buffer_util_put_midi(unsigned char *buffer,
-				  gint8 port, gint8 status_byte, gint8 data0, gint8 data1);
+				  guint8 port, guint8 status_byte, guint8 data0, guint8 data1);
 void ags_osc_buffer_util_get_midi(unsigned char *buffer,
-				  gint8 *port, gint8 *status_byte, gint8 *data0, gint8 *data1);
+				  guint8 *port, guint8 *status_byte, guint8 *data0, guint8 *data1);
 
 void ags_osc_buffer_util_put_packet(unsigned char *buffer,
 				    gint32 packet_size, unsigned char *packet);

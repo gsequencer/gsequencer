@@ -1061,7 +1061,7 @@ ags_osc_builder_real_append_value(AgsOscBuilder *osc_builder,
     break;
   case AGS_OSC_UTIL_TYPE_TAG_STRING_RGBA:
     {
-      gint8 r, g, b, a;
+      guint8 r, g, b, a;
 
       r = g_value_get_int(&(value[0]));
       g = g_value_get_int(&(value[1]));
@@ -1081,9 +1081,9 @@ ags_osc_builder_real_append_value(AgsOscBuilder *osc_builder,
     break;
   case AGS_OSC_UTIL_TYPE_TAG_STRING_MIDI:
     {
-      gint8 port;
-      gint8 status_byte;
-      gint8 data0, data1;
+      guint8 port;
+      guint8 status_byte;
+      guint8 data0, data1;
 
       port = g_value_get_int(&(value[0]));
       status_byte = g_value_get_int(&(value[1]));
@@ -1179,7 +1179,175 @@ ags_osc_builder_append_value(AgsOscBuilder *osc_builder,
 void
 ags_osc_builder_build(AgsOscBuilder *osc_builder)
 {
-  //TODO:JK: implement me
+  GList *packet_start, *packet;
+
+  unsigned char *data;
+
+  gsize data_length;
+  gsize offset;
+
+  auto void ags_osc_builder_build_bundle(AgsOscBuilder *osc_builder,
+					 AgsOscBuilderBundle *bundle);
+  auto void ags_osc_builder_build_message(AgsOscBuilder *osc_builder,
+					  AgsOscBuilderMessage *message);
+
+  void ags_osc_builder_build_bundle(AgsOscBuilder *osc_builder,
+				    AgsOscBuilderBundle *bundle)
+  {
+    GList *message_start, *message;
+    GList *bundle_start, *bundle;
+
+    /* #bundle */
+    ags_osc_buffer_util_put_string(data + offset,
+				   "#bundle",
+				   -1);
+    
+    offset += 8;
+
+    /* time tag */
+    ags_osc_buffer_util_put_timetag(data + offsedt,
+				    bundle->tv_secs, bundle->tv_fraction, bundle->immediately);
+    
+    offset += 8;
+
+    /* content */
+    message_start = g_list_copy(AGS_OSC_BUILDER_BUNDLE(bundle->data)->message);
+    message_start = g_list_reverse(message_start);
+
+    bundle_start = g_list_copy(AGS_OSC_BUILDER_BUNDLE(bundle->data)->bundle);
+    bundle_start = g_list_reverse(bundle_start);
+
+    message = message_start;
+    bundle = bundle_start;
+
+    while(message != NULL || bundle != NULL){
+      if(bundle == NULL ||
+	 (message != NULL && AGS_OSC_BUILDER_MESSAGE(message->data)->offset < AGS_OSC_BUILDER_BUNDLE(bundle->data)->offset)){
+	ags_osc_builder_build_message(osc_builder,
+				      message->data);	
+      }else{
+	ags_osc_builder_build_bundle(osc_builder,
+				     bundle->data);	
+      }
+      
+      /* iterate */
+      if(message != NULL){
+	message = message->next;
+      }
+
+      if(bundle != NULL){
+	bundle = bundle->next;
+      }
+    }
+    
+    g_list_free(message_start);
+    g_list_free(bundle_start);
+  }
+
+  void ags_osc_builder_build_message(AgsOscBuilder *osc_builder,
+				     AgsOscBuilderMessage *message)
+  {
+    guint64 address_pattern_length;
+    guint64 type_tag_length;
+
+    /* address pattern */
+    address_pattern_length = strlen(message->address_pattern);
+
+    ags_osc_buffer_util_put_string(data + offset,
+				   message->address_pattern,
+				   -1);
+
+    offset += (address_pattern_length + 1);
+
+    /* type tag */
+    type_tag_length = strlen(message->type_tag);
+
+    ags_osc_buffer_util_put_string(data + offset,
+				   message->type_tag,
+				   -1);
+
+    offset += (type_tag_length + 1);
+
+    /* data */
+    memcpy(data + offset,
+	   message->data,
+	   message->data_length * sizeof(unsigned char));
+
+    offset += message->data_length;
+  }
+  
+  if(!AGS_IS_OSC_BUILDER(osc_builder)){
+    return;
+  }
+
+  packet_start = g_list_copy(osc_builder->packet);
+  packet_start = g_list_reverse(packet_start);
+
+  packet = packet_start;
+
+  data = NULL;
+
+  offset = 0;
+  data_length = 0;
+  
+  while(packet != NULL){
+    GList *message_start, *message;
+    GList *bundle_start, *bundle;
+    
+    /* re-allocate data */
+    if(data == NULL){
+      data = (unsigned char *) malloc((4 + AGS_OSC_BUILDER_PACKET(packet->data)->packet_size) * sizeof(unsigned char));
+      
+      data_length = 4 + AGS_OSC_BUILDER_PACKET(packet->data)->packet_size;
+    }else{
+      data = (unsigned char *) realloc(data,
+				       (data_length + 4 + AGS_OSC_BUILDER_PACKET(packet->data)->packet_size) * sizeof(unsigned char));
+
+      data_length += (4 + AGS_OSC_BUILDER_PACKET(packet->data)->packet_size);
+    }
+
+    /* put packet size */
+    ags_osc_buffer_util_put_int32(data + offset,
+				  AGS_OSC_BUILDER_PACKET(packet->data)->packet_size);
+
+    /*  */
+    message_start = g_list_copy(AGS_OSC_BUILDER_PACKET(packet->data)->message);
+    message_start = g_list_reverse(message_start);
+
+    bundle_start = g_list_copy(AGS_OSC_BUILDER_PACKET(packet->data)->bundle);
+    bundle_start = g_list_reverse(bundle_start);
+
+    message = message_start;
+    bundle = bundle_start;
+    
+    while(message != NULL || bundle != NULL){
+      if(bundle == NULL ||
+	 (message != NULL && AGS_OSC_BUILDER_MESSAGE(message->data)->offset < AGS_OSC_BUILDER_BUNDLE(bundle->data)->offset)){
+	ags_osc_builder_build_message(osc_builder,
+				      message->data);	
+      }else{
+	ags_osc_builder_build_bundle(osc_builder,
+				     bundle->data);	
+      }
+      
+      /* iterate */
+      if(message != NULL){
+	message = message->next;
+      }
+
+      if(bundle != NULL){
+	bundle = bundle->next;
+      }
+    }
+    
+    g_list_free(message_start);
+    g_list_free(bundle_start);
+    
+    /* iterate */
+    packet = packet->next;
+  }
+
+  g_list_free(packet_start);
 }
 
 /**
