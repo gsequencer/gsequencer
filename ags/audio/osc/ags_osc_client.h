@@ -32,6 +32,8 @@
 #define AGS_IS_OSC_CLIENT_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_OSC_CLIENT))
 #define AGS_OSC_CLIENT_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_OSC_CLIENT, AgsOscClientClass))
 
+#define AGS_OSC_CLIENT_DEFAULT_MAX_ADDRESS_LENGTH (2048)
+
 #define AGS_OSC_CLIENT_DEFAULT_SERVER_PORT (9000)
 #define AGS_OSC_CLIENT_DEFAULT_DOMAIN "localhost"
 #define AGS_OSC_CLIENT_DEFAULT_INET4_ADDRESS "127.0.0.1"
@@ -61,6 +63,7 @@ struct _AgsOscClient
   gchar *ip4;
   gchar *ip6;
 
+  gchar *domain;
   guint server_port;
   
   int ip4_fd;
@@ -78,6 +81,8 @@ struct _AgsOscClientClass
 {
   GObjectClass gobject;
 
+  void (*resolve)(AgsOscClient *osc_client);
+
   void (*connect)(AgsOscClient *osc_client);
 };
 
@@ -88,6 +93,8 @@ pthread_mutex_t* ags_osc_client_get_class_mutex();
 gboolean ags_osc_client_test_flags(AgsOscClient *osc_client, guint flags);
 void ags_osc_client_set_flags(AgsOscClient *osc_client, guint flags);
 void ags_osc_client_unset_flags(AgsOscClient *osc_client, guint flags);
+
+void ags_osc_client_resolve(AgsOscClient *osc_client);
 
 void ags_osc_client_connect(AgsOscClient *osc_client);
 

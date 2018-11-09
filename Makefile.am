@@ -915,7 +915,7 @@ libags_audio_osc_h_sources = \
 	$(deprecated_libags_audio_osc_h_sources) \
 	ags/audio/osc/ags_osc_buffer_util.h \
 	ags/audio/osc/ags_osc_builder.h \
-	ags/audio/osc/ags_osc_parser.h \
+	ags/audio/osc/ags_osc_client.h \
 	ags/audio/osc/ags_osc_parser.h \
 	ags/audio/osc/ags_osc_server.h \
 	ags/audio/osc/ags_osc_util.h

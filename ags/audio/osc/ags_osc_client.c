@@ -21,6 +21,7 @@
 
 #include <sys/types.h>
 #include <sys/socket.h>
+#include <netdb.h>
 
 void ags_osc_client_class_init(AgsOscClientClass *osc_client);
 void ags_osc_client_init(AgsOscClient *osc_client);
@@ -34,6 +35,7 @@ void ags_osc_client_get_property(GObject *gobject,
 				 GParamSpec *param_spec);
 void ags_osc_client_finalize(GObject *gobject);
 
+void ags_osc_client_real_resolve(AgsOscClient *osc_client);
 void ags_osc_client_real_connect(AgsOscClient *osc_client);
 
 /**
@@ -43,7 +45,7 @@ void ags_osc_client_real_connect(AgsOscClient *osc_client);
  * @section_id:
  * @include: ags/audio/osc/ags_osc_client.h
  *
- * #AgsOscClient your osc client.
+ * #AgsOscClient your OSC client.
  */
 
 enum{
@@ -51,6 +53,7 @@ enum{
 };
 
 enum{
+  RESOLVE,
   CONNECT,
   LAST_SIGNAL,
 };
@@ -94,6 +97,7 @@ void
 ags_osc_client_class_init(AgsOscClientClass *osc_client)
 {
   GObjectClass *gobject;
+
   GParamSpec *param_spec;
   
   ags_osc_client_parent_class = g_type_class_peek_parent(osc_client);
@@ -110,6 +114,23 @@ ags_osc_client_class_init(AgsOscClientClass *osc_client)
   osc_client->connect = ags_osc_client_real_connect;
   
   /* signals */
+  /**
+   * AgsOscClient::resolve:
+   * @osc_client: the #AgsOscClient
+   *
+   * The ::resolve signal is emited during resolve of domain.
+   *
+   * Since: 2.1.0
+   */
+  osc_client_signals[RESOLVE] =
+    g_signal_new("resolve",
+		 G_TYPE_FROM_CLASS(osc_client),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsOscClientClass, resolve),
+		 NULL, NULL,
+		 g_cclosure_marshal_VOID__VOID,
+		 G_TYPE_NONE, 0);
+
   /**
    * AgsOscClient::connect:
    * @osc_client: the #AgsOscClient
@@ -151,6 +172,7 @@ ags_osc_client_init(AgsOscClient *osc_client)
   osc_client->ip4 = g_strdup(AGS_OSC_CLIENT_DEFAULT_INET4_ADDRESS);
   osc_client->ip6 = g_strdup(AGS_OSC_CLIENT_DEFAULT_INET6_ADDRESS);
 
+  osc_client->domain = g_strdup(AGS_OSC_CLIENT_DEFAULT_DOMAIN);
   osc_client->server_port = AGS_OSC_CLIENT_DEFAULT_SERVER_PORT;
   
   osc_client->ip4_fd = -1;
@@ -360,6 +382,63 @@ ags_osc_client_unset_flags(AgsOscClient *osc_client, guint flags)
 }
 
 void
+ags_osc_client_real_resolve(AgsOscClient *osc_client)
+{
+  struct addrinfo hints, *res;
+
+  int rc;
+  
+  /* IPv4 */
+  memset(&hints, 0, sizeof(struct addrinfo));
+  hints.ai_family = AF_INET;
+  hints.ai_flags |= AI_CANONNAME;
+  
+  rc = getaddrinfo(osc_client->domain, NULL, &hints, &res);
+
+  if(rc == 0){
+    osc_client->ip4 = (char *) malloc(AGS_OSC_CLIENT_DEFAULT_MAX_ADDRESS_LENGTH * sizeof(char));
+    inet_ntop(AF_INET, res->ai_addr->sa_data, osc_client->ip4,
+	      AGS_OSC_CLIENT_DEFAULT_MAX_ADDRESS_LENGTH);
+  }else{
+    g_warning("failed to resolve IPv4 address");
+  }
+  
+  /* IPv6 */
+  memset(&hints, 0, sizeof(struct addrinfo));
+  hints.ai_family = AF_INET6;
+  hints.ai_flags |= AI_CANONNAME;
+  
+  rc = getaddrinfo(osc_client->domain, NULL, &hints, &res);
+
+  if(rc == 0){
+    osc_client->ip6 = (char *) malloc(AGS_OSC_CLIENT_DEFAULT_MAX_ADDRESS_LENGTH * sizeof(char));
+    inet_ntop(AF_INET, res->ai_addr->sa_data, osc_client->ip6,
+	      AGS_OSC_CLIENT_DEFAULT_MAX_ADDRESS_LENGTH);
+  }else{
+    g_warning("failed to resolve IPv6 address");
+  }
+}
+
+/**
+ * ags_osc_client_resolve:
+ * @osc_client: the #AgsOscClient
+ * 
+ * Resolve OSC client.
+ * 
+ * Since: 2.1.0
+ */
+void
+ags_osc_client_resolve(AgsOscClient *osc_client)
+{
+  g_return_if_fail(AGS_IS_OSC_CLIENT(osc_client));
+  
+  g_object_ref((GObject *) osc_client);
+  g_signal_emit(G_OBJECT(osc_client),
+		osc_client_signals[RESOLVE], 0);
+  g_object_unref((GObject *) osc_client);
+}
+
+void
 ags_osc_client_real_connect(AgsOscClient *osc_client)
 {
   gboolean ip4_success, ip6_success;
@@ -465,10 +544,14 @@ ags_osc_client_real_connect(AgsOscClient *osc_client)
 
     i++;
   }
+
+  if(!ip4_connected && !ip6_connected){
+    g_message("failed to connect to server");
+  }
 }
   
 /**
- * Ags_osc_client_connect:
+ * ags_osc_client_connect:
  * @osc_client: the #AgsOscClient
  * 
  * Connect OSC client.

@@ -4731,9 +4731,9 @@ am__nobase_include_HEADERS_DIST = ags/libags.h \
 	ags/audio/midi/ags_midi_file.h \
 	ags/audio/midi/ags_midi_parser.h \
 	ags/audio/osc/ags_osc_buffer_util.h \
-	ags/audio/osc/ags_osc_builder.h ags/audio/osc/ags_osc_parser.h \
-	ags/audio/osc/ags_osc_server.h ags/audio/osc/ags_osc_util.h \
-	ags/audio/jack/ags_jack_client.h \
+	ags/audio/osc/ags_osc_builder.h ags/audio/osc/ags_osc_client.h \
+	ags/audio/osc/ags_osc_parser.h ags/audio/osc/ags_osc_server.h \
+	ags/audio/osc/ags_osc_util.h ags/audio/jack/ags_jack_client.h \
 	ags/audio/jack/ags_jack_midiin.h \
 	ags/audio/jack/ags_jack_devout.h \
 	ags/audio/jack/ags_jack_devin.h ags/audio/jack/ags_jack_port.h \
@@ -7166,7 +7166,7 @@ libags_audio_osc_h_sources = \
 	$(deprecated_libags_audio_osc_h_sources) \
 	ags/audio/osc/ags_osc_buffer_util.h \
 	ags/audio/osc/ags_osc_builder.h \
-	ags/audio/osc/ags_osc_parser.h \
+	ags/audio/osc/ags_osc_client.h \
 	ags/audio/osc/ags_osc_parser.h \
 	ags/audio/osc/ags_osc_server.h \
 	ags/audio/osc/ags_osc_util.h
