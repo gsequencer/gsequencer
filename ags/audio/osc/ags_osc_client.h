@@ -23,6 +23,8 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <netinet/in.h>
+
 #define AGS_TYPE_OSC_CLIENT                (ags_osc_client_get_type ())
 #define AGS_OSC_CLIENT(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_OSC_CLIENT, AgsOscClient))
 #define AGS_OSC_CLIENT_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_OSC_CLIENT, AgsOscClientClass))
@@ -30,8 +32,22 @@
 #define AGS_IS_OSC_CLIENT_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_OSC_CLIENT))
 #define AGS_OSC_CLIENT_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_OSC_CLIENT, AgsOscClientClass))
 
+#define AGS_OSC_CLIENT_DEFAULT_SERVER_PORT (9000)
+#define AGS_OSC_CLIENT_DEFAULT_DOMAIN "localhost"
+#define AGS_OSC_CLIENT_DEFAULT_INET4_ADDRESS "127.0.0.1"
+#define AGS_OSC_CLIENT_DEFAULT_INET6_ADDRESS "::1"
+
+#define AGS_OSC_CLIENT_DEFAULT_MAX_RETRY (16)
+
 typedef struct _AgsOscClient AgsOscClient;
 typedef struct _AgsOscClientClass AgsOscClientClass;
+
+typedef enum{
+  AGS_OSC_CLIENT_INET4      = 1,
+  AGS_OSC_CLIENT_INET6      = 1 <<  1,
+  AGS_OSC_CLIENT_UDP        = 1 <<  2,
+  AGS_OSC_CLIENT_TCP        = 1 <<  3,
+}AgsOscClientFlags;
 
 struct _AgsOscClient
 {
@@ -41,6 +57,21 @@ struct _AgsOscClient
 
   pthread_mutex_t *obj_mutex;
   pthread_mutexattr_t *obj_mutexattr;
+  
+  gchar *ip4;
+  gchar *ip6;
+
+  guint server_port;
+  
+  int ip4_fd;
+  int ip6_fd;
+  
+  struct sockaddr_in *ip4_address;
+  struct sockaddr_in6 *ip6_address;
+
+  guint max_retry_count;
+
+  struct timespec *retry_delay;
 };
 
 struct _AgsOscClientClass
@@ -53,6 +84,10 @@ struct _AgsOscClientClass
 GType ags_osc_client_get_type(void);
 
 pthread_mutex_t* ags_osc_client_get_class_mutex();
+
+gboolean ags_osc_client_test_flags(AgsOscClient *osc_client, guint flags);
+void ags_osc_client_set_flags(AgsOscClient *osc_client, guint flags);
+void ags_osc_client_unset_flags(AgsOscClient *osc_client, guint flags);
 
 void ags_osc_client_connect(AgsOscClient *osc_client);
 

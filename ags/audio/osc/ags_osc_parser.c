@@ -150,7 +150,7 @@ ags_osc_parser_class_init(AgsOscParserClass *osc_parser)
   /* signals */
   /**
    * AgsOscParser::osc-getc:
-   * @osc_parser: the parser
+   * @osc_parser: the #AgsOscParser
    *
    * The ::osc-getc signal is emited during parsing of event.
    *
@@ -169,7 +169,7 @@ ags_osc_parser_class_init(AgsOscParserClass *osc_parser)
 
   /**
    * AgsOscParser::on-error:
-   * @osc_parser: the parser
+   * @osc_parser: the #AgsOscParser
    *
    * The ::on-error signal is emited as error occurs.
    *
@@ -187,7 +187,7 @@ ags_osc_parser_class_init(AgsOscParserClass *osc_parser)
 
   /**
    * AgsOscParser::parse-full:
-   * @osc_parser: the parser
+   * @osc_parser: the #AgsOscParser
    *
    * The ::parse-full signal is emited during parsing of osc file.
    *
@@ -206,7 +206,7 @@ ags_osc_parser_class_init(AgsOscParserClass *osc_parser)
 
   /**
    * AgsOscParser::parse-bytes:
-   * @osc_parser: the parser
+   * @osc_parser: the #AgsOscParser
    * @buffer: the OSC data
    * @buffer_length: the buffer's length
    *
@@ -229,7 +229,7 @@ ags_osc_parser_class_init(AgsOscParserClass *osc_parser)
   
   /**
    * AgsOscParser::packet:
-   * @osc_parser: the parser
+   * @osc_parser: the #AgsOscParser
    *
    * The ::packet signal is emited during parsing.
    *
@@ -248,7 +248,7 @@ ags_osc_parser_class_init(AgsOscParserClass *osc_parser)
 
   /**
    * AgsOscParser::bundle:
-   * @osc_parser: the parser
+   * @osc_parser: the #AgsOscParser
    *
    * The ::bundle signal is emited during parsing.
    *
@@ -267,7 +267,7 @@ ags_osc_parser_class_init(AgsOscParserClass *osc_parser)
 
   /**
    * AgsOscParser::message:
-   * @osc_parser: the parser
+   * @osc_parser: the #AgsOscParser
    *
    * The ::message signal is emited during parsing.
    *
@@ -286,7 +286,7 @@ ags_osc_parser_class_init(AgsOscParserClass *osc_parser)
 
   /**
    * AgsOscParser::value:
-   * @osc_parser: the parser
+   * @osc_parser: the #AgsOscParser
    *
    * The ::value signal is emited during parsing.
    *

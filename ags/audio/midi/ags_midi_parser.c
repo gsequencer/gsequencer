@@ -215,7 +215,7 @@ ags_midi_parser_class_init(AgsMidiParserClass *midi_parser)
   /* signals */
   /**
    * AgsMidiParser::midi-getc:
-   * @midi_parser: the parser
+   * @midi_parser: the #AgsMidiParser
    *
    * The ::midi-getc signal is emited during parsing of event.
    *
@@ -234,7 +234,7 @@ ags_midi_parser_class_init(AgsMidiParserClass *midi_parser)
 
   /**
    * AgsMidiParser::on-error:
-   * @midi_parser: the parser
+   * @midi_parser: the #AgsMidiParser
    *
    * The ::on-error signal is emited as error occurs.
    *
@@ -252,7 +252,7 @@ ags_midi_parser_class_init(AgsMidiParserClass *midi_parser)
 
   /**
    * AgsMidiParser::parse-full:
-   * @midi_parser: the parser
+   * @midi_parser: the #AgsMidiParser
    *
    * The ::parse-full signal is emited during parsing of midi file.
    *
@@ -271,7 +271,7 @@ ags_midi_parser_class_init(AgsMidiParserClass *midi_parser)
 
   /**
    * AgsMidiParser::parse-bytes:
-   * @midi_parser: the parser
+   * @midi_parser: the #AgsMidiParser
    * @buffer: the MIDI data
    * @buffer_length: the buffer's length
    *
@@ -294,7 +294,7 @@ ags_midi_parser_class_init(AgsMidiParserClass *midi_parser)
 
   /**
    * AgsMidiParser::parse-header:
-   * @midi_parser: the parser
+   * @midi_parser: the #AgsMidiParser
    *
    * The ::parse-header signal is emited during parsing of header.
    *
@@ -313,7 +313,7 @@ ags_midi_parser_class_init(AgsMidiParserClass *midi_parser)
 
   /**
    * AgsMidiParser::parse-track:
-   * @midi_parser: the parser
+   * @midi_parser: the #AgsMidiParser
    *
    * The ::parse-track signal is emited during parsing of track.
    *
@@ -332,7 +332,8 @@ ags_midi_parser_class_init(AgsMidiParserClass *midi_parser)
 
   /**
    * AgsMidiParser::key-on:
-   * @midi_parser: the parser
+   * @midi_parser: the #AgsMidiParser
+   * @status: the MIDI status byte
    *
    * The ::key-on signal is emited during parsing of event.
    *
@@ -352,7 +353,8 @@ ags_midi_parser_class_init(AgsMidiParserClass *midi_parser)
 
   /**
    * AgsMidiParser::key-off:
-   * @midi_parser: the parser
+   * @midi_parser: the #AgsMidiParser
+   * @status: the MIDI status byte
    *
    * The ::key-off signal is emited during parsing of event.
    *
@@ -372,7 +374,8 @@ ags_midi_parser_class_init(AgsMidiParserClass *midi_parser)
 
   /**
    * AgsMidiParser::key-pressure:
-   * @midi_parser: the parser
+   * @midi_parser: the #AgsMidiParser
+   * @status: the MIDI status byte
    *
    * The ::key-pressure signal is emited during parsing of event.
    *
@@ -392,7 +395,8 @@ ags_midi_parser_class_init(AgsMidiParserClass *midi_parser)
 
   /**
    * AgsMidiParser::change-parameter:
-   * @midi_parser: the parser
+   * @midi_parser: the #AgsMidiParser
+   * @status: the MIDI status byte
    *
    * The ::change-parameter signal is emited during parsing of event.
    *
@@ -412,7 +416,8 @@ ags_midi_parser_class_init(AgsMidiParserClass *midi_parser)
 
   /**
    * AgsMidiParser::change-pitch-bend:
-   * @midi_parser: the parser
+   * @midi_parser: the #AgsMidiParser
+   * @status: the MIDI status byte
    *
    * The ::change-pitch-bend signal is emited during parsing of event.
    *
@@ -432,7 +437,8 @@ ags_midi_parser_class_init(AgsMidiParserClass *midi_parser)
 
   /**
    * AgsMidiParser::change-program:
-   * @midi_parser: the parser
+   * @midi_parser: the #AgsMidiParser
+   * @status: the MIDI status byte
    *
    * The ::change-program signal is emited during parsing of event.
    *
@@ -452,7 +458,8 @@ ags_midi_parser_class_init(AgsMidiParserClass *midi_parser)
 
   /**
    * AgsMidiParser::change-channel-pressure:
-   * @midi_parser: the parser
+   * @midi_parser: the #AgsMidiParser
+   * @status: the MIDI status byte
    *
    * The ::change-channel-pressure signal is emited during parsing of event.
    *
@@ -472,7 +479,8 @@ ags_midi_parser_class_init(AgsMidiParserClass *midi_parser)
 
   /**
    * AgsMidiParser::not-defined:
-   * @midi_parser: the parser
+   * @midi_parser: the #AgsMidiParser
+   * @status: the MIDI status byte
    *
    * The ::not-defined signal is emited during parsing of event.
    *
@@ -492,7 +500,8 @@ ags_midi_parser_class_init(AgsMidiParserClass *midi_parser)
 
   /**
    * AgsMidiParser::sysex:
-   * @midi_parser: the parser
+   * @midi_parser: the #AgsMidiParser
+   * @status: the MIDI status byte
    *
    * The ::sysex signal is emited during parsing of event.
    *
@@ -512,7 +521,8 @@ ags_midi_parser_class_init(AgsMidiParserClass *midi_parser)
 
   /**
    * AgsMidiParser::system-common:
-   * @midi_parser: the parser
+   * @midi_parser: the #AgsMidiParser
+   * @status: the MIDI status byte
    *
    * The ::system-common signal is emited during parsing of event.
    *
@@ -532,7 +542,8 @@ ags_midi_parser_class_init(AgsMidiParserClass *midi_parser)
 
   /**
    * AgsMidiParser::meta-event:
-   * @midi_parser: the parser
+   * @midi_parser: the #AgsMidiParser
+   * @status: the MIDI status byte
    *
    * The ::meta-event signal is emited during parsing of event.
    *
@@ -552,7 +563,8 @@ ags_midi_parser_class_init(AgsMidiParserClass *midi_parser)
 
   /**
    * AgsMidiParser::sequence-number:
-   * @midi_parser: the parser
+   * @midi_parser: the #AgsMidiParser
+   * @status: the MIDI status byte
    *
    * The ::sequence-number signal is emited during parsing of event.
    *
@@ -572,7 +584,8 @@ ags_midi_parser_class_init(AgsMidiParserClass *midi_parser)
 
   /**
    * AgsMidiParser::end-of-track:
-   * @midi_parser: the parser
+   * @midi_parser: the #AgsMidiParser
+   * @status: the MIDI status byte
    *
    * The ::end-of-track signal is emited during parsing of event.
    *
@@ -592,7 +605,8 @@ ags_midi_parser_class_init(AgsMidiParserClass *midi_parser)
 
   /**
    * AgsMidiParser::smtpe:
-   * @midi_parser: the parser
+   * @midi_parser: the #AgsMidiParser
+   * @status: the MIDI status byte
    *
    * The ::smtpe signal is emited during parsing of event.
    *
@@ -612,7 +626,8 @@ ags_midi_parser_class_init(AgsMidiParserClass *midi_parser)
 
   /**
    * AgsMidiParser::tempo:
-   * @midi_parser: the parser
+   * @midi_parser: the #AgsMidiParser
+   * @status: the MIDI status byte
    *
    * The ::tempo signal is emited during parsing of event.
    *
@@ -632,7 +647,8 @@ ags_midi_parser_class_init(AgsMidiParserClass *midi_parser)
 
   /**
    * AgsMidiParser::time-signature:
-   * @midi_parser: the parser
+   * @midi_parser: the #AgsMidiParser
+   * @status: the MIDI status byte
    *
    * The ::time-signature signal is emited during parsing of event.
    *
@@ -652,7 +668,8 @@ ags_midi_parser_class_init(AgsMidiParserClass *midi_parser)
 
   /**
    * AgsMidiParser::key-signature:
-   * @midi_parser: the parser
+   * @midi_parser: the #AgsMidiParser
+   * @status: the MIDI status byte
    *
    * The ::key-signature signal is emited during parsing of event.
    *
@@ -672,7 +689,8 @@ ags_midi_parser_class_init(AgsMidiParserClass *midi_parser)
 
   /**
    * AgsMidiParser::sequencer-meta-event:
-   * @midi_parser: the parser
+   * @midi_parser: the #AgsMidiParser
+   * @status: the MIDI status byte
    *
    * The ::sequencer-meta-event signal is emited during parsing of event.
    *
@@ -692,7 +710,8 @@ ags_midi_parser_class_init(AgsMidiParserClass *midi_parser)
 
   /**
    * AgsMidiParser::text-event:
-   * @midi_parser: the parser
+   * @midi_parser: the #AgsMidiParser
+   * @status: the MIDI status byte
    *
    * The ::text-event signal is emited during parsing of event.
    *

@@ -920,6 +920,9 @@ ags_osc_buffer_util_put_bundle
 ags_osc_buffer_util_get_bundle
 ags_osc_client_get_type
 ags_osc_client_get_class_mutex
+ags_osc_client_test_flags
+ags_osc_client_set_flags
+ags_osc_client_unset_flags
 ags_osc_client_connect
 ags_osc_client_new
 ags_osc_util_type_tag_string_count_type

@@ -87,7 +87,7 @@ struct _AgsMidiParserClass
   int (*midi_getc)(AgsMidiParser *midi_parser);
   void (*on_error)(AgsMidiParser *midi_parser,
 		   GError **error);
-
+  
   xmlDoc* (*parse_full)(AgsMidiParser *midi_parser);
   xmlNode* (*parse_bytes)(AgsMidiParser *midi_parser,
 			  unsigned char *midi_buffer,
