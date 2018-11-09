@@ -21,6 +21,9 @@
 
 #include <sys/types.h>
 #include <sys/socket.h>
+#include <netinet/in.h>
+
+#include <unistd.h>
 
 #include <ags/i18n.h>
 
@@ -299,6 +302,8 @@ ags_osc_server_init(AgsOscServer *osc_server)
   
   osc_server->ip6_address = (struct sockaddr_in6 *) malloc(sizeof(struct sockaddr_in6));
   memset(osc_server->ip6_address, 0, sizeof(struct sockaddr_in6));
+
+  osc_server->connection = NULL;
 }
 
 void
@@ -482,6 +487,11 @@ ags_osc_server_finalize(GObject *gobject)
   pthread_mutexattr_destroy(osc_server->obj_mutexattr);
   free(osc_server->obj_mutexattr);
 
+  g_free(osc_server->domain);
+  
+  g_free(osc_server->ip4);
+  g_free(osc_server->ip6);
+  
   /* call parent */
   G_OBJECT_CLASS(ags_osc_server_parent_class)->finalize(gobject);
 }
@@ -609,7 +619,144 @@ ags_osc_server_unset_flags(AgsOscServer *osc_server, guint flags)
 void
 ags_osc_server_real_start(AgsOscServer *osc_server)
 {
-  //TODO:JK: implement me
+  gboolean any_address;
+  gboolean ip4_success, ip6_success;
+  gboolean ip4_udp_success, ip4_tcp_success;
+  gboolean ip6_udp_success, ip6_tcp_success;
+
+  pthread_mutex_t *osc_server_mutex;
+
+  /* get osc_server mutex */
+  pthread_mutex_lock(ags_osc_server_get_class_mutex());
+  
+  osc_server_mutex = osc_server->obj_mutex;
+  
+  pthread_mutex_unlock(ags_osc_server_get_class_mutex());
+
+  any_address = ags_osc_server_test_flags(osc_server, AGS_OSC_SERVER_ANY_ADDRESS);
+  
+  ip4_success = FALSE;
+  ip6_success = FALSE;
+  
+  ip4_udp_success = FALSE;
+  ip4_tcp_success = FALSE;
+
+  ip6_udp_success = FALSE;
+  ip6_tcp_success = FALSE;
+  
+  if(ags_osc_server_test_flags(osc_server, AGS_OSC_SERVER_INET4)){
+    ip4_success = TRUE;
+  
+    if(ags_osc_server_test_flags(osc_server, AGS_OSC_SERVER_UDP)){
+      ip4_udp_success = TRUE;
+      
+      /* create socket */
+      pthread_mutex_lock(osc_server_mutex);
+      
+      osc_server->ip4_fd = socket(AF_INET, SOCK_DGRAM, 0);
+      
+      pthread_mutex_unlock(osc_server_mutex);
+    }else if(ags_osc_server_test_flags(osc_server, AGS_OSC_SERVER_TCP)){
+      ip4_tcp_success = TRUE;
+
+      /* create socket */
+      pthread_mutex_lock(osc_server_mutex);
+      
+      osc_server->ip4_fd = socket(AF_INET, SOCK_STREAM, 0);
+
+      pthread_mutex_unlock(osc_server_mutex);
+    }else{
+      g_critical("no flow control type");
+    }
+
+    /* get ip4 */
+    if(any_address){
+      pthread_mutex_lock(osc_server_mutex);  
+
+      osc_server->ip4_address->sin_addr.s_addr = INADDR_ANY;
+      osc_server->ip4_address->sin_port = htons(osc_server->server_port);
+
+      pthread_mutex_unlock(osc_server_mutex);  
+    }else{
+      pthread_mutex_lock(osc_server_mutex);  
+
+      inet_pton(AF_INET, osc_server->ip4, &(osc_server->ip4_address->sin_addr.s_addr));
+      osc_server->ip4_address->sin_port = htons(osc_server->server_port);
+
+      pthread_mutex_unlock(osc_server_mutex);
+    }
+  }
+
+  if(ags_osc_server_test_flags(osc_server, AGS_OSC_SERVER_INET6)){    
+    ip6_success = TRUE;
+  
+    if(ags_osc_server_test_flags(osc_server, AGS_OSC_SERVER_UDP)){
+      ip6_udp_success = TRUE;
+
+      /* create socket */
+      pthread_mutex_lock(osc_server_mutex);
+      
+      osc_server->ip6_fd = socket(AF_INET6, SOCK_DGRAM, 0);
+
+      pthread_mutex_unlock(osc_server_mutex);
+    }else if(ags_osc_server_test_flags(osc_server, AGS_OSC_SERVER_TCP)){
+      ip6_tcp_success = TRUE;
+
+      /* create socket */
+      pthread_mutex_lock(osc_server_mutex);
+      
+      osc_server->ip6_fd = socket(AF_INET6, SOCK_STREAM, 0);
+
+      pthread_mutex_unlock(osc_server_mutex);
+    }else{
+      g_critical("no flow control type");
+    }
+
+    /* get ip6 */
+    if(any_address){
+      pthread_mutex_lock(osc_server_mutex);
+
+      memcpy(&(osc_server->ip6_address->sin6_addr.s6_addr), &in6addr_any, sizeof(struct in6_addr));
+      osc_server->ip6_address->sin6_port = htons(osc_server->server_port);
+      
+      pthread_mutex_unlock(osc_server_mutex);
+    }else{
+      pthread_mutex_lock(osc_server_mutex);
+
+      inet_pton(AF_INET6, osc_server->ip6, &(osc_server->ip6_address->sin6_addr.s6_addr));
+      osc_server->ip6_address->sin6_port = htons(osc_server->server_port);
+
+      pthread_mutex_unlock(osc_server_mutex);
+    }
+  }
+  
+  if(!ip4_success && !ip6_success){
+    g_critical("no protocol family");
+
+    return;
+  }
+
+  if(ip4_success){
+    int rc;
+    
+    rc = bind(osc_server->ip4_fd, osc_server->ip4_address, sizeof(struct sockaddr_in));
+
+    if(rc < 0){
+      g_critical("bind failed");
+    }
+  }
+  
+  if(ip6_success){
+    int rc;
+    
+    rc = bind(osc_server->ip6_fd, osc_server->ip6_address, sizeof(struct sockaddr_in6));
+
+    if(rc < 0){
+      g_critical("bind failed");
+    }
+  }
+
+  ags_osc_server_set_flags(osc_server, AGS_OSC_SERVER_STARTED);
 }
 
 /**
@@ -634,7 +781,27 @@ ags_osc_server_start(AgsOscServer *osc_server)
 void
 ags_osc_server_real_stop(AgsOscServer *osc_server)
 {
-  //TODO:JK: implement me
+  pthread_mutex_t *osc_server_mutex;
+
+  /* get OSC server mutex */
+  pthread_mutex_lock(ags_osc_server_get_class_mutex());
+  
+  osc_server_mutex = osc_server->obj_mutex;
+  
+  pthread_mutex_unlock(ags_osc_server_get_class_mutex());
+
+  /* close fd */
+  pthread_mutex_lock(osc_server_mutex);
+
+  if(osc_server->ip4_fd != -1){
+    close(osc_server->ip4_fd);
+  }
+
+  if(osc_server->ip6_fd != -1){
+    close(osc_server->ip6_fd);
+  }
+
+  pthread_mutex_unlock(osc_server_mutex);
 }
 
 /**
@@ -659,7 +826,21 @@ ags_osc_server_stop(AgsOscServer *osc_server)
 void
 ags_osc_server_real_listen(AgsOscServer *osc_server)
 {
-  //TODO:JK: implement me
+  if(ags_osc_server_test_flags(osc_server, AGS_OSC_SERVER_STARTED)){
+    return;
+  }
+
+  if(osc_server->ip4_fd != -1){
+    listen(osc_server->ip4_fd, AGS_OSC_SERVER_DEFAULT_BACKLOG);
+  }
+  
+  if(osc_server->ip6_fd != -1){
+    listen(osc_server->ip6_fd, AGS_OSC_SERVER_DEFAULT_BACKLOG);
+  }
+
+  while(ags_osc_server_test_flags(osc_server, AGS_OSC_SERVER_RUNNING)){
+    //TODO:JK: implement me
+  }
 }
 
 /**

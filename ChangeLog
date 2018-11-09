@@ -5,7 +5,7 @@ ags (2.1.0)
 	* implemented ags_osc_buffer_util.c
 	* implemented ags_osc_parser.c
 	* implemented ags_osc_builder.c
-	* TODO:JK: implemented ags_osc_client.c
+	* implemented ags_osc_client.c
 	* TODO:JK: implemented ags_osc_server.c
 	* TODO:JK: implemented AgsFileUploadController
 	* TODO:JK: improved AgsServer

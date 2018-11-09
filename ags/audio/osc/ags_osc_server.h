@@ -39,15 +39,33 @@
 #define AGS_OSC_SERVER_DEFAULT_INET4_ADDRESS "127.0.0.1"
 #define AGS_OSC_SERVER_DEFAULT_INET6_ADDRESS "::1"
 
+#define AGS_OSC_SERVER_DEFAULT_BACKLOG (512)
+#define AGS_OSC_SERVER_DEFAULT_MAX_CONNECTIONS (8192)
+
 typedef struct _AgsOscServer AgsOscServer;
 typedef struct _AgsOscServerClass AgsOscServerClass;
 
+/**
+ * AgsOscServerFlags:
+ * @AGS_OSC_SERVER_STARTED: the server was started
+ * @AGS_OSC_SERVER_RUNNING: the server is up and running
+ * @AGS_OSC_SERVER_INET4: use IPv4
+ * @AGS_OSC_SERVER_INET6: use IPv6
+ * @AGS_OSC_SERVER_UDP: run using UDP transport
+ * @AGS_OSC_SERVER_TCP: run using TCP transport
+ * @AGS_OSC_SERVER_ANY_ADDRESS: listen on any address
+ * 
+ * Enum values to control the behavior or indicate internal state of #AgsOscServer by
+ * enable/disable as flags.
+ */
 typedef enum{
-  AGS_OSC_SERVER_INET4         = 1,
-  AGS_OSC_SERVER_INET6         = 1 <<  1,
-  AGS_OSC_SERVER_UDP           = 1 <<  2,
-  AGS_OSC_SERVER_TCP           = 1 <<  3,
-  AGS_OSC_SERVER_ANY_ADDRESS   = 1 <<  4,
+  AGS_OSC_SERVER_STARTED        = 1,
+  AGS_OSC_SERVER_RUNNING        = 1 <<  1,
+  AGS_OSC_SERVER_INET4          = 1 <<  2,
+  AGS_OSC_SERVER_INET6          = 1 <<  3,
+  AGS_OSC_SERVER_UDP            = 1 <<  4,
+  AGS_OSC_SERVER_TCP            = 1 <<  5,
+  AGS_OSC_SERVER_ANY_ADDRESS    = 1 <<  6,
 }AgsOscServerFlags;
 
 struct _AgsOscServer
@@ -70,6 +88,8 @@ struct _AgsOscServer
   
   struct sockaddr_in *ip4_address;
   struct sockaddr_in6 *ip6_address;
+
+  GList *connection;
 };
 
 struct _AgsOscServerClass

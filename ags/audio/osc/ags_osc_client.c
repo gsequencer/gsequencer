@@ -645,7 +645,7 @@ ags_osc_client_real_resolve(AgsOscClient *osc_client)
 
   if(rc == 0){
     osc_client->ip6 = (char *) malloc(AGS_OSC_CLIENT_DEFAULT_MAX_ADDRESS_LENGTH * sizeof(char));
-    inet_ntop(AF_INET, res->ai_addr->sa_data, osc_client->ip6,
+    inet_ntop(AF_INET6, res->ai_addr->sa_data, osc_client->ip6,
 	      AGS_OSC_CLIENT_DEFAULT_MAX_ADDRESS_LENGTH);
   }else{
     g_warning("failed to resolve IPv6 address");
@@ -883,7 +883,7 @@ ags_osc_client_real_write_bytes(AgsOscClient *osc_client,
   success = TRUE;
 
   /* write on IPv4 socket */
-  if(ags_osc_client_test_flags(osc_client, AGS_OSC_CLIENT_INET6)){    
+  if(ags_osc_client_test_flags(osc_client, AGS_OSC_CLIENT_INET4)){
     num_write = write(ip4_fd,
 		      data, data_length);
 

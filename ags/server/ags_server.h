@@ -50,6 +50,11 @@
 #define AGS_IS_SERVER_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_SERVER))
 #define AGS_SERVER_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS(obj, AGS_TYPE_SERVER, AgsServerClass))
 
+#define AGS_SERVER_DEFAULT_SERVER_PORT (8080)
+#define AGS_SERVER_DEFAULT_DOMAIN "localhost"
+#define AGS_SERVER_DEFAULT_INET4_ADDRESS "127.0.0.1"
+#define AGS_SERVER_DEFAULT_INET6_ADDRESS "::1"
+
 #define AGS_SERVER_DEFAULT_AUTH_MODULE "ags-xml-password-store"
 
 typedef struct _AgsServer AgsServer;
@@ -62,6 +67,9 @@ typedef struct _AgsServerInfo AgsServerInfo;
  * @AGS_SERVER_CONNECTED: the server was connected by #AgsConnectable::connect()
  * @AGS_SERVER_STARTED: the server was started
  * @AGS_SERVER_RUNNING: the server is up and running
+ * @AGS_SERVER_INET4: use IPv4
+ * @AGS_SERVER_INET6: use IPv6
+ * @AGS_SERVER_ANY_ADDRESS: listen on any address
  * 
  * Enum values to control the behavior or indicate internal state of #AgsServer by
  * enable/disable as flags.
@@ -71,6 +79,9 @@ typedef enum{
   AGS_SERVER_CONNECTED          = 1 <<  1,
   AGS_SERVER_STARTED            = 1 <<  2,
   AGS_SERVER_RUNNING            = 1 <<  3,
+  AGS_SERVER_INET4              = 1 <<  4,
+  AGS_SERVER_INET6              = 1 <<  5,
+  AGS_SERVER_ANY_ADDRESS        = 1 <<  6,
 }AgsServerFlags;
 
 struct _AgsServer
@@ -94,8 +105,17 @@ struct _AgsServer
   void *socket;  
 #endif
 
-  int socket_fd;
-  struct sockaddr_in *address;
+  gchar *ip4;
+  gchar *ip6;
+
+  gchar *domain;
+  guint server_port;
+  
+  int ip4_fd;
+  int ip6_fd;
+  
+  struct sockaddr_in *ip4_address;
+  struct sockaddr_in6 *ip6_address;
 
   gchar *auth_module;
   
@@ -109,6 +129,7 @@ struct _AgsServerClass
   GObjectClass object;
   
   void (*start)(AgsServer *server);
+  void (*stop)(AgsServer *server);
 };
 
 /**
@@ -135,6 +156,7 @@ void ags_server_unset_flags(AgsServer *server, guint flags);
 AgsServerInfo* ags_server_info_alloc(gchar *server_name, gchar *uuid);
 
 void ags_server_start(AgsServer *server);
+void ags_server_stop(AgsServer *server);
 
 AgsServer* ags_server_lookup(AgsServerInfo *server_info);
 

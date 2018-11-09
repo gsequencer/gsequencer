@@ -36,6 +36,8 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 
+#include <unistd.h>
+
 #include <ags/i18n.h>
 
 void ags_server_class_init(AgsServerClass *server);
@@ -66,6 +68,7 @@ void ags_server_connect(AgsConnectable *connectable);
 void ags_server_disconnect(AgsConnectable *connectable);
 
 void ags_server_real_start(AgsServer *server);
+void ags_server_real_stop(AgsServer *server);
 
 /**
  * SECTION:ags_server
@@ -79,11 +82,16 @@ void ags_server_real_start(AgsServer *server);
 
 enum{
   PROP_0,
+  PROP_DOMAIN,
+  PROP_SERVER_PORT,
+  PROP_IP4,
+  PROP_IP6,
   PROP_APPLICATION_CONTEXT,
 };
 
 enum{
   START,
+  STOP,
   LAST_SIGNAL,
 };
 
@@ -169,8 +177,75 @@ ags_server_class_init(AgsServerClass *server)
 				  PROP_APPLICATION_CONTEXT,
 				  param_spec);
 
+  /**
+   * AgsServer:domain:
+   *
+   * The domain to use.
+   * 
+   * Since: 2.1.0
+   */
+  param_spec = g_param_spec_string("domain",
+				   i18n_pspec("domain"),
+				   i18n_pspec("The domain to use"),
+				   NULL,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_DOMAIN,
+				  param_spec);
+  
+  /**
+   * AgsServer:server-port:
+   *
+   * The server port to use.
+   * 
+   * Since: 2.1.0
+   */
+  param_spec = g_param_spec_uint("server-port",
+				 i18n_pspec("server port"),
+				 i18n_pspec("The server port to use"),
+				 0,
+				 G_MAXUINT32,
+				 AGS_SERVER_DEFAULT_SERVER_PORT,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_SERVER_PORT,
+				  param_spec);
+
+  /**
+   * AgsServer:ip4:
+   *
+   * The IPv4 address as string of the server.
+   * 
+   * Since: 2.1.0
+   */
+  param_spec = g_param_spec_string("ip4",
+				   i18n_pspec("ip4"),
+				   i18n_pspec("The IPv4 address of the server"),
+				   NULL,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_IP4,
+				  param_spec);
+
+  /**
+   * AgsServer:ip6:
+   *
+   * The IPv6 address as string of the server.
+   * 
+   * Since: 2.1.0
+   */
+  param_spec = g_param_spec_string("ip6",
+				   i18n_pspec("ip6"),
+				   i18n_pspec("The IPv6 address of the server"),
+				   NULL,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_IP6,
+				  param_spec);
+
   /* AgsServer */
   server->start = ags_server_real_start;
+  server->stop = ags_server_real_stop;
 
   /* signals */
   /**
@@ -186,6 +261,23 @@ ags_server_class_init(AgsServerClass *server)
 		 G_TYPE_FROM_CLASS(server),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsServerClass, start),
+		 NULL, NULL,
+		 g_cclosure_marshal_VOID__VOID,
+		 G_TYPE_NONE, 0);
+
+  /**
+   * AgsServer::stop:
+   * @server: the #AgsServer
+   *
+   * The ::stop signal is emitted as the server stops.
+   *
+   * Since: 2.1.0
+   */
+  server_signals[STOP] =
+    g_signal_new("stop",
+		 G_TYPE_FROM_CLASS(server),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsServerClass, stop),
 		 NULL, NULL,
 		 g_cclosure_marshal_VOID__VOID,
 		 G_TYPE_NONE, 0);
@@ -247,13 +339,20 @@ ags_server_init(AgsServer *server)
   server->socket = NULL;
 #endif
 
-  server->address = (struct sockaddr_in *) malloc(sizeof(struct sockaddr_in));
-  memset(server->address, 0, sizeof(struct sockaddr_in));
-  
-  server->address->sin_port = 8080;
-  server->address->sin_family = AF_INET;
+  server->ip4 = g_strdup(AGS_SERVER_DEFAULT_INET4_ADDRESS);
+  server->ip6 = g_strdup(AGS_SERVER_DEFAULT_INET6_ADDRESS);
 
-  inet_aton("127.0.0.1", &(server->address->sin_addr.s_addr));
+  server->domain = g_strdup(AGS_SERVER_DEFAULT_DOMAIN);
+  server->server_port = AGS_SERVER_DEFAULT_SERVER_PORT;
+  
+  server->ip4_fd = -1;
+  server->ip6_fd = -1;
+  
+  server->ip4_address = (struct sockaddr_in *) malloc(sizeof(struct sockaddr_in));
+  memset(server->ip4_address, 0, sizeof(struct sockaddr_in));
+  
+  server->ip6_address = (struct sockaddr_in6 *) malloc(sizeof(struct sockaddr_in6));
+  memset(server->ip6_address, 0, sizeof(struct sockaddr_in6));
 
   server->auth_module = AGS_SERVER_DEFAULT_AUTH_MODULE;
   
@@ -282,6 +381,82 @@ ags_server_set_property(GObject *gobject,
   pthread_mutex_unlock(ags_server_get_class_mutex());
   
   switch(prop_id){
+  case PROP_DOMAIN:
+    {
+      gchar *domain;
+
+      domain = g_value_get_string(value);
+
+      pthread_mutex_lock(server_mutex);
+      
+      if(server->domain == domain){
+	pthread_mutex_unlock(server_mutex);
+	
+	return;
+      }
+
+      g_free(server->domain);
+
+      server->domain = g_strdup(domain);
+
+      pthread_mutex_unlock(server_mutex);
+    }
+    break;
+  case PROP_SERVER_PORT:
+    {
+      guint server_port;
+
+      server_port = g_value_get_uint(value);
+
+      pthread_mutex_lock(server_mutex);
+
+      server->server_port = server_port;
+      
+      pthread_mutex_unlock(server_mutex);      
+    }
+    break;
+  case PROP_IP4:
+    {
+      gchar *ip4;
+
+      ip4 = g_value_get_string(value);
+
+      pthread_mutex_lock(server_mutex);
+      
+      if(server->ip4 == ip4){
+	pthread_mutex_unlock(server_mutex);
+	
+	return;
+      }
+
+      g_free(server->ip4);
+
+      server->ip4 = g_strdup(ip4);
+
+      pthread_mutex_unlock(server_mutex);
+    }
+    break;
+  case PROP_IP6:
+    {
+      gchar *ip6;
+
+      ip6 = g_value_get_string(value);
+
+      pthread_mutex_lock(server_mutex);
+      
+      if(server->ip6 == ip6){
+	pthread_mutex_unlock(server_mutex);
+	
+	return;
+      }
+
+      g_free(server->ip6);
+
+      server->ip6 = g_strdup(ip6);
+
+      pthread_mutex_unlock(server_mutex);
+    }
+    break;
   case PROP_APPLICATION_CONTEXT:
     {
       AgsApplicationContext *application_context;
@@ -335,6 +510,46 @@ ags_server_get_property(GObject *gobject,
   pthread_mutex_unlock(ags_server_get_class_mutex());
   
   switch(prop_id){
+  case PROP_DOMAIN:
+    {
+      pthread_mutex_lock(server_mutex);
+
+      g_value_set_string(value,
+			 server->domain);
+      
+      pthread_mutex_unlock(server_mutex);
+    }
+    break;
+  case PROP_SERVER_PORT:
+    {
+      pthread_mutex_lock(server_mutex);
+      
+      g_value_set_uint(value,
+		       server->server_port);
+
+      pthread_mutex_unlock(server_mutex);
+    }
+    break;
+  case PROP_IP4:
+    {
+      pthread_mutex_lock(server_mutex);
+      
+      g_value_set_string(value,
+			 server->ip4);
+      
+      pthread_mutex_unlock(server_mutex);
+    }
+    break;
+  case PROP_IP6:
+    {
+      pthread_mutex_lock(server_mutex);
+      
+      g_value_set_string(value,
+			 server->ip6);
+
+      pthread_mutex_unlock(server_mutex);
+    }
+    break;    
   case PROP_APPLICATION_CONTEXT:
     {
       pthread_mutex_lock(server_mutex);
@@ -380,6 +595,11 @@ ags_server_finalize(GObject *gobject)
 
   pthread_mutexattr_destroy(server->obj_mutexattr);
   free(server->obj_mutexattr);
+
+  g_free(server->domain);
+  
+  g_free(server->ip4);
+  g_free(server->ip6);
 
   if(server->application_context != NULL){
     g_object_unref(server->application_context);
@@ -719,12 +939,14 @@ void
 ags_server_real_start(AgsServer *server)
 {
   AgsRegistry *registry;
+
   const char *error;
 
   registry = ags_service_provider_get_registry(AGS_SERVICE_PROVIDER(server->application_context));
   
   ags_connectable_add_to_registry(AGS_CONNECTABLE(server->application_context));
 
+#if 0
   //  xmlrpc_registry_set_shutdown(registry,
   //			       &requestShutdown, &terminationRequested);
   server->socket_fd = socket(AF_INET, SOCK_RDM, PF_INET);
@@ -747,6 +969,7 @@ ags_server_real_start(AgsServer *server)
     */
   } 
 #endif /* AGS_WITH_XMLRPC_C */
+#endif
 }
 
 /**
@@ -765,6 +988,51 @@ ags_server_start(AgsServer *server)
   g_object_ref((GObject *) server);
   g_signal_emit(G_OBJECT(server),
 		server_signals[START], 0);
+  g_object_unref((GObject *) server);
+}
+
+void
+ags_server_real_stop(AgsServer *server)
+{
+  pthread_mutex_t *server_mutex;
+
+  /* get server mutex */
+  pthread_mutex_lock(ags_server_get_class_mutex());
+  
+  server_mutex = server->obj_mutex;
+  
+  pthread_mutex_unlock(ags_server_get_class_mutex());
+
+  /* close fd */
+  pthread_mutex_lock(server_mutex);
+
+  if(server->ip4_fd != -1){
+    close(server->ip4_fd);
+  }
+
+  if(server->ip6_fd != -1){
+    close(server->ip6_fd);
+  }
+
+  pthread_mutex_lock(server_mutex);
+}
+
+/**
+ * ags_server_stop:
+ * @server: the #AgsServer
+ * 
+ * Stop the XMLRPC-C abyss server.
+ * 
+ * Since: 2.1.0
+ */
+void
+ags_server_stop(AgsServer *server)
+{
+  g_return_if_fail(AGS_IS_SERVER(server));
+
+  g_object_ref((GObject *) server);
+  g_signal_emit(G_OBJECT(server),
+		server_signals[STOP], 0);
   g_object_unref((GObject *) server);
 }
 
