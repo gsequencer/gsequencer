@@ -23,6 +23,8 @@
 #include <sys/socket.h>
 #include <netdb.h>
 
+#include <ags/i18n.h>
+
 void ags_osc_client_class_init(AgsOscClientClass *osc_client);
 void ags_osc_client_init(AgsOscClient *osc_client);
 void ags_osc_client_set_property(GObject *gobject,
@@ -50,6 +52,10 @@ void ags_osc_client_real_connect(AgsOscClient *osc_client);
 
 enum{
   PROP_0,
+  PROP_DOMAIN,
+  PROP_SERVER_PORT,
+  PROP_IP4,
+  PROP_IP6,
 };
 
 enum{
@@ -109,6 +115,73 @@ ags_osc_client_class_init(AgsOscClientClass *osc_client)
   gobject->get_property = ags_osc_client_get_property;
   
   gobject->finalize = ags_osc_client_finalize;
+
+  /* properties */
+  /**
+   * AgsOscClient:domain:
+   *
+   * The domain to lookup server.
+   * 
+   * Since: 2.1.0
+   */
+  param_spec = g_param_spec_string("domain",
+				   i18n_pspec("domain"),
+				   i18n_pspec("The domain to resolve"),
+				   NULL,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_DOMAIN,
+				  param_spec);
+  
+  /**
+   * AgsOscClient:server-port:
+   *
+   * The server port to connect.
+   * 
+   * Since: 2.1.0
+   */
+  param_spec = g_param_spec_uint("server-port",
+				 i18n_pspec("server port"),
+				 i18n_pspec("The server port to connect"),
+				 0,
+				 G_MAXUINT32,
+				 AGS_OSC_CLIENT_DEFAULT_SERVER_PORT,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_SERVER_PORT,
+				  param_spec);
+
+  /**
+   * AgsOscClient:ip4:
+   *
+   * The IPv4 address as string of the server.
+   * 
+   * Since: 2.1.0
+   */
+  param_spec = g_param_spec_string("ip4",
+				   i18n_pspec("ip4"),
+				   i18n_pspec("The IPv4 address of the server"),
+				   NULL,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_IP4,
+				  param_spec);
+
+  /**
+   * AgsOscClient:ip6:
+   *
+   * The IPv6 address as string of the server.
+   * 
+   * Since: 2.1.0
+   */
+  param_spec = g_param_spec_string("ip6",
+				   i18n_pspec("ip6"),
+				   i18n_pspec("The IPv6 address of the server"),
+				   NULL,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_IP6,
+				  param_spec);
 
   /* AgsOscClientClass */
   osc_client->connect = ags_osc_client_real_connect;
@@ -212,6 +285,82 @@ ags_osc_client_set_property(GObject *gobject,
   pthread_mutex_unlock(ags_osc_client_get_class_mutex());
   
   switch(prop_id){
+  case PROP_DOMAIN:
+    {
+      gchar *domain;
+
+      domain = g_value_get_string(value);
+
+      pthread_mutex_lock(osc_client_mutex);
+      
+      if(osc_client->domain == domain){
+	pthread_mutex_unlock(osc_client_mutex);
+	
+	return;
+      }
+
+      g_free(osc_client->domain);
+
+      osc_client->domain = g_strdup(domain);
+
+      pthread_mutex_unlock(osc_client_mutex);
+    }
+    break;
+  case PROP_SERVER_PORT:
+    {
+      guint server_port;
+
+      server_port = g_value_get_uint(value);
+
+      pthread_mutex_lock(osc_client_mutex);
+
+      osc_client->server_port = server_port;
+      
+      pthread_mutex_unlock(osc_client_mutex);      
+    }
+    break;
+  case PROP_IP4:
+    {
+      gchar *ip4;
+
+      ip4 = g_value_get_string(value);
+
+      pthread_mutex_lock(osc_client_mutex);
+      
+      if(osc_client->ip4 == ip4){
+	pthread_mutex_unlock(osc_client_mutex);
+	
+	return;
+      }
+
+      g_free(osc_client->ip4);
+
+      osc_client->ip4 = g_strdup(ip4);
+
+      pthread_mutex_unlock(osc_client_mutex);
+    }
+    break;
+  case PROP_IP6:
+    {
+      gchar *ip6;
+
+      ip6 = g_value_get_string(value);
+
+      pthread_mutex_lock(osc_client_mutex);
+      
+      if(osc_client->ip6 == ip6){
+	pthread_mutex_unlock(osc_client_mutex);
+	
+	return;
+      }
+
+      g_free(osc_client->ip6);
+
+      osc_client->ip6 = g_strdup(ip6);
+
+      pthread_mutex_unlock(osc_client_mutex);
+    }
+    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -238,6 +387,46 @@ ags_osc_client_get_property(GObject *gobject,
   pthread_mutex_unlock(ags_osc_client_get_class_mutex());
   
   switch(prop_id){
+  case PROP_DOMAIN:
+    {
+      pthread_mutex_lock(osc_client_mutex);
+
+      g_value_set_string(value,
+			 osc_client->domain);
+      
+      pthread_mutex_unlock(osc_client_mutex);
+    }
+    break;
+  case PROP_SERVER_PORT:
+    {
+      pthread_mutex_lock(osc_client_mutex);
+      
+      g_value_set_uint(value,
+		       osc_client->server_port);
+
+      pthread_mutex_unlock(osc_client_mutex);
+    }
+    break;
+  case PROP_IP4:
+    {
+      pthread_mutex_lock(osc_client_mutex);
+      
+      g_value_set_string(value,
+			 osc_client->ip4);
+      
+      pthread_mutex_unlock(osc_client_mutex);
+    }
+    break;
+  case PROP_IP6:
+    {
+      pthread_mutex_lock(osc_client_mutex);
+      
+      g_value_set_string(value,
+			 osc_client->ip6);
+
+      pthread_mutex_unlock(osc_client_mutex);
+    }
+    break;    
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -388,6 +577,18 @@ ags_osc_client_real_resolve(AgsOscClient *osc_client)
 
   int rc;
   
+  pthread_mutex_t *osc_client_mutex;
+
+  /* get osc client mutex */
+  pthread_mutex_lock(ags_osc_client_get_class_mutex());
+  
+  osc_client_mutex = osc_client->obj_mutex;
+  
+  pthread_mutex_unlock(ags_osc_client_get_class_mutex());
+
+  /* lock */
+  pthread_mutex_lock(osc_client_mutex);
+  
   /* IPv4 */
   memset(&hints, 0, sizeof(struct addrinfo));
   hints.ai_family = AF_INET;
@@ -417,6 +618,9 @@ ags_osc_client_real_resolve(AgsOscClient *osc_client)
   }else{
     g_warning("failed to resolve IPv6 address");
   }
+
+  /* unlock */
+  pthread_mutex_unlock(osc_client_mutex);
 }
 
 /**
@@ -447,6 +651,15 @@ ags_osc_client_real_connect(AgsOscClient *osc_client)
   gboolean ip4_connected, ip6_connected;
   guint i;
   
+  pthread_mutex_t *osc_client_mutex;
+
+  /* get osc client mutex */
+  pthread_mutex_lock(ags_osc_client_get_class_mutex());
+  
+  osc_client_mutex = osc_client->obj_mutex;
+  
+  pthread_mutex_unlock(ags_osc_client_get_class_mutex());
+
   ip4_success = FALSE;
   ip6_success = FALSE;
   
@@ -462,36 +675,66 @@ ags_osc_client_real_connect(AgsOscClient *osc_client)
     if(ags_osc_client_test_flags(osc_client, AGS_OSC_CLIENT_UDP)){
       ip4_udp_success = TRUE;
       
+      /* create socket */
+      pthread_mutex_lock(osc_client_mutex);
+      
       osc_client->ip4_fd = socket(AF_INET, SOCK_DGRAM, 0);
+      
+      pthread_mutex_unlock(osc_client_mutex);
     }else if(ags_osc_client_test_flags(osc_client, AGS_OSC_CLIENT_TCP)){
       ip4_tcp_success = TRUE;
 
+      /* create socket */
+      pthread_mutex_lock(osc_client_mutex);
+      
       osc_client->ip4_fd = socket(AF_INET, SOCK_STREAM, 0);
+
+      pthread_mutex_unlock(osc_client_mutex);
     }else{
       g_critical("no flow control type");
     }
 
+    /* get ip4 */
+    pthread_mutex_lock(osc_client_mutex);  
+
     inet_pton(AF_INET, osc_client->ip4, &(osc_client->ip4_address->sin_addr.s_addr));
     osc_client->ip4_address->sin_port = htons(osc_client->server_port);
+
+    pthread_mutex_unlock(osc_client_mutex);
   }
 
-  if(ags_osc_client_test_flags(osc_client, AGS_OSC_CLIENT_INET6)){
+  if(ags_osc_client_test_flags(osc_client, AGS_OSC_CLIENT_INET6)){    
     ip6_success = TRUE;
   
     if(ags_osc_client_test_flags(osc_client, AGS_OSC_CLIENT_UDP)){
       ip6_udp_success = TRUE;
 
+      /* create socket */
+      pthread_mutex_lock(osc_client_mutex);
+      
       osc_client->ip6_fd = socket(AF_INET6, SOCK_DGRAM, 0);
+
+      pthread_mutex_unlock(osc_client_mutex);
     }else if(ags_osc_client_test_flags(osc_client, AGS_OSC_CLIENT_TCP)){
       ip6_tcp_success = TRUE;
 
+      /* create socket */
+      pthread_mutex_lock(osc_client_mutex);
+      
       osc_client->ip6_fd = socket(AF_INET6, SOCK_STREAM, 0);
+
+      pthread_mutex_unlock(osc_client_mutex);
     }else{
       g_critical("no flow control type");
     }
 
+    /* get ip6 */
+    pthread_mutex_lock(osc_client_mutex);
+
     inet_pton(AF_INET6, osc_client->ip6, &(osc_client->ip6_address->sin6_addr.s6_addr));
     osc_client->ip6_address->sin6_port = htons(osc_client->server_port);
+
+    pthread_mutex_unlock(osc_client_mutex);
   }
   
   if(!ip4_success && !ip6_success){
@@ -515,8 +758,13 @@ ags_osc_client_real_connect(AgsOscClient *osc_client)
     if(!ip4_connected){
       if(ip4_udp_success || ip4_tcp_success){
 	int rc;
+
+	/* connect */
+	pthread_mutex_lock(osc_client_mutex);
 	
 	rc = connect(osc_client->ip4_fd, osc_client->ip4_address, sizeof(struct sockaddr_in));
+
+	pthread_mutex_unlock(osc_client_mutex);
 
 	if(rc == 0){
 	  ip4_connected = TRUE;
@@ -528,7 +776,12 @@ ags_osc_client_real_connect(AgsOscClient *osc_client)
       if(ip6_udp_success || ip6_tcp_success){
 	int rc;
 	
+	/* connect */
+	pthread_mutex_lock(osc_client_mutex);
+	
 	rc = connect(osc_client->ip6_fd, osc_client->ip6_address, sizeof(struct sockaddr_in6));
+
+	pthread_mutex_unlock(osc_client_mutex);
 
 	if(rc == 0){
 	  ip6_connected = TRUE;
