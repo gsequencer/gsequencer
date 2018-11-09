@@ -19,6 +19,11 @@
 
 #include <ags/audio/osc/ags_osc_server.h>
 
+#include <sys/types.h>
+#include <sys/socket.h>
+
+#include <ags/i18n.h>
+
 void ags_osc_server_class_init(AgsOscServerClass *osc_server);
 void ags_osc_server_init(AgsOscServer *osc_server);
 void ags_osc_server_set_property(GObject *gobject,
@@ -30,6 +35,8 @@ void ags_osc_server_get_property(GObject *gobject,
 				 GValue *value,
 				 GParamSpec *param_spec);
 void ags_osc_server_finalize(GObject *gobject);
+
+void ags_osc_server_real_start(AgsOscServer *osc_server);
 
 /**
  * SECTION:ags_osc_server
@@ -43,6 +50,10 @@ void ags_osc_server_finalize(GObject *gobject);
 
 enum{
   PROP_0,
+  PROP_DOMAIN,
+  PROP_SERVER_PORT,
+  PROP_IP4,
+  PROP_IP6,
 };
 
 enum{
@@ -100,6 +111,94 @@ ags_osc_server_class_init(AgsOscServerClass *osc_server)
   gobject->get_property = ags_osc_server_get_property;
   
   gobject->finalize = ags_osc_server_finalize;
+
+  /* properties */
+  /**
+   * AgsOscServer:domain:
+   *
+   * The domain to use.
+   * 
+   * Since: 2.1.0
+   */
+  param_spec = g_param_spec_string("domain",
+				   i18n_pspec("domain"),
+				   i18n_pspec("The domain to use"),
+				   NULL,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_DOMAIN,
+				  param_spec);
+  
+  /**
+   * AgsOscServer:server-port:
+   *
+   * The server port to use.
+   * 
+   * Since: 2.1.0
+   */
+  param_spec = g_param_spec_uint("server-port",
+				 i18n_pspec("server port"),
+				 i18n_pspec("The server port to use"),
+				 0,
+				 G_MAXUINT32,
+				 AGS_OSC_SERVER_DEFAULT_SERVER_PORT,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_SERVER_PORT,
+				  param_spec);
+
+  /**
+   * AgsOscServer:ip4:
+   *
+   * The IPv4 address as string of the server.
+   * 
+   * Since: 2.1.0
+   */
+  param_spec = g_param_spec_string("ip4",
+				   i18n_pspec("ip4"),
+				   i18n_pspec("The IPv4 address of the server"),
+				   NULL,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_IP4,
+				  param_spec);
+
+  /**
+   * AgsOscServer:ip6:
+   *
+   * The IPv6 address as string of the server.
+   * 
+   * Since: 2.1.0
+   */
+  param_spec = g_param_spec_string("ip6",
+				   i18n_pspec("ip6"),
+				   i18n_pspec("The IPv6 address of the server"),
+				   NULL,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_IP6,
+				  param_spec);
+
+  /* AgsOscServerClass */
+  osc_server->start = ags_osc_server_real_start;
+
+  /* signals */
+  /**
+   * AgsOscServer::start:
+   * @osc_server: the #AgsOscServer
+   *
+   * The ::start signal is emited during start of server.
+   *
+   * Since: 2.1.0
+   */
+  osc_server_signals[START] =
+    g_signal_new("start",
+		 G_TYPE_FROM_CLASS(osc_server),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsOscServerClass, start),
+		 NULL, NULL,
+		 g_cclosure_marshal_VOID__VOID,
+		 G_TYPE_NONE, 0);
 }
 
 void
@@ -121,6 +220,21 @@ ags_osc_server_init(AgsOscServer *osc_server)
   osc_server->obj_mutex =  (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
   pthread_mutex_init(osc_server->obj_mutex,
 		     osc_server->obj_mutexattr);
+
+  osc_server->ip4 = g_strdup(AGS_OSC_SERVER_DEFAULT_INET4_ADDRESS);
+  osc_server->ip6 = g_strdup(AGS_OSC_SERVER_DEFAULT_INET6_ADDRESS);
+
+  osc_server->domain = g_strdup(AGS_OSC_SERVER_DEFAULT_DOMAIN);
+  osc_server->server_port = AGS_OSC_SERVER_DEFAULT_SERVER_PORT;
+  
+  osc_server->ip4_fd = -1;
+  osc_server->ip6_fd = -1;
+  
+  osc_server->ip4_address = (struct sockaddr_in *) malloc(sizeof(struct sockaddr_in));
+  memset(osc_server->ip4_address, 0, sizeof(struct sockaddr_in));
+  
+  osc_server->ip6_address = (struct sockaddr_in6 *) malloc(sizeof(struct sockaddr_in6));
+  memset(osc_server->ip6_address, 0, sizeof(struct sockaddr_in6));
 }
 
 void
@@ -143,6 +257,82 @@ ags_osc_server_set_property(GObject *gobject,
   pthread_mutex_unlock(ags_osc_server_get_class_mutex());
   
   switch(prop_id){
+  case PROP_DOMAIN:
+    {
+      gchar *domain;
+
+      domain = g_value_get_string(value);
+
+      pthread_mutex_lock(osc_server_mutex);
+      
+      if(osc_server->domain == domain){
+	pthread_mutex_unlock(osc_server_mutex);
+	
+	return;
+      }
+
+      g_free(osc_server->domain);
+
+      osc_server->domain = g_strdup(domain);
+
+      pthread_mutex_unlock(osc_server_mutex);
+    }
+    break;
+  case PROP_SERVER_PORT:
+    {
+      guint server_port;
+
+      server_port = g_value_get_uint(value);
+
+      pthread_mutex_lock(osc_server_mutex);
+
+      osc_server->server_port = server_port;
+      
+      pthread_mutex_unlock(osc_server_mutex);      
+    }
+    break;
+  case PROP_IP4:
+    {
+      gchar *ip4;
+
+      ip4 = g_value_get_string(value);
+
+      pthread_mutex_lock(osc_server_mutex);
+      
+      if(osc_server->ip4 == ip4){
+	pthread_mutex_unlock(osc_server_mutex);
+	
+	return;
+      }
+
+      g_free(osc_server->ip4);
+
+      osc_server->ip4 = g_strdup(ip4);
+
+      pthread_mutex_unlock(osc_server_mutex);
+    }
+    break;
+  case PROP_IP6:
+    {
+      gchar *ip6;
+
+      ip6 = g_value_get_string(value);
+
+      pthread_mutex_lock(osc_server_mutex);
+      
+      if(osc_server->ip6 == ip6){
+	pthread_mutex_unlock(osc_server_mutex);
+	
+	return;
+      }
+
+      g_free(osc_server->ip6);
+
+      osc_server->ip6 = g_strdup(ip6);
+
+      pthread_mutex_unlock(osc_server_mutex);
+    }
+    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -169,6 +359,46 @@ ags_osc_server_get_property(GObject *gobject,
   pthread_mutex_unlock(ags_osc_server_get_class_mutex());
   
   switch(prop_id){
+  case PROP_DOMAIN:
+    {
+      pthread_mutex_lock(osc_server_mutex);
+
+      g_value_set_string(value,
+			 osc_server->domain);
+      
+      pthread_mutex_unlock(osc_server_mutex);
+    }
+    break;
+  case PROP_SERVER_PORT:
+    {
+      pthread_mutex_lock(osc_server_mutex);
+      
+      g_value_set_uint(value,
+		       osc_server->server_port);
+
+      pthread_mutex_unlock(osc_server_mutex);
+    }
+    break;
+  case PROP_IP4:
+    {
+      pthread_mutex_lock(osc_server_mutex);
+      
+      g_value_set_string(value,
+			 osc_server->ip4);
+      
+      pthread_mutex_unlock(osc_server_mutex);
+    }
+    break;
+  case PROP_IP6:
+    {
+      pthread_mutex_lock(osc_server_mutex);
+      
+      g_value_set_string(value,
+			 osc_server->ip6);
+
+      pthread_mutex_unlock(osc_server_mutex);
+    }
+    break;    
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -208,6 +438,117 @@ ags_osc_server_get_class_mutex()
 }
 
 /**
+ * ags_osc_server_test_flags:
+ * @osc_server: the #AgsOscServer
+ * @flags: the flags
+ *
+ * Test @flags to be set on @osc_server.
+ * 
+ * Returns: %TRUE if flags are set, else %FALSE
+ *
+ * Since: 2.1.0
+ */
+gboolean
+ags_osc_server_test_flags(AgsOscServer *osc_server, guint flags)
+{
+  gboolean retval;  
+  
+  pthread_mutex_t *osc_server_mutex;
+
+  if(!AGS_IS_OSC_SERVER(osc_server)){
+    return(FALSE);
+  }
+
+  /* get osc_server mutex */
+  pthread_mutex_lock(ags_osc_server_get_class_mutex());
+  
+  osc_server_mutex = osc_server->obj_mutex;
+  
+  pthread_mutex_unlock(ags_osc_server_get_class_mutex());
+
+  /* test */
+  pthread_mutex_lock(osc_server_mutex);
+
+  retval = (flags & (osc_server->flags)) ? TRUE: FALSE;
+  
+  pthread_mutex_unlock(osc_server_mutex);
+
+  return(retval);
+}
+
+/**
+ * ags_osc_server_set_flags:
+ * @osc_server: the #AgsOscServer
+ * @flags: the flags
+ *
+ * Set flags.
+ * 
+ * Since: 2.1.0
+ */
+void
+ags_osc_server_set_flags(AgsOscServer *osc_server, guint flags)
+{
+  pthread_mutex_t *osc_server_mutex;
+
+  if(!AGS_IS_OSC_SERVER(osc_server)){
+    return;
+  }
+
+  /* get osc_server mutex */
+  pthread_mutex_lock(ags_osc_server_get_class_mutex());
+  
+  osc_server_mutex = osc_server->obj_mutex;
+  
+  pthread_mutex_unlock(ags_osc_server_get_class_mutex());
+
+  /* set flags */
+  pthread_mutex_lock(osc_server_mutex);
+
+  osc_server->flags |= flags;
+
+  pthread_mutex_unlock(osc_server_mutex);
+}
+
+/**
+ * ags_osc_server_unset_flags:
+ * @osc_server: the #AgsOscServer
+ * @flags: the flags
+ *
+ * Unset flags.
+ * 
+ * Since: 2.1.0
+ */
+void
+ags_osc_server_unset_flags(AgsOscServer *osc_server, guint flags)
+{
+  pthread_mutex_t *osc_server_mutex;
+
+  if(!AGS_IS_OSC_SERVER(osc_server)){
+    return;
+  }
+
+  /* get osc_server mutex */
+  pthread_mutex_lock(ags_osc_server_get_class_mutex());
+  
+  osc_server_mutex = osc_server->obj_mutex;
+  
+  pthread_mutex_unlock(ags_osc_server_get_class_mutex());
+
+  /* set flags */
+  pthread_mutex_lock(osc_server_mutex);
+
+  osc_server->flags &= (~flags);
+
+  pthread_mutex_unlock(osc_server_mutex);
+}
+
+void
+ags_osc_server_real_start(AgsOscServer *osc_server)
+{
+  //TODO:JK: implement me
+}
+
+/**
  * ags_osc_server_start:
  * @osc_server: the #AgsOscServer
  * 
@@ -218,7 +559,12 @@ ags_osc_server_get_class_mutex()
 void
 ags_osc_server_start(AgsOscServer *osc_server)
 {
-  //TODO:JK: implement me
+  g_return_if_fail(AGS_IS_OSC_SERVER(osc_server));
+  
+  g_object_ref((GObject *) osc_server);
+  g_signal_emit(G_OBJECT(osc_server),
+		osc_server_signals[START], 0);
+  g_object_unref((GObject *) osc_server);
 }
 
 /**

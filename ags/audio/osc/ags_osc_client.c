@@ -184,6 +184,7 @@ ags_osc_client_class_init(AgsOscClientClass *osc_client)
 				  param_spec);
 
   /* AgsOscClientClass */
+  osc_client->resolve = ags_osc_client_real_resolve;
   osc_client->connect = ags_osc_client_real_connect;
   
   /* signals */
