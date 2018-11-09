@@ -82,8 +82,10 @@ struct _AgsOscClientClass
   GObjectClass gobject;
 
   void (*resolve)(AgsOscClient *osc_client);
-
   void (*connect)(AgsOscClient *osc_client);
+
+  gboolean (*write_bytes)(AgsOscClient *osc_client,
+			  guchar *data, guint data_length);
 };
 
 GType ags_osc_client_get_type(void);
@@ -95,8 +97,10 @@ void ags_osc_client_set_flags(AgsOscClient *osc_client, guint flags);
 void ags_osc_client_unset_flags(AgsOscClient *osc_client, guint flags);
 
 void ags_osc_client_resolve(AgsOscClient *osc_client);
-
 void ags_osc_client_connect(AgsOscClient *osc_client);
+
+gboolean ags_osc_client_write_bytes(AgsOscClient *osc_client,
+				    guchar *data, guint data_length);
 
 AgsOscClient* ags_osc_client_new();
 

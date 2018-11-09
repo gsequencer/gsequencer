@@ -37,6 +37,11 @@ void ags_osc_server_get_property(GObject *gobject,
 void ags_osc_server_finalize(GObject *gobject);
 
 void ags_osc_server_real_start(AgsOscServer *osc_server);
+void ags_osc_server_real_stop(AgsOscServer *osc_server);
+
+void ags_osc_server_real_listen(AgsOscServer *osc_server);
+
+void ags_osc_server_real_dispatch(AgsOscServer *osc_server);
 
 /**
  * SECTION:ags_osc_server
@@ -58,6 +63,9 @@ enum{
 
 enum{
   START,
+  STOP,
+  LISTEN,
+  DISPATCH,
   LAST_SIGNAL,
 };
 
@@ -181,6 +189,11 @@ ags_osc_server_class_init(AgsOscServerClass *osc_server)
 
   /* AgsOscServerClass */
   osc_server->start = ags_osc_server_real_start;
+  osc_server->stop = ags_osc_server_real_stop;
+
+  osc_server->listen = ags_osc_server_real_listen;
+
+  osc_server->dispatch = ags_osc_server_real_dispatch;
 
   /* signals */
   /**
@@ -196,6 +209,57 @@ ags_osc_server_class_init(AgsOscServerClass *osc_server)
 		 G_TYPE_FROM_CLASS(osc_server),
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsOscServerClass, start),
+		 NULL, NULL,
+		 g_cclosure_marshal_VOID__VOID,
+		 G_TYPE_NONE, 0);
+
+  /**
+   * AgsOscServer::stop:
+   * @osc_server: the #AgsOscServer
+   *
+   * The ::stop signal is emited during stop of server.
+   *
+   * Since: 2.1.0
+   */
+  osc_server_signals[STOP] =
+    g_signal_new("stop",
+		 G_TYPE_FROM_CLASS(osc_server),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsOscServerClass, stop),
+		 NULL, NULL,
+		 g_cclosure_marshal_VOID__VOID,
+		 G_TYPE_NONE, 0);
+
+  /**
+   * AgsOscServer::listen:
+   * @osc_server: the #AgsOscServer
+   *
+   * The ::listen signal is emited during listen of server.
+   *
+   * Since: 2.1.0
+   */
+  osc_server_signals[LISTEN] =
+    g_signal_new("listen",
+		 G_TYPE_FROM_CLASS(osc_server),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsOscServerClass, listen),
+		 NULL, NULL,
+		 g_cclosure_marshal_VOID__VOID,
+		 G_TYPE_NONE, 0);
+
+  /**
+   * AgsOscServer::dispatch:
+   * @osc_server: the #AgsOscServer
+   *
+   * The ::dispatch signal is emited during dispatch of server.
+   *
+   * Since: 2.1.0
+   */
+  osc_server_signals[DISPATCH] =
+    g_signal_new("dispatch",
+		 G_TYPE_FROM_CLASS(osc_server),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsOscServerClass, dispatch),
 		 NULL, NULL,
 		 g_cclosure_marshal_VOID__VOID,
 		 G_TYPE_NONE, 0);
@@ -564,6 +628,81 @@ ags_osc_server_start(AgsOscServer *osc_server)
   g_object_ref((GObject *) osc_server);
   g_signal_emit(G_OBJECT(osc_server),
 		osc_server_signals[START], 0);
+  g_object_unref((GObject *) osc_server);
+}
+
+void
+ags_osc_server_real_stop(AgsOscServer *osc_server)
+{
+  //TODO:JK: implement me
+}
+
+/**
+ * ags_osc_server_stop:
+ * @osc_server: the #AgsOscServer
+ * 
+ * Stop OSC server.
+ * 
+ * Since: 2.1.0
+ */
+void
+ags_osc_server_stop(AgsOscServer *osc_server)
+{
+  g_return_if_fail(AGS_IS_OSC_SERVER(osc_server));
+  
+  g_object_ref((GObject *) osc_server);
+  g_signal_emit(G_OBJECT(osc_server),
+		osc_server_signals[STOP], 0);
+  g_object_unref((GObject *) osc_server);
+}
+
+void
+ags_osc_server_real_listen(AgsOscServer *osc_server)
+{
+  //TODO:JK: implement me
+}
+
+/**
+ * ags_osc_server_listen:
+ * @osc_server: the #AgsOscServer
+ * 
+ * Listen as OSC server.
+ * 
+ * Since: 2.1.0
+ */
+void
+ags_osc_server_listen(AgsOscServer *osc_server)
+{
+  g_return_if_fail(AGS_IS_OSC_SERVER(osc_server));
+  
+  g_object_ref((GObject *) osc_server);
+  g_signal_emit(G_OBJECT(osc_server),
+		osc_server_signals[LISTEN], 0);
+  g_object_unref((GObject *) osc_server);
+}
+
+void
+ags_osc_server_real_dispatch(AgsOscServer *osc_server)
+{
+  //TODO:JK: implement me
+}
+
+/**
+ * ags_osc_server_dispatch:
+ * @osc_server: the #AgsOscServer
+ * 
+ * Dispatch OSC messages.
+ * 
+ * Since: 2.1.0
+ */
+void
+ags_osc_server_dispatch(AgsOscServer *osc_server)
+{
+  g_return_if_fail(AGS_IS_OSC_SERVER(osc_server));
+  
+  g_object_ref((GObject *) osc_server);
+  g_signal_emit(G_OBJECT(osc_server),
+		osc_server_signals[DISPATCH], 0);
   g_object_unref((GObject *) osc_server);
 }
 

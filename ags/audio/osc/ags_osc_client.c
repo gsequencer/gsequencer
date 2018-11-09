@@ -19,6 +19,8 @@
 
 #include <ags/audio/osc/ags_osc_client.h>
 
+#include <ags/libags.h>
+
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netdb.h>
@@ -39,6 +41,9 @@ void ags_osc_client_finalize(GObject *gobject);
 
 void ags_osc_client_real_resolve(AgsOscClient *osc_client);
 void ags_osc_client_real_connect(AgsOscClient *osc_client);
+
+gboolean ags_osc_client_real_write_bytes(AgsOscClient *osc_client,
+					 guchar *data, guint data_length);
 
 /**
  * SECTION:ags_osc_client
@@ -61,6 +66,7 @@ enum{
 enum{
   RESOLVE,
   CONNECT,
+  WRITE_BYTES,
   LAST_SIGNAL,
 };
 
@@ -187,6 +193,8 @@ ags_osc_client_class_init(AgsOscClientClass *osc_client)
   osc_client->resolve = ags_osc_client_real_resolve;
   osc_client->connect = ags_osc_client_real_connect;
   
+  osc_client->write_bytes = ags_osc_client_real_write_bytes;
+
   /* signals */
   /**
    * AgsOscClient::resolve:
@@ -221,6 +229,29 @@ ags_osc_client_class_init(AgsOscClientClass *osc_client)
 		 NULL, NULL,
 		 g_cclosure_marshal_VOID__VOID,
 		 G_TYPE_NONE, 0);
+
+  /**
+   * AgsOscClient::write-bytes:
+   * @osc_client: the #AgsOscClient
+   * @data: the byte array
+   * @data_length: the length of byte array
+   *
+   * The ::write-bytes signal is emited while write bytes.
+   *
+   * Returns: %TRUE if all bytes written, otherwise %FALSE
+   * 
+   * Since: 2.1.0
+   */
+  osc_client_signals[WRITE_BYTES] =
+    g_signal_new("write-bytes",
+		 G_TYPE_FROM_CLASS(osc_client),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsOscClientClass, write_bytes),
+		 NULL, NULL,
+		 ags_cclosure_marshal_BOOLEAN__POINTER_UINT,
+		 G_TYPE_BOOLEAN, 2,
+		 G_TYPE_POINTER,
+		 G_TYPE_UINT);
 }
 
 void
@@ -821,6 +852,87 @@ ags_osc_client_connect(AgsOscClient *osc_client)
   g_signal_emit(G_OBJECT(osc_client),
 		osc_client_signals[CONNECT], 0);
   g_object_unref((GObject *) osc_client);
+}
+
+gboolean
+ags_osc_client_real_write_bytes(AgsOscClient *osc_client,
+				guchar *data, guint data_length)
+{
+  int ip4_fd, ip6_fd;
+  int num_write;
+  gboolean success;
+
+  pthread_mutex_t *osc_client_mutex;
+
+  /* get osc client mutex */
+  pthread_mutex_lock(ags_osc_client_get_class_mutex());
+  
+  osc_client_mutex = osc_client->obj_mutex;
+  
+  pthread_mutex_unlock(ags_osc_client_get_class_mutex());
+
+  /* get fd */
+  pthread_mutex_lock(osc_client_mutex);
+  
+  ip4_fd = osc_client->ip4_fd;
+  ip6_fd = osc_client->ip6_fd;
+
+  pthread_mutex_unlock(osc_client_mutex);
+
+  /* initialize success */
+  success = TRUE;
+
+  /* write on IPv4 socket */
+  if(ags_osc_client_test_flags(osc_client, AGS_OSC_CLIENT_INET6)){    
+    num_write = write(ip4_fd,
+		      data, data_length);
+
+    if(num_write != data_length){
+      success = FALSE;
+    }
+  }
+
+  /* write on IPv6 socket */
+  if(ags_osc_client_test_flags(osc_client, AGS_OSC_CLIENT_INET6)){    
+    num_write = write(ip6_fd,
+		      data, data_length);
+
+    if(num_write != data_length){
+      success = FALSE;
+    }
+  }
+  
+  return(success);
+}
+
+/**
+ * ags_osc_client_write_bytes:
+ * @osc_client: the #AgsOscClient
+ * @data: the byte array
+ * @data_length: the length of byte array
+ * 
+ * Write @data using OSC client.
+ * 
+ * Returns: %TRUE if all bytes written, otherwise %FALSE
+ * 
+ * Since: 2.1.0
+ */
+gboolean
+ags_osc_client_write_bytes(AgsOscClient *osc_client,
+			   guchar *data, guint data_length)
+{
+  gboolean success;
+  
+  g_return_val_if_fail(AGS_IS_OSC_CLIENT(osc_client), FALSE);
+  
+  g_object_ref((GObject *) osc_client);
+  g_signal_emit(G_OBJECT(osc_client),
+		osc_client_signals[WRITE_BYTES], 0,
+		data, data_length,
+		&success);
+  g_object_unref((GObject *) osc_client);
+
+  return(success);
 }
 
 /**

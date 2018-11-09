@@ -925,6 +925,7 @@ ags_osc_client_set_flags
 ags_osc_client_unset_flags
 ags_osc_client_resolve
 ags_osc_client_connect
+ags_osc_client_write_bytes
 ags_osc_client_new
 ags_osc_util_type_tag_string_count_type
 ags_osc_server_get_type
@@ -933,6 +934,9 @@ ags_osc_server_test_flags
 ags_osc_server_set_flags
 ags_osc_server_unset_flags
 ags_osc_server_start
+ags_osc_server_stop
+ags_osc_server_listen
+ags_osc_server_dispatch
 ags_osc_server_new
 ags_osc_parser_get_type
 ags_osc_parser_get_class_mutex

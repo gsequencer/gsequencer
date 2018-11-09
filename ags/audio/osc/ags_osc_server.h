@@ -77,6 +77,11 @@ struct _AgsOscServerClass
   GObjectClass gobject;
 
   void (*start)(AgsOscServer *osc_server);
+  void (*stop)(AgsOscServer *osc_server);
+
+  void (*listen)(AgsOscServer *osc_server);
+
+  void (*dispatch)(AgsOscServer *osc_server);
 };
 
 GType ags_osc_server_get_type(void);
@@ -88,6 +93,11 @@ void ags_osc_server_set_flags(AgsOscServer *osc_server, guint flags);
 void ags_osc_server_unset_flags(AgsOscServer *osc_server, guint flags);
 
 void ags_osc_server_start(AgsOscServer *osc_server);
+void ags_osc_server_stop(AgsOscServer *osc_server);
+
+void ags_osc_server_listen(AgsOscServer *osc_server);
+
+void ags_osc_server_dispatch(AgsOscServer *osc_server);
 
 AgsOscServer* ags_osc_server_new();
 
