@@ -42,8 +42,20 @@
 #define AGS_OSC_UTIL_TYPE_TAG_STRING_ARRAY_START '['
 #define AGS_OSC_UTIL_TYPE_TAG_STRING_ARRAY_END ']'
 
+#define AGS_OSC_UTIL_TYPE_TAG_STRING_ALL "ifshtdScrmTFNI"
+
 #define AGS_OSC_UTIL_ADDRESS_PATTERN_VALID_CHARS_PATTERN "([a-zA-Z \\#\\*\\,\\/\\?\\[\\]\\{\\}]+)"
 
 guint ags_osc_util_type_tag_string_count_type(gchar *type_tag_string);
+
+unsigned char* ags_osc_util_meta_data(gchar *uri,
+				      guint *meta_data_length);
+unsigned char* ags_osc_util_mime_header(gchar *uri,
+					guint *mime_header_length);
+
+unsigned char* ags_osc_util_slip_encode(unsigned char *osc_buffer,
+					guint buffer_length);
+unsigned char* ags_osc_util_slip_decode(unsigned char *slip_buffer,
+					guint buffer_length);
 
 #endif /*__AGS_OSC_UTIL_H__*/
