@@ -24,6 +24,7 @@
 #include <netinet/in.h>
 
 #include <unistd.h>
+#include <fcntl.h>
 
 #include <ags/i18n.h>
 
@@ -302,6 +303,11 @@ ags_osc_server_init(AgsOscServer *osc_server)
   
   osc_server->ip6_address = (struct sockaddr_in6 *) malloc(sizeof(struct sockaddr_in6));
   memset(osc_server->ip6_address, 0, sizeof(struct sockaddr_in6));
+
+  osc_server->accept_delay = (struct timespec *) malloc(sizeof(struct timespec));
+
+  osc_server->accept_delay->tv_sec = 0;
+  osc_server->accept_delay->tv_nsec = 400000;
 
   osc_server->connection = NULL;
 }
@@ -831,15 +837,55 @@ ags_osc_server_real_listen(AgsOscServer *osc_server)
   }
 
   if(osc_server->ip4_fd != -1){
+    int flags;
+
     listen(osc_server->ip4_fd, AGS_OSC_SERVER_DEFAULT_BACKLOG);
+
+    flags = fcntl(osc_server->ip4_fd, F_GETFL, 0);
+    fcntl(osc_server->ip4_fd, F_SETFL, flags | O_NONBLOCK);
   }
   
   if(osc_server->ip6_fd != -1){
+    int flags;
+
     listen(osc_server->ip6_fd, AGS_OSC_SERVER_DEFAULT_BACKLOG);
+
+    flags = fcntl(osc_server->ip6_fd, F_GETFL, 0);
+    fcntl(osc_server->ip6_fd, F_SETFL, flags | O_NONBLOCK);
   }
 
   while(ags_osc_server_test_flags(osc_server, AGS_OSC_SERVER_RUNNING)){
-    //TODO:JK: implement me
+    gboolean created_connection;
+
+    created_connection = FALSE;
+    
+    if(osc_server->ip4_fd != -1){
+      int connection_fd;
+
+      connection_fd = accept(osc_server->ip4_fd, osc_server->ip4_address, sizeof(struct sockaddr_in));
+
+      if(connection_fd >= 0){
+	created_connection = TRUE;
+	
+	//TODO:JK: implement me
+      }
+    }
+    
+    if(osc_server->ip6_fd != -1){
+      int connection_fd;
+
+      connection_fd = accept(osc_server->ip6_fd, osc_server->ip6_address, sizeof(struct sockaddr_in6));
+
+      if(connection_fd >= 0){
+	created_connection = TRUE;
+
+	//TODO:JK: implement me
+      }
+    }
+
+    if(!created_connection){
+      nanosleep(osc_server->accept_delay, NULL);
+    }
   }
 }
 
@@ -872,7 +918,7 @@ ags_osc_server_real_dispatch(AgsOscServer *osc_server)
  * ags_osc_server_dispatch:
  * @osc_server: the #AgsOscServer
  * 
- * Dispatch OSC messages.
+ * Dispatch as OSC server.
  * 
  * Since: 2.1.0
  */

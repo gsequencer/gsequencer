@@ -328,6 +328,13 @@
 ./ags/audio/midi/ags_midi_file.c
 ./ags/audio/midi/ags_midi_parser.c
 ./ags/audio/midi/ags_midi_util.c
+./ags/audio/osc/ags_osc_buffer_util.c
+./ags/audio/osc/ags_osc_builder.c
+./ags/audio/osc/ags_osc_client.c
+./ags/audio/osc/ags_osc_connection.c
+./ags/audio/osc/ags_osc_parser.c
+./ags/audio/osc/ags_osc_server.c
+./ags/audio/osc/ags_osc_util.c
 ./ags/audio/pulse/ags_pulse_client.c
 ./ags/audio/pulse/ags_pulse_devin.c
 ./ags/audio/pulse/ags_pulse_devout.c

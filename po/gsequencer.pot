@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: gsequencer 2.0.37\n"
+"Project-Id-Version: gsequencer 2.1.0\n"
 "Report-Msgid-Bugs-To: jkraehemann@gmail.com\n"
-"POT-Creation-Date: 2018-10-27 19:02+0200\n"
+"POT-Creation-Date: 2018-11-09 21:17+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1105,11 +1105,11 @@ msgstr ""
 msgid "The assigned server"
 msgstr ""
 
-#: ags/server/ags_server.c:164
+#: ags/server/ags_server.c:172
 msgid "application context object"
 msgstr ""
 
-#: ags/server/ags_server.c:165
+#: ags/server/ags_server.c:173
 msgid "The application context object"
 msgstr ""
 

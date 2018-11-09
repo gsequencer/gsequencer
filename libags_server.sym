@@ -55,6 +55,7 @@ ags_server_set_flags
 ags_server_unset_flags
 ags_server_info_alloc
 ags_server_start
+ags_server_stop
 ags_server_lookup
 ags_server_new
 ags_security_context_get_type

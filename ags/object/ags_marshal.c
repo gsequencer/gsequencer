@@ -2283,7 +2283,46 @@ ags_cclosure_marshal_POINTER__UINT (GClosure     *closure,
   g_value_set_pointer (return_value, v_return);
 }
 
-/* POINTER:INT,UINT (ags/object/ags_marshallers.list:57) */
+/* POINTER:POINTER (ags/object/ags_marshallers.list:57) */
+void
+ags_cclosure_marshal_POINTER__POINTER (GClosure     *closure,
+                                       GValue       *return_value,
+                                       guint         n_param_values,
+                                       const GValue *param_values,
+                                       gpointer      invocation_hint G_GNUC_UNUSED,
+                                       gpointer      marshal_data)
+{
+  typedef gpointer (*GMarshalFunc_POINTER__POINTER) (gpointer data1,
+                                                     gpointer arg1,
+                                                     gpointer data2);
+  GCClosure *cc = (GCClosure *) closure;
+  gpointer data1, data2;
+  GMarshalFunc_POINTER__POINTER callback;
+  gpointer v_return;
+
+  g_return_if_fail (return_value != NULL);
+  g_return_if_fail (n_param_values == 2);
+
+  if (G_CCLOSURE_SWAP_DATA (closure))
+    {
+      data1 = closure->data;
+      data2 = g_value_peek_pointer (param_values + 0);
+    }
+  else
+    {
+      data1 = g_value_peek_pointer (param_values + 0);
+      data2 = closure->data;
+    }
+  callback = (GMarshalFunc_POINTER__POINTER) (marshal_data ? marshal_data : cc->callback);
+
+  v_return = callback (data1,
+                       g_marshal_value_peek_pointer (param_values + 1),
+                       data2);
+
+  g_value_set_pointer (return_value, v_return);
+}
+
+/* POINTER:INT,UINT (ags/object/ags_marshallers.list:58) */
 void
 ags_cclosure_marshal_POINTER__INT_UINT (GClosure     *closure,
                                         GValue       *return_value,
@@ -2324,7 +2363,7 @@ ags_cclosure_marshal_POINTER__INT_UINT (GClosure     *closure,
   g_value_set_pointer (return_value, v_return);
 }
 
-/* POINTER:UINT,UINT (ags/object/ags_marshallers.list:58) */
+/* POINTER:UINT,UINT (ags/object/ags_marshallers.list:59) */
 void
 ags_cclosure_marshal_POINTER__UINT_UINT (GClosure     *closure,
                                          GValue       *return_value,
@@ -2365,7 +2404,7 @@ ags_cclosure_marshal_POINTER__UINT_UINT (GClosure     *closure,
   g_value_set_pointer (return_value, v_return);
 }
 
-/* POINTER:UINT,POINTER (ags/object/ags_marshallers.list:59) */
+/* POINTER:UINT,POINTER (ags/object/ags_marshallers.list:60) */
 void
 ags_cclosure_marshal_POINTER__UINT_POINTER (GClosure     *closure,
                                             GValue       *return_value,
@@ -2406,7 +2445,7 @@ ags_cclosure_marshal_POINTER__UINT_POINTER (GClosure     *closure,
   g_value_set_pointer (return_value, v_return);
 }
 
-/* POINTER:POINTER,UINT (ags/object/ags_marshallers.list:60) */
+/* POINTER:POINTER,UINT (ags/object/ags_marshallers.list:61) */
 void
 ags_cclosure_marshal_POINTER__POINTER_UINT (GClosure     *closure,
                                             GValue       *return_value,
@@ -2447,7 +2486,7 @@ ags_cclosure_marshal_POINTER__POINTER_UINT (GClosure     *closure,
   g_value_set_pointer (return_value, v_return);
 }
 
-/* POINTER:STRING,STRING (ags/object/ags_marshallers.list:61) */
+/* POINTER:STRING,STRING (ags/object/ags_marshallers.list:62) */
 void
 ags_cclosure_marshal_POINTER__STRING_STRING (GClosure     *closure,
                                              GValue       *return_value,
@@ -2488,7 +2527,7 @@ ags_cclosure_marshal_POINTER__STRING_STRING (GClosure     *closure,
   g_value_set_pointer (return_value, v_return);
 }
 
-/* POINTER:STRING,STRING,STRING (ags/object/ags_marshallers.list:62) */
+/* POINTER:STRING,STRING,STRING (ags/object/ags_marshallers.list:63) */
 void
 ags_cclosure_marshal_POINTER__STRING_STRING_STRING (GClosure     *closure,
                                                     GValue       *return_value,
@@ -2531,7 +2570,7 @@ ags_cclosure_marshal_POINTER__STRING_STRING_STRING (GClosure     *closure,
   g_value_set_pointer (return_value, v_return);
 }
 
-/* POINTER:STRING,STRING,STRING,STRING (ags/object/ags_marshallers.list:63) */
+/* POINTER:STRING,STRING,STRING,STRING (ags/object/ags_marshallers.list:64) */
 void
 ags_cclosure_marshal_POINTER__STRING_STRING_STRING_STRING (GClosure     *closure,
                                                            GValue       *return_value,
@@ -2576,7 +2615,7 @@ ags_cclosure_marshal_POINTER__STRING_STRING_STRING_STRING (GClosure     *closure
   g_value_set_pointer (return_value, v_return);
 }
 
-/* POINTER:ULONG,POINTER,UINT (ags/object/ags_marshallers.list:64) */
+/* POINTER:ULONG,POINTER,UINT (ags/object/ags_marshallers.list:65) */
 void
 ags_cclosure_marshal_POINTER__ULONG_POINTER_UINT (GClosure     *closure,
                                                   GValue       *return_value,
@@ -2619,7 +2658,7 @@ ags_cclosure_marshal_POINTER__ULONG_POINTER_UINT (GClosure     *closure,
   g_value_set_pointer (return_value, v_return);
 }
 
-/* POINTER:OBJECT (ags/object/ags_marshallers.list:65) */
+/* POINTER:OBJECT (ags/object/ags_marshallers.list:66) */
 void
 ags_cclosure_marshal_POINTER__OBJECT (GClosure     *closure,
                                       GValue       *return_value,
@@ -2658,7 +2697,7 @@ ags_cclosure_marshal_POINTER__OBJECT (GClosure     *closure,
   g_value_set_pointer (return_value, v_return);
 }
 
-/* POINTER:OBJECT,OBJECT (ags/object/ags_marshallers.list:66) */
+/* POINTER:OBJECT,OBJECT (ags/object/ags_marshallers.list:67) */
 void
 ags_cclosure_marshal_POINTER__OBJECT_OBJECT (GClosure     *closure,
                                              GValue       *return_value,
@@ -2699,7 +2738,7 @@ ags_cclosure_marshal_POINTER__OBJECT_OBJECT (GClosure     *closure,
   g_value_set_pointer (return_value, v_return);
 }
 
-/* POINTER:OBJECT,STRING,STRING,STRING,POINTER (ags/object/ags_marshallers.list:67) */
+/* POINTER:OBJECT,STRING,STRING,STRING,POINTER (ags/object/ags_marshallers.list:68) */
 void
 ags_cclosure_marshal_POINTER__OBJECT_STRING_STRING_STRING_POINTER (GClosure     *closure,
                                                                    GValue       *return_value,
@@ -2746,7 +2785,7 @@ ags_cclosure_marshal_POINTER__OBJECT_STRING_STRING_STRING_POINTER (GClosure     
   g_value_set_pointer (return_value, v_return);
 }
 
-/* POINTER:OBJECT,STRING,STRING,STRING,STRING,POINTER (ags/object/ags_marshallers.list:68) */
+/* POINTER:OBJECT,STRING,STRING,STRING,STRING,POINTER (ags/object/ags_marshallers.list:69) */
 void
 ags_cclosure_marshal_POINTER__OBJECT_STRING_STRING_STRING_STRING_POINTER (GClosure     *closure,
                                                                           GValue       *return_value,
@@ -2795,7 +2834,7 @@ ags_cclosure_marshal_POINTER__OBJECT_STRING_STRING_STRING_STRING_POINTER (GClosu
   g_value_set_pointer (return_value, v_return);
 }
 
-/* POINTER:POINTER,STRING,STRING (ags/object/ags_marshallers.list:69) */
+/* POINTER:POINTER,STRING,STRING (ags/object/ags_marshallers.list:70) */
 void
 ags_cclosure_marshal_POINTER__POINTER_STRING_STRING (GClosure     *closure,
                                                      GValue       *return_value,
@@ -2838,7 +2877,7 @@ ags_cclosure_marshal_POINTER__POINTER_STRING_STRING (GClosure     *closure,
   g_value_set_pointer (return_value, v_return);
 }
 
-/* OBJECT:VOID (ags/object/ags_marshallers.list:70) */
+/* OBJECT:VOID (ags/object/ags_marshallers.list:71) */
 void
 ags_cclosure_marshal_OBJECT__VOID (GClosure     *closure,
                                    GValue       *return_value,
@@ -2875,7 +2914,7 @@ ags_cclosure_marshal_OBJECT__VOID (GClosure     *closure,
   g_value_take_object (return_value, v_return);
 }
 
-/* OBJECT:UINT,POINTER (ags/object/ags_marshallers.list:71) */
+/* OBJECT:UINT,POINTER (ags/object/ags_marshallers.list:72) */
 void
 ags_cclosure_marshal_OBJECT__UINT_POINTER (GClosure     *closure,
                                            GValue       *return_value,
@@ -2916,7 +2955,7 @@ ags_cclosure_marshal_OBJECT__UINT_POINTER (GClosure     *closure,
   g_value_take_object (return_value, v_return);
 }
 
-/* OBJECT:STRING,STRING,STRING (ags/object/ags_marshallers.list:72) */
+/* OBJECT:STRING,STRING,STRING (ags/object/ags_marshallers.list:73) */
 void
 ags_cclosure_marshal_OBJECT__STRING_STRING_STRING (GClosure     *closure,
                                                    GValue       *return_value,
@@ -2959,7 +2998,7 @@ ags_cclosure_marshal_OBJECT__STRING_STRING_STRING (GClosure     *closure,
   g_value_take_object (return_value, v_return);
 }
 
-/* OBJECT:OBJECT (ags/object/ags_marshallers.list:73) */
+/* OBJECT:OBJECT (ags/object/ags_marshallers.list:74) */
 void
 ags_cclosure_marshal_OBJECT__OBJECT (GClosure     *closure,
                                      GValue       *return_value,
@@ -2998,7 +3037,7 @@ ags_cclosure_marshal_OBJECT__OBJECT (GClosure     *closure,
   g_value_take_object (return_value, v_return);
 }
 
-/* OBJECT:OBJECT,POINTER,POINTER (ags/object/ags_marshallers.list:74) */
+/* OBJECT:OBJECT,POINTER,POINTER (ags/object/ags_marshallers.list:75) */
 void
 ags_cclosure_marshal_OBJECT__OBJECT_POINTER_POINTER (GClosure     *closure,
                                                      GValue       *return_value,
@@ -3041,7 +3080,7 @@ ags_cclosure_marshal_OBJECT__OBJECT_POINTER_POINTER (GClosure     *closure,
   g_value_take_object (return_value, v_return);
 }
 
-/* OBJECT:OBJECT,POINTER,POINTER,POINTER (ags/object/ags_marshallers.list:75) */
+/* OBJECT:OBJECT,POINTER,POINTER,POINTER (ags/object/ags_marshallers.list:76) */
 void
 ags_cclosure_marshal_OBJECT__OBJECT_POINTER_POINTER_POINTER (GClosure     *closure,
                                                              GValue       *return_value,
@@ -3086,7 +3125,7 @@ ags_cclosure_marshal_OBJECT__OBJECT_POINTER_POINTER_POINTER (GClosure     *closu
   g_value_take_object (return_value, v_return);
 }
 
-/* OBJECT:OBJECT,OBJECT (ags/object/ags_marshallers.list:76) */
+/* OBJECT:OBJECT,OBJECT (ags/object/ags_marshallers.list:77) */
 void
 ags_cclosure_marshal_OBJECT__OBJECT_OBJECT (GClosure     *closure,
                                             GValue       *return_value,

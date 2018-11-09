@@ -89,6 +89,8 @@ struct _AgsOscServer
   struct sockaddr_in *ip4_address;
   struct sockaddr_in6 *ip6_address;
 
+  struct timespec *accept_delay;
+  
   GList *connection;
 };
 

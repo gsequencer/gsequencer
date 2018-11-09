@@ -528,7 +528,16 @@ void ags_cclosure_marshal_POINTER__UINT (GClosure     *closure,
                                          gpointer      invocation_hint,
                                          gpointer      marshal_data);
 
-/* POINTER:INT,UINT (ags/object/ags_marshallers.list:57) */
+/* POINTER:POINTER (ags/object/ags_marshallers.list:57) */
+extern
+void ags_cclosure_marshal_POINTER__POINTER (GClosure     *closure,
+                                            GValue       *return_value,
+                                            guint         n_param_values,
+                                            const GValue *param_values,
+                                            gpointer      invocation_hint,
+                                            gpointer      marshal_data);
+
+/* POINTER:INT,UINT (ags/object/ags_marshallers.list:58) */
 extern
 void ags_cclosure_marshal_POINTER__INT_UINT (GClosure     *closure,
                                              GValue       *return_value,
@@ -537,7 +546,7 @@ void ags_cclosure_marshal_POINTER__INT_UINT (GClosure     *closure,
                                              gpointer      invocation_hint,
                                              gpointer      marshal_data);
 
-/* POINTER:UINT,UINT (ags/object/ags_marshallers.list:58) */
+/* POINTER:UINT,UINT (ags/object/ags_marshallers.list:59) */
 extern
 void ags_cclosure_marshal_POINTER__UINT_UINT (GClosure     *closure,
                                               GValue       *return_value,
@@ -546,7 +555,7 @@ void ags_cclosure_marshal_POINTER__UINT_UINT (GClosure     *closure,
                                               gpointer      invocation_hint,
                                               gpointer      marshal_data);
 
-/* POINTER:UINT,POINTER (ags/object/ags_marshallers.list:59) */
+/* POINTER:UINT,POINTER (ags/object/ags_marshallers.list:60) */
 extern
 void ags_cclosure_marshal_POINTER__UINT_POINTER (GClosure     *closure,
                                                  GValue       *return_value,
@@ -555,7 +564,7 @@ void ags_cclosure_marshal_POINTER__UINT_POINTER (GClosure     *closure,
                                                  gpointer      invocation_hint,
                                                  gpointer      marshal_data);
 
-/* POINTER:POINTER,UINT (ags/object/ags_marshallers.list:60) */
+/* POINTER:POINTER,UINT (ags/object/ags_marshallers.list:61) */
 extern
 void ags_cclosure_marshal_POINTER__POINTER_UINT (GClosure     *closure,
                                                  GValue       *return_value,
@@ -564,7 +573,7 @@ void ags_cclosure_marshal_POINTER__POINTER_UINT (GClosure     *closure,
                                                  gpointer      invocation_hint,
                                                  gpointer      marshal_data);
 
-/* POINTER:STRING,STRING (ags/object/ags_marshallers.list:61) */
+/* POINTER:STRING,STRING (ags/object/ags_marshallers.list:62) */
 extern
 void ags_cclosure_marshal_POINTER__STRING_STRING (GClosure     *closure,
                                                   GValue       *return_value,
@@ -573,7 +582,7 @@ void ags_cclosure_marshal_POINTER__STRING_STRING (GClosure     *closure,
                                                   gpointer      invocation_hint,
                                                   gpointer      marshal_data);
 
-/* POINTER:STRING,STRING,STRING (ags/object/ags_marshallers.list:62) */
+/* POINTER:STRING,STRING,STRING (ags/object/ags_marshallers.list:63) */
 extern
 void ags_cclosure_marshal_POINTER__STRING_STRING_STRING (GClosure     *closure,
                                                          GValue       *return_value,
@@ -582,7 +591,7 @@ void ags_cclosure_marshal_POINTER__STRING_STRING_STRING (GClosure     *closure,
                                                          gpointer      invocation_hint,
                                                          gpointer      marshal_data);
 
-/* POINTER:STRING,STRING,STRING,STRING (ags/object/ags_marshallers.list:63) */
+/* POINTER:STRING,STRING,STRING,STRING (ags/object/ags_marshallers.list:64) */
 extern
 void ags_cclosure_marshal_POINTER__STRING_STRING_STRING_STRING (GClosure     *closure,
                                                                 GValue       *return_value,
@@ -591,7 +600,7 @@ void ags_cclosure_marshal_POINTER__STRING_STRING_STRING_STRING (GClosure     *cl
                                                                 gpointer      invocation_hint,
                                                                 gpointer      marshal_data);
 
-/* POINTER:ULONG,POINTER,UINT (ags/object/ags_marshallers.list:64) */
+/* POINTER:ULONG,POINTER,UINT (ags/object/ags_marshallers.list:65) */
 extern
 void ags_cclosure_marshal_POINTER__ULONG_POINTER_UINT (GClosure     *closure,
                                                        GValue       *return_value,
@@ -600,7 +609,7 @@ void ags_cclosure_marshal_POINTER__ULONG_POINTER_UINT (GClosure     *closure,
                                                        gpointer      invocation_hint,
                                                        gpointer      marshal_data);
 
-/* POINTER:OBJECT (ags/object/ags_marshallers.list:65) */
+/* POINTER:OBJECT (ags/object/ags_marshallers.list:66) */
 extern
 void ags_cclosure_marshal_POINTER__OBJECT (GClosure     *closure,
                                            GValue       *return_value,
@@ -609,7 +618,7 @@ void ags_cclosure_marshal_POINTER__OBJECT (GClosure     *closure,
                                            gpointer      invocation_hint,
                                            gpointer      marshal_data);
 
-/* POINTER:OBJECT,OBJECT (ags/object/ags_marshallers.list:66) */
+/* POINTER:OBJECT,OBJECT (ags/object/ags_marshallers.list:67) */
 extern
 void ags_cclosure_marshal_POINTER__OBJECT_OBJECT (GClosure     *closure,
                                                   GValue       *return_value,
@@ -618,7 +627,7 @@ void ags_cclosure_marshal_POINTER__OBJECT_OBJECT (GClosure     *closure,
                                                   gpointer      invocation_hint,
                                                   gpointer      marshal_data);
 
-/* POINTER:OBJECT,STRING,STRING,STRING,POINTER (ags/object/ags_marshallers.list:67) */
+/* POINTER:OBJECT,STRING,STRING,STRING,POINTER (ags/object/ags_marshallers.list:68) */
 extern
 void ags_cclosure_marshal_POINTER__OBJECT_STRING_STRING_STRING_POINTER (GClosure     *closure,
                                                                         GValue       *return_value,
@@ -627,7 +636,7 @@ void ags_cclosure_marshal_POINTER__OBJECT_STRING_STRING_STRING_POINTER (GClosure
                                                                         gpointer      invocation_hint,
                                                                         gpointer      marshal_data);
 
-/* POINTER:OBJECT,STRING,STRING,STRING,STRING,POINTER (ags/object/ags_marshallers.list:68) */
+/* POINTER:OBJECT,STRING,STRING,STRING,STRING,POINTER (ags/object/ags_marshallers.list:69) */
 extern
 void ags_cclosure_marshal_POINTER__OBJECT_STRING_STRING_STRING_STRING_POINTER (GClosure     *closure,
                                                                                GValue       *return_value,
@@ -636,7 +645,7 @@ void ags_cclosure_marshal_POINTER__OBJECT_STRING_STRING_STRING_STRING_POINTER (G
                                                                                gpointer      invocation_hint,
                                                                                gpointer      marshal_data);
 
-/* POINTER:POINTER,STRING,STRING (ags/object/ags_marshallers.list:69) */
+/* POINTER:POINTER,STRING,STRING (ags/object/ags_marshallers.list:70) */
 extern
 void ags_cclosure_marshal_POINTER__POINTER_STRING_STRING (GClosure     *closure,
                                                           GValue       *return_value,
@@ -645,7 +654,7 @@ void ags_cclosure_marshal_POINTER__POINTER_STRING_STRING (GClosure     *closure,
                                                           gpointer      invocation_hint,
                                                           gpointer      marshal_data);
 
-/* OBJECT:VOID (ags/object/ags_marshallers.list:70) */
+/* OBJECT:VOID (ags/object/ags_marshallers.list:71) */
 extern
 void ags_cclosure_marshal_OBJECT__VOID (GClosure     *closure,
                                         GValue       *return_value,
@@ -654,7 +663,7 @@ void ags_cclosure_marshal_OBJECT__VOID (GClosure     *closure,
                                         gpointer      invocation_hint,
                                         gpointer      marshal_data);
 
-/* OBJECT:UINT,POINTER (ags/object/ags_marshallers.list:71) */
+/* OBJECT:UINT,POINTER (ags/object/ags_marshallers.list:72) */
 extern
 void ags_cclosure_marshal_OBJECT__UINT_POINTER (GClosure     *closure,
                                                 GValue       *return_value,
@@ -663,7 +672,7 @@ void ags_cclosure_marshal_OBJECT__UINT_POINTER (GClosure     *closure,
                                                 gpointer      invocation_hint,
                                                 gpointer      marshal_data);
 
-/* OBJECT:STRING,STRING,STRING (ags/object/ags_marshallers.list:72) */
+/* OBJECT:STRING,STRING,STRING (ags/object/ags_marshallers.list:73) */
 extern
 void ags_cclosure_marshal_OBJECT__STRING_STRING_STRING (GClosure     *closure,
                                                         GValue       *return_value,
@@ -672,7 +681,7 @@ void ags_cclosure_marshal_OBJECT__STRING_STRING_STRING (GClosure     *closure,
                                                         gpointer      invocation_hint,
                                                         gpointer      marshal_data);
 
-/* OBJECT:OBJECT (ags/object/ags_marshallers.list:73) */
+/* OBJECT:OBJECT (ags/object/ags_marshallers.list:74) */
 extern
 void ags_cclosure_marshal_OBJECT__OBJECT (GClosure     *closure,
                                           GValue       *return_value,
@@ -681,7 +690,7 @@ void ags_cclosure_marshal_OBJECT__OBJECT (GClosure     *closure,
                                           gpointer      invocation_hint,
                                           gpointer      marshal_data);
 
-/* OBJECT:OBJECT,POINTER,POINTER (ags/object/ags_marshallers.list:74) */
+/* OBJECT:OBJECT,POINTER,POINTER (ags/object/ags_marshallers.list:75) */
 extern
 void ags_cclosure_marshal_OBJECT__OBJECT_POINTER_POINTER (GClosure     *closure,
                                                           GValue       *return_value,
@@ -690,7 +699,7 @@ void ags_cclosure_marshal_OBJECT__OBJECT_POINTER_POINTER (GClosure     *closure,
                                                           gpointer      invocation_hint,
                                                           gpointer      marshal_data);
 
-/* OBJECT:OBJECT,POINTER,POINTER,POINTER (ags/object/ags_marshallers.list:75) */
+/* OBJECT:OBJECT,POINTER,POINTER,POINTER (ags/object/ags_marshallers.list:76) */
 extern
 void ags_cclosure_marshal_OBJECT__OBJECT_POINTER_POINTER_POINTER (GClosure     *closure,
                                                                   GValue       *return_value,
@@ -699,7 +708,7 @@ void ags_cclosure_marshal_OBJECT__OBJECT_POINTER_POINTER_POINTER (GClosure     *
                                                                   gpointer      invocation_hint,
                                                                   gpointer      marshal_data);
 
-/* OBJECT:OBJECT,OBJECT (ags/object/ags_marshallers.list:76) */
+/* OBJECT:OBJECT,OBJECT (ags/object/ags_marshallers.list:77) */
 extern
 void ags_cclosure_marshal_OBJECT__OBJECT_OBJECT (GClosure     *closure,
                                                  GValue       *return_value,

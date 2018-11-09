@@ -478,6 +478,13 @@ ags_osc_client_finalize(GObject *gobject)
   pthread_mutexattr_destroy(osc_client->obj_mutexattr);
   free(osc_client->obj_mutexattr);
 
+  g_free(osc_client->ip4);
+  g_free(osc_client->ip6);
+
+  if(osc_client->retry_delay != NULL){
+    free(osc_client->retry_delay);
+  }
+  
   /* call parent */
   G_OBJECT_CLASS(ags_osc_client_parent_class)->finalize(gobject);
 }
