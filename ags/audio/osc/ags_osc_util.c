@@ -23,6 +23,13 @@
 
 #include <math.h>
 #include <string.h>
+#include <unistd.h>
+#include <time.h>
+
+#ifdef __APPLE__
+#include <mach/clock.h>
+#include <mach/mach.h>
+#endif
 
 /**
  * ags_osc_util_type_tag_string_count_type:
@@ -220,4 +227,46 @@ ags_osc_util_slip_decode(unsigned char *slip_buffer,
   }
   
   return(osc_buffer);
+}
+
+/**
+ * ags_osc_util_timetag_now:
+ * @tv_secs: the return location of number of seconds since midnight on January 1, 1900
+ * @tv_fraction: the return location of fraction of seconds to a precision of about 200 picoseconds
+ * 
+ * Get current time.
+ * 
+ * Since: 2.1.0
+ */
+void
+ags_osc_util_timetag_now(gint32 *tv_secs, gint32 *tv_fraction)
+{
+  struct timespec time_now;
+
+#ifdef __APPLE__
+  clock_serv_t cclock;
+  mach_timespec_t mts;
+#endif
+  
+  static const guint secs_since_1900_to_1970 = 2208988800;
+  
+#ifdef __APPLE__
+  host_get_clock_service(mach_host_self(), CALENDAR_CLOCK, &cclock);
+      
+  clock_get_time(cclock, &mts);
+  mach_port_deallocate(mach_task_self(), cclock);
+      
+  time_now.tv_sec = mts.tv_sec;
+  time_now.tv_nsec = mts.tv_nsec;
+#else
+  clock_gettime(CLOCK_MONOTONIC, &time_now);
+#endif
+
+  if(tv_secs != NULL){
+    tv_secs[0] = time_now.tv_sec + 2208988800;
+  }
+
+  if(tv_fraction != NULL){
+    tv_fraction[0] = 0xfffffffe & (guint) (time_now.tv_nsec * 4.294967296);
+  }
 }

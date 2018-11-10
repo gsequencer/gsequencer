@@ -65,4 +65,6 @@ unsigned char* ags_osc_util_slip_encode(unsigned char *osc_buffer,
 unsigned char* ags_osc_util_slip_decode(unsigned char *slip_buffer,
 					guint slip_buffer_length);
 
+void ags_osc_util_timetag_now(gint32 *tv_sec, gint32 *tv_fraction);
+
 #endif /*__AGS_OSC_UTIL_H__*/
