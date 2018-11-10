@@ -38,6 +38,7 @@ void ags_osc_server_get_property(GObject *gobject,
 				 guint prop_id,
 				 GValue *value,
 				 GParamSpec *param_spec);
+void ags_osc_server_dispose(GObject *gobject);
 void ags_osc_server_finalize(GObject *gobject);
 
 void ags_osc_server_real_start(AgsOscServer *osc_server);
@@ -122,6 +123,7 @@ ags_osc_server_class_init(AgsOscServerClass *osc_server)
   gobject->set_property = ags_osc_server_set_property;
   gobject->get_property = ags_osc_server_get_property;
   
+  gobject->dispose = ags_osc_server_dispose;
   gobject->finalize = ags_osc_server_finalize;
 
   /* properties */
@@ -481,6 +483,32 @@ ags_osc_server_get_property(GObject *gobject,
 }
 
 void
+ags_osc_server_dispose(GObject *gobject)
+{
+  AgsOscServer *osc_server;
+
+  GList *start_list, *list;
+  
+  osc_server = (AgsOscServer *) gobject;
+
+  if(osc_server->connection != NULL){
+    list = 
+      start_list = osc_server->connection;
+
+    while(list != NULL){
+      g_object_set(list->data,
+		   "osc-server", NULL,
+		   NULL);
+    }
+  
+    g_list_free_full(start_list,
+		     g_object_unref);
+
+    osc_server->connection = NULL;
+  }
+}
+
+void
 ags_osc_server_finalize(GObject *gobject)
 {
   AgsOscServer *osc_server;
@@ -492,11 +520,14 @@ ags_osc_server_finalize(GObject *gobject)
 
   pthread_mutexattr_destroy(osc_server->obj_mutexattr);
   free(osc_server->obj_mutexattr);
-
+  
   g_free(osc_server->domain);
   
   g_free(osc_server->ip4);
   g_free(osc_server->ip6);
+
+  g_list_free_full(osc_server->connection,
+		   g_object_unref);
   
   /* call parent */
   G_OBJECT_CLASS(ags_osc_server_parent_class)->finalize(gobject);
@@ -620,6 +651,64 @@ ags_osc_server_unset_flags(AgsOscServer *osc_server, guint flags)
   osc_server->flags &= (~flags);
 
   pthread_mutex_unlock(osc_server_mutex);
+}
+
+/**
+ * ags_osc_server_add_connection:
+ * @osc_server: the #AgsOscServer
+ * @osc_connection: the #AgsOscConnection
+ *
+ * Add @osc_connection to @osc_server.
+ * 
+ * Since: 2.1.0
+ */
+void
+ags_osc_server_add_connection(AgsOscServer *osc_server,
+			      GObject *osc_connection)
+{
+  if(!AGS_IS_OSC_SERVER(osc_server) ||
+     !AGS_IS_OSC_CONNECTION(osc_connection)){
+    return;
+  }
+
+  if(g_list_find(osc_server->connection, osc_connection) == NULL){
+    g_object_ref(osc_connection);
+    osc_server->connection = g_list_prepend(osc_server->connection,
+					    osc_connection);
+
+    g_object_set(osc_connection,
+		 "osc-server", osc_server,
+		 NULL);
+  }
+}
+
+/**
+ * ags_osc_server_remove_connection:
+ * @osc_server: the #AgsOscServer
+ * @osc_connection: the #AgsOscConnection
+ *
+ * Remove @osc_connection from @osc_server.
+ * 
+ * Since: 2.1.0
+ */
+void
+ags_osc_server_remove_connection(AgsOscServer *osc_server,
+				 GObject *osc_connection)
+{
+  if(!AGS_IS_OSC_SERVER(osc_server) ||
+     !AGS_IS_OSC_CONNECTION(osc_connection)){
+    return;
+  }
+
+  if(g_list_find(osc_server->connection, osc_connection) != NULL){
+    osc_server->connection = g_list_remove(osc_server->connection,
+					   osc_connection);
+    g_object_unref(osc_connection);
+
+    g_object_set(osc_connection,
+		 "osc-server", NULL,
+		 NULL);
+  }
 }
 
 void

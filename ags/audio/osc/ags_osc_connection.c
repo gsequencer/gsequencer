@@ -21,6 +21,8 @@
 
 #include <ags/libags.h>
 
+#include <ags/audio/osc/ags_osc_server.h>
+
 #include <ags/i18n.h>
 
 void ags_osc_connection_class_init(AgsOscConnectionClass *osc_connection);
@@ -33,6 +35,7 @@ void ags_osc_connection_get_property(GObject *gobject,
 				     guint prop_id,
 				     GValue *value,
 				     GParamSpec *param_spec);
+void ags_osc_connection_dispose(GObject *gobject);
 void ags_osc_connection_finalize(GObject *gobject);
 
 guchar* ags_osc_connection_real_read_bytes(AgsOscConnection *osc_connection,
@@ -50,6 +53,7 @@ guchar* ags_osc_connection_real_read_bytes(AgsOscConnection *osc_connection,
 
 enum{
   PROP_0,
+  PROP_OSC_SERVER,
   PROP_IP4,
   PROP_IP6,
 };
@@ -109,9 +113,26 @@ ags_osc_connection_class_init(AgsOscConnectionClass *osc_connection)
   gobject->set_property = ags_osc_connection_set_property;
   gobject->get_property = ags_osc_connection_get_property;
   
+  gobject->dispose = ags_osc_connection_dispose;
   gobject->finalize = ags_osc_connection_finalize;
 
   /* properties */
+  /**
+   * AgsOscConnection:osc-server:
+   *
+   * The assigned #AgsOscServer.
+   * 
+   * Since: 2.1.0
+   */
+  param_spec = g_param_spec_object("osc-server",
+				   i18n_pspec("assigned OSC server"),
+				   i18n_pspec("The OSC server it is assigned with"),
+				   AGS_TYPE_OSC_SERVER,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_OSC_SERVER,
+				  param_spec);
+
   /**
    * AgsOscConnection:ip4:
    *
@@ -223,6 +244,33 @@ ags_osc_connection_set_property(GObject *gobject,
   pthread_mutex_unlock(ags_osc_connection_get_class_mutex());
   
   switch(prop_id){
+  case PROP_OSC_SERVER:
+    {
+      GObject *osc_server;
+
+      osc_server = g_value_get_object(value);
+
+      pthread_mutex_lock(osc_connection_mutex);
+
+      if(osc_connection->osc_server == osc_server){
+	pthread_mutex_unlock(osc_connection_mutex);
+
+	return;
+      }
+
+      if(osc_connection->osc_server != NULL){
+	g_object_unref(osc_connection->osc_server);
+      }
+      
+      if(osc_server != NULL){
+	g_object_ref(osc_server);
+      }
+      
+      osc_connection->osc_server = osc_server;
+
+      pthread_mutex_unlock(osc_connection_mutex);
+    }
+    break;
   case PROP_IP4:
     {
       gchar *ip4;
@@ -291,6 +339,15 @@ ags_osc_connection_get_property(GObject *gobject,
   pthread_mutex_unlock(ags_osc_connection_get_class_mutex());
   
   switch(prop_id){
+  case PROP_OSC_SERVER:
+    {
+      pthread_mutex_lock(osc_connection_mutex);
+
+      g_value_set_object(value, osc_connection->osc_server);
+
+      pthread_mutex_unlock(osc_connection_mutex);
+    }
+    break;
   case PROP_IP4:
     {
       pthread_mutex_lock(osc_connection_mutex);
@@ -318,6 +375,20 @@ ags_osc_connection_get_property(GObject *gobject,
 }
 
 void
+ags_osc_connection_dispose(GObject *gobject)
+{
+  AgsOscConnection *osc_connection;
+    
+  osc_connection = (AgsOscConnection *) gobject;
+
+  if(osc_connection->osc_server != NULL){
+    g_object_unref(osc_connection->osc_server);
+
+    osc_connection->osc_server = NULL
+  }
+}
+
+void
 ags_osc_connection_finalize(GObject *gobject)
 {
   AgsOscConnection *osc_connection;
@@ -329,6 +400,10 @@ ags_osc_connection_finalize(GObject *gobject)
 
   pthread_mutexattr_destroy(osc_connection->obj_mutexattr);
   free(osc_connection->obj_mutexattr);
+
+  if(osc_connection->osc_server != NULL){
+    g_object_unref(osc_connection->osc_server);
+  }
 
   g_free(osc_connection->ip4);
   g_free(osc_connection->ip6);

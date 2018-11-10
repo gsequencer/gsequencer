@@ -114,6 +114,11 @@ gboolean ags_osc_server_test_flags(AgsOscServer *osc_server, guint flags);
 void ags_osc_server_set_flags(AgsOscServer *osc_server, guint flags);
 void ags_osc_server_unset_flags(AgsOscServer *osc_server, guint flags);
 
+void ags_osc_server_add_connection(AgsOscServer *osc_server,
+				   GObject *osc_connection);
+void ags_osc_server_remove_connection(AgsOscServer *osc_server,
+				      GObject *osc_connection);
+
 void ags_osc_server_start(AgsOscServer *osc_server);
 void ags_osc_server_stop(AgsOscServer *osc_server);
 
