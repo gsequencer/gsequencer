@@ -22,6 +22,18 @@
 #include <ags/libags.h>
 
 #include <ags/audio/osc/ags_osc_server.h>
+#include <ags/audio/osc/ags_osc_util.h>
+#include <ags/audio/osc/ags_osc_buffer_util.h>
+
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+#include <time.h>
+
+#ifdef __APPLE__
+#include <mach/clock.h>
+#include <mach/mach.h>
+#endif
 
 #include <ags/i18n.h>
 
@@ -40,6 +52,7 @@ void ags_osc_connection_finalize(GObject *gobject);
 
 guchar* ags_osc_connection_real_read_bytes(AgsOscConnection *osc_connection,
 					   guint *data_length);
+void ags_osc_connection_real_close(AgsOscConnection *osc_connection);
 
 /**
  * SECTION:ags_osc_connection
@@ -60,6 +73,7 @@ enum{
 
 enum{
   READ_BYTES,
+  CLOSE,
   LAST_SIGNAL,
 };
 
@@ -167,6 +181,8 @@ ags_osc_connection_class_init(AgsOscConnectionClass *osc_connection)
   /* AgsOscConnectionClass */  
   osc_connection->read_bytes = ags_osc_connection_real_read_bytes;
 
+  osc_connection->close = ags_osc_connection_real_close;
+
   /* signals */
   /**
    * AgsOscConnection::read-bytes:
@@ -188,11 +204,33 @@ ags_osc_connection_class_init(AgsOscConnectionClass *osc_connection)
 		 ags_cclosure_marshal_POINTER__POINTER,
 		 G_TYPE_POINTER, 1,
 		 G_TYPE_POINTER);
+
+  /**
+   * AgsOscConnection::close:
+   * @osc_connection: the #AgsOscConnection
+   *
+   * The ::close signal is emited as closing the file descripto.
+   * 
+   * Since: 2.1.0
+   */
+  osc_connection_signals[CLOSE] =
+    g_signal_new("close",
+		 G_TYPE_FROM_CLASS(osc_connection),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsOscConnectionClass, close),
+		 NULL, NULL,
+		 g_cclosure_marshal_VOID__VOID,
+		 G_TYPE_NONE, 0);
 }
 
 void
 ags_osc_connection_init(AgsOscConnection *osc_connection)
 {
+#ifdef __APPLE__
+  clock_serv_t cclock;
+  mach_timespec_t mts;
+#endif
+
   osc_connection->flags = AGS_OSC_CONNECTION_INET4;
   
   /* osc connection mutex */
@@ -213,6 +251,8 @@ ags_osc_connection_init(AgsOscConnection *osc_connection)
   osc_connection->ip4 = NULL;
   osc_connection->ip6 = NULL;
 
+  osc_connection->buffer = (guchar *) malloc(AGS_OSC_CONNECTION_CHUNK_SIZE * sizeof(guchar));
+
   osc_connection->timeout_delay = (struct timespec *) malloc(sizeof(struct timespec));
 
   osc_connection->timeout_delay->tv_sec = 3600;
@@ -222,6 +262,18 @@ ags_osc_connection_init(AgsOscConnection *osc_connection)
 
   osc_connection->timestamp->tv_sec = 0;
   osc_connection->timestamp->tv_nsec = 0;
+
+#ifdef __APPLE__
+  host_get_clock_service(mach_host_self(), CALENDAR_CLOCK, &cclock);
+      
+  clock_get_time(cclock, &mts);
+  mach_port_deallocate(mach_task_self(), cclock);
+      
+  osc_connection->timestamp->tv_sec = mts.tv_sec;
+  osc_connection->timestamp->tv_nsec = mts.tv_nsec;
+#else
+  clock_gettime(CLOCK_MONOTONIC, osc_connection->timestamp);
+#endif
 }
 
 void
@@ -384,7 +436,7 @@ ags_osc_connection_dispose(GObject *gobject)
   if(osc_connection->osc_server != NULL){
     g_object_unref(osc_connection->osc_server);
 
-    osc_connection->osc_server = NULL
+    osc_connection->osc_server = NULL;
   }
 }
 
@@ -544,9 +596,150 @@ guchar*
 ags_osc_connection_real_read_bytes(AgsOscConnection *osc_connection,
 				   guint *data_length)
 {
-  //TODO:JK: implement me
+  struct timeval start_time;
+  struct timeval current_time;
+  
+  guchar *buffer;
+  guchar data[AGS_OSC_CONNECTION_CHUNK_SIZE];
 
-  return(NULL);
+  guint64 t_start, t_current;
+  ssize_t num_read;
+  guint data_start;
+  guint offset;
+  gint32 packet_size;
+  gboolean success;
+
+  gettimeofday(&start_time, NULL);
+  t_start = start_time.tv_sec * USEC_PER_SEC + start_time.tv_usec;
+  
+  memset(data, 0, AGS_OSC_CONNECTION_CHUNK_SIZE * sizeof(guchar));
+  
+  num_read = read(osc_connection->fd, data, 1);
+
+  if(num_read <= 0){
+    if(data_length != NULL){
+      *data_length = 0;
+    }
+    
+    return(NULL);
+  }
+
+  data_start = 0;
+  offset = 0;
+
+  success = TRUE;
+
+  /* skip garbage */
+  while(data[0] != AGS_OSC_UTIL_SLIP_END){
+    num_read = read(osc_connection->fd, data, 1);
+
+    if(t_start + AGS_OSC_CONNECTION_DEAD_LINE_USEC >= t_current){
+      success = FALSE;
+
+      break;
+    }
+  }
+
+  if(!success){
+    free(buffer);
+    
+    if(data_length != NULL){
+      *data_length = 0;
+    }
+    
+    return(NULL);
+  }
+  
+  offset += 1;
+  num_read = 0;
+
+  /* check terminated garbage */
+  while(num_read <= 0){
+    num_read = read(osc_connection->fd, data + 1, 1);
+
+    gettimeofday(&current_time, NULL);
+    t_current = current_time.tv_sec * USEC_PER_SEC + current_time.tv_usec;
+
+    if(t_start + AGS_OSC_CONNECTION_DEAD_LINE_USEC >= t_current){
+      success = FALSE;
+
+      break;
+    }
+  }
+
+  if(!success){
+    free(buffer);
+    
+    if(data_length != NULL){
+      *data_length = 0;
+    }
+    
+    return(NULL);
+  }
+  
+  if(data[1] == AGS_OSC_UTIL_SLIP_END){
+    data_start = 1;
+  }else{
+    offset += 1;
+  }
+
+  /* read packet size */
+  while(offset < 5){
+    num_read = read(osc_connection->fd, data + data_start + offset, 4 - (offset - 1));
+    offset += num_read;
+
+    gettimeofday(&current_time, NULL);
+    t_current = current_time.tv_sec * USEC_PER_SEC + current_time.tv_usec;
+
+    if(t_start + AGS_OSC_CONNECTION_DEAD_LINE_USEC >= t_current){
+      success = FALSE;
+
+      break;
+    }
+  }
+
+  if(!success){
+    free(buffer);
+    
+    if(data_length != NULL){
+      *data_length = 0;
+    }
+    
+    return(NULL);
+  }
+
+  ags_osc_buffer_util_get_int32(data + data_start,
+				&packet_size);
+
+  /* read size */
+  buffer = (guchar *) malloc((packet_size + 6) * sizeof(guchar));
+  memcpy(buffer, data + data_start, 5 * sizeof(guchar));
+
+  while(offset - 5 < packet_size){
+    num_read = read(osc_connection->fd, buffer + offset, (packet_size + 1 - (offset - 5)) * sizeof(guchar));
+    offset += num_read;
+
+    gettimeofday(&current_time, NULL);
+    t_current = current_time.tv_sec * USEC_PER_SEC + current_time.tv_usec;
+
+    if(t_start + AGS_OSC_CONNECTION_DEAD_LINE_USEC >= t_current){
+      success = FALSE;
+
+      break;
+    }
+  }
+  
+  if(!success){
+    free(buffer);
+    
+    if(data_length != NULL){
+      *data_length = 0;
+    }
+    
+    return(NULL);
+  }
+
+  return(buffer);
 }
 
 /**
@@ -576,6 +769,41 @@ ags_osc_connection_read_bytes(AgsOscConnection *osc_connection,
   g_object_unref((GObject *) osc_connection);
 
   return(success);
+}
+
+void
+ags_osc_connection_real_close(AgsOscConnection *osc_connection)
+{
+  pthread_mutex_t *osc_connection_mutex;
+
+  /* get osc_connection mutex */
+  pthread_mutex_lock(ags_osc_connection_get_class_mutex());
+  
+  osc_connection_mutex = osc_connection->obj_mutex;
+  
+  pthread_mutex_unlock(ags_osc_connection_get_class_mutex());
+
+  /* set flags */
+  pthread_mutex_lock(osc_connection_mutex);
+
+  close(osc_connection->fd);
+  osc_connection->fd = -1;
+  
+  pthread_mutex_unlock(osc_connection_mutex);
+
+  ags_osc_connection_unset_flags(osc_connection,
+				 AGS_OSC_CONNECTION_ACTIVE);
+}
+
+void
+ags_osc_connection_close(AgsOscConnection *osc_connection)
+{
+  g_return_if_fail(AGS_IS_OSC_CONNECTION(osc_connection));
+  
+  g_object_ref((GObject *) osc_connection);
+  g_signal_emit(G_OBJECT(osc_connection),
+		osc_connection_signals[CLOSE], 0);
+  g_object_unref((GObject *) osc_connection);
 }
 
 /**

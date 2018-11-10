@@ -19,6 +19,10 @@
 
 #include <ags/audio/osc/ags_osc_server.h>
 
+#include <ags/libags.h>
+
+#include <ags/audio/osc/ags_osc_connection.h>
+
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -954,9 +958,25 @@ ags_osc_server_real_listen(AgsOscServer *osc_server)
       connection_fd = accept(osc_server->ip4_fd, osc_server->ip4_address, sizeof(struct sockaddr_in));
 
       if(connection_fd >= 0){
-	created_connection = TRUE;
+	AgsOscConnection *osc_connection;
 	
-	//TODO:JK: implement me
+	int flags;
+	
+	created_connection = TRUE;
+
+	osc_connection = ags_osc_connection_new(osc_server);
+
+	flags = fcntl(connection_fd, F_GETFL, 0);
+	fcntl(connection_fd, F_SETFL, flags | O_NONBLOCK);
+
+	osc_connection->fd = connection_fd;
+	
+	ags_osc_connection_set_flags(osc_connection,
+				     (AGS_OSC_CONNECTION_ACTIVE |
+				      AGS_OSC_CONNECTION_INET4));
+	
+	ags_osc_server_add_connection(osc_server,
+				      osc_connection);
       }
     }
     
@@ -966,9 +986,25 @@ ags_osc_server_real_listen(AgsOscServer *osc_server)
       connection_fd = accept(osc_server->ip6_fd, osc_server->ip6_address, sizeof(struct sockaddr_in6));
 
       if(connection_fd >= 0){
+	AgsOscConnection *osc_connection;
+
+	int flags;
+	
 	created_connection = TRUE;
 
-	//TODO:JK: implement me
+	osc_connection = ags_osc_connection_new(osc_server);
+
+	flags = fcntl(connection_fd, F_GETFL, 0);
+	fcntl(connection_fd, F_SETFL, flags | O_NONBLOCK);
+
+	osc_connection->fd = connection_fd;
+	
+	ags_osc_connection_set_flags(osc_connection,
+				     (AGS_OSC_CONNECTION_ACTIVE |
+				      AGS_OSC_CONNECTION_INET6));
+	
+	ags_osc_server_add_connection(osc_server,
+				      osc_connection);
       }
     }
 

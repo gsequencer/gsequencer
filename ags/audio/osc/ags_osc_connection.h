@@ -32,12 +32,16 @@
 #define AGS_IS_OSC_CONNECTION_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_OSC_CONNECTION))
 #define AGS_OSC_CONNECTION_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_OSC_CONNECTION, AgsOscConnectionClass))
 
+#define AGS_OSC_CONNECTION_DEAD_LINE_USEC (8000000)
+#define AGS_OSC_CONNECTION_CHUNK_SIZE (8)
+
 typedef struct _AgsOscConnection AgsOscConnection;
 typedef struct _AgsOscConnectionClass AgsOscConnectionClass;
 
 typedef enum{
-  AGS_OSC_CONNECTION_INET4      = 1,
-  AGS_OSC_CONNECTION_INET6      = 1 <<  1,
+  AGS_OSC_CONNECTION_ACTIVE     = 1,
+  AGS_OSC_CONNECTION_INET4      = 1 <<  1,
+  AGS_OSC_CONNECTION_INET6      = 1 <<  2,
 }AgsOscConnectionFlags;
 
 struct _AgsOscConnection
@@ -56,6 +60,8 @@ struct _AgsOscConnection
   
   int fd;
 
+  guchar *buffer;
+  
   struct timespec *timeout_delay;
   struct timespec *timestamp;
 };
@@ -66,6 +72,8 @@ struct _AgsOscConnectionClass
 
   guchar* (*read_bytes)(AgsOscConnection *osc_connection,
 			guint *data_length);
+
+  void (*close)(AgsOscConnection *osc_connection);
 };
 
 GType ags_osc_connection_get_type(void);
@@ -78,6 +86,8 @@ void ags_osc_connection_unset_flags(AgsOscConnection *osc_connection, guint flag
 
 guchar* ags_osc_connection_read_bytes(AgsOscConnection *osc_connection,
 				      guint *data_length);
+
+void ags_osc_connection_close(AgsOscConnection *osc_connection);
 
 AgsOscConnection* ags_osc_connection_new(GObject *osc_server);
 
