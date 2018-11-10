@@ -46,6 +46,13 @@
 
 #define AGS_OSC_UTIL_ADDRESS_PATTERN_VALID_CHARS_PATTERN "([a-zA-Z \\#\\*\\,\\/\\?\\[\\]\\{\\}]+)"
 
+#define AGS_OSC_UTIL_SLIP_CHUNK_LENGTH (8192)
+
+#define AGS_OSC_UTIL_SLIP_END (192)
+#define AGS_OSC_UTIL_SLIP_ESC (219)
+#define AGS_OSC_UTIL_SLIP_ESC_END (220)
+#define AGS_OSC_UTIL_SLIP_ESC_ESC (221)
+
 guint ags_osc_util_type_tag_string_count_type(gchar *type_tag_string);
 
 unsigned char* ags_osc_util_meta_data(gchar *uri,
@@ -56,6 +63,6 @@ unsigned char* ags_osc_util_mime_header(gchar *uri,
 unsigned char* ags_osc_util_slip_encode(unsigned char *osc_buffer,
 					guint buffer_length);
 unsigned char* ags_osc_util_slip_decode(unsigned char *slip_buffer,
-					guint buffer_length);
+					guint slip_buffer_length);
 
 #endif /*__AGS_OSC_UTIL_H__*/

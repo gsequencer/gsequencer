@@ -21,6 +21,7 @@
 
 #include <ags/libags.h>
 
+#include <math.h>
 #include <string.h>
 
 /**
@@ -126,15 +127,57 @@ unsigned char*
 ags_osc_util_slip_encode(unsigned char *osc_buffer,
 			 guint buffer_length)
 {
-  //TODO:JK: implement me
+  unsigned char *slip_buffer;
 
-  return(NULL);
+  guint slip_buffer_length;
+  guint i, j;
+  
+  slip_buffer_length = AGS_OSC_UTIL_SLIP_CHUNK_LENGTH * ceil(buffer_length / AGS_OSC_UTIL_SLIP_CHUNK_LENGTH);
+  
+  slip_buffer = (unsigned char *) malloc((slip_buffer_length + 2) * sizeof(unsigned char));
+
+  slip_buffer[0] = AGS_OSC_UTIL_SLIP_END;
+  
+  for(i = 0, j = 1; i < buffer_length; i++, j++){
+    if(j + 2 >= slip_buffer_length){
+      slip_buffer_length = slip_buffer_length + AGS_OSC_UTIL_SLIP_CHUNK_LENGTH;
+      slip_buffer = (unsigned char *) realloc(slip_buffer,
+					      (slip_buffer_length + 2) * sizeof(unsigned char));
+    }
+    
+    switch(osc_buffer[i]){
+    case AGS_OSC_UTIL_SLIP_END:
+      {
+	slip_buffer[j] = AGS_OSC_UTIL_SLIP_ESC;
+	j++;
+	
+	slip_buffer[j] = AGS_OSC_UTIL_SLIP_ESC_END;
+      }
+      break;
+    case AGS_OSC_UTIL_SLIP_ESC:
+      {
+	slip_buffer[j] = AGS_OSC_UTIL_SLIP_ESC;
+	j++;
+	
+	slip_buffer[j] = AGS_OSC_UTIL_SLIP_ESC_ESC;
+      }
+      break;
+    default:
+      {
+	slip_buffer[j] = osc_buffer[i];
+      }
+    }
+  }
+
+  slip_buffer[j] = AGS_OSC_UTIL_SLIP_END;
+
+  return(slip_buffer);
 }
 
 /**
  * ags_osc_util_slip_decode:
  * @slip_buffer: the SLIP encoded OSC buffer
- * @buffer_length: the buffer length of SLIP encoded OSC buffer
+ * @slip_buffer_length: the buffer length of SLIP encoded OSC buffer
  * 
  * Decode @slip_buffer from SLIP encoded format.
  * See SLIP (RFC1055).
@@ -145,9 +188,36 @@ ags_osc_util_slip_encode(unsigned char *osc_buffer,
  */
 unsigned char*
 ags_osc_util_slip_decode(unsigned char *slip_buffer,
-			 guint buffer_length)
+			 guint slip_buffer_length)
 {
-  //TODO:JK: implement me
+  unsigned char *osc_buffer;
 
-  return(NULL);
+  guint buffer_length;
+  guint i, j;
+
+  buffer_length = slip_buffer_length;
+
+  osc_buffer = (unsigned char *) malloc(buffer_length * sizeof(unsigned char));
+
+  for(i = 0, j = 1; j < slip_buffer_length - 1; i++, j++){
+    switch(slip_buffer[j]){
+    case AGS_OSC_UTIL_SLIP_ESC:
+      {
+	j++;
+
+	if(slip_buffer[j] == AGS_OSC_UTIL_SLIP_ESC_END){
+	  osc_buffer[i] = AGS_OSC_UTIL_SLIP_END;
+	}else if(slip_buffer[j] == AGS_OSC_UTIL_SLIP_ESC_ESC){
+	  osc_buffer[i] = AGS_OSC_UTIL_SLIP_ESC;
+	}
+      }
+      break;
+    default:
+      {
+	osc_buffer[i] = slip_buffer[j];
+      }
+    }
+  }
+  
+  return(osc_buffer);
 }
