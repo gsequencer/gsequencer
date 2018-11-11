@@ -43,9 +43,17 @@ struct _AgsOscFrontController
 struct _AgsOscFrontControllerClass
 {
   AgsOscControllerClass osc_controller;
+
+  gpointer (*do_request)(AgsOscFrontController *osc_front_controller,
+			 AgsOscConnection *osc_connection,
+			 guchar *packet, guint packet_size);
 };
 
 GType ags_osc_front_controller_get_type();
+
+gpointer ags_osc_front_controller_do_request(AgsOscFrontController *osc_front_controller,
+					     AgsOscConnection *osc_connection,
+					     guchar *packet, guint packet_size);
 
 AgsOscFrontController* ags_osc_front_controller_new();
 

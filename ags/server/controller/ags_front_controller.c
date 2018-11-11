@@ -80,8 +80,7 @@ gpointer ags_front_controller_real_do_request(AgsFrontController *front_controll
 					      gchar *context_path,
 					      gchar *user_uuid,
 					      gchar *security_token,
-					      GParameter *params,
-					      guint n_params);
+					      guint n_params, gchar **parameter_name, GValue *value);
 
 /**
  * SECTION:ags_front_controller
@@ -195,7 +194,9 @@ ags_front_controller_class_init(AgsFrontControllerClass *front_controller)
    * @context_path: the context path to access
    * @user: the user's UUID
    * @security_token: the security token
-   * @params: the #GParameter-struct
+   * @n_params: the parameter name and value count
+   * @parameter_name: the parameter names
+   * @value: the #GValue-struct array related to parameter names
    * 
    * Do a request on the front controller.
    * 
@@ -209,12 +210,14 @@ ags_front_controller_class_init(AgsFrontControllerClass *front_controller)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsFrontControllerClass, do_request),
 		 NULL, NULL,
-		 ags_cclosure_marshal_POINTER__OBJECT_STRING_STRING_STRING_POINTER,
-		 G_TYPE_POINTER, 5,
+		 ags_cclosure_marshal_POINTER__OBJECT_STRING_STRING_STRING_UINT_POINTER_POINTER,
+		 G_TYPE_POINTER, 7,
 		 G_TYPE_OBJECT,
 		 G_TYPE_STRING,
 		 G_TYPE_STRING,
 		 G_TYPE_STRING,
+		 G_TYPE_UINT,
+		 G_TYPE_POINTER,
 		 G_TYPE_POINTER);
 }
 
@@ -621,8 +624,7 @@ ags_front_controller_delegate_local_factory_controller(AgsFrontController *front
 						       gchar *context_path,
 						       gchar *login,
 						       gchar *security_token,
-						       GParameter *params,
-						       guint n_params)
+						       guint n_params, gchar **parameter_name, GValue *value)
 {
   gpointer response;
 
@@ -664,8 +666,7 @@ ags_front_controller_real_do_request(AgsFrontController *front_controller,
 				     gchar *context_path,
 				     gchar *login,
 				     gchar *security_token,
-				     GParameter *params,
-				     guint n_params)
+				     guint n_params, gchar **parameter_name, GValue *value)
 {
   AgsServer *server;
   
@@ -725,8 +726,9 @@ ags_front_controller_real_do_request(AgsFrontController *front_controller,
  * @context_path: the context path to access
  * @login: the login
  * @security_token: the security token
- * @params: the #GParameter-struct containing parameters
- * @n_params: the count of @params
+ * @n_params: the parameter name and value count
+ * @parameter_name: the parameter names
+ * @value: the #GValue-struct array related to parameter names
  *
  * Do a XML-RPC request for the given @context_path with @params.
  * 
@@ -740,8 +742,7 @@ ags_front_controller_do_request(AgsFrontController *front_controller,
 				gchar *context_path,
 				gchar *login,
 				gchar *security_token,
-				GParameter *params,
-				guint n_params)
+				guint n_params, gchar **parameter_name, GValue *value)
 {
   gpointer retval;
 
@@ -754,8 +755,7 @@ ags_front_controller_do_request(AgsFrontController *front_controller,
 		context_path,
 		login,
 		security_token,
-		params,
-		n_params,
+		n_params, parameter_name, value,
 		&retval);
   g_object_unref((GObject *) front_controller);
 

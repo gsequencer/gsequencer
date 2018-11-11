@@ -38,19 +38,17 @@ void ags_osc_front_controller_finalize(GObject *gobject);
 
 /**
  * SECTION:ags_osc_front_controller
- * @short_description: base osc_front_controller
+ * @short_description: OSC front controller
  * @title: AgsOscFrontController
  * @section_id:
  * @include: ags/audio/osc/controller/ags_osc_front_controller.h
  *
- * The #AgsOscFrontController is a base object to implement osc_front_controllers.
+ * The #AgsOscFrontController implements the OSC front controller.
  */
 
 enum{
   PROP_0,
-  PROP_OSC_SERVER,
 };
-
 
 static gpointer ags_osc_front_controller_parent_class = NULL;
 

@@ -1,7 +1,7 @@
 ags (2.1.0)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
-	* TODO:JK: implemented ags_osc_util.c
+	* implemented ags_osc_util.c
 	* implemented ags_osc_buffer_util.c
 	* implemented ags_osc_parser.c
 	* implemented ags_osc_builder.c
@@ -9,6 +9,7 @@ ags (2.1.0)
 	* TODO:JK: implemented ags_osc_server.c
 	* TODO:JK: implemented AgsFileUploadController
 	* TODO:JK: improved AgsServer
+	* fixed ags_front_controller_do_request() prototype declaration
 
 ags (2.0.38)
 

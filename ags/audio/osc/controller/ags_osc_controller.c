@@ -28,31 +28,31 @@
 void ags_osc_controller_class_init(AgsOscControllerClass *osc_controller);
 void ags_osc_controller_init(AgsOscController *osc_controller);
 void ags_osc_controller_set_property(GObject *gobject,
-				 guint prop_id,
-				 const GValue *value,
-				 GParamSpec *param_spec);
+				     guint prop_id,
+				     const GValue *value,
+				     GParamSpec *param_spec);
 void ags_osc_controller_get_property(GObject *gobject,
-				 guint prop_id,
-				 GValue *value,
-				 GParamSpec *param_spec);
+				     guint prop_id,
+				     GValue *value,
+				     GParamSpec *param_spec);
 void ags_osc_controller_dispose(GObject *gobject);
 void ags_osc_controller_finalize(GObject *gobject);
 
 /**
  * SECTION:ags_osc_controller
- * @short_description: base osc_controller
+ * @short_description: base OSC controller
  * @title: AgsOscController
  * @section_id:
  * @include: ags/audio/osc/controller/ags_osc_controller.h
  *
- * The #AgsOscController is a base object to implement osc_controllers.
+ * The #AgsOscController is a base object to implement OSC controllers.
  */
 
 enum{
   PROP_0,
   PROP_OSC_SERVER,
+  PROP_CONTEXT_PATH,
 };
-
 
 static gpointer ags_osc_controller_parent_class = NULL;
 
@@ -79,9 +79,9 @@ ags_osc_controller_get_type()
     };
     
     ags_type_osc_controller = g_type_register_static(G_TYPE_OBJECT,
-						 "AgsOscController",
-						 &ags_osc_controller_info,
-						 0);
+						     "AgsOscController",
+						     &ags_osc_controller_info,
+						     0);
 
     g_once_init_leave(&g_define_type_id__volatile, ags_type_osc_controller);
   }
@@ -122,6 +122,22 @@ ags_osc_controller_class_init(AgsOscControllerClass *osc_controller)
   g_object_class_install_property(gobject,
 				  PROP_OSC_SERVER,
 				  param_spec);
+
+  /**
+   * AgsOscController:context-path:
+   *
+   * The context path provided.
+   * 
+   * Since: 2.1.0
+   */
+  param_spec = g_param_spec_string("context-path",
+				   i18n_pspec("context path to provide"),
+				   i18n_pspec("The context path provided by this controller"),
+				   NULL,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_CONTEXT_PATH,
+				  param_spec);
 }
 
 void
@@ -143,13 +159,15 @@ ags_osc_controller_init(AgsOscController *osc_controller)
 		     osc_controller->obj_mutexattr);
 
   osc_controller->osc_server = NULL;
+
+  osc_controller->context_path = NULL;
 }
 
 void
 ags_osc_controller_set_property(GObject *gobject,
-			    guint prop_id,
-			    const GValue *value,
-			    GParamSpec *param_spec)
+				guint prop_id,
+				const GValue *value,
+				GParamSpec *param_spec)
 {
   AgsOscController *osc_controller;
 
@@ -192,6 +210,19 @@ ags_osc_controller_set_property(GObject *gobject,
       pthread_mutex_unlock(osc_controller_mutex);
     }
     break;
+  case PROP_CONTEXT_PATH:
+    {
+      char *context_path;
+
+      context_path = (char *) g_value_get_string(value);
+
+      pthread_mutex_lock(controller_mutex);
+
+      osc_controller->context_path = g_strdup(context_path);
+
+      pthread_mutex_unlock(controller_mutex);
+    }
+    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -200,9 +231,9 @@ ags_osc_controller_set_property(GObject *gobject,
 
 void
 ags_osc_controller_get_property(GObject *gobject,
-			    guint prop_id,
-			    GValue *value,
-			    GParamSpec *param_spec)
+				guint prop_id,
+				GValue *value,
+				GParamSpec *param_spec)
 {
   AgsOscController *osc_controller;
 
@@ -225,6 +256,15 @@ ags_osc_controller_get_property(GObject *gobject,
       g_value_set_object(value, osc_controller->osc_server);
 
       pthread_mutex_unlock(osc_controller_mutex);
+    }
+    break;
+  case PROP_CONTEXT_PATH:
+    {
+      pthread_mutex_lock(controller_mutex);
+      
+      g_value_set_string(value, osc_controller->context_path);
+
+      pthread_mutex_unlock(controller_mutex);
     }
     break;
   default:
@@ -301,7 +341,7 @@ ags_osc_controller_new()
   AgsOscController *osc_controller;
 
   osc_controller = (AgsOscController *) g_object_new(AGS_TYPE_OSC_CONTROLLER,
-					      NULL);
+						     NULL);
 
   return(osc_controller);
 }
