@@ -92,6 +92,8 @@ struct _AgsOscServer
   struct timespec *accept_delay;
   
   GList *connection;
+  
+  GList *controller;
 };
 
 struct _AgsOscServerClass

@@ -316,6 +316,8 @@ ags_osc_server_init(AgsOscServer *osc_server)
   osc_server->accept_delay->tv_nsec = 400000;
 
   osc_server->connection = NULL;
+
+  osc_server->controller = NULL;
 }
 
 void
@@ -1036,14 +1038,34 @@ ags_osc_server_listen(AgsOscServer *osc_server)
 void
 ags_osc_server_real_dispatch(AgsOscServer *osc_server)
 {
-  //TODO:JK: implement me
+  GList *start_list, *list;
+
+  guchar *buffer;
+
+  guint data_length;
+  
+  list =
+    start_list = g_list_copy(osc_server->connection);
+
+  while(list != NULL){
+    buffer = ags_osc_connection_read_bytes(list->data,
+					   &data_length);
+
+    if(buffer != NULL){
+      //TODO:JK: implement me
+    }
+    
+    list = list->next;
+  }
+      
+  g_list_free(start_list);
 }
 
 /**
  * ags_osc_server_dispatch:
  * @osc_server: the #AgsOscServer
  * 
- * Dispatch as OSC server.
+ * Dispatch the OSC server.
  * 
  * Since: 2.1.0
  */

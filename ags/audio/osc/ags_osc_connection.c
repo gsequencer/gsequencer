@@ -251,7 +251,16 @@ ags_osc_connection_init(AgsOscConnection *osc_connection)
   osc_connection->ip4 = NULL;
   osc_connection->ip6 = NULL;
 
-  osc_connection->buffer = (guchar *) malloc(AGS_OSC_CONNECTION_CHUNK_SIZE * sizeof(guchar));
+  osc_connection->start_time = (struct timeval *) malloc(sizeof(struct timeval));
+
+  osc_connection->offset = 0;
+  osc_connection->packet_size = 0;
+
+  osc_connection->skip_garbage = TRUE;
+
+  osc_connection->data_start = 0;
+
+  osc_connection->buffer = NULL;
 
   osc_connection->timeout_delay = (struct timespec *) malloc(sizeof(struct timespec));
 
@@ -596,148 +605,259 @@ guchar*
 ags_osc_connection_real_read_bytes(AgsOscConnection *osc_connection,
 				   guint *data_length)
 {
-  struct timeval start_time;
   struct timeval current_time;
   
+  guchar *data;
   guchar *buffer;
-  guchar data[AGS_OSC_CONNECTION_CHUNK_SIZE];
 
+  int fd;
   guint64 t_start, t_current;
   ssize_t num_read;
-  guint data_start;
   guint offset;
   gint32 packet_size;
+  guint data_start;
+  gboolean skip_garbage;
   gboolean success;
 
-  gettimeofday(&start_time, NULL);
-  t_start = start_time.tv_sec * USEC_PER_SEC + start_time.tv_usec;
-  
-  memset(data, 0, AGS_OSC_CONNECTION_CHUNK_SIZE * sizeof(guchar));
-  
-  num_read = read(osc_connection->fd, data, 1);
+  pthread_mutex_t *osc_connection_mutex;
 
-  if(num_read <= 0){
-    if(data_length != NULL){
-      *data_length = 0;
-    }
-    
-    return(NULL);
+  /* get osc_connection mutex */
+  pthread_mutex_lock(ags_osc_connection_get_class_mutex());
+  
+  osc_connection_mutex = osc_connection->obj_mutex;
+  
+  pthread_mutex_unlock(ags_osc_connection_get_class_mutex());
+
+  /* get fd */
+  pthread_mutex_lock(osc_connection_mutex);
+
+  fd = osc_connection->fd;
+
+  gettimeofday(osc_connection->start_time, NULL);
+  t_start = osc_connection->start_time->tv_sec * USEC_PER_SEC + osc_connection->start_time->tv_usec;
+
+  offset = osc_connection->offset;
+  packet_size = osc_connection->packet_size;
+
+  skip_garbage = osc_connection->skip_garbage;
+  
+  data_start = osc_connection->data_start;
+
+  data = osc_connection->data;
+  
+  buffer = osc_connection->buffer;
+  
+  pthread_mutex_unlock(osc_connection_mutex);
+
+  /*  */
+#if 0
+  if(offset == 0){
+    memset(osc_connection->data, 0, AGS_OSC_CONNECTION_CHUNK_SIZE * sizeof(guchar));
   }
-
-  data_start = 0;
-  offset = 0;
-
+#endif
+  
   success = TRUE;
-
-  /* skip garbage */
-  while(data[0] != AGS_OSC_UTIL_SLIP_END){
-    num_read = read(osc_connection->fd, data, 1);
-
-    if(t_start + AGS_OSC_CONNECTION_DEAD_LINE_USEC >= t_current){
-      success = FALSE;
-
-      break;
-    }
-  }
-
-  if(!success){
-    free(buffer);
-    
-    if(data_length != NULL){
-      *data_length = 0;
-    }
-    
-    return(NULL);
-  }
   
-  offset += 1;
-  num_read = 0;
+  if(offset == 0){
+    num_read = read(fd, data, 1);
+
+    if(num_read <= 0){
+      if(data_length != NULL){
+	*data_length = 0;
+      }
+    
+      return(NULL);
+    }
+
+    /* skip garbage */
+    while(data[0] != AGS_OSC_UTIL_SLIP_END){
+      num_read = read(fd, data, 1);
+
+      gettimeofday(&current_time, NULL);
+      t_current = current_time.tv_sec * USEC_PER_SEC + current_time.tv_usec;
+      
+      if(t_start + AGS_OSC_CONNECTION_TIMEOUT_USEC >= t_current){
+	success = FALSE;
+
+	break;
+      }
+    }
+
+    if(!success){    
+      if(data_length != NULL){
+	*data_length = 0;
+      }
+
+      if(t_start + AGS_OSC_CONNECTION_DEAD_LINE_USEC >= t_current){
+	osc_connection->offset = 0;
+	osc_connection->packet_size = 0;
+
+	osc_connection->skip_garbage = TRUE;
+
+	osc_connection->data_start = 0;
+      }
+      
+      return(NULL);
+    }
+  
+    offset += 1;
+    num_read = 0;
+  }
 
   /* check terminated garbage */
-  while(num_read <= 0){
-    num_read = read(osc_connection->fd, data + 1, 1);
+  if(offset == 1){
+    if(skip_garbage){
+      while(num_read <= 0){
+	num_read = read(fd, data + 1, 1);
 
-    gettimeofday(&current_time, NULL);
-    t_current = current_time.tv_sec * USEC_PER_SEC + current_time.tv_usec;
+	gettimeofday(&current_time, NULL);
+	t_current = current_time.tv_sec * USEC_PER_SEC + current_time.tv_usec;
 
-    if(t_start + AGS_OSC_CONNECTION_DEAD_LINE_USEC >= t_current){
-      success = FALSE;
+	if(t_start + AGS_OSC_CONNECTION_TIMEOUT_USEC >= t_current){
+	  success = FALSE;
 
-      break;
+	  break;
+	}
+      }
     }
-  }
+  
+    if(!success){
+      if(data_length != NULL){
+	*data_length = 0;
+      }
 
-  if(!success){
-    free(buffer);
+      if(t_start + AGS_OSC_CONNECTION_DEAD_LINE_USEC >= t_current){
+	osc_connection->offset = 0;
+	osc_connection->packet_size = 0;
+
+	osc_connection->skip_garbage = TRUE;
+
+	osc_connection->data_start = 0;
+      }else{
+	osc_connection->offset = offset;
+      }
     
-    if(data_length != NULL){
-      *data_length = 0;
+      return(NULL);
     }
-    
-    return(NULL);
+  
+    if(data[1] == AGS_OSC_UTIL_SLIP_END){
+      data_start = 1;
+    }else{
+      offset += 1;
+    }
   }
   
-  if(data[1] == AGS_OSC_UTIL_SLIP_END){
-    data_start = 1;
-  }else{
-    offset += 1;
-  }
-
   /* read packet size */
-  while(offset < 5){
-    num_read = read(osc_connection->fd, data + data_start + offset, 4 - (offset - 1));
-    offset += num_read;
+  if(offset < 5){
+    while(offset < 5){
+      num_read = read(fd, data + data_start + offset, 4 - (offset - 1));
+      offset += num_read;
 
-    gettimeofday(&current_time, NULL);
-    t_current = current_time.tv_sec * USEC_PER_SEC + current_time.tv_usec;
+      gettimeofday(&current_time, NULL);
+      t_current = current_time.tv_sec * USEC_PER_SEC + current_time.tv_usec;
 
-    if(t_start + AGS_OSC_CONNECTION_DEAD_LINE_USEC >= t_current){
-      success = FALSE;
+      if(t_start + AGS_OSC_CONNECTION_TIMEOUT_USEC >= t_current){
+	success = FALSE;
 
-      break;
+	break;
+      }
+    }
+
+    if(!success){
+      if(data_length != NULL){
+	*data_length = 0;
+      }
+
+      if(t_start + AGS_OSC_CONNECTION_DEAD_LINE_USEC >= t_current){
+	osc_connection->offset = 0;
+	osc_connection->packet_size = 0;
+
+	osc_connection->skip_garbage = TRUE;
+      
+	osc_connection->data_start = 0;
+      }else{
+	osc_connection->offset = offset;
+
+	osc_connection->skip_garbage = FALSE;
+      
+	osc_connection->data_start = data_start;
+      }
+    
+      return(NULL);
     }
   }
 
-  if(!success){
-    free(buffer);
+  if(buffer == NULL){
+    ags_osc_buffer_util_get_int32(data + data_start,
+				  &packet_size);
+
+    if(packet_size <= 0){
+      if(data_length != NULL){
+	*data_length = 0;
+      }
     
-    if(data_length != NULL){
-      *data_length = 0;
+      osc_connection->offset = 0;
+      osc_connection->packet_size = 0;
+
+      osc_connection->skip_garbage = TRUE;
+      
+      osc_connection->data_start = 0;
+
+      return;
     }
     
-    return(NULL);
+    /* read size */
+    buffer = (guchar *) malloc((packet_size + 6) * sizeof(guchar));
+    memset(buffer, 0, (packet_size + 6) * sizeof(guchar));
+    memcpy(buffer, data + data_start, 5 * sizeof(guchar));
+
+    osc_connection->buffer = buffer;
   }
-
-  ags_osc_buffer_util_get_int32(data + data_start,
-				&packet_size);
-
-  /* read size */
-  buffer = (guchar *) malloc((packet_size + 6) * sizeof(guchar));
-  memcpy(buffer, data + data_start, 5 * sizeof(guchar));
-
+  
   while(offset - 5 < packet_size){
-    num_read = read(osc_connection->fd, buffer + offset, (packet_size + 1 - (offset - 5)) * sizeof(guchar));
+    num_read = read(fd, buffer + offset, (packet_size + 1 - (offset - 5)) * sizeof(guchar));
     offset += num_read;
 
     gettimeofday(&current_time, NULL);
     t_current = current_time.tv_sec * USEC_PER_SEC + current_time.tv_usec;
 
-    if(t_start + AGS_OSC_CONNECTION_DEAD_LINE_USEC >= t_current){
-      success = FALSE;
-
+    if(t_start + AGS_OSC_CONNECTION_TIMEOUT_USEC >= t_current){
+      if(buffer[offset] != AGS_OSC_UTIL_SLIP_END){
+	success = FALSE;
+      }
+      
       break;
     }
   }
   
   if(!success){
-    free(buffer);
-    
     if(data_length != NULL){
       *data_length = 0;
     }
     
+    if(t_start + AGS_OSC_CONNECTION_DEAD_LINE_USEC >= t_current){
+      osc_connection->offset = 0;
+      osc_connection->packet_size = 0;
+
+      osc_connection->skip_garbage = TRUE;
+      
+      osc_connection->data_start = 0;
+
+      osc_connection->buffer = NULL;
+      free(buffer);
+    }else{
+      osc_connection->offset = offset;
+      osc_connection->packet_size = packet_size;
+      
+      osc_connection->skip_garbage = FALSE;
+      
+      osc_connection->data_start = data_start;
+    }
+    
     return(NULL);
   }
+
+  osc_connection->buffer = NULL;
 
   return(buffer);
 }

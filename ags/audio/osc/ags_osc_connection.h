@@ -32,7 +32,8 @@
 #define AGS_IS_OSC_CONNECTION_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_OSC_CONNECTION))
 #define AGS_OSC_CONNECTION_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_OSC_CONNECTION, AgsOscConnectionClass))
 
-#define AGS_OSC_CONNECTION_DEAD_LINE_USEC (8000000)
+#define AGS_OSC_CONNECTION_TIMEOUT_USEC (250)
+#define AGS_OSC_CONNECTION_DEAD_LINE_USEC (60000000)
 #define AGS_OSC_CONNECTION_CHUNK_SIZE (8)
 
 typedef struct _AgsOscConnection AgsOscConnection;
@@ -59,6 +60,16 @@ struct _AgsOscConnection
   gchar *ip6;
   
   int fd;
+
+  struct timeval *start_time;
+
+  guint offset;
+  gint32 packet_size;
+
+  gboolean skip_garbage;
+  
+  guint data_start;
+  guchar data[AGS_OSC_CONNECTION_CHUNK_SIZE];
 
   guchar *buffer;
   
