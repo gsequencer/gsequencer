@@ -40,6 +40,9 @@ struct _AgsController
 {
   GObject gobject;
 
+  pthread_mutex_t *obj_mutex;
+  pthread_mutexattr_t *obj_mutexattr;
+
   GObject *server;
 
   gchar *context_path;
@@ -72,6 +75,8 @@ struct _AgsControllerResource
 };
 
 GType ags_controller_get_type();
+
+pthread_mutex_t* ags_controller_get_class_mutex();
 
 AgsControllerResource* ags_controller_resource_alloc(gchar *group_id, gchar *user_id,
 						     guint access_mode);

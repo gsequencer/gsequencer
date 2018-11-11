@@ -23,6 +23,9 @@
 
 #include <ags/audio/osc/ags_osc_connection.h>
 
+#include <ags/audio/osc/controller/ags_osc_controller.h>
+#include <ags/audio/osc/controller/ags_osc_front_controller.h>
+
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -68,6 +71,9 @@ enum{
   PROP_SERVER_PORT,
   PROP_IP4,
   PROP_IP6,
+  PROP_CONNECTION,
+  PROP_FRONT_CONTROLLER,
+  PROP_CONTROLLER,
 };
 
 enum{
@@ -197,6 +203,52 @@ ags_osc_server_class_init(AgsOscServerClass *osc_server)
 				  PROP_IP6,
 				  param_spec);
 
+  /**
+   * AgsOscServer:connection:
+   *
+   * The assigned #AgsOscConnection providing default settings.
+   * 
+   * Since: 2.1.0
+   */
+  param_spec = g_param_spec_pointer("connection",
+				    i18n_pspec("assigned connection"),
+				    i18n_pspec("The connection it is assigned with"),
+				    G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_CONNECTION,
+				  param_spec);
+
+  /**
+   * AgsOscServer:front-controller:
+   *
+   * The assigned #AgsOscFrontController.
+   * 
+   * Since: 2.1.0
+   */
+  param_spec = g_param_spec_object("front-controller",
+				   i18n_pspec("assigned OSC front controller"),
+				   i18n_pspec("The OSC front controller it is assigned with"),
+				   AGS_TYPE_OSC_FRONT_CONTROLLER,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_FRONT_CONTROLLER,
+				  param_spec);
+  
+  /**
+   * AgsOscServer:controller:
+   *
+   * The assigned #AgsOscController providing default settings.
+   * 
+   * Since: 2.1.0
+   */
+  param_spec = g_param_spec_pointer("controller",
+				    i18n_pspec("assigned controller"),
+				    i18n_pspec("The controller it is assigned with"),
+				    G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_CONTROLLER,
+				  param_spec);
+
   /* AgsOscServerClass */
   osc_server->start = ags_osc_server_real_start;
   osc_server->stop = ags_osc_server_real_stop;
@@ -317,6 +369,8 @@ ags_osc_server_init(AgsOscServer *osc_server)
 
   osc_server->connection = NULL;
 
+  osc_server->front_controller = NULL;
+
   osc_server->controller = NULL;
 }
 
@@ -416,6 +470,73 @@ ags_osc_server_set_property(GObject *gobject,
       pthread_mutex_unlock(osc_server_mutex);
     }
     break;
+  case PROP_CONNECTION:
+    {
+      GObject *connection;
+
+      connection = g_value_get_pointer(value);
+
+      pthread_mutex_lock(osc_server_mutex);
+
+      if(g_list_find(osc_server->connection, connection) != NULL){
+	pthread_mutex_unlock(osc_server_mutex);
+	
+	return;
+      }
+
+      pthread_mutex_unlock(osc_server_mutex);
+
+      ags_osc_server_add_connection(osc_server,
+				    connection);
+    }
+    break;
+  case PROP_FRONT_CONTROLLER:
+    {
+      GObject *front_controller;
+
+      front_controller = g_value_get_object(value);
+
+      pthread_mutex_lock(osc_server_mutex);
+
+      if(osc_server->front_controller == front_controller){
+	pthread_mutex_unlock(osc_server_mutex);
+	
+	return;
+      }
+
+      if(osc_server->front_controller != NULL){
+	g_object_unref(osc_server->front_controller);
+      }
+      
+      if(front_controller != NULL){
+	g_object_ref(front_controller);
+      }
+      
+      osc_server->front_controller = front_controller;
+
+      pthread_mutex_unlock(osc_server_mutex);
+    }
+    break;
+  case PROP_CONTROLLER:
+    {
+      GObject *controller;
+
+      controller = g_value_get_pointer(value);
+
+      pthread_mutex_lock(osc_server_mutex);
+
+      if(g_list_find(osc_server->controller, controller) != NULL){
+	pthread_mutex_unlock(osc_server_mutex);
+	
+	return;
+      }
+
+      pthread_mutex_unlock(osc_server_mutex);
+
+      ags_osc_server_add_controller(osc_server,
+				    controller);
+    }
+    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -482,6 +603,35 @@ ags_osc_server_get_property(GObject *gobject,
       pthread_mutex_unlock(osc_server_mutex);
     }
     break;    
+  case PROP_CONNECTION:
+    {
+      pthread_mutex_lock(osc_server_mutex);
+
+      g_value_set_pointer(value,
+			  g_list_copy(osc_server->connection));
+
+      pthread_mutex_unlock(osc_server_mutex);
+    }
+    break;
+  case PROP_FRONT_CONTROLLER:
+    {
+      pthread_mutex_lock(osc_server_mutex);
+
+      g_value_set_object(value, osc_server->front_controller);
+
+      pthread_mutex_unlock(osc_server_mutex);
+    }
+    break;
+  case PROP_CONTROLLER:
+    {
+      pthread_mutex_lock(osc_server_mutex);
+
+      g_value_set_pointer(value,
+			  g_list_copy(osc_server->controller));
+
+      pthread_mutex_unlock(osc_server_mutex);
+    }
+    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -712,6 +862,64 @@ ags_osc_server_remove_connection(AgsOscServer *osc_server,
     g_object_unref(osc_connection);
 
     g_object_set(osc_connection,
+		 "osc-server", NULL,
+		 NULL);
+  }
+}
+
+/**
+ * ags_osc_server_add_controller:
+ * @osc_server: the #AgsOscServer
+ * @osc_controller: the #AgsOscController
+ *
+ * Add @osc_controller to @osc_server.
+ * 
+ * Since: 2.1.0
+ */
+void
+ags_osc_server_add_controller(AgsOscServer *osc_server,
+			      GObject *osc_controller)
+{
+  if(!AGS_IS_OSC_SERVER(osc_server) ||
+     !AGS_IS_OSC_CONTROLLER(osc_controller)){
+    return;
+  }
+
+  if(g_list_find(osc_server->controller, osc_controller) == NULL){
+    g_object_ref(osc_controller);
+    osc_server->controller = g_list_prepend(osc_server->controller,
+					    osc_controller);
+
+    g_object_set(osc_controller,
+		 "osc-server", osc_server,
+		 NULL);
+  }
+}
+
+/**
+ * ags_osc_server_remove_controller:
+ * @osc_server: the #AgsOscServer
+ * @osc_controller: the #AgsOscController
+ *
+ * Remove @osc_controller from @osc_server.
+ * 
+ * Since: 2.1.0
+ */
+void
+ags_osc_server_remove_controller(AgsOscServer *osc_server,
+				 GObject *osc_controller)
+{
+  if(!AGS_IS_OSC_SERVER(osc_server) ||
+     !AGS_IS_OSC_CONTROLLER(osc_controller)){
+    return;
+  }
+
+  if(g_list_find(osc_server->controller, osc_controller) != NULL){
+    osc_server->controller = g_list_remove(osc_server->controller,
+					   osc_controller);
+    g_object_unref(osc_controller);
+
+    g_object_set(osc_controller,
 		 "osc-server", NULL,
 		 NULL);
   }

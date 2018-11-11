@@ -92,6 +92,8 @@ struct _AgsOscServer
   struct timespec *accept_delay;
   
   GList *connection;
+
+  GObject *front_controller;
   
   GList *controller;
 };
@@ -120,6 +122,11 @@ void ags_osc_server_add_connection(AgsOscServer *osc_server,
 				   GObject *osc_connection);
 void ags_osc_server_remove_connection(AgsOscServer *osc_server,
 				      GObject *osc_connection);
+
+void ags_osc_server_add_controller(AgsOscServer *osc_server,
+				   GObject *osc_controller);
+void ags_osc_server_remove_controller(AgsOscServer *osc_server,
+				      GObject *osc_controller);
 
 void ags_osc_server_start(AgsOscServer *osc_server);
 void ags_osc_server_stop(AgsOscServer *osc_server);

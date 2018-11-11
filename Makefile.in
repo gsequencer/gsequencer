@@ -472,7 +472,10 @@ am__libags_audio_la_SOURCES_DIST = ags/audio/ags_acceleration.c \
 	ags/audio/osc/ags_osc_builder.c ags/audio/osc/ags_osc_client.c \
 	ags/audio/osc/ags_osc_connection.c \
 	ags/audio/osc/ags_osc_parser.c ags/audio/osc/ags_osc_server.c \
-	ags/audio/osc/ags_osc_util.c ags/audio/jack/ags_jack_client.c \
+	ags/audio/osc/ags_osc_util.c \
+	ags/audio/osc/controller/ags_osc_controller.c \
+	ags/audio/osc/controller/ags_osc_front_controller.c \
+	ags/audio/jack/ags_jack_client.c \
 	ags/audio/jack/ags_jack_midiin.c \
 	ags/audio/jack/ags_jack_devout.c \
 	ags/audio/jack/ags_jack_devin.c ags/audio/jack/ags_jack_port.c \
@@ -718,29 +721,31 @@ am__objects_11 = $(am__objects_1) \
 	ags/audio/osc/libags_audio_la-ags_osc_parser.lo \
 	ags/audio/osc/libags_audio_la-ags_osc_server.lo \
 	ags/audio/osc/libags_audio_la-ags_osc_util.lo
-am__objects_12 = $(am__objects_1) \
+am__objects_12 = ags/audio/osc/controller/libags_audio_la-ags_osc_controller.lo \
+	ags/audio/osc/controller/libags_audio_la-ags_osc_front_controller.lo
+am__objects_13 = $(am__objects_1) \
 	ags/audio/jack/libags_audio_la-ags_jack_client.lo \
 	ags/audio/jack/libags_audio_la-ags_jack_midiin.lo \
 	ags/audio/jack/libags_audio_la-ags_jack_devout.lo \
 	ags/audio/jack/libags_audio_la-ags_jack_devin.lo \
 	ags/audio/jack/libags_audio_la-ags_jack_port.lo \
 	ags/audio/jack/libags_audio_la-ags_jack_server.lo
-am__objects_13 = $(am__objects_1) \
+am__objects_14 = $(am__objects_1) \
 	ags/audio/pulse/libags_audio_la-ags_pulse_client.lo \
 	ags/audio/pulse/libags_audio_la-ags_pulse_devout.lo \
 	ags/audio/pulse/libags_audio_la-ags_pulse_devin.lo \
 	ags/audio/pulse/libags_audio_la-ags_pulse_port.lo \
 	ags/audio/pulse/libags_audio_la-ags_pulse_server.lo
-am__objects_14 = $(am__objects_1) \
+am__objects_15 = $(am__objects_1) \
 	ags/audio/core-audio/libags_audio_la-ags_core_audio_client.lo \
 	ags/audio/core-audio/libags_audio_la-ags_core_audio_midiin.lo \
 	ags/audio/core-audio/libags_audio_la-ags_core_audio_devout.lo \
 	ags/audio/core-audio/libags_audio_la-ags_core_audio_devin.lo \
 	ags/audio/core-audio/libags_audio_la-ags_core_audio_port.lo \
 	ags/audio/core-audio/libags_audio_la-ags_core_audio_server.lo
-@WITH_LIBINSTPATCH_TRUE@am__objects_15 = ags/audio/task/libags_audio_la-ags_open_sf2_instrument.lo \
+@WITH_LIBINSTPATCH_TRUE@am__objects_16 = ags/audio/task/libags_audio_la-ags_open_sf2_instrument.lo \
 @WITH_LIBINSTPATCH_TRUE@	ags/audio/task/libags_audio_la-ags_open_sf2_sample.lo
-am__objects_16 = $(am__objects_1) \
+am__objects_17 = $(am__objects_1) \
 	ags/audio/task/libags_audio_la-ags_add_audio.lo \
 	ags/audio/task/libags_audio_la-ags_add_audio_signal.lo \
 	ags/audio/task/libags_audio_la-ags_add_effect.lo \
@@ -784,8 +789,8 @@ am__objects_16 = $(am__objects_1) \
 	ags/audio/task/libags_audio_la-ags_reset_amplitude.lo \
 	ags/audio/task/libags_audio_la-ags_reset_peak.lo \
 	ags/audio/task/libags_audio_la-ags_set_muted.lo \
-	$(am__objects_15)
-am__objects_17 = $(am__objects_1) \
+	$(am__objects_16)
+am__objects_18 = $(am__objects_1) \
 	ags/audio/recall/libags_audio_la-ags_analyse_audio_signal.lo \
 	ags/audio/recall/libags_audio_la-ags_analyse_channel.lo \
 	ags/audio/recall/libags_audio_la-ags_analyse_channel_run.lo \
@@ -872,7 +877,7 @@ am__objects_17 = $(am__objects_1) \
 	ags/audio/recall/libags_audio_la-ags_volume_channel.lo \
 	ags/audio/recall/libags_audio_la-ags_volume_channel_run.lo \
 	ags/audio/recall/libags_audio_la-ags_volume_recycling.lo
-am__objects_18 = $(am__objects_1) \
+am__objects_19 = $(am__objects_1) \
 	ags/plugin/libags_audio_la-ags_base_plugin.lo \
 	ags/plugin/libags_audio_la-ags_dssi_manager.lo \
 	ags/plugin/libags_audio_la-ags_dssi_plugin.lo \
@@ -896,7 +901,8 @@ am__objects_18 = $(am__objects_1) \
 am_libags_audio_la_OBJECTS = $(am__objects_6) $(am__objects_7) \
 	$(am__objects_9) $(am__objects_10) $(am__objects_11) \
 	$(am__objects_12) $(am__objects_13) $(am__objects_14) \
-	$(am__objects_16) $(am__objects_17) $(am__objects_18)
+	$(am__objects_15) $(am__objects_17) $(am__objects_18) \
+	$(am__objects_19)
 libags_audio_la_OBJECTS = $(am_libags_audio_la_OBJECTS)
 libags_audio_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
@@ -905,7 +911,7 @@ libags_audio_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 libags_gui_la_DEPENDENCIES = $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1)
-am__objects_19 = $(am__objects_1) \
+am__objects_20 = $(am__objects_1) \
 	ags/widget/libags_gui_la-ags_cartesian.lo \
 	ags/widget/libags_gui_la-ags_dial.lo \
 	ags/widget/libags_gui_la-ags_expander.lo \
@@ -933,20 +939,20 @@ am__objects_19 = $(am__objects_1) \
 	ags/widget/libags_gui_la-ags_vled_array.lo \
 	ags/widget/libags_gui_la-ags_widget_marshal.lo \
 	ags/widget/libags_gui_la-ags_container.lo
-am_libags_gui_la_OBJECTS = $(am__objects_19)
+am_libags_gui_la_OBJECTS = $(am__objects_20)
 libags_gui_la_OBJECTS = $(am_libags_gui_la_OBJECTS)
 libags_gui_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(libags_gui_la_CFLAGS) \
 	$(CFLAGS) $(libags_gui_la_LDFLAGS) $(LDFLAGS) -o $@
 libags_server_la_DEPENDENCIES = libags_thread.la libags.la \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
-am__objects_20 = $(am__objects_1) \
+am__objects_21 = $(am__objects_1) \
 	ags/server/libags_server_la-ags_registry.lo \
 	ags/server/libags_server_la-ags_server.lo \
 	ags/server/libags_server_la-ags_server_application_context.lo \
 	ags/server/libags_server_la-ags_server_status.lo \
 	ags/server/libags_server_la-ags_service_provider.lo
-am__objects_21 = $(am__objects_1) \
+am__objects_22 = $(am__objects_1) \
 	ags/server/security/libags_server_la-ags_authentication.lo \
 	ags/server/security/libags_server_la-ags_authentication_manager.lo \
 	ags/server/security/libags_server_la-ags_business_group.lo \
@@ -958,18 +964,18 @@ am__objects_21 = $(am__objects_1) \
 	ags/server/security/libags_server_la-ags_xml_authentication.lo \
 	ags/server/security/libags_server_la-ags_xml_certificate.lo \
 	ags/server/security/libags_server_la-ags_xml_password_store.lo
-am__objects_22 = $(am__objects_1) \
+am__objects_23 = $(am__objects_1) \
 	ags/server/controller/libags_server_la-ags_controller.lo \
 	ags/server/controller/libags_server_la-ags_front_controller.lo \
 	ags/server/controller/libags_server_la-ags_local_factory_controller.lo \
 	ags/server/controller/libags_server_la-ags_local_registry_controller.lo \
 	ags/server/controller/libags_server_la-ags_local_serialization_controller.lo \
 	ags/server/controller/libags_server_la-ags_local_task_controller.lo
-am__objects_23 = $(am__objects_1) \
+am__objects_24 = $(am__objects_1) \
 	ags/server/thread/libags_server_la-ags_remote_task.lo \
 	ags/server/thread/libags_server_la-ags_remote_task_thread.lo
-am_libags_server_la_OBJECTS = $(am__objects_20) $(am__objects_21) \
-	$(am__objects_22) $(am__objects_23)
+am_libags_server_la_OBJECTS = $(am__objects_21) $(am__objects_22) \
+	$(am__objects_23) $(am__objects_24)
 libags_server_la_OBJECTS = $(am_libags_server_la_OBJECTS)
 libags_server_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
@@ -977,7 +983,7 @@ libags_server_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 	$(libags_server_la_LDFLAGS) $(LDFLAGS) -o $@
 libags_thread_la_DEPENDENCIES = libags.la $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1)
-am__objects_24 = $(am__objects_1) \
+am__objects_25 = $(am__objects_1) \
 	ags/thread/libags_thread_la-ags_autosave_thread.lo \
 	ags/thread/libags_thread_la-ags_concurrency_provider.lo \
 	ags/thread/libags_thread_la-ags_condition_manager.lo \
@@ -999,9 +1005,9 @@ am__objects_24 = $(am__objects_1) \
 	ags/thread/libags_thread_la-ags_thread-posix.lo \
 	ags/thread/libags_thread_la-ags_timestamp.lo \
 	ags/thread/libags_thread_la-ags_worker_thread.lo
-am__objects_25 = $(am__objects_1) \
+am__objects_26 = $(am__objects_1) \
 	ags/thread/file/libags_thread_la-ags_thread_file_xml.lo
-am_libags_thread_la_OBJECTS = $(am__objects_24) $(am__objects_25)
+am_libags_thread_la_OBJECTS = $(am__objects_25) $(am__objects_26)
 libags_thread_la_OBJECTS = $(am_libags_thread_la_OBJECTS)
 libags_thread_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
@@ -1438,12 +1444,12 @@ am__libgsequencer_la_SOURCES_DIST =  \
 	ags/X/editor/ags_wave_edit_callbacks.c \
 	ags/X/editor/ags_wave_toolbar.c \
 	ags/X/editor/ags_wave_toolbar_callbacks.c
-am__objects_26 = $(am__objects_1)
-am__objects_27 = $(am__objects_1) $(am__objects_1)
-am__objects_28 = $(am__objects_26) $(am__objects_26) $(am__objects_26) \
-	$(am__objects_26) $(am__objects_26) $(am__objects_26) \
-	$(am__objects_27) $(am__objects_26)
-am__objects_29 = $(am__objects_1) \
+am__objects_27 = $(am__objects_1)
+am__objects_28 = $(am__objects_1) $(am__objects_1)
+am__objects_29 = $(am__objects_27) $(am__objects_27) $(am__objects_27) \
+	$(am__objects_27) $(am__objects_27) $(am__objects_27) \
+	$(am__objects_28) $(am__objects_27)
+am__objects_30 = $(am__objects_1) \
 	ags/X/libgsequencer_la-ags_automation_editor.lo \
 	ags/X/libgsequencer_la-ags_automation_editor_callbacks.lo \
 	ags/X/libgsequencer_la-ags_automation_window.lo \
@@ -1553,30 +1559,30 @@ am__objects_29 = $(am__objects_1) \
 	ags/X/libgsequencer_la-ags_soundcard_editor.lo \
 	ags/X/libgsequencer_la-ags_window_callbacks.lo \
 	ags/X/libgsequencer_la-ags_xorg_application_context.lo
-am__objects_30 = $(am__objects_1) \
+am__objects_31 = $(am__objects_1) \
 	ags/X/file/libgsequencer_la-ags_gui_file_xml.lo \
 	ags/X/file/libgsequencer_la-ags_simple_file.lo
-am__objects_31 = $(am__objects_1) \
+am__objects_32 = $(am__objects_1) \
 	ags/X/thread/libgsequencer_la-ags_gui_thread.lo \
 	ags/X/thread/libgsequencer_la-ags_simple_autosave_thread.lo
-am__objects_32 = $(am__objects_1) \
+am__objects_33 = $(am__objects_1) \
 	ags/X/task/libgsequencer_la-ags_simple_file_read.lo \
 	ags/X/task/libgsequencer_la-ags_simple_file_write.lo
-am__objects_33 = $(am__objects_1) \
+am__objects_34 = $(am__objects_1) \
 	ags/X/import/libgsequencer_la-ags_midi_import_wizard.lo \
 	ags/X/import/libgsequencer_la-ags_midi_import_wizard_callbacks.lo \
 	ags/X/import/libgsequencer_la-ags_track_collection.lo \
 	ags/X/import/libgsequencer_la-ags_track_collection_callbacks.lo \
 	ags/X/import/libgsequencer_la-ags_track_collection_mapper.lo \
 	ags/X/import/libgsequencer_la-ags_track_collection_mapper_callbacks.lo
-am__objects_34 = $(am__objects_1) \
+am__objects_35 = $(am__objects_1) \
 	ags/X/export/libgsequencer_la-ags_midi_export_wizard.lo \
 	ags/X/export/libgsequencer_la-ags_midi_export_wizard_callbacks.lo \
 	ags/X/export/libgsequencer_la-ags_machine_collection.lo \
 	ags/X/export/libgsequencer_la-ags_machine_collection_callbacks.lo \
 	ags/X/export/libgsequencer_la-ags_machine_collection_entry.lo \
 	ags/X/export/libgsequencer_la-ags_machine_collection_entry_callbacks.lo
-@WITH_LIBINSTPATCH_TRUE@am__objects_35 = ags/X/machine/libgsequencer_la-ags_ffplayer.lo \
+@WITH_LIBINSTPATCH_TRUE@am__objects_36 = ags/X/machine/libgsequencer_la-ags_ffplayer.lo \
 @WITH_LIBINSTPATCH_TRUE@	ags/X/machine/libgsequencer_la-ags_ffplayer_callbacks.lo \
 @WITH_LIBINSTPATCH_TRUE@	ags/X/machine/libgsequencer_la-ags_ffplayer_bridge.lo \
 @WITH_LIBINSTPATCH_TRUE@	ags/X/machine/libgsequencer_la-ags_ffplayer_bridge_callbacks.lo \
@@ -1586,7 +1592,7 @@ am__objects_34 = $(am__objects_1) \
 @WITH_LIBINSTPATCH_TRUE@	ags/X/machine/libgsequencer_la-ags_ffplayer_input_line_callbacks.lo \
 @WITH_LIBINSTPATCH_TRUE@	ags/X/machine/libgsequencer_la-ags_ffplayer_input_pad.lo \
 @WITH_LIBINSTPATCH_TRUE@	ags/X/machine/libgsequencer_la-ags_ffplayer_input_pad_callbacks.lo
-am__objects_36 = $(am__objects_1) \
+am__objects_37 = $(am__objects_1) \
 	ags/X/machine/libgsequencer_la-ags_audiorec.lo \
 	ags/X/machine/libgsequencer_la-ags_audiorec_callbacks.lo \
 	ags/X/machine/libgsequencer_la-ags_cell_pattern.lo \
@@ -1645,8 +1651,8 @@ am__objects_36 = $(am__objects_1) \
 	ags/X/machine/libgsequencer_la-ags_synth_input_pad.lo \
 	ags/X/machine/libgsequencer_la-ags_spectrometer.lo \
 	ags/X/machine/libgsequencer_la-ags_spectrometer_callbacks.lo \
-	$(am__objects_35)
-am__objects_37 = $(am__objects_1) \
+	$(am__objects_36)
+am__objects_38 = $(am__objects_1) \
 	ags/X/editor/libgsequencer_la-ags_automation_edit.lo \
 	ags/X/editor/libgsequencer_la-ags_automation_edit_box.lo \
 	ags/X/editor/libgsequencer_la-ags_automation_edit_callbacks.lo \
@@ -1702,10 +1708,10 @@ am__objects_37 = $(am__objects_1) \
 	ags/X/editor/libgsequencer_la-ags_wave_edit_callbacks.lo \
 	ags/X/editor/libgsequencer_la-ags_wave_toolbar.lo \
 	ags/X/editor/libgsequencer_la-ags_wave_toolbar_callbacks.lo
-am_libgsequencer_la_OBJECTS = $(am__objects_28) $(am__objects_29) \
-	$(am__objects_30) $(am__objects_31) $(am__objects_32) \
-	$(am__objects_33) $(am__objects_34) $(am__objects_36) \
-	$(am__objects_37)
+am_libgsequencer_la_OBJECTS = $(am__objects_29) $(am__objects_30) \
+	$(am__objects_31) $(am__objects_32) $(am__objects_33) \
+	$(am__objects_34) $(am__objects_35) $(am__objects_37) \
+	$(am__objects_38)
 libgsequencer_la_OBJECTS = $(am_libgsequencer_la_OBJECTS)
 libgsequencer_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
@@ -3509,8 +3515,8 @@ ags_xorg_application_context_test_LINK = $(LIBTOOL) $(AM_V_lt) \
 	--tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link \
 	$(CCLD) $(ags_xorg_application_context_test_CFLAGS) $(CFLAGS) \
 	$(ags_xorg_application_context_test_LDFLAGS) $(LDFLAGS) -o $@
-am__objects_38 = ags/gsequencer-gsequencer_main.$(OBJEXT)
-am_gsequencer_OBJECTS = $(am__objects_38) $(am__objects_1)
+am__objects_39 = ags/gsequencer-gsequencer_main.$(OBJEXT)
+am_gsequencer_OBJECTS = $(am__objects_39) $(am__objects_1)
 gsequencer_OBJECTS = $(am_gsequencer_OBJECTS)
 gsequencer_DEPENDENCIES = libgsequencer.la libags_audio.la \
 	libags_server.la libags_gui.la libags_thread.la libags.la \
@@ -3886,6 +3892,8 @@ am__depfiles_remade = ags/$(DEPDIR)/gsequencer-gsequencer_main.Po \
 	ags/audio/osc/$(DEPDIR)/libags_audio_la-ags_osc_parser.Plo \
 	ags/audio/osc/$(DEPDIR)/libags_audio_la-ags_osc_server.Plo \
 	ags/audio/osc/$(DEPDIR)/libags_audio_la-ags_osc_util.Plo \
+	ags/audio/osc/controller/$(DEPDIR)/libags_audio_la-ags_osc_controller.Plo \
+	ags/audio/osc/controller/$(DEPDIR)/libags_audio_la-ags_osc_front_controller.Plo \
 	ags/audio/pulse/$(DEPDIR)/libags_audio_la-ags_pulse_client.Plo \
 	ags/audio/pulse/$(DEPDIR)/libags_audio_la-ags_pulse_devin.Plo \
 	ags/audio/pulse/$(DEPDIR)/libags_audio_la-ags_pulse_devout.Plo \
@@ -4737,7 +4745,10 @@ am__nobase_include_HEADERS_DIST = ags/libags.h \
 	ags/audio/osc/ags_osc_builder.h ags/audio/osc/ags_osc_client.h \
 	ags/audio/osc/ags_osc_connection.h \
 	ags/audio/osc/ags_osc_parser.h ags/audio/osc/ags_osc_server.h \
-	ags/audio/osc/ags_osc_util.h ags/audio/jack/ags_jack_client.h \
+	ags/audio/osc/ags_osc_util.h \
+	ags/audio/osc/controller/ags_osc_controller.h \
+	ags/audio/osc/controller/ags_osc_front_controller.h \
+	ags/audio/jack/ags_jack_client.h \
 	ags/audio/jack/ags_jack_midiin.h \
 	ags/audio/jack/ags_jack_devout.h \
 	ags/audio/jack/ags_jack_devin.h ags/audio/jack/ags_jack_port.h \
@@ -5631,8 +5642,8 @@ libags_thread_la_SOURCES = $(libags_thread_c_sources) $(libags_thread_file_c_sou
 libags_thread_la_HEADERS_0 = $(libags_thread_h_sources) $(libags_thread_file_h_sources) $(libags_thread_task_h_sources)
 libags_server_la_SOURCES = $(libags_server_c_sources) $(libags_server_security_c_sources) $(libags_server_controller_c_sources) $(libags_server_thread_c_sources)
 libags_server_la_HEADERS_0 = $(libags_server_h_sources) $(libags_server_security_h_sources) $(libags_server_controller_h_sources) $(libags_server_thread_h_sources)
-libags_audio_la_SOURCES = $(libags_audio_c_sources) $(libags_audio_thread_c_sources) $(libags_audio_file_c_sources) $(libags_audio_midi_c_sources) $(libags_audio_osc_c_sources) $(libags_audio_jack_c_sources) $(libags_audio_pulse_c_sources) $(libags_audio_core_audio_c_sources)  $(libags_audio_task_c_sources) $(libags_audio_task_recall_c_sources) $(libags_audio_recall_c_sources)  $(libags_plugin_c_sources)
-libags_audio_la_HEADERS_0 = ags/libags-audio.h $(libags_audio_h_sources) $(libags_audio_thread_h_sources) $(libags_audio_file_h_sources) $(libags_audio_midi_h_sources) $(libags_audio_osc_h_sources) $(libags_audio_jack_h_sources) $(libags_audio_pulse_h_sources) $(libags_audio_core_audio_h_sources) $(libags_audio_task_h_sources) $(libags_audio_task_recall_h_sources) $(libags_audio_recall_h_sources)  $(libags_plugin_h_sources)
+libags_audio_la_SOURCES = $(libags_audio_c_sources) $(libags_audio_thread_c_sources) $(libags_audio_file_c_sources) $(libags_audio_midi_c_sources) $(libags_audio_osc_c_sources) $(libags_audio_osc_controller_c_sources) $(libags_audio_jack_c_sources) $(libags_audio_pulse_c_sources) $(libags_audio_core_audio_c_sources)  $(libags_audio_task_c_sources) $(libags_audio_task_recall_c_sources) $(libags_audio_recall_c_sources)  $(libags_plugin_c_sources)
+libags_audio_la_HEADERS_0 = ags/libags-audio.h $(libags_audio_h_sources) $(libags_audio_thread_h_sources) $(libags_audio_file_h_sources) $(libags_audio_midi_h_sources) $(libags_audio_osc_h_sources) $(libags_audio_osc_controller_h_sources) $(libags_audio_jack_h_sources) $(libags_audio_pulse_h_sources) $(libags_audio_core_audio_h_sources) $(libags_audio_task_h_sources) $(libags_audio_task_recall_h_sources) $(libags_audio_recall_h_sources)  $(libags_plugin_h_sources)
 libags_gui_la_SOURCES = $(libags_gui_c_sources)
 libags_gui_la_HEADERS_0 = ags/libags-gui.h $(libags_gui_h_sources)
 libgsequencer_la_HEADERS_0 = $(libgsequencer_h_sources) $(libgsequencer_file_h_sources) $(libgsequencer_thread_h_sources) $(libgsequencer_task_h_sources) $(libgsequencer_import_h_sources) $(libgsequencer_export_h_sources) $(libgsequencer_machine_h_sources) $(libgsequencer_editor_h_sources)
@@ -7187,6 +7198,18 @@ libags_audio_osc_c_sources = \
 	ags/audio/osc/ags_osc_server.c \
 	ags/audio/osc/ags_osc_util.c
 
+deprecated_libags_audio_osc_controller_h_sources = 
+libags_audio_osc_controller_h_sources = \
+	$(deprecated_libags_audio_osc_controller_h_sources) \
+	ags/audio/osc/controller/ags_osc_controller.h \
+	ags/audio/osc/controller/ags_osc_front_controller.h
+
+deprecated_libags_audio_osc_controller_c_sources = 
+libags_audio_osc_controller_c_sources = \
+	$(deprecated_libags_audio_controller_osc_c_sources) \
+	ags/audio/osc/controller/ags_osc_controller.c \
+	ags/audio/osc/controller/ags_osc_front_controller.c
+
 
 # libags-audio - jack
 deprecated_libags_audio_jack_h_sources = 
@@ -8688,6 +8711,18 @@ ags/audio/osc/libags_audio_la-ags_osc_server.lo:  \
 ags/audio/osc/libags_audio_la-ags_osc_util.lo:  \
 	ags/audio/osc/$(am__dirstamp) \
 	ags/audio/osc/$(DEPDIR)/$(am__dirstamp)
+ags/audio/osc/controller/$(am__dirstamp):
+	@$(MKDIR_P) ags/audio/osc/controller
+	@: > ags/audio/osc/controller/$(am__dirstamp)
+ags/audio/osc/controller/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) ags/audio/osc/controller/$(DEPDIR)
+	@: > ags/audio/osc/controller/$(DEPDIR)/$(am__dirstamp)
+ags/audio/osc/controller/libags_audio_la-ags_osc_controller.lo:  \
+	ags/audio/osc/controller/$(am__dirstamp) \
+	ags/audio/osc/controller/$(DEPDIR)/$(am__dirstamp)
+ags/audio/osc/controller/libags_audio_la-ags_osc_front_controller.lo:  \
+	ags/audio/osc/controller/$(am__dirstamp) \
+	ags/audio/osc/controller/$(DEPDIR)/$(am__dirstamp)
 ags/audio/jack/$(am__dirstamp):
 	@$(MKDIR_P) ags/audio/jack
 	@: > ags/audio/jack/$(am__dirstamp)
@@ -11386,6 +11421,8 @@ mostlyclean-compile:
 	-rm -f ags/audio/midi/*.lo
 	-rm -f ags/audio/osc/*.$(OBJEXT)
 	-rm -f ags/audio/osc/*.lo
+	-rm -f ags/audio/osc/controller/*.$(OBJEXT)
+	-rm -f ags/audio/osc/controller/*.lo
 	-rm -f ags/audio/pulse/*.$(OBJEXT)
 	-rm -f ags/audio/pulse/*.lo
 	-rm -f ags/audio/recall/*.$(OBJEXT)
@@ -11774,6 +11811,8 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/osc/$(DEPDIR)/libags_audio_la-ags_osc_parser.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/osc/$(DEPDIR)/libags_audio_la-ags_osc_server.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/osc/$(DEPDIR)/libags_audio_la-ags_osc_util.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@ags/audio/osc/controller/$(DEPDIR)/libags_audio_la-ags_osc_controller.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@ags/audio/osc/controller/$(DEPDIR)/libags_audio_la-ags_osc_front_controller.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/pulse/$(DEPDIR)/libags_audio_la-ags_pulse_client.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/pulse/$(DEPDIR)/libags_audio_la-ags_pulse_devin.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/pulse/$(DEPDIR)/libags_audio_la-ags_pulse_devout.Plo@am__quote@ # am--include-marker
@@ -13090,6 +13129,20 @@ ags/audio/osc/libags_audio_la-ags_osc_util.lo: ags/audio/osc/ags_osc_util.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/audio/osc/ags_osc_util.c' object='ags/audio/osc/libags_audio_la-ags_osc_util.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -c -o ags/audio/osc/libags_audio_la-ags_osc_util.lo `test -f 'ags/audio/osc/ags_osc_util.c' || echo '$(srcdir)/'`ags/audio/osc/ags_osc_util.c
+
+ags/audio/osc/controller/libags_audio_la-ags_osc_controller.lo: ags/audio/osc/controller/ags_osc_controller.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -MT ags/audio/osc/controller/libags_audio_la-ags_osc_controller.lo -MD -MP -MF ags/audio/osc/controller/$(DEPDIR)/libags_audio_la-ags_osc_controller.Tpo -c -o ags/audio/osc/controller/libags_audio_la-ags_osc_controller.lo `test -f 'ags/audio/osc/controller/ags_osc_controller.c' || echo '$(srcdir)/'`ags/audio/osc/controller/ags_osc_controller.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/audio/osc/controller/$(DEPDIR)/libags_audio_la-ags_osc_controller.Tpo ags/audio/osc/controller/$(DEPDIR)/libags_audio_la-ags_osc_controller.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/audio/osc/controller/ags_osc_controller.c' object='ags/audio/osc/controller/libags_audio_la-ags_osc_controller.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -c -o ags/audio/osc/controller/libags_audio_la-ags_osc_controller.lo `test -f 'ags/audio/osc/controller/ags_osc_controller.c' || echo '$(srcdir)/'`ags/audio/osc/controller/ags_osc_controller.c
+
+ags/audio/osc/controller/libags_audio_la-ags_osc_front_controller.lo: ags/audio/osc/controller/ags_osc_front_controller.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -MT ags/audio/osc/controller/libags_audio_la-ags_osc_front_controller.lo -MD -MP -MF ags/audio/osc/controller/$(DEPDIR)/libags_audio_la-ags_osc_front_controller.Tpo -c -o ags/audio/osc/controller/libags_audio_la-ags_osc_front_controller.lo `test -f 'ags/audio/osc/controller/ags_osc_front_controller.c' || echo '$(srcdir)/'`ags/audio/osc/controller/ags_osc_front_controller.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/audio/osc/controller/$(DEPDIR)/libags_audio_la-ags_osc_front_controller.Tpo ags/audio/osc/controller/$(DEPDIR)/libags_audio_la-ags_osc_front_controller.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/audio/osc/controller/ags_osc_front_controller.c' object='ags/audio/osc/controller/libags_audio_la-ags_osc_front_controller.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -c -o ags/audio/osc/controller/libags_audio_la-ags_osc_front_controller.lo `test -f 'ags/audio/osc/controller/ags_osc_front_controller.c' || echo '$(srcdir)/'`ags/audio/osc/controller/ags_osc_front_controller.c
 
 ags/audio/jack/libags_audio_la-ags_jack_client.lo: ags/audio/jack/ags_jack_client.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -MT ags/audio/jack/libags_audio_la-ags_jack_client.lo -MD -MP -MF ags/audio/jack/$(DEPDIR)/libags_audio_la-ags_jack_client.Tpo -c -o ags/audio/jack/libags_audio_la-ags_jack_client.lo `test -f 'ags/audio/jack/ags_jack_client.c' || echo '$(srcdir)/'`ags/audio/jack/ags_jack_client.c
@@ -18745,6 +18798,7 @@ clean-libtool:
 	-rm -rf ags/audio/jack/.libs ags/audio/jack/_libs
 	-rm -rf ags/audio/midi/.libs ags/audio/midi/_libs
 	-rm -rf ags/audio/osc/.libs ags/audio/osc/_libs
+	-rm -rf ags/audio/osc/controller/.libs ags/audio/osc/controller/_libs
 	-rm -rf ags/audio/pulse/.libs ags/audio/pulse/_libs
 	-rm -rf ags/audio/recall/.libs ags/audio/recall/_libs
 	-rm -rf ags/audio/task/.libs ags/audio/task/_libs
@@ -20498,6 +20552,8 @@ distclean-generic:
 	-rm -f ags/audio/midi/$(am__dirstamp)
 	-rm -f ags/audio/osc/$(DEPDIR)/$(am__dirstamp)
 	-rm -f ags/audio/osc/$(am__dirstamp)
+	-rm -f ags/audio/osc/controller/$(DEPDIR)/$(am__dirstamp)
+	-rm -f ags/audio/osc/controller/$(am__dirstamp)
 	-rm -f ags/audio/pulse/$(DEPDIR)/$(am__dirstamp)
 	-rm -f ags/audio/pulse/$(am__dirstamp)
 	-rm -f ags/audio/recall/$(DEPDIR)/$(am__dirstamp)
@@ -20910,6 +20966,8 @@ distclean: distclean-recursive
 	-rm -f ags/audio/osc/$(DEPDIR)/libags_audio_la-ags_osc_parser.Plo
 	-rm -f ags/audio/osc/$(DEPDIR)/libags_audio_la-ags_osc_server.Plo
 	-rm -f ags/audio/osc/$(DEPDIR)/libags_audio_la-ags_osc_util.Plo
+	-rm -f ags/audio/osc/controller/$(DEPDIR)/libags_audio_la-ags_osc_controller.Plo
+	-rm -f ags/audio/osc/controller/$(DEPDIR)/libags_audio_la-ags_osc_front_controller.Plo
 	-rm -f ags/audio/pulse/$(DEPDIR)/libags_audio_la-ags_pulse_client.Plo
 	-rm -f ags/audio/pulse/$(DEPDIR)/libags_audio_la-ags_pulse_devin.Plo
 	-rm -f ags/audio/pulse/$(DEPDIR)/libags_audio_la-ags_pulse_devout.Plo
@@ -21726,6 +21784,8 @@ maintainer-clean: maintainer-clean-recursive
 	-rm -f ags/audio/osc/$(DEPDIR)/libags_audio_la-ags_osc_parser.Plo
 	-rm -f ags/audio/osc/$(DEPDIR)/libags_audio_la-ags_osc_server.Plo
 	-rm -f ags/audio/osc/$(DEPDIR)/libags_audio_la-ags_osc_util.Plo
+	-rm -f ags/audio/osc/controller/$(DEPDIR)/libags_audio_la-ags_osc_controller.Plo
+	-rm -f ags/audio/osc/controller/$(DEPDIR)/libags_audio_la-ags_osc_front_controller.Plo
 	-rm -f ags/audio/pulse/$(DEPDIR)/libags_audio_la-ags_pulse_client.Plo
 	-rm -f ags/audio/pulse/$(DEPDIR)/libags_audio_la-ags_pulse_devin.Plo
 	-rm -f ags/audio/pulse/$(DEPDIR)/libags_audio_la-ags_pulse_devout.Plo

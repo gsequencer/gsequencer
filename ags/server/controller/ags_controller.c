@@ -56,6 +56,8 @@ enum{
 
 static gpointer ags_controller_parent_class = NULL;
 
+static pthread_mutex_t ags_controller_class_mutex = PTHREAD_MUTEX_INITIALIZER;
+
 GType
 ags_controller_get_type()
 {
@@ -136,11 +138,25 @@ ags_controller_class_init(AgsControllerClass *controller)
   g_object_class_install_property(gobject,
 				  PROP_CONTEXT_PATH,
 				  param_spec);
-  }
+}
 
 void
 ags_controller_init(AgsController *controller)
 {
+  controller->obj_mutexattr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
+  pthread_mutexattr_init(controller->obj_mutexattr);
+  pthread_mutexattr_settype(controller->obj_mutexattr,
+			    PTHREAD_MUTEX_RECURSIVE);
+
+#ifdef __linux__
+  pthread_mutexattr_setprotocol(controller->obj_mutexattr,
+				PTHREAD_PRIO_INHERIT);
+#endif
+
+  controller->obj_mutex =  (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
+  pthread_mutex_init(controller->obj_mutex,
+		     controller->obj_mutexattr);
+
   controller->server = NULL;
 
   controller->context_path = NULL;
@@ -158,7 +174,16 @@ ags_controller_set_property(GObject *gobject,
 {
   AgsController *controller;
 
+  pthread_mutex_t *controller_mutex;
+
   controller = AGS_CONTROLLER(gobject);
+
+  /* get controller mutex */
+  pthread_mutex_lock(ags_controller_get_class_mutex());
+  
+  controller_mutex = controller->obj_mutex;
+  
+  pthread_mutex_unlock(ags_controller_get_class_mutex());
   
   switch(prop_id){
   case PROP_SERVER:
@@ -167,7 +192,11 @@ ags_controller_set_property(GObject *gobject,
 
       server = (AgsServer *) g_value_get_object(value);
 
+      pthread_mutex_lock(controller_mutex);
+
       if(controller->server == (GObject *) server){
+	pthread_mutex_unlock(controller_mutex);
+
 	return;
       }
 
@@ -180,6 +209,8 @@ ags_controller_set_property(GObject *gobject,
       }
       
       controller->server = server;
+
+      pthread_mutex_unlock(controller_mutex);
     }
     break;
   case PROP_CONTEXT_PATH:
@@ -188,7 +219,11 @@ ags_controller_set_property(GObject *gobject,
 
       context_path = (char *) g_value_get_string(value);
 
+      pthread_mutex_lock(controller_mutex);
+
       controller->context_path = g_strdup(context_path);
+
+      pthread_mutex_unlock(controller_mutex);
     }
     break;
   default:
@@ -205,17 +240,34 @@ ags_controller_get_property(GObject *gobject,
 {
   AgsController *controller;
 
+  pthread_mutex_t *controller_mutex;
+
   controller = AGS_CONTROLLER(gobject);
+
+  /* get controller mutex */
+  pthread_mutex_lock(ags_controller_get_class_mutex());
+  
+  controller_mutex = controller->obj_mutex;
+  
+  pthread_mutex_unlock(ags_controller_get_class_mutex());
   
   switch(prop_id){
   case PROP_SERVER:
     {
+      pthread_mutex_lock(controller_mutex);
+      
       g_value_set_object(value, controller->server);
+
+      pthread_mutex_unlock(controller_mutex);
     }
     break;
   case PROP_CONTEXT_PATH:
     {
+      pthread_mutex_lock(controller_mutex);
+      
       g_value_set_string(value, controller->context_path);
+
+      pthread_mutex_unlock(controller_mutex);
     }
     break;
   default:
@@ -248,6 +300,12 @@ ags_controller_finalize(GObject *gobject)
 
   controller = AGS_CONTROLLER(gobject);
 
+  pthread_mutex_destroy(controller->obj_mutex);
+  free(controller->obj_mutex);
+
+  pthread_mutexattr_destroy(controller->obj_mutexattr);
+  free(controller->obj_mutexattr);
+
   if(controller->server != NULL){
     g_object_unref(controller->server);
   }
@@ -256,6 +314,21 @@ ags_controller_finalize(GObject *gobject)
   
   /* call parent */
   G_OBJECT_CLASS(ags_controller_parent_class)->finalize(gobject);
+}
+
+/**
+ * ags_controller_get_class_mutex:
+ * 
+ * Use this function's returned mutex to access mutex fields.
+ *
+ * Returns: the class mutex
+ * 
+ * Since: 2.1.0
+ */
+pthread_mutex_t*
+ags_controller_get_class_mutex()
+{
+  return(&ags_controller_class_mutex);
 }
 
 /**

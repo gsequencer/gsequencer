@@ -607,7 +607,7 @@ ags_audio_signal_class_init(AgsAudioSignalClass *audio_signal)
    * 
    * Since: 2.0.0
    */
-  param_spec = g_param_spec_object("recall_id",
+  param_spec = g_param_spec_object("recall-id",
 				   i18n_pspec("assigned recall id"),
 				   i18n_pspec("The recall id it is assigned with"),
 				   AGS_TYPE_RECALL_ID,
