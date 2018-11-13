@@ -447,6 +447,9 @@ ags_osc_connection_dispose(GObject *gobject)
 
     osc_connection->osc_server = NULL;
   }
+  
+  /* call parent */
+  G_OBJECT_CLASS(ags_osc_connection_parent_class)->dispose(gobject);
 }
 
 void
@@ -915,6 +918,14 @@ ags_osc_connection_real_close(AgsOscConnection *osc_connection)
 				 AGS_OSC_CONNECTION_ACTIVE);
 }
 
+/**
+ * ags_osc_connection_close:
+ * @osc_connection: the #AgsOscConnection
+ * 
+ * Close @osc_connection.
+ * 
+ * Since: 2.1.0
+ */
 void
 ags_osc_connection_close(AgsOscConnection *osc_connection)
 {

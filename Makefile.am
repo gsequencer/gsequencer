@@ -918,6 +918,7 @@ libags_audio_osc_h_sources = \
 	ags/audio/osc/ags_osc_client.h \
 	ags/audio/osc/ags_osc_connection.h \
 	ags/audio/osc/ags_osc_parser.h \
+	ags/audio/osc/ags_osc_response.h \
 	ags/audio/osc/ags_osc_server.h \
 	ags/audio/osc/ags_osc_util.h
 
@@ -930,6 +931,7 @@ libags_audio_osc_c_sources = \
 	ags/audio/osc/ags_osc_client.c \
 	ags/audio/osc/ags_osc_connection.c \
 	ags/audio/osc/ags_osc_parser.c \
+	ags/audio/osc/ags_osc_response.c \
 	ags/audio/osc/ags_osc_server.c \
 	ags/audio/osc/ags_osc_util.c
 
