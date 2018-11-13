@@ -216,11 +216,11 @@ ags_osc_controller_set_property(GObject *gobject,
 
       context_path = (char *) g_value_get_string(value);
 
-      pthread_mutex_lock(controller_mutex);
+      pthread_mutex_lock(osc_controller_mutex);
 
       osc_controller->context_path = g_strdup(context_path);
 
-      pthread_mutex_unlock(controller_mutex);
+      pthread_mutex_unlock(osc_controller_mutex);
     }
     break;
   default:
@@ -260,11 +260,11 @@ ags_osc_controller_get_property(GObject *gobject,
     break;
   case PROP_CONTEXT_PATH:
     {
-      pthread_mutex_lock(controller_mutex);
+      pthread_mutex_lock(osc_controller_mutex);
       
       g_value_set_string(value, osc_controller->context_path);
 
-      pthread_mutex_unlock(controller_mutex);
+      pthread_mutex_unlock(osc_controller_mutex);
     }
     break;
   default:

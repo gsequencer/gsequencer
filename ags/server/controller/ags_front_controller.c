@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -72,8 +72,7 @@ gpointer ags_front_controller_delegate_local_factory_controller(AgsFrontControll
 								gchar *context_path,
 								gchar *login,
 								gchar *security_token,
-								GParameter *params,
-								guint n_params);
+								guint n_params, gchar **parameter_name, GValue *value);
 
 gpointer ags_front_controller_real_do_request(AgsFrontController *front_controller,
 					      GObject *security_context,
@@ -649,10 +648,12 @@ ags_front_controller_delegate_local_factory_controller(AgsFrontController *front
 			    strlen(AGS_LOCAL_FACTORY_CONTROLLER_RESOURCE_CREATE_INSTANCE))){
       if(g_strv_contains(AGS_SECURITY_CONTEXT(security_context)->permitted_context,
 			 resource)){
+#if 0
 	response = ags_local_factory_controller_create_instance(local_factory_controller,
 								g_value_get_ulong(&(params[0].value)),
 								((n_params > 1) ? &(params[1]): NULL),
 								n_params - 1);
+#endif
       }
     }
   }
@@ -704,6 +705,7 @@ ags_front_controller_real_do_request(AgsFrontController *front_controller,
      !g_ascii_strncasecmp(context_path,
 			  AGS_CONTROLLER(local_factory_controller)->context_path,
 			  strlen(AGS_CONTROLLER(local_factory_controller)->context_path))){
+#if 0
     response = ags_front_controller_delegate_local_factory_controller(front_controller,
 								      local_factory_controller,
 								      security_context,
@@ -712,6 +714,7 @@ ags_front_controller_real_do_request(AgsFrontController *front_controller,
 								      security_token,
 								      params,
 								      n_params);
+#endif
   }
 
   //TODO:JK: implement me

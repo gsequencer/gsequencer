@@ -43,9 +43,17 @@ struct _AgsOscStatusController
 struct _AgsOscStatusControllerClass
 {
   AgsOscControllerClass osc_controller;
+
+  gpointer (*get_status)(AgsOscStatusController *status_controller,
+			 AgsOscConnection *osc_connection,
+			 guchar *message, guint message_size);
 };
 
 GType ags_osc_status_controller_get_type();
+
+gpointer ags_osc_status_controller_get_status(AgsOscStatusController *status_controller,
+					      AgsOscConnection *osc_connection,
+					      guchar *message, guint message_size);
 
 AgsOscStatusController* ags_osc_status_controller_new();
 

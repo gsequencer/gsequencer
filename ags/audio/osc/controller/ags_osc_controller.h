@@ -23,8 +23,10 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <ags/audio/osc/ags_osc_connection.h>
+
 #define AGS_TYPE_OSC_CONTROLLER                (ags_osc_controller_get_type())
-#define AGS_OSC_CONTROLLER(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_OSC_CONTROLLER, AgsOscC$ontroller))
+#define AGS_OSC_CONTROLLER(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_OSC_CONTROLLER, AgsOscController))
 #define AGS_OSC_CONTROLLER_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST(class, AGS_TYPE_OSC_CONTROLLER, AgsOscControllerClass))
 #define AGS_IS_OSC_CONTROLLER(obj)             (G_TYPE_CHECK_INSTANCE_TYPE ((obj), AGS_TYPE_OSC_CONTROLLER))
 #define AGS_IS_OSC_CONTROLLER_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_OSC_CONTROLLER))

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -50,16 +50,14 @@ struct _AgsLocalFactoryControllerClass
   
   gpointer (*create_instance)(AgsLocalFactoryController *local_factory_controller,
 			      GType gtype,
-			      GParameter *parameter,
-			      guint n_params);
+			      guint n_params, gchar **parameter_name, GValue *value);
 };
 
 GType ags_local_factory_controller_get_type();
 
 gpointer ags_local_factory_controller_create_instance(AgsLocalFactoryController *local_factory_controller,
 						      GType gtype,
-						      GParameter *parameter,
-						      guint n_params);
+						      guint n_params, gchar **parameter_name, GValue *value);
 
 AgsLocalFactoryController* ags_local_factory_controller_new();
 

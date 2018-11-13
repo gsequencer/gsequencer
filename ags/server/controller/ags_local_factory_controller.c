@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -35,8 +35,7 @@ void ags_local_factory_controller_finalize(GObject *gobject);
 
 gpointer ags_local_factory_controller_real_create_instance(AgsLocalFactoryController *local_factory_controller,
 							   GType type_name,
-							   GParameter *parameter,
-							   guint n_params);
+							   guint n_params, gchar **parameter_name, GValue *value);
 
 /**
  * SECTION:ags_local_factory_controller
@@ -108,8 +107,9 @@ ags_local_factory_controller_class_init(AgsLocalFactoryControllerClass *local_fa
    * AgsLocalFactoryController::create-instance:
    * @local_factory_controller: the #AgsLocalFactoryController
    * @type_name: the type name
-   * @parameter: parameters to set as properties
-   * @n_params: the count of parameters
+   * @n_params: the parameter name and value count
+   * @parameter_name: the parameter names
+   * @value: the #GValue-struct array related to parameter names
    *
    * The ::create-instance signal is used to create an instance.
    *
@@ -123,11 +123,12 @@ ags_local_factory_controller_class_init(AgsLocalFactoryControllerClass *local_fa
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsLocalFactoryControllerClass, create_instance),
 		 NULL, NULL,
-		 ags_cclosure_marshal_POINTER__ULONG_POINTER_UINT,
-		 G_TYPE_POINTER, 3,
+		 ags_cclosure_marshal_POINTER__ULONG_UINT_POINTER_POINTER,
+		 G_TYPE_POINTER, 4,
 		 G_TYPE_ULONG,
+		 G_TYPE_UINT,
 		 G_TYPE_POINTER,
-		 G_TYPE_UINT);
+		 G_TYPE_POINTER);
 }
 
 void
@@ -159,8 +160,7 @@ ags_local_factory_controller_finalize(GObject *gobject)
 gpointer
 ags_local_factory_controller_real_create_instance(AgsLocalFactoryController *local_factory_controller,
 						  GType gtype,
-						  GParameter *parameter,
-						  guint n_params)
+						  guint n_params, gchar **parameter_name, GValue *value)
 {
   AgsServer *server;
   AgsRegistry *registry;
@@ -177,7 +177,7 @@ ags_local_factory_controller_real_create_instance(AgsLocalFactoryController *loc
   application_context = server->application_context;
 
   registry = ags_service_provider_get_registry(AGS_SERVICE_PROVIDER(application_context));
-
+#if 0
   /* instantiate object */
   gobject = g_object_newv(gtype,
 			  n_params,
@@ -196,6 +196,7 @@ ags_local_factory_controller_real_create_instance(AgsLocalFactoryController *loc
 #else
   response = NULL;
 #endif
+#endif
   
   return(response);
 }
@@ -204,8 +205,9 @@ ags_local_factory_controller_real_create_instance(AgsLocalFactoryController *loc
  * ags_local_factory_controller_create_instance:
  * @local_factory_controller: the #AgsLocalFactoryController
  * @gtype: the type name
- * @parameter: the #GParameter-struct
- * @n_params: the parameter count
+ * @n_params: the parameter name and value count
+ * @parameter_name: the parameter names
+ * @value: the #GValue-struct array related to parameter names
  * 
  * Creates an instance of @gtype and passes @parameter to g_object_newv()
  * 
@@ -216,8 +218,7 @@ ags_local_factory_controller_real_create_instance(AgsLocalFactoryController *loc
 gpointer
 ags_local_factory_controller_create_instance(AgsLocalFactoryController *local_factory_controller,
 					     GType gtype,
-					     GParameter *parameter,
-					     guint n_params)
+					     guint n_params, gchar **parameter_name, GValue *value)
 {
   gpointer retval;
 
@@ -228,8 +229,7 @@ ags_local_factory_controller_create_instance(AgsLocalFactoryController *local_fa
   g_signal_emit(G_OBJECT(local_factory_controller),
 		local_factory_controller_signals[CREATE_INSTANCE], 0,
 		gtype,
-		parameter,
-		n_params,
+		n_params, parameter_name, value,
 		&retval);
   g_object_unref((GObject *) local_factory_controller);
 
