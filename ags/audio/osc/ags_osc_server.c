@@ -22,6 +22,7 @@
 #include <ags/libags.h>
 
 #include <ags/audio/osc/ags_osc_connection.h>
+#include <ags/audio/osc/ags_osc_response.h>
 
 #include <ags/audio/osc/controller/ags_osc_controller.h>
 #include <ags/audio/osc/controller/ags_osc_front_controller.h>
@@ -1248,7 +1249,7 @@ ags_osc_server_real_dispatch(AgsOscServer *osc_server)
 {
   GList *start_list, *list;
 
-  guchar *buffer;
+  guchar *slip_buffer;
 
   guint data_length;
   
@@ -1256,11 +1257,32 @@ ags_osc_server_real_dispatch(AgsOscServer *osc_server)
     start_list = g_list_copy(osc_server->connection);
 
   while(list != NULL){
-    buffer = ags_osc_connection_read_bytes(list->data,
-					   &data_length);
+    slip_buffer = ags_osc_connection_read_bytes(list->data,
+						&data_length);
 
-    if(buffer != NULL){
-      //TODO:JK: implement me
+    if(slip_buffer != NULL){
+      AgsOscResponse *osc_response;
+
+      unsigned char *packet;
+
+      guint packet_size;
+
+      packet = ags_osc_util_slip_decode(slip_buffer,
+					data_length,
+					&packet_size);
+      free(slip_buffer);
+      
+      osc_response = ags_osc_front_controller_do_request(osc_server->front_controller,
+							 list->data,
+							 packet, packet_size);
+      ags_osc_connection_write_response(list->data,
+					osc_response);
+      g_object_unref(osc_response);
+
+      /* free packet */
+      if(packet != NULL){
+	free(packet);
+      }
     }
     
     list = list->next;

@@ -122,6 +122,7 @@ ags_osc_util_mime_header(gchar *uri,
  * ags_osc_util_slip_encode:
  * @osc_buffer: the OSC buffer
  * @buffer_length: the OSC buffer's length
+ * @returned_buffer_length: the returned buffer's length
  * 
  * Encode @osc_buffer to be suitable for network transmission.
  * See SLIP (RFC1055).
@@ -132,7 +133,8 @@ ags_osc_util_mime_header(gchar *uri,
  */
 unsigned char*
 ags_osc_util_slip_encode(unsigned char *osc_buffer,
-			 guint buffer_length)
+			 guint buffer_length,
+			 guint *returned_buffer_length)
 {
   unsigned char *slip_buffer;
 
@@ -178,6 +180,10 @@ ags_osc_util_slip_encode(unsigned char *osc_buffer,
 
   slip_buffer[j] = AGS_OSC_UTIL_SLIP_END;
 
+  if(returned_buffer_length != NULL){
+    *returned_buffer_length = j;
+  }
+  
   return(slip_buffer);
 }
 
@@ -185,6 +191,7 @@ ags_osc_util_slip_encode(unsigned char *osc_buffer,
  * ags_osc_util_slip_decode:
  * @slip_buffer: the SLIP encoded OSC buffer
  * @slip_buffer_length: the buffer length of SLIP encoded OSC buffer
+ * @returned_buffer_length: the returned buffer's length
  * 
  * Decode @slip_buffer from SLIP encoded format.
  * See SLIP (RFC1055).
@@ -195,7 +202,8 @@ ags_osc_util_slip_encode(unsigned char *osc_buffer,
  */
 unsigned char*
 ags_osc_util_slip_decode(unsigned char *slip_buffer,
-			 guint slip_buffer_length)
+			 guint slip_buffer_length,
+			 guint *returned_buffer_length)
 {
   unsigned char *osc_buffer;
 
@@ -224,6 +232,10 @@ ags_osc_util_slip_decode(unsigned char *slip_buffer,
 	osc_buffer[i] = slip_buffer[j];
       }
     }
+  }
+
+  if(returned_buffer_length != NULL){
+    *returned_buffer_length = i;
   }
   
   return(osc_buffer);

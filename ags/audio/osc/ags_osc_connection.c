@@ -22,6 +22,7 @@
 #include <ags/libags.h>
 
 #include <ags/audio/osc/ags_osc_server.h>
+#include <ags/audio/osc/ags_osc_response.h>
 #include <ags/audio/osc/ags_osc_util.h>
 #include <ags/audio/osc/ags_osc_buffer_util.h>
 
@@ -52,6 +53,9 @@ void ags_osc_connection_finalize(GObject *gobject);
 
 guchar* ags_osc_connection_real_read_bytes(AgsOscConnection *osc_connection,
 					   guint *data_length);
+gint64 ags_osc_connection_real_write_response(AgsOscConnection *osc_connection,
+					      GObject *osc_response);
+
 void ags_osc_connection_real_close(AgsOscConnection *osc_connection);
 
 /**
@@ -73,6 +77,7 @@ enum{
 
 enum{
   READ_BYTES,
+  WRITE_RESPONSE,
   CLOSE,
   LAST_SIGNAL,
 };
@@ -180,6 +185,7 @@ ags_osc_connection_class_init(AgsOscConnectionClass *osc_connection)
 				  param_spec);
   /* AgsOscConnectionClass */  
   osc_connection->read_bytes = ags_osc_connection_real_read_bytes;
+  osc_connection->write_response = ags_osc_connection_real_write_response;
 
   osc_connection->close = ags_osc_connection_real_close;
 
@@ -206,10 +212,31 @@ ags_osc_connection_class_init(AgsOscConnectionClass *osc_connection)
 		 G_TYPE_POINTER);
 
   /**
+   * AgsOscConnection::write-response:
+   * @osc_connection: the #AgsOscConnection
+   * @osc_response: the #AgsOscResponse
+   *
+   * The ::write-response signal is emited while write response.
+   *
+   * Returns: the count bytes written
+   * 
+   * Since: 2.1.0
+   */
+  osc_connection_signals[WRITE_RESPONSE] =
+    g_signal_new("write-response",
+		 G_TYPE_FROM_CLASS(osc_connection),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsOscConnectionClass, write_response),
+		 NULL, NULL,
+		 ags_cclosure_marshal_INT64__OBJECT,
+		 G_TYPE_INT64, 1,
+		 G_TYPE_OBJECT);
+
+  /**
    * AgsOscConnection::close:
    * @osc_connection: the #AgsOscConnection
    *
-   * The ::close signal is emited as closing the file descripto.
+   * The ::close signal is emited as closing the file descriptor.
    * 
    * Since: 2.1.0
    */
@@ -892,6 +919,87 @@ ags_osc_connection_read_bytes(AgsOscConnection *osc_connection,
   g_object_unref((GObject *) osc_connection);
 
   return(success);
+}
+
+gint64
+ags_osc_connection_real_write_response(AgsOscConnection *osc_connection,
+				       GObject *osc_response)
+{
+  unsigned char *slip_buffer;
+  
+  int fd;
+  guint slip_buffer_length;
+  gint64 num_write;
+
+  pthread_mutex_t *osc_connection_mutex;
+  pthread_mutex_t *osc_response_mutex;
+
+  /* get osc connection mutex */
+  pthread_mutex_lock(ags_osc_connection_get_class_mutex());
+  
+  osc_connection_mutex = osc_connection->obj_mutex;
+  
+  pthread_mutex_unlock(ags_osc_connection_get_class_mutex());
+
+  /* get fd */
+  pthread_mutex_lock(osc_connection_mutex);
+
+  fd = osc_connection->fd;
+
+  pthread_mutex_unlock(osc_connection_mutex);
+
+  /* get osc response mutex */
+  pthread_mutex_lock(ags_osc_response_get_class_mutex());
+  
+  osc_response_mutex = AGS_OSC_RESPONSE(osc_response)->obj_mutex;
+  
+  pthread_mutex_unlock(ags_osc_response_get_class_mutex());
+
+  /* write */
+  pthread_mutex_lock(osc_response_mutex);
+
+  slip_buffer = ags_osc_util_slip_encode(AGS_OSC_RESPONSE(osc_response)->packet,
+					 AGS_OSC_RESPONSE(osc_response)->packet_size,
+					 &slip_buffer_length);
+
+  pthread_mutex_unlock(osc_response_mutex);
+  
+  num_write = write(fd, slip_buffer, slip_buffer_length * sizeof(unsigned char));
+
+  if(slip_buffer != NULL){
+    free(slip_buffer);
+  }
+  
+  return(num_write);
+}
+
+/**
+ * ags_osc_connection_write_response:
+ * @osc_connection: the #AgsOscConnection
+ * @osc_response: the #AgsOscResponse
+ * 
+ * Write response.
+ * 
+ * Returns: the count of bytes written
+ * 
+ * Since: 2.1.0
+ */
+gint64
+ags_osc_connection_write_response(AgsOscConnection *osc_connection,
+				  GObject *osc_response)
+{
+  gint64 num_write;
+  
+  g_return_val_if_fail(AGS_IS_OSC_CONNECTION(osc_connection), -1);
+  
+  g_object_ref((GObject *) osc_connection);
+  g_signal_emit(G_OBJECT(osc_connection),
+		osc_connection_signals[WRITE_RESPONSE], 0,
+		osc_response,
+		&num_write);
+  g_object_unref((GObject *) osc_connection);
+
+  return(num_write);
 }
 
 void

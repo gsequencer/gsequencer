@@ -19,6 +19,8 @@
 
 #include <ags/audio/osc/controller/ags_osc_front_controller.h>
 
+#include <ags/libags.h>
+
 #include <ags/i18n.h>
 
 #include <stdlib.h>
@@ -36,6 +38,10 @@ void ags_osc_front_controller_get_property(GObject *gobject,
 void ags_osc_front_controller_dispose(GObject *gobject);
 void ags_osc_front_controller_finalize(GObject *gobject);
 
+gpointer ags_osc_front_controller_real_do_request(AgsOscFrontController *osc_front_controller,
+						  AgsOscConnection *osc_connection,
+						  unsigned char *packet, guint packet_size);
+
 /**
  * SECTION:ags_osc_front_controller
  * @short_description: OSC front controller
@@ -50,7 +56,13 @@ enum{
   PROP_0,
 };
 
+enum{
+  DO_REQUEST,
+  LAST_SIGNAL,
+};
+
 static gpointer ags_osc_front_controller_parent_class = NULL;
+static guint osc_front_controller_signals[LAST_SIGNAL];
 
 GType
 ags_osc_front_controller_get_type()
@@ -101,6 +113,27 @@ ags_osc_front_controller_class_init(AgsOscFrontControllerClass *osc_front_contro
   gobject->finalize = ags_osc_front_controller_finalize;
 
   /* properties */
+
+  /* AgsOscFrontControllerClass */
+  osc_front_controller->do_request = ags_osc_front_controller_real_do_request;
+
+  /* signals */
+  /**
+   * AgsOscFrontController::do-request:
+   * @osc_front_controller: the #AgsOscFrontController
+   *
+   * The ::do-request signal is emited during do request of front controller.
+   *
+   * Since: 2.1.0
+   */
+  osc_front_controller_signals[DO_REQUEST] =
+    g_signal_new("do-request",
+		 G_TYPE_FROM_CLASS(osc_front_controller),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsOscFrontControllerClass, do_request),
+		 NULL, NULL,
+		 ags_cclosure_marshal_POINTER__OBJECT_POINTER_UINT,
+		 G_TYPE_NONE, 0);
 }
 
 void
@@ -181,6 +214,46 @@ ags_osc_front_controller_finalize(GObject *gobject)
   
   /* call parent */
   G_OBJECT_CLASS(ags_osc_front_controller_parent_class)->finalize(gobject);
+}
+
+gpointer
+ags_osc_front_controller_real_do_request(AgsOscFrontController *osc_front_controller,
+					 AgsOscConnection *osc_connection,
+					 unsigned char *packet, guint packet_size)
+{
+}
+
+/**
+ * ags_osc_front_controller_write_response:
+ * @osc_front_controller: the #AgsOscFrontController
+ * @osc_connection: the #AgsOscConnection
+ * @packet: the packet received
+ * @packet_size: the packet size
+ * 
+ * Do request.
+ * 
+ * Returns: the #AgsOscResponse
+ * 
+ * Since: 2.1.0
+ */
+gpointer
+ags_osc_front_controller_do_request(AgsOscFrontController *osc_front_controller,
+				    AgsOscConnection *osc_connection,
+				    unsigned char *packet, guint packet_size)
+{
+  gpointer osc_response;
+  
+  g_return_val_if_fail(AGS_IS_OSC_FRONT_CONTROLLER(osc_front_controller), NULL);
+  
+  g_object_ref((GObject *) osc_front_controller);
+  g_signal_emit(G_OBJECT(osc_front_controller),
+		osc_front_controller_signals[DO_REQUEST], 0,
+		osc_connection,
+		packet, packet_size,
+		&osc_response);
+  g_object_unref((GObject *) osc_front_controller);
+
+  return(osc_response);
 }
 
 /**

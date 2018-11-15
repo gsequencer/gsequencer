@@ -46,8 +46,8 @@ struct _AgsOscResponse
   pthread_mutex_t *obj_mutex;
   pthread_mutexattr_t *obj_mutexattr;
 
-  guchar *message;
-  guint message_size
+  guchar *packet;
+  guint packet_size
 };
 
 struct _AgsOscResponseClass
@@ -63,6 +63,6 @@ gboolean ags_osc_response_test_flags(AgsOscResponse *osc_response, guint flags);
 void ags_osc_response_set_flags(AgsOscResponse *osc_response, guint flags);
 void ags_osc_response_unset_flags(AgsOscResponse *osc_response, guint flags);
 
-AgsOscResponse* ags_osc_response_new(GObject *osc_server);
+AgsOscResponse* ags_osc_response_new();
 
 #endif /*__AGS_OSC_RESPONSE_H__*/

@@ -21,6 +21,8 @@
 
 #include <ags/libags.h>
 
+#include <stdlib.h>
+
 #include <ags/i18n.h>
 
 void ags_osc_response_class_init(AgsOscResponseClass *osc_response);
@@ -48,12 +50,11 @@ void ags_osc_response_finalize(GObject *gobject);
 
 enum{
   PROP_0,
-  PROP_MESSAGE,
-  PROP_MESSAGE_SIZE,
+  PROP_PACKET,
+  PROP_PACKET_SIZE,
 };
 
 static gpointer ags_osc_response_parent_class = NULL;
-static guint osc_response_signals[LAST_SIGNAL];
 
 static pthread_mutex_t ags_osc_response_class_mutex = PTHREAD_MUTEX_INITIALIZER;
 
@@ -107,36 +108,36 @@ ags_osc_response_class_init(AgsOscResponseClass *osc_response)
 
   /* properties */
   /**
-   * AgsOscResponse:message:
+   * AgsOscResponse:packet:
    *
-   * The response message.
+   * The response packet.
    * 
    * Since: 2.1.0
    */
-  param_spec = g_param_spec_pointer("message",
-				    i18n_pspec("response message"),
-				    i18n_pspec("The response message"),
+  param_spec = g_param_spec_pointer("packet",
+				    i18n_pspec("response packet"),
+				    i18n_pspec("The response packet"),
 				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
-				  PROP_MESSAGE,
+				  PROP_PACKET,
 				  param_spec);
   
   /**
-   * AgsOscResponse:message-size:
+   * AgsOscResponse:packet-size:
    *
-   * The response message's size.
+   * The response packet's size.
    * 
    * Since: 2.1.0
    */
-  param_spec = g_param_spec_uint("message-size",
-				 i18n_pspec("response message size"),
-				 i18n_pspec("The response message size"),
+  param_spec = g_param_spec_uint("packet-size",
+				 i18n_pspec("response packet size"),
+				 i18n_pspec("The response packet size"),
 				 0,
 				 G_MAXUINT,
 				 0,
 				 G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
-				  PROP_MESSAGE_SIZE,
+				  PROP_PACKET_SIZE,
 				  param_spec);
 }
 
@@ -144,7 +145,7 @@ void
 ags_osc_response_init(AgsOscResponse *osc_response)
 {
 
-  osc_response->flags = AGS_OSC_RESPONSE_INET4;
+  osc_response->flags = 0;
   
   /* osc response mutex */
   osc_response->obj_mutexattr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
@@ -161,8 +162,8 @@ ags_osc_response_init(AgsOscResponse *osc_response)
   pthread_mutex_init(osc_response->obj_mutex,
 		     osc_response->obj_mutexattr);
 
-  osc_response->message = NULL;
-  osc_response->message_size = 0;
+  osc_response->packet = NULL;
+  osc_response->packet_size = 0;
 }
 
 
@@ -186,34 +187,34 @@ ags_osc_response_set_property(GObject *gobject,
   pthread_mutex_unlock(ags_osc_response_get_class_mutex());
   
   switch(prop_id){
-  case PROP_MESSAGE:
+  case PROP_PACKET:
     {
-      GObject *message;
+      GObject *packet;
 
-      message = g_value_get_pointer(value);
+      packet = g_value_get_pointer(value);
 
       pthread_mutex_lock(osc_response_mutex);
 
-      if(osc_response->message == message){
+      if(osc_response->packet == packet){
 	pthread_mutex_unlock(osc_response_mutex);
 
 	return;
       }
       
-      osc_response->message = message;
+      osc_response->packet = packet;
 
       pthread_mutex_unlock(osc_response_mutex);
     }
     break;
-  case PROP_MESSAGE_SIZE:
+  case PROP_PACKET_SIZE:
     {
-      guint message_size;
+      guint packet_size;
 
-      message_size = g_value_get_uint(value);
+      packet_size = g_value_get_uint(value);
 
       pthread_mutex_lock(osc_response_mutex);
 
-      osc_response->message_size = message_size;
+      osc_response->packet_size = packet_size;
 
       pthread_mutex_unlock(osc_response_mutex);
     }
@@ -244,21 +245,21 @@ ags_osc_response_get_property(GObject *gobject,
   pthread_mutex_unlock(ags_osc_response_get_class_mutex());
   
   switch(prop_id){
-  case PROP_MESSAGE:
+  case PROP_PACKET:
     {
       pthread_mutex_lock(osc_response_mutex);
 
-      g_value_set_pointer(value, osc_response->message);
+      g_value_set_pointer(value, osc_response->packet);
 
       pthread_mutex_unlock(osc_response_mutex);
     }
     break;
-  case PROP_MESSAGE_SIZE:
+  case PROP_PACKET_SIZE:
     {
       pthread_mutex_lock(osc_response_mutex);
       
       g_value_set_uint(value,
-		       osc_response->message_size);
+		       osc_response->packet_size);
       
       pthread_mutex_unlock(osc_response_mutex);
     }
@@ -293,7 +294,9 @@ ags_osc_response_finalize(GObject *gobject)
   pthread_mutexattr_destroy(osc_response->obj_mutexattr);
   free(osc_response->obj_mutexattr);
 
-  free(osc_response->message);
+  if(osc_response->packet != NULL){
+    free(osc_response->packet);
+  }
   
   /* call parent */
   G_OBJECT_CLASS(ags_osc_response_parent_class)->finalize(gobject);

@@ -6,7 +6,16 @@ ags (2.1.0)
 	* implemented ags_osc_parser.c
 	* implemented ags_osc_builder.c
 	* implemented ags_osc_client.c
-	* TODO:JK: implemented ags_osc_server.c
+	* implemented ags_osc_server.c
+	* implemented ags_osc_connection.c
+	* implemented ags_osc_response.c
+	* TODO:JK: implemented ags_osc_front_controller.c
+	* TODO:JK: implemented ags_osc_info_controller.c
+	* TODO:JK: implemented ags_osc_status_controller.c
+	* TODO:JK: implemented ags_osc_config_controller.c
+	* TODO:JK: implemented ags_osc_action_controller.c
+	* TODO:JK: implemented ags_osc_meter_controller.c
+	* TODO:JK: implemented ags_osc_node_controller.c
 	* TODO:JK: implemented AgsFileUploadController
 	* TODO:JK: improved AgsServer
 	* fixed ags_front_controller_do_request() prototype declaration

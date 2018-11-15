@@ -83,7 +83,9 @@ struct _AgsOscConnectionClass
 
   guchar* (*read_bytes)(AgsOscConnection *osc_connection,
 			guint *data_length);
-
+  gint64 (*write_response)(AgsOscConnection *osc_connection,
+			   GObject *osc_response);
+  
   void (*close)(AgsOscConnection *osc_connection);
 };
 
@@ -95,11 +97,16 @@ gboolean ags_osc_connection_test_flags(AgsOscConnection *osc_connection, guint f
 void ags_osc_connection_set_flags(AgsOscConnection *osc_connection, guint flags);
 void ags_osc_connection_unset_flags(AgsOscConnection *osc_connection, guint flags);
 
+/* events */
 guchar* ags_osc_connection_read_bytes(AgsOscConnection *osc_connection,
 				      guint *data_length);
 
+gint64 ags_osc_connection_write_response(AgsOscConnection *osc_connection,
+					 GObject *osc_response);
+
 void ags_osc_connection_close(AgsOscConnection *osc_connection);
 
+/* instance */
 AgsOscConnection* ags_osc_connection_new(GObject *osc_server);
 
 #endif /*__AGS_OSC_CONNECTION_H__*/

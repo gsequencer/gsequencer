@@ -118,6 +118,7 @@ gboolean ags_osc_server_test_flags(AgsOscServer *osc_server, guint flags);
 void ags_osc_server_set_flags(AgsOscServer *osc_server, guint flags);
 void ags_osc_server_unset_flags(AgsOscServer *osc_server, guint flags);
 
+/* fields */
 void ags_osc_server_add_connection(AgsOscServer *osc_server,
 				   GObject *osc_connection);
 void ags_osc_server_remove_connection(AgsOscServer *osc_server,
@@ -128,6 +129,7 @@ void ags_osc_server_add_controller(AgsOscServer *osc_server,
 void ags_osc_server_remove_controller(AgsOscServer *osc_server,
 				      GObject *osc_controller);
 
+/* events */
 void ags_osc_server_start(AgsOscServer *osc_server);
 void ags_osc_server_stop(AgsOscServer *osc_server);
 
@@ -135,6 +137,7 @@ void ags_osc_server_listen(AgsOscServer *osc_server);
 
 void ags_osc_server_dispatch(AgsOscServer *osc_server);
 
+/* instance */
 AgsOscServer* ags_osc_server_new();
 
 #endif /*__AGS_OSC_SERVER_H__*/
