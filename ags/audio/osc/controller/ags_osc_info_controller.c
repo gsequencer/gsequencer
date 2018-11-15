@@ -19,9 +19,11 @@
 
 #include <ags/audio/osc/controller/ags_osc_info_controller.h>
 
-#include <ags/i18n.h>
+#include <ags/audio/osc/ags_osc_response.h>
 
 #include <stdlib.h>
+
+#include <ags/i18n.h>
 
 void ags_osc_info_controller_class_init(AgsOscInfoControllerClass *osc_info_controller);
 void ags_osc_info_controller_init(AgsOscInfoController *osc_info_controller);
@@ -35,6 +37,10 @@ void ags_osc_info_controller_get_property(GObject *gobject,
 					  GParamSpec *param_spec);
 void ags_osc_info_controller_dispose(GObject *gobject);
 void ags_osc_info_controller_finalize(GObject *gobject);
+
+gpointer ags_osc_info_controller_real_get_info(AgsOscInfoController *osc_info_controller,
+					       AgsOscConnection *osc_connection,
+					       unsigned char *message, guint message_size);
 
 /**
  * SECTION:ags_osc_info_controller
@@ -50,7 +56,13 @@ enum{
   PROP_0,
 };
 
+enum{
+  GET_INFO,
+  LAST_SIGNAL,
+};
+
 static gpointer ags_osc_info_controller_parent_class = NULL;
+static guint osc_info_controller_signals[LAST_SIGNAL];
 
 GType
 ags_osc_info_controller_get_type()
@@ -101,6 +113,30 @@ ags_osc_info_controller_class_init(AgsOscInfoControllerClass *osc_info_controlle
   gobject->finalize = ags_osc_info_controller_finalize;
 
   /* properties */
+
+  /* AgsOscInfoControllerClass */
+  osc_info_controller->get_info = ags_osc_info_controller_real_get_info;
+
+  /* signals */
+  /**
+   * AgsOscInfoController::get-info:
+   * @osc_info_controller: the #AgsOscInfoController
+   * @osc_connection: the #AgsOscConnection
+   * @message: the message received
+   * @message_size: the message size
+   *
+   * The ::get-info signal is emited during get info of info controller.
+   *
+   * Since: 2.1.0
+   */
+  osc_info_controller_signals[GET_INFO] =
+    g_signal_new("get-info",
+		 G_TYPE_FROM_CLASS(osc_info_controller),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsOscInfoControllerClass, get_info),
+		 NULL, NULL,
+		 ags_cclosure_marshal_POINTER__OBJECT_POINTER_UINT,
+		 G_TYPE_NONE, 0);
 }
 
 void
@@ -181,6 +217,70 @@ ags_osc_info_controller_finalize(GObject *gobject)
   
   /* call parent */
   G_OBJECT_CLASS(ags_osc_info_controller_parent_class)->finalize(gobject);
+}
+
+gpointer
+ags_osc_info_controller_real_get_info(AgsOscInfoController *info_controller,
+				      AgsOscConnection *osc_connection,
+				      unsigned char *message, guint message_size)
+{
+  AgsOscResponse *osc_response;
+
+  unsigned char *packet;
+
+  guint packet_size;
+  
+  static const unsigned char server_info_message[] = "/info\0\0\0,ssss\0\0\0V2.1.0\0\0osc-server\0\0Advanced Gtk+ Sequencer\02.1.0\0\0\0";
+
+  osc_response = ags_osc_response_new();
+
+  /* create packet */
+  packet = (unsigned char *) malloc((4 * sizeof(unsigned char)) + sizeof(server_info_message));
+
+  ags_osc_buffer_util_put_int32(packet,
+				sizeof(server_info_message));
+  memcpy(packet + 4, server_info_message, sizeof(server_info_message));
+
+  /* set response packet */
+  g_object_set(osc_response,
+	       "packet", packet,
+	       "packet-size", (4 * sizeof(unsigned char)) + sizeof(server_info_message),
+	       NULL);
+
+  return(osc_response);
+}
+
+/**
+ * ags_osc_info_controller_get_info:
+ * @osc_info_controller: the #AgsOscInfoController
+ * @osc_connection: the #AgsOscConnection
+ * @message: the message received
+ * @message_size: the message size
+ * 
+ * Get info.
+ * 
+ * Returns: the #AgsOscResponse
+ * 
+ * Since: 2.1.0
+ */
+gpointer
+ags_osc_info_controller_get_info(AgsOscInfoController *info_controller,
+				 AgsOscConnection *osc_connection,
+				 unsigned char *message, guint message_size)
+{
+  gpointer osc_response;
+  
+  g_return_val_if_fail(AGS_IS_OSC_INFO_CONTROLLER(osc_info_controller), NULL);
+  
+  g_object_ref((GObject *) osc_info_controller);
+  g_signal_emit(G_OBJECT(osc_info_controller),
+		osc_info_controller_signals[GET_INFO], 0,
+		osc_connection,
+		message, message_size,
+		&osc_response);
+  g_object_unref((GObject *) osc_info_controller);
+
+  return(osc_response);
 }
 
 /**

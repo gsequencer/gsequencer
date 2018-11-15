@@ -121,6 +121,9 @@ ags_osc_front_controller_class_init(AgsOscFrontControllerClass *osc_front_contro
   /**
    * AgsOscFrontController::do-request:
    * @osc_front_controller: the #AgsOscFrontController
+   * @osc_connection: the #AgsOscConnection
+   * @packet: the packet received
+   * @packet_size: the packet size
    *
    * The ::do-request signal is emited during do request of front controller.
    *
@@ -221,6 +224,7 @@ ags_osc_front_controller_real_do_request(AgsOscFrontController *osc_front_contro
 					 AgsOscConnection *osc_connection,
 					 unsigned char *packet, guint packet_size)
 {
+  //TODO:JK: implement me
 }
 
 /**

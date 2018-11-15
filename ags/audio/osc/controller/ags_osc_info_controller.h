@@ -46,14 +46,14 @@ struct _AgsOscInfoControllerClass
 
   gpointer (*get_info)(AgsOscInfoController *info_controller,
 		       AgsOscConnection *osc_connection,
-		       guchar *message, guint message_size);
+		       unsigned char *message, guint message_size);
 };
 
 GType ags_osc_info_controller_get_type();
 
 gpointer ags_osc_info_controller_get_info(AgsOscInfoController *info_controller,
 					  AgsOscConnection *osc_connection,
-					  guchar *message, guint message_size);
+					  unsigned char *message, guint message_size);
 
 AgsOscInfoController* ags_osc_info_controller_new();
 
