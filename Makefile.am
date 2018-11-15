@@ -109,7 +109,12 @@ man1_MANS = gsequencer.1 midi2xml.1
 
 CLEANFILES = \
 	functional-system-tests.mk \
-	m4/Makefile
+	m4/Makefile \
+	libags.sym \
+	libags_thread.sym \
+	libags_server.sym \
+	libags_audio.sym \
+	libags_gui.sym
 
 # pkg-config
 pkgconfigdir = $(libdir)/pkgconfig
