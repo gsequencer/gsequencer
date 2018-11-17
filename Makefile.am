@@ -77,6 +77,14 @@ EXTRA_DIST = config.rpath \
 	po/README
 
 EXTRA_DIST += \
+	license-notice-gnu-agpl-3-0+-c.txt \
+	license-notice-gnu-fdl-1-3-xml.txt \
+	license-notice-gnu-gpl-3-0+-c.txt \
+	license-notice-gnu-gpl-3-0+-sym.txt \
+	license-notice-gnu-agpl-3-0+-sym.txt \
+	license-notice-permissive-xml.txt
+
+EXTRA_DIST += \
 	functional-system-tests.mk.am \
 	functional-system-tests.mk.in
 
@@ -2182,7 +2190,7 @@ clean-local:
 gen-symbols-ags:
 	rm -f libags.sym.in
 	touch libags.sym.in
-	cat license-notice-gnu-gpl-3-0+-c.sym >> libags.sym.in
+	cat license-notice-gnu-gpl-3-0+-sym.txt >> libags.sym.in
 	find ags/util -name "*.h" | xargs grep --no-filename -o -P "(?<=\s)(ags_[a-z0-9_]+)(?=[\s]*\()" >> libags.sym.in
 	find ags/lib -name "*.h" | xargs grep --no-filename -o -P "(?<=\s)(ags_[a-z0-9_]+)(?=[\s]*\()" >> libags.sym.in
 	echo "ags_application_context" >> libags.sym.in
@@ -2193,26 +2201,26 @@ gen-symbols-ags:
 gen-symbols-ags-thread:
 	rm -f libags_thread.sym.in
 	touch libags_thread.sym.in
-	cat license-notice-gnu-gpl-3-0+-c.sym >> libags_thread.sym.in
+	cat license-notice-gnu-gpl-3-0+-sym.txt >> libags_thread.sym.in
 	find ags/thread -name "*.h" | xargs grep --no-filename -o -P "(?<=\s)(ags_[a-z0-9_]+)(?=[\s]*\()" >> libags_thread.sym.in
 
 gen-symbols-ags-server:
 	rm -f libags_server.sym.in
 	touch libags_server.sym.in
-	cat license-notice-gnu-gpl-3-0+-c.sym >> libags_server.sym.in
+	cat license-notice-gnu-agpl-3-0+-sym.txt >> libags_server.sym.in
 	find ags/server -name "*.h" | xargs grep --no-filename -o -P "(?<=\s)(ags_[a-z0-9_]+)(?=[\s]*\()" >> libags_server.sym.in
 
 gen-symbols-ags-audio:
 	rm -f libags_audio.sym.in
 	touch libags_audio.sym.in
-	cat license-notice-gnu-gpl-3-0+-c.sym >> libags_audio.sym.in
+	cat license-notice-gnu-gpl-3-0+-sym.txt >> libags_audio.sym.in
 	find ags/plugin -name "*.h" | xargs grep --no-filename -o -P "(?<=\s)(ags_[a-z0-9_]+)(?=[\s]*\()" >> libags_audio.sym.in
 	find ags/audio -name "*.h" | xargs grep --no-filename -o -P "(?<=\s)(ags_[a-z0-9_]+)(?=[\s]*\()" >> libags_audio.sym.in
 
 gen-symbols-ags-gui:
 	rm -f libags_gui.sym.in
 	touch libags_gui.sym.in
-	cat license-notice-gnu-gpl-3-0+-c.sym >> libags_gui.sym.in
+	cat license-notice-gnu-gpl-3-0+-sym.txt >> libags_gui.sym.in
 	find ags/widget -name "*.h" | xargs grep --no-filename -o -P "(?<=\s)(ags_[a-z0-9_]+)(?=[\s]*\()" >> libags_gui.sym.in
 	find ags/widget -name "ags_widget_marshal.h" | xargs grep --no-filename -o -P "(ags_widget_cclosure_marshal_[a-zA-Z0-9_]+)" >> libags_gui.sym.in
 
