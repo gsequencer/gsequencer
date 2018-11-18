@@ -19,11 +19,14 @@
 
 #include <ags/audio/osc/controller/ags_osc_node_controller.h>
 
-#include <ags/audio/osc/ags_audio.h>
-#include <ags/audio/osc/ags_channel.h>
-#include <ags/audio/osc/ags_port.h>
-
 #include <ags/libags.h>
+
+#include <ags/audio/ags_sound_provider.h>
+#include <ags/audio/ags_audio.h>
+#include <ags/audio/ags_channel.h>
+#include <ags/audio/ags_port.h>
+
+#include <ags/audio/osc/ags_osc_response.h>
 
 #include <ags/i18n.h>
 
@@ -57,7 +60,7 @@ gpointer ags_osc_node_controller_get_data_sequencer(AgsOscNodeController *osc_no
 
 gpointer ags_osc_node_controller_get_data_audio(AgsOscNodeController *osc_node_controller,
 						AgsOscConnection *osc_connection,
-						GObject *audio,
+						AgsAudio *audio,
 						unsigned char *message, guint message_size,
 						gchar *path, guint path_offset);
 gpointer ags_osc_node_controller_get_data_channel(AgsOscNodeController *osc_node_controller,
@@ -96,6 +99,7 @@ enum{
 };
 
 static gpointer ags_osc_node_controller_parent_class = NULL;
+static guint osc_node_controller_signals[LAST_SIGNAL];
 
 GType
 ags_osc_node_controller_get_type()
@@ -770,6 +774,8 @@ ags_osc_node_controller_get_data_audio(AgsOscNodeController *osc_node_controller
   if(!strncmp(path + path_offset,
 	      ":",
 	      1)){
+    guint length;
+    
     osc_response = ags_osc_response_new();
 
     packet = (unsigned char *) malloc(AGS_OSC_RESPONSE_DEFAULT_CHUNK_SIZE * sizeof(unsigned char));
@@ -1206,18 +1212,14 @@ ags_osc_node_controller_get_data_audio(AgsOscNodeController *osc_node_controller
 	return(osc_response);
       }
 
-      g_object_get(audio,
-		   "port", &start_port,
-		   NULL);	
-
       length = path - offset;
 
       specifier = malloc(length * sizeof(gchar));
       sscanf(path + path_offset, "", &specifier);
-	
-      g_object_get(channel,
+
+      g_object_get(audio,
 		   "port", &start_port,
-		   NULL);
+		   NULL);	
 
       list = ags_port_find_specifier(start_port,
 				     specifier);
@@ -1289,6 +1291,8 @@ ags_osc_node_controller_get_data_channel(AgsOscNodeController *osc_node_controll
   if(!strncmp(path + path_offset,
 	      ":",
 	      1)){
+    guint length;
+    
     osc_response = ags_osc_response_new();
 
     packet = (unsigned char *) malloc(AGS_OSC_RESPONSE_DEFAULT_CHUNK_SIZE * sizeof(unsigned char));
@@ -1597,6 +1601,8 @@ ags_osc_node_controller_get_data_port(AgsOscNodeController *osc_node_controller,
   if(!strncmp(path + path_offset,
 	      ":",
 	      1)){
+    guint length;
+    
     osc_response = ags_osc_response_new();
 
     packet = (unsigned char *) malloc(AGS_OSC_RESPONSE_DEFAULT_CHUNK_SIZE * sizeof(unsigned char));
@@ -1764,7 +1770,7 @@ ags_osc_node_controller_get_data_port(AgsOscNodeController *osc_node_controller,
 	  ags_osc_buffer_util_put_int32(packet,
 					packet_size);
 	}else if(port_value_type == G_TYPE_UINT64){
-	  for(i = 0; i < port_value_length){
+	  for(i = 0; i < port_value_length; i++){
 	    packet[packet_size + 3 + i] = 'h';
 	  }
 
@@ -1819,7 +1825,7 @@ ags_osc_node_controller_get_data_port(AgsOscNodeController *osc_node_controller,
 	  ags_osc_buffer_util_put_int32(packet,
 					packet_size);
 	}else if(port_value_type == G_TYPE_FLOAT){
-	  for(i = 0; i < port_value_length){
+	  for(i = 0; i < port_value_length; i++){
 	    packet[packet_size + 3 + i] = 'f';
 	  }
 
@@ -1873,7 +1879,7 @@ ags_osc_node_controller_get_data_port(AgsOscNodeController *osc_node_controller,
 	  ags_osc_buffer_util_put_int32(packet,
 					packet_size);
 	}else if(port_value_type == G_TYPE_DOUBLE){
-	  for(i = 0; i < port_value_length){
+	  for(i = 0; i < port_value_length; i++){
 	    packet[packet_size + 3 + i] = 'd';
 	  }
 	  
@@ -2157,7 +2163,7 @@ ags_osc_node_controller_get_data_port(AgsOscNodeController *osc_node_controller,
 }
 
 gpointer
-ags_osc_node_controller_real_get_data(AgsOscNodeController *node_controller,
+ags_osc_node_controller_real_get_data(AgsOscNodeController *osc_node_controller,
 				      AgsOscConnection *osc_connection,
 				      unsigned char *message, guint message_size)
 {
@@ -2344,7 +2350,7 @@ ags_osc_node_controller_real_get_data(AgsOscNodeController *node_controller,
  * Since: 2.1.0
  */
 gpointer
-ags_osc_node_controller_get_data(AgsOscNodeController *node_controller,
+ags_osc_node_controller_get_data(AgsOscNodeController *osc_node_controller,
 				 AgsOscConnection *osc_connection,
 				 unsigned char *message, guint message_size)
 {

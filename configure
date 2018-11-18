@@ -3194,30 +3194,6 @@ ac_config_headers="$ac_config_headers ags/config.h"
 ac_config_headers="$ac_config_headers ags/ags_config.h"
 
 
-# GSequencer - Advanced GTK Sequencer
-# Copyright (C) 2018 Joël Krähemann
-#
-# This file is part of GSequencer.
-#
-# GSequencer is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# GSequencer is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
-
-
-
-
-
-
-
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for a sed that does not truncate output" >&5
 $as_echo_n "checking for a sed that does not truncate output... " >&6; }
@@ -19165,9 +19141,29 @@ fi
 
 
 
+  { $as_echo "$as_me:${as_lineno-$LINENO}: generating libags.sym" >&5
+$as_echo "$as_me: generating libags.sym" >&6;}
+  `tail -n +17 libags.sym.in > libags.sym`
 
 
+  { $as_echo "$as_me:${as_lineno-$LINENO}: generating libags_thread.sym" >&5
+$as_echo "$as_me: generating libags_thread.sym" >&6;}
+  `tail -n +17 libags_thread.sym.in > libags_thread.sym`
 
+
+  { $as_echo "$as_me:${as_lineno-$LINENO}: generating libags_server.sym" >&5
+$as_echo "$as_me: generating libags_server.sym" >&6;}
+  `tail -n +17 libags_server.sym.in > libags_server.sym`
+
+
+  { $as_echo "$as_me:${as_lineno-$LINENO}: generating libags_audio.sym" >&5
+$as_echo "$as_me: generating libags_audio.sym" >&6;}
+  `tail -n +17 libags_audio.sym.in > libags_audio.sym`
+
+
+  { $as_echo "$as_me:${as_lineno-$LINENO}: generating libags_gui.sym" >&5
+$as_echo "$as_me: generating libags_gui.sym" >&6;}
+  `tail -n +17 libags_gui.sym.in > libags_gui.sym`
 
 
 

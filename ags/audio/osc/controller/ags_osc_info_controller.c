@@ -19,6 +19,8 @@
 
 #include <ags/audio/osc/controller/ags_osc_info_controller.h>
 
+#include <ags/libags.h>
+
 #include <ags/audio/osc/ags_osc_response.h>
 
 #include <stdlib.h>
@@ -145,7 +147,7 @@ ags_osc_info_controller_class_init(AgsOscInfoControllerClass *osc_info_controlle
 void
 ags_osc_info_controller_init(AgsOscInfoController *osc_info_controller)
 {
-  g_object_set(osc_node_controller,
+  g_object_set(osc_info_controller,
 	       "context-path", "/info",
 	       NULL);
 }
@@ -225,7 +227,7 @@ ags_osc_info_controller_finalize(GObject *gobject)
 }
 
 gpointer
-ags_osc_info_controller_real_get_info(AgsOscInfoController *info_controller,
+ags_osc_info_controller_real_get_info(AgsOscInfoController *osc_info_controller,
 				      AgsOscConnection *osc_connection,
 				      unsigned char *message, guint message_size)
 {
@@ -269,7 +271,7 @@ ags_osc_info_controller_real_get_info(AgsOscInfoController *info_controller,
  * Since: 2.1.0
  */
 gpointer
-ags_osc_info_controller_get_info(AgsOscInfoController *info_controller,
+ags_osc_info_controller_get_info(AgsOscInfoController *osc_info_controller,
 				 AgsOscConnection *osc_connection,
 				 unsigned char *message, guint message_size)
 {
