@@ -34,7 +34,7 @@
 #define AGS_OSC_RESPONSE_ERROR_MESSAGE_UNKNOW_ARGUMENT "unknown argument"
 #define AGS_OSC_RESPONSE_ERROR_MESSAGE_CHUNK_SIZE_EXCEEDED "chunk size exceeded"
 
-#define AGS_OSC_RESPONSE_DEFAULT_CHUNK_SIZE (8192)
+#define AGS_OSC_RESPONSE_DEFAULT_CHUNK_SIZE (131072)
 
 typedef struct _AgsOscResponse AgsOscResponse;
 typedef struct _AgsOscResponseClass AgsOscResponseClass;
