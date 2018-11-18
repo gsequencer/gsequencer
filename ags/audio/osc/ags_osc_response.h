@@ -30,11 +30,18 @@
 #define AGS_IS_OSC_RESPONSE_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_OSC_RESPONSE))
 #define AGS_OSC_RESPONSE_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_OSC_RESPONSE, AgsOscResponseClass))
 
+#define AGS_OSC_RESPONSE_ERROR_MESSAGE_UNKNOW_PATH "unknow path"
+#define AGS_OSC_RESPONSE_ERROR_MESSAGE_UNKNOW_ARGUMENT "unknown argument"
+#define AGS_OSC_RESPONSE_ERROR_MESSAGE_CHUNK_SIZE_EXCEEDED "chunk size exceeded"
+
+#define AGS_OSC_RESPONSE_DEFAULT_CHUNK_SIZE (8192)
+
 typedef struct _AgsOscResponse AgsOscResponse;
 typedef struct _AgsOscResponseClass AgsOscResponseClass;
 
 typedef enum{
   AGS_OSC_RESPONSE_EMPTY     = 1,
+  AGS_OSC_RESPONSE_ERROR     = 1 <<  1,
 }AgsOscResponseFlags;
 
 struct _AgsOscResponse
@@ -47,7 +54,9 @@ struct _AgsOscResponse
   pthread_mutexattr_t *obj_mutexattr;
 
   guchar *packet;
-  guint packet_size
+  guint packet_size;
+
+  gchar *error_message;
 };
 
 struct _AgsOscResponseClass

@@ -43,9 +43,17 @@ struct _AgsOscNodeController
 struct _AgsOscNodeControllerClass
 {
   AgsOscControllerClass osc_controller;
+
+  gpointer (*get_data)(AgsOscNodeController *osc_node_controller,
+		       AgsOscConnection *osc_connection,
+		       unsigned char *message, guint message_size);
 };
 
 GType ags_osc_node_controller_get_type();
+
+gpointer ags_osc_node_controller_get_data(AgsOscNodeController *osc_node_controller,
+					  AgsOscConnection *osc_connection,
+					  unsigned char *message, guint message_size);
 
 AgsOscNodeController* ags_osc_node_controller_new();
 

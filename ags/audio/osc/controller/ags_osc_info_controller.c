@@ -136,13 +136,18 @@ ags_osc_info_controller_class_init(AgsOscInfoControllerClass *osc_info_controlle
 		 G_STRUCT_OFFSET(AgsOscInfoControllerClass, get_info),
 		 NULL, NULL,
 		 ags_cclosure_marshal_POINTER__OBJECT_POINTER_UINT,
-		 G_TYPE_NONE, 0);
+		 G_TYPE_NONE, 3,
+		 G_TYPE_OBJECT,
+		 G_TYPE_POINTER,
+		 G_TYPE_UINT);
 }
 
 void
 ags_osc_info_controller_init(AgsOscInfoController *osc_info_controller)
 {
-  //TODO:JK: implement me
+  g_object_set(osc_node_controller,
+	       "context-path", "/info",
+	       NULL);
 }
 
 void
