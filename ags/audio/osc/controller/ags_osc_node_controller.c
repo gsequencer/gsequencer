@@ -273,9 +273,7 @@ ags_osc_node_controller_get_data_soundcard(AgsOscNodeController *osc_node_contro
   guint real_packet_size;
   guint packet_size;
 
-  if(soundcard == NULL){
-    //TODO:JK: implement me
-
+  if(!AGS_IS_SOUNDCARD(soundcard)){
     return(NULL);
   }
   
@@ -589,7 +587,13 @@ ags_osc_node_controller_get_data_soundcard(AgsOscNodeController *osc_node_contro
 
       return(osc_response);
     }
+
+    g_object_set(osc_response,
+		 "packet-size", packet_size,
+		 NULL);
   }else{
+    osc_response = ags_osc_response_new();
+      
     ags_osc_response_set_flags(osc_response,
 			       AGS_OSC_RESPONSE_ERROR);
 
@@ -619,9 +623,7 @@ ags_osc_node_controller_get_data_sequencer(AgsOscNodeController *osc_node_contro
   guint real_packet_size;
   guint packet_size;
 
-  if(sequencer == NULL){
-    //TODO:JK: implement me
-
+  if(!AGS_IS_SEQUENCER(sequencer)){
     return(NULL);
   }
   
@@ -720,7 +722,13 @@ ags_osc_node_controller_get_data_sequencer(AgsOscNodeController *osc_node_contro
 
       return(osc_response);
     }
+
+    g_object_set(osc_response,
+		 "packet-size", packet_size,
+		 NULL);
   }else{
+    osc_response = ags_osc_response_new();
+      
     ags_osc_response_set_flags(osc_response,
 			       AGS_OSC_RESPONSE_ERROR);
 
@@ -750,9 +758,7 @@ ags_osc_node_controller_get_data_audio(AgsOscNodeController *osc_node_controller
   guint real_packet_size;
   guint packet_size;
   
-  if(audio == NULL){
-    //TODO:JK: implement me
-
+  if(!AGS_IS_AUDIO(audio)){
     return(NULL);
   }
   
@@ -1079,7 +1085,20 @@ ags_osc_node_controller_get_data_audio(AgsOscNodeController *osc_node_controller
       /* packet size */
       ags_osc_buffer_util_put_int32(packet,
 				    packet_size);
+    }else{
+      ags_osc_response_set_flags(osc_response,
+				 AGS_OSC_RESPONSE_ERROR);
+
+      g_object_set(osc_response,
+		   "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_UNKNOW_ARGUMENT,
+		   NULL);
+
+      return(osc_response);
     }
+
+    g_object_set(osc_response,
+		 "packet-size", packet_size,
+		 NULL);
   }else if(!strncmp(path + path_offset,
 		    "/AgsOutput",
 		    11)){
@@ -1215,10 +1234,28 @@ ags_osc_node_controller_get_data_audio(AgsOscNodeController *osc_node_controller
 	
       g_list_free(start_port);
     }else{
-      g_critical("missing index");
+      osc_response = ags_osc_response_new();
+      
+      ags_osc_response_set_flags(osc_response,
+				 AGS_OSC_RESPONSE_ERROR);
+
+      g_object_set(osc_response,
+		   "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_MISSING_INDEX,
+		   NULL);
 
       return(osc_response);
     }
+  }else{
+    osc_response = ags_osc_response_new();
+      
+    ags_osc_response_set_flags(osc_response,
+			       AGS_OSC_RESPONSE_ERROR);
+
+    g_object_set(osc_response,
+		 "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_UNKNOW_PATH,
+		 NULL);
+
+    return(osc_response);
   }
 
   return(osc_response);
@@ -1240,9 +1277,7 @@ ags_osc_node_controller_get_data_channel(AgsOscNodeController *osc_node_controll
   guint real_packet_size;
   guint packet_size;
   
-  if(channel == NULL){
-    //TODO:JK: implement me
-
+  if(!AGS_IS_CHANNEL(channel)){
     return(NULL);
   }
   
@@ -1418,7 +1453,20 @@ ags_osc_node_controller_get_data_channel(AgsOscNodeController *osc_node_controll
       /* packet size */
       ags_osc_buffer_util_put_int32(packet,
 				    packet_size);
+    }else{
+      ags_osc_response_set_flags(osc_response,
+				 AGS_OSC_RESPONSE_ERROR);
+
+      g_object_set(osc_response,
+		   "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_UNKNOW_ARGUMENT,
+		   NULL);
+
+      return(osc_response);
     }
+
+    g_object_set(osc_response,
+		 "packet-size", packet_size,
+		 NULL);
   }else if(!strncmp(path + path_offset,
 		    "/AgsPort",
 		    8)){
@@ -1496,10 +1544,26 @@ ags_osc_node_controller_get_data_channel(AgsOscNodeController *osc_node_controll
 	
       g_list_free(start_port);
     }else{
-      g_critical("missing index");
+      osc_response = ags_osc_response_new();
+      
+      ags_osc_response_set_flags(osc_response,
+				 AGS_OSC_RESPONSE_ERROR);
+
+      g_object_set(osc_response,
+		   "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_MISSING_INDEX,
+		   NULL);
 
       return(osc_response);
     }
+  }else{
+    ags_osc_response_set_flags(osc_response,
+			       AGS_OSC_RESPONSE_ERROR);
+
+    g_object_set(osc_response,
+		 "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_UNKNOW_PATH,
+		 NULL);
+
+    return(osc_response);
   }
 
   return(osc_response);
@@ -1521,9 +1585,7 @@ ags_osc_node_controller_get_data_port(AgsOscNodeController *osc_node_controller,
   guint real_packet_size;
   guint packet_size;
 
-  if(port == NULL){
-    //TODO:JK: implement me
-
+  if(!AGS_IS_PORT(port)){
     return(NULL);
   }
 
@@ -1582,14 +1644,288 @@ ags_osc_node_controller_get_data_port(AgsOscNodeController *osc_node_controller,
 		   NULL);
       
       if(port_value_is_pointer){
-	guint i;
+	gchar *type_tag;
 	
-	if(port_value_type == G_TYPE_BOOLEAN){
+	guint i;
+
+	/* message type tag */
+	if(packet_size + (4 * (guint) ceil((double) (port_value_length + 5) / 4.0)) > real_packet_size){
+	  ags_osc_response_set_flags(osc_response,
+				     AGS_OSC_RESPONSE_ERROR);
+
+	  g_object_set(osc_response,
+		       "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_CHUNK_SIZE_EXCEEDED,
+		       NULL);
+
+	  return(osc_response);
+	}
+
+	type_tag = (gchar *) malloc((port_value_length + 5) * sizeof(gchar));
+
+	type_tag[0] = ',';
+	type_tag[1] = 's';
+	type_tag[2] = '[';
+	type_tag[port_value_length + 4] = ']';
+	
+	if(port_value_type == G_TYPE_BOOLEAN){	  
+	  pthread_mutex_lock(port_mutex);
+
+	  for(i = 0; i < port_value_length; i++){
+	    gboolean is_active;
+	    
+	    is_active = port->port_value.ags_port_boolean_ptr[i];
+
+	    if(is_active){
+	      packet[packet_size + 3 + i] = 'T';
+	    }else{
+	      packet[packet_size + 3 + i] = 'F';
+	    }
+	  }
 	  
+	  pthread_mutex_unlock(port_mutex);
+	  
+	  /* node path */
+	  packet_size += (4 * (guint) ceil((double) (port_value_length + 5) / 4.0));
+	  
+	  length = strlen(path);
+
+	  if(packet_size + (4 * (guint) ceil((double) (length + 1) / 4.0)) > real_packet_size){
+	    ags_osc_response_set_flags(osc_response,
+				       AGS_OSC_RESPONSE_ERROR);
+
+	    g_object_set(osc_response,
+			 "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_CHUNK_SIZE_EXCEEDED,
+			 NULL);
+
+	    return(osc_response);
+	  }
+
+	  ags_osc_buffer_util_put_string(packet + packet_size,
+					 path, -1);
+
+	  /* node argument */
+	  packet_size += (4 * (guint) ceil((double) (length + 1) / 4.0));
+
+	  /* packet size */
+	  ags_osc_buffer_util_put_int32(packet,
+					packet_size);
 	}else if(port_value_type == G_TYPE_INT64){
+	  for(i = 0; i < port_value_length; i++){
+	    packet[packet_size + 3 + i] = 'h';
+	  }
+
+	  /* node path */
+	  packet_size += (4 * (guint) ceil((double) (port_value_length + 5) / 4.0));
+	  
+	  length = strlen(path);
+
+	  if(packet_size + (4 * (guint) ceil((double) (length + 1) / 4.0)) > real_packet_size){
+	    ags_osc_response_set_flags(osc_response,
+				       AGS_OSC_RESPONSE_ERROR);
+
+	    g_object_set(osc_response,
+			 "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_CHUNK_SIZE_EXCEEDED,
+			 NULL);
+
+	    return(osc_response);
+	  }
+
+	  ags_osc_buffer_util_put_string(packet + packet_size,
+					 path, -1);
+
+	  /* node argument */
+	  packet_size += (4 * (guint) ceil((double) (length + 1) / 4.0));
+
+	  if(packet_size + (4 * (guint) ceil((double) (port_value_length * 8) / 4.0)) > real_packet_size){
+	    ags_osc_response_set_flags(osc_response,
+				       AGS_OSC_RESPONSE_ERROR);
+
+	    g_object_set(osc_response,
+			 "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_CHUNK_SIZE_EXCEEDED,
+			 NULL);
+
+	    return(osc_response);
+	  }
+	  
+	  pthread_mutex_lock(port_mutex);
+
+	  for(i = 0; i < port_value_length; i++){
+	    gint64 value;
+
+	    value = port->port_value.ags_port_int_ptr[i];
+	    
+	    ags_osc_buffer_util_put_int64(packet + packet_size + 3 + (i * 8),
+					  value);
+	  }
+
+	  pthread_mutex_unlock(port_mutex);
+
+	  /* packet size */
+	  ags_osc_buffer_util_put_int32(packet,
+					packet_size);
 	}else if(port_value_type == G_TYPE_UINT64){
+	  for(i = 0; i < port_value_length){
+	    packet[packet_size + 3 + i] = 'h';
+	  }
+
+	  /* node path */
+	  packet_size += (4 * (guint) ceil((double) (port_value_length + 5) / 4.0));
+	  
+	  length = strlen(path);
+
+	  if(packet_size + (4 * (guint) ceil((double) (length + 1) / 4.0)) > real_packet_size){
+	    ags_osc_response_set_flags(osc_response,
+				       AGS_OSC_RESPONSE_ERROR);
+
+	    g_object_set(osc_response,
+			 "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_CHUNK_SIZE_EXCEEDED,
+			 NULL);
+
+	    return(osc_response);
+	  }
+
+	  ags_osc_buffer_util_put_string(packet + packet_size,
+					 path, -1);
+
+	  /* node argument */
+	  packet_size += (4 * (guint) ceil((double) (length + 1) / 4.0));
+
+	  if(packet_size + (4 * (guint) ceil((double) (port_value_length * 8) / 4.0)) > real_packet_size){
+	    ags_osc_response_set_flags(osc_response,
+				       AGS_OSC_RESPONSE_ERROR);
+
+	    g_object_set(osc_response,
+			 "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_CHUNK_SIZE_EXCEEDED,
+			 NULL);
+
+	    return(osc_response);
+	  }
+	  
+	  pthread_mutex_lock(port_mutex);
+
+	  for(i = 0; i < port_value_length; i++){
+	    guint64 value;
+
+	    value = port->port_value.ags_port_uint_ptr[i];
+
+	    //FIXME:JK: unsafe sign
+	    ags_osc_buffer_util_put_int64(packet + packet_size + 3 + (i * 8),
+					  value);
+	  }
+
+	  pthread_mutex_unlock(port_mutex);
+
+	  /* packet size */
+	  ags_osc_buffer_util_put_int32(packet,
+					packet_size);
 	}else if(port_value_type == G_TYPE_FLOAT){
+	  for(i = 0; i < port_value_length){
+	    packet[packet_size + 3 + i] = 'f';
+	  }
+
+	  /* node path */
+	  packet_size += (4 * (guint) ceil((double) (port_value_length + 5) / 4.0));
+	  
+	  length = strlen(path);
+
+	  if(packet_size + (4 * (guint) ceil((double) (length + 1) / 4.0)) > real_packet_size){
+	    ags_osc_response_set_flags(osc_response,
+				       AGS_OSC_RESPONSE_ERROR);
+
+	    g_object_set(osc_response,
+			 "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_CHUNK_SIZE_EXCEEDED,
+			 NULL);
+
+	    return(osc_response);
+	  }
+
+	  ags_osc_buffer_util_put_string(packet + packet_size,
+					 path, -1);
+
+	  /* node argument */
+	  packet_size += (4 * (guint) ceil((double) (length + 1) / 4.0));
+
+	  if(packet_size + (4 * (guint) ceil((double) (port_value_length * 4) / 4.0)) > real_packet_size){
+	    ags_osc_response_set_flags(osc_response,
+				       AGS_OSC_RESPONSE_ERROR);
+
+	    g_object_set(osc_response,
+			 "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_CHUNK_SIZE_EXCEEDED,
+			 NULL);
+
+	    return(osc_response);
+	  }
+	  
+	  pthread_mutex_lock(port_mutex);
+
+	  for(i = 0; i < port_value_length; i++){
+	    gfloat value;
+
+	    value = port->port_value.ags_port_float_ptr[i];
+	    
+	    ags_osc_buffer_util_put_float(packet + packet_size + 3 + (i * 4),
+					  value);
+	  }
+
+	  pthread_mutex_unlock(port_mutex);
+
+	  /* packet size */
+	  ags_osc_buffer_util_put_int32(packet,
+					packet_size);
 	}else if(port_value_type == G_TYPE_DOUBLE){
+	  for(i = 0; i < port_value_length){
+	    packet[packet_size + 3 + i] = 'd';
+	  }
+	  
+	  /* node path */
+	  packet_size += (4 * (guint) ceil((double) (port_value_length + 5) / 4.0));
+	  
+	  length = strlen(path);
+
+	  if(packet_size + (4 * (guint) ceil((double) (length + 1) / 4.0)) > real_packet_size){
+	    ags_osc_response_set_flags(osc_response,
+				       AGS_OSC_RESPONSE_ERROR);
+
+	    g_object_set(osc_response,
+			 "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_CHUNK_SIZE_EXCEEDED,
+			 NULL);
+
+	    return(osc_response);
+	  }
+
+	  ags_osc_buffer_util_put_string(packet + packet_size,
+					 path, -1);
+
+	  /* node argument */
+	  packet_size += (4 * (guint) ceil((double) (length + 1) / 4.0));
+
+	  if(packet_size + (4 * (guint) ceil((double) (port_value_length * 8) / 4.0)) > real_packet_size){
+	    ags_osc_response_set_flags(osc_response,
+				       AGS_OSC_RESPONSE_ERROR);
+
+	    g_object_set(osc_response,
+			 "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_CHUNK_SIZE_EXCEEDED,
+			 NULL);
+
+	    return(osc_response);
+	  }
+	  
+	  pthread_mutex_lock(port_mutex);
+
+	  for(i = 0; i < port_value_length; i++){
+	    gdouble value;
+
+	    value = port->port_value.ags_port_double_ptr[i];
+	    
+	    ags_osc_buffer_util_put_double(packet + packet_size + 3 + (i * 8),
+					   value);
+	  }
+
+	  pthread_mutex_unlock(port_mutex);
+
+	  /* packet size */
+	  ags_osc_buffer_util_put_int32(packet,
+					packet_size);
 	}
       }else{
 	if(port_value_type == G_TYPE_BOOLEAN){
@@ -1615,7 +1951,7 @@ ags_osc_node_controller_get_data_port(AgsOscNodeController *osc_node_controller,
 	  
 	  length = strlen(path);
 
-	  if(packet_size + (4 * (guint) ceil((double) (length + 1) / 4.0)) + 4 > real_packet_size){
+	  if(packet_size + (4 * (guint) ceil((double) (length + 1) / 4.0)) > real_packet_size){
 	    ags_osc_response_set_flags(osc_response,
 				       AGS_OSC_RESPONSE_ERROR);
 
@@ -1636,10 +1972,183 @@ ags_osc_node_controller_get_data_port(AgsOscNodeController *osc_node_controller,
 	  ags_osc_buffer_util_put_int32(packet,
 					packet_size);
 	}else if(port_value_type == G_TYPE_INT64){
+	  gint64 value;
+	  
+	  /* message type tag */
+	  pthread_mutex_lock(port_mutex);
+
+	  value = port->port_value.ags_port_int;
+	  
+	  pthread_mutex_unlock(port_mutex);
+
+	  ags_osc_buffer_util_put_string(packet + packet_size,
+					 ",sh", -1);
+
+	  /* node path */	    
+	  packet_size += 4;
+	  
+	  length = strlen(path);
+
+	  if(packet_size + (4 * (guint) ceil((double) (length + 1) / 4.0)) + 8 > real_packet_size){
+	    ags_osc_response_set_flags(osc_response,
+				       AGS_OSC_RESPONSE_ERROR);
+
+	    g_object_set(osc_response,
+			 "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_CHUNK_SIZE_EXCEEDED,
+			 NULL);
+
+	    return(osc_response);
+	  }
+
+	  ags_osc_buffer_util_put_string(packet + packet_size,
+					 path, -1);
+
+	  /* node argument */
+	  packet_size += (4 * (guint) ceil((double) (length + 1) / 4.0));
+
+	  ags_osc_buffer_util_put_int64(packet + packet_size,
+					value);
+	  
+	  packet_size += 8;
+	  
+	  /* packet size */
+	  ags_osc_buffer_util_put_int32(packet,
+					packet_size);
 	}else if(port_value_type == G_TYPE_UINT64){
+	  guint64 value;
+	  
+	  /* message type tag */
+	  pthread_mutex_lock(port_mutex);
+
+	  value = port->port_value.ags_port_uint;
+	  
+	  pthread_mutex_unlock(port_mutex);
+
+	  ags_osc_buffer_util_put_string(packet + packet_size,
+					 ",sh", -1);
+
+	  /* node path */	    
+	  packet_size += 4;
+	  
+	  length = strlen(path);
+
+	  if(packet_size + (4 * (guint) ceil((double) (length + 1) / 4.0)) + 8 > real_packet_size){
+	    ags_osc_response_set_flags(osc_response,
+				       AGS_OSC_RESPONSE_ERROR);
+
+	    g_object_set(osc_response,
+			 "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_CHUNK_SIZE_EXCEEDED,
+			 NULL);
+
+	    return(osc_response);
+	  }
+
+	  ags_osc_buffer_util_put_string(packet + packet_size,
+					 path, -1);
+
+	  /* node argument */
+	  packet_size += (4 * (guint) ceil((double) (length + 1) / 4.0));
+
+	  //FIXME:JK: unsafe sign
+	  ags_osc_buffer_util_put_int64(packet + packet_size,
+					value);
+	  
+	  packet_size += 8;
+	  
+	  /* packet size */
+	  ags_osc_buffer_util_put_int32(packet,
+					packet_size);
 	}else if(port_value_type == G_TYPE_FLOAT){
+	  gfloat value;
+	  
+	  /* message type tag */
+	  pthread_mutex_lock(port_mutex);
+
+	  value = port->port_value.ags_port_float;
+	  
+	  pthread_mutex_unlock(port_mutex);
+
+	  ags_osc_buffer_util_put_string(packet + packet_size,
+					 ",sf", -1);
+
+	  /* node path */	    
+	  packet_size += 4;
+	  
+	  length = strlen(path);
+
+	  if(packet_size + (4 * (guint) ceil((double) (length + 1) / 4.0)) + 8 > real_packet_size){
+	    ags_osc_response_set_flags(osc_response,
+				       AGS_OSC_RESPONSE_ERROR);
+
+	    g_object_set(osc_response,
+			 "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_CHUNK_SIZE_EXCEEDED,
+			 NULL);
+
+	    return(osc_response);
+	  }
+
+	  ags_osc_buffer_util_put_string(packet + packet_size,
+					 path, -1);
+
+	  /* node argument */
+	  packet_size += (4 * (guint) ceil((double) (length + 1) / 4.0));
+
+	  ags_osc_buffer_util_put_float(packet + packet_size,
+					value);
+	  
+	  packet_size += 4;
+	  
+	  /* packet size */
+	  ags_osc_buffer_util_put_int32(packet,
+					packet_size);
 	}else if(port_value_type == G_TYPE_DOUBLE){
+	  gdouble value;
+	  
+	  /* message type tag */
+	  pthread_mutex_lock(port_mutex);
+
+	  value = port->port_value.ags_port_double;
+	  
+	  pthread_mutex_unlock(port_mutex);
+
+	  ags_osc_buffer_util_put_string(packet + packet_size,
+					 ",sd", -1);
+
+	  /* node path */	    
+	  packet_size += 4;
+	  
+	  length = strlen(path);
+
+	  if(packet_size + (4 * (guint) ceil((double) (length + 1) / 4.0)) + 8 > real_packet_size){
+	    ags_osc_response_set_flags(osc_response,
+				       AGS_OSC_RESPONSE_ERROR);
+
+	    g_object_set(osc_response,
+			 "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_CHUNK_SIZE_EXCEEDED,
+			 NULL);
+
+	    return(osc_response);
+	  }
+
+	  ags_osc_buffer_util_put_string(packet + packet_size,
+					 path, -1);
+
+	  /* node argument */
+	  packet_size += (4 * (guint) ceil((double) (length + 1) / 4.0));
+
+	  ags_osc_buffer_util_put_double(packet + packet_size,
+					 value);
+	  
+	  packet_size += 8;
+	  
+	  /* packet size */
+	  ags_osc_buffer_util_put_int32(packet,
+					packet_size);
 	}
+
+	g_object_set(osc_response,
+		     "packet-size", packet_size,
+		     NULL);
       }
     }
   }
@@ -1691,9 +2200,16 @@ ags_osc_node_controller_real_get_data(AgsOscNodeController *node_controller,
 		      &nth_soundcard);
       
       if(retval <= 0){
-	g_warning("missing index");
+	osc_response = ags_osc_response_new();
+      
+	ags_osc_response_set_flags(osc_response,
+				   AGS_OSC_RESPONSE_ERROR);
 
-	goto ags_osc_node_controller_real_get_data_RESPONSE;
+	g_object_set(osc_response,
+		     "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_MISSING_INDEX,
+		     NULL);
+
+	return(osc_response);
       }
 
       soundcard = g_list_nth_data(start_soundcard,
@@ -1723,9 +2239,16 @@ ags_osc_node_controller_real_get_data(AgsOscNodeController *node_controller,
 		      &nth_sequencer);
       
       if(retval <= 0){
-	g_warning("missing index");
+	osc_response = ags_osc_response_new();
+      
+	ags_osc_response_set_flags(osc_response,
+				   AGS_OSC_RESPONSE_ERROR);
 
-	goto ags_osc_node_controller_real_get_data_RESPONSE;
+	g_object_set(osc_response,
+		     "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_MISSING_INDEX,
+		     NULL);
+
+	return(osc_response);
       }
 
       sequencer = g_list_nth_data(start_sequencer,
@@ -1755,9 +2278,16 @@ ags_osc_node_controller_real_get_data(AgsOscNodeController *node_controller,
 		      &nth_audio);
       
       if(retval <= 0){
-	g_warning("missing index");
+	osc_response = ags_osc_response_new();
+      
+	ags_osc_response_set_flags(osc_response,
+				   AGS_OSC_RESPONSE_ERROR);
 
-	goto ags_osc_node_controller_real_get_data_RESPONSE;
+	g_object_set(osc_response,
+		     "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_MISSING_INDEX,
+		     NULL);
+
+	return(osc_response);
       }
 
       audio = g_list_nth_data(start_audio,
@@ -1771,12 +2301,31 @@ ags_osc_node_controller_real_get_data(AgsOscNodeController *node_controller,
 							    message, message_size,
 							    path, path_offset);
     }else{
-      g_warning("unsupported argument");
+      osc_response = ags_osc_response_new();
+      
+      ags_osc_response_set_flags(osc_response,
+				 AGS_OSC_RESPONSE_ERROR);
+
+      g_object_set(osc_response,
+		   "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_UNKNOW_ARGUMENT,
+		   NULL);
+
+      return(osc_response);
     }
   }
-  
-  /* set response packet */
- ags_osc_node_controller_real_get_data_RESPONSE:
+
+  if(osc_response == NULL){
+    osc_response = ags_osc_response_new();
+      
+    ags_osc_response_set_flags(osc_response,
+			       AGS_OSC_RESPONSE_ERROR);
+
+    g_object_set(osc_response,
+		 "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_SERVER_FAILURE,
+		 NULL);
+
+    return(osc_response);
+  }
   
   return(osc_response);
 }
