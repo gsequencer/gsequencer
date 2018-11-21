@@ -555,7 +555,35 @@ ags_osc_renew_controller_set_data_sequencer(AgsOscRenewController *osc_renew_con
     if(!strncmp(path + path_offset,
 		"device",
 		12)){
-      //TODO:JK: implement me
+      AgsSetDevice *set_device;
+      
+      gchar *device;
+      
+      gboolean success;
+      
+      success = (!strncmp(type_tag + 2, "s", 2)) ? TRUE: FALSE;
+      
+      if(!success){
+	osc_response = ags_osc_response_new();
+      
+	ags_osc_response_set_flags(osc_response,
+				   AGS_OSC_RESPONSE_ERROR);
+
+	g_object_set(osc_response,
+		     "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_MALFORMED_REQUEST,
+		     NULL);
+
+	return(osc_response);
+      }
+      
+      /* read device */
+      ags_osc_buffer_util_get_string(message + 16 + path_length,
+				     &device, NULL);
+
+      set_device = ags_set_device_new(sequencer,
+				      device);
+      ags_task_thread_append_task(task_thread,
+				  set_device);
     }else{
       ags_osc_response_set_flags(osc_response,
 				 AGS_OSC_RESPONSE_ERROR);
@@ -635,27 +663,210 @@ ags_osc_renew_controller_set_data_audio(AgsOscRenewController *osc_renew_control
     if(!strncmp(path + path_offset,
 		"audio-channels",
 		15)){
-      //TODO:JK: implement me
+      AgsResizeAudio *resize_audio;
+
+      guint output_pads, input_pads;
+      guint audio_channels;
+      gboolean success;
+      
+      success = (!strncmp(type_tag + 2, "i", 2)) ? TRUE: FALSE;
+      
+      if(!success){
+	osc_response = ags_osc_response_new();
+      
+	ags_osc_response_set_flags(osc_response,
+				   AGS_OSC_RESPONSE_ERROR);
+
+	g_object_set(osc_response,
+		     "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_MALFORMED_REQUEST,
+		     NULL);
+
+	return(osc_response);
+      }
+      
+      /* read audio channels */
+      ags_osc_buffer_util_get_int32(message + 16 + path_length,
+				    &audio_channels);
+
+      g_object_get(audio,
+		   "output-pads", &output_pads,
+		   "input-pads", &input_pads,
+		   NULL);
+      
+      resize_audio = ags_resize_audio_new(audio,
+					  output_pads, input_pads,
+					  audio_channels);
+      ags_task_thread_append_task(task_thread,
+				  resize_audio);
     }else if(!strncmp(path + path_offset,
 		      "output-pads",
 		      12)){
-      //TODO:JK: implement me
+      AgsResizeAudio *resize_audio;
+
+      guint output_pads, input_pads;
+      guint audio_channels;
+      gboolean success;
+      
+      success = (!strncmp(type_tag + 2, "i", 2)) ? TRUE: FALSE;
+      
+      if(!success){
+	osc_response = ags_osc_response_new();
+      
+	ags_osc_response_set_flags(osc_response,
+				   AGS_OSC_RESPONSE_ERROR);
+
+	g_object_set(osc_response,
+		     "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_MALFORMED_REQUEST,
+		     NULL);
+
+	return(osc_response);
+      }
+      
+      /* read output pads */
+      ags_osc_buffer_util_get_int32(message + 16 + path_length,
+				    &output_pads);
+
+      g_object_get(audio,
+		   "input-pads", &input_pads,
+		   "audio-channels", &audio-channels,
+		   NULL);
+      
+      resize_audio = ags_resize_audio_new(audio,
+					  output_pads, input_pads,
+					  audio_channels);
+      ags_task_thread_append_task(task_thread,
+				  resize_audio);
     }else if(!strncmp(path + path_offset,
 		      "input-pads",
 		      11)){
-      //TODO:JK: implement me
-    }else if(!strncmp(path + path_offset,
-		      "buffer-size",
-		      12)){
-      //TODO:JK: implement me
+      AgsResizeAudio *resize_audio;
+
+      guint output_pads, input_pads;
+      guint audio_channels;
+      gboolean success;
+      
+      success = (!strncmp(type_tag + 2, "i", 2)) ? TRUE: FALSE;
+      
+      if(!success){
+	osc_response = ags_osc_response_new();
+      
+	ags_osc_response_set_flags(osc_response,
+				   AGS_OSC_RESPONSE_ERROR);
+
+	g_object_set(osc_response,
+		     "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_MALFORMED_REQUEST,
+		     NULL);
+
+	return(osc_response);
+      }
+      
+      /* read input pads */
+      ags_osc_buffer_util_get_int32(message + 16 + path_length,
+				    &input_pads);
+
+      g_object_get(audio,
+		   "output-pads", &output_pads,
+		   "audio-channels", &audio-channels,
+		   NULL);
+      
+      resize_audio = ags_resize_audio_new(audio,
+					  output_pads, input_pads,
+					  audio_channels);
+      ags_task_thread_append_task(task_thread,
+				  resize_audio);
     }else if(!strncmp(path + path_offset,
 		      "samplerate",
 		      11)){
-      //TODO:JK: implement me
+      AgsSetSamplerate *set_samplerate;
+      
+      guint samplerate;
+      gboolean success;
+      
+      success = (!strncmp(type_tag + 2, "i", 2)) ? TRUE: FALSE;
+      
+      if(!success){
+	osc_response = ags_osc_response_new();
+      
+	ags_osc_response_set_flags(osc_response,
+				   AGS_OSC_RESPONSE_ERROR);
+
+	g_object_set(osc_response,
+		     "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_MALFORMED_REQUEST,
+		     NULL);
+
+	return(osc_response);
+      }
+      
+      /* read samplerate */
+      ags_osc_buffer_util_get_int32(message + 16 + path_length,
+				    &samplerate);
+
+      set_samplerate = ags_set_samplerate_new(audio,
+					      samplerate);
+      ags_task_thread_append_task(task_thread,
+				  set_samplerate);
+    }else if(!strncmp(path + path_offset,
+		      "buffer-size",
+		      12)){
+      AgsSetBufferSize *set_buffer_size;
+      
+      guint buffer_size;
+      gboolean success;
+      
+      success = (!strncmp(type_tag + 2, "i", 2)) ? TRUE: FALSE;
+      
+      if(!success){
+	osc_response = ags_osc_response_new();
+      
+	ags_osc_response_set_flags(osc_response,
+				   AGS_OSC_RESPONSE_ERROR);
+
+	g_object_set(osc_response,
+		     "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_MALFORMED_REQUEST,
+		     NULL);
+
+	return(osc_response);
+      }
+      
+      /* read buffer size */
+      ags_osc_buffer_util_get_int32(message + 16 + path_length,
+				    &buffer_size);
+
+      set_buffer_size = ags_set_buffer_size_new(audio,
+						buffer_size);
+      ags_task_thread_append_task(task_thread,
+				  set_buffer_size);
     }else if(!strncmp(path + path_offset,
 		      "format",
 		      7)){
-      //TODO:JK: implement me
+      AgsSetFormat *set_format;
+      
+      guint format;
+      gboolean success;
+      
+      success = (!strncmp(type_tag + 2, "i", 2)) ? TRUE: FALSE;
+      
+      if(!success){
+	osc_response = ags_osc_response_new();
+      
+	ags_osc_response_set_flags(osc_response,
+				   AGS_OSC_RESPONSE_ERROR);
+
+	g_object_set(osc_response,
+		     "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_MALFORMED_REQUEST,
+		     NULL);
+
+	return(osc_response);
+      }
+      
+      /* read format */
+      ags_osc_buffer_util_get_int32(message + 16 + path_length,
+				    &format);
+
+      set_format = ags_set_format_new(audio,
+				      format);
+      ags_task_thread_append_task(task_thread,
+				  set_format);
     }else{
       ags_osc_response_set_flags(osc_response,
 				 AGS_OSC_RESPONSE_ERROR);
@@ -878,17 +1089,98 @@ ags_osc_renew_controller_set_data_channel(AgsOscRenewController *osc_renew_contr
     path_offset += 1;
 	
     if(!strncmp(path + path_offset,
-		"buffer-size",
-		12)){
-      //TODO:JK: implement me
-    }else if(!strncmp(path + path_offset,
 		      "samplerate",
 		      11)){
-      //TODO:JK: implement me
+      AgsSetSamplerate *set_samplerate;
+      
+      guint samplerate;
+      gboolean success;
+      
+      success = (!strncmp(type_tag + 2, "i", 2)) ? TRUE: FALSE;
+      
+      if(!success){
+	osc_response = ags_osc_response_new();
+      
+	ags_osc_response_set_flags(osc_response,
+				   AGS_OSC_RESPONSE_ERROR);
+
+	g_object_set(osc_response,
+		     "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_MALFORMED_REQUEST,
+		     NULL);
+
+	return(osc_response);
+      }
+      
+      /* read samplerate */
+      ags_osc_buffer_util_get_int32(message + 16 + path_length,
+				    &samplerate);
+
+      set_samplerate = ags_set_samplerate_new(channel,
+					      samplerate);
+      ags_task_thread_append_task(task_thread,
+				  set_samplerate);
+    }else if(!strncmp(path + path_offset,
+		"buffer-size",
+		12)){
+      AgsSetBufferSize *set_buffer_size;
+      
+      guint buffer_size;
+      gboolean success;
+      
+      success = (!strncmp(type_tag + 2, "i", 2)) ? TRUE: FALSE;
+      
+      if(!success){
+	osc_response = ags_osc_response_new();
+      
+	ags_osc_response_set_flags(osc_response,
+				   AGS_OSC_RESPONSE_ERROR);
+
+	g_object_set(osc_response,
+		     "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_MALFORMED_REQUEST,
+		     NULL);
+
+	return(osc_response);
+      }
+      
+      /* read buffer size */
+      ags_osc_buffer_util_get_int32(message + 16 + path_length,
+				    &buffer_size);
+
+      set_buffer_size = ags_set_buffer_size_new(channel,
+						buffer_size);
+      ags_task_thread_append_task(task_thread,
+				  set_buffer_size);
     }else if(!strncmp(path + path_offset,
 		      "format",
 		      7)){
-      //TODO:JK: implement me
+      AgsSetFormat *set_format;
+      
+      guint format;
+      gboolean success;
+      
+      success = (!strncmp(type_tag + 2, "i", 2)) ? TRUE: FALSE;
+      
+      if(!success){
+	osc_response = ags_osc_response_new();
+      
+	ags_osc_response_set_flags(osc_response,
+				   AGS_OSC_RESPONSE_ERROR);
+
+	g_object_set(osc_response,
+		     "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_MALFORMED_REQUEST,
+		     NULL);
+
+	return(osc_response);
+      }
+      
+      /* read format */
+      ags_osc_buffer_util_get_int32(message + 16 + path_length,
+				    &format);
+
+      set_format = ags_set_format_new(channel,
+				      format);
+      ags_task_thread_append_task(task_thread,
+				  set_format);
     }else{
       ags_osc_response_set_flags(osc_response,
 				 AGS_OSC_RESPONSE_ERROR);
@@ -1021,6 +1313,7 @@ ags_osc_renew_controller_set_data_port(AgsOscRenewController *osc_renew_controll
   
   unsigned char *packet;
 
+  guint type_tag_offset;
   guint real_packet_size;
   guint packet_size;
 
@@ -1076,29 +1369,385 @@ ags_osc_renew_controller_set_data_port(AgsOscRenewController *osc_renew_controll
 		   "port-value-length", &port_value_length,
 		   NULL);
       
-      if(port_value_is_pointer){	
-	if(port_value_type == G_TYPE_BOOLEAN){	  
-	  //TODO:JK: implement me
+      path_offset = 4 * (guint) ceil((double) (path_offset + 6) / 4.0);
+      
+      if(port_value_is_pointer){
+	guint i;
+
+	if(type_tag[1] != '['){
+	  ags_osc_response_set_flags(osc_response,
+				     AGS_OSC_RESPONSE_ERROR);
+
+	  g_object_set(osc_response,
+		       "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_MALFORMED_REQUEST,
+		       NULL);
+
+	  return(osc_response);
+	}
+	
+	if(port_value_type == G_TYPE_BOOLEAN){
+	  guint value_count;
+	  gboolean success;
+
+	  value_count = 0;
+	  success = TRUE;
+	  
+	  pthread_mutex_lock(port_mutex);
+
+	  for(i = 0; type_tag[2 + i] != '\0' && type_tag[2 + i] != ']' && i < port_value_length; i++){
+	    if(type_tag[2 + i] == 'T'){
+	      port->port_value.ags_port_boolean_ptr[i] = TRUE;
+	    }else if(type_tag[2 + i] == 'F'){
+	      port->port_value.ags_port_boolean_ptr[i] = FALSE;
+	    }else{
+	      success = FALSE;
+
+	      break;
+	    }
+	  }
+
+	  pthread_mutex_unlock(port_mutex);
+
+	  if(!success){
+	    ags_osc_response_set_flags(osc_response,
+				       AGS_OSC_RESPONSE_ERROR);
+
+	    g_object_set(osc_response,
+			 "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_MALFORMED_REQUEST,
+			 NULL);
+
+	    return(osc_response);
+	  }
+	  
+	  value_count = i;
 	}else if(port_value_type == G_TYPE_INT64){
-	  //TODO:JK: implement me
+	  gint64 value;
+	  guint value_count;
+	  gboolean success;
+
+	  value_count = 0;
+	  success = TRUE;
+	  
+	  for(i = 0; type_tag[2 + i] != '\0' && type_tag[2 + i] != ']' && i < port_value_length; i++){
+	    if(type_tag[2 + i] != 'h'){
+	      success = FALSE;
+
+	      break;
+	    }
+	  }
+
+	  if(!success ||
+	     type_tag[2 + i] != ']'){
+	    ags_osc_response_set_flags(osc_response,
+				       AGS_OSC_RESPONSE_ERROR);
+
+	    g_object_set(osc_response,
+			 "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_MALFORMED_REQUEST,
+			 NULL);
+
+	    return(osc_response);
+	  }
+
+	  type_tag_offset = 4 * (guint) ceil((double) (3 + i) / 4.0);
+	  value_count = i;
+	  
+	  pthread_mutex_lock(port_mutex);
+
+	  for(i = 0; i < value_count; i++){
+	    ags_osc_buffer_util_get_int64(message + path_offset + type_tag_offset + (i * 8),
+					  &value);
+
+	    port->port_value.ags_port_int_ptr[i] = value;
+	  }
+	  
+	  pthread_mutex_unlock(port_mutex);
 	}else if(port_value_type == G_TYPE_UINT64){
-	  //TODO:JK: implement me
+	  guint64 value;
+	  guint value_count;
+	  gboolean success;
+
+	  value_count = 0;
+	  success = TRUE;
+	  
+	  for(i = 0; type_tag[2 + i] != '\0' && type_tag[2 + i] != ']' && i < port_value_length; i++){
+	    if(type_tag[2 + i] != 'h'){
+	      success = FALSE;
+
+	      break;
+	    }
+	  }
+
+	  if(!success ||
+	     type_tag[2 + i] != ']'){
+	    ags_osc_response_set_flags(osc_response,
+				       AGS_OSC_RESPONSE_ERROR);
+
+	    g_object_set(osc_response,
+			 "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_MALFORMED_REQUEST,
+			 NULL);
+
+	    return(osc_response);
+	  }
+
+	  type_tag_offset = 4 * (guint) ceil((double) (3 + i) / 4.0);
+	  value_count = i;
+	  
+	  pthread_mutex_lock(port_mutex);
+
+	  for(i = 0; i < value_count; i++){
+	    ags_osc_buffer_util_get_int64(message + path_offset + type_tag_offset + (i * 8),
+					  &value);
+
+	    port->port_value.ags_port_uint_ptr[i] = value;
+	  }
+	  
+	  pthread_mutex_unlock(port_mutex);
 	}else if(port_value_type == G_TYPE_FLOAT){
-	  //TODO:JK: implement me
+	  gfloat value;
+	  guint value_count;
+	  gboolean success;
+
+	  value_count = 0;
+	  success = TRUE;
+	  
+	  for(i = 0; type_tag[2 + i] != '\0' && type_tag[2 + i] != ']' && i < port_value_length; i++){
+	    if(type_tag[2 + i] != 'f'){
+	      success = FALSE;
+
+	      break;
+	    }
+	  }
+
+	  if(!success ||
+	     type_tag[2 + i] != ']'){
+	    ags_osc_response_set_flags(osc_response,
+				       AGS_OSC_RESPONSE_ERROR);
+
+	    g_object_set(osc_response,
+			 "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_MALFORMED_REQUEST,
+			 NULL);
+
+	    return(osc_response);
+	  }
+
+	  type_tag_offset = 4 * (guint) ceil((double) (3 + i) / 4.0);
+	  value_count = i;
+	  
+	  pthread_mutex_lock(port_mutex);
+
+	  for(i = 0; i < value_count; i++){
+	    ags_osc_buffer_util_get_float(message + path_offset + type_tag_offset + (i * 8),
+					  &value);
+
+	    port->port_value.ags_port_float_ptr[i] = value;
+	  }
+	  
+	  pthread_mutex_unlock(port_mutex);
 	}else if(port_value_type == G_TYPE_DOUBLE){
-	  //TODO:JK: implement me
+	  gdouble value;
+	  guint value_count;
+	  gboolean success;
+
+	  value_count = 0;
+	  success = TRUE;
+	  
+	  for(i = 0; type_tag[2 + i] != '\0' && type_tag[2 + i] != ']' && i < port_value_length; i++){
+	    if(type_tag[2 + i] != 'd'){
+	      success = FALSE;
+
+	      break;
+	    }
+	  }
+
+	  if(!success ||
+	     type_tag[2 + i] != ']'){
+	    ags_osc_response_set_flags(osc_response,
+				       AGS_OSC_RESPONSE_ERROR);
+
+	    g_object_set(osc_response,
+			 "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_MALFORMED_REQUEST,
+			 NULL);
+
+	    return(osc_response);
+	  }
+
+	  type_tag_offset = 4 * (guint) ceil((double) (3 + i) / 4.0);
+	  value_count = i;
+	  
+	  pthread_mutex_lock(port_mutex);
+
+	  for(i = 0; i < value_count; i++){
+	    ags_osc_buffer_util_get_double(message + path_offset + type_tag_offset + (i * 8),
+					   &value);
+
+	    port->port_value.ags_port_double_ptr[i] = value;
+	  }
+	  
+	  pthread_mutex_unlock(port_mutex);
 	}
       }else{
 	if(port_value_type == G_TYPE_BOOLEAN){
-	  //TODO:JK: implement me
+	  gboolean success;
+
+	  success = TRUE;
+	  
+	  pthread_mutex_lock(port_mutex);
+
+	  if(type_tag[1 + i] == 'T'){
+	    port->port_value.ags_port_boolean = TRUE;
+	  }else if(type_tag[1 + i] == 'F'){
+	    port->port_value.ags_port_boolean = FALSE;
+	  }else{
+	    success = FALSE;
+
+	    break;
+	  }
+
+	  pthread_mutex_unlock(port_mutex);
+
+	  if(!success ||
+	     type_tag[2] != '\0'){
+	    ags_osc_response_set_flags(osc_response,
+				       AGS_OSC_RESPONSE_ERROR);
+
+	    g_object_set(osc_response,
+			 "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_MALFORMED_REQUEST,
+			 NULL);
+
+	    return(osc_response);
+	  }
 	}else if(port_value_type == G_TYPE_INT64){
-	  //TODO:JK: implement me
+	  gint64 value;
+	  gboolean success;
+
+	  type_tag_offset = 4;
+
+	  success = TRUE;
+	  
+	  if(type_tag[1] == 'h'){
+	    ags_osc_buffer_util_get_int64(message + path_offset + type_tag_offset,
+					  &value);
+
+	    /* set value */
+	    pthread_mutex_lock(port_mutex);
+
+	    port->port_value.ags_port_int = value;
+
+	    pthread_mutex_unlock(port_mutex);
+	  }else{
+	    success = FALSE;
+	  }
+
+	  if(!success ||
+	     type_tag[2] != '\0'){
+	    ags_osc_response_set_flags(osc_response,
+				       AGS_OSC_RESPONSE_ERROR);
+
+	    g_object_set(osc_response,
+			 "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_MALFORMED_REQUEST,
+			 NULL);
+
+	    return(osc_response);
+	  }
 	}else if(port_value_type == G_TYPE_UINT64){
-	  //TODO:JK: implement me
+	  guint64 value;
+	  gboolean success;
+
+	  type_tag_offset = 4;
+
+	  success = TRUE;
+	  
+	  if(type_tag[1] == 'h'){
+	    ags_osc_buffer_util_get_int64(message + path_offset + type_tag_offset,
+					  &value);
+
+	    /* set value */
+	    pthread_mutex_lock(port_mutex);
+
+	    port->port_value.ags_port_uint = value;
+
+	    pthread_mutex_unlock(port_mutex);
+	  }else{
+	    success = FALSE;
+	  }
+
+	  if(!success ||
+	     type_tag[2] != '\0'){
+	    ags_osc_response_set_flags(osc_response,
+				       AGS_OSC_RESPONSE_ERROR);
+
+	    g_object_set(osc_response,
+			 "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_MALFORMED_REQUEST,
+			 NULL);
+
+	    return(osc_response);
+	  }
 	}else if(port_value_type == G_TYPE_FLOAT){
-	  //TODO:JK: implement me
+	  gfloat value;
+	  gboolean success;
+
+	  type_tag_offset = 4;
+
+	  success = TRUE;
+	  
+	  if(type_tag[1] == 'f'){
+	    ags_osc_buffer_util_get_float(message + path_offset + type_tag_offset,
+					  &value);
+
+	    /* set value */
+	    pthread_mutex_lock(port_mutex);
+
+	    port->port_value.ags_port_float = value;
+
+	    pthread_mutex_unlock(port_mutex);
+	  }else{
+	    success = FALSE;
+	  }
+
+	  if(!success ||
+	     type_tag[2] != '\0'){
+	    ags_osc_response_set_flags(osc_response,
+				       AGS_OSC_RESPONSE_ERROR);
+
+	    g_object_set(osc_response,
+			 "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_MALFORMED_REQUEST,
+			 NULL);
+
+	    return(osc_response);
+	  }
 	}else if(port_value_type == G_TYPE_DOUBLE){
-	  //TODO:JK: implement me
+	  gdouble value;
+	  gboolean success;
+
+	  type_tag_offset = 4;
+
+	  success = TRUE;
+	  
+	  if(type_tag[1] == 'd'){
+	    ags_osc_buffer_util_get_double(message + path_offset + type_tag_offset,
+					   &value);
+
+	    /* set value */
+	    pthread_mutex_lock(port_mutex);
+
+	    port->port_value.ags_port_double = value;
+
+	    pthread_mutex_unlock(port_mutex);
+	  }else{
+	    success = FALSE;
+	  }
+
+	  if(!success ||
+	     type_tag[2] != '\0'){
+	    ags_osc_response_set_flags(osc_response,
+				       AGS_OSC_RESPONSE_ERROR);
+
+	    g_object_set(osc_response,
+			 "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_MALFORMED_REQUEST,
+			 NULL);
+
+	    return(osc_response);
+	  }
 	}
       }
     }
