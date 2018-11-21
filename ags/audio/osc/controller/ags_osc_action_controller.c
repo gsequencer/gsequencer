@@ -19,6 +19,8 @@
 
 #include <ags/audio/osc/controller/ags_osc_action_controller.h>
 
+#include <ags/libags.h>
+
 #include <ags/i18n.h>
 
 #include <stdlib.h>
@@ -36,6 +38,10 @@ void ags_osc_action_controller_get_property(GObject *gobject,
 void ags_osc_action_controller_dispose(GObject *gobject);
 void ags_osc_action_controller_finalize(GObject *gobject);
 
+gpointer ags_osc_action_controller_real_run_action(AgsOscActionController *osc_action_controller,
+						   AgsOscConnection *osc_connection,
+						   unsigned char *message, guint message_size);
+
 /**
  * SECTION:ags_osc_action_controller
  * @short_description: OSC action controller
@@ -50,7 +56,13 @@ enum{
   PROP_0,
 };
 
+enum{
+  RUN_ACTION,
+  LAST_SIGNAL,
+};
+
 static gpointer ags_osc_action_controller_parent_class = NULL;
+static guint osc_action_controller_signals[LAST_SIGNAL];
 
 GType
 ags_osc_action_controller_get_type()
@@ -101,12 +113,41 @@ ags_osc_action_controller_class_init(AgsOscActionControllerClass *osc_action_con
   gobject->finalize = ags_osc_action_controller_finalize;
 
   /* properties */
+
+  /* AgsOscActionControllerClass */
+  osc_action_controller->run_action = ags_osc_action_controller_real_run_action;
+
+  /* signals */
+  /**
+   * AgsOscActionController::run-action:
+   * @osc_action_controller: the #AgsOscActionController
+   * @osc_connection: the #AgsOscConnection
+   * @message: the message received
+   * @message_size: the message size
+   *
+   * The ::run-action signal is emited during get data of action controller.
+   *
+   * Since: 2.1.0
+   */
+  osc_action_controller_signals[RUN_ACTION] =
+    g_signal_new("run-action",
+		 G_TYPE_FROM_CLASS(osc_action_controller),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsOscActionControllerClass, run_action),
+		 NULL, NULL,
+		 ags_cclosure_marshal_POINTER__OBJECT_POINTER_UINT,
+		 G_TYPE_NONE, 3,
+		 G_TYPE_OBJECT,
+		 G_TYPE_POINTER,
+		 G_TYPE_UINT);
 }
 
 void
 ags_osc_action_controller_init(AgsOscActionController *osc_action_controller)
 {
-  //TODO:JK: implement me
+  g_object_set(osc_action_controller,
+	       "context-path", "/action",
+	       NULL);
 }
 
 void
@@ -181,6 +222,47 @@ ags_osc_action_controller_finalize(GObject *gobject)
   
   /* call parent */
   G_OBJECT_CLASS(ags_osc_action_controller_parent_class)->finalize(gobject);
+}
+
+gpointer
+ags_osc_action_controller_real_run_action(AgsOscActionController *osc_action_controller,
+					  AgsOscConnection *osc_connection,
+					  unsigned char *message, guint message_size)
+{
+  //TODO:JK: implement me
+}
+
+/**
+ * ags_osc_action_controller_run_action:
+ * @osc_action_controller: the #AgsOscActionController
+ * @osc_connection: the #AgsOscConnection
+ * @message: the message received
+ * @message_size: the message size
+ * 
+ * Get action.
+ * 
+ * Returns: the #AgsOscResponse
+ * 
+ * Since: 2.1.0
+ */
+gpointer
+ags_osc_action_controller_run_action(AgsOscActionController *osc_action_controller,
+				     AgsOscConnection *osc_connection,
+				     unsigned char *message, guint message_size)
+{
+  gpointer osc_response;
+  
+  g_return_val_if_fail(AGS_IS_OSC_ACTION_CONTROLLER(osc_action_controller), NULL);
+  
+  g_object_ref((GObject *) osc_action_controller);
+  g_signal_emit(G_OBJECT(osc_action_controller),
+		osc_action_controller_signals[RUN_ACTION], 0,
+		osc_connection,
+		message, message_size,
+		&osc_response);
+  g_object_unref((GObject *) osc_action_controller);
+
+  return(osc_response);
 }
 
 /**

@@ -124,7 +124,7 @@ ags_set_audio_channels_class_init(AgsSetAudioChannelsClass *set_audio_channels)
   /**
    * AgsSetAudioChannels:audio-channels:
    *
-   * The count of audio channels to apply to audio.
+   * The count of audio channels to apply to soundcard.
    * 
    * Since: 2.0.0
    */

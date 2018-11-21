@@ -19,6 +19,8 @@
 
 #include <ags/audio/osc/controller/ags_osc_status_controller.h>
 
+#include <ags/libags.h>
+
 #include <ags/i18n.h>
 
 #include <stdlib.h>
@@ -106,7 +108,9 @@ ags_osc_status_controller_class_init(AgsOscStatusControllerClass *osc_status_con
 void
 ags_osc_status_controller_init(AgsOscStatusController *osc_status_controller)
 {
-  //TODO:JK: implement me
+  g_object_set(osc_status_controller,
+	       "context-path", "/status",
+	       NULL);
 }
 
 void

@@ -43,9 +43,17 @@ struct _AgsOscActionController
 struct _AgsOscActionControllerClass
 {
   AgsOscControllerClass osc_controller;
+
+  gpointer (*run_action)(AgsOscActionController *osc_action_controller,
+			 AgsOscConnection *osc_connection,
+			 unsigned char *message, guint message_size);
 };
 
 GType ags_osc_action_controller_get_type();
+
+gpointer ags_osc_action_controller_run_action(AgsOscActionController *osc_action_controller,
+					      AgsOscConnection *osc_connection,
+					      unsigned char *message, guint message_size);
 
 AgsOscActionController* ags_osc_action_controller_new();
 

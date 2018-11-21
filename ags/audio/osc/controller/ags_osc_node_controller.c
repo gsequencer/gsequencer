@@ -51,28 +51,33 @@ gpointer ags_osc_node_controller_get_data_soundcard(AgsOscNodeController *osc_no
 						    AgsOscConnection *osc_connection,
 						    GObject *soundcard,
 						    unsigned char *message, guint message_size,
+						    gchar *type_tag,
 						    gchar *path, guint path_offset);
 gpointer ags_osc_node_controller_get_data_sequencer(AgsOscNodeController *osc_node_controller,
 						    AgsOscConnection *osc_connection,
 						    GObject *sequencer,
 						    unsigned char *message, guint message_size,
+						    gchar *type_tag,
 						    gchar *path, guint path_offset);
 
 gpointer ags_osc_node_controller_get_data_audio(AgsOscNodeController *osc_node_controller,
 						AgsOscConnection *osc_connection,
 						AgsAudio *audio,
 						unsigned char *message, guint message_size,
+						gchar *type_tag,
 						gchar *path, guint path_offset);
 gpointer ags_osc_node_controller_get_data_channel(AgsOscNodeController *osc_node_controller,
 						  AgsOscConnection *osc_connection,
 						  AgsChannel *channel,
 						  unsigned char *message, guint message_size,
+						  gchar *type_tag,
 						  gchar *path, guint path_offset);
 
 gpointer ags_osc_node_controller_get_data_port(AgsOscNodeController *osc_node_controller,
 					       AgsOscConnection *osc_connection,
 					       AgsPort *port,
 					       unsigned char *message, guint message_size,
+					       gchar *type_tag,
 					       gchar *path, guint path_offset);
 
 gpointer ags_osc_node_controller_real_get_data(AgsOscNodeController *osc_node_controller,
@@ -266,12 +271,11 @@ ags_osc_node_controller_get_data_soundcard(AgsOscNodeController *osc_node_contro
 					   AgsOscConnection *osc_connection,
 					   GObject *soundcard,
 					   unsigned char *message, guint message_size,
+					   gchar *type_tag,
 					   gchar *path, guint path_offset)
 {
   AgsOscResponse *osc_response;
 
-  AgsApplicationContext *application_context;
-  
   unsigned char *packet;
 
   guint real_packet_size;
@@ -305,7 +309,7 @@ ags_osc_node_controller_get_data_soundcard(AgsOscNodeController *osc_node_contro
 	
     if(!strncmp(path + path_offset,
 		"device",
-		11)){
+		7)){
       gchar *device;
 
       guint length;
@@ -368,7 +372,7 @@ ags_osc_node_controller_get_data_soundcard(AgsOscNodeController *osc_node_contro
 				    packet_size);
     }else if(!strncmp(path + path_offset,
 		      "pcm-channels",
-		      12)){
+		      13)){
       guint pcm_channels;
       guint length;
 
@@ -421,7 +425,7 @@ ags_osc_node_controller_get_data_soundcard(AgsOscNodeController *osc_node_contro
 				    packet_size);
     }else if(!strncmp(path + path_offset,
 		      "samplerate",
-		      10)){
+		      11)){
       guint samplerate;
       guint length;
 
@@ -476,7 +480,7 @@ ags_osc_node_controller_get_data_soundcard(AgsOscNodeController *osc_node_contro
 				    packet_size);
     }else if(!strncmp(path + path_offset,
 		      "buffer-size",
-		      11)){
+		      12)){
       guint buffer_size;
       guint length;
 
@@ -529,7 +533,7 @@ ags_osc_node_controller_get_data_soundcard(AgsOscNodeController *osc_node_contro
 				    packet_size);
     }else if(!strncmp(path + path_offset,
 		      "format",
-		      6)){
+		      7)){
       guint format;
       guint length;
 
@@ -616,12 +620,11 @@ ags_osc_node_controller_get_data_sequencer(AgsOscNodeController *osc_node_contro
 					   AgsOscConnection *osc_connection,
 					   GObject *sequencer,
 					   unsigned char *message, guint message_size,
+					   gchar *type_tag,
 					   gchar *path, guint path_offset)
 {
   AgsOscResponse *osc_response;
 
-  AgsApplicationContext *application_context;
-  
   unsigned char *packet;
 
   guint real_packet_size;
@@ -655,7 +658,7 @@ ags_osc_node_controller_get_data_sequencer(AgsOscNodeController *osc_node_contro
 	
     if(!strncmp(path + path_offset,
 		"device",
-		11)){
+		7)){
       gchar *device;
 
       guint length;
@@ -751,12 +754,11 @@ ags_osc_node_controller_get_data_audio(AgsOscNodeController *osc_node_controller
 				       AgsOscConnection *osc_connection,
 				       AgsAudio *audio,
 				       unsigned char *message, guint message_size,
+				       gchar *type_tag,
 				       gchar *path, guint path_offset)
 {
   AgsOscResponse *osc_response;
 
-  AgsApplicationContext *application_context;
-  
   unsigned char *packet;
 
   guint real_packet_size;
@@ -793,7 +795,7 @@ ags_osc_node_controller_get_data_audio(AgsOscNodeController *osc_node_controller
     /* properties */
     if(!strncmp(path + path_offset,
 		"audio-channels",
-		14)){
+		15)){
       guint audio_channels;
       
       /* message path */
@@ -843,7 +845,7 @@ ags_osc_node_controller_get_data_audio(AgsOscNodeController *osc_node_controller
 				    packet_size);
     }else if(!strncmp(path + path_offset,
 		      "output-pads",
-		      11)){
+		      12)){
       guint output_pads;
       
       /* message path */
@@ -893,7 +895,7 @@ ags_osc_node_controller_get_data_audio(AgsOscNodeController *osc_node_controller
 				    packet_size);
     }else if(!strncmp(path + path_offset,
 		      "input-pads",
-		      10)){
+		      11)){
       guint input_pads;
       
       /* message path */
@@ -943,7 +945,7 @@ ags_osc_node_controller_get_data_audio(AgsOscNodeController *osc_node_controller
 				    packet_size);
     }else if(!strncmp(path + path_offset,
 		      "buffer-size",
-		      11)){
+		      12)){
       guint buffer_size;
       
       /* message path */
@@ -993,7 +995,7 @@ ags_osc_node_controller_get_data_audio(AgsOscNodeController *osc_node_controller
 				    packet_size);
     }else if(!strncmp(path + path_offset,
 		      "samplerate",
-		      10)){
+		      11)){
       guint samplerate;
       
       /* message path */
@@ -1043,7 +1045,7 @@ ags_osc_node_controller_get_data_audio(AgsOscNodeController *osc_node_controller
 				    packet_size);
     }else if(!strncmp(path + path_offset,
 		      "format",
-		      6)){
+		      7)){
       guint format;
       
       /* message path */
@@ -1131,6 +1133,7 @@ ags_osc_node_controller_get_data_audio(AgsOscNodeController *osc_node_controller
 							    osc_connection,
 							    channel,
 							    message, message_size,
+							    type_tag,
 							    path, path_offset);
   }else if(!strncmp(path + path_offset,
 		    "/AgsInput",
@@ -1158,6 +1161,7 @@ ags_osc_node_controller_get_data_audio(AgsOscNodeController *osc_node_controller
 							    osc_connection,
 							    channel,
 							    message, message_size,
+							    type_tag,
 							    path, path_offset);
   }else if(!strncmp(path + path_offset,
 		    "/AgsPort",
@@ -1190,6 +1194,7 @@ ags_osc_node_controller_get_data_audio(AgsOscNodeController *osc_node_controller
 							   osc_connection,
 							   port,
 							   message, message_size,
+							   type_tag,
 							   path, path_offset);
 
       g_list_free(start_port);
@@ -1232,6 +1237,7 @@ ags_osc_node_controller_get_data_audio(AgsOscNodeController *osc_node_controller
 							   osc_connection,
 							   port,
 							   message, message_size,
+							   type_tag,
 							   path, path_offset);
 	
       g_list_free(start_port);
@@ -1268,12 +1274,11 @@ ags_osc_node_controller_get_data_channel(AgsOscNodeController *osc_node_controll
 					 AgsOscConnection *osc_connection,
 					 AgsChannel *channel,
 					 unsigned char *message, guint message_size,
+					 gchar *type_tag,
 					 gchar *path, guint path_offset)
 {
   AgsOscResponse *osc_response;
 
-  AgsApplicationContext *application_context;
-  
   unsigned char *packet;
 
   guint real_packet_size;
@@ -1309,7 +1314,7 @@ ags_osc_node_controller_get_data_channel(AgsOscNodeController *osc_node_controll
 	
     if(!strncmp(path + path_offset,
 		"buffer-size",
-		11)){
+		12)){
       guint buffer_size;
       
       /* message path */
@@ -1359,7 +1364,7 @@ ags_osc_node_controller_get_data_channel(AgsOscNodeController *osc_node_controll
 				    packet_size);
     }else if(!strncmp(path + path_offset,
 		      "samplerate",
-		      10)){
+		      11)){
       guint samplerate;
       
       /* message path */
@@ -1409,7 +1414,7 @@ ags_osc_node_controller_get_data_channel(AgsOscNodeController *osc_node_controll
 				    packet_size);
     }else if(!strncmp(path + path_offset,
 		      "format",
-		      6)){
+		      7)){
       guint format;
       
       /* message path */
@@ -1502,6 +1507,7 @@ ags_osc_node_controller_get_data_channel(AgsOscNodeController *osc_node_controll
 							   osc_connection,
 							   port,
 							   message, message_size,
+							   type_tag,
 							   path, path_offset);
 
       g_list_free(start_port);
@@ -1544,6 +1550,7 @@ ags_osc_node_controller_get_data_channel(AgsOscNodeController *osc_node_controll
 							   osc_connection,
 							   port,
 							   message, message_size,
+							   type_tag,
 							   path, path_offset);
 	
       g_list_free(start_port);
@@ -1578,12 +1585,11 @@ ags_osc_node_controller_get_data_port(AgsOscNodeController *osc_node_controller,
 				      AgsOscConnection *osc_connection,
 				      AgsPort *port,
 				      unsigned char *message, guint message_size,
+				      gchar *type_tag,
 				      gchar *path, guint path_offset)
 {
   AgsOscResponse *osc_response;
 
-  AgsApplicationContext *application_context;
-  
   unsigned char *packet;
 
   guint real_packet_size;
@@ -1619,7 +1625,7 @@ ags_osc_node_controller_get_data_port(AgsOscNodeController *osc_node_controller,
 
     if(!strncmp(path + path_offset,
 		"value",
-		5)){
+		6)){
       GType port_value_type;
 
       guint port_value_length;
@@ -2151,11 +2157,11 @@ ags_osc_node_controller_get_data_port(AgsOscNodeController *osc_node_controller,
 	  ags_osc_buffer_util_put_int32(packet,
 					packet_size);
 	}
-
-	g_object_set(osc_response,
-		     "packet-size", packet_size,
-		     NULL);
       }
+
+      g_object_set(osc_response,
+		   "packet-size", packet_size,
+		   NULL);
     }
   }
 
@@ -2171,9 +2177,30 @@ ags_osc_node_controller_real_get_data(AgsOscNodeController *osc_node_controller,
 
   AgsApplicationContext *application_context;
 
+  gchar *type_tag;
   gchar *path;
-
+  
   guint path_offset;
+  gboolean success;
+  
+  /* read type tag */
+  ags_osc_buffer_util_get_string(message + 8,
+				 &type_tag, NULL);
+
+  success = (!strncmp(type_tag, ",s", 3)) ? TRUE: FALSE;
+
+  if(!success){
+    osc_response = ags_osc_response_new();
+      
+    ags_osc_response_set_flags(osc_response,
+			       AGS_OSC_RESPONSE_ERROR);
+
+    g_object_set(osc_response,
+		 "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_MALFORMED_REQUEST,
+		 NULL);
+
+    return(osc_response);
+  }
   
   /* read argument */
   ags_osc_buffer_util_get_string(message + 12,
@@ -2227,6 +2254,7 @@ ags_osc_node_controller_real_get_data(AgsOscNodeController *osc_node_controller,
 								osc_connection,
 								soundcard,
 								message, message_size,
+								type_tag,
 								path, path_offset);
     }else if(!strncmp(path + path_offset,
 		      "/AgsSequencer",
@@ -2266,6 +2294,7 @@ ags_osc_node_controller_real_get_data(AgsOscNodeController *osc_node_controller,
 								osc_connection,
 								sequencer,
 								message, message_size,
+								type_tag,
 								path, path_offset);
     }else if(!strncmp(path + path_offset,
 		      "/AgsAudio",
@@ -2305,6 +2334,7 @@ ags_osc_node_controller_real_get_data(AgsOscNodeController *osc_node_controller,
 							    osc_connection,
 							    audio,
 							    message, message_size,
+							    type_tag,
 							    path, path_offset);
     }else{
       osc_response = ags_osc_response_new();

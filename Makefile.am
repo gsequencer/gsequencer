@@ -959,6 +959,7 @@ libags_audio_osc_controller_h_sources = \
 	ags/audio/osc/controller/ags_osc_info_controller.h \
 	ags/audio/osc/controller/ags_osc_meter_controller.h \
 	ags/audio/osc/controller/ags_osc_node_controller.h \
+	ags/audio/osc/controller/ags_osc_renew_controller.h \
 	ags/audio/osc/controller/ags_osc_status_controller.h
 
 deprecated_libags_audio_osc_controller_c_sources =
@@ -972,6 +973,7 @@ libags_audio_osc_controller_c_sources = \
 	ags/audio/osc/controller/ags_osc_info_controller.c \
 	ags/audio/osc/controller/ags_osc_meter_controller.c \
 	ags/audio/osc/controller/ags_osc_node_controller.c \
+	ags/audio/osc/controller/ags_osc_renew_controller.c \
 	ags/audio/osc/controller/ags_osc_status_controller.c
 
 # libags-audio - jack
@@ -1257,6 +1259,7 @@ libags_audio_task_h_sources = \
 	ags/audio/task/ags_seek_soundcard.h \
 	ags/audio/task/ags_set_audio_channels.h \
 	ags/audio/task/ags_set_buffer_size.h \
+	ags/audio/task/ags_set_device.h \
 	ags/audio/task/ags_set_format.h \
 	ags/audio/task/ags_set_samplerate.h \
 	ags/audio/task/ags_start_audio.h \
@@ -1311,6 +1314,7 @@ libags_audio_task_c_sources = \
 	ags/audio/task/ags_seek_soundcard.c \
 	ags/audio/task/ags_set_audio_channels.c \
 	ags/audio/task/ags_set_buffer_size.c \
+	ags/audio/task/ags_set_device.c \
 	ags/audio/task/ags_set_format.c \
 	ags/audio/task/ags_set_samplerate.c \
 	ags/audio/task/ags_start_sequencer.c \
