@@ -23,6 +23,8 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <pthread.h>
+
 #include <ags/audio/osc/controller/ags_osc_controller.h>
 
 #define AGS_TYPE_OSC_METER_CONTROLLER                (ags_osc_meter_controller_get_type())
@@ -35,17 +37,45 @@
 typedef struct _AgsOscMeterController AgsOscMeterController;
 typedef struct _AgsOscMeterControllerClass AgsOscMeterControllerClass;
 
+typedef enum{
+  AGS_OSC_METER_CONTROLLER_MONITOR_RUNNING     = 1,
+}AgsOscMeterControllerFlags;
+
 struct _AgsOscMeterController
 {
   AgsOscController osc_controller;
+
+  guint flags;
+  
+  pthread_t *monitor_thread;
+  
+  GHashTable *monitor_port;
 };
 
 struct _AgsOscMeterControllerClass
 {
   AgsOscControllerClass osc_controller;
+
+  void (*start_monitor)(AgsOscMeterController *osc_meter_controller);
+  void (*stop_monitor)(AgsOscMeterController *osc_meter_controller);
+	
+  gpointer (*monitor_meter)(AgsOscMeterController *osc_meter_controller,
+			    AgsOscConnection *osc_connection,
+			    unsigned char *message, guint message_size);
 };
 
 GType ags_osc_meter_controller_get_type();
+
+gboolean ags_osc_meter_controller_test_flags(AgsOscMeterController *osc_meter_controller, guint flags);
+void ags_osc_meter_controller_set_flags(AgsOscMeterController *osc_meter_controller, guint flags);
+void ags_osc_meter_controller_unset_flags(AgsOscMeterController *osc_meter_controller, guint flags);
+
+void ags_osc_meter_controller_start_monitor(AgsOscMeterController *osc_meter_controller);
+void ags_osc_meter_controller_stop_monitor(AgsOscMeterController *osc_meter_controller);
+
+gpointer ags_osc_meter_controller_monitor_meter(AgsOscMeterController *osc_meter_controller,
+						AgsOscConnection *osc_connection,
+						unsigned char *message, guint message_size);
 
 AgsOscMeterController* ags_osc_meter_controller_new();
 

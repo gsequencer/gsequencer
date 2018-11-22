@@ -144,7 +144,6 @@ ags_osc_response_class_init(AgsOscResponseClass *osc_response)
 void
 ags_osc_response_init(AgsOscResponse *osc_response)
 {
-
   osc_response->flags = 0;
   
   /* osc response mutex */

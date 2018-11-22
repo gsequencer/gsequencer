@@ -129,6 +129,8 @@ ags_osc_info_controller_class_init(AgsOscInfoControllerClass *osc_info_controlle
    *
    * The ::get-info signal is emited during get info of info controller.
    *
+   * Returns: the #AgsOscResponse
+   * 
    * Since: 2.1.0
    */
   osc_info_controller_signals[GET_INFO] =
@@ -138,7 +140,7 @@ ags_osc_info_controller_class_init(AgsOscInfoControllerClass *osc_info_controlle
 		 G_STRUCT_OFFSET(AgsOscInfoControllerClass, get_info),
 		 NULL, NULL,
 		 ags_cclosure_marshal_POINTER__OBJECT_POINTER_UINT,
-		 G_TYPE_NONE, 3,
+		 G_TYPE_POINTER, 3,
 		 G_TYPE_OBJECT,
 		 G_TYPE_POINTER,
 		 G_TYPE_UINT);

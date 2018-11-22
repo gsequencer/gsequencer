@@ -130,6 +130,8 @@ ags_osc_status_controller_class_init(AgsOscStatusControllerClass *osc_status_con
    *
    * The ::get-status signal is emited during get status of status controller.
    *
+   * Returns: the #AgsOscResponse
+   * 
    * Since: 2.1.0
    */
   osc_status_controller_signals[GET_STATUS] =
@@ -139,7 +141,7 @@ ags_osc_status_controller_class_init(AgsOscStatusControllerClass *osc_status_con
 		 G_STRUCT_OFFSET(AgsOscStatusControllerClass, get_status),
 		 NULL, NULL,
 		 ags_cclosure_marshal_POINTER__OBJECT_POINTER_UINT,
-		 G_TYPE_NONE, 3,
+		 G_TYPE_POINTER, 3,
 		 G_TYPE_OBJECT,
 		 G_TYPE_POINTER,
 		 G_TYPE_UINT);

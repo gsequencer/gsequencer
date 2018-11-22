@@ -136,13 +136,18 @@ ags_osc_front_controller_class_init(AgsOscFrontControllerClass *osc_front_contro
 		 G_STRUCT_OFFSET(AgsOscFrontControllerClass, do_request),
 		 NULL, NULL,
 		 ags_cclosure_marshal_POINTER__OBJECT_POINTER_UINT,
-		 G_TYPE_NONE, 0);
+		 G_TYPE_POINTER, 3,
+		 G_TYPE_OBJECT,
+		 G_TYPE_POINTER,
+		 G_TYPE_UINT);
 }
 
 void
 ags_osc_front_controller_init(AgsOscFrontController *osc_front_controller)
 {
-  //TODO:JK: implement me
+  g_object_set(osc_info_controller,
+	       "context-path", "/",
+	       NULL);
 }
 
 void

@@ -19,6 +19,8 @@
 
 #include <ags/audio/osc/controller/ags_osc_meter_controller.h>
 
+#include <ags/libags.h>
+
 #include <ags/i18n.h>
 
 #include <stdlib.h>
@@ -36,6 +38,15 @@ void ags_osc_meter_controller_get_property(GObject *gobject,
 void ags_osc_meter_controller_dispose(GObject *gobject);
 void ags_osc_meter_controller_finalize(GObject *gobject);
 
+void* ags_osc_meter_controller_monitor_thread(void *ptr);
+
+void ags_osc_meter_controller_real_start_monitor(AgsOscMeterController *osc_meter_controller);
+void ags_osc_meter_controller_real_stop_monitor(AgsOscMeterController *osc_meter_controller);
+
+gpointer ags_osc_meter_controller_real_monitor_meter(AgsOscMeterController *osc_meter_controller,
+						     AgsOscConnection *osc_connection,
+						     unsigned char *message, guint message_size);
+
 /**
  * SECTION:ags_osc_meter_controller
  * @short_description: base osc_meter_controller
@@ -50,7 +61,15 @@ enum{
   PROP_0,
 };
 
+enum{
+  START_MONITOR,
+  STOP_MONITOR,
+  MONITOR_METER,
+  LAST_SIGNAL,
+};
+
 static gpointer ags_osc_meter_controller_parent_class = NULL;
+static guint osc_meter_controller_signals[LAST_SIGNAL];
 
 GType
 ags_osc_meter_controller_get_type()
@@ -101,12 +120,89 @@ ags_osc_meter_controller_class_init(AgsOscMeterControllerClass *osc_meter_contro
   gobject->finalize = ags_osc_meter_controller_finalize;
 
   /* properties */
+
+  /* AgsOscMeterControllerClass */
+  osc_meter_controller->start_monitor = ags_osc_meter_controller_real_start_monitor;
+  osc_meter_controller->stop_monitor = ags_osc_meter_controller_real_stop_monitor;
+
+  osc_meter_controller->monitor_meter = ags_osc_meter_controller_real_monitor_meter;
+
+  /* signals */
+  /**
+   * AgsOscMeterController::start-monitor:
+   * @osc_meter_controller: the #AgsOscMeterController
+   *
+   * The ::start-monitor signal is emited during start of monitoring meter.
+   *
+   * Since: 2.1.0
+   */
+  osc_meter_controller_signals[START_MONITOR] =
+    g_signal_new("start-monitor",
+		 G_TYPE_FROM_CLASS(osc_meter_controller),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsOscMeterControllerClass, start_monitor),
+		 NULL, NULL,
+		 g_cclosure_marshal_VOID__VOID,
+		 G_TYPE_NONE, 0);
+
+  /**
+   * AgsOscMeterController::stop-monitor:
+   * @osc_meter_controller: the #AgsOscMeterController
+   *
+   * The ::stop-monitor signal is emited during stop of monitoring meter.
+   *
+   * Since: 2.1.0
+   */
+  osc_meter_controller_signals[STOP_MONITOR] =
+    g_signal_new("stop-monitor",
+		 G_TYPE_FROM_CLASS(osc_meter_controller),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsOscMeterControllerClass, stop_monitor),
+		 NULL, NULL,
+		 g_cclosure_marshal_VOID__VOID,
+		 G_TYPE_NONE, 0);
+
+  /**
+   * AgsOscMeterController::monitor-meter:
+   * @osc_meter_controller: the #AgsOscMeterController
+   * @osc_connection: the #AgsOscConnection
+   * @message: the message received
+   * @message_size: the message size
+   *
+   * The ::monitor-meter signal is emited during get data of meter controller.
+   *
+   * Returns: the #AgsOscResponse
+   * 
+   * Since: 2.1.0
+   */
+  osc_meter_controller_signals[MONITOR_METER] =
+    g_signal_new("monitor-meter",
+		 G_TYPE_FROM_CLASS(osc_meter_controller),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsOscMeterControllerClass, monitor_meter),
+		 NULL, NULL,
+		 ags_cclosure_marshal_POINTER__OBJECT_POINTER_UINT,
+		 G_TYPE_POINTER, 3,
+		 G_TYPE_OBJECT,
+		 G_TYPE_POINTER,
+		 G_TYPE_UINT);
 }
 
 void
 ags_osc_meter_controller_init(AgsOscMeterController *osc_meter_controller)
 {
-  //TODO:JK: implement me
+  g_object_set(osc_meter_controller,
+	       "context-path", "/meter",
+	       NULL);
+
+  osc_meter_controller->flags = 0;
+
+  osc_meter_controller->monitor_thread = (pthread_t *) malloc(sizeof(pthread_t));
+  
+  osc_meter_controller->monitor_port = g_hash_table_new_full(g_direct_hash, g_direct_equal,
+							     g_object_unref,
+							     g_object_unref);
+  g_hash_table_ref(osc_meter_controller->monitor_port);
 }
 
 void
@@ -168,6 +264,12 @@ ags_osc_meter_controller_dispose(GObject *gobject)
 
   osc_meter_controller = AGS_OSC_METER_CONTROLLER(gobject);
   
+  if(osc_meter_controller->monitor_port != NULL){
+    g_hash_table_unref(osc_meter_controller->monitor_port);
+
+    osc_meter_controller->monitor_port = NULL;
+  }
+  
   /* call parent */
   G_OBJECT_CLASS(ags_osc_meter_controller_parent_class)->dispose(gobject);
 }
@@ -179,8 +281,226 @@ ags_osc_meter_controller_finalize(GObject *gobject)
 
   osc_meter_controller = AGS_OSC_METER_CONTROLLER(gobject);
   
+  if(osc_meter_controller->monitor_port != NULL){
+    g_hash_table_unref(osc_meter_controller->monitor_port);
+  }
+  
   /* call parent */
   G_OBJECT_CLASS(ags_osc_meter_controller_parent_class)->finalize(gobject);
+}
+
+void*
+ags_osc_meter_controller_monitor_thread(void *ptr)
+{
+  AgsOscMeterController *osc_meter_controller;
+
+  osc_meter_controller = AGS_OSC_METER_CONTROLLER(ptr);
+
+
+  
+  pthread_exit(NULL);
+}
+
+/**
+ * ags_osc_meter_controller_test_flags:
+ * @osc_meter_controller: the #AgsOscMeterController
+ * @flags: the flags
+ *
+ * Test @flags to be set on @osc_meter_controller.
+ * 
+ * Returns: %TRUE if flags are set, else %FALSE
+ *
+ * Since: 2.1.0
+ */
+gboolean
+ags_osc_meter_controller_test_flags(AgsOscMeterController *osc_meter_controller, guint flags)
+{
+  gboolean retval;  
+  
+  pthread_mutex_t *osc_controller_mutex;
+
+  if(!AGS_IS_OSC_METER_CONTROLLER(osc_meter_controller)){
+    return(FALSE);
+  }
+
+  /* get osc_meter_controller mutex */
+  pthread_mutex_lock(ags_osc_controller_get_class_mutex());
+  
+  osc_controller_mutex = AGS_OSC_CONTROLLER(osc_meter_controller)->obj_mutex;
+  
+  pthread_mutex_unlock(ags_osc_controller_get_class_mutex());
+
+  /* test */
+  pthread_mutex_lock(osc_controller_mutex);
+
+  retval = (flags & (osc_meter_controller->flags)) ? TRUE: FALSE;
+  
+  pthread_mutex_unlock(osc_controller_mutex);
+
+  return(retval);
+}
+
+/**
+ * ags_osc_meter_controller_set_flags:
+ * @osc_meter_controller: the #AgsOscMeterController
+ * @flags: the flags
+ *
+ * Set flags.
+ * 
+ * Since: 2.1.0
+ */
+void
+ags_osc_meter_controller_set_flags(AgsOscMeterController *osc_meter_controller, guint flags)
+{
+  pthread_mutex_t *osc_controller_mutex;
+
+  if(!AGS_IS_OSC_METER_CONTROLLER(osc_meter_controller)){
+    return;
+  }
+
+  /* get osc_meter_controller mutex */
+  pthread_mutex_lock(ags_osc_controller_get_class_mutex());
+  
+  osc_controller_mutex = AGS_OSC_CONTROLLER(osc_meter_controller)->obj_mutex;
+  
+  pthread_mutex_unlock(ags_osc_controller_get_class_mutex());
+
+  /* set flags */
+  pthread_mutex_lock(osc_controller_mutex);
+
+  osc_meter_controller->flags |= flags;
+
+  pthread_mutex_unlock(osc_controller_mutex);
+}
+
+/**
+ * ags_osc_meter_controller_unset_flags:
+ * @osc_meter_controller: the #AgsOscMeterController
+ * @flags: the flags
+ *
+ * Unset flags.
+ * 
+ * Since: 2.1.0
+ */
+void
+ags_osc_meter_controller_unset_flags(AgsOscMeterController *osc_meter_controller, guint flags)
+{
+  pthread_mutex_t *osc_controller_mutex;
+
+  if(!AGS_IS_OSC_METER_CONTROLLER(osc_meter_controller)){
+    return;
+  }
+
+  /* get osc_meter_controller mutex */
+  pthread_mutex_lock(ags_osc_controller_get_class_mutex());
+  
+  osc_controller_mutex = AGS_OSC_CONTROLLER(osc_meter_controller)->obj_mutex;
+  
+  pthread_mutex_unlock(ags_osc_controller_get_class_mutex());
+
+  /* set flags */
+  pthread_mutex_lock(osc_controller_mutex);
+
+  osc_meter_controller->flags &= (~flags);
+
+  pthread_mutex_unlock(osc_controller_mutex);
+}
+
+void
+ags_osc_meter_controller_real_start_monitor(AgsOscMeterController *osc_meter_controller)
+{
+  //TODO:JK: implement me
+}
+
+/**
+ * ags_osc_meter_controller_start_monitor:
+ * @osc_meter_controller: the #AgsOscMeterController
+ * 
+ * Start monitoring.
+ * 
+ * Since: 2.1.0
+ */
+void
+ags_osc_meter_controller_start_monitor(AgsOscMeterController *osc_meter_controller)
+{
+  g_return_if_fail(AGS_IS_OSC_METER_CONTROLLER(osc_meter_controller));
+  
+  g_object_ref((GObject *) osc_meter_controller);
+  g_signal_emit(G_OBJECT(osc_meter_controller),
+		osc_meter_controller_signals[START_MONITOR], 0,
+		osc_connection,
+		message, message_size,
+		&osc_response);
+  g_object_unref((GObject *) osc_meter_controller);
+}
+
+void
+ags_osc_meter_controller_real_stop_monitor(AgsOscMeterController *osc_meter_controller)
+{
+  //TODO:JK: implement me
+}
+
+/**
+ * ags_osc_meter_controller_stop_monitor:
+ * @osc_meter_controller: the #AgsOscMeterController
+ * 
+ * Stop monitoring.
+ * 
+ * Since: 2.1.0
+ */
+void
+ags_osc_meter_controller_stop_monitor(AgsOscMeterController *osc_meter_controller)
+{
+  g_return_if_fail(AGS_IS_OSC_METER_CONTROLLER(osc_meter_controller));
+  
+  g_object_ref((GObject *) osc_meter_controller);
+  g_signal_emit(G_OBJECT(osc_meter_controller),
+		osc_meter_controller_signals[STOP_MONITOR], 0,
+		osc_connection,
+		message, message_size,
+		&osc_response);
+  g_object_unref((GObject *) osc_meter_controller);
+}
+
+gpointer
+ags_osc_meter_controller_real_monitor_meter(AgsOscMeterController *osc_meter_controller,
+					    AgsOscConnection *osc_connection,
+					    unsigned char *message, guint message_size)
+{
+  //TODO:JK: implement me
+}
+
+/**
+ * ags_osc_meter_controller_monitor_meter:
+ * @osc_meter_controller: the #AgsOscMeterController
+ * @osc_connection: the #AgsOscConnection
+ * @message: the message received
+ * @message_size: the message size
+ * 
+ * Get meter.
+ * 
+ * Returns: the #AgsOscResponse
+ * 
+ * Since: 2.1.0
+ */
+gpointer
+ags_osc_meter_controller_monitor_meter(AgsOscMeterController *osc_meter_controller,
+				       AgsOscConnection *osc_connection,
+				       unsigned char *message, guint message_size)
+{
+  gpointer osc_response;
+  
+  g_return_val_if_fail(AGS_IS_OSC_METER_CONTROLLER(osc_meter_controller), NULL);
+  
+  g_object_ref((GObject *) osc_meter_controller);
+  g_signal_emit(G_OBJECT(osc_meter_controller),
+		osc_meter_controller_signals[MONITOR_METER], 0,
+		osc_connection,
+		message, message_size,
+		&osc_response);
+  g_object_unref((GObject *) osc_meter_controller);
+
+  return(osc_response);
 }
 
 /**

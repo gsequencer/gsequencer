@@ -176,6 +176,8 @@ ags_osc_renew_controller_class_init(AgsOscRenewControllerClass *osc_renew_contro
    *
    * The ::set-data signal is emited during get data of renew controller.
    *
+   * Returns: the #AgsOscResponse
+   * 
    * Since: 2.1.0
    */
   osc_renew_controller_signals[SET_DATA] =
@@ -185,7 +187,7 @@ ags_osc_renew_controller_class_init(AgsOscRenewControllerClass *osc_renew_contro
 		 G_STRUCT_OFFSET(AgsOscRenewControllerClass, set_data),
 		 NULL, NULL,
 		 ags_cclosure_marshal_POINTER__OBJECT_POINTER_UINT,
-		 G_TYPE_NONE, 3,
+		 G_TYPE_POINTER, 3,
 		 G_TYPE_OBJECT,
 		 G_TYPE_POINTER,
 		 G_TYPE_UINT);

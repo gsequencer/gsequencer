@@ -169,6 +169,8 @@ ags_osc_node_controller_class_init(AgsOscNodeControllerClass *osc_node_controlle
    *
    * The ::get-data signal is emited during get data of node controller.
    *
+   * Returns: the #AgsOscResponse
+   * 
    * Since: 2.1.0
    */
   osc_node_controller_signals[GET_DATA] =
@@ -178,7 +180,7 @@ ags_osc_node_controller_class_init(AgsOscNodeControllerClass *osc_node_controlle
 		 G_STRUCT_OFFSET(AgsOscNodeControllerClass, get_data),
 		 NULL, NULL,
 		 ags_cclosure_marshal_POINTER__OBJECT_POINTER_UINT,
-		 G_TYPE_NONE, 3,
+		 G_TYPE_POINTER, 3,
 		 G_TYPE_OBJECT,
 		 G_TYPE_POINTER,
 		 G_TYPE_UINT);

@@ -127,6 +127,8 @@ ags_osc_action_controller_class_init(AgsOscActionControllerClass *osc_action_con
    *
    * The ::run-action signal is emited during get data of action controller.
    *
+   * Returns: the #AgsOscResponse
+   * 
    * Since: 2.1.0
    */
   osc_action_controller_signals[RUN_ACTION] =
@@ -136,7 +138,7 @@ ags_osc_action_controller_class_init(AgsOscActionControllerClass *osc_action_con
 		 G_STRUCT_OFFSET(AgsOscActionControllerClass, run_action),
 		 NULL, NULL,
 		 ags_cclosure_marshal_POINTER__OBJECT_POINTER_UINT,
-		 G_TYPE_NONE, 3,
+		 G_TYPE_POINTER, 3,
 		 G_TYPE_OBJECT,
 		 G_TYPE_POINTER,
 		 G_TYPE_UINT);

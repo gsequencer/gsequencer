@@ -19,6 +19,8 @@
 
 #include <ags/audio/osc/controller/ags_osc_config_controller.h>
 
+#include <ags/libags.h>
+
 #include <ags/i18n.h>
 
 #include <stdlib.h>
@@ -36,6 +38,10 @@ void ags_osc_config_controller_get_property(GObject *gobject,
 void ags_osc_config_controller_dispose(GObject *gobject);
 void ags_osc_config_controller_finalize(GObject *gobject);
 
+gpointer ags_osc_config_controller_real_modify_config(AgsOscConfigController *osc_config_controller,
+						      AgsOscConnection *osc_connection,
+						      unsigned char *message, guint message_size);
+
 /**
  * SECTION:ags_osc_config_controller
  * @short_description: OSC config controller
@@ -50,7 +56,13 @@ enum{
   PROP_0,
 };
 
+enum{
+  MODIFY_CONFIG,
+  LAST_SIGNAL,
+};
+
 static gpointer ags_osc_config_controller_parent_class = NULL;
+static guint osc_config_controller_signals[LAST_SIGNAL];
 
 GType
 ags_osc_config_controller_get_type()
@@ -101,12 +113,43 @@ ags_osc_config_controller_class_init(AgsOscConfigControllerClass *osc_config_con
   gobject->finalize = ags_osc_config_controller_finalize;
 
   /* properties */
+
+  /* AgsOscConfigControllerClass */
+  osc_config_controller->modify_config = ags_osc_config_controller_real_modify_config;
+
+  /* signals */
+  /**
+   * AgsOscConfigController::modify-config:
+   * @osc_config_controller: the #AgsOscConfigController
+   * @osc_connection: the #AgsOscConnection
+   * @message: the message received
+   * @message_size: the message size
+   *
+   * The ::modify-config signal is emited during get data of config controller.
+   *
+   * Returns: the #AgsOscResponse
+   * 
+   * Since: 2.1.0
+   */
+  osc_config_controller_signals[MODIFY_CONFIG] =
+    g_signal_new("modify-config",
+		 G_TYPE_FROM_CLASS(osc_config_controller),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsOscConfigControllerClass, modify_config),
+		 NULL, NULL,
+		 ags_cclosure_marshal_POINTER__OBJECT_POINTER_UINT,
+		 G_TYPE_POINTER, 3,
+		 G_TYPE_OBJECT,
+		 G_TYPE_POINTER,
+		 G_TYPE_UINT);
 }
 
 void
 ags_osc_config_controller_init(AgsOscConfigController *osc_config_controller)
 {
-  //TODO:JK: implement me
+  g_object_set(osc_config_controller,
+	       "context-path", "/config",
+	       NULL);
 }
 
 void
@@ -181,6 +224,47 @@ ags_osc_config_controller_finalize(GObject *gobject)
   
   /* call parent */
   G_OBJECT_CLASS(ags_osc_config_controller_parent_class)->finalize(gobject);
+}
+
+gpointer
+ags_osc_config_controller_real_modify_config(AgsOscConfigController *osc_config_controller,
+					     AgsOscConnection *osc_connection,
+					     unsigned char *message, guint message_size)
+{
+  //TODO:JK: implement me
+}
+
+/**
+ * ags_osc_config_controller_modify_config:
+ * @osc_config_controller: the #AgsOscConfigController
+ * @osc_connection: the #AgsOscConnection
+ * @message: the message received
+ * @message_size: the message size
+ * 
+ * Get config.
+ * 
+ * Returns: the #AgsOscResponse
+ * 
+ * Since: 2.1.0
+ */
+gpointer
+ags_osc_config_controller_modify_config(AgsOscConfigController *osc_config_controller,
+					AgsOscConnection *osc_connection,
+					unsigned char *message, guint message_size)
+{
+  gpointer osc_response;
+  
+  g_return_val_if_fail(AGS_IS_OSC_CONFIG_CONTROLLER(osc_config_controller), NULL);
+  
+  g_object_ref((GObject *) osc_config_controller);
+  g_signal_emit(G_OBJECT(osc_config_controller),
+		osc_config_controller_signals[MODIFY_CONFIG], 0,
+		osc_connection,
+		message, message_size,
+		&osc_response);
+  g_object_unref((GObject *) osc_config_controller);
+
+  return(osc_response);
 }
 
 /**
