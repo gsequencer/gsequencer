@@ -49,6 +49,7 @@ typedef struct _AgsOscServerClass AgsOscServerClass;
  * AgsOscServerFlags:
  * @AGS_OSC_SERVER_STARTED: the server was started
  * @AGS_OSC_SERVER_RUNNING: the server is up and running
+ * @AGS_OSC_SERVER_TERMINATING: the server is closing connections and terminating
  * @AGS_OSC_SERVER_INET4: use IPv4
  * @AGS_OSC_SERVER_INET6: use IPv6
  * @AGS_OSC_SERVER_UDP: run using UDP transport
@@ -61,11 +62,12 @@ typedef struct _AgsOscServerClass AgsOscServerClass;
 typedef enum{
   AGS_OSC_SERVER_STARTED        = 1,
   AGS_OSC_SERVER_RUNNING        = 1 <<  1,
-  AGS_OSC_SERVER_INET4          = 1 <<  2,
-  AGS_OSC_SERVER_INET6          = 1 <<  3,
-  AGS_OSC_SERVER_UDP            = 1 <<  4,
-  AGS_OSC_SERVER_TCP            = 1 <<  5,
-  AGS_OSC_SERVER_ANY_ADDRESS    = 1 <<  6,
+  AGS_OSC_SERVER_TERMINATING    = 1 <<  2,
+  AGS_OSC_SERVER_INET4          = 1 <<  3,
+  AGS_OSC_SERVER_INET6          = 1 <<  4,
+  AGS_OSC_SERVER_UDP            = 1 <<  5,
+  AGS_OSC_SERVER_TCP            = 1 <<  6,
+  AGS_OSC_SERVER_ANY_ADDRESS    = 1 <<  7,
 }AgsOscServerFlags;
 
 struct _AgsOscServer

@@ -21,6 +21,9 @@
 
 #include <ags/libags.h>
 
+#include <ags/audio/osc/ags_osc_response.h>
+#include <ags/audio/osc/ags_osc_server.h>
+
 #include <ags/i18n.h>
 
 #include <stdlib.h>
@@ -38,6 +41,10 @@ void ags_osc_status_controller_get_property(GObject *gobject,
 void ags_osc_status_controller_dispose(GObject *gobject);
 void ags_osc_status_controller_finalize(GObject *gobject);
 
+gpointer ags_osc_status_controller_real_get_status(AgsOscStatusController *status_controller,
+						   AgsOscConnection *osc_connection,
+						   guchar *message, guint message_size);
+
 /**
  * SECTION:ags_osc_status_controller
  * @short_description: OSC status controller
@@ -52,7 +59,13 @@ enum{
   PROP_0,
 };
 
+enum{
+  GET_STATUS,
+  LAST_SIGNAL,
+};
+
 static gpointer ags_osc_status_controller_parent_class = NULL;
+static guint osc_status_controller_signals[LAST_SIGNAL];
 
 GType
 ags_osc_status_controller_get_type()
@@ -103,6 +116,33 @@ ags_osc_status_controller_class_init(AgsOscStatusControllerClass *osc_status_con
   gobject->finalize = ags_osc_status_controller_finalize;
 
   /* properties */
+
+  /* AgsOscStatusControllerClass */
+  osc_status_controller->get_status = ags_osc_status_controller_real_get_status;
+
+  /* signals */
+  /**
+   * AgsOscStatusController::get-status:
+   * @osc_status_controller: the #AgsOscStatusController
+   * @osc_connection: the #AgsOscConnection
+   * @message: the message received
+   * @message_size: the message size
+   *
+   * The ::get-status signal is emited during get status of status controller.
+   *
+   * Since: 2.1.0
+   */
+  osc_status_controller_signals[GET_STATUS] =
+    g_signal_new("get-status",
+		 G_TYPE_FROM_CLASS(osc_status_controller),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsOscStatusControllerClass, get_status),
+		 NULL, NULL,
+		 ags_cclosure_marshal_POINTER__OBJECT_POINTER_UINT,
+		 G_TYPE_NONE, 3,
+		 G_TYPE_OBJECT,
+		 G_TYPE_POINTER,
+		 G_TYPE_UINT);
 }
 
 void
@@ -182,9 +222,133 @@ ags_osc_status_controller_finalize(GObject *gobject)
   AgsOscStatusController *osc_status_controller;
 
   osc_status_controller = AGS_OSC_STATUS_CONTROLLER(gobject);
-  
+
   /* call parent */
   G_OBJECT_CLASS(ags_osc_status_controller_parent_class)->finalize(gobject);
+}
+
+gpointer
+ags_osc_status_controller_real_get_status(AgsOscStatusController *osc_status_controller,
+					  AgsOscConnection *osc_connection,
+					  unsigned char *message, guint message_size)
+{
+  AgsOscServer *osc_server;
+  AgsOscResponse *osc_response;
+  
+  gchar *type_tag;
+  gchar *status;
+  unsigned char *packet;
+  
+  guint real_packet_size;
+  guint packet_size;
+  guint length;
+  gboolean success;
+
+  osc_response = ags_osc_response_new();
+      
+  /* read type tag */
+  ags_osc_buffer_util_get_string(message + 8,
+				 &type_tag, NULL);
+
+  success = (!strncmp(type_tag, ",", 2)) ? TRUE: FALSE;
+
+  if(!success){
+    ags_osc_response_set_flags(osc_response,
+			       AGS_OSC_RESPONSE_ERROR);
+
+    g_object_set(osc_response,
+		 "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_MALFORMED_REQUEST,
+		 NULL);
+
+    return(osc_response);
+  }
+
+  g_object_get(osc_status_controller,
+	       "osc-server", &osc_server,
+	       NULL);
+
+  real_packet_size = 0;
+  packet_size = 0;
+
+  packet = (unsigned char *) malloc(AGS_OSC_RESPONSE_DEFAULT_CHUNK_SIZE * sizeof(unsigned char));
+  memset(packet, 0, AGS_OSC_RESPONSE_DEFAULT_CHUNK_SIZE * sizeof(unsigned char));
+    
+  g_object_set(osc_response,
+	       "packet", packet,
+	       "packet-size", packet_size,
+	       NULL);
+  
+  real_packet_size = AGS_OSC_RESPONSE_DEFAULT_CHUNK_SIZE;
+
+  /* message path */
+  packet_size = 4;
+
+  ags_osc_buffer_util_put_string(packet + packet_size,
+				 "/status", -1);
+      
+  packet_size += 8;
+
+  ags_osc_buffer_util_put_string(packet + packet_size,
+				 ",s", -1);
+  
+  /* status argument */
+  packet_size += 4;
+
+  if(ags_osc_server_test_flags(osc_server, AGS_OSC_SERVER_RUNNING)){
+    status = "server up and running";
+  }else if(ags_osc_server_test_flags(osc_server, AGS_OSC_SERVER_STARTED)){
+    status = "server started";
+  }else if(ags_osc_server_test_flags(osc_server, AGS_OSC_SERVER_TERMINATING)){
+    status = "server terminating";
+  }else{
+    status = "server stopped";
+  }
+  
+  length = strlen(status);
+      
+  ags_osc_buffer_util_put_string(packet + packet_size,
+				 status, -1);
+
+  packet_size += (4 * (guint) ceil((double) (length + 1) / 4.0));
+
+  /* packet size */
+  ags_osc_buffer_util_put_int32(packet,
+				packet_size);
+  
+  return(osc_response);
+}
+
+/**
+ * ags_osc_status_controller_get_status:
+ * @osc_status_controller: the #AgsOscStatusController
+ * @osc_connection: the #AgsOscConnection
+ * @message: the message received
+ * @message_size: the message size
+ * 
+ * Get status.
+ * 
+ * Returns: the #AgsOscResponse
+ * 
+ * Since: 2.1.0
+ */
+gpointer
+ags_osc_status_controller_get_status(AgsOscStatusController *osc_status_controller,
+				     AgsOscConnection *osc_connection,
+				     unsigned char *message, guint message_size)
+{
+  gpointer osc_response;
+  
+  g_return_val_if_fail(AGS_IS_OSC_STATUS_CONTROLLER(osc_status_controller), NULL);
+  
+  g_object_ref((GObject *) osc_status_controller);
+  g_signal_emit(G_OBJECT(osc_status_controller),
+		osc_status_controller_signals[GET_STATUS], 0,
+		osc_connection,
+		message, message_size,
+		&osc_response);
+  g_object_unref((GObject *) osc_status_controller);
+
+  return(osc_response);
 }
 
 /**
