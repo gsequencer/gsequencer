@@ -41,7 +41,7 @@ struct _AgsSetDevice
 
   GObject *scope;
   
-  guint device;
+  gchar *device;
 };
 
 struct _AgsSetDeviceClass
@@ -52,6 +52,6 @@ struct _AgsSetDeviceClass
 GType ags_set_device_get_type();
 
 AgsSetDevice* ags_set_device_new(GObject *scope,
-				 guint device);
+				 gchar *device);
 
 #endif /*__AGS_SET_DEVICE_H__*/

@@ -147,7 +147,7 @@ void
 ags_set_device_init(AgsSetDevice *set_device)
 {
   set_device->scope = NULL;
-  set_device->device = 0;
+  set_device->device = NULL;
 }
 
 void
@@ -272,7 +272,7 @@ ags_set_device_launch(AgsTask *task)
 /**
  * ags_set_device_new:
  * @scope: the #AgsSoundcard or #AgsSequencer to reset
- * @device: the device
+ * @device: the device as string
  *
  * Create a new instance of #AgsSetDevice.
  *
