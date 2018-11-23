@@ -23,6 +23,7 @@
 #include <glib.h>
 #include <glib-object.h>
 
+#include <time.h>
 #include <pthread.h>
 
 #include <ags/audio/osc/controller/ags_osc_controller.h>
@@ -34,11 +35,16 @@
 #define AGS_IS_OSC_METER_CONTROLLER_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_OSC_METER_CONTROLLER))
 #define AGS_OSC_METER_CONTROLLER_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS(obj, AGS_TYPE_OSC_METER_CONTROLLER, AgsOscMeterControllerClass))
 
+#define AGS_OSC_METER_CONTROLLER_MONITOR(ptr) ((AgsOscMeterControllerMonitor *)(ptr))
+
 typedef struct _AgsOscMeterController AgsOscMeterController;
 typedef struct _AgsOscMeterControllerClass AgsOscMeterControllerClass;
+typedef struct _AgsOscMeterControllerMonitor AgsOscMeterControllerMonitor;
 
 typedef enum{
-  AGS_OSC_METER_CONTROLLER_MONITOR_RUNNING     = 1,
+  AGS_OSC_METER_CONTROLLER_MONITOR_STARTED        = 1,
+  AGS_OSC_METER_CONTROLLER_MONITOR_RUNNING        = 1 <<  1,
+  AGS_OSC_METER_CONTROLLER_MONITOR_TERMINATING    = 1 <<  2,
 }AgsOscMeterControllerFlags;
 
 struct _AgsOscMeterController
@@ -46,10 +52,12 @@ struct _AgsOscMeterController
   AgsOscController osc_controller;
 
   guint flags;
+
+  struct timespec *monitor_timeout;
   
   pthread_t *monitor_thread;
   
-  GHashTable *monitor_port;
+  GList *monitor;
 };
 
 struct _AgsOscMeterControllerClass
@@ -64,11 +72,22 @@ struct _AgsOscMeterControllerClass
 			    unsigned char *message, guint message_size);
 };
 
+struct _AgsOscMeterControllerMonitor
+{
+  AgsOscConnection *osc_connection;
+
+  gchar *path;
+  AgsPort *port;
+};
+
 GType ags_osc_meter_controller_get_type();
 
 gboolean ags_osc_meter_controller_test_flags(AgsOscMeterController *osc_meter_controller, guint flags);
 void ags_osc_meter_controller_set_flags(AgsOscMeterController *osc_meter_controller, guint flags);
 void ags_osc_meter_controller_unset_flags(AgsOscMeterController *osc_meter_controller, guint flags);
+
+AgsOscMeterControllerMonitor* ags_osc_meter_controller_monitor_alloc();
+void ags_osc_meter_controller_monitor_free(AgsOscMeterControllerMonitor *monitor);
 
 void ags_osc_meter_controller_start_monitor(AgsOscMeterController *osc_meter_controller);
 void ags_osc_meter_controller_stop_monitor(AgsOscMeterController *osc_meter_controller);

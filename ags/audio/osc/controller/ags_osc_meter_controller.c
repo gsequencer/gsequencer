@@ -197,12 +197,14 @@ ags_osc_meter_controller_init(AgsOscMeterController *osc_meter_controller)
 
   osc_meter_controller->flags = 0;
 
+  osc_meter_controller->monitor_timeout = (struct timespec *) malloc(sizeof(struct timespec));
+
+  osc_meter_controller->monitor_timeout->tv_sec = 0;
+  osc_meter_controller->monitor_timeout->tv_nsec = NSEC_PER_SEC / 30;
+  
   osc_meter_controller->monitor_thread = (pthread_t *) malloc(sizeof(pthread_t));
   
-  osc_meter_controller->monitor_port = g_hash_table_new_full(g_direct_hash, g_direct_equal,
-							     g_object_unref,
-							     g_object_unref);
-  g_hash_table_ref(osc_meter_controller->monitor_port);
+  osc_meter_controller->monitor = NULL;
 }
 
 void
@@ -264,10 +266,11 @@ ags_osc_meter_controller_dispose(GObject *gobject)
 
   osc_meter_controller = AGS_OSC_METER_CONTROLLER(gobject);
   
-  if(osc_meter_controller->monitor_port != NULL){
-    g_hash_table_unref(osc_meter_controller->monitor_port);
+  if(osc_meter_controller->monitor != NULL){
+    g_list_free_full(osc_meter_controller->monitor,
+		     ags_osc_meter_controller_monitor_free);
 
-    osc_meter_controller->monitor_port = NULL;
+    osc_meter_controller->monitor = NULL;
   }
   
   /* call parent */
@@ -280,9 +283,14 @@ ags_osc_meter_controller_finalize(GObject *gobject)
   AgsOscMeterController *osc_meter_controller;
 
   osc_meter_controller = AGS_OSC_METER_CONTROLLER(gobject);
+
+  free(osc_meter_controller->monitor_timeout);
   
-  if(osc_meter_controller->monitor_port != NULL){
-    g_hash_table_unref(osc_meter_controller->monitor_port);
+  free(osc_meter_controller->monitor_thread);
+  
+  if(osc_meter_controller->monitor != NULL){
+    g_list_free_full(osc_meter_controller->monitor,
+		     ags_osc_meter_controller_monitor_free);
   }
   
   /* call parent */
@@ -294,9 +302,254 @@ ags_osc_meter_controller_monitor_thread(void *ptr)
 {
   AgsOscMeterController *osc_meter_controller;
 
+  GList *start_monitor, *monitor;
+  
+  pthread_mutex_t *osc_controller_mutex;
+
   osc_meter_controller = AGS_OSC_METER_CONTROLLER(ptr);
 
+  /* get OSC meter controller mutex */
+  pthread_mutex_lock(ags_osc_controller_get_class_mutex());
+  
+  osc_controller_mutex = AGS_OSC_CONTROLLER(osc_meter_controller)->obj_mutex;
+  
+  pthread_mutex_unlock(ags_osc_controller_get_class_mutex());
 
+  /* run */
+  ags_osc_meter_controller_set_flags(osc_meter_controller, AGS_OSC_METER_CONTROLLER_MONITOR_RUNNING);
+  
+  while(ags_osc_meter_controller_test_flags(osc_meter_controller, AGS_OSC_METER_CONTROLLER_MONITOR_RUNNING)){
+    pthread_mutex_lock(osc_controller_mutex);
+
+    start_monitor = g_list_copy(osc_meter_controller->monitor);
+    
+    pthread_mutex_unlock(osc_controller_mutex);
+
+    /*  */
+    monitor = start_monitor;
+
+    while(monitor != NULL){
+      AgsPort *port;
+      
+      AgsOscConnection *osc_connection;
+      AgsOscResponse *osc_response;
+
+      GType port_value_type;
+
+      gchar *path;
+      unsigned char *packet;
+
+      guint port_value_length;
+      gboolean port_value_is_pointer;
+      guint real_packet_size;
+      guint packet_size;
+      
+      pthread_mutex_t *port_mutex;
+
+      osc_connection = AGS_OSC_METER_CONTROLLER_MONITOR(monitor->data)->osc_connection;
+
+      path = AGS_OSC_METER_CONTROLLER_MONITOR(monitor->data)->path;
+      port = AGS_OSC_METER_CONTROLLER_MONITOR(monitor->data)->port;
+
+      /*  */
+      osc_response = ags_osc_response_new();
+      
+      packet = (unsigned char *) malloc(AGS_OSC_RESPONSE_DEFAULT_CHUNK_SIZE * sizeof(unsigned char));
+      memset(packet, 0, AGS_OSC_RESPONSE_DEFAULT_CHUNK_SIZE * sizeof(unsigned char));
+      
+      g_object_set(osc_response,
+		   "packet", packet,
+		   "packet-size", packet_size,
+		   NULL);
+      
+      real_packet_size = AGS_OSC_RESPONSE_DEFAULT_CHUNK_SIZE;
+
+      /* message path */
+      packet_size = 4;
+
+      ags_osc_buffer_util_put_string(packet + packet_size,
+				     "/meter", -1);
+      
+      packet_size += 8;
+
+      /* get port mutex */
+      pthread_mutex_lock(ags_port_get_class_mutex());
+      
+      port_mutex = port->obj_mutex;
+      
+      pthread_mutex_unlock(ags_port_get_class_mutex());
+
+      /* check array type */
+      g_object_get(port,
+		   "port-value-is-pointer", &port_value_is_pointer,
+		   "port-value-type", &port_value_type,
+		   "port-value-length", &port_value_length,
+		   NULL);
+
+      if(port_value_is_pointer){
+	gchar *type_tag;
+	
+	guint i;
+
+	/* message type tag */
+	if(packet_size + (4 * (guint) ceil((double) (port_value_length + 5) / 4.0)) > real_packet_size){
+	  ags_osc_response_set_flags(osc_response,
+				     AGS_OSC_RESPONSE_ERROR);
+
+	  g_object_set(osc_response,
+		       "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_CHUNK_SIZE_EXCEEDED,
+		       NULL);
+
+	  ags_osc_connection_write_response(osc_connection,
+					    osc_response);
+	    
+	  /* iterate */
+	  monitor = monitor->next;
+
+	  continue;
+	}
+
+	type_tag = (gchar *) malloc((port_value_length + 5) * sizeof(gchar));
+
+	type_tag[0] = ',';
+	type_tag[1] = 's';
+	type_tag[2] = '[';
+	type_tag[port_value_length + 4] = ']';
+
+	if(port_value_type == G_TYPE_DOUBLE){
+	  for(i = 0; i < port_value_length; i++){
+	    packet[packet_size + 3 + i] = 'd';
+	  }
+
+	  /* node path */
+	  packet_size += (4 * (guint) ceil((double) (port_value_length + 5) / 4.0));
+	  
+	  length = strlen(path);
+
+	  if(packet_size + (4 * (guint) ceil((double) (length + 1) / 4.0)) > real_packet_size){
+	    ags_osc_response_set_flags(osc_response,
+				       AGS_OSC_RESPONSE_ERROR);
+
+	    g_object_set(osc_response,
+			 "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_CHUNK_SIZE_EXCEEDED,
+			 NULL);
+
+	    ags_osc_connection_write_response(osc_connection,
+					      osc_response);
+	    
+	    /* iterate */
+	    monitor = monitor->next;
+
+	    continue;
+	  }
+
+	  ags_osc_buffer_util_put_string(packet + packet_size,
+					 path, -1);
+
+	  /* node argument */
+	  packet_size += (4 * (guint) ceil((double) (length + 1) / 4.0));
+
+	  if(packet_size + (4 * (guint) ceil((double) (port_value_length * 8) / 4.0)) > real_packet_size){
+	    ags_osc_response_set_flags(osc_response,
+				       AGS_OSC_RESPONSE_ERROR);
+
+	    g_object_set(osc_response,
+			 "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_CHUNK_SIZE_EXCEEDED,
+			 NULL);
+
+	    ags_osc_connection_write_response(osc_connection,
+					      osc_response);
+	    
+	    /* iterate */
+	    monitor = monitor->next;
+
+	    continue;
+	  }
+	  
+	  pthread_mutex_lock(port_mutex);
+
+	  for(i = 0; i < port_value_length; i++){
+	    gdouble value;
+
+	    value = port->port_value.ags_port_double_ptr[i];
+	    
+	    ags_osc_buffer_util_put_double(packet + packet_size + 3 + (i * 8),
+					   value);
+	  }
+
+	  pthread_mutex_unlock(port_mutex);
+
+	  /* packet size */
+	  ags_osc_buffer_util_put_int32(packet,
+					packet_size);
+	}else{
+	  g_warning("unsupported port type");
+	}  
+      }else{
+	if(port_value_type == G_TYPE_FLOAT){
+	  gfloat value;
+	  
+	  /* message type tag */
+	  pthread_mutex_lock(port_mutex);
+
+	  value = port->port_value.ags_port_float;
+	  
+	  pthread_mutex_unlock(port_mutex);
+
+	  ags_osc_buffer_util_put_string(packet + packet_size,
+					 ",sf", -1);
+
+	  /* node path */	    
+	  packet_size += 4;
+	  
+	  length = strlen(path);
+
+	  if(packet_size + (4 * (guint) ceil((double) (length + 1) / 4.0)) + 8 > real_packet_size){
+	    ags_osc_response_set_flags(osc_response,
+				       AGS_OSC_RESPONSE_ERROR);
+
+	    g_object_set(osc_response,
+			 "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_CHUNK_SIZE_EXCEEDED,
+			 NULL);
+
+	    ags_osc_connection_write_response(osc_connection,
+					      osc_response);
+	    
+	    /* iterate */
+	    monitor = monitor->next;
+
+	    continue;
+	  }
+
+	  ags_osc_buffer_util_put_string(packet + packet_size,
+					 path, -1);
+
+	  /* node argument */
+	  packet_size += (4 * (guint) ceil((double) (length + 1) / 4.0));
+
+	  ags_osc_buffer_util_put_float(packet + packet_size,
+					value);
+	  
+	  packet_size += 4;
+	  
+	  /* packet size */
+	  ags_osc_buffer_util_put_int32(packet,
+					packet_size);
+	}else{
+	  g_warning("unsupported port type");
+	}
+      }
+
+      /* write response */
+      ags_osc_connection_write_response(osc_connection,
+					osc_response);
+      
+      /* iterate */
+      monitor = monitor->next;
+    }
+    
+    nanosleep(osc_meter_controller->monitor_timeout, NULL);
+  }
   
   pthread_exit(NULL);
 }
@@ -323,7 +576,7 @@ ags_osc_meter_controller_test_flags(AgsOscMeterController *osc_meter_controller,
     return(FALSE);
   }
 
-  /* get osc_meter_controller mutex */
+  /* get OSC meter controller mutex */
   pthread_mutex_lock(ags_osc_controller_get_class_mutex());
   
   osc_controller_mutex = AGS_OSC_CONTROLLER(osc_meter_controller)->obj_mutex;
@@ -358,7 +611,7 @@ ags_osc_meter_controller_set_flags(AgsOscMeterController *osc_meter_controller, 
     return;
   }
 
-  /* get osc_meter_controller mutex */
+  /* get OSC meter controller mutex */
   pthread_mutex_lock(ags_osc_controller_get_class_mutex());
   
   osc_controller_mutex = AGS_OSC_CONTROLLER(osc_meter_controller)->obj_mutex;
@@ -391,7 +644,7 @@ ags_osc_meter_controller_unset_flags(AgsOscMeterController *osc_meter_controller
     return;
   }
 
-  /* get osc_meter_controller mutex */
+  /* get OSC meter controller mutex */
   pthread_mutex_lock(ags_osc_controller_get_class_mutex());
   
   osc_controller_mutex = AGS_OSC_CONTROLLER(osc_meter_controller)->obj_mutex;
@@ -404,6 +657,49 @@ ags_osc_meter_controller_unset_flags(AgsOscMeterController *osc_meter_controller
   osc_meter_controller->flags &= (~flags);
 
   pthread_mutex_unlock(osc_controller_mutex);
+}
+
+/**
+ * ags_osc_meter_controller_monitor_alloc:
+ * 
+ * Allocate #AgsOscMeterControllerMonitor-struct.
+ * 
+ * Returns: the newly allocate #AgsOscMeterControllerMonitor-struct
+ * 
+ * Since: 2.1.0
+ */
+AgsOscMeterControllerMonitor*
+ags_osc_meter_controller_monitor_alloc()
+{
+  AgsOscMeterControllerMonitor *monitor;
+
+  monitor = (AgsOscMeterControllerMonitor *) malloc(sizeof(AgsOscMeterControllerMonitor));
+
+  monitor->osc_connection = NULL;
+
+  monitor->path =  NULL;
+  monitor->port = NULL;
+
+  return(monitor);
+}
+
+/**
+ * ags_osc_meter_controller_monitor_free:
+ * @monitor: the #AgsOscMeterControllerMonitor-struct
+ * 
+ * Free @monitor.
+ * 
+ * Since: 2.1.0
+ */
+void
+ags_osc_meter_controller_monitor_free(AgsOscMeterControllerMonitor *monitor)
+{  
+  g_object_unref(monitor->osc_connection);
+
+  g_free(monitor->path);
+  g_object_unref(monitor->port);
+  
+  free(monitor);
 }
 
 void
