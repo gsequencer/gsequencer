@@ -89,6 +89,20 @@ void ags_osc_meter_controller_unset_flags(AgsOscMeterController *osc_meter_contr
 AgsOscMeterControllerMonitor* ags_osc_meter_controller_monitor_alloc();
 void ags_osc_meter_controller_monitor_free(AgsOscMeterControllerMonitor *monitor);
 
+GList* ags_osc_meter_controller_monitor_find_path(GList *monitor,
+						  gchar *path);
+GList* ags_osc_meter_controller_monitor_find_port(GList *monitor,
+						  AgsPort *port);
+
+void ags_osc_meter_controller_add_monitor(AgsOscMeterController *osc_meter_controller,
+					  AgsOscMeterControllerMonitor *monitor);
+void ags_osc_meter_controller_remove_monitor(AgsOscMeterController *osc_meter_controller,
+					     AgsOscMeterControllerMonitor *monitor);
+
+gboolean ags_osc_meter_controller_contains_monitor(AgsOscMeterController *osc_meter_controller,
+						   AgsOscConnection *osc_connection,
+						   AgsPort *port);
+
 void ags_osc_meter_controller_start_monitor(AgsOscMeterController *osc_meter_controller);
 void ags_osc_meter_controller_stop_monitor(AgsOscMeterController *osc_meter_controller);
 

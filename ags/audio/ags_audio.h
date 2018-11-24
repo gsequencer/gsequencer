@@ -91,6 +91,8 @@ struct _AgsAudio
   pthread_mutexattr_t *obj_mutexattr;
 
   AgsUUID *uuid;
+
+  gchar *audio_name;
   
   GObject *output_soundcard;
   gint *output_soundcard_channel_map;
@@ -254,6 +256,10 @@ void ags_audio_set_staging_flags(AgsAudio *audio, gint sound_scope,
 				 guint staging_flags);
 void ags_audio_unset_staging_flags(AgsAudio *audio, gint sound_scope,
 				   guint staging_flags);
+
+/* matching */
+GList* ags_audio_find_name(GList *audio,
+			   gchar *audio_name);
 
 /* channel alignment */
 void ags_audio_set_max_audio_channels(AgsAudio *audio,

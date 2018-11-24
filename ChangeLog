@@ -1,6 +1,7 @@
 ags (2.1.0)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented AgsAudio:audio-name property
 	* implemented AgsSetDevice task
 	* implemented ags_osc_util.c
 	* implemented ags_osc_buffer_util.c

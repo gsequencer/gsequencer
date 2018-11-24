@@ -160,6 +160,7 @@ enum{
 
 enum{
   PROP_0,
+  PROP_AUDIO_NAME,
   PROP_OUTPUT_SOUNDCARD,
   PROP_INPUT_SOUNDCARD,
   PROP_OUTPUT_SEQUENCER,
@@ -278,6 +279,22 @@ ags_audio_class_init(AgsAudioClass *audio)
   gobject->finalize = ags_audio_finalize;
 
   /* properties */
+  /**
+   * AgsAudio:audio-name:
+   *
+   * The name of audio object.
+   * 
+   * Since: 2.1.0
+   */
+  param_spec = g_param_spec_string("audio-name",
+				   i18n_pspec("assigned name"),
+				   i18n_pspec("The name of audio"),
+				   NULL,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_AUDIO_NAME,
+				  param_spec);
+
   /**
    * AgsAudio:output-soundcard:
    *
@@ -1530,6 +1547,8 @@ ags_audio_init(AgsAudio *audio)
   audio->uuid = ags_uuid_alloc();
   ags_uuid_generate(audio->uuid);
   
+  audio->audio_name = NULL;
+
   /* config */
   config = ags_config_get_instance();
   
@@ -1685,6 +1704,19 @@ ags_audio_set_property(GObject *gobject,
   pthread_mutex_unlock(ags_audio_get_class_mutex());
 
   switch(prop_id){
+  case PROP_AUDIO_NAME:
+    {
+      gchar *audio_name;
+
+      audio_name = g_value_get_string(value);
+
+      pthread_mutex_lock(audio_mutex);
+      
+      audio->audio_name = g_strdup(audio_name);
+
+      pthread_mutex_unlock(audio_mutex);
+    }
+    break;
   case PROP_OUTPUT_SOUNDCARD:
     {
       GObject *soundcard;
@@ -2498,6 +2530,16 @@ ags_audio_get_property(GObject *gobject,
   pthread_mutex_unlock(ags_audio_get_class_mutex());
 
   switch(prop_id){
+  case PROP_AUDIO_NAME:
+    {
+      pthread_mutex_lock(audio_mutex);
+
+      g_value_set_string(value,
+			 audio->audio_name);
+
+      pthread_mutex_unlock(audio_mutex);
+    }
+    break;
   case PROP_OUTPUT_SOUNDCARD:
     {
       pthread_mutex_lock(audio_mutex);
@@ -3369,6 +3411,10 @@ ags_audio_finalize(GObject *gobject)
   pthread_mutexattr_destroy(audio->obj_mutexattr);
   free(audio->obj_mutexattr);
 
+  ags_uuid_free(audio->uuid);
+  
+  g_free(audio->audio_name);
+  
   /* soundcard */
   if(audio->output_soundcard != NULL){
     g_object_unref(audio->output_soundcard);
@@ -5131,6 +5177,57 @@ ags_audio_unset_staging_flags(AgsAudio *audio, gint sound_scope,
   }
 
   pthread_mutex_unlock(audio_mutex);
+}
+
+/**
+ * ags_audio_find_name:
+ * @audio: the #GList-struct containing #AgsAudio
+ * @audio_name: the audio name to find
+ * 
+ * Find @audio_name in @audio.
+ *
+ * Returns: the next matching #GList-struct containing #AgsAudio
+ * 
+ * Since: 2.1.0
+ */
+GList*
+ags_audio_find_name(GList *audio,
+		    gchar *audio_name)
+{
+  if(audio == NULL ||
+     audio_name == NULL){
+    return(NULL);
+  }
+
+  while(audio != NULL){
+    gboolean success;
+    
+    pthread_mutex_t *audio_mutex;
+
+    /* get audio mutex */
+    pthread_mutex_lock(ags_audio_get_class_mutex());
+  
+    audio_mutex = AGS_AUDIO(audio->data)->obj_mutex;
+  
+    pthread_mutex_unlock(ags_audio_get_class_mutex());
+
+    /* match */
+    pthread_mutex_lock(audio_mutex);
+
+    success = (AGS_AUDIO(audio->data)->audio_name != NULL &&
+	       !g_strcmp0(AGS_AUDIO(audio->data)->audio_name,
+			  audio_name)) ? TRUE: FALSE;
+    
+    pthread_mutex_unlock(audio_mutex);
+    
+    if(success){
+      return(audio);
+    }
+    
+    audio = audio->next;
+  }
+  
+  return(NULL);
 }
 
 /**

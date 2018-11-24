@@ -346,10 +346,14 @@ ags_osc_meter_controller_monitor_thread(void *ptr)
       
       pthread_mutex_t *port_mutex;
 
+      pthread_mutex_lock(osc_controller_mutex);
+      
       osc_connection = AGS_OSC_METER_CONTROLLER_MONITOR(monitor->data)->osc_connection;
 
       path = AGS_OSC_METER_CONTROLLER_MONITOR(monitor->data)->path;
       port = AGS_OSC_METER_CONTROLLER_MONITOR(monitor->data)->port;
+
+      pthread_mutex_unlock(osc_controller_mutex);
 
       /*  */
       osc_response = ags_osc_response_new();
@@ -443,8 +447,12 @@ ags_osc_meter_controller_monitor_thread(void *ptr)
 	    continue;
 	  }
 
+	  pthread_mutex_lock(osc_controller_mutex);
+	  
 	  ags_osc_buffer_util_put_string(packet + packet_size,
 					 path, -1);
+
+	  pthread_mutex_unlock(osc_controller_mutex);
 
 	  /* node argument */
 	  packet_size += (4 * (guint) ceil((double) (length + 1) / 4.0));
@@ -521,8 +529,12 @@ ags_osc_meter_controller_monitor_thread(void *ptr)
 	    continue;
 	  }
 
+	  pthread_mutex_lock(osc_controller_mutex);
+	  
 	  ags_osc_buffer_util_put_string(packet + packet_size,
 					 path, -1);
+
+	  pthread_mutex_unlock(osc_controller_mutex);
 
 	  /* node argument */
 	  packet_size += (4 * (guint) ceil((double) (length + 1) / 4.0));
@@ -547,10 +559,12 @@ ags_osc_meter_controller_monitor_thread(void *ptr)
       /* iterate */
       monitor = monitor->next;
     }
+
+    g_list_free(start_monitor);
     
     nanosleep(osc_meter_controller->monitor_timeout, NULL);
   }
-  
+
   pthread_exit(NULL);
 }
 
@@ -702,10 +716,224 @@ ags_osc_meter_controller_monitor_free(AgsOscMeterControllerMonitor *monitor)
   free(monitor);
 }
 
+/**
+ * ags_osc_meter_controller_monitor_find_path:
+ * @monitor: the #GList-struct containing #AgsOscMeterControllerMonitor-struct
+ * @path: the path as string
+ * 
+ * Find @path in @monitor.
+ * 
+ * Returns: the next matching #GList-struct containing #AgsOscMeterControllerMonitor-struct
+ * 
+ * Since: 2.1.0
+ */
+GList*
+ags_osc_meter_controller_monitor_find_path(GList *monitor,
+					   gchar *path)
+{
+  if(monitor == NULL ||
+     path == NULL){
+    return(NULL);
+  }
+
+  while(monitor != NULL){
+    if(!g_strcmp0(AGS_OSC_METER_CONTROLLER_MONITOR(monitor->data)->path,
+		  path)){
+      return(monitor);
+    }
+
+    monitor = monitor->next;
+  }
+  
+  return(NULL);
+}
+
+/**
+ * ags_osc_meter_controller_monitor_find_port:
+ * @monitor: the #GList-struct containing #AgsOscMeterControllerMonitor-struct
+ * @port: the #AgsPort
+ * 
+ * Find @port in @monitor.
+ * 
+ * Returns: the next matching #GList-struct containing #AgsOscMeterControllerMonitor-struct
+ * 
+ * Since: 2.1.0
+ */
+GList*
+ags_osc_meter_controller_monitor_find_port(GList *monitor,
+					   AgsPort *port)
+{
+  if(monitor == NULL ||
+     port == NULL){
+    return(NULL);
+  }
+
+  while(monitor != NULL){
+    if(AGS_OSC_METER_CONTROLLER_MONITOR(monitor->data)->port == port){
+      return(monitor);
+    }
+
+    monitor = monitor->next;
+  }
+  
+  return(NULL);
+}
+
+/**
+ * ags_osc_meter_controller_monitor_add_monitor:
+ * @osc_meter_controller: the #AgsOscMeterController
+ * @monitor: the #AgsOscMeterControllerMonitor-struct
+ * 
+ * Add @monitor to @osc_meter_controller.
+ * 
+ * Since: 2.1.0
+ */
+void
+ags_osc_meter_controller_add_monitor(AgsOscMeterController *osc_meter_controller,
+				     AgsOscMeterControllerMonitor *monitor)
+{
+  pthread_mutex_t *osc_controller_mutex;
+
+  if(!AGS_IS_OSC_METER_CONTROLLER(osc_meter_controller)){
+    return;
+  }
+
+  /* get OSC meter controller mutex */
+  pthread_mutex_lock(ags_osc_controller_get_class_mutex());
+  
+  osc_controller_mutex = AGS_OSC_CONTROLLER(osc_meter_controller)->obj_mutex;
+  
+  pthread_mutex_unlock(ags_osc_controller_get_class_mutex());
+
+  /* add monitor */
+  pthread_mutex_lock(osc_controller_mutex);
+
+  if(g_list_find(osc_meter_controller->monitor, monitor) == NULL){
+    osc_meter_controller->monitor = g_list_prepend(osc_meter_controller->monitor, monitor);
+  }
+  
+  pthread_mutex_unlock(osc_controller_mutex);
+}
+
+/**
+ * ags_osc_meter_controller_monitor_remove_monitor:
+ * @osc_meter_controller: the #AgsOscMeterController
+ * @monitor: the #AgsOscMeterControllerMonitor-struct
+ * 
+ * Remove @monitor from @osc_meter_controller.
+ * 
+ * Since: 2.1.0
+ */
+void
+ags_osc_meter_controller_remove_monitor(AgsOscMeterController *osc_meter_controller,
+					AgsOscMeterControllerMonitor *monitor)
+{
+  pthread_mutex_t *osc_controller_mutex;
+
+  if(!AGS_IS_OSC_METER_CONTROLLER(osc_meter_controller)){
+    return;
+  }
+
+  /* get OSC meter controller mutex */
+  pthread_mutex_lock(ags_osc_controller_get_class_mutex());
+  
+  osc_controller_mutex = AGS_OSC_CONTROLLER(osc_meter_controller)->obj_mutex;
+  
+  pthread_mutex_unlock(ags_osc_controller_get_class_mutex());
+
+  /* remove monitor */
+  pthread_mutex_lock(osc_controller_mutex);
+
+  if(g_list_find(osc_meter_controller->monitor, monitor) != NULL){
+    osc_meter_controller->monitor = g_list_remove(osc_meter_controller->monitor, monitor);
+  }
+  
+  pthread_mutex_unlock(osc_controller_mutex);
+}
+
+/**
+ * ags_osc_meter_controller_monitor_remove_monitor:
+ * @osc_meter_controller: the #AgsOscMeterController
+ * @osc_connection: the #AgsOscConnection
+ * @port: the #AgsPort
+ * 
+ * Check if there is a monitor matching @osc_connection and @port in @osc_meter_controller.
+ * 
+ * Returns: %TRUE if found, otherwise %FALSE
+ * 
+ * Since: 2.1.0
+ */
+gboolean
+ags_osc_meter_controller_contains_monitor(AgsOscMeterController *osc_meter_controller,
+					  AgsOscConnection *osc_connection,
+					  AgsPort *port)
+{
+  GList *monitor;
+  
+  pthread_mutex_t *osc_controller_mutex;
+
+  if(!AGS_IS_OSC_METER_CONTROLLER(osc_meter_controller) ||
+     !AGS_IS_OSC_CONNECTION(osc_connection) ||
+     !AGS_IS_PORT(port)){
+    return(FALSE);
+  }
+  
+  /* get OSC meter controller mutex */
+  pthread_mutex_lock(ags_osc_controller_get_class_mutex());
+  
+  osc_controller_mutex = AGS_OSC_CONTROLLER(osc_meter_controller)->obj_mutex;
+  
+  pthread_mutex_unlock(ags_osc_controller_get_class_mutex());
+
+  /* check if contains OSC connection and port */
+  pthread_mutex_lock(osc_controller_mutex);
+
+  monitor = osc_meter_controller->monitor;
+
+  while(monitor != NULL){
+    if(AGS_OSC_METER_CONTROLLER_MONITOR(monitor->data)->osc_connection == osc_connection &&
+       AGS_OSC_METER_CONTROLLER_MONITOR(monitor->data)->port == port){
+      pthread_mutex_unlock(osc_controller_mutex);
+
+      return(TRUE);
+    }
+
+    monitor = monitor->next;
+  }
+  
+  pthread_mutex_unlock(osc_controller_mutex);
+
+  return(FALSE);
+}
+
 void
 ags_osc_meter_controller_real_start_monitor(AgsOscMeterController *osc_meter_controller)
 {
-  //TODO:JK: implement me
+  pthread_mutex_t *osc_controller_mutex;
+
+  /* get OSC meter controller mutex */
+  pthread_mutex_lock(ags_osc_controller_get_class_mutex());
+  
+  osc_controller_mutex = AGS_OSC_CONTROLLER(osc_meter_controller)->obj_mutex;
+  
+  pthread_mutex_unlock(ags_osc_controller_get_class_mutex());
+
+  /* test if already started */
+  pthread_mutex_lock(osc_controller_mutex);
+    
+  if(ags_osc_meter_controller_test_flags(osc_meter_controller, AGS_OSC_METER_CONTROLLER_MONITOR_STARTED)){
+    pthread_mutex_unlock(osc_controller_mutex);
+    
+    return;
+  }
+
+  ags_osc_meter_controller_set_flags(osc_meter_controller, AGS_OSC_METER_CONTROLLER_MONITOR_STARTED);
+  
+  pthread_mutex_unlock(osc_controller_mutex);
+
+  /* create monitor thread */
+  pthread_create(osc_meter_controller->monitor_thread, NULL,
+		 ags_osc_meter_controller_monitor_thread, osc_meter_controller);
 }
 
 /**
@@ -733,7 +961,19 @@ ags_osc_meter_controller_start_monitor(AgsOscMeterController *osc_meter_controll
 void
 ags_osc_meter_controller_real_stop_monitor(AgsOscMeterController *osc_meter_controller)
 {
-  //TODO:JK: implement me
+  if(!ags_osc_meter_controller_test_flags(osc_meter_controller, AGS_OSC_METER_CONTROLLER_MONITOR_RUNNING)){
+    pthread_mutex_unlock(osc_controller_mutex);
+    
+    return;
+  }
+
+  ags_osc_meter_controller_set_flags(osc_meter_controller, AGS_OSC_METER_CONTROLLER_MONITOR_TERMINATING);
+  ags_osc_meter_controller_unset_flags(osc_meter_controller, AGS_OSC_METER_CONTROLLER_MONITOR_RUNNING);
+
+  /* join thread */
+  pthread_join(osc_meter_controller->monitor_thread, NULL);
+  
+  ags_osc_meter_controller_unset_flags(osc_meter_controller, AGS_OSC_METER_CONTROLLER_MONITOR_TERMINATING);
 }
 
 /**
@@ -763,7 +1003,622 @@ ags_osc_meter_controller_real_monitor_meter(AgsOscMeterController *osc_meter_con
 					    AgsOscConnection *osc_connection,
 					    unsigned char *message, guint message_size)
 {
-  //TODO:JK: implement me
+  AgsOscResponse *osc_response;
+
+  AgsApplicationContext *application_context;
+
+  AgsOscMeterControllerMonitor *monitor;
+
+  gchar *type_tag;
+  gchar *path;
+  
+  guint path_offset;
+  gboolean success;
+  
+  /* read type tag */
+  ags_osc_buffer_util_get_string(message + 8,
+				 &type_tag, NULL);
+
+  success = (!strncmp(type_tag, ",s", 2) &&
+	     (type_tag[2] == 'T' || type_tag[2] == 'F') &&
+	     type_tag[3] == '\0') ? TRUE: FALSE;
+
+  if(!success){
+    osc_response = ags_osc_response_new();
+      
+    ags_osc_response_set_flags(osc_response,
+			       AGS_OSC_RESPONSE_ERROR);
+
+    g_object_set(osc_response,
+		 "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_MALFORMED_REQUEST,
+		 NULL);
+
+    return(osc_response);
+  }
+  
+  /* read argument */
+  ags_osc_buffer_util_get_string(message + 12,
+				 &path, NULL);
+
+  /* get sound provider */
+  application_context = ags_application_context_get_instance();
+
+  path_offset = 0;
+  
+  if(type_tag[2] == 'T'){
+    if(!strncmp(path, "/AgsSoundProvider", 17)){
+      path_offset += 17;
+      
+      if(!strncmp(path + path_offset, "/AgsAudio", 9)){
+	AgsAudio *audio;
+      
+	GList *start_audio;
+
+	guint nth_audio;
+	int retval;
+
+	audio = NULL;
+
+	path_offset += 9;
+
+	if(g_ascii_isdigit(path[path_offset + 1])){
+	  start_audio = ags_sound_provider_get_audio(AGS_SOUND_PROVIDER(application_context));
+	
+	  retval = sscanf(path + path_offset, "[%d]",
+			  &nth_audio);
+      
+	  if(retval <= 0){
+	    osc_response = ags_osc_response_new();
+	  
+	    ags_osc_response_set_flags(osc_response,
+				       AGS_OSC_RESPONSE_ERROR);
+	  
+	    g_object_set(osc_response,
+			 "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_MISSING_INDEX,
+			 NULL);
+	  
+	    return(osc_response);
+	  }
+	
+	  audio = g_list_nth_data(start_audio,
+				  nth_audio);
+      
+	  path_offset = index(path + path_offset, ']') - path + 1;
+	
+	  g_list_free(start_audio);
+	}else if(path[path_offset + 1] == '"'){
+	  GList *list;
+	
+	  gchar *audio_name;
+
+	  guint length;
+	  guint offset;
+
+	  if((offset = index(path + path_offset + 2, '"')) == NULL){
+	    ags_osc_response_set_flags(osc_response,
+				       AGS_OSC_RESPONSE_ERROR);
+
+	    g_object_set(osc_response,
+			 "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_CHUNK_SIZE_EXCEEDED,
+			 NULL);
+	  
+	    return(osc_response);
+	  }
+
+	  length = path - offset;
+
+	  specifier = malloc((length + 1) * sizeof(gchar));
+	  sscanf(path + path_offset, "%s", &audio_name);
+
+	  start_audio = ags_sound_provider_get_audio(AGS_SOUND_PROVIDER(application_context));
+
+	  list = ags_audio_find_name(start_audio,
+				     audio_name);
+
+	  if(list != NULL){
+	    audio = list->data;
+	  }
+
+	  path_offset = path_offset + strlen(audio_name) + 2;
+	
+	  g_list_free(start_audio);
+	}else{
+	  osc_response = ags_osc_response_new();
+      
+	  ags_osc_response_set_flags(osc_response,
+				     AGS_OSC_RESPONSE_ERROR);
+
+	  g_object_set(osc_response,
+		       "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_MISSING_INDEX,
+		       NULL);
+
+	  return(osc_response);
+	}
+	
+	if(!strncmp(path + path_offset, "/AgsOutput", 10)){
+	  AgsChannel *start_channel, *channel;
+      
+	  guint nth_channel;
+	  int retval;
+
+	  path_offset += 10;
+
+	  g_object_get(audio,
+		       "output", &start_channel,
+		       NULL);
+    
+	  retval = sscanf(path + path_offset, "[%d]",
+			  &nth_channel);
+      
+	  channel = ags_channel_nth(start_channel,
+				    nth_channel);
+      
+	  path_offset = index(path + path_offset, ']') - path + 1;
+
+	  if(!strncmp(path + path_offset, "/AgsPort", 8)){
+	    AgsPort *port;
+      
+	    GList *start_port;
+      
+	    guint nth_port;
+	    int retval;
+
+	    port = NULL;
+      
+	    path_offset += 8;
+
+	    if(g_ascii_isdigit(path[path_offset + 1])){
+	      g_object_get(audio,
+			   "port", &start_port,
+			   NULL);
+	
+	      retval = sscanf(path + path_offset, "[%d]",
+			      &nth_port);
+      
+	      if(retval <= 0){
+		osc_response = ags_osc_response_new();
+	  
+		ags_osc_response_set_flags(osc_response,
+					   AGS_OSC_RESPONSE_ERROR);
+	  
+		g_object_set(osc_response,
+			     "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_MISSING_INDEX,
+			     NULL);
+	  
+		return(osc_response);
+	      }
+      
+	      port = g_list_nth_data(start_port,
+				     nth_port);
+      
+	      path_offset = index(path + path_offset, ']') - path + 1;
+
+	      if(!ags_osc_meter_controller_contains_monitor(osc_meter_controller,
+							    osc_connection,
+							    port)){
+		/* allocate monitor */
+		monitor = ags_osc_meter_controller_monitor_alloc();
+
+		monitor->osc_connection = osc_connection;
+		g_object_ref(osc_connection);
+		
+		monitor->path = g_strdup(path);
+
+		monitor->port = port;
+		g_object_ref(port);
+
+		/* add monitor */
+		ags_osc_meter_controller_add_monitor(osc_meter_controller,
+						     monitor);
+	      }
+
+	      g_list_free(start_port);
+	    }else if(path[path_offset + 1] == '"'){
+	      GList *list;
+	
+	      gchar *specifier;
+
+	      guint length;
+	      guint offset;
+
+	      if((offset = index(path + path_offset + 2, '"')) == NULL){
+		ags_osc_response_set_flags(osc_response,
+					   AGS_OSC_RESPONSE_ERROR);
+
+		g_object_set(osc_response,
+			     "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_CHUNK_SIZE_EXCEEDED,
+			     NULL);
+	  
+		return(osc_response);
+	      }
+
+	      length = path - offset;
+
+	      specifier = malloc((length + 1) * sizeof(gchar));
+	      sscanf(path + path_offset, "%s", &specifier);
+
+	      g_object_get(audio,
+			   "port", &start_port,
+			   NULL);	
+
+	      list = ags_port_find_specifier(start_port,
+					     specifier);
+
+	      if(list != NULL){
+		port = list->data;
+	      }
+
+	      path_offset = path_offset + strlen(specifier) + 2;
+
+	      if(!ags_osc_meter_controller_contains_monitor(osc_meter_controller,
+							    osc_connection,
+							    port)){
+		/* allocate monitor */
+		monitor = ags_osc_meter_controller_monitor_alloc();
+
+		monitor->osc_connection = osc_connection;
+		g_object_ref(osc_connection);
+		
+		monitor->path = g_strdup(path);
+
+		monitor->port = port;
+		g_object_ref(port);
+
+		/* add monitor */
+		ags_osc_meter_controller_add_monitor(osc_meter_controller,
+						     monitor);
+	      }
+
+	      g_list_free(start_port);
+	    }else{
+	      osc_response = ags_osc_response_new();
+      
+	      ags_osc_response_set_flags(osc_response,
+					 AGS_OSC_RESPONSE_ERROR);
+
+	      g_object_set(osc_response,
+			   "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_MISSING_INDEX,
+			   NULL);
+
+	      return(osc_response);
+	    }
+	  }else{
+	    osc_response = ags_osc_response_new();
+      
+	    ags_osc_response_set_flags(osc_response,
+				       AGS_OSC_RESPONSE_ERROR);
+
+	    g_object_set(osc_response,
+			 "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_UNKNOW_ARGUMENT,
+			 NULL);
+
+	    return(osc_response);
+	  }
+	}else if(!strncmp(path + path_offset, "/AgsInput", 9)){
+	  AgsChannel *start_channel, *channel;
+      
+	  guint nth_channel;
+	  int retval;
+
+	  path_offset += 10;
+
+	  g_object_get(audio,
+		       "input", &start_channel,
+		       NULL);
+    
+	  retval = sscanf(path + path_offset, "[%d]",
+			  &nth_channel);
+      
+	  channel = ags_channel_nth(start_channel,
+				    nth_channel);
+      
+	  path_offset = index(path + path_offset, ']') - path + 1;
+	  
+	  if(!strncmp(path + path_offset, "/AgsPort", 8)){
+	    AgsPort *port;
+      
+	    GList *start_port;
+      
+	    guint nth_port;
+	    int retval;
+
+	    port = NULL;
+      
+	    path_offset += 8;
+
+	    if(g_ascii_isdigit(path[path_offset + 1])){
+	      g_object_get(audio,
+			   "port", &start_port,
+			   NULL);
+	
+	      retval = sscanf(path + path_offset, "[%d]",
+			      &nth_port);
+      
+	      if(retval <= 0){
+		osc_response = ags_osc_response_new();
+	  
+		ags_osc_response_set_flags(osc_response,
+					   AGS_OSC_RESPONSE_ERROR);
+	  
+		g_object_set(osc_response,
+			     "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_MISSING_INDEX,
+			     NULL);
+	  
+		return(osc_response);
+	      }
+      
+	      port = g_list_nth_data(start_port,
+				     nth_port);
+      
+	      path_offset = index(path + path_offset, ']') - path + 1;
+
+	      if(!ags_osc_meter_controller_contains_monitor(osc_meter_controller,
+							    osc_connection,
+							    port)){
+		/* allocate monitor */
+		monitor = ags_osc_meter_controller_monitor_alloc();
+
+		monitor->osc_connection = osc_connection;
+		g_object_ref(osc_connection);
+		
+		monitor->path = g_strdup(path);
+
+		monitor->port = port;
+		g_object_ref(port);
+
+		/* add monitor */
+		ags_osc_meter_controller_add_monitor(osc_meter_controller,
+						     monitor);
+	      }
+
+	      g_list_free(start_port);
+	    }else if(path[path_offset + 1] == '"'){
+	      GList *list;
+	
+	      gchar *specifier;
+
+	      guint length;
+	      guint offset;
+
+	      if((offset = index(path + path_offset + 2, '"')) == NULL){
+		ags_osc_response_set_flags(osc_response,
+					   AGS_OSC_RESPONSE_ERROR);
+
+		g_object_set(osc_response,
+			     "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_CHUNK_SIZE_EXCEEDED,
+			     NULL);
+	  
+		return(osc_response);
+	      }
+
+	      length = path - offset;
+
+	      specifier = malloc((length + 1) * sizeof(gchar));
+	      sscanf(path + path_offset, "%s", &specifier);
+
+	      g_object_get(audio,
+			   "port", &start_port,
+			   NULL);	
+
+	      list = ags_port_find_specifier(start_port,
+					     specifier);
+
+	      if(list != NULL){
+		port = list->data;
+	      }
+
+	      path_offset = path_offset + strlen(specifier) + 2;
+
+	      if(!ags_osc_meter_controller_contains_monitor(osc_meter_controller,
+							    osc_connection,
+							    port)){
+		/* allocate monitor */
+		monitor = ags_osc_meter_controller_monitor_alloc();
+
+		monitor->osc_connection = osc_connection;
+		g_object_ref(osc_connection);
+		
+		monitor->path = g_strdup(path);
+
+		monitor->port = port;
+		g_object_ref(port);
+
+		/* add monitor */
+		ags_osc_meter_controller_add_monitor(osc_meter_controller,
+						     monitor);
+	      }
+
+	      g_list_free(start_port);
+	    }else{
+	      osc_response = ags_osc_response_new();
+      
+	      ags_osc_response_set_flags(osc_response,
+					 AGS_OSC_RESPONSE_ERROR);
+
+	      g_object_set(osc_response,
+			   "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_MISSING_INDEX,
+			   NULL);
+
+	      return(osc_response);
+	    }
+	  }else{
+	    osc_response = ags_osc_response_new();
+      
+	    ags_osc_response_set_flags(osc_response,
+				       AGS_OSC_RESPONSE_ERROR);
+
+	    g_object_set(osc_response,
+			 "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_UNKNOW_ARGUMENT,
+			 NULL);
+
+	    return(osc_response);
+	  }
+	}else if(!strncmp(path + path_offset, "/AgsPort", 8)){
+	  AgsPort *port;
+      
+	  GList *start_port;
+      
+	  guint nth_port;
+	  int retval;
+
+	  port = NULL;
+      
+	  path_offset += 8;
+
+	  if(g_ascii_isdigit(path[path_offset + 1])){
+	    g_object_get(audio,
+			 "port", &start_port,
+			 NULL);
+	
+	    retval = sscanf(path + path_offset, "[%d]",
+			    &nth_port);
+      
+	    if(retval <= 0){
+	      osc_response = ags_osc_response_new();
+	  
+	      ags_osc_response_set_flags(osc_response,
+					 AGS_OSC_RESPONSE_ERROR);
+	  
+	      g_object_set(osc_response,
+			   "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_MISSING_INDEX,
+			   NULL);
+	  
+	      return(osc_response);
+	    }
+      
+	    port = g_list_nth_data(start_port,
+				   nth_port);
+      
+	    path_offset = index(path + path_offset, ']') - path + 1;
+
+	    if(!ags_osc_meter_controller_contains_monitor(osc_meter_controller,
+							  osc_connection,
+							  port)){
+	      /* allocate monitor */
+	      monitor = ags_osc_meter_controller_monitor_alloc();
+
+	      monitor->osc_connection = osc_connection;
+	      g_object_ref(osc_connection);
+		
+	      monitor->path = g_strdup(path);
+
+	      monitor->port = port;
+	      g_object_ref(port);
+
+	      /* add monitor */
+	      ags_osc_meter_controller_add_monitor(osc_meter_controller,
+						   monitor);
+	    }
+
+	    g_list_free(start_port);
+	  }else if(path[path_offset + 1] == '"'){
+	    GList *list;
+	
+	    gchar *specifier;
+
+	    guint length;
+	    guint offset;
+
+	    if((offset = index(path + path_offset + 2, '"')) == NULL){
+	      ags_osc_response_set_flags(osc_response,
+					 AGS_OSC_RESPONSE_ERROR);
+
+	      g_object_set(osc_response,
+			   "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_CHUNK_SIZE_EXCEEDED,
+			   NULL);
+	  
+	      return(osc_response);
+	    }
+
+	    length = path - offset;
+
+	    specifier = malloc((length + 1) * sizeof(gchar));
+	    sscanf(path + path_offset, "%s", &specifier);
+
+	    g_object_get(audio,
+			 "port", &start_port,
+			 NULL);	
+
+	    list = ags_port_find_specifier(start_port,
+					   specifier);
+
+	    if(list != NULL){
+	      port = list->data;
+	    }
+
+	    path_offset = path_offset + strlen(specifier) + 2;
+
+	    if(!ags_osc_meter_controller_contains_monitor(osc_meter_controller,
+							  osc_connection,
+							  port)){
+	      /* allocate monitor */
+	      monitor = ags_osc_meter_controller_monitor_alloc();
+
+	      monitor->osc_connection = osc_connection;
+	      g_object_ref(osc_connection);
+		
+	      monitor->path = g_strdup(path);
+
+	      monitor->port = port;
+	      g_object_ref(port);
+
+	      /* add monitor */
+	      ags_osc_meter_controller_add_monitor(osc_meter_controller,
+						   monitor);
+	    }
+
+	    g_list_free(start_port);
+	  }else{
+	    osc_response = ags_osc_response_new();
+      
+	    ags_osc_response_set_flags(osc_response,
+				       AGS_OSC_RESPONSE_ERROR);
+
+	    g_object_set(osc_response,
+			 "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_MISSING_INDEX,
+			 NULL);
+
+	    return(osc_response);
+	  }  
+	}else{
+	  osc_response = ags_osc_response_new();
+      
+	  ags_osc_response_set_flags(osc_response,
+				     AGS_OSC_RESPONSE_ERROR);
+
+	  g_object_set(osc_response,
+		       "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_UNKNOW_ARGUMENT,
+		       NULL);
+
+	  return(osc_response);
+	}
+      }else{
+	osc_response = ags_osc_response_new();
+      
+	ags_osc_response_set_flags(osc_response,
+				   AGS_OSC_RESPONSE_ERROR);
+
+	g_object_set(osc_response,
+		     "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_UNKNOW_ARGUMENT,
+		     NULL);
+
+	return(osc_response);
+      }
+    }else{
+      osc_response = ags_osc_response_new();
+      
+      ags_osc_response_set_flags(osc_response,
+				 AGS_OSC_RESPONSE_ERROR);
+
+      g_object_set(osc_response,
+		   "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_UNKNOW_ARGUMENT,
+		   NULL);
+
+      return(osc_response);
+    }
+  }else if(type_tag[2] == 'F'){
+    //TODO:JK: implement me
+  }
 }
 
 /**
