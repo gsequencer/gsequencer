@@ -1617,7 +1617,44 @@ ags_osc_meter_controller_real_monitor_meter(AgsOscMeterController *osc_meter_con
       return(osc_response);
     }
   }else if(type_tag[2] == 'F'){
-    //TODO:JK: implement me
+    AgsOscMeterControllerMonitor *current;
+    
+    GList *monitor;
+  
+    pthread_mutex_t *osc_controller_mutex;
+
+    /* get OSC meter controller mutex */
+    pthread_mutex_lock(ags_osc_controller_get_class_mutex());
+  
+    osc_controller_mutex = AGS_OSC_CONTROLLER(osc_meter_controller)->obj_mutex;
+  
+    pthread_mutex_unlock(ags_osc_controller_get_class_mutex());
+
+    /* find path and connection */
+    pthread_mutex_lock(osc_controller_mutex);
+
+    current = NULL;
+
+    monitor = osc_meter_controller->monitor;
+
+    while((monitor = ags_osc_meter_controller_monitor_find_path(monitor,
+								path)) != NULL){
+      if(AGS_OSC_METER_CONTROLLER_MONITOR(monitor->data)->osc_connection == osc_connection){
+	current = monitor->data;
+	
+	break;
+      }
+
+      monitor = monitor->next;
+    }
+
+    pthread_mutex_unlock(osc_controller_mutex);
+
+    /* remove monitor */
+    if(current != NULL){
+      ags_osc_meter_controller_remove_monitor(osc_meter_controller,
+					      current);
+    }
   }
 }
 
