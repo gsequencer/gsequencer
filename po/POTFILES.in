@@ -333,8 +333,18 @@
 ./ags/audio/osc/ags_osc_client.c
 ./ags/audio/osc/ags_osc_connection.c
 ./ags/audio/osc/ags_osc_parser.c
+./ags/audio/osc/ags_osc_response.c
 ./ags/audio/osc/ags_osc_server.c
 ./ags/audio/osc/ags_osc_util.c
+./ags/audio/osc/controller/ags_osc_action_controller.c
+./ags/audio/osc/controller/ags_osc_config_controller.c
+./ags/audio/osc/controller/ags_osc_controller.c
+./ags/audio/osc/controller/ags_osc_front_controller.c
+./ags/audio/osc/controller/ags_osc_info_controller.c
+./ags/audio/osc/controller/ags_osc_meter_controller.c
+./ags/audio/osc/controller/ags_osc_node_controller.c
+./ags/audio/osc/controller/ags_osc_renew_controller.c
+./ags/audio/osc/controller/ags_osc_status_controller.c
 ./ags/audio/pulse/ags_pulse_client.c
 ./ags/audio/pulse/ags_pulse_devin.c
 ./ags/audio/pulse/ags_pulse_devout.c
@@ -434,6 +444,7 @@
 ./ags/audio/task/ags_apply_bpm.c
 ./ags/audio/task/ags_apply_presets.c
 ./ags/audio/task/ags_apply_sequencer_length.c
+./ags/audio/task/ags_apply_sound_config.c
 ./ags/audio/task/ags_apply_synth.c
 ./ags/audio/task/ags_apply_tact.c
 ./ags/audio/task/ags_cancel_audio.c
@@ -461,6 +472,7 @@
 ./ags/audio/task/ags_seek_soundcard.c
 ./ags/audio/task/ags_set_audio_channels.c
 ./ags/audio/task/ags_set_buffer_size.c
+./ags/audio/task/ags_set_device.c
 ./ags/audio/task/ags_set_format.c
 ./ags/audio/task/ags_set_muted.c
 ./ags/audio/task/ags_set_samplerate.c

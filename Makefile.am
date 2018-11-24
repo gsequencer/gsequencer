@@ -1237,6 +1237,7 @@ libags_audio_task_h_sources = \
 	ags/audio/task/ags_add_note.h \
 	ags/audio/task/ags_add_soundcard.h \
 	ags/audio/task/ags_apply_presets.h \
+	ags/audio/task/ags_apply_sound_config.h \
 	ags/audio/task/ags_apply_synth.h \
 	ags/audio/task/ags_cancel_audio.h \
 	ags/audio/task/ags_cancel_channel.h \
@@ -1292,6 +1293,7 @@ libags_audio_task_c_sources = \
 	ags/audio/task/ags_add_note.c \
 	ags/audio/task/ags_add_soundcard.c \
 	ags/audio/task/ags_apply_presets.c \
+	ags/audio/task/ags_apply_sound_config.c \
 	ags/audio/task/ags_apply_synth.c \
 	ags/audio/task/ags_cancel_audio.c \
 	ags/audio/task/ags_cancel_channel.c \

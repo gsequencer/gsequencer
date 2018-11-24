@@ -74,6 +74,8 @@ struct _AgsOscMeterControllerClass
 
 struct _AgsOscMeterControllerMonitor
 {
+  volatile gint ref_count;
+  
   AgsOscConnection *osc_connection;
 
   gchar *path;
@@ -88,6 +90,9 @@ void ags_osc_meter_controller_unset_flags(AgsOscMeterController *osc_meter_contr
 
 AgsOscMeterControllerMonitor* ags_osc_meter_controller_monitor_alloc();
 void ags_osc_meter_controller_monitor_free(AgsOscMeterControllerMonitor *monitor);
+
+void ags_osc_meter_controller_monitor_ref(AgsOscMeterControllerMonitor *monitor);
+void ags_osc_meter_controller_monitor_unref(AgsOscMeterControllerMonitor *monitor);
 
 GList* ags_osc_meter_controller_monitor_find_path(GList *monitor,
 						  gchar *path);

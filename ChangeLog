@@ -3,6 +3,7 @@ ags (2.1.0)
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* implemented AgsAudio:audio-name property
 	* implemented AgsSetDevice task
+	* TODO:JK: implemented AgsApplyConfig task
 	* implemented ags_osc_util.c
 	* implemented ags_osc_buffer_util.c
 	* implemented ags_osc_parser.c
@@ -17,7 +18,7 @@ ags (2.1.0)
 	* implemented ags_osc_status_controller.c
 	* TODO:JK: implemented ags_osc_config_controller.c
 	* TODO:JK: implemented ags_osc_action_controller.c
-	* TODO:JK: implemented ags_osc_meter_controller.c
+	* implemented ags_osc_meter_controller.c
 	* implemented ags_osc_node_controller.c
 	* implemented ags_osc_renew_controller.c
 	* TODO:JK: implemented AgsFileUploadController

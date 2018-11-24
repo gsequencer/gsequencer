@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gsequencer 2.1.0\n"
 "Report-Msgid-Bugs-To: jkraehemann@gmail.com\n"
-"POT-Creation-Date: 2018-11-09 21:17+0100\n"
+"POT-Creation-Date: 2018-11-24 22:08+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1097,11 +1097,19 @@ msgstr ""
 msgid "loop end"
 msgstr ""
 
-#: ags/server/ags_registry.c:132 ags/server/controller/ags_controller.c:116
+#: ags/audio/osc/controller/ags_osc_controller.c:118
+msgid "assigned osc server"
+msgstr ""
+
+#: ags/audio/osc/controller/ags_osc_controller.c:119
+msgid "The assigned osc server"
+msgstr ""
+
+#: ags/server/ags_registry.c:132 ags/server/controller/ags_controller.c:118
 msgid "assigned server"
 msgstr ""
 
-#: ags/server/ags_registry.c:133 ags/server/controller/ags_controller.c:117
+#: ags/server/ags_registry.c:133 ags/server/controller/ags_controller.c:119
 msgid "The assigned server"
 msgstr ""
 

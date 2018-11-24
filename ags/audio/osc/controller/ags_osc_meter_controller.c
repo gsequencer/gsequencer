@@ -321,7 +321,14 @@ ags_osc_meter_controller_monitor_thread(void *ptr)
   while(ags_osc_meter_controller_test_flags(osc_meter_controller, AGS_OSC_METER_CONTROLLER_MONITOR_RUNNING)){
     pthread_mutex_lock(osc_controller_mutex);
 
-    start_monitor = g_list_copy(osc_meter_controller->monitor);
+    monitor = 
+      start_monitor = g_list_copy(osc_meter_controller->monitor);
+
+    while(monitor != NULL){
+      ags_osc_meter_controller_monitor_ref(monitor->data);
+      
+      monitor = monitor->next;
+    }
     
     pthread_mutex_unlock(osc_controller_mutex);
 
@@ -560,7 +567,8 @@ ags_osc_meter_controller_monitor_thread(void *ptr)
       monitor = monitor->next;
     }
 
-    g_list_free(start_monitor);
+    g_list_free_full(start_monitor,
+		     ags_osc_meter_controller_monitor_unref);
     
     nanosleep(osc_meter_controller->monitor_timeout, NULL);
   }
@@ -689,6 +697,8 @@ ags_osc_meter_controller_monitor_alloc()
 
   monitor = (AgsOscMeterControllerMonitor *) malloc(sizeof(AgsOscMeterControllerMonitor));
 
+  g_atomic_int_set(&(monitor->ref_count), 0);
+  
   monitor->osc_connection = NULL;
 
   monitor->path =  NULL;
@@ -707,13 +717,57 @@ ags_osc_meter_controller_monitor_alloc()
  */
 void
 ags_osc_meter_controller_monitor_free(AgsOscMeterControllerMonitor *monitor)
-{  
+{
+  if(monitor == NULL){
+    return;
+  }
+  
   g_object_unref(monitor->osc_connection);
 
   g_free(monitor->path);
   g_object_unref(monitor->port);
   
   free(monitor);
+}
+
+/**
+ * ags_osc_meter_controller_monitor_ref:
+ * @monitor: the #AgsOscMeterControllerMonitor-struct
+ * 
+ * Increase reference count of @monitor.
+ * 
+ * Since: 2.1.0
+ */
+void
+ags_osc_meter_controller_monitor_ref(AgsOscMeterControllerMonitor *monitor)
+{
+  if(monitor == NULL){
+    return;
+  }
+  
+  g_atomic_int_inc(&(monitor->ref_count));
+}
+
+/**
+ * ags_osc_meter_controller_monitor_unref:
+ * @monitor: the #AgsOscMeterControllerMonitor-struct
+ * 
+ * Decrease reference count of @monitor. If ref count is less or equal 0
+ * @monitor is freed.
+ * 
+ * Since: 2.1.0
+ */
+void
+ags_osc_meter_controller_monitor_unref(AgsOscMeterControllerMonitor *monitor)
+{
+  if(monitor == NULL){
+    return;
+  }
+  
+  if(g_atomic_int_dec_and_test(&(monitor->ref_count)) ||
+     g_atomic_int_get(&(monitor->ref_count)) < 0){
+    ags_osc_meter_controller_monitor_free(monitor);
+  }
 }
 
 /**
@@ -809,6 +863,8 @@ ags_osc_meter_controller_add_monitor(AgsOscMeterController *osc_meter_controller
   pthread_mutex_lock(osc_controller_mutex);
 
   if(g_list_find(osc_meter_controller->monitor, monitor) == NULL){
+    ags_osc_meter_controller_monitor_ref(monitor);
+    
     osc_meter_controller->monitor = g_list_prepend(osc_meter_controller->monitor, monitor);
   }
   
@@ -846,6 +902,8 @@ ags_osc_meter_controller_remove_monitor(AgsOscMeterController *osc_meter_control
 
   if(g_list_find(osc_meter_controller->monitor, monitor) != NULL){
     osc_meter_controller->monitor = g_list_remove(osc_meter_controller->monitor, monitor);
+
+    ags_osc_meter_controller_monitor_unref(monitor);
   }
   
   pthread_mutex_unlock(osc_controller_mutex);
