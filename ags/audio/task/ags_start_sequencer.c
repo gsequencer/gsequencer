@@ -249,20 +249,22 @@ ags_start_sequencer_launch(AgsTask *task)
 	       "main-loop", &audio_loop,
 	       NULL);
 
-  sequencer_thread = audio_loop;
-  
-  while((sequencer_thread = ags_thread_find_type(sequencer_thread,
-						 AGS_TYPE_SEQUENCER_THREAD)) != NULL){
-    /* append to AgsSequencer */
-    AGS_SEQUENCER_THREAD(sequencer_thread)->error = NULL;
+  sequencer_thread = ags_thread_find_type(audio_loop,
+					  AGS_TYPE_SEQUENCER_THREAD);
 
+  while(sequencer_thread != NULL){
+    if(AGS_IS_SEQUENCER_THREAD(sequencer_thread)){
+      /* append to AgsSequencer */
+      AGS_SEQUENCER_THREAD(sequencer_thread)->error = NULL;
+      
 #ifdef AGS_DEBUG
-    g_message("start sequencer");
+      g_message("start sequencer");
 #endif
-
-    ags_thread_add_start_queue(audio_loop,
-			       sequencer_thread);
-
+      
+      ags_thread_add_start_queue(audio_loop,
+				 sequencer_thread);
+    }
+    
     sequencer_thread = g_atomic_pointer_get(&(sequencer_thread->next));
   }
 }

@@ -44,16 +44,16 @@ struct _AgsOscConfigControllerClass
 {
   AgsOscControllerClass osc_controller;
 
-  gpointer (*modify_config)(AgsOscConfigController *osc_config_controller,
+  gpointer (*apply_config)(AgsOscConfigController *osc_config_controller,
 			    AgsOscConnection *osc_connection,
 			    unsigned char *message, guint message_size);
 };
 
 GType ags_osc_config_controller_get_type();
 
-gpointer ags_osc_config_controller_modify_config(AgsOscConfigController *osc_config_controller,
-						 AgsOscConnection *osc_connection,
-						 unsigned char *message, guint message_size);
+gpointer ags_osc_config_controller_apply_config(AgsOscConfigController *osc_config_controller,
+						AgsOscConnection *osc_connection,
+						unsigned char *message, guint message_size);
 
 AgsOscConfigController* ags_osc_config_controller_new();
 

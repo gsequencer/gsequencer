@@ -145,7 +145,7 @@ ags_osc_front_controller_class_init(AgsOscFrontControllerClass *osc_front_contro
 void
 ags_osc_front_controller_init(AgsOscFrontController *osc_front_controller)
 {
-  g_object_set(osc_info_controller,
+  g_object_set(osc_front_controller,
 	       "context-path", "/",
 	       NULL);
 }

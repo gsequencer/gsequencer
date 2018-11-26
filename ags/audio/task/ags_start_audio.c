@@ -296,6 +296,10 @@ ags_start_audio_launch(AgsTask *task)
   
   audio = start_audio->audio;
 
+  if(!AGS_IS_AUDIO(audio)){
+    return;
+  }
+
   g_object_get(audio,
 	       "playback-domain", &playback_domain,
 	       NULL);

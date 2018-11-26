@@ -26,6 +26,8 @@
 #include <time.h>
 #include <pthread.h>
 
+#include <ags/audio/ags_port.h>
+
 #include <ags/audio/osc/controller/ags_osc_controller.h>
 
 #define AGS_TYPE_OSC_METER_CONTROLLER                (ags_osc_meter_controller_get_type())

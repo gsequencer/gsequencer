@@ -1217,9 +1217,9 @@ ags_osc_node_controller_get_data_audio(AgsOscNodeController *osc_node_controller
       GList *list;
 	
       gchar *specifier;
+      gchar *offset;
 
       guint length;
-      guint offset;
 
       if((offset = index(path + path_offset + 2, '"')) == NULL){
 	ags_osc_response_set_flags(osc_response,
@@ -1232,7 +1232,7 @@ ags_osc_node_controller_get_data_audio(AgsOscNodeController *osc_node_controller
 	return(osc_response);
       }
 
-      length = path - offset;
+      length = offset - (path + path_offset + 3);
 
       specifier = malloc((length + 1) * sizeof(gchar));
       sscanf(path + path_offset, "%s", &specifier);
@@ -1532,9 +1532,9 @@ ags_osc_node_controller_get_data_channel(AgsOscNodeController *osc_node_controll
       GList *list;
 	
       gchar *specifier;
+      gchar *offset;
 
       guint length;
-      guint offset;
 
       if((offset = index(path + path_offset + 2, '"')) == NULL){
 	ags_osc_response_set_flags(osc_response,
@@ -1547,7 +1547,7 @@ ags_osc_node_controller_get_data_channel(AgsOscNodeController *osc_node_controll
 	return(osc_response);
       }
 
-      length = path - offset;
+      length = offset - (path + path_offset + 3);
 
       specifier = malloc(length * sizeof(gchar));
       sscanf(path + path_offset, "%s", &specifier);
@@ -2369,9 +2369,9 @@ ags_osc_node_controller_real_get_data(AgsOscNodeController *osc_node_controller,
 	GList *list;
 	
 	gchar *audio_name;
+	gchar *offset;
 
 	guint length;
-	guint offset;
 
 	if((offset = index(path + path_offset + 2, '"')) == NULL){
 	  ags_osc_response_set_flags(osc_response,
@@ -2384,9 +2384,9 @@ ags_osc_node_controller_real_get_data(AgsOscNodeController *osc_node_controller,
 	  return(osc_response);
 	}
 
-	length = path - offset;
+	length = offset - (path + path_offset + 3);
 
-	specifier = malloc((length + 1) * sizeof(gchar));
+	audio_name = malloc((length + 1) * sizeof(gchar));
 	sscanf(path + path_offset, "%s", &audio_name);
 
 	start_audio = ags_sound_provider_get_audio(AGS_SOUND_PROVIDER(application_context));

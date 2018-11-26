@@ -21,6 +21,18 @@
 
 #include <ags/libags.h>
 
+#include <ags/audio/ags_sound_provider.h>
+#include <ags/audio/ags_audio.h>
+
+#include <ags/audio/task/ags_start_audio.h>
+#include <ags/audio/task/ags_cancel_audio.h>
+#include <ags/audio/task/ags_start_soundcard.h>
+#include <ags/audio/task/ags_stop_soundcard.h>
+#include <ags/audio/task/ags_start_sequencer.h>
+#include <ags/audio/task/ags_stop_sequencer.h>
+
+#include <ags/audio/osc/ags_osc_response.h>
+
 #include <ags/i18n.h>
 
 #include <stdlib.h>
@@ -231,7 +243,231 @@ ags_osc_action_controller_real_run_action(AgsOscActionController *osc_action_con
 					  AgsOscConnection *osc_connection,
 					  unsigned char *message, guint message_size)
 {
-  //TODO:JK: implement me
+  AgsOscResponse *osc_response;
+
+  AgsThread *task_thread;
+  AgsTask *task;
+  
+  AgsApplicationContext *application_context;
+
+  GList *start_list, *list;
+  
+  gchar *type_tag;
+  gchar *path;
+  gchar *action;
+
+  guint length;
+  guint path_offset;
+  gboolean success;
+  
+  /* read type tag */
+  ags_osc_buffer_util_get_string(message + 8,
+				 &type_tag, NULL);
+
+  success = (!strncmp(type_tag, ",ss", 4)) ? TRUE: FALSE;
+
+  if(!success){
+    osc_response = ags_osc_response_new();
+      
+    ags_osc_response_set_flags(osc_response,
+			       AGS_OSC_RESPONSE_ERROR);
+
+    g_object_set(osc_response,
+		 "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_MALFORMED_REQUEST,
+		 NULL);
+
+    return(osc_response);
+  }
+  
+  /* read path */
+  ags_osc_buffer_util_get_string(message + 12,
+				 &path, NULL);
+
+  length = strlen(path);
+  
+  /* read action */
+  ags_osc_buffer_util_get_string(message + 12 + (4 * (guint) ceil((double) (length + 1) / 4.0)),
+				 &action, NULL);
+  
+  /* get sound provider */
+  application_context = ags_application_context_get_instance();
+
+  task_thread = ags_concurrency_provider_get_task_thread(AGS_CONCURRENCY_PROVIDER(application_context));
+
+  path_offset = 0;
+
+  if(!strncmp(path, "/AgsSoundProvider", 17)){
+    path_offset += 17;
+      
+    if(!strncmp(path + path_offset, "/AgsSoundcard", 13)){
+      path_offset += 13;
+      
+      if(!g_strcmp0("start",
+		    action)){
+	task = ags_start_soundcard_new(application_context);
+
+	ags_task_thread_append_task(task_thread,
+				    task);
+      }else if(!g_strcmp0("stop",
+			  action)){
+	task = ags_stop_soundcard_new(application_context);
+
+	ags_task_thread_append_task(task_thread,
+				    task);
+      }else{
+	osc_response = ags_osc_response_new();
+      
+	ags_osc_response_set_flags(osc_response,
+				   AGS_OSC_RESPONSE_ERROR);
+
+	g_object_set(osc_response,
+		     "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_UNKNOW_ARGUMENT,
+		     NULL);
+
+	return(osc_response);
+      }
+    }else if(!strncmp(path + path_offset, "/AgsSequencer", 13)){
+      path_offset += 13;
+
+      if(!g_strcmp0("start",
+		    action)){
+	task = ags_start_sequencer_new(application_context);
+
+	ags_task_thread_append_task(task_thread,
+				    task);
+      }else if(!g_strcmp0("stop",
+			  action)){
+	task = ags_stop_sequencer_new(application_context);
+
+	ags_task_thread_append_task(task_thread,
+				    task);
+      }else{
+	osc_response = ags_osc_response_new();
+      
+	ags_osc_response_set_flags(osc_response,
+				   AGS_OSC_RESPONSE_ERROR);
+
+	g_object_set(osc_response,
+		     "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_UNKNOW_ARGUMENT,
+		     NULL);
+
+	return(osc_response);
+      }
+    }else if(!strncmp(path + path_offset, "/AgsAudio", 9)){
+      AgsAudio *audio;
+      
+      guint nth_audio;
+      int retval;
+
+      audio = NULL;
+      
+      path_offset += 9;
+
+      if(g_ascii_isdigit(path[path_offset + 1])){
+	start_list = ags_sound_provider_get_audio(AGS_SOUND_PROVIDER(application_context));
+	
+	retval = sscanf(path + path_offset, "[%d]",
+			&nth_audio);
+      
+	if(retval <= 0){
+	  osc_response = ags_osc_response_new();
+	  
+	  ags_osc_response_set_flags(osc_response,
+				     AGS_OSC_RESPONSE_ERROR);
+	  
+	  g_object_set(osc_response,
+		       "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_MISSING_INDEX,
+		       NULL);
+	  
+	  return(osc_response);
+	}
+	
+	audio = g_list_nth_data(start_list,
+				nth_audio);
+      
+	path_offset = index(path + path_offset, ']') - path + 1;
+	
+	g_list_free(start_list);
+      }else if(path[path_offset + 1] == '"'){
+	gchar *audio_name;
+	gchar *offset;
+
+	guint length;
+
+	if((offset = index(path + path_offset + 2, '"')) == NULL){
+	  ags_osc_response_set_flags(osc_response,
+				     AGS_OSC_RESPONSE_ERROR);
+
+	  g_object_set(osc_response,
+		       "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_CHUNK_SIZE_EXCEEDED,
+		       NULL);
+	  
+	  return(osc_response);
+	}
+
+	length = offset - (path + path_offset + 3);
+
+	audio_name = malloc((length + 1) * sizeof(gchar));
+	sscanf(path + path_offset, "%s", &audio_name);
+
+	start_list = ags_sound_provider_get_audio(AGS_SOUND_PROVIDER(application_context));
+
+	list = ags_audio_find_name(start_list,
+				   audio_name);
+
+	if(list != NULL){
+	  audio = list->data;
+	}
+
+	path_offset = path_offset + strlen(audio_name) + 2;
+	
+	g_list_free(start_list);
+      }else{
+	osc_response = ags_osc_response_new();
+      
+	ags_osc_response_set_flags(osc_response,
+				   AGS_OSC_RESPONSE_ERROR);
+
+	g_object_set(osc_response,
+		     "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_MISSING_INDEX,
+		     NULL);
+
+	return(osc_response);
+      }
+
+      if(!g_strcmp0("start",
+		    action)){
+	task = ags_start_audio_new(audio,
+				   -1);
+
+	ags_task_thread_append_task(task_thread,
+				    task);
+      }else if(!g_strcmp0("stop",
+			  action)){
+	task = ags_cancel_audio_new(audio,
+				    -1);
+
+	ags_task_thread_append_task(task_thread,
+				    task);
+      }else{
+	osc_response = ags_osc_response_new();
+      
+	ags_osc_response_set_flags(osc_response,
+				   AGS_OSC_RESPONSE_ERROR);
+
+	g_object_set(osc_response,
+		     "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_UNKNOW_ARGUMENT,
+		     NULL);
+
+	return(osc_response);
+      }
+    }
+  }
+  
+  /* create response */
+  osc_response = ags_osc_response_new();
+
+  return(osc_response);
 }
 
 /**

@@ -1007,9 +1007,9 @@ ags_osc_renew_controller_set_data_audio(AgsOscRenewController *osc_renew_control
       GList *list;
 	
       gchar *specifier;
+      gchar *offset;
 
       guint length;
-      guint offset;
 
       if((offset = index(path + path_offset + 2, '"')) == NULL){
 	ags_osc_response_set_flags(osc_response,
@@ -1022,7 +1022,7 @@ ags_osc_renew_controller_set_data_audio(AgsOscRenewController *osc_renew_control
 	return(osc_response);
       }
 
-      length = path - offset;
+      length = offset - (path + path_offset + 3);
 
       specifier = malloc(length * sizeof(gchar));
       sscanf(path + path_offset, "%s", &specifier);
@@ -1278,9 +1278,9 @@ ags_osc_renew_controller_set_data_channel(AgsOscRenewController *osc_renew_contr
       GList *list;
 	
       gchar *specifier;
+      gchar *offset;
 
       guint length;
-      guint offset;
 
       if((offset = index(path + path_offset + 2, '"')) == NULL){
 	ags_osc_response_set_flags(osc_response,
@@ -1293,7 +1293,7 @@ ags_osc_renew_controller_set_data_channel(AgsOscRenewController *osc_renew_contr
 	return(osc_response);
       }
 
-      length = path - offset;
+      length = offset - (path + path_offset + 3);
 
       specifier = malloc(length * sizeof(gchar));
       sscanf(path + path_offset, "%s", &specifier);
@@ -2013,9 +2013,9 @@ ags_osc_renew_controller_real_set_data(AgsOscRenewController *osc_renew_controll
 	GList *list;
 	
 	gchar *audio_name;
+	gchar *offset;
 
 	guint length;
-	guint offset;
 
 	if((offset = index(path + path_offset + 2, '"')) == NULL){
 	  ags_osc_response_set_flags(osc_response,
@@ -2028,9 +2028,9 @@ ags_osc_renew_controller_real_set_data(AgsOscRenewController *osc_renew_controll
 	  return(osc_response);
 	}
 
-	length = path - offset;
+	length = offset - (path + path_offset + 3);
 
-	specifier = malloc((length + 1) * sizeof(gchar));
+	audio_name = malloc((length + 1) * sizeof(gchar));
 	sscanf(path + path_offset, "%s", &audio_name);
 
 	start_audio = ags_sound_provider_get_audio(AGS_SOUND_PROVIDER(application_context));

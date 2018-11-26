@@ -557,6 +557,12 @@ ags_soundcard_thread_stop(AgsThread *thread)
     if(polling_thread != NULL){
       gint position;
       
+      g_object_disconnect(G_OBJECT(poll_fd->data),
+			  "dispatch",
+			  G_CALLBACK(ags_soundcard_thread_dispatch_callback),
+			  soundcard_thread,
+			  NULL);
+      
       ags_polling_thread_remove_poll_fd(polling_thread,
 					poll_fd->data);
     }

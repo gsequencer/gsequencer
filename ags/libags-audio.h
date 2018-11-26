@@ -269,10 +269,13 @@
 #include <ags/audio/task/ags_seek_soundcard.h>
 #include <ags/audio/task/ags_set_audio_channels.h>
 #include <ags/audio/task/ags_set_buffer_size.h>
+#include <ags/audio/task/ags_set_device.h>
 #include <ags/audio/task/ags_set_format.h>
 #include <ags/audio/task/ags_set_samplerate.h>
 #include <ags/audio/task/ags_start_sequencer.h>
 #include <ags/audio/task/ags_start_soundcard.h>
+#include <ags/audio/task/ags_stop_sequencer.h>
+#include <ags/audio/task/ags_stop_soundcard.h>
 #include <ags/audio/task/ags_switch_buffer_flag.h>
 #include <ags/audio/task/ags_tic_device.h>
 #include <ags/audio/task/ags_toggle_pattern_bit.h>

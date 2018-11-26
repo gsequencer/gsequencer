@@ -21,9 +21,17 @@
 
 #include <ags/libags.h>
 
+#include <ags/audio/ags_sound_provider.h>
+#include <ags/audio/ags_audio.h>
+#include <ags/audio/ags_channel.h>
+
+#include <ags/audio/osc/ags_osc_response.h>
+
 #include <ags/i18n.h>
 
 #include <stdlib.h>
+#include <string.h>
+#include <strings.h>
 
 void ags_osc_meter_controller_class_init(AgsOscMeterControllerClass *osc_meter_controller);
 void ags_osc_meter_controller_init(AgsOscMeterController *osc_meter_controller);
@@ -399,7 +407,8 @@ ags_osc_meter_controller_monitor_thread(void *ptr)
 
       if(port_value_is_pointer){
 	gchar *type_tag;
-	
+
+	guint length;
 	guint i;
 
 	/* message type tag */
@@ -503,6 +512,7 @@ ags_osc_meter_controller_monitor_thread(void *ptr)
       }else{
 	if(port_value_type == G_TYPE_FLOAT){
 	  gfloat value;
+	  guint length;
 	  
 	  /* message type tag */
 	  pthread_mutex_lock(port_mutex);
@@ -1009,10 +1019,7 @@ ags_osc_meter_controller_start_monitor(AgsOscMeterController *osc_meter_controll
   
   g_object_ref((GObject *) osc_meter_controller);
   g_signal_emit(G_OBJECT(osc_meter_controller),
-		osc_meter_controller_signals[START_MONITOR], 0,
-		osc_connection,
-		message, message_size,
-		&osc_response);
+		osc_meter_controller_signals[START_MONITOR], 0);
   g_object_unref((GObject *) osc_meter_controller);
 }
 
@@ -1020,8 +1027,6 @@ void
 ags_osc_meter_controller_real_stop_monitor(AgsOscMeterController *osc_meter_controller)
 {
   if(!ags_osc_meter_controller_test_flags(osc_meter_controller, AGS_OSC_METER_CONTROLLER_MONITOR_RUNNING)){
-    pthread_mutex_unlock(osc_controller_mutex);
-    
     return;
   }
 
@@ -1029,7 +1034,7 @@ ags_osc_meter_controller_real_stop_monitor(AgsOscMeterController *osc_meter_cont
   ags_osc_meter_controller_unset_flags(osc_meter_controller, AGS_OSC_METER_CONTROLLER_MONITOR_RUNNING);
 
   /* join thread */
-  pthread_join(osc_meter_controller->monitor_thread, NULL);
+  pthread_join(osc_meter_controller->monitor_thread[0], NULL);
   
   ags_osc_meter_controller_unset_flags(osc_meter_controller, AGS_OSC_METER_CONTROLLER_MONITOR_TERMINATING);
 }
@@ -1049,10 +1054,7 @@ ags_osc_meter_controller_stop_monitor(AgsOscMeterController *osc_meter_controlle
   
   g_object_ref((GObject *) osc_meter_controller);
   g_signal_emit(G_OBJECT(osc_meter_controller),
-		osc_meter_controller_signals[STOP_MONITOR], 0,
-		osc_connection,
-		message, message_size,
-		&osc_response);
+		osc_meter_controller_signals[STOP_MONITOR], 0);
   g_object_unref((GObject *) osc_meter_controller);
 }
 
@@ -1148,9 +1150,9 @@ ags_osc_meter_controller_real_monitor_meter(AgsOscMeterController *osc_meter_con
 	  GList *list;
 	
 	  gchar *audio_name;
+	  gchar *offset;
 
 	  guint length;
-	  guint offset;
 
 	  if((offset = index(path + path_offset + 2, '"')) == NULL){
 	    ags_osc_response_set_flags(osc_response,
@@ -1163,9 +1165,9 @@ ags_osc_meter_controller_real_monitor_meter(AgsOscMeterController *osc_meter_con
 	    return(osc_response);
 	  }
 
-	  length = path - offset;
+	  length = offset - (path + path_offset + 3);
 
-	  specifier = malloc((length + 1) * sizeof(gchar));
+	  audio_name = malloc((length + 1) * sizeof(gchar));
 	  sscanf(path + path_offset, "%s", &audio_name);
 
 	  start_audio = ags_sound_provider_get_audio(AGS_SOUND_PROVIDER(application_context));
@@ -1275,9 +1277,9 @@ ags_osc_meter_controller_real_monitor_meter(AgsOscMeterController *osc_meter_con
 	      GList *list;
 	
 	      gchar *specifier;
+	      gchar *offset;
 
 	      guint length;
-	      guint offset;
 
 	      if((offset = index(path + path_offset + 2, '"')) == NULL){
 		ags_osc_response_set_flags(osc_response,
@@ -1290,7 +1292,7 @@ ags_osc_meter_controller_real_monitor_meter(AgsOscMeterController *osc_meter_con
 		return(osc_response);
 	      }
 
-	      length = path - offset;
+	      length = offset - (path + path_offset + 3);
 
 	      specifier = malloc((length + 1) * sizeof(gchar));
 	      sscanf(path + path_offset, "%s", &specifier);
@@ -1434,9 +1436,9 @@ ags_osc_meter_controller_real_monitor_meter(AgsOscMeterController *osc_meter_con
 	      GList *list;
 	
 	      gchar *specifier;
+	      gchar *offset;
 
 	      guint length;
-	      guint offset;
 
 	      if((offset = index(path + path_offset + 2, '"')) == NULL){
 		ags_osc_response_set_flags(osc_response,
@@ -1449,7 +1451,7 @@ ags_osc_meter_controller_real_monitor_meter(AgsOscMeterController *osc_meter_con
 		return(osc_response);
 	      }
 
-	      length = path - offset;
+	      length = offset - (path + path_offset + 3);
 
 	      specifier = malloc((length + 1) * sizeof(gchar));
 	      sscanf(path + path_offset, "%s", &specifier);
@@ -1573,9 +1575,9 @@ ags_osc_meter_controller_real_monitor_meter(AgsOscMeterController *osc_meter_con
 	    GList *list;
 	
 	    gchar *specifier;
+	    gchar *offset;
 
 	    guint length;
-	    guint offset;
 
 	    if((offset = index(path + path_offset + 2, '"')) == NULL){
 	      ags_osc_response_set_flags(osc_response,
@@ -1588,7 +1590,7 @@ ags_osc_meter_controller_real_monitor_meter(AgsOscMeterController *osc_meter_con
 	      return(osc_response);
 	    }
 
-	    length = path - offset;
+	    length = offset - (path + path_offset + 3);
 
 	    specifier = malloc((length + 1) * sizeof(gchar));
 	    sscanf(path + path_offset, "%s", &specifier);
@@ -1714,6 +1716,11 @@ ags_osc_meter_controller_real_monitor_meter(AgsOscMeterController *osc_meter_con
 					      current);
     }
   }
+
+  /* create response */
+  osc_response = ags_osc_response_new();
+
+  return(osc_response);
 }
 
 /**

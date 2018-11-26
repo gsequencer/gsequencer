@@ -1267,6 +1267,8 @@ libags_audio_task_h_sources = \
 	ags/audio/task/ags_start_channel.h \
 	ags/audio/task/ags_start_sequencer.h \
 	ags/audio/task/ags_start_soundcard.h \
+	ags/audio/task/ags_stop_sequencer.h \
+	ags/audio/task/ags_stop_soundcard.h \
 	ags/audio/task/ags_switch_buffer_flag.h \
 	ags/audio/task/ags_tic_device.h \
 	ags/audio/task/ags_toggle_pattern_bit.h \
@@ -1319,10 +1321,12 @@ libags_audio_task_c_sources = \
 	ags/audio/task/ags_set_device.c \
 	ags/audio/task/ags_set_format.c \
 	ags/audio/task/ags_set_samplerate.c \
-	ags/audio/task/ags_start_sequencer.c \
-	ags/audio/task/ags_start_soundcard.c \
 	ags/audio/task/ags_start_audio.c \
 	ags/audio/task/ags_start_channel.c \
+	ags/audio/task/ags_start_sequencer.c \
+	ags/audio/task/ags_start_soundcard.c \
+	ags/audio/task/ags_stop_sequencer.c \
+	ags/audio/task/ags_stop_soundcard.c \
 	ags/audio/task/ags_switch_buffer_flag.c \
 	ags/audio/task/ags_tic_device.c \
 	ags/audio/task/ags_toggle_pattern_bit.c \

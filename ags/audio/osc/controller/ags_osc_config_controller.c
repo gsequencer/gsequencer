@@ -21,6 +21,10 @@
 
 #include <ags/libags.h>
 
+#include <ags/audio/task/ags_apply_sound_config.h>
+
+#include <ags/audio/osc/ags_osc_response.h>
+
 #include <ags/i18n.h>
 
 #include <stdlib.h>
@@ -38,9 +42,9 @@ void ags_osc_config_controller_get_property(GObject *gobject,
 void ags_osc_config_controller_dispose(GObject *gobject);
 void ags_osc_config_controller_finalize(GObject *gobject);
 
-gpointer ags_osc_config_controller_real_modify_config(AgsOscConfigController *osc_config_controller,
-						      AgsOscConnection *osc_connection,
-						      unsigned char *message, guint message_size);
+gpointer ags_osc_config_controller_real_apply_config(AgsOscConfigController *osc_config_controller,
+						     AgsOscConnection *osc_connection,
+						     unsigned char *message, guint message_size);
 
 /**
  * SECTION:ags_osc_config_controller
@@ -57,7 +61,7 @@ enum{
 };
 
 enum{
-  MODIFY_CONFIG,
+  APPLY_CONFIG,
   LAST_SIGNAL,
 };
 
@@ -115,27 +119,27 @@ ags_osc_config_controller_class_init(AgsOscConfigControllerClass *osc_config_con
   /* properties */
 
   /* AgsOscConfigControllerClass */
-  osc_config_controller->modify_config = ags_osc_config_controller_real_modify_config;
+  osc_config_controller->apply_config = ags_osc_config_controller_real_apply_config;
 
   /* signals */
   /**
-   * AgsOscConfigController::modify-config:
+   * AgsOscConfigController::apply-config:
    * @osc_config_controller: the #AgsOscConfigController
    * @osc_connection: the #AgsOscConnection
    * @message: the message received
    * @message_size: the message size
    *
-   * The ::modify-config signal is emited during get data of config controller.
+   * The ::apply-config signal is emited during get data of config controller.
    *
    * Returns: the #AgsOscResponse
    * 
    * Since: 2.1.0
    */
-  osc_config_controller_signals[MODIFY_CONFIG] =
-    g_signal_new("modify-config",
+  osc_config_controller_signals[APPLY_CONFIG] =
+    g_signal_new("apply-config",
 		 G_TYPE_FROM_CLASS(osc_config_controller),
 		 G_SIGNAL_RUN_LAST,
-		 G_STRUCT_OFFSET(AgsOscConfigControllerClass, modify_config),
+		 G_STRUCT_OFFSET(AgsOscConfigControllerClass, apply_config),
 		 NULL, NULL,
 		 ags_cclosure_marshal_POINTER__OBJECT_POINTER_UINT,
 		 G_TYPE_POINTER, 3,
@@ -227,15 +231,64 @@ ags_osc_config_controller_finalize(GObject *gobject)
 }
 
 gpointer
-ags_osc_config_controller_real_modify_config(AgsOscConfigController *osc_config_controller,
-					     AgsOscConnection *osc_connection,
-					     unsigned char *message, guint message_size)
+ags_osc_config_controller_real_apply_config(AgsOscConfigController *osc_config_controller,
+					    AgsOscConnection *osc_connection,
+					    unsigned char *message, guint message_size)
 {
-  //TODO:JK: implement me
+  AgsOscResponse *osc_response;
+
+  AgsApplySoundConfig *apply_sound_config;
+  
+  AgsThread *task_thread;
+  
+  AgsApplicationContext *application_context;
+
+  gchar *type_tag;
+  gchar *config_data;
+
+  gboolean success;
+  
+  /* read type tag */
+  ags_osc_buffer_util_get_string(message + 8,
+				 &type_tag, NULL);
+
+  success = (!strncmp(type_tag, ",s", 3)) ? TRUE: FALSE;
+
+  if(!success){
+    osc_response = ags_osc_response_new();
+      
+    ags_osc_response_set_flags(osc_response,
+			       AGS_OSC_RESPONSE_ERROR);
+
+    g_object_set(osc_response,
+		 "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_MALFORMED_REQUEST,
+		 NULL);
+
+    return(osc_response);
+  }
+  
+  /* read config data */
+  ags_osc_buffer_util_get_string(message + 12,
+				 &config_data, NULL);
+
+  /* get sound provider */
+  application_context = ags_application_context_get_instance();
+
+  task_thread = ags_concurrency_provider_get_task_thread(AGS_CONCURRENCY_PROVIDER(application_context));
+
+  apply_sound_config = ags_apply_sound_config_new(config_data);
+
+  ags_task_thread_append_task(task_thread,
+			      apply_sound_config);
+
+  /* create response */
+  osc_response = ags_osc_response_new();
+
+  return(osc_response);
 }
 
 /**
- * ags_osc_config_controller_modify_config:
+ * ags_osc_config_controller_apply_config:
  * @osc_config_controller: the #AgsOscConfigController
  * @osc_connection: the #AgsOscConnection
  * @message: the message received
@@ -248,9 +301,9 @@ ags_osc_config_controller_real_modify_config(AgsOscConfigController *osc_config_
  * Since: 2.1.0
  */
 gpointer
-ags_osc_config_controller_modify_config(AgsOscConfigController *osc_config_controller,
-					AgsOscConnection *osc_connection,
-					unsigned char *message, guint message_size)
+ags_osc_config_controller_apply_config(AgsOscConfigController *osc_config_controller,
+				       AgsOscConnection *osc_connection,
+				       unsigned char *message, guint message_size)
 {
   gpointer osc_response;
   
@@ -258,7 +311,7 @@ ags_osc_config_controller_modify_config(AgsOscConfigController *osc_config_contr
   
   g_object_ref((GObject *) osc_config_controller);
   g_signal_emit(G_OBJECT(osc_config_controller),
-		osc_config_controller_signals[MODIFY_CONFIG], 0,
+		osc_config_controller_signals[APPLY_CONFIG], 0,
 		osc_connection,
 		message, message_size,
 		&osc_response);
