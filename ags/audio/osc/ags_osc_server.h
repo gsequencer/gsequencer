@@ -92,6 +92,10 @@ struct _AgsOscServer
   struct sockaddr_in6 *ip6_address;
 
   struct timespec *accept_delay;
+  struct timespec *dispatch_delay;
+
+  pthread_t *listen_thread;
+  pthread_t *dispatch_thread;
   
   GList *connection;
 

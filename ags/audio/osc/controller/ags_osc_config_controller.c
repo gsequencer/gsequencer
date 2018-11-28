@@ -276,7 +276,8 @@ ags_osc_config_controller_real_apply_config(AgsOscConfigController *osc_config_c
 
   task_thread = ags_concurrency_provider_get_task_thread(AGS_CONCURRENCY_PROVIDER(application_context));
 
-  apply_sound_config = ags_apply_sound_config_new(config_data);
+  apply_sound_config = ags_apply_sound_config_new(ags_application_context_get_instance(),
+						  config_data);
 
   ags_task_thread_append_task(task_thread,
 			      apply_sound_config);

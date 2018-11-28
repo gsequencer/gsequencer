@@ -284,7 +284,7 @@ ags_audio_loop_init(AgsAudioLoop *audio_loop)
   samplerate = ags_soundcard_helper_config_get_samplerate(config);
   buffer_size = ags_soundcard_helper_config_get_buffer_size(config);
   
-  thread->freq = ceil((gdouble) samplerate / (gdouble) buffer_size) + AGS_SOUNDCARD_DEFAULT_OVERCLOCK;  
+  thread->freq = ceil((gdouble) samplerate / (gdouble) buffer_size) + AGS_SOUNDCARD_DEFAULT_OVERCLOCK;
 
   audio_loop->flags = 0;
   

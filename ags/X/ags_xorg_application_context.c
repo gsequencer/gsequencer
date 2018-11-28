@@ -1423,7 +1423,7 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
   core_audio_server = ags_core_audio_server_new((GObject *) xorg_application_context,
 						NULL);
   xorg_application_context->sound_server = g_list_append(xorg_application_context->sound_server,
-								core_audio_server);
+							 core_audio_server);
   g_object_ref(G_OBJECT(core_audio_server));
 
   has_core_audio = FALSE;
@@ -1432,7 +1432,7 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
   pulse_server = ags_pulse_server_new((GObject *) xorg_application_context,
 				      NULL);
   xorg_application_context->sound_server = g_list_append(xorg_application_context->sound_server,
-								pulse_server);
+							 pulse_server);
   g_object_ref(G_OBJECT(pulse_server));
 
   has_pulse = FALSE;
@@ -1441,7 +1441,7 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
   jack_server = ags_jack_server_new((GObject *) xorg_application_context,
 				    NULL);
   xorg_application_context->sound_server = g_list_append(xorg_application_context->sound_server,
-								jack_server);
+							 jack_server);
   g_object_ref(G_OBJECT(jack_server));
 
   has_jack = FALSE;

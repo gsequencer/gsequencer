@@ -56,6 +56,9 @@ void ags_osc_server_real_listen(AgsOscServer *osc_server);
 
 void ags_osc_server_real_dispatch(AgsOscServer *osc_server);
 
+void* ags_osc_server_listen_thread(void *ptr);
+void* ags_osc_server_dispatch_thread(void *ptr);
+
 /**
  * SECTION:ags_osc_server
  * @short_description: the OSC server
@@ -257,7 +260,7 @@ ags_osc_server_class_init(AgsOscServerClass *osc_server)
   osc_server->listen = ags_osc_server_real_listen;
 
   osc_server->dispatch = ags_osc_server_real_dispatch;
-
+  
   /* signals */
   /**
    * AgsOscServer::start:
@@ -299,6 +302,8 @@ ags_osc_server_class_init(AgsOscServerClass *osc_server)
    *
    * The ::listen signal is emited during listen of server.
    *
+   * Returns: %TRUE as a new connection was initiated, otherwise %FALSE
+   * 
    * Since: 2.1.0
    */
   osc_server_signals[LISTEN] =
@@ -307,8 +312,8 @@ ags_osc_server_class_init(AgsOscServerClass *osc_server)
 		 G_SIGNAL_RUN_LAST,
 		 G_STRUCT_OFFSET(AgsOscServerClass, listen),
 		 NULL, NULL,
-		 g_cclosure_marshal_VOID__VOID,
-		 G_TYPE_NONE, 0);
+		 ags_cclosure_marshal_BOOLEAN__VOID,
+		 G_TYPE_BOOLEAN, 0);
 
   /**
    * AgsOscServer::dispatch:
@@ -366,8 +371,16 @@ ags_osc_server_init(AgsOscServer *osc_server)
   osc_server->accept_delay = (struct timespec *) malloc(sizeof(struct timespec));
 
   osc_server->accept_delay->tv_sec = 0;
-  osc_server->accept_delay->tv_nsec = 400000;
+  osc_server->accept_delay->tv_nsec = NSEC_PER_SEC / 1000;
 
+  osc_server->dispatch_delay = (struct timespec *) malloc(sizeof(struct timespec));
+
+  osc_server->dispatch_delay->tv_sec = 0;
+  osc_server->dispatch_delay->tv_nsec = NSEC_PER_SEC / 1000;
+
+  osc_server->listen_thread = (pthread_t *) malloc(sizeof(pthread_t));
+  osc_server->dispatch_thread = (pthread_t *) malloc(sizeof(pthread_t));
+  
   osc_server->connection = NULL;
 
   osc_server->front_controller = NULL;
@@ -683,6 +696,17 @@ ags_osc_server_finalize(GObject *gobject)
   g_free(osc_server->ip4);
   g_free(osc_server->ip6);
 
+  if(osc_server->accept_delay != NULL){
+    free(osc_server->accept_delay);
+  }
+
+  if(osc_server->dispatch_delay != NULL){
+    free(osc_server->dispatch_delay);
+  }
+  
+  free(osc_server->listen_thread);
+  free(osc_server->dispatch_thread);
+  
   g_list_free_full(osc_server->connection,
 		   g_object_unref);
   
@@ -1067,6 +1091,13 @@ ags_osc_server_real_start(AgsOscServer *osc_server)
   }
 
   ags_osc_server_set_flags(osc_server, AGS_OSC_SERVER_STARTED);
+
+  /* create listen and dispatch thread */
+  pthread_create(osc_server->listen_thread, NULL,
+		 ags_osc_server_listen_thread, osc_server);
+
+  pthread_create(osc_server->dispatch_thread, NULL,
+		 ags_osc_server_dispatch_thread, osc_server);
 }
 
 /**
@@ -1133,11 +1164,13 @@ ags_osc_server_stop(AgsOscServer *osc_server)
   g_object_unref((GObject *) osc_server);
 }
 
-void
+gboolean
 ags_osc_server_real_listen(AgsOscServer *osc_server)
 {
-  if(ags_osc_server_test_flags(osc_server, AGS_OSC_SERVER_STARTED)){
-    return;
+  gboolean created_connection;
+  
+  if(!ags_osc_server_test_flags(osc_server, AGS_OSC_SERVER_STARTED)){
+    return(FALSE);
   }
 
   if(osc_server->ip4_fd != -1){
@@ -1158,71 +1191,66 @@ ags_osc_server_real_listen(AgsOscServer *osc_server)
     fcntl(osc_server->ip6_fd, F_SETFL, flags | O_NONBLOCK);
   }
 
-  while(ags_osc_server_test_flags(osc_server, AGS_OSC_SERVER_RUNNING)){
-    gboolean created_connection;
 
-    created_connection = FALSE;
+  created_connection = FALSE;
     
-    if(osc_server->ip4_fd != -1){
-      int connection_fd;
+  if(osc_server->ip4_fd != -1){
+    int connection_fd;
 
-      connection_fd = accept(osc_server->ip4_fd, osc_server->ip4_address, sizeof(struct sockaddr_in));
+    connection_fd = accept(osc_server->ip4_fd, osc_server->ip4_address, sizeof(struct sockaddr_in));
 
-      if(connection_fd >= 0){
-	AgsOscConnection *osc_connection;
+    if(connection_fd >= 0){
+      AgsOscConnection *osc_connection;
 	
-	int flags;
+      int flags;
 	
-	created_connection = TRUE;
+      created_connection = TRUE;
 
-	osc_connection = ags_osc_connection_new(osc_server);
+      osc_connection = ags_osc_connection_new(osc_server);
 
-	flags = fcntl(connection_fd, F_GETFL, 0);
-	fcntl(connection_fd, F_SETFL, flags | O_NONBLOCK);
+      flags = fcntl(connection_fd, F_GETFL, 0);
+      fcntl(connection_fd, F_SETFL, flags | O_NONBLOCK);
 
-	osc_connection->fd = connection_fd;
+      osc_connection->fd = connection_fd;
 	
-	ags_osc_connection_set_flags(osc_connection,
-				     (AGS_OSC_CONNECTION_ACTIVE |
-				      AGS_OSC_CONNECTION_INET4));
+      ags_osc_connection_set_flags(osc_connection,
+				   (AGS_OSC_CONNECTION_ACTIVE |
+				    AGS_OSC_CONNECTION_INET4));
 	
-	ags_osc_server_add_connection(osc_server,
-				      osc_connection);
-      }
-    }
-    
-    if(osc_server->ip6_fd != -1){
-      int connection_fd;
-
-      connection_fd = accept(osc_server->ip6_fd, osc_server->ip6_address, sizeof(struct sockaddr_in6));
-
-      if(connection_fd >= 0){
-	AgsOscConnection *osc_connection;
-
-	int flags;
-	
-	created_connection = TRUE;
-
-	osc_connection = ags_osc_connection_new(osc_server);
-
-	flags = fcntl(connection_fd, F_GETFL, 0);
-	fcntl(connection_fd, F_SETFL, flags | O_NONBLOCK);
-
-	osc_connection->fd = connection_fd;
-	
-	ags_osc_connection_set_flags(osc_connection,
-				     (AGS_OSC_CONNECTION_ACTIVE |
-				      AGS_OSC_CONNECTION_INET6));
-	
-	ags_osc_server_add_connection(osc_server,
-				      osc_connection);
-      }
-    }
-
-    if(!created_connection){
-      nanosleep(osc_server->accept_delay, NULL);
+      ags_osc_server_add_connection(osc_server,
+				    osc_connection);
     }
   }
+    
+  if(osc_server->ip6_fd != -1){
+    int connection_fd;
+
+    connection_fd = accept(osc_server->ip6_fd, osc_server->ip6_address, sizeof(struct sockaddr_in6));
+
+    if(connection_fd >= 0){
+      AgsOscConnection *osc_connection;
+
+      int flags;
+	
+      created_connection = TRUE;
+
+      osc_connection = ags_osc_connection_new(osc_server);
+
+      flags = fcntl(connection_fd, F_GETFL, 0);
+      fcntl(connection_fd, F_SETFL, flags | O_NONBLOCK);
+
+      osc_connection->fd = connection_fd;
+	
+      ags_osc_connection_set_flags(osc_connection,
+				   (AGS_OSC_CONNECTION_ACTIVE |
+				    AGS_OSC_CONNECTION_INET6));
+	
+      ags_osc_server_add_connection(osc_server,
+				    osc_connection);
+    }
+  }
+
+  return(created_connection);
 }
 
 /**
@@ -1231,17 +1259,24 @@ ags_osc_server_real_listen(AgsOscServer *osc_server)
  * 
  * Listen as OSC server.
  * 
+ * Returns: %TRUE as a new connection was initiated, otherwise %FALSE
+ * 
  * Since: 2.1.0
  */
-void
+gboolean
 ags_osc_server_listen(AgsOscServer *osc_server)
 {
-  g_return_if_fail(AGS_IS_OSC_SERVER(osc_server));
+  gboolean created_connection;
+
+  g_return_val_if_fail(AGS_IS_OSC_SERVER(osc_server), FALSE);
   
   g_object_ref((GObject *) osc_server);
   g_signal_emit(G_OBJECT(osc_server),
-		osc_server_signals[LISTEN], 0);
+		osc_server_signals[LISTEN], 0,
+		&created_connection);
   g_object_unref((GObject *) osc_server);
+
+  return(created_connection);
 }
 
 void
@@ -1252,6 +1287,10 @@ ags_osc_server_real_dispatch(AgsOscServer *osc_server)
   guchar *slip_buffer;
 
   guint data_length;
+
+  if(!ags_osc_server_test_flags(osc_server, AGS_OSC_SERVER_STARTED)){
+    return;
+  }
   
   list =
     start_list = g_list_copy(osc_server->connection);
@@ -1308,6 +1347,42 @@ ags_osc_server_dispatch(AgsOscServer *osc_server)
   g_signal_emit(G_OBJECT(osc_server),
 		osc_server_signals[DISPATCH], 0);
   g_object_unref((GObject *) osc_server);
+}
+
+void*
+ags_osc_server_listen_thread(void *ptr)
+{
+  AgsOscServer *osc_server;
+
+  gboolean created_connection;
+
+  osc_server = AGS_OSC_SERVER(ptr);
+
+  while(ags_osc_server_test_flags(osc_server, AGS_OSC_SERVER_RUNNING)){
+    created_connection = ags_osc_server_listen(osc_server);
+
+    if(!created_connection){
+      nanosleep(osc_server->accept_delay, NULL);
+    }
+  }
+  
+  pthread_exit(NULL);
+}
+
+void*
+ags_osc_server_dispatch_thread(void *ptr)
+{
+  AgsOscServer *osc_server;
+
+  osc_server = AGS_OSC_SERVER(ptr);
+  
+  while(ags_osc_server_test_flags(osc_server, AGS_OSC_SERVER_RUNNING)){
+    ags_osc_server_dispatch(osc_server);
+
+    nanosleep(osc_server->dispatch_delay, NULL);
+  }
+  
+  pthread_exit(NULL);
 }
 
 /**

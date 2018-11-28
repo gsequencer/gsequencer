@@ -231,10 +231,16 @@ ags_start_soundcard_finalize(GObject *gobject)
     soundcard_thread = (AgsSoundcardThread *) ags_thread_find_type((AgsThread *) audio_loop,
 								   AGS_TYPE_SOUNDCARD_THREAD);
 
-    if(soundcard_thread->error != NULL){
-      g_error_free(soundcard_thread->error);
-
-      soundcard_thread->error = NULL;
+    while(soundcard_thread != NULL){
+      if(AGS_IS_SOUNDCARD_THREAD(soundcard_thread)){
+	if(soundcard_thread->error != NULL){
+	  g_error_free(soundcard_thread->error);
+	  
+	  soundcard_thread->error = NULL;
+	}
+      }
+      
+      soundcard_thread = g_atomic_pointer_get(&(soundcard_thread->next));
     }
     
     g_object_unref(application_context);

@@ -40,6 +40,8 @@ struct _AgsApplySoundConfig
   AgsTask task;
 
   gchar *config_data;
+
+  AgsApplicationContext *application_context;
 };
 
 struct _AgsApplySoundConfigClass
@@ -49,6 +51,7 @@ struct _AgsApplySoundConfigClass
 
 GType ags_apply_sound_config_get_type();
 
-AgsApplySoundConfig* ags_apply_sound_config_new(gchar *config_data);
+AgsApplySoundConfig* ags_apply_sound_config_new(AgsApplicationContext *application_context,
+						gchar *config_data);
 
 #endif /*__AGS_APPLY_SOUND_CONFIG_H__*/
