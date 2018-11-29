@@ -22,6 +22,39 @@
 #include <ags/libags.h>
 
 #include <ags/audio/ags_sound_provider.h>
+#include <ags/audio/ags_devout.h>
+#include <ags/audio/ags_devin.h>
+#include <ags/audio/ags_midiin.h>
+#include <ags/audio/ags_audio.h>
+#include <ags/audio/ags_channel.h>
+#include <ags/audio/ags_playback_domain.h>
+#include <ags/audio/ags_playback.h>
+
+#include <ags/audio/thread/ags_audio_loop.h>
+#include <ags/audio/thread/ags_soundcard_thread.h>
+#include <ags/audio/thread/ags_sequencer_thread.h>
+#include <ags/audio/thread/ags_audio_thread.h>
+#include <ags/audio/thread/ags_channel_thread.h>
+#include <ags/audio/thread/ags_export_thread.h>
+
+#include <ags/audio/task/ags_notify_soundcard.h>
+
+#include <ags/audio/jack/ags_jack_server.h>
+#include <ags/audio/jack/ags_jack_client.h>
+#include <ags/audio/jack/ags_jack_devout.h>
+#include <ags/audio/jack/ags_jack_devin.h>
+#include <ags/audio/jack/ags_jack_midiin.h>
+
+#include <ags/audio/pulse/ags_pulse_server.h>
+#include <ags/audio/pulse/ags_pulse_client.h>
+#include <ags/audio/pulse/ags_pulse_devout.h>
+#include <ags/audio/pulse/ags_pulse_devin.h>
+
+#include <ags/audio/core-audio/ags_core_audio_server.h>
+#include <ags/audio/core-audio/ags_core_audio_client.h>
+#include <ags/audio/core-audio/ags_core_audio_devout.h>
+#include <ags/audio/core-audio/ags_core_audio_devin.h>
+#include <ags/audio/core-audio/ags_core_audio_midiin.h>
 
 #include <math.h>
 
@@ -294,9 +327,11 @@ ags_apply_sound_config_launch(AgsTask *task)
   GList *start_orig_sequencer, *orig_sequencer;
   GList *start_audio, *audio;
   GList *start_list, *list;
-  
+
   gchar *soundcard_group;
   gchar *sequencer_group;
+  gchar *capability;
+  gchar *str;
 
   gdouble frequency;
   guint samplerate;
@@ -305,7 +340,8 @@ ags_apply_sound_config_launch(AgsTask *task)
   gboolean has_core_audio;
   gboolean has_pulse;
   gboolean has_jack;
-
+  gboolean is_output;
+  
   static const guint staging_flags = (AGS_SOUND_STAGING_CANCEL |
 				      AGS_SOUND_STAGING_REMOVE);
 
@@ -468,8 +504,8 @@ ags_apply_sound_config_launch(AgsTask *task)
     ags_audio_loop_remove_audio(audio_loop,
 				(GObject *) audio->data);
 
-    g_list_free(output_start);
-    g_list_free(input_start);
+    g_list_free(start_output);
+    g_list_free(start_input);
     
     audio = audio->next;
   }

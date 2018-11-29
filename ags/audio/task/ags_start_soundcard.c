@@ -217,7 +217,8 @@ void
 ags_start_soundcard_finalize(GObject *gobject)
 {
   AgsAudioLoop *audio_loop;
-  AgsSoundcardThread *soundcard_thread;
+
+  AgsThread *soundcard_thread;
 
   AgsApplicationContext *application_context;
   AgsSoundcard *soundcard;
@@ -233,10 +234,10 @@ ags_start_soundcard_finalize(GObject *gobject)
 
     while(soundcard_thread != NULL){
       if(AGS_IS_SOUNDCARD_THREAD(soundcard_thread)){
-	if(soundcard_thread->error != NULL){
-	  g_error_free(soundcard_thread->error);
+	if(AGS_SOUNDCARD_THREAD(soundcard_thread)->error != NULL){
+	  g_error_free(AGS_SOUNDCARD_THREAD(soundcard_thread)->error);
 	  
-	  soundcard_thread->error = NULL;
+	  AGS_SOUNDCARD_THREAD(soundcard_thread)->error = NULL;
 	}
       }
       

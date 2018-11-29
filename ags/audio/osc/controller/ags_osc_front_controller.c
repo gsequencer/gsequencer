@@ -38,6 +38,11 @@ void ags_osc_front_controller_get_property(GObject *gobject,
 void ags_osc_front_controller_dispose(GObject *gobject);
 void ags_osc_front_controller_finalize(GObject *gobject);
 
+void* ags_osc_front_controller_delegate_thread(void *ptr);
+
+void ags_osc_front_controller_real_start_delegate(AgsOscFrontController *osc_front_controller);
+void ags_osc_front_controller_real_stop_delegate(AgsOscFrontController *osc_front_controller);
+
 gpointer ags_osc_front_controller_real_do_request(AgsOscFrontController *osc_front_controller,
 						  AgsOscConnection *osc_connection,
 						  unsigned char *packet, guint packet_size);
@@ -57,6 +62,8 @@ enum{
 };
 
 enum{
+  START_DELEGATE,
+  STOP_DELEGATE,
   DO_REQUEST,
   LAST_SIGNAL,
 };
@@ -115,9 +122,46 @@ ags_osc_front_controller_class_init(AgsOscFrontControllerClass *osc_front_contro
   /* properties */
 
   /* AgsOscFrontControllerClass */
+  osc_front_controller->start_delegate = ags_osc_front_controller_real_start_delegate;
+  osc_front_controller->stop_delegate = ags_osc_front_controller_real_stop_delegate;
+
   osc_front_controller->do_request = ags_osc_front_controller_real_do_request;
 
   /* signals */
+  /**
+   * AgsOscFrontController::start-delegate:
+   * @osc_front_controller: the #AgsOscFrontController
+   *
+   * The ::start-delegate signal is emited during start of delegateing front.
+   *
+   * Since: 2.1.0
+   */
+  osc_front_controller_signals[START_DELEGATE] =
+    g_signal_new("start-delegate",
+		 G_TYPE_FROM_CLASS(osc_front_controller),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsOscFrontControllerClass, start_delegate),
+		 NULL, NULL,
+		 g_cclosure_marshal_VOID__VOID,
+		 G_TYPE_NONE, 0);
+
+  /**
+   * AgsOscFrontController::stop-delegate:
+   * @osc_front_controller: the #AgsOscFrontController
+   *
+   * The ::stop-delegate signal is emited during stop of delegateing front.
+   *
+   * Since: 2.1.0
+   */
+  osc_front_controller_signals[STOP_DELEGATE] =
+    g_signal_new("stop-delegate",
+		 G_TYPE_FROM_CLASS(osc_front_controller),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsOscFrontControllerClass, stop_delegate),
+		 NULL, NULL,
+		 g_cclosure_marshal_VOID__VOID,
+		 G_TYPE_NONE, 0);
+
   /**
    * AgsOscFrontController::do-request:
    * @osc_front_controller: the #AgsOscFrontController
@@ -148,6 +192,17 @@ ags_osc_front_controller_init(AgsOscFrontController *osc_front_controller)
   g_object_set(osc_front_controller,
 	       "context-path", "/",
 	       NULL);
+
+  osc_front_controller->flags = 0;
+
+  osc_front_controller->delegate_timeout = (struct timespec *) malloc(sizeof(struct timespec));
+
+  osc_front_controller->delegate_timeout->tv_sec = 0;
+  osc_front_controller->delegate_timeout->tv_nsec = NSEC_PER_SEC / 30;
+  
+  osc_front_controller->delegate_thread = (pthread_t *) malloc(sizeof(pthread_t));
+  
+  osc_front_controller->message = NULL;
 }
 
 void
@@ -219,9 +274,179 @@ ags_osc_front_controller_finalize(GObject *gobject)
   AgsOscFrontController *osc_front_controller;
 
   osc_front_controller = AGS_OSC_FRONT_CONTROLLER(gobject);
+
+  free(osc_front_controller->delegate_timeout);
+  
+  free(osc_front_controller->delegate_thread);
+  
+  if(osc_front_controller->message != NULL){
+    g_list_free_full(osc_front_controller->message,
+		     ags_osc_front_controller_message_free);
+  }
   
   /* call parent */
   G_OBJECT_CLASS(ags_osc_front_controller_parent_class)->finalize(gobject);
+}
+
+void*
+ags_osc_front_controller_delegate_thread(void *ptr)
+{
+  AgsOscFrontController *osc_front_controller;
+  
+  pthread_mutex_t *osc_controller_mutex;
+
+  osc_front_controller = AGS_OSC_FRONT_CONTROLLER(ptr);
+
+  /* get OSC front controller mutex */
+  pthread_mutex_lock(ags_osc_controller_get_class_mutex());
+  
+  osc_controller_mutex = AGS_OSC_CONTROLLER(osc_front_controller)->obj_mutex;
+  
+  pthread_mutex_unlock(ags_osc_controller_get_class_mutex());
+
+  while(ags_osc_front_controller_test_flags(osc_front_controller, AGS_OSC_FRONT_CONTROLLER_DELEGATE_RUNNING)){
+    //TODO:JK: implement me
+  }
+  
+  pthread_exit(NULL);
+}
+
+/**
+ * ags_osc_front_controller_test_flags:
+ * @osc_front_controller: the #AgsOscFrontController
+ * @flags: the flags
+ *
+ * Test @flags to be set on @osc_front_controller.
+ * 
+ * Returns: %TRUE if flags are set, else %FALSE
+ *
+ * Since: 2.1.0
+ */
+gboolean
+ags_osc_front_controller_test_flags(AgsOscFrontController *osc_front_controller, guint flags)
+{
+  gboolean retval;  
+  
+  pthread_mutex_t *osc_controller_mutex;
+
+  if(!AGS_IS_OSC_FRONT_CONTROLLER(osc_front_controller)){
+    return(FALSE);
+  }
+
+  /* get OSC front controller mutex */
+  pthread_mutex_lock(ags_osc_controller_get_class_mutex());
+  
+  osc_controller_mutex = AGS_OSC_CONTROLLER(osc_front_controller)->obj_mutex;
+  
+  pthread_mutex_unlock(ags_osc_controller_get_class_mutex());
+
+  /* test */
+  pthread_mutex_lock(osc_controller_mutex);
+
+  retval = (flags & (osc_front_controller->flags)) ? TRUE: FALSE;
+  
+  pthread_mutex_unlock(osc_controller_mutex);
+
+  return(retval);
+}
+
+/**
+ * ags_osc_front_controller_set_flags:
+ * @osc_front_controller: the #AgsOscFrontController
+ * @flags: the flags
+ *
+ * Set flags.
+ * 
+ * Since: 2.1.0
+ */
+void
+ags_osc_front_controller_set_flags(AgsOscFrontController *osc_front_controller, guint flags)
+{
+  pthread_mutex_t *osc_controller_mutex;
+
+  if(!AGS_IS_OSC_FRONT_CONTROLLER(osc_front_controller)){
+    return;
+  }
+
+  /* get OSC front controller mutex */
+  pthread_mutex_lock(ags_osc_controller_get_class_mutex());
+  
+  osc_controller_mutex = AGS_OSC_CONTROLLER(osc_front_controller)->obj_mutex;
+  
+  pthread_mutex_unlock(ags_osc_controller_get_class_mutex());
+
+  /* set flags */
+  pthread_mutex_lock(osc_controller_mutex);
+
+  osc_front_controller->flags |= flags;
+
+  pthread_mutex_unlock(osc_controller_mutex);
+}
+
+/**
+ * ags_osc_front_controller_unset_flags:
+ * @osc_front_controller: the #AgsOscFrontController
+ * @flags: the flags
+ *
+ * Unset flags.
+ * 
+ * Since: 2.1.0
+ */
+void
+ags_osc_front_controller_unset_flags(AgsOscFrontController *osc_front_controller, guint flags)
+{
+  pthread_mutex_t *osc_controller_mutex;
+
+  if(!AGS_IS_OSC_FRONT_CONTROLLER(osc_front_controller)){
+    return;
+  }
+
+  /* get OSC front controller mutex */
+  pthread_mutex_lock(ags_osc_controller_get_class_mutex());
+  
+  osc_controller_mutex = AGS_OSC_CONTROLLER(osc_front_controller)->obj_mutex;
+  
+  pthread_mutex_unlock(ags_osc_controller_get_class_mutex());
+
+  /* set flags */
+  pthread_mutex_lock(osc_controller_mutex);
+
+  osc_front_controller->flags &= (~flags);
+
+  pthread_mutex_unlock(osc_controller_mutex);
+}
+
+gint
+ags_osc_front_controller_message_sort_func(gconstpointer a,
+					   gconstpointer b)
+{
+  //TODO:JK: implement me
+}
+
+AgsOscFrontControllerMessage*
+ags_osc_front_controller_message_alloc()
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_osc_front_controller_message_free(AgsOscFrontControllerMessage *message)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_osc_front_controller_add_message(AgsOscFrontController *osc_front_controller,
+				     AgsOscFrontControllerMessage *message)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_osc_front_controller_remove_message(AgsOscFrontController *osc_front_controller,
+					AgsOscFrontControllerMessage *message)
+{
+  //TODO:JK: implement me
 }
 
 gpointer
@@ -229,7 +454,95 @@ ags_osc_front_controller_real_do_request(AgsOscFrontController *osc_front_contro
 					 AgsOscConnection *osc_connection,
 					 unsigned char *packet, guint packet_size)
 {
+  gint32 tv_secs;
+  gint32 tv_fraction;
+  gboolean immediately;
+
   //TODO:JK: implement me
+}
+
+void
+ags_osc_front_controller_real_start_delegate(AgsOscFrontController *osc_front_controller)
+{
+  pthread_mutex_t *osc_controller_mutex;
+
+  /* get OSC front controller mutex */
+  pthread_mutex_lock(ags_osc_controller_get_class_mutex());
+  
+  osc_controller_mutex = AGS_OSC_CONTROLLER(osc_front_controller)->obj_mutex;
+  
+  pthread_mutex_unlock(ags_osc_controller_get_class_mutex());
+
+  /* test if already started */
+  pthread_mutex_lock(osc_controller_mutex);
+    
+  if(ags_osc_front_controller_test_flags(osc_front_controller, AGS_OSC_FRONT_CONTROLLER_DELEGATE_STARTED)){
+    pthread_mutex_unlock(osc_controller_mutex);
+    
+    return;
+  }
+
+  ags_osc_front_controller_set_flags(osc_front_controller, AGS_OSC_FRONT_CONTROLLER_DELEGATE_STARTED);
+  
+  pthread_mutex_unlock(osc_controller_mutex);
+
+  /* create delegate thread */
+  pthread_create(osc_front_controller->delegate_thread, NULL,
+		 ags_osc_front_controller_delegate_thread, osc_front_controller);
+}
+
+/**
+ * ags_osc_front_controller_start_delegate:
+ * @osc_front_controller: the #AgsOscFrontController
+ * 
+ * Start delegateing.
+ * 
+ * Since: 2.1.0
+ */
+void
+ags_osc_front_controller_start_delegate(AgsOscFrontController *osc_front_controller)
+{
+  g_return_if_fail(AGS_IS_OSC_FRONT_CONTROLLER(osc_front_controller));
+  
+  g_object_ref((GObject *) osc_front_controller);
+  g_signal_emit(G_OBJECT(osc_front_controller),
+		osc_front_controller_signals[START_DELEGATE], 0);
+  g_object_unref((GObject *) osc_front_controller);
+}
+
+void
+ags_osc_front_controller_real_stop_delegate(AgsOscFrontController *osc_front_controller)
+{
+  if(!ags_osc_front_controller_test_flags(osc_front_controller, AGS_OSC_FRONT_CONTROLLER_DELEGATE_RUNNING)){
+    return;
+  }
+
+  ags_osc_front_controller_set_flags(osc_front_controller, AGS_OSC_FRONT_CONTROLLER_DELEGATE_TERMINATING);
+  ags_osc_front_controller_unset_flags(osc_front_controller, AGS_OSC_FRONT_CONTROLLER_DELEGATE_RUNNING);
+
+  /* join thread */
+  pthread_join(osc_front_controller->delegate_thread[0], NULL);
+  
+  ags_osc_front_controller_unset_flags(osc_front_controller, AGS_OSC_FRONT_CONTROLLER_DELEGATE_TERMINATING);
+}
+
+/**
+ * ags_osc_front_controller_stop_delegate:
+ * @osc_front_controller: the #AgsOscFrontController
+ * 
+ * Stop delegateing.
+ * 
+ * Since: 2.1.0
+ */
+void
+ags_osc_front_controller_stop_delegate(AgsOscFrontController *osc_front_controller)
+{
+  g_return_if_fail(AGS_IS_OSC_FRONT_CONTROLLER(osc_front_controller));
+  
+  g_object_ref((GObject *) osc_front_controller);
+  g_signal_emit(G_OBJECT(osc_front_controller),
+		osc_front_controller_signals[STOP_DELEGATE], 0);
+  g_object_unref((GObject *) osc_front_controller);
 }
 
 /**

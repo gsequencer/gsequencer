@@ -37,6 +37,10 @@ struct _AgsSoundProviderInterface
 {
   GTypeInterface ginterface;
 
+  void (*set_default_soundcard)(AgsSoundProvider *sound_provider,
+				       GObject *soundcard_thread);
+  GObject* (*get_default_soundcard)(AgsSoundProvider *sound_provider);
+
   void (*set_default_soundcard_thread)(AgsSoundProvider *sound_provider,
 				       GObject *soundcard_thread);
   GObject* (*get_default_soundcard_thread)(AgsSoundProvider *sound_provider);
@@ -56,9 +60,17 @@ struct _AgsSoundProviderInterface
   void (*set_sound_server)(AgsSoundProvider *sound_provider,
 			   GList *sound_server);
   GList* (*get_sound_server)(AgsSoundProvider *sound_provider);
+
+  void (*set_osc_server)(AgsSoundProvider *sound_provider,
+			 GList *sound_server);
+  GList* (*get_osc_server)(AgsSoundProvider *sound_provider);
 };
 
 GType ags_sound_provider_get_type();
+
+void ags_sound_provider_set_default_soundcard(AgsSoundProvider *sound_provider,
+					      GObject *soundcard_thread);
+GObject* ags_sound_provider_get_default_soundcard(AgsSoundProvider *sound_provider);
 
 void ags_sound_provider_set_default_soundcard_thread(AgsSoundProvider *sound_provider,
 						     GObject *soundcard_thread);
@@ -79,5 +91,9 @@ GList* ags_sound_provider_get_audio(AgsSoundProvider *sound_provider);
 void ags_sound_provider_set_sound_server(AgsSoundProvider *sound_provider,
 					 GList *sound_server);
 GList* ags_sound_provider_get_sound_server(AgsSoundProvider *sound_provider);
+
+void ags_sound_provider_set_osc_server(AgsSoundProvider *sound_provider,
+				       GList *sound_server);
+GList* ags_sound_provider_get_osc_server(AgsSoundProvider *sound_provider);
 
 #endif /*__AGS_SOUND_PROVIDER_H__*/

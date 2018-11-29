@@ -5,7 +5,7 @@ ags (2.1.0)
 	* implemented AgsSetDevice task
 	* implemented AgsStopSoundcard task
 	* implemented AgsStopSequencer task
-	* TODO:JK: implemented AgsApplySoundConfig task
+	* implemented AgsApplySoundConfig task
 	* implemented ags_osc_util.c
 	* implemented ags_osc_buffer_util.c
 	* implemented ags_osc_parser.c
@@ -28,6 +28,7 @@ ags (2.1.0)
 	* TODO:JK: improved AgsServer
 	* fixed ags_front_controller_do_request() prototype declaration
 	* fixed ags_local_factory_controller_create_instance() prototype declaration
+	* TODO:JK: fixed delay counter
 
 ags (2.0.38)
 

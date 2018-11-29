@@ -52,7 +52,7 @@ void ags_osc_server_finalize(GObject *gobject);
 void ags_osc_server_real_start(AgsOscServer *osc_server);
 void ags_osc_server_real_stop(AgsOscServer *osc_server);
 
-void ags_osc_server_real_listen(AgsOscServer *osc_server);
+gboolean ags_osc_server_real_listen(AgsOscServer *osc_server);
 
 void ags_osc_server_real_dispatch(AgsOscServer *osc_server);
 

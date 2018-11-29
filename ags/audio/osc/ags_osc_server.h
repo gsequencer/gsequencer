@@ -111,7 +111,7 @@ struct _AgsOscServerClass
   void (*start)(AgsOscServer *osc_server);
   void (*stop)(AgsOscServer *osc_server);
 
-  void (*listen)(AgsOscServer *osc_server);
+  gboolean (*listen)(AgsOscServer *osc_server);
 
   void (*dispatch)(AgsOscServer *osc_server);
 };
@@ -139,7 +139,7 @@ void ags_osc_server_remove_controller(AgsOscServer *osc_server,
 void ags_osc_server_start(AgsOscServer *osc_server);
 void ags_osc_server_stop(AgsOscServer *osc_server);
 
-void ags_osc_server_listen(AgsOscServer *osc_server);
+gboolean ags_osc_server_listen(AgsOscServer *osc_server);
 
 void ags_osc_server_dispatch(AgsOscServer *osc_server);
 

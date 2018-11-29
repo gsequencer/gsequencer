@@ -58,13 +58,56 @@ ags_sound_provider_class_init(AgsSoundProviderInterface *interface)
 }
 
 /**
+ * ags_sound_provider_set_default_soundcard:
+ * @sound_provider: the #AgsSoundProvider
+ * @soundcard: the #GObject implementing #AgsSoundcard
+ * 
+ * Set default soundcard.
+ * 
+ * Since: 2.1.0
+ */
+void
+ags_sound_provider_set_default_soundcard(AgsSoundProvider *sound_provider,
+					 GObject *soundcard)
+{
+  AgsSoundProviderInterface *sound_provider_interface;
+
+  g_return_if_fail(AGS_IS_SOUND_PROVIDER(sound_provider));
+  sound_provider_interface = AGS_SOUND_PROVIDER_GET_INTERFACE(sound_provider);
+  g_return_if_fail(sound_provider_interface->set_default_soundcard);
+
+  sound_provider_interface->set_default_soundcard_thread(sound_provider,
+							 soundcard);
+}
+
+/**
+ * ags_sound_provider_get_default_soundcard:
+ * @sound_provider: the #AgsSoundProvider
+ * 
+ * Get default soundcard thread.
+ *
+ * Returns: the #GObject implementing #AgsSoundcard
+ * 
+ * Since: 2.1.0
+ */
+GObject*
+ags_sound_provider_get_default_soundcard(AgsSoundProvider *sound_provider)
+{
+  AgsSoundProviderInterface *sound_provider_interface;
+
+  g_return_val_if_fail(AGS_IS_SOUND_PROVIDER(sound_provider), NULL);
+  sound_provider_interface = AGS_SOUND_PROVIDER_GET_INTERFACE(sound_provider);
+  g_return_val_if_fail(sound_provider_interface->get_default_soundcard, NULL);
+
+  return(sound_provider_interface->get_default_soundcard(sound_provider));
+}
+
+/**
  * ags_sound_provider_set_default_soundcard_thread:
  * @sound_provider: the #AgsSoundProvider
  * @soundcard_thread: the default #AgsThread
  * 
- * set default soundcard thread.
- *
- * Returns: the #AgsThread
+ * Set default soundcard thread.
  * 
  * Since: 2.0.0
  */
@@ -244,7 +287,7 @@ ags_sound_provider_get_audio(AgsSoundProvider *sound_provider)
  * @sound_provider: the #AgsSoundProvider
  * @sound_server: a #GList-struct containing #AgsSoundServer
  *
- * Set distributed manager.
+ * Get sound server.
  * 
  * Since: 2.0.0
  */
@@ -266,7 +309,7 @@ ags_sound_provider_set_sound_server(AgsSoundProvider *sound_provider,
  * ags_sound_provider_get_sound_server:
  * @sound_provider: the #AgsSoundProvider
  *
- * Set distributed manager.
+ * Set sound server.
  * 
  * Returns: a #GList-struct containing #AgsSoundServer
  *
@@ -282,4 +325,49 @@ ags_sound_provider_get_sound_server(AgsSoundProvider *sound_provider)
   g_return_val_if_fail(sound_provider_interface->get_sound_server, NULL);
 
   return(sound_provider_interface->get_sound_server(sound_provider));
+}
+
+/**
+ * ags_sound_provider_set_osc_server:
+ * @sound_provider: the #AgsSoundProvider
+ * @osc_server: a #GList-struct containing #AgsOscServer
+ *
+ * Set OSC server.
+ * 
+ * Since: 2.1.0
+ */
+void
+ags_sound_provider_set_osc_server(AgsSoundProvider *sound_provider,
+				  GList *osc_server)
+{
+  AgsSoundProviderInterface *sound_provider_interface;
+
+  g_return_if_fail(AGS_IS_SOUND_PROVIDER(sound_provider));
+  sound_provider_interface = AGS_SOUND_PROVIDER_GET_INTERFACE(sound_provider);
+  g_return_if_fail(sound_provider_interface->set_osc_server);
+
+  sound_provider_interface->set_osc_server(sound_provider,
+					   osc_server);
+}
+
+/**
+ * ags_sound_provider_get_osc_server:
+ * @sound_provider: the #AgsSoundProvider
+ *
+ * Set distributed manager.
+ * 
+ * Returns: a #GList-struct containing #AgsOscServer
+ *
+ * Since: 2.1.0
+ */
+GList*
+ags_sound_provider_get_osc_server(AgsSoundProvider *sound_provider)
+{
+  AgsSoundProviderInterface *sound_provider_interface;
+
+  g_return_val_if_fail(AGS_IS_SOUND_PROVIDER(sound_provider), NULL);
+  sound_provider_interface = AGS_SOUND_PROVIDER_GET_INTERFACE(sound_provider);
+  g_return_val_if_fail(sound_provider_interface->get_osc_server, NULL);
+
+  return(sound_provider_interface->get_osc_server(sound_provider));
 }
