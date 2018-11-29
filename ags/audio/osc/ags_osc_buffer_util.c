@@ -832,13 +832,11 @@ ags_osc_buffer_util_put_message(unsigned char *buffer,
   ags_osc_buffer_util_put_string(buffer,
 				 address_pattern, address_pattern_length);
 
-  buffer += (address_pattern_length + 1);
+  buffer += (4 * (guint) ceil((double) (address_pattern_length + 1) / 4.0));
   
   type_tag_length = strlen(type_tag);
   ags_osc_buffer_util_put_string(buffer,
 				 type_tag, type_tag_length);
-
-  buffer += (type_tag_length + 1);
 }
 
 /**
@@ -885,7 +883,7 @@ ags_osc_buffer_util_get_message(unsigned char *buffer,
     g_free(str);
   }
 
-  buffer += (length + 1);
+  buffer += (4 * (guint) ceil((double) (length + 1) / 4.0));
 
   if(buffer[0] == ','){
     ags_osc_buffer_util_get_string(buffer,

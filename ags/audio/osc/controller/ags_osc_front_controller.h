@@ -32,7 +32,7 @@
 #define AGS_IS_OSC_FRONT_CONTROLLER_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_OSC_FRONT_CONTROLLER))
 #define AGS_OSC_FRONT_CONTROLLER_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS(obj, AGS_TYPE_OSC_FRONT_CONTROLLER, AgsOscFrontControllerClass))
 
-#define AGS_OSC_FRONT_CONTROLLER_DELEGATE(ptr) ((AgsOscFrontControllerDelegate *)(ptr))
+#define AGS_OSC_FRONT_CONTROLLER_MESSAGE(ptr) ((AgsOscFrontControllerMessage *)(ptr))
 
 typedef struct _AgsOscFrontController AgsOscFrontController;
 typedef struct _AgsOscFrontControllerClass AgsOscFrontControllerClass;
@@ -49,12 +49,13 @@ struct _AgsOscFrontController
   AgsOscController osc_controller;
 
   guint flags;
-
-  pthread_cond_t *delegate_cond;
-  
-  volatile gboolean run_immediately;
   
   struct timespec *delegate_timeout;
+  
+  volatile gboolean do_reset;
+
+  pthread_mutex_t *delegate_mutex;
+  pthread_cond_t *delegate_cond;
   
   pthread_t *delegate_thread;
 
@@ -75,6 +76,8 @@ struct _AgsOscFrontControllerClass
 
 struct _AgsOscFrontControllerMessage
 {
+  AgsOscConnection *osc_connection;
+  
   gint32 tv_secs;
   gint32 tv_fraction;
   gboolean immediately;

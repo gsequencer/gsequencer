@@ -16,7 +16,7 @@ ags (2.1.0)
 	* implemented ags_osc_response.c
 	* FIXME:JK: memory leaks
 	* FIXME:JK: implement ranges and wildcards
-	* TODO:JK: implemented ags_osc_front_controller.c
+	* implemented ags_osc_front_controller.c
 	* implemented ags_osc_info_controller.c
 	* implemented ags_osc_status_controller.c
 	* implemented ags_osc_config_controller.c

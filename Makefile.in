@@ -481,6 +481,7 @@ am__libags_audio_la_SOURCES_DIST = ags/audio/ags_acceleration.c \
 	ags/audio/osc/controller/ags_osc_info_controller.c \
 	ags/audio/osc/controller/ags_osc_meter_controller.c \
 	ags/audio/osc/controller/ags_osc_node_controller.c \
+	ags/audio/osc/controller/ags_osc_plugin_controller.c \
 	ags/audio/osc/controller/ags_osc_renew_controller.c \
 	ags/audio/osc/controller/ags_osc_status_controller.c \
 	ags/audio/jack/ags_jack_client.c \
@@ -741,6 +742,7 @@ am__objects_12 = ags/audio/osc/controller/libags_audio_la-ags_osc_controller.lo 
 	ags/audio/osc/controller/libags_audio_la-ags_osc_info_controller.lo \
 	ags/audio/osc/controller/libags_audio_la-ags_osc_meter_controller.lo \
 	ags/audio/osc/controller/libags_audio_la-ags_osc_node_controller.lo \
+	ags/audio/osc/controller/libags_audio_la-ags_osc_plugin_controller.lo \
 	ags/audio/osc/controller/libags_audio_la-ags_osc_renew_controller.lo \
 	ags/audio/osc/controller/libags_audio_la-ags_osc_status_controller.lo
 am__objects_13 = $(am__objects_1) \
@@ -3924,6 +3926,7 @@ am__depfiles_remade = ags/$(DEPDIR)/gsequencer-gsequencer_main.Po \
 	ags/audio/osc/controller/$(DEPDIR)/libags_audio_la-ags_osc_info_controller.Plo \
 	ags/audio/osc/controller/$(DEPDIR)/libags_audio_la-ags_osc_meter_controller.Plo \
 	ags/audio/osc/controller/$(DEPDIR)/libags_audio_la-ags_osc_node_controller.Plo \
+	ags/audio/osc/controller/$(DEPDIR)/libags_audio_la-ags_osc_plugin_controller.Plo \
 	ags/audio/osc/controller/$(DEPDIR)/libags_audio_la-ags_osc_renew_controller.Plo \
 	ags/audio/osc/controller/$(DEPDIR)/libags_audio_la-ags_osc_status_controller.Plo \
 	ags/audio/pulse/$(DEPDIR)/libags_audio_la-ags_pulse_client.Plo \
@@ -4790,6 +4793,7 @@ am__nobase_include_HEADERS_DIST = ags/libags.h \
 	ags/audio/osc/controller/ags_osc_info_controller.h \
 	ags/audio/osc/controller/ags_osc_meter_controller.h \
 	ags/audio/osc/controller/ags_osc_node_controller.h \
+	ags/audio/osc/controller/ags_osc_plugin_controller.h \
 	ags/audio/osc/controller/ags_osc_renew_controller.h \
 	ags/audio/osc/controller/ags_osc_status_controller.h \
 	ags/audio/jack/ags_jack_client.h \
@@ -7265,6 +7269,7 @@ libags_audio_osc_controller_h_sources = \
 	ags/audio/osc/controller/ags_osc_info_controller.h \
 	ags/audio/osc/controller/ags_osc_meter_controller.h \
 	ags/audio/osc/controller/ags_osc_node_controller.h \
+	ags/audio/osc/controller/ags_osc_plugin_controller.h \
 	ags/audio/osc/controller/ags_osc_renew_controller.h \
 	ags/audio/osc/controller/ags_osc_status_controller.h
 
@@ -7278,6 +7283,7 @@ libags_audio_osc_controller_c_sources = \
 	ags/audio/osc/controller/ags_osc_info_controller.c \
 	ags/audio/osc/controller/ags_osc_meter_controller.c \
 	ags/audio/osc/controller/ags_osc_node_controller.c \
+	ags/audio/osc/controller/ags_osc_plugin_controller.c \
 	ags/audio/osc/controller/ags_osc_renew_controller.c \
 	ags/audio/osc/controller/ags_osc_status_controller.c
 
@@ -8818,6 +8824,9 @@ ags/audio/osc/controller/libags_audio_la-ags_osc_meter_controller.lo:  \
 	ags/audio/osc/controller/$(am__dirstamp) \
 	ags/audio/osc/controller/$(DEPDIR)/$(am__dirstamp)
 ags/audio/osc/controller/libags_audio_la-ags_osc_node_controller.lo:  \
+	ags/audio/osc/controller/$(am__dirstamp) \
+	ags/audio/osc/controller/$(DEPDIR)/$(am__dirstamp)
+ags/audio/osc/controller/libags_audio_la-ags_osc_plugin_controller.lo:  \
 	ags/audio/osc/controller/$(am__dirstamp) \
 	ags/audio/osc/controller/$(DEPDIR)/$(am__dirstamp)
 ags/audio/osc/controller/libags_audio_la-ags_osc_renew_controller.lo:  \
@@ -11934,6 +11943,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/osc/controller/$(DEPDIR)/libags_audio_la-ags_osc_info_controller.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/osc/controller/$(DEPDIR)/libags_audio_la-ags_osc_meter_controller.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/osc/controller/$(DEPDIR)/libags_audio_la-ags_osc_node_controller.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@ags/audio/osc/controller/$(DEPDIR)/libags_audio_la-ags_osc_plugin_controller.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/osc/controller/$(DEPDIR)/libags_audio_la-ags_osc_renew_controller.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/osc/controller/$(DEPDIR)/libags_audio_la-ags_osc_status_controller.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/audio/pulse/$(DEPDIR)/libags_audio_la-ags_pulse_client.Plo@am__quote@ # am--include-marker
@@ -13312,6 +13322,13 @@ ags/audio/osc/controller/libags_audio_la-ags_osc_node_controller.lo: ags/audio/o
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/audio/osc/controller/ags_osc_node_controller.c' object='ags/audio/osc/controller/libags_audio_la-ags_osc_node_controller.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -c -o ags/audio/osc/controller/libags_audio_la-ags_osc_node_controller.lo `test -f 'ags/audio/osc/controller/ags_osc_node_controller.c' || echo '$(srcdir)/'`ags/audio/osc/controller/ags_osc_node_controller.c
+
+ags/audio/osc/controller/libags_audio_la-ags_osc_plugin_controller.lo: ags/audio/osc/controller/ags_osc_plugin_controller.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -MT ags/audio/osc/controller/libags_audio_la-ags_osc_plugin_controller.lo -MD -MP -MF ags/audio/osc/controller/$(DEPDIR)/libags_audio_la-ags_osc_plugin_controller.Tpo -c -o ags/audio/osc/controller/libags_audio_la-ags_osc_plugin_controller.lo `test -f 'ags/audio/osc/controller/ags_osc_plugin_controller.c' || echo '$(srcdir)/'`ags/audio/osc/controller/ags_osc_plugin_controller.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/audio/osc/controller/$(DEPDIR)/libags_audio_la-ags_osc_plugin_controller.Tpo ags/audio/osc/controller/$(DEPDIR)/libags_audio_la-ags_osc_plugin_controller.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/audio/osc/controller/ags_osc_plugin_controller.c' object='ags/audio/osc/controller/libags_audio_la-ags_osc_plugin_controller.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -c -o ags/audio/osc/controller/libags_audio_la-ags_osc_plugin_controller.lo `test -f 'ags/audio/osc/controller/ags_osc_plugin_controller.c' || echo '$(srcdir)/'`ags/audio/osc/controller/ags_osc_plugin_controller.c
 
 ags/audio/osc/controller/libags_audio_la-ags_osc_renew_controller.lo: ags/audio/osc/controller/ags_osc_renew_controller.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -MT ags/audio/osc/controller/libags_audio_la-ags_osc_renew_controller.lo -MD -MP -MF ags/audio/osc/controller/$(DEPDIR)/libags_audio_la-ags_osc_renew_controller.Tpo -c -o ags/audio/osc/controller/libags_audio_la-ags_osc_renew_controller.lo `test -f 'ags/audio/osc/controller/ags_osc_renew_controller.c' || echo '$(srcdir)/'`ags/audio/osc/controller/ags_osc_renew_controller.c
@@ -21185,6 +21202,7 @@ distclean: distclean-recursive
 	-rm -f ags/audio/osc/controller/$(DEPDIR)/libags_audio_la-ags_osc_info_controller.Plo
 	-rm -f ags/audio/osc/controller/$(DEPDIR)/libags_audio_la-ags_osc_meter_controller.Plo
 	-rm -f ags/audio/osc/controller/$(DEPDIR)/libags_audio_la-ags_osc_node_controller.Plo
+	-rm -f ags/audio/osc/controller/$(DEPDIR)/libags_audio_la-ags_osc_plugin_controller.Plo
 	-rm -f ags/audio/osc/controller/$(DEPDIR)/libags_audio_la-ags_osc_renew_controller.Plo
 	-rm -f ags/audio/osc/controller/$(DEPDIR)/libags_audio_la-ags_osc_status_controller.Plo
 	-rm -f ags/audio/pulse/$(DEPDIR)/libags_audio_la-ags_pulse_client.Plo
@@ -22015,6 +22033,7 @@ maintainer-clean: maintainer-clean-recursive
 	-rm -f ags/audio/osc/controller/$(DEPDIR)/libags_audio_la-ags_osc_info_controller.Plo
 	-rm -f ags/audio/osc/controller/$(DEPDIR)/libags_audio_la-ags_osc_meter_controller.Plo
 	-rm -f ags/audio/osc/controller/$(DEPDIR)/libags_audio_la-ags_osc_node_controller.Plo
+	-rm -f ags/audio/osc/controller/$(DEPDIR)/libags_audio_la-ags_osc_plugin_controller.Plo
 	-rm -f ags/audio/osc/controller/$(DEPDIR)/libags_audio_la-ags_osc_renew_controller.Plo
 	-rm -f ags/audio/osc/controller/$(DEPDIR)/libags_audio_la-ags_osc_status_controller.Plo
 	-rm -f ags/audio/pulse/$(DEPDIR)/libags_audio_la-ags_pulse_client.Plo

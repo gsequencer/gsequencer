@@ -21,9 +21,14 @@
 
 #include <ags/libags.h>
 
-#include <ags/i18n.h>
-
 #include <stdlib.h>
+
+#ifdef __APPLE__
+#include <mach/clock.h>
+#include <mach/mach.h>
+#endif
+
+#include <ags/i18n.h>
 
 void ags_osc_front_controller_class_init(AgsOscFrontControllerClass *osc_front_controller);
 void ags_osc_front_controller_init(AgsOscFrontController *osc_front_controller);
@@ -199,6 +204,17 @@ ags_osc_front_controller_init(AgsOscFrontController *osc_front_controller)
 
   osc_front_controller->delegate_timeout->tv_sec = 0;
   osc_front_controller->delegate_timeout->tv_nsec = NSEC_PER_SEC / 30;
+
+  g_atomic_int_set(&(osc_front_controller->do_reset),
+		   FALSE);
+
+  osc_front_controller->delegate_mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
+  pthread_mutex_init(osc_front_controller->delegate_mutex,
+		    NULL);
+
+  osc_front_controller->delegate_cond = (pthread_cond_t *) malloc(sizeof(pthread_cond_t));
+  pthread_cond_init(osc_front_controller->delegate_cond,
+		    NULL);
   
   osc_front_controller->delegate_thread = (pthread_t *) malloc(sizeof(pthread_t));
   
@@ -291,12 +307,31 @@ ags_osc_front_controller_finalize(GObject *gobject)
 void*
 ags_osc_front_controller_delegate_thread(void *ptr)
 {
+  AgsOscServer *osc_server;
   AgsOscFrontController *osc_front_controller;
+
+  GList *start_controller, *controller;
+  
+  struct timespec time_now, time_next;
+  struct timespec current_time;
+  
+#ifdef __APPLE__
+  clock_serv_t cclock;
+  mach_timespec_t mts;
+#endif
   
   pthread_mutex_t *osc_controller_mutex;
 
   osc_front_controller = AGS_OSC_FRONT_CONTROLLER(ptr);
 
+  g_object_get(osc_front_controller,
+	       "osc-server", &osc_server,
+	       NULL);
+
+  g_object_get(osc_server,
+	       "controller", &start_controller,
+	       NULL);
+  
   /* get OSC front controller mutex */
   pthread_mutex_lock(ags_osc_controller_get_class_mutex());
   
@@ -304,9 +339,180 @@ ags_osc_front_controller_delegate_thread(void *ptr)
   
   pthread_mutex_unlock(ags_osc_controller_get_class_mutex());
 
+  time_next.tv_sec = 0;
+  time_next.tv_nsec = 0;
+  
   while(ags_osc_front_controller_test_flags(osc_front_controller, AGS_OSC_FRONT_CONTROLLER_DELEGATE_RUNNING)){
-    //TODO:JK: implement me
+    GList *start_message, *message;
+    GList *list;
+    
+    pthread_mutex_lock(osc_front_controller->delegate_mutex);
+
+#ifdef __APPLE__
+    host_get_clock_service(mach_host_self(), CALENDAR_CLOCK, &cclock);
+      
+    clock_get_time(cclock, &mts);
+    mach_port_deallocate(mach_task_self(), cclock);
+      
+    time_now.tv_sec = mts.tv_sec;
+    time_now.tv_nsec = mts.tv_nsec;
+#else
+    clock_gettime(CLOCK_MONOTONIC, &time_now);
+#endif
+    
+    while(!g_atomic_int_get(&(osc_front_controller->do_reset)) &&
+	  (time_now.tv_sec > time_next.tv_sec ||
+	   (time_now.tv_sec == time_next.tv_sec &&
+	    time_now.tv_nsec > time_next.tv_nsec))){
+      pthread_cond_timedwait(osc_front_controller->delegate_cond,
+			     osc_front_controller->delegate_mutex,
+			     osc_front_controller->delegate_timeout);
+      
+#ifdef __APPLE__
+      host_get_clock_service(mach_host_self(), CALENDAR_CLOCK, &cclock);
+      
+      clock_get_time(cclock, &mts);
+      mach_port_deallocate(mach_task_self(), cclock);
+      
+      time_now.tv_sec = mts.tv_sec;
+      time_now.tv_nsec = mts.tv_nsec;
+#else
+      clock_gettime(CLOCK_MONOTONIC, &time_now);
+#endif
+    }
+
+    g_atomic_int_set(&(osc_front_controller->do_reset),
+		     FALSE);
+    
+    pthread_mutex_unlock(osc_front_controller->delegate_mutex);
+
+    /* check delegate */
+    pthread_mutex_lock(osc_controller_mutex);
+
+    start_message = NULL;
+    list = osc_front_controller->message;
+
+    while(list != NULL){
+      if(AGS_OSC_FRONT_CONTROLLER_MESSAGE(list->data)->immediately){
+	start_message = g_list_prepend(start_message,
+				       list->data);
+	
+	ags_osc_front_controller_remove_message(osc_front_controller,
+						list->data);
+      }else{
+	current_time.tv_sec = AGS_OSC_FRONT_CONTROLLER_MESSAGE(list->data)->tv_sec;
+	current_time.tv_nsec = AGS_OSC_FRONT_CONTROLLER_MESSAGE(list->data)->tv_fraction / 4.294967296;
+      
+	if((time_current.tv_sec < time_now.tv_sec ||
+	   (time_current.tv_sec == time_now.tv_sec &&
+	    time_current.tv_nsec < time_now.tv_nsec))){
+	  start_message = g_list_prepend(start_message,
+					 list->data);
+	  
+	  ags_osc_front_controller_remove_message(osc_front_controller,
+						  list->data);
+	}else{
+	  break;
+	}
+      }
+
+      list = list->next;
+    }
+    
+    pthread_mutex_unlock(osc_controller_mutex);
+
+    message = 
+      start_message = g_list_reverse(start_message);
+
+    while(message != NULL){
+      AgsOscResponse *osc_response;
+      
+      gchar *path;
+
+      ags_osc_buffer_util_get_string(AGS_OSC_FRONT_CONTROLLER_MESSAGE(message->data)->message,
+				     &path, NULL);
+
+      controller = start_controller;
+      osc_response = NULL;
+      
+      while(controller != NULL){
+	gboolean success;
+	
+	pthread_mutex_t *mutex;
+
+	/* get OSC front controller mutex */
+	pthread_mutex_lock(ags_osc_controller_get_class_mutex());
+	
+	mutex = AGS_OSC_CONTROLLER(controller->data)->obj_mutex;
+	
+	pthread_mutex_unlock(ags_osc_controller_get_class_mutex());
+
+	/* match path */
+	pthread_mutex_lock(mutex);
+	
+	success = !g_strcmp0(AGS_OSC_CONTROLLER(controller->data)->path,
+			     path);
+
+	pthread_mutex_unlock(mutex);
+	
+	if(success){
+	  /* delegate */
+	  if(AGS_IS_OSC_ACTION_CONTROLLER(controller->data)){
+	    osc_response = ags_osc_plugin_controller_run_action(controller->data,
+								message->osc_connection,
+								message->message, message->message_size);
+	  }else if(AGS_IS_OSC_CONFIG_CONTROLLER(controller->data)){
+	    osc_response = ags_osc_plugin_controller_apply_config(controller->data,
+						   message->osc_connection,
+						   message->message, message->message_size);
+	  }else if(AGS_IS_OSC_INFO_CONTROLLER(controller->data)){
+	    osc_response = ags_osc_plugin_controller_get_info(controller->data,
+					       message->osc_connection,
+					       message->message, message->message_size);
+	  }else if(AGS_IS_OSC_METER_CONTROLLER(controller->data)){
+	    osc_response = ags_osc_plugin_controller_monitor_meter(controller->data,
+						    message->osc_connection,
+						    message->message, message->message_size);
+	  }else if(AGS_IS_OSC_NODE_CONTROLLER(controller->data)){
+	    osc_response = ags_osc_plugin_controller_get_data(controller->data,
+					       message->osc_connection,
+					       message->message, message->message_size);
+	  }else if(AGS_IS_OSC_RENEW_CONTROLLER(controller->data)){
+	    osc_response = ags_osc_plugin_controller_set_data(controller->data,
+					       message->osc_connection,
+					       message->message, message->message_size);
+	  }else if(AGS_IS_OSC_STATUS_CONTROLLER(controller->data)){
+	    osc_response = ags_osc_plugin_controller_get_status(controller->data,
+						 message->osc_connection,
+						 message->message, message->message_size);
+	  }else if(AGS_IS_OSC_PLUGIN_CONTROLLER(controller->data)){
+	    osc_response = ags_osc_plugin_controller_do_request(AGS_OSC_PLUGIN_CONTROLLER(controller->data),
+						 message->osc_connection,
+						 message->message, message->message_size);
+	  }
+	  
+	  break;
+	}
+	
+	controller = controller->next;
+      }
+
+      /* write response */
+      if(osc_response != NULL){
+	ags_osc_connection_write_response(message->osc_connection,
+					  osc_response);
+	g_object_unref(osc_response);
+      }
+      
+      message = message->next;
+    }
+
+    /* free messages */
+    g_list_free_full(start_message,
+		     ags_osc_front_controller_message_free);
   }
+
+  g_list_free(start_controller);
   
   pthread_exit(NULL);
 }
@@ -416,49 +622,187 @@ ags_osc_front_controller_unset_flags(AgsOscFrontController *osc_front_controller
   pthread_mutex_unlock(osc_controller_mutex);
 }
 
+/**
+ * ags_osc_front_controller_message_sort_func:
+ * @a: the #AgsOscFrontControllerMessage-struct
+ * @b: the other #AgsOscFrontControllerMessage-struct
+ * 
+ * Compare @a and @b in view of timing.
+ *
+ * Returns: -1 if @a happens before @b, 0 if at the very same time or 1 if after
+ * 
+ * Since: 2.1.0
+ */
 gint
 ags_osc_front_controller_message_sort_func(gconstpointer a,
 					   gconstpointer b)
 {
-  //TODO:JK: implement me
+  AgsOscFrontControllerMessage *message_a, *message_b;
+
+  if(a == NULL || b == NULL){
+    return(0);
+  }
+
+  message_a = a;
+  message_b = b;
+
+  if(message_a->immediately &&
+     message_b->immediately){
+    return(0);
+  }
+
+  if(message_a->immediately){
+    return(-1);
+  }
+  
+  if(message_b->immediately){
+    return(1);
+  }
+
+  if(message_a->tv_secs < message_b->tv_secs ||
+     (message_a->tv_secs == message_b->tv_secs &&
+      message_a->tv_fraction < message_b->tv_fraction)){
+    return(-1);
+  }
+  
+  if(message_a->tv_secs > message_b->tv_secs ||
+     (message_a->tv_secs == message_b->tv_secs &&
+      message_a->tv_fraction > message_b->tv_fraction)){
+    return(1);
+  }
+
+  return(0);
 }
 
+/**
+ * ags_osc_front_controller_message_alloc:
+ * 
+ * Allocate #AgsOscFrontControllerMessage-struct.
+ * 
+ * Returns: the newly allocated #AgsOscFrontControllerMessage-struct
+ * 
+ * Since: 2.1.0
+ */
 AgsOscFrontControllerMessage*
 ags_osc_front_controller_message_alloc()
 {
-  //TODO:JK: implement me
+  AgsOscFrontControllerMessage *message;
+
+  message = (AgsOscFrontControllerMessage *) malloc(sizeof(AgsOscFrontControllerMessage));
+
+  message->osc_connection = NULL;
+  
+  message->tv_secs = 0;
+  message->tv_fraction = 0;
+  message->immediately = FALSE;
+
+  message->message_size = 0;
+  message->message = NULL;
+
+  return(message);
 }
 
+/**
+ * ags_osc_front_controller_message_free:
+ * @message: the #AgsOscFrontControllerMessage-struct
+ * 
+ * Free @message.
+ * 
+ * Since: 2.1.0
+ */
 void
 ags_osc_front_controller_message_free(AgsOscFrontControllerMessage *message)
 {
-  //TODO:JK: implement me
+  if(message == NULL){
+    return;
+  }
+
+  if(message->osc_connection != NULL){
+    g_object_unref(message->osc_connection);
+  }
+  
+  if(message->message != NULL){
+    free(message->message);
+  }
+  
+  free(message);
 }
 
+/**
+ * ags_osc_front_controller_add_message:
+ * @osc_front_controller: the #AgsOscFrontController
+ * @message: the #AgsOscFrontControllerMessage-struct
+ * 
+ * Add @message to @osc_front_contrller.
+ * 
+ * Since: 2.1.0
+ */
 void
 ags_osc_front_controller_add_message(AgsOscFrontController *osc_front_controller,
 				     AgsOscFrontControllerMessage *message)
 {
-  //TODO:JK: implement me
+  pthread_mutex_t *osc_controller_mutex;
+
+  if(!AGS_IS_OSC_FRONT_CONTROLLER(osc_front_controller) ||
+     message == NULL){
+    return;
+  }
+
+  /* get OSC front controller mutex */
+  pthread_mutex_lock(ags_osc_controller_get_class_mutex());
+  
+  osc_controller_mutex = AGS_OSC_CONTROLLER(osc_front_controller)->obj_mutex;
+  
+  pthread_mutex_unlock(ags_osc_controller_get_class_mutex());
+  
+  /* add */
+  pthread_mutex_lock(osc_controller_mutex);
+
+  if(g_list_find(osc_front_controller->message, message) == NULL){
+    osc_front_controller->message = g_list_insert_sorted(osc_front_controller->message,
+							 message,
+							 ags_osc_front_controller_message_sort_func);
+  }
+  
+  pthread_mutex_unlock(osc_controller_mutex);
 }
 
+/**
+ * ags_osc_front_controller_remove_message:
+ * @osc_front_controller: the #AgsOscFrontController
+ * @message: the #AgsOscFrontControllerMessage-struct
+ * 
+ * Remove @message from @osc_front_contrller.
+ * 
+ * Since: 2.1.0
+ */
 void
 ags_osc_front_controller_remove_message(AgsOscFrontController *osc_front_controller,
 					AgsOscFrontControllerMessage *message)
 {
-  //TODO:JK: implement me
-}
+  pthread_mutex_t *osc_controller_mutex;
 
-gpointer
-ags_osc_front_controller_real_do_request(AgsOscFrontController *osc_front_controller,
-					 AgsOscConnection *osc_connection,
-					 unsigned char *packet, guint packet_size)
-{
-  gint32 tv_secs;
-  gint32 tv_fraction;
-  gboolean immediately;
+  if(!AGS_IS_OSC_FRONT_CONTROLLER(osc_front_controller) ||
+     message == NULL){
+    return;
+  }
 
-  //TODO:JK: implement me
+  /* get OSC front controller mutex */
+  pthread_mutex_lock(ags_osc_controller_get_class_mutex());
+  
+  osc_controller_mutex = AGS_OSC_CONTROLLER(osc_front_controller)->obj_mutex;
+  
+  pthread_mutex_unlock(ags_osc_controller_get_class_mutex());
+
+  /* remove */
+  pthread_mutex_lock(osc_controller_mutex);
+
+  if(g_list_find(osc_front_controller->message, message) != NULL){
+    osc_front_controller->message = g_list_remove(osc_front_controller->message,
+						  message);
+  }
+  
+  pthread_mutex_unlock(osc_controller_mutex);
 }
 
 void
@@ -543,6 +887,204 @@ ags_osc_front_controller_stop_delegate(AgsOscFrontController *osc_front_controll
   g_signal_emit(G_OBJECT(osc_front_controller),
 		osc_front_controller_signals[STOP_DELEGATE], 0);
   g_object_unref((GObject *) osc_front_controller);
+}
+
+gpointer
+ags_osc_front_controller_real_do_request(AgsOscFrontController *osc_front_controller,
+					 AgsOscConnection *osc_connection,
+					 unsigned char *packet, guint packet_size)
+{
+  guint offset;
+
+  auto guint ags_osc_front_controller_do_request_read_bundle(AgsOscFrontController *osc_front_controller,
+							     AgsOscConnection *osc_connection,
+							     unsigned char *packet, guint packet_size,
+							     guint offset);
+  auto guint ags_osc_front_controller_do_request_read_message(AgsOscFrontController *osc_front_controller,
+							      AgsOscConnection *osc_connection,
+							      unsigned char *packet, guint packet_size,
+							      guint offset,
+							      gint32 tv_secs, gint32 tv_fraction, gboolean immediately);
+
+  guint ags_osc_front_controller_do_request_read_bundle(AgsOscFrontController *osc_front_controller,
+							AgsOscConnection *osc_connection,
+							unsigned char *packet, guint packet_size,
+							guint offset)
+  {
+    gint32 tv_secs;
+    gint32 tv_fraction;
+    gboolean immediately;
+    guint read_count;
+    gint32 length;
+
+    read_count = 8;
+    
+    ags_osc_buffer_util_get_timetag(packet + offset + read_count,
+				    &(tv_secs), &(tv_fraction), &(immediately));
+    read_count += 8;
+
+    for(; offset < packet_size;){
+      ags_osc_buffer_util_get_int32(packet + offset + read_count,
+				    &length);
+      read_count += 4;
+
+      if(!g_strcmp0(packet + offset + read_count, "#bundle")){      
+	ags_osc_front_controller_do_request_read_bundle(osc_front_controller,
+							osc_connection,
+							packet, packet_size,
+							offset + read_count);
+
+	read_count += length;
+      }else if(packet[offset + read_count] == '/'){
+	ags_osc_front_controller_do_request_read_message(osc_front_controller,
+							 osc_connection,
+							 packet, packet_size,
+							 offset + read_count,
+							 tv_secs, tv_fraction, immediately);
+
+	read_count += length;
+      }else{
+	read_count += 1;
+	
+	g_warning("malformed data");
+      }
+    }
+    
+    return(read_count);
+  }
+  
+  guint ags_osc_front_controller_do_request_read_message(AgsOscFrontController *osc_front_controller,
+							 AgsOscConnection *osc_connection,
+							 unsigned char *packet, guint packet_size,
+							 guint offset,
+							 gint32 tv_secs, gint32 tv_fraction, gboolean immediately)
+  {
+    AgsOscFrontControllerMessage *message;
+
+    gchar *address_pattern;
+    gchar *type_tag;
+
+    gsize address_pattern_length;
+    gsize type_tag_length;
+    gsize data_length;
+    guint read_count;
+    guint i;
+    
+    read_count = 0;
+
+    ags_osc_buffer_util_get_message(packet + offset,
+				    &address_pattern, &type_tag);
+
+    address_pattern_length = strlen(address_pattern);
+    read_count += (4 * (guint) ceil((double) (address_pattern_length + 1) / 4.0));
+
+    type_tag_length = strlen(type_tag);
+    read_count += (4 * (guint) ceil((double) (type_tag_length + 1) / 4.0));
+
+    data_length = 0;
+    
+    for(i = 1; i < type_tag_length; i++){
+      switch(type_tag[i]){
+      case AGS_OSC_UTIL_TYPE_TAG_STRING_TRUE:
+      case AGS_OSC_UTIL_TYPE_TAG_STRING_FALSE:
+      case AGS_OSC_UTIL_TYPE_TAG_STRING_NIL:
+      case AGS_OSC_UTIL_TYPE_TAG_STRING_INFINITE:
+      case AGS_OSC_UTIL_TYPE_TAG_STRING_ARRAY_START:
+      case AGS_OSC_UTIL_TYPE_TAG_STRING_ARRAY_END:
+	{
+	  //empty
+	}
+	break;
+      case AGS_OSC_UTIL_TYPE_TAG_STRING_CHAR:
+      case AGS_OSC_UTIL_TYPE_TAG_STRING_INT32:
+      case AGS_OSC_UTIL_TYPE_TAG_STRING_FLOAT:
+      case AGS_OSC_UTIL_TYPE_TAG_STRING_RGBA:
+      case AGS_OSC_UTIL_TYPE_TAG_STRING_MIDI:
+	{
+	  data_length += 4;
+	}
+	break;
+      case AGS_OSC_UTIL_TYPE_TAG_STRING_INT64:
+      case AGS_OSC_UTIL_TYPE_TAG_STRING_DOUBLE:
+      case AGS_OSC_UTIL_TYPE_TAG_STRING_TIMETAG:
+	{
+	  data_length += 8;
+	}
+	break;
+      case AGS_OSC_UTIL_TYPE_TAG_STRING_SYMBOL:
+      case AGS_OSC_UTIL_TYPE_TAG_STRING_STRING:
+	{
+	  guint length;
+
+	  str_length = strlen(packet + offset + read_count + data_length);
+
+	  data_length += (4 * (guint) ceil((double) (length + 1) / 4.0));
+	}
+	break;
+      case AGS_OSC_UTIL_TYPE_TAG_STRING_BLOB:
+	{
+	  gint32 data_size;
+
+	  ags_osc_buffer_util_get_int32(buffer + offset + read_count + data_length,
+					&data_size);
+
+	  data_length += data_size;
+	}
+	break;
+      }
+    }
+
+    read_count += (4 * (guint) ceil((double) data_length / 4.0));
+
+    message = ags_osc_front_controller_message_alloc();
+
+    message->osc_connection = osc_connection;
+
+    message->tv_sec = tv_sec;
+    message->tv_fraction = tv_fraction;
+    message->immediately = immediately;
+    
+    message->message_size = read_count;
+    
+    message->message = (unsigned char *) malloc(read_count * sizeof(unsigned char));
+    memcpy(message->message,
+	   packet + offset,
+	   read_count * sizeof(unsigned char));
+
+    ags_osc_front_controller_add_message(osc_front_controller,
+					 message);
+    
+    return(read_count);
+  }
+  
+  current = NULL;
+  
+  tv_secs = 0;
+  tv_fraction = 0;
+  immediately = TRUE;
+  
+  for(offset = 4; offset < packet_size;){
+    guint read_count;
+    
+    if(!g_strcmp0(packet + offset, "#bundle")){      
+      read_count = ags_osc_front_controller_do_request_read_bundle(osc_front_controller,
+								   osc_connection,
+								   packet, packet_size,
+								   offset);
+    }else if(packet + offset == '/'){
+      read_count = ags_osc_front_controller_do_request_read_message(osc_front_controller,
+								    osc_connection,
+								    packet, packet_size,
+								    offset,
+								    0, 0, TRUE);
+    }else{
+      read_count = 1;
+
+      g_warning("malformed data");
+    }
+
+    offset += read_count;
+  }
 }
 
 /**

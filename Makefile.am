@@ -959,6 +959,7 @@ libags_audio_osc_controller_h_sources = \
 	ags/audio/osc/controller/ags_osc_info_controller.h \
 	ags/audio/osc/controller/ags_osc_meter_controller.h \
 	ags/audio/osc/controller/ags_osc_node_controller.h \
+	ags/audio/osc/controller/ags_osc_plugin_controller.h \
 	ags/audio/osc/controller/ags_osc_renew_controller.h \
 	ags/audio/osc/controller/ags_osc_status_controller.h
 
@@ -973,6 +974,7 @@ libags_audio_osc_controller_c_sources = \
 	ags/audio/osc/controller/ags_osc_info_controller.c \
 	ags/audio/osc/controller/ags_osc_meter_controller.c \
 	ags/audio/osc/controller/ags_osc_node_controller.c \
+	ags/audio/osc/controller/ags_osc_plugin_controller.c \
 	ags/audio/osc/controller/ags_osc_renew_controller.c \
 	ags/audio/osc/controller/ags_osc_status_controller.c
 

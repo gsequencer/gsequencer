@@ -118,7 +118,7 @@ struct _AgsOscBuilderBundle
   gboolean immediately;
 
   AgsOscBuilderPacket *packet;
-  AgsOscBuilderPacket *parent_bundle;
+  AgsOscBuilderBundle *parent_bundle;
 
   GList *message;
   GList *bundle;
@@ -136,7 +136,7 @@ struct _AgsOscBuilderMessage
   unsigned char *data;
 
   AgsOscBuilderPacket *packet;
-  AgsOscBuilderPacket *parent_bundle;
+  AgsOscBuilderBundle *parent_bundle;
 };
 
 GType ags_osc_builder_get_type(void);
