@@ -6,7 +6,7 @@ Overview of Changes in AGS 2.1.0
   controller.
 * There is a new OSC buffer util and util file. Further you may use the
   AgsOscBuilder or AgsOscParser to interact with the OSC content format.
-* Configuration in place is pack with AgsApplySoundConfig task.
+* Configuration in place is done by AgsApplySoundConfig task.
 
 Overview of Changes in AGS 2.0.0
 ================================
