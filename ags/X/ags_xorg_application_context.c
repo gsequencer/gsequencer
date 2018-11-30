@@ -91,20 +91,28 @@ void ags_xorg_application_context_get_property(GObject *gobject,
 					       guint prop_id,
 					       GValue *value,
 					       GParamSpec *param_spec);
+void ags_xorg_application_context_dispose(GObject *gobject);
+void ags_xorg_application_context_finalize(GObject *gobject);
+
 void ags_xorg_application_context_connect(AgsConnectable *connectable);
 void ags_xorg_application_context_disconnect(AgsConnectable *connectable);
+
 AgsThread* ags_xorg_application_context_get_main_loop(AgsConcurrencyProvider *concurrency_provider);
 AgsThread* ags_xorg_application_context_get_task_thread(AgsConcurrencyProvider *concurrency_provider);
 AgsThreadPool* ags_xorg_application_context_get_thread_pool(AgsConcurrencyProvider *concurrency_provider);
 GList* ags_xorg_application_context_get_worker(AgsConcurrencyProvider *concurrency_provider);
 void ags_xorg_application_context_set_worker(AgsConcurrencyProvider *concurrency_provider,
 					     GList *worker);
-GList* ags_xorg_application_context_get_soundcard(AgsSoundProvider *sound_provider);
-void ags_xorg_application_context_set_soundcard(AgsSoundProvider *sound_provider,
-						GList *soundcard);
+
+GObject* ags_xorg_application_context_get_default_soundcard(AgsSoundProvider *sound_provider);
+void ags_xorg_application_context_set_default_soundcard(AgsSoundProvider *sound_provider,
+							GObject *soundcard);
 GObject* ags_xorg_application_context_get_default_soundcard_thread(AgsSoundProvider *sound_provider);
 void ags_xorg_application_context_set_default_soundcard_thread(AgsSoundProvider *sound_provider,
 							       GObject *soundcard_thread);
+GList* ags_xorg_application_context_get_soundcard(AgsSoundProvider *sound_provider);
+void ags_xorg_application_context_set_soundcard(AgsSoundProvider *sound_provider,
+						GList *soundcard);
 GList* ags_xorg_application_context_get_sequencer(AgsSoundProvider *sound_provider);
 void ags_xorg_application_context_set_sequencer(AgsSoundProvider *sound_provider,
 						GList *sequencer);
@@ -112,6 +120,9 @@ GList* ags_xorg_application_context_get_sound_server(AgsSoundProvider *sound_pro
 GList* ags_xorg_application_context_get_audio(AgsSoundProvider *sound_provider);
 void ags_xorg_application_context_set_audio(AgsSoundProvider *sound_provider,
 					    GList *soundcard);
+GList* ags_xorg_application_context_get_osc_server(AgsSoundProvider *sound_provider);
+void ags_xorg_application_context_set_osc_server(AgsSoundProvider *sound_provider,
+						 GList *soundcard);
 
 GtkWidget* ags_xorg_application_context_get_window(AgsUiProvider *ui_provider);
 void ags_xorg_application_context_set_window(AgsUiProvider *ui_provider,
@@ -125,8 +136,6 @@ void ags_xorg_application_context_set_show_animation(AgsUiProvider *ui_provider,
 gboolean ags_xorg_application_context_get_gui_ready(AgsUiProvider *ui_provider);
 void ags_xorg_application_context_set_gui_ready(AgsUiProvider *ui_provider,
 						gboolean is_gui_ready);
-void ags_xorg_application_context_dispose(GObject *gobject);
-void ags_xorg_application_context_finalize(GObject *gobject);
 
 void ags_xorg_application_context_load_config(AgsApplicationContext *application_context);
 
@@ -368,11 +377,14 @@ ags_xorg_application_context_concurrency_provider_interface_init(AgsConcurrencyP
 void
 ags_xorg_application_context_sound_provider_interface_init(AgsSoundProviderInterface *sound_provider)
 {
-  sound_provider->get_soundcard = ags_xorg_application_context_get_soundcard;
-  sound_provider->set_soundcard = ags_xorg_application_context_set_soundcard;
+  sound_provider->get_default_soundcard = ags_xorg_application_context_get_default_soundcard;
+  sound_provider->set_default_soundcard = ags_xorg_application_context_set_default_soundcard;
 
   sound_provider->get_default_soundcard_thread = ags_xorg_application_context_get_default_soundcard_thread;
   sound_provider->set_default_soundcard_thread = ags_xorg_application_context_set_default_soundcard_thread;
+
+  sound_provider->get_soundcard = ags_xorg_application_context_get_soundcard;
+  sound_provider->set_soundcard = ags_xorg_application_context_set_soundcard;
 
   sound_provider->get_sequencer = ags_xorg_application_context_get_sequencer;
   sound_provider->set_sequencer = ags_xorg_application_context_set_sequencer;
@@ -381,6 +393,9 @@ ags_xorg_application_context_sound_provider_interface_init(AgsSoundProviderInter
 
   sound_provider->get_audio = ags_xorg_application_context_get_audio;
   sound_provider->set_audio = ags_xorg_application_context_set_audio;
+
+  sound_provider->get_osc_server = ags_xorg_application_context_get_osc_server;
+  sound_provider->set_osc_server = ags_xorg_application_context_set_osc_server;
 }
 
 void
@@ -435,8 +450,10 @@ ags_xorg_application_context_init(AgsXorgApplicationContext *xorg_application_co
 
   xorg_application_context->worker = NULL;
   
-  xorg_application_context->soundcard_thread = NULL;
-  xorg_application_context->export_thread = NULL;
+  xorg_application_context->default_soundcard = NULL;
+
+  xorg_application_context->default_soundcard_thread = NULL;
+  xorg_application_context->default_export_thread = NULL;
 
   xorg_application_context->gui_thread = NULL;
   
@@ -450,6 +467,8 @@ ags_xorg_application_context_init(AgsXorgApplicationContext *xorg_application_co
   xorg_application_context->sound_server = NULL;
   
   xorg_application_context->audio = NULL;
+
+  xorg_application_context->osc_server = NULL;
 
   xorg_application_context->window = NULL;
 }
@@ -490,6 +509,232 @@ ags_xorg_application_context_set_property(GObject *gobject,
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
   }
+}
+
+
+void
+ags_xorg_application_context_dispose(GObject *gobject)
+{
+  AgsXorgApplicationContext *xorg_application_context;
+
+  GList *list;
+
+  xorg_application_context = AGS_XORG_APPLICATION_CONTEXT(gobject);
+
+  /* thread pool */
+  if(xorg_application_context->thread_pool != NULL){
+    g_object_unref(xorg_application_context->thread_pool);
+    
+    xorg_application_context->thread_pool = NULL;
+  }
+
+  /* polling thread */
+  if(xorg_application_context->polling_thread != NULL){
+    g_object_unref(xorg_application_context->polling_thread);
+
+    xorg_application_context->polling_thread = NULL;
+  }
+
+  /* worker thread */
+  if(xorg_application_context->worker != NULL){
+    list = xorg_application_context->worker;
+
+    while(list != NULL){
+      g_object_run_dispose(list->data);
+      
+      list = list->next;
+    }
+    
+    g_list_free_full(xorg_application_context->worker,
+		     g_object_unref);
+
+    xorg_application_context->worker = NULL;
+  }
+
+  /* default soundcard */
+  if(xorg_application_context->default_soundcard != NULL){
+    g_object_unref(xorg_application_context->default_soundcard);
+
+    xorg_application_context->default_soundcard = NULL;
+  }
+
+  /* soundcard and export thread */
+  if(xorg_application_context->default_soundcard_thread != NULL){
+    g_object_unref(xorg_application_context->default_soundcard_thread);
+
+    xorg_application_context->default_soundcard_thread = NULL;
+  }
+
+  if(xorg_application_context->default_export_thread != NULL){
+    g_object_unref(xorg_application_context->default_export_thread);
+
+    xorg_application_context->default_export_thread = NULL;
+  }
+
+  /* server */
+  if(xorg_application_context->server != NULL){
+    g_object_set(xorg_application_context->server,
+		 "application-context", NULL,
+		 NULL);
+    
+    g_object_unref(xorg_application_context->server);
+
+    xorg_application_context->server = NULL;
+  }
+
+  /* soundcard and sequencer */
+  if(xorg_application_context->soundcard != NULL){
+    list = xorg_application_context->soundcard;
+
+    while(list != NULL){
+      g_object_set(list->data,
+		   "application-context", NULL,
+		   NULL);
+
+      list = list->next;
+    }
+    
+    g_list_free_full(xorg_application_context->soundcard,
+		     g_object_unref);
+
+    xorg_application_context->soundcard = NULL;
+  }
+
+  if(xorg_application_context->sequencer != NULL){
+    list = xorg_application_context->sequencer;
+
+    while(list != NULL){
+      g_object_set(list->data,
+		   "application-context", NULL,
+		   NULL);
+
+      list = list->next;
+    }
+
+    g_list_free_full(xorg_application_context->sequencer,
+		     g_object_unref);
+
+    xorg_application_context->sequencer = NULL;
+  }
+
+  /* sound server */
+  if(xorg_application_context->sound_server != NULL){
+    list = xorg_application_context->sound_server;
+
+    while(list != NULL){
+      g_object_set(list->data,
+		   "application-context", NULL,
+		   NULL);
+
+      list = list->next;
+    }
+
+    g_list_free_full(xorg_application_context->sound_server,
+		     g_object_unref);
+
+    xorg_application_context->sound_server = NULL;
+  }
+
+  /* audio */
+  if(xorg_application_context->audio != NULL){
+    g_list_free_full(xorg_application_context->audio,
+		     g_object_unref);
+
+    xorg_application_context->audio = NULL;
+  }
+
+  /* osc server */
+  if(xorg_application_context->osc_server != NULL){
+    g_list_free_full(xorg_application_context->osc_server,
+		     g_object_unref);
+
+    xorg_application_context->osc_server = NULL;
+  }
+  
+  /* window */
+  if(xorg_application_context->window != NULL){
+    g_object_set(xorg_application_context->window,
+		 "application-context", NULL,
+		 NULL);
+    
+    gtk_widget_destroy(xorg_application_context->window);
+
+    xorg_application_context->window = NULL;
+  }  
+  
+  /* call parent */
+  G_OBJECT_CLASS(ags_xorg_application_context_parent_class)->dispose(gobject);
+}
+
+void
+ags_xorg_application_context_finalize(GObject *gobject)
+{
+  AgsXorgApplicationContext *xorg_application_context;
+
+  xorg_application_context = AGS_XORG_APPLICATION_CONTEXT(gobject);
+
+  if(xorg_application_context->thread_pool != NULL){
+    g_object_unref(xorg_application_context->thread_pool);
+  }
+
+  if(xorg_application_context->polling_thread != NULL){
+    g_object_unref(xorg_application_context->polling_thread);
+  }
+
+  if(xorg_application_context->worker != NULL){
+    g_list_free_full(xorg_application_context->worker,
+		     g_object_unref);
+
+    xorg_application_context->worker = NULL;
+  }
+
+  if(xorg_application_context->default_soundcard != NULL){
+    g_object_unref(xorg_application_context->default_soundcard);
+  }
+  
+  if(xorg_application_context->default_soundcard_thread != NULL){
+    g_object_unref(xorg_application_context->default_soundcard_thread);
+  }
+
+  if(xorg_application_context->default_export_thread != NULL){
+    g_object_unref(xorg_application_context->default_export_thread);
+  }
+
+  if(xorg_application_context->server != NULL){
+    g_object_unref(xorg_application_context->server);
+  }
+
+  if(xorg_application_context->soundcard != NULL){
+    g_list_free_full(xorg_application_context->soundcard,
+		     g_object_unref);
+  }
+
+  if(xorg_application_context->sequencer != NULL){
+    g_list_free_full(xorg_application_context->sequencer,
+		     g_object_unref);
+  }
+  
+  if(xorg_application_context->sound_server != NULL){
+    g_list_free_full(xorg_application_context->sound_server,
+		     g_object_unref);
+  }
+
+  if(xorg_application_context->audio != NULL){
+    g_list_free_full(xorg_application_context->audio,
+		     g_object_unref);
+  }
+
+  if(xorg_application_context->osc_server != NULL){
+    g_list_free_full(xorg_application_context->osc_server,
+		     g_object_unref);
+  }
+  
+  if(xorg_application_context->window != NULL){
+    gtk_widget_destroy(xorg_application_context->window);
+  }
+  
+  /* call parent */
+  G_OBJECT_CLASS(ags_xorg_application_context_parent_class)->finalize(gobject);
 }
 
 void
@@ -567,32 +812,207 @@ ags_xorg_application_context_disconnect(AgsConnectable *connectable)
 AgsThread*
 ags_xorg_application_context_get_main_loop(AgsConcurrencyProvider *concurrency_provider)
 {
-  return((AgsThread *) AGS_APPLICATION_CONTEXT(concurrency_provider)->main_loop);
+  AgsThread *main_loop;
+  
+  pthread_mutex_t *application_context_mutex;
+
+  /* get mutex */
+  pthread_mutex_lock(ags_application_context_get_class_mutex());
+  
+  application_context_mutex = AGS_APPLICATION_CONTEXT(concurrency_provider)->obj_mutex;
+
+  pthread_mutex_unlock(ags_application_context_get_class_mutex());
+
+  /* get main loop */
+  pthread_mutex_lock(application_context_mutex);
+
+  main_loop = (AgsThread *) AGS_APPLICATION_CONTEXT(concurrency_provider)->main_loop;
+
+  pthread_mutex_unlock(application_context_mutex);
+  
+  return(main_loop);
 }
 
 AgsThread*
 ags_xorg_application_context_get_task_thread(AgsConcurrencyProvider *concurrency_provider)
 {
-  return((AgsThread *) AGS_APPLICATION_CONTEXT(concurrency_provider)->task_thread);
+  AgsThread *task_thread;
+  
+  pthread_mutex_t *application_context_mutex;
+
+  /* get mutex */
+  pthread_mutex_lock(ags_application_context_get_class_mutex());
+  
+  application_context_mutex = AGS_APPLICATION_CONTEXT(concurrency_provider)->obj_mutex;
+
+  pthread_mutex_unlock(ags_application_context_get_class_mutex());
+
+  /* get task thread */
+  pthread_mutex_lock(application_context_mutex);
+
+  task_thread = (AgsThread *) AGS_APPLICATION_CONTEXT(concurrency_provider)->task_thread;
+  
+  pthread_mutex_unlock(application_context_mutex);
+
+  return(task_thread);
 }
 
 AgsThreadPool*
 ags_xorg_application_context_get_thread_pool(AgsConcurrencyProvider *concurrency_provider)
 {
-  return(AGS_XORG_APPLICATION_CONTEXT(concurrency_provider)->thread_pool);
+  AgsThreadPool *thread_pool;
+  
+  pthread_mutex_t *application_context_mutex;
+
+  /* get mutex */
+  pthread_mutex_lock(ags_application_context_get_class_mutex());
+  
+  application_context_mutex = AGS_APPLICATION_CONTEXT(concurrency_provider)->obj_mutex;
+
+  pthread_mutex_unlock(ags_application_context_get_class_mutex());
+
+  /* get thread pool */
+  pthread_mutex_lock(application_context_mutex);
+
+  thread_pool = AGS_XORG_APPLICATION_CONTEXT(concurrency_provider)->thread_pool;
+
+  pthread_mutex_unlock(application_context_mutex);
+  
+  return(thread_pool);
 }
 
 GList*
 ags_xorg_application_context_get_worker(AgsConcurrencyProvider *concurrency_provider)
 {
-  return(AGS_XORG_APPLICATION_CONTEXT(concurrency_provider)->worker);
+  GList *worker;
+  
+  pthread_mutex_t *application_context_mutex;
+
+  /* get mutex */
+  pthread_mutex_lock(ags_application_context_get_class_mutex());
+  
+  application_context_mutex = AGS_APPLICATION_CONTEXT(concurrency_provider)->obj_mutex;
+
+  pthread_mutex_unlock(ags_application_context_get_class_mutex());
+
+  /* get worker */
+  pthread_mutex_lock(application_context_mutex);
+
+  worker = AGS_XORG_APPLICATION_CONTEXT(concurrency_provider)->worker;
+  
+  pthread_mutex_unlock(application_context_mutex);
+
+  return(worker);
 }
 
 void
 ags_xorg_application_context_set_worker(AgsConcurrencyProvider *concurrency_provider,
 					GList *worker)
 {
+  pthread_mutex_t *application_context_mutex;
+
+  /* get mutex */
+  pthread_mutex_lock(ags_application_context_get_class_mutex());
+  
+  application_context_mutex = AGS_APPLICATION_CONTEXT(concurrency_provider)->obj_mutex;
+
+  pthread_mutex_unlock(ags_application_context_get_class_mutex());
+
+  /* get worker */
+  pthread_mutex_lock(application_context_mutex);
+
   AGS_XORG_APPLICATION_CONTEXT(concurrency_provider)->worker = worker;
+
+  pthread_mutex_unlock(application_context_mutex);
+}
+GObject*
+ags_xorg_application_context_get_default_soundcard_thread(AgsSoundProvider *sound_provider)
+{
+  GObject *soundcard_thread;
+  
+  pthread_mutex_t *application_context_mutex;
+
+  /* get mutex */
+  pthread_mutex_lock(ags_application_context_get_class_mutex());
+  
+  application_context_mutex = AGS_APPLICATION_CONTEXT(sound_provider)->obj_mutex;
+
+  pthread_mutex_unlock(ags_application_context_get_class_mutex());
+
+  /* get default soundcard thread */
+  pthread_mutex_lock(application_context_mutex);
+
+  soundcard_thread = (GObject *) AGS_XORG_APPLICATION_CONTEXT(sound_provider)->default_soundcard_thread;
+
+  pthread_mutex_unlock(application_context_mutex);
+  
+  return(soundcard_thread);
+}
+
+void
+ags_xorg_application_context_set_default_soundcard(AgsSoundProvider *sound_provider,
+						   GObject *soundcard)
+{
+  pthread_mutex_t *application_context_mutex;
+
+  /* get mutex */
+  pthread_mutex_lock(ags_application_context_get_class_mutex());
+  
+  application_context_mutex = AGS_APPLICATION_CONTEXT(sound_provider)->obj_mutex;
+
+  pthread_mutex_unlock(ags_application_context_get_class_mutex());
+
+  /* set default soundcard */
+  pthread_mutex_lock(application_context_mutex);
+
+  AGS_XORG_APPLICATION_CONTEXT(sound_provider)->default_soundcard = (AgsThread *) soundcard;
+
+  pthread_mutex_unlock(application_context_mutex);
+}
+
+GObject*
+ags_xorg_application_context_get_default_soundcard(AgsSoundProvider *sound_provider)
+{
+  GObject *soundcard;
+  
+  pthread_mutex_t *application_context_mutex;
+
+  /* get mutex */
+  pthread_mutex_lock(ags_application_context_get_class_mutex());
+  
+  application_context_mutex = AGS_APPLICATION_CONTEXT(sound_provider)->obj_mutex;
+
+  pthread_mutex_unlock(ags_application_context_get_class_mutex());
+
+  /* get default soundcard */
+  pthread_mutex_lock(application_context_mutex);
+
+  soundcard = (GObject *) AGS_XORG_APPLICATION_CONTEXT(sound_provider)->default_soundcard;
+
+  pthread_mutex_unlock(application_context_mutex);
+  
+  return(soundcard);
+}
+
+void
+ags_xorg_application_context_set_default_soundcard_thread(AgsSoundProvider *sound_provider,
+							  GObject *soundcard_thread)
+{
+  pthread_mutex_t *application_context_mutex;
+
+  /* get mutex */
+  pthread_mutex_lock(ags_application_context_get_class_mutex());
+  
+  application_context_mutex = AGS_APPLICATION_CONTEXT(sound_provider)->obj_mutex;
+
+  pthread_mutex_unlock(ags_application_context_get_class_mutex());
+
+  /* set default soundcard thread */
+  pthread_mutex_lock(application_context_mutex);
+
+  AGS_XORG_APPLICATION_CONTEXT(sound_provider)->default_soundcard_thread = (AgsThread *) soundcard_thread;
+
+  pthread_mutex_unlock(application_context_mutex);
 }
 
 GList*
@@ -642,19 +1062,6 @@ ags_xorg_application_context_set_soundcard(AgsSoundProvider *sound_provider,
   AGS_XORG_APPLICATION_CONTEXT(sound_provider)->soundcard = soundcard;
 
   pthread_mutex_unlock(application_context_mutex);
-}
-
-GObject*
-ags_xorg_application_context_get_default_soundcard_thread(AgsSoundProvider *sound_provider)
-{
-  return((GObject *) AGS_XORG_APPLICATION_CONTEXT(sound_provider)->soundcard_thread);
-}
-
-void
-ags_xorg_application_context_set_default_soundcard_thread(AgsSoundProvider *sound_provider,
-							  GObject *soundcard_thread)
-{
-  AGS_XORG_APPLICATION_CONTEXT(sound_provider)->soundcard_thread = (AgsThread *) soundcard_thread;
 }
 
 GList*
@@ -779,192 +1186,53 @@ ags_xorg_application_context_set_audio(AgsSoundProvider *sound_provider,
   pthread_mutex_unlock(application_context_mutex);
 }
 
-void
-ags_xorg_application_context_dispose(GObject *gobject)
+GList*
+ags_xorg_application_context_get_osc_server(AgsSoundProvider *sound_provider)
 {
-  AgsXorgApplicationContext *xorg_application_context;
+  GList *osc_server;
 
-  GList *list;
+  pthread_mutex_t *application_context_mutex;
 
-  xorg_application_context = AGS_XORG_APPLICATION_CONTEXT(gobject);
-
-  /* thread pool */
-  if(xorg_application_context->thread_pool != NULL){
-    g_object_unref(xorg_application_context->thread_pool);
-    
-    xorg_application_context->thread_pool = NULL;
-  }
-
-  /* polling thread */
-  if(xorg_application_context->polling_thread != NULL){
-    g_object_unref(xorg_application_context->polling_thread);
-
-    xorg_application_context->polling_thread = NULL;
-  }
-
-  /* worker thread */
-  if(xorg_application_context->worker != NULL){
-    list = xorg_application_context->worker;
-
-    while(list != NULL){
-      g_object_run_dispose(list->data);
-      
-      list = list->next;
-    }
-    
-    g_list_free_full(xorg_application_context->worker,
-		     g_object_unref);
-
-    xorg_application_context->worker = NULL;
-  }
+  /* get mutex */
+  pthread_mutex_lock(ags_application_context_get_class_mutex());
   
-  /* soundcard and export thread */
-  if(xorg_application_context->soundcard_thread != NULL){
-    g_object_unref(xorg_application_context->soundcard_thread);
+  application_context_mutex = AGS_APPLICATION_CONTEXT(sound_provider)->obj_mutex;
 
-    xorg_application_context->soundcard_thread = NULL;
-  }
+  pthread_mutex_unlock(ags_application_context_get_class_mutex());
 
-  if(xorg_application_context->export_thread != NULL){
-    g_object_unref(xorg_application_context->export_thread);
-
-    xorg_application_context->export_thread = NULL;
-  }
-
-  /* server */
-  if(xorg_application_context->server != NULL){
-    g_object_set(xorg_application_context->server,
-		 "application-context", NULL,
-		 NULL);
-    
-    g_object_unref(xorg_application_context->server);
-
-    xorg_application_context->server = NULL;
-  }
-
-  /* soundcard and sequencer */
-  if(xorg_application_context->soundcard != NULL){
-    list = xorg_application_context->soundcard;
-
-    while(list != NULL){
-      g_object_set(list->data,
-		   "application-context", NULL,
-		   NULL);
-
-      list = list->next;
-    }
-    
-    g_list_free_full(xorg_application_context->soundcard,
-		     g_object_unref);
-
-    xorg_application_context->soundcard = NULL;
-  }
-
-  if(xorg_application_context->sequencer != NULL){
-    list = xorg_application_context->sequencer;
-
-    while(list != NULL){
-      g_object_set(list->data,
-		   "application-context", NULL,
-		   NULL);
-
-      list = list->next;
-    }
-
-    g_list_free_full(xorg_application_context->sequencer,
-		     g_object_unref);
-
-    xorg_application_context->sequencer = NULL;
-  }
-
-  /* distributed manager */
-  if(xorg_application_context->sound_server != NULL){
-    list = xorg_application_context->sound_server;
-
-    while(list != NULL){
-      g_object_set(list->data,
-		   "application-context", NULL,
-		   NULL);
-
-      list = list->next;
-    }
-
-    g_list_free_full(xorg_application_context->sound_server,
-		     g_object_unref);
-
-    xorg_application_context->sound_server = NULL;
-  }
-
-  /* window */
-  if(xorg_application_context->window != NULL){
-    g_object_set(xorg_application_context->window,
-		 "application-context", NULL,
-		 NULL);
-    
-    gtk_widget_destroy(xorg_application_context->window);
-
-    xorg_application_context->window = NULL;
-  }  
+  /* get osc_server */
+  pthread_mutex_lock(application_context_mutex);
   
-  /* call parent */
-  G_OBJECT_CLASS(ags_xorg_application_context_parent_class)->dispose(gobject);
+  osc_server = g_list_copy(AGS_XORG_APPLICATION_CONTEXT(sound_provider)->osc_server);
+
+  pthread_mutex_unlock(application_context_mutex);
+  
+  return(osc_server);
 }
 
 void
-ags_xorg_application_context_finalize(GObject *gobject)
+ags_xorg_application_context_set_osc_server(AgsSoundProvider *sound_provider,
+					    GList *osc_server)
 {
-  AgsXorgApplicationContext *xorg_application_context;
+  pthread_mutex_t *application_context_mutex;
 
-  xorg_application_context = AGS_XORG_APPLICATION_CONTEXT(gobject);
-
-  if(xorg_application_context->thread_pool != NULL){
-    g_object_unref(xorg_application_context->thread_pool);
-  }
-
-  if(xorg_application_context->polling_thread != NULL){
-    g_object_unref(xorg_application_context->polling_thread);
-  }
-
-  if(xorg_application_context->worker != NULL){
-    g_list_free_full(xorg_application_context->worker,
-		     g_object_unref);
-
-    xorg_application_context->worker = NULL;
-  }
+  /* get mutex */
+  pthread_mutex_lock(ags_application_context_get_class_mutex());
   
-  if(xorg_application_context->soundcard_thread != NULL){
-    g_object_unref(xorg_application_context->soundcard_thread);
+  application_context_mutex = AGS_APPLICATION_CONTEXT(sound_provider)->obj_mutex;
+
+  pthread_mutex_unlock(ags_application_context_get_class_mutex());
+
+  /* set osc_server */
+  pthread_mutex_lock(application_context_mutex);
+
+  if(AGS_XORG_APPLICATION_CONTEXT(sound_provider)->osc_server != NULL){
+    g_list_free(AGS_XORG_APPLICATION_CONTEXT(sound_provider)->osc_server);
   }
 
-  if(xorg_application_context->export_thread != NULL){
-    g_object_unref(xorg_application_context->export_thread);
-  }
+  AGS_XORG_APPLICATION_CONTEXT(sound_provider)->osc_server = osc_server;
 
-  if(xorg_application_context->server != NULL){
-    g_object_unref(xorg_application_context->server);
-  }
-
-  if(xorg_application_context->soundcard != NULL){
-    g_list_free_full(xorg_application_context->soundcard,
-		     g_object_unref);
-  }
-
-  if(xorg_application_context->sequencer != NULL){
-    g_list_free_full(xorg_application_context->sequencer,
-		     g_object_unref);
-  }
-  
-  if(xorg_application_context->sound_server != NULL){
-    g_list_free_full(xorg_application_context->sound_server,
-		     g_object_unref);
-  }
-  
-  if(xorg_application_context->window != NULL){
-    gtk_widget_destroy(xorg_application_context->window);
-  }
-  
-  /* call parent */
-  G_OBJECT_CLASS(ags_xorg_application_context_parent_class)->finalize(gobject);
+  pthread_mutex_unlock(application_context_mutex);
 }
 
 GtkWidget*
@@ -1765,7 +2033,7 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
   xorg_application_context->server = ags_server_new((GObject *) xorg_application_context);
   
   /* AgsSoundcardThread and AgsExportThread */
-  xorg_application_context->soundcard_thread = NULL;
+  xorg_application_context->default_soundcard_thread = NULL;
   list = xorg_application_context->soundcard;
     
   while(list != NULL){
@@ -1822,15 +2090,15 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
       }    
 
     /* default soundcard thread */
-    if(xorg_application_context->soundcard_thread == NULL){
-      xorg_application_context->soundcard_thread = soundcard_thread;
+    if(xorg_application_context->default_soundcard_thread == NULL){
+      xorg_application_context->default_soundcard_thread = soundcard_thread;
       g_object_ref(soundcard_thread);
     }
 
     /* default export thread */
     if(export_thread != NULL &&
-       xorg_application_context->export_thread == NULL){
-      xorg_application_context->export_thread = export_thread;
+       xorg_application_context->default_export_thread == NULL){
+      xorg_application_context->default_export_thread = export_thread;
       g_object_ref(export_thread);
     }
 

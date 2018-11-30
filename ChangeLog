@@ -28,7 +28,6 @@ ags (2.1.0)
 	* TODO:JK: improved AgsServer
 	* fixed ags_front_controller_do_request() prototype declaration
 	* fixed ags_local_factory_controller_create_instance() prototype declaration
-	* TODO:JK: fixed delay counter
 
 ags (2.0.38)
 

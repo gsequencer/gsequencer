@@ -40,8 +40,8 @@
 #define AGS_IS_XORG_APPLICATION_CONTEXT_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_XORG_APPLICATION_CONTEXT))
 #define AGS_XORG_APPLICATION_CONTEXT_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS(obj, AGS_TYPE_XORG_APPLICATION_CONTEXT, AgsXorgApplicationContextClass))
 
-#define AGS_XORG_VERSION "1.2.0"
-#define AGS_XORG_BUILD_ID "Thu Nov 30 22:50:27 UTC 2017"
+#define AGS_XORG_VERSION "2.1.0"
+#define AGS_XORG_BUILD_ID "Fri Nov 30 07:15:57 UTC 2018"
 
 typedef struct _AgsXorgApplicationContext AgsXorgApplicationContext;
 typedef struct _AgsXorgApplicationContextClass AgsXorgApplicationContextClass;
@@ -64,8 +64,10 @@ struct _AgsXorgApplicationContext
 
   GList *worker;
   
-  AgsThread *soundcard_thread;
-  AgsThread *export_thread;
+  GObject *default_soundcard;
+
+  AgsThread *default_soundcard_thread;
+  AgsThread *default_export_thread;
 
   AgsThread *gui_thread;
   
@@ -77,8 +79,9 @@ struct _AgsXorgApplicationContext
   GList *sequencer;
 
   GList *sound_server;
-
   GList *audio;
+
+  GList *osc_server;
   
   AgsWindow *window;
 };
