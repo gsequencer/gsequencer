@@ -81,9 +81,9 @@ ags_osc_plugin_controller_do_request(AgsOscPluginController *osc_plugin_controll
   osc_plugin_controller_interface = AGS_OSC_PLUGIN_CONTROLLER_GET_INTERFACE(osc_plugin_controller);
   g_return_val_if_fail(osc_plugin_controller_interface->do_request, NULL);
 
-  response = osc_plugin_controller_interface->do_request_thread(osc_plugin_controller,
-								osc_connection,
-								message, message_size);
+  response = osc_plugin_controller_interface->do_request(osc_plugin_controller,
+							 osc_connection,
+							 message, message_size);
 
   return(response);
 }

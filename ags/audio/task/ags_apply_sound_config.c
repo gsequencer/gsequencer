@@ -73,6 +73,8 @@ void ags_apply_sound_config_get_property(GObject *gobject,
 void ags_apply_sound_config_dispose(GObject *gobject);
 void ags_apply_sound_config_finalize(GObject *gobject);
 
+void ags_apply_sound_config_change_max_precision(AgsThread *thread,
+						 gdouble max_precision);
 void ags_apply_sound_config_launch(AgsTask *task);
 
 /**
@@ -298,6 +300,26 @@ ags_apply_sound_config_finalize(GObject *gobject)
 
   /* call parent */
   G_OBJECT_CLASS(ags_apply_sound_config_parent_class)->finalize(gobject);
+}
+
+void
+ags_apply_sound_config_change_max_precision(AgsThread *thread,
+					    gdouble max_precision)
+{
+  AgsThread *current;
+  
+  g_object_set(thread,
+	       "max-precision", max_precision,
+	       NULL);
+
+  current = g_atomic_pointer_get(&(thread->children));
+
+  while(current != NULL){
+    ags_apply_sound_config_change_max_precision(current,
+						max_precision);
+    
+    current = g_atomic_pointer_get(&(thread->next));
+  }
 }
 
 void
@@ -660,6 +682,22 @@ ags_apply_sound_config_launch(AgsTask *task)
   g_list_free(start_orig_sequencer);
   
   /* read config */
+  str = ags_config_get_value(config,
+			     AGS_CONFIG_THREAD,
+			     "max-precision");
+  
+  if(str != NULL){
+    gdouble max_precision;
+    
+    /* change max precision */
+    max_precision = g_ascii_strtod(str,
+				   NULL);
+    
+    ags_apply_sound_config_change_max_precision(audio_loop,
+						max_precision);  
+  }
+
+
   soundcard = NULL;
 
   soundcard_group = g_strdup("soundcard");

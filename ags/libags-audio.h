@@ -127,6 +127,27 @@
 #include <ags/audio/midi/ags_midi_parser.h>
 #include <ags/audio/midi/ags_midi_util.h>
 
+/* audio osc */
+#include <ags/audio/osc/ags_osc_buffer_util.h>
+#include <ags/audio/osc/ags_osc_builder.h>
+#include <ags/audio/osc/ags_osc_client.h>
+#include <ags/audio/osc/ags_osc_connection.h>
+#include <ags/audio/osc/ags_osc_parser.h>
+#include <ags/audio/osc/ags_osc_response.h>
+#include <ags/audio/osc/ags_osc_server.h>
+#include <ags/audio/osc/ags_osc_util.h>
+
+#include <ags/audio/osc/controller/ags_osc_action_controller.h>
+#include <ags/audio/osc/controller/ags_osc_config_controller.h>
+#include <ags/audio/osc/controller/ags_osc_controller.h>
+#include <ags/audio/osc/controller/ags_osc_front_controller.h>
+#include <ags/audio/osc/controller/ags_osc_info_controller.h>
+#include <ags/audio/osc/controller/ags_osc_meter_controller.h>
+#include <ags/audio/osc/controller/ags_osc_node_controller.h>
+#include <ags/audio/osc/controller/ags_osc_plugin_controller.h>
+#include <ags/audio/osc/controller/ags_osc_renew_controller.h>
+#include <ags/audio/osc/controller/ags_osc_status_controller.h>
+
 /* audio core-audio */
 #include <ags/audio/core-audio/ags_core_audio_client.h>
 #include <ags/audio/core-audio/ags_core_audio_devout.h>

@@ -21,7 +21,23 @@
 
 #include <ags/libags.h>
 
+#include <ags/audio/osc/ags_osc_server.h>
+#include <ags/audio/osc/ags_osc_response.h>
+#include <ags/audio/osc/ags_osc_util.h>
+#include <ags/audio/osc/ags_osc_buffer_util.h>
+
+#include <ags/audio/osc/controller/ags_osc_action_controller.h>
+#include <ags/audio/osc/controller/ags_osc_config_controller.h>
+#include <ags/audio/osc/controller/ags_osc_controller.h>
+#include <ags/audio/osc/controller/ags_osc_info_controller.h>
+#include <ags/audio/osc/controller/ags_osc_meter_controller.h>
+#include <ags/audio/osc/controller/ags_osc_node_controller.h>
+#include <ags/audio/osc/controller/ags_osc_plugin_controller.h>
+#include <ags/audio/osc/controller/ags_osc_renew_controller.h>
+#include <ags/audio/osc/controller/ags_osc_status_controller.h>
+
 #include <stdlib.h>
+#include <math.h>
 
 #ifdef __APPLE__
 #include <mach/clock.h>
@@ -403,9 +419,9 @@ ags_osc_front_controller_delegate_thread(void *ptr)
 	current_time.tv_sec = AGS_OSC_FRONT_CONTROLLER_MESSAGE(list->data)->tv_sec;
 	current_time.tv_nsec = AGS_OSC_FRONT_CONTROLLER_MESSAGE(list->data)->tv_fraction / 4.294967296;
       
-	if((time_current.tv_sec < time_now.tv_sec ||
-	   (time_current.tv_sec == time_now.tv_sec &&
-	    time_current.tv_nsec < time_now.tv_nsec))){
+	if((current_time.tv_sec < time_now.tv_sec ||
+	   (current_time.tv_sec == time_now.tv_sec &&
+	    current_time.tv_nsec < time_now.tv_nsec))){
 	  start_message = g_list_prepend(start_message,
 					 list->data);
 	  
@@ -426,6 +442,8 @@ ags_osc_front_controller_delegate_thread(void *ptr)
 
     while(message != NULL){
       AgsOscResponse *osc_response;
+
+      AgsOscFrontControllerMessage *current;
       
       gchar *path;
 
@@ -450,45 +468,47 @@ ags_osc_front_controller_delegate_thread(void *ptr)
 	/* match path */
 	pthread_mutex_lock(mutex);
 	
-	success = !g_strcmp0(AGS_OSC_CONTROLLER(controller->data)->path,
+	success = !g_strcmp0(AGS_OSC_CONTROLLER(controller->data)->context_path,
 			     path);
 
 	pthread_mutex_unlock(mutex);
 	
 	if(success){
+	  current = AGS_OSC_FRONT_CONTROLLER_MESSAGE(message->data);
+	  
 	  /* delegate */
 	  if(AGS_IS_OSC_ACTION_CONTROLLER(controller->data)){
-	    osc_response = ags_osc_plugin_controller_run_action(controller->data,
-								message->osc_connection,
-								message->message, message->message_size);
+	    osc_response = ags_osc_action_controller_run_action(controller->data,
+								current->osc_connection,
+								current->message, current->message_size);
 	  }else if(AGS_IS_OSC_CONFIG_CONTROLLER(controller->data)){
-	    osc_response = ags_osc_plugin_controller_apply_config(controller->data,
-						   message->osc_connection,
-						   message->message, message->message_size);
+	    osc_response = ags_osc_config_controller_apply_config(controller->data,
+								  current->osc_connection,
+								  current->message, current->message_size);
 	  }else if(AGS_IS_OSC_INFO_CONTROLLER(controller->data)){
-	    osc_response = ags_osc_plugin_controller_get_info(controller->data,
-					       message->osc_connection,
-					       message->message, message->message_size);
+	    osc_response = ags_osc_info_controller_get_info(controller->data,
+							    current->osc_connection,
+							    current->message, current->message_size);
 	  }else if(AGS_IS_OSC_METER_CONTROLLER(controller->data)){
-	    osc_response = ags_osc_plugin_controller_monitor_meter(controller->data,
-						    message->osc_connection,
-						    message->message, message->message_size);
+	    osc_response = ags_osc_meter_controller_monitor_meter(controller->data,
+								  current->osc_connection,
+								  current->message, current->message_size);
 	  }else if(AGS_IS_OSC_NODE_CONTROLLER(controller->data)){
-	    osc_response = ags_osc_plugin_controller_get_data(controller->data,
-					       message->osc_connection,
-					       message->message, message->message_size);
+	    osc_response = ags_osc_node_controller_get_data(controller->data,
+							    current->osc_connection,
+							    current->message, current->message_size);
 	  }else if(AGS_IS_OSC_RENEW_CONTROLLER(controller->data)){
-	    osc_response = ags_osc_plugin_controller_set_data(controller->data,
-					       message->osc_connection,
-					       message->message, message->message_size);
+	    osc_response = ags_osc_renew_controller_set_data(controller->data,
+							     current->osc_connection,
+							     current->message, current->message_size);
 	  }else if(AGS_IS_OSC_STATUS_CONTROLLER(controller->data)){
-	    osc_response = ags_osc_plugin_controller_get_status(controller->data,
-						 message->osc_connection,
-						 message->message, message->message_size);
+	    osc_response = ags_osc_status_controller_get_status(controller->data,
+								current->osc_connection,
+								current->message, current->message_size);
 	  }else if(AGS_IS_OSC_PLUGIN_CONTROLLER(controller->data)){
 	    osc_response = ags_osc_plugin_controller_do_request(AGS_OSC_PLUGIN_CONTROLLER(controller->data),
-						 message->osc_connection,
-						 message->message, message->message_size);
+								current->osc_connection,
+								current->message, current->message_size);
 	  }
 	  
 	  break;
@@ -499,7 +519,7 @@ ags_osc_front_controller_delegate_thread(void *ptr)
 
       /* write response */
       if(osc_response != NULL){
-	ags_osc_connection_write_response(message->osc_connection,
+	ags_osc_connection_write_response(current->osc_connection,
 					  osc_response);
 	g_object_unref(osc_response);
       }
@@ -659,14 +679,14 @@ ags_osc_front_controller_message_sort_func(gconstpointer a,
     return(1);
   }
 
-  if(message_a->tv_secs < message_b->tv_secs ||
-     (message_a->tv_secs == message_b->tv_secs &&
+  if(message_a->tv_sec < message_b->tv_sec ||
+     (message_a->tv_sec == message_b->tv_sec &&
       message_a->tv_fraction < message_b->tv_fraction)){
     return(-1);
   }
   
-  if(message_a->tv_secs > message_b->tv_secs ||
-     (message_a->tv_secs == message_b->tv_secs &&
+  if(message_a->tv_sec > message_b->tv_sec ||
+     (message_a->tv_sec == message_b->tv_sec &&
       message_a->tv_fraction > message_b->tv_fraction)){
     return(1);
   }
@@ -692,7 +712,7 @@ ags_osc_front_controller_message_alloc()
 
   message->osc_connection = NULL;
   
-  message->tv_secs = 0;
+  message->tv_sec = 0;
   message->tv_fraction = 0;
   message->immediately = FALSE;
 
@@ -894,6 +914,9 @@ ags_osc_front_controller_real_do_request(AgsOscFrontController *osc_front_contro
 					 AgsOscConnection *osc_connection,
 					 unsigned char *packet, guint packet_size)
 {
+  gint32 tv_sec;
+  gint32 tv_fraction;
+  gboolean immediately;
   guint offset;
 
   auto guint ags_osc_front_controller_do_request_read_bundle(AgsOscFrontController *osc_front_controller,
@@ -904,14 +927,14 @@ ags_osc_front_controller_real_do_request(AgsOscFrontController *osc_front_contro
 							      AgsOscConnection *osc_connection,
 							      unsigned char *packet, guint packet_size,
 							      guint offset,
-							      gint32 tv_secs, gint32 tv_fraction, gboolean immediately);
+							      gint32 tv_sec, gint32 tv_fraction, gboolean immediately);
 
   guint ags_osc_front_controller_do_request_read_bundle(AgsOscFrontController *osc_front_controller,
 							AgsOscConnection *osc_connection,
 							unsigned char *packet, guint packet_size,
 							guint offset)
   {
-    gint32 tv_secs;
+    gint32 tv_sec;
     gint32 tv_fraction;
     gboolean immediately;
     guint read_count;
@@ -920,7 +943,7 @@ ags_osc_front_controller_real_do_request(AgsOscFrontController *osc_front_contro
     read_count = 8;
     
     ags_osc_buffer_util_get_timetag(packet + offset + read_count,
-				    &(tv_secs), &(tv_fraction), &(immediately));
+				    &(tv_sec), &(tv_fraction), &(immediately));
     read_count += 8;
 
     for(; offset < packet_size;){
@@ -940,7 +963,7 @@ ags_osc_front_controller_real_do_request(AgsOscFrontController *osc_front_contro
 							 osc_connection,
 							 packet, packet_size,
 							 offset + read_count,
-							 tv_secs, tv_fraction, immediately);
+							 tv_sec, tv_fraction, immediately);
 
 	read_count += length;
       }else{
@@ -957,7 +980,7 @@ ags_osc_front_controller_real_do_request(AgsOscFrontController *osc_front_contro
 							 AgsOscConnection *osc_connection,
 							 unsigned char *packet, guint packet_size,
 							 guint offset,
-							 gint32 tv_secs, gint32 tv_fraction, gboolean immediately)
+							 gint32 tv_sec, gint32 tv_fraction, gboolean immediately)
   {
     AgsOscFrontControllerMessage *message;
 
@@ -1016,7 +1039,7 @@ ags_osc_front_controller_real_do_request(AgsOscFrontController *osc_front_contro
 	{
 	  guint length;
 
-	  str_length = strlen(packet + offset + read_count + data_length);
+	  length = strlen(packet + offset + read_count + data_length);
 
 	  data_length += (4 * (guint) ceil((double) (length + 1) / 4.0));
 	}
@@ -1025,7 +1048,7 @@ ags_osc_front_controller_real_do_request(AgsOscFrontController *osc_front_contro
 	{
 	  gint32 data_size;
 
-	  ags_osc_buffer_util_get_int32(buffer + offset + read_count + data_length,
+	  ags_osc_buffer_util_get_int32(packet + offset + read_count + data_length,
 					&data_size);
 
 	  data_length += data_size;
@@ -1056,10 +1079,8 @@ ags_osc_front_controller_real_do_request(AgsOscFrontController *osc_front_contro
     
     return(read_count);
   }
-  
-  current = NULL;
-  
-  tv_secs = 0;
+    
+  tv_sec = 0;
   tv_fraction = 0;
   immediately = TRUE;
   
@@ -1071,7 +1092,7 @@ ags_osc_front_controller_real_do_request(AgsOscFrontController *osc_front_contro
 								   osc_connection,
 								   packet, packet_size,
 								   offset);
-    }else if(packet + offset == '/'){
+    }else if(packet[offset] == '/'){
       read_count = ags_osc_front_controller_do_request_read_message(osc_front_controller,
 								    osc_connection,
 								    packet, packet_size,

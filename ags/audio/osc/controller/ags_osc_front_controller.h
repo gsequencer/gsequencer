@@ -78,7 +78,7 @@ struct _AgsOscFrontControllerMessage
 {
   AgsOscConnection *osc_connection;
   
-  gint32 tv_secs;
+  gint32 tv_sec;
   gint32 tv_fraction;
   gboolean immediately;
 
