@@ -131,9 +131,9 @@ AgsDevin AgsConnectable AgsSoundcard
 AgsDevout AgsConnectable AgsSoundcard
 AgsFifoout AgsConnectable AgsSoundcard
 AgsIpatchDLS2Reader AgsConnectable
-AgsIpatch AgsSoundContainer
+AgsIpatch AgsConnectable AgsSoundContainer
 AgsIpatchGigReader AgsConnectable
-AgsIpatchSample AgsSoundResource
+AgsIpatchSample AgsConnectable AgsSoundResource
 AgsIpatchSF2Reader AgsConnectable
 AgsJackClient AgsConnectable
 AgsJackDevin AgsConnectable AgsSoundcard
@@ -154,4 +154,4 @@ AgsPulseServer AgsConnectable AgsSoundServer
 AgsRecallContainer AgsConnectable
 AgsRecallFactory AgsConnectable
 AgsRecycling AgsConnectable
-AgsSndfile AgsSoundResource
+AgsSndfile AgsConnectable AgsSoundResource

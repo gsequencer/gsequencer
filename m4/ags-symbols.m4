@@ -21,29 +21,29 @@
 AC_DEFUN([LIBAGS_SYMBOLS],
 [
   AC_MSG_NOTICE([generating libags.sym])
-  `tail -n +17 libags.sym.in > libags.sym`
+  `tail -n +17 $srcdir/libags.sym.in > $PWD/libags.sym`
 ])
 
 AC_DEFUN([LIBAGS_THREAD_SYMBOLS],
 [
   AC_MSG_NOTICE([generating libags_thread.sym])
-  `tail -n +17 libags_thread.sym.in > libags_thread.sym`
+  `tail -n +17 $srcdir/libags_thread.sym.in > $PWD/libags_thread.sym`
 ])
 
 AC_DEFUN([LIBAGS_SERVER_SYMBOLS],
 [
   AC_MSG_NOTICE([generating libags_server.sym])
-  `tail -n +17 libags_server.sym.in > libags_server.sym`
+  `tail -n +17 $srcdir/libags_server.sym.in > $PWD/libags_server.sym`
 ])
 
 AC_DEFUN([LIBAGS_AUDIO_SYMBOLS],
 [
   AC_MSG_NOTICE([generating libags_audio.sym])
-  `tail -n +17 libags_audio.sym.in > libags_audio.sym`
+  `tail -n +17 $srcdir/libags_audio.sym.in > $PWD/libags_audio.sym`
 ])
 
 AC_DEFUN([LIBAGS_GUI_SYMBOLS],
 [
   AC_MSG_NOTICE([generating libags_gui.sym])
-  `tail -n +17 libags_gui.sym.in > libags_gui.sym`
+  `tail -n +17 $srcdir/libags_gui.sym.in > $PWD/libags_gui.sym`
 ])

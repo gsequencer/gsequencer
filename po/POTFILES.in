@@ -343,6 +343,7 @@
 ./ags/audio/osc/controller/ags_osc_info_controller.c
 ./ags/audio/osc/controller/ags_osc_meter_controller.c
 ./ags/audio/osc/controller/ags_osc_node_controller.c
+./ags/audio/osc/controller/ags_osc_plugin_controller.c
 ./ags/audio/osc/controller/ags_osc_renew_controller.c
 ./ags/audio/osc/controller/ags_osc_status_controller.c
 ./ags/audio/pulse/ags_pulse_client.c
@@ -480,6 +481,8 @@
 ./ags/audio/task/ags_start_channel.c
 ./ags/audio/task/ags_start_sequencer.c
 ./ags/audio/task/ags_start_soundcard.c
+./ags/audio/task/ags_stop_sequencer.c
+./ags/audio/task/ags_stop_soundcard.c
 ./ags/audio/task/ags_switch_buffer_flag.c
 ./ags/audio/task/ags_tic_device.c
 ./ags/audio/task/ags_toggle_pattern_bit.c

@@ -1164,8 +1164,10 @@ ags_core_audio_client_deactivate(AgsCoreAudioClient *core_audio_client)
     return;
   }
 
+#ifdef AGS_WITH_CORE_AUDIO
   AUGraphStop(graph);
-    
+#endif
+  
   /* set graph */
   pthread_mutex_lock(core_audio_client_mutex);
 

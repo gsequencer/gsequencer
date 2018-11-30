@@ -5189,9 +5189,9 @@ am__DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/libags.pc.in \
 	$(top_srcdir)/ags/ags_config.h.in \
 	$(top_srcdir)/ags/config.h.in \
 	$(top_srcdir)/functional-tests.mk $(top_srcdir)/unit-tests.mk \
-	AUTHORS COPYING ChangeLog INSTALL NEWS README TODO compile \
-	config.guess config.rpath config.sub depcomp install-sh \
-	ltmain.sh missing mkinstalldirs test-driver
+	ABOUT-NLS AUTHORS COPYING ChangeLog INSTALL NEWS README TODO \
+	compile config.guess config.rpath config.sub depcomp \
+	install-sh ltmain.sh missing mkinstalldirs test-driver
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 distdir = $(PACKAGE)-$(VERSION)
 top_distdir = $(distdir)
@@ -5490,8 +5490,10 @@ EXTRA_DIST = config.rpath COPYING.server COPYING.docs COPYING.stk-4.3 \
 	license-notice-gnu-gpl-3-0+-c.txt \
 	license-notice-gnu-gpl-3-0+-sym.txt \
 	license-notice-gnu-agpl-3-0+-sym.txt \
-	license-notice-permissive-xml.txt \
-	functional-system-tests.mk.am functional-system-tests.mk.in \
+	license-notice-permissive-xml.txt libags.sym.in \
+	libags_thread.sym.in libags_server.sym.in libags_audio.sym.in \
+	libags_gui.sym.in functional-system-tests.mk.am \
+	functional-system-tests.mk.in \
 	docs/reference/libags/libags-sections.txt \
 	docs/reference/libags/libags.types \
 	docs/reference/libags/libags.interfaces \
@@ -5710,27 +5712,27 @@ libgsequencer_la_SOURCES = $(libgsequencer_la_HEADERS_0) $(libgsequencer_c_sourc
 
 # library libags
 libags_la_CFLAGS = $(CFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ -I/usr/include $(UUID_CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(GIO_CFLAGS)
-libags_la_LDFLAGS = $(LDFLAGS) -export-symbols $(top_srcdir)/libags.sym -version-info 2:0:0 -shared -fPIC -Wl,-soname,libags.so -pthread
+libags_la_LDFLAGS = $(LDFLAGS) -export-symbols libags.sym -version-info 2:0:0 -shared -fPIC -Wl,-soname,libags.so -pthread
 libags_la_LIBADD = -ldl -lm $(UUID_LIBS) $(LIBXML2_LIBS) $(GOBJECT_LIBS) $(GIO_LIBS)
 
 # library libags-thread
 libags_thread_la_CFLAGS = $(CFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ -I/usr/include $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS)
-libags_thread_la_LDFLAGS = $(LDFLAGS) -export-symbols $(top_srcdir)/libags_thread.sym -version-info 2:0:0 -shared -fPIC -Wl,-soname,libags_thread.so -pthread
+libags_thread_la_LDFLAGS = $(LDFLAGS) -export-symbols libags_thread.sym -version-info 2:0:0 -shared -fPIC -Wl,-soname,libags_thread.so -pthread
 libags_thread_la_LIBADD = libags.la -ldl -lm $(LIBXML2_LIBS) $(GOBJECT_LIBS)
 
 # library libags-server
 libags_server_la_CFLAGS = $(CFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ -I/usr/include $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS)
-libags_server_la_LDFLAGS = $(LDFLAGS) -export-symbols $(top_srcdir)/libags_server.sym -version-info 2:0:0 -shared -fPIC -Wl,-soname,libags_server.so -pthread
+libags_server_la_LDFLAGS = $(LDFLAGS) -export-symbols libags_server.sym -version-info 2:0:0 -shared -fPIC -Wl,-soname,libags_server.so -pthread
 libags_server_la_LIBADD = libags_thread.la libags.la -ldl -lm -lcrypt $(LIBXML2_LIBS) $(GOBJECT_LIBS)
 
 # library libags-audio
 libags_audio_la_CFLAGS = $(CFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ -I/usr/include $(CORE_AUDIO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SAMPLERATE_CFLAGS) $(SNDFILE_CFLAGS) $(FFTW_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS) $(PULSE_CFLAGS)
-libags_audio_la_LDFLAGS = $(LDFLAGS) -export-symbols $(top_srcdir)/libags_audio.sym -version-info 2:0:0 -shared -fPIC -soname,libags_audio.so -pthread 
+libags_audio_la_LDFLAGS = $(LDFLAGS) -export-symbols libags_audio.sym -version-info 2:0:0 -shared -fPIC -soname,libags_audio.so -pthread 
 libags_audio_la_LIBADD = libags_server.la libags_thread.la libags.la -ldl -lm $(CORE_AUDIO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SAMPLERATE_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(FFTW_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS) $(PULSE_LIBS)
 
 # library libags-gui
 libags_gui_la_CFLAGS = $(CFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ -I/usr/include $(GOBJECT_CFLAGS) $(GDKPIXBUF_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS)
-libags_gui_la_LDFLAGS = $(LDFLAGS) -export-symbols $(top_srcdir)/libags_gui.sym -version-info 2:0:0 -shared -fPIC -Wl,-soname,libags_gui.so -pthread
+libags_gui_la_LDFLAGS = $(LDFLAGS) -export-symbols libags_gui.sym -version-info 2:0:0 -shared -fPIC -Wl,-soname,libags_gui.so -pthread
 libags_gui_la_LIBADD = -ldl -lm $(GOBJECT_LIBS) $(GDKPIXBUF_LIBS) $(CAIRO_LIBS) $(GTK_LIBS)
 
 # library libgsequencer

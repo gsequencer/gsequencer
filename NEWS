@@ -1,3 +1,13 @@
+Overview of Changes in AGS 2.1.0
+================================
+
+* Implemented OSC server with different server paths. It has a front
+  controller passing the requests to the matching context path of a
+  controller.
+* There is a new OSC buffer util and util file. Further you may use the
+  AgsOscBuilder or AgsOscParser to interact with the OSC content format.
+* Configuration in place is pack with AgsApplySoundConfig task.
+
 Overview of Changes in AGS 2.0.0
 ================================
 

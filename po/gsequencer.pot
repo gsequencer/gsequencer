@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gsequencer 2.1.0\n"
 "Report-Msgid-Bugs-To: jkraehemann@gmail.com\n"
-"POT-Creation-Date: 2018-11-24 22:08+0100\n"
+"POT-Creation-Date: 2018-11-30 17:58+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,31 +17,27 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ags/X/ags_audio_preferences.c:192
+#: ags/X/ags_audio_preferences.c:191
 msgid "JACK driver"
 msgstr ""
 
-#: ags/X/ags_audio_preferences.c:208
+#: ags/X/ags_audio_preferences.c:207
 msgid "JACK server"
 msgstr ""
 
-#: ags/X/ags_audio_preferences.c:224
+#: ags/X/ags_audio_preferences.c:223
 msgid "start"
 msgstr ""
 
-#: ags/X/ags_audio_preferences.c:230
+#: ags/X/ags_audio_preferences.c:229
 msgid "stop"
-msgstr ""
-
-#: ags/X/ags_audio_preferences_callbacks.c:45
-msgid "connect sink"
 msgstr ""
 
 #: ags/X/ags_automation_editor.c:243
 msgid "automation"
 msgstr ""
 
-#: ags/X/ags_automation_editor.c:275 ags/X/ags_preferences.c:176
+#: ags/X/ags_automation_editor.c:275 ags/X/ags_preferences.c:177
 msgid "audio"
 msgstr ""
 
@@ -473,23 +469,23 @@ msgstr ""
 msgid "Plugin type:"
 msgstr ""
 
-#: ags/X/ags_preferences.c:157
+#: ags/X/ags_preferences.c:158
 msgid "preferences"
 msgstr ""
 
-#: ags/X/ags_preferences.c:171
+#: ags/X/ags_preferences.c:172
 msgid "generic"
 msgstr ""
 
-#: ags/X/ags_preferences.c:181
+#: ags/X/ags_preferences.c:182
 msgid "midi"
 msgstr ""
 
-#: ags/X/ags_preferences.c:186
+#: ags/X/ags_preferences.c:187
 msgid "performance"
 msgstr ""
 
-#: ags/X/ags_preferences.c:201
+#: ags/X/ags_preferences.c:202
 msgid "server"
 msgstr ""
 
@@ -555,21 +551,25 @@ msgstr ""
 msgid "wave"
 msgstr ""
 
-#: ags/X/ags_xorg_application_context.c:1541
+#: ags/X/ags_xorg_application_context.c:1809
+#: ags/audio/task/ags_apply_sound_config.c:806
 #, c-format
 msgid "unknown soundcard backend - %s"
 msgstr ""
 
-#: ags/X/ags_xorg_application_context.c:1551
+#: ags/X/ags_xorg_application_context.c:1819
+#: ags/audio/task/ags_apply_sound_config.c:816
 msgid "unknown soundcard backend - NULL"
 msgstr ""
 
-#: ags/X/ags_xorg_application_context.c:1699
+#: ags/X/ags_xorg_application_context.c:1967
+#: ags/audio/task/ags_apply_sound_config.c:963
 #, c-format
 msgid "unknown sequencer backend - %s"
 msgstr ""
 
-#: ags/X/ags_xorg_application_context.c:1709
+#: ags/X/ags_xorg_application_context.c:1977
+#: ags/audio/task/ags_apply_sound_config.c:973
 msgid "unknown sequencer backend - NULL"
 msgstr ""
 
