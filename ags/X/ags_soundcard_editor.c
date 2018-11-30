@@ -1428,12 +1428,12 @@ ags_soundcard_editor_remove_port(AgsSoundcardEditor *soundcard_editor,
   }
 #endif
 
-  /* notify user about restarting GSequencer */
+  /* notify user about safe GSequencer */
   dialog = gtk_message_dialog_new(preferences,
 				  GTK_DIALOG_MODAL,
 				  GTK_MESSAGE_INFO,
 				  GTK_BUTTONS_OK,
-				  "After finished your modifications you should safe your file and restart GSequencer");
+				  "After finished your modifications you should safe your file");
   g_signal_connect(dialog, "response",
 		   G_CALLBACK(gtk_widget_destroy), NULL);
   gtk_widget_show_all(dialog);
@@ -1660,12 +1660,12 @@ ags_soundcard_editor_remove_soundcard(AgsSoundcardEditor *soundcard_editor,
   }
 #endif
 
-  /* notify user about restarting GSequencer */
+  /* notify user about safe GSequencer */
   dialog = gtk_message_dialog_new(preferences,
 				  GTK_DIALOG_MODAL,
 				  GTK_MESSAGE_INFO,
 				  GTK_BUTTONS_OK,
-				  "After finished your modifications you should safe your file and restart GSequencer");
+				  "After finished your modifications you should safe your file");
   g_signal_connect(dialog, "response",
 		   G_CALLBACK(gtk_widget_destroy), NULL);
   gtk_widget_show_all(dialog);

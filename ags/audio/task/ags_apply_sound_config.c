@@ -545,8 +545,7 @@ ags_apply_sound_config_launch(AgsTask *task)
 #ifdef AGS_WITH_JACK      
       jack_client_close(AGS_JACK_CLIENT(list->data)->client);
 
-      ags_jack_client_unset_flags(list->data,
-				  (AGS_JACK_CLIENT_ACTIVATED));
+      ags_jack_client_deactivate(list->data);
 #endif
 
       list = list->next;
@@ -564,9 +563,7 @@ ags_apply_sound_config_launch(AgsTask *task)
 		 "default-pulse-client", &pulse_client,
 		 NULL);
     
-    ags_pulse_client_unset_flags(pulse_client,
-				 (AGS_PULSE_CLIENT_ACTIVATED |
-				  AGS_PULSE_CLIENT_READY));
+    ags_pulse_client_deactivate(pulse_client);
 #endif
   }
   
@@ -577,6 +574,8 @@ ags_apply_sound_config_launch(AgsTask *task)
 #ifdef AGS_WITH_CORE_AUDIO
       AUGraphStop(AGS_CORE_AUDIO_CLIENT(list->data)->graph);
 #endif
+      
+      ags_core_audio_client_deactivate(list->data);
 
       list = list->next;
     }
@@ -1113,16 +1112,25 @@ ags_apply_sound_config_launch(AgsTask *task)
 
   /* launch */
   if(has_core_audio){
+    ags_core_audio_client_open((AgsCoreAudioClient *) core_audio_server->default_client,
+			       "ags-default-client");
+
     ags_core_audio_server_connect_client(core_audio_server);
   }
 
   if(has_pulse){
+    ags_pulse_client_open((AgsPulseClient *) pulse_server->default_client,
+			  "ags-default-client");
+
     ags_pulse_server_connect_client(pulse_server);
 
     ags_pulse_server_start_poll(pulse_server);
   }
 
   if(has_jack){
+    ags_jack_client_open((AgsJackClient *) jack_server->default_client,
+			 "ags-default-client");
+
     ags_jack_server_connect_client(jack_server);
   }
 

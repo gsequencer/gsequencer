@@ -1262,7 +1262,8 @@ ags_pulse_client_deactivate(AgsPulseClient *pulse_client)
   pa_context_disconnect(context);
 #endif
   
-  ags_pulse_client_unset_flags(pulse_client, AGS_PULSE_CLIENT_ACTIVATED);
+  ags_pulse_client_unset_flags(pulse_client, (AGS_PULSE_CLIENT_ACTIVATED |
+					      AGS_PULSE_CLIENT_READY));
 }
 
 /**

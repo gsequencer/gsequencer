@@ -729,12 +729,12 @@ ags_sequencer_editor_remove_source(AgsSequencerEditor *sequencer_editor,
   }
 #endif
   
-  /* notify user about restarting GSequencer */
+  /* notify user about safe GSequencer */
   dialog = gtk_message_dialog_new(preferences,
 				  GTK_DIALOG_MODAL,
 				  GTK_MESSAGE_INFO,
 				  GTK_BUTTONS_OK,
-				  "After finished your modifications you should safe your file and restart GSequencer");
+				  "After finished your modifications you should safe your file");
   g_signal_connect(dialog, "response",
 		   G_CALLBACK(gtk_widget_destroy), NULL);
   gtk_widget_show_all(dialog);
@@ -859,12 +859,12 @@ ags_sequencer_editor_remove_sequencer(AgsSequencerEditor *sequencer_editor,
   }
 #endif
   
-  /* notify user about restarting GSequencer */
+  /* notify user about safe GSequencer */
   dialog = gtk_message_dialog_new(preferences,
 				  GTK_DIALOG_MODAL,
 				  GTK_MESSAGE_INFO,
 				  GTK_BUTTONS_OK,
-				  "After finished your modifications you should safe your file and restart GSequencer");
+				  "After finished your modifications you should safe your file");
   g_signal_connect(dialog, "response",
 		   G_CALLBACK(gtk_widget_destroy), NULL);
   gtk_widget_show_all(dialog);
