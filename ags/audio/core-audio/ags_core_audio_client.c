@@ -1163,7 +1163,16 @@ ags_core_audio_client_deactivate(AgsCoreAudioClient *core_audio_client)
   if(graph == NULL){
     return;
   }
+
+  AUGraphStop(graph);
     
+  /* set graph */
+  pthread_mutex_lock(core_audio_client_mutex);
+
+  core_audio_client->graph = NULL;
+  
+  pthread_mutex_unlock(core_audio_client_mutex);
+
   ags_core_audio_client_unset_flags(core_audio_client, AGS_CORE_AUDIO_CLIENT_ACTIVATED);
 }
 

@@ -555,15 +555,15 @@ ags_apply_sound_config_launch(AgsTask *task)
   if(pulse_server != NULL){
 #ifdef AGS_WITH_PULSE
     AgsPulseClient *pulse_client;
-    
-    pa_mainloop_quit(pulse_server->main_loop,
-		     0);
 
     g_object_get(pulse_server,
 		 "default-pulse-client", &pulse_client,
 		 NULL);
     
     ags_pulse_client_deactivate(pulse_client);
+    
+    pa_mainloop_quit(pulse_server->main_loop,
+		     0);
 #endif
   }
   
@@ -571,10 +571,6 @@ ags_apply_sound_config_launch(AgsTask *task)
     list = core_audio_server->client;
 
     while(list != NULL){
-#ifdef AGS_WITH_CORE_AUDIO
-      AUGraphStop(AGS_CORE_AUDIO_CLIENT(list->data)->graph);
-#endif
-      
       ags_core_audio_client_deactivate(list->data);
 
       list = list->next;

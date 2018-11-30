@@ -1224,9 +1224,16 @@ ags_jack_client_deactivate(AgsJackClient *jack_client)
   
 #ifdef AGS_WITH_JACK
   jack_deactivate(client);
+#endif
+
+  /* set client */
+  pthread_mutex_lock(jack_client_mutex);
+
+  jack_client->client = NULL;
+
+  pthread_mutex_unlock(jack_client_mutex);
 
   ags_jack_client_unset_flags(jack_client, AGS_JACK_CLIENT_ACTIVATED);
-#endif
 }
 
 /**

@@ -1261,6 +1261,13 @@ ags_pulse_client_deactivate(AgsPulseClient *pulse_client)
 #ifdef AGS_WITH_PULSE
   pa_context_disconnect(context);
 #endif
+
+  /* set context */
+  pthread_mutex_lock(pulse_client_mutex);
+
+  pulse_client->context = NULL;
+  
+  pthread_mutex_unlock(pulse_client_mutex);
   
   ags_pulse_client_unset_flags(pulse_client, (AGS_PULSE_CLIENT_ACTIVATED |
 					      AGS_PULSE_CLIENT_READY));
