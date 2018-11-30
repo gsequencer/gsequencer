@@ -1523,7 +1523,7 @@ ags_jack_server_unregister_soundcard(AgsSoundServer *sound_server,
   
   /* the default client */
   g_object_get(jack_server,
-	       "default-client", &default_client,
+	       "default-jack-client", &default_client,
 	       NULL);
 
   if(default_client == NULL){
@@ -1736,7 +1736,7 @@ ags_jack_server_unregister_sequencer(AgsSoundServer *sound_server,
   
   /* the default client */
   g_object_get(jack_server,
-	       "default-client", &default_client,
+	       "default-jack-client", &default_client,
 	       NULL);
 
   if(default_client == NULL){
@@ -1839,7 +1839,7 @@ ags_jack_server_register_default_soundcard(AgsJackServer *jack_server)
   
   /* the default client */
   g_object_get(jack_server,
-	       "default-client", &default_client,
+	       "default-jack-client", &default_client,
 	       NULL);
 
   /* the default client */

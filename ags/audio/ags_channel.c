@@ -6772,11 +6772,9 @@ ags_channel_set_output_soundcard(AgsChannel *channel,
   list = channel->play;
   
   while(list != NULL){
-    if(AGS_RECALL(list->data)->output_soundcard == old_soundcard){
-      g_object_set(G_OBJECT(list->data),
-		   "output-soundcard", soundcard,
-		   NULL);
-    }
+    g_object_set(G_OBJECT(list->data),
+		 "output-soundcard", soundcard,
+		 NULL);
     
     list = list->next;
   }
@@ -6796,11 +6794,9 @@ ags_channel_set_output_soundcard(AgsChannel *channel,
   list = channel->recall;
   
   while(list != NULL){
-    if(AGS_RECALL(list->data)->output_soundcard == old_soundcard){
-      g_object_set(G_OBJECT(list->data),
-		   "output-soundcard", soundcard,
-		   NULL);
-    }
+    g_object_set(G_OBJECT(list->data),
+		 "output-soundcard", soundcard,
+		 NULL);
     
     list = list->next;
   } 
@@ -6908,11 +6904,9 @@ ags_channel_set_input_soundcard(AgsChannel *channel,
   list = channel->play;
   
   while(list != NULL){
-    if(AGS_RECALL(list->data)->input_soundcard == old_soundcard){
-      g_object_set(G_OBJECT(list->data),
-		   "input-soundcard", soundcard,
-		   NULL);
-    }
+    g_object_set(G_OBJECT(list->data),
+		 "input-soundcard", soundcard,
+		 NULL);
     
     list = list->next;
   }
@@ -6932,11 +6926,9 @@ ags_channel_set_input_soundcard(AgsChannel *channel,
   list = channel->recall;
   
   while(list != NULL){
-    if(AGS_RECALL(list->data)->input_soundcard == old_soundcard){
-      g_object_set(G_OBJECT(list->data),
-		   "input-soundcard", soundcard,
-		   NULL);
-    }
+    g_object_set(G_OBJECT(list->data),
+		 "input-soundcard", soundcard,
+		 NULL);
     
     list = list->next;
   } 

@@ -1482,7 +1482,7 @@ ags_core_audio_server_unregister_soundcard(AgsSoundServer *sound_server,
   
   /* the default client */
   g_object_get(core_audio_server,
-	       "default-client", &default_client,
+	       "default-core-audio-client", &default_client,
 	       NULL);
 
   if(default_client == NULL){
@@ -1701,7 +1701,7 @@ ags_core_audio_server_unregister_sequencer(AgsSoundServer *sound_server,
   
   /* the default client */
   g_object_get(core_audio_server,
-	       "default-client", &default_client,
+	       "default-core-audio-client", &default_client,
 	       NULL);
 
   if(default_client == NULL){
@@ -1803,7 +1803,7 @@ ags_core_audio_server_register_default_soundcard(AgsCoreAudioServer *core_audio_
   
   /* the default client */
   g_object_get(core_audio_server,
-	       "default-client", &default_client,
+	       "default-core-audio-client", &default_client,
 	       NULL);
 
   /* the default client */

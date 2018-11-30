@@ -76,8 +76,8 @@ ags_sound_provider_set_default_soundcard(AgsSoundProvider *sound_provider,
   sound_provider_interface = AGS_SOUND_PROVIDER_GET_INTERFACE(sound_provider);
   g_return_if_fail(sound_provider_interface->set_default_soundcard);
 
-  sound_provider_interface->set_default_soundcard_thread(sound_provider,
-							 soundcard);
+  sound_provider_interface->set_default_soundcard(sound_provider,
+						  soundcard);
 }
 
 /**

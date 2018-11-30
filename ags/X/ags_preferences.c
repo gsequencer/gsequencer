@@ -21,6 +21,7 @@
 #include <ags/X/ags_preferences_callbacks.h>
 
 #include <ags/libags.h>
+#include <ags/libags-audio.h>
 
 #include <ags/X/ags_window.h>
 
@@ -266,6 +267,11 @@ ags_preferences_apply(AgsApplicable *applicable)
   AgsPreferences *preferences;
   GtkDialog *dialog;
 
+  AgsApplySoundConfig *apply_sound_config;
+  
+  AgsThread *task_thread;
+  
+  AgsApplicationContext *application_context;
   AgsConfig *config;
 
   gchar *filename;
@@ -277,6 +283,10 @@ ags_preferences_apply(AgsApplicable *applicable)
   GError *error;
 
   preferences = AGS_PREFERENCES(applicable);
+  
+  application_context = ags_application_context_get_instance();
+
+  task_thread = ags_concurrency_provider_get_task_thread(AGS_CONCURRENCY_PROVIDER(application_context));
   
   config = ags_config_get_instance();
 
@@ -293,15 +303,10 @@ ags_preferences_apply(AgsApplicable *applicable)
   
   ags_config_save(config);
 
-  /* notify user about restarting GSequencer */
-  dialog = gtk_message_dialog_new(preferences->window,
-				  GTK_DIALOG_MODAL,
-				  GTK_MESSAGE_INFO,
-				  GTK_BUTTONS_OK,
-				  "You should safe your file and restart GSequencer");
-  g_signal_connect(dialog, "response",
-		   G_CALLBACK(gtk_widget_destroy), NULL);
-  gtk_widget_show_all(dialog);
+  apply_sound_config = ags_apply_sound_config_new(application_context,
+						  NULL);
+  ags_task_thread_append_task(task_thread,
+			      apply_sound_config);
 }
 
 void

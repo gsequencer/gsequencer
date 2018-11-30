@@ -1488,7 +1488,7 @@ ags_pulse_server_unregister_soundcard(AgsSoundServer *sound_server,
   
   /* the default client */
   g_object_get(pulse_server,
-	       "default-client", &default_client,
+	       "default-pulse-client", &default_client,
 	       NULL);
 
   if(default_client == NULL){
@@ -1620,7 +1620,7 @@ ags_pulse_server_register_default_soundcard(AgsPulseServer *pulse_server)
   
   /* the default client */
   g_object_get(pulse_server,
-	       "default-client", &default_client,
+	       "default-pulse-client", &default_client,
 	       NULL);
   
   /* the default client */
