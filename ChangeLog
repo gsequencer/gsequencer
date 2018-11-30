@@ -1,3 +1,8 @@
+ags (2.1.1)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed missing symbol
+
 ags (2.1.0)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
@@ -14,8 +19,6 @@ ags (2.1.0)
 	* implemented ags_osc_server.c
 	* implemented ags_osc_connection.c
 	* implemented ags_osc_response.c
-	* FIXME:JK: memory leaks
-	* FIXME:JK: implement ranges and wildcards
 	* implemented ags_osc_front_controller.c
 	* implemented ags_osc_info_controller.c
 	* implemented ags_osc_status_controller.c
@@ -24,8 +27,6 @@ ags (2.1.0)
 	* implemented ags_osc_meter_controller.c
 	* implemented ags_osc_node_controller.c
 	* implemented ags_osc_renew_controller.c
-	* TODO:JK: implemented AgsFileUploadController
-	* TODO:JK: improved AgsServer
 	* fixed ags_front_controller_do_request() prototype declaration
 	* fixed ags_local_factory_controller_create_instance() prototype declaration
 
