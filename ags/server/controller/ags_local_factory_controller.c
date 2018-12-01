@@ -1,4 +1,4 @@
-/* GSequencer - Advanced GTK Sequencer
+</* GSequencer - Advanced GTK Sequencer
  * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
@@ -177,6 +177,9 @@ ags_local_factory_controller_real_create_instance(AgsLocalFactoryController *loc
   application_context = server->application_context;
 
   registry = ags_service_provider_get_registry(AGS_SERVICE_PROVIDER(application_context));
+  
+  response = NULL;
+  
 #if 0
   /* instantiate object */
   gobject = g_object_newv(gtype,

@@ -1106,6 +1106,8 @@ ags_osc_front_controller_real_do_request(AgsOscFrontController *osc_front_contro
 
     offset += read_count;
   }
+
+  return(NULL);
 }
 
 /**
@@ -1117,7 +1119,7 @@ ags_osc_front_controller_real_do_request(AgsOscFrontController *osc_front_contro
  * 
  * Do request.
  * 
- * Returns: the #AgsOscResponse
+ * Returns: %NULL
  * 
  * Since: 2.1.0
  */

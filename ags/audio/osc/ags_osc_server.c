@@ -23,6 +23,7 @@
 
 #include <ags/audio/osc/ags_osc_connection.h>
 #include <ags/audio/osc/ags_osc_response.h>
+#include <ags/audio/osc/ags_osc_util.h>
 
 #include <ags/audio/osc/controller/ags_osc_controller.h>
 #include <ags/audio/osc/controller/ags_osc_front_controller.h>
@@ -1191,13 +1192,14 @@ ags_osc_server_real_listen(AgsOscServer *osc_server)
     fcntl(osc_server->ip6_fd, F_SETFL, flags | O_NONBLOCK);
   }
 
-
   created_connection = FALSE;
     
   if(osc_server->ip4_fd != -1){
     int connection_fd;
+    socklen_t address_length;
 
-    connection_fd = accept(osc_server->ip4_fd, osc_server->ip4_address, sizeof(struct sockaddr_in));
+    address_length = sizeof(struct sockaddr_in);
+    connection_fd = accept(osc_server->ip4_fd, osc_server->ip4_address, &address_length);
 
     if(connection_fd >= 0){
       AgsOscConnection *osc_connection;
@@ -1224,8 +1226,10 @@ ags_osc_server_real_listen(AgsOscServer *osc_server)
     
   if(osc_server->ip6_fd != -1){
     int connection_fd;
+    socklen_t address_length;
 
-    connection_fd = accept(osc_server->ip6_fd, osc_server->ip6_address, sizeof(struct sockaddr_in6));
+    address_length = sizeof(struct sockaddr_in);
+    connection_fd = accept(osc_server->ip6_fd, osc_server->ip6_address, &address_length);
 
     if(connection_fd >= 0){
       AgsOscConnection *osc_connection;

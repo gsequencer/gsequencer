@@ -184,7 +184,7 @@ ags_set_device_set_property(GObject *gobject,
     break;
   case PROP_DEVICE:
     {
-      set_device->device = g_value_get_uint(value);
+      set_device->device = g_value_get_string(value);
     }
     break;
   default:
@@ -211,7 +211,7 @@ ags_set_device_get_property(GObject *gobject,
     break;
   case PROP_DEVICE:
     {
-      g_value_set_uint(value, set_device->device);
+      g_value_set_string(value, set_device->device);
     }
     break;
   default:

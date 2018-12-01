@@ -833,7 +833,7 @@ ags_osc_connection_real_read_bytes(AgsOscConnection *osc_connection,
       
       osc_connection->data_start = 0;
 
-      return;
+      return(NULL);
     }
     
     /* read size */
@@ -907,7 +907,7 @@ guchar*
 ags_osc_connection_read_bytes(AgsOscConnection *osc_connection,
 			      guint *data_length)
 {
-  gboolean success;
+  guchar *buffer;
   
   g_return_val_if_fail(AGS_IS_OSC_CONNECTION(osc_connection), FALSE);
   
@@ -915,10 +915,10 @@ ags_osc_connection_read_bytes(AgsOscConnection *osc_connection,
   g_signal_emit(G_OBJECT(osc_connection),
 		osc_connection_signals[READ_BYTES], 0,
 		data_length,
-		&success);
+		&buffer);
   g_object_unref((GObject *) osc_connection);
 
-  return(success);
+  return(buffer);
 }
 
 gint64
