@@ -422,6 +422,7 @@ ags_machine_init(AgsMachine *machine)
 			     (GtkWidget *) machine->menu_tool_button);
   machine->properties = NULL;
   machine->rename = NULL;
+  machine->rename_audio = NULL;
   machine->connection_editor = NULL;
   machine->midi_dialog = NULL;
   machine->envelope_dialog = NULL;
@@ -743,7 +744,6 @@ ags_machine_get_property(GObject *gobject,
   }
 }
 
-
 static void
 ags_machine_finalize(GObject *gobject)
 {
@@ -782,6 +782,10 @@ ags_machine_finalize(GObject *gobject)
 
   if(machine->rename != NULL){
     gtk_widget_destroy((GtkWidget *) machine->rename);
+  }
+
+  if(machine->rename_audio != NULL){
+    gtk_widget_destroy((GtkWidget *) machine->rename_audio);
   }
   
   if(machine->machine_name != NULL){
@@ -2452,6 +2456,9 @@ ags_machine_popup_new(AgsMachine *machine)
   item = (GtkMenuItem *) gtk_menu_item_new_with_label(i18n("rename"));
   gtk_menu_shell_append((GtkMenuShell *) popup, (GtkWidget*) item);
   
+  item = (GtkMenuItem *) gtk_menu_item_new_with_label(i18n("rename audio"));
+  gtk_menu_shell_append((GtkMenuShell *) popup, (GtkWidget*) item);
+
   item = (GtkMenuItem *) gtk_menu_item_new_with_label(i18n("properties"));
   gtk_menu_shell_append((GtkMenuShell *) popup, (GtkWidget*) item);
 
@@ -2485,6 +2492,10 @@ ags_machine_popup_new(AgsMachine *machine)
 		   G_CALLBACK(ags_machine_popup_rename_activate_callback), (gpointer) machine);
   list = list->next;
 
+  g_signal_connect((GObject*) list->data, "activate",
+		   G_CALLBACK(ags_machine_popup_rename_audio_activate_callback), (gpointer) machine);
+  list = list->next;
+  
   g_signal_connect((GObject*) list->data, "activate",
 		   G_CALLBACK(ags_machine_popup_properties_activate_callback), (gpointer) machine);
   list = list->next;

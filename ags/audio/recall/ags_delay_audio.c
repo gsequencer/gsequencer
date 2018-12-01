@@ -48,19 +48,25 @@ void ags_delay_audio_finalize(GObject *gobject);
 
 void ags_delay_audio_set_ports(AgsPlugin *plugin, GList *port);
 
-void ags_delay_audio_notify_audio_callback(GObject *gobject,
-					   GParamSpec *pspec,
-					   gpointer user_data);
+void ags_delay_audio_notify_audio_after_callback(GObject *gobject,
+						 GParamSpec *pspec,
+						 gpointer user_data);
 void ags_delay_audio_notify_output_soundcard_callback(GObject *gobject,
 						      GParamSpec *pspec,
 						      gpointer user_data);
+void ags_delay_audio_notify_output_soundcard_after_callback(GObject *gobject,
+							    GParamSpec *pspec,
+							    gpointer user_data);
 
-void ags_delay_audio_notify_samplerate_callback(GObject *gobject,
-						GParamSpec *pspec,
-						gpointer user_data);
-void ags_delay_audio_notify_buffer_size_callback(GObject *gobject,
-						 GParamSpec *pspec,
-						 gpointer user_data);
+void ags_delay_audio_notify_samplerate_after_callback(GObject *gobject,
+						      GParamSpec *pspec,
+						      gpointer user_data);
+void ags_delay_audio_notify_buffer_size_after_callback(GObject *gobject,
+						       GParamSpec *pspec,
+						       gpointer user_data);
+
+void ags_delay_audio_tic_after_callback(GObject *soundcard,
+					AgsDelayAudio *delay_audio);
 
 gdouble ags_delay_audio_get_bpm(AgsTactable *tactable);
 gdouble ags_delay_audio_get_tact(AgsTactable *tactable);
@@ -676,10 +682,12 @@ ags_delay_audio_init(AgsDelayAudio *delay_audio)
   
   /* notify some properties to do final configuration */
   g_signal_connect_after(delay_audio, "notify::audio",
-			 G_CALLBACK(ags_delay_audio_notify_audio_callback), NULL);
+			 G_CALLBACK(ags_delay_audio_notify_audio_after_callback), NULL);
 
+  g_signal_connect(delay_audio, "notify::output-soundcard",
+		   G_CALLBACK(ags_delay_audio_notify_output_soundcard_callback), NULL);
   g_signal_connect_after(delay_audio, "notify::output-soundcard",
-			 G_CALLBACK(ags_delay_audio_notify_output_soundcard_callback), NULL);
+			 G_CALLBACK(ags_delay_audio_notify_output_soundcard_after_callback), NULL);
 }
 
 void
@@ -1290,9 +1298,9 @@ ags_delay_audio_set_ports(AgsPlugin *plugin, GList *port)
 }
 
 void
-ags_delay_audio_notify_audio_callback(GObject *gobject,
-				      GParamSpec *pspec,
-				      gpointer user_data)
+ags_delay_audio_notify_audio_after_callback(GObject *gobject,
+					    GParamSpec *pspec,
+					    gpointer user_data)
 {
   AgsAudio *audio;
   AgsDelayAudio *delay_audio;
@@ -1308,16 +1316,38 @@ ags_delay_audio_notify_audio_callback(GObject *gobject,
   delay_audio = AGS_DELAY_AUDIO(gobject);
 
   g_signal_connect_after(audio, "notify::samplerate",
-			 G_CALLBACK(ags_delay_audio_notify_samplerate_callback), delay_audio);
+			 G_CALLBACK(ags_delay_audio_notify_samplerate_after_callback), delay_audio);
 
   g_signal_connect_after(audio, "notify::buffer-size",
-			 G_CALLBACK(ags_delay_audio_notify_buffer_size_callback), delay_audio);
+			 G_CALLBACK(ags_delay_audio_notify_buffer_size_after_callback), delay_audio);
 }
 
 void
 ags_delay_audio_notify_output_soundcard_callback(GObject *gobject,
 						 GParamSpec *pspec,
 						 gpointer user_data)
+{
+  GObject *output_soundcard;
+  
+  g_object_get(gobject,
+	       "output-soundcard", &output_soundcard,
+	       NULL);
+
+  if(output_soundcard == NULL){
+    return;
+  }
+
+  g_object_disconnect(output_soundcard,
+		      "any_signal::tic",
+		      G_CALLBACK(ags_delay_audio_tic_after_callback),
+		      gobject,
+		      NULL);
+}
+
+void
+ags_delay_audio_notify_output_soundcard_after_callback(GObject *gobject,
+						       GParamSpec *pspec,
+						       gpointer user_data)
 {
   AgsPort *bpm;
   AgsPort *tact;
@@ -1346,6 +1376,9 @@ ags_delay_audio_notify_output_soundcard_callback(GObject *gobject,
   if(output_soundcard == NULL){
     return;
   }
+
+  g_signal_connect_after(output_soundcard, "tic",
+			 G_CALLBACK(ags_delay_audio_tic_after_callback), gobject);
 
   delay_audio = AGS_DELAY_AUDIO(gobject);
   
@@ -1436,9 +1469,9 @@ ags_delay_audio_notify_output_soundcard_callback(GObject *gobject,
 }
 
 void
-ags_delay_audio_notify_samplerate_callback(GObject *gobject,
-					   GParamSpec *pspec,
-					   gpointer user_data)
+ags_delay_audio_notify_samplerate_after_callback(GObject *gobject,
+						 GParamSpec *pspec,
+						 gpointer user_data)
 {
   AgsDelayAudio *delay_audio;
   
@@ -1448,14 +1481,21 @@ ags_delay_audio_notify_samplerate_callback(GObject *gobject,
 }
 
 void
-ags_delay_audio_notify_buffer_size_callback(GObject *gobject,
-					    GParamSpec *pspec,
-					    gpointer user_data)
+ags_delay_audio_notify_buffer_size_after_callback(GObject *gobject,
+						  GParamSpec *pspec,
+						  gpointer user_data)
 {
   AgsDelayAudio *delay_audio;
   
   delay_audio = AGS_DELAY_AUDIO(user_data);
 
+  ags_delay_audio_refresh_delay(delay_audio);
+}
+
+void
+ags_delay_audio_tic_after_callback(GObject *soundcard,
+				   AgsDelayAudio *delay_audio)
+{
   ags_delay_audio_refresh_delay(delay_audio);
 }
 

@@ -43,6 +43,7 @@
 #define AGS_RENAME_ENTRY "AgsRenameEntry"
 
 int ags_machine_popup_rename_response_callback(GtkWidget *widget, gint response, AgsMachine *machine);
+int ags_machine_popup_rename_audio_response_callback(GtkWidget *widget, gint response, AgsMachine *machine);
 int ags_machine_popup_properties_destroy_callback(GtkWidget *widget, AgsMachine *machine);
 
 int
@@ -232,6 +233,82 @@ ags_machine_popup_rename_response_callback(GtkWidget *widget, gint response, Ags
   }
   
   machine->rename = NULL;
+  gtk_widget_destroy(widget);
+
+  return(0);
+}
+
+void
+ags_machine_popup_rename_audio_activate_callback(GtkWidget *widget, AgsMachine *machine)
+{
+  GtkDialog *dialog;
+  GtkEntry *entry;
+
+  AgsAudio *audio;
+
+  gchar *audio_name;
+  
+  pthread_mutex_t *audio_mutex;
+  
+  if(machine->rename_audio != NULL){
+    return;
+  }
+
+  audio = machine->audio;
+
+  pthread_mutex_lock(ags_audio_get_class_mutex());
+
+  audio_mutex = audio->obj_mutex;
+  
+  pthread_mutex_unlock(ags_audio_get_class_mutex());
+  
+  machine->rename_audio =
+    dialog = (GtkDialog *) gtk_dialog_new_with_buttons(i18n("rename audio"),
+						       (GtkWindow *) gtk_widget_get_toplevel(GTK_WIDGET(machine)),
+						       GTK_DIALOG_DESTROY_WITH_PARENT,
+						       GTK_STOCK_OK,
+						       GTK_RESPONSE_ACCEPT,
+						       GTK_STOCK_CANCEL,
+						       GTK_RESPONSE_REJECT,
+						       NULL);
+
+  pthread_mutex_lock(audio_mutex);
+
+  audio_name = g_strdup(audio->audio_name);
+  
+  pthread_mutex_unlock(audio_mutex);
+
+  entry = (GtkEntry *) gtk_entry_new();
+  gtk_entry_set_text(entry, audio_name);
+  gtk_box_pack_start((GtkBox *) dialog->vbox,
+		     (GtkWidget *) entry,
+		     FALSE, FALSE,
+		     0);
+
+  g_free(audio_name);
+  
+  gtk_widget_show_all((GtkWidget *) dialog);
+
+  g_signal_connect((GObject *) dialog, "response",
+		   G_CALLBACK(ags_machine_popup_rename_audio_response_callback), (gpointer) machine);
+
+  return;
+}
+
+int
+ags_machine_popup_rename_audio_response_callback(GtkWidget *widget, gint response, AgsMachine *machine)
+{
+  if(response == GTK_RESPONSE_ACCEPT){
+    gchar *str;
+    
+    str = gtk_editable_get_chars(GTK_EDITABLE(gtk_container_get_children((GtkContainer *) GTK_DIALOG(widget)->vbox)->data),
+				 0, -1);
+    g_object_set(machine->audio,
+		 "audio-name", str,
+		 NULL);        
+  }
+  
+  machine->rename_audio = NULL;
   gtk_widget_destroy(widget);
 
   return(0);
