@@ -3,6 +3,7 @@ ags (2.1.3)
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* implemented rename audio in context menu
 	* fixed ags-delay recall to listen to AgsSoundcard::tic() event
+	* minor improvements
 
 ags (2.1.2)
 

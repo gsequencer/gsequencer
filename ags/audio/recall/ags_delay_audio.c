@@ -1105,9 +1105,37 @@ ags_delay_audio_get_property(GObject *gobject,
 void
 ags_delay_audio_dispose(GObject *gobject)
 {
+  AgsAudio *audio;
+  
   AgsDelayAudio *delay_audio;
 
+  GObject *output_soundcard;
+
   delay_audio = AGS_DELAY_AUDIO(gobject);
+
+  /* disconnect */
+  output_soundcard = AGS_RECALL(gobject)->output_soundcard;
+
+  if(output_soundcard != NULL){
+    g_object_disconnect(output_soundcard,
+			"any_signal::tic",
+			G_CALLBACK(ags_delay_audio_tic_after_callback),
+			gobject,
+			NULL);
+  }
+    
+  audio = AGS_RECALL_AUDIO(gobject)->audio;
+  
+  if(audio != NULL){
+    g_object_disconnect(audio,
+			"any_signal::notify::samplerate",
+			G_CALLBACK(ags_delay_audio_notify_samplerate_after_callback),
+			gobject,
+			"any_signal::notify::buffer-size",
+			G_CALLBACK(ags_delay_audio_notify_buffer_size_after_callback),
+			gobject,
+			NULL);
+  }
 
   /* bpm and tact */
   if(delay_audio->bpm != NULL){
@@ -1179,10 +1207,38 @@ ags_delay_audio_dispose(GObject *gobject)
 void
 ags_delay_audio_finalize(GObject *gobject)
 {
+  AgsAudio *audio;
+  
   AgsDelayAudio *delay_audio;
 
+  GObject *output_soundcard;
+  
   delay_audio = AGS_DELAY_AUDIO(gobject);
 
+  /* disconnect */
+  output_soundcard = AGS_RECALL(gobject)->output_soundcard;
+
+  if(output_soundcard != NULL){
+    g_object_disconnect(output_soundcard,
+			"any_signal::tic",
+			G_CALLBACK(ags_delay_audio_tic_after_callback),
+			gobject,
+			NULL);
+  }
+    
+  audio = AGS_RECALL_AUDIO(gobject)->audio;
+  
+  if(audio != NULL){
+    g_object_disconnect(audio,
+			"any_signal::notify::samplerate",
+			G_CALLBACK(ags_delay_audio_notify_samplerate_after_callback),
+			gobject,
+			"any_signal::notify::buffer-size",
+			G_CALLBACK(ags_delay_audio_notify_buffer_size_after_callback),
+			gobject,
+			NULL);
+  }
+  
   if(delay_audio->bpm != NULL){
     g_object_unref(G_OBJECT(delay_audio->bpm));
   }
