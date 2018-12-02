@@ -321,8 +321,6 @@ ags_osc_buffer_util_test_get_timetag()
        current_tv_fraction != (val_tv_fraction[i] & (~0x1)) ||
        current_immediately != val_immediately[i]){
       success = FALSE;
-
-      g_message("%d", i);
       
       break;
     }
@@ -334,25 +332,81 @@ ags_osc_buffer_util_test_get_timetag()
 void
 ags_osc_buffer_util_test_put_float()
 {
-  //TODO:JK: implement me
+  unsigned char *buffer;
+
+  gfloat current;
+  
+  guint i, j;
+  gboolean success;
+
+  static const gfloat val[] = {
+    0.0,
+    1.0,
+    4.125,
+    5.25,
+    7.8,
+    9.87,
+    16.99,
+    23.5,
+    31.75,
+  };
+
+  success = TRUE;
+
+  buffer = (unsigned char *) malloc(4 * sizeof(unsigned char));
+
+  for(i = 0; i < 9 && success; i++){
+    ags_osc_buffer_util_put_float(buffer,
+				  val[i]);
+    
+    ags_osc_buffer_util_get_float(buffer,
+				  &current);
+
+    if(current != val[i]){
+      success = FALSE;
+
+      break;
+    }
+  }
+
+  CU_ASSERT(success == TRUE);
 }
 
 void
 ags_osc_buffer_util_test_get_float()
 {
-  //TODO:JK: implement me
+  //NOTE:JK: see above
 }
 
 void
 ags_osc_buffer_util_test_put_string()
 {
-  //TODO:JK: implement me
+  unsigned char *buffer;
+  static const gchar *str = "I bytes OSC";
+
+  guint i;
+
+  buffer = (unsigned char *) malloc(16 * sizeof(unsigned char));
+  
+  ags_osc_buffer_util_put_string(buffer,
+				 str, -1);
+
+  CU_ASSERT(!g_strcmp0(buffer, str));
 }
 
 void
 ags_osc_buffer_util_test_get_string()
 {
-  //TODO:JK: implement me
+  gchar *str;
+  
+  static const unsigned char *str_buffer = "Every bytes OSC\0";
+
+  str = NULL;
+  
+  ags_osc_buffer_util_get_string(str_buffer,
+				 &str, NULL);
+
+  CU_ASSERT(!g_strcmp0(str_buffer, str));
 }
 
 void
