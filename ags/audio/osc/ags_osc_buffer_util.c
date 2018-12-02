@@ -148,7 +148,7 @@ ags_osc_buffer_util_get_timetag(unsigned char *buffer,
   tmp = (buffer[4] & 0xff);
   tmp = (tmp << 8) + (buffer[5] & 0xff);
   tmp = (tmp << 8) + (buffer[6] & 0xff);
-  tmp = (tmp << 8) + (buffer[7] & 0xff);
+  tmp = (tmp << 8) + (buffer[7] & 0xfe);
   
   if(tv_fraction != NULL){
     *tv_fraction = tmp;

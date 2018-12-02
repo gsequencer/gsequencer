@@ -24,7 +24,8 @@
 #include <CUnit/Automated.h>
 #include <CUnit/Basic.h>
 
-#include <ags/audio/midi/ags_midi_buffer_util.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
 
 #include <stdlib.h>
 
@@ -3176,8 +3177,8 @@ main(int argc, char **argv)
 {
   CU_pSuite pSuite = NULL;
 
-  putenv("LC_ALL=C\0");
-  putenv("LANG=C\0");
+  putenv("LC_ALL=C");
+  putenv("LANG=C");
   
   /* initialize the CUnit test registry */
   if(CUE_SUCCESS != CU_initialize_registry()){
@@ -3185,7 +3186,7 @@ main(int argc, char **argv)
   }
 
   /* add a suite to the registry */
-  pSuite = CU_add_suite("AgsMidiBufferUtilTest\0", ags_midi_buffer_util_test_init_suite, ags_midi_buffer_util_test_clean_suite);
+  pSuite = CU_add_suite("AgsMidiBufferUtilTest", ags_midi_buffer_util_test_init_suite, ags_midi_buffer_util_test_clean_suite);
   
   if(pSuite == NULL){
     CU_cleanup_registry();
@@ -3194,61 +3195,61 @@ main(int argc, char **argv)
   }
 
   /* add the tests to the suite */
-  if((CU_add_test(pSuite, "test of ags_midi_buffer_util.c get varlength size\0", ags_midi_buffer_util_test_get_varlength_size) == NULL) || 
-     (CU_add_test(pSuite, "test of ags_midi_buffer_util.c put varlength\0", ags_midi_buffer_util_test_put_varlength) == NULL) ||
-     (CU_add_test(pSuite, "test of ags_midi_buffer_util.c get varlength\0", ags_midi_buffer_util_test_get_varlength) == NULL) ||
-     (CU_add_test(pSuite, "test of ags_midi_buffer_util.c put int16\0", ags_midi_buffer_util_test_put_int16) == NULL) ||
-     (CU_add_test(pSuite, "test of ags_midi_buffer_util.c get int16\0", ags_midi_buffer_util_test_get_int16) == NULL) ||
-     (CU_add_test(pSuite, "test of ags_midi_buffer_util.c put int24\0", ags_midi_buffer_util_test_put_int24) == NULL) ||
-     (CU_add_test(pSuite, "test of ags_midi_buffer_util.c get int24\0", ags_midi_buffer_util_test_get_int24) == NULL) ||
-     (CU_add_test(pSuite, "test of ags_midi_buffer_util.c put int32\0", ags_midi_buffer_util_test_put_int32) == NULL) ||
-     (CU_add_test(pSuite, "test of ags_midi_buffer_util.c get int32\0", ags_midi_buffer_util_test_get_int32) == NULL) ||
-     (CU_add_test(pSuite, "test of ags_midi_buffer_util.c put header\0", ags_midi_buffer_util_test_put_header) == NULL) ||
-     (CU_add_test(pSuite, "test of ags_midi_buffer_util.c get header\0", ags_midi_buffer_util_test_get_header) == NULL) ||
-     (CU_add_test(pSuite, "test of ags_midi_buffer_util.c put track\0", ags_midi_buffer_util_test_put_track) == NULL) ||
-     (CU_add_test(pSuite, "test of ags_midi_buffer_util.c get track\0", ags_midi_buffer_util_test_get_track) == NULL) ||
-     (CU_add_test(pSuite, "test of ags_midi_buffer_util.c put key on\0", ags_midi_buffer_util_test_put_key_on) == NULL) ||
-     (CU_add_test(pSuite, "test of ags_midi_buffer_util.c get key on\0", ags_midi_buffer_util_test_get_key_on) == NULL) ||
-     (CU_add_test(pSuite, "test of ags_midi_buffer_util.c put key off\0", ags_midi_buffer_util_test_put_key_off) == NULL) ||
-     (CU_add_test(pSuite, "test of ags_midi_buffer_util.c get key off\0", ags_midi_buffer_util_test_get_key_off) == NULL) ||
-     (CU_add_test(pSuite, "test of ags_midi_buffer_util.c put key pressure\0", ags_midi_buffer_util_test_put_key_pressure) == NULL) ||
-     (CU_add_test(pSuite, "test of ags_midi_buffer_util.c get key pressure\0", ags_midi_buffer_util_test_get_key_pressure) == NULL) ||
-     (CU_add_test(pSuite, "test of ags_midi_buffer_util.c put change parameter\0", ags_midi_buffer_util_test_put_change_parameter) == NULL) ||
-     (CU_add_test(pSuite, "test of ags_midi_buffer_util.c get change parameter\0", ags_midi_buffer_util_test_get_change_parameter) == NULL) ||
-     (CU_add_test(pSuite, "test of ags_midi_buffer_util.c put change pitch bend\0", ags_midi_buffer_util_test_put_pitch_bend) == NULL) ||
-     (CU_add_test(pSuite, "test of ags_midi_buffer_util.c get change pitch bend\0", ags_midi_buffer_util_test_get_pitch_bend) == NULL) ||
-     (CU_add_test(pSuite, "test of ags_midi_buffer_util.c put change program\0", ags_midi_buffer_util_test_put_change_program) == NULL) ||
-     (CU_add_test(pSuite, "test of ags_midi_buffer_util.c get change program\0", ags_midi_buffer_util_test_get_change_program) == NULL) ||
-     (CU_add_test(pSuite, "test of ags_midi_buffer_util.c put change pressure\0", ags_midi_buffer_util_test_put_change_pressure) == NULL) ||
-     (CU_add_test(pSuite, "test of ags_midi_buffer_util.c get change pressure\0", ags_midi_buffer_util_test_get_change_pressure) == NULL) ||
-     (CU_add_test(pSuite, "test of ags_midi_buffer_util.c put sysex\0", ags_midi_buffer_util_test_put_sysex) == NULL) ||
-     (CU_add_test(pSuite, "test of ags_midi_buffer_util.c get sysex\0", ags_midi_buffer_util_test_get_sysex) == NULL) ||
-     (CU_add_test(pSuite, "test of ags_midi_buffer_util.c put quarter frame\0", ags_midi_buffer_util_test_put_quarter_frame) == NULL) ||
-     (CU_add_test(pSuite, "test of ags_midi_buffer_util.c get quarter frame\0", ags_midi_buffer_util_test_get_quarter_frame) == NULL) ||
-     (CU_add_test(pSuite, "test of ags_midi_buffer_util.c put song position\0", ags_midi_buffer_util_test_put_song_position) == NULL) ||
-     (CU_add_test(pSuite, "test of ags_midi_buffer_util.c get song position\0", ags_midi_buffer_util_test_get_song_position) == NULL) ||
-     (CU_add_test(pSuite, "test of ags_midi_buffer_util.c put song select\0", ags_midi_buffer_util_test_put_song_select) == NULL) ||
-     (CU_add_test(pSuite, "test of ags_midi_buffer_util.c get song select\0", ags_midi_buffer_util_test_get_song_select) == NULL) ||
-     (CU_add_test(pSuite, "test of ags_midi_buffer_util.c put tune request\0", ags_midi_buffer_util_test_put_tune_request) == NULL) ||
-     (CU_add_test(pSuite, "test of ags_midi_buffer_util.c get tune request\0", ags_midi_buffer_util_test_get_tune_request) == NULL) ||
-     (CU_add_test(pSuite, "test of ags_midi_buffer_util.c put sequence number\0", ags_midi_buffer_util_test_put_sequence_number) == NULL) ||
-     (CU_add_test(pSuite, "test of ags_midi_buffer_util.c get sequence number\0", ags_midi_buffer_util_test_get_sequence_number) == NULL) ||
-     (CU_add_test(pSuite, "test of ags_midi_buffer_util.c put smtpe\0", ags_midi_buffer_util_test_put_smtpe) == NULL) ||
-     (CU_add_test(pSuite, "test of ags_midi_buffer_util.c get smtpe\0", ags_midi_buffer_util_test_get_smtpe) == NULL) ||
-     (CU_add_test(pSuite, "test of ags_midi_buffer_util.c put tempo\0", ags_midi_buffer_util_test_put_tempo) == NULL) ||
-     (CU_add_test(pSuite, "test of ags_midi_buffer_util.c get tempo\0", ags_midi_buffer_util_test_get_tempo) == NULL) ||
-     (CU_add_test(pSuite, "test of ags_midi_buffer_util.c put time signature\0", ags_midi_buffer_util_test_put_time_signature) == NULL) ||
-     (CU_add_test(pSuite, "test of ags_midi_buffer_util.c get time signature\0", ags_midi_buffer_util_test_get_time_signature) == NULL) ||
-     (CU_add_test(pSuite, "test of ags_midi_buffer_util.c put key signature\0", ags_midi_buffer_util_test_put_key_signature) == NULL) ||
-     (CU_add_test(pSuite, "test of ags_midi_buffer_util.c get key signature\0", ags_midi_buffer_util_test_get_key_signature) == NULL) ||
-     (CU_add_test(pSuite, "test of ags_midi_buffer_util.c put sequencer meta event\0", ags_midi_buffer_util_test_put_sequencer_meta_event) == NULL) ||
-     (CU_add_test(pSuite, "test of ags_midi_buffer_util.c get sequencer meta event\0", ags_midi_buffer_util_test_get_sequencer_meta_event) == NULL) ||
-     (CU_add_test(pSuite, "test of ags_midi_buffer_util.c put text event\0", ags_midi_buffer_util_test_put_text_event) == NULL) ||
-     (CU_add_test(pSuite, "test of ags_midi_buffer_util.c get text event\0", ags_midi_buffer_util_test_get_text_event) == NULL) ||
-     (CU_add_test(pSuite, "test of ags_midi_buffer_util.c put end of track\0", ags_midi_buffer_util_test_put_end_of_track) == NULL) ||
-     (CU_add_test(pSuite, "test of ags_midi_buffer_util.c get end of track\0", ags_midi_buffer_util_test_get_end_of_track) == NULL) ||
-     (CU_add_test(pSuite, "test of ags_midi_buffer_util.c seek message\0", ags_midi_buffer_util_test_put_seek_message) == NULL) ||
-     (CU_add_test(pSuite, "test of ags_midi_buffer_util.c decode\0", ags_midi_buffer_util_test_decode) == NULL)){
+  if((CU_add_test(pSuite, "test of ags_midi_buffer_util.c get varlength size", ags_midi_buffer_util_test_get_varlength_size) == NULL) || 
+     (CU_add_test(pSuite, "test of ags_midi_buffer_util.c put varlength", ags_midi_buffer_util_test_put_varlength) == NULL) ||
+     (CU_add_test(pSuite, "test of ags_midi_buffer_util.c get varlength", ags_midi_buffer_util_test_get_varlength) == NULL) ||
+     (CU_add_test(pSuite, "test of ags_midi_buffer_util.c put int16", ags_midi_buffer_util_test_put_int16) == NULL) ||
+     (CU_add_test(pSuite, "test of ags_midi_buffer_util.c get int16", ags_midi_buffer_util_test_get_int16) == NULL) ||
+     (CU_add_test(pSuite, "test of ags_midi_buffer_util.c put int24", ags_midi_buffer_util_test_put_int24) == NULL) ||
+     (CU_add_test(pSuite, "test of ags_midi_buffer_util.c get int24", ags_midi_buffer_util_test_get_int24) == NULL) ||
+     (CU_add_test(pSuite, "test of ags_midi_buffer_util.c put int32", ags_midi_buffer_util_test_put_int32) == NULL) ||
+     (CU_add_test(pSuite, "test of ags_midi_buffer_util.c get int32", ags_midi_buffer_util_test_get_int32) == NULL) ||
+     (CU_add_test(pSuite, "test of ags_midi_buffer_util.c put header", ags_midi_buffer_util_test_put_header) == NULL) ||
+     (CU_add_test(pSuite, "test of ags_midi_buffer_util.c get header", ags_midi_buffer_util_test_get_header) == NULL) ||
+     (CU_add_test(pSuite, "test of ags_midi_buffer_util.c put track", ags_midi_buffer_util_test_put_track) == NULL) ||
+     (CU_add_test(pSuite, "test of ags_midi_buffer_util.c get track", ags_midi_buffer_util_test_get_track) == NULL) ||
+     (CU_add_test(pSuite, "test of ags_midi_buffer_util.c put key on", ags_midi_buffer_util_test_put_key_on) == NULL) ||
+     (CU_add_test(pSuite, "test of ags_midi_buffer_util.c get key on", ags_midi_buffer_util_test_get_key_on) == NULL) ||
+     (CU_add_test(pSuite, "test of ags_midi_buffer_util.c put key off", ags_midi_buffer_util_test_put_key_off) == NULL) ||
+     (CU_add_test(pSuite, "test of ags_midi_buffer_util.c get key off", ags_midi_buffer_util_test_get_key_off) == NULL) ||
+     (CU_add_test(pSuite, "test of ags_midi_buffer_util.c put key pressure", ags_midi_buffer_util_test_put_key_pressure) == NULL) ||
+     (CU_add_test(pSuite, "test of ags_midi_buffer_util.c get key pressure", ags_midi_buffer_util_test_get_key_pressure) == NULL) ||
+     (CU_add_test(pSuite, "test of ags_midi_buffer_util.c put change parameter", ags_midi_buffer_util_test_put_change_parameter) == NULL) ||
+     (CU_add_test(pSuite, "test of ags_midi_buffer_util.c get change parameter", ags_midi_buffer_util_test_get_change_parameter) == NULL) ||
+     (CU_add_test(pSuite, "test of ags_midi_buffer_util.c put change pitch bend", ags_midi_buffer_util_test_put_pitch_bend) == NULL) ||
+     (CU_add_test(pSuite, "test of ags_midi_buffer_util.c get change pitch bend", ags_midi_buffer_util_test_get_pitch_bend) == NULL) ||
+     (CU_add_test(pSuite, "test of ags_midi_buffer_util.c put change program", ags_midi_buffer_util_test_put_change_program) == NULL) ||
+     (CU_add_test(pSuite, "test of ags_midi_buffer_util.c get change program", ags_midi_buffer_util_test_get_change_program) == NULL) ||
+     (CU_add_test(pSuite, "test of ags_midi_buffer_util.c put change pressure", ags_midi_buffer_util_test_put_change_pressure) == NULL) ||
+     (CU_add_test(pSuite, "test of ags_midi_buffer_util.c get change pressure", ags_midi_buffer_util_test_get_change_pressure) == NULL) ||
+     (CU_add_test(pSuite, "test of ags_midi_buffer_util.c put sysex", ags_midi_buffer_util_test_put_sysex) == NULL) ||
+     (CU_add_test(pSuite, "test of ags_midi_buffer_util.c get sysex", ags_midi_buffer_util_test_get_sysex) == NULL) ||
+     (CU_add_test(pSuite, "test of ags_midi_buffer_util.c put quarter frame", ags_midi_buffer_util_test_put_quarter_frame) == NULL) ||
+     (CU_add_test(pSuite, "test of ags_midi_buffer_util.c get quarter frame", ags_midi_buffer_util_test_get_quarter_frame) == NULL) ||
+     (CU_add_test(pSuite, "test of ags_midi_buffer_util.c put song position", ags_midi_buffer_util_test_put_song_position) == NULL) ||
+     (CU_add_test(pSuite, "test of ags_midi_buffer_util.c get song position", ags_midi_buffer_util_test_get_song_position) == NULL) ||
+     (CU_add_test(pSuite, "test of ags_midi_buffer_util.c put song select", ags_midi_buffer_util_test_put_song_select) == NULL) ||
+     (CU_add_test(pSuite, "test of ags_midi_buffer_util.c get song select", ags_midi_buffer_util_test_get_song_select) == NULL) ||
+     (CU_add_test(pSuite, "test of ags_midi_buffer_util.c put tune request", ags_midi_buffer_util_test_put_tune_request) == NULL) ||
+     (CU_add_test(pSuite, "test of ags_midi_buffer_util.c get tune request", ags_midi_buffer_util_test_get_tune_request) == NULL) ||
+     (CU_add_test(pSuite, "test of ags_midi_buffer_util.c put sequence number", ags_midi_buffer_util_test_put_sequence_number) == NULL) ||
+     (CU_add_test(pSuite, "test of ags_midi_buffer_util.c get sequence number", ags_midi_buffer_util_test_get_sequence_number) == NULL) ||
+     (CU_add_test(pSuite, "test of ags_midi_buffer_util.c put smtpe", ags_midi_buffer_util_test_put_smtpe) == NULL) ||
+     (CU_add_test(pSuite, "test of ags_midi_buffer_util.c get smtpe", ags_midi_buffer_util_test_get_smtpe) == NULL) ||
+     (CU_add_test(pSuite, "test of ags_midi_buffer_util.c put tempo", ags_midi_buffer_util_test_put_tempo) == NULL) ||
+     (CU_add_test(pSuite, "test of ags_midi_buffer_util.c get tempo", ags_midi_buffer_util_test_get_tempo) == NULL) ||
+     (CU_add_test(pSuite, "test of ags_midi_buffer_util.c put time signature", ags_midi_buffer_util_test_put_time_signature) == NULL) ||
+     (CU_add_test(pSuite, "test of ags_midi_buffer_util.c get time signature", ags_midi_buffer_util_test_get_time_signature) == NULL) ||
+     (CU_add_test(pSuite, "test of ags_midi_buffer_util.c put key signature", ags_midi_buffer_util_test_put_key_signature) == NULL) ||
+     (CU_add_test(pSuite, "test of ags_midi_buffer_util.c get key signature", ags_midi_buffer_util_test_get_key_signature) == NULL) ||
+     (CU_add_test(pSuite, "test of ags_midi_buffer_util.c put sequencer meta event", ags_midi_buffer_util_test_put_sequencer_meta_event) == NULL) ||
+     (CU_add_test(pSuite, "test of ags_midi_buffer_util.c get sequencer meta event", ags_midi_buffer_util_test_get_sequencer_meta_event) == NULL) ||
+     (CU_add_test(pSuite, "test of ags_midi_buffer_util.c put text event", ags_midi_buffer_util_test_put_text_event) == NULL) ||
+     (CU_add_test(pSuite, "test of ags_midi_buffer_util.c get text event", ags_midi_buffer_util_test_get_text_event) == NULL) ||
+     (CU_add_test(pSuite, "test of ags_midi_buffer_util.c put end of track", ags_midi_buffer_util_test_put_end_of_track) == NULL) ||
+     (CU_add_test(pSuite, "test of ags_midi_buffer_util.c get end of track", ags_midi_buffer_util_test_get_end_of_track) == NULL) ||
+     (CU_add_test(pSuite, "test of ags_midi_buffer_util.c seek message", ags_midi_buffer_util_test_put_seek_message) == NULL) ||
+     (CU_add_test(pSuite, "test of ags_midi_buffer_util.c decode", ags_midi_buffer_util_test_decode) == NULL)){
     CU_cleanup_registry();
     
     return CU_get_error();

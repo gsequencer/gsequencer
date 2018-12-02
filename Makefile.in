@@ -165,6 +165,7 @@ check_PROGRAMS = ags_buffer_util_test$(EXEEXT) \
 	ags_buffer_test$(EXEEXT) ags_midi_test$(EXEEXT) \
 	ags_track_test$(EXEEXT) ags_midi_buffer_util_test$(EXEEXT) \
 	ags_midi_builder_test$(EXEEXT) \
+	ags_osc_buffer_util_test$(EXEEXT) \
 	ags_analyse_audio_signal_test$(EXEEXT) \
 	ags_analyse_channel_test$(EXEEXT) \
 	ags_buffer_audio_signal_test$(EXEEXT) \
@@ -2940,6 +2941,18 @@ ags_notify_soundcard_test_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
 	$(ags_notify_soundcard_test_CFLAGS) $(CFLAGS) \
 	$(ags_notify_soundcard_test_LDFLAGS) $(LDFLAGS) -o $@
+am_ags_osc_buffer_util_test_OBJECTS = ags/test/audio/osc/osc_buffer_util_test-ags_osc_buffer_util_test.$(OBJEXT)
+ags_osc_buffer_util_test_OBJECTS =  \
+	$(am_ags_osc_buffer_util_test_OBJECTS)
+ags_osc_buffer_util_test_DEPENDENCIES = libags_audio.la \
+	libags_server.la libags_thread.la libags.la libags_thread.la \
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
+ags_osc_buffer_util_test_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
+	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
+	$(ags_osc_buffer_util_test_CFLAGS) $(CFLAGS) \
+	$(ags_osc_buffer_util_test_LDFLAGS) $(LDFLAGS) -o $@
 am_ags_output_test_OBJECTS =  \
 	ags/test/audio/output_test-ags_output_test.$(OBJEXT)
 ags_output_test_OBJECTS = $(am_ags_output_test_OBJECTS)
@@ -4209,6 +4222,7 @@ am__depfiles_remade = ags/$(DEPDIR)/gsequencer-gsequencer_main.Po \
 	ags/test/audio/$(DEPDIR)/wave_test-ags_wave_test.Po \
 	ags/test/audio/midi/$(DEPDIR)/midi_buffer_util_test-ags_midi_buffer_util_test.Po \
 	ags/test/audio/midi/$(DEPDIR)/midi_builder_test-ags_midi_builder_test.Po \
+	ags/test/audio/osc/$(DEPDIR)/osc_buffer_util_test-ags_osc_buffer_util_test.Po \
 	ags/test/audio/recall/$(DEPDIR)/analyse_audio_signal_test-ags_analyse_audio_signal_test.Po \
 	ags/test/audio/recall/$(DEPDIR)/analyse_channel_test-ags_analyse_channel_test.Po \
 	ags/test/audio/recall/$(DEPDIR)/buffer_audio_signal_test-ags_buffer_audio_signal_test.Po \
@@ -4469,7 +4483,8 @@ SOURCES = $(libags_la_SOURCES) $(libags_audio_la_SOURCES) \
 	$(ags_mute_channel_test_SOURCES) \
 	$(ags_mutex_manager_test_SOURCES) $(ags_notation_test_SOURCES) \
 	$(ags_note_test_SOURCES) $(ags_notify_soundcard_test_SOURCES) \
-	$(ags_output_test_SOURCES) $(ags_pattern_test_SOURCES) \
+	$(ags_osc_buffer_util_test_SOURCES) $(ags_output_test_SOURCES) \
+	$(ags_pattern_test_SOURCES) \
 	$(ags_peak_audio_signal_test_SOURCES) \
 	$(ags_peak_channel_test_SOURCES) \
 	$(ags_play_audio_signal_test_SOURCES) \
@@ -4602,7 +4617,8 @@ DIST_SOURCES = $(libags_la_SOURCES) \
 	$(ags_mute_channel_test_SOURCES) \
 	$(ags_mutex_manager_test_SOURCES) $(ags_notation_test_SOURCES) \
 	$(ags_note_test_SOURCES) $(ags_notify_soundcard_test_SOURCES) \
-	$(ags_output_test_SOURCES) $(ags_pattern_test_SOURCES) \
+	$(ags_osc_buffer_util_test_SOURCES) $(ags_output_test_SOURCES) \
+	$(ags_pattern_test_SOURCES) \
 	$(ags_peak_audio_signal_test_SOURCES) \
 	$(ags_peak_channel_test_SOURCES) \
 	$(ags_play_audio_signal_test_SOURCES) \
@@ -6223,6 +6239,12 @@ ags_midi_builder_test_SOURCES = ags/test/audio/midi/ags_midi_builder_test.c
 ags_midi_builder_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
 ags_midi_builder_test_LDFLAGS = -pthread $(LDFLAGS)
 ags_midi_builder_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lm -lrt  $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
+
+# osc buffer util unit test
+ags_osc_buffer_util_test_SOURCES = ags/test/audio/osc/ags_osc_buffer_util_test.c
+ags_osc_buffer_util_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
+ags_osc_buffer_util_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_osc_buffer_util_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lm -lrt  $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
 
 # analyse audio signal unit test
 ags_analyse_audio_signal_test_SOURCES = ags/test/audio/recall/ags_analyse_audio_signal_test.c
@@ -11120,6 +11142,19 @@ ags/test/audio/task/notify_soundcard_test-ags_notify_soundcard_test.$(OBJEXT):  
 ags_notify_soundcard_test$(EXEEXT): $(ags_notify_soundcard_test_OBJECTS) $(ags_notify_soundcard_test_DEPENDENCIES) $(EXTRA_ags_notify_soundcard_test_DEPENDENCIES) 
 	@rm -f ags_notify_soundcard_test$(EXEEXT)
 	$(AM_V_CCLD)$(ags_notify_soundcard_test_LINK) $(ags_notify_soundcard_test_OBJECTS) $(ags_notify_soundcard_test_LDADD) $(LIBS)
+ags/test/audio/osc/$(am__dirstamp):
+	@$(MKDIR_P) ags/test/audio/osc
+	@: > ags/test/audio/osc/$(am__dirstamp)
+ags/test/audio/osc/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) ags/test/audio/osc/$(DEPDIR)
+	@: > ags/test/audio/osc/$(DEPDIR)/$(am__dirstamp)
+ags/test/audio/osc/osc_buffer_util_test-ags_osc_buffer_util_test.$(OBJEXT):  \
+	ags/test/audio/osc/$(am__dirstamp) \
+	ags/test/audio/osc/$(DEPDIR)/$(am__dirstamp)
+
+ags_osc_buffer_util_test$(EXEEXT): $(ags_osc_buffer_util_test_OBJECTS) $(ags_osc_buffer_util_test_DEPENDENCIES) $(EXTRA_ags_osc_buffer_util_test_DEPENDENCIES) 
+	@rm -f ags_osc_buffer_util_test$(EXEEXT)
+	$(AM_V_CCLD)$(ags_osc_buffer_util_test_LINK) $(ags_osc_buffer_util_test_OBJECTS) $(ags_osc_buffer_util_test_LDADD) $(LIBS)
 ags/test/audio/output_test-ags_output_test.$(OBJEXT):  \
 	ags/test/audio/$(am__dirstamp) \
 	ags/test/audio/$(DEPDIR)/$(am__dirstamp)
@@ -11578,6 +11613,7 @@ mostlyclean-compile:
 	-rm -f ags/test/X/machine/*.$(OBJEXT)
 	-rm -f ags/test/audio/*.$(OBJEXT)
 	-rm -f ags/test/audio/midi/*.$(OBJEXT)
+	-rm -f ags/test/audio/osc/*.$(OBJEXT)
 	-rm -f ags/test/audio/recall/*.$(OBJEXT)
 	-rm -f ags/test/audio/task/*.$(OBJEXT)
 	-rm -f ags/test/file/*.$(OBJEXT)
@@ -12228,6 +12264,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/audio/$(DEPDIR)/wave_test-ags_wave_test.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/audio/midi/$(DEPDIR)/midi_buffer_util_test-ags_midi_buffer_util_test.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/audio/midi/$(DEPDIR)/midi_builder_test-ags_midi_builder_test.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@ags/test/audio/osc/$(DEPDIR)/osc_buffer_util_test-ags_osc_buffer_util_test.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/audio/recall/$(DEPDIR)/analyse_audio_signal_test-ags_analyse_audio_signal_test.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/audio/recall/$(DEPDIR)/analyse_channel_test-ags_analyse_channel_test.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/audio/recall/$(DEPDIR)/buffer_audio_signal_test-ags_buffer_audio_signal_test.Po@am__quote@ # am--include-marker
@@ -18239,6 +18276,20 @@ ags/test/audio/task/notify_soundcard_test-ags_notify_soundcard_test.obj: ags/tes
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_notify_soundcard_test_CFLAGS) $(CFLAGS) -c -o ags/test/audio/task/notify_soundcard_test-ags_notify_soundcard_test.obj `if test -f 'ags/test/audio/task/ags_notify_soundcard_test.c'; then $(CYGPATH_W) 'ags/test/audio/task/ags_notify_soundcard_test.c'; else $(CYGPATH_W) '$(srcdir)/ags/test/audio/task/ags_notify_soundcard_test.c'; fi`
 
+ags/test/audio/osc/osc_buffer_util_test-ags_osc_buffer_util_test.o: ags/test/audio/osc/ags_osc_buffer_util_test.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_osc_buffer_util_test_CFLAGS) $(CFLAGS) -MT ags/test/audio/osc/osc_buffer_util_test-ags_osc_buffer_util_test.o -MD -MP -MF ags/test/audio/osc/$(DEPDIR)/osc_buffer_util_test-ags_osc_buffer_util_test.Tpo -c -o ags/test/audio/osc/osc_buffer_util_test-ags_osc_buffer_util_test.o `test -f 'ags/test/audio/osc/ags_osc_buffer_util_test.c' || echo '$(srcdir)/'`ags/test/audio/osc/ags_osc_buffer_util_test.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/test/audio/osc/$(DEPDIR)/osc_buffer_util_test-ags_osc_buffer_util_test.Tpo ags/test/audio/osc/$(DEPDIR)/osc_buffer_util_test-ags_osc_buffer_util_test.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/test/audio/osc/ags_osc_buffer_util_test.c' object='ags/test/audio/osc/osc_buffer_util_test-ags_osc_buffer_util_test.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_osc_buffer_util_test_CFLAGS) $(CFLAGS) -c -o ags/test/audio/osc/osc_buffer_util_test-ags_osc_buffer_util_test.o `test -f 'ags/test/audio/osc/ags_osc_buffer_util_test.c' || echo '$(srcdir)/'`ags/test/audio/osc/ags_osc_buffer_util_test.c
+
+ags/test/audio/osc/osc_buffer_util_test-ags_osc_buffer_util_test.obj: ags/test/audio/osc/ags_osc_buffer_util_test.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_osc_buffer_util_test_CFLAGS) $(CFLAGS) -MT ags/test/audio/osc/osc_buffer_util_test-ags_osc_buffer_util_test.obj -MD -MP -MF ags/test/audio/osc/$(DEPDIR)/osc_buffer_util_test-ags_osc_buffer_util_test.Tpo -c -o ags/test/audio/osc/osc_buffer_util_test-ags_osc_buffer_util_test.obj `if test -f 'ags/test/audio/osc/ags_osc_buffer_util_test.c'; then $(CYGPATH_W) 'ags/test/audio/osc/ags_osc_buffer_util_test.c'; else $(CYGPATH_W) '$(srcdir)/ags/test/audio/osc/ags_osc_buffer_util_test.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/test/audio/osc/$(DEPDIR)/osc_buffer_util_test-ags_osc_buffer_util_test.Tpo ags/test/audio/osc/$(DEPDIR)/osc_buffer_util_test-ags_osc_buffer_util_test.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/test/audio/osc/ags_osc_buffer_util_test.c' object='ags/test/audio/osc/osc_buffer_util_test-ags_osc_buffer_util_test.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_osc_buffer_util_test_CFLAGS) $(CFLAGS) -c -o ags/test/audio/osc/osc_buffer_util_test-ags_osc_buffer_util_test.obj `if test -f 'ags/test/audio/osc/ags_osc_buffer_util_test.c'; then $(CYGPATH_W) 'ags/test/audio/osc/ags_osc_buffer_util_test.c'; else $(CYGPATH_W) '$(srcdir)/ags/test/audio/osc/ags_osc_buffer_util_test.c'; fi`
+
 ags/test/audio/output_test-ags_output_test.o: ags/test/audio/ags_output_test.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_output_test_CFLAGS) $(CFLAGS) -MT ags/test/audio/output_test-ags_output_test.o -MD -MP -MF ags/test/audio/$(DEPDIR)/output_test-ags_output_test.Tpo -c -o ags/test/audio/output_test-ags_output_test.o `test -f 'ags/test/audio/ags_output_test.c' || echo '$(srcdir)/'`ags/test/audio/ags_output_test.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/test/audio/$(DEPDIR)/output_test-ags_output_test.Tpo ags/test/audio/$(DEPDIR)/output_test-ags_output_test.Po
@@ -19986,6 +20037,13 @@ ags_midi_builder_test.log: ags_midi_builder_test$(EXEEXT)
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
 	"$$tst" $(AM_TESTS_FD_REDIRECT)
+ags_osc_buffer_util_test.log: ags_osc_buffer_util_test$(EXEEXT)
+	@p='ags_osc_buffer_util_test$(EXEEXT)'; \
+	b='ags_osc_buffer_util_test'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
 ags_analyse_audio_signal_test.log: ags_analyse_audio_signal_test$(EXEEXT)
 	@p='ags_analyse_audio_signal_test$(EXEEXT)'; \
 	b='ags_analyse_audio_signal_test'; \
@@ -20816,6 +20874,8 @@ distclean-generic:
 	-rm -f ags/test/audio/$(am__dirstamp)
 	-rm -f ags/test/audio/midi/$(DEPDIR)/$(am__dirstamp)
 	-rm -f ags/test/audio/midi/$(am__dirstamp)
+	-rm -f ags/test/audio/osc/$(DEPDIR)/$(am__dirstamp)
+	-rm -f ags/test/audio/osc/$(am__dirstamp)
 	-rm -f ags/test/audio/recall/$(DEPDIR)/$(am__dirstamp)
 	-rm -f ags/test/audio/recall/$(am__dirstamp)
 	-rm -f ags/test/audio/task/$(DEPDIR)/$(am__dirstamp)
@@ -21487,6 +21547,7 @@ distclean: distclean-recursive
 	-rm -f ags/test/audio/$(DEPDIR)/wave_test-ags_wave_test.Po
 	-rm -f ags/test/audio/midi/$(DEPDIR)/midi_buffer_util_test-ags_midi_buffer_util_test.Po
 	-rm -f ags/test/audio/midi/$(DEPDIR)/midi_builder_test-ags_midi_builder_test.Po
+	-rm -f ags/test/audio/osc/$(DEPDIR)/osc_buffer_util_test-ags_osc_buffer_util_test.Po
 	-rm -f ags/test/audio/recall/$(DEPDIR)/analyse_audio_signal_test-ags_analyse_audio_signal_test.Po
 	-rm -f ags/test/audio/recall/$(DEPDIR)/analyse_channel_test-ags_analyse_channel_test.Po
 	-rm -f ags/test/audio/recall/$(DEPDIR)/buffer_audio_signal_test-ags_buffer_audio_signal_test.Po
@@ -22318,6 +22379,7 @@ maintainer-clean: maintainer-clean-recursive
 	-rm -f ags/test/audio/$(DEPDIR)/wave_test-ags_wave_test.Po
 	-rm -f ags/test/audio/midi/$(DEPDIR)/midi_buffer_util_test-ags_midi_buffer_util_test.Po
 	-rm -f ags/test/audio/midi/$(DEPDIR)/midi_builder_test-ags_midi_builder_test.Po
+	-rm -f ags/test/audio/osc/$(DEPDIR)/osc_buffer_util_test-ags_osc_buffer_util_test.Po
 	-rm -f ags/test/audio/recall/$(DEPDIR)/analyse_audio_signal_test-ags_analyse_audio_signal_test.Po
 	-rm -f ags/test/audio/recall/$(DEPDIR)/analyse_channel_test-ags_analyse_channel_test.Po
 	-rm -f ags/test/audio/recall/$(DEPDIR)/buffer_audio_signal_test-ags_buffer_audio_signal_test.Po
