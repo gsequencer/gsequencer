@@ -2,6 +2,7 @@ ags (2.1.6)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* fixed ags_osc_buffer_util.c to do shift operator using guint64
+	* fixed ags_osc_buffer_util_get_rgba() to access using correct index
 	* added ags_osc_buffer_util_test.c
 
 ags (2.1.5)

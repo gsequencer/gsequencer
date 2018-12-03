@@ -635,25 +635,264 @@ ags_osc_buffer_util_test_get_double()
 void
 ags_osc_buffer_util_test_put_char()
 {
-  //TODO:JK: implement me
+  unsigned char *buffer;
+
+  guint i, j;
+  gboolean success;
+  
+  static const gchar *str = "abcdefghijklmnopqrstuvwxyz0123456789 ";
+  static const unsigned char *val_buffer[] = {
+    "\x00\x00\x00\x61",
+    "\x00\x00\x00\x62",
+    "\x00\x00\x00\x63",
+    "\x00\x00\x00\x64",
+    "\x00\x00\x00\x65",
+    "\x00\x00\x00\x66",
+    "\x00\x00\x00\x67",
+    "\x00\x00\x00\x68",
+    "\x00\x00\x00\x69",
+    "\x00\x00\x00\x6a",
+    "\x00\x00\x00\x6b",
+    "\x00\x00\x00\x6c",
+    "\x00\x00\x00\x6d",
+    "\x00\x00\x00\x6e",
+    "\x00\x00\x00\x6f",
+    "\x00\x00\x00\x70",
+    "\x00\x00\x00\x71",
+    "\x00\x00\x00\x72",
+    "\x00\x00\x00\x73",
+    "\x00\x00\x00\x74",
+    "\x00\x00\x00\x75",
+    "\x00\x00\x00\x76",
+    "\x00\x00\x00\x77",
+    "\x00\x00\x00\x78",
+    "\x00\x00\x00\x79",
+    "\x00\x00\x00\x7a",
+    "\x00\x00\x00\x30",
+    "\x00\x00\x00\x31",
+    "\x00\x00\x00\x32",
+    "\x00\x00\x00\x33",
+    "\x00\x00\x00\x34",
+    "\x00\x00\x00\x35",
+    "\x00\x00\x00\x36",
+    "\x00\x00\x00\x37",
+    "\x00\x00\x00\x38",
+    "\x00\x00\x00\x39",
+    "\x00\x00\x00\x20",
+  };
+    
+  buffer = (unsigned char *) malloc(4 * sizeof(unsigned char));
+
+  success = TRUE;
+
+  for(i = 0; i < 37 && success; i++){
+    ags_osc_buffer_util_put_char(buffer,
+				 str[i]);
+    
+    for(j = 0; j < 4; j++){
+      if(buffer[j] != val_buffer[i][j]){
+	success = FALSE;
+	
+	break;
+      }
+    }
+  }
+  
+  CU_ASSERT(success == TRUE);
 }
 
 void
 ags_osc_buffer_util_test_get_char()
 {
-  //TODO:JK: implement me
+  gchar current;
+  guint i;
+  gboolean success;
+  
+  static const gchar *str = "abcdefghijklmnopqrstuvwxyz0123456789 ";
+  static const unsigned char *val_buffer[] = {
+    "\x00\x00\x00\x61",
+    "\x00\x00\x00\x62",
+    "\x00\x00\x00\x63",
+    "\x00\x00\x00\x64",
+    "\x00\x00\x00\x65",
+    "\x00\x00\x00\x66",
+    "\x00\x00\x00\x67",
+    "\x00\x00\x00\x68",
+    "\x00\x00\x00\x69",
+    "\x00\x00\x00\x6a",
+    "\x00\x00\x00\x6b",
+    "\x00\x00\x00\x6c",
+    "\x00\x00\x00\x6d",
+    "\x00\x00\x00\x6e",
+    "\x00\x00\x00\x6f",
+    "\x00\x00\x00\x70",
+    "\x00\x00\x00\x71",
+    "\x00\x00\x00\x72",
+    "\x00\x00\x00\x73",
+    "\x00\x00\x00\x74",
+    "\x00\x00\x00\x75",
+    "\x00\x00\x00\x76",
+    "\x00\x00\x00\x77",
+    "\x00\x00\x00\x78",
+    "\x00\x00\x00\x79",
+    "\x00\x00\x00\x7a",
+    "\x00\x00\x00\x30",
+    "\x00\x00\x00\x31",
+    "\x00\x00\x00\x32",
+    "\x00\x00\x00\x33",
+    "\x00\x00\x00\x34",
+    "\x00\x00\x00\x35",
+    "\x00\x00\x00\x36",
+    "\x00\x00\x00\x37",
+    "\x00\x00\x00\x38",
+    "\x00\x00\x00\x39",
+    "\x00\x00\x00\x20",
+  };
+
+  success = TRUE;
+
+  for(i = 0; i < 37 && success; i++){
+    ags_osc_buffer_util_get_char(val_buffer[i],
+				 &current);
+
+    if(current != str[i]){
+      success = FALSE;
+
+      break;
+    }
+  }
+  
+  CU_ASSERT(success == TRUE);
 }
 
 void
 ags_osc_buffer_util_test_put_rgba()
 {
-  //TODO:JK: implement me
+  unsigned char *buffer;
+
+  guint i, j;
+  gboolean success;
+  
+  static const guint8 rgba[14][4] = {
+    {0x0, 0x0, 0x0, 0xff},
+    {0x0, 0x0, 0xff, 0xff},
+    {0x0, 0xff, 0x0, 0xff},
+    {0xff, 0x0, 0x0, 0xff},
+    {0x0, 0xff, 0xff, 0xff},
+    {0xff, 0x0, 0xff, 0xff},
+    {0xff, 0xff, 0x0, 0xff},
+    {0xff, 0xff, 0xff, 0xff},
+    {0x0, 0x0, 0x0, 0x7f},
+    {0x0, 0x0, 0xff, 0x7f},
+    {0x0, 0xff, 0x0, 0x7f},
+    {0xff, 0x0, 0x0, 0x7f},
+    {0x0, 0xff, 0xff, 0x7f},
+    {0xff, 0x0, 0xff, 0x7f},
+    {0xff, 0xff, 0x0, 0x7f},
+    {0xff, 0xff, 0xff, 0x7f},
+  };
+
+  static const unsigned char *val_rgba[] = {
+    "\x00\x00\x00\xff",
+    "\x00\x00\xff\xff",
+    "\x00\xff\x00\xff",
+    "\xff\x00\x00\xff",
+    "\x00\xff\xff\xff",
+    "\xff\x00\xff\xff",
+    "\xff\xff\x00\xff",
+    "\xff\xff\xff\xff",
+    "\x00\x00\x00\x7f",
+    "\x00\x00\xff\x7f",
+    "\x00\xff\x00\x7f",
+    "\xff\x00\x00\x7f",
+    "\x00\xff\xff\x7f",
+    "\xff\x00\xff\x7f",
+    "\xff\xff\x00\x7f",
+    "\xff\xff\xff\x7f",
+  };
+  
+  buffer = (unsigned char *) malloc(4 * sizeof(unsigned char));
+
+  success = TRUE;
+
+  for(i = 0; i < 14 && success; i++){
+    ags_osc_buffer_util_put_rgba(buffer,
+				 rgba[i][0], rgba[i][1], rgba[i][2], rgba[i][3]);
+
+    for(j = 0; j < 4; j++){
+      if(buffer[j] != val_rgba[i][j]){
+	success = FALSE;
+	
+	break;
+      }
+    }
+  }
+
+  CU_ASSERT(success == TRUE);
 }
 
 void
 ags_osc_buffer_util_test_get_rgba()
 {
-  //TODO:JK: implement me
+  guint8 r, g, b, a;
+  guint i;
+  gboolean success;
+  
+  static const guint8 rgba[14][4] = {
+    {0x0, 0x0, 0x0, 0xff},
+    {0x0, 0x0, 0xff, 0xff},
+    {0x0, 0xff, 0x0, 0xff},
+    {0xff, 0x0, 0x0, 0xff},
+    {0x0, 0xff, 0xff, 0xff},
+    {0xff, 0x0, 0xff, 0xff},
+    {0xff, 0xff, 0x0, 0xff},
+    {0xff, 0xff, 0xff, 0xff},
+    {0x0, 0x0, 0x0, 0x7f},
+    {0x0, 0x0, 0xff, 0x7f},
+    {0x0, 0xff, 0x0, 0x7f},
+    {0xff, 0x0, 0x0, 0x7f},
+    {0x0, 0xff, 0xff, 0x7f},
+    {0xff, 0x0, 0xff, 0x7f},
+    {0xff, 0xff, 0x0, 0x7f},
+    {0xff, 0xff, 0xff, 0x7f},
+  };
+
+  static const unsigned char *val_rgba[] = {
+    "\x00\x00\x00\xff",
+    "\x00\x00\xff\xff",
+    "\x00\xff\x00\xff",
+    "\xff\x00\x00\xff",
+    "\x00\xff\xff\xff",
+    "\xff\x00\xff\xff",
+    "\xff\xff\x00\xff",
+    "\xff\xff\xff\xff",
+    "\x00\x00\x00\x7f",
+    "\x00\x00\xff\x7f",
+    "\x00\xff\x00\x7f",
+    "\xff\x00\x00\x7f",
+    "\x00\xff\xff\x7f",
+    "\xff\x00\xff\x7f",
+    "\xff\xff\x00\x7f",
+    "\xff\xff\xff\x7f",
+  };
+
+  success = TRUE;
+
+  for(i = 0; i < 14 && success; i++){
+    ags_osc_buffer_util_get_rgba(val_rgba[i],
+				 &r, &g, &b, &a);
+
+    if(r != rgba[i][0] ||
+       g != rgba[i][1] ||
+       b != rgba[i][2] ||
+       a != rgba[i][3]){
+      success = FALSE;
+      
+      break;
+    }
+  }
+  
+  CU_ASSERT(success == TRUE);
 }
 
 void

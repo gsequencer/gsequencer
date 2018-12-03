@@ -609,15 +609,15 @@ ags_osc_buffer_util_get_rgba(unsigned char *buffer,
   }
 
   if(g != NULL){
-    *g = buffer[0];
+    *g = buffer[1];
   }
 
   if(b != NULL){
-    *b = buffer[0];
+    *b = buffer[2];
   }
 
   if(a != NULL){
-    *a = buffer[0];
+    *a = buffer[3];
   }
 }
 
