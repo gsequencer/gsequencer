@@ -2030,9 +2030,10 @@ ags_osc_renew_controller_real_set_data(AgsOscRenewController *osc_renew_controll
 
 	length = offset - (path + path_offset + 3);
 
-	audio_name = malloc((length + 1) * sizeof(gchar));
-	sscanf(path + path_offset, "%s", &audio_name);
-
+	audio_name = (gchar *) malloc((length + 2) * sizeof(gchar));
+	memcpy(audio_name, path + path_offset + 2, (length + 1) * sizeof(gchar));
+	audio_name[length + 1] = '\0';
+	
 	start_audio = ags_sound_provider_get_audio(AGS_SOUND_PROVIDER(application_context));
 
 	list = ags_audio_find_name(start_audio,
