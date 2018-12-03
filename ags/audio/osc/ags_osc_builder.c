@@ -24,6 +24,11 @@
 #include <ags/audio/osc/ags_osc_util.h>
 #include <ags/audio/osc/ags_osc_buffer_util.h>
 
+#include <stdlib.h>
+#include <string.h>
+
+#include <ags/i18n.h>
+
 void ags_osc_builder_class_init(AgsOscBuilderClass *osc_builder);
 void ags_osc_builder_init(AgsOscBuilder *osc_builder);
 void ags_osc_builder_set_property(GObject *gobject,

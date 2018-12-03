@@ -46,10 +46,10 @@ ags_osc_buffer_util_put_int32(unsigned char *buffer,
     return;
   }
 
-  buffer[0] = (val & (0xff << 24)) >> 24;
-  buffer[1] = (val & (0xff << 16)) >> 16;
-  buffer[2] = (val & (0xff << 8)) >> 8;
-  buffer[3] = val & 0xff;
+  buffer[0] = (val & ((guint32) 0xff << 24)) >> 24;
+  buffer[1] = (val & ((guint32) 0xff << 16)) >> 16;
+  buffer[2] = (val & ((guint32) 0xff << 8)) >> 8;
+  buffer[3] = val & (guint32) 0xff;
 }
 
 /**
@@ -71,10 +71,10 @@ ags_osc_buffer_util_get_int32(unsigned char *buffer,
     return;
   }
 
-  tmp = (buffer[0] & 0xff);
-  tmp = (tmp << 8) + (buffer[1] & 0xff);
-  tmp = (tmp << 8) + (buffer[2] & 0xff);
-  tmp = (tmp << 8) + (buffer[3] & 0xff);
+  tmp = (guint32) (buffer[0] & 0xff);
+  tmp = (guint32) (tmp << 8) + (buffer[1] & 0xff);
+  tmp = (guint32) (tmp << 8) + (buffer[2] & 0xff);
+  tmp = (guint32) (tmp << 8) + (buffer[3] & 0xff);
   
   if(val != NULL){
     *val = tmp;
@@ -396,14 +396,14 @@ ags_osc_buffer_util_put_int64(unsigned char *buffer,
     return;
   }
 
-  buffer[0] = (val & (0xff << 56)) >> 56;
-  buffer[1] = (val & (0xff << 48)) >> 48;
-  buffer[2] = (val & (0xff << 40)) >> 40;
-  buffer[3] = (val & (0xff << 32)) >> 32;
-  buffer[4] = (val & (0xff << 24)) >> 24;
-  buffer[5] = (val & (0xff << 16)) >> 16;
-  buffer[6] = (val & (0xff << 8)) >> 8;
-  buffer[7] = val & 0xff;
+  buffer[0] = (val & ((guint64) 0xff << 56)) >> 56;
+  buffer[1] = (val & ((guint64) 0xff << 48)) >> 48;
+  buffer[2] = (val & ((guint64) 0xff << 40)) >> 40;
+  buffer[3] = (val & ((guint64) 0xff << 32)) >> 32;
+  buffer[4] = (val & ((guint64) 0xff << 24)) >> 24;
+  buffer[5] = (val & ((guint64) 0xff << 16)) >> 16;
+  buffer[6] = (val & ((guint64) 0xff << 8)) >> 8;
+  buffer[7] = val & (guint64) 0xff;
 }
 
 /**
@@ -425,14 +425,14 @@ ags_osc_buffer_util_get_int64(unsigned char *buffer,
     return;
   }
 
-  tmp = (buffer[0] & 0xff);
-  tmp = (tmp << 8) + (buffer[1] & 0xff);
-  tmp = (tmp << 8) + (buffer[2] & 0xff);
-  tmp = (tmp << 8) + (buffer[3] & 0xff);
-  tmp = (tmp << 8) + (buffer[4] & 0xff);
-  tmp = (tmp << 8) + (buffer[5] & 0xff);
-  tmp = (tmp << 8) + (buffer[6] & 0xff);
-  tmp = (tmp << 8) + (buffer[7] & 0xff);
+  tmp = (guint64) (buffer[0] & 0xff);
+  tmp = (guint64) (tmp << 8) + (buffer[1] & 0xff);
+  tmp = (guint64) (tmp << 8) + (buffer[2] & 0xff);
+  tmp = (guint64) (tmp << 8) + (buffer[3] & 0xff);
+  tmp = (guint64) (tmp << 8) + (buffer[4] & 0xff);
+  tmp = (guint64) (tmp << 8) + (buffer[5] & 0xff);
+  tmp = (guint64) (tmp << 8) + (buffer[6] & 0xff);
+  tmp = (guint64) (tmp << 8) + (buffer[7] & 0xff);
   
   if(val != NULL){
     *val = tmp;
@@ -463,14 +463,14 @@ ags_osc_buffer_util_put_double(unsigned char *buffer,
 
   data.ieee_double.v_double = val;
 
-  buffer[0] = (data.val & (0xff << 56)) >> 56;
-  buffer[1] = (data.val & (0xff << 48)) >> 48;
-  buffer[2] = (data.val & (0xff << 40)) >> 40;
-  buffer[3] = (data.val & (0xff << 32)) >> 32;
-  buffer[4] = (data.val & (0xff << 24)) >> 24;
-  buffer[5] = (data.val & (0xff << 16)) >> 16;
-  buffer[6] = (data.val & (0xff << 8)) >> 8;
-  buffer[7] = data.val & 0xff;
+  buffer[0] = (data.val & ((guint64) 0xff << 56)) >> 56;
+  buffer[1] = (data.val & ((guint64) 0xff << 48)) >> 48;
+  buffer[2] = (data.val & ((guint64) 0xff << 40)) >> 40;
+  buffer[3] = (data.val & ((guint64) 0xff << 32)) >> 32;
+  buffer[4] = (data.val & ((guint64) 0xff << 24)) >> 24;
+  buffer[5] = (data.val & ((guint64) 0xff << 16)) >> 16;
+  buffer[6] = (data.val & ((guint64) 0xff << 8)) >> 8;
+  buffer[7] = data.val & (guint64) 0xff;
 }
 
 /**
@@ -495,14 +495,14 @@ ags_osc_buffer_util_get_double(unsigned char *buffer,
     return;
   }
 
-  data.val = (buffer[0] & 0xff);
-  data.val = (data.val << 8) + (buffer[1] & 0xff);
-  data.val = (data.val << 8) + (buffer[2] & 0xff);
-  data.val = (data.val << 8) + (buffer[3] & 0xff);
-  data.val = (data.val << 8) + (buffer[4] & 0xff);
-  data.val = (data.val << 8) + (buffer[5] & 0xff);
-  data.val = (data.val << 8) + (buffer[6] & 0xff);
-  data.val = (data.val << 8) + (buffer[7] & 0xff);
+  data.val = (guint64) (buffer[0] & 0xff);
+  data.val = (guint64) (data.val << 8) + (buffer[1] & 0xff);
+  data.val = (guint64) (data.val << 8) + (buffer[2] & 0xff);
+  data.val = (guint64) (data.val << 8) + (buffer[3] & 0xff);
+  data.val = (guint64) (data.val << 8) + (buffer[4] & 0xff);
+  data.val = (guint64) (data.val << 8) + (buffer[5] & 0xff);
+  data.val = (guint64) (data.val << 8) + (buffer[6] & 0xff);
+  data.val = (guint64) (data.val << 8) + (buffer[7] & 0xff);
 
   if(val != NULL){
     *val = data.ieee_double.v_double;

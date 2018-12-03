@@ -28,6 +28,7 @@
 #include <ags/libags-audio.h>
 
 #include <stdlib.h>
+#include <string.h>
 
 int ags_osc_buffer_util_test_init_suite();
 int ags_osc_buffer_util_test_clean_suite();
@@ -412,37 +413,223 @@ ags_osc_buffer_util_test_get_string()
 void
 ags_osc_buffer_util_test_put_blob()
 {
-  //TODO:JK: implement me
+  unsigned char *buffer;
+
+  guint i;
+  gboolean success;
+  
+  static const unsigned char *blob = "\x00\x00\x00\x00\x00\x00\x00\x01\x0e\x00\x00\x00\x00\x00\x00\x00";
+  static const unsigned char *blob_length_data = "\x00\x00\x00\x10";
+  
+  buffer = (unsigned char *) malloc(32 * sizeof(unsigned char));
+
+  ags_osc_buffer_util_put_blob(buffer,
+			       16, blob);
+
+  success = TRUE;
+
+  for(i = 0; i < 4; i++){
+    if(blob_length_data[i] != buffer[i]){
+      success = FALSE;
+
+      break;
+    }
+  }
+  
+  for(i = 0; i < 16; i++){
+    if(blob[i] != buffer[i + 4]){
+      success = FALSE;
+
+      break;
+    }
+  }
+
+  CU_ASSERT(success);
 }
 
 void
 ags_osc_buffer_util_test_get_blob()
 {
-  //TODO:JK: implement me
+  unsigned char *data;
+
+  gint32 data_size;
+  guint i;
+  gboolean success;
+  
+  static const unsigned char *buffer = "\x00\x00\x00\x10\x00\x00\x00\x00\x00\x00\x00\x01\x0e\x00\x00\x00\x00\x00\x00\x00";
+
+  ags_osc_buffer_util_get_blob(buffer,
+			       &data_size, &data);
+
+  CU_ASSERT(data_size == 16);
+  
+  success = TRUE;
+  
+  for(i = 0; i < 16; i++){
+    if(data[i] != buffer[i + 4]){
+      success = FALSE;
+
+      break;
+    }
+  }
+
+  CU_ASSERT(success);
 }
 
 void
 ags_osc_buffer_util_test_put_int64()
 {
-  //TODO:JK: implement me
+  unsigned char *buffer;
+
+  guint i, j;
+  gboolean success;
+  
+  static const gint64 val[] = {
+    0,
+    1,
+    255,
+    256,
+    65535,
+    65536,
+    16777215,
+    16777216,
+    4294967295,
+    9223372036854775807,
+    18446744073709551615,
+  };
+
+  static const unsigned char *val_buffer[] = {
+    "\x00\x00\x00\x00\x00\x00\x00\x00",
+    "\x00\x00\x00\x00\x00\x00\x00\x01",
+    "\x00\x00\x00\x00\x00\x00\x00\xff",
+    "\x00\x00\x00\x00\x00\x00\x01\x00",
+    "\x00\x00\x00\x00\x00\x00\xff\xff",
+    "\x00\x00\x00\x00\x00\x01\x00\x00",
+    "\x00\x00\x00\x00\x00\xff\xff\xff",
+    "\x00\x00\x00\x00\x01\x00\x00\x00",
+    "\x00\x00\x00\x00\xff\xff\xff\xff",
+    "\x7f\xff\xff\xff\xff\xff\xff\xff",
+    "\xff\xff\xff\xff\xff\xff\xff\xff",
+  };
+
+  buffer = (unsigned char *) malloc(8 * sizeof(unsigned char));
+
+  success = TRUE;
+  
+  for(i = 0; i < 11 && success; i++){
+    ags_osc_buffer_util_put_int64(buffer,
+				  val[i]);
+    
+    for(j = 0; j < 8; j++){
+      if(buffer[j] != val_buffer[i][j]){
+	success = FALSE;
+
+	break;
+      }
+    }
+  }
+
+  CU_ASSERT(success == TRUE);
 }
 
 void
 ags_osc_buffer_util_test_get_int64()
 {
-  //TODO:JK: implement me
+  gint64 current;
+  guint i;
+  gboolean success;
+
+  static const gint64 val[] = {
+    0,
+    1,
+    255,
+    256,
+    65535,
+    65536,
+    16777215,
+    16777216,
+    4294967295,
+    9223372036854775807,
+    18446744073709551615,
+  };
+
+  static const unsigned char *val_buffer[] = {
+    "\x00\x00\x00\x00\x00\x00\x00\x00",
+    "\x00\x00\x00\x00\x00\x00\x00\x01",
+    "\x00\x00\x00\x00\x00\x00\x00\xff",
+    "\x00\x00\x00\x00\x00\x00\x01\x00",
+    "\x00\x00\x00\x00\x00\x00\xff\xff",
+    "\x00\x00\x00\x00\x00\x01\x00\x00",
+    "\x00\x00\x00\x00\x00\xff\xff\xff",
+    "\x00\x00\x00\x00\x01\x00\x00\x00",
+    "\x00\x00\x00\x00\xff\xff\xff\xff",
+    "\x7f\xff\xff\xff\xff\xff\xff\xff",
+    "\xff\xff\xff\xff\xff\xff\xff\xff",
+  };
+
+  success = TRUE;
+
+  for(i = 0; i < 9 && success; i++){
+    ags_osc_buffer_util_get_int64(val_buffer[i],
+				  &current);
+
+    if(current != val[i]){
+      success = FALSE;
+
+      break;
+    }
+  }
+
+  CU_ASSERT(success == TRUE);
 }
 
 void
 ags_osc_buffer_util_test_put_double()
 {
-  //TODO:JK: implement me
+  unsigned char *buffer;
+
+  gdouble current;
+  
+  guint i;
+  gboolean success;
+
+  static const gdouble val[] = {
+    0.0,
+    1.0,
+    4.125,
+    5.25,
+    7.8,
+    9.87,
+    16.99,
+    23.5,
+    31.75,
+  };
+
+  success = TRUE;
+
+  buffer = (unsigned char *) malloc(8 * sizeof(unsigned char));
+
+  for(i = 0; i < 9 && success; i++){
+    ags_osc_buffer_util_put_double(buffer,
+				   val[i]);
+    
+    ags_osc_buffer_util_get_double(buffer,
+				   &current);
+
+    if(current != val[i]){
+      success = FALSE;
+
+      break;
+    }
+  }
+
+  CU_ASSERT(success == TRUE);
 }
 
 void
 ags_osc_buffer_util_test_get_double()
 {
-  //TODO:JK: implement me
+  //NOTE:JK: see above
 }
 
 void

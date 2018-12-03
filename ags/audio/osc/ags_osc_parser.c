@@ -23,7 +23,10 @@
 
 #include <ags/audio/osc/ags_osc_util.h>
 
+#include <stdlib.h>
 #include <string.h>
+
+#include <ags/i18n.h>
 
 void ags_osc_parser_class_init(AgsOscParserClass *osc_parser);
 void ags_osc_parser_init(AgsOscParser *osc_parser);
