@@ -1623,6 +1623,8 @@ ags_osc_renew_controller_set_data_channel(AgsOscRenewController *osc_renew_contr
   if(!AGS_IS_CHANNEL(channel)){
     return(NULL);
   }
+
+  start_response = NULL;
   
   application_context = ags_application_context_get_instance();
 
@@ -1637,6 +1639,8 @@ ags_osc_renew_controller_set_data_channel(AgsOscRenewController *osc_renew_contr
     guint length;
     
     osc_response = ags_osc_response_new();
+    start_response = g_list_prepend(start_response,
+				    osc_response);
 
     packet = (unsigned char *) malloc(AGS_OSC_RESPONSE_DEFAULT_CHUNK_SIZE * sizeof(unsigned char));
     memset(packet, 0, AGS_OSC_RESPONSE_DEFAULT_CHUNK_SIZE * sizeof(unsigned char));
@@ -1663,8 +1667,6 @@ ags_osc_renew_controller_set_data_channel(AgsOscRenewController *osc_renew_contr
       
       if(!success ||
 	 message_size < 16 + path_length + 4){
-	osc_response = ags_osc_response_new();
-      
 	ags_osc_response_set_flags(osc_response,
 				   AGS_OSC_RESPONSE_ERROR);
 
@@ -1695,8 +1697,6 @@ ags_osc_renew_controller_set_data_channel(AgsOscRenewController *osc_renew_contr
       
       if(!success ||
 	 message_size < 16 + path_length + 4){
-	osc_response = ags_osc_response_new();
-      
 	ags_osc_response_set_flags(osc_response,
 				   AGS_OSC_RESPONSE_ERROR);
 
@@ -1727,8 +1727,6 @@ ags_osc_renew_controller_set_data_channel(AgsOscRenewController *osc_renew_contr
       
       if(!success ||
 	 message_size < 16 + path_length + 4){
-	osc_response = ags_osc_response_new();
-      
 	ags_osc_response_set_flags(osc_response,
 				   AGS_OSC_RESPONSE_ERROR);
 
@@ -1761,115 +1759,455 @@ ags_osc_renew_controller_set_data_channel(AgsOscRenewController *osc_renew_contr
     g_object_set(osc_response,
 		 "packet-size", packet_size,
 		 NULL);
-  }else if(!strncmp(path + path_offset,
-		    "/AgsPort",
-		    8)){
-    AgsPort *port;
-      
-    GList *start_port;
-      
-    guint nth_port;
-    int retval;
+  }else{
+    GType recall_type;
+    
+    GList *start_play, *play;
+    GList *start_recall, *recall;
 
-    port = NULL;
-      
-    path_offset += 8;
+    regmatch_t match_arr[2];
 
-    if(g_ascii_isdigit(path[path_offset + 1])){
-      g_object_get(channel,
-		   "port", &start_port,
-		   NULL);
-	
-      retval = sscanf(path + path_offset, "[%d]",
-		      &nth_port);
-      
-      port = g_list_nth_data(start_port,
-			     nth_port);
-      
-      path_offset = index(path + path_offset, ']') - path + 1;
+    gchar *type_name;    
+    gchar *str;
 
-      osc_response = ags_osc_renew_controller_set_data_port(osc_renew_controller,
-							    osc_connection,
-							    port,
-							    message, message_size,
-							    type_tag,
-							    path, path_offset);
+    guint type_name_length;
+    guint str_length;
+    
+    static regex_t recall_regex;
+    static regex_t single_access_regex;
+    static regex_t range_access_regex;
+    static regex_t voluntary_access_regex;
+    static regex_t more_access_regex;
+    static regex_t wildcard_access_regex;
+    
+    static gboolean regex_compiled = FALSE;
 
-      g_list_free(start_port);
-    }else if(path[path_offset + 1] == '"'){
-      GList *list;
-	
-      gchar *specifier;
-      gchar *offset;
+    static const gchar *recall_pattern = "^\\/([a-zA-Z]+)(\\/|\\[[0-9]+\\]|\\[[0-9]+\\-[0-9]+\\]|\\[\\?\\]|\\[\\+\\]|\\[\\*\\]|:)";
+    static const gchar *single_access_pattern = "^\\[([0-9]+)\\]";
+    static const gchar *range_access_pattern = "^\\[([0-9]+)\\-([0-9]+)\\]";
+    static const gchar *voluntary_access_pattern = "^\\[(\\?)\\]";
+    static const gchar *more_access_pattern = "^\\[(\\+)\\]";
+    static const gchar *wildcard_access_pattern = "^\\[(\\*)\\]";
+    
+    static const size_t max_matches = 2;
+    static const size_t index_max_matches = 1;
 
-      guint length;
+    /* compile regex */
+    pthread_mutex_lock(&regex_mutex);
+  
+    if(!regex_compiled){
+      regex_compiled = TRUE;
+    
+      ags_regcomp(&recall_regex, recall_pattern, REG_EXTENDED);
 
-      if((offset = index(path + path_offset + 2, '"')) == NULL){
-	ags_osc_response_set_flags(osc_response,
-				   AGS_OSC_RESPONSE_ERROR);
+      ags_regcomp(&single_access_regex, single_access_pattern, REG_EXTENDED);
+      ags_regcomp(&range_access_regex, range_access_pattern, REG_EXTENDED);
+      ags_regcomp(&voluntary_access_regex, voluntary_access_pattern, REG_EXTENDED);
+      ags_regcomp(&more_access_regex, more_access_pattern, REG_EXTENDED);
+      ags_regcomp(&wildcard_access_regex, wildcard_access_pattern, REG_EXTENDED);
+    }
 
-	g_object_set(osc_response,
-		     "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_CHUNK_SIZE_EXCEEDED,
-		     NULL);
-	  
-	return(start_response);
-      }
+    pthread_mutex_unlock(&regex_mutex);
 
-      length = offset - (path + path_offset + 3);
+    if(ags_regexec(&recall_regex, path + path_offset, max_matches, match_arr, 0) == 0){
+      type_name_length = match_arr[0].rm_eo - match_arr[0].rm_so;
+      type_name = g_strndup(path + path_offset + 1,
+			    type_name_length);
 
-      specifier = malloc(length * sizeof(gchar));
-      sscanf(path + path_offset, "%s", &specifier);
-	
-      g_object_get(channel,
-		   "port", &start_port,
-		   NULL);
-
-      list = ags_port_find_specifier(start_port,
-				     specifier);
-
-      if(list != NULL){
-	port = list->data;
-      }
-
-      path_offset = path_offset + strlen(specifier) + 2;
-
-      osc_response = ags_osc_renew_controller_set_data_port(osc_renew_controller,
-							    osc_connection,
-							    port,
-							    message, message_size,
-							    type_tag,
-							    path, path_offset);
-	
-      g_list_free(start_port);
+      str_length = match_arr[1].rm_eo - match_arr[1].rm_so;
+      str = g_strndup(path + path_offset + 1 + type_name_length,
+		      str_length);
     }else{
       osc_response = ags_osc_response_new();
       start_response = g_list_prepend(start_response,
 				      osc_response);
-      
+
       ags_osc_response_set_flags(osc_response,
 				 AGS_OSC_RESPONSE_ERROR);
 
       g_object_set(osc_response,
-		   "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_MISSING_INDEX,
+		   "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_UNKNOW_PATH,
 		   NULL);
 
       return(start_response);
     }
-  }else{
-    osc_response = ags_osc_response_new();
-    start_response = g_list_prepend(start_response,
-				    osc_response);
-    
-    ags_osc_response_set_flags(osc_response,
-			       AGS_OSC_RESPONSE_ERROR);
 
-    g_object_set(osc_response,
-		 "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_UNKNOW_PATH,
+    recall_type = g_type_from_name(type_name);
+    
+    g_object_get(channel,
+		 "play", &start_play,
+		 "recall", &start_recall,
 		 NULL);
 
-    return(start_response);
-  }
+    if(ags_regexec(&single_access_regex, str, index_max_matches, match_arr, 0) == 0){
+      guint i;
+      guint i_stop;
 
+      path_offset += (type_name_length + 1) + str_length;
+      
+      i_stop = g_ascii_strtoull(str + 1,
+				NULL,
+				10);
+
+      play = start_play;
+      recall = start_recall;
+      
+      for(i = 0; i < i_stop; i++){
+	play = ags_recall_template_find_type(play, recall_type);
+	recall = ags_recall_template_find_type(recall, recall_type);
+
+	if(i + 1 < i_stop){
+	  if(play != NULL){
+	    play = play->next;
+	  }
+	  
+	  if(recall != NULL){
+	    recall = recall->next;
+	  }
+	}
+      }
+      
+      if(play != NULL){
+	AgsRecall *current;
+
+	GList *retval;
+
+	current = play->data;	
+	retval = ags_osc_renew_controller_set_data_recall(osc_renew_controller,
+							  osc_connection,
+							  current,
+							  message, message_size,
+							  type_tag,
+							  path, path_offset);
+
+	if(start_response != NULL){
+	  start_response = g_list_concat(start_response,
+					 retval);
+	}else{
+	  start_response = retval;
+	}
+      }
+      
+      if(recall != NULL){
+	AgsRecall *current;
+
+	GList *retval;
+
+	current = recall->data;
+	retval = ags_osc_renew_controller_set_data_recall(osc_renew_controller,
+							  osc_connection,
+							  current,
+							  message, message_size,
+							  type_tag,
+							  path, path_offset);
+
+	if(start_response != NULL){
+	  start_response = g_list_concat(start_response,
+					 retval);
+	}else{
+	  start_response = retval;
+	}
+      }
+    }else if(ags_regexec(&range_access_regex, str, max_matches, match_arr, 0) == 0){
+      gchar *endptr;
+      
+      guint i;
+      guint i_start, i_stop;
+
+      path_offset += (type_name_length + 1) + str_length;
+
+      endptr = NULL;
+      i_start = g_ascii_strtoull(str + 1,
+				 &endptr,
+				 10);
+
+      i_stop = g_ascii_strtoull(endptr + 1,
+				NULL,
+				10);
+      
+      play = start_play;
+      recall = start_recall;
+      
+      for(i = 0; i < i_stop; i++){
+	play = ags_recall_template_find_type(play, recall_type);
+	recall = ags_recall_template_find_type(recall, recall_type);
+
+	if(i >= i_start){
+	  if(play != NULL){
+	    AgsRecall *current;
+
+	    GList *retval;
+
+	    current = play->data;	
+	    retval = ags_osc_renew_controller_set_data_recall(osc_renew_controller,
+							      osc_connection,
+							      current,
+							      message, message_size,
+							      type_tag,
+							      path, path_offset);
+
+	    if(start_response != NULL){
+	      start_response = g_list_concat(start_response,
+					     retval);
+	    }else{
+	      start_response = retval;
+	    }
+	  }
+      
+	  if(recall != NULL){
+	    AgsRecall *current;
+
+	    GList *retval;
+
+	    current = recall->data;
+	    retval = ags_osc_renew_controller_set_data_recall(osc_renew_controller,
+							      osc_connection,
+							      current,
+							      message, message_size,
+							      type_tag,
+							      path, path_offset);
+	  }
+
+	  if(start_response != NULL){
+	    start_response = g_list_concat(start_response,
+					   retval);
+	  }else{
+	    start_response = retval;
+	  }
+	}
+	
+	if(i + 1 < i_stop){
+	  if(play != NULL){
+	    play = play->next;
+	  }
+	  
+	  if(recall != NULL){
+	    recall = recall->next;
+	  }
+	}
+      }
+    }else if(ags_regexec(&voluntary_access_regex, str, index_max_matches, match_arr, 0) == 0){
+      path_offset += (type_name_length + 1) + str_length;
+
+      play = start_play;
+      recall = start_recall;
+
+      play = ags_recall_template_find_type(play, recall_type);
+      recall = ags_recall_template_find_type(recall, recall_type);
+
+      if(play != NULL){
+	AgsRecall *current;
+
+	current = play->data;	
+	start_response = ags_osc_renew_controller_set_data_recall(osc_renew_controller,
+								  osc_connection,
+								  current,
+								  message, message_size,
+								  type_tag,
+								  path, path_offset);
+      }
+      
+      if(recall != NULL){
+	AgsRecall *current;
+
+	current = recall->data;
+	start_response = ags_osc_renew_controller_set_data_recall(osc_renew_controller,
+								  osc_connection,
+								  current,
+								  message, message_size,
+								  type_tag,
+								  path, path_offset);
+      }
+
+      if(play == NULL && recall == NULL){
+	osc_response = ags_osc_response_new();
+	start_response = g_list_prepend(start_response,
+					osc_response);
+      
+	ags_osc_response_set_flags(osc_response,
+				   AGS_OSC_RESPONSE_OK);
+
+	return(start_response);
+      }
+    }else if(ags_regexec(&more_access_regex, str, index_max_matches, match_arr, 0) == 0){
+      path_offset += (type_name_length + 1) + str_length;
+
+      play = start_play;
+      recall = start_recall;
+
+      play = ags_recall_template_find_type(play, recall_type);
+      recall = ags_recall_template_find_type(recall, recall_type);
+
+      if(play == NULL && recall == NULL){
+	osc_response = ags_osc_response_new();
+	start_response = g_list_prepend(start_response,
+					osc_response);
+      
+	ags_osc_response_set_flags(osc_response,
+				   AGS_OSC_RESPONSE_ERROR);
+
+	g_object_set(osc_response,
+		     "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_SERVER_FAILURE,
+		     NULL);
+
+	return(start_response);
+      }
+      
+      if(play != NULL){
+	AgsRecall *current;
+
+	current = play->data;	
+	start_response = ags_osc_renew_controller_set_data_recall(osc_renew_controller,
+								  osc_connection,
+								  current,
+								  message, message_size,
+								  type_tag,
+								  path, path_offset);
+      }
+      
+      if(recall != NULL){
+	AgsRecall *current;
+
+	GList *retval;
+
+	current = recall->data;
+	retval = ags_osc_renew_controller_set_data_recall(osc_renew_controller,
+							  osc_connection,
+							  current,
+							  message, message_size,
+							  type_tag,
+							  path, path_offset);
+
+	if(start_response != NULL){
+	  start_response = g_list_concat(start_response,
+					 retval);
+	}else{
+	  start_response = retval;
+	}
+      }
+      
+      while(play != NULL || recall != NULL){
+	play = ags_recall_template_find_type(play, recall_type);
+	recall = ags_recall_template_find_type(recall, recall_type);
+
+	if(play != NULL){
+	  AgsRecall *current;
+
+	  GList *retval;
+
+	  current = play->data;	
+	  retval = ags_osc_renew_controller_set_data_recall(osc_renew_controller,
+							    osc_connection,
+							    current,
+							    message, message_size,
+							    type_tag,
+							    path, path_offset);
+
+	  start_response = g_list_concat(start_response,
+					 retval);
+	}
+      
+	if(recall != NULL){
+	  AgsRecall *current;
+
+	  GList *retval;
+
+	  current = recall->data;
+	  retval = ags_osc_renew_controller_set_data_recall(osc_renew_controller,
+							    osc_connection,
+							    current,
+							    message, message_size,
+							    type_tag,
+							    path, path_offset);
+
+	  start_response = g_list_concat(start_response,
+					 retval);
+	}
+
+	if(play != NULL){
+	  play = play->next;
+	}
+	  
+	if(recall != NULL){
+	  recall = recall->next;
+	}
+      }
+    }else if(ags_regexec(&wildcard_access_regex, str, index_max_matches, match_arr, 0) == 0){
+      path_offset += (type_name_length + 1) + str_length;
+
+      play = start_play;
+      recall = start_recall;
+
+      while(play != NULL || recall != NULL){
+	play = ags_recall_template_find_type(play, recall_type);
+	recall = ags_recall_template_find_type(recall, recall_type);
+
+	if(play != NULL){
+	  AgsRecall *current;
+
+	  GList *retval;
+	  
+	  current = play->data;	
+	  retval = ags_osc_renew_controller_set_data_recall(osc_renew_controller,
+							    osc_connection,
+							    current,
+							    message, message_size,
+							    type_tag,
+							    path, path_offset);
+
+	  if(start_response != NULL){
+	    start_response = g_list_concat(start_response,
+					   retval);
+	  }else{
+	    start_response = retval;
+	  }
+	}
+      
+	if(recall != NULL){
+	  AgsRecall *current;
+
+	  GList *retval;
+	  
+	  current = recall->data;
+	  retval = ags_osc_renew_controller_set_data_recall(osc_renew_controller,
+							    osc_connection,
+							    current,
+							    message, message_size,
+							    type_tag,
+							    path, path_offset);
+
+	  if(start_response != NULL){
+	    start_response = g_list_concat(start_response,
+					   retval);
+	  }else{
+	    start_response = retval;
+	  }
+	}
+
+	if(play != NULL){
+	  play = play->next;
+	}
+	  
+	if(recall != NULL){
+	  recall = recall->next;
+	}
+      }
+    }else{
+      osc_response = ags_osc_response_new();
+      start_response = g_list_prepend(start_response,
+				      osc_response);
+
+      ags_osc_response_set_flags(osc_response,
+				 AGS_OSC_RESPONSE_ERROR);
+
+      g_object_set(osc_response,
+		   "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_MALFORMED_REQUEST,
+		   NULL);
+
+      return(start_response);
+    }
+  } 
+  
   return(start_response);
 }
 
@@ -1881,100 +2219,265 @@ ags_osc_renew_controller_set_data_recall(AgsOscRenewController *osc_renew_contro
 					 gchar *type_tag,
 					 gchar *path, guint path_offset)
 {
+  AgsOscResponse *osc_response;
+
+  AgsThread *task_thread;
   
-    if(!strncmp(path + path_offset,
-		"/AgsPort",
-		8)){
-      AgsPort *port;
-      
-      GList *start_port;
-      
-      guint nth_port;
-      int retval;
+  AgsApplicationContext *application_context;
 
-      port = NULL;
-      
-      path_offset += 8;
+  GList *start_response;
+  
+  unsigned char *packet;
 
-      if(g_ascii_isdigit(path[path_offset + 1])){
-	g_object_get(audio,
-		     "port", &start_port,
-		     NULL);
+  guint path_length;
+  guint real_packet_size;
+  guint packet_size;
+  
+  if(!AGS_IS_RECALL(recall)){
+    return(NULL);
+  }
+
+  start_response = NULL;
+  
+  application_context = ags_application_context_get_instance();
+
+  task_thread = ags_concurrency_provider_get_task_thread(AGS_CONCURRENCY_PROVIDER(application_context));
+
+  real_packet_size = 0;
+  packet_size = 0;
+
+  if(!strncmp(path + path_offset,
+	      ":",
+	      1)){
+    guint length;
+    
+    osc_response = ags_osc_response_new();
+    start_response = g_list_prepend(start_response,
+				    osc_response);
+
+    packet = (unsigned char *) malloc(AGS_OSC_RESPONSE_DEFAULT_CHUNK_SIZE * sizeof(unsigned char));
+    memset(packet, 0, AGS_OSC_RESPONSE_DEFAULT_CHUNK_SIZE * sizeof(unsigned char));
+    
+    g_object_set(osc_response,
+		 "packet", packet,
+		 "packet-size", packet_size,
+		 NULL);
+  
+    real_packet_size = AGS_OSC_RESPONSE_DEFAULT_CHUNK_SIZE;
+    
+    path_length = 4 * (guint) ceil((double) (strlen(path) + 1) / 4.0);
+    path_offset += 1;
 	
-	retval = sscanf(path + path_offset, "[%d]",
-			&nth_port);
-      
-	port = g_list_nth_data(start_port,
-			       nth_port);
-      
-	path_offset = index(path + path_offset, ']') - path + 1;
+    ags_osc_response_set_flags(osc_response,
+			       AGS_OSC_RESPONSE_ERROR);
 
-	start_response = ags_osc_renew_controller_set_data_port(osc_renew_controller,
-								osc_connection,
-								port,
-								message, message_size,
-								type_tag,
-								path, path_offset);
+    g_object_set(osc_response,
+		 "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_UNKNOW_ARGUMENT,
+		 NULL);
+
+    return(start_response);
+  }else if(!strncmp(path + path_offset,
+		    "/AgsPort",
+		    8)){
+    GList *start_port, *port;
+    
+    regmatch_t match_arr[2];
+
+    static regex_t single_access_regex;
+    static regex_t range_access_regex;
+    static regex_t voluntary_access_regex;
+    static regex_t more_access_regex;
+    static regex_t wildcard_access_regex;
+    
+    static gboolean regex_compiled = FALSE;
+
+    static const gchar *single_access_pattern = "^\\[([0-9]+)\\]";
+    static const gchar *range_access_pattern = "^\\[([0-9]+)\\-([0-9]+)\\]";
+    static const gchar *voluntary_access_pattern = "^\\[(\\?)\\]";
+    static const gchar *more_access_pattern = "^\\[(\\+)\\]";
+    static const gchar *wildcard_access_pattern = "^\\[(\\*)\\]";
+    
+    static const size_t max_matches = 2;
+    static const size_t index_max_matches = 1;
+
+    /* compile regex */
+    pthread_mutex_lock(&regex_mutex);
+  
+    if(!regex_compiled){
+      regex_compiled = TRUE;
       
-	g_list_free(start_port);
-      }else if(path[path_offset + 1] == '"'){
-	GList *list;
+      ags_regcomp(&single_access_regex, single_access_pattern, REG_EXTENDED);
+      ags_regcomp(&range_access_regex, range_access_pattern, REG_EXTENDED);
+      ags_regcomp(&voluntary_access_regex, voluntary_access_pattern, REG_EXTENDED);
+      ags_regcomp(&more_access_regex, more_access_pattern, REG_EXTENDED);
+      ags_regcomp(&wildcard_access_regex, wildcard_access_pattern, REG_EXTENDED);
+    }
+
+    pthread_mutex_unlock(&regex_mutex);
+    
+    g_object_get(recall,
+		 "port", &start_port,
+		 NULL);
+
+    if(ags_regexec(&single_access_regex, path + path_offset, index_max_matches, match_arr, 0) == 0){
+      AgsPort *current;
+      
+      gchar *endptr;
+      
+      guint i_stop;
+
+      endptr = NULL;
+      i_stop = g_ascii_strtoull(path + path_offset + 1,
+				&endptr,
+				10);
+      
+      current = g_list_nth_data(start_port,
+				i_stop);
+
+      path_offset += ((endptr + 1) - (path + path_offset));
+
+      start_response = ags_osc_renew_controller_set_data_channel(osc_renew_controller,
+								 osc_connection,
+								 current,
+								 message, message_size,
+								 type_tag,
+								 path, path_offset);
+    }else if(ags_regexec(&range_access_regex, path + path_offset, max_matches, match_arr, 0) == 0){
+      gchar *endptr;
+      
+      guint i;
+      guint i_start, i_stop;
+
+      endptr = NULL;
+      i_start = g_ascii_strtoull(path + path_offset + 1,
+				 &endptr,
+				 10);
+
+      i_stop = g_ascii_strtoull(endptr + 1,
+				&endptr,
+				10);
+
+      path_offset += ((endptr + 1) - (path + path_offset));
+
+      port = g_list_nth(start_port,
+			i_start);
+      
+      for(i = i_start; i < i_stop; i++){
+	GList *retval;
 	
-	gchar *specifier;
-	gchar *offset;
+	retval = ags_osc_renew_controller_set_data_channel(osc_renew_controller,
+							   osc_connection,
+							   port->data,
+							   message, message_size,
+							   type_tag,
+							   path, path_offset);
 
-	guint length;
-
-	if((offset = index(path + path_offset + 2, '"')) == NULL){
-	  ags_osc_response_set_flags(osc_response,
-				     AGS_OSC_RESPONSE_ERROR);
-
-	  g_object_set(osc_response,
-		       "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_CHUNK_SIZE_EXCEEDED,
-		       NULL);
-	  
-	  return(start_response);
+	if(start_response != NULL){
+	  start_response = g_list_concat(start_response,
+					 retval);
+	}else{
+	  start_response = retval;
 	}
 
-	length = offset - (path + path_offset + 3);
+	port = port->next;
+      }
+    }else if(ags_regexec(&voluntary_access_regex, path + path_offset, index_max_matches, match_arr, 0) == 0){
+      path_offset += 3;
 
-	specifier = malloc(length * sizeof(gchar));
-	sscanf(path + path_offset, "%s", &specifier);
-
-	g_object_get(audio,
-		     "port", &start_port,
-		     NULL);	
-
-	list = ags_port_find_specifier(start_port,
-				       specifier);
-
-	if(list != NULL){
-	  port = list->data;
-	}
-
-	path_offset = path_offset + strlen(specifier) + 2;
-      
-	osc_response = ags_osc_renew_controller_set_data_port(osc_renew_controller,
-							      osc_connection,
-							      port,
-							      message, message_size,
-							      type_tag,
-							      path, path_offset);
+      if(start_port != NULL){
+	GList *retval;
 	
-	g_list_free(start_port);
+	retval = ags_osc_renew_controller_set_data_channel(osc_renew_controller,
+							   osc_connection,
+							   start_port->data,
+							   message, message_size,
+							   type_tag,
+							   path, path_offset);
       }else{
 	osc_response = ags_osc_response_new();
+	start_response = g_list_prepend(start_response,
+					osc_response);
+      
+	ags_osc_response_set_flags(osc_response,
+				   AGS_OSC_RESPONSE_OK);
+
+	return(start_response);
+      }
+    }else if(ags_regexec(&more_access_regex, path + path_offset, index_max_matches, match_arr, 0) == 0){
+      path_offset += 3;
+
+      if(start_port == NULL){
+	osc_response = ags_osc_response_new();
+	start_response = g_list_prepend(start_response,
+					osc_response);
       
 	ags_osc_response_set_flags(osc_response,
 				   AGS_OSC_RESPONSE_ERROR);
 
 	g_object_set(osc_response,
-		     "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_MISSING_INDEX,
+		     "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_SERVER_FAILURE,
 		     NULL);
 
 	return(start_response);
       }
+
+      port = start_port;
+      
+      while(port != NULL){
+	GList *retval;
+	
+	retval = ags_osc_renew_controller_set_data_channel(osc_renew_controller,
+							   osc_connection,
+							   port->data,
+							   message, message_size,
+							   type_tag,
+							   path, path_offset);
+
+	if(start_response != NULL){
+	  start_response = g_list_concat(start_response,
+					 retval);
+	}else{
+	  start_response = retval;
+	}
+
+	port = port->next;
+      }
+    }else if(ags_regexec(&wildcard_access_regex, path + path_offset, index_max_matches, match_arr, 0) == 0){
+      path_offset += 3;
+
+      if(start_port == NULL){
+	osc_response = ags_osc_response_new();
+	start_response = g_list_prepend(start_response,
+					osc_response);
+      
+	ags_osc_response_set_flags(osc_response,
+				   AGS_OSC_RESPONSE_OK);
+
+	return(start_response);
+      }
+      
+      while(port != NULL){
+	GList *retval;
+	
+	retval = ags_osc_renew_controller_set_data_channel(osc_renew_controller,
+							   osc_connection,
+							   port->data,
+							   message, message_size,
+							   type_tag,
+							   path, path_offset);
+
+	if(start_response != NULL){
+	  start_response = g_list_concat(start_response,
+					 retval);
+	}else{
+	  start_response = retval;
+	}
+
+	port = port->next;
+      }
     }else{
+      g_list_free(start_port);
+      
       osc_response = ags_osc_response_new();
       start_response = g_list_prepend(start_response,
 				      osc_response);
@@ -1983,12 +2486,29 @@ ags_osc_renew_controller_set_data_recall(AgsOscRenewController *osc_renew_contro
 				 AGS_OSC_RESPONSE_ERROR);
 
       g_object_set(osc_response,
-		   "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_UNKNOW_PATH,
+		   "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_SERVER_FAILURE,
 		   NULL);
 
       return(start_response);
-    }
+    }    
+
+    g_list_free(start_port);
+  }else{
+    osc_response = ags_osc_response_new();
+    start_response = g_list_prepend(start_response,
+				    osc_response);
+      
+    ags_osc_response_set_flags(osc_response,
+			       AGS_OSC_RESPONSE_ERROR);
+
+    g_object_set(osc_response,
+		 "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_SERVER_FAILURE,
+		 NULL);
+
+    return(start_response);
   }
+  
+  return(start_response);
 }
 
 gpointer
