@@ -973,13 +973,58 @@ ags_osc_buffer_util_test_get_midi()
 void
 ags_osc_buffer_util_test_put_packet()
 {
-  //TODO:JK: implement me
+  unsigned char *buffer;
+
+  guint i;
+  gboolean success;
+  
+  static const unsigned char *packet_bundle = "\x00\x00\x00\x8c#bundle\x00\x00\x00\x00\x00\x00\x00\x00\x01\x00\x00\x00\x7c/meter\x00\x00,sT\x00/AgsSoundProvider/AgsAudio[\"spectrometer\"]/AgsChannel[0]/AgsAnalyseChannel[0]/AgsPort[\"./magnitude-buffer[0]\"]\x00\x00\x00\x00";
+
+  buffer = (unsigned char *) malloc(256 * sizeof(unsigned char));
+
+  success = TRUE;
+
+  ags_osc_buffer_util_put_packet(buffer,
+				 140, packet_bundle + 4);
+
+  for(i = 0; i < 144 && success; i++){
+    if(packet_bundle[i] != buffer[i]){
+      success = FALSE;
+      
+      break;
+    }
+  }
+
+  CU_ASSERT(success == TRUE);
 }
 
 void
 ags_osc_buffer_util_test_get_packet()
 {
-  //TODO:JK: implement me
+  unsigned char *packet;
+  
+  gint32 packet_size;
+  guint i;
+  gboolean success;
+
+  static const unsigned char *packet_bundle = "\x00\x00\x00\x8c#bundle\x00\x00\x00\x00\x00\x00\x00\x00\x01\x00\x00\x00\x7c/meter\x00\x00,sT\x00/AgsSoundProvider/AgsAudio[\"spectrometer\"]/AgsChannel[0]/AgsAnalyseChannel[0]/AgsPort[\"./magnitude-buffer[0]\"]\x00\x00\x00\x00";
+
+  success = TRUE;
+  
+  ags_osc_buffer_util_get_packet(packet_bundle,
+				 &packet_size, &packet);
+  
+  CU_ASSERT(packet_size == 140);
+
+  for(i = 0; i < 140 && success; i++){
+    if(packet_bundle[i + 4] != packet[i]){
+      success = FALSE;
+      
+      break;
+    }
+  }
+
+  CU_ASSERT(success == TRUE);
 }
 
 void

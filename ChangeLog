@@ -4,6 +4,7 @@ ags (2.1.6)
 	* fixed ags_osc_buffer_util.c to do shift operator using guint64
 	* fixed ags_osc_buffer_util_get_rgba() to access using correct index
 	* fixed ags_osc_buffer_util_get_midi() to access using correct index
+	* fixed ags_osc_buffer_util_get_packet() to read packet size
 	* added ags_osc_buffer_util_test.c
 
 ags (2.1.5)

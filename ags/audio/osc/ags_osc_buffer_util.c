@@ -746,6 +746,9 @@ ags_osc_buffer_util_get_packet(unsigned char *buffer,
     return;
   }
 
+  ags_osc_buffer_util_get_int32(buffer,
+				&tmp);
+
   if(packet_size != NULL){
     *packet_size = tmp;
   }
