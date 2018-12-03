@@ -226,19 +226,27 @@ ags_osc_renew_controller_test_set_data()
 
   AgsOscRenewController *osc_renew_controller;
 
+  unsigned char *message;
+  
   guint i;
   gboolean success;
   
   GValue value = {0,};
   
-  static const unsigned char *mute_message = "/renew\x00\x00,sT\x00/AgsSoundProvider/AgsAudio[\"test-panel\"]/AgsInput[0-1]/AgsMuteChannel[0]/AgsPort[\"./muted[0]\"]\x00";
+  static const unsigned char *mute_message = "/renew\x00\x00,sf\x00/AgsSoundProvider/AgsAudio[\"test-panel\"]/AgsInput[0-1]/AgsMuteChannel[0]/AgsPort[\"./muted[0]\"]\x00\x00\x00\x00\x00";
 
-  static const guint mute_message_size = 116;
+  static const guint mute_message_size = 120;
   
   osc_connection = ags_osc_connection_new(NULL);
   
   osc_renew_controller = ags_osc_renew_controller_new();
 
+  message = (unsigned char *) malloc(mute_message_size * sizeof(unsigned char));
+  memcpy(message, mute_message, mute_message_size * sizeof(unsigned char));
+
+  ags_osc_buffer_util_put_float(message + mute_message_size - 4,
+				1.0);
+  
   g_value_init(&value,
 	       G_TYPE_FLOAT);
 
