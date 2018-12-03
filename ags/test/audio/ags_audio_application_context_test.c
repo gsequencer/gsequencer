@@ -107,14 +107,19 @@ ags_audio_application_context_test_dispose()
 
   audio_application_context = g_object_new(AGS_TYPE_AUDIO_APPLICATION_CONTEXT,
 					   NULL);
+  g_object_ref(audio_application_context);
+  
+  ags_application_context_prepare(audio_application_context);
+  ags_application_context_setup(audio_application_context);
 
   /* run dispose */
   g_object_run_dispose(audio_application_context);
 
   /* assert */
   CU_ASSERT(audio_application_context->thread_pool == NULL);
-  CU_ASSERT(audio_application_context->soundcard_thread == NULL);
-  CU_ASSERT(audio_application_context->export_thread == NULL);
+  CU_ASSERT(audio_application_context->default_soundcard == NULL);
+  CU_ASSERT(audio_application_context->default_soundcard_thread == NULL);
+  CU_ASSERT(audio_application_context->default_export_thread == NULL);
   CU_ASSERT(audio_application_context->autosave_thread == NULL);
   CU_ASSERT(audio_application_context->server == NULL);
   CU_ASSERT(audio_application_context->soundcard == NULL);
@@ -177,9 +182,6 @@ main(int argc, char **argv)
     
     return CU_get_error();
   }
-
-  g_log_set_fatal_mask("GLib-GObject\0", // "Gtk\0" G_LOG_DOMAIN, // 
-  		       G_LOG_LEVEL_CRITICAL | G_LOG_LEVEL_WARNING);
 
   /* add the tests to the suite */
   if((CU_add_test(pSuite, "test of AgsAudioApplicationContext doing dispose\0", ags_audio_application_context_test_dispose) == NULL) ||

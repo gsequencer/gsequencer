@@ -37,7 +37,7 @@ void ags_reset_amplitude_test_launch();
 AgsDevout *devout;
 AgsAudio *audio;
 
-extern AgsApplicationContext *ags_application_context;
+AgsApplicationContext *application_context;
 
 GList *recall;
 
@@ -48,7 +48,11 @@ GList *recall;
 int
 ags_reset_amplitude_test_init_suite()
 { 
-  ags_application_context = ags_audio_application_context_new();
+  application_context = ags_audio_application_context_new();
+  g_object_ref(application_context);
+
+  ags_application_context_prepare(application_context);
+  ags_application_context_setup(application_context);
   
   /* create soundcard */
   devout = g_object_new(AGS_TYPE_DEVOUT,

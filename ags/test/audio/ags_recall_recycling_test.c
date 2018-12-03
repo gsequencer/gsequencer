@@ -42,7 +42,7 @@ void ags_recall_recycling_test_source_remove_audio_signal_done_callback();
 AgsDevout *devout;
 AgsAudio *audio;
 
-extern AgsApplicationContext *ags_application_context;
+AgsApplicationContext *audio_application_context;
 
 gboolean remove_audio_signal_done_callback_invoked = FALSE;
 
@@ -53,7 +53,11 @@ gboolean remove_audio_signal_done_callback_invoked = FALSE;
 int
 ags_recall_recycling_test_init_suite()
 {
-  ags_application_context = ags_audio_application_context_new();
+  audio_application_context = ags_audio_application_context_new();
+  g_object_ref(audio_application_context);
+  
+  ags_application_context_prepare(audio_application_context);
+  ags_application_context_setup(audio_application_context);
   
   /* create soundcard */
   devout = g_object_new(AGS_TYPE_DEVOUT,

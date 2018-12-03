@@ -43,7 +43,7 @@ GList *recall;
 
 guint test_run_inter_invoke_count = 0;
 
-extern AgsApplicationContext *ags_application_context;
+AgsApplicationContext *application_context;
 
 /* The suite initialization function.
  * Opens the temporary file used by the tests.
@@ -52,7 +52,11 @@ extern AgsApplicationContext *ags_application_context;
 int
 ags_buffer_audio_signal_test_init_suite()
 {
-  ags_application_context = ags_audio_application_context_new();
+  application_context = ags_audio_application_context_new();
+  g_object_ref(application_context);
+  
+  ags_application_context_prepare(application_context);
+  ags_application_context_setup(application_context);
   
   /* create soundcard */
   devout = g_object_new(AGS_TYPE_DEVOUT,

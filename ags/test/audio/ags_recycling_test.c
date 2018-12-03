@@ -86,6 +86,10 @@ ags_recycling_test_init_suite()
 {
   application_context = ags_application_context_new(NULL,
 						    NULL);
+  g_object_ref(application_context);
+  
+  ags_application_context_prepare(application_context);
+  ags_application_context_setup(application_context);
   
   devout = ags_devout_new(NULL);
 

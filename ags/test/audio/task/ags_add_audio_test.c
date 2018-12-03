@@ -69,6 +69,9 @@ ags_add_audio_test_launch()
   application_context = ags_audio_application_context_new();
   g_object_ref(application_context);
 
+  ags_application_context_prepare(application_context);
+  ags_application_context_setup(application_context);
+
   /* create soundcard */
   devout = g_object_new(AGS_TYPE_DEVOUT,
 			NULL);

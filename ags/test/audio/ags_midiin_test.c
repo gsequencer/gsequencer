@@ -70,7 +70,10 @@ ags_midiin_test_init_suite()
   
   audio_application_context = ags_audio_application_context_new();
   g_object_ref(audio_application_context);
-  
+
+  ags_application_context_prepare(audio_application_context);
+  ags_application_context_setup(audio_application_context);
+
   return(0);
 }
 
