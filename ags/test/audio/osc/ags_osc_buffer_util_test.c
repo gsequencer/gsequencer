@@ -1036,25 +1036,88 @@ ags_osc_buffer_util_test_put_packets()
 void
 ags_osc_buffer_util_test_put_message()
 {
-  //TODO:JK: implement me
+  unsigned char *buffer;
+
+  guint i;
+  gboolean success;
+  
+  static const unsigned char *message = "/meter\x00\x00,sT\x00";
+
+  buffer = (unsigned char *) malloc(256 * sizeof(unsigned char));
+
+  success = TRUE;
+
+  ags_osc_buffer_util_put_message(buffer,
+				  "/meter", ",sT");
+
+  for(i = 0; i < 12 && success; i++){
+    if(message[i] != buffer[i]){
+      success = FALSE;
+      
+      break;
+    }
+  }
+
+  CU_ASSERT(success == TRUE);
 }
 
 void
 ags_osc_buffer_util_test_get_message()
 {
-  //TODO:JK: implement me
+  gchar *address_pattern;
+  gchar *type_tag;
+  
+  static const unsigned char *message = "/meter\x00\x00,sT\x00";
+
+  ags_osc_buffer_util_get_message(message,
+				  &address_pattern, &type_tag);
+
+  CU_ASSERT(!g_strcmp0(address_pattern, "/meter"));
+  CU_ASSERT(!g_strcmp0(type_tag, ",sT"));
 }
 
 void
 ags_osc_buffer_util_test_put_bundle()
 {
-  //TODO:JK: implement me
+  unsigned char *buffer;
+
+  guint i;
+  gboolean success;
+  
+  static const unsigned char *bundle = "#bundle\x00\x00\x00\x00\x00\x00\x00\x00\x01";
+
+  buffer = (unsigned char *) malloc(256 * sizeof(unsigned char));
+
+  success = TRUE;
+
+  ags_osc_buffer_util_put_bundle(buffer,
+				 0, 0, TRUE);
+
+  for(i = 0; i < 16 && success; i++){
+    if(bundle[i] != buffer[i]){
+      success = FALSE;
+      
+      break;
+    }
+  }
+
+  CU_ASSERT(success == TRUE);
 }
 
 void
 ags_osc_buffer_util_test_get_bundle()
 {
-  //TODO:JK: implement me
+  gint32 tv_secs, tv_fraction;
+  gboolean immediately;
+  
+  static const unsigned char *bundle = "#bundle\x00\x00\x00\x00\x00\x00\x00\x00\x01";
+
+  ags_osc_buffer_util_get_bundle(bundle,
+				 &tv_secs, &tv_fraction, &immediately);
+
+  CU_ASSERT(tv_secs == 0);
+  CU_ASSERT(tv_fraction == 0);
+  CU_ASSERT(immediately == TRUE);
 }
 
 int

@@ -34,8 +34,8 @@
 
 #define AGS_AUDIO_RT_PRIORITY (49)
 
-#define AGS_AUDIO_DEFAULT_VERSION "2.0.0"
-#define AGS_AUDIO_BUILD_ID "Wed Mar 28 09:19:10 UTC 2018"
+#define AGS_AUDIO_DEFAULT_VERSION "2.1.6"
+#define AGS_AUDIO_BUILD_ID "Mon Dec  3 13:42:15 UTC 2018"
 
 #define AGS_EFFECTS_DEFAULT_VERSION "0.7.13"
 
@@ -64,10 +64,14 @@ struct _AgsAudioApplicationContext
 
   AgsThreadPool *thread_pool;
 
+  AgsPollingThread *polling_thread;
+
   GList *worker;
 
-  AgsThread *soundcard_thread;
-  AgsThread *export_thread;
+  GObject *default_soundcard;
+
+  AgsThread *default_soundcard_thread;
+  AgsThread *default_export_thread;
 
   AgsThread *autosave_thread;
 
@@ -77,8 +81,9 @@ struct _AgsAudioApplicationContext
   GList *sequencer;
 
   GList *sound_server;
-
   GList *audio;
+
+  GList *osc_server;
 };
 
 struct _AgsAudioApplicationContextClass

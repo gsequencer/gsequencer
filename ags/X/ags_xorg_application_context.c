@@ -511,6 +511,27 @@ ags_xorg_application_context_set_property(GObject *gobject,
   }
 }
 
+void
+ags_xorg_application_context_get_property(GObject *gobject,
+					  guint prop_id,
+					  GValue *value,
+					  GParamSpec *param_spec)
+{
+  AgsXorgApplicationContext *xorg_application_context;
+
+  xorg_application_context = AGS_XORG_APPLICATION_CONTEXT(gobject);
+
+  switch(prop_id){
+  case PROP_WINDOW:
+    {
+      g_value_set_object(value, xorg_application_context->window);
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
+}
 
 void
 ags_xorg_application_context_dispose(GObject *gobject)
@@ -738,60 +759,63 @@ ags_xorg_application_context_finalize(GObject *gobject)
 }
 
 void
-ags_xorg_application_context_get_property(GObject *gobject,
-					  guint prop_id,
-					  GValue *value,
-					  GParamSpec *param_spec)
-{
-  AgsXorgApplicationContext *xorg_application_context;
-
-  xorg_application_context = AGS_XORG_APPLICATION_CONTEXT(gobject);
-
-  switch(prop_id){
-  case PROP_WINDOW:
-    {
-      g_value_set_object(value, xorg_application_context->window);
-    }
-    break;
-  default:
-    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
-    break;
-  }
-}
-
-void
 ags_xorg_application_context_connect(AgsConnectable *connectable)
 {
   AgsXorgApplicationContext *xorg_application_context;
 
-  GList *soundcard, *sequencer;
+  GList *start_soundcard, *soundcard;
+  GList *start_sequencer, *sequencer;
+
+  pthread_mutex_t *application_context_mutex;
   
   xorg_application_context = AGS_XORG_APPLICATION_CONTEXT(connectable);
 
-  if((AGS_APPLICATION_CONTEXT_CONNECTED & (AGS_APPLICATION_CONTEXT(xorg_application_context)->flags)) != 0){
+  if(ags_application_context_test_flags(AGS_APPLICATION_CONTEXT(xorg_application_context), AGS_APPLICATION_CONTEXT_CONNECTED)){
     return;
   }
 
   ags_xorg_application_context_parent_connectable_interface->connect(connectable);
 
+  /* get application context mutex */
+  pthread_mutex_lock(ags_application_context_get_class_mutex());
+  
+  application_context_mutex = AGS_APPLICATION_CONTEXT(xorg_application_context)->obj_mutex;
+  
+  pthread_mutex_unlock(ags_application_context_get_class_mutex());
+  
   /* soundcard */
-  soundcard = xorg_application_context->soundcard;
+  pthread_mutex_lock(application_context_mutex);
 
+  soundcard = 
+    start_soundcard = g_list_copy(xorg_application_context->soundcard);
+
+  pthread_mutex_unlock(application_context_mutex);
+  
   while(soundcard != NULL){
     ags_connectable_connect(AGS_CONNECTABLE(soundcard->data));
 
     soundcard = soundcard->next;
   }
 
+  g_list_free(start_soundcard);
+  
   /* sequencer */
-  sequencer = xorg_application_context->sequencer;
+  pthread_mutex_lock(application_context_mutex);
+
+  sequencer = 
+    start_sequencer = g_list_copy(xorg_application_context->sequencer);
+
+  pthread_mutex_unlock(application_context_mutex);
 
   while(sequencer != NULL){
     ags_connectable_connect(AGS_CONNECTABLE(sequencer->data));
 
     sequencer = sequencer->next;
   }
-  
+
+  g_list_free(start_sequencer);
+
+  /* window */
   ags_connectable_connect(AGS_CONNECTABLE(xorg_application_context->window));
 }
 
@@ -800,13 +824,60 @@ ags_xorg_application_context_disconnect(AgsConnectable *connectable)
 {
   AgsXorgApplicationContext *xorg_application_context;
 
+  GList *start_soundcard, *soundcard;
+  GList *start_sequencer, *sequencer;
+
+  pthread_mutex_t *application_context_mutex;
+
   xorg_application_context = AGS_XORG_APPLICATION_CONTEXT(connectable);
 
-  if((AGS_APPLICATION_CONTEXT_CONNECTED & (AGS_APPLICATION_CONTEXT(xorg_application_context)->flags)) == 0){
+  if(!ags_application_context_test_flags(AGS_APPLICATION_CONTEXT(xorg_application_context), AGS_APPLICATION_CONTEXT_CONNECTED)){
     return;
   }
 
   ags_xorg_application_context_parent_connectable_interface->disconnect(connectable);
+
+  /* get application context mutex */
+  pthread_mutex_lock(ags_application_context_get_class_mutex());
+  
+  application_context_mutex = AGS_APPLICATION_CONTEXT(xorg_application_context)->obj_mutex;
+  
+  pthread_mutex_unlock(ags_application_context_get_class_mutex());
+  
+  /* soundcard */
+  pthread_mutex_lock(application_context_mutex);
+
+  soundcard = 
+    start_soundcard = g_list_copy(xorg_application_context->soundcard);
+
+  pthread_mutex_unlock(application_context_mutex);
+  
+  while(soundcard != NULL){
+    ags_connectable_disconnect(AGS_CONNECTABLE(soundcard->data));
+
+    soundcard = soundcard->next;
+  }
+
+  g_list_free(start_soundcard);
+  
+  /* sequencer */
+  pthread_mutex_lock(application_context_mutex);
+
+  sequencer = 
+    start_sequencer = g_list_copy(xorg_application_context->sequencer);
+
+  pthread_mutex_unlock(application_context_mutex);
+
+  while(sequencer != NULL){
+    ags_connectable_disconnect(AGS_CONNECTABLE(sequencer->data));
+
+    sequencer = sequencer->next;
+  }
+
+  g_list_free(start_sequencer);
+
+  /* window */
+  ags_connectable_disconnect(AGS_CONNECTABLE(xorg_application_context->window));
 }
 
 AgsThread*
