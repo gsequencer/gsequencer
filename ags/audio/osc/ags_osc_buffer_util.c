@@ -672,15 +672,15 @@ ags_osc_buffer_util_get_midi(unsigned char *buffer,
   }
 
   if(status_byte != NULL){
-    *status_byte = buffer[0];
+    *status_byte = buffer[1];
   }
 
   if(data0 != NULL){
-    *data0 = buffer[0];
+    *data0 = buffer[2];
   }
 
   if(data1 != NULL){
-    *data1 = buffer[0];
+    *data1 = buffer[3];
   }
 }
 

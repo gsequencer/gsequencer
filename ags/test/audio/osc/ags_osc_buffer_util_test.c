@@ -898,13 +898,76 @@ ags_osc_buffer_util_test_get_rgba()
 void
 ags_osc_buffer_util_test_put_midi()
 {
-  //TODO:JK: implement me
+  unsigned char *buffer;
+
+  guint i, j;
+  gboolean success;
+  
+  static const guint8 midi[2][4] = {
+    {0x0, 0x7f, 0xff, 0x0},
+    {0x0, 0x80, 0xff, 0x0},
+  };
+
+  static const unsigned char *val_midi[] = {
+    "\x00\x7f\xff\x00",
+    "\x00\x80\xff\x00",
+  };
+  
+  buffer = (unsigned char *) malloc(4 * sizeof(unsigned char));
+
+  success = TRUE;
+
+  for(i = 0; i < 2 && success; i++){
+    ags_osc_buffer_util_put_midi(buffer,
+				 midi[i][0], midi[i][1], midi[i][2], midi[i][3]);
+
+    for(j = 0; j < 4; j++){
+      if(buffer[j] != val_midi[i][j]){
+	success = FALSE;
+	
+	break;
+      }
+    }
+  }
+  
+  CU_ASSERT(success == TRUE);
 }
 
 void
 ags_osc_buffer_util_test_get_midi()
 {
-  //TODO:JK: implement me
+  guint8 port, status_byte, data0, data1;
+  
+  guint i;
+  gboolean success;
+
+  static const guint8 midi[2][4] = {
+    {0x0, 0x7f, 0xff, 0x0},
+    {0x0, 0x80, 0xff, 0x0},
+  };
+
+  static const unsigned char *val_midi[] = {
+    "\x00\x7f\xff\x00",
+    "\x00\x80\xff\x00",
+  };
+
+  success = TRUE;
+
+  for(i = 0; i < 2 && success; i++){
+    ags_osc_buffer_util_get_midi(val_midi[i],
+				 &port, &status_byte, &data0, &data1);
+
+    if(port != midi[i][0] ||
+       status_byte != midi[i][1] ||
+       data0 != midi[i][2] ||
+       data1 != midi[i][3]){
+      success = FALSE;
+	
+      break;
+    }
+  }
+  
+  CU_ASSERT(success == TRUE);
 }
 
 void
