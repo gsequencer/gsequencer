@@ -29,6 +29,7 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include <math.h>
 
 int ags_osc_renew_controller_test_init_suite();
 int ags_osc_renew_controller_test_clean_suite();
@@ -63,6 +64,7 @@ void ags_osc_renew_controller_test_set_data();
 AgsApplicationContext *application_context;
 
 AgsAudio *panel;
+AgsAudio *spectrometer;
 AgsAudio *drum;
 
 GObject *default_soundcard;
@@ -138,7 +140,44 @@ ags_osc_renew_controller_test_init_suite()
 			     AGS_RECALL_FACTORY_PLAY |
 			     AGS_RECALL_FACTORY_ADD),
 			    0);
+
+  /* spectrometer */
+  spectrometer = ags_audio_new(default_soundcard);
+  g_object_ref(spectrometer);
+
+  g_object_set(spectrometer,
+	       "audio-name", "test-spectrometer",
+	       NULL);
   
+  ags_audio_set_flags(spectrometer,
+		      (AGS_AUDIO_SYNC));
+
+  ags_audio_set_audio_channels(spectrometer,
+			       2, 0);
+
+  ags_audio_set_pads(spectrometer,
+		     AGS_TYPE_OUTPUT,
+		     1, 0);
+  ags_audio_set_pads(spectrometer,
+		     AGS_TYPE_INPUT,
+		     1, 0);
+
+  start_audio = ags_sound_provider_get_audio(AGS_SOUND_PROVIDER(application_context));
+  ags_sound_provider_set_audio(AGS_SOUND_PROVIDER(application_context),
+			       g_list_prepend(start_audio,
+					      spectrometer));
+  
+  ags_recall_factory_create(spectrometer,
+			    NULL, NULL,
+			    "ags-analyse",
+			    0, 2,
+			    0, 1,
+			    (AGS_RECALL_FACTORY_INPUT |
+			     AGS_RECALL_FACTORY_PLAY |
+			     AGS_RECALL_FACTORY_RECALL |
+			     AGS_RECALL_FACTORY_ADD),
+			    0);
+
   /* drum */
   drum = ags_audio_new(default_soundcard);
   g_object_ref(drum);
@@ -227,13 +266,21 @@ ags_osc_renew_controller_test_set_data()
   AgsOscRenewController *osc_renew_controller;
 
   unsigned char *message;
+  unsigned char *magnitude_message;
+
+  gdouble *magnitude_buffer;
   
-  guint i;
+  guint magnitude_message_size;
+  guint cache_buffer_size;
+  guint length;
+  guint padding;
+  guint i, j;
   gboolean success;
   
   GValue value = {0,};
   
   static const unsigned char *mute_message = "/renew\x00\x00,sf\x00/AgsSoundProvider/AgsAudio[\"test-panel\"]/AgsInput[0-1]/AgsMuteChannel[0]/AgsPort[\"./muted[0]\"]:value\x00\x00\x00\x00\x00\x00";
+  static const unsigned char *magnitude_path = "/AgsSoundProvider/AgsAudio[\"test-spectrometer\"]/AgsInput[0-1]/AgsAnalyseChannel[0]/AgsPort[\"./magnitude-buffer[0]\"]:value";
 
   static const guint mute_message_size = 120;
   
@@ -241,6 +288,7 @@ ags_osc_renew_controller_test_set_data()
   
   osc_renew_controller = ags_osc_renew_controller_new();
 
+  /* panel */
   message = (unsigned char *) malloc(mute_message_size * sizeof(unsigned char));
   memcpy(message, mute_message, mute_message_size * sizeof(unsigned char));
 
@@ -323,6 +371,143 @@ ags_osc_renew_controller_test_set_data()
       success = FALSE;
 
       break;
+    }
+    
+    g_object_get(channel,
+		 "next", &channel,
+		 NULL);
+  }
+  
+  CU_ASSERT(success);
+
+  /* spectrometer */
+  magnitude_message = (unsigned char *) malloc(AGS_OSC_RESPONSE_DEFAULT_CHUNK_SIZE * sizeof(unsigned char));
+
+  cache_buffer_size = ags_soundcard_helper_config_get_buffer_size(ags_config_get_instance()) / 2;
+
+  memcpy(magnitude_message, "/renew\x00\x00,s[", 11 * sizeof(unsigned char));
+  magnitude_message_size = 11;
+
+  for(i = 0; i < cache_buffer_size; i++){
+    magnitude_message[11 + i] = 'd';
+  }
+
+  magnitude_message[11 + i] = ']';
+  magnitude_message_size += (cache_buffer_size + 1);
+
+  padding = (4 * (guint) ceil((cache_buffer_size + 5) / 4.0)) - (cache_buffer_size + 4);
+
+  for(i = 0; i < padding; i++){
+    magnitude_message[magnitude_message_size + i] = '\x00';
+  }
+
+  magnitude_message_size += padding;
+
+  length = strlen(magnitude_path);
+  memcpy(magnitude_message + magnitude_message_size, magnitude_path, (length) * sizeof(unsigned char));
+
+  padding = (4 * (guint) ceil((length + 1) / 4.0)) - length;
+
+  magnitude_message_size += length;
+  
+  for(i = 0; i < padding; i++){
+    magnitude_message[magnitude_message_size + i] = '\x00';
+  }
+  
+  magnitude_message_size += padding;
+  
+  for(i = 0; i < cache_buffer_size; i++){
+    ags_osc_buffer_util_put_double(magnitude_message + magnitude_message_size + (i * 8),
+				   4.0);
+  }
+
+  magnitude_message_size += (cache_buffer_size * 8);
+
+  g_value_unset(&value);
+  g_value_init(&value,
+	       G_TYPE_POINTER);
+
+  magnitude_buffer = (gdouble *) malloc(cache_buffer_size * sizeof(gdouble));
+  g_value_set_pointer(&value,
+		      magnitude_buffer);
+  
+  g_object_get(spectrometer,
+	       "input", &channel,
+	       NULL);
+  success = TRUE;
+
+  for(i = 0; i < 2 && success; i++){
+    GList *start_play, *play;
+    GList *start_port, *port;
+    
+    g_object_get(channel,
+		 "play", &start_play,
+		 NULL);
+
+    play = ags_recall_template_find_type(start_play,
+					 AGS_TYPE_ANALYSE_CHANNEL);
+
+    g_object_get(play->data,
+		 "port", &start_port,
+		 NULL);
+
+    port = ags_port_find_specifier(start_port,
+				   "./magnitude-buffer[0]");
+    
+    ags_port_safe_read(port->data,
+		       &value);
+
+    for(j = 0; j < cache_buffer_size; j++){
+      if(magnitude_buffer[j] != 0.0){
+	success = FALSE;
+
+	break;
+      }
+    }
+    
+    g_object_get(channel,
+		 "next", &channel,
+		 NULL);
+  }
+  
+  CU_ASSERT(success);
+  
+  osc_response = ags_osc_renew_controller_set_data(osc_renew_controller,
+						   osc_connection,
+						   magnitude_message, magnitude_message_size);
+  
+  g_object_get(spectrometer,
+	       "input", &channel,
+	       NULL);
+  success = TRUE;
+
+  for(i = 0; i < 2 && success; i++){
+    GList *start_play, *play;
+    GList *start_port, *port;
+
+    g_object_get(channel,
+		 "play", &start_play,
+		 NULL);
+
+    play = ags_recall_template_find_type(start_play,
+					 AGS_TYPE_ANALYSE_CHANNEL);
+
+    g_object_get(play->data,
+		 "port", &start_port,
+		 NULL);
+
+    port = ags_port_find_specifier(start_port,
+				   "./magnitude-buffer[0]");
+
+    ags_port_safe_read(port->data,
+		       &value);
+
+    for(j = 0; j < cache_buffer_size; j++){
+      if(magnitude_buffer[j] != 4.0){
+	success = FALSE;
+	
+	break;
+      }
     }
     
     g_object_get(channel,

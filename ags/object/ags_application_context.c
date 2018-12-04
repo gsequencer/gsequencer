@@ -622,10 +622,6 @@ ags_application_context_dispose(GObject *gobject)
   
   /* main loop */
   if(application_context->main_loop != NULL){
-    g_object_set(application_context->main_loop,
-		 "application-context", NULL,
-		 NULL);
-
     g_object_unref(application_context->main_loop);
 
     application_context->main_loop = NULL;

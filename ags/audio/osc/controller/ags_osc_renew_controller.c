@@ -2667,10 +2667,10 @@ ags_osc_renew_controller_set_data_port(AgsOscRenewController *osc_renew_controll
 	  
 	  pthread_mutex_lock(port_mutex);
 
-	  for(i = 0; 16 + path_length + 2 + i < message_size && type_tag[2 + i] != '\0' && type_tag[2 + i] != ']' && i < port_value_length; i++){
-	    if(type_tag[2 + i] == 'T'){
+	  for(i = 0; 16 + path_length + 3 + i < message_size && type_tag[3 + i] != '\0' && type_tag[3 + i] != ']' && i < port_value_length; i++){
+	    if(type_tag[3 + i] == 'T'){
 	      port->port_value.ags_port_boolean_ptr[i] = TRUE;
-	    }else if(type_tag[2 + i] == 'F'){
+	    }else if(type_tag[3 + i] == 'F'){
 	      port->port_value.ags_port_boolean_ptr[i] = FALSE;
 	    }else{
 	      success = FALSE;
@@ -2682,7 +2682,7 @@ ags_osc_renew_controller_set_data_port(AgsOscRenewController *osc_renew_controll
 	  pthread_mutex_unlock(port_mutex);
 
 	  if(!success ||
-	     type_tag[2 + i] != ']'){
+	     type_tag[3 + i] != ']'){
 	    ags_osc_response_set_flags(osc_response,
 				       AGS_OSC_RESPONSE_ERROR);
 
@@ -2702,8 +2702,8 @@ ags_osc_renew_controller_set_data_port(AgsOscRenewController *osc_renew_controll
 	  value_count = 0;
 	  success = TRUE;
 	  
-	  for(i = 0; 16 + path_length + 2 + i < message_size && type_tag[2 + i] != '\0' && type_tag[2 + i] != ']' && i < port_value_length; i++){
-	    if(type_tag[2 + i] != 'h'){
+	  for(i = 0; 16 + path_length + 3 + i < message_size && type_tag[3 + i] != '\0' && type_tag[3 + i] != ']' && i < port_value_length; i++){
+	    if(type_tag[3 + i] != 'h'){
 	      success = FALSE;
 
 	      break;
@@ -2711,7 +2711,7 @@ ags_osc_renew_controller_set_data_port(AgsOscRenewController *osc_renew_controll
 	  }
 
 	  if(!success ||
-	     type_tag[2 + i] != ']'){
+	     type_tag[3 + i] != ']'){
 	    ags_osc_response_set_flags(osc_response,
 				       AGS_OSC_RESPONSE_ERROR);
 
@@ -2722,13 +2722,13 @@ ags_osc_renew_controller_set_data_port(AgsOscRenewController *osc_renew_controll
 	    return(start_response);
 	  }
 
-	  type_tag_offset = 4 * (guint) ceil((double) (3 + i) / 4.0);
+	  type_tag_offset = 4 * (guint) ceil((double) (5 + i) / 4.0);
 	  value_count = i;
 	  
 	  pthread_mutex_lock(port_mutex);
 
 	  for(i = 0; path_offset + type_tag_offset + (i * 8) < message_size && i < value_count; i++){
-	    ags_osc_buffer_util_get_int64(message + path_offset + type_tag_offset + (i * 8),
+	    ags_osc_buffer_util_get_int64(message + 8 + path_offset + type_tag_offset + (i * 8),
 					  &value);
 
 	    port->port_value.ags_port_int_ptr[i] = value;
@@ -2743,8 +2743,8 @@ ags_osc_renew_controller_set_data_port(AgsOscRenewController *osc_renew_controll
 	  value_count = 0;
 	  success = TRUE;
 	  
-	  for(i = 0; 16 + path_length + 2 + i < message_size && type_tag[2 + i] != '\0' && type_tag[2 + i] != ']' && i < port_value_length; i++){
-	    if(type_tag[2 + i] != 'h'){
+	  for(i = 0; 16 + path_length + 3 + i < message_size && type_tag[3 + i] != '\0' && type_tag[3 + i] != ']' && i < port_value_length; i++){
+	    if(type_tag[3 + i] != 'h'){
 	      success = FALSE;
 
 	      break;
@@ -2752,7 +2752,7 @@ ags_osc_renew_controller_set_data_port(AgsOscRenewController *osc_renew_controll
 	  }
 
 	  if(!success ||
-	     type_tag[2 + i] != ']'){
+	     type_tag[3 + i] != ']'){
 	    ags_osc_response_set_flags(osc_response,
 				       AGS_OSC_RESPONSE_ERROR);
 
@@ -2763,13 +2763,13 @@ ags_osc_renew_controller_set_data_port(AgsOscRenewController *osc_renew_controll
 	    return(start_response);
 	  }
 
-	  type_tag_offset = 4 * (guint) ceil((double) (3 + i) / 4.0);
+	  type_tag_offset = 4 * (guint) ceil((double) (5 + i) / 4.0);
 	  value_count = i;
 	  
 	  pthread_mutex_lock(port_mutex);
 
 	  for(i = 0; path_offset + type_tag_offset + (i * 8) < message_size && i < value_count; i++){
-	    ags_osc_buffer_util_get_int64(message + path_offset + type_tag_offset + (i * 8),
+	    ags_osc_buffer_util_get_int64(message + 8 + path_offset + type_tag_offset + (i * 8),
 					  &value);
 
 	    port->port_value.ags_port_uint_ptr[i] = value;
@@ -2784,8 +2784,8 @@ ags_osc_renew_controller_set_data_port(AgsOscRenewController *osc_renew_controll
 	  value_count = 0;
 	  success = TRUE;
 	  
-	  for(i = 0; 16 + path_length + 2 + i < message_size && type_tag[2 + i] != '\0' && type_tag[2 + i] != ']' && i < port_value_length; i++){
-	    if(type_tag[2 + i] != 'f'){
+	  for(i = 0; 16 + path_length + 3 + i < message_size && type_tag[3 + i] != '\0' && type_tag[3 + i] != ']' && i < port_value_length; i++){
+	    if(type_tag[3 + i] != 'f'){
 	      success = FALSE;
 
 	      break;
@@ -2793,7 +2793,7 @@ ags_osc_renew_controller_set_data_port(AgsOscRenewController *osc_renew_controll
 	  }
 
 	  if(!success ||
-	     type_tag[2 + i] != ']'){
+	     type_tag[3 + i] != ']'){
 	    ags_osc_response_set_flags(osc_response,
 				       AGS_OSC_RESPONSE_ERROR);
 
@@ -2804,13 +2804,13 @@ ags_osc_renew_controller_set_data_port(AgsOscRenewController *osc_renew_controll
 	    return(start_response);
 	  }
 
-	  type_tag_offset = 4 * (guint) ceil((double) (3 + i) / 4.0);
+	  type_tag_offset = 4 * (guint) ceil((double) (5 + i) / 4.0);
 	  value_count = i;
 	  
 	  pthread_mutex_lock(port_mutex);
 
 	  for(i = 0; path_offset + type_tag_offset + (i * 4) < message_size && i < value_count; i++){
-	    ags_osc_buffer_util_get_float(message + path_offset + type_tag_offset + (i * 4),
+	    ags_osc_buffer_util_get_float(message + 8 + path_offset + type_tag_offset + (i * 4),
 					  &value);
 
 	    port->port_value.ags_port_float_ptr[i] = value;
@@ -2825,8 +2825,8 @@ ags_osc_renew_controller_set_data_port(AgsOscRenewController *osc_renew_controll
 	  value_count = 0;
 	  success = TRUE;
 	  
-	  for(i = 0; 16 + path_length + 2 + i < message_size && type_tag[2 + i] != '\0' && type_tag[2 + i] != ']' && i < port_value_length; i++){
-	    if(type_tag[2 + i] != 'd'){
+	  for(i = 0; 16 + path_length + 3 + i < message_size && type_tag[3 + i] != '\0' && type_tag[3 + i] != ']' && i < port_value_length; i++){
+	    if(type_tag[3 + i] != 'd'){
 	      success = FALSE;
 
 	      break;
@@ -2834,7 +2834,7 @@ ags_osc_renew_controller_set_data_port(AgsOscRenewController *osc_renew_controll
 	  }
 
 	  if(!success ||
-	     type_tag[2 + i] != ']'){
+	     type_tag[3 + i] != ']'){
 	    ags_osc_response_set_flags(osc_response,
 				       AGS_OSC_RESPONSE_ERROR);
 
@@ -2845,13 +2845,13 @@ ags_osc_renew_controller_set_data_port(AgsOscRenewController *osc_renew_controll
 	    return(start_response);
 	  }
 
-	  type_tag_offset = 4 * (guint) ceil((double) (3 + i) / 4.0);
+	  type_tag_offset = 4 * (guint) ceil((double) (5 + i) / 4.0);
 	  value_count = i;
-	  
+
 	  pthread_mutex_lock(port_mutex);
 
 	  for(i = 0; path_offset + type_tag_offset + (i * 8) < message_size && i < value_count; i++){
-	    ags_osc_buffer_util_get_double(message + path_offset + type_tag_offset + (i * 8),
+	    ags_osc_buffer_util_get_double(message + 8 + path_offset + type_tag_offset + (i * 8),
 					   &value);
 
 	    port->port_value.ags_port_double_ptr[i] = value;
@@ -3089,7 +3089,7 @@ ags_osc_renew_controller_real_set_data(AgsOscRenewController *osc_renew_controll
   }
   
   /* read argument */
-  ags_osc_buffer_util_get_string(message + 12,
+  ags_osc_buffer_util_get_string(message + 8 + (4 * (guint) ceil((gdouble) (strlen(type_tag) + 1) / 4.0)),
 				 &path, NULL);
   
   /* create packet */
