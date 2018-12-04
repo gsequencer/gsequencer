@@ -187,10 +187,10 @@ ags_osc_buffer_util_put_float(unsigned char *buffer,
 
   data.ieee_float.v_float = val;
 
-  buffer[0] = (data.val & (0xff << 24)) >> 24;
-  buffer[1] = (data.val & (0xff << 16)) >> 16;
-  buffer[2] = (data.val & (0xff << 8)) >> 8;
-  buffer[3] = data.val & 0xff;
+  buffer[0] = (data.val & ((guint32) 0xff << 24)) >> 24;
+  buffer[1] = (data.val & ((guint32) 0xff << 16)) >> 16;
+  buffer[2] = (data.val & ((guint32) 0xff << 8)) >> 8;
+  buffer[3] = data.val & (guint32) 0xff;
 }
 
 /**

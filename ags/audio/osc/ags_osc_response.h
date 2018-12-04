@@ -44,7 +44,8 @@ typedef struct _AgsOscResponseClass AgsOscResponseClass;
 
 typedef enum{
   AGS_OSC_RESPONSE_EMPTY     = 1,
-  AGS_OSC_RESPONSE_ERROR     = 1 <<  1,
+  AGS_OSC_RESPONSE_OK        = 1 <<  1,
+  AGS_OSC_RESPONSE_ERROR     = 1 <<  2,
 }AgsOscResponseFlags;
 
 struct _AgsOscResponse

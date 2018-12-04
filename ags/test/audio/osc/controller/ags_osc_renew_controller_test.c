@@ -233,7 +233,7 @@ ags_osc_renew_controller_test_set_data()
   
   GValue value = {0,};
   
-  static const unsigned char *mute_message = "/renew\x00\x00,sf\x00/AgsSoundProvider/AgsAudio[\"test-panel\"]/AgsInput[0-1]/AgsMuteChannel[0]/AgsPort[\"./muted[0]\"]\x00\x00\x00\x00\x00";
+  static const unsigned char *mute_message = "/renew\x00\x00,sf\x00/AgsSoundProvider/AgsAudio[\"test-panel\"]/AgsInput[0-1]/AgsMuteChannel[0]/AgsPort[\"./muted[0]\"]:value\x00\x00\x00\x00\x00\x00";
 
   static const guint mute_message_size = 120;
   
@@ -291,7 +291,7 @@ ags_osc_renew_controller_test_set_data()
   
   osc_response = ags_osc_renew_controller_set_data(osc_renew_controller,
 						   osc_connection,
-						   mute_message, mute_message_size);
+						   message, mute_message_size);
   
   g_object_get(panel,
 	       "input", &channel,
