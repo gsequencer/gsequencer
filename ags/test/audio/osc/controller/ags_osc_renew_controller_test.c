@@ -544,7 +544,7 @@ main(int argc, char **argv)
   }
 
   /* add the tests to the suite */
-  if((CU_add_test(pSuite, "test of AgsRenewController set data", ags_osc_renew_controller_test_set_data) == NULL)){
+  if((CU_add_test(pSuite, "test of AgsOscRenewController set data", ags_osc_renew_controller_test_set_data) == NULL)){
     CU_cleanup_registry();
     
     return CU_get_error();

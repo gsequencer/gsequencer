@@ -360,7 +360,7 @@ main(int argc, char **argv)
   }
 
   /* add the tests to the suite */
-  if((CU_add_test(pSuite, "test of AgsNodeController get data", ags_osc_node_controller_test_get_data) == NULL)){
+  if((CU_add_test(pSuite, "test of AgsOscNodeController get data", ags_osc_node_controller_test_get_data) == NULL)){
     CU_cleanup_registry();
     
     return CU_get_error();

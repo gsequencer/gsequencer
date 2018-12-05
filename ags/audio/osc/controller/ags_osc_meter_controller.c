@@ -24,14 +24,24 @@
 #include <ags/audio/ags_sound_provider.h>
 #include <ags/audio/ags_audio.h>
 #include <ags/audio/ags_channel.h>
+#include <ags/audio/ags_output.h>
+#include <ags/audio/ags_input.h>
+#include <ags/audio/ags_recall.h>
+#include <ags/audio/ags_recall_audio.h>
+#include <ags/audio/ags_recall_channel.h>
+#include <ags/audio/ags_port.h>
 
 #include <ags/audio/osc/ags_osc_response.h>
+#include <ags/audio/osc/ags_osc_buffer_util.h>
 
 #include <ags/i18n.h>
 
 #include <stdlib.h>
 #include <string.h>
 #include <strings.h>
+
+#include <sys/types.h>
+#include <regex.h>
 
 void ags_osc_meter_controller_class_init(AgsOscMeterControllerClass *osc_meter_controller);
 void ags_osc_meter_controller_init(AgsOscMeterController *osc_meter_controller);
@@ -50,6 +60,63 @@ void* ags_osc_meter_controller_monitor_thread(void *ptr);
 
 void ags_osc_meter_controller_real_start_monitor(AgsOscMeterController *osc_meter_controller);
 void ags_osc_meter_controller_real_stop_monitor(AgsOscMeterController *osc_meter_controller);
+
+gpointer ags_osc_meter_controller_monitor_meter_audio(AgsOscMeterController *osc_meter_controller,
+						      AgsOscConnection *osc_connection,
+						      AgsAudio *audio,
+						      unsigned char *message, guint message_size,
+						      gchar *type_tag,
+						      gchar *path, guint path_offset);
+gpointer ags_osc_meter_controller_monitor_meter_channel(AgsOscMeterController *osc_meter_controller,
+							AgsOscConnection *osc_connection,
+							AgsChannel *channel,
+							unsigned char *message, guint message_size,
+							gchar *type_tag,
+							gchar *path, guint path_offset);
+
+gpointer ags_osc_meter_controller_monitor_meter_recall(AgsOscMeterController *osc_meter_controller,
+						       AgsOscConnection *osc_connection,
+						       AgsRecall *recall,
+						       unsigned char *message, guint message_size,
+						       gchar *type_tag,
+						       gchar *path, guint path_offset);
+
+gpointer ags_osc_meter_controller_monitor_meter_port(AgsOscMeterController *osc_meter_controller,
+						     AgsOscConnection *osc_connection,
+						     AgsRecall *parent,
+						     AgsPort *port,
+						     unsigned char *message, guint message_size,
+						     gchar *type_tag,
+						     gchar *path, guint path_offset);
+
+void ags_osc_meter_controller_expand_path_audio(AgsAudio *audio,
+						gchar *path,
+						gchar ***strv);
+void ags_osc_meter_controller_expand_path_channel(AgsChannel *channel,
+						  gchar *path,
+						  gchar ***strv);
+
+void ags_osc_meter_controller_expand_path_recall(AgsRecall *recall,
+						 gchar *path,
+						 gchar ***strv);
+
+void ags_osc_meter_controller_expand_path_port(AgsPort *port,
+					       gchar *path,
+					       gchar ***strv);
+
+void ags_osc_meter_controller_expand_path(gchar *path,
+					  gchar ***strv);
+
+gpointer ags_osc_meter_controller_monitor_meter_enable(AgsOscMeterController *osc_meter_controller,
+						       AgsOscConnection *osc_connection,
+						       unsigned char *message, guint message_size,
+						       gchar *type_tag,
+						       gchar *path);
+gpointer ags_osc_meter_controller_monitor_meter_disable(AgsOscMeterController *osc_meter_controller,
+							AgsOscConnection *osc_connection,
+							unsigned char *message, guint message_size,
+							gchar *type_tag,
+							gchar *path);
 
 gpointer ags_osc_meter_controller_real_monitor_meter(AgsOscMeterController *osc_meter_controller,
 						     AgsOscConnection *osc_connection,
@@ -78,6 +145,8 @@ enum{
 
 static gpointer ags_osc_meter_controller_parent_class = NULL;
 static guint osc_meter_controller_signals[LAST_SIGNAL];
+
+static pthread_mutex_t regex_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 GType
 ags_osc_meter_controller_get_type()
@@ -731,11 +800,16 @@ ags_osc_meter_controller_monitor_free(AgsOscMeterControllerMonitor *monitor)
   if(monitor == NULL){
     return;
   }
-  
-  g_object_unref(monitor->osc_connection);
 
+  if(monitor->osc_connection != NULL){
+    g_object_unref(monitor->osc_connection);
+  }
+  
   g_free(monitor->path);
-  g_object_unref(monitor->port);
+
+  if(monitor->port != NULL){
+    g_object_unref(monitor->port);
+  }
   
   free(monitor);
 }
@@ -1036,7 +1110,8 @@ ags_osc_meter_controller_real_stop_monitor(AgsOscMeterController *osc_meter_cont
   /* join thread */
   pthread_join(osc_meter_controller->monitor_thread[0], NULL);
   
-  ags_osc_meter_controller_unset_flags(osc_meter_controller, AGS_OSC_METER_CONTROLLER_MONITOR_TERMINATING);
+  ags_osc_meter_controller_unset_flags(osc_meter_controller, (AGS_OSC_METER_CONTROLLER_MONITOR_STARTED |
+							      AGS_OSC_METER_CONTROLLER_MONITOR_TERMINATING));
 }
 
 /**
@@ -1059,21 +1134,2504 @@ ags_osc_meter_controller_stop_monitor(AgsOscMeterController *osc_meter_controlle
 }
 
 gpointer
+ags_osc_meter_controller_monitor_meter_audio(AgsOscMeterController *osc_meter_controller,
+					     AgsOscConnection *osc_connection,
+					     AgsAudio *audio,
+					     unsigned char *message, guint message_size,
+					     gchar *type_tag,
+					     gchar *path, guint path_offset)
+{
+  AgsOscResponse *osc_response;
+
+  AgsApplicationContext *application_context;  
+
+  GList *start_response;
+
+  unsigned char *packet;
+
+  guint real_packet_size;
+  guint packet_size;
+  gint nth_audio;
+  
+  if(!AGS_IS_AUDIO(audio)){
+    return(NULL);
+  }
+  
+  start_response = NULL;
+
+  application_context = ags_application_context_get_instance();
+
+  real_packet_size = 0;
+  packet_size = 0;
+  
+  if(!strncmp(path + path_offset,
+	      "/AgsOutput",
+	      10) ||
+     !strncmp(path + path_offset,
+	      "/AgsInput",
+	      9)){
+    AgsChannel *start_channel, *channel;
+      
+    regmatch_t match_arr[2];
+
+    static regex_t single_access_regex;
+    static regex_t range_access_regex;
+    static regex_t voluntary_access_regex;
+    static regex_t more_access_regex;
+    static regex_t wildcard_access_regex;
+    
+    static gboolean regex_compiled = FALSE;
+
+    static const gchar *single_access_pattern = "^\\[([0-9]+)\\]";
+    static const gchar *range_access_pattern = "^\\[([0-9]+)\\-([0-9]+)\\]";
+    static const gchar *voluntary_access_pattern = "^\\[(\\?)\\]";
+    static const gchar *more_access_pattern = "^\\[(\\+)\\]";
+    static const gchar *wildcard_access_pattern = "^\\[(\\*)\\]";
+    
+    static const size_t max_matches = 2;
+    static const size_t index_max_matches = 1;
+
+    if(!strncmp(path + path_offset,
+		"/AgsOutput",
+		10)){
+      path_offset += 10;
+      
+      g_object_get(audio,
+		   "output", &start_channel,
+		   NULL);
+    }else{
+      path_offset += 9;
+      
+      g_object_get(audio,
+		   "input", &start_channel,
+		   NULL);
+    }
+
+    /* compile regex */
+    pthread_mutex_lock(&regex_mutex);
+  
+    if(!regex_compiled){
+      regex_compiled = TRUE;
+      
+      ags_regcomp(&single_access_regex, single_access_pattern, REG_EXTENDED);
+      ags_regcomp(&range_access_regex, range_access_pattern, REG_EXTENDED);
+      ags_regcomp(&voluntary_access_regex, voluntary_access_pattern, REG_EXTENDED);
+      ags_regcomp(&more_access_regex, more_access_pattern, REG_EXTENDED);
+      ags_regcomp(&wildcard_access_regex, wildcard_access_pattern, REG_EXTENDED);
+    }
+
+    pthread_mutex_unlock(&regex_mutex);
+
+    if(ags_regexec(&single_access_regex, path + path_offset, index_max_matches, match_arr, 0) == 0){
+      gchar *endptr;
+      
+      guint i_stop;
+
+      endptr = NULL;
+      i_stop = g_ascii_strtoull(path + path_offset + 1,
+				&endptr,
+				10);
+      
+      channel = ags_channel_nth(start_channel,
+				i_stop);
+
+      path_offset += ((endptr + 1) - (path + path_offset));
+
+      start_response = ags_osc_meter_controller_monitor_meter_channel(osc_meter_controller,
+								      osc_connection,
+								      channel,
+								      message, message_size,
+								      type_tag,
+								      path, path_offset);
+    }else if(ags_regexec(&range_access_regex, path + path_offset, max_matches, match_arr, 0) == 0){
+      gchar *endptr;
+      
+      guint i;
+      guint i_start, i_stop;
+
+      endptr = NULL;
+      i_start = g_ascii_strtoull(path + path_offset + 1,
+				 &endptr,
+				 10);
+
+      i_stop = g_ascii_strtoull(endptr + 1,
+				&endptr,
+				10);
+
+      path_offset += ((endptr + 1) - (path + path_offset));
+
+      channel = ags_channel_nth(start_channel,
+				i_start);
+      
+      for(i = i_start; i <= i_stop; i++){
+	GList *retval;
+	
+	retval = ags_osc_meter_controller_monitor_meter_channel(osc_meter_controller,
+								osc_connection,
+								channel,
+								message, message_size,
+								type_tag,
+								path, path_offset);
+
+	if(start_response != NULL){
+	  start_response = g_list_concat(start_response,
+					 retval);
+	}else{
+	  start_response = retval;
+	}
+	
+	g_object_get(channel,
+		     "next", &channel,
+		     NULL);
+      }
+    }else if(ags_regexec(&voluntary_access_regex, path + path_offset, index_max_matches, match_arr, 0) == 0){
+      path_offset += 3;
+
+      if(start_channel != NULL){
+	GList *retval;
+	
+	retval = ags_osc_meter_controller_monitor_meter_channel(osc_meter_controller,
+								osc_connection,
+								start_channel,
+								message, message_size,
+								type_tag,
+								path, path_offset);
+      }else{
+	osc_response = ags_osc_response_new();
+	start_response = g_list_prepend(start_response,
+					osc_response);
+      
+	ags_osc_response_set_flags(osc_response,
+				   AGS_OSC_RESPONSE_OK);
+
+	return(start_response);
+      }
+    }else if(ags_regexec(&more_access_regex, path + path_offset, index_max_matches, match_arr, 0) == 0){
+      path_offset += 3;
+
+      if(channel == NULL){
+	osc_response = ags_osc_response_new();
+	start_response = g_list_prepend(start_response,
+					osc_response);
+      
+	ags_osc_response_set_flags(osc_response,
+				   AGS_OSC_RESPONSE_ERROR);
+
+	g_object_set(osc_response,
+		     "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_SERVER_FAILURE,
+		     NULL);
+
+	return(start_response);
+      }
+
+      while(channel != NULL){
+	GList *retval;
+	
+	retval = ags_osc_meter_controller_monitor_meter_channel(osc_meter_controller,
+								osc_connection,
+								channel,
+								message, message_size,
+								type_tag,
+								path, path_offset);
+
+	if(start_response != NULL){
+	  start_response = g_list_concat(start_response,
+					 retval);
+	}else{
+	  start_response = retval;
+	}
+	
+	g_object_get(channel,
+		     "next", &channel,
+		     NULL);
+      }
+    }else if(ags_regexec(&wildcard_access_regex, path + path_offset, index_max_matches, match_arr, 0) == 0){
+      path_offset += 3;
+
+      if(channel == NULL){
+	osc_response = ags_osc_response_new();
+	start_response = g_list_prepend(start_response,
+					osc_response);
+      
+	ags_osc_response_set_flags(osc_response,
+				   AGS_OSC_RESPONSE_OK);
+
+	return(start_response);
+      }
+      
+      while(channel != NULL){
+	GList *retval;
+	
+	retval = ags_osc_meter_controller_monitor_meter_channel(osc_meter_controller,
+								osc_connection,
+								channel,
+								message, message_size,
+								type_tag,
+								path, path_offset);
+
+	if(start_response != NULL){
+	  start_response = g_list_concat(start_response,
+					 retval);
+	}else{
+	  start_response = retval;
+	}
+	
+	g_object_get(channel,
+		     "next", &channel,
+		     NULL);
+      }
+    }else{
+      osc_response = ags_osc_response_new();
+      start_response = g_list_prepend(start_response,
+				      osc_response);
+      
+      ags_osc_response_set_flags(osc_response,
+				 AGS_OSC_RESPONSE_ERROR);
+
+      g_object_set(osc_response,
+		   "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_SERVER_FAILURE,
+		   NULL);
+
+      return(start_response);
+    }
+  }else{
+    GType recall_type;
+    
+    GList *start_play, *play;
+    GList *start_recall, *recall;
+
+    regmatch_t match_arr[3];
+
+    gchar *type_name;    
+    gchar *str;
+
+    guint type_name_length;
+    guint str_length;
+    
+    static regex_t recall_regex;
+    static regex_t single_access_regex;
+    static regex_t range_access_regex;
+    static regex_t voluntary_access_regex;
+    static regex_t more_access_regex;
+    static regex_t wildcard_access_regex;
+    
+    static gboolean regex_compiled = FALSE;
+
+    static const gchar *recall_pattern = "^\\/([a-zA-Z]+)(\\/|\\[[0-9]+\\]|\\[[0-9]+\\-[0-9]+\\]|\\[\\?\\]|\\[\\+\\]|\\[\\*\\]|:)";
+    static const gchar *single_access_pattern = "^\\[([0-9]+)\\]";
+    static const gchar *range_access_pattern = "^\\[([0-9]+)\\-([0-9]+)\\]";
+    static const gchar *voluntary_access_pattern = "^\\[(\\?)\\]";
+    static const gchar *more_access_pattern = "^\\[(\\+)\\]";
+    static const gchar *wildcard_access_pattern = "^\\[(\\*)\\]";
+    
+    static const size_t max_matches = 3;
+    static const size_t index_max_matches = 2;
+
+    /* compile regex */
+    pthread_mutex_lock(&regex_mutex);
+  
+    if(!regex_compiled){
+      regex_compiled = TRUE;
+    
+      ags_regcomp(&recall_regex, recall_pattern, REG_EXTENDED);
+
+      ags_regcomp(&single_access_regex, single_access_pattern, REG_EXTENDED);
+      ags_regcomp(&range_access_regex, range_access_pattern, REG_EXTENDED);
+      ags_regcomp(&voluntary_access_regex, voluntary_access_pattern, REG_EXTENDED);
+      ags_regcomp(&more_access_regex, more_access_pattern, REG_EXTENDED);
+      ags_regcomp(&wildcard_access_regex, wildcard_access_pattern, REG_EXTENDED);
+    }
+
+    pthread_mutex_unlock(&regex_mutex);
+
+    if(ags_regexec(&recall_regex, path + path_offset, max_matches, match_arr, 0) == 0){
+      type_name_length = match_arr[1].rm_eo - match_arr[1].rm_so;
+      type_name = g_strndup(path + path_offset + 1,
+			    type_name_length);
+
+      str_length = match_arr[2].rm_eo - match_arr[2].rm_so;
+      str = g_strndup(path + path_offset + 1 + type_name_length,
+		      str_length);
+    }else{
+      osc_response = ags_osc_response_new();
+      start_response = g_list_prepend(start_response,
+				      osc_response);
+
+      ags_osc_response_set_flags(osc_response,
+				 AGS_OSC_RESPONSE_ERROR);
+
+      g_object_set(osc_response,
+		   "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_UNKNOW_PATH,
+		   NULL);
+
+      return(start_response);
+    }
+
+    recall_type = g_type_from_name(type_name);
+    
+    g_object_get(audio,
+		 "play", &start_play,
+		 "recall", &start_recall,
+		 NULL);
+
+    if(ags_regexec(&single_access_regex, str, index_max_matches, match_arr, 0) == 0){
+      guint i;
+      guint i_stop;
+
+      path_offset += (type_name_length + 1) + str_length;
+      
+      i_stop = g_ascii_strtoull(str + 1,
+				NULL,
+				10);
+
+      play = start_play;
+      recall = start_recall;
+      
+      for(i = 0; i <= i_stop; i++){
+	play = ags_recall_template_find_type(play, recall_type);
+	recall = ags_recall_template_find_type(recall, recall_type);
+
+	if(i + 1 < i_stop){
+	  if(play != NULL){
+	    play = play->next;
+	  }
+	  
+	  if(recall != NULL){
+	    recall = recall->next;
+	  }
+	}
+      }
+      
+      if(play != NULL){
+	AgsRecall *current;
+
+	GList *retval;
+
+	current = play->data;	
+	retval = ags_osc_meter_controller_monitor_meter_recall(osc_meter_controller,
+							       osc_connection,
+							       current,
+							       message, message_size,
+							       type_tag,
+							       path, path_offset);
+
+	if(start_response != NULL){
+	  start_response = g_list_concat(start_response,
+					 retval);
+	}else{
+	  start_response = retval;
+	}
+      }
+      
+      if(recall != NULL){
+	AgsRecall *current;
+
+	GList *retval;
+
+	current = recall->data;
+	retval = ags_osc_meter_controller_monitor_meter_recall(osc_meter_controller,
+							       osc_connection,
+							       current,
+							       message, message_size,
+							       type_tag,
+							       path, path_offset);
+
+	if(start_response != NULL){
+	  start_response = g_list_concat(start_response,
+					 retval);
+	}else{
+	  start_response = retval;
+	}
+      }
+    }else if(ags_regexec(&range_access_regex, str, max_matches, match_arr, 0) == 0){
+      gchar *endptr;
+      
+      guint i;
+      guint i_start, i_stop;
+
+      path_offset += (type_name_length + 1) + str_length;
+
+      endptr = NULL;
+      i_start = g_ascii_strtoull(str + 1,
+				 &endptr,
+				 10);
+
+      i_stop = g_ascii_strtoull(endptr + 1,
+				NULL,
+				10);
+      
+      play = start_play;
+      recall = start_recall;
+      
+      for(i = 0; i <= i_stop; i++){
+	play = ags_recall_template_find_type(play, recall_type);
+	recall = ags_recall_template_find_type(recall, recall_type);
+
+	if(i >= i_start){
+	  if(play != NULL){
+	    AgsRecall *current;
+
+	    GList *retval;
+
+	    current = play->data;	
+	    retval = ags_osc_meter_controller_monitor_meter_recall(osc_meter_controller,
+								   osc_connection,
+								   current,
+								   message, message_size,
+								   type_tag,
+								   path, path_offset);
+
+	    if(start_response != NULL){
+	      start_response = g_list_concat(start_response,
+					     retval);
+	    }else{
+	      start_response = retval;
+	    }
+	  }
+      
+	  if(recall != NULL){
+	    AgsRecall *current;
+
+	    GList *retval;
+
+	    current = recall->data;
+	    retval = ags_osc_meter_controller_monitor_meter_recall(osc_meter_controller,
+								   osc_connection,
+								   current,
+								   message, message_size,
+								   type_tag,
+								   path, path_offset);
+
+	    if(start_response != NULL){
+	      start_response = g_list_concat(start_response,
+					     retval);
+	    }else{
+	      start_response = retval;
+	    }
+	  }
+	}
+	
+	if(i + 1 < i_stop){
+	  if(play != NULL){
+	    play = play->next;
+	  }
+	  
+	  if(recall != NULL){
+	    recall = recall->next;
+	  }
+	}
+      }
+    }else if(ags_regexec(&voluntary_access_regex, str, index_max_matches, match_arr, 0) == 0){
+      path_offset += (type_name_length + 1) + str_length;
+
+      play = start_play;
+      recall = start_recall;
+
+      play = ags_recall_template_find_type(play, recall_type);
+      recall = ags_recall_template_find_type(recall, recall_type);
+
+      if(play != NULL){
+	AgsRecall *current;
+
+	current = play->data;	
+	start_response = ags_osc_meter_controller_monitor_meter_recall(osc_meter_controller,
+								       osc_connection,
+								       current,
+								       message, message_size,
+								       type_tag,
+								       path, path_offset);
+      }
+      
+      if(recall != NULL){
+	AgsRecall *current;
+
+	current = recall->data;
+	start_response = ags_osc_meter_controller_monitor_meter_recall(osc_meter_controller,
+								       osc_connection,
+								       current,
+								       message, message_size,
+								       type_tag,
+								       path, path_offset);
+      }
+
+      if(play == NULL && recall == NULL){
+	osc_response = ags_osc_response_new();
+	start_response = g_list_prepend(start_response,
+					osc_response);
+      
+	ags_osc_response_set_flags(osc_response,
+				   AGS_OSC_RESPONSE_OK);
+
+	return(start_response);
+      }
+    }else if(ags_regexec(&more_access_regex, str, index_max_matches, match_arr, 0) == 0){
+      path_offset += (type_name_length + 1) + str_length;
+
+      play = start_play;
+      recall = start_recall;
+
+      play = ags_recall_template_find_type(play, recall_type);
+      recall = ags_recall_template_find_type(recall, recall_type);
+
+      if(play == NULL && recall == NULL){
+	osc_response = ags_osc_response_new();
+	start_response = g_list_prepend(start_response,
+					osc_response);
+      
+	ags_osc_response_set_flags(osc_response,
+				   AGS_OSC_RESPONSE_ERROR);
+
+	g_object_set(osc_response,
+		     "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_SERVER_FAILURE,
+		     NULL);
+
+	return(start_response);
+      }
+      
+      if(play != NULL){
+	AgsRecall *current;
+
+	current = play->data;	
+	start_response = ags_osc_meter_controller_monitor_meter_recall(osc_meter_controller,
+								       osc_connection,
+								       current,
+								       message, message_size,
+								       type_tag,
+								       path, path_offset);
+      }
+      
+      if(recall != NULL){
+	AgsRecall *current;
+
+	GList *retval;
+
+	current = recall->data;
+	retval = ags_osc_meter_controller_monitor_meter_recall(osc_meter_controller,
+							       osc_connection,
+							       current,
+							       message, message_size,
+							       type_tag,
+							       path, path_offset);
+
+	if(start_response != NULL){
+	  start_response = g_list_concat(start_response,
+					 retval);
+	}else{
+	  start_response = retval;
+	}
+      }
+      
+      while(play != NULL || recall != NULL){
+	play = ags_recall_template_find_type(play, recall_type);
+	recall = ags_recall_template_find_type(recall, recall_type);
+
+	if(play != NULL){
+	  AgsRecall *current;
+
+	  GList *retval;
+
+	  current = play->data;	
+	  retval = ags_osc_meter_controller_monitor_meter_recall(osc_meter_controller,
+								 osc_connection,
+								 current,
+								 message, message_size,
+								 type_tag,
+								 path, path_offset);
+
+	  start_response = g_list_concat(start_response,
+					 retval);
+	}
+      
+	if(recall != NULL){
+	  AgsRecall *current;
+
+	  GList *retval;
+
+	  current = recall->data;
+	  retval = ags_osc_meter_controller_monitor_meter_recall(osc_meter_controller,
+								 osc_connection,
+								 current,
+								 message, message_size,
+								 type_tag,
+								 path, path_offset);
+
+	  start_response = g_list_concat(start_response,
+					 retval);
+	}
+
+	if(play != NULL){
+	  play = play->next;
+	}
+	  
+	if(recall != NULL){
+	  recall = recall->next;
+	}
+      }
+    }else if(ags_regexec(&wildcard_access_regex, str, index_max_matches, match_arr, 0) == 0){
+      path_offset += (type_name_length + 1) + str_length;
+
+      play = start_play;
+      recall = start_recall;
+
+      while(play != NULL || recall != NULL){
+	play = ags_recall_template_find_type(play, recall_type);
+	recall = ags_recall_template_find_type(recall, recall_type);
+
+	if(play != NULL){
+	  AgsRecall *current;
+
+	  GList *retval;
+	  
+	  current = play->data;	
+	  retval = ags_osc_meter_controller_monitor_meter_recall(osc_meter_controller,
+								 osc_connection,
+								 current,
+								 message, message_size,
+								 type_tag,
+								 path, path_offset);
+
+	  if(start_response != NULL){
+	    start_response = g_list_concat(start_response,
+					   retval);
+	  }else{
+	    start_response = retval;
+	  }
+	}
+      
+	if(recall != NULL){
+	  AgsRecall *current;
+
+	  GList *retval;
+	  
+	  current = recall->data;
+	  retval = ags_osc_meter_controller_monitor_meter_recall(osc_meter_controller,
+								 osc_connection,
+								 current,
+								 message, message_size,
+								 type_tag,
+								 path, path_offset);
+
+	  if(start_response != NULL){
+	    start_response = g_list_concat(start_response,
+					   retval);
+	  }else{
+	    start_response = retval;
+	  }
+	}
+
+	if(play != NULL){
+	  play = play->next;
+	}
+	  
+	if(recall != NULL){
+	  recall = recall->next;
+	}
+      }
+    }else{
+      osc_response = ags_osc_response_new();
+      start_response = g_list_prepend(start_response,
+				      osc_response);
+
+      ags_osc_response_set_flags(osc_response,
+				 AGS_OSC_RESPONSE_ERROR);
+
+      g_object_set(osc_response,
+		   "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_MALFORMED_REQUEST,
+		   NULL);
+
+      return(start_response);
+    }
+  }
+
+  return(start_response);
+}
+
+gpointer
+ags_osc_meter_controller_monitor_meter_channel(AgsOscMeterController *osc_meter_controller,
+					       AgsOscConnection *osc_connection,
+					       AgsChannel *channel,
+					       unsigned char *message, guint message_size,
+					       gchar *type_tag,
+					       gchar *path, guint path_offset)
+{
+  AgsAudio *audio;
+  
+  AgsOscResponse *osc_response;
+
+  AgsApplicationContext *application_context;  
+
+  GType recall_type;
+  
+  GList *start_response;
+  GList *start_play, *play;
+  GList *start_recall, *recall;
+
+  regmatch_t match_arr[3];
+
+  gchar *type_name;    
+  gchar *str;
+
+  guint type_name_length;
+  guint str_length;
+    
+  static regex_t recall_regex;
+  static regex_t single_access_regex;
+  static regex_t range_access_regex;
+  static regex_t voluntary_access_regex;
+  static regex_t more_access_regex;
+  static regex_t wildcard_access_regex;
+    
+  static gboolean regex_compiled = FALSE;
+
+  static const gchar *recall_pattern = "^\\/([a-zA-Z]+)(\\/|\\[[0-9]+\\]|\\[[0-9]+\\-[0-9]+\\]|\\[\\?\\]|\\[\\+\\]|\\[\\*\\]|:)";
+  static const gchar *single_access_pattern = "^\\[([0-9]+)\\]";
+  static const gchar *range_access_pattern = "^\\[([0-9]+)\\-([0-9]+)\\]";
+  static const gchar *voluntary_access_pattern = "^\\[(\\?)\\]";
+  static const gchar *more_access_pattern = "^\\[(\\+)\\]";
+  static const gchar *wildcard_access_pattern = "^\\[(\\*)\\]";
+    
+  static const size_t max_matches = 3;
+  static const size_t index_max_matches = 2;
+  
+  if(!AGS_IS_CHANNEL(channel)){
+    return(NULL);
+  }
+  
+  start_response = NULL;
+
+  /* compile regex */
+  pthread_mutex_lock(&regex_mutex);
+  
+  if(!regex_compiled){
+    regex_compiled = TRUE;
+    
+    ags_regcomp(&recall_regex, recall_pattern, REG_EXTENDED);
+
+    ags_regcomp(&single_access_regex, single_access_pattern, REG_EXTENDED);
+    ags_regcomp(&range_access_regex, range_access_pattern, REG_EXTENDED);
+    ags_regcomp(&voluntary_access_regex, voluntary_access_pattern, REG_EXTENDED);
+    ags_regcomp(&more_access_regex, more_access_pattern, REG_EXTENDED);
+    ags_regcomp(&wildcard_access_regex, wildcard_access_pattern, REG_EXTENDED);
+  }
+
+  pthread_mutex_unlock(&regex_mutex);
+
+  if(ags_regexec(&recall_regex, path + path_offset, max_matches, match_arr, 0) == 0){
+    type_name_length = match_arr[1].rm_eo - match_arr[1].rm_so;
+    type_name = g_strndup(path + path_offset + 1,
+			  type_name_length);
+
+    str_length = match_arr[2].rm_eo - match_arr[2].rm_so;
+    str = g_strndup(path + path_offset + 1 + type_name_length,
+		    str_length);
+  }else{
+    osc_response = ags_osc_response_new();
+    start_response = g_list_prepend(start_response,
+				    osc_response);
+
+    ags_osc_response_set_flags(osc_response,
+			       AGS_OSC_RESPONSE_ERROR);
+
+    g_object_set(osc_response,
+		 "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_UNKNOW_PATH,
+		 NULL);
+
+    return(start_response);
+  }
+
+  recall_type = g_type_from_name(type_name);
+    
+  g_object_get(channel,
+	       "play", &start_play,
+	       "recall", &start_recall,
+	       NULL);
+
+  if(ags_regexec(&single_access_regex, str, index_max_matches, match_arr, 0) == 0){
+    guint i;
+    guint i_stop;
+
+    path_offset += (type_name_length + 1) + str_length;
+      
+    i_stop = g_ascii_strtoull(str + 1,
+			      NULL,
+			      10);
+
+    play = start_play;
+    recall = start_recall;
+      
+    for(i = 0; i <= i_stop; i++){
+      play = ags_recall_template_find_type(play, recall_type);
+      recall = ags_recall_template_find_type(recall, recall_type);
+
+      if(i + 1 < i_stop){
+	if(play != NULL){
+	  play = play->next;
+	}
+	  
+	if(recall != NULL){
+	  recall = recall->next;
+	}
+      }
+    }
+      
+    if(play != NULL){
+      AgsRecall *current;
+
+      GList *retval;
+
+      current = play->data;	
+      retval = ags_osc_meter_controller_monitor_meter_recall(osc_meter_controller,
+							     osc_connection,
+							     current,
+							     message, message_size,
+							     type_tag,
+							     path, path_offset);
+
+      if(start_response != NULL){
+	start_response = g_list_concat(start_response,
+				       retval);
+      }else{
+	start_response = retval;
+      }
+    }
+      
+    if(recall != NULL){
+      AgsRecall *current;
+
+      GList *retval;
+
+      current = recall->data;
+      retval = ags_osc_meter_controller_monitor_meter_recall(osc_meter_controller,
+							     osc_connection,
+							     current,
+							     message, message_size,
+							     type_tag,
+							     path, path_offset);
+
+      if(start_response != NULL){
+	start_response = g_list_concat(start_response,
+				       retval);
+      }else{
+	start_response = retval;
+      }
+    }
+  }else if(ags_regexec(&range_access_regex, str, max_matches, match_arr, 0) == 0){
+    gchar *endptr;
+      
+    guint i;
+    guint i_start, i_stop;
+
+    path_offset += (type_name_length + 1) + str_length;
+
+    endptr = NULL;
+    i_start = g_ascii_strtoull(str + 1,
+			       &endptr,
+			       10);
+
+    i_stop = g_ascii_strtoull(endptr + 1,
+			      NULL,
+			      10);
+      
+    play = start_play;
+    recall = start_recall;
+      
+    for(i = 0; i <= i_stop; i++){
+      play = ags_recall_template_find_type(play, recall_type);
+      recall = ags_recall_template_find_type(recall, recall_type);
+
+      if(i >= i_start){
+	if(play != NULL){
+	  AgsRecall *current;
+
+	  GList *retval;
+
+	  current = play->data;	
+	  retval = ags_osc_meter_controller_monitor_meter_recall(osc_meter_controller,
+								 osc_connection,
+								 current,
+								 message, message_size,
+								 type_tag,
+								 path, path_offset);
+
+	  if(start_response != NULL){
+	    start_response = g_list_concat(start_response,
+					   retval);
+	  }else{
+	    start_response = retval;
+	  }
+	}
+      
+	if(recall != NULL){
+	  AgsRecall *current;
+
+	  GList *retval;
+
+	  current = recall->data;
+	  retval = ags_osc_meter_controller_monitor_meter_recall(osc_meter_controller,
+								 osc_connection,
+								 current,
+								 message, message_size,
+								 type_tag,
+								 path, path_offset);
+
+	  if(start_response != NULL){
+	    start_response = g_list_concat(start_response,
+					   retval);
+	  }else{
+	    start_response = retval;
+	  }
+	}
+      }
+	
+      if(i + 1 < i_stop){
+	if(play != NULL){
+	  play = play->next;
+	}
+	  
+	if(recall != NULL){
+	  recall = recall->next;
+	}
+      }
+    }
+  }else if(ags_regexec(&voluntary_access_regex, str, index_max_matches, match_arr, 0) == 0){
+    path_offset += (type_name_length + 1) + str_length;
+
+    play = start_play;
+    recall = start_recall;
+
+    play = ags_recall_template_find_type(play, recall_type);
+    recall = ags_recall_template_find_type(recall, recall_type);
+
+    if(play != NULL){
+      AgsRecall *current;
+
+      current = play->data;	
+      start_response = ags_osc_meter_controller_monitor_meter_recall(osc_meter_controller,
+								     osc_connection,
+								     current,
+								     message, message_size,
+								     type_tag,
+								     path, path_offset);
+    }
+      
+    if(recall != NULL){
+      AgsRecall *current;
+
+      current = recall->data;
+      start_response = ags_osc_meter_controller_monitor_meter_recall(osc_meter_controller,
+								     osc_connection,
+								     current,
+								     message, message_size,
+								     type_tag,
+								     path, path_offset);
+    }
+
+    if(play == NULL && recall == NULL){
+      osc_response = ags_osc_response_new();
+      start_response = g_list_prepend(start_response,
+				      osc_response);
+      
+      ags_osc_response_set_flags(osc_response,
+				 AGS_OSC_RESPONSE_OK);
+
+      return(start_response);
+    }
+  }else if(ags_regexec(&more_access_regex, str, index_max_matches, match_arr, 0) == 0){
+    path_offset += (type_name_length + 1) + str_length;
+
+    play = start_play;
+    recall = start_recall;
+
+    play = ags_recall_template_find_type(play, recall_type);
+    recall = ags_recall_template_find_type(recall, recall_type);
+
+    if(play == NULL && recall == NULL){
+      osc_response = ags_osc_response_new();
+      start_response = g_list_prepend(start_response,
+				      osc_response);
+      
+      ags_osc_response_set_flags(osc_response,
+				 AGS_OSC_RESPONSE_ERROR);
+
+      g_object_set(osc_response,
+		   "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_SERVER_FAILURE,
+		   NULL);
+
+      return(start_response);
+    }
+      
+    if(play != NULL){
+      AgsRecall *current;
+
+      current = play->data;	
+      start_response = ags_osc_meter_controller_monitor_meter_recall(osc_meter_controller,
+								     osc_connection,
+								     current,
+								     message, message_size,
+								     type_tag,
+								     path, path_offset);
+    }
+      
+    if(recall != NULL){
+      AgsRecall *current;
+
+      GList *retval;
+
+      current = recall->data;
+      retval = ags_osc_meter_controller_monitor_meter_recall(osc_meter_controller,
+							     osc_connection,
+							     current,
+							     message, message_size,
+							     type_tag,
+							     path, path_offset);
+
+      if(start_response != NULL){
+	start_response = g_list_concat(start_response,
+				       retval);
+      }else{
+	start_response = retval;
+      }
+    }
+      
+    while(play != NULL || recall != NULL){
+      play = ags_recall_template_find_type(play, recall_type);
+      recall = ags_recall_template_find_type(recall, recall_type);
+
+      if(play != NULL){
+	AgsRecall *current;
+
+	GList *retval;
+
+	current = play->data;	
+	retval = ags_osc_meter_controller_monitor_meter_recall(osc_meter_controller,
+							       osc_connection,
+							       current,
+							       message, message_size,
+							       type_tag,
+							       path, path_offset);
+
+	start_response = g_list_concat(start_response,
+				       retval);
+      }
+      
+      if(recall != NULL){
+	AgsRecall *current;
+
+	GList *retval;
+
+	current = recall->data;
+	retval = ags_osc_meter_controller_monitor_meter_recall(osc_meter_controller,
+							       osc_connection,
+							       current,
+							       message, message_size,
+							       type_tag,
+							       path, path_offset);
+
+	start_response = g_list_concat(start_response,
+				       retval);
+      }
+
+      if(play != NULL){
+	play = play->next;
+      }
+	  
+      if(recall != NULL){
+	recall = recall->next;
+      }
+    }
+  }else if(ags_regexec(&wildcard_access_regex, str, index_max_matches, match_arr, 0) == 0){
+    path_offset += (type_name_length + 1) + str_length;
+
+    play = start_play;
+    recall = start_recall;
+
+    while(play != NULL || recall != NULL){
+      play = ags_recall_template_find_type(play, recall_type);
+      recall = ags_recall_template_find_type(recall, recall_type);
+
+      if(play != NULL){
+	AgsRecall *current;
+
+	GList *retval;
+	  
+	current = play->data;	
+	retval = ags_osc_meter_controller_monitor_meter_recall(osc_meter_controller,
+							       osc_connection,
+							       current,
+							       message, message_size,
+							       type_tag,
+							       path, path_offset);
+
+	if(start_response != NULL){
+	  start_response = g_list_concat(start_response,
+					 retval);
+	}else{
+	  start_response = retval;
+	}
+      }
+      
+      if(recall != NULL){
+	AgsRecall *current;
+
+	GList *retval;
+	  
+	current = recall->data;
+	retval = ags_osc_meter_controller_monitor_meter_recall(osc_meter_controller,
+							       osc_connection,
+							       current,
+							       message, message_size,
+							       type_tag,
+							       path, path_offset);
+
+	if(start_response != NULL){
+	  start_response = g_list_concat(start_response,
+					 retval);
+	}else{
+	  start_response = retval;
+	}
+      }
+
+      if(play != NULL){
+	play = play->next;
+      }
+	  
+      if(recall != NULL){
+	recall = recall->next;
+      }
+    }
+  }else{
+    osc_response = ags_osc_response_new();
+    start_response = g_list_prepend(start_response,
+				    osc_response);
+
+    ags_osc_response_set_flags(osc_response,
+			       AGS_OSC_RESPONSE_ERROR);
+
+    g_object_set(osc_response,
+		 "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_MALFORMED_REQUEST,
+		 NULL);
+
+    return(start_response);
+  }
+
+  return(start_response);
+}
+
+gpointer
+ags_osc_meter_controller_monitor_meter_recall(AgsOscMeterController *osc_meter_controller,
+					      AgsOscConnection *osc_connection,
+					      AgsRecall *recall,
+					      unsigned char *message, guint message_size,
+					      gchar *type_tag,
+					      gchar *path, guint path_offset)
+{
+  AgsOscResponse *osc_response;
+
+  AgsThread *task_thread;
+  
+  AgsApplicationContext *application_context;
+
+  GList *start_response;
+  
+  unsigned char *packet;
+
+  guint path_length;
+  guint real_packet_size;
+  guint packet_size;
+  
+  if(!AGS_IS_RECALL(recall)){
+    return(NULL);
+  }
+
+  start_response = NULL;
+  
+  application_context = ags_application_context_get_instance();
+
+  task_thread = ags_concurrency_provider_get_task_thread(AGS_CONCURRENCY_PROVIDER(application_context));
+
+  real_packet_size = 0;
+  packet_size = 0;
+
+  if(!strncmp(path + path_offset,
+	      ":",
+	      1)){
+    guint length;
+    
+    osc_response = ags_osc_response_new();
+    start_response = g_list_prepend(start_response,
+				    osc_response);
+
+    packet = (unsigned char *) malloc(AGS_OSC_RESPONSE_DEFAULT_CHUNK_SIZE * sizeof(unsigned char));
+    memset(packet, 0, AGS_OSC_RESPONSE_DEFAULT_CHUNK_SIZE * sizeof(unsigned char));
+    
+    g_object_set(osc_response,
+		 "packet", packet,
+		 "packet-size", packet_size,
+		 NULL);
+  
+    real_packet_size = AGS_OSC_RESPONSE_DEFAULT_CHUNK_SIZE;
+    
+    path_length = 4 * (guint) ceil((double) (strlen(path) + 1) / 4.0);
+    path_offset += 1;
+	
+    ags_osc_response_set_flags(osc_response,
+			       AGS_OSC_RESPONSE_ERROR);
+
+    g_object_set(osc_response,
+		 "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_UNKNOW_ARGUMENT,
+		 NULL);
+
+    return(start_response);
+  }else if(!strncmp(path + path_offset,
+		    "/AgsPort",
+		    8)){
+    GList *start_port, *port;
+    
+    regmatch_t match_arr[3];
+
+    static regex_t single_access_regex;
+    static regex_t range_access_regex;
+    static regex_t voluntary_access_regex;
+    static regex_t more_access_regex;
+    static regex_t wildcard_access_regex;
+    
+    static gboolean regex_compiled = FALSE;
+
+    static const gchar *single_access_pattern = "^\\[([0-9]+)\\]";
+    static const gchar *range_access_pattern = "^\\[([0-9]+)\\-([0-9]+)\\]";
+    static const gchar *voluntary_access_pattern = "^\\[(\\?)\\]";
+    static const gchar *more_access_pattern = "^\\[(\\+)\\]";
+    static const gchar *wildcard_access_pattern = "^\\[(\\*)\\]";
+    
+    static const size_t max_matches = 3;
+    static const size_t index_max_matches = 2;
+
+    path_offset += 8;
+
+    /* compile regex */
+    pthread_mutex_lock(&regex_mutex);
+  
+    if(!regex_compiled){
+      regex_compiled = TRUE;
+      
+      ags_regcomp(&single_access_regex, single_access_pattern, REG_EXTENDED);
+      ags_regcomp(&range_access_regex, range_access_pattern, REG_EXTENDED);
+      ags_regcomp(&voluntary_access_regex, voluntary_access_pattern, REG_EXTENDED);
+      ags_regcomp(&more_access_regex, more_access_pattern, REG_EXTENDED);
+      ags_regcomp(&wildcard_access_regex, wildcard_access_pattern, REG_EXTENDED);
+    }
+
+    pthread_mutex_unlock(&regex_mutex);
+    
+    g_object_get(recall,
+		 "port", &start_port,
+		 NULL);
+
+    if(ags_regexec(&single_access_regex, path + path_offset, index_max_matches, match_arr, 0) == 0){
+      AgsPort *current;
+      
+      gchar *endptr;
+      
+      guint i_stop;
+
+      endptr = NULL;
+      i_stop = g_ascii_strtoull(path + path_offset + 1,
+				&endptr,
+				10);
+      
+      current = g_list_nth_data(start_port,
+				i_stop);
+
+      path_offset += ((endptr + 1) - (path + path_offset));
+
+      start_response = ags_osc_meter_controller_monitor_meter_port(osc_meter_controller,
+								   osc_connection,
+								   recall,
+								   current,
+								   message, message_size,
+								   type_tag,
+								   path, path_offset);
+    }else if(ags_regexec(&range_access_regex, path + path_offset, max_matches, match_arr, 0) == 0){
+      gchar *endptr;
+      
+      guint i;
+      guint i_start, i_stop;
+
+      endptr = NULL;
+      i_start = g_ascii_strtoull(path + path_offset + 1,
+				 &endptr,
+				 10);
+
+      i_stop = g_ascii_strtoull(endptr + 1,
+				&endptr,
+				10);
+
+      path_offset += ((endptr + 1) - (path + path_offset));
+
+      port = g_list_nth(start_port,
+			i_start);
+      
+      for(i = i_start; i <= i_stop; i++){
+	GList *retval;
+	
+	retval = ags_osc_meter_controller_monitor_meter_port(osc_meter_controller,
+							     osc_connection,
+							     recall,
+							     port->data,
+							     message, message_size,
+							     type_tag,
+							     path, path_offset);
+
+	if(start_response != NULL){
+	  start_response = g_list_concat(start_response,
+					 retval);
+	}else{
+	  start_response = retval;
+	}
+
+	port = port->next;
+      }
+    }else if(ags_regexec(&voluntary_access_regex, path + path_offset, index_max_matches, match_arr, 0) == 0){
+      path_offset += 3;
+
+      if(start_port != NULL){
+	GList *retval;
+	
+	retval = ags_osc_meter_controller_monitor_meter_port(osc_meter_controller,
+							     osc_connection,
+							     recall,
+							     start_port->data,
+							     message, message_size,
+							     type_tag,
+							     path, path_offset);
+      }else{
+	osc_response = ags_osc_response_new();
+	start_response = g_list_prepend(start_response,
+					osc_response);
+      
+	ags_osc_response_set_flags(osc_response,
+				   AGS_OSC_RESPONSE_OK);
+
+	return(start_response);
+      }
+    }else if(ags_regexec(&more_access_regex, path + path_offset, index_max_matches, match_arr, 0) == 0){
+      path_offset += 3;
+
+      if(start_port == NULL){
+	osc_response = ags_osc_response_new();
+	start_response = g_list_prepend(start_response,
+					osc_response);
+      
+	ags_osc_response_set_flags(osc_response,
+				   AGS_OSC_RESPONSE_ERROR);
+
+	g_object_set(osc_response,
+		     "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_SERVER_FAILURE,
+		     NULL);
+
+	return(start_response);
+      }
+
+      port = start_port;
+      
+      while(port != NULL){
+	GList *retval;
+	
+	retval = ags_osc_meter_controller_monitor_meter_port(osc_meter_controller,
+							     osc_connection,
+							     recall,
+							     port->data,
+							     message, message_size,
+							     type_tag,
+							     path, path_offset);
+
+	if(start_response != NULL){
+	  start_response = g_list_concat(start_response,
+					 retval);
+	}else{
+	  start_response = retval;
+	}
+
+	port = port->next;
+      }
+    }else if(ags_regexec(&wildcard_access_regex, path + path_offset, index_max_matches, match_arr, 0) == 0){
+      path_offset += 3;
+
+      if(start_port == NULL){
+	osc_response = ags_osc_response_new();
+	start_response = g_list_prepend(start_response,
+					osc_response);
+      
+	ags_osc_response_set_flags(osc_response,
+				   AGS_OSC_RESPONSE_OK);
+
+	return(start_response);
+      }
+      
+      while(port != NULL){
+	GList *retval;
+	
+	retval = ags_osc_meter_controller_monitor_meter_port(osc_meter_controller,
+							     osc_connection,
+							     recall,
+							     port->data,
+							     message, message_size,
+							     type_tag,
+							     path, path_offset);
+
+	if(start_response != NULL){
+	  start_response = g_list_concat(start_response,
+					 retval);
+	}else{
+	  start_response = retval;
+	}
+
+	port = port->next;
+      }
+    }else if(path[path_offset] == '[' &&
+	     path[path_offset + 1] == '"'){
+      AgsPort *current;
+
+      gchar *port_specifier;
+      gchar *offset;
+
+      guint length;
+
+      if((offset = index(path + path_offset + 2, '"')) == NULL){
+	osc_response = ags_osc_response_new();
+	start_response = g_list_prepend(start_response,
+					osc_response);
+
+	ags_osc_response_set_flags(osc_response,
+				   AGS_OSC_RESPONSE_ERROR);
+
+	g_object_set(osc_response,
+		     "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_CHUNK_SIZE_EXCEEDED,
+		     NULL);
+	  
+	return(start_response);
+      }
+
+      length = offset - (path + path_offset + 2);
+
+      port_specifier = (gchar *) malloc((length + 1) * sizeof(gchar));
+      memcpy(port_specifier, path + path_offset + 2, (length) * sizeof(gchar));
+      port_specifier[length] = '\0';
+
+      current = NULL;
+      port = ags_port_find_specifier(start_port,
+				     port_specifier);
+	
+      if(port != NULL){
+	current = port->data;
+      }	
+
+      path_offset += (length + 4);
+      start_response  = ags_osc_meter_controller_monitor_meter_port(osc_meter_controller,
+								    osc_connection,
+								    recall,
+								    current,
+								    message, message_size,
+								    type_tag,
+								    path, path_offset);
+    }else{
+      g_list_free(start_port);
+      
+      osc_response = ags_osc_response_new();
+      start_response = g_list_prepend(start_response,
+				      osc_response);
+      
+      ags_osc_response_set_flags(osc_response,
+				 AGS_OSC_RESPONSE_ERROR);
+
+      g_object_set(osc_response,
+		   "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_SERVER_FAILURE,
+		   NULL);
+
+      return(start_response);
+    }    
+
+    g_list_free(start_port);
+  }else{
+    osc_response = ags_osc_response_new();
+    start_response = g_list_prepend(start_response,
+				    osc_response);
+      
+    ags_osc_response_set_flags(osc_response,
+			       AGS_OSC_RESPONSE_ERROR);
+
+    g_object_set(osc_response,
+		 "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_SERVER_FAILURE,
+		 NULL);
+
+    return(start_response);
+  }
+  
+  return(start_response);
+}
+
+gpointer
+ags_osc_meter_controller_monitor_meter_port(AgsOscMeterController *osc_meter_controller,
+					    AgsOscConnection *osc_connection,
+					    AgsRecall *parent,
+					    AgsPort *port,
+					    unsigned char *message, guint message_size,
+					    gchar *type_tag,
+					    gchar *path, guint path_offset)
+{
+  AgsAudio *audio;
+  AgsChannel *channel;
+  
+  AgsOscResponse *osc_response;
+
+  AgsApplicationContext *application_context;  
+
+  GList *start_response;
+  GList *start_list;
+
+  unsigned char *packet;
+  gchar *current_path;
+  gchar *specifier;
+  
+  guint real_packet_size;
+  guint packet_size;
+  gint nth_audio;
+  gint nth_channel;
+
+  if(!AGS_IS_PORT(port)){
+    return(NULL);
+  }
+
+  start_response = NULL;
+
+  application_context = ags_application_context_get_instance();
+
+  if(!strncmp(path + path_offset,
+	      ":",
+	      1)){
+    guint length;
+
+    audio = NULL;
+    channel = NULL;
+    
+    if(AGS_IS_RECALL_CHANNEL(parent)){
+      g_object_get(parent,
+		   "source", &channel,
+		   NULL);
+
+      g_object_get(channel,
+		   "audio", &audio,
+		   "line", &nth_channel,
+		   NULL);      
+    }else if(AGS_IS_RECALL_AUDIO(parent)){
+      g_object_get(parent,
+		   "audio", &audio,
+		   NULL);
+    }
+    
+    /* get nth audio */
+    start_list = ags_sound_provider_get_audio(AGS_SOUND_PROVIDER(application_context));
+
+    nth_audio = g_list_index(start_list,
+			     audio);
+
+    g_list_free(start_list);
+
+    osc_response = ags_osc_response_new();
+    start_response = g_list_prepend(start_response,
+				    osc_response);
+
+    packet = (unsigned char *) malloc(AGS_OSC_RESPONSE_DEFAULT_CHUNK_SIZE * sizeof(unsigned char));
+    memset(packet, 0, AGS_OSC_RESPONSE_DEFAULT_CHUNK_SIZE * sizeof(unsigned char));
+    
+    g_object_set(osc_response,
+		 "packet", packet,
+		 "packet-size", packet_size,
+		 NULL);
+  
+    real_packet_size = AGS_OSC_RESPONSE_DEFAULT_CHUNK_SIZE;
+    
+    path_offset += 1;
+
+    if(!strncmp(path + path_offset,
+		"value",
+		6)){
+      GType port_value_type;
+
+      guint port_value_length;
+      gboolean port_value_is_pointer;
+      
+      pthread_mutex_t *port_mutex;
+
+      /* get port mutex */
+      pthread_mutex_lock(ags_port_get_class_mutex());
+      
+      port_mutex = port->obj_mutex;
+      
+      pthread_mutex_unlock(ags_port_get_class_mutex());
+
+      /* create current path */
+      pthread_mutex_lock(port_mutex);
+
+      specifier = g_strdup(port->specifier);
+      
+      pthread_mutex_unlock(port_mutex);
+      
+      if(channel != NULL){
+	current_path = g_strdup_printf("/AgsSoundProvider/AgsAudio[%d]/%s[%d]/%s/AgsPort[%s]:value",
+				       nth_audio,
+				       ((AGS_IS_OUTPUT(channel)) ? "AgsOutput": "AgsInput"),
+				       nth_channel,
+				       G_OBJECT_TYPE_NAME(parent),
+				       specifier);
+      }else{
+	current_path = g_strdup_printf("/AgsSoundProvider/AgsAudio[%d]/%s/AgsPort[%s]:value",
+				       nth_audio,
+				       G_OBJECT_TYPE_NAME(parent),
+				       specifier);
+      }
+
+      g_free(specifier);
+    }
+
+    if(!ags_osc_meter_controller_contains_monitor(osc_meter_controller,
+						  osc_connection,
+						  port)){
+      AgsOscMeterControllerMonitor *monitor;
+      
+      /* allocate monitor */
+      monitor = ags_osc_meter_controller_monitor_alloc();
+
+      monitor->osc_connection = osc_connection;
+      g_object_ref(osc_connection);
+		
+      monitor->path = g_strdup(path);
+
+      monitor->port = port;
+      g_object_ref(port);
+
+      /* add monitor */
+      ags_osc_meter_controller_add_monitor(osc_meter_controller,
+					   monitor);
+    }
+  }
+
+  return(start_response);
+}
+
+gpointer
+ags_osc_meter_controller_monitor_meter_enable(AgsOscMeterController *osc_meter_controller,
+					      AgsOscConnection *osc_connection,
+					      unsigned char *message, guint message_size,
+					      gchar *type_tag,
+					      gchar *path)
+{
+  AgsOscResponse *osc_response;
+
+  AgsApplicationContext *application_context;  
+  
+  GList *start_response;
+  GList *start_audio, *audio;
+  
+  guint path_offset;
+
+  regmatch_t match_arr[2];
+
+  static regex_t single_access_regex;
+  static regex_t range_access_regex;
+  static regex_t voluntary_access_regex;
+  static regex_t more_access_regex;
+  static regex_t wildcard_access_regex;
+    
+  static gboolean regex_compiled = FALSE;
+
+  static const gchar *single_access_pattern = "^\\[([0-9]+)\\]";
+  static const gchar *range_access_pattern = "^\\[([0-9]+)\\-([0-9]+)\\]";
+  static const gchar *voluntary_access_pattern = "^\\[(\\?)\\]";
+  static const gchar *more_access_pattern = "^\\[(\\+)\\]";
+  static const gchar *wildcard_access_pattern = "^\\[(\\*)\\]";
+    
+  static const size_t max_matches = 2;
+  static const size_t index_max_matches = 1;
+
+  start_response = NULL;  
+
+  application_context = ags_application_context_get_instance();
+
+  path_offset = 0;
+    
+  if(strncmp(path, "/AgsSoundProvider", 17) != 0){
+    osc_response = ags_osc_response_new();
+    start_response = g_list_prepend(start_response,
+				    osc_response);
+
+    ags_osc_response_set_flags(osc_response,
+			       AGS_OSC_RESPONSE_ERROR);
+
+    g_object_set(osc_response,
+		 "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_UNKNOW_ARGUMENT,
+		 NULL);
+
+    return(start_response);
+  }
+      
+  path_offset += 17;
+      
+  if(strncmp(path + path_offset, "/AgsAudio", 9) != 0){
+    osc_response = ags_osc_response_new();
+    start_response = g_list_prepend(start_response,
+				    osc_response);
+
+    ags_osc_response_set_flags(osc_response,
+			       AGS_OSC_RESPONSE_ERROR);
+
+    g_object_set(osc_response,
+		 "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_UNKNOW_ARGUMENT,
+		 NULL);
+
+    return(start_response);
+  }
+  
+  path_offset += 9;
+      
+  /* compile regex */
+  pthread_mutex_lock(&regex_mutex);
+  
+  if(!regex_compiled){
+    regex_compiled = TRUE;
+      
+    ags_regcomp(&single_access_regex, single_access_pattern, REG_EXTENDED);
+    ags_regcomp(&range_access_regex, range_access_pattern, REG_EXTENDED);
+    ags_regcomp(&voluntary_access_regex, voluntary_access_pattern, REG_EXTENDED);
+    ags_regcomp(&more_access_regex, more_access_pattern, REG_EXTENDED);
+    ags_regcomp(&wildcard_access_regex, wildcard_access_pattern, REG_EXTENDED);
+  }
+
+  pthread_mutex_unlock(&regex_mutex);
+    
+  start_audio = ags_sound_provider_get_audio(AGS_SOUND_PROVIDER(application_context));
+
+  if(ags_regexec(&single_access_regex, path + path_offset, index_max_matches, match_arr, 0) == 0){
+    AgsAudio *current;
+      
+    gchar *endptr;
+      
+    guint i_stop;
+
+    endptr = NULL;
+    i_stop = g_ascii_strtoull(path + path_offset + 1,
+			      &endptr,
+			      10);
+      
+    current = g_list_nth_data(start_audio,
+			      i_stop);
+
+    path_offset += ((endptr + 1) - (path + path_offset));
+
+    start_response = ags_osc_meter_controller_monitor_meter_audio(osc_meter_controller,
+								  osc_connection,
+								  current,
+								  message, message_size,
+								  type_tag,
+								  path, path_offset);
+  }else if(ags_regexec(&range_access_regex, path + path_offset, max_matches, match_arr, 0) == 0){
+    gchar *endptr;
+      
+    guint i;
+    guint i_start, i_stop;
+
+    endptr = NULL;
+    i_start = g_ascii_strtoull(path + path_offset + 1,
+			       &endptr,
+			       10);
+
+    i_stop = g_ascii_strtoull(endptr + 1,
+			      &endptr,
+			      10);
+
+    path_offset += ((endptr + 1) - (path + path_offset));
+
+    audio = g_list_nth(start_audio,
+		       i_start);
+      
+    for(i = i_start; i <= i_stop; i++){
+      GList *retval;
+	
+      retval = ags_osc_meter_controller_monitor_meter_audio(osc_meter_controller,
+							    osc_connection,
+							    audio->data,
+							    message, message_size,
+							    type_tag,
+							    path, path_offset);
+
+      if(start_response != NULL){
+	start_response = g_list_concat(start_response,
+				       retval);
+      }else{
+	start_response = retval;
+      }
+
+      audio = audio->next;
+    }
+  }else if(ags_regexec(&voluntary_access_regex, path + path_offset, index_max_matches, match_arr, 0) == 0){
+    path_offset += 3;
+
+    if(start_audio != NULL){
+      GList *retval;
+	
+      retval = ags_osc_meter_controller_monitor_meter_audio(osc_meter_controller,
+							    osc_connection,
+							    start_audio->data,
+							    message, message_size,
+							    type_tag,
+							    path, path_offset);
+    }else{
+      osc_response = ags_osc_response_new();
+      start_response = g_list_prepend(start_response,
+				      osc_response);
+      
+      ags_osc_response_set_flags(osc_response,
+				 AGS_OSC_RESPONSE_OK);
+
+      return(start_response);
+    }
+  }else if(ags_regexec(&more_access_regex, path + path_offset, index_max_matches, match_arr, 0) == 0){
+    path_offset += 3;
+
+    if(start_audio == NULL){
+      osc_response = ags_osc_response_new();
+      start_response = g_list_prepend(start_response,
+				      osc_response);
+      
+      ags_osc_response_set_flags(osc_response,
+				 AGS_OSC_RESPONSE_ERROR);
+
+      g_object_set(osc_response,
+		   "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_SERVER_FAILURE,
+		   NULL);
+
+      return(start_response);
+    }
+
+    audio = start_audio;
+      
+    while(audio != NULL){
+      GList *retval;
+	
+      retval = ags_osc_meter_controller_monitor_meter_audio(osc_meter_controller,
+							    osc_connection,
+							    audio->data,
+							    message, message_size,
+							    type_tag,
+							    path, path_offset);
+
+      if(start_response != NULL){
+	start_response = g_list_concat(start_response,
+				       retval);
+      }else{
+	start_response = retval;
+      }
+
+      audio = audio->next;
+    }
+  }else if(ags_regexec(&wildcard_access_regex, path + path_offset, index_max_matches, match_arr, 0) == 0){
+    path_offset += 3;
+
+    if(start_audio == NULL){
+      osc_response = ags_osc_response_new();
+      start_response = g_list_prepend(start_response,
+				      osc_response);
+      
+      ags_osc_response_set_flags(osc_response,
+				 AGS_OSC_RESPONSE_OK);
+
+      return(start_response);
+    }
+      
+    while(audio != NULL){
+      GList *retval;
+	
+      retval = ags_osc_meter_controller_monitor_meter_audio(osc_meter_controller,
+							    osc_connection,
+							    audio->data,
+							    message, message_size,
+							    type_tag,
+							    path, path_offset);
+
+      if(start_response != NULL){
+	start_response = g_list_concat(start_response,
+				       retval);
+      }else{
+	start_response = retval;
+      }
+
+      audio = audio->next;
+    }
+  }else if(path[path_offset] == '[' &&
+	   path[path_offset + 1] == '"'){
+    AgsAudio *current;
+
+    gchar *audio_name;
+    gchar *offset;
+
+    guint length;
+
+    if((offset = index(path + path_offset + 2, '"')) == NULL){
+      osc_response = ags_osc_response_new();
+      start_response = g_list_prepend(start_response,
+				      osc_response);
+
+      ags_osc_response_set_flags(osc_response,
+				 AGS_OSC_RESPONSE_ERROR);
+
+      g_object_set(osc_response,
+		   "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_CHUNK_SIZE_EXCEEDED,
+		   NULL);
+	  
+      return(start_response);
+    }
+
+    length = offset - (path + path_offset + 2);
+
+    audio_name = (gchar *) malloc((length + 1) * sizeof(gchar));
+    memcpy(audio_name, path + path_offset + 2, (length) * sizeof(gchar));
+    audio_name[length] = '\0';
+
+    current = NULL;
+    audio = ags_audio_find_name(start_audio,
+				audio_name);
+	
+    if(audio != NULL){
+      current = audio->data;
+    }	
+
+    g_free(audio_name);
+    
+    path_offset += (length + 4);
+    start_response = ags_osc_meter_controller_monitor_meter_audio(osc_meter_controller,
+								  osc_connection,
+								  current,
+								  message, message_size,
+								  type_tag,
+								  path, path_offset);
+  }else{
+    g_list_free(start_audio);
+      
+    osc_response = ags_osc_response_new();
+    start_response = g_list_prepend(start_response,
+				    osc_response);
+      
+    ags_osc_response_set_flags(osc_response,
+			       AGS_OSC_RESPONSE_ERROR);
+
+    g_object_set(osc_response,
+		 "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_SERVER_FAILURE,
+		 NULL);
+
+    return(start_response);
+  }    
+
+  g_list_free(start_audio);
+  
+  return(start_response);
+}
+
+void
+ags_osc_meter_controller_expand_path_audio(AgsAudio *audio,
+					   gchar *path,
+					   gchar ***strv)
+{
+  regmatch_t match_arr[2];
+
+  guint path_offset;
+  guint i, i_start, i_stop;
+
+  static regex_t single_access_regex;
+  static regex_t range_access_regex;
+  static regex_t voluntary_access_regex;
+  static regex_t more_access_regex;
+  static regex_t wildcard_access_regex;
+    
+  static gboolean regex_compiled = FALSE;
+
+  static const gchar *single_access_pattern = "^/AgsSoundProvider/AgsAudio[0-9]+/(AgsOutput|AgsInput)\\[([0-9]+)\\]";
+  static const gchar *range_access_pattern = "^/AgsSoundProvider/AgsAudio[0-9]+/(AgsOutput|AgsInput)\\[([0-9]+)\\-([0-9]+)\\]";
+  static const gchar *voluntary_access_pattern = "^/AgsSoundProvider/AgsAudio[0-9]+/(AgsOutput|AgsInput)\\[(\\?)\\]";
+  static const gchar *more_access_pattern = "^/AgsSoundProvider/AgsAudio[0-9]+/(AgsOutput|AgsInput)\\[(\\+)\\]";
+  static const gchar *wildcard_access_pattern = "^/AgsSoundProvider/AgsAudio[0-9]+/(AgsOutput|AgsInput)\\[(\\*)\\]";
+  
+  static const gchar *generic_single_access_pattern = "^/AgsSoundProvider/AgsAudio[0-9]+/[A-Za-z]+\\[([0-9]+)\\]";
+  static const gchar *generic_range_access_pattern = "^/AgsSoundProvider/AgsAudio[0-9]+/[A-Za-z]+\\[([0-9]+)\\-([0-9]+)\\]";
+  static const gchar *generic_voluntary_access_pattern = "^/AgsSoundProvider/AgsAudio[0-9]+/[A-Za-z]+\\[(\\?)\\]";
+  static const gchar *generic_more_access_pattern = "^/AgsSoundProvider/AgsAudio[0-9]+/[A-Za-z]+\\[(\\+)\\]";
+  static const gchar *generic_wildcard_access_pattern = "^/AgsSoundProvider/AgsAudio[0-9]+/[A-Za-z]+\\[(\\*)\\]";
+
+  static const size_t max_matches = 3;
+  static const size_t index_max_matches = 2;
+
+  if(path == NULL){
+    return(NULL);
+  }
+  
+  pthread_mutex_lock(&regex_mutex);
+  
+  if(!regex_compiled){
+    regex_compiled = TRUE;
+      
+    ags_regcomp(&single_access_regex, single_access_pattern, REG_EXTENDED);
+    ags_regcomp(&range_access_regex, range_access_pattern, REG_EXTENDED);
+    ags_regcomp(&voluntary_access_regex, voluntary_access_pattern, REG_EXTENDED);
+    ags_regcomp(&more_access_regex, more_access_pattern, REG_EXTENDED);
+    ags_regcomp(&wildcard_access_regex, wildcard_access_pattern, REG_EXTENDED);
+  }
+
+  pthread_mutex_unlock(&regex_mutex);
+
+  if(ags_regexec(&single_access_regex, path, index_max_matches, match_arr, 0) == 0){
+  }else if(ags_regexec(&range_access_regex, path, max_matches, match_arr, 0) == 0){
+  }else if(ags_regexec(&voluntary_access_regex, path, index_max_matches, match_arr, 0) == 0){
+  }else if(ags_regexec(&more_access_regex, path, index_max_matches, match_arr, 0) == 0){
+  }else if(ags_regexec(&wildcard_access_regex, path, index_max_matches, match_arr, 0) == 0){
+  }else{
+  }
+  
+  //TODO:JK: implement me
+}
+
+void
+ags_osc_meter_controller_expand_path_channel(AgsChannel *channel,
+					     gchar *path,
+					     gchar ***strv)
+{
+  regmatch_t match_arr[2];
+
+  guint path_offset;
+  guint i, i_start, i_stop;
+
+  static regex_t single_access_regex;
+  static regex_t range_access_regex;
+  static regex_t voluntary_access_regex;
+  static regex_t more_access_regex;
+  static regex_t wildcard_access_regex;
+    
+  static gboolean regex_compiled = FALSE;
+
+  static const gchar *single_access_pattern = "^/AgsSoundProvider/AgsAudio[0-9]+/(AgsOutput|AgsInput)[0-9]+/[A-Za-z]+\\[([0-9]+)\\]";
+  static const gchar *range_access_pattern = "^/AgsSoundProvider/AgsAudio[0-9]+/(AgsOutput|AgsInput)[0-9]+/[A-Za-z]+\\[([0-9]+)\\-([0-9]+)\\]";
+  static const gchar *voluntary_access_pattern = "^/AgsSoundProvider/AgsAudio[0-9]+/(AgsOutput|AgsInput)[0-9]+/[A-Za-z]+\\[(\\?)\\]";
+  static const gchar *more_access_pattern = "^/AgsSoundProvider/AgsAudio[0-9]+/(AgsOutput|AgsInput)[0-9]+/[A-Za-z]+\\[(\\+)\\]";
+  static const gchar *wildcard_access_pattern = "^/AgsSoundProvider/AgsAudio[0-9]+/(AgsOutput|AgsInput)[0-9]+/[A-Za-z]+\\[(\\*)\\]";
+  
+  static const size_t max_matches = 3;
+  static const size_t index_max_matches = 2;
+
+  if(path == NULL){
+    return(NULL);
+  }
+  
+  pthread_mutex_lock(&regex_mutex);
+  
+  if(!regex_compiled){
+    regex_compiled = TRUE;
+      
+    ags_regcomp(&single_access_regex, single_access_pattern, REG_EXTENDED);
+    ags_regcomp(&range_access_regex, range_access_pattern, REG_EXTENDED);
+    ags_regcomp(&voluntary_access_regex, voluntary_access_pattern, REG_EXTENDED);
+    ags_regcomp(&more_access_regex, more_access_pattern, REG_EXTENDED);
+    ags_regcomp(&wildcard_access_regex, wildcard_access_pattern, REG_EXTENDED);
+  }
+
+  pthread_mutex_unlock(&regex_mutex);
+
+  if(ags_regexec(&single_access_regex, path, index_max_matches, match_arr, 0) == 0){
+  }else if(ags_regexec(&range_access_regex, path, max_matches, match_arr, 0) == 0){
+  }else if(ags_regexec(&voluntary_access_regex, path, index_max_matches, match_arr, 0) == 0){
+  }else if(ags_regexec(&more_access_regex, path, index_max_matches, match_arr, 0) == 0){
+  }else if(ags_regexec(&wildcard_access_regex, path, index_max_matches, match_arr, 0) == 0){
+  }else{
+  }
+  //TODO:JK: implement me
+}
+
+void
+ags_osc_meter_controller_expand_path_recall(AgsRecall *recall,
+					    gchar *path,
+					    gchar ***strv)
+{
+  regmatch_t match_arr[2];
+
+  guint path_offset;
+  guint i, i_start, i_stop;
+
+  static regex_t single_access_regex;
+  static regex_t range_access_regex;
+  static regex_t voluntary_access_regex;
+  static regex_t more_access_regex;
+  static regex_t wildcard_access_regex;
+    
+  static gboolean regex_compiled = FALSE;
+
+  static const gchar *single_access_pattern = "^/AgsSoundProvider(/AgsAudio[0-9]+|/AgsAudio[0-9]+/(AgsOutput|AgsInput)[0-9]+)/[A-Za-z]+\\[([0-9]+)\\]";
+  static const gchar *range_access_pattern = "^/AgsSoundProvider/(/AgsAudio[0-9]+|/AgsAudio[0-9]+/(AgsOutput|AgsInput)[0-9]+)/[A-Za-z]+\\[([0-9]+)\\-([0-9]+)\\]";
+  static const gchar *voluntary_access_pattern = "^/AgsSoundProvider/(/AgsAudio[0-9]+|/AgsAudio[0-9]+/(AgsOutput|AgsInput)[0-9]+)/[A-Za-z]+\\[(\\?)\\]";
+  static const gchar *more_access_pattern = "^/AgsSoundProvider/(/AgsAudio[0-9]+|/AgsAudio[0-9]+/(AgsOutput|AgsInput)[0-9]+)/[A-Za-z]+\\[(\\+)\\]";
+  static const gchar *wildcard_access_pattern = "^/AgsSoundProvider/(/AgsAudio[0-9]+|/AgsAudio[0-9]+/(AgsOutput|AgsInput)[0-9]+)/[A-Za-z]+/AgsPort\\[(\\*)\\]";
+
+  static const size_t max_matches = 4;
+  static const size_t index_max_matches = 3;
+  
+  if(path == NULL){
+    return(NULL);
+  }
+  
+  pthread_mutex_lock(&regex_mutex);
+  
+  if(!regex_compiled){
+    regex_compiled = TRUE;
+      
+    ags_regcomp(&single_access_regex, single_access_pattern, REG_EXTENDED);
+    ags_regcomp(&range_access_regex, range_access_pattern, REG_EXTENDED);
+    ags_regcomp(&voluntary_access_regex, voluntary_access_pattern, REG_EXTENDED);
+    ags_regcomp(&more_access_regex, more_access_pattern, REG_EXTENDED);
+    ags_regcomp(&wildcard_access_regex, wildcard_access_pattern, REG_EXTENDED);
+  }
+
+  pthread_mutex_unlock(&regex_mutex);
+
+  if(ags_regexec(&single_access_regex, path, index_max_matches, match_arr, 0) == 0){
+  }else if(ags_regexec(&range_access_regex, path, max_matches, match_arr, 0) == 0){
+  }else if(ags_regexec(&voluntary_access_regex, path, index_max_matches, match_arr, 0) == 0){
+  }else if(ags_regexec(&more_access_regex, path, index_max_matches, match_arr, 0) == 0){
+  }else if(ags_regexec(&wildcard_access_regex, path, index_max_matches, match_arr, 0) == 0){
+  }else{
+  }
+  //TODO:JK: implement me
+}
+
+void
+ags_osc_meter_controller_expand_path_port(AgsPort *port,
+					  gchar *path,
+					  gchar ***strv)
+{
+  guint length;
+
+  if(strv[0] == NULL){
+    length = 1;
+    
+    strv[0] = (gchar **) malloc(2 * sizeof(gchar *));
+  }else{
+    length = g_strv_length(strv[0]);
+
+    strv[0] = (gchar **) realloc(strv[0],
+				 2 * sizeof(gchar *));
+  }
+
+  strv[0][length - 1] = g_strdup(path);
+  strv[0][length] = NULL;
+}
+
+void
+ags_osc_meter_controller_expand_path(gchar *path,
+				     gchar ***strv)
+{
+  AgsApplicationContext *application_context;
+
+  GList *start_audio, *audio;
+
+  regmatch_t match_arr[2];
+
+  gchar *next_path;
+
+  guint path_offset;
+  guint i, i_start, i_stop;
+
+  static regex_t single_access_regex;
+  static regex_t range_access_regex;
+  static regex_t voluntary_access_regex;
+  static regex_t more_access_regex;
+  static regex_t wildcard_access_regex;
+    
+  static gboolean regex_compiled = FALSE;
+
+  static const gchar *single_access_pattern = "^/AgsSoundProvider/AgsAudio\\[([0-9]+)\\]";
+  static const gchar *range_access_pattern = "^/AgsSoundProvider/AgsAudio\\[([0-9]+)\\-([0-9]+)\\]";
+  static const gchar *voluntary_access_pattern = "^/AgsSoundProvider/AgsAudio\\[(\\?)\\]";
+  static const gchar *more_access_pattern = "^/AgsSoundProvider/AgsAudio\\[(\\+)\\]";
+  static const gchar *wildcard_access_pattern = "^/AgsSoundProvider/AgsAudio\\[(\\*)\\]";
+  
+  static const size_t max_matches = 2;
+  static const size_t index_max_matches = 1;
+
+  if(path == NULL){
+    return(NULL);
+  }
+
+  application_context = ags_application_context_get_instance();
+  
+  pthread_mutex_lock(&regex_mutex);
+  
+  if(!regex_compiled){
+    regex_compiled = TRUE;
+      
+    ags_regcomp(&single_access_regex, single_access_pattern, REG_EXTENDED);
+    ags_regcomp(&range_access_regex, range_access_pattern, REG_EXTENDED);
+    ags_regcomp(&voluntary_access_regex, voluntary_access_pattern, REG_EXTENDED);
+    ags_regcomp(&more_access_regex, more_access_pattern, REG_EXTENDED);
+    ags_regcomp(&wildcard_access_regex, wildcard_access_pattern, REG_EXTENDED);
+  }
+
+  pthread_mutex_unlock(&regex_mutex);
+
+  start_audio = ags_sound_provider_get_audio(AGS_SOUND_PROVIDER(application_context));
+
+  path_offset = strlen("/AgsSoundProvider/AgsAudio");
+  
+  if(ags_regexec(&single_access_regex, path, index_max_matches, match_arr, 0) == 0){
+    AgsAudio *current;
+    
+    gchar *endptr;
+      
+    guint i_stop;
+
+    endptr = NULL;
+    i_stop = g_ascii_strtoull(path + path_offset + 1,
+			      &endptr,
+			      10);
+
+    current = g_list_nth_data(start_audio,
+			      i_stop);
+
+    next_path = g_strdup_printf("/AgsSoundProvider/AgsAudio[%d]%s",
+				i_stop,
+				endptr + 1);
+    
+    ags_osc_meter_controller_expand_path_audio(current,
+					       next_path,
+					       strv);
+
+    g_free(next_path);
+  }else if(ags_regexec(&range_access_regex, path, max_matches, match_arr, 0) == 0){
+    gchar *endptr;
+      
+    guint i;
+    guint i_start, i_stop;
+
+    endptr = NULL;
+    i_start = g_ascii_strtoull(path + path_offset + 1,
+			       &endptr,
+			       10);
+
+    i_stop = g_ascii_strtoull(endptr + 1,
+			      &endptr,
+			      10);
+
+    path_offset += ((endptr + 1) - (path + path_offset));
+
+    audio = g_list_nth(start_audio,
+		       i_start);
+      
+    for(i = i_start; i <= i_stop; i++){
+      next_path = g_strdup_printf("/AgsSoundProvider/AgsAudio[%d]%s",
+				  i,
+				  endptr + 1);
+
+      ags_osc_meter_controller_expand_path_audio(audio->data,
+						 next_path,
+						 strv);
+
+      g_free(next_path);
+      
+      audio = audio->next;
+    }
+  }else if(ags_regexec(&voluntary_access_regex, path, index_max_matches, match_arr, 0) == 0){
+    path_offset += 3;
+
+    if(start_audio != NULL){
+      next_path = g_strdup_printf("/AgsSoundProvider/AgsAudio[0]%s",
+				  i,
+				  path + path_offset);
+      
+      ags_osc_meter_controller_expand_path_audio(audio->data,
+						 next_path,
+						 strv);
+      
+      g_free(next_path);      
+    }
+  }else if(ags_regexec(&more_access_regex, path, index_max_matches, match_arr, 0) == 0){
+    guint i;
+    
+    path_offset += 3;
+
+    if(start_audio == NULL){
+      return;
+    }
+
+    audio = start_audio;
+      
+    for(i = 0; audio != NULL; i++){
+      next_path = g_strdup_printf("/AgsSoundProvider/AgsAudio[%d]%s",
+				  i,
+				  path + path_offset);
+
+      ags_osc_meter_controller_expand_path_audio(audio->data,
+						 next_path,
+						 strv);
+
+      g_free(next_path);
+      
+      audio = audio->next;
+    }    
+  }else if(ags_regexec(&wildcard_access_regex, path, index_max_matches, match_arr, 0) == 0){
+    guint i;
+    
+    audio = start_audio;
+      
+    for(i = 0; audio != NULL; i++){
+      next_path = g_strdup_printf("/AgsSoundProvider/AgsAudio[%d]%s",
+				  i,
+				  path + path_offset);
+
+      ags_osc_meter_controller_expand_path_audio(audio->data,
+						 next_path,
+						 strv);
+
+      g_free(next_path);
+      
+      audio = audio->next;
+    }    
+  }else{
+    path_offset = strlen("/AgsSoundProvider/AgsAudio");
+
+    if(path[path_offset] == '[' &&
+       path[path_offset + 1] == '"'){
+      AgsAudio *current;
+
+      gchar *audio_name;
+      gchar *offset;
+
+      guint length;
+
+      if((offset = index(path + path_offset + 2, '"')) == NULL){
+	return;
+      }
+
+      length = offset - (path + path_offset + 2);
+
+      audio_name = (gchar *) malloc((length + 1) * sizeof(gchar));
+      memcpy(audio_name, path + path_offset + 2, (length) * sizeof(gchar));
+      audio_name[length] = '\0';
+
+      current = NULL;
+      audio = ags_audio_find_name(start_audio,
+				  audio_name);
+	
+      if(audio != NULL){
+	current = audio->data;
+      }
+
+      g_free(audio_name);
+
+      next_path = g_strdup_printf("/AgsSoundProvider/AgsAudio[%d]%s",
+				  g_list_index(start_audio, current),
+				  offset + 2);
+
+      ags_osc_meter_controller_expand_path_audio(current,
+						 next_path,
+						 strv);
+      
+      path_offset += (4 + length);
+      
+    }
+  }
+}
+
+gpointer
+ags_osc_meter_controller_monitor_meter_disable(AgsOscMeterController *osc_meter_controller,
+					       AgsOscConnection *osc_connection,
+					       unsigned char *message, guint message_size,
+					       gchar *type_tag,
+					       gchar *path)
+{
+  AgsOscResponse *osc_response;
+
+  AgsOscMeterControllerMonitor *current;
+    
+  GList *monitor;
+  GList *start_response;
+  
+  gchar **strv;
+
+  pthread_mutex_t *osc_controller_mutex;
+
+  start_response = NULL;
+  
+  osc_response = ags_osc_response_new();
+  start_response = g_list_prepend(start_response,
+				  osc_response);
+    
+  ags_osc_response_set_flags(osc_response,
+			     AGS_OSC_RESPONSE_OK);
+
+  /* get OSC meter controller mutex */
+  pthread_mutex_lock(ags_osc_controller_get_class_mutex());
+  
+  osc_controller_mutex = AGS_OSC_CONTROLLER(osc_meter_controller)->obj_mutex;
+  
+  pthread_mutex_unlock(ags_osc_controller_get_class_mutex());
+
+  /* find path and connection */
+  strv = NULL;
+  ags_osc_meter_controller_expand_path(path,
+				       &strv);
+
+  if(strv != NULL){
+    for(; strv[0] != NULL; strv++){
+      pthread_mutex_lock(osc_controller_mutex);
+
+      monitor = osc_meter_controller->monitor;
+      current = NULL;
+
+      while((monitor = ags_osc_meter_controller_monitor_find_path(monitor,
+								  strv[0])) != NULL){
+	if(AGS_OSC_METER_CONTROLLER_MONITOR(monitor->data)->osc_connection == osc_connection){
+	  current = monitor->data;
+	
+	  break;
+	}
+
+	monitor = monitor->next;
+      }
+
+      pthread_mutex_unlock(osc_controller_mutex);
+
+      /* remove monitor */
+      if(current != NULL){
+	ags_osc_meter_controller_remove_monitor(osc_meter_controller,
+						current);
+      }
+    }
+  }
+  
+  return(start_response);
+}
+
+gpointer
 ags_osc_meter_controller_real_monitor_meter(AgsOscMeterController *osc_meter_controller,
 					    AgsOscConnection *osc_connection,
 					    unsigned char *message, guint message_size)
 {
-  AgsOscResponse *osc_response;
-
   AgsApplicationContext *application_context;
 
-  AgsOscMeterControllerMonitor *monitor;
+  AgsOscResponse *osc_response;
+
+  GList *start_response;
 
   gchar *type_tag;
   gchar *path;
-  
-  guint path_offset;
+
   gboolean success;
+
+  start_response = NULL;
   
   /* read type tag */
   ags_osc_buffer_util_get_string(message + 8,
@@ -1101,626 +3659,21 @@ ags_osc_meter_controller_real_monitor_meter(AgsOscMeterController *osc_meter_con
 				 &path, NULL);
 
   /* get sound provider */
-  application_context = ags_application_context_get_instance();
-
-  path_offset = 0;
-  
   if(type_tag[2] == 'T'){
-    if(!strncmp(path, "/AgsSoundProvider", 17)){
-      path_offset += 17;
-      
-      if(!strncmp(path + path_offset, "/AgsAudio", 9)){
-	AgsAudio *audio;
-      
-	GList *start_audio;
-
-	guint nth_audio;
-	int retval;
-
-	audio = NULL;
-
-	path_offset += 9;
-
-	if(g_ascii_isdigit(path[path_offset + 1])){
-	  start_audio = ags_sound_provider_get_audio(AGS_SOUND_PROVIDER(application_context));
-	
-	  retval = sscanf(path + path_offset, "[%d]",
-			  &nth_audio);
-      
-	  if(retval <= 0){
-	    osc_response = ags_osc_response_new();
-	  
-	    ags_osc_response_set_flags(osc_response,
-				       AGS_OSC_RESPONSE_ERROR);
-	  
-	    g_object_set(osc_response,
-			 "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_MISSING_INDEX,
-			 NULL);
-	  
-	    return(osc_response);
-	  }
-	
-	  audio = g_list_nth_data(start_audio,
-				  nth_audio);
-      
-	  path_offset = index(path + path_offset, ']') - path + 1;
-	
-	  g_list_free(start_audio);
-	}else if(path[path_offset + 1] == '"'){
-	  GList *list;
-	
-	  gchar *audio_name;
-	  gchar *offset;
-
-	  guint length;
-
-	  if((offset = index(path + path_offset + 2, '"')) == NULL){
-	    ags_osc_response_set_flags(osc_response,
-				       AGS_OSC_RESPONSE_ERROR);
-
-	    g_object_set(osc_response,
-			 "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_CHUNK_SIZE_EXCEEDED,
-			 NULL);
-	  
-	    return(osc_response);
-	  }
-
-	  length = offset - (path + path_offset + 3);
-
-	  audio_name = malloc((length + 1) * sizeof(gchar));
-	  sscanf(path + path_offset, "%s", &audio_name);
-
-	  start_audio = ags_sound_provider_get_audio(AGS_SOUND_PROVIDER(application_context));
-
-	  list = ags_audio_find_name(start_audio,
-				     audio_name);
-
-	  if(list != NULL){
-	    audio = list->data;
-	  }
-
-	  path_offset = path_offset + strlen(audio_name) + 2;
-	
-	  g_list_free(start_audio);
-	}else{
-	  osc_response = ags_osc_response_new();
-      
-	  ags_osc_response_set_flags(osc_response,
-				     AGS_OSC_RESPONSE_ERROR);
-
-	  g_object_set(osc_response,
-		       "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_MISSING_INDEX,
-		       NULL);
-
-	  return(osc_response);
-	}
-	
-	if(!strncmp(path + path_offset, "/AgsOutput", 10)){
-	  AgsChannel *start_channel, *channel;
-      
-	  guint nth_channel;
-	  int retval;
-
-	  path_offset += 10;
-
-	  g_object_get(audio,
-		       "output", &start_channel,
-		       NULL);
-    
-	  retval = sscanf(path + path_offset, "[%d]",
-			  &nth_channel);
-      
-	  channel = ags_channel_nth(start_channel,
-				    nth_channel);
-      
-	  path_offset = index(path + path_offset, ']') - path + 1;
-
-	  if(!strncmp(path + path_offset, "/AgsPort", 8)){
-	    AgsPort *port;
-      
-	    GList *start_port;
-      
-	    guint nth_port;
-	    int retval;
-
-	    port = NULL;
-      
-	    path_offset += 8;
-
-	    if(g_ascii_isdigit(path[path_offset + 1])){
-	      g_object_get(audio,
-			   "port", &start_port,
-			   NULL);
-	
-	      retval = sscanf(path + path_offset, "[%d]",
-			      &nth_port);
-      
-	      if(retval <= 0){
-		osc_response = ags_osc_response_new();
-	  
-		ags_osc_response_set_flags(osc_response,
-					   AGS_OSC_RESPONSE_ERROR);
-	  
-		g_object_set(osc_response,
-			     "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_MISSING_INDEX,
-			     NULL);
-	  
-		return(osc_response);
-	      }
-      
-	      port = g_list_nth_data(start_port,
-				     nth_port);
-      
-	      path_offset = index(path + path_offset, ']') - path + 1;
-
-	      if(!ags_osc_meter_controller_contains_monitor(osc_meter_controller,
-							    osc_connection,
-							    port)){
-		/* allocate monitor */
-		monitor = ags_osc_meter_controller_monitor_alloc();
-
-		monitor->osc_connection = osc_connection;
-		g_object_ref(osc_connection);
-		
-		monitor->path = g_strdup(path);
-
-		monitor->port = port;
-		g_object_ref(port);
-
-		/* add monitor */
-		ags_osc_meter_controller_add_monitor(osc_meter_controller,
-						     monitor);
-	      }
-
-	      g_list_free(start_port);
-	    }else if(path[path_offset + 1] == '"'){
-	      GList *list;
-	
-	      gchar *specifier;
-	      gchar *offset;
-
-	      guint length;
-
-	      if((offset = index(path + path_offset + 2, '"')) == NULL){
-		ags_osc_response_set_flags(osc_response,
-					   AGS_OSC_RESPONSE_ERROR);
-
-		g_object_set(osc_response,
-			     "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_CHUNK_SIZE_EXCEEDED,
-			     NULL);
-	  
-		return(osc_response);
-	      }
-
-	      length = offset - (path + path_offset + 3);
-
-	      specifier = malloc((length + 1) * sizeof(gchar));
-	      sscanf(path + path_offset, "%s", &specifier);
-
-	      g_object_get(audio,
-			   "port", &start_port,
-			   NULL);	
-
-	      list = ags_port_find_specifier(start_port,
-					     specifier);
-
-	      if(list != NULL){
-		port = list->data;
-	      }
-
-	      path_offset = path_offset + strlen(specifier) + 2;
-
-	      if(!ags_osc_meter_controller_contains_monitor(osc_meter_controller,
-							    osc_connection,
-							    port)){
-		/* allocate monitor */
-		monitor = ags_osc_meter_controller_monitor_alloc();
-
-		monitor->osc_connection = osc_connection;
-		g_object_ref(osc_connection);
-		
-		monitor->path = g_strdup(path);
-
-		monitor->port = port;
-		g_object_ref(port);
-
-		/* add monitor */
-		ags_osc_meter_controller_add_monitor(osc_meter_controller,
-						     monitor);
-	      }
-
-	      g_list_free(start_port);
-	    }else{
-	      osc_response = ags_osc_response_new();
-      
-	      ags_osc_response_set_flags(osc_response,
-					 AGS_OSC_RESPONSE_ERROR);
-
-	      g_object_set(osc_response,
-			   "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_MISSING_INDEX,
-			   NULL);
-
-	      return(osc_response);
-	    }
-	  }else{
-	    osc_response = ags_osc_response_new();
-      
-	    ags_osc_response_set_flags(osc_response,
-				       AGS_OSC_RESPONSE_ERROR);
-
-	    g_object_set(osc_response,
-			 "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_UNKNOW_ARGUMENT,
-			 NULL);
-
-	    return(osc_response);
-	  }
-	}else if(!strncmp(path + path_offset, "/AgsInput", 9)){
-	  AgsChannel *start_channel, *channel;
-      
-	  guint nth_channel;
-	  int retval;
-
-	  path_offset += 10;
-
-	  g_object_get(audio,
-		       "input", &start_channel,
-		       NULL);
-    
-	  retval = sscanf(path + path_offset, "[%d]",
-			  &nth_channel);
-      
-	  channel = ags_channel_nth(start_channel,
-				    nth_channel);
-      
-	  path_offset = index(path + path_offset, ']') - path + 1;
-	  
-	  if(!strncmp(path + path_offset, "/AgsPort", 8)){
-	    AgsPort *port;
-      
-	    GList *start_port;
-      
-	    guint nth_port;
-	    int retval;
-
-	    port = NULL;
-      
-	    path_offset += 8;
-
-	    if(g_ascii_isdigit(path[path_offset + 1])){
-	      g_object_get(audio,
-			   "port", &start_port,
-			   NULL);
-	
-	      retval = sscanf(path + path_offset, "[%d]",
-			      &nth_port);
-      
-	      if(retval <= 0){
-		osc_response = ags_osc_response_new();
-	  
-		ags_osc_response_set_flags(osc_response,
-					   AGS_OSC_RESPONSE_ERROR);
-	  
-		g_object_set(osc_response,
-			     "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_MISSING_INDEX,
-			     NULL);
-	  
-		return(osc_response);
-	      }
-      
-	      port = g_list_nth_data(start_port,
-				     nth_port);
-      
-	      path_offset = index(path + path_offset, ']') - path + 1;
-
-	      if(!ags_osc_meter_controller_contains_monitor(osc_meter_controller,
-							    osc_connection,
-							    port)){
-		/* allocate monitor */
-		monitor = ags_osc_meter_controller_monitor_alloc();
-
-		monitor->osc_connection = osc_connection;
-		g_object_ref(osc_connection);
-		
-		monitor->path = g_strdup(path);
-
-		monitor->port = port;
-		g_object_ref(port);
-
-		/* add monitor */
-		ags_osc_meter_controller_add_monitor(osc_meter_controller,
-						     monitor);
-	      }
-
-	      g_list_free(start_port);
-	    }else if(path[path_offset + 1] == '"'){
-	      GList *list;
-	
-	      gchar *specifier;
-	      gchar *offset;
-
-	      guint length;
-
-	      if((offset = index(path + path_offset + 2, '"')) == NULL){
-		ags_osc_response_set_flags(osc_response,
-					   AGS_OSC_RESPONSE_ERROR);
-
-		g_object_set(osc_response,
-			     "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_CHUNK_SIZE_EXCEEDED,
-			     NULL);
-	  
-		return(osc_response);
-	      }
-
-	      length = offset - (path + path_offset + 3);
-
-	      specifier = malloc((length + 1) * sizeof(gchar));
-	      sscanf(path + path_offset, "%s", &specifier);
-
-	      g_object_get(audio,
-			   "port", &start_port,
-			   NULL);	
-
-	      list = ags_port_find_specifier(start_port,
-					     specifier);
-
-	      if(list != NULL){
-		port = list->data;
-	      }
-
-	      path_offset = path_offset + strlen(specifier) + 2;
-
-	      if(!ags_osc_meter_controller_contains_monitor(osc_meter_controller,
-							    osc_connection,
-							    port)){
-		/* allocate monitor */
-		monitor = ags_osc_meter_controller_monitor_alloc();
-
-		monitor->osc_connection = osc_connection;
-		g_object_ref(osc_connection);
-		
-		monitor->path = g_strdup(path);
-
-		monitor->port = port;
-		g_object_ref(port);
-
-		/* add monitor */
-		ags_osc_meter_controller_add_monitor(osc_meter_controller,
-						     monitor);
-	      }
-
-	      g_list_free(start_port);
-	    }else{
-	      osc_response = ags_osc_response_new();
-      
-	      ags_osc_response_set_flags(osc_response,
-					 AGS_OSC_RESPONSE_ERROR);
-
-	      g_object_set(osc_response,
-			   "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_MISSING_INDEX,
-			   NULL);
-
-	      return(osc_response);
-	    }
-	  }else{
-	    osc_response = ags_osc_response_new();
-      
-	    ags_osc_response_set_flags(osc_response,
-				       AGS_OSC_RESPONSE_ERROR);
-
-	    g_object_set(osc_response,
-			 "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_UNKNOW_ARGUMENT,
-			 NULL);
-
-	    return(osc_response);
-	  }
-	}else if(!strncmp(path + path_offset, "/AgsPort", 8)){
-	  AgsPort *port;
-      
-	  GList *start_port;
-      
-	  guint nth_port;
-	  int retval;
-
-	  port = NULL;
-      
-	  path_offset += 8;
-
-	  if(g_ascii_isdigit(path[path_offset + 1])){
-	    g_object_get(audio,
-			 "port", &start_port,
-			 NULL);
-	
-	    retval = sscanf(path + path_offset, "[%d]",
-			    &nth_port);
-      
-	    if(retval <= 0){
-	      osc_response = ags_osc_response_new();
-	  
-	      ags_osc_response_set_flags(osc_response,
-					 AGS_OSC_RESPONSE_ERROR);
-	  
-	      g_object_set(osc_response,
-			   "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_MISSING_INDEX,
-			   NULL);
-	  
-	      return(osc_response);
-	    }
-      
-	    port = g_list_nth_data(start_port,
-				   nth_port);
-      
-	    path_offset = index(path + path_offset, ']') - path + 1;
-
-	    if(!ags_osc_meter_controller_contains_monitor(osc_meter_controller,
-							  osc_connection,
-							  port)){
-	      /* allocate monitor */
-	      monitor = ags_osc_meter_controller_monitor_alloc();
-
-	      monitor->osc_connection = osc_connection;
-	      g_object_ref(osc_connection);
-		
-	      monitor->path = g_strdup(path);
-
-	      monitor->port = port;
-	      g_object_ref(port);
-
-	      /* add monitor */
-	      ags_osc_meter_controller_add_monitor(osc_meter_controller,
-						   monitor);
-	    }
-
-	    g_list_free(start_port);
-	  }else if(path[path_offset + 1] == '"'){
-	    GList *list;
-	
-	    gchar *specifier;
-	    gchar *offset;
-
-	    guint length;
-
-	    if((offset = index(path + path_offset + 2, '"')) == NULL){
-	      ags_osc_response_set_flags(osc_response,
-					 AGS_OSC_RESPONSE_ERROR);
-
-	      g_object_set(osc_response,
-			   "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_CHUNK_SIZE_EXCEEDED,
-			   NULL);
-	  
-	      return(osc_response);
-	    }
-
-	    length = offset - (path + path_offset + 3);
-
-	    specifier = malloc((length + 1) * sizeof(gchar));
-	    sscanf(path + path_offset, "%s", &specifier);
-
-	    g_object_get(audio,
-			 "port", &start_port,
-			 NULL);	
-
-	    list = ags_port_find_specifier(start_port,
-					   specifier);
-
-	    if(list != NULL){
-	      port = list->data;
-	    }
-
-	    path_offset = path_offset + strlen(specifier) + 2;
-
-	    if(!ags_osc_meter_controller_contains_monitor(osc_meter_controller,
-							  osc_connection,
-							  port)){
-	      /* allocate monitor */
-	      monitor = ags_osc_meter_controller_monitor_alloc();
-
-	      monitor->osc_connection = osc_connection;
-	      g_object_ref(osc_connection);
-		
-	      monitor->path = g_strdup(path);
-
-	      monitor->port = port;
-	      g_object_ref(port);
-
-	      /* add monitor */
-	      ags_osc_meter_controller_add_monitor(osc_meter_controller,
-						   monitor);
-	    }
-
-	    g_list_free(start_port);
-	  }else{
-	    osc_response = ags_osc_response_new();
-      
-	    ags_osc_response_set_flags(osc_response,
-				       AGS_OSC_RESPONSE_ERROR);
-
-	    g_object_set(osc_response,
-			 "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_MISSING_INDEX,
-			 NULL);
-
-	    return(osc_response);
-	  }  
-	}else{
-	  osc_response = ags_osc_response_new();
-      
-	  ags_osc_response_set_flags(osc_response,
-				     AGS_OSC_RESPONSE_ERROR);
-
-	  g_object_set(osc_response,
-		       "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_UNKNOW_ARGUMENT,
-		       NULL);
-
-	  return(osc_response);
-	}
-      }else{
-	osc_response = ags_osc_response_new();
-      
-	ags_osc_response_set_flags(osc_response,
-				   AGS_OSC_RESPONSE_ERROR);
-
-	g_object_set(osc_response,
-		     "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_UNKNOW_ARGUMENT,
-		     NULL);
-
-	return(osc_response);
-      }
-    }else{
-      osc_response = ags_osc_response_new();
-      
-      ags_osc_response_set_flags(osc_response,
-				 AGS_OSC_RESPONSE_ERROR);
-
-      g_object_set(osc_response,
-		   "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_UNKNOW_ARGUMENT,
-		   NULL);
-
-      return(osc_response);
-    }
+    start_response = ags_osc_meter_controller_monitor_meter_enable(osc_meter_controller,
+								   osc_connection,
+								   message, message_size,
+								   type_tag,
+								   path);
   }else if(type_tag[2] == 'F'){
-    AgsOscMeterControllerMonitor *current;
-    
-    GList *monitor;
-  
-    pthread_mutex_t *osc_controller_mutex;
-
-    /* get OSC meter controller mutex */
-    pthread_mutex_lock(ags_osc_controller_get_class_mutex());
-  
-    osc_controller_mutex = AGS_OSC_CONTROLLER(osc_meter_controller)->obj_mutex;
-  
-    pthread_mutex_unlock(ags_osc_controller_get_class_mutex());
-
-    /* find path and connection */
-    pthread_mutex_lock(osc_controller_mutex);
-
-    current = NULL;
-
-    monitor = osc_meter_controller->monitor;
-
-    while((monitor = ags_osc_meter_controller_monitor_find_path(monitor,
-								path)) != NULL){
-      if(AGS_OSC_METER_CONTROLLER_MONITOR(monitor->data)->osc_connection == osc_connection){
-	current = monitor->data;
-	
-	break;
-      }
-
-      monitor = monitor->next;
-    }
-
-    pthread_mutex_unlock(osc_controller_mutex);
-
-    /* remove monitor */
-    if(current != NULL){
-      ags_osc_meter_controller_remove_monitor(osc_meter_controller,
-					      current);
-    }
+    start_response = ags_osc_meter_controller_monitor_meter_disable(osc_meter_controller,
+								    osc_connection,
+								    message, message_size,
+								    type_tag,
+								    path);
   }
 
-  /* create response */
-  osc_response = ags_osc_response_new();
-
-  return(osc_response);
+  return(start_response);
 }
 
 /**
@@ -1732,7 +3685,7 @@ ags_osc_meter_controller_real_monitor_meter(AgsOscMeterController *osc_meter_con
  * 
  * Get meter.
  * 
- * Returns: the #AgsOscResponse
+ * Returns: the #GList-struct containing #AgsOscResponse
  * 
  * Since: 2.1.0
  */
