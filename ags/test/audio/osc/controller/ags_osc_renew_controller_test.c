@@ -261,9 +261,10 @@ ags_osc_renew_controller_test_set_data()
   AgsChannel *channel;
   
   AgsOscConnection *osc_connection;
-  AgsOscResponse *osc_response;
 
   AgsOscRenewController *osc_renew_controller;
+
+  GList *osc_response;
 
   unsigned char *message;
   unsigned char *magnitude_message;
@@ -340,6 +341,8 @@ ags_osc_renew_controller_test_set_data()
   osc_response = ags_osc_renew_controller_set_data(osc_renew_controller,
 						   osc_connection,
 						   message, mute_message_size);
+
+  CU_ASSERT(osc_response != NULL);
   
   g_object_get(panel,
 	       "input", &channel,

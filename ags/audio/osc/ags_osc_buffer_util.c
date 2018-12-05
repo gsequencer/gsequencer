@@ -26,6 +26,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <strings.h>
+#include <math.h>
 
 #include <stdarg.h>
 
@@ -288,11 +289,11 @@ ags_osc_buffer_util_get_string(unsigned char *buffer,
       tmp = NULL;
     }
     
-    *str = tmp;
+    str[0] = tmp;
   }
   
   if(length != NULL){
-    *length = count;
+    length[0] = count;
   }
 }
 
@@ -859,6 +860,7 @@ ags_osc_buffer_util_get_message(unsigned char *buffer,
 {
   gchar *str;
 
+  guint offset;
   gsize length;
   
   if(buffer == NULL){
@@ -870,33 +872,33 @@ ags_osc_buffer_util_get_message(unsigned char *buffer,
 				   &str, &length);
   }else{
     if(address_pattern != NULL){
-      *address_pattern = NULL;
+      address_pattern[0] = NULL;
     }
 
     if(type_tag != NULL){
-      *type_tag = NULL;
+      type_tag[0] = NULL;
     }
     
     return;
   }
   
   if(address_pattern != NULL){
-    *address_pattern = str;
+    address_pattern[0] = str;
   }else{
     g_free(str);
   }
 
-  buffer += (4 * (guint) ceil((double) (length + 1) / 4.0));
+  offset = (4 * (guint) ceil((double) (length + 1) / 4.0));
 
-  if(buffer[0] == ','){
-    ags_osc_buffer_util_get_string(buffer,
+  if(buffer[offset] == ','){
+    ags_osc_buffer_util_get_string(buffer + offset,
 				   &str, &length);
   }else{
     str = NULL;
   }
 
   if(type_tag != NULL){
-    *type_tag = str;
+    type_tag[0] = str;
   }else{
     g_free(str);
   }

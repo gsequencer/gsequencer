@@ -258,7 +258,62 @@ ags_osc_node_controller_test_clean_suite()
 void
 ags_osc_node_controller_test_get_data()
 {  
-  CU_ASSERT(TRUE);
+  AgsChannel *channel;
+  
+  AgsOscConnection *osc_connection;
+
+  AgsOscNodeController *osc_node_controller;
+
+  GList *osc_response;
+
+  guint length;
+  guint padding;
+  gboolean success;
+
+  GValue value = {0,};
+
+  static const unsigned char *volume_message = "/node\x00\x00\x00,s\x00\x00/AgsSoundProvider/AgsAudio[\"test-drum\"]/AgsInput[0-1]/AgsVolumeChannel[0]/AgsPort[\"./volume[0]\"]:value\x00\x00\x00\x00";
+
+  static const guint volume_message_size = 108;
+
+  osc_connection = ags_osc_connection_new(NULL);
+  
+  osc_node_controller = ags_osc_node_controller_new();
+
+  /* drum */
+  osc_response = ags_osc_node_controller_get_data(osc_node_controller,
+						  osc_connection,
+						  volume_message, volume_message_size);
+
+  CU_ASSERT(osc_response != NULL);
+
+  success = TRUE;
+  
+  while(osc_response != NULL){
+    gchar *address_pattern;
+    gchar *type_tag;
+    
+    ags_osc_buffer_util_get_message(AGS_OSC_RESPONSE(osc_response->data)->packet + 4,
+				    &address_pattern, &type_tag);
+
+    success = !g_strcmp0(address_pattern,
+			 "/node");
+    
+    if(!success){
+      break;
+    }
+
+    success = !g_strcmp0(type_tag,
+			 ",sf");
+    
+    if(!success){
+      g_message("%s", type_tag);
+      
+      break;
+    }
+  }
+  
+  CU_ASSERT(success);
 }
 
 int
