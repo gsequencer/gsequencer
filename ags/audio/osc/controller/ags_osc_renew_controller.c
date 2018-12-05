@@ -95,6 +95,7 @@ gpointer ags_osc_renew_controller_set_data_recall(AgsOscRenewController *osc_ren
 
 gpointer ags_osc_renew_controller_set_data_port(AgsOscRenewController *osc_renew_controller,
 						AgsOscConnection *osc_connection,
+						AgsRecall *parent,
 						AgsPort *port,
 						unsigned char *message, guint message_size,
 						gchar *type_tag,
@@ -308,6 +309,7 @@ ags_osc_renew_controller_set_data_soundcard(AgsOscRenewController *osc_renew_con
 
   unsigned char *packet;
 
+  guint type_tag_length;
   guint path_length;
   guint real_packet_size;
   guint packet_size;
@@ -342,6 +344,8 @@ ags_osc_renew_controller_set_data_soundcard(AgsOscRenewController *osc_renew_con
 
     real_packet_size = AGS_OSC_RESPONSE_DEFAULT_CHUNK_SIZE;
 
+    type_tag_length = 4 * (guint) ceil((double) (strlen(type_tag) + 1) / 4.0);
+
     path_length = 4 * (guint) ceil((double) (strlen(path) + 1) / 4.0);
     path_offset += 1;
 	
@@ -369,7 +373,7 @@ ags_osc_renew_controller_set_data_soundcard(AgsOscRenewController *osc_renew_con
       }
       
       /* read device */
-      ags_osc_buffer_util_get_string(message + 16 + path_length,
+      ags_osc_buffer_util_get_string(message + AGS_OSC_RENEW_CONTROLLER_CONTEXT_PATH_LENGTH + type_tag_length + path_length,
 				     &device, NULL);
 
       set_device = ags_set_device_new(soundcard,
@@ -399,7 +403,7 @@ ags_osc_renew_controller_set_data_soundcard(AgsOscRenewController *osc_renew_con
       }
       
       /* read pcm channels */
-      ags_osc_buffer_util_get_int32(message + 16 + path_length,
+      ags_osc_buffer_util_get_int32(message + AGS_OSC_RENEW_CONTROLLER_CONTEXT_PATH_LENGTH + type_tag_length + path_length,
 				    &pcm_channels);
 
       set_audio_channels = ags_set_audio_channels_new(soundcard,
@@ -429,7 +433,7 @@ ags_osc_renew_controller_set_data_soundcard(AgsOscRenewController *osc_renew_con
       }
       
       /* read samplerate */
-      ags_osc_buffer_util_get_int32(message + 16 + path_length,
+      ags_osc_buffer_util_get_int32(message + AGS_OSC_RENEW_CONTROLLER_CONTEXT_PATH_LENGTH + type_tag_length + path_length,
 				    &samplerate);
 
       set_samplerate = ags_set_samplerate_new(soundcard,
@@ -459,7 +463,7 @@ ags_osc_renew_controller_set_data_soundcard(AgsOscRenewController *osc_renew_con
       }
       
       /* read buffer size */
-      ags_osc_buffer_util_get_int32(message + 16 + path_length,
+      ags_osc_buffer_util_get_int32(message + AGS_OSC_RENEW_CONTROLLER_CONTEXT_PATH_LENGTH + type_tag_length + path_length,
 				    &buffer_size);
 
       set_buffer_size = ags_set_buffer_size_new(soundcard,
@@ -489,7 +493,7 @@ ags_osc_renew_controller_set_data_soundcard(AgsOscRenewController *osc_renew_con
       }
       
       /* read format */
-      ags_osc_buffer_util_get_int32(message + 16 + path_length,
+      ags_osc_buffer_util_get_int32(message + AGS_OSC_RENEW_CONTROLLER_CONTEXT_PATH_LENGTH + type_tag_length + path_length,
 				    &format);
 
       set_format = ags_set_format_new(soundcard,
@@ -546,6 +550,7 @@ ags_osc_renew_controller_set_data_sequencer(AgsOscRenewController *osc_renew_con
 
   unsigned char *packet;
 
+  guint type_tag_length;
   guint path_length;
   guint real_packet_size;
   guint packet_size;
@@ -580,6 +585,8 @@ ags_osc_renew_controller_set_data_sequencer(AgsOscRenewController *osc_renew_con
 
     real_packet_size = AGS_OSC_RESPONSE_DEFAULT_CHUNK_SIZE;
 
+    type_tag_length = 4 * (guint) ceil((double) (strlen(type_tag) + 1) / 4.0);
+
     path_length = 4 * (guint) ceil((double) (strlen(path) + 1) / 4.0);
     path_offset += 1;
 	
@@ -607,7 +614,7 @@ ags_osc_renew_controller_set_data_sequencer(AgsOscRenewController *osc_renew_con
       }
       
       /* read device */
-      ags_osc_buffer_util_get_string(message + 16 + path_length,
+      ags_osc_buffer_util_get_string(message + AGS_OSC_RENEW_CONTROLLER_CONTEXT_PATH_LENGTH + type_tag_length + path_length,
 				     &device, NULL);
 
       set_device = ags_set_device_new(sequencer,
@@ -664,6 +671,7 @@ ags_osc_renew_controller_set_data_audio(AgsOscRenewController *osc_renew_control
 
   unsigned char *packet;
 
+  guint type_tag_length;
   guint path_length;
   guint real_packet_size;
   guint packet_size;
@@ -700,6 +708,8 @@ ags_osc_renew_controller_set_data_audio(AgsOscRenewController *osc_renew_control
 
     real_packet_size = AGS_OSC_RESPONSE_DEFAULT_CHUNK_SIZE;
 
+    type_tag_length = 4 * (guint) ceil((double) (strlen(type_tag) + 1) / 4.0);
+
     path_length = 4 * (guint) ceil((double) (strlen(path) + 1) / 4.0);
     path_offset += 1;
     
@@ -728,7 +738,7 @@ ags_osc_renew_controller_set_data_audio(AgsOscRenewController *osc_renew_control
       }
       
       /* read audio channels */
-      ags_osc_buffer_util_get_int32(message + 16 + path_length,
+      ags_osc_buffer_util_get_int32(message + AGS_OSC_RENEW_CONTROLLER_CONTEXT_PATH_LENGTH + type_tag_length + path_length,
 				    &audio_channels);
 
       g_object_get(audio,
@@ -765,7 +775,7 @@ ags_osc_renew_controller_set_data_audio(AgsOscRenewController *osc_renew_control
       }
       
       /* read output pads */
-      ags_osc_buffer_util_get_int32(message + 16 + path_length,
+      ags_osc_buffer_util_get_int32(message + AGS_OSC_RENEW_CONTROLLER_CONTEXT_PATH_LENGTH + type_tag_length + path_length,
 				    &output_pads);
 
       g_object_get(audio,
@@ -802,7 +812,7 @@ ags_osc_renew_controller_set_data_audio(AgsOscRenewController *osc_renew_control
       }
       
       /* read input pads */
-      ags_osc_buffer_util_get_int32(message + 16 + path_length,
+      ags_osc_buffer_util_get_int32(message + AGS_OSC_RENEW_CONTROLLER_CONTEXT_PATH_LENGTH + type_tag_length + path_length,
 				    &input_pads);
 
       g_object_get(audio,
@@ -838,7 +848,7 @@ ags_osc_renew_controller_set_data_audio(AgsOscRenewController *osc_renew_control
       }
       
       /* read samplerate */
-      ags_osc_buffer_util_get_int32(message + 16 + path_length,
+      ags_osc_buffer_util_get_int32(message + AGS_OSC_RENEW_CONTROLLER_CONTEXT_PATH_LENGTH + type_tag_length + path_length,
 				    &samplerate);
 
       set_samplerate = ags_set_samplerate_new(audio,
@@ -868,7 +878,7 @@ ags_osc_renew_controller_set_data_audio(AgsOscRenewController *osc_renew_control
       }
       
       /* read buffer size */
-      ags_osc_buffer_util_get_int32(message + 16 + path_length,
+      ags_osc_buffer_util_get_int32(message + AGS_OSC_RENEW_CONTROLLER_CONTEXT_PATH_LENGTH + type_tag_length + path_length,
 				    &buffer_size);
 
       set_buffer_size = ags_set_buffer_size_new(audio,
@@ -898,7 +908,7 @@ ags_osc_renew_controller_set_data_audio(AgsOscRenewController *osc_renew_control
       }
       
       /* read format */
-      ags_osc_buffer_util_get_int32(message + 16 + path_length,
+      ags_osc_buffer_util_get_int32(message + AGS_OSC_RENEW_CONTROLLER_CONTEXT_PATH_LENGTH + type_tag_length + path_length,
 				    &format);
 
       set_format = ags_set_format_new(audio,
@@ -1619,6 +1629,7 @@ ags_osc_renew_controller_set_data_channel(AgsOscRenewController *osc_renew_contr
   
   unsigned char *packet;
 
+  guint type_tag_length;
   guint path_length;
   guint real_packet_size;
   guint packet_size;
@@ -1654,6 +1665,8 @@ ags_osc_renew_controller_set_data_channel(AgsOscRenewController *osc_renew_contr
 		 NULL);
   
     real_packet_size = AGS_OSC_RESPONSE_DEFAULT_CHUNK_SIZE;
+
+    type_tag_length = 4 * (guint) ceil((double) (strlen(type_tag) + 1) / 4.0);
     
     path_length = 4 * (guint) ceil((double) (strlen(path) + 1) / 4.0);
     path_offset += 1;
@@ -1681,7 +1694,7 @@ ags_osc_renew_controller_set_data_channel(AgsOscRenewController *osc_renew_contr
       }
       
       /* read samplerate */
-      ags_osc_buffer_util_get_int32(message + 16 + path_length,
+      ags_osc_buffer_util_get_int32(message + AGS_OSC_RENEW_CONTROLLER_CONTEXT_PATH_LENGTH + type_tag_length + path_length,
 				    &samplerate);
 
       set_samplerate = ags_set_samplerate_new(channel,
@@ -1711,7 +1724,7 @@ ags_osc_renew_controller_set_data_channel(AgsOscRenewController *osc_renew_contr
       }
       
       /* read buffer size */
-      ags_osc_buffer_util_get_int32(message + 16 + path_length,
+      ags_osc_buffer_util_get_int32(message + AGS_OSC_RENEW_CONTROLLER_CONTEXT_PATH_LENGTH + type_tag_length + path_length,
 				    &buffer_size);
 
       set_buffer_size = ags_set_buffer_size_new(channel,
@@ -1741,7 +1754,7 @@ ags_osc_renew_controller_set_data_channel(AgsOscRenewController *osc_renew_contr
       }
       
       /* read format */
-      ags_osc_buffer_util_get_int32(message + 16 + path_length,
+      ags_osc_buffer_util_get_int32(message + AGS_OSC_RENEW_CONTROLLER_CONTEXT_PATH_LENGTH + type_tag_length + path_length,
 				    &format);
 
       set_format = ags_set_format_new(channel,
@@ -2564,6 +2577,7 @@ ags_osc_renew_controller_set_data_recall(AgsOscRenewController *osc_renew_contro
 gpointer
 ags_osc_renew_controller_set_data_port(AgsOscRenewController *osc_renew_controller,
 				       AgsOscConnection *osc_connection,
+				       AgsRecall *parent,
 				       AgsPort *port,
 				       unsigned char *message, guint message_size,
 				       gchar *type_tag,
@@ -2728,7 +2742,7 @@ ags_osc_renew_controller_set_data_port(AgsOscRenewController *osc_renew_controll
 	  pthread_mutex_lock(port_mutex);
 
 	  for(i = 0; path_offset + type_tag_offset + (i * 8) < message_size && i < value_count; i++){
-	    ags_osc_buffer_util_get_int64(message + 8 + path_offset + type_tag_offset + (i * 8),
+	    ags_osc_buffer_util_get_int64(message + AGS_OSC_RENEW_CONTROLLER_CONTEXT_PATH_LENGTH + path_offset + type_tag_offset + (i * 8),
 					  &value);
 
 	    port->port_value.ags_port_int_ptr[i] = value;
@@ -2769,7 +2783,7 @@ ags_osc_renew_controller_set_data_port(AgsOscRenewController *osc_renew_controll
 	  pthread_mutex_lock(port_mutex);
 
 	  for(i = 0; path_offset + type_tag_offset + (i * 8) < message_size && i < value_count; i++){
-	    ags_osc_buffer_util_get_int64(message + 8 + path_offset + type_tag_offset + (i * 8),
+	    ags_osc_buffer_util_get_int64(message + AGS_OSC_RENEW_CONTROLLER_CONTEXT_PATH_LENGTH + path_offset + type_tag_offset + (i * 8),
 					  &value);
 
 	    port->port_value.ags_port_uint_ptr[i] = value;
@@ -2810,7 +2824,7 @@ ags_osc_renew_controller_set_data_port(AgsOscRenewController *osc_renew_controll
 	  pthread_mutex_lock(port_mutex);
 
 	  for(i = 0; path_offset + type_tag_offset + (i * 4) < message_size && i < value_count; i++){
-	    ags_osc_buffer_util_get_float(message + 8 + path_offset + type_tag_offset + (i * 4),
+	    ags_osc_buffer_util_get_float(message + AGS_OSC_RENEW_CONTROLLER_CONTEXT_PATH_LENGTH + path_offset + type_tag_offset + (i * 4),
 					  &value);
 
 	    port->port_value.ags_port_float_ptr[i] = value;
@@ -2851,7 +2865,7 @@ ags_osc_renew_controller_set_data_port(AgsOscRenewController *osc_renew_controll
 	  pthread_mutex_lock(port_mutex);
 
 	  for(i = 0; path_offset + type_tag_offset + (i * 8) < message_size && i < value_count; i++){
-	    ags_osc_buffer_util_get_double(message + 8 + path_offset + type_tag_offset + (i * 8),
+	    ags_osc_buffer_util_get_double(message + AGS_OSC_RENEW_CONTROLLER_CONTEXT_PATH_LENGTH + path_offset + type_tag_offset + (i * 8),
 					   &value);
 
 	    port->port_value.ags_port_double_ptr[i] = value;
@@ -2902,7 +2916,7 @@ ags_osc_renew_controller_set_data_port(AgsOscRenewController *osc_renew_controll
 	  
 	  if(message_size >= 8 + path_offset + type_tag_offset + 8){
 	    if(type_tag[2] == 'h'){
-	      ags_osc_buffer_util_get_int64(message + 8 + path_offset + type_tag_offset,
+	      ags_osc_buffer_util_get_int64(message + AGS_OSC_RENEW_CONTROLLER_CONTEXT_PATH_LENGTH + path_offset + type_tag_offset,
 					    &value);
 
 	      /* set value */
@@ -2939,7 +2953,7 @@ ags_osc_renew_controller_set_data_port(AgsOscRenewController *osc_renew_controll
 	  
 	  if(message_size >= 8 + path_offset + type_tag_offset + 8){
 	    if(type_tag[2] == 'h'){
-	      ags_osc_buffer_util_get_int64(message + 8 + path_offset + type_tag_offset,
+	      ags_osc_buffer_util_get_int64(message + AGS_OSC_RENEW_CONTROLLER_CONTEXT_PATH_LENGTH + path_offset + type_tag_offset,
 					    &value);
 
 	      /* set value */
@@ -2976,7 +2990,7 @@ ags_osc_renew_controller_set_data_port(AgsOscRenewController *osc_renew_controll
 
 	  if(message_size >= 8 + path_offset + type_tag_offset + 4){
 	    if(type_tag[2] == 'f'){
-	      ags_osc_buffer_util_get_float(message + 8 + path_offset + type_tag_offset,
+	      ags_osc_buffer_util_get_float(message + AGS_OSC_RENEW_CONTROLLER_CONTEXT_PATH_LENGTH + path_offset + type_tag_offset,
 					    &value);
 
 	      /* set value */
@@ -3013,7 +3027,7 @@ ags_osc_renew_controller_set_data_port(AgsOscRenewController *osc_renew_controll
 	  
 	  if(message_size >= 8 + path_offset + type_tag_offset + 8){
 	    if(type_tag[2] == 'd'){
-	      ags_osc_buffer_util_get_double(message + 8 + path_offset + type_tag_offset,
+	      ags_osc_buffer_util_get_double(message + AGS_OSC_RENEW_CONTROLLER_CONTEXT_PATH_LENGTH + path_offset + type_tag_offset,
 					     &value);
 
 	      /* set value */
