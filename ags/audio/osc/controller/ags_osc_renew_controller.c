@@ -2356,6 +2356,7 @@ ags_osc_renew_controller_set_data_recall(AgsOscRenewController *osc_renew_contro
 
       start_response = ags_osc_renew_controller_set_data_port(osc_renew_controller,
 							      osc_connection,
+							      recall,
 							      current,
 							      message, message_size,
 							      type_tag,
@@ -2385,6 +2386,7 @@ ags_osc_renew_controller_set_data_recall(AgsOscRenewController *osc_renew_contro
 	
 	retval = ags_osc_renew_controller_set_data_port(osc_renew_controller,
 							osc_connection,
+							recall,
 							port->data,
 							message, message_size,
 							type_tag,
@@ -2407,6 +2409,7 @@ ags_osc_renew_controller_set_data_recall(AgsOscRenewController *osc_renew_contro
 	
 	retval = ags_osc_renew_controller_set_data_port(osc_renew_controller,
 							osc_connection,
+							recall,
 							start_port->data,
 							message, message_size,
 							type_tag,
@@ -2446,6 +2449,7 @@ ags_osc_renew_controller_set_data_recall(AgsOscRenewController *osc_renew_contro
 	
 	retval = ags_osc_renew_controller_set_data_port(osc_renew_controller,
 							osc_connection,
+							recall,
 							port->data,
 							message, message_size,
 							type_tag,
@@ -2479,6 +2483,7 @@ ags_osc_renew_controller_set_data_recall(AgsOscRenewController *osc_renew_contro
 	
 	retval = ags_osc_renew_controller_set_data_port(osc_renew_controller,
 							osc_connection,
+							recall,
 							port->data,
 							message, message_size,
 							type_tag,
@@ -2534,6 +2539,7 @@ ags_osc_renew_controller_set_data_recall(AgsOscRenewController *osc_renew_contro
       path_offset += (length + 4);
       start_response  = ags_osc_renew_controller_set_data_port(osc_renew_controller,
 							       osc_connection,
+							       recall,
 							       current,
 							       message, message_size,
 							       type_tag,
