@@ -13,6 +13,7 @@ ags (2.1.6)
 	* added ags_osc_renew_controller_test.c
 	* added ags_osc_node_controller_test.c
 	* added ags_osc_meter_controller_test.c
+	* added ags_osc_action_controller_test.c
 
 ags (2.1.5)
 
