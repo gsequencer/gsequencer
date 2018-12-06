@@ -66,6 +66,8 @@ ags_osc_plugin_controller_class_init(AgsOscPluginControllerInterface *interface)
  * 
  * Do request.
  * 
+ * Returns: the #GList-struct containing #AgsOscResponse
+ * 
  * Since: 2.1.0
  */
 gpointer

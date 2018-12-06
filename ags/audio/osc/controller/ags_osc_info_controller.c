@@ -235,13 +235,19 @@ ags_osc_info_controller_real_get_info(AgsOscInfoController *osc_info_controller,
 {
   AgsOscResponse *osc_response;
 
+  GList *start_response;
+
   unsigned char *packet;
 
   guint packet_size;
   
   static const unsigned char server_info_message[] = "/info\0\0\0,ssss\0\0\0V2.1.0\0\0osc-server\0\0Advanced Gtk+ Sequencer\02.1.0\0\0\0";
 
+  start_response = NULL;
+
   osc_response = ags_osc_response_new();
+  start_response = g_list_prepend(start_response,
+				  osc_response);
 
   /* create packet */
   packet = (unsigned char *) malloc((4 * sizeof(unsigned char)) + sizeof(server_info_message));
@@ -256,7 +262,7 @@ ags_osc_info_controller_real_get_info(AgsOscInfoController *osc_info_controller,
 	       "packet-size", (4 * sizeof(unsigned char)) + sizeof(server_info_message),
 	       NULL);
 
-  return(osc_response);
+  return(start_response);
 }
 
 /**
@@ -268,7 +274,7 @@ ags_osc_info_controller_real_get_info(AgsOscInfoController *osc_info_controller,
  * 
  * Get info.
  * 
- * Returns: the #AgsOscResponse
+ * Returns: the #GList-struct containing #AgsOscResponse
  * 
  * Since: 2.1.0
  */

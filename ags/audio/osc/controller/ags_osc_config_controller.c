@@ -243,10 +243,14 @@ ags_osc_config_controller_real_apply_config(AgsOscConfigController *osc_config_c
   
   AgsApplicationContext *application_context;
 
+  GList *start_response;
+
   gchar *type_tag;
   gchar *config_data;
 
   gboolean success;
+
+  start_response = NULL;
   
   /* read type tag */
   ags_osc_buffer_util_get_string(message + 8,
@@ -255,7 +259,9 @@ ags_osc_config_controller_real_apply_config(AgsOscConfigController *osc_config_c
   success = (!strncmp(type_tag, ",s", 3)) ? TRUE: FALSE;
 
   if(!success){
-    osc_response = ags_osc_response_new();
+    osc_response = ags_osc_response_new();  
+    start_response = g_list_prepend(start_response,
+				    osc_response);
       
     ags_osc_response_set_flags(osc_response,
 			       AGS_OSC_RESPONSE_ERROR);
@@ -264,7 +270,7 @@ ags_osc_config_controller_real_apply_config(AgsOscConfigController *osc_config_c
 		 "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_MALFORMED_REQUEST,
 		 NULL);
 
-    return(osc_response);
+    return(start_response);
   }
   
   /* read config data */
@@ -283,9 +289,14 @@ ags_osc_config_controller_real_apply_config(AgsOscConfigController *osc_config_c
 			      apply_sound_config);
 
   /* create response */
-  osc_response = ags_osc_response_new();
+  osc_response = ags_osc_response_new();  
+  start_response = g_list_prepend(start_response,
+				  osc_response);
 
-  return(osc_response);
+  ags_osc_response_set_flags(osc_response,
+			     AGS_OSC_RESPONSE_OK);
+
+  return(start_response);
 }
 
 /**
@@ -295,9 +306,9 @@ ags_osc_config_controller_real_apply_config(AgsOscConfigController *osc_config_c
  * @message: the message received
  * @message_size: the message size
  * 
- * Get config.
+ * Apply config.
  * 
- * Returns: the #AgsOscResponse
+ * Returns: the #GList-struct containing #AgsOscResponse
  * 
  * Since: 2.1.0
  */

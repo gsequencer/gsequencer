@@ -1,10 +1,10 @@
 ags (2.1.6)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
-	* FIXME:JK: fixed missing path matching recall
 	* refactored AgsOscRenewController allowing you to use ranges and wildcards
 	* refactored AgsOscNodeController allowing you to use ranges and wildcards
 	* refactored AgsOscMeterController allowing you to use ranges and wildcards
+	* fixed OSC controllers missing path matching recall
 	* fixed ags_osc_buffer_util.c to do shift operator using guint64
 	* fixed ags_osc_buffer_util_get_rgba() to access using correct index
 	* fixed ags_osc_buffer_util_get_midi() to access using correct index

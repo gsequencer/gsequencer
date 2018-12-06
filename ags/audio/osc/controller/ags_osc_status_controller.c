@@ -237,6 +237,8 @@ ags_osc_status_controller_real_get_status(AgsOscStatusController *osc_status_con
   AgsOscServer *osc_server;
   AgsOscResponse *osc_response;
   
+  GList *start_response;
+
   gchar *type_tag;
   gchar *status;
   unsigned char *packet;
@@ -246,7 +248,11 @@ ags_osc_status_controller_real_get_status(AgsOscStatusController *osc_status_con
   guint length;
   gboolean success;
 
+  start_response = NULL;
+
   osc_response = ags_osc_response_new();
+  start_response = g_list_prepend(start_response,
+				  osc_response);
       
   /* read type tag */
   ags_osc_buffer_util_get_string(message + 8,
@@ -317,7 +323,7 @@ ags_osc_status_controller_real_get_status(AgsOscStatusController *osc_status_con
   ags_osc_buffer_util_put_int32(packet,
 				packet_size);
   
-  return(osc_response);
+  return(start_response);
 }
 
 /**
@@ -329,7 +335,7 @@ ags_osc_status_controller_real_get_status(AgsOscStatusController *osc_status_con
  * 
  * Get status.
  * 
- * Returns: the #AgsOscResponse
+ * Returns: the #GList-struct containing #AgsOscResponse
  * 
  * Since: 2.1.0
  */
