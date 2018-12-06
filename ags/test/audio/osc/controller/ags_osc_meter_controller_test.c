@@ -74,6 +74,8 @@ void ags_osc_meter_controller_test_monitor_meter();
 
 AgsApplicationContext *application_context;
 
+AgsAudio *drum;
+
 GObject *default_soundcard;
 
 /* The suite initialization function.
@@ -99,6 +101,47 @@ ags_osc_meter_controller_test_init_suite()
   ags_application_context_setup(application_context);
 
   default_soundcard = ags_sound_provider_get_default_soundcard(AGS_SOUND_PROVIDER(application_context));
+
+  /* drum */
+  drum = ags_audio_new(default_soundcard);
+  g_object_ref(drum);
+
+  g_object_set(drum,
+	       "audio-name", "test-drum",
+	       NULL);
+  
+  ags_audio_set_flags(drum,
+		      (AGS_AUDIO_OUTPUT_HAS_RECYCLING |
+		       AGS_AUDIO_INPUT_HAS_RECYCLING |
+		       AGS_AUDIO_SYNC |
+		       AGS_AUDIO_ASYNC));
+
+  ags_audio_set_audio_channels(drum,
+			       2, 0);
+
+  ags_audio_set_pads(drum,
+		     AGS_TYPE_OUTPUT,
+		     1, 0);
+  ags_audio_set_pads(drum,
+		     AGS_TYPE_INPUT,
+		     8, 0);
+
+  start_audio = ags_sound_provider_get_audio(AGS_SOUND_PROVIDER(application_context));
+  ags_sound_provider_set_audio(AGS_SOUND_PROVIDER(application_context),
+			       g_list_prepend(start_audio,
+					      drum));
+
+  /* ags-peak */
+  ags_recall_factory_create(drum,
+			    NULL, NULL,
+			    "ags-peak",
+			    0, 2,
+			    0, 8,
+			    (AGS_RECALL_FACTORY_INPUT |
+			     AGS_RECALL_FACTORY_PLAY |
+			     AGS_RECALL_FACTORY_RECALL |
+			     AGS_RECALL_FACTORY_ADD),
+			    0);
 
   return(0);
 }
@@ -411,7 +454,34 @@ ags_osc_meter_controller_test_stop_monitor()
 void
 ags_osc_meter_controller_test_monitor_meter()
 {
-  //TODO:JK: implement me
+  AgsOscConnection *osc_connection;
+
+  AgsOscMeterController *osc_meter_controller;
+
+  GList *osc_response;
+
+  static const unsigned char *enable_peak_message = "/meter\x00\x00,sT\x00/AgsSoundProvider/AgsAudio[\"test-drum\"]/AgsInput[0-15]/AgsPeakChannel[0]/AgsPort[\"./peak[0]\"]:value\x00";
+  static const unsigned char *disable_peak_message = "/meter\x00\x00,sF\x00/AgsSoundProvider/AgsAudio[\"test-drum\"]/AgsInput[0-15]/AgsPeakChannel[0]/AgsPort[\"./peak[0]\"]:value\x00";
+
+  static const guint enable_peak_message_size = 112;
+  static const guint disable_peak_message_size = 112;
+
+  osc_connection = ags_osc_connection_new(NULL);
+  
+  osc_meter_controller = ags_osc_meter_controller_new();
+
+  /* drum */
+  osc_response = ags_osc_meter_controller_monitor_meter(osc_meter_controller,
+							osc_connection,
+							enable_peak_message, enable_peak_message_size);
+
+  CU_ASSERT(osc_response != NULL);
+
+  osc_response = ags_osc_meter_controller_monitor_meter(osc_meter_controller,
+							osc_connection,
+							disable_peak_message, disable_peak_message_size);
+
+  CU_ASSERT(osc_response != NULL);
 }
 
 int
