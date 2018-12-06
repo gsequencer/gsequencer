@@ -441,7 +441,7 @@ ags_osc_front_controller_delegate_thread(void *ptr)
       start_message = g_list_reverse(start_message);
 
     while(message != NULL){
-      AgsOscResponse *osc_response;
+      GList *start_osc_response, *osc_response;
 
       AgsOscFrontControllerMessage *current;
       
@@ -451,7 +451,7 @@ ags_osc_front_controller_delegate_thread(void *ptr)
 				     &path, NULL);
 
       controller = start_controller;
-      osc_response = NULL;
+      start_osc_response = NULL;
       
       while(controller != NULL){
 	gboolean success;
@@ -478,37 +478,37 @@ ags_osc_front_controller_delegate_thread(void *ptr)
 	  
 	  /* delegate */
 	  if(AGS_IS_OSC_ACTION_CONTROLLER(controller->data)){
-	    osc_response = ags_osc_action_controller_run_action(controller->data,
-								current->osc_connection,
-								current->message, current->message_size);
+	    start_osc_response = ags_osc_action_controller_run_action(controller->data,
+								      current->osc_connection,
+								      current->message, current->message_size);
 	  }else if(AGS_IS_OSC_CONFIG_CONTROLLER(controller->data)){
-	    osc_response = ags_osc_config_controller_apply_config(controller->data,
-								  current->osc_connection,
-								  current->message, current->message_size);
+	    start_osc_response = ags_osc_config_controller_apply_config(controller->data,
+									current->osc_connection,
+									current->message, current->message_size);
 	  }else if(AGS_IS_OSC_INFO_CONTROLLER(controller->data)){
-	    osc_response = ags_osc_info_controller_get_info(controller->data,
-							    current->osc_connection,
-							    current->message, current->message_size);
-	  }else if(AGS_IS_OSC_METER_CONTROLLER(controller->data)){
-	    osc_response = ags_osc_meter_controller_monitor_meter(controller->data,
+	    start_osc_response = ags_osc_info_controller_get_info(controller->data,
 								  current->osc_connection,
 								  current->message, current->message_size);
+	  }else if(AGS_IS_OSC_METER_CONTROLLER(controller->data)){
+	    start_osc_response = ags_osc_meter_controller_monitor_meter(controller->data,
+									current->osc_connection,
+									current->message, current->message_size);
 	  }else if(AGS_IS_OSC_NODE_CONTROLLER(controller->data)){
-	    osc_response = ags_osc_node_controller_get_data(controller->data,
-							    current->osc_connection,
-							    current->message, current->message_size);
+	    start_osc_response = ags_osc_node_controller_get_data(controller->data,
+								  current->osc_connection,
+								  current->message, current->message_size);
 	  }else if(AGS_IS_OSC_RENEW_CONTROLLER(controller->data)){
-	    osc_response = ags_osc_renew_controller_set_data(controller->data,
-							     current->osc_connection,
-							     current->message, current->message_size);
+	    start_osc_response = ags_osc_renew_controller_set_data(controller->data,
+								   current->osc_connection,
+								   current->message, current->message_size);
 	  }else if(AGS_IS_OSC_STATUS_CONTROLLER(controller->data)){
-	    osc_response = ags_osc_status_controller_get_status(controller->data,
-								current->osc_connection,
-								current->message, current->message_size);
+	    start_osc_response = ags_osc_status_controller_get_status(controller->data,
+								      current->osc_connection,
+								      current->message, current->message_size);
 	  }else if(AGS_IS_OSC_PLUGIN_CONTROLLER(controller->data)){
-	    osc_response = ags_osc_plugin_controller_do_request(AGS_OSC_PLUGIN_CONTROLLER(controller->data),
-								current->osc_connection,
-								current->message, current->message_size);
+	    start_osc_response = ags_osc_plugin_controller_do_request(AGS_OSC_PLUGIN_CONTROLLER(controller->data),
+								      current->osc_connection,
+								      current->message, current->message_size);
 	  }
 	  
 	  break;
@@ -518,11 +518,17 @@ ags_osc_front_controller_delegate_thread(void *ptr)
       }
 
       /* write response */
-      if(osc_response != NULL){
+      osc_response = start_osc_response;
+      
+      while(osc_response != NULL){
 	ags_osc_connection_write_response(current->osc_connection,
-					  osc_response);
-	g_object_unref(osc_response);
+					  osc_response->data);
+
+	osc_response = osc_response->next;
       }
+
+      g_list_free_full(start_osc_response,
+		       g_object_unref);
       
       message = message->next;
     }
