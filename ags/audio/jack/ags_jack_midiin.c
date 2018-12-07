@@ -1489,7 +1489,9 @@ ags_jack_midiin_port_record(AgsSequencer *sequencer,
   pthread_mutex_t *jack_client_mutex;
 
   jack_midiin = AGS_JACK_MIDIIN(sequencer);
-  
+
+  application_context = ags_application_context_get_instance();
+    
   /* get jack midiin mutex */
   pthread_mutex_lock(ags_jack_midiin_get_class_mutex());
   

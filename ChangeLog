@@ -1,3 +1,9 @@
+ags (2.1.7)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed AgsMidiin, AgsJackMidiin and AgsCoreMidiing unitialized pointer
+	* added ags_osc_config_controller_test.c
+
 ags (2.1.6)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

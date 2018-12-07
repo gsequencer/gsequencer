@@ -1490,6 +1490,8 @@ ags_core_audio_midiin_port_record(AgsSequencer *sequencer,
   
   core_audio_midiin = AGS_CORE_AUDIO_MIDIIN(sequencer);
 
+  application_context = ags_application_context_get_instance();
+
   /* get core_audio midiin mutex */
   pthread_mutex_lock(ags_core_audio_midiin_get_class_mutex());
   

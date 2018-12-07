@@ -1601,6 +1601,8 @@ ags_midiin_oss_record(AgsSequencer *sequencer,
   
   midiin = AGS_MIDIIN(sequencer);
 
+  application_context = ags_application_context_get_instance();
+
   /* get midiin mutex */
   pthread_mutex_lock(ags_midiin_get_class_mutex());
   
@@ -1903,6 +1905,8 @@ ags_midiin_alsa_record(AgsSequencer *sequencer,
   
   midiin = AGS_MIDIIN(sequencer);
 
+  application_context = ags_application_context_get_instance();
+  
   /* get midiin mutex */
   pthread_mutex_lock(ags_midiin_get_class_mutex());
   
