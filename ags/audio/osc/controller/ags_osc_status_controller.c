@@ -23,10 +23,12 @@
 
 #include <ags/audio/osc/ags_osc_response.h>
 #include <ags/audio/osc/ags_osc_server.h>
+#include <ags/audio/osc/ags_osc_buffer_util.h>
 
 #include <ags/i18n.h>
 
 #include <stdlib.h>
+#include <math.h>
 
 void ags_osc_status_controller_class_init(AgsOscStatusControllerClass *osc_status_controller);
 void ags_osc_status_controller_init(AgsOscStatusController *osc_status_controller);

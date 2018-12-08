@@ -52,6 +52,7 @@ enum{
   PROP_0,
   PROP_PACKET,
   PROP_PACKET_SIZE,
+  PROP_ERROR_MESSAGE,
 };
 
 static gpointer ags_osc_response_parent_class = NULL;
@@ -139,6 +140,22 @@ ags_osc_response_class_init(AgsOscResponseClass *osc_response)
   g_object_class_install_property(gobject,
 				  PROP_PACKET_SIZE,
 				  param_spec);
+
+  /**
+   * AgsOscResponse:error-message:
+   *
+   * The error message.
+   * 
+   * Since: 2.1.8
+   */
+  param_spec = g_param_spec_string("error-message",
+				   i18n_pspec("error message"),
+				   i18n_pspec("The error message"),
+				   NULL,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_ERROR_MESSAGE,
+				  param_spec);
 }
 
 void
@@ -163,8 +180,9 @@ ags_osc_response_init(AgsOscResponse *osc_response)
 
   osc_response->packet = NULL;
   osc_response->packet_size = 0;
-}
 
+  osc_response->error_message = NULL;
+}
 
 void
 ags_osc_response_set_property(GObject *gobject,
@@ -188,7 +206,7 @@ ags_osc_response_set_property(GObject *gobject,
   switch(prop_id){
   case PROP_PACKET:
     {
-      GObject *packet;
+      gpointer packet;
 
       packet = g_value_get_pointer(value);
 
@@ -214,6 +232,27 @@ ags_osc_response_set_property(GObject *gobject,
       pthread_mutex_lock(osc_response_mutex);
 
       osc_response->packet_size = packet_size;
+
+      pthread_mutex_unlock(osc_response_mutex);
+    }
+    break;
+  case PROP_ERROR_MESSAGE:
+    {
+      gchar *error_message;
+
+      error_message = g_value_get_string(value);
+
+      pthread_mutex_lock(osc_response_mutex);
+
+      if(osc_response->error_message == error_message){
+	pthread_mutex_unlock(osc_response_mutex);
+
+	return;
+      }
+
+      g_free(osc_response->error_message);
+      
+      osc_response->error_message = g_strdup(error_message);
 
       pthread_mutex_unlock(osc_response_mutex);
     }
@@ -263,6 +302,15 @@ ags_osc_response_get_property(GObject *gobject,
       pthread_mutex_unlock(osc_response_mutex);
     }
     break;
+  case PROP_ERROR_MESSAGE:
+    {
+      pthread_mutex_lock(osc_response_mutex);
+
+      g_value_set_pointer(value, osc_response->error_message);
+
+      pthread_mutex_unlock(osc_response_mutex);
+    }
+    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -296,7 +344,9 @@ ags_osc_response_finalize(GObject *gobject)
   if(osc_response->packet != NULL){
     free(osc_response->packet);
   }
-  
+
+  g_free(osc_response->error_message);
+
   /* call parent */
   G_OBJECT_CLASS(ags_osc_response_parent_class)->finalize(gobject);
 }

@@ -97,10 +97,12 @@ check_PROGRAMS += \
 	ags_osc_buffer_util_test \
 	ags_osc_action_controller_test \
 	ags_osc_config_controller_test \
+	ags_osc_front_controller_test \
 	ags_osc_renew_controller_test \
 	ags_osc_info_controller_test \
 	ags_osc_meter_controller_test \
-	ags_osc_node_controller_test
+	ags_osc_node_controller_test \
+	ags_osc_status_controller_test
 
 check_PROGRAMS += \
 	ags_analyse_audio_signal_test \
@@ -668,6 +670,12 @@ ags_osc_config_controller_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_C
 ags_osc_config_controller_test_LDFLAGS = -pthread $(LDFLAGS)
 ags_osc_config_controller_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lm -lrt  $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
 
+# osc front controller unit test
+ags_osc_front_controller_test_SOURCES = ags/test/audio/osc/controller/ags_osc_front_controller_test.c
+ags_osc_front_controller_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
+ags_osc_front_controller_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_osc_front_controller_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lm -lrt  $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
+
 # osc renew controller unit test
 ags_osc_renew_controller_test_SOURCES = ags/test/audio/osc/controller/ags_osc_renew_controller_test.c
 ags_osc_renew_controller_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
@@ -691,6 +699,12 @@ ags_osc_node_controller_test_SOURCES = ags/test/audio/osc/controller/ags_osc_nod
 ags_osc_node_controller_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
 ags_osc_node_controller_test_LDFLAGS = -pthread $(LDFLAGS)
 ags_osc_node_controller_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lm -lrt  $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
+
+# osc status controller unit test
+ags_osc_status_controller_test_SOURCES = ags/test/audio/osc/controller/ags_osc_status_controller_test.c
+ags_osc_status_controller_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
+ags_osc_status_controller_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_osc_status_controller_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lm -lrt  $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
 
 # analyse audio signal unit test
 ags_analyse_audio_signal_test_SOURCES = ags/test/audio/recall/ags_analyse_audio_signal_test.c

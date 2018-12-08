@@ -623,6 +623,10 @@ ags_play_channel_run_master_remap_dependencies(AgsPlayChannelRunMaster *play_cha
 	       "recall-id", &recall_id,
 	       NULL);
 
+  if(recall_id == NULL){
+    return;
+  }
+  
   g_object_get(recall_id,
 	       "recycling-context", &recycling_context,
 	       NULL);
