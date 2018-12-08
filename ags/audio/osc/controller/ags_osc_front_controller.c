@@ -134,8 +134,8 @@ ags_osc_front_controller_class_init(AgsOscFrontControllerClass *osc_front_contro
   /* GObjectClass */
   gobject = (GObjectClass *) osc_front_controller;
 
-  gobject->set_property = ags_osc_front_controller_set_property;
-  gobject->get_property = ags_osc_front_controller_get_property;
+  //  gobject->set_property = ags_osc_front_controller_set_property;
+  //  gobject->get_property = ags_osc_front_controller_get_property;
 
   gobject->dispose = ags_osc_front_controller_dispose;
   gobject->finalize = ags_osc_front_controller_finalize;
@@ -219,7 +219,7 @@ ags_osc_front_controller_init(AgsOscFrontController *osc_front_controller)
   osc_front_controller->delegate_timeout = (struct timespec *) malloc(sizeof(struct timespec));
 
   osc_front_controller->delegate_timeout->tv_sec = 0;
-  osc_front_controller->delegate_timeout->tv_nsec = NSEC_PER_SEC / 30;
+  osc_front_controller->delegate_timeout->tv_nsec = 0;
 
   g_atomic_int_set(&(osc_front_controller->do_reset),
 		   FALSE);
@@ -357,6 +357,9 @@ ags_osc_front_controller_delegate_thread(void *ptr)
 
   time_next.tv_sec = 0;
   time_next.tv_nsec = 0;
+
+  ags_osc_front_controller_set_flags(osc_front_controller,
+				     AGS_OSC_FRONT_CONTROLLER_DELEGATE_RUNNING);
   
   while(ags_osc_front_controller_test_flags(osc_front_controller, AGS_OSC_FRONT_CONTROLLER_DELEGATE_RUNNING)){
     GList *start_message, *message;
@@ -375,11 +378,22 @@ ags_osc_front_controller_delegate_thread(void *ptr)
 #else
     clock_gettime(CLOCK_MONOTONIC, &time_now);
 #endif
+
+    if(time_now.tv_nsec + NSEC_PER_SEC / 30 > NSEC_PER_SEC){
+      osc_front_controller->delegate_timeout->tv_sec = time_now.tv_sec + 1;
+      osc_front_controller->delegate_timeout->tv_nsec = (time_now.tv_nsec + NSEC_PER_SEC / 30) - NSEC_PER_SEC;
+    }else{
+      osc_front_controller->delegate_timeout->tv_sec = time_now.tv_sec;
+      osc_front_controller->delegate_timeout->tv_nsec = time_now.tv_nsec + NSEC_PER_SEC / 30;
+    }
     
     while(!g_atomic_int_get(&(osc_front_controller->do_reset)) &&
-	  (time_now.tv_sec > time_next.tv_sec ||
-	   (time_now.tv_sec == time_next.tv_sec &&
-	    time_now.tv_nsec > time_next.tv_nsec))){
+	  ((time_now.tv_sec < time_next.tv_sec ||
+	    (time_now.tv_sec == time_next.tv_sec &&
+	     time_now.tv_nsec < time_next.tv_nsec)) &&
+	   (time_now.tv_sec < osc_front_controller->delegate_timeout->tv_sec ||
+	    (time_now.tv_sec == osc_front_controller->delegate_timeout->tv_sec &&
+	     time_now.tv_nsec < osc_front_controller->delegate_timeout->tv_nsec)))){
       pthread_cond_timedwait(osc_front_controller->delegate_cond,
 			     osc_front_controller->delegate_mutex,
 			     osc_front_controller->delegate_timeout);
@@ -536,6 +550,36 @@ ags_osc_front_controller_delegate_thread(void *ptr)
     /* free messages */
     g_list_free_full(start_message,
 		     ags_osc_front_controller_message_free);
+
+    /* next */
+    pthread_mutex_lock(osc_front_controller->delegate_mutex);
+
+    if(osc_front_controller->message != NULL){
+      time_next.tv_sec = AGS_OSC_FRONT_CONTROLLER_MESSAGE(osc_front_controller->message)->tv_sec;
+      time_next.tv_nsec = AGS_OSC_FRONT_CONTROLLER_MESSAGE(osc_front_controller->message)->tv_fraction / 4.294967296;
+    }else{
+#ifdef __APPLE__
+      host_get_clock_service(mach_host_self(), CALENDAR_CLOCK, &cclock);
+      
+      clock_get_time(cclock, &mts);
+      mach_port_deallocate(mach_task_self(), cclock);
+      
+      time_now.tv_sec = mts.tv_sec;
+      time_now.tv_nsec = mts.tv_nsec;
+#else
+      clock_gettime(CLOCK_MONOTONIC, &time_now);
+#endif
+
+      if(time_now.tv_nsec + NSEC_PER_SEC / 30 > NSEC_PER_SEC){
+	time_next.tv_sec = time_now.tv_sec + 1;
+	time_next.tv_nsec = (time_now.tv_nsec + NSEC_PER_SEC / 30) - NSEC_PER_SEC;
+      }else{
+	time_next.tv_sec = time_now.tv_sec;
+	time_next.tv_nsec = time_now.tv_nsec + NSEC_PER_SEC / 30;
+      }
+    }
+    
+    pthread_mutex_unlock(osc_front_controller->delegate_mutex);
   }
 
   g_list_free(start_controller);
@@ -893,7 +937,8 @@ ags_osc_front_controller_real_stop_delegate(AgsOscFrontController *osc_front_con
   /* join thread */
   pthread_join(osc_front_controller->delegate_thread[0], NULL);
   
-  ags_osc_front_controller_unset_flags(osc_front_controller, AGS_OSC_FRONT_CONTROLLER_DELEGATE_TERMINATING);
+  ags_osc_front_controller_unset_flags(osc_front_controller, (AGS_OSC_FRONT_CONTROLLER_DELEGATE_TERMINATING |
+							      AGS_OSC_FRONT_CONTROLLER_DELEGATE_STARTED));
 }
 
 /**

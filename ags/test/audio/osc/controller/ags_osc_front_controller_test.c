@@ -27,6 +27,7 @@
 #include <ags/libags.h>
 #include <ags/libags-audio.h>
 
+#include <unistd.h>
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
@@ -179,13 +180,48 @@ ags_osc_front_controller_test_remove_message()
 void
 ags_osc_front_controller_test_start_delegate()
 {  
-  //TODO:JK: implement me
+  AgsOscServer *server;
+
+  AgsOscFrontController *front_controller;
+
+  server = ags_osc_server_new();
+
+  front_controller = ags_osc_front_controller_new();
+
+  g_object_set(front_controller,
+	       "osc-server", server,
+	       NULL);
+
+  ags_osc_front_controller_start_delegate(front_controller);
+
+  CU_ASSERT(ags_osc_front_controller_test_flags(front_controller, AGS_OSC_FRONT_CONTROLLER_DELEGATE_STARTED) == TRUE);
 }
 
 void
 ags_osc_front_controller_test_stop_delegate()
 {  
-  //TODO:JK: implement me
+  AgsOscServer *server;
+  AgsOscFrontController *front_controller;
+
+  server = ags_osc_server_new();
+
+  front_controller = ags_osc_front_controller_new();
+
+  g_object_set(front_controller,
+	       "osc-server", server,
+	       NULL);
+
+  ags_osc_front_controller_start_delegate(front_controller);
+
+  CU_ASSERT(ags_osc_front_controller_test_flags(front_controller, AGS_OSC_FRONT_CONTROLLER_DELEGATE_STARTED) == TRUE);
+
+  while(!ags_osc_front_controller_test_flags(front_controller, AGS_OSC_FRONT_CONTROLLER_DELEGATE_RUNNING)){
+    sleep(1);
+  }
+  
+  ags_osc_front_controller_stop_delegate(front_controller);
+
+  CU_ASSERT(ags_osc_front_controller_test_flags(front_controller, AGS_OSC_FRONT_CONTROLLER_DELEGATE_STARTED) == FALSE);
 }
 
 void
