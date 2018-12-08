@@ -95,6 +95,7 @@ check_PROGRAMS += \
 
 check_PROGRAMS += \
 	ags_osc_buffer_util_test \
+	ags_osc_server_test \
 	ags_osc_action_controller_test \
 	ags_osc_config_controller_test \
 	ags_osc_front_controller_test \
@@ -657,6 +658,12 @@ ags_osc_buffer_util_test_SOURCES = ags/test/audio/osc/ags_osc_buffer_util_test.c
 ags_osc_buffer_util_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
 ags_osc_buffer_util_test_LDFLAGS = -pthread $(LDFLAGS)
 ags_osc_buffer_util_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lm -lrt  $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
+
+# osc server unit test
+ags_osc_server_test_SOURCES = ags/test/audio/osc/ags_osc_server_test.c
+ags_osc_server_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
+ags_osc_server_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_osc_server_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lm -lrt  $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
 
 # osc action controller unit test
 ags_osc_action_controller_test_SOURCES = ags/test/audio/osc/controller/ags_osc_action_controller_test.c

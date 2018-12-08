@@ -135,6 +135,9 @@ void ags_osc_server_add_controller(AgsOscServer *osc_server,
 void ags_osc_server_remove_controller(AgsOscServer *osc_server,
 				      GObject *osc_controller);
 
+/* default controllers */
+void ags_osc_server_add_default_controller(AgsOscServer *osc_server);
+
 /* events */
 void ags_osc_server_start(AgsOscServer *osc_server);
 void ags_osc_server_stop(AgsOscServer *osc_server);

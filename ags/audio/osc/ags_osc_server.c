@@ -27,6 +27,13 @@
 
 #include <ags/audio/osc/controller/ags_osc_controller.h>
 #include <ags/audio/osc/controller/ags_osc_front_controller.h>
+#include <ags/audio/osc/controller/ags_osc_action_controller.h>
+#include <ags/audio/osc/controller/ags_osc_config_controller.h>
+#include <ags/audio/osc/controller/ags_osc_info_controller.h>
+#include <ags/audio/osc/controller/ags_osc_meter_controller.h>
+#include <ags/audio/osc/controller/ags_osc_node_controller.h>
+#include <ags/audio/osc/controller/ags_osc_renew_controller.h>
+#include <ags/audio/osc/controller/ags_osc_status_controller.h>
 
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -951,9 +958,111 @@ ags_osc_server_remove_controller(AgsOscServer *osc_server,
   }
 }
 
+/**
+ * ags_osc_server_add_default_controller:
+ * @osc_server: the #AgsOscServer
+ *
+ * Add default controlers to @osc_server.
+ * 
+ * Since: 2.1.0
+ */
+void
+ags_osc_server_add_default_controller(AgsOscServer *osc_server)
+{
+  AgsOscFrontController *front_controller;
+  AgsOscActionController *action_controller;
+  AgsOscConfigController *config_controller;
+  AgsOscInfoController *info_controller;
+  AgsOscMeterController *meter_controller;
+  AgsOscNodeController *node_controller;
+  AgsOscRenewController *renew_controller;
+  AgsOscStatusController *status_controller;
+  
+  if(!AGS_IS_OSC_SERVER(osc_server)){
+    return;
+  }
+
+  /* front controller */
+  front_controller = ags_osc_front_controller_new();
+  g_object_set(front_controller,
+	       "osc-server", osc_server,
+	       NULL);
+
+  g_object_set(osc_server,
+	       "front-controller", front_controller,
+	       NULL);
+
+  /* action controller */
+  action_controller = ags_osc_action_controller_new();
+  g_object_set(action_controller,
+	       "osc-server", osc_server,
+	       NULL);
+
+  ags_osc_server_add_controller(osc_server,
+				action_controller);
+
+  /* config controller */
+  config_controller = ags_osc_config_controller_new();
+  g_object_set(config_controller,
+	       "osc-server", osc_server,
+	       NULL);
+
+  ags_osc_server_add_controller(osc_server,
+				config_controller);
+
+  /* info controller */
+  info_controller = ags_osc_info_controller_new();
+  g_object_set(info_controller,
+	       "osc-server", osc_server,
+	       NULL);
+
+  ags_osc_server_add_controller(osc_server,
+				info_controller);
+
+  /* meter controller */
+  meter_controller = ags_osc_meter_controller_new();
+  g_object_set(meter_controller,
+	       "osc-server", osc_server,
+	       NULL);
+
+  ags_osc_server_add_controller(osc_server,
+				meter_controller);
+
+  /* node controller */
+  node_controller = ags_osc_node_controller_new();
+  g_object_set(node_controller,
+	       "osc-server", osc_server,
+	       NULL);
+
+  ags_osc_server_add_controller(osc_server,
+				node_controller);
+
+  /* renew controller */
+  renew_controller = ags_osc_renew_controller_new();
+  g_object_set(renew_controller,
+	       "osc-server", osc_server,
+	       NULL);
+
+  ags_osc_server_add_controller(osc_server,
+				renew_controller);
+
+  /* status controller */
+  status_controller = ags_osc_status_controller_new();
+  g_object_set(status_controller,
+	       "osc-server", osc_server,
+	       NULL);
+
+  ags_osc_server_add_controller(osc_server,
+				status_controller);
+}
+
 void
 ags_osc_server_real_start(AgsOscServer *osc_server)
 {
+  AgsOscFrontController *osc_front_controller;
+  
+  GList *start_controller, *controller;
+  
   gboolean any_address;
   gboolean ip4_success, ip6_success;
   gboolean ip4_udp_success, ip4_tcp_success;
@@ -1099,6 +1208,26 @@ ags_osc_server_real_start(AgsOscServer *osc_server)
 
   pthread_create(osc_server->dispatch_thread, NULL,
 		 ags_osc_server_dispatch_thread, osc_server);
+
+  /* controller */
+  g_object_get(osc_server,
+	       "front-controller", &osc_front_controller,
+	       "controller", &start_controller,
+	       NULL);
+
+  ags_osc_front_controller_start_delegate(osc_front_controller);
+  
+  controller = start_controller;
+
+  while(controller != NULL){
+    if(AGS_IS_OSC_METER_CONTROLLER(controller->data)){
+      ags_osc_meter_controller_start_monitor(controller->data);
+    }
+    
+    controller = controller->next;
+  }
+
+  g_list_free(start_controller);
 }
 
 /**
@@ -1123,6 +1252,10 @@ ags_osc_server_start(AgsOscServer *osc_server)
 void
 ags_osc_server_real_stop(AgsOscServer *osc_server)
 {
+  AgsOscFrontController *osc_front_controller;
+  
+  GList *start_controller, *controller;
+  
   pthread_mutex_t *osc_server_mutex;
 
   /* get OSC server mutex */
@@ -1132,6 +1265,12 @@ ags_osc_server_real_stop(AgsOscServer *osc_server)
   
   pthread_mutex_unlock(ags_osc_server_get_class_mutex());
 
+  /* stop */
+  ags_osc_server_unset_flags(osc_server, AGS_OSC_SERVER_RUNNING);
+
+  pthread_join(osc_server->listen_thread[0], NULL);
+  pthread_join(osc_server->dispatch_thread[0], NULL);
+  
   /* close fd */
   pthread_mutex_lock(osc_server_mutex);
 
@@ -1144,6 +1283,26 @@ ags_osc_server_real_stop(AgsOscServer *osc_server)
   }
 
   pthread_mutex_unlock(osc_server_mutex);
+
+  /* controller */
+  g_object_get(osc_server,
+	       "front-controller", &osc_front_controller,
+	       "controller", &start_controller,
+	       NULL);
+
+  ags_osc_front_controller_stop_delegate(osc_front_controller);
+  
+  controller = start_controller;
+
+  while(controller != NULL){
+    if(AGS_IS_OSC_METER_CONTROLLER(controller->data)){
+      ags_osc_meter_controller_stop_monitor(controller->data);
+    }
+    
+    controller = controller->next;
+  }
+
+  g_list_free(start_controller);
 }
 
 /**
