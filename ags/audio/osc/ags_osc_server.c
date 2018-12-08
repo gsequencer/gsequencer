@@ -964,7 +964,7 @@ ags_osc_server_remove_controller(AgsOscServer *osc_server,
  *
  * Add default controlers to @osc_server.
  * 
- * Since: 2.1.0
+ * Since: 2.1.8
  */
 void
 ags_osc_server_add_default_controller(AgsOscServer *osc_server)

@@ -1,6 +1,8 @@
 ags (2.1.8)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented ags_osc_server_add_default_controller()
+	* improved AgsOscServer ::start() and ::stop()
 	* fixed timeout of ags_osc_front_controller_delegate_thread()
 	* fixed ags_play_channel_run_master_remap_dependencies() to check if AgsRecallID present
 	* added ags_osc_status_controller_test.c
