@@ -1,3 +1,8 @@
+ags (2.1.10)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* added ags_osc_client_test.c
+
 ags (2.1.9)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
