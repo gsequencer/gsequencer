@@ -72,6 +72,8 @@
 
 #include <stdbool.h>
 
+#include <signal.h>
+
 #include <ags/i18n.h>
 
 void ags_xorg_application_context_signal_handler(int signr);

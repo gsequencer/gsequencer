@@ -3211,18 +3211,28 @@ void
 ags_thread_add_start_queue(AgsThread *thread,
 			   AgsThread *child)
 {
+  pthread_mutex_t *mutex;
+
   if(!AGS_IS_THREAD(thread) ||
      !AGS_IS_THREAD(child)){
     return;
   }
+
+  /* mutex */
+  pthread_mutex_lock(ags_thread_get_class_mutex());
+
+  mutex = thread->obj_mutex;
   
-  pthread_mutex_lock(thread->mutex);
+  pthread_mutex_unlock(ags_thread_get_class_mutex());
+
+  /* add */
+  pthread_mutex_lock(mutex);
   
   g_atomic_pointer_set(&(thread->start_queue),
 		       g_list_prepend(g_atomic_pointer_get(&(thread->start_queue)),
 				      child));
   
-  pthread_mutex_unlock(thread->mutex);
+  pthread_mutex_unlock(mutex);
 }
 
 /**
@@ -3240,7 +3250,17 @@ ags_thread_add_start_queue_all(AgsThread *thread,
 {
   GList *start_queue;
   
-  pthread_mutex_lock(thread->mutex);
+  pthread_mutex_t *mutex;
+
+  /* mutex */
+  pthread_mutex_lock(ags_thread_get_class_mutex());
+
+  mutex = thread->obj_mutex;
+  
+  pthread_mutex_unlock(ags_thread_get_class_mutex());
+
+  /* add all */
+  pthread_mutex_lock(mutex);
   
   start_queue = g_atomic_pointer_get(&(thread->start_queue));
 
@@ -3255,7 +3275,7 @@ ags_thread_add_start_queue_all(AgsThread *thread,
 			 start_queue);
   }
     
-  pthread_mutex_unlock(thread->mutex);
+  pthread_mutex_unlock(mutex);
 }
 
 /**

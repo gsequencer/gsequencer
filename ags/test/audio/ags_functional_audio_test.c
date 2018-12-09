@@ -800,21 +800,6 @@ ags_functional_audio_test_playback()
   soundcard_thread = ags_thread_find_type(audio_loop,
 					  AGS_TYPE_SOUNDCARD_THREAD);
 
-  /* start engine */
-  pthread_mutex_lock(audio_loop->start_mutex);
-    
-  start_queue = NULL;
-  start_queue = g_list_prepend(start_queue,
-			       task_thread);
-  g_atomic_pointer_set(&(audio_loop->start_queue),
-		       start_queue);
-  
-  pthread_mutex_unlock(audio_loop->start_mutex);
-
-  
-  ags_thread_start(audio_loop);
-  ags_thread_pool_start(audio_application_context->thread_pool);
-
   /* wait for audio loop */
   pthread_mutex_lock(audio_loop->start_mutex);
 

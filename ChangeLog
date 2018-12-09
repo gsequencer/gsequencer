@@ -1,3 +1,10 @@
+ags (2.1.9)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed missing include of signal.h in ags_audio_application_context.c
+	* fixed ags_thread_add_start_queue() and ags_thread_add_start_queue_all() to use correct mutex
+	* fixed ags_functional_audio_test.c removed wrong code starting threads twice
+
 ags (2.1.8)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
