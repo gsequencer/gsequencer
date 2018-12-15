@@ -176,8 +176,6 @@ ags_osc_util_slip_encode(unsigned char *osc_buffer,
 	slip_buffer[j] = osc_buffer[i];
       }
     }
-
-    printf("%x[%c]", osc_buffer[i], osc_buffer[i]);
   }
 
   slip_buffer[j] = AGS_OSC_UTIL_SLIP_END;
@@ -234,8 +232,6 @@ ags_osc_util_slip_decode(unsigned char *slip_buffer,
 	osc_buffer[i] = slip_buffer[j];
       }
     }
-
-    printf("%x[%c]", osc_buffer[i], osc_buffer[i]);
   }
 
   if(returned_buffer_length != NULL){

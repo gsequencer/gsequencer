@@ -72,6 +72,31 @@ void ags_functional_osc_server_test_status_controller();
   "auto-sense=true\n"				       \
   "\n"
 
+#define AGS_FUNCTIONAL_OSC_SERVER_TEST_APPLY_CONFIG_ARGUMENT "[generic]\n" \
+  "autosave-thread=false\n"			       \
+  "simple-file=false\n"				       \
+  "disable-feature=experimental\n"		       \
+  "segmentation=4/4\n"				       \
+  "\n"						       \
+  "[thread]\n"					       \
+  "model=super-threaded\n"			       \
+  "super-threaded-scope=channel\n"		       \
+  "lock-global=ags-thread\n"			       \
+  "lock-parent=ags-recycling-thread\n"		       \
+  "\n"						       \
+  "[soundcard-0]\n"				       \
+  "backend=alsa\n"                                     \
+  "device=default\n"				       \
+  "samplerate=44100\n"				       \
+  "buffer-size=256\n"				       \
+  "pcm-channels=2\n"				       \
+  "dsp-channels=2\n"				       \
+  "format=16\n"					       \
+  "\n"						       \
+  "[recall]\n"					       \
+  "auto-sense=true\n"				       \
+  "\n"
+
 AgsApplicationContext *application_context;
 
 AgsAudio *drum;
@@ -353,13 +378,87 @@ ags_functional_osc_server_test_action_controller()
 void
 ags_functional_osc_server_test_config_controller()
 {
-  //TODO:JK: implement me
+  unsigned char *message;
+  unsigned char *buffer;
+  unsigned char *packet;
+
+  guint config_length;
+  guint length;
+  guint buffer_length;
+  gboolean retval;
+
+  static const unsigned char *config_message = "/config\x00,s\x00\x00";
+
+  static const guint config_message_size = 12;
+
+  CU_ASSERT(osc_server->ip4_fd != -1);
+  CU_ASSERT(osc_client->ip4_fd != -1);
+
+  /* apply config */
+  config_length = strlen(AGS_FUNCTIONAL_OSC_SERVER_TEST_APPLY_CONFIG_ARGUMENT);
+
+  length = config_message_size + (4 * ceil((double) (config_length + 1) / 4.0));
+
+  message = (unsigned char *) malloc(length * sizeof(unsigned char));
+  memset(message, 0, length * sizeof(unsigned char));
+
+  memcpy(message, config_message, config_message_size * sizeof(unsigned char));
+  memcpy(message + config_message_size, AGS_FUNCTIONAL_OSC_SERVER_TEST_APPLY_CONFIG_ARGUMENT, config_length * sizeof(unsigned char));
+
+  packet = (unsigned char *) malloc((4 + length) * sizeof(unsigned char));
+
+  ags_osc_buffer_util_put_int32(packet,
+				length);
+  memcpy(packet + 4, message, (length) * sizeof(unsigned char));
+
+  buffer = ags_osc_util_slip_encode(packet,
+				    4 + length,
+				    &buffer_length);
+
+  CU_ASSERT(buffer_length - 2 >= 4 + length);
+
+  retval = ags_osc_client_write_bytes(osc_client,
+				      buffer, buffer_length);
+
+  CU_ASSERT(retval == TRUE);
+
+  sleep(5);
 }
 
 void
 ags_functional_osc_server_test_info_controller()
 {
-  //TODO:JK: implement me
+  unsigned char *buffer;
+  unsigned char *packet;
+
+  guint buffer_length;
+  gboolean retval;
+
+  static const unsigned char *info_message = "/info\x00\x00\x00";
+
+  static const guint info_message_size = 8;
+
+  CU_ASSERT(osc_server->ip4_fd != -1);
+  CU_ASSERT(osc_client->ip4_fd != -1);
+
+  packet = (unsigned char *) malloc((4 + info_message_size) * sizeof(unsigned char));
+
+  ags_osc_buffer_util_put_int32(packet,
+				info_message_size);
+  memcpy(packet + 4, info_message, (info_message_size) * sizeof(unsigned char));
+
+  buffer = ags_osc_util_slip_encode(packet,
+				    4 + info_message_size,
+				    &buffer_length);
+
+  CU_ASSERT(buffer_length - 2 >= 4 + info_message_size);
+
+  retval = ags_osc_client_write_bytes(osc_client,
+				      buffer, buffer_length);
+
+  CU_ASSERT(retval == TRUE);
+
+  sleep(5);
 }
 
 void
