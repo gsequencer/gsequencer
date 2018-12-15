@@ -973,7 +973,11 @@ ags_osc_connection_real_write_response(AgsOscConnection *osc_connection,
   fd = osc_connection->fd;
 
   pthread_mutex_unlock(osc_connection_mutex);
-
+  
+  if(fd == -1){
+    return(0);
+  }
+  
   /* get osc response mutex */
   pthread_mutex_lock(ags_osc_response_get_class_mutex());
   

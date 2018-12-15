@@ -249,7 +249,105 @@ ags_functional_osc_server_test_action_controller()
 
   sleep(5);
   
-  //TODO:JK: implement me
+  /* start sequencer */
+  packet = (unsigned char *) malloc((4 + start_sequencer_message_size) * sizeof(unsigned char));
+
+  ags_osc_buffer_util_put_int32(packet,
+				start_sequencer_message_size);
+  memcpy(packet + 4, start_sequencer_message, (start_sequencer_message_size) * sizeof(unsigned char));
+
+  buffer = ags_osc_util_slip_encode(packet,
+				    4 + start_sequencer_message_size,
+				    &buffer_length);
+
+  CU_ASSERT(buffer_length - 2 >= 4 + start_sequencer_message_size);
+
+  retval = ags_osc_client_write_bytes(osc_client,
+				      buffer, buffer_length);
+
+  CU_ASSERT(retval == TRUE);
+
+  sleep(5);
+  
+  /* start audio */
+  packet = (unsigned char *) malloc((4 + start_audio_message_size) * sizeof(unsigned char));
+
+  ags_osc_buffer_util_put_int32(packet,
+				start_audio_message_size);
+  memcpy(packet + 4, start_audio_message, (start_audio_message_size) * sizeof(unsigned char));
+
+  buffer = ags_osc_util_slip_encode(packet,
+				    4 + start_audio_message_size,
+				    &buffer_length);
+
+  CU_ASSERT(buffer_length - 2 >= 4 + start_audio_message_size);
+
+  retval = ags_osc_client_write_bytes(osc_client,
+				      buffer, buffer_length);
+
+  CU_ASSERT(retval == TRUE);
+
+  sleep(5);
+
+  /* stop soundcard */
+  packet = (unsigned char *) malloc((4 + stop_soundcard_message_size) * sizeof(unsigned char));
+
+  ags_osc_buffer_util_put_int32(packet,
+				stop_soundcard_message_size);
+  memcpy(packet + 4, stop_soundcard_message, (stop_soundcard_message_size) * sizeof(unsigned char));
+
+  buffer = ags_osc_util_slip_encode(packet,
+				    4 + stop_soundcard_message_size,
+				    &buffer_length);
+
+  CU_ASSERT(buffer_length - 2 >= 4 + stop_soundcard_message_size);
+
+  retval = ags_osc_client_write_bytes(osc_client,
+				      buffer, buffer_length);
+
+  CU_ASSERT(retval == TRUE);
+
+  sleep(5);
+  
+  /* stop sequencer */
+  packet = (unsigned char *) malloc((4 + stop_sequencer_message_size) * sizeof(unsigned char));
+
+  ags_osc_buffer_util_put_int32(packet,
+				stop_sequencer_message_size);
+  memcpy(packet + 4, stop_sequencer_message, (stop_sequencer_message_size) * sizeof(unsigned char));
+
+  buffer = ags_osc_util_slip_encode(packet,
+				    4 + stop_sequencer_message_size,
+				    &buffer_length);
+
+  CU_ASSERT(buffer_length - 2 >= 4 + stop_sequencer_message_size);
+
+  retval = ags_osc_client_write_bytes(osc_client,
+				      buffer, buffer_length);
+
+  CU_ASSERT(retval == TRUE);
+
+  sleep(5);
+  
+  /* stop audio */
+  packet = (unsigned char *) malloc((4 + stop_audio_message_size) * sizeof(unsigned char));
+
+  ags_osc_buffer_util_put_int32(packet,
+				stop_audio_message_size);
+  memcpy(packet + 4, stop_audio_message, (stop_audio_message_size) * sizeof(unsigned char));
+
+  buffer = ags_osc_util_slip_encode(packet,
+				    4 + stop_audio_message_size,
+				    &buffer_length);
+
+  CU_ASSERT(buffer_length - 2 >= 4 + stop_audio_message_size);
+
+  retval = ags_osc_client_write_bytes(osc_client,
+				      buffer, buffer_length);
+
+  CU_ASSERT(retval == TRUE);
+
+  sleep(5);
 }
 
 void

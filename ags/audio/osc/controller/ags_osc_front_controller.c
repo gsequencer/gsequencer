@@ -1113,7 +1113,8 @@ ags_osc_front_controller_real_do_request(AgsOscFrontController *osc_front_contro
     message = ags_osc_front_controller_message_alloc();
 
     message->osc_connection = osc_connection;
-
+    g_object_ref(osc_connection);
+    
     message->tv_sec = tv_sec;
     message->tv_fraction = tv_fraction;
     message->immediately = immediately;
@@ -1186,11 +1187,13 @@ ags_osc_front_controller_do_request(AgsOscFrontController *osc_front_controller,
   g_return_val_if_fail(AGS_IS_OSC_FRONT_CONTROLLER(osc_front_controller), NULL);
   
   g_object_ref((GObject *) osc_front_controller);
+  g_object_ref((GObject *) osc_connection);
   g_signal_emit(G_OBJECT(osc_front_controller),
 		osc_front_controller_signals[DO_REQUEST], 0,
 		osc_connection,
 		packet, packet_size,
 		&osc_response);
+  g_object_unref((GObject *) osc_connection);
   g_object_unref((GObject *) osc_front_controller);
 
   return(osc_response);

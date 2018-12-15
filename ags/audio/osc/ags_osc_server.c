@@ -894,11 +894,11 @@ ags_osc_server_remove_connection(AgsOscServer *osc_server,
   if(g_list_find(osc_server->connection, osc_connection) != NULL){
     osc_server->connection = g_list_remove(osc_server->connection,
 					   osc_connection);
-    g_object_unref(osc_connection);
-
     g_object_set(osc_connection,
 		 "osc-server", NULL,
 		 NULL);
+
+    g_object_unref(osc_connection);
   }
 }
 
@@ -952,11 +952,12 @@ ags_osc_server_remove_controller(AgsOscServer *osc_server,
   if(g_list_find(osc_server->controller, osc_controller) != NULL){
     osc_server->controller = g_list_remove(osc_server->controller,
 					   osc_controller);
-    g_object_unref(osc_controller);
 
     g_object_set(osc_controller,
 		 "osc-server", NULL,
 		 NULL);
+
+    g_object_unref(osc_controller);
   }
 }
 
@@ -1502,7 +1503,8 @@ ags_osc_server_real_dispatch(AgsOscServer *osc_server)
 
       continue;
     }
-    
+
+    g_object_ref(list->data);
     slip_buffer = ags_osc_connection_read_bytes(list->data,
 						&data_length);
 
@@ -1529,14 +1531,16 @@ ags_osc_server_real_dispatch(AgsOscServer *osc_server)
 	osc_response = osc_response->next;
       }
 
-      g_list_free_full(start_osc_response,
-		       g_object_unref);
+      //      g_list_free_full(start_osc_response,
+      //	       g_object_unref);
 
       /* free packet */
       if(packet != NULL){
 	free(packet);
       }
     }
+    
+    g_object_unref(list->data);
     
     list = list->next;
   }
