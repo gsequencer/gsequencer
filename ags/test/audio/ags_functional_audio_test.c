@@ -838,8 +838,8 @@ main(int argc, char **argv)
 {
   CU_pSuite pSuite = NULL;
 
-  putenv("LC_ALL=C\0");
-  putenv("LANG=C\0");
+  putenv("LC_ALL=C");
+  putenv("LANG=C");
 
   /* initialize the CUnit test registry */
   if(CUE_SUCCESS != CU_initialize_registry()){
@@ -847,13 +847,14 @@ main(int argc, char **argv)
   }
 
   /* add a suite to the registry */
-  pSuite = CU_add_suite("AgsAudioTest\0", ags_functional_audio_test_init_suite, ags_functional_audio_test_clean_suite);
+  pSuite = CU_add_suite("AgsFunctionalAudioTest", ags_functional_audio_test_init_suite, ags_functional_audio_test_clean_suite);
   
   if(pSuite == NULL){
     CU_cleanup_registry();
     
     return CU_get_error();
   }
+
 #if 0
   g_log_set_fatal_mask("GLib-GObject",
   		       G_LOG_LEVEL_WARNING | G_LOG_LEVEL_CRITICAL);
@@ -864,8 +865,9 @@ main(int argc, char **argv)
   g_log_set_fatal_mask(NULL,
   		       G_LOG_LEVEL_WARNING | G_LOG_LEVEL_CRITICAL);
 #endif
+  
   /* add the tests to the suite */
-  if((CU_add_test(pSuite, "test of AgsAudio doing playback\0", ags_functional_audio_test_playback) == NULL)){
+  if((CU_add_test(pSuite, "test of AgsAudio doing playback", ags_functional_audio_test_playback) == NULL)){
       CU_cleanup_registry();
       
       return CU_get_error();

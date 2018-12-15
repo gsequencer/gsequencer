@@ -25,6 +25,8 @@
 #include <sys/socket.h>
 #include <netdb.h>
 
+#include <arpa/inet.h>
+
 #include <ags/i18n.h>
 
 void ags_osc_client_class_init(AgsOscClientClass *osc_client);
@@ -736,6 +738,7 @@ ags_osc_client_real_connect(AgsOscClient *osc_client)
     /* get ip4 */
     pthread_mutex_lock(osc_client_mutex);  
 
+    osc_client->ip4_address->sin_family = AF_INET;
     inet_pton(AF_INET, osc_client->ip4, &(osc_client->ip4_address->sin_addr.s_addr));
     osc_client->ip4_address->sin_port = htons(osc_client->server_port);
 
@@ -770,6 +773,7 @@ ags_osc_client_real_connect(AgsOscClient *osc_client)
     /* get ip6 */
     pthread_mutex_lock(osc_client_mutex);
 
+    osc_client->ip6_address->sin6_family = AF_INET6;
     inet_pton(AF_INET6, osc_client->ip6, &(osc_client->ip6_address->sin6_addr.s6_addr));
     osc_client->ip6_address->sin6_port = htons(osc_client->server_port);
 

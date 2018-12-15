@@ -34,7 +34,7 @@
 
 #define AGS_OSC_CONNECTION_TIMEOUT_USEC (250)
 #define AGS_OSC_CONNECTION_DEAD_LINE_USEC (60000000)
-#define AGS_OSC_CONNECTION_CHUNK_SIZE (8)
+#define AGS_OSC_CONNECTION_CHUNK_SIZE (131072)
 
 typedef struct _AgsOscConnection AgsOscConnection;
 typedef struct _AgsOscConnectionClass AgsOscConnectionClass;
@@ -61,17 +61,12 @@ struct _AgsOscConnection
   
   int fd;
 
-  struct timeval *start_time;
-
-  guint offset;
-  gint32 packet_size;
-
-  gboolean skip_garbage;
+  struct timespec *start_time;
   
-  guint data_start;
-  guchar data[AGS_OSC_CONNECTION_CHUNK_SIZE];
-
-  guchar *buffer;
+  unsigned char *buffer;
+  guint allocated_buffer_size;
+  
+  guint read_count;
   
   struct timespec *timeout_delay;
   struct timespec *timestamp;
@@ -81,7 +76,7 @@ struct _AgsOscConnectionClass
 {
   GObjectClass gobject;
 
-  guchar* (*read_bytes)(AgsOscConnection *osc_connection,
+  unsigned char* (*read_bytes)(AgsOscConnection *osc_connection,
 			guint *data_length);
   gint64 (*write_response)(AgsOscConnection *osc_connection,
 			   GObject *osc_response);
@@ -97,8 +92,11 @@ gboolean ags_osc_connection_test_flags(AgsOscConnection *osc_connection, guint f
 void ags_osc_connection_set_flags(AgsOscConnection *osc_connection, guint flags);
 void ags_osc_connection_unset_flags(AgsOscConnection *osc_connection, guint flags);
 
+gboolean ags_osc_connection_timeout_expired(struct timespec *start_time,
+					    struct timespec *timeout_delay);
+
 /* events */
-guchar* ags_osc_connection_read_bytes(AgsOscConnection *osc_connection,
+unsigned char* ags_osc_connection_read_bytes(AgsOscConnection *osc_connection,
 				      guint *data_length);
 
 gint64 ags_osc_connection_write_response(AgsOscConnection *osc_connection,

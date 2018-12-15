@@ -1043,7 +1043,7 @@ ags_osc_front_controller_real_do_request(AgsOscFrontController *osc_front_contro
     gsize data_length;
     guint read_count;
     guint i;
-    
+
     read_count = 0;
 
     ags_osc_buffer_util_get_message(packet + offset,
@@ -1137,6 +1137,8 @@ ags_osc_front_controller_real_do_request(AgsOscFrontController *osc_front_contro
   
   for(offset = 4; offset < packet_size;){
     guint read_count;
+
+    printf("%x[%c]", packet[offset], packet[offset]);
     
     if(!g_strcmp0(packet + offset, "#bundle")){      
       read_count = ags_osc_front_controller_do_request_read_bundle(osc_front_controller,

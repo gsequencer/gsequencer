@@ -39,6 +39,8 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 
+#include <arpa/inet.h>
+
 #include <unistd.h>
 #include <fcntl.h>
 
@@ -769,7 +771,7 @@ ags_osc_server_test_flags(AgsOscServer *osc_server, guint flags)
   /* test */
   pthread_mutex_lock(osc_server_mutex);
 
-  retval = (flags & (osc_server->flags)) ? TRUE: FALSE;
+  retval = ((flags & (osc_server->flags)) != 0) ? TRUE: FALSE;
   
   pthread_mutex_unlock(osc_server_mutex);
 
@@ -804,7 +806,7 @@ ags_osc_server_set_flags(AgsOscServer *osc_server, guint flags)
   /* set flags */
   pthread_mutex_lock(osc_server_mutex);
 
-  osc_server->flags |= flags;
+  osc_server->flags = (flags | (osc_server->flags));
 
   pthread_mutex_unlock(osc_server_mutex);
 }
@@ -837,7 +839,7 @@ ags_osc_server_unset_flags(AgsOscServer *osc_server, guint flags)
   /* set flags */
   pthread_mutex_lock(osc_server_mutex);
 
-  osc_server->flags &= (~flags);
+  osc_server->flags = ((~flags) & (osc_server->flags));
 
   pthread_mutex_unlock(osc_server_mutex);
 }
@@ -1070,6 +1072,8 @@ ags_osc_server_real_start(AgsOscServer *osc_server)
 
   pthread_mutex_t *osc_server_mutex;
 
+  ags_osc_server_set_flags(osc_server, AGS_OSC_SERVER_STARTED);
+
   /* get osc_server mutex */
   pthread_mutex_lock(ags_osc_server_get_class_mutex());
   
@@ -1117,13 +1121,15 @@ ags_osc_server_real_start(AgsOscServer *osc_server)
     if(any_address){
       pthread_mutex_lock(osc_server_mutex);  
 
-      osc_server->ip4_address->sin_addr.s_addr = INADDR_ANY;
+      osc_server->ip4_address->sin_family = AF_INET;
+      osc_server->ip4_address->sin_addr.s_addr = htonl(INADDR_ANY);
       osc_server->ip4_address->sin_port = htons(osc_server->server_port);
 
       pthread_mutex_unlock(osc_server_mutex);  
     }else{
       pthread_mutex_lock(osc_server_mutex);  
 
+      osc_server->ip4_address->sin_family = AF_INET;
       inet_pton(AF_INET, osc_server->ip4, &(osc_server->ip4_address->sin_addr.s_addr));
       osc_server->ip4_address->sin_port = htons(osc_server->server_port);
 
@@ -1160,6 +1166,7 @@ ags_osc_server_real_start(AgsOscServer *osc_server)
     if(any_address){
       pthread_mutex_lock(osc_server_mutex);
 
+      osc_server->ip6_address->sin6_family = AF_INET6;
       memcpy(&(osc_server->ip6_address->sin6_addr.s6_addr), &in6addr_any, sizeof(struct in6_addr));
       osc_server->ip6_address->sin6_port = htons(osc_server->server_port);
       
@@ -1167,6 +1174,7 @@ ags_osc_server_real_start(AgsOscServer *osc_server)
     }else{
       pthread_mutex_lock(osc_server_mutex);
 
+      osc_server->ip6_address->sin6_family = AF_INET6;
       inet_pton(AF_INET6, osc_server->ip6, &(osc_server->ip6_address->sin6_addr.s6_addr));
       osc_server->ip6_address->sin6_port = htons(osc_server->server_port);
 
@@ -1174,7 +1182,7 @@ ags_osc_server_real_start(AgsOscServer *osc_server)
     }
   }
   
-  if(!ip4_success && !ip6_success){
+  if(ip4_success != TRUE && ip6_success != TRUE){
     g_critical("no protocol family");
 
     return;
@@ -1183,9 +1191,9 @@ ags_osc_server_real_start(AgsOscServer *osc_server)
   if(ip4_success){
     int rc;
     
-    rc = bind(osc_server->ip4_fd, osc_server->ip4_address, sizeof(struct sockaddr_in));
+    rc = bind(osc_server->ip4_fd, (struct sockaddr *) osc_server->ip4_address, sizeof(struct sockaddr_in));
 
-    if(rc < 0){
+    if(rc == -1){
       g_critical("bind failed");
     }
   }
@@ -1193,15 +1201,17 @@ ags_osc_server_real_start(AgsOscServer *osc_server)
   if(ip6_success){
     int rc;
     
-    rc = bind(osc_server->ip6_fd, osc_server->ip6_address, sizeof(struct sockaddr_in6));
+    rc = bind(osc_server->ip6_fd, (struct sockaddr *) osc_server->ip6_address, sizeof(struct sockaddr_in6));
 
-    if(rc < 0){
+    if(rc == -1){
       g_critical("bind failed");
     }
   }
 
-  ags_osc_server_set_flags(osc_server, AGS_OSC_SERVER_STARTED);
+  ags_osc_server_set_flags(osc_server, AGS_OSC_SERVER_RUNNING);
 
+  g_message("starting OSC listen and dispatch threads");
+  
   /* create listen and dispatch thread */
   pthread_create(osc_server->listen_thread, NULL,
 		 ags_osc_server_listen_thread, osc_server);
@@ -1338,8 +1348,8 @@ ags_osc_server_real_listen(AgsOscServer *osc_server)
 
     listen(osc_server->ip4_fd, AGS_OSC_SERVER_DEFAULT_BACKLOG);
 
-    flags = fcntl(osc_server->ip4_fd, F_GETFL, 0);
-    fcntl(osc_server->ip4_fd, F_SETFL, flags | O_NONBLOCK);
+    //    flags = fcntl(osc_server->ip4_fd, F_GETFL, 0);
+    //    fcntl(osc_server->ip4_fd, F_SETFL, flags | O_NONBLOCK);
   }
   
   if(osc_server->ip6_fd != -1){
@@ -1358,9 +1368,9 @@ ags_osc_server_real_listen(AgsOscServer *osc_server)
     socklen_t address_length;
 
     address_length = sizeof(struct sockaddr_in);
-    connection_fd = accept(osc_server->ip4_fd, osc_server->ip4_address, &address_length);
+    connection_fd = accept(osc_server->ip4_fd,  (struct sockaddr *) osc_server->ip4_address, &address_length);
 
-    if(connection_fd >= 0){
+    if(connection_fd != -1){
       AgsOscConnection *osc_connection;
 	
       int flags;
@@ -1369,8 +1379,8 @@ ags_osc_server_real_listen(AgsOscServer *osc_server)
 
       osc_connection = ags_osc_connection_new(osc_server);
 
-      flags = fcntl(connection_fd, F_GETFL, 0);
-      fcntl(connection_fd, F_SETFL, flags | O_NONBLOCK);
+      //      flags = fcntl(connection_fd, F_GETFL, 0);
+      //      fcntl(connection_fd, F_SETFL, flags | O_NONBLOCK);
 
       osc_connection->fd = connection_fd;
 	
@@ -1388,9 +1398,9 @@ ags_osc_server_real_listen(AgsOscServer *osc_server)
     socklen_t address_length;
 
     address_length = sizeof(struct sockaddr_in);
-    connection_fd = accept(osc_server->ip6_fd, osc_server->ip6_address, &address_length);
+    connection_fd = accept(osc_server->ip6_fd,  (struct sockaddr *) osc_server->ip6_address, &address_length);
 
-    if(connection_fd >= 0){
+    if(connection_fd != 0){
       AgsOscConnection *osc_connection;
 
       int flags;
@@ -1454,16 +1464,19 @@ ags_osc_server_real_dispatch(AgsOscServer *osc_server)
   if(!ags_osc_server_test_flags(osc_server, AGS_OSC_SERVER_STARTED)){
     return;
   }
+
+  g_object_get(osc_server,
+	       "connection", &start_list,
+	       NULL);
   
-  list =
-    start_list = g_list_copy(osc_server->connection);
+  list = start_list;
 
   while(list != NULL){
     slip_buffer = ags_osc_connection_read_bytes(list->data,
 						&data_length);
 
     if(slip_buffer != NULL){
-      AgsOscResponse *osc_response;
+      GList *start_osc_response, *osc_response;
 
       unsigned char *packet;
 
@@ -1472,14 +1485,21 @@ ags_osc_server_real_dispatch(AgsOscServer *osc_server)
       packet = ags_osc_util_slip_decode(slip_buffer,
 					data_length,
 					&packet_size);
-      free(slip_buffer);
-      
-      osc_response = ags_osc_front_controller_do_request(osc_server->front_controller,
-							 list->data,
-							 packet, packet_size);
-      ags_osc_connection_write_response(list->data,
-					osc_response);
-      g_object_unref(osc_response);
+
+      osc_response = 
+	start_osc_response = ags_osc_front_controller_do_request(osc_server->front_controller,
+								 list->data,
+								 packet, packet_size);
+
+      while(osc_response != NULL){
+	ags_osc_connection_write_response(list->data,
+					  osc_response->data);
+
+	osc_response = osc_response->next;
+      }
+
+      g_list_free_full(start_osc_response,
+		       g_object_unref);
 
       /* free packet */
       if(packet != NULL){
@@ -1521,7 +1541,7 @@ ags_osc_server_listen_thread(void *ptr)
 
   osc_server = AGS_OSC_SERVER(ptr);
 
-  while(ags_osc_server_test_flags(osc_server, AGS_OSC_SERVER_RUNNING)){
+  while(ags_osc_server_test_flags(osc_server, AGS_OSC_SERVER_RUNNING)){    
     created_connection = ags_osc_server_listen(osc_server);
 
     if(!created_connection){

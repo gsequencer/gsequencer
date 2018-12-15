@@ -141,7 +141,7 @@ ags_osc_util_slip_encode(unsigned char *osc_buffer,
   guint slip_buffer_length;
   guint i, j;
   
-  slip_buffer_length = AGS_OSC_UTIL_SLIP_CHUNK_LENGTH * ceil(buffer_length / AGS_OSC_UTIL_SLIP_CHUNK_LENGTH);
+  slip_buffer_length = (guint) AGS_OSC_UTIL_SLIP_CHUNK_LENGTH + 2;
   
   slip_buffer = (unsigned char *) malloc((slip_buffer_length + 2) * sizeof(unsigned char));
 
@@ -151,7 +151,7 @@ ags_osc_util_slip_encode(unsigned char *osc_buffer,
     if(j + 2 >= slip_buffer_length){
       slip_buffer_length = slip_buffer_length + AGS_OSC_UTIL_SLIP_CHUNK_LENGTH;
       slip_buffer = (unsigned char *) realloc(slip_buffer,
-					      (slip_buffer_length + 2) * sizeof(unsigned char));
+					      (slip_buffer_length + AGS_OSC_UTIL_SLIP_CHUNK_LENGTH) * sizeof(unsigned char));
     }
     
     switch(osc_buffer[i]){
@@ -176,12 +176,14 @@ ags_osc_util_slip_encode(unsigned char *osc_buffer,
 	slip_buffer[j] = osc_buffer[i];
       }
     }
+
+    printf("%x[%c]", osc_buffer[i], osc_buffer[i]);
   }
 
   slip_buffer[j] = AGS_OSC_UTIL_SLIP_END;
 
   if(returned_buffer_length != NULL){
-    *returned_buffer_length = j;
+    *returned_buffer_length = j + 1;
   }
   
   return(slip_buffer);
@@ -214,7 +216,7 @@ ags_osc_util_slip_decode(unsigned char *slip_buffer,
 
   osc_buffer = (unsigned char *) malloc(buffer_length * sizeof(unsigned char));
 
-  for(i = 0, j = 1; j < slip_buffer_length - 1; i++, j++){
+  for(i = 0, j = 1; j < slip_buffer_length; i++, j++){
     switch(slip_buffer[j]){
     case AGS_OSC_UTIL_SLIP_ESC:
       {
@@ -232,10 +234,12 @@ ags_osc_util_slip_decode(unsigned char *slip_buffer,
 	osc_buffer[i] = slip_buffer[j];
       }
     }
+
+    printf("%x[%c]", osc_buffer[i], osc_buffer[i]);
   }
 
   if(returned_buffer_length != NULL){
-    *returned_buffer_length = i;
+    *returned_buffer_length = i + 1;
   }
   
   return(osc_buffer);
