@@ -226,6 +226,9 @@ ags_functional_osc_server_test_action_controller()
   static const guint stop_sequencer_message_size = 52;
   static const guint stop_audio_message_size = 52;
 
+  CU_ASSERT(osc_server->ip4_fd != -1);
+  CU_ASSERT(osc_client->ip4_fd != -1);
+  
   /* start soundcard */
   packet = (unsigned char *) malloc((4 + start_soundcard_message_size) * sizeof(unsigned char));
 

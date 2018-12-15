@@ -1194,7 +1194,7 @@ ags_osc_server_real_start(AgsOscServer *osc_server)
     rc = bind(osc_server->ip4_fd, (struct sockaddr *) osc_server->ip4_address, sizeof(struct sockaddr_in));
 
     if(rc == -1){
-      g_critical("bind failed");
+      g_critical("bind IPv4 failed");
     }
   }
   
@@ -1204,14 +1204,28 @@ ags_osc_server_real_start(AgsOscServer *osc_server)
     rc = bind(osc_server->ip6_fd, (struct sockaddr *) osc_server->ip6_address, sizeof(struct sockaddr_in6));
 
     if(rc == -1){
-      g_critical("bind failed");
+      g_critical("bind IPv6 failed");
     }
+  }
+
+  if(osc_server->ip4_fd != -1){
+    int flags;
+
+    flags = fcntl(osc_server->ip4_fd, F_GETFL, 0);
+    fcntl(osc_server->ip4_fd, F_SETFL, flags | O_NONBLOCK);
+  }
+
+  if(osc_server->ip6_fd != -1){
+    int flags;
+
+    flags = fcntl(osc_server->ip6_fd, F_GETFL, 0);
+    fcntl(osc_server->ip6_fd, F_SETFL, flags | O_NONBLOCK);
   }
 
   ags_osc_server_set_flags(osc_server, AGS_OSC_SERVER_RUNNING);
 
   g_message("starting OSC listen and dispatch threads");
-  
+
   /* create listen and dispatch thread */
   pthread_create(osc_server->listen_thread, NULL,
 		 ags_osc_server_listen_thread, osc_server);
@@ -1344,23 +1358,13 @@ ags_osc_server_real_listen(AgsOscServer *osc_server)
   }
 
   if(osc_server->ip4_fd != -1){
-    int flags;
-
     listen(osc_server->ip4_fd, AGS_OSC_SERVER_DEFAULT_BACKLOG);
-
-    //    flags = fcntl(osc_server->ip4_fd, F_GETFL, 0);
-    //    fcntl(osc_server->ip4_fd, F_SETFL, flags | O_NONBLOCK);
   }
-  
+
   if(osc_server->ip6_fd != -1){
-    int flags;
-
     listen(osc_server->ip6_fd, AGS_OSC_SERVER_DEFAULT_BACKLOG);
-
-    flags = fcntl(osc_server->ip6_fd, F_GETFL, 0);
-    fcntl(osc_server->ip6_fd, F_SETFL, flags | O_NONBLOCK);
-  }
-
+  }  
+  
   created_connection = FALSE;
     
   if(osc_server->ip4_fd != -1){
@@ -1472,6 +1476,33 @@ ags_osc_server_real_dispatch(AgsOscServer *osc_server)
   list = start_list;
 
   while(list != NULL){
+    int fd;
+
+    pthread_mutex_t *osc_connection_mutex;
+
+    /* get osc_connection mutex */
+    pthread_mutex_lock(ags_osc_connection_get_class_mutex());
+  
+    osc_connection_mutex = AGS_OSC_CONNECTION(list->data)->obj_mutex;
+  
+    pthread_mutex_unlock(ags_osc_connection_get_class_mutex());
+    
+    /* get fd */
+    pthread_mutex_lock(osc_connection_mutex);
+
+    fd = AGS_OSC_CONNECTION(list->data)->fd;
+    
+    pthread_mutex_unlock(osc_connection_mutex);
+
+    if(fd == -1){
+      ags_osc_server_remove_connection(osc_server,
+				       list->data);
+      
+      list = list->next;
+
+      continue;
+    }
+    
     slip_buffer = ags_osc_connection_read_bytes(list->data,
 						&data_length);
 

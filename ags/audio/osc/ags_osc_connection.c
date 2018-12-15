@@ -739,6 +739,14 @@ ags_osc_connection_real_read_bytes(AgsOscConnection *osc_connection,
   
   pthread_mutex_unlock(osc_connection_mutex);
 
+  if(fd == -1){  
+    if(data_length != NULL){
+      *data_length = 0;
+    }
+    
+    return(NULL);
+  }
+  
   /*  */
   has_valid_data = FALSE;
 
@@ -751,8 +759,29 @@ ags_osc_connection_real_read_bytes(AgsOscConnection *osc_connection,
 					    osc_connection->timeout_delay)){
     retval = read(fd, data, 256);
 
-    if(retval <= 0){
+    if(retval == 0){
       continue;
+    }
+
+    if(retval == -1){
+      if(errno == EAGAIN ||
+	 errno == EWOULDBLOCK){
+	continue;
+      }
+
+      g_message("error during reading data from socket");
+      
+      if(errno == EBADFD ||
+	 errno == ECONNRESET ||
+	 errno == ENETRESET){
+	pthread_mutex_lock(osc_connection_mutex);
+
+	osc_connection->fd = -1;
+	
+	pthread_mutex_unlock(osc_connection_mutex);
+      }
+      
+      break;      
     }
 
     success = FALSE;
