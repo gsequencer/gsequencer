@@ -41,6 +41,8 @@
 
 #define AGS_OSC_CLIENT_DEFAULT_MAX_RETRY (16)
 
+#define AGS_OSC_CLIENT_CHUNK_SIZE (131072)
+
 typedef struct _AgsOscClient AgsOscClient;
 typedef struct _AgsOscClientClass AgsOscClientClass;
 
@@ -75,6 +77,15 @@ struct _AgsOscClient
   guint max_retry_count;
 
   struct timespec *retry_delay;
+
+  struct timespec *start_time;
+
+  unsigned char *buffer;
+  guint allocated_buffer_size;
+  
+  guint read_count;
+
+  struct timespec *timeout_delay;
 };
 
 struct _AgsOscClientClass
@@ -84,6 +95,8 @@ struct _AgsOscClientClass
   void (*resolve)(AgsOscClient *osc_client);
   void (*connect)(AgsOscClient *osc_client);
 
+  unsigned char* (*read_bytes)(AgsOscClient *osc_client,
+			       guint *data_length);
   gboolean (*write_bytes)(AgsOscClient *osc_client,
 			  guchar *data, guint data_length);
 };
@@ -96,8 +109,14 @@ gboolean ags_osc_client_test_flags(AgsOscClient *osc_client, guint flags);
 void ags_osc_client_set_flags(AgsOscClient *osc_client, guint flags);
 void ags_osc_client_unset_flags(AgsOscClient *osc_client, guint flags);
 
+gboolean ags_osc_client_timeout_expired(struct timespec *start_time,
+					struct timespec *timeout_delay);
+
 void ags_osc_client_resolve(AgsOscClient *osc_client);
 void ags_osc_client_connect(AgsOscClient *osc_client);
+
+unsigned char* ags_osc_client_read_bytes(AgsOscClient *osc_client,
+					 guint *data_length);
 
 gboolean ags_osc_client_write_bytes(AgsOscClient *osc_client,
 				    guchar *data, guint data_length);

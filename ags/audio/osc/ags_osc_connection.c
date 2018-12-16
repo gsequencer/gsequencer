@@ -52,7 +52,7 @@ void ags_osc_connection_dispose(GObject *gobject);
 void ags_osc_connection_finalize(GObject *gobject);
 
 unsigned char* ags_osc_connection_real_read_bytes(AgsOscConnection *osc_connection,
-					   guint *data_length);
+						  guint *data_length);
 gint64 ags_osc_connection_real_write_response(AgsOscConnection *osc_connection,
 					      GObject *osc_response);
 
@@ -497,6 +497,10 @@ ags_osc_connection_finalize(GObject *gobject)
 
   g_free(osc_connection->ip4);
   g_free(osc_connection->ip6);
+
+  if(osc_connection->start_time != NULL){
+    free(osc_connection->start_time);
+  }
 
   if(osc_connection->timeout_delay != NULL){
     free(osc_connection->timeout_delay);

@@ -429,7 +429,7 @@ ags_osc_meter_controller_monitor_thread(void *ptr)
       guint packet_size;
       
       pthread_mutex_t *port_mutex;
-
+      
       pthread_mutex_lock(osc_controller_mutex);
       
       osc_connection = AGS_OSC_METER_CONTROLLER_MONITOR(monitor->data)->osc_connection;
@@ -447,7 +447,6 @@ ags_osc_meter_controller_monitor_thread(void *ptr)
       
       g_object_set(osc_response,
 		   "packet", packet,
-		   "packet-size", packet_size,
 		   NULL);
       
       real_packet_size = AGS_OSC_RESPONSE_DEFAULT_CHUNK_SIZE;
@@ -637,6 +636,10 @@ ags_osc_meter_controller_monitor_thread(void *ptr)
 	  g_warning("unsupported port type");
 	}
       }
+    
+      g_object_set(osc_response,
+		   "packet-size", packet_size,
+		   NULL);
 
       /* write response */
       ags_osc_connection_write_response(osc_connection,

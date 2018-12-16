@@ -21,11 +21,18 @@
 
 #include <ags/libags.h>
 
+#include <ags/audio/osc/ags_osc_util.h>
+
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netdb.h>
 
 #include <arpa/inet.h>
+
+#ifdef __APPLE__
+#include <mach/clock.h>
+#include <mach/mach.h>
+#endif
 
 #include <ags/i18n.h>
 
@@ -44,6 +51,8 @@ void ags_osc_client_finalize(GObject *gobject);
 void ags_osc_client_real_resolve(AgsOscClient *osc_client);
 void ags_osc_client_real_connect(AgsOscClient *osc_client);
 
+unsigned char* ags_osc_client_real_read_bytes(AgsOscClient *osc_client,
+					      guint *data_length);
 gboolean ags_osc_client_real_write_bytes(AgsOscClient *osc_client,
 					 guchar *data, guint data_length);
 
@@ -68,6 +77,7 @@ enum{
 enum{
   RESOLVE,
   CONNECT,
+  READ_BYTES,
   WRITE_BYTES,
   LAST_SIGNAL,
 };
@@ -195,6 +205,7 @@ ags_osc_client_class_init(AgsOscClientClass *osc_client)
   osc_client->resolve = ags_osc_client_real_resolve;
   osc_client->connect = ags_osc_client_real_connect;
   
+  osc_client->read_bytes = ags_osc_client_real_read_bytes;
   osc_client->write_bytes = ags_osc_client_real_write_bytes;
 
   /* signals */
@@ -231,6 +242,27 @@ ags_osc_client_class_init(AgsOscClientClass *osc_client)
 		 NULL, NULL,
 		 g_cclosure_marshal_VOID__VOID,
 		 G_TYPE_NONE, 0);
+
+  /**
+   * AgsOscClient::read-bytes:
+   * @osc_client: the #AgsOscClient
+   * @data_length: the return location of byte array's length
+   *
+   * The ::read-bytes signal is emited while read bytes.
+   *
+   * Returns: byte array read or %NULL if no data available
+   * 
+   * Since: 2.1.11
+   */
+  osc_client_signals[READ_BYTES] =
+    g_signal_new("read-bytes",
+		 G_TYPE_FROM_CLASS(osc_client),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsOscClientClass, read_bytes),
+		 NULL, NULL,
+		 ags_cclosure_marshal_POINTER__POINTER,
+		 G_TYPE_POINTER, 1,
+		 G_TYPE_POINTER);
 
   /**
    * AgsOscClient::write-bytes:
@@ -297,6 +329,21 @@ ags_osc_client_init(AgsOscClient *osc_client)
 
   osc_client->retry_delay->tv_sec = 5;
   osc_client->retry_delay->tv_nsec = 0;
+
+  osc_client->start_time = (struct timeval *) malloc(sizeof(struct timespec));
+
+  osc_client->start_time->tv_sec = 0;
+  osc_client->start_time->tv_nsec = 0;
+
+  osc_client->buffer = (unsigned char *) malloc(AGS_OSC_CLIENT_CHUNK_SIZE * sizeof(unsigned char));
+  osc_client->allocated_buffer_size = AGS_OSC_CLIENT_CHUNK_SIZE;
+
+  osc_client->read_count = 0;
+  
+  osc_client->timeout_delay = (struct timespec *) malloc(sizeof(struct timespec));
+
+  osc_client->timeout_delay->tv_sec = 0;
+  osc_client->timeout_delay->tv_nsec = NSEC_PER_SEC / 30;
 }
 
 void
@@ -486,6 +533,14 @@ ags_osc_client_finalize(GObject *gobject)
   if(osc_client->retry_delay != NULL){
     free(osc_client->retry_delay);
   }
+
+  if(osc_client->start_time != NULL){
+    free(osc_client->start_time);
+  }
+
+  if(osc_client->timeout_delay != NULL){
+    free(osc_client->timeout_delay);
+  }
   
   /* call parent */
   G_OBJECT_CLASS(ags_osc_client_parent_class)->finalize(gobject);
@@ -609,6 +664,61 @@ ags_osc_client_unset_flags(AgsOscClient *osc_client, guint flags)
   osc_client->flags &= (~flags);
 
   pthread_mutex_unlock(osc_client_mutex);
+}
+
+/**
+ * ags_osc_client_timeout_expired:
+ * @start_time: the start time #timespec-struct
+ * @timeout_delay: the delay #timespec-struct
+ * 
+ * Check @start_time plus @timeout_delay against current time.
+ * 
+ * Returns: %TRUE if timeout expired, otherwise %FALSE
+ * 
+ * Since: 2.1.11
+ */
+gboolean
+ags_osc_client_timeout_expired(struct timespec *start_time,
+			       struct timespec *timeout_delay)
+{
+  struct timespec current_time;
+  struct timespec deadline;
+  
+  if(start_time == NULL ||
+     timeout_delay == NULL){
+    return(TRUE);
+  }
+
+#ifdef __APPLE__
+  host_get_clock_service(mach_host_self(), CALENDAR_CLOCK, &cclock);
+      
+  clock_get_time(cclock, &mts);
+  mach_port_deallocate(mach_task_self(), cclock);
+      
+  current_time.tv_sec = mts.tv_sec;
+  current_time.tv_nsec = mts.tv_nsec;
+#else
+  clock_gettime(CLOCK_MONOTONIC, &current_time);
+#endif
+
+  if(start_time->tv_nsec + timeout_delay->tv_nsec > NSEC_PER_SEC){
+    deadline.tv_sec = start_time->tv_sec + timeout_delay->tv_sec + 1;
+    deadline.tv_nsec = (start_time->tv_nsec + timeout_delay->tv_nsec) - NSEC_PER_SEC;
+  }else{
+    deadline.tv_sec = start_time->tv_sec + timeout_delay->tv_sec;
+    deadline.tv_nsec = start_time->tv_nsec + timeout_delay->tv_nsec;
+  }
+  
+  if(current_time.tv_sec > deadline.tv_sec){
+    return(TRUE);
+  }else{
+    if(current_time.tv_sec == deadline.tv_sec &&
+       current_time.tv_nsec > deadline.tv_nsec){
+      return(TRUE);
+    }
+  }
+
+  return(FALSE);
 }
 
 void
@@ -863,6 +973,280 @@ ags_osc_client_connect(AgsOscClient *osc_client)
   g_signal_emit(G_OBJECT(osc_client),
 		osc_client_signals[CONNECT], 0);
   g_object_unref((GObject *) osc_client);
+}
+
+unsigned char*
+ags_osc_client_real_read_bytes(AgsOscClient *osc_client,
+			       guint *data_length)
+{
+  unsigned char *buffer;
+  unsigned char data[256];
+  
+  guint allocated_buffer_size;
+  guint read_count;
+  guint retval;
+  gint64 start_data, end_data;
+  int ip4_fd, ip6_fd;
+  int fd;
+  guint i, j;
+  gboolean has_valid_data;
+  gboolean success;
+
+#ifdef __APPLE__
+  clock_serv_t cclock;
+  mach_timespec_t mts;
+#endif
+
+  pthread_mutex_t *osc_client_mutex;
+
+  /* get osc_client mutex */
+  pthread_mutex_lock(ags_osc_client_get_class_mutex());
+  
+  osc_client_mutex = osc_client->obj_mutex;
+  
+  pthread_mutex_unlock(ags_osc_client_get_class_mutex());
+
+  /* get fd */
+  pthread_mutex_lock(osc_client_mutex);
+
+#ifdef __APPLE__
+  host_get_clock_service(mach_host_self(), CALENDAR_CLOCK, &cclock);
+      
+  clock_get_time(cclock, &mts);
+  mach_port_deallocate(mach_task_self(), cclock);
+      
+  osc_client->start_time->tv_sec = mts.tv_sec;
+  osc_client->start_time->tv_nsec = mts.tv_nsec;
+#else
+  clock_gettime(CLOCK_MONOTONIC, osc_client->start_time);
+#endif
+  
+  ip4_fd = osc_client->ip4_fd;
+  ip6_fd = osc_client->ip6_fd;
+  
+  buffer = osc_client->buffer;
+  allocated_buffer_size = osc_client->allocated_buffer_size;
+  
+  read_count = osc_client->read_count;
+  
+  pthread_mutex_unlock(osc_client_mutex);
+
+  if(ip4_fd != -1){
+    fd = ip4_fd;
+  }else{
+    fd = ip6_fd;
+  }
+  
+  if(fd == -1){  
+    if(data_length != NULL){
+      *data_length = 0;
+    }
+    
+    return(NULL);
+  }
+  
+  /*  */
+  has_valid_data = FALSE;
+
+  start_data = -1;
+  end_data = -1;
+
+  j = 0;
+  
+  while(!ags_osc_client_timeout_expired(osc_client->start_time,
+					osc_client->timeout_delay)){
+    retval = read(fd, data, 256);
+
+    if(retval == 0){
+      continue;
+    }
+
+    if(retval == -1){
+      if(errno == EAGAIN ||
+	 errno == EWOULDBLOCK){
+	continue;
+      }
+
+      g_message("error during reading data from socket");
+      
+      if(errno == EBADFD ||
+	 errno == ECONNRESET ||
+	 errno == ENETRESET){
+	pthread_mutex_lock(osc_client_mutex);
+
+	if(ip4_fd == fd){
+	  osc_client->ip4_fd = -1;
+	}else if(ip6_fd == fd){
+	  osc_client->ip6_fd = -1;
+	}
+	
+	pthread_mutex_unlock(osc_client_mutex);
+      }
+      
+      break;      
+    }
+
+    success = FALSE;
+      
+    if(start_data == -1 &&
+       read_count == 0){
+      for(i = 0; i < retval; i++){
+	if(data[i] == AGS_OSC_UTIL_SLIP_END){
+	  success = TRUE;
+	  
+	  break;
+	}
+      }
+    }
+    
+    if(success){
+      start_data = i;
+
+    ags_osc_client_read_bytes_REPEAT_0:
+      
+      success = FALSE;
+	
+      for(i = start_data + 1; i < retval; i++){
+	if(data[i] == AGS_OSC_UTIL_SLIP_END){
+	  success = TRUE;
+	  
+	  break;
+	}
+      }
+
+      if(success){	  
+	end_data = i;
+
+	if(start_data + 1 == end_data){
+	  start_data = end_data;
+	  j++;
+	  
+	  if(j < 2 ||
+	     !ags_osc_client_timeout_expired(osc_client->start_time,
+					     osc_client->timeout_delay)){
+	    goto ags_osc_client_read_bytes_REPEAT_0;
+	  }else{
+	    break;
+	  }
+	}
+	
+	pthread_mutex_lock(osc_client_mutex);
+
+	memcpy(osc_client->buffer, data + start_data, (end_data - start_data) * sizeof(unsigned char));
+	  
+	pthread_mutex_unlock(osc_client_mutex);
+
+	if(data_length != NULL){
+	  *data_length = end_data - start_data;
+	}
+	  
+	return(osc_client->buffer);
+      }else{
+	read_count += (retval - start_data);
+	  
+	pthread_mutex_lock(osc_client_mutex);
+
+	memcpy(osc_client->buffer, data + start_data, (retval - start_data) * sizeof(unsigned char));
+	  
+	pthread_mutex_unlock(osc_client_mutex);
+
+	has_valid_data = TRUE;
+
+	continue;
+      }
+    }else{
+      if(has_valid_data){
+	success = FALSE;
+
+	for(i = 0; i < retval; i++){
+	  if(data[i] == AGS_OSC_UTIL_SLIP_END){
+	    success = TRUE;
+	  
+	    break;
+	  }
+	}
+
+	if(success){
+	  if(read_count + i >= AGS_OSC_CLIENT_CHUNK_SIZE){
+	    if(data_length != NULL){
+	      *data_length = 0;
+	    }
+	    
+	    return(NULL);
+	  }
+	  
+	  pthread_mutex_lock(osc_client_mutex);
+
+	  memcpy(osc_client->buffer + read_count, data, (i) * sizeof(unsigned char));
+	
+	  pthread_mutex_unlock(osc_client_mutex);
+
+	  read_count += i;
+	  
+	  if(data_length != NULL){
+	    *data_length = read_count;
+	  }
+
+	  return(osc_client->buffer);
+	}else{
+	  if(read_count + retval >= AGS_OSC_CLIENT_CHUNK_SIZE){
+	    if(data_length != NULL){
+	      *data_length = 0;
+	    }
+	    
+	    return(NULL);
+	  }
+	  
+	  pthread_mutex_lock(osc_client_mutex);
+	
+	  memcpy(osc_client->buffer + read_count, data, (retval) * sizeof(unsigned char));
+
+	  pthread_mutex_unlock(osc_client_mutex);
+
+	  read_count += retval;
+
+	  continue;
+	}
+      }
+    }
+  }
+
+  osc_client->read_count = read_count;
+  
+  if(data_length != NULL){
+    *data_length = 0;
+  }
+
+  return(NULL);
+}
+
+/**
+ * ags_osc_client_read_bytes:
+ * @osc_client: the #AgsOscClient
+ * @data_length: the return location of byte array's length
+ * 
+ * Read bytes.
+ * 
+ * Returns: byte array read or %NULL if no data available
+ * 
+ * Since: 2.1.11
+ */
+unsigned char*
+ags_osc_client_read_bytes(AgsOscClient *osc_client,
+			  guint *data_length)
+{
+  unsigned char *buffer;
+  
+  g_return_val_if_fail(AGS_IS_OSC_CLIENT(osc_client), NULL);
+  
+  g_object_ref((GObject *) osc_client);
+  g_signal_emit(G_OBJECT(osc_client),
+		osc_client_signals[READ_BYTES], 0,
+		data_length,
+		&buffer);
+  g_object_unref((GObject *) osc_client);
+
+  return(buffer);
 }
 
 gboolean

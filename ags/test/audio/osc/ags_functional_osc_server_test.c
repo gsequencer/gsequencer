@@ -26,6 +26,11 @@
 #include <ags/libags.h>
 #include <ags/libags-audio.h>
 
+#ifdef __APPLE__
+#include <mach/clock.h>
+#include <mach/mach.h>
+#endif
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <unistd.h>
@@ -96,6 +101,8 @@ void ags_functional_osc_server_test_status_controller();
   "[recall]\n"					       \
   "auto-sense=true\n"				       \
   "\n"
+
+#define AGS_FUNCTIONAL_OSC_SERVER_TEST_METER_PACKET_COUNT (16 * 30)
 
 AgsApplicationContext *application_context;
 
@@ -464,7 +471,121 @@ ags_functional_osc_server_test_info_controller()
 void
 ags_functional_osc_server_test_meter_controller()
 {
-  //TODO:JK: implement me
+  struct timespec start_time;
+  struct timespec timeout_delay;
+  struct timespec idle_delay;
+  
+  unsigned char *buffer;
+  unsigned char *packet;
+
+  guint buffer_length;
+  guint meter_packet_count;
+  guint i;
+  gboolean retval;
+
+  static const unsigned char *enable_peak_message = "/meter\x00\x00,sT\x00/AgsSoundProvider/AgsAudio[\"test-drum\"]/AgsInput[0-15]/AgsPeakChannel[0]/AgsPort[\"./peak[0]\"]:value\x00";
+  static const unsigned char *disable_peak_message = "/meter\x00\x00,sF\x00/AgsSoundProvider/AgsAudio[\"test-drum\"]/AgsInput[0-15]/AgsPeakChannel[0]/AgsPort[\"./peak[0]\"]:value\x00";
+
+  static const guint enable_peak_message_size = 112;
+  static const guint disable_peak_message_size = 112;
+
+  CU_ASSERT(osc_server->ip4_fd != -1);
+  CU_ASSERT(osc_client->ip4_fd != -1);
+
+  /* enable meter */
+  packet = (unsigned char *) malloc((4 + enable_peak_message_size) * sizeof(unsigned char));
+
+  ags_osc_buffer_util_put_int32(packet,
+				enable_peak_message_size);
+  memcpy(packet + 4, enable_peak_message, (enable_peak_message_size) * sizeof(unsigned char));
+
+  buffer = ags_osc_util_slip_encode(packet,
+				    4 + enable_peak_message_size,
+				    &buffer_length);
+
+  CU_ASSERT(buffer_length - 2 >= 4 + enable_peak_message_size);
+
+  retval = ags_osc_client_write_bytes(osc_client,
+				      buffer, buffer_length);
+
+  CU_ASSERT(retval == TRUE);
+
+  /* read packets */
+#ifdef __APPLE__
+  host_get_clock_service(mach_host_self(), CALENDAR_CLOCK, &cclock);
+      
+  clock_get_time(cclock, &mts);
+  mach_port_deallocate(mach_task_self(), cclock);
+      
+  start_time.tv_sec = mts.tv_sec;
+  start_time.tv_nsec = mts.tv_nsec;
+#else
+  clock_gettime(CLOCK_MONOTONIC, &start_time);
+#endif
+
+  timeout_delay.tv_sec = 20;
+  timeout_delay.tv_nsec = 0;
+  
+  idle_delay.tv_sec = 0;
+  idle_delay.tv_nsec = NSEC_PER_SEC / 30;
+  
+  meter_packet_count = 0;
+  i = 0;
+  
+  while(!ags_osc_client_timeout_expired(&start_time,
+					&timeout_delay)){
+    unsigned char *current_data;
+    unsigned char *current_packet;
+    gchar *address_pattern;
+    
+    guint data_length;
+    
+    current_data = ags_osc_client_read_bytes(osc_client,
+					     &data_length);
+
+    if(current_data != NULL){
+      current_packet = ags_osc_util_slip_decode(current_data,
+						data_length,
+						NULL);
+      
+      ags_osc_buffer_util_get_message(current_packet + 4,
+				      &address_pattern, NULL);
+
+      if(!g_strcmp0(address_pattern,
+		    "/meter")){
+	meter_packet_count++;
+
+	i++;
+      }
+    }
+    
+    if(i == 16){
+      i = 0;
+      
+      nanosleep(&idle_delay,
+		NULL);
+    }
+  }
+  
+  CU_ASSERT(meter_packet_count >= AGS_FUNCTIONAL_OSC_SERVER_TEST_METER_PACKET_COUNT);
+
+  /* disable meter */
+  packet = (unsigned char *) malloc((4 + disable_peak_message_size) * sizeof(unsigned char));
+
+  ags_osc_buffer_util_put_int32(packet,
+				disable_peak_message_size);
+  memcpy(packet + 4, disable_peak_message, (disable_peak_message_size) * sizeof(unsigned char));
+
+  buffer = ags_osc_util_slip_encode(packet,
+				    4 + disable_peak_message_size,
+				    &buffer_length);
+
+  CU_ASSERT(buffer_length - 2 >= 4 + disable_peak_message_size);
+
+  retval = ags_osc_client_write_bytes(osc_client,
+				      buffer, buffer_length);
+
+  CU_ASSERT(retval == TRUE);
 }
 
 void
