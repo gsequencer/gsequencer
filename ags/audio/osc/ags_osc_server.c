@@ -1073,6 +1073,10 @@ ags_osc_server_real_start(AgsOscServer *osc_server)
 
   pthread_mutex_t *osc_server_mutex;
 
+  if(ags_osc_server_test_flags(osc_server, AGS_OSC_SERVER_STARTED)){
+    return;
+  }
+
   ags_osc_server_set_flags(osc_server, AGS_OSC_SERVER_STARTED);
 
   /* get osc_server mutex */
@@ -1283,6 +1287,10 @@ ags_osc_server_real_stop(AgsOscServer *osc_server)
   
   pthread_mutex_t *osc_server_mutex;
 
+  if(!ags_osc_server_test_flags(osc_server, AGS_OSC_SERVER_RUNNING)){
+    return;
+  }
+  
   /* get OSC server mutex */
   pthread_mutex_lock(ags_osc_server_get_class_mutex());
   
@@ -1291,6 +1299,7 @@ ags_osc_server_real_stop(AgsOscServer *osc_server)
   pthread_mutex_unlock(ags_osc_server_get_class_mutex());
 
   /* stop */
+  ags_osc_server_set_flags(osc_server, AGS_OSC_SERVER_TERMINATING);
   ags_osc_server_unset_flags(osc_server, AGS_OSC_SERVER_RUNNING);
 
   pthread_join(osc_server->listen_thread[0], NULL);
@@ -1328,6 +1337,9 @@ ags_osc_server_real_stop(AgsOscServer *osc_server)
   }
 
   g_list_free(start_controller);
+
+  ags_osc_server_unset_flags(osc_server, (AGS_OSC_SERVER_STARTED |
+					  AGS_OSC_SERVER_TERMINATING));
 }
 
 /**

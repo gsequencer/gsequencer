@@ -5,6 +5,7 @@ ags (2.1.11)
 	* implemented parse OSC server config in ags_xorg_application_context_setup()
 	* implemented data cache of OSC connection and client
 	* implemented missing persistence of AgsAudio:audio-name property
+	* improved read bytes of OSC connection and client
 
 ags (2.1.10)
 

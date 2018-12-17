@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: gsequencer 2.1.10\n"
+"Project-Id-Version: gsequencer 2.1.11\n"
 "Report-Msgid-Bugs-To: jkraehemann@gmail.com\n"
-"POT-Creation-Date: 2018-12-15 22:17+0100\n"
+"POT-Creation-Date: 2018-12-18 00:06+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,19 +17,19 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ags/X/ags_audio_preferences.c:191
+#: ags/X/ags_audio_preferences.c:192
 msgid "JACK driver"
 msgstr ""
 
-#: ags/X/ags_audio_preferences.c:207
+#: ags/X/ags_audio_preferences.c:208
 msgid "JACK server"
 msgstr ""
 
-#: ags/X/ags_audio_preferences.c:223
+#: ags/X/ags_audio_preferences.c:224
 msgid "start"
 msgstr ""
 
-#: ags/X/ags_audio_preferences.c:229
+#: ags/X/ags_audio_preferences.c:230
 msgid "stop"
 msgstr ""
 
@@ -445,6 +445,46 @@ msgstr ""
 msgid "notation"
 msgstr ""
 
+#: ags/X/ags_osc_server_preferences.c:148
+msgid "Note: the fields below are applied immediately"
+msgstr ""
+
+#: ags/X/ags_osc_server_preferences.c:165
+msgid "auto-start OSC server"
+msgstr ""
+
+#: ags/X/ags_osc_server_preferences.c:183
+msgid "start OSC server"
+msgstr ""
+
+#: ags/X/ags_osc_server_preferences.c:189
+msgid "stop OSC server"
+msgstr ""
+
+#: ags/X/ags_osc_server_preferences.c:196
+msgid "listen on any address"
+msgstr ""
+
+#: ags/X/ags_osc_server_preferences.c:205
+msgid "enable IPv4"
+msgstr ""
+
+#: ags/X/ags_osc_server_preferences.c:215
+msgid "IPv4 address"
+msgstr ""
+
+#: ags/X/ags_osc_server_preferences.c:236
+msgid "enable IPv6"
+msgstr ""
+
+#: ags/X/ags_osc_server_preferences.c:246
+msgid "IPv6 address"
+msgstr ""
+
+#: ags/X/ags_osc_server_preferences.c:268 ags/X/ags_server_preferences.c:173
+msgid "port"
+msgstr ""
+
 #: ags/X/ags_pad_editor.c:426
 msgid "pad"
 msgstr ""
@@ -489,7 +529,11 @@ msgstr ""
 msgid "performance"
 msgstr ""
 
-#: ags/X/ags_preferences.c:202
+#: ags/X/ags_preferences.c:196
+msgid "OSC server"
+msgstr ""
+
+#: ags/X/ags_preferences.c:207
 msgid "server"
 msgstr ""
 
@@ -523,10 +567,6 @@ msgstr ""
 msgid "address"
 msgstr ""
 
-#: ags/X/ags_server_preferences.c:173
-msgid "port"
-msgstr ""
-
 #: ags/X/ags_server_preferences.c:195
 msgid "username"
 msgstr ""
@@ -555,27 +595,27 @@ msgstr ""
 msgid "wave"
 msgstr ""
 
-#: ags/X/ags_xorg_application_context.c:1882
+#: ags/X/ags_xorg_application_context.c:1885
 #: ags/audio/ags_audio_application_context.c:1671
 #: ags/audio/task/ags_apply_sound_config.c:806
 #, c-format
 msgid "unknown soundcard backend - %s"
 msgstr ""
 
-#: ags/X/ags_xorg_application_context.c:1892
+#: ags/X/ags_xorg_application_context.c:1895
 #: ags/audio/ags_audio_application_context.c:1681
 #: ags/audio/task/ags_apply_sound_config.c:816
 msgid "unknown soundcard backend - NULL"
 msgstr ""
 
-#: ags/X/ags_xorg_application_context.c:2040
+#: ags/X/ags_xorg_application_context.c:2043
 #: ags/audio/ags_audio_application_context.c:1829
 #: ags/audio/task/ags_apply_sound_config.c:963
 #, c-format
 msgid "unknown sequencer backend - %s"
 msgstr ""
 
-#: ags/X/ags_xorg_application_context.c:2050
+#: ags/X/ags_xorg_application_context.c:2053
 #: ags/audio/ags_audio_application_context.c:1839
 #: ags/audio/task/ags_apply_sound_config.c:973
 msgid "unknown sequencer backend - NULL"

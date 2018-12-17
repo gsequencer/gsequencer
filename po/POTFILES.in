@@ -67,6 +67,8 @@
 ./ags/X/ags_notation_editor.c
 ./ags/X/ags_notation_editor_callbacks.c
 ./ags/X/ags_notation_sheet.c
+./ags/X/ags_osc_server_preferences.c
+./ags/X/ags_osc_server_preferences_callbacks.c
 ./ags/X/ags_output_collection_editor.c
 ./ags/X/ags_output_collection_editor_callbacks.c
 ./ags/X/ags_output_editor.c
