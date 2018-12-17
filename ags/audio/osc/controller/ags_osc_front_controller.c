@@ -1049,20 +1049,27 @@ ags_osc_front_controller_real_do_request(AgsOscFrontController *osc_front_contro
 
     read_count = 0;
 
-    ags_osc_buffer_util_get_message(packet + offset,
-				    &address_pattern, &type_tag);
+    ags_osc_buffer_util_get_string(packet + offset,
+				   &address_pattern, &address_pattern_length);
     
     if(address_pattern == NULL){
       return(0);
     }
     
-    address_pattern_length = strlen(address_pattern);
     read_count += (4 * (guint) ceil((double) (address_pattern_length + 1) / 4.0));
 
-    if(type_tag != NULL){
-      type_tag_length = strlen(type_tag);
-      read_count += (4 * (guint) ceil((double) (type_tag_length + 1) / 4.0));
+    type_tag = NULL;
 
+    if(packet_size > offset + read_count){
+      if(packet[offset + read_count] == ','){
+	ags_osc_buffer_util_get_string(packet + offset + read_count,
+				       &type_tag, &type_tag_length);
+
+	read_count += (4 * (guint) ceil((double) (type_tag_length + 1) / 4.0));
+      }
+    }
+    
+    if(type_tag != NULL){
       data_length = 0;
     
       for(i = 1; i < type_tag_length; i++){

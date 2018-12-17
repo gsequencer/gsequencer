@@ -353,7 +353,7 @@ ags_osc_client_init(AgsOscClient *osc_client)
   osc_client->timeout_delay = (struct timespec *) malloc(sizeof(struct timespec));
 
   osc_client->timeout_delay->tv_sec = 0;
-  osc_client->timeout_delay->tv_nsec = NSEC_PER_SEC / 30;
+  osc_client->timeout_delay->tv_nsec = 4000;
 }
 
 void
