@@ -190,6 +190,11 @@ ags_preferences_init(AgsPreferences *preferences)
 			     AGS_CONFIG_GENERIC,
 			     "disable-feature");
   
+  preferences->osc_server_preferences = ags_osc_server_preferences_new();
+  gtk_notebook_append_page(preferences->notebook,
+			   GTK_WIDGET(preferences->osc_server_preferences),
+			   gtk_label_new(i18n("OSC server")));
+
   if(str == NULL ||
      !g_ascii_strncasecmp(str,
 			  "experimental",

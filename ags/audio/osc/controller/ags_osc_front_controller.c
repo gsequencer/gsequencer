@@ -1068,10 +1068,10 @@ ags_osc_front_controller_real_do_request(AgsOscFrontController *osc_front_contro
 	read_count += (4 * (guint) ceil((double) (type_tag_length + 1) / 4.0));
       }
     }
+
+    data_length = 0;
     
     if(type_tag != NULL){
-      data_length = 0;
-    
       for(i = 1; i < type_tag_length; i++){
 	switch(type_tag[i]){
 	case AGS_OSC_UTIL_TYPE_TAG_STRING_TRUE:

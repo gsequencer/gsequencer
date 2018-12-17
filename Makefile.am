@@ -1492,6 +1492,8 @@ libgsequencer_h_sources = \
 	ags/X/ags_notation_editor_callbacks.h \
 	ags/X/ags_notation_editor.h \
 	ags/X/ags_notation_sheet.h \
+	ags/X/ags_osc_server_preferences_callbacks.h \
+	ags/X/ags_osc_server_preferences.h \
 	ags/X/ags_output_collection_editor_callbacks.h \
 	ags/X/ags_output_collection_editor.h \
 	ags/X/ags_output_editor_callbacks.h \
@@ -1606,6 +1608,8 @@ libgsequencer_c_sources = \
 	ags/X/ags_notation_editor.c \
 	ags/X/ags_notation_editor_callbacks.c \
 	ags/X/ags_notation_sheet.c \
+	ags/X/ags_osc_server_preferences_callbacks.c \
+	ags/X/ags_osc_server_preferences.c \
 	ags/X/ags_output_collection_editor_callbacks.c \
 	ags/X/ags_output_collection_editor.c \
 	ags/X/ags_output_editor_callbacks.c \

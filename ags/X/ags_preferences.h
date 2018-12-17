@@ -26,6 +26,7 @@
 #include <ags/X/ags_audio_preferences.h>
 #include <ags/X/ags_midi_preferences.h>
 #include <ags/X/ags_performance_preferences.h>
+#include <ags/X/ags_osc_server_preferences.h>
 #include <ags/X/ags_server_preferences.h>
 
 #define AGS_TYPE_PREFERENCES                (ags_preferences_get_type())
@@ -58,6 +59,7 @@ struct _AgsPreferences
   AgsAudioPreferences *audio_preferences;
   AgsMidiPreferences *midi_preferences;
   AgsPerformancePreferences *performance_preferences;
+  AgsOscServerPreferences *osc_server_preferences;
   AgsServerPreferences *server_preferences;
 };
 
