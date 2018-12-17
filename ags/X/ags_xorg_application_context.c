@@ -1484,6 +1484,8 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
   AgsPulseServer *pulse_server;
   AgsCoreAudioServer *core_audio_server;
 
+  AgsOscServer *osc_server;
+  
   AgsLadspaManager *ladspa_manager;
   AgsDssiManager *dssi_manager;
   AgsLv2Manager *lv2_manager;
@@ -1514,6 +1516,7 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
   gchar *filename;
   gchar *soundcard_group;
   gchar *sequencer_group;
+  gchar *osc_server_group;
   gchar *str;
   gchar *capability;
   
@@ -2162,21 +2165,21 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
 				      TRUE, TRUE);
       }    
 
-    /* default soundcard thread */
-    if(xorg_application_context->default_soundcard_thread == NULL){
-      xorg_application_context->default_soundcard_thread = soundcard_thread;
-      g_object_ref(soundcard_thread);
-    }
+      /* default soundcard thread */
+      if(xorg_application_context->default_soundcard_thread == NULL){
+	xorg_application_context->default_soundcard_thread = soundcard_thread;
+	g_object_ref(soundcard_thread);
+      }
 
-    /* default export thread */
-    if(export_thread != NULL &&
-       xorg_application_context->default_export_thread == NULL){
-      xorg_application_context->default_export_thread = export_thread;
-      g_object_ref(export_thread);
-    }
+      /* default export thread */
+      if(export_thread != NULL &&
+	 xorg_application_context->default_export_thread == NULL){
+	xorg_application_context->default_export_thread = export_thread;
+	g_object_ref(export_thread);
+      }
 
-    /* iterate */
-    list = list->next;      
+      /* iterate */
+      list = list->next;      
   }
   
   /* AgsSequencerThread */
@@ -2191,6 +2194,176 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
     list = list->next;      
   }
 
+  /* AgsOscServer */
+  xorg_application_context->osc_server = NULL;
+  osc_server = NULL;
+
+  osc_server_group = g_strdup("osc-server");
+  
+  for(i = 0; ; i++){
+    gchar *ip4, *ip6;
+
+    guint server_port;
+    gboolean auto_start;
+    gboolean any_address;
+    gboolean enable_ip4, enable_ip6;
+    
+    if(!g_key_file_has_group(config->key_file,
+			     osc_server_group)){
+      if(i == 0){
+	g_free(osc_server_group);    
+	osc_server_group = g_strdup_printf("%s-%d",
+					   AGS_CONFIG_OSC_SERVER,
+					   i);
+    	
+	continue;
+      }else{
+	break;
+      }
+    }
+
+    osc_server = ags_osc_server_new();
+    ags_osc_server_set_flags(osc_server,
+			     (AGS_OSC_SERVER_TCP));
+
+    xorg_application_context->osc_server = g_list_append(xorg_application_context->osc_server,
+							 osc_server);
+    g_object_ref(osc_server);
+
+    /* any address */
+    any_address = FALSE;
+
+    str = ags_config_get_value(config,
+			       osc_server_group,
+			       "any-address");
+    
+    if(str != NULL){
+      any_address = (!g_ascii_strncasecmp(str,
+					  "true",
+					  5)) ? TRUE: FALSE;
+      g_free(str);
+    }
+
+    if(any_address){
+      ags_osc_server_set_flags(osc_server,
+			       (AGS_OSC_SERVER_ANY_ADDRESS));
+    }
+
+    /* enable ip4 and ip6 */
+    enable_ip4 = FALSE;
+    enable_ip6 = FALSE;
+
+    str = ags_config_get_value(config,
+			       osc_server_group,
+			       "enable-ip4");
+    
+    if(str != NULL){
+      enable_ip4 = (!g_ascii_strncasecmp(str,
+					 "true",
+					 5)) ? TRUE: FALSE;
+      g_free(str);
+    }
+
+    str = ags_config_get_value(config,
+			       osc_server_group,
+			       "enable-ip6");
+
+    if(str != NULL){
+      enable_ip6 = (!g_ascii_strncasecmp(str,
+					 "true",
+					 5)) ? TRUE: FALSE;
+      g_free(str);
+    }
+
+    if(enable_ip4){
+      ags_osc_server_set_flags(osc_server,
+			       (AGS_OSC_SERVER_INET4));
+    }
+
+    if(enable_ip6){
+      ags_osc_server_set_flags(osc_server,
+			       (AGS_OSC_SERVER_INET6));
+    }
+    
+    ags_osc_server_add_default_controller(osc_server);
+
+    /* ip4 and ip6 address */
+    str = ags_config_get_value(config,
+			       osc_server_group,
+			       "ip4-address");
+
+    if(str != NULL){
+      g_object_set(osc_server,
+		   "ip4", str,
+		   NULL);
+      
+      g_free(str);
+    }
+
+    str = ags_config_get_value(config,
+			       osc_server_group,
+			       "ip6-address");
+
+    if(str != NULL){
+      g_object_set(osc_server,
+		   "ip6", str,
+		   NULL);
+      
+      g_free(str);
+    }
+
+    /* server port */
+    str = ags_config_get_value(config,
+			       osc_server_group,
+			       "server-port");
+
+    if(str != NULL){
+      server_port = (guint) g_ascii_strtoull(str,
+					     NULL,
+					     10);
+
+      g_object_set(osc_server,
+		   "server-port", server_port,
+		   NULL);
+    }
+    
+    /* auto-start */
+    auto_start = FALSE;
+    
+    str = ags_config_get_value(config,
+			       osc_server_group,
+			       "auto-start");
+
+    if(str != NULL){
+      auto_start = (!g_ascii_strncasecmp(str,
+					 "true",
+					 5)) ? TRUE: FALSE;
+      g_free(str);
+    }
+
+    if(auto_start){
+      ags_osc_server_start(osc_server);
+    }
+
+    g_free(osc_server_group);    
+    osc_server_group = g_strdup_printf("%s-%d",
+				       AGS_CONFIG_OSC_SERVER,
+				       i);
+  }
+
+  if(osc_server == NULL){
+    osc_server = ags_osc_server_new();
+    ags_osc_server_set_flags(osc_server,
+			     (AGS_OSC_SERVER_INET4 |
+			      AGS_OSC_SERVER_TCP));
+
+    ags_osc_server_add_default_controller(osc_server);
+
+    xorg_application_context->osc_server = g_list_append(xorg_application_context->osc_server,
+							 osc_server);
+    g_object_ref(osc_server);
+  }
+    
   /* AgsAutosaveThread */
   xorg_application_context->autosave_thread = NULL;
   

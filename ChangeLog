@@ -2,6 +2,7 @@ ags (2.1.11)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* implemented AgsOscServerPreferences
+	* implemented parse OSC server config in ags_xorg_application_context_setup()
 	* implemented data cache of OSC connection and client
 	* implemented missing persistence of AgsAudio:audio-name property
 
