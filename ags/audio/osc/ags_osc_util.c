@@ -235,7 +235,7 @@ ags_osc_util_slip_decode(unsigned char *slip_buffer,
   }
 
   if(returned_buffer_length != NULL){
-    *returned_buffer_length = i + 1;
+    *returned_buffer_length = i + 2;
   }
   
   return(osc_buffer);

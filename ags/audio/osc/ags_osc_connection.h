@@ -36,6 +36,8 @@
 #define AGS_OSC_CONNECTION_DEAD_LINE_USEC (60000000)
 #define AGS_OSC_CONNECTION_CHUNK_SIZE (131072)
 
+#define AGS_OSC_CONNECTION_DEFAULT_CACHE_DATA_LENGTH (256)
+
 typedef struct _AgsOscConnection AgsOscConnection;
 typedef struct _AgsOscConnectionClass AgsOscConnectionClass;
 
@@ -62,11 +64,16 @@ struct _AgsOscConnection
   int fd;
 
   struct timespec *start_time;
+
+  unsigned char *cache_data;
+
+  guint cache_data_length;
   
   unsigned char *buffer;
   guint allocated_buffer_size;
   
   guint read_count;
+  gboolean has_valid_data;
   
   struct timespec *timeout_delay;
   struct timespec *timestamp;

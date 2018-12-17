@@ -43,6 +43,8 @@
 
 #define AGS_OSC_CLIENT_CHUNK_SIZE (131072)
 
+#define AGS_OSC_CLIENT_DEFAULT_CACHE_DATA_LENGTH (256)
+
 typedef struct _AgsOscClient AgsOscClient;
 typedef struct _AgsOscClientClass AgsOscClientClass;
 
@@ -80,10 +82,14 @@ struct _AgsOscClient
 
   struct timespec *start_time;
 
+  unsigned char *cache_data;
+  guint cache_data_length;
+
   unsigned char *buffer;
   guint allocated_buffer_size;
   
   guint read_count;
+  gboolean has_valid_data;
 
   struct timespec *timeout_delay;
 };

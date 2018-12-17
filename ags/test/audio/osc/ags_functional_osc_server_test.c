@@ -547,15 +547,17 @@ ags_functional_osc_server_test_meter_controller()
       current_packet = ags_osc_util_slip_decode(current_data,
 						data_length,
 						NULL);
-      
-      ags_osc_buffer_util_get_message(current_packet + 4,
-				      &address_pattern, NULL);
 
-      if(!g_strcmp0(address_pattern,
-		    "/meter")){
-	meter_packet_count++;
+      if(data_length >= 8){
+	ags_osc_buffer_util_get_message(current_packet + 4,
+					&address_pattern, NULL);
 
-	i++;
+	if(!g_strcmp0(address_pattern,
+		      "/meter")){
+	  meter_packet_count++;
+	
+	  i++;
+	}
       }
     }
     

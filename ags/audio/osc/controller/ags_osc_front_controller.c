@@ -363,7 +363,7 @@ ags_osc_front_controller_delegate_thread(void *ptr)
   
   while(ags_osc_front_controller_test_flags(osc_front_controller, AGS_OSC_FRONT_CONTROLLER_DELEGATE_RUNNING)){
     GList *start_message, *message;
-    GList *list;
+    GList *start_list, *list;
     
     pthread_mutex_lock(osc_front_controller->delegate_mutex);
 
@@ -420,7 +420,8 @@ ags_osc_front_controller_delegate_thread(void *ptr)
     pthread_mutex_lock(osc_controller_mutex);
 
     start_message = NULL;
-    list = osc_front_controller->message;
+    list =
+      start_list = g_list_copy(osc_front_controller->message);
 
     while(list != NULL){
       if(AGS_OSC_FRONT_CONTROLLER_MESSAGE(list->data)->immediately){
@@ -451,6 +452,8 @@ ags_osc_front_controller_delegate_thread(void *ptr)
     
     pthread_mutex_unlock(osc_controller_mutex);
 
+    g_list_free(start_list);
+    
     message = 
       start_message = g_list_reverse(start_message);
 
@@ -1048,63 +1051,69 @@ ags_osc_front_controller_real_do_request(AgsOscFrontController *osc_front_contro
 
     ags_osc_buffer_util_get_message(packet + offset,
 				    &address_pattern, &type_tag);
-
+    
+    if(address_pattern == NULL){
+      return(0);
+    }
+    
     address_pattern_length = strlen(address_pattern);
     read_count += (4 * (guint) ceil((double) (address_pattern_length + 1) / 4.0));
 
-    type_tag_length = strlen(type_tag);
-    read_count += (4 * (guint) ceil((double) (type_tag_length + 1) / 4.0));
+    if(type_tag != NULL){
+      type_tag_length = strlen(type_tag);
+      read_count += (4 * (guint) ceil((double) (type_tag_length + 1) / 4.0));
 
-    data_length = 0;
+      data_length = 0;
     
-    for(i = 1; i < type_tag_length; i++){
-      switch(type_tag[i]){
-      case AGS_OSC_UTIL_TYPE_TAG_STRING_TRUE:
-      case AGS_OSC_UTIL_TYPE_TAG_STRING_FALSE:
-      case AGS_OSC_UTIL_TYPE_TAG_STRING_NIL:
-      case AGS_OSC_UTIL_TYPE_TAG_STRING_INFINITE:
-      case AGS_OSC_UTIL_TYPE_TAG_STRING_ARRAY_START:
-      case AGS_OSC_UTIL_TYPE_TAG_STRING_ARRAY_END:
-	{
-	  //empty
-	}
-	break;
-      case AGS_OSC_UTIL_TYPE_TAG_STRING_CHAR:
-      case AGS_OSC_UTIL_TYPE_TAG_STRING_INT32:
-      case AGS_OSC_UTIL_TYPE_TAG_STRING_FLOAT:
-      case AGS_OSC_UTIL_TYPE_TAG_STRING_RGBA:
-      case AGS_OSC_UTIL_TYPE_TAG_STRING_MIDI:
-	{
-	  data_length += 4;
-	}
-	break;
-      case AGS_OSC_UTIL_TYPE_TAG_STRING_INT64:
-      case AGS_OSC_UTIL_TYPE_TAG_STRING_DOUBLE:
-      case AGS_OSC_UTIL_TYPE_TAG_STRING_TIMETAG:
-	{
-	  data_length += 8;
-	}
-	break;
-      case AGS_OSC_UTIL_TYPE_TAG_STRING_SYMBOL:
-      case AGS_OSC_UTIL_TYPE_TAG_STRING_STRING:
-	{
-	  guint length;
+      for(i = 1; i < type_tag_length; i++){
+	switch(type_tag[i]){
+	case AGS_OSC_UTIL_TYPE_TAG_STRING_TRUE:
+	case AGS_OSC_UTIL_TYPE_TAG_STRING_FALSE:
+	case AGS_OSC_UTIL_TYPE_TAG_STRING_NIL:
+	case AGS_OSC_UTIL_TYPE_TAG_STRING_INFINITE:
+	case AGS_OSC_UTIL_TYPE_TAG_STRING_ARRAY_START:
+	case AGS_OSC_UTIL_TYPE_TAG_STRING_ARRAY_END:
+	  {
+	    //empty
+	  }
+	  break;
+	case AGS_OSC_UTIL_TYPE_TAG_STRING_CHAR:
+	case AGS_OSC_UTIL_TYPE_TAG_STRING_INT32:
+	case AGS_OSC_UTIL_TYPE_TAG_STRING_FLOAT:
+	case AGS_OSC_UTIL_TYPE_TAG_STRING_RGBA:
+	case AGS_OSC_UTIL_TYPE_TAG_STRING_MIDI:
+	  {
+	    data_length += 4;
+	  }
+	  break;
+	case AGS_OSC_UTIL_TYPE_TAG_STRING_INT64:
+	case AGS_OSC_UTIL_TYPE_TAG_STRING_DOUBLE:
+	case AGS_OSC_UTIL_TYPE_TAG_STRING_TIMETAG:
+	  {
+	    data_length += 8;
+	  }
+	  break;
+	case AGS_OSC_UTIL_TYPE_TAG_STRING_SYMBOL:
+	case AGS_OSC_UTIL_TYPE_TAG_STRING_STRING:
+	  {
+	    guint length;
 
-	  length = strlen(packet + offset + read_count + data_length);
+	    length = strlen(packet + offset + read_count + data_length);
 
-	  data_length += (4 * (guint) ceil((double) (length + 1) / 4.0));
+	    data_length += (4 * (guint) ceil((double) (length + 1) / 4.0));
+	  }
+	  break;
+	case AGS_OSC_UTIL_TYPE_TAG_STRING_BLOB:
+	  {
+	    gint32 data_size;
+
+	    ags_osc_buffer_util_get_int32(packet + offset + read_count + data_length,
+					  &data_size);
+
+	    data_length += data_size;
+	  }
+	  break;
 	}
-	break;
-      case AGS_OSC_UTIL_TYPE_TAG_STRING_BLOB:
-	{
-	  gint32 data_size;
-
-	  ags_osc_buffer_util_get_int32(packet + offset + read_count + data_length,
-					&data_size);
-
-	  data_length += data_size;
-	}
-	break;
       }
     }
 
@@ -1160,7 +1169,13 @@ ags_osc_front_controller_real_do_request(AgsOscFrontController *osc_front_contro
       g_warning("malformed data");
     }
 
-    offset += read_count;
+    if(read_count > 0){
+      offset += (4 * ceil((double) read_count / 4.0));
+    }else{
+      offset += 1;
+      
+      g_warning("malformed data");
+    }
   }
 
   return(NULL);

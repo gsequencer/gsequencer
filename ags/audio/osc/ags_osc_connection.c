@@ -283,10 +283,14 @@ ags_osc_connection_init(AgsOscConnection *osc_connection)
   osc_connection->start_time->tv_sec = 0;
   osc_connection->start_time->tv_nsec = 0;
 
+  osc_connection->cache_data = (unsigned char *) malloc(AGS_OSC_CONNECTION_DEFAULT_CACHE_DATA_LENGTH * sizeof(unsigned char));
+  osc_connection->cache_data_length = 0;
+  
   osc_connection->buffer = (unsigned char *) malloc(AGS_OSC_CONNECTION_CHUNK_SIZE * sizeof(unsigned char));
   osc_connection->allocated_buffer_size = AGS_OSC_CONNECTION_CHUNK_SIZE;
 
   osc_connection->read_count = 0;
+  osc_connection->has_valid_data = FALSE;
   
   osc_connection->timeout_delay = (struct timespec *) malloc(sizeof(struct timespec));
 
@@ -694,11 +698,12 @@ ags_osc_connection_real_read_bytes(AgsOscConnection *osc_connection,
 				   guint *data_length)
 {
   unsigned char *buffer;
-  unsigned char data[256];
+  unsigned char data[AGS_OSC_CONNECTION_DEFAULT_CACHE_DATA_LENGTH];
   
   guint allocated_buffer_size;
   guint read_count;
-  guint retval;
+  int retval;
+  guint available_data_length;
   gint64 start_data, end_data;
   int fd;
   guint i, j;
@@ -740,6 +745,7 @@ ags_osc_connection_real_read_bytes(AgsOscConnection *osc_connection,
   allocated_buffer_size = osc_connection->allocated_buffer_size;
   
   read_count = osc_connection->read_count;
+  has_valid_data = osc_connection->has_valid_data;
   
   pthread_mutex_unlock(osc_connection_mutex);
 
@@ -752,8 +758,6 @@ ags_osc_connection_real_read_bytes(AgsOscConnection *osc_connection,
   }
   
   /*  */
-  has_valid_data = FALSE;
-
   start_data = -1;
   end_data = -1;
 
@@ -761,38 +765,60 @@ ags_osc_connection_real_read_bytes(AgsOscConnection *osc_connection,
   
   while(!ags_osc_connection_timeout_expired(osc_connection->start_time,
 					    osc_connection->timeout_delay)){
-    retval = read(fd, data, 256);
+    available_data_length = 0;
+    
+    if(osc_connection->cache_data_length > 0){
+      memcpy(data,
+	     osc_connection->cache_data,
+	     osc_connection->cache_data_length * sizeof(unsigned char));
 
-    if(retval == 0){
-      continue;
+      available_data_length += osc_connection->cache_data_length;
     }
 
+    if(osc_connection->cache_data_length < AGS_OSC_CONNECTION_DEFAULT_CACHE_DATA_LENGTH){
+      retval = read(fd,
+		    data + osc_connection->cache_data_length,
+		    AGS_OSC_CONNECTION_DEFAULT_CACHE_DATA_LENGTH - osc_connection->cache_data_length);
+
+      if(retval > 0){
+	available_data_length += retval;
+      }
+    }
+
+    osc_connection->cache_data_length = 0;
+    
     if(retval == -1){
       if(errno == EAGAIN ||
 	 errno == EWOULDBLOCK){
-	continue;
-      }
-
-      g_message("error during reading data from socket");
+	if(available_data_length == 0){
+	  continue;
+	}
+      }else{
+	g_message("error during reading data from socket");
       
-      if(errno == EBADFD ||
-	 errno == ECONNRESET ||
-	 errno == ENETRESET){
-	pthread_mutex_lock(osc_connection_mutex);
+	if(errno == EBADFD ||
+	   errno == ECONNRESET ||
+	   errno == ENETRESET){
+	  pthread_mutex_lock(osc_connection_mutex);
 
-	osc_connection->fd = -1;
+	  osc_connection->fd = -1;
 	
-	pthread_mutex_unlock(osc_connection_mutex);
-      }
+	  pthread_mutex_unlock(osc_connection_mutex);
+	}
       
-      break;      
+	break;      
+      }
+    }
+    
+    if(available_data_length == 0){
+      continue;
     }
 
     success = FALSE;
       
     if(start_data == -1 &&
        read_count == 0){
-      for(i = 0; i < retval; i++){
+      for(i = 0; i < available_data_length; i++){
 	if(data[i] == AGS_OSC_UTIL_SLIP_END){
 	  success = TRUE;
 	  
@@ -808,7 +834,7 @@ ags_osc_connection_real_read_bytes(AgsOscConnection *osc_connection,
       
       success = FALSE;
 	
-      for(i = start_data + 1; i < retval; i++){
+      for(i = start_data + 1; i < available_data_length; i++){
 	if(data[i] == AGS_OSC_UTIL_SLIP_END){
 	  success = TRUE;
 	  
@@ -834,21 +860,34 @@ ags_osc_connection_real_read_bytes(AgsOscConnection *osc_connection,
 	
 	pthread_mutex_lock(osc_connection_mutex);
 
-	memcpy(osc_connection->buffer, data + start_data, (end_data - start_data) * sizeof(unsigned char));
+	memcpy(osc_connection->buffer, data + start_data, (end_data - start_data + 1) * sizeof(unsigned char));
 	  
 	pthread_mutex_unlock(osc_connection_mutex);
 
 	if(data_length != NULL){
-	  *data_length = end_data - start_data;
+	  data_length[0] = end_data - start_data + 1;
 	}
-	  
+
+	/* fill cache */
+	if(end_data > 0 &&
+	   end_data < available_data_length){
+	  memcpy(osc_connection->cache_data,
+		 data + end_data,
+		 (available_data_length - end_data) * sizeof(unsigned char));
+
+	  osc_connection->cache_data_length = available_data_length - end_data;
+	}
+
+	osc_connection->read_count = 0;
+	osc_connection->has_valid_data = FALSE;
+	
 	return(osc_connection->buffer);
       }else{
-	read_count += (retval - start_data);
+	read_count += (available_data_length - start_data);
 	  
 	pthread_mutex_lock(osc_connection_mutex);
 
-	memcpy(osc_connection->buffer, data + start_data, (retval - start_data) * sizeof(unsigned char));
+	memcpy(osc_connection->buffer, data + start_data, (available_data_length - start_data) * sizeof(unsigned char));
 	  
 	pthread_mutex_unlock(osc_connection_mutex);
 
@@ -860,7 +899,7 @@ ags_osc_connection_real_read_bytes(AgsOscConnection *osc_connection,
       if(has_valid_data){
 	success = FALSE;
 
-	for(i = 0; i < retval; i++){
+	for(i = 0; i < available_data_length; i++){
 	  if(data[i] == AGS_OSC_UTIL_SLIP_END){
 	    success = TRUE;
 	  
@@ -871,41 +910,59 @@ ags_osc_connection_real_read_bytes(AgsOscConnection *osc_connection,
 	if(success){
 	  if(read_count + i >= AGS_OSC_CONNECTION_CHUNK_SIZE){
 	    if(data_length != NULL){
-	      *data_length = 0;
+	      data_length[0] = 0;
 	    }
+
+	    osc_connection->read_count = 0;
+	    osc_connection->has_valid_data = FALSE;
 	    
 	    return(NULL);
 	  }
 	  
 	  pthread_mutex_lock(osc_connection_mutex);
 
-	  memcpy(osc_connection->buffer + read_count, data, (i) * sizeof(unsigned char));
+	  memcpy(osc_connection->buffer + read_count, data, (i + 1) * sizeof(unsigned char));
 	
 	  pthread_mutex_unlock(osc_connection_mutex);
 
-	  read_count += i;
+	  read_count += (i + 1);
 	  
 	  if(data_length != NULL){
-	    *data_length = read_count;
+	    data_length[0] = read_count;
 	  }
 
+	  /* fill cache */
+	  if(i < available_data_length){
+	    memcpy(osc_connection->cache_data,
+		   data + i,
+		   (available_data_length - i) * sizeof(unsigned char));
+
+	    osc_connection->cache_data_length = available_data_length - i;
+	  }
+
+	  osc_connection->read_count = 0;
+	  osc_connection->has_valid_data = FALSE;
+	  
 	  return(osc_connection->buffer);
 	}else{
-	  if(read_count + retval >= AGS_OSC_CONNECTION_CHUNK_SIZE){
+	  if(read_count + available_data_length >= AGS_OSC_CONNECTION_CHUNK_SIZE){
 	    if(data_length != NULL){
-	      *data_length = 0;
+	      data_length[0] = 0;
 	    }
+
+	    osc_connection->read_count = 0;
+	    osc_connection->has_valid_data = FALSE;
 	    
 	    return(NULL);
 	  }
 	  
 	  pthread_mutex_lock(osc_connection_mutex);
 	
-	  memcpy(osc_connection->buffer + read_count, data, (retval) * sizeof(unsigned char));
+	  memcpy(osc_connection->buffer + read_count, data, (available_data_length) * sizeof(unsigned char));
 
 	  pthread_mutex_unlock(osc_connection_mutex);
 
-	  read_count += retval;
+	  read_count += available_data_length;
 
 	  continue;
 	}
@@ -914,9 +971,10 @@ ags_osc_connection_real_read_bytes(AgsOscConnection *osc_connection,
   }
 
   osc_connection->read_count = read_count;
+  osc_connection->has_valid_data = has_valid_data;
   
   if(data_length != NULL){
-    *data_length = 0;
+    data_length[0] = 0;
   }
 
   return(NULL);
