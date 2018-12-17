@@ -1,7 +1,9 @@
 ags (2.1.11)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
-	* TODO:JK: implemented cache OSC connection and client
+	* implemented AgsOscServerPreferences
+	* implemented data cache of OSC connection and client
+	* implemented missing persistence of AgsAudio:audio-name property
 
 ags (2.1.10)
 

@@ -37,6 +37,7 @@ typedef struct _AgsOscServerPreferencesClass AgsOscServerPreferencesClass;
 
 typedef enum{
   AGS_OSC_SERVER_PREFERENCES_CONNECTED    = 1,
+  AGS_OSC_SERVER_PREFERENCES_BLOCK_UPDATE = 1 <<  1,
 }AgsOscServerPreferencesFlags;
 
 struct _AgsOscServerPreferences
@@ -47,6 +48,7 @@ struct _AgsOscServerPreferences
   
   GtkCheckButton *auto_start;
   GtkButton *start;
+  GtkButton *stop;
 
   GtkCheckButton *any_address;
   

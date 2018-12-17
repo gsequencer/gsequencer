@@ -231,6 +231,7 @@ ags_preferences_connect(AgsConnectable *connectable)
   ags_connectable_connect(AGS_CONNECTABLE(preferences->audio_preferences));
   ags_connectable_connect(AGS_CONNECTABLE(preferences->midi_preferences));
   ags_connectable_connect(AGS_CONNECTABLE(preferences->performance_preferences));
+  ags_connectable_connect(AGS_CONNECTABLE(preferences->osc_server_preferences));
 
   if(preferences->server_preferences != NULL){
     ags_connectable_connect(AGS_CONNECTABLE(preferences->server_preferences));
@@ -260,6 +261,7 @@ ags_preferences_set_update(AgsApplicable *applicable, gboolean update)
   ags_applicable_set_update(AGS_APPLICABLE(preferences->audio_preferences), update);
   ags_applicable_set_update(AGS_APPLICABLE(preferences->midi_preferences), update);
   ags_applicable_set_update(AGS_APPLICABLE(preferences->performance_preferences), update);
+  ags_applicable_set_update(AGS_APPLICABLE(preferences->osc_server_preferences), update);
 
   if(preferences->server_preferences != NULL){
     ags_applicable_set_update(AGS_APPLICABLE(preferences->server_preferences), update);
@@ -301,6 +303,7 @@ ags_preferences_apply(AgsApplicable *applicable)
   ags_applicable_apply(AGS_APPLICABLE(preferences->audio_preferences));
   ags_applicable_apply(AGS_APPLICABLE(preferences->midi_preferences));
   ags_applicable_apply(AGS_APPLICABLE(preferences->performance_preferences));
+  ags_applicable_apply(AGS_APPLICABLE(preferences->osc_server_preferences));
 
   if(preferences->server_preferences != NULL){
     ags_applicable_apply(AGS_APPLICABLE(preferences->server_preferences));
@@ -325,6 +328,7 @@ ags_preferences_reset(AgsApplicable *applicable)
   ags_applicable_reset(AGS_APPLICABLE(preferences->audio_preferences));
   ags_applicable_reset(AGS_APPLICABLE(preferences->midi_preferences));
   ags_applicable_reset(AGS_APPLICABLE(preferences->performance_preferences));
+  ags_applicable_reset(AGS_APPLICABLE(preferences->osc_server_preferences));
 
   if(preferences->server_preferences != NULL){
     ags_applicable_reset(AGS_APPLICABLE(preferences->server_preferences));

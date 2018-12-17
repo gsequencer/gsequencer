@@ -56,6 +56,7 @@
 	  id                      CDATA     #REQUIRED
 	  type                    CDATA     #REQUIRED
 	  name                    CDATA     #REQUIRED
+	  audio-name              CDATA     #IMPLIED
 	  filename                CDATA     #IMPLIED
 	  preset                  CDATA     #IMPLIED
 	  instrument              CDATA     #IMPLIED

@@ -19,3 +19,243 @@
 
 #include <ags/X/ags_osc_server_preferences_callbacks.h>
 
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+
+void
+ags_osc_server_preferences_start_callback(GtkButton *button, AgsOscServerPreferences *osc_server_preferences)
+{
+  AgsApplicationContext *application_context;
+  
+  GList *start_list, *list;
+
+  application_context = ags_application_context_get_instance();
+  
+  list = 
+    start_list = ags_sound_provider_get_osc_server(AGS_SOUND_PROVIDER(application_context));
+
+  while(list != NULL){
+    if(!ags_osc_server_test_flags(list->data,
+				  AGS_OSC_SERVER_STARTED)){
+      ags_osc_server_start(list->data);
+    }
+    
+    list = list->next;
+  }
+
+  g_list_free(start_list);
+}
+
+void
+ags_osc_server_preferences_stop_callback(GtkButton *button, AgsOscServerPreferences *osc_server_preferences)
+{
+  AgsApplicationContext *application_context;
+  
+  GList *start_list, *list;
+
+  application_context = ags_application_context_get_instance();
+  
+  list = 
+    start_list = ags_sound_provider_get_osc_server(AGS_SOUND_PROVIDER(application_context));
+
+  while(list != NULL){
+    if(ags_osc_server_test_flags(list->data,
+				 AGS_OSC_SERVER_STARTED)){
+      ags_osc_server_stop(list->data);
+    }
+    
+    list = list->next;
+  }
+
+  g_list_free(start_list);
+}
+
+void
+ags_osc_server_preferences_any_address_callback(GtkButton *button, AgsOscServerPreferences *osc_server_preferences)
+{
+  AgsApplicationContext *application_context;
+  
+  GList *start_list, *list;
+
+  if((AGS_OSC_SERVER_PREFERENCES_BLOCK_UPDATE & (osc_server_preferences->flags)) != 0){
+    return;
+  }
+  
+  application_context = ags_application_context_get_instance();
+  
+  list = 
+    start_list = ags_sound_provider_get_osc_server(AGS_SOUND_PROVIDER(application_context));
+
+  if(list != NULL){
+    if(gtk_toggle_button_get_active(button)){
+      ags_osc_server_set_flags(list->data,
+			       AGS_OSC_SERVER_ANY_ADDRESS);
+    }else{
+      ags_osc_server_unset_flags(list->data,
+				 AGS_OSC_SERVER_ANY_ADDRESS);
+    }
+  
+    g_list_free(start_list);
+  }
+  
+  /* set address fields in-/sensitive */
+  if(gtk_toggle_button_get_active(button)){
+    gtk_widget_set_sensitive(osc_server_preferences->ip4_address,
+			     FALSE);
+
+    gtk_widget_set_sensitive(osc_server_preferences->ip6_address,
+			     FALSE);
+  }else{
+    gtk_widget_set_sensitive(osc_server_preferences->ip4_address,
+			     TRUE);
+
+    gtk_widget_set_sensitive(osc_server_preferences->ip6_address,
+			     TRUE);
+  }
+}
+
+void
+ags_osc_server_preferences_enable_ip4_callback(GtkButton *button, AgsOscServerPreferences *osc_server_preferences)
+{
+  AgsApplicationContext *application_context;
+  
+  GList *start_list, *list;
+
+  if((AGS_OSC_SERVER_PREFERENCES_BLOCK_UPDATE & (osc_server_preferences->flags)) != 0){
+    return;
+  }
+
+  application_context = ags_application_context_get_instance();
+  
+  list = 
+    start_list = ags_sound_provider_get_osc_server(AGS_SOUND_PROVIDER(application_context));
+
+  if(list != NULL){
+    if(gtk_toggle_button_get_active(button)){
+      ags_osc_server_set_flags(list->data,
+			       AGS_OSC_SERVER_INET4);
+    }else{
+      ags_osc_server_unset_flags(list->data,
+				 AGS_OSC_SERVER_INET4);
+    }
+  
+    g_list_free(start_list);
+  }
+}
+
+void
+ags_osc_server_preferences_ip4_address_callback(GtkEditable *editable, AgsOscServerPreferences *osc_server_preferences)
+{
+  AgsApplicationContext *application_context;
+  
+  GList *start_list, *list;
+
+  if((AGS_OSC_SERVER_PREFERENCES_BLOCK_UPDATE & (osc_server_preferences->flags)) != 0){
+    return;
+  }
+
+  application_context = ags_application_context_get_instance();
+  
+  list = 
+    start_list = ags_sound_provider_get_osc_server(AGS_SOUND_PROVIDER(application_context));
+
+  if(list != NULL){
+    g_object_set(list->data,
+		 "ip4", gtk_entry_get_text(GTK_ENTRY(editable)),
+		 NULL);
+  
+    g_list_free(start_list);
+  }
+}
+
+void
+ags_osc_server_preferences_enable_ip6_callback(GtkButton *button, AgsOscServerPreferences *osc_server_preferences)
+{
+  AgsApplicationContext *application_context;
+  
+  GList *start_list, *list;
+
+  if((AGS_OSC_SERVER_PREFERENCES_BLOCK_UPDATE & (osc_server_preferences->flags)) != 0){
+    return;
+  }
+
+  application_context = ags_application_context_get_instance();
+  
+  list = 
+    start_list = ags_sound_provider_get_osc_server(AGS_SOUND_PROVIDER(application_context));
+
+  if(list != NULL){
+    if(gtk_toggle_button_get_active(button)){
+      ags_osc_server_set_flags(list->data,
+			       AGS_OSC_SERVER_INET6);
+    }else{
+      ags_osc_server_unset_flags(list->data,
+				 AGS_OSC_SERVER_INET6);
+    }
+  
+    g_list_free(start_list);
+  }
+}
+
+void
+ags_osc_server_preferences_ip6_address_callback(GtkEditable *editable, AgsOscServerPreferences *osc_server_preferences)
+{
+  AgsApplicationContext *application_context;
+  
+  GList *start_list, *list;
+
+  if((AGS_OSC_SERVER_PREFERENCES_BLOCK_UPDATE & (osc_server_preferences->flags)) != 0){
+    return;
+  }
+
+  application_context = ags_application_context_get_instance();
+  
+  list = 
+    start_list = ags_sound_provider_get_osc_server(AGS_SOUND_PROVIDER(application_context));
+
+  if(list != NULL){
+    g_object_set(list->data,
+		 "ip6", gtk_entry_get_text(GTK_ENTRY(editable)),
+		 NULL);
+  
+    g_list_free(start_list);
+  }
+}
+  
+void
+ags_osc_server_preferences_port_callback(GtkEditable *editable, AgsOscServerPreferences *osc_server_preferences)
+{
+  AgsApplicationContext *application_context;
+  
+  GList *start_list, *list;
+
+  gchar *str;
+  
+  guint server_port;
+  
+  if((AGS_OSC_SERVER_PREFERENCES_BLOCK_UPDATE & (osc_server_preferences->flags)) != 0){
+    return;
+  }
+  application_context = ags_application_context_get_instance();
+  
+  list = 
+    start_list = ags_sound_provider_get_osc_server(AGS_SOUND_PROVIDER(application_context));
+
+  if(list != NULL){
+    server_port = AGS_OSC_SERVER_DEFAULT_SERVER_PORT;
+
+    str = gtk_entry_get_text(GTK_ENTRY(editable));
+
+    if(str != NULL){
+      server_port = (guint) g_ascii_strtoull(str,
+					     NULL,
+					     10);
+    }
+  
+    g_object_set(list->data,
+		 "server-port", server_port,
+		 NULL);
+  
+    g_list_free(start_list);
+  }
+}

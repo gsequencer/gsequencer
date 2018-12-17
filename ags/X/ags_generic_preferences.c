@@ -257,6 +257,7 @@ void
 ags_generic_preferences_apply(AgsApplicable *applicable)
 {
   AgsGenericPreferences *generic_preferences; 
+
   AgsConfig *config;
  
   generic_preferences = AGS_GENERIC_PREFERENCES(applicable);

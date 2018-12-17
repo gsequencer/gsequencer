@@ -40,6 +40,8 @@
 #define AGS_CONFIG_SEQUENCER "sequencer"
 #define AGS_CONFIG_SEQUENCER_0 "sequencer-0"
 #define AGS_CONFIG_RECALL "recall"
+#define AGS_CONFIG_OSC_SERVER "osc-server"
+#define AGS_CONFIG_OSC_SERVER_0 "osc-server-0"
 
 typedef struct _AgsConfig AgsConfig;
 typedef struct _AgsConfigClass AgsConfigClass;

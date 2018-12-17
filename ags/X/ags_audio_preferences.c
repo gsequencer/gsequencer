@@ -35,12 +35,13 @@ void ags_audio_preferences_class_init(AgsAudioPreferencesClass *audio_preference
 void ags_audio_preferences_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_audio_preferences_applicable_interface_init(AgsApplicableInterface *applicable);
 void ags_audio_preferences_init(AgsAudioPreferences *audio_preferences);
+static void ags_audio_preferences_finalize(GObject *gobject);
+
 void ags_audio_preferences_connect(AgsConnectable *connectable);
 void ags_audio_preferences_disconnect(AgsConnectable *connectable);
 void ags_audio_preferences_set_update(AgsApplicable *applicable, gboolean update);
 void ags_audio_preferences_apply(AgsApplicable *applicable);
 void ags_audio_preferences_reset(AgsApplicable *applicable);
-static void ags_audio_preferences_finalize(GObject *gobject);
 
 /**
  * SECTION:ags_audio_preferences
@@ -245,6 +246,15 @@ ags_audio_preferences_init(AgsAudioPreferences *audio_preferences)
   g_free(str);
 }
 
+static void
+ags_audio_preferences_finalize(GObject *gobject)
+{
+  //TODO:JK: implement me
+  
+  /* call parent */
+  G_OBJECT_CLASS(ags_audio_preferences_parent_class)->finalize(gobject);
+}
+
 void
 ags_audio_preferences_connect(AgsConnectable *connectable)
 {
@@ -314,15 +324,6 @@ ags_audio_preferences_disconnect(AgsConnectable *connectable)
 			audio_preferences,
 			NULL);
   }
-}
-
-static void
-ags_audio_preferences_finalize(GObject *gobject)
-{
-  //TODO:JK: implement me
-  
-  /* call parent */
-  G_OBJECT_CLASS(ags_audio_preferences_parent_class)->finalize(gobject);
 }
 
 void

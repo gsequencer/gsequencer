@@ -20,9 +20,24 @@
 #ifndef __AGS_OSC_SERVER_PREFERENCES_CALLBACKS_H__
 #define __AGS_OSC_SERVER_PREFERENCES_CALLBACKS_H__
 
+#include <glib.h>
+#include <glib-object.h>
+
 #include <gtk/gtk.h>
 
 #include <ags/X/ags_osc_server_preferences.h>
 
+void ags_osc_server_preferences_start_callback(GtkButton *button, AgsOscServerPreferences *osc_server_preferences);
+void ags_osc_server_preferences_stop_callback(GtkButton *button, AgsOscServerPreferences *osc_server_preferences);
+
+void ags_osc_server_preferences_any_address_callback(GtkButton *button, AgsOscServerPreferences *osc_server_preferences);
+
+void ags_osc_server_preferences_enable_ip4_callback(GtkButton *button, AgsOscServerPreferences *osc_server_preferences);
+void ags_osc_server_preferences_ip4_address_callback(GtkEditable *editable, AgsOscServerPreferences *osc_server_preferences);
+
+void ags_osc_server_preferences_enable_ip6_callback(GtkButton *button, AgsOscServerPreferences *osc_server_preferences);
+void ags_osc_server_preferences_ip6_address_callback(GtkEditable *editable, AgsOscServerPreferences *osc_server_preferences);
+
+void ags_osc_server_preferences_port_callback(GtkEditable *editable, AgsOscServerPreferences *osc_server_preferences);
 
 #endif /*__AGS_OSC_SERVER_PREFERENCES_CALLBACKS_H__*/

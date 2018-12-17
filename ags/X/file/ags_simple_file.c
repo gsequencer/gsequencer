@@ -1841,6 +1841,7 @@ ags_simple_file_read_machine(AgsSimpleFile *simple_file, xmlNode *node, AgsMachi
 
   xmlChar *device;
   xmlChar *type_name;
+  xmlChar *audio_name;
   xmlChar *str;
   
   guint audio_channels;
@@ -1912,6 +1913,16 @@ ags_simple_file_read_machine(AgsSimpleFile *simple_file, xmlNode *node, AgsMachi
 	       "output-soundcard", soundcard,
 	       NULL);
 
+  /* audio name */
+  audio_name = xmlGetProp(node,
+			  "audio-name");
+
+  if(audio_name != NULL){
+    g_object_set(gobject->audio,
+		 "audio-name", audio_name,
+		 NULL);
+  }
+  
   /* machine specific */
   if(AGS_IS_LADSPA_BRIDGE(gobject)){
     xmlChar *filename, *effect;
@@ -6728,6 +6739,21 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
 		 (xmlChar *) "soundcard-device",
 		 (xmlChar *) g_strdup(device));
     }
+  }
+
+  /* audio name */
+  if(machine->audio != NULL){
+    gchar *audio_name;
+
+    g_object_get(machine->audio,
+		 "audio-name", &audio_name,
+		 NULL);
+
+    if(audio_name != NULL){
+      xmlNewProp(node,
+		 (xmlChar *) "audio-name",
+		 (xmlChar *) g_strdup(audio_name));
+    }    
   }
   
   /* bank and mapping */
