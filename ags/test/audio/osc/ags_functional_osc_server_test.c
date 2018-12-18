@@ -603,9 +603,9 @@ ags_functional_osc_server_test_node_controller()
   gboolean retval;
   gboolean success;
   
-  static const unsigned char *volume_message = "/node\x00\x00\x00,s\x00\x00/AgsSoundProvider/AgsAudio[\"test-drum\"]/AgsInput[0-1]/AgsVolumeChannel[0]/AgsPort[\"./volume[0]\"]:value\x00\x00\x00\x00";
+  static const unsigned char *volume_message = "/node\x00\x00\x00,s\x00\x00/AgsSoundProvider/AgsAudio[\"test-drum\"]/AgsInput[0-1]/AgsVolumeChannel[0]/AgsPort[\"./volume[0]\"]:value\x00\x00";
 
-  static const guint volume_message_size = 108;
+  static const guint volume_message_size = 116;
 
   CU_ASSERT(osc_server->ip4_fd != -1);
   CU_ASSERT(osc_client->ip4_fd != -1);
@@ -641,7 +641,7 @@ ags_functional_osc_server_test_node_controller()
   clock_gettime(CLOCK_MONOTONIC, &start_time);
 #endif
 
-  timeout_delay.tv_sec = 5;
+  timeout_delay.tv_sec = 3600;
   timeout_delay.tv_nsec = 0;
 
   success = FALSE;
@@ -669,6 +669,8 @@ ags_functional_osc_server_test_node_controller()
 	if(!g_strcmp0(address_pattern,
 		      "/node")){
 	  success = TRUE;
+
+	  break;
 	}
       }
     }

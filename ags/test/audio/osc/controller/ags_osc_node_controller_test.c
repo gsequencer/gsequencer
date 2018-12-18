@@ -270,9 +270,9 @@ ags_osc_node_controller_test_get_data()
   guint padding;
   gboolean success;
 
-  static const unsigned char *volume_message = "/node\x00\x00\x00,s\x00\x00/AgsSoundProvider/AgsAudio[\"test-drum\"]/AgsInput[0-1]/AgsVolumeChannel[0]/AgsPort[\"./volume[0]\"]:value\x00\x00\x00\x00";
+  static const unsigned char *volume_message = "/node\x00\x00\x00,s\x00\x00/AgsSoundProvider/AgsAudio[\"test-drum\"]/AgsInput[0-1]/AgsVolumeChannel[0]/AgsPort[\"./volume[0]\"]:value\x00\x00";
 
-  static const guint volume_message_size = 108;
+  static const guint volume_message_size = 116;
 
   osc_connection = ags_osc_connection_new(NULL);
   
