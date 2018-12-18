@@ -1,3 +1,8 @@
+ags (2.1.12)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed ags_osc_util_decode() to return correct size
+
 ags (2.1.11)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

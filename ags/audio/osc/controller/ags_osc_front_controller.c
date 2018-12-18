@@ -1011,7 +1011,7 @@ ags_osc_front_controller_real_do_request(AgsOscFrontController *osc_front_contro
 							packet, packet_size,
 							offset + read_count);
 
-	read_count += length;
+	read_count += ((guint) 4 * ceil((double) length / 4.0));
       }else if(packet[offset + read_count] == '/'){
 	ags_osc_front_controller_do_request_read_message(osc_front_controller,
 							 osc_connection,
@@ -1019,7 +1019,7 @@ ags_osc_front_controller_real_do_request(AgsOscFrontController *osc_front_contro
 							 offset + read_count,
 							 tv_sec, tv_fraction, immediately);
 
-	read_count += length;
+	read_count += ((guint) 4 * ceil((double) length / 4.0));
       }else{
 	read_count += 1;
 	
@@ -1151,12 +1151,13 @@ ags_osc_front_controller_real_do_request(AgsOscFrontController *osc_front_contro
   tv_sec = 0;
   tv_fraction = 0;
   immediately = TRUE;
-  
+
   for(offset = 4; offset < packet_size;){
     guint read_count;
 
 #ifdef AGS_DEBUG    
-    printf("%x[%c]", packet[offset], packet[offset]);
+    g_message("%d %d", offset, packet_size);
+    g_message("%x[%c]", packet[offset], packet[offset]);
 #endif
     
     if(!g_strcmp0(packet + offset, "#bundle")){      
@@ -1177,7 +1178,7 @@ ags_osc_front_controller_real_do_request(AgsOscFrontController *osc_front_contro
     }
 
     if(read_count > 0){
-      offset += (4 * ceil((double) read_count / 4.0));
+      offset += ((guint) 4 * ceil((double) read_count / 4.0));
     }else{
       offset += 1;
       
