@@ -593,7 +593,88 @@ ags_functional_osc_server_test_meter_controller()
 void
 ags_functional_osc_server_test_node_controller()
 {
-  //TODO:JK: implement me
+  struct timespec start_time;
+  struct timespec timeout_delay;
+
+  unsigned char *buffer;
+  unsigned char *packet;
+
+  guint buffer_length;
+  gboolean retval;
+  gboolean success;
+  
+  static const unsigned char *volume_message = "/node\x00\x00\x00,s\x00\x00/AgsSoundProvider/AgsAudio[\"test-drum\"]/AgsInput[0-1]/AgsVolumeChannel[0]/AgsPort[\"./volume[0]\"]:value\x00\x00\x00\x00";
+
+  static const guint volume_message_size = 108;
+
+  CU_ASSERT(osc_server->ip4_fd != -1);
+  CU_ASSERT(osc_client->ip4_fd != -1);
+
+  /* volume message */
+  packet = (unsigned char *) malloc((4 + volume_message_size) * sizeof(unsigned char));
+
+  ags_osc_buffer_util_put_int32(packet,
+				volume_message_size);
+  memcpy(packet + 4, volume_message, (volume_message_size) * sizeof(unsigned char));
+
+  buffer = ags_osc_util_slip_encode(packet,
+				    4 + volume_message_size,
+				    &buffer_length);
+
+  CU_ASSERT(buffer_length - 2 >= 4 + volume_message_size);
+
+  retval = ags_osc_client_write_bytes(osc_client,
+				      buffer, buffer_length);
+
+  CU_ASSERT(retval == TRUE);
+
+  /* read volume */
+#ifdef __APPLE__
+  host_get_clock_service(mach_host_self(), CALENDAR_CLOCK, &cclock);
+      
+  clock_get_time(cclock, &mts);
+  mach_port_deallocate(mach_task_self(), cclock);
+      
+  start_time.tv_sec = mts.tv_sec;
+  start_time.tv_nsec = mts.tv_nsec;
+#else
+  clock_gettime(CLOCK_MONOTONIC, &start_time);
+#endif
+
+  timeout_delay.tv_sec = 5;
+  timeout_delay.tv_nsec = 0;
+
+  success = FALSE;
+  
+  while(!ags_osc_client_timeout_expired(&start_time,
+					&timeout_delay)){
+    unsigned char *current_data;
+    unsigned char *current_packet;
+    gchar *address_pattern;
+    
+    guint data_length;
+    
+    current_data = ags_osc_client_read_bytes(osc_client,
+					     &data_length);
+
+    if(current_data != NULL){
+      current_packet = ags_osc_util_slip_decode(current_data,
+						data_length,
+						NULL);
+
+      if(data_length >= 8){
+	ags_osc_buffer_util_get_message(current_packet + 4,
+					&address_pattern, NULL);
+
+	if(!g_strcmp0(address_pattern,
+		      "/node")){
+	  success = TRUE;
+	}
+      }
+    }
+  }
+
+  CU_ASSERT(success == TRUE);
 }
 
 void
