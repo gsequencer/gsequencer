@@ -1665,6 +1665,9 @@ ags_osc_meter_controller_monitor_meter_audio(AgsOscMeterController *osc_meter_co
 	ags_osc_response_set_flags(osc_response,
 				   AGS_OSC_RESPONSE_OK);
 
+	g_list_free(start_play);
+	g_list_free(start_recall);
+
 	return(start_response);
       }
     }else if(ags_regexec(&more_access_regex, str, index_max_matches, match_arr, 0) == 0){
@@ -1687,6 +1690,9 @@ ags_osc_meter_controller_monitor_meter_audio(AgsOscMeterController *osc_meter_co
 	g_object_set(osc_response,
 		     "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_SERVER_FAILURE,
 		     NULL);
+
+	g_list_free(start_play);
+	g_list_free(start_recall);
 
 	return(start_response);
       }
@@ -1842,8 +1848,14 @@ ags_osc_meter_controller_monitor_meter_audio(AgsOscMeterController *osc_meter_co
 		   "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_MALFORMED_REQUEST,
 		   NULL);
 
+      g_list_free(start_play);
+      g_list_free(start_recall);
+
       return(start_response);
     }
+
+    g_list_free(start_play);
+    g_list_free(start_recall);
   }
 
   return(start_response);
@@ -2137,6 +2149,9 @@ ags_osc_meter_controller_monitor_meter_channel(AgsOscMeterController *osc_meter_
       ags_osc_response_set_flags(osc_response,
 				 AGS_OSC_RESPONSE_OK);
 
+      g_list_free(start_play);
+      g_list_free(start_recall);
+
       return(start_response);
     }
   }else if(ags_regexec(&more_access_regex, str, index_max_matches, match_arr, 0) == 0){
@@ -2159,6 +2174,9 @@ ags_osc_meter_controller_monitor_meter_channel(AgsOscMeterController *osc_meter_
       g_object_set(osc_response,
 		   "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_SERVER_FAILURE,
 		   NULL);
+
+      g_list_free(start_play);
+      g_list_free(start_recall);
 
       return(start_response);
     }
@@ -2302,6 +2320,9 @@ ags_osc_meter_controller_monitor_meter_channel(AgsOscMeterController *osc_meter_
 	recall = recall->next;
       }
     }
+
+    g_list_free(start_play);
+    g_list_free(start_recall);
   }else{
     osc_response = ags_osc_response_new();
     start_response = g_list_prepend(start_response,
@@ -2515,6 +2536,8 @@ ags_osc_meter_controller_monitor_meter_recall(AgsOscMeterController *osc_meter_c
 	ags_osc_response_set_flags(osc_response,
 				   AGS_OSC_RESPONSE_OK);
 
+	g_list_free(start_port);
+	
 	return(start_response);
       }
     }else if(ags_regexec(&more_access_regex, path + path_offset, index_max_matches, match_arr, 0) == 0){
@@ -2532,6 +2555,8 @@ ags_osc_meter_controller_monitor_meter_recall(AgsOscMeterController *osc_meter_c
 		     "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_SERVER_FAILURE,
 		     NULL);
 
+	g_list_free(start_port);
+	
 	return(start_response);
       }
 
@@ -2568,6 +2593,8 @@ ags_osc_meter_controller_monitor_meter_recall(AgsOscMeterController *osc_meter_c
 	ags_osc_response_set_flags(osc_response,
 				   AGS_OSC_RESPONSE_OK);
 
+	g_list_free(start_port);
+	
 	return(start_response);
       }
       
@@ -2612,6 +2639,8 @@ ags_osc_meter_controller_monitor_meter_recall(AgsOscMeterController *osc_meter_c
 		     "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_CHUNK_SIZE_EXCEEDED,
 		     NULL);
 	  
+	g_list_free(start_port);
+	
 	return(start_response);
       }
 
@@ -2651,6 +2680,8 @@ ags_osc_meter_controller_monitor_meter_recall(AgsOscMeterController *osc_meter_c
 		   "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_SERVER_FAILURE,
 		   NULL);
 
+      g_list_free(start_port);
+      
       return(start_response);
     }    
 
@@ -3108,6 +3139,8 @@ ags_osc_meter_controller_monitor_meter_enable(AgsOscMeterController *osc_meter_c
       ags_osc_response_set_flags(osc_response,
 				 AGS_OSC_RESPONSE_OK);
 
+      g_list_free(start_audio);
+      
       return(start_response);
     }
   }else if(ags_regexec(&more_access_regex, path + path_offset, index_max_matches, match_arr, 0) == 0){
@@ -3203,6 +3236,8 @@ ags_osc_meter_controller_monitor_meter_enable(AgsOscMeterController *osc_meter_c
 		   "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_CHUNK_SIZE_EXCEEDED,
 		   NULL);
 	  
+      g_list_free(start_audio);
+      
       return(start_response);
     }
 
@@ -3230,8 +3265,6 @@ ags_osc_meter_controller_monitor_meter_enable(AgsOscMeterController *osc_meter_c
 								  type_tag,
 								  path, path_offset);
   }else{
-    g_list_free(start_audio);
-      
     osc_response = ags_osc_response_new();
     start_response = g_list_prepend(start_response,
 				    osc_response);
@@ -3242,6 +3275,8 @@ ags_osc_meter_controller_monitor_meter_enable(AgsOscMeterController *osc_meter_c
     g_object_set(osc_response,
 		 "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_SERVER_FAILURE,
 		 NULL);
+
+    g_list_free(start_audio);      
 
     return(start_response);
   }    
@@ -3500,7 +3535,7 @@ ags_osc_meter_controller_expand_path_audio(AgsAudio *audio,
 		 "play", &start_play,
 		 "recall", &start_recall,
 		 NULL);
-    
+   
     if(ags_regexec(&generic_single_access_regex, path, index_max_matches, match_arr, 0) == 0){
       gchar *endptr;
       
@@ -3682,6 +3717,9 @@ ags_osc_meter_controller_expand_path_audio(AgsAudio *audio,
 
       if((play = ags_recall_template_find_type(start_play, recall_type)) == NULL &&
 	 (recall = ags_recall_template_find_type(start_recall, recall_type)) == NULL){
+	g_list_free(start_play);
+	g_list_free(start_recall);
+
 	return;
       }      
             
@@ -3766,6 +3804,9 @@ ags_osc_meter_controller_expand_path_audio(AgsAudio *audio,
 	}
       }
     }
+    
+    g_list_free(start_play);
+    g_list_free(start_recall);
   }
 
   g_free(prefix);
@@ -4029,6 +4070,9 @@ ags_osc_meter_controller_expand_path_channel(AgsChannel *channel,
 
     if((play = ags_recall_template_find_type(start_play, recall_type)) == NULL &&
        (recall = ags_recall_template_find_type(start_recall, recall_type)) == NULL){
+      g_list_free(start_play);
+      g_list_free(start_recall);
+      
       return;
     }      
       
@@ -4113,6 +4157,9 @@ ags_osc_meter_controller_expand_path_channel(AgsChannel *channel,
       }
     }
   }
+
+  g_list_free(start_play);
+  g_list_free(start_recall);
 
   g_free(prefix);
 }
@@ -4303,6 +4350,8 @@ ags_osc_meter_controller_expand_path_recall(AgsRecall *recall,
       guint length;
 
       if((offset = index(path + path_offset + 2, '"')) == NULL){
+	g_list_free(start_port);
+	
 	return;
       }
 
@@ -4331,6 +4380,8 @@ ags_osc_meter_controller_expand_path_recall(AgsRecall *recall,
 						strv);
     }
   }
+
+  g_list_free(start_port);
 }
 
 void
@@ -4570,6 +4621,8 @@ ags_osc_meter_controller_expand_path(gchar *path,
 						 strv);
     }
   }
+
+  g_list_free(start_audio);
 }
 
 gpointer

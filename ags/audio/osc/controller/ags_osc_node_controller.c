@@ -1723,6 +1723,9 @@ ags_osc_node_controller_get_data_audio(AgsOscNodeController *osc_node_controller
 	ags_osc_response_set_flags(osc_response,
 				   AGS_OSC_RESPONSE_OK);
 
+	g_list_free(start_play);
+	g_list_free(start_recall);
+	
 	return(start_response);
       }
     }else if(ags_regexec(&more_access_regex, str, index_max_matches, match_arr, 0) == 0){
@@ -1746,6 +1749,9 @@ ags_osc_node_controller_get_data_audio(AgsOscNodeController *osc_node_controller
 		     "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_SERVER_FAILURE,
 		     NULL);
 
+	g_list_free(start_play);
+	g_list_free(start_recall);
+	
 	return(start_response);
       }
       
@@ -1900,8 +1906,14 @@ ags_osc_node_controller_get_data_audio(AgsOscNodeController *osc_node_controller
 		   "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_MALFORMED_REQUEST,
 		   NULL);
 
+      g_list_free(start_play);
+      g_list_free(start_recall);
+
       return(start_response);
     }
+
+    g_list_free(start_play);
+    g_list_free(start_recall);
   }
 
   return(start_response);
@@ -2427,6 +2439,9 @@ ags_osc_node_controller_get_data_channel(AgsOscNodeController *osc_node_controll
 	ags_osc_response_set_flags(osc_response,
 				   AGS_OSC_RESPONSE_OK);
 
+	g_list_free(start_play);
+	g_list_free(start_recall);
+	
 	return(start_response);
       }
     }else if(ags_regexec(&more_access_regex, str, index_max_matches, match_arr, 0) == 0){
@@ -2450,6 +2465,9 @@ ags_osc_node_controller_get_data_channel(AgsOscNodeController *osc_node_controll
 		     "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_SERVER_FAILURE,
 		     NULL);
 
+	g_list_free(start_play);
+	g_list_free(start_recall);
+	
 	return(start_response);
       }
       
@@ -2604,8 +2622,14 @@ ags_osc_node_controller_get_data_channel(AgsOscNodeController *osc_node_controll
 		   "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_MALFORMED_REQUEST,
 		   NULL);
 
+      g_list_free(start_play);
+      g_list_free(start_recall);
+
       return(start_response);
     }
+
+    g_list_free(start_play);
+    g_list_free(start_recall);    
   }
 
   return(start_response);
@@ -2903,6 +2927,8 @@ ags_osc_node_controller_get_data_recall(AgsOscNodeController *osc_node_controlle
 		     "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_CHUNK_SIZE_EXCEEDED,
 		     NULL);
 	  
+	g_list_free(start_port);
+	
 	return(start_response);
       }
 
@@ -2929,8 +2955,6 @@ ags_osc_node_controller_get_data_recall(AgsOscNodeController *osc_node_controlle
 							      type_tag,
 							      path, path_offset);
     }else{
-      g_list_free(start_port);
-      
       osc_response = ags_osc_response_new();
       start_response = g_list_prepend(start_response,
 				      osc_response);
@@ -2941,6 +2965,8 @@ ags_osc_node_controller_get_data_recall(AgsOscNodeController *osc_node_controlle
       g_object_set(osc_response,
 		   "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_SERVER_FAILURE,
 		   NULL);
+
+      g_list_free(start_port);      
 
       return(start_response);
     }    
@@ -3839,6 +3865,8 @@ ags_osc_node_controller_real_get_data(AgsOscNodeController *osc_node_controller,
 		       "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_SERVER_FAILURE,
 		       NULL);
 
+	  g_list_free(start_soundcard);
+      
 	  free(type_tag);
 	  free(path);
 
@@ -3903,8 +3931,6 @@ ags_osc_node_controller_real_get_data(AgsOscNodeController *osc_node_controller,
 	  soundcard = soundcard->next;
 	}
       }else{
-	g_list_free(start_soundcard);
-      
 	osc_response = ags_osc_response_new();
 	start_response = g_list_prepend(start_response,
 					osc_response);
@@ -3915,6 +3941,8 @@ ags_osc_node_controller_real_get_data(AgsOscNodeController *osc_node_controller,
 	g_object_set(osc_response,
 		     "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_SERVER_FAILURE,
 		     NULL);
+	
+	g_list_free(start_soundcard);
 	
 	free(type_tag);
 	free(path);
@@ -4132,8 +4160,6 @@ ags_osc_node_controller_real_get_data(AgsOscNodeController *osc_node_controller,
 	  sequencer = sequencer->next;
 	}
       }else{
-	g_list_free(start_sequencer);
-      
 	osc_response = ags_osc_response_new();
 	start_response = g_list_prepend(start_response,
 					osc_response);
@@ -4145,6 +4171,8 @@ ags_osc_node_controller_real_get_data(AgsOscNodeController *osc_node_controller,
 		     "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_SERVER_FAILURE,
 		     NULL);
 
+	g_list_free(start_sequencer);
+      
 	free(type_tag);
 	free(path);
 
@@ -4381,6 +4409,8 @@ ags_osc_node_controller_real_get_data(AgsOscNodeController *osc_node_controller,
 		       "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_CHUNK_SIZE_EXCEEDED,
 		       NULL);
 	  
+	  g_list_free(start_audio);
+      
 	  free(type_tag);
 	  free(path);
 
@@ -4409,8 +4439,6 @@ ags_osc_node_controller_real_get_data(AgsOscNodeController *osc_node_controller,
 								type_tag,
 								path, path_offset);
       }else{
-	g_list_free(start_audio);
-      
 	osc_response = ags_osc_response_new();
 	start_response = g_list_prepend(start_response,
 					osc_response);
@@ -4422,6 +4450,8 @@ ags_osc_node_controller_real_get_data(AgsOscNodeController *osc_node_controller,
 		     "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_SERVER_FAILURE,
 		     NULL);
 
+	g_list_free(start_audio);
+      
 	free(type_tag);
 	free(path);
 

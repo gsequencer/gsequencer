@@ -1435,6 +1435,9 @@ ags_osc_renew_controller_set_data_audio(AgsOscRenewController *osc_renew_control
 	ags_osc_response_set_flags(osc_response,
 				   AGS_OSC_RESPONSE_OK);
 
+	g_list_free(start_play);
+	g_list_free(start_recall);
+
 	return(start_response);
       }
     }else if(ags_regexec(&more_access_regex, str, index_max_matches, match_arr, 0) == 0){
@@ -1457,6 +1460,9 @@ ags_osc_renew_controller_set_data_audio(AgsOscRenewController *osc_renew_control
 	g_object_set(osc_response,
 		     "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_SERVER_FAILURE,
 		     NULL);
+
+	g_list_free(start_play);
+	g_list_free(start_recall);
 
 	return(start_response);
       }
@@ -1612,8 +1618,14 @@ ags_osc_renew_controller_set_data_audio(AgsOscRenewController *osc_renew_control
 		   "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_MALFORMED_REQUEST,
 		   NULL);
 
+      g_list_free(start_play);
+      g_list_free(start_recall);
+
       return(start_response);
     }
+
+    g_list_free(start_play);
+    g_list_free(start_recall);
   } 
   
   return(start_response);
@@ -2051,6 +2063,9 @@ ags_osc_renew_controller_set_data_channel(AgsOscRenewController *osc_renew_contr
 	ags_osc_response_set_flags(osc_response,
 				   AGS_OSC_RESPONSE_OK);
 
+	g_list_free(start_play);
+	g_list_free(start_recall);
+	
 	return(start_response);
       }
     }else if(ags_regexec(&more_access_regex, str, index_max_matches, match_arr, 0) == 0){
@@ -2074,6 +2089,9 @@ ags_osc_renew_controller_set_data_channel(AgsOscRenewController *osc_renew_contr
 		     "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_SERVER_FAILURE,
 		     NULL);
 
+	g_list_free(start_play);
+	g_list_free(start_recall);
+	
 	return(start_response);
       }
       
@@ -2228,8 +2246,14 @@ ags_osc_renew_controller_set_data_channel(AgsOscRenewController *osc_renew_contr
 		   "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_MALFORMED_REQUEST,
 		   NULL);
 
+      g_list_free(start_play);
+      g_list_free(start_recall);
+	
       return(start_response);
     }
+
+    g_list_free(start_play);
+    g_list_free(start_recall);	
   } 
   
   return(start_response);
@@ -2429,7 +2453,7 @@ ags_osc_renew_controller_set_data_recall(AgsOscRenewController *osc_renew_contro
       
 	ags_osc_response_set_flags(osc_response,
 				   AGS_OSC_RESPONSE_OK);
-
+	
 	return(start_response);
       }
     }else if(ags_regexec(&more_access_regex, path + path_offset, index_max_matches, match_arr, 0) == 0){
@@ -2527,6 +2551,8 @@ ags_osc_renew_controller_set_data_recall(AgsOscRenewController *osc_renew_contro
 		     "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_CHUNK_SIZE_EXCEEDED,
 		     NULL);
 	  
+	g_list_free(start_port);
+	
 	return(start_response);
       }
 
@@ -2553,8 +2579,6 @@ ags_osc_renew_controller_set_data_recall(AgsOscRenewController *osc_renew_contro
 							       type_tag,
 							       path, path_offset);
     }else{
-      g_list_free(start_port);
-      
       osc_response = ags_osc_response_new();
       start_response = g_list_prepend(start_response,
 				      osc_response);
@@ -2566,6 +2590,8 @@ ags_osc_renew_controller_set_data_recall(AgsOscRenewController *osc_renew_contro
 		   "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_SERVER_FAILURE,
 		   NULL);
 
+      g_list_free(start_port);
+      
       return(start_response);
     }    
 
@@ -3361,8 +3387,6 @@ ags_osc_renew_controller_real_set_data(AgsOscRenewController *osc_renew_controll
 	  soundcard = soundcard->next;
 	}
       }else{
-	g_list_free(start_soundcard);
-      
 	osc_response = ags_osc_response_new();
 	start_response = g_list_prepend(start_response,
 					osc_response);
@@ -3374,6 +3398,8 @@ ags_osc_renew_controller_real_set_data(AgsOscRenewController *osc_renew_controll
 		     "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_SERVER_FAILURE,
 		     NULL);
 
+	g_list_free(start_soundcard);
+      
 	free(type_string);
 	free(path);
 	  
@@ -3590,8 +3616,6 @@ ags_osc_renew_controller_real_set_data(AgsOscRenewController *osc_renew_controll
 	  sequencer = sequencer->next;
 	}
       }else{
-	g_list_free(start_sequencer);
-      
 	osc_response = ags_osc_response_new();
 	start_response = g_list_prepend(start_response,
 					osc_response);
@@ -3603,6 +3627,8 @@ ags_osc_renew_controller_real_set_data(AgsOscRenewController *osc_renew_controll
 		     "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_SERVER_FAILURE,
 		     NULL);
 
+	g_list_free(start_sequencer);
+      
 	free(type_string);
 	free(path);
 	  
@@ -3839,6 +3865,8 @@ ags_osc_renew_controller_real_set_data(AgsOscRenewController *osc_renew_controll
 		       "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_CHUNK_SIZE_EXCEEDED,
 		       NULL);
 	  
+	  g_list_free(start_audio);
+      
 	  free(type_string);
 	  free(path);
 	  
@@ -3867,8 +3895,6 @@ ags_osc_renew_controller_real_set_data(AgsOscRenewController *osc_renew_controll
 								 type_tag,
 								 path, path_offset);
       }else{
-	g_list_free(start_audio);
-      
 	osc_response = ags_osc_response_new();
 	start_response = g_list_prepend(start_response,
 					osc_response);
@@ -3880,6 +3906,8 @@ ags_osc_renew_controller_real_set_data(AgsOscRenewController *osc_renew_controll
 		     "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_SERVER_FAILURE,
 		     NULL);
 
+	g_list_free(start_audio);
+      
 	free(type_string);
 	free(path);
 	  
