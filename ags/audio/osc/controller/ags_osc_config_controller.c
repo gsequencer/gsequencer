@@ -256,7 +256,8 @@ ags_osc_config_controller_real_apply_config(AgsOscConfigController *osc_config_c
   ags_osc_buffer_util_get_string(message + 8,
 				 &type_tag, NULL);
 
-  success = (!strncmp(type_tag, ",s", 3)) ? TRUE: FALSE;
+  success = (type_tag != NULL &&
+	     !strncmp(type_tag, ",s", 3)) ? TRUE: FALSE;
 
   if(!success){
     osc_response = ags_osc_response_new();  
@@ -270,12 +271,33 @@ ags_osc_config_controller_real_apply_config(AgsOscConfigController *osc_config_c
 		 "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_MALFORMED_REQUEST,
 		 NULL);
 
+    if(type_tag != NULL){
+      free(type_tag);
+    }
+    
     return(start_response);
   }
   
   /* read config data */
   ags_osc_buffer_util_get_string(message + 12,
 				 &config_data, NULL);
+
+  if(config_data == NULL){
+    osc_response = ags_osc_response_new();  
+    start_response = g_list_prepend(start_response,
+				    osc_response);
+      
+    ags_osc_response_set_flags(osc_response,
+			       AGS_OSC_RESPONSE_ERROR);
+
+    g_object_set(osc_response,
+		 "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_MALFORMED_REQUEST,
+		 NULL);
+
+    free(type_tag);
+    
+    return(start_response);
+  }
 
   /* get sound provider */
   application_context = ags_application_context_get_instance();
@@ -288,6 +310,9 @@ ags_osc_config_controller_real_apply_config(AgsOscConfigController *osc_config_c
   ags_task_thread_append_task(task_thread,
 			      apply_sound_config);
 
+  free(type_tag);
+  free(config_data);
+  
   /* create response */
   osc_response = ags_osc_response_new();  
   start_response = g_list_prepend(start_response,

@@ -296,6 +296,13 @@ ags_osc_front_controller_dispose(GObject *gobject)
 
   osc_front_controller = AGS_OSC_FRONT_CONTROLLER(gobject);
   
+  if(osc_front_controller->message != NULL){
+    g_list_free_full(osc_front_controller->message,
+		     ags_osc_front_controller_message_free);
+
+    osc_front_controller->message = NULL;
+  }
+
   /* call parent */
   G_OBJECT_CLASS(ags_osc_front_controller_parent_class)->dispose(gobject);
 }
@@ -308,6 +315,12 @@ ags_osc_front_controller_finalize(GObject *gobject)
   osc_front_controller = AGS_OSC_FRONT_CONTROLLER(gobject);
 
   free(osc_front_controller->delegate_timeout);
+
+  pthread_mutex_destroy(osc_front_controller->delegate_mutex);
+  free(osc_front_controller->delegate_mutex);
+
+  pthread_mutex_cond(osc_front_controller->delegate_cond);
+  free(osc_front_controller->delegate_cond);
   
   free(osc_front_controller->delegate_thread);
   
@@ -1057,7 +1070,8 @@ ags_osc_front_controller_real_do_request(AgsOscFrontController *osc_front_contro
     }
     
     read_count += (4 * (guint) ceil((double) (address_pattern_length + 1) / 4.0));
-
+    free(address_pattern);
+    
     type_tag = NULL;
 
     if(packet_size > offset + read_count){
@@ -1122,6 +1136,8 @@ ags_osc_front_controller_real_do_request(AgsOscFrontController *osc_front_contro
 	  break;
 	}
       }
+
+      free(type_tag);
     }
 
     read_count += (4 * (guint) ceil((double) data_length / 4.0));

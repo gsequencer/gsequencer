@@ -267,7 +267,8 @@ ags_osc_action_controller_real_run_action(AgsOscActionController *osc_action_con
   ags_osc_buffer_util_get_string(message + 8,
 				 &type_tag, NULL);
 
-  success = (!strncmp(type_tag, ",ss", 4)) ? TRUE: FALSE;
+  success = (type_tag != NULL &&
+	     !strncmp(type_tag, ",ss", 4)) ? TRUE: FALSE;
 
   if(!success){
     osc_response = ags_osc_response_new();
@@ -281,6 +282,10 @@ ags_osc_action_controller_real_run_action(AgsOscActionController *osc_action_con
 		 "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_MALFORMED_REQUEST,
 		 NULL);
 
+    if(type_tag != NULL){
+      free(type_tag);
+    }
+    
     return(start_response);
   }
   
@@ -288,11 +293,48 @@ ags_osc_action_controller_real_run_action(AgsOscActionController *osc_action_con
   ags_osc_buffer_util_get_string(message + 12,
 				 &path, NULL);
 
+  /* check argument */
+  if(path == NULL){
+    osc_response = ags_osc_response_new();
+    start_response = g_list_prepend(start_response,
+				    osc_response);
+    
+    ags_osc_response_set_flags(osc_response,
+			       AGS_OSC_RESPONSE_ERROR);
+
+    g_object_set(osc_response,
+		 "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_MALFORMED_REQUEST,
+		 NULL);
+
+    free(type_tag);
+
+    return(start_response);
+  }
+
   length = strlen(path);
   
   /* read action */
   ags_osc_buffer_util_get_string(message + 12 + (4 * (guint) ceil((double) (length + 1) / 4.0)),
 				 &action, NULL);
+
+  /* check argument */
+  if(action == NULL){
+    osc_response = ags_osc_response_new();
+    start_response = g_list_prepend(start_response,
+				    osc_response);
+    
+    ags_osc_response_set_flags(osc_response,
+			       AGS_OSC_RESPONSE_ERROR);
+
+    g_object_set(osc_response,
+		 "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_MALFORMED_REQUEST,
+		 NULL);
+
+    free(type_tag);
+    free(path);
+
+    return(start_response);
+  }
   
   /* get sound provider */
   application_context = ags_application_context_get_instance();
@@ -331,6 +373,10 @@ ags_osc_action_controller_real_run_action(AgsOscActionController *osc_action_con
 		     "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_UNKNOW_ARGUMENT,
 		     NULL);
 
+	free(type_tag);
+	free(path);
+	free(action);
+	
 	return(start_response);
       }
     }else if(!strncmp(path + path_offset, "/AgsSequencer", 13)){
@@ -359,6 +405,10 @@ ags_osc_action_controller_real_run_action(AgsOscActionController *osc_action_con
 	g_object_set(osc_response,
 		     "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_UNKNOW_ARGUMENT,
 		     NULL);
+
+	free(type_tag);
+	free(path);
+	free(action);
 
 	return(start_response);
       }
@@ -389,6 +439,10 @@ ags_osc_action_controller_real_run_action(AgsOscActionController *osc_action_con
 	  g_object_set(osc_response,
 		       "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_MISSING_INDEX,
 		       NULL);
+
+	  free(type_tag);
+	  free(path);
+	  free(action);
 	  
 	  return(start_response);
 	}
@@ -416,6 +470,10 @@ ags_osc_action_controller_real_run_action(AgsOscActionController *osc_action_con
 	  g_object_set(osc_response,
 		       "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_CHUNK_SIZE_EXCEEDED,
 		       NULL);
+
+	  free(type_tag);
+	  free(path);
+	  free(action);
 	  
 	  return(start_response);
 	}
@@ -449,6 +507,10 @@ ags_osc_action_controller_real_run_action(AgsOscActionController *osc_action_con
 		     "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_MISSING_INDEX,
 		     NULL);
 
+	free(type_tag);
+	free(path);
+	free(action);
+
 	return(start_response);
       }
 
@@ -478,10 +540,18 @@ ags_osc_action_controller_real_run_action(AgsOscActionController *osc_action_con
 		     "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_UNKNOW_ARGUMENT,
 		     NULL);
 
+	free(type_tag);
+	free(path);
+	free(action);
+
 	return(start_response);
       }
     }
   }
+
+  free(type_tag);
+  free(path);
+  free(action);
   
   /* create response */
   osc_response = ags_osc_response_new();  
