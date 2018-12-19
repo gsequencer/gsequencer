@@ -182,6 +182,18 @@ ags_functional_osc_server_test_init_suite()
 			     AGS_RECALL_FACTORY_ADD),
 			    0);
 
+  /* ags-mute */
+  ags_recall_factory_create(drum,
+			    NULL, NULL,
+			    "ags-mute",
+			    0, 2,
+			    0, 8,
+			    (AGS_RECALL_FACTORY_INPUT,
+			     AGS_RECALL_FACTORY_PLAY |
+			     AGS_RECALL_FACTORY_RECALL |
+			     AGS_RECALL_FACTORY_ADD),
+			    0);
+
   /* ags-peak */
   ags_recall_factory_create(drum,
 			    NULL, NULL,
@@ -641,7 +653,7 @@ ags_functional_osc_server_test_node_controller()
   clock_gettime(CLOCK_MONOTONIC, &start_time);
 #endif
 
-  timeout_delay.tv_sec = 3600;
+  timeout_delay.tv_sec = 10;
   timeout_delay.tv_nsec = 0;
 
   success = FALSE;
@@ -682,13 +694,71 @@ ags_functional_osc_server_test_node_controller()
 void
 ags_functional_osc_server_test_renew_controller()
 {
-  //TODO:JK: implement me
+  unsigned char *buffer;
+  unsigned char *packet;
+
+  guint buffer_length;
+  gboolean retval;
+
+  static const unsigned char *mute_message = "/renew\x00\x00,sf\x00/AgsSoundProvider/AgsAudio[\"test-panel\"]/AgsInput[0-1]/AgsMuteChannel[0]/AgsPort[\"./muted[0]\"]:value\x00\x00\x00\x00\x00\x00";
+
+  static const guint mute_message_size = 120;
+
+  CU_ASSERT(osc_server->ip4_fd != -1);
+  CU_ASSERT(osc_client->ip4_fd != -1);
+
+  /* mute message */
+  packet = (unsigned char *) malloc((4 + mute_message_size) * sizeof(unsigned char));
+
+  ags_osc_buffer_util_put_int32(packet,
+				mute_message_size);
+  memcpy(packet + 4, mute_message, (mute_message_size) * sizeof(unsigned char));
+
+  buffer = ags_osc_util_slip_encode(packet,
+				    4 + mute_message_size,
+				    &buffer_length);
+
+  CU_ASSERT(buffer_length - 2 >= 4 + mute_message_size);
+
+  retval = ags_osc_client_write_bytes(osc_client,
+				      buffer, buffer_length);
+
+  CU_ASSERT(retval == TRUE);
 }
 
 void
 ags_functional_osc_server_test_status_controller()
 {
-  //TODO:JK: implement me
+  unsigned char *buffer;
+  unsigned char *packet;
+
+  guint buffer_length;
+  gboolean retval;
+
+  static const unsigned char *status_message = "/status\x00,\x00\x00\x00";
+
+  static const guint status_message_size = 12;
+
+  CU_ASSERT(osc_server->ip4_fd != -1);
+  CU_ASSERT(osc_client->ip4_fd != -1);
+
+  /* status message */
+  packet = (unsigned char *) malloc((4 + status_message_size) * sizeof(unsigned char));
+
+  ags_osc_buffer_util_put_int32(packet,
+				status_message_size);
+  memcpy(packet + 4, status_message, (status_message_size) * sizeof(unsigned char));
+
+  buffer = ags_osc_util_slip_encode(packet,
+				    4 + status_message_size,
+				    &buffer_length);
+
+  CU_ASSERT(buffer_length - 2 >= 4 + status_message_size);
+
+  retval = ags_osc_client_write_bytes(osc_client,
+				      buffer, buffer_length);
+
+  CU_ASSERT(retval == TRUE);
 }
 
 int
