@@ -186,6 +186,9 @@ ags_functional_ffplayer_test_open_sf2()
   CU_ASSERT(success == TRUE);
 
   /* open path */
+  CU_ASSERT(g_file_test(AGS_FUNCTIONAL_FFPLAYER_TEST_OPEN_SF2_PATH,
+			G_FILE_TEST_EXISTS));
+  
   success = ags_functional_test_util_file_chooser_open_path(GTK_FILE_CHOOSER(ffplayer->open_dialog),
 							    AGS_FUNCTIONAL_FFPLAYER_TEST_OPEN_SF2_PATH);
   CU_ASSERT(success == TRUE);

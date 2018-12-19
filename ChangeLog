@@ -1,3 +1,9 @@
+ags (2.1.13)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed missing include in ags_play_wave_channel_run.c
+	* improved AgsFunctionalDrumTest and AgsFunctionalFFPlayerTest to assert if directory exists
+
 ags (2.1.12)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

@@ -24,6 +24,7 @@
 #include <ags/audio/ags_recycling.h>
 #include <ags/audio/ags_recall_id.h>
 #include <ags/audio/ags_recall_container.h>
+#include <ags/audio/ags_audio_buffer_util.h>
 
 #include <ags/audio/recall/ags_play_wave_audio.h>
 #include <ags/audio/recall/ags_play_wave_audio_run.h>
