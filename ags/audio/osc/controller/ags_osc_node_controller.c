@@ -3641,7 +3641,8 @@ ags_osc_node_controller_real_get_data(AgsOscNodeController *osc_node_controller,
   ags_osc_buffer_util_get_string(message + 8,
 				 &type_tag, NULL);
 
-  success = (!strncmp(type_tag, ",s", 2)) ? TRUE: FALSE;
+  success = (type_tag != NULL &&
+	     !strncmp(type_tag, ",s", 2)) ? TRUE: FALSE;
 
   if(!success){
     osc_response = ags_osc_response_new();
@@ -3655,12 +3656,33 @@ ags_osc_node_controller_real_get_data(AgsOscNodeController *osc_node_controller,
 		 "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_MALFORMED_REQUEST,
 		 NULL);
 
+    if(type_tag != NULL){
+      free(type_tag);
+    }
+
     return(start_response);
   }
   
   /* read argument */
   ags_osc_buffer_util_get_string(message + 8 + (4 * (guint) ceil((gdouble) (strlen(type_tag) + 1) / 4.0)),
 				 &path, NULL);
+
+  if(path == NULL){
+    osc_response = ags_osc_response_new();  
+    start_response = g_list_prepend(start_response,
+				    osc_response);
+      
+    ags_osc_response_set_flags(osc_response,
+			       AGS_OSC_RESPONSE_ERROR);
+
+    g_object_set(osc_response,
+		 "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_MALFORMED_REQUEST,
+		 NULL);
+
+    free(type_tag);
+    
+    return(start_response);
+  }
   
   /* create packet */
   application_context = ags_application_context_get_instance();
@@ -3797,6 +3819,9 @@ ags_osc_node_controller_real_get_data(AgsOscNodeController *osc_node_controller,
 	  ags_osc_response_set_flags(osc_response,
 				     AGS_OSC_RESPONSE_OK);
 
+	  free(type_tag);
+	  free(path);
+
 	  return(start_response);
 	}
       }else if(ags_regexec(&more_access_regex, path + path_offset, index_max_matches, match_arr, 0) == 0){
@@ -3813,6 +3838,9 @@ ags_osc_node_controller_real_get_data(AgsOscNodeController *osc_node_controller,
 	  g_object_set(osc_response,
 		       "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_SERVER_FAILURE,
 		       NULL);
+
+	  free(type_tag);
+	  free(path);
 
 	  return(start_response);
 	}
@@ -3849,6 +3877,9 @@ ags_osc_node_controller_real_get_data(AgsOscNodeController *osc_node_controller,
 	  ags_osc_response_set_flags(osc_response,
 				     AGS_OSC_RESPONSE_OK);
 
+	  free(type_tag);
+	  free(path);
+
 	  return(start_response);
 	}
       
@@ -3884,6 +3915,9 @@ ags_osc_node_controller_real_get_data(AgsOscNodeController *osc_node_controller,
 	g_object_set(osc_response,
 		     "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_SERVER_FAILURE,
 		     NULL);
+	
+	free(type_tag);
+	free(path);
 
 	return(start_response);
       }    
@@ -4014,6 +4048,9 @@ ags_osc_node_controller_real_get_data(AgsOscNodeController *osc_node_controller,
 	  ags_osc_response_set_flags(osc_response,
 				     AGS_OSC_RESPONSE_OK);
 
+	  free(type_tag);
+	  free(path);
+
 	  return(start_response);
 	}
       }else if(ags_regexec(&more_access_regex, path + path_offset, index_max_matches, match_arr, 0) == 0){
@@ -4030,6 +4067,9 @@ ags_osc_node_controller_real_get_data(AgsOscNodeController *osc_node_controller,
 	  g_object_set(osc_response,
 		       "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_SERVER_FAILURE,
 		       NULL);
+
+	  free(type_tag);
+	  free(path);
 
 	  return(start_response);
 	}
@@ -4066,6 +4106,9 @@ ags_osc_node_controller_real_get_data(AgsOscNodeController *osc_node_controller,
 	  ags_osc_response_set_flags(osc_response,
 				     AGS_OSC_RESPONSE_OK);
 
+	  free(type_tag);
+	  free(path);
+
 	  return(start_response);
 	}
       
@@ -4101,6 +4144,9 @@ ags_osc_node_controller_real_get_data(AgsOscNodeController *osc_node_controller,
 	g_object_set(osc_response,
 		     "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_SERVER_FAILURE,
 		     NULL);
+
+	free(type_tag);
+	free(path);
 
 	return(start_response);
       }    
@@ -4231,6 +4277,9 @@ ags_osc_node_controller_real_get_data(AgsOscNodeController *osc_node_controller,
 	  ags_osc_response_set_flags(osc_response,
 				     AGS_OSC_RESPONSE_OK);
 
+	  free(type_tag);
+	  free(path);
+
 	  return(start_response);
 	}
       }else if(ags_regexec(&more_access_regex, path + path_offset, index_max_matches, match_arr, 0) == 0){
@@ -4247,6 +4296,9 @@ ags_osc_node_controller_real_get_data(AgsOscNodeController *osc_node_controller,
 	  g_object_set(osc_response,
 		       "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_SERVER_FAILURE,
 		       NULL);
+
+	  free(type_tag);
+	  free(path);
 
 	  return(start_response);
 	}
@@ -4282,6 +4334,9 @@ ags_osc_node_controller_real_get_data(AgsOscNodeController *osc_node_controller,
       
 	  ags_osc_response_set_flags(osc_response,
 				     AGS_OSC_RESPONSE_OK);
+
+	  free(type_tag);
+	  free(path);
 
 	  return(start_response);
 	}
@@ -4326,6 +4381,9 @@ ags_osc_node_controller_real_get_data(AgsOscNodeController *osc_node_controller,
 		       "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_CHUNK_SIZE_EXCEEDED,
 		       NULL);
 	  
+	  free(type_tag);
+	  free(path);
+
 	  return(start_response);
 	}
 
@@ -4364,6 +4422,9 @@ ags_osc_node_controller_real_get_data(AgsOscNodeController *osc_node_controller,
 		     "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_SERVER_FAILURE,
 		     NULL);
 
+	free(type_tag);
+	free(path);
+
 	return(start_response);
       }    
 
@@ -4379,6 +4440,9 @@ ags_osc_node_controller_real_get_data(AgsOscNodeController *osc_node_controller,
       g_object_set(osc_response,
 		   "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_UNKNOW_ARGUMENT,
 		   NULL);
+
+      free(type_tag);
+      free(path);
 
       return(start_response);
     }
@@ -4396,8 +4460,14 @@ ags_osc_node_controller_real_get_data(AgsOscNodeController *osc_node_controller,
 		 "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_SERVER_FAILURE,
 		 NULL);
 
+    free(type_tag);
+    free(path);
+
     return(start_response);
   }
+
+  free(type_tag);
+  free(path);
   
   return(start_response);
 }

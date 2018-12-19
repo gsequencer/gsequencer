@@ -4673,9 +4673,10 @@ ags_osc_meter_controller_real_monitor_meter(AgsOscMeterController *osc_meter_con
   ags_osc_buffer_util_get_string(message + 8,
 				 &type_tag, NULL);
 
-  success = (!strncmp(type_tag, ",s", 2) &&
-	     (type_tag[2] == 'T' || type_tag[2] == 'F') &&
-	     type_tag[3] == '\0') ? TRUE: FALSE;
+  success = (type_tag != NULL &&
+	     strlen(type_tag) == 4 &&
+	     !strncmp(type_tag, ",s", 2) &&
+	     (type_tag[2] == 'T' || type_tag[2] == 'F')) ? TRUE: FALSE;
 
   if(!success){
     osc_response = ags_osc_response_new();
@@ -4687,12 +4688,33 @@ ags_osc_meter_controller_real_monitor_meter(AgsOscMeterController *osc_meter_con
 		 "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_MALFORMED_REQUEST,
 		 NULL);
 
+    if(type_tag != NULL){
+      free(type_tag);
+    }
+    
     return(osc_response);
   }
   
   /* read argument */
   ags_osc_buffer_util_get_string(message + 12,
 				 &path, NULL);
+
+  if(path == NULL){
+    osc_response = ags_osc_response_new();  
+    start_response = g_list_prepend(start_response,
+				    osc_response);
+      
+    ags_osc_response_set_flags(osc_response,
+			       AGS_OSC_RESPONSE_ERROR);
+
+    g_object_set(osc_response,
+		 "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_MALFORMED_REQUEST,
+		 NULL);
+
+    free(type_tag);
+    
+    return(start_response);
+  }
 
   /* get sound provider */
   if(type_tag[2] == 'T'){
@@ -4709,6 +4731,9 @@ ags_osc_meter_controller_real_monitor_meter(AgsOscMeterController *osc_meter_con
 								    path);
   }
 
+  free(type_tag);
+  free(path);
+  
   return(start_response);
 }
 

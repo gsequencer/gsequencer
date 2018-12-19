@@ -380,6 +380,10 @@ ags_osc_renew_controller_set_data_soundcard(AgsOscRenewController *osc_renew_con
 				      device);
       ags_task_thread_append_task(task_thread,
 				  set_device);
+
+      if(device != NULL){
+	free(device);
+      }
     }else if(!strncmp(path + path_offset,
 		      "pcm-channels",
 		      13)){
@@ -621,6 +625,10 @@ ags_osc_renew_controller_set_data_sequencer(AgsOscRenewController *osc_renew_con
 				      device);
       ags_task_thread_append_task(task_thread,
 				  set_device);
+
+      if(device != NULL){
+	free(device);
+      }
     }else{
       ags_osc_response_set_flags(osc_response,
 				 AGS_OSC_RESPONSE_ERROR);
@@ -3091,7 +3099,8 @@ ags_osc_renew_controller_real_set_data(AgsOscRenewController *osc_renew_controll
   ags_osc_buffer_util_get_string(message + 8,
 				 &type_tag, NULL);
 
-  success = (!strncmp(type_tag, ",s", 2)) ? TRUE: FALSE;
+  success = (type_tag != NULL &&
+	     !strncmp(type_tag, ",s", 2)) ? TRUE: FALSE;
 
   if(!success){
     osc_response = ags_osc_response_new();
@@ -3105,13 +3114,34 @@ ags_osc_renew_controller_real_set_data(AgsOscRenewController *osc_renew_controll
 		 "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_MALFORMED_REQUEST,
 		 NULL);
 
+    if(type_tag != NULL){
+      free(type_tag);
+    }
+    
     return(start_response);
   }
   
   /* read argument */
   ags_osc_buffer_util_get_string(message + 8 + (4 * (guint) ceil((gdouble) (strlen(type_tag) + 1) / 4.0)),
-				 &path, NULL);
-  
+				 &path, NULL);  
+
+  if(path == NULL){
+    osc_response = ags_osc_response_new();  
+    start_response = g_list_prepend(start_response,
+				    osc_response);
+      
+    ags_osc_response_set_flags(osc_response,
+			       AGS_OSC_RESPONSE_ERROR);
+
+    g_object_set(osc_response,
+		 "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_MALFORMED_REQUEST,
+		 NULL);
+
+    free(type_tag);
+    
+    return(start_response);
+  }
+
   /* create packet */
   application_context = ags_application_context_get_instance();
 
@@ -3247,6 +3277,9 @@ ags_osc_renew_controller_real_set_data(AgsOscRenewController *osc_renew_controll
 	  ags_osc_response_set_flags(osc_response,
 				     AGS_OSC_RESPONSE_OK);
 
+	  free(type_string);
+	  free(path);
+	  
 	  return(start_response);
 	}
       }else if(ags_regexec(&more_access_regex, path + path_offset, index_max_matches, match_arr, 0) == 0){
@@ -3264,6 +3297,9 @@ ags_osc_renew_controller_real_set_data(AgsOscRenewController *osc_renew_controll
 		       "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_SERVER_FAILURE,
 		       NULL);
 
+	  free(type_string);
+	  free(path);
+	  
 	  return(start_response);
 	}
 
@@ -3299,6 +3335,9 @@ ags_osc_renew_controller_real_set_data(AgsOscRenewController *osc_renew_controll
 	  ags_osc_response_set_flags(osc_response,
 				     AGS_OSC_RESPONSE_OK);
 
+	  free(type_string);
+	  free(path);
+	  
 	  return(start_response);
 	}
       
@@ -3335,6 +3374,9 @@ ags_osc_renew_controller_real_set_data(AgsOscRenewController *osc_renew_controll
 		     "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_SERVER_FAILURE,
 		     NULL);
 
+	free(type_string);
+	free(path);
+	  
 	return(start_response);
       }    
 
@@ -3464,6 +3506,9 @@ ags_osc_renew_controller_real_set_data(AgsOscRenewController *osc_renew_controll
 	  ags_osc_response_set_flags(osc_response,
 				     AGS_OSC_RESPONSE_OK);
 
+	  free(type_string);
+	  free(path);
+	  
 	  return(start_response);
 	}
       }else if(ags_regexec(&more_access_regex, path + path_offset, index_max_matches, match_arr, 0) == 0){
@@ -3481,6 +3526,9 @@ ags_osc_renew_controller_real_set_data(AgsOscRenewController *osc_renew_controll
 		       "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_SERVER_FAILURE,
 		       NULL);
 
+	  free(type_string);
+	  free(path);
+	  
 	  return(start_response);
 	}
 
@@ -3516,6 +3564,9 @@ ags_osc_renew_controller_real_set_data(AgsOscRenewController *osc_renew_controll
 	  ags_osc_response_set_flags(osc_response,
 				     AGS_OSC_RESPONSE_OK);
 
+	  free(type_string);
+	  free(path);
+	  
 	  return(start_response);
 	}
       
@@ -3552,6 +3603,9 @@ ags_osc_renew_controller_real_set_data(AgsOscRenewController *osc_renew_controll
 		     "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_SERVER_FAILURE,
 		     NULL);
 
+	free(type_string);
+	free(path);
+	  
 	return(start_response);
       }    
 
@@ -3681,6 +3735,9 @@ ags_osc_renew_controller_real_set_data(AgsOscRenewController *osc_renew_controll
 	  ags_osc_response_set_flags(osc_response,
 				     AGS_OSC_RESPONSE_OK);
 
+	  free(type_string);
+	  free(path);
+	  
 	  return(start_response);
 	}
       }else if(ags_regexec(&more_access_regex, path + path_offset, index_max_matches, match_arr, 0) == 0){
@@ -3698,6 +3755,9 @@ ags_osc_renew_controller_real_set_data(AgsOscRenewController *osc_renew_controll
 		       "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_SERVER_FAILURE,
 		       NULL);
 
+	  free(type_string);
+	  free(path);
+	  
 	  return(start_response);
 	}
 
@@ -3733,6 +3793,9 @@ ags_osc_renew_controller_real_set_data(AgsOscRenewController *osc_renew_controll
 	  ags_osc_response_set_flags(osc_response,
 				     AGS_OSC_RESPONSE_OK);
 
+	  free(type_string);
+	  free(path);
+	  
 	  return(start_response);
 	}
       
@@ -3776,6 +3839,9 @@ ags_osc_renew_controller_real_set_data(AgsOscRenewController *osc_renew_controll
 		       "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_CHUNK_SIZE_EXCEEDED,
 		       NULL);
 	  
+	  free(type_string);
+	  free(path);
+	  
 	  return(start_response);
 	}
 
@@ -3814,6 +3880,9 @@ ags_osc_renew_controller_real_set_data(AgsOscRenewController *osc_renew_controll
 		     "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_SERVER_FAILURE,
 		     NULL);
 
+	free(type_string);
+	free(path);
+	  
 	return(start_response);
       }    
 
@@ -3830,6 +3899,9 @@ ags_osc_renew_controller_real_set_data(AgsOscRenewController *osc_renew_controll
 		   "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_UNKNOW_ARGUMENT,
 		   NULL);
 
+      free(type_string);
+      free(path);
+	  
       return(start_response);
     }
   }
@@ -3846,9 +3918,15 @@ ags_osc_renew_controller_real_set_data(AgsOscRenewController *osc_renew_controll
 		 "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_SERVER_FAILURE,
 		 NULL);
 
+    free(type_string);
+    free(path);
+	  
     return(start_response);
   }
   
+  free(type_string);
+  free(path);
+	  
   return(start_response);
 }
 

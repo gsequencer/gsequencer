@@ -310,9 +310,6 @@ ags_osc_config_controller_real_apply_config(AgsOscConfigController *osc_config_c
   ags_task_thread_append_task(task_thread,
 			      apply_sound_config);
 
-  free(type_tag);
-  free(config_data);
-  
   /* create response */
   osc_response = ags_osc_response_new();  
   start_response = g_list_prepend(start_response,
@@ -321,6 +318,9 @@ ags_osc_config_controller_real_apply_config(AgsOscConfigController *osc_config_c
   ags_osc_response_set_flags(osc_response,
 			     AGS_OSC_RESPONSE_OK);
 
+  free(type_tag);
+  free(config_data);
+  
   return(start_response);
 }
 

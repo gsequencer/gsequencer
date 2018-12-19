@@ -260,7 +260,8 @@ ags_osc_status_controller_real_get_status(AgsOscStatusController *osc_status_con
   ags_osc_buffer_util_get_string(message + 8,
 				 &type_tag, NULL);
 
-  success = (!strncmp(type_tag, ",", 2)) ? TRUE: FALSE;
+  success = (type_tag != NULL &&
+	     !strncmp(type_tag, ",", 2)) ? TRUE: FALSE;
 
   if(!success){
     ags_osc_response_set_flags(osc_response,
@@ -270,6 +271,10 @@ ags_osc_status_controller_real_get_status(AgsOscStatusController *osc_status_con
 		 "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_MALFORMED_REQUEST,
 		 NULL);
 
+    if(type_tag != NULL){
+      free(type_tag);
+    }
+    
     return(osc_response);
   }
 
@@ -324,6 +329,8 @@ ags_osc_status_controller_real_get_status(AgsOscStatusController *osc_status_con
   /* packet size */
   ags_osc_buffer_util_put_int32(packet,
 				packet_size);
+  
+  free(type_tag);
   
   return(start_response);
 }

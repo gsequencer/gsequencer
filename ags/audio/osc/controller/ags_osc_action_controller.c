@@ -548,10 +548,6 @@ ags_osc_action_controller_real_run_action(AgsOscActionController *osc_action_con
       }
     }
   }
-
-  free(type_tag);
-  free(path);
-  free(action);
   
   /* create response */
   osc_response = ags_osc_response_new();  
@@ -560,6 +556,10 @@ ags_osc_action_controller_real_run_action(AgsOscActionController *osc_action_con
   
   ags_osc_response_set_flags(osc_response,
 			     AGS_OSC_RESPONSE_OK);
+
+  free(type_tag);
+  free(path);
+  free(action);
   
   return(start_response);
 }

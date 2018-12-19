@@ -7,7 +7,10 @@ ags (2.1.13)
 	* fixed memory leaks of AgsOscFrontController
 	* fixed memory leaks of AgsOscActionController
 	* fixed memory leaks of AgsOscConfigController
-	* TODO:JK: fixed memory leaks of AgsOsc*Controller
+	* fixed memory leaks of AgsOscMeterController
+	* fixed memory leaks of AgsOscNodeController
+	* fixed memory leaks of AgsOscRenewController
+	* fixed memory leaks of AgsOscStatusController
 
 ags (2.1.12)
 
