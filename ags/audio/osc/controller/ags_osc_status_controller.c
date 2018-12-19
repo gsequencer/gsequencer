@@ -275,7 +275,7 @@ ags_osc_status_controller_real_get_status(AgsOscStatusController *osc_status_con
       free(type_tag);
     }
     
-    return(osc_response);
+    return(start_response);
   }
 
   g_object_get(osc_status_controller,

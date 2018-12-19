@@ -319,7 +319,7 @@ ags_osc_front_controller_finalize(GObject *gobject)
   pthread_mutex_destroy(osc_front_controller->delegate_mutex);
   free(osc_front_controller->delegate_mutex);
 
-  pthread_mutex_cond(osc_front_controller->delegate_cond);
+  pthread_cond_destroy(osc_front_controller->delegate_cond);
   free(osc_front_controller->delegate_cond);
   
   free(osc_front_controller->delegate_thread);

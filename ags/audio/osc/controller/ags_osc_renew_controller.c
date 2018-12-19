@@ -3303,7 +3303,7 @@ ags_osc_renew_controller_real_set_data(AgsOscRenewController *osc_renew_controll
 	  ags_osc_response_set_flags(osc_response,
 				     AGS_OSC_RESPONSE_OK);
 
-	  free(type_string);
+	  free(type_tag);
 	  free(path);
 	  
 	  return(start_response);
@@ -3323,7 +3323,7 @@ ags_osc_renew_controller_real_set_data(AgsOscRenewController *osc_renew_controll
 		       "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_SERVER_FAILURE,
 		       NULL);
 
-	  free(type_string);
+	  free(type_tag);
 	  free(path);
 	  
 	  return(start_response);
@@ -3361,7 +3361,7 @@ ags_osc_renew_controller_real_set_data(AgsOscRenewController *osc_renew_controll
 	  ags_osc_response_set_flags(osc_response,
 				     AGS_OSC_RESPONSE_OK);
 
-	  free(type_string);
+	  free(type_tag);
 	  free(path);
 	  
 	  return(start_response);
@@ -3400,7 +3400,7 @@ ags_osc_renew_controller_real_set_data(AgsOscRenewController *osc_renew_controll
 
 	g_list_free(start_soundcard);
       
-	free(type_string);
+	free(type_tag);
 	free(path);
 	  
 	return(start_response);
@@ -3532,7 +3532,7 @@ ags_osc_renew_controller_real_set_data(AgsOscRenewController *osc_renew_controll
 	  ags_osc_response_set_flags(osc_response,
 				     AGS_OSC_RESPONSE_OK);
 
-	  free(type_string);
+	  free(type_tag);
 	  free(path);
 	  
 	  return(start_response);
@@ -3552,7 +3552,7 @@ ags_osc_renew_controller_real_set_data(AgsOscRenewController *osc_renew_controll
 		       "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_SERVER_FAILURE,
 		       NULL);
 
-	  free(type_string);
+	  free(type_tag);
 	  free(path);
 	  
 	  return(start_response);
@@ -3590,7 +3590,7 @@ ags_osc_renew_controller_real_set_data(AgsOscRenewController *osc_renew_controll
 	  ags_osc_response_set_flags(osc_response,
 				     AGS_OSC_RESPONSE_OK);
 
-	  free(type_string);
+	  free(type_tag);
 	  free(path);
 	  
 	  return(start_response);
@@ -3629,7 +3629,7 @@ ags_osc_renew_controller_real_set_data(AgsOscRenewController *osc_renew_controll
 
 	g_list_free(start_sequencer);
       
-	free(type_string);
+	free(type_tag);
 	free(path);
 	  
 	return(start_response);
@@ -3761,7 +3761,7 @@ ags_osc_renew_controller_real_set_data(AgsOscRenewController *osc_renew_controll
 	  ags_osc_response_set_flags(osc_response,
 				     AGS_OSC_RESPONSE_OK);
 
-	  free(type_string);
+	  free(type_tag);
 	  free(path);
 	  
 	  return(start_response);
@@ -3781,7 +3781,7 @@ ags_osc_renew_controller_real_set_data(AgsOscRenewController *osc_renew_controll
 		       "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_SERVER_FAILURE,
 		       NULL);
 
-	  free(type_string);
+	  free(type_tag);
 	  free(path);
 	  
 	  return(start_response);
@@ -3819,7 +3819,7 @@ ags_osc_renew_controller_real_set_data(AgsOscRenewController *osc_renew_controll
 	  ags_osc_response_set_flags(osc_response,
 				     AGS_OSC_RESPONSE_OK);
 
-	  free(type_string);
+	  free(type_tag);
 	  free(path);
 	  
 	  return(start_response);
@@ -3867,7 +3867,7 @@ ags_osc_renew_controller_real_set_data(AgsOscRenewController *osc_renew_controll
 	  
 	  g_list_free(start_audio);
       
-	  free(type_string);
+	  free(type_tag);
 	  free(path);
 	  
 	  return(start_response);
@@ -3908,7 +3908,7 @@ ags_osc_renew_controller_real_set_data(AgsOscRenewController *osc_renew_controll
 
 	g_list_free(start_audio);
       
-	free(type_string);
+	free(type_tag);
 	free(path);
 	  
 	return(start_response);
@@ -3927,7 +3927,7 @@ ags_osc_renew_controller_real_set_data(AgsOscRenewController *osc_renew_controll
 		   "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_UNKNOW_ARGUMENT,
 		   NULL);
 
-      free(type_string);
+      free(type_tag);
       free(path);
 	  
       return(start_response);
@@ -3946,13 +3946,13 @@ ags_osc_renew_controller_real_set_data(AgsOscRenewController *osc_renew_controll
 		 "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_SERVER_FAILURE,
 		 NULL);
 
-    free(type_string);
+    free(type_tag);
     free(path);
 	  
     return(start_response);
   }
   
-  free(type_string);
+  free(type_tag);
   free(path);
 	  
   return(start_response);

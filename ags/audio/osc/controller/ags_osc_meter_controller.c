@@ -4727,12 +4727,14 @@ ags_osc_meter_controller_real_monitor_meter(AgsOscMeterController *osc_meter_con
 				 &type_tag, NULL);
 
   success = (type_tag != NULL &&
-	     strlen(type_tag) == 4 &&
+	     strlen(type_tag) == 3 &&
 	     !strncmp(type_tag, ",s", 2) &&
 	     (type_tag[2] == 'T' || type_tag[2] == 'F')) ? TRUE: FALSE;
 
   if(!success){
     osc_response = ags_osc_response_new();
+    start_response = g_list_prepend(start_response,
+				    osc_response);
       
     ags_osc_response_set_flags(osc_response,
 			       AGS_OSC_RESPONSE_ERROR);
@@ -4745,7 +4747,7 @@ ags_osc_meter_controller_real_monitor_meter(AgsOscMeterController *osc_meter_con
       free(type_tag);
     }
     
-    return(osc_response);
+    return(start_response);
   }
   
   /* read argument */
