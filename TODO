@@ -1,5 +1,3 @@
-* FIXME:JK: memory leaks
-* FIXME:JK: implement ranges and wildcards
 * TODO:JK: implemented AgsFileUploadController
 * TODO:JK: improved AgsServer
 * TODO:JK: implement ::seek() of AgsMidiParser and AgsOscParser
