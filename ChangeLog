@@ -1,3 +1,14 @@
+ags (2.1.14)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented reset soundcard property of AgsWindow
+	* fixed AgsXorgApplicationContext ref counting
+	* fixed AgsAudioApplicationContext ref counting
+	* TODO:JK: implemented AgsUiOscRenewController
+	* TODO:JK: extended user's handbook to cover OSC server preferences
+	* TODO:JK: added OSC server handbook
+	* TODO:JK: added unit-tests
+
 ags (2.1.13)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

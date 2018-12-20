@@ -979,8 +979,22 @@ ags_audio_application_context_set_default_soundcard(AgsSoundProvider *sound_prov
   /* set default soundcard */
   pthread_mutex_lock(application_context_mutex);
 
-  AGS_AUDIO_APPLICATION_CONTEXT(sound_provider)->default_soundcard = (AgsThread *) soundcard;
+  if(AGS_AUDIO_APPLICATION_CONTEXT(sound_provider)->default_soundcard == soundcard){
+    pthread_mutex_unlock(application_context_mutex);
 
+    return;
+  }
+
+  if(AGS_AUDIO_APPLICATION_CONTEXT(sound_provider)->default_soundcard != NULL){
+    g_object_unref(AGS_AUDIO_APPLICATION_CONTEXT(sound_provider)->default_soundcard);
+  }
+  
+  if(soundcard != NULL){
+    g_object_ref(soundcard);
+  }
+
+  AGS_AUDIO_APPLICATION_CONTEXT(sound_provider)->default_soundcard = (AgsThread *) soundcard;
+  
   pthread_mutex_unlock(application_context_mutex);
 }
 
@@ -1024,6 +1038,20 @@ ags_audio_application_context_set_default_soundcard_thread(AgsSoundProvider *sou
   /* set default soundcard thread */
   pthread_mutex_lock(application_context_mutex);
 
+  if(AGS_AUDIO_APPLICATION_CONTEXT(sound_provider)->default_soundcard_thread == soundcard_thread){
+    pthread_mutex_unlock(application_context_mutex);
+
+    return;
+  }
+
+  if(AGS_AUDIO_APPLICATION_CONTEXT(sound_provider)->default_soundcard_thread != NULL){
+    g_object_unref(AGS_AUDIO_APPLICATION_CONTEXT(sound_provider)->default_soundcard_thread);
+  }
+
+  if(soundcard_thread != NULL){
+    g_object_ref(soundcard_thread);
+  }
+  
   AGS_AUDIO_APPLICATION_CONTEXT(sound_provider)->default_soundcard_thread = (AgsThread *) soundcard_thread;
 
   pthread_mutex_unlock(application_context_mutex);
@@ -1775,6 +1803,9 @@ ags_audio_application_context_setup(AgsApplicationContext *application_context)
     soundcard = audio_application_context->soundcard->data;
   }  
 
+  ags_sound_provider_set_default_soundcard(AGS_SOUND_PROVIDER(audio_application_context),
+					   soundcard);
+
   g_free(soundcard_group);
 
   /* AgsSequencer */
@@ -1931,8 +1962,8 @@ ags_audio_application_context_setup(AgsApplicationContext *application_context)
 
     /* default soundcard thread */
     if(audio_application_context->default_soundcard_thread == NULL){
-      audio_application_context->default_soundcard_thread = soundcard_thread;
-      g_object_ref(soundcard_thread);
+      ags_sound_provider_set_default_soundcard_thread(AGS_SOUND_PROVIDER(audio_application_context),
+						      soundcard_thread);
     }
 
     /* default export thread */

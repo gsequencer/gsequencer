@@ -1026,6 +1026,9 @@ void
 ags_xorg_application_context_set_default_soundcard(AgsSoundProvider *sound_provider,
 						   GObject *soundcard)
 {
+  AgsMessageDelivery *message_delivery;
+  AgsMessageQueue *message_queue;
+
   pthread_mutex_t *application_context_mutex;
 
   /* get mutex */
@@ -1038,9 +1041,75 @@ ags_xorg_application_context_set_default_soundcard(AgsSoundProvider *sound_provi
   /* set default soundcard */
   pthread_mutex_lock(application_context_mutex);
 
+  if(AGS_XORG_APPLICATION_CONTEXT(sound_provider)->default_soundcard == soundcard){
+    pthread_mutex_unlock(application_context_mutex);
+
+    return;
+  }
+
+  if(AGS_XORG_APPLICATION_CONTEXT(sound_provider)->default_soundcard != NULL){
+    g_object_unref(AGS_XORG_APPLICATION_CONTEXT(sound_provider)->default_soundcard);
+  }
+  
+  if(soundcard != NULL){
+    g_object_ref(soundcard);
+  }
+  
   AGS_XORG_APPLICATION_CONTEXT(sound_provider)->default_soundcard = (AgsThread *) soundcard;
 
   pthread_mutex_unlock(application_context_mutex);
+
+  /* emit message */
+  message_delivery = ags_message_delivery_get_instance();
+
+  message_queue = ags_message_delivery_find_namespace(message_delivery,
+						      "libags-audio");
+
+  if(message_queue != NULL){
+    AgsMessageEnvelope *message;
+
+    xmlDoc *doc;
+    xmlNode *root_node;
+
+    /* specify message body */
+    doc = xmlNewDoc("1.0");
+
+    root_node = xmlNewNode(NULL,
+			   "ags-command");
+    xmlDocSetRootElement(doc, root_node);    
+
+    xmlNewProp(root_node,
+	       "method",
+	       "AgsSoundProvider::set-default-soundcard");
+
+    /* add message */
+    message = ags_message_envelope_alloc(AGS_XORG_APPLICATION_CONTEXT(sound_provider),
+					 NULL,
+					 doc);
+
+    /* set parameter */
+    message->n_params = 1;
+
+    message->parameter_name = (gchar **) malloc(2 * sizeof(gchar *));
+    message->value = g_new0(GValue,
+			    1);
+
+    /* audio channels */
+    message->parameter_name[0] = "default-soundcard";
+    
+    g_value_init(&(message->value[0]),
+		 G_TYPE_OBJECT);
+    g_value_set_object(&(message->value[0]),
+		       soundcard);
+
+    /* terminate string vector */
+    message->parameter_name[1] = NULL;
+    
+    /* add message */
+    ags_message_delivery_add_message(message_delivery,
+				     "libags-audio",
+				     message);
+  }
 }
 
 GObject*
@@ -1083,6 +1152,20 @@ ags_xorg_application_context_set_default_soundcard_thread(AgsSoundProvider *soun
   /* set default soundcard thread */
   pthread_mutex_lock(application_context_mutex);
 
+  if(AGS_XORG_APPLICATION_CONTEXT(sound_provider)->default_soundcard_thread == soundcard_thread){
+    pthread_mutex_unlock(application_context_mutex);
+  
+    return;
+  }
+
+  if(AGS_XORG_APPLICATION_CONTEXT(sound_provider)->default_soundcard_thread != NULL){
+    g_object_unref(AGS_XORG_APPLICATION_CONTEXT(sound_provider)->default_soundcard_thread);
+  }
+  
+  if(soundcard_thread != NULL){
+    g_object_ref(soundcard_thread);
+  }
+  
   AGS_XORG_APPLICATION_CONTEXT(sound_provider)->default_soundcard_thread = (AgsThread *) soundcard_thread;
 
   pthread_mutex_unlock(application_context_mutex);
@@ -1464,6 +1547,10 @@ ags_xorg_application_context_prepare(AgsApplicationContext *application_context)
   pthread_mutex_unlock(audio_loop->start_mutex);
 
   /* start gui thread */
+  g_timeout_add(1000 / 30,
+		(GSourceFunc) ags_xorg_application_context_message_monitor_timeout,
+		(gpointer) xorg_application_context);
+  
   ags_gui_thread_do_run(gui_thread);
 }
 
@@ -1991,6 +2078,9 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
 
   g_free(soundcard_group);
 
+  ags_sound_provider_set_default_soundcard(AGS_SOUND_PROVIDER(xorg_application_context),
+					   soundcard);
+  
   /* AgsSequencer */
   xorg_application_context->sequencer = NULL;
   sequencer = NULL;
@@ -2167,8 +2257,8 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
 
       /* default soundcard thread */
       if(xorg_application_context->default_soundcard_thread == NULL){
-	xorg_application_context->default_soundcard_thread = soundcard_thread;
-	g_object_ref(soundcard_thread);
+	ags_sound_provider_set_default_soundcard_thread(AGS_SOUND_PROVIDER(xorg_application_context),
+							soundcard_thread);
       }
 
       /* default export thread */
@@ -2917,6 +3007,57 @@ ags_xorg_application_context_clear_cache(AgsTaskThread *task_thread,
   //  pango_cairo_font_map_set_default(NULL);
   //  cairo_debug_reset_static_data();
   //  FcFini();
+}
+
+gboolean
+ags_xorg_application_context_message_monitor_timeout(AgsXorgApplicationContext *xorg_application_context)
+{
+  AgsMessageDelivery *message_delivery;
+
+  GList *message_start, *message;
+    
+  /* retrieve message */
+  message_delivery = ags_message_delivery_get_instance();
+
+  message_start = 
+    message = ags_message_delivery_find_sender(message_delivery,
+					       "libags-audio",
+					       xorg_application_context);
+  while(message != NULL){
+    xmlNode *root_node;
+
+    root_node = xmlDocGetRootElement(AGS_MESSAGE_ENVELOPE(message->data)->doc);
+      
+    if(!xmlStrncmp(root_node->name,
+		   "ags-command",
+		   12)){
+      if(!xmlStrncmp(xmlGetProp(root_node,
+				"method"),
+		     "AgsSoundProvider::set-default-soundcard",
+		     40)){
+	GObject *default_soundcard;
+
+	gint position;
+
+	position = ags_strv_index(AGS_MESSAGE_ENVELOPE(message->data)->parameter_name,
+				  "default-soundcard");
+
+	default_soundcard = g_value_get_object(&(AGS_MESSAGE_ENVELOPE(message->data)->value[position]));
+	
+	g_object_set(xorg_application_context->window,
+		     "soundcard", default_soundcard,
+		     NULL);
+      }
+    }
+    
+    ags_message_delivery_remove_message(message_delivery,
+					"libags-audio",
+					message->data);
+      
+    message = message->next;
+  }
+
+  return(TRUE);
 }
 
 AgsXorgApplicationContext*

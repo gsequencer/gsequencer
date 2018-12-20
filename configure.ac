@@ -20,7 +20,7 @@ AM_GNU_GETTEXT_VERSION([0.19.7])
 
 # options
 AC_ARG_ENABLE(strip-rt-events, [AS_HELP_STRING([--enable-strip-rt-events],
-			          [strip rt events (default is yes)])],
+					       [strip rt events (default is yes)])],
 	      [],
 	      [enable_strip_rt_events=yes])
 

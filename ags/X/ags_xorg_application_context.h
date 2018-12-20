@@ -93,6 +93,8 @@ struct _AgsXorgApplicationContextClass
 
 GType ags_xorg_application_context_get_type();
 
+gboolean ags_xorg_application_context_message_monitor_timeout(AgsXorgApplicationContext *xorg_application_context);
+
 AgsXorgApplicationContext* ags_xorg_application_context_new();
 
 #endif /*__AGS_XORG_APPLICATION_CONTEXT_H__*/

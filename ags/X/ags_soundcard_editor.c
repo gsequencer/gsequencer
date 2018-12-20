@@ -1128,7 +1128,6 @@ ags_soundcard_editor_add_port(AgsSoundcardEditor *soundcard_editor,
     return;
   }
   
-
   /* add new */
   g_object_get(application_context,
 	       "main-loop", &main_loop,

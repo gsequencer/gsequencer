@@ -589,7 +589,6 @@ ags_apply_sound_config_launch(AgsTask *task)
     if(ags_sound_provider_get_default_soundcard_thread(AGS_SOUND_PROVIDER(application_context)) == soundcard_thread){
       ags_sound_provider_set_default_soundcard_thread(AGS_SOUND_PROVIDER(application_context),
 						      NULL);
-      g_object_unref(soundcard_thread);
     }
   }
     
@@ -1064,7 +1063,6 @@ ags_apply_sound_config_launch(AgsTask *task)
     if(ags_sound_provider_get_default_soundcard_thread(AGS_SOUND_PROVIDER(application_context)) == NULL){
       ags_sound_provider_set_default_soundcard_thread(AGS_SOUND_PROVIDER(application_context),
 						      soundcard_thread);
-      g_object_ref(soundcard_thread);
     }
 
     list = list->next;
@@ -1119,14 +1117,14 @@ ags_apply_sound_config_launch(AgsTask *task)
 			  "ags-default-client");
 
     ags_pulse_server_connect_client(pulse_server);
-
-    ags_pulse_server_start_poll(pulse_server);
+    
+    ags_pulse_server_start_poll(pulse_server);    
   }
 
-  if(has_jack){
+  if(has_jack){    
     ags_jack_client_open((AgsJackClient *) jack_server->default_client,
 			 "ags-default-client");
-
+    
     ags_jack_server_connect_client(jack_server);
   }
 
