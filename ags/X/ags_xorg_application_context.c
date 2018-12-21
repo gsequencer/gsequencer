@@ -1960,6 +1960,26 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
       }else if(!g_ascii_strncasecmp(str,
 			      "jack",
 			      5)){
+	if(!is_output){
+	  AgsJackClient *input_client;
+
+	  g_object_get(jack_server,
+		       "input-jack-client", &input_client,
+		       NULL);
+
+	  if(input_client == NULL){
+	    input_client = ags_jack_client_new((GObject *) jack_server);
+	    g_object_set(jack_server,
+			 "input-jack-client", input_client,
+			 NULL);
+	    ags_jack_server_add_client(jack_server,
+				       input_client);
+    
+	    ags_jack_client_open((AgsJackClient *) input_client,
+				 "ags-input-client");	    
+	  }
+	}
+	
 	soundcard = ags_sound_server_register_soundcard(AGS_SOUND_SERVER(jack_server),
 							is_output);
 
@@ -2137,8 +2157,26 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
       if(!g_ascii_strncasecmp(str,
 			      "jack",
 			      5)){
+	AgsJackClient *input_client;
+
+	g_object_get(jack_server,
+		     "input-jack-client", &input_client,
+		     NULL);
+
+	if(input_client == NULL){
+	  input_client = ags_jack_client_new((GObject *) jack_server);
+	  g_object_set(jack_server,
+		       "input-jack-client", input_client,
+		       NULL);
+	  ags_jack_server_add_client(jack_server,
+				     input_client);
+    
+	  ags_jack_client_open((AgsJackClient *) input_client,
+			       "ags-input-client");	    
+	}
+
 	sequencer = ags_sound_server_register_sequencer(AGS_SOUND_SERVER(jack_server),
-							       FALSE);
+							FALSE);
 
 	has_jack = TRUE;
       }else if(!g_ascii_strncasecmp(str,

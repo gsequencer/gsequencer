@@ -67,7 +67,7 @@ ags_sound_container_base_init(AgsSoundContainerInterface *interface)
 
 /**
  * ags_sound_container_open:
- * @sound_countainer: the #AgsSoundcontainer
+ * @sound_container: the #AgsSoundcontainer
  * @filename: the filename
  * 
  * Open @sound_container.
@@ -94,7 +94,7 @@ ags_sound_container_open(AgsSoundContainer *sound_container, gchar *filename)
 
 /**
  * ags_sound_container_get_level_count:
- * @sound_countainer: the #AgsSoundcontainer
+ * @sound_container: the #AgsSoundcontainer
  * 
  * Get level count.
  * 
@@ -120,7 +120,7 @@ ags_sound_container_get_level_count(AgsSoundContainer *sound_container)
 
 /**
  * ags_sound_container_get_nesting_level:
- * @sound_countainer: the #AgsSoundcontainer
+ * @sound_container: the #AgsSoundcontainer
  * 
  * Get nesting level.
  * 
@@ -146,7 +146,7 @@ ags_sound_container_get_nesting_level(AgsSoundContainer *sound_container)
 
 /**
  * ags_sound_container_get_level_id:
- * @sound_countainer: the #AgsSoundcontainer
+ * @sound_container: the #AgsSoundcontainer
  * 
  * Get level id.
  * 
@@ -172,7 +172,7 @@ ags_sound_container_get_level_id(AgsSoundContainer *sound_container)
 
 /**
  * ags_sound_container_get_level_index:
- * @sound_countainer: the #AgsSoundcontainer
+ * @sound_container: the #AgsSoundcontainer
  * 
  * Get level index.
  * 
@@ -198,7 +198,7 @@ ags_sound_container_get_level_index(AgsSoundContainer *sound_container)
 
 /**
  * ags_sound_container_get_sublevel_name:
- * @sound_countainer: the #AgsSoundcontainer
+ * @sound_container: the #AgsSoundcontainer
  * 
  * Get sublevel names.
  * 
@@ -224,7 +224,7 @@ ags_sound_container_get_sublevel_name(AgsSoundContainer *sound_container)
 
 /**
  * ags_sound_container_level_up:
- * @sound_countainer: the #AgsSoundcontainer
+ * @sound_container: the #AgsSoundcontainer
  * @level_count: the count of levels to go up
  * 
  * Level up.
@@ -253,7 +253,7 @@ ags_sound_container_level_up(AgsSoundContainer *sound_container,
 
 /**
  * ags_sound_container_select_level_by_id:
- * @sound_countainer: the #AgsSoundcontainer
+ * @sound_container: the #AgsSoundcontainer
  * @level_id: the level id as string
  * 
  * Select level by id.
@@ -282,7 +282,7 @@ ags_sound_container_select_level_by_id(AgsSoundContainer *sound_container,
 
 /**
  * ags_sound_container_select_level_by_index:
- * @sound_countainer: the #AgsSoundcontainer
+ * @sound_container: the #AgsSoundcontainer
  * @level_index: the level index unsigned integer
  * 
  * Select level by index.
@@ -311,7 +311,7 @@ ags_sound_container_select_level_by_index(AgsSoundContainer *sound_container,
 
 /**
  * ags_sound_container_get_resource_all:
- * @sound_countainer: the #AgsSoundcontainer
+ * @sound_container: the #AgsSoundcontainer
  * 
  * Get all resources as a #GList-struct.
  * 
@@ -337,7 +337,7 @@ ags_sound_container_get_resource_all(AgsSoundContainer *sound_container)
 
 /**
  * ags_sound_container_get_resource_by_name:
- * @sound_countainer: the #AgsSoundcontainer
+ * @sound_container: the #AgsSoundcontainer
  * @resource_name: the resource name
  * 
  * Get resources by name as a #GList-struct.
@@ -366,7 +366,7 @@ ags_sound_container_get_resource_by_name(AgsSoundContainer *sound_container,
 
 /**
  * ags_sound_container_get_resource_by_index:
- * @sound_countainer: the #AgsSoundcontainer
+ * @sound_container: the #AgsSoundcontainer
  * @resource_index: the index
  * 
  * Get resources by index as a #GList-struct.
@@ -395,7 +395,7 @@ ags_sound_container_get_resource_by_index(AgsSoundContainer *sound_container,
 
 /**
  * ags_sound_container_get_resource_current:
- * @sound_countainer: the #AgsSoundcontainer
+ * @sound_container: the #AgsSoundcontainer
  * 
  * Get resources by index as a #GList-struct.
  * 
@@ -421,7 +421,7 @@ ags_sound_container_get_resource_current(AgsSoundContainer *sound_container)
 
 /**
  * ags_sound_container_close:
- * @sound_countainer: the #AgsSoundcontainer
+ * @sound_container: the #AgsSoundcontainer
  * 
  * Close @sound_container.
  * 

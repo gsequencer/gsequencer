@@ -1,3 +1,8 @@
+ags (2.1.15)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* decoupled AgsJackClient for input from JACK
+
 ags (2.1.14)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

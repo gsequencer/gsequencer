@@ -103,6 +103,7 @@ enum{
   PROP_URL,
   PROP_DEFAULT_SOUNDCARD,
   PROP_DEFAULT_JACK_CLIENT,
+  PROP_INPUT_JACK_CLIENT,
   PROP_JACK_CLIENT,
 };
 
@@ -244,6 +245,22 @@ ags_jack_server_class_init(AgsJackServerClass *jack_server)
 				  param_spec);
 
   /**
+   * AgsJackServer:input-jack-client:
+   *
+   * The input jack client.
+   * 
+   * Since: 2.1.15
+   */
+  param_spec = g_param_spec_object("input-jack-client",
+				   i18n_pspec("input jack client"),
+				   i18n_pspec("The input jack client"),
+				   AGS_TYPE_JACK_CLIENT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_INPUT_JACK_CLIENT,
+				  param_spec);
+
+  /**
    * AgsJackServer:jack-client:
    *
    * The jack client list.
@@ -343,6 +360,8 @@ ags_jack_server_init(AgsJackServer *jack_server)
   jack_server->default_soundcard = NULL;
 
   jack_server->default_client = NULL;
+  jack_server->input_client = NULL;
+
   jack_server->client = NULL;
 }
 
@@ -470,6 +489,33 @@ ags_jack_server_set_property(GObject *gobject,
       pthread_mutex_unlock(jack_server_mutex);
     }
     break;
+  case PROP_INPUT_JACK_CLIENT:
+    {
+      AgsJackClient *input_client;
+
+      input_client = (AgsJackClient *) g_value_get_object(value);
+
+      pthread_mutex_lock(jack_server_mutex);
+
+      if(jack_server->input_client == (GObject *) input_client){
+	pthread_mutex_unlock(jack_server_mutex);
+
+	return;
+      }
+
+      if(jack_server->input_client != NULL){
+	g_object_unref(G_OBJECT(jack_server->input_client));
+      }
+
+      if(input_client != NULL){
+	g_object_ref(G_OBJECT(input_client));
+      }
+
+      jack_server->input_client = (GObject *) input_client;
+
+      pthread_mutex_unlock(jack_server_mutex);
+    }
+    break;
   case PROP_JACK_CLIENT:
     {
       GObject *client;
@@ -554,6 +600,15 @@ ags_jack_server_get_property(GObject *gobject,
       pthread_mutex_unlock(jack_server_mutex);
     }
     break;
+  case PROP_INPUT_JACK_CLIENT:
+    {
+      pthread_mutex_lock(jack_server_mutex);
+
+      g_value_set_object(value, jack_server->input_client);
+
+      pthread_mutex_unlock(jack_server_mutex);
+    }
+    break;
   case PROP_JACK_CLIENT:
     {
       pthread_mutex_lock(jack_server_mutex);
@@ -598,6 +653,13 @@ ags_jack_server_dispose(GObject *gobject)
     g_object_unref(G_OBJECT(jack_server->default_client));
 
     jack_server->default_client = NULL;
+  }
+
+  /* input client */
+  if(jack_server->input_client != NULL){
+    g_object_unref(G_OBJECT(jack_server->input_client));
+
+    jack_server->input_client = NULL;
   }
   
   /* client */
@@ -649,6 +711,11 @@ ags_jack_server_finalize(GObject *gobject)
   /* default client */
   if(jack_server->default_client != NULL){
     g_object_unref(G_OBJECT(jack_server->default_client));
+  }
+  
+  /* input client */
+  if(jack_server->input_client != NULL){
+    g_object_unref(G_OBJECT(jack_server->input_client));
   }
   
   /* client */
@@ -1261,7 +1328,9 @@ ags_jack_server_register_soundcard(AgsSoundServer *sound_server,
 				   gboolean is_output)
 {
   AgsJackServer *jack_server;
+  AgsJackClient *jack_client;
   AgsJackClient *default_client;
+  AgsJackClient *input_client;
   AgsJackPort *jack_port;
   AgsJackDevout *jack_devout;
   AgsJackDevin *jack_devin;
@@ -1303,21 +1372,28 @@ ags_jack_server_register_soundcard(AgsSoundServer *sound_server,
 
   application_context= jack_server->application_context;
 
-  default_client = jack_server->default_client;
+  jack_client = 
+    default_client = jack_server->default_client;
+  input_client = jack_server->input_client;
 
   n_soundcards = jack_server->n_soundcards;
   
   pthread_mutex_unlock(jack_server_mutex);
 
-  if(default_client == NULL){
-    default_client = ags_jack_client_new((GObject *) jack_server);
+  if(!is_output &&
+     input_client != NULL){
+    jack_client = input_client;
+  }
+  
+  if(jack_client == NULL){
+    jack_client = ags_jack_client_new((GObject *) jack_server);
     g_object_set(jack_server,
-		 "default-jack-client", default_client,
+		 "default-jack-client", jack_client,
 		 NULL);
     ags_jack_server_add_client(jack_server,
-			       default_client);
+			       jack_client);
     
-    ags_jack_client_open((AgsJackClient *) default_client,
+    ags_jack_client_open((AgsJackClient *) jack_client,
 			 "ags-default-client");
     initial_set = TRUE;
   }
@@ -1325,14 +1401,14 @@ ags_jack_server_register_soundcard(AgsSoundServer *sound_server,
   /* get jack client mutex */
   pthread_mutex_lock(ags_jack_client_get_class_mutex());
   
-  jack_client_mutex = default_client->obj_mutex;
+  jack_client_mutex = jack_client->obj_mutex;
   
   pthread_mutex_unlock(ags_jack_client_get_class_mutex());
 
   /* get client */
   pthread_mutex_lock(jack_client_mutex);
 
-  client = default_client->client;
+  client = jack_client->client;
 
   pthread_mutex_unlock(jack_client_mutex);
   
@@ -1351,7 +1427,7 @@ ags_jack_server_register_soundcard(AgsSoundServer *sound_server,
 			  n_soundcards);
     
     g_object_set(AGS_JACK_DEVOUT(jack_devout),
-		 "jack-client", default_client,
+		 "jack-client", jack_client,
 		 "device", str,
 		 NULL);
     g_free(str);
@@ -1375,11 +1451,11 @@ ags_jack_server_register_soundcard(AgsSoundServer *sound_server,
 			    i);
       
 #ifdef AGS_DEBUG
-      g_message("%s %x", str, default_client);
+      g_message("%s %x", str, jack_client);
 #endif
       
-      jack_port = ags_jack_port_new((GObject *) default_client);
-      ags_jack_client_add_port(default_client,
+      jack_port = ags_jack_port_new((GObject *) jack_client);
+      ags_jack_client_add_port(jack_client,
 			       (GObject *) jack_port);
 
       g_object_set(jack_devout,
@@ -1409,7 +1485,7 @@ ags_jack_server_register_soundcard(AgsSoundServer *sound_server,
 
     ags_jack_devout_realloc_buffer(jack_devout);
 
-    g_object_set(default_client,
+    g_object_set(jack_client,
 		 "device", jack_devout,
 		 NULL);
     
@@ -1427,7 +1503,7 @@ ags_jack_server_register_soundcard(AgsSoundServer *sound_server,
 			  n_soundcards);
 
     g_object_set(AGS_JACK_DEVIN(jack_devin),
-		 "jack-client", default_client,
+		 "jack-client", jack_client,
 		 "device", str,
 		 NULL);
     g_free(str);
@@ -1451,11 +1527,11 @@ ags_jack_server_register_soundcard(AgsSoundServer *sound_server,
 			    i);
       
 #ifdef AGS_DEBUG
-      g_message("%s %x", str, default_client);
+      g_message("%s %x", str, jack_client);
 #endif
       
-      jack_port = ags_jack_port_new((GObject *) default_client);
-      ags_jack_client_add_port(default_client,
+      jack_port = ags_jack_port_new((GObject *) jack_client);
+      ags_jack_client_add_port(jack_client,
 			       (GObject *) jack_port);
 
       g_object_set(jack_devin,
@@ -1485,7 +1561,7 @@ ags_jack_server_register_soundcard(AgsSoundServer *sound_server,
 
     ags_jack_devin_realloc_buffer(jack_devin);
 
-    g_object_set(default_client,
+    g_object_set(jack_client,
 		 "device", jack_devin,
 		 NULL);
     
@@ -1505,7 +1581,9 @@ ags_jack_server_unregister_soundcard(AgsSoundServer *sound_server,
 				     GObject *soundcard)
 {
   AgsJackServer *jack_server;
+  AgsJackClient *jack_client;
   AgsJackClient *default_client;
+  AgsJackClient *input_client;
 
   GList *list_start, *list;
   GList *port;
@@ -1524,9 +1602,17 @@ ags_jack_server_unregister_soundcard(AgsSoundServer *sound_server,
   /* the default client */
   g_object_get(jack_server,
 	       "default-jack-client", &default_client,
+	       "input-jack-client", &input_client,
 	       NULL);
 
-  if(default_client == NULL){
+  jack_client = default_client;
+  
+  if(AGS_IS_JACK_DEVIN(soundcard) &&
+     input_client != NULL){
+    jack_client = input_client;
+  }
+
+  if(jack_client == NULL){
     g_warning("GSequencer - no jack client");
     
     return;
@@ -1541,7 +1627,7 @@ ags_jack_server_unregister_soundcard(AgsSoundServer *sound_server,
 
     while(list != NULL){
       ags_jack_port_unregister(list->data);
-      ags_jack_client_remove_port(default_client,
+      ags_jack_client_remove_port(jack_client,
 				  list->data);
     
       list = list->next;
@@ -1557,7 +1643,7 @@ ags_jack_server_unregister_soundcard(AgsSoundServer *sound_server,
 
     while(list != NULL){
       ags_jack_port_unregister(list->data);
-      ags_jack_client_remove_port(default_client,
+      ags_jack_client_remove_port(jack_client,
 				  list->data);
     
       list = list->next;
@@ -1566,7 +1652,7 @@ ags_jack_server_unregister_soundcard(AgsSoundServer *sound_server,
     g_list_free(list_start);
   }
   
-  ags_jack_client_remove_device(default_client,
+  ags_jack_client_remove_device(jack_client,
 				soundcard);
 
   g_object_get(default_client,
@@ -1574,15 +1660,23 @@ ags_jack_server_unregister_soundcard(AgsSoundServer *sound_server,
 	       NULL);
   
   if(port == NULL){
-    /* reset n-soundcards */
-    pthread_mutex_lock(jack_server_mutex);
+    g_object_get(input_client,
+		 "port", &port,
+		 NULL);
+    
+    if(port == NULL){    
+      /* reset n-soundcards */
+      pthread_mutex_lock(jack_server_mutex);
 
-    jack_server->n_soundcards = 0;
+      jack_server->n_soundcards = 0;
 
-    pthread_mutex_unlock(jack_server_mutex);
+      pthread_mutex_unlock(jack_server_mutex);
+    }else{
+      g_list_free(port);
+    }
+  }else{
+    g_list_free(port);
   }
-
-  g_list_free(port);
 }
 
 GObject*
@@ -1590,7 +1684,9 @@ ags_jack_server_register_sequencer(AgsSoundServer *sound_server,
 				   gboolean is_output)
 {
   AgsJackServer *jack_server;
+  AgsJackClient *jack_client;
   AgsJackClient *default_client;
+  AgsJackClient *input_client;
   AgsJackPort *jack_port;
   AgsJackMidiin *jack_midiin;
 
@@ -1628,36 +1724,43 @@ ags_jack_server_register_sequencer(AgsSoundServer *sound_server,
 
   application_context= jack_server->application_context;
 
-  default_client = jack_server->default_client;
+  jack_client = 
+    default_client = jack_server->default_client;
+  input_client = jack_server->input_client;
 
   n_sequencers = jack_server->n_sequencers;
   
   pthread_mutex_unlock(jack_server_mutex);
   
-  /* the default client */
-  if(default_client == NULL){
-    default_client = ags_jack_client_new((GObject *) jack_server);
+  if(!is_output &&
+     input_client != NULL){
+    jack_client = input_client;
+  }
+  
+  /* the jack client */
+  if(jack_client == NULL){
+    jack_client = ags_jack_client_new((GObject *) jack_server);
     g_object_set(jack_server,
-		 "default-jack-client", default_client,
+		 "default-jack-client", jack_client,
 		 NULL);
     ags_jack_server_add_client(jack_server,
-			       default_client);
+			       jack_client);
     
-    ags_jack_client_open((AgsJackClient *) default_client,
+    ags_jack_client_open((AgsJackClient *) jack_client,
 			 "ags-default-client");
   }
 
   /* get jack client mutex */
   pthread_mutex_lock(ags_jack_client_get_class_mutex());
   
-  jack_client_mutex = default_client->obj_mutex;
+  jack_client_mutex = jack_client->obj_mutex;
   
   pthread_mutex_unlock(ags_jack_client_get_class_mutex());
 
   /* get client */
   pthread_mutex_lock(jack_client_mutex);
 
-  client = default_client->client;
+  client = jack_client->client;
 
   pthread_mutex_unlock(jack_client_mutex);
 
@@ -1672,15 +1775,15 @@ ags_jack_server_register_sequencer(AgsSoundServer *sound_server,
 			n_sequencers);
 
   g_object_set(AGS_JACK_MIDIIN(jack_midiin),
-	       "jack-client", default_client,
+	       "jack-client", jack_client,
 	       "device", str,
 	       NULL);
 
   g_free(str);
   
   /* register sequencer */
-  jack_port = ags_jack_port_new((GObject *) default_client);
-  ags_jack_client_add_port(default_client,
+  jack_port = ags_jack_port_new((GObject *) jack_client);
+  ags_jack_client_add_port(jack_client,
 			   (GObject *) jack_port);
 
   g_object_set(jack_midiin,
@@ -1699,7 +1802,7 @@ ags_jack_server_register_sequencer(AgsSoundServer *sound_server,
 			 FALSE, TRUE,
 			 FALSE);
     
-  g_object_set(default_client,
+  g_object_set(jack_client,
 	       "device", jack_midiin,
 	       NULL);
 
@@ -1718,6 +1821,8 @@ ags_jack_server_unregister_sequencer(AgsSoundServer *sound_server,
 				     GObject *sequencer)
 {
   AgsJackServer *jack_server;
+  AgsJackClient *jack_client;
+  AgsJackClient *input_client;
   AgsJackClient *default_client;
 
   GList *list_start, *list;
@@ -1737,9 +1842,17 @@ ags_jack_server_unregister_sequencer(AgsSoundServer *sound_server,
   /* the default client */
   g_object_get(jack_server,
 	       "default-jack-client", &default_client,
+	       "input-jack-client", &input_client,
 	       NULL);
 
-  if(default_client == NULL){
+  jack_client = default_client;
+  
+  if(AGS_IS_JACK_MIDIIN(sequencer) &&
+     input_client != NULL){
+    jack_client = input_client;
+  }
+
+  if(jack_client == NULL){
     g_warning("GSequencer - no jack client");
     
     return;
@@ -1753,7 +1866,7 @@ ags_jack_server_unregister_sequencer(AgsSoundServer *sound_server,
 
   while(list != NULL){
     ags_jack_port_unregister(list->data);
-    ags_jack_client_remove_port(default_client,
+    ags_jack_client_remove_port(jack_client,
 				list->data);
     
 
@@ -1762,7 +1875,7 @@ ags_jack_server_unregister_sequencer(AgsSoundServer *sound_server,
 
   g_list_free(list_start);
 
-  ags_jack_client_remove_device(default_client,
+  ags_jack_client_remove_device(jack_client,
 				sequencer);
 
   g_object_get(default_client,
@@ -1770,15 +1883,23 @@ ags_jack_server_unregister_sequencer(AgsSoundServer *sound_server,
 	       NULL);
   
   if(port == NULL){
-    /* reset n-sequencers */
-    pthread_mutex_lock(jack_server_mutex);
+    g_object_get(input_client,
+		 "port", &port,
+		 NULL);
+    
+    if(port == NULL){    
+      /* reset n-sequencers */
+      pthread_mutex_lock(jack_server_mutex);
 
-    jack_server->n_sequencers = 0;
+      jack_server->n_sequencers = 0;
 
-    pthread_mutex_unlock(jack_server_mutex);
+      pthread_mutex_unlock(jack_server_mutex);
+    }else{
+      g_list_free(port);
+    }
+  }else{
+    g_list_free(port);
   }
-
-  g_list_free(port);
 }
 
 /**

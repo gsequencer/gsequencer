@@ -540,16 +540,20 @@ ags_apply_sound_config_launch(AgsTask *task)
   /* stop sound server */
   if(jack_server != NULL){
 #ifdef AGS_WITH_JACK      
-    AgsJackClient *jack_client;
+    AgsJackClient *default_client;
+    AgsJackClient *input_client;
 
     g_object_get(jack_server,
-		 "default-jack-client", &jack_client,
+		 "default-jack-client", &default_client,
+		 "input-jack-client", &input_client,
 		 NULL);
     
     ags_jack_server_disconnect_client(jack_server);
 
     ags_jack_server_remove_client(jack_server,
-				  jack_client);
+				  default_client);
+    ags_jack_server_remove_client(jack_server,
+				  input_client);
 #endif
   }
 
@@ -800,6 +804,26 @@ ags_apply_sound_config_launch(AgsTask *task)
       }else if(!g_ascii_strncasecmp(str,
 				    "jack",
 				    5)){
+	if(!is_output){
+	  AgsJackClient *input_client;
+
+	  g_object_get(jack_server,
+		       "input-jack-client", &input_client,
+		       NULL);
+
+	  if(input_client == NULL){
+	    input_client = ags_jack_client_new((GObject *) jack_server);
+	    g_object_set(jack_server,
+			 "input-jack-client", input_client,
+			 NULL);
+	    ags_jack_server_add_client(jack_server,
+				       input_client);
+    
+	    ags_jack_client_open((AgsJackClient *) input_client,
+				 "ags-input-client");	    
+	  }
+	}
+
 	soundcard = ags_sound_server_register_soundcard(AGS_SOUND_SERVER(jack_server),
 							is_output);
 
@@ -973,6 +997,24 @@ ags_apply_sound_config_launch(AgsTask *task)
       if(!g_ascii_strncasecmp(str,
 			      "jack",
 			      5)){
+	AgsJackClient *input_client;
+
+	g_object_get(jack_server,
+		     "input-jack-client", &input_client,
+		     NULL);
+
+	if(input_client == NULL){
+	  input_client = ags_jack_client_new((GObject *) jack_server);
+	  g_object_set(jack_server,
+		       "input-jack-client", input_client,
+		       NULL);
+	  ags_jack_server_add_client(jack_server,
+				     input_client);
+    
+	  ags_jack_client_open((AgsJackClient *) input_client,
+			       "ags-input-client");	    
+	}
+
 	sequencer = ags_sound_server_register_sequencer(AGS_SOUND_SERVER(jack_server),
 							FALSE);
 

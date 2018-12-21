@@ -86,6 +86,8 @@ struct _AgsJackServer
   GObject *default_soundcard;  
 
   GObject *default_client;
+  GObject *input_client;
+  
   GList *client;
 };
 
