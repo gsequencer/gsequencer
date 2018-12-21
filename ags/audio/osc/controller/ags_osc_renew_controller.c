@@ -37,6 +37,7 @@
 #include <ags/audio/task/ags_set_format.h>
 
 #include <ags/audio/osc/ags_osc_response.h>
+#include <ags/audio/osc/ags_osc_buffer_util.h>
 
 #include <ags/i18n.h>
 

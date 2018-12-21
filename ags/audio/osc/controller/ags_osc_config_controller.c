@@ -24,6 +24,7 @@
 #include <ags/audio/task/ags_apply_sound_config.h>
 
 #include <ags/audio/osc/ags_osc_response.h>
+#include <ags/audio/osc/ags_osc_buffer_util.h>
 
 #include <ags/i18n.h>
 

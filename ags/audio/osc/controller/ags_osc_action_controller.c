@@ -32,6 +32,7 @@
 #include <ags/audio/task/ags_stop_sequencer.h>
 
 #include <ags/audio/osc/ags_osc_response.h>
+#include <ags/audio/osc/ags_osc_buffer_util.h>
 
 #include <ags/i18n.h>
 

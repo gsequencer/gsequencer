@@ -1,3 +1,7 @@
+* TODO:JK: implemented AgsUiOscRenewController
+* TODO:JK: extended user's handbook to cover OSC server preferences
+* TODO:JK: added OSC server handbook
+* TODO:JK: added unit-tests
 * TODO:JK: implemented AgsFileUploadController
 * TODO:JK: improved AgsServer
 * TODO:JK: implement ::seek() of AgsMidiParser and AgsOscParser
