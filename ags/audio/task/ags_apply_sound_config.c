@@ -550,13 +550,6 @@ ags_apply_sound_config_launch(AgsTask *task)
 
     ags_jack_server_remove_client(jack_server,
 				  jack_client);
-    
-    g_object_set(jack_server,
-		 "default-jack-client", NULL,
-		 NULL);
-
-    jack_server->n_soundcards = 0;
-    jack_server->n_sequencers = 0;
 #endif
   }
 
@@ -577,13 +570,6 @@ ags_apply_sound_config_launch(AgsTask *task)
 
     ags_pulse_server_remove_client(pulse_server,
 				   pulse_client);
-
-    g_object_set(pulse_server,
-		 "default-pulse-client", NULL,
-		 NULL);
-
-    pulse_server->n_soundcards = 0;
-    pulse_server->n_sequencers = 0;
     
     pulse_server->main_loop = NULL;
     pulse_server->main_loop_api = NULL;
@@ -672,6 +658,28 @@ ags_apply_sound_config_launch(AgsTask *task)
 				   NULL);
   ags_sound_provider_set_sequencer(AGS_SOUND_PROVIDER(application_context),
 				   NULL);
+
+  if(jack_server != NULL){
+#ifdef AGS_WITH_JACK      
+    g_object_set(jack_server,
+		 "default-jack-client", NULL,
+		 NULL);
+
+    jack_server->n_soundcards = 0;
+    jack_server->n_sequencers = 0;
+#endif
+  }
+
+  if(pulse_server != NULL){
+#ifdef AGS_WITH_PULSE
+    g_object_set(pulse_server,
+		 "default-pulse-client", NULL,
+		 NULL);
+
+    pulse_server->n_soundcards = 0;
+    pulse_server->n_sequencers = 0;
+#endif
+  }
 
   /* run dispose */
   orig_soundcard = start_orig_soundcard;

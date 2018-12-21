@@ -38,10 +38,12 @@ ags_preferences_response_callback(GtkDialog *dialog, gint response_id, gpointer 
   case GTK_RESPONSE_OK:
     {
       ags_applicable_apply(AGS_APPLICABLE(dialog));
-      
-      if(apply){
-	ags_applicable_reset(AGS_APPLICABLE(dialog));
 
+      if(apply){
+#if 0      
+	ags_applicable_reset(AGS_APPLICABLE(dialog));
+#endif
+	
 	break;
       }
     }
