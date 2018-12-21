@@ -4665,6 +4665,8 @@ ags_simple_file_read_oscillator(AgsSimpleFile *simple_file, xmlNode *node, AgsOs
 
       gtk_spin_button_set_value(gobject->sync_point[i],
 				current);
+
+      endptr++;
     }
   }
 }
@@ -8224,15 +8226,16 @@ ags_simple_file_write_oscillator(AgsSimpleFile *simple_file, xmlNode *parent, Ag
 
   str = NULL;
 
-  for(i = 0; i < oscillator->sync_point_count; i++){
+  for(i = 0; i < 2 * oscillator->sync_point_count; i++){
     tmp = str;
 
     if(str != NULL){
       str = g_strdup_printf("%s %f",
-			    str, gtk_spin_button_get_value(oscillator->sync_point[i]));
+			    str,
+			    gtk_spin_button_get_value(oscillator->sync_point[i]));
     }else{
       str = g_strdup_printf("%f",
-			    gtk_spin_button_get_value(oscillator->sync_point[i]));
+			    gtk_spin_button_get_value(oscillator->sync_point[2 * i]));
     }
     
     g_free(tmp);
