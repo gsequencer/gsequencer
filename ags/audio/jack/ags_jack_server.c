@@ -2235,6 +2235,12 @@ ags_jack_server_connect_client(AgsJackServer *jack_server)
   client = client_start;
 
   while(client != NULL){
+    /* client name */
+    g_object_get(client->data,
+		 "client-name", &client_name,
+		 NULL);
+    
+
     /* get jack client mutex */
     pthread_mutex_lock(ags_jack_client_get_class_mutex());
   
@@ -2255,6 +2261,42 @@ ags_jack_server_connect_client(AgsJackServer *jack_server)
     ags_jack_client_activate(client->data);
 
     g_free(client_name);
+    
+    /* iterate */
+    client = client->next;
+  }
+
+  g_list_free(client_start);
+}
+
+/**
+ * ags_jack_server_disconnect_client:
+ * @jack_server: the #AgsJackServer
+ *
+ * Connect all clients.
+ *
+ * Since: 2.1.14
+ */
+void
+ags_jack_server_disconnect_client(AgsJackServer *jack_server)
+{
+  GList *client_start, *client;
+
+  if(!AGS_IS_JACK_SERVER(jack_server)){
+    return;
+  }
+
+  g_object_get(jack_server,
+	       "jack-client", &client_start,
+	       NULL);
+  
+  client = client_start;
+
+  while(client != NULL){
+    /* close */
+    ags_jack_client_deactivate(client->data);
+    
+    ags_jack_client_close((AgsJackClient *) client->data);
     
     /* iterate */
     client = client->next;

@@ -1144,6 +1144,89 @@ ags_pulse_client_open(AgsPulseClient *pulse_client,
 }
 
 /**
+ * ags_pulse_client_close:
+ * @pulse_client: the #AgsPulseClient
+ *
+ * Close the pulseaudio client's connection.
+ *
+ * Since: 2.1.14
+ */
+void
+ags_pulse_client_close(AgsPulseClient *pulse_client)
+{
+  AgsPulseServer *pulse_server;
+
+#ifdef AGS_WITH_PULSE
+  pa_context *context;
+#else
+  gpointer context;
+#endif
+
+  GList *start_device;
+  
+  pthread_mutex_t *pulse_client_mutex;
+
+  if(!AGS_IS_PULSE_CLIENT(pulse_client)){
+    return;
+  }
+
+  /* get pulse client mutex */
+  pthread_mutex_lock(ags_pulse_client_get_class_mutex());
+  
+  pulse_client_mutex = pulse_client->obj_mutex;
+  
+  pthread_mutex_unlock(ags_pulse_client_get_class_mutex());
+
+  /* check already closed */
+  pthread_mutex_lock(pulse_client_mutex);
+
+  if(pulse_client->context == NULL){
+    pthread_mutex_unlock(pulse_client_mutex);
+
+    g_message("Advanced Gtk+ Sequencer pulseaudio client already closed");
+    
+    return;
+  } 
+
+  pulse_server = pulse_client->pulse_server;
+  
+  pthread_mutex_unlock(pulse_client_mutex);
+  
+  g_message("Advanced Gtk+ Sequencer close pulseaudio client");
+
+  /* unset context */
+#ifdef AGS_WITH_PULSE
+  pthread_mutex_lock(pulse_client_mutex);
+
+  context = pulse_client->context;
+
+  pthread_mutex_unlock(pulse_client_mutex);  
+
+  pa_context_disconnect(context);
+
+  pthread_mutex_lock(pulse_client_mutex);
+
+  pulse_client->context = NULL;
+  
+  pthread_mutex_unlock(pulse_client_mutex);
+#endif
+
+  g_object_get(pulse_client,
+	       "device", &start_device,
+	       NULL);
+
+  g_list_free_full(start_device,
+		   g_object_unref);
+
+  pthread_mutex_lock(pulse_client_mutex);
+
+  g_list_free(pulse_client->device);
+  pulse_client->device = NULL;
+
+  pthread_mutex_unlock(pulse_client_mutex);
+}
+
+/**
  * ags_pulse_client_activate:
  * @pulse_client: the #AgsPulseClient
  *
@@ -1257,17 +1340,6 @@ ags_pulse_client_deactivate(AgsPulseClient *pulse_client)
   if(context == NULL){
     return;
   }
-  
-#ifdef AGS_WITH_PULSE
-  pa_context_disconnect(context);
-#endif
-
-  /* set context */
-  pthread_mutex_lock(pulse_client_mutex);
-
-  pulse_client->context = NULL;
-  
-  pthread_mutex_unlock(pulse_client_mutex);
   
   ags_pulse_client_unset_flags(pulse_client, (AGS_PULSE_CLIENT_ACTIVATED |
 					      AGS_PULSE_CLIENT_READY));

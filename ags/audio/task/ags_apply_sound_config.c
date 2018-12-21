@@ -539,17 +539,25 @@ ags_apply_sound_config_launch(AgsTask *task)
   
   /* stop sound server */
   if(jack_server != NULL){
-    list = jack_server->client;
-
-    while(list != NULL){
 #ifdef AGS_WITH_JACK      
-      jack_client_close(AGS_JACK_CLIENT(list->data)->client);
+    AgsJackClient *jack_client;
 
-      ags_jack_client_deactivate(list->data);
+    g_object_get(jack_server,
+		 "default-jack-client", &jack_client,
+		 NULL);
+    
+    ags_jack_server_disconnect_client(jack_server);
+
+    ags_jack_server_remove_client(jack_server,
+				  jack_client);
+    
+    g_object_set(jack_server,
+		 "default-jack-client", NULL,
+		 NULL);
+
+    jack_server->n_soundcards = 0;
+    jack_server->n_sequencers = 0;
 #endif
-
-      list = list->next;
-    }
   }
 
   if(pulse_server != NULL){
@@ -559,11 +567,26 @@ ags_apply_sound_config_launch(AgsTask *task)
     g_object_get(pulse_server,
 		 "default-pulse-client", &pulse_client,
 		 NULL);
+
+    if(pulse_server->main_loop != NULL){
+      pa_mainloop_quit(pulse_server->main_loop,
+		       0);
+    }
     
-    ags_pulse_client_deactivate(pulse_client);
+    ags_pulse_server_disconnect_client(pulse_server);
+
+    ags_pulse_server_remove_client(pulse_server,
+				   pulse_client);
+
+    g_object_set(pulse_server,
+		 "default-pulse-client", NULL,
+		 NULL);
+
+    pulse_server->n_soundcards = 0;
+    pulse_server->n_sequencers = 0;
     
-    pa_mainloop_quit(pulse_server->main_loop,
-		     0);
+    pulse_server->main_loop = NULL;
+    pulse_server->main_loop_api = NULL;
 #endif
   }
   
@@ -1113,18 +1136,12 @@ ags_apply_sound_config_launch(AgsTask *task)
   }
 
   if(has_pulse){
-    ags_pulse_client_open((AgsPulseClient *) pulse_server->default_client,
-			  "ags-default-client");
-
     ags_pulse_server_connect_client(pulse_server);
-    
-    ags_pulse_server_start_poll(pulse_server);    
+
+    ags_pulse_server_start_poll(pulse_server);
   }
 
   if(has_jack){    
-    ags_jack_client_open((AgsJackClient *) jack_server->default_client,
-			 "ags-default-client");
-    
     ags_jack_server_connect_client(jack_server);
   }
 

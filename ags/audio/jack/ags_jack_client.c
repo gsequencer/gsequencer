@@ -1098,6 +1098,84 @@ ags_jack_client_open(AgsJackClient *jack_client,
 }
 
 /**
+ * ags_jack_client_close:
+ * @jack_client: the #AgsJackClient
+ *
+ * Close the JACK client's connection.
+ *
+ * Since: 2.0.0
+ */
+void
+ags_jack_client_close(AgsJackClient *jack_client)
+{
+#ifdef AGS_WITH_JACK
+  jack_client_t *client;
+#else
+  gpointer client;
+#endif
+
+  GList *start_device;
+  
+  pthread_mutex_t *jack_client_mutex;
+
+  if(!AGS_IS_JACK_CLIENT(jack_client)){
+    return;
+  }
+
+  /* get jack client mutex */
+  pthread_mutex_lock(ags_jack_client_get_class_mutex());
+  
+  jack_client_mutex = jack_client->obj_mutex;
+  
+  pthread_mutex_unlock(ags_jack_client_get_class_mutex());
+
+  /* check already closed */
+  pthread_mutex_lock(jack_client_mutex);
+
+  if(jack_client->client == NULL){
+    pthread_mutex_unlock(jack_client_mutex);
+    
+    g_message("Advanced Gtk+ Sequencer JACK client already closed");
+    
+    return;
+  } 
+
+  pthread_mutex_unlock(jack_client_mutex);
+  
+  g_message("Advanced Gtk+ Sequencer close JACK client");
+
+#ifdef AGS_WITH_JACK
+  pthread_mutex_lock(jack_client_mutex);
+
+  client = jack_client->client;
+
+  pthread_mutex_unlock(jack_client_mutex);
+
+  jack_client_close(client);
+
+  pthread_mutex_lock(jack_client_mutex);
+
+  jack_client->client = NULL;
+  
+  pthread_mutex_unlock(jack_client_mutex);
+#endif
+
+  g_object_get(jack_client,
+	       "device", &start_device,
+	       NULL);
+
+  g_list_free_full(start_device,
+		   g_object_unref);
+
+  pthread_mutex_lock(jack_client_mutex);
+
+  g_list_free(jack_client->device);
+  jack_client->device = NULL;
+
+  pthread_mutex_unlock(jack_client_mutex);
+}
+
+/**
  * ags_jack_client_activate:
  * @jack_client: the #AgsJackClient
  *
@@ -1226,13 +1304,7 @@ ags_jack_client_deactivate(AgsJackClient *jack_client)
   jack_deactivate(client);
 #endif
 
-  /* set client */
-  pthread_mutex_lock(jack_client_mutex);
-
-  jack_client->client = NULL;
-
-  pthread_mutex_unlock(jack_client_mutex);
-
+  /* set flags */
   ags_jack_client_unset_flags(jack_client, AGS_JACK_CLIENT_ACTIVATED);
 }
 

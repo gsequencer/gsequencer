@@ -4,6 +4,7 @@ ags (2.1.14)
 	* implemented reset soundcard property of AgsWindow
 	* fixed AgsXorgApplicationContext ref counting
 	* fixed AgsAudioApplicationContext ref counting
+	* fixed add/remove pulseaudio soundcard by configuration
 	* TODO:JK: implemented AgsUiOscRenewController
 	* TODO:JK: extended user's handbook to cover OSC server preferences
 	* TODO:JK: added OSC server handbook

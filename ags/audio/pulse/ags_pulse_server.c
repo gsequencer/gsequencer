@@ -333,8 +333,8 @@ ags_pulse_server_init(AgsPulseServer *pulse_server)
   ags_uuid_generate(pulse_server->uuid);
   
 #ifdef AGS_WITH_PULSE
-  pulse_server->main_loop = pa_mainloop_new();
-  pulse_server->main_loop_api = pa_mainloop_get_api(pulse_server->main_loop);
+  pulse_server->main_loop = NULL;
+  pulse_server->main_loop_api = NULL;
 #else
   pulse_server->main_loop = NULL;
   pulse_server->main_loop_api = NULL;
@@ -1312,6 +1312,16 @@ ags_pulse_server_register_soundcard(AgsSoundServer *sound_server,
   /* get some fields */
   pthread_mutex_lock(pulse_server_mutex);
 
+  if(pulse_server->main_loop == NULL){
+#ifdef AGS_WITH_PULSE
+    pulse_server->main_loop = pa_mainloop_new();
+    pulse_server->main_loop_api = pa_mainloop_get_api(pulse_server->main_loop);
+#else
+    pulse_server->main_loop = NULL;
+    pulse_server->main_loop_api = NULL;
+#endif
+  }
+  
   application_context= pulse_server->application_context;
 
   default_client = pulse_server->default_client;
@@ -1987,6 +1997,8 @@ ags_pulse_server_connect_client(AgsPulseServer *pulse_server)
 
   gchar *client_name;
   
+  pthread_mutex_t *pulse_client_mutex;
+
   if(!AGS_IS_PULSE_SERVER(pulse_server)){
     return;
   }
@@ -2003,6 +2015,20 @@ ags_pulse_server_connect_client(AgsPulseServer *pulse_server)
 		 "client-name", &client_name,
 		 NULL);
     
+    /* get pulse client mutex */
+    pthread_mutex_lock(ags_pulse_client_get_class_mutex());
+  
+    pulse_client_mutex = AGS_PULSE_CLIENT(client->data)->obj_mutex;
+  
+    pthread_mutex_unlock(ags_pulse_client_get_class_mutex());
+
+    /* client name */
+    pthread_mutex_lock(pulse_client_mutex);
+
+    client_name = g_strdup(client_name);
+    
+    pthread_mutex_unlock(pulse_client_mutex);
+
     /* open */
     ags_pulse_client_open((AgsPulseClient *) client->data,
 			  client_name);
@@ -2014,6 +2040,43 @@ ags_pulse_server_connect_client(AgsPulseServer *pulse_server)
 
   g_list_free(client_start);
 }
+
+/**
+ * ags_pulse_server_disconnect_client:
+ * @pulse_server: the #AgsPulseServer
+ *
+ * Disconnect all clients.
+ *
+ * Since: 2.1.14
+ */
+void
+ags_pulse_server_disconnect_client(AgsPulseServer *pulse_server)
+{
+  GList *client_start, *client;
+  
+  if(!AGS_IS_PULSE_SERVER(pulse_server)){
+    return;
+  }
+
+  g_object_get(pulse_server,
+	       "pulse-client", &client_start,
+	       NULL);
+  
+  client = client_start;
+
+  while(client != NULL){
+    /* close */
+    ags_pulse_client_deactivate(client->data);
+    
+    ags_pulse_client_close((AgsPulseClient *) client->data);
+
+    /* iterate */
+    client = client->next;
+  }
+
+  g_list_free(client_start);
+}
+
 
 void*
 ags_pulse_server_do_poll_loop(void *ptr)

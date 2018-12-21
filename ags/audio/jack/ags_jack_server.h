@@ -117,6 +117,7 @@ void ags_jack_server_remove_client(AgsJackServer *jack_server,
 				   GObject *jack_client);
 
 void ags_jack_server_connect_client(AgsJackServer *jack_server);
+void ags_jack_server_disconnect_client(AgsJackServer *jack_server);
 
 AgsJackServer* ags_jack_server_new(AgsApplicationContext *application_context,
 				   gchar *url);

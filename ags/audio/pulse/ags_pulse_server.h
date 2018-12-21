@@ -124,6 +124,7 @@ void ags_pulse_server_remove_client(AgsPulseServer *pulse_server,
 				    GObject *pulse_client);
 
 void ags_pulse_server_connect_client(AgsPulseServer *pulse_server);
+void ags_pulse_server_disconnect_client(AgsPulseServer *pulse_server);
 
 void ags_pulse_server_start_poll(AgsPulseServer *pulse_server);
 

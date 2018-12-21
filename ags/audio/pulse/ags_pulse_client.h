@@ -106,6 +106,7 @@ GList* ags_pulse_client_find(GList *pulse_client,
 
 void ags_pulse_client_open(AgsPulseClient *pulse_client,
 			   gchar *client_name);
+void ags_pulse_client_close(AgsPulseClient *pulse_client);
 
 void ags_pulse_client_add_device(AgsPulseClient *pulse_client,
 				 GObject *pulse_device);

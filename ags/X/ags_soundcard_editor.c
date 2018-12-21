@@ -587,14 +587,17 @@ ags_soundcard_editor_apply(AgsApplicable *applicable)
 			    "jack",
 			    5)){
       use_jack = TRUE;
+      use_pulse = FALSE;
     }else if(!g_ascii_strncasecmp(backend,
 			    "alsa",
 			    5)){
       use_alsa = TRUE;
+      use_pulse = FALSE;
     }else if(!g_ascii_strncasecmp(backend,
 				  "oss",
 				  4)){
       use_oss = TRUE;
+      use_pulse = FALSE;
     }
   }
 
@@ -678,8 +681,10 @@ ags_soundcard_editor_apply(AgsApplicable *applicable)
   }
 
   /* handle */
+#ifdef AGS_DEBUG
   g_message("%s", device);
-
+#endif
+  
   if(use_core_audio){
     ags_config_set_value(config,
 			 soundcard_group,
@@ -1227,7 +1232,6 @@ ags_soundcard_editor_remove_port(AgsSoundcardEditor *soundcard_editor,
 {
   AgsWindow *window;
   AgsPreferences *preferences;
-  GtkDialog *dialog;
   
   AgsCoreAudioServer *core_audio_server;
   AgsCoreAudioDevout *core_audio_devout;
@@ -1293,14 +1297,14 @@ ags_soundcard_editor_remove_port(AgsSoundcardEditor *soundcard_editor,
       
       use_core_audio = TRUE;
     }else if(!g_ascii_strncasecmp(backend,
-			    "pulse",
-			    6)){
+				  "pulse",
+				  6)){
       server_type = AGS_TYPE_PULSE_SERVER;
       
       use_pulse = TRUE;
     }else if(!g_ascii_strncasecmp(backend,
-			    "jack",
-			    5)){
+				  "jack",
+				  5)){
       server_type = AGS_TYPE_JACK_SERVER;
 
       use_jack = TRUE;
@@ -1315,7 +1319,7 @@ ags_soundcard_editor_remove_port(AgsSoundcardEditor *soundcard_editor,
   sound_server = ags_sound_provider_get_sound_server(AGS_SOUND_PROVIDER(application_context));
 
   if((sound_server = ags_list_util_find_type(sound_server,
-						    server_type)) != NULL){
+					     server_type)) != NULL){
     if(use_core_audio){
       server = 
 	core_audio_server = AGS_CORE_AUDIO_SERVER(sound_server->data);
@@ -1398,7 +1402,7 @@ ags_soundcard_editor_remove_port(AgsSoundcardEditor *soundcard_editor,
 #if 0
   if(server != NULL){
     ags_sound_server_unregister_soundcard(AGS_SOUND_SERVER(server),
-						 soundcard);
+					  soundcard);
   }
 #endif
   
@@ -1426,16 +1430,6 @@ ags_soundcard_editor_remove_port(AgsSoundcardEditor *soundcard_editor,
     soundcard_editor->soundcard_thread = NULL;
   }
 #endif
-
-  /* notify user about safe GSequencer */
-  dialog = gtk_message_dialog_new(preferences,
-				  GTK_DIALOG_MODAL,
-				  GTK_MESSAGE_INFO,
-				  GTK_BUTTONS_OK,
-				  "After finished your modifications you should safe your file");
-  g_signal_connect(dialog, "response",
-		   G_CALLBACK(gtk_widget_destroy), NULL);
-  gtk_widget_show_all(dialog);
 }
 
 void
@@ -1583,7 +1577,6 @@ ags_soundcard_editor_remove_soundcard(AgsSoundcardEditor *soundcard_editor,
 {
   AgsWindow *window;
   AgsPreferences *preferences;
-  GtkDialog *dialog;
   
   AgsThread *main_loop;
   AgsThread *soundcard_thread;
@@ -1658,16 +1651,6 @@ ags_soundcard_editor_remove_soundcard(AgsSoundcardEditor *soundcard_editor,
     soundcard_editor->soundcard_thread = NULL;
   }
 #endif
-
-  /* notify user about safe GSequencer */
-  dialog = gtk_message_dialog_new(preferences,
-				  GTK_DIALOG_MODAL,
-				  GTK_MESSAGE_INFO,
-				  GTK_BUTTONS_OK,
-				  "After finished your modifications you should safe your file");
-  g_signal_connect(dialog, "response",
-		   G_CALLBACK(gtk_widget_destroy), NULL);
-  gtk_widget_show_all(dialog);
 }
 
 void

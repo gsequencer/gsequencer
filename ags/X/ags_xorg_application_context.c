@@ -1211,6 +1211,12 @@ ags_xorg_application_context_set_soundcard(AgsSoundProvider *sound_provider,
   /* set soundcard */
   pthread_mutex_lock(application_context_mutex);
 
+  if(AGS_XORG_APPLICATION_CONTEXT(sound_provider)->soundcard == soundcard){
+    pthread_mutex_unlock(application_context_mutex);
+
+    return;
+  }
+  
   if(AGS_XORG_APPLICATION_CONTEXT(sound_provider)->soundcard != NULL){
     g_list_free(AGS_XORG_APPLICATION_CONTEXT(sound_provider)->soundcard);
   }
@@ -1259,6 +1265,12 @@ ags_xorg_application_context_set_sequencer(AgsSoundProvider *sound_provider,
 
   /* set sequencer */
   pthread_mutex_lock(application_context_mutex);
+
+  if(AGS_XORG_APPLICATION_CONTEXT(sound_provider)->sequencer == sequencer){
+    pthread_mutex_unlock(application_context_mutex);
+
+    return;
+  }
 
   if(AGS_XORG_APPLICATION_CONTEXT(sound_provider)->sequencer != NULL){
     g_list_free(AGS_XORG_APPLICATION_CONTEXT(sound_provider)->sequencer);
@@ -1333,6 +1345,12 @@ ags_xorg_application_context_set_audio(AgsSoundProvider *sound_provider,
   /* set audio */
   pthread_mutex_lock(application_context_mutex);
 
+  if(AGS_XORG_APPLICATION_CONTEXT(sound_provider)->audio == audio){
+    pthread_mutex_unlock(application_context_mutex);
+
+    return;
+  }
+
   if(AGS_XORG_APPLICATION_CONTEXT(sound_provider)->audio != NULL){
     g_list_free(AGS_XORG_APPLICATION_CONTEXT(sound_provider)->audio);
   }
@@ -1381,6 +1399,12 @@ ags_xorg_application_context_set_osc_server(AgsSoundProvider *sound_provider,
 
   /* set osc_server */
   pthread_mutex_lock(application_context_mutex);
+
+  if(AGS_XORG_APPLICATION_CONTEXT(sound_provider)->osc_server == osc_server){
+    pthread_mutex_unlock(application_context_mutex);
+
+    return;
+  }
 
   if(AGS_XORG_APPLICATION_CONTEXT(sound_provider)->osc_server != NULL){
     g_list_free(AGS_XORG_APPLICATION_CONTEXT(sound_provider)->osc_server);
@@ -2784,8 +2808,10 @@ ags_xorg_application_context_quit(AgsApplicationContext *application_context)
     pulse_server = list->data;
 
 #ifdef AGS_WITH_PULSE
-    pa_mainloop_quit(pulse_server->main_loop,
-		     0);
+    if(pulse_server->main_loop != NULL){
+      pa_mainloop_quit(pulse_server->main_loop,
+		       0);
+    }
 #endif
  
     list = list->next;
