@@ -72,13 +72,13 @@ ags_soundcard_editor_backend_changed_callback(GtkComboBox *combo,
 				  5)){
       ags_soundcard_editor_load_alsa_card(soundcard_editor);
 
-      gtk_widget_hide((GtkWidget *) soundcard_editor->port_hbox);
+      //      gtk_widget_hide((GtkWidget *) soundcard_editor->port_hbox);
     }else if(!g_ascii_strncasecmp(str,
 				  "oss",
 				  4)){
       ags_soundcard_editor_load_oss_card(soundcard_editor);
 
-      gtk_widget_hide((GtkWidget *) soundcard_editor->port_hbox);
+      //      gtk_widget_hide((GtkWidget *) soundcard_editor->port_hbox);
     }
   }
 }

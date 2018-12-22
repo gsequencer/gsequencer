@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: gsequencer 2.1.15\n"
+"Project-Id-Version: gsequencer 2.1.16\n"
 "Report-Msgid-Bugs-To: jkraehemann@gmail.com\n"
-"POT-Creation-Date: 2018-12-21 17:39+0100\n"
+"POT-Creation-Date: 2018-12-22 12:31+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -197,12 +197,12 @@ msgid "channel"
 msgstr ""
 
 #: ags/X/ags_export_soundcard.c:169 ags/X/ags_sequencer_editor.c:151
-#: ags/X/ags_soundcard_editor.c:157
+#: ags/X/ags_soundcard_editor.c:159
 msgid "backend"
 msgstr ""
 
 #: ags/X/ags_export_soundcard.c:217 ags/X/ags_input_collection_editor.c:248
-#: ags/X/ags_output_collection_editor.c:248 ags/X/ags_soundcard_editor.c:205
+#: ags/X/ags_output_collection_editor.c:248 ags/X/ags_soundcard_editor.c:207
 msgid "soundcard"
 msgstr ""
 
@@ -543,7 +543,7 @@ msgstr ""
 msgid "enabled"
 msgstr ""
 
-#: ags/X/ags_resize_editor.c:159 ags/X/ags_soundcard_editor.c:285
+#: ags/X/ags_resize_editor.c:159 ags/X/ags_soundcard_editor.c:287
 msgid "audio channels"
 msgstr ""
 
@@ -575,19 +575,19 @@ msgstr ""
 msgid "password"
 msgstr ""
 
-#: ags/X/ags_soundcard_editor.c:251
+#: ags/X/ags_soundcard_editor.c:253
 msgid "capability"
 msgstr ""
 
-#: ags/X/ags_soundcard_editor.c:307
+#: ags/X/ags_soundcard_editor.c:309
 msgid "samplerate"
 msgstr ""
 
-#: ags/X/ags_soundcard_editor.c:328
+#: ags/X/ags_soundcard_editor.c:330
 msgid "buffer size"
 msgstr ""
 
-#: ags/X/ags_soundcard_editor.c:349
+#: ags/X/ags_soundcard_editor.c:351
 msgid "format"
 msgstr ""
 

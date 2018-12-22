@@ -34,12 +34,14 @@ void ags_soundcard_editor_class_init(AgsSoundcardEditorClass *soundcard_editor);
 void ags_soundcard_editor_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_soundcard_editor_applicable_interface_init(AgsApplicableInterface *applicable);
 void ags_soundcard_editor_init(AgsSoundcardEditor *soundcard_editor);
+static void ags_soundcard_editor_finalize(GObject *gobject);
+
 void ags_soundcard_editor_connect(AgsConnectable *connectable);
 void ags_soundcard_editor_disconnect(AgsConnectable *connectable);
+
 void ags_soundcard_editor_set_update(AgsApplicable *applicable, gboolean update);
 void ags_soundcard_editor_apply(AgsApplicable *applicable);
 void ags_soundcard_editor_reset(AgsApplicable *applicable);
-static void ags_soundcard_editor_finalize(GObject *gobject);
 
 /**
  * SECTION:ags_soundcard_editor
@@ -390,6 +392,14 @@ ags_soundcard_editor_init(AgsSoundcardEditor *soundcard_editor)
 		   0, 0);
 }
 
+static void
+ags_soundcard_editor_finalize(GObject *gobject)
+{
+  //TODO:JK: implement me
+  
+  G_OBJECT_CLASS(ags_soundcard_editor_parent_class)->finalize(gobject);
+}
+
 void
 ags_soundcard_editor_connect(AgsConnectable *connectable)
 {
@@ -494,14 +504,6 @@ ags_soundcard_editor_disconnect(AgsConnectable *connectable)
 		      G_CALLBACK(ags_soundcard_editor_format_changed_callback),
 		      soundcard_editor,
 		      NULL);
-}
-
-static void
-ags_soundcard_editor_finalize(GObject *gobject)
-{
-  //TODO:JK: implement me
-  
-  G_OBJECT_CLASS(ags_soundcard_editor_parent_class)->finalize(gobject);
 }
 
 void
