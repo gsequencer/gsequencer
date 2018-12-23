@@ -5268,7 +5268,7 @@ ags_audio_set_max_audio_channels(AgsAudio *audio,
  * ags_audio_set_max_pads:
  * @audio: the #AgsAudio
  * @channel_type: the #GType of channel, either AGS_TYPE_OUTPUT or AGS_TYPE_INPUT
- * @max_audio_channels: maximum of audio channels
+ * @max_pads: maximum of pads
  * 
  * Set maximum pads of @channel_type.
  * 
@@ -6164,6 +6164,7 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
  * ags_audio_set_audio_channels:
  * @audio: the #AgsAudio
  * @audio_channels: new audio channels
+ * @audio_channels_old: old audio channels
  *
  * Resize audio channels AgsInput will be allocated first.
  *
@@ -7180,6 +7181,7 @@ ags_audio_real_set_pads(AgsAudio *audio,
  * @audio: the #AgsAudio
  * @channel_type: AGS_TYPE_INPUT or AGS_TYPE_OUTPUT
  * @pads: new pad count
+ * @pads_old: old pad count
  *
  * Set pad count for the apropriate @channel_type
  *

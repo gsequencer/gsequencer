@@ -50,9 +50,11 @@ typedef struct _AgsAudioClass AgsAudioClass;
  * @AGS_AUDIO_SYNC: input/output is mapped synchronously
  * @AGS_AUDIO_ASYNC: input/output is mapped asynchronously
  * @AGS_AUDIO_OUTPUT_HAS_RECYCLING: output has recycling
+ * @AGS_AUDIO_OUTPUT_HAS_SYNTH: output has synth
  * @AGS_AUDIO_INPUT_HAS_RECYCLING: input has recycling
- * @AGS_AUDIO_INPUT_HAS_FILE_LINK: input takes file
- * @AGS_AUDIO_INPUT_HAS_SYNTH_GENERATOR: input takes synth
+ * @AGS_AUDIO_INPUT_HAS_SYNTH: input has synth
+ * @AGS_AUDIO_INPUT_HAS_FILE: input takes file
+ * @AGS_AUDIO_CAN_NEXT_ACTIVE: dispatch can next active
  * @AGS_AUDIO_SKIP_OUTPUT: skip output as processing audio data
  * @AGS_AUDIO_SKIP_INPUT: skip input as processing audio data
  * @AGS_AUDIO_BYPASS: don't apply any data
