@@ -1,7 +1,8 @@
 ags (2.1.18)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
-	* improved code of AgsSeekSoundcard task
+	* improved code of AgsSetBufferSize task
+	* improved code of AgsSetSamplerate task
 	* fixed AgsSeekSoundcard:offset set/get property
 	* fixed AgsSetDevice:device set property
 	* added ags_resize_audio_test.c
@@ -11,6 +12,7 @@ ags (2.1.18)
 	* added ags_set_device_test.c
 	* added ags_set_format_test.c
 	* added ags_set_muted_test.c
+	* added ags_set_samplerate_test.c
 
 ags (2.1.17)
 

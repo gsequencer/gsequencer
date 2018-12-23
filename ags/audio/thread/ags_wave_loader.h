@@ -42,7 +42,7 @@ typedef struct _AgsWaveLoaderClass AgsWaveLoaderClass;
 typedef enum{
   AGS_WAVE_LOADER_DO_REPLACE      = 1,
   AGS_WAVE_LOADER_HAS_COMPLETED   = 1 <<  1,
-};
+}AgsWaveLoaderFlags;
 
 struct _AgsWaveLoader
 {

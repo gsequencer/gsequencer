@@ -40,7 +40,7 @@ typedef struct _AgsContextMenuClass AgsContextMenuClass;
 
 typedef enum{
   AGS_CONTEXT_MENU_CONNECTED        = 1,
-};
+}AgsContextMenuFlags;
 
 struct _AgsContextMenu
 {
