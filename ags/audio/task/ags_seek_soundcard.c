@@ -208,7 +208,7 @@ ags_seek_soundcard_set_property(GObject *gobject,
     break;
   case PROP_OFFSET:
     {
-      seek_soundcard->offset = g_value_get_uint(value);
+      seek_soundcard->offset = g_value_get_int64(value);
     }
     break;
   case PROP_WHENCE:
@@ -240,7 +240,7 @@ ags_seek_soundcard_get_property(GObject *gobject,
     break;
   case PROP_OFFSET:
     {
-      g_value_set_uint(value, seek_soundcard->offset);
+      g_value_set_int64(value, seek_soundcard->offset);
     }
     break;
   case PROP_WHENCE:

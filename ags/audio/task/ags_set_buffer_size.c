@@ -327,6 +327,8 @@ ags_set_buffer_size_soundcard(AgsSetBufferSize *set_buffer_size, GObject *soundc
   AgsThread *audio_loop;
   
   AgsApplicationContext *application_context;
+
+  GObject *default_soundcard;
   
   GList *list_start, *list;
 
@@ -336,7 +338,7 @@ ags_set_buffer_size_soundcard(AgsSetBufferSize *set_buffer_size, GObject *soundc
   guint buffer_size;
   guint format;
 
-  application_context = ags_soundcard_get_application_context(AGS_SOUNDCARD(soundcard));
+  application_context = ags_application_context_get_instance();
 
   /* get main loop */
   g_object_get(application_context,
@@ -351,16 +353,18 @@ ags_set_buffer_size_soundcard(AgsSetBufferSize *set_buffer_size, GObject *soundc
 			    &format);
     
   /* reset soundcards */
-  list =
-    list_start = ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(application_context));
+  default_soundcard = ags_sound_provider_get_default_soundcard(AGS_SOUND_PROVIDER(application_context));
 
-  if(soundcard == list->data){
+  if(soundcard == default_soundcard){
     /* reset soundcards if applied to first soundcard */
     ags_soundcard_set_presets(AGS_SOUNDCARD(soundcard),
 			      channels,
 			      samplerate,
 			      set_buffer_size->buffer_size,
 			      format);
+
+    list =
+      list_start = ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(application_context));
 
     while(list != NULL){
       if(list->data != soundcard){
@@ -385,6 +389,8 @@ ags_set_buffer_size_soundcard(AgsSetBufferSize *set_buffer_size, GObject *soundc
 
       list = list->next;
     }
+      
+    g_list_free(list_start);
     
     /* reset thread frequency */
     thread_frequency = samplerate / set_buffer_size->buffer_size + AGS_SOUNDCARD_DEFAULT_OVERCLOCK;
@@ -394,8 +400,6 @@ ags_set_buffer_size_soundcard(AgsSetBufferSize *set_buffer_size, GObject *soundc
   }else{
     g_warning("buffer size can only adjusted of your very first soundcard");
   }
-  
-  g_list_free(list_start);
 }
 
 /**

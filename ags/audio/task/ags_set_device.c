@@ -184,7 +184,17 @@ ags_set_device_set_property(GObject *gobject,
     break;
   case PROP_DEVICE:
     {
-      set_device->device = g_value_get_string(value);
+      gchar *device;
+      
+      device = g_value_get_string(value);
+
+      if(device == set_device->device){
+	return;
+      }
+      
+      g_free(set_device->device);
+      
+      set_device->device = g_strdup(device);
     }
     break;
   default:
@@ -232,7 +242,7 @@ ags_set_device_dispose(GObject *gobject)
 
     set_device->scope = NULL;
   }
-  
+
   /* call parent */
   G_OBJECT_CLASS(ags_set_device_parent_class)->dispose(gobject);
 }
@@ -247,6 +257,8 @@ ags_set_device_finalize(GObject *gobject)
   if(set_device->scope != NULL){
     g_object_unref(set_device->scope);
   }
+
+  g_free(set_device->device);
   
   /* call parent */
   G_OBJECT_CLASS(ags_set_device_parent_class)->finalize(gobject);

@@ -1,3 +1,14 @@
+ags (2.1.18)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed AgsSeekSoundcard:offset set/get property
+	* fixed AgsSetDevice:device set property
+	* added ags_resize_audio_test.c
+	* added ags_seek_soundcard_test.c
+	* added ags_set_audio_channels_test.c
+	* added ags_set_buffer_size_test.c
+	* added ags_set_device_test.c
+
 ags (2.1.17)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

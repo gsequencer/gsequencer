@@ -169,7 +169,12 @@ check_PROGRAMS += \
 	ags_remove_note_test \
 	ags_remove_soundcard_test \
 	ags_reset_amplitude_test \
-	ags_reset_peak_test
+	ags_reset_peak_test \
+	ags_resize_audio_test \
+	ags_seek_soundcard_test \
+	ags_set_audio_channels_test \
+	ags_set_buffer_size_test \
+	ags_set_device_test
 
 # unit tests - libgsequencer
 check_PROGRAMS += \
@@ -1086,6 +1091,36 @@ ags_reset_peak_test_SOURCES = ags/test/audio/task/ags_reset_peak_test.c
 ags_reset_peak_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
 ags_reset_peak_test_LDFLAGS = -pthread $(LDFLAGS)
 ags_reset_peak_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
+
+# resize audio unit test
+ags_resize_audio_test_SOURCES = ags/test/audio/task/ags_resize_audio_test.c
+ags_resize_audio_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
+ags_resize_audio_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_resize_audio_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
+
+# seek soundcard unit test
+ags_seek_soundcard_test_SOURCES = ags/test/audio/task/ags_seek_soundcard_test.c
+ags_seek_soundcard_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
+ags_seek_soundcard_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_seek_soundcard_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
+
+# set audio channels unit test
+ags_set_audio_channels_test_SOURCES = ags/test/audio/task/ags_set_audio_channels_test.c
+ags_set_audio_channels_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
+ags_set_audio_channels_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_set_audio_channels_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
+
+# set buffer size unit test
+ags_set_buffer_size_test_SOURCES = ags/test/audio/task/ags_set_buffer_size_test.c
+ags_set_buffer_size_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
+ags_set_buffer_size_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_set_buffer_size_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
+
+# set device unit test
+ags_set_device_test_SOURCES = ags/test/audio/task/ags_set_device_test.c
+ags_set_device_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
+ags_set_device_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_set_device_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
 
 # xorg application context unit test
 ags_xorg_application_context_test_SOURCES = ags/test/X/ags_xorg_application_context_test.c
