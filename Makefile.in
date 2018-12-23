@@ -231,6 +231,7 @@ check_PROGRAMS = ags_buffer_util_test$(EXEEXT) \
 	ags_seek_soundcard_test$(EXEEXT) \
 	ags_set_audio_channels_test$(EXEEXT) \
 	ags_set_buffer_size_test$(EXEEXT) ags_set_device_test$(EXEEXT) \
+	ags_set_format_test$(EXEEXT) ags_set_muted_test$(EXEEXT) \
 	ags_xorg_application_context_test$(EXEEXT) $(am__EXEEXT_1)
 
 #TODO:JK: fix tests after refactoring
@@ -3591,6 +3592,28 @@ ags_set_device_test_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
 	$(ags_set_device_test_CFLAGS) $(CFLAGS) \
 	$(ags_set_device_test_LDFLAGS) $(LDFLAGS) -o $@
+am_ags_set_format_test_OBJECTS = ags/test/audio/task/set_format_test-ags_set_format_test.$(OBJEXT)
+ags_set_format_test_OBJECTS = $(am_ags_set_format_test_OBJECTS)
+ags_set_format_test_DEPENDENCIES = libags_audio.la libags_server.la \
+	libags_thread.la libags.la libags_thread.la \
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
+ags_set_format_test_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
+	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
+	$(ags_set_format_test_CFLAGS) $(CFLAGS) \
+	$(ags_set_format_test_LDFLAGS) $(LDFLAGS) -o $@
+am_ags_set_muted_test_OBJECTS = ags/test/audio/task/set_muted_test-ags_set_muted_test.$(OBJEXT)
+ags_set_muted_test_OBJECTS = $(am_ags_set_muted_test_OBJECTS)
+ags_set_muted_test_DEPENDENCIES = libags_audio.la libags_server.la \
+	libags_thread.la libags.la libags_thread.la \
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
+ags_set_muted_test_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
+	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
+	$(ags_set_muted_test_CFLAGS) $(CFLAGS) \
+	$(ags_set_muted_test_LDFLAGS) $(LDFLAGS) -o $@
 am_ags_soundcard_test_OBJECTS =  \
 	ags/test/object/soundcard_test-ags_soundcard_test.$(OBJEXT)
 ags_soundcard_test_OBJECTS = $(am_ags_soundcard_test_OBJECTS)
@@ -4522,6 +4545,8 @@ am__depfiles_remade = ags/$(DEPDIR)/gsequencer-gsequencer_main.Po \
 	ags/test/audio/task/$(DEPDIR)/set_audio_channels_test-ags_set_audio_channels_test.Po \
 	ags/test/audio/task/$(DEPDIR)/set_buffer_size_test-ags_set_buffer_size_test.Po \
 	ags/test/audio/task/$(DEPDIR)/set_device_test-ags_set_device_test.Po \
+	ags/test/audio/task/$(DEPDIR)/set_format_test-ags_set_format_test.Po \
+	ags/test/audio/task/$(DEPDIR)/set_muted_test-ags_set_muted_test.Po \
 	ags/test/file/$(DEPDIR)/file_id_ref_test-ags_file_id_ref_test.Po \
 	ags/test/file/$(DEPDIR)/file_launch_test-ags_file_launch_test.Po \
 	ags/test/file/$(DEPDIR)/file_lookup_test-ags_file_lookup_test.Po \
@@ -4772,7 +4797,8 @@ SOURCES = $(libags_la_SOURCES) $(libags_audio_la_SOURCES) \
 	$(ags_seek_soundcard_test_SOURCES) \
 	$(ags_set_audio_channels_test_SOURCES) \
 	$(ags_set_buffer_size_test_SOURCES) \
-	$(ags_set_device_test_SOURCES) $(ags_soundcard_test_SOURCES) \
+	$(ags_set_device_test_SOURCES) $(ags_set_format_test_SOURCES) \
+	$(ags_set_muted_test_SOURCES) $(ags_soundcard_test_SOURCES) \
 	$(ags_stream_audio_signal_test_SOURCES) \
 	$(ags_synth_generator_test_SOURCES) $(ags_task_test_SOURCES) \
 	$(ags_task_thread_test_SOURCES) \
@@ -4922,7 +4948,8 @@ DIST_SOURCES = $(libags_la_SOURCES) \
 	$(ags_seek_soundcard_test_SOURCES) \
 	$(ags_set_audio_channels_test_SOURCES) \
 	$(ags_set_buffer_size_test_SOURCES) \
-	$(ags_set_device_test_SOURCES) $(ags_soundcard_test_SOURCES) \
+	$(ags_set_device_test_SOURCES) $(ags_set_format_test_SOURCES) \
+	$(ags_set_muted_test_SOURCES) $(ags_soundcard_test_SOURCES) \
 	$(ags_stream_audio_signal_test_SOURCES) \
 	$(ags_synth_generator_test_SOURCES) $(ags_task_test_SOURCES) \
 	$(ags_task_thread_test_SOURCES) \
@@ -6972,6 +6999,18 @@ ags_set_device_test_SOURCES = ags/test/audio/task/ags_set_device_test.c
 ags_set_device_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
 ags_set_device_test_LDFLAGS = -pthread $(LDFLAGS)
 ags_set_device_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
+
+# set format unit test
+ags_set_format_test_SOURCES = ags/test/audio/task/ags_set_format_test.c
+ags_set_format_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
+ags_set_format_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_set_format_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
+
+# set muted unit test
+ags_set_muted_test_SOURCES = ags/test/audio/task/ags_set_muted_test.c
+ags_set_muted_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
+ags_set_muted_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_set_muted_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
 
 # xorg application context unit test
 ags_xorg_application_context_test_SOURCES = ags/test/X/ags_xorg_application_context_test.c
@@ -11913,6 +11952,20 @@ ags/test/audio/task/set_device_test-ags_set_device_test.$(OBJEXT):  \
 ags_set_device_test$(EXEEXT): $(ags_set_device_test_OBJECTS) $(ags_set_device_test_DEPENDENCIES) $(EXTRA_ags_set_device_test_DEPENDENCIES) 
 	@rm -f ags_set_device_test$(EXEEXT)
 	$(AM_V_CCLD)$(ags_set_device_test_LINK) $(ags_set_device_test_OBJECTS) $(ags_set_device_test_LDADD) $(LIBS)
+ags/test/audio/task/set_format_test-ags_set_format_test.$(OBJEXT):  \
+	ags/test/audio/task/$(am__dirstamp) \
+	ags/test/audio/task/$(DEPDIR)/$(am__dirstamp)
+
+ags_set_format_test$(EXEEXT): $(ags_set_format_test_OBJECTS) $(ags_set_format_test_DEPENDENCIES) $(EXTRA_ags_set_format_test_DEPENDENCIES) 
+	@rm -f ags_set_format_test$(EXEEXT)
+	$(AM_V_CCLD)$(ags_set_format_test_LINK) $(ags_set_format_test_OBJECTS) $(ags_set_format_test_LDADD) $(LIBS)
+ags/test/audio/task/set_muted_test-ags_set_muted_test.$(OBJEXT):  \
+	ags/test/audio/task/$(am__dirstamp) \
+	ags/test/audio/task/$(DEPDIR)/$(am__dirstamp)
+
+ags_set_muted_test$(EXEEXT): $(ags_set_muted_test_OBJECTS) $(ags_set_muted_test_DEPENDENCIES) $(EXTRA_ags_set_muted_test_DEPENDENCIES) 
+	@rm -f ags_set_muted_test$(EXEEXT)
+	$(AM_V_CCLD)$(ags_set_muted_test_LINK) $(ags_set_muted_test_OBJECTS) $(ags_set_muted_test_LDADD) $(LIBS)
 ags/test/object/soundcard_test-ags_soundcard_test.$(OBJEXT):  \
 	ags/test/object/$(am__dirstamp) \
 	ags/test/object/$(DEPDIR)/$(am__dirstamp)
@@ -12851,6 +12904,8 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/audio/task/$(DEPDIR)/set_audio_channels_test-ags_set_audio_channels_test.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/audio/task/$(DEPDIR)/set_buffer_size_test-ags_set_buffer_size_test.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/audio/task/$(DEPDIR)/set_device_test-ags_set_device_test.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@ags/test/audio/task/$(DEPDIR)/set_format_test-ags_set_format_test.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@ags/test/audio/task/$(DEPDIR)/set_muted_test-ags_set_muted_test.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/file/$(DEPDIR)/file_id_ref_test-ags_file_id_ref_test.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/file/$(DEPDIR)/file_launch_test-ags_file_launch_test.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/file/$(DEPDIR)/file_lookup_test-ags_file_lookup_test.Po@am__quote@ # am--include-marker
@@ -19572,6 +19627,34 @@ ags/test/audio/task/set_device_test-ags_set_device_test.obj: ags/test/audio/task
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_set_device_test_CFLAGS) $(CFLAGS) -c -o ags/test/audio/task/set_device_test-ags_set_device_test.obj `if test -f 'ags/test/audio/task/ags_set_device_test.c'; then $(CYGPATH_W) 'ags/test/audio/task/ags_set_device_test.c'; else $(CYGPATH_W) '$(srcdir)/ags/test/audio/task/ags_set_device_test.c'; fi`
 
+ags/test/audio/task/set_format_test-ags_set_format_test.o: ags/test/audio/task/ags_set_format_test.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_set_format_test_CFLAGS) $(CFLAGS) -MT ags/test/audio/task/set_format_test-ags_set_format_test.o -MD -MP -MF ags/test/audio/task/$(DEPDIR)/set_format_test-ags_set_format_test.Tpo -c -o ags/test/audio/task/set_format_test-ags_set_format_test.o `test -f 'ags/test/audio/task/ags_set_format_test.c' || echo '$(srcdir)/'`ags/test/audio/task/ags_set_format_test.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/test/audio/task/$(DEPDIR)/set_format_test-ags_set_format_test.Tpo ags/test/audio/task/$(DEPDIR)/set_format_test-ags_set_format_test.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/test/audio/task/ags_set_format_test.c' object='ags/test/audio/task/set_format_test-ags_set_format_test.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_set_format_test_CFLAGS) $(CFLAGS) -c -o ags/test/audio/task/set_format_test-ags_set_format_test.o `test -f 'ags/test/audio/task/ags_set_format_test.c' || echo '$(srcdir)/'`ags/test/audio/task/ags_set_format_test.c
+
+ags/test/audio/task/set_format_test-ags_set_format_test.obj: ags/test/audio/task/ags_set_format_test.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_set_format_test_CFLAGS) $(CFLAGS) -MT ags/test/audio/task/set_format_test-ags_set_format_test.obj -MD -MP -MF ags/test/audio/task/$(DEPDIR)/set_format_test-ags_set_format_test.Tpo -c -o ags/test/audio/task/set_format_test-ags_set_format_test.obj `if test -f 'ags/test/audio/task/ags_set_format_test.c'; then $(CYGPATH_W) 'ags/test/audio/task/ags_set_format_test.c'; else $(CYGPATH_W) '$(srcdir)/ags/test/audio/task/ags_set_format_test.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/test/audio/task/$(DEPDIR)/set_format_test-ags_set_format_test.Tpo ags/test/audio/task/$(DEPDIR)/set_format_test-ags_set_format_test.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/test/audio/task/ags_set_format_test.c' object='ags/test/audio/task/set_format_test-ags_set_format_test.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_set_format_test_CFLAGS) $(CFLAGS) -c -o ags/test/audio/task/set_format_test-ags_set_format_test.obj `if test -f 'ags/test/audio/task/ags_set_format_test.c'; then $(CYGPATH_W) 'ags/test/audio/task/ags_set_format_test.c'; else $(CYGPATH_W) '$(srcdir)/ags/test/audio/task/ags_set_format_test.c'; fi`
+
+ags/test/audio/task/set_muted_test-ags_set_muted_test.o: ags/test/audio/task/ags_set_muted_test.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_set_muted_test_CFLAGS) $(CFLAGS) -MT ags/test/audio/task/set_muted_test-ags_set_muted_test.o -MD -MP -MF ags/test/audio/task/$(DEPDIR)/set_muted_test-ags_set_muted_test.Tpo -c -o ags/test/audio/task/set_muted_test-ags_set_muted_test.o `test -f 'ags/test/audio/task/ags_set_muted_test.c' || echo '$(srcdir)/'`ags/test/audio/task/ags_set_muted_test.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/test/audio/task/$(DEPDIR)/set_muted_test-ags_set_muted_test.Tpo ags/test/audio/task/$(DEPDIR)/set_muted_test-ags_set_muted_test.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/test/audio/task/ags_set_muted_test.c' object='ags/test/audio/task/set_muted_test-ags_set_muted_test.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_set_muted_test_CFLAGS) $(CFLAGS) -c -o ags/test/audio/task/set_muted_test-ags_set_muted_test.o `test -f 'ags/test/audio/task/ags_set_muted_test.c' || echo '$(srcdir)/'`ags/test/audio/task/ags_set_muted_test.c
+
+ags/test/audio/task/set_muted_test-ags_set_muted_test.obj: ags/test/audio/task/ags_set_muted_test.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_set_muted_test_CFLAGS) $(CFLAGS) -MT ags/test/audio/task/set_muted_test-ags_set_muted_test.obj -MD -MP -MF ags/test/audio/task/$(DEPDIR)/set_muted_test-ags_set_muted_test.Tpo -c -o ags/test/audio/task/set_muted_test-ags_set_muted_test.obj `if test -f 'ags/test/audio/task/ags_set_muted_test.c'; then $(CYGPATH_W) 'ags/test/audio/task/ags_set_muted_test.c'; else $(CYGPATH_W) '$(srcdir)/ags/test/audio/task/ags_set_muted_test.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/test/audio/task/$(DEPDIR)/set_muted_test-ags_set_muted_test.Tpo ags/test/audio/task/$(DEPDIR)/set_muted_test-ags_set_muted_test.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/test/audio/task/ags_set_muted_test.c' object='ags/test/audio/task/set_muted_test-ags_set_muted_test.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_set_muted_test_CFLAGS) $(CFLAGS) -c -o ags/test/audio/task/set_muted_test-ags_set_muted_test.obj `if test -f 'ags/test/audio/task/ags_set_muted_test.c'; then $(CYGPATH_W) 'ags/test/audio/task/ags_set_muted_test.c'; else $(CYGPATH_W) '$(srcdir)/ags/test/audio/task/ags_set_muted_test.c'; fi`
+
 ags/test/object/soundcard_test-ags_soundcard_test.o: ags/test/object/ags_soundcard_test.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_soundcard_test_CFLAGS) $(CFLAGS) -MT ags/test/object/soundcard_test-ags_soundcard_test.o -MD -MP -MF ags/test/object/$(DEPDIR)/soundcard_test-ags_soundcard_test.Tpo -c -o ags/test/object/soundcard_test-ags_soundcard_test.o `test -f 'ags/test/object/ags_soundcard_test.c' || echo '$(srcdir)/'`ags/test/object/ags_soundcard_test.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/test/object/$(DEPDIR)/soundcard_test-ags_soundcard_test.Tpo ags/test/object/$(DEPDIR)/soundcard_test-ags_soundcard_test.Po
@@ -21354,6 +21437,20 @@ ags_set_device_test.log: ags_set_device_test$(EXEEXT)
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
 	"$$tst" $(AM_TESTS_FD_REDIRECT)
+ags_set_format_test.log: ags_set_format_test$(EXEEXT)
+	@p='ags_set_format_test$(EXEEXT)'; \
+	b='ags_set_format_test'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+ags_set_muted_test.log: ags_set_muted_test$(EXEEXT)
+	@p='ags_set_muted_test$(EXEEXT)'; \
+	b='ags_set_muted_test'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
 ags_xorg_application_context_test.log: ags_xorg_application_context_test$(EXEEXT)
 	@p='ags_xorg_application_context_test$(EXEEXT)'; \
 	b='ags_xorg_application_context_test'; \
@@ -22526,6 +22623,8 @@ distclean: distclean-recursive
 	-rm -f ags/test/audio/task/$(DEPDIR)/set_audio_channels_test-ags_set_audio_channels_test.Po
 	-rm -f ags/test/audio/task/$(DEPDIR)/set_buffer_size_test-ags_set_buffer_size_test.Po
 	-rm -f ags/test/audio/task/$(DEPDIR)/set_device_test-ags_set_device_test.Po
+	-rm -f ags/test/audio/task/$(DEPDIR)/set_format_test-ags_set_format_test.Po
+	-rm -f ags/test/audio/task/$(DEPDIR)/set_muted_test-ags_set_muted_test.Po
 	-rm -f ags/test/file/$(DEPDIR)/file_id_ref_test-ags_file_id_ref_test.Po
 	-rm -f ags/test/file/$(DEPDIR)/file_launch_test-ags_file_launch_test.Po
 	-rm -f ags/test/file/$(DEPDIR)/file_lookup_test-ags_file_lookup_test.Po
@@ -23377,6 +23476,8 @@ maintainer-clean: maintainer-clean-recursive
 	-rm -f ags/test/audio/task/$(DEPDIR)/set_audio_channels_test-ags_set_audio_channels_test.Po
 	-rm -f ags/test/audio/task/$(DEPDIR)/set_buffer_size_test-ags_set_buffer_size_test.Po
 	-rm -f ags/test/audio/task/$(DEPDIR)/set_device_test-ags_set_device_test.Po
+	-rm -f ags/test/audio/task/$(DEPDIR)/set_format_test-ags_set_format_test.Po
+	-rm -f ags/test/audio/task/$(DEPDIR)/set_muted_test-ags_set_muted_test.Po
 	-rm -f ags/test/file/$(DEPDIR)/file_id_ref_test-ags_file_id_ref_test.Po
 	-rm -f ags/test/file/$(DEPDIR)/file_launch_test-ags_file_launch_test.Po
 	-rm -f ags/test/file/$(DEPDIR)/file_lookup_test-ags_file_lookup_test.Po

@@ -174,7 +174,9 @@ check_PROGRAMS += \
 	ags_seek_soundcard_test \
 	ags_set_audio_channels_test \
 	ags_set_buffer_size_test \
-	ags_set_device_test
+	ags_set_device_test \
+	ags_set_format_test \
+	ags_set_muted_test
 
 # unit tests - libgsequencer
 check_PROGRAMS += \
@@ -1121,6 +1123,18 @@ ags_set_device_test_SOURCES = ags/test/audio/task/ags_set_device_test.c
 ags_set_device_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
 ags_set_device_test_LDFLAGS = -pthread $(LDFLAGS)
 ags_set_device_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
+
+# set format unit test
+ags_set_format_test_SOURCES = ags/test/audio/task/ags_set_format_test.c
+ags_set_format_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
+ags_set_format_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_set_format_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
+
+# set muted unit test
+ags_set_muted_test_SOURCES = ags/test/audio/task/ags_set_muted_test.c
+ags_set_muted_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
+ags_set_muted_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_set_muted_test_LDADD = libags_audio.la libags_server.la libags_thread.la libags.la libags_thread.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
 
 # xorg application context unit test
 ags_xorg_application_context_test_SOURCES = ags/test/X/ags_xorg_application_context_test.c
