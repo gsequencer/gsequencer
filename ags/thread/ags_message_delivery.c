@@ -179,8 +179,12 @@ ags_message_delivery_add_queue(AgsMessageDelivery *message_delivery,
 
   pthread_mutex_lock(message_delivery->obj_mutex);
 
-  message_delivery->message_queue = g_list_prepend(message_delivery->message_queue,
-						   message_queue);
+  if(g_list_find(message_delivery->message_queue,
+		 message_queue) == NULL){
+    g_object_ref(message_queue);
+    message_delivery->message_queue = g_list_prepend(message_delivery->message_queue,
+						     message_queue);
+  }
   
   pthread_mutex_unlock(message_delivery->obj_mutex);
 }
@@ -205,8 +209,12 @@ ags_message_delivery_remove_queue(AgsMessageDelivery *message_delivery,
 
   pthread_mutex_lock(message_delivery->obj_mutex);
 
-  message_delivery->message_queue = g_list_remove(message_delivery->message_queue,
-						  message_queue);
+  if(g_list_find(message_delivery->message_queue,
+		 message_queue) != NULL){
+    message_delivery->message_queue = g_list_remove(message_delivery->message_queue,
+						    message_queue);
+    g_object_unref(message_queue);
+  }
   
   pthread_mutex_unlock(message_delivery->obj_mutex);
 }

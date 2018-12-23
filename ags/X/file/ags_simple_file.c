@@ -4659,14 +4659,16 @@ ags_simple_file_read_oscillator(AgsSimpleFile *simple_file, xmlNode *node, AgsOs
 
     endptr = str;
     
-    for(i = 0; *endptr != '\0' && i < 2 * gobject->sync_point_count; i++){
+    for(i = 0; endptr[0] != '\0' && i < 2 * gobject->sync_point_count; i++){
       current = g_strtod(endptr,
 			 &endptr);
 
       gtk_spin_button_set_value(gobject->sync_point[i],
 				current);
 
-      endptr++;
+      if(endptr[0] != '\0'){
+	endptr++;
+      }
     }
   }
 }

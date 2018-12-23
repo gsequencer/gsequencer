@@ -255,7 +255,7 @@ ags_message_queue_get_class_mutex()
  * @recipient: the recipient as #GObject
  * @doc: the message document
  * 
- * Allocate #AgsMessageEnvelope.
+ * Allocate #AgsMessageEnvelope-struct.
  * 
  * Since: 2.0.0
  */
@@ -292,7 +292,7 @@ ags_message_envelope_alloc(GObject *sender,
 
 /**
  * ags_message_envelope_free:
- * @message: the #AgsMessageEnvelope
+ * @message: the #AgsMessageEnvelope-struct
  * 
  * Free @message.
  * 
@@ -326,7 +326,7 @@ ags_message_envelope_free(AgsMessageEnvelope *message)
 /**
  * ags_message_queue_add_message:
  * @message_queue: the #AgsMessageQueue
- * @message: the #AgsMessageEnvelope
+ * @message: the #AgsMessageEnvelope-struct
  * 
  * Add @message to @message_queue.
  * 
@@ -352,7 +352,7 @@ ags_message_queue_add_message(AgsMessageQueue *message_queue,
 /**
  * ags_message_queue_remove_message:
  * @message_queue: the #AgsMessageQueue
- * @message: the #AgsMessageEnvelope
+ * @message: the #AgsMessageEnvelope-struct
  * 
  * Remove @message from @message_queue.
  * 
@@ -383,7 +383,7 @@ ags_message_queue_remove_message(AgsMessageQueue *message_queue,
  * 
  * Find @sender in @message_queue's messages.
  * 
- * Returns: all matching #AgsMessageEnvelope as #GList-struct
+ * Returns: all matching #AgsMessageEnvelope-struct as #GList-struct
  * 
  * Since: 2.0.0
  */
@@ -425,7 +425,7 @@ ags_message_queue_find_sender(AgsMessageQueue *message_queue,
  * 
  * Find @recipient in @message_queue's messages.
  * 
- * Returns: all matching #AgsMessageEnvelope as #GList-struct
+ * Returns: all matching #AgsMessageEnvelope-struct as #GList-struct
  * 
  * Since: 2.0.0
  */
@@ -467,7 +467,7 @@ ags_message_queue_find_recipient(AgsMessageQueue *message_queue,
  * 
  * Query @xpath in @message_queue's messages.
  * 
- * Returns: all matching #AgsMessageEnvelope as #GList-struct
+ * Returns: all matching #AgsMessageEnvelope-struct as #GList-struct
  * 
  * Since: 2.0.0
  */

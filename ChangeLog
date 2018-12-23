@@ -1,3 +1,10 @@
+ags (2.1.17)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed AgsMessageEnvelope missing struct for API comments
+	* fixed potential string read boundary excess in ags_simple_file_read_oscillator()
+	* improved ref count of ags_message_delivery_add_queue() and ags_message_delivery_remove_queue()
+
 ags (2.1.16)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
