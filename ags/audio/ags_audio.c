@@ -4782,7 +4782,7 @@ ags_audio_set_ability_flags(AgsAudio *audio, guint ability_flags)
 /**
  * ags_audio_unset_ability_flags:
  * @audio: the #AgsAudio
- * @flags: see enum AgsSoundAbilityFlags
+ * @ability_flags: see enum AgsSoundAbilityFlags
  *
  * Disable an ability of AgsAudio.
  *

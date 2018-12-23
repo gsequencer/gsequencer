@@ -3206,7 +3206,7 @@ ags_channel_set_ability_flags(AgsChannel *channel, guint ability_flags)
 /**
  * ags_channel_unset_ability_flags:
  * @channel: the #AgsChannel
- * @flags: see enum AgsSoundAbilityFlags
+ * @ability_flags: see enum AgsSoundAbilityFlags
  *
  * Disable an ability of AgsChannel.
  *
@@ -6626,7 +6626,7 @@ ags_channel_recycling_changed(AgsChannel *channel,
 /**
  * ags_channel_set_output_soundcard:
  * @channel: an #AgsChannel
- * @soundcard: an #GObject
+ * @output_soundcard: an #GObject
  *
  * Set the output soundcard object of @channel.
  *
@@ -6634,7 +6634,7 @@ ags_channel_recycling_changed(AgsChannel *channel,
  */
 void
 ags_channel_set_output_soundcard(AgsChannel *channel,
-				 GObject *soundcard)
+				 GObject *output_soundcard)
 {
   AgsRecycling *recycling;
   AgsPlayback *playback;
@@ -6673,24 +6673,24 @@ ags_channel_set_output_soundcard(AgsChannel *channel,
 
   pthread_mutex_unlock(channel_mutex);
   
-  if(old_soundcard == soundcard){
+  if(old_soundcard == output_soundcard){
     return;
   }
 
   /* ref and set new soundcard */
-  if(soundcard != NULL){
-    g_object_ref(soundcard);
+  if(output_soundcard != NULL){
+    g_object_ref(output_soundcard);
   }
 
   pthread_mutex_lock(channel_mutex);
   
-  channel->output_soundcard = (GObject *) soundcard;
+  channel->output_soundcard = (GObject *) output_soundcard;
 
   pthread_mutex_unlock(channel_mutex);
 
-  if(soundcard != NULL){
+  if(output_soundcard != NULL){
     /* get presets */
-    ags_soundcard_get_presets(AGS_SOUNDCARD(soundcard),
+    ags_soundcard_get_presets(AGS_SOUNDCARD(output_soundcard),
 			      NULL,
 			      &samplerate,
 			      &buffer_size,
@@ -6725,7 +6725,7 @@ ags_channel_set_output_soundcard(AgsChannel *channel,
     pthread_mutex_unlock(channel_mutex);
 
     g_object_set(G_OBJECT(recycling),
-		 "output-soundcard", soundcard,
+		 "output-soundcard", output_soundcard,
 		 NULL); 
   }
   
@@ -6754,7 +6754,7 @@ ags_channel_set_output_soundcard(AgsChannel *channel,
     if(channel_thread != NULL){
       /* set output soundcard */      
       g_object_set(channel_thread,
-		   "output-soundcard", soundcard,
+		   "output-soundcard", output_soundcard,
 		   NULL);
     }
   }
@@ -6773,7 +6773,7 @@ ags_channel_set_output_soundcard(AgsChannel *channel,
   
   while(list != NULL){
     g_object_set(G_OBJECT(list->data),
-		 "output-soundcard", soundcard,
+		 "output-soundcard", output_soundcard,
 		 NULL);
     
     list = list->next;
@@ -6795,7 +6795,7 @@ ags_channel_set_output_soundcard(AgsChannel *channel,
   
   while(list != NULL){
     g_object_set(G_OBJECT(list->data),
-		 "output-soundcard", soundcard,
+		 "output-soundcard", output_soundcard,
 		 NULL);
     
     list = list->next;
@@ -6812,7 +6812,7 @@ ags_channel_set_output_soundcard(AgsChannel *channel,
 /**
  * ags_channel_set_input_soundcard:
  * @channel: the #AgsChannel
- * @soundcard: an #AgsSoundcard
+ * @input_soundcard: an #AgsSoundcard
  *
  * Set the input soundcard object on channel.
  *
@@ -6820,7 +6820,7 @@ ags_channel_set_output_soundcard(AgsChannel *channel,
  */
 void
 ags_channel_set_input_soundcard(AgsChannel *channel,
-				GObject *soundcard)
+				GObject *input_soundcard)
 {
   AgsRecycling *recycling;
 
@@ -6851,18 +6851,18 @@ ags_channel_set_input_soundcard(AgsChannel *channel,
 
   pthread_mutex_unlock(channel_mutex);
   
-  if(old_soundcard == soundcard){
+  if(old_soundcard == input_soundcard){
     return;
   }
 
   /* ref and set new soundcard */
-  if(soundcard != NULL){
-    g_object_ref(soundcard);
+  if(input_soundcard != NULL){
+    g_object_ref(input_soundcard);
   }
   
   pthread_mutex_lock(channel_mutex);
   
-  channel->input_soundcard = (GObject *) soundcard;
+  channel->input_soundcard = (GObject *) input_soundcard;
 
   pthread_mutex_unlock(channel_mutex);  
 
@@ -6887,7 +6887,7 @@ ags_channel_set_input_soundcard(AgsChannel *channel,
     pthread_mutex_unlock(channel_mutex);
 
     g_object_set(G_OBJECT(recycling),
-		 "input-soundcard", soundcard,
+		 "input-soundcard", input_soundcard,
 		 NULL); 
   }
 
@@ -6905,7 +6905,7 @@ ags_channel_set_input_soundcard(AgsChannel *channel,
   
   while(list != NULL){
     g_object_set(G_OBJECT(list->data),
-		 "input-soundcard", soundcard,
+		 "input-soundcard", input_soundcard,
 		 NULL);
     
     list = list->next;
@@ -6927,7 +6927,7 @@ ags_channel_set_input_soundcard(AgsChannel *channel,
   
   while(list != NULL){
     g_object_set(G_OBJECT(list->data),
-		 "input-soundcard", soundcard,
+		 "input-soundcard", input_soundcard,
 		 NULL);
     
     list = list->next;
