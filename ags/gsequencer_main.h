@@ -44,9 +44,6 @@
 
 #define ALSA_PCM_NEW_HW_PARAMS_API
 
-#define AGS_DEFAULT_DIRECTORY ".gsequencer\0"
-#define AGS_DEFAULT_CONFIG "ags.conf\0"
-
 #define GSEQUENCER_RT_PRIORITY (95)
 
 #endif /*__GSEQUENCER_MAIN_H__*/

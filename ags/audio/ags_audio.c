@@ -7221,7 +7221,7 @@ ags_audio_set_pads(AgsAudio *audio,
 /**
  * ags_audio_set_output_soundcard:
  * @audio: the #AgsAudio
- * @soundcard: an #AgsSoundcard
+ * @output_soundcard: an #AgsSoundcard
  *
  * Set the output soundcard object of @audio.
  *
@@ -7229,7 +7229,7 @@ ags_audio_set_pads(AgsAudio *audio,
  */
 void
 ags_audio_set_output_soundcard(AgsAudio *audio,
-			       GObject *soundcard)
+			       GObject *output_soundcard)
 {
   AgsChannel *channel;
   AgsPlaybackDomain *playback_domain;
@@ -7268,24 +7268,24 @@ ags_audio_set_output_soundcard(AgsAudio *audio,
 
   pthread_mutex_unlock(audio_mutex);
   
-  if(old_soundcard == soundcard){
+  if(old_soundcard == output_soundcard){
     return;
   }
 
   /* ref and set new soundcard */
-  if(soundcard != NULL){
-    g_object_ref(soundcard);
+  if(output_soundcard != NULL){
+    g_object_ref(output_soundcard);
   }
   
   pthread_mutex_lock(audio_mutex);
   
-  audio->output_soundcard = (GObject *) soundcard;
+  audio->output_soundcard = (GObject *) output_soundcard;
 
   pthread_mutex_unlock(audio_mutex);
 
-  if(soundcard != NULL){
+  if(output_soundcard != NULL){
     /* get presets */    
-    ags_soundcard_get_presets(AGS_SOUNDCARD(soundcard),
+    ags_soundcard_get_presets(AGS_SOUNDCARD(output_soundcard),
 			      NULL,
 			      &samplerate,
 			      &buffer_size,
@@ -7316,7 +7316,7 @@ ags_audio_set_output_soundcard(AgsAudio *audio,
 
     /* reset */
     g_object_set(G_OBJECT(channel),
-		 "output-soundcard", soundcard,
+		 "output-soundcard", output_soundcard,
 		 NULL);
 
     /* iterate */
@@ -7344,7 +7344,7 @@ ags_audio_set_output_soundcard(AgsAudio *audio,
 
     /* reset */
     g_object_set(G_OBJECT(channel),
-		 "output-soundcard", soundcard,
+		 "output-soundcard", output_soundcard,
 		 NULL);
 
     /* iterate */
@@ -7380,7 +7380,7 @@ ags_audio_set_output_soundcard(AgsAudio *audio,
     if(audio_thread != NULL){
       /* set output soundcard */
       g_object_set(audio_thread,
-		   "default-output-soundcard", soundcard,
+		   "default-output-soundcard", output_soundcard,
 		   NULL);
     }
   }
@@ -7399,7 +7399,7 @@ ags_audio_set_output_soundcard(AgsAudio *audio,
   
   while(list != NULL){
     g_object_set(G_OBJECT(list->data),
-		 "output-soundcard", soundcard,
+		 "output-soundcard", output_soundcard,
 		 NULL);
     
     list = list->next;
@@ -7421,7 +7421,7 @@ ags_audio_set_output_soundcard(AgsAudio *audio,
   
   while(list != NULL){
     g_object_set(G_OBJECT(list->data),
-		 "output-soundcard", soundcard,
+		 "output-soundcard", output_soundcard,
 		 NULL);
     
     list = list->next;
@@ -7438,7 +7438,7 @@ ags_audio_set_output_soundcard(AgsAudio *audio,
 /**
  * ags_audio_set_input_soundcard:
  * @audio: the #AgsAudio
- * @soundcard: an #AgsSoundcard
+ * @input_soundcard: an #AgsSoundcard
  *
  * Set the input soundcard object on audio.
  *
@@ -7446,7 +7446,7 @@ ags_audio_set_output_soundcard(AgsAudio *audio,
  */
 void
 ags_audio_set_input_soundcard(AgsAudio *audio,
-			      GObject *soundcard)
+			      GObject *input_soundcard)
 {
   AgsChannel *channel;
 
@@ -7476,18 +7476,18 @@ ags_audio_set_input_soundcard(AgsAudio *audio,
 
   pthread_mutex_unlock(audio_mutex);
   
-  if(old_soundcard == soundcard){
+  if(old_soundcard == input_soundcard){
     return;
   }
 
   /* ref and set new soundcard */
-  if(soundcard != NULL){
-    g_object_ref(soundcard);
+  if(input_soundcard != NULL){
+    g_object_ref(input_soundcard);
   }
   
   pthread_mutex_lock(audio_mutex);
   
-  audio->input_soundcard = (GObject *) soundcard;
+  audio->input_soundcard = (GObject *) input_soundcard;
 
   pthread_mutex_unlock(audio_mutex);  
 
@@ -7508,7 +7508,7 @@ ags_audio_set_input_soundcard(AgsAudio *audio,
 
     /* reset */
     g_object_set(G_OBJECT(channel),
-		 "input-soundcard", soundcard,
+		 "input-soundcard", input_soundcard,
 		 NULL);
 
     /* iterate */
@@ -7536,7 +7536,7 @@ ags_audio_set_input_soundcard(AgsAudio *audio,
 
     /* reset */
     g_object_set(G_OBJECT(channel),
-		 "input-soundcard", soundcard,
+		 "input-soundcard", input_soundcard,
 		 NULL);
 
     /* iterate */
@@ -7561,7 +7561,7 @@ ags_audio_set_input_soundcard(AgsAudio *audio,
   
   while(list != NULL){
     g_object_set(G_OBJECT(list->data),
-		 "input-soundcard", soundcard,
+		 "input-soundcard", input_soundcard,
 		 NULL);
     
     list = list->next;
@@ -7583,7 +7583,7 @@ ags_audio_set_input_soundcard(AgsAudio *audio,
   
   while(list != NULL){
     g_object_set(G_OBJECT(list->data),
-		 "input-soundcard", soundcard,
+		 "input-soundcard", input_soundcard,
 		 NULL);
     
     list = list->next;

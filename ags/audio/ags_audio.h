@@ -279,9 +279,9 @@ void ags_audio_set_pads(AgsAudio *audio,
 
 /* soundcard */
 void ags_audio_set_output_soundcard(AgsAudio *audio,
-				    GObject *soundcard);
+				    GObject *output_soundcard);
 void ags_audio_set_input_soundcard(AgsAudio *audio,
-				   GObject *soundcard);
+				   GObject *input_soundcard);
 
 /* sequencer */
 void ags_audio_set_output_sequencer(AgsAudio *audio,

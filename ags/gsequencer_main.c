@@ -194,7 +194,7 @@ ags_setup_thread(void *ptr)
 
   //  pthread_mutex_lock(ags_gui_thread_get_dispatch_mutex());
   
-  ags_application_context_setup(xorg_application_context);
+  ags_application_context_setup(AGS_APPLICATION_CONTEXT(xorg_application_context));
 
   //  pthread_mutex_unlock(ags_gui_thread_get_dispatch_mutex());
   
