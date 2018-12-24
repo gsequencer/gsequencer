@@ -813,28 +813,18 @@ ags_line_add_ladspa_effect(AgsLine *line,
 
   GList *list;
   GList *start_recall, *recall;
-  GList *port, *recall_port;
+  GList *play_port, *recall_port;
   GList *start_plugin_port, *plugin_port;
 
   gdouble step;
   guint port_count;
-  gboolean has_output_port;
 
   guint x, y;
   guint k;
-
-  pthread_mutex_t *base_plugin_mutex;
   
   /* load plugin */
   ladspa_plugin = ags_ladspa_manager_find_ladspa_plugin(ags_ladspa_manager_get_instance(),
 							filename, effect);
-
-  /* get base plugin mutex */
-  pthread_mutex_lock(ags_base_plugin_get_class_mutex());
-  
-  base_plugin_mutex = AGS_BASE_PLUGIN(ladspa_plugin)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_base_plugin_get_class_mutex());
 
   port = NULL;
   recall_port = NULL;
@@ -875,16 +865,10 @@ ags_line_add_ladspa_effect(AgsLine *line,
 
   recall = g_list_last(start_recall);
   g_object_get((GObject *) recall->data,
-	       "port", &port,
+	       "port", &play_port,
 	       NULL);
   
   /* check has output port */
-  if(ags_recall_test_flags(recall->data, AGS_RECALL_HAS_OUTPUT_PORT)){
-    has_output_port = TRUE;
-  }else{
-    has_output_port = FALSE;
-  }
-
   g_list_free(start_recall);
   
   /* recall - find ports */
@@ -925,7 +909,7 @@ ags_line_add_ladspa_effect(AgsLine *line,
   		   (GtkWidget *) separator,
   		   0, y,
   		   AGS_LINE_COLUMNS_COUNT, 1);
-  gtk_widget_show_all(separator);
+  gtk_widget_show_all(GTK_WIDGET(separator));
 
   y++;
   
@@ -1173,8 +1157,8 @@ ags_line_add_ladspa_effect(AgsLine *line,
 
   g_list_free(start_plugin_port);
 
-  return(g_list_concat(g_list_copy(port),
-		       g_list_copy(recall_port)));
+  return(g_list_concat(play_port,
+		       recall_port));
 }
 
 GList*
@@ -1191,7 +1175,7 @@ ags_line_add_lv2_effect(AgsLine *line,
 
   GList *list;
   GList *start_recall, *recall;
-  GList *port, *recall_port;
+  GList *play_port, *recall_port;
   GList *start_plugin_port, *plugin_port;
 
   gchar *uri;
@@ -1257,7 +1241,7 @@ ags_line_add_lv2_effect(AgsLine *line,
 
   recall = g_list_last(start_recall);
   g_object_get((GObject *) recall->data,
-	       "port", &port,
+	       "port", &play_port,
 	       NULL);
   
   g_list_free(start_recall);
@@ -1300,7 +1284,7 @@ ags_line_add_lv2_effect(AgsLine *line,
   		   (GtkWidget *) separator,
   		   0, y,
   		   AGS_LINE_COLUMNS_COUNT, 1);
-  gtk_widget_show_all(separator);
+  gtk_widget_show_all(GTK_WIDGET(separator));
   
   y++;
   
@@ -1524,8 +1508,8 @@ ags_line_add_lv2_effect(AgsLine *line,
 
   g_free(uri);
   
-  return(g_list_concat(g_list_copy(port),
-		       g_list_copy(recall_port)));
+  return(g_list_concat(play_port,
+		       recall_port));
 }
 
 GList*
@@ -1617,7 +1601,6 @@ ags_line_real_remove_effect(AgsLine *line,
   GList *start_recall, *recall;
   GList *start_port, *port;
 
-  gchar **remove_specifier;
   gchar *filename, *effect;
   
   guint nth_effect, n_bulk;
@@ -1718,7 +1701,6 @@ ags_line_real_remove_effect(AgsLine *line,
 	       NULL);
   
   port = start_port;
-  remove_specifier = NULL;
   i = 0;
   
   while(port != NULL){
@@ -1733,14 +1715,6 @@ ags_line_real_remove_effect(AgsLine *line,
 	child_widget = gtk_bin_get_child(control->data);
 
 	/* collect specifier */
-	if(remove_specifier == NULL){
-	  remove_specifier = (gchar **) malloc(2 * sizeof(gchar *));
-	}else{
-	  remove_specifier = (gchar **) realloc(remove_specifier,
-						(i + 2) * sizeof(gchar *));
-	}	
-	
-	remove_specifier[i] = g_strdup(AGS_LINE_MEMBER(control->data)->specifier);
 	i++;
 
 	/* remove widget */
@@ -1768,10 +1742,6 @@ ags_line_real_remove_effect(AgsLine *line,
 
   g_list_free(start_recall);
   g_list_free(start_port);
-    
-  if(remove_specifier != NULL){
-    remove_specifier[i] = NULL;
-  }
   
   /* remove recalls */
   ags_channel_remove_effect(line->channel,
@@ -1975,7 +1945,7 @@ ags_line_message_monitor_timeout(AgsLine *line)
     message_start = 
       message = ags_message_delivery_find_sender(message_delivery,
 						 "libags-audio",
-						 channel);
+						 (GObject *) channel);
     
     while(message != NULL){
       xmlNode *root_node;
@@ -2181,7 +2151,7 @@ ags_line_message_monitor_timeout(AgsLine *line)
     }
     
     g_list_free_full(message_start,
-		     ags_message_envelope_free);
+		     GDestroyNotify(ags_message_envelope_free));
 
     return(TRUE);
   }else{
@@ -2208,8 +2178,8 @@ ags_line_indicator_queue_draw_timeout(GtkWidget *widget)
 			 widget) != NULL){      
     GList *list, *list_start;
     
-    line = gtk_widget_get_ancestor(widget,
-				   AGS_TYPE_LINE);
+    line = (AgsLine *) gtk_widget_get_ancestor(widget,
+					       AGS_TYPE_LINE);
   
     list_start = 
       list = gtk_container_get_children((GtkContainer *) AGS_LINE(line)->expander->table);
@@ -2373,7 +2343,7 @@ ags_line_indicator_queue_draw_timeout(GtkWidget *widget)
 	/* apply */
 	if(AGS_IS_LED(child)){
 	  if(average_peak != 0.0){
-	    ags_led_set_active(child);
+	    ags_led_set_active(AGS_LED(child));
 	  }
 	}else{
 	  g_object_get(child,

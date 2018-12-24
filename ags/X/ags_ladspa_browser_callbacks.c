@@ -49,8 +49,8 @@ ags_ladspa_browser_plugin_filename_callback(GtkComboBoxText *combo_box,
   pthread_mutex_t *ladspa_manager_mutex;
   pthread_mutex_t *base_plugin_mutex;
 
-  filename = ladspa_browser->filename;
-  effect = ladspa_browser->effect;
+  filename = (GtkComboBoxText *) ladspa_browser->filename;
+  effect = (GtkComboBoxText *) ladspa_browser->effect;
 
   gtk_list_store_clear(GTK_LIST_STORE(gtk_combo_box_get_model((GtkComboBox *) effect)));
 
@@ -134,12 +134,12 @@ ags_ladspa_browser_plugin_effect_callback(GtkComboBoxText *combo_box,
   pthread_mutex_t *base_plugin_mutex;
 
   /* retrieve filename and effect */
-  filename = ladspa_browser->filename;
-  effect = ladspa_browser->effect;
+  filename = (GtkComboBoxText *) ladspa_browser->filename;
+  effect = (GtkComboBoxText *) ladspa_browser->effect;
 
   ladspa_plugin = ags_ladspa_manager_find_ladspa_plugin(ags_ladspa_manager_get_instance(),
-						  gtk_combo_box_text_get_active_text(filename),
-						  gtk_combo_box_text_get_active_text(effect));
+							gtk_combo_box_text_get_active_text(filename),
+							gtk_combo_box_text_get_active_text(effect));
 
   g_object_get(ladspa_plugin,
 	       "plugin-so", &plugin_so,

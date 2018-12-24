@@ -134,7 +134,6 @@ void
 ags_lv2_browser_init(AgsLv2Browser *lv2_browser)
 {
   GtkTable *table;
-  GtkComboBoxText *combo_box;
   GtkLabel *label;
 
   GList *list;
@@ -157,10 +156,9 @@ ags_lv2_browser_init(AgsLv2Browser *lv2_browser)
 		     FALSE, FALSE,
 		     0);
 
-  lv2_browser->filename = 
-    combo_box = (GtkComboBoxText *) gtk_combo_box_text_new();
+  lv2_browser->filename = (GtkComboBox *) gtk_combo_box_text_new();
   gtk_box_pack_start(GTK_BOX(lv2_browser->plugin),
-		     GTK_WIDGET(combo_box),
+		     GTK_WIDGET(lv2_browser->filename),
 		     FALSE, FALSE,
 		     0);
 
@@ -171,7 +169,7 @@ ags_lv2_browser_init(AgsLv2Browser *lv2_browser)
   
   if(filenames_start != NULL){
     while(*filenames != NULL){
-      gtk_combo_box_text_append_text(combo_box,
+      gtk_combo_box_text_append_text(lv2_browser->filename,
 				     *filenames);
       
       filenames++;
@@ -186,10 +184,9 @@ ags_lv2_browser_init(AgsLv2Browser *lv2_browser)
 		     FALSE, FALSE,
 		     0);
 
-  lv2_browser->effect = 
-    combo_box = (GtkComboBoxText *) gtk_combo_box_text_new();
+  lv2_browser->effect = (GtkComboBox *) gtk_combo_box_text_new();
   gtk_box_pack_start(GTK_BOX(lv2_browser->plugin),
-		     GTK_WIDGET(combo_box),
+		     GTK_WIDGET(lv2_browser->effect),
 		     FALSE, FALSE,
 		     0);
 

@@ -134,7 +134,6 @@ void
 ags_ladspa_browser_init(AgsLadspaBrowser *ladspa_browser)
 {
   GtkTable *table;
-  GtkComboBoxText *combo_box;
   GtkLabel *label;
 
   GList *list;
@@ -153,10 +152,9 @@ ags_ladspa_browser_init(AgsLadspaBrowser *ladspa_browser)
 		     FALSE, FALSE,
 		     0);
 
-  ladspa_browser->filename = 
-    combo_box = (GtkComboBoxText *) gtk_combo_box_text_new();
+  ladspa_browser->filename = (GtkComboBox *) gtk_combo_box_text_new();
   gtk_box_pack_start(GTK_BOX(ladspa_browser->plugin),
-		     GTK_WIDGET(combo_box),
+		     GTK_WIDGET(ladspa_browser->filename),
 		     FALSE, FALSE,
 		     0);
 
@@ -167,13 +165,13 @@ ags_ladspa_browser_init(AgsLadspaBrowser *ladspa_browser)
 
   if(filenames_start != NULL){
     while(*filenames != NULL){
-      gtk_combo_box_text_append_text(combo_box,
+      gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(ladspa_browser->filename),
 				     *filenames);
 
       filenames++;
     }
 
-    free(filenames_start);
+    g_strfreev(filenames_start);
   }
     
   label = (GtkLabel *) gtk_label_new(i18n("effect: "));
@@ -182,10 +180,9 @@ ags_ladspa_browser_init(AgsLadspaBrowser *ladspa_browser)
 		     FALSE, FALSE,
 		     0);
 
-  ladspa_browser->effect = 
-    combo_box = (GtkComboBoxText *) gtk_combo_box_text_new();
+  ladspa_browser->effect = (GtkComboBox *) gtk_combo_box_text_new();
   gtk_box_pack_start(GTK_BOX(ladspa_browser->plugin),
-		     GTK_WIDGET(combo_box),
+		     GTK_WIDGET(ladspa_browser->effect),
 		     FALSE, FALSE,
 		     0);
 
@@ -339,7 +336,7 @@ ags_ladspa_browser_get_plugin_filename(AgsLadspaBrowser *ladspa_browser)
     return(NULL);
   }
   
-  return(gtk_combo_box_text_get_active_text(ladspa_browser->filename));
+  return(gtk_combo_box_text_get_active_text(GTK_COMBO_BOX_TEXT(ladspa_browser->filename)));
 }
 
 /**
@@ -359,7 +356,7 @@ ags_ladspa_browser_get_plugin_effect(AgsLadspaBrowser *ladspa_browser)
     return(NULL);
   }
 
-  return(gtk_combo_box_text_get_active_text(ladspa_browser->effect));
+  return(gtk_combo_box_text_get_active_text(GTK_COMBO_BOX_TEXT(ladspa_browser->effect)));
 }
 
 /**

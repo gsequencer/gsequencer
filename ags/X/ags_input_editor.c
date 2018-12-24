@@ -208,11 +208,6 @@ ags_input_editor_apply(AgsApplicable *applicable)
 
   if(gtk_combo_box_get_active_iter(GTK_COMBO_BOX(input_editor->soundcard),
 				   &iter)){
-    AgsWindow *window;
-    AgsMachine *machine;
-    AgsConnectionEditor *connection_editor;
-
-    AgsAudio *audio;
     AgsChannel *channel;
 
     GObject *input_soundcard;
@@ -222,14 +217,8 @@ ags_input_editor_apply(AgsApplicable *applicable)
     guint soundcard_channel;
     guint pad, audio_channel;
 
-    connection_editor = AGS_CONNECTION_EDITOR(gtk_widget_get_ancestor(GTK_WIDGET(input_editor),
-								      AGS_TYPE_CONNECTION_EDITOR));
     line_editor = AGS_LINE_EDITOR(gtk_widget_get_ancestor(GTK_WIDGET(input_editor),
 							  AGS_TYPE_LINE_EDITOR));
-
-    machine = connection_editor->machine;
-
-    audio = machine->audio;
 
     channel = line_editor->channel;
 
@@ -267,7 +256,7 @@ ags_input_editor_reset(AgsApplicable *applicable)
 
   input_editor = AGS_INPUT_EDITOR(applicable);
 
-  model = gtk_combo_box_get_model(input_editor->soundcard);
+  model = gtk_combo_box_get_model(GTK_COMBO_BOX(input_editor->soundcard));
 
   if(gtk_tree_model_get_iter_first(model,
 				   &iter)){
@@ -322,7 +311,7 @@ ags_input_editor_reset(AgsApplicable *applicable)
       guint audio_channel;
       
       /* set channel link */
-      gtk_combo_box_set_active(input_editor->soundcard,
+      gtk_combo_box_set_active(GTK_COMBO_BOX(input_editor->soundcard),
 			       i);
 
       g_object_get(channel,
@@ -350,14 +339,11 @@ void
 ags_input_editor_check(AgsInputEditor *input_editor)
 {
   AgsConnectionEditor *connection_editor;
-  AgsLineEditor *line_editor;
   
   GtkTreeIter iter;
 
   connection_editor = AGS_CONNECTION_EDITOR(gtk_widget_get_ancestor(GTK_WIDGET(input_editor),
 								    AGS_TYPE_CONNECTION_EDITOR));
-  line_editor = AGS_LINE_EDITOR(gtk_widget_get_ancestor(GTK_WIDGET(input_editor),
-							AGS_TYPE_LINE_EDITOR));
 
   if(gtk_combo_box_get_active_iter(GTK_COMBO_BOX(input_editor->soundcard),
 				   &iter)){    

@@ -56,14 +56,14 @@ void
 ags_generic_preferences_rt_safe_callback(GtkWidget *check_button,
 					 AgsGenericPreferences *generic_preferences)
 {
-  if(gtk_toggle_button_get_active(check_button)){
-    gtk_toggle_button_set_active(generic_preferences->engine_mode,
+  if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(check_button))){
+    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(generic_preferences->engine_mode),
 				 1);
 
-    gtk_widget_set_sensitive(generic_preferences->engine_mode,
+    gtk_widget_set_sensitive(GTK_WIDGET(generic_preferences->engine_mode),
 			     FALSE);
   }else{
-    gtk_widget_set_sensitive(generic_preferences->engine_mode,
+    gtk_widget_set_sensitive(GTK_WIDGET(generic_preferences->engine_mode),
 			     TRUE);
   }
 }

@@ -1081,8 +1081,8 @@ ags_effect_line_add_ladspa_effect(AgsEffectLine *effect_line,
 
   g_list_free(start_plugin_port);
   
-  return(g_list_concat(g_list_copy(play_port),
-		       g_list_copy(recall_port)));
+  return(g_list_concat(play_port,
+		       recall_port));
 }
 
 GList*
@@ -1442,8 +1442,8 @@ ags_effect_line_add_lv2_effect(AgsEffectLine *effect_line,
 
   g_free(uri);
   
-  return(g_list_concat(g_list_copy(play_port),
-		       g_list_copy(recall_port)));
+  return(g_list_concat(play_port,
+		       recall_port));
 }
 
 GList*

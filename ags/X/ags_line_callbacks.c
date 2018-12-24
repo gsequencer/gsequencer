@@ -169,7 +169,7 @@ ags_line_stop_callback(AgsLine *line,
   
   gboolean reset_active;
 
-  pad = line->pad;
+  pad = AGS_PAD(line->pad);
   
   if((AGS_PAD_BLOCK_STOP & (pad->flags)) != 0){
     return;

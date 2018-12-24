@@ -167,7 +167,7 @@ ags_input_listing_editor_connect(AgsConnectable *connectable)
   /* AgsPadEditor */
   if(input_listing_editor->child != NULL){
     pad_editor_start = 
-      pad_editor = gtk_container_get_children(input_listing_editor->child);
+      pad_editor = gtk_container_get_children(GTK_CONTAINER(input_listing_editor->child));
 
     while(pad_editor != NULL){
       ags_connectable_connect(AGS_CONNECTABLE(pad_editor->data));
@@ -210,7 +210,7 @@ ags_input_listing_editor_disconnect(AgsConnectable *connectable)
   /* AgsPadEditor */
   if(input_listing_editor->child != NULL){
     pad_editor_start = 
-      pad_editor = gtk_container_get_children(input_listing_editor->child);
+      pad_editor = gtk_container_get_children(GTK_CONTAINER(input_listing_editor->child));
 
     while(pad_editor != NULL){
       ags_connectable_disconnect(AGS_CONNECTABLE(pad_editor->data));
