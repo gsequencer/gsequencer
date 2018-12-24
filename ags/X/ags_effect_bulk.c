@@ -631,7 +631,7 @@ ags_effect_bulk_finalize(GObject *gobject)
 
   /* free plugin list */
   g_list_free_full(effect_bulk->plugin,
-		   GDestroyNotify(ags_effect_bulk_plugin_free));
+		   (GDestroyNotify *) ags_effect_bulk_plugin_free);
 
   /* destroy plugin browser */
   gtk_widget_destroy(GTK_WIDGET(effect_bulk->plugin_browser));
@@ -641,7 +641,7 @@ ags_effect_bulk_finalize(GObject *gobject)
 
   while(list != NULL){
     g_hash_table_remove(ags_effect_bulk_indicator_queue_draw,
-			GDestroyNotify(list->data));
+			(GDestroyNotify *) list->data);
 
     list = list->next;
   }

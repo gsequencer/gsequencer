@@ -772,7 +772,7 @@ ags_machine_finalize(GObject *gobject)
 		      machine);
 
   g_list_free_full(machine->enabled_automation_port,
-		   ags_machine_automation_port_free);
+		   (GDestroyNotify *) ags_machine_automation_port_free);
   
   //TODO:JK: better clean-up of audio
   
@@ -1718,7 +1718,7 @@ ags_machine_set_run_extended(AgsMachine *machine,
 {
   AgsWindow *window;
 
-  AgsGuiThread *gui_thread;
+  AgsThread *gui_thread;
 
   AgsApplicationContext *application_context;
 
@@ -1790,12 +1790,12 @@ ags_machine_set_run_extended(AgsMachine *machine,
     /* create start task */
     if(list != NULL){
       /* start soundcard */
-      start_soundcard = ags_start_soundcard_new(window->application_context);
+      start_soundcard = ags_start_soundcard_new((AgsApplicationContext *) window->application_context);
       list = g_list_prepend(list,
 			    start_soundcard);
 
       /* start sequencer */
-      start_sequencer = ags_start_sequencer_new(window->application_context);
+      start_sequencer = ags_start_sequencer_new((AgsApplicationContext *) window->application_context);
       list = g_list_prepend(list,
 			    start_sequencer);
       
@@ -1815,7 +1815,7 @@ ags_machine_set_run_extended(AgsMachine *machine,
     
       /* append AgsCancelAudio */
       ags_gui_thread_schedule_task((AgsGuiThread *) gui_thread,
-				   cancel_audio);
+				   (GObject *) cancel_audio);
     }
 
     if(notation){
@@ -1825,7 +1825,7 @@ ags_machine_set_run_extended(AgsMachine *machine,
     
       /* append AgsCancelAudio */
       ags_gui_thread_schedule_task((AgsGuiThread *) gui_thread,
-				   cancel_audio);
+				   (GObject *) cancel_audio);
     }
 
     if(wave){
@@ -1835,7 +1835,7 @@ ags_machine_set_run_extended(AgsMachine *machine,
     
       /* append AgsCancelAudio */
       ags_gui_thread_schedule_task((AgsGuiThread *) gui_thread,
-				   cancel_audio);
+				   (GObject *) cancel_audio);
     }
 
     if(midi){
@@ -1845,7 +1845,7 @@ ags_machine_set_run_extended(AgsMachine *machine,
     
       /* append AgsCancelAudio */
       ags_gui_thread_schedule_task((AgsGuiThread *) gui_thread,
-				   cancel_audio);
+				   (GObject *) cancel_audio);
     }
   }
 }
@@ -2089,7 +2089,7 @@ ags_machine_open_files(AgsMachine *machine,
 
   AgsOpenFile *open_file;
 
-  AgsGuiThread *gui_thread;
+  AgsThread *gui_thread;
 
   AgsApplicationContext *application_context;
   
@@ -2106,8 +2106,8 @@ ags_machine_open_files(AgsMachine *machine,
 				overwrite_channels,
 				create_channels);
 
-  ags_gui_thread_schedule_task(gui_thread,
-			       open_file);
+  ags_gui_thread_schedule_task((AgsGuiThread *) gui_thread,
+			       (GObject *) open_file);
 }
 
 void
@@ -2299,7 +2299,7 @@ ags_machine_message_monitor_timeout(AgsMachine *machine)
     message_start = 
       message = ags_message_delivery_find_sender(message_delivery,
 						 "libags-audio",
-						 machine->audio);
+						 (GObject *) machine->audio);
     
     while(message != NULL){
       xmlNode *root_node;
@@ -2383,7 +2383,7 @@ ags_machine_message_monitor_timeout(AgsMachine *machine)
     }
     
     g_list_free_full(message_start,
-		     ags_message_envelope_free);
+		     (GDestroyNotify *) ags_message_envelope_free);
 
     return(TRUE);
   }else{
@@ -2564,7 +2564,7 @@ ags_machine_popup_add_edit_options(AgsMachine *machine, guint edit_options)
     gtk_widget_show((GtkWidget *) item);
   }
 
-  gtk_widget_show_all(machine->popup);
+  gtk_widget_show_all((GtkWidget *) machine->popup);
 }
 
 /**

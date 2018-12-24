@@ -737,7 +737,7 @@ ags_effect_line_add_ladspa_effect(AgsEffectLine *effect_line,
   ladspa_plugin = ags_ladspa_manager_find_ladspa_plugin(ags_ladspa_manager_get_instance(),
 							filename, effect);
 
-  port = NULL;
+  play_port = NULL;
   recall_port = NULL;
 
   /* retrieve position within table  */
@@ -2092,7 +2092,7 @@ ags_effect_line_message_monitor_timeout(AgsEffectLine *effect_line)
     }
     
     g_list_free_full(message_start,
-		     GDestroyNotify(ags_message_envelope_free));
+		     (GDestroyNotify *) ags_message_envelope_free);
     
     return(TRUE);
   }else{

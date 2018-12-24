@@ -237,7 +237,7 @@ ags_link_editor_apply(AgsApplicable *applicable)
 
     GObject *output_soundcard;
 
-    AgsGuiThread *gui_thread;
+    AgsThread *gui_thread;
 
     AgsApplicationContext *application_context;
     
@@ -249,8 +249,8 @@ ags_link_editor_apply(AgsApplicable *applicable)
 
     machine = machine_editor->machine;
 
-    window = gtk_widget_get_ancestor(machine,
-				     AGS_TYPE_WINDOW);
+    window = AGS_WINDOW(gtk_widget_get_ancestor(GTK_WIDGET(machine),
+						AGS_TYPE_WINDOW));
     
     /* get channel */
     channel = line_editor->channel;
@@ -295,8 +295,8 @@ ags_link_editor_apply(AgsApplicable *applicable)
 						      filename,
 						      (guint) gtk_spin_button_get_value_as_int(link_editor->spin_button));
 	  /* append AgsLinkChannel */
-	  ags_gui_thread_schedule_task(gui_thread,
-				       open_single_file);
+	  ags_gui_thread_schedule_task((AgsGuiThread *) gui_thread,
+				       (GObject *) open_single_file);
 	}
       }else{
 	/* create task */
@@ -304,8 +304,8 @@ ags_link_editor_apply(AgsApplicable *applicable)
 					    NULL);
 	
 	/* append AgsLinkChannel */
-	ags_gui_thread_schedule_task(gui_thread,
-				     link_channel);
+	ags_gui_thread_schedule_task((AgsGuiThread *) gui_thread,
+				     (GObject *) link_channel);
       }
     }else{
       guint link_line;
@@ -335,8 +335,8 @@ ags_link_editor_apply(AgsApplicable *applicable)
 					  link);
       
       /* append AgsLinkChannel */
-      ags_gui_thread_schedule_task(gui_thread,
-				   link_channel);
+      ags_gui_thread_schedule_task((AgsGuiThread *) gui_thread,
+				   (GObject *) link_channel);
     }
   }
 }
@@ -356,7 +356,6 @@ ags_link_editor_reset(AgsApplicable *applicable)
 
   if(gtk_tree_model_get_iter_first(model,
 				   &iter)){
-    AgsWindow *window;
     AgsMachine *machine, *link_machine, *link;
     AgsMachineEditor *machine_editor;
     AgsLineEditor *line_editor;
@@ -374,9 +373,6 @@ ags_link_editor_reset(AgsApplicable *applicable)
 								AGS_TYPE_MACHINE_EDITOR));
 
     machine = machine_editor->machine;
-
-    window = gtk_widget_get_ancestor(machine,
-				     AGS_TYPE_WINDOW);
 
     channel = line_editor->channel;
  

@@ -1356,8 +1356,7 @@ ags_line_member_real_change_port(AgsLineMember *line_member,
   if((AGS_LINE_MEMBER_RESET_BY_TASK & (line_member->flags)) != 0){
     AgsWindow *window;
 
-    AgsGuiThread *gui_thread;
-
+    AgsThread *gui_thread;
     AgsTask *task;
 
     AgsApplicationContext *application_context;
@@ -1373,8 +1372,8 @@ ags_line_member_real_change_port(AgsLineMember *line_member,
 				    line_member->control_port, port_data,
 				    NULL);
 
-    ags_gui_thread_schedule_task(gui_thread,
-				 task);
+    ags_gui_thread_schedule_task(AGS_GUI_THREAD(gui_thread),
+				 G_OBJECT(task));
   }
 }
 
@@ -1629,8 +1628,8 @@ ags_line_member_chained_event(AgsLineMember *line_member)
     return;
   }
   
-  machine = gtk_widget_get_ancestor(line_member,
-				    AGS_TYPE_MACHINE);
+  machine = (AgsMachine *) gtk_widget_get_ancestor(GTK_WIDGET(line_member),
+						   AGS_TYPE_MACHINE);
 
   if((AGS_MACHINE_STICKY_CONTROLS & (machine->flags)) != 0){
     AgsPad *pad;
@@ -1641,11 +1640,11 @@ ags_line_member_chained_event(AgsLineMember *line_member)
     
     gboolean is_active;
 
-    pad = gtk_widget_get_ancestor(line_member,
-				  AGS_TYPE_PAD);
+    pad = (AgsPad *) gtk_widget_get_ancestor(GTK_WIDGET(line_member),
+					     AGS_TYPE_PAD);
 
-    effect_pad = gtk_widget_get_ancestor(line_member,
-					 AGS_TYPE_EFFECT_PAD);
+    effect_pad = (AgsEffectPad *) gtk_widget_get_ancestor(GTK_WIDGET(line_member),
+							  AGS_TYPE_EFFECT_PAD);
 
     is_active = FALSE;
 
@@ -1658,7 +1657,7 @@ ags_line_member_chained_event(AgsLineMember *line_member)
 		   "adjustment", &adjustment,
 		   NULL);
     }else if(GTK_IS_TOGGLE_BUTTON(child_widget)){
-      is_active = gtk_toggle_button_get_active(gtk_bin_get_child(line_member));
+      is_active = gtk_toggle_button_get_active((GtkToggleButton *) gtk_bin_get_child(GTK_BIN(line_member)));
     }
 
     if(pad != NULL){
@@ -1667,8 +1666,8 @@ ags_line_member_chained_event(AgsLineMember *line_member)
       GList *list_line, *list_line_start;
       GList *list_line_member, *list_line_member_start;
 
-      line = gtk_widget_get_ancestor(line_member,
-				     AGS_TYPE_LINE);
+      line = (AgsLine *) gtk_widget_get_ancestor(GTK_WIDGET(line_member),
+						 AGS_TYPE_LINE);
       
       list_line =
 	list_line_start = gtk_container_get_children(GTK_CONTAINER(pad->expander_set));
@@ -1683,22 +1682,22 @@ ags_line_member_chained_event(AgsLineMember *line_member)
 			  AGS_LINE_MEMBER(list_line_member->data)->specifier)){
 	      AGS_LINE_MEMBER(list_line_member->data)->flags |= AGS_LINE_MEMBER_BLOCK_CHAINED;
 
-	      child_widget = gtk_bin_get_child(AGS_LINE_MEMBER(list_line_member->data));
+	      child_widget = gtk_bin_get_child(GTK_BIN(list_line_member->data));
 
 	      if(AGS_IS_DIAL(child_widget)){
-		ags_dial_set_value(gtk_bin_get_child(AGS_LINE_MEMBER(list_line_member->data)),
+		ags_dial_set_value((AgsDial *) child_widget,
 				   adjustment->value);
 	      }else if(GTK_IS_SPIN_BUTTON(child_widget)){
-		gtk_spin_button_set_value(gtk_bin_get_child(AGS_LINE_MEMBER(list_line_member->data)),
+		gtk_spin_button_set_value((GtkSpinButton *) child_widget,
 					  adjustment->value);
 	      }else if(GTK_IS_SCALE(child_widget)){
-		gtk_range_set_value(gtk_bin_get_child(AGS_LINE_MEMBER(list_line_member->data)),
+		gtk_range_set_value((GtkRange *) child_widget,
 				    adjustment->value);
 	      }else if(GTK_IS_TOGGLE_BUTTON(child_widget)){
-		gtk_toggle_button_set_active(gtk_bin_get_child(list_line_member->data),
+		gtk_toggle_button_set_active((GtkToggleButton *) child_widget,
 					     is_active);
 	      }else if(GTK_IS_BUTTON(child_widget)){
-		gtk_button_clicked(gtk_bin_get_child(AGS_LINE_MEMBER(list_line_member->data)));
+		gtk_button_clicked((GtkButton *) child_widget);
 	      }
 	      
 	      AGS_LINE_MEMBER(list_line_member->data)->flags &= (~AGS_LINE_MEMBER_BLOCK_CHAINED);
@@ -1722,8 +1721,8 @@ ags_line_member_chained_event(AgsLineMember *line_member)
       GList *list_effect_line, *list_effect_line_start;
       GList *list_line_member, *list_line_member_start;
 
-      effect_line = gtk_widget_get_ancestor(line_member,
-					    AGS_TYPE_EFFECT_LINE);
+      effect_line = (AgsEffectLine *) gtk_widget_get_ancestor(GTK_WIDGET(line_member),
+							      AGS_TYPE_EFFECT_LINE);
       
       list_effect_line =
 	list_effect_line_start = gtk_container_get_children(GTK_CONTAINER(effect_pad->table));
@@ -1741,19 +1740,19 @@ ags_line_member_chained_event(AgsLineMember *line_member)
 	      child_widget = gtk_bin_get_child(AGS_LINE_MEMBER(list_line_member->data));
 
 	      if(AGS_IS_DIAL(child_widget)){
-		ags_dial_set_value(gtk_bin_get_child(AGS_LINE_MEMBER(list_line_member->data)),
+		ags_dial_set_value((AgsDial *) child_widget,
 				   adjustment->value);
 	      }else if(GTK_IS_SPIN_BUTTON(child_widget)){
-		gtk_spin_button_set_value(gtk_bin_get_child(AGS_LINE_MEMBER(list_line_member->data)),
+		gtk_spin_button_set_value((GtkSpinButton *) child_widget,
 					  adjustment->value);
 	      }else if(GTK_IS_SCALE(child_widget)){
-		gtk_range_set_value(gtk_bin_get_child(AGS_LINE_MEMBER(list_line_member->data)),
+		gtk_range_set_value((GtkRange *) child_widget,
 				    adjustment->value);
 	      }else if(GTK_IS_TOGGLE_BUTTON(child_widget)){
-		gtk_toggle_button_set_active(gtk_bin_get_child(list_line_member->data),
+		gtk_toggle_button_set_active((GtkToggleButton *) child_widget,
 					     is_active);
 	      }else if(GTK_IS_BUTTON(child_widget)){
-		gtk_button_clicked(gtk_bin_get_child(AGS_LINE_MEMBER(list_line_member->data)));
+		gtk_button_clicked((GtkButton *) child_widget);
 	      }
 	      
 	      AGS_LINE_MEMBER(list_line_member->data)->flags &= (~AGS_LINE_MEMBER_BLOCK_CHAINED);

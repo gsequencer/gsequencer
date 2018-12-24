@@ -203,7 +203,7 @@ ags_line_member_editor_plugin_browser_response_callback(GtkDialog *dialog,
 					    filename,
 					    effect);
 	    ags_gui_thread_schedule_task((AgsGuiThread *) gui_thread,
-					 add_effect);
+					 (GObject *) add_effect);
 	  }
 
 	  g_list_free(start_play);
@@ -277,7 +277,7 @@ ags_line_member_editor_plugin_browser_response_callback(GtkDialog *dialog,
 					    filename,
 					    effect);
 	    ags_gui_thread_schedule_task((AgsGuiThread *) gui_thread,
-					 add_effect);
+					 (GObject *) add_effect);
 	  }
 
 	  g_list_free(start_play);
@@ -397,7 +397,7 @@ ags_line_member_editor_remove_callback(GtkWidget *button,
     AgsEffectBridge *effect_bridge;
     AgsEffectLine *effect_line;
 	
-    effect_bridge = machine->bridge;
+    effect_bridge = AGS_EFFECT_BRIDGE(machine->bridge);
 	
     /* retrieve effect line and effect pad */
     if(is_output){
