@@ -100,16 +100,16 @@ ags_osc_server_preferences_any_address_callback(GtkButton *button, AgsOscServerP
   
   /* set address fields in-/sensitive */
   if(gtk_toggle_button_get_active(button)){
-    gtk_widget_set_sensitive(osc_server_preferences->ip4_address,
+    gtk_widget_set_sensitive((GtkWidget *) osc_server_preferences->ip4_address,
 			     FALSE);
 
-    gtk_widget_set_sensitive(osc_server_preferences->ip6_address,
+    gtk_widget_set_sensitive((GtkWidget *) osc_server_preferences->ip6_address,
 			     FALSE);
   }else{
-    gtk_widget_set_sensitive(osc_server_preferences->ip4_address,
+    gtk_widget_set_sensitive((GtkWidget *) osc_server_preferences->ip4_address,
 			     TRUE);
 
-    gtk_widget_set_sensitive(osc_server_preferences->ip6_address,
+    gtk_widget_set_sensitive((GtkWidget *) osc_server_preferences->ip6_address,
 			     TRUE);
   }
 }
@@ -131,7 +131,7 @@ ags_osc_server_preferences_enable_ip4_callback(GtkButton *button, AgsOscServerPr
     start_list = ags_sound_provider_get_osc_server(AGS_SOUND_PROVIDER(application_context));
 
   if(list != NULL){
-    if(gtk_toggle_button_get_active(button)){
+    if(gtk_toggle_button_get_active((GtkToggleButton *) button)){
       ags_osc_server_set_flags(list->data,
 			       AGS_OSC_SERVER_INET4);
     }else{
@@ -185,7 +185,7 @@ ags_osc_server_preferences_enable_ip6_callback(GtkButton *button, AgsOscServerPr
     start_list = ags_sound_provider_get_osc_server(AGS_SOUND_PROVIDER(application_context));
 
   if(list != NULL){
-    if(gtk_toggle_button_get_active(button)){
+    if(gtk_toggle_button_get_active((GtkToggleButton *) button)){
       ags_osc_server_set_flags(list->data,
 			       AGS_OSC_SERVER_INET6);
     }else{

@@ -65,8 +65,6 @@ void
 ags_sequencer_editor_card_changed_callback(GtkComboBox *combo,
 					   AgsSequencerEditor *sequencer_editor)
 {
-  AgsWindow *window;
-
   GObject *sequencer;
 
   GtkTreeIter current;
@@ -81,8 +79,6 @@ ags_sequencer_editor_card_changed_callback(GtkComboBox *combo,
 
   GError *error;
 
-  window = AGS_WINDOW(AGS_PREFERENCES(gtk_widget_get_ancestor(GTK_WIDGET(sequencer_editor),
-							      AGS_TYPE_PREFERENCES))->window);
   sequencer = sequencer_editor->sequencer;
 
   /*  */

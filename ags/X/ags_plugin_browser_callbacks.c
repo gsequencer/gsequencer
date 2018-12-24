@@ -40,7 +40,7 @@ void
 ags_plugin_browser_ok_callback(GtkWidget *button,
 			       AgsPluginBrowser *plugin_browser)
 {
-  gtk_combo_box_set_active(plugin_browser->plugin_type,
+  gtk_combo_box_set_active((GtkComboBox *) plugin_browser->plugin_type,
 			   -1);
   
   gtk_widget_hide((GtkWidget *) plugin_browser);
@@ -50,7 +50,7 @@ void
 ags_plugin_browser_cancel_callback(GtkWidget *button,
 				   AgsPluginBrowser *plugin_browser)
 {
-  gtk_combo_box_set_active(plugin_browser->plugin_type,
+  gtk_combo_box_set_active((GtkComboBox *) plugin_browser->plugin_type,
 			   -1);
 
   gtk_widget_hide((GtkWidget *) plugin_browser);

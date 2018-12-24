@@ -227,8 +227,8 @@ ags_notation_editor_init(AgsNotationEditor *notation_editor)
 		     TRUE, TRUE, 0);
 
   /* machine selector */
-  viewport = gtk_viewport_new(NULL,
-			      NULL);
+  viewport = (GtkViewport *) gtk_viewport_new(NULL,
+					      NULL);
   g_object_set(viewport,
 	       "shadow-type", GTK_SHADOW_NONE,
 	       NULL);
@@ -237,8 +237,8 @@ ags_notation_editor_init(AgsNotationEditor *notation_editor)
 		  FALSE, TRUE);
 
   scrolled_window = (GtkScrolledWindow *) gtk_scrolled_window_new(NULL, NULL);
-  gtk_container_add(viewport,
-		    scrolled_window);
+  gtk_container_add(GTK_CONTAINER(viewport),
+		    GTK_WIDGET(scrolled_window));
 
   notation_editor->machine_selector = g_object_new(AGS_TYPE_MACHINE_SELECTOR,
 						   "homogeneous", FALSE,
@@ -262,8 +262,8 @@ ags_notation_editor_init(AgsNotationEditor *notation_editor)
   notation_editor->selected_machine = NULL;
 
   /* table */
-  viewport = gtk_viewport_new(NULL,
-			      NULL);
+  viewport = (GtkViewport *) gtk_viewport_new(NULL,
+					      NULL);
   g_object_set(viewport,
 	       "shadow-type", GTK_SHADOW_NONE,
 	       NULL);
@@ -273,8 +273,8 @@ ags_notation_editor_init(AgsNotationEditor *notation_editor)
 
   table = (GtkTable *) gtk_table_new(3, 2,
 				     FALSE);
-  gtk_container_add(viewport,
-		    table);
+  gtk_container_add(GTK_CONTAINER(viewport),
+		    GTK_WIDGET(table));
   
   /* notebook */
   notation_editor->notebook = g_object_new(AGS_TYPE_NOTEBOOK,
@@ -525,7 +525,7 @@ ags_notation_editor_real_machine_changed(AgsNotationEditor *notation_editor,
 		 NULL);
   }
   
-  gtk_widget_queue_draw(notation_editor->scrolled_piano->piano);
+  gtk_widget_queue_draw((GtkWidget *) notation_editor->scrolled_piano->piano);
   
   /* selected machine */
   notation_editor->selected_machine = machine;
@@ -535,7 +535,7 @@ ags_notation_editor_real_machine_changed(AgsNotationEditor *notation_editor,
   ags_notation_edit_reset_hscrollbar(notation_editor->notation_edit);
 
   /* redraw */
-  gtk_widget_queue_draw(notation_editor->notation_edit);
+  gtk_widget_queue_draw((GtkWidget *) notation_editor->notation_edit);
 
   /* connect set-pads - new */
   if(machine != NULL){
@@ -624,12 +624,12 @@ ags_notation_editor_add_note(AgsNotationEditor *notation_editor,
       if(list_notation != NULL){
 	notation = list_notation->data;
       }else{
-	notation = ags_notation_new(machine->audio,
+	notation = ags_notation_new((GObject *) machine->audio,
 				    i);
 	AGS_TIMESTAMP(notation->timestamp)->timer.ags_offset.offset = timestamp->timer.ags_offset.offset;
 	
 	ags_audio_add_notation(machine->audio,
-			       notation);
+			       (GObject *) notation);
       }
 
       new_note = ags_note_duplicate(note);
@@ -645,7 +645,7 @@ ags_notation_editor_add_note(AgsNotationEditor *notation_editor,
 
     g_object_unref(timestamp);
     
-    gtk_widget_queue_draw(notation_editor->notation_edit);
+    gtk_widget_queue_draw((GtkWidget *) notation_editor->notation_edit);
   }
 }
 
@@ -715,7 +715,7 @@ ags_notation_editor_delete_note(AgsNotationEditor *notation_editor,
 
     g_object_unref(timestamp);
     
-    gtk_widget_queue_draw(notation_editor->notation_edit);
+    gtk_widget_queue_draw((GtkWidget *) notation_editor->notation_edit);
   }
 }
 
@@ -810,7 +810,7 @@ ags_notation_editor_select_region(AgsNotationEditor *notation_editor,
 
     g_list_free(start_list_notation);
     
-    gtk_widget_queue_draw(notation_editor->notation_edit);
+    gtk_widget_queue_draw((GtkWidget *) notation_editor->notation_edit);
   }
 }
 
@@ -821,7 +821,7 @@ ags_notation_edit_play_channel(AgsNotationEdit *notation_edit,
 {
   AgsWindow *window;
   
-  AgsGuiThread *gui_thread;
+  AgsThread *gui_thread;
 
   AgsStartSoundcard *start_soundcard;
   AgsStartChannel *start_channel;
@@ -863,8 +863,8 @@ ags_notation_edit_play_channel(AgsNotationEdit *notation_edit,
 
   /* perform playback */
   task = g_list_reverse(task);
-  ags_gui_thread_schedule_task_list(gui_thread,
-				    task);
+  ags_gui_thread_schedule_task_list((AgsGuiThread *) gui_thread,
+				    (GObject *) task);
 }
 
 /**
@@ -1036,7 +1036,7 @@ ags_notation_editor_select_all(AgsNotationEditor *notation_editor)
 
     g_list_free(start_list_notation);
     
-    gtk_widget_queue_draw(notation_editor->notation_edit);
+    gtk_widget_queue_draw((GtkWidget *) notation_editor->notation_edit);
   }
 }
 
@@ -1099,12 +1099,12 @@ ags_notation_editor_paste(AgsNotationEditor *notation_editor)
 						       timestamp);
 
       if(list_notation == NULL){
-	notation = ags_notation_new(machine->audio,
+	notation = ags_notation_new((GObject *) machine->audio,
 				    i);
 	notation->timestamp->timer.ags_offset.offset = timestamp->timer.ags_offset.offset;
 	
 	ags_audio_add_notation(machine->audio,
-			       notation);
+			       (GObject *) notation);
       }else{
 	notation = AGS_NOTATION(list_notation->data);
       }
@@ -1368,7 +1368,7 @@ ags_notation_editor_paste(AgsNotationEditor *notation_editor)
       }
     }
 
-    gtk_widget_queue_draw(notation_editor->notation_edit);
+    gtk_widget_queue_draw((GtkWidget *) notation_editor->notation_edit);
   }
 }
 
@@ -1524,7 +1524,7 @@ ags_notation_editor_cut(AgsNotationEditor *notation_editor)
 
     g_list_free(start_list_notation);
 
-    gtk_widget_queue_draw(notation_editor->notation_edit);
+    gtk_widget_queue_draw((GtkWidget *) notation_editor->notation_edit);
 
     /* write to clipboard */
     xmlDocDumpFormatMemoryEnc(clipboard, &buffer, &size, "UTF-8", TRUE);
@@ -1676,7 +1676,7 @@ ags_notation_editor_invert(AgsNotationEditor *notation_editor)
       i++;
     }
   
-    gtk_widget_queue_draw(notation_editor->notation_edit);
+    gtk_widget_queue_draw((GtkWidget *) notation_editor->notation_edit);
   }
 }
 

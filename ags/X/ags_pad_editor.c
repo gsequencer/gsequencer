@@ -238,11 +238,11 @@ ags_pad_editor_connect(AgsConnectable *connectable)
 
   machine = NULL;
   
-  machine_editor = gtk_widget_get_ancestor(pad_editor,
-					   AGS_TYPE_MACHINE_EDITOR);
+  machine_editor = (AgsMachineEditor *) gtk_widget_get_ancestor(GTK_WIDGET(pad_editor),
+								AGS_TYPE_MACHINE_EDITOR);
 
-  connection_editor = gtk_widget_get_ancestor(pad_editor,
-					      AGS_TYPE_CONNECTION_EDITOR);
+  connection_editor = (AgsConnectionEditor *) gtk_widget_get_ancestor(GTK_WIDGET(pad_editor),
+								      AGS_TYPE_CONNECTION_EDITOR);
   
   if(machine_editor != NULL){
     machine = machine_editor->machine;
@@ -289,11 +289,11 @@ ags_pad_editor_disconnect(AgsConnectable *connectable)
   
   machine = NULL;
 
-  machine_editor = gtk_widget_get_ancestor(pad_editor,
-					   AGS_TYPE_MACHINE_EDITOR);
+  machine_editor = (AgsMachineEditor *) gtk_widget_get_ancestor(GTK_WIDGET(pad_editor),
+								AGS_TYPE_MACHINE_EDITOR);
 
-  connection_editor = gtk_widget_get_ancestor(pad_editor,
-					      AGS_TYPE_CONNECTION_EDITOR);
+  connection_editor = (AgsConnectionEditor *) gtk_widget_get_ancestor(GTK_WIDGET(pad_editor),
+								      AGS_TYPE_CONNECTION_EDITOR);
   
   if(machine_editor != NULL){
     machine = machine_editor->machine;

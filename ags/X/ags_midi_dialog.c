@@ -527,7 +527,6 @@ ags_midi_dialog_set_update(AgsApplicable *applicable, gboolean update)
 void
 ags_midi_dialog_apply(AgsApplicable *applicable)
 {
-  AgsWindow *window;
   AgsMidiDialog *midi_dialog;
   AgsMachine *machine;
 
@@ -539,9 +538,6 @@ ags_midi_dialog_apply(AgsApplicable *applicable)
   midi_dialog = AGS_MIDI_DIALOG(applicable);
 
   machine = midi_dialog->machine;
-
-  window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) machine,
-						 AGS_TYPE_WINDOW);
 
   /* audio and sequencer */
   audio = machine->audio;
@@ -567,7 +563,6 @@ ags_midi_dialog_apply(AgsApplicable *applicable)
 void
 ags_midi_dialog_reset(AgsApplicable *applicable)
 {
-  AgsWindow *window;
   AgsMidiDialog *midi_dialog;
   AgsMachine *machine;
 
@@ -588,9 +583,6 @@ ags_midi_dialog_reset(AgsApplicable *applicable)
   midi_dialog = AGS_MIDI_DIALOG(applicable);
 
   machine = midi_dialog->machine;
-
-  window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) machine,
-						 AGS_TYPE_WINDOW);
 
   /* audio and sequencer */
   audio = machine->audio;
@@ -680,7 +672,7 @@ ags_midi_dialog_load_sequencers(AgsMidiDialog *midi_dialog)
 						 AGS_TYPE_WINDOW);
 
   /* application context and mutex manager */
-  application_context = window->application_context;
+  application_context = (AgsApplicationContext *) window->application_context;
 
   /* clear model */
   gtk_list_store_clear(GTK_LIST_STORE(gtk_combo_box_get_model(GTK_COMBO_BOX(midi_dialog->midi_device))));

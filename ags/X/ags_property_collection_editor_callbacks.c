@@ -35,7 +35,8 @@ ags_property_collection_editor_add_collection_callback(GtkButton *button,
 		     GTK_WIDGET(table),
 		     FALSE, FALSE,
 		     0);
-  
+
+  //FIXME:JK: deprecated function
   collection = (GtkWidget *) g_object_newv(property_collection_editor->child_type,
 					   property_collection_editor->child_parameter_count,
 					   property_collection_editor->child_parameter);

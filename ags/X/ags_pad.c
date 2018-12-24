@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -737,7 +737,7 @@ ags_pad_play(AgsPad *pad)
   AgsStartSoundcard *start_soundcard;
   AgsStartChannel *start_channel;
 
-  AgsGuiThread *gui_thread;
+  AgsThread *gui_thread;
 
   AgsApplicationContext *application_context;
   
@@ -800,13 +800,9 @@ ags_pad_play(AgsPad *pad)
 		     NULL);
       }
     }else{
-      AgsLine *line;
-
       GList *list;
 
       list = gtk_container_get_children(GTK_CONTAINER(pad->expander_set));
-
-      line = AGS_LINE(ags_line_find_next_grouped(list)->data);
 
       /* start channel for playback */
       start_channel = ags_start_channel_new(channel,
@@ -830,7 +826,7 @@ ags_pad_play(AgsPad *pad)
       start_task = g_list_reverse(start_task);
 
       ags_gui_thread_schedule_task_list((AgsGuiThread *) gui_thread,
-					start_task);
+					(GObject *) start_task);
     }
   }else{
     AgsPlayback *playback;
@@ -860,8 +856,8 @@ ags_pad_play(AgsPad *pad)
 	  cancel_channel = ags_cancel_channel_new(channel,
 						  AGS_SOUND_SCOPE_PLAYBACK);
 
-	  ags_gui_thread_schedule_task(gui_thread,
-				       cancel_channel);
+	  ags_gui_thread_schedule_task((AgsGuiThread *) gui_thread,
+				       (GObject *) cancel_channel);
 	}
 	
 	/* iterate */
@@ -903,8 +899,8 @@ ags_pad_play(AgsPad *pad)
 	cancel_channel = ags_cancel_channel_new(channel,
 						AGS_SOUND_SCOPE_PLAYBACK);
 
-	ags_gui_thread_schedule_task(gui_thread,
-				     cancel_channel);
+	ags_gui_thread_schedule_task((AgsGuiThread *) gui_thread,
+				     (GObject *) cancel_channel);
       }
     }
   }

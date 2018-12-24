@@ -234,7 +234,7 @@ ags_playback_window_set_property(GObject *gobject,
 	g_object_ref(main_window);
       }
 
-      playback_window->main_window = (GObject *) main_window;
+      playback_window->main_window = (GtkWidget *) main_window;
     }
     break;
   default:

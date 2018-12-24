@@ -276,7 +276,7 @@ ags_preferences_apply(AgsApplicable *applicable)
 
   AgsApplySoundConfig *apply_sound_config;
   
-  AgsThread *task_thread;
+  AgsThread *gui_thread;
   
   AgsApplicationContext *application_context;
   AgsConfig *config;
@@ -293,7 +293,7 @@ ags_preferences_apply(AgsApplicable *applicable)
   
   application_context = ags_application_context_get_instance();
 
-  task_thread = ags_concurrency_provider_get_task_thread(AGS_CONCURRENCY_PROVIDER(application_context));
+  gui_thread = ags_ui_provider_get_gui_thread(AGS_CONCURRENCY_PROVIDER(application_context));
   
   config = ags_config_get_instance();
 
@@ -313,18 +313,18 @@ ags_preferences_apply(AgsApplicable *applicable)
 
   apply_sound_config = ags_apply_sound_config_new(application_context,
 						  NULL);
-  ags_task_thread_append_task(task_thread,
-			      apply_sound_config);
+  ags_gui_thread_schedule_task((AgsGuiThread *) gui_thread,
+			       (GObject *) apply_sound_config);
 
   /* notify user about safe GSequencer */
-  dialog = gtk_message_dialog_new(preferences,
+  dialog = gtk_message_dialog_new((GtkWindow *) preferences,
 				  GTK_DIALOG_MODAL,
 				  GTK_MESSAGE_INFO,
 				  GTK_BUTTONS_OK,
 				  "After finished your modifications you should safe your file");
   g_signal_connect(dialog, "response",
 		   G_CALLBACK(gtk_widget_destroy), NULL);
-  gtk_widget_show_all(dialog);
+  gtk_widget_show_all((GtkWidget *) dialog);
 }
 
 void

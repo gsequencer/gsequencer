@@ -123,7 +123,7 @@ ags_machine_popup_destroy_activate_callback(GtkWidget *widget, AgsMachine *machi
   
   AgsRemoveAudio *remove_audio;
 
-  AgsGuiThread *gui_thread;
+  AgsThread *gui_thread;
 
   AgsApplicationContext *application_context;
   
@@ -180,8 +180,8 @@ ags_machine_popup_destroy_activate_callback(GtkWidget *widget, AgsMachine *machi
   remove_audio = ags_remove_audio_new(application_context,
 				      audio);
   
-  ags_gui_thread_schedule_task(gui_thread,
-			       remove_audio);
+  ags_gui_thread_schedule_task((AgsGuiThread *) gui_thread,
+			       (GObject *) remove_audio);
 }
 
 void
@@ -333,7 +333,7 @@ ags_machine_popup_properties_activate_callback(GtkWidget *widget, AgsMachine *ma
 void
 ags_machine_popup_sticky_controls_toggled_callback(GtkWidget *widget, AgsMachine *machine)
 {
-  if(gtk_check_menu_item_get_active(widget)){
+  if(gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(widget))){
     machine->flags |= AGS_MACHINE_STICKY_CONTROLS;
   }else{
     machine->flags &= (~AGS_MACHINE_STICKY_CONTROLS);
@@ -377,7 +377,7 @@ ags_machine_popup_envelope_callback(GtkWidget *widget, AgsMachine *machine)
     ags_connectable_connect(AGS_CONNECTABLE(envelope_dialog));
     ags_applicable_reset(AGS_APPLICABLE(envelope_dialog));
 
-    gtk_widget_show_all(envelope_dialog);
+    gtk_widget_show_all((GtkWidget *) envelope_dialog);
   }
 }
 
@@ -645,15 +645,11 @@ ags_machine_resize_audio_channels_callback(AgsMachine *machine,
 					   guint audio_channels, guint audio_channels_old,
 					   gpointer data)
 {
-  AgsWindow *window;
-  
   GList *pad_list;
   GList *line_list;
   
   guint i;
   
-  window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) machine);
-
   /* resize */
   if((AGS_MACHINE_CONNECTED & (machine->flags)) != 0){
     if(audio_channels > audio_channels_old){
@@ -701,12 +697,8 @@ ags_machine_resize_pads_callback(AgsMachine *machine, GType channel_type,
 				 guint pads, guint pads_old,
 				 gpointer data)
 {
-  AgsWindow *window;
-
   GList *pad_list;
   
-  window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) machine);
-
   /* resize */
   if((AGS_MACHINE_CONNECTED & (machine->flags)) != 0){
     if(pads > pads_old){

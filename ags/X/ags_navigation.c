@@ -202,7 +202,7 @@ ags_navigation_init(AgsNavigation *navigation)
   gtk_box_pack_start((GtkBox *) navigation, (GtkWidget *) hbox, FALSE, FALSE, 2);
 
   navigation->expander = (GtkToggleButton *) gtk_toggle_button_new();
-  gtk_widget_set_name(navigation->expander,
+  gtk_widget_set_name((GtkWidget *) navigation->expander,
 		      "ags-navigation-expander");
   gtk_box_pack_start((GtkBox*) hbox, (GtkWidget *) navigation->expander, FALSE, FALSE, 2);
   gtk_container_add((GtkContainer *) navigation->expander,
@@ -545,7 +545,7 @@ ags_navigation_real_change_position(AgsNavigation *navigation,
 
   AgsSeekSoundcard *seek_soundcard;
 
-  AgsGuiThread *gui_thread;
+  AgsThread *gui_thread;
 
   AgsApplicationContext *application_context;
   
@@ -553,7 +553,6 @@ ags_navigation_real_change_position(AgsNavigation *navigation,
   gdouble delay;
   gdouble delay_factor;
   double tact_factor;
-  double tact;
   guint steps;
   guint note_offset;
   gboolean move_forward;
@@ -571,8 +570,6 @@ ags_navigation_real_change_position(AgsNavigation *navigation,
   delay = ags_soundcard_get_delay(AGS_SOUNDCARD(window->soundcard));
   delay_factor = ags_soundcard_get_delay_factor(AGS_SOUNDCARD(window->soundcard));
   
-  tact = note_offset - navigation->start_tact;
-  
   if(note_offset < 16 * tact_counter){
     steps = (guint) (16 * tact_counter - note_offset);
     move_forward = TRUE;
@@ -585,8 +582,8 @@ ags_navigation_real_change_position(AgsNavigation *navigation,
 					  steps,
 					  move_forward);
   
-  ags_gui_thread_schedule_task(gui_thread,
-			       seek_soundcard);
+  ags_gui_thread_schedule_task((AgsGuiThread *) gui_thread,
+			       (GObject *) seek_soundcard);
 
   //TODO:JK: implement me
   

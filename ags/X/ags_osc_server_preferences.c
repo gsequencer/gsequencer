@@ -171,7 +171,7 @@ ags_osc_server_preferences_init(AgsOscServerPreferences *osc_server_preferences)
 		   0, 0);
 
   /* start/stop */
-  hbox = gtk_hbox_new(FALSE,
+  hbox = (GtkHBox *) gtk_hbox_new(FALSE,
 		      0);
   gtk_table_attach(table,
 		   GTK_WIDGET(hbox),
@@ -429,7 +429,7 @@ ags_osc_server_preferences_apply(AgsApplicable *applicable)
   config = ags_config_get_instance();
 
   /* auto-start */
-  if(gtk_toggle_button_get_active(osc_server_preferences->auto_start)){
+  if(gtk_toggle_button_get_active((GtkToggleButton *) osc_server_preferences->auto_start)){
     ags_config_set_value(config,
 			 AGS_CONFIG_OSC_SERVER,
 			 "auto-start",
@@ -442,7 +442,7 @@ ags_osc_server_preferences_apply(AgsApplicable *applicable)
   }
 
   /* any address */
-  if(gtk_toggle_button_get_active(osc_server_preferences->any_address)){
+  if(gtk_toggle_button_get_active((GtkToggleButton *) osc_server_preferences->any_address)){
     ags_config_set_value(config,
 			 AGS_CONFIG_OSC_SERVER,
 			 "any-address",
@@ -455,7 +455,7 @@ ags_osc_server_preferences_apply(AgsApplicable *applicable)
   }
 
   /* IPv4 */
-  if(gtk_toggle_button_get_active(osc_server_preferences->enable_ip4)){
+  if(gtk_toggle_button_get_active((GtkToggleButton *) osc_server_preferences->enable_ip4)){
     ags_config_set_value(config,
 			 AGS_CONFIG_OSC_SERVER,
 			 "enable-ip4",
@@ -479,7 +479,7 @@ ags_osc_server_preferences_apply(AgsApplicable *applicable)
 		       str);
   
   /* IPv6 */
-  if(gtk_toggle_button_get_active(osc_server_preferences->enable_ip6)){
+  if(gtk_toggle_button_get_active((GtkToggleButton *) osc_server_preferences->enable_ip6)){
     ags_config_set_value(config,
 			 AGS_CONFIG_OSC_SERVER,
 			 "enable-ip6",

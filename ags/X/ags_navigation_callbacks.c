@@ -75,7 +75,7 @@ ags_navigation_bpm_callback(GtkWidget *widget,
   AgsWindow *window;
   AgsApplyBpm *apply_bpm;
 
-  AgsGuiThread *gui_thread;
+  AgsThread *gui_thread;
 
   AgsApplicationContext *application_context;
   
@@ -90,8 +90,8 @@ ags_navigation_bpm_callback(GtkWidget *widget,
   apply_bpm = ags_apply_bpm_new(window->application_context,
 				navigation->bpm->adjustment->value);
   
-  ags_gui_thread_schedule_task(gui_thread,
-			       apply_bpm);
+  ags_gui_thread_schedule_task((AgsGuiThread *) gui_thread,
+			       (GObject *) apply_bpm);
 }
 
 void
@@ -447,6 +447,8 @@ ags_navigation_loop_left_tact_callback(GtkWidget *widget,
       g_object_get(audio,
 		   "play", &list_start,
 		   NULL);
+
+      list = list_start;
       
       while((list = ags_recall_find_type(list,
 					 AGS_TYPE_COUNT_BEATS_AUDIO)) != NULL){
@@ -478,6 +480,8 @@ ags_navigation_loop_left_tact_callback(GtkWidget *widget,
 		   "recall", &list_start,
 		   NULL);
       
+      list = list_start;
+
       while((list = ags_recall_find_type(list,
 					 AGS_TYPE_PLAY_WAVE_AUDIO)) != NULL){
 	AgsPort *port;
@@ -553,6 +557,8 @@ ags_navigation_loop_right_tact_callback(GtkWidget *widget,
 		   "play", &list_start,
 		   NULL);
 
+      list = list_start;
+
       while((list = ags_recall_find_type(list,
 					 AGS_TYPE_COUNT_BEATS_AUDIO)) != NULL){
 	AgsPort *port;
@@ -581,6 +587,8 @@ ags_navigation_loop_right_tact_callback(GtkWidget *widget,
       g_object_get(audio,
 		   "recall", &list_start,
 		   NULL);
+
+      list = list_start;
 
       while((list = ags_recall_find_type(list,
 					 AGS_TYPE_PLAY_WAVE_AUDIO)) != NULL){

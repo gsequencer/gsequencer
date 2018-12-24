@@ -83,10 +83,10 @@ ags_notation_editor_resize_pads_callback(AgsMachine *machine, GType channel_type
   g_object_set(notation_editor->scrolled_piano->piano,
 	       "key-count", pads,
 	       NULL);
-  gtk_widget_queue_draw(notation_editor->scrolled_piano->piano);
+  gtk_widget_queue_draw((GtkWidget *) notation_editor->scrolled_piano->piano);
 
   /*  */
-  gtk_widget_queue_draw(notation_editor->notation_edit);
+  gtk_widget_queue_draw((GtkWidget *) notation_editor->notation_edit);
 }
 
 
@@ -106,8 +106,6 @@ ags_notation_editor_start_channel_launch_callback(AgsTask *task, AgsNote *note)
   gdouble delay;
   guint samplerate;
   
-  GValue value = {0,};
-
   channel = AGS_START_CHANNEL(task)->channel;
 
   /* get some fields */
@@ -186,7 +184,7 @@ ags_notation_editor_start_channel_launch_callback(AgsTask *task, AgsNote *note)
       
       audio_signal = NULL;
       list = ags_audio_signal_find_by_recall_id(start_list,
-						recall_id);
+						(GObject *) recall_id);
 	    
       if(list != NULL){
 	audio_signal = list->data;

@@ -222,7 +222,7 @@ ags_menu_bar_init(AgsMenuBar *menu_bar)
   menu_bar->live = (GtkMenu *) gtk_menu_new();
   
   item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label("live!");
-  gtk_menu_item_set_submenu((GtkMenuItem*) item, menu_bar->live);
+  gtk_menu_item_set_submenu((GtkMenuItem*) item, (GtkWidget *) menu_bar->live);
   gtk_menu_shell_append((GtkMenuShell*) menu_bar->add, (GtkWidget*) item);
 
   item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label(i18n("DSSI"));
@@ -269,7 +269,7 @@ ags_menu_bar_init(AgsMenuBar *menu_bar)
 			(GtkWidget*) gtk_separator_menu_item_new());
 
   item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label("playback");
-  gtk_widget_set_sensitive(item,
+  gtk_widget_set_sensitive((GtkWidget *) item,
 			   FALSE);
   gtk_menu_shell_append((GtkMenuShell*) menu_bar->midi, (GtkWidget*) item);
 

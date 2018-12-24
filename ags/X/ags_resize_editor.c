@@ -253,7 +253,7 @@ ags_resize_editor_apply(AgsApplicable *applicable)
   AgsMachineEditor *machine_editor;
   AgsResizeEditor *resize_editor;
 
-  AgsGuiThread *gui_thread;
+  AgsThread *gui_thread;
 
   AgsAudio *audio;
   AgsResizeAudio *resize_audio;
@@ -294,8 +294,8 @@ ags_resize_editor_apply(AgsApplicable *applicable)
 				      audio_channels);
       
   /* append AgsResizeAudio */
-  ags_gui_thread_schedule_task(gui_thread,
-			       resize_audio);
+  ags_gui_thread_schedule_task((AgsGuiThread *) gui_thread,
+			       (GObject *) resize_audio);
 }
 
 void

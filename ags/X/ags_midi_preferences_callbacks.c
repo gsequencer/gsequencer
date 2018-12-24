@@ -113,7 +113,6 @@ void
 ags_midi_preferences_remove_sequencer_editor_callback(GtkWidget *button,
 						      AgsMidiPreferences *midi_preferences)
 {
-  AgsWindow *window;
   AgsPreferences *preferences;
   AgsSequencerEditor *sequencer_editor;
 
@@ -122,7 +121,6 @@ ags_midi_preferences_remove_sequencer_editor_callback(GtkWidget *button,
   
   preferences = (AgsPreferences *) gtk_widget_get_ancestor(GTK_WIDGET(midi_preferences),
 							   AGS_TYPE_PREFERENCES);
-  window = (AgsWindow *) preferences->window;
 
   sequencer_editor = (AgsSequencerEditor *) gtk_widget_get_ancestor(button,
 								    AGS_TYPE_SEQUENCER_EDITOR);

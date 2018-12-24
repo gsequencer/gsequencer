@@ -167,9 +167,9 @@ ags_performance_preferences_init(AgsPerformancePreferences *performance_preferen
 		     FALSE, FALSE,
 		     0);
 
-  performance_preferences->thread_pool_max_unused_threads = gtk_spin_button_new_with_range(1.0,
-											   (gdouble) AGS_THREAD_POOL_DEFAULT_MAX_THREADS,
-											   1.0);
+  performance_preferences->thread_pool_max_unused_threads = (GtkSpinButton *) gtk_spin_button_new_with_range(1.0,
+													     (gdouble) AGS_THREAD_POOL_DEFAULT_MAX_THREADS,
+													     1.0);
   gtk_box_pack_start(GTK_BOX(hbox),
 		     GTK_WIDGET(performance_preferences->thread_pool_max_unused_threads),
 		     FALSE, FALSE,
@@ -269,19 +269,19 @@ ags_performance_preferences_apply(AgsApplicable *applicable)
   g_free(str);
 
   /* restore thread config */
-  if(gtk_toggle_button_get_active(performance_preferences->super_threaded_audio) ||
-     gtk_toggle_button_get_active(performance_preferences->super_threaded_channel)){
+  if(gtk_toggle_button_get_active((GtkToggleButton *) performance_preferences->super_threaded_audio) ||
+     gtk_toggle_button_get_active((GtkToggleButton *) performance_preferences->super_threaded_channel)){
     ags_config_set_value(config,
 			 AGS_CONFIG_THREAD,
 			 "model",
 			 "super-threaded");
 
-    if(gtk_toggle_button_get_active(performance_preferences->super_threaded_channel)){
+    if(gtk_toggle_button_get_active((GtkToggleButton *) performance_preferences->super_threaded_channel)){
       ags_config_set_value(config,
 			   AGS_CONFIG_THREAD,
 			   "super-threaded-scope",
 			   "channel");
-    }else if(gtk_toggle_button_get_active(performance_preferences->super_threaded_audio)){
+    }else if(gtk_toggle_button_get_active((GtkToggleButton *) performance_preferences->super_threaded_audio)){
       ags_config_set_value(config,
 			   AGS_CONFIG_THREAD,
 			   "super-threaded-scope",
@@ -315,7 +315,7 @@ ags_performance_preferences_apply(AgsApplicable *applicable)
   g_free(str);
   
   /* max-precision */
-  str = gtk_combo_box_get_active_text(performance_preferences->max_precision);
+  str = gtk_combo_box_get_active_text(GTK_COMBO_BOX_TEXT(performance_preferences->max_precision));
   max_precision = 0;
   
   if(str != NULL){
@@ -418,19 +418,19 @@ ags_performance_preferences_reset(AgsApplicable *applicable)
     switch(max_precision){
     case 125:
       {
-	gtk_combo_box_set_active(performance_preferences->max_precision,
+	gtk_combo_box_set_active((GtkComboBox *) performance_preferences->max_precision,
 				 0);
       }
       break;
     case 250:
       {
-	gtk_combo_box_set_active(performance_preferences->max_precision,
+	gtk_combo_box_set_active((GtkComboBox *) performance_preferences->max_precision,
 				 1);
       }
       break;
     case 1000:
       {
-	gtk_combo_box_set_active(performance_preferences->max_precision,
+	gtk_combo_box_set_active((GtkComboBox *) performance_preferences->max_precision,
 				 2);
       }
       break;

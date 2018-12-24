@@ -25,13 +25,13 @@ void
 ags_performance_preferences_super_threaded_channel_callback(GtkWidget *button,
 							    AgsPerformancePreferences *performance_preferences)
 {
-  if(gtk_toggle_button_get_active(button)){
-    gtk_toggle_button_set_active(performance_preferences->super_threaded_audio,
+  if(gtk_toggle_button_get_active((GtkToggleButton *) button)){
+    gtk_toggle_button_set_active((GtkToggleButton *) performance_preferences->super_threaded_audio,
 				 TRUE);
-    gtk_widget_set_sensitive(performance_preferences->super_threaded_audio,
+    gtk_widget_set_sensitive((GtkWidget *) performance_preferences->super_threaded_audio,
 			     FALSE);
   }else{
-    gtk_widget_set_sensitive(performance_preferences->super_threaded_audio,
+    gtk_widget_set_sensitive((GtkWidget *) performance_preferences->super_threaded_audio,
 			     TRUE);
   }
 }

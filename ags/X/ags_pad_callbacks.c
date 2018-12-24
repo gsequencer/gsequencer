@@ -87,7 +87,7 @@ ags_pad_mute_clicked_callback(GtkWidget *widget, AgsPad *pad)
 
   AgsSetMuted *set_muted;
 
-  AgsGuiThread *gui_thread;
+  AgsThread *gui_thread;
 
   AgsApplicationContext *application_context;
 
@@ -168,8 +168,8 @@ ags_pad_mute_clicked_callback(GtkWidget *widget, AgsPad *pad)
     }
   }
 
-  ags_gui_thread_schedule_task_list(gui_thread,
-				    start_task);
+  ags_gui_thread_schedule_task_list((AgsGuiThread *) gui_thread,
+				    (GObject *) start_task);
 }
 
 void
@@ -302,7 +302,7 @@ ags_pad_start_channel_launch_callback(AgsTask *task,
       
 	audio_signal = NULL;
 	list = ags_audio_signal_find_by_recall_id(start_list,
-						  recall_id);
+						  (GObject *) recall_id);
 	    
 	if(list != NULL){
 	  audio_signal = list->data;
