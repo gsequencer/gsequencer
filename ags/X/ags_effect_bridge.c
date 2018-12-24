@@ -574,8 +574,8 @@ ags_effect_bridge_connect(AgsConnectable *connectable)
 
   effect_bridge->flags |= AGS_EFFECT_BRIDGE_CONNECTED;
 
-  machine = gtk_widget_get_ancestor(effect_bridge,
-				    AGS_TYPE_MACHINE);
+  machine = (AgsMachine *) gtk_widget_get_ancestor(GTK_WIDGET(effect_bridge),
+						   AGS_TYPE_MACHINE);
   
   g_signal_connect_after(machine, "resize-audio-channels",
 			 G_CALLBACK(ags_effect_bridge_resize_audio_channels_callback), effect_bridge);
@@ -638,8 +638,8 @@ ags_effect_bridge_disconnect(AgsConnectable *connectable)
 
   effect_bridge->flags &= (~AGS_EFFECT_BRIDGE_CONNECTED);
 
-  machine = gtk_widget_get_ancestor(effect_bridge,
-				    AGS_TYPE_MACHINE);
+  machine = (AgsMachine *) gtk_widget_get_ancestor(GTK_WIDGET(effect_bridge),
+						   AGS_TYPE_MACHINE);
 
   g_object_disconnect(G_OBJECT(machine),
 		      "any_signal::resize-audio-channels",

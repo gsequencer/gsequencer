@@ -407,7 +407,7 @@ ags_effect_line_init(AgsEffectLine *effect_line)
 		     FALSE, FALSE,
 		     0);
 
-  effect_line->group = (GtkLabel *) gtk_toggle_button_new_with_label(i18n("group"));
+  effect_line->group = (GtkToggleButton *) gtk_toggle_button_new_with_label(i18n("group"));
   gtk_box_pack_start(GTK_BOX(effect_line),
 		     GTK_WIDGET(effect_line->group),
 		     FALSE, FALSE,
@@ -724,28 +724,18 @@ ags_effect_line_add_ladspa_effect(AgsEffectLine *effect_line,
   
   GList *list;
   GList *start_recall, *recall;
-  GList *port, *recall_port;
+  GList *play_port, *recall_port;
   GList *start_plugin_port, *plugin_port;
   
   gdouble step;
   guint port_count;
-  gboolean has_output_port;
 
   guint x, y;
   guint k;
 
-  pthread_mutex_t *base_plugin_mutex;
-  
   /* load plugin */
   ladspa_plugin = ags_ladspa_manager_find_ladspa_plugin(ags_ladspa_manager_get_instance(),
 							filename, effect);
-
-  /* get base plugin mutex */
-  pthread_mutex_lock(ags_base_plugin_get_class_mutex());
-  
-  base_plugin_mutex = AGS_BASE_PLUGIN(ladspa_plugin)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_base_plugin_get_class_mutex());
 
   port = NULL;
   recall_port = NULL;
@@ -786,15 +776,8 @@ ags_effect_line_add_ladspa_effect(AgsEffectLine *effect_line,
 
   recall = g_list_last(start_recall);
   g_object_get((GObject *) recall->data,
-	       "port", &port,
+	       "port", &play_port,
 	       NULL);
-  
-  /* check has output port */
-  if(ags_recall_test_flags(recall->data, AGS_RECALL_HAS_OUTPUT_PORT)){
-    has_output_port = TRUE;
-  }else{
-    has_output_port = FALSE;
-  }
 
   g_list_free(start_recall);
   
@@ -839,7 +822,7 @@ ags_effect_line_add_ladspa_effect(AgsEffectLine *effect_line,
 		   y, y + 1,
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
-  gtk_widget_show_all(separator);
+  gtk_widget_show_all(GTK_WIDGET(separator));
 
   y++;
 
@@ -1098,7 +1081,7 @@ ags_effect_line_add_ladspa_effect(AgsEffectLine *effect_line,
 
   g_list_free(start_plugin_port);
   
-  return(g_list_concat(g_list_copy(port),
+  return(g_list_concat(g_list_copy(play_port),
 		       g_list_copy(recall_port)));
 }
 
@@ -1118,14 +1101,13 @@ ags_effect_line_add_lv2_effect(AgsEffectLine *effect_line,
 
   GList *list;
   GList *start_recall, *recall;
-  GList *port, *recall_port;
+  GList *play_port, *recall_port;
   GList *start_plugin_port, *plugin_port;
 
   gchar *uri;
   
   gdouble step;
   guint port_count;
-  gboolean has_output_port;
 
   guint x, y;
   guint k;
@@ -1176,19 +1158,17 @@ ags_effect_line_add_lv2_effect(AgsEffectLine *effect_line,
   if(recall == NULL){
     return(NULL);
   }
-
-  /* check has output port */
-  if(ags_recall_test_flags(recall->data, AGS_RECALL_HAS_OUTPUT_PORT)){
-    has_output_port = TRUE;
-  }else{
-    has_output_port = FALSE;
-  }
     
+  recall = g_list_last(start_recall);
+  g_object_get((GObject *) recall->data,
+	       "port", &play_port,
+	       NULL);
+  
   g_list_free(start_recall);
 
   /* recall - find ports */
   g_object_get(effect_line->channel,
-	       "play", &start_recall,
+	       "recall", &start_recall,
 	       NULL);
 
   /* get by effect */
@@ -1226,7 +1206,7 @@ ags_effect_line_add_lv2_effect(AgsEffectLine *effect_line,
 		   y, y + 1,
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
-  gtk_widget_show_all(separator);
+  gtk_widget_show_all(GTK_WIDGET(separator));
   
   y++;
 
@@ -1462,7 +1442,7 @@ ags_effect_line_add_lv2_effect(AgsEffectLine *effect_line,
 
   g_free(uri);
   
-  return(g_list_concat(g_list_copy(port),
+  return(g_list_concat(g_list_copy(play_port),
 		       g_list_copy(recall_port)));
 }
 
@@ -1549,7 +1529,6 @@ ags_effect_line_real_remove_effect(AgsEffectLine *effect_line,
 				   guint nth)
 {
   AgsWindow *window;
-  AgsMachine *machine;
 
   GList *control, *control_start;
   GList *start_recall, *recall;
@@ -1564,8 +1543,6 @@ ags_effect_line_real_remove_effect(AgsEffectLine *effect_line,
   pthread_mutex_t *recall_mutex;
   
   window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) effect_line);
-  machine = (AgsMachine *) gtk_widget_get_ancestor((GtkWidget *) effect_line,
-						   AGS_TYPE_MACHINE);
   
   /* get nth_effect */
   g_object_get(effect_line->channel,
@@ -1911,7 +1888,7 @@ ags_effect_line_message_monitor_timeout(AgsEffectLine *effect_line)
     message_start = 
       message = ags_message_delivery_find_sender(message_delivery,
 						 "libags-audio",
-						 channel);
+						 (GObject *) channel);
     
     while(message != NULL){
       xmlNode *root_node;
@@ -1985,8 +1962,11 @@ ags_effect_line_message_monitor_timeout(AgsEffectLine *effect_line)
 		gchar *controls;
 
 		/* get plugin browser */
-		description_start = NULL;
-		port_control_start = NULL;
+		description =
+		  description_start = NULL;
+
+		port_control = 
+		  port_control_start = NULL;
 	
 		if(AGS_IS_LADSPA_BROWSER(plugin_browser->active_browser)){
 		  description_start = 
@@ -2100,7 +2080,7 @@ ags_effect_line_message_monitor_timeout(AgsEffectLine *effect_line)
 
 	  /* done */
 	  ags_effect_line_done(effect_line,
-			       recall_id);
+			       (GObject *) recall_id);
 	}
       }
       
@@ -2112,7 +2092,7 @@ ags_effect_line_message_monitor_timeout(AgsEffectLine *effect_line)
     }
     
     g_list_free_full(message_start,
-		     ags_message_envelope_free);
+		     GDestroyNotify(ags_message_envelope_free));
     
     return(TRUE);
   }else{
@@ -2304,7 +2284,7 @@ ags_effect_line_indicator_queue_draw_timeout(GtkWidget *widget)
 	/* apply */
 	if(AGS_IS_LED(child)){
 	  if(average_peak != 0.0){
-	    ags_led_set_active(child);
+	    ags_led_set_active((AgsLed *) child);
 	  }
 	}else{
 	  g_object_get(child,

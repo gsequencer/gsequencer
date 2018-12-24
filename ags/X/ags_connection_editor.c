@@ -420,7 +420,7 @@ ags_connection_editor_add_children(AgsConnectionEditor *connection_editor)
   g_value_set_gtype(&(output_connection_editor_child_parameter[0].value), AGS_TYPE_OUTPUT);
 
   /* AgsOutput listing editor */
-  connection_editor->output_listing_editor = ags_output_listing_editor_new(AGS_TYPE_OUTPUT);
+  connection_editor->output_listing_editor = (AgsPropertyCollectionEditor *) ags_output_listing_editor_new(AGS_TYPE_OUTPUT);
 
   if((AGS_CONNECTION_EDITOR_SHOW_OUTPUT & (connection_editor->flags)) != 0){
     gtk_notebook_append_page(connection_editor->notebook,
@@ -440,7 +440,7 @@ ags_connection_editor_add_children(AgsConnectionEditor *connection_editor)
   g_value_set_gtype(&(input_connection_editor_child_parameter[0].value), AGS_TYPE_INPUT);
 
   /* AgsInput listing editor */
-  connection_editor->input_listing_editor = ags_input_listing_editor_new(AGS_TYPE_INPUT);
+  connection_editor->input_listing_editor = (AgsPropertyCollectionEditor *) ags_input_listing_editor_new(AGS_TYPE_INPUT);
 
   if((AGS_CONNECTION_EDITOR_SHOW_INPUT & (connection_editor->flags)) != 0){
     gtk_notebook_append_page(connection_editor->notebook,

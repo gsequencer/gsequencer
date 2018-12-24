@@ -39,13 +39,13 @@ ags_export_soundcard_backend_callback(GtkWidget *combo_box,
 
   gboolean found_card;
   
-  export_window = (AgsExportWindow *) gtk_widget_get_ancestor(export_soundcard,
+  export_window = (AgsExportWindow *) gtk_widget_get_ancestor(GTK_WIDGET(export_soundcard),
 							      AGS_TYPE_EXPORT_WINDOW);
 
   application_context = NULL;
 
   if(export_window != NULL){
-    application_context = export_window->application_context;
+    application_context = (AgsApplicationContext *) export_window->application_context;
   }
 
   /* refresh card */
@@ -172,7 +172,7 @@ ags_export_soundcard_card_callback(GtkWidget *combo_box,
 
   gboolean found_card;
   
-  export_window = (AgsExportWindow *) gtk_widget_get_ancestor(export_soundcard,
+  export_window = (AgsExportWindow *) gtk_widget_get_ancestor(GTK_WIDGET(export_soundcard),
 							      AGS_TYPE_EXPORT_WINDOW);
 
   application_context = NULL;
@@ -294,7 +294,7 @@ ags_export_soundcard_file_chooser_button_callback(GtkWidget *file_chooser_button
   AgsExportWindow *export_window;
   GtkFileChooserDialog *file_chooser;
   
-  export_window = (AgsExportWindow *) gtk_widget_get_ancestor(export_soundcard,
+  export_window = (AgsExportWindow *) gtk_widget_get_ancestor(GTK_WIDGET(export_soundcard),
 							      AGS_TYPE_EXPORT_WINDOW);
   
   file_chooser = (GtkFileChooserDialog *) gtk_file_chooser_dialog_new("Export to file ...",

@@ -77,7 +77,7 @@ ags_export_window_add_export_soundcard_callback(GtkWidget *button,
 		   G_CALLBACK(ags_export_window_remove_export_soundcard_callback), export_window);
 
   /* show all */
-  gtk_widget_show_all(hbox);
+  gtk_widget_show_all(GTK_WIDGET(hbox));
 }
 
 void
@@ -88,7 +88,7 @@ ags_export_window_remove_export_soundcard_callback(GtkWidget *button,
 
   hbox = gtk_widget_get_ancestor(button,
 				 GTK_TYPE_HBOX);
-  gtk_widget_destroy(hbox);
+  gtk_widget_destroy(GTK_WIDGET(hbox));
 }
 
 void
@@ -103,7 +103,7 @@ ags_export_window_tact_callback(GtkWidget *spin_button,
   gdouble delay;
 
   /* retrieve window */
-  window = export_window->main_window;
+  window = AGS_WINDOW(export_window->main_window);
 
   /* get some properties */
   delay_factor = ags_soundcard_get_delay_factor(AGS_SOUNDCARD(window->soundcard));
@@ -126,9 +126,8 @@ ags_export_window_export_callback(GtkWidget *toggle_button,
   AgsWindow *window;
   AgsMachine *machine;
   
-  AgsGuiThread *gui_thread;
-
   AgsThread *main_loop;
+  AgsThread *gui_thread;
   
   AgsApplicationContext *application_context;
   
@@ -148,6 +147,8 @@ ags_export_window_export_callback(GtkWidget *toggle_button,
   
   /* collect */  
   machines_start = NULL;
+
+  success = FALSE;
 
   if(gtk_toggle_button_get_active((GtkToggleButton *) toggle_button)){
     AgsExportOutput *export_output;
@@ -190,7 +191,8 @@ ags_export_window_export_callback(GtkWidget *toggle_button,
 	child = child->next;
       }
 	
-      if(!AGS_IS_EXPORT_SOUNDCARD(child->data)){
+      if(child == NULL ||
+	 !AGS_IS_EXPORT_SOUNDCARD(child->data)){
 	export_soundcard = export_soundcard->next;
 	g_list_free(child_start);
 	  
@@ -270,8 +272,6 @@ ags_export_window_export_callback(GtkWidget *toggle_button,
       machines = gtk_container_get_children(GTK_CONTAINER(window->machines));
 
     /* start machines */
-    success = FALSE;
-
     while(machines != NULL){
       machine = AGS_MACHINE(machines->data);
 
@@ -384,7 +384,7 @@ ags_export_window_export_callback(GtkWidget *toggle_button,
       /* append AgsStartSoundcard */
       task = g_list_reverse(task);
       
-      ags_gui_thread_schedule_task_list(gui_thread,
+      ags_gui_thread_schedule_task_list(AGS_GUI_THREAD(gui_thread),
 					task);
       
       ags_navigation_set_seeking_sensitive(window->navigation,

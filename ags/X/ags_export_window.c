@@ -401,7 +401,7 @@ ags_export_window_set_property(GObject *gobject,
 	g_object_ref(main_window);
       }
 
-      export_window->main_window = (GObject *) main_window;
+      export_window->main_window = (GtkWidget *) main_window;
     }
     break;
   default:
@@ -568,7 +568,6 @@ ags_export_window_delete_event(GtkWidget *widget, GdkEventAny *event)
 void
 ags_export_window_reload_soundcard_editor(AgsExportWindow *export_window)
 {
-  AgsWindow *main_window;
   AgsExportSoundcard *export_soundcard;
   GtkHBox *hbox;
   GtkAlignment *alignment;
@@ -584,8 +583,6 @@ ags_export_window_reload_soundcard_editor(AgsExportWindow *export_window)
   guint i;
   
   /* retrieve main window and application context */
-  main_window = export_window->main_window;
-
   application_context = export_window->application_context;
 
   if(application_context == NULL){

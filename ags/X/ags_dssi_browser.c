@@ -160,7 +160,7 @@ ags_dssi_browser_init(AgsDssiBrowser *dssi_browser)
 		     0);
 
   dssi_browser->filename = 
-    combo_box = (GtkComboBoxText *) gtk_combo_box_text_new();
+    combo_box = (GtkComboBox *) gtk_combo_box_text_new();
   gtk_box_pack_start(GTK_BOX(dssi_browser->plugin),
 		     GTK_WIDGET(combo_box),
 		     FALSE, FALSE,
@@ -189,7 +189,7 @@ ags_dssi_browser_init(AgsDssiBrowser *dssi_browser)
 		     0);
 
   dssi_browser->effect = 
-    combo_box = (GtkComboBoxText *) gtk_combo_box_text_new();
+    combo_box = (GtkComboBox *) gtk_combo_box_text_new();
   gtk_box_pack_start(GTK_BOX(dssi_browser->plugin),
 		     GTK_WIDGET(combo_box),
 		     FALSE, FALSE,
@@ -346,7 +346,7 @@ ags_dssi_browser_get_plugin_filename(AgsDssiBrowser *dssi_browser)
     return(NULL);
   }
   
-  return(gtk_combo_box_text_get_active_text(dssi_browser->filename));
+  return(gtk_combo_box_text_get_active_text(GTK_COMBO_BOX_TEXT(dssi_browser->filename)));
 }
 
 /**
@@ -366,7 +366,7 @@ ags_dssi_browser_get_plugin_effect(AgsDssiBrowser *dssi_browser)
     return(NULL);
   }
 
-  return(gtk_combo_box_text_get_active_text(dssi_browser->effect));
+  return(gtk_combo_box_text_get_active_text(GTK_COMBO_BOX_TEXT(dssi_browser->effect)));
 }
 
 /**

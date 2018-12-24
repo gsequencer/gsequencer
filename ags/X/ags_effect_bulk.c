@@ -631,17 +631,17 @@ ags_effect_bulk_finalize(GObject *gobject)
 
   /* free plugin list */
   g_list_free_full(effect_bulk->plugin,
-		   ags_effect_bulk_plugin_free);
+		   GDestroyNotify(ags_effect_bulk_plugin_free));
 
   /* destroy plugin browser */
-  gtk_widget_destroy(effect_bulk->plugin_browser);
+  gtk_widget_destroy(GTK_WIDGET(effect_bulk->plugin_browser));
 
   /* remove of the queued drawing hash */
   list = effect_bulk->queued_drawing;
 
   while(list != NULL){
     g_hash_table_remove(ags_effect_bulk_indicator_queue_draw,
-			list->data);
+			GDestroyNotify(list->data));
 
     list = list->next;
   }
@@ -666,8 +666,8 @@ ags_effect_bulk_connect(AgsConnectable *connectable)
 
   effect_bulk->flags |= AGS_EFFECT_BULK_CONNECTED;
 
-  machine = gtk_widget_get_ancestor(effect_bulk,
-				    AGS_TYPE_MACHINE);
+  machine = (AgsMachine *) gtk_widget_get_ancestor((GtkWidget *) effect_bulk,
+						   AGS_TYPE_MACHINE);
   
   g_signal_connect_after(machine, "resize-audio-channels",
 			 G_CALLBACK(ags_effect_bulk_resize_audio_channels_callback), effect_bulk);
@@ -717,8 +717,8 @@ ags_effect_bulk_disconnect(AgsConnectable *connectable)
 
   effect_bulk->flags &= (~AGS_EFFECT_BULK_CONNECTED);
 
-  machine = gtk_widget_get_ancestor(effect_bulk,
-				    AGS_TYPE_MACHINE);
+  machine = (AgsMachine *) gtk_widget_get_ancestor((GtkWidget *) effect_bulk,
+						   AGS_TYPE_MACHINE);
 
   g_object_disconnect(G_OBJECT(machine),
 		      "any_signal::resize-audio-channels",
@@ -922,7 +922,6 @@ ags_effect_bulk_add_ladspa_effect(AgsEffectBulk *effect_bulk,
   guint pads, audio_channels;
   gdouble step;
   guint port_count;
-  gboolean has_output_port;
   
   guint x, y;
   guint i, j;
@@ -983,8 +982,6 @@ ags_effect_bulk_add_ladspa_effect(AgsEffectBulk *effect_bulk,
   task = NULL;
   retport = NULL;
 
-  has_output_port = FALSE;
-  
   for(i = 0; i < pads; i++){
     for(j = 0; j < audio_channels; j++){
       /* get channel mutex */
@@ -1004,13 +1001,13 @@ ags_effect_bulk_add_ladspa_effect(AgsEffectBulk *effect_bulk,
 					    effect,
 					    AGS_BASE_PLUGIN(ladspa_plugin)->effect_index);
 
-      ags_recall_set_flags(recall_ladspa,
+      ags_recall_set_flags((AgsRecall *) recall_ladspa,
 			   AGS_RECALL_TEMPLATE);
-      ags_recall_set_ability_flags(recall_ladspa,
+      ags_recall_set_ability_flags((AgsRecall *) recall_ladspa,
 				   (AGS_SOUND_ABILITY_PLAYBACK |
 				    AGS_SOUND_ABILITY_NOTATION |
 				    AGS_SOUND_ABILITY_SEQUENCER));
-      ags_recall_set_behaviour_flags(recall_ladspa,
+      ags_recall_set_behaviour_flags((AgsRecall *) recall_ladspa,
 				     (AGS_SOUND_BEHAVIOUR_BULK_MODE |
 				      AGS_SOUND_BEHAVIOUR_CHAINED_TO_INPUT));
 
@@ -1022,10 +1019,6 @@ ags_effect_bulk_add_ladspa_effect(AgsEffectBulk *effect_bulk,
       ags_recall_ladspa_load(recall_ladspa);
 
       port = ags_recall_ladspa_load_ports(recall_ladspa);
-
-      if(ags_recall_test_flags(recall_ladspa, AGS_RECALL_HAS_OUTPUT_PORT)){
-	has_output_port = TRUE;
-      }
       
       if(retport == NULL){
 	retport = port;
@@ -1044,13 +1037,13 @@ ags_effect_bulk_add_ladspa_effect(AgsEffectBulk *effect_bulk,
 								      AGS_TYPE_GENERIC_RECALL_RECYCLING,
 								      AGS_TYPE_RECALL_LADSPA_RUN);
 
-      ags_recall_set_flags(generic_recall_channel_run,
+      ags_recall_set_flags((AgsRecall *) generic_recall_channel_run,
 			   AGS_RECALL_TEMPLATE);
-      ags_recall_set_ability_flags(generic_recall_channel_run,
+      ags_recall_set_ability_flags((AgsRecall *) generic_recall_channel_run,
 				   (AGS_SOUND_ABILITY_PLAYBACK |
 				    AGS_SOUND_ABILITY_NOTATION |
 				    AGS_SOUND_ABILITY_SEQUENCER));
-      ags_recall_set_behaviour_flags(generic_recall_channel_run,
+      ags_recall_set_behaviour_flags((AgsRecall *) generic_recall_channel_run,
 				     (AGS_SOUND_BEHAVIOUR_BULK_MODE |
 				      AGS_SOUND_BEHAVIOUR_CHAINED_TO_INPUT));
 
@@ -1075,13 +1068,13 @@ ags_effect_bulk_add_ladspa_effect(AgsEffectBulk *effect_bulk,
 					    effect,
 					    effect_index);
 
-      ags_recall_set_flags(recall_ladspa,
+      ags_recall_set_flags((AgsRecall *) recall_ladspa,
 			   AGS_RECALL_TEMPLATE);
-      ags_recall_set_ability_flags(recall_ladspa,
+      ags_recall_set_ability_flags((AgsRecall *) recall_ladspa,
 				   (AGS_SOUND_ABILITY_PLAYBACK |
 				    AGS_SOUND_ABILITY_NOTATION |
 				    AGS_SOUND_ABILITY_SEQUENCER));
-      ags_recall_set_behaviour_flags(recall_ladspa,
+      ags_recall_set_behaviour_flags((AgsRecall *) recall_ladspa,
 				     (AGS_SOUND_BEHAVIOUR_BULK_MODE |
 				      AGS_SOUND_BEHAVIOUR_CHAINED_TO_INPUT));
 
@@ -1111,13 +1104,13 @@ ags_effect_bulk_add_ladspa_effect(AgsEffectBulk *effect_bulk,
 								      AGS_TYPE_GENERIC_RECALL_RECYCLING,
 								      AGS_TYPE_RECALL_LADSPA_RUN);
 
-      ags_recall_set_flags(generic_recall_channel_run,
+      ags_recall_set_flags((AgsRecall *) generic_recall_channel_run,
 			   AGS_RECALL_TEMPLATE);
-      ags_recall_set_ability_flags(generic_recall_channel_run,
+      ags_recall_set_ability_flags((AgsRecall *) generic_recall_channel_run,
 				   (AGS_SOUND_ABILITY_PLAYBACK |
 				    AGS_SOUND_ABILITY_NOTATION |
 				    AGS_SOUND_ABILITY_SEQUENCER));
-      ags_recall_set_behaviour_flags(generic_recall_channel_run,
+      ags_recall_set_behaviour_flags((AgsRecall *) generic_recall_channel_run,
 				     (AGS_SOUND_BEHAVIOUR_BULK_MODE |
 				      AGS_SOUND_BEHAVIOUR_CHAINED_TO_INPUT));
 
@@ -1442,7 +1435,6 @@ ags_effect_bulk_add_dssi_effect(AgsEffectBulk *effect_bulk,
   guint pads, audio_channels;
   gdouble step;
   guint port_count;
-  gboolean has_output_port;
   
   guint x, y;
   guint i, j;
@@ -1504,8 +1496,6 @@ ags_effect_bulk_add_dssi_effect(AgsEffectBulk *effect_bulk,
 
   task = NULL;
   retport = NULL;
-
-  has_output_port = FALSE;
   
   for(i = 0; i < pads; i++){
     for(j = 0; j < audio_channels; j++){
@@ -1531,13 +1521,13 @@ ags_effect_bulk_add_dssi_effect(AgsEffectBulk *effect_bulk,
 					effect,
 					effect_index);
 
-      ags_recall_set_flags(recall_dssi,
+      ags_recall_set_flags((AgsRecall *) recall_dssi,
 			   AGS_RECALL_TEMPLATE);
-      ags_recall_set_ability_flags(recall_dssi,
+      ags_recall_set_ability_flags((AgsRecall *) recall_dssi,
 				   (AGS_SOUND_ABILITY_PLAYBACK |
 				    AGS_SOUND_ABILITY_NOTATION |
 				    AGS_SOUND_ABILITY_SEQUENCER));
-      ags_recall_set_behaviour_flags(recall_dssi,
+      ags_recall_set_behaviour_flags((AgsRecall *) recall_dssi,
 				     (AGS_SOUND_BEHAVIOUR_BULK_MODE |
 				      AGS_SOUND_BEHAVIOUR_CHAINED_TO_INPUT));
 
@@ -1557,10 +1547,6 @@ ags_effect_bulk_add_dssi_effect(AgsEffectBulk *effect_bulk,
 				port);
       }
 
-      if(ags_recall_test_flags(recall_dssi, AGS_RECALL_HAS_OUTPUT_PORT)){
-	has_output_port = TRUE;
-      }
-
       ags_channel_add_recall(current,
 			     (GObject *) recall_dssi,
 			     TRUE);
@@ -1571,13 +1557,13 @@ ags_effect_bulk_add_dssi_effect(AgsEffectBulk *effect_bulk,
 								      AGS_TYPE_GENERIC_RECALL_RECYCLING,
 								      AGS_TYPE_RECALL_DSSI_RUN);
 
-      ags_recall_set_flags(generic_recall_channel_run,
+      ags_recall_set_flags((AgsRecall *) generic_recall_channel_run,
 			   AGS_RECALL_TEMPLATE);
-      ags_recall_set_ability_flags(generic_recall_channel_run,
+      ags_recall_set_ability_flags((AgsRecall *) generic_recall_channel_run,
 				   (AGS_SOUND_ABILITY_PLAYBACK |
 				    AGS_SOUND_ABILITY_NOTATION |
 				    AGS_SOUND_ABILITY_SEQUENCER));
-      ags_recall_set_behaviour_flags(generic_recall_channel_run,
+      ags_recall_set_behaviour_flags((AgsRecall *) generic_recall_channel_run,
 				     (AGS_SOUND_BEHAVIOUR_BULK_MODE |
 				      AGS_SOUND_BEHAVIOUR_CHAINED_TO_INPUT));
 
@@ -1602,13 +1588,13 @@ ags_effect_bulk_add_dssi_effect(AgsEffectBulk *effect_bulk,
 					effect,
 					effect_index);
 
-      ags_recall_set_flags(recall_dssi,
+      ags_recall_set_flags((AgsRecall *) recall_dssi,
 			   AGS_RECALL_TEMPLATE);
-      ags_recall_set_ability_flags(recall_dssi,
+      ags_recall_set_ability_flags((AgsRecall *) recall_dssi,
 				   (AGS_SOUND_ABILITY_PLAYBACK |
 				    AGS_SOUND_ABILITY_NOTATION |
 				    AGS_SOUND_ABILITY_SEQUENCER));
-      ags_recall_set_behaviour_flags(recall_dssi,
+      ags_recall_set_behaviour_flags((AgsRecall *) recall_dssi,
 				     (AGS_SOUND_BEHAVIOUR_BULK_MODE |
 				      AGS_SOUND_BEHAVIOUR_CHAINED_TO_INPUT));
 
@@ -1638,13 +1624,13 @@ ags_effect_bulk_add_dssi_effect(AgsEffectBulk *effect_bulk,
 								      AGS_TYPE_GENERIC_RECALL_RECYCLING,
 								      AGS_TYPE_RECALL_DSSI_RUN);
 
-      ags_recall_set_flags(generic_recall_channel_run,
+      ags_recall_set_flags((AgsRecall *) generic_recall_channel_run,
 			   AGS_RECALL_TEMPLATE);
-      ags_recall_set_ability_flags(generic_recall_channel_run,
+      ags_recall_set_ability_flags((AgsRecall *) generic_recall_channel_run,
 				   (AGS_SOUND_ABILITY_PLAYBACK |
 				    AGS_SOUND_ABILITY_NOTATION |
 				    AGS_SOUND_ABILITY_SEQUENCER));
-      ags_recall_set_behaviour_flags(generic_recall_channel_run,
+      ags_recall_set_behaviour_flags((AgsRecall *) generic_recall_channel_run,
 				     (AGS_SOUND_BEHAVIOUR_BULK_MODE |
 				      AGS_SOUND_BEHAVIOUR_CHAINED_TO_INPUT));
 
@@ -1939,8 +1925,6 @@ ags_effect_bulk_add_lv2_effect(AgsEffectBulk *effect_bulk,
   GtkAdjustment *adjustment;
   AgsEffectBulkPlugin *effect_bulk_plugin;
 
-  AgsGuiThread *gui_thread;
-
   AgsChannel *current;
   AgsRecallContainer *recall_container;
   AgsGenericRecallChannelRun *generic_recall_channel_run;
@@ -1969,7 +1953,6 @@ ags_effect_bulk_add_lv2_effect(AgsEffectBulk *effect_bulk,
   gdouble step;
   guint pads, audio_channels;
   guint port_count;
-  gboolean has_output_port;
 
   guint x, y;
   guint i, j;
@@ -1986,8 +1969,6 @@ ags_effect_bulk_add_lv2_effect(AgsEffectBulk *effect_bulk,
 						 AGS_TYPE_WINDOW);
   
   application_context = (AgsApplicationContext *) window->application_context;
-
-  gui_thread = (AgsGuiThread *) ags_ui_provider_get_gui_thread(AGS_UI_PROVIDER(application_context));
 
   /* alloc effect bulk plugin */
   effect_bulk_plugin = ags_effect_bulk_plugin_alloc(filename,
@@ -2045,8 +2026,6 @@ ags_effect_bulk_add_lv2_effect(AgsEffectBulk *effect_bulk,
   pthread_mutex_unlock(base_plugin_mutex);
 
   retport = NULL;
-
-  has_output_port = FALSE;
   
   for(i = 0; i < pads; i++){
     for(j = 0; j < audio_channels; j++){
@@ -2069,13 +2048,13 @@ ags_effect_bulk_add_lv2_effect(AgsEffectBulk *effect_bulk,
 				      uri,
 				      effect_index);
 
-      ags_recall_set_flags(recall_lv2,
+      ags_recall_set_flags((AgsRecall *) recall_lv2,
 			   AGS_RECALL_TEMPLATE);
-      ags_recall_set_ability_flags(recall_lv2,
+      ags_recall_set_ability_flags((AgsRecall *) recall_lv2,
 				   (AGS_SOUND_ABILITY_PLAYBACK |
 				    AGS_SOUND_ABILITY_NOTATION |
 				    AGS_SOUND_ABILITY_SEQUENCER));
-      ags_recall_set_behaviour_flags(recall_lv2,
+      ags_recall_set_behaviour_flags((AgsRecall *) recall_lv2,
 				     (AGS_SOUND_BEHAVIOUR_BULK_MODE |
 				      AGS_SOUND_BEHAVIOUR_CHAINED_TO_INPUT));
 
@@ -2094,10 +2073,6 @@ ags_effect_bulk_add_lv2_effect(AgsEffectBulk *effect_bulk,
 	retport = g_list_concat(retport,
 				port);
       }
-
-      if(ags_recall_test_flags(recall_lv2, AGS_RECALL_HAS_OUTPUT_PORT)){
-	has_output_port = TRUE;
-      }
       
       ags_channel_add_recall(current,
 			     (GObject *) recall_lv2,
@@ -2109,13 +2084,13 @@ ags_effect_bulk_add_lv2_effect(AgsEffectBulk *effect_bulk,
 								      AGS_TYPE_GENERIC_RECALL_RECYCLING,
 								      AGS_TYPE_RECALL_LV2_RUN);
 
-      ags_recall_set_flags(generic_recall_channel_run,
+      ags_recall_set_flags((AgsRecall *) generic_recall_channel_run,
 			   AGS_RECALL_TEMPLATE);
-      ags_recall_set_ability_flags(generic_recall_channel_run,
+      ags_recall_set_ability_flags((AgsRecall *) generic_recall_channel_run,
 				   (AGS_SOUND_ABILITY_PLAYBACK |
 				    AGS_SOUND_ABILITY_NOTATION |
 				    AGS_SOUND_ABILITY_SEQUENCER));
-      ags_recall_set_behaviour_flags(generic_recall_channel_run,
+      ags_recall_set_behaviour_flags((AgsRecall *) generic_recall_channel_run,
 				     (AGS_SOUND_BEHAVIOUR_BULK_MODE |
 				      AGS_SOUND_BEHAVIOUR_CHAINED_TO_INPUT));
 
@@ -2142,13 +2117,13 @@ ags_effect_bulk_add_lv2_effect(AgsEffectBulk *effect_bulk,
 				      uri,
 				      effect_index);
 
-      ags_recall_set_flags(recall_lv2,
+      ags_recall_set_flags((AgsRecall *) recall_lv2,
 			   AGS_RECALL_TEMPLATE);
-      ags_recall_set_ability_flags(recall_lv2,
+      ags_recall_set_ability_flags((AgsRecall *) recall_lv2,
 				   (AGS_SOUND_ABILITY_PLAYBACK |
 				    AGS_SOUND_ABILITY_NOTATION |
 				    AGS_SOUND_ABILITY_SEQUENCER));
-      ags_recall_set_behaviour_flags(recall_lv2,
+      ags_recall_set_behaviour_flags((AgsRecall *) recall_lv2,
 				     (AGS_SOUND_BEHAVIOUR_BULK_MODE |
 				      AGS_SOUND_BEHAVIOUR_CHAINED_TO_INPUT));
 
@@ -2178,13 +2153,13 @@ ags_effect_bulk_add_lv2_effect(AgsEffectBulk *effect_bulk,
 								      AGS_TYPE_GENERIC_RECALL_RECYCLING,
 								      AGS_TYPE_RECALL_LV2_RUN);
 
-      ags_recall_set_flags(generic_recall_channel_run,
+      ags_recall_set_flags((AgsRecall *) generic_recall_channel_run,
 			   AGS_RECALL_TEMPLATE);
-      ags_recall_set_ability_flags(generic_recall_channel_run,
+      ags_recall_set_ability_flags((AgsRecall *) generic_recall_channel_run,
 				   (AGS_SOUND_ABILITY_PLAYBACK |
 				    AGS_SOUND_ABILITY_NOTATION |
 				    AGS_SOUND_ABILITY_SEQUENCER));
-      ags_recall_set_behaviour_flags(generic_recall_channel_run,
+      ags_recall_set_behaviour_flags((AgsRecall *) generic_recall_channel_run,
 				     (AGS_SOUND_BEHAVIOUR_BULK_MODE |
 				      AGS_SOUND_BEHAVIOUR_CHAINED_TO_INPUT));
 
@@ -2580,6 +2555,8 @@ ags_effect_bulk_real_remove_effect(AgsEffectBulk *effect_bulk,
 
   pthread_mutex_unlock(audio_mutex);
 
+  nth_effect = 0;
+
   if(current != NULL){
     GList *start_play, *play;
 
@@ -2590,7 +2567,6 @@ ags_effect_bulk_real_remove_effect(AgsEffectBulk *effect_bulk,
     /* get nth_effect */
     play = start_play;
     
-    nth_effect = 0;
     n_recall = 0;
   
     while((play = ags_recall_template_find_all_type(play,
@@ -2614,6 +2590,10 @@ ags_effect_bulk_real_remove_effect(AgsEffectBulk *effect_bulk,
     }
 
     g_list_free(start_play);
+  }
+
+  if(nth_effect == 0){
+    return;
   }
 
   nth_effect--;
@@ -2648,7 +2628,7 @@ ags_effect_bulk_real_remove_effect(AgsEffectBulk *effect_bulk,
 			      child_widget);
 	}
 
-	gtk_widget_destroy(list->data);
+	gtk_widget_destroy(GTK_WIDGET(list->data));
       }
       
     }
@@ -2702,8 +2682,6 @@ ags_effect_bulk_real_resize_audio_channels(AgsEffectBulk *effect_bulk,
 					   guint new_size,
 					   guint old_size)
 {
-  AgsWindow *window;
-
   AgsChannel *current;
   
   GList *start_list, *list;
@@ -2713,9 +2691,6 @@ ags_effect_bulk_real_resize_audio_channels(AgsEffectBulk *effect_bulk,
 
   pthread_mutex_t *audio_mutex;
 
-  window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) effect_bulk,
-						 AGS_TYPE_WINDOW);
-    
   /* get audio mutex */
   pthread_mutex_lock(ags_audio_get_class_mutex());
 

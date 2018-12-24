@@ -222,8 +222,8 @@ ags_automation_editor_init(AgsAutomationEditor *automation_editor)
 		     0);
 
   /* machine selector */
-  viewport = gtk_viewport_new(NULL,
-			      NULL);
+  viewport = (GtkViewport *) gtk_viewport_new(NULL,
+					      NULL);
   g_object_set(viewport,
 	       "shadow-type", GTK_SHADOW_NONE,
 	       NULL);
@@ -254,8 +254,8 @@ ags_automation_editor_init(AgsAutomationEditor *automation_editor)
   automation_editor->selected_machine = NULL;
 
   /* notebook audio, output, input */
-  viewport = gtk_viewport_new(NULL,
-			      NULL);
+  viewport = (GtkViewport *) gtk_viewport_new(NULL,
+					      NULL);
   g_object_set(viewport,
 	       "shadow-type", GTK_SHADOW_NONE,
 	       NULL);
@@ -431,7 +431,7 @@ ags_automation_editor_init(AgsAutomationEditor *automation_editor)
 
   /* input - scrollbars */
   adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 1.0, AGS_AUTOMATION_EDIT_DEFAULT_CONTROL_HEIGHT, 1.0);
-  automation_editor->input_vscrollbar = gtk_vscrollbar_new(adjustment);
+  automation_editor->input_vscrollbar = (GtkVScrollbar *) gtk_vscrollbar_new(adjustment);
   gtk_table_attach(table,
 		   (GtkWidget *) automation_editor->input_vscrollbar,
 		   2, 3,
@@ -440,7 +440,7 @@ ags_automation_editor_init(AgsAutomationEditor *automation_editor)
 		   0, 0);
 
   adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 1.0, AGS_AUTOMATION_EDIT_DEFAULT_CONTROL_WIDTH, 1.0);
-  automation_editor->input_hscrollbar = gtk_hscrollbar_new(adjustment);
+  automation_editor->input_hscrollbar = (GtkHScrollbar *) gtk_hscrollbar_new(adjustment);
   gtk_table_attach(table,
 		   (GtkWidget *) automation_editor->input_hscrollbar,
 		   1, 2,
@@ -473,9 +473,9 @@ ags_automation_editor_init(AgsAutomationEditor *automation_editor)
   /* input - scale */
   automation_editor->input_scrolled_scale_box = ags_scrolled_scale_box_new();
 
-  automation_editor->input_scrolled_scale_box->scale_box = ags_vscale_box_new();
-  gtk_container_add(automation_editor->input_scrolled_scale_box->viewport,
-		    automation_editor->input_scrolled_scale_box->scale_box);
+  automation_editor->input_scrolled_scale_box->scale_box = (AgsScaleBox *) ags_vscale_box_new();
+  gtk_container_add(GTK_CONTAINER(automation_editor->input_scrolled_scale_box->viewport),
+		    GTK_WIDGET(automation_editor->input_scrolled_scale_box->scale_box));
 
   gtk_table_attach(table,
 		   (GtkWidget *) automation_editor->input_scrolled_scale_box,
@@ -1157,7 +1157,7 @@ ags_automation_editor_real_machine_changed(AgsAutomationEditor *automation_edito
 			     AGS_AUTOMATION_EDIT_DEFAULT_PADDING);
 	}
 	
-	gtk_widget_show(scale);
+	gtk_widget_show(GTK_WIDGET(scale));
 	  
 	/* automation edit */
 	automation_edit = ags_automation_edit_new();

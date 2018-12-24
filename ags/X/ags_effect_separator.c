@@ -176,23 +176,23 @@ ags_effect_separator_init(AgsEffectSeparator *effect_separator)
   effect_separator->effect = NULL;
 
   /* heading separator */
-  separator = gtk_hseparator_new();
-  gtk_box_pack_start(effect_separator,
-		     separator,
+  separator = (GtkSeparator *) gtk_hseparator_new();
+  gtk_box_pack_start(GTK_BOX(effect_separator),
+		     GTK_WIDGET(separator),
 		     TRUE, TRUE,
 		     0);
 
   /* label */
-  effect_separator->label = gtk_label_new(NULL);
-  gtk_box_pack_start(effect_separator,
-		     effect_separator->label,
+  effect_separator->label = (GtkLabel *) gtk_label_new(NULL);
+  gtk_box_pack_start(GTK_BOX(effect_separator),
+		     GTK_WIDGET(effect_separator->label),
 		     FALSE, FALSE,
 		     0);
 
   /* trailing separator */
-  separator = gtk_hseparator_new();
-  gtk_box_pack_start(effect_separator,
-		     separator,
+  separator = (GtkSeparator *) gtk_hseparator_new();
+  gtk_box_pack_start(GTK_BOX(effect_separator),
+		     GTK_WIDGET(separator),
 		     TRUE, TRUE,
 		     0);
 }

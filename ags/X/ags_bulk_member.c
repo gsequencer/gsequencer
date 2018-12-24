@@ -804,10 +804,10 @@ ags_bulk_member_finalize(GObject *gobject)
   
   /* bulk port */
   g_list_free_full(bulk_member->bulk_port,
-		   ags_bulk_port_free);
+		   GDestroyNotify(ags_bulk_port_free));
   
   g_list_free_full(bulk_member->recall_bulk_port,
-		   ags_bulk_port_free);
+		   GDestroyNotify(ags_bulk_port_free));
 
   /* call parent */
   G_OBJECT_CLASS(ags_bulk_member_parent_class)->finalize(gobject);
@@ -1069,7 +1069,7 @@ ags_bulk_member_real_change_port(AgsBulkMember *bulk_member,
 {
   AgsWindow *window;
 
-  AgsGuiThread *gui_thread;
+  AgsThread *gui_thread;
   
   AgsApplicationContext *application_context;
 
@@ -1284,7 +1284,6 @@ ags_bulk_member_real_change_port(AgsBulkMember *bulk_member,
 
   if((AGS_BULK_MEMBER_RESET_BY_TASK & (bulk_member->flags)) != 0){
     AgsEffectBulk *effect_bulk;
-    AgsGuiThread *gui_thread;
     AgsTask *task;
 
     effect_bulk = (AgsEffectBulk *) gtk_widget_get_ancestor(GTK_WIDGET(bulk_member),
@@ -1294,8 +1293,8 @@ ags_bulk_member_real_change_port(AgsBulkMember *bulk_member,
 				    bulk_member->control_port, port_data,
 				    NULL);
 
-    ags_gui_thread_schedule_task(gui_thread,
-				 task);
+    ags_gui_thread_schedule_task(AGS_GUI_THREAD(gui_thread),
+				 G_OBJECT(task));
   }
 }
 

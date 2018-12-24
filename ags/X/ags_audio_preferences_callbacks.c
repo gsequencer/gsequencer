@@ -134,8 +134,6 @@ ags_audio_preferences_remove_soundcard_editor_callback(GtkWidget *button,
   AgsPreferences *preferences;
   AgsSoundcardEditor *soundcard_editor;
 
-  AgsApplicationContext *application_context;
-
   GObject *soundcard;
 
   GList *start_list, *list;
@@ -143,8 +141,6 @@ ags_audio_preferences_remove_soundcard_editor_callback(GtkWidget *button,
   preferences = (AgsPreferences *) gtk_widget_get_ancestor(GTK_WIDGET(audio_preferences),
 							   AGS_TYPE_PREFERENCES);
   window = (AgsWindow *) preferences->window;
-
-  application_context = (AgsApplicationContext *) window->application_context;
 
   soundcard_editor = (AgsSoundcardEditor *) gtk_widget_get_ancestor(button,
 								    AGS_TYPE_SOUNDCARD_EDITOR);
@@ -157,23 +153,6 @@ ags_audio_preferences_remove_soundcard_editor_callback(GtkWidget *button,
   gtk_widget_destroy((GtkWidget *) soundcard_editor);
 
   /* reset default card */
-#if 0
-  soundcard = NULL;
-  
-  list =
-    start_list = ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(application_context));
-  
-  if(list != NULL){
-    soundcard = list->data;
-  }
-
-  g_list_free(start_list);
-  
-  g_object_set(window,
-	       "soundcard", soundcard,
-	       NULL);
-#endif
-  
   /*  */
   list =
     start_list = gtk_container_get_children((GtkContainer *) audio_preferences->soundcard_editor);
@@ -190,106 +169,12 @@ void
 ags_audio_preferences_start_jack_callback(GtkButton *button,
 					  AgsAudioPreferences *audio_preferences)
 {
-  AgsWindow *window;
-
-  AgsJackServer *jack_server;
-  
-  AgsApplicationContext *application_context;
-
-#ifdef AGS_WITH_JACK
-  jackctl_driver_t *driver;
-#endif
-
-  GList *start_list, *list;
-
-#ifdef AGS_WITH_JACK
-  JSList *jslist;
-#endif
-
-  //  gchar *driver_name;
-  
-  window = AGS_WINDOW(AGS_PREFERENCES(gtk_widget_get_ancestor(GTK_WIDGET(audio_preferences),
-							      AGS_TYPE_PREFERENCES))->window);
-
-  application_context = (AgsApplicationContext *) window->application_context;
-
-  //TODO:JK: improve me
-  list =
-    start_list = ags_sound_provider_get_sound_server(AGS_SOUND_PROVIDER(application_context));
-  
-  while(list != NULL){
-    if(AGS_IS_JACK_SERVER(list->data)){
-      jack_server = list->data;
-
-      break;
-    }
-    
-    list = list->next;
-  }
-
-  g_list_free(start_list);
-  
-#ifdef AGS_WITH_JACK
-  /* find driver */
-  driver = NULL;
-  
-  //  driver_name = gtk_combo_box_text_get_active_text(audio_preferences->jack_driver);
-
-  jslist = NULL;
-  //  jslist = jackctl_server_get_drivers_list(jack_server->jackctl);
-
-  while(jslist != NULL){
-    //    if(!g_ascii_strcasecmp(driver_name,
-    //			   jackctl_driver_get_name(jslist->data))){
-    //      driver = jslist->data;
-
-    //      break;
-    //    }
-  }
-
-  /* start server */
-  if(jack_server != NULL){
-    //    jackctl_server_start(jack_server->jackctl);
-  }
-#endif
+  //TODO:JK: implement me
 }
 
 void
 ags_audio_preferences_stop_jack_callback(GtkButton *button,
 					 AgsAudioPreferences *audio_preferences)
 {
-  AgsWindow *window;
-
-  AgsJackServer *jack_server;
-  
-  AgsApplicationContext *application_context;
-
-  GList *start_list, *list;
-
-  window = AGS_WINDOW(AGS_PREFERENCES(gtk_widget_get_ancestor(GTK_WIDGET(audio_preferences),
-									 AGS_TYPE_PREFERENCES))->window);
-
-  application_context = (AgsApplicationContext *) window->application_context;
-
-  //TODO:JK: improve me
-  list =
-    start_list = ags_sound_provider_get_sound_server(AGS_SOUND_PROVIDER(application_context));
-  
-  while(list != NULL){
-    if(AGS_IS_JACK_SERVER(list->data)){
-      jack_server = list->data;
-
-      break;
-    }
-    
-    list = list->next;
-  }
-
-  g_list_free(start_list);
-  
-  if(jack_server != NULL){
-#ifdef AGS_WITH_JACK
-    //    jackctl_server_stop(jack_server->jackctl);
-#endif
-  }
+  //TODO:JK: implement me
 }

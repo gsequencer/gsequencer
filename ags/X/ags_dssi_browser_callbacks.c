@@ -49,8 +49,8 @@ ags_dssi_browser_plugin_filename_callback(GtkComboBoxText *combo_box,
   pthread_mutex_t *dssi_manager_mutex;
   pthread_mutex_t *base_plugin_mutex;
 
-  filename = dssi_browser->filename;
-  effect = dssi_browser->effect;
+  filename = GTK_COMBO_BOX_TEXT(dssi_browser->filename);
+  effect = GTK_COMBO_BOX_TEXT(dssi_browser->effect);
 
   gtk_list_store_clear(GTK_LIST_STORE(effect));
 
@@ -134,8 +134,8 @@ ags_dssi_browser_plugin_effect_callback(GtkComboBoxText *combo_box,
   pthread_mutex_t *base_plugin_mutex;
 
   /* retrieve filename and effect */
-  filename = dssi_browser->filename;
-  effect = dssi_browser->effect;
+  filename = GTK_COMBO_BOX_TEXT(dssi_browser->filename);
+  effect = GTK_COMBO_BOX_TEXT(dssi_browser->effect);
 
   dssi_plugin = ags_dssi_manager_find_dssi_plugin(ags_dssi_manager_get_instance(),
 						  gtk_combo_box_text_get_active_text(filename),

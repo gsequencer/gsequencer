@@ -499,8 +499,8 @@ ags_export_soundcard_refresh_card(AgsExportSoundcard *export_soundcard)
   gchar *backend;
   gchar *device;
 
-  export_window = gtk_widget_get_ancestor(export_soundcard,
-					  AGS_TYPE_EXPORT_WINDOW);
+  export_window = (AgsExportWindow *) gtk_widget_get_ancestor(GTK_WIDGET(export_soundcard),
+							      AGS_TYPE_EXPORT_WINDOW);
  
   start_soundcard = NULL;
   

@@ -196,7 +196,7 @@ ags_generic_preferences_init(AgsGenericPreferences *generic_preferences)
 		     0);
 
   /* rt-safe */
-  generic_preferences->rt_safe = (GtkComboBoxText *) gtk_check_button_new_with_label(i18n("rt-safe"));
+  generic_preferences->rt_safe = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("rt-safe"));
   gtk_box_pack_start(GTK_BOX(generic_preferences),
 		     GTK_WIDGET(generic_preferences->rt_safe),
 		     FALSE, FALSE,
@@ -294,7 +294,7 @@ ags_generic_preferences_apply(AgsApplicable *applicable)
   ags_config_set_value(config,
 		       AGS_CONFIG_GENERIC,
 		       "rt-safe",
-		       (gtk_toggle_button_get_active(generic_preferences->rt_safe) ? "true": "false"));
+		       (gtk_toggle_button_get_active((GtkToggleButton *) generic_preferences->rt_safe) ? "true": "false"));
 }
 
 void
@@ -336,7 +336,7 @@ ags_generic_preferences_reset(AgsApplicable *applicable)
     if(g_ascii_strncasecmp(str,
 			   "performance",
 			   12)){
-      gtk_combo_box_set_active(generic_preferences->engine_mode,
+      gtk_combo_box_set_active((GtkComboBox *) generic_preferences->engine_mode,
 			       1);
     }
   }
@@ -352,7 +352,7 @@ ags_generic_preferences_reset(AgsApplicable *applicable)
      !g_ascii_strncasecmp(str,
 			  "true",
 			  5)){
-    gtk_toggle_button_set_active(generic_preferences->rt_safe,
+    gtk_toggle_button_set_active((GtkToggleButton *) generic_preferences->rt_safe,
 				 TRUE);
   }
 
