@@ -38,14 +38,6 @@ void ags_machine_collection_class_init(AgsMachineCollectionClass *machine_collec
 void ags_machine_collection_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_machine_collection_applicable_interface_init(AgsApplicableInterface *applicable);
 void ags_machine_collection_init(AgsMachineCollection *machine_collection);
-void ags_machine_collection_set_property(GObject *gobject,
-					 guint prop_id,
-					 const GValue *value,
-					 GParamSpec *param_spec);
-void ags_machine_collection_get_property(GObject *gobject,
-					 guint prop_id,
-					 GValue *value,
-					 GParamSpec *param_spec);
 
 void ags_machine_collection_connect(AgsConnectable *connectable);
 void ags_machine_collection_disconnect(AgsConnectable *connectable);
@@ -123,17 +115,8 @@ ags_machine_collection_get_type(void)
 
 void
 ags_machine_collection_class_init(AgsMachineCollectionClass *machine_collection)
-{
-  GObjectClass *gobject;
-  GParamSpec *param_spec;
-  
+{  
   ags_machine_collection_parent_class = g_type_class_peek_parent(machine_collection);
-
-  /* GObjectClass */
-  gobject = (GObjectClass *) machine_collection;
-
-  gobject->set_property = ags_machine_collection_set_property;
-  gobject->get_property = ags_machine_collection_get_property;
 
   /* properties */
 }
@@ -173,40 +156,6 @@ ags_machine_collection_init(AgsMachineCollection *machine_collection)
 						       0);
   gtk_scrolled_window_add_with_viewport(scrolled_window,
 					(GtkWidget *) machine_collection->child);
-}
-
-void
-ags_machine_collection_set_property(GObject *gobject,
-				    guint prop_id,
-				    const GValue *value,
-				    GParamSpec *param_spec)
-{
-  AgsMachineCollection *machine_collection;
-
-  machine_collection = AGS_MACHINE_COLLECTION(gobject);
-
-  switch(prop_id){
-  default:
-    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
-    break;
-  }
-}
-
-void
-ags_machine_collection_get_property(GObject *gobject,
-				    guint prop_id,
-				    GValue *value,
-				    GParamSpec *param_spec)
-{
-  AgsMachineCollection *machine_collection;
-
-  machine_collection = AGS_MACHINE_COLLECTION(gobject);
-
-  switch(prop_id){
-  default:
-    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
-    break;
-  }
 }
 
 void
@@ -334,22 +283,22 @@ ags_machine_collection_reload(AgsMachineCollection *machine_collection)
   
   GList *machine, *machine_start;
 
-  midi_export_wizard = gtk_widget_get_ancestor(machine_collection,
-					       AGS_TYPE_MIDI_EXPORT_WIZARD);
-  window = midi_export_wizard->main_window;
+  midi_export_wizard = (AgsMidiExportWizard *) gtk_widget_get_ancestor((GtkWidget *) machine_collection,
+								       AGS_TYPE_MIDI_EXPORT_WIZARD);
+  window = (AgsWindow *) midi_export_wizard->main_window;
 
   /* destroy old */
   parent = GTK_WIDGET(machine_collection->child)->parent;
-  gtk_widget_destroy(machine_collection->child);
+  gtk_widget_destroy((GtkWidget *) machine_collection->child);
   
   machine_collection->child = (GtkVBox *) gtk_vbox_new(FALSE,
 						       0);
-  gtk_container_add(parent,
-		    machine_collection->child);
+  gtk_container_add((GtkContainer *) parent,
+		    (GtkWidget *) machine_collection->child);
   
   /* add entry */
   machine =
-    machine_start = gtk_container_get_children(window->machines);
+    machine_start = gtk_container_get_children((GtkContainer *) window->machines);
   
   while(machine != NULL){
     if(AGS_MACHINE(machine->data)->audio != NULL &&
@@ -374,6 +323,7 @@ ags_machine_collection_add_entry(AgsMachineCollection *machine_collection,
     return;
   }
 
+  //FIXME:JK: deprecated
   machine_collection_entry = (AgsMachineCollectionEntry *) g_object_newv(machine_collection->child_type,
 									 machine_collection->child_parameter_count,
 									 machine_collection->child_parameter);

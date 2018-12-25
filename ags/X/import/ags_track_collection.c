@@ -207,7 +207,7 @@ ags_track_collection_set_property(GObject *gobject,
     {
       xmlDoc *midi_document;
 
-      midi_document = (gchar *) g_value_get_pointer(value);
+      midi_document = (xmlDoc *) g_value_get_pointer(value);
 
       if(track_collection->midi_doc == midi_document){
 	return;
@@ -567,6 +567,7 @@ ags_track_collection_add_mapper(AgsTrackCollection *track_collection,
   g_message("%s", instrument);
   g_message("%s", sequence);
 
+  //FIXME:JK: deprecated
   track_collection_mapper = (AgsTrackCollectionMapper *) g_object_newv(track_collection->child_type,
 								       track_collection->child_parameter_count,
 								       track_collection->child_parameter);

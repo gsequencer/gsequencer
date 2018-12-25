@@ -341,15 +341,12 @@ ags_machine_collection_entry_disconnect(AgsConnectable *connectable)
 void
 ags_machine_collection_entry_set_update(AgsApplicable *applicable, gboolean update)
 {
-  AgsMachineCollectionEntry *machine_collection_entry;
-
-  machine_collection_entry = AGS_MACHINE_COLLECTION_ENTRY(applicable);
+  //TODO:JK: implement me
 }
 
 void
 ags_machine_collection_entry_apply(AgsApplicable *applicable)
 {
-  AgsWindow *window;
   AgsMachine *machine;
 
   AgsMidiExportWizard *midi_export_wizard;
@@ -367,7 +364,6 @@ ags_machine_collection_entry_apply(AgsApplicable *applicable)
   gboolean key_active[128];
 
   gdouble bpm;
-  guint division;
   guint delta_time;
   guint pulse_unit;
   guint notation_count;
@@ -378,15 +374,14 @@ ags_machine_collection_entry_apply(AgsApplicable *applicable)
   
   machine_collection_entry = AGS_MACHINE_COLLECTION_ENTRY(applicable);
 
-  if(!gtk_toggle_button_get_active(machine_collection_entry->enabled)){
+  if(!gtk_toggle_button_get_active((GtkToggleButton *) machine_collection_entry->enabled)){
     return;
   }
 
-  midi_export_wizard = gtk_widget_get_ancestor(machine_collection_entry,
-					       AGS_TYPE_MIDI_EXPORT_WIZARD);
+  midi_export_wizard = (AgsMidiExportWizard *) gtk_widget_get_ancestor((GtkWidget *) machine_collection_entry,
+								       AGS_TYPE_MIDI_EXPORT_WIZARD);
 
-  window = midi_export_wizard->main_window;
-  machine = machine_collection_entry->machine;
+  machine = (AgsMachine *) machine_collection_entry->machine;
 
   g_object_get(machine->audio,
 	       "notation", &start_notation,
@@ -396,7 +391,6 @@ ags_machine_collection_entry_apply(AgsApplicable *applicable)
   pulse_unit = midi_export_wizard->pulse_unit;
 
   bpm = midi_builder->midi_header->beat;
-  division = midi_builder->midi_header->division;
   
   notation_count = g_list_length(start_notation);
 
@@ -425,6 +419,10 @@ ags_machine_collection_entry_apply(AgsApplicable *applicable)
   
   /* put keys */
   check_match = (AgsNote **) malloc(notation_count * sizeof(AgsNote *));
+
+  for(i = 0; i < notation_count; i++){
+    check_match[i] = NULL;
+  }
   
   memset(key_on, -1, 128 * sizeof(gint));
   memset(key_off, -1, 128 * sizeof(gint));
@@ -603,15 +601,15 @@ ags_machine_collection_entry_apply(AgsApplicable *applicable)
     }
   }
 
+  free(check_match);
+  
   g_list_free(start_notation);
 }
 
 void
 ags_machine_collection_entry_reset(AgsApplicable *applicable)
 {
-  AgsMachineCollectionEntry *machine_collection_entry;
-
-  machine_collection_entry = AGS_MACHINE_COLLECTION_ENTRY(applicable);
+  //TODO:JK: implement me
 }
 
 /**

@@ -236,7 +236,7 @@ ags_midi_export_wizard_init(AgsMidiExportWizard *midi_export_wizard)
 		     0);
   
   midi_export_wizard->file_chooser = gtk_file_chooser_widget_new(GTK_FILE_CHOOSER_ACTION_SAVE);
-  gtk_file_chooser_set_filename(midi_export_wizard->file_chooser,
+  gtk_file_chooser_set_filename(GTK_FILE_CHOOSER(midi_export_wizard->file_chooser),
 				AGS_MIDI_EXPORT_WIZARD_DEFAULT_FILENAME);
   gtk_container_add((GtkContainer *) alignment,
 		    midi_export_wizard->file_chooser);
@@ -299,7 +299,7 @@ ags_midi_export_wizard_set_property(GObject *gobject,
 	g_object_ref(main_window);
       }
 
-      midi_export_wizard->main_window = (GObject *) main_window;
+      midi_export_wizard->main_window = (GtkWidget *) main_window;
     }
     break;
   default:
@@ -407,10 +407,12 @@ ags_midi_export_wizard_apply(AgsApplicable *applicable)
   
   /* find tracks */
   list =
-    list_start = gtk_container_get_children(AGS_MACHINE_COLLECTION(midi_export_wizard->machine_collection)->child);
+    list_start = gtk_container_get_children(GTK_CONTAINER(AGS_MACHINE_COLLECTION(midi_export_wizard->machine_collection)->child));
 
+  track_count = 0;
+  
   while(list != NULL){
-    if(gtk_toggle_button_get_active(AGS_MACHINE_COLLECTION_ENTRY(list->data)->enabled)){
+    if(gtk_toggle_button_get_active((GtkToggleButton *) AGS_MACHINE_COLLECTION_ENTRY(list->data)->enabled)){
       track_count++;
     }
     
@@ -433,7 +435,7 @@ ags_midi_export_wizard_apply(AgsApplicable *applicable)
   midi_export_wizard->pulse_unit = division / 16.0;
   
   /* open file */
-  filename = gtk_file_chooser_get_filename(midi_export_wizard->file_chooser);
+  filename = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(midi_export_wizard->file_chooser));
   
   file = fopen(filename, "w");
   g_object_set(midi_export_wizard->midi_builder,
@@ -468,7 +470,7 @@ ags_midi_export_wizard_reset(AgsApplicable *applicable)
 
   midi_export_wizard = AGS_MIDI_EXPORT_WIZARD(applicable);
 
-  ags_machine_collection_reload(midi_export_wizard->machine_collection);
+  ags_machine_collection_reload(AGS_MACHINE_COLLECTION(midi_export_wizard->machine_collection));
   
   ags_applicable_reset(AGS_APPLICABLE(midi_export_wizard->machine_collection));
 }

@@ -425,23 +425,19 @@ ags_track_collection_mapper_get_property(GObject *gobject,
 void
 ags_track_collection_mapper_connect(AgsConnectable *connectable)
 {
-  AgsTrackCollectionMapper *track_collection_mapper;
-
-  track_collection_mapper = AGS_TRACK_COLLECTION_MAPPER(connectable);
+  //TODO:JK: implement me
 }
 
 void
 ags_track_collection_mapper_disconnect(AgsConnectable *connectable)
 {
-  /* empty */
+  //TODO:JK: implement me
 }
 
 void
 ags_track_collection_mapper_set_update(AgsApplicable *applicable, gboolean update)
 {
-  AgsTrackCollectionMapper *track_collection_mapper;
-
-  track_collection_mapper = AGS_TRACK_COLLECTION_MAPPER(applicable);
+  //TODO:JK: implement me
 }
 
 void
@@ -454,8 +450,7 @@ ags_track_collection_mapper_apply(AgsApplicable *applicable)
 
   AgsAddAudio *add_audio;
 
-  AgsThread *main_loop;
-  AgsGuiThread *gui_thread;
+  AgsThread *gui_thread;
 
   AgsApplicationContext *application_context;
   
@@ -465,7 +460,7 @@ ags_track_collection_mapper_apply(AgsApplicable *applicable)
   
   track_collection_mapper = AGS_TRACK_COLLECTION_MAPPER(applicable);
 
-  if(!gtk_toggle_button_get_active(track_collection_mapper->enabled)){
+  if(!gtk_toggle_button_get_active((GtkToggleButton *) track_collection_mapper->enabled)){
     return;
   }  
   
@@ -474,10 +469,8 @@ ags_track_collection_mapper_apply(AgsApplicable *applicable)
   window = (AgsWindow *) midi_import_wizard->main_window;
 
   application_context = (AgsApplicationContext *) window->application_context;
-  
-  main_loop = (AgsThread *) application_context->main_loop;
-  gui_thread = (AgsGuiThread *) ags_thread_find_type(main_loop,
-						     AGS_TYPE_GUI_THREAD);
+
+  gui_thread = ags_concurrency_provider_get_gui_thread(AGS_CONCURRENCY_PROVIDER(application_context));
 
   /* create machine */
   machine_type = gtk_combo_box_text_get_active_text(track_collection_mapper->machine_type);
@@ -530,10 +523,10 @@ ags_track_collection_mapper_apply(AgsApplicable *applicable)
   }
 
   /* add audio */  
-  add_audio = ags_add_audio_new(window->soundcard,
+  add_audio = ags_add_audio_new(application_context,
 				machine->audio);
-  ags_gui_thread_schedule_task(gui_thread,
-			       add_audio);
+  ags_gui_thread_schedule_task((AgsGuiThread *) gui_thread,
+			       (GObject *) add_audio);
   
   gtk_box_pack_start((GtkBox *) window->machines,
 		     GTK_WIDGET(machine),
@@ -546,9 +539,7 @@ ags_track_collection_mapper_apply(AgsApplicable *applicable)
 void
 ags_track_collection_mapper_reset(AgsApplicable *applicable)
 {
-  AgsTrackCollectionMapper *track_collection_mapper;
-
-  track_collection_mapper = AGS_TRACK_COLLECTION_MAPPER(applicable);
+  //TODO:JK: implement me
 }
 
 /**

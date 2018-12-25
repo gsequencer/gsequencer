@@ -260,7 +260,7 @@ ags_midi_import_wizard_set_property(GObject *gobject,
 
       application_context = (AgsApplicationContext *) g_value_get_object(value);
 
-      if((AgsApplicationContext *) midi_import_wizard->application_context == application_context){
+      if(midi_import_wizard->application_context == application_context){
 	return;
       }
       
@@ -272,7 +272,7 @@ ags_midi_import_wizard_set_property(GObject *gobject,
 	g_object_ref(application_context);
       }
 
-      midi_import_wizard->application_context = (GObject *) application_context;
+      midi_import_wizard->application_context = application_context;
     }
     break;
   case PROP_MAIN_WINDOW:
@@ -293,7 +293,7 @@ ags_midi_import_wizard_set_property(GObject *gobject,
 	g_object_ref(main_window);
       }
 
-      midi_import_wizard->main_window = (GObject *) main_window;
+      midi_import_wizard->main_window = (GtkWidget *) main_window;
     }
     break;
   default:
