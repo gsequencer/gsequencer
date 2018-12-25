@@ -162,9 +162,9 @@ ags_ui_provider_get_show_animation(AgsUiProvider *ui_provider)
 {
   AgsUiProviderInterface *ui_provider_interface;
 
-  g_return_val_if_fail(AGS_IS_UI_PROVIDER(ui_provider), NULL);
+  g_return_val_if_fail(AGS_IS_UI_PROVIDER(ui_provider), FALSE);
   ui_provider_interface = AGS_UI_PROVIDER_GET_INTERFACE(ui_provider);
-  g_return_val_if_fail(ui_provider_interface->get_show_animation, NULL);
+  g_return_val_if_fail(ui_provider_interface->get_show_animation, FALSE);
 
   return(ui_provider_interface->get_show_animation(ui_provider));
 }
@@ -207,9 +207,9 @@ ags_ui_provider_get_gui_ready(AgsUiProvider *ui_provider)
 {
   AgsUiProviderInterface *ui_provider_interface;
 
-  g_return_val_if_fail(AGS_IS_UI_PROVIDER(ui_provider), NULL);
+  g_return_val_if_fail(AGS_IS_UI_PROVIDER(ui_provider), FALSE);
   ui_provider_interface = AGS_UI_PROVIDER_GET_INTERFACE(ui_provider);
-  g_return_val_if_fail(ui_provider_interface->get_gui_ready, NULL);
+  g_return_val_if_fail(ui_provider_interface->get_gui_ready, FALSE);
 
   return(ui_provider_interface->get_gui_ready(ui_provider));
 }

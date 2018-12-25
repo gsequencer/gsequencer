@@ -386,7 +386,7 @@ ags_sequencer_editor_apply(AgsApplicable *applicable)
   
   if(gtk_combo_box_get_active_iter(GTK_COMBO_BOX(sequencer_editor->card),
 				   &current)){
-    gtk_tree_model_get_value(model,
+    gtk_tree_model_get_value(GTK_TREE_MODEL(model),
 			     &current,
 			     0,
 			     &value);
@@ -511,7 +511,7 @@ ags_sequencer_editor_reset(AgsApplicable *applicable)
     if(card_id->data != NULL &&
        use_alsa){
       tmp = g_strdup_printf("%s,0",
-			    card_id->data);
+			    (gchar *) card_id->data);
     }
     
     if(tmp != NULL &&
@@ -602,7 +602,7 @@ ags_sequencer_editor_add_source(AgsSequencerEditor *sequencer_editor,
 	       "main-loop", &main_loop,
 	       NULL);
   
-  sequencer_editor->sequencer = jack_midiin;
+  sequencer_editor->sequencer = (GObject *) jack_midiin;
 
   ags_sound_provider_set_sequencer(AGS_SOUND_PROVIDER(application_context),
 				   g_list_append(ags_sound_provider_get_sequencer(AGS_SOUND_PROVIDER(application_context)),
@@ -610,7 +610,7 @@ ags_sequencer_editor_add_source(AgsSequencerEditor *sequencer_editor,
     
   g_object_ref(jack_midiin);
 
-  sequencer_thread = (AgsThread *) ags_sequencer_thread_new(jack_midiin);
+  sequencer_thread = (AgsThread *) ags_sequencer_thread_new((GObject *) jack_midiin);
   sequencer_editor->sequencer_thread = (GObject *) sequencer_thread;
   
   ags_thread_add_child_extended(main_loop,
@@ -641,7 +641,6 @@ ags_sequencer_editor_remove_source(AgsSequencerEditor *sequencer_editor,
 {
   AgsWindow *window;
   AgsPreferences *preferences;
-  GtkDialog *dialog;
  
   AgsJackMidiin *jack_midiin;
 
@@ -703,7 +702,7 @@ ags_sequencer_editor_remove_source(AgsSequencerEditor *sequencer_editor,
 #endif
 
   /* remove */
-  if(jack_midiin == sequencer_editor->sequencer){
+  if((GObject *) jack_midiin == sequencer_editor->sequencer){
     sequencer_editor->sequencer = NULL;
   }
 
@@ -728,16 +727,6 @@ ags_sequencer_editor_remove_source(AgsSequencerEditor *sequencer_editor,
     sequencer_editor->sequencer_thread = NULL;
   }
 #endif
-  
-  /* notify user about safe GSequencer */
-  dialog = gtk_message_dialog_new(preferences,
-				  GTK_DIALOG_MODAL,
-				  GTK_MESSAGE_INFO,
-				  GTK_BUTTONS_OK,
-				  "After finished your modifications you should safe your file");
-  g_signal_connect(dialog, "response",
-		   G_CALLBACK(gtk_widget_destroy), NULL);
-  gtk_widget_show_all(dialog);
 }
 
 void
@@ -811,7 +800,6 @@ ags_sequencer_editor_remove_sequencer(AgsSequencerEditor *sequencer_editor,
 {
   AgsWindow *window;
   AgsPreferences *preferences;
-  GtkDialog *dialog;
 
   AgsThread *main_loop;
   AgsThread *sequencer_thread;
@@ -858,16 +846,6 @@ ags_sequencer_editor_remove_sequencer(AgsSequencerEditor *sequencer_editor,
     sequencer_editor->sequencer_thread = NULL;
   }
 #endif
-  
-  /* notify user about safe GSequencer */
-  dialog = gtk_message_dialog_new(preferences,
-				  GTK_DIALOG_MODAL,
-				  GTK_MESSAGE_INFO,
-				  GTK_BUTTONS_OK,
-				  "After finished your modifications you should safe your file");
-  g_signal_connect(dialog, "response",
-		   G_CALLBACK(gtk_widget_destroy), NULL);
-  gtk_widget_show_all(dialog);
 }
 
 void

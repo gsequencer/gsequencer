@@ -56,12 +56,12 @@ ags_wave_editor_hscrollbar_value_changed(GtkRange *range, AgsWaveEditor *wave_ed
   
   gtk_adjustment_set_value(wave_editor->ruler->adjustment,
 			   range->adjustment->value / AGS_WAVE_EDIT_DEFAULT_CONTROL_WIDTH);
-  gtk_widget_queue_draw(wave_editor->ruler);
+  gtk_widget_queue_draw(GTK_WIDGET(wave_editor->ruler));
     
   /* wave edit */
   if((AGS_WAVE_EDITOR_RESET_HSCROLLBAR & (wave_editor->flags)) == 0){
     list_start =
-      list = gtk_container_get_children(wave_editor->scrolled_wave_edit_box->wave_edit_box);
+      list = gtk_container_get_children(GTK_CONTAINER(wave_editor->scrolled_wave_edit_box->wave_edit_box));
 
     while(list != NULL){
       gtk_adjustment_set_value(GTK_RANGE(AGS_WAVE_EDIT(list->data)->hscrollbar)->adjustment,
@@ -81,12 +81,12 @@ ags_wave_editor_wave_edit_hscrollbar_value_changed(GtkRange *range, AgsWaveEdito
 
   gtk_adjustment_set_value(wave_editor->ruler->adjustment,
 			   range->adjustment->value / AGS_WAVE_EDIT_DEFAULT_CONTROL_WIDTH);
-  gtk_widget_queue_draw(wave_editor->ruler);
+  gtk_widget_queue_draw(GTK_WIDGET(wave_editor->ruler));
   
   /* wave edit */
   if((AGS_WAVE_EDITOR_RESET_HSCROLLBAR & (wave_editor->flags)) == 0){
     list_start =
-      list = gtk_container_get_children(wave_editor->scrolled_wave_edit_box->wave_edit_box);
+      list = gtk_container_get_children(GTK_CONTAINER(wave_editor->scrolled_wave_edit_box->wave_edit_box));
 
     while(list != NULL){
       gtk_adjustment_set_value(GTK_RANGE(AGS_WAVE_EDIT(list->data)->hscrollbar)->adjustment,

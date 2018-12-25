@@ -249,7 +249,7 @@ ags_window_init(AgsWindow *window)
   gtk_widget_set_events(GTK_WIDGET(window), 
 			(GDK_BUTTON_PRESS_MASK
 			 | GDK_BUTTON_RELEASE_MASK));
-  gtk_widget_show_all(window->context_menu);
+  gtk_widget_show_all(GTK_WIDGET(window->context_menu));
 
   g_signal_connect((GObject *) window, "button-press-event",
 		   G_CALLBACK(ags_window_button_press_event), (gpointer) window);
@@ -266,18 +266,18 @@ ags_window_init(AgsWindow *window)
 		     TRUE, TRUE,
 		     0);
 
-  viewport = gtk_viewport_new(NULL,
-			      NULL);
+  viewport = (GtkViewport *) gtk_viewport_new(NULL,
+					      NULL);
   g_object_set(viewport,
 	       "shadow-type", GTK_SHADOW_NONE,
 	       NULL);
   gtk_paned_pack1((GtkPaned *) window->paned,
-		  viewport,
+		  (GtkWidget *) viewport,
 		  TRUE, TRUE);
   
   scrolled_window = (GtkWidget *) gtk_scrolled_window_new(NULL, NULL);
-  gtk_container_add(viewport,
-		    scrolled_window);
+  gtk_container_add((GtkContainer *) viewport,
+		    (GtkWidget *) scrolled_window);
 
   /* machines rack */
   window->machines = (GtkVBox *) gtk_vbox_new(FALSE, 0);
@@ -288,8 +288,8 @@ ags_window_init(AgsWindow *window)
   window->selected = NULL;
 
   /* editor */
-  viewport = gtk_viewport_new(NULL,
-			      NULL);
+  viewport = (GtkViewport *) gtk_viewport_new(NULL,
+					      NULL);
   g_object_set(viewport,
 	       "shadow-type", GTK_SHADOW_NONE,
 	       NULL);
@@ -301,8 +301,8 @@ ags_window_init(AgsWindow *window)
 					 "homogeneous", FALSE,
 					 "spacing", 0,
 					 NULL);
-  gtk_container_add(viewport,
-		    window->notation_editor);
+  gtk_container_add((GtkContainer *) viewport,
+		    (GtkWidget *) window->notation_editor);
 
   /* navigation */
   window->navigation = g_object_new(AGS_TYPE_NAVIGATION,
@@ -812,7 +812,7 @@ ags_window_load_file_timeout(AgsWindow *window)
   gui_thread = NULL;
   
   if(window->application_context != NULL){
-    gui_thread = ags_ui_provider_get_gui_thread(AGS_UI_PROVIDER(window->application_context));
+    gui_thread = (AgsGuiThread *) ags_ui_provider_get_gui_thread(AGS_UI_PROVIDER(window->application_context));
   }
   
   if(gui_thread != NULL &&
@@ -821,7 +821,7 @@ ags_window_load_file_timeout(AgsWindow *window)
   }
 
   if((AGS_WINDOW_TERMINATING & (window->flags)) != 0){
-    ags_application_context_quit(window->application_context);
+    ags_application_context_quit((AgsApplicationContext *) window->application_context);
 
     return(FALSE);
   }

@@ -217,8 +217,8 @@ ags_wave_editor_init(AgsWaveEditor *wave_editor)
 		     TRUE, TRUE, 0);
 
   /* machine selector */
-  viewport = gtk_viewport_new(NULL,
-			      NULL);
+  viewport = (GtkViewport *) gtk_viewport_new(NULL,
+					      NULL);
   g_object_set(viewport,
 	       "shadow-type", GTK_SHADOW_NONE,
 	       NULL);
@@ -227,8 +227,8 @@ ags_wave_editor_init(AgsWaveEditor *wave_editor)
 		  FALSE, TRUE);
 
   scrolled_window = (GtkScrolledWindow *) gtk_scrolled_window_new(NULL, NULL);
-  gtk_container_add(viewport,
-		    scrolled_window);
+  gtk_container_add(GTK_CONTAINER(viewport),
+		    GTK_WIDGET(scrolled_window));
 
   wave_editor->machine_selector = g_object_new(AGS_TYPE_MACHINE_SELECTOR,
 					       "homogeneous", FALSE,
@@ -249,8 +249,8 @@ ags_wave_editor_init(AgsWaveEditor *wave_editor)
   wave_editor->selected_machine = NULL;
 
   /* table */
-  viewport = gtk_viewport_new(NULL,
-			      NULL);
+  viewport = (GtkViewport *) gtk_viewport_new(NULL,
+					      NULL);
   g_object_set(viewport,
 	       "shadow-type", GTK_SHADOW_NONE,
 	       NULL);
@@ -259,8 +259,8 @@ ags_wave_editor_init(AgsWaveEditor *wave_editor)
 		  TRUE, TRUE);
 
   table = (GtkTable *) gtk_table_new(4, 3, FALSE);
-  gtk_container_add(viewport,
-		    table);
+  gtk_container_add(GTK_CONTAINER(viewport),
+		    GTK_WIDGET(table));
   
   /* notebook */
   wave_editor->notebook = g_object_new(AGS_TYPE_NOTEBOOK,
@@ -289,8 +289,8 @@ ags_wave_editor_init(AgsWaveEditor *wave_editor)
   wave_editor->scrolled_level_box = ags_scrolled_level_box_new();
 
   wave_editor->scrolled_level_box->level_box = ags_vlevel_box_new();
-  gtk_container_add(wave_editor->scrolled_level_box->viewport,
-		    wave_editor->scrolled_level_box->level_box);
+  gtk_container_add(GTK_CONTAINER(wave_editor->scrolled_level_box->viewport),
+		    GTK_WIDGET(wave_editor->scrolled_level_box->level_box));
 
   gtk_table_attach(table,
 		   (GtkWidget *) wave_editor->scrolled_level_box,
@@ -302,9 +302,9 @@ ags_wave_editor_init(AgsWaveEditor *wave_editor)
   /* wave edit */
   wave_editor->scrolled_wave_edit_box = ags_scrolled_wave_edit_box_new();
 
-  wave_editor->scrolled_wave_edit_box->wave_edit_box = ags_vwave_edit_box_new();
-  gtk_container_add(wave_editor->scrolled_wave_edit_box->viewport,
-		    wave_editor->scrolled_wave_edit_box->wave_edit_box);
+  wave_editor->scrolled_wave_edit_box->wave_edit_box = (AgsWaveEditBox *) ags_vwave_edit_box_new();
+  gtk_container_add(GTK_CONTAINER(wave_editor->scrolled_wave_edit_box->viewport),
+		    GTK_WIDGET(wave_editor->scrolled_wave_edit_box->wave_edit_box));
 
   gtk_table_attach(table,
 		   (GtkWidget *) wave_editor->scrolled_wave_edit_box,
@@ -325,7 +325,7 @@ ags_wave_editor_init(AgsWaveEditor *wave_editor)
   
   /* scrollbars */
   adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 1.0, AGS_WAVE_EDIT_DEFAULT_CONTROL_HEIGHT, 1.0);
-  wave_editor->vscrollbar = gtk_vscrollbar_new(adjustment);
+  wave_editor->vscrollbar = (GtkVScrollbar *) gtk_vscrollbar_new(adjustment);
   gtk_table_attach(table,
 		   (GtkWidget *) wave_editor->vscrollbar,
 		   2, 3,
@@ -334,7 +334,7 @@ ags_wave_editor_init(AgsWaveEditor *wave_editor)
 		   0, 0);
 
   adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 1.0, AGS_WAVE_EDIT_DEFAULT_CONTROL_WIDTH, 1.0);
-  wave_editor->hscrollbar = gtk_hscrollbar_new(adjustment);
+  wave_editor->hscrollbar = (GtkHScrollbar *) gtk_hscrollbar_new(adjustment);
   gtk_table_attach(table,
 		   (GtkWidget *) wave_editor->hscrollbar,
 		   1, 2,
@@ -538,7 +538,7 @@ ags_wave_editor_reset_scrollbar(AgsWaveEditor *wave_editor)
 
   /* wave edit */
   list_start =
-    list = gtk_container_get_children(wave_editor->scrolled_wave_edit_box->wave_edit_box);
+    list = gtk_container_get_children(GTK_CONTAINER(wave_editor->scrolled_wave_edit_box->wave_edit_box));
 
   while(list != NULL){
     gtk_adjustment_set_upper(GTK_RANGE(AGS_WAVE_EDIT(list->data)->hscrollbar)->adjustment,
@@ -615,7 +615,7 @@ ags_wave_editor_real_machine_changed(AgsWaveEditor *wave_editor, AgsMachine *mac
 
   /* destroy edit */
   list =
-    list_start = gtk_container_get_children(wave_editor->scrolled_level_box->level_box);
+    list_start = gtk_container_get_children(GTK_CONTAINER(wave_editor->scrolled_level_box->level_box));
 
   while(list != NULL){
     gtk_widget_destroy(list->data);
@@ -626,7 +626,7 @@ ags_wave_editor_real_machine_changed(AgsWaveEditor *wave_editor, AgsMachine *mac
   g_list_free(list_start);
 
   list =
-    list_start = gtk_container_get_children(wave_editor->scrolled_wave_edit_box->wave_edit_box);
+    list_start = gtk_container_get_children(GTK_CONTAINER(wave_editor->scrolled_wave_edit_box->wave_edit_box));
 
   while(list != NULL){
     g_object_disconnect(AGS_WAVE_EDIT(list->data)->hscrollbar,
@@ -658,22 +658,22 @@ ags_wave_editor_real_machine_changed(AgsWaveEditor *wave_editor, AgsMachine *mac
 
       /* level */
       level = ags_level_new();
-      gtk_box_pack_start(wave_editor->scrolled_level_box->level_box,
-			 level,
+      gtk_box_pack_start(GTK_BOX(wave_editor->scrolled_level_box->level_box),
+			 GTK_WIDGET(level),
 			 FALSE, FALSE,
 			 AGS_WAVE_EDIT_DEFAULT_PADDING);
 	
-      gtk_widget_show(level);
+      gtk_widget_show(GTK_WIDGET(level));
 	  
       /* wave edit */
       wave_edit = ags_wave_edit_new(i);
-      gtk_box_pack_start(wave_editor->scrolled_wave_edit_box->wave_edit_box,
-			 wave_edit,
+      gtk_box_pack_start(GTK_BOX(wave_editor->scrolled_wave_edit_box->wave_edit_box),
+			 GTK_WIDGET(wave_edit),
 			 FALSE, FALSE,
 			 AGS_WAVE_EDIT_DEFAULT_PADDING);
 
       ags_connectable_connect(AGS_CONNECTABLE(wave_edit));
-      gtk_widget_show(wave_edit);
+      gtk_widget_show(GTK_WIDGET(wave_edit));
 
       g_signal_connect_after((GObject *) wave_edit->hscrollbar, "value-changed",
 			     G_CALLBACK(ags_wave_editor_wave_edit_hscrollbar_value_changed), (gpointer) wave_editor);
@@ -751,9 +751,9 @@ ags_wave_editor_select_region(AgsWaveEditor *wave_editor,
   if(wave_editor->selected_machine != NULL){
     machine = wave_editor->selected_machine;
 
-    wave_window = gtk_widget_get_ancestor(wave_editor,
-					  AGS_TYPE_WAVE_WINDOW);
-    window = wave_window->parent_window;  
+    wave_window = (AgsWaveWindow *) gtk_widget_get_ancestor(GTK_WIDGET(wave_editor),
+							    AGS_TYPE_WAVE_WINDOW);
+    window = (AgsWindow *) wave_window->parent_window;  
 
     wave_toolbar = wave_editor->wave_toolbar;
 
@@ -808,7 +808,7 @@ ags_wave_editor_select_region(AgsWaveEditor *wave_editor,
     timestamp->flags &= (~AGS_TIMESTAMP_UNIX);
     timestamp->flags |= AGS_TIMESTAMP_OFFSET;
 
-    start_wave_edit = gtk_container_get_children(wave_editor->scrolled_wave_edit_box->wave_edit_box);
+    start_wave_edit = gtk_container_get_children(GTK_CONTAINER(wave_editor->scrolled_wave_edit_box->wave_edit_box));
     i = 0;
 
     while((i = ags_notebook_next_active_tab(notebook,
@@ -836,7 +836,7 @@ ags_wave_editor_select_region(AgsWaveEditor *wave_editor,
       }
 
       /* queue draw */
-      gtk_widget_queue_draw(wave_edit->data);
+      gtk_widget_queue_draw(GTK_WIDGET(wave_edit->data));
       
       i++;
     }
@@ -979,13 +979,13 @@ ags_wave_editor_paste(AgsWaveEditor *wave_editor)
 					       timestamp);
 
       if(list_wave == NULL){
-	wave = ags_wave_new(machine->audio,
+	wave = ags_wave_new((GObject *) machine->audio,
 			    i);
 	wave->timestamp->timer.ags_offset.offset = timestamp->timer.ags_offset.offset;
 	
 	/* add to audio */
 	ags_audio_add_wave(machine->audio,
-			   wave);
+			   (GObject *) wave);
       }else{
 	wave = AGS_WAVE(list_wave->data);
       }
@@ -1184,9 +1184,9 @@ ags_wave_editor_paste(AgsWaveEditor *wave_editor)
   if((machine = wave_editor->selected_machine) != NULL){
     machine = wave_editor->selected_machine;
 
-    wave_window = gtk_widget_get_ancestor(wave_editor,
-					  AGS_TYPE_WAVE_WINDOW);
-    window = wave_window->parent_window;  
+    wave_window = (AgsWaveWindow *) gtk_widget_get_ancestor(GTK_WIDGET(wave_editor),
+							    AGS_TYPE_WAVE_WINDOW);
+    window = (AgsWindow *) wave_window->parent_window;  
 
     wave_toolbar = wave_editor->wave_toolbar;
     wave_edit = wave_editor->focused_wave_edit;
@@ -1223,8 +1223,8 @@ ags_wave_editor_paste(AgsWaveEditor *wave_editor)
 
       position_x = 15.0 * delay_factor * wave_editor->focused_wave_edit->cursor_position_x * samplerate / (16.0 * bpm);
       
-      printf("pasting at position: [%u]\n", position_x);
 #ifdef DEBUG
+      printf("pasting at position: [%u]\n", position_x);
 #endif
     }else{
       paste_from_position = FALSE;
@@ -1266,7 +1266,7 @@ ags_wave_editor_paste(AgsWaveEditor *wave_editor)
       //TODO:JK: implement me
     }
 
-    gtk_widget_queue_draw(wave_edit);
+    gtk_widget_queue_draw(GTK_WIDGET(wave_edit));
   }
 }
 
@@ -1412,7 +1412,7 @@ ags_wave_editor_cut(AgsWaveEditor *wave_editor)
       i++;
     }
 
-    gtk_widget_queue_draw(wave_editor->focused_wave_edit);
+    gtk_widget_queue_draw(GTK_WIDGET(wave_editor->focused_wave_edit));
 
     /* write to clipboard */
     xmlDocDumpFormatMemoryEnc(clipboard, &buffer, &size, "UTF-8", TRUE);

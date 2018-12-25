@@ -239,15 +239,13 @@ ags_server_preferences_init(AgsServerPreferences *server_preferences)
 void
 ags_server_preferences_connect(AgsConnectable *connectable)
 {
-  AgsServerPreferences *server_preferences;
-
-  server_preferences = AGS_SERVER_PREFERENCES(connectable);
+  //TODO:JK: implement me
 }
 
 void
 ags_server_preferences_disconnect(AgsConnectable *connectable)
 {
-  /* empty */
+  //TODO:JK: implement me
 }
 
 

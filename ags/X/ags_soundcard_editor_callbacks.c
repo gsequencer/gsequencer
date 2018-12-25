@@ -38,7 +38,7 @@ ags_soundcard_editor_backend_changed_callback(GtkComboBox *combo,
 {
   gchar *str;
 
-  gtk_widget_set_sensitive(soundcard_editor->capability,
+  gtk_widget_set_sensitive(GTK_WIDGET(soundcard_editor->capability),
 			   TRUE);
   
   str = gtk_combo_box_text_get_active_text(GTK_COMBO_BOX_TEXT(combo));
@@ -53,9 +53,9 @@ ags_soundcard_editor_backend_changed_callback(GtkComboBox *combo,
     }else if(!g_ascii_strncasecmp(str,
 			    "pulse",
 			    6)){
-      gtk_combo_box_set_active(soundcard_editor->capability,
+      gtk_combo_box_set_active(GTK_COMBO_BOX(soundcard_editor->capability),
 			       0);
-      gtk_widget_set_sensitive(soundcard_editor->capability,
+      gtk_widget_set_sensitive(GTK_WIDGET(soundcard_editor->capability),
 			       FALSE);
       
       ags_soundcard_editor_load_pulse_card(soundcard_editor);
@@ -87,8 +87,6 @@ void
 ags_soundcard_editor_card_changed_callback(GtkComboBox *combo,
 					   AgsSoundcardEditor *soundcard_editor)
 {
-  AgsWindow *window;
-
   GObject *soundcard;
 
   GtkTreeIter current;
@@ -96,7 +94,6 @@ ags_soundcard_editor_card_changed_callback(GtkComboBox *combo,
   gchar *str;
   gchar *card;
 
-  gboolean use_alsa;
   guint channels, channels_min, channels_max;
   guint rate, rate_min, rate_max;
   guint buffer_size, buffer_size_min, buffer_size_max;
@@ -109,13 +106,9 @@ ags_soundcard_editor_card_changed_callback(GtkComboBox *combo,
 
   soundcard_editor->flags |= AGS_SOUNDCARD_EDITOR_BLOCK_CARD;
   
-  window = AGS_WINDOW(AGS_PREFERENCES(gtk_widget_get_ancestor(GTK_WIDGET(soundcard_editor),
-							      AGS_TYPE_PREFERENCES))->window);
   soundcard = soundcard_editor->soundcard;
 
   /*  */
-  use_alsa = FALSE;
-
   str = NULL;
   
   if(AGS_IS_CORE_AUDIO_DEVOUT(soundcard)){
@@ -130,13 +123,6 @@ ags_soundcard_editor_card_changed_callback(GtkComboBox *combo,
     }else if((AGS_DEVOUT_OSS & (AGS_DEVOUT(soundcard)->flags)) != 0){
       str = "oss";
     }
-  }
-
-  if(str != NULL &&
-     !g_ascii_strncasecmp(str,
-			  "alsa",
-			  5)){
-    use_alsa = TRUE;
   }
 
   card = gtk_combo_box_text_get_active_text(soundcard_editor->card);
@@ -211,7 +197,7 @@ ags_soundcard_editor_audio_channels_changed_callback(GtkSpinButton *spin_button,
   GObject *soundcard;
   AgsSetAudioChannels *set_audio_channels;
 
-  AgsGuiThread *gui_thread;
+  AgsThread *gui_thread;
 
   AgsApplicationContext *application_context;
 
@@ -229,8 +215,8 @@ ags_soundcard_editor_audio_channels_changed_callback(GtkSpinButton *spin_button,
 						  (guint) gtk_spin_button_get_value(spin_button));
 
   /* append AgsSetAudioChannels */
-  ags_gui_thread_schedule_task(gui_thread,
-			       set_audio_channels);
+  ags_gui_thread_schedule_task((AgsGuiThread *) gui_thread,
+			       (GObject *) set_audio_channels);
 }
 
 void
@@ -241,7 +227,7 @@ ags_soundcard_editor_samplerate_changed_callback(GtkSpinButton *spin_button,
   GObject *soundcard;
   AgsSetSamplerate *set_samplerate;
 
-  AgsGuiThread *gui_thread;
+  AgsThread *gui_thread;
 
   AgsApplicationContext *application_context;
   
@@ -259,8 +245,8 @@ ags_soundcard_editor_samplerate_changed_callback(GtkSpinButton *spin_button,
 					  (guint) gtk_spin_button_get_value(spin_button));
 
   /* append AgsSetSamplerate */
-  ags_gui_thread_schedule_task(gui_thread,
-			       set_samplerate);
+  ags_gui_thread_schedule_task((AgsGuiThread *) gui_thread,
+			       (GObject *) set_samplerate);
 }
 
 void
@@ -271,7 +257,7 @@ ags_soundcard_editor_buffer_size_changed_callback(GtkSpinButton *spin_button,
   GObject *soundcard;
   AgsSetBufferSize *set_buffer_size;
 
-  AgsGuiThread *gui_thread;
+  AgsThread *gui_thread;
 
   AgsApplicationContext *application_context;
   
@@ -289,8 +275,8 @@ ags_soundcard_editor_buffer_size_changed_callback(GtkSpinButton *spin_button,
 					    (guint) gtk_spin_button_get_value(spin_button));
 
   /* append AgsSetBufferSize */
-  ags_gui_thread_schedule_task(gui_thread,
-			       set_buffer_size);
+  ags_gui_thread_schedule_task((AgsGuiThread *) gui_thread,
+			       (GObject *) set_buffer_size);
 }
 
 void
@@ -301,7 +287,7 @@ ags_soundcard_editor_format_changed_callback(GtkComboBox *combo_box,
   GObject *soundcard;
   AgsSetFormat *set_format;
 
-  AgsGuiThread *gui_thread;
+  AgsThread *gui_thread;
 
   AgsApplicationContext *application_context;
 
@@ -334,6 +320,10 @@ ags_soundcard_editor_format_changed_callback(GtkComboBox *combo_box,
   case 4:
     format = AGS_SOUNDCARD_SIGNED_64_BIT;
     break;
+  default:
+    g_warning("unsupported format");
+    
+    return;
   }
 
   /* create set output device task */
@@ -341,6 +331,6 @@ ags_soundcard_editor_format_changed_callback(GtkComboBox *combo_box,
 				  format);
 
   /* append AgsSetBufferSize */
-  ags_gui_thread_schedule_task(gui_thread,
-			       set_format);
+  ags_gui_thread_schedule_task((AgsGuiThread *) gui_thread,
+			       (GObject *) set_format);
 }
