@@ -1526,13 +1526,8 @@ ags_dssi_bridge_load(AgsDssiBridge *dssi_bridge)
 	if(LADSPA_IS_PORT_CONTROL(port_descriptor[i])){
 	  if(LADSPA_IS_PORT_INPUT(port_descriptor[i]) ||
 	     LADSPA_IS_PORT_OUTPUT(port_descriptor[i])){
-	    AgsDssiPlugin *dssi_plugin;
-
 	    gchar *specifier;
 	    
-	    dssi_plugin = ags_dssi_manager_find_dssi_plugin(ags_dssi_manager_get_instance(),
-							    dssi_bridge->filename, dssi_bridge->effect);
-
 	    plugin_port = start_plugin_port;
  	    specifier = plugin_descriptor->LADSPA_Plugin->PortNames[i];
 

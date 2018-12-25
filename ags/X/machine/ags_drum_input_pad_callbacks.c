@@ -59,7 +59,7 @@ ags_drum_input_pad_open_callback(GtkWidget *widget, AgsDrumInputPad *drum_input_
 									GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
 									GTK_STOCK_OPEN, GTK_RESPONSE_ACCEPT,
 									NULL);
-  gtk_file_chooser_add_shortcut_folder_uri(file_chooser,
+  gtk_file_chooser_add_shortcut_folder_uri(GTK_FILE_CHOOSER(file_chooser),
 					   "file:///usr/share/hydrogen/data/drumkits",
 					   NULL);
   gtk_file_chooser_set_select_multiple(GTK_FILE_CHOOSER(file_chooser),
@@ -109,7 +109,6 @@ void
 ags_drum_input_pad_open_response_callback(GtkWidget *widget, gint response, AgsDrumInputPad *drum_input_pad)
 {
   AgsWindow *window;
-  AgsDrum *drum;
 
   GtkFileChooserDialog *file_chooser;
   GtkSpinButton *spin_button;
@@ -127,9 +126,6 @@ ags_drum_input_pad_open_response_callback(GtkWidget *widget, gint response, AgsD
   char *name0, *name1;
 
   pthread_mutex_t *application_mutex;
-
-  drum = (AgsDrum *) gtk_widget_get_ancestor(GTK_WIDGET(drum_input_pad),
-					     AGS_TYPE_DRUM);
 
   window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) drum_input_pad,
 						 AGS_TYPE_WINDOW);

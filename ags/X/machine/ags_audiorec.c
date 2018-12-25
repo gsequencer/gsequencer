@@ -227,8 +227,8 @@ ags_audiorec_init(AgsAudiorec *audiorec)
 
   /* frame - filename and open */
   frame = (GtkFrame *) gtk_frame_new(i18n("file"));
-  gtk_box_pack_start(hbox,
-		     frame,
+  gtk_box_pack_start((GtkBox *) hbox,
+		     (GtkWidget *) frame,
 		     FALSE, FALSE,
 		     0);
 
@@ -240,26 +240,26 @@ ags_audiorec_init(AgsAudiorec *audiorec)
   /* filename */
   filename_hbox = (GtkHBox *) gtk_hbox_new(FALSE,
 					   0);
-  gtk_box_pack_start(vbox,
-		     filename_hbox,
+  gtk_box_pack_start((GtkBox *) vbox,
+		     (GtkWidget *) filename_hbox,
 		     FALSE, FALSE,
 		     0);
   
-  label = gtk_label_new(i18n("filename: "));
-  gtk_box_pack_start(filename_hbox,
-		     label,
+  label = (GtkLabel *) gtk_label_new(i18n("filename: "));
+  gtk_box_pack_start((GtkBox *) filename_hbox,
+		     (GtkWidget *) label,
 		     FALSE, FALSE,
 		     0);
 
   audiorec->filename = (GtkEntry *) gtk_entry_new();
-  gtk_box_pack_start(filename_hbox,
-		     audiorec->filename,
+  gtk_box_pack_start((GtkBox *) filename_hbox,
+		     (GtkWidget *) audiorec->filename,
 		     FALSE, FALSE,
 		     0);
 
   audiorec->open = (GtkButton *) gtk_button_new_from_stock(GTK_STOCK_OPEN);
-  gtk_box_pack_start(filename_hbox,
-		     audiorec->open,
+  gtk_box_pack_start((GtkBox *) filename_hbox,
+		     (GtkWidget *) audiorec->open,
 		     FALSE, FALSE,
 		     0);
 
@@ -267,52 +267,52 @@ ags_audiorec_init(AgsAudiorec *audiorec)
 
   audiorec->position = -1;
 
-  audiorec->loading = gtk_label_new(i18n("loading ...  "));
-  gtk_box_pack_start(filename_hbox,
-		     audiorec->loading,
+  audiorec->loading = (GtkLabel *) gtk_label_new(i18n("loading ...  "));
+  gtk_box_pack_start((GtkBox *) filename_hbox,
+		     (GtkWidget *) audiorec->loading,
 		     FALSE, FALSE,
 		     0);
-  gtk_widget_set_no_show_all(audiorec->loading,
+  gtk_widget_set_no_show_all((GtkWidget *) audiorec->loading,
 			     TRUE);
-  gtk_widget_hide(audiorec->loading);
+  gtk_widget_hide((GtkWidget *) audiorec->loading);
   
   /* radio */
   radio_hbox = (GtkHBox *) gtk_hbox_new(FALSE,
 					0);
-  gtk_box_pack_start(vbox,
-		     radio_hbox,
+  gtk_box_pack_start((GtkBox *) vbox,
+		     (GtkWidget *) radio_hbox,
 		     FALSE, FALSE,
 		     0);
 
-  audiorec->keep_data = gtk_radio_button_new_with_label_from_widget(NULL,
-								    "keep");
-  gtk_box_pack_start(radio_hbox,
-		     audiorec->keep_data,
+  audiorec->keep_data = (GtkRadioButton *) gtk_radio_button_new_with_label_from_widget(NULL,
+										       "keep");
+  gtk_box_pack_start((GtkBox *) radio_hbox,
+		     (GtkWidget *) audiorec->keep_data,
 		     FALSE, FALSE,
 		     0);
 
-  audiorec->replace_data = gtk_radio_button_new_with_label_from_widget(audiorec->keep_data,
-								       "replace");
-  gtk_box_pack_start(radio_hbox,
-		     audiorec->replace_data,
+  audiorec->replace_data = (GtkRadioButton *) gtk_radio_button_new_with_label_from_widget(audiorec->keep_data,
+											  "replace");
+  gtk_box_pack_start((GtkBox *) radio_hbox,
+		     (GtkWidget *) audiorec->replace_data,
 		     FALSE, FALSE,
 		     0);
   
-  audiorec->mix_data = gtk_radio_button_new_with_label_from_widget(audiorec->keep_data,
-								   "mix");
-  gtk_box_pack_start(radio_hbox,
-		     audiorec->mix_data,
+  audiorec->mix_data = (GtkRadioButton *) gtk_radio_button_new_with_label_from_widget(audiorec->keep_data,
+										      "mix");
+  gtk_box_pack_start((GtkBox *) radio_hbox,
+		     (GtkWidget *) audiorec->mix_data,
 		     FALSE, FALSE,
 		     0);
   
   /* frame - hindicator */
   frame = (GtkFrame *) gtk_frame_new(i18n("input"));
-  gtk_box_pack_start(hbox,
-		     frame,
+  gtk_box_pack_start((GtkBox *) hbox,
+		     (GtkWidget *) frame,
 		     FALSE, FALSE,
 		     0);
 
-  audiorec->hindicator_vbox = (GtkHBox *) gtk_vbox_new(FALSE,
+  audiorec->hindicator_vbox = (GtkVBox *) gtk_vbox_new(FALSE,
 						       0);
   gtk_container_add((GtkContainer *) frame,
 		    (GtkWidget *) audiorec->hindicator_vbox);
@@ -348,7 +348,7 @@ ags_audiorec_finalize(GObject *gobject)
 {
   AgsAudiorec *audiorec;
 
-  audiorec = gobject;
+  audiorec = (AgsAudiorec *) gobject;
 
   g_hash_table_remove(ags_audiorec_wave_loader_completed,
 		      audiorec);
@@ -461,21 +461,13 @@ ags_audiorec_set_xml_type(AgsPlugin *plugin, gchar *xml_type)
 void
 ags_audiorec_show(GtkWidget *widget)
 {
-  AgsAudiorec *audiorec;
-
-  audiorec = widget;
-  
   /* call parent */
   GTK_WIDGET_CLASS(ags_audiorec_parent_class)->show(widget);
 }
 
 void
 ags_audiorec_show_all(GtkWidget *widget)
-{
-  AgsAudiorec *audiorec;
-
-  audiorec = widget;
-  
+{  
   /* call parent */
   GTK_WIDGET_CLASS(ags_audiorec_parent_class)->show_all(widget);
 }
@@ -719,24 +711,24 @@ ags_audiorec_resize_audio_channels(AgsMachine *machine,
     /* widgets */
     for(i = audio_channels_old; i < audio_channels; i++){
       hindicator = ags_hindicator_new();
-      gtk_box_pack_start(audiorec->hindicator_vbox,
-			 hindicator,
+      gtk_box_pack_start((GtkBox *) audiorec->hindicator_vbox,
+			 (GtkWidget *) hindicator,
 			 FALSE, FALSE,
 			 8);
     }
 
-    gtk_widget_show_all(audiorec->hindicator_vbox);
+    gtk_widget_show_all((GtkWidget *) audiorec->hindicator_vbox);
   }else{
     GList *list, *list_start;
 
     list_start =
-      list = gtk_container_get_children(audiorec->hindicator_vbox);
+      list = gtk_container_get_children((GtkContainer *) audiorec->hindicator_vbox);
 
     list = g_list_nth(list_start,
 		      audio_channels);
     
     while(list != NULL){
-      gtk_widget_destroy(list->data);
+      gtk_widget_destroy((GtkWidget *) list->data);
       
       list = list->next;
     }
@@ -810,13 +802,13 @@ ags_audiorec_resize_pads(AgsMachine *machine, GType type,
 
       for(i = 0; i < audio_channels; i++){
 	hindicator = ags_hindicator_new();
-	gtk_box_pack_start(audiorec->hindicator_vbox,
-			   hindicator,
+	gtk_box_pack_start((GtkBox *) audiorec->hindicator_vbox,
+			   (GtkWidget *) hindicator,
 			   FALSE, FALSE,
 			   8);
       }
 
-      gtk_widget_show_all(audiorec->hindicator_vbox);
+      gtk_widget_show_all((GtkWidget *) audiorec->hindicator_vbox);
 
       /* depending on destination */
       ags_audiorec_input_map_recall(audiorec,
@@ -825,10 +817,10 @@ ags_audiorec_resize_pads(AgsMachine *machine, GType type,
       GList *list, *list_start;
 
       list_start = 
-	list = gtk_container_get_children(audiorec->hindicator_vbox);
+	list = gtk_container_get_children((GtkContainer *) audiorec->hindicator_vbox);
 
       while(list != NULL){
-	gtk_widget_destroy(list->data);
+	gtk_widget_destroy((GtkWidget *) list->data);
       
 	list = list->next;
       }
@@ -939,18 +931,18 @@ ags_audiorec_wave_loader_completed_timeout(AgsAudiorec *audiorec)
 			 audiorec) != NULL){
     if(audiorec->wave_loader != NULL){
       if(ags_wave_loader_test_flags(audiorec->wave_loader, AGS_WAVE_LOADER_HAS_COMPLETED)){
-	g_object_run_dispose(audiorec->wave_loader);
+	g_object_run_dispose((GObject *) audiorec->wave_loader);
 	g_object_unref(audiorec->wave_loader);
 
 	audiorec->wave_loader = NULL;
 
 	audiorec->position = -1;
-	gtk_widget_hide(audiorec->loading);
+	gtk_widget_hide((GtkWidget *) audiorec->loading);
       }else{
 	if(audiorec->position == -1){
 	  audiorec->position = 0;
 
-	  gtk_widget_show(audiorec->loading);
+	  gtk_widget_show((GtkWidget *) audiorec->loading);
 	}
 
 	switch(audiorec->position){
@@ -1098,7 +1090,6 @@ AgsAudiorec*
 ags_audiorec_new(GObject *soundcard)
 {
   AgsAudiorec *audiorec;
-  GValue value = {0,};
 
   audiorec = (AgsAudiorec *) g_object_new(AGS_TYPE_AUDIOREC,
 					  NULL);

@@ -216,9 +216,9 @@ ags_desk_input_pad_init(AgsDeskInputPad *desk_input_pad)
 
   /* volume */
   desk_input_pad->volume = (GtkScale *) gtk_vscale_new_with_range(0.0, 2.0, 0.1);
-  gtk_range_set_inverted(desk_input_pad->volume,
+  gtk_range_set_inverted((GtkRange *) desk_input_pad->volume,
 			 TRUE);
-  gtk_range_set_value(desk_input_pad->volume,
+  gtk_range_set_value((GtkRange *) desk_input_pad->volume,
 		      1.0);
   gtk_box_pack_start((GtkBox *) hbox,
 		     (GtkWidget *) desk_input_pad->volume,

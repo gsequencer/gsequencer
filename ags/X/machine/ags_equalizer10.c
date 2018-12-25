@@ -111,7 +111,6 @@ void
 ags_equalizer10_class_init(AgsEqualizer10Class *equalizer10)
 {
   GObjectClass *gobject;
-  GtkWidgetClass *widget;
   AgsMachineClass *machine;
 
   ags_equalizer10_parent_class = g_type_class_peek_parent(equalizer10);
@@ -120,9 +119,6 @@ ags_equalizer10_class_init(AgsEqualizer10Class *equalizer10)
   gobject = (GObjectClass *) equalizer10;
 
   gobject->finalize = ags_equalizer10_finalize;
-
-  /* GtkWidget */
-  widget = (GtkWidgetClass *) equalizer10;
 
   /*  */
   machine = (AgsMachineClass *) equalizer10;
@@ -169,10 +165,10 @@ ags_equalizer10_init(AgsEqualizer10 *equalizer10)
   gtk_container_add((GtkContainer*) gtk_bin_get_child((GtkBin *) equalizer10), (GtkWidget *) vbox);
 
   /* controls */
-  hbox = (GtkVBox *) gtk_hbox_new(FALSE,
+  hbox = (GtkHBox *) gtk_hbox_new(FALSE,
 				  4);
-  gtk_box_pack_start(vbox,
-		     hbox,
+  gtk_box_pack_start((GtkBox *) vbox,
+		     (GtkWidget *) hbox,
 		     FALSE, FALSE,
 		     0);
 
@@ -185,7 +181,7 @@ ags_equalizer10_init(AgsEqualizer10 *equalizer10)
 		     0);
 
   equalizer10->peak_28hz = (GtkScale *) gtk_vscale_new_with_range(0.0, 2.0, 0.01);
-  gtk_range_set_inverted(equalizer10->peak_28hz,
+  gtk_range_set_inverted((GtkRange *) equalizer10->peak_28hz,
 			 TRUE);
   gtk_range_set_value((GtkRange *) equalizer10->peak_28hz,
 		      1.0);
@@ -211,7 +207,7 @@ ags_equalizer10_init(AgsEqualizer10 *equalizer10)
 		     0);
 
   equalizer10->peak_56hz = (GtkScale *) gtk_vscale_new_with_range(0.0, 2.0, 0.01);
-  gtk_range_set_inverted(equalizer10->peak_56hz,
+  gtk_range_set_inverted((GtkRange *) equalizer10->peak_56hz,
 			 TRUE);
   gtk_range_set_value((GtkRange *) equalizer10->peak_56hz,
 		      1.0);
@@ -237,7 +233,7 @@ ags_equalizer10_init(AgsEqualizer10 *equalizer10)
 		     0);
 
   equalizer10->peak_112hz = (GtkScale *) gtk_vscale_new_with_range(0.0, 2.0, 0.01);
-  gtk_range_set_inverted(equalizer10->peak_112hz,
+  gtk_range_set_inverted((GtkRange *) equalizer10->peak_112hz,
 			 TRUE);
   gtk_range_set_value((GtkRange *) equalizer10->peak_112hz,
 		      1.0);
@@ -263,7 +259,7 @@ ags_equalizer10_init(AgsEqualizer10 *equalizer10)
 		     0);
 
   equalizer10->peak_224hz = (GtkScale *) gtk_vscale_new_with_range(0.0, 2.0, 0.01);
-  gtk_range_set_inverted(equalizer10->peak_224hz,
+  gtk_range_set_inverted((GtkRange *) equalizer10->peak_224hz,
 			 TRUE);
   gtk_range_set_value((GtkRange *) equalizer10->peak_224hz,
 		      1.0);
@@ -289,7 +285,7 @@ ags_equalizer10_init(AgsEqualizer10 *equalizer10)
 		     0);
 
   equalizer10->peak_448hz = (GtkScale *) gtk_vscale_new_with_range(0.0, 2.0, 0.01);
-  gtk_range_set_inverted(equalizer10->peak_448hz,
+  gtk_range_set_inverted((GtkRange *) equalizer10->peak_448hz,
 			 TRUE);
   gtk_range_set_value((GtkRange *) equalizer10->peak_448hz,
 		      1.0);
@@ -315,7 +311,7 @@ ags_equalizer10_init(AgsEqualizer10 *equalizer10)
 		     0);
 
   equalizer10->peak_896hz = (GtkScale *) gtk_vscale_new_with_range(0.0, 2.0, 0.01);
-  gtk_range_set_inverted(equalizer10->peak_896hz,
+  gtk_range_set_inverted((GtkRange *) equalizer10->peak_896hz,
 			 TRUE);
   gtk_range_set_value((GtkRange *) equalizer10->peak_896hz,
 		      1.0);
@@ -341,7 +337,7 @@ ags_equalizer10_init(AgsEqualizer10 *equalizer10)
 		     0);
 
   equalizer10->peak_1792hz = (GtkScale *) gtk_vscale_new_with_range(0.0, 2.0, 0.01);
-  gtk_range_set_inverted(equalizer10->peak_1792hz,
+  gtk_range_set_inverted((GtkRange *) equalizer10->peak_1792hz,
 			 TRUE);
   gtk_range_set_value((GtkRange *) equalizer10->peak_1792hz,
 		      1.0);
@@ -367,7 +363,7 @@ ags_equalizer10_init(AgsEqualizer10 *equalizer10)
 		     0);
 
   equalizer10->peak_3584hz = (GtkScale *) gtk_vscale_new_with_range(0.0, 2.0, 0.01);
-  gtk_range_set_inverted(equalizer10->peak_3584hz,
+  gtk_range_set_inverted((GtkRange *) equalizer10->peak_3584hz,
 			 TRUE);
   gtk_range_set_value((GtkRange *) equalizer10->peak_3584hz,
 		      1.0);
@@ -393,7 +389,7 @@ ags_equalizer10_init(AgsEqualizer10 *equalizer10)
 		     0);
 
   equalizer10->peak_7168hz = (GtkScale *) gtk_vscale_new_with_range(0.0, 2.0, 0.01);
-  gtk_range_set_inverted(equalizer10->peak_7168hz,
+  gtk_range_set_inverted((GtkRange *) equalizer10->peak_7168hz,
 			 TRUE);
   gtk_range_set_value((GtkRange *) equalizer10->peak_7168hz,
 		      1.0);
@@ -419,7 +415,7 @@ ags_equalizer10_init(AgsEqualizer10 *equalizer10)
 		     0);
 
   equalizer10->peak_14336hz = (GtkScale *) gtk_vscale_new_with_range(0.0, 2.0, 0.01);
-  gtk_range_set_inverted(equalizer10->peak_14336hz,
+  gtk_range_set_inverted((GtkRange *) equalizer10->peak_14336hz,
 			 TRUE);
   gtk_range_set_value((GtkRange *) equalizer10->peak_14336hz,
 		      1.0);
@@ -445,7 +441,7 @@ ags_equalizer10_init(AgsEqualizer10 *equalizer10)
 		     0);
 
   equalizer10->pressure = (GtkScale *) gtk_vscale_new_with_range(0.0, 2.0, 0.01);
-  gtk_range_set_inverted(equalizer10->pressure,
+  gtk_range_set_inverted((GtkRange *) equalizer10->pressure,
 			 TRUE);
   gtk_range_set_value((GtkRange *) equalizer10->pressure,
 		      1.0);
@@ -501,7 +497,7 @@ ags_equalizer10_finalize(GObject *gobject)
 {
   AgsEqualizer10 *equalizer10;
 
-  equalizer10 = gobject;
+  equalizer10 = (AgsEqualizer10 *) gobject;
   
   g_list_free_full(equalizer10->peak_28hz_play_port,
 		   g_object_unref);
@@ -729,7 +725,7 @@ ags_equalizer10_map_recall(AgsMachine *machine)
   guint audio_channels;
   guint i;
 
-  equalizer10 = machine;
+  equalizer10 = (AgsEqualizer10 *) machine;
   
   audio = machine->audio;
   

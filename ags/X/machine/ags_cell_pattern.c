@@ -265,7 +265,7 @@ ags_cell_pattern_init(AgsCellPattern *cell_pattern)
   /* led */
   cell_pattern->active_led = 0;
 
-  cell_pattern->hled_array = (GtkHBox *) ags_hled_array_new();
+  cell_pattern->hled_array = ags_hled_array_new();
   g_object_set(cell_pattern->hled_array,
 	       "led-width", cell_pattern->cell_width,
 	       "led-height", AGS_CELL_PATTERN_DEFAULT_CELL_HEIGHT,
@@ -277,7 +277,7 @@ ags_cell_pattern_init(AgsCellPattern *cell_pattern)
 		   2, 3,
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
-  gtk_widget_show_all(cell_pattern->hled_array);
+  gtk_widget_show_all((GtkWidget *) cell_pattern->hled_array);
 
   if(ags_cell_pattern_led_queue_draw == NULL){
     ags_cell_pattern_led_queue_draw = g_hash_table_new_full(g_direct_hash, g_direct_equal,
@@ -407,13 +407,13 @@ ags_cell_pattern_realize(GtkWidget *widget)
 {
   AgsCellPattern *cell_pattern;
 
-  cell_pattern = widget;
+  cell_pattern = (AgsCellPattern *) widget;
   
   /* call parent */
   GTK_WIDGET_CLASS(ags_cell_pattern_parent_class)->realize(widget);
 
   if(cell_pattern_style == NULL){
-    cell_pattern_style = gtk_style_copy(gtk_widget_get_style(cell_pattern));
+    cell_pattern_style = gtk_style_copy(gtk_widget_get_style((GtkWidget *) cell_pattern));
   }
 
   gtk_widget_set_style((GtkWidget *) cell_pattern->drawing_area,
@@ -452,7 +452,7 @@ ags_accessible_cell_pattern_do_action(AtkAction *action,
     return(FALSE);
   }
 
-  cell_pattern = gtk_accessible_get_widget(GTK_ACCESSIBLE(action));
+  cell_pattern = (AgsCellPattern *) gtk_accessible_get_widget(GTK_ACCESSIBLE(action));
   
   key_press = (GdkEventKey *) gdk_event_new(GDK_KEY_PRESS);
   key_release = (GdkEventKey *) gdk_event_new(GDK_KEY_RELEASE);
@@ -996,8 +996,8 @@ ags_cell_pattern_led_queue_draw_timeout(AgsCellPattern *cell_pattern)
     active_led_new = (guint) play_count_beats_audio_run->sequencer_counter;
 
     cell_pattern->active_led = (guint) active_led_new;
-    ags_led_array_unset_all(cell_pattern->hled_array);
-    ags_led_array_set_nth(cell_pattern->hled_array,
+    ags_led_array_unset_all((AgsLedArray *) cell_pattern->hled_array);
+    ags_led_array_set_nth((AgsLedArray *) cell_pattern->hled_array,
 			  active_led_new);
     
     return(TRUE);

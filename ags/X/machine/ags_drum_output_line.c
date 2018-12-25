@@ -166,8 +166,8 @@ ags_drum_output_line_connect(AgsConnectable *connectable)
   
   ags_drum_output_line_parent_connectable_interface->connect(connectable);
 
-  drum = gtk_widget_get_ancestor(drum_output_line,
-				 AGS_TYPE_DRUM);
+  drum = (AgsDrum *) gtk_widget_get_ancestor((GtkWidget *) drum_output_line,
+					     AGS_TYPE_DRUM);
   
   g_signal_connect_after((GObject *) drum, "resize-pads",
 			 G_CALLBACK(ags_drum_output_line_resize_pads_callback), drum_output_line);
@@ -187,8 +187,8 @@ ags_drum_output_line_disconnect(AgsConnectable *connectable)
 
   ags_drum_output_line_parent_connectable_interface->disconnect(connectable);
 
-  drum = gtk_widget_get_ancestor(drum_output_line,
-				 AGS_TYPE_DRUM);
+  drum = (AgsDrum *) gtk_widget_get_ancestor((GtkWidget *) drum_output_line,
+					     AGS_TYPE_DRUM);
 
   g_signal_handlers_disconnect_by_data(drum,
 				       drum_output_line);

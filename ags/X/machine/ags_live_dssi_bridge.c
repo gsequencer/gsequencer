@@ -1310,13 +1310,8 @@ ags_live_dssi_bridge_load(AgsLiveDssiBridge *live_dssi_bridge)
 	if(LADSPA_IS_PORT_CONTROL(port_descriptor[i])){
 	  if(LADSPA_IS_PORT_INPUT(port_descriptor[i]) ||
 	     LADSPA_IS_PORT_OUTPUT(port_descriptor[i])){
-	    AgsDssiPlugin *dssi_plugin;
-
 	    gchar *specifier;
 	    
-	    dssi_plugin = ags_dssi_manager_find_dssi_plugin(ags_dssi_manager_get_instance(),
-							    live_dssi_bridge->filename, live_dssi_bridge->effect);
-
 	    plugin_port = start_plugin_port;
  	    specifier = plugin_descriptor->LADSPA_Plugin->PortNames[i];
 
@@ -1356,7 +1351,7 @@ ags_live_dssi_bridge_load(AgsLiveDssiBridge *live_dssi_bridge)
   gtk_combo_box_set_model(GTK_COMBO_BOX(live_dssi_bridge->program),
 			  GTK_TREE_MODEL(model));
 
-  effect_bulk = AGS_EFFECT_BRIDGE(AGS_MACHINE(live_dssi_bridge)->bridge)->bulk_output;
+  effect_bulk = AGS_EFFECT_BULK(AGS_EFFECT_BRIDGE(AGS_MACHINE(live_dssi_bridge)->bridge)->bulk_output);
 
   /* retrieve position within table  */
   x = 0;
@@ -1430,7 +1425,7 @@ ags_live_dssi_bridge_load(AgsLiveDssiBridge *live_dssi_bridge)
       /* add bulk member */
       plugin_name = g_strdup_printf("dssi-%u",
 				    dssi_plugin->unique_id);
-      control_port = g_strdup_printf("%u/%u",
+      control_port = g_strdup_printf("%u/%lu",
 				     k,
 				     port_count);
       bulk_member = (AgsBulkMember *) g_object_new(AGS_TYPE_BULK_MEMBER,

@@ -61,12 +61,12 @@ ags_audiorec_open_callback(GtkWidget *button, AgsAudiorec *audiorec)
   }
   
   audiorec->open_dialog = 
-    dialog = gtk_file_chooser_dialog_new(i18n("Open audio files"),
-					 (GtkWindow *) gtk_widget_get_toplevel((GtkWidget *) audiorec),
-					 GTK_FILE_CHOOSER_ACTION_OPEN,
-					 GTK_STOCK_OK, GTK_RESPONSE_ACCEPT,
-					 GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
-					 NULL);
+    dialog = (GtkFileChooserDialog *) gtk_file_chooser_dialog_new(i18n("Open audio files"),
+								  (GtkWindow *) gtk_widget_get_toplevel((GtkWidget *) audiorec),
+								  GTK_FILE_CHOOSER_ACTION_OPEN,
+								  GTK_STOCK_OK, GTK_RESPONSE_ACCEPT,
+								  GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
+								  NULL);
   gtk_file_chooser_set_select_multiple(GTK_FILE_CHOOSER(dialog),
 				       FALSE);
   gtk_widget_show_all((GtkWidget *) dialog);
@@ -103,7 +103,7 @@ ags_audiorec_keep_data_callback(GtkWidget *button, AgsAudiorec *audiorec)
   GValue playback_value = {0,};
   GValue replace_value = {0,};
 
-  if(gtk_toggle_button_get_active(button)){
+  if(gtk_toggle_button_get_active((GtkToggleButton *) button)){
     g_value_init(&playback_value,
 		 G_TYPE_BOOLEAN);
 
@@ -156,7 +156,7 @@ ags_audiorec_replace_data_callback(GtkWidget *button, AgsAudiorec *audiorec)
   GValue playback_value = {0,};
   GValue replace_value = {0,};
 
-  if(gtk_toggle_button_get_active(button)){
+  if(gtk_toggle_button_get_active((GtkToggleButton *) button)){
     g_value_init(&playback_value,
 		 G_TYPE_BOOLEAN);
 
@@ -209,7 +209,7 @@ ags_audiorec_mix_data_callback(GtkWidget *button, AgsAudiorec *audiorec)
   GValue playback_value = {0,};
   GValue replace_value = {0,};
 
-  if(gtk_toggle_button_get_active(button)){
+  if(gtk_toggle_button_get_active((GtkToggleButton *) button)){
     g_value_init(&playback_value,
 		 G_TYPE_BOOLEAN);
 

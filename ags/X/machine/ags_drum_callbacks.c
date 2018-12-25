@@ -104,7 +104,7 @@ ags_drum_open_callback(GtkWidget *toggle_button, AgsDrum *drum)
 								      GTK_STOCK_OK, GTK_RESPONSE_ACCEPT,
 								      GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL, 
 								      NULL);
-  gtk_file_chooser_add_shortcut_folder_uri(file_chooser,
+  gtk_file_chooser_add_shortcut_folder_uri(GTK_FILE_CHOOSER(file_chooser),
 					   "file:///usr/share/hydrogen/data/drumkits",
 					   NULL);  
   drum->open_dialog = (GtkWidget *) file_chooser;
@@ -217,7 +217,7 @@ ags_drum_length_spin_callback(GtkWidget *spin_button, AgsDrum *drum)
 {
   AgsWindow *window;
   
-  AgsGuiThread *gui_thread;
+  AgsThread *gui_thread;
 
   AgsApplySequencerLength *apply_sequencer_length;
 
@@ -238,8 +238,8 @@ ags_drum_length_spin_callback(GtkWidget *spin_button, AgsDrum *drum)
   apply_sequencer_length = ags_apply_sequencer_length_new(AGS_MACHINE(drum)->audio,
 							  length);
 
-  ags_gui_thread_schedule_task(gui_thread,
-			       apply_sequencer_length);
+  ags_gui_thread_schedule_task((AgsGuiThread *) gui_thread,
+			       (GObject *) apply_sequencer_length);
 }
 
 void
@@ -448,5 +448,5 @@ ags_drum_stop_callback(AgsDrum *drum,
   }
   
   /* all done */
-  ags_led_array_unset_all(drum->pattern_box->hled_array);
+  ags_led_array_unset_all((AgsLedArray *) drum->pattern_box->hled_array);
 }

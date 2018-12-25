@@ -190,8 +190,8 @@ ags_desk_init(AgsDesk *desk)
   
   desk->console = (GtkVBox *) gtk_vbox_new(FALSE,
 					   0);
-  gtk_container_add(alignment,
-		    desk->console);
+  gtk_container_add((GtkContainer *) alignment,
+		    (GtkWidget *) desk->console);
   
   balance_hbox = (GtkHBox *) gtk_hbox_new(FALSE,
 					  0);
@@ -207,7 +207,7 @@ ags_desk_init(AgsDesk *desk)
 		     0);
 
   desk->balance = (GtkScale *) gtk_hscale_new_with_range(-1.0, 1.0, 0.1);
-  gtk_widget_set_size_request(desk->balance,
+  gtk_widget_set_size_request((GtkWidget *) desk->balance,
 			      200, -1);
   gtk_box_pack_start((GtkBox *) balance_hbox,
 		     (GtkWidget *) desk->balance,
@@ -229,7 +229,7 @@ ags_desk_init(AgsDesk *desk)
 
   /* file chooser */
   desk->file_chooser = gtk_file_chooser_widget_new(GTK_FILE_CHOOSER_ACTION_OPEN);
-  gtk_widget_set_size_request(desk->file_chooser,
+  gtk_widget_set_size_request((GtkWidget *) desk->file_chooser,
 			      -1, 400);
   gtk_box_pack_start((GtkBox *) desk->vbox,
 		     (GtkWidget *) desk->file_chooser,

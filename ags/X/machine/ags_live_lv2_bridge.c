@@ -1420,7 +1420,7 @@ ags_live_lv2_bridge_load_program(AgsLiveLv2Bridge *live_lv2_bridge)
 		   "buffer-size", &buffer_size,
 		   NULL);
       
-      live_lv2_bridge->lv2_handle = (LV2_Handle *) ags_base_plugin_instantiate(lv2_plugin,
+      live_lv2_bridge->lv2_handle = (LV2_Handle *) ags_base_plugin_instantiate((AgsBasePlugin *) lv2_plugin,
 									       samplerate, buffer_size);
     }
 
@@ -1477,7 +1477,7 @@ ags_live_lv2_bridge_load_program(AgsLiveLv2Bridge *live_lv2_bridge)
 			 FALSE, FALSE,
 			 0);
 
-      live_lv2_bridge->program = gtk_combo_box_text_new();
+      live_lv2_bridge->program = (GtkComboBoxText *) gtk_combo_box_text_new();
       gtk_box_pack_start((GtkBox *) hbox,
 			 (GtkWidget *) live_lv2_bridge->program,
 			 FALSE, FALSE,
@@ -1496,7 +1496,7 @@ ags_live_lv2_bridge_load_program(AgsLiveLv2Bridge *live_lv2_bridge)
       gtk_combo_box_set_model(GTK_COMBO_BOX(live_lv2_bridge->program),
 			      GTK_TREE_MODEL(model));
     }else{
-      model = gtk_combo_box_get_model(GTK_COMBO_BOX(live_lv2_bridge->program));
+      model = GTK_LIST_STORE(gtk_combo_box_get_model(GTK_COMBO_BOX(live_lv2_bridge->program)));
       
       gtk_list_store_clear(GTK_LIST_STORE(model));
     }
@@ -1538,7 +1538,7 @@ ags_live_lv2_bridge_load_preset(AgsLiveLv2Bridge *live_lv2_bridge)
 		     FALSE, FALSE,
 		     0);
 
-  live_lv2_bridge->preset = gtk_combo_box_text_new();
+  live_lv2_bridge->preset = (GtkComboBoxText *) gtk_combo_box_text_new();
   gtk_box_pack_start((GtkBox *) hbox,
 		     (GtkWidget *) live_lv2_bridge->preset,
 		     FALSE, FALSE,
@@ -1561,7 +1561,7 @@ ags_live_lv2_bridge_load_preset(AgsLiveLv2Bridge *live_lv2_bridge)
     list = list->next;
   }
 
-  gtk_widget_show_all(hbox);
+  gtk_widget_show_all((GtkWidget *) hbox);
 
   /* connect preset */
   g_signal_connect_after(G_OBJECT(live_lv2_bridge->preset), "changed",
@@ -1624,14 +1624,11 @@ ags_live_lv2_bridge_load(AgsLiveLv2Bridge *live_lv2_bridge)
 
   AgsLv2Plugin *lv2_plugin;
 
-  void *plugin_so;
-
   GList *list;
   GList *start_plugin_port, *plugin_port;
   
   guint samplerate;
   guint buffer_size;
-  guint effect_index;
   gdouble step;
   unsigned long port_count;
   gboolean has_output_port;
@@ -1658,14 +1655,9 @@ ags_live_lv2_bridge_load(AgsLiveLv2Bridge *live_lv2_bridge)
   buffer_size = ags_soundcard_helper_config_get_buffer_size(ags_config_get_instance());
 
   g_message("ags_live_lv2_bridge.c - load %s %s", live_lv2_bridge->filename, live_lv2_bridge->effect);
- 
-  /* load plugin */
-  plugin_so = AGS_BASE_PLUGIN(lv2_plugin)->plugin_so;
   
   /*  */
-  effect_index = AGS_BASE_PLUGIN(lv2_plugin)->effect_index;
-
-  effect_bulk = AGS_EFFECT_BRIDGE(AGS_MACHINE(live_lv2_bridge)->bridge)->bulk_output;
+  effect_bulk = AGS_EFFECT_BULK(AGS_EFFECT_BRIDGE(AGS_MACHINE(live_lv2_bridge)->bridge)->bulk_output);
 
   /* retrieve position within table  */
   x = 0;
@@ -1739,7 +1731,7 @@ ags_live_lv2_bridge_load(AgsLiveLv2Bridge *live_lv2_bridge)
       /* add bulk member */
       plugin_name = g_strdup_printf("lv2-<%s>",
 				    lv2_plugin->uri);
-      control_port = g_strdup_printf("%u/%u",
+      control_port = g_strdup_printf("%u/%lu",
 				     k,
 				     port_count);
       bulk_member = (AgsBulkMember *) g_object_new(AGS_TYPE_BULK_MEMBER,
@@ -1847,7 +1839,7 @@ ags_live_lv2_bridge_load(AgsLiveLv2Bridge *live_lv2_bridge)
   }
 
   /* program */
-  live_lv2_bridge->lv2_handle = ags_base_plugin_instantiate(lv2_plugin,
+  live_lv2_bridge->lv2_handle = ags_base_plugin_instantiate((AgsBasePlugin *) lv2_plugin,
 							    samplerate, buffer_size);
   
   if((AGS_LV2_PLUGIN_HAS_PROGRAM_INTERFACE & (lv2_plugin->flags)) != 0){

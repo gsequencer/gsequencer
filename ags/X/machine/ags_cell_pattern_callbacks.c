@@ -125,7 +125,7 @@ ags_cell_pattern_drawing_area_button_press_callback(GtkWidget *widget, GdkEventB
 			   j);
 
     /* queue draw */
-    gtk_widget_queue_draw(cell_pattern->drawing_area);
+    gtk_widget_queue_draw((GtkWidget *) cell_pattern->drawing_area);
   }
 
   return(FALSE);
@@ -172,9 +172,7 @@ ags_cell_pattern_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *
 {
   AgsWindow *window;
   AgsMachine *machine;
-      
-  AgsGuiThread *gui_thread;
-
+  
   AgsAudio *audio;
   AgsChannel *input;
   AgsChannel *channel;
@@ -186,7 +184,7 @@ ags_cell_pattern_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *
   auto void ags_cell_pattern_drawing_area_key_release_event_play_channel(AgsChannel *channel);
 
   void ags_cell_pattern_drawing_area_key_release_event_play_channel(AgsChannel *channel){
-    AgsGuiThread *gui_thread;
+    AgsThread *gui_thread;
     
     AgsAudio *audio;
     
@@ -228,8 +226,8 @@ ags_cell_pattern_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *
 
     /* perform playback */
     task = g_list_reverse(task);
-    ags_gui_thread_schedule_task_list(gui_thread,
-				      task);
+    ags_gui_thread_schedule_task_list((AgsGuiThread *) gui_thread,
+				      (GObject *) task);
   }
   
   if(event->keyval == GDK_KEY_Tab){
@@ -459,7 +457,7 @@ ags_cell_pattern_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *
       }
 
       /* queue draw */
-      gtk_widget_queue_draw(cell_pattern->drawing_area);
+      gtk_widget_queue_draw((GtkWidget *) cell_pattern->drawing_area);
     }
     break;
   }
@@ -569,7 +567,7 @@ ags_cell_pattern_start_channel_launch_callback(AgsTask *task, AgsNote *note)
       
       audio_signal = NULL;
       list = ags_audio_signal_find_by_recall_id(start_list,
-						recall_id);
+						(GObject *) recall_id);
 	    
       if(list != NULL){
 	audio_signal = list->data;

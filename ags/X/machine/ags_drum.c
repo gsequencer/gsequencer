@@ -237,7 +237,7 @@ ags_drum_init(AgsDrum *drum)
 				     (AGS_MACHINE_POPUP_COPY_PATTERN |
 				      AGS_MACHINE_POPUP_ENVELOPE));
   
-  ags_machine_popup_add_connection_options(drum,
+  ags_machine_popup_add_connection_options((AgsMachine *) drum,
   					   (AGS_MACHINE_POPUP_MIDI_DIALOG));
 
   /* audio resize */
