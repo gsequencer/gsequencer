@@ -1144,14 +1144,9 @@ ags_simple_file_real_read(AgsSimpleFile *simple_file)
 {
   AgsApplicationContext *application_context;
 
-  AgsGuiThread *gui_thread;
-
   xmlNode *root_node, *child;
   
   application_context = (AgsApplicationContext *) simple_file->application_context;
-
-  gui_thread = ags_thread_find_type(application_context->main_loop,
-				    AGS_TYPE_GUI_THREAD);
 
   root_node = simple_file->root_node;
 
@@ -1424,7 +1419,7 @@ ags_simple_file_read_property(AgsSimpleFile *simple_file, xmlNode *node, GParame
       g_value_init(&(pointer->value),
 		   AGS_TYPE_COMPLEX);
 
-      sscanf(str, "%f %f", &(z[0]), &(z[1]));
+      sscanf(str, "%Lf %Lf", &(z[0]), &(z[1]));
       g_value_set_boxed(&(pointer->value),
 			&z);
     }else{
@@ -1551,7 +1546,7 @@ ags_simple_file_read_value(AgsSimpleFile *simple_file, xmlNode *node, GValue **v
       g_value_init(current,
 		   AGS_TYPE_COMPLEX);
 
-      sscanf(str, "%f %f", &(z[0]), &(z[1]));
+      sscanf(str, "%Lf %Lf", &(z[0]), &(z[1]));
       g_value_set_boxed(current,
 			&z);
     }else{
@@ -2211,20 +2206,21 @@ ags_simple_file_read_machine(AgsSimpleFile *simple_file, xmlNode *node, AgsMachi
 			   (xmlChar *) "ags-oscillator-list",
 			   19)){
 	if(AGS_IS_SYNCSYNTH(gobject)){
-	  GList *oscillator, *list;
+	  GList *oscillator;
+	  GList *start_list, *list;
 
 	  guint count;
 	  guint i;
-	  
-	  list = gtk_container_get_children(AGS_SYNCSYNTH(gobject)->oscillator);
-	  count = g_list_length(list);
+
+	  start_list = gtk_container_get_children(GTK_CONTAINER(AGS_SYNCSYNTH(gobject)->oscillator));
+	  count = g_list_length(start_list);
 
 	  for(i = 0; i < count; i++){
-	    ags_syncsynth_remove_oscillator(gobject,
+	    ags_syncsynth_remove_oscillator((AgsSyncsynth *) gobject,
 					    0);
 	  }
 
-	  g_list_free(list);
+	  g_list_free(start_list);
 	  
 	  oscillator = NULL;
 	  
@@ -2232,16 +2228,17 @@ ags_simple_file_read_machine(AgsSimpleFile *simple_file, xmlNode *node, AgsMachi
 					       child,
 					       &oscillator);
 
-	  list = g_list_reverse(oscillator);
+	  list =
+	    start_list = g_list_reverse(oscillator);
 	  
 	  while(list != NULL){
-	    ags_syncsynth_add_oscillator(gobject,
+	    ags_syncsynth_add_oscillator((AgsSyncsynth *) gobject,
 					 list->data);
 
 	    list = list->next;
 	  }
 	  
-	  g_list_free(oscillator);
+	  g_list_free(start_list);
 	}
       }else if(!xmlStrncmp(child->name,
 			   (xmlChar *) "ags-sf-pattern-list",
@@ -2565,62 +2562,57 @@ ags_simple_file_read_machine_launch(AgsFileLaunch *file_launch,
 		  if(!xmlStrncmp(specifier,
 				 "28 [Hz]",
 				 8)){
-		    gtk_range_set_value(equalizer10->peak_28hz,
+		    gtk_range_set_value(GTK_RANGE(equalizer10->peak_28hz),
 					val);
 		  }else if(!xmlStrncmp(specifier,
 				       "56 [Hz]",
 				       8)){
-		    gtk_range_set_value(equalizer10->peak_56hz,
+		    gtk_range_set_value(GTK_RANGE(equalizer10->peak_56hz),
 					val);
 		  }else if(!xmlStrncmp(specifier,
 				       "112 [Hz]",
 				       9)){
-		    gtk_range_set_value(equalizer10->peak_112hz,
+		    gtk_range_set_value(GTK_RANGE(equalizer10->peak_112hz),
 					val);
 		  }else if(!xmlStrncmp(specifier,
 				       "224 [Hz]",
 				       9)){
-		    gtk_range_set_value(equalizer10->peak_224hz,
+		    gtk_range_set_value(GTK_RANGE(equalizer10->peak_224hz),
 					val);
 		  }else if(!xmlStrncmp(specifier,
 				       "448 [Hz]",
 				       9)){
-		    gtk_range_set_value(equalizer10->peak_448hz,
+		    gtk_range_set_value(GTK_RANGE(equalizer10->peak_448hz),
 					val);
 		  }else if(!xmlStrncmp(specifier,
 				       "896 [Hz]",
 				       9)){
-		    gtk_range_set_value(equalizer10->peak_896hz,
+		    gtk_range_set_value(GTK_RANGE(equalizer10->peak_896hz),
 					val);
 		  }else if(!xmlStrncmp(specifier,
 				       "1792 [Hz]",
 				       10)){
-		    gtk_range_set_value(equalizer10->peak_1792hz,
-					val);
-		  }else if(!xmlStrncmp(specifier,
-				       "1792 [Hz]",
-				       10)){
-		    gtk_range_set_value(equalizer10->peak_1792hz,
+		    gtk_range_set_value(GTK_RANGE(equalizer10->peak_1792hz),
 					val);
 		  }else if(!xmlStrncmp(specifier,
 				       "3584 [Hz]",
 				       10)){
-		    gtk_range_set_value(equalizer10->peak_3584hz,
+		    gtk_range_set_value(GTK_RANGE(equalizer10->peak_3584hz),
 					val);
 		  }else if(!xmlStrncmp(specifier,
 				       "7168 [Hz]",
 				       10)){
-		    gtk_range_set_value(equalizer10->peak_7168hz,
+		    gtk_range_set_value(GTK_RANGE(equalizer10->peak_7168hz),
 					val);
 		  }else if(!xmlStrncmp(specifier,
 				       "14336 [Hz]",
 				       11)){
-		    gtk_range_set_value(equalizer10->peak_14336hz,
+		    gtk_range_set_value(GTK_RANGE(equalizer10->peak_14336hz),
 					val);
 		  }else if(!xmlStrncmp(specifier,
 				       "pressure",
 				       9)){
-		    gtk_range_set_value(equalizer10->pressure,
+		    gtk_range_set_value(GTK_RANGE(equalizer10->pressure),
 					val);
 		  }
 		}	
@@ -3212,11 +3204,11 @@ ags_simple_file_read_machine_launch(AgsFileLaunch *file_launch,
   }else if(AGS_IS_DSSI_BRIDGE(machine)){
     ags_simple_file_read_dssi_bridge_launch((AgsSimpleFile *) file_launch->file, file_launch->node, (AgsDssiBridge *) machine);
   }else if(AGS_IS_DSSI_BRIDGE(machine)){
-    ags_simple_file_read_live_dssi_bridge_launch((AgsSimpleFile *) file_launch->file, file_launch->node, (AgsDssiBridge *) machine);
+    ags_simple_file_read_live_dssi_bridge_launch((AgsSimpleFile *) file_launch->file, file_launch->node, (AgsLiveDssiBridge *) machine);
   }else if(AGS_IS_LV2_BRIDGE(machine)){
     ags_simple_file_read_lv2_bridge_launch((AgsSimpleFile *) file_launch->file, file_launch->node, (AgsLv2Bridge *) machine);
   }else if(AGS_IS_LV2_BRIDGE(machine)){
-    ags_simple_file_read_live_lv2_bridge_launch((AgsSimpleFile *) file_launch->file, file_launch->node, (AgsLv2Bridge *) machine);
+    ags_simple_file_read_live_lv2_bridge_launch((AgsSimpleFile *) file_launch->file, file_launch->node, (AgsLiveLv2Bridge *) machine);
   }
   
   /* children */
@@ -3606,7 +3598,7 @@ ags_simple_file_read_line(AgsSimpleFile *simple_file, xmlNode *node, AgsLine **l
   
   if(line != NULL &&
      line[0] != NULL){
-    gobject = AGS_LINE(line[0]);
+    gobject = G_OBJECT(line[0]);
 
     nth_line = AGS_LINE(gobject)->channel->line;
   }else{
@@ -4644,7 +4636,7 @@ ags_simple_file_read_oscillator(AgsSimpleFile *simple_file, xmlNode *node, AgsOs
      !xmlStrncmp(str,
 		 "true",
 		 5)){
-    gtk_toggle_button_set_active(gobject->do_sync,
+    gtk_toggle_button_set_active((GtkToggleButton *) gobject->do_sync,
 				 TRUE);
   }
 
@@ -4762,8 +4754,8 @@ ags_simple_file_read_notation_editor_launch(AgsFileLaunch *file_launch,
 	    str = g_value_get_string(&(((GParameter *) property->data)->value));
 
 	    if(str != NULL){
-	      file_id_ref = (AgsFileIdRef *) ags_simple_file_find_id_ref_by_xpath((AgsSimpleFile *) file_launch->file,
-										  str);
+	      file_id_ref = ags_simple_file_find_id_ref_by_xpath((AgsSimpleFile *) file_launch->file,
+								 str);
 	      machine = AGS_FILE_ID_REF(file_id_ref->data)->ref;
 	    
 	      ags_machine_selector_add_index(notation_editor->machine_selector);
@@ -4896,7 +4888,7 @@ ags_simple_file_read_automation_editor_launch(AgsFileLaunch *file_launch,
 	    str = g_value_get_string(&(((GParameter *) property->data)->value));
 	    
 	    if(str != NULL){
-	      file_id_ref = (AgsFileIdRef *) ags_simple_file_find_id_ref_by_xpath((AgsSimpleFile *) file_launch->file,
+	      file_id_ref =  ags_simple_file_find_id_ref_by_xpath((AgsSimpleFile *) file_launch->file,
 										  str);
 	      machine = AGS_FILE_ID_REF(file_id_ref->data)->ref;
 
@@ -5094,7 +5086,7 @@ ags_simple_file_read_wave_editor_launch(AgsFileLaunch *file_launch,
 	    str = g_value_get_string(&(((GParameter *) property->data)->value));
 	    
 	    if(str != NULL){
-	      file_id_ref = (AgsFileIdRef *) ags_simple_file_find_id_ref_by_xpath((AgsSimpleFile *) file_launch->file,
+	      file_id_ref =  ags_simple_file_find_id_ref_by_xpath((AgsSimpleFile *) file_launch->file,
 										  str);
 	      machine = AGS_FILE_ID_REF(file_id_ref->data)->ref;
 
@@ -5288,35 +5280,35 @@ ags_simple_file_read_notation_list_fixup_1_0_to_1_2(AgsSimpleFile *simple_file, 
 			   "attack");
 
 	  if(str != NULL){
-	    sscanf(str, "%f %f", &(note->attack[0]), &(note->attack[1]));
+	    sscanf(str, "%Lf %Lf", &(note->attack[0]), &(note->attack[1]));
 	  }
 
 	  str = xmlGetProp(child,
 			   "decay");
 
 	  if(str != NULL){
-	    sscanf(str, "%f %f", &(note->decay[0]), &(note->decay[1]));
+	    sscanf(str, "%Lf %Lf", &(note->decay[0]), &(note->decay[1]));
 	  }
 
 	  str = xmlGetProp(child,
 			   "sustain");
 
 	  if(str != NULL){
-	    sscanf(str, "%f %f", &(note->sustain[0]), &(note->sustain[1]));
+	    sscanf(str, "%Lf %Lf", &(note->sustain[0]), &(note->sustain[1]));
 	  }
 
 	  str = xmlGetProp(child,
 			   "release");
 
 	  if(str != NULL){
-	    sscanf(str, "%f %f", &(note->release[0]), &(note->release[1]));
+	    sscanf(str, "%Lf %Lf", &(note->release[0]), &(note->release[1]));
 	  }
 
 	  str = xmlGetProp(child,
 			   "ratio");
 
 	  if(str != NULL){
-	    sscanf(str, "%f %f", &(note->ratio[0]), &(note->ratio[1]));
+	    sscanf(str, "%Lf %Lf", &(note->ratio[0]), &(note->ratio[1]));
 	  }
 
 	  timestamp->timer.ags_offset.offset = AGS_NOTATION_DEFAULT_OFFSET * floor(note->x[0] / AGS_NOTATION_DEFAULT_OFFSET);
@@ -5501,35 +5493,35 @@ ags_simple_file_read_notation(AgsSimpleFile *simple_file, xmlNode *node, AgsNota
 			 "attack");
 
 	if(str != NULL){
-	  sscanf(str, "%f %f", &(note->attack[0]), &(note->attack[1]));
+	  sscanf(str, "%Lf %Lf", &(note->attack[0]), &(note->attack[1]));
 	}
 
 	str = xmlGetProp(child,
 			 "decay");
 
 	if(str != NULL){
-	  sscanf(str, "%f %f", &(note->decay[0]), &(note->decay[1]));
+	  sscanf(str, "%Lf %Lf", &(note->decay[0]), &(note->decay[1]));
 	}
 
 	str = xmlGetProp(child,
 			 "sustain");
 
 	if(str != NULL){
-	  sscanf(str, "%f %f", &(note->sustain[0]), &(note->sustain[1]));
+	  sscanf(str, "%Lf %Lf", &(note->sustain[0]), &(note->sustain[1]));
 	}
 
 	str = xmlGetProp(child,
 			 "release");
 
 	if(str != NULL){
-	  sscanf(str, "%f %f", &(note->release[0]), &(note->release[1]));
+	  sscanf(str, "%Lf %Lf", &(note->release[0]), &(note->release[1]));
 	}
 
 	str = xmlGetProp(child,
 			 "ratio");
 
 	if(str != NULL){
-	  sscanf(str, "%f %f", &(note->ratio[0]), &(note->ratio[1]));
+	  sscanf(str, "%Lf %Lf", &(note->ratio[0]), &(note->ratio[1]));
 	}
 
 	/* add */
@@ -6063,7 +6055,7 @@ ags_simple_file_read_preset(AgsSimpleFile *simple_file, xmlNode *node, AgsPreset
 	  memset(&(gobject->value[i]), 0, sizeof(GValue));
 	}
 	
-	ags_simple_file_read_value(simple_file, child, &(gobject->value[i]));
+	ags_simple_file_read_value(simple_file, child, &(&(gobject->value[i])));
 
 	i++;
       }
@@ -6190,7 +6182,7 @@ ags_simple_file_write_property(AgsSimpleFile *simple_file, xmlNode *parent, GPar
     type_name = g_type_name(AGS_TYPE_COMPLEX);
 
     z = g_value_get_boxed(&(property->value));
-    val = g_strdup_printf("%f %f",
+    val = g_strdup_printf("%Lf %Lf",
 			  z[0][0], z[0][1]);
   }else{
     g_warning("ags_simple_file_write_property() - unsupported type");
@@ -6296,7 +6288,7 @@ ags_simple_file_write_value(AgsSimpleFile *simple_file, xmlNode *parent, GValue 
     type_name = g_type_name(AGS_TYPE_COMPLEX);
 
     z = g_value_get_boxed(value);
-    val = g_strdup_printf("%f %f",
+    val = g_strdup_printf("%Lf %Lf",
 			  z[0][0], z[0][1]);
   }else{
     g_warning("ags_simple_file_write_property() - unsupported type");
@@ -6837,7 +6829,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(control_node,
 	       "value",
-	       g_strdup_printf("%f", gtk_range_get_value(equalizer10->peak_28hz)));
+	       g_strdup_printf("%f", gtk_range_get_value(GTK_RANGE(equalizer10->peak_28hz))));
 
     /* peak 56hz */
     control_node = xmlNewNode(NULL,
@@ -6855,7 +6847,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(control_node,
 	       "value",
-	       g_strdup_printf("%f", gtk_range_get_value(equalizer10->peak_56hz)));
+	       g_strdup_printf("%f", gtk_range_get_value(GTK_RANGE(equalizer10->peak_56hz))));
 
     /* peak 112hz */
     control_node = xmlNewNode(NULL,
@@ -6873,7 +6865,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(control_node,
 	       "value",
-	       g_strdup_printf("%f", gtk_range_get_value(equalizer10->peak_112hz)));
+	       g_strdup_printf("%f", gtk_range_get_value(GTK_RANGE(equalizer10->peak_112hz))));
 
     /* peak 224hz */
     control_node = xmlNewNode(NULL,
@@ -6891,7 +6883,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(control_node,
 	       "value",
-	       g_strdup_printf("%f", gtk_range_get_value(equalizer10->peak_224hz)));
+	       g_strdup_printf("%f", gtk_range_get_value(GTK_RANGE(equalizer10->peak_224hz))));
 
     /* peak 448hz */
     control_node = xmlNewNode(NULL,
@@ -6909,7 +6901,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(control_node,
 	       "value",
-	       g_strdup_printf("%f", gtk_range_get_value(equalizer10->peak_448hz)));
+	       g_strdup_printf("%f", gtk_range_get_value(GTK_RANGE(equalizer10->peak_448hz))));
 
     /* peak 896hz */
     control_node = xmlNewNode(NULL,
@@ -6927,7 +6919,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(control_node,
 	       "value",
-	       g_strdup_printf("%f", gtk_range_get_value(equalizer10->peak_896hz)));
+	       g_strdup_printf("%f", gtk_range_get_value(GTK_RANGE(equalizer10->peak_896hz))));
 
     /* peak 1792hz */
     control_node = xmlNewNode(NULL,
@@ -6945,7 +6937,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(control_node,
 	       "value",
-	       g_strdup_printf("%f", gtk_range_get_value(equalizer10->peak_1792hz)));
+	       g_strdup_printf("%f", gtk_range_get_value(GTK_RANGE(equalizer10->peak_1792hz))));
 
     /* peak 3584hz */
     control_node = xmlNewNode(NULL,
@@ -6963,7 +6955,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(control_node,
 	       "value",
-	       g_strdup_printf("%f", gtk_range_get_value(equalizer10->peak_3584hz)));
+	       g_strdup_printf("%f", gtk_range_get_value(GTK_RANGE(equalizer10->peak_3584hz))));
 
     /* peak 7168hz */
     control_node = xmlNewNode(NULL,
@@ -6981,7 +6973,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(control_node,
 	       "value",
-	       g_strdup_printf("%f", gtk_range_get_value(equalizer10->peak_7168hz)));
+	       g_strdup_printf("%f", gtk_range_get_value(GTK_RANGE(equalizer10->peak_7168hz))));
 
     /* peak 14336hz */
     control_node = xmlNewNode(NULL,
@@ -6999,7 +6991,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(control_node,
 	       "value",
-	       g_strdup_printf("%f", gtk_range_get_value(equalizer10->peak_14336hz)));
+	       g_strdup_printf("%f", gtk_range_get_value(GTK_RANGE(equalizer10->peak_14336hz))));
 
     /* pressure */
     control_node = xmlNewNode(NULL,
@@ -7017,7 +7009,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
     
     xmlNewProp(control_node,
 	       "value",
-	       g_strdup_printf("%f", gtk_range_get_value(equalizer10->pressure)));
+	       g_strdup_printf("%f", gtk_range_get_value(GTK_RANGE(equalizer10->pressure))));
   }else if(AGS_IS_DRUM(machine)){
     AgsDrum *drum;
 
@@ -8224,7 +8216,7 @@ ags_simple_file_write_oscillator(AgsSimpleFile *simple_file, xmlNode *parent, Ag
 
   xmlNewProp(node,
 	     "sync",
-	     g_strdup_printf("%s", (gtk_toggle_button_get_active(oscillator->do_sync) ? "true": "false")));
+	     g_strdup_printf("%s", (gtk_toggle_button_get_active((GtkToggleButton *) oscillator->do_sync) ? "true": "false")));
 
   str = NULL;
 
@@ -8655,31 +8647,31 @@ ags_simple_file_write_notation(AgsSimpleFile *simple_file, xmlNode *parent, AgsN
     
     xmlNewProp(child,
 	       "attack",
-	       g_strdup_printf("%f %f",
+	       g_strdup_printf("%Lf %Lf",
 			       AGS_NOTE(list->data)->attack[0],
 			       AGS_NOTE(list->data)->attack[1]));
     
     xmlNewProp(child,
 	       "decay",
-	       g_strdup_printf("%f %f",
+	       g_strdup_printf("%Lf %Lf",
 			       AGS_NOTE(list->data)->decay[0],
 			       AGS_NOTE(list->data)->decay[1]));
     
     xmlNewProp(child,
 	       "sustain",
-	       g_strdup_printf("%f %f",
+	       g_strdup_printf("%Lf %Lf",
 			       AGS_NOTE(list->data)->sustain[0],
 			       AGS_NOTE(list->data)->sustain[1]));
     
     xmlNewProp(child,
 	       "release",
-	       g_strdup_printf("%f %f",
+	       g_strdup_printf("%Lf %Lf",
     			       AGS_NOTE(list->data)->release[0],
 			       AGS_NOTE(list->data)->release[1]));
 			       
     xmlNewProp(child,
 	       "ratio",
-	       g_strdup_printf("%f %f",
+	       g_strdup_printf("%Lf %Lf",
 			       AGS_NOTE(list->data)->ratio[0],
 			       AGS_NOTE(list->data)->ratio[1]));
     
@@ -8762,7 +8754,7 @@ ags_simple_file_write_automation(AgsSimpleFile *simple_file, xmlNode *parent, Ag
 
     xmlNewProp(child,
 	       "y",
-	       g_strdup_printf("%d",
+	       g_strdup_printf("%f",
 			       AGS_ACCELERATION(list->data)->y));
 
     /* add to parent */
