@@ -21,6 +21,8 @@
 
 #include <ags/libags.h>
 
+#include <ags/X/ags_ui_provider.h>
+
 #include <ags/X/thread/ags_gui_thread.h>
 
 #include <ags/X/file/ags_simple_file.h>
@@ -299,7 +301,7 @@ ags_simple_autosave_thread_run(AgsThread *thread)
   AgsThread *gui_thread;
   
   simple_autosave_thread = AGS_SIMPLE_AUTOSAVE_THREAD(thread);
-  gui_thread = ags_concurrency_providre_get_gui_thread(AGS_CONCURRENCY_PROVIDER(simple_autosave_thread->application_context));
+  gui_thread = ags_ui_provider_get_gui_thread(AGS_UI_PROVIDER(simple_autosave_thread->application_context));
 
   if(simple_autosave_thread->counter != simple_autosave_thread->delay){
     simple_autosave_thread->counter += 1;

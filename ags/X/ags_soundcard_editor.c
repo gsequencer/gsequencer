@@ -675,7 +675,7 @@ ags_soundcard_editor_apply(AgsApplicable *applicable)
   
   if(gtk_combo_box_get_active_iter(GTK_COMBO_BOX(soundcard_editor->card),
 				   &current)){
-    gtk_tree_model_get_value(GTK_TREE_MODELmodel),
+    gtk_tree_model_get_value(GTK_TREE_MODEL(model),
 			     &current,
 			     0,
 			     &value);

@@ -315,7 +315,7 @@ ags_lv2_bridge_lv2ui_write_function(LV2UI_Controller controller, uint32_t port_i
 			    strlen(str))){
       lv2_bridge->flags |= AGS_LV2_BRIDGE_NO_UPDATE;
 
-      child_widget = gtk_bin_get_child(GTK_BIND(AGS_BULK_MEMBER(list_bulk_member->data)));
+      child_widget = gtk_bin_get_child(GTK_BIN(AGS_BULK_MEMBER(list_bulk_member->data)));
 
       if(AGS_IS_DIAL(child_widget)){
 	ags_dial_set_value((AgsDial *) child_widget,

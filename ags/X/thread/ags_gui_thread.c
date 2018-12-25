@@ -1285,7 +1285,7 @@ ags_gui_thread_sync_task_prepare(GSource *source,
 
   gui_thread = ags_ui_provider_get_gui_thread(AGS_UI_PROVIDER(application_context));
   
-  if(gui_thread->queued_sync > 0){
+  if(AGS_GUI_THREAD(gui_thread)->queued_sync > 0){
     if(timeout_ != NULL){
       *timeout_ = 0;
     }
@@ -1345,7 +1345,7 @@ ags_gui_thread_sync_task_dispatch(GSource *source,
 
   gui_thread = ags_ui_provider_get_gui_thread(AGS_UI_PROVIDER(application_context));
 
-  main_context = gui_thread->main_context;
+  main_context = AGS_GUI_THREAD(gui_thread)->main_context;
 
   if(ags_ui_provider_get_show_animation(AGS_UI_PROVIDER(application_context))){
     return(G_SOURCE_CONTINUE);
@@ -1508,7 +1508,7 @@ ags_gui_thread_task_dispatch(GSource *source,
   ags_task_thread_append_tasks((AgsTaskThread *) task_thread,
 			       g_list_reverse(AGS_GUI_THREAD(gui_thread)->collected_task));
 
-  gui_thread->collected_task = NULL;
+  AGS_GUI_THREAD(gui_thread)->collected_task = NULL;
 
   ags_gui_thread_complete_task((AgsGuiThread *) gui_thread);
   

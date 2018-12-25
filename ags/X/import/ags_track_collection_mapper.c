@@ -24,6 +24,7 @@
 #include <ags/libags-audio.h>
 #include <ags/libags-gui.h>
 
+#include <ags/X/ags_ui_provider.h>
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_machine.h>
 
@@ -470,7 +471,7 @@ ags_track_collection_mapper_apply(AgsApplicable *applicable)
 
   application_context = (AgsApplicationContext *) window->application_context;
 
-  gui_thread = ags_concurrency_provider_get_gui_thread(AGS_CONCURRENCY_PROVIDER(application_context));
+  gui_thread = ags_ui_provider_get_gui_thread(AGS_UI_PROVIDER(application_context));
 
   /* create machine */
   machine_type = gtk_combo_box_text_get_active_text(track_collection_mapper->machine_type);

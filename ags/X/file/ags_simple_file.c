@@ -6054,8 +6054,9 @@ ags_simple_file_read_preset(AgsSimpleFile *simple_file, xmlNode *node, AgsPreset
 				   i + 1);
 	  memset(&(gobject->value[i]), 0, sizeof(GValue));
 	}
-	
-	ags_simple_file_read_value(simple_file, child, &(&(gobject->value[i])));
+
+	//FIXME:JK: 
+	ags_simple_file_read_value(simple_file, child, &(gobject->value[i]));
 
 	i++;
       }

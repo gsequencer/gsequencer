@@ -685,8 +685,8 @@ ags_spectrometer_cartesian_queue_draw_timeout(GtkWidget *widget)
       
     GValue value = {0,};
 
-    spectrometer = (AgsSpectromenter *) gtk_widget_get_ancestor(widget,
-								AGS_TYPE_SPECTROMETER);
+    spectrometer = (AgsSpectrometer *) gtk_widget_get_ancestor(widget,
+							       AGS_TYPE_SPECTROMETER);
 
     fg_plot = spectrometer->fg_plot;
     correction = (double) 44100.0 / (double) AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;

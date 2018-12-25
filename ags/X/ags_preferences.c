@@ -25,6 +25,8 @@
 
 #include <ags/X/ags_window.h>
 
+#include <ags/X/thread/ags_gui_thread.h>
+
 #include <ags/X/file/ags_simple_file.h>
 
 #include <sys/types.h>
