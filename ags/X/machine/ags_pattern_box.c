@@ -252,7 +252,7 @@ ags_pattern_box_init(AgsPatternBox *pattern_box)
 		   0, 1,
 		   0, 0,
 		   0, 0);
-  gtk_widget_show_all(pattern_box->hled_array);
+  gtk_widget_show_all((GtkWidget *) pattern_box->hled_array);
   
   if(ags_pattern_box_led_queue_draw == NULL){
     ags_pattern_box_led_queue_draw = g_hash_table_new_full(g_direct_hash, g_direct_equal,
@@ -472,13 +472,13 @@ ags_pattern_box_realize(GtkWidget *widget)
 {
   AgsPatternBox *pattern_box;
 
-  pattern_box = widget;
+  pattern_box = (AgsPatternBox *) widget;
   
   /* call parent */
   GTK_WIDGET_CLASS(ags_pattern_box_parent_class)->realize(widget);
 
   if(pattern_box_style == NULL){
-    pattern_box_style = gtk_style_copy(gtk_widget_get_style(pattern_box));
+    pattern_box_style = gtk_style_copy(gtk_widget_get_style((GtkWidget *) pattern_box));
   }
   
   gtk_widget_set_style((GtkWidget *) pattern_box,
@@ -514,7 +514,7 @@ ags_accessible_pattern_box_do_action(AtkAction *action,
     return(FALSE);
   }
 
-  pattern_box = gtk_accessible_get_widget(GTK_ACCESSIBLE(action));
+  pattern_box = (AgsPatternBox *) gtk_accessible_get_widget(GTK_ACCESSIBLE(action));
   
   key_press = (GdkEventKey *) gdk_event_new(GDK_KEY_PRESS);
   key_release = (GdkEventKey *) gdk_event_new(GDK_KEY_RELEASE);
@@ -894,8 +894,8 @@ ags_pattern_box_led_queue_draw_timeout(AgsPatternBox *pattern_box)
     pattern_box->active_led = (guint) active_led_new;
 
     pattern_box->active_led = (guint) active_led_new;
-    ags_led_array_unset_all(pattern_box->hled_array);
-    ags_led_array_set_nth(pattern_box->hled_array,
+    ags_led_array_unset_all((AgsLedArray *) pattern_box->hled_array);
+    ags_led_array_set_nth((AgsLedArray *) pattern_box->hled_array,
 			  active_led_new);
         
     return(TRUE);

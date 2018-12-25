@@ -97,13 +97,9 @@ ags_oscillator_get_type(void)
 void
 ags_oscillator_class_init(AgsOscillatorClass *oscillator)
 {
-  GObjectClass *gobject;
   GParamSpec *param_spec;
 
   ags_oscillator_parent_class = g_type_class_peek_parent(oscillator);
-
-  /* GObjectClass */
-  gobject = G_OBJECT_CLASS(oscillator);
 
   /* signals */
   /**
@@ -255,7 +251,7 @@ ags_oscillator_init(AgsOscillator *oscillator)
 			    6, 7,
 			    0, 1);
 
-  hbox = (GtkBox *) gtk_hbox_new(TRUE,
+  hbox = (GtkHBox *) gtk_hbox_new(TRUE,
 				 0);
   gtk_table_attach_defaults(table,
 			    (GtkWidget *) hbox,
@@ -266,22 +262,22 @@ ags_oscillator_init(AgsOscillator *oscillator)
   oscillator->sync_point = (GtkSpinButton **) malloc(2 * oscillator->sync_point_count * sizeof(GtkSpinButton *));
 
   for(i = 0; i < oscillator->sync_point_count; i++){
-    sync_box = (GtkBox *) gtk_hbox_new(TRUE,
-				       0);
-    gtk_box_pack_start(hbox,
-		       sync_box,
+    sync_box = (GtkHBox *) gtk_hbox_new(TRUE,
+					0);
+    gtk_box_pack_start((GtkBox *) hbox,
+		       (GtkWidget *) sync_box,
 		       FALSE, FALSE,
 		       0);
     
-    oscillator->sync_point[2 * i] = gtk_spin_button_new_with_range(0.0, 100000.0, 1.0);
-    gtk_box_pack_start(sync_box,
-		       oscillator->sync_point[2 * i],
+    oscillator->sync_point[2 * i] = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, 100000.0, 1.0);
+    gtk_box_pack_start((GtkBox *) sync_box,
+		       (GtkWidget *) oscillator->sync_point[2 * i],
 		       FALSE, FALSE,
 		       0);
 
-    oscillator->sync_point[2 * i + 1] = gtk_spin_button_new_with_range(0.0, 100000.0, 1.0);
-    gtk_box_pack_start(sync_box,
-		       oscillator->sync_point[2 * i + 1],
+    oscillator->sync_point[2 * i + 1] = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, 100000.0, 1.0);
+    gtk_box_pack_start((GtkBox *) sync_box,
+		       (GtkWidget *) oscillator->sync_point[2 * i + 1],
 		       FALSE, FALSE,
 		       0);
   }

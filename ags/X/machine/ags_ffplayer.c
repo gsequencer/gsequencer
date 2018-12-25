@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -222,7 +222,7 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
   AGS_MACHINE(ffplayer)->output_line_type = G_TYPE_NONE;
 
   /* context menu */
-  ags_machine_popup_add_connection_options(ffplayer,
+  ags_machine_popup_add_connection_options((AgsMachine *) ffplayer,
   					   (AGS_MACHINE_POPUP_MIDI_DIALOG));
 
   /* audio resize */
@@ -492,13 +492,13 @@ ags_ffplayer_realize(GtkWidget *widget)
 {
   AgsFFPlayer *ffplayer;
 
-  ffplayer = widget;
+  ffplayer = (AgsFFPlayer *) widget;
   
   /* call parent */
   GTK_WIDGET_CLASS(ags_ffplayer_parent_class)->realize(widget);
 
   if(ffplayer_style == NULL){
-    ffplayer_style = gtk_style_copy(gtk_widget_get_style(ffplayer));
+    ffplayer_style = gtk_style_copy(gtk_widget_get_style((GtkWidget *) ffplayer));
   }
   
   gtk_widget_set_style((GtkWidget *) ffplayer->drawing_area,
@@ -962,7 +962,7 @@ ags_ffplayer_resize_pads(AgsMachine *machine, GType channel_type,
     return;
   }
     
-  ffplayer = machine;
+  ffplayer = (AgsFFPlayer *) machine;
 
   audio = machine->audio;
 
@@ -1565,7 +1565,7 @@ ags_ffplayer_load_preset(AgsFFPlayer *ffplayer)
   audio_container = ffplayer->audio_container;
 
   /* select first preset */
-  preset = ags_ipatch_sf2_reader_get_preset_all(AGS_IPATCH(audio_container->sound_container)->reader);
+  preset = ags_ipatch_sf2_reader_get_preset_all(AGS_IPATCH_SF2_READER(AGS_IPATCH(audio_container->sound_container)->reader));
 
   /* fill ffplayer->preset */
   while(preset != NULL && preset[0] != NULL){
@@ -1599,10 +1599,10 @@ ags_ffplayer_load_instrument(AgsFFPlayer *ffplayer)
   
   gtk_list_store_clear(GTK_LIST_STORE(gtk_combo_box_get_model(GTK_COMBO_BOX(ffplayer->instrument))));
 
-  position = gtk_combo_box_get_active(ffplayer->preset);
+  position = gtk_combo_box_get_active(GTK_COMBO_BOX(ffplayer->preset));
 
   if(position != -1){
-    instrument = ags_ipatch_sf2_reader_get_instrument_by_preset_index(AGS_IPATCH(audio_container->sound_container)->reader,
+    instrument = ags_ipatch_sf2_reader_get_instrument_by_preset_index(AGS_IPATCH_SF2_READER(AGS_IPATCH(audio_container->sound_container)->reader),
 								      position);
   }else{
     instrument = NULL;

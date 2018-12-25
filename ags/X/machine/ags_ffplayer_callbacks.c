@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -80,7 +80,7 @@ ags_ffplayer_open_clicked_callback(GtkWidget *widget, AgsFFPlayer *ffplayer)
   GtkFileChooserDialog *file_chooser;
 
   file_chooser = ags_machine_file_chooser_dialog_new(AGS_MACHINE(ffplayer));
-  gtk_file_chooser_add_shortcut_folder_uri(file_chooser,
+  gtk_file_chooser_add_shortcut_folder_uri(GTK_FILE_CHOOSER(file_chooser),
 					   "file:///usr/share/sounds/sf2",
 					   NULL);
   ffplayer->open_dialog = (GtkWidget *) file_chooser;
@@ -112,7 +112,7 @@ ags_ffplayer_open_dialog_response_callback(GtkWidget *widget, gint response,
   ffplayer->open_dialog = NULL;
   gtk_widget_destroy(widget);
 
-  gtk_combo_box_set_active(ffplayer->preset, 0);
+  gtk_combo_box_set_active(GTK_COMBO_BOX(ffplayer->preset), 0);
 }
 
 void
@@ -135,7 +135,7 @@ ags_ffplayer_preset_changed_callback(GtkComboBox *preset, AgsFFPlayer *ffplayer)
 			       3);
 
   /* load presets */
-  position = gtk_combo_box_get_active(ffplayer->preset);
+  position = gtk_combo_box_get_active(GTK_COMBO_BOX(ffplayer->preset));
   
   ags_sound_container_select_level_by_index(AGS_SOUND_CONTAINER(audio_container->sound_container),
 					    position);
@@ -144,7 +144,7 @@ ags_ffplayer_preset_changed_callback(GtkComboBox *preset, AgsFFPlayer *ffplayer)
   /* select first instrument */
   ags_ffplayer_load_instrument(ffplayer);
 
-  gtk_combo_box_set_active(ffplayer->instrument, 0);
+  gtk_combo_box_set_active(GTK_COMBO_BOX(ffplayer->instrument), 0);
 }
 
 void
@@ -152,7 +152,7 @@ ags_ffplayer_instrument_changed_callback(GtkComboBox *instrument, AgsFFPlayer *f
 {
   AgsWindow *window;
 
-  AgsGuiThread *gui_thread;
+  AgsThread *gui_thread;
 
   AgsAudio *audio;
 
@@ -188,7 +188,7 @@ ags_ffplayer_instrument_changed_callback(GtkComboBox *instrument, AgsFFPlayer *f
 			       3);
 
   /* load presets */
-  position = gtk_combo_box_get_active(ffplayer->preset);
+  position = gtk_combo_box_get_active(GTK_COMBO_BOX(ffplayer->preset));
 
   if(position == -1){
     position = 0;
@@ -199,7 +199,7 @@ ags_ffplayer_instrument_changed_callback(GtkComboBox *instrument, AgsFFPlayer *f
   AGS_IPATCH(audio_container->sound_container)->nesting_level += 1;
 
   /* load instrument */
-  position = gtk_combo_box_get_active(ffplayer->instrument);
+  position = gtk_combo_box_get_active(GTK_COMBO_BOX(ffplayer->instrument));
 
   if(position == -1){
     position = 0;
@@ -219,8 +219,8 @@ ags_ffplayer_instrument_changed_callback(GtkComboBox *instrument, AgsFFPlayer *f
 						    0);
   
   /* append task */
-  ags_gui_thread_schedule_task(gui_thread,
-			       open_sf2_instrument);
+  ags_gui_thread_schedule_task((AgsGuiThread *) gui_thread,
+			       (GObject *) open_sf2_instrument);
 }
 
 gboolean

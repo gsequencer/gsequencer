@@ -70,7 +70,6 @@ ags_lv2_bridge_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, Ags
 void
 ags_lv2_bridge_show_gui_callback(GtkMenuItem *item, AgsLv2Bridge *lv2_bridge)
 {
-  AgsWindow *window;
   GtkWidget *plugin_widget;
   
   AgsLv2uiPlugin *lv2ui_plugin;
@@ -87,9 +86,6 @@ ags_lv2_bridge_show_gui_callback(GtkMenuItem *item, AgsLv2Bridge *lv2_bridge)
   static const LV2_Feature **feature = {
     NULL,
   };
-
-  window = gtk_widget_get_ancestor(lv2_bridge,
-				   AGS_TYPE_WINDOW);
   
   if(lv2_bridge->gui_uri == NULL){
     return;
@@ -185,7 +181,7 @@ ags_lv2_bridge_show_gui_callback(GtkMenuItem *item, AgsLv2Bridge *lv2_bridge)
 	  uint32_t port_index;
 	  float val;
 
-	  child_widget = gtk_bin_get_child(AGS_BULK_MEMBER(list_bulk_member->data));
+	  child_widget = gtk_bin_get_child(GTK_BIN(AGS_BULK_MEMBER(list_bulk_member->data)));
 	  sscanf(AGS_BULK_MEMBER(list_bulk_member->data)->control_port,
 		 "%d/",
 		 &port_index);
@@ -319,22 +315,22 @@ ags_lv2_bridge_lv2ui_write_function(LV2UI_Controller controller, uint32_t port_i
 			    strlen(str))){
       lv2_bridge->flags |= AGS_LV2_BRIDGE_NO_UPDATE;
 
-      child_widget = gtk_bin_get_child(AGS_BULK_MEMBER(list_bulk_member->data));
+      child_widget = gtk_bin_get_child(GTK_BIND(AGS_BULK_MEMBER(list_bulk_member->data)));
 
       if(AGS_IS_DIAL(child_widget)){
-	ags_dial_set_value(child_widget,
+	ags_dial_set_value((AgsDial *) child_widget,
 			   ((float *) buffer)[0]);
       }else if(GTK_IS_SPIN_BUTTON(child_widget)){
-	gtk_spin_button_set_value(child_widget,
+	gtk_spin_button_set_value((GtkSpinButton *) child_widget,
 				  ((float *) buffer)[0]);
       }else if(GTK_IS_SCALE(child_widget)){
-	gtk_range_set_value(child_widget,
+	gtk_range_set_value((GtkRange *) child_widget,
 			    ((float *) buffer)[0]);
       }else if(GTK_IS_TOGGLE_BUTTON(child_widget)){
-	gtk_toggle_button_set_active(gtk_bin_get_child(list_bulk_member->data),
+	gtk_toggle_button_set_active((GtkToggleButton *) child_widget,
 				     ((((float *) buffer)[0] != 0.0) ? TRUE: FALSE));
       }else if(GTK_IS_BUTTON(child_widget)){
-	gtk_button_clicked(child_widget);
+	gtk_button_clicked((GtkButton *) child_widget);
       }
 	      
       lv2_bridge->flags &= (~AGS_LV2_BRIDGE_NO_UPDATE);
@@ -547,7 +543,7 @@ ags_lv2_bridge_preset_changed_callback(GtkComboBox *combo_box, AgsLv2Bridge *lv2
   
   gdouble value;
   
-  preset_label = gtk_combo_box_text_get_active_text(combo_box);
+  preset_label = gtk_combo_box_text_get_active_text(GTK_COMBO_BOX_TEXT(combo_box));
 
   /* retrieve lv2 plugin */
   lv2_plugin = ags_lv2_manager_find_lv2_plugin(ags_lv2_manager_get_instance(),
@@ -568,7 +564,7 @@ ags_lv2_bridge_preset_changed_callback(GtkComboBox *combo_box, AgsLv2Bridge *lv2
     return;
   }
 
-  container = AGS_EFFECT_BULK(AGS_EFFECT_BRIDGE(AGS_MACHINE(lv2_bridge)->bridge)->bulk_input)->table;
+  container = GTK_CONTAINER(AGS_EFFECT_BULK(AGS_EFFECT_BRIDGE(AGS_MACHINE(lv2_bridge)->bridge)->bulk_input)->table);
 
   g_object_get(lv2_plugin,
 	       "plugin-port", &start_plugin_port,
@@ -650,8 +646,8 @@ ags_lv2_bridge_dial_changed_callback(GtkWidget *dial, AgsLv2Bridge *lv2_bridge)
     return;
   }
 
-  bulk_member = gtk_widget_get_ancestor(dial,
-					AGS_TYPE_BULK_MEMBER);
+  bulk_member = (AgsBulkMember *) gtk_widget_get_ancestor(dial,
+							  AGS_TYPE_BULK_MEMBER);
 
   g_object_get(dial,
 	       "adjustment", &adjustment,
@@ -688,8 +684,8 @@ ags_lv2_bridge_vscale_changed_callback(GtkWidget *vscale, AgsLv2Bridge *lv2_brid
     return;
   }
 
-  bulk_member = gtk_widget_get_ancestor(vscale,
-					AGS_TYPE_BULK_MEMBER);
+  bulk_member = (AgsBulkMember *) gtk_widget_get_ancestor(vscale,
+							  AGS_TYPE_BULK_MEMBER);
 
   g_object_get(vscale,
 	       "adjustment", &adjustment,
@@ -726,8 +722,8 @@ ags_lv2_bridge_hscale_changed_callback(GtkWidget *hscale, AgsLv2Bridge *lv2_brid
     return;
   }
 
-  bulk_member = gtk_widget_get_ancestor(hscale,
-					AGS_TYPE_BULK_MEMBER);
+  bulk_member = (AgsBulkMember *) gtk_widget_get_ancestor(hscale,
+							  AGS_TYPE_BULK_MEMBER);
 
   g_object_get(hscale,
 	       "adjustment", &adjustment,
@@ -764,8 +760,8 @@ ags_lv2_bridge_spin_button_changed_callback(GtkWidget *spin_button, AgsLv2Bridge
     return;
   }
 
-  bulk_member = gtk_widget_get_ancestor(spin_button,
-					AGS_TYPE_BULK_MEMBER);
+  bulk_member = (AgsBulkMember *) gtk_widget_get_ancestor(spin_button,
+							  AGS_TYPE_BULK_MEMBER);
 
   g_object_get(spin_button,
 	       "adjustment", &adjustment,
@@ -803,10 +799,10 @@ ags_lv2_bridge_check_button_clicked_callback(GtkWidget *check_button, AgsLv2Brid
     return;
   }
 
-  bulk_member = gtk_widget_get_ancestor(check_button,
-					AGS_TYPE_BULK_MEMBER);
+  bulk_member = (AgsBulkMember *) gtk_widget_get_ancestor(check_button,
+							  AGS_TYPE_BULK_MEMBER);
 
-  is_active = gtk_toggle_button_get_active(check_button);
+  is_active = gtk_toggle_button_get_active((GtkToggleButton *) check_button);
   
   sscanf(bulk_member->control_port,
 	 "%d/",
@@ -841,10 +837,10 @@ ags_lv2_bridge_toggle_button_clicked_callback(GtkWidget *toggle_button, AgsLv2Br
     return;
   }
 
-  bulk_member = gtk_widget_get_ancestor(toggle_button,
-					AGS_TYPE_BULK_MEMBER);
+  bulk_member = (AgsBulkMember *) gtk_widget_get_ancestor(toggle_button,
+							  AGS_TYPE_BULK_MEMBER);
 
-  is_active = gtk_toggle_button_get_active(toggle_button);
+  is_active = gtk_toggle_button_get_active((GtkToggleButton *) toggle_button);
   
   sscanf(bulk_member->control_port,
 	 "%d/",
@@ -879,8 +875,8 @@ ags_lv2_bridge_button_clicked_callback(GtkWidget *button, AgsLv2Bridge *lv2_brid
     return;
   }
 
-  bulk_member = gtk_widget_get_ancestor(button,
-					AGS_TYPE_BULK_MEMBER);
+  bulk_member = (AgsBulkMember *) gtk_widget_get_ancestor(button,
+							  AGS_TYPE_BULK_MEMBER);
 
   sscanf(bulk_member->control_port,
 	 "%d/",

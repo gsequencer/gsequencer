@@ -87,7 +87,6 @@ void
 ags_automation_edit_box_class_init(AgsAutomationEditBoxClass *automation_edit_box)
 {
   GObjectClass *gobject;
-  GtkWidgetClass *widget;
   GtkContainerClass *container;
 
   GParamSpec *param_spec;
@@ -121,11 +120,8 @@ ags_automation_edit_box_class_init(AgsAutomationEditBoxClass *automation_edit_bo
 				  PROP_FIXED_EDIT_HEIGHT,
 				  param_spec);
 
-  /* GtkWidgetClass */
-  widget = (GtkWidgetClass *) automation_edit_box;
-  
   /* GtkContainerClass */
-  container = (GtkWidgetClass *) automation_edit_box;
+  container = (GtkContainerClass *) automation_edit_box;
 
   container->child_type = ags_automation_edit_box_child_type;
 }

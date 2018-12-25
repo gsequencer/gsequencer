@@ -423,7 +423,6 @@ ags_matrix_resize_pads(AgsMachine *machine, GType type,
 		       guint pads, guint pads_old,
 		       gpointer data)
 {
-  AgsWindow *window;
   AgsMatrix *matrix;
 
   AgsAudio *audio;
@@ -440,9 +439,6 @@ ags_matrix_resize_pads(AgsMachine *machine, GType type,
   if(pads == pads_old){
     return;
   }
-
-  /* get machine */
-  window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) machine);
   
   /* set size request if needed */
   if(g_type_is_a(type, AGS_TYPE_INPUT)){

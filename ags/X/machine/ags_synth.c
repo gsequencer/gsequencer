@@ -528,7 +528,7 @@ ags_synth_update(AgsSynth *synth)
   AgsClearAudioSignal *clear_audio_signal;
   AgsApplySynth *apply_synth;
 
-  AgsGuiThread *gui_thread;
+  AgsThread *gui_thread;
 
   AgsApplicationContext *application_context;
   
@@ -539,10 +539,8 @@ ags_synth_update(AgsSynth *synth)
   
   guint output_lines;
   guint buffer_size;
-  guint wave;
   guint attack, frame_count;
   gdouble frequency, phase, start_frequency;
-  guint loop_start, loop_end;
   gdouble volume;
 
   AgsComplex **sync_point;
@@ -557,9 +555,6 @@ ags_synth_update(AgsSynth *synth)
 
   /*  */
   start_frequency = (gdouble) gtk_spin_button_get_value_as_float(synth->lower);
-
-  loop_start = (guint) gtk_spin_button_get_value_as_int(synth->loop_start);
-  loop_end = (guint) gtk_spin_button_get_value_as_int(synth->loop_end);
 
   /* clear output */
   input_pad_start = 
@@ -631,7 +626,6 @@ ags_synth_update(AgsSynth *synth)
     synth_generator = start_synth_generator;
 
     /* do it so */    
-    wave = (guint) gtk_combo_box_get_active(oscillator->wave) + 1;
     attack = (guint) gtk_spin_button_get_value_as_int(oscillator->attack);
     frame_count = (guint) gtk_spin_button_get_value_as_int(oscillator->frame_count);
     phase = gtk_spin_button_get_value(oscillator->phase);
@@ -649,7 +643,7 @@ ags_synth_update(AgsSynth *synth)
 		 "volume", volume,
 		 NULL);
 
-    do_sync = gtk_toggle_button_get_active(oscillator->do_sync);
+    do_sync = gtk_toggle_button_get_active((GtkToggleButton *) oscillator->do_sync);
     
     if(do_sync){
       sync_point_count = oscillator->sync_point_count;
@@ -707,7 +701,7 @@ ags_synth_update(AgsSynth *synth)
   
   g_list_free(input_pad_start);
   
-  ags_gui_thread_schedule_task_list(gui_thread,
+  ags_gui_thread_schedule_task_list((AgsGuiThread *) gui_thread,
 				    g_list_reverse(task));
 }
 

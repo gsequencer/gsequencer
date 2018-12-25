@@ -146,14 +146,14 @@ ags_matrix_index_callback(GtkWidget *widget, AgsMatrix *matrix)
       
       g_list_free(start_list);
 
-      gtk_widget_queue_draw(matrix->cell_pattern->drawing_area);
+      gtk_widget_queue_draw((GtkWidget *) matrix->cell_pattern->drawing_area);
     }else{
       matrix->selected = NULL;
       
-      gtk_toggle_button_set_active(toggle,
+      gtk_toggle_button_set_active((GtkToggleButton *) widget,
 				   TRUE);
       
-      matrix->selected = widget;
+      matrix->selected = (GtkToggleButton *) widget;
     }
   }
 }
@@ -163,7 +163,7 @@ ags_matrix_length_spin_callback(GtkWidget *spin_button, AgsMatrix *matrix)
 {
   AgsWindow *window;
 
-  AgsGuiThread *gui_thread;
+  AgsThread *gui_thread;
 
   AgsApplySequencerLength *apply_sequencer_length;
   
@@ -184,8 +184,8 @@ ags_matrix_length_spin_callback(GtkWidget *spin_button, AgsMatrix *matrix)
   apply_sequencer_length = ags_apply_sequencer_length_new(AGS_MACHINE(matrix)->audio,
 							  length);
 
-  ags_gui_thread_schedule_task(gui_thread,
-			       apply_sequencer_length);
+  ags_gui_thread_schedule_task((AgsGuiThread *) gui_thread,
+			       (GObject *) apply_sequencer_length);
 }
 
 void
@@ -275,6 +275,6 @@ ags_matrix_stop_callback(AgsMatrix *matrix,
     return;
   }
   
-  ags_led_array_unset_all(matrix->cell_pattern->hled_array);
+  ags_led_array_unset_all((AgsLedArray *) matrix->cell_pattern->hled_array);
 }
 

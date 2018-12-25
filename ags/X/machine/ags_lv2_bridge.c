@@ -1549,8 +1549,6 @@ ags_lv2_bridge_input_map_recall(AgsLv2Bridge *lv2_bridge,
 				 AGS_RECALL_FACTORY_RECALL |
 				 AGS_RECALL_FACTORY_ADD),
 				0);
-
-      current = current->next_pad;
     }else{    
       /* ags-buffer */
       ags_recall_factory_create(audio,
@@ -1712,7 +1710,7 @@ ags_lv2_bridge_load_program(AgsLv2Bridge *lv2_bridge)
 		   "buffer-size", &buffer_size,
 		   NULL);
       
-      lv2_bridge->lv2_handle = ags_base_plugin_instantiate(lv2_plugin,
+      lv2_bridge->lv2_handle = ags_base_plugin_instantiate((AgsBasePlugin *) lv2_plugin,
 							   samplerate, buffer_size);
     }
     
@@ -1767,7 +1765,7 @@ ags_lv2_bridge_load_program(AgsLv2Bridge *lv2_bridge)
 			 FALSE, FALSE,
 			 0);
 
-      lv2_bridge->program = gtk_combo_box_text_new();
+      lv2_bridge->program = (GtkComboBoxText *) gtk_combo_box_text_new();
       gtk_box_pack_start((GtkBox *) hbox,
 			 (GtkWidget *) lv2_bridge->program,
 			 FALSE, FALSE,
@@ -1786,7 +1784,7 @@ ags_lv2_bridge_load_program(AgsLv2Bridge *lv2_bridge)
       gtk_combo_box_set_model(GTK_COMBO_BOX(lv2_bridge->program),
 			      GTK_TREE_MODEL(model));
     }else{
-      model = gtk_combo_box_get_model(GTK_COMBO_BOX(lv2_bridge->program));
+      model = GTK_LIST_STORE(gtk_combo_box_get_model(GTK_COMBO_BOX(lv2_bridge->program)));
       
       gtk_list_store_clear(GTK_LIST_STORE(model));
     }
@@ -1828,7 +1826,7 @@ ags_lv2_bridge_load_preset(AgsLv2Bridge *lv2_bridge)
 		     FALSE, FALSE,
 		     0);
 
-  lv2_bridge->preset = gtk_combo_box_text_new();
+  lv2_bridge->preset = (GtkComboBoxText *) gtk_combo_box_text_new();
   gtk_box_pack_start((GtkBox *) hbox,
 		     (GtkWidget *) lv2_bridge->preset,
 		     FALSE, FALSE,
@@ -1851,7 +1849,7 @@ ags_lv2_bridge_load_preset(AgsLv2Bridge *lv2_bridge)
     list = list->next;
   }
 
-  gtk_widget_show_all(hbox);
+  gtk_widget_show_all((GtkWidget *) hbox);
 
   /* connect preset */
   g_signal_connect_after(G_OBJECT(lv2_bridge->preset), "changed",
@@ -1930,7 +1928,7 @@ ags_lv2_bridge_load(AgsLv2Bridge *lv2_bridge)
   buffer_size = ags_soundcard_helper_config_get_buffer_size(ags_config_get_instance());
 
   /* program */
-  lv2_bridge->lv2_handle = ags_base_plugin_instantiate(lv2_plugin,
+  lv2_bridge->lv2_handle = ags_base_plugin_instantiate((AgsBasePlugin *) lv2_plugin,
 						       samplerate, buffer_size);
 
   if((AGS_LV2_PLUGIN_HAS_PROGRAM_INTERFACE & (lv2_plugin->flags)) != 0){
@@ -2003,7 +2001,6 @@ ags_lv2_bridge_new(GObject *soundcard,
 		   gchar *effect)
 {
   AgsLv2Bridge *lv2_bridge;
-  GValue value = {0,};
 
   lv2_bridge = (AgsLv2Bridge *) g_object_new(AGS_TYPE_LV2_BRIDGE,
 					     NULL);

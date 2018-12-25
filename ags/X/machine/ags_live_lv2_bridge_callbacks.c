@@ -70,7 +70,6 @@ ags_live_lv2_bridge_parent_set_callback(GtkWidget *widget, GtkObject *old_parent
 void
 ags_live_lv2_bridge_show_gui_callback(GtkMenuItem *item, AgsLiveLv2Bridge *live_lv2_bridge)
 {
-  AgsWindow *window;
   GtkWidget *plugin_widget;
   
   AgsLv2uiPlugin *lv2ui_plugin;
@@ -88,9 +87,6 @@ ags_live_lv2_bridge_show_gui_callback(GtkMenuItem *item, AgsLiveLv2Bridge *live_
     NULL,
   };
 
-  window = gtk_widget_get_ancestor(live_lv2_bridge,
-				   AGS_TYPE_WINDOW);
-  
   if(live_lv2_bridge->gui_uri == NULL){
     return;
   }
@@ -264,8 +260,9 @@ ags_live_lv2_bridge_lv2ui_write_function(LV2UI_Controller controller, uint32_t p
 	       NULL);
   
   /* play */
-  effect = ags_recall_get_by_effect(start_play,
-				    live_lv2_bridge->filename, live_lv2_bridge->effect);
+  effect =
+    start_effect = ags_recall_get_by_effect(start_play,
+					    live_lv2_bridge->filename, live_lv2_bridge->effect);
   
   if(effect != NULL){
     play_lv2_audio = effect->data;
@@ -295,8 +292,9 @@ ags_live_lv2_bridge_lv2ui_write_function(LV2UI_Controller controller, uint32_t p
   g_list_free(start_effect);
 
   /* recall */
-  effect = ags_recall_get_by_effect(start_recall,
-				    live_lv2_bridge->filename, live_lv2_bridge->effect);
+  effect =
+    start_effect = ags_recall_get_by_effect(start_recall,
+					    live_lv2_bridge->filename, live_lv2_bridge->effect);
   
   if(effect != NULL){
     play_lv2_audio = effect->data;
@@ -508,7 +506,7 @@ ags_live_lv2_bridge_preset_changed_callback(GtkComboBox *combo_box, AgsLiveLv2Br
   
   gdouble value;
   
-  preset_label = gtk_combo_box_text_get_active_text(combo_box);
+  preset_label = gtk_combo_box_text_get_active_text(GTK_COMBO_BOX_TEXT(combo_box));
 
   /* retrieve lv2 plugin */
   lv2_plugin = ags_lv2_manager_find_lv2_plugin(ags_lv2_manager_get_instance(),
@@ -529,7 +527,7 @@ ags_live_lv2_bridge_preset_changed_callback(GtkComboBox *combo_box, AgsLiveLv2Br
     return;
   }
 
-  container = AGS_EFFECT_BULK(AGS_EFFECT_BRIDGE(AGS_MACHINE(live_lv2_bridge)->bridge)->bulk_output)->table;
+  container = GTK_CONTAINER(AGS_EFFECT_BULK(AGS_EFFECT_BRIDGE(AGS_MACHINE(live_lv2_bridge)->bridge)->bulk_output)->table);
 
   g_object_get(AGS_BASE_PLUGIN(lv2_plugin),
 	       "plugin-port", &start_plugin_port,

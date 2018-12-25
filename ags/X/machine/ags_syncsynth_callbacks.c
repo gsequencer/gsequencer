@@ -90,14 +90,14 @@ ags_syncsynth_remove_callback(GtkButton *button, AgsSyncsynth *syncsynth)
   guint nth;
   
   list =
-    list_start = gtk_container_get_children(syncsynth->oscillator);
+    list_start = gtk_container_get_children(GTK_CONTAINER(syncsynth->oscillator));
 
   nth = 0;
   
   while(list != NULL){
-    child_start = gtk_container_get_children(list->data);
+    child_start = gtk_container_get_children(GTK_CONTAINER(list->data));
 
-    if(gtk_toggle_button_get_active(child_start->data)){
+    if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(child_start->data))){
       ags_syncsynth_remove_oscillator(syncsynth,
 				      nth);
     }else{

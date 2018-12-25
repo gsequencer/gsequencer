@@ -154,45 +154,45 @@ ags_automation_toolbar_init(AgsAutomationToolbar *automation_toolbar)
 			    "select automation",
 			    NULL);
 
-  automation_toolbar->copy = (GtkButton *) g_object_new(GTK_TYPE_TOOL_BUTTON,
-							"stock-id", GTK_STOCK_COPY,
-							NULL);
+  automation_toolbar->copy = (GtkToolButton *) g_object_new(GTK_TYPE_TOOL_BUTTON,
+							    "stock-id", GTK_STOCK_COPY,
+							    NULL);
   gtk_toolbar_append_widget((GtkToolbar *) automation_toolbar,
 			    (GtkWidget *) automation_toolbar->copy,
 			    i18n("copy automation"),
 			    NULL);
 
-  automation_toolbar->cut = (GtkButton *) g_object_new(GTK_TYPE_TOOL_BUTTON,
-						       "stock-id", GTK_STOCK_CUT,
-						       NULL);
+  automation_toolbar->cut = (GtkToolButton *) g_object_new(GTK_TYPE_TOOL_BUTTON,
+							   "stock-id", GTK_STOCK_CUT,
+							   NULL);
   gtk_toolbar_append_widget((GtkToolbar *) automation_toolbar,
 			    (GtkWidget *) automation_toolbar->cut,
 			    i18n("cut automation"),
 			    NULL);
 
-  automation_toolbar->paste_tool = (GtkButton *) g_object_new(GTK_TYPE_MENU_TOOL_BUTTON,
-							      "stock-id", GTK_STOCK_PASTE,
-							      NULL);
+  automation_toolbar->paste_tool = (GtkToolButton *) g_object_new(GTK_TYPE_MENU_TOOL_BUTTON,
+								  "stock-id", GTK_STOCK_PASTE,
+								  NULL);
 
-  menu = gtk_menu_new();
+  menu = (GtkMenu *) gtk_menu_new();
 
   item = g_object_new(GTK_TYPE_CHECK_MENU_ITEM,
 		      "label", "match line",
 		      "active", TRUE,
 		      NULL);
-  gtk_menu_shell_append(menu,
-			item);
+  gtk_menu_shell_append((GtkMenuShell *) menu,
+			(GtkWidget *) item);
   
   item = g_object_new(GTK_TYPE_CHECK_MENU_ITEM,
 		      "label", "no duplicates",
 		      "active", TRUE,
 		      NULL);
-  gtk_menu_shell_append(menu,
-			item);
+  gtk_menu_shell_append((GtkMenuShell *) menu,
+			(GtkWidget *) item);
 
   gtk_menu_tool_button_set_menu(automation_toolbar->paste_tool,
-				menu);
-  gtk_widget_show_all(menu);
+				(GtkWidget *) menu);
+  gtk_widget_show_all((GtkWidget *) menu);
 
   gtk_toolbar_append_widget((GtkToolbar *) automation_toolbar,
 			    (GtkWidget *) automation_toolbar->paste_tool,
@@ -209,7 +209,7 @@ ags_automation_toolbar_init(AgsAutomationToolbar *automation_toolbar)
   /* menu tool - tool popup */
   automation_toolbar->tool_popup = ags_automation_toolbar_tool_popup_new(automation_toolbar);
   gtk_menu_tool_button_set_menu(automation_toolbar->menu_tool,
-				automation_toolbar->tool_popup);
+				(GtkWidget *) automation_toolbar->tool_popup);
 
   /* menu tool - dialogs */
   automation_toolbar->select_acceleration = ags_select_acceleration_dialog_new(NULL);
@@ -1120,7 +1120,7 @@ ags_automation_toolbar_apply_port(AgsAutomationToolbar *automation_toolbar,
  * Since: 2.0.0
  */
 GtkMenu*
-ags_automation_toolbar_tool_popup_new(GtkToolbar *automation_toolbar)
+ags_automation_toolbar_tool_popup_new(AgsAutomationToolbar *automation_toolbar)
 {
   GtkMenu *tool_popup;
   GtkMenuItem *item;

@@ -89,7 +89,7 @@ ags_automation_edit_drawing_area_button_press_event(GtkWidget *widget, GdkEventB
     }
 
     /* queue draw */
-    gtk_widget_queue_draw(automation_edit);
+    gtk_widget_queue_draw((GtkWidget *) automation_edit);
   }
   
   void ags_automation_edit_drawing_area_button_press_add_acceleration()
@@ -133,7 +133,7 @@ ags_automation_edit_drawing_area_button_press_event(GtkWidget *widget, GdkEventB
     g_object_ref(acceleration);
 
     /* queue draw */
-    gtk_widget_queue_draw(automation_edit);
+    gtk_widget_queue_draw((GtkWidget *) automation_edit);
   }
 
   void ags_automation_edit_drawing_area_button_press_select_acceleration()
@@ -144,7 +144,7 @@ ags_automation_edit_drawing_area_button_press_event(GtkWidget *widget, GdkEventB
     automation_edit->selection_y0 = (guint) event->y + GTK_RANGE(automation_edit->vscrollbar)->adjustment->value;
     automation_edit->selection_y1 = automation_edit->selection_y0;
 
-    gtk_widget_queue_draw(automation_edit);
+    gtk_widget_queue_draw((GtkWidget *) automation_edit);
   }
 
   automation_editor = (AgsAutomationEditor *) gtk_widget_get_ancestor(GTK_WIDGET(automation_edit),
@@ -220,7 +220,7 @@ ags_automation_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEven
     }
     
     /* queue draw */
-    gtk_widget_queue_draw(automation_edit);
+    gtk_widget_queue_draw((GtkWidget *) automation_edit);
   }
 
   void ags_automation_edit_drawing_area_button_release_add_acceleration()
@@ -418,7 +418,7 @@ ags_automation_edit_drawing_area_motion_notify_event(GtkWidget *widget, GdkEvent
 #endif
     
     /* queue draw */
-    gtk_widget_queue_draw(automation_edit);
+    gtk_widget_queue_draw((GtkWidget *) automation_edit);
   }
 
   void ags_automation_edit_drawing_area_motion_notify_add_acceleration()
@@ -460,7 +460,7 @@ ags_automation_edit_drawing_area_motion_notify_event(GtkWidget *widget, GdkEvent
 #endif
     
     /* queue draw */
-    gtk_widget_queue_draw(automation_edit);
+    gtk_widget_queue_draw((GtkWidget *) automation_edit);
   }
 
   void ags_automation_edit_drawing_area_motion_notify_select_acceleration()
@@ -477,7 +477,7 @@ ags_automation_edit_drawing_area_motion_notify_event(GtkWidget *widget, GdkEvent
       automation_edit->selection_y1 = 0.0;
     }
     
-    gtk_widget_queue_draw(automation_edit);
+    gtk_widget_queue_draw((GtkWidget *) automation_edit);
   }
 
   automation_editor = (AgsAutomationEditor *) gtk_widget_get_ancestor(GTK_WIDGET(automation_edit),
@@ -806,7 +806,7 @@ ags_automation_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKe
       break;
     }
 
-    gtk_widget_queue_draw(automation_edit);
+    gtk_widget_queue_draw((GtkWidget *) automation_edit);
   }
   
   return(retval);
@@ -815,15 +815,10 @@ ags_automation_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKe
 void
 ags_automation_edit_vscrollbar_value_changed(GtkRange *range, AgsAutomationEdit *automation_edit)
 {
-  AgsAutomationEditor *automation_editor;
-
   GtkAdjustment *piano_adjustment;
   
-  automation_editor = gtk_widget_get_ancestor(automation_edit,
-					      AGS_TYPE_AUTOMATION_EDITOR);
-
   /* queue draw */
-  gtk_widget_queue_draw(automation_edit->drawing_area);
+  gtk_widget_queue_draw((GtkWidget *) automation_edit->drawing_area);
 }
 
 void
@@ -834,8 +829,8 @@ ags_automation_edit_hscrollbar_value_changed(GtkRange *range, AgsAutomationEdit 
   value = GTK_RANGE(automation_edit->hscrollbar)->adjustment->value / 64.0;
   gtk_adjustment_set_value(automation_edit->ruler->adjustment,
 			   value);
-  gtk_widget_queue_draw(automation_edit->ruler);
+  gtk_widget_queue_draw((GtkWidget *) automation_edit->ruler);
   
   /* queue draw */
-  gtk_widget_queue_draw(automation_edit->drawing_area);
+  gtk_widget_queue_draw((GtkWidget *) automation_edit->drawing_area);
 }

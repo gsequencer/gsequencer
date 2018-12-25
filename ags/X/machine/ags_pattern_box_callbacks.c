@@ -72,7 +72,6 @@ ags_pattern_box_focus_out_callback(GtkWidget *widget, GdkEvent *event, AgsPatter
 void
 ags_pattern_box_pad_callback(GtkWidget *toggle_button, AgsPatternBox *pattern_box)
 {
-  AgsWindow *window;
   AgsMachine *machine;
   AgsLine *selected_line;
 
@@ -98,9 +97,6 @@ ags_pattern_box_pad_callback(GtkWidget *toggle_button, AgsPatternBox *pattern_bo
 
     return;
   }
-
-  window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) machine,
-						 AGS_TYPE_WINDOW);
 
   /* calculate offset */
   list_start = 
@@ -204,23 +200,15 @@ ags_pattern_box_key_press_event(GtkWidget *widget, GdkEventKey *event, AgsPatter
 gboolean
 ags_pattern_box_key_release_event(GtkWidget *widget, GdkEventKey *event, AgsPatternBox *pattern_box)
 {
-  AgsWindow *window;
   AgsMachine *machine;
   
-  AgsApplicationContext *application_context;
-
   if(event->keyval == GDK_KEY_Tab){
     return(FALSE);
   }
   
   machine = (AgsMachine *) gtk_widget_get_ancestor((GtkWidget *) pattern_box,
 						   AGS_TYPE_MACHINE);
-  
-  window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) machine,
-						 AGS_TYPE_WINDOW);
-
-  application_context = (AgsApplicationContext *) window->application_context;
-  
+    
   switch(event->keyval){
   case GDK_KEY_Control_L:
     {

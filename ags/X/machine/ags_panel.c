@@ -212,11 +212,7 @@ ags_panel_init(AgsPanel *panel)
 
 static void
 ags_panel_finalize(GObject *gobject)
-{
-  AgsPanel *panel;
-
-  panel = (AgsPanel *) gobject;
-  
+{  
   /* call parent */
   G_OBJECT_CLASS(ags_panel_parent_class)->finalize(gobject);
 }
@@ -329,10 +325,7 @@ void
 ags_panel_read_resolve_audio(AgsFileLookup *file_lookup,
 			     AgsMachine *machine)
 {
-  AgsPanel *panel;
   GList *pad, *pad_start, *line, *line_start;
-
-  panel = AGS_PANEL(machine);
 
   g_signal_connect_after(G_OBJECT(machine), "resize-audio-channels",
 			 G_CALLBACK(ags_panel_resize_audio_channels), NULL);

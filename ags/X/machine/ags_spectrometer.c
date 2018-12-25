@@ -66,7 +66,7 @@ static gpointer ags_spectrometer_parent_class = NULL;
 
 static AgsConnectableInterface *ags_spectrometer_parent_connectable_interface;
 
-extern GHashTable *ags_spectrometer_cartesian_queue_draw = NULL;
+GHashTable *ags_spectrometer_cartesian_queue_draw = NULL;
 
 GType
 ags_spectrometer_get_type(void)
@@ -122,7 +122,6 @@ void
 ags_spectrometer_class_init(AgsSpectrometerClass *spectrometer)
 {
   GObjectClass *gobject;
-  GtkWidgetClass *widget;
   AgsMachineClass *machine;
 
   ags_spectrometer_parent_class = g_type_class_peek_parent(spectrometer);
@@ -131,9 +130,6 @@ ags_spectrometer_class_init(AgsSpectrometerClass *spectrometer)
   gobject = (GObjectClass *) spectrometer;
 
   gobject->finalize = ags_spectrometer_finalize;
-
-  /* GtkWidget */
-  widget = (GtkWidgetClass *) spectrometer;
 
   /*  */
   machine = (AgsMachineClass *) spectrometer;
@@ -231,14 +227,14 @@ ags_spectrometer_init(AgsSpectrometer *spectrometer)
   spectrometer->fg_plot = NULL;
 
   /* cartesian - size, pack and redraw */
-  gtk_widget_set_size_request(cartesian,
+  gtk_widget_set_size_request((GtkWidget *) cartesian,
 			      (gint) (width + 2.0 * cartesian->x_margin), (gint) (height + 2.0 * cartesian->y_margin));
   gtk_box_pack_start((GtkBox *) vbox,
 		     GTK_WIDGET(cartesian),
 		     FALSE, FALSE,
 		     0);
 
-  gtk_widget_queue_draw(cartesian);
+  gtk_widget_queue_draw((GtkWidget *) cartesian);
 
   /* buffer-size */
   str = ags_config_get_value(config,
@@ -377,7 +373,7 @@ ags_spectrometer_map_recall(AgsMachine *machine)
   guint audio_channels;
   guint i;
 
-  spectrometer = machine;
+  spectrometer = (AgsSpectrometer *) machine;
 
   cartesian = spectrometer->cartesian;
   
@@ -637,18 +633,10 @@ ags_spectrometer_fg_plot_alloc(AgsSpectrometer *spectrometer,
   AgsCartesian *cartesian;
   AgsPlot *plot;
 
-  gdouble width, height;
-  gdouble default_width, default_height;
   guint i, i_stop;
 
   cartesian = spectrometer->cartesian;
 
-  width = cartesian->x_end - cartesian->x_start;
-  height = cartesian->y_end - cartesian->y_start;
-  
-  default_width = cartesian->x_step_width * cartesian->x_scale_step_width;
-  default_height = cartesian->y_step_height * cartesian->y_scale_step_height;
-  
   i_stop = AGS_SPECTROMETER_PLOT_DEFAULT_POINT_COUNT + 1;
   
   plot = ags_plot_alloc(i_stop, 0, 0);
@@ -682,9 +670,7 @@ ags_spectrometer_cartesian_queue_draw_timeout(GtkWidget *widget)
   AgsSpectrometer *spectrometer;
 
   if(g_hash_table_lookup(ags_spectrometer_cartesian_queue_draw,
-			 widget) != NULL){
-    AgsCartesian *cartesian;
-    
+			 widget) != NULL){    
     GList *fg_plot;
     GList *frequency_buffer_port;
     GList *magnitude_buffer_port;
@@ -699,9 +685,8 @@ ags_spectrometer_cartesian_queue_draw_timeout(GtkWidget *widget)
       
     GValue value = {0,};
 
-    cartesian = widget;
-    spectrometer = gtk_widget_get_ancestor(widget,
-					   AGS_TYPE_SPECTROMETER);
+    spectrometer = (AgsSpectromenter *) gtk_widget_get_ancestor(widget,
+								AGS_TYPE_SPECTROMETER);
 
     fg_plot = spectrometer->fg_plot;
     correction = (double) 44100.0 / (double) AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE;
