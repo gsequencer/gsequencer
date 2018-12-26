@@ -47,7 +47,7 @@ ags_select_acceleration_dialog_response_callback(GtkWidget *dialog, gint respons
   case GTK_RESPONSE_CANCEL:
     {
       if(hide_dialog){
-	gtk_widget_hide(select_acceleration_dialog);
+	gtk_widget_hide((GtkWidget *) select_acceleration_dialog);
       }
     }
   }
@@ -82,7 +82,7 @@ ags_select_acceleration_dialog_add_callback(GtkWidget *button,
   audio = machine->audio;
 
   /* select automation */
-  hbox = (GtkVBox *) gtk_hbox_new(FALSE,
+  hbox = (GtkHBox *) gtk_hbox_new(FALSE,
 				  0);
   gtk_box_pack_start((GtkBox *) select_acceleration_dialog->port,
 		     GTK_WIDGET(hbox),
@@ -266,11 +266,11 @@ ags_select_acceleration_dialog_add_callback(GtkWidget *button,
   /* remove button */
   remove = (GtkCheckButton *) gtk_button_new_from_stock(GTK_STOCK_REMOVE);
   gtk_box_pack_start((GtkBox *) hbox,
-		     remove,
+		     (GtkWidget *) remove,
 		     FALSE, FALSE,
 		     0);
 
-  gtk_widget_show_all(hbox);
+  gtk_widget_show_all((GtkWidget *) hbox);
   
   g_signal_connect(remove, "clicked",
 		   G_CALLBACK(ags_select_acceleration_dialog_remove_callback), select_acceleration_dialog);

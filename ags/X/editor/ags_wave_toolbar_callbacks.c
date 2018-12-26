@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -99,7 +99,7 @@ ags_wave_toolbar_match_line_callback(GtkWidget *widget, AgsWaveToolbar *wave_too
   wave_editor = AGS_WAVE_EDITOR(gtk_widget_get_ancestor(GTK_WIDGET(wave_toolbar),
 							AGS_TYPE_WAVE_EDITOR));
 
-  if(gtk_check_menu_item_get_active(widget)){
+  if(gtk_check_menu_item_get_active((GtkCheckMenuItem *) widget)){
     wave_editor->flags |= AGS_WAVE_EDITOR_PASTE_MATCH_LINE;
   }else{
     wave_editor->flags &= (~AGS_WAVE_EDITOR_PASTE_MATCH_LINE);
@@ -109,13 +109,13 @@ ags_wave_toolbar_match_line_callback(GtkWidget *widget, AgsWaveToolbar *wave_too
 void
 ags_wave_toolbar_tool_popup_select_buffer_callback(GtkWidget *item, AgsWaveToolbar *wave_toolbar)
 {
-  gtk_widget_show_all(wave_toolbar->select_buffer);
+  gtk_widget_show_all((GtkWidget *) wave_toolbar->select_buffer);
 }
 
 void
 ags_wave_toolbar_tool_popup_position_cursor_callback(GtkWidget *item, AgsWaveToolbar *wave_toolbar)
 {
-  gtk_widget_show_all(wave_toolbar->position_wave_cursor);  
+  gtk_widget_show_all((GtkWidget *) wave_toolbar->position_wave_cursor);  
 }
 
 void
@@ -196,7 +196,7 @@ ags_wave_toolbar_zoom_callback(GtkComboBox *combo_box, AgsWaveToolbar *wave_tool
     while(list != NULL){
       wave_edit = list->data;
       
-      gtk_widget_queue_draw(wave_edit);
+      gtk_widget_queue_draw((GtkWidget *) wave_edit);
       
       /* reset ruler */
       wave_edit->ruler->factor = zoom_factor;
@@ -223,7 +223,7 @@ ags_wave_toolbar_zoom_callback(GtkComboBox *combo_box, AgsWaveToolbar *wave_tool
   
   gtk_widget_queue_draw((GtkWidget *) wave_editor->ruler);
 
-  list_start = gtk_container_get_children(wave_editor->scrolled_wave_edit_box->wave_edit_box);
+  list_start = gtk_container_get_children((GtkContainer *) wave_editor->scrolled_wave_edit_box->wave_edit_box);
   ags_wave_toolbar_zoom_callback_apply(list_start);
 
   g_list_free(list_start);
@@ -238,16 +238,16 @@ ags_wave_toolbar_opacity_callback(GtkSpinButton *spin_button, AgsWaveToolbar *wa
 
   GList *start_list, *list;
   
-  wave_editor = gtk_widget_get_ancestor(wave_toolbar,
-					AGS_TYPE_WAVE_EDITOR);
+  wave_editor = (AgsWaveEditor *) gtk_widget_get_ancestor((GtkWidget *) wave_toolbar,
+							  AGS_TYPE_WAVE_EDITOR);
 
 
   /* queue draw */
   list =
-    start_list = gtk_container_get_children(wave_editor->scrolled_wave_edit_box->wave_edit_box);
+    start_list = gtk_container_get_children((GtkContainer *) wave_editor->scrolled_wave_edit_box->wave_edit_box);
 
   while(list != NULL){
-    gtk_widget_queue_draw(list->data);
+    gtk_widget_queue_draw((GtkWidget *) list->data);
 
     list = list->next;
   }

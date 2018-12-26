@@ -214,7 +214,7 @@ ags_select_acceleration_dialog_init(AgsSelectAccelerationDialog *select_accelera
 
   /* copy selection */
   select_acceleration_dialog->copy_selection = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("copy selection"));
-  gtk_toggle_button_set_active(select_acceleration_dialog->copy_selection,
+  gtk_toggle_button_set_active((GtkToggleButton *) select_acceleration_dialog->copy_selection,
 			       TRUE);
   gtk_box_pack_start((GtkBox *) vbox,
 		     GTK_WIDGET(select_acceleration_dialog->copy_selection),
@@ -230,14 +230,14 @@ ags_select_acceleration_dialog_init(AgsSelectAccelerationDialog *select_accelera
 		     0);  
   
   /* add */
-  select_acceleration_dialog->add = (GtkCheckButton *) gtk_button_new_from_stock(GTK_STOCK_ADD);
+  select_acceleration_dialog->add = (GtkButton *) gtk_button_new_from_stock(GTK_STOCK_ADD);
   gtk_box_pack_start((GtkBox *) vbox,
 		     GTK_WIDGET(select_acceleration_dialog->add),
 		     FALSE, FALSE,
 		     0);  
   
   /* select x0 - hbox */
-  hbox = (GtkVBox *) gtk_hbox_new(FALSE, 0);
+  hbox = (GtkHBox *) gtk_hbox_new(FALSE, 0);
   gtk_box_pack_start((GtkBox *) vbox,
 		     GTK_WIDGET(hbox),
 		     FALSE, FALSE,
@@ -264,7 +264,7 @@ ags_select_acceleration_dialog_init(AgsSelectAccelerationDialog *select_accelera
 		     0);
   
   /* select x1 - hbox */
-  hbox = (GtkVBox *) gtk_hbox_new(FALSE, 0);
+  hbox = (GtkHBox *) gtk_hbox_new(FALSE, 0);
   gtk_box_pack_start((GtkBox *) vbox,
 		     GTK_WIDGET(hbox),
 		     FALSE, FALSE,
@@ -348,7 +348,7 @@ ags_select_acceleration_dialog_set_property(GObject *gobject,
 	g_object_ref(main_window);
       }
 
-      select_acceleration_dialog->main_window = (GObject *) main_window;
+      select_acceleration_dialog->main_window = (GtkWidget *) main_window;
     }
     break;
   default:
@@ -505,7 +505,6 @@ ags_select_acceleration_dialog_apply(AgsApplicable *applicable)
   gint line;
   
   gboolean copy_selection;
-  gboolean is_audio, is_output, is_input;
     
   select_acceleration_dialog = AGS_SELECT_ACCELERATION_DIALOG(applicable);
 
@@ -522,18 +521,12 @@ ags_select_acceleration_dialog_apply(AgsApplicable *applicable)
   if(automation_editor->focused_automation_edit->channel_type == G_TYPE_NONE){
     notebook = NULL;
     channel_type = G_TYPE_NONE;
-
-    is_audio = TRUE;
   }else if(automation_editor->focused_automation_edit->channel_type == AGS_TYPE_OUTPUT){
     notebook = automation_editor->output_notebook;
     channel_type = AGS_TYPE_OUTPUT;
-      
-    is_output = TRUE;
   }else if(automation_editor->focused_automation_edit->channel_type == AGS_TYPE_INPUT){
     notebook = automation_editor->input_notebook;
     channel_type = AGS_TYPE_INPUT;
-      
-    is_input = TRUE;
   }
   
   audio = machine->audio;
@@ -543,7 +536,7 @@ ags_select_acceleration_dialog_apply(AgsApplicable *applicable)
 	       NULL);
 
   /* get some values */
-  copy_selection = gtk_toggle_button_get_active(select_acceleration_dialog->copy_selection);
+  copy_selection = gtk_toggle_button_get_active((GtkToggleButton *) select_acceleration_dialog->copy_selection);
 
   x0 = (AGS_SELECT_ACCELERATION_DEFAULT_WIDTH / 16) * gtk_spin_button_get_value_as_int(select_acceleration_dialog->select_x0);
 
@@ -551,7 +544,7 @@ ags_select_acceleration_dialog_apply(AgsApplicable *applicable)
   
   /* select acceleration */
   port =
-    port_start = gtk_container_get_children(select_acceleration_dialog->port);
+    port_start = gtk_container_get_children((GtkContainer *) select_acceleration_dialog->port);
   
   specifier = NULL;
 
@@ -565,7 +558,7 @@ ags_select_acceleration_dialog_apply(AgsApplicable *applicable)
   }
 
   for(i = 0; port != NULL;){
-    list = gtk_container_get_children(port->data);
+    list = gtk_container_get_children((GtkContainer *) port->data);
     str = gtk_combo_box_text_get_active_text(list->data);
 
     g_list_free(list);
@@ -705,6 +698,8 @@ ags_select_acceleration_dialog_apply(AgsApplicable *applicable)
     i++;
   }
 
+  g_strfreev(specifier);
+  
   g_list_free(start_list_automation);
   g_list_free(port_start);
 

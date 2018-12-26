@@ -42,7 +42,7 @@ ags_select_buffer_dialog_response_callback(GtkWidget *dialog, gint response,
   case GTK_RESPONSE_CANCEL:
     {
       if(hide_dialog){
-	gtk_widget_hide(select_buffer_dialog);
+	gtk_widget_hide((GtkWidget *) select_buffer_dialog);
       }
     }
   }

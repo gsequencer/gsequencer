@@ -87,7 +87,6 @@ void
 ags_wave_edit_box_class_init(AgsWaveEditBoxClass *wave_edit_box)
 {
   GObjectClass *gobject;
-  GtkWidgetClass *widget;
   GtkContainerClass *container;
 
   GParamSpec *param_spec;
@@ -120,12 +119,9 @@ ags_wave_edit_box_class_init(AgsWaveEditBoxClass *wave_edit_box)
   g_object_class_install_property(gobject,
 				  PROP_FIXED_EDIT_HEIGHT,
 				  param_spec);
-
-  /* GtkWidgetClass */
-  widget = (GtkWidgetClass *) wave_edit_box;
   
   /* GtkContainerClass */
-  container = (GtkWidgetClass *) wave_edit_box;
+  container = (GtkContainerClass *) wave_edit_box;
 
   container->child_type = ags_wave_edit_box_child_type;
 }

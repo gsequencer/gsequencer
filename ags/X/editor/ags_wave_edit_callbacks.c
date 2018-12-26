@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -79,7 +79,7 @@ ags_wave_edit_drawing_area_button_press_event(GtkWidget *widget, GdkEventButton 
     wave_edit->cursor_position_y = (((GTK_WIDGET(wave_edit->drawing_area)->allocation.height - event->y) / g_range) * c_range);
 
     /* queue draw */
-    gtk_widget_queue_draw(wave_edit);
+    gtk_widget_queue_draw((GtkWidget *) wave_edit);
   }
 
   void ags_wave_edit_drawing_area_button_press_select_buffer()
@@ -95,11 +95,11 @@ ags_wave_edit_drawing_area_button_press_event(GtkWidget *widget, GdkEventButton 
     wave_edit->selection_y0 = (guint) event->y + GTK_RANGE(wave_edit->vscrollbar)->adjustment->value;
     wave_edit->selection_y1 = wave_edit->selection_y0;
 
-    gtk_widget_queue_draw(wave_edit);
+    gtk_widget_queue_draw((GtkWidget *) wave_edit);
   }
 
   wave_editor = (AgsWaveEditor *) gtk_widget_get_ancestor(GTK_WIDGET(wave_edit),
-								      AGS_TYPE_WAVE_EDITOR);
+							  AGS_TYPE_WAVE_EDITOR);
 
   wave_toolbar = wave_editor->wave_toolbar;
 
@@ -153,7 +153,7 @@ ags_wave_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEventButto
     wave_edit->cursor_position_y = (((GTK_WIDGET(wave_edit->drawing_area)->allocation.height - event->y) / g_range) * c_range);
     
     /* queue draw */
-    gtk_widget_queue_draw(wave_edit);
+    gtk_widget_queue_draw((GtkWidget *) wave_edit);
   }
 
   void ags_wave_edit_drawing_area_button_release_select_buffer()
@@ -187,7 +187,7 @@ ags_wave_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEventButto
   }
 
   wave_editor = (AgsWaveEditor *) gtk_widget_get_ancestor(GTK_WIDGET(wave_edit),
-								      AGS_TYPE_WAVE_EDITOR);
+							  AGS_TYPE_WAVE_EDITOR);
   
   wave_toolbar = wave_editor->wave_toolbar;
 
@@ -242,7 +242,7 @@ ags_wave_edit_drawing_area_motion_notify_event(GtkWidget *widget, GdkEventMotion
 #endif
     
     /* queue draw */
-    gtk_widget_queue_draw(wave_edit);
+    gtk_widget_queue_draw((GtkWidget *) wave_edit);
   }
 
   void ags_wave_edit_drawing_area_motion_notify_select_buffer()
@@ -264,11 +264,11 @@ ags_wave_edit_drawing_area_motion_notify_event(GtkWidget *widget, GdkEventMotion
       wave_edit->selection_y1 = 0.0;
     }
     
-    gtk_widget_queue_draw(wave_edit);
+    gtk_widget_queue_draw((GtkWidget *) wave_edit);
   }
 
   wave_editor = (AgsWaveEditor *) gtk_widget_get_ancestor(GTK_WIDGET(wave_edit),
-								      AGS_TYPE_WAVE_EDITOR);
+							  AGS_TYPE_WAVE_EDITOR);
 
   wave_toolbar = wave_editor->wave_toolbar;
 
@@ -471,7 +471,7 @@ ags_wave_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *eve
       break;
     }
 
-    gtk_widget_queue_draw(wave_edit);
+    gtk_widget_queue_draw((GtkWidget *) wave_edit);
   }
   
   return(retval);
@@ -480,13 +480,8 @@ ags_wave_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *eve
 void
 ags_wave_edit_vscrollbar_value_changed(GtkRange *range, AgsWaveEdit *wave_edit)
 {
-  AgsWaveEditor *wave_editor;
-
-  wave_editor = gtk_widget_get_ancestor(wave_edit,
-					AGS_TYPE_WAVE_EDITOR);
-
   /* queue draw */
-  gtk_widget_queue_draw(wave_edit->drawing_area);
+  gtk_widget_queue_draw((GtkWidget *) wave_edit->drawing_area);
 }
 
 void
@@ -500,6 +495,6 @@ ags_wave_edit_hscrollbar_value_changed(GtkRange *range, AgsWaveEdit *wave_edit)
   gtk_widget_queue_draw(wave_edit->ruler);
   
   /* queue draw */
-  gtk_widget_queue_draw(wave_edit->drawing_area);
+  gtk_widget_queue_draw((GtkWidget *) wave_edit->drawing_area);
 }
 

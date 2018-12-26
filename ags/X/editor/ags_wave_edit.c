@@ -285,7 +285,7 @@ ags_wave_edit_init(AgsWaveEdit *wave_edit)
   wave_edit->selection_y1 = 0;
 
   if(wave_edit_style == NULL){
-    wave_edit_style = gtk_style_copy(gtk_widget_get_style(wave_edit));
+    wave_edit_style = gtk_style_copy(gtk_widget_get_style((GtkWidget *) wave_edit));
   }
 
   wave_edit->ruler = ags_ruler_new();
@@ -318,7 +318,7 @@ ags_wave_edit_init(AgsWaveEdit *wave_edit)
   gtk_widget_set_can_focus((GtkWidget *) wave_edit->drawing_area,
 			   TRUE);
     
-  gtk_widget_set_size_request(wave_edit->drawing_area,
+  gtk_widget_set_size_request((GtkWidget *) wave_edit->drawing_area,
 			      -1, AGS_LEVEL_DEFAULT_HEIGHT);
   gtk_table_attach(GTK_TABLE(wave_edit),
 		   (GtkWidget *) wave_edit->drawing_area,
@@ -337,7 +337,7 @@ ags_wave_edit_init(AgsWaveEdit *wave_edit)
   g_object_set(wave_edit->vscrollbar,
 	       "no-show-all", TRUE,
 	       NULL);
-  gtk_widget_set_size_request(wave_edit->vscrollbar,
+  gtk_widget_set_size_request((GtkWidget *) wave_edit->vscrollbar,
 			      -1, AGS_LEVEL_DEFAULT_HEIGHT);
   gtk_table_attach(GTK_TABLE(wave_edit),
 		   (GtkWidget *) wave_edit->vscrollbar,
@@ -352,7 +352,7 @@ ags_wave_edit_init(AgsWaveEdit *wave_edit)
   g_object_set(wave_edit->hscrollbar,
 	       "no-show-all", TRUE,
 	       NULL);
-  gtk_widget_set_size_request(wave_edit->hscrollbar,
+  gtk_widget_set_size_request((GtkWidget *) wave_edit->hscrollbar,
 			      -1, -1);
   gtk_table_attach(GTK_TABLE(wave_edit),
 		   (GtkWidget *) wave_edit->hscrollbar,
@@ -388,7 +388,7 @@ ags_wave_edit_set_property(GObject *gobject,
     {
       wave_edit->line = g_value_get_uint(value);
 
-      gtk_widget_queue_draw(wave_edit);
+      gtk_widget_queue_draw((GtkWidget *) wave_edit);
     }
     break;
   default:
@@ -579,7 +579,8 @@ ags_accessible_wave_edit_do_action(AtkAction *action,
       /* send event */
       gtk_widget_event((GtkWidget *) wave_edit->drawing_area,
 		       (GdkEvent *) key_press);
-      gtk_widget_event(wave_edit->drawing_area, key_release);
+      gtk_widget_event((GtkWidget *) wave_edit->drawing_area,
+		       (GdkEvent *) key_release);
     }
     break;
   case 1:
@@ -770,10 +771,6 @@ void
 ags_wave_edit_size_request(GtkWidget *widget,
 			   GtkRequisition *requisition)
 {
-  AgsWaveEdit *wave_edit;
-
-  wave_edit = AGS_WAVE_EDIT(widget);
-
   requisition->width = -1;
   requisition->height = AGS_LEVEL_DEFAULT_HEIGHT;  
 }
@@ -801,10 +798,10 @@ ags_wave_edit_size_allocate(GtkWidget *widget,
   child_allocation.width = allocation->width;
   child_allocation.height = AGS_LEVEL_DEFAULT_HEIGHT;
 
-  gtk_widget_size_allocate(wave_edit->drawing_area,
+  gtk_widget_size_allocate((GtkWidget *) wave_edit->drawing_area,
   			   &child_allocation);
 
-  window = gtk_widget_get_window(wave_edit->drawing_area);
+  window = gtk_widget_get_window((GtkWidget *) wave_edit->drawing_area);
   gdk_window_move(window,
   		  allocation->x, allocation->y);
 }
@@ -819,18 +816,18 @@ ags_wave_edit_show(GtkWidget *widget)
   /* call parent */
   GTK_WIDGET_CLASS(ags_wave_edit_parent_class)->show(widget);
 
-  gtk_widget_show(wave_edit->drawing_area);
+  gtk_widget_show((GtkWidget *) wave_edit->drawing_area);
   
   if((AGS_WAVE_EDIT_SHOW_RULER & (wave_edit->flags)) != 0){
-    gtk_widget_show(wave_edit->ruler);
+    gtk_widget_show((GtkWidget *) wave_edit->ruler);
   }
 
   if((AGS_WAVE_EDIT_SHOW_VSCROLLBAR & (wave_edit->flags)) != 0){
-    gtk_widget_show(wave_edit->vscrollbar);
+    gtk_widget_show((GtkWidget *) wave_edit->vscrollbar);
   }
 
   if((AGS_WAVE_EDIT_SHOW_HSCROLLBAR & (wave_edit->flags)) != 0){
-    gtk_widget_show(wave_edit->hscrollbar);
+    gtk_widget_show((GtkWidget *) wave_edit->hscrollbar);
   }
 }
 
@@ -844,18 +841,18 @@ ags_wave_edit_show_all(GtkWidget *widget)
   /* call parent */
   GTK_WIDGET_CLASS(ags_wave_edit_parent_class)->show_all(widget);
 
-  gtk_widget_show_all(wave_edit->drawing_area);
+  gtk_widget_show_all((GtkWidget *) wave_edit->drawing_area);
 
   if((AGS_WAVE_EDIT_SHOW_RULER & (wave_edit->flags)) != 0){
-    gtk_widget_show(wave_edit->ruler);
+    gtk_widget_show((GtkWidget *) wave_edit->ruler);
   }
 
   if((AGS_WAVE_EDIT_SHOW_VSCROLLBAR & (wave_edit->flags)) != 0){
-    gtk_widget_show(wave_edit->vscrollbar);
+    gtk_widget_show((GtkWidget *) wave_edit->vscrollbar);
   }
 
   if((AGS_WAVE_EDIT_SHOW_HSCROLLBAR & (wave_edit->flags)) != 0){
-    gtk_widget_show(wave_edit->hscrollbar);
+    gtk_widget_show((GtkWidget *) wave_edit->hscrollbar);
   }
 }
 
@@ -870,7 +867,6 @@ ags_wave_edit_auto_scroll_timeout(GtkWidget *widget)
 
     GObject *output_soundcard;
     
-    double zoom;
     double x;
     
     wave_edit = AGS_WAVE_EDIT(widget);
@@ -879,17 +875,14 @@ ags_wave_edit_auto_scroll_timeout(GtkWidget *widget)
       return(TRUE);
     }
     
-    wave_editor = gtk_widget_get_ancestor(wave_edit,
-					  AGS_TYPE_WAVE_EDITOR);
+    wave_editor = (AgsWaveEditor *) gtk_widget_get_ancestor((GtkWidget *) wave_edit,
+							    AGS_TYPE_WAVE_EDITOR);
     
     if(wave_editor->selected_machine == NULL){
       return(TRUE);
     }
 
     wave_toolbar = wave_editor->wave_toolbar;
-
-    /* zoom */
-    zoom = exp2((double) gtk_combo_box_get_active((GtkComboBox *) wave_toolbar->zoom) - 2.0);
 
     /* reset offset */
     g_object_get(wave_editor->selected_machine->audio,
@@ -925,8 +918,8 @@ ags_wave_edit_reset_vscrollbar(AgsWaveEdit *wave_edit)
     return;
   }
 
-  wave_editor = gtk_widget_get_ancestor(wave_edit,
-					AGS_TYPE_WAVE_EDITOR);
+  wave_editor = (AgsWaveEditor *) gtk_widget_get_ancestor((GtkWidget *) wave_edit,
+							  AGS_TYPE_WAVE_EDITOR);
 
   if(wave_editor->selected_machine == NULL){
     return;
@@ -971,8 +964,8 @@ ags_wave_edit_reset_hscrollbar(AgsWaveEdit *wave_edit)
     return;
   }
 
-  wave_editor = gtk_widget_get_ancestor(wave_edit,
-					AGS_TYPE_WAVE_EDITOR);
+  wave_editor = (AgsWaveEditor *) gtk_widget_get_ancestor((GtkWidget *) wave_edit,
+							  AGS_TYPE_WAVE_EDITOR);
 
   if(wave_editor->selected_machine == NULL){
     return;
@@ -1047,8 +1040,8 @@ ags_wave_edit_draw_segment(AgsWaveEdit *wave_edit)
     return;
   }
 
-  wave_editor = gtk_widget_get_ancestor(wave_edit,
-					AGS_TYPE_WAVE_EDITOR);
+  wave_editor = (AgsWaveEditor *) gtk_widget_get_ancestor((GtkWidget *) wave_edit,
+							  AGS_TYPE_WAVE_EDITOR);
 
   if(wave_editor->selected_machine == NULL){
     return;
@@ -1090,7 +1083,7 @@ ags_wave_edit_draw_segment(AgsWaveEdit *wave_edit)
 
   cairo_set_line_width(cr, 1.0);
 
-  tact = exp2((double) gtk_combo_box_get_active(wave_editor->wave_toolbar->zoom) - 2.0);
+  tact = exp2((double) gtk_combo_box_get_active(wave_toolbar->zoom) - 2.0);
 
   y = (gdouble) 0.0;
   
@@ -1211,8 +1204,8 @@ ags_wave_edit_draw_position(AgsWaveEdit *wave_edit)
     return;
   }
 
-  wave_editor = gtk_widget_get_ancestor(wave_edit,
-					AGS_TYPE_WAVE_EDITOR);
+  wave_editor = (AgsWaveEditor *) gtk_widget_get_ancestor((GtkWidget *) wave_edit,
+							  AGS_TYPE_WAVE_EDITOR);
 
   if(wave_editor->selected_machine == NULL){
     return;
@@ -1279,8 +1272,8 @@ ags_wave_edit_draw_cursor(AgsWaveEdit *wave_edit)
     return;
   }
 
-  wave_editor = gtk_widget_get_ancestor(wave_edit,
-					AGS_TYPE_WAVE_EDITOR);
+  wave_editor = (AgsWaveEditor *) gtk_widget_get_ancestor((GtkWidget *) wave_edit,
+							  AGS_TYPE_WAVE_EDITOR);
 
   if(wave_editor->selected_machine == NULL){
     return;
@@ -1347,8 +1340,8 @@ ags_wave_edit_draw_selection(AgsWaveEdit *wave_edit)
     return;
   }
 
-  wave_editor = gtk_widget_get_ancestor(wave_edit,
-					AGS_TYPE_WAVE_EDITOR);
+  wave_editor = (AgsWaveEditor *) gtk_widget_get_ancestor((GtkWidget *) wave_edit,
+							  AGS_TYPE_WAVE_EDITOR);
   
   wave_toolbar = wave_editor->wave_toolbar;
 
@@ -1396,7 +1389,7 @@ ags_wave_edit_draw_selection(AgsWaveEdit *wave_edit)
   if(x + width > GTK_WIDGET(wave_edit->drawing_area)->allocation.width){
     width = ((double) GTK_WIDGET(wave_edit->drawing_area)->allocation.width) - x;
   }
-  
+
   if(y < 0.0){
     height += y;
 
@@ -1471,8 +1464,8 @@ ags_wave_edit_draw_buffer(AgsWaveEdit *wave_edit,
     return;
   }
 
-  wave_editor = gtk_widget_get_ancestor(wave_edit,
-					AGS_TYPE_WAVE_EDITOR);
+  wave_editor = (AgsWaveEditor *) gtk_widget_get_ancestor((GtkWidget *) wave_edit,
+							  AGS_TYPE_WAVE_EDITOR);
 
   if(wave_editor->selected_machine == NULL){
     return;
@@ -1561,6 +1554,8 @@ ags_wave_edit_draw_buffer(AgsWaveEdit *wave_edit,
   //  cairo_scale(cr,
   //	      1.0 / (zoom_factor * (((60.0 / bpm) * ((double) buffer_size / (double) samplerate)) * AGS_WAVE_EDIT_X_RESOLUTION)), 1.0);
 
+  y1 = 0.0;
+  
   for(i = 0; i < buffer_size; i += (zoom_factor * 16)){
     double y0, y1;
 
@@ -1658,16 +1653,16 @@ ags_wave_edit_draw_wave(AgsWaveEdit *wave_edit)
     return;
   }
 
-  wave_editor = gtk_widget_get_ancestor(wave_edit,
-					AGS_TYPE_WAVE_EDITOR);
+  wave_editor = (AgsWaveEditor *) gtk_widget_get_ancestor((GtkWidget *) wave_edit,
+							  AGS_TYPE_WAVE_EDITOR);
 
   if(wave_editor->selected_machine == NULL){
     return;
   }
 
-  wave_window = gtk_widget_get_ancestor(wave_editor,
-					AGS_TYPE_WAVE_WINDOW);
-  window = wave_window->parent_window;  
+  wave_window = (AgsWaveWindow *) gtk_widget_get_ancestor((GtkWidget *) wave_editor,
+							  AGS_TYPE_WAVE_WINDOW);
+  window = (AgsWindow *) wave_window->parent_window;  
 
   wave_toolbar = wave_editor->wave_toolbar;
   

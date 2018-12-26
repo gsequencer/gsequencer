@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -152,22 +152,22 @@ ags_wave_toolbar_init(AgsWaveToolbar *wave_toolbar)
 			    "cut wave",
 			    NULL);
 
-  wave_toolbar->paste_tool = (GtkButton *) g_object_new(GTK_TYPE_MENU_TOOL_BUTTON,
-							"stock-id", GTK_STOCK_PASTE,
-							NULL);
+  wave_toolbar->paste_tool = (GtkMenuToolButton *) g_object_new(GTK_TYPE_MENU_TOOL_BUTTON,
+								"stock-id", GTK_STOCK_PASTE,
+								NULL);
 
-  menu = gtk_menu_new();
+  menu = (GtkMenu *) gtk_menu_new();
 
   item = g_object_new(GTK_TYPE_CHECK_MENU_ITEM,
 		      "label", "match line",
 		      "active", TRUE,
 		      NULL);
-  gtk_menu_shell_append(menu,
-			item);
+  gtk_menu_shell_append((GtkMenuShell *) menu,
+			(GtkWidget *) item);
 
   gtk_menu_tool_button_set_menu(wave_toolbar->paste_tool,
-				menu);
-  gtk_widget_show_all(menu);
+				(GtkWidget *) menu);
+  gtk_widget_show_all((GtkWidget *) menu);
 
   gtk_toolbar_append_widget((GtkToolbar *) wave_toolbar,
 			    (GtkWidget *) wave_toolbar->paste_tool,
@@ -184,11 +184,11 @@ ags_wave_toolbar_init(AgsWaveToolbar *wave_toolbar)
   /* menu tool - tool popup */
   wave_toolbar->tool_popup = ags_wave_toolbar_tool_popup_new(wave_toolbar);
   gtk_menu_tool_button_set_menu(wave_toolbar->menu_tool,
-				wave_toolbar->tool_popup);
+				(GtkWidget *) wave_toolbar->tool_popup);
 
   /* menu tool - dialogs */
-  wave_toolbar->select_buffer = ags_select_buffer_dialog_new(NULL);
-  wave_toolbar->position_wave_cursor = ags_position_wave_cursor_dialog_new(NULL);
+  wave_toolbar->select_buffer = (GtkDialog *) ags_select_buffer_dialog_new(NULL);
+  wave_toolbar->position_wave_cursor = (GtkDialog *) ags_position_wave_cursor_dialog_new(NULL);
 
   /*  */
   wave_toolbar->zoom_history = 4;
@@ -241,7 +241,7 @@ ags_wave_toolbar_connect(AgsConnectable *connectable)
 
   wave_window = (AgsWaveWindow *) gtk_widget_get_ancestor((GtkWidget *) wave_toolbar,
 								      AGS_TYPE_WAVE_WINDOW);
-  window = wave_window->parent_window;
+  window = (AgsWindow *) wave_window->parent_window;
   
   g_object_set(wave_toolbar->select_buffer,
 	       "main-window", window,
@@ -267,7 +267,7 @@ ags_wave_toolbar_connect(AgsConnectable *connectable)
   g_signal_connect((GObject *) wave_toolbar->paste_tool, "clicked",
 		   G_CALLBACK(ags_wave_toolbar_paste_callback), (gpointer) wave_toolbar);
 
-  list = gtk_container_get_children(gtk_menu_tool_button_get_menu(wave_toolbar->paste_tool));
+  list = gtk_container_get_children((GtkContainer *) gtk_menu_tool_button_get_menu(wave_toolbar->paste_tool));
 
   g_signal_connect_after(list->data, "activate",
 			 G_CALLBACK(ags_wave_toolbar_match_line_callback), wave_toolbar);
@@ -335,7 +335,7 @@ ags_wave_toolbar_disconnect(AgsConnectable *connectable)
 		      wave_toolbar,
 		      NULL);
   
-  list = gtk_container_get_children(gtk_menu_tool_button_get_menu(wave_toolbar->paste_tool));
+  list = gtk_container_get_children((GtkContainer *) gtk_menu_tool_button_get_menu(wave_toolbar->paste_tool));
 
   g_object_disconnect(G_OBJECT(list->data),
 		      "any_signal::activate",
@@ -375,7 +375,7 @@ ags_wave_toolbar_disconnect(AgsConnectable *connectable)
  * Since: 2.0.0
  */
 GtkMenu*
-ags_wave_toolbar_tool_popup_new(GtkToolbar *wave_toolbar)
+ags_wave_toolbar_tool_popup_new(AgsWaveToolbar *wave_toolbar)
 {
   GtkMenu *tool_popup;
   GtkMenuItem *item;

@@ -72,7 +72,7 @@ struct _AgsWaveToolbarClass
 
 GType ags_wave_toolbar_get_type(void);
 
-GtkMenu* ags_wave_toolbar_tool_popup_new(GtkToolbar *wave_toolbar);
+GtkMenu* ags_wave_toolbar_tool_popup_new(AgsWaveToolbar *wave_toolbar);
 
 AgsWaveToolbar* ags_wave_toolbar_new();
 

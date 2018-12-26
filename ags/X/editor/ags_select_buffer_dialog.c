@@ -216,7 +216,7 @@ ags_select_buffer_dialog_init(AgsSelectBufferDialog *select_buffer_dialog)
 
   /* copy selection */
   select_buffer_dialog->copy_selection = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("copy selection"));
-  gtk_toggle_button_set_active(select_buffer_dialog->copy_selection,
+  gtk_toggle_button_set_active((GtkToggleButton *) select_buffer_dialog->copy_selection,
 			       TRUE);
   gtk_box_pack_start((GtkBox *) vbox,
 		     GTK_WIDGET(select_buffer_dialog->copy_selection),
@@ -251,7 +251,7 @@ ags_select_buffer_dialog_init(AgsSelectBufferDialog *select_buffer_dialog)
 		     0);
   
   /* select x1 - hbox */
-  hbox = (GtkVBox *) gtk_hbox_new(FALSE, 0);
+  hbox = (GtkHBox *) gtk_hbox_new(FALSE, 0);
   gtk_box_pack_start((GtkBox *) vbox,
 		     GTK_WIDGET(hbox),
 		     FALSE, FALSE,
@@ -335,7 +335,7 @@ ags_select_buffer_dialog_set_property(GObject *gobject,
 	g_object_ref(main_window);
       }
 
-      select_buffer_dialog->main_window = (GObject *) main_window;
+      select_buffer_dialog->main_window = (GtkWidget *) main_window;
     }
     break;
   default:
@@ -374,7 +374,6 @@ ags_select_buffer_dialog_get_property(GObject *gobject,
 void
 ags_select_buffer_dialog_connect(AgsConnectable *connectable)
 {
-  AgsWaveEditor *wave_editor;
   AgsSelectBufferDialog *select_buffer_dialog;
 
   select_buffer_dialog = AGS_SELECT_BUFFER_DIALOG(connectable);
@@ -385,8 +384,6 @@ ags_select_buffer_dialog_connect(AgsConnectable *connectable)
 
   select_buffer_dialog->flags |= AGS_SELECT_BUFFER_DIALOG_CONNECTED;
 
-  wave_editor = AGS_WINDOW(select_buffer_dialog->main_window)->wave_window->wave_editor;
-
   g_signal_connect(select_buffer_dialog, "response",
 		   G_CALLBACK(ags_select_buffer_dialog_response_callback), select_buffer_dialog);
 }
@@ -394,7 +391,6 @@ ags_select_buffer_dialog_connect(AgsConnectable *connectable)
 void
 ags_select_buffer_dialog_disconnect(AgsConnectable *connectable)
 {
-  AgsWaveEditor *wave_editor;
   AgsSelectBufferDialog *select_buffer_dialog;
 
   select_buffer_dialog = AGS_SELECT_BUFFER_DIALOG(connectable);
@@ -404,8 +400,6 @@ ags_select_buffer_dialog_disconnect(AgsConnectable *connectable)
   }
 
   select_buffer_dialog->flags &= (~AGS_SELECT_BUFFER_DIALOG_CONNECTED);
-
-  wave_editor = AGS_WINDOW(select_buffer_dialog->main_window)->wave_window->wave_editor;
 
   g_object_disconnect(G_OBJECT(select_buffer_dialog),
 		      "any_signal::response",
@@ -490,7 +484,7 @@ ags_select_buffer_dialog_apply(AgsApplicable *applicable)
   delay = ags_soundcard_get_delay(AGS_SOUNDCARD(output_soundcard));
   
   /* get some values */
-  copy_selection = gtk_toggle_button_get_active(select_buffer_dialog->copy_selection);
+  copy_selection = gtk_toggle_button_get_active((GtkToggleButton *) select_buffer_dialog->copy_selection);
 
   x0 = gtk_spin_button_get_value_as_int(select_buffer_dialog->select_x0);
   x0 = delay * buffer_size * x0;

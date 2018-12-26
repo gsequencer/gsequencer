@@ -212,7 +212,7 @@ ags_select_note_dialog_init(AgsSelectNoteDialog *select_note_dialog)
 
   /* copy selection */
   select_note_dialog->copy_selection = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("copy selection"));
-  gtk_toggle_button_set_active(select_note_dialog->copy_selection,
+  gtk_toggle_button_set_active((GtkToggleButton *) select_note_dialog->copy_selection,
 			       TRUE);
   gtk_box_pack_start((GtkBox *) vbox,
 		     GTK_WIDGET(select_note_dialog->copy_selection),
@@ -220,7 +220,7 @@ ags_select_note_dialog_init(AgsSelectNoteDialog *select_note_dialog)
 		     0);  
 
   /* select x0 - hbox */
-  hbox = (GtkVBox *) gtk_hbox_new(FALSE, 0);
+  hbox = (GtkHBox *) gtk_hbox_new(FALSE, 0);
   gtk_box_pack_start((GtkBox *) vbox,
 		     GTK_WIDGET(hbox),
 		     FALSE, FALSE,
@@ -245,7 +245,7 @@ ags_select_note_dialog_init(AgsSelectNoteDialog *select_note_dialog)
 		     0);
   
   /* select y0 - hbox */
-  hbox = (GtkVBox *) gtk_hbox_new(FALSE, 0);
+  hbox = (GtkHBox *) gtk_hbox_new(FALSE, 0);
   gtk_box_pack_start((GtkBox *) vbox,
 		     GTK_WIDGET(hbox),
 		     FALSE, FALSE,
@@ -270,7 +270,7 @@ ags_select_note_dialog_init(AgsSelectNoteDialog *select_note_dialog)
 		     0);
 
   /* select x1 - hbox */
-  hbox = (GtkVBox *) gtk_hbox_new(FALSE, 0);
+  hbox = (GtkHBox *) gtk_hbox_new(FALSE, 0);
   gtk_box_pack_start((GtkBox *) vbox,
 		     GTK_WIDGET(hbox),
 		     FALSE, FALSE,
@@ -295,7 +295,7 @@ ags_select_note_dialog_init(AgsSelectNoteDialog *select_note_dialog)
 		     0);
 
   /* select y1 - hbox */
-  hbox = (GtkVBox *) gtk_hbox_new(FALSE, 0);
+  hbox = (GtkHBox *) gtk_hbox_new(FALSE, 0);
   gtk_box_pack_start((GtkBox *) vbox,
 		     GTK_WIDGET(hbox),
 		     FALSE, FALSE,
@@ -377,7 +377,7 @@ ags_select_note_dialog_set_property(GObject *gobject,
 	g_object_ref(main_window);
       }
 
-      select_note_dialog->main_window = (GObject *) main_window;
+      select_note_dialog->main_window = (GtkWidget *) main_window;
     }
     break;
   default:
@@ -515,7 +515,7 @@ ags_select_note_dialog_apply(AgsApplicable *applicable)
 	       NULL);
 
   /* get some values */
-  copy_selection = gtk_toggle_button_get_active(select_note_dialog->copy_selection);
+  copy_selection = gtk_toggle_button_get_active((GtkToggleButton *) select_note_dialog->copy_selection);
 
   x0 = gtk_spin_button_get_value_as_int(select_note_dialog->select_x0);
   y0 = gtk_spin_button_get_value_as_int(select_note_dialog->select_y0);
