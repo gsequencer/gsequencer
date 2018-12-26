@@ -458,7 +458,7 @@ ags_position_notation_cursor_dialog_apply(AgsApplicable *applicable)
   history = gtk_combo_box_get_active(GTK_COMBO_BOX(notation_toolbar->zoom));
   zoom = exp2((double) history - 2.0);
 
-  notation_edit = notation_editor->focused_notation_edit;
+  notation_edit = notation_editor->notation_edit;
 
   if(notation_edit == NULL){
     return;
