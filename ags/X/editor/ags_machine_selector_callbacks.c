@@ -102,10 +102,14 @@ ags_machine_selector_popup_link_index_callback(GtkWidget *menu_item, AgsMachineS
 
   while(list != NULL && !AGS_IS_WINDOW(list->data)) list = list->next;
 
+  if(list == NULL){
+    return;
+  }
+  
   window = list->data;
 
-  machine_selector->machine_selection =
-    machine_selection = (AgsMachineSelection *) ags_machine_selection_new(window);
+  machine_selection = (AgsMachineSelection *) ags_machine_selection_new(window);
+  machine_selector->machine_selection = (GtkDialog *) machine_selection;
 
   if((AGS_MACHINE_SELECTOR_NOTATION & (machine_selector->flags)) != 0){
     machine_selection->flags |= AGS_MACHINE_SELECTION_NOTATION;
@@ -212,11 +216,12 @@ ags_machine_selector_popup_shift_piano_callback(GtkWidget *menu_item, AgsMachine
 
     gint base_key_code;
     
-    notation = notation_editor->selected_machine->audio->notation;
     label = gtk_menu_item_get_label((GtkMenuItem *) menu_item);
 
     //FIXME:JK: modify to the new API
 #if 0
+    notation = notation_editor->selected_machine->audio->notation;
+
     while(notation != NULL){
       g_free(AGS_NOTATION(notation->data)->base_note);
       AGS_NOTATION(notation->data)->base_note = g_strdup(label);
@@ -224,6 +229,9 @@ ags_machine_selector_popup_shift_piano_callback(GtkWidget *menu_item, AgsMachine
       notation = notation->next;
     }
 #endif
+
+    base_note = NULL;
+    base_key_code = 0;
     
     if(!g_strcmp0(label,
 		  "A")){
@@ -279,6 +287,6 @@ ags_machine_selector_popup_shift_piano_callback(GtkWidget *menu_item, AgsMachine
 		 "base-note", base_note,
 		 "base-key-code", base_key_code,
 		 NULL);
-    gtk_widget_queue_draw(notation_editor->scrolled_piano->piano);
+    gtk_widget_queue_draw((GtkWidget *) notation_editor->scrolled_piano->piano);
   }
 }

@@ -47,7 +47,7 @@ ags_ramp_acceleration_dialog_response_callback(GtkWidget *dialog, gint response,
   case GTK_RESPONSE_CANCEL:
     {
       if(hide_dialog){
-	gtk_widget_hide(ramp_acceleration_dialog);
+	gtk_widget_hide((GtkWidget *) ramp_acceleration_dialog);
       }
     }
   }
@@ -61,7 +61,6 @@ ags_ramp_acceleration_dialog_port_callback(GtkComboBox *combo_box,
   AgsAutomationEditor *automation_editor;
   AgsMachine *machine;
 
-  AgsAudio *audio;
   AgsChannel *channel;
   
   AgsPluginPort *plugin_port;
@@ -78,12 +77,12 @@ ags_ramp_acceleration_dialog_port_callback(GtkComboBox *combo_box,
   if(machine == NULL){
     return;
   }
-  
-  audio = machine->audio;
 
   /* specifier */
   specifier = gtk_combo_box_text_get_active_text(ramp_acceleration_dialog->port);
 
+  start_port = NULL;
+  
   switch(gtk_notebook_get_current_page(automation_editor->notebook)){
   case 0:
     {
@@ -102,8 +101,6 @@ ags_ramp_acceleration_dialog_port_callback(GtkComboBox *combo_box,
       }else{
 	start_port = port;
       }
-
-      port = start_port;
     }
     break;
   case 1:

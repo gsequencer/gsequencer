@@ -212,9 +212,9 @@ ags_automation_toolbar_init(AgsAutomationToolbar *automation_toolbar)
 				(GtkWidget *) automation_toolbar->tool_popup);
 
   /* menu tool - dialogs */
-  automation_toolbar->select_acceleration = ags_select_acceleration_dialog_new(NULL);
-  automation_toolbar->ramp_acceleration = ags_ramp_acceleration_dialog_new(NULL);
-  automation_toolbar->position_automation_cursor = ags_position_automation_cursor_dialog_new(NULL);
+  automation_toolbar->select_acceleration = (GtkDialog *) ags_select_acceleration_dialog_new(NULL);
+  automation_toolbar->ramp_acceleration = (GtkDialog *) ags_ramp_acceleration_dialog_new(NULL);
+  automation_toolbar->position_automation_cursor = (GtkDialog *) ags_position_automation_cursor_dialog_new(NULL);
 
   /*  */
   automation_toolbar->zoom_history = 4;
@@ -299,7 +299,7 @@ ags_automation_toolbar_connect(AgsConnectable *connectable)
 
   automation_window = (AgsAutomationWindow *) gtk_widget_get_ancestor((GtkWidget *) automation_toolbar,
 								      AGS_TYPE_AUTOMATION_WINDOW);
-  window = automation_window->parent_window;
+  window = (AgsWindow *) automation_window->parent_window;
   
   g_object_set(automation_toolbar->select_acceleration,
 	       "main-window", window,
@@ -338,7 +338,7 @@ ags_automation_toolbar_connect(AgsConnectable *connectable)
   g_signal_connect((GObject *) automation_toolbar->paste_tool, "clicked",
 		   G_CALLBACK(ags_automation_toolbar_paste_callback), (gpointer) automation_toolbar);
 
-  list = gtk_container_get_children(gtk_menu_tool_button_get_menu(automation_toolbar->paste_tool));
+  list = gtk_container_get_children((GtkContainer *) gtk_menu_tool_button_get_menu(automation_toolbar->paste_tool));
 
   g_signal_connect_after(list->data, "activate",
 			 G_CALLBACK(ags_automation_toolbar_match_line_callback), automation_toolbar);
@@ -427,7 +427,7 @@ ags_automation_toolbar_disconnect(AgsConnectable *connectable)
 		      automation_toolbar,
 		      NULL);
   
-  list = gtk_container_get_children(gtk_menu_tool_button_get_menu(automation_toolbar->paste_tool));
+  list = gtk_container_get_children((GtkContainer *) gtk_menu_tool_button_get_menu(automation_toolbar->paste_tool));
 
   g_object_disconnect(G_OBJECT(list->data),
 		      "any_signal::activate",
@@ -775,6 +775,8 @@ ags_automation_toolbar_apply_port(AgsAutomationToolbar *automation_toolbar,
 		       2, &specifier,
 		       -1);
 
+    scope = G_TYPE_NONE;
+
     if(!g_ascii_strcasecmp("audio",
 			   str)){
       scope = G_TYPE_NONE;
@@ -794,8 +796,6 @@ ags_automation_toolbar_apply_port(AgsAutomationToolbar *automation_toolbar,
       }else{
 	start_port = port;
       }
-
-      port = start_port;
     }else if(!g_ascii_strcasecmp("output",
 				 str)){
       scope = AGS_TYPE_OUTPUT;
@@ -964,23 +964,23 @@ ags_automation_toolbar_apply_port(AgsAutomationToolbar *automation_toolbar,
 		 NULL);
 
     if(channel_type == G_TYPE_NONE){
-      gtk_box_pack_start(automation_editor->audio_scrolled_scale_box->scale_box,
-			 scale,
+      gtk_box_pack_start((GtkBox *) automation_editor->audio_scrolled_scale_box->scale_box,
+			 (GtkWidget *) scale,
 			 FALSE, FALSE,
 			 AGS_AUTOMATION_EDIT_DEFAULT_PADDING);
     }else if(channel_type == AGS_TYPE_OUTPUT){
-      gtk_box_pack_start(automation_editor->output_scrolled_scale_box->scale_box,
-			 scale,
+      gtk_box_pack_start((GtkBox *) automation_editor->output_scrolled_scale_box->scale_box,
+			 (GtkWidget *) scale,
 			 FALSE, FALSE,
 			 AGS_AUTOMATION_EDIT_DEFAULT_PADDING);
     }else if(channel_type == AGS_TYPE_INPUT){
-      gtk_box_pack_start(automation_editor->input_scrolled_scale_box->scale_box,
-			 scale,
+      gtk_box_pack_start((GtkBox *) automation_editor->input_scrolled_scale_box->scale_box,
+			 (GtkWidget *) scale,
 			 FALSE, FALSE,
 			 AGS_AUTOMATION_EDIT_DEFAULT_PADDING);
     }
       
-    gtk_widget_show(scale);
+    gtk_widget_show((GtkWidget *) scale);
 	  
     /* automation edit */
     automation_edit = ags_automation_edit_new();
@@ -995,24 +995,24 @@ ags_automation_toolbar_apply_port(AgsAutomationToolbar *automation_toolbar,
 		 NULL);
 
     if(channel_type == G_TYPE_NONE){
-      gtk_box_pack_start(automation_editor->audio_scrolled_automation_edit_box->automation_edit_box,
-			 automation_edit,
+      gtk_box_pack_start((GtkBox *) automation_editor->audio_scrolled_automation_edit_box->automation_edit_box,
+			 (GtkWidget *) automation_edit,
 			 FALSE, FALSE,
 			 AGS_AUTOMATION_EDIT_DEFAULT_PADDING);
     }else if(channel_type == AGS_TYPE_OUTPUT){
-      gtk_box_pack_start(automation_editor->output_scrolled_automation_edit_box->automation_edit_box,
-			 automation_edit,
+      gtk_box_pack_start((GtkBox *) automation_editor->output_scrolled_automation_edit_box->automation_edit_box,
+			 (GtkWidget *) automation_edit,
 			 FALSE, FALSE,
 			 AGS_AUTOMATION_EDIT_DEFAULT_PADDING);
     }else if(channel_type == AGS_TYPE_INPUT){
-      gtk_box_pack_start(automation_editor->input_scrolled_automation_edit_box->automation_edit_box,
-			 automation_edit,
+      gtk_box_pack_start((GtkBox *) automation_editor->input_scrolled_automation_edit_box->automation_edit_box,
+			 (GtkWidget *) automation_edit,
 			 FALSE, FALSE,
 			 AGS_AUTOMATION_EDIT_DEFAULT_PADDING);
     }
       
     ags_connectable_connect(AGS_CONNECTABLE(automation_edit));
-    gtk_widget_show(automation_edit);    
+    gtk_widget_show((GtkWidget *) automation_edit);    
 
     if(channel_type == G_TYPE_NONE){
       g_signal_connect_after((GObject *) automation_edit->hscrollbar, "value-changed",
@@ -1050,13 +1050,13 @@ ags_automation_toolbar_apply_port(AgsAutomationToolbar *automation_toolbar,
     
     if(channel_type == G_TYPE_NONE){
       list =
-	list_start = gtk_container_get_children(automation_editor->audio_scrolled_automation_edit_box->automation_edit_box);
+	list_start = gtk_container_get_children((GtkContainer *) automation_editor->audio_scrolled_automation_edit_box->automation_edit_box);
     }else if(channel_type == AGS_TYPE_OUTPUT){
       list =
-	list_start = gtk_container_get_children(automation_editor->output_scrolled_automation_edit_box->automation_edit_box);
+	list_start = gtk_container_get_children((GtkContainer *) automation_editor->output_scrolled_automation_edit_box->automation_edit_box);
     }else if(channel_type == AGS_TYPE_INPUT){
       list =
-	list_start = gtk_container_get_children(automation_editor->input_scrolled_automation_edit_box->automation_edit_box);
+	list_start = gtk_container_get_children((GtkContainer *) automation_editor->input_scrolled_automation_edit_box->automation_edit_box);
     }
     
 
@@ -1080,11 +1080,11 @@ ags_automation_toolbar_apply_port(AgsAutomationToolbar *automation_toolbar,
 
     if(success){
       if(channel_type == G_TYPE_NONE){
-	list_start = gtk_container_get_children(automation_editor->audio_scrolled_scale_box->scale_box);
+	list_start = gtk_container_get_children((GtkContainer *) automation_editor->audio_scrolled_scale_box->scale_box);
       }else if(channel_type == AGS_TYPE_OUTPUT){
-	list_start = gtk_container_get_children(automation_editor->output_scrolled_scale_box->scale_box);
+	list_start = gtk_container_get_children((GtkContainer *) automation_editor->output_scrolled_scale_box->scale_box);
       }else if(channel_type == AGS_TYPE_INPUT){
-	list_start = gtk_container_get_children(automation_editor->input_scrolled_scale_box->scale_box);
+	list_start = gtk_container_get_children((GtkContainer *) automation_editor->input_scrolled_scale_box->scale_box);
       }
 
       list = g_list_nth(list_start,

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -27,10 +27,10 @@
 
 #include <ags/X/editor/ags_notation_toolbar.h>
 
-void ags_notation_toolbar_position_callback(GtkToggleButton *toggle_button, AgsNotationToolbar *notation_toolbar);
-void ags_notation_toolbar_edit_callback(GtkToggleButton *toggle_button, AgsNotationToolbar *notation_toolbar);
-void ags_notation_toolbar_clear_callback(GtkToggleButton *toggle_button, AgsNotationToolbar *notation_toolbar);
-void ags_notation_toolbar_select_callback(GtkToggleButton *toggle_button, AgsNotationToolbar *notation_toolbar);
+void ags_notation_toolbar_position_callback(GtkToggleToolButton *toggle_button, AgsNotationToolbar *notation_toolbar);
+void ags_notation_toolbar_edit_callback(GtkToggleToolButton *toggle_button, AgsNotationToolbar *notation_toolbar);
+void ags_notation_toolbar_clear_callback(GtkToggleToolButton *toggle_button, AgsNotationToolbar *notation_toolbar);
+void ags_notation_toolbar_select_callback(GtkToggleToolButton *toggle_button, AgsNotationToolbar *notation_toolbar);
 
 void ags_notation_toolbar_copy_or_cut_callback(GtkWidget *widget, AgsNotationToolbar *notation_toolbar);
 void ags_notation_toolbar_paste_callback(GtkWidget *widget, AgsNotationToolbar *notation_toolbar);

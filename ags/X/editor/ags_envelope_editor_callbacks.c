@@ -75,12 +75,12 @@ ags_envelope_editor_preset_remove_callback(GtkWidget *button,
 {
   AgsEnvelopeDialog *envelope_dialog;
 
-  envelope_dialog = (AgsEnvelopeDialog *) gtk_widget_get_ancestor(envelope_editor,
+  envelope_dialog = (AgsEnvelopeDialog *) gtk_widget_get_ancestor((GtkWidget *) envelope_editor,
 								  AGS_TYPE_ENVELOPE_DIALOG);
   
   /* remove preset */
   ags_envelope_editor_remove_preset(envelope_editor,
-				    gtk_combo_box_get_active(envelope_editor->preset));
+				    gtk_combo_box_get_active(GTK_COMBO_BOX(envelope_editor->preset)));
 
   /* load preset */
   ags_envelope_dialog_load_preset(envelope_dialog);
@@ -95,7 +95,7 @@ ags_envelope_editor_preset_rename_response_callback(GtkWidget *widget, gint resp
     
     gchar *text;
 
-    envelope_dialog = (AgsEnvelopeDialog *) gtk_widget_get_ancestor(envelope_editor,
+    envelope_dialog = (AgsEnvelopeDialog *) gtk_widget_get_ancestor((GtkWidget *) envelope_editor,
 								    AGS_TYPE_ENVELOPE_DIALOG);
 
     /* get name */

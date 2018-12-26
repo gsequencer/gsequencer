@@ -222,7 +222,7 @@ ags_ramp_acceleration_dialog_init(AgsRampAccelerationDialog *ramp_acceleration_d
 		     0);  
   
   /* ramp x0 - hbox */
-  hbox = (GtkVBox *) gtk_hbox_new(FALSE, 0);
+  hbox = (GtkHBox *) gtk_hbox_new(FALSE, 0);
   gtk_box_pack_start((GtkBox *) vbox,
 		     GTK_WIDGET(hbox),
 		     FALSE, FALSE,
@@ -249,7 +249,7 @@ ags_ramp_acceleration_dialog_init(AgsRampAccelerationDialog *ramp_acceleration_d
 		     0);
 
   /* ramp y0 - hbox */
-  hbox = (GtkVBox *) gtk_hbox_new(FALSE, 0);
+  hbox = (GtkHBox *) gtk_hbox_new(FALSE, 0);
   gtk_box_pack_start((GtkBox *) vbox,
 		     GTK_WIDGET(hbox),
 		     FALSE, FALSE,
@@ -274,7 +274,7 @@ ags_ramp_acceleration_dialog_init(AgsRampAccelerationDialog *ramp_acceleration_d
 		     0);
   
   /* ramp x1 - hbox */
-  hbox = (GtkVBox *) gtk_hbox_new(FALSE, 0);
+  hbox = (GtkHBox *) gtk_hbox_new(FALSE, 0);
   gtk_box_pack_start((GtkBox *) vbox,
 		     GTK_WIDGET(hbox),
 		     FALSE, FALSE,
@@ -301,7 +301,7 @@ ags_ramp_acceleration_dialog_init(AgsRampAccelerationDialog *ramp_acceleration_d
 		     0);
 
   /* ramp y1 - hbox */
-  hbox = (GtkVBox *) gtk_hbox_new(FALSE, 0);
+  hbox = (GtkHBox *) gtk_hbox_new(FALSE, 0);
   gtk_box_pack_start((GtkBox *) vbox,
 		     GTK_WIDGET(hbox),
 		     FALSE, FALSE,
@@ -326,7 +326,7 @@ ags_ramp_acceleration_dialog_init(AgsRampAccelerationDialog *ramp_acceleration_d
 		     0);
 
   /* ramp step count - hbox */
-  hbox = (GtkVBox *) gtk_hbox_new(FALSE, 0);
+  hbox = (GtkHBox *) gtk_hbox_new(FALSE, 0);
   gtk_box_pack_start((GtkBox *) vbox,
 		     GTK_WIDGET(hbox),
 		     FALSE, FALSE,
@@ -408,7 +408,7 @@ ags_ramp_acceleration_dialog_set_property(GObject *gobject,
 	g_object_ref(main_window);
       }
 
-      ramp_acceleration_dialog->main_window = (GObject *) main_window;
+      ramp_acceleration_dialog->main_window = (GtkWidget *) main_window;
     }
     break;
   default:
@@ -542,8 +542,6 @@ ags_ramp_acceleration_dialog_apply(AgsApplicable *applicable)
 
   AgsTimestamp *timestamp;
 
-  AgsApplicationContext *application_context;
-
   GList *start_list_automation, *list_automation;
   GList *list_acceleration, *list_acceleration_start;
 
@@ -567,7 +565,6 @@ ags_ramp_acceleration_dialog_apply(AgsApplicable *applicable)
   guint i, i_start, i_stop;
   guint nth_match, match_count;
 
-  gboolean is_audio, is_output, is_input;
   gboolean success;
   
   ramp_acceleration_dialog = AGS_RAMP_ACCELERATION_DIALOG(applicable);
@@ -582,25 +579,20 @@ ags_ramp_acceleration_dialog_apply(AgsApplicable *applicable)
     return;
   }
 
-  automation_toolbar = automation_editor->automation_toolbar;
+  automation_toolbar = (AgsAutomationToolbar *) automation_editor->automation_toolbar;
   
   specifier = gtk_combo_box_text_get_active_text(ramp_acceleration_dialog->port);
-
+  notebook = NULL;
+  
   if(automation_editor->focused_automation_edit->channel_type == G_TYPE_NONE){
     notebook = NULL;
     channel_type = G_TYPE_NONE;
-
-    is_audio = TRUE;
   }else if(automation_editor->focused_automation_edit->channel_type == AGS_TYPE_OUTPUT){
     notebook = automation_editor->output_notebook;
     channel_type = AGS_TYPE_OUTPUT;
-      
-    is_output = TRUE;
   }else if(automation_editor->focused_automation_edit->channel_type == AGS_TYPE_INPUT){
     notebook = automation_editor->input_notebook;
     channel_type = AGS_TYPE_INPUT;
-      
-    is_input = TRUE;
   }
   
   audio = machine->audio;
@@ -613,9 +605,6 @@ ags_ramp_acceleration_dialog_apply(AgsApplicable *applicable)
   y1 = gtk_spin_button_get_value(ramp_acceleration_dialog->ramp_y1);
   
   step_count = gtk_spin_button_get_value_as_int(ramp_acceleration_dialog->ramp_step_count);
-
-  /* application context and mutex manager */
-  application_context = window->application_context;
 
   /* remove acceleration of region */
   line = 0;
@@ -821,7 +810,7 @@ ags_ramp_acceleration_dialog_apply(AgsApplicable *applicable)
 							     timestamp);
 
 	if(list_automation == NULL){
-	  current = ags_automation_new(machine->audio,
+	  current = ags_automation_new((GObject *) machine->audio,
 				       line,
 				       channel_type, specifier);
 	  g_object_set(current,
@@ -831,9 +820,9 @@ ags_ramp_acceleration_dialog_apply(AgsApplicable *applicable)
 	  current->timestamp->timer.ags_offset.offset = timestamp->timer.ags_offset.offset;
 
 	  ags_audio_add_automation(machine->audio,
-				   current);
+				   (GObject *) current);
 	  ags_port_add_automation(AGS_PORT(play_port->data),
-				  current);
+				  (GObject *) current);
 	}else{
 	  current = list_automation->data;
 	}
@@ -920,7 +909,7 @@ ags_ramp_acceleration_dialog_apply(AgsApplicable *applicable)
 							     timestamp);
 
 	if(list_automation == NULL){
-	  current = ags_automation_new(machine->audio,
+	  current = ags_automation_new((GObject *) machine->audio,
 				       line,
 				       channel_type, specifier);
 	  g_object_set(current,
@@ -930,9 +919,9 @@ ags_ramp_acceleration_dialog_apply(AgsApplicable *applicable)
 	  current->timestamp->timer.ags_offset.offset = timestamp->timer.ags_offset.offset;
 
 	  ags_audio_add_automation(machine->audio,
-				   current);
+				   (GObject *) current);
 	  ags_port_add_automation(AGS_PORT(recall_port->data),
-				  current);
+				  (GObject *) current);
 	}else{
 	  current = list_automation->data;
 	}
@@ -1028,7 +1017,7 @@ ags_ramp_acceleration_dialog_reset(AgsApplicable *applicable)
 
   machine = automation_editor->selected_machine;
 
-  gtk_list_store_clear(gtk_combo_box_get_model(ramp_acceleration_dialog->port));
+  gtk_list_store_clear(GTK_LIST_STORE(gtk_combo_box_get_model(GTK_COMBO_BOX(ramp_acceleration_dialog->port))));
   
   if(machine == NULL){
     return;

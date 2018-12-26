@@ -237,7 +237,7 @@ ags_crop_note_dialog_init(AgsCropNoteDialog *crop_note_dialog)
 		     0);  
 
   /* crop note - hbox */
-  hbox = (GtkVBox *) gtk_hbox_new(FALSE, 0);
+  hbox = (GtkHBox *) gtk_hbox_new(FALSE, 0);
   gtk_box_pack_start((GtkBox *) vbox,
 		     GTK_WIDGET(hbox),
 		     FALSE, FALSE,
@@ -344,7 +344,7 @@ ags_crop_note_dialog_set_property(GObject *gobject,
 	g_object_ref(main_window);
       }
 
-      crop_note_dialog->main_window = (GObject *) main_window;
+      crop_note_dialog->main_window = (GtkWidget *) main_window;
     }
     break;
   default:
@@ -461,7 +461,7 @@ ags_crop_note_dialog_apply(AgsApplicable *applicable)
 
   AgsAudio *audio;
 
-  AgsGuiThread *gui_thread;
+  AgsThread *gui_thread;
 
   AgsApplicationContext *application_context;
   
@@ -478,7 +478,7 @@ ags_crop_note_dialog_apply(AgsApplicable *applicable)
   
   crop_note_dialog = AGS_CROP_NOTE_DIALOG(applicable);
 
-  window = crop_note_dialog->main_window;
+  window = (AgsWindow *) crop_note_dialog->main_window;
   notation_editor = window->notation_editor;
 
   machine = notation_editor->selected_machine;
@@ -493,10 +493,10 @@ ags_crop_note_dialog_apply(AgsApplicable *applicable)
   x_crop = gtk_spin_button_get_value_as_int(crop_note_dialog->crop_note);
   x_padding = gtk_spin_button_get_value_as_int(crop_note_dialog->padding_note);
 
-  absolute = gtk_toggle_button_get_active(crop_note_dialog->absolute);
+  absolute = gtk_toggle_button_get_active((GtkToggleButton *) crop_note_dialog->absolute);
 
-  in_place = gtk_toggle_button_get_active(crop_note_dialog->in_place);
-  do_resize = gtk_toggle_button_get_active(crop_note_dialog->do_resize);
+  in_place = gtk_toggle_button_get_active((GtkToggleButton *) crop_note_dialog->in_place);
+  do_resize = gtk_toggle_button_get_active((GtkToggleButton *) crop_note_dialog->do_resize);
   
   /* application context and mutex manager */
   application_context = window->application_context;
@@ -547,7 +547,7 @@ ags_crop_note_dialog_apply(AgsApplicable *applicable)
   g_list_free(start_notation);
   
   /* append tasks */
-  ags_gui_thread_schedule_task_list(gui_thread,
+  ags_gui_thread_schedule_task_list((AgsGuiThread *) gui_thread,
 				    task);
 }
 

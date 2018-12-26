@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -218,7 +218,7 @@ ags_position_automation_cursor_dialog_init(AgsPositionAutomationCursorDialog *po
 
   /* set focus */
   position_automation_cursor_dialog->set_focus = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("set focus"));
-  gtk_toggle_button_set_active(position_automation_cursor_dialog->set_focus,
+  gtk_toggle_button_set_active((GtkToggleButton *) position_automation_cursor_dialog->set_focus,
 			       TRUE);
   gtk_box_pack_start((GtkBox *) vbox,
 		     GTK_WIDGET(position_automation_cursor_dialog->set_focus),
@@ -226,7 +226,7 @@ ags_position_automation_cursor_dialog_init(AgsPositionAutomationCursorDialog *po
 		     0);  
 
   /* position x - hbox */
-  hbox = (GtkVBox *) gtk_hbox_new(FALSE, 0);
+  hbox = (GtkHBox *) gtk_hbox_new(FALSE, 0);
   gtk_box_pack_start((GtkBox *) vbox,
 		     GTK_WIDGET(hbox),
 		     FALSE, FALSE,
@@ -308,7 +308,7 @@ ags_position_automation_cursor_dialog_set_property(GObject *gobject,
 	g_object_ref(main_window);
       }
 
-      position_automation_cursor_dialog->main_window = (GObject *) main_window;
+      position_automation_cursor_dialog->main_window = (GtkWidget *) main_window;
     }
     break;
   default:
@@ -418,12 +418,11 @@ ags_position_automation_cursor_dialog_apply(AgsApplicable *applicable)
 
   gdouble zoom;
   guint history;
-  gint current_page;
   guint x;
 
   position_automation_cursor_dialog = AGS_POSITION_AUTOMATION_CURSOR_DIALOG(applicable);
 
-  window = position_automation_cursor_dialog->main_window;
+  window = (AgsWindow *) position_automation_cursor_dialog->main_window;
 
   automation_window = window->automation_window;
   automation_editor = automation_window->automation_editor;
@@ -438,8 +437,6 @@ ags_position_automation_cursor_dialog_apply(AgsApplicable *applicable)
 
   history = gtk_combo_box_get_active(GTK_COMBO_BOX(automation_toolbar->zoom));
   zoom = exp2((double) history - 2.0);
-
-  current_page = gtk_notebook_get_current_page(automation_editor->notebook);
   
   automation_edit = automation_editor->focused_automation_edit;
 
@@ -453,7 +450,7 @@ ags_position_automation_cursor_dialog_apply(AgsApplicable *applicable)
 
   hadjustment = GTK_RANGE(automation_edit->hscrollbar)->adjustment;
 
-  widget = automation_edit->drawing_area;
+  widget = (GtkWidget *) automation_edit->drawing_area;
     
   /* make visible */  
   if(hadjustment != NULL){
@@ -461,7 +458,7 @@ ags_position_automation_cursor_dialog_apply(AgsApplicable *applicable)
 			     ((x * 16 * 64 / zoom) * (hadjustment->upper / (AGS_AUTOMATION_EDITOR_MAX_CONTROLS / zoom))));
   }
   
-  if(gtk_toggle_button_get_active(position_automation_cursor_dialog->set_focus)){
+  if(gtk_toggle_button_get_active((GtkToggleButton *) position_automation_cursor_dialog->set_focus)){
     gtk_widget_grab_focus(widget);
   }
 }

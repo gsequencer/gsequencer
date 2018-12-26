@@ -36,18 +36,12 @@ void ags_accessible_notation_edit_class_init(AtkObject *object);
 void ags_accessible_notation_edit_action_interface_init(AtkActionIface *action);
 void ags_notation_edit_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_notation_edit_init(AgsNotationEdit *notation_edit);
-void ags_notation_edit_set_property(GObject *gobject,
-				    guint prop_id,
-				    const GValue *value,
-				    GParamSpec *param_spec);
-void ags_notation_edit_get_property(GObject *gobject,
-				    guint prop_id,
-				    GValue *value,
-				    GParamSpec *param_spec);
+void ags_notation_edit_finalize(GObject *gobject);
+
+AtkObject* ags_notation_edit_get_accessible(GtkWidget *widget);
+
 void ags_notation_edit_connect(AgsConnectable *connectable);
 void ags_notation_edit_disconnect(AgsConnectable *connectable);
-AtkObject* ags_notation_edit_get_accessible(GtkWidget *widget);
-void ags_notation_edit_finalize(GObject *gobject);
 
 gboolean ags_accessible_notation_edit_do_action(AtkAction *action,
 						gint i);
@@ -173,15 +167,10 @@ ags_notation_edit_class_init(AgsNotationEditClass *notation_edit)
   
   GObjectClass *gobject;
   
-  GParamSpec *param_spec;
-  
   ags_notation_edit_parent_class = g_type_class_peek_parent(notation_edit);
 
   /* GObjectClass */
   gobject = G_OBJECT_CLASS(notation_edit);
-
-  gobject->set_property = ags_notation_edit_set_property;
-  gobject->get_property = ags_notation_edit_get_property;
 
   gobject->finalize = ags_notation_edit_finalize;
 
@@ -252,7 +241,7 @@ ags_notation_edit_init(AgsNotationEdit *notation_edit)
   notation_edit->current_note = NULL;
 
   if(notation_edit_style == NULL){
-    notation_edit_style = gtk_style_copy(gtk_widget_get_style(notation_edit));
+    notation_edit_style = gtk_style_copy(gtk_widget_get_style((GtkWidget *) notation_edit));
   }
 
   notation_edit->ruler = ags_ruler_new();
@@ -266,7 +255,7 @@ ags_notation_edit_init(AgsNotationEdit *notation_edit)
 		   GTK_FILL | GTK_EXPAND, GTK_FILL,
 		   0, 0);
 
-  notation_edit->drawing_area = gtk_drawing_area_new();
+  notation_edit->drawing_area = (GtkDrawingArea *) gtk_drawing_area_new();
   gtk_widget_set_events(GTK_WIDGET(notation_edit->drawing_area), GDK_EXPOSURE_MASK
 			| GDK_LEAVE_NOTIFY_MASK
 			| GDK_BUTTON_PRESS_MASK
@@ -288,7 +277,7 @@ ags_notation_edit_init(AgsNotationEdit *notation_edit)
 
   /* vscrollbar */
   adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 1.0, notation_edit->control_height, 1.0);
-  notation_edit->vscrollbar = gtk_vscrollbar_new(adjustment);
+  notation_edit->vscrollbar = (GtkVScrollbar *) gtk_vscrollbar_new(adjustment);
   g_object_set(notation_edit->vscrollbar,
 	       "no-show-all", TRUE,
 	       NULL);
@@ -301,7 +290,7 @@ ags_notation_edit_init(AgsNotationEdit *notation_edit)
 
   /* hscrollbar */
   adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 1.0, (gdouble) notation_edit->control_width, 1.0);
-  notation_edit->hscrollbar = gtk_hscrollbar_new(adjustment);
+  notation_edit->hscrollbar = (GtkHScrollbar *) gtk_hscrollbar_new(adjustment);
   g_object_set(notation_edit->hscrollbar,
 	       "no-show-all", TRUE,
 	       NULL);
@@ -325,37 +314,40 @@ ags_notation_edit_init(AgsNotationEdit *notation_edit)
 }
 
 void
-ags_notation_edit_set_property(GObject *gobject,
-			       guint prop_id,
-			       const GValue *value,
-			       GParamSpec *param_spec)
+ags_notation_edit_finalize(GObject *gobject)
 {
   AgsNotationEdit *notation_edit;
-
+  
   notation_edit = AGS_NOTATION_EDIT(gobject);
+  
+  /* remove auto scroll */
+  g_hash_table_remove(ags_notation_edit_auto_scroll,
+		      notation_edit);
 
-  switch(prop_id){
-  default:
-    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
-    break;
-  }
+  /* call parent */
+  G_OBJECT_CLASS(ags_notation_edit_parent_class)->finalize(gobject);
 }
 
-void
-ags_notation_edit_get_property(GObject *gobject,
-			       guint prop_id,
-			       GValue *value,
-			       GParamSpec *param_spec)
+AtkObject*
+ags_notation_edit_get_accessible(GtkWidget *widget)
 {
-  AgsNotationEdit *notation_edit;
+  AtkObject* accessible;
 
-  notation_edit = AGS_NOTATION_EDIT(gobject);
-
-  switch(prop_id){
-  default:
-    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
-    break;
+  accessible = g_object_get_qdata(G_OBJECT(widget),
+				  quark_accessible_object);
+  
+  if(!accessible){
+    accessible = g_object_new(ags_accessible_notation_edit_get_type(),
+			      NULL);
+    
+    g_object_set_qdata(G_OBJECT(widget),
+		       quark_accessible_object,
+		       accessible);
+    gtk_accessible_set_widget(GTK_ACCESSIBLE(accessible),
+			      widget);
   }
+  
+  return(accessible);
 }
 
 void
@@ -453,43 +445,6 @@ ags_notation_edit_disconnect(AgsConnectable *connectable)
 		      NULL);
 }
 
-AtkObject*
-ags_notation_edit_get_accessible(GtkWidget *widget)
-{
-  AtkObject* accessible;
-
-  accessible = g_object_get_qdata(G_OBJECT(widget),
-				  quark_accessible_object);
-  
-  if(!accessible){
-    accessible = g_object_new(ags_accessible_notation_edit_get_type(),
-			      NULL);
-    
-    g_object_set_qdata(G_OBJECT(widget),
-		       quark_accessible_object,
-		       accessible);
-    gtk_accessible_set_widget(GTK_ACCESSIBLE(accessible),
-			      widget);
-  }
-  
-  return(accessible);
-}
-
-void
-ags_notation_edit_finalize(GObject *gobject)
-{
-  AgsNotationEdit *notation_edit;
-  
-  notation_edit = AGS_NOTATION_EDIT(gobject);
-  
-  /* remove auto scroll */
-  g_hash_table_remove(ags_notation_edit_auto_scroll,
-		      notation_edit);
-
-  /* call parent */
-  G_OBJECT_CLASS(ags_notation_edit_parent_class)->finalize(gobject);
-}
-
 gboolean
 ags_accessible_notation_edit_do_action(AtkAction *action,
 				       gint i)
@@ -504,7 +459,7 @@ ags_accessible_notation_edit_do_action(AtkAction *action,
     return(FALSE);
   }
 
-  notation_edit = gtk_accessible_get_widget(GTK_ACCESSIBLE(action));
+  notation_edit = (AgsNotationEdit *) gtk_accessible_get_widget(GTK_ACCESSIBLE(action));
   
   key_press = (GdkEventKey *) gdk_event_new(GDK_KEY_PRESS);
   key_release = (GdkEventKey *) gdk_event_new(GDK_KEY_RELEASE);
@@ -829,15 +784,15 @@ ags_notation_edit_show(GtkWidget *widget)
   GTK_WIDGET_CLASS(ags_notation_edit_parent_class)->show(widget);
 
   if((AGS_NOTATION_EDIT_SHOW_RULER & (notation_edit->flags)) != 0){
-    gtk_widget_show(notation_edit->ruler);
+    gtk_widget_show((GtkWidget *) notation_edit->ruler);
   }
 
   if((AGS_NOTATION_EDIT_SHOW_VSCROLLBAR & (notation_edit->flags)) != 0){
-    gtk_widget_show(notation_edit->vscrollbar);
+    gtk_widget_show((GtkWidget *) notation_edit->vscrollbar);
   }
 
   if((AGS_NOTATION_EDIT_SHOW_HSCROLLBAR & (notation_edit->flags)) != 0){
-    gtk_widget_show(notation_edit->hscrollbar);
+    gtk_widget_show((GtkWidget *) notation_edit->hscrollbar);
   }
 }
 
@@ -852,15 +807,15 @@ ags_notation_edit_show_all(GtkWidget *widget)
   GTK_WIDGET_CLASS(ags_notation_edit_parent_class)->show_all(widget);
 
   if((AGS_NOTATION_EDIT_SHOW_RULER & (notation_edit->flags)) != 0){
-    gtk_widget_show(notation_edit->ruler);
+    gtk_widget_show((GtkWidget *) notation_edit->ruler);
   }
 
   if((AGS_NOTATION_EDIT_SHOW_VSCROLLBAR & (notation_edit->flags)) != 0){
-    gtk_widget_show(notation_edit->vscrollbar);
+    gtk_widget_show((GtkWidget *) notation_edit->vscrollbar);
   }
 
   if((AGS_NOTATION_EDIT_SHOW_HSCROLLBAR & (notation_edit->flags)) != 0){
-    gtk_widget_show(notation_edit->hscrollbar);
+    gtk_widget_show((GtkWidget *) notation_edit->hscrollbar);
   }
 }
 
@@ -875,7 +830,6 @@ ags_notation_edit_auto_scroll_timeout(GtkWidget *widget)
 
     GObject *output_soundcard;
     
-    double zoom;
     double x;
     
     notation_edit = AGS_NOTATION_EDIT(widget);
@@ -884,17 +838,14 @@ ags_notation_edit_auto_scroll_timeout(GtkWidget *widget)
       return(TRUE);
     }
     
-    notation_editor = gtk_widget_get_ancestor(notation_edit,
-					      AGS_TYPE_NOTATION_EDITOR);
+    notation_editor = (AgsNotationEditor *) gtk_widget_get_ancestor((GtkWidget *) notation_edit,
+								    AGS_TYPE_NOTATION_EDITOR);
     
     if(notation_editor->selected_machine == NULL){
       return(TRUE);
     }
 
     notation_toolbar = notation_editor->notation_toolbar;
-
-    /* zoom */
-    zoom = exp2((double) gtk_combo_box_get_active((GtkComboBox *) notation_toolbar->zoom) - 2.0);
 
     /* reset offset */
     g_object_get(notation_editor->selected_machine->audio,
@@ -932,8 +883,8 @@ ags_notation_edit_reset_vscrollbar(AgsNotationEdit *notation_edit)
     return;
   }
 
-  notation_editor = gtk_widget_get_ancestor(notation_edit,
-					    AGS_TYPE_NOTATION_EDITOR);
+  notation_editor = (AgsNotationEditor *) gtk_widget_get_ancestor((GtkWidget *) notation_edit,
+								  AGS_TYPE_NOTATION_EDITOR);
 
   if(notation_editor->selected_machine == NULL){
     return;
@@ -998,8 +949,8 @@ ags_notation_edit_reset_hscrollbar(AgsNotationEdit *notation_edit)
     return;
   }
 
-  notation_editor = gtk_widget_get_ancestor(notation_edit,
-					    AGS_TYPE_NOTATION_EDITOR);
+  notation_editor = (AgsNotationEditor *) gtk_widget_get_ancestor((GtkWidget *) notation_edit,
+								  AGS_TYPE_NOTATION_EDITOR);
 
   if(notation_editor->selected_machine == NULL){
     return;
@@ -1069,8 +1020,8 @@ ags_notation_edit_draw_segment(AgsNotationEdit *notation_edit)
     return;
   }
 
-  notation_editor = gtk_widget_get_ancestor(notation_edit,
-					    AGS_TYPE_NOTATION_EDITOR);
+  notation_editor = (AgsNotationEditor *) gtk_widget_get_ancestor((GtkWidget *) notation_edit,
+								  AGS_TYPE_NOTATION_EDITOR);
 
   if(notation_editor->selected_machine == NULL){
     return;
@@ -1256,8 +1207,8 @@ ags_notation_edit_draw_position(AgsNotationEdit *notation_edit)
     return;
   }
 
-  notation_editor = gtk_widget_get_ancestor(notation_edit,
-					    AGS_TYPE_NOTATION_EDITOR);
+  notation_editor = (AgsNotationEditor *) gtk_widget_get_ancestor((GtkWidget *) notation_edit,
+								  AGS_TYPE_NOTATION_EDITOR);
 
   if(notation_editor->selected_machine == NULL){
     return;
@@ -1326,7 +1277,7 @@ ags_notation_edit_draw_cursor(AgsNotationEdit *notation_edit)
 
   GtkStyle *notation_edit_style;
 
-  double zoom, zoom_factor;
+  double zoom_factor;
   double x, y;
   double width, height;
 
@@ -1338,8 +1289,8 @@ ags_notation_edit_draw_cursor(AgsNotationEdit *notation_edit)
     return;
   }
   
-  notation_editor = gtk_widget_get_ancestor(notation_edit,
-					    AGS_TYPE_NOTATION_EDITOR);
+  notation_editor = (AgsNotationEditor *) gtk_widget_get_ancestor((GtkWidget *) notation_edit,
+								  AGS_TYPE_NOTATION_EDITOR);
 
   if(notation_editor->selected_machine == NULL){
     return;
@@ -1357,7 +1308,6 @@ ags_notation_edit_draw_cursor(AgsNotationEdit *notation_edit)
   }
 
   /* zoom */
-  zoom = exp2((double) gtk_combo_box_get_active((GtkComboBox *) notation_toolbar->zoom) - 2.0);
   zoom_factor = exp2(6.0 - (double) gtk_combo_box_get_active((GtkComboBox *) notation_toolbar->zoom));
 
   /* get offset */
@@ -1420,8 +1370,6 @@ ags_notation_edit_draw_cursor(AgsNotationEdit *notation_edit)
 void
 ags_notation_edit_draw_selection(AgsNotationEdit *notation_edit)
 {
-  GtkStyle *notation_edit_style;
-
   cairo_t *cr;
 
   double x, y;
@@ -1430,8 +1378,6 @@ ags_notation_edit_draw_selection(AgsNotationEdit *notation_edit)
   if(!AGS_IS_NOTATION_EDIT(notation_edit)){
     return;
   }
-  
-  notation_edit_style = gtk_widget_get_style(GTK_WIDGET(notation_edit->drawing_area));
 
   /* create cairo context */
   cr = gdk_cairo_create(GTK_WIDGET(notation_edit->drawing_area)->window);
@@ -1516,7 +1462,7 @@ ags_notation_edit_draw_note(AgsNotationEdit *notation_edit,
 
   GtkStyle *notation_edit_style;
 
-  double zoom, zoom_factor;
+  double zoom_factor;
   guint channel_count;
   double viewport_x, viewport_y;
   double x, y;
@@ -1530,8 +1476,8 @@ ags_notation_edit_draw_note(AgsNotationEdit *notation_edit,
     return;
   }
 
-  notation_editor = gtk_widget_get_ancestor(notation_edit,
-					    AGS_TYPE_NOTATION_EDITOR);
+  notation_editor = (AgsNotationEditor *) gtk_widget_get_ancestor((GtkWidget *) notation_edit,
+								  AGS_TYPE_NOTATION_EDITOR);
 
   if(notation_editor->selected_machine == NULL){
     return;
@@ -1553,7 +1499,6 @@ ags_notation_edit_draw_note(AgsNotationEdit *notation_edit,
 #endif
   
   /* zoom */
-  zoom = exp2((double) gtk_combo_box_get_active((GtkComboBox *) notation_toolbar->zoom) - 2.0);
   zoom_factor = exp2(6.0 - (double) gtk_combo_box_get_active((GtkComboBox *) notation_toolbar->zoom));
 
   /* get offset and dimensions */
@@ -1682,7 +1627,6 @@ ags_notation_edit_draw_notation(AgsNotationEdit *notation_edit)
   gdouble opacity;
   gdouble zoom, zoom_factor;
   guint x0, x1;
-  guint y0, y1;
   guint offset;
   gint i;    
 
@@ -1692,8 +1636,8 @@ ags_notation_edit_draw_notation(AgsNotationEdit *notation_edit)
     return;
   }
 
-  notation_editor = gtk_widget_get_ancestor(notation_edit,
-					    AGS_TYPE_NOTATION_EDITOR);
+  notation_editor = (AgsNotationEditor *) gtk_widget_get_ancestor((GtkWidget *) notation_edit,
+								  AGS_TYPE_NOTATION_EDITOR);
   notation_toolbar = notation_editor->notation_toolbar;
 
   if(notation_editor->selected_machine == NULL){
@@ -1718,9 +1662,6 @@ ags_notation_edit_draw_notation(AgsNotationEdit *notation_edit)
   /* get visisble region */
   x0 = (zoom_factor * GTK_RANGE(notation_edit->hscrollbar)->adjustment->value) / notation_edit->control_width;
   x1 = ((zoom_factor * GTK_RANGE(notation_edit->hscrollbar)->adjustment->value) / notation_edit->control_width) + (GTK_WIDGET(notation_edit->drawing_area)->allocation.width * zoom);
-
-  y0 = GTK_RANGE(notation_edit->vscrollbar)->adjustment->value / notation_edit->control_height;
-  y1 = (GTK_RANGE(notation_edit->vscrollbar)->adjustment->value + GTK_WIDGET(notation_edit->drawing_area)->allocation.height) / notation_edit->control_height;
   
   /* push group */
   cairo_push_group(cr);

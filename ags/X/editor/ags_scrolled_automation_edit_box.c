@@ -195,13 +195,13 @@ ags_scrolled_automation_edit_box_init(AgsScrolledAutomationEditBox *scrolled_aut
   scrolled_automation_edit_box->margin_right = 0;
 
   /* viewport */
-  scrolled_automation_edit_box->viewport = gtk_viewport_new(NULL,
-							    NULL);
+  scrolled_automation_edit_box->viewport = (GtkViewport *) gtk_viewport_new(NULL,
+									    NULL);
   g_object_set(scrolled_automation_edit_box->viewport,
 	       "shadow-type", GTK_SHADOW_NONE,
 	       NULL);
-  gtk_container_add(scrolled_automation_edit_box,
-		    scrolled_automation_edit_box->viewport);
+  gtk_container_add((GtkContainer *) scrolled_automation_edit_box,
+		    (GtkWidget *) scrolled_automation_edit_box->viewport);
 
   /* automation_edit box */
   scrolled_automation_edit_box->automation_edit_box = NULL;
@@ -294,10 +294,6 @@ ags_scrolled_automation_edit_box_get_property(GObject *gobject,
 void
 ags_scrolled_automation_edit_box_finalize(GObject *gobject)
 {
-  AgsScrolledAutomationEditBox *scrolled_automation_edit_box;
-  
-  scrolled_automation_edit_box = AGS_SCROLLED_AUTOMATION_EDIT_BOX(gobject);
-  
   /* call parent */
   G_OBJECT_CLASS(ags_scrolled_automation_edit_box_parent_class)->finalize(gobject);
 }
@@ -355,7 +351,7 @@ ags_scrolled_automation_edit_box_size_request(GtkWidget *widget,
   requisition->width = AGS_SCALE_DEFAULT_HEIGHT;
   requisition->height = AGS_SCALE_DEFAULT_HEIGHT;
   
-  gtk_widget_size_request(gtk_bin_get_child((GtkContainer *) widget),
+  gtk_widget_size_request(gtk_bin_get_child((GtkBin *) widget),
 			  &child_requisition);
 }
 

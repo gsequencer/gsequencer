@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -115,8 +115,6 @@ void
 ags_pattern_envelope_class_init(AgsPatternEnvelopeClass *pattern_envelope)
 {
   GObjectClass *gobject;
-  GtkWidgetClass *widget;
-  GParamSpec *param_spec;
 
   ags_pattern_envelope_parent_class = g_type_class_peek_parent(pattern_envelope);
 
@@ -124,9 +122,6 @@ ags_pattern_envelope_class_init(AgsPatternEnvelopeClass *pattern_envelope)
   gobject = (GObjectClass *) pattern_envelope;
 
   gobject->finalize = ags_pattern_envelope_finalize;
-  
-  /* GtkWidgetClass */
-  widget = (GtkWidgetClass *) pattern_envelope;
 }
 
 void
@@ -193,14 +188,14 @@ ags_pattern_envelope_init(AgsPatternEnvelope *pattern_envelope)
   height = cartesian->y_end - cartesian->y_start;
 
   /* cartesian - size, pack and redraw */
-  gtk_widget_set_size_request(cartesian,
+  gtk_widget_set_size_request((GtkWidget *) cartesian,
 			      (gint) width + 2.0 * cartesian->x_margin, (gint) height + 2.0 * cartesian->y_margin);
   gtk_box_pack_start((GtkBox *) pattern_envelope,
 		     (GtkWidget *) cartesian,
 		     FALSE, FALSE,
 		     0);
 
-  gtk_widget_queue_draw(cartesian);
+  gtk_widget_queue_draw((GtkWidget *) cartesian);
 
   /* tree view */
   pattern_envelope->tree_view = (GtkTreeView *) gtk_tree_view_new();
@@ -219,7 +214,7 @@ ags_pattern_envelope_init(AgsPatternEnvelope *pattern_envelope)
 			     G_TYPE_UINT,
 			     G_TYPE_UINT);
   gtk_tree_view_set_model(pattern_envelope->tree_view,
-			  model);
+			  GTK_TREE_MODEL(model));
   
   edit_renderer = gtk_cell_renderer_toggle_new();
   plot_renderer = gtk_cell_renderer_toggle_new();
@@ -476,7 +471,7 @@ ags_pattern_envelope_init(AgsPatternEnvelope *pattern_envelope)
 		   0, 0);
   
   pattern_envelope->attack_x = (GtkHScale *) gtk_hscale_new_with_range(0.0, 1.0, 0.001);
-  gtk_scale_set_draw_value(pattern_envelope->attack_x,
+  gtk_scale_set_draw_value((GtkScale *) pattern_envelope->attack_x,
 			   TRUE);
   gtk_range_set_value((GtkRange *) pattern_envelope->attack_x,
 		      0.25);
@@ -486,7 +481,7 @@ ags_pattern_envelope_init(AgsPatternEnvelope *pattern_envelope)
 		     0);
 
   pattern_envelope->attack_y = (GtkHScale *) gtk_hscale_new_with_range(-1.0, 1.0, 0.001);
-  gtk_scale_set_draw_value(pattern_envelope->attack_y,
+  gtk_scale_set_draw_value((GtkScale *) pattern_envelope->attack_y,
 			   TRUE);
   gtk_range_set_value((GtkRange *) pattern_envelope->attack_y,
 		      0.0);
@@ -518,7 +513,7 @@ ags_pattern_envelope_init(AgsPatternEnvelope *pattern_envelope)
 		   0, 0);
 
   pattern_envelope->decay_x = (GtkHScale *) gtk_hscale_new_with_range(0.0, 1.0, 0.001);
-  gtk_scale_set_draw_value(pattern_envelope->decay_x,
+  gtk_scale_set_draw_value((GtkScale *) pattern_envelope->decay_x,
 			   TRUE);
   gtk_range_set_value((GtkRange *) pattern_envelope->decay_x,
 		      0.25);
@@ -528,7 +523,7 @@ ags_pattern_envelope_init(AgsPatternEnvelope *pattern_envelope)
 		     0);
 
   pattern_envelope->decay_y = (GtkHScale *) gtk_hscale_new_with_range(-1.0, 1.0, 0.001);
-  gtk_scale_set_draw_value(pattern_envelope->decay_y,
+  gtk_scale_set_draw_value((GtkScale *) pattern_envelope->decay_y,
 			   TRUE);
   gtk_range_set_value((GtkRange *) pattern_envelope->decay_y,
 		      0.0);
@@ -560,7 +555,7 @@ ags_pattern_envelope_init(AgsPatternEnvelope *pattern_envelope)
 		   0, 0);
 
   pattern_envelope->sustain_x = (GtkHScale *) gtk_hscale_new_with_range(0.0, 1.0, 0.001);
-  gtk_scale_set_draw_value(pattern_envelope->sustain_x,
+  gtk_scale_set_draw_value((GtkScale *) pattern_envelope->sustain_x,
 			   TRUE);
   gtk_range_set_value((GtkRange *) pattern_envelope->sustain_x,
 		      0.25);
@@ -570,7 +565,7 @@ ags_pattern_envelope_init(AgsPatternEnvelope *pattern_envelope)
 		     0);
 
   pattern_envelope->sustain_y = (GtkHScale *) gtk_hscale_new_with_range(-1.0, 1.0, 0.001);
-  gtk_scale_set_draw_value(pattern_envelope->sustain_y,
+  gtk_scale_set_draw_value((GtkScale *) pattern_envelope->sustain_y,
 			   TRUE);
   gtk_range_set_value((GtkRange *) pattern_envelope->sustain_y,
 		      0.0);
@@ -602,7 +597,7 @@ ags_pattern_envelope_init(AgsPatternEnvelope *pattern_envelope)
 		   0, 0);
 
   pattern_envelope->release_x = (GtkHScale *) gtk_hscale_new_with_range(0.0, 1.0, 0.001);
-  gtk_scale_set_draw_value(pattern_envelope->release_x,
+  gtk_scale_set_draw_value((GtkScale *) pattern_envelope->release_x,
 			   TRUE);
   gtk_range_set_value((GtkRange *) pattern_envelope->release_x,
 		      0.25);
@@ -612,7 +607,7 @@ ags_pattern_envelope_init(AgsPatternEnvelope *pattern_envelope)
 		     0);
 
   pattern_envelope->release_y = (GtkHScale *) gtk_hscale_new_with_range(-1.0, 1.0, 0.001);
-  gtk_scale_set_draw_value(pattern_envelope->release_y,
+  gtk_scale_set_draw_value((GtkScale *) pattern_envelope->release_y,
 			   TRUE);
   gtk_range_set_value((GtkRange *) pattern_envelope->release_y,
 		      0.0);
@@ -635,7 +630,7 @@ ags_pattern_envelope_init(AgsPatternEnvelope *pattern_envelope)
 		   0, 0);
 
   pattern_envelope->ratio = (GtkHScale *) gtk_hscale_new_with_range(0.0, 1.0, 0.001);
-  gtk_scale_set_draw_value(pattern_envelope->ratio,
+  gtk_scale_set_draw_value((GtkScale *) pattern_envelope->ratio,
 			   TRUE);
   gtk_range_set_value((GtkRange *) pattern_envelope->ratio,
 		      1.0);
@@ -650,8 +645,8 @@ ags_pattern_envelope_init(AgsPatternEnvelope *pattern_envelope)
   pattern_envelope->rename = NULL;
   
   /* hbox - actions */
-  hbox = (GtkBox *) gtk_hbox_new(FALSE,
-				 0);
+  hbox = (GtkHBox *) gtk_hbox_new(FALSE,
+				  0);
   gtk_box_pack_start((GtkBox *) pattern_envelope,
 		     GTK_WIDGET(hbox),
 		     FALSE, FALSE,
@@ -988,8 +983,6 @@ ags_pattern_envelope_get_active_preset(AgsPatternEnvelope *pattern_envelope)
 
   AgsAudio *audio;
   AgsPreset *current;
-    
-  AgsApplicationContext *application_context;
 
   GList *start_preset, *preset;
 
@@ -1001,7 +994,7 @@ ags_pattern_envelope_get_active_preset(AgsPatternEnvelope *pattern_envelope)
     return(NULL);
   }
   
-  envelope_dialog = (AgsEnvelopeDialog *) gtk_widget_get_ancestor(pattern_envelope,
+  envelope_dialog = (AgsEnvelopeDialog *) gtk_widget_get_ancestor((GtkWidget *) pattern_envelope,
 								  AGS_TYPE_ENVELOPE_DIALOG);
 
   window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) envelope_dialog->machine,
@@ -1009,9 +1002,6 @@ ags_pattern_envelope_get_active_preset(AgsPatternEnvelope *pattern_envelope)
   machine = envelope_dialog->machine;
 
   audio = machine->audio;
-
-  /* application context and mutex manager */
-  application_context = window->application_context;
 
   /* get model */
   model = gtk_tree_view_get_model(pattern_envelope->tree_view);
@@ -1079,15 +1069,13 @@ ags_pattern_envelope_load_preset(AgsPatternEnvelope *pattern_envelope)
 
   AgsAudio *audio;
   
-  AgsApplicationContext *application_context;
-  
   GList *start_preset, *preset;
   
   if(!AGS_IS_PATTERN_ENVELOPE(pattern_envelope)){
     return;
   }
 
-  envelope_dialog = (AgsEnvelopeDialog *) gtk_widget_get_ancestor(pattern_envelope,
+  envelope_dialog = (AgsEnvelopeDialog *) gtk_widget_get_ancestor((GtkWidget *) pattern_envelope,
 								  AGS_TYPE_ENVELOPE_DIALOG);
 
   window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) envelope_dialog->machine,
@@ -1095,9 +1083,6 @@ ags_pattern_envelope_load_preset(AgsPatternEnvelope *pattern_envelope)
   machine = envelope_dialog->machine;
 
   audio = machine->audio;
-
-  /* application context and mutex manager */
-  application_context = window->application_context;
   
   /* get model */
   model = GTK_LIST_STORE(gtk_tree_view_get_model(pattern_envelope->tree_view));
@@ -1144,31 +1129,10 @@ void
 ags_pattern_envelope_set_preset_property(AgsPatternEnvelope *pattern_envelope,
 					 AgsPreset *preset,
 					 gchar *property_name, GValue *value)
-{
-  AgsEnvelopeDialog *envelope_dialog;
-
-  AgsWindow *window;
-  AgsMachine *machine;
-
-  AgsAudio *audio;
-  
-  AgsApplicationContext *application_context;
-    
+{    
   if(!AGS_IS_PATTERN_ENVELOPE(pattern_envelope)){
     return;
   }
-  
-  envelope_dialog = (AgsEnvelopeDialog *) gtk_widget_get_ancestor(pattern_envelope,
-								  AGS_TYPE_ENVELOPE_DIALOG);
-
-  window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) envelope_dialog->machine,
-						 AGS_TYPE_WINDOW);
-  machine = envelope_dialog->machine;
-
-  audio = machine->audio;
-
-  /* application context and mutex manager */
-  application_context = window->application_context;
 
   /* set property */  
   g_object_set_property(preset,
@@ -1198,8 +1162,6 @@ ags_pattern_envelope_add_preset(AgsPatternEnvelope *pattern_envelope,
 
   AgsAudio *audio;
   AgsPreset *preset;
-  
-  AgsApplicationContext *application_context;
 
   GList *start_preset;
   
@@ -1212,7 +1174,7 @@ ags_pattern_envelope_add_preset(AgsPatternEnvelope *pattern_envelope,
     return;
   }
   
-  envelope_dialog = (AgsEnvelopeDialog *) gtk_widget_get_ancestor(pattern_envelope,
+  envelope_dialog = (AgsEnvelopeDialog *) gtk_widget_get_ancestor((GtkWidget *) pattern_envelope,
 								  AGS_TYPE_ENVELOPE_DIALOG);
 
   window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) envelope_dialog->machine,
@@ -1220,9 +1182,6 @@ ags_pattern_envelope_add_preset(AgsPatternEnvelope *pattern_envelope,
   machine = envelope_dialog->machine;
 
   audio = machine->audio;
-  
-  /* application context and mutex manager */
-  application_context = window->application_context;
 
   /* check if already present */
   g_object_get(audio,
@@ -1240,7 +1199,7 @@ ags_pattern_envelope_add_preset(AgsPatternEnvelope *pattern_envelope,
 			"preset-name", preset_name,
 			NULL);
   ags_audio_add_preset(audio,
-		       preset);
+		       (GObject *) preset);
 
   /* preset - ratio */
   val = ags_complex_alloc();
@@ -1324,8 +1283,6 @@ ags_pattern_envelope_remove_preset(AgsPatternEnvelope *pattern_envelope,
 
   AgsAudio *audio;
   AgsPreset *preset;
-  
-  AgsApplicationContext *application_context;
 
   GList *start_preset;
   
@@ -1333,7 +1290,7 @@ ags_pattern_envelope_remove_preset(AgsPatternEnvelope *pattern_envelope,
     return;
   }
   
-  envelope_dialog = (AgsEnvelopeDialog *) gtk_widget_get_ancestor(pattern_envelope,
+  envelope_dialog = (AgsEnvelopeDialog *) gtk_widget_get_ancestor((GtkWidget *) pattern_envelope,
 								  AGS_TYPE_ENVELOPE_DIALOG);
 
   window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) envelope_dialog->machine,
@@ -1341,9 +1298,6 @@ ags_pattern_envelope_remove_preset(AgsPatternEnvelope *pattern_envelope,
   machine = envelope_dialog->machine;
 
   audio = machine->audio;
-
-  /* application context and mutex manager */
-  application_context = window->application_context;
 
   /* create preset */
   g_object_get(audio,
@@ -1354,7 +1308,7 @@ ags_pattern_envelope_remove_preset(AgsPatternEnvelope *pattern_envelope,
 			   nth);
 
   ags_audio_remove_preset(audio,
-			  preset);
+			  (GObject *) preset);
 }
 
 /**
@@ -1368,15 +1322,7 @@ ags_pattern_envelope_remove_preset(AgsPatternEnvelope *pattern_envelope,
 void
 ags_pattern_envelope_reset_control(AgsPatternEnvelope *pattern_envelope)
 {
-  AgsEnvelopeDialog *envelope_dialog;
-
-  AgsWindow *window;
-  AgsMachine *machine;
-
-  AgsAudio *audio;
   AgsPreset *preset;
-  
-  AgsApplicationContext *application_context;
 
   AgsComplex *val;
   
@@ -1392,15 +1338,6 @@ ags_pattern_envelope_reset_control(AgsPatternEnvelope *pattern_envelope)
     return;
   }
 
-  envelope_dialog = (AgsEnvelopeDialog *) gtk_widget_get_ancestor(pattern_envelope,
-								  AGS_TYPE_ENVELOPE_DIALOG);
-
-  window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) envelope_dialog->machine,
-						 AGS_TYPE_WINDOW);
-  machine = envelope_dialog->machine;
-
-  audio = machine->audio;
-
   /* disable update */
   pattern_envelope->flags |= AGS_PATTERN_ENVELOPE_NO_UPDATE;
  
@@ -1412,9 +1349,6 @@ ags_pattern_envelope_reset_control(AgsPatternEnvelope *pattern_envelope)
     
     return;
   }
-
-  /* application context and mutex manager */
-  application_context = window->application_context;
 
   /* get preset properties  */
   g_object_get(preset,
@@ -1460,9 +1394,9 @@ ags_pattern_envelope_reset_control(AgsPatternEnvelope *pattern_envelope)
 
   val = (AgsComplex *) g_value_get_boxed(&value);  
   
-  gtk_range_set_value(pattern_envelope->attack_x,
+  gtk_range_set_value((GtkRange *) pattern_envelope->attack_x,
 		      val[0][0]);
-  gtk_range_set_value(pattern_envelope->attack_y,
+  gtk_range_set_value((GtkRange *) pattern_envelope->attack_y,
 		      val[0][1]);
 
   /* decay */
@@ -1483,9 +1417,9 @@ ags_pattern_envelope_reset_control(AgsPatternEnvelope *pattern_envelope)
 
   val = (AgsComplex *) g_value_get_boxed(&value);  
   
-  gtk_range_set_value(pattern_envelope->decay_x,
+  gtk_range_set_value((GtkRange *) pattern_envelope->decay_x,
 		      val[0][0]);
-  gtk_range_set_value(pattern_envelope->decay_y,
+  gtk_range_set_value((GtkRange *) pattern_envelope->decay_y,
 		      val[0][1]);
 
   /* sustain */
@@ -1506,9 +1440,9 @@ ags_pattern_envelope_reset_control(AgsPatternEnvelope *pattern_envelope)
 
   val = (AgsComplex *) g_value_get_boxed(&value);  
   
-  gtk_range_set_value(pattern_envelope->sustain_x,
+  gtk_range_set_value((GtkRange *) pattern_envelope->sustain_x,
 		      val[0][0]);
-  gtk_range_set_value(pattern_envelope->sustain_y,
+  gtk_range_set_value((GtkRange *) pattern_envelope->sustain_y,
 		      val[0][1]);
 
   /* release */
@@ -1529,9 +1463,9 @@ ags_pattern_envelope_reset_control(AgsPatternEnvelope *pattern_envelope)
 
   val = (AgsComplex *) g_value_get_boxed(&value);  
   
-  gtk_range_set_value(pattern_envelope->release_x,
+  gtk_range_set_value((GtkRange *) pattern_envelope->release_x,
 		      val[0][0]);
-  gtk_range_set_value(pattern_envelope->release_y,
+  gtk_range_set_value((GtkRange *) pattern_envelope->release_y,
 		      val[0][1]);
 
   /* ratio */
@@ -1552,7 +1486,7 @@ ags_pattern_envelope_reset_control(AgsPatternEnvelope *pattern_envelope)
 
   val = (AgsComplex *) g_value_get_boxed(&value);  
   
-  gtk_range_set_value(pattern_envelope->ratio,
+  gtk_range_set_value((GtkRange *) pattern_envelope->ratio,
 		      val[0][1]);
 
   /* unset no update */
@@ -1570,33 +1504,16 @@ ags_pattern_envelope_reset_control(AgsPatternEnvelope *pattern_envelope)
 void
 ags_pattern_envelope_reset_tree_view(AgsPatternEnvelope *pattern_envelope)
 {
-  AgsEnvelopeDialog *envelope_dialog;
-
-  AgsWindow *window;
-  AgsMachine *machine;
-
   GtkTreeModel *model;
   GtkTreeIter iter;
 
-  AgsAudio *audio;
   AgsPreset *preset;
-  
-  AgsApplicationContext *application_context;
 
   gboolean do_edit;
 
   if(!AGS_IS_PATTERN_ENVELOPE(pattern_envelope)){
     return;
   }
-
-  envelope_dialog = (AgsEnvelopeDialog *) gtk_widget_get_ancestor(pattern_envelope,
-								  AGS_TYPE_ENVELOPE_DIALOG);
-
-  window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) envelope_dialog->machine,
-						 AGS_TYPE_WINDOW);
-  machine = envelope_dialog->machine;
-
-  audio = machine->audio;
 
   /* disable update */
   pattern_envelope->flags |= AGS_PATTERN_ENVELOPE_NO_UPDATE;
@@ -1609,9 +1526,6 @@ ags_pattern_envelope_reset_tree_view(AgsPatternEnvelope *pattern_envelope)
     
     return;
   }
-
-  /* application context and mutex manager */
-  application_context = window->application_context;
 
   /* get model and get editing iter */
   model = gtk_tree_view_get_model(pattern_envelope->tree_view);
@@ -1682,8 +1596,6 @@ ags_pattern_envelope_plot(AgsPatternEnvelope *pattern_envelope)
   GtkTreeIter iter;
 
   AgsAudio *audio;
-  
-  AgsApplicationContext *application_context;
 
   GList *preset;
 
@@ -1703,7 +1615,7 @@ ags_pattern_envelope_plot(AgsPatternEnvelope *pattern_envelope)
     return;
   }
 
-  envelope_dialog = (AgsEnvelopeDialog *) gtk_widget_get_ancestor(pattern_envelope,
+  envelope_dialog = (AgsEnvelopeDialog *) gtk_widget_get_ancestor((GtkWidget *) pattern_envelope,
 								  AGS_TYPE_ENVELOPE_DIALOG);
 
   window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) envelope_dialog->machine,
@@ -1711,9 +1623,6 @@ ags_pattern_envelope_plot(AgsPatternEnvelope *pattern_envelope)
   machine = envelope_dialog->machine;
 
   audio = machine->audio;
-
-  /* application context and mutex manager */
-  application_context = window->application_context;
 
   /* get dimension of cartesian */
   cartesian = pattern_envelope->cartesian;
@@ -1727,7 +1636,7 @@ ags_pattern_envelope_plot(AgsPatternEnvelope *pattern_envelope)
   /* clear old plot */
   if(cartesian->plot != NULL){
     g_list_free_full(cartesian->plot,
-		     ags_plot_free);
+		     (GDestroyNotify *) ags_plot_free);
     
     cartesian->plot = NULL;
   }
@@ -1886,7 +1795,7 @@ ags_pattern_envelope_plot(AgsPatternEnvelope *pattern_envelope)
   }
 
   /* queue draw */
-  gtk_widget_queue_draw(cartesian);
+  gtk_widget_queue_draw((GtkWidget *) cartesian);
 }
 
 /**

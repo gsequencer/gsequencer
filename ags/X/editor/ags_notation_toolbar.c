@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -115,75 +115,75 @@ ags_notation_toolbar_init(AgsNotationToolbar *notation_toolbar)
   notation_toolbar->flags = 0;
   
   /* position */
-  notation_toolbar->position = (GtkToggleButton *) g_object_new(GTK_TYPE_TOGGLE_TOOL_BUTTON,
-								"label", i18n("Position"),
-								"stock-id", GTK_STOCK_JUMP_TO,
-								NULL);
+  notation_toolbar->position = (GtkToggleToolButton *) g_object_new(GTK_TYPE_TOGGLE_TOOL_BUTTON,
+								    "label", i18n("Position"),
+								    "stock-id", GTK_STOCK_JUMP_TO,
+								    NULL);
   gtk_toolbar_append_widget((GtkToolbar *) notation_toolbar, (GtkWidget *) notation_toolbar->position, i18n("position cursor"), NULL);
 
   /* edit */
-  notation_toolbar->edit = (GtkToggleButton *) g_object_new(GTK_TYPE_TOGGLE_TOOL_BUTTON,
-							    "stock-id", GTK_STOCK_EDIT,
-							    "active", TRUE,
-							    NULL);
+  notation_toolbar->edit = (GtkToggleToolButton *) g_object_new(GTK_TYPE_TOGGLE_TOOL_BUTTON,
+								"stock-id", GTK_STOCK_EDIT,
+								"active", TRUE,
+								NULL);
   gtk_toolbar_append_widget((GtkToolbar *) notation_toolbar, (GtkWidget *) notation_toolbar->edit, i18n("edit notes"), NULL);
   notation_toolbar->selected_edit_mode = notation_toolbar->edit;
 
   /* clear */
-  notation_toolbar->clear = (GtkToggleButton *) g_object_new(GTK_TYPE_TOGGLE_TOOL_BUTTON,
-							     "stock-id", GTK_STOCK_CLEAR,
-							     NULL);
+  notation_toolbar->clear = (GtkToggleToolButton *) g_object_new(GTK_TYPE_TOGGLE_TOOL_BUTTON,
+								 "stock-id", GTK_STOCK_CLEAR,
+								 NULL);
   gtk_toolbar_append_widget((GtkToolbar *) notation_toolbar, (GtkWidget *) notation_toolbar->clear, i18n("clear notes"), NULL);
 
   /* select */
-  notation_toolbar->select = (GtkToggleButton *) g_object_new(GTK_TYPE_TOGGLE_TOOL_BUTTON,
-							      "label", i18n("Select"),
-							      "stock-id", GTK_STOCK_SELECT_ALL,
-							      NULL);
+  notation_toolbar->select = (GtkToggleToolButton *) g_object_new(GTK_TYPE_TOGGLE_TOOL_BUTTON,
+								  "label", i18n("Select"),
+								  "stock-id", GTK_STOCK_SELECT_ALL,
+								  NULL);
   gtk_toolbar_append_widget((GtkToolbar *) notation_toolbar,
 			    (GtkWidget *) notation_toolbar->select,
 			    i18n("select notes"),
 			    NULL);
 
   /* copy */
-  notation_toolbar->copy = (GtkButton *) g_object_new(GTK_TYPE_TOOL_BUTTON,
-						      "stock-id", GTK_STOCK_COPY,
-						      NULL);
+  notation_toolbar->copy = (GtkToolButton *) g_object_new(GTK_TYPE_TOOL_BUTTON,
+							  "stock-id", GTK_STOCK_COPY,
+							  NULL);
   gtk_toolbar_append_widget((GtkToolbar *) notation_toolbar,
 			    (GtkWidget *) notation_toolbar->copy,
 			    i18n("copy notes"),
 			    NULL);
 
   /* cut */
-  notation_toolbar->cut = (GtkButton *) g_object_new(GTK_TYPE_TOOL_BUTTON,
-						     "stock-id", GTK_STOCK_CUT,
-						     NULL);
+  notation_toolbar->cut = (GtkToolButton *) g_object_new(GTK_TYPE_TOOL_BUTTON,
+							 "stock-id", GTK_STOCK_CUT,
+							 NULL);
   gtk_toolbar_append_widget((GtkToolbar *) notation_toolbar, (GtkWidget *) notation_toolbar->cut, i18n("cut notes"), NULL);
 
   /* paste */
-  notation_toolbar->paste_tool = (GtkButton *) g_object_new(GTK_TYPE_MENU_TOOL_BUTTON,
-							    "stock-id", GTK_STOCK_PASTE,
-							    NULL);
+  notation_toolbar->paste_tool = (GtkToolButton *) g_object_new(GTK_TYPE_MENU_TOOL_BUTTON,
+								"stock-id", GTK_STOCK_PASTE,
+								NULL);
   
-  menu = gtk_menu_new();
+  menu = (GtkMenu *) gtk_menu_new();
 
   item = g_object_new(GTK_TYPE_CHECK_MENU_ITEM,
 		      "label", i18n("match audio channel"),
 		      "active", TRUE,
 		      NULL);
-  gtk_menu_shell_append(menu,
-			item);
+  gtk_menu_shell_append((GtkMenuShell *) menu,
+			(GtkWidget *) item);
   
   item = g_object_new(GTK_TYPE_CHECK_MENU_ITEM,
 		      "label", i18n("no duplicates"),
 		      "active", TRUE,
 		      NULL);
-  gtk_menu_shell_append(menu,
-			item);
+  gtk_menu_shell_append((GtkMenuShell *) menu,
+			(GtkWidget *) item);
 
   gtk_menu_tool_button_set_menu(notation_toolbar->paste_tool,
-				menu);
-  gtk_widget_show_all(menu);
+				(GtkWidget *) menu);
+  gtk_widget_show_all((GtkWidget *) menu);
   
   gtk_toolbar_append_widget((GtkToolbar *) notation_toolbar, (GtkWidget *) notation_toolbar->paste_tool, i18n("paste notes"), NULL);
 
@@ -205,13 +205,13 @@ ags_notation_toolbar_init(AgsNotationToolbar *notation_toolbar)
   /* menu tool - tool popup */
   notation_toolbar->tool_popup = ags_notation_toolbar_tool_popup_new(notation_toolbar);
   gtk_menu_tool_button_set_menu(notation_toolbar->menu_tool,
-				notation_toolbar->tool_popup);
+				(GtkWidget *) notation_toolbar->tool_popup);
 
   /* menu tool - dialogs */
-  notation_toolbar->move_note = ags_move_note_dialog_new(NULL);
-  notation_toolbar->crop_note = ags_crop_note_dialog_new(NULL);
-  notation_toolbar->select_note = ags_select_note_dialog_new(NULL);
-  notation_toolbar->position_notation_cursor = ags_position_notation_cursor_dialog_new(NULL);
+  notation_toolbar->move_note = (GtkDialog *) ags_move_note_dialog_new(NULL);
+  notation_toolbar->crop_note = (GtkDialog *) ags_crop_note_dialog_new(NULL);
+  notation_toolbar->select_note = (GtkDialog *) ags_select_note_dialog_new(NULL);
+  notation_toolbar->position_notation_cursor = (GtkDialog *) ags_position_notation_cursor_dialog_new(NULL);
   
   /* zoom */
   label = (GtkLabel *) gtk_label_new(i18n("Zoom"));
@@ -292,7 +292,7 @@ ags_notation_toolbar_connect(AgsConnectable *connectable)
   g_signal_connect((GObject *) notation_toolbar->invert, "clicked",
 		   G_CALLBACK(ags_notation_toolbar_invert_callback), (gpointer) notation_toolbar);
 
-  list = gtk_container_get_children(gtk_menu_tool_button_get_menu(notation_toolbar->paste_tool));
+  list = gtk_container_get_children((GtkContainer *) gtk_menu_tool_button_get_menu(notation_toolbar->paste_tool));
 
   g_signal_connect_after(list->data, "activate",
 			 G_CALLBACK(ags_notation_toolbar_match_audio_channel_callback), notation_toolbar);
@@ -385,7 +385,7 @@ ags_notation_toolbar_disconnect(AgsConnectable *connectable)
 		      notation_toolbar,
 		      NULL);
 
-  list = gtk_container_get_children(gtk_menu_tool_button_get_menu(notation_toolbar->paste_tool));
+  list = gtk_container_get_children((GtkContainer *) gtk_menu_tool_button_get_menu(notation_toolbar->paste_tool));
 
   g_object_disconnect(G_OBJECT(list->data),
 		      "any_signal::activate",
@@ -436,7 +436,7 @@ ags_notation_toolbar_disconnect(AgsConnectable *connectable)
  * Since: 2.0.0
  */
 GtkMenu*
-ags_notation_toolbar_tool_popup_new(GtkToolbar *notation_toolbar)
+ags_notation_toolbar_tool_popup_new(AgsNotationToolbar *notation_toolbar)
 {
   GtkMenu *tool_popup;
   GtkMenuItem *item;

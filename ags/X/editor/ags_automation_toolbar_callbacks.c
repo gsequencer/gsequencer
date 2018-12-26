@@ -35,7 +35,7 @@ ags_automation_toolbar_machine_changed_callback(AgsAutomationEditor *automation_
 }
 
 void
-ags_automation_toolbar_position_callback(GtkToggleButton *toggle_button, AgsAutomationToolbar *automation_toolbar)
+ags_automation_toolbar_position_callback(GtkToggleToolButton *toggle_button, AgsAutomationToolbar *automation_toolbar)
 {
   AgsAutomationEditor *automation_editor;
 
@@ -56,7 +56,7 @@ ags_automation_toolbar_position_callback(GtkToggleButton *toggle_button, AgsAuto
 }
 
 void
-ags_automation_toolbar_edit_callback(GtkToggleButton *toggle_button, AgsAutomationToolbar *automation_toolbar)
+ags_automation_toolbar_edit_callback(GtkToggleToolButton *toggle_button, AgsAutomationToolbar *automation_toolbar)
 {
   if(toggle_button == automation_toolbar->selected_edit_mode){
     if(!gtk_toggle_tool_button_get_active(toggle_button)){
@@ -72,7 +72,7 @@ ags_automation_toolbar_edit_callback(GtkToggleButton *toggle_button, AgsAutomati
 }
 
 void
-ags_automation_toolbar_clear_callback(GtkToggleButton *toggle_button, AgsAutomationToolbar *automation_toolbar)
+ags_automation_toolbar_clear_callback(GtkToggleToolButton *toggle_button, AgsAutomationToolbar *automation_toolbar)
 {
   if(toggle_button == automation_toolbar->selected_edit_mode){
     if(!gtk_toggle_tool_button_get_active(toggle_button)){
@@ -88,7 +88,7 @@ ags_automation_toolbar_clear_callback(GtkToggleButton *toggle_button, AgsAutomat
 }
 
 void
-ags_automation_toolbar_select_callback(GtkToggleButton *toggle_button, AgsAutomationToolbar *automation_toolbar)
+ags_automation_toolbar_select_callback(GtkToggleToolButton *toggle_button, AgsAutomationToolbar *automation_toolbar)
 {
   if(toggle_button == automation_toolbar->selected_edit_mode){
     if(!gtk_toggle_tool_button_get_active(toggle_button)){
@@ -137,7 +137,7 @@ ags_automation_toolbar_match_line_callback(GtkWidget *widget, AgsAutomationToolb
   automation_editor = AGS_AUTOMATION_EDITOR(gtk_widget_get_ancestor(GTK_WIDGET(automation_toolbar),
 								    AGS_TYPE_AUTOMATION_EDITOR));
 
-  if(gtk_check_menu_item_get_active(widget)){
+  if(gtk_check_menu_item_get_active((GtkCheckMenuItem *) widget)){
     automation_editor->flags |= AGS_AUTOMATION_EDITOR_PASTE_MATCH_LINE;
   }else{
     automation_editor->flags &= (~AGS_AUTOMATION_EDITOR_PASTE_MATCH_LINE);
@@ -152,7 +152,7 @@ ags_automation_toolbar_no_duplicates_callback(GtkWidget *widget, AgsAutomationTo
   automation_editor = AGS_AUTOMATION_EDITOR(gtk_widget_get_ancestor(GTK_WIDGET(automation_toolbar),
 								    AGS_TYPE_AUTOMATION_EDITOR));
 
-  if(gtk_check_menu_item_get_active(widget)){
+  if(gtk_check_menu_item_get_active((GtkCheckMenuItem *) widget)){
     automation_editor->flags |= AGS_AUTOMATION_EDITOR_PASTE_NO_DUPLICATES;
   }else{
     automation_editor->flags &= (~AGS_AUTOMATION_EDITOR_PASTE_NO_DUPLICATES);
@@ -162,19 +162,19 @@ ags_automation_toolbar_no_duplicates_callback(GtkWidget *widget, AgsAutomationTo
 void
 ags_automation_toolbar_tool_popup_select_acceleration_callback(GtkWidget *item, AgsAutomationToolbar *automation_toolbar)
 {
-  gtk_widget_show_all(automation_toolbar->select_acceleration);
+  gtk_widget_show_all((GtkWidget *) automation_toolbar->select_acceleration);
 }
 
 void
 ags_automation_toolbar_tool_popup_ramp_acceleration_callback(GtkWidget *item, AgsAutomationToolbar *automation_toolbar)
 {
-  gtk_widget_show_all(automation_toolbar->ramp_acceleration);  
+  gtk_widget_show_all((GtkWidget *) automation_toolbar->ramp_acceleration);  
 }
 
 void
 ags_automation_toolbar_tool_popup_position_cursor_callback(GtkWidget *item, AgsAutomationToolbar *automation_toolbar)
 {
-  gtk_widget_show_all(automation_toolbar->position_automation_cursor);  
+  gtk_widget_show_all((GtkWidget *) automation_toolbar->position_automation_cursor);  
 }
 
 void
@@ -281,7 +281,7 @@ ags_automation_toolbar_zoom_callback(GtkComboBox *combo_box, AgsAutomationToolba
     while(list != NULL){
       automation_edit = list->data;
       
-      gtk_widget_queue_draw(automation_edit);
+      gtk_widget_queue_draw((GtkWidget *) automation_edit);
       
       /* reset ruler */
       automation_edit->ruler->factor = zoom_factor;
@@ -308,7 +308,7 @@ ags_automation_toolbar_zoom_callback(GtkComboBox *combo_box, AgsAutomationToolba
   
   gtk_widget_queue_draw((GtkWidget *) automation_editor->audio_ruler);
 
-  list_start = gtk_container_get_children(automation_editor->audio_scrolled_automation_edit_box->automation_edit_box);
+  list_start = gtk_container_get_children((GtkContainer *) automation_editor->audio_scrolled_automation_edit_box->automation_edit_box);
   ags_automation_toolbar_zoom_callback_apply(list_start);
 
   g_list_free(list_start);
@@ -322,7 +322,7 @@ ags_automation_toolbar_zoom_callback(GtkComboBox *combo_box, AgsAutomationToolba
   
   gtk_widget_queue_draw((GtkWidget *) automation_editor->output_ruler);
 
-  list_start = gtk_container_get_children(automation_editor->output_scrolled_automation_edit_box->automation_edit_box);
+  list_start = gtk_container_get_children((GtkContainer *) automation_editor->output_scrolled_automation_edit_box->automation_edit_box);
   ags_automation_toolbar_zoom_callback_apply(list_start);
 
   g_list_free(list_start);
@@ -336,7 +336,7 @@ ags_automation_toolbar_zoom_callback(GtkComboBox *combo_box, AgsAutomationToolba
   
   gtk_widget_queue_draw((GtkWidget *) automation_editor->input_ruler);
 
-  list_start = gtk_container_get_children(automation_editor->input_scrolled_automation_edit_box->automation_edit_box);
+  list_start = gtk_container_get_children((GtkContainer *) automation_editor->input_scrolled_automation_edit_box->automation_edit_box);
   ags_automation_toolbar_zoom_callback_apply(list_start);
 
   g_list_free(list_start);
@@ -400,8 +400,8 @@ ags_automation_toolbar_opacity_callback(GtkSpinButton *spin_button, AgsAutomatio
 
   GList *start_list, *list;
   
-  automation_editor = gtk_widget_get_ancestor(automation_toolbar,
-					      AGS_TYPE_AUTOMATION_EDITOR);
+  automation_editor = (AgsAutomationEditor *) gtk_widget_get_ancestor((GtkWidget *) automation_toolbar,
+								      AGS_TYPE_AUTOMATION_EDITOR);
 
 
   /* queue draw */
@@ -409,19 +409,19 @@ ags_automation_toolbar_opacity_callback(GtkSpinButton *spin_button, AgsAutomatio
   case 0:
     {
       list =
-	start_list = gtk_container_get_children(automation_editor->audio_scrolled_automation_edit_box->automation_edit_box);
+	start_list = gtk_container_get_children((GtkContainer *) automation_editor->audio_scrolled_automation_edit_box->automation_edit_box);
     }
     break;
   case 1:
     {
       list =
-	start_list = gtk_container_get_children(automation_editor->output_scrolled_automation_edit_box->automation_edit_box);
+	start_list = gtk_container_get_children((GtkContainer *) automation_editor->output_scrolled_automation_edit_box->automation_edit_box);
     }
     break;
   case 2:
     {
       list =
-	start_list = gtk_container_get_children(automation_editor->input_scrolled_automation_edit_box->automation_edit_box);
+	start_list = gtk_container_get_children((GtkContainer *) automation_editor->input_scrolled_automation_edit_box->automation_edit_box);
     }
     break;
   default:
@@ -433,7 +433,7 @@ ags_automation_toolbar_opacity_callback(GtkSpinButton *spin_button, AgsAutomatio
     
   
   while(list != NULL){
-    gtk_widget_queue_draw(list->data);
+    gtk_widget_queue_draw((GtkWidget *) list->data);
 
     list = list->next;
   }

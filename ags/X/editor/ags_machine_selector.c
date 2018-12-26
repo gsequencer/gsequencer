@@ -456,6 +456,8 @@ ags_machine_selector_popup_new(AgsMachineSelector *machine_selector)
     gtk_menu_shell_append((GtkMenuShell*) popup, (GtkWidget*) item);
   }
 
+  keys = NULL;
+  
   if((AGS_MACHINE_SELECTOR_SHOW_SHIFT_PIANO & (machine_selector->flags)) != 0){
     item = (GtkMenuItem *) gtk_menu_item_new_with_label(i18n("shift piano"));
     gtk_menu_shell_append((GtkMenuShell*) popup, (GtkWidget*) item);

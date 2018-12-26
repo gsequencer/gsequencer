@@ -230,7 +230,7 @@ ags_move_note_dialog_init(AgsMoveNoteDialog *move_note_dialog)
 		     0);
 
   /* move x - hbox */
-  hbox = (GtkVBox *) gtk_hbox_new(FALSE, 0);
+  hbox = (GtkHBox *) gtk_hbox_new(FALSE, 0);
   gtk_box_pack_start((GtkBox *) vbox,
 		     GTK_WIDGET(hbox),
 		     FALSE, FALSE,
@@ -337,7 +337,7 @@ ags_move_note_dialog_set_property(GObject *gobject,
 	g_object_ref(main_window);
       }
 
-      move_note_dialog->main_window = (GObject *) main_window;
+      move_note_dialog->main_window = (GtkWidget *) main_window;
     }
     break;
   default:
@@ -461,7 +461,7 @@ ags_move_note_dialog_apply(AgsApplicable *applicable)
   
   AgsAudio *audio;
 
-  AgsGuiThread *gui_thread;
+  AgsThread *gui_thread;
   
   AgsApplicationContext *application_context;
 
@@ -494,11 +494,11 @@ ags_move_note_dialog_apply(AgsApplicable *applicable)
   move_x = gtk_spin_button_get_value_as_int(move_note_dialog->move_x);
   move_y = gtk_spin_button_get_value_as_int(move_note_dialog->move_y);
 
-  relative = gtk_toggle_button_get_active(move_note_dialog->relative);
-  absolute = gtk_toggle_button_get_active(move_note_dialog->absolute);
+  relative = gtk_toggle_button_get_active((GtkToggleButton *) move_note_dialog->relative);
+  absolute = gtk_toggle_button_get_active((GtkToggleButton *) move_note_dialog->absolute);
   
   /* application context and mutex manager */
-  application_context = window->application_context;
+  application_context = (AgsApplicationContext *) window->application_context;
 
   /* get task thread */  
   gui_thread = ags_ui_provider_get_gui_thread(AGS_UI_PROVIDER(application_context));
@@ -507,8 +507,6 @@ ags_move_note_dialog_apply(AgsApplicable *applicable)
   g_object_get(audio,
 	       "notation", &start_notation,
 	       NULL);
-
-  notation = start_notation;
 
   first_x = 0;
   first_y = 0;
@@ -600,7 +598,7 @@ ags_move_note_dialog_apply(AgsApplicable *applicable)
   g_list_free(start_notation);
 
   /* append tasks */
-  ags_gui_thread_schedule_task_list(gui_thread,
+  ags_gui_thread_schedule_task_list((AgsGuiThread *) gui_thread,
 				    task);
 }
 

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -822,9 +822,7 @@ ags_pattern_envelope_preset_move_up_callback(GtkWidget *button,
 
   AgsAudio *audio;
   AgsPreset *current;
-    
-  AgsApplicationContext *application_context;
-
+  
   GList *start_preset;
   GList *preset, *prev;
 
@@ -835,7 +833,7 @@ ags_pattern_envelope_preset_move_up_callback(GtkWidget *button,
 
   pthread_mutex_t *audio_mutex;
 
-  envelope_dialog = (AgsEnvelopeDialog *) gtk_widget_get_ancestor(pattern_envelope,
+  envelope_dialog = (AgsEnvelopeDialog *) gtk_widget_get_ancestor((GtkWidget *) pattern_envelope,
 								  AGS_TYPE_ENVELOPE_DIALOG);
 
   window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) envelope_dialog->machine,
@@ -870,9 +868,6 @@ ags_pattern_envelope_preset_move_up_callback(GtkWidget *button,
      nth == 0){
     return;
   }
-
-  /* application context and mutex manager */
-  application_context = window->application_context;
 
   /* get audio mutex */
   pthread_mutex_lock(ags_audio_get_class_mutex());
@@ -940,8 +935,6 @@ ags_pattern_envelope_preset_move_down_callback(GtkWidget *button,
   AgsAudio *audio;
   AgsPreset *current;
   
-  AgsApplicationContext *application_context;
-  
   GList *start_preset;
   GList *preset, *next;
 
@@ -952,7 +945,7 @@ ags_pattern_envelope_preset_move_down_callback(GtkWidget *button,
 
   pthread_mutex_t *audio_mutex;
 
-  envelope_dialog = (AgsEnvelopeDialog *) gtk_widget_get_ancestor(pattern_envelope,
+  envelope_dialog = (AgsEnvelopeDialog *) gtk_widget_get_ancestor((GtkWidget *) pattern_envelope,
 								  AGS_TYPE_ENVELOPE_DIALOG);
 
   window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) envelope_dialog->machine,
@@ -986,9 +979,6 @@ ags_pattern_envelope_preset_move_down_callback(GtkWidget *button,
   if(!do_edit){
     return;
   }
-
-  /* application context and mutex manager */
-  application_context = window->application_context;
 
   /* get audio mutex */
   pthread_mutex_lock(ags_audio_get_class_mutex());
@@ -1104,7 +1094,7 @@ ags_pattern_envelope_preset_remove_callback(GtkWidget *button,
   if(do_edit){
     AgsEnvelopeDialog *envelope_dialog;
 
-    envelope_dialog = (AgsEnvelopeDialog *) gtk_widget_get_ancestor(pattern_envelope,
+    envelope_dialog = (AgsEnvelopeDialog *) gtk_widget_get_ancestor((GtkWidget *) pattern_envelope,
 								    AGS_TYPE_ENVELOPE_DIALOG);
     
     ags_pattern_envelope_remove_preset(pattern_envelope,
@@ -1124,7 +1114,7 @@ ags_pattern_envelope_preset_rename_response_callback(GtkWidget *widget, gint res
     
     gchar *text;
 
-    envelope_dialog = (AgsEnvelopeDialog *) gtk_widget_get_ancestor(pattern_envelope,
+    envelope_dialog = (AgsEnvelopeDialog *) gtk_widget_get_ancestor((GtkWidget *) pattern_envelope,
 								    AGS_TYPE_ENVELOPE_DIALOG);
 
     /* get name */

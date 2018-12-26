@@ -77,7 +77,7 @@ struct _AgsNotationToolbarClass
 
 GType ags_notation_toolbar_get_type(void);
 
-GtkMenu* ags_notation_toolbar_tool_popup_new(GtkToolbar *notation_toolbar);
+GtkMenu* ags_notation_toolbar_tool_popup_new(AgsNotationToolbar *notation_toolbar);
 
 AgsNotationToolbar* ags_notation_toolbar_new();
 

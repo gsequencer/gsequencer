@@ -41,7 +41,7 @@ ags_move_note_dialog_response_callback(GtkWidget *dialog, gint response,
   case GTK_RESPONSE_CANCEL:
     {
       if(hide_dialog){
-	gtk_widget_hide(move_note_dialog);
+	gtk_widget_hide((GtkWidget *) move_note_dialog);
       }
     }
   }

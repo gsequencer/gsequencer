@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -41,7 +41,7 @@ ags_position_notation_cursor_dialog_response_callback(GtkWidget *dialog, gint re
   case GTK_RESPONSE_CANCEL:
     {
       if(hide_dialog){
-	gtk_widget_hide(position_notation_cursor_dialog);
+	gtk_widget_hide((GtkWidget *) position_notation_cursor_dialog);
       }
     }
   }

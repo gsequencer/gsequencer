@@ -34,10 +34,10 @@ void ags_automation_toolbar_machine_changed_callback(AgsAutomationEditor *automa
 						     AgsMachine *machine,
 						     AgsAutomationToolbar *toolbar);
 
-void ags_automation_toolbar_position_callback(GtkToggleButton *toggle_button, AgsAutomationToolbar *automation_toolbar);
-void ags_automation_toolbar_edit_callback(GtkToggleButton *toggle_button, AgsAutomationToolbar *automation_toolbar);
-void ags_automation_toolbar_clear_callback(GtkToggleButton *toggle_button, AgsAutomationToolbar *automation_toolbar);
-void ags_automation_toolbar_select_callback(GtkToggleButton *toggle_button, AgsAutomationToolbar *automation_toolbar);
+void ags_automation_toolbar_position_callback(GtkToggleToolButton *toggle_button, AgsAutomationToolbar *automation_toolbar);
+void ags_automation_toolbar_edit_callback(GtkToggleToolButton *toggle_button, AgsAutomationToolbar *automation_toolbar);
+void ags_automation_toolbar_clear_callback(GtkToggleToolButton *toggle_button, AgsAutomationToolbar *automation_toolbar);
+void ags_automation_toolbar_select_callback(GtkToggleToolButton *toggle_button, AgsAutomationToolbar *automation_toolbar);
 
 void ags_automation_toolbar_copy_or_cut_callback(GtkWidget *widget, AgsAutomationToolbar *automation_toolbar);
 void ags_automation_toolbar_paste_callback(GtkWidget *widget, AgsAutomationToolbar *automation_toolbar);

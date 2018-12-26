@@ -117,7 +117,6 @@ void
 ags_envelope_info_class_init(AgsEnvelopeInfoClass *envelope_info)
 {
   GObjectClass *gobject;
-  GtkWidgetClass *widget;
   GParamSpec *param_spec;
 
   ags_envelope_info_parent_class = g_type_class_peek_parent(envelope_info);
@@ -125,10 +124,7 @@ ags_envelope_info_class_init(AgsEnvelopeInfoClass *envelope_info)
   /* GObjectClass */
   gobject = (GObjectClass *) envelope_info;
 
-  gobject->finalize = ags_envelope_info_finalize;
-  
-  /* GtkWidgetClass */
-  widget = (GtkWidgetClass *) envelope_info;
+  gobject->finalize = ags_envelope_info_finalize;  
 }
 
 void
@@ -185,14 +181,14 @@ ags_envelope_info_init(AgsEnvelopeInfo *envelope_info)
   height = cartesian->y_end - cartesian->y_start;
 
   /* cartesian - size, pack and redraw */
-  gtk_widget_set_size_request(cartesian,
+  gtk_widget_set_size_request((GtkWidget *) cartesian,
 			      (gint) width + 2.0 * cartesian->x_margin, (gint) height + 2.0 * cartesian->y_margin);
   gtk_box_pack_start((GtkBox *) envelope_info,
 		     (GtkWidget *) cartesian,
 		     FALSE, FALSE,
 		     0);
 
-  gtk_widget_queue_draw(cartesian);
+  gtk_widget_queue_draw((GtkWidget *) cartesian);
 
   /* tree view */
   envelope_info->tree_view = (GtkTreeView *) gtk_tree_view_new();
@@ -207,7 +203,7 @@ ags_envelope_info_init(AgsEnvelopeInfo *envelope_info)
 			     G_TYPE_UINT,
 			     G_TYPE_UINT);
   gtk_tree_view_set_model(envelope_info->tree_view,
-			  model);
+			  GTK_TREE_MODEL(model));
 
   toggle_renderer = gtk_cell_renderer_toggle_new();
   renderer = gtk_cell_renderer_text_new();
@@ -326,23 +322,18 @@ ags_envelope_info_reset(AgsApplicable *applicable)
   
   AgsAudio *audio;
   
-  AgsApplicationContext *application_context;
-
   GList *start_notation, *notation;
   GList *start_selection, *selection;
 
   envelope_info = AGS_ENVELOPE_INFO(applicable);
-  envelope_dialog = gtk_widget_get_ancestor(envelope_info,
-					    AGS_TYPE_ENVELOPE_DIALOG);
+  envelope_dialog = (AgsEnvelopeDialog *) gtk_widget_get_ancestor((GtkWidget *) envelope_info,
+								  AGS_TYPE_ENVELOPE_DIALOG);
   
   window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) envelope_dialog->machine,
 						 AGS_TYPE_WINDOW);
   machine = envelope_dialog->machine;
 
   audio = machine->audio;
-
-  /* application context and mutex manager */
-  application_context = window->application_context;
 
   /* get tree model */
   model = GTK_LIST_STORE(gtk_tree_view_get_model(envelope_info->tree_view));
@@ -480,10 +471,7 @@ ags_envelope_info_plot(AgsEnvelopeInfo *envelope_info)
   GtkTreeModel *model;
   GtkTreeIter iter;
 
-  AgsAudio *audio;
   AgsNote *note;
-  
-  AgsApplicationContext *application_context;
   
   GList *selection;
 
@@ -496,17 +484,12 @@ ags_envelope_info_plot(AgsEnvelopeInfo *envelope_info)
     return;
   }
 
-  envelope_dialog = gtk_widget_get_ancestor(envelope_info,
-					    AGS_TYPE_ENVELOPE_DIALOG);
+  envelope_dialog = (AgsEnvelopeDialog *) gtk_widget_get_ancestor((GtkWidget *) envelope_info,
+								  AGS_TYPE_ENVELOPE_DIALOG);
 
   window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) envelope_dialog->machine,
 						 AGS_TYPE_WINDOW);
   machine = envelope_dialog->machine;
-
-  audio = machine->audio;
-
-  /* application context and mutex manager */
-  application_context = window->application_context;
 
   /* cartesian */
   cartesian = envelope_info->cartesian;
@@ -626,7 +609,7 @@ ags_envelope_info_plot(AgsEnvelopeInfo *envelope_info)
   }
 
   /* queue draw */
-  gtk_widget_queue_draw(cartesian);
+  gtk_widget_queue_draw((GtkWidget *) cartesian);
 }
 
 /**

@@ -119,7 +119,6 @@ void
 ags_envelope_dialog_class_init(AgsEnvelopeDialogClass *envelope_dialog)
 {
   GObjectClass *gobject;
-  GtkWidgetClass *widget;
   GParamSpec *param_spec;
 
   ags_envelope_dialog_parent_class = g_type_class_peek_parent(envelope_dialog);
@@ -146,12 +145,6 @@ ags_envelope_dialog_class_init(AgsEnvelopeDialogClass *envelope_dialog)
   g_object_class_install_property(gobject,
 				  PROP_MACHINE,
 				  param_spec);
-
-
-  /* GtkWidgetClass */
-  widget = (GtkWidgetClass *) envelope_dialog;
-
-  //  widget->delete_event = ags_envelope_dialog_delete_event;
 }
 
 void

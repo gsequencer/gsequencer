@@ -41,7 +41,7 @@ ags_position_automation_cursor_dialog_response_callback(GtkWidget *dialog, gint 
   case GTK_RESPONSE_CANCEL:
     {
       if(hide_dialog){
-	gtk_widget_hide(position_automation_cursor_dialog);
+	gtk_widget_hide((GtkWidget *) position_automation_cursor_dialog);
       }
     }
   }

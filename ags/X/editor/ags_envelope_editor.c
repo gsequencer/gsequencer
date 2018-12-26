@@ -115,17 +115,7 @@ ags_envelope_editor_get_type(void)
 void
 ags_envelope_editor_class_init(AgsEnvelopeEditorClass *envelope_editor)
 {
-  GObjectClass *gobject;
-  GtkWidgetClass *widget;
-  GParamSpec *param_spec;
-
   ags_envelope_editor_parent_class = g_type_class_peek_parent(envelope_editor);
-
-  /* GObjectClass */
-  gobject = (GObjectClass *) envelope_editor;
-
-  /* GtkWidgetClass */
-  widget = (GtkWidgetClass *) envelope_editor;
 }
 
 void
@@ -167,7 +157,7 @@ ags_envelope_editor_init(AgsEnvelopeEditor *envelope_editor)
   envelope_editor->build_id = AGS_ENVELOPE_EDITOR_DEFAULT_BUILD_ID;
 
   /* enabled */
-  envelope_editor->enabled = gtk_check_button_new_with_label(i18n("enabled"));
+  envelope_editor->enabled = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("enabled"));
   gtk_box_pack_start((GtkBox *) envelope_editor,
 		     (GtkWidget *) envelope_editor->enabled,
 		     FALSE, FALSE,
@@ -188,7 +178,7 @@ ags_envelope_editor_init(AgsEnvelopeEditor *envelope_editor)
   gtk_container_add((GtkContainer *) frame,
 		    (GtkWidget *) hbox);
   
-  envelope_editor->preset = gtk_combo_box_text_new();
+  envelope_editor->preset = (GtkComboBoxText *) gtk_combo_box_text_new();
   gtk_box_pack_start((GtkBox *) hbox,
 		     (GtkWidget *) envelope_editor->preset,
 		     FALSE, FALSE,
@@ -273,14 +263,14 @@ ags_envelope_editor_init(AgsEnvelopeEditor *envelope_editor)
 			 plot);
 
   /* cartesian - size, pack and redraw */
-  gtk_widget_set_size_request(cartesian,
+  gtk_widget_set_size_request((GtkWidget *) cartesian,
 			      (gint) width + 2.0 * cartesian->x_margin, (gint) height + 2.0 * cartesian->y_margin);
   gtk_box_pack_start((GtkBox *) envelope_editor,
 		     GTK_WIDGET(cartesian),
 		     FALSE, FALSE,
 		     0);
 
-  gtk_widget_queue_draw(cartesian);
+  gtk_widget_queue_draw((GtkWidget *) cartesian);
 
   /* table */
   table = (GtkTable *) gtk_table_new(5, 2,
@@ -313,7 +303,7 @@ ags_envelope_editor_init(AgsEnvelopeEditor *envelope_editor)
 		   0, 0);
   
   envelope_editor->attack_x = (GtkHScale *) gtk_hscale_new_with_range(0.0, 1.0, 0.001);
-  gtk_scale_set_draw_value(envelope_editor->attack_x,
+  gtk_scale_set_draw_value((GtkScale *) envelope_editor->attack_x,
 			   TRUE);
   gtk_range_set_value((GtkRange *) envelope_editor->attack_x,
 		      0.25);
@@ -323,7 +313,7 @@ ags_envelope_editor_init(AgsEnvelopeEditor *envelope_editor)
 		     0);
 
   envelope_editor->attack_y = (GtkHScale *) gtk_hscale_new_with_range(-1.0, 1.0, 0.001);
-  gtk_scale_set_draw_value(envelope_editor->attack_y,
+  gtk_scale_set_draw_value((GtkScale *) envelope_editor->attack_y,
 			   TRUE);
   gtk_range_set_value((GtkRange *) envelope_editor->attack_y,
 		      0.0);
@@ -355,7 +345,7 @@ ags_envelope_editor_init(AgsEnvelopeEditor *envelope_editor)
 		   0, 0);
 
   envelope_editor->decay_x = (GtkHScale *) gtk_hscale_new_with_range(0.0, 1.0, 0.001);
-  gtk_scale_set_draw_value(envelope_editor->decay_x,
+  gtk_scale_set_draw_value((GtkScale *) envelope_editor->decay_x,
 			   TRUE);
   gtk_range_set_value((GtkRange *) envelope_editor->decay_x,
 		      0.25);
@@ -365,7 +355,7 @@ ags_envelope_editor_init(AgsEnvelopeEditor *envelope_editor)
 		     0);
 
   envelope_editor->decay_y = (GtkHScale *) gtk_hscale_new_with_range(-1.0, 1.0, 0.001);
-  gtk_scale_set_draw_value(envelope_editor->decay_y,
+  gtk_scale_set_draw_value((GtkScale *) envelope_editor->decay_y,
 			   TRUE);
   gtk_range_set_value((GtkRange *) envelope_editor->decay_y,
 		      0.0);
@@ -397,7 +387,7 @@ ags_envelope_editor_init(AgsEnvelopeEditor *envelope_editor)
 		   0, 0);
 
   envelope_editor->sustain_x = (GtkHScale *) gtk_hscale_new_with_range(0.0, 1.0, 0.001);
-  gtk_scale_set_draw_value(envelope_editor->sustain_x,
+  gtk_scale_set_draw_value((GtkScale *) envelope_editor->sustain_x,
 			   TRUE);
   gtk_range_set_value((GtkRange *) envelope_editor->sustain_x,
 		      0.25);
@@ -407,7 +397,7 @@ ags_envelope_editor_init(AgsEnvelopeEditor *envelope_editor)
 		     0);
 
   envelope_editor->sustain_y = (GtkHScale *) gtk_hscale_new_with_range(-1.0, 1.0, 0.001);
-  gtk_scale_set_draw_value(envelope_editor->sustain_y,
+  gtk_scale_set_draw_value((GtkScale *) envelope_editor->sustain_y,
 			   TRUE);
   gtk_range_set_value((GtkRange *) envelope_editor->sustain_y,
 		      0.0);
@@ -439,7 +429,7 @@ ags_envelope_editor_init(AgsEnvelopeEditor *envelope_editor)
 		   0, 0);
 
   envelope_editor->release_x = (GtkHScale *) gtk_hscale_new_with_range(0.0, 1.0, 0.001);
-  gtk_scale_set_draw_value(envelope_editor->release_x,
+  gtk_scale_set_draw_value((GtkScale *) envelope_editor->release_x,
 			   TRUE);
   gtk_range_set_value((GtkRange *) envelope_editor->release_x,
 		      0.25);
@@ -449,7 +439,7 @@ ags_envelope_editor_init(AgsEnvelopeEditor *envelope_editor)
 		     0);
 
   envelope_editor->release_y = (GtkHScale *) gtk_hscale_new_with_range(-1.0, 1.0, 0.001);
-  gtk_scale_set_draw_value(envelope_editor->release_y,
+  gtk_scale_set_draw_value((GtkScale *) envelope_editor->release_y,
 			   TRUE);
   gtk_range_set_value((GtkRange *) envelope_editor->release_y,
 		      0.0);
@@ -472,7 +462,7 @@ ags_envelope_editor_init(AgsEnvelopeEditor *envelope_editor)
 		   0, 0);
 
   envelope_editor->ratio = (GtkHScale *) gtk_hscale_new_with_range(0.0, 1.0, 0.001);
-  gtk_scale_set_draw_value(envelope_editor->ratio,
+  gtk_scale_set_draw_value((GtkScale *) envelope_editor->ratio,
 			   TRUE);
   gtk_range_set_value((GtkRange *) envelope_editor->ratio,
 		      1.0);
@@ -649,8 +639,6 @@ ags_envelope_editor_apply(AgsApplicable *applicable)
 
   AgsAudio *audio;
   
-  AgsApplicationContext *application_context;
-
   GList *start_notation, *notation;
   GList *start_selection, *selection;
 
@@ -663,17 +651,14 @@ ags_envelope_editor_apply(AgsApplicable *applicable)
   complex z;
   
   envelope_editor = AGS_ENVELOPE_EDITOR(applicable);
-  envelope_dialog = gtk_widget_get_ancestor(envelope_editor,
-					    AGS_TYPE_ENVELOPE_DIALOG);
+  envelope_dialog = (AgsEnvelopeDialog *) gtk_widget_get_ancestor((GtkWidget *) envelope_editor,
+								  AGS_TYPE_ENVELOPE_DIALOG);
 
   window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) envelope_dialog->machine,
 						 AGS_TYPE_WINDOW);
   machine = envelope_dialog->machine;
 
   audio = machine->audio;
-
-  /* application context and mutex manager */
-  application_context = window->application_context;
 
   /* get z */
   attack_x = gtk_range_get_value(GTK_RANGE(envelope_editor->attack_x));
@@ -833,8 +818,6 @@ ags_envelope_editor_get_active_preset(AgsEnvelopeEditor *envelope_editor)
 
   AgsAudio *audio;
   AgsPreset *current;
-    
-  AgsApplicationContext *application_context;
 
   GList *start_preset, *preset;
 
@@ -844,7 +827,7 @@ ags_envelope_editor_get_active_preset(AgsEnvelopeEditor *envelope_editor)
     return(NULL);
   }
     
-  envelope_dialog = (AgsEnvelopeDialog *) gtk_widget_get_ancestor(envelope_editor,
+  envelope_dialog = (AgsEnvelopeDialog *) gtk_widget_get_ancestor((GtkWidget *) envelope_editor,
 								  AGS_TYPE_ENVELOPE_DIALOG);
 
   window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) envelope_dialog->machine,
@@ -852,9 +835,6 @@ ags_envelope_editor_get_active_preset(AgsEnvelopeEditor *envelope_editor)
   machine = envelope_dialog->machine;
 
   audio = machine->audio;
-
-  /* application context and mutex manager */
-  application_context = window->application_context;
 
   /* preset name */
   preset_name = gtk_combo_box_text_get_active_text(envelope_editor->preset);
@@ -900,9 +880,7 @@ ags_envelope_editor_load_preset(AgsEnvelopeEditor *envelope_editor)
   GtkTreeModel *model;
 
   AgsAudio *audio;
-  
-  AgsApplicationContext *application_context;
-  
+    
   GList *start_preset, *preset;
   
   if(!AGS_IS_ENVELOPE_EDITOR(envelope_editor)){
@@ -918,11 +896,8 @@ ags_envelope_editor_load_preset(AgsEnvelopeEditor *envelope_editor)
 
   audio = machine->audio;
 
-  /* application context and mutex manager */
-  application_context = window->application_context;
-
   /* get model */
-  model = GTK_TREE_MODEL(gtk_combo_box_get_model(envelope_editor->preset));
+  model = GTK_TREE_MODEL(gtk_combo_box_get_model(GTK_COMBO_BOX(envelope_editor->preset)));
 
   /* clear old */
   gtk_list_store_clear(GTK_LIST_STORE(model));
@@ -966,8 +941,6 @@ ags_envelope_editor_add_preset(AgsEnvelopeEditor *envelope_editor,
 
   AgsAudio *audio;
   AgsPreset *preset;
-  
-  AgsApplicationContext *application_context;
 
   GList *start_preset;
   
@@ -980,7 +953,7 @@ ags_envelope_editor_add_preset(AgsEnvelopeEditor *envelope_editor,
     return;
   }
   
-  envelope_dialog = (AgsEnvelopeDialog *) gtk_widget_get_ancestor(envelope_editor,
+  envelope_dialog = (AgsEnvelopeDialog *) gtk_widget_get_ancestor((GtkWidget *) envelope_editor,
 								  AGS_TYPE_ENVELOPE_DIALOG);
 
   window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) envelope_dialog->machine,
@@ -988,9 +961,6 @@ ags_envelope_editor_add_preset(AgsEnvelopeEditor *envelope_editor,
   machine = envelope_dialog->machine;
 
   audio = machine->audio;
-
-  /* application context and mutex manager */
-  application_context = window->application_context;
 
   g_object_get(audio,
 	       "preset", &start_preset,
@@ -1010,7 +980,7 @@ ags_envelope_editor_add_preset(AgsEnvelopeEditor *envelope_editor,
 			"preset-name", preset_name,
 			NULL);
   ags_audio_add_preset(audio,
-		       preset);
+		       (GObject *) preset);
 
   /* preset - attack */
   val = ags_complex_alloc();
@@ -1097,15 +1067,13 @@ ags_envelope_editor_remove_preset(AgsEnvelopeEditor *envelope_editor,
   AgsAudio *audio;
   AgsPreset *preset;
   
-  AgsApplicationContext *application_context;
-
   GList *start_preset;
   
   if(!AGS_IS_ENVELOPE_EDITOR(envelope_editor)){
     return;
   }
   
-  envelope_dialog = (AgsEnvelopeDialog *) gtk_widget_get_ancestor(envelope_editor,
+  envelope_dialog = (AgsEnvelopeDialog *) gtk_widget_get_ancestor((GtkWidget *) envelope_editor,
 								  AGS_TYPE_ENVELOPE_DIALOG);
 
   window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) envelope_dialog->machine,
@@ -1114,9 +1082,6 @@ ags_envelope_editor_remove_preset(AgsEnvelopeEditor *envelope_editor,
 
   audio = machine->audio;
   
-  /* application context and mutex manager */
-  application_context = window->application_context;
-
   /* remove preset */
   g_object_get(audio,
 	       "preset", &start_preset,
@@ -1127,7 +1092,7 @@ ags_envelope_editor_remove_preset(AgsEnvelopeEditor *envelope_editor,
   g_list_free(start_preset);
 
   ags_audio_remove_preset(audio,
-			  preset);
+			  (GObject *) preset);
 }
 
 /**
@@ -1146,11 +1111,8 @@ ags_envelope_editor_reset_control(AgsEnvelopeEditor *envelope_editor)
   AgsWindow *window;
   AgsMachine *machine;
 
-  AgsAudio *audio;
   AgsPreset *preset;
   
-  AgsApplicationContext *application_context;
-
   AgsComplex *val;
   
   complex z;
@@ -1182,11 +1144,6 @@ ags_envelope_editor_reset_control(AgsEnvelopeEditor *envelope_editor)
 						 AGS_TYPE_WINDOW);
   machine = envelope_dialog->machine;
 
-  audio = machine->audio;
-  
-  /* application context and mutex manager */
-  application_context = window->application_context;
-
   /* attack */
   g_value_init(&value,
 	       AGS_TYPE_COMPLEX);
@@ -1207,9 +1164,9 @@ ags_envelope_editor_reset_control(AgsEnvelopeEditor *envelope_editor)
   val = (AgsComplex *) g_value_get_boxed(&value);  
   z = ags_complex_get(val);
   
-  gtk_range_set_value(envelope_editor->attack_x,
+  gtk_range_set_value((GtkRange *) envelope_editor->attack_x,
 		      creal(z));
-  gtk_range_set_value(envelope_editor->attack_y,
+  gtk_range_set_value((GtkRange *) envelope_editor->attack_y,
 		      cimag(z));
 
   /* decay */
@@ -1231,9 +1188,9 @@ ags_envelope_editor_reset_control(AgsEnvelopeEditor *envelope_editor)
   val = (AgsComplex *) g_value_get_boxed(&value);  
   z = ags_complex_get(val);
   
-  gtk_range_set_value(envelope_editor->decay_x,
+  gtk_range_set_value((GtkRange *) envelope_editor->decay_x,
 		      creal(z));
-  gtk_range_set_value(envelope_editor->decay_y,
+  gtk_range_set_value((GtkRange *) envelope_editor->decay_y,
 		      cimag(z));
 
   /* sustain */
@@ -1255,9 +1212,9 @@ ags_envelope_editor_reset_control(AgsEnvelopeEditor *envelope_editor)
   val = (AgsComplex *) g_value_get_boxed(&value);  
   z = ags_complex_get(val);
   
-  gtk_range_set_value(envelope_editor->sustain_x,
+  gtk_range_set_value((GtkRange *) envelope_editor->sustain_x,
 		      creal(z));
-  gtk_range_set_value(envelope_editor->sustain_y,
+  gtk_range_set_value((GtkRange *) envelope_editor->sustain_y,
 		      cimag(z));
 
   /* release */
@@ -1279,9 +1236,9 @@ ags_envelope_editor_reset_control(AgsEnvelopeEditor *envelope_editor)
   val = (AgsComplex *) g_value_get_boxed(&value);  
   z = ags_complex_get(val);
   
-  gtk_range_set_value(envelope_editor->release_x,
+  gtk_range_set_value((GtkRange *) envelope_editor->release_x,
 		      creal(z));
-  gtk_range_set_value(envelope_editor->release_y,
+  gtk_range_set_value((GtkRange *) envelope_editor->release_y,
 		      cimag(z));
 
   /* ratio */
@@ -1303,7 +1260,7 @@ ags_envelope_editor_reset_control(AgsEnvelopeEditor *envelope_editor)
   val = (AgsComplex *) g_value_get_boxed(&value);  
   z = ags_complex_get(val);
   
-  gtk_range_set_value(envelope_editor->ratio,
+  gtk_range_set_value((GtkRange *) envelope_editor->ratio,
 		      cimag(z));
 
   /* unset no update */
@@ -1325,7 +1282,6 @@ ags_envelope_editor_plot(AgsEnvelopeEditor *envelope_editor)
   
   AgsPlot *plot;
 
-  gdouble width, height;
   gdouble default_width, default_height;
   gdouble attack_x, attack_y;
   gdouble decay_x, decay_y;
@@ -1341,26 +1297,23 @@ ags_envelope_editor_plot(AgsEnvelopeEditor *envelope_editor)
   cartesian = envelope_editor->cartesian;
 
   plot = cartesian->plot->data;
-
-  width = (gdouble) cartesian->x_end - cartesian->x_start;
-  height = (gdouble) cartesian->y_end - cartesian->y_start;
   
   default_width = cartesian->x_step_width * cartesian->x_scale_step_width;
   default_height = cartesian->y_step_height * cartesian->y_scale_step_height;
 
-  attack_x = gtk_range_get_value(envelope_editor->attack_x);
-  attack_y = gtk_range_get_value(envelope_editor->attack_y);
+  attack_x = gtk_range_get_value((GtkRange *) envelope_editor->attack_x);
+  attack_y = gtk_range_get_value((GtkRange *) envelope_editor->attack_y);
 
-  decay_x = gtk_range_get_value(envelope_editor->decay_x);
-  decay_y = gtk_range_get_value(envelope_editor->decay_y);
+  decay_x = gtk_range_get_value((GtkRange *) envelope_editor->decay_x);
+  decay_y = gtk_range_get_value((GtkRange *) envelope_editor->decay_y);
 
-  sustain_x = gtk_range_get_value(envelope_editor->sustain_x);
-  sustain_y = gtk_range_get_value(envelope_editor->sustain_y);
+  sustain_x = gtk_range_get_value((GtkRange *) envelope_editor->sustain_x);
+  sustain_y = gtk_range_get_value((GtkRange *) envelope_editor->sustain_y);
 
-  release_x = gtk_range_get_value(envelope_editor->release_x);
-  release_y = gtk_range_get_value(envelope_editor->release_y);
+  release_x = gtk_range_get_value((GtkRange *) envelope_editor->release_x);
+  release_y = gtk_range_get_value((GtkRange *) envelope_editor->release_y);
 
-  ratio = gtk_range_get_value(envelope_editor->ratio);
+  ratio = gtk_range_get_value((GtkRange *) envelope_editor->ratio);
 
   /* reset plot points */
   plot->point[0][0] = 0.0;
@@ -1385,7 +1338,7 @@ ags_envelope_editor_plot(AgsEnvelopeEditor *envelope_editor)
   plot->point[4][1] = default_height * (release_y + ratio);
   
   /* redraw */
-  gtk_widget_queue_draw(cartesian);
+  gtk_widget_queue_draw((GtkWidget *) cartesian);
 }
 
 /**

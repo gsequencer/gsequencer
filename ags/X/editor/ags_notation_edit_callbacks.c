@@ -76,7 +76,7 @@ ags_notation_edit_drawing_area_button_press_event(GtkWidget *widget, GdkEventBut
     notation_edit->cursor_position_y = (guint) ((event->y + GTK_RANGE(notation_edit->vscrollbar)->adjustment->value) / notation_edit->control_height);
 
     /* queue draw */
-    gtk_widget_queue_draw(notation_edit);
+    gtk_widget_queue_draw((GtkWidget *) notation_edit);
   }
   
   void ags_notation_edit_drawing_area_button_press_add_note()
@@ -113,7 +113,7 @@ ags_notation_edit_drawing_area_button_press_event(GtkWidget *widget, GdkEventBut
     g_object_ref(note);
 
     /* queue draw */
-    gtk_widget_queue_draw(notation_edit);
+    gtk_widget_queue_draw((GtkWidget *) notation_edit);
   }
 
   void ags_notation_edit_drawing_area_button_press_select_note()
@@ -124,7 +124,7 @@ ags_notation_edit_drawing_area_button_press_event(GtkWidget *widget, GdkEventBut
     notation_edit->selection_y0 = (guint) event->y + GTK_RANGE(notation_edit->vscrollbar)->adjustment->value;
     notation_edit->selection_y1 = notation_edit->selection_y0;
 
-    gtk_widget_queue_draw(notation_edit);
+    gtk_widget_queue_draw((GtkWidget *) notation_edit);
   }
 
   notation_editor = (AgsNotationEditor *) gtk_widget_get_ancestor(GTK_WIDGET(notation_edit),
@@ -186,7 +186,7 @@ ags_notation_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEventB
     notation_edit->cursor_position_y = (guint) ((event->y + GTK_RANGE(notation_edit->vscrollbar)->adjustment->value) / notation_edit->control_height);
     
     /* queue draw */
-    gtk_widget_queue_draw(notation_edit);
+    gtk_widget_queue_draw((GtkWidget *) notation_edit);
   }
 
   void ags_notation_edit_drawing_area_button_release_add_note()
@@ -331,7 +331,7 @@ ags_notation_edit_drawing_area_motion_notify_event(GtkWidget *widget, GdkEventMo
 #endif
     
     /* queue draw */
-    gtk_widget_queue_draw(notation_edit);
+    gtk_widget_queue_draw((GtkWidget *) notation_edit);
   }
 
   void ags_notation_edit_drawing_area_motion_notify_add_note()
@@ -367,7 +367,7 @@ ags_notation_edit_drawing_area_motion_notify_event(GtkWidget *widget, GdkEventMo
 #endif
     
     /* queue draw */
-    gtk_widget_queue_draw(notation_edit);
+    gtk_widget_queue_draw((GtkWidget *) notation_edit);
   }
 
   void ags_notation_edit_drawing_area_motion_notify_select_note()
@@ -384,7 +384,7 @@ ags_notation_edit_drawing_area_motion_notify_event(GtkWidget *widget, GdkEventMo
       notation_edit->selection_y1 = 0.0;
     }
 
-    gtk_widget_queue_draw(notation_edit);
+    gtk_widget_queue_draw((GtkWidget *) notation_edit);
   }
 
   notation_editor = (AgsNotationEditor *) gtk_widget_get_ancestor(GTK_WIDGET(notation_edit),
@@ -785,7 +785,7 @@ ags_notation_edit_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey 
       break;
     }
 
-    gtk_widget_queue_draw(notation_edit);
+    gtk_widget_queue_draw((GtkWidget *) notation_edit);
 
     /* do feedback */
     if(do_feedback){
@@ -803,18 +803,18 @@ ags_notation_edit_vscrollbar_value_changed(GtkRange *range, AgsNotationEdit *not
 
   GtkAdjustment *piano_adjustment;
   
-  notation_editor = gtk_widget_get_ancestor(notation_edit,
-					    AGS_TYPE_NOTATION_EDITOR);
+  notation_editor = (AgsNotationEditor *) gtk_widget_get_ancestor((GtkWidget *) notation_edit,
+								  AGS_TYPE_NOTATION_EDITOR);
 
   g_object_get(notation_editor->scrolled_piano->viewport,
 	       "vadjustment", &piano_adjustment,
 	       NULL);
   gtk_adjustment_set_value(piano_adjustment,
 			   range->adjustment->value);
-  gtk_widget_queue_draw(notation_editor->scrolled_piano->piano);
+  gtk_widget_queue_draw((GtkWidget *) notation_editor->scrolled_piano->piano);
 
   /* queue draw */
-  gtk_widget_queue_draw(notation_edit->drawing_area);
+  gtk_widget_queue_draw((GtkWidget *) notation_edit->drawing_area);
 }
 
 void
@@ -825,8 +825,8 @@ ags_notation_edit_hscrollbar_value_changed(GtkRange *range, AgsNotationEdit *not
   value = GTK_RANGE(notation_edit->hscrollbar)->adjustment->value / 64.0;
   gtk_adjustment_set_value(notation_edit->ruler->adjustment,
 			   value);
-  gtk_widget_queue_draw(notation_edit->ruler);
+  gtk_widget_queue_draw((GtkWidget *) notation_edit->ruler);
   
   /* queue draw */
-  gtk_widget_queue_draw(notation_edit->drawing_area);
+  gtk_widget_queue_draw((GtkWidget *) notation_edit->drawing_area);
 }

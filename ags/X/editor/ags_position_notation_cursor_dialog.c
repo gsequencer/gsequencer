@@ -215,7 +215,7 @@ ags_position_notation_cursor_dialog_init(AgsPositionNotationCursorDialog *positi
 
   /* set focus */
   position_notation_cursor_dialog->set_focus = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("set focus"));
-  gtk_toggle_button_set_active(position_notation_cursor_dialog->set_focus,
+  gtk_toggle_button_set_active((GtkToggleButton *) position_notation_cursor_dialog->set_focus,
 			       TRUE);
   gtk_box_pack_start((GtkBox *) vbox,
 		     GTK_WIDGET(position_notation_cursor_dialog->set_focus),
@@ -223,7 +223,7 @@ ags_position_notation_cursor_dialog_init(AgsPositionNotationCursorDialog *positi
 		     0);  
 
   /* position x - hbox */
-  hbox = (GtkVBox *) gtk_hbox_new(FALSE, 0);
+  hbox = (GtkHBox *) gtk_hbox_new(FALSE, 0);
   gtk_box_pack_start((GtkBox *) vbox,
 		     GTK_WIDGET(hbox),
 		     FALSE, FALSE,
@@ -248,7 +248,7 @@ ags_position_notation_cursor_dialog_init(AgsPositionNotationCursorDialog *positi
 		     0);
   
   /* position y - hbox */
-  hbox = (GtkVBox *) gtk_hbox_new(FALSE, 0);
+  hbox = (GtkHBox *) gtk_hbox_new(FALSE, 0);
   gtk_box_pack_start((GtkBox *) vbox,
 		     GTK_WIDGET(hbox),
 		     FALSE, FALSE,
@@ -330,7 +330,7 @@ ags_position_notation_cursor_dialog_set_property(GObject *gobject,
 	g_object_ref(main_window);
       }
 
-      position_notation_cursor_dialog->main_window = (GObject *) main_window;
+      position_notation_cursor_dialog->main_window = (GtkWidget *) main_window;
     }
     break;
   default:
@@ -431,10 +431,11 @@ ags_position_notation_cursor_dialog_apply(AgsApplicable *applicable)
   AgsWindow *window;
   AgsNotationEditor *notation_editor;
   AgsNotationToolbar *notation_toolbar;
+  AgsNotationEdit *notation_edit;
   AgsMachine *machine;
   GtkWidget *widget;
   
-  GtkAdjustment *vadjustment, *hadjustment;
+  GtkAdjustment *hadjustment;
 
   gdouble zoom;
   guint map_height, height;
@@ -443,7 +444,7 @@ ags_position_notation_cursor_dialog_apply(AgsApplicable *applicable)
   
   position_notation_cursor_dialog = AGS_POSITION_NOTATION_CURSOR_DIALOG(applicable);
 
-  window = position_notation_cursor_dialog->main_window;
+  window = (AgsWindow *) position_notation_cursor_dialog->main_window;
   notation_editor = window->notation_editor;
 
   machine = notation_editor->selected_machine;
@@ -457,6 +458,29 @@ ags_position_notation_cursor_dialog_apply(AgsApplicable *applicable)
   history = gtk_combo_box_get_active(GTK_COMBO_BOX(notation_toolbar->zoom));
   zoom = exp2((double) history - 2.0);
 
+  notation_edit = notation_editor->focused_notation_edit;
+
+  if(notation_edit == NULL){
+    return;
+  }
+  
+  x = gtk_spin_button_get_value_as_int(position_notation_cursor_dialog->position_x);
+  notation_edit->cursor_position_x = 16 * x;
+  notation_edit->cursor_position_y = 0.0;
+
+  hadjustment = GTK_RANGE(notation_edit->hscrollbar)->adjustment;
+
+  widget = (GtkWidget *) notation_edit->drawing_area;
+    
+  /* make visible */  
+  if(hadjustment != NULL){
+    gtk_adjustment_set_value(hadjustment,
+			     ((x * 16 * 64 / zoom) * (hadjustment->upper / (AGS_NOTATION_EDITOR_MAX_CONTROLS / zoom))));
+  }
+
+  if(gtk_toggle_button_get_active((GtkToggleButton *) position_notation_cursor_dialog->set_focus)){
+    gtk_widget_grab_focus(widget);
+  }
   //TODO:JK: implement me
 }
 

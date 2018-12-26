@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -24,7 +24,7 @@
 #include <math.h>
 
 void
-ags_notation_toolbar_position_callback(GtkToggleButton *toggle_button, AgsNotationToolbar *notation_toolbar)
+ags_notation_toolbar_position_callback(GtkToggleToolButton *toggle_button, AgsNotationToolbar *notation_toolbar)
 {
   if(toggle_button == notation_toolbar->selected_edit_mode){
     if(!gtk_toggle_tool_button_get_active(toggle_button)){
@@ -40,7 +40,7 @@ ags_notation_toolbar_position_callback(GtkToggleButton *toggle_button, AgsNotati
 }
 
 void
-ags_notation_toolbar_edit_callback(GtkToggleButton *toggle_button, AgsNotationToolbar *notation_toolbar)
+ags_notation_toolbar_edit_callback(GtkToggleToolButton *toggle_button, AgsNotationToolbar *notation_toolbar)
 {
   if(toggle_button == notation_toolbar->selected_edit_mode){
     if(!gtk_toggle_tool_button_get_active(toggle_button)){
@@ -56,7 +56,7 @@ ags_notation_toolbar_edit_callback(GtkToggleButton *toggle_button, AgsNotationTo
 }
 
 void
-ags_notation_toolbar_clear_callback(GtkToggleButton *toggle_button, AgsNotationToolbar *notation_toolbar)
+ags_notation_toolbar_clear_callback(GtkToggleToolButton *toggle_button, AgsNotationToolbar *notation_toolbar)
 {
   if(toggle_button == notation_toolbar->selected_edit_mode){
     if(!gtk_toggle_tool_button_get_active(toggle_button)){
@@ -72,7 +72,7 @@ ags_notation_toolbar_clear_callback(GtkToggleButton *toggle_button, AgsNotationT
 }
 
 void
-ags_notation_toolbar_select_callback(GtkToggleButton *toggle_button, AgsNotationToolbar *notation_toolbar)
+ags_notation_toolbar_select_callback(GtkToggleToolButton *toggle_button, AgsNotationToolbar *notation_toolbar)
 {
   if(toggle_button == notation_toolbar->selected_edit_mode){
     if(!gtk_toggle_tool_button_get_active(toggle_button)){
@@ -121,7 +121,7 @@ ags_notation_toolbar_match_audio_channel_callback(GtkWidget *widget, AgsNotation
   notation_editor = AGS_NOTATION_EDITOR(gtk_widget_get_ancestor(GTK_WIDGET(notation_toolbar),
 								AGS_TYPE_NOTATION_EDITOR));
 
-  if(gtk_check_menu_item_get_active(widget)){
+  if(gtk_check_menu_item_get_active((GtkCheckMenuItem *) widget)){
     notation_editor->flags |= AGS_NOTATION_EDITOR_PASTE_MATCH_AUDIO_CHANNEL;
   }else{
     notation_editor->flags &= (~AGS_NOTATION_EDITOR_PASTE_MATCH_AUDIO_CHANNEL);
@@ -136,7 +136,7 @@ ags_notation_toolbar_no_duplicates_callback(GtkWidget *widget, AgsNotationToolba
   notation_editor = AGS_NOTATION_EDITOR(gtk_widget_get_ancestor(GTK_WIDGET(notation_toolbar),
 								AGS_TYPE_NOTATION_EDITOR));
 
-  if(gtk_check_menu_item_get_active(widget)){
+  if(gtk_check_menu_item_get_active((GtkCheckMenuItem *) widget)){
     notation_editor->flags |= AGS_NOTATION_EDITOR_PASTE_NO_DUPLICATES;
   }else{
     notation_editor->flags &= (~AGS_NOTATION_EDITOR_PASTE_NO_DUPLICATES);
@@ -156,25 +156,25 @@ ags_notation_toolbar_invert_callback(GtkWidget *widget, AgsNotationToolbar *nota
 void
 ags_notation_toolbar_tool_popup_move_note_callback(GtkWidget *item, AgsNotationToolbar *notation_toolbar)
 {
-  gtk_widget_show_all(notation_toolbar->move_note);
+  gtk_widget_show_all((GtkWidget *) notation_toolbar->move_note);
 }
 
 void
 ags_notation_toolbar_tool_popup_crop_note_callback(GtkWidget *item, AgsNotationToolbar *notation_toolbar)
 {
-  gtk_widget_show_all(notation_toolbar->crop_note);
+  gtk_widget_show_all((GtkWidget *) notation_toolbar->crop_note);
 }
 
 void
 ags_notation_toolbar_tool_popup_select_note_callback(GtkWidget *item, AgsNotationToolbar *notation_toolbar)
 {
-  gtk_widget_show_all(notation_toolbar->select_note);
+  gtk_widget_show_all((GtkWidget *) notation_toolbar->select_note);
 }
 
 void
 ags_notation_toolbar_tool_popup_position_cursor_callback(GtkWidget *item, AgsNotationToolbar *notation_toolbar)
 {
-  gtk_widget_show_all(notation_toolbar->position_notation_cursor);
+  gtk_widget_show_all((GtkWidget *) notation_toolbar->position_notation_cursor);
 }
 
 void
@@ -243,8 +243,8 @@ ags_notation_toolbar_zoom_callback(GtkComboBox *combo_box, AgsNotationToolbar *n
 
   double zoom_factor, zoom;
 
-  notation_editor = gtk_widget_get_ancestor(notation_toolbar,
-					    AGS_TYPE_NOTATION_EDITOR);
+  notation_editor = (AgsNotationEditor *) gtk_widget_get_ancestor((GtkWidget *) notation_toolbar,
+								  AGS_TYPE_NOTATION_EDITOR);
 
   notation_edit = notation_editor->notation_edit;
 
@@ -267,8 +267,8 @@ ags_notation_toolbar_opacity_callback(GtkSpinButton *spin_button, AgsNotationToo
 {
   AgsNotationEditor *notation_editor;
 
-  notation_editor = gtk_widget_get_ancestor(notation_toolbar,
-					    AGS_TYPE_NOTATION_EDITOR);
+  notation_editor = (AgsNotationEditor *) gtk_widget_get_ancestor((GtkWidget *) notation_toolbar,
+								  AGS_TYPE_NOTATION_EDITOR);
   
-  gtk_widget_queue_draw(notation_editor->notation_edit);
+  gtk_widget_queue_draw((GtkWidget *) notation_editor->notation_edit);
 }
