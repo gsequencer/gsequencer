@@ -2898,7 +2898,7 @@ ags_midi_builder_append_xml_node(AgsMidiBuilder *midi_builder,
       
       if(str != NULL){
 	sscanf(str,
-	       "%d %s", &sf, &minor);
+	       "%d %ms", &sf, &minor);
       }
 
       /* sharp flats */

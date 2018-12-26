@@ -355,7 +355,7 @@ ags_sndfile_init(AgsSndfile *sndfile)
   config = ags_config_get_instance();
 
   sndfile->audio_channels = 1;
-  sndfile->audio_channel_written = (guint64 *) malloc(sndfile->audio_channels * sizeof(guint64));
+  sndfile->audio_channel_written = (gint64 *) malloc(sndfile->audio_channels * sizeof(gint64));
 
   sndfile->audio_channel_written[0] = -1;
   
@@ -661,11 +661,11 @@ ags_sndfile_add_to_registry(AgsConnectable *connectable)
 
   application_context = ags_application_context_get_instance();
 
-  registry = ags_service_provider_get_registry(AGS_SERVICE_PROVIDER(application_context));
+  registry = (AgsRegistry *) ags_service_provider_get_registry(AGS_SERVICE_PROVIDER(application_context));
 
   if(registry != NULL){
     entry = ags_registry_entry_alloc(registry);
-    g_value_set_object(&(entry->entry),
+    g_value_set_object(entry->entry,
 		       (gpointer) sndfile);
     ags_registry_add_entry(registry,
 			   entry);
@@ -957,8 +957,6 @@ ags_sndfile_rw_open(AgsSoundResource *sound_resource,
 {
   AgsSndfile *sndfile;
   
-  AgsConfig *config;
-
   guint major_format;
 
   pthread_mutex_t *sndfile_mutex;
@@ -996,8 +994,6 @@ ags_sndfile_rw_open(AgsSoundResource *sound_resource,
   sndfile->info->channels = (int) audio_channels;
 
   pthread_mutex_unlock(sndfile_mutex);
-
-  config = ags_config_get_instance();
 
   if(g_str_has_suffix(filename, ".wav")){
     major_format = SF_FORMAT_WAV;
@@ -1352,6 +1348,8 @@ ags_sndfile_read(AgsSoundResource *sound_resource,
 
     multi_frames = read_count * sndfile->info->channels;
 
+    retval = -1;
+    
     //    if(!use_cache){
     //      g_message("read %d %d", sndfile->offset, sndfile->buffer_size);
       

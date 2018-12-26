@@ -278,7 +278,7 @@ ags_osc_connection_init(AgsOscConnection *osc_connection)
   osc_connection->ip4 = NULL;
   osc_connection->ip6 = NULL;
 
-  osc_connection->start_time = (struct timeval *) malloc(sizeof(struct timespec));
+  osc_connection->start_time = (struct timespec *) malloc(sizeof(struct timespec));
 
   osc_connection->start_time->tv_sec = 0;
   osc_connection->start_time->tv_nsec = 0;
@@ -775,6 +775,8 @@ ags_osc_connection_real_read_bytes(AgsOscConnection *osc_connection,
       available_data_length += osc_connection->cache_data_length;
     }
 
+    retval = 0;
+    
     if(osc_connection->cache_data_length < AGS_OSC_CONNECTION_DEFAULT_CACHE_DATA_LENGTH){
       retval = read(fd,
 		    data + osc_connection->cache_data_length,

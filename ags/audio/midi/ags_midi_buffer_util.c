@@ -2048,8 +2048,8 @@ ags_midi_buffer_util_get_sequencer_meta_event(unsigned char *buffer,
     *delta_time = val;
   }
 
-  if(*len != NULL){
-    *len = buffer[delta_time_size + 2];
+  if(len != NULL){
+    len[0] = buffer[delta_time_size + 2];
   }
 
   if(id != NULL){
@@ -2158,8 +2158,8 @@ ags_midi_buffer_util_get_text_event(unsigned char *buffer,
   
   /* text */
   if(text != NULL){
-    *text = (unsigned char *) malloc(text_size * sizeof(unsigned char));
-    memcpy(*text, buffer + delta_time_size + 3, text_size * sizeof(unsigned char));
+    text[0] = (unsigned char *) malloc(text_size * sizeof(unsigned char));
+    memcpy(text[0], buffer + delta_time_size + 3, text_size * sizeof(unsigned char));
   }
 
   return(delta_time_size + text_size + 3);

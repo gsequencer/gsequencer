@@ -1509,7 +1509,7 @@ ags_jack_client_process_callback(jack_nframes_t nframes, void *ptr)
   AgsJackClient *jack_client;
   AgsJackPort *jack_port;
   AgsJackDevout *jack_devout;
-  AgsJackDevout *jack_devin;
+  AgsJackDevin *jack_devin;
   AgsJackMidiin *jack_midiin;
   
   AgsAudioLoop *audio_loop;
@@ -1557,7 +1557,7 @@ ags_jack_client_process_callback(jack_nframes_t nframes, void *ptr)
   /* get jack server */
   pthread_mutex_lock(jack_client_mutex);
 
-  jack_server = jack_client->jack_server;
+  jack_server = (AgsJackServer *) jack_client->jack_server;
 
   device_start = g_list_copy(jack_client->device);
 
@@ -1704,6 +1704,8 @@ ags_jack_client_process_callback(jack_nframes_t nframes, void *ptr)
 	      jack_midi_event_get(&in_event, port_buf, j);
 
 	      if(in_event.size > 0){
+		nth_buffer = 0;
+		
 		if((AGS_JACK_MIDIIN_BUFFER0 & (jack_midiin->flags)) != 0){
 		  nth_buffer = 1;
 		}else if((AGS_JACK_MIDIIN_BUFFER1 & (jack_midiin->flags)) != 0){

@@ -1084,7 +1084,7 @@ ags_pulse_client_open(AgsPulseClient *pulse_client,
     return;
   } 
 
-  pulse_server = pulse_client->pulse_server;
+  pulse_server = (AgsPulseServer *) pulse_client->pulse_server;
   
   pthread_mutex_unlock(pulse_client_mutex);
   
@@ -1188,7 +1188,7 @@ ags_pulse_client_close(AgsPulseClient *pulse_client)
     return;
   } 
 
-  pulse_server = pulse_client->pulse_server;
+  pulse_server = (AgsPulseServer *) pulse_client->pulse_server;
   
   pthread_mutex_unlock(pulse_client_mutex);
   

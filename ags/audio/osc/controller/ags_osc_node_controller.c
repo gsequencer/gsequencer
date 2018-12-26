@@ -1268,6 +1268,8 @@ ags_osc_node_controller_get_data_audio(AgsOscNodeController *osc_node_controller
 		   NULL);
     }
 
+    channel = start_channel;
+    
     /* compile regex */
     pthread_mutex_lock(&regex_mutex);
   
@@ -2745,6 +2747,8 @@ ags_osc_node_controller_get_data_recall(AgsOscNodeController *osc_node_controlle
 		 "port", &start_port,
 		 NULL);
 
+    port = start_port;
+    
     if(ags_regexec(&single_access_regex, path + path_offset, index_max_matches, match_arr, 0) == 0){
       AgsPort *current;
       
@@ -3148,7 +3152,7 @@ ags_osc_node_controller_get_data_port(AgsOscNodeController *osc_node_controller,
 	  return(start_response);
 	}
 
-	type_tag = (gchar *) malloc((port_value_length + 5) * sizeof(gchar));
+	type_tag = packet + packet_size; // (gchar *) malloc((port_value_length + 5) * sizeof(gchar));
 
 	type_tag[0] = ',';
 	type_tag[1] = 's';
@@ -3760,8 +3764,9 @@ ags_osc_node_controller_real_get_data(AgsOscNodeController *osc_node_controller,
       }
 
       pthread_mutex_unlock(&regex_mutex);
-      
-      start_soundcard = ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(application_context));
+
+      soundcard = 
+	start_soundcard = ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(application_context));
 
       if(ags_regexec(&single_access_regex, path + path_offset, index_max_matches, match_arr, 0) == 0){
 	GObject *current;
@@ -3991,8 +3996,9 @@ ags_osc_node_controller_real_get_data(AgsOscNodeController *osc_node_controller,
       }
 
       pthread_mutex_unlock(&regex_mutex);
-      
-      start_sequencer = ags_sound_provider_get_sequencer(AGS_SOUND_PROVIDER(application_context));
+
+      sequencer = 
+	start_sequencer = ags_sound_provider_get_sequencer(AGS_SOUND_PROVIDER(application_context));
 
       if(ags_regexec(&single_access_regex, path + path_offset, index_max_matches, match_arr, 0) == 0){
 	GObject *current;
@@ -4220,8 +4226,9 @@ ags_osc_node_controller_real_get_data(AgsOscNodeController *osc_node_controller,
       }
 
       pthread_mutex_unlock(&regex_mutex);
-    
-      start_audio = ags_sound_provider_get_audio(AGS_SOUND_PROVIDER(application_context));
+
+      audio = 
+	start_audio = ags_sound_provider_get_audio(AGS_SOUND_PROVIDER(application_context));
 
       if(ags_regexec(&single_access_regex, path + path_offset, index_max_matches, match_arr, 0) == 0){
 	AgsAudio *current;

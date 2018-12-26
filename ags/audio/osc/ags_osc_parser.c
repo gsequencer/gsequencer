@@ -1151,7 +1151,7 @@ ags_osc_parser_real_value(AgsOscParser *osc_parser,
     {
       xmlNewProp(node,
 		 "int64",
-		 g_strdup_printf("%d", ags_osc_parser_read_gint64(osc_parser)));
+		 g_strdup_printf("%ld", ags_osc_parser_read_gint64(osc_parser)));
     }
     break;
   case AGS_OSC_UTIL_TYPE_TAG_STRING_TIMETAG:

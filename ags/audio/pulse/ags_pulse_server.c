@@ -382,7 +382,7 @@ ags_pulse_server_set_property(GObject *gobject,
 
       pthread_mutex_lock(pulse_server_mutex);
 
-      if(pulse_server->application_context == (GObject *) application_context){
+      if(pulse_server->application_context == application_context){
 	pthread_mutex_unlock(pulse_server_mutex);
 
 	return;
@@ -396,7 +396,7 @@ ags_pulse_server_set_property(GObject *gobject,
 	g_object_ref(G_OBJECT(application_context));
       }
 
-      pulse_server->application_context = (GObject *) application_context;
+      pulse_server->application_context = application_context;
 
       pthread_mutex_unlock(pulse_server_mutex);
     }
@@ -1324,7 +1324,7 @@ ags_pulse_server_register_soundcard(AgsSoundServer *sound_server,
   
   application_context= pulse_server->application_context;
 
-  default_client = pulse_server->default_client;
+  default_client = (AgsPulseClient *) pulse_server->default_client;
 
   n_soundcards = pulse_server->n_soundcards;
   
@@ -1338,7 +1338,7 @@ ags_pulse_server_register_soundcard(AgsSoundServer *sound_server,
 		 "default-pulse-client", default_client,
 		 NULL);
     ags_pulse_server_add_client(pulse_server,
-				default_client);
+				(GObject *) default_client);
     
     ags_pulse_client_open((AgsPulseClient *) default_client,
 			  "ags-default-client");
@@ -1624,7 +1624,7 @@ ags_pulse_server_register_default_soundcard(AgsPulseServer *pulse_server)
 
   application_context = pulse_server->application_context;
 
-  default_client = pulse_server->default_client;
+  default_client = (AgsPulseClient *) pulse_server->default_client;
 
   pthread_mutex_unlock(pulse_server_mutex);
   
@@ -1641,7 +1641,7 @@ ags_pulse_server_register_default_soundcard(AgsPulseServer *pulse_server)
 		 "default-pulse-client", default_client,
 		 NULL);
     ags_pulse_server_add_client(pulse_server,
-				default_client);
+				(GObject *) default_client);
     
     ags_pulse_client_open((AgsPulseClient *) default_client,
 			  "ags-default-client");
@@ -1864,7 +1864,7 @@ ags_pulse_server_find_port(AgsPulseServer *pulse_server,
 		 "pulse-port", &port_start,
 		 NULL);
 
-    port_start = port;
+    port = port_start;
     
     while(port != NULL){
       /* get pulse port mutex */

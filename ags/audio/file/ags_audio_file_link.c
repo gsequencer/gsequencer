@@ -540,7 +540,6 @@ void
 ags_audio_file_link_read_launch(AgsFileLaunch *file_launch,
 				AgsAudioFileLink *audio_file_link)
 {
-  AgsAudio *audio;
   AgsChannel *input;
 
   AgsAudioFile *audio_file;
@@ -574,12 +573,6 @@ ags_audio_file_link_read_launch(AgsFileLaunch *file_launch,
   if(id_ref != NULL){
     input = (AgsChannel *) id_ref->ref;
     soundcard = input->output_soundcard;
-  }
-
-  /* get audio */
-  if(input != NULL &&
-     input->audio != NULL){
-    audio = AGS_AUDIO(input->audio);
   }
   
   /* read file link using URL or embedded */

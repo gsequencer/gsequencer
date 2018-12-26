@@ -384,7 +384,7 @@ ags_osc_builder_finalize(GObject *gobject)
   }
   
   g_list_free_full(osc_builder->packet,
-		   ags_osc_builder_packet_free);
+		   (GDestroyNotify) ags_osc_builder_packet_free);
   
   /* call parent */
   G_OBJECT_CLASS(ags_osc_builder_parent_class)->finalize(gobject);
@@ -518,10 +518,10 @@ ags_osc_builder_packet_free(AgsOscBuilderPacket *packet)
   }
 
   g_list_free_full(packet->message,
-		   ags_osc_builder_message_free);
+		   (GDestroyNotify) ags_osc_builder_message_free);
 
   g_list_free_full(packet->bundle,
-		   ags_osc_builder_bundle_free);
+		   (GDestroyNotify) ags_osc_builder_bundle_free);
 
   free(packet);
 }
@@ -574,10 +574,10 @@ ags_osc_builder_bundle_free(AgsOscBuilderBundle *bundle)
   }
 
   g_list_free_full(bundle->message,
-		   ags_osc_builder_message_free);
+		   (GDestroyNotify) ags_osc_builder_message_free);
 
   g_list_free_full(bundle->bundle,
-		   ags_osc_builder_bundle_free);
+		   (GDestroyNotify) ags_osc_builder_bundle_free);
 
   free(bundle);
 }

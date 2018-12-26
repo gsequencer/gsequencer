@@ -379,8 +379,8 @@ ags_osc_renew_controller_set_data_soundcard(AgsOscRenewController *osc_renew_con
 
       set_device = ags_set_device_new(soundcard,
 				      device);
-      ags_task_thread_append_task(task_thread,
-				  set_device);
+      ags_task_thread_append_task((AgsTaskThread *) task_thread,
+				  (AgsTask *) set_device);
 
       if(device != NULL){
 	free(device);
@@ -413,8 +413,8 @@ ags_osc_renew_controller_set_data_soundcard(AgsOscRenewController *osc_renew_con
 
       set_audio_channels = ags_set_audio_channels_new(soundcard,
 						      pcm_channels);
-      ags_task_thread_append_task(task_thread,
-				  set_audio_channels);
+      ags_task_thread_append_task((AgsTaskThread *) task_thread,
+				  (AgsTask *) set_audio_channels);
     }else if(!strncmp(path + path_offset,
 		      "samplerate",
 		      11)){
@@ -443,8 +443,8 @@ ags_osc_renew_controller_set_data_soundcard(AgsOscRenewController *osc_renew_con
 
       set_samplerate = ags_set_samplerate_new(soundcard,
 					      samplerate);
-      ags_task_thread_append_task(task_thread,
-				  set_samplerate);
+      ags_task_thread_append_task((AgsTaskThread *) task_thread,
+				  (AgsTask *) set_samplerate);
     }else if(!strncmp(path + path_offset,
 		      "buffer-size",
 		      12)){
@@ -473,8 +473,8 @@ ags_osc_renew_controller_set_data_soundcard(AgsOscRenewController *osc_renew_con
 
       set_buffer_size = ags_set_buffer_size_new(soundcard,
 						buffer_size);
-      ags_task_thread_append_task(task_thread,
-				  set_buffer_size);
+      ags_task_thread_append_task((AgsTaskThread *) task_thread,
+				  (AgsTask *) set_buffer_size);
     }else if(!strncmp(path + path_offset,
 		      "format",
 		      7)){
@@ -503,8 +503,8 @@ ags_osc_renew_controller_set_data_soundcard(AgsOscRenewController *osc_renew_con
 
       set_format = ags_set_format_new(soundcard,
 				      format);
-      ags_task_thread_append_task(task_thread,
-				  set_format);
+      ags_task_thread_append_task((AgsTaskThread *) task_thread,
+				  (AgsTask *) set_format);
     }else{
       ags_osc_response_set_flags(osc_response,
 				 AGS_OSC_RESPONSE_ERROR);
@@ -624,8 +624,8 @@ ags_osc_renew_controller_set_data_sequencer(AgsOscRenewController *osc_renew_con
 
       set_device = ags_set_device_new(sequencer,
 				      device);
-      ags_task_thread_append_task(task_thread,
-				  set_device);
+      ags_task_thread_append_task((AgsTaskThread *) task_thread,
+				  (AgsTask *) set_device);
 
       if(device != NULL){
 	free(device);
@@ -758,8 +758,8 @@ ags_osc_renew_controller_set_data_audio(AgsOscRenewController *osc_renew_control
       resize_audio = ags_resize_audio_new(audio,
 					  output_pads, input_pads,
 					  audio_channels);
-      ags_task_thread_append_task(task_thread,
-				  resize_audio);
+      ags_task_thread_append_task((AgsTaskThread *) task_thread,
+				  (AgsTask *) resize_audio);
     }else if(!strncmp(path + path_offset,
 		      "output-pads",
 		      12)){
@@ -795,8 +795,8 @@ ags_osc_renew_controller_set_data_audio(AgsOscRenewController *osc_renew_control
       resize_audio = ags_resize_audio_new(audio,
 					  output_pads, input_pads,
 					  audio_channels);
-      ags_task_thread_append_task(task_thread,
-				  resize_audio);
+      ags_task_thread_append_task((AgsTaskThread *) task_thread,
+				  (AgsTask *) resize_audio);
     }else if(!strncmp(path + path_offset,
 		      "input-pads",
 		      11)){
@@ -832,8 +832,8 @@ ags_osc_renew_controller_set_data_audio(AgsOscRenewController *osc_renew_control
       resize_audio = ags_resize_audio_new(audio,
 					  output_pads, input_pads,
 					  audio_channels);
-      ags_task_thread_append_task(task_thread,
-				  resize_audio);
+      ags_task_thread_append_task((AgsTaskThread *) task_thread,
+				  (AgsTask *) resize_audio);
     }else if(!strncmp(path + path_offset,
 		      "samplerate",
 		      11)){
@@ -862,8 +862,8 @@ ags_osc_renew_controller_set_data_audio(AgsOscRenewController *osc_renew_control
 
       set_samplerate = ags_set_samplerate_new(audio,
 					      samplerate);
-      ags_task_thread_append_task(task_thread,
-				  set_samplerate);
+      ags_task_thread_append_task((AgsTaskThread *) task_thread,
+				  (AgsTask *) set_samplerate);
     }else if(!strncmp(path + path_offset,
 		      "buffer-size",
 		      12)){
@@ -892,8 +892,8 @@ ags_osc_renew_controller_set_data_audio(AgsOscRenewController *osc_renew_control
 
       set_buffer_size = ags_set_buffer_size_new(audio,
 						buffer_size);
-      ags_task_thread_append_task(task_thread,
-				  set_buffer_size);
+      ags_task_thread_append_task((AgsTaskThread *) task_thread,
+				  (AgsTask *) set_buffer_size);
     }else if(!strncmp(path + path_offset,
 		      "format",
 		      7)){
@@ -922,8 +922,8 @@ ags_osc_renew_controller_set_data_audio(AgsOscRenewController *osc_renew_control
 
       set_format = ags_set_format_new(audio,
 				      format);
-      ags_task_thread_append_task(task_thread,
-				  set_format);
+      ags_task_thread_append_task((AgsTaskThread *) task_thread,
+				  (AgsTask *) set_format);
     }else{
       ags_osc_response_set_flags(osc_response,
 				 AGS_OSC_RESPONSE_ERROR);
@@ -981,6 +981,8 @@ ags_osc_renew_controller_set_data_audio(AgsOscRenewController *osc_renew_control
 		   NULL);
     }
 
+    channel = start_channel;
+    
     /* compile regex */
     pthread_mutex_lock(&regex_mutex);
   
@@ -1720,8 +1722,8 @@ ags_osc_renew_controller_set_data_channel(AgsOscRenewController *osc_renew_contr
 
       set_samplerate = ags_set_samplerate_new(channel,
 					      samplerate);
-      ags_task_thread_append_task(task_thread,
-				  set_samplerate);
+      ags_task_thread_append_task((AgsTaskThread *) task_thread,
+				  (AgsTask *) set_samplerate);
     }else if(!strncmp(path + path_offset,
 		      "buffer-size",
 		      12)){
@@ -1750,8 +1752,8 @@ ags_osc_renew_controller_set_data_channel(AgsOscRenewController *osc_renew_contr
 
       set_buffer_size = ags_set_buffer_size_new(channel,
 						buffer_size);
-      ags_task_thread_append_task(task_thread,
-				  set_buffer_size);
+      ags_task_thread_append_task((AgsTaskThread *) task_thread,
+				  (AgsTask *) set_buffer_size);
     }else if(!strncmp(path + path_offset,
 		      "format",
 		      7)){
@@ -1780,8 +1782,8 @@ ags_osc_renew_controller_set_data_channel(AgsOscRenewController *osc_renew_contr
 
       set_format = ags_set_format_new(channel,
 				      format);
-      ags_task_thread_append_task(task_thread,
-				  set_format);
+      ags_task_thread_append_task((AgsTaskThread *) task_thread,
+				  (AgsTask *) set_format);
     }else{
       ags_osc_response_set_flags(osc_response,
 				 AGS_OSC_RESPONSE_ERROR);
@@ -2370,6 +2372,8 @@ ags_osc_renew_controller_set_data_recall(AgsOscRenewController *osc_renew_contro
 		 "port", &start_port,
 		 NULL);
 
+    port = start_port;
+    
     if(ags_regexec(&single_access_regex, path + path_offset, index_max_matches, match_arr, 0) == 0){
       AgsPort *current;
       
@@ -3219,8 +3223,9 @@ ags_osc_renew_controller_real_set_data(AgsOscRenewController *osc_renew_controll
       }
 
       pthread_mutex_unlock(&regex_mutex);
-      
-      start_soundcard = ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(application_context));
+
+      soundcard = 
+	start_soundcard = ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(application_context));
 
       if(ags_regexec(&single_access_regex, path + path_offset, index_max_matches, match_arr, 0) == 0){
 	GObject *current;
@@ -3448,8 +3453,9 @@ ags_osc_renew_controller_real_set_data(AgsOscRenewController *osc_renew_controll
       }
 
       pthread_mutex_unlock(&regex_mutex);
-      
-      start_sequencer = ags_sound_provider_get_sequencer(AGS_SOUND_PROVIDER(application_context));
+
+      sequencer = 
+	start_sequencer = ags_sound_provider_get_sequencer(AGS_SOUND_PROVIDER(application_context));
 
       if(ags_regexec(&single_access_regex, path + path_offset, index_max_matches, match_arr, 0) == 0){
 	GObject *current;
@@ -3677,8 +3683,9 @@ ags_osc_renew_controller_real_set_data(AgsOscRenewController *osc_renew_controll
       }
 
       pthread_mutex_unlock(&regex_mutex);
-    
-      start_audio = ags_sound_provider_get_audio(AGS_SOUND_PROVIDER(application_context));
+
+      audio = 
+	start_audio = ags_sound_provider_get_audio(AGS_SOUND_PROVIDER(application_context));
 
       if(ags_regexec(&single_access_regex, path + path_offset, index_max_matches, match_arr, 0) == 0){
 	AgsAudio *current;

@@ -1276,7 +1276,7 @@ ags_core_audio_devin_set_application_context(AgsSoundcard *soundcard,
   /* set application context */
   pthread_mutex_lock(core_audio_devin_mutex);
   
-  core_audio_devin->application_context = (GObject *) application_context;
+  core_audio_devin->application_context = application_context;
   
   pthread_mutex_unlock(core_audio_devin_mutex);
 }
@@ -1302,7 +1302,7 @@ ags_core_audio_devin_get_application_context(AgsSoundcard *soundcard)
   /* get application context */
   pthread_mutex_lock(core_audio_devin_mutex);
 
-  application_context = (AgsApplicationContext *) core_audio_devin->application_context;
+  application_context = core_audio_devin->application_context;
 
   pthread_mutex_unlock(core_audio_devin_mutex);
   

@@ -1146,7 +1146,7 @@ ags_core_audio_devout_dispose(GObject *gobject)
 		   NULL);
       
       ags_task_thread_remove_cyclic_task(task_thread,
-					 core_audio_devout->notify_soundcard);
+					 (AgsTask *) core_audio_devout->notify_soundcard);
     }
     
     g_object_unref(core_audio_devout->notify_soundcard);
@@ -1213,7 +1213,7 @@ ags_core_audio_devout_finalize(GObject *gobject)
 		   NULL);
 
       ags_task_thread_remove_cyclic_task(task_thread,
-					 core_audio_devout->notify_soundcard);
+					 (AgsTask *) core_audio_devout->notify_soundcard);
     }
     
     g_object_unref(core_audio_devout->notify_soundcard);

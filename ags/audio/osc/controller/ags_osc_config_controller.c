@@ -308,8 +308,8 @@ ags_osc_config_controller_real_apply_config(AgsOscConfigController *osc_config_c
   apply_sound_config = ags_apply_sound_config_new(ags_application_context_get_instance(),
 						  config_data);
 
-  ags_task_thread_append_task(task_thread,
-			      apply_sound_config);
+  ags_task_thread_append_task((AgsTaskThread *) task_thread,
+			      (AgsTask *) apply_sound_config);
 
   /* create response */
   osc_response = ags_osc_response_new();  

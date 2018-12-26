@@ -1126,7 +1126,7 @@ ags_pulse_devin_dispose(GObject *gobject)
 		   NULL);
       
       ags_task_thread_remove_cyclic_task(task_thread,
-					 pulse_devin->notify_soundcard);
+					 (AgsTask *) pulse_devin->notify_soundcard);
     }
     
     g_object_unref(pulse_devin->notify_soundcard);
@@ -1193,7 +1193,7 @@ ags_pulse_devin_finalize(GObject *gobject)
 		   NULL);
 
       ags_task_thread_remove_cyclic_task(task_thread,
-					 pulse_devin->notify_soundcard);
+					 (AgsTask *) pulse_devin->notify_soundcard);
     }
     
     g_object_unref(pulse_devin->notify_soundcard);

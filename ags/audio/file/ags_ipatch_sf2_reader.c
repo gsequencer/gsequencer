@@ -433,11 +433,11 @@ ags_ipatch_sf2_reader_add_to_registry(AgsConnectable *connectable)
 
   application_context = ags_application_context_get_instance();
 
-  registry = ags_service_provider_get_registry(AGS_SERVICE_PROVIDER(application_context));
+  registry = (AgsRegistry *) ags_service_provider_get_registry(AGS_SERVICE_PROVIDER(application_context));
 
   if(registry != NULL){
     entry = ags_registry_entry_alloc(registry);
-    g_value_set_object(&(entry->entry),
+    g_value_set_object(entry->entry,
 		       (gpointer) ipatch_sf2_reader);
     ags_registry_add_entry(registry,
 			   entry);
@@ -746,7 +746,7 @@ ags_ipatch_sf2_reader_select_preset(AgsIpatchSF2Reader *ipatch_sf2_reader,
 #ifdef AGS_WITH_LIBINSTPATCH
   sf2 = ipatch_sf2_reader->sf2;
   
-  ipatch_list = ipatch_container_get_children(sf2, IPATCH_TYPE_SF2_PRESET);
+  ipatch_list = ipatch_container_get_children((IpatchContainer *) sf2, IPATCH_TYPE_SF2_PRESET);
 
   if(ipatch_list != NULL){
     ipatch_list_init_iter(ipatch_list, &preset_iter);
@@ -773,7 +773,7 @@ ags_ipatch_sf2_reader_select_preset(AgsIpatchSF2Reader *ipatch_sf2_reader,
       ipatch_sf2_reader->name_selected[AGS_SF2_SHDR] = NULL;
 
       /* container */
-      ipatch_sf2_reader->preset = ipatch_item;
+      ipatch_sf2_reader->preset = (IpatchContainer *) ipatch_item;
       
       ipatch_sf2_reader->instrument = NULL;
       ipatch_sf2_reader->sample = NULL;
@@ -827,7 +827,7 @@ ags_ipatch_sf2_reader_select_instrument(AgsIpatchSF2Reader *ipatch_sf2_reader,
       success = TRUE;
 
       ipatch_iter_index(&instrument_iter, instrument_index);
-      ipatch_item = ipatch_sf2_pzone_get_inst(ipatch_iter_get(&instrument_iter));
+      ipatch_item = (IpatchItem *) ipatch_sf2_pzone_get_inst(ipatch_iter_get(&instrument_iter));
 
       /* selected index and name */
       ipatch_sf2_reader->index_selected[AGS_SF2_IHDR] = instrument_index;
@@ -894,13 +894,13 @@ ags_ipatch_sf2_reader_select_sample(AgsIpatchSF2Reader *ipatch_sf2_reader,
       success = TRUE;
 
       ipatch_iter_index(&sample_iter, sample_index);
-      ipatch_item = ipatch_sf2_izone_get_sample(ipatch_iter_get(&sample_iter));
+      ipatch_item = (IpatchItem *) ipatch_sf2_izone_get_sample(ipatch_iter_get(&sample_iter));
 
       /* selected index and name */
       ipatch_sf2_reader->index_selected[AGS_SF2_SHDR] = sample_index;
 
       g_free(ipatch_sf2_reader->name_selected[AGS_SF2_SHDR]);
-      ipatch_sf2_reader->name_selected[AGS_SF2_SHDR] = g_strdup(ipatch_sf2_sample_get_name(ipatch_item));
+      ipatch_sf2_reader->name_selected[AGS_SF2_SHDR] = g_strdup(ipatch_sf2_sample_get_name((IpatchSF2Sample *) ipatch_item));
 
       /* container */
       ipatch_sf2_reader->sample = ipatch_item;
@@ -945,7 +945,7 @@ ags_ipatch_sf2_reader_get_preset_all(AgsIpatchSF2Reader *ipatch_sf2_reader)
 #ifdef AGS_WITH_LIBINSTPATCH
   sf2 = ipatch_sf2_reader->sf2;
   
-  ipatch_list = ipatch_container_get_children(sf2, IPATCH_TYPE_SF2_PRESET);
+  ipatch_list = ipatch_container_get_children((IpatchContainer *) sf2, IPATCH_TYPE_SF2_PRESET);
   
   if(ipatch_list != NULL){
     ipatch_list_init_iter(ipatch_list, &preset_iter);
@@ -1010,7 +1010,7 @@ ags_ipatch_sf2_reader_get_instrument_all(AgsIpatchSF2Reader *ipatch_sf2_reader)
 #ifdef AGS_WITH_LIBINSTPATCH
   sf2 = ipatch_sf2_reader->sf2;
   
-  ipatch_list = ipatch_container_get_children(sf2, IPATCH_TYPE_SF2_INST);
+  ipatch_list = ipatch_container_get_children((IpatchContainer *) sf2, IPATCH_TYPE_SF2_INST);
   
   if(ipatch_list != NULL){
     ipatch_list_init_iter(ipatch_list, &instrument_iter);
@@ -1075,7 +1075,7 @@ ags_ipatch_sf2_reader_get_sample_all(AgsIpatchSF2Reader *ipatch_sf2_reader)
 #ifdef AGS_WITH_LIBINSTPATCH
   sf2 = ipatch_sf2_reader->sf2;
   
-  ipatch_list = ipatch_container_get_children(sf2, IPATCH_TYPE_SF2_SAMPLE);
+  ipatch_list = ipatch_container_get_children((IpatchContainer *) sf2, IPATCH_TYPE_SF2_SAMPLE);
   
   if(ipatch_list != NULL){
     ipatch_list_init_iter(ipatch_list, &sample_iter);
@@ -1149,7 +1149,7 @@ ags_ipatch_sf2_reader_get_instrument_by_preset_index(AgsIpatchSF2Reader *ipatch_
   sf2 = ipatch_sf2_reader->sf2;
   
   /* presets */
-  ipatch_list = ipatch_container_get_children(sf2, IPATCH_TYPE_SF2_PRESET);
+  ipatch_list = ipatch_container_get_children((IpatchContainer *) sf2, IPATCH_TYPE_SF2_PRESET);
   
   if(ipatch_list != NULL){
     ipatch_list_init_iter(ipatch_list, &preset_iter);
@@ -1160,7 +1160,7 @@ ags_ipatch_sf2_reader_get_instrument_by_preset_index(AgsIpatchSF2Reader *ipatch_
       ipatch_iter_first(&preset_iter);
       ipatch_iter_index(&preset_iter, preset_index);
 
-      preset = ipatch_iter_get(&preset_iter);
+      preset = (IpatchContainer *) ipatch_iter_get(&preset_iter);
 
       /* instruments */
       ipatch_list = ipatch_sf2_preset_get_zones(preset);
@@ -1175,8 +1175,8 @@ ags_ipatch_sf2_reader_get_instrument_by_preset_index(AgsIpatchSF2Reader *ipatch_
 	  instrument_strv = (gchar **) malloc((j_stop + 1) * sizeof(gchar *));
 	    
 	  for(j = 0, count = 0; j < j_stop; j++){
-	    instrument = ipatch_sf2_pzone_get_inst(ipatch_iter_get(&instrument_iter));
-	    instrument_strv[count] = ipatch_sf2_inst_get_name(instrument);
+	    instrument = (IpatchContainer *) ipatch_sf2_pzone_get_inst(ipatch_iter_get(&instrument_iter));
+	    instrument_strv[count] = ipatch_sf2_inst_get_name((IpatchSF2Inst *) instrument);
 
 	    /* iterate */
 	    ipatch_iter_next(&instrument_iter);
@@ -1239,7 +1239,7 @@ ags_ipatch_sf2_reader_get_sample_by_preset_index(AgsIpatchSF2Reader *ipatch_sf2_
   sf2 = ipatch_sf2_reader->sf2;
   
   /* presets */
-  ipatch_list = ipatch_container_get_children(sf2, IPATCH_TYPE_SF2_PRESET);
+  ipatch_list = ipatch_container_get_children((IpatchContainer *) sf2, IPATCH_TYPE_SF2_PRESET);
   
   if(ipatch_list != NULL){
     ipatch_list_init_iter(ipatch_list, &preset_iter);
@@ -1249,7 +1249,7 @@ ags_ipatch_sf2_reader_get_sample_by_preset_index(AgsIpatchSF2Reader *ipatch_sf2_
     if(i_stop > 0){
       ipatch_iter_index(&preset_iter, preset_index);
 
-      preset = ipatch_iter_get(&preset_iter);
+      preset = (IpatchContainer *) ipatch_iter_get(&preset_iter);
 
       /* instruments */
       ipatch_list = ipatch_sf2_preset_get_zones(preset);
@@ -1261,7 +1261,7 @@ ags_ipatch_sf2_reader_get_sample_by_preset_index(AgsIpatchSF2Reader *ipatch_sf2_
 	
 	if(j_stop > 0){
 	  for(j = 0, count = 0; j < j_stop; j++){
-	    instrument = ipatch_sf2_pzone_get_inst(ipatch_iter_get(&instrument_iter));
+	    instrument = (IpatchContainer *) ipatch_sf2_pzone_get_inst(ipatch_iter_get(&instrument_iter));
 	    
 	    /* samples */
 	    ipatch_list = ipatch_sf2_inst_get_zones(preset);
@@ -1280,8 +1280,8 @@ ags_ipatch_sf2_reader_get_sample_by_preset_index(AgsIpatchSF2Reader *ipatch_sf2_
 		}
 	    
 		for(k = 0; k < k_stop; k++){
-		  ipatch_item = ipatch_sf2_izone_get_sample(ipatch_iter_get(&sample_iter));
-		  sample_strv[count] = ipatch_sf2_sample_get_name(ipatch_item);
+		  ipatch_item = (IpatchItem *) ipatch_sf2_izone_get_sample(ipatch_iter_get(&sample_iter));
+		  sample_strv[count] = ipatch_sf2_sample_get_name((IpatchSF2Sample *) ipatch_item);
 		    
 		  /* iterate */
 		  ipatch_iter_next(&sample_iter);
@@ -1352,7 +1352,7 @@ ags_ipatch_sf2_reader_get_sample_by_preset_and_instrument_index(AgsIpatchSF2Read
   sf2 = ipatch_sf2_reader->sf2;
   
   /* presets */
-  ipatch_list = ipatch_container_get_children(sf2, IPATCH_TYPE_SF2_PRESET);
+  ipatch_list = ipatch_container_get_children((IpatchContainer *) sf2, IPATCH_TYPE_SF2_PRESET);
   
   if(ipatch_list != NULL){
     ipatch_list_init_iter(ipatch_list, &preset_iter);
@@ -1362,7 +1362,7 @@ ags_ipatch_sf2_reader_get_sample_by_preset_and_instrument_index(AgsIpatchSF2Read
     if(i_stop > 0 && preset_index < i_stop){
       ipatch_iter_index(&preset_iter, preset_index);
 
-      preset = ipatch_iter_get(&preset_iter);
+      preset = (IpatchContainer *) ipatch_iter_get(&preset_iter);
 
       /* instruments */
       ipatch_list = ipatch_sf2_preset_get_zones(preset);
@@ -1375,7 +1375,7 @@ ags_ipatch_sf2_reader_get_sample_by_preset_and_instrument_index(AgsIpatchSF2Read
 	if(j_stop > 0 && instrument_index < j_stop){	  
 	  ipatch_iter_index(&instrument_iter, instrument_index);
 
-	  instrument = ipatch_sf2_pzone_get_inst(ipatch_iter_get(&instrument_iter));
+	  instrument = (IpatchContainer *) ipatch_sf2_pzone_get_inst(ipatch_iter_get(&instrument_iter));
 
 	  /* samples */
 	  ipatch_list = ipatch_sf2_inst_get_zones(instrument);
@@ -1389,8 +1389,8 @@ ags_ipatch_sf2_reader_get_sample_by_preset_and_instrument_index(AgsIpatchSF2Read
 	      sample = (gchar **) malloc((k_stop + 1) * sizeof(gchar *));
 	    
 	      for(k = 0, count = 0; k < k_stop; k++){
-		ipatch_item = ipatch_sf2_izone_get_sample(ipatch_iter_get(&sample_iter));
-		sample[count] = ipatch_sf2_sample_get_name(ipatch_item);
+		ipatch_item = (IpatchItem *) ipatch_sf2_izone_get_sample(ipatch_iter_get(&sample_iter));
+		sample[count] = ipatch_sf2_sample_get_name((IpatchSF2Sample *) ipatch_item);
 		    
 		/* iterate */
 		ipatch_iter_next(&sample_iter);

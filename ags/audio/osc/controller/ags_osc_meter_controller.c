@@ -345,7 +345,7 @@ ags_osc_meter_controller_dispose(GObject *gobject)
   
   if(osc_meter_controller->monitor != NULL){
     g_list_free_full(osc_meter_controller->monitor,
-		     ags_osc_meter_controller_monitor_free);
+		     (GDestroyNotify) ags_osc_meter_controller_monitor_free);
 
     osc_meter_controller->monitor = NULL;
   }
@@ -367,7 +367,7 @@ ags_osc_meter_controller_finalize(GObject *gobject)
   
   if(osc_meter_controller->monitor != NULL){
     g_list_free_full(osc_meter_controller->monitor,
-		     ags_osc_meter_controller_monitor_free);
+		     (GDestroyNotify) ags_osc_meter_controller_monitor_free);
   }
   
   /* call parent */
@@ -489,7 +489,7 @@ ags_osc_meter_controller_monitor_thread(void *ptr)
 		       NULL);
 
 	  ags_osc_connection_write_response(osc_connection,
-					    osc_response);
+					    (GObject *) osc_response);
 	    
 	  /* iterate */
 	  monitor = monitor->next;
@@ -497,7 +497,7 @@ ags_osc_meter_controller_monitor_thread(void *ptr)
 	  continue;
 	}
 
-	type_tag = (gchar *) malloc((port_value_length + 5) * sizeof(gchar));
+	type_tag = packet + packet_size; // (gchar *) malloc((port_value_length + 5) * sizeof(gchar));
 
 	type_tag[0] = ',';
 	type_tag[1] = 's';
@@ -523,7 +523,7 @@ ags_osc_meter_controller_monitor_thread(void *ptr)
 			 NULL);
 
 	    ags_osc_connection_write_response(osc_connection,
-					      osc_response);
+					      (GObject *) osc_response);
 	    
 	    /* iterate */
 	    monitor = monitor->next;
@@ -550,7 +550,7 @@ ags_osc_meter_controller_monitor_thread(void *ptr)
 			 NULL);
 
 	    ags_osc_connection_write_response(osc_connection,
-					      osc_response);
+					      (GObject *) osc_response);
 	    
 	    /* iterate */
 	    monitor = monitor->next;
@@ -606,7 +606,7 @@ ags_osc_meter_controller_monitor_thread(void *ptr)
 			 NULL);
 
 	    ags_osc_connection_write_response(osc_connection,
-					      osc_response);
+					      (GObject *) osc_response);
 	    
 	    /* iterate */
 	    monitor = monitor->next;
@@ -643,14 +643,14 @@ ags_osc_meter_controller_monitor_thread(void *ptr)
 
       /* write response */
       ags_osc_connection_write_response(osc_connection,
-					osc_response);
+					(GObject *) osc_response);
       
       /* iterate */
       monitor = monitor->next;
     }
 
     g_list_free_full(start_monitor,
-		     ags_osc_meter_controller_monitor_unref);
+		     (GDestroyNotify) ags_osc_meter_controller_monitor_unref);
     
     nanosleep(osc_meter_controller->monitor_timeout, NULL);
   }
@@ -1210,6 +1210,8 @@ ags_osc_meter_controller_monitor_meter_audio(AgsOscMeterController *osc_meter_co
 		   NULL);
     }
 
+    channel = start_channel;
+    
     /* compile regex */
     pthread_mutex_lock(&regex_mutex);
   
@@ -2451,6 +2453,8 @@ ags_osc_meter_controller_monitor_meter_recall(AgsOscMeterController *osc_meter_c
 		 "port", &start_port,
 		 NULL);
 
+    port = start_port;
+    
     if(ags_regexec(&single_access_regex, path + path_offset, index_max_matches, match_arr, 0) == 0){
       AgsPort *current;
       
@@ -3054,8 +3058,9 @@ ags_osc_meter_controller_monitor_meter_enable(AgsOscMeterController *osc_meter_c
   }
 
   pthread_mutex_unlock(&regex_mutex);
-    
-  start_audio = ags_sound_provider_get_audio(AGS_SOUND_PROVIDER(application_context));
+
+  audio = 
+    start_audio = ags_sound_provider_get_audio(AGS_SOUND_PROVIDER(application_context));
 
   if(ags_regexec(&single_access_regex, path + path_offset, index_max_matches, match_arr, 0) == 0){
     AgsAudio *current;
@@ -3363,6 +3368,7 @@ ags_osc_meter_controller_expand_path_audio(AgsAudio *audio,
   start_channel = NULL;
   
   prefix = NULL;
+  path_offset = 0;
   
   if((offset = strstr(path, "/AgsOutput")) != NULL){
     g_object_get(audio,
@@ -3883,6 +3889,9 @@ ags_osc_meter_controller_expand_path_channel(AgsChannel *channel,
   }
   
   recall_type = g_type_from_name(type_name);
+
+  prefix = NULL;
+  path_offset = 0;
   
   g_object_get(channel,
 	       "play", &start_play,
@@ -4464,7 +4473,8 @@ ags_osc_meter_controller_expand_path(gchar *path,
 
   pthread_mutex_unlock(&regex_mutex);
 
-  start_audio = ags_sound_provider_get_audio(AGS_SOUND_PROVIDER(application_context));
+  audio = 
+    start_audio = ags_sound_provider_get_audio(AGS_SOUND_PROVIDER(application_context));
 
   path_offset = strlen("/AgsSoundProvider/AgsAudio");
   

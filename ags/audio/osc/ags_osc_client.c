@@ -336,7 +336,7 @@ ags_osc_client_init(AgsOscClient *osc_client)
   osc_client->retry_delay->tv_sec = 5;
   osc_client->retry_delay->tv_nsec = 0;
 
-  osc_client->start_time = (struct timeval *) malloc(sizeof(struct timespec));
+  osc_client->start_time = (struct timespec *) malloc(sizeof(struct timespec));
 
   osc_client->start_time->tv_sec = 0;
   osc_client->start_time->tv_nsec = 0;
@@ -1090,6 +1090,8 @@ ags_osc_client_real_read_bytes(AgsOscClient *osc_client,
       available_data_length += osc_client->cache_data_length;
     }
 
+    retval = 0;
+    
     if(osc_client->cache_data_length < AGS_OSC_CLIENT_DEFAULT_CACHE_DATA_LENGTH){
       retval = read(fd,
 		    data + osc_client->cache_data_length,

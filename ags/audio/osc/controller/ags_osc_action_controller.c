@@ -354,13 +354,13 @@ ags_osc_action_controller_real_run_action(AgsOscActionController *osc_action_con
 		    action)){
 	task = ags_start_soundcard_new(application_context);
 
-	ags_task_thread_append_task(task_thread,
+	ags_task_thread_append_task((AgsTaskThread *) task_thread,
 				    task);
       }else if(!g_strcmp0("stop",
 			  action)){
 	task = ags_stop_soundcard_new(application_context);
 
-	ags_task_thread_append_task(task_thread,
+	ags_task_thread_append_task((AgsTaskThread *) task_thread,
 				    task);
       }else{
 	osc_response = ags_osc_response_new();
@@ -387,13 +387,13 @@ ags_osc_action_controller_real_run_action(AgsOscActionController *osc_action_con
 		    action)){
 	task = ags_start_sequencer_new(application_context);
 
-	ags_task_thread_append_task(task_thread,
+	ags_task_thread_append_task((AgsTaskThread *) task_thread,
 				    task);
       }else if(!g_strcmp0("stop",
 			  action)){
 	task = ags_stop_sequencer_new(application_context);
 
-	ags_task_thread_append_task(task_thread,
+	ags_task_thread_append_task((AgsTaskThread *) task_thread,
 				    task);
       }else{
 	osc_response = ags_osc_response_new();
@@ -482,7 +482,7 @@ ags_osc_action_controller_real_run_action(AgsOscActionController *osc_action_con
 	length = offset - (path + path_offset + 3);
 
 	audio_name = malloc((length + 1) * sizeof(gchar));
-	sscanf(path + path_offset, "%s", &audio_name);
+	sscanf(path + path_offset, "%ms", &audio_name);
 
 	start_list = ags_sound_provider_get_audio(AGS_SOUND_PROVIDER(application_context));
 
@@ -520,14 +520,14 @@ ags_osc_action_controller_real_run_action(AgsOscActionController *osc_action_con
 	task = ags_start_audio_new(audio,
 				   -1);
 
-	ags_task_thread_append_task(task_thread,
+	ags_task_thread_append_task((AgsTaskThread *) task_thread,
 				    task);
       }else if(!g_strcmp0("stop",
 			  action)){
 	task = ags_cancel_audio_new(audio,
 				    -1);
 
-	ags_task_thread_append_task(task_thread,
+	ags_task_thread_append_task((AgsTaskThread *) task_thread,
 				    task);
       }else{
 	osc_response = ags_osc_response_new();

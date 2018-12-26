@@ -103,8 +103,8 @@ struct _AgsOscBuilderPacket
   
   AgsOscBuilder *builder;
   
-  AgsOscBuilderMessage *message;
-  AgsOscBuilderBundle *bundle;
+  GList *message;
+  GList *bundle;
 };
 
 struct _AgsOscBuilderBundle

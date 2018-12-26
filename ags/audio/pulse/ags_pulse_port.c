@@ -1294,15 +1294,15 @@ ags_pulse_port_stream_request_callback(pa_stream *stream, size_t length, AgsPuls
   /*  */
   pthread_mutex_lock(pulse_port_mutex);
 
-  pulse_devout = pulse_port->pulse_devout;
-  pulse_devin = pulse_port->pulse_devin;
+  pulse_devout = (AgsPulseDevout *) pulse_port->pulse_devout;
+  pulse_devin = (AgsPulseDevin *) pulse_port->pulse_devin;
 
   soundcard = NULL;
   
   if(pulse_devout != NULL){
-    soundcard = pulse_devout;
+    soundcard = (GObject *) pulse_devout;
   }else if(pulse_devin != NULL){
-    soundcard = pulse_devin;
+    soundcard = (GObject *) pulse_devin;
   }
   
   stream = pulse_port->stream;
@@ -1805,8 +1805,8 @@ ags_pulse_port_stream_underflow_callback(pa_stream *stream, AgsPulsePort *pulse_
   pthread_mutex_unlock(ags_pulse_port_get_class_mutex());
 
   /* polling thread */
-  polling_thread = ags_thread_find_type(audio_loop,
-					AGS_TYPE_POLLING_THREAD);
+  polling_thread = (AgsPollingThread *) ags_thread_find_type((AgsThread *) audio_loop,
+							     AGS_TYPE_POLLING_THREAD);
   
   pthread_mutex_lock(audio_loop->timing_mutex);
 
@@ -1853,7 +1853,7 @@ ags_pulse_port_get_fixed_size(AgsPulsePort *pulse_port)
   /* get pulse devout */
   pthread_mutex_lock(pulse_port_mutex);
 
-  pulse_devout = pulse_port->pulse_devout;
+  pulse_devout = (AgsPulseDevout *) pulse_port->pulse_devout;
 
   pthread_mutex_unlock(pulse_port_mutex);
 

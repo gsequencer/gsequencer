@@ -432,11 +432,11 @@ ags_ipatch_gig_reader_add_to_registry(AgsConnectable *connectable)
 
   application_context = ags_application_context_get_instance();
 
-  registry = ags_service_provider_get_registry(AGS_SERVICE_PROVIDER(application_context));
+  registry = (AgsRegistry *) ags_service_provider_get_registry(AGS_SERVICE_PROVIDER(application_context));
 
   if(registry != NULL){
     entry = ags_registry_entry_alloc(registry);
-    g_value_set_object(&(entry->entry),
+    g_value_set_object(entry->entry,
 		       (gpointer) ipatch_gig_reader);
     ags_registry_add_entry(registry,
 			   entry);
@@ -723,7 +723,7 @@ ags_ipatch_gig_reader_select_instrument(AgsIpatchGigReader *ipatch_gig_reader,
 #ifdef AGS_WITH_LIBINSTPATCH
   gig = ipatch_gig_reader->gig;
 
-  ipatch_list = ipatch_container_get_children(gig, IPATCH_TYPE_DLS2_INST);
+  ipatch_list = ipatch_container_get_children((IpatchContainer *) gig, IPATCH_TYPE_DLS2_INST);
 
   if(ipatch_list != NULL){
     ipatch_list_init_iter(ipatch_list, &instrument_iter);
@@ -734,7 +734,7 @@ ags_ipatch_gig_reader_select_instrument(AgsIpatchGigReader *ipatch_gig_reader,
       success = TRUE;
 
       ipatch_iter_index(&instrument_iter, instrument_index);
-      ipatch_item = ipatch_dls2_inst_get_regions(ipatch_iter_get(&instrument_iter));
+      ipatch_item = (IpatchItem *) ipatch_dls2_inst_get_regions(ipatch_iter_get(&instrument_iter));
 
       /* selected index and name */
       ipatch_gig_reader->index_selected[AGS_GIG_IHDR] = instrument_index;
@@ -742,7 +742,7 @@ ags_ipatch_gig_reader_select_instrument(AgsIpatchGigReader *ipatch_gig_reader,
       ipatch_gig_reader->index_selected[AGS_GIG_SHDR] = 0;
 
       g_free(ipatch_gig_reader->name_selected[AGS_GIG_IHDR]);
-      ipatch_dls2_inst_get_midi_locale(ipatch_item,
+      ipatch_dls2_inst_get_midi_locale((IpatchDLS2Inst *) ipatch_item,
 				       &bank, &program);
       ipatch_gig_reader->name_selected[AGS_GIG_IHDR] = g_strdup_printf("bank=%d; program=%d;", bank, program);
       
@@ -750,7 +750,7 @@ ags_ipatch_gig_reader_select_instrument(AgsIpatchGigReader *ipatch_gig_reader,
       ipatch_gig_reader->name_selected[AGS_GIG_SHDR] = NULL;
 
       /* container */
-      ipatch_gig_reader->instrument = ipatch_item;
+      ipatch_gig_reader->instrument = (IpatchContainer *) ipatch_item;
       
       ipatch_gig_reader->sample = NULL;
     }
@@ -792,7 +792,7 @@ ags_ipatch_gig_reader_select_sample(AgsIpatchGigReader *ipatch_gig_reader,
       success = TRUE;
 
       ipatch_iter_index(&sample_iter, sample_index);
-      ipatch_item = ipatch_dls2_region_get_sample(ipatch_iter_get(&sample_iter));
+      ipatch_item = (IpatchItem *) ipatch_dls2_region_get_sample(ipatch_iter_get(&sample_iter));
 
       /* selected index and name */
       ipatch_gig_reader->index_selected[AGS_GIG_SHDR] = sample_index;
@@ -808,7 +808,7 @@ ags_ipatch_gig_reader_select_sample(AgsIpatchGigReader *ipatch_gig_reader,
       }
       
       /* container */
-      ipatch_gig_reader->sample = ipatch_item;
+      ipatch_gig_reader->sample = (IpatchContainer *) ipatch_item;
     }
   }
 #endif
@@ -840,7 +840,7 @@ ags_ipatch_gig_reader_get_instrument_all(AgsIpatchGigReader *ipatch_gig_reader)
 #ifdef AGS_WITH_LIBINSTPATCH
   gig = ipatch_gig_reader->gig;
   
-  ipatch_list = ipatch_container_get_children(gig, IPATCH_TYPE_DLS2_INST);
+  ipatch_list = ipatch_container_get_children((IpatchContainer *) gig, IPATCH_TYPE_DLS2_INST);
   
   if(ipatch_list != NULL){
     ipatch_list_init_iter(ipatch_list, &instrument_iter);
@@ -857,7 +857,7 @@ ags_ipatch_gig_reader_get_instrument_all(AgsIpatchGigReader *ipatch_gig_reader)
 	
 	ipatch_item = ipatch_iter_get(&instrument_iter);
 
-	ipatch_dls2_inst_get_midi_locale(ipatch_item,
+	ipatch_dls2_inst_get_midi_locale((IpatchDLS2Inst *) ipatch_item,
 					 &bank, &program);
 	instrument[i] = g_strdup_printf("bank=%d; program=%d;", bank, program);
 
@@ -968,7 +968,7 @@ ags_ipatch_gig_reader_get_sample_by_instrument_index(AgsIpatchGigReader *ipatch_
   gig = ipatch_gig_reader->gig;
   
   /* instruments */
-  ipatch_list = ipatch_container_get_children(gig, IPATCH_TYPE_DLS2_INST);
+  ipatch_list = ipatch_container_get_children((IpatchContainer *) gig, IPATCH_TYPE_DLS2_INST);
   
   if(ipatch_list != NULL){
     ipatch_list_init_iter(ipatch_list, &instrument_iter);
@@ -992,7 +992,7 @@ ags_ipatch_gig_reader_get_sample_by_instrument_index(AgsIpatchGigReader *ipatch_
 	  sample = (gchar **) malloc((j_stop + 1) * sizeof(gchar *));
 	    
 	  for(j = 0, count = 0; j < j_stop; j++){
-	    ipatch_item = ipatch_dls2_region_get_sample(ipatch_iter_get(&sample_iter));
+	    ipatch_item = (IpatchItem *) ipatch_dls2_region_get_sample(ipatch_iter_get(&sample_iter));
 
 	    if(IPATCH_DLS2_SAMPLE(ipatch_item)->dlid != NULL){
 	      sample[count] = g_strdup_printf("id=0x%x%x",

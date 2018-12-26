@@ -578,11 +578,11 @@ ags_ipatch_add_to_registry(AgsConnectable *connectable)
 
   application_context = ags_application_context_get_instance();
 
-  registry = ags_service_provider_get_registry(AGS_SERVICE_PROVIDER(application_context));
+  registry = (AgsRegistry *) ags_service_provider_get_registry(AGS_SERVICE_PROVIDER(application_context));
 
   if(registry != NULL){
     entry = ags_registry_entry_alloc(registry);
-    g_value_set_object(&(entry->entry),
+    g_value_set_object(entry->entry,
 		       (gpointer) ipatch);
     ags_registry_add_entry(registry,
 			   entry);
@@ -890,7 +890,7 @@ ags_ipatch_open(AgsSoundContainer *sound_container, gchar *filename)
     /* dls2 */
     reader = (GObject *) ags_ipatch_dls2_reader_new(ipatch);
 
-    if(ags_ipatch_dls2_reader_load(reader,
+    if(ags_ipatch_dls2_reader_load((AgsIpatchDLS2Reader *) reader,
 				   handle)){
       retval = TRUE;
     }    
@@ -900,7 +900,7 @@ ags_ipatch_open(AgsSoundContainer *sound_container, gchar *filename)
     /* sf2 */
     reader = (GObject *) ags_ipatch_sf2_reader_new(ipatch);
 
-    if(ags_ipatch_sf2_reader_load(reader,
+    if(ags_ipatch_sf2_reader_load((AgsIpatchSF2Reader *) reader,
 				  handle)){
       retval = TRUE;
     }
@@ -910,7 +910,7 @@ ags_ipatch_open(AgsSoundContainer *sound_container, gchar *filename)
     /* gig */
     reader = (GObject *) ags_ipatch_gig_reader_new(ipatch);
 
-    if(ags_ipatch_gig_reader_load(reader,
+    if(ags_ipatch_gig_reader_load((AgsIpatchGigReader *) reader,
 				  handle)){
       retval = TRUE;
     }
@@ -1046,7 +1046,7 @@ ags_ipatch_get_sublevel_name(AgsSoundContainer *sound_container)
   pthread_mutex_unlock(ags_ipatch_get_class_mutex());
 
   /* sublevel */
-  sublevel = ags_ipatch_get_nesting_level(ipatch);
+  sublevel = ags_sound_container_get_nesting_level(AGS_SOUND_CONTAINER(ipatch));
   
 #ifdef AGS_WITH_LIBINSTPATCH  
   if(ags_ipatch_test_flags(ipatch, AGS_IPATCH_DLS2)){
@@ -1177,7 +1177,7 @@ ags_ipatch_level_up(AgsSoundContainer *sound_container,
   pthread_mutex_unlock(ags_ipatch_get_class_mutex());
 
   /* check boundaries */
-  if(ags_ipatch_get_nesting_level(ipatch) >= level_count){
+  if(ags_sound_container_get_nesting_level(AGS_SOUND_CONTAINER(ipatch)) >= level_count){
     /* level up */
     pthread_mutex_lock(ipatch_mutex);
 
@@ -1228,7 +1228,7 @@ ags_ipatch_select_level_by_index(AgsSoundContainer *sound_container,
   pthread_mutex_unlock(ags_ipatch_get_class_mutex());
 
   /* sublevel */
-  sublevel = ags_ipatch_get_nesting_level(ipatch);
+  sublevel = ags_sound_container_get_nesting_level(AGS_SOUND_CONTAINER(ipatch));
   retval = 0;
   
 #ifdef AGS_WITH_LIBINSTPATCH
@@ -1413,7 +1413,7 @@ ags_ipatch_get_resource_current(AgsSoundContainer *sound_container)
     /* get dls2 reader */
     pthread_mutex_lock(ipatch_mutex);
 
-    ipatch_dls2_reader = ipatch->reader;
+    ipatch_dls2_reader = AGS_IPATCH_DLS2_READER(ipatch->reader);
 
     pthread_mutex_unlock(ipatch_mutex);
   
@@ -1429,7 +1429,7 @@ ags_ipatch_get_resource_current(AgsSoundContainer *sound_container)
       for(i  = 0; i < i_stop; i++){
 	AgsIpatchSample *ipatch_sample;
 
-	ipatch_item = ipatch_dls2_region_get_sample(ipatch_iter_get(&sample_iter));
+	ipatch_item = (IpatchItem *) ipatch_dls2_region_get_sample(ipatch_iter_get(&sample_iter));
 
 	ipatch_sample = ags_ipatch_sample_new();
 	g_object_set(ipatch_sample,
@@ -1450,7 +1450,7 @@ ags_ipatch_get_resource_current(AgsSoundContainer *sound_container)
     /* get sf2 reader */
     pthread_mutex_lock(ipatch_mutex);
 
-    ipatch_sf2_reader = ipatch->reader;
+    ipatch_sf2_reader = AGS_IPATCH_SF2_READER(ipatch->reader);
 
     pthread_mutex_unlock(ipatch_mutex);
   
@@ -1466,7 +1466,7 @@ ags_ipatch_get_resource_current(AgsSoundContainer *sound_container)
       for(i  = 0; i < i_stop; i++){
 	AgsIpatchSample *ipatch_sample;
 
-	ipatch_item = ipatch_sf2_izone_get_sample(ipatch_iter_get(&sample_iter));
+	ipatch_item = (IpatchItem *) ipatch_sf2_izone_get_sample(ipatch_iter_get(&sample_iter));
 
 	ipatch_sample = ags_ipatch_sample_new();
 	g_object_set(ipatch_sample,
@@ -1487,7 +1487,7 @@ ags_ipatch_get_resource_current(AgsSoundContainer *sound_container)
     /* get gig reader */
     pthread_mutex_lock(ipatch_mutex);
 
-    ipatch_gig_reader = ipatch->reader;
+    ipatch_gig_reader = AGS_IPATCH_GIG_READER(ipatch->reader);
 
     pthread_mutex_unlock(ipatch_mutex);
   
@@ -1503,7 +1503,7 @@ ags_ipatch_get_resource_current(AgsSoundContainer *sound_container)
       for(i  = 0; i < i_stop; i++){
 	AgsIpatchSample *ipatch_sample;
 
-	ipatch_item = ipatch_dls2_region_get_sample(ipatch_iter_get(&sample_iter));
+	ipatch_item = (IpatchItem *) ipatch_dls2_region_get_sample(ipatch_iter_get(&sample_iter));
 
 	ipatch_sample = ags_ipatch_sample_new();
 	g_object_set(ipatch_sample,

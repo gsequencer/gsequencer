@@ -1002,7 +1002,7 @@ ags_osc_server_add_default_controller(AgsOscServer *osc_server)
 	       NULL);
 
   ags_osc_server_add_controller(osc_server,
-				action_controller);
+				(GObject *) action_controller);
 
   /* config controller */
   config_controller = ags_osc_config_controller_new();
@@ -1011,7 +1011,7 @@ ags_osc_server_add_default_controller(AgsOscServer *osc_server)
 	       NULL);
 
   ags_osc_server_add_controller(osc_server,
-				config_controller);
+				(GObject *) config_controller);
 
   /* info controller */
   info_controller = ags_osc_info_controller_new();
@@ -1020,7 +1020,7 @@ ags_osc_server_add_default_controller(AgsOscServer *osc_server)
 	       NULL);
 
   ags_osc_server_add_controller(osc_server,
-				info_controller);
+				(GObject *) info_controller);
 
   /* meter controller */
   meter_controller = ags_osc_meter_controller_new();
@@ -1029,7 +1029,7 @@ ags_osc_server_add_default_controller(AgsOscServer *osc_server)
 	       NULL);
 
   ags_osc_server_add_controller(osc_server,
-				meter_controller);
+				(GObject *) meter_controller);
 
   /* node controller */
   node_controller = ags_osc_node_controller_new();
@@ -1038,7 +1038,7 @@ ags_osc_server_add_default_controller(AgsOscServer *osc_server)
 	       NULL);
 
   ags_osc_server_add_controller(osc_server,
-				node_controller);
+				(GObject *) node_controller);
 
   /* renew controller */
   renew_controller = ags_osc_renew_controller_new();
@@ -1047,7 +1047,7 @@ ags_osc_server_add_default_controller(AgsOscServer *osc_server)
 	       NULL);
 
   ags_osc_server_add_controller(osc_server,
-				renew_controller);
+				(GObject *) renew_controller);
 
   /* status controller */
   status_controller = ags_osc_status_controller_new();
@@ -1056,7 +1056,7 @@ ags_osc_server_add_default_controller(AgsOscServer *osc_server)
 	       NULL);
 
   ags_osc_server_add_controller(osc_server,
-				status_controller);
+				(GObject *) status_controller);
 }
 
 void
@@ -1394,7 +1394,7 @@ ags_osc_server_real_listen(AgsOscServer *osc_server)
 	
       created_connection = TRUE;
 
-      osc_connection = ags_osc_connection_new(osc_server);
+      osc_connection = ags_osc_connection_new((GObject *) osc_server);
 
       //      flags = fcntl(connection_fd, F_GETFL, 0);
       //      fcntl(connection_fd, F_SETFL, flags | O_NONBLOCK);
@@ -1406,7 +1406,7 @@ ags_osc_server_real_listen(AgsOscServer *osc_server)
 				    AGS_OSC_CONNECTION_INET4));
 	
       ags_osc_server_add_connection(osc_server,
-				    osc_connection);
+				    (GObject *) osc_connection);
     }
   }
     
@@ -1424,7 +1424,7 @@ ags_osc_server_real_listen(AgsOscServer *osc_server)
 	
       created_connection = TRUE;
 
-      osc_connection = ags_osc_connection_new(osc_server);
+      osc_connection = ags_osc_connection_new((GObject *) osc_server);
 
       flags = fcntl(connection_fd, F_GETFL, 0);
       fcntl(connection_fd, F_SETFL, flags | O_NONBLOCK);
@@ -1436,7 +1436,7 @@ ags_osc_server_real_listen(AgsOscServer *osc_server)
 				    AGS_OSC_CONNECTION_INET6));
 	
       ags_osc_server_add_connection(osc_server,
-				    osc_connection);
+				    (GObject *) osc_connection);
     }
   }
 
@@ -1532,7 +1532,7 @@ ags_osc_server_real_dispatch(AgsOscServer *osc_server)
 					&packet_size);
 
       osc_response = 
-	start_osc_response = ags_osc_front_controller_do_request(osc_server->front_controller,
+	start_osc_response = ags_osc_front_controller_do_request((AgsOscFrontController *) osc_server->front_controller,
 								 list->data,
 								 packet, packet_size);
 

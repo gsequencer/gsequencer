@@ -375,7 +375,7 @@ ags_core_audio_server_set_property(GObject *gobject,
 
       pthread_mutex_lock(core_audio_server_mutex);
 
-      if(core_audio_server->application_context == (GObject *) application_context){
+      if(core_audio_server->application_context == application_context){
 	pthread_mutex_unlock(core_audio_server_mutex);
 
 	return;
@@ -389,7 +389,7 @@ ags_core_audio_server_set_property(GObject *gobject,
 	g_object_ref(G_OBJECT(application_context));
       }
 
-      core_audio_server->application_context = (GObject *) application_context;
+      core_audio_server->application_context = application_context;
 
       pthread_mutex_unlock(core_audio_server_mutex);
     }
@@ -1306,7 +1306,7 @@ ags_core_audio_server_register_soundcard(AgsSoundServer *sound_server,
 
   application_context= core_audio_server->application_context;
 
-  default_client = core_audio_server->default_client;
+  default_client = (AgsCoreAudioClient *) core_audio_server->default_client;
 
   n_soundcards = core_audio_server->n_soundcards;
   
@@ -1320,7 +1320,7 @@ ags_core_audio_server_register_soundcard(AgsSoundServer *sound_server,
 		 "default-core-audio-client", default_client,
 		 NULL);
     ags_core_audio_server_add_client(core_audio_server,
-				     default_client);
+				     (GObject *) default_client);
     
     ags_core_audio_client_open((AgsCoreAudioClient *) default_client,
 			       "ags-default-client");
@@ -1349,9 +1349,9 @@ ags_core_audio_server_register_soundcard(AgsSoundServer *sound_server,
 
   /* the soundcard */
   if(is_output){
-    soundcard = 
-      core_audio_devout = ags_core_audio_devout_new(core_audio_server->application_context);
-    
+    core_audio_devout = ags_core_audio_devout_new(core_audio_server->application_context);
+    soundcard = (GObject *) core_audio_devout;
+
     str = g_strdup_printf("ags-core-audio-devout-%d",
 			  n_soundcards);
     
@@ -1399,9 +1399,9 @@ ags_core_audio_server_register_soundcard(AgsSoundServer *sound_server,
 
     pthread_mutex_unlock(core_audio_server_mutex);
   }else{
-    soundcard = 
-      core_audio_devin = ags_core_audio_devin_new(core_audio_server->application_context);
-    
+    core_audio_devin = ags_core_audio_devin_new(core_audio_server->application_context);
+    soundcard = (GObject *) core_audio_devin;
+
     str = g_strdup_printf("ags-core-audio-devin-%d",
 			  n_soundcards);
     
@@ -1587,7 +1587,7 @@ ags_core_audio_server_register_sequencer(AgsSoundServer *sound_server,
 
   application_context= core_audio_server->application_context;
 
-  default_client = core_audio_server->default_client;
+  default_client = (AgsCoreAudioClient *) core_audio_server->default_client;
 
   n_sequencers = core_audio_server->n_sequencers;
   
@@ -1606,7 +1606,7 @@ ags_core_audio_server_register_sequencer(AgsSoundServer *sound_server,
 		 "default-core-audio-client", default_client,
 		 NULL);
     ags_core_audio_server_add_client(core_audio_server,
-				     default_client);
+				     (GObject *) default_client);
     
     ags_core_audio_client_open((AgsCoreAudioClient *) default_client,
 			       "ags-default-client");    
@@ -2036,7 +2036,7 @@ ags_core_audio_server_find_port(AgsCoreAudioServer *core_audio_server,
 		 "core_audio-port", &port_start,
 		 NULL);
 
-    port_start = port;
+    port = port_start;
     
     while(port != NULL){
       /* get core_audio port mutex */

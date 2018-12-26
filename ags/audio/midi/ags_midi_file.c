@@ -735,6 +735,7 @@ ags_midi_file_read_varlength(AgsMidiFile *midi_file,
     return(0x0);
   }
 
+  c = 0x0;
   success = TRUE;
   
   if(midi_file->iter + 1 < midi_file->buffer + midi_file->buffer_length){

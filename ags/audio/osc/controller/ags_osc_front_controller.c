@@ -298,7 +298,7 @@ ags_osc_front_controller_dispose(GObject *gobject)
   
   if(osc_front_controller->message != NULL){
     g_list_free_full(osc_front_controller->message,
-		     ags_osc_front_controller_message_free);
+		     (GDestroyNotify) ags_osc_front_controller_message_free);
 
     osc_front_controller->message = NULL;
   }
@@ -326,7 +326,7 @@ ags_osc_front_controller_finalize(GObject *gobject)
   
   if(osc_front_controller->message != NULL){
     g_list_free_full(osc_front_controller->message,
-		     ags_osc_front_controller_message_free);
+		     (GDestroyNotify) ags_osc_front_controller_message_free);
   }
   
   /* call parent */
@@ -565,7 +565,7 @@ ags_osc_front_controller_delegate_thread(void *ptr)
 
     /* free messages */
     g_list_free_full(start_message,
-		     ags_osc_front_controller_message_free);
+		     (GDestroyNotify) ags_osc_front_controller_message_free);
 
     /* next */
     pthread_mutex_lock(osc_front_controller->delegate_mutex);

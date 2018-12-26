@@ -566,7 +566,7 @@ ags_audio_file_set_property(GObject *gobject,
       pthread_mutex_unlock(audio_file_mutex);
       
       ags_audio_file_add_audio_signal(audio_file,
-				      audio_signal);
+				      (GObject *) audio_signal);
     }
     break;
   case PROP_WAVE:
@@ -587,7 +587,7 @@ ags_audio_file_set_property(GObject *gobject,
       pthread_mutex_unlock(audio_file_mutex);
       
       ags_audio_file_add_wave(audio_file,
-			      wave);
+			      (GObject *) wave);
     }
     break;
   default:
@@ -833,11 +833,11 @@ ags_audio_file_add_to_registry(AgsConnectable *connectable)
 
   application_context = ags_application_context_get_instance();
 
-  registry = ags_service_provider_get_registry(AGS_SERVICE_PROVIDER(application_context));
+  registry = (AgsRegistry *) ags_service_provider_get_registry(AGS_SERVICE_PROVIDER(application_context));
 
   if(registry != NULL){
     entry = ags_registry_entry_alloc(registry);
-    g_value_set_object(&(entry->entry),
+    g_value_set_object(entry->entry,
 		       (gpointer) audio_file);
     ags_registry_add_entry(registry,
 			   entry);
@@ -1114,11 +1114,16 @@ ags_audio_file_add_audio_signal(AgsAudioFile *audio_file, GObject *audio_signal)
   
   pthread_mutex_unlock(ags_audio_file_get_class_mutex());
 
+  /*  */
+  pthread_mutex_lock(audio_file_mutex);
+
   if(g_list_find(audio_file->audio_signal, audio_signal) == NULL){
     g_object_ref(audio_signal);
     audio_file->audio_signal = g_list_prepend(audio_file->audio_signal,
 					      audio_signal);
   }
+
+  pthread_mutex_unlock(audio_file_mutex);
 }
 
 /**
@@ -1147,11 +1152,16 @@ ags_audio_file_remove_audio_signal(AgsAudioFile *audio_file, GObject *audio_sign
   
   pthread_mutex_unlock(ags_audio_file_get_class_mutex());
 
+  /*  */
+  pthread_mutex_lock(audio_file_mutex);
+
   if(g_list_find(audio_file->audio_signal, audio_signal) != NULL){
     audio_file->audio_signal = g_list_prepend(audio_file->audio_signal,
 					      audio_signal);
     g_object_unref(audio_signal);
   }
+
+  pthread_mutex_unlock(audio_file_mutex);
 }
 
 /**
@@ -1180,11 +1190,16 @@ ags_audio_file_add_wave(AgsAudioFile *audio_file, GObject *wave)
   
   pthread_mutex_unlock(ags_audio_file_get_class_mutex());
 
+  /*  */
+  pthread_mutex_lock(audio_file_mutex);
+
   if(g_list_find(audio_file->wave, wave) == NULL){
     g_object_ref(wave);
     audio_file->wave = g_list_prepend(audio_file->wave,
 				      wave);
   }
+
+  pthread_mutex_unlock(audio_file_mutex);
 }
 
 /**
@@ -1213,11 +1228,16 @@ ags_audio_file_remove_wave(AgsAudioFile *audio_file, GObject *wave)
   
   pthread_mutex_unlock(ags_audio_file_get_class_mutex());
 
+  /*  */
+  pthread_mutex_lock(audio_file_mutex);
+
   if(g_list_find(audio_file->wave, wave) != NULL){
     audio_file->wave = g_list_prepend(audio_file->wave,
 				      wave);
     g_object_unref(wave);
   }
+
+  pthread_mutex_unlock(audio_file_mutex);
 }
 
 /**

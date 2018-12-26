@@ -1140,7 +1140,7 @@ ags_jack_devout_dispose(GObject *gobject)
 		   NULL);
       
       ags_task_thread_remove_cyclic_task(task_thread,
-					 jack_devout->notify_soundcard);
+					 (AgsTask *) jack_devout->notify_soundcard);
     }
     
     g_object_unref(jack_devout->notify_soundcard);
@@ -1203,7 +1203,7 @@ ags_jack_devout_finalize(GObject *gobject)
 		   NULL);
 
       ags_task_thread_remove_cyclic_task(task_thread,
-					 jack_devout->notify_soundcard);
+					 (AgsTask *) jack_devout->notify_soundcard);
     }
     
     g_object_unref(jack_devout->notify_soundcard);
@@ -1540,7 +1540,7 @@ ags_jack_devout_set_application_context(AgsSoundcard *soundcard,
   /* set application context */
   pthread_mutex_lock(jack_devout_mutex);
   
-  jack_devout->application_context = (GObject *) application_context;
+  jack_devout->application_context = application_context;
   
   pthread_mutex_unlock(jack_devout_mutex);
 }
@@ -1566,7 +1566,7 @@ ags_jack_devout_get_application_context(AgsSoundcard *soundcard)
   /* get application context */
   pthread_mutex_lock(jack_devout_mutex);
 
-  application_context = (AgsApplicationContext *) jack_devout->application_context;
+  application_context = jack_devout->application_context;
 
   pthread_mutex_unlock(jack_devout_mutex);
   
@@ -3263,7 +3263,7 @@ ags_jack_devout_realloc_buffer(AgsJackDevout *jack_devout)
   /* get word size */  
   pthread_mutex_lock(jack_devout_mutex);
 
-  jack_client = jack_devout->jack_client;
+  jack_client = (AgsJackClient *) jack_devout->jack_client;
   
   port_count = g_list_length(jack_devout->jack_port);
   
@@ -3334,7 +3334,7 @@ ags_jack_devout_realloc_buffer(AgsJackDevout *jack_devout)
 			    nth_soundcard,
 			    i);
       
-      jack_port = ags_jack_port_new(jack_client);
+      jack_port = ags_jack_port_new((GObject *) jack_client);
       ags_jack_client_add_port((AgsJackClient *) jack_client,
 			       (GObject *) jack_port);
 

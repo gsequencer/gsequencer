@@ -306,7 +306,7 @@ ags_ipatch_sample_init(AgsIpatchSample *ipatch_sample)
   config = ags_config_get_instance();
 
   ipatch_sample->audio_channels = 1;
-  ipatch_sample->audio_channel_written = (guint64 *) malloc(ipatch_sample->audio_channels * sizeof(guint64));
+  ipatch_sample->audio_channel_written = (gint64 *) malloc(ipatch_sample->audio_channels * sizeof(gint64));
 
   ipatch_sample->audio_channel_written[0] = -1;
 
@@ -601,11 +601,11 @@ ags_ipatch_sample_add_to_registry(AgsConnectable *connectable)
 
   application_context = ags_application_context_get_instance();
 
-  registry = ags_service_provider_get_registry(AGS_SERVICE_PROVIDER(application_context));
+  registry = (AgsRegistry *) ags_service_provider_get_registry(AGS_SERVICE_PROVIDER(application_context));
 
   if(registry != NULL){
     entry = ags_registry_entry_alloc(registry);
-    g_value_set_object(&(entry->entry),
+    g_value_set_object(entry->entry,
 		       (gpointer) ipatch_sample);
     ags_registry_add_entry(registry,
 			   entry);

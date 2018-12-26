@@ -1137,6 +1137,24 @@ ags_jack_devin_dispose(GObject *gobject)
 
   jack_devin->jack_port = NULL;
 
+  /* notify soundcard */
+  if(jack_devin->notify_soundcard != NULL){
+    if(jack_devin->application_context != NULL){
+      AgsTaskThread *task_thread;
+    
+      g_object_get(jack_devin->application_context,
+		   "task-thread", &task_thread,
+		   NULL);
+      
+      ags_task_thread_remove_cyclic_task(task_thread,
+					 (AgsTask *) jack_devin->notify_soundcard);
+    }
+    
+    g_object_unref(jack_devin->notify_soundcard);
+
+    jack_devin->notify_soundcard = NULL;
+  }
+
   /* call parent */
   G_OBJECT_CLASS(ags_jack_devin_parent_class)->dispose(gobject);
 }
@@ -1169,8 +1187,14 @@ ags_jack_devin_finalize(GObject *gobject)
   /* unref notify soundcard */
   if(jack_devin->notify_soundcard != NULL){
     if(jack_devin->application_context != NULL){
-      ags_task_thread_remove_cyclic_task(AGS_APPLICATION_CONTEXT(jack_devin->application_context)->task_thread,
-					 jack_devin->notify_soundcard);
+      AgsTaskThread *task_thread;
+      
+      g_object_get(jack_devin->application_context,
+		   "task-thread", &task_thread,
+		   NULL);
+
+      ags_task_thread_remove_cyclic_task(task_thread,
+					 (AgsTask *) jack_devin->notify_soundcard);
     }
     
     g_object_unref(jack_devin->notify_soundcard);

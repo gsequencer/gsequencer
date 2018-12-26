@@ -542,7 +542,7 @@ ags_jack_midiin_set_property(GObject *gobject,
 
       pthread_mutex_lock(jack_midiin_mutex);
 
-      if(jack_midiin->application_context == application_context){
+      if(jack_midiin->application_context == (GObject *) application_context){
 	pthread_mutex_unlock(jack_midiin_mutex);
 
 	return;
@@ -556,7 +556,7 @@ ags_jack_midiin_set_property(GObject *gobject,
 	g_object_ref(G_OBJECT(application_context));
       }
 
-      jack_midiin->application_context = application_context;
+      jack_midiin->application_context = (GObject *) application_context;
 
       pthread_mutex_unlock(jack_midiin_mutex);
     }
