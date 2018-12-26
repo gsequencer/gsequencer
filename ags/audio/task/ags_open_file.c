@@ -211,7 +211,7 @@ ags_open_file_set_property(GObject *gobject,
 
       audio = (AgsAudio *) g_value_get_object(value);
 
-      if(open_file->audio == (GObject *) audio){
+      if(open_file->audio == audio){
 	return;
       }
 
@@ -223,7 +223,7 @@ ags_open_file_set_property(GObject *gobject,
 	g_object_ref(audio);
       }
 
-      open_file->audio = (GObject *) audio;
+      open_file->audio = audio;
     }
     break;
   case PROP_FILENAME:

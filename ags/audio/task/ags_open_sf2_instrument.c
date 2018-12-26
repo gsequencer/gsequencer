@@ -238,7 +238,7 @@ ags_open_sf2_instrument_init(AgsOpenSf2Instrument *open_sf2_instrument)
   open_sf2_instrument->preset = NULL;
   open_sf2_instrument->instrument = NULL;
 
-  open_sf2_instrument->start_pad = NULL;
+  open_sf2_instrument->start_pad = 0;
 }
 
 void
@@ -258,7 +258,7 @@ ags_open_sf2_instrument_set_property(GObject *gobject,
 
       audio = (AgsAudio *) g_value_get_object(value);
 
-      if(open_sf2_instrument->audio == (GObject *) audio){
+      if(open_sf2_instrument->audio == audio){
 	return;
       }
 
@@ -270,7 +270,7 @@ ags_open_sf2_instrument_set_property(GObject *gobject,
 	g_object_ref(audio);
       }
 
-      open_sf2_instrument->audio = (GObject *) audio;
+      open_sf2_instrument->audio = audio;
     }
     break;
   case PROP_IPATCH:
@@ -279,7 +279,7 @@ ags_open_sf2_instrument_set_property(GObject *gobject,
 
       ipatch = (AgsIpatch *) g_value_get_object(value);
 
-      if(open_sf2_instrument->ipatch == (GObject *) ipatch){
+      if(open_sf2_instrument->ipatch == ipatch){
 	return;
       }
 
@@ -291,7 +291,7 @@ ags_open_sf2_instrument_set_property(GObject *gobject,
 	g_object_ref(ipatch);
       }
 
-      open_sf2_instrument->ipatch = (GObject *) ipatch;
+      open_sf2_instrument->ipatch = ipatch;
     }
     break;
   case PROP_FILENAME:
@@ -470,7 +470,7 @@ ags_open_sf2_instrument_launch(AgsTask *task)
 
   GError *error;
   
-  open_sf2_instrument = task;
+  open_sf2_instrument = (AgsOpenSf2Instrument *) task;
 
   audio = open_sf2_instrument->audio;
 
@@ -524,7 +524,7 @@ ags_open_sf2_instrument_launch(AgsTask *task)
     while(list != NULL){
       GList *start_audio_signal, *audio_signal;
 
-      g_message("open sf2 sample: %s", ipatch_sf2_sample_get_name(AGS_IPATCH_SAMPLE(list->data)->sample));
+      //      g_message("open sf2 sample: %s", ipatch_sf2_sample_get_name(AGS_IPATCH_SAMPLE(list->data)->sample));
       
       channel = ags_channel_pad_nth(start_channel,
 				    open_sf2_instrument->start_pad + i);

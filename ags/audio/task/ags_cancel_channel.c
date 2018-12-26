@@ -175,7 +175,7 @@ ags_cancel_channel_set_property(GObject *gobject,
 
       channel = (AgsChannel *) g_value_get_object(value);
 
-      if(cancel_channel->channel == (GObject *) channel){
+      if(cancel_channel->channel == channel){
 	return;
       }
 
@@ -187,7 +187,7 @@ ags_cancel_channel_set_property(GObject *gobject,
 	g_object_ref(channel);
       }
 
-      cancel_channel->channel = (GObject *) channel;
+      cancel_channel->channel = channel;
     }
     break;
   case PROP_SOUND_SCOPE:

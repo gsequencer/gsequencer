@@ -200,7 +200,7 @@ ags_add_audio_set_property(GObject *gobject,
 	g_object_ref(application_context);
       }
 
-      add_audio->application_context = (GObject *) application_context;
+      add_audio->application_context = application_context;
     }
     break;
   case PROP_AUDIO:
@@ -209,7 +209,7 @@ ags_add_audio_set_property(GObject *gobject,
 
       audio = (AgsAudio *) g_value_get_object(value);
 
-      if(add_audio->audio == (GObject *) audio){
+      if(add_audio->audio == audio){
 	return;
       }
 
@@ -221,7 +221,7 @@ ags_add_audio_set_property(GObject *gobject,
 	g_object_ref(audio);
       }
 
-      add_audio->audio = (GObject *) audio;
+      add_audio->audio = audio;
     }
     break;
   default:

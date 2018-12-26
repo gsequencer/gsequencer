@@ -249,7 +249,7 @@ ags_export_output_set_property(GObject *gobject,
 
       export_thread = (AgsExportThread *) g_value_get_object(value);
 
-      if(export_output->export_thread == (GObject *) export_thread){
+      if(export_output->export_thread == export_thread){
 	return;
       }
 
@@ -261,7 +261,7 @@ ags_export_output_set_property(GObject *gobject,
 	g_object_ref(export_thread);
       }
 
-      export_output->export_thread = (GObject *) export_thread;
+      export_output->export_thread = export_thread;
     }
     break;
   case PROP_SOUNDCARD:

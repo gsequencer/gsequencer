@@ -147,11 +147,11 @@ ags_start_sequencer_set_property(GObject *gobject,
   switch(prop_id){
   case PROP_APPLICATION_CONTEXT:
     {
-      GObject *application_context;
+      AgsApplicationContext *application_context;
 
-      application_context = (GObject *) g_value_get_object(value);
+      application_context = (AgsApplicationContext *) g_value_get_object(value);
 
-      if(start_sequencer->application_context == (GObject *) application_context){
+      if(start_sequencer->application_context == application_context){
 	return;
       }
 
@@ -163,7 +163,7 @@ ags_start_sequencer_set_property(GObject *gobject,
 	g_object_ref(application_context);
       }
 
-      start_sequencer->application_context = (GObject *) application_context;
+      start_sequencer->application_context = application_context;
     }
     break;
   default:

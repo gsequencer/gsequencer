@@ -278,7 +278,7 @@ ags_apply_tact_launch(AgsTask *task)
  if(AGS_IS_APPLICATION_CONTEXT(apply_tact->scope)){
     AgsApplicationContext *application_context;
 
-    application_context = apply_tact->scope;
+    application_context = (AgsApplicationContext *) apply_tact->scope;
 
     ags_apply_tact_application_context(apply_tact, application_context);
   }else if(AGS_IS_SOUNDCARD(apply_tact->scope)){

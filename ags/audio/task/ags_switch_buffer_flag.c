@@ -248,27 +248,27 @@ ags_switch_buffer_flag_launch(AgsTask *task)
 
   /* switch buffer flag */
   if(AGS_IS_DEVOUT(switch_buffer_flag->device)){
-    ags_devout_switch_buffer_flag(switch_buffer_flag->device);
+    ags_devout_switch_buffer_flag((AgsDevout *) switch_buffer_flag->device);
   }else if(AGS_IS_DEVIN(switch_buffer_flag->device)){
-    ags_devin_switch_buffer_flag(switch_buffer_flag->device);
+    ags_devin_switch_buffer_flag((AgsDevin *) switch_buffer_flag->device);
   }else if(AGS_IS_JACK_DEVOUT(switch_buffer_flag->device)){
-    ags_jack_devout_switch_buffer_flag(switch_buffer_flag->device);
+    ags_jack_devout_switch_buffer_flag((AgsJackDevout *) switch_buffer_flag->device);
   }else if(AGS_IS_JACK_DEVIN(switch_buffer_flag->device)){
-    ags_jack_devin_switch_buffer_flag(switch_buffer_flag->device);
+    ags_jack_devin_switch_buffer_flag((AgsJackDevin *) switch_buffer_flag->device);
   }else if(AGS_IS_PULSE_DEVOUT(switch_buffer_flag->device)){
-    ags_pulse_devout_switch_buffer_flag(switch_buffer_flag->device);
+    ags_pulse_devout_switch_buffer_flag((AgsPulseDevout *) switch_buffer_flag->device);
   }else if(AGS_IS_PULSE_DEVIN(switch_buffer_flag->device)){
-    ags_pulse_devin_switch_buffer_flag(switch_buffer_flag->device);
+    ags_pulse_devin_switch_buffer_flag((AgsPulseDevin *) switch_buffer_flag->device);
   }else if(AGS_IS_CORE_AUDIO_DEVOUT(switch_buffer_flag->device)){
-    ags_core_audio_devout_switch_buffer_flag(switch_buffer_flag->device);
-  }else if(AGS_IS_CORE_AUDIO_DEVIN(switch_buffer_flag->device)){
+    ags_core_audio_devout_switch_buffer_flag((AgsCoreAudioDevout *) switch_buffer_flag->device);
+  }else if(AGS_IS_CORE_AUDIO_DEVIN((AgsCoreAudioDevin *) switch_buffer_flag->device)){
     ags_core_audio_devin_switch_buffer_flag(switch_buffer_flag->device);
   }else if(AGS_IS_MIDIIN(switch_buffer_flag->device)){
-    ags_midiin_switch_buffer_flag(switch_buffer_flag->device);
+    ags_midiin_switch_buffer_flag((AgsMidiin *) switch_buffer_flag->device);
   }else if(AGS_IS_JACK_MIDIIN(switch_buffer_flag->device)){
-    ags_jack_midiin_switch_buffer_flag(switch_buffer_flag->device);
+    ags_jack_midiin_switch_buffer_flag((AgsJackMidiin *) switch_buffer_flag->device);
   }else if(AGS_IS_CORE_AUDIO_MIDIIN(switch_buffer_flag->device)){
-    ags_core_audio_midiin_switch_buffer_flag(switch_buffer_flag->device);
+    ags_core_audio_midiin_switch_buffer_flag((AgsCoreAudioMidiin *) switch_buffer_flag->device);
   }
 }
 

@@ -224,7 +224,7 @@ ags_add_audio_signal_set_property(GObject *gobject,
 
       recycling = (AgsRecycling *) g_value_get_object(value);
 
-      if(add_audio_signal->recycling == (GObject *) recycling){
+      if(add_audio_signal->recycling == recycling){
 	return;
       }
 
@@ -236,7 +236,7 @@ ags_add_audio_signal_set_property(GObject *gobject,
 	g_object_ref(recycling);
       }
 
-      add_audio_signal->recycling = (GObject *) recycling;
+      add_audio_signal->recycling = recycling;
     }
     break;
   case PROP_AUDIO_SIGNAL:
@@ -245,7 +245,7 @@ ags_add_audio_signal_set_property(GObject *gobject,
 
       audio_signal = (AgsAudioSignal *) g_value_get_object(value);
 
-      if(add_audio_signal->audio_signal == (GObject *) audio_signal){
+      if(add_audio_signal->audio_signal == audio_signal){
 	return;
       }
 
@@ -257,7 +257,7 @@ ags_add_audio_signal_set_property(GObject *gobject,
 	g_object_ref(audio_signal);
       }
 
-      add_audio_signal->audio_signal = (GObject *) audio_signal;
+      add_audio_signal->audio_signal = audio_signal;
     }
     break;
   case PROP_SOUNDCARD:
@@ -287,7 +287,7 @@ ags_add_audio_signal_set_property(GObject *gobject,
 
       recall_id = (AgsRecallID *) g_value_get_object(value);
 
-      if(add_audio_signal->recall_id == (GObject *) recall_id){
+      if(add_audio_signal->recall_id == recall_id){
 	return;
       }
 
@@ -299,7 +299,7 @@ ags_add_audio_signal_set_property(GObject *gobject,
 	g_object_ref(recall_id);
       }
 
-      add_audio_signal->recall_id = (GObject *) recall_id;
+      add_audio_signal->recall_id = recall_id;
     }
     break;
   case PROP_AUDIO_SIGNAL_FLAGS:

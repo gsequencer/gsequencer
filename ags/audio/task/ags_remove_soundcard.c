@@ -170,7 +170,7 @@ ags_remove_soundcard_set_property(GObject *gobject,
 
       application_context = (AgsApplicationContext *) g_value_get_object(value);
 
-      if(remove_soundcard->application_context == (GObject *) application_context){
+      if(remove_soundcard->application_context == application_context){
 	return;
       }
 
@@ -182,7 +182,7 @@ ags_remove_soundcard_set_property(GObject *gobject,
 	g_object_ref(application_context);
       }
 
-      remove_soundcard->application_context = (GObject *) application_context;
+      remove_soundcard->application_context = application_context;
     }
     break;
   case PROP_SOUNDCARD:

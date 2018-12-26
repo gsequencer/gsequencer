@@ -231,7 +231,7 @@ ags_toggle_pattern_bit_set_property(GObject *gobject,
 
       pattern = (AgsPattern *) g_value_get_object(value);
 
-      if(toggle_pattern_bit->pattern == (GObject *) pattern){
+      if(toggle_pattern_bit->pattern == pattern){
 	return;
       }
 
@@ -243,7 +243,7 @@ ags_toggle_pattern_bit_set_property(GObject *gobject,
 	g_object_ref(pattern);
       }
 
-      toggle_pattern_bit->pattern = (GObject *) pattern;
+      toggle_pattern_bit->pattern = pattern;
     }
     break;
   case PROP_LINE:

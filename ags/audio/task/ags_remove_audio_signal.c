@@ -171,7 +171,7 @@ ags_remove_audio_signal_set_property(GObject *gobject,
 
       recycling = (AgsRecycling *) g_value_get_object(value);
 
-      if(remove_audio_signal->recycling == (GObject *) recycling){
+      if(remove_audio_signal->recycling == recycling){
 	return;
       }
 
@@ -183,7 +183,7 @@ ags_remove_audio_signal_set_property(GObject *gobject,
 	g_object_ref(recycling);
       }
 
-      remove_audio_signal->recycling = (GObject *) recycling;
+      remove_audio_signal->recycling = recycling;
     }
     break;
   case PROP_AUDIO_SIGNAL:
@@ -192,7 +192,7 @@ ags_remove_audio_signal_set_property(GObject *gobject,
 
       audio_signal = (AgsAudioSignal *) g_value_get_object(value);
 
-      if(remove_audio_signal->audio_signal == (GObject *) audio_signal){
+      if(remove_audio_signal->audio_signal == audio_signal){
 	return;
       }
 
@@ -204,7 +204,7 @@ ags_remove_audio_signal_set_property(GObject *gobject,
 	g_object_ref(audio_signal);
       }
 
-      remove_audio_signal->audio_signal = (GObject *) audio_signal;
+      remove_audio_signal->audio_signal = audio_signal;
     }
     break;
   default:

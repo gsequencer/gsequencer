@@ -183,7 +183,7 @@ ags_remove_audio_set_property(GObject *gobject,
 	g_object_ref(application_context);
       }
 
-      remove_audio->application_context = (GObject *) application_context;
+      remove_audio->application_context = application_context;
     }
     break;
   case PROP_AUDIO:
@@ -192,7 +192,7 @@ ags_remove_audio_set_property(GObject *gobject,
 
       audio = (AgsAudio *) g_value_get_object(value);
 
-      if(remove_audio->audio == (GObject *) audio){
+      if(remove_audio->audio == audio){
 	return;
       }
 
@@ -204,7 +204,7 @@ ags_remove_audio_set_property(GObject *gobject,
 	g_object_ref(audio);
       }
 
-      remove_audio->audio = (GObject *) audio;
+      remove_audio->audio = audio;
     }
     break;
   default:

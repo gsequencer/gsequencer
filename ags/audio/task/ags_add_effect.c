@@ -207,7 +207,7 @@ ags_add_effect_set_property(GObject *gobject,
 
       channel = (AgsChannel *) g_value_get_object(value);
 
-      if(add_effect->channel == (GObject *) channel){
+      if(add_effect->channel == channel){
 	return;
       }
 
@@ -219,7 +219,7 @@ ags_add_effect_set_property(GObject *gobject,
 	g_object_ref(channel);
       }
 
-      add_effect->channel = (GObject *) channel;
+      add_effect->channel = channel;
     }
     break;
   case PROP_FILENAME:

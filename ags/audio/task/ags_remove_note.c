@@ -208,7 +208,7 @@ ags_remove_note_set_property(GObject *gobject,
 
       audio = (AgsAudio *) g_value_get_object(value);
 
-      if(remove_note->audio == (GObject *) audio){
+      if(remove_note->audio == audio){
 	return;
       }
 
@@ -220,7 +220,7 @@ ags_remove_note_set_property(GObject *gobject,
 	g_object_ref(audio);
       }
 
-      remove_note->audio = (GObject *) audio;
+      remove_note->audio = audio;
     }
     break;
   case PROP_NOTE:
@@ -229,7 +229,7 @@ ags_remove_note_set_property(GObject *gobject,
 
       note = (AgsNote *) g_value_get_object(value);
 
-      if(remove_note->note == (GObject *) note){
+      if(remove_note->note == note){
 	return;
       }
 
@@ -241,7 +241,7 @@ ags_remove_note_set_property(GObject *gobject,
 	g_object_ref(note);
       }
 
-      remove_note->note = (GObject *) note;
+      remove_note->note = note;
     }
     break;
   case PROP_AUDIO_CHANNEL:

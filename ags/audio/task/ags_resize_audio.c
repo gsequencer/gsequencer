@@ -213,7 +213,7 @@ ags_resize_audio_set_property(GObject *gobject,
 
       audio = (AgsAudio *) g_value_get_object(value);
 
-      if(resize_audio->audio == (GObject *) audio){
+      if(resize_audio->audio == audio){
 	return;
       }
 
@@ -225,7 +225,7 @@ ags_resize_audio_set_property(GObject *gobject,
 	g_object_ref(audio);
       }
 
-      resize_audio->audio = (GObject *) audio;
+      resize_audio->audio = audio;
     }
     break;
   case PROP_OUTPUT_PADS:

@@ -208,7 +208,7 @@ ags_add_note_set_property(GObject *gobject,
 
       audio = (AgsAudio *) g_value_get_object(value);
 
-      if(add_note->audio == (GObject *) audio){
+      if(add_note->audio == audio){
 	return;
       }
 
@@ -220,7 +220,7 @@ ags_add_note_set_property(GObject *gobject,
 	g_object_ref(audio);
       }
 
-      add_note->audio = (GObject *) audio;
+      add_note->audio = audio;
     }
     break;
   case PROP_NOTE:
@@ -229,7 +229,7 @@ ags_add_note_set_property(GObject *gobject,
 
       note = (AgsNote *) g_value_get_object(value);
 
-      if(add_note->note == (GObject *) note){
+      if(add_note->note == note){
 	return;
       }
 
@@ -241,7 +241,7 @@ ags_add_note_set_property(GObject *gobject,
 	g_object_ref(note);
       }
 
-      add_note->note = (GObject *) note;
+      add_note->note = note;
     }
     break;
   case PROP_AUDIO_CHANNEL:
@@ -395,7 +395,7 @@ ags_add_note_launch(AgsTask *task)
   pthread_mutex_unlock(audio_mutex);
 					  
   if(list == NULL){
-    notation = ags_notation_new(audio,
+    notation = ags_notation_new((GObject *) audio,
 				audio_channel);
     ags_audio_add_notation(audio,
 			   (GObject *) notation);

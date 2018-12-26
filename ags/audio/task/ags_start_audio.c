@@ -182,7 +182,7 @@ ags_start_audio_set_property(GObject *gobject,
 
       audio = (AgsAudio *) g_value_get_object(value);
 
-      if(start_audio->audio == (GObject *) audio){
+      if(start_audio->audio == audio){
 	return;
       }
 
@@ -194,7 +194,7 @@ ags_start_audio_set_property(GObject *gobject,
 	g_object_ref(audio);
       }
 
-      start_audio->audio = (GObject *) audio;
+      start_audio->audio = audio;
     }
     break;
   case PROP_SOUND_SCOPE:
@@ -340,12 +340,12 @@ ags_start_audio_launch(AgsTask *task)
       audio_recall_id = ags_recall_id_new();
       ags_recall_id_set_sound_scope(audio_recall_id, sound_scope);
       ags_audio_add_recall_id(audio,
-			      audio_recall_id);
+			      (GObject *) audio_recall_id);
 
       channel_recall_id = ags_recall_id_new();
       ags_recall_id_set_sound_scope(channel_recall_id, sound_scope);
       ags_channel_add_recall_id(output,
-				channel_recall_id);
+				(GObject *) channel_recall_id);
       
       recycling_context = ags_recycling_context_new(1);
       ags_recycling_context_replace(recycling_context,
@@ -369,7 +369,7 @@ ags_start_audio_launch(AgsTask *task)
 				 sound_scope);
 
       /* add to start queue */
-      ags_thread_add_start_queue(audio_loop,
+      ags_thread_add_start_queue((AgsThread *) audio_loop,
 				 ags_playback_get_channel_thread(list->data,
 								 sound_scope));
       
@@ -382,11 +382,11 @@ ags_start_audio_launch(AgsTask *task)
 				  sound_scope, staging_flags);
 
     /* add to start queue */
-    audio_thread = ags_playback_domain_get_audio_thread(playback_domain,
-							sound_scope);
+    audio_thread = (AgsAudioThread *) ags_playback_domain_get_audio_thread(playback_domain,
+									   sound_scope);
         
-    ags_thread_add_start_queue(audio_loop,
-			       audio_thread);
+    ags_thread_add_start_queue((AgsThread *) audio_loop,
+			       (AgsThread *) audio_thread);
   }else{
     gint i;
 
@@ -407,12 +407,12 @@ ags_start_audio_launch(AgsTask *task)
 	audio_recall_id = ags_recall_id_new();
 	ags_recall_id_set_sound_scope(audio_recall_id, sound_scope);
 	ags_audio_add_recall_id(audio,
-				audio_recall_id);
+				(GObject *) audio_recall_id);
 
 	channel_recall_id = ags_recall_id_new();
 	ags_recall_id_set_sound_scope(channel_recall_id, sound_scope);
 	ags_channel_add_recall_id(output,
-				  channel_recall_id);
+				  (GObject *) channel_recall_id);
 
 	recycling_context = ags_recycling_context_new(1);
 	ags_recycling_context_replace(recycling_context,

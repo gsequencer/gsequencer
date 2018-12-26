@@ -198,7 +198,7 @@ ags_open_wave_init(AgsOpenWave *open_wave)
 
   open_wave->filename = NULL;
 
-  open_wave->start_pad = NULL;
+  open_wave->start_pad = 0;
 }
 
 void
@@ -218,7 +218,7 @@ ags_open_wave_set_property(GObject *gobject,
 
       audio = (AgsAudio *) g_value_get_object(value);
 
-      if(open_wave->audio == (GObject *) audio){
+      if(open_wave->audio == audio){
 	return;
       }
 
@@ -230,7 +230,7 @@ ags_open_wave_set_property(GObject *gobject,
 	g_object_ref(audio);
       }
 
-      open_wave->audio = (GObject *) audio;
+      open_wave->audio = audio;
     }
     break;
   case PROP_AUDIO_FILE:
@@ -239,7 +239,7 @@ ags_open_wave_set_property(GObject *gobject,
 
       audio_file = (AgsAudioFile *) g_value_get_object(value);
 
-      if(open_wave->audio_file == (GObject *) audio_file){
+      if(open_wave->audio_file == audio_file){
 	return;
       }
 
@@ -251,7 +251,7 @@ ags_open_wave_set_property(GObject *gobject,
 	g_object_ref(audio_file);
       }
 
-      open_wave->audio_file = (GObject *) audio_file;
+      open_wave->audio_file = audio_file;
     }
     break;
   case PROP_FILENAME:
@@ -380,7 +380,7 @@ ags_open_wave_launch(AgsTask *task)
   guint n_pads, current_pads;
   guint n_audio_channels, current_audio_channels;
 
-  open_wave = task;
+  open_wave = (AgsOpenWave *) task;
 
   audio = open_wave->audio;
 

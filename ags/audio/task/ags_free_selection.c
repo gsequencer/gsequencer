@@ -149,7 +149,7 @@ ags_free_selection_set_property(GObject *gobject,
 
       notation = (AgsNotation *) g_value_get_object(value);
 
-      if(free_selection->notation == (GObject *) notation){
+      if(free_selection->notation == notation){
 	return;
       }
 
@@ -161,7 +161,7 @@ ags_free_selection_set_property(GObject *gobject,
 	g_object_ref(notation);
       }
 
-      free_selection->notation = (GObject *) notation;
+      free_selection->notation = notation;
     }
     break;
   default:

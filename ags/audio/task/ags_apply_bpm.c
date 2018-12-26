@@ -280,7 +280,7 @@ ags_apply_bpm_launch(AgsTask *task)
   if(AGS_IS_APPLICATION_CONTEXT(apply_bpm->scope)){
     AgsApplicationContext *application_context;
 
-    application_context = apply_bpm->scope;
+    application_context = (AgsApplicationContext *) apply_bpm->scope;
 
     ags_apply_bpm_application_context(apply_bpm, application_context);
   }else if(AGS_IS_SOUNDCARD(apply_bpm->scope)){

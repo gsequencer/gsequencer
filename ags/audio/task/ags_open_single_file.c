@@ -197,7 +197,7 @@ ags_open_single_file_set_property(GObject *gobject,
 
       channel = (AgsChannel *) g_value_get_object(value);
 
-      if(open_single_file->channel == (GObject *) channel){
+      if(open_single_file->channel == channel){
 	return;
       }
 
@@ -209,7 +209,7 @@ ags_open_single_file_set_property(GObject *gobject,
 	g_object_ref(channel);
       }
 
-      open_single_file->channel = (GObject *) channel;
+      open_single_file->channel = channel;
     }
     break;
   case PROP_FILENAME:

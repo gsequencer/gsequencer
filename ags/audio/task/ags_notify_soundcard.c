@@ -169,7 +169,7 @@ ags_notify_soundcard_set_property(GObject *gobject,
 
       soundcard_thread = (AgsSoundcardThread *) g_value_get_object(value);
 
-      if(notify_soundcard->soundcard_thread == (GObject *) soundcard_thread){
+      if(notify_soundcard->soundcard_thread == soundcard_thread){
 	return;
       }
 
@@ -181,7 +181,7 @@ ags_notify_soundcard_set_property(GObject *gobject,
 	g_object_ref(soundcard_thread);
       }
 
-      notify_soundcard->soundcard_thread = (GObject *) soundcard_thread;
+      notify_soundcard->soundcard_thread = soundcard_thread;
     }
     break;
   default:

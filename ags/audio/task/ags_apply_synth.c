@@ -230,7 +230,7 @@ ags_apply_synth_set_property(GObject *gobject,
 	g_object_ref(synth_generator);
       }
 
-      apply_synth->synth_generator = (GObject *) synth_generator;
+      apply_synth->synth_generator = synth_generator;
     }
     break;
   case PROP_START_CHANNEL:
@@ -239,7 +239,7 @@ ags_apply_synth_set_property(GObject *gobject,
 
       start_channel = (AgsChannel *) g_value_get_object(value);
 
-      if(apply_synth->start_channel == (GObject *) start_channel){
+      if(apply_synth->start_channel == start_channel){
 	return;
       }
 
@@ -251,7 +251,7 @@ ags_apply_synth_set_property(GObject *gobject,
 	g_object_ref(start_channel);
       }
 
-      apply_synth->start_channel = (GObject *) start_channel;
+      apply_synth->start_channel = start_channel;
     }
     break;
   case PROP_BASE_NOTE:
@@ -397,7 +397,7 @@ ags_apply_synth_launch(AgsTask *task)
   /* get some fields */
   pthread_mutex_lock(channel_mutex);
 
-  audio = channel->audio;
+  audio = (AgsAudio *) channel->audio;
 
   pthread_mutex_unlock(channel_mutex);
 
@@ -450,7 +450,7 @@ ags_apply_synth_launch(AgsTask *task)
 
     if(audio_signal == NULL){
       audio_signal = ags_audio_signal_new(output_soundcard,
-					  first_recycling,
+					  (GObject *) first_recycling,
 					  NULL);
       audio_signal->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;
       ags_recycling_add_audio_signal(first_recycling,
@@ -461,7 +461,7 @@ ags_apply_synth_launch(AgsTask *task)
     note = apply_synth->base_note + i;
 	
     ags_synth_generator_compute(synth_generator,
-				audio_signal,
+				(GObject *) audio_signal,
 				note);
 
     rt_template = 

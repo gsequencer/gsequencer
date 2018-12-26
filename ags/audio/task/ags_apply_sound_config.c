@@ -221,7 +221,7 @@ ags_apply_sound_config_set_property(GObject *gobject,
 
       application_context = (GObject *) g_value_get_object(value);
 
-      if(apply_sound_config->application_context == (GObject *) application_context){
+      if(apply_sound_config->application_context == application_context){
 	return;
       }
 
@@ -233,7 +233,7 @@ ags_apply_sound_config_set_property(GObject *gobject,
 	g_object_ref(application_context);
       }
 
-      apply_sound_config->application_context = (GObject *) application_context;
+      apply_sound_config->application_context = application_context;
     }
     break;
   default:
@@ -411,8 +411,8 @@ ags_apply_sound_config_launch(AgsTask *task)
   has_jack = FALSE;
 
   /* stop all playback */
-  ags_thread_find_type(audio_loop,
-		       AGS_TYPE_SOUNDCARD_THREAD);
+  soundcard_thread = ags_thread_find_type(audio_loop,
+					  AGS_TYPE_SOUNDCARD_THREAD);
 
   while(soundcard_thread != NULL){
     if(AGS_IS_SOUNDCARD_THREAD(soundcard_thread)){
@@ -528,7 +528,7 @@ ags_apply_sound_config_launch(AgsTask *task)
       }
     }
 
-    ags_audio_loop_remove_audio(audio_loop,
+    ags_audio_loop_remove_audio((AgsAudioLoop *) audio_loop,
 				(GObject *) audio->data);
 
     g_list_free(start_output);
@@ -551,9 +551,9 @@ ags_apply_sound_config_launch(AgsTask *task)
     ags_jack_server_disconnect_client(jack_server);
 
     ags_jack_server_remove_client(jack_server,
-				  default_client);
+				  (GObject *) default_client);
     ags_jack_server_remove_client(jack_server,
-				  input_client);
+				  (GObject *) input_client);
 #endif
   }
 
@@ -573,7 +573,7 @@ ags_apply_sound_config_launch(AgsTask *task)
     ags_pulse_server_disconnect_client(pulse_server);
 
     ags_pulse_server_remove_client(pulse_server,
-				   pulse_client);
+				   (GObject *) pulse_client);
     
     pulse_server->main_loop = NULL;
     pulse_server->main_loop_api = NULL;
@@ -596,8 +596,8 @@ ags_apply_sound_config_launch(AgsTask *task)
     ags_thread_remove_child(audio_loop,
 			    soundcard_thread);
 
-    g_object_run_dispose(soundcard_thread);
-    g_object_unref(soundcard_thread);
+    g_object_run_dispose((GObject *) soundcard_thread);
+    g_object_unref((GObject *) soundcard_thread);
 
     if(ags_sound_provider_get_default_soundcard_thread(AGS_SOUND_PROVIDER(application_context)) == soundcard_thread){
       ags_sound_provider_set_default_soundcard_thread(AGS_SOUND_PROVIDER(application_context),
@@ -610,8 +610,8 @@ ags_apply_sound_config_launch(AgsTask *task)
     ags_thread_remove_child(audio_loop,
 			    export_thread);
 
-    g_object_run_dispose(export_thread);
-    g_object_unref(export_thread);
+    g_object_run_dispose((GObject *) export_thread);
+    g_object_unref((GObject *) export_thread);
   }
 
   while((sequencer_thread = ags_thread_find_type(audio_loop,
@@ -619,8 +619,8 @@ ags_apply_sound_config_launch(AgsTask *task)
     ags_thread_remove_child(audio_loop,
 			    sequencer_thread);
 
-    g_object_run_dispose(sequencer_thread);
-    g_object_unref(sequencer_thread);
+    g_object_run_dispose((GObject *) sequencer_thread);
+    g_object_unref((GObject *) sequencer_thread);
   }
   
   /* unregister soundcard and sequencer */
@@ -692,28 +692,28 @@ ags_apply_sound_config_launch(AgsTask *task)
     AgsNotifySoundcard *notify_soundcard;
 
     if(AGS_IS_DEVOUT(orig_soundcard->data)){
-      notify_soundcard = AGS_DEVOUT(orig_soundcard->data)->notify_soundcard;
+      notify_soundcard = (AgsNotifySoundcard *) AGS_DEVOUT(orig_soundcard->data)->notify_soundcard;
     }else if(AGS_IS_JACK_DEVOUT(orig_soundcard->data)){
-      notify_soundcard = AGS_JACK_DEVOUT(orig_soundcard->data)->notify_soundcard;
+      notify_soundcard = (AgsNotifySoundcard *) AGS_JACK_DEVOUT(orig_soundcard->data)->notify_soundcard;
     }else if(AGS_IS_PULSE_DEVOUT(orig_soundcard->data)){
-      notify_soundcard = AGS_PULSE_DEVOUT(orig_soundcard->data)->notify_soundcard;
+      notify_soundcard = (AgsNotifySoundcard *) AGS_PULSE_DEVOUT(orig_soundcard->data)->notify_soundcard;
     }else if(AGS_IS_CORE_AUDIO_DEVOUT(orig_soundcard->data)){
-      notify_soundcard = AGS_CORE_AUDIO_DEVOUT(orig_soundcard->data)->notify_soundcard;
+      notify_soundcard = (AgsNotifySoundcard *) AGS_CORE_AUDIO_DEVOUT(orig_soundcard->data)->notify_soundcard;
     }else if(AGS_IS_DEVIN(orig_soundcard->data)){
-      notify_soundcard = AGS_DEVIN(orig_soundcard->data)->notify_soundcard;
+      notify_soundcard = (AgsNotifySoundcard *) AGS_DEVIN(orig_soundcard->data)->notify_soundcard;
     }else if(AGS_IS_JACK_DEVIN(orig_soundcard->data)){
-      notify_soundcard = AGS_JACK_DEVIN(orig_soundcard->data)->notify_soundcard;
+      notify_soundcard = (AgsNotifySoundcard *) AGS_JACK_DEVIN(orig_soundcard->data)->notify_soundcard;
     }else if(AGS_IS_PULSE_DEVIN(orig_soundcard->data)){
-      notify_soundcard = AGS_PULSE_DEVIN(orig_soundcard->data)->notify_soundcard;
+      notify_soundcard = (AgsNotifySoundcard *) AGS_PULSE_DEVIN(orig_soundcard->data)->notify_soundcard;
     }else if(AGS_IS_CORE_AUDIO_DEVIN(orig_soundcard->data)){
-      notify_soundcard = AGS_CORE_AUDIO_DEVIN(orig_soundcard->data)->notify_soundcard;
+      notify_soundcard = (AgsNotifySoundcard *) AGS_CORE_AUDIO_DEVIN(orig_soundcard->data)->notify_soundcard;
     }
 
-    ags_task_thread_remove_cyclic_task(application_context->task_thread,
-				       notify_soundcard);
+    ags_task_thread_remove_cyclic_task((AgsTaskThread *) application_context->task_thread,
+				       (AgsTask *) notify_soundcard);
     
-    g_object_run_dispose(orig_soundcard->data);
-    g_object_unref(orig_soundcard->data);
+    g_object_run_dispose((GObject *) orig_soundcard->data);
+    g_object_unref((GObject *) orig_soundcard->data);
     
     orig_soundcard = orig_soundcard->next;
   }
@@ -723,8 +723,8 @@ ags_apply_sound_config_launch(AgsTask *task)
   orig_sequencer = start_orig_sequencer;
   
   while(orig_sequencer != NULL){
-    g_object_run_dispose(orig_sequencer->data);
-    g_object_unref(orig_sequencer->data);
+    g_object_run_dispose((GObject *) orig_sequencer->data);
+    g_object_unref((GObject *) orig_sequencer->data);
     
     orig_sequencer = orig_sequencer->next;
   }
@@ -817,7 +817,7 @@ ags_apply_sound_config_launch(AgsTask *task)
 			 "input-jack-client", input_client,
 			 NULL);
 	    ags_jack_server_add_client(jack_server,
-				       input_client);
+				       (GObject *) input_client);
     
 	    ags_jack_client_open((AgsJackClient *) input_client,
 				 "ags-input-client");	    
@@ -1009,7 +1009,7 @@ ags_apply_sound_config_launch(AgsTask *task)
 		       "input-jack-client", input_client,
 		       NULL);
 	  ags_jack_server_add_client(jack_server,
-				     input_client);
+				     (GObject *) input_client);
     
 	  ags_jack_client_open((AgsJackClient *) input_client,
 			       "ags-input-client");	    
@@ -1096,29 +1096,29 @@ ags_apply_sound_config_launch(AgsTask *task)
     /* notify soundcard and export thread */
     export_thread = NULL;
     
-    notify_soundcard = ags_notify_soundcard_new(soundcard_thread);
+    notify_soundcard = ags_notify_soundcard_new((AgsSoundcardThread *) soundcard_thread);
     AGS_TASK(notify_soundcard)->task_thread = application_context->task_thread;
     
     if(AGS_IS_DEVOUT(list->data)){
-      AGS_DEVOUT(list->data)->notify_soundcard = notify_soundcard;
+      AGS_DEVOUT(list->data)->notify_soundcard = (GObject *) notify_soundcard;
     }else if(AGS_IS_JACK_DEVOUT(list->data)){
-      AGS_JACK_DEVOUT(list->data)->notify_soundcard = notify_soundcard;
+      AGS_JACK_DEVOUT(list->data)->notify_soundcard = (GObject *) notify_soundcard;
     }else if(AGS_IS_PULSE_DEVOUT(list->data)){
-      AGS_PULSE_DEVOUT(list->data)->notify_soundcard = notify_soundcard;
+      AGS_PULSE_DEVOUT(list->data)->notify_soundcard = (GObject *) notify_soundcard;
     }else if(AGS_IS_CORE_AUDIO_DEVOUT(list->data)){
-      AGS_CORE_AUDIO_DEVOUT(list->data)->notify_soundcard = notify_soundcard;
+      AGS_CORE_AUDIO_DEVOUT(list->data)->notify_soundcard = (GObject *) notify_soundcard;
     }else if(AGS_IS_DEVIN(list->data)){
-      AGS_DEVIN(list->data)->notify_soundcard = notify_soundcard;
+      AGS_DEVIN(list->data)->notify_soundcard = (GObject *) notify_soundcard;
     }else if(AGS_IS_JACK_DEVIN(list->data)){
-      AGS_JACK_DEVIN(list->data)->notify_soundcard = notify_soundcard;
+      AGS_JACK_DEVIN(list->data)->notify_soundcard = (GObject *) notify_soundcard;
     }else if(AGS_IS_PULSE_DEVIN(list->data)){
-      AGS_PULSE_DEVIN(list->data)->notify_soundcard = notify_soundcard;
+      AGS_PULSE_DEVIN(list->data)->notify_soundcard = (GObject *) notify_soundcard;
     }else if(AGS_IS_CORE_AUDIO_DEVIN(list->data)){
-      AGS_CORE_AUDIO_DEVIN(list->data)->notify_soundcard = notify_soundcard;
+      AGS_CORE_AUDIO_DEVIN(list->data)->notify_soundcard = (GObject *) notify_soundcard;
     }
 
     ags_task_thread_append_cyclic_task(application_context->task_thread,
-				       notify_soundcard);
+				       (AgsTask *) notify_soundcard);
 
     /* export thread */
     if(AGS_IS_DEVOUT(list->data) ||
@@ -1135,7 +1135,7 @@ ags_apply_sound_config_launch(AgsTask *task)
     /* default soundcard thread */
     if(ags_sound_provider_get_default_soundcard_thread(AGS_SOUND_PROVIDER(application_context)) == NULL){
       ags_sound_provider_set_default_soundcard_thread(AGS_SOUND_PROVIDER(application_context),
-						      soundcard_thread);
+						      (GObject *) soundcard_thread);
     }
 
     list = list->next;

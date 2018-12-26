@@ -149,11 +149,11 @@ ags_stop_soundcard_set_property(GObject *gobject,
   switch(prop_id){
   case PROP_APPLICATION_CONTEXT:
     {
-      GObject *application_context;
+      AgsApplicationContext *application_context;
 
-      application_context = (GObject *) g_value_get_object(value);
+      application_context = (AgsApplicationContext *) g_value_get_object(value);
 
-      if(stop_soundcard->application_context == (GObject *) application_context){
+      if(stop_soundcard->application_context == application_context){
 	return;
       }
 
@@ -165,7 +165,7 @@ ags_stop_soundcard_set_property(GObject *gobject,
 	g_object_ref(application_context);
       }
 
-      stop_soundcard->application_context = (GObject *) application_context;
+      stop_soundcard->application_context = application_context;
     }
     break;
   default:
@@ -228,8 +228,8 @@ ags_stop_soundcard_finalize(GObject *gobject)
     //FIXME:JK: wrong location of code
     audio_loop = AGS_AUDIO_LOOP(application_context->main_loop);
 
-    soundcard_thread = (AgsSoundcardThread *) ags_thread_find_type((AgsThread *) audio_loop,
-								   AGS_TYPE_SOUNDCARD_THREAD);
+    soundcard_thread = ags_thread_find_type((AgsThread *) audio_loop,
+					    AGS_TYPE_SOUNDCARD_THREAD);
 
     if(AGS_SOUNDCARD_THREAD(soundcard_thread)->error != NULL){
       g_error_free(AGS_SOUNDCARD_THREAD(soundcard_thread)->error);

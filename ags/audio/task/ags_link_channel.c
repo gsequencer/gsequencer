@@ -187,7 +187,7 @@ ags_link_channel_set_property(GObject *gobject,
 
       channel = (AgsChannel *) g_value_get_object(value);
 
-      if(link_channel->channel == (GObject *) channel){
+      if(link_channel->channel == channel){
 	return;
       }
 
@@ -199,7 +199,7 @@ ags_link_channel_set_property(GObject *gobject,
 	g_object_ref(channel);
       }
 
-      link_channel->channel = (GObject *) channel;
+      link_channel->channel = channel;
     }
     break;
   case PROP_LINK:
@@ -208,7 +208,7 @@ ags_link_channel_set_property(GObject *gobject,
 
       link = (AgsChannel *) g_value_get_object(value);
 
-      if(link_channel->link == (GObject *) link){
+      if(link_channel->link == link){
 	return;
       }
 
@@ -220,7 +220,7 @@ ags_link_channel_set_property(GObject *gobject,
 	g_object_ref(link);
       }
 
-      link_channel->link = (GObject *) link;
+      link_channel->link = link;
     }
     break;
   case PROP_ERROR:

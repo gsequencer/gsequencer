@@ -265,7 +265,7 @@ ags_reset_peak_get_instance()
     pthread_mutex_unlock(&mutex);
 
     ags_task_thread_append_cyclic_task(task_thread,
-				       ags_reset_peak);
+				       (AgsTask *) ags_reset_peak);
   }else{
     pthread_mutex_unlock(&mutex);
   }

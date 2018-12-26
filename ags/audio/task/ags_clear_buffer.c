@@ -290,10 +290,12 @@ ags_clear_buffer_launch(AgsTask *task)
     return;
   }
 
+  nth_buffer = 0;
+
   if(AGS_IS_DEVOUT(clear_buffer->device)){
     AgsDevout *devout;
 
-    devout = clear_buffer->device;
+    devout = (AgsDevout *) clear_buffer->device;
 
     /* retrieve nth buffer */    
     if(ags_devout_test_flags(devout, AGS_DEVOUT_BUFFER0)){
@@ -314,7 +316,7 @@ ags_clear_buffer_launch(AgsTask *task)
   }else if(AGS_IS_DEVIN(clear_buffer->device)){
     AgsDevin *devin;
 
-    devin = clear_buffer->device;    
+    devin = (AgsDevin *) clear_buffer->device;    
 
     /* retrieve nth buffer */    
     if(ags_devin_test_flags(devin, AGS_DEVIN_BUFFER0)){
@@ -335,7 +337,7 @@ ags_clear_buffer_launch(AgsTask *task)
   }else if(AGS_IS_JACK_DEVOUT(clear_buffer->device)){
     AgsJackDevout *jack_devout;
     
-    jack_devout = clear_buffer->device;
+    jack_devout = (AgsJackDevout *) clear_buffer->device;
     
     /* retrieve nth buffer */    
     if(ags_jack_devout_test_flags(jack_devout, AGS_JACK_DEVOUT_BUFFER0)){
@@ -356,7 +358,7 @@ ags_clear_buffer_launch(AgsTask *task)
   }else if(AGS_IS_JACK_DEVIN(clear_buffer->device)){
     AgsJackDevin *jack_devin;
     
-    jack_devin = clear_buffer->device;
+    jack_devin = (AgsJackDevin *) clear_buffer->device;
     
     /* retrieve nth buffer */    
     if(ags_jack_devin_test_flags(jack_devin, AGS_JACK_DEVIN_BUFFER0)){
@@ -377,7 +379,7 @@ ags_clear_buffer_launch(AgsTask *task)
   }else if(AGS_IS_PULSE_DEVOUT(clear_buffer->device)){
     AgsPulseDevout *pulse_devout;
     
-    pulse_devout = clear_buffer->device;
+    pulse_devout = (AgsPulseDevout *) clear_buffer->device;
     
     /* retrieve nth buffer */    
     if(ags_pulse_devout_test_flags(pulse_devout, AGS_PULSE_DEVOUT_BUFFER0)){
@@ -406,7 +408,7 @@ ags_clear_buffer_launch(AgsTask *task)
   }else if(AGS_IS_PULSE_DEVIN(clear_buffer->device)){
     AgsPulseDevin *pulse_devin;
     
-    pulse_devin = clear_buffer->device;
+    pulse_devin = (AgsPulseDevin *) clear_buffer->device;
     
     /* retrieve nth buffer */    
     if((AGS_PULSE_DEVIN_BUFFER0 & (pulse_devin->flags)) != 0){
@@ -435,7 +437,7 @@ ags_clear_buffer_launch(AgsTask *task)
   }else if(AGS_IS_CORE_AUDIO_DEVOUT(clear_buffer->device)){
     AgsCoreAudioDevout *core_audio_devout;
     
-    core_audio_devout = clear_buffer->device;
+    core_audio_devout = (AgsCoreAudioDevout *) clear_buffer->device;
 
     /* retrieve nth buffer */    
     if(ags_core_audio_devout_test_flags(core_audio_devout, AGS_CORE_AUDIO_DEVOUT_BUFFER0)){
@@ -464,7 +466,7 @@ ags_clear_buffer_launch(AgsTask *task)
   }else if(AGS_IS_CORE_AUDIO_DEVIN(clear_buffer->device)){
     AgsCoreAudioDevin *core_audio_devin;
     
-    core_audio_devin = clear_buffer->device;
+    core_audio_devin = (AgsCoreAudioDevin *) clear_buffer->device;
 
     /* retrieve nth buffer */    
     if(ags_core_audio_devin_test_flags(core_audio_devin, AGS_CORE_AUDIO_DEVIN_BUFFER0)){

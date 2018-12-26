@@ -181,7 +181,7 @@ ags_start_channel_set_property(GObject *gobject,
 
       channel = (AgsChannel *) g_value_get_object(value);
 
-      if(start_channel->channel == (GObject *) channel){
+      if(start_channel->channel == channel){
 	return;
       }
 
@@ -193,7 +193,7 @@ ags_start_channel_set_property(GObject *gobject,
 	g_object_ref(channel);
       }
 
-      start_channel->channel = (GObject *) channel;
+      start_channel->channel = channel;
     }
     break;
   case PROP_SOUND_SCOPE:
@@ -282,8 +282,6 @@ ags_start_channel_launch(AgsTask *task)
   AgsAudioLoop *audio_loop;
 
   AgsApplicationContext *application_context;
-
-  GList *list_start, *list;
   
   gint sound_scope;
   static const guint staging_flags = (AGS_SOUND_STAGING_CHECK_RT_DATA |
@@ -329,7 +327,7 @@ ags_start_channel_launch(AgsTask *task)
     audio_recall_id = ags_recall_id_new();
     ags_recall_id_set_sound_scope(audio_recall_id, sound_scope);
     ags_audio_add_recall_id(audio,
-			    audio_recall_id);
+			    (GObject *) audio_recall_id);
     
     channel_recall_id = ags_recall_id_new();
     ags_recall_id_set_sound_scope(channel_recall_id, sound_scope);
@@ -358,7 +356,7 @@ ags_start_channel_launch(AgsTask *task)
 			       sound_scope);
 
     /* add to start queue */
-    ags_thread_add_start_queue(audio_loop,
+    ags_thread_add_start_queue((AgsThread *) audio_loop,
 			       ags_playback_get_channel_thread(playback,
 							       sound_scope));
     
@@ -367,15 +365,13 @@ ags_start_channel_launch(AgsTask *task)
 				    sound_scope, staging_flags);
 
     /* add to start queue */
-    ags_thread_add_start_queue(audio_loop,
+    ags_thread_add_start_queue((AgsThread *) audio_loop,
 			       ags_playback_domain_get_audio_thread(playback_domain,
 								    sound_scope));
   }else{
     gint i;
 
-    for(i = 0; i < AGS_SOUND_SCOPE_LAST; i++){      
-      list = list_start;
-
+    for(i = 0; i < AGS_SOUND_SCOPE_LAST; i++){
       /* get some fields */
       g_object_get(channel,
 		   "first-recycling", &recycling,
@@ -414,7 +410,7 @@ ags_start_channel_launch(AgsTask *task)
 				 i);
 
       /* add to start queue */
-      ags_thread_add_start_queue(audio_loop,
+      ags_thread_add_start_queue((AgsThread *) audio_loop,
 				 ags_playback_get_channel_thread(playback,
 								 i));
 
@@ -423,7 +419,7 @@ ags_start_channel_launch(AgsTask *task)
 				      i, staging_flags);
 
       /* add to start queue */
-      ags_thread_add_start_queue(audio_loop,
+      ags_thread_add_start_queue((AgsThread *) audio_loop,
 				 ags_playback_domain_get_audio_thread(playback_domain,
 								      i));
     }

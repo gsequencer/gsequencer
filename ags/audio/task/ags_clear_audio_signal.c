@@ -154,7 +154,7 @@ ags_clear_audio_signal_set_property(GObject *gobject,
 
       audio_signal = (AgsAudioSignal *) g_value_get_object(value);
 
-      if(clear_audio_signal->audio_signal == (GObject *) audio_signal){
+      if(clear_audio_signal->audio_signal == audio_signal){
 	return;
       }
 
@@ -166,7 +166,7 @@ ags_clear_audio_signal_set_property(GObject *gobject,
 	g_object_ref(audio_signal);
       }
 
-      clear_audio_signal->audio_signal = (GObject *) audio_signal;
+      clear_audio_signal->audio_signal = audio_signal;
     }
     break;
   default:

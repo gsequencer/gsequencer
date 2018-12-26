@@ -276,7 +276,7 @@ ags_open_sf2_sample_set_property(GObject *gobject,
 
       channel = (AgsChannel *) g_value_get_object(value);
 
-      if(open_sf2_sample->channel == (GObject *) channel){
+      if(open_sf2_sample->channel == channel){
 	return;
       }
 
@@ -288,7 +288,7 @@ ags_open_sf2_sample_set_property(GObject *gobject,
 	g_object_ref(channel);
       }
 
-      open_sf2_sample->channel = (GObject *) channel;
+      open_sf2_sample->channel = channel;
     }
     break;
   case PROP_IPATCH_SAMPLE:
@@ -297,7 +297,7 @@ ags_open_sf2_sample_set_property(GObject *gobject,
 
       ipatch_sample = (AgsIpatchSample *) g_value_get_object(value);
 
-      if(open_sf2_sample->ipatch_sample == (GObject *) ipatch_sample){
+      if(open_sf2_sample->ipatch_sample == ipatch_sample){
 	return;
       }
 
@@ -309,7 +309,7 @@ ags_open_sf2_sample_set_property(GObject *gobject,
 	g_object_ref(ipatch_sample);
       }
 
-      open_sf2_sample->ipatch_sample = (GObject *) ipatch_sample;
+      open_sf2_sample->ipatch_sample = ipatch_sample;
     }
     break;
   case PROP_FILENAME:

@@ -179,7 +179,7 @@ ags_cancel_audio_set_property(GObject *gobject,
 
       audio = (AgsAudio *) g_value_get_object(value);
 
-      if(cancel_audio->audio == (GObject *) audio){
+      if(cancel_audio->audio == audio){
 	return;
       }
 
@@ -191,7 +191,7 @@ ags_cancel_audio_set_property(GObject *gobject,
 	g_object_ref(audio);
       }
 
-      cancel_audio->audio = (GObject *) audio;
+      cancel_audio->audio = audio;
     }
     break;
   case PROP_SOUND_SCOPE:
@@ -316,11 +316,11 @@ ags_cancel_audio_launch(AgsTask *task)
 				  sound_scope, staging_flags);
 
     /* stop audio thread */
-    audio_thread = ags_playback_domain_get_audio_thread(playback_domain,
-							sound_scope);
+    audio_thread = (AgsAudioThread *) ags_playback_domain_get_audio_thread(playback_domain,
+									   sound_scope);
 
     if(audio_thread != NULL){
-      ags_thread_stop(audio_thread);
+      ags_thread_stop((AgsThread *) audio_thread);
     }
     
     /* stop channel thread and unset recall id */
@@ -333,11 +333,11 @@ ags_cancel_audio_launch(AgsTask *task)
 		   "channel", &channel,
 		   NULL);
 
-      channel_thread = ags_playback_get_channel_thread(list->data,
-						       sound_scope);
+      channel_thread = (AgsChannelThread *) ags_playback_get_channel_thread(list->data,
+									    sound_scope);
 
       if(channel_thread != NULL){
-	ags_thread_stop(channel_thread);
+	ags_thread_stop((AgsThread *) channel_thread);
       }
       
       /* iterate */
@@ -373,11 +373,11 @@ ags_cancel_audio_launch(AgsTask *task)
 				    i, staging_flags);
 
       /* stop audio thread */
-      audio_thread = ags_playback_domain_get_audio_thread(playback_domain,
-							  i);
+      audio_thread = (AgsAudioThread *) ags_playback_domain_get_audio_thread(playback_domain,
+									     i);
 
       if(audio_thread != NULL){
-	ags_thread_stop(audio_thread);
+	ags_thread_stop((AgsThread *) audio_thread);
       }
       
       /* stop channel thread and unset recall id */
@@ -390,11 +390,11 @@ ags_cancel_audio_launch(AgsTask *task)
 		     "channel", &channel,
 		     NULL);
 
-	channel_thread = ags_playback_get_channel_thread(list->data,
-							 i);
+	channel_thread = (AgsChannelThread *) ags_playback_get_channel_thread(list->data,
+									      i);
 
 	if(channel_thread != NULL){
-	  ags_thread_stop(channel_thread);
+	  ags_thread_stop((AgsThread *) channel_thread);
 	}
 	
 	/* iterate */

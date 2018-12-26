@@ -289,7 +289,7 @@ ags_move_note_set_property(GObject *gobject,
 
       notation = (AgsNotation *) g_value_get_object(value);
 
-      if(move_note->notation == (GObject *) notation){
+      if(move_note->notation == notation){
 	return;
       }
 
@@ -301,7 +301,7 @@ ags_move_note_set_property(GObject *gobject,
 	g_object_ref(notation);
       }
 
-      move_note->notation = (GObject *) notation;
+      move_note->notation = notation;
     }
     break;
   case PROP_SELECTION:
@@ -518,7 +518,7 @@ ags_move_note_launch(AgsTask *task)
     if(note->x[0] >= ags_timestamp_get_ags_offset(current_notation->timestamp) + AGS_NOTATION_DEFAULT_OFFSET){
       AgsTimestamp *timestamp;
 
-      GList *list_start;
+      GList *list_start, *list;
 
       g_object_get(audio,
 		   "notation", &list_start,
@@ -530,14 +530,16 @@ ags_move_note_launch(AgsTask *task)
       
       timestamp->timer.ags_offset.offset = (guint64) (AGS_NOTATION_DEFAULT_OFFSET * floor(note->x[0] / AGS_NOTATION_DEFAULT_OFFSET));
 
-      if((current_notation = ags_notation_find_near_timestamp(list_start, audio_channel,
-							      timestamp)) == NULL){
-	current_notation = ags_notation_new(audio,
+      if((list = ags_notation_find_near_timestamp(list_start, audio_channel,
+						  timestamp)) == NULL){
+	current_notation = ags_notation_new((GObject *) audio,
 					    audio_channel);
 	
 	current_notation->timestamp->timer.ags_offset.offset = ags_timestamp_get_ags_offset(timestamp);
 	ags_audio_add_notation(audio,
-			       current_notation);
+			       (GObject *) current_notation);
+      }else{
+	current_notation = list->data;
       }
 
       g_list_free(list_start);
