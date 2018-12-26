@@ -222,7 +222,7 @@ ags_input_set_property(GObject *gobject,
 	return;
       }
       
-      ags_input_add_synth_generator(input, synth_generator);
+      ags_input_add_synth_generator(input, (GObject *) synth_generator);
     }
     break;
   default:
@@ -362,7 +362,7 @@ ags_input_is_active(AgsInput *input,
     return(FALSE);
   }
   
-  channel = input;
+  channel = (AgsChannel *) input;
 
   /* get channel mutex */
   pthread_mutex_lock(ags_channel_get_class_mutex());
@@ -384,7 +384,7 @@ ags_input_is_active(AgsInput *input,
   }
 
   /* get active recycling context */
-  active_context = recycling_context;
+  active_context = (AgsRecyclingContext *) recycling_context;
   
   /* get recycling mutex */
   pthread_mutex_lock(ags_recycling_get_class_mutex());
@@ -437,7 +437,7 @@ ags_input_is_active(AgsInput *input,
       /* get recall id */
       pthread_mutex_lock(audio_signal_mutex);
       
-      current_recall_id = audio_signal->recall_id;
+      current_recall_id = (AgsRecallID *) audio_signal->recall_id;
 
       pthread_mutex_unlock(audio_signal_mutex);
       
@@ -515,7 +515,7 @@ ags_input_next_active(AgsInput *input,
     return(NULL);
   }
 
-  channel = input;
+  channel = (AgsChannel *) input;
 
   /* check if active */
   while(channel != NULL){
@@ -546,7 +546,7 @@ ags_input_next_active(AgsInput *input,
     }
 
     /* get active recycling context */
-    active_context = recycling_context;
+    active_context = (AgsRecyclingContext *) recycling_context;
   
     /* get recycling mutex */
     pthread_mutex_lock(ags_recycling_get_class_mutex());
@@ -600,7 +600,7 @@ ags_input_next_active(AgsInput *input,
 	/* get recall id */
 	pthread_mutex_lock(audio_signal_mutex);
       
-	current_recall_id = audio_signal->recall_id;
+	current_recall_id = (AgsRecallID *) audio_signal->recall_id;
 
 	pthread_mutex_unlock(audio_signal_mutex);
       
@@ -627,7 +627,7 @@ ags_input_next_active(AgsInput *input,
 	if(current_recycling_context == active_context) {
 	  g_list_free(list_start);
 	
-	  return(channel);
+	  return((AgsInput *) channel);
 	}
 
 	list = list->next;

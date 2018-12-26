@@ -940,6 +940,8 @@ ags_audio_buffer_util_envelope(void *buffer, guint channels,
 {
   gdouble retval;
 
+  retval = 0.0;
+  
   switch(format){
   case AGS_AUDIO_BUFFER_UTIL_S8:
     {
@@ -2005,6 +2007,8 @@ ags_audio_buffer_util_peak(void *buffer, guint channels,
 			   gdouble pressure_factor)
 {
   gdouble current_value;
+
+  current_value = 0.0;
   
   switch(format){
   case AGS_AUDIO_BUFFER_UTIL_S8:
@@ -2080,8 +2084,8 @@ ags_audio_buffer_util_peak(void *buffer, guint channels,
 /**
  * ags_audio_buffer_util_resample_s8:
  * @buffer: the audio buffer
- * @samplerate: the current samplerate
  * @channels: number of audio channels
+ * @samplerate: the current samplerate
  * @buffer_length: the buffer's length
  * @target_samplerate: the samplerate to use
  * 
@@ -2130,8 +2134,8 @@ ags_audio_buffer_util_resample_s8(gint8 *buffer, guint channels,
 /**
  * ags_audio_buffer_util_resample_s16:
  * @buffer: the audio buffer
- * @samplerate: the current samplerate
  * @channels: number of audio channels
+ * @samplerate: the current samplerate
  * @buffer_length: the buffer's length
  * @target_samplerate: the samplerate to use
  * 
@@ -2180,8 +2184,8 @@ ags_audio_buffer_util_resample_s16(gint16 *buffer, guint channels,
 /**
  * ags_audio_buffer_util_resample_s24:
  * @buffer: the audio buffer
- * @samplerate: the current samplerate
  * @channels: number of audio channels
+ * @samplerate: the current samplerate
  * @buffer_length: the buffer's length
  * @target_samplerate: the samplerate to use
  * 
@@ -2230,8 +2234,8 @@ ags_audio_buffer_util_resample_s24(gint32 *buffer, guint channels,
 /**
  * ags_audio_buffer_util_resample_s32:
  * @buffer: the audio buffer
- * @samplerate: the current samplerate
  * @channels: number of audio channels
+ * @samplerate: the current samplerate
  * @buffer_length: the buffer's length
  * @target_samplerate: the samplerate to use
  * 
@@ -2280,8 +2284,8 @@ ags_audio_buffer_util_resample_s32(gint32 *buffer, guint channels,
 /**
  * ags_audio_buffer_util_resample_s64:
  * @buffer: the audio buffer
- * @samplerate: the current samplerate
  * @channels: number of audio channels
+ * @samplerate: the current samplerate
  * @buffer_length: the buffer's length
  * @target_samplerate: the samplerate to use
  * 
@@ -2330,8 +2334,8 @@ ags_audio_buffer_util_resample_s64(gint64 *buffer, guint channels,
 /**
  * ags_audio_buffer_util_resample_float:
  * @buffer: the audio buffer
- * @samplerate: the current samplerate
  * @channels: number of audio channels
+ * @samplerate: the current samplerate
  * @buffer_length: the buffer's length
  * @target_samplerate: the samplerate to use
  * 
@@ -2367,8 +2371,8 @@ ags_audio_buffer_util_resample_float(gfloat *buffer, guint channels,
 /**
  * ags_audio_buffer_util_resample_double:
  * @buffer: the audio buffer
- * @samplerate: the current samplerate
  * @channels: number of audio channels
+ * @samplerate: the current samplerate
  * @buffer_length: the buffer's length
  * @target_samplerate: the samplerate to use
  * 
@@ -2417,6 +2421,21 @@ ags_audio_buffer_util_resample_double(gdouble *buffer, guint channels,
   return(ret_buffer);
 }
 
+/**
+ * ags_audio_buffer_util_resample:
+ * @buffer: the audio buffer
+ * @channels: number of audio channels
+ * @format: the format
+ * @samplerate: the current samplerate
+ * @buffer_length: the buffer's length
+ * @target_samplerate: the samplerate to use
+ * 
+ * Resamples @buffer from @samplerate to @target_samplerate.
+ * 
+ * Returns: the resampled audio buffer
+ * 
+ * Since: 2.0.0
+ */
 void*
 ags_audio_buffer_util_resample(void *buffer, guint channels,
 			       guint format,  guint samplerate,
@@ -2425,6 +2444,8 @@ ags_audio_buffer_util_resample(void *buffer, guint channels,
 {
   void *retval;
 
+  retval = NULL;
+  
   switch(format){
   case AGS_AUDIO_BUFFER_UTIL_S8:
     {

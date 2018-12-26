@@ -302,7 +302,7 @@ ags_notation_set_property(GObject *gobject,
 
       pthread_mutex_lock(notation_mutex);
 
-      if(timestamp == (AgsTimestamp *) notation->timestamp){
+      if(timestamp == notation->timestamp){
 	pthread_mutex_unlock(notation_mutex);
 	
 	return;
@@ -316,7 +316,7 @@ ags_notation_set_property(GObject *gobject,
 	g_object_ref(G_OBJECT(timestamp));
       }
 
-      notation->timestamp = (GObject *) timestamp;
+      notation->timestamp = timestamp;
 
       pthread_mutex_unlock(notation_mutex);
     }
@@ -1621,7 +1621,7 @@ ags_notation_copy_selection(AgsNotation *notation)
     
     xmlNewProp(timestamp_node,
 	       BAD_CAST "offset",
-	       BAD_CAST (g_strdup_printf("%u", ags_timestamp_get_ags_offset(timestamp))));
+	       BAD_CAST (g_strdup_printf("%lu", ags_timestamp_get_ags_offset(timestamp))));
   }
   
   /* selection */

@@ -1124,7 +1124,7 @@ ags_midiin_set_application_context(AgsSequencer *sequencer,
   /* set application context */
   pthread_mutex_lock(midiin_mutex);
   
-  midiin->application_context = (GObject *) application_context;
+  midiin->application_context = application_context;
   
   pthread_mutex_unlock(midiin_mutex);
 }
@@ -1150,7 +1150,7 @@ ags_midiin_get_application_context(AgsSequencer *sequencer)
   /* get application context */
   pthread_mutex_lock(midiin_mutex);
 
-  application_context = (AgsApplicationContext *) midiin->application_context;
+  application_context = midiin->application_context;
 
   pthread_mutex_unlock(midiin_mutex);
   

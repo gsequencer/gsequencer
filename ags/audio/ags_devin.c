@@ -1100,7 +1100,7 @@ ags_devin_dispose(GObject *gobject)
 		   NULL);
       
       ags_task_thread_remove_cyclic_task(task_thread,
-					 devin->notify_soundcard);
+					 (AgsTask *) devin->notify_soundcard);
     }
 
     g_object_unref(devin->notify_soundcard);
@@ -1151,7 +1151,7 @@ ags_devin_finalize(GObject *gobject)
   if(devin->notify_soundcard != NULL){
     if(devin->application_context != NULL){
       ags_task_thread_remove_cyclic_task(AGS_APPLICATION_CONTEXT(devin->application_context)->task_thread,
-					 devin->notify_soundcard);
+					 (AgsTask *) devin->notify_soundcard);
     }
 
     g_object_unref(devin->notify_soundcard);
@@ -1167,7 +1167,7 @@ ags_devin_finalize(GObject *gobject)
 		   NULL);
       
       ags_task_thread_remove_cyclic_task(task_thread,
-					 devin->notify_soundcard);
+					 (AgsTask *) devin->notify_soundcard);
     }
 
     g_object_unref(devin->notify_soundcard);
@@ -1504,7 +1504,7 @@ ags_devin_set_application_context(AgsSoundcard *soundcard,
   /* set application context */
   pthread_mutex_lock(devin_mutex);
   
-  devin->application_context = (GObject *) application_context;
+  devin->application_context = application_context;
   
   pthread_mutex_unlock(devin_mutex);
 }
@@ -1530,7 +1530,7 @@ ags_devin_get_application_context(AgsSoundcard *soundcard)
   /* get application context */
   pthread_mutex_lock(devin_mutex);
 
-  application_context = (AgsApplicationContext *) devin->application_context;
+  application_context = devin->application_context;
 
   pthread_mutex_unlock(devin_mutex);
   

@@ -1018,7 +1018,7 @@ ags_fifoout_dispose(GObject *gobject)
 		   NULL);
       
       ags_task_thread_remove_cyclic_task(task_thread,
-					 fifoout->notify_soundcard);
+					 (AgsTask *) fifoout->notify_soundcard);
     }
 
     g_object_unref(fifoout->notify_soundcard);
@@ -1073,7 +1073,7 @@ ags_fifoout_finalize(GObject *gobject)
 		   NULL);
       
       ags_task_thread_remove_cyclic_task(task_thread,
-					 fifoout->notify_soundcard);
+					 (AgsTask *) fifoout->notify_soundcard);
     }
 
     g_object_unref(fifoout->notify_soundcard);

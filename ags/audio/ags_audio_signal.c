@@ -1777,11 +1777,11 @@ ags_audio_signal_add_to_registry(AgsConnectable *connectable)
 
   application_context = ags_application_context_get_instance();
 
-  registry = ags_service_provider_get_registry(AGS_SERVICE_PROVIDER(application_context));
+  registry = (AgsRegistry *) ags_service_provider_get_registry(AGS_SERVICE_PROVIDER(application_context));
 
   if(registry != NULL){
     entry = ags_registry_entry_alloc(registry);
-    g_value_set_object(&(entry->entry),
+    g_value_set_object(entry->entry,
 		       (gpointer) audio_signal);
     ags_registry_add_entry(registry,
 			   entry);
@@ -2291,6 +2291,8 @@ ags_audio_signal_set_buffer_size(AgsAudioSignal *audio_signal, guint buffer_size
 
   stream = audio_signal->stream;
 
+  word_size = 1;
+  
   while(stream != NULL){
     switch(format){
     case AGS_SOUNDCARD_SIGNED_8_BIT:
@@ -2943,10 +2945,10 @@ ags_audio_signal_feed(AgsAudioSignal *audio_signal,
 
   pthread_mutex_lock(audio_signal_mutex);
 
-  audio_signal->last_frame = ((guint) (delay * buffer_size) + frame_count + attack) % buffer_size;
-
   delay = audio_signal->delay;
   attack = audio_signal->attack;
+  
+  audio_signal->last_frame = ((guint) (delay * buffer_size) + frame_count + attack) % buffer_size;
 
   pthread_mutex_unlock(audio_signal_mutex);
 
@@ -3231,12 +3233,12 @@ ags_audio_signal_find_by_recall_id(GList *audio_signal,
     /* get some fields */
     pthread_mutex_lock(audio_signal_mutex);
 
-    current_recall_id = current_audio_signal->recall_id;
+    current_recall_id = (AgsRecallID *) current_audio_signal->recall_id;
   
     pthread_mutex_unlock(audio_signal_mutex);
 
     /* check recall id */
-    if(current_recall_id == recall_id){
+    if(current_recall_id == (AgsRecallID *) recall_id){
       return(audio_signal);
     }
 
@@ -3338,7 +3340,7 @@ ags_audio_signal_is_active(GList *audio_signal,
     /* get some fields */
     pthread_mutex_lock(audio_signal_mutex);
 
-    current_recall_id = current_audio_signal->recall_id;
+    current_recall_id = (AgsRecallID *) current_audio_signal->recall_id;
 
     pthread_mutex_unlock(audio_signal_mutex);
 

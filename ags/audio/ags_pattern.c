@@ -389,7 +389,7 @@ ags_pattern_set_property(GObject *gobject,
 
       pthread_mutex_lock(pattern_mutex);
 
-      if(timestamp == (AgsTimestamp *) pattern->timestamp){
+      if(timestamp == pattern->timestamp){
 	pthread_mutex_unlock(pattern_mutex);
 
 	return;
@@ -403,7 +403,7 @@ ags_pattern_set_property(GObject *gobject,
 	g_object_ref(G_OBJECT(timestamp));
       }
 
-      pattern->timestamp = (GObject *) timestamp;
+      pattern->timestamp = timestamp;
 
       pthread_mutex_unlock(pattern_mutex);
     }
@@ -664,7 +664,7 @@ ags_pattern_add_to_registry(AgsConnectable *connectable)
 
   if(registry != NULL){
     entry = ags_registry_entry_alloc(registry);
-    g_value_set_object(&(entry->entry),
+    g_value_set_object(entry->entry,
 		       (gpointer) pattern);
     ags_registry_add_entry(registry,
 			   entry);
@@ -992,6 +992,8 @@ ags_pattern_set_dim(AgsPattern *pattern, guint dim0, guint dim1, guint length)
       }
 
       free(pattern->pattern[i]);
+
+      pattern->pattern[i] = NULL;
     }
 
     if(dim0 == 0){

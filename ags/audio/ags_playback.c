@@ -263,7 +263,7 @@ ags_playback_init(AgsPlayback *playback)
   playback->channel = NULL;
   playback->audio_channel = 0;
 
-  playback->play_note = ags_note_new();
+  playback->play_note = (GObject *) ags_note_new();
   g_object_ref(playback->play_note);
   
   /* playback domain */
@@ -495,8 +495,8 @@ ags_playback_dispose(GObject *gobject)
   if(playback->channel_thread != NULL){
     for(i = 0; i < AGS_SOUND_SCOPE_LAST; i++){
       if(playback->channel_thread[i] != NULL){
-	g_object_run_dispose(playback->channel_thread[i]);
-	g_object_unref(playback->channel_thread[i]);
+	g_object_run_dispose((GObject *) playback->channel_thread[i]);
+	g_object_unref((GObject *) playback->channel_thread[i]);
 
 	playback->channel_thread[i] = NULL;
       }
@@ -547,8 +547,8 @@ ags_playback_finalize(GObject *gobject)
   if(playback->channel_thread != NULL){
     for(i = 0; i < AGS_SOUND_SCOPE_LAST; i++){
       if(playback->channel_thread[i] != NULL){
-	g_object_run_dispose(playback->channel_thread[i]);
-	g_object_unref(playback->channel_thread[i]);
+	g_object_run_dispose((GObject *) playback->channel_thread[i]);
+	g_object_unref((GObject *) playback->channel_thread[i]);
       }
     }
     
@@ -727,8 +727,8 @@ ags_playback_set_channel_thread(AgsPlayback *playback,
       ags_thread_stop(playback->channel_thread[sound_scope]);
     }
     
-    g_object_run_dispose(playback->channel_thread[sound_scope]);
-    g_object_unref(playback->channel_thread[sound_scope]);
+    g_object_run_dispose((GObject *) playback->channel_thread[sound_scope]);
+    g_object_unref((GObject *) playback->channel_thread[sound_scope]);
   }
 
   /* set new */

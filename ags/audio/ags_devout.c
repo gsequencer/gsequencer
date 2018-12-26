@@ -1103,7 +1103,7 @@ ags_devout_dispose(GObject *gobject)
 		   NULL);
       
       ags_task_thread_remove_cyclic_task(task_thread,
-					 devout->notify_soundcard);
+					 (AgsTask *) devout->notify_soundcard);
     }
 
     g_object_unref(devout->notify_soundcard);
@@ -1160,7 +1160,7 @@ ags_devout_finalize(GObject *gobject)
 		   NULL);
       
       ags_task_thread_remove_cyclic_task(task_thread,
-					 devout->notify_soundcard);
+					 (AgsTask *) devout->notify_soundcard);
     }
 
     g_object_unref(devout->notify_soundcard);
@@ -1497,7 +1497,7 @@ ags_devout_set_application_context(AgsSoundcard *soundcard,
   /* set application context */
   pthread_mutex_lock(devout_mutex);
   
-  devout->application_context = (GObject *) application_context;
+  devout->application_context = application_context;
   
   pthread_mutex_unlock(devout_mutex);
 }
@@ -1523,7 +1523,7 @@ ags_devout_get_application_context(AgsSoundcard *soundcard)
   /* get application context */
   pthread_mutex_lock(devout_mutex);
 
-  application_context = (AgsApplicationContext *) devout->application_context;
+  application_context = devout->application_context;
 
   pthread_mutex_unlock(devout_mutex);
   

@@ -554,7 +554,7 @@ ags_automation_set_property(GObject *gobject,
 
       pthread_mutex_lock(automation_mutex);
 
-      if(automation->timestamp == (GObject *) timestamp){
+      if(automation->timestamp == timestamp){
 	pthread_mutex_unlock(automation_mutex);
 	
 	return;
@@ -568,7 +568,7 @@ ags_automation_set_property(GObject *gobject,
 	g_object_ref(G_OBJECT(timestamp));
       }
 
-      automation->timestamp = (GObject *) timestamp;
+      automation->timestamp = timestamp;
 
       pthread_mutex_unlock(automation_mutex);
     }
@@ -803,7 +803,7 @@ ags_automation_dispose(GObject *gobject)
 
   /* source function */
   if(automation->source_function != NULL){
-    g_object_run_dispose(automation->source_function);
+    g_object_run_dispose((GObject *) automation->source_function);
     
     g_object_unref(automation->source_function);
 
@@ -2152,7 +2152,7 @@ ags_automation_copy_selection(AgsAutomation *automation)
 
     xmlNewProp(timestamp_node,
 	       BAD_CAST "offset",
-	       BAD_CAST (g_strdup_printf("%u", ags_timestamp_get_ags_offset(timestamp))));
+	       BAD_CAST (g_strdup_printf("%lu", ags_timestamp_get_ags_offset(timestamp))));
   }
 
   /* selection */

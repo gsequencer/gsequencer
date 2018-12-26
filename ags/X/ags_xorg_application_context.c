@@ -1500,7 +1500,10 @@ ags_xorg_application_context_prepare(AgsApplicationContext *application_context)
   /* AgsAudioLoop */
   application_context->main_loop = (GObject *) ags_audio_loop_new((GObject *) NULL,
 								  (GObject *) xorg_application_context);
+  g_object_ref(application_context->main_loop);
+  
   audio_loop = (AgsThread *) application_context->main_loop;
+  
   g_object_set(xorg_application_context,
 	       "main-loop", audio_loop,
 	       NULL);
@@ -1511,13 +1514,17 @@ ags_xorg_application_context_prepare(AgsApplicationContext *application_context)
   /* AgsPollingThread */
   polling_thread = 
     xorg_application_context->polling_thread = (AgsThread *) ags_polling_thread_new();
+  g_object_ref(xorg_application_context->polling_thread);
   ags_thread_add_child_extended(AGS_THREAD(audio_loop),
 				(AgsThread *) polling_thread,
 				TRUE, TRUE);
   
   /* AgsTaskThread */
   application_context->task_thread = (GObject *) ags_task_thread_new();
+  g_object_ref(application_context->task_thread);
+  
   task_thread = application_context->task_thread;
+  
   thread_pool = AGS_TASK_THREAD(task_thread)->thread_pool;
   ags_main_loop_set_async_queue(AGS_MAIN_LOOP(audio_loop),
 				(GObject *) task_thread);
@@ -1531,6 +1538,7 @@ ags_xorg_application_context_prepare(AgsApplicationContext *application_context)
   gui_thread = 
     xorg_application_context->gui_thread = (AgsThread *) ags_gui_thread_new();
   g_object_ref(gui_thread);
+
   ags_thread_add_child_extended(AGS_THREAD(audio_loop),
   				(AgsThread *) gui_thread,
   				TRUE, TRUE);
@@ -2280,7 +2288,9 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
     export_thread = NULL;
     
     //    if(soundcard_capability == AGS_SOUNDCARD_CAPABILITY_PLAYBACK){
-    notify_soundcard = ags_notify_soundcard_new((AgsSoundcardThread *) soundcard_thread);
+      notify_soundcard = ags_notify_soundcard_new((AgsSoundcardThread *) soundcard_thread);
+      g_object_ref(notify_soundcard);
+      
       AGS_TASK(notify_soundcard)->task_thread = application_context->task_thread;
     
       if(AGS_IS_DEVOUT(list->data)){

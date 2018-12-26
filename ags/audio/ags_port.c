@@ -605,7 +605,7 @@ ags_port_set_property(GObject *gobject,
 
       pthread_mutex_lock(port_mutex);
 
-      if(plugin_port == port->plugin_port){
+      if(plugin_port == (AgsPluginPort *) port->plugin_port){
 	pthread_mutex_unlock(port_mutex);
 	
 	return;
@@ -619,7 +619,7 @@ ags_port_set_property(GObject *gobject,
 	g_object_ref(plugin_port);
       }
 
-      port->plugin_port = plugin_port;
+      port->plugin_port = (GObject *) plugin_port;
 
       pthread_mutex_unlock(port_mutex);
     }
@@ -948,7 +948,7 @@ ags_port_add_to_registry(AgsConnectable *connectable)
 
   if(registry != NULL){
     entry = ags_registry_entry_alloc(registry);
-    g_value_set_object(&(entry->entry),
+    g_value_set_object(entry->entry,
 		       (gpointer) port);
     ags_registry_add_entry(registry,
 			   entry);
@@ -1751,7 +1751,7 @@ ags_port_add_automation(AgsPort *port, GObject *automation)
 		 automation) == NULL){
     g_object_ref(automation);
     port->automation = ags_automation_add(port->automation,
-					   automation);
+					  (AgsAutomation *) automation);
 
     g_object_set(automation,
 		 "port", port,

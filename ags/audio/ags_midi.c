@@ -300,7 +300,7 @@ ags_midi_set_property(GObject *gobject,
 	g_object_ref(G_OBJECT(timestamp));
       }
 
-      midi->timestamp = (GObject *) timestamp;
+      midi->timestamp = timestamp;
 
       pthread_mutex_unlock(midi_mutex);
     }
