@@ -235,7 +235,7 @@ ags_recall_channel_set_property(GObject *gobject,
 
       pthread_mutex_lock(recall_mutex);
 
-      if(recall_channel->recall_audio == (AgsRecall *) recall_audio){
+      if(recall_channel->recall_audio == recall_audio){
 	pthread_mutex_unlock(recall_mutex);
 	
 	return;
@@ -249,7 +249,7 @@ ags_recall_channel_set_property(GObject *gobject,
 	g_object_ref(G_OBJECT(recall_audio));
       }
 
-      recall_channel->recall_audio = (AgsRecall *) recall_audio;
+      recall_channel->recall_audio = recall_audio;
 
       pthread_mutex_unlock(recall_mutex);
     }
@@ -418,7 +418,6 @@ ags_recall_channel_notify_recall_container_callback(GObject *gobject,
 						    GParamSpec *pspec,
 						    gpointer user_data)
 {
-  AgsChannel *source;
   AgsRecallContainer *recall_container;
   AgsRecallChannel *recall_channel;
   
@@ -435,10 +434,8 @@ ags_recall_channel_notify_recall_container_callback(GObject *gobject,
 
   /* get some fields */
   pthread_mutex_lock(recall_mutex);
-  
-  source = recall_channel->source;
 
-  recall_container = AGS_RECALL(recall_channel)->recall_container;
+  recall_container = (AgsRecallContainer *) AGS_RECALL(recall_channel)->recall_container;
 
   pthread_mutex_unlock(recall_mutex);
 
@@ -603,9 +600,7 @@ ags_recall_channel_duplicate(AgsRecall *recall,
 			     AgsRecallID *recall_id,
 			     guint *n_params, gchar **parameter_name, GValue *value)
 {
-  AgsRecallChannel *recall_channel, *copy_recall_channel;
-
-  recall_channel = AGS_RECALL_CHANNEL(recall);
+  AgsRecallChannel *copy_recall_channel;
 
   copy_recall_channel = AGS_RECALL_CHANNEL(AGS_RECALL_CLASS(ags_recall_channel_parent_class)->duplicate(recall,
 													recall_id,

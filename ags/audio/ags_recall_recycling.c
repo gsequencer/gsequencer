@@ -342,7 +342,7 @@ ags_recall_recycling_set_property(GObject *gobject,
 	if((AGS_RECALL_TEMPLATE & (AGS_RECALL(recall_recycling)->flags)) == 0 &&
 	   ags_connectable_is_connected(AGS_CONNECTABLE(recall_recycling))){
 	  ags_connectable_disconnect_connection(AGS_CONNECTABLE(recall_recycling),
-						recall_recycling->source);
+						(GObject *) recall_recycling->source);
 	}
 
 	g_object_unref(recall_recycling->source);
@@ -358,7 +358,7 @@ ags_recall_recycling_set_property(GObject *gobject,
 	if((AGS_RECALL_TEMPLATE & (AGS_RECALL(recall_recycling)->flags)) == 0 &&
 	   ags_connectable_is_connected(AGS_CONNECTABLE(recall_recycling))){
 	  ags_connectable_connect_connection(AGS_CONNECTABLE(recall_recycling),
-					     source);
+					     (GObject *) source);
 	}
       }
 
@@ -578,7 +578,7 @@ ags_recall_recycling_connect(AgsConnectable *connectable)
   ags_recall_recycling_parent_connectable_interface->connect(connectable);
 
   ags_connectable_connect_connection(connectable,
-				     source);
+				     (GObject *) source);
 }
 
 void
@@ -599,7 +599,7 @@ ags_recall_recycling_disconnect(AgsConnectable *connectable)
   ags_recall_recycling_parent_connectable_interface->disconnect(connectable);
 
   ags_connectable_disconnect_connection(connectable,
-					source);
+					(GObject *) source);
 }
 
 void
@@ -610,9 +610,9 @@ ags_recall_recycling_connect_connection(AgsConnectable *connectable,
 
   recall_recycling = AGS_RECALL_RECYCLING(connectable);
 
-  if(recall_recycling->destination == connection){
+  if((GObject *) recall_recycling->destination == connection){
     //empty
-  }else if(recall_recycling->source == connection){
+  }else if((GObject *) recall_recycling->source == connection){
     g_signal_connect_after(connection, "add-audio-signal",
 			   G_CALLBACK(ags_recall_recycling_source_add_audio_signal_callback), recall_recycling);
 
@@ -630,9 +630,9 @@ ags_recall_recycling_disconnect_connection(AgsConnectable *connectable,
 
   recall_recycling = AGS_RECALL_RECYCLING(connectable);
 
-  if(recall_recycling->destination == connection){
+  if((GObject *) recall_recycling->destination == connection){
     //empty
-  }else if(recall_recycling->source == connection){    
+  }else if((GObject *) recall_recycling->source == connection){    
     g_object_disconnect(connection,
 			"any_signal::add-audio-signal",
 			G_CALLBACK(ags_recall_recycling_source_add_audio_signal_callback),
@@ -829,7 +829,7 @@ ags_recall_recycling_source_add_audio_signal_callback(AgsRecycling *source,
     g_message("recall recycling %s", G_OBJECT_TYPE_NAME(recall_audio_signal));
 #endif
     
-    ags_recall_add_child(recall_recycling, recall_audio_signal);
+    ags_recall_add_child((AgsRecall *) recall_recycling, (AgsRecall *) recall_audio_signal);
   }
 }
 
@@ -934,7 +934,7 @@ ags_recall_recycling_source_remove_audio_signal_callback(AgsRecycling *source,
 		 NULL);
     
     if(current_audio_signal == audio_signal){
-      ags_recall_done(recall_audio_signal);
+      ags_recall_done((AgsRecall *) recall_audio_signal);
     }
 
     list = list->next;

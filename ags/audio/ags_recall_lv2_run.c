@@ -261,13 +261,13 @@ ags_recall_lv2_run_set_property(GObject *gobject,
   switch(prop_id){
   case PROP_ROUTE_LV2_AUDIO_RUN:
     {
-      AgsDelayAudioRun *route_lv2_audio_run;
+      AgsRouteLv2AudioRun *route_lv2_audio_run;
 
       route_lv2_audio_run = g_value_get_object(value);
 
       pthread_mutex_lock(recall_mutex);
 
-      if(route_lv2_audio_run == recall_lv2_run->route_lv2_audio_run){
+      if((GObject *) route_lv2_audio_run == recall_lv2_run->route_lv2_audio_run){
 	pthread_mutex_unlock(recall_mutex);
 	
 	return;
@@ -281,7 +281,7 @@ ags_recall_lv2_run_set_property(GObject *gobject,
 	g_object_ref(route_lv2_audio_run);
       }
 
-      recall_lv2_run->route_lv2_audio_run = route_lv2_audio_run;
+      recall_lv2_run->route_lv2_audio_run = (GObject *) route_lv2_audio_run;
 
       pthread_mutex_unlock(recall_mutex);
     }
@@ -405,7 +405,7 @@ ags_recall_lv2_run_finalize(GObject *gobject)
     if(returnable_thread != NULL){
       ags_returnable_thread_unset_flags(returnable_thread, AGS_RETURNABLE_THREAD_IN_USE);
 
-      ags_thread_stop(returnable_thread);
+      ags_thread_stop((AgsThread *) returnable_thread);
     }
     
     g_object_unref(recall_lv2_run->worker_handle);
@@ -519,7 +519,7 @@ ags_recall_lv2_run_run_init_pre(AgsRecall *recall)
   recall_lv2_run->input = input;
   
   /* instantiate lv2 */  
-  lv2_handle = (LV2_Handle *) ags_base_plugin_instantiate(lv2_plugin,
+  lv2_handle = (LV2_Handle *) ags_base_plugin_instantiate((AgsBasePlugin *) lv2_plugin,
 							  samplerate, buffer_size);
 
   recall_lv2_run->lv2_handle = lv2_handle;
@@ -615,8 +615,7 @@ ags_recall_lv2_run_run_init_pre(AgsRecall *recall)
     /* get plugin port */
     pthread_mutex_lock(base_plugin_mutex);
 
-    plugin_port =
-      plugin_port_start = g_list_copy(AGS_BASE_PLUGIN(lv2_plugin)->plugin_port);
+    plugin_port_start = g_list_copy(AGS_BASE_PLUGIN(lv2_plugin)->plugin_port);
 
     pthread_mutex_unlock(base_plugin_mutex);
 
@@ -663,6 +662,8 @@ ags_recall_lv2_run_run_init_pre(AgsRecall *recall)
 	port_data[i] = g_value_get_float(&value);
 
 	g_value_unset(&value);
+      }else{
+	port_data[i] = 0.0;
       }
 
       g_free(specifier);
@@ -920,12 +921,12 @@ ags_recall_lv2_run_run_pre(AgsRecall *recall)
   
   if(recall_lv2_run->output != NULL){
     ags_audio_buffer_util_clear_float(recall_lv2_run->output, 1,
-				      recall_lv2->output_lines * buffer_size);
+				      output_lines * buffer_size);
   }
 
   if(recall_lv2_run->input != NULL){
     ags_audio_buffer_util_clear_float(recall_lv2_run->input, 1,
-				      recall_lv2->input_lines * buffer_size);
+				      input_lines * buffer_size);
   }
 
   /* copy data  */
@@ -1154,7 +1155,6 @@ ags_recall_lv2_run_load_ports(AgsRecallLv2Run *recall_lv2_run)
   gchar *filename, *effect;
   gchar *specifier, *current_specifier;
   
-  guint output_lines, input_lines;
   guint port_count;
   guint i, j;
 
@@ -1201,11 +1201,6 @@ ags_recall_lv2_run_load_ports(AgsRecallLv2Run *recall_lv2_run)
 
   filename = g_strdup(AGS_RECALL(recall_lv2)->filename);
   effect = g_strdup(AGS_RECALL(recall_lv2)->effect);
-
-  port = g_list_copy(AGS_RECALL(recall_lv2)->port);
-
-  output_lines = recall_lv2->output_lines;
-  input_lines = recall_lv2->input_lines;
 
   port = g_list_copy(AGS_RECALL(recall_lv2)->port);
 

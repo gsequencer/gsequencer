@@ -518,7 +518,7 @@ ags_recall_container_set_property(GObject *gobject,
 	  list = list->next;
 	}
       }else if((AGS_RECALL_TEMPLATE & (recall_flags)) != 0){      
-	while((list = ags_recall_find_template(list_start)) != NULL){
+	while((list = ags_recall_find_template(list)) != NULL){
 	  g_object_set(list->data,
 		       "recall-audio-run", recall_audio_run,
 		       NULL);
@@ -590,7 +590,7 @@ ags_recall_container_set_property(GObject *gobject,
 
       pthread_mutex_unlock(recall_container_mutex);
 
-      while((list = ags_recall_find_provider(list, source)) != NULL){
+      while((list = ags_recall_find_provider(list, (GObject *) source)) != NULL){
 	g_object_set(G_OBJECT(list->data),
 		     "recall-channel", recall_channel,
 		     NULL);
@@ -891,7 +891,7 @@ ags_recall_container_add_to_registry(AgsConnectable *connectable)
 
   if(registry != NULL){
     entry = ags_registry_entry_alloc(registry);
-    g_value_set_object(&(entry->entry),
+    g_value_set_object(entry->entry,
 		       (gpointer) recall_container);
     ags_registry_add_entry(registry,
 			   entry);

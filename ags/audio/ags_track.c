@@ -482,8 +482,8 @@ ags_track_duplicate(AgsTrack *track)
 
   track_copy->x = track->x;
 
-  g_object_set(track_copy,
-	       NULL);
+  //  g_object_set(track_copy,
+  //	       NULL);
 
   //TODO:JK: implement me
 

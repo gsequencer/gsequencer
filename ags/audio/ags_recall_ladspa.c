@@ -575,7 +575,7 @@ ags_recall_ladspa_load_ports(AgsRecallLadspa *recall_ladspa)
 
 	GValue *default_value;
 	
-	plugin_name = g_strdup_printf("ladspa-%lu", ladspa_plugin->unique_id);
+	plugin_name = g_strdup_printf("ladspa-%u", ladspa_plugin->unique_id);
 
 	default_value = g_new0(GValue,
 			       1);
@@ -593,7 +593,7 @@ ags_recall_ladspa_load_ports(AgsRecallLadspa *recall_ladspa)
 	current_port = g_object_new(AGS_TYPE_PORT,
 				    "plugin-name", plugin_name,
 				    "specifier", specifier,
-				    "control-port", g_strdup_printf("%lu/%lu",
+				    "control-port", g_strdup_printf("%u/%u",
 								    i,
 								    port_count),
 				    "port-value-is-pointer", FALSE,
@@ -606,7 +606,7 @@ ags_recall_ladspa_load_ports(AgsRecallLadspa *recall_ladspa)
 				      AGS_PLUGIN_PORT_OUTPUT)){
 	  current_port->flags |= AGS_PORT_IS_OUTPUT;
 
-	  ags_recall_set_flags(recall_ladspa,
+	  ags_recall_set_flags((AgsRecall *) recall_ladspa,
 			       AGS_RECALL_HAS_OUTPUT_PORT);
 
 	}else{
@@ -642,11 +642,11 @@ ags_recall_ladspa_load_ports(AgsRecallLadspa *recall_ladspa)
 	if(ags_plugin_port_test_flags(current_plugin_port,
 				      AGS_PLUGIN_PORT_INPUT)){
 	  if(recall_ladspa->input_port == NULL){
-	    recall_ladspa->input_port = (unsigned long *) malloc(sizeof(unsigned long));
+	    recall_ladspa->input_port = (guint *) malloc(sizeof(guint));
 	    recall_ladspa->input_port[0] = i;
 	  }else{
-	    recall_ladspa->input_port = (unsigned long *) realloc(recall_ladspa->input_port,
-								  (recall_ladspa->input_lines + 1) * sizeof(unsigned long));
+	    recall_ladspa->input_port = (guint *) realloc(recall_ladspa->input_port,
+							  (recall_ladspa->input_lines + 1) * sizeof(guint));
 	    recall_ladspa->input_port[recall_ladspa->input_lines] = i;
 	  }
 	  
@@ -654,11 +654,11 @@ ags_recall_ladspa_load_ports(AgsRecallLadspa *recall_ladspa)
 	}else if(ags_plugin_port_test_flags(current_plugin_port,
 					    AGS_PLUGIN_PORT_OUTPUT)){
 	  if(recall_ladspa->output_port == NULL){
-	    recall_ladspa->output_port = (unsigned long *) malloc(sizeof(unsigned long));
+	    recall_ladspa->output_port = (guint *) malloc(sizeof(guint));
 	    recall_ladspa->output_port[0] = i;
 	  }else{
-	    recall_ladspa->output_port = (unsigned long *) realloc(recall_ladspa->output_port,
-								   (recall_ladspa->output_lines + 1) * sizeof(unsigned long));
+	    recall_ladspa->output_port = (guint *) realloc(recall_ladspa->output_port,
+							   (recall_ladspa->output_lines + 1) * sizeof(guint));
 	    recall_ladspa->output_port[recall_ladspa->output_lines] = i;
 	  }
 	  

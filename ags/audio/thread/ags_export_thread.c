@@ -511,6 +511,8 @@ ags_export_thread_run(AgsThread *thread)
   /*  */
   soundcard = AGS_SOUNDCARD(export_thread->soundcard);
 
+  soundcard_buffer = NULL;
+  
   if(AGS_IS_DEVOUT(soundcard)){
     soundcard_buffer = ags_soundcard_get_buffer(soundcard);
   }else if(AGS_IS_JACK_DEVOUT(soundcard) ||

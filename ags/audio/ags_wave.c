@@ -391,7 +391,7 @@ ags_wave_set_property(GObject *gobject,
 
       pthread_mutex_lock(wave_mutex);
 
-      if(timestamp == (AgsTimestamp *) wave->timestamp){
+      if(timestamp == wave->timestamp){
 	pthread_mutex_unlock(wave_mutex);
 	
 	return;
@@ -405,7 +405,7 @@ ags_wave_set_property(GObject *gobject,
 	g_object_ref(G_OBJECT(timestamp));
       }
 
-      wave->timestamp = (GObject *) timestamp;
+      wave->timestamp = timestamp;
 
       pthread_mutex_unlock(wave_mutex);
     }
@@ -2082,7 +2082,7 @@ ags_wave_insert_native_level_from_clipboard(AgsWave *wave,
     guint64 selection_x0_val, selection_x1_val;
     guint target_frame_count, frame_count;
     guint word_size;
-    guint clipboard_length;
+    gsize clipboard_length;
     gboolean subtract_x;
 
     node = root_node->children;

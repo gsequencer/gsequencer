@@ -739,7 +739,7 @@ ags_recall_dssi_load_ports(AgsRecallDssi *recall_dssi)
 
 	GValue *default_value;
 	
-	plugin_name = g_strdup_printf("dssi-%lu", dssi_plugin->unique_id);
+	plugin_name = g_strdup_printf("dssi-%u", dssi_plugin->unique_id);
 
 	default_value = g_new0(GValue,
 			       1);
@@ -748,8 +748,6 @@ ags_recall_dssi_load_ports(AgsRecallDssi *recall_dssi)
 
 	specifier = g_strdup(current_plugin_port->port_name);
 
-	default_value = g_new0(GValue,
-			       1);
 	g_value_init(default_value,
 		     G_TYPE_FLOAT);
 	g_value_copy(current_plugin_port->default_value,
@@ -760,7 +758,7 @@ ags_recall_dssi_load_ports(AgsRecallDssi *recall_dssi)
 	current_port = g_object_new(AGS_TYPE_PORT,
 				    "plugin-name", plugin_name,
 				    "specifier", specifier,
-				    "control-port", g_strdup_printf("%lu/%lu",
+				    "control-port", g_strdup_printf("%u/%u",
 								    i,
 								    port_count),
 				    "port-value-is-pointer", FALSE,
@@ -773,7 +771,7 @@ ags_recall_dssi_load_ports(AgsRecallDssi *recall_dssi)
 				      AGS_PLUGIN_PORT_OUTPUT)){
 	  current_port->flags |= AGS_PORT_IS_OUTPUT;
 
-	  ags_recall_set_flags(recall_dssi,
+	  ags_recall_set_flags((AgsRecall *) recall_dssi,
 			       AGS_RECALL_HAS_OUTPUT_PORT);
 
 	}else{
@@ -809,11 +807,11 @@ ags_recall_dssi_load_ports(AgsRecallDssi *recall_dssi)
 	if(ags_plugin_port_test_flags(current_plugin_port,
 				      AGS_PLUGIN_PORT_INPUT)){
 	  if(recall_dssi->input_port == NULL){
-	    recall_dssi->input_port = (unsigned long *) malloc(sizeof(unsigned long));
+	    recall_dssi->input_port = (guint *) malloc(sizeof(guint));
 	    recall_dssi->input_port[0] = i;
 	  }else{
-	    recall_dssi->input_port = (unsigned long *) realloc(recall_dssi->input_port,
-								(recall_dssi->input_lines + 1) * sizeof(unsigned long));
+	    recall_dssi->input_port = (guint *) realloc(recall_dssi->input_port,
+							(recall_dssi->input_lines + 1) * sizeof(guint));
 	    recall_dssi->input_port[recall_dssi->input_lines] = i;
 	  }
 	  
@@ -821,11 +819,11 @@ ags_recall_dssi_load_ports(AgsRecallDssi *recall_dssi)
 	}else if(ags_plugin_port_test_flags(current_plugin_port,
 					    AGS_PLUGIN_PORT_OUTPUT)){
 	  if(recall_dssi->output_port == NULL){
-	    recall_dssi->output_port = (unsigned long *) malloc(sizeof(unsigned long));
+	    recall_dssi->output_port = (guint *) malloc(sizeof(guint));
 	    recall_dssi->output_port[0] = i;
 	  }else{
-	    recall_dssi->output_port = (unsigned long *) realloc(recall_dssi->output_port,
-								 (recall_dssi->output_lines + 1) * sizeof(unsigned long));
+	    recall_dssi->output_port = (guint *) realloc(recall_dssi->output_port,
+							 (recall_dssi->output_lines + 1) * sizeof(guint));
 	    recall_dssi->output_port[recall_dssi->output_lines] = i;
 	  }
 	  

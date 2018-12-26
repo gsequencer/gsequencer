@@ -215,15 +215,12 @@ ags_recall_ladspa_run_run_init_pre(AgsRecall *recall)
                                unsigned long SampleRate);
   void (*activate)(LADSPA_Handle Instance);
 
-  pthread_mutex_t *recall_mutex;
   pthread_mutex_t *recall_ladspa_mutex;
 
   /* get recall mutex */
   pthread_mutex_lock(ags_recall_get_class_mutex());
 
   parent_class_run_init_pre = AGS_RECALL_CLASS(ags_recall_ladspa_run_parent_class)->run_init_pre;
-  
-  recall_mutex = recall->obj_mutex;
   
   pthread_mutex_unlock(ags_recall_get_class_mutex());
 
@@ -268,8 +265,6 @@ ags_recall_ladspa_run_run_init_pre(AgsRecall *recall)
   output_lines = recall_ladspa->output_lines;
   input_lines = recall_ladspa->input_lines;
   
-  port_count = recall_ladspa->plugin_descriptor->PortCount;
-
   instantiate = recall_ladspa->plugin_descriptor->instantiate;
   activate = recall_ladspa->plugin_descriptor->activate;
   
@@ -524,7 +519,6 @@ ags_recall_ladspa_run_load_ports(AgsRecallLadspaRun *recall_ladspa_run)
 		       unsigned long Port,
 		       LADSPA_Data * DataLocation);
 
-  pthread_mutex_t *recall_mutex;
   pthread_mutex_t *recall_ladspa_mutex;
   pthread_mutex_t *port_mutex;
 
@@ -533,11 +527,6 @@ ags_recall_ladspa_run_load_ports(AgsRecallLadspaRun *recall_ladspa_run)
   }
   
   /* get recall mutex */
-  pthread_mutex_lock(ags_recall_get_class_mutex());
-
-  recall_mutex = AGS_RECALL(recall_ladspa_run)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_recall_get_class_mutex());
 
   g_object_get(recall_ladspa_run,
 	       "parent", &recall_recycling,

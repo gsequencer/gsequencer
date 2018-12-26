@@ -186,7 +186,7 @@ ags_recall_dependency_set_property(GObject *gobject,
       
       pthread_mutex_lock(recall_dependency_mutex);
 
-      if(recall_dependency->dependency == dependency){
+      if(recall_dependency->dependency == (GObject *) dependency){
 	pthread_mutex_unlock(recall_dependency_mutex);
 	
 	return;
@@ -200,7 +200,7 @@ ags_recall_dependency_set_property(GObject *gobject,
 	g_object_ref(G_OBJECT(dependency));
       }
 
-      recall_dependency->dependency = dependency;
+      recall_dependency->dependency = (GObject *) dependency;
 
       pthread_mutex_unlock(recall_dependency_mutex);
     }

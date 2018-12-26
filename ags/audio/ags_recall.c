@@ -1191,7 +1191,7 @@ ags_recall_set_property(GObject *gobject,
 
       pthread_mutex_lock(recall_mutex);
       
-      if(recall->recall_container == recall_container){
+      if(recall->recall_container == (GObject *) recall_container){
 	pthread_mutex_unlock(recall_mutex);
 	
 	return;
@@ -1701,7 +1701,7 @@ ags_recall_dispose(GObject *gobject)
   /* port */
   if(recall->port != NULL){
     g_list_free_full(recall->port,
-		     g_object_unref);
+		     (GDestroyNotify) g_object_unref);
 
     recall->port = NULL;
   }
@@ -1948,11 +1948,11 @@ ags_recall_add_to_registry(AgsConnectable *connectable)
 
   application_context = ags_application_context_get_instance();
 
-  registry = ags_service_provider_get_registry(AGS_SERVICE_PROVIDER(application_context));
+  registry = (AgsRegistry *) ags_service_provider_get_registry(AGS_SERVICE_PROVIDER(application_context));
 
   if(registry != NULL){
     entry = ags_registry_entry_alloc(registry);
-    g_value_set_object(&(entry->entry),
+    g_value_set_object(entry->entry,
 		       (gpointer) recall);
     ags_registry_add_entry(registry,
 			   entry);
@@ -2320,7 +2320,7 @@ ags_recall_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
 
   xmlNewProp(node,
 	     "effect-index",
-	     g_strdup_printf("%lu", recall->effect_index));
+	     g_strdup_printf("%u", recall->effect_index));
 
   pthread_mutex_unlock(recall_mutex);
 
@@ -3834,7 +3834,6 @@ ags_recall_add_child(AgsRecall *parent, AgsRecall *child)
   guint samplerate;
   guint buffer_size;
   guint format;
-  guint parent_flags;
   guint parent_ability_flags;
   guint parent_behaviour_flags;
   gint parent_sound_scope;
@@ -3882,8 +3881,6 @@ ags_recall_add_child(AgsRecall *parent, AgsRecall *child)
   /* add child */
   pthread_mutex_lock(parent_mutex);
 
-  parent_flags = parent->flags;
-
   parent_ability_flags = parent->ability_flags;
   parent_behaviour_flags = parent->behaviour_flags;
   parent_sound_scope = parent->sound_scope;
@@ -3924,7 +3921,7 @@ ags_recall_add_child(AgsRecall *parent, AgsRecall *child)
 	       "samplerate", samplerate,
 	       "buffer-size", buffer_size,
 	       "format", format,
-	       "recall_id", parent->recall_id,
+	       "recall_id", recall_id,
 	       NULL);
 
   g_signal_connect_after(G_OBJECT(child), "done",
@@ -5378,7 +5375,6 @@ ags_recall_real_duplicate(AgsRecall *recall,
   guint recall_flags;
   guint ability_flags;
   guint behaviour_flags;
-  gint sound_scope;
   gint output_soundcard_channel;
   gint input_soundcard_channel;
   guint local_n_params;
@@ -5399,9 +5395,8 @@ ags_recall_real_duplicate(AgsRecall *recall,
   recall_flags = recall->flags;
   ability_flags = recall->ability_flags;
   behaviour_flags = recall->behaviour_flags;
-  sound_scope = recall->sound_scope;
   
-  recall_container = recall->recall_container;
+  recall_container = (AgsRecallContainer *) recall->recall_container;
   
   output_soundcard = recall->output_soundcard;
   output_soundcard_channel = recall->output_soundcard_channel;
@@ -5490,7 +5485,7 @@ ags_recall_real_duplicate(AgsRecall *recall,
     guint i;
 
     for(i = 0; i < n_params[0]; i++){
-      g_object_set_property(copy_recall,
+      g_object_set_property((GObject *) copy_recall,
 			    parameter_name[i], &(value[i]));
     }
   }
@@ -6306,7 +6301,7 @@ ags_recall_find_provider(GList *recall, GObject *provider)
 		     "audio", &current_audio,
 		     NULL);
 	
-	if(current_audio == provider){
+	if((GObject *) current_audio == provider){
 	  return(recall);
 	}
       }else if(AGS_IS_RECALL_AUDIO_RUN(current_recall)){
@@ -6314,7 +6309,7 @@ ags_recall_find_provider(GList *recall, GObject *provider)
 		     "audio", &current_audio,
 		     NULL);
 
-	if(current_audio == provider){
+	if((GObject *) current_audio == provider){
 	  return(recall);
 	}
       }
@@ -6324,7 +6319,7 @@ ags_recall_find_provider(GList *recall, GObject *provider)
 		     "source", &current_channel,
 		     NULL);
 
-	if(current_channel == provider){
+	if((GObject *) current_channel == provider){
 	  return(recall);
 	}
       }else if(AGS_IS_RECALL_CHANNEL_RUN(current_recall)){
@@ -6332,7 +6327,7 @@ ags_recall_find_provider(GList *recall, GObject *provider)
 		     "source", &current_channel,
 		     NULL);
 
-	if(current_channel == provider){
+	if((GObject *) current_channel == provider){
 	  return(recall);
 	}
       }
@@ -6342,7 +6337,7 @@ ags_recall_find_provider(GList *recall, GObject *provider)
 		     "source", &current_recycling,
 		     NULL);
 
-	if(current_recycling == provider){
+	if((GObject *) current_recycling == provider){
 	  return(recall);
 	}
       }
@@ -6352,7 +6347,7 @@ ags_recall_find_provider(GList *recall, GObject *provider)
 		     "source", &current_audio_signal,
 		     NULL);
 
-	if(current_audio_signal == provider){
+	if((GObject *) current_audio_signal == provider){
 	  return(recall);
 	}
       }
@@ -6496,8 +6491,8 @@ ags_recall_child_done(AgsRecall *child,
   ags_recall_remove_child(parent,
 			  child);
 
-  g_object_run_dispose(child);
-  g_object_unref(child);
+  g_object_run_dispose((GObject *) child);
+  g_object_unref((GObject *) child);
   
   g_object_get(parent,
 	       "child", &children,
@@ -6548,6 +6543,8 @@ ags_recall_lock_port(AgsRecall *recall)
   pthread_mutex_unlock(recall_mutex);
 
   while(list != NULL){
+    port = list->data;
+    
     /* get port mutex */
     pthread_mutex_lock(ags_port_get_class_mutex());
   
@@ -6603,6 +6600,8 @@ ags_recall_unlock_port(AgsRecall *recall)
   pthread_mutex_unlock(recall_mutex);
 
   while(list != NULL){
+    port = list->data;
+
     /* get port mutex */
     pthread_mutex_lock(ags_port_get_class_mutex());
   

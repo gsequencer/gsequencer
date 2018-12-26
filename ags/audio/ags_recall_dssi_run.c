@@ -260,7 +260,7 @@ ags_recall_dssi_run_set_property(GObject *gobject,
 
       pthread_mutex_lock(recall_mutex);
 
-      if(route_dssi_audio_run == recall_dssi_run->route_dssi_audio_run){
+      if((GObject *) route_dssi_audio_run == recall_dssi_run->route_dssi_audio_run){
 	pthread_mutex_unlock(recall_mutex);
 	
 	return;
@@ -274,7 +274,7 @@ ags_recall_dssi_run_set_property(GObject *gobject,
 	g_object_ref(route_dssi_audio_run);
       }
 
-      recall_dssi_run->route_dssi_audio_run = route_dssi_audio_run;
+      recall_dssi_run->route_dssi_audio_run = (GObject *) route_dssi_audio_run;
 
       pthread_mutex_unlock(recall_mutex);
     }

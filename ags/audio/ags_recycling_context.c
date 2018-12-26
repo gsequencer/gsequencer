@@ -818,6 +818,10 @@ ags_recycling_context_insert(AgsRecyclingContext *recycling_context,
 
   /* ref count */
   g_object_ref(recycling);
+
+  if(old_context != NULL){
+    free(old_context);
+  }
 }
 
 /**
@@ -1221,6 +1225,8 @@ ags_recycling_context_reset_recycling(AgsRecyclingContext *recycling_context,
     return(NULL);
   }
 
+  parent = NULL;
+  
   /* retrieve new length */
   new_length = ags_recycling_position(new_first_recycling, old_last_recycling,
 				      old_last_recycling);
@@ -1283,7 +1289,7 @@ ags_recycling_context_reset_recycling(AgsRecyclingContext *recycling_context,
   }
   
   /* dispose old recycling context */
-  g_object_run_dispose(recycling_context);
+  g_object_run_dispose((GObject *) recycling_context);
     
   return(new_recycling_context);
 }

@@ -647,7 +647,6 @@ ags_synth_generator_compute(AgsSynthGenerator *synth_generator,
   guint offset;
   guint last_sync;
   guint i, j;
-  gboolean sync_relative;
   AgsComplex **sync_point;
   guint sync_point_count;
   gboolean synced;
@@ -659,8 +658,6 @@ ags_synth_generator_compute(AgsSynthGenerator *synth_generator,
   
   buffer_size = AGS_AUDIO_SIGNAL(audio_signal)->buffer_size;
 
-  sync_relative = synth_generator->sync_relative;
-
   sync_point = synth_generator->sync_point;
   sync_point_count = synth_generator->sync_point_count;
 
@@ -668,7 +665,7 @@ ags_synth_generator_compute(AgsSynthGenerator *synth_generator,
   requested_frame_count = (guint) ceil(((floor(delay) * buffer_size + attack) + frame_count) / buffer_size) * buffer_size;
   
   if(current_frame_count < requested_frame_count){
-    ags_audio_signal_stream_resize(audio_signal,
+    ags_audio_signal_stream_resize((AgsAudioSignal *) audio_signal,
 				   ceil(requested_frame_count / buffer_size));
   }
   

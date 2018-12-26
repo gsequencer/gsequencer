@@ -208,7 +208,7 @@ ags_recall_audio_run_set_property(GObject *gobject,
   switch(prop_id){
   case PROP_AUDIO:
     {
-      AgsRecallAudio *audio;
+      AgsAudio *audio;
 
       audio = (AgsRecallAudio *) g_value_get_object(value);
 
@@ -321,7 +321,7 @@ ags_recall_audio_run_dispose(GObject *gobject)
   if(AGS_RECALL(gobject)->recall_container != NULL){
     AgsRecallContainer *recall_container;
 
-    recall_container = AGS_RECALL(gobject)->recall_container;
+    recall_container = (AgsRecallContainer *) AGS_RECALL(gobject)->recall_container;
 
     recall_container->recall_audio_run = g_list_remove(recall_container->recall_audio_run,
 						       gobject);
@@ -359,7 +359,7 @@ ags_recall_audio_run_finalize(GObject *gobject)
   if(AGS_RECALL(gobject)->recall_container != NULL){
     AgsRecallContainer *recall_container;
 
-    recall_container = AGS_RECALL(gobject)->recall_container;
+    recall_container = (AgsRecallContainer *) AGS_RECALL(gobject)->recall_container;
 
     recall_container->recall_audio_run = g_list_remove(recall_container->recall_audio_run,
 						       gobject);
@@ -385,7 +385,6 @@ ags_recall_audio_run_notify_recall_container_callback(GObject *gobject,
 						      GParamSpec *pspec,
 						      gpointer user_data)
 {
-  AgsAudio *audio;
   AgsRecallContainer *recall_container;
   AgsRecallAudioRun *recall_audio_run;
   
@@ -403,9 +402,7 @@ ags_recall_audio_run_notify_recall_container_callback(GObject *gobject,
   /* get some fields */
   pthread_mutex_lock(recall_mutex);
 
-  audio = recall_audio_run->audio;
-
-  recall_container = AGS_RECALL(recall_audio_run)->recall_container;
+  recall_container = (AgsRecallContainer *) AGS_RECALL(recall_audio_run)->recall_container;
 
   pthread_mutex_unlock(recall_mutex);
 
@@ -459,9 +456,9 @@ ags_recall_audio_run_duplicate(AgsRecall *recall,
   pthread_mutex_unlock(recall_mutex);
 
   /* duplicate */
-  copy_recall_audio_run = AGS_RECALL_CLASS(ags_recall_audio_run_parent_class)->duplicate(recall,
-											 recall_id,
-											 n_params, parameter_name, value);
+  copy_recall_audio_run = (AgsRecallAudioRun *) AGS_RECALL_CLASS(ags_recall_audio_run_parent_class)->duplicate(recall,
+													       recall_id,
+													       n_params, parameter_name, value);
   g_object_set(copy_recall_audio_run,
 	       "audio", audio,
 	       "recall-audio", recall_audio,

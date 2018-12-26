@@ -595,8 +595,8 @@ ags_soundcard_thread_dispatch_callback(AgsPollFd *poll_fd,
     //			    AGS_THREAD_SUSPEND_SIG,
     //			    0, &time_spent);
 
-    polling_thread = ags_thread_find_type(audio_loop,
-					  AGS_TYPE_POLLING_THREAD);
+    polling_thread = (AgsPollingThread *) ags_thread_find_type((AgsThread *) audio_loop,
+							       AGS_TYPE_POLLING_THREAD);
 
     if(polling_thread != NULL){
       g_atomic_int_or(&(polling_thread->flags),

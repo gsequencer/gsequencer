@@ -643,7 +643,7 @@ ags_recall_lv2_set_ports(AgsPlugin *plugin, GList *port)
 	list = ags_port_find_specifier(port, specifier);
 
 	if(list != NULL){
-	  current_port = list;
+	  current_port = list->data;
 	  g_object_set(current_port,
 		       "plugin-port", current_plugin_port,
 		       NULL);
@@ -1146,7 +1146,7 @@ ags_recall_lv2_load_ports(AgsRecallLv2 *recall_lv2)
 				      AGS_PLUGIN_PORT_OUTPUT)){
 	  current_port->flags |= AGS_PORT_IS_OUTPUT;
 
-	  ags_recall_set_flags(recall_lv2,
+	  ags_recall_set_flags((AgsRecall *) recall_lv2,
 			       AGS_RECALL_HAS_OUTPUT_PORT);
 	}else{
 	  gint scale_steps;
@@ -1192,11 +1192,11 @@ ags_recall_lv2_load_ports(AgsRecallLv2 *recall_lv2)
 	if(ags_plugin_port_test_flags(current_plugin_port,
 				      AGS_PLUGIN_PORT_INPUT)){
 	  if(recall_lv2->input_port == NULL){
-	    recall_lv2->input_port = (unsigned long *) malloc(sizeof(unsigned long));
+	    recall_lv2->input_port = (guint *) malloc(sizeof(guint));
 	    recall_lv2->input_port[0] = i;
 	  }else{
-	    recall_lv2->input_port = (unsigned long *) realloc(recall_lv2->input_port,
-							       (recall_lv2->input_lines + 1) * sizeof(unsigned long));
+	    recall_lv2->input_port = (guint *) realloc(recall_lv2->input_port,
+						       (recall_lv2->input_lines + 1) * sizeof(guint));
 	    recall_lv2->input_port[recall_lv2->input_lines] = i;
 	  }
 	  
@@ -1204,11 +1204,11 @@ ags_recall_lv2_load_ports(AgsRecallLv2 *recall_lv2)
 	}else if(ags_plugin_port_test_flags(current_plugin_port,
 					    AGS_PLUGIN_PORT_OUTPUT)){
 	  if(recall_lv2->output_port == NULL){
-	    recall_lv2->output_port = (unsigned long *) malloc(sizeof(unsigned long));
+	    recall_lv2->output_port = (guint *) malloc(sizeof(guint));
 	    recall_lv2->output_port[0] = i;
 	  }else{
-	    recall_lv2->output_port = (unsigned long *) realloc(recall_lv2->output_port,
-								(recall_lv2->output_lines + 1) * sizeof(unsigned long));
+	    recall_lv2->output_port = (guint *) realloc(recall_lv2->output_port,
+							(recall_lv2->output_lines + 1) * sizeof(guint));
 	    recall_lv2->output_port[recall_lv2->output_lines] = i;
 	  }
 	  
