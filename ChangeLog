@@ -1,7 +1,7 @@
 ags (2.1.19)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
-	* minor improvements
+	* minor improvements and targeting compiler warnings
 	* added ags_start_audio_test.c
 	* added ags_start_channel_test.c
 

@@ -1553,13 +1553,12 @@ ags_wave_edit_draw_buffer(AgsWaveEdit *wave_edit,
   
   //  cairo_scale(cr,
   //	      1.0 / (zoom_factor * (((60.0 / bpm) * ((double) buffer_size / (double) samplerate)) * AGS_WAVE_EDIT_X_RESOLUTION)), 1.0);
-
-  y1 = 0.0;
   
   for(i = 0; i < buffer_size; i += (zoom_factor * 16)){
     double y0, y1;
 
     y0 = 0.0;
+    y1 = 0.0;
 
     pthread_mutex_lock(buffer_mutex);
 
