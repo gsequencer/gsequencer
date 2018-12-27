@@ -1385,6 +1385,8 @@ ags_recall_set_property(GObject *gobject,
 	return;
       }
       
+      pthread_mutex_unlock(recall_mutex);
+      
       ags_recall_add_recall_dependency(recall, recall_dependency);
     }
     break;

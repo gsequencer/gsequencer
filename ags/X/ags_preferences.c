@@ -23,6 +23,7 @@
 #include <ags/libags.h>
 #include <ags/libags-audio.h>
 
+#include <ags/X/ags_ui_provider.h>
 #include <ags/X/ags_window.h>
 
 #include <ags/X/thread/ags_gui_thread.h>
@@ -295,7 +296,7 @@ ags_preferences_apply(AgsApplicable *applicable)
   
   application_context = ags_application_context_get_instance();
 
-  gui_thread = ags_ui_provider_get_gui_thread(AGS_CONCURRENCY_PROVIDER(application_context));
+  gui_thread = ags_ui_provider_get_gui_thread(AGS_UI_PROVIDER(application_context));
   
   config = ags_config_get_instance();
 

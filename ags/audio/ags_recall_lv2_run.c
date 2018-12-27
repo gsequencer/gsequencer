@@ -296,7 +296,7 @@ ags_recall_lv2_run_set_property(GObject *gobject,
 
       if(!AGS_IS_NOTE(note) ||
 	 g_list_find(recall_lv2_run->note, note) != NULL){
-	pthread_mutex_lock(recall_mutex);
+	pthread_mutex_unlock(recall_mutex);
 	
 	return;
       }
@@ -305,7 +305,7 @@ ags_recall_lv2_run_set_property(GObject *gobject,
 					     note);
       g_object_ref(note);
 
-      pthread_mutex_lock(recall_mutex);
+      pthread_mutex_unlock(recall_mutex);
     }
     break;
   default:

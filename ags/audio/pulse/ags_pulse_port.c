@@ -1470,8 +1470,11 @@ ags_pulse_port_stream_request_callback(pa_stream *stream, size_t length, AgsPuls
 	  if(g_atomic_int_get(&(pulse_port->underflow)) > 0){
 	    n_bytes = 0;
 	    empty_buffer = &(((unsigned char *) pulse_port->empty_buffer)[nth_empty_buffer * count]);
-	    pa_stream_begin_write(stream, &empty_buffer, &n_bytes);	
 
+#if 0
+	    pa_stream_begin_write(stream, &empty_buffer, &n_bytes);	
+#endif
+	    
 	    remaining = length;
 	  }
 	
@@ -1492,8 +1495,10 @@ ags_pulse_port_stream_request_callback(pa_stream *stream, size_t length, AgsPuls
 
 	    pulse_port->nth_empty_buffer = nth_empty_buffer;
 
+#if 0
 	    pa_stream_write(stream, empty_buffer, count, NULL, 0, PA_SEEK_RELATIVE);
-	  
+#endif
+	    
 	    pthread_mutex_unlock(pulse_port_mutex);
 
 	    memset(next_empty_buffer, 0, count * sizeof(unsigned char));

@@ -1,3 +1,14 @@
+ags (2.1.20)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* minor improvements and targeting compiler warnings
+	* increased pulseaudio default buffer size
+	* disabled pulseaudio empty buffer compensation on underflow
+	* fixed potential dead-lock in ags_recall_set_property()
+	* fixed potential dead-lock in ags_recall_dssi_run_set_property()
+	* fixed potential dead-lock in ags_recall_lv2_run_set_property()
+	* fixed potential dead-lock in ags_eq10_channel_get_property()
+
 ags (2.1.19)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

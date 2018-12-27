@@ -62,7 +62,7 @@ void ags_lv2_plugin_dispose(GObject *gobject);
 void ags_lv2_plugin_finalize(GObject *gobject);
 
 gpointer ags_lv2_plugin_instantiate(AgsBasePlugin *base_plugin,
-				    guint samplerate);
+				    guint samplerate, guint buffer_size);
 void ags_lv2_plugin_connect_port(AgsBasePlugin *base_plugin,
 				 gpointer plugin_handle,
 				 guint port_index,
@@ -838,7 +838,7 @@ ags_lv2_plugin_finalize(GObject *gobject)
 
 gpointer
 ags_lv2_plugin_instantiate(AgsBasePlugin *base_plugin,
-			   guint samplerate)
+			   guint samplerate, guint buffer_size)
 {
   AgsLv2Plugin *lv2_plugin;
   
@@ -1064,7 +1064,6 @@ ags_lv2_plugin_instantiate(AgsBasePlugin *base_plugin,
     /* some options */
     options = (LV2_Options_Option *) malloc(6 * sizeof(LV2_Options_Option));
 
-
     /* samplerate */
     options[0].context = LV2_OPTIONS_INSTANCE;
     options[0].subject = 0;
@@ -1135,7 +1134,7 @@ ags_lv2_plugin_instantiate(AgsBasePlugin *base_plugin,
 						  LV2_ATOM__Int);
     options[4].value = ptr_buffer_size;
     
-    /* terminate */
+    /* instance */
     options[5].context = LV2_OPTIONS_INSTANCE;
     options[5].subject = 0;
     options[5].key = 0;
@@ -1143,7 +1142,7 @@ ags_lv2_plugin_instantiate(AgsBasePlugin *base_plugin,
     options[5].size = 0;
     options[5].type = 0;
     options[5].value = NULL;
-
+    
     /* set options */
     ags_lv2_option_manager_lv2_options_set(lv2_handle[0],
 					   options);

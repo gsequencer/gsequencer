@@ -1006,6 +1006,8 @@ ags_eq10_channel_get_property(GObject *gobject,
       pthread_mutex_lock(recall_mutex);
 
       g_value_set_object(value, eq10_channel->peak_896hz);
+
+      pthread_mutex_unlock(recall_mutex);
     }
     break;
   case PROP_PEAK_1792HZ:
