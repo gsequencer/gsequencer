@@ -324,7 +324,7 @@ ags_copy_pattern_audio_run_set_property(GObject *gobject,
 
       /* dependency - remove */
       if(is_template){
-	if(old_delay_audio_run != NULL){
+	if(old_count_beats_audio_run != NULL){
 	  AgsRecallDependency *recall_dependency;
 
 	  GList *list;

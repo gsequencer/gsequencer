@@ -863,9 +863,9 @@ ags_recall_channel_run_duplicate(AgsRecall *recall,
   }
   
   /* duplicate */
-  copy_recall_channel_run = (AgsCopyRecallChannelRun *) AGS_RECALL_CLASS(ags_recall_channel_run_parent_class)->duplicate(recall,
-															 recall_id,
-															 n_params, parameter_name, value);
+  copy_recall_channel_run = (AgsRecallChannelRun *) AGS_RECALL_CLASS(ags_recall_channel_run_parent_class)->duplicate(recall,
+														     recall_id,
+														     n_params, parameter_name, value);
   g_object_set(copy_recall_channel_run,
 	       "recall-audio", recall_audio,
 	       //	       "recall-audio-run", recall_audio_run,

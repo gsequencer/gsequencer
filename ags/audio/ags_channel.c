@@ -10570,7 +10570,7 @@ ags_channel_real_stop(AgsChannel *channel,
   /* emit message */
   message_delivery = ags_message_delivery_get_instance();
 
-  message_queue = (AgsMessageQueue )* ags_message_delivery_find_namespace(message_delivery,
+  message_queue = (AgsMessageQueue *) ags_message_delivery_find_namespace(message_delivery,
 									  "libags-audio");
 
   if(message_queue != NULL){
@@ -10591,7 +10591,7 @@ ags_channel_real_stop(AgsChannel *channel,
 	       "AgsChannel::stop");
 
     /* add message */
-    message = ags_message_envelope_alloc(GObject *) channel,
+    message = ags_message_envelope_alloc((GObject *) channel,
 					 NULL,
 					 doc);
 

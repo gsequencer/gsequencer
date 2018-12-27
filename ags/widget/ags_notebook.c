@@ -263,7 +263,7 @@ ags_notebook_finalize(GObject *gobject)
     g_list_free_full(notebook->tab,
 		     (GDestroyNotify) notebook->tab_free_func);
   }else{
-    g_list_free_full(notebook,
+    g_list_free_full(notebook->tab,
 		     g_free);
   }
   

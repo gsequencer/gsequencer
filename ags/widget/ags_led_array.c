@@ -251,7 +251,7 @@ ags_led_array_realize(GtkWidget *widget)
 {
   AgsLedArray *led_array;
 
-  led_array = (AgsLedArry *) widget;
+  led_array = (AgsLedArray *) widget;
   
   /* call parent */
   GTK_WIDGET_CLASS(ags_led_array_parent_class)->realize(widget);
