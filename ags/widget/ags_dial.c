@@ -718,7 +718,7 @@ ags_dial_realize(GtkWidget *widget)
   widget->style = gtk_style_attach(widget->style, widget->window);
   gtk_style_set_background(widget->style, widget->window, GTK_STATE_NORMAL);
 
-  gtk_widget_queue_resize (widget);
+  gtk_widget_queue_resize(widget);
 }
 
 AtkObject*
@@ -1600,7 +1600,7 @@ ags_dial_set_value(AgsDial *dial,
 
   gtk_adjustment_set_value(dial->adjustment,
 			   value);
-  gtk_widget_queue_draw(dial);
+  gtk_widget_queue_draw((GtkWidget *) dial);
 }
 
 /**

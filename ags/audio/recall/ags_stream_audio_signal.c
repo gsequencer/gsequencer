@@ -112,7 +112,7 @@ ags_stream_audio_signal_init(AgsStreamAudioSignal *stream_audio_signal)
 void
 ags_stream_audio_signal_dispose(GObject *gobject)
 {
-  AGS_STREAM_AUDIO_SIGNAL(gobject)->dispose_source = AGS_RECALL_AUDIO_SIGNAL(gobject)->source;
+  AGS_STREAM_AUDIO_SIGNAL(gobject)->dispose_source = (GObject *) AGS_RECALL_AUDIO_SIGNAL(gobject)->source;
 
   /* call parent */
   G_OBJECT_CLASS(ags_stream_audio_signal_parent_class)->dispose(gobject); 
@@ -123,20 +123,20 @@ ags_stream_audio_signal_finalize(GObject *gobject)
 {
   AgsAudioSignal *audio_signal;
 
-  audio_signal = AGS_STREAM_AUDIO_SIGNAL(gobject)->dispose_source;
+  audio_signal = (AgsAudioSignal *) AGS_STREAM_AUDIO_SIGNAL(gobject)->dispose_source;
   
   if(audio_signal != NULL){
     AgsRecycling *recycling;
 
-    recycling = audio_signal->recycling;
+    recycling = (AgsRecycling *) audio_signal->recycling;
     
     if(recycling != NULL){
       ags_recycling_remove_audio_signal(recycling,
 					audio_signal);
     }
     
-    g_object_run_dispose(audio_signal);
-    g_object_unref(audio_signal);
+    g_object_run_dispose((GObject *) audio_signal);
+    g_object_unref((GObject *) audio_signal);
   }
 
   /* call parent */

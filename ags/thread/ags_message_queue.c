@@ -227,7 +227,7 @@ ags_message_queue_finalize(GObject *gobject)
   /* message */
   if(message_queue->message != NULL){
     g_list_free_full(message_queue->message,
-		     ags_message_envelope_free);
+		     (GDestroyNotify) ags_message_envelope_free);
   }
   
   /* call parent */

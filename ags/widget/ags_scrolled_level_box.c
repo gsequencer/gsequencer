@@ -196,21 +196,21 @@ ags_scrolled_level_box_init(AgsScrolledLevelBox *scrolled_level_box)
   scrolled_level_box->margin_right = 0;
 
   /* viewport */
-  scrolled_level_box->viewport = gtk_viewport_new(NULL,
-						  NULL);
+  scrolled_level_box->viewport = (GtkViewport *) gtk_viewport_new(NULL,
+								  NULL);
   g_object_set(scrolled_level_box->viewport,
 	       "shadow-type", GTK_SHADOW_NONE,
 	       NULL);
-  gtk_container_add(scrolled_level_box,
-		    scrolled_level_box->viewport);
+  gtk_container_add((GtkContainer *) scrolled_level_box,
+		    (GtkWidget *) scrolled_level_box->viewport);
 
   /* level box */
   scrolled_level_box->level_box = NULL;
   
 #if 0
   scrolled_level_box->level_box = ags_vlevel_box_new();
-  gtk_container_add(scrolled_level_box->viewport,
-		    scrolled_level_box->level_box);
+  gtk_container_add((GtkContainer *) scrolled_level_box->viewport,
+		    (GtkWidget *) scrolled_level_box->level_box);
 #endif
 }
 
@@ -350,7 +350,7 @@ ags_scrolled_level_box_size_request(GtkWidget *widget,
   requisition->width = AGS_LEVEL_DEFAULT_WIDTH;
   requisition->height = -1;
   
-  gtk_widget_size_request(gtk_bin_get_child((GtkContainer *) widget),
+  gtk_widget_size_request(gtk_bin_get_child((GtkBin *) widget),
 			  &child_requisition);
 }
 

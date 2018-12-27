@@ -875,7 +875,7 @@ ags_file_find_id_ref_by_node(AgsFile *file, xmlNode *node)
 
   g_list_free(start_list);
 
-  return(file_id_ref);
+  return((GObject *) file_id_ref);
 }
 
 /**
@@ -1000,7 +1000,7 @@ ags_file_find_id_ref_by_reference(AgsFile *file, gpointer ref)
 
   g_list_free(start_list);
 
-  return(file_id_ref);
+  return((GObject *) file_id_ref);
 }
 
 /**

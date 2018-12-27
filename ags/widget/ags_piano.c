@@ -1420,7 +1420,7 @@ ags_piano_real_key_pressed(AgsPiano *piano,
   piano->active_key_count += 1;
 
   /* queue draw */
-  gtk_widget_queue_draw(piano);
+  gtk_widget_queue_draw((GtkWidget *) piano);
 }
 
 /**
@@ -1489,7 +1489,7 @@ ags_piano_real_key_released(AgsPiano *piano,
   }
 
   /* queue draw */
-  gtk_widget_queue_draw(piano);
+  gtk_widget_queue_draw((GtkWidget *) piano);
 }
 
 /**

@@ -238,7 +238,7 @@ ags_play_notation_audio_run_plugin_interface_init(AgsPluginInterface *plugin)
 void
 ags_play_notation_audio_run_init(AgsPlayNotationAudioRun *play_notation_audio_run)
 {
-  ags_recall_set_ability_flags(play_notation_audio_run, (AGS_SOUND_ABILITY_NOTATION));
+  ags_recall_set_ability_flags((AgsRecall *) play_notation_audio_run, (AGS_SOUND_ABILITY_NOTATION));
 
   AGS_RECALL(play_notation_audio_run)->name = "ags-play-notation";
   AGS_RECALL(play_notation_audio_run)->version = AGS_RECALL_DEFAULT_VERSION;
@@ -287,7 +287,6 @@ ags_play_notation_audio_run_set_property(GObject *gobject,
       gboolean is_template;
 
       delay_audio_run = g_value_get_object(value);
-
       old_delay_audio_run = NULL;
       
       pthread_mutex_lock(recall_mutex);
@@ -312,7 +311,7 @@ ags_play_notation_audio_run_set_property(GObject *gobject,
 
       /* check template */
       if(delay_audio_run != NULL &&
-	 ags_recall_test_flags(play_notation_audio_run, AGS_RECALL_TEMPLATE)){
+	 ags_recall_test_flags((AgsRecall *) play_notation_audio_run, AGS_RECALL_TEMPLATE)){
 	is_template = TRUE;
       }else{
 	is_template = FALSE;
@@ -320,12 +319,26 @@ ags_play_notation_audio_run_set_property(GObject *gobject,
 
       /* old - dependency/connection */
       if(is_template){
-	ags_recall_remove_recall_dependency(AGS_RECALL(play_notation_audio_run),
-					    (AgsRecall *) old_delay_audio_run);
+	if(old_delay_audio_run != NULL){
+	  AgsRecallDependency *recall_dependency;
+
+	  GList *list;
+	  
+	  recall_dependency = NULL;
+	  list = ags_recall_dependency_find_dependency(AGS_RECALL(play_notation_audio_run)->recall_dependency,
+						       old_delay_audio_run);
+
+	  if(list != NULL){
+	    recall_dependency = list->data;
+	  }
+	  
+	  ags_recall_remove_recall_dependency(AGS_RECALL(play_notation_audio_run),
+					      recall_dependency);
+	}
       }else{
 	if(ags_connectable_is_connected(AGS_CONNECTABLE(play_notation_audio_run))){
 	  ags_connectable_disconnect_connection(AGS_CONNECTABLE(play_notation_audio_run),
-						old_delay_audio_run);
+						(GObject *) old_delay_audio_run);
 	}
       }
 
@@ -343,7 +356,7 @@ ags_play_notation_audio_run_set_property(GObject *gobject,
 	}else{
 	  if(ags_connectable_is_connected(AGS_CONNECTABLE(play_notation_audio_run))){
 	    ags_connectable_connect_connection(AGS_CONNECTABLE(play_notation_audio_run),
-					       delay_audio_run);
+					       (GObject *) delay_audio_run);
 	  }
 	}
       }
@@ -356,7 +369,8 @@ ags_play_notation_audio_run_set_property(GObject *gobject,
       gboolean is_template;
 
       count_beats_audio_run = g_value_get_object(value);
-
+      old_count_beats_audio_run = NULL;
+      
       pthread_mutex_lock(recall_mutex);
 
       if(count_beats_audio_run == play_notation_audio_run->count_beats_audio_run){
@@ -372,6 +386,8 @@ ags_play_notation_audio_run_set_property(GObject *gobject,
       }
 
       if(play_notation_audio_run->count_beats_audio_run != NULL){
+	old_count_beats_audio_run = play_notation_audio_run->count_beats_audio_run;
+	
 	g_object_unref(G_OBJECT(play_notation_audio_run->count_beats_audio_run));
       }
 
@@ -385,17 +401,30 @@ ags_play_notation_audio_run_set_property(GObject *gobject,
 
       /* check template */
       if(count_beats_audio_run != NULL &&
-	 ags_recall_test_flags(play_notation_audio_run, AGS_RECALL_TEMPLATE)){
+	 ags_recall_test_flags((AgsRecall *) play_notation_audio_run, AGS_RECALL_TEMPLATE)){
 	is_template = TRUE;
       }else{
 	is_template = FALSE;
       }
 
       /* dependency - remove */
-      if(is_template &&
-	 old_count_beats_audio_run != NULL){
-	ags_recall_remove_recall_dependency(AGS_RECALL(play_notation_audio_run),
-					    (AgsRecall *) old_count_beats_audio_run);
+      if(is_template){
+	if(old_count_beats_audio_run != NULL){
+	  AgsRecallDependency *recall_dependency;
+
+	  GList *list;
+	  
+	  recall_dependency = NULL;
+	  list = ags_recall_dependency_find_dependency(AGS_RECALL(play_notation_audio_run)->recall_dependency,
+						       old_count_beats_audio_run);
+
+	  if(list != NULL){
+	    recall_dependency = list->data;
+	  }
+	  
+	  ags_recall_remove_recall_dependency(AGS_RECALL(play_notation_audio_run),
+					      recall_dependency);
+	}
       }
 
       /* dependency - add */
@@ -571,7 +600,7 @@ ags_play_notation_audio_run_connect(AgsConnectable *connectable)
 	       "delay-audio-run", &delay_audio_run,
 	       NULL);
 
-  ags_connectable_connect_connection(connectable, delay_audio_run);
+  ags_connectable_connect_connection(connectable, (GObject *) delay_audio_run);
   
   /* call parent */
   ags_play_notation_audio_run_parent_connectable_interface->connect(connectable);
@@ -593,7 +622,7 @@ ags_play_notation_audio_run_disconnect(AgsConnectable *connectable)
 	       "delay-audio-run", &delay_audio_run,
 	       NULL);
 
-  ags_connectable_disconnect_connection(connectable, delay_audio_run);
+  ags_connectable_disconnect_connection(connectable, (GObject *) delay_audio_run);
 
   /* call parent */
   ags_play_notation_audio_run_parent_connectable_interface->disconnect(connectable);
@@ -615,7 +644,7 @@ ags_play_notation_audio_run_connect_connection(AgsConnectable *connectable, GObj
 	       "delay-audio-run", &delay_audio_run,
 	       NULL);
 
-  if(connection == delay_audio_run){
+  if(connection == (GObject *) delay_audio_run){
     g_signal_connect(G_OBJECT(delay_audio_run), "notation-alloc-input",
 		     G_CALLBACK(ags_play_notation_audio_run_alloc_input_callback), play_notation_audio_run);  
   }
@@ -637,7 +666,7 @@ ags_play_notation_audio_run_disconnect_connection(AgsConnectable *connectable, G
 	       "delay-audio-run", &delay_audio_run,
 	       NULL);
 
-  if(connection == delay_audio_run){
+  if(connection == (GObject *) delay_audio_run){
     g_object_disconnect(G_OBJECT(delay_audio_run),
 			"any_signal::notation-alloc-input",
 			G_CALLBACK(ags_play_notation_audio_run_alloc_input_callback),
@@ -1025,7 +1054,7 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
 	    
 	    audio_signal = NULL;
 	    list = ags_audio_signal_find_by_recall_id(start_list,
-						      child_recall_id);
+						      (GObject *) child_recall_id);
 	    
 	    if(list != NULL){
 	      audio_signal = list->data;

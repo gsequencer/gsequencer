@@ -263,7 +263,7 @@ ags_message_delivery_find_namespace(AgsMessageDelivery *message_delivery,
 		  message_queue->namespace)){
       pthread_mutex_unlock(message_queue->obj_mutex);
 
-      return(message_queue);
+      return((GObject *) message_queue);
     }
 
     pthread_mutex_unlock(message_queue->obj_mutex);
@@ -301,8 +301,8 @@ ags_message_delivery_add_message(AgsMessageDelivery *message_delivery,
     return;
   }
 
-  message_queue = ags_message_delivery_find_namespace(message_delivery,
-						      namespace);
+  message_queue = (AgsMessageQueue *) ags_message_delivery_find_namespace(message_delivery,
+									  namespace);
 
   if(message_queue == NULL){
     message_queue = ags_message_queue_new(namespace);
@@ -336,8 +336,8 @@ ags_message_delivery_remove_message(AgsMessageDelivery *message_delivery,
     return;
   }
 
-  message_queue = ags_message_delivery_find_namespace(message_delivery,
-						      namespace);
+  message_queue = (AgsMessageQueue *) ags_message_delivery_find_namespace(message_delivery,
+									  namespace);
   
   ags_message_queue_remove_message(message_queue,
 				   message);  
@@ -406,8 +406,8 @@ ags_message_delivery_find_sender(AgsMessageDelivery *message_delivery,
       pthread_mutex_unlock(message_delivery->obj_mutex);
     }
   }else{
-    message_queue = ags_message_delivery_find_namespace(message_delivery,
-							namespace);
+    message_queue = (AgsMessageQueue *) ags_message_delivery_find_namespace(message_delivery,
+									    namespace);
 
     match = ags_message_queue_find_sender(message_queue,
 					  sender);
@@ -479,8 +479,8 @@ ags_message_delivery_find_recipient(AgsMessageDelivery *message_delivery,
       pthread_mutex_unlock(message_delivery->obj_mutex);
     }
   }else{
-    message_queue = ags_message_delivery_find_namespace(message_delivery,
-							namespace);
+    message_queue = (AgsMessageQueue *) ags_message_delivery_find_namespace(message_delivery,
+									    namespace);
 
     match = ags_message_queue_find_recipient(message_queue,
 					     recipient);
@@ -552,8 +552,8 @@ ags_message_delivery_query_message(AgsMessageDelivery *message_delivery,
       pthread_mutex_unlock(message_delivery->obj_mutex);
     }
   }else{
-    message_queue = ags_message_delivery_find_namespace(message_delivery,
-							namespace);
+    message_queue = (AgsMessageQueue *) ags_message_delivery_find_namespace(message_delivery,
+									    namespace);
 
     match = ags_message_queue_query_message(message_queue,
 					    xpath);

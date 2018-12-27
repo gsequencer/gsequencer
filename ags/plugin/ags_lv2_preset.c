@@ -250,7 +250,7 @@ ags_lv2_preset_set_property(GObject *gobject,
 
       pthread_mutex_lock(lv2_preset_mutex);
       
-      if(lv2_preset->lv2_plugin == lv2_plugin){
+      if(lv2_preset->lv2_plugin == (GObject *) lv2_plugin){
 	pthread_mutex_unlock(lv2_preset_mutex);
 
 	return;
@@ -476,7 +476,7 @@ ags_lv2_preset_finalize(GObject *gobject)
   /* port preset */
   if(lv2_preset->port_preset != NULL){
     g_list_free_full(lv2_preset->port_preset,
-		     ags_lv2_port_preset_free);
+		     (GDestroyNotify) ags_lv2_port_preset_free);
   }
 
   /* destroy object mutex */

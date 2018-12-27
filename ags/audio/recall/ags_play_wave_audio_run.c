@@ -99,7 +99,7 @@ ags_play_wave_audio_run_class_init(AgsPlayWaveAudioRunClass *play_wave_audio_run
 void
 ags_play_wave_audio_run_init(AgsPlayWaveAudioRun *play_wave_audio_run)
 {
-  ags_recall_set_ability_flags(play_wave_audio_run, (AGS_SOUND_ABILITY_WAVE));
+  ags_recall_set_ability_flags((AgsRecall *) play_wave_audio_run, (AGS_SOUND_ABILITY_WAVE));
 
   AGS_RECALL(play_wave_audio_run)->name = "ags-play-wave";
   AGS_RECALL(play_wave_audio_run)->version = AGS_RECALL_DEFAULT_VERSION;

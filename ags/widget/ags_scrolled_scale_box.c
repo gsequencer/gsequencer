@@ -201,16 +201,16 @@ ags_scrolled_scale_box_init(AgsScrolledScaleBox *scrolled_scale_box)
   g_object_set(scrolled_scale_box->viewport,
 	       "shadow-type", GTK_SHADOW_NONE,
 	       NULL);
-  gtk_container_add(scrolled_scale_box,
-		    scrolled_scale_box->viewport);
+  gtk_container_add((GtkContainer *) scrolled_scale_box,
+		    (GtkWidget *) scrolled_scale_box->viewport);
 
   /* scale box */
   scrolled_scale_box->scale_box = NULL;
   
 #if 0
   scrolled_scale_box->scale_box = ags_vscale_box_new();
-  gtk_container_add(scrolled_scale_box->viewport,
-		    scrolled_scale_box->scale_box);
+  gtk_container_add((GtkContainer *) scrolled_scale_box->viewport,
+		    (GtkWidget *) scrolled_scale_box->scale_box);
 #endif
 }
 
@@ -350,7 +350,7 @@ ags_scrolled_scale_box_size_request(GtkWidget *widget,
   requisition->width = AGS_SCALE_DEFAULT_WIDTH;
   requisition->height = -1;
   
-  gtk_widget_size_request(gtk_bin_get_child((GtkContainer *) widget),
+  gtk_widget_size_request(gtk_bin_get_child((GtkBin *) widget),
 			  &child_requisition);
 }
 

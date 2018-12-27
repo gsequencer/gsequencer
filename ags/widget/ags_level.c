@@ -404,21 +404,21 @@ ags_level_set_property(GObject *gobject,
     {
       level->lower = g_value_get_double(value);
 
-      gtk_widget_queue_draw(level);
+      gtk_widget_queue_draw((GtkWidget *) level);
     }
     break;
   case PROP_UPPER:
     {
       level->upper = g_value_get_double(value);
 
-      gtk_widget_queue_draw(level);
+      gtk_widget_queue_draw((GtkWidget *) level);
     }
     break;
   case PROP_NORMALIZED_VOLUME:
     {
       level->normalized_volume = g_value_get_double(value);
 
-      gtk_widget_queue_draw(level);
+      gtk_widget_queue_draw((GtkWidget *) level);
     }
     break;
   default:
@@ -853,7 +853,7 @@ ags_level_button_press(GtkWidget *widget,
       }
 
       level->normalized_volume = normalized_volume;
-      gtk_widget_queue_draw(level);
+      gtk_widget_queue_draw((GtkWidget *) level);
 
       ags_level_value_changed(level,
 			      normalized_volume);
@@ -889,7 +889,7 @@ ags_level_button_release(GtkWidget *widget,
       }
 
       level->normalized_volume = normalized_volume;
-      gtk_widget_queue_draw(level);
+      gtk_widget_queue_draw((GtkWidget *) level);
 
       ags_level_value_changed(level,
 			      normalized_volume);
@@ -1067,7 +1067,7 @@ ags_level_motion_notify(GtkWidget *widget,
 
     if(new_normalized_volume != level->normalized_volume){
       level->normalized_volume = new_normalized_volume;
-      gtk_widget_queue_draw(level);
+      gtk_widget_queue_draw((GtkWidget *) level);
       
       ags_level_value_changed(level,
 			      new_normalized_volume);

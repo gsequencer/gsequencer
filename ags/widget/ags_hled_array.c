@@ -74,11 +74,11 @@ ags_hled_array_class_init(AgsHLedArrayClass *hled_array)
 void
 ags_hled_array_init(AgsHLedArray *hled_array)
 {
-  AGS_LED_ARRAY(hled_array)->box = gtk_hbox_new(FALSE,
-						0);
-  gtk_container_add(hled_array,
-		    AGS_LED_ARRAY(hled_array)->box);
-  gtk_widget_show(AGS_LED_ARRAY(hled_array)->box);
+  AGS_LED_ARRAY(hled_array)->box = (GtkBox *) gtk_hbox_new(FALSE,
+							   0);
+  gtk_container_add((GtkContainer *) hled_array,
+		    (GtkWidget *) AGS_LED_ARRAY(hled_array)->box);
+  gtk_widget_show((GtkWidget *) AGS_LED_ARRAY(hled_array)->box);
 }
 
 /**

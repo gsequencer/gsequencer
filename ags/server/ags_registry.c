@@ -283,7 +283,7 @@ ags_registry_dispose(GObject *gobject)
   }
 
   g_list_free_full(registry->entry,
-		   ags_registry_entry_free);
+		   (GDestroyNotify) ags_registry_entry_free);
 
   registry->entry = NULL;
   
@@ -303,7 +303,7 @@ ags_registry_finalize(GObject *gobject)
   }
 
   g_list_free_full(registry->entry,
-		   ags_registry_entry_free);
+		   (GDestroyNotify) ags_registry_entry_free);
   
   /* mutex */
   pthread_mutex_destroy(registry->mutex);

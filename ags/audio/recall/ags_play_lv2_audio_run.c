@@ -435,7 +435,8 @@ ags_play_lv2_audio_run_set_property(GObject *gobject,
       gboolean is_template;
 
       count_beats_audio_run = g_value_get_object(value);
-
+      old_count_beats_audio_run = NULL;
+      
       pthread_mutex_lock(recall_mutex);
 
       if(count_beats_audio_run == play_lv2_audio_run->count_beats_audio_run){
@@ -451,6 +452,8 @@ ags_play_lv2_audio_run_set_property(GObject *gobject,
       }
 
       if(play_lv2_audio_run->count_beats_audio_run != NULL){
+	old_count_beats_audio_run = play_lv2_audio_run->count_beats_audio_run;
+
 	g_object_unref(G_OBJECT(play_lv2_audio_run->count_beats_audio_run));
       }
 
@@ -471,10 +474,23 @@ ags_play_lv2_audio_run_set_property(GObject *gobject,
       }
 
       /* dependency - remove */
-      if(is_template &&
-	 old_count_beats_audio_run != NULL){
-	ags_recall_remove_recall_dependency(AGS_RECALL(play_lv2_audio_run),
-					    (AgsRecall *) old_count_beats_audio_run);
+      if(is_template){
+	if(old_count_beats_audio_run != NULL){
+	  AgsRecallDependency *recall_dependency;
+
+	  GList *list;
+	  
+	  recall_dependency = NULL;
+	  list = ags_recall_dependency_find_dependency(AGS_RECALL(play_lv2_audio_run)->recall_dependency,
+						       old_count_beats_audio_run);
+
+	  if(list != NULL){
+	    recall_dependency = list->data;
+	  }
+	  
+	  ags_recall_remove_recall_dependency(AGS_RECALL(play_lv2_audio_run),
+					      recall_dependency);
+	}
       }
 
       /* dependency - add */
@@ -695,7 +711,7 @@ ags_play_lv2_audio_run_connect(AgsConnectable *connectable)
 	       "delay-audio-run", &delay_audio_run,
 	       NULL);
 
-  ags_connectable_connect_connection(connectable, delay_audio_run);
+  ags_connectable_connect_connection(connectable, (GObject *) delay_audio_run);
   
   /* call parent */
   ags_play_lv2_audio_run_parent_connectable_interface->connect(connectable);
@@ -717,7 +733,7 @@ ags_play_lv2_audio_run_disconnect(AgsConnectable *connectable)
 	       "delay-audio-run", &delay_audio_run,
 	       NULL);
 
-  ags_connectable_disconnect_connection(connectable, delay_audio_run);
+  ags_connectable_disconnect_connection(connectable, (GObject *) delay_audio_run);
 
   /* call parent */
   ags_play_lv2_audio_run_parent_connectable_interface->disconnect(connectable);
@@ -739,7 +755,7 @@ ags_play_lv2_audio_run_connect_connection(AgsConnectable *connectable, GObject *
 	       "delay-audio-run", &delay_audio_run,
 	       NULL);
 
-  if(connection == delay_audio_run){
+  if(connection == (GObject *) delay_audio_run){
     g_signal_connect(G_OBJECT(delay_audio_run), "notation-alloc-input",
 		     G_CALLBACK(ags_play_lv2_audio_run_alloc_input_callback), play_lv2_audio_run);  
   }
@@ -761,7 +777,7 @@ ags_play_lv2_audio_run_disconnect_connection(AgsConnectable *connectable, GObjec
 	       "delay-audio-run", &delay_audio_run,
 	       NULL);
 
-  if(connection == delay_audio_run){
+  if(connection == (GObject *) delay_audio_run){
     g_object_disconnect(G_OBJECT(delay_audio_run),
 			"any_signal::notation-alloc-input",
 			G_CALLBACK(ags_play_lv2_audio_run_alloc_input_callback),
@@ -1040,7 +1056,7 @@ ags_play_lv2_audio_run_run_init_pre(AgsRecall *recall)
   play_lv2_audio_run->input = input;
   
   /* instantiate lv2 */  
-  lv2_handle = (LV2_Handle *) ags_base_plugin_instantiate(lv2_plugin,
+  lv2_handle = (LV2_Handle *) ags_base_plugin_instantiate((AgsBasePlugin *) lv2_plugin,
 							  samplerate, buffer_size);
 
   play_lv2_audio_run->lv2_handle = lv2_handle;
@@ -1170,7 +1186,8 @@ ags_play_lv2_audio_run_run_init_pre(AgsRecall *recall)
       pthread_mutex_unlock(plugin_port_mutex);
 
       list = ags_port_find_specifier(port, specifier);
-
+      port_data[i] = 0.0;
+      
       if(list != NULL){
 	GValue value = {0,};
 	
@@ -1568,7 +1585,8 @@ ags_play_lv2_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_run,
 
   list = ags_notation_find_near_timestamp(start_list, audio_channel,
 					  play_lv2_audio_run->timestamp);
-
+  start_current_position = NULL;
+  
   if(list != NULL){
     notation = list->data;
 
@@ -1643,6 +1661,8 @@ ags_play_lv2_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_run,
     seq_event->data.note.velocity = 127;
 
     /* write to port */
+    success = FALSE;
+    
     if(ags_play_lv2_audio_test_flags(play_lv2_audio, AGS_PLAY_LV2_AUDIO_HAS_ATOM_PORT)){
       success = ags_lv2_plugin_atom_sequence_append_midi(play_lv2_audio_run->atom_port,
 							 AGS_PLAY_LV2_AUDIO_DEFAULT_MIDI_LENGHT,

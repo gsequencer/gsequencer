@@ -107,7 +107,7 @@ ags_play_wave_channel_run_class_init(AgsPlayWaveChannelRunClass *play_wave_chann
 void
 ags_play_wave_channel_run_init(AgsPlayWaveChannelRun *play_wave_channel_run)
 {
-  ags_recall_set_ability_flags(play_wave_channel_run, (AGS_SOUND_ABILITY_WAVE));
+  ags_recall_set_ability_flags((AgsRecall *) play_wave_channel_run, (AGS_SOUND_ABILITY_WAVE));
 
   AGS_RECALL(play_wave_channel_run)->name = "ags-play-wave";
   AGS_RECALL(play_wave_channel_run)->version = AGS_RECALL_DEFAULT_VERSION;
@@ -204,8 +204,8 @@ ags_play_wave_channel_run_run_inter(AgsRecall *recall)
 		 NULL);
 	  
     play_wave_channel_run->audio_signal = ags_audio_signal_new(output_soundcard,
-							       first_recycling,
-							       recall_id);
+							       (GObject *) first_recycling,
+							       (GObject *) recall_id);
     g_object_set(play_wave_channel_run->audio_signal,
 		 "samplerate", samplerate,
 		 "buffer-size", buffer_size,

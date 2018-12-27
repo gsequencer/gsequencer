@@ -97,11 +97,11 @@ ags_rt_stream_channel_run_class_init(AgsRtStreamChannelRunClass *rt_stream_chann
 void
 ags_rt_stream_channel_run_init(AgsRtStreamChannelRun *rt_stream_channel_run)
 {
-  ags_recall_set_ability_flags(rt_stream_channel_run, (AGS_SOUND_ABILITY_PLAYBACK |
-						       AGS_SOUND_ABILITY_SEQUENCER |
-						       AGS_SOUND_ABILITY_NOTATION |
-						       AGS_SOUND_ABILITY_WAVE |
-						       AGS_SOUND_ABILITY_MIDI));
+  ags_recall_set_ability_flags((AgsRecall *) rt_stream_channel_run, (AGS_SOUND_ABILITY_PLAYBACK |
+								     AGS_SOUND_ABILITY_SEQUENCER |
+								     AGS_SOUND_ABILITY_NOTATION |
+								     AGS_SOUND_ABILITY_WAVE |
+								     AGS_SOUND_ABILITY_MIDI));
 
   AGS_RECALL(rt_stream_channel_run)->name = "ags-rt_stream";
   AGS_RECALL(rt_stream_channel_run)->version = AGS_RECALL_DEFAULT_VERSION;
@@ -151,8 +151,8 @@ ags_rt_stream_channel_run_check_rt_data(AgsRecall *recall)
     
     /* create rt template */
     rt_template = ags_audio_signal_new(output_soundcard,
-				       recycling,
-				       recall_id);
+				       (GObject *) recycling,
+				       (GObject *) recall_id);
     rt_template->flags |= AGS_AUDIO_SIGNAL_RT_TEMPLATE;
     ags_recycling_create_audio_signal_with_defaults(recycling,
 						    rt_template,
@@ -162,8 +162,8 @@ ags_rt_stream_channel_run_check_rt_data(AgsRecall *recall)
     
     /* create buffer */
     audio_signal = ags_audio_signal_new(output_soundcard,
-					recycling,
-					recall_id);
+					(GObject *) recycling,
+					(GObject *) recall_id);
 
     g_object_set(audio_signal,
 		 "rt-template", rt_template,
@@ -233,7 +233,7 @@ ags_rt_stream_channel_run_done(AgsRecall *recall)
     audio_signal = start_audio_signal;
     
     while((audio_signal = ags_audio_signal_find_by_recall_id(audio_signal,
-							     recall_id)) != NULL){
+							     (GObject *) recall_id)) != NULL){
       ags_recycling_remove_audio_signal(recycling,
 					audio_signal->data);
       

@@ -90,10 +90,10 @@ ags_prepare_channel_run_class_init(AgsPrepareChannelRunClass *prepare_channel_ru
 void
 ags_prepare_channel_run_init(AgsPrepareChannelRun *prepare_channel_run)
 {
-  ags_recall_set_ability_flags(prepare_channel_run, (AGS_SOUND_ABILITY_SEQUENCER |
-						     AGS_SOUND_ABILITY_NOTATION |
-						     AGS_SOUND_ABILITY_WAVE |
-						     AGS_SOUND_ABILITY_MIDI));
+  ags_recall_set_ability_flags((AgsRecall *) prepare_channel_run, (AGS_SOUND_ABILITY_SEQUENCER |
+								   AGS_SOUND_ABILITY_NOTATION |
+								   AGS_SOUND_ABILITY_WAVE |
+								   AGS_SOUND_ABILITY_MIDI));
 
   AGS_RECALL(prepare_channel_run)->name = "ags-prepare";
   AGS_RECALL(prepare_channel_run)->version = AGS_RECALL_DEFAULT_VERSION;

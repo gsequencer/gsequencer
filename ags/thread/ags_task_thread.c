@@ -359,7 +359,7 @@ ags_task_thread_set_property(GObject *gobject,
 
       pthread_mutex_lock(thread_mutex);
 
-      if((AgsThreadPool *) task_thread->thread_pool == thread_pool){
+      if(task_thread->thread_pool == thread_pool){
 	pthread_mutex_unlock(thread_mutex);
 	
 	return;
@@ -373,7 +373,7 @@ ags_task_thread_set_property(GObject *gobject,
 	g_object_ref(G_OBJECT(thread_pool));
       }
 
-      task_thread->thread_pool = (GObject *) thread_pool;
+      task_thread->thread_pool = thread_pool;
 
       pthread_mutex_unlock(thread_mutex);
     }
@@ -538,7 +538,7 @@ void
 ags_task_thread_schedule_task(AgsAsyncQueue *async_queue, GObject *task)
 {
   ags_task_thread_append_task(AGS_TASK_THREAD(async_queue),
-			      task);
+			      (AgsTask *) task);
 }
 
 void

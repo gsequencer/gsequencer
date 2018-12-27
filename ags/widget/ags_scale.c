@@ -433,21 +433,21 @@ ags_scale_set_property(GObject *gobject,
     {
       scale->lower = g_value_get_double(value);
 
-      gtk_widget_queue_draw(scale);
+      gtk_widget_queue_draw((GtkWidget *) scale);
     }
     break;
   case PROP_UPPER:
     {
       scale->upper = g_value_get_double(value);
 
-      gtk_widget_queue_draw(scale);
+      gtk_widget_queue_draw((GtkWidget *) scale);
     }
     break;
   case PROP_DEFAULT_VALUE:
     {
       scale->default_value = g_value_get_double(value);
 
-      gtk_widget_queue_draw(scale);
+      gtk_widget_queue_draw((GtkWidget *) scale);
     }
     break;
   default:
@@ -894,7 +894,7 @@ ags_scale_button_press(GtkWidget *widget,
       }
 
       scale->default_value = default_value;
-      gtk_widget_queue_draw(scale);
+      gtk_widget_queue_draw((GtkWidget *) scale);
 
       ags_scale_value_changed(scale,
 			      default_value);
@@ -934,7 +934,7 @@ ags_scale_button_release(GtkWidget *widget,
       }
 
       scale->default_value = default_value;
-      gtk_widget_queue_draw(scale);
+      gtk_widget_queue_draw((GtkWidget *) scale);
 
       ags_scale_value_changed(scale,
 			      default_value);
@@ -1132,7 +1132,7 @@ ags_scale_motion_notify(GtkWidget *widget,
 
     if(new_default_value != scale->default_value){
       scale->default_value = new_default_value;
-      gtk_widget_queue_draw(scale);
+      gtk_widget_queue_draw((GtkWidget *) scale);
       
       ags_scale_value_changed(scale,
 			      new_default_value);

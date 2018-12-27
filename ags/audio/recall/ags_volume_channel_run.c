@@ -86,11 +86,11 @@ ags_volume_channel_run_class_init(AgsVolumeChannelRunClass *volume_channel_run)
 void
 ags_volume_channel_run_init(AgsVolumeChannelRun *volume_channel_run)
 {
-  ags_recall_set_ability_flags(volume_channel_run, (AGS_SOUND_ABILITY_PLAYBACK |
-						    AGS_SOUND_ABILITY_SEQUENCER |
-						    AGS_SOUND_ABILITY_NOTATION |
-						    AGS_SOUND_ABILITY_WAVE |
-						    AGS_SOUND_ABILITY_MIDI));
+  ags_recall_set_ability_flags((AgsRecall *) volume_channel_run, (AGS_SOUND_ABILITY_PLAYBACK |
+								  AGS_SOUND_ABILITY_SEQUENCER |
+								  AGS_SOUND_ABILITY_NOTATION |
+								  AGS_SOUND_ABILITY_WAVE |
+								  AGS_SOUND_ABILITY_MIDI));
 
   AGS_RECALL(volume_channel_run)->name = "ags-volume";
   AGS_RECALL(volume_channel_run)->version = AGS_RECALL_DEFAULT_VERSION;

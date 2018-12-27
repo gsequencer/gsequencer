@@ -198,13 +198,13 @@ ags_scrolled_piano_init(AgsScrolledPiano *scrolled_piano)
   g_object_set(scrolled_piano->viewport,
 	       "shadow-type", GTK_SHADOW_NONE,
 	       NULL);
-  gtk_container_add(scrolled_piano,
-		    scrolled_piano->viewport);
+  gtk_container_add((GtkContainer *) scrolled_piano,
+		    (GtkWidget *) scrolled_piano->viewport);
 
   /* piano */
   scrolled_piano->piano = ags_piano_new();
-  gtk_container_add(scrolled_piano->viewport,
-		    scrolled_piano->piano);
+  gtk_container_add((GtkContainer *) scrolled_piano->viewport,
+		    (GtkWidget *) scrolled_piano->piano);
 }
 
 void
@@ -358,7 +358,7 @@ ags_scrolled_piano_size_request(GtkWidget *widget,
     requisition->height = scrolled_piano->piano->key_width + (scrolled_piano->margin_top + scrolled_piano->margin_bottom);
   }
 
-  gtk_widget_size_request((GtkWidget *) gtk_bin_get_child(scrolled_piano),
+  gtk_widget_size_request((GtkWidget *) gtk_bin_get_child((GtkBin *) scrolled_piano),
 			  &child_requisition);
 }
 

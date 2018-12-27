@@ -74,11 +74,11 @@ ags_vled_array_class_init(AgsVLedArrayClass *vled_array)
 void
 ags_vled_array_init(AgsVLedArray *vled_array)
 {
-  AGS_LED_ARRAY(vled_array)->box = gtk_vbox_new(FALSE,
-						0);
-  gtk_container_add(vled_array,
-		    AGS_LED_ARRAY(vled_array)->box);
-  gtk_widget_show(AGS_LED_ARRAY(vled_array)->box);
+  AGS_LED_ARRAY(vled_array)->box = (GtkBox *) gtk_vbox_new(FALSE,
+							   0);
+  gtk_container_add((GtkContainer *) vled_array,
+		    (GtkWidget *) AGS_LED_ARRAY(vled_array)->box);
+  gtk_widget_show((GtkWidget *) AGS_LED_ARRAY(vled_array)->box);
 }
 
 /**

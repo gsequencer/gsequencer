@@ -87,11 +87,11 @@ ags_stream_channel_run_class_init(AgsStreamChannelRunClass *stream_channel_run)
 void
 ags_stream_channel_run_init(AgsStreamChannelRun *stream_channel_run)
 {
-  ags_recall_set_ability_flags(stream_channel_run, (AGS_SOUND_ABILITY_PLAYBACK |
-						    AGS_SOUND_ABILITY_SEQUENCER |
-						    AGS_SOUND_ABILITY_NOTATION |
-						    AGS_SOUND_ABILITY_WAVE |
-						    AGS_SOUND_ABILITY_MIDI));
+  ags_recall_set_ability_flags((AgsRecall *) stream_channel_run, (AGS_SOUND_ABILITY_PLAYBACK |
+								  AGS_SOUND_ABILITY_SEQUENCER |
+								  AGS_SOUND_ABILITY_NOTATION |
+								  AGS_SOUND_ABILITY_WAVE |
+								  AGS_SOUND_ABILITY_MIDI));
 
   AGS_RECALL(stream_channel_run)->name = "ags-stream";
   AGS_RECALL(stream_channel_run)->version = AGS_RECALL_DEFAULT_VERSION;

@@ -300,7 +300,7 @@ ags_lv2_worker_set_property(GObject *gobject,
       pthread_mutex_lock(lv2_worker_mutex);
 
       if(response_data == NULL ||
-	 g_list_find(lv2_worker, response_data) != NULL){
+	 g_list_find(lv2_worker->response_data, response_data) != NULL){
 	pthread_mutex_unlock(lv2_worker_mutex);
 
 	return;
@@ -448,7 +448,7 @@ ags_lv2_worker_finalize(GObject *gobject)
   free(lv2_worker->obj_mutexattr);
 
   g_list_free_full(lv2_worker->response_data,
-		   ags_lv2_worker_free_response_data);
+		   (GDestroyNotify) ags_lv2_worker_free_response_data);
   
   if(lv2_worker->returnable_thread != NULL){
     g_object_unref(lv2_worker->returnable_thread);

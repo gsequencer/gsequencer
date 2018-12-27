@@ -261,7 +261,7 @@ ags_notebook_finalize(GObject *gobject)
   
   if(notebook->tab_free_func != NULL){
     g_list_free_full(notebook->tab,
-		     notebook->tab_free_func);
+		     (GDestroyNotify) notebook->tab_free_func);
   }else{
     g_list_free_full(notebook,
 		     g_free);
@@ -683,7 +683,7 @@ ags_notebook_add_tab(AgsNotebook *notebook)
 			  tab_index);
   }
   
-  tab->toggle = (GtkToggleButton *) g_object_new(tab->toggle,
+  tab->toggle = (GtkToggleButton *) g_object_new(GTK_TYPE_TOGGLE_BUTTON,
 						 "label", str,
 						 "xalign", 0.0,
 						 "yalign", 0.0,

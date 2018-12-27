@@ -251,13 +251,13 @@ ags_led_array_realize(GtkWidget *widget)
 {
   AgsLedArray *led_array;
 
-  led_array = widget;
+  led_array = (AgsLedArry *) widget;
   
   /* call parent */
   GTK_WIDGET_CLASS(ags_led_array_parent_class)->realize(widget);
 
   if(led_array_style == NULL){
-    led_array_style = gtk_style_copy(gtk_widget_get_style(led_array));
+    led_array_style = gtk_style_copy(gtk_widget_get_style((GtkWidget *) led_array));
   }
   
   gtk_widget_set_style((GtkWidget *) led_array,
@@ -278,7 +278,7 @@ ags_led_array_set_led_count(AgsLedArray *led_array,
   if(led_count < led_array->led_count){
     /* shrink */
     for(i = led_count; i < led_array->led_count; i++){
-      gtk_widget_destroy(led_array->led[i]);
+      gtk_widget_destroy((GtkWidget *) led_array->led[i]);
     }
 
     if(led_array->led == NULL){
@@ -301,10 +301,10 @@ ags_led_array_set_led_count(AgsLedArray *led_array,
       gtk_widget_set_size_request((GtkWidget *) led_array->led[i],
 				  led_array->led_width, led_array->led_height);
       gtk_box_pack_start(led_array->box,
-			 led_array->led[i],
+			 (GtkWidget *) led_array->led[i],
 			 TRUE, FALSE,
 			 0);
-      gtk_widget_show(led_array->led[i]);
+      gtk_widget_show((GtkWidget *) led_array->led[i]);
     }
   }
 

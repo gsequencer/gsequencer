@@ -123,20 +123,20 @@ ags_rt_stream_audio_signal_finalize(GObject *gobject)
 {
   AgsAudioSignal *audio_signal;
 
-  audio_signal = AGS_RT_STREAM_AUDIO_SIGNAL(gobject)->dispose_source;
+  audio_signal = (AgsAudioSignal *) AGS_RT_STREAM_AUDIO_SIGNAL(gobject)->dispose_source;
   
   if(audio_signal != NULL){
     AgsRecycling *recycling;
 
-    recycling = audio_signal->recycling;
+    recycling = (AgsRecycling *) audio_signal->recycling;
     
     if(recycling != NULL){
       ags_recycling_remove_audio_signal(recycling,
 					audio_signal);
     }
     
-    g_object_run_dispose(audio_signal);
-    g_object_unref(audio_signal);
+    g_object_run_dispose((GObject *) audio_signal);
+    g_object_unref((GObject *) audio_signal);
   }
 
   /* call parent */
@@ -206,7 +206,7 @@ ags_rt_stream_audio_signal_run_pre(AgsRecall *recall)
 	       "buffer-size", &rt_template_buffer_size,
 	       "format", &rt_template_format,
 	       "length", &rt_template_length,
-	       "frame-count", rt_template_frame_count,
+	       "frame-count", &rt_template_frame_count,
 	       "loop-start", &loop_start,
 	       "loop-end", &loop_end,
 	       NULL);
@@ -410,7 +410,7 @@ ags_rt_stream_audio_signal_run_pre(AgsRecall *recall)
       GList *start_list;
 
       ags_audio_signal_remove_note(source,
-				   current);
+				   (GObject *) current);
 
       g_object_get(source,
 		   "note", &start_list,
