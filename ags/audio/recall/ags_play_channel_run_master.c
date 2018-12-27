@@ -252,7 +252,7 @@ ags_play_channel_run_master_set_property(GObject *gobject,
 
       pthread_mutex_unlock(recall_mutex);
 
-      if(ags_recall_test_flags(stream_channel_run, AGS_RECALL_TEMPLATE)){
+      if(ags_recall_test_flags((AgsRecall *) stream_channel_run, AGS_RECALL_TEMPLATE)){
 	is_template = TRUE;
       }else{
 	is_template = FALSE;
@@ -264,7 +264,7 @@ ags_play_channel_run_master_set_property(GObject *gobject,
       }else{
 	if(ags_connectable_is_connected(AGS_CONNECTABLE(play_channel_run_master))){
 	  ags_connectable_connect_connection(AGS_CONNECTABLE(play_channel_run_master),
-					     stream_channel_run);
+					     (GObject *) stream_channel_run);
 	}
       }
     }
@@ -381,7 +381,7 @@ ags_play_channel_run_master_connect(AgsConnectable *connectable)
 
   while(list != NULL){
     ags_connectable_connect_connection(connectable,
-				       list->data);
+				       (GObject *) list->data);
 
     list = list->next;
   }
@@ -423,7 +423,7 @@ ags_play_channel_run_master_disconnect(AgsConnectable *connectable)
 
   while(list != NULL){
     ags_connectable_disconnect_connection(connectable,
-					  list->data);
+					  (GObject *) list->data);
 
     list = list->next;
   }
@@ -671,7 +671,7 @@ ags_play_channel_run_master_remap_dependencies(AgsPlayChannelRunMaster *play_cha
 	  
 	  /* remove dependency */
 	  ags_recall_remove_recall_dependency(play_channel_run_master,
-					      dependency);
+					      list->data);
 
 	  /* remove stream channel run */
 	  g_object_get(play_channel_run_master,
@@ -738,7 +738,7 @@ ags_play_channel_run_master_remap_dependencies(AgsPlayChannelRunMaster *play_cha
 
 	list = list_start;
 
-	while((list = ags_recall_find_type_with_recycling_context(list, AGS_TYPE_STREAM_CHANNEL_RUN, recycling_context)) != NULL){
+	while((list = ags_recall_find_type_with_recycling_context(list, AGS_TYPE_STREAM_CHANNEL_RUN, (GObject *) recycling_context)) != NULL){
 	  g_object_set(play_channel_run_master,
 		       "stream-channel-run", list->data,
 		       NULL);
@@ -756,7 +756,7 @@ ags_play_channel_run_master_remap_dependencies(AgsPlayChannelRunMaster *play_cha
 	  while(master != NULL){
 	    current_master = AGS_PLAY_CHANNEL_RUN_MASTER(master->data);
 
-	    if(!ags_recall_test_flags(current_master, AGS_RECALL_TEMPLATE)){
+	    if(!ags_recall_test_flags((AgsRecall *) current_master, AGS_RECALL_TEMPLATE)){
 	      g_object_set(G_OBJECT(current_master),
 			   "stream-channel-run", AGS_STREAM_CHANNEL_RUN(list->data),
 			   NULL);
@@ -791,7 +791,7 @@ ags_play_channel_run_master_source_recycling_changed_callback(AgsChannel *channe
 							      AgsRecycling *new_start_changed_region, AgsRecycling *new_end_changed_region,
 							      AgsPlayChannelRunMaster *play_channel_run_master)
 {
-  if(ags_recall_test_flags(play_channel_run_master, AGS_RECALL_TEMPLATE)){
+  if(ags_recall_test_flags((AgsRecall *) play_channel_run_master, AGS_RECALL_TEMPLATE)){
     ags_play_channel_run_master_remap_dependencies(play_channel_run_master,
 						   old_start_changed_region, old_end_changed_region,
 						   new_start_changed_region, new_end_changed_region);

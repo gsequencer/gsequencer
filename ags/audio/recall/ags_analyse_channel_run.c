@@ -100,12 +100,12 @@ ags_analyse_channel_run_class_init(AgsAnalyseChannelRunClass *analyse_channel_ru
 void
 ags_analyse_channel_run_init(AgsAnalyseChannelRun *analyse_channel_run)
 {
-  ags_recall_set_ability_flags(analyse_channel_run, (AGS_SOUND_ABILITY_PLAYBACK |
-						     AGS_SOUND_ABILITY_SEQUENCER |
-						     AGS_SOUND_ABILITY_NOTATION |
-						     AGS_SOUND_ABILITY_WAVE |
-						     AGS_SOUND_ABILITY_MIDI));
-
+  ags_recall_set_ability_flags((AgsRecall *) analyse_channel_run, (AGS_SOUND_ABILITY_PLAYBACK |
+								   AGS_SOUND_ABILITY_SEQUENCER |
+								   AGS_SOUND_ABILITY_NOTATION |
+								   AGS_SOUND_ABILITY_WAVE |
+								   AGS_SOUND_ABILITY_MIDI));
+  
   AGS_RECALL(analyse_channel_run)->name = "ags-analyse";
   AGS_RECALL(analyse_channel_run)->version = AGS_RECALL_DEFAULT_VERSION;
   AGS_RECALL(analyse_channel_run)->build_id = AGS_RECALL_DEFAULT_BUILD_ID;

@@ -105,7 +105,7 @@ ags_capture_wave_channel_run_class_init(AgsCaptureWaveChannelRunClass *capture_w
 void
 ags_capture_wave_channel_run_init(AgsCaptureWaveChannelRun *capture_wave_channel_run)
 {
-  ags_recall_set_ability_flags(capture_wave_channel_run, (AGS_SOUND_ABILITY_WAVE));
+  ags_recall_set_ability_flags((AgsRecall *) capture_wave_channel_run, (AGS_SOUND_ABILITY_WAVE));
 
   AGS_RECALL(capture_wave_channel_run)->name = "ags-capture-wave";
   AGS_RECALL(capture_wave_channel_run)->version = AGS_RECALL_DEFAULT_VERSION;
@@ -364,7 +364,7 @@ ags_capture_wave_channel_run_run_pre(AgsRecall *recall)
     }else{
       AgsTimestamp *current_timestamp;
       
-      wave = ags_wave_new(audio,
+      wave = ags_wave_new((GObject *) audio,
 			  line);
 
       g_object_get(wave,
@@ -374,7 +374,7 @@ ags_capture_wave_channel_run_run_pre(AgsRecall *recall)
 				   relative_offset * floor(x_offset / relative_offset));
       
       ags_audio_add_wave(audio,
-			 wave);
+			 (GObject *) wave);
     }
 
     x_point_offset = x_offset - attack;
@@ -476,7 +476,7 @@ ags_capture_wave_channel_run_run_pre(AgsRecall *recall)
       }else{
 	AgsTimestamp *current_timestamp;
 	  
-	wave = ags_wave_new(audio,
+	wave = ags_wave_new((GObject *) audio,
 			    line);
 
 	g_object_get(wave,
@@ -486,7 +486,7 @@ ags_capture_wave_channel_run_run_pre(AgsRecall *recall)
 				     relative_offset * floor((x_offset + frame_count) / relative_offset));
 
 	ags_audio_add_wave(audio,
-			   wave);
+			   (GObject *) wave);
       }
     }
 

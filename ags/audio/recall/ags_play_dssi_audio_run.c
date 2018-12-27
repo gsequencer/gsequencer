@@ -282,10 +282,10 @@ ags_play_dssi_audio_run_init(AgsPlayDssiAudioRun *play_dssi_audio_run)
 {
   guint i;
   
-  ags_recall_set_ability_flags(play_dssi_audio_run, (AGS_SOUND_ABILITY_SEQUENCER |
-						     AGS_SOUND_ABILITY_NOTATION |
-						     AGS_SOUND_ABILITY_WAVE |
-						     AGS_SOUND_ABILITY_MIDI));
+  ags_recall_set_ability_flags((AgsRecall *) play_dssi_audio_run, (AGS_SOUND_ABILITY_SEQUENCER |
+								   AGS_SOUND_ABILITY_NOTATION |
+								   AGS_SOUND_ABILITY_WAVE |
+								   AGS_SOUND_ABILITY_MIDI));
 
   AGS_RECALL(play_dssi_audio_run)->name = "ags-play-dssi";
   AGS_RECALL(play_dssi_audio_run)->version = AGS_RECALL_DEFAULT_VERSION;
@@ -361,6 +361,7 @@ ags_play_dssi_audio_run_set_property(GObject *gobject,
       gboolean is_template;
 
       delay_audio_run = g_value_get_object(value);
+      old_delay_audio_run = NULL;
 
       pthread_mutex_lock(recall_mutex);
 
@@ -369,7 +370,7 @@ ags_play_dssi_audio_run_set_property(GObject *gobject,
 
 	return;
       }
-
+      
       if(play_dssi_audio_run->delay_audio_run != NULL){
 	old_delay_audio_run = play_dssi_audio_run->delay_audio_run;
 
@@ -384,7 +385,7 @@ ags_play_dssi_audio_run_set_property(GObject *gobject,
 
       /* check template */
       if(delay_audio_run != NULL &&
-	 ags_recall_test_flags(play_dssi_audio_run, AGS_RECALL_TEMPLATE)){
+	 ags_recall_test_flags((AgsRecall *) play_dssi_audio_run, AGS_RECALL_TEMPLATE)){
 	is_template = TRUE;
       }else{
 	is_template = FALSE;
@@ -392,12 +393,26 @@ ags_play_dssi_audio_run_set_property(GObject *gobject,
 
       /* old - dependency/connection */
       if(is_template){
-	ags_recall_remove_recall_dependency(AGS_RECALL(play_dssi_audio_run),
-					    (AgsRecall *) old_delay_audio_run);
+	if(old_delay_audio_run != NULL){
+	  AgsRecallDependency *recall_dependency;
+
+	  GList *list;
+	  
+	  recall_dependency = NULL;
+	  list = ags_recall_dependency_find_dependency(AGS_RECALL(play_dssi_audio_run)->recall_dependency,
+						       old_delay_audio_run);
+
+	  if(list != NULL){
+	    recall_dependency = list->data;
+	  }
+	  
+	  ags_recall_remove_recall_dependency(AGS_RECALL(play_dssi_audio_run),
+					      recall_dependency);
+	}
       }else{
 	if(ags_connectable_is_connected(AGS_CONNECTABLE(play_dssi_audio_run))){
 	  ags_connectable_disconnect_connection(AGS_CONNECTABLE(play_dssi_audio_run),
-						old_delay_audio_run);
+						(GObject *) old_delay_audio_run);
 	}
       }
 
@@ -415,7 +430,7 @@ ags_play_dssi_audio_run_set_property(GObject *gobject,
 	}else{
 	  if(ags_connectable_is_connected(AGS_CONNECTABLE(play_dssi_audio_run))){
 	    ags_connectable_connect_connection(AGS_CONNECTABLE(play_dssi_audio_run),
-					       delay_audio_run);
+					       (GObject *) delay_audio_run);
 	  }
 	}
       }
@@ -428,7 +443,8 @@ ags_play_dssi_audio_run_set_property(GObject *gobject,
       gboolean is_template;
 
       count_beats_audio_run = g_value_get_object(value);
-
+      old_count_beats_audio_run = NULL;
+      
       pthread_mutex_lock(recall_mutex);
 
       if(count_beats_audio_run == play_dssi_audio_run->count_beats_audio_run){
@@ -457,17 +473,30 @@ ags_play_dssi_audio_run_set_property(GObject *gobject,
 
       /* check template */
       if(count_beats_audio_run != NULL &&
-	 ags_recall_test_flags(play_dssi_audio_run, AGS_RECALL_TEMPLATE)){
+	 ags_recall_test_flags((AgsRecall *) play_dssi_audio_run, AGS_RECALL_TEMPLATE)){
 	is_template = TRUE;
       }else{
 	is_template = FALSE;
       }
 
       /* dependency - remove */
-      if(is_template &&
-	 old_count_beats_audio_run != NULL){
-	ags_recall_remove_recall_dependency(AGS_RECALL(play_dssi_audio_run),
-					    (AgsRecall *) old_count_beats_audio_run);
+      if(is_template){
+	if(old_count_beats_audio_run != NULL){
+	  AgsRecallDependency *recall_dependency;
+
+	  GList *list;
+	  
+	  recall_dependency = NULL;
+	  list = ags_recall_dependency_find_dependency(AGS_RECALL(play_dssi_audio_run)->recall_dependency,
+						       old_count_beats_audio_run);
+
+	  if(list != NULL){
+	    recall_dependency = list->data;
+	  }
+	  
+	  ags_recall_remove_recall_dependency(AGS_RECALL(play_dssi_audio_run),
+					      recall_dependency);
+	}
       }
 
       /* dependency - add */
@@ -688,7 +717,7 @@ ags_play_dssi_audio_run_connect(AgsConnectable *connectable)
 	       "delay-audio-run", &delay_audio_run,
 	       NULL);
 
-  ags_connectable_connect_connection(connectable, delay_audio_run);
+  ags_connectable_connect_connection(connectable, (GObject *) delay_audio_run);
   
   /* call parent */
   ags_play_dssi_audio_run_parent_connectable_interface->connect(connectable);
@@ -710,7 +739,7 @@ ags_play_dssi_audio_run_disconnect(AgsConnectable *connectable)
 	       "delay-audio-run", &delay_audio_run,
 	       NULL);
 
-  ags_connectable_disconnect_connection(connectable, delay_audio_run);
+  ags_connectable_disconnect_connection(connectable, (GObject *) delay_audio_run);
 
   /* call parent */
   ags_play_dssi_audio_run_parent_connectable_interface->disconnect(connectable);
@@ -732,7 +761,7 @@ ags_play_dssi_audio_run_connect_connection(AgsConnectable *connectable, GObject 
 	       "delay-audio-run", &delay_audio_run,
 	       NULL);
 
-  if(connection == delay_audio_run){
+  if((GObject *) connection == delay_audio_run){
     g_signal_connect(G_OBJECT(delay_audio_run), "notation-alloc-input",
 		     G_CALLBACK(ags_play_dssi_audio_run_alloc_input_callback), play_dssi_audio_run);  
   }
@@ -754,7 +783,7 @@ ags_play_dssi_audio_run_disconnect_connection(AgsConnectable *connectable, GObje
 	       "delay-audio-run", &delay_audio_run,
 	       NULL);
 
-  if(connection == delay_audio_run){
+  if((GObject *) connection == delay_audio_run){
     g_object_disconnect(G_OBJECT(delay_audio_run),
 			"any_signal::notation-alloc-input",
 			G_CALLBACK(ags_play_dssi_audio_run_alloc_input_callback),
@@ -1231,7 +1260,7 @@ ags_play_dssi_audio_run_run_pre(AgsRecall *recall)
 	       "first-recycling", &recycling,
 	       NULL);
 
-  ags_recall_unset_behaviour_flags(recall, AGS_SOUND_BEHAVIOUR_PERSISTENT);
+  ags_recall_unset_behaviour_flags((AgsRecall *) recall, AGS_SOUND_BEHAVIOUR_PERSISTENT);
 
   if(destination == NULL){
     gdouble delay;

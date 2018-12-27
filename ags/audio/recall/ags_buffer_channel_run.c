@@ -93,10 +93,10 @@ ags_buffer_channel_run_class_init(AgsBufferChannelRunClass *buffer_channel_run)
 void
 ags_buffer_channel_run_init(AgsBufferChannelRun *buffer_channel_run)
 {
-  ags_recall_set_ability_flags(buffer_channel_run, (AGS_SOUND_ABILITY_SEQUENCER |
-						    AGS_SOUND_ABILITY_NOTATION |
-						    AGS_SOUND_ABILITY_WAVE |
-						    AGS_SOUND_ABILITY_MIDI));
+  ags_recall_set_ability_flags((AgsRecall *) buffer_channel_run, (AGS_SOUND_ABILITY_SEQUENCER |
+								  AGS_SOUND_ABILITY_NOTATION |
+								  AGS_SOUND_ABILITY_WAVE |
+								  AGS_SOUND_ABILITY_MIDI));
 
   AGS_RECALL(buffer_channel_run)->name = "ags-buffer";
   AGS_RECALL(buffer_channel_run)->version = AGS_RECALL_DEFAULT_VERSION;

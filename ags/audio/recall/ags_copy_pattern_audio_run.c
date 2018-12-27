@@ -184,7 +184,7 @@ ags_copy_pattern_audio_run_plugin_interface_init(AgsPluginInterface *plugin)
 void
 ags_copy_pattern_audio_run_init(AgsCopyPatternAudioRun *copy_pattern_audio_run)
 {
-  ags_recall_set_ability_flags(copy_pattern_audio_run, (AGS_SOUND_ABILITY_SEQUENCER));
+  ags_recall_set_ability_flags((AgsRecall *) copy_pattern_audio_run, (AGS_SOUND_ABILITY_SEQUENCER));
 
   AGS_RECALL(copy_pattern_audio_run)->name = "ags-copy-pattern";
   AGS_RECALL(copy_pattern_audio_run)->version = AGS_RECALL_DEFAULT_VERSION;
@@ -251,16 +251,29 @@ ags_copy_pattern_audio_run_set_property(GObject *gobject,
       pthread_mutex_unlock(recall_mutex);
 
       /* dependency */
-      if(ags_recall_test_flags(delay_audio_run, AGS_RECALL_TEMPLATE)){
+      if(ags_recall_test_flags((AgsRecall *) delay_audio_run, AGS_RECALL_TEMPLATE)){
 	is_template = TRUE;
       }else{
 	is_template = FALSE;
       }
 
-      if(is_template &&
-	 old_delay_audio_run != NULL){
-	ags_recall_remove_recall_dependency(AGS_RECALL(copy_pattern_audio_run),
-					    (AgsRecall *) old_delay_audio_run);
+      if(is_template){
+	if(old_delay_audio_run != NULL){
+	  AgsRecallDependency *recall_dependency;
+
+	  GList *list;
+	  
+	  recall_dependency = NULL;
+	  list = ags_recall_dependency_find_dependency(AGS_RECALL(copy_pattern_audio_run)->recall_dependency,
+						       old_delay_audio_run);
+
+	  if(list != NULL){
+	    recall_dependency = list->data;
+	  }
+	  
+	  ags_recall_remove_recall_dependency(AGS_RECALL(copy_pattern_audio_run),
+					      recall_dependency);
+	}
       }
 
       if(is_template &&
@@ -303,17 +316,30 @@ ags_copy_pattern_audio_run_set_property(GObject *gobject,
 
       /* check template */
       if(count_beats_audio_run != NULL &&
-	 ags_recall_test_flags(count_beats_audio_run, AGS_RECALL_TEMPLATE)){
+	 ags_recall_test_flags((AgsRecall *) count_beats_audio_run, AGS_RECALL_TEMPLATE)){
 	is_template = TRUE;
       }else{
 	is_template = FALSE;
       }
 
       /* dependency - remove */
-      if(is_template &&
-	 old_count_beats_audio_run != NULL){
-	ags_recall_remove_recall_dependency(AGS_RECALL(copy_pattern_audio_run),
-					    (AgsRecall *) old_count_beats_audio_run);
+      if(is_template){
+	if(old_delay_audio_run != NULL){
+	  AgsRecallDependency *recall_dependency;
+
+	  GList *list;
+	  
+	  recall_dependency = NULL;
+	  list = ags_recall_dependency_find_dependency(AGS_RECALL(copy_pattern_audio_run)->recall_dependency,
+						       old_count_beats_audio_run);
+
+	  if(list != NULL){
+	    recall_dependency = list->data;
+	  }
+	  
+	  ags_recall_remove_recall_dependency(AGS_RECALL(copy_pattern_audio_run),
+					      recall_dependency);
+	}
       }
       
       /* dependency - add */

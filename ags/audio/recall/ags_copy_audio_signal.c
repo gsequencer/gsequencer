@@ -393,8 +393,8 @@ ags_copy_audio_signal_run_inter(AgsRecall *recall)
       ags_recycling_remove_audio_signal(destination_recycling,
 					destination);
       
-      g_object_run_dispose(destination);
-      g_object_unref(destination);
+      g_object_run_dispose((GObject *) destination);
+      g_object_unref((GObject *) destination);
     }
 
     ags_recall_done(recall);

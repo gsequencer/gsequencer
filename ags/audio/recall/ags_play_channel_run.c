@@ -159,7 +159,7 @@ ags_play_channel_run_class_init(AgsPlayChannelRunClass *play_channel_run)
 void
 ags_play_channel_run_init(AgsPlayChannelRun *play_channel_run)
 {
-  ags_recall_set_ability_flags(play_channel_run, (AGS_SOUND_ABILITY_PLAYBACK));
+  ags_recall_set_ability_flags((AgsRecall *) play_channel_run, (AGS_SOUND_ABILITY_PLAYBACK));
 
   AGS_RECALL(play_channel_run)->name = "ags-play";
   AGS_RECALL(play_channel_run)->version = AGS_RECALL_DEFAULT_VERSION;
@@ -205,7 +205,7 @@ ags_play_channel_run_set_property(GObject *gobject,
       
       pthread_mutex_lock(recall_mutex);
 
-      if(stream_channel_run == play_channel_run->stream_channel_run){
+      if((GObject *) stream_channel_run == play_channel_run->stream_channel_run){
 	pthread_mutex_unlock(recall_mutex);
 
 	return;
@@ -221,21 +221,34 @@ ags_play_channel_run_set_property(GObject *gobject,
 	g_object_ref(G_OBJECT(stream_channel_run));
       }
 
-      play_channel_run->stream_channel_run = stream_channel_run;
+      play_channel_run->stream_channel_run = (GObject *) stream_channel_run;
 
       pthread_mutex_unlock(recall_mutex);
 
       /* dependency */
-      if(ags_recall_test_flags(play_channel_run, AGS_RECALL_TEMPLATE)){
+      if(ags_recall_test_flags((AgsRecall *) play_channel_run, AGS_RECALL_TEMPLATE)){
 	is_template = TRUE;
       }else{
 	is_template = FALSE;
       }
 
-      if(is_template &&
-	 old_stream_channel_run != NULL){
-	ags_recall_remove_recall_dependency(AGS_RECALL(play_channel_run),
-					    (AgsRecall *) old_stream_channel_run);
+      if(is_template){
+	if(old_stream_channel_run != NULL){
+	  AgsRecallDependency *recall_dependency;
+
+	  GList *list;
+	  
+	  recall_dependency = NULL;
+	  list = ags_recall_dependency_find_dependency(AGS_RECALL(play_channel_run)->recall_dependency,
+						       old_stream_channel_run);
+
+	  if(list != NULL){
+	    recall_dependency = list->data;
+	  }
+	  
+	  ags_recall_remove_recall_dependency(AGS_RECALL(play_channel_run),
+					      recall_dependency);
+	}
       }
 
       if(is_template &&
@@ -404,7 +417,7 @@ ags_play_channel_run_run_post(AgsRecall *recall)
 	  !found){
       rt_stream_channel_run = AGS_RT_STREAM_CHANNEL_RUN(list->data);
 
-      if(ags_recall_test_flags(rt_stream_channel_run, AGS_RECALL_TEMPLATE)){
+      if(ags_recall_test_flags((AgsRecall *) rt_stream_channel_run, AGS_RECALL_TEMPLATE)){
 	list = list->next;
 
 	continue;
@@ -421,8 +434,8 @@ ags_play_channel_run_run_post(AgsRecall *recall)
 	recall_audio_signal_list = AGS_RECALL(recall_recycling_list->data)->children;
       
 	while(recall_audio_signal_list != NULL){
-	  if(!ags_recall_test_staging_flags(recall_audio_signal_list->data, AGS_SOUND_STAGING_DONE) &&
-	     !ags_recall_test_flags(recall_audio_signal_list->data, AGS_RECALL_TEMPLATE)){
+	  if(!ags_recall_test_staging_flags((AgsRecall *) recall_audio_signal_list->data, AGS_SOUND_STAGING_DONE) &&
+	     !ags_recall_test_flags((AgsRecall *) recall_audio_signal_list->data, AGS_RECALL_TEMPLATE)){
 	    found = TRUE;
 	  
 	    break;
@@ -459,7 +472,7 @@ ags_play_channel_run_run_post(AgsRecall *recall)
 	  !found){
       stream_channel_run = AGS_STREAM_CHANNEL_RUN(list->data);
 
-      if(ags_recall_test_flags(stream_channel_run, AGS_RECALL_TEMPLATE)){
+      if(ags_recall_test_flags((AgsRecall *) stream_channel_run, AGS_RECALL_TEMPLATE)){
 	list = list->next;
 
 	continue;
@@ -472,8 +485,8 @@ ags_play_channel_run_run_post(AgsRecall *recall)
 	recall_audio_signal_list = AGS_RECALL(recall_recycling_list->data)->children;
       
 	while(recall_audio_signal_list != NULL){
-	  if(!ags_recall_test_staging_flags(recall_audio_signal_list->data, AGS_SOUND_STAGING_DONE) &&
-	     !ags_recall_test_flags(recall_audio_signal_list->data, AGS_RECALL_TEMPLATE)){
+	  if(!ags_recall_test_staging_flags((AgsRecall *) recall_audio_signal_list->data, AGS_SOUND_STAGING_DONE) &&
+	     !ags_recall_test_flags((AgsRecall *) recall_audio_signal_list->data, AGS_RECALL_TEMPLATE)){
 	    found = TRUE;
 	    
 	    break;

@@ -563,7 +563,7 @@ ags_play_dssi_audio_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
 
   xmlNewProp(node,
 	     "index",
-	     g_strdup_printf("%lu", AGS_RECALL(play_dssi_audio)->effect_index));
+	     g_strdup_printf("%u", AGS_RECALL(play_dssi_audio)->effect_index));
 
   xmlAddChild(parent,
 	      node);
@@ -717,7 +717,7 @@ ags_play_dssi_audio_load_ports(AgsPlayDssiAudio *play_dssi_audio)
   /* get plugin name */
   pthread_mutex_lock(base_plugin_mutex);
 
-  plugin_name = g_strdup_printf("dssi-%lu",
+  plugin_name = g_strdup_printf("dssi-%u",
 				dssi_plugin->unique_id);
 
   pthread_mutex_unlock(base_plugin_mutex);
@@ -729,7 +729,7 @@ ags_play_dssi_audio_load_ports(AgsPlayDssiAudio *play_dssi_audio)
     port_count = g_list_length(start_plugin_port);
     
     for(i = 0; i < port_count; i++){
-      if(ags_plugin_port_test_flags(plugin_port->data, AGS_PLUGIN_PORT_CONTROL)){
+      if(ags_plugin_port_test_flags((AgsPluginPort *) plugin_port->data, AGS_PLUGIN_PORT_CONTROL)){
 	gchar *specifier;
 
 	GValue *value;
@@ -769,14 +769,14 @@ ags_play_dssi_audio_load_ports(AgsPlayDssiAudio *play_dssi_audio)
 	current->flags |= AGS_PORT_USE_LADSPA_FLOAT;
 	g_object_ref(current);
 
-	if(ags_plugin_port_test_flags(plugin_port->data, AGS_PLUGIN_PORT_OUTPUT)){
-	  ags_recall_set_flags(play_dssi_audio,
+	if(ags_plugin_port_test_flags((AgsPluginPort *) plugin_port->data, AGS_PLUGIN_PORT_OUTPUT)){
+	  ags_recall_set_flags((AgsRecall *) play_dssi_audio,
 			       AGS_RECALL_HAS_OUTPUT_PORT);
 
 	  current->flags |= AGS_PORT_IS_OUTPUT;
 	}else{
-	  if(!ags_plugin_port_test_flags(plugin_port->data, AGS_PLUGIN_PORT_INTEGER) &&
-	     !ags_plugin_port_test_flags(plugin_port->data, AGS_PLUGIN_PORT_TOGGLED)){
+	  if(!ags_plugin_port_test_flags((AgsPluginPort *) plugin_port->data, AGS_PLUGIN_PORT_INTEGER) &&
+	     !ags_plugin_port_test_flags((AgsPluginPort *) plugin_port->data, AGS_PLUGIN_PORT_TOGGLED)){
 	    current->flags |= AGS_PORT_INFINITE_RANGE;
 	  }
 	}
@@ -798,9 +798,9 @@ ags_play_dssi_audio_load_ports(AgsPlayDssiAudio *play_dssi_audio)
 
 	start_port = g_list_prepend(start_port,
 				    current);
-      }else if(ags_plugin_port_test_flags(plugin_port->data, AGS_PLUGIN_PORT_AUDIO)){
+      }else if(ags_plugin_port_test_flags((AgsPluginPort *) plugin_port->data, AGS_PLUGIN_PORT_AUDIO)){
 	/* audio port */
-	if(ags_plugin_port_test_flags(plugin_port->data, AGS_PLUGIN_PORT_INPUT)){
+	if(ags_plugin_port_test_flags((AgsPluginPort *) plugin_port->data, AGS_PLUGIN_PORT_INPUT)){
 	  pthread_mutex_lock(recall_mutex);
 	  
 	  if(play_dssi_audio->input_port == NULL){
@@ -815,7 +815,7 @@ ags_play_dssi_audio_load_ports(AgsPlayDssiAudio *play_dssi_audio)
 	  play_dssi_audio->input_lines += 1;
 
 	  pthread_mutex_unlock(recall_mutex);
-	}else if(ags_plugin_port_test_flags(plugin_port->data, AGS_PLUGIN_PORT_OUTPUT)){
+	}else if(ags_plugin_port_test_flags((AgsPluginPort *) plugin_port->data, AGS_PLUGIN_PORT_OUTPUT)){
 	  pthread_mutex_lock(recall_mutex);
 	  
 	  if(play_dssi_audio->output_port == NULL){
@@ -879,7 +879,7 @@ ags_play_dssi_audio_load_conversion(AgsPlayDssiAudio *play_dssi_audio,
 
   ladspa_conversion = NULL;
 
-  if(ags_plugin_port_test_flags(plugin_port, AGS_PLUGIN_PORT_BOUNDED_BELOW)){
+  if(ags_plugin_port_test_flags((AgsPluginPort *) plugin_port, AGS_PLUGIN_PORT_BOUNDED_BELOW)){
     if(ladspa_conversion == NULL ||
        !AGS_IS_LADSPA_CONVERSION(ladspa_conversion)){
       ladspa_conversion = ags_ladspa_conversion_new();
@@ -888,7 +888,7 @@ ags_play_dssi_audio_load_conversion(AgsPlayDssiAudio *play_dssi_audio,
     ladspa_conversion->flags |= AGS_LADSPA_CONVERSION_BOUNDED_BELOW;
   }
 
-  if(ags_plugin_port_test_flags(plugin_port, AGS_PLUGIN_PORT_BOUNDED_ABOVE)){
+  if(ags_plugin_port_test_flags((AgsPluginPort *) plugin_port, AGS_PLUGIN_PORT_BOUNDED_ABOVE)){
     if(ladspa_conversion == NULL ||
        !AGS_IS_LADSPA_CONVERSION(ladspa_conversion)){
       ladspa_conversion = ags_ladspa_conversion_new();
@@ -897,7 +897,7 @@ ags_play_dssi_audio_load_conversion(AgsPlayDssiAudio *play_dssi_audio,
     ladspa_conversion->flags |= AGS_LADSPA_CONVERSION_BOUNDED_ABOVE;
   }
   
-  if(ags_plugin_port_test_flags(plugin_port, AGS_PLUGIN_PORT_SAMPLERATE)){
+  if(ags_plugin_port_test_flags((AgsPluginPort *) plugin_port, AGS_PLUGIN_PORT_SAMPLERATE)){
     if(ladspa_conversion == NULL ||
        !AGS_IS_LADSPA_CONVERSION(ladspa_conversion)){
       ladspa_conversion = ags_ladspa_conversion_new();
@@ -906,7 +906,7 @@ ags_play_dssi_audio_load_conversion(AgsPlayDssiAudio *play_dssi_audio,
     ladspa_conversion->flags |= AGS_LADSPA_CONVERSION_SAMPLERATE;
   }
 
-  if(ags_plugin_port_test_flags(plugin_port, AGS_PLUGIN_PORT_LOGARITHMIC)){
+  if(ags_plugin_port_test_flags((AgsPluginPort *) plugin_port, AGS_PLUGIN_PORT_LOGARITHMIC)){
     if(ladspa_conversion == NULL ||
        !AGS_IS_LADSPA_CONVERSION(ladspa_conversion)){
       ladspa_conversion = ags_ladspa_conversion_new();

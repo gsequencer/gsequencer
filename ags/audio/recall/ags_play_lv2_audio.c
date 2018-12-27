@@ -567,7 +567,7 @@ ags_play_lv2_audio_set_ports(AgsPlugin *plugin, GList *port)
     port_count = g_list_length(start_plugin_port);
 
     for(i = 0; i < port_count; i++){
-      if(ags_plugin_port_test_flags(plugin_port->data, AGS_PLUGIN_PORT_CONTROL)){
+      if(ags_plugin_port_test_flags((AgsPluginPort *) plugin_port->data, AGS_PLUGIN_PORT_CONTROL)){
 	gchar *specifier;
 
 	pthread_mutex_t *plugin_port_mutex;
@@ -646,8 +646,8 @@ ags_play_lv2_audio_set_ports(AgsPlugin *plugin, GList *port)
 	  g_message("connecting port: %d/%d", i, port_count);      
 #endif
 	}
-      }else if(ags_plugin_port_test_flags(plugin_port->data, AGS_PLUGIN_PORT_AUDIO)){
-	if(ags_plugin_port_test_flags(plugin_port->data, AGS_PLUGIN_PORT_INPUT)){
+      }else if(ags_plugin_port_test_flags((AgsPluginPort *) plugin_port->data, AGS_PLUGIN_PORT_AUDIO)){
+	if(ags_plugin_port_test_flags((AgsPluginPort *) plugin_port->data, AGS_PLUGIN_PORT_INPUT)){
 	  pthread_mutex_lock(recall_mutex);
 
 	  if(play_lv2_audio->input_port == NULL){
@@ -662,7 +662,7 @@ ags_play_lv2_audio_set_ports(AgsPlugin *plugin, GList *port)
 	  play_lv2_audio->input_lines += 1;
 
 	  pthread_mutex_unlock(recall_mutex);
-	}else if(ags_plugin_port_test_flags(plugin_port->data, AGS_PLUGIN_PORT_OUTPUT)){
+	}else if(ags_plugin_port_test_flags((AgsPluginPort *) plugin_port->data, AGS_PLUGIN_PORT_OUTPUT)){
 	  pthread_mutex_lock(recall_mutex);
 
 	  if(play_lv2_audio->output_port == NULL){
@@ -1056,21 +1056,21 @@ ags_play_lv2_audio_load_ports(AgsPlayLv2Audio *play_lv2_audio)
 	
       pthread_mutex_unlock(ags_plugin_port_get_class_mutex());
       
-      if(ags_plugin_port_test_flags(plugin_port->data, AGS_PLUGIN_PORT_INPUT)){
-	if(ags_plugin_port_test_flags(plugin_port->data, AGS_PLUGIN_PORT_EVENT)){
+      if(ags_plugin_port_test_flags((AgsPluginPort *) plugin_port->data, AGS_PLUGIN_PORT_INPUT)){
+	if(ags_plugin_port_test_flags((AgsPluginPort *) plugin_port->data, AGS_PLUGIN_PORT_EVENT)){
 	  play_lv2_audio->flags |= AGS_PLAY_LV2_AUDIO_HAS_EVENT_PORT;
 	  play_lv2_audio->event_port = AGS_PLUGIN_PORT(plugin_port->data)->port_index;
 	}
       
-	if(ags_plugin_port_test_flags(plugin_port->data, AGS_PLUGIN_PORT_ATOM)){
+	if(ags_plugin_port_test_flags((AgsPluginPort *) plugin_port->data, AGS_PLUGIN_PORT_ATOM)){
 	  play_lv2_audio->flags |= AGS_PLAY_LV2_AUDIO_HAS_ATOM_PORT;
 	  play_lv2_audio->atom_port = AGS_PLUGIN_PORT(plugin_port->data)->port_index;
 	}
       }
       
-      if(ags_plugin_port_test_flags(plugin_port->data, AGS_PLUGIN_PORT_CONTROL) &&
-	 (ags_plugin_port_test_flags(plugin_port->data, AGS_PLUGIN_PORT_INPUT) ||
-	  ags_plugin_port_test_flags(plugin_port->data, AGS_PLUGIN_PORT_OUTPUT))){
+      if(ags_plugin_port_test_flags((AgsPluginPort *) plugin_port->data, AGS_PLUGIN_PORT_CONTROL) &&
+	 (ags_plugin_port_test_flags((AgsPluginPort *) plugin_port->data, AGS_PLUGIN_PORT_INPUT) ||
+	  ags_plugin_port_test_flags((AgsPluginPort *) plugin_port->data, AGS_PLUGIN_PORT_OUTPUT))){
 	gchar *specifier;
 
 	/* get specifier */
@@ -1097,11 +1097,11 @@ ags_play_lv2_audio_load_ports(AgsPlayLv2Audio *play_lv2_audio)
 			       NULL);
 	g_object_ref(current);
 	
-	if(ags_plugin_port_test_flags(plugin_port->data, AGS_PLUGIN_PORT_OUTPUT)){
-	  ags_recall_set_flags(play_lv2_audio,
+	if(ags_plugin_port_test_flags((AgsPluginPort *) plugin_port->data, AGS_PLUGIN_PORT_OUTPUT)){
+	  ags_recall_set_flags((AgsRecall *) play_lv2_audio,
 			       AGS_RECALL_HAS_OUTPUT_PORT);
 
-	  ags_port_set_flags(current,
+	  ags_port_set_flags((AgsPort *) current,
 			     AGS_PORT_IS_OUTPUT);
 	}else{
 	  gint scale_steps;
@@ -1110,10 +1110,10 @@ ags_play_lv2_audio_load_ports(AgsPlayLv2Audio *play_lv2_audio)
 		       "scale-steps", &scale_steps,
 		       NULL);
 	  
-	  if(!ags_plugin_port_test_flags(plugin_port->data, AGS_PLUGIN_PORT_INTEGER) &&
-	     !ags_plugin_port_test_flags(plugin_port->data, AGS_PLUGIN_PORT_TOGGLED) &&
+	  if(!ags_plugin_port_test_flags((AgsPluginPort *) plugin_port->data, AGS_PLUGIN_PORT_INTEGER) &&
+	     !ags_plugin_port_test_flags((AgsPluginPort *) plugin_port->data, AGS_PLUGIN_PORT_TOGGLED) &&
 	     scale_steps == -1){
-	    ags_port_set_flags(current,
+	    ags_port_set_flags((AgsPort *) current,
 			       AGS_PORT_INFINITE_RANGE);
 	  }
 	}
@@ -1138,8 +1138,8 @@ ags_play_lv2_audio_load_ports(AgsPlayLv2Audio *play_lv2_audio)
 	
 	start_port = g_list_prepend(start_port,
 				    current);
-      }else if(ags_plugin_port_test_flags(plugin_port->data, AGS_PLUGIN_PORT_AUDIO)){
-	if(ags_plugin_port_test_flags(plugin_port->data, AGS_PLUGIN_PORT_INPUT)){
+      }else if(ags_plugin_port_test_flags((AgsPluginPort *) plugin_port->data, AGS_PLUGIN_PORT_AUDIO)){
+	if(ags_plugin_port_test_flags((AgsPluginPort *) plugin_port->data, AGS_PLUGIN_PORT_INPUT)){
 	  pthread_mutex_lock(recall_mutex);
 
 	  if(play_lv2_audio->input_port == NULL){
@@ -1154,7 +1154,7 @@ ags_play_lv2_audio_load_ports(AgsPlayLv2Audio *play_lv2_audio)
 	  play_lv2_audio->input_lines += 1;
 
 	  pthread_mutex_unlock(recall_mutex);
-	}else if(ags_plugin_port_test_flags(plugin_port->data, AGS_PLUGIN_PORT_OUTPUT)){
+	}else if(ags_plugin_port_test_flags((AgsPluginPort *) plugin_port->data, AGS_PLUGIN_PORT_OUTPUT)){
 	  pthread_mutex_lock(recall_mutex);
 
 	  if(play_lv2_audio->output_port == NULL){
@@ -1219,7 +1219,7 @@ ags_play_lv2_audio_load_conversion(AgsPlayLv2Audio *play_lv2_audio,
 
   lv2_conversion = NULL;
   
-  if(ags_plugin_port_test_flags(plugin_port, AGS_PLUGIN_PORT_LOGARITHMIC)){
+  if(ags_plugin_port_test_flags((AgsPluginPort *) plugin_port, AGS_PLUGIN_PORT_LOGARITHMIC)){
     lv2_conversion = ags_lv2_conversion_new();
     lv2_conversion->flags |= AGS_LV2_CONVERSION_LOGARITHMIC;
 

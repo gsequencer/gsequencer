@@ -138,7 +138,7 @@ ags_capture_wave_audio_run_plugin_interface_init(AgsPluginInterface *plugin)
 void
 ags_capture_wave_audio_run_init(AgsCaptureWaveAudioRun *capture_wave_audio_run)
 {
-  ags_recall_set_ability_flags(capture_wave_audio_run, (AGS_SOUND_ABILITY_WAVE));
+  ags_recall_set_ability_flags((AgsRecall *) capture_wave_audio_run, (AGS_SOUND_ABILITY_WAVE));
 
   AGS_RECALL(capture_wave_audio_run)->name = "ags-capture-wave";
   AGS_RECALL(capture_wave_audio_run)->version = AGS_RECALL_DEFAULT_VERSION;

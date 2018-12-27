@@ -86,10 +86,10 @@ ags_envelope_channel_run_class_init(AgsEnvelopeChannelRunClass *envelope_channel
 void
 ags_envelope_channel_run_init(AgsEnvelopeChannelRun *envelope_channel_run)
 {
-  ags_recall_set_ability_flags(envelope_channel_run, (AGS_SOUND_ABILITY_SEQUENCER |
-						      AGS_SOUND_ABILITY_NOTATION |
-						      AGS_SOUND_ABILITY_WAVE |
-						      AGS_SOUND_ABILITY_MIDI));
+  ags_recall_set_ability_flags((AgsRecall *) envelope_channel_run, (AGS_SOUND_ABILITY_SEQUENCER |
+								    AGS_SOUND_ABILITY_NOTATION |
+								    AGS_SOUND_ABILITY_WAVE |
+								    AGS_SOUND_ABILITY_MIDI));
 
   AGS_RECALL(envelope_channel_run)->name = "ags-envelope";
   AGS_RECALL(envelope_channel_run)->version = AGS_RECALL_DEFAULT_VERSION;

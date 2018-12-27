@@ -205,8 +205,8 @@ ags_loop_channel_run_plugin_interface_init(AgsPluginInterface *plugin)
 void
 ags_loop_channel_run_init(AgsLoopChannelRun *loop_channel_run)
 {
-  ags_recall_set_ability_flags(loop_channel_run, (AGS_SOUND_ABILITY_SEQUENCER |
-						  AGS_SOUND_ABILITY_NOTATION));
+  ags_recall_set_ability_flags((AgsRecall *) loop_channel_run, (AGS_SOUND_ABILITY_SEQUENCER |
+								AGS_SOUND_ABILITY_NOTATION));
   
   AGS_RECALL(loop_channel_run)->name = "ags-loop";
   AGS_RECALL(loop_channel_run)->version = AGS_RECALL_DEFAULT_VERSION;
@@ -246,7 +246,8 @@ ags_loop_channel_run_set_property(GObject *gobject,
       gboolean is_template;
 
       count_beats_audio_run = (AgsCountBeatsAudioRun *) g_value_get_object(value);
-
+      old_count_beats_audio_run = NULL;
+      
       pthread_mutex_lock(recall_mutex);
 
       if(loop_channel_run->count_beats_audio_run == count_beats_audio_run){
@@ -270,16 +271,29 @@ ags_loop_channel_run_set_property(GObject *gobject,
       pthread_mutex_unlock(recall_mutex);
 
       /* dependency */
-      if(ags_recall_test_flags(count_beats_audio_run, AGS_RECALL_TEMPLATE)){
+      if(ags_recall_test_flags((AgsRecall *) count_beats_audio_run, AGS_RECALL_TEMPLATE)){
 	is_template = TRUE;
       }else{
 	is_template = FALSE;
       }
 
-      if(is_template &&
-	 old_count_beats_audio_run != NULL){
-	ags_recall_remove_recall_dependency(AGS_RECALL(loop_channel_run),
-					    (AgsRecall *) old_count_beats_audio_run);
+      if(is_template){
+	if(old_count_beats_audio_run != NULL){
+	  AgsRecallDependency *recall_dependency;
+
+	  GList *list;
+	  
+	  recall_dependency = NULL;
+	  list = ags_recall_dependency_find_dependency(AGS_RECALL(loop_channel_run)->recall_dependency,
+						       old_count_beats_audio_run);
+
+	  if(list != NULL){
+	    recall_dependency = list->data;
+	  }
+	  
+	  ags_recall_remove_recall_dependency(AGS_RECALL(loop_channel_run),
+					      recall_dependency);
+	}
       }
 
       if(is_template &&
@@ -381,7 +395,7 @@ ags_loop_channel_run_connect(AgsConnectable *connectable)
 
   /* count beats audio run */
   ags_connectable_connect_connection(connectable,
-				     loop_channel_run->count_beats_audio_run);
+				     (GObject *) loop_channel_run->count_beats_audio_run);
 }
 
 void
@@ -400,7 +414,7 @@ ags_loop_channel_run_disconnect(AgsConnectable *connectable)
 
   /* count beats audio run */
   ags_connectable_disconnect_connection(connectable,
-					loop_channel_run->count_beats_audio_run);
+					(GObject *) loop_channel_run->count_beats_audio_run);
 }
 
 void
@@ -421,7 +435,7 @@ ags_loop_channel_run_connect_connection(AgsConnectable *connectable,
 	       NULL);
 
   /* AgsCountBeatsAudioRun */
-  if(count_beats_audio_run == connection){
+  if((GObject *) count_beats_audio_run == connection){
     g_signal_connect(count_beats_audio_run, "sequencer-start",
 		     G_CALLBACK(ags_loop_channel_run_start_callback), loop_channel_run);
     
@@ -451,7 +465,7 @@ ags_loop_channel_run_disconnect_connection(AgsConnectable *connectable,
 	       NULL);
   
   /* AgsCountBeatsAudioRun */
-  if(loop_channel_run->count_beats_audio_run == connection){
+  if((GObject *) loop_channel_run->count_beats_audio_run == connection){
     g_object_disconnect(count_beats_audio_run,
 			"any_signal::sequencer-start",
 			G_CALLBACK(ags_loop_channel_run_start_callback),

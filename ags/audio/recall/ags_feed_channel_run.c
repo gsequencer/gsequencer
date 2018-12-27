@@ -89,8 +89,8 @@ ags_feed_channel_run_class_init(AgsFeedChannelRunClass *feed_channel_run)
 void
 ags_feed_channel_run_init(AgsFeedChannelRun *feed_channel_run)
 {
-  ags_recall_set_ability_flags(feed_channel_run, (AGS_SOUND_ABILITY_NOTATION |
-						  AGS_SOUND_ABILITY_MIDI));
+  ags_recall_set_ability_flags((AgsRecall *) feed_channel_run, (AGS_SOUND_ABILITY_NOTATION |
+								AGS_SOUND_ABILITY_MIDI));
 
   AGS_RECALL(feed_channel_run)->name = "ags-feed";
   AGS_RECALL(feed_channel_run)->version = AGS_RECALL_DEFAULT_VERSION;
