@@ -86,8 +86,8 @@ ags_export_window_remove_export_soundcard_callback(GtkWidget *button,
 {
   GtkHBox *hbox;
 
-  hbox = gtk_widget_get_ancestor(button,
-				 GTK_TYPE_HBOX);
+  hbox = (GtkHBox *) gtk_widget_get_ancestor(button,
+					     GTK_TYPE_HBOX);
   gtk_widget_destroy(GTK_WIDGET(hbox));
 }
 
@@ -327,7 +327,8 @@ ags_export_window_export_callback(GtkWidget *toggle_button,
 	  child = child->next;
 	}
 	
-	if(!AGS_IS_EXPORT_SOUNDCARD(child->data)){
+	if(child == NULL ||
+	   !AGS_IS_EXPORT_SOUNDCARD(child->data)){
 	  export_soundcard = export_soundcard->next;
 	  g_list_free(child_start);
 	  

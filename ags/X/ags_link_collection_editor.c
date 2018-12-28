@@ -441,7 +441,7 @@ ags_link_collection_editor_apply(AgsApplicable *applicable)
 
     GtkTreeModel *model;
 
-    AgsGuiThread *gui_thread;
+    AgsThread *gui_thread;
 
     AgsAudio *audio;
     AgsChannel *channel, *link;
@@ -514,7 +514,7 @@ ags_link_collection_editor_apply(AgsApplicable *applicable)
       
       /* append AgsLinkChannel */
       task = g_list_reverse(task);
-      ags_gui_thread_schedule_task_list(gui_thread,
+      ags_gui_thread_schedule_task_list((AgsGuiThread *) gui_thread,
 					task);
     }else{
       guint first_link;

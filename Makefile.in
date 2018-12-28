@@ -5604,7 +5604,7 @@ AUTOMAKE = @AUTOMAKE@
 AWK = @AWK@
 CAIRO_CFLAGS = @CAIRO_CFLAGS@
 CAIRO_LIBS = @CAIRO_LIBS@
-CC = @CC@
+CC = clang -k -ferror-limit 0 
 CCDEPMODE = @CCDEPMODE@
 
 # what flags you want to pass to the C compiler & linker

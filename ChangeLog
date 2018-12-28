@@ -1,3 +1,8 @@
+ags (2.1.22)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* minor improvements and 2nd attempt of targeting compiler warnings
+
 ags (2.1.21)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

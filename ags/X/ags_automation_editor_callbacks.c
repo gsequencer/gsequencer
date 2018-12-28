@@ -200,8 +200,8 @@ ags_automation_editor_audio_automation_edit_hscrollbar_value_changed(GtkRange *r
     return;
   }
   
-  automation_edit = gtk_widget_get_ancestor(GTK_WIDGET(range),
-					    AGS_TYPE_AUTOMATION_EDIT);
+  automation_edit = (AgsAutomationEdit *) gtk_widget_get_ancestor(GTK_WIDGET(range),
+								  AGS_TYPE_AUTOMATION_EDIT);
 
   automation_editor->flags |= AGS_AUTOMATION_EDITOR_RESET_AUDIO_HSCROLLBAR;
 
@@ -237,8 +237,8 @@ ags_automation_editor_output_automation_edit_hscrollbar_value_changed(GtkRange *
     return;
   }
 
-  automation_edit = gtk_widget_get_ancestor(GTK_WIDGET(range),
-					    AGS_TYPE_AUTOMATION_EDIT);
+  automation_edit = (AgsAutomationEdit *) gtk_widget_get_ancestor(GTK_WIDGET(range),
+								  AGS_TYPE_AUTOMATION_EDIT);
   
   automation_editor->flags |= AGS_AUTOMATION_EDITOR_RESET_OUTPUT_HSCROLLBAR;
 
@@ -274,8 +274,8 @@ ags_automation_editor_input_automation_edit_hscrollbar_value_changed(GtkRange *r
     return;
   }
 
-  automation_edit = gtk_widget_get_ancestor(GTK_WIDGET(range),
-					    AGS_TYPE_AUTOMATION_EDIT);
+  automation_edit = (AgsAutomationEdit *) gtk_widget_get_ancestor(GTK_WIDGET(range),
+								  AGS_TYPE_AUTOMATION_EDIT);
   
   automation_editor->flags |= AGS_AUTOMATION_EDITOR_RESET_INPUT_HSCROLLBAR;
 

@@ -321,7 +321,7 @@ ags_input_editor_reset(AgsApplicable *applicable)
       gtk_spin_button_set_value(input_editor->audio_channel,
 				audio_channel);
     }else{
-      gtk_combo_box_set_active(input_editor->soundcard,
+      gtk_combo_box_set_active(GTK_COMBO_BOX(input_editor->soundcard),
 			       0);
     }
   }
@@ -338,12 +338,7 @@ ags_input_editor_reset(AgsApplicable *applicable)
 void
 ags_input_editor_check(AgsInputEditor *input_editor)
 {
-  AgsConnectionEditor *connection_editor;
-  
   GtkTreeIter iter;
-
-  connection_editor = AGS_CONNECTION_EDITOR(gtk_widget_get_ancestor(GTK_WIDGET(input_editor),
-								    AGS_TYPE_CONNECTION_EDITOR));
 
   if(gtk_combo_box_get_active_iter(GTK_COMBO_BOX(input_editor->soundcard),
 				   &iter)){    

@@ -804,10 +804,10 @@ ags_bulk_member_finalize(GObject *gobject)
   
   /* bulk port */
   g_list_free_full(bulk_member->bulk_port,
-		   (GDestroyNotify *) ags_bulk_port_free);
+		   (GDestroyNotify) ags_bulk_port_free);
   
   g_list_free_full(bulk_member->recall_bulk_port,
-		   (GDestroyNotify *) ags_bulk_port_free);
+		   (GDestroyNotify) ags_bulk_port_free);
 
   /* call parent */
   G_OBJECT_CLASS(ags_bulk_member_parent_class)->finalize(gobject);

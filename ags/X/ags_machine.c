@@ -772,7 +772,7 @@ ags_machine_finalize(GObject *gobject)
 		      machine);
 
   g_list_free_full(machine->enabled_automation_port,
-		   (GDestroyNotify *) ags_machine_automation_port_free);
+		   (GDestroyNotify) ags_machine_automation_port_free);
   
   //TODO:JK: better clean-up of audio
   
@@ -2383,7 +2383,7 @@ ags_machine_message_monitor_timeout(AgsMachine *machine)
     }
     
     g_list_free_full(message_start,
-		     (GDestroyNotify *) ags_message_envelope_free);
+		     (GDestroyNotify) ags_message_envelope_free);
 
     return(TRUE);
   }else{
@@ -2614,5 +2614,5 @@ ags_machine_popup_add_connection_options(AgsMachine *machine, guint connection_o
     gtk_widget_show((GtkWidget *) item);
   }
 
-  gtk_widget_show_all(machine->popup);
+  gtk_widget_show_all((GtkWidget *) machine->popup);
 }

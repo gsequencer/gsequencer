@@ -583,7 +583,7 @@ ags_export_window_reload_soundcard_editor(AgsExportWindow *export_window)
   guint i;
   
   /* retrieve main window and application context */
-  application_context = export_window->application_context;
+  application_context = (AgsApplicationContext *) export_window->application_context;
 
   if(application_context == NULL){
     return;

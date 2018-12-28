@@ -631,7 +631,7 @@ ags_effect_bulk_finalize(GObject *gobject)
 
   /* free plugin list */
   g_list_free_full(effect_bulk->plugin,
-		   (GDestroyNotify *) ags_effect_bulk_plugin_free);
+		   (GDestroyNotify) ags_effect_bulk_plugin_free);
 
   /* destroy plugin browser */
   gtk_widget_destroy(GTK_WIDGET(effect_bulk->plugin_browser));
@@ -641,7 +641,7 @@ ags_effect_bulk_finalize(GObject *gobject)
 
   while(list != NULL){
     g_hash_table_remove(ags_effect_bulk_indicator_queue_draw,
-			(GDestroyNotify *) list->data);
+			(GDestroyNotify) list->data);
 
     list = list->next;
   }
@@ -1919,7 +1919,6 @@ ags_effect_bulk_add_lv2_effect(AgsEffectBulk *effect_bulk,
 			       gchar *filename,
 			       gchar *effect)
 {
-  AgsWindow *window;
   AgsBulkMember *bulk_member;
   
   GtkAdjustment *adjustment;
@@ -1933,8 +1932,6 @@ ags_effect_bulk_add_lv2_effect(AgsEffectBulk *effect_bulk,
 
   AgsLv2Plugin *lv2_plugin;
   
-  AgsApplicationContext *application_context;
-
   GObject *output_soundcard;
 
   xmlNode *parent;
@@ -1963,12 +1960,6 @@ ags_effect_bulk_add_lv2_effect(AgsEffectBulk *effect_bulk,
   pthread_mutex_t *audio_mutex;
   pthread_mutex_t *channel_mutex;
   pthread_mutex_t *base_plugin_mutex;
-
-  /* get window and application context */
-  window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) effect_bulk,
-						 AGS_TYPE_WINDOW);
-  
-  application_context = (AgsApplicationContext *) window->application_context;
 
   /* alloc effect bulk plugin */
   effect_bulk_plugin = ags_effect_bulk_plugin_alloc(filename,

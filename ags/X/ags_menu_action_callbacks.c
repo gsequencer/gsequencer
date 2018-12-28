@@ -326,7 +326,7 @@ ags_menu_action_add_panel_callback(GtkWidget *menu_item, gpointer data)
   /* create panel */
   panel = ags_panel_new(G_OBJECT(window->soundcard));
 
-  add_audio = ags_add_audio_new(window->application_context,
+  add_audio = ags_add_audio_new((AgsApplicationContext *) window->application_context,
 				AGS_MACHINE(panel)->audio);
   ags_gui_thread_schedule_task((AgsGuiThread *) gui_thread,
 			       (GObject *) add_audio);
@@ -371,7 +371,7 @@ ags_menu_action_add_mixer_callback(GtkWidget *menu_item, gpointer data)
   /* create mixer */
   mixer = ags_mixer_new(G_OBJECT(window->soundcard));
 
-  add_audio = ags_add_audio_new(window->application_context,
+  add_audio = ags_add_audio_new((AgsApplicationContext *) window->application_context,
 				AGS_MACHINE(mixer)->audio);
   ags_gui_thread_schedule_task((AgsGuiThread *) gui_thread,
 			       (GObject *) add_audio);
@@ -416,7 +416,7 @@ ags_menu_action_add_spectrometer_callback(GtkWidget *menu_item, gpointer data)
   /* create spectrometer */
   spectrometer = ags_spectrometer_new(G_OBJECT(window->soundcard));
 
-  add_audio = ags_add_audio_new(window->application_context,
+  add_audio = ags_add_audio_new((AgsApplicationContext *) window->application_context,
 				AGS_MACHINE(spectrometer)->audio);
   ags_gui_thread_schedule_task((AgsGuiThread *) gui_thread,
 			       (GObject *) add_audio);
@@ -461,7 +461,7 @@ ags_menu_action_add_equalizer_callback(GtkWidget *menu_item, gpointer data)
   /* create equalizer10 */
   equalizer10 = ags_equalizer10_new(G_OBJECT(window->soundcard));
 
-  add_audio = ags_add_audio_new(window->application_context,
+  add_audio = ags_add_audio_new((AgsApplicationContext *) window->application_context,
 				AGS_MACHINE(equalizer10)->audio);
   ags_gui_thread_schedule_task((AgsGuiThread *) gui_thread,
 			       (GObject *) add_audio);
@@ -506,7 +506,7 @@ ags_menu_action_add_drum_callback(GtkWidget *menu_item, gpointer data)
   /* create drum */
   drum = ags_drum_new(G_OBJECT(window->soundcard));
   
-  add_audio = ags_add_audio_new(window->application_context,
+  add_audio = ags_add_audio_new((AgsApplicationContext *) window->application_context,
 				AGS_MACHINE(drum)->audio);
   ags_gui_thread_schedule_task((AgsGuiThread *) gui_thread,
 			       (GObject *) add_audio);
@@ -555,7 +555,7 @@ ags_menu_action_add_matrix_callback(GtkWidget *menu_item, gpointer data)
   /* create matrix */
   matrix = ags_matrix_new(G_OBJECT(window->soundcard));
 
-  add_audio = ags_add_audio_new(window->application_context,
+  add_audio = ags_add_audio_new((AgsApplicationContext *) window->application_context,
 				AGS_MACHINE(matrix)->audio);
   ags_gui_thread_schedule_task((AgsGuiThread *) gui_thread,
 			       (GObject *) add_audio);
@@ -604,7 +604,7 @@ ags_menu_action_add_synth_callback(GtkWidget *menu_item, gpointer data)
   /* create synth */
   synth = ags_synth_new(G_OBJECT(window->soundcard));
 
-  add_audio = ags_add_audio_new(window->application_context,
+  add_audio = ags_add_audio_new((AgsApplicationContext *) window->application_context,
 				AGS_MACHINE(synth)->audio);
   ags_gui_thread_schedule_task((AgsGuiThread *) gui_thread,
 			       (GObject *) add_audio);
@@ -649,7 +649,7 @@ ags_menu_action_add_syncsynth_callback(GtkWidget *menu_item, gpointer data)
   /* create syncsynth */
   syncsynth = ags_syncsynth_new(G_OBJECT(window->soundcard));
 
-  add_audio = ags_add_audio_new(window->application_context,
+  add_audio = ags_add_audio_new((AgsApplicationContext *) window->application_context,
 				AGS_MACHINE(syncsynth)->audio);
   ags_gui_thread_schedule_task((AgsGuiThread *) gui_thread,
 			       (GObject *) add_audio);
@@ -695,7 +695,7 @@ ags_menu_action_add_ffplayer_callback(GtkWidget *menu_item, gpointer data)
   /* create ffplayer */
   ffplayer = ags_ffplayer_new(G_OBJECT(window->soundcard));
 
-  add_audio = ags_add_audio_new(window->application_context,
+  add_audio = ags_add_audio_new((AgsApplicationContext *) window->application_context,
 				AGS_MACHINE(ffplayer)->audio);
   ags_gui_thread_schedule_task((AgsGuiThread *) gui_thread,
 			       (GObject *) add_audio);
@@ -741,7 +741,7 @@ ags_menu_action_add_audiorec_callback(GtkWidget *menu_item, gpointer data)
   /* create audiorec */
   audiorec = ags_audiorec_new(G_OBJECT(window->soundcard));
 
-  add_audio = ags_add_audio_new(window->application_context,
+  add_audio = ags_add_audio_new((AgsApplicationContext *) window->application_context,
 				AGS_MACHINE(audiorec)->audio);
   ags_gui_thread_schedule_task((AgsGuiThread *) gui_thread,
 			       (GObject *) add_audio);
@@ -797,7 +797,7 @@ ags_menu_action_add_ladspa_bridge_callback(GtkWidget *menu_item, gpointer data)
 					filename,
 					effect);
   
-  add_audio = ags_add_audio_new(window->application_context,
+  add_audio = ags_add_audio_new((AgsApplicationContext *) window->application_context,
 				AGS_MACHINE(ladspa_bridge)->audio);
   ags_gui_thread_schedule_task((AgsGuiThread *) gui_thread,
 			       (GObject *) add_audio);
@@ -857,7 +857,7 @@ ags_menu_action_add_dssi_bridge_callback(GtkWidget *menu_item, gpointer data)
 				    filename,
 				    effect);
   
-  add_audio = ags_add_audio_new(window->application_context,
+  add_audio = ags_add_audio_new((AgsApplicationContext *) window->application_context,
 				AGS_MACHINE(dssi_bridge)->audio);
   ags_gui_thread_schedule_task((AgsGuiThread *) gui_thread,
 			       (GObject *) add_audio);
@@ -949,7 +949,7 @@ ags_menu_action_add_lv2_bridge_callback(GtkWidget *menu_item, gpointer data)
 				       (AGS_MACHINE_POPUP_ENVELOPE));
   }
   
-  add_audio = ags_add_audio_new(window->application_context,
+  add_audio = ags_add_audio_new((AgsApplicationContext *) window->application_context,
 				AGS_MACHINE(lv2_bridge)->audio);
   ags_gui_thread_schedule_task((AgsGuiThread *) gui_thread,
 			       (GObject *) add_audio);
@@ -1018,7 +1018,7 @@ ags_menu_action_add_live_dssi_bridge_callback(GtkWidget *menu_item, gpointer dat
 					      filename,
 					      effect);
   
-  add_audio = ags_add_audio_new(window->application_context,
+  add_audio = ags_add_audio_new((AgsApplicationContext *) window->application_context,
 				AGS_MACHINE(live_dssi_bridge)->audio);
   ags_gui_thread_schedule_task((AgsGuiThread *) gui_thread,
 			       (GObject *) add_audio);
@@ -1083,7 +1083,7 @@ ags_menu_action_add_live_lv2_bridge_callback(GtkWidget *menu_item, gpointer data
   lv2_plugin = ags_lv2_manager_find_lv2_plugin(ags_lv2_manager_get_instance(),
 					       filename, effect);
     
-  add_audio = ags_add_audio_new(window->application_context,
+  add_audio = ags_add_audio_new((AgsApplicationContext *) window->application_context,
 				AGS_MACHINE(live_lv2_bridge)->audio);
   ags_gui_thread_schedule_task((AgsGuiThread *) gui_thread,
 			       (GObject *) add_audio);

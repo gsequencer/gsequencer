@@ -178,7 +178,7 @@ ags_export_soundcard_card_callback(GtkWidget *combo_box,
   application_context = NULL;
 
   if(export_window != NULL){
-    application_context = export_window->application_context;
+    application_context = (AgsApplicationContext *) export_window->application_context;
   }
 
   /* get soundcard */

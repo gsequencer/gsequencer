@@ -372,7 +372,7 @@ ags_machine_popup_envelope_callback(GtkWidget *widget, AgsMachine *machine)
       ags_envelope_dialog_add_pattern_tab(envelope_dialog);
     }
     
-    machine->envelope_dialog = envelope_dialog;
+    machine->envelope_dialog = (GtkDialog *) envelope_dialog;
     
     ags_connectable_connect(AGS_CONNECTABLE(envelope_dialog));
     ags_applicable_reset(AGS_APPLICABLE(envelope_dialog));

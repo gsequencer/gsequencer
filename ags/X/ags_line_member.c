@@ -1648,12 +1648,12 @@ ags_line_member_chained_event(AgsLineMember *line_member)
 
     is_active = FALSE;
 
-    child_widget = gtk_bin_get_child(line_member);
+    child_widget = gtk_bin_get_child((GtkBin *) line_member);
     
     if(AGS_IS_DIAL(child_widget) ||
        GTK_IS_SPIN_BUTTON(child_widget) ||
        GTK_IS_SCALE(child_widget)){
-      g_object_get(gtk_bin_get_child(line_member),
+      g_object_get(gtk_bin_get_child((GtkBin *) line_member),
 		   "adjustment", &adjustment,
 		   NULL);
     }else if(GTK_IS_TOGGLE_BUTTON(child_widget)){
@@ -1737,7 +1737,7 @@ ags_line_member_chained_event(AgsLineMember *line_member)
 			 AGS_LINE_MEMBER(list_line_member->data)->specifier)){
 	      AGS_LINE_MEMBER(list_line_member->data)->flags |= AGS_LINE_MEMBER_BLOCK_CHAINED;
 
-	      child_widget = gtk_bin_get_child(AGS_LINE_MEMBER(list_line_member->data));
+	      child_widget = gtk_bin_get_child(GTK_BIN(list_line_member->data));
 
 	      if(AGS_IS_DIAL(child_widget)){
 		ags_dial_set_value((AgsDial *) child_widget,

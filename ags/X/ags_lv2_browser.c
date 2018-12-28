@@ -169,7 +169,7 @@ ags_lv2_browser_init(AgsLv2Browser *lv2_browser)
   
   if(filenames_start != NULL){
     while(*filenames != NULL){
-      gtk_combo_box_text_append_text(lv2_browser->filename,
+      gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(lv2_browser->filename),
 				     *filenames);
       
       filenames++;

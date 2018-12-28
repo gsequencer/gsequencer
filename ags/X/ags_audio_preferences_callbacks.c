@@ -130,7 +130,6 @@ void
 ags_audio_preferences_remove_soundcard_editor_callback(GtkWidget *button,
 						       AgsAudioPreferences *audio_preferences)
 {
-  AgsWindow *window;
   AgsPreferences *preferences;
   AgsSoundcardEditor *soundcard_editor;
 
@@ -140,7 +139,6 @@ ags_audio_preferences_remove_soundcard_editor_callback(GtkWidget *button,
   
   preferences = (AgsPreferences *) gtk_widget_get_ancestor(GTK_WIDGET(audio_preferences),
 							   AGS_TYPE_PREFERENCES);
-  window = (AgsWindow *) preferences->window;
 
   soundcard_editor = (AgsSoundcardEditor *) gtk_widget_get_ancestor(button,
 								    AGS_TYPE_SOUNDCARD_EDITOR);

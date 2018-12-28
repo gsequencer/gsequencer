@@ -760,8 +760,6 @@ ags_effect_line_add_ladspa_effect(AgsEffectLine *effect_line,
 	       NULL);
 
   /* get by effect */
-  recall = start_recall;
-  
   recall = ags_recall_get_by_effect(start_recall,
 				    filename,
 				    effect);
@@ -1145,8 +1143,6 @@ ags_effect_line_add_lv2_effect(AgsEffectLine *effect_line,
 	       NULL);
 
   /* get by effect */
-  recall = start_recall;
-  
   recall = ags_recall_get_by_effect(start_recall,
 				    filename,
 				    effect);
@@ -1535,7 +1531,6 @@ ags_effect_line_real_remove_effect(AgsEffectLine *effect_line,
   GList *start_port, *port;
 
   gchar *filename, *effect;
-  gchar **remove_specifier;
 
   guint nth_effect, n_bulk;
   guint i;
@@ -1633,7 +1628,6 @@ ags_effect_line_real_remove_effect(AgsEffectLine *effect_line,
 	       NULL);
   
   port = start_port;
-  remove_specifier = NULL;
   i = 0;
   
   while(port != NULL){
@@ -1648,14 +1642,6 @@ ags_effect_line_real_remove_effect(AgsEffectLine *effect_line,
 	child_widget = gtk_bin_get_child(control->data);
 	
 	/* collect specifier */
-	if(remove_specifier == NULL){
-	  remove_specifier = (gchar **) malloc(2 * sizeof(gchar *));
-	}else{
-	  remove_specifier = (gchar **) realloc(remove_specifier,
-						(i + 2) * sizeof(gchar *));
-	}	
-	
-	remove_specifier[i] = g_strdup(AGS_LINE_MEMBER(control->data)->specifier);
 	i++;
 
 	/* remove widget */
@@ -1682,10 +1668,6 @@ ags_effect_line_real_remove_effect(AgsEffectLine *effect_line,
 
   g_list_free(start_recall);
   g_list_free(start_port);
-
-  if(remove_specifier != NULL){
-    remove_specifier[i] = NULL;
-  }
 
   /* remove recalls */
   ags_channel_remove_effect(effect_line->channel,
@@ -2092,7 +2074,7 @@ ags_effect_line_message_monitor_timeout(AgsEffectLine *effect_line)
     }
     
     g_list_free_full(message_start,
-		     (GDestroyNotify *) ags_message_envelope_free);
+		     (GDestroyNotify) ags_message_envelope_free);
     
     return(TRUE);
   }else{
@@ -2119,8 +2101,8 @@ ags_effect_line_indicator_queue_draw_timeout(GtkWidget *widget)
 			 widget) != NULL){
     GList *list, *list_start;
     
-    effect_line = gtk_widget_get_ancestor(widget,
-					  AGS_TYPE_EFFECT_LINE);
+    effect_line = (AgsEffectLine *) gtk_widget_get_ancestor(widget,
+							    AGS_TYPE_EFFECT_LINE);
 
     list_start = 
       list = gtk_container_get_children((GtkContainer *) AGS_EFFECT_LINE(effect_line)->table);

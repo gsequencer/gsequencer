@@ -159,8 +159,8 @@ ags_dssi_browser_init(AgsDssiBrowser *dssi_browser)
 		     FALSE, FALSE,
 		     0);
 
-  dssi_browser->filename = 
-    combo_box = (GtkComboBox *) gtk_combo_box_text_new();
+  dssi_browser->filename = (GtkComboBox *) gtk_combo_box_text_new();
+  combo_box = (GtkComboBoxText *) dssi_browser->filename;
   gtk_box_pack_start(GTK_BOX(dssi_browser->plugin),
 		     GTK_WIDGET(combo_box),
 		     FALSE, FALSE,
@@ -188,8 +188,8 @@ ags_dssi_browser_init(AgsDssiBrowser *dssi_browser)
 		     FALSE, FALSE,
 		     0);
 
-  dssi_browser->effect = 
-    combo_box = (GtkComboBox *) gtk_combo_box_text_new();
+  dssi_browser->effect = (GtkComboBox *) gtk_combo_box_text_new();
+  combo_box = (GtkComboBoxText *) dssi_browser->effect;
   gtk_box_pack_start(GTK_BOX(dssi_browser->plugin),
 		     GTK_WIDGET(combo_box),
 		     FALSE, FALSE,

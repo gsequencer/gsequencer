@@ -849,8 +849,6 @@ ags_line_add_ladspa_effect(AgsLine *line,
 	       NULL);
 
   /* get by effect */
-  recall = start_recall;
-  
   recall = ags_recall_get_by_effect(start_recall,
 				    filename,
 				    effect);
@@ -1225,8 +1223,6 @@ ags_line_add_lv2_effect(AgsLine *line,
 	       NULL);
 
   /* get by effect */
-  recall = start_recall;
-  
   recall = ags_recall_get_by_effect(start_recall,
 				    filename,
 				    effect);
@@ -1595,7 +1591,6 @@ ags_line_real_remove_effect(AgsLine *line,
 			    guint nth)
 {
   AgsWindow *window;
-  AgsMachine *machine;
   
   GList *control, *control_start;
   GList *start_recall, *recall;
@@ -1609,8 +1604,6 @@ ags_line_real_remove_effect(AgsLine *line,
   pthread_mutex_t *recall_mutex;
 
   window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) line);
-  machine = (AgsMachine *) gtk_widget_get_ancestor((GtkWidget *) line,
-						   AGS_TYPE_MACHINE);
     
   /* get nth_effect */
   g_object_get(line->channel,
@@ -2019,9 +2012,10 @@ ags_line_message_monitor_timeout(AgsLine *line)
 		gchar *controls;
 
 		/* get plugin browser */
-		description_start = NULL;
+		description = 
+		  description_start = NULL;
 		port_control_start = NULL;
-	
+		
 		if(AGS_IS_LADSPA_BROWSER(plugin_browser->active_browser)){
 		  description_start = 
 		    description = gtk_container_get_children((GtkContainer *) AGS_LADSPA_BROWSER(plugin_browser->active_browser)->description);
@@ -2151,7 +2145,7 @@ ags_line_message_monitor_timeout(AgsLine *line)
     }
     
     g_list_free_full(message_start,
-		     (GDestroyNotify *) ags_message_envelope_free);
+		     (GDestroyNotify) ags_message_envelope_free);
 
     return(TRUE);
   }else{
