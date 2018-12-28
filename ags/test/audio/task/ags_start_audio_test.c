@@ -34,6 +34,31 @@ int ags_start_audio_test_clean_suite();
 
 void ags_start_audio_test_launch();
 
+#define AGS_START_AUDIO_TEST_CONFIG "[generic]\n"	\
+  "autosave-thread=false\n"				\
+  "simple-file=true\n"					\
+  "disable-feature=experimental\n"			\
+  "segmentation=4/4\n"					\
+  "\n"							\
+  "[thread]\n"						\
+  "model=super-threaded\n"				\
+  "super-threaded-scope=channel\n"			\
+  "lock-global=ags-thread\n"				\
+  "lock-parent=ags-recycling-thread\n"			\
+  "\n"							\
+  "[soundcard]\n"					\
+  "backend=alsa\n"					\
+  "device=default\n"					\
+  "samplerate=48000\n"					\
+  "buffer-size=1024\n"					\
+  "pcm-channels=2\n"					\
+  "dsp-channels=2\n"					\
+  "format=16\n"						\
+  "\n"							\
+  "[recall]\n"						\
+  "auto-sense=true\n"					\
+  "\n"
+
 AgsConfig *config;
 
 AgsApplicationContext *application_context;
@@ -46,7 +71,9 @@ int
 ags_start_audio_test_init_suite()
 {
   config = ags_config_get_instance();
-  ags_config_load_defaults(config);
+  ags_config_load_from_data(config,
+			    AGS_START_AUDIO_TEST_CONFIG,
+			    strlen(AGS_START_AUDIO_TEST_CONFIG));
   
   application_context = ags_audio_application_context_new();
   g_object_ref(application_context);
