@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: gsequencer 2.1.21\n"
+"Project-Id-Version: gsequencer 2.1.22\n"
 "Report-Msgid-Bugs-To: jkraehemann@gmail.com\n"
-"POT-Creation-Date: 2018-12-28 10:44+0100\n"
+"POT-Creation-Date: 2018-12-29 15:37+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -595,27 +595,27 @@ msgstr ""
 msgid "wave"
 msgstr ""
 
-#: ags/X/ags_xorg_application_context.c:2023
+#: ags/X/ags_xorg_application_context.c:2024
 #: ags/audio/ags_audio_application_context.c:1703
 #: ags/audio/task/ags_apply_sound_config.c:860
 #, c-format
 msgid "unknown soundcard backend - %s"
 msgstr ""
 
-#: ags/X/ags_xorg_application_context.c:2033
+#: ags/X/ags_xorg_application_context.c:2034
 #: ags/audio/ags_audio_application_context.c:1713
 #: ags/audio/task/ags_apply_sound_config.c:870
 msgid "unknown soundcard backend - NULL"
 msgstr ""
 
-#: ags/X/ags_xorg_application_context.c:2202
+#: ags/X/ags_xorg_application_context.c:2203
 #: ags/audio/ags_audio_application_context.c:1864
 #: ags/audio/task/ags_apply_sound_config.c:1035
 #, c-format
 msgid "unknown sequencer backend - %s"
 msgstr ""
 
-#: ags/X/ags_xorg_application_context.c:2212
+#: ags/X/ags_xorg_application_context.c:2213
 #: ags/audio/ags_audio_application_context.c:1874
 #: ags/audio/task/ags_apply_sound_config.c:1045
 msgid "unknown sequencer backend - NULL"
@@ -663,29 +663,29 @@ msgstr ""
 msgid "Opacity"
 msgstr ""
 
-#: ags/X/editor/ags_automation_toolbar.c:1132
+#: ags/X/editor/ags_automation_toolbar.c:1134
 #: ags/X/editor/ags_select_acceleration_dialog.c:205
 msgid "select accelerations"
 msgstr ""
 
-#: ags/X/editor/ags_automation_toolbar.c:1135
+#: ags/X/editor/ags_automation_toolbar.c:1137
 #: ags/X/editor/ags_ramp_acceleration_dialog.c:207
 msgid "ramp accelerations"
 msgstr ""
 
-#: ags/X/editor/ags_automation_toolbar.c:1138
+#: ags/X/editor/ags_automation_toolbar.c:1140
 #: ags/X/editor/ags_notation_toolbar.c:122
-#: ags/X/editor/ags_notation_toolbar.c:457 ags/X/editor/ags_wave_toolbar.c:390
+#: ags/X/editor/ags_notation_toolbar.c:457 ags/X/editor/ags_wave_toolbar.c:386
 msgid "position cursor"
 msgstr ""
 
-#: ags/X/editor/ags_automation_toolbar.c:1144
-#: ags/X/editor/ags_wave_toolbar.c:396
+#: ags/X/editor/ags_automation_toolbar.c:1146
+#: ags/X/editor/ags_wave_toolbar.c:392
 msgid "enable all lines"
 msgstr ""
 
-#: ags/X/editor/ags_automation_toolbar.c:1147
-#: ags/X/editor/ags_wave_toolbar.c:399
+#: ags/X/editor/ags_automation_toolbar.c:1149
+#: ags/X/editor/ags_wave_toolbar.c:395
 msgid "disable all lines"
 msgstr ""
 
@@ -763,7 +763,7 @@ msgid "ratio"
 msgstr ""
 
 #: ags/X/editor/ags_envelope_editor_callbacks.c:51
-#: ags/X/editor/ags_pattern_envelope_callbacks.c:1046
+#: ags/X/editor/ags_pattern_envelope_callbacks.c:1040
 msgid "preset name"
 msgstr ""
 
@@ -982,7 +982,7 @@ msgstr ""
 msgid "select y1"
 msgstr ""
 
-#: ags/X/editor/ags_wave_toolbar.c:387
+#: ags/X/editor/ags_wave_toolbar.c:383
 msgid "select audio data"
 msgstr ""
 

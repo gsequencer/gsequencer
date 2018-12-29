@@ -860,7 +860,7 @@ ags_osc_renew_controller_set_data_audio(AgsOscRenewController *osc_renew_control
       ags_osc_buffer_util_get_int32(message + AGS_OSC_RENEW_CONTROLLER_CONTEXT_PATH_LENGTH + type_tag_length + path_length,
 				    &samplerate);
 
-      set_samplerate = ags_set_samplerate_new(((GObject *) audio,
+      set_samplerate = ags_set_samplerate_new((GObject *) audio,
 					      samplerate);
       ags_task_thread_append_task((AgsTaskThread *) task_thread,
 				  (AgsTask *) set_samplerate);
