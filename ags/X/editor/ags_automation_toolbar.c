@@ -170,9 +170,9 @@ ags_automation_toolbar_init(AgsAutomationToolbar *automation_toolbar)
 			    i18n("cut automation"),
 			    NULL);
 
-  automation_toolbar->paste_tool = (GtkToolButton *) g_object_new(GTK_TYPE_MENU_TOOL_BUTTON,
-								  "stock-id", GTK_STOCK_PASTE,
-								  NULL);
+  automation_toolbar->paste_tool = (GtkMenuToolButton *) g_object_new(GTK_TYPE_MENU_TOOL_BUTTON,
+								      "stock-id", GTK_STOCK_PASTE,
+								      NULL);
 
   menu = (GtkMenu *) gtk_menu_new();
 
@@ -761,6 +761,8 @@ ags_automation_toolbar_apply_port(AgsAutomationToolbar *automation_toolbar,
   model = gtk_combo_box_get_model(automation_toolbar->port);
 
   /* update port combo box */
+  start_port = NULL;
+  
   contains_specifier = FALSE;
 
   if(gtk_combo_box_get_active_iter(automation_toolbar->port, &iter)){

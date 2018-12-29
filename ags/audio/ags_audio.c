@@ -2343,7 +2343,7 @@ ags_audio_set_property(GObject *gobject,
 	g_object_ref(output_midi_file);
       }
 
-      audio->output_midi_file = output_midi_file;
+      audio->output_midi_file = (GObject *) output_midi_file;
 
       pthread_mutex_unlock(audio_mutex);
     }
@@ -2370,7 +2370,7 @@ ags_audio_set_property(GObject *gobject,
 	g_object_ref(input_midi_file);
       }
 
-      audio->input_midi_file = input_midi_file;
+      audio->input_midi_file = (GObject *) input_midi_file;
 
       pthread_mutex_unlock(audio_mutex);
     }
@@ -5448,7 +5448,7 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
 					      NULL);
 	g_object_ref(channel);
 
-	playback = channel->playback;
+	playback = (AgsPlayback *) channel->playback;
 	g_object_set(playback,
 		     "playback-domain", playback_domain,
 		     NULL);

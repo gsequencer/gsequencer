@@ -255,7 +255,7 @@ ags_move_note_dialog_init(AgsMoveNoteDialog *move_note_dialog)
 		     0);
 
   /* move y - hbox */
-  hbox = (GtkVBox *) gtk_hbox_new(FALSE, 0);
+  hbox = (GtkHBox *) gtk_hbox_new(FALSE, 0);
   gtk_box_pack_start((GtkBox *) vbox,
 		     GTK_WIDGET(hbox),
 		     FALSE, FALSE,
@@ -479,7 +479,7 @@ ags_move_note_dialog_apply(AgsApplicable *applicable)
   
   move_note_dialog = AGS_MOVE_NOTE_DIALOG(applicable);
 
-  window = move_note_dialog->main_window;
+  window = (AgsWindow *) move_note_dialog->main_window;
   notation_editor = window->notation_editor;
 
   machine = notation_editor->selected_machine;

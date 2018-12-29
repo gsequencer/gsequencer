@@ -508,7 +508,7 @@ ags_select_acceleration_dialog_apply(AgsApplicable *applicable)
     
   select_acceleration_dialog = AGS_SELECT_ACCELERATION_DIALOG(applicable);
 
-  window = select_acceleration_dialog->main_window;
+  window = (AgsWindow *) select_acceleration_dialog->main_window;
   automation_editor = window->automation_window->automation_editor;
 
   machine = automation_editor->selected_machine;
@@ -517,6 +517,8 @@ ags_select_acceleration_dialog_apply(AgsApplicable *applicable)
      automation_editor->focused_automation_edit == NULL){
     return;
   }
+
+  notebook = NULL;
 
   if(automation_editor->focused_automation_edit->channel_type == G_TYPE_NONE){
     notebook = NULL;
@@ -724,7 +726,7 @@ ags_select_acceleration_dialog_reset(AgsApplicable *applicable)
   select_acceleration_dialog = AGS_SELECT_ACCELERATION_DIALOG(applicable);
 
   list =
-    list_start = gtk_container_get_children(select_acceleration_dialog->port);
+    list_start = gtk_container_get_children((GtkContainer *) select_acceleration_dialog->port);
 
   while(list != NULL){
     gtk_widget_destroy(list->data);

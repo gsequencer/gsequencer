@@ -161,9 +161,9 @@ ags_notation_toolbar_init(AgsNotationToolbar *notation_toolbar)
   gtk_toolbar_append_widget((GtkToolbar *) notation_toolbar, (GtkWidget *) notation_toolbar->cut, i18n("cut notes"), NULL);
 
   /* paste */
-  notation_toolbar->paste_tool = (GtkToolButton *) g_object_new(GTK_TYPE_MENU_TOOL_BUTTON,
-								"stock-id", GTK_STOCK_PASTE,
-								NULL);
+  notation_toolbar->paste_tool = (GtkMenuToolButton *) g_object_new(GTK_TYPE_MENU_TOOL_BUTTON,
+								    "stock-id", GTK_STOCK_PASTE,
+								    NULL);
   
   menu = (GtkMenu *) gtk_menu_new();
 

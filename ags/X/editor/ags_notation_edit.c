@@ -826,7 +826,6 @@ ags_notation_edit_auto_scroll_timeout(GtkWidget *widget)
 			 widget) != NULL){
     AgsNotationEditor *notation_editor;
     AgsNotationEdit *notation_edit;
-    AgsNotationToolbar *notation_toolbar;
 
     GObject *output_soundcard;
     
@@ -844,8 +843,6 @@ ags_notation_edit_auto_scroll_timeout(GtkWidget *widget)
     if(notation_editor->selected_machine == NULL){
       return(TRUE);
     }
-
-    notation_toolbar = notation_editor->notation_toolbar;
 
     /* reset offset */
     g_object_get(notation_editor->selected_machine->audio,

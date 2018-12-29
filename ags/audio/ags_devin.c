@@ -1150,7 +1150,7 @@ ags_devin_finalize(GObject *gobject)
   /* notify soundcard */
   if(devin->notify_soundcard != NULL){
     if(devin->application_context != NULL){
-      ags_task_thread_remove_cyclic_task(AGS_APPLICATION_CONTEXT(devin->application_context)->task_thread,
+      ags_task_thread_remove_cyclic_task((AgsTaskThread *) AGS_APPLICATION_CONTEXT(devin->application_context)->task_thread,
 					 (AgsTask *) devin->notify_soundcard);
     }
 

@@ -415,8 +415,8 @@ ags_sndfile_set_property(GObject *gobject,
       ags_stream_free(sndfile->buffer);
 
       if(audio_channels > 0){
-	sndfile->audio_channel_written = (guint64 *) realloc(sndfile->audio_channel_written,
-							     audio_channels * sizeof(guint64));
+	sndfile->audio_channel_written = (gint64 *) realloc(sndfile->audio_channel_written,
+							    audio_channels * sizeof(gint64));
 	
 	for(i = sndfile->audio_channels; i < audio_channels; i++){
 	  sndfile->audio_channel_written[i] = -1;

@@ -215,7 +215,7 @@ ags_ramp_acceleration_dialog_init(AgsRampAccelerationDialog *ramp_acceleration_d
 		     0);  
 
   /* automation */
-  ramp_acceleration_dialog->port = (GtkVBox *) gtk_combo_box_text_new();
+  ramp_acceleration_dialog->port = (GtkComboBoxText *) gtk_combo_box_text_new();
   gtk_box_pack_start((GtkBox *) vbox,
 		     GTK_WIDGET(ramp_acceleration_dialog->port),
 		     FALSE, FALSE,
@@ -532,7 +532,6 @@ ags_ramp_acceleration_dialog_apply(AgsApplicable *applicable)
   AgsRampAccelerationDialog *ramp_acceleration_dialog;
   AgsWindow *window;
   AgsAutomationEditor *automation_editor;
-  AgsAutomationToolbar *automation_toolbar;
   AgsMachine *machine;
   AgsNotebook *notebook;
 
@@ -569,7 +568,7 @@ ags_ramp_acceleration_dialog_apply(AgsApplicable *applicable)
   
   ramp_acceleration_dialog = AGS_RAMP_ACCELERATION_DIALOG(applicable);
 
-  window = ramp_acceleration_dialog->main_window;
+  window = (AgsWindow *) ramp_acceleration_dialog->main_window;
   automation_editor = window->automation_window->automation_editor;
 
   machine = automation_editor->selected_machine;
@@ -579,10 +578,10 @@ ags_ramp_acceleration_dialog_apply(AgsApplicable *applicable)
     return;
   }
 
-  automation_toolbar = (AgsAutomationToolbar *) automation_editor->automation_toolbar;
-  
   specifier = gtk_combo_box_text_get_active_text(ramp_acceleration_dialog->port);
   notebook = NULL;
+
+  channel_type = G_TYPE_NONE;
   
   if(automation_editor->focused_automation_edit->channel_type == G_TYPE_NONE){
     notebook = NULL;

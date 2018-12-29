@@ -333,7 +333,7 @@ ags_wave_edit_init(AgsWaveEdit *wave_edit)
   
   /* vscrollbar */
   adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 1.0, wave_edit->control_height, 1.0);
-  wave_edit->vscrollbar = gtk_vscrollbar_new(adjustment);
+  wave_edit->vscrollbar = (GtkVScrollbar *) gtk_vscrollbar_new(adjustment);
   g_object_set(wave_edit->vscrollbar,
 	       "no-show-all", TRUE,
 	       NULL);
@@ -348,7 +348,7 @@ ags_wave_edit_init(AgsWaveEdit *wave_edit)
 
   /* hscrollbar */
   adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 1.0, (gdouble) wave_edit->control_width, 1.0);
-  wave_edit->hscrollbar = gtk_hscrollbar_new(adjustment);
+  wave_edit->hscrollbar = (GtkHScrollbar *) gtk_hscrollbar_new(adjustment);
   g_object_set(wave_edit->hscrollbar,
 	       "no-show-all", TRUE,
 	       NULL);
@@ -551,7 +551,7 @@ ags_accessible_wave_edit_do_action(AtkAction *action,
     return(FALSE);
   }
 
-  wave_edit = gtk_accessible_get_widget(GTK_ACCESSIBLE(action));
+  wave_edit = (AgsWaveEdit *) gtk_accessible_get_widget(GTK_ACCESSIBLE(action));
   
   key_press = (GdkEventKey *) gdk_event_new(GDK_KEY_PRESS);
   key_release = (GdkEventKey *) gdk_event_new(GDK_KEY_RELEASE);
@@ -863,7 +863,6 @@ ags_wave_edit_auto_scroll_timeout(GtkWidget *widget)
 			 widget) != NULL){
     AgsWaveEditor *wave_editor;
     AgsWaveEdit *wave_edit;
-    AgsWaveToolbar *wave_toolbar;
 
     GObject *output_soundcard;
     
@@ -881,8 +880,6 @@ ags_wave_edit_auto_scroll_timeout(GtkWidget *widget)
     if(wave_editor->selected_machine == NULL){
       return(TRUE);
     }
-
-    wave_toolbar = wave_editor->wave_toolbar;
 
     /* reset offset */
     g_object_get(wave_editor->selected_machine->audio,
@@ -1061,6 +1058,8 @@ ags_wave_edit_draw_segment(AgsWaveEdit *wave_edit)
     return;
   }
 
+  y = (gdouble) 0.0;
+
   width = (gdouble) GTK_WIDGET(wave_edit->drawing_area)->allocation.width;
   height = (gdouble) GTK_WIDGET(wave_edit->drawing_area)->allocation.height;
 
@@ -1084,8 +1083,6 @@ ags_wave_edit_draw_segment(AgsWaveEdit *wave_edit)
   cairo_set_line_width(cr, 1.0);
 
   tact = exp2((double) gtk_combo_box_get_active(wave_toolbar->zoom) - 2.0);
-
-  y = (gdouble) 0.0;
   
   map_height = (gdouble) height;
 

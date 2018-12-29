@@ -31,7 +31,7 @@ ags_notation_toolbar_position_callback(GtkToggleToolButton *toggle_button, AgsNo
       gtk_toggle_tool_button_set_active(toggle_button, TRUE);
     }
   }else if(gtk_toggle_tool_button_get_active(toggle_button)){
-    GtkToggleButton *old_selected_edit_mode;
+    GtkToggleToolButton *old_selected_edit_mode;
     
     old_selected_edit_mode = notation_toolbar->selected_edit_mode;
     notation_toolbar->selected_edit_mode = toggle_button;
@@ -47,7 +47,7 @@ ags_notation_toolbar_edit_callback(GtkToggleToolButton *toggle_button, AgsNotati
       gtk_toggle_tool_button_set_active(toggle_button, TRUE);
     }
   }else if(gtk_toggle_tool_button_get_active(toggle_button)){
-    GtkToggleButton *old_selected_edit_mode;
+    GtkToggleToolButton *old_selected_edit_mode;
     
     old_selected_edit_mode = notation_toolbar->selected_edit_mode;
     notation_toolbar->selected_edit_mode = toggle_button;
@@ -63,7 +63,7 @@ ags_notation_toolbar_clear_callback(GtkToggleToolButton *toggle_button, AgsNotat
       gtk_toggle_tool_button_set_active(toggle_button, TRUE);
     }
   }else if(gtk_toggle_tool_button_get_active(toggle_button)){
-    GtkToggleButton *old_selected_edit_mode;
+    GtkToggleToolButton *old_selected_edit_mode;
     
     old_selected_edit_mode = notation_toolbar->selected_edit_mode;
     notation_toolbar->selected_edit_mode = toggle_button;
@@ -79,7 +79,7 @@ ags_notation_toolbar_select_callback(GtkToggleToolButton *toggle_button, AgsNota
       gtk_toggle_tool_button_set_active(toggle_button, TRUE);
     }
   }else if(gtk_toggle_tool_button_get_active(toggle_button)){
-    GtkToggleButton *old_selected_edit_mode;
+    GtkToggleToolButton *old_selected_edit_mode;
     
     old_selected_edit_mode = notation_toolbar->selected_edit_mode;
     notation_toolbar->selected_edit_mode = toggle_button;

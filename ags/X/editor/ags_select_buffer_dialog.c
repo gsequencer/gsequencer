@@ -224,7 +224,7 @@ ags_select_buffer_dialog_init(AgsSelectBufferDialog *select_buffer_dialog)
 		     0);  
   
   /* select x0 - hbox */
-  hbox = (GtkVBox *) gtk_hbox_new(FALSE, 0);
+  hbox = (GtkHBox *) gtk_hbox_new(FALSE, 0);
   gtk_box_pack_start((GtkBox *) vbox,
 		     GTK_WIDGET(hbox),
 		     FALSE, FALSE,
@@ -463,7 +463,7 @@ ags_select_buffer_dialog_apply(AgsApplicable *applicable)
     
   select_buffer_dialog = AGS_SELECT_BUFFER_DIALOG(applicable);
 
-  window = select_buffer_dialog->main_window;
+  window = (AgsWindow *) select_buffer_dialog->main_window;
   wave_editor = window->wave_window->wave_editor;
 
   machine = wave_editor->selected_machine;

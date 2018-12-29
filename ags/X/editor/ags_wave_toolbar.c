@@ -223,7 +223,6 @@ ags_wave_toolbar_connect(AgsConnectable *connectable)
 {
   AgsWindow *window;
   AgsWaveWindow *wave_window;
-  AgsWaveEditor *wave_editor;
   AgsWaveToolbar *wave_toolbar;
 
   GList *list;
@@ -235,9 +234,6 @@ ags_wave_toolbar_connect(AgsConnectable *connectable)
   }
 
   wave_toolbar->flags |= AGS_WAVE_TOOLBAR_CONNECTED;
-
-  wave_editor = (AgsWaveEditor *) gtk_widget_get_ancestor((GtkWidget *) wave_toolbar,
-								      AGS_TYPE_WAVE_EDITOR);
 
   wave_window = (AgsWaveWindow *) gtk_widget_get_ancestor((GtkWidget *) wave_toolbar,
 								      AGS_TYPE_WAVE_WINDOW);

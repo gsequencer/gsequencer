@@ -810,7 +810,7 @@ ags_accessible_automation_edit_do_action(AtkAction *action,
     return(FALSE);
   }
 
-  automation_edit = gtk_accessible_get_widget(GTK_ACCESSIBLE(action));
+  automation_edit = (AgsAutomationEdit *) gtk_accessible_get_widget(GTK_ACCESSIBLE(action));
   
   key_press = (GdkEventKey *) gdk_event_new(GDK_KEY_PRESS);
   key_release = (GdkEventKey *) gdk_event_new(GDK_KEY_RELEASE);
@@ -1438,7 +1438,7 @@ ags_automation_edit_draw_segment(AgsAutomationEdit *automation_edit)
 
   cairo_set_line_width(cr, 1.0);
 
-  tact = exp2((double) gtk_combo_box_get_active(automation_editor->automation_toolbar->zoom) - 2.0);
+  tact = exp2((double) gtk_combo_box_get_active(automation_toolbar->zoom) - 2.0);
 
   y = (gdouble) 0.0;
   
@@ -1976,8 +1976,6 @@ ags_automation_edit_draw_automation(AgsAutomationEdit *automation_edit)
   GList *start_list_acceleration, *list_acceleration;
 
   gdouble opacity;
-  gdouble c_range;
-  gdouble y_upper, y_value;
   guint x0, x1;
   guint offset;
   gint i;    
@@ -2016,19 +2014,10 @@ ags_automation_edit_draw_automation(AgsAutomationEdit *automation_edit)
     return;
   }
 
-  if((AGS_AUTOMATION_EDIT_LOGARITHMIC & (automation_edit->flags)) != 0){
-    c_range = exp(automation_edit->upper) - exp(automation_edit->lower);
-  }else{
-    c_range = automation_edit->upper - automation_edit->lower;
-  }
-
   /* get visisble region */
   x0 = GTK_RANGE(automation_edit->hscrollbar)->adjustment->value;
   x1 = (GTK_RANGE(automation_edit->hscrollbar)->adjustment->value + GTK_WIDGET(automation_edit->drawing_area)->allocation.width);
 
-  y_value = GTK_RANGE(automation_edit->vscrollbar)->adjustment->value;
-  y_upper = GTK_RANGE(automation_edit->vscrollbar)->adjustment->upper;
-    
   /* push group */
   cairo_push_group(cr);
 

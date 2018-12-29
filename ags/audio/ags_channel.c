@@ -7066,7 +7066,7 @@ ags_channel_set_buffer_size(AgsChannel *channel, guint buffer_size)
   link = channel->link;
   recycling = channel->first_recycling;
   
-  playback = channel->playback;
+  playback = (AgsPlayback *) channel->playback;
 
   frequency = ceil((gdouble) channel->samplerate / (gdouble) channel->buffer_size) + AGS_SOUNDCARD_DEFAULT_OVERCLOCK;
   
@@ -11513,7 +11513,7 @@ ags_channel_real_recursive_run_stage(AgsChannel *channel,
 	ags_recall_id_set_sound_scope(current_recall_id, sound_scope);
 
 	ags_channel_add_recall_id(current_channel,
-				  (GObject *) current_recall_id);
+				  current_recall_id);
       }
 
       /* free recall id */
@@ -11580,7 +11580,7 @@ ags_channel_real_recursive_run_stage(AgsChannel *channel,
       ags_recall_id_set_sound_scope(current_recall_id, sound_scope);
 
       ags_channel_add_recall_id(channel,
-				(GObject *) current_recall_id);
+				current_recall_id);
     }
 
     /* free recall id */
@@ -11921,7 +11921,7 @@ ags_channel_real_recursive_run_stage(AgsChannel *channel,
 	  ags_recall_id_set_sound_scope(current_recall_id, sound_scope);
 
 	  ags_channel_add_recall_id(current_input,
-				    (GObject *) current_recall_id);
+				    current_recall_id);
 	}
       	
 	/* free recall id */
@@ -11971,7 +11971,7 @@ ags_channel_real_recursive_run_stage(AgsChannel *channel,
 	ags_recall_id_set_sound_scope(current_recall_id, sound_scope);
 
 	ags_channel_add_recall_id(current_input,
-				  (GObject *) current_recall_id);
+				  current_recall_id);
       }
       
       /* free recall id */
@@ -12053,7 +12053,7 @@ ags_channel_real_recursive_run_stage(AgsChannel *channel,
       /* get current audio */
       pthread_mutex_lock(current_channel_mutex);
       
-      current_audio = current_channel->audio;
+      current_audio = (AgsAudio *) current_channel->audio;
 
       pthread_mutex_unlock(current_channel_mutex);
       
@@ -12229,7 +12229,7 @@ ags_channel_real_recursive_run_stage(AgsChannel *channel,
     /* get current audio */
     pthread_mutex_lock(channel_mutex);
       
-    current_audio = channel->audio;
+    current_audio = (AgsAudio *) channel->audio;
 
     audio_channel = channel->audio_channel;
     line = channel->line;
@@ -12608,7 +12608,7 @@ ags_channel_real_recursive_run_stage(AgsChannel *channel,
       /* get current audio */
       pthread_mutex_lock(current_channel_mutex);
       
-      current_audio = current_channel->audio;
+      current_audio = (AgsAudio *) current_channel->audio;
 
       pthread_mutex_unlock(current_channel_mutex);
       
@@ -12778,7 +12778,7 @@ ags_channel_real_recursive_run_stage(AgsChannel *channel,
     /* get current audio */
     pthread_mutex_lock(channel_mutex);
       
-    current_audio = channel->audio;
+    current_audio = (AgsAudio *) channel->audio;
 
     audio_channel = channel->audio_channel;
     line = channel->line;
@@ -13152,7 +13152,7 @@ ags_channel_real_recursive_run_stage(AgsChannel *channel,
       if((AGS_CHANNEL_RECURSIVE_CLEANUP_SCOPE & (local_staging_flags)) != 0){	
 	if(current_recall_id != NULL){
 	  ags_channel_remove_recall_id(current_channel,
-				       (GObject *) current_recall_id);
+				       current_recall_id);
 
 	  ags_channel_unset_staging_flags(current_channel, sound_scope,
 					  staging_mask);
@@ -13165,7 +13165,7 @@ ags_channel_real_recursive_run_stage(AgsChannel *channel,
       /* get current audio */
       pthread_mutex_lock(current_channel_mutex);
       
-      current_audio = current_channel->audio;
+      current_audio = (AgsAudio *) current_channel->audio;
 
       pthread_mutex_unlock(current_channel_mutex);
       
@@ -13279,7 +13279,7 @@ ags_channel_real_recursive_run_stage(AgsChannel *channel,
       if((AGS_CHANNEL_RECURSIVE_CLEANUP_SCOPE & (local_staging_flags)) != 0){
 	if(current_recall_id){
 	  ags_channel_remove_recall_id(current_channel,
-				       (GObject *) current_recall_id);
+				       current_recall_id);
 
 	  ags_channel_unset_staging_flags(current_channel, sound_scope,
 					  staging_mask);
@@ -13368,7 +13368,7 @@ ags_channel_real_recursive_run_stage(AgsChannel *channel,
     if((AGS_CHANNEL_RECURSIVE_CLEANUP_SCOPE & (local_staging_flags)) != 0){	
       if(current_recall_id != NULL){
 	ags_channel_remove_recall_id(channel,
-				     (GObject *) current_recall_id);
+				     current_recall_id);
 
 	ags_channel_unset_staging_flags(channel, sound_scope,
 					staging_mask);
@@ -13381,7 +13381,7 @@ ags_channel_real_recursive_run_stage(AgsChannel *channel,
     /* get current audio */
     pthread_mutex_lock(channel_mutex);
       
-    current_audio = channel->audio;
+    current_audio = (AgsAudio *) channel->audio;
 
     audio_channel = channel->audio_channel;
     line = channel->line;
@@ -13646,7 +13646,7 @@ ags_channel_real_recursive_run_stage(AgsChannel *channel,
 	if((AGS_CHANNEL_RECURSIVE_CLEANUP_SCOPE & (local_staging_flags)) != 0){	
 	  if(current_recall_id != NULL){
 	    ags_channel_remove_recall_id(current_input,
-					 (GObject *) current_recall_id);
+					 current_recall_id);
 
 	    ags_channel_unset_staging_flags(current_input, sound_scope,
 					    staging_mask);
@@ -13713,7 +13713,7 @@ ags_channel_real_recursive_run_stage(AgsChannel *channel,
       if((AGS_CHANNEL_RECURSIVE_CLEANUP_SCOPE & (local_staging_flags)) != 0){	
 	if(current_recall_id != NULL){
 	  ags_channel_remove_recall_id(current_input,
-				       (GObject *) current_recall_id);
+				       current_recall_id);
 
 	  ags_channel_unset_staging_flags(current_input, sound_scope,
 					  staging_mask);

@@ -1407,7 +1407,7 @@ ags_audio_loop_sync_audio_super_threaded(AgsAudioLoop *audio_loop, AgsPlaybackDo
 						    sound_scope);
 
       if(thread != NULL){
-	audio_thread = thread;
+	audio_thread = (AgsAudioThread *) thread;
 
 	if(g_list_find(audio_loop->sync_thread, audio_thread) != NULL &&
 	   (AGS_THREAD_RUNNING & (g_atomic_int_get(&(thread->flags)))) != 0 &&

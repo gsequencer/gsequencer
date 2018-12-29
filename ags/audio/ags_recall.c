@@ -1839,7 +1839,7 @@ ags_recall_finalize(GObject *gobject)
 
   /* recall handler */
   g_list_free_full(recall->recall_handler,
-		   ags_recall_handler_free);
+		   (GDestroyNotify) ags_recall_handler_free);
 
   /* parent */
   if(recall->parent != NULL){

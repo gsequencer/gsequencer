@@ -634,7 +634,6 @@ ags_envelope_editor_apply(AgsApplicable *applicable)
   AgsEnvelopeDialog *envelope_dialog;
   AgsEnvelopeEditor *envelope_editor;
   
-  AgsWindow *window;
   AgsMachine *machine;
 
   AgsAudio *audio;
@@ -654,8 +653,6 @@ ags_envelope_editor_apply(AgsApplicable *applicable)
   envelope_dialog = (AgsEnvelopeDialog *) gtk_widget_get_ancestor((GtkWidget *) envelope_editor,
 								  AGS_TYPE_ENVELOPE_DIALOG);
 
-  window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) envelope_dialog->machine,
-						 AGS_TYPE_WINDOW);
   machine = envelope_dialog->machine;
 
   audio = machine->audio;
@@ -813,7 +810,6 @@ ags_envelope_editor_get_active_preset(AgsEnvelopeEditor *envelope_editor)
 {
   AgsEnvelopeDialog *envelope_dialog;
 
-  AgsWindow *window;
   AgsMachine *machine;
 
   AgsAudio *audio;
@@ -830,8 +826,6 @@ ags_envelope_editor_get_active_preset(AgsEnvelopeEditor *envelope_editor)
   envelope_dialog = (AgsEnvelopeDialog *) gtk_widget_get_ancestor((GtkWidget *) envelope_editor,
 								  AGS_TYPE_ENVELOPE_DIALOG);
 
-  window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) envelope_dialog->machine,
-						 AGS_TYPE_WINDOW);
   machine = envelope_dialog->machine;
 
   audio = machine->audio;
@@ -874,7 +868,6 @@ ags_envelope_editor_load_preset(AgsEnvelopeEditor *envelope_editor)
 {
   AgsEnvelopeDialog *envelope_dialog;
 
-  AgsWindow *window;
   AgsMachine *machine;
 
   GtkTreeModel *model;
@@ -887,11 +880,9 @@ ags_envelope_editor_load_preset(AgsEnvelopeEditor *envelope_editor)
     return;
   }
 
-  envelope_dialog = (AgsEnvelopeDialog *) gtk_widget_get_ancestor(envelope_editor,
+  envelope_dialog = (AgsEnvelopeDialog *) gtk_widget_get_ancestor((GtkWidget *) envelope_editor,
 								  AGS_TYPE_ENVELOPE_DIALOG);
 
-  window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) envelope_dialog->machine,
-						 AGS_TYPE_WINDOW);
   machine = envelope_dialog->machine;
 
   audio = machine->audio;
@@ -936,7 +927,6 @@ ags_envelope_editor_add_preset(AgsEnvelopeEditor *envelope_editor,
 {
   AgsEnvelopeDialog *envelope_dialog;
 
-  AgsWindow *window;
   AgsMachine *machine;
 
   AgsAudio *audio;
@@ -956,8 +946,6 @@ ags_envelope_editor_add_preset(AgsEnvelopeEditor *envelope_editor,
   envelope_dialog = (AgsEnvelopeDialog *) gtk_widget_get_ancestor((GtkWidget *) envelope_editor,
 								  AGS_TYPE_ENVELOPE_DIALOG);
 
-  window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) envelope_dialog->machine,
-						 AGS_TYPE_WINDOW);
   machine = envelope_dialog->machine;
 
   audio = machine->audio;
@@ -1061,7 +1049,6 @@ ags_envelope_editor_remove_preset(AgsEnvelopeEditor *envelope_editor,
 {
   AgsEnvelopeDialog *envelope_dialog;
 
-  AgsWindow *window;
   AgsMachine *machine;
 
   AgsAudio *audio;
@@ -1076,8 +1063,6 @@ ags_envelope_editor_remove_preset(AgsEnvelopeEditor *envelope_editor,
   envelope_dialog = (AgsEnvelopeDialog *) gtk_widget_get_ancestor((GtkWidget *) envelope_editor,
 								  AGS_TYPE_ENVELOPE_DIALOG);
 
-  window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) envelope_dialog->machine,
-						 AGS_TYPE_WINDOW);
   machine = envelope_dialog->machine;
 
   audio = machine->audio;
@@ -1108,9 +1093,6 @@ ags_envelope_editor_reset_control(AgsEnvelopeEditor *envelope_editor)
 {
   AgsEnvelopeDialog *envelope_dialog;
 
-  AgsWindow *window;
-  AgsMachine *machine;
-
   AgsPreset *preset;
   
   AgsComplex *val;
@@ -1137,12 +1119,8 @@ ags_envelope_editor_reset_control(AgsEnvelopeEditor *envelope_editor)
     return;
   }
 
-  envelope_dialog = (AgsEnvelopeDialog *) gtk_widget_get_ancestor(envelope_editor,
+  envelope_dialog = (AgsEnvelopeDialog *) gtk_widget_get_ancestor((GtkWidget *) envelope_editor,
 								  AGS_TYPE_ENVELOPE_DIALOG);
-
-  window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) envelope_dialog->machine,
-						 AGS_TYPE_WINDOW);
-  machine = envelope_dialog->machine;
 
   /* attack */
   g_value_init(&value,

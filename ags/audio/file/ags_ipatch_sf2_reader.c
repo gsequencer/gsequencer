@@ -841,7 +841,7 @@ ags_ipatch_sf2_reader_select_instrument(AgsIpatchSF2Reader *ipatch_sf2_reader,
       ipatch_sf2_reader->name_selected[AGS_SF2_SHDR] = NULL;
 
       /* container */
-      ipatch_sf2_reader->instrument = ipatch_item;
+      ipatch_sf2_reader->instrument = (IpatchContainer *) ipatch_item;
       
       ipatch_sf2_reader->sample = NULL;
     }
@@ -903,7 +903,7 @@ ags_ipatch_sf2_reader_select_sample(AgsIpatchSF2Reader *ipatch_sf2_reader,
       ipatch_sf2_reader->name_selected[AGS_SF2_SHDR] = g_strdup(ipatch_sf2_sample_get_name((IpatchSF2Sample *) ipatch_item));
 
       /* container */
-      ipatch_sf2_reader->sample = ipatch_item;
+      ipatch_sf2_reader->sample = (IpatchContainer *) ipatch_item;
     }
   }
 #endif

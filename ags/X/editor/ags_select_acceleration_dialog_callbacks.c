@@ -264,7 +264,7 @@ ags_select_acceleration_dialog_add_callback(GtkWidget *button,
   g_strfreev(collected_specifier);
   
   /* remove button */
-  remove = (GtkCheckButton *) gtk_button_new_from_stock(GTK_STOCK_REMOVE);
+  remove = (GtkButton *) gtk_button_new_from_stock(GTK_STOCK_REMOVE);
   gtk_box_pack_start((GtkBox *) hbox,
 		     (GtkWidget *) remove,
 		     FALSE, FALSE,

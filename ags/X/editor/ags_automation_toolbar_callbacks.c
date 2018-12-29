@@ -47,7 +47,7 @@ ags_automation_toolbar_position_callback(GtkToggleToolButton *toggle_button, Ags
       gtk_toggle_tool_button_set_active(toggle_button, TRUE);
     }
   }else if(gtk_toggle_tool_button_get_active(toggle_button)){
-    GtkToggleButton *old_selected_edit_mode;
+    GtkToggleToolButton *old_selected_edit_mode;
     
     old_selected_edit_mode = automation_toolbar->selected_edit_mode;
     automation_toolbar->selected_edit_mode = toggle_button;
@@ -63,7 +63,7 @@ ags_automation_toolbar_edit_callback(GtkToggleToolButton *toggle_button, AgsAuto
       gtk_toggle_tool_button_set_active(toggle_button, TRUE);
     }
   }else if(gtk_toggle_tool_button_get_active(toggle_button)){
-    GtkToggleButton *old_selected_edit_mode;
+    GtkToggleToolButton *old_selected_edit_mode;
     
     old_selected_edit_mode = automation_toolbar->selected_edit_mode;
     automation_toolbar->selected_edit_mode = toggle_button;
@@ -79,7 +79,7 @@ ags_automation_toolbar_clear_callback(GtkToggleToolButton *toggle_button, AgsAut
       gtk_toggle_tool_button_set_active(toggle_button, TRUE);
     }
   }else if(gtk_toggle_tool_button_get_active(toggle_button)){
-    GtkToggleButton *old_selected_edit_mode;
+    GtkToggleToolButton *old_selected_edit_mode;
     
     old_selected_edit_mode = automation_toolbar->selected_edit_mode;
     automation_toolbar->selected_edit_mode = toggle_button;
@@ -95,7 +95,7 @@ ags_automation_toolbar_select_callback(GtkToggleToolButton *toggle_button, AgsAu
       gtk_toggle_tool_button_set_active(toggle_button, TRUE);
     }
   }else if(gtk_toggle_tool_button_get_active(toggle_button)){
-    GtkToggleButton *old_selected_edit_mode;
+    GtkToggleToolButton *old_selected_edit_mode;
     
     old_selected_edit_mode = automation_toolbar->selected_edit_mode;
     automation_toolbar->selected_edit_mode = toggle_button;

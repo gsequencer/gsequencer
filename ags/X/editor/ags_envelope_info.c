@@ -314,7 +314,6 @@ ags_envelope_info_reset(AgsApplicable *applicable)
   AgsEnvelopeDialog *envelope_dialog;
   AgsEnvelopeInfo *envelope_info;
 
-  AgsWindow *window;
   AgsMachine *machine;
 
   GtkListStore *model;
@@ -329,8 +328,6 @@ ags_envelope_info_reset(AgsApplicable *applicable)
   envelope_dialog = (AgsEnvelopeDialog *) gtk_widget_get_ancestor((GtkWidget *) envelope_info,
 								  AGS_TYPE_ENVELOPE_DIALOG);
   
-  window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) envelope_dialog->machine,
-						 AGS_TYPE_WINDOW);
   machine = envelope_dialog->machine;
 
   audio = machine->audio;
@@ -462,9 +459,6 @@ ags_envelope_info_plot(AgsEnvelopeInfo *envelope_info)
 {
   AgsEnvelopeDialog *envelope_dialog;
 
-  AgsWindow *window;
-  AgsMachine *machine;
-
   AgsCartesian *cartesian;
   AgsPlot *plot;
 
@@ -487,10 +481,6 @@ ags_envelope_info_plot(AgsEnvelopeInfo *envelope_info)
   envelope_dialog = (AgsEnvelopeDialog *) gtk_widget_get_ancestor((GtkWidget *) envelope_info,
 								  AGS_TYPE_ENVELOPE_DIALOG);
 
-  window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) envelope_dialog->machine,
-						 AGS_TYPE_WINDOW);
-  machine = envelope_dialog->machine;
-
   /* cartesian */
   cartesian = envelope_info->cartesian;
 
@@ -502,7 +492,7 @@ ags_envelope_info_plot(AgsEnvelopeInfo *envelope_info)
   /* clear old plot */
   if(cartesian->plot != NULL){
     g_list_free_full(cartesian->plot,
-		     ags_plot_free);
+		     (GDestroyNotify) ags_plot_free);
     
     cartesian->plot = NULL;
   }

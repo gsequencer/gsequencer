@@ -262,7 +262,7 @@ ags_crop_note_dialog_init(AgsCropNoteDialog *crop_note_dialog)
 		     0);
 
   /* padding note - hbox */
-  hbox = (GtkVBox *) gtk_hbox_new(FALSE, 0);
+  hbox = (GtkHBox *) gtk_hbox_new(FALSE, 0);
   gtk_box_pack_start((GtkBox *) vbox,
 		     GTK_WIDGET(hbox),
 		     FALSE, FALSE,
@@ -499,7 +499,7 @@ ags_crop_note_dialog_apply(AgsApplicable *applicable)
   do_resize = gtk_toggle_button_get_active((GtkToggleButton *) crop_note_dialog->do_resize);
   
   /* application context and mutex manager */
-  application_context = window->application_context;
+  application_context = (AgsApplicationContext *) window->application_context;
   
   /* get task thread */  
   gui_thread = ags_ui_provider_get_gui_thread(AGS_UI_PROVIDER(application_context));

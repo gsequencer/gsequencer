@@ -975,7 +975,6 @@ ags_pattern_envelope_get_active_preset(AgsPatternEnvelope *pattern_envelope)
 {
   AgsEnvelopeDialog *envelope_dialog;
 
-  AgsWindow *window;
   AgsMachine *machine;
 
   GtkTreeModel *model;
@@ -997,8 +996,6 @@ ags_pattern_envelope_get_active_preset(AgsPatternEnvelope *pattern_envelope)
   envelope_dialog = (AgsEnvelopeDialog *) gtk_widget_get_ancestor((GtkWidget *) pattern_envelope,
 								  AGS_TYPE_ENVELOPE_DIALOG);
 
-  window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) envelope_dialog->machine,
-						 AGS_TYPE_WINDOW);
   machine = envelope_dialog->machine;
 
   audio = machine->audio;
@@ -1061,7 +1058,6 @@ ags_pattern_envelope_load_preset(AgsPatternEnvelope *pattern_envelope)
 {
   AgsEnvelopeDialog *envelope_dialog;
 
-  AgsWindow *window;
   AgsMachine *machine;
 
   GtkListStore *model;
@@ -1078,8 +1074,6 @@ ags_pattern_envelope_load_preset(AgsPatternEnvelope *pattern_envelope)
   envelope_dialog = (AgsEnvelopeDialog *) gtk_widget_get_ancestor((GtkWidget *) pattern_envelope,
 								  AGS_TYPE_ENVELOPE_DIALOG);
 
-  window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) envelope_dialog->machine,
-						 AGS_TYPE_WINDOW);
   machine = envelope_dialog->machine;
 
   audio = machine->audio;
@@ -1135,7 +1129,7 @@ ags_pattern_envelope_set_preset_property(AgsPatternEnvelope *pattern_envelope,
   }
 
   /* set property */  
-  g_object_set_property(preset,
+  g_object_set_property((GObject *) preset,
 			property_name, value);
   
   /* reset */
@@ -1157,7 +1151,6 @@ ags_pattern_envelope_add_preset(AgsPatternEnvelope *pattern_envelope,
 {
   AgsEnvelopeDialog *envelope_dialog;
 
-  AgsWindow *window;
   AgsMachine *machine;
 
   AgsAudio *audio;
@@ -1177,8 +1170,6 @@ ags_pattern_envelope_add_preset(AgsPatternEnvelope *pattern_envelope,
   envelope_dialog = (AgsEnvelopeDialog *) gtk_widget_get_ancestor((GtkWidget *) pattern_envelope,
 								  AGS_TYPE_ENVELOPE_DIALOG);
 
-  window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) envelope_dialog->machine,
-						 AGS_TYPE_WINDOW);
   machine = envelope_dialog->machine;
 
   audio = machine->audio;
@@ -1278,7 +1269,6 @@ ags_pattern_envelope_remove_preset(AgsPatternEnvelope *pattern_envelope,
 {
   AgsEnvelopeDialog *envelope_dialog;
 
-  AgsWindow *window;
   AgsMachine *machine;
 
   AgsAudio *audio;
@@ -1293,8 +1283,6 @@ ags_pattern_envelope_remove_preset(AgsPatternEnvelope *pattern_envelope,
   envelope_dialog = (AgsEnvelopeDialog *) gtk_widget_get_ancestor((GtkWidget *) pattern_envelope,
 								  AGS_TYPE_ENVELOPE_DIALOG);
 
-  window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) envelope_dialog->machine,
-						 AGS_TYPE_WINDOW);
   machine = envelope_dialog->machine;
 
   audio = machine->audio;
@@ -1586,7 +1574,6 @@ ags_pattern_envelope_plot(AgsPatternEnvelope *pattern_envelope)
 {
   AgsEnvelopeDialog *envelope_dialog;
 
-  AgsWindow *window;
   AgsMachine *machine;
 
   AgsCartesian *cartesian;
@@ -1618,8 +1605,6 @@ ags_pattern_envelope_plot(AgsPatternEnvelope *pattern_envelope)
   envelope_dialog = (AgsEnvelopeDialog *) gtk_widget_get_ancestor((GtkWidget *) pattern_envelope,
 								  AGS_TYPE_ENVELOPE_DIALOG);
 
-  window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) envelope_dialog->machine,
-						 AGS_TYPE_WINDOW);
   machine = envelope_dialog->machine;
 
   audio = machine->audio;
@@ -1636,7 +1621,7 @@ ags_pattern_envelope_plot(AgsPatternEnvelope *pattern_envelope)
   /* clear old plot */
   if(cartesian->plot != NULL){
     g_list_free_full(cartesian->plot,
-		     (GDestroyNotify *) ags_plot_free);
+		     (GDestroyNotify) ags_plot_free);
     
     cartesian->plot = NULL;
   }

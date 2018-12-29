@@ -814,7 +814,6 @@ ags_pattern_envelope_preset_move_up_callback(GtkWidget *button,
 {
   AgsEnvelopeDialog *envelope_dialog;
 
-  AgsWindow *window;
   AgsMachine *machine;
 
   GtkTreeModel *model;
@@ -836,8 +835,6 @@ ags_pattern_envelope_preset_move_up_callback(GtkWidget *button,
   envelope_dialog = (AgsEnvelopeDialog *) gtk_widget_get_ancestor((GtkWidget *) pattern_envelope,
 								  AGS_TYPE_ENVELOPE_DIALOG);
 
-  window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) envelope_dialog->machine,
-						 AGS_TYPE_WINDOW);
   machine = envelope_dialog->machine;
 
   audio = machine->audio;
@@ -926,7 +923,6 @@ ags_pattern_envelope_preset_move_down_callback(GtkWidget *button,
 {
   AgsEnvelopeDialog *envelope_dialog;
 
-  AgsWindow *window;
   AgsMachine *machine;
 
   GtkTreeModel *model;
@@ -948,8 +944,6 @@ ags_pattern_envelope_preset_move_down_callback(GtkWidget *button,
   envelope_dialog = (AgsEnvelopeDialog *) gtk_widget_get_ancestor((GtkWidget *) pattern_envelope,
 								  AGS_TYPE_ENVELOPE_DIALOG);
 
-  window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) envelope_dialog->machine,
-						 AGS_TYPE_WINDOW);
   machine = envelope_dialog->machine;
 
   audio = machine->audio;

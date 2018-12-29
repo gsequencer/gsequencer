@@ -492,7 +492,7 @@ ags_wave_edit_hscrollbar_value_changed(GtkRange *range, AgsWaveEdit *wave_edit)
   value = GTK_RANGE(wave_edit->hscrollbar)->adjustment->value / 64.0;
   gtk_adjustment_set_value(wave_edit->ruler->adjustment,
 			   value);
-  gtk_widget_queue_draw(wave_edit->ruler);
+  gtk_widget_queue_draw((GtkWidget *) wave_edit->ruler);
   
   /* queue draw */
   gtk_widget_queue_draw((GtkWidget *) wave_edit->drawing_area);

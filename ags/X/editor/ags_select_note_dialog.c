@@ -499,7 +499,7 @@ ags_select_note_dialog_apply(AgsApplicable *applicable)
   
   select_note_dialog = AGS_SELECT_NOTE_DIALOG(applicable);
 
-  window = select_note_dialog->main_window;
+  window = (AgsWindow *) select_note_dialog->main_window;
   notation_editor = window->notation_editor;
 
   machine = notation_editor->selected_machine;

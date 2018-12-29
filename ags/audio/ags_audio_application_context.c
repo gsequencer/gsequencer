@@ -401,7 +401,7 @@ ags_audio_application_context_init(AgsAudioApplicationContext *audio_application
   AgsConfig *config;
 
   if(ags_application_context == NULL){
-    ags_application_context = audio_application_context;
+    ags_application_context = (AgsApplicationContext *) audio_application_context;
   }
 
   /* set config */
@@ -1320,7 +1320,7 @@ ags_audio_application_context_prepare(AgsApplicationContext *application_context
   audio_application_context->polling_thread = (AgsThread *) ags_polling_thread_new();
   g_object_ref(audio_application_context->polling_thread);
   
-  polling_thread = audio_application_context->polling_thread;
+  polling_thread = (AgsPollingThread *) audio_application_context->polling_thread;
   ags_thread_add_child_extended(AGS_THREAD(audio_loop),
 				(AgsThread *) polling_thread,
 				TRUE, TRUE);

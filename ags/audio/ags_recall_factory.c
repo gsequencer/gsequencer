@@ -807,7 +807,7 @@ ags_recall_factory_create_play_master(AgsAudio *audio,
 						 "audio", audio,
 						 "recall-container", recall_container,
 						 NULL);
-      ags_recall_set_flags(play_audio,
+      ags_recall_set_flags((AgsRecall *) play_audio,
 			   (AGS_RECALL_TEMPLATE));
       ags_recall_set_ability_flags((AgsRecall *) play_audio,
 				   (AGS_SOUND_ABILITY_PLAYBACK |
