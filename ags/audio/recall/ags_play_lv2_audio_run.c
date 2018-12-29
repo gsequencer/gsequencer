@@ -392,7 +392,7 @@ ags_play_lv2_audio_run_set_property(GObject *gobject,
 	  
 	  recall_dependency = NULL;
 	  list = ags_recall_dependency_find_dependency(AGS_RECALL(play_lv2_audio_run)->recall_dependency,
-						       old_delay_audio_run);
+						       (GObject *) old_delay_audio_run);
 
 	  if(list != NULL){
 	    recall_dependency = list->data;
@@ -482,7 +482,7 @@ ags_play_lv2_audio_run_set_property(GObject *gobject,
 	  
 	  recall_dependency = NULL;
 	  list = ags_recall_dependency_find_dependency(AGS_RECALL(play_lv2_audio_run)->recall_dependency,
-						       old_count_beats_audio_run);
+						       (GObject *) old_count_beats_audio_run);
 
 	  if(list != NULL){
 	    recall_dependency = list->data;
@@ -509,7 +509,7 @@ ags_play_lv2_audio_run_set_property(GObject *gobject,
 
       pthread_mutex_lock(recall_mutex);
 
-      if(play_lv2_audio_run->destination == destination){
+      if(play_lv2_audio_run->destination == (GObject *) destination){
 	pthread_mutex_unlock(recall_mutex);
       
 	return;
@@ -523,7 +523,7 @@ ags_play_lv2_audio_run_set_property(GObject *gobject,
 	g_object_ref(destination);
       }
 
-      play_lv2_audio_run->destination = destination;
+      play_lv2_audio_run->destination = (GObject *) destination;
 
       pthread_mutex_unlock(recall_mutex);
     }

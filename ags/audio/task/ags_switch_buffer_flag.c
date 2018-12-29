@@ -261,8 +261,8 @@ ags_switch_buffer_flag_launch(AgsTask *task)
     ags_pulse_devin_switch_buffer_flag((AgsPulseDevin *) switch_buffer_flag->device);
   }else if(AGS_IS_CORE_AUDIO_DEVOUT(switch_buffer_flag->device)){
     ags_core_audio_devout_switch_buffer_flag((AgsCoreAudioDevout *) switch_buffer_flag->device);
-  }else if(AGS_IS_CORE_AUDIO_DEVIN((AgsCoreAudioDevin *) switch_buffer_flag->device)){
-    ags_core_audio_devin_switch_buffer_flag(switch_buffer_flag->device);
+  }else if(AGS_IS_CORE_AUDIO_DEVIN(switch_buffer_flag->device)){
+    ags_core_audio_devin_switch_buffer_flag((AgsCoreAudioDevin *) switch_buffer_flag->device);
   }else if(AGS_IS_MIDIIN(switch_buffer_flag->device)){
     ags_midiin_switch_buffer_flag((AgsMidiin *) switch_buffer_flag->device);
   }else if(AGS_IS_JACK_MIDIIN(switch_buffer_flag->device)){

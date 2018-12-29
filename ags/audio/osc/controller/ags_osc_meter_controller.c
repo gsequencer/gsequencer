@@ -3701,6 +3701,7 @@ ags_osc_meter_controller_expand_path_audio(AgsAudio *audio,
       }
 
       if(current != NULL){
+	i_stop = 0;
 	next_path = g_strdup_printf("%s[%d]%s",
 				    prefix,
 				    i_stop,
@@ -3727,12 +3728,12 @@ ags_osc_meter_controller_expand_path_audio(AgsAudio *audio,
 	g_list_free(start_recall);
 
 	return;
-      }      
-            
-      while(play != NULL || recall != NULL){
+      }
+      
+      for(i = 0; play != NULL || recall != NULL; i++){
 	next_path = g_strdup_printf("%s[%d]%s",
 				    prefix,
-				    i_stop,
+				    i,
 				    path + path_offset + 3);
 
 	current = NULL;
@@ -3775,10 +3776,10 @@ ags_osc_meter_controller_expand_path_audio(AgsAudio *audio,
       play = ags_recall_template_find_type(start_play, recall_type);    
       recall = ags_recall_template_find_type(start_recall, recall_type);
       
-      while(play != NULL || recall != NULL){
+      for(i = 0; play != NULL || recall != NULL; i++){
 	next_path = g_strdup_printf("%s[%d]%s",
 				    prefix,
-				    i_stop,
+				    i,
 				    path + path_offset + 3);
 
 	current = NULL;

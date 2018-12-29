@@ -319,7 +319,7 @@ ags_route_dssi_audio_run_set_property(GObject *gobject,
 	  
 	  recall_dependency = NULL;
 	  list = ags_recall_dependency_find_dependency(AGS_RECALL(route_dssi_audio_run)->recall_dependency,
-						       old_delay_audio_run);
+						       (GObject *) old_delay_audio_run);
 
 	  if(list != NULL){
 	    recall_dependency = list->data;
@@ -409,7 +409,7 @@ ags_route_dssi_audio_run_set_property(GObject *gobject,
 	  
 	  recall_dependency = NULL;
 	  list = ags_recall_dependency_find_dependency(AGS_RECALL(route_dssi_audio_run)->recall_dependency,
-						       old_count_beats_audio_run);
+						       (GObject *) old_count_beats_audio_run);
 
 	  if(list != NULL){
 	    recall_dependency = list->data;

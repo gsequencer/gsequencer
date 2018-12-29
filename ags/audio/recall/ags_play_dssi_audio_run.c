@@ -407,7 +407,7 @@ ags_play_dssi_audio_run_set_property(GObject *gobject,
 	  }
 	  
 	  ags_recall_remove_recall_dependency(AGS_RECALL(play_dssi_audio_run),
-					      recall_dependency);
+					      (GObject *) recall_dependency);
 	}
       }else{
 	if(ags_connectable_is_connected(AGS_CONNECTABLE(play_dssi_audio_run))){
@@ -495,7 +495,7 @@ ags_play_dssi_audio_run_set_property(GObject *gobject,
 	  }
 	  
 	  ags_recall_remove_recall_dependency(AGS_RECALL(play_dssi_audio_run),
-					      recall_dependency);
+					      (GObject *) recall_dependency);
 	}
       }
 
@@ -515,7 +515,7 @@ ags_play_dssi_audio_run_set_property(GObject *gobject,
 
       pthread_mutex_lock(recall_mutex);
 
-      if(play_dssi_audio_run->destination == destination){
+      if(play_dssi_audio_run->destination == (GObject *) destination){
 	pthread_mutex_unlock(recall_mutex);
       
 	return;
@@ -529,7 +529,7 @@ ags_play_dssi_audio_run_set_property(GObject *gobject,
 	g_object_ref(destination);
       }
 
-      play_dssi_audio_run->destination = destination;
+      play_dssi_audio_run->destination = (GObject *) destination;
 
       pthread_mutex_unlock(recall_mutex);
     }
@@ -761,7 +761,7 @@ ags_play_dssi_audio_run_connect_connection(AgsConnectable *connectable, GObject 
 	       "delay-audio-run", &delay_audio_run,
 	       NULL);
 
-  if((GObject *) connection == delay_audio_run){
+  if(connection == (GObject *) delay_audio_run){
     g_signal_connect(G_OBJECT(delay_audio_run), "notation-alloc-input",
 		     G_CALLBACK(ags_play_dssi_audio_run_alloc_input_callback), play_dssi_audio_run);  
   }
@@ -783,7 +783,7 @@ ags_play_dssi_audio_run_disconnect_connection(AgsConnectable *connectable, GObje
 	       "delay-audio-run", &delay_audio_run,
 	       NULL);
 
-  if((GObject *) connection == delay_audio_run){
+  if(connection == (GObject *) delay_audio_run){
     g_object_disconnect(G_OBJECT(delay_audio_run),
 			"any_signal::notation-alloc-input",
 			G_CALLBACK(ags_play_dssi_audio_run_alloc_input_callback),
@@ -1398,6 +1398,12 @@ ags_play_dssi_audio_run_run_pre(AgsRecall *recall)
 	       NULL);
 
   if(select_program != NULL){    
+    if(input_lines < output_lines){
+      i_stop = output_lines;
+    }else{
+      i_stop = input_lines;
+    }
+    
     for(i = 0; i < i_stop; i++){
       select_program(play_dssi_audio_run->ladspa_handle[i],
 		     (unsigned long) bank,
@@ -1624,7 +1630,8 @@ ags_play_dssi_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_run,
 
   list = ags_notation_find_near_timestamp(start_list, audio_channel,
 					  play_dssi_audio_run->timestamp);
-
+  start_current_position = NULL;
+  
   if(list != NULL){
     notation = list->data;
 
@@ -1698,6 +1705,7 @@ ags_play_dssi_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_run,
     seq_event->data.note.velocity = 127;
 
     /* find end */
+    event_count = 0;
     i = 0;
       
     if(play_dssi_audio_run->event_buffer != NULL){

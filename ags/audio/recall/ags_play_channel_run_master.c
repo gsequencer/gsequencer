@@ -660,7 +660,7 @@ ags_play_channel_run_master_remap_dependencies(AgsPlayChannelRunMaster *play_cha
 	list = list_start;
 	
 	while((list = ags_recall_dependency_find_dependency_by_provider(list,
-									current)) != NULL){
+									(GObject *) current)) != NULL){
 	  GObject *dependency;
 
 	  GList *start_stream_channel_run;
@@ -670,7 +670,7 @@ ags_play_channel_run_master_remap_dependencies(AgsPlayChannelRunMaster *play_cha
 		        NULL);
 	  
 	  /* remove dependency */
-	  ags_recall_remove_recall_dependency(play_channel_run_master,
+	  ags_recall_remove_recall_dependency((AgsRecall *) play_channel_run_master,
 					      list->data);
 
 	  /* remove stream channel run */

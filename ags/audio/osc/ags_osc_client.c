@@ -940,7 +940,7 @@ ags_osc_client_real_connect(AgsOscClient *osc_client)
 	/* connect */
 	pthread_mutex_lock(osc_client_mutex);
 	
-	rc = connect(osc_client->ip4_fd, osc_client->ip4_address, sizeof(struct sockaddr_in));
+	rc = connect(osc_client->ip4_fd, (struct sockaddr *) osc_client->ip4_address, sizeof(struct sockaddr_in));
 
 	pthread_mutex_unlock(osc_client_mutex);
 
@@ -957,7 +957,7 @@ ags_osc_client_real_connect(AgsOscClient *osc_client)
 	/* connect */
 	pthread_mutex_lock(osc_client_mutex);
 	
-	rc = connect(osc_client->ip6_fd, osc_client->ip6_address, sizeof(struct sockaddr_in6));
+	rc = connect(osc_client->ip6_fd, (struct sockaddr *) osc_client->ip6_address, sizeof(struct sockaddr_in6));
 
 	pthread_mutex_unlock(osc_client_mutex);
 

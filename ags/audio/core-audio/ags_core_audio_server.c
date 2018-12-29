@@ -1795,7 +1795,7 @@ ags_core_audio_server_register_default_soundcard(AgsCoreAudioServer *core_audio_
 
   application_context = core_audio_server->application_context;
 
-  default_client = core_audio_server->default_client;
+  default_client = (AgsCoreAudioClient *) core_audio_server->default_client;
 
   n_soundcards = core_audio_server->n_soundcards;
   
@@ -1814,7 +1814,7 @@ ags_core_audio_server_register_default_soundcard(AgsCoreAudioServer *core_audio_
 		 "default-core-audio-client", default_client,
 		 NULL);
     ags_core_audio_server_add_client(core_audio_server,
-				     default_client);
+				     (GObject *) default_client);
     
     ags_core_audio_client_open((AgsCoreAudioClient *) core_audio_server->default_client,
 			       "ags-default-client");
@@ -2000,7 +2000,7 @@ ags_core_audio_server_find_client(AgsCoreAudioServer *core_audio_server,
 
   g_list_free(list_start);
   
-  return(retval);
+  return((GObject *) retval);
 }
 
 /**

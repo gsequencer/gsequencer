@@ -488,7 +488,9 @@ ags_eq10_channel_init(AgsEq10Channel *eq10_channel)
   eq10_channel->peak_896hz->port_value.ags_port_float = 1.0;
 
   /* plugin port */
-  eq10_channel->peak_896hz->plugin_port = ags_eq10_channel_get_peak_generic_plugin_port();
+  g_object_set(eq10_channel->peak_896hz,
+	       "plugin-port", ags_eq10_channel_get_peak_generic_plugin_port(),
+	       NULL);
 
   /* add to port */  
   port = g_list_prepend(port, eq10_channel->peak_896hz);

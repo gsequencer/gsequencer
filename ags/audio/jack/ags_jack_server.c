@@ -1952,7 +1952,7 @@ ags_jack_server_register_default_soundcard(AgsJackServer *jack_server)
 
   application_context = jack_server->application_context;
 
-  default_client = jack_server->default_client;
+  default_client = (AgsJackClient *) jack_server->default_client;
 
   n_soundcards = jack_server->n_soundcards;
   
@@ -1970,7 +1970,7 @@ ags_jack_server_register_default_soundcard(AgsJackServer *jack_server)
 		 "default-jack-client", default_client,
 		 NULL);
     ags_jack_server_add_client(jack_server,
-			       default_client);
+			       (GObject *) default_client);
     
     ags_jack_client_open((AgsJackClient *) default_client,
 			 "ags-default-client");
@@ -2174,7 +2174,7 @@ ags_jack_server_find_client(AgsJackServer *jack_server,
 
   g_list_free(list_start);
   
-  return(retval);
+  return((GObject *) retval);
 }
 
 /**

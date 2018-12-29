@@ -240,7 +240,7 @@ ags_play_channel_run_set_property(GObject *gobject,
 	  
 	  recall_dependency = NULL;
 	  list = ags_recall_dependency_find_dependency(AGS_RECALL(play_channel_run)->recall_dependency,
-						       old_stream_channel_run);
+						       (GObject *) old_stream_channel_run);
 
 	  if(list != NULL){
 	    recall_dependency = list->data;

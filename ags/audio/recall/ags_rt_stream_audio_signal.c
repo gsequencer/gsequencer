@@ -244,6 +244,7 @@ ags_rt_stream_audio_signal_run_pre(AgsRecall *recall)
 		 "x0", &note_x0,
 		 "x1", &note_x1,
 		 NULL);
+    rt_attack = 0;
     
     if(rt_offset < rt_template_length ||
        rt_offset < delay * note_x1){

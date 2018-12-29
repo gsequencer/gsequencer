@@ -119,7 +119,7 @@ ags_analyse_audio_signal_run_inter(AgsRecall *recall)
   AgsAnalyseChannel *analyse_channel;
   AgsAnalyseChannelRun *analyse_channel_run;
   AgsAnalyseRecycling *analyse_recycling;
-  AgsAnalyseChannel *analyse_audio_signal;
+  AgsAnalyseAudioSignal *analyse_audio_signal;
 
   guint samplerate;
   guint buffer_size;

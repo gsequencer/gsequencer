@@ -381,7 +381,7 @@ ags_start_channel_launch(AgsTask *task)
       audio_recall_id = ags_recall_id_new();
       ags_recall_id_set_sound_scope(audio_recall_id, sound_scope);
       ags_audio_add_recall_id(audio,
-			      audio_recall_id);
+			      (GObject *) audio_recall_id);
 
       channel_recall_id = ags_recall_id_new();
       ags_recall_id_set_sound_scope(channel_recall_id, sound_scope);

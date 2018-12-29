@@ -205,7 +205,7 @@ ags_osc_controller_set_property(GObject *gobject,
 	g_object_ref(G_OBJECT(osc_server));
       }
       
-      osc_controller->osc_server = osc_server;
+      osc_controller->osc_server = (GObject *) osc_server;
 
       pthread_mutex_unlock(osc_controller_mutex);
     }

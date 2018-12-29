@@ -252,6 +252,7 @@ ags_capture_wave_channel_run_run_pre(AgsRecall *recall)
 
   g_object_get(audio,
 	       "input", &input,
+	       "buffer-size", &target_buffer_size,
 	       NULL);
   
   /* get soundcard */
@@ -406,6 +407,8 @@ ags_capture_wave_channel_run_run_pre(AgsRecall *recall)
     if(!is_new_buffer &&
        do_replace){
       void *data;
+
+      data = NULL;
       
       switch(target_format){
       case AGS_SOUNDCARD_SIGNED_8_BIT:

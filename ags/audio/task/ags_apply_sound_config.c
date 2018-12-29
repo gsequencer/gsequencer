@@ -217,7 +217,7 @@ ags_apply_sound_config_set_property(GObject *gobject,
     break;
   case PROP_APPLICATION_CONTEXT:
     {
-      GObject *application_context;
+      AgsApplicationContext *application_context;
 
       application_context = (GObject *) g_value_get_object(value);
 
@@ -422,8 +422,8 @@ ags_apply_sound_config_launch(AgsTask *task)
     soundcard_thread = g_atomic_pointer_get(&(soundcard_thread->next));
   }
 
-  ags_thread_find_type(audio_loop,
-		       AGS_TYPE_EXPORT_THREAD);
+  export_thread = ags_thread_find_type(audio_loop,
+				       AGS_TYPE_EXPORT_THREAD);
 
   while(export_thread != NULL){
     if(AGS_IS_EXPORT_THREAD(export_thread)){
@@ -599,7 +599,7 @@ ags_apply_sound_config_launch(AgsTask *task)
     g_object_run_dispose((GObject *) soundcard_thread);
     g_object_unref((GObject *) soundcard_thread);
 
-    if(ags_sound_provider_get_default_soundcard_thread(AGS_SOUND_PROVIDER(application_context)) == soundcard_thread){
+    if((AgsThread *) ags_sound_provider_get_default_soundcard_thread(AGS_SOUND_PROVIDER(application_context)) == soundcard_thread){
       ags_sound_provider_set_default_soundcard_thread(AGS_SOUND_PROVIDER(application_context),
 						      NULL);
     }
@@ -1117,7 +1117,7 @@ ags_apply_sound_config_launch(AgsTask *task)
       AGS_CORE_AUDIO_DEVIN(list->data)->notify_soundcard = (GObject *) notify_soundcard;
     }
 
-    ags_task_thread_append_cyclic_task(application_context->task_thread,
+    ags_task_thread_append_cyclic_task((AgsTaskThread *) application_context->task_thread,
 				       (AgsTask *) notify_soundcard);
 
     /* export thread */

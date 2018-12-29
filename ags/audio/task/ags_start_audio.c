@@ -345,7 +345,7 @@ ags_start_audio_launch(AgsTask *task)
       channel_recall_id = ags_recall_id_new();
       ags_recall_id_set_sound_scope(channel_recall_id, sound_scope);
       ags_channel_add_recall_id(output,
-				(GObject *) channel_recall_id);
+				channel_recall_id);
       
       recycling_context = ags_recycling_context_new(1);
       ags_recycling_context_replace(recycling_context,
@@ -412,7 +412,7 @@ ags_start_audio_launch(AgsTask *task)
 	channel_recall_id = ags_recall_id_new();
 	ags_recall_id_set_sound_scope(channel_recall_id, sound_scope);
 	ags_channel_add_recall_id(output,
-				  (GObject *) channel_recall_id);
+				  channel_recall_id);
 
 	recycling_context = ags_recycling_context_new(1);
 	ags_recycling_context_replace(recycling_context,
@@ -450,11 +450,11 @@ ags_start_audio_launch(AgsTask *task)
 				    i, staging_flags);
 
       /* add to start queue */
-      audio_thread = ags_playback_domain_get_audio_thread(playback_domain,
-							  i);
+      audio_thread = (AgsAudioThread *) ags_playback_domain_get_audio_thread(playback_domain,
+									     i);
             
-      ags_thread_add_start_queue(audio_loop,
-				 audio_thread);
+      ags_thread_add_start_queue((AgsThread *) audio_loop,
+				 (AgsThread *) audio_thread);
     }
   }
 }

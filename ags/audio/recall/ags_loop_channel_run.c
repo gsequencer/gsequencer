@@ -285,7 +285,7 @@ ags_loop_channel_run_set_property(GObject *gobject,
 	  
 	  recall_dependency = NULL;
 	  list = ags_recall_dependency_find_dependency(AGS_RECALL(loop_channel_run)->recall_dependency,
-						       old_count_beats_audio_run);
+						       (GObject *) old_count_beats_audio_run);
 
 	  if(list != NULL){
 	    recall_dependency = list->data;

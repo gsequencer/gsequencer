@@ -115,7 +115,7 @@ struct _AgsCoreAudioMidiin
   pthread_mutex_t *obj_mutex;
   pthread_mutexattr_t *obj_mutexattr;
 
-  GObject *application_context;
+  AgsApplicationContext *application_context;
   
   AgsUUID *uuid;
   

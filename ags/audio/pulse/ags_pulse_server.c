@@ -1368,8 +1368,8 @@ ags_pulse_server_register_soundcard(AgsSoundServer *sound_server,
 
   /* the soundcard */
   if(is_output){
-    soundcard = 
-      pulse_devout = ags_pulse_devout_new(application_context);
+    pulse_devout = ags_pulse_devout_new(application_context);
+    soundcard = (GObject *) pulse_devout;
     
     str = g_strdup_printf("ags-pulse-devout-%d",
 			  n_soundcards);
@@ -1418,9 +1418,9 @@ ags_pulse_server_register_soundcard(AgsSoundServer *sound_server,
 
     pthread_mutex_unlock(pulse_server_mutex);
   }else{
-    soundcard = 
-      pulse_devin = ags_pulse_devin_new(application_context);
-    
+    pulse_devin = ags_pulse_devin_new(application_context);
+    soundcard = (GObject *) pulse_devin;
+
     str = g_strdup_printf("ags-pulse-devin-%d",
 			  pulse_server->n_soundcards);
     
@@ -1828,7 +1828,7 @@ ags_pulse_server_find_client(AgsPulseServer *pulse_server,
 
   g_list_free(list_start);
   
-  return(retval);
+  return((GObject *) retval);
 }
 
 /**

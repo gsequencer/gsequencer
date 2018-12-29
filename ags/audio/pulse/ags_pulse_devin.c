@@ -1530,7 +1530,7 @@ ags_pulse_devin_set_application_context(AgsSoundcard *soundcard,
   /* set application context */
   pthread_mutex_lock(pulse_devin_mutex);
   
-  pulse_devin->application_context = (GObject *) application_context;
+  pulse_devin->application_context = application_context;
   
   pthread_mutex_unlock(pulse_devin_mutex);
 }
@@ -1556,7 +1556,7 @@ ags_pulse_devin_get_application_context(AgsSoundcard *soundcard)
   /* get application context */
   pthread_mutex_lock(pulse_devin_mutex);
 
-  application_context = (AgsApplicationContext *) pulse_devin->application_context;
+  application_context = pulse_devin->application_context;
 
   pthread_mutex_unlock(pulse_devin_mutex);
   

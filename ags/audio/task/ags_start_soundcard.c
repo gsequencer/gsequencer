@@ -229,8 +229,8 @@ ags_start_soundcard_finalize(GObject *gobject)
     //FIXME:JK: wrong location of code
     audio_loop = AGS_AUDIO_LOOP(application_context->main_loop);
 
-    soundcard_thread = (AgsSoundcardThread *) ags_thread_find_type((AgsThread *) audio_loop,
-								   AGS_TYPE_SOUNDCARD_THREAD);
+    soundcard_thread = ags_thread_find_type((AgsThread *) audio_loop,
+					    AGS_TYPE_SOUNDCARD_THREAD);
 
     while(soundcard_thread != NULL){
       if(AGS_IS_SOUNDCARD_THREAD(soundcard_thread)){

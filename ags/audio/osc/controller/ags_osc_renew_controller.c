@@ -860,7 +860,7 @@ ags_osc_renew_controller_set_data_audio(AgsOscRenewController *osc_renew_control
       ags_osc_buffer_util_get_int32(message + AGS_OSC_RENEW_CONTROLLER_CONTEXT_PATH_LENGTH + type_tag_length + path_length,
 				    &samplerate);
 
-      set_samplerate = ags_set_samplerate_new(audio,
+      set_samplerate = ags_set_samplerate_new(((GObject *) audio,
 					      samplerate);
       ags_task_thread_append_task((AgsTaskThread *) task_thread,
 				  (AgsTask *) set_samplerate);
@@ -890,7 +890,7 @@ ags_osc_renew_controller_set_data_audio(AgsOscRenewController *osc_renew_control
       ags_osc_buffer_util_get_int32(message + AGS_OSC_RENEW_CONTROLLER_CONTEXT_PATH_LENGTH + type_tag_length + path_length,
 				    &buffer_size);
 
-      set_buffer_size = ags_set_buffer_size_new(audio,
+      set_buffer_size = ags_set_buffer_size_new((GObject *) audio,
 						buffer_size);
       ags_task_thread_append_task((AgsTaskThread *) task_thread,
 				  (AgsTask *) set_buffer_size);
@@ -920,7 +920,7 @@ ags_osc_renew_controller_set_data_audio(AgsOscRenewController *osc_renew_control
       ags_osc_buffer_util_get_int32(message + AGS_OSC_RENEW_CONTROLLER_CONTEXT_PATH_LENGTH + type_tag_length + path_length,
 				    &format);
 
-      set_format = ags_set_format_new(audio,
+      set_format = ags_set_format_new((GObject *) audio,
 				      format);
       ags_task_thread_append_task((AgsTaskThread *) task_thread,
 				  (AgsTask *) set_format);
@@ -1720,7 +1720,7 @@ ags_osc_renew_controller_set_data_channel(AgsOscRenewController *osc_renew_contr
       ags_osc_buffer_util_get_int32(message + AGS_OSC_RENEW_CONTROLLER_CONTEXT_PATH_LENGTH + type_tag_length + path_length,
 				    &samplerate);
 
-      set_samplerate = ags_set_samplerate_new(channel,
+      set_samplerate = ags_set_samplerate_new((GObject *) channel,
 					      samplerate);
       ags_task_thread_append_task((AgsTaskThread *) task_thread,
 				  (AgsTask *) set_samplerate);
@@ -1750,7 +1750,7 @@ ags_osc_renew_controller_set_data_channel(AgsOscRenewController *osc_renew_contr
       ags_osc_buffer_util_get_int32(message + AGS_OSC_RENEW_CONTROLLER_CONTEXT_PATH_LENGTH + type_tag_length + path_length,
 				    &buffer_size);
 
-      set_buffer_size = ags_set_buffer_size_new(channel,
+      set_buffer_size = ags_set_buffer_size_new((GObject *) channel,
 						buffer_size);
       ags_task_thread_append_task((AgsTaskThread *) task_thread,
 				  (AgsTask *) set_buffer_size);
@@ -1780,7 +1780,7 @@ ags_osc_renew_controller_set_data_channel(AgsOscRenewController *osc_renew_contr
       ags_osc_buffer_util_get_int32(message + AGS_OSC_RENEW_CONTROLLER_CONTEXT_PATH_LENGTH + type_tag_length + path_length,
 				    &format);
 
-      set_format = ags_set_format_new(channel,
+      set_format = ags_set_format_new((GObject *) channel,
 				      format);
       ags_task_thread_append_task((AgsTaskThread *) task_thread,
 				  (AgsTask *) set_format);
