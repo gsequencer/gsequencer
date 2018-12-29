@@ -954,7 +954,7 @@ ags_gui_thread_launch_filename(AgsGuiThread *gui_thread,
 			 &error);
 
     if(error != NULL){
-      ags_gui_thread_show_file_error(gui_thread,
+      ags_gui_thread_show_file_error((AgsGuiThread *) gui_thread,
 				     filename,
 				     error);
       ags_application_context_quit(application_context);
@@ -1092,7 +1092,7 @@ ags_gui_thread_timer_launch_filename(AgsGuiThread *gui_thread,
 			 &error);
 
     if(error != NULL){
-      ags_gui_thread_show_file_error(gui_thread,
+      ags_gui_thread_show_file_error((AgsGuiThread *) gui_thread,
 				     filename,
 				     error);
       exit(-1);
@@ -1324,7 +1324,6 @@ ags_gui_thread_sync_task_dispatch(GSource *source,
 				  gpointer user_data)
 {
   AgsThread *gui_thread;
-  AgsThread *main_loop;
   AgsTaskThread *task_thread;
 
   AgsApplicationContext *application_context;
@@ -1340,8 +1339,7 @@ ags_gui_thread_sync_task_dispatch(GSource *source,
   
   application_context = ags_application_context_get_instance();
   
-  main_loop = ags_concurrency_provider_get_main_loop(AGS_CONCURRENCY_PROVIDER(application_context));
-  task_thread = ags_concurrency_provider_get_task_thread(AGS_CONCURRENCY_PROVIDER(application_context));
+  task_thread = (AgsTaskThread *) ags_concurrency_provider_get_task_thread(AGS_CONCURRENCY_PROVIDER(application_context));
 
   gui_thread = ags_ui_provider_get_gui_thread(AGS_UI_PROVIDER(application_context));
 
@@ -1709,7 +1707,6 @@ ags_gui_thread_do_run(AgsGuiThread *gui_thread)
   AgsApplicationContext *application_context;
 
   AgsThread *thread;
-  AgsTaskThread *task_thread;
   
   GMainContext *main_context;
 
@@ -1722,8 +1719,6 @@ ags_gui_thread_do_run(AgsGuiThread *gui_thread)
   thread = (AgsThread *) gui_thread;
   g_atomic_int_or(&(gui_thread->flags),
 		  AGS_GUI_THREAD_RUNNING);
-
-  task_thread = ags_concurrency_provider_get_task_thread(AGS_CONCURRENCY_PROVIDER(application_context));
 
   main_context = gui_thread->main_context;
 
@@ -1815,7 +1810,6 @@ ags_gui_thread_schedule_task(AgsGuiThread *gui_thread,
 {
   AgsApplicationContext *application_context;
 
-  AgsThread *main_loop;
   AgsThread *task_thread;
 
   if(!AGS_IS_GUI_THREAD(gui_thread) ||
@@ -1825,7 +1819,6 @@ ags_gui_thread_schedule_task(AgsGuiThread *gui_thread,
 
   application_context = ags_application_context_get_instance();
 
-  main_loop = ags_concurrency_provider_get_main_loop(AGS_CONCURRENCY_PROVIDER(application_context));
   task_thread = ags_concurrency_provider_get_task_thread(AGS_CONCURRENCY_PROVIDER(application_context));
 
   if(task_thread == NULL){
@@ -1854,7 +1847,6 @@ ags_gui_thread_schedule_task_list(AgsGuiThread *gui_thread,
 {
   AgsApplicationContext *application_context;
 
-  AgsThread *main_loop;
   AgsThread *task_thread;
 
   if(!AGS_IS_GUI_THREAD(gui_thread) ||
@@ -1864,7 +1856,6 @@ ags_gui_thread_schedule_task_list(AgsGuiThread *gui_thread,
 
   application_context = ags_application_context_get_instance();
 
-  main_loop = ags_concurrency_provider_get_main_loop(AGS_CONCURRENCY_PROVIDER(application_context));
   task_thread = ags_concurrency_provider_get_task_thread(AGS_CONCURRENCY_PROVIDER(application_context));
 
   if(task_thread == NULL){

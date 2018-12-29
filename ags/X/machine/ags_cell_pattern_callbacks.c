@@ -227,7 +227,7 @@ ags_cell_pattern_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *
     /* perform playback */
     task = g_list_reverse(task);
     ags_gui_thread_schedule_task_list((AgsGuiThread *) gui_thread,
-				      (GObject *) task);
+				      task);
   }
   
   if(event->keyval == GDK_KEY_Tab){

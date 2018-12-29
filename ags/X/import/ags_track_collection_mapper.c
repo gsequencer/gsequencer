@@ -474,6 +474,8 @@ ags_track_collection_mapper_apply(AgsApplicable *applicable)
   gui_thread = ags_ui_provider_get_gui_thread(AGS_UI_PROVIDER(application_context));
 
   /* create machine */
+  machine = NULL;
+  
   machine_type = gtk_combo_box_text_get_active_text(track_collection_mapper->machine_type);
   
   if(!g_ascii_strcasecmp(machine_type,

@@ -1512,9 +1512,10 @@ ags_xorg_application_context_prepare(AgsApplicationContext *application_context)
   ags_connectable_connect(AGS_CONNECTABLE(audio_loop));
 
   /* AgsPollingThread */
-  polling_thread = 
-    xorg_application_context->polling_thread = (AgsThread *) ags_polling_thread_new();
+  xorg_application_context->polling_thread = (AgsPollingThread *) ags_polling_thread_new();
+  polling_thread = (AgsThread *) xorg_application_context->polling_thread;
   g_object_ref(xorg_application_context->polling_thread);
+  
   ags_thread_add_child_extended(AGS_THREAD(audio_loop),
 				(AgsThread *) polling_thread,
 				TRUE, TRUE);
@@ -1523,7 +1524,7 @@ ags_xorg_application_context_prepare(AgsApplicationContext *application_context)
   application_context->task_thread = (GObject *) ags_task_thread_new();
   g_object_ref(application_context->task_thread);
   
-  task_thread = application_context->task_thread;
+  task_thread = (AgsThread *) application_context->task_thread;
   
   thread_pool = AGS_TASK_THREAD(task_thread)->thread_pool;
   ags_main_loop_set_async_queue(AGS_MAIN_LOOP(audio_loop),
@@ -1592,7 +1593,7 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
   AgsXorgApplicationContext *xorg_application_context;
   AgsWindow *window;
 
-  AgsGuiThread *gui_thread;
+  AgsThread *gui_thread;
   
   AgsServer *server;
 
@@ -1870,11 +1871,11 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
   single_thread_enabled = FALSE;
 
 #ifdef AGS_USE_TIMER
-  ags_gui_thread_timer_launch(gui_thread,
+  ags_gui_thread_timer_launch((AgsGuiThread *) gui_thread,
 			      timer_id,
 			      single_thread_enabled);
 #else
-  ags_gui_thread_launch(gui_thread,
+  ags_gui_thread_launch((AgsGuiThread *) gui_thread,
 			single_thread_enabled);
 #endif
 
@@ -2992,7 +2993,7 @@ ags_xorg_application_context_read(AgsFile *file, xmlNode *node, GObject **applic
 void
 ags_xorg_application_context_launch(AgsFileLaunch *launch, AgsXorgApplicationContext *application_context)
 {
-  AgsThread *audio_loop, *task_thread, *gui_thread;
+  AgsThread *audio_loop, *task_thread;
 
   GList *list;
   GList *start_queue;
@@ -3008,9 +3009,6 @@ ags_xorg_application_context_launch(AgsFileLaunch *launch, AgsXorgApplicationCon
   task_thread = ags_thread_find_type(audio_loop,
 				     AGS_TYPE_TASK_THREAD);
   application_context->thread_pool->parent = task_thread;
-
-  gui_thread = ags_thread_find_type(audio_loop,
-				    AGS_TYPE_GUI_THREAD);
 
   ags_thread_pool_start(application_context->thread_pool);
   ags_thread_start(audio_loop);
@@ -3139,6 +3137,9 @@ ags_xorg_application_context_message_monitor_timeout(AgsXorgApplicationContext *
       
     message = message->next;
   }
+
+  g_list_free_full(message_start,
+		   (GDestroyNotify) ags_message_envelope_free);
 
   return(TRUE);
 }

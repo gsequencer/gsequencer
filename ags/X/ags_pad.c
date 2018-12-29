@@ -826,7 +826,7 @@ ags_pad_play(AgsPad *pad)
       start_task = g_list_reverse(start_task);
 
       ags_gui_thread_schedule_task_list((AgsGuiThread *) gui_thread,
-					(GObject *) start_task);
+					start_task);
     }
   }else{
     AgsPlayback *playback;

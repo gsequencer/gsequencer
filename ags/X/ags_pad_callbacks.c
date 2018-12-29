@@ -169,7 +169,7 @@ ags_pad_mute_clicked_callback(GtkWidget *widget, AgsPad *pad)
   }
 
   ags_gui_thread_schedule_task_list((AgsGuiThread *) gui_thread,
-				    (GObject *) start_task);
+				    start_task);
 }
 
 void

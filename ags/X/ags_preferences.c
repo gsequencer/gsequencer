@@ -320,11 +320,11 @@ ags_preferences_apply(AgsApplicable *applicable)
 			       (GObject *) apply_sound_config);
 
   /* notify user about safe GSequencer */
-  dialog = gtk_message_dialog_new((GtkWindow *) preferences,
-				  GTK_DIALOG_MODAL,
-				  GTK_MESSAGE_INFO,
-				  GTK_BUTTONS_OK,
-				  "After finished your modifications you should safe your file");
+  dialog = (GtkDialog *) gtk_message_dialog_new((GtkWindow *) preferences,
+						GTK_DIALOG_MODAL,
+						GTK_MESSAGE_INFO,
+						GTK_BUTTONS_OK,
+						"After finished your modifications you should safe your file");
   g_signal_connect(dialog, "response",
 		   G_CALLBACK(gtk_widget_destroy), NULL);
   gtk_widget_show_all((GtkWidget *) dialog);

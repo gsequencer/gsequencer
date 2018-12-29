@@ -864,7 +864,7 @@ ags_notation_edit_play_channel(AgsNotationEdit *notation_edit,
   /* perform playback */
   task = g_list_reverse(task);
   ags_gui_thread_schedule_task_list((AgsGuiThread *) gui_thread,
-				    (GObject *) task);
+				    task);
 }
 
 /**

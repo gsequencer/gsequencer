@@ -6045,6 +6045,8 @@ ags_simple_file_read_preset(AgsSimpleFile *simple_file, xmlNode *node, AgsPreset
       }else if(!xmlStrncmp(child->name,
 			   "ags-sf-value",
 			   13)){
+	GValue *value;
+	
 	if(gobject->value == NULL){
 	  gobject->value = g_new0(GValue,
 				  1);
@@ -6055,8 +6057,9 @@ ags_simple_file_read_preset(AgsSimpleFile *simple_file, xmlNode *node, AgsPreset
 	  memset(&(gobject->value[i]), 0, sizeof(GValue));
 	}
 
-	//FIXME:JK: 
-	ags_simple_file_read_value(simple_file, child, &(gobject->value[i]));
+	//NOTE:JK: pay attention
+	value = &(gobject->value[i]);
+	ags_simple_file_read_value(simple_file, child, &value);
 
 	i++;
       }

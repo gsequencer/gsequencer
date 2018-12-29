@@ -235,7 +235,7 @@ ags_drum_length_spin_callback(GtkWidget *spin_button, AgsDrum *drum)
   /* task - apply length */
   length = GTK_SPIN_BUTTON(spin_button)->adjustment->value;
 
-  apply_sequencer_length = ags_apply_sequencer_length_new(AGS_MACHINE(drum)->audio,
+  apply_sequencer_length = ags_apply_sequencer_length_new((GObject *) AGS_MACHINE(drum)->audio,
 							  length);
 
   ags_gui_thread_schedule_task((AgsGuiThread *) gui_thread,

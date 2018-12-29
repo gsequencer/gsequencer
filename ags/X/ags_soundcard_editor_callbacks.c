@@ -91,7 +91,6 @@ ags_soundcard_editor_card_changed_callback(GtkComboBox *combo,
 
   GtkTreeIter current;
   
-  gchar *str;
   gchar *card;
 
   guint channels, channels_min, channels_max;
@@ -109,22 +108,6 @@ ags_soundcard_editor_card_changed_callback(GtkComboBox *combo,
   soundcard = soundcard_editor->soundcard;
 
   /*  */
-  str = NULL;
-  
-  if(AGS_IS_CORE_AUDIO_DEVOUT(soundcard)){
-    str = "core-audio";
-  }else if(AGS_IS_PULSE_DEVOUT(soundcard)){
-    str = "pulse";
-  }else if(AGS_IS_JACK_DEVOUT(soundcard)){
-    str = "jack";
-  }else if(AGS_IS_DEVOUT(soundcard)){
-    if((AGS_DEVOUT_ALSA & (AGS_DEVOUT(soundcard)->flags)) != 0){
-      str = "alsa";
-    }else if((AGS_DEVOUT_OSS & (AGS_DEVOUT(soundcard)->flags)) != 0){
-      str = "oss";
-    }
-  }
-
   card = gtk_combo_box_text_get_active_text(soundcard_editor->card);
   
   /* reset dialog */

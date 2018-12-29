@@ -87,7 +87,7 @@ ags_osc_server_preferences_any_address_callback(GtkButton *button, AgsOscServerP
     start_list = ags_sound_provider_get_osc_server(AGS_SOUND_PROVIDER(application_context));
 
   if(list != NULL){
-    if(gtk_toggle_button_get_active(button)){
+    if(gtk_toggle_button_get_active((GtkToggleButton *) button)){
       ags_osc_server_set_flags(list->data,
 			       AGS_OSC_SERVER_ANY_ADDRESS);
     }else{
@@ -99,7 +99,7 @@ ags_osc_server_preferences_any_address_callback(GtkButton *button, AgsOscServerP
   }
   
   /* set address fields in-/sensitive */
-  if(gtk_toggle_button_get_active(button)){
+  if(gtk_toggle_button_get_active((GtkToggleButton *) button)){
     gtk_widget_set_sensitive((GtkWidget *) osc_server_preferences->ip4_address,
 			     FALSE);
 

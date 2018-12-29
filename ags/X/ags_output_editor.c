@@ -209,8 +209,6 @@ ags_output_editor_apply(AgsApplicable *applicable)
   if(gtk_combo_box_get_active_iter(GTK_COMBO_BOX(output_editor->soundcard),
 				   &iter)){
     AgsWindow *window;
-    AgsMachine *machine;
-    AgsConnectionEditor *connection_editor;
 
     AgsChannel *channel;
 
@@ -221,12 +219,8 @@ ags_output_editor_apply(AgsApplicable *applicable)
     guint soundcard_channel;
     guint pad, audio_channel;
 
-    connection_editor = AGS_CONNECTION_EDITOR(gtk_widget_get_ancestor(GTK_WIDGET(output_editor),
-								      AGS_TYPE_CONNECTION_EDITOR));
     line_editor = AGS_LINE_EDITOR(gtk_widget_get_ancestor(GTK_WIDGET(output_editor),
 							  AGS_TYPE_LINE_EDITOR));
-
-    machine = connection_editor->machine;
 
     channel = line_editor->channel;
 

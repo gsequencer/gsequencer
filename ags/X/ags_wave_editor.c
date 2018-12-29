@@ -288,7 +288,7 @@ ags_wave_editor_init(AgsWaveEditor *wave_editor)
   /* level */
   wave_editor->scrolled_level_box = ags_scrolled_level_box_new();
 
-  wave_editor->scrolled_level_box->level_box = ags_vlevel_box_new();
+  wave_editor->scrolled_level_box->level_box = (AgsLevelBox *) ags_vlevel_box_new();
   gtk_container_add(GTK_CONTAINER(wave_editor->scrolled_level_box->viewport),
 		    GTK_WIDGET(wave_editor->scrolled_level_box->level_box));
 
@@ -895,7 +895,7 @@ ags_wave_editor_select_all(AgsWaveEditor *wave_editor)
     g_list_free(start_list_wave);
 
     /* queue draw */
-    gtk_widget_queue_draw(wave_editor->focused_wave_edit);
+    gtk_widget_queue_draw(GTK_WIDGET(wave_editor->focused_wave_edit));
   }
 }
 

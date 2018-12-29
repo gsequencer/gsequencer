@@ -238,7 +238,7 @@ ags_pattern_box_init(AgsPatternBox *pattern_box)
   
   /* led */
   pattern_box->active_led = 0;
-  pattern_box->hled_array = (GtkHBox *) ags_hled_array_new();
+  pattern_box->hled_array = (AgsHLedArray *) ags_hled_array_new();
   g_object_set(pattern_box->hled_array,
 	       "led-width", AGS_PATTERN_BOX_LED_DEFAULT_WIDTH,
 	       "led-height", AGS_PATTERN_BOX_LED_DEFAULT_HEIGHT,

@@ -400,7 +400,7 @@ ags_midi_export_wizard_apply(AgsApplicable *applicable)
 
   midi_export_wizard = AGS_MIDI_EXPORT_WIZARD(applicable);
 
-  window = midi_export_wizard->main_window;
+  window = (AgsWindow *) midi_export_wizard->main_window;
   
   /* retrieve BPM */
   bpm = gtk_spin_button_get_value_as_int(window->navigation->bpm);

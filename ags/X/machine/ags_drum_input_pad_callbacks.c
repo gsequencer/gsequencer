@@ -113,11 +113,11 @@ ags_drum_input_pad_open_response_callback(GtkWidget *widget, gint response, AgsD
   GtkFileChooserDialog *file_chooser;
   GtkSpinButton *spin_button;
 
-  AgsGuiThread *gui_thread;
-
   AgsAudioFile *audio_file;
 
   AgsOpenSingleFile *open_single_file;
+
+  AgsThread *gui_thread;
   
   AgsApplicationContext *application_context;
 
@@ -193,7 +193,7 @@ ags_drum_input_pad_open_response_callback(GtkWidget *widget, gint response, AgsD
       g_list_free(list);
     }
 
-    ags_gui_thread_schedule_task_list(gui_thread,
+    ags_gui_thread_schedule_task_list((AgsGuiThread *) gui_thread,
 				      task);
 
     gtk_widget_destroy((GtkWidget *) file_chooser);

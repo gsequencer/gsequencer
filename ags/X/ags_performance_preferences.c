@@ -315,7 +315,7 @@ ags_performance_preferences_apply(AgsApplicable *applicable)
   g_free(str);
   
   /* max-precision */
-  str = gtk_combo_box_get_active_text(GTK_COMBO_BOX_TEXT(performance_preferences->max_precision));
+  str = gtk_combo_box_get_active_text(GTK_COMBO_BOX(performance_preferences->max_precision));
   max_precision = 0;
   
   if(str != NULL){

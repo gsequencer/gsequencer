@@ -1249,7 +1249,7 @@ ags_soundcard_editor_remove_port(AgsSoundcardEditor *soundcard_editor,
   GType server_type;
 
   GList *machine, *machine_start;
-  GList *sound_server;
+  GList *start_sound_server, *sound_server;
   GList *list;
   GList *card_id;
 
@@ -1313,22 +1313,18 @@ ags_soundcard_editor_remove_port(AgsSoundcardEditor *soundcard_editor,
 	       "main-loop", &main_loop,
 	       NULL);
 
-  sound_server = ags_sound_provider_get_sound_server(AGS_SOUND_PROVIDER(application_context));
+  start_sound_server = ags_sound_provider_get_sound_server(AGS_SOUND_PROVIDER(application_context));
 
-  if((sound_server = ags_list_util_find_type(sound_server,
-					     server_type)) != NULL){
-    if(use_core_audio){
-      core_audio_server = AGS_CORE_AUDIO_SERVER(sound_server->data);
-    }else if(use_pulse){
-      pulse_server = AGS_PULSE_SERVER(sound_server->data);
-    }else if(use_jack){
-      jack_server = AGS_JACK_SERVER(sound_server->data);
-    }
-  }else{
+  if((sound_server = ags_list_util_find_type(start_sound_server,
+					     server_type)) == NULL){
+    g_list_free(start_sound_server);
+    
     g_warning("sound server not found");
     
     return;
   }
+
+  g_list_free(start_sound_server);
 
   list = ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(application_context));
   
@@ -1337,24 +1333,27 @@ ags_soundcard_editor_remove_port(AgsSoundcardEditor *soundcard_editor,
       if(AGS_IS_CORE_AUDIO_DEVOUT(list->data) &&
 	 !g_ascii_strcasecmp(ags_soundcard_get_device(AGS_SOUNDCARD(list->data)),
 			     device)){
-	soundcard = 
-	  core_audio_devout = list->data;
+	core_audio_devout = list->data;
+	soundcard = (GObject *) core_audio_devout;
+
 	break;
       }
     }else if(use_pulse){
       if(AGS_IS_PULSE_DEVOUT(list->data) &&
 	 !g_ascii_strcasecmp(ags_soundcard_get_device(AGS_SOUNDCARD(list->data)),
 			     device)){
-	soundcard = 
-	  pulse_devout = list->data;
+	pulse_devout = list->data;
+	soundcard = (GObject *) pulse_devout;
+
 	break;
       }
     }else if(use_jack){
       if(AGS_IS_JACK_DEVOUT(list->data) &&
 	 !g_ascii_strcasecmp(ags_soundcard_get_device(AGS_SOUNDCARD(list->data)),
 			     device)){
-	soundcard = 
-	  jack_devout = list->data;
+	jack_devout = list->data;
+	soundcard = (GObject *) jack_devout;
+	
 	break;
       }
     }
@@ -1507,7 +1506,7 @@ ags_soundcard_editor_add_soundcard(AgsSoundcardEditor *soundcard_editor,
     GList *list;
     
     machine = 
-      machine_start = gtk_container_get_children(window->machines);
+      machine_start = gtk_container_get_children(GTK_CONTAINER(window->machines));
 
     while(machine != NULL){
       g_object_ref(G_OBJECT(AGS_MACHINE(machine->data)->audio));
