@@ -1033,7 +1033,7 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
 	      /* create audio signal with frame count */
 	      ags_recycling_create_audio_signal_with_frame_count(recycling,
 								 audio_signal,
-								 (guint) (((gdouble) samplerate / notation_delay) * (gdouble) (note_x1 - note_x0)),
+								 (guint) (((gdouble) audio_signal->buffer_size * notation_delay) * (gdouble) (note_x1 - note_x0)),
 								 0.0, 0);
 	    }
 	  

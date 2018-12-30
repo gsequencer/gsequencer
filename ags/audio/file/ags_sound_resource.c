@@ -488,6 +488,10 @@ ags_sound_resource_read_audio_signal(AgsSoundResource *sound_resource,
       //TODO:JK: implement me
       g_warning("samplerate != target_samplerate");
     }
+
+    g_object_set(audio_signal,
+		 "last-frame", frame_count,
+		 NULL);
     
     while(stream != NULL){
       if(samplerate != target_samplerate){

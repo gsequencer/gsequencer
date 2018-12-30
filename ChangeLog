@@ -1,3 +1,10 @@
+ags (2.1.23)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed missing initial loop of notation as adding AgsDssiBridge and AgsLiveDssiBridge
+	* fixed missing initial loop of notation as adding AgsLv2Bridge and AgsLiveLv2Bridge
+	* fixed ags_recycling_create_audio_signal_with_frame_count()
+
 ags (2.1.22)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

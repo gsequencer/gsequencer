@@ -2173,7 +2173,7 @@ ags_recycling_create_audio_signal_with_frame_count(AgsRecycling *recycling,
   guint n_frames;
   guint copy_n_frames;
   guint nth_loop;
-  guint i, j, k;
+  guint i, j;
   guint copy_mode;
 
   pthread_mutex_t *recycling_mutex;
@@ -2277,17 +2277,19 @@ ags_recycling_create_audio_signal_with_frame_count(AgsRecycling *recycling,
 	       "samplerate", samplerate,
 	       "buffer-size", buffer_size,
 	       "format", format,
-	       "frame-count", frame_count,
-	       "last-frame", new_last_frame,
-	       "loop-start", new_loop_start,
-	       "loop-end", new_loop_end,
 	       NULL);
 
   /* resize */
   if(loop_end > loop_start){
     loop_length = loop_end - loop_start;
-    loop_frame_count = ((frame_count - loop_start) / loop_length) * buffer_size;
-
+    
+    if((frame_count - loop_start) > (last_frame - loop_end) &&
+       last_frame >= loop_end){
+      loop_frame_count = (frame_count - loop_start) - (last_frame - loop_end);
+    }else{
+      loop_frame_count = loop_length;
+    }
+    
     ags_audio_signal_stream_resize(audio_signal,
 				   (guint) ceil(frame_count / buffer_size) + 1);    
   }else{
@@ -2328,65 +2330,58 @@ ags_recycling_create_audio_signal_with_frame_count(AgsRecycling *recycling,
   
   template_stream = template->stream;
 
-  for(i = 0, j = 0, k = attack, nth_loop = 0; i < frame_count;){    
+  for(i = 0, j = attack, nth_loop = 0; i < frame_count && stream != NULL && template_stream != NULL;){    
     /* compute count of frames to copy */
     copy_n_frames = buffer_size;
 
-    /* limit nth loop */
-    if(i > loop_start &&
-       i + copy_n_frames > loop_start + loop_length &&
-       i + copy_n_frames < loop_start + loop_frame_count &&
-       i + copy_n_frames >= loop_start + (nth_loop + 1) * loop_length){
-      copy_n_frames = (loop_start + (nth_loop + 1) * loop_length) - i;
+    if(loop_start < loop_end &&
+       i + copy_n_frames < loop_start + loop_frame_count){
+      if(j + copy_n_frames > loop_end){
+	copy_n_frames = loop_end - j;
+      }
     }
 
-    /* check boundaries */
-    if((k % buffer_size) + copy_n_frames > buffer_size){
-      copy_n_frames = buffer_size - (k % buffer_size);
+    if((i % buffer_size) + copy_n_frames > buffer_size){
+      copy_n_frames = buffer_size - (i % buffer_size);
     }
 
-    if(j + copy_n_frames > buffer_size){
-      copy_n_frames = buffer_size - j;
+    if((j % buffer_size) + copy_n_frames > buffer_size){
+      copy_n_frames = buffer_size - (j % buffer_size);
     }
 
-    if(stream == NULL ||
-       template_stream == NULL){
-      break;
+    if(i + copy_n_frames > frame_count){
+      copy_n_frames = frame_count - i;
     }
     
     /* copy */
-    ags_audio_buffer_util_copy_buffer_to_buffer(stream->data, 1, k % buffer_size,
-						template_stream->data, 1, j,
+    ags_audio_buffer_util_copy_buffer_to_buffer(stream->data, 1, i % buffer_size,
+						template_stream->data, 1, j % buffer_size,
 						copy_n_frames, copy_mode);
-
-    /* increment and iterate */
+    
     if((i + copy_n_frames) % buffer_size == 0){
       stream = stream->next;
     }
 
-    if(j + copy_n_frames == buffer_size){
+    if((j + copy_n_frames) % buffer_size == 0){
       template_stream = template_stream->next;
     }
-    
-    if(template_stream == NULL ||
-       (i > loop_start &&
-	i + copy_n_frames > loop_start + loop_length &&
-	i + copy_n_frames < loop_start + loop_frame_count &&
-	i + copy_n_frames >= loop_start + (nth_loop + 1) * loop_length)){
-      j = loop_start % buffer_size;
-      template_stream = g_list_nth(template->stream,
-				   floor(loop_start / buffer_size));
 
-      nth_loop++;
+    i += copy_n_frames;
+
+    if(loop_start < loop_end){
+      if(j + copy_n_frames == loop_end &&
+	 i + copy_n_frames < loop_start + loop_frame_count){
+	template_stream = g_list_nth(template->stream,
+				     floor(loop_start / buffer_size));
+	
+	j = loop_start;
+	
+	nth_loop++;
+      }else{
+	j += copy_n_frames;
+      }
     }else{
       j += copy_n_frames;
-    }
-    
-    i += copy_n_frames;
-    k += copy_n_frames;
-
-    if(j == buffer_size){
-      j = 0;
     }
   }
 

@@ -1362,6 +1362,7 @@ ags_syncsynth_update(AgsSyncsynth *syncsynth)
   guint buffer_size;
   guint format;
   guint attack, frame_count;
+  guint loop_start, loop_end;
   gdouble frequency, phase, start_frequency;
   gdouble volume;
 
@@ -1430,6 +1431,9 @@ ags_syncsynth_update(AgsSyncsynth *syncsynth)
 	       "format", &format,
 	       NULL);
 
+  loop_start = (guint) gtk_spin_button_get_value_as_int(syncsynth->loop_start);
+  loop_end = (guint) gtk_spin_button_get_value_as_int(syncsynth->loop_end);
+
   synth_generator = start_synth_generator;
 
   while(list != NULL){
@@ -1454,6 +1458,8 @@ ags_syncsynth_update(AgsSyncsynth *syncsynth)
 		 "delay", (gdouble) attack / buffer_size,
 		 "attack", attack,
 		 "frame-count", frame_count,
+		 "loop-start", loop_start,
+		 "loop-end", loop_end,
 		 "oscillator", gtk_combo_box_get_active(oscillator->wave),
 		 "frequency", frequency,
 		 "phase", phase,

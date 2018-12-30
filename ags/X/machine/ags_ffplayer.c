@@ -407,25 +407,6 @@ ags_ffplayer_connect(AgsConnectable *connectable)
 
   g_signal_connect((GObject *) ffplayer->hadjustment, "value_changed",
 		   G_CALLBACK(ags_ffplayer_hscrollbar_value_changed), (gpointer) ffplayer);
-
-  /* AgsAudio */  
-  //TODO:JK: magnify it
-  if(!gtk_toggle_button_get_active((GtkToggleButton *) window->navigation->loop)){
-    GList *list;
-
-    list = ags_recall_find_type(ffplayer->machine.audio->play, AGS_TYPE_COUNT_BEATS_AUDIO_RUN);
-  
-    if(list != NULL){
-      AgsCountBeatsAudioRun *play_count_beats_audio_run;
-      GValue value = {0,};
-
-      play_count_beats_audio_run = AGS_COUNT_BEATS_AUDIO_RUN(list->data);
-      g_value_init(&value, G_TYPE_BOOLEAN);
-      g_value_set_boolean(&value, FALSE);
-      ags_port_safe_write(AGS_COUNT_BEATS_AUDIO(AGS_RECALL_AUDIO_RUN(play_count_beats_audio_run)->recall_audio)->notation_loop,
-			  &value);
-    }
-  }
 }
 
 void
@@ -1031,6 +1012,8 @@ ags_ffplayer_map_recall(AgsMachine *machine)
 
   GList *start_play, *play;
   GList *start_recall, *recall;
+  
+  GValue value = {0,};
 
   if((AGS_MACHINE_MAPPED_RECALL & (machine->flags)) != 0 ||
      (AGS_MACHINE_PREMAPPED_RECALL & (machine->flags)) != 0){
@@ -1090,8 +1073,6 @@ ags_ffplayer_map_recall(AgsMachine *machine)
 			      AGS_TYPE_COUNT_BEATS_AUDIO_RUN);
 
   if(play != NULL){
-    GValue value = {0,};
-
     play_count_beats_audio_run = AGS_COUNT_BEATS_AUDIO_RUN(play->data);
 
     /* set dependency */  

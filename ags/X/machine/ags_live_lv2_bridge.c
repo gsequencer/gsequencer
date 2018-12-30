@@ -1187,6 +1187,8 @@ ags_live_lv2_bridge_map_recall(AgsMachine *machine)
   GList *start_play, *play;
   GList *start_recall, *recall;
   
+  GValue value = {0,};
+  
   if((AGS_MACHINE_MAPPED_RECALL & (machine->flags)) != 0 ||
      (AGS_MACHINE_PREMAPPED_RECALL & (machine->flags)) != 0){
     return;
@@ -1254,6 +1256,11 @@ ags_live_lv2_bridge_map_recall(AgsMachine *machine)
     ags_seekable_seek(AGS_SEEKABLE(play_count_beats_audio_run),
 		      window->navigation->position_tact->adjustment->value,
 		      TRUE);
+
+    g_value_init(&value, G_TYPE_BOOLEAN);
+    g_value_set_boolean(&value, gtk_toggle_button_get_active((GtkToggleButton *) window->navigation->loop));
+    ags_port_safe_write(AGS_COUNT_BEATS_AUDIO(AGS_RECALL_AUDIO_RUN(play_count_beats_audio_run)->recall_audio)->notation_loop,
+			&value);
   }else{
     play_count_beats_audio_run = NULL;
   }

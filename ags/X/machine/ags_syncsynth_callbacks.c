@@ -122,7 +122,6 @@ void
 ags_syncsynth_oscillator_control_changed_callback(AgsOscillator *oscillator,
 						  AgsSyncsynth *syncsynth)
 {
-
   ags_syncsynth_reset_loop(syncsynth);
 
   if((AGS_SYNCSYNTH_AUTO_UPDATE & (syncsynth->flags)) != 0){

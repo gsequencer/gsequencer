@@ -66,6 +66,8 @@ enum{
   PROP_DELAY,
   PROP_ATTACK,
   PROP_FRAME_COUNT,
+  PROP_LOOP_START,
+  PROP_LOOP_END,
   PROP_OSCILLATOR,
   PROP_FREQUENCY,
   PROP_PHASE,
@@ -208,6 +210,42 @@ ags_synth_generator_class_init(AgsSynthGeneratorClass *synth_generator)
 				  PROP_FRAME_COUNT,
 				  param_spec);
 
+  /**
+   * AgsSynthGenerator:loop-start:
+   *
+   * The loop start to be used.
+   * 
+   * Since: 2.1.23
+   */
+  param_spec = g_param_spec_uint("loop-start",
+				 i18n_pspec("loop start"),
+				 i18n_pspec("The loop start"),
+				 0,
+				 G_MAXUINT32,
+				 0,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_LOOP_START,
+				  param_spec);
+
+  /**
+   * AgsSynthGenerator:loop-end:
+   *
+   * The loop end to be used.
+   * 
+   * Since: 2.1.23
+   */
+  param_spec = g_param_spec_uint("loop-end",
+				 i18n_pspec("loop end"),
+				 i18n_pspec("To loop end"),
+				 0,
+				 G_MAXUINT32,
+				 0,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_LOOP_END,
+				  param_spec);
+  
   /**
    * AgsAudioSignal:delay:
    *
@@ -423,6 +461,16 @@ ags_synth_generator_set_property(GObject *gobject,
       synth_generator->frame_count = g_value_get_uint(value);
     }
     break;
+  case PROP_LOOP_START:
+    {
+      synth_generator->loop_start = g_value_get_uint(value);
+    }
+    break;
+  case PROP_LOOP_END:
+    {
+      synth_generator->loop_end = g_value_get_uint(value);
+    }
+    break;
   case PROP_OSCILLATOR:
     {
       synth_generator->oscillator = g_value_get_uint(value);
@@ -509,6 +557,16 @@ ags_synth_generator_get_property(GObject *gobject,
   case PROP_FRAME_COUNT:
     {
       g_value_set_uint(value, synth_generator->frame_count);
+    }
+    break;
+  case PROP_LOOP_START:
+    {
+      g_value_set_uint(value, synth_generator->loop_start);
+    }
+    break;
+  case PROP_LOOP_END:
+    {
+      g_value_set_uint(value, synth_generator->loop_end);
     }
     break;
   case PROP_OSCILLATOR:
@@ -668,6 +726,12 @@ ags_synth_generator_compute(AgsSynthGenerator *synth_generator,
     ags_audio_signal_stream_resize((AgsAudioSignal *) audio_signal,
 				   ceil(requested_frame_count / buffer_size));
   }
+
+  g_object_set(audio_signal,
+	       "loop-start", synth_generator->loop_start,
+	       "loop-end", synth_generator->loop_end,
+	       "last-frame", attack + frame_count,
+	       NULL);
   
   /*  */
   stream = 
