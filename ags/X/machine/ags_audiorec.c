@@ -475,9 +475,18 @@ ags_audiorec_show_all(GtkWidget *widget)
 void
 ags_audiorec_map_recall(AgsMachine *machine)
 {
+  AgsWindow *window;
+  
   AgsAudiorec *audiorec;
 
   AgsAudio *audio;
+
+  AgsPlayWaveAudioRun *play_wave_audio_run;
+  AgsCaptureWaveAudioRun *capture_wave_audio_run;
+
+  GList *start_play, *play;
+
+  GValue value = {0,};
 
   if((AGS_MACHINE_MAPPED_RECALL & (machine->flags)) != 0 ||
      (AGS_MACHINE_PREMAPPED_RECALL & (machine->flags)) != 0){
@@ -485,6 +494,8 @@ ags_audiorec_map_recall(AgsMachine *machine)
   }
 
   audiorec = AGS_AUDIOREC(machine);
+  window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) machine,
+						 AGS_TYPE_WINDOW);
 
   audio = machine->audio;
 
@@ -499,6 +510,43 @@ ags_audiorec_map_recall(AgsMachine *machine)
 			     AGS_RECALL_FACTORY_PLAY),
 			    0);
 
+  g_object_get(audio,
+	       "play", &start_play,
+	       NULL);
+
+  play = ags_recall_find_type(start_play,
+			      AGS_TYPE_PLAY_WAVE_AUDIO_RUN);
+
+  if(play != NULL){
+    play_wave_audio_run = play->data;
+    
+    ags_seekable_seek(AGS_SEEKABLE(play_wave_audio_run),
+		      (gint64) 16 * window->navigation->position_tact->adjustment->value,
+		      AGS_SEEK_SET);
+
+    /* wave loop */
+    g_value_init(&value, G_TYPE_BOOLEAN);
+    
+    g_value_set_boolean(&value, gtk_toggle_button_get_active((GtkToggleButton *) window->navigation->loop));
+    ags_port_safe_write(AGS_PLAY_WAVE_AUDIO(AGS_RECALL_AUDIO_RUN(play_wave_audio_run)->recall_audio)->wave_loop,
+			&value);
+
+    g_value_unset(&value);
+    g_value_init(&value, G_TYPE_UINT64);
+
+    g_value_set_uint64(&value, 16 * window->navigation->loop_left_tact->adjustment->value);
+    ags_port_safe_write(AGS_PLAY_WAVE_AUDIO(AGS_RECALL_AUDIO_RUN(play_wave_audio_run)->recall_audio)->wave_loop_start,
+			&value);
+
+    g_value_reset(&value);
+
+    g_value_set_uint64(&value, 16 * window->navigation->loop_right_tact->adjustment->value);
+    ags_port_safe_write(AGS_PLAY_WAVE_AUDIO(AGS_RECALL_AUDIO_RUN(play_wave_audio_run)->recall_audio)->wave_loop_end,
+			&value);
+  }
+
+  g_list_free(start_play);
+
   /* ags-capture-wave */
   ags_recall_factory_create(audio,
 			    NULL, NULL,
@@ -509,6 +557,43 @@ ags_audiorec_map_recall(AgsMachine *machine)
 			     AGS_RECALL_FACTORY_ADD |
 			     AGS_RECALL_FACTORY_PLAY),
 			    0);
+
+  g_object_get(audio,
+	       "play", &start_play,
+	       NULL);
+
+  play = ags_recall_find_type(start_play,
+			      AGS_TYPE_CAPTURE_WAVE_AUDIO_RUN);
+
+  if(play != NULL){
+    capture_wave_audio_run = play->data;
+
+    ags_seekable_seek(AGS_SEEKABLE(capture_wave_audio_run),
+		      (gint64) 16 * window->navigation->position_tact->adjustment->value,
+		      AGS_SEEK_SET);
+
+    /* wave loop */
+    g_value_init(&value, G_TYPE_BOOLEAN);
+    
+    g_value_set_boolean(&value, gtk_toggle_button_get_active((GtkToggleButton *) window->navigation->loop));
+    ags_port_safe_write(AGS_CAPTURE_WAVE_AUDIO(AGS_RECALL_AUDIO_RUN(capture_wave_audio_run)->recall_audio)->wave_loop,
+			&value);
+
+    g_value_unset(&value);
+    g_value_init(&value, G_TYPE_UINT64);
+
+    g_value_set_uint64(&value, 16 * window->navigation->loop_left_tact->adjustment->value);
+    ags_port_safe_write(AGS_CAPTURE_WAVE_AUDIO(AGS_RECALL_AUDIO_RUN(capture_wave_audio_run)->recall_audio)->wave_loop_start,
+			&value);
+
+    g_value_reset(&value);
+
+    g_value_set_uint64(&value, 16 * window->navigation->loop_right_tact->adjustment->value);
+    ags_port_safe_write(AGS_CAPTURE_WAVE_AUDIO(AGS_RECALL_AUDIO_RUN(capture_wave_audio_run)->recall_audio)->wave_loop_end,
+			&value);
+  }
+
+  g_list_free(start_play);
   
   /* depending on destination */
   ags_audiorec_input_map_recall(audiorec, 0);

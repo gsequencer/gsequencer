@@ -1574,10 +1574,14 @@ ags_audio_init(AgsAudio *audio)
   audio->bank_dim[2] = 0;
 
   /* channel allocation */
-  audio->max_audio_channels = 0;
+  audio->max_audio_channels = G_MAXUINT32;
+  audio->min_audio_channels = 0;
 
-  audio->max_output_pads = 0;
-  audio->max_input_pads = 0;
+  audio->max_output_pads = G_MAXUINT32;
+  audio->min_output_pads = 0;
+
+  audio->max_input_pads = G_MAXUINT32;
+  audio->min_input_pads = 0;
 
   audio->audio_channels = 0;
 

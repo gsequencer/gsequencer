@@ -307,7 +307,9 @@ ags_resize_editor_reset(AgsApplicable *applicable)
   AgsAudio *audio;
 
   guint audio_channels;
+  guint min_audio_channels, max_audio_channels;
   guint output_pads, input_pads;
+  guint min_output_pads, max_output_pads, min_input_pads, max_input_pads;
 
   resize_editor = AGS_RESIZE_EDITOR(applicable);
 
@@ -317,29 +319,35 @@ ags_resize_editor_reset(AgsApplicable *applicable)
   audio = machine_editor->machine->audio;
   g_object_get(audio,
 	       "audio-channels", &audio_channels,
+	       "min-audio-channels", &min_audio_channels,
+	       "max-audio-channels", &max_audio_channels,
 	       "output-pads", &output_pads,
 	       "input-pads", &input_pads,
+	       "min-output-pads", &min_output_pads,
+	       "max-output-pads", &max_output_pads,
+	       "min-input-pads", &min_input_pads,
+	       "max-input-pads", &max_input_pads,
 	       NULL);
   
-  /* reset */
-  if((AGS_MACHINE_MONO & (machine_editor->machine->mapping_flags)) != 0){
-    gtk_spin_button_set_range(resize_editor->audio_channels,
-			      0.0, 1.0);
-  }
+  /* reset - audio channels */
+  gtk_spin_button_set_range(resize_editor->audio_channels,
+			    (gdouble) min_audio_channels, (gdouble) max_audio_channels);
 
   gtk_spin_button_set_value(resize_editor->audio_channels,
 			    (gdouble) audio_channels);
 
-  gtk_spin_button_set_value(resize_editor->input_pads,
-			    (gdouble) input_pads);
-
-  if((AGS_AUDIO_OUTPUT_HAS_RECYCLING & (machine_editor->machine->audio->flags)) == 0){
-    gtk_spin_button_set_range(resize_editor->output_pads,
-			      0.0, 1.0);
-  }
+  /* reset - output/input pads */
+  gtk_spin_button_set_range(resize_editor->output_pads,
+			   (gdouble) min_output_pads, (gdouble) max_output_pads);
   
+  gtk_spin_button_set_range(resize_editor->input_pads,
+			   (gdouble) min_input_pads, (gdouble) max_input_pads);
+
   gtk_spin_button_set_value(resize_editor->output_pads,
 			    (gdouble) output_pads);
+
+  gtk_spin_button_set_value(resize_editor->input_pads,
+			    (gdouble) input_pads);
 }
 
 /**

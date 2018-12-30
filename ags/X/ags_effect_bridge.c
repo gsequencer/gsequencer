@@ -757,30 +757,34 @@ ags_effect_bridge_real_resize_audio_channels(AgsEffectBridge *effect_bridge,
   }
 
   /* output */
-  list =
-    start_list = gtk_container_get_children((GtkContainer *) effect_bridge->output);
+  if(effect_bridge->output != NULL){
+    list =
+      start_list = gtk_container_get_children((GtkContainer *) effect_bridge->output);
 
-  while(list != NULL){
-    ags_effect_pad_resize_lines(AGS_EFFECT_PAD(list->data), effect_bridge->output_line_type,
-				new_size, old_size);
+    while(list != NULL){
+      ags_effect_pad_resize_lines(AGS_EFFECT_PAD(list->data), effect_bridge->output_line_type,
+				  new_size, old_size);
 
-    list = list->next;
+      list = list->next;
+    }
+
+    g_list_free(start_list);
   }
-
-  g_list_free(start_list);
   
   /* input */
-  list =
-    start_list = gtk_container_get_children((GtkContainer *) effect_bridge->input);
+  if(effect_bridge->input != NULL){
+    list =
+      start_list = gtk_container_get_children((GtkContainer *) effect_bridge->input);
 
-  while(list != NULL){
-    ags_effect_pad_resize_lines(AGS_EFFECT_PAD(list->data), effect_bridge->input_line_type,
-				new_size, old_size);
+    while(list != NULL){
+      ags_effect_pad_resize_lines(AGS_EFFECT_PAD(list->data), effect_bridge->input_line_type,
+				  new_size, old_size);
 
-    list = list->next;
+      list = list->next;
+    }
+
+    g_list_free(start_list);
   }
-
-  g_list_free(start_list);
 }
 
 /**

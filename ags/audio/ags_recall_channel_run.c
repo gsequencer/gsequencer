@@ -1208,7 +1208,7 @@ ags_recall_channel_run_remap_child_source(AgsRecallChannelRun *recall_channel_ru
 
       /* get children */
       g_object_get(recall_channel_run,
-		   "children", &list_start,
+		   "child", &list_start,
 		   NULL);
 
       list = list_start;
@@ -1403,7 +1403,7 @@ ags_recall_channel_run_remap_child_destination(AgsRecallChannelRun *recall_chann
       
       /* get children */
       g_object_get(recall_channel_run,
-		   "children", &list_start,
+		   "child", &list_start,
 		   NULL);
 
       list = list_start;

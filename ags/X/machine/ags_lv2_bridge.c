@@ -358,6 +358,11 @@ ags_lv2_bridge_init(AgsLv2Bridge *lv2_bridge)
 
   audio = AGS_MACHINE(lv2_bridge)->audio;
   ags_audio_set_flags(audio, (AGS_AUDIO_SYNC));
+  g_object_set(audio,
+	       "min-audio-channels", 1,
+	       "min-output-pads", 1,
+	       "min-input-pads", 1,
+	       NULL);
 
   g_signal_connect_after(G_OBJECT(lv2_bridge), "resize-audio-channels",
 			 G_CALLBACK(ags_lv2_bridge_resize_audio_channels), NULL);
@@ -1293,12 +1298,26 @@ ags_lv2_bridge_map_recall(AgsMachine *machine)
 		   "delay-audio-run", play_delay_audio_run,
 		   NULL);
       ags_seekable_seek(AGS_SEEKABLE(play_count_beats_audio_run),
-			window->navigation->position_tact->adjustment->value,
-			TRUE);
+			(gint64) 16 * window->navigation->position_tact->adjustment->value,
+			AGS_SEEK_SET);
 
+      /* notation loop */
       g_value_init(&value, G_TYPE_BOOLEAN);
       g_value_set_boolean(&value, gtk_toggle_button_get_active((GtkToggleButton *) window->navigation->loop));
       ags_port_safe_write(AGS_COUNT_BEATS_AUDIO(AGS_RECALL_AUDIO_RUN(play_count_beats_audio_run)->recall_audio)->notation_loop,
+			  &value);
+
+      g_value_unset(&value);
+      g_value_init(&value, G_TYPE_UINT64);
+
+      g_value_set_uint64(&value, 16 * window->navigation->loop_left_tact->adjustment->value);
+      ags_port_safe_write(AGS_COUNT_BEATS_AUDIO(AGS_RECALL_AUDIO_RUN(play_count_beats_audio_run)->recall_audio)->notation_loop_start,
+			  &value);
+
+      g_value_reset(&value);
+
+      g_value_set_uint64(&value, 16 * window->navigation->loop_right_tact->adjustment->value);
+      ags_port_safe_write(AGS_COUNT_BEATS_AUDIO(AGS_RECALL_AUDIO_RUN(play_count_beats_audio_run)->recall_audio)->notation_loop_end,
 			  &value);
     }else{
       play_count_beats_audio_run = NULL;

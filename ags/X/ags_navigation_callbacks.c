@@ -373,6 +373,24 @@ ags_navigation_loop_callback(GtkWidget *widget,
 	list = list->next;
       }
 
+      list = list_start;
+      
+      while((list = ags_recall_find_type(list,
+					 AGS_TYPE_CAPTURE_WAVE_AUDIO)) != NULL){
+	AgsPort *port;
+	
+	recall = AGS_RECALL(list->data);
+
+	g_object_get(recall,
+		     "wave-loop", &port,
+		     NULL);
+	
+	ags_port_safe_write(port,
+			    &do_loop_value);
+
+	list = list->next;
+      }
+      
       g_list_free(list_start);
     }
 
@@ -428,9 +446,9 @@ ags_navigation_loop_left_tact_callback(GtkWidget *widget,
 			 loop_left, loop_right,
 			 gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(navigation->loop)));
 
-  g_value_init(&value, G_TYPE_DOUBLE);
-  g_value_set_double(&value,
-		     loop_left);
+  g_value_init(&value, G_TYPE_UINT64);
+  g_value_set_uint64(&value,
+		     (guint64) loop_left);
 
   while(machines != NULL){
     machine = AGS_MACHINE(machines->data);
@@ -477,7 +495,7 @@ ags_navigation_loop_left_tact_callback(GtkWidget *widget,
 
       /* do it so */
       g_object_get(audio,
-		   "recall", &list_start,
+		   "play", &list_start,
 		   NULL);
       
       list = list_start;
@@ -499,6 +517,25 @@ ags_navigation_loop_left_tact_callback(GtkWidget *widget,
 	list = list->next;
       }
 
+      list = list_start;
+
+      while((list = ags_recall_find_type(list,
+					 AGS_TYPE_CAPTURE_WAVE_AUDIO)) != NULL){
+	AgsPort *port;
+
+	recall = AGS_RECALL(list->data);
+
+
+	g_object_get(recall,
+		     "wave-loop-start", &port,
+		     NULL);
+	
+	ags_port_safe_write(port,
+			    &value);
+
+	list = list->next;
+      }
+      
       g_list_free(list_start);
     }
 
@@ -536,9 +573,9 @@ ags_navigation_loop_right_tact_callback(GtkWidget *widget,
 			 loop_left, loop_right,
 			 gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(navigation->loop)));
 
-  g_value_init(&value, G_TYPE_DOUBLE);
-  g_value_set_double(&value,
-		     loop_right);
+  g_value_init(&value, G_TYPE_UINT64);
+  g_value_set_uint64(&value,
+		     (guint64) loop_right);
 
   while(machines != NULL){
     machine = AGS_MACHINE(machines->data);
@@ -585,13 +622,31 @@ ags_navigation_loop_right_tact_callback(GtkWidget *widget,
       
       /* do it so */
       g_object_get(audio,
-		   "recall", &list_start,
+		   "play", &list_start,
 		   NULL);
 
       list = list_start;
 
       while((list = ags_recall_find_type(list,
 					 AGS_TYPE_PLAY_WAVE_AUDIO)) != NULL){
+	AgsPort *port;
+	
+	recall = AGS_RECALL(list->data);
+
+	g_object_get(recall,
+		     "wave-loop-end", &port,
+		     NULL);
+
+	ags_port_safe_write(port,
+			    &value);
+
+	list = list->next;
+      }
+
+      list = list_start;
+
+      while((list = ags_recall_find_type(list,
+					 AGS_TYPE_CAPTURE_WAVE_AUDIO)) != NULL){
 	AgsPort *port;
 	
 	recall = AGS_RECALL(list->data);

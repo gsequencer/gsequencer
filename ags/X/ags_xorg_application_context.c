@@ -3124,10 +3124,12 @@ ags_xorg_application_context_message_monitor_timeout(AgsXorgApplicationContext *
 				  "default-soundcard");
 
 	default_soundcard = g_value_get_object(&(AGS_MESSAGE_ENVELOPE(message->data)->value[position]));
-	
-	g_object_set(xorg_application_context->window,
-		     "soundcard", default_soundcard,
-		     NULL);
+
+	if(xorg_application_context->window != NULL){
+	  g_object_set(xorg_application_context->window,
+		       "soundcard", default_soundcard,
+		       NULL);
+	}
       }
     }
     

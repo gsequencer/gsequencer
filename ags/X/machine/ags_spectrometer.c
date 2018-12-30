@@ -177,6 +177,13 @@ ags_spectrometer_init(AgsSpectrometer *spectrometer)
   g_signal_connect_after((GObject *) spectrometer, "parent_set",
 			 G_CALLBACK(ags_spectrometer_parent_set_callback), (gpointer) spectrometer);
 
+  ags_audio_set_flags(AGS_MACHINE(spectrometer)->audio, (AGS_AUDIO_SYNC));
+  g_object_set(AGS_MACHINE(spectrometer)->audio,
+	       "min-audio-channels", 1,
+	       "min-output-pads", 1,
+	       "min-input-pads", 1,
+	       NULL);
+
   if(ags_spectrometer_cartesian_queue_draw == NULL){
     ags_spectrometer_cartesian_queue_draw = g_hash_table_new_full(g_direct_hash, g_direct_equal,
 								  NULL,

@@ -183,6 +183,12 @@ ags_panel_init(AgsPanel *panel)
   AGS_MACHINE(panel)->connection_flags |= AGS_MACHINE_SHOW_AUDIO_OUTPUT_CONNECTION;
 
   ags_audio_set_flags(AGS_MACHINE(panel)->audio, (AGS_AUDIO_SYNC));
+  g_object_set(AGS_MACHINE(panel)->audio,
+	       "min-audio-channels", 1,
+	       "min-output-pads", 1,
+	       "min-input-pads", 1,
+	       NULL);
+
   AGS_MACHINE(panel)->input_pad_type = AGS_TYPE_PANEL_INPUT_PAD;
 
   AGS_MACHINE(panel)->input_pad_type = AGS_TYPE_PANEL_INPUT_PAD;

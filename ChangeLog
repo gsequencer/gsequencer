@@ -1,3 +1,13 @@
+ags (2.1.24)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* TODO:JK: improved AgsRecallContainer detection of ags_recall_factory.c
+	* improved apply min/max audio channels and pads to instruments
+	* improved AgsResizeEditor to respect min/max channel alignment
+	* improved AgsResizeAudio task to resize audio channels prior to pads
+	* fixed missing initial loop position of instruments
+	* TODO:JK: fixed ags-buffer creation in ags_recall_factory.c
+
 ags (2.1.23)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

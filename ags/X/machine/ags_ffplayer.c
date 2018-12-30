@@ -206,6 +206,10 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
   ags_audio_set_behaviour_flags(audio, (AGS_SOUND_BEHAVIOUR_REVERSE_MAPPING |
 					AGS_SOUND_BEHAVIOUR_DEFAULTS_TO_INPUT));
   g_object_set(audio,
+	       "min-audio-channels", 1,
+	       "min-output-pads", 1,
+	       "min-input-pads", 1,
+	       "max-input-pads", 128,
 	       "audio-start-mapping", 0,
 	       "audio-end-mapping", 128,
 	       "midi-start-mapping", 0,
@@ -858,7 +862,7 @@ ags_ffplayer_resize_audio_channels(AgsMachine *machine,
 				 AGS_RECALL_FACTORY_RECALL |
 				 AGS_RECALL_FACTORY_ADD),
 				0);
-    }else{    
+    }else{
       /* ags-buffer */
       ags_recall_factory_create(audio,
 				NULL, NULL,
@@ -975,8 +979,30 @@ ags_ffplayer_resize_pads(AgsMachine *machine, GType channel_type,
 				    pads_old);
 
       while(channel != NULL){
+	AgsRecycling *recycling;
+	AgsAudioSignal *audio_signal;
+
+	GObject *output_soundcard;
+
 	ags_channel_set_ability_flags(channel, (AGS_SOUND_ABILITY_NOTATION));
 
+	g_object_get(audio,
+		     "output-soundcard", &output_soundcard,
+		     NULL);
+
+	/* get recycling */
+	g_object_get(channel,
+		     "first-recycling", &recycling,
+		     NULL);
+
+	/* instantiate template audio signal */
+	audio_signal = ags_audio_signal_new(output_soundcard,
+					    (GObject *) recycling,
+					    NULL);
+	audio_signal->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;
+	ags_recycling_add_audio_signal(recycling,
+				       audio_signal);
+	
 	/* iterate */
 	g_object_get(channel,
 		     "next", &channel,
@@ -1080,12 +1106,26 @@ ags_ffplayer_map_recall(AgsMachine *machine)
 		 "delay-audio-run", play_delay_audio_run,
 		 NULL);
     ags_seekable_seek(AGS_SEEKABLE(play_count_beats_audio_run),
-		      window->navigation->position_tact->adjustment->value,
-		      TRUE);
+		      (gint64) 16 * window->navigation->position_tact->adjustment->value,
+		      AGS_SEEK_SET);
 
+    /* notation loop */
     g_value_init(&value, G_TYPE_BOOLEAN);
     g_value_set_boolean(&value, gtk_toggle_button_get_active((GtkToggleButton *) window->navigation->loop));
     ags_port_safe_write(AGS_COUNT_BEATS_AUDIO(AGS_RECALL_AUDIO_RUN(play_count_beats_audio_run)->recall_audio)->notation_loop,
+			&value);
+
+    g_value_unset(&value);
+    g_value_init(&value, G_TYPE_UINT64);
+
+    g_value_set_uint64(&value, 16 * window->navigation->loop_left_tact->adjustment->value);
+    ags_port_safe_write(AGS_COUNT_BEATS_AUDIO(AGS_RECALL_AUDIO_RUN(play_count_beats_audio_run)->recall_audio)->notation_loop_start,
+			&value);
+
+    g_value_reset(&value);
+
+    g_value_set_uint64(&value, 16 * window->navigation->loop_right_tact->adjustment->value);
+    ags_port_safe_write(AGS_COUNT_BEATS_AUDIO(AGS_RECALL_AUDIO_RUN(play_count_beats_audio_run)->recall_audio)->notation_loop_end,
 			&value);
   }else{
     play_count_beats_audio_run = NULL;
@@ -1256,7 +1296,8 @@ ags_ffplayer_input_map_recall(AgsFFPlayer *ffplayer, guint input_pad_start)
 			    0);
 
   /* ags-stream */
-  if(!ags_recall_global_get_rt_safe()){
+  if(!(ags_recall_global_get_rt_safe() ||
+       ags_recall_global_get_performance_mode())){
     ags_recall_factory_create(audio,
 			      NULL, NULL,
 			      "ags-stream",

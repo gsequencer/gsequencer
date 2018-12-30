@@ -238,7 +238,12 @@ ags_ladspa_bridge_init(AgsLadspaBridge *ladspa_bridge)
 
   audio = AGS_MACHINE(ladspa_bridge)->audio;
   ags_audio_set_flags(audio, (AGS_AUDIO_SYNC));
-  
+  g_object_set(audio,
+	       "min-audio-channels", 1,
+	       "min-output-pads", 1,
+	       "min-input-pads", 1,
+	       NULL);
+
   ladspa_bridge->flags = 0;
 
   ladspa_bridge->name = NULL;

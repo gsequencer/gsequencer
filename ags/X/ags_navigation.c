@@ -553,9 +553,8 @@ ags_navigation_real_change_position(AgsNavigation *navigation,
   gdouble delay;
   gdouble delay_factor;
   double tact_factor;
-  guint steps;
+  gint64 new_offset;
   guint note_offset;
-  gboolean move_forward;
 
   window = AGS_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(navigation)));
 
@@ -570,17 +569,11 @@ ags_navigation_real_change_position(AgsNavigation *navigation,
   delay = ags_soundcard_get_delay(AGS_SOUNDCARD(window->soundcard));
   delay_factor = ags_soundcard_get_delay_factor(AGS_SOUNDCARD(window->soundcard));
   
-  if(note_offset < 16 * tact_counter){
-    steps = (guint) (16 * tact_counter - note_offset);
-    move_forward = TRUE;
-  }else{
-    steps = (guint) (note_offset - 16 * tact_counter);
-    move_forward = FALSE;
-  }
+  new_offset = (16 * tact_counter);
   
   seek_soundcard = ags_seek_soundcard_new(window->soundcard,
-					  steps,
-					  move_forward);
+					  new_offset,
+					  SEEK_SET);
   
   ags_gui_thread_schedule_task((AgsGuiThread *) gui_thread,
 			       (GObject *) seek_soundcard);

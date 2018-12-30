@@ -161,6 +161,12 @@ ags_mixer_init(AgsMixer *mixer)
 			 G_CALLBACK(ags_mixer_parent_set_callback), (gpointer) mixer);
 
   ags_audio_set_flags(AGS_MACHINE(mixer)->audio, (AGS_AUDIO_ASYNC));
+  g_object_set(AGS_MACHINE(mixer)->audio,
+	       "min-audio-channels", 1,
+	       "max-output-pads", 1,
+	       "min-output-pads", 1,
+	       "min-input-pads", 1,
+	       NULL);
 
   AGS_MACHINE(mixer)->input_pad_type = AGS_TYPE_MIXER_INPUT_PAD;
   AGS_MACHINE(mixer)->input_line_type = AGS_TYPE_MIXER_INPUT_LINE;

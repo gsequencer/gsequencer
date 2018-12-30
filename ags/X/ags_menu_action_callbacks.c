@@ -933,6 +933,7 @@ ags_menu_action_add_lv2_bridge_callback(GtkWidget *menu_item, gpointer data)
 								   AGS_SOUND_BEHAVIOUR_REVERSE_MAPPING));
     
     g_object_set(AGS_MACHINE(lv2_bridge)->audio,
+		 "max-input-pads", 128,
 		 "audio-start-mapping", 0,
 		 "audio-end-mapping", 128,
 		 "midi-start-mapping", 0,

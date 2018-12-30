@@ -185,6 +185,13 @@ ags_synth_init(AgsSynth *synth)
 			      AGS_AUDIO_OUTPUT_HAS_RECYCLING |
 			      AGS_AUDIO_INPUT_HAS_RECYCLING |
 			      AGS_AUDIO_INPUT_HAS_SYNTH));
+  g_object_set(audio,
+	       "min-audio-channels", 1,
+	       "max-audio-channels", 1,
+	       "min-output-pads", 1,
+	       "max-output-pads", 128,
+	       "min-input-pads", 1,
+	       NULL);
 
   AGS_MACHINE(synth)->input_pad_type = AGS_TYPE_SYNTH_INPUT_PAD;
   AGS_MACHINE(synth)->input_line_type = AGS_TYPE_SYNTH_INPUT_LINE;

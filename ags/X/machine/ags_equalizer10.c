@@ -157,6 +157,13 @@ ags_equalizer10_init(AgsEqualizer10 *equalizer10)
   g_signal_connect_after((GObject *) equalizer10, "parent_set",
 			 G_CALLBACK(ags_equalizer10_parent_set_callback), (gpointer) equalizer10);
 
+  ags_audio_set_flags(AGS_MACHINE(equalizer10)->audio, (AGS_AUDIO_SYNC));
+  g_object_set(AGS_MACHINE(equalizer10)->audio,
+	       "min-audio-channels", 1,
+	       "min-output-pads", 1,
+	       "min-input-pads", 1,
+	       NULL);
+
   equalizer10->name = NULL;
   equalizer10->xml_type = "ags-equalizer10";
 

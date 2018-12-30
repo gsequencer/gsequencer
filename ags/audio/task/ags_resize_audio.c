@@ -338,6 +338,12 @@ ags_resize_audio_launch(AgsTask *task)
 	       "output-pads", &output_pads_old,
 	       "input-pads", &input_pads_old,
 	       NULL);
+
+  /* resize audio - audio channels */
+  if(audio_channels_old != resize_audio->audio_channels){
+    ags_audio_set_audio_channels(audio,
+				 resize_audio->audio_channels, audio_channels_old);
+  }
   
   /* resize audio - output */
   if(output_pads_old != resize_audio->output_pads){    
@@ -351,12 +357,6 @@ ags_resize_audio_launch(AgsTask *task)
     ags_audio_set_pads(audio,
 		       AGS_TYPE_INPUT,
 		       resize_audio->input_pads, input_pads_old);
-  }
-
-  /* resize audio - audio channels */
-  if(audio_channels_old != resize_audio->audio_channels){
-    ags_audio_set_audio_channels(audio,
-				 resize_audio->audio_channels, audio_channels_old);
   }
 }
   
