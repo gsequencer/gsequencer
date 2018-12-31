@@ -292,7 +292,7 @@ guint ags_soundcard_get_delay_counter(AgsSoundcard *soundcard);
 
 void ags_soundcard_set_start_note_offset(AgsSoundcard *soundcard,
 					 guint start_note_offset);
-guint ags_soundcard_getstart__note_offset(AgsSoundcard *soundcard);
+guint ags_soundcard_get_start_note_offset(AgsSoundcard *soundcard);
 
 void ags_soundcard_set_note_offset(AgsSoundcard *soundcard,
 				   guint note_offset);

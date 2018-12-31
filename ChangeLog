@@ -1,3 +1,8 @@
+ags (2.1.25)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed typo in prototype declaration
+
 ags (2.1.24)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
