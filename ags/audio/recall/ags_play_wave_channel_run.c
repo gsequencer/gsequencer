@@ -35,9 +35,22 @@
 #include <ags/i18n.h>
 
 void ags_play_wave_channel_run_class_init(AgsPlayWaveChannelRunClass *play_wave_channel_run);
+void ags_play_wave_channel_run_seekable_interface_init(AgsSeekableInterface *seekable);
 void ags_play_wave_channel_run_init(AgsPlayWaveChannelRun *play_wave_channel_run);
+void ags_play_wave_channel_run_set_property(GObject *gobject,
+					    guint prop_id,
+					    const GValue *value,
+					    GParamSpec *param_spec);
+void ags_play_wave_channel_run_get_property(GObject *gobject,
+					    guint prop_id,
+					    GValue *value,
+					    GParamSpec *param_spec);
 void ags_play_wave_channel_run_dispose(GObject *gobject);
 void ags_play_wave_channel_run_finalize(GObject *gobject);
+
+void ags_play_wave_channel_run_seek(AgsSeekable *seekable,
+				    gint64 offset,
+				    guint whence);
 
 void ags_play_wave_channel_run_run_inter(AgsRecall *recall);
 
@@ -50,6 +63,11 @@ void ags_play_wave_channel_run_run_inter(AgsRecall *recall);
  *
  * The #AgsPlayWaveChannelRun class play wave.
  */
+
+enum{
+  PROP_0,
+  PROP_X_OFFSET,
+};
 
 static gpointer ags_play_wave_channel_run_parent_class = NULL;
 
@@ -73,10 +91,20 @@ ags_play_wave_channel_run_get_type()
       (GInstanceInitFunc) ags_play_wave_channel_run_init,
     };
 
+    static const GInterfaceInfo ags_seekable_interface_info = {
+      (GInterfaceInitFunc) ags_play_wave_channel_run_seekable_interface_init,
+      NULL, /* interface_finalize */
+      NULL, /* interface_data */
+    };
+
     ags_type_play_wave_channel_run = g_type_register_static(AGS_TYPE_RECALL_CHANNEL_RUN,
 							    "AgsPlayWaveChannelRun",
 							    &ags_play_wave_channel_run_info,
 							    0);
+
+    g_type_add_interface_static(ags_type_play_wave_channel_run,
+				AGS_TYPE_SEEKABLE,
+				&ags_seekable_interface_info);
 
     g_once_init_leave(&g_define_type_id__volatile, ags_type_play_wave_channel_run);
   }
@@ -90,18 +118,48 @@ ags_play_wave_channel_run_class_init(AgsPlayWaveChannelRunClass *play_wave_chann
   GObjectClass *gobject;
   AgsRecallClass *recall;
 
+  GParamSpec *param_spec;
+
   ags_play_wave_channel_run_parent_class = g_type_class_peek_parent(play_wave_channel_run);
 
   /* GObjectClass */
   gobject = (GObjectClass *) play_wave_channel_run;
 
+  gobject->set_property = ags_play_wave_channel_run_set_property;
+  gobject->get_property = ags_play_wave_channel_run_get_property;
+
   gobject->dispose = ags_play_wave_channel_run_dispose;
   gobject->finalize = ags_play_wave_channel_run_finalize;
+
+  /* properties */
+  /**
+   * AgsPlayWaveChannelRun:x-offset:
+   *
+   * The x offset.
+   * 
+   * Since: 2.1.24
+   */
+  param_spec = g_param_spec_uint64("x-offset",
+				   i18n_pspec("x offset"),
+				   i18n_pspec("The x offset in the wave"),
+				   0,
+				   G_MAXUINT64,
+				   0,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_X_OFFSET,
+				  param_spec);
 
   /* AgsRecallClass */
   recall = (AgsRecallClass *) play_wave_channel_run;
 
   recall->run_inter = ags_play_wave_channel_run_run_inter;
+}
+
+void
+ags_play_wave_channel_run_seekable_interface_init(AgsSeekableInterface *seekable)
+{
+  seekable->seek = ags_play_wave_channel_run_seek;
 }
 
 void
@@ -129,6 +187,80 @@ ags_play_wave_channel_run_init(AgsPlayWaveChannelRun *play_wave_channel_run)
 }
 
 void
+ags_play_wave_channel_run_set_property(GObject *gobject,
+				       guint prop_id,
+				       const GValue *value,
+				       GParamSpec *param_spec)
+{
+  AgsPlayWaveChannelRun *play_wave_channel_run;
+
+  pthread_mutex_t *recall_mutex;
+
+  play_wave_channel_run = AGS_PLAY_WAVE_CHANNEL_RUN(gobject);
+
+  /* get recall mutex */
+  pthread_mutex_lock(ags_recall_get_class_mutex());
+  
+  recall_mutex = AGS_RECALL(gobject)->obj_mutex;
+
+  pthread_mutex_unlock(ags_recall_get_class_mutex());
+
+  switch(prop_id){
+  case PROP_X_OFFSET:
+    {
+      guint64 x_offset;
+
+      x_offset = g_value_get_uint64(value);
+
+      pthread_mutex_lock(recall_mutex);
+
+      play_wave_channel_run->x_offset = x_offset;
+
+      pthread_mutex_unlock(recall_mutex);
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  };
+}
+
+void
+ags_play_wave_channel_run_get_property(GObject *gobject,
+				       guint prop_id,
+				       GValue *value,
+				       GParamSpec *param_spec)
+{
+  AgsPlayWaveChannelRun *play_wave_channel_run;
+  
+  pthread_mutex_t *recall_mutex;
+
+  play_wave_channel_run = AGS_PLAY_WAVE_CHANNEL_RUN(gobject);
+
+  /* get recall mutex */
+  pthread_mutex_lock(ags_recall_get_class_mutex());
+  
+  recall_mutex = AGS_RECALL(gobject)->obj_mutex;
+
+  pthread_mutex_unlock(ags_recall_get_class_mutex());
+
+  switch(prop_id){
+  case PROP_X_OFFSET:
+    {
+      pthread_mutex_lock(recall_mutex);
+
+      g_value_set_uint64(value, play_wave_channel_run->x_offset);
+
+      pthread_mutex_unlock(recall_mutex);
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  };
+}
+
+void
 ags_play_wave_channel_run_dispose(GObject *gobject)
 {
   AgsPlayWaveChannelRun *play_wave_channel_run;
@@ -153,6 +285,63 @@ ags_play_wave_channel_run_finalize(GObject *gobject)
 
   /* call parent */
   G_OBJECT_CLASS(ags_play_wave_channel_run_parent_class)->finalize(gobject);
+}
+
+void
+ags_play_wave_channel_run_seek(AgsSeekable *seekable,
+			       gint64 offset,
+			       guint whence)
+{
+  AgsPlayWaveChannelRun *play_wave_channel_run;
+
+  GObject *soundcard;
+
+  gdouble absolute_delay;
+  guint buffer_size;
+  guint64 x_offset;
+      
+  play_wave_channel_run = AGS_PLAY_WAVE_CHANNEL_RUN(seekable);
+
+  g_object_get(play_wave_channel_run,
+	       "output-soundcard", &soundcard,
+	       "buffer-size", &buffer_size,
+	       NULL);
+
+  absolute_delay = ags_soundcard_get_absolute_delay(AGS_SOUNDCARD(soundcard));
+  
+  switch(whence){
+  case AGS_SEEK_CUR:
+    {
+      g_object_get(play_wave_channel_run,
+		   "x-offset", &x_offset,
+		   NULL);
+
+      if(x_offset + (offset * absolute_delay * buffer_size) < 0){
+	x_offset = 0;
+      }else{
+	x_offset = x_offset + (offset * absolute_delay * buffer_size);
+      }
+
+      g_object_set(play_wave_channel_run,
+		   "x-offset", x_offset,
+		   NULL);
+    }
+    break;
+  case AGS_SEEK_END:
+    {
+      g_warning("seek from end not implemented");
+    }
+    break;
+  case AGS_SEEK_SET:
+    {
+      x_offset = offset * absolute_delay * buffer_size;
+      
+      g_object_set(play_wave_channel_run,
+		   "x-offset", x_offset,
+		   NULL);
+    }
+    break;
+  }
 }
 
 void
@@ -200,7 +389,7 @@ ags_play_wave_channel_run_run_inter(AgsRecall *recall)
     AgsRecycling *first_recycling;
 
     g_object_get(channel,
- 		 "first-recycling", &first_recycling,
+		 "first-recycling", &first_recycling,
 		 NULL);
 	  
     play_wave_channel_run->audio_signal = ags_audio_signal_new(output_soundcard,
@@ -253,7 +442,9 @@ ags_play_wave_channel_run_run_inter(AgsRecall *recall)
     return;
   }
 
-  x_offset = play_wave_channel_run->x_offset;
+  g_object_get(play_wave_channel_run,
+	       "x-offset", &x_offset,
+	       NULL);
   
   /* get some fields */
   g_object_get(play_wave_audio_run,
@@ -425,7 +616,9 @@ ags_play_wave_channel_run_run_inter(AgsRecall *recall)
   }
   
   /* new x offset */
-  play_wave_channel_run->x_offset = x_offset;
+  g_object_set(play_wave_channel_run,
+	       "x-offset", x_offset,
+	       NULL);
 
   g_object_get(play_wave_channel,
 	       "x-offset", &port,

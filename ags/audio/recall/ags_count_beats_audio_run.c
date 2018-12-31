@@ -297,6 +297,7 @@ ags_count_beats_audio_run_class_init(AgsCountBeatsAudioRunClass *count_beats_aud
 {
   GObjectClass *gobject;
   AgsRecallClass *recall;
+
   GParamSpec *param_spec;
 
   ags_count_beats_audio_run_parent_class = g_type_class_peek_parent(count_beats_audio_run);

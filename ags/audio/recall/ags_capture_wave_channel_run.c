@@ -33,9 +33,22 @@
 #include <ags/i18n.h>
 
 void ags_capture_wave_channel_run_class_init(AgsCaptureWaveChannelRunClass *capture_wave_channel_run);
+void ags_capture_wave_channel_run_seekable_interface_init(AgsSeekableInterface *seekable);
 void ags_capture_wave_channel_run_init(AgsCaptureWaveChannelRun *capture_wave_channel_run);
+void ags_capture_wave_channel_run_set_property(GObject *gobject,
+					       guint prop_id,
+					       const GValue *value,
+					       GParamSpec *param_spec);
+void ags_capture_wave_channel_run_get_property(GObject *gobject,
+					       guint prop_id,
+					       GValue *value,
+					       GParamSpec *param_spec);
 void ags_capture_wave_channel_run_dispose(GObject *gobject);
 void ags_capture_wave_channel_run_finalize(GObject *gobject);
+
+void ags_capture_wave_channel_run_seek(AgsSeekable *seekable,
+				       gint64 offset,
+				       guint whence);
 
 void ags_capture_wave_channel_run_run_pre(AgsRecall *recall);
 
@@ -48,6 +61,11 @@ void ags_capture_wave_channel_run_run_pre(AgsRecall *recall);
  *
  * The #AgsCaptureWaveChannelRun class capture wave.
  */
+
+enum{
+  PROP_0,
+  PROP_X_OFFSET,
+};
 
 static gpointer ags_capture_wave_channel_run_parent_class = NULL;
 
@@ -88,13 +106,37 @@ ags_capture_wave_channel_run_class_init(AgsCaptureWaveChannelRunClass *capture_w
   GObjectClass *gobject;
   AgsRecallClass *recall;
 
+  GParamSpec *param_spec;
+
   ags_capture_wave_channel_run_parent_class = g_type_class_peek_parent(capture_wave_channel_run);
 
   /* GObjectClass */
   gobject = (GObjectClass *) capture_wave_channel_run;
 
+  gobject->set_property = ags_capture_wave_channel_run_set_property;
+  gobject->get_property = ags_capture_wave_channel_run_get_property;
+
   gobject->dispose = ags_capture_wave_channel_run_dispose;
   gobject->finalize = ags_capture_wave_channel_run_finalize;
+
+  /* properties */
+  /**
+   * AgsCaptureWaveChannelRun:x-offset:
+   *
+   * The x offset.
+   * 
+   * Since: 2.1.24
+   */
+  param_spec = g_param_spec_uint64("x-offset",
+				   i18n_pspec("x offset"),
+				   i18n_pspec("The x offset in the wave"),
+				   0,
+				   G_MAXUINT64,
+				   0,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_X_OFFSET,
+				  param_spec);
 
   /* AgsRecallClass */
   recall = (AgsRecallClass *) capture_wave_channel_run;
@@ -127,6 +169,80 @@ ags_capture_wave_channel_run_init(AgsCaptureWaveChannelRun *capture_wave_channel
 }
 
 void
+ags_capture_wave_channel_run_set_property(GObject *gobject,
+					  guint prop_id,
+					  const GValue *value,
+					  GParamSpec *param_spec)
+{
+  AgsCaptureWaveChannelRun *capture_wave_channel_run;
+
+  pthread_mutex_t *recall_mutex;
+
+  capture_wave_channel_run = AGS_CAPTURE_WAVE_CHANNEL_RUN(gobject);
+
+  /* get recall mutex */
+  pthread_mutex_lock(ags_recall_get_class_mutex());
+  
+  recall_mutex = AGS_RECALL(gobject)->obj_mutex;
+
+  pthread_mutex_unlock(ags_recall_get_class_mutex());
+
+  switch(prop_id){
+  case PROP_X_OFFSET:
+    {
+      guint64 x_offset;
+
+      x_offset = g_value_get_uint64(value);
+
+      pthread_mutex_lock(recall_mutex);
+
+      capture_wave_channel_run->x_offset = x_offset;
+
+      pthread_mutex_unlock(recall_mutex);
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  };
+}
+
+void
+ags_capture_wave_channel_run_get_property(GObject *gobject,
+					  guint prop_id,
+					  GValue *value,
+					  GParamSpec *param_spec)
+{
+  AgsCaptureWaveChannelRun *capture_wave_channel_run;
+  
+  pthread_mutex_t *recall_mutex;
+
+  capture_wave_channel_run = AGS_CAPTURE_WAVE_CHANNEL_RUN(gobject);
+
+  /* get recall mutex */
+  pthread_mutex_lock(ags_recall_get_class_mutex());
+  
+  recall_mutex = AGS_RECALL(gobject)->obj_mutex;
+
+  pthread_mutex_unlock(ags_recall_get_class_mutex());
+
+  switch(prop_id){
+  case PROP_X_OFFSET:
+    {
+      pthread_mutex_lock(recall_mutex);
+
+      g_value_set_uint64(value, capture_wave_channel_run->x_offset);
+
+      pthread_mutex_unlock(recall_mutex);
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  };
+}
+
+void
 ags_capture_wave_channel_run_dispose(GObject *gobject)
 {
   AgsCaptureWaveChannelRun *capture_wave_channel_run;
@@ -151,6 +267,63 @@ ags_capture_wave_channel_run_finalize(GObject *gobject)
 
   /* call parent */
   G_OBJECT_CLASS(ags_capture_wave_channel_run_parent_class)->finalize(gobject);
+}
+
+void
+ags_capture_wave_channel_run_seek(AgsSeekable *seekable,
+				  gint64 offset,
+				  guint whence)
+{
+  AgsCaptureWaveChannelRun *capture_wave_channel_run;
+
+  GObject *soundcard;
+
+  gdouble absolute_delay;
+  guint buffer_size;
+  guint64 x_offset;
+      
+  capture_wave_channel_run = AGS_CAPTURE_WAVE_CHANNEL_RUN(seekable);
+
+  g_object_get(capture_wave_channel_run,
+	       "output-soundcard", &soundcard,
+	       "buffer-size", &buffer_size,
+	       NULL);
+
+  absolute_delay = ags_soundcard_get_absolute_delay(AGS_SOUNDCARD(soundcard));
+  
+  switch(whence){
+  case AGS_SEEK_CUR:
+    {
+      g_object_get(capture_wave_channel_run,
+		   "x-offset", &x_offset,
+		   NULL);
+
+      if(x_offset + (offset * absolute_delay * buffer_size) < 0){
+	x_offset = 0;
+      }else{
+	x_offset = x_offset + (offset * absolute_delay * buffer_size);
+      }
+
+      g_object_set(capture_wave_channel_run,
+		   "x-offset", x_offset,
+		   NULL);
+    }
+    break;
+  case AGS_SEEK_END:
+    {
+      g_warning("seek from end not implemented");
+    }
+    break;
+  case AGS_SEEK_SET:
+    {
+      x_offset = offset * absolute_delay * buffer_size;
+      
+      g_object_set(capture_wave_channel_run,
+		   "x-offset", x_offset,
+		   NULL);
+    }
+    break;
+  }
 }
 
 void
