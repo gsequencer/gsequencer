@@ -548,6 +548,8 @@ ags_navigation_real_change_position(AgsNavigation *navigation,
   AgsThread *gui_thread;
 
   AgsApplicationContext *application_context;
+
+  GList *start_list, *list;
   
   gchar *timestr;
   gdouble delay;
@@ -577,6 +579,32 @@ ags_navigation_real_change_position(AgsNavigation *navigation,
   
   ags_gui_thread_schedule_task((AgsGuiThread *) gui_thread,
 			       (GObject *) seek_soundcard);
+
+  /* soundcard - start offset */
+  list = 
+    start_list = ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(application_context));
+
+  while(list != NULL){
+    ags_soundcard_set_start_note_offset(AGS_SOUNDCARD(list->data),
+					new_offset);
+
+    list = list->next;
+  }
+
+  g_list_free(start_list);
+
+  /* sequencer - start offset */
+  list = 
+    start_list = ags_sound_provider_get_sequencer(AGS_SOUND_PROVIDER(application_context));
+
+  while(list != NULL){
+    ags_sequencer_set_start_note_offset(AGS_SEQUENCER(list->data),
+					new_offset);
+
+    list = list->next;
+  }
+
+  g_list_free(start_list);
 
   //TODO:JK: implement me
   
