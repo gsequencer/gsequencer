@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: gsequencer 2.1.23\n"
+"Project-Id-Version: gsequencer 2.1.24\n"
 "Report-Msgid-Bugs-To: jkraehemann@gmail.com\n"
-"POT-Creation-Date: 2018-12-30 13:01+0100\n"
+"POT-Creation-Date: 2018-12-31 14:26+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -56,8 +56,8 @@ msgstr ""
 msgid "input"
 msgstr ""
 
-#: ags/X/ags_bulk_member.c:543 ags/X/machine/ags_dssi_bridge.c:398
-#: ags/X/machine/ags_live_dssi_bridge.c:401
+#: ags/X/ags_bulk_member.c:543 ags/X/machine/ags_dssi_bridge.c:402
+#: ags/X/machine/ags_live_dssi_bridge.c:405
 msgid "Plugin file not present"
 msgstr ""
 
@@ -429,7 +429,7 @@ msgstr ""
 msgid "bpm"
 msgstr ""
 
-#: ags/X/ags_navigation.c:251 ags/X/machine/ags_drum.c:300
+#: ags/X/ags_navigation.c:251 ags/X/machine/ags_drum.c:304
 msgid "loop"
 msgstr ""
 
@@ -727,13 +727,13 @@ msgstr ""
 msgid "info"
 msgstr ""
 
-#: ags/X/editor/ags_envelope_dialog.c:453 ags/X/machine/ags_drum.c:294
+#: ags/X/editor/ags_envelope_dialog.c:453 ags/X/machine/ags_drum.c:298
 msgid "pattern"
 msgstr ""
 
 #: ags/X/editor/ags_envelope_editor.c:170
-#: ags/X/editor/ags_pattern_envelope.c:239 ags/X/machine/ags_ffplayer.c:280
-#: ags/X/machine/ags_live_lv2_bridge.c:1542 ags/X/machine/ags_lv2_bridge.c:1830
+#: ags/X/editor/ags_pattern_envelope.c:239 ags/X/machine/ags_ffplayer.c:284
+#: ags/X/machine/ags_live_lv2_bridge.c:1560 ags/X/machine/ags_lv2_bridge.c:1849
 msgid "preset"
 msgstr ""
 
@@ -996,7 +996,7 @@ msgid "instrument: "
 msgstr ""
 
 #: ags/X/import/ags_track_collection_mapper.c:346
-#: ags/X/machine/ags_ffplayer.c:295
+#: ags/X/machine/ags_ffplayer.c:299
 msgid "instrument"
 msgstr ""
 
@@ -1020,19 +1020,19 @@ msgstr ""
 msgid "grab"
 msgstr ""
 
-#: ags/X/machine/ags_drum.c:278
+#: ags/X/machine/ags_drum.c:282
 msgid "kit"
 msgstr ""
 
-#: ags/X/machine/ags_drum.c:285
+#: ags/X/machine/ags_drum.c:289
 msgid "default"
 msgstr ""
 
-#: ags/X/machine/ags_drum.c:306
+#: ags/X/machine/ags_drum.c:310
 msgid "run"
 msgstr ""
 
-#: ags/X/machine/ags_drum.c:359 ags/X/machine/ags_oscillator.c:213
+#: ags/X/machine/ags_drum.c:363 ags/X/machine/ags_oscillator.c:213
 msgid "length"
 msgstr ""
 
@@ -1044,56 +1044,56 @@ msgstr ""
 msgid "channel: "
 msgstr ""
 
-#: ags/X/machine/ags_dssi_bridge.c:326 ags/X/machine/ags_live_dssi_bridge.c:329
-#: ags/X/machine/ags_live_lv2_bridge.c:1481 ags/X/machine/ags_lv2_bridge.c:1769
+#: ags/X/machine/ags_dssi_bridge.c:330 ags/X/machine/ags_live_dssi_bridge.c:333
+#: ags/X/machine/ags_live_lv2_bridge.c:1499 ags/X/machine/ags_lv2_bridge.c:1788
 msgid "program"
 msgstr ""
 
-#: ags/X/machine/ags_equalizer10.c:195
+#: ags/X/machine/ags_equalizer10.c:202
 msgid "28Hz"
 msgstr ""
 
-#: ags/X/machine/ags_equalizer10.c:221
+#: ags/X/machine/ags_equalizer10.c:228
 msgid "56Hz"
 msgstr ""
 
-#: ags/X/machine/ags_equalizer10.c:247
+#: ags/X/machine/ags_equalizer10.c:254
 msgid "112Hz"
 msgstr ""
 
-#: ags/X/machine/ags_equalizer10.c:273
+#: ags/X/machine/ags_equalizer10.c:280
 msgid "224Hz"
 msgstr ""
 
-#: ags/X/machine/ags_equalizer10.c:299
+#: ags/X/machine/ags_equalizer10.c:306
 msgid "448Hz"
 msgstr ""
 
-#: ags/X/machine/ags_equalizer10.c:325
+#: ags/X/machine/ags_equalizer10.c:332
 msgid "896Hz"
 msgstr ""
 
-#: ags/X/machine/ags_equalizer10.c:351
+#: ags/X/machine/ags_equalizer10.c:358
 msgid "1792Hz"
 msgstr ""
 
-#: ags/X/machine/ags_equalizer10.c:377
+#: ags/X/machine/ags_equalizer10.c:384
 msgid "3584Hz"
 msgstr ""
 
-#: ags/X/machine/ags_equalizer10.c:403
+#: ags/X/machine/ags_equalizer10.c:410
 msgid "7168Hz"
 msgstr ""
 
-#: ags/X/machine/ags_equalizer10.c:429
+#: ags/X/machine/ags_equalizer10.c:436
 msgid "14336Hz"
 msgstr ""
 
-#: ags/X/machine/ags_equalizer10.c:455
+#: ags/X/machine/ags_equalizer10.c:462
 msgid "pressure"
 msgstr ""
 
-#: ags/X/machine/ags_live_lv2_bridge.c:465 ags/X/machine/ags_lv2_bridge.c:441
+#: ags/X/machine/ags_live_lv2_bridge.c:469 ags/X/machine/ags_lv2_bridge.c:446
 msgid "show GUI"
 msgstr ""
 
@@ -1125,23 +1125,23 @@ msgstr ""
 msgid "sync"
 msgstr ""
 
-#: ags/X/machine/ags_syncsynth.c:275 ags/X/machine/ags_synth.c:220
+#: ags/X/machine/ags_syncsynth.c:280 ags/X/machine/ags_synth.c:227
 msgid "auto update"
 msgstr ""
 
-#: ags/X/machine/ags_syncsynth.c:278 ags/X/machine/ags_synth.c:223
+#: ags/X/machine/ags_syncsynth.c:283 ags/X/machine/ags_synth.c:230
 msgid "update"
 msgstr ""
 
-#: ags/X/machine/ags_syncsynth.c:287 ags/X/machine/ags_synth.c:232
+#: ags/X/machine/ags_syncsynth.c:292 ags/X/machine/ags_synth.c:239
 msgid "lower"
 msgstr ""
 
-#: ags/X/machine/ags_syncsynth.c:310 ags/X/machine/ags_synth.c:255
+#: ags/X/machine/ags_syncsynth.c:315 ags/X/machine/ags_synth.c:262
 msgid "loop start"
 msgstr ""
 
-#: ags/X/machine/ags_syncsynth.c:330 ags/X/machine/ags_synth.c:275
+#: ags/X/machine/ags_syncsynth.c:335 ags/X/machine/ags_synth.c:282
 msgid "loop end"
 msgstr ""
 

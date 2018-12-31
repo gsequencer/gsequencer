@@ -1,3 +1,5 @@
+* TODO:JK: improved AgsRecallContainer detection of ags_recall_factory.c
+* TODO:JK: fixed ags-buffer creation in ags_recall_factory.c
 * TODO:JK: implemented AgsUiOscRenewController
 * TODO:JK: extended user's handbook to cover OSC server preferences
 * TODO:JK: added OSC server handbook
