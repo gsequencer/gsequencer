@@ -137,7 +137,7 @@ ags_seek_soundcard_class_init(AgsSeekSoundcardClass *seek_soundcard)
 				 i18n_pspec("offset"),
 				 i18n_pspec("The amount of offset"),
 				 0,
-				 G_MAXUINT,
+				 G_MAXINT64,
 				 0,
 				 G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -151,11 +151,13 @@ ags_seek_soundcard_class_init(AgsSeekSoundcardClass *seek_soundcard)
    * 
    * Since: 2.0.0
    */
-  param_spec = g_param_spec_boolean("whence",
-				    i18n_pspec("whence"),
-				    i18n_pspec("whence"),
-				    FALSE,
-				    G_PARAM_READABLE | G_PARAM_WRITABLE);
+  param_spec = g_param_spec_uint("whence",
+				 i18n_pspec("whence"),
+				 i18n_pspec("whence"),
+				 0,
+				 G_MAXUINT,
+				 AGS_SEEK_SET,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_WHENCE,
 				  param_spec);
@@ -171,7 +173,7 @@ ags_seek_soundcard_init(AgsSeekSoundcard *seek_soundcard)
 {
   seek_soundcard->soundcard = NULL;
   seek_soundcard->offset = 0;
-  seek_soundcard->whence = AGS_SEEK_CUR;
+  seek_soundcard->whence = AGS_SEEK_SET;
 }
 
 void
@@ -213,7 +215,7 @@ ags_seek_soundcard_set_property(GObject *gobject,
     break;
   case PROP_WHENCE:
     {
-      seek_soundcard->whence = g_value_get_boolean(value);
+      seek_soundcard->whence = g_value_get_uint(value);
     }
     break;
   default:
@@ -245,7 +247,7 @@ ags_seek_soundcard_get_property(GObject *gobject,
     break;
   case PROP_WHENCE:
     {
-      g_value_set_boolean(value, seek_soundcard->whence);
+      g_value_set_uint(value, seek_soundcard->whence);
     }
     break;
   default:
