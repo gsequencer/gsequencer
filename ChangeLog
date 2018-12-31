@@ -1,6 +1,10 @@
 ags (2.1.24)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented ags_soundcard_set_start_note_offset()
+	* implemented ags_soundcard_get_start_note_offset()
+	* implemented ags_sequencer_set_start_note_offset()
+	* implemented ags_sequencer_get_start_note_offset()
 	* implemented AgsSeekable of ags-play-wave recall
 	* implemented AgsSeekable of ags-capture-wave recall
 	* improved apply min/max audio channels and pads to instruments

@@ -133,6 +133,10 @@ void* ags_midiin_get_buffer(AgsSequencer *sequencer,
 void* ags_midiin_get_next_buffer(AgsSequencer *sequencer,
 				 guint *buffer_length);
 
+void ags_midiin_set_start_note_offset(AgsSequencer *sequencer,
+				      guint start_note_offset);
+guint ags_midiin_get_start_note_offset(AgsSequencer *sequencer);
+
 void ags_midiin_set_note_offset(AgsSequencer *sequencer,
 				guint note_offset);
 guint ags_midiin_get_note_offset(AgsSequencer *sequencer);
@@ -389,6 +393,9 @@ ags_midiin_sequencer_interface_init(AgsSequencerInterface *sequencer)
   sequencer->get_buffer = ags_midiin_get_buffer;
   sequencer->get_next_buffer = ags_midiin_get_next_buffer;
 
+  sequencer->set_start_note_offset = ags_midiin_set_start_note_offset;
+  sequencer->get_start_note_offset = ags_midiin_get_start_note_offset;
+
   sequencer->set_note_offset = ags_midiin_set_note_offset;
   sequencer->get_note_offset = ags_midiin_get_note_offset;
 }
@@ -526,7 +533,9 @@ ags_midiin_init(AgsMidiin *midiin)
   midiin->latency = NSEC_PER_SEC / 4000.0;
   
   /* counters */
+  midiin->start_note_offset = 0;
   midiin->note_offset = 0;
+  midiin->note_offset_absolute = 0;
 
   midiin->tact_counter = 0.0;
   midiin->delay_counter = 0;
@@ -1799,8 +1808,9 @@ ags_midiin_oss_free(AgsSequencer *sequencer)
 
   g_atomic_int_or(&(midiin->sync_flags),
 		  AGS_MIDIIN_PASS_THROUGH);
-
-  midiin->note_offset = 0;
+  
+  midiin->note_offset = midiin->start_note_offset;
+  midiin->note_offset_absolute = midiin->start_note_offset;
   
   pthread_mutex_unlock(midiin_mutex);  
 }  
@@ -1837,8 +1847,6 @@ ags_midiin_alsa_init(AgsSequencer *sequencer,
 		    AGS_MIDIIN_START_RECORD |
 		    AGS_MIDIIN_RECORD |
 		    AGS_MIDIIN_NONBLOCKING);
-
-  midiin->note_offset = 0;
 
 #ifdef AGS_WITH_ALSA
   mode = SND_RAWMIDI_NONBLOCK;
@@ -1921,8 +1929,8 @@ ags_midiin_alsa_record(AgsSequencer *sequencer,
 
   if((AGS_MIDIIN_INITIALIZED & (midiin->flags)) == 0){
     pthread_mutex_unlock(midiin_mutex);
-    
-    return;
+     
+   return;
   }
 
   device_handle = midiin->in.alsa.handle;
@@ -2123,6 +2131,9 @@ ags_midiin_alsa_free(AgsSequencer *sequencer)
     midiin->buffer_size[0] = 0;
   }
 
+  midiin->note_offset = midiin->start_note_offset;
+  midiin->note_offset_absolute = midiin->start_note_offset;
+  
   pthread_mutex_unlock(midiin_mutex);  
 }
 
@@ -2394,6 +2405,59 @@ ags_midiin_get_next_buffer(AgsSequencer *sequencer,
   }
   
   return(buffer);
+}
+
+void
+ags_midiin_set_start_note_offset(AgsSequencer *sequencer,
+				 guint start_note_offset)
+{
+  AgsMidiin *midiin;
+
+  pthread_mutex_t *midiin_mutex;  
+
+  midiin = AGS_MIDIIN(sequencer);
+
+  /* get midiin mutex */
+  pthread_mutex_lock(ags_midiin_get_class_mutex());
+  
+  midiin_mutex = midiin->obj_mutex;
+  
+  pthread_mutex_unlock(ags_midiin_get_class_mutex());
+
+  /* set note offset */
+  pthread_mutex_lock(midiin_mutex);
+
+  midiin->start_note_offset = start_note_offset;
+
+  pthread_mutex_unlock(midiin_mutex);
+}
+
+guint
+ags_midiin_get_start_note_offset(AgsSequencer *sequencer)
+{
+  AgsMidiin *midiin;
+
+  guint start_note_offset;
+  
+  pthread_mutex_t *midiin_mutex;  
+
+  midiin = AGS_MIDIIN(sequencer);
+
+  /* get midiin mutex */
+  pthread_mutex_lock(ags_midiin_get_class_mutex());
+  
+  midiin_mutex = midiin->obj_mutex;
+  
+  pthread_mutex_unlock(ags_midiin_get_class_mutex());
+
+  /* set note offset */
+  pthread_mutex_lock(midiin_mutex);
+
+  start_note_offset = midiin->start_note_offset;
+
+  pthread_mutex_unlock(midiin_mutex);
+
+  return(start_note_offset);
 }
 
 void

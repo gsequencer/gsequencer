@@ -108,6 +108,10 @@ struct _AgsSequencerInterface
 			   gdouble delay_factor);
   gdouble (*get_delay_factor)(AgsSequencer *sequencer);
 
+  void (*set_start_note_offset)(AgsSequencer *sequencer,
+				guint start_note_offset);
+  guint (*get_start_note_offset)(AgsSequencer *sequencer);
+
   void (*set_note_offset)(AgsSequencer *sequencer,
 			  guint note_offset);
   guint (*get_note_offset)(AgsSequencer *sequencer);
@@ -163,6 +167,10 @@ gdouble ags_sequencer_get_bpm(AgsSequencer *sequencer);
 void ags_sequencer_set_delay_factor(AgsSequencer *sequencer,
 				    gdouble delay_factor);
 gdouble ags_sequencer_get_delay_factor(AgsSequencer *sequencer);
+
+void ags_sequencer_set_start_note_offset(AgsSequencer *sequencer,
+					 guint start_note_offset);
+guint ags_sequencer_get_start_note_offset(AgsSequencer *sequencer);
 
 void ags_sequencer_set_note_offset(AgsSequencer *sequencer,
 				   guint note_offset);

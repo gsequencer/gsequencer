@@ -919,6 +919,50 @@ ags_soundcard_get_delay_counter(AgsSoundcard *soundcard)
 }
 
 /**
+ * ags_soundcard_set_start_note_offset:
+ * @soundcard: the #AgsSoundcard
+ * @start_note_offset: the start note offset to set
+ *
+ * Set start playback note offset. 
+ *
+ * Since: 2.1.24
+ */
+void
+ags_soundcard_set_start_note_offset(AgsSoundcard *soundcard,
+				    guint start_note_offset)
+{
+  AgsSoundcardInterface *soundcard_interface;
+
+  g_return_if_fail(AGS_IS_SOUNDCARD(soundcard));
+  soundcard_interface = AGS_SOUNDCARD_GET_INTERFACE(soundcard);
+  g_return_if_fail(soundcard_interface->set_start_note_offset);
+  soundcard_interface->set_start_note_offset(soundcard,
+					     start_note_offset);
+}
+
+/**
+ * ags_soundcard_get_start_note_offset:
+ * @soundcard: the #AgsSoundcard
+ *
+ * Get start playback note offset. 
+ *
+ * Returns: the start note offset
+ *
+ * Since: 2.1.24
+ */
+guint
+ags_soundcard_get_start_note_offset(AgsSoundcard *soundcard)
+{
+  AgsSoundcardInterface *soundcard_interface;
+
+  g_return_val_if_fail(AGS_IS_SOUNDCARD(soundcard), G_MAXUINT);
+  soundcard_interface = AGS_SOUNDCARD_GET_INTERFACE(soundcard);
+  g_return_val_if_fail(soundcard_interface->get_start_note_offset, G_MAXUINT);
+
+  return(soundcard_interface->get_start_note_offset(soundcard));
+}
+
+/**
  * ags_soundcard_set_note_offset:
  * @soundcard: the #AgsSoundcard
  * @note_offset: the note offset to set
@@ -946,7 +990,7 @@ ags_soundcard_set_note_offset(AgsSoundcard *soundcard,
  *
  * Get current playback note offset. 
  *
- * Returns: offset
+ * Returns: the current note offset
  *
  * Since: 2.0.0
  */

@@ -133,6 +133,7 @@ struct _AgsJackDevin
   gdouble delay_counter; // next time attack changeing when delay_counter == delay
   guint tic_counter; // in the range of default period
 
+  guint start_note_offset;
   guint note_offset;
   guint note_offset_absolute;
   

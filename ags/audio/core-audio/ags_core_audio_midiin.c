@@ -103,6 +103,10 @@ void* ags_core_audio_midiin_get_buffer(AgsSequencer *sequencer,
 void* ags_core_audio_midiin_get_next_buffer(AgsSequencer *sequencer,
 					    guint *buffer_length);
 
+void ags_core_audio_midiin_set_start_note_offset(AgsSequencer *sequencer,
+						 guint start_note_offset);
+guint ags_core_audio_midiin_get_start_note_offset(AgsSequencer *sequencer);
+
 void ags_core_audio_midiin_set_note_offset(AgsSequencer *sequencer,
 					   guint note_offset);
 guint ags_core_audio_midiin_get_note_offset(AgsSequencer *sequencer);
@@ -400,6 +404,9 @@ ags_core_audio_midiin_sequencer_interface_init(AgsSequencerInterface *sequencer)
   sequencer->get_buffer = ags_core_audio_midiin_get_buffer;
   sequencer->get_next_buffer = ags_core_audio_midiin_get_next_buffer;
 
+  sequencer->set_start_note_offset = ags_core_audio_midiin_set_start_note_offset;
+  sequencer->get_start_note_offset = ags_core_audio_midiin_get_start_note_offset;
+
   sequencer->set_note_offset = ags_core_audio_midiin_set_note_offset;
   sequencer->get_note_offset = ags_core_audio_midiin_get_note_offset;
 }
@@ -490,7 +497,10 @@ ags_core_audio_midiin_init(AgsCoreAudioMidiin *core_audio_midiin)
   }
 
   /* counters */
+  core_audio_midiin->start_note_offset = 0;
   core_audio_midiin->note_offset = 0;
+  core_audio_midiin->note_offset_absolute = 0;
+  
   core_audio_midiin->tact_counter = 0.0;
   core_audio_midiin->delay_counter = 0;
   core_audio_midiin->tic_counter = 0;
@@ -1441,8 +1451,6 @@ ags_core_audio_midiin_port_init(AgsSequencer *sequencer,
 			       AGS_CORE_AUDIO_MIDIIN_RECORD |
 			       AGS_CORE_AUDIO_MIDIIN_NONBLOCKING);
 
-  core_audio_midiin->note_offset = 0;
-
   /* port setup */
   //TODO:JK: implement me
   
@@ -1701,6 +1709,9 @@ ags_core_audio_midiin_port_free(AgsSequencer *sequencer)
     free(core_audio_midiin->buffer[0]);
     core_audio_midiin->buffer_size[0] = 0;
   }
+
+  core_audio_midiin->note_offset = core_audio_midiin->start_note_offset;
+  core_audio_midiin->note_offset_absolute = core_audio_midiin->start_note_offset;
 
   pthread_mutex_unlock(core_audio_midiin_mutex);
 }
@@ -1973,6 +1984,59 @@ ags_core_audio_midiin_get_next_buffer(AgsSequencer *sequencer,
   }
   
   return(buffer);
+}
+
+void
+ags_core_audio_midiin_set_start_note_offset(AgsSequencer *sequencer,
+					    guint start_note_offset)
+{
+  AgsCoreAudioMidiin *core_audio_midiin;
+
+  pthread_mutex_t *core_audio_midiin_mutex;  
+
+  core_audio_midiin = AGS_CORE_AUDIO_MIDIIN(sequencer);
+
+  /* get core_audio midiin mutex */
+  pthread_mutex_lock(ags_core_audio_midiin_get_class_mutex());
+  
+  core_audio_midiin_mutex = core_audio_midiin->obj_mutex;
+  
+  pthread_mutex_unlock(ags_core_audio_midiin_get_class_mutex());
+
+  /* set note offset */
+  pthread_mutex_lock(core_audio_midiin_mutex);
+
+  core_audio_midiin->start_note_offset = start_note_offset;
+
+  pthread_mutex_unlock(core_audio_midiin_mutex);
+}
+
+guint
+ags_core_audio_midiin_get_start_note_offset(AgsSequencer *sequencer)
+{
+  AgsCoreAudioMidiin *core_audio_midiin;
+
+  guint start_note_offset;
+  
+  pthread_mutex_t *core_audio_midiin_mutex;  
+
+  core_audio_midiin = AGS_CORE_AUDIO_MIDIIN(sequencer);
+
+  /* get core_audio midiin mutex */
+  pthread_mutex_lock(ags_core_audio_midiin_get_class_mutex());
+  
+  core_audio_midiin_mutex = core_audio_midiin->obj_mutex;
+  
+  pthread_mutex_unlock(ags_core_audio_midiin_get_class_mutex());
+
+  /* set note offset */
+  pthread_mutex_lock(core_audio_midiin_mutex);
+
+  start_note_offset = core_audio_midiin->start_note_offset;
+
+  pthread_mutex_unlock(core_audio_midiin_mutex);
+
+  return(start_note_offset);
 }
 
 void

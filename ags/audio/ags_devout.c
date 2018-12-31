@@ -164,6 +164,10 @@ void ags_devout_unlock_buffer(AgsSoundcard *soundcard,
 
 guint ags_devout_get_delay_counter(AgsSoundcard *soundcard);
 
+void ags_devout_set_start_note_offset(AgsSoundcard *soundcard,
+				      guint start_note_offset);
+guint ags_devout_get_start_note_offset(AgsSoundcard *soundcard);
+
 void ags_devout_set_note_offset(AgsSoundcard *soundcard,
 				guint note_offset);
 guint ags_devout_get_note_offset(AgsSoundcard *soundcard);
@@ -555,6 +559,9 @@ ags_devout_soundcard_interface_init(AgsSoundcardInterface *soundcard)
 
   soundcard->get_delay_counter = ags_devout_get_delay_counter;
 
+  soundcard->set_start_note_offset = ags_devout_set_start_note_offset;
+  soundcard->get_start_note_offset = ags_devout_get_start_note_offset;
+
   soundcard->set_note_offset = ags_devout_set_note_offset;
   soundcard->get_note_offset = ags_devout_get_note_offset;
 
@@ -721,6 +728,7 @@ ags_devout_init(AgsDevout *devout)
   devout->delay_counter = 0;
   devout->tic_counter = 0;
 
+  devout->start_note_offset = 0;
   devout->note_offset = 0;
   devout->note_offset_absolute = 0;
 
@@ -3025,8 +3033,8 @@ ags_devout_oss_free(AgsSoundcard *soundcard)
   
   pthread_mutex_unlock(notify_soundcard->return_mutex);
 
-  devout->note_offset = 0;
-  devout->note_offset_absolute = 0;
+  devout->note_offset = devout->start_note_offset;
+  devout->note_offset_absolute = devout->start_note_offset;
 
   pthread_mutex_unlock(devout_mutex);
 }
@@ -3923,8 +3931,8 @@ ags_devout_alsa_free(AgsSoundcard *soundcard)
 
   pthread_mutex_lock(devout_mutex);
 
-  devout->note_offset = 0;
-  devout->note_offset_absolute = 0;
+  devout->note_offset = devout->start_note_offset;
+  devout->note_offset_absolute = devout->start_note_offset;
 
   pthread_mutex_unlock(devout_mutex);
 }
@@ -4392,6 +4400,59 @@ ags_devout_get_delay_counter(AgsSoundcard *soundcard)
   pthread_mutex_unlock(devout_mutex);
 
   return(delay_counter);
+}
+
+void
+ags_devout_set_start_note_offset(AgsSoundcard *soundcard,
+				 guint start_note_offset)
+{
+  AgsDevout *devout;
+
+  pthread_mutex_t *devout_mutex;  
+
+  devout = AGS_DEVOUT(soundcard);
+
+  /* get devout mutex */
+  pthread_mutex_lock(ags_devout_get_class_mutex());
+  
+  devout_mutex = devout->obj_mutex;
+  
+  pthread_mutex_unlock(ags_devout_get_class_mutex());
+
+  /* set note offset */
+  pthread_mutex_lock(devout_mutex);
+
+  devout->start_note_offset = start_note_offset;
+
+  pthread_mutex_unlock(devout_mutex);
+}
+
+guint
+ags_devout_get_start_note_offset(AgsSoundcard *soundcard)
+{
+  AgsDevout *devout;
+
+  guint start_note_offset;
+  
+  pthread_mutex_t *devout_mutex;  
+
+  devout = AGS_DEVOUT(soundcard);
+
+  /* get devout mutex */
+  pthread_mutex_lock(ags_devout_get_class_mutex());
+  
+  devout_mutex = devout->obj_mutex;
+  
+  pthread_mutex_unlock(ags_devout_get_class_mutex());
+
+  /* set note offset */
+  pthread_mutex_lock(devout_mutex);
+
+  start_note_offset = devout->start_note_offset;
+
+  pthread_mutex_unlock(devout_mutex);
+
+  return(start_note_offset);
 }
 
 void

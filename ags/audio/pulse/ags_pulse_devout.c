@@ -137,6 +137,10 @@ void ags_pulse_devout_unlock_buffer(AgsSoundcard *soundcard,
 
 guint ags_pulse_devout_get_delay_counter(AgsSoundcard *soundcard);
 
+void ags_pulse_devout_set_start_note_offset(AgsSoundcard *soundcard,
+					    guint start_note_offset);
+guint ags_pulse_devout_get_start_note_offset(AgsSoundcard *soundcard);
+
 void ags_pulse_devout_set_note_offset(AgsSoundcard *soundcard,
 				      guint note_offset);
 guint ags_pulse_devout_get_note_offset(AgsSoundcard *soundcard);
@@ -560,6 +564,9 @@ ags_pulse_devout_soundcard_interface_init(AgsSoundcardInterface *soundcard)
 
   soundcard->get_delay_counter = ags_pulse_devout_get_delay_counter;
 
+  soundcard->set_start_note_offset = ags_pulse_devout_set_start_note_offset;
+  soundcard->get_start_note_offset = ags_pulse_devout_get_start_note_offset;
+
   soundcard->set_note_offset = ags_pulse_devout_set_note_offset;
   soundcard->get_note_offset = ags_pulse_devout_get_note_offset;
 
@@ -685,6 +692,7 @@ ags_pulse_devout_init(AgsPulseDevout *pulse_devout)
   pulse_devout->delay_counter = 0;
   pulse_devout->tic_counter = 0;
 
+  pulse_devout->start_note_offset = 0;
   pulse_devout->note_offset = 0;
   pulse_devout->note_offset_absolute = 0;
 
@@ -2347,8 +2355,8 @@ ags_pulse_devout_port_free(AgsSoundcard *soundcard)
   g_object_unref(notify_soundcard);
   
   /*  */
-  pulse_devout->note_offset = 0;
-  pulse_devout->note_offset_absolute = 0;
+  pulse_devout->note_offset = pulse_devout->start_note_offset;
+  pulse_devout->note_offset_absolute = pulse_devout->start_note_offset;
 
   switch(pulse_devout->format){
   case AGS_SOUNDCARD_SIGNED_8_BIT:
@@ -2902,6 +2910,59 @@ ags_pulse_devout_get_delay_counter(AgsSoundcard *soundcard)
   pthread_mutex_unlock(pulse_devout_mutex);
 
   return(delay_counter);
+}
+
+void
+ags_pulse_devout_set_start_note_offset(AgsSoundcard *soundcard,
+				       guint start_note_offset)
+{
+  AgsPulseDevout *pulse_devout;
+
+  pthread_mutex_t *pulse_devout_mutex;  
+
+  pulse_devout = AGS_PULSE_DEVOUT(soundcard);
+
+  /* get pulse devout mutex */
+  pthread_mutex_lock(ags_pulse_devout_get_class_mutex());
+  
+  pulse_devout_mutex = pulse_devout->obj_mutex;
+  
+  pthread_mutex_unlock(ags_pulse_devout_get_class_mutex());
+
+  /* set note offset */
+  pthread_mutex_lock(pulse_devout_mutex);
+
+  pulse_devout->start_note_offset = start_note_offset;
+
+  pthread_mutex_unlock(pulse_devout_mutex);
+}
+
+guint
+ags_pulse_devout_get_start_note_offset(AgsSoundcard *soundcard)
+{
+  AgsPulseDevout *pulse_devout;
+
+  guint start_note_offset;
+  
+  pthread_mutex_t *pulse_devout_mutex;  
+
+  pulse_devout = AGS_PULSE_DEVOUT(soundcard);
+
+  /* get pulse devout mutex */
+  pthread_mutex_lock(ags_pulse_devout_get_class_mutex());
+  
+  pulse_devout_mutex = pulse_devout->obj_mutex;
+  
+  pthread_mutex_unlock(ags_pulse_devout_get_class_mutex());
+
+  /* set note offset */
+  pthread_mutex_lock(pulse_devout_mutex);
+
+  start_note_offset = pulse_devout->start_note_offset;
+
+  pthread_mutex_unlock(pulse_devout_mutex);
+
+  return(start_note_offset);
 }
 
 void

@@ -137,6 +137,10 @@ void ags_jack_devout_unlock_buffer(AgsSoundcard *soundcard,
 
 guint ags_jack_devout_get_delay_counter(AgsSoundcard *soundcard);
 
+void ags_jack_devout_set_start_note_offset(AgsSoundcard *soundcard,
+					   guint start_note_offset);
+guint ags_jack_devout_get_start_note_offset(AgsSoundcard *soundcard);
+
 void ags_jack_devout_set_note_offset(AgsSoundcard *soundcard,
 				     guint note_offset);
 guint ags_jack_devout_get_note_offset(AgsSoundcard *soundcard);
@@ -560,6 +564,9 @@ ags_jack_devout_soundcard_interface_init(AgsSoundcardInterface *soundcard)
 
   soundcard->get_delay_counter = ags_jack_devout_get_delay_counter;
 
+  soundcard->set_start_note_offset = ags_jack_devout_set_start_note_offset;
+  soundcard->get_start_note_offset = ags_jack_devout_get_start_note_offset;
+
   soundcard->set_note_offset = ags_jack_devout_set_note_offset;
   soundcard->get_note_offset = ags_jack_devout_get_note_offset;
 
@@ -681,6 +688,7 @@ ags_jack_devout_init(AgsJackDevout *jack_devout)
   jack_devout->delay_counter = 0;
   jack_devout->tic_counter = 0;
 
+  jack_devout->start_note_offset = 0;
   jack_devout->note_offset = 0;
   jack_devout->note_offset_absolute = 0;
 
@@ -2346,8 +2354,8 @@ ags_jack_devout_port_free(AgsSoundcard *soundcard)
   g_object_unref(notify_soundcard);
   
   /*  */
-  jack_devout->note_offset = 0;
-  jack_devout->note_offset_absolute = 0;
+  jack_devout->note_offset = jack_devout->start_note_offset;
+  jack_devout->note_offset_absolute = jack_devout->start_note_offset;
 
   switch(jack_devout->format){
   case AGS_SOUNDCARD_SIGNED_8_BIT:
@@ -2853,6 +2861,59 @@ ags_jack_devout_get_delay_counter(AgsSoundcard *soundcard)
   pthread_mutex_unlock(jack_devout_mutex);
 
   return(delay_counter);
+}
+
+void
+ags_jack_devout_set_start_note_offset(AgsSoundcard *soundcard,
+				      guint start_note_offset)
+{
+  AgsJackDevout *jack_devout;
+
+  pthread_mutex_t *jack_devout_mutex;  
+
+  jack_devout = AGS_JACK_DEVOUT(soundcard);
+
+  /* get jack devout mutex */
+  pthread_mutex_lock(ags_jack_devout_get_class_mutex());
+  
+  jack_devout_mutex = jack_devout->obj_mutex;
+  
+  pthread_mutex_unlock(ags_jack_devout_get_class_mutex());
+
+  /* set note offset */
+  pthread_mutex_lock(jack_devout_mutex);
+
+  jack_devout->start_note_offset = start_note_offset;
+
+  pthread_mutex_unlock(jack_devout_mutex);
+}
+
+guint
+ags_jack_devout_get_start_note_offset(AgsSoundcard *soundcard)
+{
+  AgsJackDevout *jack_devout;
+
+  guint start_note_offset;
+  
+  pthread_mutex_t *jack_devout_mutex;  
+
+  jack_devout = AGS_JACK_DEVOUT(soundcard);
+
+  /* get jack devout mutex */
+  pthread_mutex_lock(ags_jack_devout_get_class_mutex());
+  
+  jack_devout_mutex = jack_devout->obj_mutex;
+  
+  pthread_mutex_unlock(ags_jack_devout_get_class_mutex());
+
+  /* set note offset */
+  pthread_mutex_lock(jack_devout_mutex);
+
+  start_note_offset = jack_devout->start_note_offset;
+
+  pthread_mutex_unlock(jack_devout_mutex);
+
+  return(start_note_offset);
 }
 
 void

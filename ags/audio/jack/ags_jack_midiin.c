@@ -103,6 +103,10 @@ void* ags_jack_midiin_get_buffer(AgsSequencer *sequencer,
 void* ags_jack_midiin_get_next_buffer(AgsSequencer *sequencer,
 				      guint *buffer_length);
 
+void ags_jack_midiin_set_start_note_offset(AgsSequencer *sequencer,
+					   guint start_note_offset);
+guint ags_jack_midiin_get_start_note_offset(AgsSequencer *sequencer);
+
 void ags_jack_midiin_set_note_offset(AgsSequencer *sequencer,
 				     guint note_offset);
 guint ags_jack_midiin_get_note_offset(AgsSequencer *sequencer);
@@ -400,6 +404,9 @@ ags_jack_midiin_sequencer_interface_init(AgsSequencerInterface *sequencer)
   sequencer->get_buffer = ags_jack_midiin_get_buffer;
   sequencer->get_next_buffer = ags_jack_midiin_get_next_buffer;
 
+  sequencer->set_start_note_offset = ags_jack_midiin_set_start_note_offset;
+  sequencer->get_start_note_offset = ags_jack_midiin_get_start_note_offset;
+
   sequencer->set_note_offset = ags_jack_midiin_set_note_offset;
   sequencer->get_note_offset = ags_jack_midiin_get_note_offset;
 }
@@ -491,7 +498,9 @@ ags_jack_midiin_init(AgsJackMidiin *jack_midiin)
   }
 
   /* counters */
+  jack_midiin->start_note_offset = 0;
   jack_midiin->note_offset = 0;
+  jack_midiin->note_offset_absolute = 0;
 
   jack_midiin->tact_counter = 0.0;
   jack_midiin->delay_counter = 0;
@@ -1443,8 +1452,6 @@ ags_jack_midiin_port_init(AgsSequencer *sequencer,
 			 AGS_JACK_MIDIIN_RECORD |
 			 AGS_JACK_MIDIIN_NONBLOCKING);
 
-  jack_midiin->note_offset = 0;
-
   /* port setup */
   //TODO:JK: implement me
   
@@ -1686,6 +1693,9 @@ ags_jack_midiin_port_free(AgsSequencer *sequencer)
     free(jack_midiin->buffer[0]);
     jack_midiin->buffer_size[0] = 0;
   }
+
+  jack_midiin->note_offset = jack_midiin->start_note_offset;
+  jack_midiin->note_offset_absolute = jack_midiin->start_note_offset;
 
   pthread_mutex_unlock(jack_midiin_mutex);
 }
@@ -1959,6 +1969,60 @@ ags_jack_midiin_get_next_buffer(AgsSequencer *sequencer,
   
   return(buffer);
 }
+
+void
+ags_jack_midiin_set_start_note_offset(AgsSequencer *sequencer,
+				      guint start_note_offset)
+{
+  AgsJackMidiin *jack_midiin;
+
+  pthread_mutex_t *jack_midiin_mutex;  
+
+  jack_midiin = AGS_JACK_MIDIIN(sequencer);
+
+  /* get jack midiin mutex */
+  pthread_mutex_lock(ags_jack_midiin_get_class_mutex());
+  
+  jack_midiin_mutex = jack_midiin->obj_mutex;
+  
+  pthread_mutex_unlock(ags_jack_midiin_get_class_mutex());
+
+  /* set note offset */
+  pthread_mutex_lock(jack_midiin_mutex);
+
+  jack_midiin->start_note_offset = start_note_offset;
+
+  pthread_mutex_unlock(jack_midiin_mutex);
+}
+
+guint
+ags_jack_midiin_get_start_note_offset(AgsSequencer *sequencer)
+{
+  AgsJackMidiin *jack_midiin;
+
+  guint start_note_offset;
+  
+  pthread_mutex_t *jack_midiin_mutex;  
+
+  jack_midiin = AGS_JACK_MIDIIN(sequencer);
+
+  /* get jack midiin mutex */
+  pthread_mutex_lock(ags_jack_midiin_get_class_mutex());
+  
+  jack_midiin_mutex = jack_midiin->obj_mutex;
+  
+  pthread_mutex_unlock(ags_jack_midiin_get_class_mutex());
+
+  /* set note offset */
+  pthread_mutex_lock(jack_midiin_mutex);
+
+  start_note_offset = jack_midiin->start_note_offset;
+
+  pthread_mutex_unlock(jack_midiin_mutex);
+
+  return(start_note_offset);
+}
+
 
 void
 ags_jack_midiin_set_note_offset(AgsSequencer *sequencer,

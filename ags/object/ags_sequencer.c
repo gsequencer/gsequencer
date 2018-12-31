@@ -608,6 +608,50 @@ ags_sequencer_get_delay_factor(AgsSequencer *sequencer)
 }
 
 /**
+ * ags_sequencer_get_start_note_offset:
+ * @sequencer: the #AgsSequencer
+ *
+ * Get start playback note offset. 
+ *
+ * Returns: the start note offset
+ *
+ * Since: 2.1.24
+ */
+guint
+ags_sequencer_get_start_note_offset(AgsSequencer *sequencer)
+{
+  AgsSequencerInterface *sequencer_interface;
+
+  g_return_val_if_fail(AGS_IS_SEQUENCER(sequencer), G_MAXUINT);
+  sequencer_interface = AGS_SEQUENCER_GET_INTERFACE(sequencer);
+  g_return_val_if_fail(sequencer_interface->get_start_note_offset, G_MAXUINT);
+
+  return(sequencer_interface->get_start_note_offset(sequencer));
+}
+
+/**
+ * ags_sequencer_set_start_note_offset:
+ * @sequencer: the #AgsSequencer
+ * @start_note_offset: the start note offset to set
+ *
+ * Set start playback note offset. 
+ *
+ * Since: 2.1.24
+ */
+void
+ags_sequencer_set_start_note_offset(AgsSequencer *sequencer,
+				    guint start_note_offset)
+{
+  AgsSequencerInterface *sequencer_interface;
+
+  g_return_if_fail(AGS_IS_SEQUENCER(sequencer));
+  sequencer_interface = AGS_SEQUENCER_GET_INTERFACE(sequencer);
+  g_return_if_fail(sequencer_interface->set_start_note_offset);
+  sequencer_interface->set_start_note_offset(sequencer,
+					     start_note_offset);
+}
+
+/**
  * ags_sequencer_get_note_offset:
  * @sequencer: the #AgsSequencer
  *

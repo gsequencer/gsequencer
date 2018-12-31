@@ -137,6 +137,10 @@ void ags_jack_devin_unlock_buffer(AgsSoundcard *soundcard,
 
 guint ags_jack_devin_get_delay_counter(AgsSoundcard *soundcard);
 
+void ags_jack_devin_set_start_note_offset(AgsSoundcard *soundcard,
+					  guint start_note_offset);
+guint ags_jack_devin_get_start_note_offset(AgsSoundcard *soundcard);
+
 void ags_jack_devin_set_note_offset(AgsSoundcard *soundcard,
 				    guint note_offset);
 guint ags_jack_devin_get_note_offset(AgsSoundcard *soundcard);
@@ -560,6 +564,9 @@ ags_jack_devin_soundcard_interface_init(AgsSoundcardInterface *soundcard)
 
   soundcard->get_delay_counter = ags_jack_devin_get_delay_counter;
 
+  soundcard->set_start_note_offset = ags_jack_devin_set_start_note_offset;
+  soundcard->get_start_note_offset = ags_jack_devin_get_start_note_offset;
+
   soundcard->set_note_offset = ags_jack_devin_set_note_offset;
   soundcard->get_note_offset = ags_jack_devin_get_note_offset;
 
@@ -681,6 +688,7 @@ ags_jack_devin_init(AgsJackDevin *jack_devin)
   jack_devin->delay_counter = 0;
   jack_devin->tic_counter = 0;
 
+  jack_devin->start_note_offset = 0;
   jack_devin->note_offset = 0;
   jack_devin->note_offset_absolute = 0;
 
@@ -2358,8 +2366,8 @@ ags_jack_devin_port_free(AgsSoundcard *soundcard)
   g_object_unref(notify_soundcard);
   
   /*  */
-  jack_devin->note_offset = 0;
-  jack_devin->note_offset_absolute = 0;
+  jack_devin->note_offset = jack_devin->start_note_offset;
+  jack_devin->note_offset_absolute = jack_devin->start_note_offset;
 
   switch(jack_devin->format){
   case AGS_SOUNDCARD_SIGNED_8_BIT:
@@ -2865,6 +2873,59 @@ ags_jack_devin_get_delay_counter(AgsSoundcard *soundcard)
   pthread_mutex_unlock(jack_devin_mutex);
 
   return(delay_counter);
+}
+
+void
+ags_jack_devin_set_start_note_offset(AgsSoundcard *soundcard,
+				     guint start_note_offset)
+{
+  AgsJackDevin *jack_devin;
+
+  pthread_mutex_t *jack_devin_mutex;  
+
+  jack_devin = AGS_JACK_DEVIN(soundcard);
+
+  /* get jack devin mutex */
+  pthread_mutex_lock(ags_jack_devin_get_class_mutex());
+  
+  jack_devin_mutex = jack_devin->obj_mutex;
+  
+  pthread_mutex_unlock(ags_jack_devin_get_class_mutex());
+
+  /* set note offset */
+  pthread_mutex_lock(jack_devin_mutex);
+
+  jack_devin->start_note_offset = start_note_offset;
+
+  pthread_mutex_unlock(jack_devin_mutex);
+}
+
+guint
+ags_jack_devin_get_start_note_offset(AgsSoundcard *soundcard)
+{
+  AgsJackDevin *jack_devin;
+
+  guint start_note_offset;
+  
+  pthread_mutex_t *jack_devin_mutex;  
+
+  jack_devin = AGS_JACK_DEVIN(soundcard);
+
+  /* get jack devin mutex */
+  pthread_mutex_lock(ags_jack_devin_get_class_mutex());
+  
+  jack_devin_mutex = jack_devin->obj_mutex;
+  
+  pthread_mutex_unlock(ags_jack_devin_get_class_mutex());
+
+  /* set note offset */
+  pthread_mutex_lock(jack_devin_mutex);
+
+  start_note_offset = jack_devin->start_note_offset;
+
+  pthread_mutex_unlock(jack_devin_mutex);
+
+  return(start_note_offset);
 }
 
 void
