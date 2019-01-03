@@ -1,10 +1,10 @@
-gsequencer (2.1.25-1) UNRELEASED; urgency=medium
+gsequencer (2.1.26) bionic; urgency=medium
 
   * updated libags2.symbols because new symbols available
   * updated libags-audio2.symbols because new function available
-  * New upstream version 2.1.25
+  * New upstream version 2.1.26
 
- -- Joël Krähemann <jkraehemann@gmail.com>  Mon, 31 Dec 2018 19:24:00 +0100
+ -- Joël Krähemann <jkraehemann@gmail.com>  Thu, 03 Jan 2019 14:24:43 +0100
 
 gsequencer (2.0.37-1) unstable; urgency=medium
 
