@@ -1,3 +1,8 @@
+ags (2.1.29)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed missing datadir prefix in Makefile.am
+
 ags (2.1.28)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
