@@ -1,0 +1,103 @@
+#!/usr/bin/make -f
+#DH_VERBOSE = 1
+
+DPKG_EXPORT_BUILDFLAGS = 1
+include /usr/share/dpkg/default.mk
+include /usr/share/dpkg/pkg-info.mk
+
+archconfflags :=
+
+ifeq ($(DEB_HOST_ARCH_OS),linux)
+  archconfflags += --enable-alsa
+else
+  archconfflags += --disable-alsa
+endif
+
+
+ifeq ($(DEB_HOST_ARCH_OS),kfreebsd)
+  archconfflags += --enable-oss
+else
+  archconfflags += --disable-oss
+endif
+
+archconfflags += --enable-libinstpatch --enable-gtk-doc --enable-gtk-doc-html
+
+# provide some system dependent configuration as a C macro
+CPPFLAGS += -DAGS_RC_FILENAME=\"/usr/share/gsequencer/styles/ags.rc\"
+CPPFLAGS += -DAGS_ANIMATION_FILENAME=\"/usr/share/gsequencer/images/ags_supermoon-800x450.png\"
+CPPFLAGS += -DAGS_LOGO_FILENAME=\"/usr/share/gsequencer/images/ags.png\"
+CPPFLAGS += -DAGS_LICENSE_FILENAME=\"/usr/share/common-licenses/GPL-3\"
+
+# Gets only the upstream version of the package
+DEB_UPSTREAM_MINOR_VERSION := $(shell echo $(DEB_VERSION_UPSTREAM) | sed -r 's/([0-9]+).([0-9]+).([0-9]+)/\1.\2.x/')
+
+# Sets build tarball-dir if not provided by command line
+TARBALL_DIR ?= ../tarballs
+
+# Sets export-dir if not provided by command line
+EXPORT_DIR ?= ../build-area
+
+# Sets download mirror if not provided by command line
+DOWNLOAD_MIRROR ?= http://download.savannah.gnu.org/releases/gsequencer
+
+get-orig-source:
+	mkdir -p $(TARBALL_DIR)
+	mkdir -p $(EXPORT_DIR)
+	wget --method=GET -O "$(TARBALL_DIR)/$(DEB_SOURCE)_$(DEB_VERSION_UPSTREAM).orig.tar.gz" -c "$(DOWNLOAD_MIRROR)/$(DEB_UPSTREAM_MINOR_VERSION)/$(DEB_SOURCE)-$(DEB_VERSION_UPSTREAM).tar.gz"
+	wget --method=GET -O "$(TARBALL_DIR)/$(DEB_SOURCE)_$(DEB_VERSION_UPSTREAM).orig.tar.gz.asc" -c "$(DOWNLOAD_MIRROR)/$(DEB_UPSTREAM_MINOR_VERSION)/$(DEB_SOURCE)-$(DEB_VERSION_UPSTREAM).tar.gz.sig"
+	ln -s "$(TARBALL_DIR)/$(DEB_SOURCE)_$(DEB_VERSION_UPSTREAM).orig.tar.gz.asc" $(EXPORT_DIR)
+
+pre-integration-test:
+	dh_autoreconf
+	dh_auto_configure -- --libdir=/usr/lib/$(DEB_HOST_MULTIARCH) $(archconfflags)
+
+override_dh_auto_configure:
+	dh_auto_configure -- $(archconfflags)
+	$(MAKE) gen-symbols-all
+
+override_dh_auto_build:
+	dh_auto_build --parallel
+
+override_dh_auto_test:
+	xvfb-run --server-args="-screen 0 1920x1080x24" -a dh_auto_test
+
+override_dh_auto_install:
+	dh_auto_install --no-parallel
+	$(MAKE) DESTDIR=$$(pwd)/debian/tmp install-html
+	find $$(pwd)/debian/tmp/usr/share -type f \
+		\( -name "htmlhelp.hhp" -or -name "toc.hhc" \) \
+		-delete
+	rm -f $$(pwd)/debian/tmp/usr/share/doc/libags-doc/api/libags
+	rm -f $$(pwd)/debian/tmp/usr/share/doc/libags-audio-doc/api/libags-audio
+	rm -f $$(pwd)/debian/tmp/usr/share/doc/libags-gui-doc/api/libags-gui
+	find $$(pwd)/debian/tmp/usr/lib -type f -name "*.la" -delete
+
+# main packaging script based on dh7 syntax
+override_dh_shlibdeps:
+	dh_shlibdeps --dpkg-shlibdeps-params=--ignore-missing-info
+
+%:
+	dh $@
+
+override_dh_clean:
+	rm -f docs/reference/libgsequencer/libgsequencer-sections.txt
+	find docs/ -type f -name "*.stamp" -delete
+	find docs/ -type f \( \
+		   -name "*-decl-list.txt" \
+		-o -name "*-decl.txt" \
+		-o -name "*-undeclared.txt" \
+		-o -name "*-undocumented.txt" \
+		-o -name "*-unused.txt" \
+		\) -delete
+	find docs/ -type f \( \
+		   -name "*.args" \
+		-o -name "*.hierarchy" \
+		-o -name "*.interfaces" \
+		-o -name "*.prerequisites" \
+		-o -name "*.signals" \
+		\) -delete
+	rm -f docs/reference/libgsequencer/libgsequencer.types
+	find docs/ -type d -name ".libs" -exec rm -rf {} +
+	find docs/ -type d -name "tmpl" -exec rm -rf {} +
+	rm lib*.sym
+	dh_clean

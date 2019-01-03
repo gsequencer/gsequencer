@@ -1,0 +1,8 @@
+usr/lib/*/gsequencer/libgsequencer*
+usr/bin
+usr/share/gsequencer
+usr/share/xml/gsequencer
+usr/share/doc/gsequencer/README
+usr/share/doc/gsequencer/ags_example.xml
+usr/share/man
+usr/share/applications

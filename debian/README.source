@@ -1,0 +1,65 @@
+gbp clone
+---------
+
+Starting with git-buildpackage>0.8.1, here's a simple way to automatically
+fine-tune the repository in the following ways:
+- make git ignore any .pc/ directory (created by quilt)
+- enable the "--follow-tags" when running 'git-push', so it's harder
+  to forget to push packaging tags along with the branches.
+
+To enable this for ALL repositories cloned via 'gbp' (in the future), do
+something like the following:
+
+<snip>
+mkdir -p ~/bin
+cat >> ~/bin/gbphook-postclone <<EOF
+#!/bin/sh
+## script to initialize a cloned repository
+# - enable the "--follow-tags" mode for pushing
+echo "tuning git-repository for ${NAME}"
+git config push.followTags true && echo "enabled push.followTags"
+# - ignore quilt's .pc/ directory
+GITEXCLUDE=".git/info/exclude"
+egrep "^/?\.pc/?$" "${GITEXCLUDE}" >/dev/null 2>&1 \
+|| (echo "/.pc/" >> "${GITEXCLUDE}" && echo "ignoring /.pc/")
+EOF
+
+chmod u+x ~/bin/gbphook-postclone
+cat >> ~/.gbp.conf <<EOF
+[clone]
+postclone = ~/bin/gbphook-postclone
+EOF
+</snip>
+
+Then simply run:
+	$ gbp clone ...
+
+ -- IOhannes m zmölnig (Debian/GNU) <umlaeute@debian.org>  Mon, 1 Aug 2017 12:15:50 +0200
+
+
+debian/rules get-orig-source
+---------
+
+As a work-around of the lintian error there is an additional debian/rules
+target provided get-orig-source. You may want to pass the build-area and
+tarballs directory as follows:
+
+EXPORT_DIR=../build-area TARBALL_DIR=../tarballs ./debian/rules get-orig-source
+
+There is an additional environment variable DOWNLOAD_MIRROR you might want to set for mirror
+server to use.
+
+ -- Joël Krähemann <jkraehemann@gmail.com>  Tue, 29 Aug 2017 20:45:31 +0200
+
+debian/*.symbols
+---------
+
+Assumed you would love to update the symbols files, invoke the following and replace the
+version information - this example uses version 2.0.0:
+
+export VERSION="2.0.0"
+dpkg-gensymbols -plibags2 -e/usr/lib/x86_64-linux-gnu/libags.so.2 -e/usr/lib/x86_64-linux-gnu/libags_thread.so.2 -e/usr/lib/x86_64-linux-gnu/libags_server.so.2 -v$VERSION -Idebian/libags2.symbols -Odebian/libags2.symbols
+dpkg-gensymbols -plibags-audio2 -e/usr/lib/x86_64-linux-gnu/libags_audio.so.2 -v$VERSION -Idebian/libags-audio2.symbols -Odebian/libags-audio2.symbols
+dpkg-gensymbols -plibags-gui2 -e/usr/lib/x86_64-linux-gnu/libags_gui.so.2 -v$VERSION -Idebian/libags-gui2.symbols -Odebian/libags-gui2.symbols
+
+ -- Joël Krähemann <jkraehemann@gmail.com>  Tue, 29 Aug 2017 20:45:31 +0200

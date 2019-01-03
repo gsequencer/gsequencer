@@ -215,7 +215,6 @@ devdoc = \
 
 oscdoc = \
 	docs/oscBook.xml \
-	docs/appa.xml \
 	docs/oscBook/appb.xml \
 	docs/oscBook/chap1.xml \
 	docs/oscBook/chap2.xml \
@@ -224,7 +223,8 @@ oscdoc = \
 	docs/oscBook/chap5.xml \
 	docs/oscBook/chap6.xml \
 	docs/oscBook/chap7.xml \
-	docs/oscBook/chap8.xml
+	docs/oscBook/chap8.xml \
+	docs/oscBook/appb.xml
 
 devdoclistings = \
 	docs/listings/add_pattern.c \

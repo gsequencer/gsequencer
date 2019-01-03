@@ -1,0 +1,3 @@
+usr/lib/*/libags.so.*
+usr/lib/*/libags_thread.so.*
+usr/lib/*/libags_server.so.*

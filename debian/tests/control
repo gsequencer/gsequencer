@@ -1,0 +1,14 @@
+Tests: ags-integration-test
+Depends: @builddeps@,
+	 dpkg-dev,
+	 fakeroot,
+	 cmt,
+	 swh-lv2,
+	 fluid-soundfont-gm,
+	 hydrogen-drumkits,
+	 gsequencer,
+	 libags-dev,
+	 libags-audio-dev,
+	 libags-gui-dev,
+	 pulseaudio,
+Restrictions: isolation-container, allow-stderr

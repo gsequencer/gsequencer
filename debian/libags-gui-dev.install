@@ -1,0 +1,4 @@
+usr/lib/*/libags_gui.so
+usr/lib/*/pkgconfig/libags_gui.pc
+usr/include/ags/libags-gui.h
+usr/include/ags/widget
