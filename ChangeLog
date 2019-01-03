@@ -1,3 +1,10 @@
+ags (2.1.28)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented write xmlns to files
+	* improved gsequencer.destkop.in
+	* added application-x-gsequencer.xml to specify MIME handler
+
 ags (2.1.27)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

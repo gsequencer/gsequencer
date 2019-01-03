@@ -973,6 +973,10 @@ ags_simple_file_real_rw_open(AgsSimpleFile *simple_file,
 
   simple_file->doc = xmlNewDoc("1.0");
   simple_file->root_node = xmlNewNode(NULL, "ags-simple-file");
+  xmlNewProp(simple_file->root_node,
+	     "xmlns",
+	     "http://nongnu.org/gsequencer/ns/ags-simple-file");
+  
   xmlDocSetRootElement(simple_file->doc, simple_file->root_node);
 }
 
