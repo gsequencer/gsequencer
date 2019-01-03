@@ -1,0 +1,25 @@
+<?xml version='1.0' encoding="utf-8"?>
+
+<!-- Copyright (C) 2005-2018 Jo\u00EBl Kr\u00E4hemann -->
+<!-- Permission is granted to copy, distribute and/or modify this document -->
+<!-- under the terms of the GNU Free Documentation License, Version 1.3 -->
+<!-- or any later version published by the Free Software Foundation; -->
+<!-- with no Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts. -->
+<!-- A copy of the license is included in the section entitled "GNU -->
+<!-- Free Documentation License". -->
+
+<appendix xmlns="http://docbook.org/ns/docbook"
+	  xmlns:xlink="http://www.w3.org/1999/xlink">
+  <title>Related projects</title>
+  <variablelist>
+    <title>Project Websites</title>
+    <varlistentry><term><filename>Open Sound Control</filename></term>
+    <listitem>
+      <para>
+	The Open Sound Control 1.0 Specification - <link xlink:href="http://opensoundcontrol.org/spec-1_0">http://opensoundcontrol.org/spec-1_0</link>
+      </para>
+    </listitem>
+    </varlistentry>
+
+  </variablelist>
+</appendix>

@@ -24,7 +24,7 @@
       The type tag of the request starts like following: <parameter class="command">,s</parameter>.
     </para>
 
-    <table xml:id="ex.htmltable">
+    <table border="1">
       <caption>Type tag description</caption>
       <thead>
 	<tr>
@@ -47,7 +47,7 @@
       </tbody>
     </table>
 
-    <table xml:id="ex.htmltable">
+    <table border="1">
       <caption>Value specification</caption>
       <thead>
 	<tr>

@@ -32,7 +32,7 @@
       for accessing the audio layer of GSequencer.
     </para>
 
-    <table xml:id="ex.htmltable">
+    <table border="1">
       <caption>OSC server context paths</caption>
       <thead>
 	<tr>
