@@ -1,0 +1,64 @@
+<?xml version='1.0' encoding="utf-8"?>
+<!DOCTYPE book [
+<!ENTITY ags "Advanced Gtk+ Sequencer">
+]>
+
+<!-- Copyright (C) 2005-2018 Jo\u00EBl Kr\u00E4hemann -->
+<!-- Permission is granted to copy, distribute and/or modify this document -->
+<!-- under the terms of the GNU Free Documentation License, Version 1.3 -->
+<!-- or any later version published by the Free Software Foundation; -->
+<!-- with no Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts. -->
+<!-- A copy of the license is included in the section entitled "GNU -->
+<!-- Free Documentation License". -->
+
+<chapter xmlns="http://docbook.org/ns/docbook" version="5.0">
+  <title>The node controller</title>
+  <para>
+    The <command>/node</command> context path returns the value assigned to node. The response type
+    tag matches the port value type held.
+  </para>
+
+  <sect1>
+    <title>Type tag and parameters</title>
+    <para>
+      The type tag of the request looks like following: <parameter class="command">,s</parameter>.
+    </para>
+
+    <table xml:id="ex.htmltable">
+      <caption>Type tag description</caption>
+      <thead>
+	<tr>
+	  <td>index</td>
+	  <td>type indentifier</td>
+          <td>value</td>
+	</tr>
+      </thead>
+      <tbody>
+	<tr>
+	  <td>#0</td>
+	  <td>s</td>
+          <td>Path is any valid accessor for properties or port value.</td>
+	</tr>
+      </tbody>
+    </table>
+
+    <para>
+      The path supports indices, ranges, wildcard or some even names as accessors. This 2 examples shows you
+      the access to an AgsAudio port and AgsChannel:
+    </para>
+
+    <itemizedlist>
+      <listitem>
+	/AgsSoundProvider/AgsAudio[0]/AgsMuteChannel[0]/AgsPort["./muted[0]"]:value
+      </listitem>
+      <listitem>
+	/AgsSoundProvider/AgsAudio[0]/AgsInput[0]/AgsVolumeChannel[0]/AgsPort["./volume[0]"]:value
+      </listitem>
+    </itemizedlist>
+
+    <p>
+      The response contains as first argument of the type the tag the matching path. Followed by type or array
+      of types requested. The requested value follows the path argument.
+    </p>
+  </sect1>
+</chapter>

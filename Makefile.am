@@ -213,6 +213,19 @@ devdoc = \
 	docs/developersBook/chap12.xml \
 	docs/developersBook/appb.xml
 
+oscdoc = \
+	docs/oscBook.xml \
+	docs/appa.xml \
+	docs/oscBook/appb.xml \
+	docs/oscBook/chap1.xml \
+	docs/oscBook/chap2.xml \
+	docs/oscBook/chap3.xml \
+	docs/oscBook/chap4.xml \
+	docs/oscBook/chap5.xml \
+	docs/oscBook/chap6.xml \
+	docs/oscBook/chap7.xml \
+	docs/oscBook/chap8.xml
+
 devdoclistings = \
 	docs/listings/add_pattern.c \
 	docs/listings/application_mutex.c \
@@ -294,7 +307,7 @@ userdocimages = \
 	$(top_srcdir)/docs/images/ags_wave_window_audiorec.png
 
 
-EXTRA_DIST += $(manpages) $(userdoc) $(userdocimages) $(devdoc) $(devdocimages) $(devdoclistings)
+EXTRA_DIST += $(manpages) $(userdoc) $(userdocimages) $(devdoc) $(devdocimages) $(devdoclistings) $(oscdoc)
 
 EXTRA_DIST += \
 	$(top_srcdir)/ags/server/security/ags_authentication.dtd \
@@ -2048,9 +2061,10 @@ gsequencer.desktop: gsequencer.desktop.in
 
 html:
 	mkdir -p $(top_builddir)/html/
-	mkdir -p $(top_builddir)/html/{developer-docs,user-docs}
+	mkdir -p $(top_builddir)/html/{developer-docs,user-docs,osc-docs}
 	xsltproc --output $(top_builddir)/html/user-docs/ --xinclude /usr/share/xml/docbook/stylesheet/docbook-xsl/htmlhelp/htmlhelp.xsl $(top_srcdir)/docs/usersBook.xml
 	xsltproc --output $(top_builddir)/html/developer-docs/ --xinclude /usr/share/xml/docbook/stylesheet/docbook-xsl/htmlhelp/htmlhelp.xsl $(top_srcdir)/docs/developersBook.xml
+	xsltproc --output $(top_builddir)/html/osc-docs/ --xinclude /usr/share/xml/docbook/stylesheet/docbook-xsl/htmlhelp/htmlhelp.xsl $(top_srcdir)/docs/oscBook.xml
 	$(MAKE) -C $(top_srcdir)/docs/reference/libags
 	cd $(top_srcdir)
 	$(MAKE) -C $(top_srcdir)/docs/reference/libags-audio
@@ -2117,11 +2131,12 @@ fix-online-html: html
 
 install-html: fix-local-html 
 	mkdir -p $(DESTDIR)/$(docdir)/{images,html}/
-	mkdir -p $(DESTDIR)/$(datadir)/doc/libags-audio-doc/{images,html}/
+	mkdir -p $(DESTDIR)/$(datadir)/doc/libags-audio-doc/{images,html,osc-server}/
 	install -c -p -m 644 $(userdocimages) $(DESTDIR)/$(docdir)/images/
 	install -c -p -m 644 $(devdocimages) $(DESTDIR)/$(datadir)/doc/libags-audio-doc/images/
 	install -c -p -m 644 $(top_builddir)/html/user-docs/* $(DESTDIR)/$(docdir)/html/
 	install -c -p -m 644 $(top_builddir)/html/developer-docs/* $(DESTDIR)/$(datadir)/doc/libags-audio-doc/html/
+	install -c -p -m 644 $(top_builddir)/html/osc-docs/* $(DESTDIR)/doc/libags-audio-doc/osc-server/
 	mkdir -p $(DESTDIR)/$(datadir)/gtk-doc/html
 	mkdir -p $(DESTDIR)/$(datadir)/doc/libags-doc/api
 	mkdir -p $(DESTDIR)/$(datadir)/doc/libags-audio-doc/api
