@@ -1,0 +1,53 @@
+<?xml version='1.0' encoding="utf-8"?>
+<!DOCTYPE book [
+<!ENTITY jkraehemann "Joël Krähemann">
+<!ENTITY bookpath ".">
+]>
+
+<!-- Copyright (C) 2005-2018 Jo\u00EBl Kr\u00E4hemann -->
+<!-- Permission is granted to copy, distribute and/or modify this document -->
+<!-- under the terms of the GNU Free Documentation License, Version 1.3 -->
+<!-- or any later version published by the Free Software Foundation; -->
+<!-- with no Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts. -->
+<!-- A copy of the license is included in the section entitled "GNU -->
+<!-- Free Documentation License". -->
+
+<book xmlns="http://docbook.org/ns/docbook"
+      xmlns:xi="http://www.w3.org/2001/XInclude" version="5.0">
+  <title>Advanced Gtk+ Sequencer</title>
+  <subtitle>User's Handbook</subtitle>
+
+  <info>
+    <legalnotice>
+      <para>
+	Copyright (C)  &jkraehemann;.
+      </para>
+      <para>
+	Permission is granted to copy, distribute and/or modify this document
+	under the terms of the GNU Free Documentation License, Version 1.3
+	or any later version published by the Free Software Foundation;
+	with no Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.
+	A copy of the license is included in the section entitled "GNU
+	Free Documentation License".
+      </para>
+    </legalnotice>
+    <author>
+      <personname>
+	<firstname>Joël</firstname>
+	<surname>Krähemann</surname>
+      </personname>
+    </author>
+  </info>
+
+  <xi:include href="&bookpath;/oscBook/chap1.xml"/> <!-- overview -->
+  <xi:include href="&bookpath;/oscBook/chap2.xml"/> <!-- info controller -->
+  <xi:include href="&bookpath;/oscBook/chap3.xml"/> <!-- status controller -->
+  <xi:include href="&bookpath;/oscBook/chap4.xml"/> <!-- config controller -->
+  <xi:include href="&bookpath;/oscBook/chap5.xml"/> <!-- action controller -->
+  <xi:include href="&bookpath;/oscBook/chap6.xml"/> <!-- node controller -->
+  <xi:include href="&bookpath;/oscBook/chap7.xml"/> <!-- renew controller -->
+  <xi:include href="&bookpath;/oscBook/chap8.xml"/> <!-- meter controller -->
+  <xi:include href="&bookpath;/appa.xml"/>
+  <xi:include href="&bookpath;/oscBook/appb.xml"/>
+
+</book>
