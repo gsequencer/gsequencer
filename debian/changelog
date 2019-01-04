@@ -1,4 +1,12 @@
-com.github.gsequencer.gsequencer (2.1.29-20) UNRELEASED; urgency=medium
+com.github.gsequencer.gsequencer (2.1.30-1juno1) UNRELEASED; urgency=medium
+
+  * Non-maintainer upload.
+  * fixed download
+  * changed source format to native
+
+ -- Joël Krähemann <jkraehemann@gmail.com>  Fri, 04 Jan 2019 19:33:31 +0100
+
+com.github.gsequencer.gsequencer (2.1.29) bionic; urgency=medium
 
   * New upstream version 2.1.29
   * fixed debian/control to be properly prefixed
@@ -14,5 +22,7 @@ com.github.gsequencer.gsequencer (2.1.29-20) UNRELEASED; urgency=medium
   * removed debian/com.github.gsequencer.gsequencer.symbols file
   * modified copyright file
   * removed gbp.conf
+  * edited copyright
+  * no special chars in control file
 
- -- Joël Krähemann <joelkraehemann@deb-halo>  Fri, 04 Jan 2019 17:56:02 +0100
+ -- Joël Krähemann <jkraehemann@gmail.com>  Fri, 04 Jan 2019 18:22:17 +0100

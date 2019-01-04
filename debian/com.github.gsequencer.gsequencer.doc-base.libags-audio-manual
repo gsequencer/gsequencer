@@ -1,0 +1,9 @@
+Document: libags-audio-doc-manual
+Title: Advanced Gtk+ Sequencer Development Manual
+Author: Joël Krähemann
+Abstract: This manual describes howto code with Advanced Gtk+ Sequencer audio library
+Section: Sound
+
+Format: HTML
+Index: /usr/share/doc/libags-audio-doc/html/index.html
+Files: /usr/share/doc/libags-audio-doc/html/*.html

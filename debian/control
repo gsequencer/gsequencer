@@ -1,8 +1,8 @@
 Source: com.github.gsequencer.gsequencer
 Section: sound
 Priority: optional
-Maintainer: Joël Krähemann <jkraehemann@gmail.com>
-Uploaders: Joël Krähemann <jkraehemann@gmail.com>
+Maintainer: Joel Kraehemann <jkraehemann@gmail.com>
+Uploaders: Joel Kraehemann <jkraehemann@gmail.com>
 Build-Depends:
  debhelper (>= 11),
  pkg-config,
