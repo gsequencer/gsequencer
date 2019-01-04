@@ -99,5 +99,5 @@ override_dh_clean:
 	rm -f docs/reference/libgsequencer/libgsequencer.types
 	find docs/ -type d -name ".libs" -exec rm -rf {} +
 	find docs/ -type d -name "tmpl" -exec rm -rf {} +
-	rm lib*.sym
+	rm -f lib*.sym
 	dh_clean
