@@ -1,9 +1,10 @@
-com.github.gsequencer.gsequencer (2.1.30+nmu1) UNRELEASED; urgency=medium
+com.github.gsequencer.gsequencer (2.1.30) UNRELEASED; urgency=medium
 
   * Non-maintainer upload.
   * merged 2.1.x
+  * fixed email
 
- -- Joël Krähemann <joelkraehemann@deb-halo>  Fri, 04 Jan 2019 18:39:41 +0100
+ -- Joël Krähemann <jkraehemann@gmail.com>  Fri, 04 Jan 2019 18:57:25 +0100
 
 com.github.gsequencer.gsequencer (2.1.29) bionic; urgency=medium
 
