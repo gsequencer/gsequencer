@@ -408,7 +408,7 @@ ags_pulse_devout_class_init(AgsPulseDevoutClass *pulse_devout)
 				   i18n_pspec("Beats per minute to use"),
 				   1.0,
 				   240.0,
-				   120.0,
+				   AGS_SOUNDCARD_DEFAULT_BPM,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_BPM,
@@ -900,6 +900,12 @@ ags_pulse_devout_set_property(GObject *gobject,
       bpm = g_value_get_double(value);
 
       pthread_mutex_lock(pulse_devout_mutex);
+
+      if(bpm == pulse_devout->bpm){
+	pthread_mutex_unlock(devout_mutex);
+
+	return;
+      }
 
       pulse_devout->bpm = bpm;
 
