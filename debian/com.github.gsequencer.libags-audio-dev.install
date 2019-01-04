@@ -1,5 +1,0 @@
-usr/lib/*/libags_audio.so
-usr/lib/*/pkgconfig/libags_audio.pc
-usr/include/ags/libags-audio.h
-usr/include/ags/plugin
-usr/include/ags/audio
