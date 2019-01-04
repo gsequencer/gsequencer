@@ -1,4 +1,4 @@
-libags_gui.so.2 libags-gui2 #MINVER#
+libags_gui.so.2 com.github.gsequencer.libags-gui2 #MINVER#
  ags_cartesian_add_plot@Base 2.0.0
  ags_cartesian_fill_label@Base 2.0.0
  ags_cartesian_get_type@Base 2.0.0

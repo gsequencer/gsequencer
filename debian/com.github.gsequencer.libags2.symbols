@@ -1,4 +1,4 @@
-libags.so.2 libags2 #MINVER#
+libags.so.2 com.github.gsequencer.libags2 #MINVER#
  ags_applicable_apply@Base 2.0.0
  ags_applicable_get_type@Base 2.0.0
  ags_applicable_reset@Base 2.0.0

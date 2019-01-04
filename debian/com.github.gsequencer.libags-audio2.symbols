@@ -1,4 +1,4 @@
-libags_audio.so.2 libags-audio2 #MINVER#
+libags_audio.so.2 com.github.gsequencer.libags-audio2 #MINVER#
  ags_acceleration_duplicate@Base 2.0.0
  ags_acceleration_get_class_mutex@Base 2.0.0
  ags_acceleration_get_type@Base 2.0.0
