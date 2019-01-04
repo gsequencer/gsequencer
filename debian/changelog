@@ -1,4 +1,4 @@
-com.github.gsequencer.gsequencer (2.1.29-6) bionic; urgency=medium
+com.github.gsequencer.gsequencer (2.1.29-7) bionic; urgency=medium
 
   * New upstream version 2.1.29
   * fixed debian/control to be properly prefixed
