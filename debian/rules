@@ -3,7 +3,7 @@
 
 DPKG_EXPORT_BUILDFLAGS = 1
 include /usr/share/dpkg/default.mk
-include /usr/share/dpkg/pkg-info.mk
+# include /usr/share/dpkg/pkg-info.mk
 
 archconfflags :=
 
