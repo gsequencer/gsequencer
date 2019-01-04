@@ -64,7 +64,7 @@ override_dh_auto_test:
 	xvfb-run --server-args="-screen 0 1920x1080x24" -a dh_auto_test
 
 override_dh_auto_install:
-	dh_auto_install --destdir=debian/com.github.gsequencer.gsequencer --no-parallel
+	dh_auto_install --no-parallel --destdir=debian/com.github.gsequencer.gsequencer
 	$(MAKE) DESTDIR=$$(pwd)/debian/com.github.gsequencer.gsequencer install-html
 	find $$(pwd)/debian/com.github.gsequencer.gsequencer/usr/share -type f \
 		\( -name "htmlhelp.hhp" -or -name "toc.hhc" \) \
