@@ -902,7 +902,7 @@ ags_pulse_devout_set_property(GObject *gobject,
       pthread_mutex_lock(pulse_devout_mutex);
 
       if(bpm == pulse_devout->bpm){
-	pthread_mutex_unlock(devout_mutex);
+	pthread_mutex_unlock(pulse_devout_mutex);
 
 	return;
       }
