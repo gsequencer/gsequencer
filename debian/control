@@ -1,9 +1,8 @@
 Source: com.github.gsequencer.gsequencer
 Section: sound
 Priority: optional
-Maintainer: Debian Multimedia Maintainers <debian-multimedia@lists.debian.org>
-Uploaders: Joël Krähemann <jkraehemann@gmail.com>,
- IOhannes m zmölnig (Debian/GNU) <umlaeute@debian.org>,
+Maintainer: Joël Krähemann <jkraehemann@gmail.com>
+Uploaders: Joël Krähemann <jkraehemann@gmail.com>
 Build-Depends:
  debhelper (>= 11),
  pkg-config,
