@@ -1,0 +1,9 @@
+Document: libags-audio-doc-osc-server
+Title: Advanced Gtk+ Sequencer OSC Server Manual
+Author: Joël Krähemann
+Abstract: This manual describes howto use the Advanced Gtk+ Sequencer OSC server
+Section: Sound
+
+Format: HTML
+Index: /usr/share/doc/libags-audio-doc/osc-server/index.html
+Files: /usr/share/doc/libags-audio-doc/osc-server/*.html
