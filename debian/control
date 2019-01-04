@@ -67,7 +67,7 @@ Architecture: all
 Multi-Arch: foreign
 Depends:
  ${misc:Depends},
-Recommends: gsequencer
+Recommends: com.github.gsequencer.gsequencer
 Description: documentation for Advanced Gtk+ Sequencer
  Advanced GTK+ Sequencer is intended to be used for music composition.
  .
