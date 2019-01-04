@@ -1,0 +1,9 @@
+Document: gseqeuencer-doc
+Title: GSequencer Manual
+Author: Joël Krähemann
+Abstract: This manual describes howto use GSequencer
+Section: Sound
+
+Format: HTML
+Index: /usr/share/doc/gsequencer-doc/html/index.html
+Files: /usr/share/doc/gsequencer-doc/html/*.html

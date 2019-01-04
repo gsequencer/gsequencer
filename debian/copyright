@@ -1,6 +1,6 @@
 Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
-Upstream-Name: com.github.gsequener.gsequencer
-Source: https://git.savannah.nongnu.org/cgit/gsequencer.git
+Upstream-Name: gsequencer
+Source: https://github.com/gsequencer/gsequencer.git
 
 Files: *
 Copyright: 2005-2015 Joël Krähemann <jkraehemann@gmail.com>
