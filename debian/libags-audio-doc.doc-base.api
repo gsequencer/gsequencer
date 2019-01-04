@@ -1,9 +1,0 @@
-Document: libags-audio-doc-api
-Title: Advanced Gtk+ Sequencer Audio API Reference Manual
-Author: Joël Krähemann
-Abstract: This manual is the API reference manual of Advanced Gtk+ Sequencer audio library
-Section: Sound
-
-Format: HTML
-Index: /usr/share/doc/libags-audio-doc/api/index.html
-Files: /usr/share/doc/libags-audio-doc/api/*.html

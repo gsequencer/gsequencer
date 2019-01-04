@@ -1,4 +1,0 @@
-# watch control file for uscan
-version=3
-opts=uversionmangle=s/-(alpha|beta|rc)/~\\1/,pgpsigurlmangle=s/$/.sig/ \
-https://download.gsequencer.org/latest/gsequencer-(.+)\.tar\.gz
