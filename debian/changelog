@@ -1,4 +1,4 @@
-com.github.gsequencer.gsequencer (2.1.29-15) bionic; urgency=medium
+com.github.gsequencer.gsequencer (2.1.29-15.1) bionic; urgency=medium
 
   * New upstream version 2.1.29
   * fixed debian/control to be properly prefixed
@@ -12,4 +12,4 @@ com.github.gsequencer.gsequencer (2.1.29-15) bionic; urgency=medium
   * merged to 1 single package
   * using destdir in debian/rules
 
- -- Joël Krähemann <jkraehemann@gmail.com>  Fri, 04 Jan 2019 10:30:47 +0100
+ -- Joël Krähemann <joelkraehemann@deb-halo>  Fri, 04 Jan 2019 17:12:22 +0100
