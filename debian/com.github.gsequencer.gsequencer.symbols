@@ -2602,7 +2602,7 @@ libags.so.2 com.github.gsequencer.gsequencer #MINVER#
  ags_uuid_generate@Base 2.0.0
  ags_uuid_get_type@Base 2.0.0
  ags_uuid_to_string@Base 2.0.0
-libags_server.so.2 libags2 #MINVER#
+libags_server.so.2 com.github.gsequencer.gsequencer #MINVER#
  ags_authentication_generate_token@Base 2.0.0
  ags_authentication_get_authentication_module@Base 2.0.0
  ags_authentication_get_groups@Base 2.0.0
@@ -2730,7 +2730,7 @@ libags_server.so.2 libags2 #MINVER#
  ags_xml_password_store_find_login@Base 2.0.0
  ags_xml_password_store_get_type@Base 2.0.0
  ags_xml_password_store_new@Base 2.0.0
-libags_thread.so.2 libags2 #MINVER#
+libags_thread.so.2 com.github.gsequencer.gsequencer #MINVER#
  ags_autosave_thread_get_type@Base 2.0.0
  ags_autosave_thread_new@Base 2.0.0
  ags_concurrency_provider_get_main_loop@Base 2.0.0
