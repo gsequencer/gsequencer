@@ -32,20 +32,23 @@ CPPFLAGS += -DAGS_LICENSE_FILENAME=\"/usr/share/common-licenses/GPL-3\"
 DEB_UPSTREAM_MINOR_VERSION := $(shell echo $(DEB_VERSION_UPSTREAM) | sed -r 's/([0-9]+).([0-9]+).([0-9]+)/\1.\2.x/')
 
 # Sets build tarball-dir if not provided by command line
-TARBALL_DIR ?= ../tarballs
+TARBALL_DIR ?= ../
 
 # Sets export-dir if not provided by command line
-EXPORT_DIR ?= ../build-area
+EXPORT_DIR ?= ../
 
 # Sets download mirror if not provided by command line
-DOWNLOAD_MIRROR ?= http://download.savannah.gnu.org/releases/gsequencer
+DOWNLOAD_MIRROR ?= http://download-mirror.savannah.gnu.org/releases/gsequencer
+
+%: get-orig-source
+	dh $@
 
 get-orig-source:
-	mkdir -p $(TARBALL_DIR)
-	mkdir -p $(EXPORT_DIR)
-	wget --method=GET -O "$(TARBALL_DIR)/$(DEB_SOURCE)_$(DEB_VERSION_UPSTREAM).orig.tar.gz" -c "$(DOWNLOAD_MIRROR)/$(DEB_UPSTREAM_MINOR_VERSION)/$(DEB_SOURCE)-$(DEB_VERSION_UPSTREAM).tar.gz"
-	wget --method=GET -O "$(TARBALL_DIR)/$(DEB_SOURCE)_$(DEB_VERSION_UPSTREAM).orig.tar.gz.asc" -c "$(DOWNLOAD_MIRROR)/$(DEB_UPSTREAM_MINOR_VERSION)/$(DEB_SOURCE)-$(DEB_VERSION_UPSTREAM).tar.gz.sig"
-	ln -s "$(TARBALL_DIR)/$(DEB_SOURCE)_$(DEB_VERSION_UPSTREAM).orig.tar.gz.asc" $(EXPORT_DIR)
+#	mkdir -p $(TARBALL_DIR)
+#	mkdir -p $(EXPORT_DIR)
+	wget --method=GET -O "$(TARBALL_DIR)/com.github.gsequencer.$(DEB_SOURCE)_$(DEB_VERSION_UPSTREAM).orig.tar.gz" -c "$(DOWNLOAD_MIRROR)/$(DEB_UPSTREAM_MINOR_VERSION)/$(DEB_SOURCE)-$(DEB_VERSION_UPSTREAM).tar.gz"
+	wget --method=GET -O "$(TARBALL_DIR)/com.github.gsequencer.$(DEB_SOURCE)_$(DEB_VERSION_UPSTREAM).orig.tar.gz.asc" -c "$(DOWNLOAD_MIRROR)/$(DEB_UPSTREAM_MINOR_VERSION)/$(DEB_SOURCE)-$(DEB_VERSION_UPSTREAM).tar.gz.sig"
+#	ln -s "$(TARBALL_DIR)/com.github.gsequencer.$(DEB_SOURCE)_$(DEB_VERSION_UPSTREAM).orig.tar.gz.asc" $(EXPORT_DIR)
 
 pre-integration-test:
 	dh_autoreconf
