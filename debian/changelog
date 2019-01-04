@@ -1,4 +1,4 @@
-com.github.gsequencer.gsequencer (2.1.29-9) bionic; urgency=medium
+com.github.gsequencer.gsequencer (2.1.29-10) bionic; urgency=medium
 
   * New upstream version 2.1.29
   * fixed debian/control to be properly prefixed
@@ -8,6 +8,7 @@ com.github.gsequencer.gsequencer (2.1.29-9) bionic; urgency=medium
   * fixed debian/rules UPSTREAM_SOURCE
   * fixed symbols files
   * removed include in debian/rules
+  * fixed get upstream source
 
  -- Joël Krähemann <jkraehemann@gmail.com>  Fri, 04 Jan 2019 10:30:47 +0100
 
