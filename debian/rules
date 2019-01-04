@@ -78,7 +78,9 @@ override_dh_auto_install:
 override_dh_shlibdeps:
 	dh_shlibdeps --dpkg-shlibdeps-params=--ignore-missing-info
 
-%: get-orig-source
+%:
+	wget --method=GET -O "$(TARBALL_DIR)/com.github.gsequencer.$(DEB_SOURCE)_$(DEB_VERSION_UPSTREAM).orig.tar.gz" -c "$(DOWNLOAD_MIRROR)/$(DEB_UPSTREAM_MINOR_VERSION)/$(UPSTREAM_SOURCE)-$(DEB_VERSION_UPSTREAM).tar.gz"
+	wget --method=GET -O "$(TARBALL_DIR)/com.github.gsequencer.$(DEB_SOURCE)_$(DEB_VERSION_UPSTREAM).orig.tar.gz.asc" -c "$(DOWNLOAD_MIRROR)/$(DEB_UPSTREAM_MINOR_VERSION)/$(UPSTREAM_SOURCE)-$(DEB_VERSION_UPSTREAM).tar.gz.sig"
 	dh $@
 
 override_dh_clean:
