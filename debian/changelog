@@ -1,4 +1,4 @@
-com.github.gsequencer.gsequencer (2.1.29-19) UNRELEASED; urgency=medium
+com.github.gsequencer.gsequencer (2.1.29-20) UNRELEASED; urgency=medium
 
   * New upstream version 2.1.29
   * fixed debian/control to be properly prefixed
@@ -13,5 +13,6 @@ com.github.gsequencer.gsequencer (2.1.29-19) UNRELEASED; urgency=medium
   * using destdir in debian/rules
   * removed debian/com.github.gsequencer.gsequencer.symbols file
   * modified copyright file
+  * removed gbp.conf
 
- -- Joël Krähemann <joelkraehemann@deb-halo>  Fri, 04 Jan 2019 17:51:14 +0100
+ -- Joël Krähemann <joelkraehemann@deb-halo>  Fri, 04 Jan 2019 17:56:02 +0100
