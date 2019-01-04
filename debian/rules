@@ -40,13 +40,11 @@ EXPORT_DIR ?= ../
 # Sets download mirror if not provided by command line
 DOWNLOAD_MIRROR ?= http://download-mirror.savannah.gnu.org/releases/gsequencer
 
-UPSTREAM_SOURCE ?= gsequencer
-
 get-orig-source:
 	mkdir -p $(TARBALL_DIR)
 	mkdir -p $(EXPORT_DIR)
-	wget --method=GET -O "$(TARBALL_DIR)/$(DEB_SOURCE)_$(DEB_VERSION_UPSTREAM).orig.tar.gz" -c "$(DOWNLOAD_MIRROR)/$(DEB_UPSTREAM_MINOR_VERSION)/$(UPSTREAM_SOURCE)-$(DEB_VERSION_UPSTREAM).tar.gz"
-	wget --method=GET -O "$(TARBALL_DIR)/$(DEB_SOURCE)_$(DEB_VERSION_UPSTREAM).orig.tar.gz.asc" -c "$(DOWNLOAD_MIRROR)/$(DEB_UPSTREAM_MINOR_VERSION)/$(UPSTREAM_SOURCE)-$(DEB_VERSION_UPSTREAM).tar.gz.sig"
+	wget --method=GET -O "$(TARBALL_DIR)/$(DEB_SOURCE)_$(DEB_VERSION_UPSTREAM).orig.tar.gz" -c "$(DOWNLOAD_MIRROR)/$(DEB_UPSTREAM_MINOR_VERSION)/gsequencer-$(DEB_VERSION_UPSTREAM).tar.gz"
+	wget --method=GET -O "$(TARBALL_DIR)/$(DEB_SOURCE)_$(DEB_VERSION_UPSTREAM).orig.tar.gz.asc" -c "$(DOWNLOAD_MIRROR)/$(DEB_UPSTREAM_MINOR_VERSION)/gsequencer-$(DEB_VERSION_UPSTREAM).tar.gz.sig"
 	ln -s "$(TARBALL_DIR)/$(DEB_SOURCE)_$(DEB_VERSION_UPSTREAM).orig.tar.gz.asc" $(EXPORT_DIR)
 
 pre-integration-test:
@@ -79,8 +77,8 @@ override_dh_shlibdeps:
 	dh_shlibdeps --dpkg-shlibdeps-params=--ignore-missing-info
 
 %:
-	wget --method=GET -O "$(TARBALL_DIR)/$(DEB_SOURCE)_$(DEB_VERSION_UPSTREAM).orig.tar.gz" -c "$(DOWNLOAD_MIRROR)/$(DEB_UPSTREAM_MINOR_VERSION)/$(UPSTREAM_SOURCE)-$(DEB_VERSION_UPSTREAM).tar.gz"
-	wget --method=GET -O "$(TARBALL_DIR)/$(DEB_SOURCE)_$(DEB_VERSION_UPSTREAM).orig.tar.gz.asc" -c "$(DOWNLOAD_MIRROR)/$(DEB_UPSTREAM_MINOR_VERSION)/$(UPSTREAM_SOURCE)-$(DEB_VERSION_UPSTREAM).tar.gz.sig"
+	wget --method=GET -O "$(TARBALL_DIR)/$(DEB_SOURCE)_$(DEB_VERSION_UPSTREAM).orig.tar.gz" -c "$(DOWNLOAD_MIRROR)/$(DEB_UPSTREAM_MINOR_VERSION)/gsequencer-$(DEB_VERSION_UPSTREAM).tar.gz"
+	wget --method=GET -O "$(TARBALL_DIR)/$(DEB_SOURCE)_$(DEB_VERSION_UPSTREAM).orig.tar.gz.asc" -c "$(DOWNLOAD_MIRROR)/$(DEB_UPSTREAM_MINOR_VERSION)/gsequencer-$(DEB_VERSION_UPSTREAM).tar.gz.sig"
 	dh $@
 
 override_dh_clean:
