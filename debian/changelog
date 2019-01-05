@@ -1,5 +1,6 @@
 com.github.gsequencer.gsequencer (2.1.31) bionic; urgency=medium
 
   * initial release
+  * cleaned changelog
 
  -- Joël Krähemann <jkraehemann@gmail.com>  Sat, 05 Jan 2019 14:17:51 +0100
