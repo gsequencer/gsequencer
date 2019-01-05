@@ -10,4 +10,18 @@
     <p>GSequencer provides you various tools to play, create, edit and mix your own music.
     It features a step sequencer, piano roll, automation and waveform editor.</p>
   </description>
+  
+  <launchable type="desktop-id">com.github.gsequencer.gsequencer</launchable>
+
+  <screenshots>
+    <screenshot type="default">
+      <caption>GSequencer's main window</caption>
+      <image>https://directory.fsf.org/w/images/9/95/Gsequencer-main-window.png</image>
+    </screenshot>
+    <screenshot>
+      <image>https://directory.fsf.org/w/images/7/79/Gsequencer-automation-window.png</image>
+    </screenshot>
+  </screenshots>
+
+  <url type="homepage">http://nongnu.org/gsequencer</url>
 </component>

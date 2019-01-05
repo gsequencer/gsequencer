@@ -40,3 +40,4 @@ usr/include/ags/file
 usr/include/ags/thread
 usr/include/ags/server
 usr/share/doc/libags-doc/api/* usr/share/doc/libags-doc/api/
+usr/share/metainfo
