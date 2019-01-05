@@ -2,7 +2,7 @@
 <!-- Copyright 2018 Your Name <jkraehemann@gmail.com> -->
 <component type="desktop">
   <id>com.github.gsequencer.gsequencer</id>
-  <metadata_license>GPL3</metadata_license>
+  <metadata_license>FSFAP</metadata_license>
   <content_rating type="oars-1.0" />
   <name>GSequencer</name>
   <summary>Advanced Gtk+ Sequencer</summary>
