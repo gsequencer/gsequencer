@@ -3,5 +3,6 @@ com.github.gsequencer.gsequencer (2.1.31) bionic; urgency=medium
   * initial release
   * moving binary to com.github.gsequencer.gsequencer
   * added usr/share/metainfo/com.github.gsequencer.gsequencer.appdata.xml
+  * modified *.appdata.xml license
 
  -- Joël Krähemann <jkraehemann@gmail.com>  Sat, 05 Jan 2019 14:17:51 +0100
