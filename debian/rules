@@ -63,8 +63,9 @@ override_dh_auto_test:
 
 override_dh_auto_install:
 	mkdir -p $$(pwd)/debian/tmp/usr/share/metainfo
-	cp com.github.gsequencer.gsequencer.appdata.xml $$(pwd)/debian/tmp/usr/share/metainfo/com.github.gsequencer.gsequencer.appdata.xml
-	sed -i "s/Exec=sh -c \"f=%f;\"' if [ -f \"$f\" ]; then gsequencer --filename $f; else gsequencer; fi'/Exec=sh -c \"f=%f;\"' if [ -f \"$f\" ]; then com.github.gsequencer.gsequencer --filename $f; else com.github.gsequencer.gsequencer; fi'/g" gsequencer.desktop
+	sed -i "s/<id>org.nongnu.gsequencer.gsequencer</id>/<id>com.github.gsequencer.gsequencer</id>/g" gsequencer.appdata.xml
+	sed -i "s/<launchable type=\"desktop-id\">gsequencer</launchable>/<launchable type=\"desktop-id\">com.github.gsequencer.gsequencer</launchable>/g" gsequencer.appdata.xml
+	sed -i "s/Exec=gsequencer --filename %f/Exec=com.github.gsequencer.gsequencer --filename %f/g" gsequencer.desktop
 	dh_auto_install --no-parallel --destdir=$$(pwd)/debian/tmp
 	$(MAKE) DESTDIR=$$(pwd)/debian/tmp install-html
 	find $$(pwd)/debian/tmp/usr/share -type f \
