@@ -1,3 +1,9 @@
+ags (2.1.32)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved gsequencer.desktop
+	* improved recognize missing filename in ags_xorg_application_context_prepare()
+
 ags (2.1.31)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

@@ -1722,7 +1722,9 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
   //  pthread_mutex_lock(ags_gui_thread_get_dispatch_mutex());
   
   for(i = 0; i < AGS_APPLICATION_CONTEXT(xorg_application_context)->argc; i++){
-    if(!strncmp(AGS_APPLICATION_CONTEXT(xorg_application_context)->argv[i], "--filename", 11)){
+    if(!strncmp(AGS_APPLICATION_CONTEXT(xorg_application_context)->argv[i], "--filename", 11) &&
+       i + 1 < AGS_APPLICATION_CONTEXT(xorg_application_context)->argc &&
+       AGS_APPLICATION_CONTEXT(xorg_application_context)->argv[i + 1] != NULL){
       AgsSimpleFile *simple_file;
 
       xmlXPathContext *xpath_context; 
