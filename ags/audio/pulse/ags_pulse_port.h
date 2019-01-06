@@ -89,6 +89,11 @@ struct _AgsPulsePort
   guint buffer_size;
   guint format;
 
+  gboolean use_cache;
+  guint cache_buffer_size;
+
+  void **cache;
+  
 #ifdef AGS_WITH_PULSE
   pa_stream *stream;
   pa_sample_spec *sample_spec;
