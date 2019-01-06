@@ -1641,7 +1641,7 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
   
   uid_t uid;
   
-  guint i;
+  guint i, j;
   gboolean single_thread_enabled;
   gboolean has_core_audio;
   gboolean has_pulse;
@@ -1722,7 +1722,9 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
   //  pthread_mutex_lock(ags_gui_thread_get_dispatch_mutex());
   
   for(i = 0; i < AGS_APPLICATION_CONTEXT(xorg_application_context)->argc; i++){
-    if(!strncmp(AGS_APPLICATION_CONTEXT(xorg_application_context)->argv[i], "--filename", 11)){
+    if(!strncmp(AGS_APPLICATION_CONTEXT(xorg_application_context)->argv[i], "--filename", 11) &&
+       i + 1 < AGS_APPLICATION_CONTEXT(xorg_application_context)->argc &&
+       AGS_APPLICATION_CONTEXT(xorg_application_context)->argv[i + 1] != NULL){
       AgsSimpleFile *simple_file;
 
       xmlXPathContext *xpath_context; 
@@ -1735,6 +1737,16 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
       guint buffer_length;
       
       filename = AGS_APPLICATION_CONTEXT(xorg_application_context)->argv[i + 1];
+
+      if(!g_file_test(filename,
+		      G_FILE_TEST_EXISTS) ||
+	 !g_file_test(filename,
+		      G_FILE_TEST_IS_REGULAR)){
+	i += 2;
+
+	break;
+      }
+      
       simple_file = ags_simple_file_new();
       g_object_set(simple_file,
 		   "filename", filename,
@@ -1770,9 +1782,9 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
       node = xpath_object->nodesetval->nodeTab;
       buffer = NULL;
       
-      for(i = 0; i < xpath_object->nodesetval->nodeNr; i++){
-	if(node[i]->type == XML_ELEMENT_NODE){
-	  buffer = xmlNodeGetContent(node[i]);
+      for(j = 0; j < xpath_object->nodesetval->nodeNr; j++){
+	if(node[j]->type == XML_ELEMENT_NODE){
+	  buffer = xmlNodeGetContent(node[j]);
 	  buffer_length = strlen(buffer);
 	  
 	  break;
@@ -1784,6 +1796,8 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
 	ags_config_load_from_data(ags_config_get_instance(),
 				  buffer, buffer_length);
       }
+
+      i++;
       
       break;
     }
