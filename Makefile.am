@@ -146,7 +146,8 @@ appdata_DATA = gsequencer.desktop
 EXTRA_DIST += gsequencer.desktop.in
 
 # MIME specification
-EXTRA_DIST += application-x-gsequencer.xml
+EXTRA_DIST += application-x-gsequencer.xml \
+	gsequencer.appdata.xml
 
 # clean
 CLEANFILES += $(appdata_DATA) $(pkgconfig_DATA)
@@ -2087,6 +2088,7 @@ install-data-local:
 	mkdir -p $(DESTDIR)/$(datadir)/gsequencer/styles
 	mkdir -p $(DESTDIR)/$(datadir)/xml/gsequencer/{schema/dtd/$(PACKAGE_VERSION)/,stylesheet/ags-xsl/midi-xml/}
 	mkdir -p $(DESTDIR)/$(datadir)/mime/packages
+	mkdir -p $(DESTDIR)/$(datadir)/metainfo
 	install -c -p -m 644 $(top_srcdir)/gsequencer.share/icons/ags.xpm $(DESTDIR)/$(datadir)/gsequencer/icons/ags.xpm
 	install -c -p -m 644 $(top_srcdir)/gsequencer.share/icons/jumper.png $(DESTDIR)/$(datadir)/gsequencer/icons/jumper.png
 	install -c -p -m 644 $(top_srcdir)/gsequencer.share/icons/ags.png $(DESTDIR)/$(datadir)/gsequencer/icons/ags.png
@@ -2104,6 +2106,7 @@ install-data-local:
 	install -c -p -m 644 $(top_srcdir)/ags.xsl $(DESTDIR)/$(datadir)/xml/gsequencer/stylesheet/ags-xsl/midi-xml/
 	install -c -p -m 644 $(top_srcdir)/ags-simple.xsl $(DESTDIR)/$(datadir)/xml/gsequencer/stylesheet/ags-xsl/midi-xml/
 	install -c -p -m 644 $(top_srcdir)/application-x-gsequencer.xml $(DESTDIR)/$(datadir)/mime/packages/gsequencer.xml
+	install -c -p -m 644 $(top_srcdir)/gsequencer.appdata.xml $(DESTDIR)/$(datadir)/metainfo/
 	mkdir -p $(DESTDIR)/$(docdir)/
 	gzip -9 -c $(top_srcdir)/ChangeLog > $(DESTDIR)/$(docdir)/changelog.gz
 
@@ -2176,6 +2179,7 @@ uninstall-hook:
 	rm -rf $(DESTDIR)/$(datadir)/gtk-doc/html/libgsequencer
 	rm -f $(DESTDIR)/$(datadir)/icons/hicolor/{32x32,48x48,64x64,128x128}/apps/gsequencer.png
 	rm -f $(DESTDIR)/$(datadir)/mime/packages/gsequencer.xml
+	rm -f $(DESTDIR)/$(datadir)/metainfo/gsequencer.appdata.xml
 	rm -f $(DESTDIR)/$(pkgconfigdir)/libags.pc
 	rm -f $(DESTDIR)/$(pkgconfigdir)/libags_audio.pc
 	rm -f $(DESTDIR)/$(pkgconfigdir)/libags_gui.pc
