@@ -676,7 +676,7 @@ ags_devout_init(AgsDevout *devout)
 		       NULL);
   }
   
-  devout->buffer = (void **) malloc(4 * sizeof(void*));
+  devout->buffer = (void **) malloc(4 * sizeof(void *));
 
   devout->buffer[0] = NULL;
   devout->buffer[1] = NULL;

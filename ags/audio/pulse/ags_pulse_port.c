@@ -67,6 +67,7 @@ void ags_pulse_port_connect(AgsConnectable *connectable);
 void ags_pulse_port_disconnect(AgsConnectable *connectable);
 
 #ifdef AGS_WITH_PULSE
+void ags_pulse_port_cached_stream_request_callback(pa_stream *stream, size_t length, AgsPulsePort *pulse_port);
 void ags_pulse_port_stream_request_callback(pa_stream *stream, size_t length, AgsPulsePort *pulse_port);
 void ags_pulse_port_stream_underflow_callback(pa_stream *stream, AgsPulsePort *pulse_port);
 #endif
@@ -294,6 +295,15 @@ ags_pulse_port_init(AgsPulsePort *pulse_port)
   pulse_port->buffer_size = ags_soundcard_helper_config_get_buffer_size(config);
   pulse_port->format = ags_soundcard_helper_config_get_format(config);
 
+  pulse_port->use_cache = TRUE;
+  pulse_port->cache_buffer_size = AGS_PULSE_PORT_DEFAULT_CACHE_BUFFER_SIZE;
+
+  pulse_port->current_cache = 0;
+  pulse_port->completed_cache = 0;
+  pulse_port->cache_offset = 0;
+
+  pulse_port->cache = (void **) malloc(4 * sizeof(void *));
+  
 #ifdef AGS_WITH_PULSE
   pulse_port->sample_spec = (pa_sample_spec *) malloc(sizeof(pa_sample_spec));
   pulse_port->sample_spec->rate = pulse_port->samplerate;
@@ -313,6 +323,11 @@ ags_pulse_port_init(AgsPulsePort *pulse_port)
       }
 #endif
 
+      pulse_port->cache[0] = (void *) malloc(pulse_port->pcm_channels * AGS_PULSE_PORT_DEFAULT_CACHE_BUFFER_SIZE * sizeof(gint16));
+      pulse_port->cache[1] = (void *) malloc(pulse_port->pcm_channels * AGS_PULSE_PORT_DEFAULT_CACHE_BUFFER_SIZE * sizeof(gint16));
+      pulse_port->cache[2] = (void *) malloc(pulse_port->pcm_channels * AGS_PULSE_PORT_DEFAULT_CACHE_BUFFER_SIZE * sizeof(gint16));
+      pulse_port->cache[3] = (void *) malloc(pulse_port->pcm_channels * AGS_PULSE_PORT_DEFAULT_CACHE_BUFFER_SIZE * sizeof(gint16));
+
       word_size = sizeof(gint16);
     }
     break;
@@ -325,6 +340,11 @@ ags_pulse_port_init(AgsPulsePort *pulse_port)
 	pulse_port->sample_spec->format = PA_SAMPLE_S24_32LE;
       }
 #endif
+
+      pulse_port->cache[0] = (void *) malloc(pulse_port->pcm_channels * AGS_PULSE_PORT_DEFAULT_CACHE_BUFFER_SIZE * sizeof(gint32));
+      pulse_port->cache[1] = (void *) malloc(pulse_port->pcm_channels * AGS_PULSE_PORT_DEFAULT_CACHE_BUFFER_SIZE * sizeof(gint32));
+      pulse_port->cache[2] = (void *) malloc(pulse_port->pcm_channels * AGS_PULSE_PORT_DEFAULT_CACHE_BUFFER_SIZE * sizeof(gint32));
+      pulse_port->cache[3] = (void *) malloc(pulse_port->pcm_channels * AGS_PULSE_PORT_DEFAULT_CACHE_BUFFER_SIZE * sizeof(gint32));
 
       word_size = sizeof(gint32);
     }
@@ -339,6 +359,11 @@ ags_pulse_port_init(AgsPulsePort *pulse_port)
       }
 #endif
 
+      pulse_port->cache[0] = (void *) malloc(pulse_port->pcm_channels * AGS_PULSE_PORT_DEFAULT_CACHE_BUFFER_SIZE * sizeof(gint32));
+      pulse_port->cache[1] = (void *) malloc(pulse_port->pcm_channels * AGS_PULSE_PORT_DEFAULT_CACHE_BUFFER_SIZE * sizeof(gint32));
+      pulse_port->cache[2] = (void *) malloc(pulse_port->pcm_channels * AGS_PULSE_PORT_DEFAULT_CACHE_BUFFER_SIZE * sizeof(gint32));
+      pulse_port->cache[3] = (void *) malloc(pulse_port->pcm_channels * AGS_PULSE_PORT_DEFAULT_CACHE_BUFFER_SIZE * sizeof(gint32));
+
       word_size = sizeof(gint32);
     }
     break;
@@ -347,6 +372,11 @@ ags_pulse_port_init(AgsPulsePort *pulse_port)
   }
   
   fixed_size = pulse_port->pcm_channels * pulse_port->buffer_size * word_size;
+
+  memset(pulse_port->cache[0], 0, pulse_port->pcm_channels * AGS_PULSE_PORT_DEFAULT_CACHE_BUFFER_SIZE * word_size);
+  memset(pulse_port->cache[1], 0, pulse_port->pcm_channels * AGS_PULSE_PORT_DEFAULT_CACHE_BUFFER_SIZE * word_size);
+  memset(pulse_port->cache[2], 0, pulse_port->pcm_channels * AGS_PULSE_PORT_DEFAULT_CACHE_BUFFER_SIZE * word_size);
+  memset(pulse_port->cache[3], 0, pulse_port->pcm_channels * AGS_PULSE_PORT_DEFAULT_CACHE_BUFFER_SIZE * word_size);
 
 #ifdef AGS_WITH_PULSE
   pulse_port->buffer_attr = (pa_buffer_attr *) malloc(sizeof(pa_buffer_attr));
@@ -1029,7 +1059,8 @@ ags_pulse_port_register(AgsPulsePort *pulse_port,
   GList *list;
 
   int r;
-
+  gboolean use_cache;
+  
   pthread_mutex_t *pulse_client_mutex;
   pthread_mutex_t *pulse_port_mutex;
   
@@ -1095,6 +1126,8 @@ ags_pulse_port_register(AgsPulsePort *pulse_port,
   
   port_name = g_strdup(pulse_port->port_name);
 
+  use_cache = pulse_port->use_cache;
+  
   pthread_mutex_unlock(pulse_port_mutex);
 
   /* create sequencer or soundcard */
@@ -1122,9 +1155,16 @@ ags_pulse_port_register(AgsPulsePort *pulse_port,
   if(is_audio){
     ags_pulse_port_set_flags(pulse_port, AGS_PULSE_PORT_IS_AUDIO);
 
-    pa_stream_set_write_callback(stream,
-				 ags_pulse_port_stream_request_callback,
-				 pulse_port);
+    if(use_cache){
+      pa_stream_set_write_callback(stream,
+				   ags_pulse_port_cached_stream_request_callback,
+				   pulse_port);
+    }else{
+      pa_stream_set_write_callback(stream,
+				   ags_pulse_port_stream_request_callback,
+				   pulse_port);
+    }
+    
     pa_stream_set_underflow_callback(stream,
 				     ags_pulse_port_stream_underflow_callback,
 				     pulse_port);
@@ -1206,6 +1246,134 @@ ags_pulse_port_unregister(AgsPulsePort *pulse_port)
 }
 
 #ifdef AGS_WITH_PULSE
+void
+ags_pulse_port_cached_stream_request_callback(pa_stream *stream, size_t length, AgsPulsePort *pulse_port)
+{
+  AgsPulseDevout *pulse_devout;
+  AgsPulseDevin *pulse_devin;
+    
+  GObject *soundcard;
+
+  guint current_cache;
+  guint next_cache, completed_cache;
+  guint played_cache;
+  guint word_size;
+  guint frame_size;
+  
+  pthread_mutex_t *pulse_port_mutex;
+
+  if(pulse_port == NULL){
+    return;
+  }
+
+  /* get pulse port mutex */
+  pthread_mutex_lock(ags_pulse_port_get_class_mutex());
+  
+  pulse_port_mutex = pulse_port->obj_mutex;
+  
+  pthread_mutex_unlock(ags_pulse_port_get_class_mutex());
+
+  /*  */
+  pthread_mutex_lock(pulse_port_mutex);
+
+  pulse_devout = (AgsPulseDevout *) pulse_port->pulse_devout;
+  pulse_devin = (AgsPulseDevin *) pulse_port->pulse_devin;
+
+  current_cache = pulse_port->current_cache;
+  
+  switch(pulse_port->format){
+  case AGS_SOUNDCARD_SIGNED_16_BIT:
+    {
+      word_size = sizeof(gint16);
+    }
+    break;
+  case AGS_SOUNDCARD_SIGNED_24_BIT:
+    {
+      word_size = sizeof(gint32);
+    }
+    break;
+  case AGS_SOUNDCARD_SIGNED_32_BIT:
+    {
+      word_size = sizeof(gint32);
+    }
+    break;
+  }
+
+  frame_size = pulse_port->sample_spec->channels * pulse_port->cache_buffer_size * word_size;
+
+  pthread_mutex_unlock(pulse_port_mutex);
+
+  soundcard = NULL;
+  
+  if(pulse_devout != NULL){
+    soundcard = (GObject *) pulse_devout;
+  }else if(pulse_devin != NULL){
+    soundcard = (GObject *) pulse_devin;
+  }
+
+  if(current_cache == 3){
+    next_cache = 0;
+  }else{
+    next_cache = current_cache + 1;
+  }
+
+  /* wait until cache ready */
+  pthread_mutex_lock(pulse_port_mutex);
+
+  completed_cache = pulse_port->completed_cache;
+
+  pthread_mutex_unlock(pulse_port_mutex);
+
+  if(AGS_IS_PULSE_DEVOUT(soundcard)){
+    static const struct timespec idle_time = {
+      0,
+      250000,
+    };
+    
+    while(next_cache == completed_cache){
+      nanosleep(&idle_time, NULL);
+
+      pthread_mutex_lock(pulse_port_mutex);
+
+      completed_cache = pulse_port->completed_cache;
+
+      pthread_mutex_unlock(pulse_port_mutex);
+    }
+    
+    if(current_cache == 0){
+      played_cache = 3;
+    }else{
+      played_cache = current_cache - 1;
+    }
+    
+    pa_stream_write(stream,
+		    pulse_port->cache[played_cache],
+		    frame_size,
+		    NULL,
+		    0,
+		    PA_SEEK_RELATIVE);
+  }else{
+    if(current_cache == 3){
+      played_cache = 0;
+    }else{
+      played_cache = current_cache + 1;
+    }
+
+    pa_stream_peek(stream,
+		   &(pulse_port->cache[played_cache]),
+		   &frame_size);
+
+    pthread_mutex_lock(pulse_port_mutex);
+  }
+
+  /* seek current cache */
+  pthread_mutex_lock(pulse_port_mutex);
+
+  pulse_port->current_cache = next_cache;
+
+  pthread_mutex_unlock(pulse_port_mutex);
+}
+
 void
 ags_pulse_port_stream_request_callback(pa_stream *stream, size_t length, AgsPulsePort *pulse_port)
 {
