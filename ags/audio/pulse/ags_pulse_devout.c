@@ -2006,14 +2006,17 @@ void
 ags_pulse_devout_port_init(AgsSoundcard *soundcard,
 			   GError **error)
 {
+  AgsPulsePort *pulse_port;
   AgsPulseDevout *pulse_devout;
-
-  guint format, word_size;
   
+  guint format, word_size;
+  gboolean use_cache;
+  
+  pthread_mutex_t *pulse_port_mutex;
   pthread_mutex_t *pulse_devout_mutex;
   
   pulse_devout = AGS_PULSE_DEVOUT(soundcard);
-  
+
   /* get pulse devout mutex */
   pthread_mutex_lock(ags_pulse_devout_get_class_mutex());
   
@@ -2021,8 +2024,36 @@ ags_pulse_devout_port_init(AgsSoundcard *soundcard,
   
   pthread_mutex_unlock(ags_pulse_devout_get_class_mutex());
 
+  /* port */
+  pthread_mutex_lock(pulse_devout_mutex);
+
+  pulse_port = (AgsPulsePort *) pulse_devout->pulse_port->data;
+
+  pthread_mutex_unlock(pulse_devout_mutex);
+
+  /* get port mutex */
+  pthread_mutex_lock(ags_pulse_port_get_class_mutex());
+  
+  pulse_port_mutex = pulse_port->obj_mutex;
+  
+  pthread_mutex_unlock(ags_pulse_port_get_class_mutex());
+
+  /* check use cache */
+  pthread_mutex_lock(pulse_port_mutex);
+
+  use_cache = pulse_port->use_cache;
+
+  if(use_cache){
+    pulse_port->completed_cache = 0;
+    pulse_port->current_cache = 1;
+  }
+  
+  pthread_mutex_unlock(pulse_port_mutex);
+
   /* retrieve word size */
   pthread_mutex_lock(pulse_devout_mutex);
+
+  pulse_port = (AgsPulsePort *) pulse_devout->pulse_port->data;
 
   switch(pulse_devout->format){
   case AGS_SOUNDCARD_SIGNED_8_BIT:
@@ -2191,6 +2222,8 @@ ags_pulse_devout_port_play(AgsSoundcard *soundcard,
   pthread_mutex_unlock(pulse_port_mutex);
 
   if(use_cache){
+    void *buffer;
+    
     guint current_cache;
     guint completed_cache;
     guint write_cache;
@@ -2200,10 +2233,12 @@ ags_pulse_devout_port_play(AgsSoundcard *soundcard,
     guint buffer_size;
     guint format;
     
-    static const struct timespec idle_time = {
+    struct timespec idle_time = {
       0,
-      250000,
+      0,
     };
+
+    idle_time.tv_nsec = ags_pulse_port_get_latency(pulse_port) / 8;
 
     pthread_mutex_lock(pulse_port_mutex);
 
@@ -2247,26 +2282,49 @@ ags_pulse_devout_port_play(AgsSoundcard *soundcard,
     
     pthread_mutex_unlock(pulse_devout_mutex);
 
+    buffer = ags_soundcard_get_buffer(AGS_SOUNDCARD(pulse_devout));
+    
     switch(format){
     case AGS_SOUNDCARD_SIGNED_16_BIT:
       {
-	ags_audio_buffer_util_copy_s16_to_s16((gint16 *) pulse_port->cache[write_cache] + cache_offset, 1,
-					      (gint16 *) ags_soundcard_get_buffer(AGS_SOUNDCARD(pulse_devout)), 1,
-					      pcm_channels * buffer_size);
+	if(cache_offset == 0){
+	  ags_audio_buffer_util_clear_buffer(pulse_port->cache[write_cache], 1,
+					     pcm_channels * cache_buffer_size, AGS_AUDIO_BUFFER_UTIL_S16);
+	}
+
+	if(buffer != NULL){
+	  ags_audio_buffer_util_copy_s16_to_s16((gint16 *) pulse_port->cache[write_cache] + (pcm_channels * cache_offset), 1,
+						(gint16 *) buffer, 1,
+						pcm_channels * buffer_size);
+	}
       }
       break;
     case AGS_SOUNDCARD_SIGNED_24_BIT:
       {
-	ags_audio_buffer_util_copy_s24_to_s24((gint32 *) pulse_port->cache[write_cache] + cache_offset, 1,
-					      (gint32 *) ags_soundcard_get_buffer(AGS_SOUNDCARD(pulse_devout)), 1,
-					      pcm_channels * buffer_size);
+	if(cache_offset == 0){
+	  ags_audio_buffer_util_clear_buffer(pulse_port->cache[write_cache], 1,
+					     pcm_channels * cache_buffer_size, AGS_AUDIO_BUFFER_UTIL_S32);
+	}
+
+	if(buffer != NULL){
+	  ags_audio_buffer_util_copy_s24_to_s24((gint32 *) pulse_port->cache[write_cache] + (pcm_channels * cache_offset), 1,
+						(gint32 *) buffer, 1,
+						pcm_channels * buffer_size);
+	}
       }
       break;
     case AGS_SOUNDCARD_SIGNED_32_BIT:
       {
-	ags_audio_buffer_util_copy_s32_to_s32((gint32 *) pulse_port->cache[write_cache] + cache_offset, 1,
-					      (gint32 *) ags_soundcard_get_buffer(AGS_SOUNDCARD(pulse_devout)), 1,
-					      pcm_channels * buffer_size);
+	if(cache_offset == 0){
+	  ags_audio_buffer_util_clear_buffer(pulse_port->cache[write_cache], 1,
+					     pcm_channels * cache_buffer_size, AGS_AUDIO_BUFFER_UTIL_S32);
+	}
+
+	if(buffer != NULL){
+	  ags_audio_buffer_util_copy_s32_to_s32((gint32 *) pulse_port->cache[write_cache] + (pcm_channels * cache_offset), 1,
+						(gint32 *) buffer, 1,
+						pcm_channels * buffer_size);
+	}
       }
       break;
     }
@@ -2389,8 +2447,12 @@ ags_pulse_devout_port_free(AgsSoundcard *soundcard)
 
   AgsNotifySoundcard *notify_soundcard;
   
+  guint pcm_channels;
+  guint cache_buffer_size;
   guint word_size;
-
+  gboolean use_cache;
+  
+  pthread_mutex_t *pulse_port_mutex;
   pthread_mutex_t *pulse_devout_mutex;
   pthread_mutex_t *callback_mutex;
   pthread_mutex_t *callback_finish_mutex;
@@ -2403,6 +2465,74 @@ ags_pulse_devout_port_free(AgsSoundcard *soundcard)
   pulse_devout_mutex = pulse_devout->obj_mutex;
   
   pthread_mutex_unlock(ags_pulse_devout_get_class_mutex());
+
+  /* port */
+  pthread_mutex_lock(pulse_devout_mutex);
+
+  pulse_port = (AgsPulsePort *) pulse_devout->pulse_port->data;
+  pcm_channels = pulse_devout->pcm_channels;
+  
+  pthread_mutex_unlock(pulse_devout_mutex);
+
+  /* get port mutex */
+  pthread_mutex_lock(ags_pulse_port_get_class_mutex());
+  
+  pulse_port_mutex = pulse_port->obj_mutex;
+  
+  pthread_mutex_unlock(ags_pulse_port_get_class_mutex());
+
+  /* check use cache */
+  pthread_mutex_lock(pulse_port_mutex);
+
+  cache_buffer_size = pulse_port->cache_buffer_size;
+  use_cache = pulse_port->use_cache;
+
+  if(use_cache){
+    pulse_port->completed_cache = 0;
+    pulse_port->current_cache = 0;
+    pulse_port->cache_offset = 0;
+  }
+  
+  switch(pulse_port->format){
+  case AGS_SOUNDCARD_SIGNED_16_BIT:
+    {
+      ags_audio_buffer_util_clear_buffer(pulse_port->cache[0], 1,
+					 pcm_channels * cache_buffer_size, AGS_AUDIO_BUFFER_UTIL_S16);
+      ags_audio_buffer_util_clear_buffer(pulse_port->cache[1], 1,
+					 pcm_channels * cache_buffer_size, AGS_AUDIO_BUFFER_UTIL_S16);
+      ags_audio_buffer_util_clear_buffer(pulse_port->cache[2], 1,
+					 pcm_channels * cache_buffer_size, AGS_AUDIO_BUFFER_UTIL_S16);
+      ags_audio_buffer_util_clear_buffer(pulse_port->cache[3], 1,
+					 pcm_channels * cache_buffer_size, AGS_AUDIO_BUFFER_UTIL_S16);
+    }
+    break;
+  case AGS_SOUNDCARD_SIGNED_24_BIT:
+    {
+      ags_audio_buffer_util_clear_buffer(pulse_port->cache[0], 1,
+					 pcm_channels * cache_buffer_size, AGS_AUDIO_BUFFER_UTIL_S32);
+      ags_audio_buffer_util_clear_buffer(pulse_port->cache[1], 1,
+					 pcm_channels * cache_buffer_size, AGS_AUDIO_BUFFER_UTIL_S32);
+      ags_audio_buffer_util_clear_buffer(pulse_port->cache[2], 1,
+					 pcm_channels * cache_buffer_size, AGS_AUDIO_BUFFER_UTIL_S32);
+      ags_audio_buffer_util_clear_buffer(pulse_port->cache[3], 1,
+					 pcm_channels * cache_buffer_size, AGS_AUDIO_BUFFER_UTIL_S32);
+    }
+    break;
+  case AGS_SOUNDCARD_SIGNED_32_BIT:
+    {
+      ags_audio_buffer_util_clear_buffer(pulse_port->cache[0], 1,
+					 pcm_channels * cache_buffer_size, AGS_AUDIO_BUFFER_UTIL_S32);
+      ags_audio_buffer_util_clear_buffer(pulse_port->cache[1], 1,
+					 pcm_channels * cache_buffer_size, AGS_AUDIO_BUFFER_UTIL_S32);
+      ags_audio_buffer_util_clear_buffer(pulse_port->cache[2], 1,
+					 pcm_channels * cache_buffer_size, AGS_AUDIO_BUFFER_UTIL_S32);
+      ags_audio_buffer_util_clear_buffer(pulse_port->cache[3], 1,
+					 pcm_channels * cache_buffer_size, AGS_AUDIO_BUFFER_UTIL_S32);
+    }
+    break;
+  }
+
+  pthread_mutex_unlock(pulse_port_mutex);
 
   /*  */
   pthread_mutex_lock(pulse_devout_mutex);
