@@ -1,6 +1,7 @@
 ags (2.1.33)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented cache options of AgsSoundcardEditor
 	* implemented pulseaudio cache
 
 ags (2.1.32)

@@ -2185,7 +2185,7 @@ ags_pulse_port_set_buffer_size(AgsPulsePort *pulse_port,
   if(pulse_port->empty_buffer != NULL){
     free(pulse_port->empty_buffer);
   }
-  
+
   pulse_port->empty_buffer = ags_stream_alloc(pulse_port->pcm_channels * buffer_size,
 					      pulse_port->format);
 
@@ -2262,6 +2262,15 @@ ags_pulse_port_set_format(AgsPulsePort *pulse_port,
       }else{
 	pulse_port->sample_spec->format = PA_SAMPLE_S16LE;
       }
+
+      pulse_port->cache[0] = (void *) realloc(pulse_port->cache[0],
+					      pulse_port->pcm_channels * pulse_port->cache_buffer_size * sizeof(gint32));
+      pulse_port->cache[1] = (void *) realloc(pulse_port->cache[1],
+					      pulse_port->pcm_channels * pulse_port->cache_buffer_size * sizeof(gint32));
+      pulse_port->cache[2] = (void *) realloc(pulse_port->cache[2],
+					      pulse_port->pcm_channels * pulse_port->cache_buffer_size * sizeof(gint32));
+      pulse_port->cache[3] = (void *) realloc(pulse_port->cache[3],
+					      pulse_port->pcm_channels * pulse_port->cache_buffer_size * sizeof(gint32));
     }
     break;
   case AGS_SOUNDCARD_SIGNED_24_BIT:
@@ -2271,6 +2280,15 @@ ags_pulse_port_set_format(AgsPulsePort *pulse_port,
       }else{
 	pulse_port->sample_spec->format = PA_SAMPLE_S24_32LE;
       }
+
+      pulse_port->cache[0] = (void *) realloc(pulse_port->cache[0],
+					      pulse_port->pcm_channels * pulse_port->cache_buffer_size * sizeof(gint32));
+      pulse_port->cache[1] = (void *) realloc(pulse_port->cache[1],
+					      pulse_port->pcm_channels * pulse_port->cache_buffer_size * sizeof(gint32));
+      pulse_port->cache[2] = (void *) realloc(pulse_port->cache[2],
+					      pulse_port->pcm_channels * pulse_port->cache_buffer_size * sizeof(gint32));
+      pulse_port->cache[3] = (void *) realloc(pulse_port->cache[3],
+					      pulse_port->pcm_channels * pulse_port->cache_buffer_size * sizeof(gint32));
     }
     break;
   case AGS_SOUNDCARD_SIGNED_32_BIT:
@@ -2280,6 +2298,15 @@ ags_pulse_port_set_format(AgsPulsePort *pulse_port,
       }else{
 	pulse_port->sample_spec->format = PA_SAMPLE_S32LE;
       }
+
+      pulse_port->cache[0] = (void *) realloc(pulse_port->cache[0],
+					      pulse_port->pcm_channels * pulse_port->cache_buffer_size * sizeof(gint32));
+      pulse_port->cache[1] = (void *) realloc(pulse_port->cache[1],
+					      pulse_port->pcm_channels * pulse_port->cache_buffer_size * sizeof(gint32));
+      pulse_port->cache[2] = (void *) realloc(pulse_port->cache[2],
+					      pulse_port->pcm_channels * pulse_port->cache_buffer_size * sizeof(gint32));
+      pulse_port->cache[3] = (void *) realloc(pulse_port->cache[3],
+					      pulse_port->pcm_channels * pulse_port->cache_buffer_size * sizeof(gint32));
     }
     break;
   default:
@@ -2300,6 +2327,66 @@ ags_pulse_port_set_format(AgsPulsePort *pulse_port,
   
   pulse_port->empty_buffer = ags_stream_alloc(pulse_port->pcm_channels * pulse_port->buffer_size,
 					      format);
+
+  pthread_mutex_unlock(pulse_port_mutex);
+}
+
+void
+ags_pulse_port_set_cache_buffer_size(AgsPulsePort *pulse_port,
+				     guint cache_buffer_size)
+{
+  pthread_mutex_t *pulse_port_mutex;
+
+  /* get pulse port mutex */
+  pthread_mutex_lock(ags_pulse_port_get_class_mutex());
+  
+  pulse_port_mutex = pulse_port->obj_mutex;
+  
+  pthread_mutex_unlock(ags_pulse_port_get_class_mutex());
+    
+  /* lock pulse port */
+  pthread_mutex_lock(pulse_port_mutex);
+
+  switch(pulse_port->format){
+  case AGS_SOUNDCARD_SIGNED_16_BIT:
+    {
+      pulse_port->cache[0] = (void *) realloc(pulse_port->cache[0],
+					      pulse_port->pcm_channels * pulse_port->cache_buffer_size * sizeof(gint32));
+      pulse_port->cache[1] = (void *) realloc(pulse_port->cache[1],
+					      pulse_port->pcm_channels * pulse_port->cache_buffer_size * sizeof(gint32));
+      pulse_port->cache[2] = (void *) realloc(pulse_port->cache[2],
+					      pulse_port->pcm_channels * pulse_port->cache_buffer_size * sizeof(gint32));
+      pulse_port->cache[3] = (void *) realloc(pulse_port->cache[3],
+					      pulse_port->pcm_channels * pulse_port->cache_buffer_size * sizeof(gint32));
+    }
+    break;
+  case AGS_SOUNDCARD_SIGNED_24_BIT:
+    {
+      pulse_port->cache[0] = (void *) realloc(pulse_port->cache[0],
+					      pulse_port->pcm_channels * pulse_port->cache_buffer_size * sizeof(gint32));
+      pulse_port->cache[1] = (void *) realloc(pulse_port->cache[1],
+					      pulse_port->pcm_channels * pulse_port->cache_buffer_size * sizeof(gint32));
+      pulse_port->cache[2] = (void *) realloc(pulse_port->cache[2],
+					      pulse_port->pcm_channels * pulse_port->cache_buffer_size * sizeof(gint32));
+      pulse_port->cache[3] = (void *) realloc(pulse_port->cache[3],
+					      pulse_port->pcm_channels * pulse_port->cache_buffer_size * sizeof(gint32));
+    }
+    break;
+  case AGS_SOUNDCARD_SIGNED_32_BIT:
+    {
+      pulse_port->cache[0] = (void *) realloc(pulse_port->cache[0],
+					      pulse_port->pcm_channels * pulse_port->cache_buffer_size * sizeof(gint32));
+      pulse_port->cache[1] = (void *) realloc(pulse_port->cache[1],
+					      pulse_port->pcm_channels * pulse_port->cache_buffer_size * sizeof(gint32));
+      pulse_port->cache[2] = (void *) realloc(pulse_port->cache[2],
+					      pulse_port->pcm_channels * pulse_port->cache_buffer_size * sizeof(gint32));
+      pulse_port->cache[3] = (void *) realloc(pulse_port->cache[3],
+					      pulse_port->pcm_channels * pulse_port->cache_buffer_size * sizeof(gint32));
+    }
+    break;
+  default:
+    g_warning("pulse devout - unsupported format");
+  }
 
   pthread_mutex_unlock(pulse_port_mutex);
 }
