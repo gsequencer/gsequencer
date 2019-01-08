@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: gsequencer 2.1.32\n"
+"Project-Id-Version: gsequencer 2.1.33\n"
 "Report-Msgid-Bugs-To: jkraehemann@gmail.com\n"
-"POT-Creation-Date: 2019-01-06 14:45+0100\n"
+"POT-Creation-Date: 2019-01-08 05:18+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -197,12 +197,12 @@ msgid "channel"
 msgstr ""
 
 #: ags/X/ags_export_soundcard.c:169 ags/X/ags_sequencer_editor.c:151
-#: ags/X/ags_soundcard_editor.c:159
+#: ags/X/ags_soundcard_editor.c:160
 msgid "backend"
 msgstr ""
 
 #: ags/X/ags_export_soundcard.c:217 ags/X/ags_input_collection_editor.c:248
-#: ags/X/ags_output_collection_editor.c:248 ags/X/ags_soundcard_editor.c:207
+#: ags/X/ags_output_collection_editor.c:248 ags/X/ags_soundcard_editor.c:208
 msgid "soundcard"
 msgstr ""
 
@@ -543,7 +543,7 @@ msgstr ""
 msgid "enabled"
 msgstr ""
 
-#: ags/X/ags_resize_editor.c:159 ags/X/ags_soundcard_editor.c:287
+#: ags/X/ags_resize_editor.c:159 ags/X/ags_soundcard_editor.c:288
 msgid "audio channels"
 msgstr ""
 
@@ -575,49 +575,57 @@ msgstr ""
 msgid "password"
 msgstr ""
 
-#: ags/X/ags_soundcard_editor.c:253
+#: ags/X/ags_soundcard_editor.c:254
 msgid "capability"
 msgstr ""
 
-#: ags/X/ags_soundcard_editor.c:309
+#: ags/X/ags_soundcard_editor.c:310
 msgid "samplerate"
 msgstr ""
 
-#: ags/X/ags_soundcard_editor.c:330
+#: ags/X/ags_soundcard_editor.c:331
 msgid "buffer size"
 msgstr ""
 
-#: ags/X/ags_soundcard_editor.c:351
+#: ags/X/ags_soundcard_editor.c:353
 msgid "format"
+msgstr ""
+
+#: ags/X/ags_soundcard_editor.c:386
+msgid "use cache"
+msgstr ""
+
+#: ags/X/ags_soundcard_editor.c:398
+msgid "cache buffer size"
 msgstr ""
 
 #: ags/X/ags_wave_editor.c:239 ags/X/machine/ags_oscillator.c:156
 msgid "wave"
 msgstr ""
 
-#: ags/X/ags_xorg_application_context.c:2038
+#: ags/X/ags_xorg_application_context.c:2040
 #: ags/audio/ags_audio_application_context.c:1703
-#: ags/audio/task/ags_apply_sound_config.c:860
+#: ags/audio/task/ags_apply_sound_config.c:863
 #, c-format
 msgid "unknown soundcard backend - %s"
 msgstr ""
 
-#: ags/X/ags_xorg_application_context.c:2048
+#: ags/X/ags_xorg_application_context.c:2050
 #: ags/audio/ags_audio_application_context.c:1713
-#: ags/audio/task/ags_apply_sound_config.c:870
+#: ags/audio/task/ags_apply_sound_config.c:873
 msgid "unknown soundcard backend - NULL"
 msgstr ""
 
-#: ags/X/ags_xorg_application_context.c:2217
+#: ags/X/ags_xorg_application_context.c:2269
 #: ags/audio/ags_audio_application_context.c:1864
-#: ags/audio/task/ags_apply_sound_config.c:1035
+#: ags/audio/task/ags_apply_sound_config.c:1088
 #, c-format
 msgid "unknown sequencer backend - %s"
 msgstr ""
 
-#: ags/X/ags_xorg_application_context.c:2227
+#: ags/X/ags_xorg_application_context.c:2279
 #: ags/audio/ags_audio_application_context.c:1874
-#: ags/audio/task/ags_apply_sound_config.c:1045
+#: ags/audio/task/ags_apply_sound_config.c:1098
 msgid "unknown sequencer backend - NULL"
 msgstr ""
 
