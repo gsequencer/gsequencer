@@ -1,0 +1,24 @@
+Description: install libgsequencer.so in standard library path.
+Forwarded: not-needed
+Author: Joël Krähemann <jkraehemann@gmail.com>
+
+Index: gsequencer/Makefile.am
+===================================================================
+--- gsequencer.orig/Makefile.am
++++ gsequencer/Makefile.am
+@@ -35,12 +35,12 @@ DEFS = -DLOCALEDIR=\"$(localedir)\" @DEF
+ # this lists the binaries to produce, the (non-PHONY, binary) targets in
+ # the previous manual Makefile
+ lib_LTLIBRARIES = libags.la libags_thread.la libags_server.la libags_audio.la libags_gui.la
+-# lib_LTLIBRARIES += libgsequencer.la
++lib_LTLIBRARIES += libgsequencer.la
+ 
+ bin_PROGRAMS = gsequencer midi2xml
+ 
+-libgsequencerdir = $(libdir)/gsequencer
+-libgsequencer_LTLIBRARIES = libgsequencer.la
++# libgsequencerdir = $(libdir)/gsequencer
++# libgsequencer_LTLIBRARIES = libgsequencer.la
+ 
+ EXTRA_DIST = config.rpath \
+ 	COPYING.server \
