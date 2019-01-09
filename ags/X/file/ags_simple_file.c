@@ -1154,6 +1154,10 @@ ags_simple_file_real_read(AgsSimpleFile *simple_file)
 
   root_node = simple_file->root_node;
 
+  if(root_node == NULL){
+    return;
+  }
+  
   /* child elements */
   child = root_node->children;
 

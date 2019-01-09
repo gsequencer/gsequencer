@@ -1,5 +1,5 @@
 usr/lib/*/gsequencer/libgsequencer*
-usr/bin/gsequencer usr/bin/com.github.gsequencer.gsequencer
+usr/bin/com.github.gsequencer.gsequencer
 usr/bin/midi2xml
 usr/share/gsequencer
 usr/share/xml/gsequencer
@@ -7,7 +7,7 @@ usr/share/doc/gsequencer/README
 usr/share/doc/gsequencer/ags_example.xml
 usr/share/man
 usr/share/applications/gsequencer.desktop usr/share/applications/com.github.gsequencer.gsequencer.desktop
-usr/share/metainfo
+usr/share/metainfo/gsequencer.appdata.xml usr/share/metainfo/com.github.gsequencer.gsequencer.appdata.xml
 usr/share/doc/gsequencer/images/* usr/share/doc/gsequencer-doc/images/
 usr/share/doc/gsequencer/html/* usr/share/doc/gsequencer-doc/html/
 usr/lib/*/libags_gui.so.*

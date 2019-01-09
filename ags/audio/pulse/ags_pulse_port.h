@@ -38,6 +38,8 @@
 #define AGS_IS_PULSE_PORT_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_PULSE_PORT))
 #define AGS_PULSE_PORT_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS(obj, AGS_TYPE_PULSE_PORT, AgsPulsePortClass))
 
+#define AGS_PULSE_PORT_DEFAULT_CACHE_BUFFER_SIZE (4096)
+
 typedef struct _AgsPulsePort AgsPulsePort;
 typedef struct _AgsPulsePortClass AgsPulsePortClass;
 
@@ -89,6 +91,14 @@ struct _AgsPulsePort
   guint buffer_size;
   guint format;
 
+  gboolean use_cache;
+  guint cache_buffer_size;
+
+  guint current_cache;
+  guint completed_cache;
+  guint cache_offset;
+  void **cache;
+  
 #ifdef AGS_WITH_PULSE
   pa_stream *stream;
   pa_sample_spec *sample_spec;
@@ -142,6 +152,9 @@ void ags_pulse_port_set_buffer_size(AgsPulsePort *pulse_port,
 				    guint buffer_size);
 void ags_pulse_port_set_format(AgsPulsePort *pulse_port,
 			       guint format);
+
+void ags_pulse_port_set_cache_buffer_size(AgsPulsePort *pulse_port,
+					  guint cache_buffer_size);
 
 guint ags_pulse_port_get_latency(AgsPulsePort *pulse_port);
 

@@ -67,6 +67,9 @@ struct _AgsSoundcardEditor
   GtkSpinButton *buffer_size;
   GtkComboBoxText *format;
 
+  GtkCheckButton *use_cache;
+  GtkSpinButton *cache_buffer_size;
+  
   GtkButton *remove;
 };
 

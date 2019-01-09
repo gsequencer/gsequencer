@@ -1,12 +1,5 @@
-com.github.gsequencer.gsequencer (2.1.31) bionic; urgency=medium
+com.github.gsequencer.gsequencer (2.1.33) bionic; urgency=medium
 
   * initial release
-  * moving binary to com.github.gsequencer.gsequencer
-  * added usr/share/metainfo/com.github.gsequencer.gsequencer.appdata.xml
-  * modified *.appdata.xml license
-  * added missing project_license
-  * added content rating
-  * fixed com.github.gsequencer.gsequencer.desktop installation
-  * fixed com.github.gsequencer.gsequencer.appdata.xml installation
 
- -- Joël Krähemann <jkraehemann@gmail.com>  Sat, 05 Jan 2019 14:17:51 +0100
+ -- Joël Krähemann <jkraehemann@gmail.com>  Wed, 09 Jan 2019 04:53:17 +0100

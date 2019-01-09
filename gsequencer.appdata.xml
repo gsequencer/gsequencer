@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Copyright 2018 Your Name <jkraehemann@gmail.com> -->
+<!-- Copyright 2018 Joël Krähemann <jkraehemann@gmail.com> -->
 <component type="desktop">
-  <id>com.github.gsequencer.gsequencer</id>
+  <id>org.nongnu.gsequencer.gsequencer</id>
   <metadata_license>FSFAP</metadata_license>
   <project_license>GPL-3.0+</project_license>
   <content_rating type="oars-1.0">
@@ -11,10 +11,10 @@
   <summary>Advanced Gtk+ Sequencer</summary>
   <description>
     <p>GSequencer provides you various tools to play, create, edit and mix your own music.
-    It features a step sequencer, piano roll, automation and waveform editor.</p>
+    It features a step sequencer, piano roll, automation and wave-form editor.</p>
   </description>
   
-  <launchable type="desktop-id">com.github.gsequencer.gsequencer</launchable>
+  <launchable type="desktop-id">gsequencer</launchable>
 
   <screenshots>
     <screenshot type="default">

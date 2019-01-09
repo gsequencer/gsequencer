@@ -128,7 +128,7 @@ struct _AgsPulseDevin
   guint buffer_size;
   guint samplerate;
 
-  void** buffer;
+  void **buffer;
 
   double bpm; // beats per minute
   gdouble delay_factor;
