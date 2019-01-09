@@ -522,7 +522,7 @@ ags_config_real_load_defaults(AgsConfig *config)
   ags_config_set_value(config, AGS_CONFIG_THREAD, "super-threaded-scope", "audio");
   ags_config_set_value(config, AGS_CONFIG_THREAD, "lock-global", "ags-thread");
   ags_config_set_value(config, AGS_CONFIG_THREAD, "lock-parent", "ags-recycling-thread");
-  ags_config_set_value(config, AGS_CONFIG_THREAD, "max-precision", "125");
+  ags_config_set_value(config, AGS_CONFIG_THREAD, "max-precision", "250");
 
 #ifdef AGS_WITH_CORE_AUDIO
   ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "backend", "core-audio");
@@ -534,7 +534,9 @@ ags_config_real_load_defaults(AgsConfig *config)
   
   ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "pcm-channels", "2");
   ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "samplerate", "48000");
-  ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "buffer-size", "4096");
+  ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "buffer-size", "256");
+  ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "use-cache", "true");
+  ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "cache-buffer-size", "4096");
   ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "format", "16");
 
   //ags_config_set_value(config, AGS_CONFIG_SEQUENCER_0, "backend", "jack");

@@ -47,6 +47,7 @@
 
 #include <ags/audio/pulse/ags_pulse_server.h>
 #include <ags/audio/pulse/ags_pulse_client.h>
+#include <ags/audio/pulse/ags_pulse_port.h>
 #include <ags/audio/pulse/ags_pulse_devout.h>
 #include <ags/audio/pulse/ags_pulse_devin.h>
 
@@ -753,6 +754,8 @@ ags_apply_sound_config_launch(AgsTask *task)
 
   for(i = 0; ; i++){
     guint pcm_channels, buffer_size, samplerate, format;
+    guint cache_buffer_size;
+    gboolean use_cache;
 
     if(!g_key_file_has_group(config->key_file,
 			     soundcard_group)){
@@ -957,6 +960,56 @@ ags_apply_sound_config_launch(AgsTask *task)
 			      samplerate,
 			      buffer_size,
 			      format);
+
+    use_cache = TRUE;
+    str = ags_config_get_value(config,
+			       soundcard_group,
+			       "use-cache");
+
+    if(str != NULL &&
+       !g_strncasecmp(str,
+		      "false",
+		      5)){
+      use_cache = FALSE;
+    }
+
+    cache_buffer_size = 4096;
+    str = ags_config_get_value(config,
+			       soundcard_group,
+			       "cache-buffer-size");
+
+    if(str != NULL){
+      cache_buffer_size = g_ascii_strtoull(str,
+					   NULL,
+					   10);
+    }
+
+    if(AGS_IS_PULSE_DEVOUT(soundcard)){
+      GList *start_port, *port;
+
+      g_object_get(soundcard,
+		   "pulse-port", &start_port,
+		   NULL);
+
+      port = start_port;
+
+      while(port != NULL){
+	ags_pulse_port_set_samplerate(port->data,
+				      samplerate);
+	ags_pulse_port_set_pcm_channels(port->data,
+					pcm_channels);
+	ags_pulse_port_set_buffer_size(port->data,
+				       buffer_size);
+	ags_pulse_port_set_format(port->data,
+				  format);
+	ags_pulse_port_set_cache_buffer_size(port->data,
+					     cache_buffer_size);
+	
+	port = port->next;
+      }
+
+      g_list_free(start_port);
+    }
 
     g_free(soundcard_group);    
     soundcard_group = g_strdup_printf("%s-%d",

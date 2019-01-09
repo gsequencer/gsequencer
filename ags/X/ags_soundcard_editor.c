@@ -148,7 +148,8 @@ ags_soundcard_editor_init(AgsSoundcardEditor *soundcard_editor)
   soundcard_editor->soundcard = NULL;
   soundcard_editor->soundcard_thread = NULL;
   
-  table = (GtkTable *) gtk_table_new(3, 8, FALSE);
+  table = (GtkTable *) gtk_table_new(3, 10,
+				     FALSE);
   gtk_box_pack_start(GTK_BOX(soundcard_editor),
 		     GTK_WIDGET(table),
 		     FALSE, FALSE,
@@ -338,7 +339,8 @@ ags_soundcard_editor_init(AgsSoundcardEditor *soundcard_editor)
 		   0, 0);
 
   soundcard_editor->buffer_size = (GtkSpinButton *) gtk_spin_button_new_with_range(1.0, 65535.0, 1.0);
-  gtk_spin_button_set_value(soundcard_editor->buffer_size, 512);
+  gtk_spin_button_set_value(soundcard_editor->buffer_size,
+			    512.0);
   gtk_table_attach(table,
 		   GTK_WIDGET(soundcard_editor->buffer_size),
 		   1, 2,
@@ -380,6 +382,39 @@ ags_soundcard_editor_init(AgsSoundcardEditor *soundcard_editor)
   gtk_combo_box_set_active(GTK_COMBO_BOX(soundcard_editor->format),
 			   1);
 
+  /* use cache */
+  soundcard_editor->use_cache = gtk_check_button_new_with_label(i18n("use cache"));
+  gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(soundcard_editor->use_cache),
+			       TRUE);
+  gtk_table_attach(table,
+		   GTK_WIDGET(soundcard_editor->use_cache),
+		   0, 2,
+		   7, 8,
+		   GTK_FILL, GTK_FILL,
+		   0, 0);
+  
+  /* cache buffer size */
+  label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
+				    "label", i18n("cache buffer size"),
+				    "xalign", 0.0,
+				    NULL);
+  gtk_table_attach(table,
+		   GTK_WIDGET(label),
+		   0, 1,
+		   8, 9,
+		   GTK_FILL, GTK_FILL,
+		   0, 0);
+
+  soundcard_editor->cache_buffer_size = (GtkSpinButton *) gtk_spin_button_new_with_range(1.0, 65535.0, 1.0);
+  gtk_spin_button_set_value(soundcard_editor->cache_buffer_size,
+			    4096.0);
+  gtk_table_attach(table,
+		   GTK_WIDGET(soundcard_editor->cache_buffer_size),
+		   1, 2,
+		   8, 9,
+		   GTK_FILL, GTK_FILL,
+		   0, 0);
+
   /*  */
   //  soundcard_editor->remove = NULL;
 
@@ -387,7 +422,7 @@ ags_soundcard_editor_init(AgsSoundcardEditor *soundcard_editor)
   gtk_table_attach(table,
 		   GTK_WIDGET(soundcard_editor->remove),
 		   2, 3,
-		   7, 8,
+		   9, 10,
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
 }
@@ -535,6 +570,7 @@ ags_soundcard_editor_apply(AgsApplicable *applicable)
   guint channels;
   guint samplerate;
   guint buffer_size;
+  guint cache_buffer_size;
   guint format;
   gboolean use_core_audio, use_pulse, use_jack, use_alsa, use_oss;
   
@@ -715,6 +751,20 @@ ags_soundcard_editor_apply(AgsApplicable *applicable)
 			 "device",
 			 device);
   }
+
+  ags_config_set_value(config,
+		       soundcard_group,
+		       "use-cache",
+		       (gtk_toggle_button_get_active(soundcard_editor->use_cache) ? "true": "false"));
+  
+  cache_buffer_size = gtk_spin_button_get_value(soundcard_editor->cache_buffer_size);
+  str = g_strdup_printf("%u",
+			cache_buffer_size);
+  ags_config_set_value(config,
+		       soundcard_group,
+		       "cache-buffer-size",
+		       str);
+  g_free(str);
 }
 
 void

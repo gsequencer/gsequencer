@@ -52,6 +52,8 @@
 
 #include "config.h"
 
+#include <ags/i18n.h>
+
 #ifdef AGS_MAC_BUNDLE
 void premain() __attribute__ ((constructor));
 #endif
@@ -397,6 +399,10 @@ main(int argc, char **argv)
   		       G_LOG_LEVEL_CRITICAL);
 #endif
 
+  g_set_application_name(i18n("Advanced Gtk+ Sequencer"));
+  gtk_window_set_default_icon_name("gsequencer");
+  g_setenv("PULSE_PROP_media.role", "production", TRUE);
+  
   /* setup */
   wdir = g_strdup_printf("%s/%s",
 			 pw->pw_dir,

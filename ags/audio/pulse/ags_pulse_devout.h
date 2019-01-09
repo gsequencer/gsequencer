@@ -129,7 +129,7 @@ struct _AgsPulseDevout
   guint samplerate;
 
   pthread_mutex_t **buffer_mutex;
-  void** buffer;
+  void **buffer;
 
   double bpm; // beats per minute
   gdouble delay_factor;
