@@ -1,9 +1,0 @@
-Document: libags-gui-doc
-Title: Advanced Gtk+ Sequencer GUI API Reference Manual
-Author: Joël Krähemann
-Abstract: This manual is the API reference manual of Advanced Gtk+ Sequencer GUI library
-Section: Sound
-
-Format: HTML
-Index: /usr/share/doc/libags-gui-doc/api/index.html
-Files: /usr/share/doc/libags-gui-doc/api/*.html
