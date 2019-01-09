@@ -62,12 +62,13 @@ override_dh_auto_test:
 	xvfb-run --server-args="-screen 0 1920x1080x24" -a dh_auto_test
 
 override_dh_auto_install:
-	mkdir -p $$(pwd)/debian/tmp/usr/share/metainfo
+	rm -rf $$(pwd)/debian/tmp/
+	rm -rf $$(pwd)/debian/com.github.gsequencer.gsequencer/
+	mkdir -p $$(pwd)/debian/tmp/
+	mkdir -p $$(pwd)/debian/com.github.gsequencer.gsequencer/
 	sed -i "s/<id>org.nongnu.gsequencer.gsequencer<\/id>/<id>com.github.gsequencer.gsequencer<\/id>/g" gsequencer.appdata.xml
 	sed -i "s/<launchable type=\"desktop-id\">gsequencer<\/launchable>/<launchable type=\"desktop-id\">com.github.gsequencer.gsequencer<\/launchable>/g" gsequencer.appdata.xml
 	sed -i "s/Exec=gsequencer --filename %f/Exec=com.github.gsequencer.gsequencer --filename %f/g" gsequencer.desktop
-	rm -rf $$(pwd)/debian/tmp/usr/bin/com.github.gsequencer.gsequencer
-	rm -rf $$(pwd)/debian/tmp/com.github.gsequencer.gsequencer/usr/bin/com.github.gsequencer.gsequencer
 	dh_auto_install --no-parallel --destdir=$$(pwd)/debian/tmp
 	mv $$(pwd)/debian/tmp/usr/bin/gsequencer $$(pwd)/debian/tmp/usr/bin/com.github.gsequencer.gsequencer
 	$(MAKE) DESTDIR=$$(pwd)/debian/tmp install-html
