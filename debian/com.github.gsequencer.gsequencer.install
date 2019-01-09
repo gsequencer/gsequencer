@@ -1,4 +1,4 @@
-usr/lib/*/gsequencer/libgsequencer*
+usr/lib/*/libgsequencer*
 usr/bin/com.github.gsequencer.gsequencer
 usr/bin/midi2xml
 usr/share/gsequencer
