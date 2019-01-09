@@ -67,6 +67,7 @@ override_dh_auto_install:
 	sed -i "s/<launchable type=\"desktop-id\">gsequencer<\/launchable>/<launchable type=\"desktop-id\">com.github.gsequencer.gsequencer<\/launchable>/g" gsequencer.appdata.xml
 	sed -i "s/Exec=gsequencer --filename %f/Exec=com.github.gsequencer.gsequencer --filename %f/g" gsequencer.desktop
 	dh_auto_install --no-parallel --destdir=$$(pwd)/debian/tmp
+	rm -rf $$(pwd)/debian/tmp/usr/bin/com.github.gsequencer.gsequencer
 	mv $$(pwd)/debian/tmp/usr/bin/gsequencer $$(pwd)/debian/tmp/usr/bin/com.github.gsequencer.gsequencer
 	$(MAKE) DESTDIR=$$(pwd)/debian/tmp install-html
 	find $$(pwd)/debian/tmp/usr/share -type f \
