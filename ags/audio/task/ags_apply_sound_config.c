@@ -1003,7 +1003,7 @@ ags_apply_sound_config_launch(AgsTask *task)
 	ags_pulse_port_set_format(port->data,
 				  format);
 	ags_pulse_port_set_cache_buffer_size(port->data,
-					     cache_buffer_size);
+					     buffer_size * ceil(cache_buffer_size / buffer_size));
 	
 	port = port->next;
       }

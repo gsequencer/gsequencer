@@ -74,6 +74,8 @@
 
 #include <signal.h>
 
+#include <math.h>
+
 #include <ags/i18n.h>
 
 void ags_xorg_application_context_signal_handler(int signr);
@@ -2176,7 +2178,7 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
 	ags_pulse_port_set_format(port->data,
 				  format);
 	ags_pulse_port_set_cache_buffer_size(port->data,
-					     cache_buffer_size);
+					     buffer_size * ceil(cache_buffer_size / buffer_size));
 	
 	port = port->next;
       }
