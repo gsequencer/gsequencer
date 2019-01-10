@@ -2,6 +2,7 @@ ags (2.1.34)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* added missing integration test ags_check_system_functional_osc_server_test
+	* improved AgsSoundcardEditor use cache option
 
 ags (2.1.33)
 

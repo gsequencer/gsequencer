@@ -752,19 +752,21 @@ ags_soundcard_editor_apply(AgsApplicable *applicable)
 			 device);
   }
 
-  ags_config_set_value(config,
-		       soundcard_group,
-		       "use-cache",
-		       (gtk_toggle_button_get_active(soundcard_editor->use_cache) ? "true": "false"));
+  if(AGS_IS_PULSE_DEVOUT(soundcard_editor->soundcard)){
+    ags_config_set_value(config,
+			 soundcard_group,
+			 "use-cache",
+			 (gtk_toggle_button_get_active(soundcard_editor->use_cache) ? "true": "false"));
   
-  cache_buffer_size = gtk_spin_button_get_value(soundcard_editor->cache_buffer_size);
-  str = g_strdup_printf("%u",
-			cache_buffer_size);
-  ags_config_set_value(config,
-		       soundcard_group,
-		       "cache-buffer-size",
-		       str);
-  g_free(str);
+    cache_buffer_size = gtk_spin_button_get_value(soundcard_editor->cache_buffer_size);
+    str = g_strdup_printf("%u",
+			  cache_buffer_size);
+    ags_config_set_value(config,
+			 soundcard_group,
+			 "cache-buffer-size",
+			 str);
+    g_free(str);
+  }
 }
 
 void
@@ -1055,6 +1057,47 @@ ags_soundcard_editor_reset(AgsApplicable *applicable)
 			    buffer_size_min, buffer_size_max);
 
   soundcard_editor->flags &= (~AGS_SOUNDCARD_EDITOR_BLOCK_RESET);
+
+  if(AGS_IS_PULSE_DEVOUT(soundcard)){
+    GList *start_port, *port;
+
+    guint cache_buffer_size;
+    gboolean use_cache;
+    
+    pthread_mutex_t *pulse_port_mutex;
+    
+    g_object_get(soundcard,
+		 "pulse-port", &start_port,
+		 NULL);
+
+    port = start_port;
+
+    if(port != NULL){
+      pthread_mutex_lock(ags_pulse_port_get_class_mutex());
+      
+      pulse_port_mutex = AGS_PULSE_PORT(port->data)->obj_mutex;
+      
+      pthread_mutex_unlock(ags_pulse_port_get_class_mutex());
+
+      /* read use cache and cache buffer size */
+      pthread_mutex_lock(pulse_port_mutex);
+
+      use_cache = AGS_PULSE_PORT(port->data)->use_cache;
+      cache_buffer_size = AGS_PULSE_PORT(port->data)->cache_buffer_size;
+      
+      pthread_mutex_unlock(pulse_port_mutex);
+
+      /* reset */
+      gtk_toggle_button_set_active(soundcard_editor->use_cache,
+				   use_cache);
+
+      gtk_spin_button_set_value(soundcard_editor->cache_buffer_size,
+				cache_buffer_size);
+    }
+  }else{
+    gtk_toggle_button_set_active(soundcard_editor->use_cache,
+				 FALSE);
+  }
 }
 
 void
