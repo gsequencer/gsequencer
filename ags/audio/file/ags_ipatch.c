@@ -1065,7 +1065,7 @@ ags_ipatch_get_sublevel_name(AgsSoundContainer *sound_container)
 	
 	sublevel_name = (gchar **) malloc(2 * sizeof(gchar*));
 
-	sublevel_name[0] = ipatch->filename;
+	sublevel_name[0] = g_strdup(ipatch->filename);
 	sublevel_name[1] = NULL;
 
 	return(sublevel_name);
@@ -1096,7 +1096,7 @@ ags_ipatch_get_sublevel_name(AgsSoundContainer *sound_container)
 	
 	sublevel_name = (gchar **) malloc(2 * sizeof(gchar*));
 
-	sublevel_name[0] = ipatch->filename;
+	sublevel_name[0] = g_strdup(ipatch->filename);
 	sublevel_name[1] = NULL;
 
 	return(sublevel_name);
@@ -1132,7 +1132,7 @@ ags_ipatch_get_sublevel_name(AgsSoundContainer *sound_container)
 	
 	sublevel_name = (gchar **) malloc(2 * sizeof(gchar*));
 
-	sublevel_name[0] = ipatch->filename;
+	sublevel_name[0] = g_strdup(ipatch->filename);
 	sublevel_name[1] = NULL;
 
 	return(sublevel_name);

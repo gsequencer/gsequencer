@@ -30,6 +30,12 @@
 #include <ags/audio/ags_playback_domain.h>
 #include <ags/audio/ags_playback.h>
 
+#include <ags/audio/file/ags_audio_file_link.h>
+#include <ags/audio/file/ags_audio_container.h>
+#include <ags/audio/file/ags_audio_file.h>
+#include <ags/audio/file/ags_sound_container.h>
+#include <ags/audio/file/ags_sound_resource.h>
+
 #include <ags/audio/thread/ags_audio_loop.h>
 #include <ags/audio/thread/ags_soundcard_thread.h>
 #include <ags/audio/thread/ags_sequencer_thread.h>
@@ -76,6 +82,7 @@ void ags_apply_sound_config_finalize(GObject *gobject);
 
 void ags_apply_sound_config_change_max_precision(AgsThread *thread,
 						 gdouble max_precision);
+void ags_apply_sound_config_reload_sound_resource(AgsAudio *audio);
 void ags_apply_sound_config_launch(AgsTask *task);
 
 /**
@@ -320,6 +327,127 @@ ags_apply_sound_config_change_max_precision(AgsThread *thread,
 						max_precision);
     
     current = g_atomic_pointer_get(&(thread->next));
+  }
+}
+
+void
+ags_apply_sound_config_reload_sound_resource(AgsAudio *audio)
+{
+  AgsChannel *input;
+
+  if(!ags_audio_test_flags(audio, AGS_AUDIO_OUTPUT_HAS_RECYCLING)){
+    return;
+  }
+  
+  g_object_get(audio,
+	       "input", &input,
+	       NULL);
+
+  while(input != NULL){
+    AgsRecycling *recycling;
+    
+    AgsAudioFile *audio_file;
+    AgsAudioContainer *audio_container;    
+    AgsAudioFileLink *audio_file_link;
+
+    GObject *output_soundcard;
+    GObject *sound_resource;
+    
+    GList *audio_signal;
+
+    gchar *filename;
+    gchar *instrument;
+    gchar *preset;
+    gchar *sample;
+    
+    gint audio_channel;
+
+    pthread_mutex_t *file_link_mutex;
+    
+    g_object_get(input,
+		 "file-link", &audio_file_link,
+		 "first-recycling", &recycling,
+		 NULL);
+
+    /* get file link mutex */
+    pthread_mutex_lock(ags_file_link_get_class_mutex());
+
+    file_link_mutex = AGS_FILE_LINK(audio_file_link)->obj_mutex;
+    
+    pthread_mutex_unlock(ags_file_link_get_class_mutex());
+
+    /* file link */
+    pthread_mutex_lock(file_link_mutex);
+
+    filename = g_strdup(AGS_FILE_LINK(audio_file_link)->filename);
+    preset = g_strdup(audio_file_link->preset);
+    instrument = g_strdup(audio_file_link->instrument);
+    sample = g_strdup(audio_file_link->sample);
+    
+    audio_channel = audio_file_link->audio_channel;
+    
+    pthread_mutex_unlock(file_link_mutex);
+
+    audio_file = NULL;
+    audio_container = NULL;
+
+    sound_resource = NULL;
+    
+    if(ags_audio_file_check_suffix(filename)){
+      audio_file = ags_audio_file_new(filename,
+				      output_soundcard,
+				      audio_channel);
+      ags_audio_file_open(audio_file);
+
+      sound_resource = audio_file->sound_resource;
+    }else if(ags_audio_container_check_suffix(filename)){
+      GList *sample;
+      
+      audio_container = ags_audio_container_new(filename,
+						preset,
+						instrument,
+						sample,
+						output_soundcard,
+						audio_channel);
+      ags_audio_container_open(audio_container);
+
+      sample = ags_audio_container_find_sound_resource(audio_container,
+						       preset,
+						       instrument,
+						       sample);
+
+      if(sample != NULL){
+	sound_resource = sample->data;
+      }
+    }
+    
+    /* read audio signal */
+    audio_signal = ags_sound_resource_read_audio_signal(AGS_SOUND_RESOURCE(sound_resource),
+							output_soundcard,
+							audio_channel);
+
+    if(audio_signal != NULL){
+      ags_audio_signal_set_flags(audio_signal->data,
+				 AGS_AUDIO_SIGNAL_TEMPLATE);
+      
+      ags_recycling_add_audio_signal(recycling,
+				     audio_signal->data);
+    }
+
+    if(audio_file != NULL){
+      g_object_run_dispose(audio_file);
+      
+      g_object_unref(audio_file);
+    }else if(audio_container != NULL){
+      g_object_run_dispose(audio_container);
+      
+      g_object_unref(audio_container);
+    }
+    
+    /* iterate */
+    g_object_get(input,
+		 "next", &input,
+		 NULL);
   }
 }
 

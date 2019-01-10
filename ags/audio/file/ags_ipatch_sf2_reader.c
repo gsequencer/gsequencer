@@ -959,7 +959,7 @@ ags_ipatch_sf2_reader_get_preset_all(AgsIpatchSF2Reader *ipatch_sf2_reader)
       
       for(i = 0; i < i_stop; i++){
 	ipatch_item = ipatch_iter_get(&preset_iter);
-	preset[i] = ipatch_sf2_preset_get_name(IPATCH_SF2_PRESET(ipatch_item));
+	preset[i] = g_strdup(ipatch_sf2_preset_get_name(IPATCH_SF2_PRESET(ipatch_item)));
 
 	/* iterate */
 	ipatch_iter_next(&preset_iter);
@@ -1024,7 +1024,7 @@ ags_ipatch_sf2_reader_get_instrument_all(AgsIpatchSF2Reader *ipatch_sf2_reader)
       
       for(i = 0; i < i_stop; i++){
 	ipatch_item = ipatch_iter_get(&instrument_iter);
-	instrument[i] = ipatch_sf2_inst_get_name(IPATCH_SF2_INST(ipatch_item));
+	instrument[i] = g_strdup(ipatch_sf2_inst_get_name(IPATCH_SF2_INST(ipatch_item)));
 
 	/* iterate */
 	ipatch_iter_next(&instrument_iter);
@@ -1089,7 +1089,7 @@ ags_ipatch_sf2_reader_get_sample_all(AgsIpatchSF2Reader *ipatch_sf2_reader)
       
       for(i = 0; i < i_stop; i++){
 	ipatch_item = ipatch_iter_get(&sample_iter);
-	sample[i] = ipatch_sf2_sample_get_name(IPATCH_SF2_SAMPLE(ipatch_item));
+	sample[i] = g_strdup(ipatch_sf2_sample_get_name(IPATCH_SF2_SAMPLE(ipatch_item)));
 
 	/* iterate */
 	ipatch_iter_next(&sample_iter);
@@ -1176,7 +1176,7 @@ ags_ipatch_sf2_reader_get_instrument_by_preset_index(AgsIpatchSF2Reader *ipatch_
 	    
 	  for(j = 0, count = 0; j < j_stop; j++){
 	    instrument = (IpatchContainer *) ipatch_sf2_pzone_get_inst(ipatch_iter_get(&instrument_iter));
-	    instrument_strv[count] = ipatch_sf2_inst_get_name((IpatchSF2Inst *) instrument);
+	    instrument_strv[count] = g_strdup(ipatch_sf2_inst_get_name((IpatchSF2Inst *) instrument));
 
 	    /* iterate */
 	    ipatch_iter_next(&instrument_iter);
@@ -1281,7 +1281,7 @@ ags_ipatch_sf2_reader_get_sample_by_preset_index(AgsIpatchSF2Reader *ipatch_sf2_
 	    
 		for(k = 0; k < k_stop; k++){
 		  ipatch_item = (IpatchItem *) ipatch_sf2_izone_get_sample(ipatch_iter_get(&sample_iter));
-		  sample_strv[count] = ipatch_sf2_sample_get_name((IpatchSF2Sample *) ipatch_item);
+		  sample_strv[count] = g_strdup(ipatch_sf2_sample_get_name((IpatchSF2Sample *) ipatch_item));
 		    
 		  /* iterate */
 		  ipatch_iter_next(&sample_iter);
@@ -1390,7 +1390,7 @@ ags_ipatch_sf2_reader_get_sample_by_preset_and_instrument_index(AgsIpatchSF2Read
 	    
 	      for(k = 0, count = 0; k < k_stop; k++){
 		ipatch_item = (IpatchItem *) ipatch_sf2_izone_get_sample(ipatch_iter_get(&sample_iter));
-		sample[count] = ipatch_sf2_sample_get_name((IpatchSF2Sample *) ipatch_item);
+		sample[count] = g_strdup(ipatch_sf2_sample_get_name((IpatchSF2Sample *) ipatch_item));
 		    
 		/* iterate */
 		ipatch_iter_next(&sample_iter);

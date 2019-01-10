@@ -23,12 +23,14 @@
 #include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_input.h>
 
+#include <ags/audio/file/ags_audio_file_link.h>
 #include <ags/audio/file/ags_sound_container.h>
 #include <ags/audio/file/ags_sound_resource.h>
 #include <ags/audio/file/ags_audio_file_link.h>
 #include <ags/audio/file/ags_audio_container.h>
 #include <ags/audio/file/ags_ipatch.h>
 #include <ags/audio/file/ags_ipatch_sample.h>
+#include <ags/audio/file/ags_ipatch_sf2_reader.h>
 
 #include <ags/config.h>
 
@@ -543,6 +545,8 @@ ags_open_sf2_instrument_launch(AgsTask *task)
       for(j = 0; j < j_stop && audio_signal != NULL; j++){
 	AgsRecycling *recycling;
 
+	AgsFileLink *file_link;
+
 	/* reset link */
 	error = NULL;
 	ags_channel_set_link(channel, NULL,
@@ -555,6 +559,25 @@ ags_open_sf2_instrument_launch(AgsTask *task)
 	/* get recycling */
 	g_object_get(channel,
 		     "first-recycling", &recycling,
+		     "file-link", &file_link,
+		     NULL);
+
+	/* set filename and channel */
+	if(file_link == NULL){
+	  file_link = g_object_new(AGS_TYPE_AUDIO_FILE_LINK,
+				   NULL);
+      
+	  g_object_set(channel,
+		       "file-link", file_link,
+		       NULL);
+	}
+	  
+	g_object_set(file_link,
+		     "filename", ipatch->filename,
+		     "preset", AGS_IPATCH_SF2_READER(ipatch->reader)->name_selected[AGS_SF2_PHDR],
+		     "instrument", AGS_IPATCH_SF2_READER(ipatch->reader)->name_selected[AGS_SF2_IHDR],
+		     "sample", ipatch_sf2_sample_get_name(list->data),
+		     "audio-channel", j,
 		     NULL);	
 	
 	/* replace template audio signal */

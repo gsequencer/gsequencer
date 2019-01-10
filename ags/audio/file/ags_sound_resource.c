@@ -469,11 +469,11 @@ ags_sound_resource_read_audio_signal(AgsSoundResource *sound_resource,
 					NULL,
 					NULL);
     g_object_set(audio_signal,
-		 "samplerate", samplerate, //TODO:JK: implement me target_samplerate
+		 "samplerate", target_samplerate,
 		 "buffer-size", target_buffer_size,
 		 "format", target_format,
-		 "loop-start", loop_start,
-		 "loop-end", loop_end,
+		 "loop-start", target_samplerate * (loop_start / samplerate),
+		 "loop-end", target_samplerate * (loop_end / samplerate),
 		 NULL);
     ags_audio_signal_stream_resize(audio_signal,
 				   (guint) ceil(frame_count / target_buffer_size) + 1);
@@ -483,11 +483,6 @@ ags_sound_resource_read_audio_signal(AgsSoundResource *sound_resource,
 				audio_signal);
 
     stream = audio_signal->stream;
-
-    if(samplerate != target_samplerate){
-      //TODO:JK: implement me
-      g_warning("samplerate != target_samplerate");
-    }
 
     g_object_set(audio_signal,
 		 "last-frame", frame_count,

@@ -41,6 +41,7 @@
 #include <ags/audio/thread/ags_audio_loop.h>
 #include <ags/audio/thread/ags_audio_thread.h>
 
+#include <ags/audio/file/ags_audio_file_link.h>
 #include <ags/audio/file/ags_audio_file.h>
 
 #include <ags/audio/midi/ags_midi_file.h>
@@ -11056,6 +11057,8 @@ ags_audio_open_audio_file_as_channel(AgsAudio *audio,
 	
 	for(j = 0; j < audio_channels && audio_signal != NULL; j++){
 	  AgsRecycling *recycling;
+
+	  AgsFileLink *file_link;
 	  
 	  /* reset link */
 	  error = NULL;
@@ -11078,9 +11081,26 @@ ags_audio_open_audio_file_as_channel(AgsAudio *audio,
 	  pthread_mutex_lock(channel_mutex);
 
 	  recycling = channel->first_recycling;
-	  	  
+
+	  file_link = AGS_INPUT(channel)->file_link;
+	  
 	  pthread_mutex_unlock(channel_mutex);
 
+	  /* set filename and channel */
+	  if(file_link == NULL){
+	    file_link = g_object_new(AGS_TYPE_AUDIO_FILE_LINK,
+				     NULL);
+      
+	    g_object_set(channel,
+			 "file-link", file_link,
+			 NULL);
+	  }
+	  
+	  g_object_set(file_link,
+		       "filename", filename->data,
+		       "audio-channel", j,
+		       NULL);
+	  
 	  /* get recycling mutex */
 	  pthread_mutex_lock(ags_recycling_get_class_mutex());
 	  

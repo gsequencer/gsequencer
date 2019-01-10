@@ -1229,6 +1229,76 @@ ags_audio_container_check_suffix(gchar *filename)
 }
 
 /**
+ * ags_audio_container_find_sound_resource:
+ * @audio_container: the #AgsAudioContainer
+ * @preset: the preset
+ * @instrument: the instrument
+ * @sample: the sample
+ * 
+ * Find resource specified by parameters.
+ *
+ * Returns: the #GList-struct containing #AgsSample or %NULL. WARNING the parameters need to be valid in order
+ * to return the correct list.
+ * 
+ * Since: 2.1.35
+ */
+GList*
+ags_audio_container_find_sound_resource(AgsAudioContainer *audio_container,
+					gchar *preset,
+					gchar *instrument,
+					gchar *sample)
+{
+  GList *retval;
+  
+  gchar **strv;
+
+  guint i;
+  
+  ags_sound_container_level_up(AGS_SOUND_CONTAINER(audio_container->sound_container),
+			       5);
+
+  /* preset */
+  if(preset != NULL){
+    strv = ags_sound_container_get_sublevel_name(AGS_SOUND_CONTAINER(audio_container->sound_container));
+    i = ags_strv_index(strv,
+		       preset);
+  
+    ags_sound_container_select_level_by_index(AGS_SOUND_CONTAINER(audio_container->sound_container),
+					      i);
+
+    g_strfreev(strv);
+  }
+
+  /* instrument */
+  if(instrument != NULL){
+    strv = ags_sound_container_get_sublevel_name(AGS_SOUND_CONTAINER(audio_container->sound_container));
+    i = ags_strv_index(strv,
+		       instrument);
+  
+    ags_sound_container_select_level_by_index(AGS_SOUND_CONTAINER(audio_container->sound_container),
+					      i);
+
+    g_strfreev(strv);
+  }
+  
+  /* sample */
+  if(sample != NULL){
+    strv = ags_sound_container_get_sublevel_name(AGS_SOUND_CONTAINER(audio_container->sound_container));
+    i = ags_strv_index(strv,
+		       sample);
+  
+    ags_sound_container_select_level_by_index(AGS_SOUND_CONTAINER(audio_container->sound_container),
+					      i);
+
+    g_strfreev(strv);
+  }
+
+  retval = ags_sound_container_get_resource_current(AGS_SOUND_CONTAINER(audio_container->sound_container));
+  
+  return(retval);
+}
+
+/**
  * ags_audio_container_add_audio_signal:
  * @audio_container: the #AgsAudioContainer
  * @audio_signal: the #AgsAudioSignal

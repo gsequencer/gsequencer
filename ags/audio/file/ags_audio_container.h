@@ -97,6 +97,11 @@ void ags_audio_container_unset_flags(AgsAudioContainer *audio_container, guint f
 
 gboolean ags_audio_container_check_suffix(gchar *filename);
 
+GList* ags_audio_container_find_sound_resource(AgsAudioContainer *audio_container,
+					       gchar *preset,
+					       gchar *instrument,
+					       gchar *sample);
+
 /* fields */
 void ags_audio_container_add_audio_signal(AgsAudioContainer *audio_container, GObject *audio_signal);
 void ags_audio_container_remove_audio_signal(AgsAudioContainer *audio_container, GObject *audio_signal);
