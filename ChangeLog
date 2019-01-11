@@ -3,7 +3,7 @@ ags (2.1.35)
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* TODO:JK: implemented AgsSoundContainer manager
 	* implemented proper resample of AgsAudioSignal as adjusting buffer size and samplerate
-	* TODO:JK: implemented proper resample of AgsWave as adjusting buffer size and samplerate
+	* implemented proper resample of AgsWave as adjusting buffer size and samplerate
 	* TODO:JK: fixed reload synth generator after applying configuration
 	* TODO:JK: fixed update AgsOscillator after modifying samplerate
 	* fixed adjust loop information to samplerate

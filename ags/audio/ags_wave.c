@@ -738,7 +738,19 @@ void
 ags_wave_set_samplerate(AgsWave *wave,
 			guint samplerate)
 {
-  GList *list_start, *list;
+  GList *start_list, *list;
+
+  void *data, *resampled_data;
+
+  guint64 x;
+  guint buffer_length;
+  guint new_buffer_length;
+  guint buffer_size;
+  guint old_samplerate;
+  guint format;
+  guint offset;
+  guint copy_mode;
+  guint i;    
 
   pthread_mutex_t *wave_mutex;
 
@@ -755,22 +767,199 @@ ags_wave_set_samplerate(AgsWave *wave,
 
   /* apply samplerate */
   pthread_mutex_lock(wave_mutex);
+
+  x = ags_timestamp_get_ags_offset(wave->timestamp);
+
+  buffer_size = wave->buffer_size;
+  old_samplerate = wave->samplerate;
+  format = wave->format;
   
   wave->samplerate = samplerate;
 
-  list =
-    list_start = g_list_copy(wave->buffer);
+  start_list = g_list_copy(wave->buffer);
   
   pthread_mutex_unlock(wave_mutex);
 
+  data = NULL;
+
+  buffer_length = g_list_length(start_list);
+
+  switch(format){
+  case AGS_SOUNDCARD_SIGNED_8_BIT:
+    {
+      data = (gint8 *) malloc(buffer_length * buffer_size * sizeof(gint8));
+
+      copy_mode = AGS_AUDIO_BUFFER_UTIL_COPY_S8_TO_S8;
+    }
+    break;
+  case AGS_SOUNDCARD_SIGNED_16_BIT:
+    {
+      data = (gint16 *) malloc(buffer_length * buffer_size * sizeof(gint16));
+
+      copy_mode = AGS_AUDIO_BUFFER_UTIL_COPY_S16_TO_S16;
+    }
+    break;
+  case AGS_SOUNDCARD_SIGNED_24_BIT:
+    {
+      data = (gint32 *) malloc(buffer_length * buffer_size * sizeof(gint32));
+
+      copy_mode = AGS_AUDIO_BUFFER_UTIL_COPY_S32_TO_S32;
+    }
+    break;
+  case AGS_SOUNDCARD_SIGNED_32_BIT:
+    {
+      data = (gint32 *) malloc(buffer_length * buffer_size * sizeof(gint32));
+
+      copy_mode = AGS_AUDIO_BUFFER_UTIL_COPY_S32_TO_S32;
+    }
+    break;
+  case AGS_SOUNDCARD_SIGNED_64_BIT:
+    {
+      data = (gint64 *) malloc(buffer_length * buffer_size * sizeof(gint64));
+
+      copy_mode = AGS_AUDIO_BUFFER_UTIL_COPY_S64_TO_S64;
+    }
+    break;
+  case AGS_SOUNDCARD_FLOAT:
+    {
+      data = (gfloat *) malloc(buffer_length * buffer_size * sizeof(gfloat));
+
+      copy_mode = AGS_AUDIO_BUFFER_UTIL_COPY_FLOAT_TO_FLOAT;
+    }
+    break;
+  case AGS_SOUNDCARD_DOUBLE:
+    {
+      data = (gdouble *) malloc(buffer_length * buffer_size * sizeof(gdouble));
+
+      copy_mode = AGS_AUDIO_BUFFER_UTIL_COPY_DOUBLE_TO_DOUBLE;
+    }
+    break;
+  default:
+    g_warning("ags_audio_signal_set_buffer_size() - unsupported format");
+  }
+
+  list = start_list;
+
   while(list != NULL){
+    pthread_mutex_t *buffer_mutex;
+  
+    /* get buffer mutex */
+    pthread_mutex_lock(ags_buffer_get_class_mutex());
+  
+    buffer_mutex = AGS_BUFFER(list->data)->obj_mutex;
+  
+    pthread_mutex_unlock(ags_buffer_get_class_mutex());
+
+    /*  */
+    pthread_mutex_lock(buffer_mutex);
+    
+    ags_audio_buffer_util_copy_buffer_to_buffer(data, 1, offset,
+						AGS_BUFFER(list->data)->data, 1, 0,
+						buffer_size, copy_mode);
+
+    pthread_mutex_unlock(buffer_mutex);
+
+    /* iterate */
+    list = list->next;
+
+    offset += buffer_size;
+  }
+
+  resampled_data = ags_audio_buffer_util_resample(data, 1,
+						  format, old_samplerate,
+						  buffer_length * buffer_size,
+						  samplerate);
+
+  if(data != NULL){
+    free(data);
+  }
+
+  new_buffer_length = (guint) ceil((samplerate * (buffer_length * buffer_size / old_samplerate)) / buffer_size);
+    
+  if(samplerate < old_samplerate){
+    list = g_list_nth(start_list,
+		      new_buffer_length);
+    
+    for(i = 0; i < buffer_length - new_buffer_length && list != NULL; i++){
+      ags_wave_remove_buffer(wave,
+			     list->data,
+			     FALSE);
+
+      list = list->next;
+    }
+  }else{
+    for(i = 0; i < new_buffer_length - buffer_length; i++){
+      AgsBuffer *current;
+
+      current = ags_buffer_new();
+      g_object_set(current,
+		   "x", x + i * buffer_size,
+		   NULL);
+      ags_buffer_set_buffer_size(current,
+				 buffer_size);
+      
+      ags_wave_add_buffer(wave,
+			  current,
+			  FALSE);
+    }
+  }
+
+  g_list_free(start_list);
+
+  g_object_get(wave,
+	       "buffer", &start_list,
+	       NULL);
+  
+  list = start_list;
+
+  offset = 0;
+  
+  while(list != NULL && offset < buffer_length * buffer_size){
+    pthread_mutex_t *buffer_mutex;
+  
+    /* get buffer mutex */
+    pthread_mutex_lock(ags_buffer_get_class_mutex());
+  
+    buffer_mutex = AGS_BUFFER(list->data)->obj_mutex;
+  
+    pthread_mutex_unlock(ags_buffer_get_class_mutex());
+
+    /*  */
     ags_buffer_set_samplerate(list->data,
 			      samplerate);
 
+    pthread_mutex_lock(buffer_mutex);
+    
+    if(offset + buffer_size < buffer_length * buffer_size){
+      ags_audio_buffer_util_copy_buffer_to_buffer(AGS_BUFFER(list->data)->data, 1, 0,
+						  resampled_data, 1, offset,
+						  buffer_size, copy_mode);
+    }else{
+      guint end_offset;
+
+      end_offset = (buffer_length * buffer_size) - offset;
+      
+      ags_audio_buffer_util_copy_buffer_to_buffer(AGS_BUFFER(list->data)->data, 1, 0,
+						  resampled_data, 1, offset,
+						  end_offset - offset, copy_mode);
+
+      ags_audio_buffer_util_clear_buffer(AGS_BUFFER(list->data)->data + end_offset, 1,
+					 buffer_size - (end_offset - offset), format);
+    }
+    
+    pthread_mutex_unlock(buffer_mutex);
+
+    /* iterate */
     list = list->next;
+
+    offset += buffer_size;
   }
 
-  g_list_free(list_start);
+  g_list_free(start_list);
+
+  if(resampled_data != NULL){
+    free(resampled_data);
+  }
 }
 
 /**
@@ -786,8 +975,20 @@ void
 ags_wave_set_buffer_size(AgsWave *wave,
 			 guint buffer_size)
 {
-  GList *list_start, *list;
+  GList *start_list, *list;
 
+  void *data;
+
+  guint64 x;
+  guint buffer_length;
+  guint new_buffer_length;
+  guint offset;
+  guint format;
+  guint old_buffer_size;
+  guint word_size;
+  guint copy_mode;
+  guint i;
+  
   pthread_mutex_t *wave_mutex;
 
   if(!AGS_IS_WAVE(wave)){
@@ -803,22 +1004,191 @@ ags_wave_set_buffer_size(AgsWave *wave,
 
   /* apply buffer size */
   pthread_mutex_lock(wave_mutex);
+
+  old_buffer_size = wave->buffer_size;
+  format = wave->format;
   
   wave->buffer_size = buffer_size;
 
-  list =
-    list_start = g_list_copy(wave->buffer);
+  start_list = g_list_copy(wave->buffer);
   
   pthread_mutex_unlock(wave_mutex);
+
+  /* resize buffer */
+  data = NULL;
+  
+  buffer_length = g_list_length(start_list);
+  word_size = 1;  
+  
+  switch(format){
+  case AGS_SOUNDCARD_SIGNED_8_BIT:
+    {
+      data = (gint8 *) malloc(buffer_length * old_buffer_size * sizeof(gint8));
+
+      copy_mode = AGS_AUDIO_BUFFER_UTIL_COPY_S8_TO_S8;
+    }
+    break;
+  case AGS_SOUNDCARD_SIGNED_16_BIT:
+    {
+      data = (gint16 *) malloc(buffer_length * old_buffer_size * sizeof(gint16));
+
+      copy_mode = AGS_AUDIO_BUFFER_UTIL_COPY_S16_TO_S16;
+    }
+    break;
+  case AGS_SOUNDCARD_SIGNED_24_BIT:
+    {
+      data = (gint32 *) malloc(buffer_length * old_buffer_size * sizeof(gint32));
+
+      copy_mode = AGS_AUDIO_BUFFER_UTIL_COPY_S32_TO_S32;
+    }
+    break;
+  case AGS_SOUNDCARD_SIGNED_32_BIT:
+    {
+      data = (gint32 *) malloc(buffer_length * old_buffer_size * sizeof(gint32));
+
+      copy_mode = AGS_AUDIO_BUFFER_UTIL_COPY_S32_TO_S32;
+    }
+    break;
+  case AGS_SOUNDCARD_SIGNED_64_BIT:
+    {
+      data = (gint64 *) malloc(buffer_length * old_buffer_size * sizeof(gint64));
+
+      copy_mode = AGS_AUDIO_BUFFER_UTIL_COPY_S64_TO_S64;
+    }
+    break;
+  case AGS_SOUNDCARD_FLOAT:
+    {
+      data = (gfloat *) malloc(buffer_length * old_buffer_size * sizeof(gfloat));
+
+      copy_mode = AGS_AUDIO_BUFFER_UTIL_COPY_FLOAT_TO_FLOAT;
+    }
+    break;
+  case AGS_SOUNDCARD_DOUBLE:
+    {
+      data = (gdouble *) malloc(buffer_length * old_buffer_size * sizeof(gdouble));
+
+      copy_mode = AGS_AUDIO_BUFFER_UTIL_COPY_DOUBLE_TO_DOUBLE;
+    }
+    break;
+  default:
+    g_warning("ags_wave_set_buffer_size() - unsupported format");
+  }
+
+  list = start_list;
+
+  offset = 0;
   
   while(list != NULL){
+    pthread_mutex_t *buffer_mutex;
+  
+    /* get buffer mutex */
+    pthread_mutex_lock(ags_buffer_get_class_mutex());
+  
+    buffer_mutex = AGS_BUFFER(list->data)->obj_mutex;
+  
+    pthread_mutex_unlock(ags_buffer_get_class_mutex());
+
+    /*  */
+    pthread_mutex_lock(buffer_mutex);
+    
+    ags_audio_buffer_util_copy_buffer_to_buffer(data, 1, offset,
+						AGS_BUFFER(list->data)->data, 1, 0,
+						old_buffer_size, copy_mode);
+
+    pthread_mutex_unlock(buffer_mutex);
+
+    /* iterate */
+    list = list->next;
+
+    offset += old_buffer_size;
+  }
+
+  new_buffer_length = (guint) ceil((buffer_length * old_buffer_size) / buffer_size);
+
+  if(old_buffer_size < buffer_size){
+    list = g_list_nth(start_list,
+		      new_buffer_length);
+    
+    for(i = 0; i < buffer_length - new_buffer_length && list != NULL; i++){
+      ags_wave_remove_buffer(wave,
+			     list->data,
+			     FALSE);
+
+      list = list->next;
+    }
+  }else{
+    for(i = 0; i < new_buffer_length - buffer_length; i++){
+      AgsBuffer *current;
+
+      current = ags_buffer_new();
+      g_object_set(current,
+		   "x", x + i * buffer_size,
+		   NULL);
+      ags_buffer_set_buffer_size(current,
+				 buffer_size);
+      
+      ags_wave_add_buffer(wave,
+			  current,
+			  FALSE);
+    }
+  }
+
+  g_list_free(start_list);
+
+  g_object_get(wave,
+	       "buffer", &start_list,
+	       NULL);
+  
+  list = start_list;
+
+  offset = 0;
+  
+  while(list != NULL){
+    pthread_mutex_t *buffer_mutex;
+  
+    /* get buffer mutex */
+    pthread_mutex_lock(ags_buffer_get_class_mutex());
+  
+    buffer_mutex = AGS_BUFFER(list->data)->obj_mutex;
+  
+    pthread_mutex_unlock(ags_buffer_get_class_mutex());
+
+    /*  */
     ags_buffer_set_buffer_size(list->data,
 			       buffer_size);
 
+    pthread_mutex_lock(buffer_mutex);
+    
+    if(offset + buffer_size < buffer_length * buffer_size){
+      ags_audio_buffer_util_copy_buffer_to_buffer(AGS_BUFFER(list->data)->data, 1, 0,
+						  data, 1, offset,
+						  buffer_size, copy_mode);
+    }else{
+      guint end_offset;
+
+      end_offset = (buffer_length * buffer_size) - offset;
+      
+      ags_audio_buffer_util_copy_buffer_to_buffer(AGS_BUFFER(list->data)->data, 1, 0,
+						  data, 1, offset,
+						  end_offset - offset, copy_mode);
+
+      ags_audio_buffer_util_clear_buffer(AGS_BUFFER(list->data)->data + end_offset, 1,
+					 buffer_size - (end_offset - offset), format);
+    }
+    
+    pthread_mutex_unlock(buffer_mutex);
+
+    /* iterate */
     list = list->next;
+
+    offset += buffer_size;
   }
 
-  g_list_free(list_start);
+  g_list_free(start_list);
+
+  if(data != NULL){
+    free(data);
+  }
 }
 
 /**

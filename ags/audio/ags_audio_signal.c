@@ -2320,7 +2320,7 @@ ags_audio_signal_set_samplerate(AgsAudioSignal *audio_signal, guint samplerate)
     }
     break;
   default:
-    g_warning("ags_audio_signal_set_buffer_size() - unsupported format");
+    g_warning("ags_audio_signal_set_samplerate() - unsupported format");
   }
 
   stream = audio_signal->stream;
@@ -2350,7 +2350,7 @@ ags_audio_signal_set_samplerate(AgsAudioSignal *audio_signal, guint samplerate)
   }
 
   ags_audio_signal_stream_resize(audio_signal,
-				 ceil((samplerate * (stream_length * buffer_size / old_samplerate)) / buffer_size));
+				 (guint) ceil((samplerate * (stream_length * buffer_size / old_samplerate)) / buffer_size));
   
   pthread_mutex_lock(stream_mutex);
 
@@ -2521,12 +2521,21 @@ ags_audio_signal_set_buffer_size(AgsAudioSignal *audio_signal, guint buffer_size
 
     offset += old_buffer_size;
   }
+
+  pthread_mutex_unlock(stream_mutex);
   
+  ags_audio_signal_stream_resize(audio_signal,
+				 (guint) ceil(((double) stream_length * (double) old_buffer_size) / buffer_size));
+
+  pthread_mutex_lock(stream_mutex);
+
   stream = audio_signal->stream;
+
+  stream_length = g_list_length(audio_signal->stream);
 
   offset = 0;
   
-  while(stream != NULL && offset < stream_length * old_buffer_size){
+  while(stream != NULL && offset < stream_length * buffer_size){
     switch(format){
     case AGS_SOUNDCARD_SIGNED_8_BIT:
       {
