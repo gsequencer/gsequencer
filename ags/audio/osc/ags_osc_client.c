@@ -1111,7 +1111,10 @@ ags_osc_client_real_read_bytes(AgsOscClient *osc_client,
       }else{
 	g_message("error during reading data from socket");
       
-	if(errno == EBADFD ||
+	if(
+#ifdef EBADFD
+	   errno == EBADFD ||
+#endif
 	   errno == ECONNRESET ||
 	   errno == ENETRESET){
 	  pthread_mutex_lock(osc_client_mutex);
