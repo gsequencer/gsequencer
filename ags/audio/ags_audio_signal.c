@@ -2222,7 +2222,19 @@ ags_audio_signal_set_input_soundcard(AgsAudioSignal *audio_signal, GObject *inpu
 void
 ags_audio_signal_set_samplerate(AgsAudioSignal *audio_signal, guint samplerate)
 {
+  GList *stream;
+
+  void *data, *resampled_data;
+
+  guint stream_length;
+  guint buffer_size;
+  guint old_samplerate;
+  guint format;
+  guint offset;
+  guint copy_mode;
+  
   pthread_mutex_t *audio_signal_mutex;
+  pthread_mutex_t *stream_mutex;
 
   if(!AGS_IS_AUDIO_SIGNAL(audio_signal)){
     return;
@@ -2232,15 +2244,150 @@ ags_audio_signal_set_samplerate(AgsAudioSignal *audio_signal, guint samplerate)
   pthread_mutex_lock(ags_audio_signal_get_class_mutex());
   
   audio_signal_mutex = audio_signal->obj_mutex;
+  stream_mutex = audio_signal->stream_mutex;
   
   pthread_mutex_unlock(ags_audio_signal_get_class_mutex());
 
   /* set samplerate */
   pthread_mutex_lock(audio_signal_mutex);
 
+  buffer_size = audio_signal->buffer_size;
+  old_samplerate = audio_signal->samplerate;
+  format = audio_signal->format;
+
   audio_signal->samplerate = samplerate;
 
+  audio_signal->loop_start = (guint) floor((double) samplerate * ((double) audio_signal->loop_start / (double) old_samplerate));
+  audio_signal->loop_end = (guint) floor((double) samplerate * ((double) audio_signal->loop_end / (double) old_samplerate));
+
   pthread_mutex_unlock(audio_signal_mutex);
+
+  /* resample buffer */
+  pthread_mutex_lock(stream_mutex);
+
+  data = NULL;
+  
+  stream_length = g_list_length(audio_signal->stream);
+
+  switch(format){
+  case AGS_SOUNDCARD_SIGNED_8_BIT:
+    {
+      data = (gint8 *) malloc(stream_length * buffer_size * sizeof(gint8));
+
+      copy_mode = AGS_AUDIO_BUFFER_UTIL_COPY_S8_TO_S8;
+    }
+    break;
+  case AGS_SOUNDCARD_SIGNED_16_BIT:
+    {
+      data = (gint16 *) malloc(stream_length * buffer_size * sizeof(gint16));
+
+      copy_mode = AGS_AUDIO_BUFFER_UTIL_COPY_S16_TO_S16;
+    }
+    break;
+  case AGS_SOUNDCARD_SIGNED_24_BIT:
+    {
+      data = (gint32 *) malloc(stream_length * buffer_size * sizeof(gint32));
+
+      copy_mode = AGS_AUDIO_BUFFER_UTIL_COPY_S32_TO_S32;
+    }
+    break;
+  case AGS_SOUNDCARD_SIGNED_32_BIT:
+    {
+      data = (gint32 *) malloc(stream_length * buffer_size * sizeof(gint32));
+
+      copy_mode = AGS_AUDIO_BUFFER_UTIL_COPY_S32_TO_S32;
+    }
+    break;
+  case AGS_SOUNDCARD_SIGNED_64_BIT:
+    {
+      data = (gint64 *) malloc(stream_length * buffer_size * sizeof(gint64));
+
+      copy_mode = AGS_AUDIO_BUFFER_UTIL_COPY_S64_TO_S64;
+    }
+    break;
+  case AGS_SOUNDCARD_FLOAT:
+    {
+      data = (gfloat *) malloc(stream_length * buffer_size * sizeof(gfloat));
+
+      copy_mode = AGS_AUDIO_BUFFER_UTIL_COPY_FLOAT_TO_FLOAT;
+    }
+    break;
+  case AGS_SOUNDCARD_DOUBLE:
+    {
+      data = (gdouble *) malloc(stream_length * buffer_size * sizeof(gdouble));
+
+      copy_mode = AGS_AUDIO_BUFFER_UTIL_COPY_DOUBLE_TO_DOUBLE;
+    }
+    break;
+  default:
+    g_warning("ags_audio_signal_set_buffer_size() - unsupported format");
+  }
+
+  stream = audio_signal->stream;
+
+  offset = 0;
+  
+  while(stream != NULL){
+    ags_audio_buffer_util_copy_buffer_to_buffer(data, 1, offset,
+						stream->data, 1, 0,
+						buffer_size, copy_mode);
+
+    /* iterate */
+    stream = stream->next;
+
+    offset += buffer_size;
+  }
+  
+  pthread_mutex_unlock(stream_mutex);
+
+  resampled_data = ags_audio_buffer_util_resample(data, 1,
+						  format, old_samplerate,
+						  stream_length * buffer_size,
+						  samplerate);
+
+  if(data != NULL){
+    free(data);
+  }
+
+  ags_audio_signal_stream_resize(audio_signal,
+				 ceil((samplerate * (stream_length * buffer_size / old_samplerate)) / buffer_size));
+  
+  pthread_mutex_lock(stream_mutex);
+
+  stream = audio_signal->stream;
+
+  stream_length = g_list_length(audio_signal->stream);
+  offset = 0;
+
+  while(stream != NULL && offset < stream_length * buffer_size){
+    if(offset + buffer_size < stream_length * buffer_size){
+      ags_audio_buffer_util_copy_buffer_to_buffer(stream->data, 1, 0,
+						  resampled_data, 1, offset,
+						  buffer_size, copy_mode);
+    }else{
+      guint end_offset;
+
+      end_offset = (stream_length * buffer_size) - offset;
+      
+      ags_audio_buffer_util_copy_buffer_to_buffer(stream->data, 1, 0,
+						  resampled_data, 1, offset,
+						  end_offset - offset, copy_mode);
+
+      ags_audio_buffer_util_clear_buffer(stream->data + end_offset, 1,
+					 buffer_size - (end_offset - offset), format);
+    }
+    
+    /* iterate */
+    stream = stream->next;
+
+    offset += buffer_size;
+  }
+  
+  pthread_mutex_unlock(stream_mutex);
+
+  if(resampled_data != NULL){
+    free(resampled_data);
+  }
 }
 
 /**
@@ -2257,9 +2404,14 @@ ags_audio_signal_set_buffer_size(AgsAudioSignal *audio_signal, guint buffer_size
 {
   GList *stream;
 
+  void *data;
+
+  guint stream_length;
+  guint offset;
   guint format;
   guint old_buffer_size;
   guint word_size;
+  guint copy_mode;
   
   pthread_mutex_t *audio_signal_mutex;
   pthread_mutex_t *stream_mutex;
@@ -2289,74 +2441,167 @@ ags_audio_signal_set_buffer_size(AgsAudioSignal *audio_signal, guint buffer_size
   /* resize buffer */
   pthread_mutex_lock(stream_mutex);
 
+  data = NULL;
+  
+  stream_length = g_list_length(audio_signal->stream);
+  word_size = 1;  
+  
+  switch(format){
+  case AGS_SOUNDCARD_SIGNED_8_BIT:
+    {
+      data = (gint8 *) malloc(stream_length * old_buffer_size * sizeof(gint8));
+
+      copy_mode = AGS_AUDIO_BUFFER_UTIL_COPY_S8_TO_S8;
+      word_size = sizeof(gint8);
+    }
+    break;
+  case AGS_SOUNDCARD_SIGNED_16_BIT:
+    {
+      data = (gint16 *) malloc(stream_length * old_buffer_size * sizeof(gint16));
+
+      copy_mode = AGS_AUDIO_BUFFER_UTIL_COPY_S16_TO_S16;
+      word_size = sizeof(gint16);
+    }
+    break;
+  case AGS_SOUNDCARD_SIGNED_24_BIT:
+    {
+      data = (gint32 *) malloc(stream_length * old_buffer_size * sizeof(gint32));
+
+      copy_mode = AGS_AUDIO_BUFFER_UTIL_COPY_S32_TO_S32;
+      word_size = sizeof(gint32);
+    }
+    break;
+  case AGS_SOUNDCARD_SIGNED_32_BIT:
+    {
+      data = (gint32 *) malloc(stream_length * old_buffer_size * sizeof(gint32));
+
+      copy_mode = AGS_AUDIO_BUFFER_UTIL_COPY_S32_TO_S32;
+      word_size = sizeof(gint32);
+    }
+    break;
+  case AGS_SOUNDCARD_SIGNED_64_BIT:
+    {
+      data = (gint64 *) malloc(stream_length * old_buffer_size * sizeof(gint64));
+
+      copy_mode = AGS_AUDIO_BUFFER_UTIL_COPY_S64_TO_S64;
+      word_size = sizeof(gint64);
+    }
+    break;
+  case AGS_SOUNDCARD_FLOAT:
+    {
+      data = (gfloat *) malloc(stream_length * old_buffer_size * sizeof(gfloat));
+
+      copy_mode = AGS_AUDIO_BUFFER_UTIL_COPY_FLOAT_TO_FLOAT;
+      word_size = sizeof(gfloat);
+    }
+    break;
+  case AGS_SOUNDCARD_DOUBLE:
+    {
+      data = (gdouble *) malloc(stream_length * old_buffer_size * sizeof(gdouble));
+
+      copy_mode = AGS_AUDIO_BUFFER_UTIL_COPY_DOUBLE_TO_DOUBLE;
+      word_size = sizeof(gdouble);
+    }
+    break;
+  default:
+    g_warning("ags_audio_signal_set_buffer_size() - unsupported format");
+  }
+
   stream = audio_signal->stream;
 
-  word_size = 1;
+  offset = 0;
   
   while(stream != NULL){
+    ags_audio_buffer_util_copy_buffer_to_buffer(data, 1, offset,
+						stream->data, 1, 0,
+						old_buffer_size, copy_mode);
+
+    /* iterate */
+    stream = stream->next;
+
+    offset += old_buffer_size;
+  }
+  
+  stream = audio_signal->stream;
+
+  offset = 0;
+  
+  while(stream != NULL && offset < stream_length * old_buffer_size){
     switch(format){
     case AGS_SOUNDCARD_SIGNED_8_BIT:
       {
 	stream->data = (gint8 *) realloc(stream->data,
 					 buffer_size * sizeof(gint8));
-	word_size = sizeof(gint8);
       }
       break;
     case AGS_SOUNDCARD_SIGNED_16_BIT:
       {
 	stream->data = (gint16 *) realloc(stream->data,
 					  buffer_size * sizeof(gint16));
-	word_size = sizeof(gint16);
       }
       break;
     case AGS_SOUNDCARD_SIGNED_24_BIT:
       {
 	stream->data = (gint32 *) realloc(stream->data,
 					  buffer_size * sizeof(gint32));
-	word_size = sizeof(gint32);
       }
       break;
     case AGS_SOUNDCARD_SIGNED_32_BIT:
       {
 	stream->data = (gint32 *) realloc(stream->data,
 					  buffer_size * sizeof(gint32));
-	word_size = sizeof(gint32);
       }
       break;
     case AGS_SOUNDCARD_SIGNED_64_BIT:
       {
 	stream->data = (gint64 *) realloc(stream->data,
 					  buffer_size * sizeof(gint64));
-	word_size = sizeof(gint64);
       }
       break;
     case AGS_SOUNDCARD_FLOAT:
       {
 	stream->data = (gfloat *) realloc(stream->data,
 					  buffer_size * sizeof(gfloat));
-	word_size = sizeof(gfloat);
       }
       break;
     case AGS_SOUNDCARD_DOUBLE:
       {
 	stream->data = (gdouble *) realloc(stream->data,
 					  buffer_size * sizeof(gdouble));
-	word_size = sizeof(gdouble);
       }
       break;
     default:
       g_warning("ags_audio_signal_set_buffer_size() - unsupported format");
     }
 
-    if(old_buffer_size < buffer_size){
-      memset(stream->data + old_buffer_size, 0, (buffer_size - old_buffer_size) * word_size);
+    if(offset + buffer_size < stream_length * old_buffer_size){
+      ags_audio_buffer_util_copy_buffer_to_buffer(stream->data, 1, 0,
+						  data, 1, offset,
+						  buffer_size, copy_mode);
+    }else{
+      guint end_offset;
+
+      end_offset = (stream_length * old_buffer_size) - offset;
+      
+      ags_audio_buffer_util_copy_buffer_to_buffer(stream->data, 1, 0,
+						  data, 1, offset,
+						  end_offset - offset, copy_mode);
+
+      ags_audio_buffer_util_clear_buffer(stream->data + end_offset, 1,
+					 buffer_size - (end_offset - offset), format);
     }
     
     /* iterate */
     stream = stream->next;
+
+    offset += buffer_size;
   }
 
   pthread_mutex_unlock(stream_mutex);
+
+  if(data != NULL){
+    free(data);
+  }
 }
 
 /**
