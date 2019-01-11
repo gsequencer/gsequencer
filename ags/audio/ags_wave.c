@@ -1154,6 +1154,9 @@ ags_wave_set_buffer_size(AgsWave *wave,
     pthread_mutex_unlock(ags_buffer_get_class_mutex());
 
     /*  */
+    g_object_set(list->data,
+		 "x", x + offset,
+		 NULL);
     ags_buffer_set_buffer_size(list->data,
 			       buffer_size);
 
