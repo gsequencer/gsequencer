@@ -91,6 +91,10 @@ struct _AgsSynthGeneratorClass
   
 GType ags_synth_generator_get_type();
 
+void ags_synth_generator_set_samplerate(AgsSynthGenerator *synth_generator, guint samplerate);
+void ags_synth_generator_set_buffer_size(AgsSynthGenerator *synth_generator, guint buffer_size);
+void ags_synth_generator_set_format(AgsSynthGenerator *synth_generator, guint format);
+
 void ags_synth_generator_compute(AgsSynthGenerator *synth_generator,
 				 GObject *audio_signal,
 				 gdouble note);

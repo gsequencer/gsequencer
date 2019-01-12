@@ -7731,6 +7731,8 @@ ags_audio_set_samplerate(AgsAudio *audio, guint samplerate)
   
   AgsThread *audio_thread;
 
+  GList *start_list, *list;
+  
   gdouble frequency;
   guint i;
   
@@ -7784,8 +7786,10 @@ ags_audio_set_samplerate(AgsAudio *audio, guint samplerate)
 
   output = audio->output;
   input = audio->input;
-
+  
   playback_domain = (AgsPlaybackDomain *) audio->playback_domain;
+
+  start_list = g_list_copy(audio->synth_generator);
   
   pthread_mutex_unlock(audio_mutex);
 
@@ -7817,6 +7821,19 @@ ags_audio_set_samplerate(AgsAudio *audio, guint samplerate)
   /* set samplerate output/input */
   ags_audio_set_samplerate_channel(output);
   ags_audio_set_samplerate_channel(input);
+
+  /* set samplerate synth generator */
+  list = start_list;
+  
+  while(list != NULL){
+    g_object_set(list->data,
+		 "samplerate", samplerate,
+		 NULL);
+    
+    list = list->next;
+  }
+  
+  g_list_free(start_list);
 }
 
 /**
@@ -7835,6 +7852,8 @@ ags_audio_set_buffer_size(AgsAudio *audio, guint buffer_size)
   AgsPlaybackDomain *playback_domain;
 
   AgsThread *audio_thread;
+
+  GList *start_list, *list;
   
   gdouble frequency;
   guint i;
@@ -7890,6 +7909,8 @@ ags_audio_set_buffer_size(AgsAudio *audio, guint buffer_size)
 
   playback_domain = (AgsPlaybackDomain *) audio->playback_domain;
 
+  start_list = g_list_copy(audio->synth_generator);
+
   frequency = ceil((gdouble) audio->samplerate / (gdouble) audio->buffer_size) + AGS_SOUNDCARD_DEFAULT_OVERCLOCK;
   
   pthread_mutex_unlock(audio_mutex);
@@ -7920,6 +7941,19 @@ ags_audio_set_buffer_size(AgsAudio *audio, guint buffer_size)
   /* set buffer size output/input */
   ags_audio_set_buffer_size_channel(output);
   ags_audio_set_buffer_size_channel(input);
+
+  /* set buffer size synth generator */
+  list = start_list;
+  
+  while(list != NULL){
+    g_object_set(list->data,
+		 "buffer-size", buffer_size,
+		 NULL);
+    
+    list = list->next;
+  }
+  
+  g_list_free(start_list);
 }
 
 /**
@@ -7936,6 +7970,8 @@ ags_audio_set_format(AgsAudio *audio, guint format)
 {
   AgsChannel *output, *input;
   
+  GList *start_list, *list;
+
   pthread_mutex_t *audio_mutex;
 
   auto void ags_audio_set_format_channel(AgsChannel *channel);
@@ -7984,11 +8020,26 @@ ags_audio_set_format(AgsAudio *audio, guint format)
   output = audio->output;
   input = audio->input;
 
+  start_list = g_list_copy(audio->synth_generator);
+
   pthread_mutex_unlock(audio_mutex);
 
   /* set format output/input */
   ags_audio_set_format_channel(output);
   ags_audio_set_format_channel(input);
+
+  /* set format synth generator */
+  list = start_list;
+  
+  while(list != NULL){
+    g_object_set(list->data,
+		 "format", format,
+		 NULL);
+    
+    list = list->next;
+  }
+  
+  g_list_free(start_list);
 }
 
 /**

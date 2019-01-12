@@ -37,7 +37,6 @@
 #include <math.h>
 
 void ags_input_class_init (AgsInputClass *input_class);
-void ags_input_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_input_set_property(GObject *gobject,
 			    guint prop_id,
 			    const GValue *value,
@@ -49,8 +48,16 @@ void ags_input_get_property(GObject *gobject,
 void ags_input_init (AgsInput *input);
 void ags_input_dispose(GObject *gobject);
 void ags_input_finalize(GObject *gobject);
-void ags_input_connect(AgsConnectable *connectable);
-void ags_input_disconnect(AgsConnectable *connectable);
+
+void ags_input_notify_samplerate_callback(GObject *gobject,
+					  GParamSpec *pspec,
+					  gpointer user_data);
+void ags_input_notify_buffer_size_callback(GObject *gobject,
+					   GParamSpec *pspec,
+					   gpointer user_data);
+void ags_input_notify_format_callback(GObject *gobject,
+				      GParamSpec *pspec,
+				      gpointer user_data);
 
 /**
  * SECTION:ags_input
@@ -63,7 +70,6 @@ void ags_input_disconnect(AgsConnectable *connectable);
  */
 
 static gpointer ags_input_parent_class = NULL;
-static AgsConnectableInterface *ags_input_parent_connectable_interface;
 
 enum{
   PROP_0,
@@ -91,20 +97,10 @@ ags_input_get_type (void)
       (GInstanceInitFunc) ags_input_init,
     };
 
-    static const GInterfaceInfo ags_connectable_interface_info = {
-      (GInterfaceInitFunc) ags_input_connectable_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
-    };
-
     ags_type_input = g_type_register_static(AGS_TYPE_CHANNEL,
 					    "AgsInput",
 					    &ags_input_info,
 					    0);
-
-    g_type_add_interface_static(ags_type_input,
-				AGS_TYPE_CONNECTABLE,
-				&ags_connectable_interface_info);
 
     g_once_init_leave(&g_define_type_id__volatile, ags_type_input);
   }
@@ -162,19 +158,15 @@ ags_input_class_init(AgsInputClass *input)
 }
 
 void
-ags_input_connectable_interface_init(AgsConnectableInterface *connectable)
-{
-  AgsConnectableInterface *ags_input_connectable_parent_interface;
-
-  ags_input_parent_connectable_interface = g_type_interface_peek_parent(connectable);
-
-  connectable->connect = ags_input_connect;
-  connectable->disconnect = ags_input_disconnect;
-}
-
-void
 ags_input_init(AgsInput *input)
 {
+  g_signal_connect_after(input, "notify::samplerate",
+			 G_CALLBACK(ags_input_notify_samplerate_callback), NULL);
+  g_signal_connect_after(input, "notify::buffer-size",
+			 G_CALLBACK(ags_input_notify_buffer_size_callback), NULL);
+  g_signal_connect_after(input, "notify::format",
+			 G_CALLBACK(ags_input_notify_format_callback), NULL);
+
   input->file_link = NULL;
 
   input->synth_generator = NULL;
@@ -319,15 +311,99 @@ ags_input_finalize(GObject *gobject)
 }
 
 void
-ags_input_connect(AgsConnectable *connectable)
+ags_input_notify_samplerate_callback(GObject *gobject,
+				     GParamSpec *pspec,
+				     gpointer user_data)
 {
-  ags_input_parent_connectable_interface->connect(connectable);
+  AgsInput *input;
+
+  GList *start_list, *list;
+  
+  guint samplerate;
+  
+  input = AGS_INPUT(gobject);
+  
+  g_object_get(gobject,
+	       "samplerate", &samplerate,
+	       "synth-generator", &start_list,
+	       NULL);
+
+  /* apply to synth generator */
+  list = start_list;
+
+  while(list != NULL){
+    g_object_set(list->data,
+		 "samplerate", samplerate,
+		 NULL);
+
+    list = list->next;
+  }
+
+  g_list_free(start_list);
 }
 
 void
-ags_input_disconnect(AgsConnectable *connectable)
+ags_input_notify_buffer_size_callback(GObject *gobject,
+				      GParamSpec *pspec,
+				      gpointer user_data)
 {
-  ags_input_parent_connectable_interface->disconnect(connectable);
+  AgsInput *input;
+
+  GList *start_list, *list;
+  
+  guint buffer_size;
+  
+  input = AGS_INPUT(gobject);
+  
+  g_object_get(gobject,
+	       "buffer-size", &buffer_size,
+	       "synth-generator", &start_list,
+	       NULL);
+
+  /* apply to synth generator */
+  list = start_list;
+
+  while(list != NULL){
+    g_object_set(list->data,
+		 "buffer-size", buffer_size,
+		 NULL);
+
+    list = list->next;
+  }
+
+  g_list_free(start_list);
+}
+
+void
+ags_input_notify_format_callback(GObject *gobject,
+				 GParamSpec *pspec,
+				 gpointer user_data)
+{
+  AgsInput *input;
+
+  GList *start_list, *list;
+  
+  guint format;
+  
+  input = AGS_INPUT(gobject);
+  
+  g_object_get(gobject,
+	       "format", &format,
+	       "synth-generator", &start_list,
+	       NULL);
+
+  /* apply to synth generator */
+  list = start_list;
+
+  while(list != NULL){
+    g_object_set(list->data,
+		 "format", format,
+		 NULL);
+
+    list = list->next;
+  }
+
+  g_list_free(start_list);
 }
 
 /**
