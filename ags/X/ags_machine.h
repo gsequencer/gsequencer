@@ -101,10 +101,14 @@ struct _AgsMachine
 
   gchar *version;
   gchar *build_id;
-  
+
+  guint samplerate;
+  guint buffer_size;
+  guint format;
+    
   guint bank_0;
   guint bank_1;
-  
+
   AgsAudio *audio;
 
   GtkToggleButton *play;
