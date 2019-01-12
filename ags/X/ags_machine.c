@@ -90,6 +90,9 @@ enum{
 
 enum{
   PROP_0,
+  PROP_SAMPLERATE,
+  PROP_BUFFER_SIZE,
+  PROP_FORMAT,
   PROP_AUDIO,
   PROP_MACHINE_NAME,
 };
@@ -167,6 +170,60 @@ ags_machine_class_init(AgsMachineClass *machine)
   gobject->finalize = ags_machine_finalize;
 
   /* properties */
+  /**
+   * AgsMachine:samplerate:
+   *
+   * The samplerate.
+   * 
+   * Since: 2.0.0
+   */
+  param_spec = g_param_spec_uint("samplerate",
+				 i18n_pspec("samplerate"),
+				 i18n_pspec("The samplerate"),
+				 0,
+				 G_MAXUINT32,
+				 AGS_SOUNDCARD_DEFAULT_SAMPLERATE,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_SAMPLERATE,
+				  param_spec);
+
+  /**
+   * AgsMachine:buffer-size:
+   *
+   * The buffer length.
+   * 
+   * Since: 2.0.0
+   */
+  param_spec = g_param_spec_uint("buffer-size",
+				 i18n_pspec("buffer size"),
+				 i18n_pspec("The buffer size"),
+				 0,
+				 G_MAXUINT32,
+				 AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_BUFFER_SIZE,
+				  param_spec);
+
+  /**
+   * AgsMachine:format:
+   *
+   * The format.
+   * 
+   * Since: 2.0.0
+   */
+  param_spec = g_param_spec_uint("format",
+				 i18n_pspec("format"),
+				 i18n_pspec("The format"),
+				 0,
+				 G_MAXUINT32,
+				 AGS_SOUNDCARD_DEFAULT_FORMAT,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_FORMAT,
+				  param_spec);
+
   /**
    * AgsMachine:audio:
    *
@@ -385,6 +442,10 @@ ags_machine_init(AgsMachine *machine)
   machine->audio = ags_audio_new(NULL);
   g_object_ref(G_OBJECT(machine->audio));
 
+  machine->samplerate = machine->audio->samplerate;
+  machine->buffer_size = machine->audio->buffer_size;
+  machine->format = machine->audio->format;
+  
   machine->audio->flags |= AGS_AUDIO_CAN_NEXT_ACTIVE;
   machine->audio->machine_widget = (GObject *) machine;
 
@@ -444,6 +505,21 @@ ags_machine_set_property(GObject *gobject,
 						 AGS_TYPE_WINDOW);
 
   switch(prop_id){
+  case PROP_SAMPLERATE:
+    {
+      machine->samplerate = g_value_get_uint(value);
+    }
+    break;
+  case PROP_BUFFER_SIZE:
+    {
+      machine->buffer_size = g_value_get_uint(value);
+    }
+    break;
+  case PROP_FORMAT:
+    {
+      machine->format = g_value_get_uint(value);
+    }
+    break;
   case PROP_AUDIO:
     {
       AgsAudio *audio;
@@ -728,6 +804,24 @@ ags_machine_get_property(GObject *gobject,
   machine = AGS_MACHINE(gobject);
 
   switch(prop_id){
+  case PROP_SAMPLERATE:
+    {
+      g_value_set_uint(value,
+		       machine->samplerate);
+    }
+    break;
+  case PROP_BUFFER_SIZE:
+    {
+      g_value_set_uint(value,
+		       machine->buffer_size);
+    }
+    break;
+  case PROP_FORMAT:
+    {
+      g_value_set_uint(value,
+		       machine->format);
+    }
+    break;
   case PROP_AUDIO:
     {
       g_value_set_object(value, machine->audio);
@@ -2310,6 +2404,51 @@ ags_machine_message_monitor_timeout(AgsMachine *machine)
 		     "ags-command",
 		     12)){
 	if(!xmlStrncmp(xmlGetProp(root_node,
+				  "method"),
+		       "AgsAudio::set-samplerate",
+		       29)){
+	  guint samplerate;
+	  gint position;
+	  
+	  position = ags_strv_index(AGS_MESSAGE_ENVELOPE(message->data)->parameter_name,
+				    "samplerate");
+	  samplerate = g_value_get_uint(&(AGS_MESSAGE_ENVELOPE(message->data)->value[position]));
+
+	  /* set samplerate */
+	  g_object_set(machine,
+		       "samplerate", samplerate,
+		       NULL);
+	}else if(!xmlStrncmp(xmlGetProp(root_node,
+				  "method"),
+		       "AgsAudio::set-buffer-size",
+		       29)){
+	  guint buffer_size;
+	  gint position;
+	  
+	  position = ags_strv_index(AGS_MESSAGE_ENVELOPE(message->data)->parameter_name,
+				    "buffer-size");
+	  buffer_size = g_value_get_uint(&(AGS_MESSAGE_ENVELOPE(message->data)->value[position]));
+
+	  /* set buffer size */
+	  g_object_set(machine,
+		       "buffer-size", buffer_size,
+		       NULL);
+	}else if(!xmlStrncmp(xmlGetProp(root_node,
+				  "method"),
+		       "AgsAudio::set-format",
+		       29)){
+	  guint format;
+	  gint position;
+	  
+	  position = ags_strv_index(AGS_MESSAGE_ENVELOPE(message->data)->parameter_name,
+				    "format");
+	  format = g_value_get_uint(&(AGS_MESSAGE_ENVELOPE(message->data)->value[position]));
+
+	  /* set format */
+	  g_object_set(machine,
+		       "format", format,
+		       NULL);
+	}else if(!xmlStrncmp(xmlGetProp(root_node,
 				  "method"),
 		       "AgsAudio::set-audio-channels",
 		       29)){

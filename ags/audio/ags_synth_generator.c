@@ -433,17 +433,32 @@ ags_synth_generator_set_property(GObject *gobject,
   switch(prop_id){
   case PROP_SAMPLERATE:
     {
-      synth_generator->samplerate = g_value_get_uint(value);
+      guint samplerate;
+      
+      samplerate = g_value_get_uint(value);
+
+      ags_synth_generator_set_samplerate(synth_generator,
+					 samplerate);
     }
     break;
   case PROP_BUFFER_SIZE:
     {
-      synth_generator->buffer_size = g_value_get_uint(value);
+      guint buffer_size;
+      
+      buffer_size = g_value_get_uint(value);
+
+      ags_synth_generator_set_buffer_size(synth_generator,
+					  buffer_size);
     }
     break;
   case PROP_FORMAT:
     {
-      synth_generator->format = g_value_get_uint(value);
+      guint format;
+      
+      format = g_value_get_uint(value);
+
+      ags_synth_generator_set_format(synth_generator,
+				     format);
     }
     break;
   case PROP_DELAY:
@@ -669,6 +684,81 @@ ags_synth_generator_finalize(GObject *gobject)
 
   /* finalize */
   G_OBJECT_CLASS(ags_synth_generator_parent_class)->finalize(gobject);
+}
+
+/**
+ * ags_synth_generator_set_samplerate:
+ * @synth_generator: the #AgsSynthGenerator
+ * @samplerate: the samplerate
+ * 
+ * Set samplerate.
+ * 
+ * Since: 2.1.35
+ */
+void
+ags_synth_generator_set_samplerate(AgsSynthGenerator *synth_generator, guint samplerate)
+{
+  guint old_samplerate;
+  guint i;  
+
+  if(!AGS_IS_SYNTH_GENERATOR(synth_generator)){
+    return;
+  }
+
+  old_samplerate = synth_generator->samplerate;
+  
+  synth_generator->samplerate = samplerate;
+
+  synth_generator->frame_count = samplerate * (synth_generator->frame_count / old_samplerate);
+  
+  synth_generator->loop_start = samplerate * (synth_generator->loop_start / old_samplerate);
+  synth_generator->loop_end = samplerate * (synth_generator->loop_end / old_samplerate);
+
+  synth_generator->attack = samplerate * (synth_generator->attack / old_samplerate);
+
+  synth_generator->phase = samplerate * (synth_generator->phase / old_samplerate);
+
+  for(i = 0; i < synth_generator->sync_point_count; i++){
+    synth_generator->sync_point[i][0][0] = samplerate * (synth_generator->sync_point[i][0][0] / old_samplerate);
+  }
+}
+
+/**
+ * ags_synth_generator_set_buffer_size:
+ * @synth_generator: the #AgsSynthGenerator
+ * @buffer_size: the buffer size
+ * 
+ * Set buffer size.
+ * 
+ * Since: 2.1.35
+ */
+void
+ags_synth_generator_set_buffer_size(AgsSynthGenerator *synth_generator, guint buffer_size)
+{
+  if(!AGS_IS_SYNTH_GENERATOR(synth_generator)){
+    return;
+  }
+
+  synth_generator->buffer_size = buffer_size;
+}
+
+/**
+ * ags_synth_generator_set_format:
+ * @synth_generator: the #AgsSynthGenerator
+ * @format: the format
+ * 
+ * Set format.
+ * 
+ * Since: 2.1.35
+ */
+void
+ags_synth_generator_set_format(AgsSynthGenerator *synth_generator, guint format)
+{
+  if(!AGS_IS_SYNTH_GENERATOR(synth_generator)){
+    return;
+  }
+
+  synth_generator->format = format;
 }
 
 /**

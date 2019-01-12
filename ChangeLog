@@ -2,9 +2,10 @@ ags (2.1.35)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* TODO:JK: implemented AgsSoundContainer manager
+	* implemented emitting message of AgsAudio's samplerate, buffer-size and format
 	* implemented proper resample of AgsAudioSignal as adjusting buffer size and samplerate
 	* implemented proper resample of AgsWave as adjusting buffer size and samplerate
-	* TODO:JK: fixed reload synth generator after applying configuration
+	* fixed applying samplerate, buffer size and format to AgsSynthGenerator
 	* TODO:JK: fixed update AgsOscillator after modifying samplerate
 	* fixed adjust loop information to samplerate
 	* fixed check if EBADFD available in ags_osc_client.c and ags_osc_connection.c
