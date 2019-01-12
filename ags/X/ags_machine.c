@@ -80,6 +80,9 @@ GtkMenu* ags_machine_popup_new(AgsMachine *machine);
 #define AGS_DEFAULT_MACHINE "ags-default-machine"
 
 enum{
+  SAMPLERATE_CHANGED,
+  BUFFER_SIZE_CHANGED,
+  FORMAT_CHANGED,
   RESIZE_AUDIO_CHANNELS,
   RESIZE_PADS,
   MAP_RECALL,
@@ -175,7 +178,7 @@ ags_machine_class_init(AgsMachineClass *machine)
    *
    * The samplerate.
    * 
-   * Since: 2.0.0
+   * Since: 2.1.35
    */
   param_spec = g_param_spec_uint("samplerate",
 				 i18n_pspec("samplerate"),
@@ -193,7 +196,7 @@ ags_machine_class_init(AgsMachineClass *machine)
    *
    * The buffer length.
    * 
-   * Since: 2.0.0
+   * Since: 2.1.35
    */
   param_spec = g_param_spec_uint("buffer-size",
 				 i18n_pspec("buffer size"),
@@ -211,7 +214,7 @@ ags_machine_class_init(AgsMachineClass *machine)
    *
    * The format.
    * 
-   * Since: 2.0.0
+   * Since: 2.1.35
    */
   param_spec = g_param_spec_uint("format",
 				 i18n_pspec("format"),
@@ -262,6 +265,10 @@ ags_machine_class_init(AgsMachineClass *machine)
   widget->show = ags_machine_show;
 
   /* AgsMachineClass */
+  machine->samplerate_changed = NULL;
+  machine->buffer_size_changed = NULL;
+  machine->format_changed = NULL;
+
   machine->resize_pads = ags_machine_real_resize_pads;
   machine->resize_audio_channels = ags_machine_real_resize_audio_channels;
   machine->map_recall = ags_machine_real_map_recall;
@@ -269,6 +276,69 @@ ags_machine_class_init(AgsMachineClass *machine)
   machine->stop = NULL;
 
   /* signals */
+  /**
+   * AgsMachine::samplerate-changed:
+   * @machine: the #AgsMachine
+   * @samplerate: the samplerate
+   * @old_samplerate: the old samplerate
+   *
+   * The ::samplerate-changed signal notifies about changed samplerate.
+   * 
+   * Since: 2.1.35
+   */
+  machine_signals[SAMPLERATE_CHANGED] =
+    g_signal_new("samplerate-changed",
+		 G_TYPE_FROM_CLASS(machine),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsMachineClass, samplerate_changed),
+		 NULL, NULL,
+		 ags_cclosure_marshal_VOID__UINT_UINT,
+		 G_TYPE_NONE, 2,
+		 G_TYPE_UINT,
+		 G_TYPE_UINT);
+
+  /**
+   * AgsMachine::buffer-size-changed:
+   * @machine: the #AgsMachine
+   * @buffer_size: the buffer size
+   * @old_buffer_size: the old buffer size
+   *
+   * The ::buffer-size-changed signal notifies about changed buffer size.
+   * 
+   * Since: 2.1.35
+   */
+  machine_signals[BUFFER_SIZE_CHANGED] =
+    g_signal_new("buffer-size-changed",
+		 G_TYPE_FROM_CLASS(machine),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsMachineClass, buffer_size_changed),
+		 NULL, NULL,
+		 ags_cclosure_marshal_VOID__UINT_UINT,
+		 G_TYPE_NONE, 2,
+		 G_TYPE_UINT,
+		 G_TYPE_UINT);
+
+  /**
+   * AgsMachine::format-changed:
+   * @machine: the #AgsMachine
+   * @format: the format
+   * @old_format: the old format
+   *
+   * The ::format-changed signal notifies about changed format.
+   * 
+   * Since: 2.1.35
+   */
+  machine_signals[FORMAT_CHANGED] =
+    g_signal_new("format-changed",
+		 G_TYPE_FROM_CLASS(machine),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsMachineClass, format_changed),
+		 NULL, NULL,
+		 ags_cclosure_marshal_VOID__UINT_UINT,
+		 G_TYPE_NONE, 2,
+		 G_TYPE_UINT,
+		 G_TYPE_UINT);
+
   /**
    * AgsMachine::resize-audio-channels:
    * @machine: the #AgsMachine to modify
@@ -507,17 +577,41 @@ ags_machine_set_property(GObject *gobject,
   switch(prop_id){
   case PROP_SAMPLERATE:
     {
-      machine->samplerate = g_value_get_uint(value);
+      guint samplerate, old_samplerate;
+      
+      samplerate = g_value_get_uint(value);
+      old_samplerate = machine->samplerate;
+
+      machine->samplerate = samplerate;
+
+      ags_machine_samplerate_changed(machine,
+				     samplerate, old_samplerate);
     }
     break;
   case PROP_BUFFER_SIZE:
     {
-      machine->buffer_size = g_value_get_uint(value);
+      guint buffer_size, old_buffer_size;
+      
+      buffer_size = g_value_get_uint(value);
+      old_buffer_size = machine->buffer_size;
+
+      machine->buffer_size = buffer_size;
+
+      ags_machine_buffer_size_changed(machine,
+				      buffer_size, old_buffer_size);
     }
     break;
   case PROP_FORMAT:
     {
-      machine->format = g_value_get_uint(value);
+      guint format, old_format;
+      
+      format = g_value_get_uint(value);
+      old_format = machine->format;
+
+      machine->format = format;
+
+      ags_machine_format_changed(machine,
+				 format, old_format);
     }
     break;
   case PROP_AUDIO:
@@ -1139,6 +1233,78 @@ ags_machine_automation_port_find_channel_type_with_control_name(GList *list,
   }
 
   return(NULL);
+}
+
+/**
+ * ags_machine_samplerate_changed:
+ * @machine: the #AgsMachine
+ * @samplerate: the samplerate
+ * @old_samplerate: the old samplerate
+ * 
+ * Notify about samplerate changed.
+ * 
+ * Since: 2.1.35
+ */
+void
+ags_machine_samplerate_changed(AgsMachine *machine,
+			       guint samplerate, guint old_samplerate)
+{
+  g_return_if_fail(AGS_IS_MACHINE(machine));
+
+  g_object_ref((GObject *) machine);
+  g_signal_emit(G_OBJECT(machine),
+		machine_signals[SAMPLERATE_CHANGED], 0,
+		samplerate,
+		old_samplerate);
+  g_object_unref((GObject *) machine);
+}
+
+/**
+ * ags_machine_buffer_size_changed:
+ * @machine: the #AgsMachine
+ * @buffer_size: the buffer_size
+ * @old_buffer_size: the old buffer_size
+ * 
+ * Notify about buffer_size changed.
+ * 
+ * Since: 2.1.35
+ */
+void
+ags_machine_buffer_size_changed(AgsMachine *machine,
+				guint buffer_size, guint old_buffer_size)
+{
+  g_return_if_fail(AGS_IS_MACHINE(machine));
+
+  g_object_ref((GObject *) machine);
+  g_signal_emit(G_OBJECT(machine),
+		machine_signals[BUFFER_SIZE_CHANGED], 0,
+		buffer_size,
+		old_buffer_size);
+  g_object_unref((GObject *) machine);
+}
+
+/**
+ * ags_machine_format_changed:
+ * @machine: the #AgsMachine
+ * @format: the format
+ * @old_format: the old format
+ * 
+ * Notify about format changed.
+ * 
+ * Since: 2.1.35
+ */
+void
+ags_machine_format_changed(AgsMachine *machine,
+			   guint format, guint old_format)
+{
+  g_return_if_fail(AGS_IS_MACHINE(machine));
+
+  g_object_ref((GObject *) machine);
+  g_signal_emit(G_OBJECT(machine),
+		machine_signals[FORMAT_CHANGED], 0,
+		format,
+		old_format);
+  g_object_unref((GObject *) machine);
 }
 
 void

@@ -62,6 +62,10 @@ struct _AgsLine
   gchar *version;
   gchar *build_id;
 
+  guint samplerate;
+  guint buffer_size;
+  guint format;
+
   gchar *name;
 
   AgsChannel *channel;
@@ -82,6 +86,13 @@ struct _AgsLineClass
 {
   GtkVBoxClass vbox;
 
+  void (*samplerate_changed)(AgsLine *line,
+			     guint samplerate, guint old_samplerate);
+  void (*buffer_size_changed)(AgsLine *line,
+			      guint buffer_size, guint old_buffer_size);
+  void (*format_changed)(AgsLine *line,
+			 guint format, guint old_format);
+  
   void (*set_channel)(AgsLine *line, AgsChannel *channel);
 
   void (*group_changed)(AgsLine *line);
@@ -102,6 +113,13 @@ struct _AgsLineClass
 };
 
 GType ags_line_get_type(void);
+
+void ags_line_samplerate_changed(AgsLine *line,
+				 guint samplerate, guint old_samplerate);
+void ags_line_buffer_size_changed(AgsLine *line,
+				  guint buffer_size, guint old_buffer_size);
+void ags_line_format_changed(AgsLine *line,
+			     guint format, guint old_format);
 
 void ags_line_set_channel(AgsLine *line, AgsChannel *channel);
 

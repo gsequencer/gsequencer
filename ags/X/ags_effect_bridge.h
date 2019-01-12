@@ -65,6 +65,10 @@ struct _AgsEffectBridge
   gchar *version;
   gchar *build_id;
   
+  guint samplerate;
+  guint buffer_size;
+  guint format;
+    
   AgsAudio *audio;
   
   GType bulk_output_type;
@@ -86,6 +90,13 @@ struct _AgsEffectBridgeClass
 {
   GtkVBoxClass vbox;
 
+  void (*samplerate_changed)(AgsEffectBridge *effect_bridge,
+			     guint samplerate, guint old_samplerate);
+  void (*buffer_size_changed)(AgsEffectBridge *effect_bridge,
+			      guint buffer_size, guint old_buffer_size);
+  void (*format_changed)(AgsEffectBridge *effect_bridge,
+			 guint format, guint old_format);
+
   void (*resize_audio_channels)(AgsEffectBridge *effect_bridge,
 				guint new_size, guint old_size);
   void (*resize_pads)(AgsEffectBridge *effect_bridge,
@@ -97,6 +108,13 @@ struct _AgsEffectBridgeClass
 };
 
 GType ags_effect_bridge_get_type(void);
+
+void ags_effect_bridge_samplerate_changed(AgsEffectBridge *effect_bridge,
+					  guint samplerate, guint old_samplerate);
+void ags_effect_bridge_buffer_size_changed(AgsEffectBridge *effect_bridge,
+					   guint buffer_size, guint old_buffer_size);
+void ags_effect_bridge_format_changed(AgsEffectBridge *effect_bridge,
+				      guint format, guint old_format);
 
 void ags_effect_bridge_resize_audio_channels(AgsEffectBridge *effect_bridge,
 					     guint new_size, guint old_size);

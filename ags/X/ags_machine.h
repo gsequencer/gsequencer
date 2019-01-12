@@ -148,6 +148,13 @@ struct _AgsMachineClass
 {
   GtkHandleBoxClass handle_box;
 
+  void (*samplerate_changed)(AgsMachine *machine,
+			     guint samplerate, guint old_samplerate);
+  void (*buffer_size_changed)(AgsMachine *machine,
+			      guint buffer_size, guint old_buffer_size);
+  void (*format_changed)(AgsMachine *machine,
+			 guint format, guint old_format);
+  
   void (*resize_audio_channels)(AgsMachine *machine,
 				guint new_size, guint old_size);
   void (*resize_pads)(AgsMachine *machine,
@@ -174,6 +181,13 @@ void ags_machine_automation_port_free(AgsMachineAutomationPort *automation_port)
 
 GList* ags_machine_automation_port_find_channel_type_with_control_name(GList *list,
 								       GType channel_type, gchar *control_name);
+
+void ags_machine_samplerate_changed(AgsMachine *machine,
+				    guint samplerate, guint old_samplerate);
+void ags_machine_buffer_size_changed(AgsMachine *machine,
+				     guint buffer_size, guint old_buffer_size);
+void ags_machine_format_changed(AgsMachine *machine,
+				guint format, guint old_format);
 
 void ags_machine_resize_audio_channels(AgsMachine *machine,
 				       guint new_size, guint old_size);

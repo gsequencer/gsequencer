@@ -98,6 +98,9 @@ GList* ags_line_real_find_port(AgsLine *line);
  */
 
 enum{
+  SAMPLERATE_CHANGED,
+  BUFFER_SIZE_CHANGED,
+  FORMAT_CHANGED,
   SET_CHANNEL,
   GROUP_CHANGED,
   ADD_EFFECT,
@@ -110,6 +113,9 @@ enum{
 
 enum{
   PROP_0,
+  PROP_SAMPLERATE,
+  PROP_BUFFER_SIZE,
+  PROP_FORMAT,
   PROP_PAD,
   PROP_CHANNEL,
 };
@@ -190,6 +196,60 @@ ags_line_class_init(AgsLineClass *line)
   
   /* properties */
   /**
+   * AgsLine:samplerate:
+   *
+   * The samplerate.
+   * 
+   * Since: 2.1.35
+   */
+  param_spec = g_param_spec_uint("samplerate",
+				 i18n_pspec("samplerate"),
+				 i18n_pspec("The samplerate"),
+				 0,
+				 G_MAXUINT32,
+				 AGS_SOUNDCARD_DEFAULT_SAMPLERATE,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_SAMPLERATE,
+				  param_spec);
+
+  /**
+   * AgsLine:buffer-size:
+   *
+   * The buffer length.
+   * 
+   * Since: 2.1.35
+   */
+  param_spec = g_param_spec_uint("buffer-size",
+				 i18n_pspec("buffer size"),
+				 i18n_pspec("The buffer size"),
+				 0,
+				 G_MAXUINT32,
+				 AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_BUFFER_SIZE,
+				  param_spec);
+
+  /**
+   * AgsLine:format:
+   *
+   * The format.
+   * 
+   * Since: 2.1.35
+   */
+  param_spec = g_param_spec_uint("format",
+				 i18n_pspec("format"),
+				 i18n_pspec("The format"),
+				 0,
+				 G_MAXUINT32,
+				 AGS_SOUNDCARD_DEFAULT_FORMAT,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_FORMAT,
+				  param_spec);
+
+  /**
    * AgsLine:pad:
    *
    * The assigned #AgsPad.
@@ -222,6 +282,10 @@ ags_line_class_init(AgsLineClass *line)
 				  param_spec);
 
   /* AgsLineClass */
+  line->samplerate_changed = NULL;
+  line->buffer_size_changed = NULL;
+  line->format_changed = NULL;
+
   line->set_channel = ags_line_real_set_channel;
   line->group_changed = NULL;
   
@@ -234,6 +298,69 @@ ags_line_class_init(AgsLineClass *line)
   line->stop = NULL;
 
   /* signals */
+  /**
+   * AgsLine::samplerate-changed:
+   * @line: the #AgsLine
+   * @samplerate: the samplerate
+   * @old_samplerate: the old samplerate
+   *
+   * The ::samplerate-changed signal notifies about changed samplerate.
+   * 
+   * Since: 2.1.35
+   */
+  line_signals[SAMPLERATE_CHANGED] =
+    g_signal_new("samplerate-changed",
+		 G_TYPE_FROM_CLASS(line),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsLineClass, samplerate_changed),
+		 NULL, NULL,
+		 ags_cclosure_marshal_VOID__UINT_UINT,
+		 G_TYPE_NONE, 2,
+		 G_TYPE_UINT,
+		 G_TYPE_UINT);
+
+  /**
+   * AgsLine::buffer-size-changed:
+   * @line: the #AgsLine
+   * @buffer_size: the buffer size
+   * @old_buffer_size: the old buffer size
+   *
+   * The ::buffer-size-changed signal notifies about changed buffer size.
+   * 
+   * Since: 2.1.35
+   */
+  line_signals[BUFFER_SIZE_CHANGED] =
+    g_signal_new("buffer-size-changed",
+		 G_TYPE_FROM_CLASS(line),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsLineClass, buffer_size_changed),
+		 NULL, NULL,
+		 ags_cclosure_marshal_VOID__UINT_UINT,
+		 G_TYPE_NONE, 2,
+		 G_TYPE_UINT,
+		 G_TYPE_UINT);
+
+  /**
+   * AgsLine::format-changed:
+   * @line: the #AgsLine
+   * @format: the format
+   * @old_format: the old format
+   *
+   * The ::format-changed signal notifies about changed format.
+   * 
+   * Since: 2.1.35
+   */
+  line_signals[FORMAT_CHANGED] =
+    g_signal_new("format-changed",
+		 G_TYPE_FROM_CLASS(line),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsLineClass, format_changed),
+		 NULL, NULL,
+		 ags_cclosure_marshal_VOID__UINT_UINT,
+		 G_TYPE_NONE, 2,
+		 G_TYPE_UINT,
+		 G_TYPE_UINT);
+
   /**
    * AgsLine::set-channel:
    * @line: the #AgsLine to modify
@@ -475,6 +602,45 @@ ags_line_set_property(GObject *gobject,
   line = AGS_LINE(gobject);
 
   switch(prop_id){
+  case PROP_SAMPLERATE:
+    {
+      guint samplerate, old_samplerate;
+      
+      samplerate = g_value_get_uint(value);
+      old_samplerate = line->samplerate;
+
+      line->samplerate = samplerate;
+
+      ags_line_samplerate_changed(line,
+				  samplerate, old_samplerate);
+    }
+    break;
+  case PROP_BUFFER_SIZE:
+    {
+      guint buffer_size, old_buffer_size;
+      
+      buffer_size = g_value_get_uint(value);
+      old_buffer_size = line->buffer_size;
+
+      line->buffer_size = buffer_size;
+
+      ags_line_buffer_size_changed(line,
+				   buffer_size, old_buffer_size);
+    }
+    break;
+  case PROP_FORMAT:
+    {
+      guint format, old_format;
+      
+      format = g_value_get_uint(value);
+      old_format = line->format;
+
+      line->format = format;
+
+      ags_line_format_changed(line,
+			      format, old_format);
+    }
+    break;
   case PROP_PAD:
     {
       GtkWidget *pad;
@@ -522,6 +688,24 @@ ags_line_get_property(GObject *gobject,
   line = AGS_LINE(gobject);
 
   switch(prop_id){
+  case PROP_SAMPLERATE:
+    {
+      g_value_set_uint(value,
+		       line->samplerate);
+    }
+    break;
+  case PROP_BUFFER_SIZE:
+    {
+      g_value_set_uint(value,
+		       line->buffer_size);
+    }
+    break;
+  case PROP_FORMAT:
+    {
+      g_value_set_uint(value,
+		       line->format);
+    }
+    break;
   case PROP_PAD:
     {
       g_value_set_object(value,
@@ -711,6 +895,78 @@ void
 ags_line_set_build_id(AgsPlugin *plugin, gchar *build_id)
 {
   AGS_LINE(plugin)->build_id = build_id;
+}
+
+/**
+ * ags_line_samplerate_changed:
+ * @line: the #AgsLine
+ * @samplerate: the samplerate
+ * @old_samplerate: the old samplerate
+ * 
+ * Notify about samplerate changed.
+ * 
+ * Since: 2.1.35
+ */
+void
+ags_line_samplerate_changed(AgsLine *line,
+			    guint samplerate, guint old_samplerate)
+{
+  g_return_if_fail(AGS_IS_LINE(line));
+
+  g_object_ref((GObject *) line);
+  g_signal_emit(G_OBJECT(line),
+		line_signals[SAMPLERATE_CHANGED], 0,
+		samplerate,
+		old_samplerate);
+  g_object_unref((GObject *) line);
+}
+
+/**
+ * ags_line_buffer_size_changed:
+ * @line: the #AgsLine
+ * @buffer_size: the buffer_size
+ * @old_buffer_size: the old buffer_size
+ * 
+ * Notify about buffer_size changed.
+ * 
+ * Since: 2.1.35
+ */
+void
+ags_line_buffer_size_changed(AgsLine *line,
+			     guint buffer_size, guint old_buffer_size)
+{
+  g_return_if_fail(AGS_IS_LINE(line));
+
+  g_object_ref((GObject *) line);
+  g_signal_emit(G_OBJECT(line),
+		line_signals[BUFFER_SIZE_CHANGED], 0,
+		buffer_size,
+		old_buffer_size);
+  g_object_unref((GObject *) line);
+}
+
+/**
+ * ags_line_format_changed:
+ * @line: the #AgsLine
+ * @format: the format
+ * @old_format: the old format
+ * 
+ * Notify about format changed.
+ * 
+ * Since: 2.1.35
+ */
+void
+ags_line_format_changed(AgsLine *line,
+			guint format, guint old_format)
+{
+  g_return_if_fail(AGS_IS_LINE(line));
+
+  g_object_ref((GObject *) line);
+  g_signal_emit(G_OBJECT(line),
+		line_signals[FORMAT_CHANGED], 0,
+		format,
+		old_format);
+  g_object_unref((GObject *) line);
 }
 
 void

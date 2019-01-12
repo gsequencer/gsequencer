@@ -71,6 +71,9 @@ GList* ags_pad_real_find_port(AgsPad *pad);
  */
 
 enum{
+  SAMPLERATE_CHANGED,
+  BUFFER_SIZE_CHANGED,
+  FORMAT_CHANGED,
   SET_CHANNEL,
   RESIZE_LINES,
   MAP_RECALL,
@@ -80,6 +83,9 @@ enum{
 
 enum{
   PROP_0,
+  PROP_SAMPLERATE,
+  PROP_BUFFER_SIZE,
+  PROP_FORMAT,
   PROP_CHANNEL,
 };
 
@@ -150,8 +156,63 @@ ags_pad_class_init(AgsPadClass *pad)
   gobject->set_property = ags_pad_set_property;
   gobject->get_property = ags_pad_get_property;
 
-  /* properties */
   //TODO:JK: add finalize
+
+  /* properties */
+  /**
+   * AgsPad:samplerate:
+   *
+   * The samplerate.
+   * 
+   * Since: 2.1.35
+   */
+  param_spec = g_param_spec_uint("samplerate",
+				 i18n_pspec("samplerate"),
+				 i18n_pspec("The samplerate"),
+				 0,
+				 G_MAXUINT32,
+				 AGS_SOUNDCARD_DEFAULT_SAMPLERATE,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_SAMPLERATE,
+				  param_spec);
+
+  /**
+   * AgsPad:buffer-size:
+   *
+   * The buffer length.
+   * 
+   * Since: 2.1.35
+   */
+  param_spec = g_param_spec_uint("buffer-size",
+				 i18n_pspec("buffer size"),
+				 i18n_pspec("The buffer size"),
+				 0,
+				 G_MAXUINT32,
+				 AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_BUFFER_SIZE,
+				  param_spec);
+
+  /**
+   * AgsPad:format:
+   *
+   * The format.
+   * 
+   * Since: 2.1.35
+   */
+  param_spec = g_param_spec_uint("format",
+				 i18n_pspec("format"),
+				 i18n_pspec("The format"),
+				 0,
+				 G_MAXUINT32,
+				 AGS_SOUNDCARD_DEFAULT_FORMAT,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_FORMAT,
+				  param_spec);
+
   /**
    * AgsPad:channel:
    *
@@ -169,12 +230,79 @@ ags_pad_class_init(AgsPadClass *pad)
 				  param_spec);
 
   /* AgsPadClass */
+  pad->samplerate_changed = NULL;
+  pad->buffer_size_changed = NULL;
+  pad->format_changed = NULL;
+
   pad->set_channel = ags_pad_real_set_channel;
   pad->resize_lines = ags_pad_real_resize_lines;
   pad->map_recall = ags_pad_real_map_recall;
   pad->find_port = ags_pad_real_find_port;
 
   /* signals */
+  /**
+   * AgsPad::samplerate-changed:
+   * @pad: the #AgsPad
+   * @samplerate: the samplerate
+   * @old_samplerate: the old samplerate
+   *
+   * The ::samplerate-changed signal notifies about changed samplerate.
+   * 
+   * Since: 2.1.35
+   */
+  pad_signals[SAMPLERATE_CHANGED] =
+    g_signal_new("samplerate-changed",
+		 G_TYPE_FROM_CLASS(pad),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsPadClass, samplerate_changed),
+		 NULL, NULL,
+		 ags_cclosure_marshal_VOID__UINT_UINT,
+		 G_TYPE_NONE, 2,
+		 G_TYPE_UINT,
+		 G_TYPE_UINT);
+
+  /**
+   * AgsPad::buffer-size-changed:
+   * @pad: the #AgsPad
+   * @buffer_size: the buffer size
+   * @old_buffer_size: the old buffer size
+   *
+   * The ::buffer-size-changed signal notifies about changed buffer size.
+   * 
+   * Since: 2.1.35
+   */
+  pad_signals[BUFFER_SIZE_CHANGED] =
+    g_signal_new("buffer-size-changed",
+		 G_TYPE_FROM_CLASS(pad),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsPadClass, buffer_size_changed),
+		 NULL, NULL,
+		 ags_cclosure_marshal_VOID__UINT_UINT,
+		 G_TYPE_NONE, 2,
+		 G_TYPE_UINT,
+		 G_TYPE_UINT);
+
+  /**
+   * AgsPad::format-changed:
+   * @pad: the #AgsPad
+   * @format: the format
+   * @old_format: the old format
+   *
+   * The ::format-changed signal notifies about changed format.
+   * 
+   * Since: 2.1.35
+   */
+  pad_signals[FORMAT_CHANGED] =
+    g_signal_new("format-changed",
+		 G_TYPE_FROM_CLASS(pad),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsPadClass, format_changed),
+		 NULL, NULL,
+		 ags_cclosure_marshal_VOID__UINT_UINT,
+		 G_TYPE_NONE, 2,
+		 G_TYPE_UINT,
+		 G_TYPE_UINT);
+
   /**
    * AgsPad::set-channel:
    * @pad: the #AgsPad to modify
@@ -326,6 +454,45 @@ ags_pad_set_property(GObject *gobject,
   pad = AGS_PAD(gobject);
 
   switch(prop_id){
+  case PROP_SAMPLERATE:
+    {
+      guint samplerate, old_samplerate;
+      
+      samplerate = g_value_get_uint(value);
+      old_samplerate = pad->samplerate;
+
+      pad->samplerate = samplerate;
+
+      ags_pad_samplerate_changed(pad,
+				 samplerate, old_samplerate);
+    }
+    break;
+  case PROP_BUFFER_SIZE:
+    {
+      guint buffer_size, old_buffer_size;
+      
+      buffer_size = g_value_get_uint(value);
+      old_buffer_size = pad->buffer_size;
+
+      pad->buffer_size = buffer_size;
+
+      ags_pad_buffer_size_changed(pad,
+				  buffer_size, old_buffer_size);
+    }
+    break;
+  case PROP_FORMAT:
+    {
+      guint format, old_format;
+      
+      format = g_value_get_uint(value);
+      old_format = pad->format;
+
+      pad->format = format;
+
+      ags_pad_format_changed(pad,
+			     format, old_format);
+    }
+    break;
   case PROP_CHANNEL:
     {
       AgsChannel *channel;
@@ -352,8 +519,28 @@ ags_pad_get_property(GObject *gobject,
   pad = AGS_PAD(gobject);
 
   switch(prop_id){
+  case PROP_SAMPLERATE:
+    {
+      g_value_set_uint(value,
+		       pad->samplerate);
+    }
+    break;
+  case PROP_BUFFER_SIZE:
+    {
+      g_value_set_uint(value,
+		       pad->buffer_size);
+    }
+    break;
+  case PROP_FORMAT:
+    {
+      g_value_set_uint(value,
+		       pad->format);
+    }
+    break;
   case PROP_CHANNEL:
-    g_value_set_object(value, pad->channel);
+    {
+      g_value_set_object(value, pad->channel);
+    }
     break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
@@ -471,6 +658,78 @@ ags_pad_set_build_id(AgsPlugin *plugin, gchar *build_id)
   pad = AGS_PAD(plugin);
 
   pad->build_id = build_id;
+}
+
+/**
+ * ags_pad_samplerate_changed:
+ * @pad: the #AgsPad
+ * @samplerate: the samplerate
+ * @old_samplerate: the old samplerate
+ * 
+ * Notify about samplerate changed.
+ * 
+ * Since: 2.1.35
+ */
+void
+ags_pad_samplerate_changed(AgsPad *pad,
+			   guint samplerate, guint old_samplerate)
+{
+  g_return_if_fail(AGS_IS_PAD(pad));
+
+  g_object_ref((GObject *) pad);
+  g_signal_emit(G_OBJECT(pad),
+		pad_signals[SAMPLERATE_CHANGED], 0,
+		samplerate,
+		old_samplerate);
+  g_object_unref((GObject *) pad);
+}
+
+/**
+ * ags_pad_buffer_size_changed:
+ * @pad: the #AgsPad
+ * @buffer_size: the buffer_size
+ * @old_buffer_size: the old buffer_size
+ * 
+ * Notify about buffer_size changed.
+ * 
+ * Since: 2.1.35
+ */
+void
+ags_pad_buffer_size_changed(AgsPad *pad,
+			    guint buffer_size, guint old_buffer_size)
+{
+  g_return_if_fail(AGS_IS_PAD(pad));
+
+  g_object_ref((GObject *) pad);
+  g_signal_emit(G_OBJECT(pad),
+		pad_signals[BUFFER_SIZE_CHANGED], 0,
+		buffer_size,
+		old_buffer_size);
+  g_object_unref((GObject *) pad);
+}
+
+/**
+ * ags_pad_format_changed:
+ * @pad: the #AgsPad
+ * @format: the format
+ * @old_format: the old format
+ * 
+ * Notify about format changed.
+ * 
+ * Since: 2.1.35
+ */
+void
+ags_pad_format_changed(AgsPad *pad,
+		       guint format, guint old_format)
+{
+  g_return_if_fail(AGS_IS_PAD(pad));
+
+  g_object_ref((GObject *) pad);
+  g_signal_emit(G_OBJECT(pad),
+		pad_signals[FORMAT_CHANGED], 0,
+		format,
+		old_format);
+  g_object_unref((GObject *) pad);
 }
 
 void

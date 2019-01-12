@@ -62,6 +62,10 @@ struct _AgsEffectPad
   gchar *version;
   gchar *build_id;
   
+  guint samplerate;
+  guint buffer_size;
+  guint format;
+    
   AgsChannel *channel;
   
   guint cols;
@@ -71,6 +75,13 @@ struct _AgsEffectPad
 struct _AgsEffectPadClass
 {
   GtkVBoxClass vbox;
+
+  void (*samplerate_changed)(AgsEffectPad *effect_pad,
+			     guint samplerate, guint old_samplerate);
+  void (*buffer_size_changed)(AgsEffectPad *effect_pad,
+			      guint buffer_size, guint old_buffer_size);
+  void (*format_changed)(AgsEffectPad *effect_pad,
+			 guint format, guint old_format);
 
   void (*set_channel)(AgsEffectPad *effect_pad, AgsChannel *channel);
 
@@ -82,6 +93,13 @@ struct _AgsEffectPadClass
 };
 
 GType ags_effect_pad_get_type(void);
+
+void ags_effect_pad_samplerate_changed(AgsEffectPad *effect_pad,
+				       guint samplerate, guint old_samplerate);
+void ags_effect_pad_buffer_size_changed(AgsEffectPad *effect_pad,
+					guint buffer_size, guint old_buffer_size);
+void ags_effect_pad_format_changed(AgsEffectPad *effect_pad,
+				   guint format, guint old_format);
 
 void ags_effect_pad_set_channel(AgsEffectPad *effect_pad, AgsChannel *channel);
 

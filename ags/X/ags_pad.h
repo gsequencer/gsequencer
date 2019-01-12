@@ -66,6 +66,10 @@ struct _AgsPad
   gchar *version;
   gchar *build_id;
 
+  guint samplerate;
+  guint buffer_size;
+  guint format;
+
   AgsChannel *channel;
 
   guint cols;
@@ -82,6 +86,13 @@ struct _AgsPadClass
 {
   GtkVBoxClass vbox;
 
+  void (*samplerate_changed)(AgsPad *pad,
+			     guint samplerate, guint old_samplerate);
+  void (*buffer_size_changed)(AgsPad *pad,
+			      guint buffer_size, guint old_buffer_size);
+  void (*format_changed)(AgsPad *pad,
+			 guint format, guint old_format);
+
   void (*set_channel)(AgsPad *pad, AgsChannel *channel);
 
   void (*resize_lines)(AgsPad *pad, GType line_type,
@@ -92,6 +103,13 @@ struct _AgsPadClass
 };
 
 GType ags_pad_get_type(void);
+
+void ags_pad_samplerate_changed(AgsPad *pad,
+				guint samplerate, guint old_samplerate);
+void ags_pad_buffer_size_changed(AgsPad *pad,
+				 guint buffer_size, guint old_buffer_size);
+void ags_pad_format_changed(AgsPad *pad,
+			    guint format, guint old_format);
 
 void ags_pad_set_channel(AgsPad *pad, AgsChannel *channel);
 

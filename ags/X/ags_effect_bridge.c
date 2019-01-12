@@ -71,6 +71,9 @@ GList* ags_effect_bridge_real_find_port(AgsEffectBridge *effect_bridge);
  */
 
 enum{
+  SAMPLERATE_CHANGED,
+  BUFFER_SIZE_CHANGED,
+  FORMAT_CHANGED,
   RESIZE_AUDIO_CHANNELS,
   RESIZE_PADS,
   MAP_RECALL,
@@ -80,6 +83,9 @@ enum{
 
 enum{
   PROP_0,
+  PROP_SAMPLERATE,
+  PROP_BUFFER_SIZE,
+  PROP_FORMAT,
   PROP_AUDIO,
 };
 
@@ -152,6 +158,60 @@ ags_effect_bridge_class_init(AgsEffectBridgeClass *effect_bridge)
 
   /* properties */
   /**
+   * AgsEffectBridge:samplerate:
+   *
+   * The samplerate.
+   * 
+   * Since: 2.1.35
+   */
+  param_spec = g_param_spec_uint("samplerate",
+				 i18n_pspec("samplerate"),
+				 i18n_pspec("The samplerate"),
+				 0,
+				 G_MAXUINT32,
+				 AGS_SOUNDCARD_DEFAULT_SAMPLERATE,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_SAMPLERATE,
+				  param_spec);
+
+  /**
+   * AgsEffectBridge:buffer-size:
+   *
+   * The buffer length.
+   * 
+   * Since: 2.1.35
+   */
+  param_spec = g_param_spec_uint("buffer-size",
+				 i18n_pspec("buffer size"),
+				 i18n_pspec("The buffer size"),
+				 0,
+				 G_MAXUINT32,
+				 AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_BUFFER_SIZE,
+				  param_spec);
+
+  /**
+   * AgsEffectBridge:format:
+   *
+   * The format.
+   * 
+   * Since: 2.1.35
+   */
+  param_spec = g_param_spec_uint("format",
+				 i18n_pspec("format"),
+				 i18n_pspec("The format"),
+				 0,
+				 G_MAXUINT32,
+				 AGS_SOUNDCARD_DEFAULT_FORMAT,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_FORMAT,
+				  param_spec);
+
+  /**
    * AgsEffectBridge:audio:
    *
    * The start of a bunch of #AgsAudio to visualize.
@@ -168,12 +228,80 @@ ags_effect_bridge_class_init(AgsEffectBridgeClass *effect_bridge)
 				  param_spec);
 
   /* AgsEffectBridgeClass */
+  effect_bridge->samplerate_changed = NULL;
+  effect_bridge->buffer_size_changed = NULL;
+  effect_bridge->format_changed = NULL;
+
   effect_bridge->resize_pads = ags_effect_bridge_real_resize_pads;
   effect_bridge->resize_audio_channels = ags_effect_bridge_real_resize_audio_channels;
+
   effect_bridge->map_recall = ags_effect_bridge_real_map_recall;
   effect_bridge->find_port = ags_effect_bridge_real_find_port;
 
   /* signals */
+  /**
+   * AgsEffectBridge::samplerate-changed:
+   * @effect_bridge: the #AgsEffectBridge
+   * @samplerate: the samplerate
+   * @old_samplerate: the old samplerate
+   *
+   * The ::samplerate-changed signal notifies about changed samplerate.
+   * 
+   * Since: 2.1.35
+   */
+  effect_bridge_signals[SAMPLERATE_CHANGED] =
+    g_signal_new("samplerate-changed",
+		 G_TYPE_FROM_CLASS(effect_bridge),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsEffectBridgeClass, samplerate_changed),
+		 NULL, NULL,
+		 ags_cclosure_marshal_VOID__UINT_UINT,
+		 G_TYPE_NONE, 2,
+		 G_TYPE_UINT,
+		 G_TYPE_UINT);
+
+  /**
+   * AgsEffectBridge::buffer-size-changed:
+   * @effect_bridge: the #AgsEffectBridge
+   * @buffer_size: the buffer size
+   * @old_buffer_size: the old buffer size
+   *
+   * The ::buffer-size-changed signal notifies about changed buffer size.
+   * 
+   * Since: 2.1.35
+   */
+  effect_bridge_signals[BUFFER_SIZE_CHANGED] =
+    g_signal_new("buffer-size-changed",
+		 G_TYPE_FROM_CLASS(effect_bridge),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsEffectBridgeClass, buffer_size_changed),
+		 NULL, NULL,
+		 ags_cclosure_marshal_VOID__UINT_UINT,
+		 G_TYPE_NONE, 2,
+		 G_TYPE_UINT,
+		 G_TYPE_UINT);
+
+  /**
+   * AgsEffectBridge::format-changed:
+   * @effect_bridge: the #AgsEffectBridge
+   * @format: the format
+   * @old_format: the old format
+   *
+   * The ::format-changed signal notifies about changed format.
+   * 
+   * Since: 2.1.35
+   */
+  effect_bridge_signals[FORMAT_CHANGED] =
+    g_signal_new("format-changed",
+		 G_TYPE_FROM_CLASS(effect_bridge),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsEffectBridgeClass, format_changed),
+		 NULL, NULL,
+		 ags_cclosure_marshal_VOID__UINT_UINT,
+		 G_TYPE_NONE, 2,
+		 G_TYPE_UINT,
+		 G_TYPE_UINT);
+
   /**
    * AgsEffectBridge::resize-audio-channels:
    * @effect_bridge: the #AgsEffectBridge to modify
@@ -327,6 +455,45 @@ ags_effect_bridge_set_property(GObject *gobject,
   effect_bridge = AGS_EFFECT_BRIDGE(gobject);
 
   switch(prop_id){
+  case PROP_SAMPLERATE:
+    {
+      guint samplerate, old_samplerate;
+      
+      samplerate = g_value_get_uint(value);
+      old_samplerate = effect_bridge->samplerate;
+
+      effect_bridge->samplerate = samplerate;
+
+      ags_effect_bridge_samplerate_changed(effect_bridge,
+					   samplerate, old_samplerate);
+    }
+    break;
+  case PROP_BUFFER_SIZE:
+    {
+      guint buffer_size, old_buffer_size;
+      
+      buffer_size = g_value_get_uint(value);
+      old_buffer_size = effect_bridge->buffer_size;
+
+      effect_bridge->buffer_size = buffer_size;
+
+      ags_effect_bridge_buffer_size_changed(effect_bridge,
+					    buffer_size, old_buffer_size);
+    }
+    break;
+  case PROP_FORMAT:
+    {
+      guint format, old_format;
+      
+      format = g_value_get_uint(value);
+      old_format = effect_bridge->format;
+
+      effect_bridge->format = format;
+
+      ags_effect_bridge_format_changed(effect_bridge,
+				       format, old_format);
+    }
+    break;
   case PROP_AUDIO:
     {
       AgsAudio *audio;
@@ -547,6 +714,24 @@ ags_effect_bridge_get_property(GObject *gobject,
   effect_bridge = AGS_EFFECT_BRIDGE(gobject);
 
   switch(prop_id){
+  case PROP_SAMPLERATE:
+    {
+      g_value_set_uint(value,
+		       effect_bridge->samplerate);
+    }
+    break;
+  case PROP_BUFFER_SIZE:
+    {
+      g_value_set_uint(value,
+		       effect_bridge->buffer_size);
+    }
+    break;
+  case PROP_FORMAT:
+    {
+      g_value_set_uint(value,
+		       effect_bridge->format);
+    }
+    break;
   case PROP_AUDIO:
     {
       g_value_set_object(value, effect_bridge->audio);
@@ -735,6 +920,78 @@ ags_effect_bridge_set_build_id(AgsPlugin *plugin, gchar *build_id)
   effect_bridge = AGS_EFFECT_BRIDGE(plugin);
 
   effect_bridge->build_id = build_id;
+}
+
+/**
+ * ags_effect_bridge_samplerate_changed:
+ * @effect_bridge: the #AgsEffectBridge
+ * @samplerate: the samplerate
+ * @old_samplerate: the old samplerate
+ * 
+ * Notify about samplerate changed.
+ * 
+ * Since: 2.1.35
+ */
+void
+ags_effect_bridge_samplerate_changed(AgsEffectBridge *effect_bridge,
+				     guint samplerate, guint old_samplerate)
+{
+  g_return_if_fail(AGS_IS_EFFECT_BRIDGE(effect_bridge));
+
+  g_object_ref((GObject *) effect_bridge);
+  g_signal_emit(G_OBJECT(effect_bridge),
+		effect_bridge_signals[SAMPLERATE_CHANGED], 0,
+		samplerate,
+		old_samplerate);
+  g_object_unref((GObject *) effect_bridge);
+}
+
+/**
+ * ags_effect_bridge_buffer_size_changed:
+ * @effect_bridge: the #AgsEffectBridge
+ * @buffer_size: the buffer_size
+ * @old_buffer_size: the old buffer_size
+ * 
+ * Notify about buffer_size changed.
+ * 
+ * Since: 2.1.35
+ */
+void
+ags_effect_bridge_buffer_size_changed(AgsEffectBridge *effect_bridge,
+				      guint buffer_size, guint old_buffer_size)
+{
+  g_return_if_fail(AGS_IS_EFFECT_BRIDGE(effect_bridge));
+
+  g_object_ref((GObject *) effect_bridge);
+  g_signal_emit(G_OBJECT(effect_bridge),
+		effect_bridge_signals[BUFFER_SIZE_CHANGED], 0,
+		buffer_size,
+		old_buffer_size);
+  g_object_unref((GObject *) effect_bridge);
+}
+
+/**
+ * ags_effect_bridge_format_changed:
+ * @effect_bridge: the #AgsEffectBridge
+ * @format: the format
+ * @old_format: the old format
+ * 
+ * Notify about format changed.
+ * 
+ * Since: 2.1.35
+ */
+void
+ags_effect_bridge_format_changed(AgsEffectBridge *effect_bridge,
+				 guint format, guint old_format)
+{
+  g_return_if_fail(AGS_IS_EFFECT_BRIDGE(effect_bridge));
+
+  g_object_ref((GObject *) effect_bridge);
+  g_signal_emit(G_OBJECT(effect_bridge),
+		effect_bridge_signals[FORMAT_CHANGED], 0,
+		format,
+		old_format);
+  g_object_unref((GObject *) effect_bridge);
 }
 
 void

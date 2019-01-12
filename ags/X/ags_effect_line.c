@@ -105,6 +105,9 @@ GList* ags_effect_line_real_find_port(AgsEffectLine *effect_line);
  */
 
 enum{
+  SAMPLERATE_CHANGED,
+  BUFFER_SIZE_CHANGED,
+  FORMAT_CHANGED,
   SET_CHANNEL,
   ADD_EFFECT,
   REMOVE_EFFECT,
@@ -116,6 +119,9 @@ enum{
 
 enum{
   PROP_0,
+  PROP_SAMPLERATE,
+  PROP_BUFFER_SIZE,
+  PROP_FORMAT,
   PROP_CHANNEL,
 };
 
@@ -194,6 +200,60 @@ ags_effect_line_class_init(AgsEffectLineClass *effect_line)
   
   /* properties */
   /**
+   * AgsEffectLine:samplerate:
+   *
+   * The samplerate.
+   * 
+   * Since: 2.1.35
+   */
+  param_spec = g_param_spec_uint("samplerate",
+				 i18n_pspec("samplerate"),
+				 i18n_pspec("The samplerate"),
+				 0,
+				 G_MAXUINT32,
+				 AGS_SOUNDCARD_DEFAULT_SAMPLERATE,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_SAMPLERATE,
+				  param_spec);
+
+  /**
+   * AgsEffectLine:buffer-size:
+   *
+   * The buffer length.
+   * 
+   * Since: 2.1.35
+   */
+  param_spec = g_param_spec_uint("buffer-size",
+				 i18n_pspec("buffer size"),
+				 i18n_pspec("The buffer size"),
+				 0,
+				 G_MAXUINT32,
+				 AGS_SOUNDCARD_DEFAULT_BUFFER_SIZE,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_BUFFER_SIZE,
+				  param_spec);
+
+  /**
+   * AgsEffectLine:format:
+   *
+   * The format.
+   * 
+   * Since: 2.1.35
+   */
+  param_spec = g_param_spec_uint("format",
+				 i18n_pspec("format"),
+				 i18n_pspec("The format"),
+				 0,
+				 G_MAXUINT32,
+				 AGS_SOUNDCARD_DEFAULT_FORMAT,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_FORMAT,
+				  param_spec);
+
+  /**
    * AgsEffectLine:channel:
    *
    * The start of a bunch of #AgsChannel to visualize.
@@ -210,6 +270,10 @@ ags_effect_line_class_init(AgsEffectLineClass *effect_line)
 				  param_spec);
 
   /* AgsEffectLineClass */
+  effect_line->samplerate_changed = NULL;
+  effect_line->buffer_size_changed = NULL;
+  effect_line->format_changed = NULL;
+
   effect_line->set_channel = ags_effect_line_real_set_channel;
 
   effect_line->add_effect = ags_effect_line_real_add_effect;
@@ -221,6 +285,69 @@ ags_effect_line_class_init(AgsEffectLineClass *effect_line)
   effect_line->done = NULL;
 
   /* signals */
+  /**
+   * AgsEffectLine::samplerate-changed:
+   * @effect_line: the #AgsEffectLine
+   * @samplerate: the samplerate
+   * @old_samplerate: the old samplerate
+   *
+   * The ::samplerate-changed signal notifies about changed samplerate.
+   * 
+   * Since: 2.1.35
+   */
+  effect_line_signals[SAMPLERATE_CHANGED] =
+    g_signal_new("samplerate-changed",
+		 G_TYPE_FROM_CLASS(effect_line),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsEffectLineClass, samplerate_changed),
+		 NULL, NULL,
+		 ags_cclosure_marshal_VOID__UINT_UINT,
+		 G_TYPE_NONE, 2,
+		 G_TYPE_UINT,
+		 G_TYPE_UINT);
+
+  /**
+   * AgsEffectLine::buffer-size-changed:
+   * @effect_line: the #AgsEffectLine
+   * @buffer_size: the buffer size
+   * @old_buffer_size: the old buffer size
+   *
+   * The ::buffer-size-changed signal notifies about changed buffer size.
+   * 
+   * Since: 2.1.35
+   */
+  effect_line_signals[BUFFER_SIZE_CHANGED] =
+    g_signal_new("buffer-size-changed",
+		 G_TYPE_FROM_CLASS(effect_line),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsEffectLineClass, buffer_size_changed),
+		 NULL, NULL,
+		 ags_cclosure_marshal_VOID__UINT_UINT,
+		 G_TYPE_NONE, 2,
+		 G_TYPE_UINT,
+		 G_TYPE_UINT);
+
+  /**
+   * AgsEffectLine::format-changed:
+   * @effect_line: the #AgsEffectLine
+   * @format: the format
+   * @old_format: the old format
+   *
+   * The ::format-changed signal notifies about changed format.
+   * 
+   * Since: 2.1.35
+   */
+  effect_line_signals[FORMAT_CHANGED] =
+    g_signal_new("format-changed",
+		 G_TYPE_FROM_CLASS(effect_line),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET(AgsEffectLineClass, format_changed),
+		 NULL, NULL,
+		 ags_cclosure_marshal_VOID__UINT_UINT,
+		 G_TYPE_NONE, 2,
+		 G_TYPE_UINT,
+		 G_TYPE_UINT);
+
   /**
    * AgsEffectLine::set-channel:
    * @effect_line: the #AgsEffectLine to modify
@@ -434,6 +561,45 @@ ags_effect_line_set_property(GObject *gobject,
   effect_line = AGS_EFFECT_LINE(gobject);
 
   switch(prop_id){
+  case PROP_SAMPLERATE:
+    {
+      guint samplerate, old_samplerate;
+      
+      samplerate = g_value_get_uint(value);
+      old_samplerate = effect_line->samplerate;
+
+      effect_line->samplerate = samplerate;
+
+      ags_effect_line_samplerate_changed(effect_line,
+					 samplerate, old_samplerate);
+    }
+    break;
+  case PROP_BUFFER_SIZE:
+    {
+      guint buffer_size, old_buffer_size;
+      
+      buffer_size = g_value_get_uint(value);
+      old_buffer_size = effect_line->buffer_size;
+
+      effect_line->buffer_size = buffer_size;
+
+      ags_effect_line_buffer_size_changed(effect_line,
+					  buffer_size, old_buffer_size);
+    }
+    break;
+  case PROP_FORMAT:
+    {
+      guint format, old_format;
+      
+      format = g_value_get_uint(value);
+      old_format = effect_line->format;
+
+      effect_line->format = format;
+
+      ags_effect_line_format_changed(effect_line,
+				     format, old_format);
+    }
+    break;
   case PROP_CHANNEL:
     {
       AgsChannel *channel;
@@ -460,6 +626,24 @@ ags_effect_line_get_property(GObject *gobject,
   effect_line = AGS_EFFECT_LINE(gobject);
 
   switch(prop_id){
+  case PROP_SAMPLERATE:
+    {
+      g_value_set_uint(value,
+		       effect_line->samplerate);
+    }
+    break;
+  case PROP_BUFFER_SIZE:
+    {
+      g_value_set_uint(value,
+		       effect_line->buffer_size);
+    }
+    break;
+  case PROP_FORMAT:
+    {
+      g_value_set_uint(value,
+		       effect_line->format);
+    }
+    break;
   case PROP_CHANNEL:
     {
       g_value_set_object(value,
@@ -639,6 +823,78 @@ ags_effect_line_set_build_id(AgsPlugin *plugin, gchar *build_id)
   effect_line = AGS_EFFECT_LINE(plugin);
 
   effect_line->build_id = build_id;
+}
+
+/**
+ * ags_effect_line_samplerate_changed:
+ * @effect_line: the #AgsEffectLine
+ * @samplerate: the samplerate
+ * @old_samplerate: the old samplerate
+ * 
+ * Notify about samplerate changed.
+ * 
+ * Since: 2.1.35
+ */
+void
+ags_effect_line_samplerate_changed(AgsEffectLine *effect_line,
+				   guint samplerate, guint old_samplerate)
+{
+  g_return_if_fail(AGS_IS_EFFECT_LINE(effect_line));
+
+  g_object_ref((GObject *) effect_line);
+  g_signal_emit(G_OBJECT(effect_line),
+		effect_line_signals[SAMPLERATE_CHANGED], 0,
+		samplerate,
+		old_samplerate);
+  g_object_unref((GObject *) effect_line);
+}
+
+/**
+ * ags_effect_line_buffer_size_changed:
+ * @effect_line: the #AgsEffectLine
+ * @buffer_size: the buffer_size
+ * @old_buffer_size: the old buffer_size
+ * 
+ * Notify about buffer_size changed.
+ * 
+ * Since: 2.1.35
+ */
+void
+ags_effect_line_buffer_size_changed(AgsEffectLine *effect_line,
+				    guint buffer_size, guint old_buffer_size)
+{
+  g_return_if_fail(AGS_IS_EFFECT_LINE(effect_line));
+
+  g_object_ref((GObject *) effect_line);
+  g_signal_emit(G_OBJECT(effect_line),
+		effect_line_signals[BUFFER_SIZE_CHANGED], 0,
+		buffer_size,
+		old_buffer_size);
+  g_object_unref((GObject *) effect_line);
+}
+
+/**
+ * ags_effect_line_format_changed:
+ * @effect_line: the #AgsEffectLine
+ * @format: the format
+ * @old_format: the old format
+ * 
+ * Notify about format changed.
+ * 
+ * Since: 2.1.35
+ */
+void
+ags_effect_line_format_changed(AgsEffectLine *effect_line,
+			       guint format, guint old_format)
+{
+  g_return_if_fail(AGS_IS_EFFECT_LINE(effect_line));
+
+  g_object_ref((GObject *) effect_line);
+  g_signal_emit(G_OBJECT(effect_line),
+		effect_line_signals[FORMAT_CHANGED], 0,
+		format,
+		old_format);
+  g_object_unref((GObject *) effect_line);
 }
 
 void
