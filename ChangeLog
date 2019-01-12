@@ -1,8 +1,8 @@
 ags (2.1.35)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
-	* TODO:JK: implemented AgsSoundContainer manager
-	* implemented emitting message of AgsAudio's samplerate, buffer-size and format
+	* implemented emitting message of AgsAudio's samplerate, buffer-size and format change
+	* implemented emitting message of AgsChannel's samplerate, buffer-size and format change
 	* implemented proper resample of AgsAudioSignal as adjusting buffer size and samplerate
 	* implemented proper resample of AgsWave as adjusting buffer size and samplerate
 	* fixed applying samplerate, buffer size and format to AgsSynthGenerator

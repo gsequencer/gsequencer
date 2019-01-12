@@ -6958,8 +6958,11 @@ ags_channel_set_samplerate(AgsChannel *channel, guint samplerate)
   AgsPlayback *playback;
   
   AgsThread *channel_thread;
+  AgsMessageDelivery *message_delivery;
+  AgsMessageQueue *message_queue;
 
   gdouble frequency;
+  guint old_samplerate;
   gint i;
   
   pthread_mutex_t *channel_mutex;
@@ -6978,6 +6981,8 @@ ags_channel_set_samplerate(AgsChannel *channel, guint samplerate)
 
   /* set samplerate */
   pthread_mutex_lock(channel_mutex);
+
+  old_samplerate = channel->samplerate;
 
   channel->samplerate = samplerate;
 
@@ -7021,6 +7026,66 @@ ags_channel_set_samplerate(AgsChannel *channel, guint samplerate)
 		 "samplerate", samplerate,
 		 NULL);
   }
+  
+  /* emit message */
+  message_delivery = ags_message_delivery_get_instance();
+
+  message_queue = (AgsMessageQueue *) ags_message_delivery_find_namespace(message_delivery,
+									  "libags-audio");
+
+  if(message_queue != NULL){
+    AgsMessageEnvelope *message;
+
+    xmlDoc *doc;
+    xmlNode *root_node;
+
+    /* specify message body */
+    doc = xmlNewDoc("1.0");
+
+    root_node = xmlNewNode(NULL,
+			   "ags-command");
+    xmlDocSetRootElement(doc, root_node);    
+
+    xmlNewProp(root_node,
+	       "method",
+	       "AgsChannel::set-samplerate");
+
+    /* add message */
+    message = ags_message_envelope_alloc((GObject *) channel,
+					 NULL,
+					 doc);
+
+    /* set parameter */
+    message->n_params = 2;
+
+    message->parameter_name = (gchar **) malloc(3 * sizeof(gchar *));
+    message->value = g_new0(GValue,
+			    2);
+
+    /* samplerate */
+    message->parameter_name[0] = "samplerate";
+    
+    g_value_init(&(message->value[0]),
+		 G_TYPE_UINT);
+    g_value_set_uint(&(message->value[0]),
+		     samplerate);
+
+    /* old samplerate */
+    message->parameter_name[1] = "old-samplerate";
+    
+    g_value_init(&(message->value[1]),
+		 G_TYPE_UINT);
+    g_value_set_uint(&(message->value[1]),
+		     old_samplerate);
+
+    /* terminate string vector */
+    message->parameter_name[2] = NULL;
+    
+    /* add message */
+    ags_message_delivery_add_message(message_delivery,
+				     "libags-audio",
+				     message);
+  }
 }
 
 /**
@@ -7040,8 +7105,11 @@ ags_channel_set_buffer_size(AgsChannel *channel, guint buffer_size)
   AgsPlayback *playback;
   
   AgsThread *channel_thread;
+  AgsMessageDelivery *message_delivery;
+  AgsMessageQueue *message_queue;
 
   gdouble frequency;
+  guint old_buffer_size;
   gint i;
   
   pthread_mutex_t *channel_mutex;
@@ -7060,6 +7128,8 @@ ags_channel_set_buffer_size(AgsChannel *channel, guint buffer_size)
   
   /* set buffer size */
   pthread_mutex_lock(channel_mutex);
+
+  old_buffer_size = channel->buffer_size;
 
   channel->buffer_size = buffer_size;
 
@@ -7103,6 +7173,66 @@ ags_channel_set_buffer_size(AgsChannel *channel, guint buffer_size)
 		 "buffer-size", buffer_size,
 		 NULL);
   }
+
+  /* emit message */
+  message_delivery = ags_message_delivery_get_instance();
+
+  message_queue = (AgsMessageQueue *) ags_message_delivery_find_namespace(message_delivery,
+									  "libags-audio");
+
+  if(message_queue != NULL){
+    AgsMessageEnvelope *message;
+
+    xmlDoc *doc;
+    xmlNode *root_node;
+
+    /* specify message body */
+    doc = xmlNewDoc("1.0");
+
+    root_node = xmlNewNode(NULL,
+			   "ags-command");
+    xmlDocSetRootElement(doc, root_node);    
+
+    xmlNewProp(root_node,
+	       "method",
+	       "AgsChannel::set-buffer-size");
+
+    /* add message */
+    message = ags_message_envelope_alloc((GObject *) channel,
+					 NULL,
+					 doc);
+
+    /* set parameter */
+    message->n_params = 2;
+
+    message->parameter_name = (gchar **) malloc(3 * sizeof(gchar *));
+    message->value = g_new0(GValue,
+			    2);
+
+    /* buffer_size */
+    message->parameter_name[0] = "buffer-size";
+    
+    g_value_init(&(message->value[0]),
+		 G_TYPE_UINT);
+    g_value_set_uint(&(message->value[0]),
+		     buffer_size);
+
+    /* old buffer_size */
+    message->parameter_name[1] = "old-buffer-size";
+    
+    g_value_init(&(message->value[1]),
+		 G_TYPE_UINT);
+    g_value_set_uint(&(message->value[1]),
+		     old_buffer_size);
+
+    /* terminate string vector */
+    message->parameter_name[2] = NULL;
+    
+    /* add message */
+    ags_message_delivery_add_message(message_delivery,
+				     "libags-audio",
+				     message);
+  }
 }
 
 /**
@@ -7120,6 +7250,11 @@ ags_channel_set_format(AgsChannel *channel, guint format)
   AgsChannel *link;
   AgsRecycling *recycling;
 
+  AgsMessageDelivery *message_delivery;
+  AgsMessageQueue *message_queue;
+
+  guint old_format;
+  
   pthread_mutex_t *channel_mutex;
 
   if(!AGS_IS_CHANNEL(channel)){
@@ -7136,6 +7271,8 @@ ags_channel_set_format(AgsChannel *channel, guint format)
   /* set buffer size */
   pthread_mutex_lock(channel_mutex);
 
+  old_format = channel->format;
+
   channel->format = format;
 
   link = channel->link;
@@ -7148,6 +7285,66 @@ ags_channel_set_format(AgsChannel *channel, guint format)
     g_object_set(recycling,
 		 "format", format,
 		 NULL);
+  }
+
+  /* emit message */
+  message_delivery = ags_message_delivery_get_instance();
+
+  message_queue = (AgsMessageQueue *) ags_message_delivery_find_namespace(message_delivery,
+									  "libags-audio");
+
+  if(message_queue != NULL){
+    AgsMessageEnvelope *message;
+
+    xmlDoc *doc;
+    xmlNode *root_node;
+
+    /* specify message body */
+    doc = xmlNewDoc("1.0");
+
+    root_node = xmlNewNode(NULL,
+			   "ags-command");
+    xmlDocSetRootElement(doc, root_node);    
+
+    xmlNewProp(root_node,
+	       "method",
+	       "AgsChannel::set-format");
+
+    /* add message */
+    message = ags_message_envelope_alloc((GObject *) channel,
+					 NULL,
+					 doc);
+
+    /* set parameter */
+    message->n_params = 2;
+
+    message->parameter_name = (gchar **) malloc(3 * sizeof(gchar *));
+    message->value = g_new0(GValue,
+			    2);
+
+    /* format */
+    message->parameter_name[0] = "format";
+    
+    g_value_init(&(message->value[0]),
+		 G_TYPE_UINT);
+    g_value_set_uint(&(message->value[0]),
+		     format);
+
+    /* old format */
+    message->parameter_name[1] = "old-format";
+    
+    g_value_init(&(message->value[1]),
+		 G_TYPE_UINT);
+    g_value_set_uint(&(message->value[1]),
+		     old_format);
+
+    /* terminate string vector */
+    message->parameter_name[2] = NULL;
+    
+    /* add message */
+    ags_message_delivery_add_message(message_delivery,
+				     "libags-audio",
+				     message);
   }
 }
 
