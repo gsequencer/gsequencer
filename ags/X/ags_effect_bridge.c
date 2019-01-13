@@ -462,6 +462,10 @@ ags_effect_bridge_set_property(GObject *gobject,
       samplerate = g_value_get_uint(value);
       old_samplerate = effect_bridge->samplerate;
 
+      if(samplerate == old_samplerate){
+	return;
+      }
+      
       effect_bridge->samplerate = samplerate;
 
       ags_effect_bridge_samplerate_changed(effect_bridge,
@@ -475,6 +479,10 @@ ags_effect_bridge_set_property(GObject *gobject,
       buffer_size = g_value_get_uint(value);
       old_buffer_size = effect_bridge->buffer_size;
 
+      if(buffer_size == old_buffer_size){
+	return;
+      }
+
       effect_bridge->buffer_size = buffer_size;
 
       ags_effect_bridge_buffer_size_changed(effect_bridge,
@@ -487,6 +495,10 @@ ags_effect_bridge_set_property(GObject *gobject,
       
       format = g_value_get_uint(value);
       old_format = effect_bridge->format;
+
+      if(format == old_format){
+	return;
+      }
 
       effect_bridge->format = format;
 

@@ -568,6 +568,10 @@ ags_effect_line_set_property(GObject *gobject,
       samplerate = g_value_get_uint(value);
       old_samplerate = effect_line->samplerate;
 
+      if(samplerate == old_samplerate){
+	return;
+      }
+
       effect_line->samplerate = samplerate;
 
       ags_effect_line_samplerate_changed(effect_line,
@@ -581,6 +585,10 @@ ags_effect_line_set_property(GObject *gobject,
       buffer_size = g_value_get_uint(value);
       old_buffer_size = effect_line->buffer_size;
 
+      if(buffer_size == old_buffer_size){
+	return;
+      }
+
       effect_line->buffer_size = buffer_size;
 
       ags_effect_line_buffer_size_changed(effect_line,
@@ -593,6 +601,10 @@ ags_effect_line_set_property(GObject *gobject,
       
       format = g_value_get_uint(value);
       old_format = effect_line->format;
+
+      if(format == old_format){
+	return;
+      }
 
       effect_line->format = format;
 

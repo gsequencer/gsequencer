@@ -461,6 +461,10 @@ ags_pad_set_property(GObject *gobject,
       samplerate = g_value_get_uint(value);
       old_samplerate = pad->samplerate;
 
+      if(samplerate == old_samplerate){
+	return;
+      }
+
       pad->samplerate = samplerate;
 
       ags_pad_samplerate_changed(pad,
@@ -474,6 +478,10 @@ ags_pad_set_property(GObject *gobject,
       buffer_size = g_value_get_uint(value);
       old_buffer_size = pad->buffer_size;
 
+      if(buffer_size == old_buffer_size){
+	return;
+      }
+
       pad->buffer_size = buffer_size;
 
       ags_pad_buffer_size_changed(pad,
@@ -486,6 +494,10 @@ ags_pad_set_property(GObject *gobject,
       
       format = g_value_get_uint(value);
       old_format = pad->format;
+
+      if(format == old_format){
+	return;
+      }
 
       pad->format = format;
 

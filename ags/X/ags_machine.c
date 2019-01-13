@@ -582,6 +582,10 @@ ags_machine_set_property(GObject *gobject,
       samplerate = g_value_get_uint(value);
       old_samplerate = machine->samplerate;
 
+      if(samplerate == old_samplerate){
+	return;
+      }
+      
       machine->samplerate = samplerate;
 
       ags_machine_samplerate_changed(machine,
@@ -595,6 +599,10 @@ ags_machine_set_property(GObject *gobject,
       buffer_size = g_value_get_uint(value);
       old_buffer_size = machine->buffer_size;
 
+      if(buffer_size == old_buffer_size){
+	return;
+      }
+      
       machine->buffer_size = buffer_size;
 
       ags_machine_buffer_size_changed(machine,
@@ -607,6 +615,10 @@ ags_machine_set_property(GObject *gobject,
       
       format = g_value_get_uint(value);
       old_format = machine->format;
+
+      if(format == old_format){
+	return;
+      }
 
       machine->format = format;
 

@@ -444,6 +444,10 @@ ags_effect_pad_set_property(GObject *gobject,
       samplerate = g_value_get_uint(value);
       old_samplerate = effect_pad->samplerate;
 
+      if(samplerate == old_samplerate){
+	return;
+      }
+
       effect_pad->samplerate = samplerate;
 
       ags_effect_pad_samplerate_changed(effect_pad,
@@ -457,6 +461,10 @@ ags_effect_pad_set_property(GObject *gobject,
       buffer_size = g_value_get_uint(value);
       old_buffer_size = effect_pad->buffer_size;
 
+      if(buffer_size == old_buffer_size){
+	return;
+      }
+
       effect_pad->buffer_size = buffer_size;
 
       ags_effect_pad_buffer_size_changed(effect_pad,
@@ -469,6 +477,10 @@ ags_effect_pad_set_property(GObject *gobject,
       
       format = g_value_get_uint(value);
       old_format = effect_pad->format;
+
+      if(format == old_format){
+	return;
+      }
 
       effect_pad->format = format;
 

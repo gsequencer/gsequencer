@@ -609,6 +609,10 @@ ags_line_set_property(GObject *gobject,
       samplerate = g_value_get_uint(value);
       old_samplerate = line->samplerate;
 
+      if(samplerate == old_samplerate){
+	return;
+      }
+
       line->samplerate = samplerate;
 
       ags_line_samplerate_changed(line,
@@ -622,6 +626,10 @@ ags_line_set_property(GObject *gobject,
       buffer_size = g_value_get_uint(value);
       old_buffer_size = line->buffer_size;
 
+      if(buffer_size == old_buffer_size){
+	return;
+      }
+      
       line->buffer_size = buffer_size;
 
       ags_line_buffer_size_changed(line,
@@ -634,6 +642,10 @@ ags_line_set_property(GObject *gobject,
       
       format = g_value_get_uint(value);
       old_format = line->format;
+
+      if(format == old_format){
+	return;
+      }
 
       line->format = format;
 
