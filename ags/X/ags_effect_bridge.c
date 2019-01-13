@@ -457,6 +457,8 @@ ags_effect_bridge_set_property(GObject *gobject,
   switch(prop_id){
   case PROP_SAMPLERATE:
     {
+      GList *start_list, *list;
+
       guint samplerate, old_samplerate;
       
       samplerate = g_value_get_uint(value);
@@ -470,10 +472,46 @@ ags_effect_bridge_set_property(GObject *gobject,
 
       ags_effect_bridge_samplerate_changed(effect_bridge,
 					   samplerate, old_samplerate);
+
+      if(effect_bridge->output != NULL){
+	list =
+	  start_list = gtk_container_get_children(GTK_CONTAINER(effect_bridge->output)); 
+
+	while(list != NULL){
+	  if(AGS_IS_EFFECT_PAD(list->data)){
+	    g_object_set(list->data,
+			 "samplerate", samplerate,
+			 NULL);
+	  }
+
+	  list = list->next;
+	}
+
+	g_list_free(start_list);
+      }
+
+      if(effect_bridge->input != NULL){
+	list =
+	  start_list = gtk_container_get_children(GTK_CONTAINER(effect_bridge->input)); 
+
+	while(list != NULL){
+	  if(AGS_IS_EFFECT_PAD(list->data)){
+	    g_object_set(list->data,
+			 "samplerate", samplerate,
+			 NULL);
+	  }
+
+	  list = list->next;
+	}
+
+	g_list_free(start_list);
+      }
     }
     break;
   case PROP_BUFFER_SIZE:
     {
+      GList *start_list, *list;
+
       guint buffer_size, old_buffer_size;
       
       buffer_size = g_value_get_uint(value);
@@ -487,10 +525,46 @@ ags_effect_bridge_set_property(GObject *gobject,
 
       ags_effect_bridge_buffer_size_changed(effect_bridge,
 					    buffer_size, old_buffer_size);
+
+      if(effect_bridge->output != NULL){
+	list =
+	  start_list = gtk_container_get_children(GTK_CONTAINER(effect_bridge->output)); 
+
+	while(list != NULL){
+	  if(AGS_IS_EFFECT_PAD(list->data)){
+	    g_object_set(list->data,
+			 "buffer-size", buffer_size,
+			 NULL);
+	  }
+
+	  list = list->next;
+	}
+
+	g_list_free(start_list);
+      }
+
+      if(effect_bridge->input != NULL){
+	list =
+	  start_list = gtk_container_get_children(GTK_CONTAINER(effect_bridge->input)); 
+
+	while(list != NULL){
+	  if(AGS_IS_EFFECT_PAD(list->data)){
+	    g_object_set(list->data,
+			 "buffer-size", buffer_size,
+			 NULL);
+	  }
+
+	  list = list->next;
+	}
+
+	g_list_free(start_list);
+      }
     }
     break;
   case PROP_FORMAT:
     {
+      GList *start_list, *list;
+
       guint format, old_format;
       
       format = g_value_get_uint(value);
@@ -504,6 +578,40 @@ ags_effect_bridge_set_property(GObject *gobject,
 
       ags_effect_bridge_format_changed(effect_bridge,
 				       format, old_format);
+
+      if(effect_bridge->output != NULL){
+	list =
+	  start_list = gtk_container_get_children(GTK_CONTAINER(effect_bridge->output)); 
+
+	while(list != NULL){
+	  if(AGS_IS_EFFECT_PAD(list->data)){
+	    g_object_set(list->data,
+			 "format", format,
+			 NULL);
+	  }
+
+	  list = list->next;
+	}
+
+	g_list_free(start_list);
+      }
+
+      if(effect_bridge->input != NULL){
+	list =
+	  start_list = gtk_container_get_children(GTK_CONTAINER(effect_bridge->input)); 
+
+	while(list != NULL){
+	  if(AGS_IS_EFFECT_PAD(list->data)){
+	    g_object_set(list->data,
+			 "format", format,
+			 NULL);
+	  }
+
+	  list = list->next;
+	}
+
+	g_list_free(start_list);
+      }
     }
     break;
   case PROP_AUDIO:

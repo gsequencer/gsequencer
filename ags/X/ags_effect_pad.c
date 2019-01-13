@@ -439,6 +439,8 @@ ags_effect_pad_set_property(GObject *gobject,
   switch(prop_id){
   case PROP_SAMPLERATE:
     {
+      GList *start_list, *list;
+
       guint samplerate, old_samplerate;
       
       samplerate = g_value_get_uint(value);
@@ -452,10 +454,27 @@ ags_effect_pad_set_property(GObject *gobject,
 
       ags_effect_pad_samplerate_changed(effect_pad,
 					samplerate, old_samplerate);
+
+      list = 
+	start_list = gtk_container_get_children(GTK_CONTAINER(effect_pad->table));
+
+      while(list != NULL){
+	if(AGS_IS_EFFECT_LINE(list->data)){
+	  g_object_set(list->data,
+		       "samplerate", samplerate,
+		       NULL);
+	}
+
+	list = list->next;
+      }
+
+      g_list_free(start_list);
     }
     break;
   case PROP_BUFFER_SIZE:
     {
+      GList *start_list, *list;
+
       guint buffer_size, old_buffer_size;
       
       buffer_size = g_value_get_uint(value);
@@ -469,10 +488,27 @@ ags_effect_pad_set_property(GObject *gobject,
 
       ags_effect_pad_buffer_size_changed(effect_pad,
 					 buffer_size, old_buffer_size);
+
+      list = 
+	start_list = gtk_container_get_children(GTK_CONTAINER(effect_pad->table));
+
+      while(list != NULL){
+	if(AGS_IS_EFFECT_LINE(list->data)){
+	  g_object_set(list->data,
+		       "buffer-size", buffer_size,
+		       NULL);
+	}
+
+	list = list->next;
+      }
+
+      g_list_free(start_list);
     }
     break;
   case PROP_FORMAT:
     {
+      GList *start_list, *list;
+
       guint format, old_format;
       
       format = g_value_get_uint(value);
@@ -486,6 +522,21 @@ ags_effect_pad_set_property(GObject *gobject,
 
       ags_effect_pad_format_changed(effect_pad,
 				    format, old_format);
+
+      list = 
+	start_list = gtk_container_get_children(GTK_CONTAINER(effect_pad->table));
+
+      while(list != NULL){
+	if(AGS_IS_EFFECT_LINE(list->data)){
+	  g_object_set(list->data,
+		       "format", format,
+		       NULL);
+	}
+
+	list = list->next;
+      }
+
+      g_list_free(start_list);
     }
     break;
   case PROP_CHANNEL:

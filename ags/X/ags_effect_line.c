@@ -2150,6 +2150,51 @@ ags_effect_line_message_monitor_timeout(AgsEffectLine *effect_line)
 		     12)){
 	if(!xmlStrncmp(xmlGetProp(root_node,
 				  "method"),
+		       "AgsChannel::set-samplerate",
+		       27)){
+	  guint samplerate;
+	  gint position;
+	  
+	  position = ags_strv_index(AGS_MESSAGE_ENVELOPE(message->data)->parameter_name,
+				    "samplerate");
+	  samplerate = g_value_get_uint(&(AGS_MESSAGE_ENVELOPE(message->data)->value[position]));
+
+	  /* set samplerate */
+	  g_object_set(effect_line,
+		       "samplerate", samplerate,
+		       NULL);
+	}else if(!xmlStrncmp(xmlGetProp(root_node,
+				  "method"),
+		       "AgsChannel::set-buffer-size",
+		       28)){
+	  guint buffer_size;
+	  gint position;
+	  
+	  position = ags_strv_index(AGS_MESSAGE_ENVELOPE(message->data)->parameter_name,
+				    "buffer-size");
+	  buffer_size = g_value_get_uint(&(AGS_MESSAGE_ENVELOPE(message->data)->value[position]));
+
+	  /* set buffer size */
+	  g_object_set(effect_line,
+		       "buffer-size", buffer_size,
+		       NULL);
+	}else if(!xmlStrncmp(xmlGetProp(root_node,
+				  "method"),
+		       "AgsChannel::set-format",
+		       23)){
+	  guint format;
+	  gint position;
+	  
+	  position = ags_strv_index(AGS_MESSAGE_ENVELOPE(message->data)->parameter_name,
+				    "format");
+	  format = g_value_get_uint(&(AGS_MESSAGE_ENVELOPE(message->data)->value[position]));
+
+	  /* set format */
+	  g_object_set(effect_line,
+		       "format", format,
+		       NULL);
+	}else if(!xmlStrncmp(xmlGetProp(root_node,
+				  "method"),
 		       "AgsChannel::add-effect",
 		       22)){
 	  AgsMachine *machine;

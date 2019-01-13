@@ -577,6 +577,8 @@ ags_machine_set_property(GObject *gobject,
   switch(prop_id){
   case PROP_SAMPLERATE:
     {
+      GList *start_list, *list;
+      
       guint samplerate, old_samplerate;
       
       samplerate = g_value_get_uint(value);
@@ -590,10 +592,52 @@ ags_machine_set_property(GObject *gobject,
 
       ags_machine_samplerate_changed(machine,
 				     samplerate, old_samplerate);
+
+      if(machine->output != NULL){
+	list = 
+	  start_list = gtk_container_get_children(GTK_CONTAINER(machine->output));
+
+	while(list != NULL){
+	  if(AGS_IS_PAD(list->data)){
+	    g_object_set(list->data,
+			 "samplerate", samplerate,
+			 NULL);
+	  }
+
+	  list = list->next;
+	}
+
+	g_list_free(start_list);
+      }
+
+      if(machine->input != NULL){
+	list = 
+	  start_list = gtk_container_get_children(GTK_CONTAINER(machine->input));
+
+	while(list != NULL){
+	  if(AGS_IS_PAD(list->data)){
+	    g_object_set(list->data,
+			 "samplerate", samplerate,
+			 NULL);
+	  }
+
+	  list = list->next;
+	}
+
+	g_list_free(start_list);
+      }
+
+      if(machine->bridge != NULL){
+	g_object_set(machine->bridge,
+		     "samplerate", samplerate,
+		     NULL);
+      }
     }
     break;
   case PROP_BUFFER_SIZE:
     {
+      GList *start_list, *list;
+      
       guint buffer_size, old_buffer_size;
       
       buffer_size = g_value_get_uint(value);
@@ -607,10 +651,53 @@ ags_machine_set_property(GObject *gobject,
 
       ags_machine_buffer_size_changed(machine,
 				      buffer_size, old_buffer_size);
+
+
+      if(machine->output != NULL){
+	list = 
+	  start_list = gtk_container_get_children(GTK_CONTAINER(machine->output));
+
+	while(list != NULL){
+	  if(AGS_IS_PAD(list->data)){
+	    g_object_set(list->data,
+			 "buffer-size", buffer_size,
+			 NULL);
+	  }
+
+	  list = list->next;
+	}
+
+	g_list_free(start_list);
+      }
+
+      if(machine->input != NULL){
+	list = 
+	  start_list = gtk_container_get_children(GTK_CONTAINER(machine->input));
+
+	while(list != NULL){
+	  if(AGS_IS_PAD(list->data)){
+	    g_object_set(list->data,
+			 "buffer-size", buffer_size,
+			 NULL);
+	  }
+
+	  list = list->next;
+	}
+
+	g_list_free(start_list);
+      }
+
+      if(machine->bridge != NULL){
+	g_object_set(machine->bridge,
+		     "buffer-size", buffer_size,
+		     NULL);
+      }
     }
     break;
   case PROP_FORMAT:
     {
+      GList *start_list, *list;
+      
       guint format, old_format;
       
       format = g_value_get_uint(value);
@@ -624,6 +711,47 @@ ags_machine_set_property(GObject *gobject,
 
       ags_machine_format_changed(machine,
 				 format, old_format);
+
+
+      if(machine->output != NULL){
+	list = 
+	  start_list = gtk_container_get_children(GTK_CONTAINER(machine->output));
+
+	while(list != NULL){
+	  if(AGS_IS_PAD(list->data)){
+	    g_object_set(list->data,
+			 "format", format,
+			 NULL);
+	  }
+
+	  list = list->next;
+	}
+
+	g_list_free(start_list);
+      }
+
+      if(machine->input != NULL){
+	list = 
+	  start_list = gtk_container_get_children(GTK_CONTAINER(machine->input));
+
+	while(list != NULL){
+	  if(AGS_IS_PAD(list->data)){
+	    g_object_set(list->data,
+			 "format", format,
+			 NULL);
+	  }
+
+	  list = list->next;
+	}
+
+	g_list_free(start_list);
+      }
+
+      if(machine->bridge != NULL){
+	g_object_set(machine->bridge,
+		     "format", format,
+		     NULL);
+      }
     }
     break;
   case PROP_AUDIO:
@@ -2584,7 +2712,7 @@ ags_machine_message_monitor_timeout(AgsMachine *machine)
 	if(!xmlStrncmp(xmlGetProp(root_node,
 				  "method"),
 		       "AgsAudio::set-samplerate",
-		       29)){
+		       25)){
 	  guint samplerate;
 	  gint position;
 	  
@@ -2599,7 +2727,7 @@ ags_machine_message_monitor_timeout(AgsMachine *machine)
 	}else if(!xmlStrncmp(xmlGetProp(root_node,
 				  "method"),
 		       "AgsAudio::set-buffer-size",
-		       29)){
+		       26)){
 	  guint buffer_size;
 	  gint position;
 	  
@@ -2614,7 +2742,7 @@ ags_machine_message_monitor_timeout(AgsMachine *machine)
 	}else if(!xmlStrncmp(xmlGetProp(root_node,
 				  "method"),
 		       "AgsAudio::set-format",
-		       29)){
+		       21)){
 	  guint format;
 	  gint position;
 	  
