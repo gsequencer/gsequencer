@@ -60,8 +60,9 @@ xmlNode* ags_mixer_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin);
  */
 
 static gpointer ags_mixer_parent_class = NULL;
-
 static AgsConnectableInterface *ags_mixer_parent_connectable_interface;
+
+extern GHashTable *ags_machine_generic_output_message_monitor;
 
 GType
 ags_mixer_get_type(void)
@@ -177,6 +178,16 @@ ags_mixer_init(AgsMixer *mixer)
   mixer->name = NULL;
   mixer->xml_type = "ags-mixer";
 
+  /* output - discard messages */
+  g_hash_table_insert(ags_machine_generic_output_message_monitor,
+		      mixer,
+		      ags_machine_generic_output_message_monitor_timeout);
+
+  g_timeout_add(1000 / 30,
+		(GSourceFunc) ags_machine_generic_output_message_monitor_timeout,
+		(gpointer) mixer);
+  
+  /* input */
   mixer->input_pad = (GtkHBox *) gtk_hbox_new(FALSE, 0);
   AGS_MACHINE(mixer)->input = (GtkContainer *) mixer->input_pad;
   gtk_container_add((GtkContainer*) (gtk_container_get_children((GtkContainer *) mixer))->data, (GtkWidget *) mixer->input_pad);

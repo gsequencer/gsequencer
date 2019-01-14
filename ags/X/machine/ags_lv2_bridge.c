@@ -96,6 +96,9 @@ static gpointer ags_lv2_bridge_parent_class = NULL;
 static AgsConnectableInterface* ags_lv2_bridge_parent_connectable_interface;
 static AgsPluginInterface* ags_lv2_bridge_parent_plugin_interface;
 
+extern GHashTable *ags_machine_generic_output_message_monitor;
+extern GHashTable *ags_machine_generic_input_message_monitor;
+
 GHashTable *ags_lv2_bridge_lv2ui_handle = NULL;
 GHashTable *ags_lv2_bridge_lv2ui_idle = NULL;
 
@@ -448,6 +451,24 @@ ags_lv2_bridge_init(AgsLv2Bridge *lv2_bridge)
 			(GtkWidget *) item);
 
   gtk_widget_show_all((GtkWidget *) lv2_bridge->lv2_menu);
+
+  /* output - discard messages */
+  g_hash_table_insert(ags_machine_generic_output_message_monitor,
+		      lv2_bridge,
+		      ags_machine_generic_output_message_monitor_timeout);
+
+  g_timeout_add(1000 / 30,
+		(GSourceFunc) ags_machine_generic_output_message_monitor_timeout,
+		(gpointer) lv2_bridge);
+
+  /* input - discard messages */
+  g_hash_table_insert(ags_machine_generic_input_message_monitor,
+		      lv2_bridge,
+		      ags_machine_generic_input_message_monitor_timeout);
+
+  g_timeout_add(1000 / 30,
+		(GSourceFunc) ags_machine_generic_input_message_monitor_timeout,
+		(gpointer) lv2_bridge);
 }
 
 void

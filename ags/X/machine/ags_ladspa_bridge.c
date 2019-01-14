@@ -80,6 +80,9 @@ static gpointer ags_ladspa_bridge_parent_class = NULL;
 static AgsConnectableInterface* ags_ladspa_bridge_parent_connectable_interface;
 static AgsPluginInterface* ags_ladspa_bridge_parent_plugin_interface;
 
+extern GHashTable *ags_machine_generic_output_message_monitor;
+extern GHashTable *ags_machine_generic_input_message_monitor;
+
 GType
 ags_ladspa_bridge_get_type(void)
 {
@@ -281,6 +284,24 @@ ags_ladspa_bridge_init(AgsLadspaBridge *ladspa_bridge)
 		   0, 1,
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
+
+  /* output - discard messages */
+  g_hash_table_insert(ags_machine_generic_output_message_monitor,
+		      ladspa_bridge,
+		      ags_machine_generic_output_message_monitor_timeout);
+
+  g_timeout_add(1000 / 30,
+		(GSourceFunc) ags_machine_generic_output_message_monitor_timeout,
+		(gpointer) ladspa_bridge);
+
+  /* input - discard messages */
+  g_hash_table_insert(ags_machine_generic_input_message_monitor,
+		      ladspa_bridge,
+		      ags_machine_generic_input_message_monitor_timeout);
+
+  g_timeout_add(1000 / 30,
+		(GSourceFunc) ags_machine_generic_input_message_monitor_timeout,
+		(gpointer) ladspa_bridge);
 }
 
 void

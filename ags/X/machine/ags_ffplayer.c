@@ -78,6 +78,8 @@ void ags_ffplayer_paint(AgsFFPlayer *ffplayer);
 static gpointer ags_ffplayer_parent_class = NULL;
 static AgsConnectableInterface *ags_ffplayer_parent_connectable_interface;
 
+extern GHashTable *ags_machine_generic_output_message_monitor;
+
 GtkStyle *ffplayer_style = NULL;
 
 GType
@@ -363,6 +365,15 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
 		     (GtkWidget *) AGS_MACHINE(ffplayer)->bridge,
 		     FALSE, FALSE,
 		     0);
+
+  /* output - discard messages */
+  g_hash_table_insert(ags_machine_generic_output_message_monitor,
+		      ffplayer,
+		      ags_machine_generic_output_message_monitor_timeout);
+
+  g_timeout_add(1000 / 30,
+		(GSourceFunc) ags_machine_generic_output_message_monitor_timeout,
+		(gpointer) ffplayer);
 }
 
 void

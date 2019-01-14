@@ -81,8 +81,10 @@ void ags_syncsynth_output_map_recall(AgsSyncsynth *syncsynth,
  */
 
 static gpointer ags_syncsynth_parent_class = NULL;
-
 static AgsConnectableInterface *ags_syncsynth_parent_connectable_interface;
+
+extern GHashTable *ags_machine_generic_output_message_monitor;
+extern GHashTable *ags_machine_generic_input_message_monitor;
 
 GType
 ags_syncsynth_get_type(void)
@@ -349,6 +351,24 @@ ags_syncsynth_init(AgsSyncsynth *syncsynth)
 		   2, 3,
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
+
+  /* output - discard messages */
+  g_hash_table_insert(ags_machine_generic_output_message_monitor,
+		      syncsynth,
+		      ags_machine_generic_output_message_monitor_timeout);
+
+  g_timeout_add(1000 / 30,
+		(GSourceFunc) ags_machine_generic_output_message_monitor_timeout,
+		(gpointer) syncsynth);
+
+  /* input - discard messages */
+  g_hash_table_insert(ags_machine_generic_input_message_monitor,
+		      syncsynth,
+		      ags_machine_generic_input_message_monitor_timeout);
+
+  g_timeout_add(1000 / 30,
+		(GSourceFunc) ags_machine_generic_input_message_monitor_timeout,
+		(gpointer) syncsynth);
 }
 
 void

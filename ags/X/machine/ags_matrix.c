@@ -73,8 +73,10 @@ void ags_matrix_resize_pads(AgsMachine *machine, GType type,
  */
 
 static gpointer ags_matrix_parent_class = NULL;
-
 static AgsConnectableInterface *ags_matrix_parent_connectable_interface;
+
+extern GHashTable *ags_machine_generic_output_message_monitor;
+extern GHashTable *ags_machine_generic_input_message_monitor;
 
 const char *AGS_MATRIX_INDEX = "AgsMatrixIndex";
 
@@ -327,6 +329,24 @@ ags_matrix_init(AgsMatrix *matrix)
 		     (GtkWidget *) matrix->loop_button,
 		     FALSE, FALSE,
 		     0);
+
+  /* output - discard messages */
+  g_hash_table_insert(ags_machine_generic_output_message_monitor,
+		      matrix,
+		      ags_machine_generic_output_message_monitor_timeout);
+
+  g_timeout_add(1000 / 30,
+		(GSourceFunc) ags_machine_generic_output_message_monitor_timeout,
+		(gpointer) matrix);
+
+  /* input - discard messages */
+  g_hash_table_insert(ags_machine_generic_input_message_monitor,
+		      matrix,
+		      ags_machine_generic_input_message_monitor_timeout);
+
+  g_timeout_add(1000 / 30,
+		(GSourceFunc) ags_machine_generic_input_message_monitor_timeout,
+		(gpointer) matrix);
 }
 
 void

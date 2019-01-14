@@ -229,6 +229,9 @@ void ags_machine_popup_add_connection_options(AgsMachine *machine, guint connect
 
 gboolean ags_machine_message_monitor_timeout(AgsMachine *machine);
 
+gboolean ags_machine_generic_output_message_monitor_timeout(AgsMachine *machine);
+gboolean ags_machine_generic_input_message_monitor_timeout(AgsMachine *machine);
+
 AgsMachine* ags_machine_new(GObject *soundcard);
 
 #endif /*__AGS_MACHINE_H__*/

@@ -104,6 +104,8 @@ static gpointer ags_machine_parent_class = NULL;
 static guint machine_signals[LAST_SIGNAL];
 
 GHashTable *ags_machine_message_monitor = NULL;
+GHashTable *ags_machine_generic_output_message_monitor = NULL;
+GHashTable *ags_machine_generic_input_message_monitor = NULL;
 
 GType
 ags_machine_get_type(void)
@@ -478,6 +480,24 @@ ags_machine_init(AgsMachine *machine)
 							NULL);
   }
 
+  if(ags_machine_generic_output_message_monitor == NULL){
+    ags_machine_generic_output_message_monitor = g_hash_table_new_full(g_direct_hash, g_direct_equal,
+								       NULL,
+								       NULL);
+  }
+
+  if(ags_machine_generic_input_message_monitor == NULL){
+    ags_machine_generic_input_message_monitor = g_hash_table_new_full(g_direct_hash, g_direct_equal,
+								      NULL,
+								      NULL);
+  }
+
+  if(ags_machine_message_monitor == NULL){
+    ags_machine_message_monitor = g_hash_table_new_full(g_direct_hash, g_direct_equal,
+							NULL,
+							NULL);
+  }
+  
   g_hash_table_insert(ags_machine_message_monitor,
 		      machine,
 		      ags_machine_message_monitor_timeout);
@@ -2680,7 +2700,7 @@ ags_machine_copy_pattern(AgsMachine *machine)
  *
  * Monitor messages.
  *
- * Returns: %TRUE if proceed with redraw, otherwise %FALSE
+ * Returns: %TRUE if proceed with monitor, otherwise %FALSE
  *
  * Since: 2.0.0
  */
@@ -2830,6 +2850,118 @@ ags_machine_message_monitor_timeout(AgsMachine *machine)
     g_list_free_full(message_start,
 		     (GDestroyNotify) ags_message_envelope_free);
 
+    return(TRUE);
+  }else{
+    return(FALSE);
+  }
+}
+
+/**
+ * ags_machine_generic_output_message_monitor_timeout:
+ * @machine: the #AgsMachine
+ *
+ * Monitor messages and discard them.
+ *
+ * Returns: %TRUE if proceed with monitor, otherwise %FALSE
+ *
+ * Since: 2.1.35
+ */
+gboolean
+ags_machine_generic_output_message_monitor_timeout(AgsMachine *machine)
+{
+  if(g_hash_table_lookup(ags_machine_generic_output_message_monitor,
+			 machine) != NULL){
+    AgsMessageDelivery *message_delivery;
+
+    AgsChannel *output;
+    
+    GList *message_start, *message;
+    
+    /* retrieve message */
+    message_delivery = ags_message_delivery_get_instance();
+
+    g_object_get(machine->audio,
+		 "output", &output,
+		 NULL);
+
+    while(output != NULL){
+      message_start = 
+	message = ags_message_delivery_find_sender(message_delivery,
+						   "libags-audio",
+						   (GObject *) output);
+
+      while(message != NULL){
+	ags_message_delivery_remove_message(message_delivery,
+					    "libags-audio",
+					    message->data);
+
+	message = message->next;
+      }
+      
+      g_list_free_full(message_start,
+		       (GDestroyNotify) ags_message_envelope_free);
+      
+      g_object_get(output,
+		   "next", &output,
+		   NULL);
+    }
+    
+    return(TRUE);
+  }else{
+    return(FALSE);
+  }
+}
+
+/**
+ * ags_machine_generic_input_message_monitor_timeout:
+ * @machine: the #AgsMachine
+ *
+ * Monitor messages and discard them.
+ *
+ * Returns: %TRUE if proceed with monitor, otherwise %FALSE
+ *
+ * Since: 2.1.35
+ */
+gboolean
+ags_machine_generic_input_message_monitor_timeout(AgsMachine *machine)
+{
+  if(g_hash_table_lookup(ags_machine_generic_input_message_monitor,
+			 machine) != NULL){
+    AgsMessageDelivery *message_delivery;
+
+    AgsChannel *input;
+    
+    GList *message_start, *message;
+    
+    /* retrieve message */
+    message_delivery = ags_message_delivery_get_instance();
+    
+    g_object_get(machine->audio,
+		 "input", &input,
+		 NULL);
+
+    while(input != NULL){
+      message_start = 
+	message = ags_message_delivery_find_sender(message_delivery,
+						   "libags-audio",
+						   (GObject *) input);
+
+      while(message != NULL){
+	ags_message_delivery_remove_message(message_delivery,
+					    "libags-audio",
+					    message->data);
+
+	message = message->next;
+      }
+      
+      g_list_free_full(message_start,
+		       (GDestroyNotify) ags_message_envelope_free);
+      
+      g_object_get(input,
+		   "next", &input,
+		   NULL);
+    }
+    
     return(TRUE);
   }else{
     return(FALSE);

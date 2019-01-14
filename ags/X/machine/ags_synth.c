@@ -74,8 +74,9 @@ xmlNode* ags_synth_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin);
  */
 
 static gpointer ags_synth_parent_class = NULL;
-
 static AgsConnectableInterface *ags_synth_parent_connectable_interface;
+
+extern GHashTable *ags_machine_generic_output_message_monitor;
 
 GType
 ags_synth_get_type(void)
@@ -296,6 +297,15 @@ ags_synth_init(AgsSynth *synth)
 		   2, 3,
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
+
+  /* output - discard messages */
+  g_hash_table_insert(ags_machine_generic_output_message_monitor,
+		      synth,
+		      ags_machine_generic_output_message_monitor_timeout);
+
+  g_timeout_add(1000 / 30,
+		(GSourceFunc) ags_machine_generic_output_message_monitor_timeout,
+		(gpointer) synth);
 }
 
 void

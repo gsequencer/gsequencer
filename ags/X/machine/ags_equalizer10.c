@@ -54,8 +54,10 @@ xmlNode* ags_equalizer10_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin
  */
 
 static gpointer ags_equalizer10_parent_class = NULL;
-
 static AgsConnectableInterface *ags_equalizer10_parent_connectable_interface;
+
+extern GHashTable *ags_machine_generic_output_message_monitor;
+extern GHashTable *ags_machine_generic_input_message_monitor;
 
 GType
 ags_equalizer10_get_type(void)
@@ -497,6 +499,24 @@ ags_equalizer10_init(AgsEqualizer10 *equalizer10)
 
   equalizer10->pressure_play_port = NULL;
   equalizer10->pressure_recall_port = NULL;
+
+  /* output - discard messages */
+  g_hash_table_insert(ags_machine_generic_output_message_monitor,
+		      equalizer10,
+		      ags_machine_generic_output_message_monitor_timeout);
+
+  g_timeout_add(1000 / 30,
+		(GSourceFunc) ags_machine_generic_output_message_monitor_timeout,
+		(gpointer) equalizer10);
+
+  /* input - discard messages */
+  g_hash_table_insert(ags_machine_generic_input_message_monitor,
+		      equalizer10,
+		      ags_machine_generic_input_message_monitor_timeout);
+
+  g_timeout_add(1000 / 30,
+		(GSourceFunc) ags_machine_generic_input_message_monitor_timeout,
+		(gpointer) equalizer10);
 }
 
 void
