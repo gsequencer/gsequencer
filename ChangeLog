@@ -4,6 +4,7 @@ ags (2.1.35)
 	* implemented AgsMachine signals ::samplerate-changed, ::buffer-size-changed and ::format-changed
 	* implemented AgsPad signals ::samplerate-changed, ::buffer-size-changed and ::format-changed
 	* implemented AgsLine signals ::samplerate-changed, ::buffer-size-changed and ::format-changed
+	* implemented AgsEffectBridge signals ::samplerate-changed, ::buffer-size-changed and ::format-changed
 	* implemented AgsEffectPad signals ::samplerate-changed, ::buffer-size-changed and ::format-changed
 	* implemented AgsEffectLine signals ::samplerate-changed, ::buffer-size-changed and ::format-changed
 	* implemented emitting message of AgsAudio's samplerate, buffer-size and format change
