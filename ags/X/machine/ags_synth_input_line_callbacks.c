@@ -21,6 +21,35 @@
 #include <ags/X/machine/ags_synth.h>
 
 void
+ags_synth_input_line_samplerate_changed_callback(AgsLine *line,
+						 guint samplerate, guint old_samplerate,
+						 gpointer user_data)
+{
+  AgsOscillator *oscillator;
+
+  guint i;
+  
+  oscillator = AGS_SYNTH_INPUT_LINE(line)->oscillator;
+  
+  gtk_spin_button_set_value(oscillator->attack,
+			    samplerate * (gtk_spin_button_get_value(oscillator->attack) / old_samplerate));
+
+  gtk_spin_button_set_value(oscillator->frame_count,
+			    samplerate * (gtk_spin_button_get_value(oscillator->frame_count) / old_samplerate));
+  
+  gtk_spin_button_set_value(oscillator->phase,
+			    samplerate * (gtk_spin_button_get_value(oscillator->phase) / old_samplerate));
+
+  for(i = 0; i < oscillator->sync_point_count; i++){
+    gtk_spin_button_set_value(oscillator->sync_point[i * 2],
+			      samplerate * (gtk_spin_button_get_value(oscillator->sync_point[i * 2]) / old_samplerate));
+			      
+    gtk_spin_button_set_value(oscillator->sync_point[i * 2 + 1],
+			      samplerate * (gtk_spin_button_get_value(oscillator->sync_point[i * 2 + 1]) / old_samplerate));
+  }
+}
+
+void
 ags_synth_input_line_oscillator_control_changed_callback(AgsOscillator *oscillator,
 							 AgsSynthInputLine *synth_input_line)
 {

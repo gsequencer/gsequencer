@@ -720,6 +720,7 @@ ags_synth_generator_set_samplerate(AgsSynthGenerator *synth_generator, guint sam
 
   for(i = 0; i < synth_generator->sync_point_count; i++){
     synth_generator->sync_point[i][0][0] = samplerate * (synth_generator->sync_point[i][0][0] / old_samplerate);
+    synth_generator->sync_point[i][0][1] = samplerate * (synth_generator->sync_point[i][0][1] / old_samplerate);
   }
 }
 

@@ -29,6 +29,10 @@
 
 void ags_syncsynth_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsSyncsynth *syncsynth);
 
+void ags_syncsynth_samplerate_changed_callback(AgsMachine *machine,
+					       guint samplerate, guint old_samplerate,
+					       gpointer user_data);
+
 void ags_syncsynth_auto_update_callback(GtkToggleButton *toggle, AgsSyncsynth *syncsynth);
 void ags_syncsynth_update_callback(GtkButton *button, AgsSyncsynth *syncsynth);
 

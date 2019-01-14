@@ -55,6 +55,63 @@ ags_syncsynth_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsS
 }
 
 void
+ags_syncsynth_samplerate_changed_callback(AgsMachine *machine,
+					  guint samplerate, guint old_samplerate,
+					  gpointer user_data)
+{
+  GList *start_list, *list;
+
+  list = 
+    start_list = gtk_container_get_children(AGS_SYNCSYNTH(machine)->oscillator);
+
+  while(list != NULL){
+    AgsOscillator *oscillator;
+
+    GList *start_child, *child;
+    
+    guint i;
+
+    start_child = gtk_container_get_children(list->data);
+
+    child = ags_list_util_find_type(start_child,
+				    AGS_TYPE_OSCILLATOR);
+
+    if(child != NULL){
+      oscillator = child->data;
+  
+      gtk_spin_button_set_value(oscillator->attack,
+				samplerate * (gtk_spin_button_get_value(oscillator->attack) / old_samplerate));
+
+      gtk_spin_button_set_value(oscillator->frame_count,
+				samplerate * (gtk_spin_button_get_value(oscillator->frame_count) / old_samplerate));
+  
+      gtk_spin_button_set_value(oscillator->phase,
+				samplerate * (gtk_spin_button_get_value(oscillator->phase) / old_samplerate));
+
+      for(i = 0; i < oscillator->sync_point_count; i++){
+	gtk_spin_button_set_value(oscillator->sync_point[i * 2],
+				  samplerate * (gtk_spin_button_get_value(oscillator->sync_point[i * 2]) / old_samplerate));
+			      
+	gtk_spin_button_set_value(oscillator->sync_point[i * 2 + 1],
+				  samplerate * (gtk_spin_button_get_value(oscillator->sync_point[i * 2 + 1]) / old_samplerate));
+      }
+    }
+
+    g_list_free(start_child);
+    
+    list = list->next;
+  }
+
+  g_list_free(start_list);
+  
+  gtk_spin_button_set_value(AGS_SYNCSYNTH(machine)->loop_start,
+			    samplerate * (gtk_spin_button_get_value(AGS_SYNCSYNTH(machine)->loop_start) / old_samplerate));
+
+  gtk_spin_button_set_value(AGS_SYNCSYNTH(machine)->loop_end,
+			    samplerate * (gtk_spin_button_get_value(AGS_SYNCSYNTH(machine)->loop_end) / old_samplerate));
+}
+
+void
 ags_syncsynth_auto_update_callback(GtkToggleButton *toggle, AgsSyncsynth *syncsynth)
 {
   if(gtk_toggle_button_get_active(toggle)){

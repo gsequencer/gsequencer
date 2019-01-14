@@ -189,7 +189,7 @@ ags_syncsynth_init(AgsSyncsynth *syncsynth)
 
   g_signal_connect_after((GObject *) syncsynth, "parent_set",
 			 G_CALLBACK(ags_syncsynth_parent_set_callback), (gpointer) syncsynth);
-
+  
   audio = AGS_MACHINE(syncsynth)->audio;
   ags_audio_set_flags(audio, (AGS_AUDIO_SYNC |
 			      AGS_AUDIO_ASYNC |
@@ -226,6 +226,9 @@ ags_syncsynth_init(AgsSyncsynth *syncsynth)
   					   (AGS_MACHINE_POPUP_MIDI_DIALOG));
 
   /* audio resize */
+  g_signal_connect(syncsynth, "samplerate-changed",
+		   G_CALLBACK(ags_syncsynth_samplerate_changed_callback), NULL);
+
   g_signal_connect_after(G_OBJECT(syncsynth), "resize-audio-channels",
 			 G_CALLBACK(ags_syncsynth_resize_audio_channels), NULL);
 

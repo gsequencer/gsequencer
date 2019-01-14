@@ -11,7 +11,7 @@ ags (2.1.35)
 	* implemented proper resample of AgsAudioSignal as adjusting buffer size and samplerate
 	* implemented proper resample of AgsWave as adjusting buffer size and samplerate
 	* fixed applying samplerate, buffer size and format to AgsSynthGenerator
-	* TODO:JK: fixed update AgsOscillator after modifying samplerate
+	* fixed update AgsSynth and AgsSyncsynth after modifying samplerate
 	* fixed adjust loop information to samplerate
 	* fixed check if EBADFD available in ags_osc_client.c and ags_osc_connection.c
 

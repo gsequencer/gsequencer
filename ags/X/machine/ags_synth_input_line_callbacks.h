@@ -27,6 +27,10 @@
 
 #include <ags/X/machine/ags_synth_input_line.h>
 
+void ags_synth_input_line_samplerate_changed_callback(AgsLine *line,
+						      guint samplerate, guint old_samplerate,
+						      gpointer user_data);
+
 void ags_synth_input_line_oscillator_control_changed_callback(AgsOscillator *oscillator,
 							      AgsSynthInputLine *synth_input_line);
 

@@ -173,6 +173,9 @@ ags_synth_input_line_init(AgsSynthInputLine *synth_input_line)
 		   GTK_WIDGET(oscillator),
 		   0, 0,
 		   1, 1);
+
+  g_signal_connect((GObject *) synth_input_line, "samplerate-changed",
+		   G_CALLBACK(ags_synth_input_line_samplerate_changed_callback), NULL);
 }
 
 void
