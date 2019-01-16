@@ -14,7 +14,7 @@
     It features a step sequencer, piano roll, automation and wave-form editor.</p>
   </description>
   
-  <launchable type="desktop-id">gsequencer</launchable>
+  <launchable type="desktop-id">gsequencer.desktop</launchable>
 
   <screenshots>
     <screenshot type="default">

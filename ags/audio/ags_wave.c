@@ -866,7 +866,7 @@ ags_wave_set_samplerate(AgsWave *wave,
   }
 
   resampled_data = ags_audio_buffer_util_resample(data, 1,
-						  format, old_samplerate,
+						  ags_audio_buffer_util_format_from_soundcard(format), old_samplerate,
 						  buffer_length * buffer_size,
 						  samplerate);
 
@@ -2858,7 +2858,7 @@ ags_wave_insert_native_level_from_clipboard(AgsWave *wave,
 
 	    if(samplerate_val != wave_samplerate){
 	      target_data = ags_audio_buffer_util_resample(clipboard_data, 1,
-							   format_val, samplerate_val,
+							   ags_audio_buffer_util_format_from_soundcard(format_val), samplerate_val,
 							   buffer_size_val,
 							   wave_samplerate);
 	      target_frame_count = ceil((double) frame_count / (double) samplerate_val * (double) wave_samplerate);
@@ -2931,7 +2931,7 @@ ags_wave_insert_native_level_from_clipboard(AgsWave *wave,
 	      
 	      if(samplerate_val != wave_samplerate){
 		target_data = ags_audio_buffer_util_resample(clipboard_data, 1,
-							     format_val, samplerate_val,
+							     ags_audio_buffer_util_format_from_soundcard(format_val), samplerate_val,
 							     buffer_size_val,
 							     wave_samplerate);
 	      

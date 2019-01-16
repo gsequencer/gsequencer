@@ -272,7 +272,7 @@ ags_osc_buffer_util_get_string(unsigned char *buffer,
   gchar *tmp;
   unsigned char *offset;
 
-  gint64 count;
+  gsize count;
   
   if(buffer == NULL){
     return;

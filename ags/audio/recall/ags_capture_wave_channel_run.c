@@ -89,10 +89,20 @@ ags_capture_wave_channel_run_get_type()
       (GInstanceInitFunc) ags_capture_wave_channel_run_init,
     };
 
+    static const GInterfaceInfo ags_seekable_interface_info = {
+      (GInterfaceInitFunc) ags_capture_wave_channel_run_seekable_interface_init,
+      NULL, /* interface_finalize */
+      NULL, /* interface_data */
+    };
+
     ags_type_capture_wave_channel_run = g_type_register_static(AGS_TYPE_RECALL_CHANNEL_RUN,
 							       "AgsCaptureWaveChannelRun",
 							       &ags_capture_wave_channel_run_info,
 							       0);
+
+    g_type_add_interface_static(ags_type_capture_wave_channel_run,
+				AGS_TYPE_SEEKABLE,
+				&ags_seekable_interface_info);
 
     g_once_init_leave(&g_define_type_id__volatile, ags_type_capture_wave_channel_run);
   }
@@ -142,6 +152,12 @@ ags_capture_wave_channel_run_class_init(AgsCaptureWaveChannelRunClass *capture_w
   recall = (AgsRecallClass *) capture_wave_channel_run;
 
   recall->run_pre = ags_capture_wave_channel_run_run_pre;
+}
+
+void
+ags_capture_wave_channel_run_seekable_interface_init(AgsSeekableInterface *seekable)
+{
+  seekable->seek = ags_capture_wave_channel_run_seek;
 }
 
 void

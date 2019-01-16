@@ -1354,56 +1354,94 @@ ags_recall_container_find(GList *recall_container,
   }else if(g_type_is_a(gtype, AGS_TYPE_RECALL_CHANNEL_RUN)){
     mode = 3;
   }else{
-    g_message("ags_recall_container_find: invalid type\n");
+    g_message("ags_recall_container_find: invalid type");
+
     return(NULL);
   }
-
-  g_message("mode = %d", mode);
   
   while(recall_container != NULL){
+    GType *current_gtype;
+    
     current = AGS_RECALL_CONTAINER(recall_container->data);
 
     if(mode == 0){
+      g_object_get(current,
+		   "recall-audio-type", &current_gtype,
+		   NULL);
+      
+      if((AGS_RECALL_CONTAINER_FIND_TYPE & find_flags) != 0 && current_gtype == gtype){
+	break;
+      }
+
       recall = ags_recall_container_get_recall_audio(current);
     }else if(mode == 1){
       GList *list;
 
+      g_object_get(current,
+		   "recall-audio-run-type", &current_gtype,
+		   NULL);
+      
+      if((AGS_RECALL_CONTAINER_FIND_TYPE & find_flags) != 0 && current_gtype == gtype){
+	break;
+      }
+
       list = ags_recall_container_get_recall_audio_run(current);
 	
-      if(list == NULL)
+      if(list == NULL){
 	recall = NULL;
-      else
+      }else{
 	recall = AGS_RECALL(list->data);
+      }
     }else if(mode == 2){
       GList *list;
 
+      g_object_get(current,
+		   "recall-channel-type", &current_gtype,
+		   NULL);
+      
+      if((AGS_RECALL_CONTAINER_FIND_TYPE & find_flags) != 0 && current_gtype == gtype){
+	break;
+      }
+
       list = ags_recall_container_get_recall_channel(current);
 
-      if(list == NULL)
+      if(list == NULL){
 	recall = NULL;
-      else
+      }else{
 	recall = AGS_RECALL(list->data);
+      }
     }else if(mode == 3){
       GList *list;
 
+      g_object_get(current,
+		   "recall-channel-run-type", &current_gtype,
+		   NULL);
+      
+      if((AGS_RECALL_CONTAINER_FIND_TYPE & find_flags) != 0 && current_gtype == gtype){
+	break;
+      }
+
       list = ags_recall_container_get_recall_channel_run(current);
 
-      if(list == NULL)
+      if(list == NULL){
 	recall = NULL;
-      else
+      }else{
 	recall = AGS_RECALL(list->data);
+      }
     }
    
-    if(recall != NULL){      
-      if((AGS_RECALL_CONTAINER_FIND_TYPE & find_flags) != 0 && G_OBJECT_TYPE(recall) == gtype){
+    if(recall != NULL){
+      AgsRecallID *current_recall_id;
+            
+      if((AGS_RECALL_CONTAINER_FIND_TEMPLATE & find_flags) != 0 && ags_recall_test_flags(recall, AGS_RECALL_TEMPLATE)){
 	break;
       }
+
+      g_object_get(recall,
+		   "recall-id", &current_recall_id,
+		   NULL);
       
-      if((AGS_RECALL_CONTAINER_FIND_TEMPLATE & find_flags) != 0 && (AGS_RECALL_TEMPLATE & (recall->flags)) != 0){
-	break;
-      }
-      
-      if((AGS_RECALL_CONTAINER_FIND_RECALL_ID & find_flags) != 0 && (recall->recall_id != NULL && recall->recall_id == recall_id)){
+      if((AGS_RECALL_CONTAINER_FIND_RECALL_ID & find_flags) != 0 && (current_recall_id != NULL && current_recall_id == recall_id)){
 	break;
       }
     }
