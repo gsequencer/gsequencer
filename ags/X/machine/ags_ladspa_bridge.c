@@ -419,6 +419,12 @@ ags_ladspa_bridge_finalize(GObject *gobject)
   AgsLadspaBridge *ladspa_bridge;
 
   ladspa_bridge = (AgsLadspaBridge *) gobject;
+
+  g_hash_table_remove(ags_machine_generic_output_message_monitor,
+		      gobject);
+
+  g_hash_table_remove(ags_machine_generic_input_message_monitor,
+		      gobject);
   
   g_free(ladspa_bridge->filename);
   g_free(ladspa_bridge->effect);

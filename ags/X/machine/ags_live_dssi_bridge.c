@@ -510,6 +510,12 @@ ags_live_dssi_bridge_finalize(GObject *gobject)
 
   live_dssi_bridge = (AgsLiveDssiBridge *) gobject;
   
+  g_hash_table_remove(ags_machine_generic_output_message_monitor,
+		      gobject);
+
+  g_hash_table_remove(ags_machine_generic_input_message_monitor,
+		      gobject);
+
   g_object_disconnect(G_OBJECT(live_dssi_bridge),
 		      "any_signal::resize-audio-channels",
 		      G_CALLBACK(ags_live_dssi_bridge_resize_audio_channels),

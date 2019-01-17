@@ -525,7 +525,13 @@ ags_equalizer10_finalize(GObject *gobject)
   AgsEqualizer10 *equalizer10;
 
   equalizer10 = (AgsEqualizer10 *) gobject;
-  
+
+  g_hash_table_remove(ags_machine_generic_output_message_monitor,
+		      gobject);
+
+  g_hash_table_remove(ags_machine_generic_input_message_monitor,
+		      gobject);
+
   g_list_free_full(equalizer10->peak_28hz_play_port,
 		   g_object_unref);
 

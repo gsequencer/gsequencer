@@ -227,7 +227,10 @@ ags_panel_init(AgsPanel *panel)
 
 static void
 ags_panel_finalize(GObject *gobject)
-{  
+{
+  g_hash_table_remove(ags_machine_generic_output_message_monitor,
+		      gobject);
+  
   /* call parent */
   G_OBJECT_CLASS(ags_panel_parent_class)->finalize(gobject);
 }

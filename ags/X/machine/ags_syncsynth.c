@@ -377,6 +377,13 @@ ags_syncsynth_init(AgsSyncsynth *syncsynth)
 void
 ags_syncsynth_finalize(GObject *gobject)
 {
+  g_hash_table_remove(ags_machine_generic_output_message_monitor,
+		      gobject);
+
+  g_hash_table_remove(ags_machine_generic_input_message_monitor,
+		      gobject);
+
+  /* call parent */
   G_OBJECT_CLASS(ags_syncsynth_parent_class)->finalize(gobject);
 }
 

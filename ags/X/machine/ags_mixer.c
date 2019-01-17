@@ -196,6 +196,10 @@ ags_mixer_init(AgsMixer *mixer)
 void
 ags_mixer_finalize(GObject *gobject)
 {
+  g_hash_table_remove(ags_machine_generic_output_message_monitor,
+		      gobject);
+
+  /* call parent */
   G_OBJECT_CLASS(ags_mixer_parent_class)->finalize(gobject);
 }
 

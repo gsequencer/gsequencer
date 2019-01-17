@@ -315,6 +315,12 @@ ags_spectrometer_finalize(GObject *gobject)
 
   spectrometer = (AgsSpectrometer *) gobject;
 
+  g_hash_table_remove(ags_machine_generic_output_message_monitor,
+		      gobject);
+
+  g_hash_table_remove(ags_machine_generic_input_message_monitor,
+		      gobject);
+
   g_hash_table_remove(ags_spectrometer_cartesian_queue_draw,
 		      spectrometer->cartesian);
   

@@ -1,3 +1,8 @@
+ags (2.1.37)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed remove message monitor on AgsMachine implementation finalize
+
 ags (2.1.36)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

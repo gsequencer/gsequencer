@@ -352,6 +352,13 @@ ags_matrix_init(AgsMatrix *matrix)
 void
 ags_matrix_finalize(GObject *gobject)
 {
+  g_hash_table_remove(ags_machine_generic_output_message_monitor,
+		      gobject);
+
+  g_hash_table_remove(ags_machine_generic_input_message_monitor,
+		      gobject);
+
+  /* call parent */
   G_OBJECT_CLASS(ags_matrix_parent_class)->finalize(gobject);
 }
 

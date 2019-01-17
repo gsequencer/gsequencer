@@ -710,6 +710,12 @@ ags_live_lv2_bridge_finalize(GObject *gobject)
   AgsLiveLv2Bridge *live_lv2_bridge;
 
   live_lv2_bridge = AGS_LIVE_LV2_BRIDGE(gobject);
+
+  g_hash_table_remove(ags_machine_generic_output_message_monitor,
+		      gobject);
+
+  g_hash_table_remove(ags_machine_generic_input_message_monitor,
+		      gobject);
   
   if(live_lv2_bridge->ui_handle != NULL){
     g_hash_table_remove(ags_live_lv2_bridge_lv2ui_handle,
@@ -718,7 +724,8 @@ ags_live_lv2_bridge_finalize(GObject *gobject)
     g_hash_table_remove(ags_live_lv2_bridge_lv2ui_idle,
 			live_lv2_bridge->ui_handle);
   }
-  
+
+  /* call parent */
   G_OBJECT_CLASS(ags_live_lv2_bridge_parent_class)->finalize(gobject);
 }
 
