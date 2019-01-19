@@ -2048,8 +2048,10 @@ midi2xml_LDADD = libags_audio.la libags_server.la libags_gui.la libags_thread.la
 
 midi2xml_SOURCES = ags/midi2xml_main.c
 
-ags-integration-test: 
+ags-integration-unit-test: 
 	$(MAKE) -C $(top_srcdir) -f unit-system-tests.mk ags-check-system-unit-tests
+
+ags-integration-functional-test: 
 	$(MAKE) -C $(top_srcdir) -f functional-system-tests.mk ags-check-system-functional-test
 
 libtool: $(LIBTOOL_DEPS)

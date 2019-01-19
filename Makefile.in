@@ -23805,8 +23805,10 @@ uninstall-man: uninstall-man1
 .PRECIOUS: Makefile
 
 
-ags-integration-test: 
+ags-integration-unit-test: 
 	$(MAKE) -C $(top_srcdir) -f unit-system-tests.mk ags-check-system-unit-tests
+
+ags-integration-functional-test: 
 	$(MAKE) -C $(top_srcdir) -f functional-system-tests.mk ags-check-system-functional-test
 
 libtool: $(LIBTOOL_DEPS)

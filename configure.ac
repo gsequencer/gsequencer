@@ -308,8 +308,6 @@ LIBAGS_GUI_SYMBOLS([])
 AM_EXTRA_RECURSIVE_TARGETS([ags-docs])
 AC_CONFIG_FILES([
 Makefile
-unit-system-tests.mk
-functional-system-tests.mk
 docs/reference/libags/Makefile
 docs/reference/libags-audio/Makefile
 docs/reference/libags-gui/Makefile
@@ -320,5 +318,9 @@ libags.pc
 libags_audio.pc
 libags_gui.pc
 libgsequencer.pc])
+
+#NOTE:JK: you may add the following files to AC_CONFIG_FILES
+# unit-system-tests.mk
+# functional-system-tests.mk
 
 AC_OUTPUT

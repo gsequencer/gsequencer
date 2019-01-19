@@ -8,6 +8,8 @@
 AUTOMAKE_OPTIONS = foreign
 SUBDIRS = po
 
+AM_CPPFLAGS = -std=gnu99 -include errno.h -DSRCDIR=\"$(srcdir)\"
+
 # unit system tests - libags
 libags_installcheck_programs = \
 	ags_check_system_buffer_util_test \
@@ -248,13 +250,13 @@ ags_check_system_config_test_LDADD = -lags -lags_thread -lags_server -lcunit -lr
 ags_check_system_connectable_test_SOURCES = ags/test/object/ags_connectable_test.c
 ags_check_system_connectable_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
 ags_check_system_connectable_test_LDFLAGS = -pthread $(LDFLAGS)
-ags_check_system_connectable_test_LDADD = libags_audio.la -lags -lags_thread -lags_server -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
+ags_check_system_connectable_test_LDADD = -lags -lags_thread -lags_server -lcunit -lags_audio -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
 
 # soundcard unit test
 ags_check_system_soundcard_test_SOURCES = ags/test/object/ags_soundcard_test.c
 ags_check_system_soundcard_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS)
 ags_check_system_soundcard_test_LDFLAGS = -pthread $(LDFLAGS)
-ags_check_system_soundcard_test_LDADD = libags_audio.la -lags -lags_thread -lags_server -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
+ags_check_system_soundcard_test_LDADD = -lags -lags_thread -lags_server -lags_audio -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS)
 
 # condition manager unit test
 ags_check_system_condition_manager_test_SOURCES = ags/test/thread/ags_condition_manager_test.c

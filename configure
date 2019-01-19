@@ -19167,8 +19167,12 @@ $as_echo "$as_me: generating libags_gui.sym" >&6;}
 
 
 
-ac_config_files="$ac_config_files Makefile unit-system-tests.mk functional-system-tests.mk docs/reference/libags/Makefile docs/reference/libags-audio/Makefile docs/reference/libags-gui/Makefile docs/reference/libgsequencer/Makefile m4/Makefile po/Makefile.in libags.pc libags_audio.pc libags_gui.pc libgsequencer.pc"
+ac_config_files="$ac_config_files Makefile docs/reference/libags/Makefile docs/reference/libags-audio/Makefile docs/reference/libags-gui/Makefile docs/reference/libgsequencer/Makefile m4/Makefile po/Makefile.in libags.pc libags_audio.pc libags_gui.pc libgsequencer.pc"
 
+
+#NOTE:JK: you may add the following files to AC_CONFIG_FILES
+# unit-system-tests.mk
+# functional-system-tests.mk
 
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
@@ -20227,8 +20231,6 @@ do
     "depfiles") CONFIG_COMMANDS="$CONFIG_COMMANDS depfiles" ;;
     "libtool") CONFIG_COMMANDS="$CONFIG_COMMANDS libtool" ;;
     "Makefile") CONFIG_FILES="$CONFIG_FILES Makefile" ;;
-    "unit-system-tests.mk") CONFIG_FILES="$CONFIG_FILES unit-system-tests.mk" ;;
-    "functional-system-tests.mk") CONFIG_FILES="$CONFIG_FILES functional-system-tests.mk" ;;
     "docs/reference/libags/Makefile") CONFIG_FILES="$CONFIG_FILES docs/reference/libags/Makefile" ;;
     "docs/reference/libags-audio/Makefile") CONFIG_FILES="$CONFIG_FILES docs/reference/libags-audio/Makefile" ;;
     "docs/reference/libags-gui/Makefile") CONFIG_FILES="$CONFIG_FILES docs/reference/libags-gui/Makefile" ;;
