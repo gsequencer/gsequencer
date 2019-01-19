@@ -765,13 +765,23 @@ ags_wave_set_samplerate(AgsWave *wave,
   
   pthread_mutex_unlock(ags_wave_get_class_mutex());
 
+  /* check resample */
+  pthread_mutex_lock(wave_mutex);
+
+  old_samplerate = wave->samplerate;
+
+  pthread_mutex_unlock(wave_mutex);
+
+  if(old_samplerate == samplerate){
+    return;
+  }
+
   /* apply samplerate */
   pthread_mutex_lock(wave_mutex);
 
   x = ags_timestamp_get_ags_offset(wave->timestamp);
 
   buffer_size = wave->buffer_size;
-  old_samplerate = wave->samplerate;
   format = wave->format;
   
   wave->samplerate = samplerate;
@@ -835,7 +845,7 @@ ags_wave_set_samplerate(AgsWave *wave,
     }
     break;
   default:
-    g_warning("ags_audio_signal_set_buffer_size() - unsupported format");
+    g_warning("ags_audio_signal_set_buffer_samplerate() - unsupported format");
   }
 
   list = start_list;
@@ -1002,10 +1012,19 @@ ags_wave_set_buffer_size(AgsWave *wave,
   
   pthread_mutex_unlock(ags_wave_get_class_mutex());
 
-  /* apply buffer size */
   pthread_mutex_lock(wave_mutex);
 
   old_buffer_size = wave->buffer_size;
+
+  pthread_mutex_unlock(wave_mutex);
+
+  if(buffer_size == old_buffer_size){
+    return;
+  }
+  
+  /* apply buffer size */
+  pthread_mutex_lock(wave_mutex);
+
   format = wave->format;
   
   wave->buffer_size = buffer_size;

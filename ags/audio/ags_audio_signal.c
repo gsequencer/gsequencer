@@ -2248,11 +2248,21 @@ ags_audio_signal_set_samplerate(AgsAudioSignal *audio_signal, guint samplerate)
   
   pthread_mutex_unlock(ags_audio_signal_get_class_mutex());
 
+  /* check resample */
+  pthread_mutex_lock(audio_signal_mutex);
+
+  old_samplerate = audio_signal->samplerate;
+
+  pthread_mutex_unlock(audio_signal_mutex);
+
+  if(old_samplerate == samplerate){
+    return;
+  }
+  
   /* set samplerate */
   pthread_mutex_lock(audio_signal_mutex);
 
   buffer_size = audio_signal->buffer_size;
-  old_samplerate = audio_signal->samplerate;
   format = audio_signal->format;
 
   audio_signal->samplerate = samplerate;
@@ -2428,10 +2438,20 @@ ags_audio_signal_set_buffer_size(AgsAudioSignal *audio_signal, guint buffer_size
   
   pthread_mutex_unlock(ags_audio_signal_get_class_mutex());
 
-  /* get some fields and set buffer size */
+  /* check buffer size */
   pthread_mutex_lock(audio_signal_mutex);
 
   old_buffer_size = audio_signal->buffer_size;
+
+  pthread_mutex_unlock(audio_signal_mutex);
+
+  if(old_buffer_size == buffer_size){
+    return;
+  }
+  
+  /* get some fields and set buffer size */
+  pthread_mutex_lock(audio_signal_mutex);
+
   format = audio_signal->format;
 
   audio_signal->buffer_size = buffer_size;
