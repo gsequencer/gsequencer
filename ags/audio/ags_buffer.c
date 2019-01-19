@@ -898,6 +898,91 @@ ags_buffer_duplicate(AgsBuffer *buffer)
 }
 
 /**
+ * ags_buffer_find_position:
+ * @buffer: the #GList-struct containing #AgsBuffer
+ * @x: the x-position to find
+ * 
+ * Find buffer with @x position in @buffer. This function
+ * bisectionates @buffer resulting in more constant computing
+ * time.
+ * 
+ * Returns: the matching #GList-struct, or %NULL if not found
+ * 
+ * Since: 2.1.38
+ */
+GList*
+ags_buffer_find_position(GList *buffer,
+			 guint64 x)
+{
+  GList *current_start, *current;
+
+  guint64 currrent_x;
+  guint length, position;
+  gboolean success;
+  
+  if(buffer == NULL){
+    return(NULL);
+  }
+
+  current = 
+    current_start = buffer;
+  
+  length = g_list_length(buffer);
+  position = length / 2;
+
+  success = FALSE;
+  
+  while(!success && current != NULL){
+    current = g_list_nth(current_start,
+			 position);
+
+    g_object_get(current->data,
+		 "x", &current_x,
+		 NULL);
+    
+    if(current_x == x){
+      success = TRUE;
+
+      break;
+    }
+
+    if(current_x < x){
+      current_start = current->next;
+    }else{
+      current = current_start;
+      
+      g_object_get(current->data,
+		   "x", &current_x,
+		   NULL);
+
+      if(current_x == x){
+	success = TRUE;
+
+	break;
+      }
+
+      if(current_x < x){
+	break;
+      }
+      
+      current_start = current->next;
+    }
+
+    if(position <= 1){
+      break;
+    }
+
+    position = position / 2;
+  }
+
+  if(success){
+    return(current);
+  }
+  
+  return(NULL);
+}
+
+/**
  * ags_buffer_new:
  *
  * Creates a new instance of #AgsBuffer

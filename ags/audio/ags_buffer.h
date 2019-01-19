@@ -94,6 +94,9 @@ gint ags_buffer_sort_func(gconstpointer a,
 
 AgsBuffer* ags_buffer_duplicate(AgsBuffer *buffer);
 
+GList* ags_buffer_find_position(GList *buffer,
+				guint64 x);
+
 AgsBuffer* ags_buffer_new();
 
 #endif /*__AGS_BUFFER_H__*/
