@@ -23964,6 +23964,7 @@ clean-local:
 	rm -f $(top_builddir)/docs/reference/libags-audio/Makefile
 	rm -f $(top_builddir)/docs/reference/libags-gui/Makefile
 	rm -f $(top_builddir)/docs/reference/libgsequencer/Makefile
+	rm -f $(top_builddir)/unit-system-tests.mk
 	rm -f $(top_builddir)/functional-system-tests.mk
 	rm -f docs/reference/libags-audio/libags_audio-decl-list.txt
 	rm -f docs/reference/libags-audio/libags_audio-decl.txt
