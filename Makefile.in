@@ -5853,7 +5853,8 @@ EXTRA_DIST = config.rpath COPYING.server COPYING.docs COPYING.stk-4.3 \
 	license-notice-gnu-agpl-3-0+-sym.txt \
 	license-notice-permissive-xml.txt libags.sym.in \
 	libags_thread.sym.in libags_server.sym.in libags_audio.sym.in \
-	libags_gui.sym.in functional-system-tests.mk.am \
+	libags_gui.sym.in unit-system-tests.mk.am \
+	unit-system-tests.mk.in functional-system-tests.mk.am \
 	functional-system-tests.mk.in \
 	docs/reference/libags/libags-sections.txt \
 	docs/reference/libags/libags.types \

@@ -2,6 +2,7 @@ ags (2.1.38)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* refactored ags_wave_find_point() to do bisect
+	* added  unit-system-tests.mk.am
 
 ags (2.1.37)
 

@@ -63,8 +63,8 @@ void ags_wave_test_insert_from_clipboard_extended();
 #define AGS_WAVE_TEST_IS_BUFFER_SELECTED_SELECTION_COUNT (128)
 
 #define AGS_WAVE_TEST_FIND_POINT_BUFFER_SIZE (1024)
-#define AGS_WAVE_TEST_FIND_POINT_COUNT (1024)
-#define AGS_WAVE_TEST_FIND_POINT_N_ATTEMPTS (128)
+#define AGS_WAVE_TEST_FIND_POINT_COUNT (1025)
+#define AGS_WAVE_TEST_FIND_POINT_N_ATTEMPTS (1024)
 
 #define AGS_WAVE_TEST_FIND_REGION_BUFFER_SIZE (1024)
 #define AGS_WAVE_TEST_FIND_REGION_COUNT (1024)
@@ -391,7 +391,8 @@ ags_wave_test_find_point()
 				 AGS_BUFFER(current->data)->x,
 				 FALSE);
     
-    if(buffer->x != AGS_BUFFER(current->data)->x){
+    if(buffer == NULL ||
+       buffer->x != AGS_BUFFER(current->data)->x){
       success = FALSE;
 
       break;

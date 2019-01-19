@@ -92,6 +92,8 @@ EXTRA_DIST += \
 	libags_gui.sym.in
 
 EXTRA_DIST += \
+	unit-system-tests.mk.am \
+	unit-system-tests.mk.in \
 	functional-system-tests.mk.am \
 	functional-system-tests.mk.in
 

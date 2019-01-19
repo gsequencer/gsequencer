@@ -1639,14 +1639,8 @@ ags_wave_find_point(AgsWave *wave,
 		 NULL);
 
     if(current_start_x == x){
-      retval = current_start;
+      retval = current_start->data;
 
-      break;
-    }else if(x < current_start_x){
-      break;
-    }
-
-    if(current_start == current_end){
       break;
     }
     
@@ -1655,14 +1649,8 @@ ags_wave_find_point(AgsWave *wave,
 		 NULL);
 
     if(current_end_x == x){
-      retval = current_end;
+      retval = current_end->data;
 
-      break;
-    }else if(x > current_end_x){
-      break;
-    }
-
-    if(current == current_end){
       break;
     }
 
@@ -1671,12 +1659,12 @@ ags_wave_find_point(AgsWave *wave,
 		 NULL);
     
     if(current_x == x){
-      retval = current;
+      retval = current->data;
       
       break;
     }
 
-    if(position <= 1){
+    if(position == 0){
       break;
     }
 
