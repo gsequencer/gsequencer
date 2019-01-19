@@ -1781,7 +1781,7 @@ uninstall-am:
 .PRECIOUS: functional-system-tests.mk
 
 
-ags-check-system: $(installcheck_programs)
+ags-check-system-functional-tests: $(installcheck_programs)
 	./ags_check_system_functional_audio_test
 	./ags_check_system_functional_osc_server_test
 	./ags_check_system_functional_machine_add_and_destroy_test

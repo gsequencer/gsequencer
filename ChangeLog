@@ -1,7 +1,7 @@
 ags (2.1.38)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
-	* TODO:JK: implemented ags_buffer_find_position()
+	* refactored ags_wave_find_point() to do bisect
 
 ags (2.1.37)
 

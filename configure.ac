@@ -308,6 +308,8 @@ LIBAGS_GUI_SYMBOLS([])
 AM_EXTRA_RECURSIVE_TARGETS([ags-docs])
 AC_CONFIG_FILES([
 Makefile
+unit-system-tests.mk
+functional-system-tests.mk
 docs/reference/libags/Makefile
 docs/reference/libags-audio/Makefile
 docs/reference/libags-gui/Makefile

@@ -1593,8 +1593,11 @@ ags_wave_find_point(AgsWave *wave,
   AgsBuffer *retval;
   
   GList *buffer;
+  GList *current_start, *current_end, *current;
 
-  guint64 current_x;
+  guint64 current_start_x, current_end_x, current_x;
+  guint length, position;
+  gboolean success;
 
   pthread_mutex_t *wave_mutex;
 
@@ -1617,25 +1620,78 @@ ags_wave_find_point(AgsWave *wave,
   }else{
     buffer = wave->buffer;
   }
-
-  retval = NULL;
   
-  while(buffer != NULL){
-    g_object_get(buffer->data,
+  current_start = buffer;
+  current_end = g_list_last(buffer);
+  
+  length = g_list_length(buffer);
+  position = length / 2;
+
+  current = g_list_nth(current_start,
+		       position);
+  
+  retval = NULL;
+  success = FALSE;
+  
+  while(!success && current != NULL){
+    g_object_get(current_start->data,
+		 "x", &current_start_x,
+		 NULL);
+
+    if(current_start_x == x){
+      retval = current_start;
+
+      break;
+    }else if(x < current_start_x){
+      break;
+    }
+
+    if(current_start == current_end){
+      break;
+    }
+    
+    g_object_get(current_end->data,
+		 "x", &current_end_x,
+		 NULL);
+
+    if(current_end_x == x){
+      retval = current_end;
+
+      break;
+    }else if(x > current_end_x){
+      break;
+    }
+
+    if(current == current_end){
+      break;
+    }
+
+    g_object_get(current->data,
 		 "x", &current_x,
 		 NULL);
     
-    if(current_x > x){
+    if(current_x == x){
+      retval = current;
+      
       break;
     }
 
-    if(x == current_x){
-      retval = buffer->data;
-
+    if(position <= 1){
       break;
     }
-    
-    buffer = buffer->next;
+
+    position = position / 2;
+
+    if(current_x < x){
+      current_start = current->next;
+      current_end = current_end->prev;
+    }else{
+      current_start = current_start->next;
+      current_end = current->prev;
+    }    
+
+    current = g_list_nth(current_start,
+			 position);
   }
 
   pthread_mutex_unlock(wave_mutex);
