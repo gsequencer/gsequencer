@@ -889,7 +889,9 @@ ags_pattern_box_led_queue_draw_timeout(AgsPatternBox *pattern_box)
     }
     
     /* active led */
-    active_led_new = (guint) play_count_beats_audio_run->sequencer_counter;      
+    g_object_get(play_count_beats_audio_run,
+		 "sequencer-counter", &active_led_new,
+		 NULL);
 
     pattern_box->active_led = (guint) active_led_new;
 

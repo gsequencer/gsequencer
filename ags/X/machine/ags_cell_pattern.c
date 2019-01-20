@@ -993,7 +993,9 @@ ags_cell_pattern_led_queue_draw_timeout(AgsCellPattern *cell_pattern)
     }
 
     /* active led */
-    active_led_new = (guint) play_count_beats_audio_run->sequencer_counter;
+    g_object_get(play_count_beats_audio_run,
+		 "sequencer-counter", &active_led_new,
+		 NULL);
 
     cell_pattern->active_led = (guint) active_led_new;
     ags_led_array_unset_all((AgsLedArray *) cell_pattern->hled_array);
