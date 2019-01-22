@@ -1,3 +1,9 @@
+ags (2.1.41)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved AgsCellPattern get sequencer counter and set active led
+	* improved AgsPatternBox get sequencer counter and set active led
+
 ags (2.1.40)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

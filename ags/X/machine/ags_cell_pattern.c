@@ -915,7 +915,7 @@ ags_cell_pattern_led_queue_draw_timeout(AgsCellPattern *cell_pattern)
     GList *start_recall, *recall;
     
     guint offset;
-    guint active_led_new;
+    guint64 active_led_new;
     
     machine = (AgsMachine *) gtk_widget_get_ancestor((GtkWidget *) cell_pattern,
 						     AGS_TYPE_MACHINE);
@@ -997,10 +997,10 @@ ags_cell_pattern_led_queue_draw_timeout(AgsCellPattern *cell_pattern)
 		 "sequencer-counter", &active_led_new,
 		 NULL);
 
-    cell_pattern->active_led = (guint) active_led_new;
+    cell_pattern->active_led = (guint) (active_led_new % cell_pattern->n_cols);
     ags_led_array_unset_all((AgsLedArray *) cell_pattern->hled_array);
     ags_led_array_set_nth((AgsLedArray *) cell_pattern->hled_array,
-			  active_led_new);
+			  cell_pattern->active_led);
     
     return(TRUE);
   }else{
