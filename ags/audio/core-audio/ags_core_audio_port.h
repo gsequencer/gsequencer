@@ -44,6 +44,8 @@
 #define AGS_IS_CORE_AUDIO_PORT_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_CORE_AUDIO_PORT))
 #define AGS_CORE_AUDIO_PORT_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS(obj, AGS_TYPE_CORE_AUDIO_PORT, AgsCoreAudioPortClass))
 
+#define AGS_CORE_AUDIO_PORT_DEFAULT_CACHE_BUFFER_SIZE (4096)
+
 typedef struct _AgsCoreAudioPort AgsCoreAudioPort;
 typedef struct _AgsCoreAudioPortClass AgsCoreAudioPortClass;
 
@@ -93,6 +95,14 @@ struct _AgsCoreAudioPort
   guint samplerate;
   guint buffer_size;
   guint format;
+
+  gboolean use_cache;
+  guint cache_buffer_size;
+
+  guint current_cache;
+  guint completed_cache;
+  guint cache_offset;
+  void **cache;
   
 #ifdef AGS_WITH_CORE_AUDIO
   AudioQueueRef aq_ref;
@@ -154,6 +164,11 @@ void ags_core_audio_port_set_pcm_channels(AgsCoreAudioPort *core_audio_port,
 					  guint pcm_channels);
 void ags_core_audio_port_set_buffer_size(AgsCoreAudioPort *core_audio_port,
 					 guint buffer_size);
+
+void ags_core_audio_port_set_cache_buffer_size(AgsCoreAudioPort *core_audio_port,
+					       guint cache_buffer_size);
+
+guint ags_core_audio_port_get_latency(AgsCoreAudioPort *core_audio_port);
 
 AgsCoreAudioPort* ags_core_audio_port_new(GObject *core_audio_client);
 

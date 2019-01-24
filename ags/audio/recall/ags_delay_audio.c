@@ -684,8 +684,8 @@ ags_delay_audio_init(AgsDelayAudio *delay_audio)
   g_signal_connect_after(delay_audio, "notify::audio",
 			 G_CALLBACK(ags_delay_audio_notify_audio_after_callback), NULL);
 
-  g_signal_connect(delay_audio, "notify::output-soundcard",
-		   G_CALLBACK(ags_delay_audio_notify_output_soundcard_callback), NULL);
+  //  g_signal_connect(delay_audio, "notify::output-soundcard",
+  //		   G_CALLBACK(ags_delay_audio_notify_output_soundcard_callback), NULL);
   g_signal_connect_after(delay_audio, "notify::output-soundcard",
 			 G_CALLBACK(ags_delay_audio_notify_output_soundcard_after_callback), NULL);
 }
@@ -1392,7 +1392,7 @@ ags_delay_audio_notify_output_soundcard_callback(GObject *gobject,
   if(output_soundcard == NULL){
     return;
   }
-
+  
   g_object_disconnect(output_soundcard,
 		      "any_signal::tic",
 		      G_CALLBACK(ags_delay_audio_tic_after_callback),

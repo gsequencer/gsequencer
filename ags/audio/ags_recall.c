@@ -4158,6 +4158,9 @@ ags_recall_set_output_soundcard(AgsRecall *recall, GObject *output_soundcard)
   pthread_mutex_lock(recall_mutex);
 
   if(recall->output_soundcard != NULL){
+    g_signal_handlers_disconnect_by_data(recall->output_soundcard,
+					 recall);
+
     g_object_unref(recall->output_soundcard);
   }
 
@@ -4200,6 +4203,9 @@ ags_recall_set_input_soundcard(AgsRecall *recall, GObject *input_soundcard)
   pthread_mutex_lock(recall_mutex);
 
   if(recall->input_soundcard != NULL){
+    g_signal_handlers_disconnect_by_data(recall->input_soundcard,
+					 recall);
+
     g_object_unref(recall->input_soundcard);
   }
 
@@ -5943,7 +5949,7 @@ ags_recall_find_type(GList *recall, GType gtype)
   while(recall != NULL){
     current_recall = AGS_RECALL(recall->data);
 
-    if(G_OBJECT_TYPE(current_recall) == gtype){
+    if(g_type_is_a(G_OBJECT_TYPE(current_recall), gtype)){
       break;
     }
 
@@ -6025,7 +6031,7 @@ ags_recall_template_find_type(GList *recall, GType gtype)
 
     if(AGS_IS_RECALL(current_recall) &&
        (AGS_RECALL_TEMPLATE & (current_recall->flags)) != 0 &&
-       G_OBJECT_TYPE(current_recall) == gtype){
+       g_type_is_a(G_OBJECT_TYPE(current_recall), gtype)){
       break;
     }
 
@@ -6110,9 +6116,9 @@ ags_recall_template_find_all_type(GList *recall, ...)
       /**/
       offset = recall_type;
     
-      while(*offset != G_TYPE_NONE){      
+      while(offset[0] != G_TYPE_NONE){
 	if((AGS_RECALL_TEMPLATE & (current_recall_flags)) != 0 &&
-	   g_type_is_a(G_OBJECT_TYPE(current_recall), *offset)){
+	   g_type_is_a(G_OBJECT_TYPE(current_recall), offset[0])){
 	  free(recall_type);
 	
 	  return(recall);

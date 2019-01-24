@@ -1059,7 +1059,7 @@ ags_pattern_set_dim(AgsPattern *pattern, guint dim0, guint dim1, guint length)
       for(i = 0; i < pattern->dim[0]; i++){
 	for(j = 0; j < pattern->dim[1]; j++){
 	  pattern->pattern[i][j] = (guint *) realloc(pattern->pattern[i][j],
-						     (int) ceil((double) length / (double) (sizeof(guint) * 8)) * sizeof(guint));
+						     (guint) ceil((double) length / (double) (sizeof(guint) * 8)) * sizeof(guint));
 	}
       }
 
@@ -1068,7 +1068,7 @@ ags_pattern_set_dim(AgsPattern *pattern, guint dim0, guint dim1, guint length)
   }
 
   // grow
-  bitmap_size = (int) ceil((double) pattern->dim[2] / (double) (sizeof(guint) * 8)) * sizeof(guint);
+  bitmap_size = (guint) ceil((double) pattern->dim[2] / (double) (sizeof(guint) * 8)) * sizeof(guint);
     
   if(pattern->dim[0] < dim0){
     if(pattern->pattern == NULL){
@@ -1119,7 +1119,7 @@ ags_pattern_set_dim(AgsPattern *pattern, guint dim0, guint dim1, guint length)
   if(pattern->dim[2] < length){
     guint new_bitmap_size;
     
-    new_bitmap_size = (int) ceil((double) length / (double) (sizeof(guint) * 8)) * sizeof(guint);
+    new_bitmap_size = (guint) ceil((double) length / (double) (sizeof(guint) * 8)) * sizeof(guint);
     
     for(i = 0; i < pattern->dim[0]; i++){
       for(j = 0; j < pattern->dim[1]; j++){
@@ -1214,6 +1214,11 @@ ags_pattern_get_bit(AgsPattern *pattern, guint i, guint j, guint bit)
   k = (guint) floor((double) bit / (double) (sizeof(guint) * 8));
   value = 1 << (bit % (sizeof(guint) * 8));
 
+#ifdef AGS_DEBUG
+  g_message("i,j,bit = %d,%d,%d", i, j, bit);
+  g_message("k = %d; value = %x", k, value);
+#endif
+  
   //((1 << (bit % (sizeof(guint) *8))) & (pattern->pattern[i][j][(guint) floor((double) bit / (double) (sizeof(guint) * 8))])) != 0
   if((value & (pattern->pattern[i][j][k])) != 0){
     pthread_mutex_unlock(pattern_mutex);
@@ -1261,8 +1266,7 @@ ags_pattern_toggle_bit(AgsPattern *pattern, guint i, guint j, guint bit)
   k = (guint) floor((double) bit / (double) (sizeof(guint) * 8));
   value = 1 << (bit % (sizeof(guint) * 8));
 
-
-  if(value & (pattern->pattern[i][j][k])){
+  if((value & (pattern->pattern[i][j][k])) != 0){
     pattern->pattern[i][j][k] &= (~value);
   }else{
     pattern->pattern[i][j][k] |= value;

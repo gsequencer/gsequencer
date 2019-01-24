@@ -3,6 +3,9 @@ ags (2.1.41)
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* improved AgsCellPattern get sequencer counter and set active led
 	* improved AgsPatternBox get sequencer counter and set active led
+	* improved ags_recall_find_type() and ags_recall_template_find_type() to use g_type_is_a()
+	* improved CoreAudio output to use cache
+	* removed calls to pango_fc_font_map_cache_clear()
 
 ags (2.1.40)
 

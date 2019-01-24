@@ -1105,7 +1105,7 @@ ags_level_draw(AgsLevel *level)
     pango_cairo_show_layout(cr, layout);
 
 #ifndef __APPLE__
-    pango_fc_font_map_cache_clear(pango_cairo_font_map_get_default());
+    //    pango_fc_font_map_cache_clear(pango_cairo_font_map_get_default());
 #endif
     g_object_unref(layout);
   }

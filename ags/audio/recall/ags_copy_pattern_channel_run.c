@@ -180,8 +180,8 @@ ags_copy_pattern_channel_run_init(AgsCopyPatternChannelRun *copy_pattern_channel
 {
   ags_recall_set_ability_flags((AgsRecall *) copy_pattern_channel_run, (AGS_SOUND_ABILITY_SEQUENCER));
 
-  g_signal_connect(copy_pattern_channel_run, "notify::recall-audio-run",
-		   G_CALLBACK(ags_copy_pattern_channel_run_notify_recall_audio_run), NULL);
+  //  g_signal_connect(copy_pattern_channel_run, "notify::recall-audio-run",
+  //		   G_CALLBACK(ags_copy_pattern_channel_run_notify_recall_audio_run), NULL);
   
   g_signal_connect_after(copy_pattern_channel_run, "notify::recall-audio-run",
 			 G_CALLBACK(ags_copy_pattern_channel_run_notify_recall_audio_run_after), NULL);
@@ -246,11 +246,11 @@ ags_copy_pattern_channel_run_notify_recall_audio_run(GObject *gobject,
 	       NULL);
 
   if(copy_pattern_audio_run != NULL){
-    g_object_disconnect(copy_pattern_audio_run,
-			"any_signal::notify::delay-audio-run",
-			G_CALLBACK(ags_copy_pattern_channel_run_notify_delay_audio_run),
-			copy_pattern_channel_run,
-			NULL);
+    //    g_object_disconnect(copy_pattern_audio_run,
+    //			"any_signal::notify::delay-audio-run",
+    //			G_CALLBACK(ags_copy_pattern_channel_run_notify_delay_audio_run),
+    //			copy_pattern_channel_run,
+    //			NULL);
   
     g_object_disconnect(copy_pattern_audio_run,
 			"any_signal::notify::delay-audio-run",
@@ -286,8 +286,8 @@ ags_copy_pattern_channel_run_notify_recall_audio_run_after(GObject *gobject,
 	       NULL);
 
   if(copy_pattern_audio_run != NULL){
-    g_signal_connect(copy_pattern_audio_run, "notify::delay-audio-run",
-		     G_CALLBACK(ags_copy_pattern_channel_run_notify_delay_audio_run), copy_pattern_channel_run);
+    //    g_signal_connect(copy_pattern_audio_run, "notify::delay-audio-run",
+    //		     G_CALLBACK(ags_copy_pattern_channel_run_notify_delay_audio_run), copy_pattern_channel_run);
   
     g_signal_connect_after(copy_pattern_audio_run, "notify::delay-audio-run",
 			   G_CALLBACK(ags_copy_pattern_channel_run_notify_delay_audio_run_after), copy_pattern_channel_run);
