@@ -1364,7 +1364,8 @@ ags_pulse_port_cached_stream_request_callback(pa_stream *stream, size_t length, 
     if(ags_soundcard_is_playing(AGS_SOUNDCARD(soundcard))){
       idle_time.tv_nsec = ags_pulse_port_get_latency(pulse_port) / 8;
     
-      while(next_cache == completed_cache){
+      while(next_cache == completed_cache &&
+	    ags_soundcard_is_playing(AGS_SOUNDCARD(soundcard))){
 	nanosleep(&idle_time, NULL);
 
 	pthread_mutex_lock(pulse_port_mutex);

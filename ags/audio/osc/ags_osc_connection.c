@@ -655,7 +655,12 @@ ags_osc_connection_timeout_expired(struct timespec *start_time,
 {
   struct timespec current_time;
   struct timespec deadline;
-  
+
+#ifdef __APPLE__
+  clock_serv_t cclock;
+  mach_timespec_t mts;
+#endif
+
   if(start_time == NULL ||
      timeout_delay == NULL){
     return(TRUE);

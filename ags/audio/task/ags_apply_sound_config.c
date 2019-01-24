@@ -1015,8 +1015,33 @@ ags_apply_sound_config_launch(AgsTask *task)
       }
 
       g_list_free(start_port);
-    }
+    }else if(AGS_IS_CORE_AUDIO_DEVOUT(soundcard)){
+      GList *start_port, *port;
 
+      g_object_get(soundcard,
+		   "pulse-port", &start_port,
+		   NULL);
+
+      port = start_port;
+      
+      while(port != NULL){
+	ags_core_audio_port_set_samplerate(port->data,
+					   samplerate);
+	ags_core_audio_port_set_pcm_channels(port->data,
+					     pcm_channels);
+	ags_core_audio_port_set_buffer_size(port->data,
+					    buffer_size);
+	ags_core_audio_port_set_format(port->data,
+				       format);
+	ags_core_audio_port_set_cache_buffer_size(port->data,
+						  buffer_size * ceil(cache_buffer_size / buffer_size));
+	
+	port = port->next;
+      }
+    
+      g_list_free(start_port);
+    }
+  
     g_free(soundcard_group);    
     soundcard_group = g_strdup_printf("%s-%d",
 				      AGS_CONFIG_SOUNDCARD,

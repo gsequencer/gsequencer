@@ -3022,7 +3022,7 @@ ags_pulse_devout_get_next_buffer(AgsSoundcard *soundcard)
   }else if(ags_pulse_devout_test_flags(pulse_devout, AGS_PULSE_DEVOUT_BUFFER6)){
     buffer = pulse_devout->buffer[7];
   }else if(ags_pulse_devout_test_flags(pulse_devout, AGS_PULSE_DEVOUT_BUFFER7)){
-    buffer = pulse_devout->buffer[8];
+    buffer = pulse_devout->buffer[0];
   }else{
     buffer = NULL;
   }
