@@ -743,6 +743,7 @@ ags_wave_set_samplerate(AgsWave *wave,
   void *data, *resampled_data;
 
   guint64 x;
+  guint end_offset;
   guint buffer_length;
   guint new_buffer_length;
   guint buffer_size;
@@ -923,6 +924,7 @@ ags_wave_set_samplerate(AgsWave *wave,
   list = start_list;
 
   offset = 0;
+  end_offset = (buffer_length * buffer_size);    
   
   while(list != NULL && offset < buffer_length * buffer_size){
     pthread_mutex_t *buffer_mutex;
@@ -945,16 +947,17 @@ ags_wave_set_samplerate(AgsWave *wave,
 						  resampled_data, 1, offset,
 						  buffer_size, copy_mode);
     }else{
-      guint end_offset;
+      if(end_offset > offset){
+	ags_audio_buffer_util_copy_buffer_to_buffer(AGS_BUFFER(list->data)->data, 1, 0,
+						    resampled_data, 1, offset,
+						    end_offset - offset, copy_mode);
 
-      end_offset = (buffer_length * buffer_size) - offset;
-      
-      ags_audio_buffer_util_copy_buffer_to_buffer(AGS_BUFFER(list->data)->data, 1, 0,
-						  resampled_data, 1, offset,
-						  end_offset - offset, copy_mode);
-
-      ags_audio_buffer_util_clear_buffer(AGS_BUFFER(list->data)->data + end_offset, 1,
-					 buffer_size - (end_offset - offset), format);
+	ags_audio_buffer_util_clear_buffer(AGS_BUFFER(list->data)->data + (end_offset - offset), 1,
+					   buffer_size - (end_offset - offset), ags_audio_buffer_util_format_from_soundcard(format));
+      }else{
+	ags_audio_buffer_util_clear_buffer(AGS_BUFFER(list->data)->data, 1,
+					   buffer_size, ags_audio_buffer_util_format_from_soundcard(format));
+      }
     }
     
     pthread_mutex_unlock(buffer_mutex);

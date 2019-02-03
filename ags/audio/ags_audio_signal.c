@@ -2417,6 +2417,7 @@ ags_audio_signal_set_buffer_size(AgsAudioSignal *audio_signal, guint buffer_size
   void *data;
 
   guint stream_length;
+  guint end_offset;
   guint offset;
   guint format;
   guint old_buffer_size;
@@ -2552,6 +2553,7 @@ ags_audio_signal_set_buffer_size(AgsAudioSignal *audio_signal, guint buffer_size
   stream = audio_signal->stream;
 
   stream_length = g_list_length(audio_signal->stream);
+  end_offset = stream_length * old_buffer_size;	
 
   offset = 0;
   
@@ -2596,28 +2598,29 @@ ags_audio_signal_set_buffer_size(AgsAudioSignal *audio_signal, guint buffer_size
     case AGS_SOUNDCARD_DOUBLE:
       {
 	stream->data = (gdouble *) realloc(stream->data,
-					  buffer_size * sizeof(gdouble));
+					   buffer_size * sizeof(gdouble));
       }
       break;
     default:
       g_warning("ags_audio_signal_set_buffer_size() - unsupported format");
     }
 
-    if(offset + buffer_size < stream_length * old_buffer_size){
+    if(offset + buffer_size < end_offset){
       ags_audio_buffer_util_copy_buffer_to_buffer(stream->data, 1, 0,
 						  data, 1, offset,
 						  buffer_size, copy_mode);
     }else{
-      guint end_offset;
-
-      end_offset = (stream_length * old_buffer_size) - offset;
-      
-      ags_audio_buffer_util_copy_buffer_to_buffer(stream->data, 1, 0,
-						  data, 1, offset,
-						  end_offset - offset, copy_mode);
-
-      ags_audio_buffer_util_clear_buffer(stream->data + end_offset, 1,
-					 buffer_size - (end_offset - offset), format);
+      if(end_offset > offset){
+	ags_audio_buffer_util_copy_buffer_to_buffer(stream->data, 1, 0,
+						    data, 1, offset,
+						    end_offset - offset, copy_mode);
+	
+	ags_audio_buffer_util_clear_buffer(stream->data + (end_offset - offset), 1,
+					   buffer_size - (end_offset - offset), ags_audio_buffer_util_format_from_soundcard(format));
+      }else{
+	ags_audio_buffer_util_clear_buffer(stream->data, 1,
+					   buffer_size, ags_audio_buffer_util_format_from_soundcard(format));
+      }
     }
     
     /* iterate */
