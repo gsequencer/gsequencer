@@ -31,7 +31,8 @@ check_PROGRAMS += \
 	ags_functional_matrix_test \
 	ags_functional_synth_test \
 	ags_functional_ffplayer_test \
-	ags_functional_notation_edit_test
+	ags_functional_notation_edit_test \
+	ags_functional_audio_config_test
 
 # functional test util library
 libgsequencer_test_la_SOURCES = ags/test/X/gsequencer_setup_util.c ags/test/X/gsequencer_setup_util.h ags/test/X/ags_functional_test_util.c ags/test/X/ags_functional_test_util.h ags/test/X/libgsequencer.h
@@ -135,3 +136,10 @@ ags_functional_notation_edit_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND
 ags_functional_notation_edit_test_CPPFLAGS = -DSRCDIR=\"$(srcdir)\" -DDESTDIR=\"gsequencer.share\"
 ags_functional_notation_edit_test_LDFLAGS = -pthread $(LDFLAGS)
 ags_functional_notation_edit_test_LDADD = $(gsequencer_functional_test_LDADD)
+
+# functional audio config test
+ags_functional_audio_config_test_SOURCES = ags/test/X/ags_functional_audio_config_test.c
+ags_functional_audio_config_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS) $(FONTCONFIG_CFLAGS) $(GDKPIXBUF_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS)
+ags_functional_audio_config_test_CPPFLAGS = -DSRCDIR=\"$(srcdir)\" -DDESTDIR=\"gsequencer.share\"
+ags_functional_audio_config_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_functional_audio_config_test_LDADD = $(gsequencer_functional_test_LDADD)

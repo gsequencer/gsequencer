@@ -134,7 +134,8 @@ am__EXEEXT_1 = ags_check_system_functional_audio_test$(EXEEXT) \
 	ags_check_system_functional_matrix_test$(EXEEXT) \
 	ags_check_system_functional_synth_test$(EXEEXT) \
 	ags_check_system_functional_ffplayer_test$(EXEEXT) \
-	ags_check_system_functional_notation_edit_test$(EXEEXT)
+	ags_check_system_functional_notation_edit_test$(EXEEXT) \
+	ags_check_system_functional_audio_config_test$(EXEEXT)
 PROGRAMS = $(noinst_PROGRAMS)
 LTLIBRARIES = $(noinst_LTLIBRARIES)
 am__DEPENDENCIES_1 =
@@ -158,15 +159,27 @@ libgsequencer_check_system_test_la_LINK = $(LIBTOOL) $(AM_V_lt) \
 	--tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link \
 	$(CCLD) $(libgsequencer_check_system_test_la_CFLAGS) $(CFLAGS) \
 	$(AM_LDFLAGS) $(LDFLAGS) -o $@
-am_ags_check_system_functional_audio_test_OBJECTS = ags/test/audio/check_system_functional_audio_test-ags_functional_audio_test.$(OBJEXT)
-ags_check_system_functional_audio_test_OBJECTS =  \
-	$(am_ags_check_system_functional_audio_test_OBJECTS)
+am_ags_check_system_functional_audio_config_test_OBJECTS = ags/test/X/check_system_functional_audio_config_test-ags_functional_audio_config_test.$(OBJEXT)
+ags_check_system_functional_audio_config_test_OBJECTS =  \
+	$(am_ags_check_system_functional_audio_config_test_OBJECTS)
 am__DEPENDENCIES_3 = libgsequencer_check_system_test.la \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
+ags_check_system_functional_audio_config_test_DEPENDENCIES =  \
+	$(am__DEPENDENCIES_3)
+ags_check_system_functional_audio_config_test_LINK = $(LIBTOOL) \
+	$(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
+	--mode=link $(CCLD) \
+	$(ags_check_system_functional_audio_config_test_CFLAGS) \
+	$(CFLAGS) \
+	$(ags_check_system_functional_audio_config_test_LDFLAGS) \
+	$(LDFLAGS) -o $@
+am_ags_check_system_functional_audio_test_OBJECTS = ags/test/audio/check_system_functional_audio_test-ags_functional_audio_test.$(OBJEXT)
+ags_check_system_functional_audio_test_OBJECTS =  \
+	$(am_ags_check_system_functional_audio_test_OBJECTS)
 ags_check_system_functional_audio_test_DEPENDENCIES =  \
 	$(am__DEPENDENCIES_3)
 ags_check_system_functional_audio_test_LINK = $(LIBTOOL) $(AM_V_lt) \
@@ -329,7 +342,8 @@ am__v_at_1 =
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)/ags
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__maybe_remake_depfiles = depfiles
-am__depfiles_remade = ags/test/X/$(DEPDIR)/check_system_functional_automation_editor_workflow_test-ags_functional_automation_editor_workflow_test.Po \
+am__depfiles_remade = ags/test/X/$(DEPDIR)/check_system_functional_audio_config_test-ags_functional_audio_config_test.Po \
+	ags/test/X/$(DEPDIR)/check_system_functional_automation_editor_workflow_test-ags_functional_automation_editor_workflow_test.Po \
 	ags/test/X/$(DEPDIR)/check_system_functional_line_member_add_and_destroy_test-ags_functional_line_member_add_and_destroy_test.Po \
 	ags/test/X/$(DEPDIR)/check_system_functional_machine_add_and_destroy_test-ags_functional_machine_add_and_destroy_test.Po \
 	ags/test/X/$(DEPDIR)/check_system_functional_machine_link_test-ags_functional_machine_link_test.Po \
@@ -365,6 +379,7 @@ am__v_CCLD_ = $(am__v_CCLD_@AM_DEFAULT_V@)
 am__v_CCLD_0 = @echo "  CCLD    " $@;
 am__v_CCLD_1 = 
 SOURCES = $(libgsequencer_check_system_test_la_SOURCES) \
+	$(ags_check_system_functional_audio_config_test_SOURCES) \
 	$(ags_check_system_functional_audio_test_SOURCES) \
 	$(ags_check_system_functional_automation_editor_workflow_test_SOURCES) \
 	$(ags_check_system_functional_drum_test_SOURCES) \
@@ -380,6 +395,7 @@ SOURCES = $(libgsequencer_check_system_test_la_SOURCES) \
 	$(ags_check_system_functional_panel_test_SOURCES) \
 	$(ags_check_system_functional_synth_test_SOURCES)
 DIST_SOURCES = $(libgsequencer_check_system_test_la_SOURCES) \
+	$(ags_check_system_functional_audio_config_test_SOURCES) \
 	$(ags_check_system_functional_audio_test_SOURCES) \
 	$(ags_check_system_functional_automation_editor_workflow_test_SOURCES) \
 	$(ags_check_system_functional_drum_test_SOURCES) \
@@ -706,7 +722,8 @@ installcheck_programs = \
 	ags_check_system_functional_matrix_test \
 	ags_check_system_functional_synth_test \
 	ags_check_system_functional_ffplayer_test \
-	ags_check_system_functional_notation_edit_test
+	ags_check_system_functional_notation_edit_test \
+	ags_check_system_functional_audio_config_test
 
 
 # functional test util library
@@ -810,6 +827,13 @@ ags_check_system_functional_notation_edit_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS
 ags_check_system_functional_notation_edit_test_CPPFLAGS = -DSRCDIR=\"$(srcdir)\" $(AGS_RESOURCES)
 ags_check_system_functional_notation_edit_test_LDFLAGS = -pthread $(LDFLAGS)
 ags_check_system_functional_notation_edit_test_LDADD = $(gsequencer_check_system_functional_test_LDADD)
+
+# functional note edit test
+ags_check_system_functional_audio_config_test_SOURCES = ags/test/X/ags_functional_audio_config_test.c
+ags_check_system_functional_audio_config_test_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS) $(FONTCONFIG_CFLAGS) $(GDKPIXBUF_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS)
+ags_check_system_functional_audio_config_test_CPPFLAGS = -DSRCDIR=\"$(srcdir)\" $(AGS_RESOURCES)
+ags_check_system_functional_audio_config_test_LDFLAGS = -pthread $(LDFLAGS)
+ags_check_system_functional_audio_config_test_LDADD = $(gsequencer_check_system_functional_test_LDADD)
 all: all-recursive
 
 .SUFFIXES:
@@ -913,6 +937,13 @@ ags/test/X/libgsequencer_check_system_test_la-ags_functional_test_util.lo:  \
 
 libgsequencer_check_system_test.la: $(libgsequencer_check_system_test_la_OBJECTS) $(libgsequencer_check_system_test_la_DEPENDENCIES) $(EXTRA_libgsequencer_check_system_test_la_DEPENDENCIES) 
 	$(AM_V_CCLD)$(libgsequencer_check_system_test_la_LINK)  $(libgsequencer_check_system_test_la_OBJECTS) $(libgsequencer_check_system_test_la_LIBADD) $(LIBS)
+ags/test/X/check_system_functional_audio_config_test-ags_functional_audio_config_test.$(OBJEXT):  \
+	ags/test/X/$(am__dirstamp) \
+	ags/test/X/$(DEPDIR)/$(am__dirstamp)
+
+ags_check_system_functional_audio_config_test$(EXEEXT): $(ags_check_system_functional_audio_config_test_OBJECTS) $(ags_check_system_functional_audio_config_test_DEPENDENCIES) $(EXTRA_ags_check_system_functional_audio_config_test_DEPENDENCIES) 
+	@rm -f ags_check_system_functional_audio_config_test$(EXEEXT)
+	$(AM_V_CCLD)$(ags_check_system_functional_audio_config_test_LINK) $(ags_check_system_functional_audio_config_test_OBJECTS) $(ags_check_system_functional_audio_config_test_LDADD) $(LIBS)
 ags/test/audio/$(am__dirstamp):
 	@$(MKDIR_P) ags/test/audio
 	@: > ags/test/audio/$(am__dirstamp)
@@ -1041,6 +1072,7 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+@AMDEP_TRUE@@am__include@ @am__quote@ags/test/X/$(DEPDIR)/check_system_functional_audio_config_test-ags_functional_audio_config_test.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/X/$(DEPDIR)/check_system_functional_automation_editor_workflow_test-ags_functional_automation_editor_workflow_test.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/X/$(DEPDIR)/check_system_functional_line_member_add_and_destroy_test-ags_functional_line_member_add_and_destroy_test.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/test/X/$(DEPDIR)/check_system_functional_machine_add_and_destroy_test-ags_functional_machine_add_and_destroy_test.Po@am__quote@ # am--include-marker
@@ -1101,6 +1133,20 @@ ags/test/X/libgsequencer_check_system_test_la-ags_functional_test_util.lo: ags/t
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/test/X/ags_functional_test_util.c' object='ags/test/X/libgsequencer_check_system_test_la-ags_functional_test_util.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libgsequencer_check_system_test_la_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_check_system_test_la_CFLAGS) $(CFLAGS) -c -o ags/test/X/libgsequencer_check_system_test_la-ags_functional_test_util.lo `test -f 'ags/test/X/ags_functional_test_util.c' || echo '$(srcdir)/'`ags/test/X/ags_functional_test_util.c
+
+ags/test/X/check_system_functional_audio_config_test-ags_functional_audio_config_test.o: ags/test/X/ags_functional_audio_config_test.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ags_check_system_functional_audio_config_test_CPPFLAGS) $(CPPFLAGS) $(ags_check_system_functional_audio_config_test_CFLAGS) $(CFLAGS) -MT ags/test/X/check_system_functional_audio_config_test-ags_functional_audio_config_test.o -MD -MP -MF ags/test/X/$(DEPDIR)/check_system_functional_audio_config_test-ags_functional_audio_config_test.Tpo -c -o ags/test/X/check_system_functional_audio_config_test-ags_functional_audio_config_test.o `test -f 'ags/test/X/ags_functional_audio_config_test.c' || echo '$(srcdir)/'`ags/test/X/ags_functional_audio_config_test.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/test/X/$(DEPDIR)/check_system_functional_audio_config_test-ags_functional_audio_config_test.Tpo ags/test/X/$(DEPDIR)/check_system_functional_audio_config_test-ags_functional_audio_config_test.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/test/X/ags_functional_audio_config_test.c' object='ags/test/X/check_system_functional_audio_config_test-ags_functional_audio_config_test.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ags_check_system_functional_audio_config_test_CPPFLAGS) $(CPPFLAGS) $(ags_check_system_functional_audio_config_test_CFLAGS) $(CFLAGS) -c -o ags/test/X/check_system_functional_audio_config_test-ags_functional_audio_config_test.o `test -f 'ags/test/X/ags_functional_audio_config_test.c' || echo '$(srcdir)/'`ags/test/X/ags_functional_audio_config_test.c
+
+ags/test/X/check_system_functional_audio_config_test-ags_functional_audio_config_test.obj: ags/test/X/ags_functional_audio_config_test.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ags_check_system_functional_audio_config_test_CPPFLAGS) $(CPPFLAGS) $(ags_check_system_functional_audio_config_test_CFLAGS) $(CFLAGS) -MT ags/test/X/check_system_functional_audio_config_test-ags_functional_audio_config_test.obj -MD -MP -MF ags/test/X/$(DEPDIR)/check_system_functional_audio_config_test-ags_functional_audio_config_test.Tpo -c -o ags/test/X/check_system_functional_audio_config_test-ags_functional_audio_config_test.obj `if test -f 'ags/test/X/ags_functional_audio_config_test.c'; then $(CYGPATH_W) 'ags/test/X/ags_functional_audio_config_test.c'; else $(CYGPATH_W) '$(srcdir)/ags/test/X/ags_functional_audio_config_test.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/test/X/$(DEPDIR)/check_system_functional_audio_config_test-ags_functional_audio_config_test.Tpo ags/test/X/$(DEPDIR)/check_system_functional_audio_config_test-ags_functional_audio_config_test.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/test/X/ags_functional_audio_config_test.c' object='ags/test/X/check_system_functional_audio_config_test-ags_functional_audio_config_test.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ags_check_system_functional_audio_config_test_CPPFLAGS) $(CPPFLAGS) $(ags_check_system_functional_audio_config_test_CFLAGS) $(CFLAGS) -c -o ags/test/X/check_system_functional_audio_config_test-ags_functional_audio_config_test.obj `if test -f 'ags/test/X/ags_functional_audio_config_test.c'; then $(CYGPATH_W) 'ags/test/X/ags_functional_audio_config_test.c'; else $(CYGPATH_W) '$(srcdir)/ags/test/X/ags_functional_audio_config_test.c'; fi`
 
 ags/test/audio/check_system_functional_audio_test-ags_functional_audio_test.o: ags/test/audio/ags_functional_audio_test.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ags_check_system_functional_audio_test_CFLAGS) $(CFLAGS) -MT ags/test/audio/check_system_functional_audio_test-ags_functional_audio_test.o -MD -MP -MF ags/test/audio/$(DEPDIR)/check_system_functional_audio_test-ags_functional_audio_test.Tpo -c -o ags/test/audio/check_system_functional_audio_test-ags_functional_audio_test.o `test -f 'ags/test/audio/ags_functional_audio_test.c' || echo '$(srcdir)/'`ags/test/audio/ags_functional_audio_test.c
@@ -1660,7 +1706,8 @@ clean-am: clean-generic clean-libtool clean-noinstLTLIBRARIES \
 
 distclean: distclean-recursive
 	-rm -f $(am__CONFIG_DISTCLEAN_FILES)
-		-rm -f ags/test/X/$(DEPDIR)/check_system_functional_automation_editor_workflow_test-ags_functional_automation_editor_workflow_test.Po
+		-rm -f ags/test/X/$(DEPDIR)/check_system_functional_audio_config_test-ags_functional_audio_config_test.Po
+	-rm -f ags/test/X/$(DEPDIR)/check_system_functional_automation_editor_workflow_test-ags_functional_automation_editor_workflow_test.Po
 	-rm -f ags/test/X/$(DEPDIR)/check_system_functional_line_member_add_and_destroy_test-ags_functional_line_member_add_and_destroy_test.Po
 	-rm -f ags/test/X/$(DEPDIR)/check_system_functional_machine_add_and_destroy_test-ags_functional_machine_add_and_destroy_test.Po
 	-rm -f ags/test/X/$(DEPDIR)/check_system_functional_machine_link_test-ags_functional_machine_link_test.Po
@@ -1723,7 +1770,8 @@ installcheck-am:
 maintainer-clean: maintainer-clean-recursive
 	-rm -f $(am__CONFIG_DISTCLEAN_FILES)
 	-rm -rf $(top_srcdir)/autom4te.cache
-		-rm -f ags/test/X/$(DEPDIR)/check_system_functional_automation_editor_workflow_test-ags_functional_automation_editor_workflow_test.Po
+		-rm -f ags/test/X/$(DEPDIR)/check_system_functional_audio_config_test-ags_functional_audio_config_test.Po
+	-rm -f ags/test/X/$(DEPDIR)/check_system_functional_automation_editor_workflow_test-ags_functional_automation_editor_workflow_test.Po
 	-rm -f ags/test/X/$(DEPDIR)/check_system_functional_line_member_add_and_destroy_test-ags_functional_line_member_add_and_destroy_test.Po
 	-rm -f ags/test/X/$(DEPDIR)/check_system_functional_machine_add_and_destroy_test-ags_functional_machine_add_and_destroy_test.Po
 	-rm -f ags/test/X/$(DEPDIR)/check_system_functional_machine_link_test-ags_functional_machine_link_test.Po
@@ -1796,6 +1844,7 @@ ags-check-system-functional-test: $(installcheck_programs)
 	./ags_check_system_functional_synth_test
 	./ags_check_system_functional_ffplayer_test
 	./ags_check_system_functional_notation_edit_test
+	./ags_check_system_functional_audio_config_test
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
