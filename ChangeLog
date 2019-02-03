@@ -1,3 +1,9 @@
+ags (2.1.43)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved ref-count in ags_xorg_application_context_test.c
+	* fixed project_license in gsequencer.appdata.xml
+
 ags (2.1.42)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

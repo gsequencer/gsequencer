@@ -101,7 +101,8 @@ ags_xorg_application_context_test_dispose()
 
   xorg_application_context = g_object_new(AGS_TYPE_XORG_APPLICATION_CONTEXT,
 					  NULL);
-
+  g_object_ref(xorg_application_context);
+  
   /* run dispose */
   g_object_run_dispose(xorg_application_context);
 
@@ -133,6 +134,7 @@ ags_xorg_application_context_test_finalize()
   
   xorg_application_context = g_object_new(AGS_TYPE_XORG_APPLICATION_CONTEXT,
 					   NULL);
+  g_object_ref(xorg_application_context);
 
   /* run dispose */
   g_object_run_dispose(xorg_application_context);
