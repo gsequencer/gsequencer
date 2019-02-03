@@ -2227,6 +2227,7 @@ ags_audio_signal_set_samplerate(AgsAudioSignal *audio_signal, guint samplerate)
   void *data, *resampled_data;
 
   guint stream_length;
+  guint end_offset;
   guint buffer_size;
   guint old_samplerate;
   guint format;
@@ -2367,6 +2368,8 @@ ags_audio_signal_set_samplerate(AgsAudioSignal *audio_signal, guint samplerate)
   stream = audio_signal->stream;
 
   stream_length = g_list_length(audio_signal->stream);
+  end_offset = stream_length * buffer_size;	
+
   offset = 0;
 
   while(stream != NULL && offset < stream_length * buffer_size){
@@ -2375,16 +2378,17 @@ ags_audio_signal_set_samplerate(AgsAudioSignal *audio_signal, guint samplerate)
 						  resampled_data, 1, offset,
 						  buffer_size, copy_mode);
     }else{
-      guint end_offset;
-
-      end_offset = (stream_length * buffer_size) - offset;
-      
-      ags_audio_buffer_util_copy_buffer_to_buffer(stream->data, 1, 0,
-						  resampled_data, 1, offset,
-						  end_offset - offset, copy_mode);
-
-      ags_audio_buffer_util_clear_buffer(stream->data + end_offset, 1,
-					 buffer_size - (end_offset - offset), format);
+      if(end_offset > offset){
+	ags_audio_buffer_util_copy_buffer_to_buffer(stream->data, 1, 0,
+						    resampled_data, 1, offset,
+						    end_offset - offset, copy_mode);
+	
+	ags_audio_buffer_util_clear_buffer(stream->data + (end_offset - offset), 1,
+					   buffer_size - (end_offset - offset), ags_audio_buffer_util_format_from_soundcard(format));
+      }else{
+	ags_audio_buffer_util_clear_buffer(stream->data, 1,
+					   buffer_size, ags_audio_buffer_util_format_from_soundcard(format));
+      }
     }
     
     /* iterate */

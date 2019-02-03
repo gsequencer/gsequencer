@@ -245,6 +245,13 @@ gboolean ags_functional_test_util_automation_edit_select_region(guint nth_index,
 								guint x0, guint x1,
 								guint y0, guint y1);
 
+/* preferences */
+gboolean ags_functional_test_util_preferences_click_tab(guint nth_tab);
+gboolean ags_functional_test_util_audio_preferences_buffer_size(guint nth_backend,
+								guint buffer_size);
+gboolean ags_functional_test_util_audio_preferences_samplerate(guint nth_backend,
+							       guint samplerate);
+
 /* generic machine */
 gboolean ags_functional_test_util_machine_move_up(guint nth_machine);
 gboolean ags_functional_test_util_machine_move_down(guint nth_machine);

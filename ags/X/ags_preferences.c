@@ -274,6 +274,7 @@ ags_preferences_set_update(AgsApplicable *applicable, gboolean update)
 void
 ags_preferences_apply(AgsApplicable *applicable)
 {
+  AgsWindow *window;
   AgsPreferences *preferences;
   GtkDialog *dialog;
 
@@ -296,6 +297,7 @@ ags_preferences_apply(AgsApplicable *applicable)
   
   application_context = ags_application_context_get_instance();
 
+  window = ags_ui_provider_get_window(AGS_UI_PROVIDER(application_context));
   gui_thread = ags_ui_provider_get_gui_thread(AGS_UI_PROVIDER(application_context));
   
   config = ags_config_get_instance();
@@ -320,8 +322,8 @@ ags_preferences_apply(AgsApplicable *applicable)
 			       (GObject *) apply_sound_config);
 
   /* notify user about safe GSequencer */
-  dialog = (GtkDialog *) gtk_message_dialog_new((GtkWindow *) preferences,
-						GTK_DIALOG_MODAL,
+  dialog = (GtkDialog *) gtk_message_dialog_new((GtkWindow *) window,
+						GTK_DIALOG_DESTROY_WITH_PARENT,
 						GTK_MESSAGE_INFO,
 						GTK_BUTTONS_OK,
 						"After finished your modifications you should safe your file");

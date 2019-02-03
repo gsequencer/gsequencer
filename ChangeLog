@@ -3,7 +3,10 @@ ags (2.1.42)
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* fixed potential SIGSEGV during grow buffer size in ags_audio_signal_set_buffer_size()
 	* fixed potential SIGSEGV during grow buffer size in ags_wave_set_buffer_size()
+	* fixed potential SIGSEGV during grow samplerate in ags_audio_signal_set_samplerate()
+	* fixed potential SIGSEGV during grow samplerate in ags_wave_set_samplerate()
 	* improved ags_functional_osc_server_test_meter_controller() to free data
+	* added ags_functional_audio_config_test.c
 
 ags (2.1.41)
 

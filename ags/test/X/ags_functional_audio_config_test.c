@@ -28,10 +28,27 @@
 
 #include <ags/config.h>
 
+#include <ags/gsequencer_main.h>
+
+#include <ags/X/ags_ui_provider.h>
+#include <ags/X/ags_xorg_application_context.h>
+
+#include <ags/X/thread/ags_gui_thread.h>
+
+#include "gsequencer_setup_util.h"
+#include "ags_functional_test_util.h"
+
 void ags_functional_audio_config_test_add_test();
 
 int ags_functional_audio_config_test_init_suite();
 int ags_functional_audio_config_test_clean_suite();
+
+void ags_functional_audio_config_test_file_setup();
+
+#define AGS_FUNCTIONAL_AUDIO_CONFIG_TEST_SHRINK_BUFFER_SIZE (512)
+#define AGS_FUNCTIONAL_AUDIO_CONFIG_TEST_GROW_BUFFER_SIZE (1024)
+#define AGS_FUNCTIONAL_AUDIO_CONFIG_TEST_GROW_SAMPLERATE (48000)
+#define AGS_FUNCTIONAL_AUDIO_CONFIG_TEST_SHRINK_SAMPLERATE (44100)
 
 #define AGS_FUNCTIONAL_AUDIO_CONFIG_TEST_FILE_SETUP_FILENAME SRCDIR "/" "ags_functional_audio_config_test.xml"
 
@@ -117,13 +134,104 @@ ags_functional_audio_config_test_clean_suite()
 }
 
 void
-ags_functional_notation_edit_test_file_setup()
-{  
-  while(ags_ui_provider_get_gui_ready(AGS_UI_PROVIDER(application_context))){
+ags_functional_audio_config_test_file_setup()
+{
+  AgsXorgApplicationContext *xorg_application_context;
+  GtkWidget *preferences;
+
+  gboolean success;
+  
+  while(!ags_ui_provider_get_gui_ready(AGS_UI_PROVIDER(application_context))){
     usleep(500000);
   }
 
   usleep(500000);  
+
+  ags_test_enter();
+
+  xorg_application_context = ags_application_context_get_instance();
+
+  ags_test_leave();
+
+  /* shrink buffer size */
+  success = ags_functional_test_util_preferences_open();
+  
+  CU_ASSERT(success == TRUE);
+  
+  ags_test_enter();
+
+  preferences = xorg_application_context->window->preferences;
+
+  ags_test_leave();
+
+  success = ags_functional_test_util_audio_preferences_buffer_size(0,
+								   AGS_FUNCTIONAL_AUDIO_CONFIG_TEST_SHRINK_BUFFER_SIZE);
+
+  CU_ASSERT(success == TRUE);
+  
+  success = ags_functional_test_util_dialog_ok(preferences);
+
+  CU_ASSERT(success == TRUE);  
+  
+  /* grow buffer size */
+  success = ags_functional_test_util_preferences_open();
+  
+  CU_ASSERT(success == TRUE);
+  
+  ags_test_enter();
+
+  preferences = xorg_application_context->window->preferences;
+
+  ags_test_leave();
+
+  success = ags_functional_test_util_audio_preferences_buffer_size(0,
+								   AGS_FUNCTIONAL_AUDIO_CONFIG_TEST_GROW_BUFFER_SIZE);
+
+  CU_ASSERT(success == TRUE);
+  
+  success = ags_functional_test_util_dialog_ok(preferences);
+
+  CU_ASSERT(success == TRUE);  
+
+  /* grow samplerate */
+  success = ags_functional_test_util_preferences_open();
+  
+  CU_ASSERT(success == TRUE);
+  
+  ags_test_enter();
+
+  preferences = xorg_application_context->window->preferences;
+
+  ags_test_leave();
+
+  success = ags_functional_test_util_audio_preferences_samplerate(0,
+								  AGS_FUNCTIONAL_AUDIO_CONFIG_TEST_GROW_SAMPLERATE);
+
+  CU_ASSERT(success == TRUE);
+  
+  success = ags_functional_test_util_dialog_ok(preferences);
+
+  CU_ASSERT(success == TRUE);  
+
+  /* shrink samplerate */
+  success = ags_functional_test_util_preferences_open();
+  
+  CU_ASSERT(success == TRUE);
+  
+  ags_test_enter();
+
+  preferences = xorg_application_context->window->preferences;
+
+  ags_test_leave();
+
+  success = ags_functional_test_util_audio_preferences_samplerate(0,
+								  AGS_FUNCTIONAL_AUDIO_CONFIG_TEST_SHRINK_SAMPLERATE);
+
+  CU_ASSERT(success == TRUE);
+  
+  success = ags_functional_test_util_dialog_ok(preferences);
+
+  CU_ASSERT(success == TRUE);  
 }
 
 int

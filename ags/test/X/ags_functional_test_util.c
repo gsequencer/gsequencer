@@ -1927,13 +1927,60 @@ ags_functional_test_util_automation_close()
 gboolean
 ags_functional_test_util_preferences_open()
 {
-  //TODO:JK: 
+  AgsXorgApplicationContext *xorg_application_context;
+  AgsWindow *window;
+  AgsMenuBar *menu_bar;
+
+  gboolean success;
+
+  if(!ags_functional_test_util_menu_bar_click(GTK_STOCK_EDIT)){    
+    return(FALSE);
+  }
+
+  ags_test_enter();
+  
+  xorg_application_context = ags_application_context_get_instance();
+
+  window = xorg_application_context->window;
+  menu_bar = window->menu_bar;
+
+  ags_test_leave();
+
+  success = ags_functional_test_util_menu_click(menu_bar->edit,
+						GTK_STOCK_PREFERENCES);
+
+  if(!success){
+    return(FALSE);
+  }
+
+  ags_functional_test_util_reaction_time_long();
+    
+  return(success); 
 }
 
 gboolean
 ags_functional_test_util_preferences_close()
 {
-  //TODO:JK: 
+  AgsXorgApplicationContext *xorg_application_context;
+  GtkWidget *preferences;
+  
+  gboolean success;
+
+  ags_test_enter();
+
+  xorg_application_context = ags_application_context_get_instance();
+  preferences = xorg_application_context->window->preferences;
+
+  ags_test_leave();
+
+  success = ags_functional_test_util_dialog_close(preferences);
+  
+  ags_functional_test_util_reaction_time_long();
+  ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_null),
+						      &ags_functional_test_util_default_timeout,
+						      &preferences);
+  
+  return(success); 
 }
 
 gboolean
@@ -2907,6 +2954,151 @@ ags_functional_test_util_automation_edit_select_region(guint nth_index,
 						       guint y0, guint y1)
 {
   //TODO:JK: 
+}
+
+gboolean
+ags_functional_test_util_preferences_click_tab(guint nth_tab)
+{
+  AgsXorgApplicationContext *xorg_application_context;
+  AgsPreferences *preferences;
+  
+  gboolean success;
+
+  ags_test_enter();
+  
+  xorg_application_context = ags_application_context_get_instance();
+
+  preferences = xorg_application_context->window->preferences;
+
+  ags_test_leave();
+
+  if(preferences == NULL){
+    return(FALSE);
+  }
+
+  /* click tab */
+  ags_test_enter();
+
+  gtk_notebook_set_current_page(preferences->notebook,
+				nth_tab);
+
+  ags_test_leave();
+
+  ags_functional_test_util_reaction_time_long();
+
+  return(TRUE);
+}
+
+gboolean
+ags_functional_test_util_audio_preferences_buffer_size(guint nth_backend,
+						       guint buffer_size)
+{
+  AgsXorgApplicationContext *xorg_application_context;
+  AgsPreferences *preferences;
+  AgsSoundcardEditor *soundcard_editor;
+
+  GList *start_list;
+  
+  gboolean success;
+  
+  ags_test_enter();
+
+  xorg_application_context = ags_application_context_get_instance();
+
+  preferences = xorg_application_context->window->preferences;
+
+  ags_test_leave();
+
+  if(preferences == NULL){
+    return(FALSE);
+  }
+
+  success = ags_functional_test_util_preferences_click_tab(1);
+
+  if(!success){
+    return(FALSE);
+  }
+  
+  ags_test_enter();
+
+  start_list = gtk_container_get_children(preferences->audio_preferences->soundcard_editor);
+  soundcard_editor = g_list_nth_data(start_list,
+				     nth_backend);
+  
+  ags_test_leave();
+
+  g_list_free(start_list);
+
+  if(soundcard_editor == NULL){
+    return(FALSE);
+  }
+
+  ags_test_enter();
+
+  gtk_spin_button_set_value(soundcard_editor->buffer_size,
+			    (gdouble) buffer_size);
+  
+  ags_test_leave();
+  
+  ags_functional_test_util_reaction_time_long();
+
+  return(TRUE);
+}
+
+gboolean
+ags_functional_test_util_audio_preferences_samplerate(guint nth_backend,
+						      guint samplerate)
+{
+  AgsXorgApplicationContext *xorg_application_context;
+  AgsPreferences *preferences;
+  AgsSoundcardEditor *soundcard_editor;
+  
+  GList *start_list;
+  
+  gboolean success;
+  
+  ags_test_enter();
+
+  xorg_application_context = ags_application_context_get_instance();
+
+  preferences = xorg_application_context->window->preferences;
+
+  ags_test_leave();
+
+  if(preferences == NULL){
+    return(FALSE);
+  }
+
+  success = ags_functional_test_util_preferences_click_tab(1);
+
+  if(!success){
+    return(FALSE);
+  }
+
+  ags_test_enter();
+
+  start_list = gtk_container_get_children(preferences->audio_preferences->soundcard_editor);
+  soundcard_editor = g_list_nth_data(start_list,
+				     nth_backend);
+  
+  ags_test_leave();
+
+  g_list_free(start_list);
+
+  if(soundcard_editor == NULL){
+    return(FALSE);
+  }
+
+  ags_test_enter();
+
+  gtk_spin_button_set_value(soundcard_editor->samplerate,
+			    (gdouble) samplerate);
+  
+  ags_test_leave();
+  
+  ags_functional_test_util_reaction_time_long();
+
+  return(TRUE);
 }
 
 gboolean
