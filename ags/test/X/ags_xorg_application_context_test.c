@@ -127,6 +127,10 @@ ags_xorg_application_context_test_finalize()
 
   AgsConfig *config;
 
+  GObjectClass *class;
+  
+  gpointer stub_finalize;
+  
   config = ags_config_get_instance();
   ags_config_load_from_data(config,
 			    AGS_XORG_APPLICATION_CONTEXT_TEST_CONFIG,
@@ -134,17 +138,23 @@ ags_xorg_application_context_test_finalize()
   
   xorg_application_context = g_object_new(AGS_TYPE_XORG_APPLICATION_CONTEXT,
 					   NULL);
-  g_object_ref(xorg_application_context);
 
   /* run dispose */
   g_object_run_dispose(xorg_application_context);
 
   /* stub finalize */
   xorg_application_context_test_finalized = FALSE;
+
+  class = G_OBJECT_GET_CLASS(xorg_application_context);
+  stub_finalize = class->finalize;
+  
   G_OBJECT_GET_CLASS(xorg_application_context)->finalize = ags_xorg_application_context_test_finalize_stub;
 
+  
   /* unref and assert */
   g_object_unref(xorg_application_context);
+
+  class->finalize = stub_finalize;
   
   CU_ASSERT(xorg_application_context_test_finalized == TRUE);
 }

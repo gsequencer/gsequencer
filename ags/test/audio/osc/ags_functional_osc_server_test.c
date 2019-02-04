@@ -535,7 +535,7 @@ ags_functional_osc_server_test_meter_controller()
   clock_gettime(CLOCK_MONOTONIC, &start_time);
 #endif
 
-  timeout_delay.tv_sec = 20;
+  timeout_delay.tv_sec = 180;
   timeout_delay.tv_nsec = 0;
   
   idle_delay.tv_sec = 0;

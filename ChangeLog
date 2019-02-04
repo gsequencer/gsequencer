@@ -1,3 +1,8 @@
+ags (2.1.45)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed memory-leak during monitor by osc server
+
 ags (2.1.44)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

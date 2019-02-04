@@ -491,6 +491,9 @@ ags_osc_meter_controller_monitor_thread(void *ptr)
 	  ags_osc_connection_write_response(osc_connection,
 					    (GObject *) osc_response);
 	    
+	  g_object_run_dispose(osc_response);
+	  g_object_unref(osc_response);
+	  
 	  /* iterate */
 	  monitor = monitor->next;
 
@@ -525,6 +528,9 @@ ags_osc_meter_controller_monitor_thread(void *ptr)
 	    ags_osc_connection_write_response(osc_connection,
 					      (GObject *) osc_response);
 	    
+	    g_object_run_dispose(osc_response);
+	    g_object_unref(osc_response);
+
 	    /* iterate */
 	    monitor = monitor->next;
 
@@ -551,6 +557,9 @@ ags_osc_meter_controller_monitor_thread(void *ptr)
 
 	    ags_osc_connection_write_response(osc_connection,
 					      (GObject *) osc_response);
+	    
+	    g_object_run_dispose(osc_response);
+	    g_object_unref(osc_response);
 	    
 	    /* iterate */
 	    monitor = monitor->next;
@@ -608,6 +617,9 @@ ags_osc_meter_controller_monitor_thread(void *ptr)
 	    ags_osc_connection_write_response(osc_connection,
 					      (GObject *) osc_response);
 	    
+	    g_object_run_dispose(osc_response);
+	    g_object_unref(osc_response);
+	    
 	    /* iterate */
 	    monitor = monitor->next;
 
@@ -644,6 +656,8 @@ ags_osc_meter_controller_monitor_thread(void *ptr)
       /* write response */
       ags_osc_connection_write_response(osc_connection,
 					(GObject *) osc_response);
+      g_object_run_dispose(osc_response);
+      g_object_unref(osc_response);
       
       /* iterate */
       monitor = monitor->next;

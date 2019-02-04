@@ -1360,7 +1360,7 @@ ags_recall_container_find(GList *recall_container,
   }
   
   while(recall_container != NULL){
-    GType *current_gtype;
+    GType current_gtype;
     
     current = AGS_RECALL_CONTAINER(recall_container->data);
 
