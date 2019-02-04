@@ -1,3 +1,9 @@
+ags (2.1.44)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed SIGSEGV introduced in 2.1.42 related to ags_functional_osc_server_test_meter_controller()
+	* fixed project_license in gsequencer.appdata.xml
+
 ags (2.1.43)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

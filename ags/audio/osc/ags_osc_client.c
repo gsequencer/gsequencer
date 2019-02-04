@@ -548,6 +548,10 @@ ags_osc_client_finalize(GObject *gobject)
     free(osc_client->start_time);
   }
 
+  if(osc_client->buffer != NULL){
+    free(osc_client->buffer);
+  }
+
   if(osc_client->timeout_delay != NULL){
     free(osc_client->timeout_delay);
   }

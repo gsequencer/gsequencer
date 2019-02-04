@@ -573,7 +573,6 @@ ags_functional_osc_server_test_meter_controller()
       }
 
       free(current_packet);
-      free(current_data);
     }
     
     if(i == 16){

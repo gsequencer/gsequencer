@@ -3,7 +3,7 @@
 <component type="desktop">
   <id>org.nongnu.gsequencer.gsequencer</id>
   <metadata_license>FSFAP</metadata_license>
-  <project_license>GPL-3+</project_license>
+  <project_license>gpl-3+</project_license>
   <content_rating type="oars-1.0">
     <content_attribute id="social-audio">none</content_attribute>
   </content_rating>
