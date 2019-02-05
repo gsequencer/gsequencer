@@ -692,7 +692,7 @@ ags_apply_sound_config_launch(AgsTask *task)
 #endif
   }
 
-  /* run dispose */
+  /* remove cyclic task */
   orig_soundcard = start_orig_soundcard;
   
   while(orig_soundcard != NULL){
@@ -718,25 +718,9 @@ ags_apply_sound_config_launch(AgsTask *task)
 
     ags_task_thread_remove_cyclic_task((AgsTaskThread *) application_context->task_thread,
 				       (AgsTask *) notify_soundcard);
-    
-    g_object_run_dispose((GObject *) orig_soundcard->data);
-    g_object_unref((GObject *) orig_soundcard->data);
-    
+        
     orig_soundcard = orig_soundcard->next;
   }
-
-  g_list_free(start_orig_soundcard);
-
-  orig_sequencer = start_orig_sequencer;
-  
-  while(orig_sequencer != NULL){
-    g_object_run_dispose((GObject *) orig_sequencer->data);
-    g_object_unref((GObject *) orig_sequencer->data);
-    
-    orig_sequencer = orig_sequencer->next;
-  }
-
-  g_list_free(start_orig_sequencer);
   
   /* read config */
   str = ags_config_get_value(config,
@@ -1281,6 +1265,31 @@ ags_apply_sound_config_launch(AgsTask *task)
 
   g_list_free(start_sound_server);
   g_list_free(start_audio);  
+
+  /* run dispose */
+  orig_soundcard = start_orig_soundcard;
+  
+  while(orig_soundcard != NULL){
+    AgsNotifySoundcard *notify_soundcard;
+    
+    g_object_run_dispose((GObject *) orig_soundcard->data);
+    g_object_unref((GObject *) orig_soundcard->data);
+    
+    orig_soundcard = orig_soundcard->next;
+  }
+
+  g_list_free(start_orig_soundcard);
+
+  orig_sequencer = start_orig_sequencer;
+  
+  while(orig_sequencer != NULL){
+    g_object_run_dispose((GObject *) orig_sequencer->data);
+    g_object_unref((GObject *) orig_sequencer->data);
+    
+    orig_sequencer = orig_sequencer->next;
+  }
+
+  g_list_free(start_orig_sequencer);
 }
 
 /**

@@ -189,6 +189,8 @@ ags_generic_preferences_init(AgsGenericPreferences *generic_preferences)
 				 "deterministic");
   gtk_combo_box_text_append_text(generic_preferences->engine_mode,
 				 "performance");
+  gtk_combo_box_set_active(GTK_COMBO_BOX(generic_preferences->engine_mode),
+			   0);
   
   gtk_box_pack_start(GTK_BOX(hbox),
 		     GTK_WIDGET(generic_preferences->engine_mode),
@@ -333,11 +335,14 @@ ags_generic_preferences_reset(AgsApplicable *applicable)
 			     "engine-mode");
 
   if(str != NULL){
-    if(g_ascii_strncasecmp(str,
-			   "performance",
-			   12)){
+    if(!g_ascii_strncasecmp(str,
+			    "performance",
+			    12)){
       gtk_combo_box_set_active((GtkComboBox *) generic_preferences->engine_mode,
 			       1);
+    }else{
+      gtk_combo_box_set_active((GtkComboBox *) generic_preferences->engine_mode,
+			       0);
     }
   }
   
