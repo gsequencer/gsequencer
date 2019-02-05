@@ -1,3 +1,12 @@
+ags (2.1.46)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented ags_notation_find_offset() bisection x offset of notes
+	* improved ags-play-notation recall to use ags_notation_find_offset()
+	* refactored ags_automation_get_value() to bisection x offset of accelerations
+	* fixed AgsApplySoundConfig task to run dispose after replacing soundcard/sequencer
+	* fixed set property default-output-soundcard thread of AgsChannelThread in ags_channel.c
+
 ags (2.1.45)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

@@ -1060,53 +1060,188 @@ GList*
 ags_automation_find_near_timestamp(GList *automation, guint line,
 				   AgsTimestamp *timestamp)
 {
-  AgsTimestamp *current_timestamp;
+  AgsTimestamp *current_start_timestamp, *current_end_timestamp, *current_timestamp;
+
+  GList *retval;
+  GList *current_start, *current_end, *current;
 
   guint current_line;
+  guint64 current_x, x;
+  guint length, position;
+  gboolean success;
 
-  while(automation != NULL){
-    g_object_get(automation->data,
+  if(automation == NULL){
+    return(NULL);
+  }
+
+  current_start = automation;
+  current_end = g_list_last(automation);
+  
+  length = g_list_length(automation);
+  position = length / 2;
+
+  current = g_list_nth(current_start,
+		       position);
+
+  if(ags_timestamp_test_flags(timestamp,
+			      AGS_TIMESTAMP_OFFSET)){
+    x = ags_timestamp_get_ags_offset(timestamp);
+  }else if(ags_timestamp_test_flags(timestamp,
+				    AGS_TIMESTAMP_UNIX)){
+    x = ags_timestamp_get_unix_time(timestamp);
+  }
+  
+  retval = NULL;
+  success = FALSE;
+  
+  while(!success && current != NULL){
+    /* check current - start */
+    g_object_get(current_start->data,
 		 "line", &current_line,
-		 NULL);
-    
-    if(current_line != line){
-      automation = automation->next;
-      
-      continue;
-    }
-
-    if(timestamp == NULL){
-      return(automation);
-    }
-
-    g_object_get(automation->data,
 		 "timestamp", &current_timestamp,
 		 NULL);
     
-    if(current_timestamp != NULL){
-      if(ags_timestamp_test_flags(timestamp,
-				  AGS_TIMESTAMP_OFFSET) &&
-	 ags_timestamp_test_flags(current_timestamp,
-				  AGS_TIMESTAMP_OFFSET)){
-	if(ags_timestamp_get_ags_offset(current_timestamp) >= ags_timestamp_get_ags_offset(timestamp) &&
-	   ags_timestamp_get_ags_offset(current_timestamp) < ags_timestamp_get_ags_offset(timestamp) + AGS_AUTOMATION_DEFAULT_OFFSET){
-	  return(automation);
+    if(current_line == line){
+      if(timestamp == NULL){
+	retval = current_start;
+	
+	break;
+      }
+
+      if(current_timestamp != NULL){
+	if(ags_timestamp_test_flags(timestamp,
+				    AGS_TIMESTAMP_OFFSET) &&
+	   ags_timestamp_test_flags(current_timestamp,
+				    AGS_TIMESTAMP_OFFSET)){
+	  if(ags_timestamp_get_ags_offset(current_timestamp) >= x &&
+	     ags_timestamp_get_ags_offset(current_timestamp) < x + AGS_AUTOMATION_DEFAULT_OFFSET){
+	    retval = current_start;
+	    
+	    break;
+	  }
+	}else if(ags_timestamp_test_flags(timestamp,
+					  AGS_TIMESTAMP_UNIX) &&
+		 ags_timestamp_test_flags(current_timestamp,
+					  AGS_TIMESTAMP_UNIX)){
+	  if(ags_timestamp_get_unix_time(current_timestamp) >= x &&
+	     ags_timestamp_get_unix_time(current_timestamp) < x + AGS_AUTOMATION_DEFAULT_DURATION){
+	    retval = current_start;
+	    
+	    break;
+	  }
+	}else{
+	  g_warning("inconsistent data");
 	}
-      }else if(ags_timestamp_test_flags(timestamp,
-					AGS_TIMESTAMP_UNIX) &&
-	       ags_timestamp_test_flags(current_timestamp,
-					AGS_TIMESTAMP_UNIX)){
-	if(ags_timestamp_get_unix_time(current_timestamp) >= ags_timestamp_get_unix_time(timestamp) &&
-	   ags_timestamp_get_unix_time(current_timestamp) < ags_timestamp_get_unix_time(timestamp) + AGS_AUTOMATION_DEFAULT_DURATION){
-	  return(automation);
+      }else{
+	g_warning("inconsistent data");
+      }
+    }
+
+    /* check current - end */
+    g_object_get(current_end->data,
+		 "line", &current_line,
+		 "timestamp", &current_timestamp,
+		 NULL);
+    
+    if(current_line == line){
+      if(timestamp == NULL){
+	retval = current_end;
+	
+	break;
+      }
+
+      if(current_timestamp != NULL){
+	if(ags_timestamp_test_flags(timestamp,
+				    AGS_TIMESTAMP_OFFSET) &&
+	   ags_timestamp_test_flags(current_timestamp,
+				    AGS_TIMESTAMP_OFFSET)){
+	  if(ags_timestamp_get_ags_offset(current_timestamp) >= x &&
+	     ags_timestamp_get_ags_offset(current_timestamp) < x + AGS_AUTOMATION_DEFAULT_OFFSET){
+	    retval = current_end;
+	    
+	    break;
+	  }
+	}else if(ags_timestamp_test_flags(timestamp,
+					  AGS_TIMESTAMP_UNIX) &&
+		 ags_timestamp_test_flags(current_timestamp,
+					  AGS_TIMESTAMP_UNIX)){
+	  if(ags_timestamp_get_unix_time(current_timestamp) >= x &&
+	     ags_timestamp_get_unix_time(current_timestamp) < x + AGS_AUTOMATION_DEFAULT_DURATION){
+	    retval = current_end;
+	    
+	    break;
+	  }
+	}else{
+	  g_warning("inconsistent data");
 	}
+      }else{
+	g_warning("inconsistent data");
+      }
+    }
+
+    /* check current - center */
+    current_x = 0;
+    
+    g_object_get(current->data,
+		 "line", &current_line,
+		 "timestamp", &current_timestamp,
+		 NULL);
+    
+    if(current_line == line){
+      if(timestamp == NULL){
+	retval = current;
+	
+	break;
+      }
+
+      if(current_timestamp != NULL){
+	if(ags_timestamp_test_flags(timestamp,
+				    AGS_TIMESTAMP_OFFSET) &&
+	   ags_timestamp_test_flags(current_timestamp,
+				    AGS_TIMESTAMP_OFFSET)){
+	  if((current_x = ags_timestamp_get_ags_offset(current_timestamp)) >= x &&
+	     ags_timestamp_get_ags_offset(current_timestamp) < x + AGS_AUTOMATION_DEFAULT_OFFSET){
+	    retval = current;
+	    
+	    break;
+	  }
+	}else if(ags_timestamp_test_flags(timestamp,
+					  AGS_TIMESTAMP_UNIX) &&
+		 ags_timestamp_test_flags(current_timestamp,
+					  AGS_TIMESTAMP_UNIX)){
+	  if((current_x = ags_timestamp_get_unix_time(current_timestamp)) >= x &&
+	     ags_timestamp_get_unix_time(current_timestamp) < x + AGS_AUTOMATION_DEFAULT_DURATION){
+	    retval = current;
+	    
+	    break;
+	  }
+	}else{
+	  g_warning("inconsistent data");
+	}
+      }else{
+	g_warning("inconsistent data");
       }
     }
     
-    automation = automation->next;
+    if(position == 0){
+      break;
+    }
+
+    position = position / 2;
+
+    if(current_x < x){
+      current_start = current->next;
+      current_end = current_end->prev;
+    }else{
+      current_start = current_start->next;
+      current_end = current->prev;
+    }    
+
+    current = g_list_nth(current_start,
+			 position);
   }
 
-  return(NULL);
+  return(retval);
 }
 
 /**
@@ -1128,86 +1263,210 @@ ags_automation_find_near_timestamp_extended(GList *automation, guint line,
 					    GType channel_type, gchar *control_name,
 					    AgsTimestamp *timestamp)
 {
-  AgsAutomation *current_automation;
-  
-  AgsTimestamp *current_timestamp;
+  AgsTimestamp *current_start_timestamp, *current_end_timestamp, *current_timestamp;
+
+  GList *retval;
+  GList *current_start, *current_end, *current;
 
   GType current_channel_type;
 
   gchar *current_control_name;
-  
+
   guint current_line;
+  guint64 current_x, x;
+  guint length, position;
   gboolean success;
 
-  pthread_mutex_t *automation_mutex;
+  if(automation == NULL){
+    return(NULL);
+  }
 
-  while(automation != NULL){
-    current_automation = AGS_AUTOMATION(automation->data);
-    
-    /* get automation mutex */
-    pthread_mutex_lock(ags_automation_get_class_mutex());
+  current_start = automation;
+  current_end = g_list_last(automation);
   
-    automation_mutex = current_automation->obj_mutex;
+  length = g_list_length(automation);
+  position = length / 2;
+
+  current = g_list_nth(current_start,
+		       position);
+
+  if(ags_timestamp_test_flags(timestamp,
+			      AGS_TIMESTAMP_OFFSET)){
+    x = ags_timestamp_get_ags_offset(timestamp);
+  }else if(ags_timestamp_test_flags(timestamp,
+				    AGS_TIMESTAMP_UNIX)){
+    x = ags_timestamp_get_unix_time(timestamp);
+  }
   
-    pthread_mutex_unlock(ags_automation_get_class_mutex());
-
-    /* get some fields */
-    pthread_mutex_lock(automation_mutex);
-
-    current_line = current_automation->line;
-
-    current_channel_type = current_automation->channel_type;
-
-    current_control_name = g_strdup(current_automation->control_name);
-    
-    pthread_mutex_unlock(automation_mutex);
-
-    /* check success */
-    success = (current_line == line &&
-	       current_channel_type == channel_type &&
-	       !g_strcmp0(current_control_name,
-			  control_name)) ? TRUE: FALSE;
-
-    g_free(current_control_name);
-    
-    if(!success){
-      automation = automation->next;
-      
-      continue;
-    }
-
-    if(timestamp == NULL){
-      return(automation);
-    }
-    
-    g_object_get(current_automation,
+  retval = NULL;
+  success = FALSE;
+  
+  while(!success && current != NULL){
+    /* check current - start */
+    g_object_get(current_start->data,
+		 "line", &current_line,
+		 "channel-type", &current_channel_type,
+		 "control-name", &current_control_name,
 		 "timestamp", &current_timestamp,
 		 NULL);
     
-    if(current_timestamp != NULL){
-      if(ags_timestamp_test_flags(timestamp,
-				  AGS_TIMESTAMP_OFFSET) &&
-	 ags_timestamp_test_flags(current_timestamp,
-				  AGS_TIMESTAMP_OFFSET)){
-	if(ags_timestamp_get_ags_offset(current_timestamp) >= ags_timestamp_get_ags_offset(timestamp) &&
-	   ags_timestamp_get_ags_offset(current_timestamp) < ags_timestamp_get_ags_offset(timestamp) + AGS_AUTOMATION_DEFAULT_OFFSET){
-	  return(automation);
+    if(current_line == line &&
+       g_type_is_a(current_channel_type,
+		   channel_type) &&
+       !g_strcmp0(current_control_name,
+		  control_name)){
+      if(timestamp == NULL){
+	retval = current_start;
+	
+	break;
+      }
+
+      if(current_timestamp != NULL){
+	if(ags_timestamp_test_flags(timestamp,
+				    AGS_TIMESTAMP_OFFSET) &&
+	   ags_timestamp_test_flags(current_timestamp,
+				    AGS_TIMESTAMP_OFFSET)){
+	  if(ags_timestamp_get_ags_offset(current_timestamp) >= x &&
+	     ags_timestamp_get_ags_offset(current_timestamp) < x + AGS_AUTOMATION_DEFAULT_OFFSET){
+	    retval = current_start;
+	    
+	    break;
+	  }
+	}else if(ags_timestamp_test_flags(timestamp,
+					  AGS_TIMESTAMP_UNIX) &&
+		 ags_timestamp_test_flags(current_timestamp,
+					  AGS_TIMESTAMP_UNIX)){
+	  if(ags_timestamp_get_unix_time(current_timestamp) >= x &&
+	     ags_timestamp_get_unix_time(current_timestamp) < x + AGS_AUTOMATION_DEFAULT_DURATION){
+	    retval = current_start;
+	    
+	    break;
+	  }
+	}else{
+	  g_warning("inconsistent data");
 	}
-      }else if(ags_timestamp_test_flags(timestamp,
-					AGS_TIMESTAMP_UNIX) &&
-	       ags_timestamp_test_flags(current_timestamp,
-					AGS_TIMESTAMP_UNIX)){
-	if(ags_timestamp_get_unix_time(current_timestamp) >= ags_timestamp_get_unix_time(timestamp) &&
-	   ags_timestamp_get_unix_time(current_timestamp) < ags_timestamp_get_unix_time(timestamp) + AGS_AUTOMATION_DEFAULT_DURATION){
-	  return(automation);
+      }else{
+	g_warning("inconsistent data");
+      }
+    }
+
+    /* check current - end */
+    g_object_get(current_end->data,
+		 "line", &current_line,
+		 "channel-type", &current_channel_type,
+		 "control-name", &current_control_name,
+		 "timestamp", &current_timestamp,
+		 NULL);
+    
+    if(current_line == line &&
+       g_type_is_a(current_channel_type,
+		   channel_type) &&
+       !g_strcmp0(current_control_name,
+		  control_name)){
+      if(timestamp == NULL){
+	retval = current_end;
+	
+	break;
+      }
+
+      if(current_timestamp != NULL){
+	if(ags_timestamp_test_flags(timestamp,
+				    AGS_TIMESTAMP_OFFSET) &&
+	   ags_timestamp_test_flags(current_timestamp,
+				    AGS_TIMESTAMP_OFFSET)){
+	  if(ags_timestamp_get_ags_offset(current_timestamp) >= x &&
+	     ags_timestamp_get_ags_offset(current_timestamp) < x + AGS_AUTOMATION_DEFAULT_OFFSET){
+	    retval = current_end;
+	    
+	    break;
+	  }
+	}else if(ags_timestamp_test_flags(timestamp,
+					  AGS_TIMESTAMP_UNIX) &&
+		 ags_timestamp_test_flags(current_timestamp,
+					  AGS_TIMESTAMP_UNIX)){
+	  if(ags_timestamp_get_unix_time(current_timestamp) >= x &&
+	     ags_timestamp_get_unix_time(current_timestamp) < x + AGS_AUTOMATION_DEFAULT_DURATION){
+	    retval = current_end;
+	    
+	    break;
+	  }
+	}else{
+	  g_warning("inconsistent data");
 	}
+      }else{
+	g_warning("inconsistent data");
+      }
+    }
+
+    /* check current - center */
+    current_x = 0;
+    
+    g_object_get(current->data,
+		 "line", &current_line,
+		 "channel-type", &current_channel_type,
+		 "control-name", &current_control_name,
+		 "timestamp", &current_timestamp,
+		 NULL);
+    
+    if(current_line == line &&
+       g_type_is_a(current_channel_type,
+		   channel_type) &&
+       !g_strcmp0(current_control_name,
+		  control_name)){
+      if(timestamp == NULL){
+	retval = current;
+	
+	break;
+      }
+
+      if(current_timestamp != NULL){
+	if(ags_timestamp_test_flags(timestamp,
+				    AGS_TIMESTAMP_OFFSET) &&
+	   ags_timestamp_test_flags(current_timestamp,
+				    AGS_TIMESTAMP_OFFSET)){
+	  if((current_x = ags_timestamp_get_ags_offset(current_timestamp)) >= x &&
+	     ags_timestamp_get_ags_offset(current_timestamp) < x + AGS_AUTOMATION_DEFAULT_OFFSET){
+	    retval = current;
+	    
+	    break;
+	  }
+	}else if(ags_timestamp_test_flags(timestamp,
+					  AGS_TIMESTAMP_UNIX) &&
+		 ags_timestamp_test_flags(current_timestamp,
+					  AGS_TIMESTAMP_UNIX)){
+	  if((current_x = ags_timestamp_get_unix_time(current_timestamp)) >= x &&
+	     ags_timestamp_get_unix_time(current_timestamp) < x + AGS_AUTOMATION_DEFAULT_DURATION){
+	    retval = current;
+	    
+	    break;
+	  }
+	}else{
+	  g_warning("inconsistent data");
+	}
+      }else{
+	g_warning("inconsistent data");
       }
     }
     
-    automation = automation->next;
+    if(position == 0){
+      break;
+    }
+
+    position = position / 2;
+
+    if(current_x < x){
+      current_start = current->next;
+      current_end = current_end->prev;
+    }else{
+      current_start = current_start->next;
+      current_end = current->prev;
+    }    
+
+    current = g_list_nth(current_start,
+			 position);
   }
 
-  return(NULL);
+  return(retval);
 }
 
 /**
@@ -2936,14 +3195,18 @@ ags_automation_get_value(AgsAutomation *automation,
 			 gboolean use_prev_on_failure,
 			 GValue *value)
 {
-  AgsAcceleration *current_acceleration;
+  AgsAcceleration *matching_acceleration;
   AgsPort *port;
 
   GType port_value_type;
   
   GList *acceleration;
+  GList *next, *prev;
+  GList *current_start, *current_end, *current;
 
-  guint current_x;
+  guint current_start_x, current_end_x, current_x;
+  guint length, position;
+  gboolean success;
   guint ret_x;
   gdouble default_value;
   gdouble y;
@@ -2968,49 +3231,134 @@ ags_automation_get_value(AgsAutomation *automation,
   port = (AgsPort *) automation->port;
   acceleration = automation->acceleration;
 
-  current_acceleration = NULL;
-  ret_x = 0;
+  current_start = acceleration;
+  current_end = g_list_last(acceleration);
   
-  if(acceleration != NULL){
-    while(acceleration != NULL){
-      current_acceleration = acceleration->data;
-      
-      g_object_get(current_acceleration,
-		   "x", &current_x,
-		   NULL);
-      
-      if(current_x >= x &&
-	 current_x < x_end){
-	break;
-      }
+  length = g_list_length(acceleration);
+  position = length / 2;
 
-      if(current_x > x_end){
-	if(use_prev_on_failure){
-	  acceleration = acceleration->prev;
+  current = g_list_nth(current_start,
+		       position);
+  
+  if(acceleration == NULL){
+    pthread_mutex_unlock(automation_mutex);
 
-	  break;
-	}else{
-	  pthread_mutex_unlock(automation_mutex);
-	  
-	  return(G_MAXUINT);
-	}
-      }
-
-      acceleration = acceleration->next;
-    }
-    
-    if(acceleration == NULL){
-      pthread_mutex_unlock(automation_mutex);
-      
-      return(G_MAXUINT);
-    }
-    
-    ret_x = current_x;
-  }else{
     return(G_MAXUINT);
   }
 
+  matching_acceleration = NULL;
+
+  ret_x = 0;  
+  success = FALSE;
+  
+  while(!success && current != NULL){
+    g_object_get(current_start->data,
+		 "x", &current_start_x,
+		 NULL);
+
+    if(current_start_x >= x &&
+       current_start_x < x_end){
+      matching_acceleration = current_start->data;
+
+      break;
+    }
+    
+    g_object_get(current_end->data,
+		 "x", &current_end_x,
+		 NULL);
+
+    if(current_end_x >= x &&
+       current_end_x < x_end){
+      matching_acceleration = current_end->data;
+
+      break;
+    }
+
+    g_object_get(current->data,
+		 "x", &current_x,
+		 NULL);
+    
+    if(current_x >= x &&
+       current_x < x_end){
+      matching_acceleration = current->data;
+      
+      break;
+    }
+
+    if(position == 0){
+      break;
+    }
+
+    position = position / 2;
+
+    if(current_x < x){
+      current_start = current->next;
+      current_end = current_end->prev;
+    }else{
+      current_start = current_start->next;
+      current_end = current->prev;
+    }    
+
+    current = g_list_nth(current_start,
+			 position);
+  }
+
+  if(matching_acceleration != NULL){
+    guint tmp_x;
+
+    if(current_start->data == matching_acceleration){
+      next = current_start->next;
+
+      ret_x = current_start_x;
+    }else if(current_end->data == matching_acceleration){
+      next = current_end->next;
+
+      ret_x = current_end_x;
+    }else if(current->data == matching_acceleration){
+      next = current->next;
+
+      ret_x = current_x;
+    }
+
+    while(next != NULL){
+      g_object_get(next->data,
+		   "x", &tmp_x,
+		   NULL);
+
+      if(tmp_x > x_end){
+	break;
+      }
+
+      matching_acceleration = next->data;
+      
+      next = next->next;
+    }
+  }else{
+    if(use_prev_on_failure){
+      prev = current_start;
+
+      while(prev != NULL){
+	g_object_get(prev->data,
+		     "x", &current_start_x,
+		     NULL);
+
+      
+	if(current_start_x < x){	
+	  matching_acceleration = prev->data;
+
+	  break;
+	}
+      
+	prev = prev->prev;
+      }
+    }
+  }
+  
   pthread_mutex_unlock(automation_mutex);
+  
+  if(matching_acceleration == NULL){
+    return(G_MAXUINT);
+  }
 
   /* apply port */
   g_object_get(automation,
@@ -3022,7 +3370,7 @@ ags_automation_get_value(AgsAutomation *automation,
 	       "port-value-type", &port_value_type,
 	       NULL);
   
-  g_object_get(current_acceleration,
+  g_object_get(matching_acceleration,
 	       "y", &y,
 	       NULL);
 

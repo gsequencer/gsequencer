@@ -625,53 +625,186 @@ GList*
 ags_notation_find_near_timestamp(GList *notation, guint audio_channel,
 				 AgsTimestamp *timestamp)
 {
-  AgsTimestamp *current_timestamp;
+  AgsTimestamp *current_start_timestamp, *current_end_timestamp, *current_timestamp;
+
+  GList *retval;
+  GList *current_start, *current_end, *current;
 
   guint current_audio_channel;
+  guint64 current_x, x;
+  guint length, position;
+  gboolean success;
 
-  while(notation != NULL){
-    g_object_get(notation->data,
+  if(notation == NULL){
+    return(NULL);
+  }
+
+  current_start = notation;
+  current_end = g_list_last(notation);
+  
+  length = g_list_length(notation);
+  position = length / 2;
+
+  current = g_list_nth(current_start,
+		       position);
+
+  if(ags_timestamp_test_flags(timestamp,
+			      AGS_TIMESTAMP_OFFSET)){
+    x = ags_timestamp_get_ags_offset(timestamp);
+  }else if(ags_timestamp_test_flags(timestamp,
+				    AGS_TIMESTAMP_UNIX)){
+    x = ags_timestamp_get_unix_time(timestamp);
+  }
+  
+  retval = NULL;
+  success = FALSE;
+  
+  while(!success && current != NULL){
+    /* check current - start */
+    g_object_get(current_start->data,
 		 "audio-channel", &current_audio_channel,
-		 NULL);
-    
-    if(current_audio_channel != audio_channel){
-      notation = notation->next;
-      
-      continue;
-    }
-
-    if(timestamp == NULL){
-      return(notation);
-    }
-    
-    g_object_get(notation->data,
 		 "timestamp", &current_timestamp,
 		 NULL);
     
-    if(current_timestamp != NULL){
-      if(ags_timestamp_test_flags(timestamp,
-				  AGS_TIMESTAMP_OFFSET) &&
-	 ags_timestamp_test_flags(current_timestamp,
-				  AGS_TIMESTAMP_OFFSET)){
-	if(ags_timestamp_get_ags_offset(current_timestamp) >= ags_timestamp_get_ags_offset(timestamp) &&
-	   ags_timestamp_get_ags_offset(current_timestamp) < ags_timestamp_get_ags_offset(timestamp) + AGS_NOTATION_DEFAULT_OFFSET){
-	  return(notation);
+    if(current_audio_channel == audio_channel){
+      if(timestamp == NULL){
+	retval = current_start;
+	
+	break;
+      }
+
+      if(current_timestamp != NULL){
+	if(ags_timestamp_test_flags(timestamp,
+				    AGS_TIMESTAMP_OFFSET) &&
+	   ags_timestamp_test_flags(current_timestamp,
+				    AGS_TIMESTAMP_OFFSET)){
+	  if(ags_timestamp_get_ags_offset(current_timestamp) >= x &&
+	     ags_timestamp_get_ags_offset(current_timestamp) < x + AGS_NOTATION_DEFAULT_OFFSET){
+	    retval = current_start;
+	    
+	    break;
+	  }
+	}else if(ags_timestamp_test_flags(timestamp,
+					  AGS_TIMESTAMP_UNIX) &&
+		 ags_timestamp_test_flags(current_timestamp,
+					  AGS_TIMESTAMP_UNIX)){
+	  if(ags_timestamp_get_unix_time(current_timestamp) >= x &&
+	     ags_timestamp_get_unix_time(current_timestamp) < x + AGS_NOTATION_DEFAULT_DURATION){
+	    retval = current_start;
+	    
+	    break;
+	  }
+	}else{
+	  g_warning("inconsistent data");
 	}
-      }else if(ags_timestamp_test_flags(timestamp,
-					AGS_TIMESTAMP_UNIX) &&
-	       ags_timestamp_test_flags(current_timestamp,
-					AGS_TIMESTAMP_UNIX)){
-	if(ags_timestamp_get_unix_time(current_timestamp) >= ags_timestamp_get_unix_time(timestamp) &&
-	   ags_timestamp_get_unix_time(current_timestamp) < ags_timestamp_get_unix_time(timestamp) + AGS_NOTATION_DEFAULT_DURATION){
-	  return(notation);
+      }else{
+	g_warning("inconsistent data");
+      }
+    }
+
+    /* check current - end */
+    g_object_get(current_end->data,
+		 "audio-channel", &current_audio_channel,
+		 "timestamp", &current_timestamp,
+		 NULL);
+    
+    if(current_audio_channel == audio_channel){
+      if(timestamp == NULL){
+	retval = current_end;
+	
+	break;
+      }
+
+      if(current_timestamp != NULL){
+	if(ags_timestamp_test_flags(timestamp,
+				    AGS_TIMESTAMP_OFFSET) &&
+	   ags_timestamp_test_flags(current_timestamp,
+				    AGS_TIMESTAMP_OFFSET)){
+	  if((current_x = ags_timestamp_get_ags_offset(current_timestamp)) >= x &&
+	     ags_timestamp_get_ags_offset(current_timestamp) < x + AGS_NOTATION_DEFAULT_OFFSET){
+	    retval = current_end;
+	    
+	    break;
+	  }
+	}else if(ags_timestamp_test_flags(timestamp,
+					  AGS_TIMESTAMP_UNIX) &&
+		 ags_timestamp_test_flags(current_timestamp,
+					  AGS_TIMESTAMP_UNIX)){
+	  if((current_x = ags_timestamp_get_unix_time(current_timestamp)) >= x &&
+	     ags_timestamp_get_unix_time(current_timestamp) < x + AGS_NOTATION_DEFAULT_DURATION){
+	    retval = current_end;
+	    
+	    break;
+	  }
+	}else{
+	  g_warning("inconsistent data");
 	}
+      }else{
+	g_warning("inconsistent data");
+      }
+    }
+
+    /* check current - center */
+    g_object_get(current->data,
+		 "audio-channel", &current_audio_channel,
+		 "timestamp", &current_timestamp,
+		 NULL);
+    
+    if(current_audio_channel == audio_channel){
+      if(timestamp == NULL){
+	retval = current;
+	
+	break;
+      }
+
+      if(current_timestamp != NULL){
+	if(ags_timestamp_test_flags(timestamp,
+				    AGS_TIMESTAMP_OFFSET) &&
+	   ags_timestamp_test_flags(current_timestamp,
+				    AGS_TIMESTAMP_OFFSET)){
+	  if(ags_timestamp_get_ags_offset(current_timestamp) >= x &&
+	     ags_timestamp_get_ags_offset(current_timestamp) < x + AGS_NOTATION_DEFAULT_OFFSET){
+	    retval = current;
+	    
+	    break;
+	  }
+	}else if(ags_timestamp_test_flags(timestamp,
+					  AGS_TIMESTAMP_UNIX) &&
+		 ags_timestamp_test_flags(current_timestamp,
+					  AGS_TIMESTAMP_UNIX)){
+	  if(ags_timestamp_get_unix_time(current_timestamp) >= x &&
+	     ags_timestamp_get_unix_time(current_timestamp) < x + AGS_NOTATION_DEFAULT_DURATION){
+	    retval = current;
+	    
+	    break;
+	  }
+	}else{
+	  g_warning("inconsistent data");
+	}
+      }else{
+	g_warning("inconsistent data");
       }
     }
     
-    notation = notation->next;
+    if(position == 0){
+      break;
+    }
+
+    position = position / 2;
+
+    if(current_x < x){
+      current_start = current->next;
+      current_end = current_end->prev;
+    }else{
+      current_start = current_start->next;
+      current_end = current->prev;
+    }    
+
+    current = g_list_nth(current_start,
+			 position);
   }
 
-  return(NULL);
+  return(retval);
 }
 
 /**
@@ -1197,6 +1330,170 @@ ags_notation_find_region(AgsNotation *notation,
   region = g_list_reverse(region);
 
   return(region);
+}
+
+/**
+ * ags_notation_find_region:
+ * @notation: the #AgsNotation
+ * @x: offset
+ * @use_selection_list: if %TRUE selection is searched
+ *
+ * Find all notes by offset @x.
+ *
+ * Returns: the #GList-struct containing matching #AgsNote
+ *
+ * Since: 2.1.46
+ */
+GList*
+ags_notation_find_offset(AgsNotation *notation,
+			 guint x,
+			 gboolean use_selection_list)
+{
+  GList *retval;
+  GList *note;
+  GList *next, *prev;
+  GList *current_start, *current_end, *current;
+
+  guint current_start_x, current_end_x, current_x;
+  guint length, position;
+  gboolean success;
+
+  pthread_mutex_t *notation_mutex;
+
+  if(!AGS_IS_NOTATION(notation)){
+    return(NULL);
+  }
+
+  /* get notation mutex */
+  pthread_mutex_lock(ags_notation_get_class_mutex());
+  
+  notation_mutex = notation->obj_mutex;
+  
+  pthread_mutex_unlock(ags_notation_get_class_mutex());
+
+  /* find note */
+  pthread_mutex_lock(notation_mutex);
+
+  if(use_selection_list){
+    note = notation->selection;
+  }else{
+    note = notation->note;
+  }
+  
+  current_start = note;
+  current_end = g_list_last(note);
+  
+  length = g_list_length(note);
+  position = length / 2;
+
+  current = g_list_nth(current_start,
+		       position);
+  
+  retval = NULL;
+  success = FALSE;
+  
+  while(!success && current != NULL){
+    g_object_get(current_start->data,
+		 "x", &current_start_x,
+		 NULL);
+
+    if(current_start_x == x){
+      retval = g_list_alloc();
+      retval->data = current_start->data;
+
+      break;
+    }
+    
+    g_object_get(current_end->data,
+		 "x", &current_end_x,
+		 NULL);
+
+    if(current_end_x == x){
+      retval = g_list_alloc();
+      retval->data = current_end->data;
+
+      break;
+    }
+
+    g_object_get(current->data,
+		 "x", &current_x,
+		 NULL);
+    
+    if(current_x == x){
+      retval = g_list_alloc();
+      retval->data = current->data;
+      
+      break;
+    }
+
+    if(position == 0){
+      break;
+    }
+
+    position = position / 2;
+
+    if(current_x < x){
+      current_start = current->next;
+      current_end = current_end->prev;
+    }else{
+      current_start = current_start->next;
+      current_end = current->prev;
+    }    
+
+    current = g_list_nth(current_start,
+			 position);
+  }
+
+  if(retval != NULL){
+    if(current_start->data == retval->data){
+      next = current_start->next;
+      prev = current_start->prev;
+    }else if(current_end->data == retval->data){
+      next = current_end->next;
+      prev = current_end->prev;
+    }else if(current->data == retval->data){
+      next = current->next;
+      prev = current->prev;
+    }
+
+    /* check next */
+    current = next;
+
+    while(current != NULL){
+      g_object_get(current->data,
+		   "x", &current_x,
+		   NULL);
+    
+      if(current_x == x){
+	retval = g_list_prepend(retval,
+				current->data);
+      }
+	
+      current = current->next;
+    }
+
+    retval = g_list_reverse(retval);
+
+    /* check prev */
+    current = prev;
+
+    while(current != NULL){
+      g_object_get(current->data,
+		   "x", &current_x,
+		   NULL);
+    
+      if(current_x == x){
+	retval = g_list_prepend(retval,
+				current->data);
+      }
+	
+      current = current->prev;
+    }
+  }
+
+  pthread_mutex_unlock(notation_mutex);
+  
+  return(retval);
 }
 
 /**

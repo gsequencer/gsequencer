@@ -1283,59 +1283,200 @@ GList*
 ags_wave_find_near_timestamp(GList *wave, guint line,
 			     AgsTimestamp *timestamp)
 {
-  AgsTimestamp *current_timestamp;
+  AgsTimestamp *current_start_timestamp, *current_end_timestamp, *current_timestamp;
+
+  GList *retval;
+  GList *current_start, *current_end, *current;
 
   guint current_line;
+  guint64 current_x, x;
+  guint length, position;
+  gboolean success;
 
-  while(wave != NULL){
+  if(wave == NULL){
+    return(NULL);
+  }
+
+  current_start = wave;
+  current_end = g_list_last(wave);
+  
+  length = g_list_length(wave);
+  position = length / 2;
+
+  current = g_list_nth(current_start,
+		       position);
+
+  if(ags_timestamp_test_flags(timestamp,
+			      AGS_TIMESTAMP_OFFSET)){
+    x = ags_timestamp_get_ags_offset(timestamp);
+  }else if(ags_timestamp_test_flags(timestamp,
+				    AGS_TIMESTAMP_UNIX)){
+    x = ags_timestamp_get_unix_time(timestamp);
+  }
+  
+  retval = NULL;
+  success = FALSE;
+  
+  while(!success && current != NULL){
     guint64 relative_offset;
     guint samplerate;
     
-    g_object_get(wave->data,
+    /* check current - start */
+    g_object_get(current_start->data,
 		 "line", &current_line,
 		 "samplerate", &samplerate,
+		 "timestamp", &current_timestamp,
 		 NULL);
 
-    relative_offset = AGS_WAVE_DEFAULT_BUFFER_LENGTH * samplerate;
-    
-    if(current_line != line){
-      wave = wave->next;
-      
-      continue;
+    if(current_line == line){
+      if(timestamp == NULL){
+	retval = current_start;
+	
+	break;
+      }
+
+      if(current_timestamp != NULL){
+	if(ags_timestamp_test_flags(timestamp,
+				    AGS_TIMESTAMP_OFFSET) &&
+	   ags_timestamp_test_flags(current_timestamp,
+				    AGS_TIMESTAMP_OFFSET)){
+	  relative_offset = AGS_WAVE_DEFAULT_BUFFER_LENGTH * samplerate;
+
+	  if(ags_timestamp_get_ags_offset(current_timestamp) >= x &&
+	     ags_timestamp_get_ags_offset(current_timestamp) < x + relative_offset){
+	    retval = current_start;
+	    
+	    break;
+	  }
+	}else if(ags_timestamp_test_flags(timestamp,
+					  AGS_TIMESTAMP_UNIX) &&
+		 ags_timestamp_test_flags(current_timestamp,
+					  AGS_TIMESTAMP_UNIX)){
+	  if(ags_timestamp_get_unix_time(current_timestamp) >= x &&
+	     ags_timestamp_get_unix_time(current_timestamp) < x + AGS_WAVE_DEFAULT_DURATION){
+	    retval = current_start;
+	    
+	    break;
+	  }
+	}else{
+	  g_warning("inconsistent data");
+	}
+      }else{
+	g_warning("inconsistent data");
+      }
     }
 
-    if(timestamp == NULL){
-      return(wave);
-    }
-    
-    g_object_get(wave->data,
+    /* check current - end */
+    g_object_get(current_end->data,
+		 "line", &current_line,
+		 "samplerate", &samplerate,
 		 "timestamp", &current_timestamp,
 		 NULL);
     
-    if(current_timestamp != NULL){
-      if(ags_timestamp_test_flags(timestamp,
-				  AGS_TIMESTAMP_OFFSET) &&
-	 ags_timestamp_test_flags(current_timestamp,
-				  AGS_TIMESTAMP_OFFSET)){
-	if(ags_timestamp_get_ags_offset(current_timestamp) >= ags_timestamp_get_ags_offset(timestamp) &&
-	   ags_timestamp_get_ags_offset(current_timestamp) < ags_timestamp_get_ags_offset(timestamp) + relative_offset){
-	  return(wave);
+    if(current_line == line){
+      if(timestamp == NULL){
+	retval = current_end;
+	
+	break;
+      }
+
+      if(current_timestamp != NULL){
+	if(ags_timestamp_test_flags(timestamp,
+				    AGS_TIMESTAMP_OFFSET) &&
+	   ags_timestamp_test_flags(current_timestamp,
+				    AGS_TIMESTAMP_OFFSET)){
+	  relative_offset = AGS_WAVE_DEFAULT_BUFFER_LENGTH * samplerate;
+	  
+	  if(ags_timestamp_get_ags_offset(current_timestamp) >= x &&
+	     ags_timestamp_get_ags_offset(current_timestamp) < x + relative_offset){
+	    retval = current_end;
+	    
+	    break;
+	  }
+	}else if(ags_timestamp_test_flags(timestamp,
+					  AGS_TIMESTAMP_UNIX) &&
+		 ags_timestamp_test_flags(current_timestamp,
+					  AGS_TIMESTAMP_UNIX)){
+	  if(ags_timestamp_get_unix_time(current_timestamp) >= x &&
+	     ags_timestamp_get_unix_time(current_timestamp) < x + AGS_WAVE_DEFAULT_DURATION){
+	    retval = current_end;
+	    
+	    break;
+	  }
+	}else{
+	  g_warning("inconsistent data");
 	}
-      }else if(ags_timestamp_test_flags(timestamp,
-					AGS_TIMESTAMP_UNIX) &&
-	       ags_timestamp_test_flags(current_timestamp,
-					AGS_TIMESTAMP_UNIX)){
-	if(ags_timestamp_get_unix_time(current_timestamp) >= ags_timestamp_get_unix_time(timestamp) &&
-	   ags_timestamp_get_unix_time(current_timestamp) < ags_timestamp_get_unix_time(timestamp) + AGS_WAVE_DEFAULT_DURATION){
-	  return(wave);
+      }else{
+	g_warning("inconsistent data");
+      }
+    }
+
+    /* check current - center */
+    current_x = 0;
+    
+    g_object_get(current->data,
+		 "line", &current_line,
+		 "samplerate", &samplerate,
+		 "timestamp", &current_timestamp,
+		 NULL);
+
+    if(current_line == line){
+      if(timestamp == NULL){
+	retval = current;
+	
+	break;
+      }
+
+      if(current_timestamp != NULL){
+	if(ags_timestamp_test_flags(timestamp,
+				    AGS_TIMESTAMP_OFFSET) &&
+	   ags_timestamp_test_flags(current_timestamp,
+				    AGS_TIMESTAMP_OFFSET)){
+	  relative_offset = AGS_WAVE_DEFAULT_BUFFER_LENGTH * samplerate;
+    
+	  if((current_x = ags_timestamp_get_ags_offset(current_timestamp)) >= x &&
+	     ags_timestamp_get_ags_offset(current_timestamp) < x + relative_offset){
+	    retval = current;
+	    
+	    break;
+	  }
+	}else if(ags_timestamp_test_flags(timestamp,
+					  AGS_TIMESTAMP_UNIX) &&
+		 ags_timestamp_test_flags(current_timestamp,
+					  AGS_TIMESTAMP_UNIX)){
+	  if((current_x = ags_timestamp_get_unix_time(current_timestamp)) >= x &&
+	     ags_timestamp_get_unix_time(current_timestamp) < x + AGS_WAVE_DEFAULT_DURATION){
+	    retval = current;
+	    
+	    break;
+	  }
+	}else{
+	  g_warning("inconsistent data");
 	}
+      }else{
+	g_warning("inconsistent data");
       }
     }
     
-    wave = wave->next;
+    if(position == 0){
+      break;
+    }
+
+    position = position / 2;
+
+    if(current_x < x){
+      current_start = current->next;
+      current_end = current_end->prev;
+    }else{
+      current_start = current_start->next;
+      current_end = current->prev;
+    }    
+
+    current = g_list_nth(current_start,
+			 position);
   }
-  
-  return(NULL);
+
+  return(retval);
 }
 
 /**

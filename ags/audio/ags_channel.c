@@ -6754,7 +6754,7 @@ ags_channel_set_output_soundcard(AgsChannel *channel,
     if(channel_thread != NULL){
       /* set output soundcard */      
       g_object_set(channel_thread,
-		   "output-soundcard", output_soundcard,
+		   "default-output-soundcard", output_soundcard,
 		   NULL);
     }
   }
