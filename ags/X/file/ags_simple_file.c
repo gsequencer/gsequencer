@@ -780,7 +780,8 @@ ags_simple_file_find_id_ref_by_xpath(AgsSimpleFile *simple_file, gchar *xpath)
   xmlNode **node;
 
   GList *list;
-  
+
+  gboolean success;
   guint i;
 
   if(simple_file == NULL || xpath == NULL || !g_str_has_prefix(xpath, "xpath=")){
@@ -800,6 +801,8 @@ ags_simple_file_find_id_ref_by_xpath(AgsSimpleFile *simple_file, gchar *xpath)
     return(NULL);
   }
 
+  xpath_context->node = simple_file->root_node;
+
   /* Evaluate xpath expression */
   xpath_object = xmlXPathEval(xpath, xpath_context);
 
@@ -813,11 +816,13 @@ ags_simple_file_find_id_ref_by_xpath(AgsSimpleFile *simple_file, gchar *xpath)
   node = xpath_object->nodesetval->nodeTab;
 
   list = NULL;
+  success = FALSE;
   
   for(i = 0; i < xpath_object->nodesetval->nodeNr; i++){
     if(node[i]->type == XML_ELEMENT_NODE){
       GObject *gobject;
-      
+
+      success = TRUE;
       gobject = ags_simple_file_find_id_ref_by_node(simple_file,
 						    node[i]);
 
@@ -828,8 +833,8 @@ ags_simple_file_find_id_ref_by_xpath(AgsSimpleFile *simple_file, gchar *xpath)
     }
   }
 
-  if(list == NULL){
-    g_message("no xpath match: %s", xpath);
+  if(!success){
+    g_message("no xpath match [%d]: %s", xpath_object->nodesetval->nodeNr, xpath);
   }
   
   return(list);
@@ -895,7 +900,9 @@ ags_simple_file_real_open(AgsSimpleFile *simple_file,
 			  GError **error)
 {
   /* parse the file and get the DOM */
-  simple_file->doc = xmlReadFile(simple_file->filename, NULL, 0);
+  simple_file->doc = xmlReadFile(simple_file->filename,
+				 NULL,
+				 XML_PARSE_HUGE);
 
   if(simple_file->doc == NULL){
     g_warning("ags_simple_file.c - failed to read XML document %s", simple_file->filename);
@@ -974,7 +981,7 @@ ags_simple_file_real_rw_open(AgsSimpleFile *simple_file,
   simple_file->doc = xmlNewDoc("1.0");
   simple_file->root_node = xmlNewNode(NULL, "ags-simple-file");
   xmlNewProp(simple_file->root_node,
-	     "xmlns",
+	     "xmlns:agssf",
 	     "http://nongnu.org/gsequencer/ns/ags-simple-file");
   
   xmlDocSetRootElement(simple_file->doc, simple_file->root_node);
@@ -1608,7 +1615,6 @@ ags_simple_file_read_window(AgsSimpleFile *simple_file, xmlNode *node, AgsWindow
   
   /* children */  
   child = node->children;
-  list = NULL;
 
   while(child != NULL){
     if(child->type == XML_ELEMENT_NODE){
@@ -1622,9 +1628,20 @@ ags_simple_file_read_window(AgsSimpleFile *simple_file, xmlNode *node, AgsWindow
 					  child,
 					  &machine_start);
 	g_list_free(machine_start);
-      }else if(!xmlStrncmp(child->name,
-			   (xmlChar *) "ags-sf-notation-editor",
-			   23)){
+      }
+    }
+
+    child = child->next;
+  }
+
+  /* children */  
+  child = node->children;
+
+  while(child != NULL){
+    if(child->type == XML_ELEMENT_NODE){
+      if(!xmlStrncmp(child->name,
+		     (xmlChar *) "ags-sf-notation-editor",
+		     23)){
 	ags_simple_file_read_notation_editor(simple_file,
 					     child,
 					     &(gobject->notation_editor));
@@ -1645,7 +1662,7 @@ ags_simple_file_read_window(AgsSimpleFile *simple_file, xmlNode *node, AgsWindow
 
     child = child->next;
   }
-
+  
   config = ags_config_get_instance();
 
   /* presets */

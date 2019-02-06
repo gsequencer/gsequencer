@@ -1336,6 +1336,17 @@ ags_wave_find_near_timestamp(GList *wave, guint line,
       }
 
       if(current_timestamp != NULL){
+	if(ags_timestamp_test_flags(current_timestamp,
+				    AGS_TIMESTAMP_OFFSET)){
+	  if(ags_timestamp_get_ags_offset(current_timestamp) > x){
+	    break;
+	  }
+	}else{
+	  if(ags_timestamp_get_unix_time(current_timestamp) > x){
+	    break;
+	  }
+	}
+
 	if(ags_timestamp_test_flags(timestamp,
 				    AGS_TIMESTAMP_OFFSET) &&
 	   ags_timestamp_test_flags(current_timestamp,
@@ -1381,6 +1392,17 @@ ags_wave_find_near_timestamp(GList *wave, guint line,
       }
 
       if(current_timestamp != NULL){
+	if(ags_timestamp_test_flags(current_timestamp,
+				    AGS_TIMESTAMP_OFFSET)){
+	  if(ags_timestamp_get_ags_offset(current_timestamp) < x){
+	    break;
+	  }
+	}else{
+	  if(ags_timestamp_get_unix_time(current_timestamp) < x){
+	    break;
+	  }
+	}
+
 	if(ags_timestamp_test_flags(timestamp,
 				    AGS_TIMESTAMP_OFFSET) &&
 	   ags_timestamp_test_flags(current_timestamp,

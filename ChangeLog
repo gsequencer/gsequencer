@@ -1,3 +1,10 @@
+ags (2.1.47)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved read machines in AgsSimpleFile before editors
+	* improved hihgly inneficient ags_notation_find_offset()
+	* work-around fix default XML namespace with XPath
+
 ags (2.1.46)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

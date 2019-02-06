@@ -1653,7 +1653,7 @@ ags_notation_edit_draw_notation(AgsNotationEdit *notation_edit)
   if(cr == NULL){
     return;
   }
-
+  
   opacity = gtk_spin_button_get_value(notation_editor->notation_toolbar->opacity);
   
   /* zoom */

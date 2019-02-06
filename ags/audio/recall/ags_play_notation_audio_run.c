@@ -930,15 +930,20 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
       AgsRecallID *child_recall_id;
 
       GList *start_list, *list;
-          
-      note = AGS_NOTE(current_position->data);
 
+      guint y;
+      
+      note = AGS_NOTE(current_position->data);
+      g_object_get(note,
+		   "y", &y,
+		   NULL);
+      
       if(ags_audio_test_behaviour_flags(audio, AGS_SOUND_BEHAVIOUR_REVERSE_MAPPING)){
 	selected_channel = ags_channel_pad_nth(channel,
-					       pads - note->y - 1);
+					       pads - y - 1);
       }else{
 	selected_channel = ags_channel_pad_nth(channel,
-					       note->y);
+					       y);
       }
 
       if(selected_channel == NULL){
@@ -1072,7 +1077,8 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
       current_position = current_position->next;
     }
 
-    g_list_free(start_current_position);
+    g_list_free_full(start_current_position,
+		     g_object_unref);
   }
   
   if(delay != 0.0){

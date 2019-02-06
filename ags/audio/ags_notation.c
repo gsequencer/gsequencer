@@ -663,7 +663,6 @@ ags_notation_find_near_timestamp(GList *notation, guint audio_channel,
     /* check current - start */
     g_object_get(current_start->data,
 		 "audio-channel", &current_audio_channel,
-		 "timestamp", &current_timestamp,
 		 NULL);
     
     if(current_audio_channel == audio_channel){
@@ -673,7 +672,22 @@ ags_notation_find_near_timestamp(GList *notation, guint audio_channel,
 	break;
       }
 
+      g_object_get(current_start->data,
+		   "timestamp", &current_timestamp,
+		   NULL);
+      
       if(current_timestamp != NULL){
+	if(ags_timestamp_test_flags(current_timestamp,
+				    AGS_TIMESTAMP_OFFSET)){
+	  if(ags_timestamp_get_ags_offset(current_timestamp) > x){
+	    break;
+	  }
+	}else{
+	  if(ags_timestamp_get_unix_time(current_timestamp) > x){
+	    break;
+	  }
+	}
+	
 	if(ags_timestamp_test_flags(timestamp,
 				    AGS_TIMESTAMP_OFFSET) &&
 	   ags_timestamp_test_flags(current_timestamp,
@@ -705,7 +719,6 @@ ags_notation_find_near_timestamp(GList *notation, guint audio_channel,
     /* check current - end */
     g_object_get(current_end->data,
 		 "audio-channel", &current_audio_channel,
-		 "timestamp", &current_timestamp,
 		 NULL);
     
     if(current_audio_channel == audio_channel){
@@ -715,7 +728,22 @@ ags_notation_find_near_timestamp(GList *notation, guint audio_channel,
 	break;
       }
 
+      g_object_get(current_end->data,
+		   "timestamp", &current_timestamp,
+		   NULL);
+      
       if(current_timestamp != NULL){
+	if(ags_timestamp_test_flags(current_timestamp,
+				    AGS_TIMESTAMP_OFFSET)){
+	  if(ags_timestamp_get_ags_offset(current_timestamp) < x){
+	    break;
+	  }
+	}else{
+	  if(ags_timestamp_get_unix_time(current_timestamp) < x){
+	    break;
+	  }
+	}
+
 	if(ags_timestamp_test_flags(timestamp,
 				    AGS_TIMESTAMP_OFFSET) &&
 	   ags_timestamp_test_flags(current_timestamp,
@@ -747,7 +775,6 @@ ags_notation_find_near_timestamp(GList *notation, guint audio_channel,
     /* check current - center */
     g_object_get(current->data,
 		 "audio-channel", &current_audio_channel,
-		 "timestamp", &current_timestamp,
 		 NULL);
     
     if(current_audio_channel == audio_channel){
@@ -756,6 +783,10 @@ ags_notation_find_near_timestamp(GList *notation, guint audio_channel,
 	
 	break;
       }
+
+      g_object_get(current->data,
+		   "timestamp", &current_timestamp,
+		   NULL);
 
       if(current_timestamp != NULL){
 	if(ags_timestamp_test_flags(timestamp,
@@ -1401,10 +1432,15 @@ ags_notation_find_offset(AgsNotation *notation,
 		 "x0", &current_start_x,
 		 NULL);
 
+    if(current_start_x > x){
+      break;
+    }
+    
     if(current_start_x == x){
-      retval = g_list_alloc();
-      retval->data = current_start->data;
-
+      retval = g_list_prepend(retval,
+			      current_start->data);
+      g_object_ref(current_start->data);
+      
       break;
     }
     
@@ -1412,9 +1448,14 @@ ags_notation_find_offset(AgsNotation *notation,
 		 "x0", &current_end_x,
 		 NULL);
 
+    if(current_end_x < x){
+      break;
+    }
+
     if(current_end_x == x){
-      retval = g_list_alloc();
-      retval->data = current_end->data;
+      retval = g_list_prepend(retval,
+			      current_end->data);
+      g_object_ref(current_end->data);
 
       break;
     }
@@ -1424,8 +1465,9 @@ ags_notation_find_offset(AgsNotation *notation,
 		 NULL);
     
     if(current_x == x){
-      retval = g_list_alloc();
-      retval->data = current->data;
+      retval = g_list_prepend(retval,
+			      current->data);
+      g_object_ref(current->data);
       
       break;
     }
@@ -1471,6 +1513,8 @@ ags_notation_find_offset(AgsNotation *notation,
       if(current_x == x){
 	retval = g_list_prepend(retval,
 				current->data);
+      }else{
+	break;
       }
 	
       current = current->next;
@@ -1489,6 +1533,8 @@ ags_notation_find_offset(AgsNotation *notation,
       if(current_x == x){
 	retval = g_list_prepend(retval,
 				current->data);
+      }else{
+	break;
       }
 	
       current = current->prev;
