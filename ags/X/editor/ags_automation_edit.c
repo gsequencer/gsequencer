@@ -1969,15 +1969,23 @@ ags_automation_edit_draw_automation(AgsAutomationEdit *automation_edit)
   AgsNotebook *notebook;
   
   GtkStyle *automation_edit_style;
+
+  AgsTimestamp *timestamp;
+  AgsTimestamp *current_timestamp;    
   
   cairo_t *cr;
+
+  GType channel_type;
 
   GList *start_list_automation, *list_automation;
   GList *start_list_acceleration, *list_acceleration;
 
+  gchar *control_name;
+
   gdouble opacity;
   guint x0, x1;
   guint offset;
+  guint line;
   gint i;    
   
   static const gdouble white_gc = 65535.0;
@@ -2022,39 +2030,55 @@ ags_automation_edit_draw_automation(AgsAutomationEdit *automation_edit)
   cairo_push_group(cr);
 
   /* draw automation */
+  timestamp = ags_timestamp_new();
+
+  timestamp->flags &= (~AGS_TIMESTAMP_UNIX);
+  timestamp->flags |= AGS_TIMESTAMP_OFFSET;
+
   g_object_get(automation_editor->selected_machine->audio,
 	       "automation", &start_list_automation,
 	       NULL);
+
+  timestamp->timer.ags_offset.offset = (guint64) AGS_NOTATION_DEFAULT_OFFSET * floor((double) x0 / (double) AGS_NOTATION_DEFAULT_OFFSET);
     
   i = 0;
   
   while(notebook == NULL ||
 	(i = ags_notebook_next_active_tab(notebook,
 					  i)) != -1){
-    list_automation = start_list_automation;
+    list_automation = ags_automation_find_near_timestamp_extended(start_list_automation, i,
+								  automation_edit->channel_type, automation_edit->control_name,
+								  timestamp);
 
-    while((list_automation = ags_automation_find_near_timestamp_extended(list_automation, i,
-									 automation_edit->channel_type, automation_edit->control_name,
-									 NULL)) != NULL){
+    while(list_automation != NULL){
       AgsAutomation *automation;
 
-      AgsTimestamp *timestamp;
-      
       GList *start_list_acceleration, *list_acceleration;
 
       automation = AGS_AUTOMATION(list_automation->data);
 
       g_object_get(automation,
-		   "timestamp", &timestamp,
+		   "timestamp", &current_timestamp,
+		   "line", &line,
+		   "channel-type", &channel_type,
+		   "control-name", &control_name,
 		   NULL);
       
-      if(timestamp != NULL &&
-	 ags_timestamp_get_ags_offset(timestamp) > x1){
+      if(i != line ||
+	 channel_type != automation_editor->focused_automation_edit->channel_type ||
+	 !g_strcmp0(control_name,
+		    automation_editor->focused_automation_edit->control_name) != TRUE ||
+	 current_timestamp == NULL){
+	list_automation = list_automation->next;
+
+	continue;
+      }
+
+      if(ags_timestamp_get_ags_offset(current_timestamp) > x1){
 	break;
       }
 
-      if(timestamp != NULL &&
-	 ags_timestamp_get_ags_offset(timestamp) + AGS_AUTOMATION_DEFAULT_OFFSET < x0){
+      if(ags_timestamp_get_ags_offset(current_timestamp) + AGS_AUTOMATION_DEFAULT_OFFSET < x0){
 	list_automation = list_automation->next;
 
 	continue;

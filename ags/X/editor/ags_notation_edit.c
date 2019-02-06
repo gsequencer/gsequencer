@@ -1616,6 +1616,9 @@ ags_notation_edit_draw_notation(AgsNotationEdit *notation_edit)
   AgsNotationToolbar *notation_toolbar;
 
   GtkStyle *notation_edit_style;
+
+  AgsTimestamp *timestamp;
+  AgsTimestamp *current_timestamp;    
   
   cairo_t *cr;
 
@@ -1625,6 +1628,7 @@ ags_notation_edit_draw_notation(AgsNotationEdit *notation_edit)
   gdouble zoom, zoom_factor;
   guint x0, x1;
   guint offset;
+  guint audio_channel;
   gint i;    
 
   static const gdouble white_gc = 65535.0;
@@ -1664,30 +1668,48 @@ ags_notation_edit_draw_notation(AgsNotationEdit *notation_edit)
   cairo_push_group(cr);
 
   /* draw notation */
+  timestamp = ags_timestamp_new();
+
+  timestamp->flags &= (~AGS_TIMESTAMP_UNIX);
+  timestamp->flags |= AGS_TIMESTAMP_OFFSET;
+
   g_object_get(notation_editor->selected_machine->audio,
 	       "notation", &start_list_notation,
 	       NULL);
+
+  timestamp->timer.ags_offset.offset = (guint64) AGS_NOTATION_DEFAULT_OFFSET * floor((double) x0 / (double) AGS_NOTATION_DEFAULT_OFFSET);
+
   i = 0;
   
   while((i = ags_notebook_next_active_tab(notation_editor->notebook,
 					  i)) != -1){
-    list_notation = start_list_notation;
-
-    while((list_notation = ags_notation_find_near_timestamp(list_notation, i,
-							    NULL)) != NULL){
+    list_notation = ags_notation_find_near_timestamp(start_list_notation, i,
+						     timestamp);
+    
+    while(list_notation != NULL){
       AgsNotation *notation;
 
       GList *start_list_note, *list_note;
 
       notation = AGS_NOTATION(list_notation->data);
 
-      if(notation->timestamp != NULL &&
-	 AGS_TIMESTAMP(notation->timestamp)->timer.ags_offset.offset > x1){	
+      g_object_get(notation,
+		   "audio-channel", &audio_channel,
+		   "timestamp", &current_timestamp,
+		   NULL);
+
+      if(i != audio_channel ||
+	 current_timestamp == NULL){
+	list_notation = list_notation->next;
+
+	continue;
+      }
+
+      if(ags_timestamp_get_ags_offset(current_timestamp) > x1){	
 	break;
       }
 
-      if(notation->timestamp != NULL &&
-	 AGS_TIMESTAMP(notation->timestamp)->timer.ags_offset.offset + AGS_NOTATION_DEFAULT_OFFSET < x0){
+      if(ags_timestamp_get_ags_offset(current_timestamp) + AGS_NOTATION_DEFAULT_OFFSET < x0){
 	list_notation = list_notation->next;
 
 	continue;
@@ -1720,6 +1742,8 @@ ags_notation_edit_draw_notation(AgsNotationEdit *notation_edit)
   }
 
   g_list_free(start_list_notation);
+
+  g_object_unref(timestamp);
 
   /* complete */
   cairo_pop_group_to_source(cr);

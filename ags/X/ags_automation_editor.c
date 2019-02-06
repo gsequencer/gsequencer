@@ -1700,9 +1700,14 @@ ags_automation_editor_select_all(AgsAutomationEditor *automation_editor)
 {
   AgsMachine *machine;
   AgsNotebook *notebook;
+
+  GType channel_type;
   
   GList *start_list_automation, *list_automation;
 
+  gchar *control_name;
+
+  guint line;
   gint i;
 
   if(!AGS_IS_AUTOMATION_EDITOR(automation_editor)){
@@ -1732,9 +1737,22 @@ ags_automation_editor_select_all(AgsAutomationEditor *automation_editor)
 					    i)) != -1){
       list_automation = start_list_automation;
       
-      while((list_automation = ags_automation_find_near_timestamp_extended(list_automation, i,
-									   automation_editor->focused_automation_edit->channel_type, automation_editor->focused_automation_edit->control_name,
-									   NULL)) != NULL){
+      while(list_automation != NULL){
+	g_object_get(list_automation->data,
+		     "line", &line,
+		     "channel-type", &channel_type,
+		     "control-name", &control_name,
+		     NULL);
+
+	if(i != line ||
+	   channel_type != automation_editor->focused_automation_edit->channel_type ||
+	   !g_strcmp0(control_name,
+		      automation_editor->focused_automation_edit->control_name) != TRUE){
+	  list_automation = list_automation->next;
+
+	  continue;
+	}
+	
 	ags_automation_add_all_to_selection(AGS_AUTOMATION(list_automation->data));
 	
 	list_automation = list_automation->next;

@@ -856,6 +856,7 @@ ags_wave_editor_select_all(AgsWaveEditor *wave_editor)
 
   guint samplerate;
   guint64 relative_offset;
+  guint line;
   gint i;
 
   if(!AGS_IS_WAVE_EDITOR(wave_editor)){
@@ -882,8 +883,17 @@ ags_wave_editor_select_all(AgsWaveEditor *wave_editor)
 					    i)) != -1){
       list_wave = start_list_wave;
       
-      while((list_wave = ags_wave_find_near_timestamp(list_wave, i,
-						      NULL)) != NULL){
+      while(list_wave != NULL){
+	g_object_get(list_wave->data,
+		     "line", &line,
+		     NULL);
+
+	if(i != line){	
+	  list_wave = list_wave->next;
+
+	  continue;
+	}
+
 	ags_wave_add_all_to_selection(AGS_WAVE(list_wave->data));
 	
 	list_wave = list_wave->next;
@@ -1286,6 +1296,7 @@ ags_wave_editor_copy(AgsWaveEditor *wave_editor)
   xmlChar *buffer;
 
   int size;
+  guint line;
   gint i;
 
   if(!AGS_IS_WAVE_EDITOR(wave_editor) ||
@@ -1323,8 +1334,17 @@ ags_wave_editor_copy(AgsWaveEditor *wave_editor)
       list_wave = start_list_wave;
 
       /* copy */
-      while((list_wave = ags_wave_find_near_timestamp(list_wave, i,
-						      NULL)) != NULL){
+      while(list_wave != NULL){
+	g_object_get(list_wave->data,
+		     "line", &line,
+		     NULL);
+
+	if(i != line){	
+	  list_wave = list_wave->next;
+
+	  continue;
+	}
+
 	//	g_message("copy %d", i);
 	wave_node = ags_wave_copy_selection(AGS_WAVE(list_wave->data));
 	xmlAddChild(wave_list_node,
@@ -1361,7 +1381,9 @@ ags_wave_editor_cut(AgsWaveEditor *wave_editor)
   GList *start_list_wave, *list_wave;
 
   xmlChar *buffer;
+  
   int size;
+  guint line;
   gint i;
 
   if(!AGS_IS_WAVE_EDITOR(wave_editor) ||
@@ -1399,8 +1421,17 @@ ags_wave_editor_cut(AgsWaveEditor *wave_editor)
       list_wave = start_list_wave;
 
       /* cut */
-      while((list_wave = ags_wave_find_near_timestamp(list_wave, i,
-						      NULL)) != NULL){
+      while(list_wave != NULL){
+	g_object_get(list_wave->data,
+		     "line", &line,
+		     NULL);
+
+	if(i != line){	
+	  list_wave = list_wave->next;
+
+	  continue;
+	}
+
 	//	g_message("cut %d", i);
 	wave_node = ags_wave_cut_selection(AGS_WAVE(list_wave->data));
 	xmlAddChild(wave_list_node,

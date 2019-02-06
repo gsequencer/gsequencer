@@ -1627,6 +1627,8 @@ ags_wave_edit_draw_wave(AgsWaveEdit *wave_edit)
 
   GtkStyle *wave_edit_style;
 
+  AgsTimestamp *current_timestamp;    
+
   GObject *soundcard;
   
   cairo_t *cr;
@@ -1700,28 +1702,33 @@ ags_wave_edit_draw_wave(AgsWaveEdit *wave_edit)
   opacity = gtk_spin_button_get_value(wave_editor->wave_toolbar->opacity);
   
   cairo_push_group(cr);
-
-  while((list_wave = ags_wave_find_near_timestamp(list_wave, line,
-						  NULL)) != NULL){
+  
+  while(list_wave != NULL){
     AgsWave *wave;
 
-    AgsTimestamp *timestamp;
-      
     GList *start_list_buffer, *list_buffer;
 
+    guint current_line;
     guint64 offset;
     
     wave = AGS_WAVE(list_wave->data);
 
     g_object_get(wave,
-		 "timestamp", &timestamp,
+		 "timestamp", &current_timestamp,
+		 "line", &current_line,
 		 "samplerate", &samplerate,
 		 NULL);
 
-    offset = ags_timestamp_get_ags_offset(timestamp);
+    if(current_line != line ||
+       current_timestamp == NULL){
+      list_wave = list_wave->next;
+
+      continue;
+    }
     
-    if(timestamp != NULL &&
-       ((((double) (offset) / samplerate * (bpm / 60.0) / delay_factor) * 64.0)) / zoom_factor - x_cut > GTK_WIDGET(wave_edit->drawing_area)->allocation.width){
+    offset = ags_timestamp_get_ags_offset(current_timestamp);
+    
+    if(((((double) (offset) / samplerate * (bpm / 60.0) / delay_factor) * 64.0)) / zoom_factor - x_cut > GTK_WIDGET(wave_edit->drawing_area)->allocation.width){
       break;
     }
 

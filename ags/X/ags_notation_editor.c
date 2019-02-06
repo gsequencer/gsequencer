@@ -1008,6 +1008,7 @@ ags_notation_editor_select_all(AgsNotationEditor *notation_editor)
       
   GList *start_list_notation, *list_notation;
 
+  guint audio_channel;
   gint i;
 
   if(!AGS_IS_NOTATION_EDITOR(notation_editor)){
@@ -1028,8 +1029,17 @@ ags_notation_editor_select_all(AgsNotationEditor *notation_editor)
 					    i)) != -1){
       list_notation = start_list_notation;
       
-      while((list_notation = ags_notation_find_near_timestamp(list_notation, i,
-							      NULL)) != NULL){
+      while(list_notation != NULL){
+	g_object_get(list_notation->data,
+		     "audio-channel", &audio_channel,
+		     NULL);
+
+	if(i != audio_channel){	
+	  list_notation = list_notation->next;
+
+	  continue;
+	}
+	
 	ags_notation_add_all_to_selection(AGS_NOTATION(list_notation->data));
 	
 	list_notation = list_notation->next;
@@ -1400,6 +1410,7 @@ ags_notation_editor_copy(AgsNotationEditor *notation_editor)
   xmlChar *buffer;
 
   int size;
+  guint audio_channel;
   gint i;
 
   if(!AGS_IS_NOTATION_EDITOR(notation_editor)){
@@ -1434,8 +1445,17 @@ ags_notation_editor_copy(AgsNotationEditor *notation_editor)
       list_notation = start_list_notation;
 
       /* copy */
-      while((list_notation = ags_notation_find_near_timestamp(list_notation, i,
-							      NULL)) != NULL){
+      while(list_notation != NULL){
+	g_object_get(list_notation->data,
+		     "audio-channel", &audio_channel,
+		     NULL);
+
+	if(i != audio_channel){	
+	  list_notation = list_notation->next;
+
+	  continue;
+	}
+
 	notation_node = ags_notation_copy_selection(AGS_NOTATION(list_notation->data));
 	xmlAddChild(notation_list_node,
 		    notation_node);
@@ -1479,7 +1499,9 @@ ags_notation_editor_cut(AgsNotationEditor *notation_editor)
   GList *start_list_notation, *list_notation;
 
   xmlChar *buffer;
+
   int size;
+  guint audio_channel;
   gint i;
 
   if(!AGS_IS_NOTATION_EDITOR(notation_editor)){
@@ -1514,8 +1536,17 @@ ags_notation_editor_cut(AgsNotationEditor *notation_editor)
       list_notation = start_list_notation;
 
       /* cut */
-      while((list_notation = ags_notation_find_near_timestamp(list_notation, i,
-							      NULL)) != NULL){
+      while(list_notation != NULL){
+	g_object_get(list_notation->data,
+		     "audio-channel", &audio_channel,
+		     NULL);
+
+	if(i != audio_channel){	
+	  list_notation = list_notation->next;
+
+	  continue;
+	}
+
 	notation_node = ags_notation_cut_selection(AGS_NOTATION(list_notation->data));
 	xmlAddChild(notation_list_node,
 		    notation_node);
@@ -1559,6 +1590,7 @@ ags_notation_editor_invert(AgsNotationEditor *notation_editor)
   GList *start_list_notation, *list_notation;
 
   int size;
+  guint audio_channel;
   gint i;
 
   auto void ags_notation_editor_get_boundary(AgsNotation *notation,
@@ -1659,8 +1691,16 @@ ags_notation_editor_invert(AgsNotationEditor *notation_editor)
       upper = 0;
 
       while(list_notation != NULL){
-	list_notation = ags_notation_find_near_timestamp(list_notation, i,
-							 NULL);
+	g_object_get(list_notation->data,
+		     "audio-channel", &audio_channel,
+		     NULL);
+
+	if(i != audio_channel){	
+	  list_notation = list_notation->next;
+
+	  continue;
+	}
+
 	ags_notation_editor_get_boundary(AGS_NOTATION(list_notation->data),
 					 &lower, &upper);
 
@@ -1670,8 +1710,17 @@ ags_notation_editor_invert(AgsNotationEditor *notation_editor)
       /* invert */
       list_notation = start_list_notation;
       
-      while((list_notation = ags_notation_find_near_timestamp(list_notation, i,
-							      NULL)) != NULL){
+      while(list_notation != NULL){
+	g_object_get(list_notation->data,
+		     "audio-channel", &audio_channel,
+		     NULL);
+
+	if(i != audio_channel){	
+	  list_notation = list_notation->next;
+
+	  continue;
+	}
+
 	ags_notation_editor_invert_notation(AGS_NOTATION(list_notation->data),
 					    lower, upper);
 
