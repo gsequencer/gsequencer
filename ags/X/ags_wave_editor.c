@@ -1147,7 +1147,7 @@ ags_wave_editor_paste(AgsWaveEditor *wave_editor)
 		}     
 		
 		/* 1st attempt */
-		timestamp->timer.ags_offset.offset = relative_offset * floor(offset / relative_offset);
+		timestamp->timer.ags_offset.offset = (guint64) relative_offset * floor((double) position_x / (double) relative_offset);
 		
 		first_x = ags_wave_editor_paste_wave_all(wave_node,
 							 timestamp,

@@ -762,7 +762,7 @@ ags_notation_find_near_timestamp(GList *notation, guint audio_channel,
 				    AGS_TIMESTAMP_OFFSET) &&
 	   ags_timestamp_test_flags(current_timestamp,
 				    AGS_TIMESTAMP_OFFSET)){
-	  if(ags_timestamp_get_ags_offset(current_timestamp) >= x &&
+	  if((current_x = ags_timestamp_get_ags_offset(current_timestamp)) >= x &&
 	     ags_timestamp_get_ags_offset(current_timestamp) < x + AGS_NOTATION_DEFAULT_OFFSET){
 	    retval = current;
 	    
@@ -772,7 +772,7 @@ ags_notation_find_near_timestamp(GList *notation, guint audio_channel,
 					  AGS_TIMESTAMP_UNIX) &&
 		 ags_timestamp_test_flags(current_timestamp,
 					  AGS_TIMESTAMP_UNIX)){
-	  if(ags_timestamp_get_unix_time(current_timestamp) >= x &&
+	  if((current_x = ags_timestamp_get_unix_time(current_timestamp)) >= x &&
 	     ags_timestamp_get_unix_time(current_timestamp) < x + AGS_NOTATION_DEFAULT_DURATION){
 	    retval = current;
 	    
@@ -891,7 +891,11 @@ ags_notation_add_note(AgsNotation *notation,
 
   /* insert sorted */
   g_object_ref(note);
-  
+
+#ifdef AGS_DEBUG
+  g_message("add note[%d,%d|%d]", note->x[0], note->x[1], note->y);
+#endif
+    
   pthread_mutex_lock(notation_mutex);
 
   if(use_selection_list){
@@ -1394,7 +1398,7 @@ ags_notation_find_offset(AgsNotation *notation,
   
   while(!success && current != NULL){
     g_object_get(current_start->data,
-		 "x", &current_start_x,
+		 "x0", &current_start_x,
 		 NULL);
 
     if(current_start_x == x){
@@ -1405,7 +1409,7 @@ ags_notation_find_offset(AgsNotation *notation,
     }
     
     g_object_get(current_end->data,
-		 "x", &current_end_x,
+		 "x0", &current_end_x,
 		 NULL);
 
     if(current_end_x == x){
@@ -1416,7 +1420,7 @@ ags_notation_find_offset(AgsNotation *notation,
     }
 
     g_object_get(current->data,
-		 "x", &current_x,
+		 "x0", &current_x,
 		 NULL);
     
     if(current_x == x){
@@ -1461,7 +1465,7 @@ ags_notation_find_offset(AgsNotation *notation,
 
     while(current != NULL){
       g_object_get(current->data,
-		   "x", &current_x,
+		   "x0", &current_x,
 		   NULL);
     
       if(current_x == x){
@@ -1479,7 +1483,7 @@ ags_notation_find_offset(AgsNotation *notation,
 
     while(current != NULL){
       g_object_get(current->data,
-		   "x", &current_x,
+		   "x0", &current_x,
 		   NULL);
     
       if(current_x == x){

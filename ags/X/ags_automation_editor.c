@@ -2110,7 +2110,7 @@ ags_automation_editor_paste(AgsAutomationEditor *automation_editor)
 		}     
 		
 		/* 1st attempt */
-		timestamp->timer.ags_offset.offset = AGS_AUTOMATION_DEFAULT_OFFSET * floor(offset / AGS_AUTOMATION_DEFAULT_OFFSET);
+		timestamp->timer.ags_offset.offset = (guint64) AGS_AUTOMATION_DEFAULT_OFFSET * floor((double) position_x / (double) AGS_AUTOMATION_DEFAULT_OFFSET);
 		
 		first_x = ags_automation_editor_paste_automation_all(automation_node,
 								     timestamp,

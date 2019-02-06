@@ -590,6 +590,7 @@ ags_notation_editor_add_note(AgsNotationEditor *notation_editor,
 
   GList *start_list_notation, *list_notation;
 
+  guint x0;
   gint i;
   
   if(!AGS_IS_NOTATION_EDITOR(notation_editor) ||
@@ -605,8 +606,12 @@ ags_notation_editor_add_note(AgsNotationEditor *notation_editor,
 
     timestamp->flags &= (~AGS_TIMESTAMP_UNIX);
     timestamp->flags |= AGS_TIMESTAMP_OFFSET;
+
+    g_object_get(note,
+		 "x0", &x0,
+		 NULL);
     
-    timestamp->timer.ags_offset.offset = (guint64) AGS_NOTATION_DEFAULT_OFFSET * floor((double) note->x[0] / (double) AGS_NOTATION_DEFAULT_OFFSET);
+    timestamp->timer.ags_offset.offset = (guint64) AGS_NOTATION_DEFAULT_OFFSET * floor((double) x0 / (double) AGS_NOTATION_DEFAULT_OFFSET);
 
     i = 0;
 
@@ -1268,7 +1273,7 @@ ags_notation_editor_paste(AgsNotationEditor *notation_editor)
 		}     
 
 		/* 1st attempt */
-		timestamp->timer.ags_offset.offset = AGS_NOTATION_DEFAULT_OFFSET * floor(offset / AGS_NOTATION_DEFAULT_OFFSET);
+		timestamp->timer.ags_offset.offset = (guint64) AGS_NOTATION_DEFAULT_OFFSET * floor((double) position_x / (double) AGS_NOTATION_DEFAULT_OFFSET);
 		
 		first_x = ags_notation_editor_paste_notation_all(notation_node,
 								 timestamp,
