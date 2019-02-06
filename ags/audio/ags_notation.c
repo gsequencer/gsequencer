@@ -633,6 +633,7 @@ ags_notation_find_near_timestamp(GList *notation, guint audio_channel,
   guint current_audio_channel;
   guint64 current_x, x;
   guint length, position;
+  gboolean use_ags_offset;
   gboolean success;
 
   if(notation == NULL){
@@ -651,9 +652,15 @@ ags_notation_find_near_timestamp(GList *notation, guint audio_channel,
   if(ags_timestamp_test_flags(timestamp,
 			      AGS_TIMESTAMP_OFFSET)){
     x = ags_timestamp_get_ags_offset(timestamp);
+
+    use_ags_offset = TRUE;
   }else if(ags_timestamp_test_flags(timestamp,
 				    AGS_TIMESTAMP_UNIX)){
     x = ags_timestamp_get_unix_time(timestamp);
+
+    use_ags_offset = FALSE;
+  }else{
+    return(NULL);
   }
   
   retval = NULL;
@@ -677,8 +684,7 @@ ags_notation_find_near_timestamp(GList *notation, guint audio_channel,
 		   NULL);
       
       if(current_timestamp != NULL){
-	if(ags_timestamp_test_flags(current_timestamp,
-				    AGS_TIMESTAMP_OFFSET)){
+	if(use_ags_offset){
 	  if(ags_timestamp_get_ags_offset(current_timestamp) > x){
 	    break;
 	  }
@@ -688,28 +694,20 @@ ags_notation_find_near_timestamp(GList *notation, guint audio_channel,
 	  }
 	}
 	
-	if(ags_timestamp_test_flags(timestamp,
-				    AGS_TIMESTAMP_OFFSET) &&
-	   ags_timestamp_test_flags(current_timestamp,
-				    AGS_TIMESTAMP_OFFSET)){
+	if(use_ags_offset){
 	  if(ags_timestamp_get_ags_offset(current_timestamp) >= x &&
 	     ags_timestamp_get_ags_offset(current_timestamp) < x + AGS_NOTATION_DEFAULT_OFFSET){
 	    retval = current_start;
 	    
 	    break;
 	  }
-	}else if(ags_timestamp_test_flags(timestamp,
-					  AGS_TIMESTAMP_UNIX) &&
-		 ags_timestamp_test_flags(current_timestamp,
-					  AGS_TIMESTAMP_UNIX)){
+	}else{
 	  if(ags_timestamp_get_unix_time(current_timestamp) >= x &&
 	     ags_timestamp_get_unix_time(current_timestamp) < x + AGS_NOTATION_DEFAULT_DURATION){
 	    retval = current_start;
 	    
 	    break;
 	  }
-	}else{
-	  g_warning("inconsistent data");
 	}
       }else{
 	g_warning("inconsistent data");
@@ -733,8 +731,7 @@ ags_notation_find_near_timestamp(GList *notation, guint audio_channel,
 		   NULL);
       
       if(current_timestamp != NULL){
-	if(ags_timestamp_test_flags(current_timestamp,
-				    AGS_TIMESTAMP_OFFSET)){
+	if(use_ags_offset){
 	  if(ags_timestamp_get_ags_offset(current_timestamp) < x){
 	    break;
 	  }
@@ -744,28 +741,20 @@ ags_notation_find_near_timestamp(GList *notation, guint audio_channel,
 	  }
 	}
 
-	if(ags_timestamp_test_flags(timestamp,
-				    AGS_TIMESTAMP_OFFSET) &&
-	   ags_timestamp_test_flags(current_timestamp,
-				    AGS_TIMESTAMP_OFFSET)){
+	if(use_ags_offset){
 	  if((current_x = ags_timestamp_get_ags_offset(current_timestamp)) >= x &&
 	     ags_timestamp_get_ags_offset(current_timestamp) < x + AGS_NOTATION_DEFAULT_OFFSET){
 	    retval = current_end;
 	    
 	    break;
 	  }
-	}else if(ags_timestamp_test_flags(timestamp,
-					  AGS_TIMESTAMP_UNIX) &&
-		 ags_timestamp_test_flags(current_timestamp,
-					  AGS_TIMESTAMP_UNIX)){
+	}else{
 	  if((current_x = ags_timestamp_get_unix_time(current_timestamp)) >= x &&
 	     ags_timestamp_get_unix_time(current_timestamp) < x + AGS_NOTATION_DEFAULT_DURATION){
 	    retval = current_end;
 	    
 	    break;
 	  }
-	}else{
-	  g_warning("inconsistent data");
 	}
       }else{
 	g_warning("inconsistent data");
@@ -789,28 +778,20 @@ ags_notation_find_near_timestamp(GList *notation, guint audio_channel,
 		   NULL);
 
       if(current_timestamp != NULL){
-	if(ags_timestamp_test_flags(timestamp,
-				    AGS_TIMESTAMP_OFFSET) &&
-	   ags_timestamp_test_flags(current_timestamp,
-				    AGS_TIMESTAMP_OFFSET)){
+	if(use_ags_offset){
 	  if((current_x = ags_timestamp_get_ags_offset(current_timestamp)) >= x &&
 	     ags_timestamp_get_ags_offset(current_timestamp) < x + AGS_NOTATION_DEFAULT_OFFSET){
 	    retval = current;
 	    
 	    break;
 	  }
-	}else if(ags_timestamp_test_flags(timestamp,
-					  AGS_TIMESTAMP_UNIX) &&
-		 ags_timestamp_test_flags(current_timestamp,
-					  AGS_TIMESTAMP_UNIX)){
+	}else{
 	  if((current_x = ags_timestamp_get_unix_time(current_timestamp)) >= x &&
 	     ags_timestamp_get_unix_time(current_timestamp) < x + AGS_NOTATION_DEFAULT_DURATION){
 	    retval = current;
 	    
 	    break;
 	  }
-	}else{
-	  g_warning("inconsistent data");
 	}
       }else{
 	g_warning("inconsistent data");

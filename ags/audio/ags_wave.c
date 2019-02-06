@@ -1291,6 +1291,7 @@ ags_wave_find_near_timestamp(GList *wave, guint line,
   guint current_line;
   guint64 current_x, x;
   guint length, position;
+  gboolean use_ags_offset;
   gboolean success;
 
   if(wave == NULL){
@@ -1309,9 +1310,15 @@ ags_wave_find_near_timestamp(GList *wave, guint line,
   if(ags_timestamp_test_flags(timestamp,
 			      AGS_TIMESTAMP_OFFSET)){
     x = ags_timestamp_get_ags_offset(timestamp);
+
+    use_ags_offset = TRUE;
   }else if(ags_timestamp_test_flags(timestamp,
 				    AGS_TIMESTAMP_UNIX)){
     x = ags_timestamp_get_unix_time(timestamp);
+
+    use_ags_offset = FALSE;
+  }else{
+    return(NULL);
   }
   
   retval = NULL;
@@ -1336,8 +1343,7 @@ ags_wave_find_near_timestamp(GList *wave, guint line,
       }
 
       if(current_timestamp != NULL){
-	if(ags_timestamp_test_flags(current_timestamp,
-				    AGS_TIMESTAMP_OFFSET)){
+	if(use_ags_offset){
 	  if(ags_timestamp_get_ags_offset(current_timestamp) > x){
 	    break;
 	  }
@@ -1347,10 +1353,7 @@ ags_wave_find_near_timestamp(GList *wave, guint line,
 	  }
 	}
 
-	if(ags_timestamp_test_flags(timestamp,
-				    AGS_TIMESTAMP_OFFSET) &&
-	   ags_timestamp_test_flags(current_timestamp,
-				    AGS_TIMESTAMP_OFFSET)){
+	if(use_ags_offset){
 	  relative_offset = AGS_WAVE_DEFAULT_BUFFER_LENGTH * samplerate;
 
 	  if(ags_timestamp_get_ags_offset(current_timestamp) >= x &&
@@ -1359,18 +1362,13 @@ ags_wave_find_near_timestamp(GList *wave, guint line,
 	    
 	    break;
 	  }
-	}else if(ags_timestamp_test_flags(timestamp,
-					  AGS_TIMESTAMP_UNIX) &&
-		 ags_timestamp_test_flags(current_timestamp,
-					  AGS_TIMESTAMP_UNIX)){
+	}else{
 	  if(ags_timestamp_get_unix_time(current_timestamp) >= x &&
 	     ags_timestamp_get_unix_time(current_timestamp) < x + AGS_WAVE_DEFAULT_DURATION){
 	    retval = current_start;
 	    
 	    break;
 	  }
-	}else{
-	  g_warning("inconsistent data");
 	}
       }else{
 	g_warning("inconsistent data");
@@ -1403,10 +1401,7 @@ ags_wave_find_near_timestamp(GList *wave, guint line,
 	  }
 	}
 
-	if(ags_timestamp_test_flags(timestamp,
-				    AGS_TIMESTAMP_OFFSET) &&
-	   ags_timestamp_test_flags(current_timestamp,
-				    AGS_TIMESTAMP_OFFSET)){
+	if(use_ags_offset){
 	  relative_offset = AGS_WAVE_DEFAULT_BUFFER_LENGTH * samplerate;
 	  
 	  if(ags_timestamp_get_ags_offset(current_timestamp) >= x &&
@@ -1415,18 +1410,13 @@ ags_wave_find_near_timestamp(GList *wave, guint line,
 	    
 	    break;
 	  }
-	}else if(ags_timestamp_test_flags(timestamp,
-					  AGS_TIMESTAMP_UNIX) &&
-		 ags_timestamp_test_flags(current_timestamp,
-					  AGS_TIMESTAMP_UNIX)){
+	}else{
 	  if(ags_timestamp_get_unix_time(current_timestamp) >= x &&
 	     ags_timestamp_get_unix_time(current_timestamp) < x + AGS_WAVE_DEFAULT_DURATION){
 	    retval = current_end;
 	    
 	    break;
 	  }
-	}else{
-	  g_warning("inconsistent data");
 	}
       }else{
 	g_warning("inconsistent data");
@@ -1450,10 +1440,7 @@ ags_wave_find_near_timestamp(GList *wave, guint line,
       }
 
       if(current_timestamp != NULL){
-	if(ags_timestamp_test_flags(timestamp,
-				    AGS_TIMESTAMP_OFFSET) &&
-	   ags_timestamp_test_flags(current_timestamp,
-				    AGS_TIMESTAMP_OFFSET)){
+	if(use_ags_offset){
 	  relative_offset = AGS_WAVE_DEFAULT_BUFFER_LENGTH * samplerate;
     
 	  if((current_x = ags_timestamp_get_ags_offset(current_timestamp)) >= x &&
@@ -1462,18 +1449,13 @@ ags_wave_find_near_timestamp(GList *wave, guint line,
 	    
 	    break;
 	  }
-	}else if(ags_timestamp_test_flags(timestamp,
-					  AGS_TIMESTAMP_UNIX) &&
-		 ags_timestamp_test_flags(current_timestamp,
-					  AGS_TIMESTAMP_UNIX)){
+	}else{
 	  if((current_x = ags_timestamp_get_unix_time(current_timestamp)) >= x &&
 	     ags_timestamp_get_unix_time(current_timestamp) < x + AGS_WAVE_DEFAULT_DURATION){
 	    retval = current;
 	    
 	    break;
 	  }
-	}else{
-	  g_warning("inconsistent data");
 	}
       }else{
 	g_warning("inconsistent data");
