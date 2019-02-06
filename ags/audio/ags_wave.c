@@ -1808,6 +1808,10 @@ ags_wave_find_point(AgsWave *wave,
 		 "x", &current_start_x,
 		 NULL);
 
+    if(current_start_x > x){
+      break;
+    }
+    
     if(current_start_x == x){
       retval = current_start->data;
 
@@ -1817,6 +1821,10 @@ ags_wave_find_point(AgsWave *wave,
     g_object_get(current_end->data,
 		 "x", &current_end_x,
 		 NULL);
+
+    if(current_end_x < x){
+      break;
+    }
 
     if(current_end_x == x){
       retval = current_end->data;
