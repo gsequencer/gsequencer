@@ -516,7 +516,9 @@ ags_wave_get_property(GObject *gobject,
     {
       pthread_mutex_lock(wave_mutex);
 
-      g_value_set_pointer(value, g_list_copy(wave->buffer));
+      g_value_set_pointer(value, g_list_copy_deep(wave->buffer,
+						  (GCopyFunc) g_object_ref,
+						  NULL));
 
       pthread_mutex_unlock(wave_mutex);
     }
@@ -968,7 +970,8 @@ ags_wave_set_samplerate(AgsWave *wave,
     offset += buffer_size;
   }
 
-  g_list_free(start_list);
+  g_list_free_full(start_list,
+		   g_object_unref);
 
   if(resampled_data != NULL){
     free(resampled_data);
@@ -1212,7 +1215,8 @@ ags_wave_set_buffer_size(AgsWave *wave,
     offset += buffer_size;
   }
 
-  g_list_free(start_list);
+  g_list_free_full(start_list,
+		   g_object_unref);
 
   if(data != NULL){
     free(data);
@@ -1283,7 +1287,7 @@ GList*
 ags_wave_find_near_timestamp(GList *wave, guint line,
 			     AgsTimestamp *timestamp)
 {
-  AgsTimestamp *current_start_timestamp, *current_end_timestamp, *current_timestamp;
+  AgsTimestamp *current_timestamp;
 
   GList *retval;
   GList *current_start, *current_end, *current;
@@ -1327,12 +1331,12 @@ ags_wave_find_near_timestamp(GList *wave, guint line,
   while(!success && current != NULL){
     guint64 relative_offset;
     guint samplerate;
+
+    current_x = 0;    
     
     /* check current - start */
     g_object_get(current_start->data,
 		 "line", &current_line,
-		 "samplerate", &samplerate,
-		 "timestamp", &current_timestamp,
 		 NULL);
 
     if(current_line == line){
@@ -1342,12 +1346,25 @@ ags_wave_find_near_timestamp(GList *wave, guint line,
 	break;
       }
 
+      g_object_get(current_start->data,
+		   "samplerate", &samplerate,
+		   "timestamp", &current_timestamp,
+		   NULL);
+
       if(current_timestamp != NULL){
 	if(use_ags_offset){
+	  current_x = ags_timestamp_get_ags_offset(current_timestamp);
+	  
+	  g_object_unref(current_timestamp);
+
 	  if(ags_timestamp_get_ags_offset(current_timestamp) > x){
 	    break;
 	  }
 	}else{
+	  current_x = ags_timestamp_get_unix_time(current_timestamp);
+	  
+	  g_object_unref(current_timestamp);
+
 	  if(ags_timestamp_get_unix_time(current_timestamp) > x){
 	    break;
 	  }
@@ -1356,15 +1373,15 @@ ags_wave_find_near_timestamp(GList *wave, guint line,
 	if(use_ags_offset){
 	  relative_offset = AGS_WAVE_DEFAULT_BUFFER_LENGTH * samplerate;
 
-	  if(ags_timestamp_get_ags_offset(current_timestamp) >= x &&
-	     ags_timestamp_get_ags_offset(current_timestamp) < x + relative_offset){
+	  if(current_x >= x &&
+	     current_x < x + relative_offset){
 	    retval = current_start;
 	    
 	    break;
 	  }
 	}else{
-	  if(ags_timestamp_get_unix_time(current_timestamp) >= x &&
-	     ags_timestamp_get_unix_time(current_timestamp) < x + AGS_WAVE_DEFAULT_DURATION){
+	  if(current_x >= x &&
+	     current_x < x + AGS_WAVE_DEFAULT_DURATION){
 	    retval = current_start;
 	    
 	    break;
@@ -1378,8 +1395,6 @@ ags_wave_find_near_timestamp(GList *wave, guint line,
     /* check current - end */
     g_object_get(current_end->data,
 		 "line", &current_line,
-		 "samplerate", &samplerate,
-		 "timestamp", &current_timestamp,
 		 NULL);
     
     if(current_line == line){
@@ -1389,14 +1404,26 @@ ags_wave_find_near_timestamp(GList *wave, guint line,
 	break;
       }
 
+      g_object_get(current_start->data,
+		   "samplerate", &samplerate,
+		   "timestamp", &current_timestamp,
+		   NULL);
+
       if(current_timestamp != NULL){
-	if(ags_timestamp_test_flags(current_timestamp,
-				    AGS_TIMESTAMP_OFFSET)){
-	  if(ags_timestamp_get_ags_offset(current_timestamp) < x){
+	if(use_ags_offset){
+	  current_x = ags_timestamp_get_ags_offset(current_timestamp);
+
+	  g_object_unref(current_timestamp);
+
+	  if(current_x < x){
 	    break;
 	  }
 	}else{
-	  if(ags_timestamp_get_unix_time(current_timestamp) < x){
+	  current_x = ags_timestamp_get_unix_time(current_timestamp);
+	  
+	  g_object_unref(current_timestamp);
+
+	  if(current_x < x){
 	    break;
 	  }
 	}
@@ -1404,15 +1431,15 @@ ags_wave_find_near_timestamp(GList *wave, guint line,
 	if(use_ags_offset){
 	  relative_offset = AGS_WAVE_DEFAULT_BUFFER_LENGTH * samplerate;
 	  
-	  if(ags_timestamp_get_ags_offset(current_timestamp) >= x &&
-	     ags_timestamp_get_ags_offset(current_timestamp) < x + relative_offset){
+	  if(current_x >= x &&
+	     current_x < x + relative_offset){
 	    retval = current_end;
 	    
 	    break;
 	  }
 	}else{
-	  if(ags_timestamp_get_unix_time(current_timestamp) >= x &&
-	     ags_timestamp_get_unix_time(current_timestamp) < x + AGS_WAVE_DEFAULT_DURATION){
+	  if(current_x >= x &&
+	     current_x < x + AGS_WAVE_DEFAULT_DURATION){
 	    retval = current_end;
 	    
 	    break;
@@ -1428,8 +1455,6 @@ ags_wave_find_near_timestamp(GList *wave, guint line,
     
     g_object_get(current->data,
 		 "line", &current_line,
-		 "samplerate", &samplerate,
-		 "timestamp", &current_timestamp,
 		 NULL);
 
     if(current_line == line){
@@ -1439,19 +1464,32 @@ ags_wave_find_near_timestamp(GList *wave, guint line,
 	break;
       }
 
+      g_object_get(current_start->data,
+		   "samplerate", &samplerate,
+		   "timestamp", &current_timestamp,
+		   NULL);
+
       if(current_timestamp != NULL){
 	if(use_ags_offset){
+	  current_x = ags_timestamp_get_ags_offset(current_timestamp);
+
+	  g_object_unref(current_timestamp);
+
 	  relative_offset = AGS_WAVE_DEFAULT_BUFFER_LENGTH * samplerate;
     
-	  if((current_x = ags_timestamp_get_ags_offset(current_timestamp)) >= x &&
-	     ags_timestamp_get_ags_offset(current_timestamp) < x + relative_offset){
+	  if(current_x >= x &&
+	     current_x < x + relative_offset){
 	    retval = current;
 	    
 	    break;
 	  }
 	}else{
-	  if((current_x = ags_timestamp_get_unix_time(current_timestamp)) >= x &&
-	     ags_timestamp_get_unix_time(current_timestamp) < x + AGS_WAVE_DEFAULT_DURATION){
+	  current_x = ags_timestamp_get_unix_time(current_timestamp);
+	  
+	  g_object_unref(current_timestamp);
+
+	  if(current_x >= x &&
+	     current_x < x + AGS_WAVE_DEFAULT_DURATION){
 	    retval = current;
 	    
 	    break;
@@ -1506,6 +1544,8 @@ ags_wave_add(GList *wave,
   {
     AgsTimestamp *timestamp_a, *timestamp_b;
 
+    guint64 offset_a, offset_b;
+
     g_object_get(a,
 		 "timestamp", &timestamp_a,
 		 NULL);
@@ -1514,11 +1554,17 @@ ags_wave_add(GList *wave,
 		 "timestamp", &timestamp_b,
 		 NULL);
     
-    if(ags_timestamp_get_ags_offset(timestamp_a) == ags_timestamp_get_ags_offset(timestamp_b)){
+    offset_a = ags_timestamp_get_ags_offset(timestamp_a);
+    offset_b = ags_timestamp_get_ags_offset(timestamp_b);
+
+    g_object_unref(timestamp_a);
+    g_object_unref(timestamp_b);
+    
+    if(offset_a == offset_b){
       return(0);
-    }else if(ags_timestamp_get_ags_offset(timestamp_a) < ags_timestamp_get_ags_offset(timestamp_b)){
+    }else if(offset_a < offset_b){
       return(-1);
-    }else if(ags_timestamp_get_ags_offset(timestamp_a) > ags_timestamp_get_ags_offset(timestamp_b)){
+    }else if(offset_a > offset_b){
       return(1);
     }
 
@@ -2390,6 +2436,8 @@ ags_wave_copy_selection(AgsWave *wave)
     xmlNewProp(timestamp_node,
 	       BAD_CAST "offset",
 	       BAD_CAST (g_strdup_printf("%lu", ags_timestamp_get_ags_offset(timestamp))));
+
+    g_object_unref(timestamp);
   }
   
   /* selection */
@@ -2668,6 +2716,7 @@ ags_wave_insert_native_level_from_clipboard(AgsWave *wave,
     gchar *offset;
     char *endptr;
 
+    guint64 timestamp_offset;
     guint samplerate_val;
     guint buffer_size_val;
     guint format_val;
@@ -2968,8 +3017,11 @@ ags_wave_insert_native_level_from_clipboard(AgsWave *wave,
 		       "timestamp", &timestamp,
 		       NULL);
 
+	  timestamp_offset = ags_timestamp_get_ags_offset(timestamp);
+	  g_object_unref(timestamp);
+
 	  if(!match_timestamp ||
-	     x_val < ags_timestamp_get_ags_offset(timestamp) + relative_offset){
+	     x_val < timestamp_offset + relative_offset){
 	    guint copy_mode;
 	    
 	    /* find first */

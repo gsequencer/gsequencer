@@ -406,6 +406,8 @@ ags_recall_lv2_run_finalize(GObject *gobject)
       ags_returnable_thread_unset_flags(returnable_thread, AGS_RETURNABLE_THREAD_IN_USE);
 
       ags_thread_stop((AgsThread *) returnable_thread);
+
+      g_object_unref(returnable_thread);
     }
     
     g_object_unref(recall_lv2_run->worker_handle);
@@ -727,6 +729,14 @@ ags_recall_lv2_run_run_init_pre(AgsRecall *recall)
     g_list_free(port);
     g_list_free(plugin_port_start);
   }
+
+  g_object_unref(recall_recycling);
+
+  g_object_unref(recall_channel_run);
+
+  g_object_unref(recall_lv2);
+
+  g_object_unref(audio_signal);
 }
 
 void
@@ -780,7 +790,6 @@ ags_recall_lv2_run_run_pre(AgsRecall *recall)
 
   g_object_get(recall,
 	       "recall-id", &recall_id,
-	       "source", &audio_signal,
 	       NULL);
 
   g_object_get(recall_id,
@@ -798,10 +807,17 @@ ags_recall_lv2_run_run_pre(AgsRecall *recall)
   if(ags_recall_global_get_rt_safe() &&
      parent_recycling_context != NULL &&
      note_start == NULL){
+    g_object_unref(recall_id);
+
+    g_object_unref(recycling_context);
+
+    g_object_unref(parent_recycling_context);
+
     return;
   }
 
-  g_list_free(note_start);
+  g_list_free_full(note_start,
+		   g_object_unref);
 
   g_object_get(recall,
 	       "parent", &recall_recycling,
@@ -822,8 +838,24 @@ ags_recall_lv2_run_run_pre(AgsRecall *recall)
 	       NULL);
   
   if(route_lv2_audio_run == NULL){
+    g_object_unref(recall_id);
+
+    g_object_unref(recycling_context);
+
+    g_object_unref(parent_recycling_context);
+
+    g_object_unref(recall_recycling);
+    
+    g_object_unref(recall_channel_run);
+
+    g_object_unref(recall_lv2);
+
     return;
   }
+
+  g_object_get(recall,
+	       "source", &audio_signal,
+	       NULL);
 
   /* get recall lv2 mutex */
   pthread_mutex_lock(ags_recall_get_class_mutex());
@@ -907,8 +939,8 @@ ags_recall_lv2_run_run_pre(AgsRecall *recall)
 
       ags_recall_done(recall);
       g_list_free(note_start);
-            
-      return;
+      
+      goto ags_recall_lv2_run_run_pre_END;
     }
   }
 
@@ -967,6 +999,22 @@ ags_recall_lv2_run_run_pre(AgsRecall *recall)
 						recall_lv2_run->output, 1, 0,
 						(guint) buffer_size, copy_mode_out);
   }
+
+ags_recall_lv2_run_run_pre_END:
+  
+  g_object_unref(recall_id);
+
+  g_object_unref(recycling_context);
+
+  g_object_unref(parent_recycling_context);
+
+  g_object_unref(recall_recycling);
+    
+  g_object_unref(recall_channel_run);
+
+  g_object_unref(recall_lv2);
+
+  g_object_unref(count_beats_audio_run);
 }
 
 void
@@ -1009,7 +1057,6 @@ ags_recall_lv2_run_run_inter(AgsRecall *recall)
 
   g_object_get(recall,
 	       "recall-id", &recall_id,
-	       "source", &audio_signal,
 	       NULL);
 
   g_object_get(recall_id,
@@ -1027,10 +1074,17 @@ ags_recall_lv2_run_run_inter(AgsRecall *recall)
   if(ags_recall_global_get_rt_safe() &&
      parent_recycling_context != NULL &&
      note_start == NULL){
+    g_object_unref(recall_id);
+
+    g_object_unref(recycling_context);
+
+    g_object_unref(parent_recycling_context);
+
     return;
   }
 
-  g_list_free(note_start);
+  g_list_free_full(note_start,
+		   g_object_unref);
 
   g_object_get(recall,
 	       "parent", &recall_recycling,
@@ -1048,9 +1102,25 @@ ags_recall_lv2_run_run_inter(AgsRecall *recall)
   
   if(ags_recall_lv2_test_flags(recall_lv2, AGS_RECALL_LV2_HAS_EVENT_PORT) ||
      ags_recall_lv2_test_flags(recall_lv2, AGS_RECALL_LV2_HAS_ATOM_PORT)){
+    g_object_unref(recall_id);
+
+    g_object_unref(recycling_context);
+
+    g_object_unref(parent_recycling_context);
+
+    g_object_unref(recall_recycling);
+
+    g_object_unref(recall_channel_run);
+
+    g_object_unref(recall_lv2);
+
     return;
   }
   
+  g_object_get(recall,
+	       "source", &audio_signal,
+	       NULL);
+
   /* get recall lv2 mutex */
   pthread_mutex_lock(ags_recall_get_class_mutex());
   
@@ -1089,8 +1159,8 @@ ags_recall_lv2_run_run_inter(AgsRecall *recall)
     }
 
     ags_recall_done(recall);
-    
-    return;
+
+    goto ags_recall_lv2_run_run_inter_END;
   }
   
   copy_mode_in = ags_audio_buffer_util_get_copy_mode(AGS_AUDIO_BUFFER_UTIL_FLOAT,
@@ -1128,6 +1198,22 @@ ags_recall_lv2_run_run_inter(AgsRecall *recall)
 						recall_lv2_run->output, (guint) output_lines, 0,
 						(guint) buffer_size, copy_mode_out);
   }
+
+ags_recall_lv2_run_run_inter_END:
+  
+  g_object_unref(recall_id);
+
+  g_object_unref(recycling_context);
+
+  g_object_unref(parent_recycling_context);
+
+  g_object_unref(recall_recycling);
+
+  g_object_unref(recall_channel_run);
+
+  g_object_unref(recall_lv2);
+
+  g_object_unref(audio_signal);
 }
 
 /**
@@ -1287,6 +1373,15 @@ ags_recall_lv2_run_load_ports(AgsRecallLv2Run *recall_lv2_run)
   }
 
   g_list_free(port);
+
+  g_list_free_full(plugin_port_start,
+		   g_object_unref);
+
+  g_object_unref(recall_recycling);
+
+  g_object_unref(recall_channel_run);
+
+  g_object_unref(recall_lv2);
 }
 
 /**

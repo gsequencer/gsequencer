@@ -1373,5 +1373,9 @@ ags_recall_lv2_new(AgsChannel *source,
 					     "effect-index", index,
 					     NULL);
 
+  if(output_soundcard != NULL){
+    g_object_unref(output_soundcard);
+  }
+
   return(recall_lv2);
 }

@@ -748,7 +748,9 @@ ags_core_audio_midiin_get_property(GObject *gobject,
       pthread_mutex_lock(core_audio_midiin_mutex);
 
       g_value_set_pointer(value,
-			  g_list_copy(core_audio_midiin->core_audio_port));
+			  g_list_copy_deep(core_audio_midiin->core_audio_port,
+					   (GCopyFunc) g_object_ref,
+					   NULL));
 
       pthread_mutex_unlock(core_audio_midiin_mutex);
     }
@@ -1332,7 +1334,7 @@ ags_core_audio_midiin_list_cards(AgsSequencer *sequencer,
     if(AGS_IS_CORE_AUDIO_MIDIIN(list->data)){
       g_object_get(list->data,
 		   "device", &device,
-		   "core_audio-client", &core_audio_client,
+		   "core-audio-client", &core_audio_client,
 		   NULL);
       
       if(card_id != NULL){
@@ -1354,7 +1356,9 @@ ags_core_audio_midiin_list_cards(AgsSequencer *sequencer,
 
 	  g_warning("ags_core_audio_midiin_list_cards() - CORE_AUDIO client not connected (null)");
 	}
-      }      
+      }
+
+      g_object_unref(core_audio_client);
     }
 
     list = list->next;
@@ -1600,9 +1604,8 @@ ags_core_audio_midiin_port_record(AgsSequencer *sequencer,
 		    (AGS_CORE_AUDIO_MIDIIN_CALLBACK_FINISH_WAIT |  AGS_CORE_AUDIO_MIDIIN_CALLBACK_FINISH_DONE));
   }
 
-  g_object_get(application_context,
-	       "task-thread", &task_thread,
-	       NULL);  
+  task_thread = ags_concurrency_provider_get_task_thread(AGS_CONCURRENCY_PROVIDER(application_context));
+
   task = NULL;
   
   /* tic sequencer */

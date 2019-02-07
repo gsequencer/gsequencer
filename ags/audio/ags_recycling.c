@@ -857,7 +857,9 @@ ags_recycling_get_property(GObject *gobject,
     {
       pthread_mutex_lock(recycling_mutex);
 
-      g_value_set_pointer(value, g_list_copy(recycling->audio_signal));
+      g_value_set_pointer(value, g_list_copy_deep(recycling->audio_signal,
+						  (GCopyFunc) g_object_ref,
+						  NULL));
 
       pthread_mutex_unlock(recycling_mutex);
     }

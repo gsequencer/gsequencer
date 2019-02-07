@@ -1025,6 +1025,8 @@ ags_recall_dssi_run_run_pre_END:
   g_object_unref(recall_channel_run);
 
   g_object_unref(recall_dssi);
+
+  g_object_unref(count_beats_audio_run);
 }
 
 /**

@@ -425,7 +425,9 @@ ags_core_audio_client_get_property(GObject *gobject,
       pthread_mutex_lock(core_audio_client_mutex);
 
       g_value_set_pointer(value,
-			  g_list_copy(core_audio_client->device));
+			  g_list_copy_deep(core_audio_client->device,
+					   (GCopyFunc) g_object_ref,
+					   NULL));
 
       pthread_mutex_unlock(core_audio_client_mutex);
     }
@@ -435,7 +437,9 @@ ags_core_audio_client_get_property(GObject *gobject,
       pthread_mutex_lock(core_audio_client_mutex);
 
       g_value_set_pointer(value,
-			  g_list_copy(core_audio_client->port));
+			  g_list_copy_deep(core_audio_client->port,
+					   (GCopyFunc) g_object_ref,
+					   NULL));
 
       pthread_mutex_unlock(core_audio_client_mutex);
     }
@@ -1105,7 +1109,6 @@ ags_core_audio_client_activate(AgsCoreAudioClient *core_audio_client)
   while(port != NULL){
     gchar *port_name;
 
-    //TODO:JK: make thread-safe
     g_object_get(port->data,
 		 "port-name", &port_name,
 		 NULL);
@@ -1114,6 +1117,8 @@ ags_core_audio_client_activate(AgsCoreAudioClient *core_audio_client)
 				 port_name,
 				 (ags_core_audio_port_test_flags(port->data, AGS_CORE_AUDIO_PORT_IS_AUDIO) ? TRUE: FALSE), (ags_core_audio_port_test_flags(port->data, AGS_CORE_AUDIO_PORT_IS_MIDI) ? TRUE: FALSE),
 				 (ags_core_audio_port_test_flags(port->data, AGS_CORE_AUDIO_PORT_IS_OUTPUT) ? TRUE: FALSE));
+
+    g_free(port_name);
     
     port = port->next;
   }

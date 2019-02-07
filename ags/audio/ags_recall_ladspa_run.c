@@ -332,6 +332,14 @@ ags_recall_ladspa_run_run_init_pre(AgsRecall *recall)
     g_message("activated LADSPA handle");
 #endif
   }
+
+  g_object_unref(recall_recycling);
+
+  g_object_unref(recall_channel_run);
+
+  g_object_unref(recall_ladspa);
+
+  g_object_unref(audio_signal);
 }
 
 void
@@ -373,7 +381,6 @@ ags_recall_ladspa_run_run_inter(AgsRecall *recall)
 
   g_object_get(recall,
 	       "recall-id", &recall_id,
-	       "source", &audio_signal,
 	       NULL);
 
   g_object_get(recall_id,
@@ -391,13 +398,21 @@ ags_recall_ladspa_run_run_inter(AgsRecall *recall)
   if(ags_recall_global_get_rt_safe() &&
      parent_recycling_context != NULL &&
      note_start == NULL){
+    g_object_unref(recall_id);
+
+    g_object_unref(recycling_context);
+
+    g_object_unref(parent_recycling_context);
+    
     return;
   }
 
-  g_list_free(note_start);
+  g_list_free_full(note_start,
+		   g_object_unref);
 
   g_object_get(recall,
 	       "parent", &recall_recycling,
+	       "source", &audio_signal,
 	       NULL);
 
   g_object_get(recall_recycling,
@@ -446,8 +461,8 @@ ags_recall_ladspa_run_run_inter(AgsRecall *recall)
     }
 
     ags_recall_done(recall);
-    
-    return;
+
+    goto ags_recall_ladspa_run_run_inter_END;
   }
   
   /* get copy mode and clear buffer */
@@ -485,6 +500,20 @@ ags_recall_ladspa_run_run_inter(AgsRecall *recall)
 						recall_ladspa_run->output, (guint) output_lines, 0,
 						(guint) buffer_size, copy_mode_out);
   }
+  
+ags_recall_ladspa_run_run_inter_END:
+  g_object_unref(recall_id);
+
+  g_object_unref(recycling_context);
+
+  g_object_unref(parent_recycling_context);
+
+  g_object_unref(recall_recycling);
+  g_object_unref(audio_signal);
+
+  g_object_unref(recall_channel_run);
+
+  g_object_unref(recall_ladspa);
 }
 
 /**
@@ -636,6 +665,12 @@ ags_recall_ladspa_run_load_ports(AgsRecallLadspaRun *recall_ladspa_run)
 		 (unsigned long) (recall_ladspa->output_port[j]),
 		 &(recall_ladspa_run->output[j]));
   }
+
+  g_object_unref(recall_recycling);
+
+  g_object_unref(recall_channel_run);
+
+  g_object_unref(recall_ladspa);
 }
 
 /**

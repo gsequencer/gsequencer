@@ -480,7 +480,9 @@ ags_recall_recycling_get_property(GObject *gobject,
     {
       pthread_mutex_lock(recall_mutex);
 
-      g_value_set_pointer(value, g_list_copy(recall_recycling->child_source));
+      g_value_set_pointer(value, g_list_copy_deep(recall_recycling->child_source,
+						  (GCopyFunc) g_object_ref,
+						  NULL));
 
       pthread_mutex_unlock(recall_mutex);
     }
@@ -579,6 +581,8 @@ ags_recall_recycling_connect(AgsConnectable *connectable)
 
   ags_connectable_connect_connection(connectable,
 				     (GObject *) source);
+
+  g_object_unref(source);
 }
 
 void
@@ -600,6 +604,8 @@ ags_recall_recycling_disconnect(AgsConnectable *connectable)
 
   ags_connectable_disconnect_connection(connectable,
 					(GObject *) source);
+
+  g_object_unref(source);
 }
 
 void
@@ -701,7 +707,6 @@ ags_recall_recycling_source_add_audio_signal_callback(AgsRecycling *source,
   AgsRecallAudioSignal *recall_audio_signal;
   AgsRecallID *recall_id, *source_recall_id;
   AgsRecyclingContext *recycling_context, *source_recycling_context;
-  AgsRecyclingContext *parent_recycling_context;
   
   GObject *output_soundcard;
   
@@ -715,6 +720,11 @@ ags_recall_recycling_source_add_audio_signal_callback(AgsRecycling *source,
   
   pthread_mutex_t *recall_mutex;
 
+  if(ags_audio_signal_test_flags(audio_signal, AGS_AUDIO_SIGNAL_TEMPLATE) ||
+     ags_audio_signal_test_flags(audio_signal, AGS_AUDIO_SIGNAL_RT_TEMPLATE)){
+    return;
+  }
+  
   /* get recall mutex */
   pthread_mutex_lock(ags_recall_get_class_mutex());
   
@@ -747,14 +757,25 @@ ags_recall_recycling_source_add_audio_signal_callback(AgsRecycling *source,
 	       "recall-id", &recall_id,
 	       NULL);
   
+  if(recall_id == NULL){
+    g_object_unref(recall_channel_run);
+    
+    g_object_unref(channel);
+
+    return;
+  }
+
   g_object_get(audio_signal,
 	       "recall-id", &source_recall_id,
 	       NULL);
 
-  if(ags_audio_signal_test_flags(audio_signal, AGS_AUDIO_SIGNAL_TEMPLATE) ||
-     ags_audio_signal_test_flags(audio_signal, AGS_AUDIO_SIGNAL_RT_TEMPLATE) ||
-     recall_id == NULL ||
-     source_recall_id == NULL){
+  if(source_recall_id == NULL){
+    g_object_unref(recall_channel_run);
+    
+    g_object_unref(channel);
+
+    g_object_unref(recall_id);
+
     return;
   }
 
@@ -762,16 +783,49 @@ ags_recall_recycling_source_add_audio_signal_callback(AgsRecycling *source,
 	       "recycling-context", &recycling_context,
 	       NULL);
   
+  if(recycling_context == NULL){
+    g_object_unref(recall_channel_run);
+    
+    g_object_unref(channel);
+
+    g_object_unref(recall_id);
+
+    g_object_unref(source_recall_id);
+
+    return;
+  }
+
   g_object_get(source_recall_id,
 	       "recycling-context", &source_recycling_context,
 	       NULL);
 
-  if(recycling_context == NULL ||
-     source_recycling_context == NULL){
+  if(source_recycling_context == NULL){
+    g_object_unref(recall_channel_run);
+    
+    g_object_unref(channel);
+
+    g_object_unref(recall_id);
+
+    g_object_unref(source_recall_id);
+
+    g_object_unref(recycling_context);
+
     return;
   }
   
   if(recycling_context != source_recycling_context){
+    g_object_unref(recall_channel_run);
+    
+    g_object_unref(channel);
+
+    g_object_unref(recall_id);
+
+    g_object_unref(source_recall_id);
+
+    g_object_unref(recycling_context);
+
+    g_object_unref(source_recycling_context);
+
     return;
   }
 
@@ -780,6 +834,8 @@ ags_recall_recycling_source_add_audio_signal_callback(AgsRecycling *source,
 	       NULL);
 
   if(destination_channel != NULL){
+    AgsRecyclingContext *parent_recycling_context;
+    
     g_object_get(destination_channel,
 		 "recall-id", &list_start,
 		 NULL);
@@ -791,15 +847,19 @@ ags_recall_recycling_source_add_audio_signal_callback(AgsRecycling *source,
     success = (destination_channel == NULL ||
 	       ags_recall_id_find_recycling_context(list_start,
 						    parent_recycling_context) != NULL) ? TRUE: FALSE;
-    g_list_free(list_start);
+
+    g_object_unref(parent_recycling_context);
+    
+    g_list_free_full(list_start,
+		     g_object_unref);
   
     if(!success){
-      return;
+      goto ags_recall_recycling_source_add_audio_signal_callback_END;
     }
   }
   
   if(!ags_recall_id_check_sound_scope(recall_id, sound_scope)){
-    return;
+    goto ags_recall_recycling_source_add_audio_signal_callback_END;
   }
 
 #ifdef AGS_DEBUG
@@ -832,6 +892,22 @@ ags_recall_recycling_source_add_audio_signal_callback(AgsRecycling *source,
     
     ags_recall_add_child((AgsRecall *) recall_recycling, (AgsRecall *) recall_audio_signal);
   }
+
+ags_recall_recycling_source_add_audio_signal_callback_END:
+  
+  g_object_unref(recall_channel_run);
+    
+  g_object_unref(channel);
+
+  g_object_unref(recall_id);
+
+  g_object_unref(source_recall_id);
+
+  g_object_unref(recycling_context);
+
+  g_object_unref(source_recycling_context);
+
+  g_object_unref(destination_channel);
 }
 
 void
@@ -851,6 +927,11 @@ ags_recall_recycling_source_remove_audio_signal_callback(AgsRecycling *source,
   GList *list_start, *list;
 
   gboolean success;
+
+  if((AGS_AUDIO_SIGNAL_TEMPLATE & (audio_signal->flags)) != 0 ||
+     (AGS_AUDIO_SIGNAL_RT_TEMPLATE & (audio_signal->flags)) != 0){
+    return;
+  }
   
   g_object_get(recall_recycling,
 	       "parent", &recall_channel_run,
@@ -864,14 +945,25 @@ ags_recall_recycling_source_remove_audio_signal_callback(AgsRecycling *source,
 	       "recall-id", &recall_id,
 	       NULL);
   
+  if(recall_id == NULL){
+    g_object_unref(recall_channel_run);
+    
+    g_object_unref(channel);
+
+    return;
+  }
+
   g_object_get(audio_signal,
 	       "recall-id", &source_recall_id,
 	       NULL);
 
-  if((AGS_AUDIO_SIGNAL_TEMPLATE & (audio_signal->flags)) != 0 ||
-     (AGS_AUDIO_SIGNAL_RT_TEMPLATE & (audio_signal->flags)) != 0 ||
-     recall_id == NULL ||
-     source_recall_id == NULL){
+  if(source_recall_id == NULL){
+    g_object_unref(recall_channel_run);
+    
+    g_object_unref(channel);
+
+    g_object_unref(recall_id);
+
     return;
   }
 
@@ -879,16 +971,33 @@ ags_recall_recycling_source_remove_audio_signal_callback(AgsRecycling *source,
 	       "recycling-context", &recycling_context,
 	       NULL);
   
-  g_object_get(source_recall_id,
-	       "recycling-context", &source_recycling_context,
-	       NULL);
-  
-  if(recycling_context == NULL ||
-     source_recycling_context == NULL){
+  if(recycling_context == NULL){
+    g_object_unref(recall_channel_run);
+    
+    g_object_unref(channel);
+
+    g_object_unref(recall_id);
+
+    g_object_unref(source_recall_id);
+
     return;
   }
   
-  if(recycling_context != source_recycling_context){
+  g_object_get(source_recall_id,
+	       "recycling-context", &source_recycling_context,
+	       NULL);
+
+  if(source_recycling_context == NULL){
+    g_object_unref(recall_channel_run);
+    
+    g_object_unref(channel);
+
+    g_object_unref(recall_id);
+
+    g_object_unref(source_recall_id);
+
+    g_object_unref(recycling_context);
+
     return;
   }
 
@@ -911,7 +1020,7 @@ ags_recall_recycling_source_remove_audio_signal_callback(AgsRecycling *source,
     g_list_free(list_start);
     
     if(!success){
-      return;
+      goto ags_recall_recycling_source_remove_audio_signal_callback_END;
     }
   }
   
@@ -941,7 +1050,24 @@ ags_recall_recycling_source_remove_audio_signal_callback(AgsRecycling *source,
     list = list->next;
   }
 
-  g_list_free(list_start);
+  g_list_free_full(list_start,
+		   g_object_unref);
+
+ags_recall_recycling_source_remove_audio_signal_callback_END:
+  
+  g_object_unref(recall_channel_run);
+    
+  g_object_unref(channel);
+
+  g_object_unref(recall_id);
+
+  g_object_unref(source_recall_id);
+
+  g_object_unref(recycling_context);
+
+  g_object_unref(source_recycling_context);
+
+  g_object_unref(destination_channel);
 }
 
 /**

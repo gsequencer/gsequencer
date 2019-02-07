@@ -1095,7 +1095,9 @@ ags_core_audio_devin_get_property(GObject *gobject,
       pthread_mutex_lock(core_audio_devin_mutex);
 
       g_value_set_pointer(value,
-			  g_list_copy(core_audio_devin->core_audio_port));
+			  g_list_copy_deep(core_audio_devin->core_audio_port,
+					   (GCopyFunc) g_object_ref,
+					   NULL));
 
       pthread_mutex_unlock(core_audio_devin_mutex);
     }
@@ -1519,13 +1521,7 @@ ags_core_audio_devin_list_cards(AgsSoundcard *soundcard,
   
   core_audio_devin = AGS_CORE_AUDIO_DEVIN(soundcard);
 
-  g_object_get(core_audio_devin,
-	       "application-context", &application_context,
-	       NULL);
-
-  if(application_context == NULL){
-    return;
-  }
+  application_context = ags_application_context_get_instance();
   
   if(card_id != NULL){
     *card_id = NULL;
@@ -1560,24 +1556,15 @@ ags_core_audio_devin_list_cards(AgsSoundcard *soundcard,
 		     NULL);
 	
 	if(core_audio_client != NULL){
-	  pthread_mutex_t *core_audio_client_mutex;
-	  
-	  /* get core_audio client mutex */
-	  pthread_mutex_lock(ags_core_audio_client_get_class_mutex());
-  
-	  core_audio_client_mutex = core_audio_client->obj_mutex;
-  
-	  pthread_mutex_unlock(ags_core_audio_client_get_class_mutex());
-
 	  /* get client name */
-	  pthread_mutex_lock(core_audio_client_mutex);
-
-	  client_name = g_strdup(core_audio_client->client_name);
-
-	  pthread_mutex_unlock(core_audio_client_mutex);
+	  g_object_get(core_audio_client,
+		       "client-name", &client_name,
+		       NULL);
 	  
 	  *card_name = g_list_prepend(*card_name,
 				      client_name);
+
+	  g_object_unref(core_audio_client);
 	}else{
 	  *card_name = g_list_prepend(*card_name,
 				      g_strdup("(null)"));
@@ -1847,7 +1834,8 @@ ags_core_audio_devin_port_record(AgsSoundcard *soundcard,
   pthread_mutex_t *callback_finish_mutex;
   
   core_audio_devin = AGS_CORE_AUDIO_DEVIN(soundcard);
-  application_context = ags_soundcard_get_application_context(soundcard);
+
+  application_context = ags_application_context_get_instance();
   
   /* get core-audio devin mutex */
   pthread_mutex_lock(ags_core_audio_devin_get_class_mutex());
@@ -1966,9 +1954,8 @@ ags_core_audio_devin_port_record(AgsSoundcard *soundcard,
   pthread_mutex_unlock(notify_soundcard->return_mutex);
 
   /* update soundcard */
-  g_object_get(application_context,
-	       "task-thread", &task_thread,
-	       NULL);  
+  task_thread = ags_concurrency_provider_get_task_thread(AGS_CONCURRENCY_PROVIDER(application_context));
+
   task = NULL;      
   
   /* tic soundcard */

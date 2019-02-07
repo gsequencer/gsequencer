@@ -844,5 +844,9 @@ ags_recall_ladspa_new(AgsChannel *source,
 						   "effect-index", effect_index,
 						   NULL);
 
+  if(output_soundcard != NULL){
+    g_object_unref(output_soundcard);
+  }
+
   return(recall_ladspa);
 }

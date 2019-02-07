@@ -842,7 +842,9 @@ ags_audio_container_get_property(GObject *gobject,
     {
       pthread_mutex_lock(audio_container_mutex);
 
-      g_value_set_pointer(value, g_list_copy(audio_container->audio_signal));
+      g_value_set_pointer(value, g_list_copy_deep(audio_container->audio_signal,
+						  (GCopyFunc) g_object_ref,
+						  NULL));
 
       pthread_mutex_unlock(audio_container_mutex);
     }
@@ -851,7 +853,9 @@ ags_audio_container_get_property(GObject *gobject,
     {
       pthread_mutex_lock(audio_container_mutex);
 
-      g_value_set_pointer(value, g_list_copy(audio_container->wave));
+      g_value_set_pointer(value, g_list_copy_deep(audio_container->wave,
+						  (GCopyFunc) g_object_ref,
+						  NULL));
 
       pthread_mutex_unlock(audio_container_mutex);
     }

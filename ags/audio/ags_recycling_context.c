@@ -394,7 +394,9 @@ ags_recycling_context_get_property(GObject *gobject,
     {
       pthread_mutex_lock(recycling_context_mutex);
       
-      g_value_set_pointer(value, g_list_copy(recycling_context->children));
+      g_value_set_pointer(value, g_list_copy_deep(recycling_context->children,
+						  (GCopyFunc) g_object_ref,
+						  NULL));
 
       pthread_mutex_unlock(recycling_context_mutex);
     }

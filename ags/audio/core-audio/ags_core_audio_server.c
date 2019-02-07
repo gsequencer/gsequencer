@@ -560,7 +560,9 @@ ags_core_audio_server_get_property(GObject *gobject,
       pthread_mutex_lock(core_audio_server_mutex);
 
       g_value_set_pointer(value,
-			  g_list_copy(core_audio_server->client));
+			  g_list_copy_deep(core_audio_server->client,
+					   (GCopyFunc) g_object_ref,
+					   NULL));
 
       pthread_mutex_unlock(core_audio_server_mutex);
     }
@@ -1186,6 +1188,9 @@ ags_core_audio_server_get_soundcard(AgsSoundServer *sound_server,
     device = device->next;
   }
 
+  g_list_free_full(device_start,
+		   g_object_unref);
+
   return(g_list_reverse(list));
 }
 
@@ -1256,6 +1261,9 @@ ags_core_audio_server_get_sequencer(AgsSoundServer *sound_server,
     device = device->next;
   }
 #endif
+
+  g_list_free_full(device_start,
+		   g_object_unref);
   
   return(g_list_reverse(list));
 }
@@ -1506,7 +1514,8 @@ ags_core_audio_server_unregister_soundcard(AgsSoundServer *sound_server,
       list = list->next;
     }
 
-    g_list_free(list_start);
+    g_list_free_full(list_start,
+		     g_object_unref);
   }else if(AGS_IS_CORE_AUDIO_DEVIN(soundcard)){
     g_object_get(soundcard,
 		 "core-audio-port", &list_start,
@@ -1522,7 +1531,8 @@ ags_core_audio_server_unregister_soundcard(AgsSoundServer *sound_server,
       list = list->next;
     }
 
-    g_list_free(list_start);
+    g_list_free_full(list_start,
+		     g_object_unref);
   }
   
   ags_core_audio_client_remove_device(default_client,
@@ -1541,7 +1551,10 @@ ags_core_audio_server_unregister_soundcard(AgsSoundServer *sound_server,
     pthread_mutex_unlock(core_audio_server_mutex);
   }
 
-  g_list_free(port);
+  g_object_unref(default_client);
+  
+  g_list_free_full(port,
+		   g_object_unref);
 }
 
 GObject*
@@ -1711,7 +1724,7 @@ ags_core_audio_server_unregister_sequencer(AgsSoundServer *sound_server,
   }
 
   g_object_get(sequencer,
-	       "core_audio-port", &list_start,
+	       "core-audio-port", &list_start,
 	       NULL);
 
   list = list_start;
@@ -1725,7 +1738,8 @@ ags_core_audio_server_unregister_sequencer(AgsSoundServer *sound_server,
     list = list->next;
   }
 
-  g_list_free(list_start);
+  g_list_free_full(list_start,
+		   g_object_unref);
 
   ags_core_audio_client_remove_device(default_client,
 				sequencer);
@@ -1743,7 +1757,10 @@ ags_core_audio_server_unregister_sequencer(AgsSoundServer *sound_server,
     pthread_mutex_unlock(core_audio_server_mutex);
   }
 
-  g_list_free(port);
+  g_object_unref(default_client);
+  
+  g_list_free_full(port,
+		   g_object_unref);
 }
 
 /**
@@ -1801,11 +1818,6 @@ ags_core_audio_server_register_default_soundcard(AgsCoreAudioServer *core_audio_
   
   pthread_mutex_unlock(core_audio_server_mutex);
   
-  /* the default client */
-  g_object_get(core_audio_server,
-	       "default-core-audio-client", &default_client,
-	       NULL);
-
   /* the default client */
   if(default_client == NULL){
     default_client = ags_core_audio_client_new((GObject *) core_audio_server);
@@ -2026,14 +2038,14 @@ ags_core_audio_server_find_port(AgsCoreAudioServer *core_audio_server,
   pthread_mutex_t *core_audio_port_mutex;
 
   g_object_get(core_audio_server,
-	       "core_audio-client", &client_start,
+	       "core-audio-client", &client_start,
 	       NULL);
 
   client = client_start;
   
   while(client != NULL){
     g_object_get(core_audio_server,
-		 "core_audio-port", &port_start,
+		 "core-audio-port", &port_start,
 		 NULL);
 
     port = port_start;
@@ -2065,13 +2077,15 @@ ags_core_audio_server_find_port(AgsCoreAudioServer *core_audio_server,
       port = port->next;
     }
 
-    g_list_free(port_start);
+    g_list_free_full(port_start,
+		     g_object_unref);
 
     /* iterate */
     client = client->next;
   }
 
-  g_list_free(client_start);
+  g_list_free_full(client_start,
+		   g_object_unref);
   
   return(NULL);
 }
@@ -2176,7 +2190,7 @@ ags_core_audio_server_connect_client(AgsCoreAudioServer *core_audio_server)
   }
 
   g_object_get(core_audio_server,
-	       "core_audio-client", &client_start,
+	       "core-audio-client", &client_start,
 	       NULL);
   
   client = client_start;
@@ -2207,7 +2221,8 @@ ags_core_audio_server_connect_client(AgsCoreAudioServer *core_audio_server)
     client = client->next;
   }
 
-  g_list_free(client_start);
+  g_list_free_full(client_start,
+		   g_object_unref);
 }
 
 /**

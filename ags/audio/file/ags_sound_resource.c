@@ -632,8 +632,6 @@ ags_sound_resource_read_wave(AgsSoundResource *sound_resource,
   for(i = i_start; i < i_stop; i++){
     AgsWave *wave;
 
-    AgsTimestamp *timestamp;
-
     gboolean success;
 
     ags_sound_resource_seek(AGS_SOUND_RESOURCE(sound_resource),
@@ -649,11 +647,6 @@ ags_sound_resource_read_wave(AgsSoundResource *sound_resource,
 
     start_list = ags_wave_add(start_list,
 			      wave);
-
-
-    g_object_get(wave,
-		 "timestamp", &timestamp,
-		 NULL);
     
     relative_offset = AGS_WAVE_DEFAULT_BUFFER_LENGTH * target_samplerate;
         
@@ -729,6 +722,8 @@ ags_sound_resource_read_wave(AgsSoundResource *sound_resource,
 			  FALSE);
       
       if(create_wave){
+	AgsTimestamp *timestamp;
+
 	wave = ags_wave_new(NULL,
 			    i);
 	g_object_set(wave,
@@ -743,6 +738,7 @@ ags_sound_resource_read_wave(AgsSoundResource *sound_resource,
 	ags_timestamp_set_ags_offset(timestamp,
 				     x_point_offset + frame_count);
 
+	g_object_unref(timestamp);
 
 	start_list = ags_wave_add(start_list,
 				  wave);

@@ -1113,6 +1113,8 @@ ags_core_audio_port_register(AgsCoreAudioPort *core_audio_port,
   }
 
   if(ags_core_audio_port_test_flags(core_audio_port, AGS_CORE_AUDIO_PORT_REGISTERED)){
+    g_object_unref(core_audio_client);
+    
     return;
   }
 
@@ -1122,6 +1124,8 @@ ags_core_audio_port_register(AgsCoreAudioPort *core_audio_port,
 	       NULL);
   
   if(core_audio_server == NULL){
+    g_object_unref(core_audio_client);
+
     return;
   }
 
@@ -1140,6 +1144,10 @@ ags_core_audio_port_register(AgsCoreAudioPort *core_audio_port,
   pthread_mutex_unlock(core_audio_client_mutex);
 
   if(graph == NULL){
+    g_object_unref(core_audio_client);
+
+    g_object_unref(core_audio_server);
+    
     return;
   }
 
@@ -1360,7 +1368,7 @@ ags_core_audio_port_register(AgsCoreAudioPort *core_audio_port,
 				core_audio_port->midi_client);
 
       if(retval != noErr){
-	return;
+	goto ags_core_audio_port_register_END;
       }
       
       retval = MIDIInputPortCreate(*(core_audio_port->midi_client), CFSTR("Input port"),
@@ -1369,25 +1377,31 @@ ags_core_audio_port_register(AgsCoreAudioPort *core_audio_port,
 				   core_audio_port->midi_port);
 	
       if(retval != noErr){
-	return;
+	goto ags_core_audio_port_register_END;
       }
 
       endpoint = MIDIGetSource(core_audio_port->midi_port_number);
 
       if(endpoint == 0){
-	return;
+	goto ags_core_audio_port_register_END;
       }
       
       retval = MIDIPortConnectSource(*(core_audio_port->midi_port), endpoint, NULL);
 
       if(retval != noErr){
-	return;
+	goto ags_core_audio_port_register_END;
       }
  #endif
     }
   }
   
   ags_core_audio_port_set_flags(core_audio_port, AGS_CORE_AUDIO_PORT_REGISTERED);
+
+ags_core_audio_port_register_END:
+  
+  g_object_unref(core_audio_client);
+
+  g_object_unref(core_audio_server);    
 }
 
 void
@@ -1444,10 +1458,8 @@ ags_core_audio_port_cached_handle_output_buffer(AgsCoreAudioPort *core_audio_por
 
   application_context = ags_application_context_get_instance();
 
-  g_object_get(application_context,
-	       "main-loop", &audio_loop,
-	       "task-thread", &task_thread,
-	       NULL);
+  audio_loop = ags_concurrency_provider_get_main_loop(AGS_CONCURRENCY_PROVIDER(application_context));
+  task_thread = ags_concurrency_provider_get_task_thread(AGS_CONCURRENCY_PROVIDER(application_context));
 
   if(audio_loop != NULL){
     pthread_mutex_lock(audio_loop->timing_mutex);
@@ -1640,10 +1652,8 @@ ags_core_audio_port_handle_output_buffer(AgsCoreAudioPort *core_audio_port,
   /*  */  
   application_context = ags_application_context_get_instance();
 
-  g_object_get(application_context,
-	       "main-loop", &audio_loop,
-	       "task-thread", &task_thread,
-	       NULL);
+  audio_loop = ags_concurrency_provider_get_main_loop(AGS_CONCURRENCY_PROVIDER(application_context));
+  task_thread = ags_concurrency_provider_get_task_thread(AGS_CONCURRENCY_PROVIDER(application_context));
 
   /* interrupt GUI */
   if(task_thread != NULL){
@@ -1931,10 +1941,8 @@ ags_core_audio_port_handle_input_buffer(AgsCoreAudioPort *core_audio_port,
   /*  */  
   application_context = ags_application_context_get_instance();
 
-  g_object_get(application_context,
-	       "main-loop", &audio_loop,
-	       "task-thread", &task_thread,
-	       NULL);
+  audio_loop = ags_concurrency_provider_get_main_loop(AGS_CONCURRENCY_PROVIDER(application_context));
+  task_thread = ags_concurrency_provider_get_task_thread(AGS_CONCURRENCY_PROVIDER(application_context));
 
   /* interrupt GUI */
   if(task_thread != NULL){
@@ -2227,10 +2235,8 @@ ags_core_audio_port_midi_read_callback(const MIDIPacketList *pkt_list,
   /*  */  
   application_context = ags_application_context_get_instance();
 
-  g_object_get(application_context,
-	       "main-loop", &audio_loop,
-	       "task-thread", &task_thread,
-	       NULL);
+  audio_loop = ags_concurrency_provider_get_main_loop(AGS_CONCURRENCY_PROVIDER(application_context));
+  task_thread = ags_concurrency_provider_get_task_thread(AGS_CONCURRENCY_PROVIDER(application_context));
 
   /* interrupt GUI */
   if(task_thread != NULL){

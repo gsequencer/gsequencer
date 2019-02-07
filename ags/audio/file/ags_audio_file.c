@@ -701,7 +701,9 @@ ags_audio_file_get_property(GObject *gobject,
     {
       pthread_mutex_lock(audio_file_mutex);
 
-      g_value_set_pointer(value, g_list_copy(audio_file->audio_signal));
+      g_value_set_pointer(value, g_list_copy_deep(audio_file->audio_signal,
+						  (GCopyFunc) g_object_ref,
+						  NULL));
 
       pthread_mutex_unlock(audio_file_mutex);
     }
@@ -710,7 +712,9 @@ ags_audio_file_get_property(GObject *gobject,
     {
       pthread_mutex_lock(audio_file_mutex);
 
-      g_value_set_pointer(value, g_list_copy(audio_file->wave));
+      g_value_set_pointer(value, g_list_copy_deep(audio_file->wave,
+						  (GCopyFunc) g_object_ref,
+						  NULL));
 
       pthread_mutex_unlock(audio_file_mutex);
     }
@@ -1259,6 +1263,7 @@ ags_audio_file_open(AgsAudioFile *audio_file)
   guint file_audio_channels;
   guint file_samplerate;
   guint file_frame_count;
+  gboolean retval;
   
   pthread_mutex_t *audio_file_mutex;
 
@@ -1283,6 +1288,8 @@ ags_audio_file_open(AgsAudioFile *audio_file)
 	       "filename", &filename,
 	       NULL);
 
+  retval = FALSE;
+  
   if(g_file_test(filename, G_FILE_TEST_EXISTS)){
     if(ags_audio_file_check_suffix(filename)){
       pthread_mutex_lock(audio_file_mutex);
@@ -1315,14 +1322,16 @@ ags_audio_file_open(AgsAudioFile *audio_file)
 		     "file-samplerate", file_samplerate,
 		     NULL);
 
-	return(TRUE);
+	retval = TRUE;
       }
     }else{
       g_message("ags_audio_file_open: unknown file type\n");
     }
   }
 
-  return(FALSE);
+  g_free(filename);
+  
+  return(retval);
 }
 
 /**
@@ -1345,6 +1354,7 @@ ags_audio_file_rw_open(AgsAudioFile *audio_file,
   gchar *filename;
   guint file_audio_channels;
   guint file_samplerate;
+  gboolean retval;
   
   pthread_mutex_t *audio_file_mutex;
   
@@ -1373,9 +1383,13 @@ ags_audio_file_rw_open(AgsAudioFile *audio_file,
   
   if(!create &&
      !g_file_test(filename, G_FILE_TEST_EXISTS)){
+    g_free(filename);
+    
     return(FALSE);
   }
 
+  retval = FALSE;
+  
   if(ags_audio_file_check_suffix(audio_file->filename)){
     GError *error;
     guint loop_start, loop_end;
@@ -1393,15 +1407,15 @@ ags_audio_file_rw_open(AgsAudioFile *audio_file,
 				  filename,
 				  file_audio_channels, file_samplerate,
 				  create)){
-      return(TRUE);
-    }else{
-      return(FALSE);
+      retval = TRUE;
     }
   }else{
     g_message("ags_audio_file_open: unknown file type\n");
-
-    return(FALSE);
   }
+
+  g_free(filename);
+
+  return(retval);
 }
 
 /**
@@ -1424,7 +1438,8 @@ ags_audio_file_open_from_data(AgsAudioFile *audio_file, gchar *data)
   guint file_audio_channels;
   guint file_samplerate;
   guint file_frame_count;
-
+  gboolean retval;
+  
   pthread_mutex_t *audio_file_mutex;
 
   if(!AGS_IS_AUDIO_FILE(audio_file)){
@@ -1447,6 +1462,8 @@ ags_audio_file_open_from_data(AgsAudioFile *audio_file, gchar *data)
   g_object_get(audio_file,
 	       "filename", &filename,
 	       NULL);
+
+  retval = FALSE;
 
   if(data != NULL){
     if(ags_audio_file_check_suffix(audio_file->filename)){
@@ -1490,14 +1507,16 @@ ags_audio_file_open_from_data(AgsAudioFile *audio_file, gchar *data)
 		     "file-samplerate", file_samplerate,
 		     NULL);
 
-	return(TRUE);
+	retval = TRUE;
       }
     }else{
       g_message("ags_audio_file_open: unknown file type\n");
     }
   }
 
-  return(FALSE);
+  g_free(filename);
+  
+  return(retval);
 }
 
 /**
