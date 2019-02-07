@@ -1040,8 +1040,8 @@ ags_recall_channel_run_map_recall_recycling(AgsRecallChannelRun *recall_channel_
     source_recycling = source_first_recycling;
     
     while(source_recycling != source_end_recycling){
-      g_message("ags_recall_channel_run_map_recall_recycling %d", source->line);
 #ifdef AGS_DEBUG
+      g_message("ags_recall_channel_run_map_recall_recycling %d", source->line);
 #endif
       
       /* get recycling mutex */

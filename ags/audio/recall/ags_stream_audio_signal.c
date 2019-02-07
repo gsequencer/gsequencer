@@ -30,6 +30,7 @@ void ags_stream_audio_signal_init(AgsStreamAudioSignal *stream_audio_signal);
 void ags_stream_audio_signal_dispose(GObject *gobject);
 void ags_stream_audio_signal_finalize(GObject *gobject);
 
+void ags_stream_audio_signal_run_init_pre(AgsRecall *recall);
 void ags_stream_audio_signal_run_post(AgsRecall *recall);
 
 /**
@@ -92,6 +93,7 @@ ags_stream_audio_signal_class_init(AgsStreamAudioSignalClass *stream_audio_signa
   /* AgsRecallClass */
   recall = (AgsRecallClass *) stream_audio_signal;
 
+  recall->run_init_pre = ags_stream_audio_signal_run_init_pre;
   recall->run_post = ags_stream_audio_signal_run_post;
 }
 
@@ -112,8 +114,6 @@ ags_stream_audio_signal_init(AgsStreamAudioSignal *stream_audio_signal)
 void
 ags_stream_audio_signal_dispose(GObject *gobject)
 {
-  AGS_STREAM_AUDIO_SIGNAL(gobject)->dispose_source = (GObject *) AGS_RECALL_AUDIO_SIGNAL(gobject)->source;
-
   /* call parent */
   G_OBJECT_CLASS(ags_stream_audio_signal_parent_class)->dispose(gobject); 
 }
@@ -129,18 +129,36 @@ ags_stream_audio_signal_finalize(GObject *gobject)
     AgsRecycling *recycling;
 
     recycling = (AgsRecycling *) audio_signal->recycling;
-    
+        
     if(recycling != NULL){
       ags_recycling_remove_audio_signal(recycling,
 					audio_signal);
     }
-    
+
     g_object_run_dispose((GObject *) audio_signal);
     g_object_unref((GObject *) audio_signal);
   }
 
   /* call parent */
   G_OBJECT_CLASS(ags_stream_audio_signal_parent_class)->finalize(gobject); 
+}
+
+void
+ags_stream_audio_signal_run_init_pre(AgsRecall *recall)
+{
+  void (*parent_class_run_init_pre)(AgsRecall *recall);
+
+  /* get parent class */
+  pthread_mutex_lock(ags_recall_get_class_mutex());
+
+  parent_class_run_init_pre = AGS_RECALL_CLASS(ags_stream_audio_signal_parent_class)->run_init_pre;
+
+  pthread_mutex_unlock(ags_recall_get_class_mutex());
+
+  /* call parent */
+  parent_class_run_init_pre(recall);
+  
+  AGS_STREAM_AUDIO_SIGNAL(recall)->dispose_source = (GObject *) AGS_RECALL_AUDIO_SIGNAL(recall)->source;
 }
 
 void

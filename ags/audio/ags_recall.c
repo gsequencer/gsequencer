@@ -3260,7 +3260,7 @@ ags_recall_set_staging_flags(AgsRecall *recall, guint staging_flags)
   recall_staging_flags = recall->staging_flags;
 
   pthread_mutex_unlock(recall_mutex);
-
+  
   /* invoke appropriate staging */
   if((AGS_SOUND_STAGING_FINI & (recall_staging_flags)) == 0){
     if((AGS_SOUND_STAGING_CHECK_RT_DATA & (staging_flags)) != 0 &&
@@ -5322,6 +5322,10 @@ ags_recall_real_done(AgsRecall *recall)
 
   pthread_mutex_unlock(ags_recall_get_class_mutex());
 
+  if(AGS_IS_RECALL_AUDIO_SIGNAL(recall)){
+    g_message("done - %s", G_OBJECT_TYPE_NAME(recall));
+  }
+  
   /* do feedback */
   pthread_mutex_lock(recall_mutex);
 

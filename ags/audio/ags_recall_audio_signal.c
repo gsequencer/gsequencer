@@ -231,7 +231,7 @@ ags_recall_audio_signal_set_property(GObject *gobject,
 	g_object_unref(recall_audio_signal->source);
       }
       
-      if(source != NULL){
+      if(source != NULL){	
 	g_object_ref(G_OBJECT(source));
       }
       

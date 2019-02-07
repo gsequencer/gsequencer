@@ -1742,6 +1742,13 @@ ags_recycling_real_add_audio_signal(AgsRecycling *recycling,
   /* get audio signal */
   pthread_mutex_lock(recycling_mutex);
 
+  if(g_list_find(recycling->audio_signal,
+		 audio_signal) != NULL){
+    pthread_mutex_unlock(recycling_mutex);
+
+    return;
+  }
+  
   output_soundcard = recycling->output_soundcard;
   
   list =
@@ -1902,7 +1909,7 @@ void
 ags_recycling_add_audio_signal(AgsRecycling *recycling,
 			       AgsAudioSignal *audio_signal)
 {
-  g_return_if_fail(AGS_IS_RECYCLING(recycling) && AGS_IS_AUDIO_SIGNAL(audio_signal));
+  g_return_if_fail(AGS_IS_RECYCLING(recycling));
   
   /* emit signal */
   g_object_ref(G_OBJECT(recycling));
@@ -1960,15 +1967,13 @@ void
 ags_recycling_remove_audio_signal(AgsRecycling *recycling,
 				  AgsAudioSignal *audio_signal)
 {
-  g_return_if_fail(AGS_IS_RECYCLING(recycling) && AGS_IS_AUDIO_SIGNAL(audio_signal));
+  g_return_if_fail(AGS_IS_RECYCLING(recycling));
 
   /* emit signal */
   g_object_ref((GObject *) recycling);
-  g_object_ref((GObject *) audio_signal);
   g_signal_emit(G_OBJECT(recycling),
 		recycling_signals[REMOVE_AUDIO_SIGNAL], 0,
 		audio_signal);
-  g_object_unref((GObject *) audio_signal);
   g_object_unref((GObject *) recycling);
 }
 

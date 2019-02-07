@@ -825,6 +825,7 @@ ags_recall_recycling_source_add_audio_signal_callback(AgsRecycling *source,
 				       "audio-channel", audio_channel,
 				       "source", audio_signal,
 				       NULL);
+
 #ifdef AGS_DEBUG
     g_message("recall recycling %s", G_OBJECT_TYPE_NAME(recall_audio_signal));
 #endif
