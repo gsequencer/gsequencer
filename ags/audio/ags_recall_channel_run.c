@@ -640,7 +640,6 @@ ags_recall_channel_run_notify_recall_container_callback(GObject *gobject,
   if(recall_container != NULL){
     AgsRecallAudio *recall_audio;
     AgsRecallID *recall_id;
-    AgsRecyclingContext *recycling_context;
     
     GList *list_start, *list;
 
@@ -669,6 +668,8 @@ ags_recall_channel_run_notify_recall_container_callback(GObject *gobject,
 		 NULL);
 
     if(recall_id != NULL){
+      AgsRecyclingContext *recycling_context;
+      
       g_object_get(recall_id,
 		   "recycling-context", &recycling_context,
 		   NULL);
@@ -679,6 +680,8 @@ ags_recall_channel_run_notify_recall_container_callback(GObject *gobject,
 		     "recall-audio-run", list->data,
 		     NULL);
       }
+
+      g_object_unref(recycling_context);
     }else if((AGS_RECALL_TEMPLATE & (recall_flags)) != 0){      
       if((list = ags_recall_find_template(list_start)) != NULL){	
 	g_object_set(recall_channel_run,
@@ -687,7 +690,8 @@ ags_recall_channel_run_notify_recall_container_callback(GObject *gobject,
       }
     }
 
-    g_list_free(list_start);
+    g_list_free_full(list_start,
+		     g_object_unref);
 
     /* recall channel */
     g_object_get(recall_container,
@@ -701,7 +705,10 @@ ags_recall_channel_run_notify_recall_container_callback(GObject *gobject,
 		   NULL);
     }
 
-    g_list_free(list_start);
+    g_list_free_full(list_start,
+		     g_object_unref);
+
+    g_object_unref(recall_audio);
   }else{
     g_object_set(recall_channel_run,
 		 "recall-audio", NULL,
@@ -854,7 +861,8 @@ ags_recall_channel_run_duplicate(AgsRecall *recall,
 
     next_recycling_context = (AgsRecyclingContext *) ags_recall_id_find_recycling_context(list_start,
 											  recall_id->recycling_context->parent);
-    g_list_free(list_start);
+    g_list_free_full(list_start,
+		     g_object_unref);
   }
   
   if(destination != NULL &&
@@ -1236,7 +1244,8 @@ ags_recall_channel_run_remap_child_source(AgsRecallChannelRun *recall_channel_ru
 	list = list->next;
       }
 
-      g_list_free(list_start);
+      g_list_free_full(list_start,
+		       g_object_unref);
 
       /* iterate */
       pthread_mutex_lock(source_recycling_mutex);
@@ -1431,7 +1440,8 @@ ags_recall_channel_run_remap_child_destination(AgsRecallChannelRun *recall_chann
 	list = list->next;
       }
 
-      g_list_free(list_start);
+      g_list_free_full(list_start,
+		       g_object_unref);
 
       /* iterate */
       pthread_mutex_lock(destination_recycling_mutex);

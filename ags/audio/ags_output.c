@@ -179,6 +179,7 @@ ags_output_find_first_input_recycling(AgsOutput *output)
     g_object_get(input,
 		 "first-recycling", &recycling,
 		 NULL);
+    g_object_unref(recycling);
   }
   
   return(recycling);
@@ -259,6 +260,7 @@ ags_output_find_last_input_recycling(AgsOutput *output)
     g_object_get(input,
 		 "last-recycling", &recycling,
 		 NULL);
+    g_object_unref(recycling);
   }
   
   return(recycling);

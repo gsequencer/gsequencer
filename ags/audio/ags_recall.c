@@ -1603,7 +1603,9 @@ ags_recall_get_property(GObject *gobject,
     {
       pthread_mutex_lock(recall_mutex);
       
-      g_value_set_pointer(value, g_list_copy(recall->port));
+      g_value_set_pointer(value, g_list_copy_deep(recall->port,
+						  (GCopyFunc) g_object_unref,
+						  NULL));
 
       pthread_mutex_unlock(recall_mutex);
     }
@@ -1612,7 +1614,9 @@ ags_recall_get_property(GObject *gobject,
     {
       pthread_mutex_lock(recall_mutex);
       
-      g_value_set_pointer(value, g_list_copy(recall->automation_port));
+      g_value_set_pointer(value, g_list_copy_deep(recall->automation_port,
+						  (GCopyFunc) g_object_unref,
+						  NULL));
 
       pthread_mutex_unlock(recall_mutex);
     }
@@ -1630,7 +1634,9 @@ ags_recall_get_property(GObject *gobject,
     {
       pthread_mutex_lock(recall_mutex);
       
-      g_value_set_pointer(value, g_list_copy(recall->recall_dependency));
+      g_value_set_pointer(value, g_list_copy_deep(recall->recall_dependency,
+						  (GCopyFunc) g_object_unref,
+						  NULL));
 
       pthread_mutex_unlock(recall_mutex);
     }
@@ -1648,7 +1654,9 @@ ags_recall_get_property(GObject *gobject,
     {
       pthread_mutex_lock(recall_mutex);
       
-      g_value_set_pointer(value, g_list_copy(recall->children));
+      g_value_set_pointer(value, g_list_copy_deep(recall->children,
+						  (GCopyFunc) g_object_unref,
+						  NULL));
 
       pthread_mutex_unlock(recall_mutex);
     }
@@ -6303,6 +6311,8 @@ ags_recall_find_provider(GList *recall, GObject *provider)
   AgsRecycling *current_recycling;
   AgsAudioSignal *current_audio_signal;
   AgsRecall *current_recall;
+
+  gboolean success;
   
   while(recall != NULL){
     current_recall = AGS_RECALL(recall->data);
@@ -6312,8 +6322,12 @@ ags_recall_find_provider(GList *recall, GObject *provider)
 	g_object_get(current_recall,
 		     "audio", &current_audio,
 		     NULL);
+
+	success = ((GObject *) current_audio == provider) ? TRUE: FALSE;
+
+	g_object_unref(current_audio);
 	
-	if((GObject *) current_audio == provider){
+	if(success){
 	  return(recall);
 	}
       }else if(AGS_IS_RECALL_AUDIO_RUN(current_recall)){
@@ -6321,7 +6335,11 @@ ags_recall_find_provider(GList *recall, GObject *provider)
 		     "audio", &current_audio,
 		     NULL);
 
-	if((GObject *) current_audio == provider){
+	success = ((GObject *) current_audio == provider) ? TRUE: FALSE;
+
+	g_object_unref(current_audio);
+
+	if(success){
 	  return(recall);
 	}
       }
@@ -6331,7 +6349,11 @@ ags_recall_find_provider(GList *recall, GObject *provider)
 		     "source", &current_channel,
 		     NULL);
 
-	if((GObject *) current_channel == provider){
+	success = ((GObject *) current_channel == provider) ? TRUE: FALSE;
+
+	g_object_unref(current_channel);
+	
+	if(success){
 	  return(recall);
 	}
       }else if(AGS_IS_RECALL_CHANNEL_RUN(current_recall)){
@@ -6339,7 +6361,11 @@ ags_recall_find_provider(GList *recall, GObject *provider)
 		     "source", &current_channel,
 		     NULL);
 
-	if((GObject *) current_channel == provider){
+	success = ((GObject *) current_channel == provider) ? TRUE: FALSE;
+
+	g_object_unref(current_channel);
+
+	if(success){
 	  return(recall);
 	}
       }
@@ -6349,7 +6375,11 @@ ags_recall_find_provider(GList *recall, GObject *provider)
 		     "source", &current_recycling,
 		     NULL);
 
-	if((GObject *) current_recycling == provider){
+	success = ((GObject *) current_recycling == provider) ? TRUE: FALSE;
+
+	g_object_unref(current_recycling);
+	
+	if(success){
 	  return(recall);
 	}
       }
@@ -6359,7 +6389,11 @@ ags_recall_find_provider(GList *recall, GObject *provider)
 		     "source", &current_audio_signal,
 		     NULL);
 
-	if((GObject *) current_audio_signal == provider){
+	success = ((GObject *) current_audio_signal == provider) ? TRUE: FALSE;
+
+	g_object_unref(current_audio_signal);
+	
+	if(success){
 	  return(recall);
 	}
       }
@@ -6515,6 +6549,9 @@ ags_recall_child_done(AgsRecall *child,
      children == NULL){
     ags_recall_done(parent);
   }
+
+  g_list_free_full(children,
+		   g_object_unref);
 }
 
 /**

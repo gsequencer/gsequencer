@@ -412,7 +412,12 @@ ags_recall_audio_automate(AgsRecall *recall)
     port = port->next;
   }
 
-  g_list_free(port_start);
+  g_object_unref(audio);
+
+  g_object_unref(soundcard);
+
+  g_list_free_full(port_start,
+		   g_object_unref);
 }
 
 AgsRecall*

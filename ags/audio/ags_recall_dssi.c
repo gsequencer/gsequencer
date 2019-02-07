@@ -1008,6 +1008,9 @@ ags_recall_dssi_new(AgsChannel *source,
 					       "effect", effect,
 					       "effect-index", effect_index,
 					       NULL);
-
+  if(output_soundcard != NULL){
+    g_object_unref(output_soundcard);
+  }
+  
   return(recall_dssi);
 }

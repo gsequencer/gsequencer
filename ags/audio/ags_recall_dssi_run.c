@@ -341,7 +341,9 @@ ags_recall_dssi_run_get_property(GObject *gobject,
       pthread_mutex_lock(recall_mutex);
 
       g_value_set_pointer(value,
-			  g_list_copy(recall_dssi_run->note));
+			  g_list_copy_deep(recall_dssi_run->note,
+					   (GCopyFunc) g_object_ref,
+					   NULL));
 
       pthread_mutex_unlock(recall_mutex);
     }
@@ -545,6 +547,14 @@ ags_recall_dssi_run_run_init_pre(AgsRecall *recall)
     g_message("activated DSSI handle");
 #endif
   }
+
+  g_object_unref(recall_recycling);
+
+  g_object_unref(recall_channel_run);
+
+  g_object_unref(recall_dssi);
+
+  g_object_unref(audio_signal);
 }
 
 void
@@ -613,7 +623,6 @@ ags_recall_dssi_run_run_pre(AgsRecall *recall)
 
   g_object_get(recall,
 	       "recall-id", &recall_id,
-	       "source", &audio_signal,
 	       NULL);
 
   g_object_get(recall_id,
@@ -631,10 +640,17 @@ ags_recall_dssi_run_run_pre(AgsRecall *recall)
   if(ags_recall_global_get_rt_safe() &&
      parent_recycling_context != NULL &&
      note_start == NULL){
+    g_object_unref(recall_id);
+
+    g_object_unref(recycling_context);
+
+    g_object_unref(parent_recycling_context);
+    
     return;
   }
 
-  g_list_free(note_start);
+  g_list_free_full(note_start,
+		   g_object_unref);
   
   g_object_get(recall,
 	       "parent", &recall_recycling,
@@ -655,8 +671,24 @@ ags_recall_dssi_run_run_pre(AgsRecall *recall)
 	       NULL);
   
   if(route_dssi_audio_run == NULL){
+    g_object_unref(recall_id);
+
+    g_object_unref(recycling_context);
+
+    g_object_unref(parent_recycling_context);
+
+    g_object_unref(recall_recycling);
+    
+    g_object_unref(recall_channel_run);
+
+    g_object_unref(recall_dssi);
+
     return;
   }
+
+  g_object_get(recall,
+	       "source", &audio_signal,
+	       NULL);
 
   /* get recall dssi mutex */
   pthread_mutex_lock(ags_recall_get_class_mutex());
@@ -691,11 +723,11 @@ ags_recall_dssi_run_run_pre(AgsRecall *recall)
 	       "notation-counter", &notation_counter,
 	       NULL);
   
-  g_object_get(recall_dssi_run,
-	       "note", &note_start,
-	       NULL);
-  
-  if(ags_recall_global_get_rt_safe()){
+  if(ags_recall_global_get_rt_safe()){  
+    g_object_get(recall_dssi_run,
+		 "note", &note_start,
+		 NULL);
+    
     note = note_start;
     
     while(note != NULL){
@@ -719,8 +751,13 @@ ags_recall_dssi_run_run_pre(AgsRecall *recall)
       memset(recall_dssi_run->event_buffer[0], 0, sizeof(snd_seq_event_t));
     }
 
-    g_list_free(note_start);
-  }else{
+    g_list_free_full(note_start,
+		     g_object_unref);
+  }else{  
+    g_object_get(recall_dssi_run,
+		 "note", &note_start,
+		 NULL);
+    
     g_object_get(note_start->data,
 		 "x0", &x0,
 		 "x1", &x1,
@@ -750,9 +787,11 @@ ags_recall_dssi_run_run_pre(AgsRecall *recall)
       }
       
       ags_recall_done(recall);
-      g_list_free(note_start);
-      
-      return;
+
+      g_list_free_full(note_start,
+		       g_object_unref);
+
+      goto ags_recall_dssi_run_run_pre_END;
     }
   }
   
@@ -917,7 +956,8 @@ ags_recall_dssi_run_run_pre(AgsRecall *recall)
     }
   }
 
-  g_list_free(list_start);
+  g_list_free_full(list_start,
+		   g_object_unref);
   
   /* process data */
   pthread_mutex_lock(recall_dssi_mutex);
@@ -959,7 +999,8 @@ ags_recall_dssi_run_run_pre(AgsRecall *recall)
     note = note->next;
   }
 
-  g_list_free(note_start);
+  g_list_free_full(note_start,
+		   g_object_unref);
   
   /* copy data */
   if(recall_dssi_run->output != NULL){
@@ -970,6 +1011,20 @@ ags_recall_dssi_run_run_pre(AgsRecall *recall)
 						recall_dssi_run->output, output_lines, 0,
 						buffer_size, copy_mode_out);
   }
+
+ags_recall_dssi_run_run_pre_END:
+  
+  g_object_unref(recall_id);
+
+  g_object_unref(recycling_context);
+
+  g_object_unref(parent_recycling_context);
+
+  g_object_unref(recall_recycling);
+    
+  g_object_unref(recall_channel_run);
+
+  g_object_unref(recall_dssi);
 }
 
 /**
@@ -1136,6 +1191,12 @@ ags_recall_dssi_run_load_ports(AgsRecallDssiRun *recall_dssi_run)
 		 (unsigned long) (recall_dssi->output_port[j]),
 		 &(recall_dssi_run->output[j]));
   }
+
+  g_object_unref(recall_recycling);
+
+  g_object_unref(recall_channel_run);
+
+  g_object_unref(recall_dssi);
 }
 
 /**

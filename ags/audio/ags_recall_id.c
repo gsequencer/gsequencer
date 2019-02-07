@@ -792,14 +792,20 @@ AgsRecallID*
 ags_recall_id_find_recycling_context(GList *recall_id,
 				     AgsRecyclingContext *recycling_context)
 {
-  AgsRecyclingContext *current_recycling_context;
-  
   while(recall_id != NULL){
+    AgsRecyclingContext *current_recycling_context;
+
+    gboolean success;
+    
     g_object_get(recall_id->data,
 		 "recycling-context", &current_recycling_context,
 		 NULL);
+
+    success = (current_recycling_context == recycling_context) ? TRUE: FALSE;
+
+    g_object_unref(current_recycling_context);
     
-    if(current_recycling_context == recycling_context){
+    if(success){
       return(recall_id->data);
     }
 
@@ -824,9 +830,14 @@ AgsRecallID*
 ags_recall_id_find_parent_recycling_context(GList *recall_id,
 					    AgsRecyclingContext *parent_recycling_context)
 {
-  AgsRecyclingContext *current_parent_recycling_context, *current_recycling_context;
-
   while(recall_id != NULL){
+    AgsRecyclingContext *current_parent_recycling_context;
+    AgsRecyclingContext *current_recycling_context;
+
+    gboolean success;
+
+    success = FALSE;
+    
     g_object_get(recall_id->data,
 		 "recycling-context", &current_recycling_context,
 		 NULL);
@@ -837,10 +848,21 @@ ags_recall_id_find_parent_recycling_context(GList *recall_id,
 		   NULL);
       
       if(current_parent_recycling_context == parent_recycling_context){
-	return(recall_id->data);
+	success = TRUE;
       }
+
+      /* unref */
+      if(current_parent_recycling_context != NULL){
+	g_object_unref(current_parent_recycling_context);
+      }
+      
+      g_object_unref(current_recycling_context);
     }
 
+    if(success){
+      return(recall_id->data);
+    }
+    
     recall_id = recall_id->next;
   }
 

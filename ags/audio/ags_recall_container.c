@@ -454,7 +454,6 @@ ags_recall_container_set_property(GObject *gobject,
     {
       AgsRecallAudioRun *recall_audio_run;
       AgsRecallID *recall_id;
-      AgsRecyclingContext *recycling_context;
 
       GList *list_start, *list;
 
@@ -505,6 +504,8 @@ ags_recall_container_set_property(GObject *gobject,
       pthread_mutex_unlock(recall_container_mutex);
 
       if(recall_id != NULL){
+	AgsRecyclingContext *recycling_context;
+	
 	g_object_get(recall_id,
 		     "recycling-context", &recycling_context,
 		     NULL);
@@ -517,6 +518,8 @@ ags_recall_container_set_property(GObject *gobject,
 
 	  list = list->next;
 	}
+
+	g_object_unref(recycling_context);
       }else if((AGS_RECALL_TEMPLATE & (recall_flags)) != 0){      
 	while((list = ags_recall_find_template(list)) != NULL){
 	  g_object_set(list->data,
@@ -528,6 +531,10 @@ ags_recall_container_set_property(GObject *gobject,
       }
       
       g_list_free(list_start);
+
+      if(recall_id != NULL){
+	g_object_unref(recall_id);
+      }
     }
     break;
   case PROP_RECALL_CHANNEL_TYPE:
@@ -1438,7 +1445,9 @@ ags_recall_container_find(GList *recall_container,
    
     if(recall != NULL){
       AgsRecallID *current_recall_id;
-            
+
+      gboolean match_recall_id;
+      
       if((AGS_RECALL_CONTAINER_FIND_TEMPLATE & find_flags) != 0 && ags_recall_test_flags(recall, AGS_RECALL_TEMPLATE)){
 	break;
       }
@@ -1446,8 +1455,12 @@ ags_recall_container_find(GList *recall_container,
       g_object_get(recall,
 		   "recall-id", &current_recall_id,
 		   NULL);
+
+      match_recall_id = (current_recall_id != NULL && current_recall_id == recall_id) ? TRUE: FALSE;
+
+      g_object_unref(current_recall_id);
       
-      if((AGS_RECALL_CONTAINER_FIND_RECALL_ID & find_flags) != 0 && (current_recall_id != NULL && current_recall_id == recall_id)){
+      if((AGS_RECALL_CONTAINER_FIND_RECALL_ID & find_flags) != 0 && match_recall_id){
 	break;
       }
     }

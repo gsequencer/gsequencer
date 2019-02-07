@@ -784,7 +784,9 @@ ags_port_get_property(GObject *gobject,
     {
       pthread_mutex_lock(port_mutex);
 
-      g_value_set_pointer(value, g_list_copy(port->automation));
+      g_value_set_pointer(value, g_list_copy_deep(port->automation,
+						  (GCopyFunc) g_object_ref,
+						  NULL));
 
       pthread_mutex_unlock(port_mutex);
     }

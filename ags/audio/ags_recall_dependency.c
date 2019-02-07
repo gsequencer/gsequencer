@@ -315,14 +315,20 @@ ags_recall_dependency_get_class_mutex()
 GList*
 ags_recall_dependency_find_dependency(GList *recall_dependency, GObject *dependency)
 {
-  GObject *current_dependency;
-
   while(recall_dependency != NULL){
+    GObject *current_dependency;
+
+    gboolean success;
+    
     g_object_get(recall_dependency->data,
 		 "dependency", &current_dependency,
 		 NULL);
 
-    if(current_dependency == dependency){
+    success = (current_dependency == dependency) ? TRUE: FALSE;
+
+    g_object_unref(current_dependency);
+    
+    if(success){
       return(recall_dependency);
     }
 
@@ -347,9 +353,11 @@ GList*
 ags_recall_dependency_find_dependency_by_provider(GList *recall_dependency,
 						  GObject *provider)
 {
-  GObject *current_dependency;
-
   while(recall_dependency != NULL){
+    GObject *current_dependency;
+
+    gboolean success;
+  
     g_object_get(recall_dependency->data,
 		 "dependency", &current_dependency,
 		 NULL);
@@ -361,8 +369,14 @@ ags_recall_dependency_find_dependency_by_provider(GList *recall_dependency,
       g_object_get(current_dependency,
 		   "source", &channel,
 		   NULL);
+
+      success = (channel == AGS_CHANNEL(provider)) ? TRUE: FALSE;
+
+      g_object_unref(channel);
       
-      if(channel == AGS_CHANNEL(provider)){
+      if(success){
+	g_object_unref(current_dependency);
+	
 	return(recall_dependency);
       }
     }
@@ -374,12 +388,20 @@ ags_recall_dependency_find_dependency_by_provider(GList *recall_dependency,
       g_object_get(current_dependency,
 		   "audio", &audio,
 		   NULL);
+
+      success = (audio == AGS_AUDIO(provider)) ? TRUE: FALSE;
+
+      g_object_unref(audio);
       
-      if(audio == AGS_AUDIO(provider)){
+      if(success){
+	g_object_unref(current_dependency);
+
 	return(recall_dependency);
       }
     }
 
+    g_object_unref(current_dependency);
+    
     recall_dependency = recall_dependency->next;
   }
 
@@ -402,6 +424,8 @@ ags_recall_dependency_resolve(AgsRecallDependency *recall_dependency, AgsRecallI
 {
   AgsRecallContainer *recall_container;
   AgsRecall *dependency;
+
+  GObject *retval;
   
   g_object_get(recall_dependency,
 	       "dependency", &dependency,
@@ -416,8 +440,12 @@ ags_recall_dependency_resolve(AgsRecallDependency *recall_dependency, AgsRecallI
 	       NULL);
   
   if(recall_container == NULL){
+    g_object_unref(dependency);
+    
     return(NULL);
   }
+
+  retval = NULL;
   
   if(AGS_IS_RECALL_AUDIO(dependency)){
     GObject *recall_audio;
@@ -425,8 +453,10 @@ ags_recall_dependency_resolve(AgsRecallDependency *recall_dependency, AgsRecallI
     g_object_get(recall_container,
 		 "recall-audio", &recall_audio,
 		 NULL);
+
+    retval = recall_audio;
     
-    return(recall_audio);
+    g_object_unref(recall_audio);    
   }else if(AGS_IS_RECALL_AUDIO_RUN(dependency)){
     AgsRecyclingContext *recycling_context;
 
@@ -436,8 +466,8 @@ ags_recall_dependency_resolve(AgsRecallDependency *recall_dependency, AgsRecallI
 
     if(recall_id == NULL){
       g_message("dependency resolve: recall_id == NULL");
-      
-      return(NULL);
+
+      goto ags_recall_dependency_resolve_END;
     }
 
     g_object_get(recall_id,
@@ -453,12 +483,13 @@ ags_recall_dependency_resolve(AgsRecallDependency *recall_dependency, AgsRecallI
     if(list != NULL){
       recall_audio_run = list->data;
 
-      g_list_free(list_start);
-      
-      return(recall_audio_run);
+      retval = recall_audio_run;
     }
 
-    g_list_free(list_start);
+    g_object_unref(recycling_context);
+    
+    g_list_free_full(list_start,
+		     g_object_unref);
   }else if(AGS_IS_RECALL_CHANNEL(dependency)){
     AgsChannel *source;
 
@@ -479,13 +510,14 @@ ags_recall_dependency_resolve(AgsRecallDependency *recall_dependency, AgsRecallI
 
     if(list != NULL){
       recall_channel = list->data;
-
-      g_list_free(list_start);
       
-      return(recall_channel);
+      retval = recall_channel;
     }
 
-    g_list_free(list_start);
+    g_object_unref(source);
+    
+    g_list_free_full(list_start,
+		     g_object_unref);
   }else if(AGS_IS_RECALL_CHANNEL_RUN(dependency)){
     AgsRecyclingContext *recycling_context;
 
@@ -496,7 +528,7 @@ ags_recall_dependency_resolve(AgsRecallDependency *recall_dependency, AgsRecallI
     if(recall_id == NULL){
       g_message("dependency resolve: recall_id == NULL");
       
-      return(NULL);
+      goto ags_recall_dependency_resolve_END;
     }
 
     g_object_get(recall_id,
@@ -512,17 +544,23 @@ ags_recall_dependency_resolve(AgsRecallDependency *recall_dependency, AgsRecallI
     if(list != NULL){
       recall_channel_run = list->data;
 
-      g_list_free(list_start);
-      
-      return(recall_channel_run);
+      retval = recall_channel_run;
     }
 
-    g_list_free(list_start);
+    g_object_unref(recycling_context);
+
+    g_list_free_full(list_start,
+		     g_object_unref);
   }
+  
+ags_recall_dependency_resolve_END:
+  
+  g_object_unref(dependency);
+  g_object_unref(recall_container);
 
   g_warning("dependency not found!");
 
-  return(NULL);
+  return(retval);
 }
 
 /**

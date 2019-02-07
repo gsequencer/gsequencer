@@ -611,7 +611,7 @@ GList*
 ags_midi_find_near_timestamp(GList *midi, guint audio_channel,
 			     AgsTimestamp *timestamp)
 {
-  AgsTimestamp *current_start_timestamp, *current_end_timestamp, *current_timestamp;
+  AgsTimestamp *current_timestamp;
 
   GList *retval;
   GList *current_start, *current_end, *current;

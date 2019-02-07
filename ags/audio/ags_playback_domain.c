@@ -392,7 +392,9 @@ ags_playback_domain_get_property(GObject *gobject,
       pthread_mutex_lock(playback_domain_mutex);
 
       g_value_set_pointer(value,
-			  g_list_copy(playback_domain->output_playback));
+			  g_list_copy_deep(playback_domain->output_playback,
+					   (GCopyFunc) g_object_ref,
+					   NULL));
       
       pthread_mutex_unlock(playback_domain_mutex);
     }
@@ -402,7 +404,9 @@ ags_playback_domain_get_property(GObject *gobject,
       pthread_mutex_lock(playback_domain_mutex);
 
       g_value_set_pointer(value,
-			  g_list_copy(playback_domain->input_playback));
+			  g_list_copy_deep(playback_domain->input_playback,
+					   (GCopyFunc) g_object_ref,
+					   NULL));
       
       pthread_mutex_unlock(playback_domain_mutex);
     }

@@ -1070,7 +1070,7 @@ GList*
 ags_automation_find_near_timestamp(GList *automation, guint line,
 				   AgsTimestamp *timestamp)
 {
-  AgsTimestamp *current_start_timestamp, *current_end_timestamp, *current_timestamp;
+  AgsTimestamp *current_timestamp;
 
   GList *retval;
   GList *current_start, *current_end, *current;
@@ -1307,7 +1307,7 @@ ags_automation_find_near_timestamp_extended(GList *automation, guint line,
 					    GType channel_type, gchar *control_name,
 					    AgsTimestamp *timestamp)
 {
-  AgsTimestamp *current_start_timestamp, *current_end_timestamp, *current_timestamp;
+  AgsTimestamp *current_timestamp;
 
   GList *retval;
   GList *current_start, *current_end, *current;

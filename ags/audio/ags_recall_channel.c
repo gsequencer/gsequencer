@@ -453,6 +453,7 @@ ags_recall_channel_notify_recall_container_callback(GObject *gobject,
 		 "recall-audio", recall_audio,
 		 NULL);
 
+    g_object_unref(recall_audio);
   }else{
     g_object_set(recall_channel,
 		 "recall-audio", NULL,
@@ -586,13 +587,21 @@ ags_recall_channel_automate(AgsRecall *recall)
       automation = automation->next;
     }
 
-    g_list_free(automation_start);
+    g_list_free_full(automation_start,
+		     g_object_unref);
     
     /* iterate */
     port = port->next;
   }
 
-  g_list_free(port_start);
+  g_object_unref(channel);
+
+  g_object_unref(audio);
+
+  g_object_unref(soundcard);
+
+  g_list_free_full(port_start,
+		   g_object_unref);
 }
 
 AgsRecall*

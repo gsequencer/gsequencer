@@ -418,6 +418,8 @@ ags_recall_audio_run_notify_recall_container_callback(GObject *gobject,
       g_object_set(recall_audio_run,
 		   "recall-audio", recall_audio,
 		   NULL);
+
+      g_object_unref(recall_audio);
     }
   }else{
     g_object_set(recall_audio_run,
