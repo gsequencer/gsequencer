@@ -1443,9 +1443,7 @@ ags_audio_application_context_setup(AgsApplicationContext *application_context)
   /* call parent */
   //  AGS_APPLICATION_CONTEXT_CLASS(ags_audio_application_context_parent_class)->setup(application_context);
 
-  g_object_get(application_context,
-	       "main-loop", &main_loop,
-	       NULL);
+  main_loop = ags_concurrency_provider_get_main_loop(AGS_CONCURRENCY_PROVIDER(application_context));
 
   log = ags_log_get_instance();
 

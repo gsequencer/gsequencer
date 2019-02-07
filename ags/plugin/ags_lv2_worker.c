@@ -396,7 +396,9 @@ ags_lv2_worker_get_property(GObject *gobject,
     {
       pthread_mutex_lock(lv2_worker_mutex);
       
-      g_value_set_pointer(value, g_list_copy(lv2_worker->response_data));
+      g_value_set_pointer(value, g_list_copy_deep(lv2_worker->response_data,
+						  (GCopyFunc) g_object_ref,
+						  NULL));
 
       pthread_mutex_unlock(lv2_worker_mutex);
     }

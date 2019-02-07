@@ -543,6 +543,8 @@ ags_automation_set_property(GObject *gobject,
 	}else{
 	  automation->steps = AGS_AUTOMATION_DEFAULT_PRECISION;
 	}
+
+	g_object_unref(plugin_port);
       }
     }
     break;
@@ -767,7 +769,9 @@ ags_automation_get_property(GObject *gobject,
     {
       pthread_mutex_lock(automation_mutex);
 
-      g_value_set_pointer(value, g_list_copy(automation->acceleration));
+      g_value_set_pointer(value, g_list_copy_deep(automation->acceleration,
+						  (GCopyFunc) g_object_ref,
+						  NULL));
 
       pthread_mutex_unlock(automation_mutex);
     }
@@ -1022,19 +1026,25 @@ GList*
 ags_automation_find_port(GList *automation,
 			 GObject *port)
 {
-  GObject *current_port;
-  
   if(automation == NULL ||
      !AGS_IS_PORT(port)){
     return(NULL);
   }
 
   while(automation != NULL){
+    GObject *current_port;
+  
+    gboolean success;
+    
     g_object_get(automation->data,
 		 "port", &current_port,
 		 NULL);
     
-    if(current_port == port){
+    success = (current_port == port) ? TRUE: FALSE;
+    
+    g_object_unref(current_port);
+
+    if(success){
       break;
     }
     
@@ -1094,48 +1104,59 @@ ags_automation_find_near_timestamp(GList *automation, guint line,
     x = ags_timestamp_get_unix_time(timestamp);
 
     use_ags_offset = FALSE;
-  }else{
-    return(NULL);
   }
   
   retval = NULL;
   success = FALSE;
   
   while(!success && current != NULL){
+    current_x = 0;
+    
     /* check current - start */
     g_object_get(current_start->data,
 		 "line", &current_line,
-		 "timestamp", &current_timestamp,
 		 NULL);
     
     if(current_line == line){
       if(timestamp == NULL){
 	retval = current_start;
-	
+
 	break;
       }
 
+      g_object_get(current_start->data,
+		   "timestamp", &current_timestamp,
+		   NULL);
+
       if(current_timestamp != NULL){
 	if(use_ags_offset){
-	  if(ags_timestamp_get_ags_offset(current_timestamp) > x){
+	  current_x = ags_timestamp_get_ags_offset(current_timestamp);
+	  
+	  g_object_unref(current_timestamp);
+	    
+	  if(current_x > x){
 	    break;
 	  }
 	}else{
-	  if(ags_timestamp_get_unix_time(current_timestamp) > x){
+	  current_x = ags_timestamp_get_unix_time(current_timestamp);
+	  
+	  g_object_unref(current_timestamp);
+	  
+	  if(current_x > x){
 	    break;
 	  }
 	}
 
 	if(use_ags_offset){
-	  if(ags_timestamp_get_ags_offset(current_timestamp) >= x &&
-	     ags_timestamp_get_ags_offset(current_timestamp) < x + AGS_AUTOMATION_DEFAULT_OFFSET){
+	  if(current_x >= x &&
+	     current_x < x + AGS_AUTOMATION_DEFAULT_OFFSET){
 	    retval = current_start;
 	    
 	    break;
 	  }
 	}else{
-	  if(ags_timestamp_get_unix_time(current_timestamp) >= x &&
-	     ags_timestamp_get_unix_time(current_timestamp) < x + AGS_AUTOMATION_DEFAULT_DURATION){
+	  if(current_x >= x &&
+	     current_x < x + AGS_AUTOMATION_DEFAULT_DURATION){
 	    retval = current_start;
 	    
 	    break;
@@ -1149,7 +1170,6 @@ ags_automation_find_near_timestamp(GList *automation, guint line,
     /* check current - end */
     g_object_get(current_end->data,
 		 "line", &current_line,
-		 "timestamp", &current_timestamp,
 		 NULL);
     
     if(current_line == line){
@@ -1159,27 +1179,39 @@ ags_automation_find_near_timestamp(GList *automation, guint line,
 	break;
       }
 
+      g_object_get(current_end->data,
+		   "timestamp", &current_timestamp,
+		   NULL);
+
       if(current_timestamp != NULL){
 	if(use_ags_offset){
-	  if(ags_timestamp_get_ags_offset(current_timestamp) < x){
+	  current_x = ags_timestamp_get_ags_offset(current_timestamp);
+	  
+	  g_object_unref(current_timestamp);
+	  
+	  if(current_x < x){
 	    break;
 	  }
 	}else{
-	  if(ags_timestamp_get_unix_time(current_timestamp) < x){
+	  current_x = ags_timestamp_get_unix_time(current_timestamp);
+	  
+	  g_object_unref(current_timestamp);
+	  
+	  if(current_x < x){
 	    break;
 	  }
 	}
 
 	if(use_ags_offset){
-	  if(ags_timestamp_get_ags_offset(current_timestamp) >= x &&
-	     ags_timestamp_get_ags_offset(current_timestamp) < x + AGS_AUTOMATION_DEFAULT_OFFSET){
+	  if(current_x >= x &&
+	     current_x < x + AGS_AUTOMATION_DEFAULT_OFFSET){
 	    retval = current_end;
 	    
 	    break;
 	  }
 	}else{
-	  if(ags_timestamp_get_unix_time(current_timestamp) >= x &&
-	     ags_timestamp_get_unix_time(current_timestamp) < x + AGS_AUTOMATION_DEFAULT_DURATION){
+	  if(current_x >= x &&
+	     current_x < x + AGS_AUTOMATION_DEFAULT_DURATION){
 	    retval = current_end;
 	    
 	    break;
@@ -1191,11 +1223,8 @@ ags_automation_find_near_timestamp(GList *automation, guint line,
     }
 
     /* check current - center */
-    current_x = 0;
-    
     g_object_get(current->data,
 		 "line", &current_line,
-		 "timestamp", &current_timestamp,
 		 NULL);
     
     if(current_line == line){
@@ -1205,17 +1234,29 @@ ags_automation_find_near_timestamp(GList *automation, guint line,
 	break;
       }
 
+      g_object_get(current->data,
+		   "timestamp", &current_timestamp,
+		   NULL);
+
       if(current_timestamp != NULL){
 	if(use_ags_offset){
-	  if((current_x = ags_timestamp_get_ags_offset(current_timestamp)) >= x &&
-	     ags_timestamp_get_ags_offset(current_timestamp) < x + AGS_AUTOMATION_DEFAULT_OFFSET){
+	  current_x = ags_timestamp_get_ags_offset(current_timestamp);
+
+	  g_object_unref(current_timestamp);
+	  
+	  if(current_x >= x &&
+	     current_x < x + AGS_AUTOMATION_DEFAULT_OFFSET){
 	    retval = current;
 	    
 	    break;
 	  }
 	}else{
-	  if((current_x = ags_timestamp_get_unix_time(current_timestamp)) >= x &&
-	     ags_timestamp_get_unix_time(current_timestamp) < x + AGS_AUTOMATION_DEFAULT_DURATION){
+	  current_x = ags_timestamp_get_unix_time(current_timestamp);
+
+	  g_object_unref(current_timestamp);
+	  
+	  if(current_x >= x &&
+	     current_x < x + AGS_AUTOMATION_DEFAULT_DURATION){
 	    retval = current;
 	    
 	    break;
@@ -1278,6 +1319,7 @@ ags_automation_find_near_timestamp_extended(GList *automation, guint line,
   guint current_line;
   guint64 current_x, x;
   guint length, position;
+  gboolean use_ags_offset;
   gboolean success;
 
   if(automation == NULL){
@@ -1296,21 +1338,26 @@ ags_automation_find_near_timestamp_extended(GList *automation, guint line,
   if(ags_timestamp_test_flags(timestamp,
 			      AGS_TIMESTAMP_OFFSET)){
     x = ags_timestamp_get_ags_offset(timestamp);
+
+    use_ags_offset = TRUE;
   }else if(ags_timestamp_test_flags(timestamp,
 				    AGS_TIMESTAMP_UNIX)){
     x = ags_timestamp_get_unix_time(timestamp);
+
+    use_ags_offset = FALSE;
   }
   
   retval = NULL;
   success = FALSE;
   
   while(!success && current != NULL){
+    current_x = 0;
+
     /* check current - start */
     g_object_get(current_start->data,
 		 "line", &current_line,
 		 "channel-type", &current_channel_type,
 		 "control-name", &current_control_name,
-		 "timestamp", &current_timestamp,
 		 NULL);
     
     if(current_line == line &&
@@ -1318,39 +1365,57 @@ ags_automation_find_near_timestamp_extended(GList *automation, guint line,
 		   channel_type) &&
        !g_strcmp0(current_control_name,
 		  control_name)){
+      g_free(current_control_name);
+      
       if(timestamp == NULL){
 	retval = current_start;
 	
 	break;
       }
 
+      g_object_get(current_start->data,
+		   "timestamp", &current_timestamp,
+		   NULL);
+
       if(current_timestamp != NULL){
-	if(ags_timestamp_test_flags(timestamp,
-				    AGS_TIMESTAMP_OFFSET) &&
-	   ags_timestamp_test_flags(current_timestamp,
-				    AGS_TIMESTAMP_OFFSET)){
-	  if(ags_timestamp_get_ags_offset(current_timestamp) >= x &&
-	     ags_timestamp_get_ags_offset(current_timestamp) < x + AGS_AUTOMATION_DEFAULT_OFFSET){
-	    retval = current_start;
+	if(use_ags_offset){
+	  current_x = ags_timestamp_get_ags_offset(current_timestamp);
+	  
+	  g_object_unref(current_timestamp);
 	    
+	  if(current_x > x){
 	    break;
 	  }
-	}else if(ags_timestamp_test_flags(timestamp,
-					  AGS_TIMESTAMP_UNIX) &&
-		 ags_timestamp_test_flags(current_timestamp,
-					  AGS_TIMESTAMP_UNIX)){
-	  if(ags_timestamp_get_unix_time(current_timestamp) >= x &&
-	     ags_timestamp_get_unix_time(current_timestamp) < x + AGS_AUTOMATION_DEFAULT_DURATION){
+	}else{
+	  current_x = ags_timestamp_get_unix_time(current_timestamp);
+	  
+	  g_object_unref(current_timestamp);
+	  
+	  if(current_x > x){
+	    break;
+	  }
+	}
+
+	if(use_ags_offset){
+	  if(current_x >= x &&
+	     current_x < x + AGS_AUTOMATION_DEFAULT_OFFSET){
 	    retval = current_start;
 	    
 	    break;
 	  }
 	}else{
-	  g_warning("inconsistent data");
+	  if(current_x >= x &&
+	     current_x < x + AGS_AUTOMATION_DEFAULT_DURATION){
+	    retval = current_start;
+	    
+	    break;
+	  }
 	}
       }else{
 	g_warning("inconsistent data");
       }
+    }else{
+      g_free(current_control_name);
     }
 
     /* check current - end */
@@ -1358,7 +1423,6 @@ ags_automation_find_near_timestamp_extended(GList *automation, guint line,
 		 "line", &current_line,
 		 "channel-type", &current_channel_type,
 		 "control-name", &current_control_name,
-		 "timestamp", &current_timestamp,
 		 NULL);
     
     if(current_line == line &&
@@ -1366,39 +1430,57 @@ ags_automation_find_near_timestamp_extended(GList *automation, guint line,
 		   channel_type) &&
        !g_strcmp0(current_control_name,
 		  control_name)){
+      g_free(current_control_name);
+      
       if(timestamp == NULL){
 	retval = current_end;
 	
 	break;
       }
 
+      g_object_get(current_end->data,
+		   "timestamp", &current_timestamp,
+		   NULL);
+
       if(current_timestamp != NULL){
-	if(ags_timestamp_test_flags(timestamp,
-				    AGS_TIMESTAMP_OFFSET) &&
-	   ags_timestamp_test_flags(current_timestamp,
-				    AGS_TIMESTAMP_OFFSET)){
-	  if(ags_timestamp_get_ags_offset(current_timestamp) >= x &&
-	     ags_timestamp_get_ags_offset(current_timestamp) < x + AGS_AUTOMATION_DEFAULT_OFFSET){
-	    retval = current_end;
-	    
+	if(use_ags_offset){
+	  current_x = ags_timestamp_get_ags_offset(current_timestamp);
+	  
+	  g_object_unref(current_timestamp);
+	  
+	  if(current_x < x){
 	    break;
 	  }
-	}else if(ags_timestamp_test_flags(timestamp,
-					  AGS_TIMESTAMP_UNIX) &&
-		 ags_timestamp_test_flags(current_timestamp,
-					  AGS_TIMESTAMP_UNIX)){
-	  if(ags_timestamp_get_unix_time(current_timestamp) >= x &&
-	     ags_timestamp_get_unix_time(current_timestamp) < x + AGS_AUTOMATION_DEFAULT_DURATION){
+	}else{
+	  current_x = ags_timestamp_get_unix_time(current_timestamp);
+	  
+	  g_object_unref(current_timestamp);
+	  
+	  if(current_x < x){
+	    break;
+	  }
+	}
+
+	if(use_ags_offset){
+	  if(current_x >= x &&
+	     current_x < x + AGS_AUTOMATION_DEFAULT_OFFSET){
 	    retval = current_end;
 	    
 	    break;
 	  }
 	}else{
-	  g_warning("inconsistent data");
+	  if(current_x >= x &&
+	     current_x < x + AGS_AUTOMATION_DEFAULT_DURATION){
+	    retval = current_end;
+	    
+	    break;
+	  }
 	}
       }else{
 	g_warning("inconsistent data");
       }
+    }else{
+      g_free(current_control_name);
     }
 
     /* check current - center */
@@ -1408,7 +1490,6 @@ ags_automation_find_near_timestamp_extended(GList *automation, guint line,
 		 "line", &current_line,
 		 "channel-type", &current_channel_type,
 		 "control-name", &current_control_name,
-		 "timestamp", &current_timestamp,
 		 NULL);
     
     if(current_line == line &&
@@ -1416,39 +1497,47 @@ ags_automation_find_near_timestamp_extended(GList *automation, guint line,
 		   channel_type) &&
        !g_strcmp0(current_control_name,
 		  control_name)){
+      g_free(current_control_name);
+      
       if(timestamp == NULL){
 	retval = current;
 	
 	break;
       }
 
+      g_object_get(current->data,
+		   "timestamp", &current_timestamp,
+		   NULL);
+
       if(current_timestamp != NULL){
-	if(ags_timestamp_test_flags(timestamp,
-				    AGS_TIMESTAMP_OFFSET) &&
-	   ags_timestamp_test_flags(current_timestamp,
-				    AGS_TIMESTAMP_OFFSET)){
-	  if((current_x = ags_timestamp_get_ags_offset(current_timestamp)) >= x &&
-	     ags_timestamp_get_ags_offset(current_timestamp) < x + AGS_AUTOMATION_DEFAULT_OFFSET){
-	    retval = current;
-	    
-	    break;
-	  }
-	}else if(ags_timestamp_test_flags(timestamp,
-					  AGS_TIMESTAMP_UNIX) &&
-		 ags_timestamp_test_flags(current_timestamp,
-					  AGS_TIMESTAMP_UNIX)){
-	  if((current_x = ags_timestamp_get_unix_time(current_timestamp)) >= x &&
-	     ags_timestamp_get_unix_time(current_timestamp) < x + AGS_AUTOMATION_DEFAULT_DURATION){
+	if(use_ags_offset){
+	  current_x = ags_timestamp_get_ags_offset(current_timestamp);
+
+	  g_object_unref(current_timestamp);
+	  
+	  if(current_x >= x &&
+	     current_x < x + AGS_AUTOMATION_DEFAULT_OFFSET){
 	    retval = current;
 	    
 	    break;
 	  }
 	}else{
-	  g_warning("inconsistent data");
+	  current_x = ags_timestamp_get_unix_time(current_timestamp);
+
+	  g_object_unref(current_timestamp);
+	  
+	  if(current_x >= x &&
+	     current_x < x + AGS_AUTOMATION_DEFAULT_DURATION){
+	    retval = current;
+	    
+	    break;
+	  }
 	}
       }else{
 	g_warning("inconsistent data");
       }
+    }else{
+      g_free(current_control_name);
     }
     
     if(position == 0){
@@ -1495,6 +1584,8 @@ ags_automation_add(GList *automation,
   {
     AgsTimestamp *timestamp_a, *timestamp_b;
 
+    guint64 offset_a, offset_b;
+    
     g_object_get(a,
 		 "timestamp", &timestamp_a,
 		 NULL);
@@ -1502,12 +1593,18 @@ ags_automation_add(GList *automation,
     g_object_get(b,
 		 "timestamp", &timestamp_b,
 		 NULL);
+
+    offset_a = ags_timestamp_get_ags_offset(timestamp_a);
+    offset_b = ags_timestamp_get_ags_offset(timestamp_b);
+
+    g_object_unref(timestamp_a);
+    g_object_unref(timestamp_b);
     
-    if(ags_timestamp_get_ags_offset(timestamp_a) == ags_timestamp_get_ags_offset(timestamp_b)){
+    if(offset_a == offset_b){
       return(0);
-    }else if(ags_timestamp_get_ags_offset(timestamp_a) < ags_timestamp_get_ags_offset(timestamp_b)){
+    }else if(offset_a < offset_b){
       return(-1);
-    }else if(ags_timestamp_get_ags_offset(timestamp_a) > ags_timestamp_get_ags_offset(timestamp_b)){
+    }else if(offset_a > offset_b){
       return(1);
     }
 
@@ -2537,6 +2634,7 @@ ags_automation_insert_native_scale_from_clipboard(AgsAutomation *automation,
     char *endptr;
     char *x, *y;
 
+    guint64 timestamp_offset;
     guint x_boundary_val, y_boundary_val;
     guint x_val;
     gdouble y_val;
@@ -2684,9 +2782,12 @@ ags_automation_insert_native_scale_from_clipboard(AgsAutomation *automation,
 		     "timestamp", &timestamp,
 		     NULL);
 	
+	timestamp_offset = ags_timestamp_get_ags_offset(timestamp);
+	g_object_unref(timestamp);
+	
 	if(!match_timestamp ||
-	   (x_val >= ags_timestamp_get_ags_offset(timestamp) &&
-	    x_val < ags_timestamp_get_ags_offset(timestamp) + AGS_AUTOMATION_DEFAULT_OFFSET)){
+	   (x_val >= timestamp_offset &&
+	    x_val < timestamp_offset + AGS_AUTOMATION_DEFAULT_OFFSET)){
 	  acceleration = ags_acceleration_new();
 	  
 	  acceleration->x = x_val;

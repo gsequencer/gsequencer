@@ -603,8 +603,13 @@ ags_lv2_preset_parse_turtle(AgsLv2Preset *lv2_preset)
 	       NULL);
     
 
-  if(turtle == NULL ||
-     uri == NULL){
+  if(turtle == NULL){
+    return;
+  }
+  
+  if(uri == NULL){
+    g_object_unref(turtle);
+    
     return;
   }
   
@@ -636,6 +641,9 @@ ags_lv2_preset_parse_turtle(AgsLv2Preset *lv2_preset)
       g_list_free(list);
     }else{
       g_warning("rdf-triple not found");
+      
+      g_object_unref(turtle);
+      g_free(uri);
       
       return;
     }
@@ -728,6 +736,9 @@ ags_lv2_preset_parse_turtle(AgsLv2Preset *lv2_preset)
   if(port_list != NULL){
     g_list_free(port_list);
   }
+
+  g_object_unref(turtle);
+  g_free(uri);
 }
 
 /**

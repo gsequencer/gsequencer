@@ -1102,10 +1102,8 @@ ags_devin_dispose(GObject *gobject)
   if(devin->notify_soundcard != NULL){
     if(devin->application_context != NULL){
       AgsTaskThread *task_thread;
-    
-      g_object_get(devin->application_context,
-		   "task-thread", &task_thread,
-		   NULL);
+
+      task_thread = ags_concurrency_provider_get_task_thread(AGS_CONCURRENCY_PROVIDER(ags_application_context_get_instance()));
       
       ags_task_thread_remove_cyclic_task(task_thread,
 					 (AgsTask *) devin->notify_soundcard);
@@ -1170,9 +1168,7 @@ ags_devin_finalize(GObject *gobject)
     if(devin->application_context != NULL){
       AgsTaskThread *task_thread;
       
-      g_object_get(devin->application_context,
-		   "task-thread", &task_thread,
-		   NULL);
+      task_thread = ags_concurrency_provider_get_task_thread(AGS_CONCURRENCY_PROVIDER(ags_application_context_get_instance()));
       
       ags_task_thread_remove_cyclic_task(task_thread,
 					 (AgsTask *) devin->notify_soundcard);
@@ -2743,18 +2739,18 @@ ags_devin_oss_record(AgsSoundcard *soundcard,
   
   devin = AGS_DEVIN(soundcard);
 
+  application_context = ags_application_context_get_instance();
+
   /* get devin mutex */
   pthread_mutex_lock(ags_devin_get_class_mutex());
   
   devin_mutex = devin->obj_mutex;
   
   pthread_mutex_unlock(ags_devin_get_class_mutex());
-
+  
   /* lock */
   pthread_mutex_lock(devin_mutex);
 
-  application_context = devin->application_context;
-  
   notify_soundcard = AGS_NOTIFY_SOUNDCARD(devin->notify_soundcard);
   
   /* notify cyclic task */
@@ -2876,9 +2872,8 @@ ags_devin_oss_record(AgsSoundcard *soundcard,
   pthread_mutex_unlock(devin_mutex);
 
   /* update soundcard */
-  g_object_get(application_context,
-	       "task-thread", &task_thread,
-	       NULL);
+  task_thread = ags_concurrency_provider_get_task_thread(AGS_CONCURRENCY_PROVIDER(application_context));
+
   task = NULL;
   
   /* tic soundcard */
@@ -3592,6 +3587,8 @@ ags_devin_alsa_record(AgsSoundcard *soundcard,
   
   devin = AGS_DEVIN(soundcard);
 
+  application_context = ags_application_context_get_instance();
+
   /* get devin mutex */
   pthread_mutex_lock(ags_devin_get_class_mutex());
   
@@ -3602,7 +3599,6 @@ ags_devin_alsa_record(AgsSoundcard *soundcard,
   /* lock */
   pthread_mutex_lock(devin_mutex);
   
-  application_context = devin->application_context;
   notify_soundcard = AGS_NOTIFY_SOUNDCARD(devin->notify_soundcard);
 
   /* notify cyclic task */
@@ -3766,9 +3762,8 @@ ags_devin_alsa_record(AgsSoundcard *soundcard,
   pthread_mutex_unlock(devin_mutex);
 
   /* update soundcard */
-  g_object_get(application_context,
-	       "task-thread", &task_thread,
-	       NULL);
+  task_thread = ags_concurrency_provider_get_task_thread(AGS_CONCURRENCY_PROVIDER(application_context));
+
   task = NULL;
   
   /* tic soundcard */

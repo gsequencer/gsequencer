@@ -2920,7 +2920,9 @@ ags_audio_get_property(GObject *gobject,
       pthread_mutex_lock(audio_mutex);
 
       g_value_set_pointer(value,
-			  g_list_copy(audio->preset));
+			  g_list_copy_deep(audio->preset,
+					   (GCopyFunc) g_object_ref,
+					   NULL));
 
       pthread_mutex_unlock(audio_mutex);
     }
@@ -2930,7 +2932,9 @@ ags_audio_get_property(GObject *gobject,
       pthread_mutex_lock(audio_mutex);
 
       g_value_set_pointer(value,
-			  g_list_copy(audio->synth_generator));
+			  g_list_copy_deep(audio->synth_generator,
+					   (GCopyFunc) g_object_ref,
+					   NULL));
 
       pthread_mutex_unlock(audio_mutex);
     }
@@ -2950,7 +2954,9 @@ ags_audio_get_property(GObject *gobject,
       pthread_mutex_lock(audio_mutex);
 
       g_value_set_pointer(value,
-			  g_list_copy(audio->notation));
+			  g_list_copy_deep(audio->notation,
+					   (GCopyFunc) g_object_ref,
+					   NULL));
 
       pthread_mutex_unlock(audio_mutex);
     }
@@ -2960,7 +2966,9 @@ ags_audio_get_property(GObject *gobject,
       pthread_mutex_lock(audio_mutex);
 
       g_value_set_pointer(value,
-			  g_list_copy(audio->automation));
+			  g_list_copy_deep(audio->automation,
+					   (GCopyFunc) g_object_ref,
+					   NULL));
 
       pthread_mutex_unlock(audio_mutex);
     }
@@ -2970,7 +2978,9 @@ ags_audio_get_property(GObject *gobject,
       pthread_mutex_lock(audio_mutex);
 
       g_value_set_pointer(value,
-			  g_list_copy(audio->wave));
+			  g_list_copy_deep(audio->wave,
+					   (GCopyFunc) g_object_ref,
+					   NULL));
 
       pthread_mutex_unlock(audio_mutex);
     }
@@ -3020,7 +3030,9 @@ ags_audio_get_property(GObject *gobject,
       pthread_mutex_lock(audio_mutex);
 
       g_value_set_pointer(value,
-			  g_list_copy(audio->recall_id));
+			  g_list_copy_deep(audio->recall_id,
+					   (GCopyFunc) g_object_ref,
+					   NULL));
 
       pthread_mutex_unlock(audio_mutex);
     }
@@ -3030,7 +3042,9 @@ ags_audio_get_property(GObject *gobject,
       pthread_mutex_lock(audio_mutex);
 
       g_value_set_pointer(value,
-			  g_list_copy(audio->recycling_context));
+			  g_list_copy_deep(audio->recycling_context,
+					   (GCopyFunc) g_object_ref,
+					   NULL));
 
       pthread_mutex_unlock(audio_mutex);
     }
@@ -3040,7 +3054,9 @@ ags_audio_get_property(GObject *gobject,
       pthread_mutex_lock(audio_mutex);
 
       g_value_set_pointer(value,
-			  g_list_copy(audio->recall_container));
+			  g_list_copy_deep(audio->recall_container,
+					   (GCopyFunc) g_object_ref,
+					   NULL));
 
       pthread_mutex_unlock(audio_mutex);
     }
@@ -3060,7 +3076,9 @@ ags_audio_get_property(GObject *gobject,
       pthread_mutex_lock(play_mutex);
       
       g_value_set_pointer(value,
-			  g_list_copy(audio->play));
+			  g_list_copy_deep(audio->play,
+					   (GCopyFunc) g_object_ref,
+					   NULL));
 
       pthread_mutex_unlock(play_mutex);
     }
@@ -3080,7 +3098,9 @@ ags_audio_get_property(GObject *gobject,
       pthread_mutex_lock(recall_mutex);
 
       g_value_set_pointer(value,
-			  g_list_copy(audio->recall));
+			  g_list_copy_deep(audio->recall,
+					   (GCopyFunc) g_object_ref,
+					   NULL));
 
       pthread_mutex_unlock(recall_mutex);
     }
@@ -6910,6 +6930,8 @@ ags_audio_real_set_pads(AgsAudio *audio,
 	    g_object_run_dispose((GObject *) playback);
 	    g_object_unref((GObject *) playback);
 	  }
+
+	  g_object_unref(current);
 	  
 	  /* iterate */
 	  list = list->next;
@@ -7095,6 +7117,8 @@ ags_audio_real_set_pads(AgsAudio *audio,
 	    g_object_run_dispose((GObject *) playback);
 	    g_object_unref((GObject *) playback);
 	  }
+
+	  g_object_unref(current);
 	  
 	  /* iterate */
 	  list = list->next;

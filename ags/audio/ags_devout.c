@@ -1106,9 +1106,7 @@ ags_devout_dispose(GObject *gobject)
     if(devout->application_context != NULL){
       AgsTaskThread *task_thread;
     
-      g_object_get(devout->application_context,
-		   "task-thread", &task_thread,
-		   NULL);
+      task_thread = ags_concurrency_provider_get_task_thread(AGS_CONCURRENCY_PROVIDER(ags_application_context_get_instance()));
       
       ags_task_thread_remove_cyclic_task(task_thread,
 					 (AgsTask *) devout->notify_soundcard);
@@ -1163,9 +1161,7 @@ ags_devout_finalize(GObject *gobject)
     if(devout->application_context != NULL){
       AgsTaskThread *task_thread;
       
-      g_object_get(devout->application_context,
-		   "task-thread", &task_thread,
-		   NULL);
+      task_thread = ags_concurrency_provider_get_task_thread(AGS_CONCURRENCY_PROVIDER(ags_application_context_get_instance()));
       
       ags_task_thread_remove_cyclic_task(task_thread,
 					 (AgsTask *) devout->notify_soundcard);
@@ -2791,6 +2787,8 @@ ags_devout_oss_play(AgsSoundcard *soundcard,
   
   devout = AGS_DEVOUT(soundcard);
 
+  application_context = ags_application_context_get_instance();
+
   /* get devout mutex */
   pthread_mutex_lock(ags_devout_get_class_mutex());
   
@@ -2800,8 +2798,6 @@ ags_devout_oss_play(AgsSoundcard *soundcard,
 
   /* lock */
   pthread_mutex_lock(devout_mutex);
-
-  application_context = devout->application_context;
   
   notify_soundcard = AGS_NOTIFY_SOUNDCARD(devout->notify_soundcard);
   
@@ -2918,9 +2914,8 @@ ags_devout_oss_play(AgsSoundcard *soundcard,
   pthread_mutex_unlock(devout_mutex);
 
   /* update soundcard */
-  g_object_get(application_context,
-	       "task-thread", &task_thread,
-	       NULL);
+  task_thread = ags_concurrency_provider_get_task_thread(AGS_CONCURRENCY_PROVIDER(application_context));
+
   task = NULL;
   
   /* tic soundcard */
@@ -3632,6 +3627,8 @@ ags_devout_alsa_play(AgsSoundcard *soundcard,
   
   devout = AGS_DEVOUT(soundcard);
   
+  application_context = ags_application_context_get_instance();
+
   /* get devout mutex */
   pthread_mutex_lock(ags_devout_get_class_mutex());
   
@@ -3641,8 +3638,6 @@ ags_devout_alsa_play(AgsSoundcard *soundcard,
 
   /* lock */
   pthread_mutex_lock(devout_mutex);
-
-  application_context = devout->application_context;
   
   notify_soundcard = AGS_NOTIFY_SOUNDCARD(devout->notify_soundcard);
 
@@ -3799,9 +3794,8 @@ ags_devout_alsa_play(AgsSoundcard *soundcard,
   pthread_mutex_unlock(devout_mutex);
 
   /* update soundcard */
-  g_object_get(application_context,
-	       "task-thread", &task_thread,
-	       NULL);
+  task_thread = ags_concurrency_provider_get_task_thread(AGS_CONCURRENCY_PROVIDER(application_context));
+
   task = NULL;
   
   /* tic soundcard */

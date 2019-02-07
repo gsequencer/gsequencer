@@ -959,7 +959,7 @@ ags_file_find_id_ref_by_reference(AgsFile *file, gpointer ref)
 
   GList *start_list, *list;
 
-  gchar *current_ref;
+  gpointer current_ref;
   
   pthread_mutex_t *file_mutex;
 

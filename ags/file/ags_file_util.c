@@ -910,6 +910,7 @@ ags_file_util_write_object(AgsFile *file,
     g_value_init(&parameter[i].value,
 		 param_spec[i]->value_type);
 
+    //FIXME:JK: potential memory-leak
     parameter[i].name = param_spec[i]->name;
     g_object_get_property(G_OBJECT(gobject),
 			  param_spec[i]->name,

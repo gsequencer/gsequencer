@@ -1013,9 +1013,7 @@ ags_fifoout_dispose(GObject *gobject)
     if(fifoout->application_context != NULL){
       AgsTaskThread *task_thread;
     
-      g_object_get(fifoout->application_context,
-		   "task-thread", &task_thread,
-		   NULL);
+      task_thread = ags_concurrency_provider_get_task_thread(AGS_CONCURRENCY_PROVIDER(ags_application_context_get_instance()));
       
       ags_task_thread_remove_cyclic_task(task_thread,
 					 (AgsTask *) fifoout->notify_soundcard);
@@ -1068,9 +1066,7 @@ ags_fifoout_finalize(GObject *gobject)
     if(fifoout->application_context != NULL){
       AgsTaskThread *task_thread;
       
-      g_object_get(fifoout->application_context,
-		   "task-thread", &task_thread,
-		   NULL);
+      task_thread = ags_concurrency_provider_get_task_thread(AGS_CONCURRENCY_PROVIDER(ags_application_context_get_instance()));
       
       ags_task_thread_remove_cyclic_task(task_thread,
 					 (AgsTask *) fifoout->notify_soundcard);

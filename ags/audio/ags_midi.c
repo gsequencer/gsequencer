@@ -384,7 +384,9 @@ ags_midi_get_property(GObject *gobject,
     {
       pthread_mutex_lock(midi_mutex);
 
-      g_value_set_pointer(value, g_list_copy(midi->track));
+      g_value_set_pointer(value, g_list_copy_deep(midi->track,
+						  (GCopyFunc) g_object_ref,
+						  NULL));
 
       pthread_mutex_unlock(midi_mutex);
     }
@@ -609,53 +611,224 @@ GList*
 ags_midi_find_near_timestamp(GList *midi, guint audio_channel,
 			     AgsTimestamp *timestamp)
 {
-  AgsTimestamp *current_timestamp;
+  AgsTimestamp *current_start_timestamp, *current_end_timestamp, *current_timestamp;
+
+  GList *retval;
+  GList *current_start, *current_end, *current;
 
   guint current_audio_channel;
+  guint64 current_x, x;
+  guint length, position;
+  gboolean use_ags_offset;
+  gboolean success;
 
-  while(midi != NULL){
-    g_object_get(midi->data,
+  if(midi == NULL){
+    return(NULL);
+  }
+
+  current_start = midi;
+  current_end = g_list_last(midi);
+  
+  length = g_list_length(midi);
+  position = length / 2;
+
+  current = g_list_nth(current_start,
+		       position);
+
+  if(ags_timestamp_test_flags(timestamp,
+			      AGS_TIMESTAMP_OFFSET)){
+    x = ags_timestamp_get_ags_offset(timestamp);
+
+    use_ags_offset = TRUE;
+  }else if(ags_timestamp_test_flags(timestamp,
+				    AGS_TIMESTAMP_UNIX)){
+    x = ags_timestamp_get_unix_time(timestamp);
+
+    use_ags_offset = FALSE;
+  }else{
+    return(NULL);
+  }
+  
+  retval = NULL;
+  success = FALSE;
+  
+  while(!success && current != NULL){
+    current_x = 0;
+    
+    /* check current - start */
+    g_object_get(current_start->data,
 		 "audio-channel", &current_audio_channel,
 		 NULL);
     
-    if(current_audio_channel != audio_channel){
-      midi = midi->next;
+    if(current_audio_channel == audio_channel){
+      if(timestamp == NULL){
+	retval = current_start;
+	
+	break;
+      }
+
+      g_object_get(current_start->data,
+		   "timestamp", &current_timestamp,
+		   NULL);
       
-      continue;
+      if(current_timestamp != NULL){
+	if(use_ags_offset){
+	  current_x = ags_timestamp_get_ags_offset(current_timestamp);
+
+	  g_object_unref(current_timestamp);
+	  
+	  if(current_x > x){
+	    break;
+	  }
+	}else{
+	  current_x = ags_timestamp_get_unix_time(current_timestamp);
+	  
+	  g_object_unref(current_timestamp);
+
+	  if(current_x > x){
+	    break;
+	  }
+	}
+	
+	if(use_ags_offset){
+	  if(current_x >= x &&
+	     current_x < x + AGS_MIDI_DEFAULT_OFFSET){
+	    retval = current_start;
+	    
+	    break;
+	  }
+	}else{
+	  if(current_x >= x &&
+	     current_x < x + AGS_MIDI_DEFAULT_DURATION){
+	    retval = current_start;
+	    
+	    break;
+	  }
+	}
+      }else{
+	g_warning("inconsistent data");
+      }
     }
 
-    if(timestamp == NULL){
-      return(midi);
-    }
-    
-    g_object_get(midi->data,
-		 "timestamp", &current_timestamp,
+    /* check current - end */
+    g_object_get(current_end->data,
+		 "audio-channel", &current_audio_channel,
 		 NULL);
     
-    if(current_timestamp != NULL){
-      if(ags_timestamp_test_flags(timestamp,
-				  AGS_TIMESTAMP_OFFSET) &&
-	 ags_timestamp_test_flags(current_timestamp,
-				  AGS_TIMESTAMP_OFFSET)){
-	if(ags_timestamp_get_ags_offset(current_timestamp) >= ags_timestamp_get_ags_offset(timestamp) &&
-	   ags_timestamp_get_ags_offset(current_timestamp) < ags_timestamp_get_ags_offset(timestamp) + AGS_MIDI_DEFAULT_OFFSET){
-	  return(midi);
+    if(current_audio_channel == audio_channel){
+      if(timestamp == NULL){
+	retval = current_end;
+	
+	break;
+      }
+
+      g_object_get(current_end->data,
+		   "timestamp", &current_timestamp,
+		   NULL);
+      
+      if(current_timestamp != NULL){
+	if(use_ags_offset){
+	  current_x = ags_timestamp_get_ags_offset(current_timestamp);
+
+	  g_object_unref(current_timestamp);
+
+	  if(current_x < x){
+	    break;
+	  }
+	}else{
+	  current_x = ags_timestamp_get_unix_time(current_timestamp);
+	  
+	  g_object_unref(current_timestamp);
+
+	  if(current_x < x){
+	    break;
+	  }
 	}
-      }else if(ags_timestamp_test_flags(timestamp,
-					AGS_TIMESTAMP_UNIX) &&
-	       ags_timestamp_test_flags(current_timestamp,
-					AGS_TIMESTAMP_UNIX)){
-	if(ags_timestamp_get_unix_time(current_timestamp) >= ags_timestamp_get_unix_time(timestamp) &&
-	   ags_timestamp_get_unix_time(current_timestamp) < ags_timestamp_get_unix_time(timestamp) + AGS_MIDI_DEFAULT_DURATION){
-	  return(midi);
+
+	if(use_ags_offset){
+	  if(current_x >= x &&
+	     current_x < x + AGS_MIDI_DEFAULT_OFFSET){
+	    retval = current_end;
+	    
+	    break;
+	  }
+	}else{
+	  if(current_x >= x &&
+	     current_x < x + AGS_MIDI_DEFAULT_DURATION){
+	    retval = current_end;
+	    
+	    break;
+	  }
 	}
+      }else{
+	g_warning("inconsistent data");
+      }
+    }
+
+    /* check current - center */
+    g_object_get(current->data,
+		 "audio-channel", &current_audio_channel,
+		 NULL);
+    
+    if(current_audio_channel == audio_channel){
+      if(timestamp == NULL){
+	retval = current;
+	
+	break;
+      }
+
+      g_object_get(current->data,
+		   "timestamp", &current_timestamp,
+		   NULL);
+
+      if(current_timestamp != NULL){
+	if(use_ags_offset){
+	  current_x = ags_timestamp_get_ags_offset(current_timestamp);
+
+	  g_object_unref(current_timestamp);
+
+	  if(current_x >= x &&
+	     current_x < x + AGS_MIDI_DEFAULT_OFFSET){
+	    retval = current;
+	    
+	    break;
+	  }
+	}else{
+	  current_x = ags_timestamp_get_unix_time(current_timestamp);
+	  
+	  g_object_unref(current_timestamp);
+
+	  if(current_x >= x &&
+	     current_x < x + AGS_MIDI_DEFAULT_DURATION){
+	    retval = current;
+	    
+	    break;
+	  }
+	}
+      }else{
+	g_warning("inconsistent data");
       }
     }
     
-    midi = midi->next;
+    if(position == 0){
+      break;
+    }
+
+    position = position / 2;
+
+    if(current_x < x){
+      current_start = current->next;
+      current_end = current_end->prev;
+    }else{
+      current_start = current_start->next;
+      current_end = current->prev;
+    }    
+
+    current = g_list_nth(current_start,
+			 position);
   }
-  
-  return(NULL);
+
+  return(retval);
 }
 
 /**
@@ -681,6 +854,8 @@ ags_midi_add(GList *midi,
   {
     AgsTimestamp *timestamp_a, *timestamp_b;
 
+    guint64 offset_a, offset_b;
+
     g_object_get(a,
 		 "timestamp", &timestamp_a,
 		 NULL);
@@ -689,11 +864,17 @@ ags_midi_add(GList *midi,
 		 "timestamp", &timestamp_b,
 		 NULL);
     
-    if(ags_timestamp_get_ags_offset(timestamp_a) == ags_timestamp_get_ags_offset(timestamp_b)){
+    offset_a = ags_timestamp_get_ags_offset(timestamp_a);
+    offset_b = ags_timestamp_get_ags_offset(timestamp_b);
+
+    g_object_unref(timestamp_a);
+    g_object_unref(timestamp_b);
+    
+    if(offset_a == offset_b){
       return(0);
-    }else if(ags_timestamp_get_ags_offset(timestamp_a) < ags_timestamp_get_ags_offset(timestamp_b)){
+    }else if(offset_a < offset_b){
       return(-1);
-    }else if(ags_timestamp_get_ags_offset(timestamp_a) > ags_timestamp_get_ags_offset(timestamp_b)){
+    }else if(offset_a > offset_b){
       return(1);
     }
 

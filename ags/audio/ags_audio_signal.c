@@ -1497,7 +1497,9 @@ ags_audio_signal_get_property(GObject *gobject,
     pthread_mutex_lock(audio_signal_mutex);
 
     g_value_set_pointer(value,
-			g_list_copy(audio_signal->note));
+			g_list_copy_deep(audio_signal->note,
+					 (GCopyFunc) g_object_ref,
+					 NULL));
 
     pthread_mutex_unlock(audio_signal_mutex);
   }

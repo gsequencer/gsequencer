@@ -356,7 +356,8 @@ ags_generic_recall_channel_run_duplicate(AgsRecall *recall,
     list = list->next;
   }
 
-  g_list_free(list_start);
+  g_list_free_full(list_start,
+		   g_object_unref);
   
   return((AgsRecall *) copy_generic_recall_channel_run);
 }

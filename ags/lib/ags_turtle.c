@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -70,6 +70,7 @@ enum{
 
 static gpointer ags_turtle_parent_class = NULL;
 
+static pthread_mutex_t ags_turtle_class_mutex = PTHREAD_MUTEX_INITIALIZER;
 static pthread_mutex_t regex_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 GType
@@ -156,7 +157,23 @@ void
 ags_turtle_init(AgsTurtle *turtle)
 {
   turtle->flags = AGS_TURTLE_TOLOWER;
-  
+
+  /* add turtle mutex */
+  turtle->obj_mutexattr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
+  pthread_mutexattr_init(turtle->obj_mutexattr);
+  pthread_mutexattr_settype(turtle->obj_mutexattr,
+			    PTHREAD_MUTEX_RECURSIVE);
+
+#ifdef __linux__
+  pthread_mutexattr_setprotocol(turtle->obj_mutexattr,
+				PTHREAD_PRIO_INHERIT);
+#endif
+
+  turtle->obj_mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
+  pthread_mutex_init(turtle->obj_mutex,
+		     turtle->obj_mutexattr);  
+
+  /* fields */
   turtle->filename = NULL;
 
   turtle->doc = NULL;
@@ -170,7 +187,16 @@ ags_turtle_set_property(GObject *gobject,
 {
   AgsTurtle *turtle;
 
+  pthread_mutex_t *turtle_mutex;
+
   turtle = AGS_TURTLE(gobject);
+
+  /* get turtle mutex */
+  pthread_mutex_lock(ags_turtle_get_class_mutex());
+  
+  turtle_mutex = turtle->obj_mutex;
+  
+  pthread_mutex_unlock(ags_turtle_get_class_mutex());
 
   switch(prop_id){
   case PROP_FILENAME:
@@ -179,7 +205,11 @@ ags_turtle_set_property(GObject *gobject,
 
       filename = (gchar *) g_value_get_string(value);
 
+      pthread_mutex_lock(turtle_mutex);
+
       if(turtle->filename == filename){
+	pthread_mutex_unlock(turtle_mutex);
+
 	return;
       }
       
@@ -188,6 +218,8 @@ ags_turtle_set_property(GObject *gobject,
       }
 
       turtle->filename = g_strdup(filename);
+
+      pthread_mutex_unlock(turtle_mutex);
     }
     break;
   case PROP_XML_DOC:
@@ -195,8 +227,12 @@ ags_turtle_set_property(GObject *gobject,
       xmlDoc *doc;
 
       doc = (xmlDoc *) g_value_get_pointer(value);
+
+      pthread_mutex_lock(turtle_mutex);
       
       turtle->doc = doc;
+
+      pthread_mutex_unlock(turtle_mutex);
     }
     break;
   default:
@@ -213,17 +249,34 @@ ags_turtle_get_property(GObject *gobject,
 {
   AgsTurtle *turtle;
 
+  pthread_mutex_t *turtle_mutex;
+
   turtle = AGS_TURTLE(gobject);
+
+  /* get turtle mutex */
+  pthread_mutex_lock(ags_turtle_get_class_mutex());
+  
+  turtle_mutex = turtle->obj_mutex;
+  
+  pthread_mutex_unlock(ags_turtle_get_class_mutex());
 
   switch(prop_id){
   case PROP_FILENAME:
     {
+      pthread_mutex_lock(turtle_mutex);
+
       g_value_set_string(value, turtle->filename);
+
+      pthread_mutex_unlock(turtle_mutex);
     }
     break;
   case PROP_XML_DOC:
     {
+      pthread_mutex_lock(turtle_mutex);
+
       g_value_set_pointer(value, turtle->doc);
+
+      pthread_mutex_unlock(turtle_mutex);
     }
     break;
   default:
@@ -250,6 +303,21 @@ ags_turtle_finalize(GObject *gobject)
   
   /* call parent */
   G_OBJECT_CLASS(ags_turtle_parent_class)->finalize(gobject);
+}
+
+/**
+ * ags_turtle_get_class_mutex:
+ * 
+ * Use this function's returned mutex to access mutex fields.
+ *
+ * Returns: the class mutex
+ * 
+ * Since: 2.1.48
+ */
+pthread_mutex_t*
+ags_turtle_get_class_mutex()
+{
+  return(&ags_turtle_class_mutex);
 }
 
 /**
