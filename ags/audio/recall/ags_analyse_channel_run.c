@@ -126,6 +126,7 @@ void
 ags_analyse_channel_run_run_pre(AgsRecall *recall)
 {
   AgsPort *buffer_computed;
+
   AgsAnalyseChannel *analyse_channel;
   AgsAnalyseChannelRun *analyse_channel_run;
 
@@ -200,6 +201,8 @@ ags_analyse_channel_run_run_pre(AgsRecall *recall)
   
     pthread_mutex_unlock(buffer_mutex);
   }
+
+  g_object_unref(analyse_channel);
 }
 
 /**

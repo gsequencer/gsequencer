@@ -205,7 +205,8 @@ ags_buffer_audio_signal_run_init_pre(AgsRecall *recall)
   parent_recall_id = ags_recall_id_find_recycling_context(list,
 							  parent_recycling_context);
 
-  g_list_free(list_start);
+  g_list_free_full(list_start,
+		   g_object_unref);
   
   //TODO:JK: unclear
   attack = 0;
@@ -244,6 +245,20 @@ ags_buffer_audio_signal_run_init_pre(AgsRecall *recall)
 
   /* call parent */
   parent_class_run_init_pre(recall);
+
+  g_object_unref(output_soundcard);
+  
+  g_object_unref(buffer_recycling);
+
+  g_object_unref(buffer_channel_run);
+
+  g_object_unref(output);
+
+  g_object_unref(recycling);
+
+  g_object_unref(recall_id);
+
+  g_object_unref(recycling_context);
 }
 
 void
@@ -289,7 +304,6 @@ ags_buffer_audio_signal_run_inter(AgsRecall *recall)
 
   g_object_get(buffer_audio_signal,
 	       "source", &source,
-	       "destination", &destination,
 	       NULL);
 
   stream_source = source->stream_current;
@@ -297,8 +311,14 @@ ags_buffer_audio_signal_run_inter(AgsRecall *recall)
   if(stream_source == NULL){
     ags_recall_done(recall);
 
+    g_object_unref(source);
+    
     return;
   }
+
+  g_object_get(buffer_audio_signal,
+	       "destination", &destination,
+	       NULL);
 
   /* initialize some variables */
   g_object_get(recall,
@@ -326,7 +346,7 @@ ags_buffer_audio_signal_run_inter(AgsRecall *recall)
   g_value_unset(&value);
 
   if(is_muted){
-    return;
+    goto ags_buffer_audio_signal_run_inter_END;
   }
 
   stream_destination = destination->stream_current;
@@ -409,6 +429,19 @@ ags_buffer_audio_signal_run_inter(AgsRecall *recall)
       free(buffer_source);
     }
   }
+
+ags_buffer_audio_signal_run_inter_END:
+  /* unref */
+  g_object_unref(source);
+  g_object_unref(destination);
+
+  g_object_unref(buffer_recycling);  
+
+  g_object_unref(buffer_channel_run);  
+
+  g_object_unref(buffer_channel);  
+
+  g_object_unref(muted);  
 }
 
 /**

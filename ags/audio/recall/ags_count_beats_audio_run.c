@@ -965,6 +965,8 @@ ags_count_beats_audio_run_connect(AgsConnectable *connectable)
 
   ags_connectable_connect_connection(connectable,
 				     (GObject *) delay_audio_run);  
+
+  g_object_unref(delay_audio_run);
 }
 
 void
@@ -987,6 +989,8 @@ ags_count_beats_audio_run_disconnect(AgsConnectable *connectable)
 
   ags_connectable_disconnect_connection(connectable,
 					(GObject *) delay_audio_run);  
+
+  g_object_unref(delay_audio_run);
 }
 
 void
@@ -1025,6 +1029,8 @@ ags_count_beats_audio_run_connect_connection(AgsConnectable *connectable,
     g_signal_connect(G_OBJECT(count_beats_audio_run->delay_audio_run), "notation-count",
 		     G_CALLBACK(ags_count_beats_audio_run_notation_count_callback), count_beats_audio_run);
   }
+
+  g_object_unref(delay_audio_run);
 }
 
 void
@@ -1066,6 +1072,8 @@ ags_count_beats_audio_run_disconnect_connection(AgsConnectable *connectable,
 			count_beats_audio_run,
 			NULL);
   }
+
+  g_object_unref(delay_audio_run);
 }
 
 void
@@ -1229,6 +1237,10 @@ ags_count_beats_audio_run_seek(AgsSeekable *seekable,
     }
     break;
   }
+
+  g_object_unref(delay_audio_run);
+
+  g_object_unref(delay_audio);
 }
 
 guint64
@@ -1455,7 +1467,8 @@ ags_count_beats_audio_run_resolve_dependency(AgsRecall *recall)
     template = AGS_RECALL(list->data);
   }
 
-  g_list_free(list_start);
+  g_list_free_full(list_start,
+		   g_object_unref);
 
   /* check recall dependency */
   g_object_get(template,
@@ -1512,17 +1525,31 @@ ags_count_beats_audio_run_resolve_dependency(AgsRecall *recall)
 
       g_value_unset(&value);
 
+      /* unref */
+      g_object_unref(sequencer_duration);
+      
+      g_object_unref(delay_audio);
+      
       i++;
     }
 
+    g_object_unref(dependency);
+    
     list = list->next;
   }
-
-  g_list_free(list_start);
   
   g_object_set(G_OBJECT(recall),
 	       "delay-audio-run", delay_audio_run,
 	       NULL);
+
+  /* unref */
+  g_object_unref(recall_id);
+
+  g_object_unref(recall_container);
+  
+  g_list_free_full(list_start,
+		   g_object_unref);
+  
 }
 
 void
@@ -1673,6 +1700,14 @@ ags_count_beats_audio_run_done(AgsRecall *recall)
   ags_audio_done_recall(audio,
 			recall_id);
 
+  /* unref */
+  g_object_unref(audio);
+
+  g_object_unref(count_beats_audio);
+
+  g_object_unref(recall_id);
+
+  g_object_unref(delay_audio_run);
 }
 
 /**
@@ -1963,6 +1998,8 @@ ags_count_beats_audio_run_sequencer_alloc_output_callback(AgsDelayAudioRun *dela
 	       NULL);
   
   if(!ags_recall_id_check_sound_scope(recall_id, AGS_SOUND_SCOPE_SEQUENCER)){
+    g_object_unref(recall_id);
+    
     return;
   }
 
@@ -1984,6 +2021,8 @@ ags_count_beats_audio_run_sequencer_alloc_output_callback(AgsDelayAudioRun *dela
   do_loop = g_value_get_boolean(&loop_value);
   g_value_unset(&loop_value);
 
+  g_object_unref(sequencer_loop);
+  
   /* get recall mutex */
   pthread_mutex_lock(ags_recall_get_class_mutex());
 
@@ -2018,6 +2057,11 @@ ags_count_beats_audio_run_sequencer_alloc_output_callback(AgsDelayAudioRun *dela
 					      nth_run);
     }
   }
+
+  /* unref */
+  g_object_unref(recall_id);
+
+  g_object_unref(count_beats_audio);
 }
 
 void
@@ -2043,6 +2087,8 @@ ags_count_beats_audio_run_notation_alloc_output_callback(AgsDelayAudioRun *delay
 	       NULL);
   
   if(!ags_recall_id_check_sound_scope(recall_id, AGS_SOUND_SCOPE_NOTATION)){
+    g_object_unref(recall_id);
+
     return;
   }
 
@@ -2063,6 +2109,8 @@ ags_count_beats_audio_run_notation_alloc_output_callback(AgsDelayAudioRun *delay
 
   do_loop = g_value_get_boolean(&loop_value);
   g_value_unset(&loop_value);
+
+  g_object_unref(notation_loop);
 
   /* get recall mutex */
   pthread_mutex_lock(ags_recall_get_class_mutex());
@@ -2098,6 +2146,11 @@ ags_count_beats_audio_run_notation_alloc_output_callback(AgsDelayAudioRun *delay
 					      nth_run);
     }
   }
+
+  /* unref */
+  g_object_unref(recall_id);
+
+  g_object_unref(count_beats_audio);
 }
 
 void
@@ -2123,6 +2176,8 @@ ags_count_beats_audio_run_wave_alloc_output_callback(AgsDelayAudioRun *delay_aud
 	       NULL);
   
   if(!ags_recall_id_check_sound_scope(recall_id, AGS_SOUND_SCOPE_WAVE)){
+    g_object_unref(recall_id);
+
     return;
   }
 
@@ -2152,6 +2207,8 @@ ags_count_beats_audio_run_wave_alloc_output_callback(AgsDelayAudioRun *delay_aud
   do_loop = g_value_get_boolean(&loop_value);
   g_value_unset(&loop_value);
 
+  g_object_unref(wave_loop);
+
   /* get some fields */
   pthread_mutex_lock(recall_mutex);
 
@@ -2179,6 +2236,11 @@ ags_count_beats_audio_run_wave_alloc_output_callback(AgsDelayAudioRun *delay_aud
 					      nth_run);
     }
   }
+
+  /* unref */
+  g_object_unref(recall_id);
+
+  g_object_unref(count_beats_audio);
 }
 
 void
@@ -2204,6 +2266,8 @@ ags_count_beats_audio_run_midi_alloc_output_callback(AgsDelayAudioRun *delay_aud
 	       NULL);
   
   if(!ags_recall_id_check_sound_scope(recall_id, AGS_SOUND_SCOPE_MIDI)){
+    g_object_unref(recall_id);
+
     return;
   }
 
@@ -2224,6 +2288,8 @@ ags_count_beats_audio_run_midi_alloc_output_callback(AgsDelayAudioRun *delay_aud
 
   do_loop = g_value_get_boolean(&loop_value);
   g_value_unset(&loop_value);
+
+  g_object_unref(midi_loop);
 
   /* get recall mutex */
   pthread_mutex_lock(ags_recall_get_class_mutex());
@@ -2259,6 +2325,11 @@ ags_count_beats_audio_run_midi_alloc_output_callback(AgsDelayAudioRun *delay_aud
 					      nth_run);
     }
   }
+
+  /* unref */
+  g_object_unref(recall_id);
+
+  g_object_unref(count_beats_audio);
 }
 
 void
@@ -2295,6 +2366,8 @@ ags_count_beats_audio_run_sequencer_count_callback(AgsDelayAudioRun *delay_audio
 	       NULL);
 
   if(!ags_recall_id_check_sound_scope(recall_id, AGS_SOUND_SCOPE_SEQUENCER)){
+    g_object_unref(recall_id);
+
     return;
   }
 
@@ -2327,6 +2400,8 @@ ags_count_beats_audio_run_sequencer_count_callback(AgsDelayAudioRun *delay_audio
   do_loop = g_value_get_boolean(&loop_value);
   g_value_unset(&loop_value);
 
+  g_object_unref(sequencer_loop);
+  
   /* loop start */
   g_value_init(&loop_start_value,
 	       G_TYPE_UINT64);
@@ -2337,6 +2412,8 @@ ags_count_beats_audio_run_sequencer_count_callback(AgsDelayAudioRun *delay_audio
   loop_start = g_value_get_uint64(&loop_start_value);
   g_value_unset(&loop_start_value);
 
+  g_object_unref(sequencer_loop_start);
+
   /* loop end */
   g_value_init(&loop_end_value,
 	       G_TYPE_UINT64);
@@ -2346,6 +2423,8 @@ ags_count_beats_audio_run_sequencer_count_callback(AgsDelayAudioRun *delay_audio
 
   loop_end = g_value_get_uint64(&loop_end_value);
   g_value_unset(&loop_end_value);
+
+  g_object_unref(sequencer_loop_end);
   
   /* count */
   pthread_mutex_lock(recall_mutex);
@@ -2383,8 +2462,14 @@ ags_count_beats_audio_run_sequencer_count_callback(AgsDelayAudioRun *delay_audio
     /* emit done */
     ags_recall_done((AgsRecall *) count_beats_audio_run);
   }
-}
 
+  /* unref */
+  g_object_unref(recall_id);
+
+  g_object_unref(audio);
+
+  g_object_unref(count_beats_audio);
+}
 
 void
 ags_count_beats_audio_run_notation_count_callback(AgsDelayAudioRun *delay_audio_run,
@@ -2418,6 +2503,8 @@ ags_count_beats_audio_run_notation_count_callback(AgsDelayAudioRun *delay_audio_
 	       NULL);
 
   if(!ags_recall_id_check_sound_scope(recall_id, AGS_SOUND_SCOPE_NOTATION)){
+    g_object_unref(recall_id);
+
     return;
   }
 
@@ -2450,6 +2537,8 @@ ags_count_beats_audio_run_notation_count_callback(AgsDelayAudioRun *delay_audio_
   do_loop = g_value_get_boolean(&loop_value);
   g_value_unset(&loop_value);
 
+  g_object_unref(notation_loop);
+  
   /* loop start */
   g_value_init(&loop_start_value,
 	       G_TYPE_UINT64);
@@ -2460,6 +2549,8 @@ ags_count_beats_audio_run_notation_count_callback(AgsDelayAudioRun *delay_audio_
   loop_start = g_value_get_uint64(&loop_start_value);
   g_value_unset(&loop_start_value);
 
+  g_object_unref(notation_loop_start);
+  
   /* loop end */
   g_value_init(&loop_end_value,
 	       G_TYPE_UINT64);
@@ -2469,7 +2560,9 @@ ags_count_beats_audio_run_notation_count_callback(AgsDelayAudioRun *delay_audio_
 
   loop_end = g_value_get_uint64(&loop_end_value);
   g_value_unset(&loop_end_value);
-  
+
+  g_object_unref(notation_loop_end);
+    
   /* count */
   pthread_mutex_lock(recall_mutex);
 
@@ -2488,6 +2581,13 @@ ags_count_beats_audio_run_notation_count_callback(AgsDelayAudioRun *delay_audio_
   }
 
   pthread_mutex_unlock(recall_mutex);
+
+  /* unref */
+  g_object_unref(recall_id);
+
+  g_object_unref(audio);
+
+  g_object_unref(count_beats_audio);
 }
 
 void
@@ -2522,6 +2622,8 @@ ags_count_beats_audio_run_wave_count_callback(AgsDelayAudioRun *delay_audio_run,
 	       NULL);
 
   if(!ags_recall_id_check_sound_scope(recall_id, AGS_SOUND_SCOPE_WAVE)){
+    g_object_unref(recall_id);
+
     return;
   }
 
@@ -2554,6 +2656,8 @@ ags_count_beats_audio_run_wave_count_callback(AgsDelayAudioRun *delay_audio_run,
   do_loop = g_value_get_boolean(&loop_value);
   g_value_unset(&loop_value);
 
+  g_object_unref(wave_loop);
+  
   /* loop start */
   g_value_init(&loop_start_value,
 	       G_TYPE_UINT64);
@@ -2564,6 +2668,8 @@ ags_count_beats_audio_run_wave_count_callback(AgsDelayAudioRun *delay_audio_run,
   loop_start = g_value_get_uint64(&loop_start_value);
   g_value_unset(&loop_start_value);
 
+  g_object_unref(wave_loop_start);
+
   /* loop end */
   g_value_init(&loop_end_value,
 	       G_TYPE_UINT64);
@@ -2573,6 +2679,8 @@ ags_count_beats_audio_run_wave_count_callback(AgsDelayAudioRun *delay_audio_run,
 
   loop_end = g_value_get_uint64(&loop_end_value);
   g_value_unset(&loop_end_value);
+
+  g_object_unref(wave_loop_end);
 
   /* count */
   pthread_mutex_lock(recall_mutex);
@@ -2592,6 +2700,13 @@ ags_count_beats_audio_run_wave_count_callback(AgsDelayAudioRun *delay_audio_run,
   }
 
   pthread_mutex_unlock(recall_mutex);
+
+  /* unref */
+  g_object_unref(recall_id);
+
+  g_object_unref(audio);
+
+  g_object_unref(count_beats_audio);
 }
 
 void
@@ -2626,6 +2741,8 @@ ags_count_beats_audio_run_midi_count_callback(AgsDelayAudioRun *delay_audio_run,
 	       NULL);
 
   if(!ags_recall_id_check_sound_scope(recall_id, AGS_SOUND_SCOPE_MIDI)){
+    g_object_unref(recall_id);
+
     return;
   }
 
@@ -2658,6 +2775,8 @@ ags_count_beats_audio_run_midi_count_callback(AgsDelayAudioRun *delay_audio_run,
   do_loop = g_value_get_boolean(&loop_value);
   g_value_unset(&loop_value);
 
+  g_object_unref(midi_loop);
+
   /* loop start */
   g_value_init(&loop_start_value,
 	       G_TYPE_UINT64);
@@ -2668,6 +2787,8 @@ ags_count_beats_audio_run_midi_count_callback(AgsDelayAudioRun *delay_audio_run,
   loop_start = g_value_get_uint64(&loop_start_value);
   g_value_unset(&loop_start_value);
 
+  g_object_unref(midi_loop_start);
+
   /* loop end */
   g_value_init(&loop_end_value,
 	       G_TYPE_UINT64);
@@ -2677,6 +2798,8 @@ ags_count_beats_audio_run_midi_count_callback(AgsDelayAudioRun *delay_audio_run,
 
   loop_end = g_value_get_uint64(&loop_end_value);
   g_value_unset(&loop_end_value);
+
+  g_object_unref(midi_loop_end);
 
   /* count */
   pthread_mutex_lock(recall_mutex);
@@ -2696,6 +2819,13 @@ ags_count_beats_audio_run_midi_count_callback(AgsDelayAudioRun *delay_audio_run,
   }
 
   pthread_mutex_unlock(recall_mutex);
+
+  /* unref */
+  g_object_unref(recall_id);
+
+  g_object_unref(audio);
+
+  g_object_unref(count_beats_audio);
 }
 
 void
@@ -2740,6 +2870,8 @@ ags_count_beats_audio_run_write_resolve_dependency(AgsFileLookup *file_lookup,
   xmlNewProp(file_lookup->node,
 	     "xpath",
   	     g_strdup_printf("xpath=//*[@id='%s']", id));
+
+  g_object_unref(delay_audio_run);
 }
 
 gdouble

@@ -593,13 +593,11 @@ ags_copy_pattern_audio_run_resolve_dependency(AgsRecall *recall)
   AgsRecallID *parent_recall_id;
   AgsRecallID *recall_id;
   AgsRecyclingContext *parent_recycling_context;
-  AgsRecyclingContext *recycling_context;
-  
+  AgsRecyclingContext *recycling_context;  
   AgsRecallDependency *recall_dependency;
+  
   AgsDelayAudioRun *delay_audio_run;
   AgsCountBeatsAudioRun *count_beats_audio_run;
-
-  GObject *dependency;
   
   GList *list_start, *list;
   
@@ -618,11 +616,18 @@ ags_copy_pattern_audio_run_resolve_dependency(AgsRecall *recall)
   if(list == NULL){
     g_warning("AgsRecallClass::resolve - missing dependency");
 
+    g_object_unref(recall_container);
+    
+    g_list_free_full(list_start,
+		     g_object_unref);
+    
     return;
   }
 
   template = AGS_RECALL(list->data);
-  g_list_free(list_start);
+
+  g_list_free_full(list_start,
+		   g_object_unref);
   
   g_object_get(template,
 	       "recall-dependency", &list_start,
@@ -653,6 +658,8 @@ ags_copy_pattern_audio_run_resolve_dependency(AgsRecall *recall)
   i_stop = 2;
 
   for(i = 0; i < i_stop && list != NULL;){
+    GObject *dependency;
+    
     recall_dependency = AGS_RECALL_DEPENDENCY(list->data);
 
     g_object_get(recall_dependency,
@@ -671,15 +678,27 @@ ags_copy_pattern_audio_run_resolve_dependency(AgsRecall *recall)
       i++;
     }
 
+    g_object_unref(dependency);
+    
     list = list->next;
   }
 
-  g_list_free(list_start);
-  
   g_object_set(G_OBJECT(recall),
 	       "delay-audio-run", delay_audio_run,
 	       "count-beats-audio-run", count_beats_audio_run,
 	       NULL);
+  
+  g_object_unref(recall_container);
+
+  g_list_free_full(list_start,
+		   g_object_unref);
+
+  g_object_unref(recall_id);
+
+  g_object_unref(recycling_context);
+  g_object_unref(parent_recycling_context);
+
+  g_object_unref(parent_recall_id);  
 }
 
 void
@@ -721,7 +740,6 @@ ags_copy_pattern_audio_run_notify_dependency(AgsRecall *recall,
   default:
     g_message("ags_copy_pattern_audio_run.c - ags_copy_pattern_audio_run_notify: unknown notify");
   }
-
 
   pthread_mutex_unlock(recall_mutex);
 }

@@ -555,6 +555,8 @@ ags_copy_pattern_audio_new(AgsAudio *audio,
   ags_port_safe_write(port,
 		      value);
 
+  g_object_unref(port);
+  
   g_object_get(copy_pattern_audio,
 	       "bank-index-1" , &port,
 	       NULL);
@@ -563,6 +565,8 @@ ags_copy_pattern_audio_new(AgsAudio *audio,
   g_value_set_float(value, bank_index_1);
   ags_port_safe_write(copy_pattern_audio->bank_index_1,
 		      value);
+
+  g_object_unref(port);
 
   g_value_unset(value);
   g_free(value);

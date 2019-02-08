@@ -340,6 +340,8 @@ ags_capture_wave_channel_run_seek(AgsSeekable *seekable,
     }
     break;
   }
+
+  g_object_unref(soundcard);
 }
 
 void
@@ -351,6 +353,7 @@ ags_capture_wave_channel_run_run_pre(AgsRecall *recall)
   AgsPort *port;
   AgsWave *wave;
   AgsBuffer *buffer;
+
   AgsCaptureWaveAudio *capture_wave_audio;
   AgsCaptureWaveAudioRun *capture_wave_audio_run;
   AgsCaptureWaveChannel *capture_wave_channel;
@@ -443,6 +446,7 @@ ags_capture_wave_channel_run_run_pre(AgsRecall *recall)
 	       "input", &input,
 	       "buffer-size", &target_buffer_size,
 	       NULL);
+  g_object_unref(input);
   
   /* get soundcard */
   input = ags_channel_nth(input,
@@ -454,6 +458,20 @@ ags_capture_wave_channel_run_run_pre(AgsRecall *recall)
 	       NULL);
   
   if(input_soundcard == NULL){
+    /* call parent */
+    parent_class_run_pre(recall);
+
+    /* unref */
+    g_object_unref(capture_wave_audio);
+
+    g_object_unref(capture_wave_audio_run);
+
+    g_object_unref(capture_wave_channel);
+
+    g_object_unref(channel);
+
+    g_object_unref(audio);
+    
     return;
   }
 
@@ -485,6 +503,8 @@ ags_capture_wave_channel_run_run_pre(AgsRecall *recall)
 
   do_playback = g_value_get_boolean(&value);
   g_value_unset(&value);
+
+  g_object_unref(port);
   
   if(do_playback){
     /* read replace */
@@ -499,6 +519,8 @@ ags_capture_wave_channel_run_run_pre(AgsRecall *recall)
 
     do_replace = g_value_get_boolean(&value);
     g_value_unset(&value);
+    
+    g_object_unref(port);
     
     /* get target presets */
     pthread_mutex_lock(audio_mutex);
@@ -565,6 +587,8 @@ ags_capture_wave_channel_run_run_pre(AgsRecall *recall)
       
       ags_audio_add_wave(audio,
 			 (GObject *) wave);
+
+      g_object_unref(current_timestamp);
     }
 
     x_point_offset = x_offset - attack;
@@ -679,6 +703,8 @@ ags_capture_wave_channel_run_run_pre(AgsRecall *recall)
 
 	ags_audio_add_wave(audio,
 			   (GObject *) wave);
+
+	g_object_unref(current_timestamp);
       }
     }
 
@@ -750,6 +776,8 @@ ags_capture_wave_channel_run_run_pre(AgsRecall *recall)
 
   do_record = g_value_get_boolean(&value);
   g_value_unset(&value);
+
+  g_object_unref(port);
   
   if(do_record){
     AgsAudioFile *audio_file;
@@ -820,6 +848,8 @@ ags_capture_wave_channel_run_run_pre(AgsRecall *recall)
 
   do_loop = g_value_get_boolean(&do_loop_value);
 
+  g_object_unref(port);
+  
   if(do_loop){
     guint64 loop_start, loop_end;
     
@@ -837,6 +867,8 @@ ags_capture_wave_channel_run_run_pre(AgsRecall *recall)
 		       &loop_end_value);
 
     loop_end = g_value_get_uint64(&loop_end_value);
+
+    g_object_unref(port);
     
     if(x_offset / buffer_size / delay >= loop_end){
       g_object_get(capture_wave_audio,
@@ -848,9 +880,11 @@ ags_capture_wave_channel_run_run_pre(AgsRecall *recall)
 
       ags_port_safe_read(port,
 			 &loop_start_value);
-      
+
       loop_start = g_value_get_uint64(&loop_start_value);
 
+      g_object_unref(port);
+      
       x_offset = (relative_offset * floor((delay * buffer_size * loop_start) / relative_offset)) + ((guint64) (delay * buffer_size * loop_start) % relative_offset);
     }
   }
@@ -871,8 +905,24 @@ ags_capture_wave_channel_run_run_pre(AgsRecall *recall)
   ags_port_safe_write(port,
 		      &x_offset_value);
   
+  g_object_unref(port);
+      
   /* call parent */
   parent_class_run_pre(recall);
+
+  /* unref */
+  g_object_unref(capture_wave_audio);
+
+  g_object_unref(capture_wave_audio_run);
+
+  g_object_unref(capture_wave_channel);
+
+  g_object_unref(channel);
+
+  g_object_unref(audio);
+
+  g_object_unref(output_soundcard);
+  g_object_unref(input_soundcard);
 }
 
 /**

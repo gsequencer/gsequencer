@@ -138,6 +138,7 @@ ags_copy_audio_signal_run_init_pre(AgsRecall *recall)
   AgsRecallID *recall_id;
   AgsRecyclingContext *parent_recycling_context;
   AgsRecyclingContext *recycling_context;
+
   AgsCopyChannelRun *copy_channel_run;
   AgsCopyRecycling *copy_recycling;
   AgsCopyAudioSignal *copy_audio_signal;
@@ -208,7 +209,8 @@ ags_copy_audio_signal_run_init_pre(AgsRecall *recall)
   parent_recall_id = ags_recall_id_find_recycling_context(list_start,
 							  parent_recycling_context);
 
-  g_list_free(list_start);
+  g_list_free_full(list_start,
+		   g_object_unref);
   
   //TODO:JK: unclear
   attack = 0;
@@ -243,12 +245,30 @@ ags_copy_audio_signal_run_init_pre(AgsRecall *recall)
   
   /* call parent */
   parent_class_run_init_pre(recall);
+
+  /* unref */
+  g_object_unref(copy_recycling);
+
+  g_object_unref(output_soundcard);
+
+  g_object_unref(recall_id);
+
+  g_object_unref(copy_channel_run);
+
+  g_object_unref(destination_channel);
+
+  g_object_unref(destination_recycling);
+
+  g_object_unref(recycling_context);
+
+  g_object_unref(parent_recycling_context);
 }
 
 void
 ags_copy_audio_signal_run_pre(AgsRecall *recall)
 {
-  AgsAudioSignal *destination, *source;
+  AgsAudioSignal *source;
+
   AgsCopyAudioSignal *copy_audio_signal;
   
   void *buffer;
@@ -279,6 +299,8 @@ ags_copy_audio_signal_run_pre(AgsRecall *recall)
 	       NULL);
   
   if(source->stream != NULL){
+    AgsAudioSignal *destination;
+    
     g_object_get(recall,
 		 "destination", &destination,
 		 NULL);
@@ -293,6 +315,8 @@ ags_copy_audio_signal_run_pre(AgsRecall *recall)
     ags_audio_buffer_util_clear_buffer(buffer, 1,
 				       buffer_size, ags_audio_buffer_util_format_from_soundcard(format));
   }
+
+  g_object_unref(source);
 }
 
 void
@@ -367,10 +391,18 @@ ags_copy_audio_signal_run_inter(AgsRecall *recall)
   if(ags_recall_global_get_rt_safe() &&
      parent_recycling_context != NULL &&
      note_start == NULL){
+    g_object_unref(source);
+
+    g_object_unref(recall_id);
+
+    g_object_unref(recycling_context);
+    g_object_unref(parent_recycling_context);
+    
     return;
   }
 
-  g_list_free(note_start);
+  g_list_free_full(note_start,
+		   g_object_unref);
 
   /* get destination */
   g_object_get(recall,
@@ -395,6 +427,8 @@ ags_copy_audio_signal_run_inter(AgsRecall *recall)
       
       g_object_run_dispose((GObject *) destination);
       g_object_unref((GObject *) destination);
+
+      g_object_unref(destination_recycling);
     }
 
     ags_recall_done(recall);
@@ -402,6 +436,16 @@ ags_copy_audio_signal_run_inter(AgsRecall *recall)
     ags_recycling_remove_audio_signal(source_recycling,
 				      source);
     g_object_unref(source);
+
+    g_object_unref(source_recycling);
+
+    /* unref */
+    g_object_unref(source);
+
+    g_object_unref(recall_id);
+
+    g_object_unref(recycling_context);
+    g_object_unref(parent_recycling_context);
     
     return;
   }
@@ -409,6 +453,14 @@ ags_copy_audio_signal_run_inter(AgsRecall *recall)
   if(destination == NULL){
     g_warning("no destination");
     
+    /* unref */
+    g_object_unref(source);
+
+    g_object_unref(recall_id);
+
+    g_object_unref(recycling_context);
+    g_object_unref(parent_recycling_context);
+
     return;
   }
 
@@ -437,8 +489,10 @@ ags_copy_audio_signal_run_inter(AgsRecall *recall)
   is_muted = (g_value_get_float(&value) == 0.0) ? TRUE: FALSE;  
   g_value_unset(&value);
 
+  g_object_unref(port);
+  
   if(is_muted){
-    return;
+    goto ags_copy_audio_signal_run_inter_END;
   }
 
   stream_destination = destination->stream;
@@ -517,6 +571,17 @@ ags_copy_audio_signal_run_inter(AgsRecall *recall)
   if(resample){
     free(buffer_source);
   }
+
+ags_copy_audio_signal_run_inter_END:
+  /* unref */
+  g_object_unref(source);
+
+  g_object_unref(recall_id);
+
+  g_object_unref(recycling_context);
+  g_object_unref(parent_recycling_context);
+
+  g_object_unref(destination);
 }
 
 /**

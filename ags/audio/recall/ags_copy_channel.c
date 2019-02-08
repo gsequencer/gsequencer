@@ -359,6 +359,8 @@ ags_copy_channel_set_muted(AgsMutable *mutable, gboolean muted)
 
   ags_port_safe_write(port,
 		      &value);
+
+  g_object_unref(port);
 }
 
 /**

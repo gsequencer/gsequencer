@@ -237,7 +237,6 @@ ags_copy_pattern_channel_run_notify_recall_audio_run(GObject *gobject,
 {
   AgsCopyPatternAudioRun *copy_pattern_audio_run;
   AgsCopyPatternChannelRun *copy_pattern_channel_run;
-  AgsDelayAudioRun *delay_audio_run;
 
   copy_pattern_channel_run = AGS_COPY_PATTERN_CHANNEL_RUN(gobject);
 
@@ -246,6 +245,8 @@ ags_copy_pattern_channel_run_notify_recall_audio_run(GObject *gobject,
 	       NULL);
 
   if(copy_pattern_audio_run != NULL){
+    AgsDelayAudioRun *delay_audio_run;
+    
     //    g_object_disconnect(copy_pattern_audio_run,
     //			"any_signal::notify::delay-audio-run",
     //			G_CALLBACK(ags_copy_pattern_channel_run_notify_delay_audio_run),
@@ -266,8 +267,12 @@ ags_copy_pattern_channel_run_notify_recall_audio_run(GObject *gobject,
     if(delay_audio_run != NULL &&
        ags_connectable_is_connected(AGS_CONNECTABLE(copy_pattern_channel_run))){
       ags_copy_pattern_channel_run_disconnect_connection(AGS_CONNECTABLE(copy_pattern_channel_run), (GObject *) delay_audio_run);
+
+      g_object_unref(delay_audio_run);
     }
   }
+
+  g_object_unref(copy_pattern_audio_run);
 }
 
 void
@@ -277,7 +282,6 @@ ags_copy_pattern_channel_run_notify_recall_audio_run_after(GObject *gobject,
 {
   AgsCopyPatternAudioRun *copy_pattern_audio_run;
   AgsCopyPatternChannelRun *copy_pattern_channel_run;
-  AgsDelayAudioRun *delay_audio_run;
 
   copy_pattern_channel_run = AGS_COPY_PATTERN_CHANNEL_RUN(gobject);
   
@@ -286,6 +290,8 @@ ags_copy_pattern_channel_run_notify_recall_audio_run_after(GObject *gobject,
 	       NULL);
 
   if(copy_pattern_audio_run != NULL){
+    AgsDelayAudioRun *delay_audio_run;
+    
     //    g_signal_connect(copy_pattern_audio_run, "notify::delay-audio-run",
     //		     G_CALLBACK(ags_copy_pattern_channel_run_notify_delay_audio_run), copy_pattern_channel_run);
   
@@ -301,7 +307,11 @@ ags_copy_pattern_channel_run_notify_recall_audio_run_after(GObject *gobject,
        ags_connectable_is_connected(AGS_CONNECTABLE(copy_pattern_channel_run))){
       ags_copy_pattern_channel_run_connect_connection(AGS_CONNECTABLE(copy_pattern_channel_run), (GObject *) delay_audio_run);
     }
+    
+    g_object_unref(delay_audio_run);
   }
+
+  g_object_unref(copy_pattern_audio_run);
 }
 
 void
@@ -322,6 +332,8 @@ ags_copy_pattern_channel_run_notify_delay_audio_run(GObject *gobject,
      ags_connectable_is_connected(AGS_CONNECTABLE(copy_pattern_channel_run))){
     ags_connectable_disconnect_connection(AGS_CONNECTABLE(copy_pattern_channel_run), (GObject *) delay_audio_run);
   }
+
+  g_object_unref(delay_audio_run);
 }
 
 void
@@ -342,6 +354,8 @@ ags_copy_pattern_channel_run_notify_delay_audio_run_after(GObject *gobject,
      ags_connectable_is_connected(AGS_CONNECTABLE(copy_pattern_channel_run))){
     ags_connectable_connect_connection(AGS_CONNECTABLE(copy_pattern_channel_run), (GObject *) delay_audio_run);
   }
+
+  g_object_unref(delay_audio_run);
 }
 
 void
@@ -349,7 +363,6 @@ ags_copy_pattern_channel_run_connect(AgsConnectable *connectable)
 {
   AgsCopyPatternAudioRun *copy_pattern_audio_run;
   AgsCopyPatternChannelRun *copy_pattern_channel_run;
-  AgsDelayAudioRun *delay_audio_run;
   
   pthread_mutex_t *recall_mutex;
 
@@ -374,13 +387,19 @@ ags_copy_pattern_channel_run_connect(AgsConnectable *connectable)
 	       NULL);
 
   if(copy_pattern_audio_run != NULL){
+    AgsDelayAudioRun *delay_audio_run;
+    
     g_object_get(copy_pattern_audio_run,
 		 "delay-audio-run", &delay_audio_run,
 		 NULL);
     
     if(delay_audio_run != NULL){
       ags_connectable_connect_connection(connectable, (GObject *) delay_audio_run);
+
+      g_object_unref(delay_audio_run);
     }
+
+    g_object_unref(copy_pattern_audio_run);
   }
 }
 
@@ -389,7 +408,6 @@ ags_copy_pattern_channel_run_disconnect(AgsConnectable *connectable)
 {
   AgsCopyPatternAudioRun *copy_pattern_audio_run;
   AgsCopyPatternChannelRun *copy_pattern_channel_run;
-  AgsDelayAudioRun *delay_audio_run;
   
   pthread_mutex_t *recall_mutex;
 
@@ -414,13 +432,19 @@ ags_copy_pattern_channel_run_disconnect(AgsConnectable *connectable)
 	       NULL);
 
   if(copy_pattern_audio_run != NULL){
+    AgsDelayAudioRun *delay_audio_run;
+    
     g_object_get(copy_pattern_audio_run,
 		 "delay-audio-run", &delay_audio_run,
 		 NULL);
 
     if(delay_audio_run != NULL){
       ags_connectable_disconnect_connection(connectable, (GObject *) delay_audio_run);
+
+      g_object_unref(delay_audio_run);
     }
+
+    g_object_unref(copy_pattern_audio_run);
   }
 }
 
@@ -429,7 +453,6 @@ ags_copy_pattern_channel_run_connect_connection(AgsConnectable *connectable, GOb
 {
   AgsCopyPatternAudioRun *copy_pattern_audio_run;
   AgsCopyPatternChannelRun *copy_pattern_channel_run;
-  AgsDelayAudioRun *delay_audio_run;
 
   copy_pattern_channel_run = AGS_COPY_PATTERN_CHANNEL_RUN(connectable);
   
@@ -438,6 +461,8 @@ ags_copy_pattern_channel_run_connect_connection(AgsConnectable *connectable, GOb
 	       NULL);
 
   if(copy_pattern_audio_run != NULL){
+    AgsDelayAudioRun *delay_audio_run;
+    
     g_object_get(copy_pattern_audio_run,
 		 "delay-audio-run", &delay_audio_run,
 		 NULL);
@@ -446,6 +471,9 @@ ags_copy_pattern_channel_run_connect_connection(AgsConnectable *connectable, GOb
       g_signal_connect(G_OBJECT(delay_audio_run), "sequencer-alloc-input",
 		       G_CALLBACK(ags_copy_pattern_channel_run_sequencer_alloc_callback), copy_pattern_channel_run);
     }
+
+    g_object_unref(delay_audio_run);
+    g_object_unref(copy_pattern_audio_run);
   }
 }
 
@@ -454,7 +482,6 @@ ags_copy_pattern_channel_run_disconnect_connection(AgsConnectable *connectable, 
 {
   AgsCopyPatternAudioRun *copy_pattern_audio_run;
   AgsCopyPatternChannelRun *copy_pattern_channel_run;
-  AgsDelayAudioRun *delay_audio_run;
 
   copy_pattern_channel_run = AGS_COPY_PATTERN_CHANNEL_RUN(connectable);
   
@@ -463,6 +490,8 @@ ags_copy_pattern_channel_run_disconnect_connection(AgsConnectable *connectable, 
 	       NULL);
 
   if(copy_pattern_audio_run != NULL){
+    AgsDelayAudioRun *delay_audio_run;
+    
     g_object_get(copy_pattern_audio_run,
 		 "delay-audio-run", &delay_audio_run,
 		 NULL);
@@ -474,6 +503,9 @@ ags_copy_pattern_channel_run_disconnect_connection(AgsConnectable *connectable, 
 			  copy_pattern_channel_run,
 			  NULL);
     }
+
+    g_object_unref(delay_audio_run);
+    g_object_unref(copy_pattern_audio_run);
   }
 }
 
@@ -530,6 +562,8 @@ ags_copy_pattern_channel_run_run_init_pre(AgsRecall *recall)
   pattern = g_value_get_pointer(&pattern_value);
 
   g_value_unset(&pattern_value);
+
+  g_object_unref(port);
   
   /* add note */
   g_object_get(source,
@@ -564,6 +598,11 @@ ags_copy_pattern_channel_run_run_init_pre(AgsRecall *recall)
   }
 
   copy_pattern_channel_run->note = g_list_reverse(copy_pattern_channel_run->note);
+
+  /* unref */
+  g_object_unref(source);
+  
+  g_object_unref(copy_pattern_channel);
 }
 
 void
@@ -613,6 +652,11 @@ ags_copy_pattern_channel_run_done(AgsRecall *recall)
 
   /* call parent */
   parent_class_done(recall);
+
+  /* unref */
+  g_object_unref(copy_pattern_audio_run);
+
+  g_object_unref(count_beats_audio_run);
 }
 
 void
@@ -662,6 +706,8 @@ ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *delay_au
   g_value_init(&i_value, G_TYPE_FLOAT);
   ags_port_safe_read(port, &i_value);
 
+  g_object_unref(port);
+  
   /* get bank index 1 */
   g_object_get(copy_pattern_audio,
 	       "bank-index-1", &port,
@@ -669,6 +715,8 @@ ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *delay_au
 
   g_value_init(&j_value, G_TYPE_FLOAT);
   ags_port_safe_read(port, &j_value);
+
+  g_object_unref(port);
 
   /* get AgsPattern */
   g_object_get(copy_pattern_channel,
@@ -680,6 +728,8 @@ ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *delay_au
 		     &pattern_value);
 
   pattern = g_value_get_pointer(&pattern_value);
+
+  g_object_unref(port);
 
   /* get pattern mutex */
   pthread_mutex_lock(ags_pattern_get_class_mutex());
@@ -757,12 +807,17 @@ ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *delay_au
 		 "audio-channel", &audio_channel,
 		 NULL);
 
+    g_object_unref(recycling);
+
     end_recycling = NULL;
     
     if(last_recycling != NULL){
       g_object_get(last_recycling,
 		   "next", &end_recycling,
 		   NULL);
+      
+      g_object_unref(end_recycling);
+      g_object_unref(last_recycling);
     }
 
     /* find preset scope envelope */
@@ -803,7 +858,8 @@ ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *delay_au
       preset = preset->next;
     }
 
-    g_list_free(preset_start);
+    g_list_free_full(preset_start,
+		     g_object_unref);
 
     note = g_list_nth_data(copy_pattern_channel_run->note,
 			   sequencer_counter);
@@ -951,7 +1007,8 @@ ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *delay_au
 			 NULL);
 	  }
 
-	  g_list_free(list_start);
+	  g_list_free_full(list_start,
+			   g_object_unref);
 	  
 	  g_object_set(note,
 		       "rt-offset", 0,
@@ -973,13 +1030,25 @@ ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *delay_au
 	g_object_get(recycling,
 		     "next", &recycling,
 		     NULL);
+	g_object_unref(recycling);
       }
     }
+    
+    /* unref */
+    g_object_unref(audio);
+    g_object_unref(source);
+
+    g_object_unref(output_soundcard);
+
+    g_object_unref(link);
   }
-  
-      //      g_message("%u\n", copy_pattern->shared_audio_run->bit);
-      //      copy_pattern->shared_audio_run->bit++;
-  //  }
+
+  /* unref */
+  g_object_unref(copy_pattern_audio);
+  g_object_unref(copy_pattern_audio_run);
+  g_object_unref(copy_pattern_channel);
+
+  g_object_unref(count_beats_audio_run);
 }
 
 /**

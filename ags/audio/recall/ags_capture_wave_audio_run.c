@@ -201,6 +201,7 @@ ags_capture_wave_audio_run_run_init_pre(AgsRecall *recall)
 {
   AgsAudio *audio;
   AgsPort *port;
+
   AgsCaptureWaveAudio *capture_wave_audio;
   AgsCaptureWaveAudioRun *capture_wave_audio_run;
 
@@ -254,6 +255,8 @@ ags_capture_wave_audio_run_run_init_pre(AgsRecall *recall)
   do_record = g_value_get_boolean(&value);
   g_value_unset(&value);
 
+  g_object_unref(port);
+  
   filename = NULL;
 
   if(do_record){
@@ -262,18 +265,15 @@ ags_capture_wave_audio_run_run_init_pre(AgsRecall *recall)
 		 "filename", &port,
 		 NULL);
 
-    pthread_mutex_lock(ags_port_get_class_mutex());
+    g_value_init(&value,
+		 G_TYPE_STRING);
+    ags_port_safe_read(port,
+		       &value);
 
-    port_mutex = port->obj_mutex;
-    
-    pthread_mutex_unlock(ags_port_get_class_mutex());
+    filename = g_value_get_string(&value);
+    g_value_unset(&value);
 
-    /* get filename */
-    pthread_mutex_lock(port_mutex);
-
-    filename = g_strdup(port->port_value.ags_port_pointer);
-    
-    pthread_mutex_unlock(port_mutex);
+    g_object_unref(port);
 
     /* read audio channels */
     g_object_get(capture_wave_audio,
@@ -287,6 +287,8 @@ ags_capture_wave_audio_run_run_init_pre(AgsRecall *recall)
 
     file_audio_channels = g_value_get_uint(&value);
     g_value_unset(&value);
+
+    g_object_unref(port);
     
     /* read samplerate */
     g_object_get(capture_wave_audio,
@@ -301,6 +303,8 @@ ags_capture_wave_audio_run_run_init_pre(AgsRecall *recall)
     file_samplerate = g_value_get_uint(&value);
     g_value_unset(&value);
 
+    g_object_unref(port);
+
     /* read buffer size */
     g_object_get(capture_wave_audio,
 		 "file-buffer-size", &port,
@@ -313,6 +317,8 @@ ags_capture_wave_audio_run_run_init_pre(AgsRecall *recall)
 
     file_buffer_size = g_value_get_uint(&value);
     g_value_unset(&value);
+
+    g_object_unref(port);
 
     /* read format */
     g_object_get(capture_wave_audio,
@@ -327,6 +333,8 @@ ags_capture_wave_audio_run_run_init_pre(AgsRecall *recall)
     file_format = g_value_get_uint(&value);
     g_value_unset(&value);
 
+    g_object_unref(port);
+
     /* file buffer */
     capture_wave_audio_run->file_buffer = ags_stream_alloc(file_audio_channels * file_buffer_size,
 							   file_format);
@@ -336,35 +344,38 @@ ags_capture_wave_audio_run_run_init_pre(AgsRecall *recall)
 		 "input-soundcard", &input_soundcard,
 		 NULL);
 
-    if(input_soundcard == NULL){
-      return;
-    }
+    if(input_soundcard != NULL){
+      pthread_mutex_lock(capture_wave_audio->audio_file_mutex);
 
-    pthread_mutex_lock(capture_wave_audio->audio_file_mutex);
-
-    if(capture_wave_audio->audio_file == NULL){
-      capture_wave_audio->audio_file = ags_audio_file_new(filename,
-							      input_soundcard,
-							      -1);
-      g_object_set(capture_wave_audio->audio_file,
-		   "file-audio-channels", file_audio_channels,
-		   "file-samplerate", file_samplerate,
-		   "samplerate", file_samplerate,
-		   "buffer-size", file_buffer_size,
-		   "format", file_format,
-		   NULL);
+      if(capture_wave_audio->audio_file == NULL){
+	capture_wave_audio->audio_file = ags_audio_file_new(filename,
+							    input_soundcard,
+							    -1);
+	g_object_set(capture_wave_audio->audio_file,
+		     "file-audio-channels", file_audio_channels,
+		     "file-samplerate", file_samplerate,
+		     "samplerate", file_samplerate,
+		     "buffer-size", file_buffer_size,
+		     "format", file_format,
+		     NULL);
     
-      ags_audio_file_rw_open(capture_wave_audio->audio_file,
-			     TRUE);
+	ags_audio_file_rw_open(capture_wave_audio->audio_file,
+			       TRUE);
+      }
+
+      pthread_mutex_unlock(capture_wave_audio->audio_file_mutex);
     }
-
-    pthread_mutex_unlock(capture_wave_audio->audio_file_mutex);
-
-    g_free(filename);
   }
   
   /* call parent */
   parent_class_run_init_pre(recall);
+
+  /* unref */
+  g_object_unref(capture_wave_audio);
+  
+  g_object_unref(audio);
+
+  g_free(filename);
 }
 
 void
@@ -372,6 +383,7 @@ ags_capture_wave_audio_run_done(AgsRecall *recall)
 {
   AgsPort *port;
   AgsAudioFile *audio_file;
+
   AgsCaptureWaveAudio *capture_wave_audio;
   AgsCaptureWaveAudioRun *capture_wave_audio_run;
 
@@ -410,6 +422,8 @@ ags_capture_wave_audio_run_done(AgsRecall *recall)
 
   do_record = g_value_get_boolean(&value);
   g_value_unset(&value);
+
+  g_object_unref(port);
   
   if(do_record){
     pthread_mutex_lock(capture_wave_audio->audio_file_mutex);
@@ -426,6 +440,9 @@ ags_capture_wave_audio_run_done(AgsRecall *recall)
   
   /* call parent */
   parent_class_done(recall);
+
+  /* unref */
+  g_object_unref(capture_wave_audio);
 }
 
 /**

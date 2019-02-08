@@ -116,15 +116,9 @@ void
 ags_analyse_audio_signal_run_inter(AgsRecall *recall)
 {
   AgsAudioSignal *source;
-  AgsAnalyseChannel *analyse_channel;
-  AgsAnalyseChannelRun *analyse_channel_run;
-  AgsAnalyseRecycling *analyse_recycling;
+
   AgsAnalyseAudioSignal *analyse_audio_signal;
 
-  guint samplerate;
-  guint buffer_size;
-  guint format;
-  
   void (*parent_class_run_inter)(AgsRecall *recall);
   
   pthread_mutex_t *recall_mutex;
@@ -149,6 +143,14 @@ ags_analyse_audio_signal_run_inter(AgsRecall *recall)
 	       NULL);
   
   if(source->stream_current != NULL){
+    AgsAnalyseChannel *analyse_channel;
+    AgsAnalyseChannelRun *analyse_channel_run;
+    AgsAnalyseRecycling *analyse_recycling;
+
+    guint samplerate;
+    guint buffer_size;
+    guint format;
+  
     g_object_get(analyse_audio_signal,
 		 "parent", &analyse_recycling,
 		 NULL);
@@ -172,9 +174,17 @@ ags_analyse_audio_signal_run_inter(AgsRecall *recall)
 				   samplerate,
 				   buffer_size,
 				   format);
+
+    g_object_unref(analyse_recycling);
+
+    g_object_unref(analyse_channel);
+
+    g_object_unref(analyse_channel_run);
   }else{
     ags_recall_done(recall);
   }
+
+  g_object_unref(source);
 }
 
 /**

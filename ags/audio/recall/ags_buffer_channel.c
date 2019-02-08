@@ -366,6 +366,8 @@ ags_buffer_channel_set_muted(AgsMutable *mutable, gboolean is_muted)
   g_value_set_float(&value, (float) is_muted);
 
   ags_port_safe_write(muted, &value);
+
+  g_object_unref(muted);
 }
 
 static AgsPluginPort*

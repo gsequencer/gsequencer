@@ -574,6 +574,8 @@ ags_delay_audio_run_run_pre(AgsRecall *recall)
 
     g_value_unset(&value);
 
+    g_object_unref(sequencer_delay);
+    
     /* counter */
     pthread_mutex_lock(recall_mutex);
     
@@ -640,6 +642,8 @@ ags_delay_audio_run_run_pre(AgsRecall *recall)
     current_delay = g_value_get_double(&value);
 
     g_value_unset(&value);
+
+    g_object_unref(notation_delay);
 
     /* counter */
     pthread_mutex_lock(recall_mutex);
@@ -708,6 +712,8 @@ ags_delay_audio_run_run_pre(AgsRecall *recall)
 
     g_value_unset(&value);
 
+    g_object_unref(wave_delay);
+
     /* counter */
     pthread_mutex_lock(recall_mutex);
     
@@ -775,6 +781,8 @@ ags_delay_audio_run_run_pre(AgsRecall *recall)
 
     g_value_unset(&value);
 
+    g_object_unref(midi_delay);
+
     /* counter */
     pthread_mutex_lock(recall_mutex);
     
@@ -818,6 +826,12 @@ ags_delay_audio_run_run_pre(AgsRecall *recall)
 				     delay, attack);
     }
   }
+
+  g_object_unref(output_soundcard);
+
+  g_object_unref(recall_id);
+
+  g_object_unref(delay_audio);
 }
 
 AgsRecall*

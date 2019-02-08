@@ -1356,6 +1356,21 @@ ags_count_beats_audio_notify_output_soundcard_callback(GObject *gobject,
 		      &loop_start_value);
   ags_port_safe_write(midi_loop_end,
 		      &loop_end_value);
+
+  /* unref */
+  g_object_unref(output_soundcard);
+
+  g_object_unref(notation_loop);
+  g_object_unref(notation_loop_start);
+  g_object_unref(notation_loop_end);
+
+  g_object_unref(wave_loop);
+  g_object_unref(wave_loop_start);
+  g_object_unref(wave_loop_end);
+
+  g_object_unref(midi_loop);
+  g_object_unref(midi_loop_start);
+  g_object_unref(midi_loop_end);
 }
 
 void
@@ -1383,6 +1398,8 @@ ags_count_beats_audio_change_sequencer_duration(AgsTactable *tactable, guint64 d
 		      &value);
 
   g_value_unset(&value);
+
+  g_object_unref(port);
 }
 
 void
@@ -1411,6 +1428,8 @@ ags_count_beats_audio_change_notation_duration(AgsTactable *tactable, guint64 du
 		      &value);
 
   g_value_unset(&value);
+
+  g_object_unref(port);
 }
 
 void
@@ -1439,6 +1458,8 @@ ags_count_beats_audio_change_wave_duration(AgsTactable *tactable, guint64 durati
 		      &value);
 
   g_value_unset(&value);
+
+  g_object_unref(port);
 }
 
 void
@@ -1467,6 +1488,8 @@ ags_count_beats_audio_change_midi_duration(AgsTactable *tactable, guint64 durati
 		      &value);
 
   g_value_unset(&value);
+
+  g_object_unref(port);
 }
 
 void
