@@ -137,10 +137,8 @@ ags_export_window_export_callback(GtkWidget *toggle_button,
 
   window = AGS_XORG_APPLICATION_CONTEXT(export_window->application_context)->window;
 
-  application_context = (AgsApplicationContext *) window->application_context;
-  g_object_get(application_context,
-	       "main-loop", &main_loop,
-	       NULL);
+  application_context = ags_application_context_get_instance();
+  main_loop = ags_concurrency_provider_get_main_loop(AGS_CONCURRENCY_PROVIDER(application_context));
   
   gui_thread = ags_ui_provider_get_gui_thread(AGS_UI_PROVIDER(application_context));
 

@@ -422,6 +422,8 @@ ags_input_collection_editor_apply(AgsApplicable *applicable)
 		 "output", &output,
 		 "input", &input,
 		 NULL);
+    g_object_unref(output);
+    g_object_unref(input);
     
     for(i = 0; i < count; i++){
       if(g_type_is_a(input_collection_editor->channel_type, AGS_TYPE_OUTPUT)){

@@ -117,6 +117,8 @@ ags_link_editor_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, Ag
 
 	gtk_combo_box_set_model(link_editor->combo,
 				model);
+
+	g_object_unref(audio);
       }
     }
   }
@@ -147,6 +149,8 @@ ags_link_editor_combo_callback(GtkComboBox *combo, AgsLinkEditor *link_editor)
     g_object_get(channel,
 		 "audio", &audio,
 		 NULL);
+
+    g_object_unref(audio);
 
     //FIXME:JK: don't access AgsAudio to obtain widget
     machine = AGS_MACHINE(audio->machine_widget);

@@ -1447,7 +1447,8 @@ ags_line_member_real_find_port(AgsLineMember *line_member)
 	current_port = port->data;
       }
 
-      g_list_free(start_port);
+      g_list_free_full(start_port,
+		       g_object_unref);
 
       if(current_port != NULL){
 	break;
@@ -1505,7 +1506,8 @@ ags_line_member_real_find_port(AgsLineMember *line_member)
 
   channel_port = ags_line_member_find_specifier(list_start);
 
-  g_list_free(list_start);  
+  g_list_free_full(list_start,
+		   g_object_unref);  
 
   /* recall context */
   g_object_get(channel,
@@ -1514,7 +1516,8 @@ ags_line_member_real_find_port(AgsLineMember *line_member)
     
   recall_channel_port = ags_line_member_find_specifier(list_start);
 
-  g_list_free(list_start);
+  g_list_free_full(list_start,
+		   g_object_unref);
 
   if(channel_port != NULL){
     port = g_list_prepend(port,
@@ -1538,7 +1541,8 @@ ags_line_member_real_find_port(AgsLineMember *line_member)
 
     audio_port = ags_line_member_find_specifier(list_start);
 
-    g_list_free(list_start);
+    g_list_free_full(list_start,
+		     g_object_unref);
 
     /* recall context */
     g_object_get(audio,
@@ -1547,7 +1551,8 @@ ags_line_member_real_find_port(AgsLineMember *line_member)
 
     recall_audio_port = ags_line_member_find_specifier(list_start);
 
-    g_list_free(list_start);
+    g_list_free_full(list_start,
+		     g_object_unref);
 
     if(audio_port != NULL){
       port = g_list_prepend(port,

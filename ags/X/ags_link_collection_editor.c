@@ -476,12 +476,14 @@ ags_link_collection_editor_apply(AgsApplicable *applicable)
       g_object_get(audio,
 		   "input", &channel,
 		   NULL);
-
+      g_object_unref(channel);
+      
       channel = ags_channel_nth(channel, first_line);
     }else{
       g_object_get(audio,
 		   "output", &channel,
 		   NULL);
+      g_object_unref(channel);
 
       channel = ags_channel_nth(channel, first_line);
     }
@@ -505,11 +507,12 @@ ags_link_collection_editor_apply(AgsApplicable *applicable)
 					    NULL);
 	task = g_list_prepend(task,
 			      link_channel);
-
+	
 	/* iterate */
 	g_object_get(channel,
 		     "next", &channel,
 		     NULL);
+	g_object_unref(channel);
       }
       
       /* append AgsLinkChannel */
@@ -526,10 +529,12 @@ ags_link_collection_editor_apply(AgsApplicable *applicable)
 	g_object_get(link_machine->audio,
 		     "output", &link,
 		     NULL);
+	g_object_unref(link);
       }else{
 	g_object_get(link_machine->audio,
 		     "input", &link,
 		     NULL);
+	g_object_unref(link);
       }
       
       link = ags_channel_nth(link,
@@ -546,10 +551,12 @@ ags_link_collection_editor_apply(AgsApplicable *applicable)
 	g_object_get(channel,
 		     "next", &channel,
 		     NULL);
+	g_object_unref(channel);
 
 	g_object_get(link,
 		     "next", &link,
 		     NULL);
+	g_object_unref(link);
       }
 
       task = g_list_reverse(task);

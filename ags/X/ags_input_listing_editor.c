@@ -341,10 +341,12 @@ ags_input_listing_editor_add_children(AgsInputListingEditor *input_listing_edito
     g_object_get(audio,
 		 "output", &channel,
 		 NULL);
+    g_object_unref(channel);
   }else if(g_type_is_a(input_listing_editor->channel_type, AGS_TYPE_INPUT)){
     g_object_get(audio,
 		 "input", &channel,
 		 NULL); 
+    g_object_unref(channel);
   }else{
     channel = NULL;
   }
@@ -378,6 +380,7 @@ ags_input_listing_editor_add_children(AgsInputListingEditor *input_listing_edito
     g_object_get(channel,
 		 "next-pad", &channel,
 		 NULL);
+    g_object_unref(channel);
   }
 }
 

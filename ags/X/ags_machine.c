@@ -834,6 +834,8 @@ ags_machine_set_property(GObject *gobject,
 		       "output", &output,
 		       "input", &input,
 		       NULL);
+	  g_object_unref(output);
+	  g_object_unref(input);
 
 	  /* set channel and resize for AgsOutput */
 	  if(machine->output_pad_type != G_TYPE_NONE){	    
@@ -858,6 +860,7 @@ ags_machine_set_property(GObject *gobject,
 	      g_object_get(output,
 			   "next-pad", &output,
 			   NULL);
+	      g_object_unref(output);
 	      
 	      pad = pad->next;
 	      i++;
@@ -918,6 +921,7 @@ ags_machine_set_property(GObject *gobject,
 	      g_object_get(input,
 			   "next-pad", &input,
 			   NULL);
+	      g_object_unref(input);
 	      
 	      pad = pad->next;
 	      i++;
@@ -971,6 +975,8 @@ ags_machine_set_property(GObject *gobject,
 		       "output", &output,
 		       "input", &input,
 		       NULL);
+	  g_object_unref(output);
+	  g_object_unref(input);
 
 	  /* add pad */
 	  if(machine->output_pad_type != G_TYPE_NONE){
@@ -988,6 +994,7 @@ ags_machine_set_property(GObject *gobject,
 	      g_object_get(channel,
 			   "next-pad", &channel,
 			   NULL);
+	      g_object_unref(channel);
 	    }
 	  }
 
@@ -1006,6 +1013,7 @@ ags_machine_set_property(GObject *gobject,
 	      g_object_get(channel,
 			   "next-pad", &channel,
 			   NULL);
+	      g_object_unref(channel);
 	    }
 	  }
 	}
@@ -1516,6 +1524,7 @@ ags_machine_real_resize_audio_channels(AgsMachine *machine,
       g_object_get(audio,
 		   "input", &channel,
 		   NULL);
+      g_object_unref(channel);
 
       for(i = 0; i < input_pads; i++){
 	/* create AgsPad's if necessary or resize */
@@ -1541,6 +1550,8 @@ ags_machine_real_resize_audio_channels(AgsMachine *machine,
 	g_object_get(channel,
 		     "next-pad", &channel,
 		     NULL);
+
+	g_object_unref(channel);
 	
 	if(audio_channels_old != 0){
 	  list_input_pad = list_input_pad->next;
@@ -1554,6 +1565,8 @@ ags_machine_real_resize_audio_channels(AgsMachine *machine,
       g_object_get(audio,
 		   "output", &channel,
 		   NULL);
+
+      g_object_unref(channel);
 
       for(i = 0; i < output_pads; i++){
 	/* create AgsPad's if necessary or resize */
@@ -1578,6 +1591,8 @@ ags_machine_real_resize_audio_channels(AgsMachine *machine,
 	g_object_get(channel,
 		     "next-pad", &channel,
 		     NULL);
+
+	g_object_unref(channel);
 
 	if(audio_channels_old != 0){
 	  list_output_pad = list_output_pad->next;
@@ -1789,6 +1804,9 @@ ags_machine_real_resize_pads(AgsMachine *machine, GType channel_type,
 		 "input", &input,
 		 NULL);
 
+    g_object_unref(output);
+    g_object_unref(input);
+
     /* grow input */
     if(machine->input != NULL){
       if(channel_type == AGS_TYPE_INPUT){
@@ -1811,6 +1829,8 @@ ags_machine_real_resize_pads(AgsMachine *machine, GType channel_type,
 	  g_object_get(channel,
 		       "next-pad", &channel,
 		       NULL);	
+
+	  g_object_unref(channel);
 	}
 
 	/* show all */
@@ -1850,6 +1870,8 @@ ags_machine_real_resize_pads(AgsMachine *machine, GType channel_type,
 	  g_object_get(channel,
 		       "next-pad", &channel,
 		       NULL);
+
+	  g_object_unref(channel);
 	}
 
 	/* show all */
@@ -2584,7 +2606,8 @@ ags_machine_copy_pattern(AgsMachine *machine)
 		   NULL);
 
       pattern = start_list->data;
-      g_list_free(start_list);
+      g_list_free_full(start_list,
+		       g_object_unref);
 
       /* get pattern mutex */
       pthread_mutex_lock(ags_pattern_get_class_mutex());
@@ -2643,6 +2666,8 @@ ags_machine_copy_pattern(AgsMachine *machine)
       g_object_get(current,
 		   "next", &current,
 		   NULL);
+ 
+      g_object_unref(current);
     }
 
     xmlNewProp(notation_node, BAD_CAST "x_boundary", BAD_CAST g_strdup_printf("%u", x_boundary));
@@ -2673,6 +2698,8 @@ ags_machine_copy_pattern(AgsMachine *machine)
 	       "input", &channel,
 	       NULL);
 
+  g_object_unref(channel);
+
   for(i = 0; i < audio_channels; i++){
     /* do it so */
     notation_node = ags_machine_copy_pattern_to_notation(channel);
@@ -2683,6 +2710,8 @@ ags_machine_copy_pattern(AgsMachine *machine)
     g_object_get(channel,
 		 "next", &channel,
 		 NULL);
+
+    g_object_unref(channel);
   }
   
   /* write to clipboard */
@@ -2884,6 +2913,8 @@ ags_machine_generic_output_message_monitor_timeout(AgsMachine *machine)
 		 "output", &output,
 		 NULL);
 
+    g_object_unref(output);
+
     while(output != NULL){
       message_start = 
 	message = ags_message_delivery_find_sender(message_delivery,
@@ -2904,6 +2935,8 @@ ags_machine_generic_output_message_monitor_timeout(AgsMachine *machine)
       g_object_get(output,
 		   "next", &output,
 		   NULL);
+
+      g_object_unref(output);
     }
     
     return(TRUE);
@@ -2940,6 +2973,8 @@ ags_machine_generic_input_message_monitor_timeout(AgsMachine *machine)
 		 "input", &input,
 		 NULL);
 
+    g_object_unref(input);
+
     while(input != NULL){
       message_start = 
 	message = ags_message_delivery_find_sender(message_delivery,
@@ -2960,6 +2995,8 @@ ags_machine_generic_input_message_monitor_timeout(AgsMachine *machine)
       g_object_get(input,
 		   "next", &input,
 		   NULL);
+
+      g_object_unref(input);
     }
     
     return(TRUE);

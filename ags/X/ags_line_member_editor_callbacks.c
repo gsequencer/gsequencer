@@ -206,8 +206,10 @@ ags_line_member_editor_plugin_browser_response_callback(GtkDialog *dialog,
 					 (GObject *) add_effect);
 	  }
 
-	  g_list_free(start_play);
-	  g_list_free(start_recall);
+	  g_list_free_full(start_play,
+			   g_object_unref);
+	  g_list_free_full(start_recall,
+			   g_object_unref);
 	}
       }else{
 	AgsEffectBridge *effect_bridge;
@@ -280,8 +282,10 @@ ags_line_member_editor_plugin_browser_response_callback(GtkDialog *dialog,
 					 (GObject *) add_effect);
 	  }
 
-	  g_list_free(start_play);
-	  g_list_free(start_recall);
+	  g_list_free_full(start_play,
+			   g_object_unref);
+	  g_list_free_full(start_recall,
+			   g_object_unref);
 	}
       }
     }

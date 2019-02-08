@@ -132,7 +132,8 @@ ags_line_volume_callback(GtkRange *range,
     list = list->next;
   }
 
-  g_list_free(start_list);
+  g_list_free_full(start_list,
+		   g_object_unref);
   
   /* recall context */
   g_object_get(line->channel,
@@ -157,7 +158,8 @@ ags_line_volume_callback(GtkRange *range,
     list = list->next;
   }
 
-  g_list_free(start_list);
+  g_list_free_full(start_list,
+		   g_object_unref);
 }
 
 void

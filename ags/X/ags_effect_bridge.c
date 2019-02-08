@@ -667,7 +667,9 @@ ags_effect_bridge_set_property(GObject *gobject,
 		     "output-pads", &output_pads,
 		     "input-pads", &input_pads,
 		     NULL);
-
+	g_object_unref(output);
+	g_object_unref(input);
+	
 	/* set channel and resize for AgsOutput */
 	if(effect_bridge->output_pad_type != G_TYPE_NONE){
 	  effect_pad =
@@ -692,6 +694,7 @@ ags_effect_bridge_set_property(GObject *gobject,
 	    g_object_get(output,
 			 "next-pad", &output,
 			 NULL);
+	    g_object_unref(output);
 	    
 	    effect_pad = effect_pad->next;
 	    i++;
@@ -715,6 +718,7 @@ ags_effect_bridge_set_property(GObject *gobject,
 	      g_object_get(output,
 			   "next-pad", &output,
 			   NULL);
+	      g_object_unref(output);
 	    }
 
 	    g_list_free(start_effect_pad);
@@ -758,6 +762,7 @@ ags_effect_bridge_set_property(GObject *gobject,
 	    g_object_get(input,
 			 "next-pad", &input,
 			 NULL);
+	    g_object_unref(input);
 
 	    effect_pad = effect_pad->next;
 	    i++;
@@ -781,6 +786,7 @@ ags_effect_bridge_set_property(GObject *gobject,
 	      g_object_get(input,
 			   "next-pad", &input,
 			   NULL);
+	      g_object_unref(input);
 	    }
 
 	    g_list_free(start_effect_pad);
@@ -1216,7 +1222,9 @@ ags_effect_bridge_real_resize_pads(AgsEffectBridge *effect_bridge,
 	       "output", &output,
 	       "input", &input,
 	       NULL);
-  
+  g_object_unref(output);
+  g_object_unref(input);
+
   if(new_size > old_size){
     if(channel_type == AGS_TYPE_OUTPUT){
       current = ags_channel_nth(output,
@@ -1254,6 +1262,7 @@ ags_effect_bridge_real_resize_pads(AgsEffectBridge *effect_bridge,
       g_object_get(current,
 		   "next-pad", &current,
 		   NULL);
+      g_object_unref(current);
     }
 
     /* connect and show */

@@ -1388,7 +1388,8 @@ ags_effect_bulk_add_ladspa_effect(AgsEffectBulk *effect_bulk,
     k++;
   }
 
-  g_list_free(start_plugin_port);
+  g_list_free_full(start_plugin_port,
+		   g_object_unref);
   
   /* launch tasks */
   task = g_list_reverse(task);      
@@ -1903,7 +1904,8 @@ ags_effect_bulk_add_dssi_effect(AgsEffectBulk *effect_bulk,
     k++;
   }
 
-  g_list_free(start_plugin_port);
+  g_list_free_full(start_plugin_port,
+		   g_object_unref);
   
   /* launch tasks */
   task = g_list_reverse(task);      
@@ -2397,7 +2399,8 @@ ags_effect_bulk_add_lv2_effect(AgsEffectBulk *effect_bulk,
     k++;
   }
 
-  g_list_free(start_plugin_port);
+  g_list_free_full(start_plugin_port,
+		   g_object_unref);
 
   g_free(uri);
   
@@ -2580,7 +2583,8 @@ ags_effect_bulk_real_remove_effect(AgsEffectBulk *effect_bulk,
       play = play->next;
     }
 
-    g_list_free(start_play);
+    g_list_free_full(start_play,
+		     g_object_unref);
   }
 
   if(nth_effect == 0){
@@ -2641,6 +2645,7 @@ ags_effect_bulk_real_remove_effect(AgsEffectBulk *effect_bulk,
 	g_object_get(current,
 		     "next", &current,
 		     NULL);
+	g_object_unref(current);
       }
     }
   }
@@ -2777,10 +2782,12 @@ ags_effect_bulk_real_resize_audio_channels(AgsEffectBulk *effect_bulk,
 	      port = port->next;
 	    }
 
-	    g_list_free(start_port);
+	    g_list_free_full(start_port,
+			     g_object_unref);
 	  }
 
-	  g_list_free(start_play);
+	  g_list_free_full(start_play,
+			   g_object_unref);
 
 	  /* get effect - recall context */
 	  recall = ags_recall_find_recall_id_with_effect(start_recall,
@@ -2818,10 +2825,12 @@ ags_effect_bulk_real_resize_audio_channels(AgsEffectBulk *effect_bulk,
 	      port = port->next;
 	    }
 
-	    g_list_free(start_port);
+	    g_list_free_full(start_port,
+			     g_object_unref);
 	  }
 
-	  g_list_free(start_recall);
+	  g_list_free_full(start_recall,
+			   g_object_unref);
 	  
 	  /* iterate */
 	  effect_bulk_plugin = effect_bulk_plugin->next;
@@ -2831,6 +2840,8 @@ ags_effect_bulk_real_resize_audio_channels(AgsEffectBulk *effect_bulk,
 	g_object_get(current,
 		     "next", &current,
 		     NULL);
+	
+	g_object_unref(current);
       }
     }
   }else{
@@ -2993,10 +3004,12 @@ ags_effect_bulk_real_resize_pads(AgsEffectBulk *effect_bulk,
 	      port = port->next;
 	    }
 
-	    g_list_free(start_port);
+	    g_list_free_full(start_port,
+			     g_object_unref);
 	  }
 
-	  g_list_free(start_play);
+	  g_list_free_full(start_play,
+			   g_object_unref);
 
 	  /* get effect - recall context */
 	  recall = ags_recall_find_recall_id_with_effect(start_recall,
@@ -3034,10 +3047,12 @@ ags_effect_bulk_real_resize_pads(AgsEffectBulk *effect_bulk,
 	      port = port->next;
 	    }
 
-	    g_list_free(start_port);
+	    g_list_free_full(start_port,
+			     g_object_unref);
 	  }
 
-	  g_list_free(start_recall);
+	  g_list_free_full(start_recall,
+			   g_object_unref);
 	  
 	  /* iterate */
 	  effect_bulk_plugin = effect_bulk_plugin->next;
@@ -3047,6 +3062,8 @@ ags_effect_bulk_real_resize_pads(AgsEffectBulk *effect_bulk,
 	g_object_get(current,
 		     "next", &current,
 		     NULL);
+
+	g_object_unref(current);
       }
     }
   }else{

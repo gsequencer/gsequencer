@@ -114,7 +114,10 @@ ags_notation_editor_start_channel_launch_callback(AgsTask *task, AgsNote *note)
 	       "output-soundcard", &output_soundcard,
 	       "playback", &playback,
 	       NULL);
-
+  g_object_unref(audio);
+  g_object_unref(output_soundcard);
+  g_object_unref(playback);
+  
   recall_id = ags_playback_get_recall_id(playback, AGS_SOUND_SCOPE_PLAYBACK);
     
 #ifdef AGS_DEBUG
@@ -141,9 +144,14 @@ ags_notation_editor_start_channel_launch_callback(AgsTask *task, AgsNote *note)
 	       "last-recycling", &last_recycling,
 	       NULL);
 
+  g_object_unref(recycling);
+  g_object_unref(last_recycling);
+  
   g_object_get(last_recycling,
 	       "next", &end_recycling,
 	       NULL);
+
+  g_object_unref(end_recycling);
 
   /* add audio signal */  
   while(recycling != end_recycling){
@@ -194,7 +202,8 @@ ags_notation_editor_start_channel_launch_callback(AgsTask *task, AgsNote *note)
 		     NULL);
       }
 
-      g_list_free(start_list);
+      g_list_free_full(start_list,
+		       g_object_unref);
 
       g_object_set(note,
 		   "rt-offset", 0,
@@ -204,5 +213,6 @@ ags_notation_editor_start_channel_launch_callback(AgsTask *task, AgsNote *note)
     g_object_get(recycling,
 		 "next", &recycling,
 		 NULL);
+    g_object_unref(recycling);
   }
 }

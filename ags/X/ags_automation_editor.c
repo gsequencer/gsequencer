@@ -1213,7 +1213,8 @@ ags_automation_editor_real_machine_changed(AgsAutomationEditor *automation_edito
       automation_port = automation_port->next;
     }
 
-    g_list_free(start_automation);
+    g_list_free_full(start_automation,
+		     g_object_unref);
   }
   
   /* selected machine */
@@ -1401,7 +1402,8 @@ ags_automation_editor_add_acceleration(AgsAutomationEditor *automation_editor,
 					new_acceleration,
 					FALSE);
 
-	g_list_free(start_list);
+	g_list_free_full(start_list,
+			 g_object_unref);
 	
 	/* iterate */
 	play_port = play_port->next;
@@ -1447,7 +1449,8 @@ ags_automation_editor_add_acceleration(AgsAutomationEditor *automation_editor,
 					new_acceleration,
 					FALSE);
 
-	g_list_free(start_list);
+	g_list_free_full(start_list,
+			 g_object_unref);
 	
 	/* iterate */
 	recall_port = recall_port->next;
@@ -1587,7 +1590,8 @@ ags_automation_editor_delete_acceleration(AgsAutomationEditor *automation_editor
       i++;
     }
 
-    g_list_free(start_list_automation);
+    g_list_free_full(start_list_automation,
+		     g_object_unref);
 
     /* queue draw */
     gtk_widget_queue_draw(GTK_WIDGET(automation_editor->focused_automation_edit));
@@ -1688,7 +1692,8 @@ ags_automation_editor_select_region(AgsAutomationEditor *automation_editor,
       i++;
     }
     
-    g_list_free(start_list_automation);
+    g_list_free_full(start_list_automation,
+		     g_object_unref);
 
     /* queue draw */
     gtk_widget_queue_draw(GTK_WIDGET(automation_editor->focused_automation_edit));
@@ -1765,7 +1770,8 @@ ags_automation_editor_select_all(AgsAutomationEditor *automation_editor)
       i++;
     }
     
-    g_list_free(start_list_automation);
+    g_list_free_full(start_list_automation,
+		     g_object_unref);
 
     /* queue draw */
     gtk_widget_queue_draw(GTK_WIDGET(automation_editor->focused_automation_edit));
@@ -1953,7 +1959,8 @@ ags_automation_editor_paste(AgsAutomationEditor *automation_editor)
 	automation = AGS_AUTOMATION(list_automation->data);
       }
 
-      g_list_free(start_list_automation);
+      g_list_free_full(start_list_automation,
+		       g_object_unref);
       
       g_object_get(machine->audio,
 		   "automation", &start_list_automation,
@@ -2061,6 +2068,9 @@ ags_automation_editor_paste(AgsAutomationEditor *automation_editor)
 
 	list_automation = list_automation->next;
       }
+
+      g_list_free_full(start_list_automation,
+		       g_object_unref);
       
       if(notebook == NULL){
 	break;
@@ -2374,6 +2384,9 @@ ags_automation_editor_copy(AgsAutomationEditor *automation_editor)
       i++;
     }
     
+    g_list_free_full(start_list_automation,
+		     g_object_unref);
+          
     /* write to clipboard */
     xmlDocDumpFormatMemoryEnc(clipboard, &buffer, &size, "UTF-8", TRUE);
     gtk_clipboard_set_text(gtk_clipboard_get(GDK_SELECTION_CLIPBOARD),
@@ -2460,7 +2473,10 @@ ags_automation_editor_cut(AgsAutomationEditor *automation_editor)
 
       i++;
     }
-
+    
+    g_list_free_full(start_list_automation,
+		     g_object_unref);
+      
     gtk_widget_queue_draw(GTK_WIDGET(automation_editor->focused_automation_edit));
 
     /* write to clipboard */

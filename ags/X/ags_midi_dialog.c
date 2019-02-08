@@ -640,6 +640,8 @@ ags_midi_dialog_reset(AgsApplicable *applicable)
       }while(gtk_tree_model_iter_next(model,
 				      &iter));
     }
+
+    g_object_unref(sequencer);
   }
 
   if(found_device){

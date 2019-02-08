@@ -72,11 +72,8 @@ ags_audio_preferences_add_callback(GtkWidget *widget, AgsAudioPreferences *audio
 							   AGS_TYPE_PREFERENCES);
   window = (AgsWindow *) preferences->window;
 
-  application_context = (AgsApplicationContext *) window->application_context;
-
-  g_object_get(application_context,
-	       "main-loop", &main_loop,
-	       NULL);
+  application_context = ags_application_context_get_instance();
+  main_loop = ags_concurrency_provider_get_main_loop(AGS_CONCURRENCY_PROVIDER(application_context));
   
   /* retrieve first soundcard */
   soundcard = NULL;

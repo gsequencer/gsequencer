@@ -284,6 +284,8 @@ ags_input_editor_reset(AgsApplicable *applicable)
 		   "audio", &audio,
 		   "input-soundcard", &input_soundcard,
 		   NULL);
+      g_object_unref(audio);
+      g_object_unref(input_soundcard);
     }
     
     i = 0;

@@ -1121,7 +1121,8 @@ ags_line_add_ladspa_effect(AgsLine *line,
 				    filename,
 				    effect);
 
-  g_list_free(start_recall);
+  g_list_free_full(start_recall,
+		   g_object_unref);
   
   start_recall = recall;
   
@@ -1133,6 +1134,10 @@ ags_line_add_ladspa_effect(AgsLine *line,
   g_object_get((GObject *) recall->data,
 	       "port", &play_port,
 	       NULL);
+
+  g_list_foreach(play_port,
+		 (GFunc) g_object_unref,
+		 NULL);
   
   /* check has output port */
   g_list_free(start_recall);
@@ -1149,7 +1154,8 @@ ags_line_add_ladspa_effect(AgsLine *line,
 					  filename,
 					  effect);
 
-  g_list_free(recall);
+  g_list_free_full(recall,
+		   g_object_unref);
   
   recall = start_recall;
   
@@ -1161,6 +1167,10 @@ ags_line_add_ladspa_effect(AgsLine *line,
   g_object_get((GObject *) recall->data,
 	       "port", &recall_port,
 	       NULL);
+
+  g_list_foreach(recall_port,
+		 (GFunc) g_object_unref,
+		 NULL);
 
   g_list_free(start_recall);
   
@@ -1421,7 +1431,8 @@ ags_line_add_ladspa_effect(AgsLine *line,
     k++;
   }
 
-  g_list_free(start_plugin_port);
+  g_list_free_full(start_plugin_port,
+		   g_object_unref);
 
   return(g_list_concat(play_port,
 		       recall_port));
@@ -1495,7 +1506,8 @@ ags_line_add_lv2_effect(AgsLine *line,
 				    filename,
 				    effect);
 
-  g_list_free(start_recall);
+  g_list_free_full(start_recall,
+		   g_object_unref);
   
   start_recall = recall;
   
@@ -1507,6 +1519,10 @@ ags_line_add_lv2_effect(AgsLine *line,
   g_object_get((GObject *) recall->data,
 	       "port", &play_port,
 	       NULL);
+
+  g_list_foreach(play_port,
+		 (GFunc) g_object_unref,
+		 NULL);
   
   g_list_free(start_recall);
   
@@ -1522,7 +1538,8 @@ ags_line_add_lv2_effect(AgsLine *line,
 					  filename,
 					  effect);
 
-  g_list_free(recall);
+  g_list_free_full(recall,
+		   g_object_unref);
   
   recall = start_recall;
   
@@ -1534,6 +1551,10 @@ ags_line_add_lv2_effect(AgsLine *line,
   g_object_get((GObject *) recall->data,
 	       "port", &recall_port,
 	       NULL);
+
+  g_list_foreach(recall_port,
+		 (GFunc) g_object_unref,
+		 NULL);
 
   g_list_free(start_recall);
   
@@ -1770,6 +1791,9 @@ ags_line_add_lv2_effect(AgsLine *line,
     k++;
   }
 
+  g_list_free_full(start_plugin_port,
+		   g_object_unref);
+
   g_free(uri);
   
   return(g_list_concat(play_port,
@@ -1903,7 +1927,8 @@ ags_line_real_remove_effect(AgsLine *line,
   }
 
   if(recall == NULL){
-    g_list_free(start_recall);
+    g_list_free_full(start_recall,
+		     g_object_unref);
     
     return;
   }
@@ -2001,8 +2026,10 @@ ags_line_real_remove_effect(AgsLine *line,
     port = port->next;
   }
 
-  g_list_free(start_recall);
-  g_list_free(start_port);
+  g_list_free_full(start_recall,
+		   g_object_unref);
+  g_list_free_full(start_port,
+		   g_object_unref);
   
   /* remove recalls */
   ags_channel_remove_effect(line->channel,
@@ -2540,7 +2567,8 @@ ags_line_indicator_queue_draw_timeout(GtkWidget *widget)
 	g_object_get(current,
 		     "plugin-port", &plugin_port,
 		     NULL);
-
+	g_object_unref(plugin_port);
+	
 	if(plugin_port == NULL){
 	  list = list->next;
 

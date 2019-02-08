@@ -72,9 +72,8 @@ ags_midi_preferences_add_callback(GtkWidget *widget, AgsMidiPreferences *midi_pr
   window = (AgsWindow *) preferences->window;
 
   application_context = (AgsApplicationContext *) window->application_context;
-  g_object_get(application_context,
-	       "main-loop", &main_loop,
-	       NULL);
+
+  main_loop = ags_concurrency_provider_get_main_loop(AGS_CONCURRENCY_PROVIDER(application_context));
   
   /* retrieve first sequencer */
   sequencer = NULL;

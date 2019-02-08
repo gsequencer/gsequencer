@@ -27,8 +27,9 @@ ags_link_collection_editor_parent_set_callback(GtkWidget *widget, GtkObject *old
 {
   AgsMachineEditor *machine_editor;
 
-  if(old_parent != NULL)
+  if(old_parent != NULL){
     return(0);
+  }
 
   machine_editor = (AgsMachineEditor *) gtk_widget_get_ancestor(widget, 
 								AGS_TYPE_MACHINE_EDITOR);

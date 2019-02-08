@@ -335,6 +335,8 @@ ags_listing_editor_add_children(AgsListingEditor *listing_editor,
 		 "output", &channel,
 		 NULL);
 
+    g_object_unref(channel);
+
     channel = ags_channel_nth(channel,
 			      nth_channel);
   }else{
@@ -342,6 +344,8 @@ ags_listing_editor_add_children(AgsListingEditor *listing_editor,
 		 "input", &channel,
 		 NULL);
     
+    g_object_unref(channel);
+
     channel = ags_channel_nth(channel,
 			      nth_channel);
   }
@@ -373,6 +377,8 @@ ags_listing_editor_add_children(AgsListingEditor *listing_editor,
     g_object_get(channel,
 		 "next-pad", &channel,
 		 NULL);
+
+    g_object_unref(channel);
   }
 }
 

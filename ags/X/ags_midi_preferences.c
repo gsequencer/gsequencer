@@ -264,9 +264,8 @@ ags_midi_preferences_reset(AgsApplicable *applicable)
   window = (AgsWindow *) preferences->window;
   
   application_context = (AgsApplicationContext *) window->application_context;
-  g_object_get(application_context,
-	       "main-loop", &main_loop,
-	       NULL);
+
+  main_loop = ags_concurrency_provider_get_main_loop(AGS_CONCURRENCY_PROVIDER(application_context));
   
   sequencer_thread = ags_thread_find_type(main_loop,
 					  AGS_TYPE_SEQUENCER_THREAD);

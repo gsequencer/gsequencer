@@ -321,10 +321,12 @@ ags_link_editor_apply(AgsApplicable *applicable)
 	g_object_get(link_machine->audio,
 		     "output", &link,
 		     NULL);
+	g_object_unref(link);
       }else{
 	g_object_get(link_machine->audio,
 		     "input", &link,
 		     NULL);
+	g_object_unref(link);
       }
       
       link = ags_channel_nth(link,
@@ -339,6 +341,10 @@ ags_link_editor_apply(AgsApplicable *applicable)
 				   (GObject *) link_channel);
     }
   }
+
+  g_object_unref(audio);
+  
+  g_object_unref(output_soundcard);
 }
 
 void
@@ -381,6 +387,8 @@ ags_link_editor_reset(AgsApplicable *applicable)
 		 "audio", &audio,
 		 "link", &link_channel,
 		 NULL);
+    g_object_unref(audio);
+    g_object_unref(link_channel);
     
     /*  */
     if(link_channel != NULL){
@@ -390,6 +398,7 @@ ags_link_editor_reset(AgsApplicable *applicable)
       g_object_get(link_channel,
 		   "audio", &link_audio,
 		   NULL);
+      g_object_unref(link_audio);
 
       /* get machine */
       //FIXME:JK: don't access AgsAudio to obtain widget
@@ -500,6 +509,8 @@ ags_link_editor_reset(AgsApplicable *applicable)
 	link_editor->flags &= (~AGS_LINK_EDITOR_BLOCK_FILE_CHOOSER);
 
 	g_free(filename);
+
+	g_object_unref(file_link);
       }else{
 	gtk_list_store_set(GTK_LIST_STORE(model), &iter,
 			   0, "file://",

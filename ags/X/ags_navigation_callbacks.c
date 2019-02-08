@@ -342,7 +342,8 @@ ags_navigation_loop_callback(GtkWidget *widget,
 	list = list->next;
       }
 
-      g_list_free(list_start);
+      g_list_free_full(list_start,
+		       g_object_unref);
     }else if((AGS_MACHINE_IS_WAVE_PLAYER & (machine->flags)) != 0){
 #ifdef AGS_DEBUG
       g_message("found machine to loop!\n");
@@ -391,7 +392,8 @@ ags_navigation_loop_callback(GtkWidget *widget,
 	list = list->next;
       }
       
-      g_list_free(list_start);
+      g_list_free_full(list_start,
+		       g_object_unref);
     }
 
     machines = machines->next;
@@ -474,7 +476,6 @@ ags_navigation_loop_left_tact_callback(GtkWidget *widget,
 
 	recall = AGS_RECALL(list->data);
 
-
 	g_object_get(recall,
 		     "notation-loop-start", &port,
 		     NULL);
@@ -482,10 +483,13 @@ ags_navigation_loop_left_tact_callback(GtkWidget *widget,
 	ags_port_safe_write(port,
 			    &value);
 
+	g_object_unref(port);
+	
 	list = list->next;
       }
 
-      g_list_free(list_start);
+      g_list_free_full(list_start,
+		       g_object_unref);
     }else if((AGS_MACHINE_IS_WAVE_PLAYER & (machine->flags)) != 0){
 #ifdef AGS_DEBUG
       g_message("found machine to loop!\n");
@@ -506,13 +510,14 @@ ags_navigation_loop_left_tact_callback(GtkWidget *widget,
 
 	recall = AGS_RECALL(list->data);
 
-
 	g_object_get(recall,
 		     "wave-loop-start", &port,
 		     NULL);
 	
 	ags_port_safe_write(port,
 			    &value);
+
+	g_object_unref(port);
 
 	list = list->next;
       }
@@ -525,7 +530,6 @@ ags_navigation_loop_left_tact_callback(GtkWidget *widget,
 
 	recall = AGS_RECALL(list->data);
 
-
 	g_object_get(recall,
 		     "wave-loop-start", &port,
 		     NULL);
@@ -533,10 +537,13 @@ ags_navigation_loop_left_tact_callback(GtkWidget *widget,
 	ags_port_safe_write(port,
 			    &value);
 
+	g_object_unref(port);
+
 	list = list->next;
       }
       
-      g_list_free(list_start);
+      g_list_free_full(list_start,
+		       g_object_unref);
     }
 
     machines = machines->next;
@@ -609,10 +616,13 @@ ags_navigation_loop_right_tact_callback(GtkWidget *widget,
 	ags_port_safe_write(port,
 			    &value);
 
+	g_object_unref(port);
+
 	list = list->next;
       }
 
-      g_list_free(list_start);
+      g_list_free_full(list_start,
+		       g_object_unref);
     }else if((AGS_MACHINE_IS_WAVE_PLAYER & (machine->flags)) != 0){
 #ifdef AGS_DEBUG
       g_message("found machine to loop!\n");
@@ -640,6 +650,8 @@ ags_navigation_loop_right_tact_callback(GtkWidget *widget,
 	ags_port_safe_write(port,
 			    &value);
 
+	g_object_unref(port);
+
 	list = list->next;
       }
 
@@ -658,10 +670,13 @@ ags_navigation_loop_right_tact_callback(GtkWidget *widget,
 	ags_port_safe_write(port,
 			    &value);
 
+	g_object_unref(port);
+
 	list = list->next;
       }
 
-      g_list_free(list_start);
+      g_list_free_full(list_start,
+		       g_object_unref);
     }
 
     machines = machines->next;

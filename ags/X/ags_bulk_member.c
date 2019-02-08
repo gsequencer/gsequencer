@@ -1363,7 +1363,8 @@ ags_bulk_member_real_find_port(AgsBulkMember *bulk_member)
 	current_port = port->data;
       }
 
-      g_list_free(start_port);
+      g_list_free_full(start_port,
+		       g_object_unref);
 
       if(current_port != NULL){
 	break;
@@ -1404,10 +1405,12 @@ ags_bulk_member_real_find_port(AgsBulkMember *bulk_member)
     g_object_get(audio,
 		 "output", &channel,
 		 NULL);
+    g_object_unref(channel);
   }else if(AGS_EFFECT_BULK(effect_bulk)->channel_type == AGS_TYPE_INPUT){
     g_object_get(audio,
 		 "input", &channel,
 		 NULL);
+    g_object_unref(channel);
   }
 
   while(channel != NULL){
@@ -1431,7 +1434,8 @@ ags_bulk_member_real_find_port(AgsBulkMember *bulk_member)
 								  pad, audio_channel));
     }
 
-    g_list_free(list_start);
+    g_list_free_full(list_start,
+		     g_object_unref);
 
     /* recall context */
     g_object_get(channel,
@@ -1447,12 +1451,14 @@ ags_bulk_member_real_find_port(AgsBulkMember *bulk_member)
 									 pad, audio_channel));
     }
 
-    g_list_free(list_start);
+    g_list_free_full(list_start,
+		     g_object_unref);
 
     /* iterate */
     g_object_get(channel,
 		 "next", &channel,
 		 NULL);
+    g_object_unref(channel);
   }
 
   /* search audio */
@@ -1474,7 +1480,8 @@ ags_bulk_member_real_find_port(AgsBulkMember *bulk_member)
 								  0, 0));
     }
     
-    g_list_free(list_start);
+    g_list_free_full(list_start,
+		     g_object_unref);
 
     /* recall context */
     g_object_get(audio,
@@ -1490,7 +1497,8 @@ ags_bulk_member_real_find_port(AgsBulkMember *bulk_member)
 									 0, 0));
     }
     
-    g_list_free(list_start);
+    g_list_free_full(list_start,
+		     g_object_unref);
   }
 
   return(g_list_copy(bulk_member->bulk_port));
