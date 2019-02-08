@@ -219,6 +219,8 @@ ags_stream_audio_signal_run_post(AgsRecall *recall)
       auto_sense = g_value_get_boolean(&value);
 
       g_value_unset(&value);
+
+      g_object_unref(port);
       
       if(auto_sense){
 	void *buffer;
@@ -310,6 +312,14 @@ ags_stream_audio_signal_run_post(AgsRecall *recall)
 
     ags_recall_done(recall);
   }
+
+  g_object_unref(stream_recycling);
+
+  g_object_unref(source);
+
+  g_object_unref(stream_channel_run);
+
+  g_object_unref(stream_channel);
 }
 
 /**

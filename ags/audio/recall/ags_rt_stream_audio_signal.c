@@ -199,6 +199,13 @@ ags_rt_stream_audio_signal_run_pre(AgsRecall *recall)
 
   /* get template */
   if(rt_template == NULL){
+    g_object_unref(source);
+
+    g_object_unref(recall_id);
+
+    g_list_free_full(start_note,
+		     g_object_unref);
+    
     return;
   }
 
@@ -432,7 +439,16 @@ ags_rt_stream_audio_signal_run_pre(AgsRecall *recall)
     note = note->next;
   }
 
-  g_list_free(start_note);
+  /* unref */
+  g_object_unref(source);
+
+  g_object_unref(recall_id);
+
+  g_list_free_full(start_note,
+		   g_object_unref);
+
+  g_object_unref(recycling_context);
+  g_object_unref(parent_recycling_context);
 }
 
 /**

@@ -604,6 +604,8 @@ ags_play_notation_audio_run_connect(AgsConnectable *connectable)
   
   /* call parent */
   ags_play_notation_audio_run_parent_connectable_interface->connect(connectable);
+
+  g_object_unref(delay_audio_run);
 }
 
 void
@@ -626,6 +628,8 @@ ags_play_notation_audio_run_disconnect(AgsConnectable *connectable)
 
   /* call parent */
   ags_play_notation_audio_run_parent_connectable_interface->disconnect(connectable);
+
+  g_object_unref(delay_audio_run);
 }
 
 void
@@ -648,6 +652,8 @@ ags_play_notation_audio_run_connect_connection(AgsConnectable *connectable, GObj
     g_signal_connect(G_OBJECT(delay_audio_run), "notation-alloc-input",
 		     G_CALLBACK(ags_play_notation_audio_run_alloc_input_callback), play_notation_audio_run);  
   }
+
+  g_object_unref(delay_audio_run);
 }
 
 void
@@ -673,6 +679,8 @@ ags_play_notation_audio_run_disconnect_connection(AgsConnectable *connectable, G
 			play_notation_audio_run,
 			NULL);
   }
+
+  g_object_unref(delay_audio_run);
 }
 
 void
@@ -808,7 +816,8 @@ ags_play_notation_audio_run_resolve_dependency(AgsRecall *recall)
     template = AGS_RECALL(list->data);
   }
 
-  g_list_free(list_start);
+  g_list_free_full(list_start,
+		   g_object_unref);
 
   g_object_get(template,
 	       "recall-dependency", &list_start,
@@ -842,16 +851,24 @@ ags_play_notation_audio_run_resolve_dependency(AgsRecall *recall)
       i++;
     }
 
+    g_object_unref(dependency);
+    
     /* iterate */
     list = list->next;
   }
 
-  g_list_free(list_start);
+  g_list_free_full(list_start,
+		   g_object_unref);
   
   g_object_set(G_OBJECT(recall),
 	       "delay-audio-run", delay_audio_run,
 	       "count-beats-audio-run", count_beats_audio_run,
 	       NULL);
+
+  /* unref */
+  g_object_unref(recall_id);
+
+  g_object_unref(recall_container);
 }
 
 void
@@ -919,6 +936,8 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
     notation_delay = g_value_get_double(&value);
     g_value_unset(&value);
 
+    g_object_unref(port);
+    
     /*  */
     start_current_position = ags_notation_find_offset(notation,
 						      notation_counter,
@@ -982,17 +1001,21 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
 	list = list->next;
       }
 
-      g_list_free(start_list);
+      g_list_free_full(start_list,
+		       g_object_unref);
 
       /* recycling */
       g_object_get(selected_channel,
 		   "first-recycling", &recycling,
 		   "last-recycling", &last_recycling,
 		   NULL);
-
+      g_object_unref(recycling);
+      g_object_unref(last_recycling);
+      
       g_object_get(last_recycling,
 		   "next", &end_recycling,
 		   NULL);
+      g_object_unref(end_recycling);
 	
       g_object_set(note,
 		   "rt-attack", attack,
@@ -1064,13 +1087,15 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
 			 NULL);
 	  }
 
-	  g_list_free(start_list);
+	  g_list_free_full(start_list,
+			   g_object_unref);
 	}
 	  
 	/* iterate */
 	g_object_get(recycling,
 		     "next", &recycling,
 		     NULL);
+	g_object_unref(recycling);
       }
 
       /* iterate */
@@ -1095,6 +1120,8 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
 	       NULL);
   
   if(start_list == NULL){
+    g_object_unref(audio);
+    
     return;
   }
 
@@ -1171,7 +1198,21 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
     ags_play_notation_audio_run_alloc_input_callback_play_notation(notation);
   }  
 
-  g_list_free(start_list);
+  /* unref */
+  g_object_unref(audio);
+  
+  g_object_unref(play_notation_audio);
+  
+  g_object_unref(output_soundcard);
+  
+  g_object_unref(recall_id);
+
+  g_object_unref(delay_audio_run);
+  
+  g_object_unref(count_beats_audio_run);
+
+  g_list_free_full(start_list,
+		   g_object_unref);
 }
 
 void

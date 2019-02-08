@@ -159,6 +159,13 @@ ags_volume_audio_signal_run_inter(AgsRecall *recall)
   if(ags_recall_global_get_rt_safe() &&
      parent_recycling_context != NULL &&
      start_note == NULL){
+    g_object_unref(source);
+
+    g_object_unref(recall_id);
+    
+    g_object_unref(recycling_context);
+    g_object_unref(parent_recycling_context);
+
     return;
   }
   
@@ -211,14 +218,31 @@ ags_volume_audio_signal_run_inter(AgsRecall *recall)
     
     g_value_unset(&value);
 
+    g_object_unref(port);
+    
     ags_audio_buffer_util_volume(buffer, 1,
 				 ags_audio_buffer_util_format_from_soundcard(format),
 				 buffer_size,
 				 volume);
 
+    g_object_unref(volume_recycling);
+
+    g_object_unref(volume_channel_run);
+    g_object_unref(volume_channel);
   }else{
     ags_recall_done(recall);
   }
+
+  /* unref */
+  g_object_unref(source);
+
+  g_object_unref(recall_id);
+    
+  g_object_unref(recycling_context);
+  g_object_unref(parent_recycling_context);
+
+  g_list_free_full(start_note,
+		   g_object_unref);
 }
 
 /**

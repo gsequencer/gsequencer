@@ -715,6 +715,8 @@ ags_play_lv2_audio_run_connect(AgsConnectable *connectable)
   
   /* call parent */
   ags_play_lv2_audio_run_parent_connectable_interface->connect(connectable);
+
+  g_object_unref(delay_audio_run);
 }
 
 void
@@ -737,6 +739,8 @@ ags_play_lv2_audio_run_disconnect(AgsConnectable *connectable)
 
   /* call parent */
   ags_play_lv2_audio_run_parent_connectable_interface->disconnect(connectable);
+
+  g_object_unref(delay_audio_run);
 }
 
 void
@@ -759,6 +763,8 @@ ags_play_lv2_audio_run_connect_connection(AgsConnectable *connectable, GObject *
     g_signal_connect(G_OBJECT(delay_audio_run), "notation-alloc-input",
 		     G_CALLBACK(ags_play_lv2_audio_run_alloc_input_callback), play_lv2_audio_run);  
   }
+
+  g_object_unref(delay_audio_run);
 }
 
 void
@@ -784,6 +790,8 @@ ags_play_lv2_audio_run_disconnect_connection(AgsConnectable *connectable, GObjec
 			play_lv2_audio_run,
 			NULL);
   }
+
+  g_object_unref(delay_audio_run);
 }
 
 void
@@ -919,7 +927,8 @@ ags_play_lv2_audio_run_resolve_dependency(AgsRecall *recall)
     template = AGS_RECALL(list->data);
   }
 
-  g_list_free(list_start);
+  g_list_free_full(list_start,
+		   g_object_unref);
 
   g_object_get(template,
 	       "recall-dependency", &list_start,
@@ -953,6 +962,8 @@ ags_play_lv2_audio_run_resolve_dependency(AgsRecall *recall)
       i++;
     }
 
+    g_object_unref(dependency);
+    
     list = list->next;
   }
 
@@ -960,6 +971,14 @@ ags_play_lv2_audio_run_resolve_dependency(AgsRecall *recall)
 	       "delay-audio-run", delay_audio_run,
 	       "count-beats-audio-run", count_beats_audio_run,
 	       NULL);
+
+  /* unref */
+  g_object_unref(recall_id);
+
+  g_object_unref(recall_container);
+
+  g_list_free_full(list_start,
+		   g_object_unref);
 }
 
 void
@@ -1264,6 +1283,11 @@ ags_play_lv2_audio_run_run_init_pre(AgsRecall *recall)
     g_list_free(port);
     g_list_free(plugin_port_start);
   }
+
+  /* unref */
+  g_object_unref(output_soundcard);
+
+  g_object_unref(play_lv2_audio);
 }
 
 void
@@ -1354,7 +1378,9 @@ ags_play_lv2_audio_run_run_pre(AgsRecall *recall)
 	       "output", &output,
 	       "input", &input,
 	       NULL);
-    
+  g_object_unref(output);
+  g_object_unref(input);
+  
   /* get channel */
   selected_channel = ags_channel_nth(output,
 				     audio_channel);
@@ -1373,7 +1399,8 @@ ags_play_lv2_audio_run_run_pre(AgsRecall *recall)
   g_object_get(selected_channel,
 	       "first-recycling", &recycling,
 	       NULL);
-
+  g_object_unref(recycling);
+  
   ags_recall_unset_behaviour_flags((AgsRecall *) recall, AGS_SOUND_BEHAVIOUR_PERSISTENT);
 
   if(destination == NULL){
@@ -1421,6 +1448,7 @@ ags_play_lv2_audio_run_run_pre(AgsRecall *recall)
   g_object_get(selected_channel,
 	       "first-recycling", &recycling,
 	       NULL);
+  g_object_unref(recycling);
 
   /* create audio data */
   g_object_get(destination,
@@ -1474,6 +1502,17 @@ ags_play_lv2_audio_run_run_pre(AgsRecall *recall)
 						play_lv2_audio_run->output, (guint) output_lines, 0,
 						(guint) buffer_size, copy_mode_out);
   }
+
+  /* unref */
+  g_object_unref(output_soundcard);
+
+  g_object_unref(recall_id);
+
+  g_object_unref(audio);
+
+  g_object_unref(play_lv2_audio);
+
+  g_object_unref(destination);
 }
 
 void
@@ -1547,6 +1586,14 @@ ags_play_lv2_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_run,
   pthread_mutex_unlock(audio_mutex);
   
   if(start_list == NULL){
+    g_object_unref(audio);
+    
+    g_object_unref(output_soundcard);
+
+    g_object_unref(play_lv2_audio);
+
+    g_object_unref(delay_audio);
+
     return;
   }
 
@@ -1735,10 +1782,20 @@ ags_play_lv2_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_run,
   }
 
   g_list_free(start_list);
-  g_list_free(start_current_position);
+  g_list_free_full(start_current_position,
+		   g_object_unref);
   
   g_list_free(start_append_note);
   g_list_free(start_remove_note);
+
+  /* unref */
+  g_object_unref(audio);
+    
+  g_object_unref(output_soundcard);
+
+  g_object_unref(play_lv2_audio);
+
+  g_object_unref(delay_audio);
 }
 
 void
@@ -1907,6 +1964,12 @@ ags_play_lv2_audio_run_load_ports(AgsPlayLv2AudioRun *play_lv2_audio_run)
 
     list = list->next;
   }
+
+  /* unref */
+  g_list_free_full(start_list,
+		   g_object_unref);
+  
+  g_object_unref(play_lv2_audio);
 }
 
 /**

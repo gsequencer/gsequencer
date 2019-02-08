@@ -342,6 +342,8 @@ ags_play_wave_channel_run_seek(AgsSeekable *seekable,
     }
     break;
   }
+
+  g_object_unref(soundcard);
 }
 
 void
@@ -391,7 +393,8 @@ ags_play_wave_channel_run_run_inter(AgsRecall *recall)
     g_object_get(channel,
 		 "first-recycling", &first_recycling,
 		 NULL);
-	  
+    g_object_unref(first_recycling);
+    
     play_wave_channel_run->audio_signal = ags_audio_signal_new(output_soundcard,
 							       (GObject *) first_recycling,
 							       (GObject *) recall_id);
@@ -437,8 +440,20 @@ ags_play_wave_channel_run_run_inter(AgsRecall *recall)
   do_playback = g_value_get_boolean(&do_playback_value);
   
   g_value_unset(&do_playback_value);
+
+  g_object_unref(port);
   
   if(!do_playback){
+    g_object_unref(output_soundcard);
+    
+    g_object_unref(recall_id);
+
+    g_object_unref(play_wave_audio);
+
+    g_object_unref(play_wave_channel);
+
+    g_object_unref(play_wave_audio_run);
+
     return;
   }
 
@@ -632,6 +647,24 @@ ags_play_wave_channel_run_run_inter(AgsRecall *recall)
 
   ags_port_safe_write(port,
 		      &x_offset_value);
+
+  /* unref */
+  g_object_unref(output_soundcard);
+    
+  g_object_unref(recall_id);
+
+  g_object_unref(play_wave_audio);
+
+  g_object_unref(play_wave_channel);
+
+  g_object_unref(play_wave_audio_run);
+
+  g_object_unref(audio);
+
+  g_object_unref(channel);
+
+  g_list_free_full(start_list,
+		   g_object_unref);
 }
 
 /**

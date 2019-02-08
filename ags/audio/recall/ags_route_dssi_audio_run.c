@@ -560,6 +560,8 @@ ags_route_dssi_audio_run_connect(AgsConnectable *connectable)
   
   /* call parent */
   ags_route_dssi_audio_run_parent_connectable_interface->connect(connectable);
+
+  g_object_unref(delay_audio_run);
 }
 
 void
@@ -582,6 +584,8 @@ ags_route_dssi_audio_run_disconnect(AgsConnectable *connectable)
 
   /* call parent */
   ags_route_dssi_audio_run_parent_connectable_interface->disconnect(connectable);
+
+  g_object_unref(delay_audio_run);
 }
 
 void
@@ -604,6 +608,8 @@ ags_route_dssi_audio_run_connect_connection(AgsConnectable *connectable, GObject
     g_signal_connect(G_OBJECT(delay_audio_run), "notation-alloc-input",
 		     G_CALLBACK(ags_route_dssi_audio_run_alloc_input_callback), route_dssi_audio_run);  
   }
+
+  g_object_unref(delay_audio_run);
 }
 
 void
@@ -629,6 +635,8 @@ ags_route_dssi_audio_run_disconnect_connection(AgsConnectable *connectable, GObj
 			route_dssi_audio_run,
 			NULL);
   }
+
+  g_object_unref(delay_audio_run);
 }
 
 void
@@ -760,7 +768,8 @@ ags_route_dssi_audio_run_resolve_dependency(AgsRecall *recall)
     template = AGS_RECALL(list->data);
   }
 
-  g_list_free(list_start);
+  g_list_free_full(list_start,
+		   g_object_unref);
 
   g_object_get(template,
 	       "recall-dependency", &list_start,
@@ -794,16 +803,24 @@ ags_route_dssi_audio_run_resolve_dependency(AgsRecall *recall)
       i++;
     }
 
+    g_object_unref(dependency);
+    
     /* iterate */
     list = list->next;
   }
 
-  g_list_free(list_start);
+  g_list_free_full(list_start,
+		   g_object_unref);
   
   g_object_set(G_OBJECT(recall),
 	       "delay-audio-run", delay_audio_run,
 	       "count-beats-audio-run", count_beats_audio_run,
 	       NULL);
+
+  /* unref */
+  g_object_unref(recall_id);
+
+  g_object_unref(recall_container);
 }
 
 void
@@ -882,8 +899,7 @@ ags_route_dssi_audio_run_feed_midi(AgsRecall *recall,
   /* note */
   g_object_get(note,
 	       "y", &note_y,
-	       NULL);
-  
+	       NULL);  
 
   /* get channel */
   if(ags_audio_test_behaviour_flags(audio, AGS_SOUND_BEHAVIOUR_DEFAULTS_TO_INPUT)){
@@ -913,6 +929,14 @@ ags_route_dssi_audio_run_feed_midi(AgsRecall *recall,
 
   if(selected_pad - audio_start_mapping + midi_start_mapping < midi_start_mapping ||
      selected_pad - audio_start_mapping + midi_start_mapping >= midi_end_mapping){
+    g_object_unref(audio);
+    
+    g_object_unref(recall_id);
+
+    g_object_unref(delay_audio_run);
+
+    g_object_unref(recycling_context);
+
     return;
   }
   
@@ -937,7 +961,8 @@ ags_route_dssi_audio_run_feed_midi(AgsRecall *recall,
       list = list->next;
     }
 
-    g_list_free(start_list);
+    g_list_free_full(start_list,
+		     g_object_unref);
 
     /* get dssi run */
     if(child_recall_id != NULL){
@@ -963,8 +988,13 @@ ags_route_dssi_audio_run_feed_midi(AgsRecall *recall,
 	g_object_get(recall_container,
 		     "recall-channel-run", &start_generic_channel_recall,
 		     NULL);
+	
+	g_object_unref(recall_container);
       }
 
+      g_list_free_full(start_list_recall,
+		       g_object_unref);
+      
       generic_channel_recall = start_generic_channel_recall;
       
       while(generic_channel_recall != NULL){
@@ -987,6 +1017,8 @@ ags_route_dssi_audio_run_feed_midi(AgsRecall *recall,
 	
 	if(current_recycling_context != child_recycling_context){
 	  generic_channel_recall = generic_channel_recall->next;
+
+	  g_object_unref(current_recall_id);
 	  
 	  continue;
 	}
@@ -1040,17 +1072,39 @@ ags_route_dssi_audio_run_feed_midi(AgsRecall *recall,
 	    dssi_run = dssi_run->next;
 	  }
 
+	  /* unref */
+	  g_list_free_full(start_dssi_run,
+			   g_object_unref);
+
 	  generic_recycling_recall = generic_recycling_recall->next;
 	}
 
-	g_list_free(start_generic_recycling_recall);
+	/* unref */
+	g_object_unref(current_recall_id);
+	  
+	g_object_unref(current_recycling_context);
+	  
+	g_list_free_full(start_generic_recycling_recall,
+			 g_object_unref);
 	
 	generic_channel_recall = generic_channel_recall->next;
-      }
+      }      
 
-      g_list_free(start_generic_channel_recall);
+      g_object_unref(child_recycling_context);
+
+      g_list_free_full(start_generic_channel_recall,
+		       g_object_unref);
     }
   }
+
+  /* unref */
+  g_object_unref(audio);
+
+  g_object_unref(recall_id);
+
+  g_object_unref(delay_audio_run);
+  
+  g_object_unref(recycling_context);
 }
 
 void
@@ -1138,7 +1192,8 @@ ags_route_dssi_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_run,
       list = list->next;
     }
 
-    g_list_free(start_note);
+    g_list_free_full(start_note,
+		     g_object_unref);
     g_list_free(start_list);
   }
   
@@ -1192,7 +1247,15 @@ ags_route_dssi_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_run,
     ags_route_dssi_audio_run_alloc_input_callback_feed_note(notation);
   }
 
-  g_list_free(start_list);
+  /* unref */
+  g_object_unref(audio);
+  
+  g_object_unref(route_dssi_audio);
+
+  g_object_unref(count_beats_audio_run);
+
+  g_list_free_full(start_list,
+		   g_object_unref);
 }
 
 void
@@ -1251,6 +1314,8 @@ ags_route_dssi_audio_run_run_post(AgsRecall *recall)
 
   g_value_unset(&value);
 
+  g_object_unref(port);
+  
   /* get bpm */
   g_object_get(delay_audio,
 	       "bpm", &port,
@@ -1265,10 +1330,23 @@ ags_route_dssi_audio_run_run_post(AgsRecall *recall)
 
   g_value_unset(&value);
 
+  g_object_unref(port);
+  
   /*  */
   x = (((notation_counter * notation_delay) + notation_counter) * buffer_size);
   
   route_dssi_audio_run->delta_time = x / 16.0 / bpm * 60.0 / ((USEC_PER_SEC * bpm / 4.0) / (4.0 * bpm) / USEC_PER_SEC);
+
+  /* unref */
+  g_object_unref(audio);
+  
+  g_object_unref(count_beats_audio_run);
+
+  g_object_unref(delay_audio_run);
+
+  g_object_unref(delay_audio);
+
+  g_object_unref(output_soundcard);
 }
 
 void

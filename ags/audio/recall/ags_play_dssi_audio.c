@@ -841,12 +841,15 @@ ags_play_dssi_audio_load_ports(AgsPlayDssiAudio *play_dssi_audio)
     AGS_RECALL(play_dssi_audio)->port = g_list_copy(start_port);
   }
 
-  /* free */
+  /* unref/free */
+  g_list_free_full(start_plugin_port,
+		   g_object_unref);
+  
   g_free(filename);
   g_free(effect);
 
   g_free(plugin_name);
-
+  
 #ifdef AGS_DEBUG
   g_message("output lines: %d", play_dssi_audio->output_lines);
 #endif

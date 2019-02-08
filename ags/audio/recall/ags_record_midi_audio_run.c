@@ -653,16 +653,24 @@ ags_record_midi_audio_run_resolve_dependency(AgsRecall *recall)
       i++;
     }
 
+    g_object_unref(dependency);
+    
     /* iterate */
     list = list->next;
   }
 
-  g_list_free(list_start);
+  g_list_free_full(list_start,
+		   g_object_unref);
   
   g_object_set(G_OBJECT(recall),
 	       "delay-audio-run", delay_audio_run,
 	       "count-beats-audio-run", count_beats_audio_run,
 	       NULL);
+
+  /* unref */
+  g_object_unref(recall_id);
+
+  g_object_unref(recall_container);
 }
 
 void
@@ -682,8 +690,6 @@ ags_record_midi_audio_run_run_init_pre(AgsRecall *recall)
   GValue value = {0,};
 
   void (*parent_class_run_init_pre)(AgsRecall *recall);
-  
-  pthread_mutex_t *port_mutex;
   
   record_midi_audio_run = AGS_RECORD_MIDI_AUDIO_RUN(recall);
 
@@ -705,6 +711,10 @@ ags_record_midi_audio_run_run_init_pre(AgsRecall *recall)
 	       NULL);
   
   if(input_sequencer == NULL){
+    g_object_unref(audio);
+    
+    g_object_unref(record_midi_audio);
+
     return;
   }
   
@@ -724,19 +734,10 @@ ags_record_midi_audio_run_run_init_pre(AgsRecall *recall)
   ags_port_safe_read(port,
 		     &value);
 
-  /* get port mutex */
-  pthread_mutex_lock(ags_port_get_class_mutex());
-  
-  port_mutex = port->obj_mutex;
-  
-  pthread_mutex_unlock(ags_port_get_class_mutex());
+  //FIXME:JK: memory leak?
+  filename = g_value_get_string(&value);
 
-  /* filename */
-  pthread_mutex_lock(port_mutex);
-
-  filename = g_strdup(g_value_get_string(&value));
-
-  pthread_mutex_unlock(port_mutex);
+  g_object_unref(port);  
 
   /* instantiate midi file and open rw */
   record_midi_audio_run->midi_file = (GObject *) ags_midi_file_new(filename);
@@ -747,6 +748,11 @@ ags_record_midi_audio_run_run_init_pre(AgsRecall *recall)
 
   /* call parent */
   parent_class_run_init_pre(recall);
+
+  /* unref */
+  g_object_unref(audio);
+    
+  g_object_unref(record_midi_audio);
 }
 
 void
@@ -813,6 +819,16 @@ ags_record_midi_audio_run_run_pre(AgsRecall *recall)
 	       NULL);
   
   if(input_sequencer == NULL){
+    g_object_unref(audio);
+    
+    g_object_unref(record_midi_audio);
+
+    g_object_unref(delay_audio_run);
+
+    g_object_unref(count_beats_audio_run);
+
+    g_object_unref(timestamp);
+
     return;
   }
 
@@ -834,7 +850,6 @@ ags_record_midi_audio_run_run_pre(AgsRecall *recall)
 
   /* get sequencer specific data */
   bpm = ags_sequencer_get_bpm(AGS_SEQUENCER(input_sequencer));
-
 
   /* get notation */
   g_object_get(count_beats_audio_run,
@@ -866,6 +881,8 @@ ags_record_midi_audio_run_run_pre(AgsRecall *recall)
   playback = g_value_get_boolean(&value);
 
   g_value_reset(&value);
+
+  g_object_unref(port);
   
   g_object_get(record_midi_audio,
 	       "record", &port,
@@ -876,6 +893,8 @@ ags_record_midi_audio_run_run_pre(AgsRecall *recall)
 
   record = g_value_get_boolean(&value);
 
+  g_object_unref(port);
+  
   /* delta time specific fields */
   g_value_unset(&value);
 
@@ -892,7 +911,9 @@ ags_record_midi_audio_run_run_pre(AgsRecall *recall)
   division = g_value_get_int64(&value);
   
   g_value_reset(&value);
-  
+
+  g_object_unref(port);
+    
   ags_port_safe_read(record_midi_audio->tempo,
 		     &value);
 
@@ -909,6 +930,8 @@ ags_record_midi_audio_run_run_pre(AgsRecall *recall)
 
   bpm = g_value_get_int64(&value);
 
+  g_object_unref(port);
+  
   /* retrieve buffer */
   midi_buffer = ags_sequencer_get_buffer(AGS_SEQUENCER(input_sequencer),
 					 &buffer_length);
@@ -1232,6 +1255,20 @@ ags_record_midi_audio_run_run_pre(AgsRecall *recall)
 
   /* call parent */
   parent_class_run_pre(recall);
+
+  /* unref */
+  g_object_unref(audio);
+    
+  g_object_unref(record_midi_audio);
+
+  g_object_unref(delay_audio_run);
+
+  g_object_unref(count_beats_audio_run);
+
+  g_object_unref(timestamp);
+
+  g_list_free_full(start_list,
+		   g_object_unref);
 }
 
 void

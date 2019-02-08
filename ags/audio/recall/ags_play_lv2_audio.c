@@ -685,6 +685,15 @@ ags_play_lv2_audio_set_ports(AgsPlugin *plugin, GList *port)
 
     AGS_RECALL(play_lv2_audio)->port = g_list_reverse(port);
   }
+
+  /* unref */
+  g_list_free_full(start_list,
+		   g_object_unref);
+  
+  g_object_unref(lv2_plugin);
+
+  g_list_free_full(start_plugin_port,
+		   g_object_unref);
 }
 
 void
@@ -1174,14 +1183,16 @@ ags_play_lv2_audio_load_ports(AgsPlayLv2Audio *play_lv2_audio)
 
       /* iterate */
       plugin_port = plugin_port->next;
-    }
-    
+    }    
 
     start_port = g_list_reverse(start_port);
     AGS_RECALL(play_lv2_audio)->port = g_list_copy(start_port);
   }
   
-  /* free */
+  /* unref/free */
+  g_list_free_full(start_plugin_port,
+		   g_object_unref);
+
   g_free(filename);
   g_free(effect);
 
