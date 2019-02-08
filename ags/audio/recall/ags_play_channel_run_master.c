@@ -300,7 +300,9 @@ ags_play_channel_run_master_get_property(GObject *gobject,
       pthread_mutex_lock(recall_mutex);
 
       g_value_set_pointer(value,
-			  g_list_copy(play_channel_run_master->stream_channel_run));
+			  g_list_copy_deep(play_channel_run_master->stream_channel_run,
+					   (GCopyFunc) g_object_ref,
+					   NULL));
 
       pthread_mutex_unlock(recall_mutex);
     }
@@ -385,6 +387,12 @@ ags_play_channel_run_master_connect(AgsConnectable *connectable)
 
     list = list->next;
   }
+
+  /* unref */
+  g_object_unref(channel);
+
+  g_list_free_full(list_start,
+		   g_object_unref);
 }
 
 void
@@ -427,6 +435,12 @@ ags_play_channel_run_master_disconnect(AgsConnectable *connectable)
 
     list = list->next;
   }
+
+  /* unref */
+  g_object_unref(channel);
+
+  g_list_free_full(list_start,
+		   g_object_unref);
 }
 
 void
@@ -452,7 +466,8 @@ ags_play_channel_run_master_connect_connection(AgsConnectable *connectable,
 		     G_CALLBACK(ags_play_channel_run_master_stream_channel_done_callback), play_channel_run_master);
   }
 
-  g_list_free(list_start);
+  g_list_free_full(list_start,
+		   g_object_unref);
 }
 
 void
@@ -481,7 +496,8 @@ ags_play_channel_run_master_disconnect_connection(AgsConnectable *connectable,
 			NULL);
   }
 
-  g_list_free(list_start);
+  g_list_free_full(list_start,
+		   g_object_unref);
 }
 
 void
@@ -522,6 +538,11 @@ ags_play_channel_run_master_run_init_pre(AgsRecall *recall)
   ags_play_channel_run_master_remap_dependencies(play_channel_run_master,
 						 NULL, NULL,
 						 first_recycling, last_recycling);
+
+  g_object_unref(channel);
+
+  g_object_unref(first_recycling);
+  g_object_unref(last_recycling);
 }
 
 void
@@ -553,11 +574,17 @@ ags_play_channel_run_master_resolve_dependency(AgsRecall *recall)
   if(list == NULL){
     g_warning("AgsRecallClass::resolve - missing dependency");
 
+    g_object_unref(recall_container);
+
+    g_list_free_full(list_start,
+		     g_object_unref);
+    
     return;
   }
   
   template = AGS_RECALL(list->data);
-  g_list_free(list_start);
+  g_list_free_full(list_start,
+		   g_object_unref);
 
   g_object_get(template,
 	       "recall-dependency", &list_start,
@@ -590,8 +617,18 @@ ags_play_channel_run_master_resolve_dependency(AgsRecall *recall)
       i++;
     }
 
+    g_object_unref(dependency);
+    
     list = list->next;
   }
+
+  /* unref */
+  g_object_unref(recall_container);
+
+  g_list_free_full(list_start,
+		   g_object_unref);
+
+  g_object_unref(recall_id);
 }
 
 void
@@ -642,6 +679,7 @@ ags_play_channel_run_master_remap_dependencies(AgsPlayChannelRunMaster *play_cha
     g_object_get(old_end_region,
 		 "next", &end_recycling,
 		 NULL);
+    g_object_unref(end_recycling);
     
     while(recycling != end_recycling){
       AgsChannel *tmp_channel;
@@ -649,6 +687,7 @@ ags_play_channel_run_master_remap_dependencies(AgsPlayChannelRunMaster *play_cha
       g_object_get(recycling,
 		   "channel", &tmp_channel,
 		   NULL);
+      g_object_unref(tmp_channel);
       
       if(current != tmp_channel){
 	current = tmp_channel;
@@ -690,19 +729,24 @@ ags_play_channel_run_master_remap_dependencies(AgsPlayChannelRunMaster *play_cha
 	    g_object_unref(dependency);
 	  }
 
-	  g_list_free(start_stream_channel_run);
+	  g_list_free_full(start_stream_channel_run,
+			   g_object_unref);
+
+	  g_object_unref(dependency);
 	  
 	  /* iterate */
 	  list = list->next;
 	}
 
-	g_list_free(list_start);
+	g_list_free_full(list_start,
+			 g_object_unref);
       }
 
       /* iterate */
       g_object_get(recycling,
 		   "next", &recycling,
 		   NULL);
+      g_object_unref(recycling);
     }
   }
 
@@ -721,6 +765,7 @@ ags_play_channel_run_master_remap_dependencies(AgsPlayChannelRunMaster *play_cha
     g_object_get(new_end_region,
 		 "next", &end_recycling,
 		 NULL);
+    g_object_unref(end_recycling);
     
     while(recycling != end_recycling){
       AgsChannel *tmp_channel;
@@ -728,7 +773,8 @@ ags_play_channel_run_master_remap_dependencies(AgsPlayChannelRunMaster *play_cha
       g_object_get(recycling,
 		   "channel", &tmp_channel,
 		   NULL);
-
+      g_object_unref(tmp_channel);
+      
       if(current != tmp_channel){
 	current = tmp_channel;
 
@@ -762,25 +808,35 @@ ags_play_channel_run_master_remap_dependencies(AgsPlayChannelRunMaster *play_cha
 			   NULL);
 	    }
 	    
-	  /* iterate */
+	    /* iterate */
 	    master = master->next;
 	  }
 
-	  g_list_free(master_start);
+	  g_object_unref(recall_container);
+
+	  g_list_free_full(master_start,
+			   g_object_unref);
 
 	  /* iterate */
 	  list = list->next;
 	}
 
-	g_list_free(list_start);
+	g_list_free_full(list_start,
+			 g_object_unref);
       }
 
       /* iterate */
       g_object_get(recycling,
 		   "next", &recycling,
 		   NULL);
+      g_object_unref(recycling);
     }
   }
+
+  /* unref */
+  g_object_unref(recall_id);
+
+  g_object_unref(recycling_context);
 }
 
 void

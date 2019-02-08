@@ -445,6 +445,8 @@ ags_loop_channel_run_connect_connection(AgsConnectable *connectable,
     g_signal_connect(count_beats_audio_run, "sequencer-stop",
 		     G_CALLBACK(ags_loop_channel_run_stop_callback), loop_channel_run);
   }
+
+  g_object_unref(count_beats_audio_run);
 }
 
 void
@@ -478,6 +480,8 @@ ags_loop_channel_run_disconnect_connection(AgsConnectable *connectable,
 			loop_channel_run,
 			NULL);
   }
+
+  g_object_unref(count_beats_audio_run);
 }
 
 void
@@ -586,9 +590,8 @@ ags_loop_channel_run_resolve_dependency(AgsRecall *recall)
   AgsRecallContainer *recall_container;
   AgsRecallID *recall_id;
   AgsRecallDependency *recall_dependency;
-  AgsCountBeatsAudioRun *count_beats_audio_run;
 
-  GObject *dependency;
+  AgsCountBeatsAudioRun *count_beats_audio_run;
 
   GList *list_start, *list;  
 
@@ -607,11 +610,18 @@ ags_loop_channel_run_resolve_dependency(AgsRecall *recall)
   if(list == NULL){
     g_warning("AgsRecallClass::resolve - missing dependency");
 
+    g_object_unref(recall_container);
+    
+    g_list_free_full(list_start,
+		     g_object_unref);
+
     return;
   }
   
   template = AGS_RECALL(list->data);
-  g_list_free(list_start);
+  
+  g_list_free_full(list_start,
+		   g_object_unref);
 
   g_object_get(template,
 	       "recall-dependency", &list_start,
@@ -629,6 +639,8 @@ ags_loop_channel_run_resolve_dependency(AgsRecall *recall)
   i_stop = 1;
 
   for(i = 0; i < i_stop && list != NULL;){
+    GObject *dependency;
+    
     recall_dependency = AGS_RECALL_DEPENDENCY(list->data);
 
     g_object_get(recall_dependency,
@@ -642,12 +654,21 @@ ags_loop_channel_run_resolve_dependency(AgsRecall *recall)
       i++;
     }
 
+    g_object_unref(dependency);
+    
     list = list->next;
   }
   
   g_object_set(G_OBJECT(recall),
 	       "count-beats-audio-run", count_beats_audio_run,
 	       NULL);
+
+  g_object_unref(recall_container);
+
+  g_object_unref(recall_id);
+
+  g_list_free_full(list_start,
+		   g_object_unref);
 }
 
 void
@@ -667,9 +688,7 @@ ags_loop_channel_run_create_audio_signals(AgsLoopChannelRun *loop_channel_run)
   //  g_message("debug");
 
   g_object_get(loop_channel_run,
-	       "output-soundcard", &output_soundcard,
 	       "source", &channel,
-	       "recall-id", &recall_id,
 	       NULL);
 
   /* recycling */
@@ -679,12 +698,26 @@ ags_loop_channel_run_create_audio_signals(AgsLoopChannelRun *loop_channel_run)
 	       NULL);
 
   if(recycling == NULL){
+    g_object_unref(channel);
+    
     return;
   }
+
+  g_object_unref(recycling);
+  g_object_unref(last_recycling);
+
+  g_object_get(loop_channel_run,
+	       "output-soundcard", &output_soundcard,
+	       "recall-id", &recall_id,
+	       NULL);
   
   g_object_get(last_recycling,
 	       "next", &end_recycling,
 	       NULL);
+
+  if(end_recycling != NULL){
+    g_object_unref(end_recycling);
+  }
   
   /* delay and attack */
   //TODO:JK: unclear
@@ -724,6 +757,12 @@ ags_loop_channel_run_create_audio_signals(AgsLoopChannelRun *loop_channel_run)
 
     recycling = recycling->next;
   }
+
+  g_object_unref(channel);
+
+  g_object_unref(output_soundcard);
+  
+  g_object_unref(recall_id);
 }
 
 void

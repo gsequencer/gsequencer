@@ -465,6 +465,8 @@ ags_play_channel_set_muted(AgsMutable *mutable, gboolean muted)
 		      &value);
 
   g_value_unset(&value);
+
+  g_object_unref(port);
 }
 
 static AgsPluginPort*

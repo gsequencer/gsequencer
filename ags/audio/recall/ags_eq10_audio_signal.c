@@ -192,6 +192,8 @@ ags_eq10_audio_signal_run_init_pre(AgsRecall *recall)
 				     AGS_EQ10_AUDIO_SIGNAL_CACHE_SIZE);
   ags_audio_buffer_util_clear_double(eq10_audio_signal->cache_14336hz, 1,
 				     AGS_EQ10_AUDIO_SIGNAL_CACHE_SIZE);
+
+  g_object_unref(source);
 }
 
 void
@@ -277,14 +279,18 @@ ags_eq10_audio_signal_run_inter(AgsRecall *recall)
 
   g_object_get(source,
 	       "note", &note,
-	       "samplerate", &samplerate,
-	       "buffer-size", &buffer_size,
-	       "format", &format,
 	       NULL);
   
   if(ags_recall_global_get_rt_safe() &&
      parent_recycling_context != NULL &&
      note == NULL){
+    g_object_unref(source);
+
+    g_object_unref(recall_id);
+    
+    g_object_unref(recycling_context);
+    g_object_unref(parent_recycling_context);
+    
     return;
   }
 
@@ -293,8 +299,24 @@ ags_eq10_audio_signal_run_inter(AgsRecall *recall)
   if(stream_source == NULL){
     ags_recall_done(recall);
 
+    g_object_unref(source);
+
+    g_object_unref(recall_id);
+    
+    g_object_unref(recycling_context);
+    g_object_unref(parent_recycling_context);
+
+    g_list_free_full(note,
+		     g_object_unref);
+    
     return;
   }
+
+  g_object_get(source,
+	       "samplerate", &samplerate,
+	       "buffer-size", &buffer_size,
+	       "format", &format,
+	       NULL);
 
   g_object_get(eq10_audio_signal,
 	       "parent", &eq10_recycling,
@@ -341,6 +363,8 @@ ags_eq10_audio_signal_run_inter(AgsRecall *recall)
   
   pressure = g_value_get_float(&value) / 10.0;
   g_value_reset(&value);
+
+  g_object_unref(port);
   
   g_object_get(eq10_channel,
 	       "peak-28hz", &port,
@@ -351,23 +375,29 @@ ags_eq10_audio_signal_run_inter(AgsRecall *recall)
   peak_28hz = g_value_get_float(&value) / 2.0 - 0.01;
   g_value_reset(&value);
 
+  g_object_unref(port);
+
   g_object_get(eq10_channel,
 	       "peak-56hz", &port,
 	       NULL);
   ags_port_safe_read(port,
 		     &value);
-  
+
   peak_56hz = g_value_get_float(&value) / 2.0 - 0.01;
   g_value_reset(&value);
+  
+  g_object_unref(port);
 
   g_object_get(eq10_channel,
 	       "peak-112hz", &port,
 	       NULL);
   ags_port_safe_read(port,
 		     &value);
-  
+
   peak_112hz = g_value_get_float(&value) / 2.0 - 0.01;
   g_value_reset(&value);
+  
+  g_object_unref(port);
 
   g_object_get(eq10_channel,
 	       "peak-224hz", &port,
@@ -375,8 +405,12 @@ ags_eq10_audio_signal_run_inter(AgsRecall *recall)
   ags_port_safe_read(port,
 		     &value);
   
+  g_object_unref(port);
+
   peak_224hz = g_value_get_float(&value) / 2.0 - 0.01;
   g_value_reset(&value);
+
+  g_object_unref(port);
 
   g_object_get(eq10_channel,
 	       "peak-448hz", &port,
@@ -387,6 +421,8 @@ ags_eq10_audio_signal_run_inter(AgsRecall *recall)
   peak_448hz = g_value_get_float(&value) / 2.0 - 0.01;
   g_value_reset(&value);
 
+  g_object_unref(port);
+
   g_object_get(eq10_channel,
 	       "peak-896hz", &port,
 	       NULL);  
@@ -396,6 +432,8 @@ ags_eq10_audio_signal_run_inter(AgsRecall *recall)
   peak_896hz = g_value_get_float(&value) / 2.0 - 0.01;
   g_value_reset(&value);
 
+  g_object_unref(port);
+
   g_object_get(eq10_channel,
 	       "peak-1792hz", &port,
 	       NULL);
@@ -404,6 +442,8 @@ ags_eq10_audio_signal_run_inter(AgsRecall *recall)
   
   peak_1792hz = g_value_get_float(&value) / 2.0 - 0.01;
   g_value_reset(&value);
+  
+  g_object_unref(port);
 
   g_object_get(eq10_channel,
 	       "peak-3584hz", &port,
@@ -414,6 +454,8 @@ ags_eq10_audio_signal_run_inter(AgsRecall *recall)
   peak_3584hz = g_value_get_float(&value) / 2.0 - 0.01;
   g_value_reset(&value);
 
+  g_object_unref(port);
+
   g_object_get(eq10_channel,
 	       "peak-7168hz", &port,
 	       NULL);
@@ -422,6 +464,8 @@ ags_eq10_audio_signal_run_inter(AgsRecall *recall)
   
   peak_7168hz = g_value_get_float(&value) / 2.0 - 0.01;
   g_value_reset(&value);
+  
+  g_object_unref(port);
 
   g_object_get(eq10_channel,
 	       "peak-14336hz", &port,
@@ -431,6 +475,8 @@ ags_eq10_audio_signal_run_inter(AgsRecall *recall)
   peak_14336hz = g_value_get_float(&value) / 2.0 - 0.01;
 
   g_value_unset(&value);
+  
+  g_object_unref(port);
 
   /* clear/copy - preserve trailing */
   if(buffer_size > 8){
@@ -931,6 +977,22 @@ ags_eq10_audio_signal_run_inter(AgsRecall *recall)
   ags_audio_buffer_util_copy_buffer_to_buffer(stream_source->data, 1, 0,
 					      output_buffer, 1, 0,
 					      buffer_size, output_copy_mode);
+
+  /* unref */
+  g_object_unref(source);
+
+  g_object_unref(recall_id);
+    
+  g_object_unref(recycling_context);
+  g_object_unref(parent_recycling_context);
+
+  g_list_free_full(note,
+		   g_object_unref);
+  
+  g_object_unref(eq10_recycling);
+
+  g_object_unref(eq10_channel);
+  g_object_unref(eq10_channel_run);
 }
 
 /**

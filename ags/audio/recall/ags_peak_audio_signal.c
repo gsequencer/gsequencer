@@ -293,9 +293,16 @@ ags_peak_audio_signal_run_inter(AgsRecall *recall)
 				samplerate,
 				buffer_size,
 				format);
+
+    g_object_unref(peak_recycling);
+
+    g_object_unref(peak_channel_run);
+    g_object_unref(peak_channel);
   }else{
     ags_recall_done(recall);
   }
+
+  g_object_unref(source);
 }
 
 /**

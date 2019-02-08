@@ -122,10 +122,10 @@ ags_play_audio_signal_finalize(GObject *gobject)
 void
 ags_play_audio_signal_run_inter(AgsRecall *recall)
 {
-  AgsChannel *channel;
   AgsAudioSignal *source;
   AgsAudioSignal *rt_template;
   AgsPort *muted;
+
   AgsPlayChannel *play_channel;
   AgsPlayChannelRun *play_channel_run;
   AgsPlayRecycling *play_recycling;
@@ -174,7 +174,10 @@ ags_play_audio_signal_run_inter(AgsRecall *recall)
 
   if(output_soundcard == NULL){
     g_warning("no soundcard");
-    
+
+    g_object_unref(output_soundcard);
+    g_object_unref(source);
+
     return;
   }
 
@@ -189,6 +192,9 @@ ags_play_audio_signal_run_inter(AgsRecall *recall)
   
   if(buffer0 == NULL){
     g_warning("no output buffer");
+
+    g_object_unref(output_soundcard);
+    g_object_unref(source);
     
     return;
   }
@@ -213,6 +219,8 @@ ags_play_audio_signal_run_inter(AgsRecall *recall)
 		 "output-soundcard-channel", &audio_channel,
 		 NULL);
   }else{
+    AgsChannel *channel;
+    
     g_object_get(play_channel_run,
 		 "recall-channel", &play_channel,
 		 NULL);
@@ -230,6 +238,8 @@ ags_play_audio_signal_run_inter(AgsRecall *recall)
     current_muted = (g_value_get_float(&muted_value) == 1.0) ? TRUE: FALSE;
     g_value_unset(&muted_value);
 
+    g_object_unref(muted);
+    
     if(current_muted){
       return;
     }
@@ -252,6 +262,8 @@ ags_play_audio_signal_run_inter(AgsRecall *recall)
       audio_channel = g_value_get_uint64(&audio_channel_value);
       g_value_unset(&audio_channel_value);
     }
+
+    g_object_unref(channel);
   }
 
   buffer_size = source->buffer_size;
@@ -330,12 +342,8 @@ ags_play_audio_signal_run_inter(AgsRecall *recall)
       
       note = note->next;
     }
-
-    g_list_free(note_start);
   }else{
     stream = source->stream_current;
-
-    g_list_free(note_start);
         
     if(stream == NULL){
       AgsRecycling *recycling;
@@ -350,8 +358,8 @@ ags_play_audio_signal_run_inter(AgsRecall *recall)
 					  source);
 	g_object_unref(source);
       }
-      
-      return;
+
+      goto ags_play_audio_signal_run_inter_END;
     }
     
     /* check if resample */
@@ -426,7 +434,22 @@ ags_play_audio_signal_run_inter(AgsRecall *recall)
   }
   
   /* call parent */
+ags_play_audio_signal_run_inter_END:
   parent_class_run_inter(recall);
+
+  /* unref */
+  g_object_unref(output_soundcard);
+  g_object_unref(source);
+
+  g_object_unref(play_recycling);
+
+  g_object_unref(play_channel);
+  g_object_unref(play_channel_run);
+
+  g_object_unref(rt_template);
+
+  g_list_free_full(note_start,
+		   g_object_unref);
 }
 
 /**

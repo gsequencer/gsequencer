@@ -167,6 +167,7 @@ ags_envelope_audio_signal_run_inter(AgsRecall *recall)
   guint format;
   guint note_offset, delay_counter;
   gdouble delay;
+  gdouble current_fixed_length;
 
   guint i, j;
 
@@ -231,7 +232,6 @@ ags_envelope_audio_signal_run_inter(AgsRecall *recall)
 
   /* get some fields */
   g_object_get(envelope_audio_signal,
-	       "parent", &envelope_recycling,
 	       "source", &source,
 	       NULL);
 
@@ -239,8 +239,15 @@ ags_envelope_audio_signal_run_inter(AgsRecall *recall)
 
   if(stream_source == NULL){
     ags_recall_done(recall);
+
+    g_object_unref(source);
+    
     return;
   }
+
+  g_object_get(envelope_audio_signal,
+	       "parent", &envelope_recycling,
+	       NULL);
 
   g_object_get(envelope_recycling,
 	       "parent", &envelope_channel_run,
@@ -266,6 +273,8 @@ ags_envelope_audio_signal_run_inter(AgsRecall *recall)
   
   do_use_note_length = g_value_get_boolean(&value);
 
+  g_object_unref(use_note_length);
+
   /* get use fixed length port */
   g_value_reset(&value);
 
@@ -276,6 +285,21 @@ ags_envelope_audio_signal_run_inter(AgsRecall *recall)
   
   g_value_unset(&value);
 
+  g_object_unref(use_fixed_length);
+
+  /* get fixed length */
+  g_value_init(&value,
+	       G_TYPE_DOUBLE);
+
+  ags_port_safe_read(fixed_length,
+		     &value);
+
+  current_fixed_length = g_value_get_double(&value);
+
+  g_value_unset(&value);
+
+  g_object_unref(fixed_length);
+  
   /* initialize some control values */
   g_object_get(source,
 	       "output-soundcard", &output_soundcard,
@@ -355,21 +379,6 @@ ags_envelope_audio_signal_run_inter(AgsRecall *recall)
       if(do_use_note_length){
 	frame_count = (key_x1 - key_x0) * (delay * buffer_size);
       }else if(do_use_fixed_length){
-	gdouble current_fixed_length;
-	
-	GValue value = {0,};
-
-	/* get fixed length */
-	g_value_init(&value,
-		     G_TYPE_DOUBLE);
-
-	ags_port_safe_read(fixed_length,
-			   &value);
-
-	current_fixed_length = g_value_get_double(&value);
-
-	g_value_unset(&value);
-
 	/* calculuate frame count */
 	frame_count = current_fixed_length * (delay * buffer_size);
       }
@@ -615,7 +624,19 @@ ags_envelope_audio_signal_run_inter(AgsRecall *recall)
     note = note->next;
   }
 
-  g_list_free(note_start);
+  /* unref */
+  g_object_unref(source);
+
+  g_object_unref(envelope_recycling);
+
+  g_object_unref(envelope_channel_run);
+
+  g_object_unref(envelope_channel);
+
+  g_object_unref(output_soundcard);
+  
+  g_list_free_full(note_start,
+		   g_object_unref);
 }
 
 /**

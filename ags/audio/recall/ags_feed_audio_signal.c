@@ -186,6 +186,11 @@ ags_feed_audio_signal_run_pre(AgsRecall *recall)
 		       NULL);
 	
 	  template = ags_audio_signal_get_template(list_start);
+
+	  g_object_unref(recycling);
+
+	  g_list_free_full(list_start,
+			   g_object_unref);
 	}
     
 	/* get notation delay */
@@ -205,7 +210,13 @@ ags_feed_audio_signal_run_pre(AgsRecall *recall)
     ags_recall_done(recall);
   }
 
-  g_list_free(note_start);
+  /* unref */
+  g_object_unref(output_soundcard);
+
+  g_object_unref(audio_signal);
+  
+  g_list_free_full(note_start,
+		   g_object_unref);
 }
 
 /**

@@ -163,6 +163,8 @@ ags_mute_audio_signal_run_inter(AgsRecall *recall)
   if(stream_source == NULL){
     ags_recall_done(recall);
 
+    g_object_unref(source);
+    
     return;
   }
 
@@ -202,6 +204,8 @@ ags_mute_audio_signal_run_inter(AgsRecall *recall)
   
   g_value_unset(&channel_value);
 
+  g_object_unref(port);
+
   /* check audio */
   g_object_get(mute_audio,
 	       "muted", &port,
@@ -217,13 +221,26 @@ ags_mute_audio_signal_run_inter(AgsRecall *recall)
 
   g_value_unset(&audio_value);
 
+  g_object_unref(port);
+  
   /* if not muted return */
   if(!channel_muted && !audio_muted){
-    return;
+    goto ags_mute_audio_signal_run_inter_END;
   }
   
   /* mute */
   memset((signed short *) stream_source->data, 0, buffer_size * sizeof(signed short));
+
+ags_mute_audio_signal_run_inter_END:
+
+  /* unref */
+  g_object_unref(source);
+
+  g_object_unref(mute_recycling);
+
+  g_object_unref(mute_channel_run);
+  g_object_unref(mute_channel);
+  g_object_unref(mute_audio);
 }
 
 /**

@@ -171,6 +171,8 @@ ags_peak_channel_run_run_pre(AgsRecall *recall)
 
   g_value_unset(&value);
 
+  g_object_unref(buffer_computed);
+  
   if(!current_buffer_computed){    
     /* set buffer-computed port to TRUE */
     g_value_init(&value,
@@ -194,6 +196,8 @@ ags_peak_channel_run_run_pre(AgsRecall *recall)
     ags_audio_buffer_util_clear_buffer(peak_channel->buffer, 1,
 				       buffer_size, ags_audio_buffer_util_format_from_soundcard(format));
   }
+
+  g_object_unref(peak_channel);
 }
 
 /**

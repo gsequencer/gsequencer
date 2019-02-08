@@ -457,7 +457,8 @@ ags_play_channel_run_run_post(AgsRecall *recall)
       list = list->next;
     }
 
-    g_list_free(list_start);
+    g_list_free_full(list_start,
+		     g_object_unref);
   }else{
     /* connect done */
     g_object_get(source,
@@ -508,12 +509,20 @@ ags_play_channel_run_run_post(AgsRecall *recall)
       list = list->next;
     }
 
-    g_list_free(list_start);
+    g_list_free_full(list_start,
+		     g_object_unref);
   }
   
   if(!found){
     ags_recall_done(recall);
   }
+
+  /* unref */
+  g_object_unref(source);
+
+  g_object_unref(recall_id);
+
+  g_object_unref(recycling_context);
 }
 
 void
@@ -573,14 +582,21 @@ ags_play_channel_run_resolve_dependency(AgsRecall *recall)
       i++;
     }
 
+    g_object_unref(dependency);
+    
     list = list->next;
   }
 
-  g_list_free(list_start);
+  g_list_free_full(list_start,
+		   g_object_unref);
 
   g_object_set(G_OBJECT(recall),
 	       "stream_channel_run", stream_channel_run,
 	       NULL);
+
+  g_object_unref(recall_id);
+  
+  g_object_unref(recall_container);
 }
 
 /**

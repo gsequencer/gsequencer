@@ -369,6 +369,8 @@ ags_play_audio_set_muted(AgsMutable *mutable, gboolean muted)
 		      &value);
 
   g_value_unset(&value);
+
+  g_object_unref(port);
 }
 
 static AgsPluginPort*
