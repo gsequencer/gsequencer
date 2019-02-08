@@ -427,7 +427,9 @@ ags_pulse_client_get_property(GObject *gobject,
       pthread_mutex_lock(pulse_client_mutex);
 
       g_value_set_pointer(value,
-			  g_list_copy(pulse_client->device));
+			  g_list_copy_deep(pulse_client->device,
+					   (GCopyFunc) g_object_ref,
+					   NULL));
 
       pthread_mutex_unlock(pulse_client_mutex);
     }
@@ -437,7 +439,9 @@ ags_pulse_client_get_property(GObject *gobject,
       pthread_mutex_lock(pulse_client_mutex);
 
       g_value_set_pointer(value,
-			  g_list_copy(pulse_client->port));
+			  g_list_copy_deep(pulse_client->port,
+					   (GCopyFunc) g_object_ref,
+					   NULL));
 
       pthread_mutex_unlock(pulse_client_mutex);
     }
@@ -1211,16 +1215,10 @@ ags_pulse_client_close(AgsPulseClient *pulse_client)
   pthread_mutex_unlock(pulse_client_mutex);
 #endif
 
-  g_object_get(pulse_client,
-	       "device", &start_device,
-	       NULL);
-
-  g_list_free_full(start_device,
-		   g_object_unref);
-
   pthread_mutex_lock(pulse_client_mutex);
 
-  g_list_free(pulse_client->device);
+  g_list_free_full(pulse_client->device,
+		   g_object_unref);
   pulse_client->device = NULL;
 
   pthread_mutex_unlock(pulse_client_mutex);
@@ -1291,6 +1289,8 @@ ags_pulse_client_activate(AgsPulseClient *pulse_client)
 			    port_name,
 			    (ags_pulse_port_test_flags(port->data, AGS_PULSE_PORT_IS_AUDIO) ? TRUE: FALSE), (ags_pulse_port_test_flags(port->data, AGS_PULSE_PORT_IS_MIDI) ? TRUE: FALSE),
 			    (ags_pulse_port_test_flags(port->data, AGS_PULSE_PORT_IS_OUTPUT) ? TRUE: FALSE));
+
+    g_free(port_name);
     
     port = port->next;
   }

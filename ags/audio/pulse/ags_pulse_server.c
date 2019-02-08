@@ -567,7 +567,9 @@ ags_pulse_server_get_property(GObject *gobject,
       pthread_mutex_lock(pulse_server_mutex);
 
       g_value_set_pointer(value,
-			  g_list_copy(pulse_server->client));
+			  g_list_copy_deep(pulse_server->client,
+					   (GCopyFunc) g_object_ref,
+					   NULL));
 
       pthread_mutex_unlock(pulse_server_mutex);
     }
@@ -1194,6 +1196,9 @@ ags_pulse_server_get_soundcard(AgsSoundServer *sound_server,
     device = device->next;
   }
 
+  g_list_free_full(device_start,
+		   g_object_unref);
+  
   return(g_list_reverse(list));
 }
 
@@ -1264,7 +1269,10 @@ ags_pulse_server_get_sequencer(AgsSoundServer *sound_server,
     device = device->next;
   }
 #endif
-  
+
+  g_list_free_full(device_start,
+		   g_object_unref);
+    
   return(g_list_reverse(list));
 }
 
@@ -1522,7 +1530,8 @@ ags_pulse_server_unregister_soundcard(AgsSoundServer *sound_server,
       list = list->next;
     }
 
-    g_list_free(list_start);
+    g_list_free_full(list_start,
+		     g_object_unref);
   }else if(AGS_IS_PULSE_DEVIN(soundcard)){
     g_object_get(soundcard,
 		 "pulse-port", &list_start,
@@ -1538,7 +1547,8 @@ ags_pulse_server_unregister_soundcard(AgsSoundServer *sound_server,
       list = list->next;
     }
 
-    g_list_free(list_start);
+    g_list_free_full(list_start,
+		     g_object_unref);
   }
   
   ags_pulse_client_remove_device(default_client,
@@ -1557,7 +1567,10 @@ ags_pulse_server_unregister_soundcard(AgsSoundServer *sound_server,
     pthread_mutex_unlock(pulse_server_mutex);
   }
 
-  g_list_free(port);
+  g_object_unref(default_client);
+  
+  g_list_free_full(port,
+		   g_object_unref);
 }
 
 GObject*
@@ -1612,6 +1625,8 @@ ags_pulse_server_register_default_soundcard(AgsPulseServer *pulse_server)
     return(NULL);
   }
 
+  application_context = ags_application_context_get_instance();
+
   /* get pulse server mutex */
   pthread_mutex_lock(ags_pulse_server_get_class_mutex());
   
@@ -1622,17 +1637,10 @@ ags_pulse_server_register_default_soundcard(AgsPulseServer *pulse_server)
   /* get some fields */
   pthread_mutex_lock(pulse_server_mutex);
 
-  application_context = pulse_server->application_context;
-
   default_client = (AgsPulseClient *) pulse_server->default_client;
 
   pthread_mutex_unlock(pulse_server_mutex);
-  
-  /* the default client */
-  g_object_get(pulse_server,
-	       "default-pulse-client", &default_client,
-	       NULL);
-  
+    
   /* the default client */
   if(default_client == NULL){
     default_client = ags_pulse_client_new((GObject *) pulse_server);
@@ -1883,8 +1891,10 @@ ags_pulse_server_find_port(AgsPulseServer *pulse_server,
       pthread_mutex_unlock(pulse_port_mutex);
       
       if(success){
-	g_list_free(client_start);
-	g_list_free(port_start);
+	g_list_free_full(client_start,
+			 g_object_unref);
+	g_list_free_full(port_start,
+			 g_object_unref);
 	
 	return(port->data);
       }
@@ -1893,13 +1903,15 @@ ags_pulse_server_find_port(AgsPulseServer *pulse_server,
       port = port->next;
     }
 
-    g_list_free(port_start);
+    g_list_free_full(port_start,
+		     g_object_unref);
 
     /* iterate */
     client = client->next;
   }
 
-  g_list_free(client_start);
+  g_list_free_full(client_start,
+		   g_object_unref);
   
   return(NULL);
 }
@@ -2015,20 +2027,6 @@ ags_pulse_server_connect_client(AgsPulseServer *pulse_server)
 		 "client-name", &client_name,
 		 NULL);
     
-    /* get pulse client mutex */
-    pthread_mutex_lock(ags_pulse_client_get_class_mutex());
-  
-    pulse_client_mutex = AGS_PULSE_CLIENT(client->data)->obj_mutex;
-  
-    pthread_mutex_unlock(ags_pulse_client_get_class_mutex());
-
-    /* client name */
-    pthread_mutex_lock(pulse_client_mutex);
-
-    client_name = g_strdup(client_name);
-    
-    pthread_mutex_unlock(pulse_client_mutex);
-
     /* open */
     ags_pulse_client_open((AgsPulseClient *) client->data,
 			  client_name);
@@ -2038,7 +2036,8 @@ ags_pulse_server_connect_client(AgsPulseServer *pulse_server)
     client = client->next;
   }
 
-  g_list_free(client_start);
+  g_list_free_full(client_start,
+		   g_object_unref);
 }
 
 /**
@@ -2074,7 +2073,8 @@ ags_pulse_server_disconnect_client(AgsPulseServer *pulse_server)
     client = client->next;
   }
 
-  g_list_free(client_start);
+  g_list_free_full(client_start,
+		   g_object_unref);
 }
 
 

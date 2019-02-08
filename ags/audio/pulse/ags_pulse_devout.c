@@ -1117,7 +1117,9 @@ ags_pulse_devout_get_property(GObject *gobject,
       pthread_mutex_lock(pulse_devout_mutex);
 
       g_value_set_pointer(value,
-			  g_list_copy(pulse_devout->pulse_port));
+			  g_list_copy_deep(pulse_devout->pulse_port,
+					   (GCopyFunc) g_object_ref,
+					   NULL));
 
       pthread_mutex_unlock(pulse_devout_mutex);
     }
@@ -1150,16 +1152,12 @@ ags_pulse_devout_dispose(GObject *gobject)
 
   /* notify soundcard */
   if(pulse_devout->notify_soundcard != NULL){
-    if(pulse_devout->application_context != NULL){
-      AgsTaskThread *task_thread;
-    
-      g_object_get(pulse_devout->application_context,
-		   "task-thread", &task_thread,
-		   NULL);
+    AgsTaskThread *task_thread;
+
+    task_thread = ags_concurrency_provider_get_task_thread(AGS_CONCURRENCY_PROVIDER(ags_application_context_get_instance()));
       
-      ags_task_thread_remove_cyclic_task(task_thread,
-					 (AgsTask *) pulse_devout->notify_soundcard);
-    }
+    ags_task_thread_remove_cyclic_task(task_thread,
+				       (AgsTask *) pulse_devout->notify_soundcard);
     
     g_object_unref(pulse_devout->notify_soundcard);
 
@@ -1217,16 +1215,12 @@ ags_pulse_devout_finalize(GObject *gobject)
 
   /* notify soundcard */
   if(pulse_devout->notify_soundcard != NULL){
-    if(pulse_devout->application_context != NULL){
-      AgsTaskThread *task_thread;
-      
-      g_object_get(pulse_devout->application_context,
-		   "task-thread", &task_thread,
-		   NULL);
+    AgsTaskThread *task_thread;
 
-      ags_task_thread_remove_cyclic_task(task_thread,
-					 (AgsTask *) pulse_devout->notify_soundcard);
-    }
+    task_thread = ags_concurrency_provider_get_task_thread(AGS_CONCURRENCY_PROVIDER(ags_application_context_get_instance()));
+
+    ags_task_thread_remove_cyclic_task(task_thread,
+				       (AgsTask *) pulse_devout->notify_soundcard);
     
     g_object_unref(pulse_devout->notify_soundcard);
   }
@@ -1787,13 +1781,7 @@ ags_pulse_devout_list_cards(AgsSoundcard *soundcard,
   
   pulse_devout = AGS_PULSE_DEVOUT(soundcard);
 
-  g_object_get(pulse_devout,
-	       "application-context", &application_context,
-	       NULL);
-
-  if(application_context == NULL){
-    return;
-  }
+  application_context = ags_application_context_get_instance();
   
   if(card_id != NULL){
     *card_id = NULL;
@@ -1828,24 +1816,15 @@ ags_pulse_devout_list_cards(AgsSoundcard *soundcard,
 		     NULL);
 	
 	if(pulse_client != NULL){
-	  pthread_mutex_t *pulse_client_mutex;
-	  
-	  /* get pulse client mutex */
-	  pthread_mutex_lock(ags_pulse_client_get_class_mutex());
-  
-	  pulse_client_mutex = pulse_client->obj_mutex;
-  
-	  pthread_mutex_unlock(ags_pulse_client_get_class_mutex());
-
 	  /* get client name */
-	  pthread_mutex_lock(pulse_client_mutex);
-
-	  client_name = g_strdup(pulse_client->client_name);
-
-	  pthread_mutex_unlock(pulse_client_mutex);
+	  g_object_get(pulse_client,
+		       "client-name", &client_name,
+		       NULL);
 	  
 	  *card_name = g_list_prepend(*card_name,
 				      client_name);
+
+	  g_object_unref(pulse_client);
 	}else{
 	  *card_name = g_list_prepend(*card_name,
 				      g_strdup("(null)"));
@@ -2152,7 +2131,8 @@ ags_pulse_devout_port_play(AgsSoundcard *soundcard,
   pthread_mutex_t *callback_finish_mutex;
   
   pulse_devout = AGS_PULSE_DEVOUT(soundcard);
-  application_context = ags_soundcard_get_application_context(soundcard);
+  
+  application_context = ags_application_context_get_instance();
   
   /* get pulse devout mutex */
   pthread_mutex_lock(ags_pulse_devout_get_class_mutex());
@@ -2414,9 +2394,8 @@ ags_pulse_devout_port_play(AgsSoundcard *soundcard,
   pthread_mutex_unlock(notify_soundcard->return_mutex);
 
   /* update soundcard */
-  g_object_get(application_context,
-	       "task-thread", &task_thread,
-	       NULL);  
+  task_thread = ags_concurrency_provider_get_task_thread(AGS_CONCURRENCY_PROVIDER(application_context));
+
   task = NULL;
   
   /* tic soundcard */

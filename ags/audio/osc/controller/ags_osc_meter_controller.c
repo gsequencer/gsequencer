@@ -1187,7 +1187,7 @@ ags_osc_meter_controller_monitor_meter_audio(AgsOscMeterController *osc_meter_co
      !strncmp(path + path_offset,
 	      "/AgsInput",
 	      9)){
-    AgsChannel *start_channel, *channel;
+    AgsChannel *start_channel, *channel, *tmp_channel;
       
     regmatch_t match_arr[2];
 
@@ -1216,16 +1216,18 @@ ags_osc_meter_controller_monitor_meter_audio(AgsOscMeterController *osc_meter_co
       g_object_get(audio,
 		   "output", &start_channel,
 		   NULL);
+      g_object_unref(start_channel);
     }else{
       path_offset += 9;
       
       g_object_get(audio,
 		   "input", &start_channel,
 		   NULL);
+      g_object_unref(start_channel);
     }
 
     channel = start_channel;
-    
+     
     /* compile regex */
     pthread_mutex_lock(&regex_mutex);
   
@@ -1298,10 +1300,13 @@ ags_osc_meter_controller_monitor_meter_audio(AgsOscMeterController *osc_meter_co
 	}else{
 	  start_response = retval;
 	}
-	
+
+	/* iterate */
 	g_object_get(channel,
 		     "next", &channel,
 		     NULL);
+
+	g_object_unref(channel);
       }
     }else if(ags_regexec(&voluntary_access_regex, path + path_offset, index_max_matches, match_arr, 0) == 0){
       path_offset += 3;
@@ -1360,9 +1365,12 @@ ags_osc_meter_controller_monitor_meter_audio(AgsOscMeterController *osc_meter_co
 	  start_response = retval;
 	}
 	
+	/* iterate */
 	g_object_get(channel,
 		     "next", &channel,
 		     NULL);
+
+	g_object_unref(channel);
       }
     }else if(ags_regexec(&wildcard_access_regex, path + path_offset, index_max_matches, match_arr, 0) == 0){
       path_offset += 3;
@@ -1395,9 +1403,12 @@ ags_osc_meter_controller_monitor_meter_audio(AgsOscMeterController *osc_meter_co
 	  start_response = retval;
 	}
 	
+	/* iterate */
 	g_object_get(channel,
 		     "next", &channel,
 		     NULL);
+
+	g_object_unref(channel);
       }
     }else{
       osc_response = ags_osc_response_new();
@@ -1681,8 +1692,10 @@ ags_osc_meter_controller_monitor_meter_audio(AgsOscMeterController *osc_meter_co
 	ags_osc_response_set_flags(osc_response,
 				   AGS_OSC_RESPONSE_OK);
 
-	g_list_free(start_play);
-	g_list_free(start_recall);
+	g_list_free_full(start_play,
+			 g_object_unref);
+	g_list_free_full(start_recall,
+			 g_object_unref);
 
 	return(start_response);
       }
@@ -1707,8 +1720,10 @@ ags_osc_meter_controller_monitor_meter_audio(AgsOscMeterController *osc_meter_co
 		     "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_SERVER_FAILURE,
 		     NULL);
 
-	g_list_free(start_play);
-	g_list_free(start_recall);
+	g_list_free_full(start_play,
+			 g_object_unref);
+	g_list_free_full(start_recall,
+			 g_object_unref);
 
 	return(start_response);
       }
@@ -1864,14 +1879,18 @@ ags_osc_meter_controller_monitor_meter_audio(AgsOscMeterController *osc_meter_co
 		   "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_MALFORMED_REQUEST,
 		   NULL);
 
-      g_list_free(start_play);
-      g_list_free(start_recall);
+      g_list_free_full(start_play,
+		       g_object_unref);
+      g_list_free_full(start_recall,
+		       g_object_unref);
 
       return(start_response);
     }
 
-    g_list_free(start_play);
-    g_list_free(start_recall);
+    g_list_free_full(start_play,
+		     g_object_unref);
+    g_list_free_full(start_recall,
+		     g_object_unref);
   }
 
   return(start_response);
@@ -2165,8 +2184,10 @@ ags_osc_meter_controller_monitor_meter_channel(AgsOscMeterController *osc_meter_
       ags_osc_response_set_flags(osc_response,
 				 AGS_OSC_RESPONSE_OK);
 
-      g_list_free(start_play);
-      g_list_free(start_recall);
+      g_list_free_full(start_play,
+		       g_object_unref);
+      g_list_free_full(start_recall,
+		       g_object_unref);
 
       return(start_response);
     }
@@ -2191,8 +2212,10 @@ ags_osc_meter_controller_monitor_meter_channel(AgsOscMeterController *osc_meter_
 		   "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_SERVER_FAILURE,
 		   NULL);
 
-      g_list_free(start_play);
-      g_list_free(start_recall);
+      g_list_free_full(start_play,
+		       g_object_unref);
+      g_list_free_full(start_recall,
+		       g_object_unref);
 
       return(start_response);
     }
@@ -2337,8 +2360,10 @@ ags_osc_meter_controller_monitor_meter_channel(AgsOscMeterController *osc_meter_
       }
     }
 
-    g_list_free(start_play);
-    g_list_free(start_recall);
+    g_list_free_full(start_play,
+		       g_object_unref);
+    g_list_free_full(start_recall,
+		       g_object_unref);
   }else{
     osc_response = ags_osc_response_new();
     start_response = g_list_prepend(start_response,
@@ -2554,7 +2579,8 @@ ags_osc_meter_controller_monitor_meter_recall(AgsOscMeterController *osc_meter_c
 	ags_osc_response_set_flags(osc_response,
 				   AGS_OSC_RESPONSE_OK);
 
-	g_list_free(start_port);
+	g_list_free_full(start_port,
+			 g_object_unref);
 	
 	return(start_response);
       }
@@ -2573,7 +2599,8 @@ ags_osc_meter_controller_monitor_meter_recall(AgsOscMeterController *osc_meter_c
 		     "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_SERVER_FAILURE,
 		     NULL);
 
-	g_list_free(start_port);
+	g_list_free_full(start_port,
+			 g_object_unref);
 	
 	return(start_response);
       }
@@ -2611,7 +2638,8 @@ ags_osc_meter_controller_monitor_meter_recall(AgsOscMeterController *osc_meter_c
 	ags_osc_response_set_flags(osc_response,
 				   AGS_OSC_RESPONSE_OK);
 
-	g_list_free(start_port);
+	g_list_free_full(start_port,
+			 g_object_unref);
 	
 	return(start_response);
       }
@@ -2657,7 +2685,8 @@ ags_osc_meter_controller_monitor_meter_recall(AgsOscMeterController *osc_meter_c
 		     "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_CHUNK_SIZE_EXCEEDED,
 		     NULL);
 	  
-	g_list_free(start_port);
+	g_list_free_full(start_port,
+			 g_object_unref);
 	
 	return(start_response);
       }
@@ -2685,7 +2714,8 @@ ags_osc_meter_controller_monitor_meter_recall(AgsOscMeterController *osc_meter_c
 								    type_tag,
 								    path, path_offset);
     }else{
-      g_list_free(start_port);
+      g_list_free_full(start_port,
+		       g_object_unref);
       
       osc_response = ags_osc_response_new();
       start_response = g_list_prepend(start_response,
@@ -2698,12 +2728,14 @@ ags_osc_meter_controller_monitor_meter_recall(AgsOscMeterController *osc_meter_c
 		   "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_SERVER_FAILURE,
 		   NULL);
 
-      g_list_free(start_port);
+      g_list_free_full(start_port,
+		       g_object_unref);
       
       return(start_response);
     }    
 
-    g_list_free(start_port);
+    g_list_free_full(start_port,
+		     g_object_unref);
   }else{
     osc_response = ags_osc_response_new();
     start_response = g_list_prepend(start_response,
@@ -2799,7 +2831,8 @@ ags_osc_meter_controller_monitor_meter_port(AgsOscMeterController *osc_meter_con
 	}
       }
 
-      g_list_free(start_list);
+      g_list_free_full(start_list,
+		       g_object_unref);
 
       if(list != NULL){
 	nth_recall = i;
@@ -2823,10 +2856,15 @@ ags_osc_meter_controller_monitor_meter_port(AgsOscMeterController *osc_meter_con
 	  }
 	}
 
-	g_list_free(start_list);
+	g_list_free_full(start_list,
+			 g_object_unref);
       
 	nth_recall = i;
       }
+
+      g_object_unref(channel);
+
+      g_object_unref(audio);
     }else if(AGS_IS_RECALL_AUDIO(parent)){
       g_object_get(parent,
 		   "audio", &audio,
@@ -2852,7 +2890,8 @@ ags_osc_meter_controller_monitor_meter_port(AgsOscMeterController *osc_meter_con
 	}
       }
 
-      g_list_free(start_list);
+      g_list_free_full(start_list,
+		       g_object_unref);
       
       if(list != NULL){
 	nth_recall = i;
@@ -2876,10 +2915,13 @@ ags_osc_meter_controller_monitor_meter_port(AgsOscMeterController *osc_meter_con
 	  }
 	}
 
-	g_list_free(start_list);
+	g_list_free_full(start_list,
+			 g_object_unref);
       
 	nth_recall = i;
       }
+
+      g_object_unref(audio);
     }
 
     g_object_get(parent,
@@ -2889,7 +2931,8 @@ ags_osc_meter_controller_monitor_meter_port(AgsOscMeterController *osc_meter_con
     nth_port = g_list_index(start_list,
 			    port);
     
-    g_list_free(start_list);
+    g_list_free_full(start_list,
+		     g_object_unref);
       
     /* get nth audio */
     start_list = ags_sound_provider_get_audio(AGS_SOUND_PROVIDER(application_context));
@@ -3310,7 +3353,7 @@ ags_osc_meter_controller_expand_path_audio(AgsAudio *audio,
 					   gchar *path,
 					   gchar ***strv)
 {
-  AgsChannel *start_channel, *channel;
+  AgsChannel *start_channel, *channel, *tmp_channel;
   
   regmatch_t match_arr[3];
 
@@ -3388,6 +3431,7 @@ ags_osc_meter_controller_expand_path_audio(AgsAudio *audio,
     g_object_get(audio,
 		 "output", &start_channel,
 		 NULL);
+    g_object_unref(start_channel);
     
     path_offset = offset - path + 10;
 
@@ -3399,6 +3443,7 @@ ags_osc_meter_controller_expand_path_audio(AgsAudio *audio,
     g_object_get(audio,
 		 "input", &start_channel,
 		 NULL);
+    g_object_unref(start_channel);
 
     path_offset = offset - path + 9;
 
@@ -3463,9 +3508,12 @@ ags_osc_meter_controller_expand_path_audio(AgsAudio *audio,
 
       g_free(next_path);
 
+      /* iterate */
       g_object_get(channel,
 		   "next", &channel,
 		   NULL);
+
+      g_object_unref(channel);
     }
   }else if(ags_regexec(&voluntary_access_regex, path, index_max_matches, match_arr, 0) == 0){
     path_offset += 3;
@@ -3503,10 +3551,13 @@ ags_osc_meter_controller_expand_path_audio(AgsAudio *audio,
 						   strv);
 
       g_free(next_path);
-      
+
+      /* iterate */
       g_object_get(channel,
 		   "next", &channel,
 		   NULL);
+
+      g_object_unref(channel);
     }    
   }else if(ags_regexec(&wildcard_access_regex, path, index_max_matches, match_arr, 0) == 0){
     guint i;
@@ -3524,10 +3575,13 @@ ags_osc_meter_controller_expand_path_audio(AgsAudio *audio,
 						   strv);
 
       g_free(next_path);
-      
+
+      /* iterate */
       g_object_get(channel,
 		   "next", &channel,
 		   NULL);
+
+      g_object_unref(channel);
     }    
   }else{
     AgsRecall *current;
@@ -3738,8 +3792,10 @@ ags_osc_meter_controller_expand_path_audio(AgsAudio *audio,
 
       if((play = ags_recall_template_find_type(start_play, recall_type)) == NULL &&
 	 (recall = ags_recall_template_find_type(start_recall, recall_type)) == NULL){
-	g_list_free(start_play);
-	g_list_free(start_recall);
+	g_list_free_full(start_play,
+			 g_object_unref);
+	g_list_free_full(start_recall,
+			 g_object_unref);
 
 	return;
       }
@@ -3826,8 +3882,10 @@ ags_osc_meter_controller_expand_path_audio(AgsAudio *audio,
       }
     }
     
-    g_list_free(start_play);
-    g_list_free(start_recall);
+    g_list_free_full(start_play,
+		     g_object_unref);
+    g_list_free_full(start_recall,
+		     g_object_unref);
   }
 
   g_free(prefix);
@@ -4094,8 +4152,10 @@ ags_osc_meter_controller_expand_path_channel(AgsChannel *channel,
 
     if((play = ags_recall_template_find_type(start_play, recall_type)) == NULL &&
        (recall = ags_recall_template_find_type(start_recall, recall_type)) == NULL){
-      g_list_free(start_play);
-      g_list_free(start_recall);
+      g_list_free_full(start_play,
+		       g_object_unref);
+      g_list_free_full(start_recall,
+		       g_object_unref);
       
       return;
     }      
@@ -4182,8 +4242,10 @@ ags_osc_meter_controller_expand_path_channel(AgsChannel *channel,
     }
   }
 
-  g_list_free(start_play);
-  g_list_free(start_recall);
+  g_list_free_full(start_play,
+		   g_object_unref);
+  g_list_free_full(start_recall,
+		   g_object_unref);
 
   g_free(prefix);
 }
@@ -4374,7 +4436,8 @@ ags_osc_meter_controller_expand_path_recall(AgsRecall *recall,
       guint length;
 
       if((offset = index(path + path_offset + 2, '"')) == NULL){
-	g_list_free(start_port);
+	g_list_free_full(start_port,
+			 g_object_unref);
 	
 	return;
       }
@@ -4405,7 +4468,8 @@ ags_osc_meter_controller_expand_path_recall(AgsRecall *recall,
     }
   }
 
-  g_list_free(start_port);
+  g_list_free_full(start_port,
+		   g_object_unref);
 }
 
 void

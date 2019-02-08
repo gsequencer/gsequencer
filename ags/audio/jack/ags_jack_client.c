@@ -439,7 +439,9 @@ ags_jack_client_get_property(GObject *gobject,
       pthread_mutex_lock(jack_client_mutex);
 
       g_value_set_pointer(value,
-			  g_list_copy(jack_client->device));
+			  g_list_copy_deep(jack_client->device,
+					   (GCopyFunc) g_object_ref,
+					   NULL));
 
       pthread_mutex_unlock(jack_client_mutex);
     }
@@ -449,7 +451,9 @@ ags_jack_client_get_property(GObject *gobject,
       pthread_mutex_lock(jack_client_mutex);
 
       g_value_set_pointer(value,
-			  g_list_copy(jack_client->port));
+			  g_list_copy_deep(jack_client->port,
+					   (GCopyFunc) g_object_ref,
+					   NULL));
 
       pthread_mutex_unlock(jack_client_mutex);
     }
@@ -1113,8 +1117,6 @@ ags_jack_client_close(AgsJackClient *jack_client)
 #else
   gpointer client;
 #endif
-
-  GList *start_device;
   
   pthread_mutex_t *jack_client_mutex;
 
@@ -1160,16 +1162,10 @@ ags_jack_client_close(AgsJackClient *jack_client)
   pthread_mutex_unlock(jack_client_mutex);
 #endif
 
-  g_object_get(jack_client,
-	       "device", &start_device,
-	       NULL);
-
-  g_list_free_full(start_device,
-		   g_object_unref);
-
   pthread_mutex_lock(jack_client_mutex);
 
-  g_list_free(jack_client->device);
+  g_list_free_full(jack_client->device,
+		   g_object_unref);
   jack_client->device = NULL;
 
   pthread_mutex_unlock(jack_client_mutex);
@@ -1250,6 +1246,8 @@ ags_jack_client_activate(AgsJackClient *jack_client)
 			   port_name,
 			   (ags_jack_port_test_flags(port->data, AGS_JACK_PORT_IS_AUDIO) ? TRUE: FALSE), (ags_jack_port_test_flags(port->data, AGS_JACK_PORT_IS_MIDI) ? TRUE: FALSE),
 			   (ags_jack_port_test_flags(port->data, AGS_JACK_PORT_IS_OUTPUT) ? TRUE: FALSE));
+
+    g_free(port_name);
     
     port = port->next;
   }
@@ -1564,13 +1562,7 @@ ags_jack_client_process_callback(jack_nframes_t nframes, void *ptr)
   pthread_mutex_unlock(jack_client_mutex);
 
   /* get application context */
-  application_context = NULL;
-  
-  if(jack_server != NULL){
-    g_object_get(jack_server,
-		 "application-context", &application_context,
-		 NULL);
-  }  
+  application_context = ags_application_context_get_instance();
 
   if(g_atomic_int_get(&(jack_client->queued)) > 0){
     g_warning("drop JACK callback");
@@ -1584,15 +1576,8 @@ ags_jack_client_process_callback(jack_nframes_t nframes, void *ptr)
    * process audio
    */
   /*  */
-  audio_loop = NULL;
-  task_thread = NULL;
-
-  if(application_context != NULL){
-    g_object_get(application_context,
-		 "main-loop", &audio_loop,
-		 "task-thread", &task_thread,
-		 NULL);
-  }
+  audio_loop = ags_concurrency_provider_get_main_loop(AGS_CONCURRENCY_PROVIDER(application_context));
+  task_thread = ags_concurrency_provider_get_task_thread(AGS_CONCURRENCY_PROVIDER(application_context));
 
   /* interrupt GUI */
   if(task_thread != NULL){

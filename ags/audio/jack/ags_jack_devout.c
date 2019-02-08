@@ -1140,16 +1140,12 @@ ags_jack_devout_dispose(GObject *gobject)
 
   /* notify soundcard */
   if(jack_devout->notify_soundcard != NULL){
-    if(jack_devout->application_context != NULL){
-      AgsTaskThread *task_thread;
+    AgsTaskThread *task_thread;
     
-      g_object_get(jack_devout->application_context,
-		   "task-thread", &task_thread,
-		   NULL);
+    task_thread = ags_concurrency_provider_get_task_thread(AGS_CONCURRENCY_PROVIDER(ags_application_context_get_instance()));
       
-      ags_task_thread_remove_cyclic_task(task_thread,
-					 (AgsTask *) jack_devout->notify_soundcard);
-    }
+    ags_task_thread_remove_cyclic_task(task_thread,
+				       (AgsTask *) jack_devout->notify_soundcard);
     
     g_object_unref(jack_devout->notify_soundcard);
 
@@ -1203,16 +1199,12 @@ ags_jack_devout_finalize(GObject *gobject)
 
   /* notify soundcard */
   if(jack_devout->notify_soundcard != NULL){
-    if(jack_devout->application_context != NULL){
-      AgsTaskThread *task_thread;
-      
-      g_object_get(jack_devout->application_context,
-		   "task-thread", &task_thread,
-		   NULL);
+    AgsTaskThread *task_thread;
 
-      ags_task_thread_remove_cyclic_task(task_thread,
-					 (AgsTask *) jack_devout->notify_soundcard);
-    }
+    task_thread = ags_concurrency_provider_get_task_thread(AGS_CONCURRENCY_PROVIDER(ags_application_context_get_instance()));
+
+    ags_task_thread_remove_cyclic_task(task_thread,
+				       (AgsTask *) jack_devout->notify_soundcard);
     
     g_object_unref(jack_devout->notify_soundcard);
   }
@@ -1775,13 +1767,7 @@ ags_jack_devout_list_cards(AgsSoundcard *soundcard,
   
   jack_devout = AGS_JACK_DEVOUT(soundcard);
 
-  g_object_get(jack_devout,
-	       "application-context", &application_context,
-	       NULL);
-
-  if(application_context == NULL){
-    return;
-  }
+  application_context = ags_application_context_get_instance();
   
   if(card_id != NULL){
     *card_id = NULL;
@@ -1816,24 +1802,15 @@ ags_jack_devout_list_cards(AgsSoundcard *soundcard,
 		     NULL);
 	
 	if(jack_client != NULL){
-	  pthread_mutex_t *jack_client_mutex;
-	  
-	  /* get jack client mutex */
-	  pthread_mutex_lock(ags_jack_client_get_class_mutex());
-  
-	  jack_client_mutex = jack_client->obj_mutex;
-  
-	  pthread_mutex_unlock(ags_jack_client_get_class_mutex());
-
 	  /* get client name */
-	  pthread_mutex_lock(jack_client_mutex);
-
-	  client_name = g_strdup(jack_client->client_name);
-
-	  pthread_mutex_unlock(jack_client_mutex);
+	  g_object_get(jack_client,
+		       "client-name", &client_name,
+		       NULL);
 	  
 	  *card_name = g_list_prepend(*card_name,
 				      client_name);
+
+	  g_object_unref(jack_client);
 	}else{
 	  *card_name = g_list_prepend(*card_name,
 				      g_strdup("(null)"));
@@ -2102,7 +2079,8 @@ ags_jack_devout_port_play(AgsSoundcard *soundcard,
   pthread_mutex_t *callback_finish_mutex;
   
   jack_devout = AGS_JACK_DEVOUT(soundcard);
-  application_context = ags_soundcard_get_application_context(soundcard);
+  
+  application_context = ags_application_context_get_instance();
   
   /* get jack devout mutex */
   pthread_mutex_lock(ags_jack_devout_get_class_mutex());
@@ -2238,9 +2216,8 @@ ags_jack_devout_port_play(AgsSoundcard *soundcard,
   pthread_mutex_unlock(notify_soundcard->return_mutex);
 
   /* update soundcard */
-  g_object_get(application_context,
-	       "task-thread", &task_thread,
-	       NULL);  
+  task_thread = ags_concurrency_provider_get_task_thread(AGS_CONCURRENCY_PROVIDER(application_context));
+
   task = NULL;
   
   /* tic soundcard */

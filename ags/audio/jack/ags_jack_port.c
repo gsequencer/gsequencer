@@ -804,6 +804,8 @@ ags_jack_port_register(AgsJackPort *jack_port,
   }
 
   if(ags_jack_port_test_flags(jack_port, AGS_JACK_PORT_REGISTERED)){
+    g_object_unref(jack_client);
+    
     return;
   }
 
@@ -813,6 +815,8 @@ ags_jack_port_register(AgsJackPort *jack_port,
 	       NULL);
   
   if(jack_server == NULL){
+    g_object_unref(jack_client);
+
     return;
   }
 
@@ -831,6 +835,10 @@ ags_jack_port_register(AgsJackPort *jack_port,
   pthread_mutex_unlock(jack_client_mutex);
   
   if(client == NULL){
+    g_object_unref(jack_client);
+
+    g_object_unref(jack_server);
+
     return;
   }
 
@@ -899,6 +907,10 @@ ags_jack_port_register(AgsJackPort *jack_port,
   }
 #endif
 #endif
+
+  g_object_unref(jack_client);
+
+  g_object_unref(jack_server);
 }
 
 /**
@@ -971,6 +983,8 @@ ags_jack_port_unregister(AgsJackPort *jack_port)
   pthread_mutex_unlock(jack_client_mutex);
 
   if(client == NULL){
+    g_object_unref(jack_client);
+    
     return;
   }
 
@@ -987,6 +1001,8 @@ ags_jack_port_unregister(AgsJackPort *jack_port)
 
   ags_jack_port_unset_flags(jack_port, AGS_JACK_PORT_REGISTERED);
 #endif
+
+  g_object_unref(jack_client);
 }
 
 /**

@@ -1080,6 +1080,8 @@ ags_pulse_port_register(AgsPulsePort *pulse_port,
   }
 
   if(ags_pulse_port_test_flags(pulse_port, AGS_PULSE_PORT_REGISTERED)){
+    g_object_unref(pulse_client);
+    
     return;
   }
 
@@ -1089,6 +1091,8 @@ ags_pulse_port_register(AgsPulsePort *pulse_port,
 	       NULL);
   
   if(pulse_server == NULL){
+    g_object_unref(pulse_client);
+
     return;
   }
 
@@ -1107,6 +1111,10 @@ ags_pulse_port_register(AgsPulsePort *pulse_port,
   pthread_mutex_unlock(pulse_client_mutex);
 
   if(context == NULL){
+    g_object_unref(pulse_client);
+
+    g_object_unref(pulse_server);
+    
     return;
   }
 
@@ -1198,6 +1206,10 @@ ags_pulse_port_register(AgsPulsePort *pulse_port,
     ags_pulse_port_set_flags(pulse_port, AGS_PULSE_PORT_REGISTERED);
   }
 #endif
+
+  g_object_unref(pulse_client);
+
+  g_object_unref(pulse_server);
 }
 
 void
@@ -1274,10 +1286,8 @@ ags_pulse_port_cached_stream_request_callback(pa_stream *stream, size_t length, 
 
   application_context = ags_application_context_get_instance();
 
-  g_object_get(application_context,
-	       "main-loop", &audio_loop,
-	       "task-thread", &task_thread,
-	       NULL);
+  audio_loop = ags_concurrency_provider_get_main_loop(AGS_CONCURRENCY_PROVIDER(application_context));
+  task_thread = ags_concurrency_provider_get_task_thread(AGS_CONCURRENCY_PROVIDER(application_context));
 
   if(audio_loop != NULL){
     pthread_mutex_lock(audio_loop->timing_mutex);
@@ -1472,10 +1482,8 @@ ags_pulse_port_stream_request_callback(pa_stream *stream, size_t length, AgsPuls
   /*  */  
   application_context = ags_application_context_get_instance();
 
-  g_object_get(application_context,
-	       "main-loop", &audio_loop,
-	       "task-thread", &task_thread,
-	       NULL);
+  audio_loop = ags_concurrency_provider_get_main_loop(AGS_CONCURRENCY_PROVIDER(application_context));
+  task_thread = ags_concurrency_provider_get_task_thread(AGS_CONCURRENCY_PROVIDER(application_context));
   
   /* interrupt GUI */
   if(task_thread != NULL){
@@ -2009,9 +2017,7 @@ ags_pulse_port_stream_underflow_callback(pa_stream *stream, AgsPulsePort *pulse_
       
   application_context = ags_application_context_get_instance();
 
-  g_object_get(application_context,
-	       "main-loop", &audio_loop,
-	       NULL);
+  audio_loop = ags_concurrency_provider_get_main_loop(AGS_CONCURRENCY_PROVIDER(application_context));
   
   /* get pulse port mutex */
   pthread_mutex_lock(ags_pulse_port_get_class_mutex());

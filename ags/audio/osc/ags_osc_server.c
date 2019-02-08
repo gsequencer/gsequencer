@@ -632,7 +632,9 @@ ags_osc_server_get_property(GObject *gobject,
       pthread_mutex_lock(osc_server_mutex);
 
       g_value_set_pointer(value,
-			  g_list_copy(osc_server->connection));
+			  g_list_copy_deep(osc_server->connection,
+					   (GCopyFunc) g_object_ref,
+					   NULL));
 
       pthread_mutex_unlock(osc_server_mutex);
     }
@@ -651,7 +653,9 @@ ags_osc_server_get_property(GObject *gobject,
       pthread_mutex_lock(osc_server_mutex);
 
       g_value_set_pointer(value,
-			  g_list_copy(osc_server->controller));
+			  g_list_copy_deep(osc_server->controller,
+					   (GCopyFunc) g_object_ref,
+					   NULL));
 
       pthread_mutex_unlock(osc_server_mutex);
     }
@@ -1256,7 +1260,10 @@ ags_osc_server_real_start(AgsOscServer *osc_server)
     controller = controller->next;
   }
 
-  g_list_free(start_controller);
+  g_object_unref(osc_front_controller);
+  
+  g_list_free_full(start_controller,
+		   g_object_unref);
 }
 
 /**
@@ -1336,7 +1343,10 @@ ags_osc_server_real_stop(AgsOscServer *osc_server)
     controller = controller->next;
   }
 
-  g_list_free(start_controller);
+  g_object_unref(osc_front_controller);
+  
+  g_list_free_full(start_controller,
+		   g_object_unref);
 
   ags_osc_server_unset_flags(osc_server, (AGS_OSC_SERVER_STARTED |
 					  AGS_OSC_SERVER_TERMINATING));
@@ -1557,7 +1567,8 @@ ags_osc_server_real_dispatch(AgsOscServer *osc_server)
     list = list->next;
   }
       
-  g_list_free(start_list);
+  g_list_free_full(start_list,
+		   g_object_unref);
 }
 
 /**

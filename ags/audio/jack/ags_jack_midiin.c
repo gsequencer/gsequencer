@@ -749,7 +749,9 @@ ags_jack_midiin_get_property(GObject *gobject,
       pthread_mutex_lock(jack_midiin_mutex);
 
       g_value_set_pointer(value,
-			  g_list_copy(jack_midiin->jack_port));
+			  g_list_copy_deep(jack_midiin->jack_port,
+					   (GCopyFunc) g_object_ref,
+					   NULL));
 
       pthread_mutex_unlock(jack_midiin_mutex);
     }
@@ -1312,11 +1314,7 @@ ags_jack_midiin_list_cards(AgsSequencer *sequencer,
   
   jack_midiin = AGS_JACK_MIDIIN(sequencer);
 
-  application_context = (AgsApplicationContext *) jack_midiin->application_context;
-
-  if(application_context == NULL){
-    return;
-  }
+  application_context = ags_application_context_get_instance();
     
   if(card_id != NULL){
     *card_id = NULL;
@@ -1356,6 +1354,10 @@ ags_jack_midiin_list_cards(AgsSequencer *sequencer,
 	  g_warning("ags_jack_midiin_list_cards() - JACK client not connected (null)");
 	}
       }      
+
+      if(jack_client != NULL){
+	g_object_unref(jack_client);
+      }
     }
 
     list = list->next;
@@ -1584,9 +1586,8 @@ ags_jack_midiin_port_record(AgsSequencer *sequencer,
     }
   }
 
-  g_object_get(application_context,
-	       "task-thread", &task_thread,
-	       NULL);  
+  task_thread = ags_concurrency_provider_get_task_thread(AGS_CONCURRENCY_PROVIDER(application_context));
+
   task = NULL;
   
   /* tic sequencer */

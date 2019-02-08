@@ -598,7 +598,10 @@ ags_osc_front_controller_delegate_thread(void *ptr)
     pthread_mutex_unlock(osc_front_controller->delegate_mutex);
   }
 
-  g_list_free(start_controller);
+  g_object_unref(osc_server);
+  
+  g_list_free_full(start_controller,
+		   g_object_unref);
   
   pthread_exit(NULL);
 }
