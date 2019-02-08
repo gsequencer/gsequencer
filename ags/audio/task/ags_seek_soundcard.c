@@ -330,7 +330,8 @@ ags_seek_soundcard_launch(AgsTask *task)
       recall = recall->next;
     }
 
-    g_list_free(recall_start);
+    g_list_free_full(recall_start,
+		     g_object_unref);
 
     /* seek recall context */
     g_object_get(audio->data,
@@ -349,7 +350,8 @@ ags_seek_soundcard_launch(AgsTask *task)
       recall = recall->next;
     }
 
-    g_list_free(recall_start);
+    g_list_free_full(recall_start,
+		     g_object_unref);
 
     /* iterate */
     audio = audio->next;

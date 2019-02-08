@@ -541,6 +541,8 @@ ags_wave_loader_run(void *ptr)
   g_object_get(wave_loader->audio,
 	       "output-soundcard", &output_soundcard,
 	       NULL);
+
+  g_object_unref(output_soundcard);
   
   wave_loader->audio_file = ags_audio_file_new(wave_loader->filename,
 					       output_soundcard,
@@ -561,7 +563,8 @@ ags_wave_loader_run(void *ptr)
       wave = wave->next;
     }
 
-    g_list_free(start_wave);
+    g_list_free_full(start_wave,
+		     g_object_unref);
 
     g_object_set(wave_loader->audio,
 		 "input-audio-file", wave_loader->audio_file,

@@ -306,9 +306,7 @@ ags_start_channel_launch(AgsTask *task)
 
   application_context = ags_application_context_get_instance();
 
-  g_object_get(application_context,
-	       "main-loop", &audio_loop,
-	       NULL);
+  audio_loop = ags_concurrency_provider_get_main_loop(AGS_CONCURRENCY_PROVIDER(application_context));
 
   /* add channel to AgsAudioLoop */
   ags_audio_loop_add_channel(audio_loop,
@@ -322,7 +320,8 @@ ags_start_channel_launch(AgsTask *task)
     g_object_get(channel,
 		 "first-recycling", &recycling,
 		 NULL);
-
+    g_object_unref(recycling);
+    
     /* create recall id and recycling context */
     audio_recall_id = ags_recall_id_new();
     ags_recall_id_set_sound_scope(audio_recall_id, sound_scope);
@@ -376,6 +375,7 @@ ags_start_channel_launch(AgsTask *task)
       g_object_get(channel,
 		   "first-recycling", &recycling,
 		   NULL);
+      g_object_unref(recycling);
 
       /* create recall id and recycling context */
       audio_recall_id = ags_recall_id_new();
@@ -424,6 +424,13 @@ ags_start_channel_launch(AgsTask *task)
 								      i));
     }
   }
+
+  /* unref */
+  g_object_unref(audio);
+  
+  g_object_unref(playback);
+  
+  g_object_unref(playback_domain);
 }
 
 /**

@@ -248,9 +248,7 @@ ags_reset_amplitude_get_instance()
 
     application_context = ags_application_context_get_instance();
 
-    g_object_get(application_context,
-		 "main-loop", &main_loop,
-		 NULL);
+    main_loop = ags_concurrency_provider_get_main_loop(AGS_CONCURRENCY_PROVIDER(application_context));
 
     /* get task thread */
     task_thread = (AgsTaskThread *) ags_thread_find_type(main_loop,

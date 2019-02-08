@@ -267,9 +267,7 @@ ags_notify_soundcard_launch(AgsTask *task)
 
   application_context = ags_application_context_get_instance();
 
-  g_object_get(application_context,
-	       "task-thread", &task_thread,
-	       NULL);
+  task_thread = ags_concurrency_provider_get_task_thread(AGS_CONCURRENCY_PROVIDER(application_context));
   
   if((AGS_THREAD_RUNNING & (g_atomic_int_get(&(AGS_THREAD(soundcard_thread)->flags)))) == 0 ||
      (AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(AGS_THREAD(soundcard_thread)->flags)))) != 0 ||

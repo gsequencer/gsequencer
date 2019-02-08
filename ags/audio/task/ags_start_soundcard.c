@@ -267,9 +267,7 @@ ags_start_soundcard_launch(AgsTask *task)
   application_context = start_soundcard->application_context;
 
   /* get main loop */
-  g_object_get(application_context,
-	       "main-loop", &audio_loop,
-	       NULL);
+  audio_loop = ags_concurrency_provider_get_main_loop(AGS_CONCURRENCY_PROVIDER(application_context));
 
   soundcard_thread = ags_thread_find_type(audio_loop,
 					  AGS_TYPE_SOUNDCARD_THREAD);
@@ -301,6 +299,8 @@ ags_start_soundcard_launch(AgsTask *task)
       /* append soundcard thread */
       ags_thread_add_start_queue(audio_loop,
 				 soundcard_thread);
+
+      g_object_unref(soundcard);
     }
     
     soundcard_thread = g_atomic_pointer_get(&(soundcard_thread->next));

@@ -319,7 +319,8 @@ ags_set_muted_channel(AgsSetMuted *set_muted, AgsChannel *channel)
     list = list->next;
   }
 
-  g_list_free(list_start);
+  g_list_free_full(list_start,
+		   g_object_unref);
   
   /* set muted - recall */
   g_object_get(channel,
@@ -334,7 +335,8 @@ ags_set_muted_channel(AgsSetMuted *set_muted, AgsChannel *channel)
     list = list->next;
   }
 
-  g_list_free(list_start);
+  g_list_free_full(list_start,
+		   g_object_unref);
 }
 
 void
@@ -376,7 +378,8 @@ ags_set_muted_audio(AgsSetMuted *set_muted, AgsAudio *audio)
     list = list->next;
   }
 
-  g_list_free(list_start);
+  g_list_free_full(list_start,
+		   g_object_unref);
   
   /* set muted - recall */
   g_object_get(audio,
@@ -391,7 +394,8 @@ ags_set_muted_audio(AgsSetMuted *set_muted, AgsAudio *audio)
     list = list->next;
   }
 
-  g_list_free(list_start);
+  g_list_free_full(list_start,
+		   g_object_unref);
   
   /* AgsChannel - output */
   channel = output;

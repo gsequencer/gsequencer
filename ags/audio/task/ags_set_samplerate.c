@@ -341,9 +341,7 @@ ags_set_samplerate_soundcard(AgsSetSamplerate *set_samplerate, GObject *soundcar
   application_context = ags_application_context_get_instance();
 
   /* get main loop */
-  g_object_get(application_context,
-	       "main-loop", &audio_loop,
-	       NULL);
+  audio_loop = ags_concurrency_provider_get_main_loop(AGS_CONCURRENCY_PROVIDER(application_context));
   
   /* set buffer size */
   ags_soundcard_get_presets(AGS_SOUNDCARD(soundcard),

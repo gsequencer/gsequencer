@@ -378,9 +378,7 @@ ags_apply_sound_config_launch(AgsTask *task)
 
   application_context = apply_sound_config->application_context;
 
-  g_object_get(application_context,
-	       "main-loop", &audio_loop,
-	       NULL);
+  audio_loop = ags_concurrency_provider_get_main_loop(AGS_CONCURRENCY_PROVIDER(application_context));
   
   start_orig_soundcard = ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(application_context));
   start_orig_sequencer = ags_sound_provider_get_sequencer(AGS_SOUND_PROVIDER(application_context));
@@ -504,6 +502,8 @@ ags_apply_sound_config_launch(AgsTask *task)
 	if(channel_thread != NULL){
 	  ags_thread_stop(channel_thread);
 	}
+
+	g_object_unref(channel);
       
 	/* iterate */
 	output = output->next;
@@ -529,7 +529,9 @@ ags_apply_sound_config_launch(AgsTask *task)
 	if(channel_thread != NULL){
 	  ags_thread_stop(channel_thread);
 	}
-      
+
+	g_object_unref(channel);
+	
 	/* iterate */
 	input = input->next;
       }
@@ -538,9 +540,13 @@ ags_apply_sound_config_launch(AgsTask *task)
     ags_audio_loop_remove_audio((AgsAudioLoop *) audio_loop,
 				(GObject *) audio->data);
 
-    g_list_free(start_output);
-    g_list_free(start_input);
+    g_object_unref(playback_domain);
     
+    g_list_free_full(start_output,
+		     g_object_unref);
+    g_list_free_full(start_input,
+		     g_object_unref);
+
     audio = audio->next;
   }
   
@@ -561,6 +567,9 @@ ags_apply_sound_config_launch(AgsTask *task)
 				  (GObject *) default_client);
     ags_jack_server_remove_client(jack_server,
 				  (GObject *) input_client);
+
+    g_object_unref(default_client);
+    g_object_unref(input_client);
 #endif
   }
 
@@ -584,6 +593,8 @@ ags_apply_sound_config_launch(AgsTask *task)
     
     pulse_server->main_loop = NULL;
     pulse_server->main_loop_api = NULL;
+    
+    g_object_unref(pulse_client);
 #endif
   }
   
@@ -814,6 +825,8 @@ ags_apply_sound_config_launch(AgsTask *task)
     
 	    ags_jack_client_open((AgsJackClient *) input_client,
 				 "ags-input-client");	    
+
+	    g_object_unref(input_client);
 	  }
 	}
 
@@ -998,7 +1011,8 @@ ags_apply_sound_config_launch(AgsTask *task)
 	port = port->next;
       }
 
-      g_list_free(start_port);
+      g_list_free_full(start_port,
+		       g_object_unref);
     }else if(AGS_IS_CORE_AUDIO_DEVOUT(soundcard)){
       GList *start_port, *port;
 
@@ -1023,7 +1037,8 @@ ags_apply_sound_config_launch(AgsTask *task)
 	port = port->next;
       }
     
-      g_list_free(start_port);
+      g_list_free_full(start_port,
+		       g_object_unref);
     }
   
     g_free(soundcard_group);    
@@ -1080,7 +1095,9 @@ ags_apply_sound_config_launch(AgsTask *task)
 				     (GObject *) input_client);
     
 	  ags_jack_client_open((AgsJackClient *) input_client,
-			       "ags-input-client");	    
+			       "ags-input-client");
+
+	  g_object_unref(input_client);
 	}
 
 	sequencer = ags_sound_server_register_sequencer(AGS_SOUND_SERVER(jack_server),

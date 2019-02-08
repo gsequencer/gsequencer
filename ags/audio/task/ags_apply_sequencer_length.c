@@ -320,7 +320,8 @@ ags_apply_sequencer_length_channel(AgsApplySequencerLength *apply_sequencer_leng
     list = list->next;
   }
 
-  g_list_free(list_start);
+  g_list_free_full(list_start,
+		   g_object_unref);
   
   /* apply sequencer length - recall */
   g_object_get(channel,
@@ -335,7 +336,8 @@ ags_apply_sequencer_length_channel(AgsApplySequencerLength *apply_sequencer_leng
     list = list->next;
   }
 
-  g_list_free(list_start);
+  g_list_free_full(list_start,
+		   g_object_unref);
 }
 
 void
@@ -377,7 +379,8 @@ ags_apply_sequencer_length_audio(AgsApplySequencerLength *apply_sequencer_length
     list = list->next;
   }
 
-  g_list_free(list_start);
+  g_list_free_full(list_start,
+		   g_object_unref);
   
   /* apply sequencer length - recall */
   g_object_get(audio,
@@ -392,7 +395,8 @@ ags_apply_sequencer_length_audio(AgsApplySequencerLength *apply_sequencer_length
     list = list->next;
   }
 
-  g_list_free(list_start);
+  g_list_free_full(list_start,
+		   g_object_unref);
   
   /* AgsChannel - output */
   channel = output;

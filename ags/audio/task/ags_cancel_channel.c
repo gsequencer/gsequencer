@@ -287,9 +287,7 @@ ags_cancel_channel_launch(AgsTask *task)
 
   application_context = ags_application_context_get_instance();
 
-  g_object_get(application_context,
-	       "main-loop", &audio_loop,
-	       NULL);
+  audio_loop = ags_concurrency_provider_get_main_loop(AGS_CONCURRENCY_PROVIDER(application_context));
 
   g_object_get(channel,
 	       "playback", &playback,
@@ -344,6 +342,10 @@ ags_cancel_channel_launch(AgsTask *task)
   /* add channel to AgsAudioLoop */
   ags_audio_loop_remove_channel(audio_loop,
 				(GObject *) channel);
+
+  g_object_unref(playback);
+
+  g_object_unref(playback_domain);
 }
 
 /**

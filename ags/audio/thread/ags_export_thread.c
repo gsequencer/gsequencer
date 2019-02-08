@@ -581,6 +581,8 @@ ags_export_thread_find_soundcard(AgsExportThread *export_thread,
       g_object_get(export_thread,
 		   "soundcard", &current_soundcard,
 		   NULL);
+
+      g_object_unref(current_soundcard);
       
       if(current_soundcard == soundcard){
 	return(export_thread);

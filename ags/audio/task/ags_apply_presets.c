@@ -420,11 +420,9 @@ ags_apply_presets_soundcard(AgsApplyPresets *apply_presets,
   gdouble freq;
   guint channels;
 
-  application_context = ags_soundcard_get_application_context(AGS_SOUNDCARD(soundcard));
+  application_context = ags_application_context_get_instance();
 
-  g_object_get(application_context,
-	       "main-loop", &main_loop,
-	       NULL);
+  main_loop = ags_concurrency_provider_get_main_loop(AGS_CONCURRENCY_PROVIDER(application_context));
   
   /* calculate thread frequency */
   freq = ceil((gdouble) apply_presets->samplerate / (gdouble) apply_presets->buffer_size) + AGS_SOUNDCARD_DEFAULT_OVERCLOCK;

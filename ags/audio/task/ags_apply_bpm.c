@@ -346,7 +346,8 @@ ags_apply_bpm_channel(AgsApplyBpm *apply_bpm, AgsChannel *channel)
     list = list->next;
   }
 
-  g_list_free(list_start);
+  g_list_free_full(list_start,
+		   g_object_unref);
   
   /* apply bpm - recall */
   g_object_get(channel,
@@ -361,7 +362,8 @@ ags_apply_bpm_channel(AgsApplyBpm *apply_bpm, AgsChannel *channel)
     list = list->next;
   }
 
-  g_list_free(list_start);
+  g_list_free_full(list_start,
+		   g_object_unref);
 }
 
 void
@@ -408,7 +410,8 @@ ags_apply_bpm_audio(AgsApplyBpm *apply_bpm, AgsAudio *audio)
     list = list->next;
   }
 
-  g_list_free(list_start);
+  g_list_free_full(list_start,
+		   g_object_unref);
   
   /* apply bpm - recall */
   g_object_get(audio,
@@ -423,7 +426,8 @@ ags_apply_bpm_audio(AgsApplyBpm *apply_bpm, AgsAudio *audio)
     list = list->next;
   }
 
-  g_list_free(list_start);
+  g_list_free_full(list_start,
+		   g_object_unref);
   
   /* AgsChannel - output */
   channel = output;

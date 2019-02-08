@@ -476,8 +476,11 @@ ags_apply_synth_launch(AgsTask *task)
     }
 
     g_list_free(rt_template_start);
-    g_list_free(list_start);
+    g_list_free_full(list_start,
+		     g_object_unref);
 	
+    g_object_unref(output_soundcard);
+    
     /* iterate */
     pthread_mutex_lock(channel_mutex);
 	

@@ -267,7 +267,7 @@ ags_clear_audio_signal_launch(AgsTask *task)
     g_object_get(audio_signal,
 		 "recycling", &recycling,
 		 NULL);
-
+    
     g_object_get(recycling,
 		 "audio-signal", &list_start,
 		 NULL);
@@ -294,7 +294,10 @@ ags_clear_audio_signal_launch(AgsTask *task)
     }
 
     g_list_free(rt_template_start);
-    g_list_free(list_start);
+    g_list_free_full(list_start,
+		     g_object_unref);    
+
+    g_object_unref(recycling);
   }
 }
 

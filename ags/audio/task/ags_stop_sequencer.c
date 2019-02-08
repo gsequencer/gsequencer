@@ -245,9 +245,7 @@ ags_stop_sequencer_launch(AgsTask *task)
   application_context = stop_sequencer->application_context;
 
   /* get main loop */
-  g_object_get(application_context,
-	       "main-loop", &audio_loop,
-	       NULL);
+  audio_loop = ags_concurrency_provider_get_main_loop(AGS_CONCURRENCY_PROVIDER(application_context));
 
   sequencer_thread = ags_thread_find_type(audio_loop,
 					  AGS_TYPE_SEQUENCER_THREAD);

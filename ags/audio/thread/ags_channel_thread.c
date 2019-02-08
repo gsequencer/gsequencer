@@ -465,9 +465,13 @@ ags_channel_thread_run(AgsThread *thread)
 	       "channel", &channel,
 	       NULL);
 
+  g_object_unref(channel);
+  
   g_object_get(channel,
 	       "playback", &playback,
 	        NULL);
+
+  g_object_unref(playback);
   
   /* start - wait until signaled */
   pthread_mutex_lock(channel_thread->wakeup_mutex);

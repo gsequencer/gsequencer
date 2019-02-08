@@ -376,7 +376,9 @@ ags_move_note_get_property(GObject *gobject,
   case PROP_SELECTION:
     {
       g_value_set_pointer(value,
-			  g_list_copy(move_note->selection));
+			  g_list_copy_deep(move_note->selection,
+					   (GCopyFunc) g_object_ref,
+					   NULL));
     }
     break;
   case PROP_FIRST_X:
@@ -542,7 +544,8 @@ ags_move_note_launch(AgsTask *task)
 	current_notation = list->data;
       }
 
-      g_list_free(list_start);
+      g_list_free_full(list_start,
+		       g_object_unref);
       g_object_unref(timestamp);
     }
 
@@ -561,6 +564,8 @@ ags_move_note_launch(AgsTask *task)
 
     selection = selection->next;
   }
+
+  g_object_unref(audio);
 }
 
 /**

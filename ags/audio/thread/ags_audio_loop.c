@@ -489,7 +489,9 @@ ags_audio_loop_get_property(GObject *gobject,
     {
       pthread_mutex_lock(thread_mutex);
 
-      g_value_set_pointer(value, g_list_copy(audio_loop->play_channel));
+      g_value_set_pointer(value, g_list_copy_deep(audio_loop->play_channel,
+						  (GCopyFunc) g_object_ref,
+						  NULL));
 
       pthread_mutex_unlock(thread_mutex);
     }
@@ -498,7 +500,9 @@ ags_audio_loop_get_property(GObject *gobject,
     {
       pthread_mutex_lock(thread_mutex);
 
-      g_value_set_pointer(value, g_list_copy(audio_loop->play_audio));
+      g_value_set_pointer(value, g_list_copy_deep(audio_loop->play_audio,
+						  (GCopyFunc) g_object_ref,
+						  NULL));
 
       pthread_mutex_unlock(thread_mutex);
     }
@@ -1060,7 +1064,9 @@ ags_audio_loop_play_channel(AgsAudioLoop *audio_loop)
     g_object_get(playback,
 		 "channel", &channel,
 		 NULL);
-    
+
+    g_object_unref(channel);
+        
     /* play */
     if(ags_playback_test_flags(playback, AGS_PLAYBACK_SUPER_THREADED_CHANNEL)){
       /* super threaded */
@@ -1125,6 +1131,8 @@ ags_audio_loop_play_channel_super_threaded(AgsAudioLoop *audio_loop,
 	       "channel", &channel,
 	       NULL);
 
+  g_object_unref(channel);
+    
   sound_scope = AGS_SOUND_SCOPE_PLAYBACK;
   
   if((recall_id = ags_channel_check_scope(channel, sound_scope)) != NULL){
@@ -1174,6 +1182,8 @@ ags_audio_loop_sync_channel_super_threaded(AgsAudioLoop *audio_loop,
 	       "channel", &channel,
 	       NULL);
 
+  g_object_unref(channel);
+    
   sound_scope = AGS_SOUND_SCOPE_PLAYBACK;
 
   if((recall_id = ags_channel_check_scope(channel, sound_scope)) != NULL){
@@ -1252,7 +1262,9 @@ ags_audio_loop_play_audio(AgsAudioLoop *audio_loop)
     g_object_get(playback_domain,
 		 "audio", &audio,
 		 NULL);
-    
+
+    g_object_unref(audio);
+        
     /* play */
     if(ags_playback_domain_test_flags(playback_domain, AGS_PLAYBACK_DOMAIN_SUPER_THREADED_AUDIO)){
       /* super threaded */
@@ -1335,6 +1347,8 @@ ags_audio_loop_play_audio_super_threaded(AgsAudioLoop *audio_loop, AgsPlaybackDo
   g_object_get(playback_domain,
 	       "audio", &audio,
 	       NULL);
+
+  g_object_unref(audio);
   
   for(sound_scope = 0; sound_scope < AGS_SOUND_SCOPE_LAST; sound_scope++){    
     if(sound_scope == AGS_SOUND_SCOPE_PLAYBACK){
@@ -1396,7 +1410,9 @@ ags_audio_loop_sync_audio_super_threaded(AgsAudioLoop *audio_loop, AgsPlaybackDo
   g_object_get(playback_domain,
 	       "audio", &audio,
 	       NULL);
-  
+
+  g_object_unref(audio);
+    
   for(sound_scope = 0; sound_scope < AGS_SOUND_SCOPE_LAST; sound_scope++){    
     if(sound_scope == AGS_SOUND_SCOPE_PLAYBACK){
       continue;

@@ -519,7 +519,8 @@ ags_open_sf2_instrument_launch(AgsTask *task)
     g_object_get(audio,
 		 "input", &start_channel,
 		 NULL);
-
+    g_object_unref(start_channel);
+    
     list = start_list;
     i = 0;
     
@@ -561,7 +562,8 @@ ags_open_sf2_instrument_launch(AgsTask *task)
 		     "first-recycling", &recycling,
 		     "file-link", &file_link,
 		     NULL);
-
+	g_object_unref(recycling);
+	
 	/* set filename and channel */
 	if(file_link == NULL){
 	  file_link = g_object_new(AGS_TYPE_AUDIO_FILE_LINK,
@@ -570,6 +572,8 @@ ags_open_sf2_instrument_launch(AgsTask *task)
 	  g_object_set(channel,
 		       "file-link", file_link,
 		       NULL);
+	}else{
+	  g_object_unref(file_link);
 	}
 	  
 	g_object_set(file_link,
@@ -594,7 +598,9 @@ ags_open_sf2_instrument_launch(AgsTask *task)
 	
 	g_object_get(channel,
 		     "next", &channel,
-		     NULL);	
+		     NULL);
+
+	g_object_unref(channel);
       }
 
       g_list_free(start_audio_signal);
@@ -607,6 +613,8 @@ ags_open_sf2_instrument_launch(AgsTask *task)
 
     g_list_free(start_list);
   }
+
+  g_object_unref(output_soundcard);
 }
 
 /**

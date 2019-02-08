@@ -258,9 +258,7 @@ ags_reset_peak_get_instance()
     
     application_context = ags_application_context_get_instance();
 
-    g_object_get(application_context,
-		 "task-thread", &task_thread,
-		 NULL);
+    task_thread = ags_concurrency_provider_get_task_thread(AGS_CONCURRENCY_PROVIDER(application_context));
 
     pthread_mutex_unlock(&mutex);
 

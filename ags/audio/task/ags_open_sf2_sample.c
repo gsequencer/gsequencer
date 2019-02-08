@@ -534,6 +534,8 @@ ags_open_sf2_sample_launch(AgsTask *task)
     if(!ags_audio_container_open(audio_container)){
       g_message("unable to open file - %s", open_sf2_sample->filename);
 
+      g_object_unref(soundcard);
+      
       return;
     }
   
@@ -572,6 +574,8 @@ ags_open_sf2_sample_launch(AgsTask *task)
       g_object_set(channel,
 		   "file-link", file_link,
 		   NULL);
+    }else{
+      g_object_unref(file_link);
     }
     
     g_object_set(file_link,
@@ -587,6 +591,7 @@ ags_open_sf2_sample_launch(AgsTask *task)
   g_object_get(channel,
 	       "first-recycling", &first_recycling,
 	       NULL);
+  g_object_unref(first_recycling);
   
   AGS_AUDIO_SIGNAL(audio_signal->data)->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;
   ags_recycling_add_audio_signal(first_recycling,
@@ -596,6 +601,10 @@ ags_open_sf2_sample_launch(AgsTask *task)
   if(ipatch_sample == NULL){
     g_object_unref(audio_container);
   }
+
+  g_object_unref(link);
+  
+  g_object_unref(soundcard);
 }
 
 /**

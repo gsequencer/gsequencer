@@ -260,9 +260,7 @@ ags_stop_soundcard_launch(AgsTask *task)
   application_context = stop_soundcard->application_context;
 
   /* get main loop */
-  g_object_get(application_context,
-	       "main-loop", &audio_loop,
-	       NULL);
+  audio_loop = ags_concurrency_provider_get_main_loop(AGS_CONCURRENCY_PROVIDER(application_context));
 
   soundcard_thread = ags_thread_find_type(audio_loop,
 					  AGS_TYPE_SOUNDCARD_THREAD);

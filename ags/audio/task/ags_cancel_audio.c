@@ -306,9 +306,7 @@ ags_cancel_audio_launch(AgsTask *task)
   
   application_context = ags_application_context_get_instance();
 
-  g_object_get(application_context,
-	       "main-loop", &audio_loop,
-	       NULL);
+  audio_loop = ags_concurrency_provider_get_main_loop(AGS_CONCURRENCY_PROVIDER(application_context));
 
   if(sound_scope >= 0){
     /* cancel */
@@ -339,6 +337,8 @@ ags_cancel_audio_launch(AgsTask *task)
       if(channel_thread != NULL){
 	ags_thread_stop((AgsThread *) channel_thread);
       }
+
+      g_object_unref(channel);
       
       /* iterate */
       list = list->next;
@@ -396,6 +396,8 @@ ags_cancel_audio_launch(AgsTask *task)
 	if(channel_thread != NULL){
 	  ags_thread_stop((AgsThread *) channel_thread);
 	}
+
+	g_object_unref(channel);
 	
 	/* iterate */
 	list = list->next;
@@ -422,9 +424,10 @@ ags_cancel_audio_launch(AgsTask *task)
 	list = list->next;
       }
     }
-
-    g_list_free(list_start);
   }
+
+  g_list_free_full(list_start,
+		   g_object_unref);
 
   /* add channel to AgsAudioLoop */
   sequencer = ags_audio_check_scope(audio,
@@ -451,6 +454,8 @@ ags_cancel_audio_launch(AgsTask *task)
   g_list_free(notation);
   g_list_free(wave);
   g_list_free(midi);
+
+  g_object_unref(playback_domain);
 }
 
 /**

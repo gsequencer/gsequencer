@@ -355,6 +355,7 @@ ags_open_single_file_launch(AgsTask *task)
   g_object_get(channel,
 	       "link", &link,
 	       NULL);
+  g_object_unref(link);
 
   if(link != NULL){
     error = NULL;
@@ -379,6 +380,8 @@ ags_open_single_file_launch(AgsTask *task)
       g_object_set(channel,
 		   "file-link", file_link,
 		   NULL);
+    }else{
+      g_object_unref(file_link);
     }
     
     g_object_set(file_link,
@@ -394,6 +397,7 @@ ags_open_single_file_launch(AgsTask *task)
   g_object_get(channel,
 	       "first-recycling", &first_recycling,
 	       NULL);
+  g_object_unref(first_recycling);
   
   AGS_AUDIO_SIGNAL(audio_file->audio_signal->data)->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;
   ags_recycling_add_audio_signal(first_recycling,
@@ -401,6 +405,8 @@ ags_open_single_file_launch(AgsTask *task)
 
   /* unref audio file */
   g_object_unref(audio_file);
+
+  g_object_unref(soundcard);
 }
 
 /**

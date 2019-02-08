@@ -479,10 +479,14 @@ ags_audio_thread_run(AgsThread *thread)
 	       "audio", &audio,
 	       NULL);
 
+  g_object_unref(audio);
+  
   g_object_get(audio,
 	       "playback-domain", &playback_domain,
 	        NULL);
   
+  g_object_unref(playback_domain);
+
   /* start - wait until signaled */
   if(audio_thread->sound_scope != AGS_SOUND_SCOPE_PLAYBACK){
     pthread_mutex_lock(audio_thread->wakeup_mutex);
@@ -526,6 +530,8 @@ ags_audio_thread_run(AgsThread *thread)
 		   "channel", &channel,
 		   NULL);
 
+      g_object_unref(channel);
+      
       if(audio_thread->sound_scope >= 0){
 	sound_scope = audio_thread->sound_scope;
 
@@ -580,6 +586,9 @@ ags_audio_thread_run(AgsThread *thread)
     playback = playback->next;
   }
 
+  g_list_free_full(input_playback_start,
+		   g_object_unref);
+  
   /* output */
   g_object_get(playback_domain,
 	       "output-playback", &output_playback_start,
@@ -594,6 +603,8 @@ ags_audio_thread_run(AgsThread *thread)
       g_object_get(playback->data,
 		   "channel", &channel,
 		   NULL);
+
+      g_object_unref(channel);
       
       if(audio_thread->sound_scope >= 0){
 	sound_scope = audio_thread->sound_scope;
@@ -754,6 +765,8 @@ ags_audio_thread_play_channel_super_threaded(AgsAudioThread *audio_thread, AgsPl
 	       "channel", &channel,
 	       NULL);
 
+  g_object_unref(channel);
+      
   if(audio_thread->sound_scope >= 0){
     sound_scope = audio_thread->sound_scope;
 
@@ -841,6 +854,8 @@ ags_audio_thread_sync_channel_super_threaded(AgsAudioThread *audio_thread, AgsPl
 	       "channel", &channel,
 	       NULL);
 
+  g_object_unref(channel);
+      
   if(audio_thread->sound_scope >= 0){
     sound_scope = audio_thread->sound_scope;
 

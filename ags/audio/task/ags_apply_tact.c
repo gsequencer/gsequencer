@@ -344,7 +344,8 @@ ags_apply_tact_channel(AgsApplyTact *apply_tact, AgsChannel *channel)
     list = list->next;
   }
 
-  g_list_free(list_start);
+  g_list_free_full(list_start,
+		   g_object_unref);
   
   /* apply tact - recall */
   g_object_get(channel,
@@ -359,7 +360,8 @@ ags_apply_tact_channel(AgsApplyTact *apply_tact, AgsChannel *channel)
     list = list->next;
   }
 
-  g_list_free(list_start);
+  g_list_free_full(list_start,
+		   g_object_unref);
 }
 
 void
@@ -401,7 +403,8 @@ ags_apply_tact_audio(AgsApplyTact *apply_tact, AgsAudio *audio)
     list = list->next;
   }
 
-  g_list_free(list_start);
+  g_list_free_full(list_start,
+		   g_object_unref);
   
   /* apply tact - recall */
   g_object_get(audio,
@@ -416,7 +419,8 @@ ags_apply_tact_audio(AgsApplyTact *apply_tact, AgsAudio *audio)
     list = list->next;
   }
 
-  g_list_free(list_start);
+  g_list_free_full(list_start,
+		   g_object_unref);
   
   /* AgsChannel - output */
   channel = output;
