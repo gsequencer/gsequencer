@@ -634,6 +634,8 @@ ags_ramp_acceleration_dialog_apply(AgsApplicable *applicable)
       g_object_get(current,
 		   "timestamp", &current_timestamp,
 		   NULL);
+
+      g_object_unref(current_timestamp);
       
       if(ags_timestamp_get_ags_offset(current_timestamp) < x0){
 	list_automation = list_automation->next;
@@ -672,7 +674,9 @@ ags_ramp_acceleration_dialog_apply(AgsApplicable *applicable)
 	  
 	c_range = range;
       }
-	
+
+      g_object_unref(current_port);
+      
       if(range == 0.0){
 	list_automation = list_automation->next;
 	g_warning("ags_ramp_acceleration_dialog.c - range = 0.0");
@@ -731,6 +735,9 @@ ags_ramp_acceleration_dialog_apply(AgsApplicable *applicable)
 
     line++;
   }
+
+  g_list_free_full(start_list_automation,
+		   g_object_unref);
   
   /* ramp acceleration */
   line = 0;
@@ -756,6 +763,10 @@ ags_ramp_acceleration_dialog_apply(AgsApplicable *applicable)
       g_object_get(machine->audio,
 		   "output", &channel,
 		   NULL);
+
+      if(channel != NULL){
+	g_object_unref(channel);
+      }
       
       channel = ags_channel_nth(channel,
 				line);
@@ -769,6 +780,10 @@ ags_ramp_acceleration_dialog_apply(AgsApplicable *applicable)
       g_object_get(machine->audio,
 		   "input", &channel,
 		   NULL);
+
+      if(channel != NULL){
+	g_object_unref(channel);
+      }
 
       channel = ags_channel_nth(channel,
 				line);
@@ -1079,6 +1094,10 @@ ags_ramp_acceleration_dialog_reset(AgsApplicable *applicable)
 	       "output", &channel,
 	       NULL);
 
+  if(channel != NULL){
+    g_object_unref(channel);
+  }
+
   while(channel != NULL){
     /* output */
     port =
@@ -1129,12 +1148,20 @@ ags_ramp_acceleration_dialog_reset(AgsApplicable *applicable)
     g_object_get(channel,
 		 "next", &channel,
 		 NULL);
+
+    if(channel != NULL){
+      g_object_unref(channel);
+    }
   }
   
   /* input */
   g_object_get(audio,
 	       "input", &channel,
 	       NULL);
+
+  if(channel != NULL){
+    g_object_unref(channel);
+  }
 
   while(channel != NULL){
     /* input */
@@ -1186,6 +1213,10 @@ ags_ramp_acceleration_dialog_reset(AgsApplicable *applicable)
     g_object_get(channel,
 		 "next", &channel,
 		 NULL);
+
+    if(channel != NULL){
+      g_object_unref(channel);
+    }
   }
   
   g_strfreev(collected_specifier);

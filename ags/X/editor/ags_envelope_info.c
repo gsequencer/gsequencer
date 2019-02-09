@@ -409,7 +409,8 @@ ags_envelope_info_reset(AgsApplicable *applicable)
     notation = notation->next;
   }
 
-  g_list_free(start_notation);
+  g_list_free_full(start_notation,
+		   g_object_unref);
 }
 
 gchar*

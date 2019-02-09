@@ -1652,8 +1652,6 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
   
   xorg_application_context = (AgsXorgApplicationContext *) application_context;
 
-  main_loop = (AgsThread *) AGS_APPLICATION_CONTEXT(xorg_application_context)->main_loop;
-
   config = ags_config_get_instance();
 
   /* call parent */
@@ -2000,9 +1998,9 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
     
 	    ags_jack_client_open((AgsJackClient *) input_client,
 				 "ags-input-client");	    
+	  }else{
+	    g_object_unref(input_client);
 	  }
-	}else{
-	  g_object_unref(input_client);
 	}
 	
 	soundcard = ags_sound_server_register_soundcard(AGS_SOUND_SERVER(jack_server),
@@ -3094,7 +3092,7 @@ ags_xorg_application_context_launch(AgsFileLaunch *launch, AgsXorgApplicationCon
   GList *list;
   GList *start_queue;
 
-  main_loop = ags_concurrency_provider_get_main_loop(AGS_CONCURRENCY_PROVIDER(application_context));
+  audio_loop = ags_concurrency_provider_get_main_loop(AGS_CONCURRENCY_PROVIDER(application_context));
 
   /* show all */
   gtk_widget_show_all((GtkWidget *) application_context->window);

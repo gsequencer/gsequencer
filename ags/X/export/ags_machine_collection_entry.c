@@ -471,7 +471,8 @@ ags_machine_collection_entry_apply(AgsApplicable *applicable)
 	note = note->next;
       }
 
-      g_list_free(start_note);
+      g_list_free_full(start_note,
+		       g_object_unref);
       
       notation = notation->next;
     }
@@ -514,7 +515,8 @@ ags_machine_collection_entry_apply(AgsApplicable *applicable)
 	note = note->next;
       }
 
-      g_list_free(start_note);
+      g_list_free_full(start_note,
+		       g_object_unref);
       
       notation = notation->next;
     }
@@ -603,7 +605,8 @@ ags_machine_collection_entry_apply(AgsApplicable *applicable)
 
   free(check_match);
   
-  g_list_free(start_notation);
+  g_list_free_full(start_notation,
+		   g_object_unref);
 }
 
 void

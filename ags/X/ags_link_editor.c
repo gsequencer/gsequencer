@@ -340,11 +340,11 @@ ags_link_editor_apply(AgsApplicable *applicable)
       ags_gui_thread_schedule_task((AgsGuiThread *) gui_thread,
 				   (GObject *) link_channel);
     }
-  }
 
-  g_object_unref(audio);
+    g_object_unref(audio);
   
-  g_object_unref(output_soundcard);
+    g_object_unref(output_soundcard);
+  }
 }
 
 void

@@ -748,7 +748,8 @@ ags_envelope_editor_apply(AgsApplicable *applicable)
     notation = notation->next;
   }
 
-  g_list_free(start_notation);
+  g_list_free_full(start_notation,
+		   g_object_unref);
 }
 
 void
@@ -850,7 +851,8 @@ ags_envelope_editor_get_active_preset(AgsEnvelopeEditor *envelope_editor)
     current = preset->data;
   }
 
-  g_list_free(start_preset);
+  g_list_free_full(start_preset,
+		   g_object_unref);
   
   return(current);
 }
@@ -909,7 +911,8 @@ ags_envelope_editor_load_preset(AgsEnvelopeEditor *envelope_editor)
     preset = preset->next;
   }
 
-  g_list_free(start_preset);
+  g_list_free_full(start_preset,
+		   g_object_unref);
 }
 
 /**
@@ -957,7 +960,8 @@ ags_envelope_editor_add_preset(AgsEnvelopeEditor *envelope_editor,
   /* check if already present */
   if(ags_preset_find_name(start_preset,
 			  preset_name) != NULL){    
-    g_list_free(start_preset);
+    g_list_free_full(start_preset,
+		     g_object_unref);
     
     return;
   }
@@ -1074,7 +1078,8 @@ ags_envelope_editor_remove_preset(AgsEnvelopeEditor *envelope_editor,
   preset = g_list_nth_data(start_preset,
 			   nth);
 
-  g_list_free(start_preset);
+  g_list_free_full(start_preset,
+		   g_object_unref);
 
   ags_audio_remove_preset(audio,
 			  (GObject *) preset);

@@ -1042,6 +1042,9 @@ ags_pattern_envelope_get_active_preset(AgsPatternEnvelope *pattern_envelope)
     current = preset->data;
   }
 
+  g_list_free_full(start_preset,
+		   g_object_unref);
+
   return(current);
 }
 
@@ -1106,6 +1109,9 @@ ags_pattern_envelope_load_preset(AgsPatternEnvelope *pattern_envelope)
 
     preset = preset->next;
   }
+
+  g_list_free_full(start_preset,
+		   g_object_unref);
 }
 
 /**
@@ -1181,6 +1187,9 @@ ags_pattern_envelope_add_preset(AgsPatternEnvelope *pattern_envelope,
 
   if(ags_preset_find_name(start_preset,
 			  preset_name) != NULL){
+    g_list_free_full(start_preset,
+		     g_object_unref);
+   
     return;
   }
   
@@ -1252,6 +1261,9 @@ ags_pattern_envelope_add_preset(AgsPatternEnvelope *pattern_envelope,
 
   ags_preset_add_parameter(preset,
 			   "release", &value);
+
+  g_list_free_full(start_preset,
+		   g_object_unref);
 }
 
 /**
@@ -1297,6 +1309,9 @@ ags_pattern_envelope_remove_preset(AgsPatternEnvelope *pattern_envelope,
 
   ags_audio_remove_preset(audio,
 			  (GObject *) preset);
+
+  g_list_free_full(start_preset,
+		   g_object_unref);
 }
 
 /**

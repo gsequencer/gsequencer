@@ -911,7 +911,8 @@ ags_pattern_envelope_preset_move_up_callback(GtkWidget *button,
 
   pthread_mutex_unlock(audio_mutex);
 
-  g_list_free(start_preset);
+  g_list_free_full(start_preset,
+		   g_object_unref);
   
   /* load preset */
   ags_envelope_dialog_load_preset(envelope_dialog);    
@@ -1019,7 +1020,8 @@ ags_pattern_envelope_preset_move_down_callback(GtkWidget *button,
 
   pthread_mutex_unlock(audio_mutex);
 
-  g_list_free(start_preset);
+  g_list_free_full(start_preset,
+		   g_object_unref);
   
   /* load preset */
   ags_envelope_dialog_load_preset(envelope_dialog);    

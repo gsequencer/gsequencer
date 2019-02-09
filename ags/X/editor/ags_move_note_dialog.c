@@ -595,7 +595,8 @@ ags_move_note_dialog_apply(AgsApplicable *applicable)
     notation = notation->next;
   }
 
-  g_list_free(start_notation);
+  g_list_free_full(start_notation,
+		   g_object_unref);
 
   /* append tasks */
   ags_gui_thread_schedule_task_list((AgsGuiThread *) gui_thread,

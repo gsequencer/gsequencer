@@ -895,6 +895,8 @@ ags_wave_edit_auto_scroll_timeout(GtkWidget *widget)
     gtk_range_set_value(GTK_RANGE(wave_edit->hscrollbar),
 			x);
 
+    g_object_unref(output_soundcard);
+    
     return(TRUE);
   }else{
     return(FALSE);
@@ -1481,6 +1483,8 @@ ags_wave_edit_draw_buffer(AgsWaveEdit *wave_edit,
   g_object_get(wave_editor->selected_machine->audio,
 	       "output-soundcard", &soundcard,
 	       NULL);
+
+  g_object_unref(soundcard);
   
   /* zoom */
   zoom = exp2((double) gtk_combo_box_get_active((GtkComboBox *) wave_toolbar->zoom) - 2.0);
@@ -1670,6 +1674,8 @@ ags_wave_edit_draw_wave(AgsWaveEdit *wave_edit)
 	       "output-soundcard", &soundcard,
 	       NULL);
 
+  g_object_unref(soundcard);
+  
   /* create cairo context */
   cr = gdk_cairo_create(GTK_WIDGET(wave_edit->drawing_area)->window);
 
@@ -1719,6 +1725,8 @@ ags_wave_edit_draw_wave(AgsWaveEdit *wave_edit)
 		 "samplerate", &samplerate,
 		 NULL);
 
+    g_object_unref(current_timestamp);
+    
     if(current_line != line ||
        current_timestamp == NULL){
       list_wave = list_wave->next;
@@ -1752,7 +1760,8 @@ ags_wave_edit_draw_wave(AgsWaveEdit *wave_edit)
       list_buffer = list_buffer->next;
     }
 
-    g_list_free(start_list_buffer);
+    g_list_free_full(start_list_buffer,
+		     g_object_unref);
       
     /* iterate */
     list_wave = list_wave->next;
@@ -1760,7 +1769,8 @@ ags_wave_edit_draw_wave(AgsWaveEdit *wave_edit)
   
   //TODO:JK: implement me
 
-  g_list_free(start_list_wave);
+  g_list_free_full(start_list_wave,
+		   g_object_unref);
 
   /* complete */
   cairo_pop_group_to_source(cr);

@@ -152,6 +152,10 @@ ags_select_acceleration_dialog_add_callback(GtkWidget *button,
 	       "output", &channel,
 	       NULL);
 
+  if(channel != NULL){
+    g_object_unref(channel);
+  }
+
   while(channel != NULL){
     /* output */
     port =
@@ -202,12 +206,20 @@ ags_select_acceleration_dialog_add_callback(GtkWidget *button,
     g_object_get(channel,
 		 "next", &channel,
 		 NULL);
+
+    if(channel != NULL){
+      g_object_unref(channel);
+    }
   }
   
   /* input */
   g_object_get(audio,
 	       "input", &channel,
 	       NULL);
+
+  if(channel != NULL){
+    g_object_unref(channel);
+  }
 
   while(channel != NULL){
     /* input */
@@ -259,6 +271,10 @@ ags_select_acceleration_dialog_add_callback(GtkWidget *button,
     g_object_get(channel,
 		 "next", &channel,
 		 NULL);
+
+    if(channel != NULL){
+      g_object_unref(channel);
+    }
   }
   
   g_strfreev(collected_specifier);

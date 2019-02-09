@@ -1475,7 +1475,8 @@ ags_notation_editor_copy(AgsNotationEditor *notation_editor)
       i++;
     }
 
-    g_list_free_full(start_list_notation);
+    g_list_free_full(start_list_notation,
+		     g_object_unref);
     
     /* write to clipboard */
     xmlDocDumpFormatMemoryEnc(clipboard, &buffer, &size, "UTF-8", TRUE);

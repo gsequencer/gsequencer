@@ -579,6 +579,10 @@ ags_automation_toolbar_load_port(AgsAutomationToolbar *automation_toolbar)
 	       "output", &channel,
 	       NULL);
 
+  if(channel != NULL){
+    g_object_unref(channel);
+  }
+  
   while(channel != NULL){
     /* output */
     port =
@@ -638,12 +642,20 @@ ags_automation_toolbar_load_port(AgsAutomationToolbar *automation_toolbar)
     g_object_get(channel,
 		 "next", &channel,
 		 NULL);
+
+    if(channel != NULL){
+      g_object_unref(channel);
+    }
   }
   
   /* input */
   g_object_get(machine->audio,
 	       "input", &channel,
 	       NULL);
+
+  if(channel != NULL){
+    g_object_unref(channel);
+  }
 
   while(channel != NULL){
     /* input */
@@ -704,6 +716,10 @@ ags_automation_toolbar_load_port(AgsAutomationToolbar *automation_toolbar)
     g_object_get(channel,
 		 "next", &channel,
 		 NULL);
+
+    if(channel != NULL){
+      g_object_unref(channel);
+    }
   }
   
   g_strfreev(collected_specifier);
@@ -806,6 +822,10 @@ ags_automation_toolbar_apply_port(AgsAutomationToolbar *automation_toolbar,
 		   "output", &channel,
 		   NULL);
 
+      if(channel != NULL){
+	g_object_unref(channel);
+      }
+
       start_port = NULL;
       
       while(channel != NULL){
@@ -834,6 +854,10 @@ ags_automation_toolbar_apply_port(AgsAutomationToolbar *automation_toolbar,
 	g_object_get(channel,
 		     "next", &channel,
 		     NULL);
+
+	if(channel != NULL){
+	  g_object_unref(channel);
+	}
       }
     }else if(!g_ascii_strcasecmp("input",
 				 str)){
@@ -843,6 +867,10 @@ ags_automation_toolbar_apply_port(AgsAutomationToolbar *automation_toolbar,
 		   "input", &channel,
 		   NULL);
 
+      if(channel != NULL){
+	g_object_unref(channel);
+      }
+
       start_port = NULL;
       
       while(channel != NULL){
@@ -871,6 +899,10 @@ ags_automation_toolbar_apply_port(AgsAutomationToolbar *automation_toolbar,
 	g_object_get(channel,
 		     "next", &channel,
 		     NULL);
+
+	if(channel != NULL){
+	  g_object_unref(channel);
+	}
       }
     }
 
@@ -948,6 +980,8 @@ ags_automation_toolbar_apply_port(AgsAutomationToolbar *automation_toolbar,
       lower = g_value_get_float(lower_value);
 
       default_value = g_value_get_float(value);
+
+      g_object_unref(plugin_port);
     }else{
       upper = 1.0;
       lower = 0.0;
@@ -1109,7 +1143,8 @@ ags_automation_toolbar_apply_port(AgsAutomationToolbar *automation_toolbar,
     }
   }
 
-  g_list_free(start_automation);
+  g_list_free_full(start_automation,
+		   g_object_unref);
 }
 
 /**

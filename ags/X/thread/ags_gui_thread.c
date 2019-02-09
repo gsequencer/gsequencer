@@ -885,6 +885,9 @@ ags_gui_thread_launch(AgsGuiThread *gui_thread,
 	       "config", &config,
 	       NULL);
 
+  g_object_unref(audio_loop);
+  g_object_unref(config);
+  
   task_thread = ags_thread_find_type(audio_loop,
 				     AGS_TYPE_TASK_THREAD);
 
@@ -929,6 +932,10 @@ ags_gui_thread_launch_filename(AgsGuiThread *gui_thread,
 	       "task-thread", &task_thread,
 	       "config", &config,
 	       NULL);
+
+  g_object_unref(audio_loop);
+  g_object_unref(task_thread);
+  g_object_unref(config);
 
   /* open file */
   if(g_strcmp0(ags_config_get_value(config,
@@ -1031,6 +1038,10 @@ ags_gui_thread_timer_launch(AgsGuiThread *gui_thread,
 	       "task-thread", &task_thread,
 	       "config", &config,
 	       NULL);
+
+  g_object_unref(audio_loop);
+  g_object_unref(task_thread);
+  g_object_unref(config);
   
   /* autosave thread */
   if(!g_strcmp0(ags_config_get_value(config,
@@ -1071,6 +1082,10 @@ ags_gui_thread_timer_launch_filename(AgsGuiThread *gui_thread,
 	       "task-thread", &task_thread,
 	       "config", &config,
 	       NULL);
+
+  g_object_unref(audio_loop);
+  g_object_unref(task_thread);
+  g_object_unref(config);
 
   /* open file */
   if(g_strcmp0(ags_config_get_value(config,

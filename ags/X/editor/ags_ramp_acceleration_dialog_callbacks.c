@@ -109,6 +109,10 @@ ags_ramp_acceleration_dialog_port_callback(GtkComboBox *combo_box,
 		   "output", &channel,
 		   NULL);
 
+      if(channel != NULL){
+	g_object_unref(channel);
+      }
+
       start_port = NULL;
       
       while(channel != NULL){
@@ -137,6 +141,10 @@ ags_ramp_acceleration_dialog_port_callback(GtkComboBox *combo_box,
 	g_object_get(channel,
 		     "next", &channel,
 		     NULL);
+
+	if(channel != NULL){
+	  g_object_unref(channel);
+	}
       }
     }
     break;
@@ -146,6 +154,10 @@ ags_ramp_acceleration_dialog_port_callback(GtkComboBox *combo_box,
 		   "input", &channel,
 		   NULL);
 
+      if(channel != NULL){
+	g_object_unref(channel);
+      }
+
       start_port = NULL;
       
       while(channel != NULL){
@@ -174,6 +186,10 @@ ags_ramp_acceleration_dialog_port_callback(GtkComboBox *combo_box,
 	g_object_get(channel,
 		     "next", &channel,
 		     NULL);
+
+	if(channel != NULL){
+	  g_object_unref(channel);
+	}
       }
     }
     break;
@@ -236,6 +252,8 @@ ags_ramp_acceleration_dialog_port_callback(GtkComboBox *combo_box,
     gtk_spin_button_set_range(ramp_acceleration_dialog->ramp_step_count,
 			      0.0,
 			      steps);
+
+    g_object_unref(plugin_port);
   }else{
     gtk_spin_button_set_range(ramp_acceleration_dialog->ramp_y0,
 			      0.0,

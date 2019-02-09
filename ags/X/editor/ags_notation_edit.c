@@ -858,6 +858,8 @@ ags_notation_edit_auto_scroll_timeout(GtkWidget *widget)
     gtk_range_set_value(GTK_RANGE(notation_edit->hscrollbar),
 			x);
 
+    g_object_unref(output_soundcard);
+    
     return(TRUE);
   }else{
     return(FALSE);
@@ -1698,6 +1700,8 @@ ags_notation_edit_draw_notation(AgsNotationEdit *notation_edit)
 		   "timestamp", &current_timestamp,
 		   NULL);
 
+      g_object_unref(current_timestamp);
+      
       if(i != audio_channel ||
 	 current_timestamp == NULL){
 	list_notation = list_notation->next;
@@ -1733,7 +1737,8 @@ ags_notation_edit_draw_notation(AgsNotationEdit *notation_edit)
 	list_note = list_note->next;
       }
 
-      g_list_free(start_list_note);
+      g_list_free_full(start_list_note,
+		       g_object_unref);
       
       list_notation = list_notation->next;
     }
@@ -1741,7 +1746,8 @@ ags_notation_edit_draw_notation(AgsNotationEdit *notation_edit)
     i++;
   }
 
-  g_list_free(start_list_notation);
+  g_list_free_full(start_list_notation,
+		   g_object_unref);
 
   g_object_unref(timestamp);
 

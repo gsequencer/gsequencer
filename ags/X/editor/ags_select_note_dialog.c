@@ -570,7 +570,8 @@ ags_select_note_dialog_apply(AgsApplicable *applicable)
 
   g_object_unref(timestamp);
   
-  g_list_free(start_list_notation);
+  g_list_free_full(start_list_notation,
+		   g_object_unref);
   
   /* write to clipboard */
   if(copy_selection){

@@ -1252,6 +1252,8 @@ ags_automation_edit_auto_scroll_timeout(GtkWidget *widget)
     gtk_range_set_value(GTK_RANGE(automation_edit->hscrollbar),
 			x);
 
+    g_object_unref(output_soundcard);
+    
     return(TRUE);
   }else{
     return(FALSE);
@@ -2063,6 +2065,8 @@ ags_automation_edit_draw_automation(AgsAutomationEdit *automation_edit)
 		   "channel-type", &channel_type,
 		   "control-name", &control_name,
 		   NULL);
+
+      g_object_unref(current_timestamp);
       
       if(i != line ||
 	 channel_type != automation_editor->focused_automation_edit->channel_type ||
@@ -2103,7 +2107,8 @@ ags_automation_edit_draw_automation(AgsAutomationEdit *automation_edit)
 	list_acceleration = list_acceleration->next;
       }
 
-      g_list_free(start_list_acceleration);
+      g_list_free_full(start_list_acceleration,
+		       g_object_unref);
       
       /* iterate */
       list_automation = list_automation->next;
@@ -2116,7 +2121,8 @@ ags_automation_edit_draw_automation(AgsAutomationEdit *automation_edit)
     i++;
   }
 
-  g_list_free(start_list_automation);
+  g_list_free_full(start_list_automation,
+		   g_object_unref);
 
   /* complete */
   cairo_pop_group_to_source(cr);

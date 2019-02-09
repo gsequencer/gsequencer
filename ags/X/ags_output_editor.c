@@ -326,10 +326,10 @@ ags_output_editor_reset(AgsApplicable *applicable)
       gtk_combo_box_set_active(GTK_COMBO_BOX(output_editor->soundcard),
 			       0);
     }
-  }
 
-  if(output_soundcard != NULL){
-    g_object_unref(output_soundcard);
+    if(output_soundcard != NULL){
+      g_object_unref(output_soundcard);
+    }
   }
 }
 

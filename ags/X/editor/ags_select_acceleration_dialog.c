@@ -605,6 +605,8 @@ ags_select_acceleration_dialog_apply(AgsApplicable *applicable)
 	g_object_get(current_automation,
 		     "timestamp", &timestamp,
 		     NULL);
+
+	g_object_unref(timestamp);
 	
 	if(ags_timestamp_get_ags_offset(timestamp) + AGS_AUTOMATION_DEFAULT_OFFSET < x0){
 	  list_automation = list_automation->next;
@@ -636,12 +638,16 @@ ags_select_acceleration_dialog_apply(AgsApplicable *applicable)
 					   lower,
 					   FALSE);
 	  c_range = c_upper - c_lower;
+
+	  g_object_unref(conversion);
 	}else{
 	  c_upper = upper;
 	  c_lower = lower;
 	  
 	  c_range = range;
 	}
+
+	g_object_unref(current_port);
 	
 	if(range == 0.0){
 	  list_automation = list_automation->next;
@@ -702,7 +708,8 @@ ags_select_acceleration_dialog_apply(AgsApplicable *applicable)
 
   g_strfreev(specifier);
   
-  g_list_free(start_list_automation);
+  g_list_free_full(start_list_automation,
+		   g_object_unref);
   g_list_free(port_start);
 
   /* write to clipboard */
