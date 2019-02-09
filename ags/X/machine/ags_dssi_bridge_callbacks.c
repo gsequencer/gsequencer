@@ -148,18 +148,24 @@ ags_dssi_bridge_program_changed_callback(GtkComboBox *combo_box, AgsDssiBridge *
 	  }
 	}
 
-	g_list_free(start_port);
+	g_list_free_full(start_port,
+			 g_object_unref);
 
 	/* iterate */
 	recall = recall->next;
       }
 
-      g_list_free(start_recall);
+      g_list_free_full(start_recall,
+		       g_object_unref);
       
       /* iterate */
       g_object_get(channel,
 		   "next", &channel,
 		   NULL);
+
+      if(channel != NULL){
+	g_object_unref(channel);
+      }
     }
 
     /* update UI */

@@ -111,10 +111,13 @@ ags_matrix_index_callback(GtkWidget *widget, AgsMatrix *matrix)
 	ags_port_safe_write(port,
 			    &value);
 
+	g_object_unref(port);
+	
 	g_value_unset(&value);
       }
 
-      g_list_free(start_list);
+      g_list_free_full(start_list,
+		       g_object_unref);
       
       /* recall - set port */
       g_object_get(AGS_MACHINE(matrix)->audio,
@@ -141,10 +144,13 @@ ags_matrix_index_callback(GtkWidget *widget, AgsMatrix *matrix)
 	ags_port_safe_write(port,
 			    &value);
 
+	g_object_unref(port);
+
 	g_value_unset(&value);
       }
       
-      g_list_free(start_list);
+      g_list_free_full(start_list,
+		       g_object_unref);
 
       gtk_widget_queue_draw((GtkWidget *) matrix->cell_pattern->drawing_area);
     }else{
@@ -223,15 +229,17 @@ ags_matrix_loop_button_callback(GtkWidget *button, AgsMatrix *matrix)
 
     ags_port_safe_write(port,
 			&value);
-
+    
     g_value_unset(&value);
+
+    g_object_unref(port);
     
     /* iterate */
     list = list->next;
   }
 
-
-  g_list_free(start_list);
+  g_list_free_full(start_list,
+		   g_object_unref);
 
   /* recall - count beats audio */
   g_object_get(AGS_MACHINE(matrix)->audio,
@@ -258,6 +266,8 @@ ags_matrix_loop_button_callback(GtkWidget *button, AgsMatrix *matrix)
 			&value);
 
     g_value_unset(&value);
+
+    g_object_unref(port);
     
     /* iterate */
     list = list->next;

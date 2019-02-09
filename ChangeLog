@@ -1,7 +1,10 @@
 ags (2.1.48)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* reworked object properties and accessors
 	* implemented object mutex of AgsTurtle
+	* fixed missing clear during set samplerate and buffer size of AgsAudioSignal
+	* fixed missing clear during set samplerate and buffer size of AgsWave
 
 ags (2.1.47)
 

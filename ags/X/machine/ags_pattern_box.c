@@ -760,7 +760,8 @@ ags_pattern_box_set_pattern(AgsPatternBox *pattern_box)
       
       is_active = ags_pattern_get_bit((AgsPattern *) pattern->data, index0, index1, offset + i);
 
-      g_list_free(start_pattern);
+      g_list_free_full(start_pattern,
+		       g_object_unref);
       
       if(!is_active){	
 	set_active = FALSE;
@@ -837,11 +838,17 @@ ags_pattern_box_led_queue_draw_timeout(AgsPatternBox *pattern_box)
 		   "recycling-context", &current,
 		   NULL);
 
+      g_object_unref(current);
+
       if(current != NULL){
 	g_object_get(current,
 		     "parent", &current,
 		     NULL);
-      
+
+	if(current != NULL){
+	  g_object_unref(current);
+	}
+	
 	if(current == NULL &&
 	   ags_recall_id_check_sound_scope(list->data, AGS_SOUND_SCOPE_SEQUENCER)){
 	  recall_id = list->data;
@@ -868,7 +875,8 @@ ags_pattern_box_led_queue_draw_timeout(AgsPatternBox *pattern_box)
 	    play_count_beats_audio_run = AGS_COUNT_BEATS_AUDIO_RUN(recall->data);
 	  }
 
-	  g_list_free(start_recall);
+	  g_list_free_full(start_recall,
+			   g_object_unref);
 
 	  if(play_count_beats_audio == NULL ||
 	     play_count_beats_audio_run == NULL){
@@ -882,7 +890,8 @@ ags_pattern_box_led_queue_draw_timeout(AgsPatternBox *pattern_box)
       list = list->next;
     }
 
-    g_list_free(start_list);
+    g_list_free_full(start_list,
+		     g_object_unref);
     
     if(recall_id == NULL){      
       return(TRUE);

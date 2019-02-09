@@ -801,13 +801,15 @@ ags_wave_set_samplerate(AgsWave *wave,
   case AGS_SOUNDCARD_SIGNED_8_BIT:
     {
       data = (gint8 *) malloc(buffer_length * buffer_size * sizeof(gint8));
-
+      memset(data, 0, buffer_length * buffer_size * sizeof(gint8));
+      
       copy_mode = AGS_AUDIO_BUFFER_UTIL_COPY_S8_TO_S8;
     }
     break;
   case AGS_SOUNDCARD_SIGNED_16_BIT:
     {
       data = (gint16 *) malloc(buffer_length * buffer_size * sizeof(gint16));
+      memset(data, 0, buffer_length * buffer_size * sizeof(gint16));
 
       copy_mode = AGS_AUDIO_BUFFER_UTIL_COPY_S16_TO_S16;
     }
@@ -815,6 +817,7 @@ ags_wave_set_samplerate(AgsWave *wave,
   case AGS_SOUNDCARD_SIGNED_24_BIT:
     {
       data = (gint32 *) malloc(buffer_length * buffer_size * sizeof(gint32));
+      memset(data, 0, buffer_length * buffer_size * sizeof(gint32));
 
       copy_mode = AGS_AUDIO_BUFFER_UTIL_COPY_S32_TO_S32;
     }
@@ -822,6 +825,7 @@ ags_wave_set_samplerate(AgsWave *wave,
   case AGS_SOUNDCARD_SIGNED_32_BIT:
     {
       data = (gint32 *) malloc(buffer_length * buffer_size * sizeof(gint32));
+      memset(data, 0, buffer_length * buffer_size * sizeof(gint32));
 
       copy_mode = AGS_AUDIO_BUFFER_UTIL_COPY_S32_TO_S32;
     }
@@ -829,6 +833,7 @@ ags_wave_set_samplerate(AgsWave *wave,
   case AGS_SOUNDCARD_SIGNED_64_BIT:
     {
       data = (gint64 *) malloc(buffer_length * buffer_size * sizeof(gint64));
+      memset(data, 0, buffer_length * buffer_size * sizeof(gint64));
 
       copy_mode = AGS_AUDIO_BUFFER_UTIL_COPY_S64_TO_S64;
     }
@@ -836,6 +841,7 @@ ags_wave_set_samplerate(AgsWave *wave,
   case AGS_SOUNDCARD_FLOAT:
     {
       data = (gfloat *) malloc(buffer_length * buffer_size * sizeof(gfloat));
+      memset(data, 0, buffer_length * buffer_size * sizeof(gfloat));
 
       copy_mode = AGS_AUDIO_BUFFER_UTIL_COPY_FLOAT_TO_FLOAT;
     }
@@ -843,6 +849,7 @@ ags_wave_set_samplerate(AgsWave *wave,
   case AGS_SOUNDCARD_DOUBLE:
     {
       data = (gdouble *) malloc(buffer_length * buffer_size * sizeof(gdouble));
+      memset(data, 0, buffer_length * buffer_size * sizeof(gdouble));
 
       copy_mode = AGS_AUDIO_BUFFER_UTIL_COPY_DOUBLE_TO_DOUBLE;
     }
@@ -944,6 +951,9 @@ ags_wave_set_samplerate(AgsWave *wave,
 
     pthread_mutex_lock(buffer_mutex);
     
+    ags_audio_buffer_util_clear_buffer(AGS_BUFFER(list->data)->data, 1,
+				       buffer_size, ags_audio_buffer_util_format_from_soundcard(format));
+
     if(offset + buffer_size < buffer_length * buffer_size){
       ags_audio_buffer_util_copy_buffer_to_buffer(AGS_BUFFER(list->data)->data, 1, 0,
 						  resampled_data, 1, offset,
@@ -956,9 +966,6 @@ ags_wave_set_samplerate(AgsWave *wave,
 
 	ags_audio_buffer_util_clear_buffer(AGS_BUFFER(list->data)->data + (end_offset - offset), 1,
 					   buffer_size - (end_offset - offset), ags_audio_buffer_util_format_from_soundcard(format));
-      }else{
-	ags_audio_buffer_util_clear_buffer(AGS_BUFFER(list->data)->data, 1,
-					   buffer_size, ags_audio_buffer_util_format_from_soundcard(format));
       }
     }
     
@@ -1050,13 +1057,15 @@ ags_wave_set_buffer_size(AgsWave *wave,
   case AGS_SOUNDCARD_SIGNED_8_BIT:
     {
       data = (gint8 *) malloc(buffer_length * old_buffer_size * sizeof(gint8));
-
+      memset(data, 0, buffer_length * old_buffer_size * sizeof(gint8));
+      
       copy_mode = AGS_AUDIO_BUFFER_UTIL_COPY_S8_TO_S8;
     }
     break;
   case AGS_SOUNDCARD_SIGNED_16_BIT:
     {
       data = (gint16 *) malloc(buffer_length * old_buffer_size * sizeof(gint16));
+      memset(data, 0, buffer_length * old_buffer_size * sizeof(gint16));
 
       copy_mode = AGS_AUDIO_BUFFER_UTIL_COPY_S16_TO_S16;
     }
@@ -1064,6 +1073,7 @@ ags_wave_set_buffer_size(AgsWave *wave,
   case AGS_SOUNDCARD_SIGNED_24_BIT:
     {
       data = (gint32 *) malloc(buffer_length * old_buffer_size * sizeof(gint32));
+      memset(data, 0, buffer_length * old_buffer_size * sizeof(gint32));
 
       copy_mode = AGS_AUDIO_BUFFER_UTIL_COPY_S32_TO_S32;
     }
@@ -1071,6 +1081,7 @@ ags_wave_set_buffer_size(AgsWave *wave,
   case AGS_SOUNDCARD_SIGNED_32_BIT:
     {
       data = (gint32 *) malloc(buffer_length * old_buffer_size * sizeof(gint32));
+      memset(data, 0, buffer_length * old_buffer_size * sizeof(gint32));
 
       copy_mode = AGS_AUDIO_BUFFER_UTIL_COPY_S32_TO_S32;
     }
@@ -1078,6 +1089,7 @@ ags_wave_set_buffer_size(AgsWave *wave,
   case AGS_SOUNDCARD_SIGNED_64_BIT:
     {
       data = (gint64 *) malloc(buffer_length * old_buffer_size * sizeof(gint64));
+      memset(data, 0, buffer_length * old_buffer_size * sizeof(gint64));
 
       copy_mode = AGS_AUDIO_BUFFER_UTIL_COPY_S64_TO_S64;
     }
@@ -1085,6 +1097,7 @@ ags_wave_set_buffer_size(AgsWave *wave,
   case AGS_SOUNDCARD_FLOAT:
     {
       data = (gfloat *) malloc(buffer_length * old_buffer_size * sizeof(gfloat));
+      memset(data, 0, buffer_length * old_buffer_size * sizeof(gfloat));
 
       copy_mode = AGS_AUDIO_BUFFER_UTIL_COPY_FLOAT_TO_FLOAT;
     }
@@ -1092,6 +1105,7 @@ ags_wave_set_buffer_size(AgsWave *wave,
   case AGS_SOUNDCARD_DOUBLE:
     {
       data = (gdouble *) malloc(buffer_length * old_buffer_size * sizeof(gdouble));
+      memset(data, 0, buffer_length * old_buffer_size * sizeof(gdouble));
 
       copy_mode = AGS_AUDIO_BUFFER_UTIL_COPY_DOUBLE_TO_DOUBLE;
     }
@@ -1188,6 +1202,9 @@ ags_wave_set_buffer_size(AgsWave *wave,
 			       buffer_size);
 
     pthread_mutex_lock(buffer_mutex);
+
+    ags_audio_buffer_util_clear_buffer(AGS_BUFFER(list->data)->data, 1,
+				       buffer_size, ags_audio_buffer_util_format_from_soundcard(format));
     
     if(offset + buffer_size < buffer_length * buffer_size){
       ags_audio_buffer_util_copy_buffer_to_buffer(AGS_BUFFER(list->data)->data, 1, 0,
@@ -1198,12 +1215,6 @@ ags_wave_set_buffer_size(AgsWave *wave,
 	ags_audio_buffer_util_copy_buffer_to_buffer(AGS_BUFFER(list->data)->data, 1, 0,
 						    data, 1, offset,
 						    end_offset - offset, copy_mode);
-
-	ags_audio_buffer_util_clear_buffer(AGS_BUFFER(list->data)->data + (end_offset - offset), 1,
-					   buffer_size - (end_offset - offset), ags_audio_buffer_util_format_from_soundcard(format));
-      }else{
-	ags_audio_buffer_util_clear_buffer(AGS_BUFFER(list->data)->data, 1,
-					   buffer_size, ags_audio_buffer_util_format_from_soundcard(format));
       }
     }
     

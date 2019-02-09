@@ -288,7 +288,6 @@ ags_live_lv2_bridge_lv2ui_write_function(LV2UI_Controller controller, uint32_t p
     free(control_port);
   }
 
-  g_list_free(start_recall);
   g_list_free(start_effect);
 
   /* recall */
@@ -320,8 +319,12 @@ ags_live_lv2_bridge_lv2ui_write_function(LV2UI_Controller controller, uint32_t p
     free(control_port);
   }
 
-  g_list_free(start_recall);
   g_list_free(start_effect);
+
+  g_list_free_full(start_play,
+		   g_object_unref);
+  g_list_free_full(start_recall,
+		   g_object_unref);
 }
 
 void
@@ -484,7 +487,8 @@ ags_live_lv2_bridge_program_changed_callback(GtkComboBox *combo_box, AgsLiveLv2B
       plugin_port = plugin_port->next;
     }
 
-    g_list_free(start_plugin_port);
+    g_list_free_full(start_plugin_port,
+		     g_object_unref);
     g_list_free(bulk_member_start);
   }
 }
@@ -586,4 +590,7 @@ ags_live_lv2_bridge_preset_changed_callback(GtkComboBox *combo_box, AgsLiveLv2Br
     
     port_preset = port_preset->next;
   }
+
+  g_list_free_full(start_plugin_port,
+		   g_object_unref);
 }

@@ -419,6 +419,10 @@ ags_spectrometer_map_recall(AgsMachine *machine)
 	       "input", &channel,
 	       NULL);
 
+  if(channel != NULL){
+    g_object_unref(channel);
+  }
+  
   /* ags-analyse */
   ags_recall_factory_create(audio,
 			    NULL, NULL,
@@ -491,11 +495,20 @@ ags_spectrometer_map_recall(AgsMachine *machine)
       spectrometer->magnitude_buffer_recall_port = g_list_prepend(spectrometer->magnitude_buffer_recall_port,
 								  port);
     }
+
+    g_list_free_full(start_play,
+		     g_object_unref);
+    g_list_free_full(start_recall,
+		     g_object_unref);
     
     /* iterate */
     g_object_get(channel,
 		 "next", &channel,
 		 NULL);
+
+    if(channel != NULL){
+      g_object_unref(channel);
+    }
   }
   
   /* call parent */

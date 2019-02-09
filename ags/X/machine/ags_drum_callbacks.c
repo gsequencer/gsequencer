@@ -172,12 +172,15 @@ ags_drum_loop_button_callback(GtkWidget *button, AgsDrum *drum)
 			&value);
 
     g_value_unset(&value);
+
+    g_object_unref(port);
     
     /* iterate */
     list = list->next;
   }
 
-  g_list_free(start_list);
+  g_list_free_full(start_list,
+		   g_object_unref);
 
   /* recall - count beats audio */
   g_object_get(AGS_MACHINE(drum)->audio,
@@ -204,12 +207,15 @@ ags_drum_loop_button_callback(GtkWidget *button, AgsDrum *drum)
 			&value);
 
     g_value_unset(&value);
+
+    g_object_unref(port);
     
     /* iterate */
     list = list->next;
   }
 
-  g_list_free(start_list);  
+  g_list_free_full(start_list,
+		   g_object_unref);
 }
 
 void
@@ -295,9 +301,12 @@ ags_drum_index0_callback(GtkWidget *widget, AgsDrum *drum)
 			    &value);
 
 	g_value_unset(&value);
+
+	g_object_unref(port);
       }
 
-      g_list_free(start_list);
+      g_list_free_full(start_list,
+		       g_object_unref);
       
       /* recall - set port */
       g_object_get(AGS_MACHINE(drum)->audio,
@@ -325,9 +334,12 @@ ags_drum_index0_callback(GtkWidget *widget, AgsDrum *drum)
 			    &value);
 
 	g_value_unset(&value);
+
+	g_object_unref(port);
       }
       
-      g_list_free(start_list);
+      g_list_free_full(start_list,
+		       g_object_unref);
     }else if(! gtk_toggle_button_get_active(drum->selected0)){
       drum->selected0 = NULL;
 
@@ -394,10 +406,12 @@ ags_drum_index1_callback(GtkWidget *widget, AgsDrum *drum)
 			    &value);
 
 	g_value_unset(&value);
+
+	g_object_unref(port);
       }
 
-
-      g_list_free(start_list);
+      g_list_free_full(start_list,
+		       g_object_unref);
       
       /* recall - set port */
       g_object_get(AGS_MACHINE(drum)->audio,
@@ -424,7 +438,12 @@ ags_drum_index1_callback(GtkWidget *widget, AgsDrum *drum)
 			    &value);
 
 	g_value_unset(&value);
+
+	g_object_unref(port);
       }
+
+      g_list_free_full(start_list,
+		       g_object_unref);
     }else if(!gtk_toggle_button_get_active(drum->selected1)){
       drum->selected1 = NULL;
 

@@ -768,6 +768,10 @@ ags_equalizer10_map_recall(AgsMachine *machine)
 	       "input", &channel,
 	       NULL);
 
+  if(channel != NULL){
+    g_object_unref(channel);
+  }
+
   /* ags-eq10 */
   ags_recall_factory_create(audio,
 			    NULL, NULL,
@@ -1022,13 +1026,19 @@ ags_equalizer10_map_recall(AgsMachine *machine)
 							 port);
     }
 
-    g_list_free(start_play);
-    g_list_free(start_recall);
+    g_list_free_full(start_play,
+		     g_object_unref);
+    g_list_free_full(start_recall,
+		     g_object_unref);
     
     /* iterate */
     g_object_get(channel,
 		 "next", &channel,
 		 NULL);
+
+    if(channel != NULL){
+      g_object_unref(channel);
+    }
   }
   
   /* call parent */

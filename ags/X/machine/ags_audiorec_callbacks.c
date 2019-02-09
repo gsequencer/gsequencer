@@ -131,18 +131,23 @@ ags_audiorec_keep_data_callback(GtkWidget *button, AgsAudiorec *audiorec)
       ags_port_safe_write(port,
 			  &playback_value);
 
+      g_object_unref(port);
+      
       g_object_get(recall->data,
 		   "replace", &port,
 		   NULL);
 
       ags_port_safe_write(port,
 			  &replace_value);
+
+      g_object_unref(port);
     }
 
     g_value_unset(&playback_value);
     g_value_unset(&replace_value);
   
-    g_list_free(start_recall);
+    g_list_free_full(start_recall,
+		     g_object_unref);
   }
 }
 
@@ -184,18 +189,23 @@ ags_audiorec_replace_data_callback(GtkWidget *button, AgsAudiorec *audiorec)
       ags_port_safe_write(port,
 			  &playback_value);
 
+      g_object_unref(port);
+
       g_object_get(recall->data,
 		   "replace", &port,
 		   NULL);
 
       ags_port_safe_write(port,
 			  &replace_value);
+
+      g_object_unref(port);
     }
 
     g_value_unset(&playback_value);
     g_value_unset(&replace_value);
   
-    g_list_free(start_recall);
+    g_list_free_full(start_recall,
+		     g_object_unref);
   }
 }
 
@@ -237,17 +247,22 @@ ags_audiorec_mix_data_callback(GtkWidget *button, AgsAudiorec *audiorec)
       ags_port_safe_write(port,
 			  &playback_value);
 
+      g_object_unref(port);
+
       g_object_get(recall->data,
 		   "replace", &port,
 		   NULL);
 
       ags_port_safe_write(port,
 			  &replace_value);
+
+      g_object_unref(port);
     }
 
     g_value_unset(&playback_value);
     g_value_unset(&replace_value);
   
-    g_list_free(start_recall);
+    g_list_free_full(start_recall,
+		     g_object_unref);
   }
 }

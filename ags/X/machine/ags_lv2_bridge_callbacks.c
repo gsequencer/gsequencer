@@ -393,6 +393,10 @@ ags_lv2_bridge_program_changed_callback(GtkComboBox *combo_box, AgsLv2Bridge *lv
 		 "input", &channel,
 		 NULL);
 
+    if(channel != NULL){
+      g_object_unref(channel);
+    }
+    
     g_object_get(lv2_plugin,
 		 "plugin-port", &start_plugin_port,
 		 NULL);
@@ -446,14 +450,24 @@ ags_lv2_bridge_program_changed_callback(GtkComboBox *combo_box, AgsLv2Bridge *lv
 	  plugin_port = plugin_port->next;
 	}
 
+	g_list_free_full(start_plugin_port,
+			 g_object_unref);
+
 	/* iterate */
 	recall = recall->next;
       }
 
-      g_list_free(start_recall);
+      g_list_free_full(start_recall,
+		       g_object_unref);
       
       /* iterate */
-      channel = channel->next;
+      g_object_get(channel,
+		   "next", &channel,
+		   NULL);
+
+      if(channel != NULL){
+	g_object_unref(channel);
+      }
     }
 
     /* update UI */
@@ -629,7 +643,11 @@ ags_lv2_bridge_preset_changed_callback(GtkComboBox *combo_box, AgsLv2Bridge *lv2
     port_preset = port_preset->next;
   }
 
-  g_list_free(start_port_preset);
+  g_list_free_full(start_plugin_port,
+		   g_object_unref);
+  
+  g_list_free_full(start_port_preset,
+		   g_object_unref);
 }
 
 void

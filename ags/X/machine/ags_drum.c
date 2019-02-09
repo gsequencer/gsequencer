@@ -569,7 +569,8 @@ ags_drum_map_recall(AgsMachine *machine)
     play_delay_audio_run = NULL;
   }
 
-  g_list_free(start_play);
+  g_list_free_full(start_play,
+		   g_object_unref);
   
   /* ags-count-beats */
   ags_recall_factory_create(audio,
@@ -623,7 +624,8 @@ ags_drum_map_recall(AgsMachine *machine)
     play_count_beats_audio_run = NULL;
   }
 
-  g_list_free(start_play);
+  g_list_free_full(start_play,
+		   g_object_unref);
   
   /* ags-copy-pattern */
   ags_recall_factory_create(audio,
@@ -653,7 +655,8 @@ ags_drum_map_recall(AgsMachine *machine)
 		 NULL);
   }
 
-  g_list_free(start_recall);
+  g_list_free_full(start_recall,
+		   g_object_unref);
   
   /* ags-record-midi */
   ags_recall_factory_create(audio,
@@ -687,7 +690,8 @@ ags_drum_map_recall(AgsMachine *machine)
 		 NULL);
   }  
 
-  g_list_free(start_play);
+  g_list_free_full(start_play,
+		   g_object_unref);
   
   /* ags-play-notation */
   ags_recall_factory_create(audio,
@@ -721,7 +725,8 @@ ags_drum_map_recall(AgsMachine *machine)
 		 NULL);
   }
 
-  g_list_free(start_play);
+  g_list_free_full(start_play,
+		   g_object_unref);
   
   /* call parent */
   AGS_MACHINE_CLASS(ags_drum_parent_class)->map_recall(machine);

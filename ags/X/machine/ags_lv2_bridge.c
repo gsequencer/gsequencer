@@ -1008,6 +1008,14 @@ ags_lv2_bridge_resize_audio_channels(AgsMachine *machine,
 	       "output-pads", &output_pads,
 	       "input-pads", &input_pads,
 	       NULL);
+
+  if(output != NULL){
+    g_object_unref(output);
+  }
+
+  if(input != NULL){
+    g_object_unref(input);
+  }
   
   /* check available */
   if(input_pads == 0 &&
@@ -1025,6 +1033,10 @@ ags_lv2_bridge_resize_audio_channels(AgsMachine *machine,
 		   "next-pad", &next_pad,
 		   NULL);
 
+      if(next_pad != NULL){
+	g_object_unref(next_pad);
+      }
+      
       channel = ags_channel_nth(channel,
 				audio_channels_old);
 
@@ -1046,11 +1058,19 @@ ags_lv2_bridge_resize_audio_channels(AgsMachine *machine,
 	  ags_recycling_add_audio_signal(first_recycling,
 					 audio_signal);
 	}
+
+	g_object_unref(output_soundcard);
+	
+	g_object_unref(first_recycling);
 	
 	/* iterate */
 	g_object_get(channel,
 		     "next", &channel,
 		     NULL);
+
+	if(channel != NULL){
+	  g_object_unref(channel);
+	}
       }
     }
 
@@ -1062,6 +1082,10 @@ ags_lv2_bridge_resize_audio_channels(AgsMachine *machine,
       g_object_get(channel,
 		   "next-pad", &next_pad,
 		   NULL);
+
+      if(next_pad != NULL){
+	g_object_unref(next_pad);
+      }
 
       channel = ags_channel_pad_nth(channel,
 				    audio_channels_old);
@@ -1088,10 +1112,18 @@ ags_lv2_bridge_resize_audio_channels(AgsMachine *machine,
 					 audio_signal);
 	}
 	
+	g_object_unref(output_soundcard);
+	
+	g_object_unref(first_recycling);
+
 	/* iterate */
 	g_object_get(channel,
 		     "next", &channel,
 		     NULL);
+
+	if(channel != NULL){
+	  g_object_unref(channel);
+	}
       }
     }
 
@@ -1137,6 +1169,14 @@ ags_lv2_bridge_resize_pads(AgsMachine *machine, GType channel_type,
 	       "audio-channels", &audio_channels,
 	       NULL);
 
+  if(output != NULL){
+    g_object_unref(output);
+  }
+
+  if(input != NULL){
+    g_object_unref(input);
+  }
+  
   /* check available */
   if(pads == pads_old ||
      audio->audio_channels == 0){
@@ -1162,7 +1202,6 @@ ags_lv2_bridge_resize_pads(AgsMachine *machine, GType channel_type,
 		     "first-recycling", &first_recycling,
 		     NULL);
 
-
 	if(first_recycling != NULL){
 	  /* audio signal */
 	  audio_signal = ags_audio_signal_new(output_soundcard,
@@ -1175,10 +1214,18 @@ ags_lv2_bridge_resize_pads(AgsMachine *machine, GType channel_type,
 					 audio_signal);
 	}
 	
+	g_object_unref(output_soundcard);
+	
+	g_object_unref(first_recycling);
+
 	/* iterate */
 	g_object_get(channel,
 		     "next", &channel,
 		     NULL);
+
+	if(channel != NULL){
+	  g_object_unref(channel);
+	}
       }
 
       /* recall */
@@ -1217,10 +1264,18 @@ ags_lv2_bridge_resize_pads(AgsMachine *machine, GType channel_type,
 					 audio_signal);
 	}
 	
+	g_object_unref(output_soundcard);
+	
+	g_object_unref(first_recycling);
+	
 	/* iterate */
 	g_object_get(channel,
 		     "next", &channel,
 		     NULL);
+
+	if(channel != NULL){
+	  g_object_unref(channel);
+	}
       }
 
       /* recall */
@@ -1298,7 +1353,8 @@ ags_lv2_bridge_map_recall(AgsMachine *machine)
       play_delay_audio_run = NULL;
     }
 
-    g_list_free(start_play);
+    g_list_free_full(start_play,
+		     g_object_unref);
     
     /* ags-count-beats */
     ags_recall_factory_create(audio,
@@ -1351,7 +1407,8 @@ ags_lv2_bridge_map_recall(AgsMachine *machine)
       play_count_beats_audio_run = NULL;
     }
 
-    g_list_free(start_play);
+    g_list_free_full(start_play,
+		     g_object_unref);
 
     /* ags-record-midi */
     ags_recall_factory_create(audio,
@@ -1385,7 +1442,8 @@ ags_lv2_bridge_map_recall(AgsMachine *machine)
 		   NULL);
     }  
 
-    g_list_free(start_play);
+    g_list_free_full(start_play,
+		     g_object_unref);
 
     /* ags-play-notation */
     ags_recall_factory_create(audio,
@@ -1419,7 +1477,8 @@ ags_lv2_bridge_map_recall(AgsMachine *machine)
 		   NULL);
     }
     
-    g_list_free(start_play);
+    g_list_free_full(start_play,
+		     g_object_unref);
 
     /* ags-route-lv2 */
     ags_recall_factory_create(audio,
@@ -1455,7 +1514,8 @@ ags_lv2_bridge_map_recall(AgsMachine *machine)
       recall_route_lv2_audio_run = NULL;
     }
 
-    g_list_free(start_play);
+    g_list_free_full(start_play,
+		     g_object_unref);
   }
 
   /* depending on destination */
@@ -1502,6 +1562,10 @@ ags_lv2_bridge_input_map_recall(AgsLv2Bridge *lv2_bridge,
 	       "input-pads", &input_pads,
 	       "audio-channels", &audio_channels,
 	       NULL);
+
+  if(input != NULL){
+    g_object_unref(input);
+  }
 
   /* source */
   source = ags_channel_nth(input,
@@ -1551,10 +1615,13 @@ ags_lv2_bridge_input_map_recall(AgsLv2Bridge *lv2_bridge,
 	ags_port_safe_write(port,
 			    &use_note_length_value);
 
+	g_object_unref(port);
+	
 	g_value_unset(&use_note_length_value);
       }
 
-      g_list_free(start_list);
+      g_list_free_full(start_list,
+		       g_object_unref);
       
       /* recall - use note length */
       g_object_get(current,
@@ -1580,15 +1647,22 @@ ags_lv2_bridge_input_map_recall(AgsLv2Bridge *lv2_bridge,
 	ags_port_safe_write(port,
 			    &use_note_length_value);
 
+	g_object_unref(port);
+
 	g_value_unset(&use_note_length_value);
       }
 
-      g_list_free(start_list);
+      g_list_free_full(start_list,
+		       g_object_unref);
 
       /* iterate */
       g_object_get(current,
 		   "next-pad", &current,
 		   NULL);
+
+      if(current != NULL){
+	g_object_unref(current);
+      }
     }
     
     if(ags_recall_global_get_rt_safe() ||
@@ -1797,6 +1871,9 @@ ags_lv2_bridge_load_program(AgsLv2Bridge *lv2_bridge)
 	/* iterate */
 	plugin_port = plugin_port->next;
       }
+
+      g_list_free_full(start_plugin_port,
+		       g_object_unref);
     }
 
     if(lv2_bridge->program == NULL){

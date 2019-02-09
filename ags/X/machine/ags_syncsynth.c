@@ -554,7 +554,8 @@ ags_syncsynth_map_recall(AgsMachine *machine)
     play_delay_audio_run = NULL;
   }
   
-  g_list_free(start_play);
+  g_list_free_full(start_play,
+		   g_object_unref);
   
   /* ags-count-beats */
   ags_recall_factory_create(audio,
@@ -609,7 +610,8 @@ ags_syncsynth_map_recall(AgsMachine *machine)
     play_count_beats_audio_run = NULL;
   }
 
-  g_list_free(start_play);
+  g_list_free_full(start_play,
+		   g_object_unref);
   
   /* ags-record-midi */
   ags_recall_factory_create(audio,
@@ -643,7 +645,8 @@ ags_syncsynth_map_recall(AgsMachine *machine)
 		 NULL);
   }  
 
-  g_list_free(start_play);
+  g_list_free_full(start_play,
+		   g_object_unref);
   
   /* ags-play-notation */
   ags_recall_factory_create(audio,
@@ -677,7 +680,8 @@ ags_syncsynth_map_recall(AgsMachine *machine)
 		 NULL);
   }
 
-  g_list_free(start_play);
+  g_list_free_full(start_play,
+		   g_object_unref);
 
   /* depending on destination */
   ags_syncsynth_input_map_recall(syncsynth, 0);
@@ -841,6 +845,10 @@ ags_syncsynth_resize_audio_channels(AgsMachine *machine,
 	       "output", &output,
 	       NULL);
 
+  if(output != NULL){
+    g_object_unref(output);
+  }
+
   if(audio_channels > audio_channels_old){
     /* AgsOutput */
     channel = output;
@@ -850,6 +858,10 @@ ags_syncsynth_resize_audio_channels(AgsMachine *machine,
       g_object_get(channel,
 		   "next-pad", &next_pad,
 		   NULL);
+
+      if(next_pad != NULL){
+	g_object_unref(next_pad);
+      }
 
       channel = ags_channel_pad_nth(channel,
 				    audio_channels_old);
@@ -879,10 +891,18 @@ ags_syncsynth_resize_audio_channels(AgsMachine *machine,
 	ags_recycling_add_audio_signal(recycling,
 				       audio_signal);
 
+	g_object_unref(output_soundcard);
+	
+	g_object_unref(recycling);
+
 	/* iterate */
 	g_object_get(channel,
 		     "next", &channel,
 		     NULL);
+
+	if(channel != NULL){
+	  g_object_unref(channel);
+	}
       }
     }
 
@@ -1023,6 +1043,10 @@ ags_syncsynth_resize_pads(AgsMachine *machine, GType type,
 		   "output", &source,
 		   NULL);
 
+      if(source != NULL){
+	g_object_unref(source);
+      }
+      
       source = ags_channel_pad_nth(source,
 				   pads_old);
 
@@ -1051,10 +1075,18 @@ ags_syncsynth_resize_pads(AgsMachine *machine, GType type,
 	ags_recycling_add_audio_signal(recycling,
 				       audio_signal);
 
+	g_object_unref(output_soundcard);
+	
+	g_object_unref(recycling);
+	
 	/* iterate */
 	g_object_get(source,
 		     "next-pad", &source,
 		     NULL);
+
+	if(source != NULL){
+	  g_object_unref(source);
+	}
       }
 
       if((AGS_MACHINE_MAPPED_RECALL & (machine->flags)) != 0){
@@ -1320,7 +1352,8 @@ ags_syncsynth_remove_oscillator(AgsSyncsynth *syncsynth,
 				   g_list_nth_data(start_synth_generator,
 						   nth));
 
-  g_list_free(start_synth_generator);
+  g_list_free_full(start_synth_generator,
+		   g_object_unref);
   
   list_start = gtk_container_get_children(GTK_CONTAINER(syncsynth->oscillator));
 
@@ -1433,6 +1466,10 @@ ags_syncsynth_update(AgsSyncsynth *syncsynth)
 	       "input", &channel,
 	       NULL);
 
+  if(channel != NULL){
+    g_object_unref(channel);
+  }
+
   task = NULL;
 
   while(channel != NULL){
@@ -1456,12 +1493,19 @@ ags_syncsynth_update(AgsSyncsynth *syncsynth)
     task = g_list_prepend(task,
 			  clear_audio_signal);
 
-    g_list_free(start_list);
+    g_list_free_full(start_list,
+		     g_object_unref);
     
+    g_object_unref(first_recycling);
+
     /* iterate */
     g_object_get(channel,
 		 "next", &channel,
 		 NULL);
+
+    if(channel != NULL){
+      g_object_unref(channel);
+    }
   }
 
   /* write input */
@@ -1474,6 +1518,10 @@ ags_syncsynth_update(AgsSyncsynth *syncsynth)
 	       "input-lines", &input_lines,
 	       "synth-generator", &start_synth_generator,
 	       NULL);
+
+  if(channel != NULL){
+    g_object_unref(channel);
+  }
 
   g_object_get(channel,
 	       "buffer-size", &buffer_size,
@@ -1568,7 +1616,8 @@ ags_syncsynth_update(AgsSyncsynth *syncsynth)
     list = list->next;
   }
 
-  g_list_free(start_synth_generator);
+  g_list_free_full(start_synth_generator,
+		   g_object_unref);
   
   g_list_free(list_start);
 

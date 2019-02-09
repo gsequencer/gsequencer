@@ -74,7 +74,11 @@ ags_spectrometer_resize_audio_channels_callback(AgsSpectrometer *spectrometer,
 		   "audio-channels", &audio_channels,
 		   "input", &channel,
 		   NULL);
-  
+
+      if(channel != NULL){
+	g_object_unref(channel);
+      }
+      
       /* ags-analyse */
       ags_recall_factory_create(audio,
 				NULL, NULL,
@@ -148,13 +152,19 @@ ags_spectrometer_resize_audio_channels_callback(AgsSpectrometer *spectrometer,
 								      port);
 	}
 
-	g_list_free(start_play);
-	g_list_free(start_recall);
+	g_list_free_full(start_play,
+			 g_object_unref);
+	g_list_free_full(start_recall,
+			 g_object_unref);
 	
 	/* iterate */
 	g_object_get(channel,
 		     "next", &channel,
 		     NULL);
+
+	if(channel != NULL){
+	  g_object_unref(channel);
+	}
       }
     }
   }else{
@@ -258,6 +268,10 @@ ags_spectrometer_resize_pads_callback(AgsSpectrometer *spectrometer,
 		   "audio-channels", &audio_channels,
 		   "input", &channel,
 		   NULL);
+
+      if(channel != NULL){
+	g_object_unref(channel);
+      }
   
       /* ags-analyse */
       ags_recall_factory_create(audio,
@@ -332,13 +346,19 @@ ags_spectrometer_resize_pads_callback(AgsSpectrometer *spectrometer,
 								      port);
 	}
     
-	g_list_free(start_play);
-	g_list_free(start_recall);
+	g_list_free_full(start_play,
+			 g_object_unref);
+	g_list_free_full(start_recall,
+			 g_object_unref);
 
 	/* iterate */
 	g_object_get(channel,
 		     "next", &channel,
 		     NULL);
+	
+	if(channel != NULL){
+	  g_object_unref(channel);
+	}
       }
     }
   }

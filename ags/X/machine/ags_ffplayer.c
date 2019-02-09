@@ -807,6 +807,10 @@ ags_ffplayer_resize_audio_channels(AgsMachine *machine,
 	       "output", &output,
 	       NULL);
 
+  if(output != NULL){
+    g_object_unref(output);
+  }
+
   /*  */
   if(audio_channels > audio_channels_old){  
     /* AgsOutput */
@@ -817,6 +821,10 @@ ags_ffplayer_resize_audio_channels(AgsMachine *machine,
       g_object_get(channel,
 		   "next-pad", &next_pad,
 		   NULL);
+
+      if(next_pad != NULL){
+	g_object_unref(next_pad);
+      }
 
       channel = ags_channel_pad_nth(channel,
 				    audio_channels_old);
@@ -846,10 +854,18 @@ ags_ffplayer_resize_audio_channels(AgsMachine *machine,
 	ags_recycling_add_audio_signal(recycling,
 				       audio_signal);
 
+	g_object_unref(output_soundcard);
+
+	g_object_unref(recycling);
+	
 	/* iterate */
 	g_object_get(channel,
 		     "next", &channel,
 		     NULL);
+
+	if(channel != NULL){
+	  g_object_unref(channel);
+	}
       }
     }
 
@@ -973,6 +989,10 @@ ags_ffplayer_resize_pads(AgsMachine *machine, GType channel_type,
 	       "output", &output,
 	       NULL);
 
+  if(output != NULL){
+    g_object_unref(output);
+  }
+
   /* check grow */
   if(pads_old < pads){
     grow = TRUE;
@@ -1017,11 +1037,19 @@ ags_ffplayer_resize_pads(AgsMachine *machine, GType channel_type,
 	audio_signal->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;
 	ags_recycling_add_audio_signal(recycling,
 				       audio_signal);
+
+	g_object_unref(output_soundcard);
+
+	g_object_unref(recycling);
 	
 	/* iterate */
 	g_object_get(channel,
 		     "next", &channel,
 		     NULL);
+
+	if(channel != NULL){
+	  g_object_unref(channel);
+	}
       }
 
       /* depending on destination */
@@ -1093,7 +1121,8 @@ ags_ffplayer_map_recall(AgsMachine *machine)
     play_delay_audio_run = NULL;
   }
 
-  g_list_free(start_play);
+  g_list_free_full(start_play,
+		   g_object_unref);
   
   /* ags-count-beats */
   ags_recall_factory_create(audio,
@@ -1146,7 +1175,8 @@ ags_ffplayer_map_recall(AgsMachine *machine)
     play_count_beats_audio_run = NULL;
   }
 
-  g_list_free(start_play);
+  g_list_free_full(start_play,
+		   g_object_unref);
 
   /* ags-record-midi */
   ags_recall_factory_create(audio,
@@ -1180,7 +1210,8 @@ ags_ffplayer_map_recall(AgsMachine *machine)
 		 NULL);
   }  
 
-  g_list_free(start_play);
+  g_list_free_full(start_play,
+		   g_object_unref);
 
   /* ags-play-notation */
   ags_recall_factory_create(audio,
@@ -1214,7 +1245,8 @@ ags_ffplayer_map_recall(AgsMachine *machine)
 		 NULL);
   }
 
-  g_list_free(start_play);
+  g_list_free_full(start_play,
+		   g_object_unref);
 
   /* depending on destination */
   ags_ffplayer_input_map_recall(ffplayer, 0);

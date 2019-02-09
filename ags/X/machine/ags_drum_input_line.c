@@ -316,6 +316,10 @@ ags_drum_input_line_set_channel(AgsLine *line, AgsChannel *channel)
 		 "first-recycling", &first_recycling,
 		 "line", &nth_line,
 		 NULL);
+
+    if(first_recycling != NULL){
+      g_object_unref(first_recycling);
+    }
     
 #ifdef AGS_DEBUG
     g_message("ags_drum_input_line_set_channel - channel: %u",
@@ -364,6 +368,11 @@ ags_drum_input_line_set_channel(AgsLine *line, AgsChannel *channel)
 	g_list_free(list);
       }
     }
+
+    g_list_free_full(start_list,
+		     g_object_unref);
+    
+    g_object_unref(output_soundcard);
   }
 }
 
@@ -468,10 +477,14 @@ ags_drum_input_line_map_recall(AgsLine *line,
     ags_port_safe_write(port,
 			&pattern_value);
 
-    g_list_free(pattern);
+    g_object_unref(port);
+    
+    g_list_free_full(pattern,
+		     g_object_unref);
   }
 
-  g_list_free(start_recall);
+  g_list_free_full(start_recall,
+		   g_object_unref);
   
   if(ags_recall_global_get_rt_safe()){
     ags_recall_factory_create(audio,
@@ -519,11 +532,14 @@ ags_drum_input_line_map_recall(AgsLine *line,
 
     ags_port_safe_write(port,
 			&audio_channel_value);
+
+    g_object_unref(port);
     
     play = play->next;
   }
 
-  g_list_free(start_play);
+  g_list_free_full(start_play,
+		   g_object_unref);
   
   /* ags-volume */
   ags_recall_factory_create(audio,
@@ -579,8 +595,11 @@ ags_drum_input_line_map_recall(AgsLine *line,
 		 "stream-channel-run", stream_channel_run,
 		 NULL);
 
-    g_list_free(start_play);
+    g_list_free_full(start_play,
+		     g_object_unref);
   }
+
+  g_object_unref(audio);
   
   /* call parent */
   AGS_LINE_CLASS(ags_drum_input_line_parent_class)->map_recall(line,

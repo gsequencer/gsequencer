@@ -942,10 +942,16 @@ ags_cell_pattern_led_queue_draw_timeout(AgsCellPattern *cell_pattern)
 		   NULL);
 
       if(current != NULL){
+	g_object_unref(current);
+	
 	g_object_get(current,
 		     "parent", &current,
 		     NULL);
 
+	if(current != NULL){
+	  g_object_unref(current);
+	}
+	
 	if(current == NULL &&
 	   ags_recall_id_check_sound_scope(list->data, AGS_SOUND_SCOPE_SEQUENCER)){
 	  recall_id = list->data;
@@ -972,7 +978,8 @@ ags_cell_pattern_led_queue_draw_timeout(AgsCellPattern *cell_pattern)
 	    play_count_beats_audio_run = AGS_COUNT_BEATS_AUDIO_RUN(recall->data);
 	  }
 
-	  g_list_free(start_recall);
+	  g_list_free_full(start_recall,
+			   g_object_unref);
 
 	  if(play_count_beats_audio == NULL ||
 	     play_count_beats_audio_run == NULL){
@@ -986,7 +993,8 @@ ags_cell_pattern_led_queue_draw_timeout(AgsCellPattern *cell_pattern)
       list = list->next;
     }
 
-    g_list_free(list_start);
+    g_list_free_full(list_start,
+		     g_object_unref);
     
     if(recall_id == NULL){
       return(TRUE);

@@ -288,6 +288,8 @@ ags_mixer_input_line_map_recall(AgsLine *line,
   /* call parent */
   AGS_LINE_CLASS(ags_mixer_input_line_parent_class)->map_recall(line,
 								output_pad_start);
+
+  g_object_unref(audio);  
 }
 
 /**

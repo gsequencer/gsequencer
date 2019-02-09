@@ -245,6 +245,9 @@ ags_drum_output_line_set_channel(AgsLine *line, AgsChannel *channel)
     audio_signal->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;
     ags_recycling_add_audio_signal(first_recycling,
 				   audio_signal);
+
+    g_object_unref(output_soundcard);
+    g_object_unref(first_recycling);
   }
 }
 
@@ -328,6 +331,8 @@ ags_drum_output_line_map_recall(AgsLine *line,
   /* call parent */
   AGS_LINE_CLASS(ags_drum_output_line_parent_class)->map_recall(line,
 								output_pad_start);
+
+  g_object_unref(audio);
 }
 
 void

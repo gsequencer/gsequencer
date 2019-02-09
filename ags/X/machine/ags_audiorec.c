@@ -541,7 +541,8 @@ ags_audiorec_map_recall(AgsMachine *machine)
 			&value);
   }
 
-  g_list_free(start_play);
+  g_list_free_full(start_play,
+		   g_object_unref);
 
   /* ags-capture-wave */
   ags_recall_factory_create(audio,
@@ -587,7 +588,8 @@ ags_audiorec_map_recall(AgsMachine *machine)
 			&value);
   }
 
-  g_list_free(start_play);
+  g_list_free_full(start_play,
+		   g_object_unref);
   
   /* depending on destination */
   ags_audiorec_input_map_recall(audiorec, 0);
@@ -625,6 +627,10 @@ ags_audiorec_output_map_recall(AgsAudiorec *audiorec, guint output_pad_start)
 	       "audio-channels", &audio_channels,
 	       NULL);
 
+  if(start_output != NULL){
+    g_object_unref(start_output);
+  }
+  
   /* ags-peak */
   ags_recall_factory_create(audio,
 			    NULL, NULL,
@@ -667,10 +673,17 @@ ags_audiorec_output_map_recall(AgsAudiorec *audiorec, guint output_pad_start)
 			(gint64) 16 * window->navigation->position_tact->adjustment->value,
 			AGS_SEEK_SET);
     }
+
+    g_list_free_full(start_play,
+		     g_object_unref);
     
     g_object_get(output,
 		 "next", &output,
 		 NULL);
+
+    if(output != NULL){
+      g_object_unref(output);
+    }
   }
   
   /* ags-capture-wave */
@@ -704,10 +717,17 @@ ags_audiorec_output_map_recall(AgsAudiorec *audiorec, guint output_pad_start)
 			(gint64) 16 * window->navigation->position_tact->adjustment->value,
 			AGS_SEEK_SET);
     }
+
+    g_list_free_full(start_play,
+		     g_object_unref);
     
     g_object_get(output,
 		 "next", &output,
 		 NULL);
+
+    if(output != NULL){
+      g_object_unref(output);
+    }
   }
   
   audiorec->mapped_output_pad = output_pads;
@@ -764,6 +784,10 @@ ags_audiorec_resize_audio_channels(AgsMachine *machine,
 	       "output", &output,
 	       NULL);
 
+  if(output != NULL){
+    g_object_unref(output);
+  }
+  
   if(audio_channels > audio_channels_old){
     AgsHIndicator *hindicator;
 	
@@ -778,6 +802,10 @@ ags_audiorec_resize_audio_channels(AgsMachine *machine,
 		   "next-pad", &next_pad,
 		   NULL);
 
+      if(next_pad != NULL){
+	g_object_unref(next_pad);
+      }
+      
       channel = ags_channel_pad_nth(channel,
 				    audio_channels_old);
 
@@ -799,11 +827,23 @@ ags_audiorec_resize_audio_channels(AgsMachine *machine,
 				       3);
 	ags_recycling_add_audio_signal(first_recycling,
 				       audio_signal);
+
+	if(output_soundcard != NULL){
+	  g_object_unref(output_soundcard);
+	}
+
+	if(first_recycling != NULL){
+	  g_object_unref(first_recycling);
+	}
 	
 	/* iterate */
 	g_object_get(channel,
 		     "next", &channel,
 		     NULL);
+
+	if(channel != NULL){
+	  g_object_unref(channel);
+	}
       }
     }
 
@@ -909,6 +949,10 @@ ags_audiorec_resize_pads(AgsMachine *machine, GType type,
 		   "audio-channels", &audio_channels,
 		   NULL);
 
+      if(output != NULL){
+	g_object_unref(output);
+      }
+
       /* AgsOutput */
       channel = ags_channel_pad_nth(output,
 				    pads_old);
@@ -932,10 +976,22 @@ ags_audiorec_resize_pads(AgsMachine *machine, GType type,
 	ags_recycling_add_audio_signal(first_recycling,
 				       audio_signal);
 	
+	if(output_soundcard != NULL){
+	  g_object_unref(output_soundcard);
+	}
+
+	if(first_recycling != NULL){
+	  g_object_unref(first_recycling);
+	}
+	
 	/* iterate */
 	g_object_get(channel,
 		     "next", &channel,
 		     NULL);
+
+	if(channel != NULL){
+	  g_object_unref(channel);
+	}
       }
 
       for(i = 0; i < audio_channels; i++){
@@ -1144,6 +1200,10 @@ ags_audiorec_indicator_queue_draw_timeout(AgsAudiorec *audiorec)
     g_object_get(audio,
 		 "output", &channel,
 		 NULL);
+
+    if(channel != NULL){
+      g_object_unref(channel);
+    }
     
     list_start = 
       list = gtk_container_get_children((GtkContainer *) audiorec->hindicator_vbox);
@@ -1204,6 +1264,10 @@ ags_audiorec_indicator_queue_draw_timeout(AgsAudiorec *audiorec)
       g_object_get(channel,
 		   "next", &channel,
 		   NULL);
+
+      if(channel != NULL){
+	g_object_unref(channel);
+      }
     }
 
     g_list_free(list_start);

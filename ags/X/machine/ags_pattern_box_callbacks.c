@@ -146,7 +146,8 @@ ags_pattern_box_pad_callback(GtkWidget *toggle_button, AgsPatternBox *pattern_bo
 			   index0, index1,
 			   offset);
 
-    g_list_free(start_pattern);
+    g_list_free_full(start_pattern,
+		     g_object_unref);
 
     /* iterate */
     line = line->next;
@@ -382,7 +383,8 @@ ags_pattern_box_key_release_event(GtkWidget *widget, GdkEventKey *event, AgsPatt
 			       index0, index1,
 			       offset);
 
-	g_list_free(start_pattern);
+	g_list_free_full(start_pattern,
+			 g_object_unref);
 
 	/* iterate */
 	line = line->next;

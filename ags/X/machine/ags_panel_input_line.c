@@ -319,6 +319,8 @@ ags_panel_input_line_set_channel(AgsLine *line, AgsChannel *channel)
   g_message("ags_panel_input_line_set_channel - channel: %u",
 	    channel->line);
 #endif
+
+  g_object_unref(output_soundcard);
 }
 
 void
@@ -381,11 +383,14 @@ ags_panel_input_line_map_recall(AgsLine *line,
     play = play->next;
   }
 
-  g_list_free(start_play);
+  g_list_free_full(start_play,
+		   g_object_unref);
 
   /* call parent */
   AGS_LINE_CLASS(ags_panel_input_line_parent_class)->map_recall(line,
 								output_pad_start);
+
+  g_object_unref(audio);
 }
 
 /**

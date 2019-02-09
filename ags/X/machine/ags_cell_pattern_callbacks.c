@@ -228,6 +228,10 @@ ags_cell_pattern_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *
     task = g_list_reverse(task);
     ags_gui_thread_schedule_task_list((AgsGuiThread *) gui_thread,
 				      task);
+
+    g_object_unref(soundcard);
+
+    g_object_unref(audio);
   }
   
   if(event->keyval == GDK_KEY_Tab){
@@ -247,6 +251,10 @@ ags_cell_pattern_drawing_area_key_release_event(GtkWidget *widget, GdkEventKey *
 	       "input", &input,
 	       "input-lines", &input_lines,
 	       NULL);
+
+  if(input != NULL){
+    g_object_unref(input);
+  }
   
   switch(event->keyval){
   case GDK_KEY_Control_L:
@@ -498,6 +506,14 @@ ags_cell_pattern_start_channel_launch_callback(AgsTask *task, AgsNote *note)
 	       "playback", &playback,
 	       NULL);
 
+  g_object_unref(audio);
+
+  g_object_unref(output_soundcard);
+  
+  if(playback != NULL){
+    g_object_unref(playback);
+  }
+  
   recall_id = ags_playback_get_recall_id(playback, AGS_SOUND_SCOPE_PLAYBACK);
 
 #ifdef AGS_DEBUG
@@ -524,10 +540,19 @@ ags_cell_pattern_start_channel_launch_callback(AgsTask *task, AgsNote *note)
 	       "last-recycling", &last_recycling,
 	       NULL);
 
+  if(recycling != NULL){
+    g_object_unref(recycling);
+    g_object_unref(last_recycling);
+  }
+  
   g_object_get(last_recycling,
 	       "next", &end_recycling,
 	       NULL);
 
+  if(end_recycling != NULL){
+    g_object_unref(end_recycling);
+  }
+  
   /* add audio signal */  
   while(recycling != end_recycling){
     if(!ags_recall_global_get_rt_safe()){
@@ -577,7 +602,8 @@ ags_cell_pattern_start_channel_launch_callback(AgsTask *task, AgsNote *note)
 		     NULL);
       }
 
-      g_list_free(start_list);
+      g_list_free_full(start_list,
+		       g_object_unref);
 
       g_object_set(note,
 		   "rt-offset", 0,
@@ -587,5 +613,9 @@ ags_cell_pattern_start_channel_launch_callback(AgsTask *task, AgsNote *note)
     g_object_get(recycling,
 		 "next", &recycling,
 		 NULL);
+
+    if(recycling != NULL){
+      g_object_unref(recycling);
+    }
   }
 }

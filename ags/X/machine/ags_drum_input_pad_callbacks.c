@@ -164,6 +164,10 @@ ags_drum_input_pad_open_response_callback(GtkWidget *widget, gint response, AgsD
       g_object_get(current,
 		   "next-pad", &next_pad,
 		   NULL);
+
+      if(next_pad != NULL){
+	g_object_unref(next_pad);
+      }
       
       for(i = 0; current != next_pad; i++){
 	open_single_file = ags_open_single_file_new(current,
@@ -176,6 +180,10 @@ ags_drum_input_pad_open_response_callback(GtkWidget *widget, gint response, AgsD
 	g_object_get(current,
 		     "next", &current,
 		     NULL);
+
+	if(current != NULL){
+	  g_object_unref(current);
+	}
       }
     }else{
       AgsLine *line;
