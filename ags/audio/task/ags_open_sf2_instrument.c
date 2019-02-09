@@ -580,7 +580,7 @@ ags_open_sf2_instrument_launch(AgsTask *task)
 		     "filename", ipatch->filename,
 		     "preset", AGS_IPATCH_SF2_READER(ipatch->reader)->name_selected[AGS_SF2_PHDR],
 		     "instrument", AGS_IPATCH_SF2_READER(ipatch->reader)->name_selected[AGS_SF2_IHDR],
-		     "sample", ipatch_sf2_sample_get_name(list->data),
+		     "sample", ipatch_sf2_sample_get_name(AGS_IPATCH_SAMPLE(list->data)->sample),
 		     "audio-channel", j,
 		     NULL);	
 	

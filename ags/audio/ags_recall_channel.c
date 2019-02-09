@@ -453,7 +453,9 @@ ags_recall_channel_notify_recall_container_callback(GObject *gobject,
 		 "recall-audio", recall_audio,
 		 NULL);
 
-    g_object_unref(recall_audio);
+    if(recall_audio != NULL){
+      g_object_unref(recall_audio);
+    }
   }else{
     g_object_set(recall_channel,
 		 "recall-audio", NULL,

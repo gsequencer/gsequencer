@@ -358,8 +358,6 @@ ags_cancel_audio_launch(AgsTask *task)
       /* iterate */
       list = list->next;
     }
-
-    g_list_free(list_start);
   }else{
     gint i;
 

@@ -708,7 +708,9 @@ ags_recall_channel_run_notify_recall_container_callback(GObject *gobject,
     g_list_free_full(list_start,
 		     g_object_unref);
 
-    g_object_unref(recall_audio);
+    if(recall_audio != NULL){
+      g_object_unref(recall_audio);
+    }
   }else{
     g_object_set(recall_channel_run,
 		 "recall-audio", NULL,

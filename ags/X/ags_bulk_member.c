@@ -1405,12 +1405,18 @@ ags_bulk_member_real_find_port(AgsBulkMember *bulk_member)
     g_object_get(audio,
 		 "output", &channel,
 		 NULL);
-    g_object_unref(channel);
+
+    if(channel != NULL){
+      g_object_unref(channel);
+    }
   }else if(AGS_EFFECT_BULK(effect_bulk)->channel_type == AGS_TYPE_INPUT){
     g_object_get(audio,
 		 "input", &channel,
 		 NULL);
-    g_object_unref(channel);
+
+    if(channel != NULL){
+      g_object_unref(channel);
+    }
   }
 
   while(channel != NULL){

@@ -175,7 +175,6 @@ ags_play_audio_signal_run_inter(AgsRecall *recall)
   if(output_soundcard == NULL){
     g_warning("no soundcard");
 
-    g_object_unref(output_soundcard);
     g_object_unref(source);
 
     return;
@@ -240,10 +239,6 @@ ags_play_audio_signal_run_inter(AgsRecall *recall)
 
     g_object_unref(muted);
     
-    if(current_muted){
-      return;
-    }
-
     g_object_get(play_channel,
 		 "source", &channel,
 		 NULL);
@@ -279,6 +274,10 @@ ags_play_audio_signal_run_inter(AgsRecall *recall)
 	       "format", &format,
 	       "attack", &attack,
 	       NULL);
+
+  if(current_muted){
+    goto ags_play_audio_signal_run_inter_END;
+  }
 
 #ifdef AGS_DEBUG
   g_message("- play 0x%x", source);
@@ -350,6 +349,7 @@ ags_play_audio_signal_run_inter(AgsRecall *recall)
       
       ags_recall_done(recall);
 
+#if 0      
       if(play_recycling != NULL){
 	g_object_get(play_recycling,
 		     "source", &recycling,
@@ -358,7 +358,8 @@ ags_play_audio_signal_run_inter(AgsRecall *recall)
 					  source);
 	g_object_unref(source);
       }
-
+#endif
+      
       goto ags_play_audio_signal_run_inter_END;
     }
     
@@ -446,8 +447,10 @@ ags_play_audio_signal_run_inter_END:
   g_object_unref(play_channel);
   g_object_unref(play_channel_run);
 
-  g_object_unref(rt_template);
-
+  if(rt_template != NULL){
+    g_object_unref(rt_template);
+  }
+  
   g_list_free_full(note_start,
 		   g_object_unref);
 }

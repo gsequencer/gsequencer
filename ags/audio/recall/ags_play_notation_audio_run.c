@@ -605,7 +605,9 @@ ags_play_notation_audio_run_connect(AgsConnectable *connectable)
   /* call parent */
   ags_play_notation_audio_run_parent_connectable_interface->connect(connectable);
 
-  g_object_unref(delay_audio_run);
+  if(delay_audio_run != NULL){
+    g_object_unref(delay_audio_run);
+  }
 }
 
 void
@@ -629,7 +631,9 @@ ags_play_notation_audio_run_disconnect(AgsConnectable *connectable)
   /* call parent */
   ags_play_notation_audio_run_parent_connectable_interface->disconnect(connectable);
 
-  g_object_unref(delay_audio_run);
+  if(delay_audio_run != NULL){
+    g_object_unref(delay_audio_run);
+  }
 }
 
 void
@@ -653,7 +657,9 @@ ags_play_notation_audio_run_connect_connection(AgsConnectable *connectable, GObj
 		     G_CALLBACK(ags_play_notation_audio_run_alloc_input_callback), play_notation_audio_run);  
   }
 
-  g_object_unref(delay_audio_run);
+  if(delay_audio_run != NULL){
+    g_object_unref(delay_audio_run);
+  }
 }
 
 void
@@ -680,7 +686,9 @@ ags_play_notation_audio_run_disconnect_connection(AgsConnectable *connectable, G
 			NULL);
   }
 
-  g_object_unref(delay_audio_run);
+  if(delay_audio_run != NULL){
+    g_object_unref(delay_audio_run);
+  }
 }
 
 void
@@ -1073,6 +1081,8 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
 	  ags_recycling_add_audio_signal(recycling,
 					 audio_signal);
 	  //	g_object_unref(audio_signal);
+
+	  g_object_unref(audio_signal);
 	}else{
 	  GList *start_list, *list;
 

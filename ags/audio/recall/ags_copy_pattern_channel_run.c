@@ -267,12 +267,14 @@ ags_copy_pattern_channel_run_notify_recall_audio_run(GObject *gobject,
     if(delay_audio_run != NULL &&
        ags_connectable_is_connected(AGS_CONNECTABLE(copy_pattern_channel_run))){
       ags_copy_pattern_channel_run_disconnect_connection(AGS_CONNECTABLE(copy_pattern_channel_run), (GObject *) delay_audio_run);
+    }
 
+    if(delay_audio_run != NULL){
       g_object_unref(delay_audio_run);
     }
-  }
 
-  g_object_unref(copy_pattern_audio_run);
+    g_object_unref(copy_pattern_audio_run);
+  }
 }
 
 void
@@ -307,11 +309,13 @@ ags_copy_pattern_channel_run_notify_recall_audio_run_after(GObject *gobject,
        ags_connectable_is_connected(AGS_CONNECTABLE(copy_pattern_channel_run))){
       ags_copy_pattern_channel_run_connect_connection(AGS_CONNECTABLE(copy_pattern_channel_run), (GObject *) delay_audio_run);
     }
-    
-    g_object_unref(delay_audio_run);
-  }
 
-  g_object_unref(copy_pattern_audio_run);
+    if(delay_audio_run != NULL){
+      g_object_unref(delay_audio_run);
+    }
+    
+    g_object_unref(copy_pattern_audio_run);
+  }
 }
 
 void
@@ -333,7 +337,9 @@ ags_copy_pattern_channel_run_notify_delay_audio_run(GObject *gobject,
     ags_connectable_disconnect_connection(AGS_CONNECTABLE(copy_pattern_channel_run), (GObject *) delay_audio_run);
   }
 
-  g_object_unref(delay_audio_run);
+  if(delay_audio_run != NULL){
+    g_object_unref(delay_audio_run);
+  }
 }
 
 void
@@ -355,7 +361,9 @@ ags_copy_pattern_channel_run_notify_delay_audio_run_after(GObject *gobject,
     ags_connectable_connect_connection(AGS_CONNECTABLE(copy_pattern_channel_run), (GObject *) delay_audio_run);
   }
 
-  g_object_unref(delay_audio_run);
+  if(delay_audio_run != NULL){
+    g_object_unref(delay_audio_run);
+  }
 }
 
 void
@@ -472,7 +480,10 @@ ags_copy_pattern_channel_run_connect_connection(AgsConnectable *connectable, GOb
 		       G_CALLBACK(ags_copy_pattern_channel_run_sequencer_alloc_callback), copy_pattern_channel_run);
     }
 
-    g_object_unref(delay_audio_run);
+    if(delay_audio_run != NULL){
+      g_object_unref(delay_audio_run);
+    }
+    
     g_object_unref(copy_pattern_audio_run);
   }
 }
@@ -504,7 +515,10 @@ ags_copy_pattern_channel_run_disconnect_connection(AgsConnectable *connectable, 
 			  NULL);
     }
 
-    g_object_unref(delay_audio_run);
+    if(delay_audio_run != NULL){
+      g_object_unref(delay_audio_run);
+    }
+    
     g_object_unref(copy_pattern_audio_run);
   }
 }
@@ -990,6 +1004,8 @@ ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *delay_au
 	  g_object_set(audio_signal,
 		       "note", copy_note,
 		       NULL);
+
+	  g_object_unref(audio_signal);
 	}else{
 	  GList *list_start, *list;
 
@@ -1046,7 +1062,9 @@ ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *delay_au
 
     g_object_unref(output_soundcard);
 
-    g_object_unref(link);
+    if(link != NULL){
+      g_object_unref(link);
+    }
   }
 
   /* unref */

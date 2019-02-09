@@ -561,7 +561,9 @@ ags_route_dssi_audio_run_connect(AgsConnectable *connectable)
   /* call parent */
   ags_route_dssi_audio_run_parent_connectable_interface->connect(connectable);
 
-  g_object_unref(delay_audio_run);
+  if(delay_audio_run != NULL){
+    g_object_unref(delay_audio_run);
+  }
 }
 
 void
@@ -585,7 +587,9 @@ ags_route_dssi_audio_run_disconnect(AgsConnectable *connectable)
   /* call parent */
   ags_route_dssi_audio_run_parent_connectable_interface->disconnect(connectable);
 
-  g_object_unref(delay_audio_run);
+  if(delay_audio_run != NULL){
+    g_object_unref(delay_audio_run);
+  }
 }
 
 void
@@ -609,7 +613,9 @@ ags_route_dssi_audio_run_connect_connection(AgsConnectable *connectable, GObject
 		     G_CALLBACK(ags_route_dssi_audio_run_alloc_input_callback), route_dssi_audio_run);  
   }
 
-  g_object_unref(delay_audio_run);
+  if(delay_audio_run != NULL){
+    g_object_unref(delay_audio_run);
+  }
 }
 
 void
@@ -636,7 +642,9 @@ ags_route_dssi_audio_run_disconnect_connection(AgsConnectable *connectable, GObj
 			NULL);
   }
 
-  g_object_unref(delay_audio_run);
+  if(delay_audio_run != NULL){
+    g_object_unref(delay_audio_run);
+  }
 }
 
 void

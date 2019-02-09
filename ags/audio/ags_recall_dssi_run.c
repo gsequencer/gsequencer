@@ -623,6 +623,7 @@ ags_recall_dssi_run_run_pre(AgsRecall *recall)
 
   g_object_get(recall,
 	       "recall-id", &recall_id,
+	       "source", &audio_signal,
 	       NULL);
 
   g_object_get(recall_id,
@@ -642,6 +643,8 @@ ags_recall_dssi_run_run_pre(AgsRecall *recall)
      note_start == NULL){
     g_object_unref(recall_id);
 
+    g_object_unref(audio_signal);
+    
     g_object_unref(recycling_context);
 
     g_object_unref(parent_recycling_context);
@@ -673,6 +676,8 @@ ags_recall_dssi_run_run_pre(AgsRecall *recall)
   if(route_dssi_audio_run == NULL){
     g_object_unref(recall_id);
 
+    g_object_unref(audio_signal);
+
     g_object_unref(recycling_context);
 
     g_object_unref(parent_recycling_context);
@@ -685,10 +690,6 @@ ags_recall_dssi_run_run_pre(AgsRecall *recall)
 
     return;
   }
-
-  g_object_get(recall,
-	       "source", &audio_signal,
-	       NULL);
 
   /* get recall dssi mutex */
   pthread_mutex_lock(ags_recall_get_class_mutex());

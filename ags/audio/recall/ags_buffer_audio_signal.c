@@ -113,6 +113,18 @@ ags_buffer_audio_signal_init(AgsBufferAudioSignal *buffer_audio_signal)
 void
 ags_buffer_audio_signal_finalize(GObject *gobject)
 {
+#if 0
+  /* destination */
+  if(AGS_RECALL_AUDIO_SIGNAL(gobject)->destination != NULL){
+    g_object_unref(AGS_RECALL_AUDIO_SIGNAL(gobject)->destination);
+  }
+
+  /* source */
+  if(AGS_RECALL_AUDIO_SIGNAL(gobject)->source != NULL){
+    g_object_unref(AGS_RECALL_AUDIO_SIGNAL(gobject)->source);
+  }
+#endif
+  
   /* call parent */
   G_OBJECT_CLASS(ags_buffer_audio_signal_parent_class)->finalize(gobject); 
 }

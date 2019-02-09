@@ -585,9 +585,6 @@ ags_audio_thread_run(AgsThread *thread)
     
     playback = playback->next;
   }
-
-  g_list_free_full(input_playback_start,
-		   g_object_unref);
   
   /* output */
   g_object_get(playback_domain,
@@ -688,9 +685,12 @@ ags_audio_thread_run(AgsThread *thread)
       playback = playback->next;
     }
   }
+
+  g_list_free_full(input_playback_start,
+		   g_object_unref);
   
-  g_list_free(output_playback_start);
-  g_list_free(input_playback_start);
+  g_list_free_full(output_playback_start,
+		   g_object_unref);
 
   g_list_free(audio_thread->sync_thread);
   audio_thread->sync_thread = NULL;

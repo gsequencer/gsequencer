@@ -2113,7 +2113,10 @@ ags_channel_dispose(GObject *gobject)
 	g_object_run_dispose((GObject *) list->data);
       }
 
-      g_object_unref(recall_audio);
+      if(recall_audio != NULL){
+	g_object_unref(recall_audio);
+      }
+      
       g_list_free_full(recall_audio_run,
 		       g_object_unref);
       
@@ -10880,14 +10883,13 @@ ags_channel_real_check_scope(AgsChannel *channel, gint sound_scope)
   pthread_mutex_unlock(ags_channel_get_class_mutex());
 
   /* get recall id */
-  pthread_mutex_lock(channel_mutex);
-  
-  list = 
-    list_start = g_list_copy(channel->recall_id);
-
-  pthread_mutex_unlock(channel_mutex);
+  g_object_get(channel,
+	       "recall-id", &list_start,
+	       NULL);
   
   /* iterate recall id */
+  list = list_start;
+
   recall_id = NULL;
 
   if(sound_scope >= 0){
@@ -10918,7 +10920,8 @@ ags_channel_real_check_scope(AgsChannel *channel, gint sound_scope)
     }
   }
 
-  g_list_free(list_start);
+  g_list_free_full(list_start,
+		   g_object_unref);
 
   /* reverse recall id */
   recall_id = g_list_reverse(recall_id);

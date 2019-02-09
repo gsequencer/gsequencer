@@ -667,8 +667,14 @@ ags_effect_bridge_set_property(GObject *gobject,
 		     "output-pads", &output_pads,
 		     "input-pads", &input_pads,
 		     NULL);
-	g_object_unref(output);
-	g_object_unref(input);
+
+	if(output != NULL){
+	  g_object_unref(output);
+	}
+
+	if(input != NULL){
+	  g_object_unref(input);
+	}
 	
 	/* set channel and resize for AgsOutput */
 	if(effect_bridge->output_pad_type != G_TYPE_NONE){

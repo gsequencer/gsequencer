@@ -239,8 +239,11 @@ ags_volume_audio_signal_run_inter(AgsRecall *recall)
   g_object_unref(recall_id);
     
   g_object_unref(recycling_context);
-  g_object_unref(parent_recycling_context);
 
+  if(parent_recycling_context != NULL){
+    g_object_unref(parent_recycling_context);
+  }
+  
   g_list_free_full(start_note,
 		   g_object_unref);
 }

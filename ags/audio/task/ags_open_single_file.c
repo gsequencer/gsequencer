@@ -355,8 +355,11 @@ ags_open_single_file_launch(AgsTask *task)
   g_object_get(channel,
 	       "link", &link,
 	       NULL);
-  g_object_unref(link);
 
+  if(link != NULL){
+    g_object_unref(link);
+  }
+  
   if(link != NULL){
     error = NULL;
     ags_channel_set_link(channel, NULL,

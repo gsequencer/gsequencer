@@ -1617,6 +1617,8 @@ ags_audio_signal_finalize(GObject *gobject)
 
   audio_signal = AGS_AUDIO_SIGNAL(gobject);
 
+  g_message("fin %x", audio_signal);
+  
 #ifdef AGS_DEBUG
   if((AGS_AUDIO_SIGNAL_TEMPLATE & (audio_signal->flags)) != 0){
     g_warning("AGS_AUDIO_SIGNAL_TEMPLATE: destroying\n");

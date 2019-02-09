@@ -907,7 +907,9 @@ ags_recall_recycling_source_add_audio_signal_callback_END:
 
   g_object_unref(source_recycling_context);
 
-  g_object_unref(destination_channel);
+  if(destination_channel != NULL){
+    g_object_unref(destination_channel);
+  }
 }
 
 void
@@ -1047,6 +1049,8 @@ ags_recall_recycling_source_remove_audio_signal_callback(AgsRecycling *source,
       ags_recall_done((AgsRecall *) recall_audio_signal);
     }
 
+    g_object_unref(current_audio_signal);
+    
     list = list->next;
   }
 
@@ -1067,7 +1071,9 @@ ags_recall_recycling_source_remove_audio_signal_callback_END:
 
   g_object_unref(source_recycling_context);
 
-  g_object_unref(destination_channel);
+  if(destination_channel != NULL){
+    g_object_unref(destination_channel);
+  }
 }
 
 /**

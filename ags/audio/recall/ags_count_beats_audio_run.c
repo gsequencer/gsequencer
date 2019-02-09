@@ -966,7 +966,9 @@ ags_count_beats_audio_run_connect(AgsConnectable *connectable)
   ags_connectable_connect_connection(connectable,
 				     (GObject *) delay_audio_run);  
 
-  g_object_unref(delay_audio_run);
+  if(delay_audio_run != NULL){
+    g_object_unref(delay_audio_run);
+  }
 }
 
 void
@@ -990,7 +992,9 @@ ags_count_beats_audio_run_disconnect(AgsConnectable *connectable)
   ags_connectable_disconnect_connection(connectable,
 					(GObject *) delay_audio_run);  
 
-  g_object_unref(delay_audio_run);
+  if(delay_audio_run != NULL){
+    g_object_unref(delay_audio_run);
+  }
 }
 
 void
@@ -1030,7 +1034,9 @@ ags_count_beats_audio_run_connect_connection(AgsConnectable *connectable,
 		     G_CALLBACK(ags_count_beats_audio_run_notation_count_callback), count_beats_audio_run);
   }
 
-  g_object_unref(delay_audio_run);
+  if(delay_audio_run != NULL){
+    g_object_unref(delay_audio_run);
+  }
 }
 
 void
@@ -1073,7 +1079,9 @@ ags_count_beats_audio_run_disconnect_connection(AgsConnectable *connectable,
 			NULL);
   }
 
-  g_object_unref(delay_audio_run);
+  if(delay_audio_run != NULL){
+    g_object_unref(delay_audio_run);
+  }
 }
 
 void

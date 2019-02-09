@@ -11403,6 +11403,9 @@ ags_audio_open_audio_file_as_channel(AgsAudio *audio,
 	  channel = ags_channel_nth(channel,
 				    audio_channels - audio_file->file_audio_channels);
 	}
+
+	g_object_run_dispose(audio_file);
+	g_object_unref(audio_file);
 	
 	filename = filename->next;
       }
@@ -11483,6 +11486,9 @@ ags_audio_open_audio_file_as_channel(AgsAudio *audio,
 	channel = ags_channel_nth(channel,
 				  audio_channels - audio_file->file_audio_channels);
       }
+
+      g_object_run_dispose(audio_file);
+      g_object_unref(audio_file);
       
       filename = filename->next;
     }

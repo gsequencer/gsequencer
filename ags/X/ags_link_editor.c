@@ -388,7 +388,10 @@ ags_link_editor_reset(AgsApplicable *applicable)
 		 "link", &link_channel,
 		 NULL);
     g_object_unref(audio);
-    g_object_unref(link_channel);
+
+    if(link_channel != NULL){
+      g_object_unref(link_channel);
+    }
     
     /*  */
     if(link_channel != NULL){

@@ -1604,7 +1604,7 @@ ags_recall_get_property(GObject *gobject,
       pthread_mutex_lock(recall_mutex);
       
       g_value_set_pointer(value, g_list_copy_deep(recall->port,
-						  (GCopyFunc) g_object_unref,
+						  (GCopyFunc) g_object_ref,
 						  NULL));
 
       pthread_mutex_unlock(recall_mutex);
@@ -1615,7 +1615,7 @@ ags_recall_get_property(GObject *gobject,
       pthread_mutex_lock(recall_mutex);
       
       g_value_set_pointer(value, g_list_copy_deep(recall->automation_port,
-						  (GCopyFunc) g_object_unref,
+						  (GCopyFunc) g_object_ref,
 						  NULL));
 
       pthread_mutex_unlock(recall_mutex);
@@ -1635,7 +1635,7 @@ ags_recall_get_property(GObject *gobject,
       pthread_mutex_lock(recall_mutex);
       
       g_value_set_pointer(value, g_list_copy_deep(recall->recall_dependency,
-						  (GCopyFunc) g_object_unref,
+						  (GCopyFunc) g_object_ref,
 						  NULL));
 
       pthread_mutex_unlock(recall_mutex);
@@ -1655,7 +1655,7 @@ ags_recall_get_property(GObject *gobject,
       pthread_mutex_lock(recall_mutex);
       
       g_value_set_pointer(value, g_list_copy_deep(recall->children,
-						  (GCopyFunc) g_object_unref,
+						  (GCopyFunc) g_object_ref,
 						  NULL));
 
       pthread_mutex_unlock(recall_mutex);
@@ -1778,8 +1778,8 @@ ags_recall_finalize(GObject *gobject)
   
   recall = AGS_RECALL(gobject);
 
+  g_message("finalize %s", G_OBJECT_TYPE_NAME(gobject));
 #ifdef AGS_DEBUG
-  g_message("finalize %s\n", G_OBJECT_TYPE_NAME(gobject));
 #endif
 
   pthread_mutex_destroy(recall->obj_mutex);
@@ -5330,9 +5330,11 @@ ags_recall_real_done(AgsRecall *recall)
 
   pthread_mutex_unlock(ags_recall_get_class_mutex());
 
+#ifdef AGS_DEBUG  
   if(AGS_IS_RECALL_AUDIO_SIGNAL(recall)){
     g_message("done - %s", G_OBJECT_TYPE_NAME(recall));
   }
+#endif
   
   /* do feedback */
   pthread_mutex_lock(recall_mutex);
