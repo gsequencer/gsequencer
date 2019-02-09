@@ -81,6 +81,8 @@ AgsDestroyEntry* ags_destroy_entry_alloc(gpointer ptr, AgsDestroyFunc destroy_fu
 void ags_destroy_worker_add(AgsDestroyWorker *destroy_worker,
 			    gpointer ptr, AgsDestroyFunc destroy_func);
 
+AgsDestroyWorker* ags_destroy_worker_get_instance();
+
 AgsDestroyWorker* ags_destroy_worker_new();
 
 #endif /*__AGS_DESTROY_WORKER_H__*/

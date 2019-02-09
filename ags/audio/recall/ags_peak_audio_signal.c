@@ -15,15 +15,6 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
- *
- * Introduction to Digital Filters with Audio Applications
- * Copyright (C) 2007-2018 Julius O. Smith III
- * 
- * License: STK-4.3
- * 
- * See COPYING.stk-4.3 for further deatails
- * 
- * https://ccrma.stanford.edu/~jos
  */
 
 #include <ags/audio/recall/ags_peak_audio_signal.h>

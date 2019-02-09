@@ -173,6 +173,7 @@ ags_polling_thread_new
 ags_destroy_worker_get_type
 ags_destroy_entry_alloc
 ags_destroy_worker_add
+ags_destroy_worker_get_instance
 ags_destroy_worker_new
 ags_message_queue_get_type
 ags_message_queue_get_class_mutex

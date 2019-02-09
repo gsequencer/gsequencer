@@ -1778,8 +1778,8 @@ ags_recall_finalize(GObject *gobject)
   
   recall = AGS_RECALL(gobject);
 
-  g_message("finalize %s", G_OBJECT_TYPE_NAME(gobject));
 #ifdef AGS_DEBUG
+  g_message("finalize %s", G_OBJECT_TYPE_NAME(gobject));
 #endif
 
   pthread_mutex_destroy(recall->obj_mutex);
@@ -1788,6 +1788,8 @@ ags_recall_finalize(GObject *gobject)
   pthread_mutexattr_destroy(recall->obj_mutexattr);
   free(recall->obj_mutexattr);
 
+  ags_uuid_free(recall->uuid);
+  
   //TODO:JK: check removal
 #if 0
   guint *ids;
@@ -6539,8 +6541,16 @@ ags_recall_child_done(AgsRecall *child,
   ags_recall_remove_child(parent,
 			  child);
 
-  g_object_run_dispose((GObject *) child);
-  g_object_unref((GObject *) child);
+  if(TRUE){
+    AgsDestroyWorker *destroy_worker;
+    
+    destroy_worker = ags_destroy_worker_get_instance();
+    ags_destroy_worker_add(destroy_worker,
+			   child, ags_destroy_util_dispose_and_unref);
+  }else{
+    g_object_run_dispose((GObject *) child);
+    g_object_unref((GObject *) child);
+  }
   
   g_object_get(parent,
 	       "child", &children,

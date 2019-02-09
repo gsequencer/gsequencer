@@ -2642,7 +2642,7 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
   xorg_application_context->worker = NULL;
 
   /* AgsDestroyWorker */
-  destroy_worker = ags_destroy_worker_new();
+  destroy_worker = ags_destroy_worker_get_instance();
   g_object_ref(destroy_worker);
   ags_thread_add_child_extended(main_loop,
 				(AgsThread *) destroy_worker,

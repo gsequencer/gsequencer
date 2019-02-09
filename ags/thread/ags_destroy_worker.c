@@ -45,6 +45,8 @@ void ags_destroy_worker_do_poll(AgsWorkerThread *worker_thread);
 
 static gpointer ags_destroy_worker_parent_class = NULL;
 
+AgsDestroyWorker *ags_destroy_worker = NULL;
+
 GType
 ags_destroy_worker_get_type()
 {
@@ -253,6 +255,31 @@ ags_destroy_worker_add(AgsDestroyWorker *destroy_worker,
 						destroy_entry);
   
   pthread_mutex_unlock(destroy_worker->destroy_mutex);
+}
+
+/**
+ * ags_destroy_worker_get_instance:
+ * 
+ * Get your destroy worker instance.
+ *
+ * Returns: the #AgsDestroyWorker instance
+ *
+ * Since: 2.1.48
+ */
+AgsDestroyWorker*
+ags_destroy_worker_get_instance()
+{
+  static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+
+  pthread_mutex_lock(&mutex);
+  
+  if(ags_destroy_worker == NULL){
+    ags_destroy_worker = ags_destroy_worker_new();
+  }
+
+  pthread_mutex_unlock(&mutex);
+  
+  return(ags_destroy_worker);
 }
 
 /**

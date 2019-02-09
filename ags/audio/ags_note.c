@@ -806,7 +806,7 @@ ags_note_finalize(GObject *gobject)
   AgsNote *note;
 
   note = AGS_NOTE(gobject);
-
+  
   pthread_mutex_destroy(note->obj_mutex);
   free(note->obj_mutex);
 

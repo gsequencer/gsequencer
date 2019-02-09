@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: gsequencer 2.1.47\n"
+"Project-Id-Version: gsequencer 2.1.48\n"
 "Report-Msgid-Bugs-To: jkraehemann@gmail.com\n"
-"POT-Creation-Date: 2019-02-06 22:32+0100\n"
+"POT-Creation-Date: 2019-02-09 23:04+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -284,11 +284,11 @@ msgstr ""
 msgid "first link line"
 msgstr ""
 
-#: ags/X/ags_link_editor_callbacks.c:194
+#: ags/X/ags_link_editor_callbacks.c:198
 msgid "select audio file"
 msgstr ""
 
-#: ags/X/ags_link_editor_callbacks.c:209
+#: ags/X/ags_link_editor_callbacks.c:213
 msgid "audio channel: "
 msgstr ""
 
@@ -312,80 +312,80 @@ msgstr ""
 msgid "Ports"
 msgstr ""
 
-#: ags/X/ags_machine.c:2470 ags/X/machine/ags_audiorec_callbacks.c:64
+#: ags/X/ags_machine.c:2512 ags/X/machine/ags_audiorec_callbacks.c:64
 msgid "Open audio files"
 msgstr ""
 
-#: ags/X/ags_machine.c:2478
+#: ags/X/ags_machine.c:2520
 msgid "open in new channel"
 msgstr ""
 
-#: ags/X/ags_machine.c:2483
+#: ags/X/ags_machine.c:2525
 msgid "overwrite existing links"
 msgstr ""
 
-#: ags/X/ags_machine.c:3018 ags/X/editor/ags_pattern_envelope.c:656
+#: ags/X/ags_machine.c:3083 ags/X/editor/ags_pattern_envelope.c:656
 msgid "move up"
 msgstr ""
 
-#: ags/X/ags_machine.c:3021 ags/X/editor/ags_pattern_envelope.c:663
+#: ags/X/ags_machine.c:3086 ags/X/editor/ags_pattern_envelope.c:663
 msgid "move down"
 msgstr ""
 
-#: ags/X/ags_machine.c:3024
+#: ags/X/ags_machine.c:3089
 msgid "hide"
 msgstr ""
 
-#: ags/X/ags_machine.c:3027
+#: ags/X/ags_machine.c:3092
 msgid "show"
 msgstr ""
 
-#: ags/X/ags_machine.c:3030
+#: ags/X/ags_machine.c:3095
 msgid "destroy"
 msgstr ""
 
-#: ags/X/ags_machine.c:3033 ags/X/ags_machine_callbacks.c:198
+#: ags/X/ags_machine.c:3098 ags/X/ags_machine_callbacks.c:198
 msgid "rename"
 msgstr ""
 
-#: ags/X/ags_machine.c:3036 ags/X/ags_machine_callbacks.c:266
+#: ags/X/ags_machine.c:3101 ags/X/ags_machine_callbacks.c:266
 msgid "rename audio"
 msgstr ""
 
-#: ags/X/ags_machine.c:3039 ags/X/ags_machine_editor.c:207
+#: ags/X/ags_machine.c:3104 ags/X/ags_machine_editor.c:207
 msgid "properties"
 msgstr ""
 
-#: ags/X/ags_machine.c:3042
+#: ags/X/ags_machine.c:3107
 msgid "sticky controls"
 msgstr ""
 
-#: ags/X/ags_machine.c:3104 ags/X/editor/ags_pattern_envelope.c:225
+#: ags/X/ags_machine.c:3169 ags/X/editor/ags_pattern_envelope.c:225
 #: ags/X/machine/ags_drum_input_pad.c:193
 msgid "edit"
 msgstr ""
 
-#: ags/X/ags_machine.c:3115
+#: ags/X/ags_machine.c:3180
 msgid "copy pattern"
 msgstr ""
 
-#: ags/X/ags_machine.c:3125
+#: ags/X/ags_machine.c:3190
 msgid "paste pattern"
 msgstr ""
 
-#: ags/X/ags_machine.c:3135
+#: ags/X/ags_machine.c:3200
 msgid "envelope"
 msgstr ""
 
-#: ags/X/ags_machine.c:3164
+#: ags/X/ags_machine.c:3229
 msgid "connection"
 msgstr ""
 
-#: ags/X/ags_machine.c:3175
+#: ags/X/ags_machine.c:3240
 msgid "audio connection"
 msgstr ""
 
-#: ags/X/ags_machine.c:3185
+#: ags/X/ags_machine.c:3250
 msgid "MIDI dialog"
 msgstr ""
 
@@ -485,7 +485,7 @@ msgstr ""
 msgid "port"
 msgstr ""
 
-#: ags/X/ags_pad_editor.c:426
+#: ags/X/ags_pad_editor.c:430
 msgid "pad"
 msgstr ""
 
@@ -603,29 +603,29 @@ msgstr ""
 msgid "wave"
 msgstr ""
 
-#: ags/X/ags_xorg_application_context.c:2042
-#: ags/audio/ags_audio_application_context.c:1703
-#: ags/audio/task/ags_apply_sound_config.c:853
+#: ags/X/ags_xorg_application_context.c:2039
+#: ags/audio/ags_audio_application_context.c:1701
+#: ags/audio/task/ags_apply_sound_config.c:866
 #, c-format
 msgid "unknown soundcard backend - %s"
 msgstr ""
 
-#: ags/X/ags_xorg_application_context.c:2052
-#: ags/audio/ags_audio_application_context.c:1713
-#: ags/audio/task/ags_apply_sound_config.c:863
+#: ags/X/ags_xorg_application_context.c:2049
+#: ags/audio/ags_audio_application_context.c:1711
+#: ags/audio/task/ags_apply_sound_config.c:876
 msgid "unknown soundcard backend - NULL"
 msgstr ""
 
-#: ags/X/ags_xorg_application_context.c:2296
-#: ags/audio/ags_audio_application_context.c:1864
-#: ags/audio/task/ags_apply_sound_config.c:1103
+#: ags/X/ags_xorg_application_context.c:2297
+#: ags/audio/ags_audio_application_context.c:1862
+#: ags/audio/task/ags_apply_sound_config.c:1120
 #, c-format
 msgid "unknown sequencer backend - %s"
 msgstr ""
 
-#: ags/X/ags_xorg_application_context.c:2306
-#: ags/audio/ags_audio_application_context.c:1874
-#: ags/audio/task/ags_apply_sound_config.c:1113
+#: ags/X/ags_xorg_application_context.c:2307
+#: ags/audio/ags_audio_application_context.c:1872
+#: ags/audio/task/ags_apply_sound_config.c:1130
 msgid "unknown sequencer backend - NULL"
 msgstr ""
 
@@ -671,28 +671,28 @@ msgstr ""
 msgid "Opacity"
 msgstr ""
 
-#: ags/X/editor/ags_automation_toolbar.c:1134
+#: ags/X/editor/ags_automation_toolbar.c:1169
 #: ags/X/editor/ags_select_acceleration_dialog.c:205
 msgid "select accelerations"
 msgstr ""
 
-#: ags/X/editor/ags_automation_toolbar.c:1137
+#: ags/X/editor/ags_automation_toolbar.c:1172
 #: ags/X/editor/ags_ramp_acceleration_dialog.c:207
 msgid "ramp accelerations"
 msgstr ""
 
-#: ags/X/editor/ags_automation_toolbar.c:1140
+#: ags/X/editor/ags_automation_toolbar.c:1175
 #: ags/X/editor/ags_notation_toolbar.c:122
 #: ags/X/editor/ags_notation_toolbar.c:457 ags/X/editor/ags_wave_toolbar.c:386
 msgid "position cursor"
 msgstr ""
 
-#: ags/X/editor/ags_automation_toolbar.c:1146
+#: ags/X/editor/ags_automation_toolbar.c:1181
 #: ags/X/editor/ags_wave_toolbar.c:392
 msgid "enable all lines"
 msgstr ""
 
-#: ags/X/editor/ags_automation_toolbar.c:1149
+#: ags/X/editor/ags_automation_toolbar.c:1184
 #: ags/X/editor/ags_wave_toolbar.c:395
 msgid "disable all lines"
 msgstr ""
@@ -741,7 +741,7 @@ msgstr ""
 
 #: ags/X/editor/ags_envelope_editor.c:170
 #: ags/X/editor/ags_pattern_envelope.c:239 ags/X/machine/ags_ffplayer.c:286
-#: ags/X/machine/ags_live_lv2_bridge.c:1588 ags/X/machine/ags_lv2_bridge.c:1877
+#: ags/X/machine/ags_live_lv2_bridge.c:1641 ags/X/machine/ags_lv2_bridge.c:1954
 msgid "preset"
 msgstr ""
 
@@ -771,7 +771,7 @@ msgid "ratio"
 msgstr ""
 
 #: ags/X/editor/ags_envelope_editor_callbacks.c:51
-#: ags/X/editor/ags_pattern_envelope_callbacks.c:1040
+#: ags/X/editor/ags_pattern_envelope_callbacks.c:1042
 msgid "preset name"
 msgstr ""
 
@@ -1053,7 +1053,7 @@ msgid "channel: "
 msgstr ""
 
 #: ags/X/machine/ags_dssi_bridge.c:333 ags/X/machine/ags_live_dssi_bridge.c:336
-#: ags/X/machine/ags_live_lv2_bridge.c:1527 ags/X/machine/ags_lv2_bridge.c:1816
+#: ags/X/machine/ags_live_lv2_bridge.c:1580 ags/X/machine/ags_lv2_bridge.c:1893
 msgid "program"
 msgstr ""
 

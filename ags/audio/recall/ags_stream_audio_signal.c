@@ -128,6 +128,8 @@ ags_stream_audio_signal_finalize(GObject *gobject)
   if(audio_signal != NULL){
     AgsRecycling *recycling;
 
+    AgsDestroyWorker *destroy_worker;
+
     recycling = (AgsRecycling *) audio_signal->recycling;
         
     if(recycling != NULL){
@@ -135,11 +137,19 @@ ags_stream_audio_signal_finalize(GObject *gobject)
 					audio_signal);
     }
 
+#ifdef AGS_DEBUG
     g_message("%d %x -> %x", g_atomic_int_get(&(G_OBJECT(audio_signal)->ref_count)), audio_signal, AGS_RECALL_ID(audio_signal->recall_id)->recycling_context->parent);
+#endif
 
-    g_object_run_dispose((GObject *) audio_signal);
-    
-    g_object_unref((GObject *) audio_signal);
+    if(TRUE){
+      destroy_worker = ags_destroy_worker_get_instance();
+      ags_destroy_worker_add(destroy_worker,
+			     audio_signal, ags_destroy_util_dispose_and_unref);
+    }else{
+      g_object_run_dispose(audio_signal);
+
+      g_object_unref(audio_signal);
+    }
   }
 
   /* call parent */

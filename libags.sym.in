@@ -94,6 +94,7 @@ ags_buffer_util_char_buffer_write_double
 ags_buffer_util_char_buffer_swap_bytes
 ags_time_get_uptime_from_offset
 ags_turtle_get_type
+ags_turtle_get_class_mutex
 ags_turtle_read_iriref
 ags_turtle_read_pname_ns
 ags_turtle_read_pname_ln

@@ -1617,9 +1617,9 @@ ags_audio_signal_finalize(GObject *gobject)
 
   audio_signal = AGS_AUDIO_SIGNAL(gobject);
 
+#ifdef AGS_DEBUG
   g_message("fin %x", audio_signal);
   
-#ifdef AGS_DEBUG
   if((AGS_AUDIO_SIGNAL_TEMPLATE & (audio_signal->flags)) != 0){
     g_warning("AGS_AUDIO_SIGNAL_TEMPLATE: destroying\n");
   }
@@ -1630,6 +1630,8 @@ ags_audio_signal_finalize(GObject *gobject)
 
   pthread_mutexattr_destroy(audio_signal->obj_mutexattr);
   free(audio_signal->obj_mutexattr);
+
+  ags_uuid_free(audio_signal->uuid);
 
   /* disconnect */
 #if 0

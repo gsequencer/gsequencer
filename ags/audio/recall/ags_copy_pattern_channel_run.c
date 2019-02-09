@@ -1005,6 +1005,7 @@ ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *delay_au
 		       "note", copy_note,
 		       NULL);
 
+	  g_object_unref(copy_note);
 	  g_object_unref(audio_signal);
 	}else{
 	  GList *list_start, *list;
@@ -1024,6 +1025,8 @@ ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *delay_au
 	    g_object_set(audio_signal,
 			 "note", copy_note,
 			 NULL);
+
+	    g_object_unref(copy_note);
 	  }
 
 	  g_list_free_full(list_start,
