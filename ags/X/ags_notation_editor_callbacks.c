@@ -144,15 +144,19 @@ ags_notation_editor_start_channel_launch_callback(AgsTask *task, AgsNote *note)
 	       "last-recycling", &last_recycling,
 	       NULL);
 
-  g_object_unref(recycling);
-  g_object_unref(last_recycling);
+  if(recycling != NULL){
+    g_object_unref(recycling);
+    g_object_unref(last_recycling);
+  }
   
   g_object_get(last_recycling,
 	       "next", &end_recycling,
 	       NULL);
 
-  g_object_unref(end_recycling);
-
+  if(end_recycling != NULL){
+    g_object_unref(end_recycling);
+  }
+  
   /* add audio signal */  
   while(recycling != end_recycling){
     if(!ags_recall_global_get_rt_safe()){
@@ -213,6 +217,9 @@ ags_notation_editor_start_channel_launch_callback(AgsTask *task, AgsNote *note)
     g_object_get(recycling,
 		 "next", &recycling,
 		 NULL);
-    g_object_unref(recycling);
+
+    if(recycling != NULL){
+      g_object_unref(recycling);
+    }
   }
 }

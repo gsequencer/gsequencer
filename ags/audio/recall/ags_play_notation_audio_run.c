@@ -1009,14 +1009,20 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
 		   "first-recycling", &recycling,
 		   "last-recycling", &last_recycling,
 		   NULL);
-      g_object_unref(recycling);
-      g_object_unref(last_recycling);
+
+      if(recycling != NULL){
+	g_object_unref(recycling);
+	g_object_unref(last_recycling);
+      }
       
       g_object_get(last_recycling,
 		   "next", &end_recycling,
 		   NULL);
-      g_object_unref(end_recycling);
-	
+
+      if(end_recycling != NULL){
+	g_object_unref(end_recycling);
+      }
+      
       g_object_set(note,
 		   "rt-attack", attack,
 		   NULL);
@@ -1095,7 +1101,10 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
 	g_object_get(recycling,
 		     "next", &recycling,
 		     NULL);
-	g_object_unref(recycling);
+
+	if(recycling != NULL){
+	  g_object_unref(recycling);
+	}
       }
 
       /* iterate */

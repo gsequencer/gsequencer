@@ -860,7 +860,10 @@ ags_machine_set_property(GObject *gobject,
 	      g_object_get(output,
 			   "next-pad", &output,
 			   NULL);
-	      g_object_unref(output);
+
+	      if(output != NULL){
+		g_object_unref(output);
+	      }
 	      
 	      pad = pad->next;
 	      i++;
@@ -921,7 +924,10 @@ ags_machine_set_property(GObject *gobject,
 	      g_object_get(input,
 			   "next-pad", &input,
 			   NULL);
-	      g_object_unref(input);
+
+	      if(input != NULL){
+		g_object_unref(input);
+	      }
 	      
 	      pad = pad->next;
 	      i++;
@@ -994,7 +1000,10 @@ ags_machine_set_property(GObject *gobject,
 	      g_object_get(channel,
 			   "next-pad", &channel,
 			   NULL);
-	      g_object_unref(channel);
+
+	      if(channel != NULL){
+		g_object_unref(channel);
+	      }
 	    }
 	  }
 
@@ -1013,7 +1022,10 @@ ags_machine_set_property(GObject *gobject,
 	      g_object_get(channel,
 			   "next-pad", &channel,
 			   NULL);
-	      g_object_unref(channel);
+
+	      if(channel != NULL){
+		g_object_unref(channel);
+	      }
 	    }
 	  }
 	}
@@ -1551,7 +1563,9 @@ ags_machine_real_resize_audio_channels(AgsMachine *machine,
 		     "next-pad", &channel,
 		     NULL);
 
-	g_object_unref(channel);
+	if(channel != NULL){
+	  g_object_unref(channel);
+	}
 	
 	if(audio_channels_old != 0){
 	  list_input_pad = list_input_pad->next;
@@ -1592,7 +1606,9 @@ ags_machine_real_resize_audio_channels(AgsMachine *machine,
 		     "next-pad", &channel,
 		     NULL);
 
-	g_object_unref(channel);
+	if(channel != NULL){
+	  g_object_unref(channel);
+	}
 
 	if(audio_channels_old != 0){
 	  list_output_pad = list_output_pad->next;
@@ -1830,7 +1846,9 @@ ags_machine_real_resize_pads(AgsMachine *machine, GType channel_type,
 		       "next-pad", &channel,
 		       NULL);	
 
-	  g_object_unref(channel);
+	  if(channel != NULL){
+	    g_object_unref(channel);
+	  }
 	}
 
 	/* show all */
@@ -1871,7 +1889,9 @@ ags_machine_real_resize_pads(AgsMachine *machine, GType channel_type,
 		       "next-pad", &channel,
 		       NULL);
 
-	  g_object_unref(channel);
+	  if(channel != NULL){
+	    g_object_unref(channel);
+	  }
 	}
 
 	/* show all */
@@ -2667,7 +2687,9 @@ ags_machine_copy_pattern(AgsMachine *machine)
 		   "next", &current,
 		   NULL);
  
-      g_object_unref(current);
+      if(current != NULL){
+	g_object_unref(current);
+      }
     }
 
     xmlNewProp(notation_node, BAD_CAST "x_boundary", BAD_CAST g_strdup_printf("%u", x_boundary));
@@ -2711,7 +2733,9 @@ ags_machine_copy_pattern(AgsMachine *machine)
 		 "next", &channel,
 		 NULL);
 
-    g_object_unref(channel);
+    if(channel != NULL){
+      g_object_unref(channel);
+    }
   }
   
   /* write to clipboard */
@@ -2936,7 +2960,9 @@ ags_machine_generic_output_message_monitor_timeout(AgsMachine *machine)
 		   "next", &output,
 		   NULL);
 
-      g_object_unref(output);
+      if(output != NULL){
+	g_object_unref(output);
+      }
     }
     
     return(TRUE);
@@ -2996,7 +3022,9 @@ ags_machine_generic_input_message_monitor_timeout(AgsMachine *machine)
 		   "next", &input,
 		   NULL);
 
-      g_object_unref(input);
+      if(input != NULL){
+	g_object_unref(input);
+      }
     }
     
     return(TRUE);

@@ -694,7 +694,10 @@ ags_effect_bridge_set_property(GObject *gobject,
 	    g_object_get(output,
 			 "next-pad", &output,
 			 NULL);
-	    g_object_unref(output);
+
+	    if(output != NULL){
+	      g_object_unref(output);
+	    }
 	    
 	    effect_pad = effect_pad->next;
 	    i++;
@@ -718,7 +721,10 @@ ags_effect_bridge_set_property(GObject *gobject,
 	      g_object_get(output,
 			   "next-pad", &output,
 			   NULL);
-	      g_object_unref(output);
+
+	      if(output != NULL){
+		g_object_unref(output);
+	      }
 	    }
 
 	    g_list_free(start_effect_pad);
@@ -762,8 +768,11 @@ ags_effect_bridge_set_property(GObject *gobject,
 	    g_object_get(input,
 			 "next-pad", &input,
 			 NULL);
-	    g_object_unref(input);
 
+	    if(input != NULL){
+	      g_object_unref(input);
+	    }
+	    
 	    effect_pad = effect_pad->next;
 	    i++;
 	  }
@@ -786,7 +795,10 @@ ags_effect_bridge_set_property(GObject *gobject,
 	      g_object_get(input,
 			   "next-pad", &input,
 			   NULL);
-	      g_object_unref(input);
+
+	      if(input != NULL){
+		g_object_unref(input);
+	      }
 	    }
 
 	    g_list_free(start_effect_pad);
@@ -1262,7 +1274,10 @@ ags_effect_bridge_real_resize_pads(AgsEffectBridge *effect_bridge,
       g_object_get(current,
 		   "next-pad", &current,
 		   NULL);
-      g_object_unref(current);
+
+      if(current != NULL){
+	g_object_unref(current);
+      }
     }
 
     /* connect and show */

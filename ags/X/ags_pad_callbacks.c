@@ -118,6 +118,10 @@ ags_pad_mute_clicked_callback(GtkWidget *widget, AgsPad *pad)
 		 "next-pad", &next_pad,
 		 NULL);
 
+    if(next_pad != NULL){
+      g_object_unref(next_pad);
+    }
+    
     while(current != next_pad){
       /* instantiate set muted task */
       set_muted = ags_set_muted_new((GObject *) current,
@@ -129,6 +133,10 @@ ags_pad_mute_clicked_callback(GtkWidget *widget, AgsPad *pad)
       g_object_get(current,
 		   "next", &current,
 		   NULL);
+
+      if(current != NULL){
+	g_object_unref(current);
+      }
     }
   }else{
     if((AGS_MACHINE_SOLO & (machine->flags)) != 0){
@@ -153,6 +161,10 @@ ags_pad_mute_clicked_callback(GtkWidget *widget, AgsPad *pad)
     g_object_get(pad->channel,
 		 "next-pad", &next_pad,
 		 NULL);
+
+    if(next_pad != NULL){
+      g_object_unref(next_pad);
+    }
     
     while(current != next_pad){
       /* instantiate set muted task */
@@ -165,6 +177,10 @@ ags_pad_mute_clicked_callback(GtkWidget *widget, AgsPad *pad)
       g_object_get(current,
 		   "next", &current,
 		   NULL);
+
+      if(current != NULL){
+	g_object_unref(current);
+      }
     }
   }
 
@@ -229,6 +245,10 @@ ags_pad_start_channel_launch_callback(AgsTask *task,
 	       "output-soundcard", &output_soundcard,
 	       "next", &next,
 	       NULL);
+
+  if(next != NULL){
+    g_object_unref(next);
+  }
   
 #ifdef AGS_DEBUG
   g_message("launch");
@@ -246,6 +266,10 @@ ags_pad_start_channel_launch_callback(AgsTask *task,
 		 "playback", &playback,
 		 NULL);
 
+    if(playback != NULL){
+      g_object_unref(playback);
+    }
+    
     recall_id = ags_playback_get_recall_id(playback,
 					   AGS_SOUND_SCOPE_PLAYBACK);
     
@@ -254,12 +278,21 @@ ags_pad_start_channel_launch_callback(AgsTask *task,
       g_object_get(channel,
 		   "next", &channel,
 		   NULL);
+
+      if(channel != NULL){
+	g_object_unref(channel);
+      }
+      
       continue;
     }
     
     g_object_get(playback,
 		 "play-note", &note,
 		 NULL);
+
+    if(note != NULL){
+      g_object_unref(note);
+    }
     
     /* get some fields */
     g_object_get(channel,
@@ -267,10 +300,19 @@ ags_pad_start_channel_launch_callback(AgsTask *task,
 		 "last-recycling", &last_recycling,
 		 NULL);
 
+    if(recycling != NULL){
+      g_object_unref(recycling);
+      g_object_unref(last_recycling);
+    }
+    
     g_object_get(last_recycling,
 		 "next", &end_recycling,
 		 NULL);
-      
+
+    if(end_recycling != NULL){
+      g_object_unref(end_recycling);
+    }
+    
     while(recycling != end_recycling){      
       if(!ags_recall_global_get_rt_safe()){
 	/* instantiate audio signal */
@@ -312,7 +354,8 @@ ags_pad_start_channel_launch_callback(AgsTask *task,
 		       NULL);
 	}
 
-	g_list_free(start_list);
+	g_list_free_full(start_list,
+			 g_object_unref);
 
 	g_object_set(note,
 		     "rt-offset", 0,
@@ -323,11 +366,23 @@ ags_pad_start_channel_launch_callback(AgsTask *task,
       g_object_get(recycling,
 		   "next", &recycling,
 		   NULL);
+
+      if(recycling != NULL){
+	g_object_unref(recycling);
+      }
     }
 
     /* iterate */
     g_object_get(channel,
 		 "next", &channel,
 		 NULL);
+
+    if(channel != NULL){
+      g_object_unref(channel);
+    }
   }
+
+  g_object_unref(audio);
+  
+  g_object_unref(output_soundcard);
 }

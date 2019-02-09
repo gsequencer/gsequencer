@@ -791,7 +791,7 @@ ags_wave_editor_select_region(AgsWaveEditor *wave_editor,
 		 "samplerate", &samplerate,
 		 "buffer-size", &buffer_size,
 		 NULL);
-
+    
     delay_factor = ags_soundcard_get_delay_factor(AGS_SOUNDCARD(soundcard));
 
     relative_offset = AGS_WAVE_DEFAULT_BUFFER_LENGTH * samplerate;
@@ -841,8 +841,13 @@ ags_wave_editor_select_region(AgsWaveEditor *wave_editor,
       i++;
     }
 
+    if(soundcard != NULL){
+      g_object_unref(soundcard);
+    }
+
     g_list_free(start_wave_edit);
-    g_list_free(start_list_wave);
+    g_list_free_full(start_list_wave,
+		     g_object_unref);
   }
 }
 
@@ -902,7 +907,8 @@ ags_wave_editor_select_all(AgsWaveEditor *wave_editor)
       i++;
     }
     
-    g_list_free(start_list_wave);
+    g_list_free_full(start_list_wave,
+		     g_object_unref);
 
     /* queue draw */
     gtk_widget_queue_draw(GTK_WIDGET(wave_editor->focused_wave_edit));
@@ -1094,7 +1100,8 @@ ags_wave_editor_paste(AgsWaveEditor *wave_editor)
 	}
       }
 
-      g_list_free(start_list_wave);
+      g_list_free_full(start_list_wave,
+		       g_object_unref);
       
       i++;
     }
@@ -1215,6 +1222,10 @@ ags_wave_editor_paste(AgsWaveEditor *wave_editor)
 		 "samplerate", &samplerate,
 		 NULL);
 
+    if(soundcard != NULL){
+      g_object_unref(soundcard);
+    }
+    
     delay_factor = ags_soundcard_get_delay_factor(AGS_SOUNDCARD(soundcard));
 
     relative_offset = AGS_WAVE_DEFAULT_BUFFER_LENGTH * samplerate;
@@ -1355,6 +1366,9 @@ ags_wave_editor_copy(AgsWaveEditor *wave_editor)
 
       i++;
     }
+
+    g_list_free_full(start_list_wave,
+		     g_object_unref);
     
     /* write to clipboard */
     xmlDocDumpFormatMemoryEnc(clipboard, &buffer, &size, "UTF-8", TRUE);
@@ -1442,6 +1456,9 @@ ags_wave_editor_cut(AgsWaveEditor *wave_editor)
 
       i++;
     }
+
+    g_list_free_full(start_list_wave,
+		     g_object_unref);
 
     gtk_widget_queue_draw(GTK_WIDGET(wave_editor->focused_wave_edit));
 

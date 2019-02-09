@@ -1095,6 +1095,9 @@ ags_soundcard_editor_reset(AgsApplicable *applicable)
       gtk_spin_button_set_value(soundcard_editor->cache_buffer_size,
 				cache_buffer_size);
     }
+
+    g_list_free_full(start_port,
+		     g_object_unref);
   }else if(AGS_IS_CORE_AUDIO_DEVOUT(soundcard)){
     GList *start_port, *port;
 
@@ -1131,6 +1134,9 @@ ags_soundcard_editor_reset(AgsApplicable *applicable)
       gtk_spin_button_set_value(soundcard_editor->cache_buffer_size,
 				cache_buffer_size);
     }
+
+    g_list_free_full(start_port,
+		     g_object_unref);
   }else{
     gtk_toggle_button_set_active(soundcard_editor->use_cache,
 				 FALSE);
@@ -1263,9 +1269,7 @@ ags_soundcard_editor_add_port(AgsSoundcardEditor *soundcard_editor,
   }
   
   /* add new */
-  g_object_get(application_context,
-	       "main-loop", &main_loop,
-	       NULL);
+  main_loop = ags_concurrency_provider_get_main_loop(AGS_CONCURRENCY_PROVIDER(application_context));
   
   if(ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(application_context)) == NULL){
     initial_soundcard = TRUE;
@@ -1439,9 +1443,7 @@ ags_soundcard_editor_remove_port(AgsSoundcardEditor *soundcard_editor,
   }
   
   /* destroy soundcard */
-  g_object_get(application_context,
-	       "main-loop", &main_loop,
-	       NULL);
+  main_loop = ags_concurrency_provider_get_main_loop(AGS_CONCURRENCY_PROVIDER(application_context));
 
   start_sound_server = ags_sound_provider_get_sound_server(AGS_SOUND_PROVIDER(application_context));
 
@@ -1609,9 +1611,7 @@ ags_soundcard_editor_add_soundcard(AgsSoundcardEditor *soundcard_editor,
   }
   
   /*  */
-  g_object_get(application_context,
-	       "main-loop", &main_loop,
-	       NULL);
+  main_loop = ags_concurrency_provider_get_main_loop(AGS_CONCURRENCY_PROVIDER(application_context));
 
   if(g_list_find(ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(application_context)),
 		 soundcard) != NULL){
@@ -1722,9 +1722,7 @@ ags_soundcard_editor_remove_soundcard(AgsSoundcardEditor *soundcard_editor,
 
   application_context = (AgsApplicationContext *) window->application_context;  
 
-  g_object_get(application_context,
-	       "main-loop", &main_loop,
-	       NULL);
+  main_loop = ags_concurrency_provider_get_main_loop(AGS_CONCURRENCY_PROVIDER(application_context));
 
   /* remove AgsSoundcard from AgsAudio */
 #if 0

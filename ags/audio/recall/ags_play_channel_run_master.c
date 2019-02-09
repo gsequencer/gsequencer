@@ -679,7 +679,10 @@ ags_play_channel_run_master_remap_dependencies(AgsPlayChannelRunMaster *play_cha
     g_object_get(old_end_region,
 		 "next", &end_recycling,
 		 NULL);
-    g_object_unref(end_recycling);
+
+    if(end_recycling != NULL){
+      g_object_unref(end_recycling);
+    }
     
     while(recycling != end_recycling){
       AgsChannel *tmp_channel;
@@ -746,7 +749,10 @@ ags_play_channel_run_master_remap_dependencies(AgsPlayChannelRunMaster *play_cha
       g_object_get(recycling,
 		   "next", &recycling,
 		   NULL);
-      g_object_unref(recycling);
+
+      if(recycling != NULL){
+	g_object_unref(recycling);
+      }
     }
   }
 
@@ -765,7 +771,10 @@ ags_play_channel_run_master_remap_dependencies(AgsPlayChannelRunMaster *play_cha
     g_object_get(new_end_region,
 		 "next", &end_recycling,
 		 NULL);
-    g_object_unref(end_recycling);
+
+    if(end_recycling != NULL){
+      g_object_unref(end_recycling);
+    }
     
     while(recycling != end_recycling){
       AgsChannel *tmp_channel;
@@ -829,7 +838,10 @@ ags_play_channel_run_master_remap_dependencies(AgsPlayChannelRunMaster *play_cha
       g_object_get(recycling,
 		   "next", &recycling,
 		   NULL);
-      g_object_unref(recycling);
+
+      if(recycling != NULL){
+	g_object_unref(recycling);
+      }
     }
   }
 

@@ -876,7 +876,10 @@ ags_effect_pad_real_resize_lines(AgsEffectPad *effect_pad, GType effect_line_typ
 	g_object_get(channel,
 		     "next", &channel,
 		     NULL);
-	g_object_unref(channel);
+
+	if(channel != NULL){
+	  g_object_unref(channel);
+	}
       }
     }
   }else{

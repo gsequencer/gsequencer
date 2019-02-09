@@ -378,7 +378,9 @@ ags_listing_editor_add_children(AgsListingEditor *listing_editor,
 		 "next-pad", &channel,
 		 NULL);
 
-    g_object_unref(channel);
+    if(channel != NULL){
+      g_object_unref(channel);
+    }
   }
 }
 

@@ -420,6 +420,10 @@ ags_pad_editor_set_channel(AgsPadEditor *pad_editor, AgsChannel *channel)
 		 "pad", &pad,
 		 "next-pad", &next_pad,
 		 NULL);
+
+    if(next_pad != NULL){
+      g_object_unref(next_pad);
+    }
     
     /* set label */
     str = g_strdup_printf("%s: %u",
@@ -457,6 +461,10 @@ ags_pad_editor_set_channel(AgsPadEditor *pad_editor, AgsChannel *channel)
       g_object_get(channel,
 		   "next", &channel,
 		   NULL);
+
+      if(channel != NULL){
+	g_object_unref(channel);
+      }
     }
   }else{
     gtk_expander_set_label(pad_editor->line_editor_expander,

@@ -596,11 +596,8 @@ ags_sequencer_editor_add_source(AgsSequencerEditor *sequencer_editor,
     return;
   }
   
-
   /* add new */
-  g_object_get(application_context,
-	       "main-loop", &main_loop,
-	       NULL);
+  main_loop = ags_concurrency_provider_get_main_loop(AGS_CONCURRENCY_PROVIDER(application_context));
   
   sequencer_editor->sequencer = (GObject *) jack_midiin;
 
@@ -657,9 +654,7 @@ ags_sequencer_editor_remove_source(AgsSequencerEditor *sequencer_editor,
   application_context = (AgsApplicationContext *) window->application_context;
   
   /* create sequencer */
-  g_object_get(application_context,
-	       "main-loop", &main_loop,
-	       NULL);
+  main_loop = ags_concurrency_provider_get_main_loop(AGS_CONCURRENCY_PROVIDER(application_context));
   
   sound_server = ags_sound_provider_get_sound_server(AGS_SOUND_PROVIDER(application_context));
 
@@ -768,9 +763,7 @@ ags_sequencer_editor_add_sequencer(AgsSequencerEditor *sequencer_editor,
   }
   
   /*  */
-  g_object_get(application_context,
-	       "main-loop", &main_loop,
-	       NULL);
+  main_loop = ags_concurrency_provider_get_main_loop(AGS_CONCURRENCY_PROVIDER(application_context));
 
   if(g_list_find(ags_sound_provider_get_sequencer(AGS_SOUND_PROVIDER(application_context)),
 		 sequencer) != NULL){
@@ -817,9 +810,7 @@ ags_sequencer_editor_remove_sequencer(AgsSequencerEditor *sequencer_editor,
 
   application_context = (AgsApplicationContext *) window->application_context;  
 
-  g_object_get(application_context,
-	       "main-loop", &main_loop,
-	       NULL);
+  main_loop = ags_concurrency_provider_get_main_loop(AGS_CONCURRENCY_PROVIDER(application_context));
     
   if(sequencer == sequencer_editor->sequencer){
     sequencer_editor->sequencer = NULL;

@@ -380,7 +380,10 @@ ags_input_listing_editor_add_children(AgsInputListingEditor *input_listing_edito
     g_object_get(channel,
 		 "next-pad", &channel,
 		 NULL);
-    g_object_unref(channel);
+
+    if(channel != NULL){
+      g_object_unref(channel);
+    }
   }
 }
 

@@ -811,13 +811,16 @@ ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *delay_au
 
     end_recycling = NULL;
     
-    if(last_recycling != NULL){
+    if(last_recycling != NULL){      
+      g_object_unref(last_recycling);
+      
       g_object_get(last_recycling,
 		   "next", &end_recycling,
 		   NULL);
-      
-      g_object_unref(end_recycling);
-      g_object_unref(last_recycling);
+
+      if(end_recycling != NULL){
+	g_object_unref(end_recycling);
+      }
     }
 
     /* find preset scope envelope */
@@ -1030,7 +1033,10 @@ ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *delay_au
 	g_object_get(recycling,
 		     "next", &recycling,
 		     NULL);
-	g_object_unref(recycling);
+
+	if(recycling != NULL){
+	  g_object_unref(recycling);
+	}
       }
     }
     

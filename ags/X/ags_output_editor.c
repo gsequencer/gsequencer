@@ -327,6 +327,10 @@ ags_output_editor_reset(AgsApplicable *applicable)
 			       0);
     }
   }
+
+  if(output_soundcard != NULL){
+    g_object_unref(output_soundcard);
+  }
 }
 
 /**

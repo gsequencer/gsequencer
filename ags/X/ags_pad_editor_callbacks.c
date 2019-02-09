@@ -45,6 +45,10 @@ ags_pad_editor_resize_audio_channels_callback(AgsMachine *machine,
 		 "next-pad", &next_pad,
 		 NULL);
 
+    if(next_pad != NULL){
+      g_object_unref(next_pad);
+    }
+    
     /* get current last of pad */
     channel = ags_channel_nth(pad_editor->pad,
 			      audio_channels_old);
@@ -70,6 +74,10 @@ ags_pad_editor_resize_audio_channels_callback(AgsMachine *machine,
       g_object_get(channel,
 		   "next", &channel,
 		   NULL);
+
+      if(channel != NULL){
+	g_object_unref(channel);
+      }
     }
   }else{
     GList *list, *list_next, *list_start;

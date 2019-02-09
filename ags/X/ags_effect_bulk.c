@@ -2645,7 +2645,10 @@ ags_effect_bulk_real_remove_effect(AgsEffectBulk *effect_bulk,
 	g_object_get(current,
 		     "next", &current,
 		     NULL);
-	g_object_unref(current);
+
+	if(current != NULL){
+	  g_object_unref(current);
+	}
       }
     }
   }
@@ -2841,7 +2844,9 @@ ags_effect_bulk_real_resize_audio_channels(AgsEffectBulk *effect_bulk,
 		     "next", &current,
 		     NULL);
 	
-	g_object_unref(current);
+	if(current != NULL){
+	  g_object_unref(current);
+	}
       }
     }
   }else{
@@ -3063,7 +3068,9 @@ ags_effect_bulk_real_resize_pads(AgsEffectBulk *effect_bulk,
 		     "next", &current,
 		     NULL);
 
-	g_object_unref(current);
+	if(current != NULL){
+	  g_object_unref(current);
+	}
       }
     }
   }else{

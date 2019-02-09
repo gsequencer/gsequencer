@@ -1458,7 +1458,10 @@ ags_bulk_member_real_find_port(AgsBulkMember *bulk_member)
     g_object_get(channel,
 		 "next", &channel,
 		 NULL);
-    g_object_unref(channel);
+
+    if(channel != NULL){
+      g_object_unref(channel);
+    }
   }
 
   /* search audio */

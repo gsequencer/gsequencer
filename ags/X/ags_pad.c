@@ -831,6 +831,10 @@ ags_pad_real_set_channel(AgsPad *pad, AgsChannel *channel)
       g_object_get(current,
 		   "next", &current,
 		   NULL);
+
+      if(current != NULL){
+	g_object_unref(current);
+      }
     }
     
     line = line->next;
@@ -902,6 +906,10 @@ ags_pad_real_resize_lines(AgsPad *pad, GType line_type,
 	  g_object_get(channel,
 		       "next", &channel,
 		       NULL);
+
+	  if(channel != NULL){
+	    g_object_unref(channel);
+	  }
 	}
       }
     }
@@ -1106,6 +1114,10 @@ ags_pad_play(AgsPad *pad)
 		   "next-pad", &next_pad,
 		   NULL);
 
+      if(next_pad != NULL){
+	g_object_unref(next_pad);
+      }
+
       while(channel != next_pad){
 	/* start channel for playback */
 	start_channel = ags_start_channel_new(channel,
@@ -1120,6 +1132,10 @@ ags_pad_play(AgsPad *pad)
 	g_object_get(channel,
 		     "next", &channel,
 		     NULL);
+
+	if(channel != NULL){
+	  g_object_unref(channel);
+	}
       }
     }else{
       GList *list;
@@ -1165,6 +1181,10 @@ ags_pad_play(AgsPad *pad)
 		   "next-pad", &next_pad,
 		   NULL);
 
+      if(next_pad != NULL){
+	g_object_unref(next_pad);
+      }
+
       /* cancel request */
       while(channel != next_pad){
 	g_object_get(channel,
@@ -1181,11 +1201,17 @@ ags_pad_play(AgsPad *pad)
 	  ags_gui_thread_schedule_task((AgsGuiThread *) gui_thread,
 				       (GObject *) cancel_channel);
 	}
+
+	g_object_unref(playback);
 	
 	/* iterate */
 	g_object_get(channel,
 		     "next", &channel,
 		     NULL);
+
+	if(channel != NULL){
+	  g_object_unref(channel);
+	}
       }
     }else{
       AgsLine *line;
@@ -1224,6 +1250,8 @@ ags_pad_play(AgsPad *pad)
 	ags_gui_thread_schedule_task((AgsGuiThread *) gui_thread,
 				     (GObject *) cancel_channel);
       }
+
+      g_object_unref(playback);
     }
   }
 }

@@ -136,15 +136,21 @@ ags_rt_stream_channel_run_check_rt_data(AgsRecall *recall)
 	       "first-recycling", &first_recycling,
 	       "last-recycling", &last_recycling,
 	       NULL);
-  g_object_unref(first_recycling);
-  g_object_unref(last_recycling);
+
+  if(first_recycling != NULL){
+    g_object_unref(first_recycling);
+    g_object_unref(last_recycling);
+  }
   
   /* get end */
   g_object_get(last_recycling,
 	       "next", &end_recycling,
 	       NULL);
-  g_object_unref(end_recycling);
 
+  if(end_recycling != NULL){
+    g_object_unref(end_recycling);
+  }
+  
   /* */
   recycling = first_recycling;
   
@@ -183,7 +189,10 @@ ags_rt_stream_channel_run_check_rt_data(AgsRecall *recall)
     g_object_get(recycling,
 		 "next", &recycling,
 		 NULL);
-    g_object_unref(recycling);
+
+    if(recycling != NULL){
+      g_object_unref(recycling);
+    }
   }
 
   /* unref */
@@ -225,15 +234,21 @@ ags_rt_stream_channel_run_done(AgsRecall *recall)
 	       "first-recycling", &first_recycling,
 	       "last-recycling", &last_recycling,
 	       NULL);
-  g_object_unref(first_recycling);
-  g_object_unref(last_recycling);
-    
+
+  if(first_recycling != NULL){
+    g_object_unref(first_recycling);
+    g_object_unref(last_recycling);
+  }
+  
   /* get end */
   g_object_get(last_recycling,
 	       "next", &end_recycling,
 	       NULL);
-  g_object_unref(end_recycling);
 
+  if(end_recycling != NULL){
+    g_object_unref(end_recycling);
+  }
+  
   /* */
   recycling = first_recycling;
   
@@ -260,7 +275,10 @@ ags_rt_stream_channel_run_done(AgsRecall *recall)
     g_object_get(recycling,
 		 "next", &recycling,
 		 NULL);
-    g_object_unref(recycling);
+
+    if(recycling != NULL){
+      g_object_unref(recycling);
+    }
   }
   
   /* call parent */

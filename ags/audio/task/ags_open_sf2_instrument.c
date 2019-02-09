@@ -600,7 +600,9 @@ ags_open_sf2_instrument_launch(AgsTask *task)
 		     "next", &channel,
 		     NULL);
 
-	g_object_unref(channel);
+	if(channel != NULL){
+	  g_object_unref(channel);
+	}
       }
 
       g_list_free(start_audio_signal);

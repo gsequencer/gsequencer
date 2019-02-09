@@ -512,7 +512,10 @@ ags_link_collection_editor_apply(AgsApplicable *applicable)
 	g_object_get(channel,
 		     "next", &channel,
 		     NULL);
-	g_object_unref(channel);
+
+	if(channel != NULL){
+	  g_object_unref(channel);
+	}
       }
       
       /* append AgsLinkChannel */
@@ -551,12 +554,18 @@ ags_link_collection_editor_apply(AgsApplicable *applicable)
 	g_object_get(channel,
 		     "next", &channel,
 		     NULL);
-	g_object_unref(channel);
+
+	if(channel != NULL){
+	  g_object_unref(channel);
+	}
 
 	g_object_get(link,
 		     "next", &link,
 		     NULL);
-	g_object_unref(link);
+
+	if(link != NULL){
+	  g_object_unref(link);
+	}
       }
 
       task = g_list_reverse(task);

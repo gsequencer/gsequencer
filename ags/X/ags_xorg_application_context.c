@@ -1658,10 +1658,7 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
 
   /* call parent */
   //  AGS_APPLICATION_CONTEXT_CLASS(ags_xorg_application_context_parent_class)->setup(application_context);
-
-  g_object_get(application_context,
-	       "main-loop", &main_loop,
-	       NULL);
+  main_loop = ags_concurrency_provider_get_main_loop(AGS_CONCURRENCY_PROVIDER(application_context));
 
   gui_thread = ags_ui_provider_get_gui_thread(AGS_UI_PROVIDER(application_context));
 
@@ -2004,11 +2001,13 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
 	    ags_jack_client_open((AgsJackClient *) input_client,
 				 "ags-input-client");	    
 	  }
+	}else{
+	  g_object_unref(input_client);
 	}
 	
 	soundcard = ags_sound_server_register_soundcard(AGS_SOUND_SERVER(jack_server),
 							is_output);
-
+	
 	has_jack = TRUE;
       }else if(!g_ascii_strncasecmp(str,
 				    "alsa",
@@ -2183,7 +2182,8 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
 	port = port->next;
       }
 
-      g_list_free(start_port);
+      g_list_free_full(start_port,
+		       g_object_unref);
     }else if(AGS_IS_CORE_AUDIO_DEVOUT(soundcard)){
       GList *start_port, *port;
 
@@ -2208,7 +2208,8 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
 	port = port->next;
       }
 
-      g_list_free(start_port);
+      g_list_free_full(start_port,
+		       g_object_unref);
     }
     
     g_free(soundcard_group);    
@@ -2274,6 +2275,8 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
     
 	  ags_jack_client_open((AgsJackClient *) input_client,
 			       "ags-input-client");	    
+	}else{
+	  g_object_unref(input_client);
 	}
 
 	sequencer = ags_sound_server_register_sequencer(AGS_SOUND_SERVER(jack_server),
@@ -3091,9 +3094,7 @@ ags_xorg_application_context_launch(AgsFileLaunch *launch, AgsXorgApplicationCon
   GList *list;
   GList *start_queue;
 
-  g_object_get(application_context,
-	       "main-loop", &audio_loop,
-	       NULL);
+  main_loop = ags_concurrency_provider_get_main_loop(AGS_CONCURRENCY_PROVIDER(application_context));
 
   /* show all */
   gtk_widget_show_all((GtkWidget *) application_context->window);
