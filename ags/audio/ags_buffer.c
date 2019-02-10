@@ -822,11 +822,11 @@ ags_buffer_sort_func(gconstpointer a,
   }
     
   g_object_get(a,
-	       "x", &a_x ,
+	       "x", &a_x,
 	       NULL);
     
   g_object_get(b,
-	       "x", &b_x ,
+	       "x", &b_x,
 	       NULL);
 
   if(a_x == b_x){

@@ -1,3 +1,9 @@
+ags (2.1.51)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed bisect algorithm of AgsNotation, AgsAutomation and AgsWave
+	* fixed wrong ref-count in ags-eq10 recall
+
 ags (2.1.50)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

@@ -736,8 +736,8 @@ ags_sound_resource_read_wave(AgsSoundResource *sound_resource,
 		     "timestamp", &timestamp,
 		     NULL);
 	ags_timestamp_set_ags_offset(timestamp,
-				     x_point_offset + frame_count);
-
+				     (guint64) relative_offset * floor((x_point_offset + frame_count) / relative_offset));
+	
 	g_object_unref(timestamp);
 
 	start_list = ags_wave_add(start_list,
@@ -756,7 +756,7 @@ ags_sound_resource_read_wave(AgsSoundResource *sound_resource,
       }
     }
   }
-
+  
   if(data != NULL){
     free(data);
   }

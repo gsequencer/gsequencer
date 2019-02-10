@@ -22,6 +22,7 @@
 #include <ags/libags.h>
 
 #include <ags/audio/ags_input.h>
+#include <ags/audio/ags_wave.h>
 
 #include <ags/audio/file/ags_sound_resource.h>
 
@@ -612,6 +613,7 @@ ags_wave_loader_run(void *ptr)
       while(wave != NULL){
 	guint current_line;
 
+#if 0	
 	g_object_get(wave->data,
 		     "line", &current_line,
 		     NULL);
@@ -619,7 +621,8 @@ ags_wave_loader_run(void *ptr)
 	g_object_set(wave->data,
 		     "line", current_line,
 		     NULL);
-      
+#endif
+	
 	ags_audio_add_wave(wave_loader->audio,
 			   wave->data);
       

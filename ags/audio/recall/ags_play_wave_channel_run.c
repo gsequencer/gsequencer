@@ -24,6 +24,8 @@
 #include <ags/audio/ags_recycling.h>
 #include <ags/audio/ags_recall_id.h>
 #include <ags/audio/ags_recall_container.h>
+#include <ags/audio/ags_wave.h>
+#include <ags/audio/ags_buffer.h>
 #include <ags/audio/ags_audio_buffer_util.h>
 
 #include <ags/audio/recall/ags_play_wave_audio.h>
@@ -499,7 +501,7 @@ ags_play_wave_channel_run_run_inter(AgsRecall *recall)
   
   /* time stamp offset */
   ags_timestamp_set_ags_offset(play_wave_channel_run->timestamp,
-			       (guint64) (relative_offset * floor(x_offset / (relative_offset))));
+			       (guint64) (relative_offset * floor((double) x_offset / (double) relative_offset)));
   
   /* find wave */
   wave = NULL;
@@ -540,7 +542,7 @@ ags_play_wave_channel_run_run_inter(AgsRecall *recall)
 
   /* 2nd attempt */
   ags_timestamp_set_ags_offset(play_wave_channel_run->timestamp,
-			       relative_offset * floor((x_offset + frame_count) / relative_offset));
+			       (guint64) relative_offset * floor((double) (x_offset + frame_count) / (double) relative_offset));
   
   /* play */
   if(attack != 0 ||

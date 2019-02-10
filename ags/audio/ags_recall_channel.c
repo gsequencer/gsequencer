@@ -495,7 +495,7 @@ ags_recall_channel_automate(AgsRecall *recall)
   g_object_get(audio,
 	       "output-soundcard", &soundcard,
 	       NULL);
-  
+
   g_object_get(recall,
 	       "port", &port_start,
 	       NULL);

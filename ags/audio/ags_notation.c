@@ -646,7 +646,7 @@ ags_notation_find_near_timestamp(GList *notation, guint audio_channel,
   current_end = g_list_last(notation);
   
   length = g_list_length(notation);
-  position = length / 2;
+  position = (length - 1) / 2;
 
   current = g_list_nth(current_start,
 		       position);
@@ -792,38 +792,40 @@ ags_notation_find_near_timestamp(GList *notation, guint audio_channel,
 	
 	break;
       }
+    }
+    
+    g_object_get(current->data,
+		 "timestamp", &current_timestamp,
+		 NULL);
 
-      g_object_get(current->data,
-		   "timestamp", &current_timestamp,
-		   NULL);
+    if(current_timestamp != NULL){
+      if(use_ags_offset){
+	current_x = ags_timestamp_get_ags_offset(current_timestamp);
 
-      if(current_timestamp != NULL){
-	if(use_ags_offset){
-	  current_x = ags_timestamp_get_ags_offset(current_timestamp);
+	g_object_unref(current_timestamp);
 
-	  g_object_unref(current_timestamp);
-
-	  if(current_x >= x &&
-	     current_x < x + AGS_NOTATION_DEFAULT_OFFSET){
-	    retval = current;
+	if(current_x >= x &&
+	   current_x < x + AGS_NOTATION_DEFAULT_OFFSET &&
+	   current_audio_channel == audio_channel){
+	  retval = current;
 	    
-	    break;
-	  }
-	}else{
-	  current_x = ags_timestamp_get_unix_time(current_timestamp);
-	  
-	  g_object_unref(current_timestamp);
-
-	  if(current_x >= x &&
-	     current_x < x + AGS_NOTATION_DEFAULT_DURATION){
-	    retval = current;
-	    
-	    break;
-	  }
+	  break;
 	}
       }else{
-	g_warning("inconsistent data");
+	current_x = ags_timestamp_get_unix_time(current_timestamp);
+	  
+	g_object_unref(current_timestamp);
+
+	if(current_x >= x &&
+	   current_x < x + AGS_NOTATION_DEFAULT_DURATION &&
+	   current_audio_channel == audio_channel){
+	  retval = current;
+	    
+	  break;
+	}
       }
+    }else{
+      g_warning("inconsistent data");
     }
     
     if(length <= 3){
@@ -833,14 +835,18 @@ ags_notation_find_near_timestamp(GList *notation, guint audio_channel,
     if(current_x < x){
       current_start = current->next;
       current_end = current_end->prev;
-    }else{
+    }else if(current_x > x){
       current_start = current_start->next;
       current_end = current->prev;
-    }    
+    }else{
+      current_start = current_start->next;
+      //NOTE:JK: we want progression
+      //current_end = current_end->prev;
+    }
 
     length = g_list_position(current_start,
 			     current_end) + 1;
-    position = length / 2;
+    position = (length - 1) / 2;
 
     current = g_list_nth(current_start,
 			 position);
@@ -1482,7 +1488,7 @@ ags_notation_find_offset(AgsNotation *notation,
   current_end = g_list_last(note);
   
   length = g_list_length(note);
-  position = length / 2;
+  position = (length - 1) / 2;
 
   current = g_list_nth(current_start,
 		       position);
@@ -1542,14 +1548,18 @@ ags_notation_find_offset(AgsNotation *notation,
     if(current_x < x){
       current_start = current->next;
       current_end = current_end->prev;
-    }else{
+    }else if(current_x > x){
       current_start = current_start->next;
       current_end = current->prev;
-    }    
+    }else{
+      current_start = current_start->next;
+      //NOTE:JK: we want progression
+      //current_end = current_end->prev;
+    }
 
     length = g_list_position(current_start,
 			     current_end) + 1;
-    position = length / 2;
+    position = (length - 1) / 2;
 
     current = g_list_nth(current_start,
 			 position);

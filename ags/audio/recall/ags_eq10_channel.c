@@ -612,7 +612,7 @@ ags_eq10_channel_init(AgsEq10Channel *eq10_channel)
   g_object_ref(eq10_channel->pressure);
 
   /* set port */
-  AGS_RECALL(eq10_channel)->port = port;
+//  AGS_RECALL(eq10_channel)->port = port;
 }
 
 void

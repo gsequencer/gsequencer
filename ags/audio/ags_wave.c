@@ -1317,7 +1317,7 @@ ags_wave_find_near_timestamp(GList *wave, guint line,
   current_end = g_list_last(wave);
   
   length = g_list_length(wave);
-  position = length / 2;
+  position = (length - 1) / 2;
 
   current = g_list_nth(current_start,
 		       position);
@@ -1343,8 +1343,6 @@ ags_wave_find_near_timestamp(GList *wave, guint line,
     guint64 relative_offset;
     guint samplerate;
 
-    current_x = 0;    
-    
     /* check current - start */
     g_object_get(current_start->data,
 		 "line", &current_line,
@@ -1362,13 +1360,15 @@ ags_wave_find_near_timestamp(GList *wave, guint line,
 		   "timestamp", &current_timestamp,
 		   NULL);
 
+      relative_offset = AGS_WAVE_DEFAULT_BUFFER_LENGTH * samplerate;
+
       if(current_timestamp != NULL){
 	if(use_ags_offset){
 	  current_x = ags_timestamp_get_ags_offset(current_timestamp);
 	  
 	  g_object_unref(current_timestamp);
 
-	  if(current_x > x){
+	  if(current_x > x + relative_offset){
 	    break;
 	  }
 	}else{
@@ -1382,8 +1382,6 @@ ags_wave_find_near_timestamp(GList *wave, guint line,
 	}
 
 	if(use_ags_offset){
-	  relative_offset = AGS_WAVE_DEFAULT_BUFFER_LENGTH * samplerate;
-
 	  if(current_x >= x &&
 	     current_x < x + relative_offset){
 	    retval = current_start;
@@ -1415,11 +1413,13 @@ ags_wave_find_near_timestamp(GList *wave, guint line,
 	break;
       }
 
-      g_object_get(current_start->data,
+      g_object_get(current_end->data,
 		   "samplerate", &samplerate,
 		   "timestamp", &current_timestamp,
 		   NULL);
 
+      relative_offset = AGS_WAVE_DEFAULT_BUFFER_LENGTH * samplerate;
+	  
       if(current_timestamp != NULL){
 	if(use_ags_offset){
 	  current_x = ags_timestamp_get_ags_offset(current_timestamp);
@@ -1440,12 +1440,10 @@ ags_wave_find_near_timestamp(GList *wave, guint line,
 	}
 
 	if(use_ags_offset){
-	  relative_offset = AGS_WAVE_DEFAULT_BUFFER_LENGTH * samplerate;
-	  
 	  if(current_x >= x &&
 	     current_x < x + relative_offset){
 	    retval = current_end;
-	    
+
 	    break;
 	  }
 	}else{
@@ -1462,8 +1460,6 @@ ags_wave_find_near_timestamp(GList *wave, guint line,
     }
 
     /* check current - center */
-    current_x = 0;
-    
     g_object_get(current->data,
 		 "line", &current_line,
 		 NULL);
@@ -1474,41 +1470,43 @@ ags_wave_find_near_timestamp(GList *wave, guint line,
 	
 	break;
       }
-
-      g_object_get(current_start->data,
-		   "samplerate", &samplerate,
-		   "timestamp", &current_timestamp,
-		   NULL);
-
-      if(current_timestamp != NULL){
-	if(use_ags_offset){
-	  current_x = ags_timestamp_get_ags_offset(current_timestamp);
-
-	  g_object_unref(current_timestamp);
-
-	  relative_offset = AGS_WAVE_DEFAULT_BUFFER_LENGTH * samplerate;
+    }
     
-	  if(current_x >= x &&
-	     current_x < x + relative_offset){
-	    retval = current;
-	    
-	    break;
-	  }
-	}else{
-	  current_x = ags_timestamp_get_unix_time(current_timestamp);
-	  
-	  g_object_unref(current_timestamp);
+    g_object_get(current->data,
+		 "samplerate", &samplerate,
+		 "timestamp", &current_timestamp,
+		 NULL);
 
-	  if(current_x >= x &&
-	     current_x < x + AGS_WAVE_DEFAULT_DURATION){
-	    retval = current;
-	    
-	    break;
-	  }
+    relative_offset = AGS_WAVE_DEFAULT_BUFFER_LENGTH * samplerate;
+
+    if(current_timestamp != NULL){
+      if(use_ags_offset){
+	current_x = ags_timestamp_get_ags_offset(current_timestamp);
+
+	g_object_unref(current_timestamp);
+    
+	if(current_x >= x &&
+	   current_x < x + relative_offset &&
+	   current_line == line){
+	  retval = current;
+
+	  break;
 	}
       }else{
-	g_warning("inconsistent data");
+	current_x = ags_timestamp_get_unix_time(current_timestamp);
+	  
+	g_object_unref(current_timestamp);
+
+	if(current_x >= x &&
+	   current_x < x + AGS_WAVE_DEFAULT_DURATION &&
+	   current_line == line){
+	  retval = current;
+	    
+	  break;
+	}
       }
+    }else{
+      g_warning("inconsistent data");
     }
     
     if(length <= 3){
@@ -1518,14 +1516,18 @@ ags_wave_find_near_timestamp(GList *wave, guint line,
     if(current_x < x){
       current_start = current->next;
       current_end = current_end->prev;
-    }else{
+    }else if(current_x > x){
       current_start = current_start->next;
       current_end = current->prev;
-    }    
+    }else{
+      current_start = current_start->next;
+      //NOTE:JK: we want progression
+      //current_end = current_end->prev;
+    }
 
     length = g_list_position(current_start,
 			     current_end) + 1;
-    position = length / 2;
+    position = (length - 1) / 2;
 
     current = g_list_nth(current_start,
 			 position);
@@ -1824,6 +1826,7 @@ ags_wave_find_point(AgsWave *wave,
   GList *buffer;
   GList *current_start, *current_end, *current;
 
+  guint buffer_size;
   guint64 current_start_x, current_end_x, current_x;
   guint length, position;
   gboolean success;
@@ -1844,6 +1847,8 @@ ags_wave_find_point(AgsWave *wave,
   /* find buffer */
   pthread_mutex_lock(wave_mutex);
 
+  buffer_size = wave->buffer_size;
+  
   if(use_selection_list){
     buffer = wave->selection;
   }else{
@@ -1854,7 +1859,7 @@ ags_wave_find_point(AgsWave *wave,
   current_end = g_list_last(buffer);
   
   length = g_list_length(buffer);
-  position = length / 2;
+  position = (length - 1) / 2;
 
   current = g_list_nth(current_start,
 		       position);
@@ -1871,7 +1876,8 @@ ags_wave_find_point(AgsWave *wave,
       break;
     }
     
-    if(current_start_x == x){
+    if(current_start_x <= x &&
+       current_start_x + buffer_size > x){
       retval = current_start->data;
 
       break;
@@ -1881,11 +1887,12 @@ ags_wave_find_point(AgsWave *wave,
 		 "x", &current_end_x,
 		 NULL);
 
-    if(current_end_x < x){
+    if(current_end_x + buffer_size < x){
       break;
     }
-
-    if(current_end_x == x){
+    
+    if(current_end_x <= x &&
+       current_end_x + buffer_size > x){
       retval = current_end->data;
 
       break;
@@ -1895,7 +1902,8 @@ ags_wave_find_point(AgsWave *wave,
 		 "x", &current_x,
 		 NULL);
     
-    if(current_x == x){
+    if(current_x <= x &&
+       current_x + buffer_size > x){
       retval = current->data;
       
       break;
@@ -1908,14 +1916,18 @@ ags_wave_find_point(AgsWave *wave,
     if(current_x < x){
       current_start = current->next;
       current_end = current_end->prev;
-    }else{
+    }else if(current_x > x){
       current_start = current_start->next;
       current_end = current->prev;
-    }    
+    }else{
+      current_start = current_start->next;
+      //NOTE:JK: we want progression
+      //current_end = current_end->prev;
+    }
 
     length = g_list_position(current_start,
 			     current_end) + 1;
-    position = length / 2;
+    position = (length - 1) / 2;
 
     current = g_list_nth(current_start,
 			 position);
