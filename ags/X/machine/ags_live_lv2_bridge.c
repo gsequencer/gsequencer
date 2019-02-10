@@ -1032,9 +1032,13 @@ ags_live_lv2_bridge_resize_audio_channels(AgsMachine *machine,
 	ags_recycling_add_audio_signal(first_recycling,
 				       audio_signal);
 
-	g_object_unref(output_soundcard);
+	if(output_soundcard != NULL){
+	  g_object_unref(output_soundcard);
+	}
 	
-	g_object_unref(first_recycling);
+	if(first_recycling != NULL){
+	  g_object_unref(first_recycling);
+	}
 	
 	/* iterate */
 	g_object_get(channel,
@@ -1082,9 +1086,13 @@ ags_live_lv2_bridge_resize_audio_channels(AgsMachine *machine,
 	ags_recycling_add_audio_signal(first_recycling,
 				       audio_signal);
 
-	g_object_unref(output_soundcard);
+	if(output_soundcard != NULL){
+	  g_object_unref(output_soundcard);
+	}
 	
-	g_object_unref(first_recycling);
+	if(first_recycling != NULL){
+	  g_object_unref(first_recycling);
+	}
 	
 	/* iterate */
 	g_object_get(channel,
@@ -1173,10 +1181,14 @@ ags_live_lv2_bridge_resize_pads(AgsMachine *machine, GType channel_type,
 	ags_recycling_add_audio_signal(first_recycling,
 				       audio_signal);
 	
-	g_object_unref(output_soundcard);
+	if(output_soundcard != NULL){
+	  g_object_unref(output_soundcard);
+	}
 	
-	g_object_unref(first_recycling);
-
+	if(first_recycling != NULL){
+	  g_object_unref(first_recycling);
+	}
+	
 	/* iterate */
 	g_object_get(channel,
 		     "next", &channel,
@@ -1221,10 +1233,14 @@ ags_live_lv2_bridge_resize_pads(AgsMachine *machine, GType channel_type,
 	ags_recycling_add_audio_signal(first_recycling,
 				       audio_signal);
 	
-	g_object_unref(output_soundcard);
+	if(output_soundcard != NULL){
+	  g_object_unref(output_soundcard);
+	}
 	
-	g_object_unref(first_recycling);
-
+	if(first_recycling != NULL){
+	  g_object_unref(first_recycling);
+	}
+	
 	/* iterate */
 	g_object_get(channel,
 		     "next", &channel,

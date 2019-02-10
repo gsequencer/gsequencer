@@ -790,6 +790,7 @@ ags_recall_lv2_run_run_pre(AgsRecall *recall)
 
   g_object_get(recall,
 	       "recall-id", &recall_id,
+	       "source", &audio_signal,
 	       NULL);
 
   g_object_get(recall_id,
@@ -808,6 +809,8 @@ ags_recall_lv2_run_run_pre(AgsRecall *recall)
      parent_recycling_context != NULL &&
      note_start == NULL){
     g_object_unref(recall_id);
+
+    g_object_unref(audio_signal);
 
     g_object_unref(recycling_context);
 
@@ -840,10 +843,14 @@ ags_recall_lv2_run_run_pre(AgsRecall *recall)
   if(route_lv2_audio_run == NULL){
     g_object_unref(recall_id);
 
+    g_object_unref(audio_signal);
+
     g_object_unref(recycling_context);
 
-    g_object_unref(parent_recycling_context);
-
+    if(parent_recycling_context != NULL){
+      g_object_unref(parent_recycling_context);
+    }
+    
     g_object_unref(recall_recycling);
     
     g_object_unref(recall_channel_run);
@@ -852,10 +859,6 @@ ags_recall_lv2_run_run_pre(AgsRecall *recall)
 
     return;
   }
-
-  g_object_get(recall,
-	       "source", &audio_signal,
-	       NULL);
 
   /* get recall lv2 mutex */
   pthread_mutex_lock(ags_recall_get_class_mutex());
@@ -1006,8 +1009,10 @@ ags_recall_lv2_run_run_pre_END:
 
   g_object_unref(recycling_context);
 
-  g_object_unref(parent_recycling_context);
-
+  if(parent_recycling_context != NULL){
+    g_object_unref(parent_recycling_context);
+  }
+  
   g_object_unref(recall_recycling);
     
   g_object_unref(recall_channel_run);
@@ -1056,6 +1061,7 @@ ags_recall_lv2_run_run_inter(AgsRecall *recall)
   parent_class_run_inter(recall);
 
   g_object_get(recall,
+	       "source", &audio_signal,
 	       "recall-id", &recall_id,
 	       NULL);
 
@@ -1074,12 +1080,14 @@ ags_recall_lv2_run_run_inter(AgsRecall *recall)
   if(ags_recall_global_get_rt_safe() &&
      parent_recycling_context != NULL &&
      note_start == NULL){
+    g_object_unref(audio_signal);
+
     g_object_unref(recall_id);
 
     g_object_unref(recycling_context);
 
     g_object_unref(parent_recycling_context);
-
+    
     return;
   }
 
@@ -1102,12 +1110,16 @@ ags_recall_lv2_run_run_inter(AgsRecall *recall)
   
   if(ags_recall_lv2_test_flags(recall_lv2, AGS_RECALL_LV2_HAS_EVENT_PORT) ||
      ags_recall_lv2_test_flags(recall_lv2, AGS_RECALL_LV2_HAS_ATOM_PORT)){
+    g_object_unref(audio_signal);
+
     g_object_unref(recall_id);
 
     g_object_unref(recycling_context);
 
-    g_object_unref(parent_recycling_context);
-
+    if(parent_recycling_context != NULL){
+      g_object_unref(parent_recycling_context);
+    }
+    
     g_object_unref(recall_recycling);
 
     g_object_unref(recall_channel_run);
@@ -1116,10 +1128,6 @@ ags_recall_lv2_run_run_inter(AgsRecall *recall)
 
     return;
   }
-  
-  g_object_get(recall,
-	       "source", &audio_signal,
-	       NULL);
 
   /* get recall lv2 mutex */
   pthread_mutex_lock(ags_recall_get_class_mutex());
@@ -1205,8 +1213,10 @@ ags_recall_lv2_run_run_inter_END:
 
   g_object_unref(recycling_context);
 
-  g_object_unref(parent_recycling_context);
-
+  if(parent_recycling_context != NULL){
+    g_object_unref(parent_recycling_context);
+  }
+  
   g_object_unref(recall_recycling);
 
   g_object_unref(recall_channel_run);

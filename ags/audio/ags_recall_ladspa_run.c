@@ -381,6 +381,7 @@ ags_recall_ladspa_run_run_inter(AgsRecall *recall)
 
   g_object_get(recall,
 	       "recall-id", &recall_id,
+	       "source", &audio_signal,
 	       NULL);
 
   g_object_get(recall_id,
@@ -400,6 +401,8 @@ ags_recall_ladspa_run_run_inter(AgsRecall *recall)
      note_start == NULL){
     g_object_unref(recall_id);
 
+    g_object_unref(audio_signal);
+    
     g_object_unref(recycling_context);
 
     g_object_unref(parent_recycling_context);
@@ -412,7 +415,6 @@ ags_recall_ladspa_run_run_inter(AgsRecall *recall)
 
   g_object_get(recall,
 	       "parent", &recall_recycling,
-	       "source", &audio_signal,
 	       NULL);
 
   g_object_get(recall_recycling,
@@ -506,8 +508,10 @@ ags_recall_ladspa_run_run_inter_END:
 
   g_object_unref(recycling_context);
 
-  g_object_unref(parent_recycling_context);
-
+  if(parent_recycling_context != NULL){
+    g_object_unref(parent_recycling_context);
+  }
+  
   g_object_unref(recall_recycling);
   g_object_unref(audio_signal);
 

@@ -1059,9 +1059,13 @@ ags_lv2_bridge_resize_audio_channels(AgsMachine *machine,
 					 audio_signal);
 	}
 
-	g_object_unref(output_soundcard);
+	if(output_soundcard != NULL){
+	  g_object_unref(output_soundcard);
+	}
 	
-	g_object_unref(first_recycling);
+	if(first_recycling != NULL){
+	  g_object_unref(first_recycling);
+	}
 	
 	/* iterate */
 	g_object_get(channel,
@@ -1112,10 +1116,14 @@ ags_lv2_bridge_resize_audio_channels(AgsMachine *machine,
 					 audio_signal);
 	}
 	
-	g_object_unref(output_soundcard);
+	if(output_soundcard != NULL){
+	  g_object_unref(output_soundcard);
+	}
 	
-	g_object_unref(first_recycling);
-
+	if(first_recycling != NULL){
+	  g_object_unref(first_recycling);
+	}
+	
 	/* iterate */
 	g_object_get(channel,
 		     "next", &channel,
@@ -1214,10 +1222,14 @@ ags_lv2_bridge_resize_pads(AgsMachine *machine, GType channel_type,
 					 audio_signal);
 	}
 	
-	g_object_unref(output_soundcard);
-	
-	g_object_unref(first_recycling);
+	if(output_soundcard != NULL){
+	  g_object_unref(output_soundcard);
+	}
 
+	if(first_recycling != NULL){
+	  g_object_unref(first_recycling);
+	}
+	
 	/* iterate */
 	g_object_get(channel,
 		     "next", &channel,
@@ -1264,9 +1276,13 @@ ags_lv2_bridge_resize_pads(AgsMachine *machine, GType channel_type,
 					 audio_signal);
 	}
 	
-	g_object_unref(output_soundcard);
+	if(output_soundcard != NULL){
+	  g_object_unref(output_soundcard);
+	}
 	
-	g_object_unref(first_recycling);
+	if(first_recycling != NULL){
+	  g_object_unref(first_recycling);
+	}
 	
 	/* iterate */
 	g_object_get(channel,
