@@ -1701,19 +1701,18 @@ ags_notation_edit_draw_notation(AgsNotationEdit *notation_edit)
 		   NULL);
 
       g_object_unref(current_timestamp);
-      
-      if(i != audio_channel ||
-	 current_timestamp == NULL){
-	list_notation = list_notation->next;
 
-	continue;
-      }
-
-      if(ags_timestamp_get_ags_offset(current_timestamp) > x1){	
+      if(ags_timestamp_get_ags_offset(current_timestamp) > AGS_NOTATION_DEFAULT_OFFSET * floor((double) x1 / (double) AGS_NOTATION_DEFAULT_OFFSET) + AGS_NOTATION_DEFAULT_OFFSET){
 	break;
       }
 
       if(ags_timestamp_get_ags_offset(current_timestamp) + AGS_NOTATION_DEFAULT_OFFSET < x0){
+	list_notation = list_notation->next;
+
+	continue;
+      }
+      
+      if(i != audio_channel){
 	list_notation = list_notation->next;
 
 	continue;

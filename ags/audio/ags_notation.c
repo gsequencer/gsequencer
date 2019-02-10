@@ -826,11 +826,9 @@ ags_notation_find_near_timestamp(GList *notation, guint audio_channel,
       }
     }
     
-    if(position == 0){
+    if(length <= 3){
       break;
     }
-
-    position = position / 2;
 
     if(current_x < x){
       current_start = current->next;
@@ -839,6 +837,10 @@ ags_notation_find_near_timestamp(GList *notation, guint audio_channel,
       current_start = current_start->next;
       current_end = current->prev;
     }    
+
+    length = g_list_position(current_start,
+			     current_end) + 1;
+    position = length / 2;
 
     current = g_list_nth(current_start,
 			 position);
@@ -862,6 +864,12 @@ GList*
 ags_notation_add(GList *notation,
 		 AgsNotation *new_notation)
 {
+  AgsTimestamp *timestamp;
+
+  GList *list;
+  
+  guint audio_channel;
+  
   auto gint ags_notation_add_compare(gconstpointer a,
 				     gconstpointer b);
   
@@ -900,6 +908,21 @@ ags_notation_add(GList *notation,
   if(!AGS_IS_NOTATION(new_notation)){
     return(notation);
   }
+
+  g_object_get(new_notation,
+	       "timestamp", &timestamp,
+	       "audio-channel", &audio_channel,
+	       NULL);
+
+  list = ags_notation_find_near_timestamp(notation, audio_channel,
+					  timestamp);
+  g_object_unref(timestamp);
+  
+  if(list != NULL){
+    g_critical("timestamp already preset");
+
+    return;
+  }
   
   notation = g_list_insert_sorted(notation,
 				  new_notation,
@@ -923,6 +946,11 @@ ags_notation_add_note(AgsNotation *notation,
 		      AgsNote *note,
 		      gboolean use_selection_list)
 {
+  AgsTimestamp *timestamp;
+
+  guint64 timestamp_x;
+  guint x0;
+  
   pthread_mutex_t *notation_mutex;
 
   if(!AGS_IS_NOTATION(notation) ||
@@ -937,13 +965,31 @@ ags_notation_add_note(AgsNotation *notation,
   
   pthread_mutex_unlock(ags_notation_get_class_mutex());
 
+  g_object_get(notation,
+	       "timestamp", &timestamp,
+	       NULL);
+
+  timestamp_x = ags_timestamp_get_ags_offset(timestamp);
+  g_object_unref(timestamp);
+
+  g_object_get(note,
+	       "x0", &x0,
+	       NULL);
+  
+  if(x0 < timestamp_x ||
+     x0 >= timestamp_x + AGS_NOTATION_DEFAULT_OFFSET){
+    g_critical("timestamp not matching note:x0");
+
+    return;
+  }
+
   /* insert sorted */
   g_object_ref(note);
 
 #ifdef AGS_DEBUG
   g_message("add note[%d,%d|%d]", note->x[0], note->x[1], note->y);
 #endif
-    
+  
   pthread_mutex_lock(notation_mutex);
 
   if(use_selection_list){
@@ -1489,11 +1535,9 @@ ags_notation_find_offset(AgsNotation *notation,
       break;
     }
 
-    if(position == 0){
+    if(length <= 3){
       break;
     }
-
-    position = position / 2;
 
     if(current_x < x){
       current_start = current->next;
@@ -1502,6 +1546,10 @@ ags_notation_find_offset(AgsNotation *notation,
       current_start = current_start->next;
       current_end = current->prev;
     }    
+
+    length = g_list_position(current_start,
+			     current_end) + 1;
+    position = length / 2;
 
     current = g_list_nth(current_start,
 			 position);
@@ -1530,6 +1578,7 @@ ags_notation_find_offset(AgsNotation *notation,
       if(current_x == x){
 	retval = g_list_prepend(retval,
 				current->data);
+	g_object_ref(current->data);
       }else{
 	break;
       }
@@ -1550,6 +1599,7 @@ ags_notation_find_offset(AgsNotation *notation,
       if(current_x == x){
 	retval = g_list_prepend(retval,
 				current->data);
+	g_object_ref(current->data);
       }else{
 	break;
       }

@@ -1267,7 +1267,7 @@ ags_automation_find_near_timestamp(GList *automation, guint line,
       }
     }
     
-    if(position == 0){
+    if(length <= 3){
       break;
     }
 
@@ -1544,8 +1544,6 @@ ags_automation_find_near_timestamp_extended(GList *automation, guint line,
       break;
     }
 
-    position = position / 2;
-
     if(current_x < x){
       current_start = current->next;
       current_end = current_end->prev;
@@ -1553,6 +1551,10 @@ ags_automation_find_near_timestamp_extended(GList *automation, guint line,
       current_start = current_start->next;
       current_end = current->prev;
     }    
+
+    length = g_list_position(current_start,
+			     current_end) + 1;
+    position = length / 2;
 
     current = g_list_nth(current_start,
 			 position);
@@ -3397,11 +3399,9 @@ ags_automation_get_value(AgsAutomation *automation,
       break;
     }
 
-    if(position == 0){
+    if(length <= 3){
       break;
     }
-
-    position = position / 2;
 
     if(current_x < x){
       current_start = current->next;
@@ -3410,6 +3410,10 @@ ags_automation_get_value(AgsAutomation *automation,
       current_start = current_start->next;
       current_end = current->prev;
     }    
+
+    length = g_list_position(current_start,
+			     current_end) + 1;
+    position = length / 2;
 
     current = g_list_nth(current_start,
 			 position);

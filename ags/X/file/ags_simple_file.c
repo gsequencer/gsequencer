@@ -5187,8 +5187,9 @@ ags_simple_file_read_notation_list(AgsSimpleFile *simple_file, xmlNode *node, GL
 	}
 	
 	ags_simple_file_read_notation(simple_file, child, &current);
-	list = g_list_prepend(list, current);
-
+	list = ags_notation_add(list,
+				current);
+	
 	i++;
       }
     }
@@ -5196,7 +5197,6 @@ ags_simple_file_read_notation_list(AgsSimpleFile *simple_file, xmlNode *node, GL
     child = child->next;
   }
 
-  list = g_list_reverse(list);
   *notation = list;
 }
 
@@ -5595,7 +5595,7 @@ ags_simple_file_read_automation_list(AgsSimpleFile *simple_file, xmlNode *node, 
 	}
 	
 	ags_simple_file_read_automation(simple_file, child, &current);
-	list = g_list_prepend(list, current);
+	list = ags_automation_add(list, current);
 
 	i++;
       }
@@ -5604,7 +5604,6 @@ ags_simple_file_read_automation_list(AgsSimpleFile *simple_file, xmlNode *node, 
     child = child->next;
   }
 
-  list = g_list_reverse(list);
   *automation = list;
 }
 

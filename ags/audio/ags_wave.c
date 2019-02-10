@@ -1368,7 +1368,7 @@ ags_wave_find_near_timestamp(GList *wave, guint line,
 	  
 	  g_object_unref(current_timestamp);
 
-	  if(ags_timestamp_get_ags_offset(current_timestamp) > x){
+	  if(current_x > x){
 	    break;
 	  }
 	}else{
@@ -1376,7 +1376,7 @@ ags_wave_find_near_timestamp(GList *wave, guint line,
 	  
 	  g_object_unref(current_timestamp);
 
-	  if(ags_timestamp_get_unix_time(current_timestamp) > x){
+	  if(current_x > x){
 	    break;
 	  }
 	}
@@ -1511,11 +1511,9 @@ ags_wave_find_near_timestamp(GList *wave, guint line,
       }
     }
     
-    if(position == 0){
+    if(length <= 3){
       break;
     }
-
-    position = position / 2;
 
     if(current_x < x){
       current_start = current->next;
@@ -1524,6 +1522,10 @@ ags_wave_find_near_timestamp(GList *wave, guint line,
       current_start = current_start->next;
       current_end = current->prev;
     }    
+
+    length = g_list_position(current_start,
+			     current_end) + 1;
+    position = length / 2;
 
     current = g_list_nth(current_start,
 			 position);
@@ -1899,11 +1901,9 @@ ags_wave_find_point(AgsWave *wave,
       break;
     }
 
-    if(position == 0){
+    if(length <= 3){
       break;
     }
-
-    position = position / 2;
 
     if(current_x < x){
       current_start = current->next;
@@ -1912,6 +1912,10 @@ ags_wave_find_point(AgsWave *wave,
       current_start = current_start->next;
       current_end = current->prev;
     }    
+
+    length = g_list_position(current_start,
+			     current_end) + 1;
+    position = length / 2;
 
     current = g_list_nth(current_start,
 			 position);

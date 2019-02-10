@@ -575,7 +575,7 @@ ags_navigation_real_change_position(AgsNavigation *navigation,
   
   seek_soundcard = ags_seek_soundcard_new(window->soundcard,
 					  new_offset,
-					  SEEK_SET);
+					  AGS_SEEK_SET);
   
   ags_gui_thread_schedule_task((AgsGuiThread *) gui_thread,
 			       (GObject *) seek_soundcard);

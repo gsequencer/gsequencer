@@ -1,3 +1,10 @@
+ags (2.1.49)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved bisection of AgsNotation, AgsAutomation and AgsWave
+	* fixed use ags_notation_add() in ags_simple_file.c
+	* fixed use ags_automation_add() in ags_simple_file.c
+
 ags (2.1.48)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
