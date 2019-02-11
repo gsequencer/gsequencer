@@ -75,6 +75,7 @@ xmlNode* ags_recall_dssi_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin
 
 enum{
   PROP_0,
+  PROP_PLUGIN,
   PROP_BANK,
   PROP_PROGRAM,
 };
@@ -152,6 +153,22 @@ ags_recall_dssi_class_init(AgsRecallDssiClass *recall_dssi)
   gobject->finalize = ags_recall_dssi_finalize;
 
   /* properties */
+  /**
+   * AgsRecallDssi:plugin:
+   *
+   * The assigned plugin.
+   * 
+   * Since: 2.1.53
+   */
+  param_spec = g_param_spec_object("plugin",
+				   i18n_pspec("plugin of recall dssi"),
+				   i18n_pspec("The plugin which this recall dssi does run"),
+				   AGS_TYPE_DSSI_PLUGIN,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_PLUGIN,
+				  param_spec);
+
   /**
    * AgsRecallDssi:bank:
    *
@@ -247,6 +264,33 @@ ags_recall_dssi_set_property(GObject *gobject,
   pthread_mutex_unlock(ags_recall_get_class_mutex());
 
   switch(prop_id){
+  case PROP_PLUGIN:
+    {
+      AgsDssiPlugin *plugin;
+
+      plugin = (AgsDssiPlugin *) g_value_get_object(value);
+
+      pthread_mutex_lock(recall_mutex);
+
+      if(recall_dssi->plugin == plugin){
+	pthread_mutex_unlock(recall_mutex);	
+
+	return;
+      }
+
+      if(recall_dssi->plugin != NULL){
+	g_object_unref(recall_dssi->plugin);
+      }
+
+      if(plugin != NULL){
+	g_object_ref(plugin);
+      }
+
+      recall_dssi->plugin = plugin;
+      
+      pthread_mutex_unlock(recall_mutex);
+    }
+    break;
   case PROP_BANK:
     {
       pthread_mutex_lock(recall_mutex);
@@ -291,6 +335,15 @@ ags_recall_dssi_get_property(GObject *gobject,
   pthread_mutex_unlock(ags_recall_get_class_mutex());
 
   switch(prop_id){
+  case PROP_PLUGIN:
+    {
+      pthread_mutex_lock(recall_mutex);
+
+      g_value_set_object(value, recall_dssi->plugin);
+      
+      pthread_mutex_unlock(recall_mutex);	
+    }
+    break;
   case PROP_BANK:
     {
       pthread_mutex_lock(recall_mutex);

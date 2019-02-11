@@ -43,6 +43,14 @@ void ags_recall_ladspa_class_init(AgsRecallLadspaClass *recall_ladspa_class);
 void ags_recall_ladspa_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_recall_ladspa_plugin_interface_init(AgsPluginInterface *plugin);
 void ags_recall_ladspa_init(AgsRecallLadspa *recall_ladspa);
+void ags_recall_ladspa_set_property(GObject *gobject,
+				    guint prop_id,
+				    const GValue *value,
+				    GParamSpec *param_spec);
+void ags_recall_ladspa_get_property(GObject *gobject,
+				    guint prop_id,
+				    GValue *value,
+				    GParamSpec *param_spec);
 void ags_recall_ladspa_finalize(GObject *gobject);
 
 void ags_recall_ladspa_set_ports(AgsPlugin *plugin, GList *port);
@@ -62,6 +70,11 @@ xmlNode* ags_recall_ladspa_write(AgsFile *file, xmlNode *parent, AgsPlugin *plug
 static gpointer ags_recall_ladspa_parent_class = NULL;
 static AgsConnectableInterface* ags_recall_ladspa_parent_connectable_interface;
 static AgsPluginInterface* ags_recall_ladspa_parent_plugin_interface;
+
+enum{
+  PROP_0,
+  PROP_PLUGIN,
+};
 
 GType
 ags_recall_ladspa_get_type (void)
@@ -125,9 +138,28 @@ ags_recall_ladspa_class_init(AgsRecallLadspaClass *recall_ladspa)
   /* GObjectClass */
   gobject = (GObjectClass *) recall_ladspa;
 
-  gobject->finalize = ags_recall_ladspa_finalize;
-}
+  gobject->set_property = ags_recall_ladspa_set_property;
+  gobject->get_property = ags_recall_ladspa_get_property;
 
+  gobject->finalize = ags_recall_ladspa_finalize;
+
+  /* properties */
+  /**
+   * AgsRecallLadspa:plugin:
+   *
+   * The assigned plugin.
+   * 
+   * Since: 2.1.53
+   */
+  param_spec = g_param_spec_object("plugin",
+				   i18n_pspec("plugin of recall ladspa"),
+				   i18n_pspec("The plugin which this recall ladspa does run"),
+				   AGS_TYPE_LADSPA_PLUGIN,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_PLUGIN,
+				  param_spec);
+}
 
 void
 ags_recall_ladspa_connectable_interface_init(AgsConnectableInterface *connectable)
@@ -154,6 +186,7 @@ ags_recall_ladspa_init(AgsRecallLadspa *recall_ladspa)
   AGS_RECALL(recall_ladspa)->xml_type = "ags-recall-ladspa";
   AGS_RECALL(recall_ladspa)->port = NULL;
 
+  recall_ladspa->plugin = NULL;
   recall_ladspa->plugin_descriptor = NULL;
 
   recall_ladspa->input_port = NULL;
@@ -161,6 +194,94 @@ ags_recall_ladspa_init(AgsRecallLadspa *recall_ladspa)
 
   recall_ladspa->output_port = NULL;
   recall_ladspa->output_lines = 0;
+}
+
+void
+ags_recall_ladspa_set_property(GObject *gobject,
+			     guint prop_id,
+			     const GValue *value,
+			     GParamSpec *param_spec)
+{
+  AgsRecallLadspa *recall_ladspa;
+
+  pthread_mutex_t *recall_mutex;
+
+  recall_ladspa = AGS_RECALL_LADSPA(gobject);
+
+  /* get recall mutex */
+  pthread_mutex_lock(ags_recall_get_class_mutex());
+  
+  recall_mutex = AGS_RECALL(gobject)->obj_mutex;
+  
+  pthread_mutex_unlock(ags_recall_get_class_mutex());
+
+  switch(prop_id){
+  case PROP_PLUGIN:
+    {
+      AgsLadspaPlugin *plugin;
+
+      plugin = (AgsLadspaPlugin *) g_value_get_object(value);
+
+      pthread_mutex_lock(recall_mutex);
+
+      if(recall_ladspa->plugin == plugin){
+	pthread_mutex_unlock(recall_mutex);	
+
+	return;
+      }
+
+      if(recall_ladspa->plugin != NULL){
+	g_object_unref(recall_ladspa->plugin);
+      }
+
+      if(plugin != NULL){
+	g_object_ref(plugin);
+      }
+
+      recall_ladspa->plugin = plugin;
+      
+      pthread_mutex_unlock(recall_mutex);
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  };
+}
+
+void
+ags_recall_ladspa_get_property(GObject *gobject,
+			     guint prop_id,
+			     GValue *value,
+			     GParamSpec *param_spec)
+{
+  AgsRecallLadspa *recall_ladspa;
+
+  pthread_mutex_t *recall_mutex;
+
+  recall_ladspa = AGS_RECALL_LADSPA(gobject);
+
+  /* get recall mutex */
+  pthread_mutex_lock(ags_recall_get_class_mutex());
+  
+  recall_mutex = AGS_RECALL(gobject)->obj_mutex;
+  
+  pthread_mutex_unlock(ags_recall_get_class_mutex());
+
+  switch(prop_id){
+  case PROP_PLUGIN:
+    {
+      pthread_mutex_lock(recall_mutex);
+
+      g_value_set_object(value, recall_ladspa->plugin);
+      
+      pthread_mutex_unlock(recall_mutex);	
+    }
+    break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
 }
 
 void

@@ -30,6 +30,8 @@
 #include <ags/audio/ags_channel.h>
 #include <ags/audio/ags_recall.h>
 
+#include <ags/plugin/ags_ladspa_plugin.h>
+
 #define AGS_TYPE_RECALL_LADSPA                (ags_recall_ladspa_get_type())
 #define AGS_RECALL_LADSPA(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_RECALL_LADSPA, AgsRecallLadspa))
 #define AGS_RECALL_LADSPA_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_RECALL_LADSPA, AgsRecallLadspaClass))
@@ -44,6 +46,7 @@ struct _AgsRecallLadspa
 {
   AgsRecallChannel recall_channel;
 
+  AgsLadspaPlugin *plugin;
   LADSPA_Descriptor *plugin_descriptor;
 
   guint *input_port;

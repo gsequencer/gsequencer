@@ -1034,6 +1034,8 @@ ags_recall_lv2_run_run_inter(AgsRecall *recall)
   AgsRecallID *recall_id;
   AgsRecyclingContext *parent_recycling_context, *recycling_context;
 
+  AgsLv2Plugin *lv2_plugin;
+
   GList *note_start, *note;
 
   guint output_lines, input_lines;
@@ -1106,9 +1108,13 @@ ags_recall_lv2_run_run_inter(AgsRecall *recall)
 	       "recall-channel", &recall_lv2,
 	       NULL);
 
+  g_object_get(recall_lv2,
+	       "plugin", &lv2_plugin,
+	       NULL);
+  
   recall_lv2_run = AGS_RECALL_LV2_RUN(recall);
   
-  if(ags_lv2_plugin_test_flags(recall_lv2->plugin,
+  if(ags_lv2_plugin_test_flags(lv2_plugin,
 			       AGS_LV2_PLUGIN_IS_SYNTHESIZER)){
     g_object_unref(audio_signal);
 
@@ -1126,6 +1132,8 @@ ags_recall_lv2_run_run_inter(AgsRecall *recall)
 
     g_object_unref(recall_lv2);
 
+    g_object_unref(lv2_plugin);
+    
     return;
   }
 
@@ -1224,6 +1232,8 @@ ags_recall_lv2_run_run_inter_END:
   g_object_unref(recall_lv2);
 
   g_object_unref(audio_signal);
+
+  g_object_unref(lv2_plugin);
 }
 
 /**

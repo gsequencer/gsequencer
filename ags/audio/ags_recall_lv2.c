@@ -71,6 +71,7 @@ xmlNode* ags_recall_lv2_write(AgsFile *file, xmlNode *parent, AgsPlugin *plugin)
 enum{
   PROP_0,
   PROP_TURTLE,
+  PROP_PLUGIN,
   PROP_URI,
   PROP_EVENT_PORT,
   PROP_ATOM_PORT,
@@ -166,6 +167,22 @@ ags_recall_lv2_class_init(AgsRecallLv2Class *recall_lv2)
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_TURTLE,
+				  param_spec);
+
+  /**
+   * AgsRecallLv2:plugin:
+   *
+   * The assigned plugin.
+   * 
+   * Since: 2.1.53
+   */
+  param_spec = g_param_spec_object("plugin",
+				   i18n_pspec("plugin of recall lv2"),
+				   i18n_pspec("The plugin which this recall lv2 does run"),
+				   AGS_TYPE_LV2_PLUGIN,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_PLUGIN,
 				  param_spec);
 
   /**
@@ -351,6 +368,33 @@ ags_recall_lv2_set_property(GObject *gobject,
       pthread_mutex_unlock(recall_mutex);
     }
     break;
+  case PROP_PLUGIN:
+    {
+      AgsLv2Plugin *plugin;
+
+      plugin = (AgsLv2Plugin *) g_value_get_object(value);
+
+      pthread_mutex_lock(recall_mutex);
+
+      if(recall_lv2->plugin == plugin){
+	pthread_mutex_unlock(recall_mutex);	
+
+	return;
+      }
+
+      if(recall_lv2->plugin != NULL){
+	g_object_unref(recall_lv2->plugin);
+      }
+
+      if(plugin != NULL){
+	g_object_ref(plugin);
+      }
+
+      recall_lv2->plugin = plugin;
+      
+      pthread_mutex_unlock(recall_mutex);
+    }
+    break;
   case PROP_URI:
     {
       gchar *uri;
@@ -441,6 +485,15 @@ ags_recall_lv2_get_property(GObject *gobject,
       pthread_mutex_lock(recall_mutex);
 
       g_value_set_object(value, recall_lv2->turtle);
+      
+      pthread_mutex_unlock(recall_mutex);	
+    }
+    break;
+  case PROP_PLUGIN:
+    {
+      pthread_mutex_lock(recall_mutex);
+
+      g_value_set_object(value, recall_lv2->plugin);
       
       pthread_mutex_unlock(recall_mutex);	
     }
