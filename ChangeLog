@@ -3,6 +3,7 @@ ags (2.1.53)
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* fixed ags_recall_lv2_run_run_inter() to test if instrument by AGS_LV2_PLUGIN_IS_SYNTHESIZER flag
 	* added plugin property to AgsRecallLadspa, AgsRecallDssi and AgsRecallLv2
+	* fixed double free in ags_jack_port_finalize() and ags_pulse_port_finalize()
 
 ags (2.1.52)
 

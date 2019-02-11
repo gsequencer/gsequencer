@@ -614,9 +614,6 @@ ags_core_audio_port_dispose(GObject *gobject)
     core_audio_port->core_audio_device = NULL;
   }
 
-  /* name */
-  g_free(core_audio_port->port_name);
-
   /* call parent */
   G_OBJECT_CLASS(ags_core_audio_port_parent_class)->dispose(gobject);
 }

@@ -627,9 +627,6 @@ ags_pulse_port_dispose(GObject *gobject)
     pulse_port->pulse_devin = NULL;
   }
 
-  /* name */
-  g_free(pulse_port->port_name);
-
   /* call parent */
   G_OBJECT_CLASS(ags_pulse_port_parent_class)->dispose(gobject);
 }

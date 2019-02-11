@@ -368,9 +368,6 @@ ags_jack_port_dispose(GObject *gobject)
     jack_port->jack_client = NULL;
   }
 
-  /* name */
-  g_free(jack_port->port_name);
-
   /* call parent */
   G_OBJECT_CLASS(ags_jack_port_parent_class)->dispose(gobject);
 }
