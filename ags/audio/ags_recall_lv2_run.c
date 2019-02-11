@@ -538,7 +538,7 @@ ags_recall_lv2_run_run_init_pre(AgsRecall *recall)
   /* connect audio port */
   for(i = 0; i < input_lines; i++){
 #ifdef AGS_DEBUG
-    g_message("connect port: %d", recall_lv2->input_port[i]);
+    g_message("connect in port: %d", recall_lv2->input_port[i]);
 #endif
     
     connect_port(recall_lv2_run->lv2_handle[0],
@@ -548,7 +548,7 @@ ags_recall_lv2_run_run_init_pre(AgsRecall *recall)
 
   for(i = 0; i < output_lines; i++){
 #ifdef AGS_DEBUG
-    g_message("connect port: %d", recall_lv2->output_port[i]);
+    g_message("connect out port: %d", recall_lv2->output_port[i]);
 #endif
     
     connect_port(recall_lv2_run->lv2_handle[0],
@@ -1108,8 +1108,8 @@ ags_recall_lv2_run_run_inter(AgsRecall *recall)
 
   recall_lv2_run = AGS_RECALL_LV2_RUN(recall);
   
-  if(ags_recall_lv2_test_flags(recall_lv2, AGS_RECALL_LV2_HAS_EVENT_PORT) ||
-     ags_recall_lv2_test_flags(recall_lv2, AGS_RECALL_LV2_HAS_ATOM_PORT)){
+  if(ags_lv2_plugin_test_flags(recall_lv2->plugin,
+			       AGS_LV2_PLUGIN_IS_SYNTHESIZER)){
     g_object_unref(audio_signal);
 
     g_object_unref(recall_id);
@@ -1196,7 +1196,7 @@ ags_recall_lv2_run_run_inter(AgsRecall *recall)
   /* process data */
   run(recall_lv2_run->lv2_handle[0],
       (uint32_t) buffer_size);
-
+  
   /* copy data */
   if(recall_lv2_run->output != NULL){
     ags_audio_buffer_util_clear_buffer(audio_signal->stream_current->data, 1,
