@@ -3257,7 +3257,7 @@ ags_audio_signal_feed(AgsAudioSignal *audio_signal,
   if(template_length == 0){
     return;
   }
-
+  
   //NOTE:JK: lock only template
   pthread_mutex_lock(template_stream_mutex);
 

@@ -141,10 +141,12 @@ ags_feed_audio_signal_run_pre(AgsRecall *recall)
   /* call parent */
   parent_class_run_pre(recall);
 
+#if 0
   if(ags_recall_global_get_rt_safe()){
     return;
   }
-
+#endif
+  
   g_object_get(feed_audio_signal,
 	       "output-soundcard", &output_soundcard,
 	       "source", &audio_signal,
@@ -197,7 +199,7 @@ ags_feed_audio_signal_run_pre(AgsRecall *recall)
 	notation_delay = ags_soundcard_get_absolute_delay(AGS_SOUNDCARD(output_soundcard));
 
 	/* feed audio signal */
-	frame_count = (guint) (((gdouble) samplerate / notation_delay) * (gdouble) (x1 - x0));
+	frame_count = (guint) (((gdouble) samplerate / notation_delay) * (gdouble) (x1 - x0 + 2));
 
 	ags_audio_signal_feed(audio_signal,
 			      template,

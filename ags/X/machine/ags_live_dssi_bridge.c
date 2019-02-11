@@ -1293,7 +1293,7 @@ ags_live_dssi_bridge_map_recall(AgsMachine *machine)
 
   g_list_free_full(start_play,
 		   g_object_unref);
-
+  
   /* depending on destination */
   ags_live_dssi_bridge_input_map_recall(live_dssi_bridge,
 					0,

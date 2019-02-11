@@ -76,6 +76,7 @@ enum{
   PROP_0,
   PROP_DELAY_AUDIO_RUN,
   PROP_COUNT_BEATS_AUDIO_RUN,
+  PROP_TIMESTAMP,
 };
 
 static gpointer ags_record_midi_audio_run_parent_class = NULL;
@@ -173,6 +174,22 @@ ags_record_midi_audio_run_class_init(AgsRecordMidiAudioRunClass *record_midi_aud
 				  PROP_COUNT_BEATS_AUDIO_RUN,
 				  param_spec);
 
+  /**
+   * AgsRecordMidiAudioRun:timestamp:
+   * 
+   * The timestamp.
+   * 
+   * Since: 2.1.53
+   */
+  param_spec = g_param_spec_object("timestamp",
+				   i18n_pspec("assigned timestamp"),
+				   i18n_pspec("the timestamp"),
+				   AGS_TYPE_TIMESTAMP,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_TIMESTAMP,
+				  param_spec);
+
   /* AgsRecallClass */
   recall = (AgsRecallClass *) record_midi_audio_run;
 
@@ -193,7 +210,7 @@ ags_record_midi_audio_run_plugin_interface_init(AgsPluginInterface *plugin)
 void
 ags_record_midi_audio_run_init(AgsRecordMidiAudioRun *record_midi_audio_run)
 {
-  ags_recall_set_ability_flags((AgsRecall *) record_midi_audio_run, (AGS_SOUND_ABILITY_MIDI));
+  ags_recall_set_ability_flags((AgsRecall *) record_midi_audio_run, (AGS_SOUND_ABILITY_NOTATION));
 
   AGS_RECALL(record_midi_audio_run)->name = "ags-record-midi";
   AGS_RECALL(record_midi_audio_run)->version = AGS_RECALL_DEFAULT_VERSION;
@@ -381,6 +398,33 @@ ags_record_midi_audio_run_set_property(GObject *gobject,
       }
     }
     break;
+  case PROP_TIMESTAMP:
+    {
+      AgsTimestamp *timestamp;
+
+      timestamp = g_value_get_object(value);
+      
+      pthread_mutex_lock(recall_mutex);
+
+      if(timestamp == record_midi_audio_run->timestamp){
+	pthread_mutex_unlock(recall_mutex);
+
+	return;
+      }
+
+      if(record_midi_audio_run->timestamp != NULL){
+	g_object_unref(G_OBJECT(record_midi_audio_run->timestamp));
+      }
+
+      if(timestamp != NULL){
+	g_object_ref(timestamp);
+      }
+
+      record_midi_audio_run->timestamp = timestamp;
+
+      pthread_mutex_unlock(recall_mutex);
+    }
+    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -421,6 +465,15 @@ ags_record_midi_audio_run_get_property(GObject *gobject,
       pthread_mutex_lock(recall_mutex);
 
       g_value_set_object(value, G_OBJECT(record_midi_audio_run->count_beats_audio_run));
+
+      pthread_mutex_unlock(recall_mutex);
+    }
+    break;
+  case PROP_TIMESTAMP:
+    {
+      pthread_mutex_lock(recall_mutex);
+
+      g_value_set_object(value, G_OBJECT(record_midi_audio_run->timestamp));
 
       pthread_mutex_unlock(recall_mutex);
     }
@@ -944,9 +997,11 @@ ags_record_midi_audio_run_run_pre(AgsRecall *recall)
   pthread_mutex_unlock(ags_audio_get_class_mutex());
 
   /* playback */
+#if 0
   ags_sequencer_lock_buffer(AGS_SEQUENCER(input_sequencer),
 			    midi_buffer);
-
+#endif
+  
   if(midi_buffer != NULL){
     if(playback){
       unsigned char *midi_iter;
@@ -1050,13 +1105,21 @@ ags_record_midi_audio_run_run_pre(AgsRecall *recall)
 		  record_midi_audio_run->note = g_list_remove(record_midi_audio_run->note,
 							      current_note);
 		  g_object_unref(current_note);
+
+#ifdef AGS_DEBUG
+		  g_message("remove %d", current_note->y);
+#endif
 		}else{
 		  pthread_mutex_lock(audio_mutex);
 
 		  g_object_set(current_note,
 			       "x1", notation_counter + 1,
 			       NULL);
-		}
+
+#ifdef AGS_DEBUG
+		  g_message("count %d", current_note->y);
+#endif
+ 		}
 	      }
 	    }
 	  }
@@ -1149,6 +1212,10 @@ ags_record_midi_audio_run_run_pre(AgsRecall *recall)
 	      g_object_set(current_note,
 			   "x1", notation_counter + 1,
 			   NULL);
+
+#ifdef AGS_DEBUG
+	      g_message("count %d", current_note->y);
+#endif
 	    }
 	  }
 	  
@@ -1224,7 +1291,9 @@ ags_record_midi_audio_run_run_pre(AgsRecall *recall)
 	g_object_set(current_note,
 		     "x1", notation_counter + 1,
 		     NULL);
-
+#ifdef AGS_DEBUG
+	g_message("count %d", current_note->y);
+#endif
 	note = note->next;
       }
     }
@@ -1250,9 +1319,11 @@ ags_record_midi_audio_run_run_pre(AgsRecall *recall)
     }
   }
 
+#if 0
   ags_sequencer_unlock_buffer(AGS_SEQUENCER(input_sequencer),
 			      midi_buffer);
-
+#endif
+  
   /* call parent */
   parent_class_run_pre(recall);
 
