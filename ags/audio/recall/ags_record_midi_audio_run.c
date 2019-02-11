@@ -997,10 +997,8 @@ ags_record_midi_audio_run_run_pre(AgsRecall *recall)
   pthread_mutex_unlock(ags_audio_get_class_mutex());
 
   /* playback */
-#if 0
   ags_sequencer_lock_buffer(AGS_SEQUENCER(input_sequencer),
 			    midi_buffer);
-#endif
   
   if(midi_buffer != NULL){
     if(playback){
@@ -1319,10 +1317,8 @@ ags_record_midi_audio_run_run_pre(AgsRecall *recall)
     }
   }
 
-#if 0
   ags_sequencer_unlock_buffer(AGS_SEQUENCER(input_sequencer),
 			      midi_buffer);
-#endif
   
   /* call parent */
   parent_class_run_pre(recall);

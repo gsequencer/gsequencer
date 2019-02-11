@@ -119,6 +119,7 @@ struct _AgsCoreAudioMidiin
   
   AgsUUID *uuid;
   
+  pthread_mutex_t **buffer_mutex;
   char **buffer;
   guint buffer_size[4];
 

@@ -136,6 +136,7 @@ struct _AgsMidiin
   char **ring_buffer;
   guint ring_buffer_size[2];
   
+  pthread_mutex_t **buffer_mutex;
   char **buffer;
   guint buffer_size[4];
 

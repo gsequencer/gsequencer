@@ -103,6 +103,11 @@ void* ags_core_audio_midiin_get_buffer(AgsSequencer *sequencer,
 void* ags_core_audio_midiin_get_next_buffer(AgsSequencer *sequencer,
 					    guint *buffer_length);
 
+void ags_core_audio_midiin_lock_buffer(AgsSequencer *sequencer,
+				       void *buffer);
+void ags_core_audio_midiin_unlock_buffer(AgsSequencer *sequencer,
+					 void *buffer);
+
 void ags_core_audio_midiin_set_start_note_offset(AgsSequencer *sequencer,
 						 guint start_note_offset);
 guint ags_core_audio_midiin_get_start_note_offset(AgsSequencer *sequencer);
@@ -404,6 +409,9 @@ ags_core_audio_midiin_sequencer_interface_init(AgsSequencerInterface *sequencer)
   sequencer->get_buffer = ags_core_audio_midiin_get_buffer;
   sequencer->get_next_buffer = ags_core_audio_midiin_get_next_buffer;
 
+  sequencer->lock_buffer = ags_core_audio_midiin_lock_buffer;
+  sequencer->unlock_buffer = ags_core_audio_midiin_unlock_buffer;
+
   sequencer->set_start_note_offset = ags_core_audio_midiin_set_start_note_offset;
   sequencer->get_start_note_offset = ags_core_audio_midiin_get_start_note_offset;
 
@@ -418,6 +426,7 @@ ags_core_audio_midiin_init(AgsCoreAudioMidiin *core_audio_midiin)
 
   gchar *segmentation;
 
+  guint i;
   guint denumerator, numerator;
 
   pthread_mutex_t *mutex;
@@ -460,6 +469,15 @@ ags_core_audio_midiin_init(AgsCoreAudioMidiin *core_audio_midiin)
   core_audio_midiin->core_audio_port = NULL;
 
   /* buffer */
+  core_audio_midiin->buffer_mutex = (pthread_mutex_t **) malloc(4 * sizeof(pthread_mutex_t *));
+
+  for(i = 0; i < 4; i++){
+    core_audio_midiin->buffer_mutex[i] = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
+
+    pthread_mutex_init(core_audio_midiin->buffer_mutex[i],
+		       NULL);
+  }
+
   core_audio_midiin->buffer = (char **) malloc(4 * sizeof(char*));
 
   core_audio_midiin->buffer[0] = NULL;
@@ -1987,6 +2005,64 @@ ags_core_audio_midiin_get_next_buffer(AgsSequencer *sequencer,
   }
   
   return(buffer);
+}
+
+void
+ags_core_audio_midiin_lock_buffer(AgsSequencer *sequencer,
+				  void *buffer)
+{
+  AgsCoreAudioMidiin *core_audio_midiin;
+
+  pthread_mutex_t *buffer_mutex;
+  
+  core_audio_midiin = AGS_CORE_AUDIO_MIDIIN(sequencer);
+
+  buffer_mutex = NULL;
+
+  if(core_audio_midiin->buffer != NULL){
+    if(buffer == core_audio_midiin->buffer[0]){
+      buffer_mutex = core_audio_midiin->buffer_mutex[0];
+    }else if(buffer == core_audio_midiin->buffer[1]){
+      buffer_mutex = core_audio_midiin->buffer_mutex[1];
+    }else if(buffer == core_audio_midiin->buffer[2]){
+      buffer_mutex = core_audio_midiin->buffer_mutex[2];
+    }else if(buffer == core_audio_midiin->buffer[3]){
+      buffer_mutex = core_audio_midiin->buffer_mutex[3];
+    }
+  }
+  
+  if(buffer_mutex != NULL){
+    pthread_mutex_lock(buffer_mutex);
+  }
+}
+
+void
+ags_core_audio_midiin_unlock_buffer(AgsSequencer *sequencer,
+				    void *buffer)
+{
+  AgsCoreAudioMidiin *core_audio_midiin;
+
+  pthread_mutex_t *buffer_mutex;
+  
+  core_audio_midiin = AGS_CORE_AUDIO_MIDIIN(sequencer);
+
+  buffer_mutex = NULL;
+
+  if(core_audio_midiin->buffer != NULL){
+    if(buffer == core_audio_midiin->buffer[0]){
+      buffer_mutex = core_audio_midiin->buffer_mutex[0];
+    }else if(buffer == core_audio_midiin->buffer[1]){
+      buffer_mutex = core_audio_midiin->buffer_mutex[1];
+    }else if(buffer == core_audio_midiin->buffer[2]){
+      buffer_mutex = core_audio_midiin->buffer_mutex[2];
+    }else if(buffer == core_audio_midiin->buffer[3]){
+      buffer_mutex = core_audio_midiin->buffer_mutex[3];
+    }
+  }
+
+  if(buffer_mutex != NULL){
+    pthread_mutex_unlock(buffer_mutex);
+  }
 }
 
 void
