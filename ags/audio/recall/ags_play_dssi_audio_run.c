@@ -1709,7 +1709,12 @@ ags_play_dssi_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_run,
       start_append_note = g_list_prepend(start_append_note,
 					 note);
       g_object_ref(note);
-    }else if(note_x1 == notation_counter){
+    }else if(notation_counter != 0 &&
+	     (note_x1 == notation_counter ||
+	      note_x1 == notation_counter - 1)){
+      //feed
+    }else if(notation_counter > 1 &&
+	     note_x1 == notation_counter - 2){
       start_remove_note = g_list_prepend(start_remove_note,
 					 note);
       g_object_ref(note);
