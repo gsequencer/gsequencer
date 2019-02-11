@@ -652,10 +652,10 @@ ags_lv2ui_manager_load_file(AgsLv2uiManager *lv2ui_manager,
 
   pthread_mutex_t *lv2ui_manager_mutex;
 
+  auto void ags_lv2ui_manager_load_file_analyse_plugin(xmlNode *context_node, gchar *gui_uri);
   auto void ags_lv2ui_manager_load_file_ui_plugin(GList *list);
 
-  void ags_lv2ui_manager_load_file_ui_plugin(GList *list){
-    GList *uri_list;
+  void ags_lv2ui_manager_load_file_analyse_plugin(xmlNode *context_node, gchar *gui_uri){
     GList *binary_list;
 
     gchar *ui_filename;
@@ -663,7 +663,6 @@ ags_lv2ui_manager_load_file(AgsLv2uiManager *lv2ui_manager,
     gchar *path;
     gchar *ui_path;
     gchar *xpath;
-    gchar *gui_uri;
 
     guint ui_effect_index;
     
@@ -673,13 +672,132 @@ ags_lv2ui_manager_load_file(AgsLv2uiManager *lv2ui_manager,
     
     uint32_t i;
 
+    if(gui_uri == NULL){
+      return;
+    }
+
+    xpath = "/rdf-turtle-doc/rdf-statement/rdf-triple//rdf-verb//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':binary') + 1) = ':binary']/ancestor::*[self::rdf-verb][1]/following-sibling::*[self::rdf-object-list][1]//rdf-iriref[substring(text(), string-length(text()) - string-length('.so>') + 1) = '.so>']";
+    binary_list = ags_turtle_find_xpath_with_context_node(turtle,
+							  xpath,
+							  context_node);
+
+    /* load */
+    while(binary_list != NULL){
+      gchar *tmp;
+	
+      /* read filename of binary */
+      str = xmlNodeGetContent((xmlNode *) binary_list->data);
+	
+      if(str == NULL){
+	binary_list = binary_list->next;
+	continue;
+      }
+
+      str = g_strndup(&(str[1]),
+		      strlen(str) - 2);
+
+      if((tmp = strstr(filename, "/")) != NULL){
+	tmp = g_strndup(filename,
+			tmp - filename);
+      }else{
+	binary_list = binary_list->next;
+	continue;
+      }
+	
+      ui_filename = g_strdup_printf("%s/%s",
+				    tmp,
+				    str);
+      free(str);
+
+      break;
+    }
+      
+    path = g_strdup_printf("%s/%s",
+			   lv2ui_path,
+			   filename);
+      
+    ui_path = g_strdup_printf("%s/%s",
+			      lv2ui_path,
+			      ui_filename);
+      
+    g_message("lv2ui check - %s", ui_path);
+
+    /* get gui_uri index and append plugin */
+    ui_plugin_so = dlopen(ui_path,
+			  RTLD_NOW);
+  
+    if(ui_plugin_so == NULL){
+      g_warning("ags_lv2ui_manager.c - failed to load static object file");
+    
+      dlerror();
+
+      return;
+    }
+
+    lv2ui_descriptor = (LV2UI_DescriptorFunction) dlsym(ui_plugin_so,
+							"lv2ui_descriptor");
+  
+    if(dlerror() == NULL && lv2ui_descriptor){
+      for(i = 0; (ui_plugin_descriptor = lv2ui_descriptor(i)) != NULL; i++){
+	if(ui_path != NULL &&
+	   gui_uri != NULL &&
+	   !g_ascii_strcasecmp(ui_plugin_descriptor->URI,
+			       gui_uri)){
+	  ui_effect_index = i;
+	    
+	  /* check if already added */
+	  lv2ui_plugin = ags_lv2ui_manager_find_lv2ui_plugin_with_index(lv2ui_manager,
+									ui_path,
+									ui_effect_index);
+
+	  if(lv2ui_plugin != NULL){
+	    break;
+	  }
+
+	  if(ags_base_plugin_find_ui_effect_index(lv2ui_manager->lv2ui_plugin,
+						  ui_path,
+						  ui_effect_index) == NULL){
+	    g_message("ags_lv2ui_manager.c loading - %s %s with ui-effect-index %u",
+		      ui_path,
+		      turtle->filename,
+		      ui_effect_index);
+
+	    lv2ui_plugin = g_object_new(AGS_TYPE_LV2UI_PLUGIN,
+					"gui-uri", gui_uri,
+					"manifest", manifest,
+					"gui-turtle", turtle,
+					"ui-filename", ui_path,
+					"ui-effect-index", ui_effect_index,
+					NULL);
+	    ags_base_plugin_load_plugin((AgsBasePlugin *) lv2ui_plugin);
+	    lv2ui_manager->lv2ui_plugin = g_list_prepend(lv2ui_manager->lv2ui_plugin,
+							 lv2ui_plugin);
+	  }
+	  
+	  break;
+	}
+      }  
+    }
+  }
+  
+  void ags_lv2ui_manager_load_file_ui_plugin(GList *list){
+    GList *uri_list;
+
+    gchar *ui_filename;
+    gchar *str;
+    gchar *path;
+    gchar *ui_path;
+    gchar *xpath;
+    gchar *gui_uri;
+
     if(list == NULL){
       return;
     }
 
     while(list != NULL){
       /* find URI */
-      xpath = "/rdf-turtle-doc/rdf-statement/rdf-triple/rdf-subject/rdf-iri";    
+//      xpath = "/rdf-turtle-doc/rdf-statement/rdf-triple/rdf-subject/rdf-iri";
+      xpath = "./rdf-subject/rdf-iri";
       uri_list = ags_turtle_find_xpath_with_context_node(turtle,
 							 xpath,
 							 list->data);
@@ -693,19 +811,19 @@ ags_lv2ui_manager_load_file(AgsLv2uiManager *lv2ui_manager,
 
 	while(child != NULL){
 	  if(child->type == XML_ELEMENT_NODE){
-	    if(!g_ascii_strncasecmp(child->name,
-				    "rdf-iriref",
-				    11)){
+	    if(!g_strcmp0(child->name,
+			  "rdf-iriref")){
 	      gui_uri = xmlNodeGetContent(child);
 
 	      if(strlen(gui_uri) > 2){
 		gui_uri = g_strndup(gui_uri + 1,
 				    strlen(gui_uri) - 2);
 	      }
-	      break;
-	    }else if(!g_ascii_strncasecmp(child->name,
-					  "rdf-prefixed-name",
-					  18)){
+
+	      ags_lv2ui_manager_load_file_analyse_plugin(list->data,
+							 gui_uri);
+	    }else if(!g_strcmp0(child->name,
+				"rdf-prefixed-name")){
 	      xmlNode *pname_node;
 
 	      gchar *pname;
@@ -719,7 +837,7 @@ ags_lv2ui_manager_load_file(AgsLv2uiManager *lv2ui_manager,
 					  "rdf-pname-ln",
 					  11)){
 		    pname = xmlNodeGetContent(pname_node);
-		
+
 		    break;
 		  }
 		}
@@ -772,124 +890,14 @@ ags_lv2ui_manager_load_file(AgsLv2uiManager *lv2ui_manager,
 		  }
 		}
 	      }
-	  
-	      break;
+
+	      ags_lv2ui_manager_load_file_analyse_plugin(list->data,
+							 gui_uri);
 	    }
 	  }
+
 	  child = child->next;
 	}
-      }
-
-      /* load plugin */
-      if(gui_uri == NULL){
-	list = list->next;
-
-	continue;
-      }
-
-      xpath = "/rdf-turtle-doc/rdf-statement/rdf-triple//rdf-verb//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':binary') + 1) = ':binary']/ancestor::*[self::rdf-verb][1]/following-sibling::*[self::rdf-object-list][1]//rdf-iriref[substring(text(), string-length(text()) - string-length('.so>') + 1) = '.so>']";
-      binary_list = ags_turtle_find_xpath_with_context_node(turtle,
-							    xpath,
-							    list->data);
-
-      /* load */
-      while(binary_list != NULL){
-	gchar *tmp;
-	
-	/* read filename of binary */
-	str = xmlNodeGetContent((xmlNode *) binary_list->data);
-	
-	if(str == NULL){
-	  binary_list = binary_list->next;
-	  continue;
-	}
-
-	str = g_strndup(&(str[1]),
-			strlen(str) - 2);
-
-	if((tmp = strstr(filename, "/")) != NULL){
-	  tmp = g_strndup(filename,
-			  tmp - filename);
-	}else{
-	  binary_list = binary_list->next;
-	  continue;
-	}
-	
-	ui_filename = g_strdup_printf("%s/%s",
-				      tmp,
-				      str);
-	free(str);
-
-	break;
-      }
-      
-      path = g_strdup_printf("%s/%s",
-			     lv2ui_path,
-			     filename);
-      
-      ui_path = g_strdup_printf("%s/%s",
-				lv2ui_path,
-				ui_filename);
-      
-      g_message("lv2ui check - %s", ui_path);
-
-      /* get gui_uri index and append plugin */
-      ui_plugin_so = dlopen(ui_path,
-			    RTLD_NOW);
-  
-      if(ui_plugin_so == NULL){
-	g_warning("ags_lv2ui_manager.c - failed to load static object file");
-    
-	dlerror();
-
-	list = list->next;
-      
-	continue;
-      }
-
-      lv2ui_descriptor = (LV2UI_DescriptorFunction) dlsym(ui_plugin_so,
-							  "lv2ui_descriptor");
-  
-      if(dlerror() == NULL && lv2ui_descriptor){
-	for(i = 0; (ui_plugin_descriptor = lv2ui_descriptor(i)) != NULL; i++){
-	  if(ui_path != NULL &&
-	     gui_uri != NULL &&
-	     !g_ascii_strcasecmp(ui_plugin_descriptor->URI,
-				 gui_uri)){
-	    ui_effect_index = i;
-	    
-	    /* check if already added */
-	    lv2ui_plugin = ags_lv2ui_manager_find_lv2ui_plugin_with_index(lv2ui_manager,
-									  ui_path,
-									  ui_effect_index);
-
-	    if(lv2ui_plugin != NULL){
-	      break;
-	    }
-
-	    if(ags_base_plugin_find_ui_effect_index(lv2ui_manager->lv2ui_plugin,
-						    ui_path,
-						    ui_effect_index) == NULL){
-	      g_message("ags_lv2ui_manager.c loading - %s %s with ui-effect-index %u",
-			ui_path,
-			turtle->filename,
-			ui_effect_index);
-
-	      lv2ui_plugin = g_object_new(AGS_TYPE_LV2UI_PLUGIN,
-					  "gui-uri", gui_uri,
-					  "manifest", manifest,
-					  "gui-turtle", turtle,
-					  "ui-filename", ui_path,
-					  "ui-effect-index", ui_effect_index,
-					  NULL);
-	      ags_base_plugin_load_plugin((AgsBasePlugin *) lv2ui_plugin);
-	      lv2ui_manager->lv2ui_plugin = g_list_prepend(lv2ui_manager->lv2ui_plugin,
-							   lv2ui_plugin);
-	    }
-	  
-	    break;
-	  }
-	}  
       }
       
       list = list->next;

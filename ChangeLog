@@ -3,6 +3,7 @@ ags (2.1.52)
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* fixed accessing uninitialized pointer in ags_recall_lv2_run.c
 	* fixed accessing uninitialized pointer in ags_recall_ladspa_run.c
+	* fixed XPath accessor to read LV2 UIs
 
 ags (2.1.51)
 

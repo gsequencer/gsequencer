@@ -41,6 +41,8 @@
 extern GHashTable *ags_lv2_bridge_lv2ui_handle;
 extern GHashTable *ags_lv2_bridge_lv2ui_idle;
 
+gboolean ags_lv2_bridge_delete_event_callback(GtkWidget *widget, GdkEvent *event, AgsLv2Bridge *lv2_bridge);
+
 void
 ags_lv2_bridge_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, AgsLv2Bridge *lv2_bridge)
 {
@@ -65,6 +67,14 @@ ags_lv2_bridge_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, Ags
 				       AGS_TYPE_LV2_BRIDGE);
 
   g_free(str);
+}
+
+gboolean
+ags_lv2_bridge_delete_event_callback(GtkWidget *widget, GdkEvent *event, AgsLv2Bridge *lv2_bridge)
+{
+  gtk_widget_hide(widget);
+
+  return(TRUE);
 }
 
 void
@@ -242,14 +252,25 @@ ags_lv2_bridge_show_gui_callback(GtkMenuItem *item, AgsLv2Bridge *lv2_bridge)
   if(lv2_bridge->ui_feature != NULL &&
      lv2_bridge->ui_feature[1]->data != NULL){
     ((struct _LV2UI_Show_Interface *) lv2_bridge->ui_feature[1]->data)->show(lv2_bridge->ui_handle);
-  }
-}
+  }else if(plugin_widget != NULL){
+    GtkWindow *window;
 
-gboolean
-ags_lv2_bridge_delete_event_callback(GtkWidget *widget, GdkEvent *event, AgsLv2Bridge *lv2_bridge)
-{
-  
-  return(TRUE);
+    if(lv2_bridge->lv2_window == NULL){
+      lv2_bridge->lv2_window = 
+	window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
+      gtk_container_add(window,
+			plugin_widget);
+      gtk_window_set_title(window,
+			   lv2_bridge->gui_uri);
+      
+      g_signal_connect(window, "delete-event",
+		       G_CALLBACK(ags_lv2_bridge_delete_event_callback), lv2_bridge);
+    }else{
+      window = lv2_bridge->lv2_window;
+    }
+    
+    gtk_widget_show_all(window);
+  }
 }
 
 void

@@ -1789,9 +1789,10 @@ ags_turtle_find_xpath_with_context_node(AgsTurtle *turtle,
   }
   
   xpath_context = xmlXPathNewContext(turtle->doc);
-  xpath_context->node = context_node;
-  xpath_object = xmlXPathEval((xmlChar *) xpath,
-			      xpath_context);
+  //xpath_context->node = context_node;
+  xpath_object = xmlXPathNodeEval(context_node,
+				  (xmlChar *) xpath,
+				  xpath_context);
   
   list = NULL;
 

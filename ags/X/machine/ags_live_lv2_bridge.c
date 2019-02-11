@@ -459,6 +459,8 @@ ags_live_lv2_bridge_init(AgsLiveLv2Bridge *live_lv2_bridge)
   
   live_lv2_bridge->lv2_gui = NULL;
 
+  live_lv2_bridge->lv2_window = NULL;
+
   /* lv2 menu */
   item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label("Lv2");
   gtk_menu_shell_append((GtkMenuShell *) AGS_MACHINE(live_lv2_bridge)->popup,
@@ -724,6 +726,11 @@ ags_live_lv2_bridge_finalize(GObject *gobject)
     g_hash_table_remove(ags_live_lv2_bridge_lv2ui_idle,
 			live_lv2_bridge->ui_handle);
   }
+
+  if(live_lv2_bridge->lv2_window != NULL){
+    gtk_widget_destroy(live_lv2_bridge->lv2_window);
+  }
+  
 
   /* call parent */
   G_OBJECT_CLASS(ags_live_lv2_bridge_parent_class)->finalize(gobject);

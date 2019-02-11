@@ -98,6 +98,8 @@ struct _AgsLv2Bridge
   GtkWidget *lv2_gui;
   GtkWidget *ui_widget;
 
+  GtkWidget *lv2_window;
+  
   GtkMenu *lv2_menu;
 };
 

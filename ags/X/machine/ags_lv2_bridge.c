@@ -436,6 +436,8 @@ ags_lv2_bridge_init(AgsLv2Bridge *lv2_bridge)
   
   lv2_bridge->lv2_gui = NULL;
 
+  lv2_bridge->lv2_window = NULL;
+
   /* lv2 menu */
   item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label("Lv2");
   gtk_menu_shell_append((GtkMenuShell *) AGS_MACHINE(lv2_bridge)->popup,
@@ -704,6 +706,10 @@ ags_lv2_bridge_finalize(GObject *gobject)
 			lv2_bridge->ui_handle);
   }
 
+  if(lv2_bridge->lv2_window != NULL){
+    gtk_widget_destroy(lv2_bridge->lv2_window);
+  }
+  
   /* call parent */
   G_OBJECT_CLASS(ags_lv2_bridge_parent_class)->finalize(gobject);
 }
@@ -2038,7 +2044,7 @@ ags_lv2_bridge_load_gui(AgsLv2Bridge *lv2_bridge)
   lv2ui_plugin = list->data;
   
 #ifdef AGS_DEBUG
-  g_message("ui filename - %s", AGS_BASE_PLUGIN(lv2ui_plugin)->ui_filename);
+  g_message("ui filename - %s, %s", AGS_BASE_PLUGIN(lv2ui_plugin)->ui_filename, lv2_plugin->ui_uri);
 #endif
 
   /* apply ui */
