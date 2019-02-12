@@ -2,9 +2,11 @@ ags (2.1.53)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* implemented AgsSequencer::lock-buffer() and AgsSequencer::unlock-buffer()
-	* fixed ags_recall_lv2_run_run_inter() to test if instrument by AGS_LV2_PLUGIN_IS_SYNTHESIZER flag
 	* added plugin property to AgsRecallLadspa, AgsRecallDssi and AgsRecallLv2
+	* fixed ags_recall_lv2_run_run_inter() to test if instrument by AGS_LV2_PLUGIN_IS_SYNTHESIZER flag
 	* fixed double free in ags_jack_port_finalize() and ags_pulse_port_finalize()
+	* applied patches for FreeBSD
+	* replaced shell expansion of directory lists in Makefile.am
 
 ags (2.1.52)
 

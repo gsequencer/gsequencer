@@ -23,7 +23,7 @@
 
 #include <unistd.h>
 
-#if !defined(__APPLE__)
+#if !defined(__APPLE__) && !defined(__FreeBSD__) && !defined(__DragonFly__)
 #define __USE_GNU
 #define _GNU_SOURCE
 #include <crypt.h>
@@ -220,13 +220,13 @@ ags_xml_password_store_encrypt_password(AgsPasswordStore *password_store,
 					gchar *salt,
 					GError **error)
 {
-#ifndef __APPLE__
+#if !defined(__APPLE__) && !defined(__FreeBSD__) && !defined(__DragonFly__)
   struct crypt_data *data;
 #endif
 
   gchar *password_hash;
   
-#if !defined(__APPLE__)
+#if !defined(__APPLE__) && !defined(__FreeBSD__) && !defined(__DragonFly__)
   data = (struct crypt_data *) malloc(sizeof(struct crypt_data));
   data->initialized = 0;
 

@@ -28,7 +28,7 @@
 
 #include <ags/audio/ags_port.h>
 
-#ifdef __APPLE__
+#if defined(__APPLE__) || defined(__FreeBSD__) || defined(__DragonFly__)
 #include <machine/endian.h>
 #else
 #include <endian.h>
