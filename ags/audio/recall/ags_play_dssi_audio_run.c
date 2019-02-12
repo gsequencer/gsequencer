@@ -1695,10 +1695,13 @@ ags_play_dssi_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_run,
    * feed midi
    */  
   while(current_position != NULL){
+    gboolean do_feed;
     gboolean success;
       
     note = AGS_NOTE(current_position->data);
 
+    do_feed = ags_note_test_flags(note,
+				  AGS_NOTE_FEED);
     g_object_get(note,
 		 "x0", &note_x0,
 		 "x1", &note_x1,
@@ -1709,11 +1712,16 @@ ags_play_dssi_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_run,
       start_append_note = g_list_prepend(start_append_note,
 					 note);
       g_object_ref(note);
-    }else if(notation_counter != 0 &&
-	     note_x1 == notation_counter){
+    }else if(do_feed &&
+	     notation_counter != 0 &&
+	     (note_x1 == notation_counter ||
+	      note_x1 == notation_counter - 1)){
       //feed
-    }else if(notation_counter > 0 &&
-	     note_x1 == notation_counter - 1){
+    }else if((do_feed &&
+	      notation_counter > 1 &&
+	      note_x1 == notation_counter - 2) ||
+	     (!do_feed &&
+	      note_x1 <= notation_counter)){
       start_remove_note = g_list_prepend(start_remove_note,
 					 note);
       g_object_ref(note);
