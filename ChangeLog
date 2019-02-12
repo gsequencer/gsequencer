@@ -4,6 +4,7 @@ ags (2.1.54)
 	* fixed ags_simple_file_read_config() to modify AgsThread:max-precision and main loops frequency
 	* fixed AgsThread:max-precision property specification
 	* fixed wrong warning during ags_recall_dependency_resolve()
+	* improved MIDI playback of ags-play-lv2 and ags-play-dssi recall
 
 ags (2.1.53)
 
