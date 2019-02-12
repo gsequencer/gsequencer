@@ -215,7 +215,7 @@ ags_thread_class_init(AgsThreadClass *thread)
 				   AGS_THREAD_DEFAULT_MAX_PRECISION,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
-				  PROP_FREQUENCY,
+				  PROP_MAX_PRECISION,
 				  param_spec);
 
   /* AgsThread */
@@ -647,6 +647,7 @@ ags_thread_set_property(GObject *gobject,
 	return;
       }
 
+      g_message("max %f", max_precision);
       old_max_precision = thread->max_precision;
       
       thread->max_precision = max_precision;

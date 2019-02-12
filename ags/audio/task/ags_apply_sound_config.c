@@ -1235,7 +1235,7 @@ ags_apply_sound_config_launch(AgsTask *task)
 				  (AgsThread *) sequencer_thread,
 				  TRUE, TRUE);
 
-    list = list->next;      
+    list = list->next;
   }
 
   /* change frequency */

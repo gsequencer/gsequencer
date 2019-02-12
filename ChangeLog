@@ -1,3 +1,9 @@
+ags (2.1.54)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed ags_simple_file_read_config() to modify AgsThread:max-precision and main loops frequency
+	* fixed AgsThread:max-precision property specification
+
 ags (2.1.53)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

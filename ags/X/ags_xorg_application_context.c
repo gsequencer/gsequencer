@@ -1781,19 +1781,26 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
       
       for(j = 0; j < xpath_object->nodesetval->nodeNr; j++){
 	if(node[j]->type == XML_ELEMENT_NODE){
+	  ags_config_clear(config);
+	  ags_simple_file_read_config(simple_file, node[j], &config);
+	  
+#if 0
 	  buffer = xmlNodeGetContent(node[j]);
 	  buffer_length = strlen(buffer);
+#endif
 	  
 	  break;
 	}
       }
       
+#if 0
       if(buffer != NULL){
 	//	ags_config_clear(ags_config_get_instance());
 	ags_config_load_from_data(ags_config_get_instance(),
 				  buffer, buffer_length);
       }
-
+#endif
+      
       i++;
       
       break;

@@ -601,6 +601,7 @@ ags_config_load_from_file(AgsConfig *config, gchar *filename)
     ags_config_load_defaults(config);
   }else{
     GKeyFile *key_file;
+
     gchar **groups, **groups_start;
     gchar **keys, **keys_start;
     gchar *value;
@@ -698,12 +699,9 @@ ags_config_load_from_data(AgsConfig *config,
   }else{
     GKeyFile *key_file;
 
-    gchar **groups;
-    gchar **keys;
+    gchar **groups, **groups_start;
+    gchar **keys, **keys_start;
     gchar *value;
-    
-    gsize n_groups, n_keys;
-    guint i, j;
 
     GError *error;
 
@@ -724,33 +722,36 @@ ags_config_load_from_data(AgsConfig *config,
       g_error_free(error);
     }
     
-    groups = g_key_file_get_groups(key_file,
-				   &n_groups);
-    
-    for(i = 0; i < n_groups; i++){
-      keys = g_key_file_get_keys(key_file,
-				 groups[i],
-				 &n_keys,
-				 NULL);
+    groups =
+      groups_start = g_key_file_get_groups(key_file,
+					   NULL);
 
-      for(j = 0; j < n_keys; j++){
+    while(*groups != NULL){
+      keys =
+	keys_start = g_key_file_get_keys(key_file,
+					 *groups,
+					 NULL,
+					 NULL);
+
+      while(*keys != NULL){
 	value = g_key_file_get_value(key_file,
-				     groups[i],
-				     keys[j],
+				     *groups,
+				     *keys,
 				     NULL);
-
 	ags_config_set_value(config,
-			     groups[i],
-			     keys[j],
+			     *groups,
+			     *keys,
 			     value);
-	g_message("%s", keys[j]);
-    	g_message("%s", value);
+	
+	keys++;
       }
 
-      g_strfreev(keys);
+      g_strfreev(keys_start);
+
+      groups++;
     }
-    
-    g_strfreev(groups);
+
+    g_strfreev(groups_start);
     g_key_file_unref(key_file);
 
     pthread_mutex_unlock(config_mutex);

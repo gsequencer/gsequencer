@@ -250,7 +250,8 @@ main(int argc, char **argv)
 
   gchar *wdir, *config_file;
   gchar *rc_filename;
-  
+
+  gboolean has_file;
   uid_t uid;
   int result;
 
@@ -289,7 +290,8 @@ main(int argc, char **argv)
 
   /* parse command line parameter */
   filename = NULL;
-
+  has_file = FALSE;
+  
   for(i = 0; i < argc; i++){
     if(!strncmp(argv[i], "--help", 7)){
       printf("GSequencer is an audio sequencer and notation editor\n\n");
@@ -321,6 +323,13 @@ main(int argc, char **argv)
     }else if(!strncmp(argv[i], "--filename", 11)){
       filename = argv[i + 1];
       i++;
+
+      if(g_file_test(filename,
+		     G_FILE_TEST_EXISTS) &&
+	 g_file_test(filename,
+		     G_FILE_TEST_IS_REGULAR)){
+	has_file = TRUE;
+      }
     }
   }
 
@@ -404,21 +413,23 @@ main(int argc, char **argv)
   g_setenv("PULSE_PROP_media.role", "production", TRUE);
   
   /* setup */
-  wdir = g_strdup_printf("%s/%s",
-			 pw->pw_dir,
-			 AGS_DEFAULT_DIRECTORY);
+  if(!has_file){
+    wdir = g_strdup_printf("%s/%s",
+			   pw->pw_dir,
+			   AGS_DEFAULT_DIRECTORY);
 
-  config_file = g_strdup_printf("%s/%s",
-				wdir,
-				AGS_DEFAULT_CONFIG);
+    config_file = g_strdup_printf("%s/%s",
+				  wdir,
+				  AGS_DEFAULT_CONFIG);
 
-  config = ags_config_get_instance();
+    config = ags_config_get_instance();
 
-  ags_config_load_from_file(config,
-			    config_file);
+    ags_config_load_from_file(config,
+			      config_file);
 
-  g_free(wdir);
-  g_free(config_file);
+    g_free(wdir);
+    g_free(config_file);
+  }
   
   ags_setup(argc, argv);
     

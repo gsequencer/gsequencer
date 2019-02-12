@@ -1168,16 +1168,26 @@ ags_simple_file_real_read(AgsSimpleFile *simple_file)
   /* child elements */
   child = root_node->children;
 
-  /*  */
+  /* read config then window */
   ags_application_context_register_types(application_context);
-  
+
+#if 0
   while(child != NULL){
     if(child->type == XML_ELEMENT_NODE){
       if(!xmlStrncmp("ags-sf-config",
 		     child->name,
 		     13)){
 	//NOTE:JK: no redundant code here
-      }else if(!xmlStrncmp("ags-sf-window",
+      }
+    }
+
+    child = child->next;
+  }
+#endif
+  
+  while(child != NULL){
+    if(child->type == XML_ELEMENT_NODE){
+      if(!xmlStrncmp("ags-sf-window",
 			   child->name,
 			   14)){
 	ags_simple_file_read_window(simple_file,
@@ -1188,7 +1198,7 @@ ags_simple_file_real_read(AgsSimpleFile *simple_file)
 
     child = child->next;
   }
-
+  
   /* resolve */
   ags_simple_file_read_resolve(simple_file);
   
@@ -1274,12 +1284,41 @@ ags_simple_file_read_start(AgsSimpleFile *simple_file)
 void
 ags_simple_file_read_config(AgsSimpleFile *simple_file, xmlNode *node, AgsConfig **ags_config)
 {
+  AgsThread *audio_loop;
+
+  AgsApplicationContext *application_context;
   AgsConfig *gobject;
 
-  gchar *id;
-
   char *buffer;
+  gchar *id;
+  gchar *str;
+  
   gsize buffer_length;
+  gdouble samplerate;
+  guint buffer_size;
+  gdouble frequency;
+
+  auto void ags_simple_file_read_config_change_max_precision(AgsThread *thread,
+							     gdouble max_precision);
+  
+  void ags_simple_file_read_config_change_max_precision(AgsThread *thread,
+							gdouble max_precision)
+  {
+    AgsThread *current;
+  
+    g_object_set(thread,
+		 "max-precision", max_precision,
+		 NULL);
+
+    current = g_atomic_pointer_get(&(thread->children));
+
+    while(current != NULL){
+      ags_simple_file_read_config_change_max_precision(current,
+						       max_precision);
+    
+      current = g_atomic_pointer_get(&(thread->next));
+    }
+  }
 
   gobject = *ags_config;
   gobject->version = xmlGetProp(node,
@@ -1288,6 +1327,8 @@ ags_simple_file_read_config(AgsSimpleFile *simple_file, xmlNode *node, AgsConfig
   gobject->build_id = xmlGetProp(node,
 				 AGS_FILE_BUILD_ID_PROP);
 
+  application_context = ags_application_context_get_instance();
+  
   buffer = xmlNodeGetContent(node);
   buffer_length = xmlStrlen(buffer);
 
@@ -1295,6 +1336,31 @@ ags_simple_file_read_config(AgsSimpleFile *simple_file, xmlNode *node, AgsConfig
   
   ags_config_load_from_data(gobject,
 			    buffer, buffer_length);
+
+  /* max-precision */
+  audio_loop = ags_concurrency_provider_get_main_loop(AGS_CONCURRENCY_PROVIDER(application_context));
+
+  str = ags_config_get_value(gobject,
+			     AGS_CONFIG_THREAD,
+			     "max-precision");
+  
+  if(str != NULL){
+    gdouble max_precision;
+    
+    /* change max precision */
+    max_precision = g_ascii_strtod(str,
+				   NULL);
+    
+    ags_simple_file_read_config_change_max_precision(audio_loop,
+						     max_precision);  
+  }
+
+  samplerate = ags_soundcard_helper_config_get_samplerate(gobject);
+  buffer_size = ags_soundcard_helper_config_get_buffer_size(gobject);
+  
+  frequency = ceil((gdouble) samplerate / (gdouble) buffer_size) + AGS_SOUNDCARD_DEFAULT_OVERCLOCK;
+  ags_main_loop_change_frequency(AGS_MAIN_LOOP(audio_loop),
+				 frequency);
 }
 
 void
