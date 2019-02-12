@@ -59,6 +59,7 @@
 
 #include <ags/audio/core-audio/ags_core_audio_server.h>
 #include <ags/audio/core-audio/ags_core_audio_client.h>
+#include <ags/audio/core-audio/ags_core_audio_port.h>
 #include <ags/audio/core-audio/ags_core_audio_devout.h>
 #include <ags/audio/core-audio/ags_core_audio_devin.h>
 #include <ags/audio/core-audio/ags_core_audio_midiin.h>
@@ -568,8 +569,13 @@ ags_apply_sound_config_launch(AgsTask *task)
     ags_jack_server_remove_client(jack_server,
 				  (GObject *) input_client);
 
-    g_object_unref(default_client);
-    g_object_unref(input_client);
+    if(default_client != NULL){
+      g_object_unref(default_client);
+    }
+    
+    if(input_client != NULL){
+      g_object_unref(input_client);
+    }
 #endif
   }
 
@@ -594,7 +600,9 @@ ags_apply_sound_config_launch(AgsTask *task)
     pulse_server->main_loop = NULL;
     pulse_server->main_loop_api = NULL;
     
-    g_object_unref(pulse_client);
+    if(pulse_client != NULL){
+      g_object_unref(pulse_client);
+    }
 #endif
   }
   
