@@ -558,8 +558,10 @@ ags_recall_dependency_resolve_END:
   g_object_unref(dependency);
   g_object_unref(recall_container);
 
-  g_warning("dependency not found!");
-
+  if(retval == NULL){
+    g_warning("dependency not found!");
+  }
+  
   return(retval);
 }
 

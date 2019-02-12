@@ -5963,9 +5963,13 @@ ags_recall_find_type(GList *recall, GType gtype)
   AgsRecall *current_recall;
 
   while(recall != NULL){
+    GType current_gtype;
+    
     current_recall = AGS_RECALL(recall->data);
 
-    if(g_type_is_a(G_OBJECT_TYPE(current_recall), gtype)){
+    current_gtype = G_OBJECT_TYPE(current_recall);
+    
+    if(g_type_is_a(current_gtype, gtype)){
       break;
     }
 

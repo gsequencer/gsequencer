@@ -1670,12 +1670,11 @@ ags_play_lv2_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_run,
       start_append_note = g_list_prepend(start_append_note,
 					 note);
       g_object_ref(note);
-    }else if(notation_counter != 0 ||
-	     (note_x1 == notation_counter ||
-	      note_x1 == notation_counter - 1)){
+    }else if(notation_counter != 0 &&
+	     note_x1 == notation_counter){
       //feed
-    }else if(notation_counter > 1 &&
-	     note_x1 == notation_counter - 2){
+    }else if(notation_counter > 0 &&
+	     note_x1 == notation_counter - 1){
       start_remove_note = g_list_prepend(start_remove_note,
 					 note);
       g_object_ref(note);
