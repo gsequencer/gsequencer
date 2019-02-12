@@ -629,7 +629,7 @@ ags_syncsynth_map_recall(AgsMachine *machine)
 	       NULL);
 
   play = ags_recall_find_type(start_play,
-			      AGS_TYPE_PLAY_NOTATION_AUDIO_RUN);
+			      AGS_TYPE_RECORD_MIDI_AUDIO_RUN);
 
   if(play != NULL){
     recall_record_midi_audio_run = AGS_RECORD_MIDI_AUDIO_RUN(play->data);

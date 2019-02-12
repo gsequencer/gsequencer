@@ -3161,27 +3161,34 @@ ags_audio_signal_feed(AgsAudioSignal *audio_signal,
 		      AgsAudioSignal *template,
 		      guint frame_count)
 {
+  GObject *output_soundcard;
+  
+  GList *list_start, *list;
   GList *stream, *template_stream;
 
-  guint template_format, format;
-  guint loop_start, loop_end;
+  guint template_samplerate, samplerate;
   guint template_buffer_size, buffer_size;
-  guint template_length;
-  guint old_length;
-  guint old_last_frame;
-  guint old_frame_count;
+  guint template_format, format;
   gdouble delay;
   guint attack;
+  guint old_length;
+  guint old_frame_count;
+  guint last_frame, old_last_frame;
+  guint loop_start, loop_end;
+  guint new_last_frame;
+  guint new_loop_start, new_loop_end;
+  guint template_length;
   guint loop_length;
   guint loop_frame_count;
   guint n_frames;
   guint copy_n_frames;
   guint nth_loop;
-  guint i, j, k;
+  guint i, j;
   guint copy_mode;
-
-  pthread_mutex_t *template_mutex;
+  gboolean initial_reset;
+  
   pthread_mutex_t *audio_signal_mutex;
+  pthread_mutex_t *template_mutex;
   pthread_mutex_t *template_stream_mutex;
 
   if(!AGS_IS_AUDIO_SIGNAL(audio_signal) ||
@@ -3189,9 +3196,9 @@ ags_audio_signal_feed(AgsAudioSignal *audio_signal,
     return;
   }
   
-  /* get audio signal mutex */
+  /* get audio signal mutex */  
   pthread_mutex_lock(ags_audio_signal_get_class_mutex());
-  
+
   template_mutex = template->obj_mutex;
   audio_signal_mutex = audio_signal->obj_mutex;
   
@@ -3202,9 +3209,13 @@ ags_audio_signal_feed(AgsAudioSignal *audio_signal,
   /* get some fields */
   pthread_mutex_lock(template_mutex);
 
+  output_soundcard = template->output_soundcard;
+  
+  template_samplerate = template->samplerate;
   template_buffer_size = template->buffer_size;
   template_format = template->format;
-  
+
+  last_frame = template->last_frame;
   loop_start = template->loop_start;
   loop_end = template->loop_end;
 
@@ -3217,118 +3228,144 @@ ags_audio_signal_feed(AgsAudioSignal *audio_signal,
 
   buffer_size = audio_signal->buffer_size;
   format = audio_signal->format;
+
+  samplerate = audio_signal->samplerate;
+  delay = audio_signal->delay;
+  attack = audio_signal->attack;
   
   old_length = audio_signal->length;
   old_last_frame = audio_signal->last_frame;
   old_frame_count = old_last_frame + (old_length * audio_signal->buffer_size) - audio_signal->first_frame;
 
   pthread_mutex_unlock(audio_signal_mutex);
-
-  if(template_buffer_size != buffer_size){
-    g_warning("template buffer size != buffer size");
-
-    return;
-  }
   
   /* resize */
   if(loop_end > loop_start){
     loop_length = loop_end - loop_start;
-    loop_frame_count = ((frame_count - loop_start) / loop_length) * buffer_size;
-
-    ags_audio_signal_stream_resize(audio_signal,
-				   (guint) ceil(frame_count / buffer_size) + 1);
     
+    if((frame_count - loop_start) > (last_frame - loop_end) &&
+       last_frame >= loop_end){
+      loop_frame_count = (frame_count - loop_start) - (last_frame - loop_end);
+    }else{
+      loop_frame_count = loop_length;
+    }
+    
+    ags_audio_signal_stream_resize(audio_signal,
+				   (guint) ceil(frame_count / buffer_size) + (delay + 3));
   }else{
     ags_audio_signal_stream_resize(audio_signal,
-				   (guint) ceil(frame_count / buffer_size) + 1);
+				   (guint) ceil(frame_count / buffer_size) + (delay + 3));
+
+    return;
+  }
+  
+  if(template_buffer_size != buffer_size ||
+     template_samplerate != samplerate){
+    g_warning("can't resample");
 
     return;
   }
 
-  pthread_mutex_lock(audio_signal_mutex);
+  /* apply delay and attack */
+  new_last_frame = (((guint)(delay *
+			     buffer_size) +
+		     attack +
+		     last_frame) %
+		    buffer_size);
+  new_loop_start = ((guint) (delay *
+			     buffer_size) +
+		    attack +
+		    loop_start);
+  new_loop_end = ((guint)(delay *
+			  buffer_size) +
+		  attack +
+		  loop_end);
 
-  delay = audio_signal->delay;
-  attack = audio_signal->attack;
+  new_last_frame = ((guint) (delay * buffer_size) + frame_count + attack) % buffer_size;
+
+  g_object_set(audio_signal,
+	       "last-frame", new_last_frame,
+	       NULL);
   
-  audio_signal->last_frame = ((guint) (delay * buffer_size) + frame_count + attack) % buffer_size;
-
-  pthread_mutex_unlock(audio_signal_mutex);
-
   if(template_length == 0){
     return;
   }
   
-  //NOTE:JK: lock only template
-  pthread_mutex_lock(template_stream_mutex);
+  /* loop related copying */
+  copy_mode = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(format),
+ 						  ags_audio_buffer_util_format_from_soundcard(template_format));
 
   /* generic copying */
   stream = g_list_nth(audio_signal->stream,
 		      (guint) ((delay * buffer_size) + attack) / buffer_size);
+  
+  pthread_mutex_lock(template_stream_mutex);
+  
   template_stream = template->stream;
 
-  /* loop related copying */
-  copy_mode = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(format),
-						  ags_audio_buffer_util_format_from_soundcard(template_format));
+  initial_reset = TRUE;
   
-  for(i = 0, j = 0, k = attack, nth_loop = 0; i < frame_count;){    
+  for(i = 0, j = attack, nth_loop = 0; i < frame_count && stream != NULL && template_stream != NULL;){    
     /* compute count of frames to copy */
     copy_n_frames = buffer_size;
 
-    /* limit nth loop */
-    if(i > template->loop_start &&
-       i + copy_n_frames > loop_start + loop_length &&
-       i + copy_n_frames < loop_start + loop_frame_count &&
-       i + copy_n_frames >= loop_start + (nth_loop + 1) * loop_length){
-      copy_n_frames = (loop_start + (nth_loop + 1) * loop_length) - i;
+    if(loop_start < loop_end &&
+       i + copy_n_frames < loop_start + loop_frame_count){
+      if(j + copy_n_frames > loop_end){
+	copy_n_frames = loop_end - j;
+      }
     }
 
-    /* check boundaries */
-    if((k % buffer_size) + copy_n_frames > buffer_size){
-      copy_n_frames = buffer_size - (k % buffer_size);
+    if((i % buffer_size) + copy_n_frames > buffer_size){
+      copy_n_frames = buffer_size - (i % buffer_size);
     }
 
-    if(j + copy_n_frames > buffer_size){
-      copy_n_frames = buffer_size - j;
+    if((j % buffer_size) + copy_n_frames > buffer_size){
+      copy_n_frames = buffer_size - (j % buffer_size);
     }
 
-    if(stream == NULL ||
-       template_stream == NULL){
-      break;
+    if(i + copy_n_frames > frame_count){
+      copy_n_frames = frame_count - i;
+    }
+
+    if(initial_reset &&
+       i + copy_n_frames >= old_frame_count){
+      copy_n_frames = old_frame_count - i;
+      
+      initial_reset = FALSE;
     }
     
     /* copy */
-    ags_audio_buffer_util_copy_buffer_to_buffer(stream->data, 1, k % buffer_size,
-						template_stream->data, 1, j,
-						copy_n_frames, copy_mode);
+    if(i >= old_frame_count){
+      ags_audio_buffer_util_copy_buffer_to_buffer(stream->data, 1, i % buffer_size,
+						  template_stream->data, 1, j % buffer_size,
+						  copy_n_frames, copy_mode);
+    }
     
-    /* increment and iterate */
     if((i + copy_n_frames) % buffer_size == 0){
       stream = stream->next;
     }
 
-    if(j + copy_n_frames == buffer_size){
+    if((j + copy_n_frames) % buffer_size == 0){
       template_stream = template_stream->next;
     }
-    
-    if(template_stream == NULL ||
-       (i > template->loop_start &&
-	i + copy_n_frames > loop_start + loop_length &&
-	i + copy_n_frames < loop_start + loop_frame_count &&
-	i + copy_n_frames >= loop_start + (nth_loop + 1) * loop_length)){
-      j = loop_start % buffer_size;
-      template_stream = g_list_nth(stream,
-				   floor(loop_start / buffer_size));
 
-      nth_loop++;
+    i += copy_n_frames;
+
+    if(loop_start < loop_end){
+      if(j + copy_n_frames == loop_end &&
+	 i + copy_n_frames < loop_start + loop_frame_count){
+	template_stream = g_list_nth(template->stream,
+				     floor(loop_start / buffer_size));
+	
+	j = loop_start;
+	
+	nth_loop++;
+      }else{
+	j += copy_n_frames;
+      }
     }else{
       j += copy_n_frames;
-    }
-    
-    i += copy_n_frames;
-    k += copy_n_frames;
-
-    if(j == buffer_size){
-      j = 0;
     }
   }
 

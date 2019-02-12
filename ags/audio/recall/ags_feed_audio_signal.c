@@ -32,6 +32,7 @@ void ags_feed_audio_signal_init(AgsFeedAudioSignal *feed_audio_signal);
 void ags_feed_audio_signal_finalize(GObject *gobject);
 
 void ags_feed_audio_signal_run_pre(AgsRecall *recall);
+void ags_feed_audio_signal_run_post(AgsRecall *recall);
 
 /**
  * SECTION:ags_feed_audio_signal
@@ -94,6 +95,7 @@ ags_feed_audio_signal_class_init(AgsFeedAudioSignalClass *feed_audio_signal)
   recall = (AgsRecallClass *) feed_audio_signal;
 
   recall->run_pre = ags_feed_audio_signal_run_pre;
+  recall->run_post = ags_feed_audio_signal_run_post;
 }
 
 void
@@ -117,12 +119,13 @@ void
 ags_feed_audio_signal_run_pre(AgsRecall *recall)
 {
   AgsAudioSignal *template, *audio_signal;
+
   AgsFeedAudioSignal *feed_audio_signal;
 
   GObject *output_soundcard;
   
   GList *note_start, *note;
-  
+
   void (*parent_class_run_pre)(AgsRecall *recall);
 
   pthread_mutex_t *recall_mutex;
@@ -155,7 +158,7 @@ ags_feed_audio_signal_run_pre(AgsRecall *recall)
   g_object_get(audio_signal,
 	       "note", &note_start,
 	       NULL);
-
+  
   if(note_start != NULL){
     note = note_start;
 
@@ -208,13 +211,72 @@ ags_feed_audio_signal_run_pre(AgsRecall *recall)
 
       note = note->next;
     }
-  }else{
-    ags_recall_done(recall);
   }
 
   /* unref */
   g_object_unref(output_soundcard);
 
+  g_object_unref(audio_signal);
+  
+  g_list_free_full(note_start,
+		   g_object_unref);
+}
+
+void
+ags_feed_audio_signal_run_post(AgsRecall *recall)
+{
+  AgsAudioSignal *audio_signal;
+
+  AgsFeedAudioSignal *feed_audio_signal;
+
+  GList *note_start, *note;
+
+  gboolean success;
+  
+  void (*parent_class_run_post)(AgsRecall *recall);
+
+  pthread_mutex_t *recall_mutex;
+  
+  feed_audio_signal = (AgsFeedAudioSignal *) recall;
+
+  /* get mutex */
+  pthread_mutex_lock(ags_recall_get_class_mutex());
+
+  recall_mutex = recall->obj_mutex;
+
+  parent_class_run_post = AGS_RECALL_CLASS(ags_feed_audio_signal_parent_class)->run_post;
+
+  pthread_mutex_unlock(ags_recall_get_class_mutex());
+
+  /* call parent */
+  parent_class_run_post(recall);
+  
+  g_object_get(feed_audio_signal,
+	       "source", &audio_signal,
+	       NULL);
+
+  g_object_get(audio_signal,
+	       "note", &note_start,
+	       NULL);
+
+  note = note_start;
+  success = FALSE;
+  
+  while(note != NULL){      
+    if(ags_note_test_flags(note->data, AGS_NOTE_FEED)){
+      success = TRUE;
+
+      break;
+    }
+
+    note = note->next;
+  }
+
+  if(!success){
+    ags_recall_done(recall);
+  }
+
+  /* unref */
   g_object_unref(audio_signal);
   
   g_list_free_full(note_start,
