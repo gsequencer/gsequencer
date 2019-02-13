@@ -1287,7 +1287,8 @@ ags_lv2_plugin_load_plugin(AgsBasePlugin *base_plugin)
   AgsPluginPort *current_plugin_port;
 
   AgsTurtle *turtle;
-  
+
+  GList *iriref_list;
   GList *plugin_port;
   GList *metadata_list;
   GList *instrument_list;
@@ -1299,6 +1300,7 @@ ags_lv2_plugin_load_plugin(AgsBasePlugin *base_plugin)
   gchar *escaped_effect;
   gchar *xpath;
   gchar *uri;
+  gchar *ui_iriref;
 
   gdouble lower_value, upper_value;
   guint i;
@@ -1369,6 +1371,19 @@ ags_lv2_plugin_load_plugin(AgsBasePlugin *base_plugin)
       g_warning("rdf-triple not found");
       
       return;
+    }
+
+    /* ui iriref */
+    xpath = "/rdf-turtle-doc/rdf-statement/rdf-directive/rdf-prefix-id/rdf-iriref[text()='<http://lv2plug.in/ns/extensions/ui#>']/ancestor::*[self::rdf-prefix-id][1]/rdf-pname-ns";
+    iriref_list = ags_turtle_find_xpath(turtle,
+					xpath);
+
+    if(iriref_list != NULL){
+      ui_iriref = xmlNodeGetContent((xmlNode *) iriref_list->data);
+      
+      g_list_free(iriref_list);
+    }else{
+      ui_iriref = "uiext:";
     }
     
     /* name metadata */
@@ -1466,7 +1481,8 @@ ags_lv2_plugin_load_plugin(AgsBasePlugin *base_plugin)
     }
 
     /* check UI */
-    xpath = ".//rdf-pname-ln[text()='uiext:ui']/ancestor::*[self::rdf-verb][1]/following-sibling::*[self::rdf-object-list][1]//rdf-iriref";
+    xpath = g_strdup_printf(".//rdf-pname-ln[text()='%sui']/ancestor::*[self::rdf-verb][1]/following-sibling::*[self::rdf-object-list][1]//rdf-iriref",
+			    ui_iriref);
 
     ui_list = ags_turtle_find_xpath_with_context_node(turtle,
 						      xpath,
@@ -1491,6 +1507,8 @@ ags_lv2_plugin_load_plugin(AgsBasePlugin *base_plugin)
       g_list_free(ui_list);
     }
 
+    g_free(xpath);
+    
     /* load ports */
     xpath = ".//rdf-verb//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':port') + 1) = ':port']/ancestor::*[self::rdf-verb][1]/following-sibling::*[self::rdf-object-list]/rdf-object[.//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':index') + 1) = ':index']]";
     port_list = ags_turtle_find_xpath_with_context_node(turtle,

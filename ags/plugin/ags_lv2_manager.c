@@ -1282,7 +1282,7 @@ ags_lv2_manager_load_default_directory(AgsLv2Manager *lv2_manager)
 	
 	    //fwrite(buffer, size, sizeof(xmlChar), out);
 	    //fflush(out);
-	    //	xmlSaveFormatFileEnc("-", turtle->doc, "UTF-8", 1);
+	    //xmlSaveFormatFileEnc("-", turtle->doc, "UTF-8", 1);
 
 	    ttl_list = ttl_list->next;
 	  }

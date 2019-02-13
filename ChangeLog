@@ -1,3 +1,8 @@
+ags (2.1.55)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved ags_lv2_plugin.c to check UI iriref.
+
 ags (2.1.54)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
