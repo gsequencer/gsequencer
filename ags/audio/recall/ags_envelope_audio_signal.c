@@ -162,6 +162,7 @@ ags_envelope_audio_signal_run_inter(AgsRecall *recall)
   GList *note_start, *note;
   GList *stream_source;
 
+  guint length;
   guint frame_count;
   guint buffer_size;
   guint format;
@@ -306,6 +307,7 @@ ags_envelope_audio_signal_run_inter(AgsRecall *recall)
 	       "note", &note_start,
 	       "buffer-size", &buffer_size,
 	       "format", &format,
+	       "length", &length,
 	       NULL);
 
   note_offset = ags_soundcard_get_note_offset(AGS_SOUNDCARD(output_soundcard));
@@ -381,6 +383,8 @@ ags_envelope_audio_signal_run_inter(AgsRecall *recall)
       }else if(do_use_fixed_length){
 	/* calculuate frame count */
 	frame_count = current_fixed_length * (delay * buffer_size);
+      }else{
+	frame_count = length * buffer_size;
       }
 
       offset = 0;
