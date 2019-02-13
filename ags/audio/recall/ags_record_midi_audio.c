@@ -294,12 +294,12 @@ ags_record_midi_audio_init(AgsRecordMidiAudio *record_midi_audio)
 					     "plugin-name", ags_record_midi_audio_plugin_name,
 					     "specifier", ags_record_midi_audio_specifier[2],
 					     "control-port", ags_record_midi_audio_control_port[2],
-					     "port-value-is-pointer", FALSE,
-					     "port-value-type", G_TYPE_BOOLEAN,
+					     "port-value-is-pointer", TRUE,
+					     "port-value-type", G_TYPE_STRING,
 					     NULL);
   g_object_ref(record_midi_audio->filename);
 
-  record_midi_audio->filename->port_value.ags_port_boolean = TRUE;
+  record_midi_audio->filename->port_value.ags_port_string = NULL;
 
   /* add to port */
   port = g_list_prepend(port, record_midi_audio->filename);

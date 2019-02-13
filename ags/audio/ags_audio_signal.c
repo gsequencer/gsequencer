@@ -3250,12 +3250,12 @@ ags_audio_signal_feed(AgsAudioSignal *audio_signal,
       loop_frame_count = loop_length;
     }
     
-    ags_audio_signal_stream_resize(audio_signal,
-				   (guint) ceil(frame_count / buffer_size) + (delay + 3));
+    ags_audio_signal_stream_safe_resize(audio_signal,
+					(guint) ceil(frame_count / buffer_size));
   }else{
-    ags_audio_signal_stream_resize(audio_signal,
-				   (guint) ceil(frame_count / buffer_size) + (delay + 3));
-
+    ags_audio_signal_stream_safe_resize(audio_signal,
+					(guint) ceil(frame_count / buffer_size));
+    
     return;
   }
   

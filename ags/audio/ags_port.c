@@ -1249,7 +1249,9 @@ ags_port_real_safe_read(AgsPort *port, GValue *value)
   }else{
     data = NULL;
     
-    if(port->port_value_type == G_TYPE_POINTER){
+    if(port->port_value_type == G_TYPE_STRING){
+      data = g_strdup(port->port_value.ags_port_string);
+    }else if(port->port_value_type == G_TYPE_POINTER){
       data = port->port_value.ags_port_pointer;
     }else if(port->port_value_type == G_TYPE_OBJECT){
       data = port->port_value.ags_port_object;

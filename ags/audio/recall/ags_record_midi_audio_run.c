@@ -782,13 +782,12 @@ ags_record_midi_audio_run_run_init_pre(AgsRecall *recall)
 	       NULL);
 
   g_value_init(&value,
-	       G_TYPE_STRING);
+	       G_TYPE_POINTER);
 
   ags_port_safe_read(port,
 		     &value);
 
-  //FIXME:JK: memory leak?
-  filename = g_value_get_string(&value);
+  filename = g_value_get_pointer(&value);
 
   g_object_unref(port);  
 
@@ -806,6 +805,8 @@ ags_record_midi_audio_run_run_init_pre(AgsRecall *recall)
   g_object_unref(audio);
     
   g_object_unref(record_midi_audio);
+
+  g_free(filename);  
 }
 
 void
@@ -830,7 +831,7 @@ ags_record_midi_audio_run_run_pre(AgsRecall *recall)
   unsigned char *midi_buffer;
 
   glong division, tempo, bpm;
-  guint notation_counter;
+  guint64 notation_counter;
   gboolean reverse_mapping;
   gboolean pattern_mode;
   gboolean playback, record;

@@ -95,6 +95,7 @@ struct _AgsPort
     LADSPA_Data ags_port_ladspa;
     gdouble ags_port_double;
     AgsComplex ags_port_complex;
+    gchar *ags_port_string;
     gboolean *ags_port_boolean_ptr;
     gint64 *ags_port_int_ptr;
     guint64 *ags_port_uint_ptr;

@@ -167,7 +167,8 @@ ags_feed_audio_signal_run_pre(AgsRecall *recall)
 	AgsRecycling *recycling;
 
 	guint x0, x1;
-	guint samplerate;
+	guint buffer_size;
+	guint note_offset;
 	gdouble notation_delay;
 	guint frame_count;
 
@@ -180,7 +181,7 @@ ags_feed_audio_signal_run_pre(AgsRecall *recall)
 	
 	g_object_get(audio_signal,
 		     "recycling", &recycling,
-		     "samplerate", &samplerate,
+		     "buffer-size", &buffer_size,
 		     NULL);
       
 	if(recycling != NULL){
@@ -200,9 +201,10 @@ ags_feed_audio_signal_run_pre(AgsRecall *recall)
     
 	/* get notation delay */
 	notation_delay = ags_soundcard_get_absolute_delay(AGS_SOUNDCARD(output_soundcard));
+	note_offset = ags_soundcard_get_note_offset(AGS_SOUNDCARD(output_soundcard));
 
 	/* feed audio signal */
-	frame_count = (guint) (((gdouble) samplerate / notation_delay) * (gdouble) (x1 - x0 + 2));
+	frame_count = (guint) (((gdouble) buffer_size * notation_delay) * (gdouble) ((note_offset + 1) - x0));
 
 	ags_audio_signal_feed(audio_signal,
 			      template,
