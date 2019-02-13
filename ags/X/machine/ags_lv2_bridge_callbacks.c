@@ -667,8 +667,7 @@ ags_lv2_bridge_preset_changed_callback(GtkComboBox *combo_box, AgsLv2Bridge *lv2
   g_list_free_full(start_plugin_port,
 		   g_object_unref);
   
-  g_list_free_full(start_port_preset,
-		   g_object_unref);
+  g_list_free(start_port_preset);
 }
 
 void

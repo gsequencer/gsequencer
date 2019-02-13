@@ -152,6 +152,8 @@ gboolean ags_lv2_plugin_atom_sequence_remove_midi(void *atom_sequence,
 void ags_lv2_plugin_clear_atom_sequence(void *atom_sequence,
 					guint sequence_size);
 
+GList* ags_lv2_plugin_find_uri(GList *lv2_plugin,
+			       gchar *uri);
 GList* ags_lv2_plugin_find_pname(GList *lv2_plugin,
 				 gchar *pname);
 

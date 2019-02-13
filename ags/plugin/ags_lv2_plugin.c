@@ -2596,6 +2596,56 @@ ags_lv2_plugin_clear_atom_sequence(void *atom_sequence,
 }
 
 /**
+ * ags_lv2_plugin_find_uri:
+ * @lv2_plugin: a #GList-struct containig #AgsLv2Plugin
+ * @uri: the uri to find
+ * 
+ * Find uri in @lv2_plugin #GList-struct
+ * 
+ * Returns: the matching #GList-struct containing #AgsLv2Plugin
+ * 
+ * Since: 2.1.55
+ */
+GList*
+ags_lv2_plugin_find_uri(GList *lv2_plugin,
+			gchar *uri)
+{
+  gboolean success;
+  
+  pthread_mutex_t *base_plugin_mutex;
+
+  if(uri == NULL){
+    return(NULL);
+  }
+
+  while(lv2_plugin != NULL){
+    /* get base plugin mutex */
+    pthread_mutex_lock(ags_base_plugin_get_class_mutex());
+  
+    base_plugin_mutex = AGS_BASE_PLUGIN(lv2_plugin->data)->obj_mutex;
+  
+    pthread_mutex_unlock(ags_base_plugin_get_class_mutex());
+
+    /* check uri */
+    pthread_mutex_lock(base_plugin_mutex);
+    
+    success = (AGS_LV2_PLUGIN(lv2_plugin->data)->uri != NULL &&
+	       !g_ascii_strcasecmp(uri,
+				   AGS_LV2_PLUGIN(lv2_plugin->data)->uri)) ? TRUE: FALSE;
+
+    pthread_mutex_unlock(base_plugin_mutex);
+    
+    if(success){
+      return(lv2_plugin);
+    }
+    
+    lv2_plugin = lv2_plugin->next;
+  }
+
+  return(NULL);
+}
+
+/**
  * ags_lv2_plugin_find_pname:
  * @lv2_plugin: a #GList-struct containig #AgsLv2Plugin
  * @pname: the pname to find

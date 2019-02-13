@@ -1167,12 +1167,14 @@ ags_lv2_manager_load_default_directory(AgsLv2Manager *lv2_manager)
 	GList *ttl_list, *binary_list;
 	GList *preset_list;
 	GList *pname_list;
+	GList *iriref_list;
 	GList *list;
 	
 	gchar *manifest_filename;
 
 	gchar *turtle_path, *filename;
 	gchar *turtle_pname;
+	gchar *turtle_iriref;
 	
 	gchar *preset_path;
 	
@@ -1322,25 +1324,53 @@ ags_lv2_manager_load_default_directory(AgsLv2Manager *lv2_manager)
 	    continue;
 	  }
 
-	  /* turtle pname */
-	  xpath = ".//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':appliesto') + 1) = ':appliesto']/ancestor::*[self::rdf-verb][1]/following-sibling::*[self::rdf-object-list][1]//rdf-pname-ln";
-	  pname_list = ags_turtle_find_xpath_with_context_node(manifest,
-							       xpath,
-							       preset_list->data);
+	  /* turtle iriref/pname */
+	  turtle_iriref = NULL;
+	  turtle_pname = NULL;
 
-	  if(pname_list != NULL){
-	    turtle_pname = xmlNodeGetContent(pname_list->data);
-    
-	    g_list_free(pname_list);
+	  xpath = ".//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':appliesto') + 1) = ':appliesto']/ancestor::*[self::rdf-verb][1]/following-sibling::*[self::rdf-object-list][1]//rdf-iriref";
+	  iriref_list = ags_turtle_find_xpath_with_context_node(manifest,
+								xpath,
+								preset_list->data);
+	  
+	  if(iriref_list != NULL){
+	    gchar *str;
+
+	    str = xmlNodeGetContent(iriref_list->data);
+	    
+	    if(strlen(str) > 2){
+	      turtle_iriref = g_strndup(str + 1,
+					strlen(str) - 2);
+	    }
+	    
+	    g_list_free(iriref_list);
 	  }else{
-	    preset_list = preset_list->next;
-
-	    continue;
+	    xpath = ".//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':appliesto') + 1) = ':appliesto']/ancestor::*[self::rdf-verb][1]/following-sibling::*[self::rdf-object-list][1]//rdf-pname-ln";
+	    pname_list = ags_turtle_find_xpath_with_context_node(manifest,
+								 xpath,
+								 preset_list->data);
+	  
+	    if(pname_list != NULL){
+	      turtle_pname = xmlNodeGetContent(pname_list->data);
+    
+	      g_list_free(pname_list);
+	    }else{
+	      preset_list = preset_list->next;
+	      
+	      continue;
+	    }
 	  }
 
 	  /* find lv2 plugin by pname */
-	  list = ags_lv2_plugin_find_pname(lv2_manager->lv2_plugin,
-					   turtle_pname);	  
+	  list = NULL;
+	  
+	  if(turtle_iriref != NULL){
+	    list = ags_lv2_plugin_find_uri(lv2_manager->lv2_plugin,
+					   turtle_iriref);	  
+	  }else if(turtle_pname != NULL){
+	    list = ags_lv2_plugin_find_pname(lv2_manager->lv2_plugin,
+					     turtle_pname);	  
+	  }
 	  
 	  if(list == NULL){
 	    preset_list = preset_list->next;
@@ -1356,6 +1386,7 @@ ags_lv2_manager_load_default_directory(AgsLv2Manager *lv2_manager)
 	    preset = ags_turtle_new(g_strdup_printf("%s/%s",
 						    plugin_path,
 						    preset_path));
+
 	    ags_turtle_load(preset,
 			    NULL);
 	    ags_turtle_manager_add(ags_turtle_manager_get_instance(),

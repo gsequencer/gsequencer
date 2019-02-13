@@ -56,6 +56,7 @@ enum{
   PROP_BANK,
   PROP_PRESET_LABEL,
   PROP_TURTLE,
+  PROP_PORT_PRESET,
 };
 
 static gpointer ags_lv2_preset_parent_class = NULL;
@@ -189,6 +190,21 @@ ags_lv2_preset_class_init(AgsLv2PresetClass *lv2_preset)
   g_object_class_install_property(gobject,
 				  PROP_TURTLE,
 				  param_spec);
+
+  /**
+   * AgsLv2Preset:port-preset:
+   *
+   * The port preset.
+   * 
+   * Since: 2.1.55
+   */
+  param_spec = g_param_spec_pointer("port-preset",
+				    i18n_pspec("port-preset of the preset"),
+				    i18n_pspec("The port-preset this preset is located in"),
+				    G_PARAM_READABLE);
+  g_object_class_install_property(gobject,
+				  PROP_PORT_PRESET,
+				  param_spec);
 }
 
 void
@@ -219,6 +235,8 @@ ags_lv2_preset_init(AgsLv2Preset *lv2_preset)
   lv2_preset->preset_label = NULL;
 
   lv2_preset->turtle = NULL;
+
+  lv2_preset->port_preset = NULL;
 }
 
 
@@ -432,6 +450,15 @@ ags_lv2_preset_get_property(GObject *gobject,
       pthread_mutex_lock(lv2_preset_mutex);
 
       g_value_set_object(value, lv2_preset->turtle);
+
+      pthread_mutex_unlock(lv2_preset_mutex);
+    }
+    break;
+  case PROP_PORT_PRESET:
+    {
+      pthread_mutex_lock(lv2_preset_mutex);
+      
+      g_value_set_pointer(value, g_list_copy(lv2_preset->port_preset));
 
       pthread_mutex_unlock(lv2_preset_mutex);
     }

@@ -524,7 +524,7 @@ ags_live_lv2_bridge_preset_changed_callback(GtkComboBox *combo_box, AgsLiveLv2Br
   AgsLv2Preset *lv2_preset;
     
   GList *list, *list_start;
-  GList *port_preset;
+  GList *start_port_preset, *port_preset;
   GList *start_plugin_port, *plugin_port;
 
   gchar *preset_label;
@@ -558,7 +558,11 @@ ags_live_lv2_bridge_preset_changed_callback(GtkComboBox *combo_box, AgsLiveLv2Br
 	       "plugin-port", &start_plugin_port,
 	       NULL);
   
-  port_preset = lv2_preset->port_preset;
+  g_object_get(lv2_preset,
+	       "port-preset", &start_port_preset,
+	       NULL);
+
+  port_preset = start_port_preset;
   
   while(port_preset != NULL){
     plugin_port = ags_plugin_port_find_symbol(start_plugin_port,
@@ -614,4 +618,6 @@ ags_live_lv2_bridge_preset_changed_callback(GtkComboBox *combo_box, AgsLiveLv2Br
 
   g_list_free_full(start_plugin_port,
 		   g_object_unref);
+
+  g_list_free(start_port_preset);
 }
