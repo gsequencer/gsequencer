@@ -131,15 +131,15 @@ ags_stream_audio_signal_finalize(GObject *gobject)
     AgsDestroyWorker *destroy_worker;
 
     recycling = (AgsRecycling *) audio_signal->recycling;
+
+#ifdef AGS_DEBUG
+    g_message("%d %x -> %x", g_atomic_int_get(&(G_OBJECT(audio_signal)->ref_count)), audio_signal, AGS_RECALL_ID(audio_signal->recall_id)->recycling_context->parent);
+#endif
         
     if(recycling != NULL){
       ags_recycling_remove_audio_signal(recycling,
 					audio_signal);
     }
-
-#ifdef AGS_DEBUG
-    g_message("%d %x -> %x", g_atomic_int_get(&(G_OBJECT(audio_signal)->ref_count)), audio_signal, AGS_RECALL_ID(audio_signal->recall_id)->recycling_context->parent);
-#endif
 
     if(TRUE){
       destroy_worker = ags_destroy_worker_get_instance();

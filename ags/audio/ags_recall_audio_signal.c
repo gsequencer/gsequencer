@@ -322,6 +322,10 @@ ags_recall_audio_signal_finalize(GObject *gobject)
 
   recall_audio_signal = AGS_RECALL_AUDIO_SIGNAL(gobject);
 
+#ifdef AGS_DEBUG
+  g_message("- recall audio signal %s", G_OBJECT_TYPE_NAME(recall_audio_signal));
+#endif
+  
   /* destination */
   if(recall_audio_signal->destination != NULL){
     g_object_unref(recall_audio_signal->destination);

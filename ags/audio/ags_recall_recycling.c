@@ -887,7 +887,7 @@ ags_recall_recycling_source_add_audio_signal_callback(AgsRecycling *source,
 				       NULL);
 
 #ifdef AGS_DEBUG
-    g_message("recall recycling %s", G_OBJECT_TYPE_NAME(recall_audio_signal));
+    g_message(" + recall recycling %s", G_OBJECT_TYPE_NAME(recall_audio_signal));
 #endif
     
     ags_recall_add_child((AgsRecall *) recall_recycling, (AgsRecall *) recall_audio_signal);
@@ -1032,6 +1032,7 @@ ags_recall_recycling_source_remove_audio_signal_callback(AgsRecycling *source,
 	    AGS_CHANNEL(recall_recycling->source->channel)->line);
 #endif
 
+#if 0
   g_object_get(recall_recycling,
 	       "child", &list_start,
 	       NULL);
@@ -1046,6 +1047,7 @@ ags_recall_recycling_source_remove_audio_signal_callback(AgsRecycling *source,
 		 NULL);
     
     if(current_audio_signal == audio_signal){
+      g_message("- recall recycling %s", G_OBJECT_TYPE_NAME(recall_audio_signal));
       ags_recall_done((AgsRecall *) recall_audio_signal);
     }
 
@@ -1056,7 +1058,8 @@ ags_recall_recycling_source_remove_audio_signal_callback(AgsRecycling *source,
 
   g_list_free_full(list_start,
 		   g_object_unref);
-
+#endif
+  
 ags_recall_recycling_source_remove_audio_signal_callback_END:
   
   g_object_unref(recall_channel_run);
