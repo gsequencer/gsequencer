@@ -567,51 +567,54 @@ ags_live_lv2_bridge_preset_changed_callback(GtkComboBox *combo_box, AgsLiveLv2Br
   while(port_preset != NULL){
     plugin_port = ags_plugin_port_find_symbol(start_plugin_port,
 					      AGS_LV2_PORT_PRESET(port_preset->data)->port_symbol);
-    value = (gdouble) g_value_get_float(AGS_LV2_PORT_PRESET(port_preset->data)->port_value);
-    
-    list_start = 
-      list = gtk_container_get_children(container);
-    
-    while(list != NULL){
-      if(!g_strcmp0(AGS_BULK_MEMBER(list->data)->specifier,
-		    AGS_PLUGIN_PORT(plugin_port->data)->port_name)){
-	GtkWidget *child_widget;
 
-	//	AGS_BULK_MEMBER(list->data)->flags |= AGS_BULK_MEMBER_NO_UPDATE;
+    if(plugin_port != NULL){
+      value = (gdouble) g_value_get_float(AGS_LV2_PORT_PRESET(port_preset->data)->port_value);
+    
+      list_start = 
+	list = gtk_container_get_children(container);
+    
+      while(list != NULL){
+	if(!g_strcmp0(AGS_BULK_MEMBER(list->data)->specifier,
+		      AGS_PLUGIN_PORT(plugin_port->data)->port_name)){
+	  GtkWidget *child_widget;
 
-	child_widget = gtk_bin_get_child((GtkBin *) AGS_BULK_MEMBER(list->data));
+	  //	AGS_BULK_MEMBER(list->data)->flags |= AGS_BULK_MEMBER_NO_UPDATE;
+
+	  child_widget = gtk_bin_get_child((GtkBin *) AGS_BULK_MEMBER(list->data));
 	  
-	lv2_conversion = (AgsLv2Conversion *) AGS_BULK_MEMBER(list->data)->conversion;
+	  lv2_conversion = (AgsLv2Conversion *) AGS_BULK_MEMBER(list->data)->conversion;
 	  
-	if(GTK_IS_TOGGLE_BUTTON(child_widget)){
-	  if(value == 0.0){
-	    gtk_toggle_button_set_active((GtkToggleButton *) child_widget,
-					 FALSE);
-	  }else{
-	    gtk_toggle_button_set_active((GtkToggleButton *) child_widget,
-					 TRUE);
-	  }
-	}else if(AGS_IS_DIAL(child_widget)){
+	  if(GTK_IS_TOGGLE_BUTTON(child_widget)){
+	    if(value == 0.0){
+	      gtk_toggle_button_set_active((GtkToggleButton *) child_widget,
+					   FALSE);
+	    }else{
+	      gtk_toggle_button_set_active((GtkToggleButton *) child_widget,
+					   TRUE);
+	    }
+	  }else if(AGS_IS_DIAL(child_widget)){
 	    
-	  if(lv2_conversion != NULL){
-	    //	      val = ags_lv2_conversion_convert(lv2_conversion,
-	    //				  value,
-	    //				  TRUE);
-	  }
+	    if(lv2_conversion != NULL){
+	      //	      val = ags_lv2_conversion_convert(lv2_conversion,
+	      //				  value,
+	      //				  TRUE);
+	    }
 	    
-	  gtk_adjustment_set_value(AGS_DIAL(child_widget)->adjustment,
-				   value);
-	  ags_dial_draw((AgsDial *) child_widget);
-	}
+	    gtk_adjustment_set_value(AGS_DIAL(child_widget)->adjustment,
+				     value);
+	    ags_dial_draw((AgsDial *) child_widget);
+	  }
 	
-	//	AGS_BULK_MEMBER(list->data)->flags &= (~AGS_BULK_MEMBER_NO_UPDATE);
-	break;
+	  //	AGS_BULK_MEMBER(list->data)->flags &= (~AGS_BULK_MEMBER_NO_UPDATE);
+	  break;
+	}
+
+	list = list->next;
       }
 
-      list = list->next;
+      g_list_free(list_start);
     }
-
-    g_list_free(list_start);
     
     port_preset = port_preset->next;
   }

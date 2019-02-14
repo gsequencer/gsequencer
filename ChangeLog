@@ -4,6 +4,7 @@ ags (2.1.56)
 	* improved ags_devout.c and ags_midiin.c to use ALSA hints
 	* enabled third mode of ags-envelope by audio signal length
 	* enabled ags-envelope mode use-note-length of AgsSyncsynth and AgsFFPlayer
+	* fixed potential SIGSEGV of LV2 presets in AgsLv2Bridge and AgsLiveLv2Bridge callbacks
 
 ags (2.1.55)
 
