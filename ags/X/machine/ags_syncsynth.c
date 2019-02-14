@@ -831,7 +831,7 @@ ags_syncsynth_resize_audio_channels(AgsMachine *machine,
 				    gpointer data)
 {
   AgsAudio *audio;
-  AgsChannel *output;
+  AgsChannel *output, *input;
   AgsChannel *channel, *next_pad;
 
   guint output_pads, input_pads;
@@ -843,10 +843,15 @@ ags_syncsynth_resize_audio_channels(AgsMachine *machine,
 	       "output-pads", &output_pads,
 	       "input-pads", &input_pads,
 	       "output", &output,
+	       "input", &input,
 	       NULL);
 
   if(output != NULL){
     g_object_unref(output);
+  }
+
+  if(input != NULL){
+    g_object_unref(input);
   }
 
   if(audio_channels > audio_channels_old){
@@ -863,8 +868,8 @@ ags_syncsynth_resize_audio_channels(AgsMachine *machine,
 	g_object_unref(next_pad);
       }
 
-      channel = ags_channel_pad_nth(channel,
-				    audio_channels_old);
+      channel = ags_channel_nth(channel,
+				audio_channels_old);
 
       while(channel != next_pad){
 	AgsRecycling *recycling;
@@ -917,7 +922,93 @@ ags_syncsynth_resize_audio_channels(AgsMachine *machine,
 			       AGS_RECALL_FACTORY_RECALL | 
 			       AGS_RECALL_FACTORY_ADD),
 			      0);
+    
+    /* AgsInput */
+    channel = input;
 
+    while(channel != NULL){
+      /* get some fields */
+      g_object_get(channel,
+		   "next-pad", &next_pad,
+		   NULL);
+
+      if(next_pad != NULL){
+	g_object_unref(next_pad);
+      }
+
+      channel = ags_channel_nth(channel,
+				audio_channels_old);
+
+      while(channel != next_pad){
+	AgsPort *port;
+      
+	GList *start_play, *play;
+	GList *start_recall, *recall;
+
+	g_object_get(channel,
+		     "play", &start_play,
+		     "recall", &start_recall,
+		     NULL);
+
+	/* play */
+	play = ags_recall_find_type(start_play,
+				    AGS_TYPE_ENVELOPE_CHANNEL);
+      
+	if(play != NULL){
+	  GValue value = {0};
+      
+	  g_object_get(play->data,
+		       "use-note-length", &port,
+		       NULL);
+
+	  g_value_init(&value,
+		       G_TYPE_BOOLEAN);
+	  g_value_set_boolean(&value,
+			      TRUE);
+
+	  ags_port_safe_write(port,
+			      &value);
+	
+	  g_object_unref(port);
+	}
+
+	g_list_free(start_play);
+
+	/* recall */
+	recall = ags_recall_find_type(start_recall,
+				      AGS_TYPE_ENVELOPE_CHANNEL);
+      
+	if(recall != NULL){
+	  GValue value = {0};
+      
+	  g_object_get(recall->data,
+		       "use-note-length", &port,
+		       NULL);
+
+	  g_value_init(&value,
+		       G_TYPE_BOOLEAN);
+	  g_value_set_boolean(&value,
+			      TRUE);
+
+	  ags_port_safe_write(port,
+			      &value);
+	
+	  g_object_unref(port);
+	}
+
+	g_list_free(start_recall);
+
+	/* iterate */
+	g_object_get(channel,
+		     "next", &channel,
+		     NULL);
+
+	if(channel != NULL){
+	  g_object_unref(channel);
+	}
+      }
+    }
+    
     if(ags_recall_global_get_rt_safe() ||
        ags_recall_global_get_performance_mode()){
       /* ags-copy */
@@ -1105,8 +1196,8 @@ ags_syncsynth_input_map_recall(AgsSyncsynth *syncsynth,
 			       guint input_pad_start)
 {
   AgsAudio *audio;
-
-  GList *list;
+  AgsChannel *input;
+  AgsChannel *channel;
 
   guint input_pads;
   guint audio_channels;
@@ -1121,8 +1212,13 @@ ags_syncsynth_input_map_recall(AgsSyncsynth *syncsynth,
   g_object_get(audio,
 	       "input-pads", &input_pads,
 	       "audio-channels", &audio_channels,
+	       "input", &input,
 	       NULL);
 
+  if(input != NULL){
+    g_object_unref(input);
+  }
+  
   /* ags-envelope */
   ags_recall_factory_create(audio,
 			    NULL, NULL,
@@ -1135,6 +1231,78 @@ ags_syncsynth_input_map_recall(AgsSyncsynth *syncsynth,
 			     AGS_RECALL_FACTORY_ADD),
 			    0);
 
+  channel = ags_channel_pad_nth(input,
+				input_pad_start);
+    
+  while(channel != NULL){
+    AgsPort *port;
+      
+    GList *start_play, *play;
+    GList *start_recall, *recall;
+
+    g_object_get(channel,
+		 "play", &start_play,
+		 "recall", &start_recall,
+		 NULL);
+
+    /* play */
+    play = ags_recall_find_type(start_play,
+				AGS_TYPE_ENVELOPE_CHANNEL);
+      
+    if(play != NULL){
+      GValue value = {0};
+      
+      g_object_get(play->data,
+		   "use-note-length", &port,
+		   NULL);
+
+      g_value_init(&value,
+		   G_TYPE_BOOLEAN);
+      g_value_set_boolean(&value,
+			  TRUE);
+
+      ags_port_safe_write(port,
+			  &value);
+	
+      g_object_unref(port);
+    }
+
+    g_list_free(start_play);
+
+    /* recall */
+    recall = ags_recall_find_type(start_recall,
+				  AGS_TYPE_ENVELOPE_CHANNEL);
+      
+    if(recall != NULL){
+      GValue value = {0};
+      
+      g_object_get(recall->data,
+		   "use-note-length", &port,
+		   NULL);
+
+      g_value_init(&value,
+		   G_TYPE_BOOLEAN);
+      g_value_set_boolean(&value,
+			  TRUE);
+
+      ags_port_safe_write(port,
+			  &value);
+	
+      g_object_unref(port);
+    }
+
+    g_list_free(start_recall);
+
+    /* iterate */
+    g_object_get(channel,
+		 "next", &channel,
+		 NULL);
+
+    if(channel != NULL){
+      g_object_unref(channel);
+    }
+  }
+  
   /* remap for input */
   if(ags_recall_global_get_rt_safe() ||
      ags_recall_global_get_performance_mode()){
