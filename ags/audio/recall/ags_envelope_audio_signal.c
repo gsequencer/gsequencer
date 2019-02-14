@@ -148,7 +148,7 @@ ags_envelope_audio_signal_finalize(GObject *gobject)
 void
 ags_envelope_audio_signal_run_inter(AgsRecall *recall)
 {
-  AgsAudioSignal *source;
+  AgsAudioSignal *source, *rt_template;
   AgsPort *use_note_length;
   AgsPort *use_fixed_length;
   AgsPort *fixed_length;
@@ -304,12 +304,20 @@ ags_envelope_audio_signal_run_inter(AgsRecall *recall)
   /* initialize some control values */
   g_object_get(source,
 	       "output-soundcard", &output_soundcard,
+	       "rt-template", &rt_template,
 	       "note", &note_start,
 	       "buffer-size", &buffer_size,
 	       "format", &format,
 	       "length", &length,
 	       NULL);
 
+  if(ags_recall_global_get_rt_safe() &&
+     rt_template != NULL){
+    g_object_get(rt_template,
+		 "length", &length,
+		 NULL);
+  }
+  
   note_offset = ags_soundcard_get_note_offset(AGS_SOUNDCARD(output_soundcard));
   delay_counter = ags_soundcard_get_delay_counter(AGS_SOUNDCARD(output_soundcard));
   
@@ -631,6 +639,10 @@ ags_envelope_audio_signal_run_inter(AgsRecall *recall)
   /* unref */
   g_object_unref(source);
 
+  if(rt_template != NULL){
+    g_object_unref(rt_template);
+  }
+  
   g_object_unref(envelope_recycling);
 
   g_object_unref(envelope_channel_run);
