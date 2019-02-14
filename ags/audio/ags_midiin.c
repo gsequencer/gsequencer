@@ -1286,6 +1286,9 @@ ags_midiin_list_cards(AgsSequencer *sequencer,
     card_num = -1;
 
     while(TRUE){
+      char *iface;
+      char **hints, **iter;
+
       error = snd_card_next(&card_num);
 
       if(card_num < 0){
@@ -1300,6 +1303,8 @@ ags_midiin_list_cards(AgsSequencer *sequencer,
       error = snd_ctl_open(&card_handle, str, 0);
 
       if(error < 0){
+	g_free(str);
+
 	continue;
       }
 
@@ -1307,6 +1312,9 @@ ags_midiin_list_cards(AgsSequencer *sequencer,
       error = snd_ctl_card_info(card_handle, card_info);
 
       if(error < 0){
+	snd_ctl_close(card_handle);
+	g_free(str);
+	
 	continue;
       }
 
@@ -1314,15 +1322,32 @@ ags_midiin_list_cards(AgsSequencer *sequencer,
       error = snd_ctl_rawmidi_next_device(card_handle, &device);
     
       if(error < 0){
+	snd_ctl_close(card_handle);
+	g_free(str);
+	
 	continue;
       }
 
-      if(card_id != NULL){
-	*card_id = g_list_prepend(*card_id, str);
-      }
-      
-      if(card_name != NULL){
-	*card_name = g_list_prepend(*card_name, g_strdup(snd_ctl_card_info_get_name(card_info)));
+      iface = "rawmidi";
+      hints = NULL;
+            
+      error = snd_device_name_hint(card_num,
+				   iface,
+				   &hints);
+
+      if(hints != NULL){
+	for(iter = hints; iter[0] != NULL; iter++){
+	  if(card_id != NULL){
+	    *card_id = g_list_prepend(*card_id, g_strdup(snd_device_name_get_hint(iter[0],
+										  "NAME")));
+	  }
+
+	  if(card_name != NULL){
+	    *card_name = g_list_prepend(*card_name, g_strdup(snd_ctl_card_info_get_name(card_info)));
+	  }
+	}
+
+	snd_device_name_free_hint(hints);
       }
       
       snd_ctl_close(card_handle);

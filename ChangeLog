@@ -1,3 +1,9 @@
+ags (2.1.56)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved ags_devout.c and ags_midiin.c to use ALSA hints
+	* enabled third mode of ags-envelope by audio signal length
+
 ags (2.1.55)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
