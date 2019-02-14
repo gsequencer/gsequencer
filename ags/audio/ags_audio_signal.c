@@ -3485,7 +3485,7 @@ ags_audio_signal_get_template(GList *audio_signal)
 }
 
 /**
- * ags_audio_signal_get_template:
+ * ags_audio_signal_get_rt_template:
  * @audio_signal: a #GList-struct containing #AgsAudioSignal
  *
  * Retrieve the realtime template audio signal.

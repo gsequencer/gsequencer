@@ -193,7 +193,7 @@ ags_output_listing_editor_disconnect(AgsConnectable *connectable)
     return;
   }
 
-  ags_output_listing_editor_parent_connectable_interface->connect(connectable);
+  ags_output_listing_editor_parent_connectable_interface->disconnect(connectable);
 
   connection_editor = (AgsConnectionEditor *) gtk_widget_get_ancestor(GTK_WIDGET(output_listing_editor),
 								      AGS_TYPE_CONNECTION_EDITOR);
@@ -214,7 +214,7 @@ ags_output_listing_editor_disconnect(AgsConnectable *connectable)
 
     while(pad_editor != NULL){
       ags_connectable_disconnect(AGS_CONNECTABLE(pad_editor->data));
-
+      
       pad_editor = pad_editor->next;
     }
   

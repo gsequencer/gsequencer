@@ -141,7 +141,7 @@ ags_property_editor_disconnect(AgsConnectable *connectable)
   }
 
   property_editor->flags &= (~AGS_PROPERTY_EDITOR_CONNECTED);
-  
+
   g_object_disconnect(property_editor->enabled,
 		      "any_signal::toggled",
 		      G_CALLBACK(ags_property_editor_enable_callback),

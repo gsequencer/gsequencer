@@ -713,6 +713,7 @@ ags_recall_lv2_set_ports(AgsPlugin *plugin, GList *port)
 #endif
 	}
 
+	g_value_unset(default_value);
 	g_free(default_value);
 	g_free(specifier);
       }else if(ags_plugin_port_test_flags(current_plugin_port,
@@ -1175,6 +1176,7 @@ ags_recall_lv2_load_ports(AgsRecallLv2 *recall_lv2)
 	pthread_mutex_unlock(plugin_port_mutex);
 
 	if(specifier == NULL){
+	  g_value_unset(default_value);
 	  g_free(default_value);
 	  
 	  plugin_port = plugin_port->next;
@@ -1235,6 +1237,7 @@ ags_recall_lv2_load_ports(AgsRecallLv2 *recall_lv2)
 	port = g_list_prepend(port,
 			      current_port);
 
+	g_value_unset(default_value);
 	g_free(default_value);
 	g_free(plugin_name);
 	g_free(specifier);

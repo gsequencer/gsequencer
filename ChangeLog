@@ -1,3 +1,11 @@
+ags (2.1.57)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved ags_devin.c to use ALSA hints
+	* improved AgsAudioSignal access in ags_recycling.c
+	* fixed memory leak in ags_recycling.c as retrieving audio signal template
+	* fixed accessing AgsConnectable::connect() of AgsOutputListingEditor and AgsInputListingEditor during disconnect
+
 ags (2.1.56)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

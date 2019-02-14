@@ -1357,6 +1357,11 @@ ags_count_beats_audio_notify_output_soundcard_callback(GObject *gobject,
   ags_port_safe_write(midi_loop_end,
 		      &loop_end_value);
 
+  /* unset value */
+  g_value_unset(&do_loop_value);
+  g_value_unset(&loop_start_value);
+  g_value_unset(&loop_end_value);
+
   /* unref */
   g_object_unref(output_soundcard);
 

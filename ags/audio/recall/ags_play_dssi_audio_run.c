@@ -1411,6 +1411,8 @@ ags_play_dssi_audio_run_run_pre(AgsRecall *recall)
 			   &value);
 	
 	play_dssi_audio_run->port_data[i] = g_value_get_float(&value);
+
+	g_value_unset(&value);
 	
 	break;
       }
@@ -1496,6 +1498,8 @@ ags_play_dssi_audio_run_run_pre(AgsRecall *recall)
 			port_data);
       ags_port_safe_write(current_port,
 			  &value);
+
+      g_value_unset(&value);
     }
   }
 

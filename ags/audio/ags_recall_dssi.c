@@ -510,6 +510,7 @@ ags_recall_dssi_set_ports(AgsPlugin *plugin, GList *port)
 #endif
 	}
 
+	g_value_unset(default_value);
 	g_free(default_value);
 	g_free(specifier);
       }else if(ags_plugin_port_test_flags(current_plugin_port,
@@ -850,6 +851,7 @@ ags_recall_dssi_load_ports(AgsRecallDssi *recall_dssi)
 	port = g_list_prepend(port,
 			      current_port);
 
+	g_value_unset(default_value);
 	g_free(default_value);
 	g_free(plugin_name);
 	g_free(specifier);

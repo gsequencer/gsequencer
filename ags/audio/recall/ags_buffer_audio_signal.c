@@ -258,6 +258,8 @@ ags_buffer_audio_signal_run_init_pre(AgsRecall *recall)
   /* call parent */
   parent_class_run_init_pre(recall);
 
+  //g_object_unref(destination);
+  
   g_object_unref(output_soundcard);
   
   g_object_unref(buffer_recycling);

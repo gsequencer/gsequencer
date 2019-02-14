@@ -1546,6 +1546,8 @@ ags_delay_audio_notify_output_soundcard_after_callback(GObject *gobject,
   ags_port_safe_write(midi_duration,
 		      &value);
 
+  g_value_unset(&value);
+  
   g_object_unref(midi_duration);
 
   g_object_unref(output_soundcard);
@@ -1885,7 +1887,8 @@ ags_delay_audio_change_bpm(AgsTactable *tactable, gdouble new_bpm, gdouble old_b
   g_object_unref(midi_duration);
 
   /* -- finish adjust -- */
-
+  g_value_unset(&value);
+  
   /* emit changed */
   ags_delay_audio_sequencer_duration_changed(delay_audio);
   ags_delay_audio_notation_duration_changed(delay_audio);
@@ -2006,7 +2009,8 @@ ags_delay_audio_change_tact(AgsTactable *tactable, gdouble new_tact, gdouble old
   g_object_unref(midi_duration);
 
   /* -- finish adjust -- */
-
+  g_value_unset(&value);
+  
   /* emit changed */
   ags_delay_audio_sequencer_duration_changed(delay_audio);
   ags_delay_audio_notation_duration_changed(delay_audio);
@@ -2116,7 +2120,8 @@ ags_delay_audio_refresh_delay(AgsDelayAudio *delay_audio)
   g_object_unref(midi_duration);
   
   /* -- finish adjust -- */
-
+  g_value_unset(&value);
+  
   /* emit changed */
   ags_delay_audio_sequencer_duration_changed(delay_audio);
   ags_delay_audio_notation_duration_changed(delay_audio);
@@ -2158,6 +2163,8 @@ ags_delay_audio_change_sequencer_duration(AgsTactable *tactable, guint64 duratio
   ags_port_safe_write(sequencer_duration,
 		      &value);
 
+  g_value_unset(&value);
+
   g_object_unref(sequencer_duration);
 
   /* emit changed */
@@ -2198,6 +2205,8 @@ ags_delay_audio_change_notation_duration(AgsTactable *tactable, guint64 duration
   ags_port_safe_write(notation_duration,
 		      &value);
 
+  g_value_unset(&value);
+
   g_object_unref(notation_duration);
 
   /* emit changed */
@@ -2235,6 +2244,8 @@ ags_delay_audio_change_wave_duration(AgsTactable *tactable, guint64 duration)
 
   ags_port_safe_write(wave_duration,
 		      &value);
+
+  g_value_unset(&value);
 
   g_object_unref(wave_duration);
 
@@ -2275,6 +2286,8 @@ ags_delay_audio_change_midi_duration(AgsTactable *tactable, guint64 duration)
 
   ags_port_safe_write(midi_duration,
 		      &value);
+
+  g_value_unset(&value);
 
   g_object_unref(midi_duration);
 

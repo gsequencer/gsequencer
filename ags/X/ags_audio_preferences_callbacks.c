@@ -98,12 +98,14 @@ ags_audio_preferences_add_callback(GtkWidget *widget, AgsAudioPreferences *audio
   
   list =
     start_list = gtk_container_get_children((GtkContainer *) audio_preferences->soundcard_editor);
-  
+
+#if 0  
   if(list != NULL){
     gtk_widget_set_sensitive((GtkWidget *) soundcard_editor->buffer_size,
 			     FALSE);
   }
-
+#endif
+  
   g_list_free(start_list);
   
   gtk_box_pack_start((GtkBox *) audio_preferences->soundcard_editor,
@@ -151,12 +153,14 @@ ags_audio_preferences_remove_soundcard_editor_callback(GtkWidget *button,
   /*  */
   list =
     start_list = gtk_container_get_children((GtkContainer *) audio_preferences->soundcard_editor);
-  
+
+#if 0  
   if(list != NULL){
     gtk_widget_set_sensitive((GtkWidget *) AGS_SOUNDCARD_EDITOR(list->data)->buffer_size,
 			     TRUE);
   }
-
+#endif
+  
   g_list_free(start_list);
 }
 

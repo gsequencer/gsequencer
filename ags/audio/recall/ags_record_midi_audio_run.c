@@ -789,6 +789,7 @@ ags_record_midi_audio_run_run_init_pre(AgsRecall *recall)
 
   filename = g_value_get_pointer(&value);
 
+  g_value_unset(&value);
   g_object_unref(port);  
 
   /* instantiate midi file and open rw */
@@ -984,6 +985,7 @@ ags_record_midi_audio_run_run_pre(AgsRecall *recall)
 
   bpm = g_value_get_int64(&value);
 
+  g_value_unset(&value);
   g_object_unref(port);
   
   /* retrieve buffer */

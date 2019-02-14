@@ -848,6 +848,7 @@ ags_capture_wave_channel_run_run_pre(AgsRecall *recall)
 
   do_loop = g_value_get_boolean(&do_loop_value);
 
+  g_value_unset(&do_loop_value);
   g_object_unref(port);
   
   if(do_loop){
@@ -868,6 +869,7 @@ ags_capture_wave_channel_run_run_pre(AgsRecall *recall)
 
     loop_end = g_value_get_uint64(&loop_end_value);
 
+    g_value_unset(&loop_end_value);
     g_object_unref(port);
     
     if(x_offset / buffer_size / delay >= loop_end){
@@ -882,6 +884,7 @@ ags_capture_wave_channel_run_run_pre(AgsRecall *recall)
 			 &loop_start_value);
 
       loop_start = g_value_get_uint64(&loop_start_value);
+      g_value_unset(&loop_start_value);
 
       g_object_unref(port);
       
@@ -904,7 +907,8 @@ ags_capture_wave_channel_run_run_pre(AgsRecall *recall)
 
   ags_port_safe_write(port,
 		      &x_offset_value);
-  
+
+  g_value_unset(&x_offset_value);
   g_object_unref(port);
       
   /* call parent */

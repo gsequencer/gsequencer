@@ -1120,6 +1120,8 @@ ags_count_beats_audio_run_seek(AgsSeekable *seekable,
 		     &value);
   duration = g_value_get_uint64(&value);
 
+  g_value_unset(&value);
+  
   switch(whence){
   case AGS_SEEK_CUR:
     {

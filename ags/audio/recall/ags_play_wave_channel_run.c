@@ -596,7 +596,8 @@ ags_play_wave_channel_run_run_inter(AgsRecall *recall)
 		     &do_loop_value);
 
   do_loop = g_value_get_boolean(&do_loop_value);
-
+  g_value_unset(&do_loop_value);
+  
   if(do_loop){
     guint64 loop_start, loop_end;
     
@@ -614,6 +615,7 @@ ags_play_wave_channel_run_run_inter(AgsRecall *recall)
 		       &loop_end_value);
 
     loop_end = g_value_get_uint64(&loop_end_value);
+    g_value_unset(&loop_end_value);
     
     if(x_offset / buffer_size / delay >= loop_end){
       g_object_get(play_wave_audio,
@@ -627,6 +629,7 @@ ags_play_wave_channel_run_run_inter(AgsRecall *recall)
 			 &loop_start_value);
       
       loop_start = g_value_get_uint64(&loop_start_value);
+      g_value_unset(&loop_start_value);
 
       x_offset = (relative_offset * floor((delay * buffer_size * loop_start) / relative_offset)) + ((guint64) (delay * buffer_size * loop_start) % relative_offset);
     }
@@ -649,6 +652,9 @@ ags_play_wave_channel_run_run_inter(AgsRecall *recall)
 
   ags_port_safe_write(port,
 		      &x_offset_value);
+
+  g_value_unset(&x_offset_value);
+  g_object_unref(port);
 
   /* unref */
   g_object_unref(output_soundcard);

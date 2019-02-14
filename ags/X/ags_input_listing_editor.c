@@ -193,7 +193,7 @@ ags_input_listing_editor_disconnect(AgsConnectable *connectable)
     return;
   }
 
-  ags_input_listing_editor_parent_connectable_interface->connect(connectable);
+  ags_input_listing_editor_parent_connectable_interface->disconnect(connectable);
 
   connection_editor = (AgsConnectionEditor *) gtk_widget_get_ancestor(GTK_WIDGET(input_listing_editor),
 								      AGS_TYPE_CONNECTION_EDITOR);

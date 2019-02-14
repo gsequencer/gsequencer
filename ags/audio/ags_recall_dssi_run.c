@@ -875,6 +875,8 @@ ags_recall_dssi_run_run_pre(AgsRecall *recall)
 			   &value);
 	
 	recall_dssi_run->port_data[i] = g_value_get_float(&value);
+
+	g_value_unset(&value);
 	
 	break;
       }
@@ -954,6 +956,8 @@ ags_recall_dssi_run_run_pre(AgsRecall *recall)
 			port_data);
       ags_port_safe_write(current_port,
 			  &value);
+
+      g_value_unset(&value);
     }
   }
 

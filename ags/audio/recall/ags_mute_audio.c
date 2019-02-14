@@ -369,6 +369,7 @@ ags_mute_audio_set_muted(AgsMutable *mutable, gboolean muted)
   ags_port_safe_write(port,
 		      &value);
 
+  g_value_unset(&value);
   g_object_unref(port);
 }
 

@@ -981,6 +981,8 @@ ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *delay_au
 				  "ratio",
 				  &value);
 	  }
+
+	  g_value_unset(&value);
 	}
 		  
 	if(!ags_recall_global_get_rt_safe()){
@@ -1006,7 +1008,7 @@ ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *delay_au
 		       NULL);
 
 	  g_object_unref(copy_note);
-	  g_object_unref(audio_signal);
+	  //g_object_unref(audio_signal);
 	}else{
 	  GList *list_start, *list;
 
