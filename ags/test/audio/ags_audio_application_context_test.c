@@ -169,6 +169,10 @@ main(int argc, char **argv)
   putenv("LC_ALL=C\0");
   putenv("LANG=C\0");
 
+  putenv("LADSPA_PATH=\"\"");
+  putenv("DSSI_PATH=\"\"");
+  putenv("LV2_PATH=\"\"");
+
   /* initialize the CUnit test registry */
   if(CUE_SUCCESS != CU_initialize_registry()){
     return CU_get_error();

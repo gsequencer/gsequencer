@@ -52,6 +52,7 @@ typedef enum{
   AGS_LIVE_LV2_BRIDGE_BULK_OUTPUT      = 1 <<  1,
   AGS_LIVE_LV2_BRIDGE_DISPLAY_OUTPUT   = 1 <<  2,
   AGS_LIVE_LV2_BRIDGE_BULK_INPUT       = 1 <<  3,
+  AGS_LIVE_LV2_BRIDGE_NO_UPDATE        = 1 <<  4,
 }AgsLiveLv2BridgeFlags;
 
 struct _AgsLiveLv2Bridge
@@ -90,6 +91,7 @@ struct _AgsLiveLv2Bridge
   GtkComboBoxText *program;
   GtkComboBoxText *preset;
 
+  LV2UI_Descriptor *ui_descriptor;
   LV2_Feature **ui_feature;
   LV2UI_Handle ui_handle;
 

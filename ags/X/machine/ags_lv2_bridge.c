@@ -432,9 +432,12 @@ ags_lv2_bridge_init(AgsLv2Bridge *lv2_bridge)
   lv2_bridge->gui_filename = NULL;
   lv2_bridge->gui_uri = NULL;
 
+  lv2_bridge->ui_descriptor = NULL;
+  lv2_bridge->ui_feature = NULL;
   lv2_bridge->ui_handle = NULL;
   
   lv2_bridge->lv2_gui = NULL;
+  lv2_bridge->ui_widget = NULL;
 
   lv2_bridge->lv2_window = NULL;
 

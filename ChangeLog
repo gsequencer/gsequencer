@@ -1,9 +1,12 @@
 ags (2.1.57)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented ags_effect_bulk_indicator_queue_draw_timeout() updating bulk member
+	* disabled ladspa, dssi and lv2 for unit-tests by setting appropriate path
 	* improved ags_devin.c to use ALSA hints
 	* improved AgsAudioSignal access in ags_recycling.c
 	* improved usage of g_value_unset()
+	* improved removing threads in ags_apply_sound_config.c
 	* fixed memory leak in ags_recycling.c as retrieving audio signal template
 	* fixed accessing AgsConnectable::connect() of AgsOutputListingEditor and AgsInputListingEditor during disconnect
 	* fixed missing object unref in ags_buffer_audio_signal_run_init_pre()

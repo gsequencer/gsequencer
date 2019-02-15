@@ -3231,6 +3231,44 @@ ags_effect_bulk_indicator_queue_draw_timeout(GtkWidget *widget)
 {
   if(g_hash_table_lookup(ags_effect_bulk_indicator_queue_draw,
 			 widget) != NULL){
+    AgsBulkMember *bulk_member;
+
+    GList *list;
+
+    gdouble val;
+    
+    bulk_member = gtk_widget_get_ancestor(widget,
+					  AGS_TYPE_BULK_MEMBER);
+
+    list = bulk_member->bulk_port;
+
+    val = 0.0;
+    
+    while(list != NULL){
+      GValue value = {0,};
+
+      g_value_init(&value,
+		   G_TYPE_FLOAT);
+
+      ags_port_safe_read(AGS_BULK_PORT(list->data)->port,
+			 &value);
+
+      val += g_value_get_float(&value);
+      
+      list = list->next;
+    }
+
+    if(AGS_IS_LED(widget)){
+      if(val != 0.0){
+	ags_led_set_active(widget);
+      }else{
+	ags_led_unset_active(widget);
+      }
+    }else if(AGS_IS_INDICATOR(widget)){
+      gtk_adjustment_set_value(AGS_INDICATOR(widget)->adjustment,
+			       val);
+    }
+    
     gtk_widget_queue_draw(widget);
     
     return(TRUE);

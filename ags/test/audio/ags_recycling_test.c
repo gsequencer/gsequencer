@@ -181,9 +181,9 @@ ags_recycling_test_create_audio_signal_with_defaults()
 				  NULL);
   template->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;
   g_object_set(G_OBJECT(template),
-	       "samplerate\0", AGS_RECYCLING_TEST_CREATE_AUDIO_SIGNAL_WITH_DEFAULTS_SAMPLERATE,
-	       "buffer-size\0", AGS_RECYCLING_TEST_CREATE_AUDIO_SIGNAL_WITH_DEFAULTS_BUFFER_SIZE,
-	       "format\0", AGS_RECYCLING_TEST_CREATE_AUDIO_SIGNAL_WITH_DEFAULTS_FORMAT,
+	       "samplerate", AGS_RECYCLING_TEST_CREATE_AUDIO_SIGNAL_WITH_DEFAULTS_SAMPLERATE,
+	       "buffer-size", AGS_RECYCLING_TEST_CREATE_AUDIO_SIGNAL_WITH_DEFAULTS_BUFFER_SIZE,
+	       "format", AGS_RECYCLING_TEST_CREATE_AUDIO_SIGNAL_WITH_DEFAULTS_FORMAT,
 	       NULL);
 
   /* fill stream */
@@ -314,9 +314,9 @@ ags_recycling_test_create_audio_signal_with_frame_count()
 				  NULL);
   template->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;
   g_object_set(G_OBJECT(template),
-	       "samplerate\0", AGS_RECYCLING_TEST_CREATE_AUDIO_SIGNAL_WITH_FRAME_COUNT_SAMPLERATE,
-	       "buffer-size\0", AGS_RECYCLING_TEST_CREATE_AUDIO_SIGNAL_WITH_FRAME_COUNT_BUFFER_SIZE,
-	       "format\0", AGS_RECYCLING_TEST_CREATE_AUDIO_SIGNAL_WITH_FRAME_COUNT_FORMAT,
+	       "samplerate", AGS_RECYCLING_TEST_CREATE_AUDIO_SIGNAL_WITH_FRAME_COUNT_SAMPLERATE,
+	       "buffer-size", AGS_RECYCLING_TEST_CREATE_AUDIO_SIGNAL_WITH_FRAME_COUNT_BUFFER_SIZE,
+	       "format", AGS_RECYCLING_TEST_CREATE_AUDIO_SIGNAL_WITH_FRAME_COUNT_FORMAT,
 	       NULL);
 
   /* fill stream */
@@ -348,9 +348,9 @@ ags_recycling_test_create_audio_signal_with_frame_count()
 				      recycling,
 				      NULL);
   g_object_set(G_OBJECT(audio_signal),
-	       "samplerate\0", AGS_RECYCLING_TEST_CREATE_AUDIO_SIGNAL_WITH_FRAME_COUNT_SAMPLERATE,
-	       "buffer-size\0", AGS_RECYCLING_TEST_CREATE_AUDIO_SIGNAL_WITH_FRAME_COUNT_BUFFER_SIZE,
-	       "format\0", AGS_RECYCLING_TEST_CREATE_AUDIO_SIGNAL_WITH_FRAME_COUNT_FORMAT,
+	       "samplerate", AGS_RECYCLING_TEST_CREATE_AUDIO_SIGNAL_WITH_FRAME_COUNT_SAMPLERATE,
+	       "buffer-size", AGS_RECYCLING_TEST_CREATE_AUDIO_SIGNAL_WITH_FRAME_COUNT_BUFFER_SIZE,
+	       "format", AGS_RECYCLING_TEST_CREATE_AUDIO_SIGNAL_WITH_FRAME_COUNT_FORMAT,
 	       NULL);
 
   /* create frame count */
@@ -548,7 +548,7 @@ ags_recycling_test_find_next_channel()
 	channel->first_recycling = recycling;
       
       g_object_set(G_OBJECT(recycling),
-		   "channel\0", channel,
+		   "channel", channel,
 		   NULL);
 
       prev_recycling = recycling;
@@ -562,7 +562,7 @@ ags_recycling_test_find_next_channel()
 	channel->next->first_recycling = recycling;
       
       g_object_set(G_OBJECT(recycling),
-		   "channel\0", channel->next,
+		   "channel", channel->next,
 		   NULL);
       
       channel->next->prev =
@@ -596,8 +596,12 @@ main(int argc, char **argv)
 {
   CU_pSuite pSuite = NULL;
 
-  putenv("LC_ALL=C\0");
-  putenv("LANG=C\0");
+  putenv("LC_ALL=C");
+  putenv("LANG=C");
+
+  putenv("LADSPA_PATH=\"\"");
+  putenv("DSSI_PATH=\"\"");
+  putenv("LV2_PATH=\"\"");
   
   /* initialize the CUnit test registry */
   if(CUE_SUCCESS != CU_initialize_registry()){
@@ -605,7 +609,7 @@ main(int argc, char **argv)
   }
 
   /* add a suite to the registry */
-  pSuite = CU_add_suite("AgsRecyclingTest\0", ags_recycling_test_init_suite, ags_recycling_test_clean_suite);
+  pSuite = CU_add_suite("AgsRecyclingTest", ags_recycling_test_init_suite, ags_recycling_test_clean_suite);
   
   if(pSuite == NULL){
     CU_cleanup_registry();
@@ -625,13 +629,13 @@ main(int argc, char **argv)
 #endif
   
   /* add the tests to the suite */
-  if((CU_add_test(pSuite, "test of AgsRecycling add audio signal\0", ags_recycling_test_add_audio_signal) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsRecycling remove audio signal\0", ags_recycling_test_remove_audio_signal) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsRecycling create audio signal with defaults\0", ags_recycling_test_create_audio_signal_with_defaults) == NULL) ||
+  if((CU_add_test(pSuite, "test of AgsRecycling add audio signal", ags_recycling_test_add_audio_signal) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsRecycling remove audio signal", ags_recycling_test_remove_audio_signal) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsRecycling create audio signal with defaults", ags_recycling_test_create_audio_signal_with_defaults) == NULL) ||
      //FIXME:JK: uncomment
-     /* (CU_add_test(pSuite, "test of AgsRecycling create audio signal with frame count\0", ags_recycling_test_create_audio_signal_with_frame_count) == NULL) || */
-     (CU_add_test(pSuite, "test of AgsRecycling position\0", ags_recycling_test_position) == NULL) ||
-     (CU_add_test(pSuite, "test of AgsRecycling find next channel\0", ags_recycling_test_find_next_channel) == NULL)){
+     /* (CU_add_test(pSuite, "test of AgsRecycling create audio signal with frame count", ags_recycling_test_create_audio_signal_with_frame_count) == NULL) || */
+     (CU_add_test(pSuite, "test of AgsRecycling position", ags_recycling_test_position) == NULL) ||
+     (CU_add_test(pSuite, "test of AgsRecycling find next channel", ags_recycling_test_find_next_channel) == NULL)){
       CU_cleanup_registry();
       
       return CU_get_error();
