@@ -150,7 +150,7 @@ EXTRA_DIST += gsequencer.desktop.in
 
 # MIME specification
 EXTRA_DIST += application-x-gsequencer.xml \
-	gsequencer.appdata.xml
+	org.nongnu.gsequencer.gsequencer.appdata.xml
 
 # clean
 CLEANFILES += $(appdata_DATA) $(pkgconfig_DATA)
@@ -2118,7 +2118,7 @@ install-data-local:
 	install -c -p -m 644 $(top_srcdir)/ags.xsl $(DESTDIR)/$(datadir)/xml/gsequencer/stylesheet/ags-xsl/midi-xml/
 	install -c -p -m 644 $(top_srcdir)/ags-simple.xsl $(DESTDIR)/$(datadir)/xml/gsequencer/stylesheet/ags-xsl/midi-xml/
 	install -c -p -m 644 $(top_srcdir)/application-x-gsequencer.xml $(DESTDIR)/$(datadir)/mime/packages/gsequencer.xml
-	install -c -p -m 644 $(top_srcdir)/gsequencer.appdata.xml $(DESTDIR)/$(datadir)/metainfo/
+	install -c -p -m 644 $(top_srcdir)/org.nongnu.gsequenecer.gsequencer.appdata.xml $(DESTDIR)/$(datadir)/metainfo/
 	mkdir -p $(DESTDIR)/$(docdir)/
 	gzip -9 -c $(top_srcdir)/ChangeLog > $(DESTDIR)/$(docdir)/changelog.gz
 
