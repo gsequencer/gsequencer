@@ -2756,6 +2756,14 @@ ags_effect_bulk_real_resize_audio_channels(AgsEffectBulk *effect_bulk,
 						       AGS_EFFECT_BULK_PLUGIN(effect_bulk_plugin->data)->effect);
 
 	  if(play != NULL){
+	    ags_recall_set_ability_flags((AgsRecall *) play->data,
+					 (AGS_SOUND_ABILITY_PLAYBACK |
+					  AGS_SOUND_ABILITY_NOTATION |
+					  AGS_SOUND_ABILITY_SEQUENCER));
+	    ags_recall_set_behaviour_flags((AgsRecall *) play->data,
+					   (AGS_SOUND_BEHAVIOUR_BULK_MODE |
+					    AGS_SOUND_BEHAVIOUR_CHAINED_TO_INPUT));
+	    
 	    g_object_get(play->data,
 			 "port", &start_port,
 			 NULL);
@@ -2799,6 +2807,14 @@ ags_effect_bulk_real_resize_audio_channels(AgsEffectBulk *effect_bulk,
 							 AGS_EFFECT_BULK_PLUGIN(effect_bulk_plugin->data)->effect);
 
 	  if(recall != NULL){
+	    ags_recall_set_ability_flags((AgsRecall *) recall->data,
+					 (AGS_SOUND_ABILITY_PLAYBACK |
+					  AGS_SOUND_ABILITY_NOTATION |
+					  AGS_SOUND_ABILITY_SEQUENCER));
+	    ags_recall_set_behaviour_flags((AgsRecall *) recall->data,
+					   (AGS_SOUND_BEHAVIOUR_BULK_MODE |
+					    AGS_SOUND_BEHAVIOUR_CHAINED_TO_INPUT));
+
 	    g_object_get(recall->data,
 			 "port", &start_port,
 			 NULL);
@@ -2980,6 +2996,14 @@ ags_effect_bulk_real_resize_pads(AgsEffectBulk *effect_bulk,
 						       AGS_EFFECT_BULK_PLUGIN(effect_bulk_plugin->data)->effect);
 
 	  if(play != NULL){
+	    ags_recall_set_ability_flags((AgsRecall *) play->data,
+					 (AGS_SOUND_ABILITY_PLAYBACK |
+					  AGS_SOUND_ABILITY_NOTATION |
+					  AGS_SOUND_ABILITY_SEQUENCER));
+	    ags_recall_set_behaviour_flags((AgsRecall *) play->data,
+					   (AGS_SOUND_BEHAVIOUR_BULK_MODE |
+					    AGS_SOUND_BEHAVIOUR_CHAINED_TO_INPUT));
+
 	    g_object_get(play->data,
 			 "port", &start_port,
 			 NULL);
@@ -3023,6 +3047,14 @@ ags_effect_bulk_real_resize_pads(AgsEffectBulk *effect_bulk,
 							 AGS_EFFECT_BULK_PLUGIN(effect_bulk_plugin->data)->effect);
 
 	  if(recall != NULL){
+	    ags_recall_set_ability_flags((AgsRecall *) recall->data,
+					 (AGS_SOUND_ABILITY_PLAYBACK |
+					  AGS_SOUND_ABILITY_NOTATION |
+					  AGS_SOUND_ABILITY_SEQUENCER));
+	    ags_recall_set_behaviour_flags((AgsRecall *) recall->data,
+					   (AGS_SOUND_BEHAVIOUR_BULK_MODE |
+					    AGS_SOUND_BEHAVIOUR_CHAINED_TO_INPUT));
+
 	    g_object_get(recall->data,
 			 "port", &start_port,
 			 NULL);

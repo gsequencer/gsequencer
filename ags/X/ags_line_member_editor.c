@@ -239,7 +239,7 @@ ags_line_member_editor_reset(AgsApplicable *applicable)
   GtkCheckButton *check_button;
   GtkLabel *label;
 
-  GList *recall;
+  GList *start_recall, *recall;
 
   gchar *str;
   gchar *filename, *effect;
@@ -249,7 +249,11 @@ ags_line_member_editor_reset(AgsApplicable *applicable)
   line_editor = (AgsLineEditor *) gtk_widget_get_ancestor((GtkWidget *) line_member_editor,
 							  AGS_TYPE_LINE_EDITOR);
 
-  recall = line_editor->channel->recall;
+  g_object_get(line_editor->channel,
+	       "recall", &start_recall,
+	       NULL);
+
+  recall = start_recall;
 
   while((recall = ags_recall_template_find_all_type(recall,
 						    AGS_TYPE_RECALL_LADSPA,
@@ -318,6 +322,9 @@ ags_line_member_editor_reset(AgsApplicable *applicable)
     
     recall = recall->next;
   }
+
+  g_list_free_full(start_recall,
+		   g_object_unref);
 }
 
 /**

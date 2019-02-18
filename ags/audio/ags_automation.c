@@ -3384,7 +3384,7 @@ ags_automation_get_value(AgsAutomation *automation,
 		 "x", &current_start_x,
 		 NULL);
 
-    if(current_start_x < x){
+    if(current_start_x > x){
       break;
     }
     
@@ -3399,7 +3399,7 @@ ags_automation_get_value(AgsAutomation *automation,
 		 "x", &current_end_x,
 		 NULL);
 
-    if(current_end_x > x){
+    if(current_end_x < x){
       break;
     }
 
@@ -3477,15 +3477,17 @@ ags_automation_get_value(AgsAutomation *automation,
     }
   }else{
     if(use_prev_on_failure){
-      prev = current_start;
+      guint tmp_x;
+
+      prev = current_end;
 
       while(prev != NULL){
 	g_object_get(prev->data,
-		     "x", &current_start_x,
+		     "x", &tmp_x,
 		     NULL);
 
       
-	if(current_start_x < x){	
+	if(tmp_x < x){	
 	  matching_acceleration = prev->data;
 
 	  break;

@@ -1,3 +1,9 @@
+ags (2.1.58)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed ags_automation_get_value()
+	* fixed missing flags during resize audio channels and pads of AgsEffectBridge
+
 ags (2.1.57)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

@@ -6134,17 +6134,18 @@ ags_recall_template_find_all_type(GList *recall, ...)
       pthread_mutex_unlock(current_recall_mutex);
 
       /**/
-      offset = recall_type;
+      if((AGS_RECALL_TEMPLATE & (current_recall_flags)) != 0){
+	offset = recall_type;
     
-      while(offset[0] != G_TYPE_NONE){
-	if((AGS_RECALL_TEMPLATE & (current_recall_flags)) != 0 &&
-	   g_type_is_a(G_OBJECT_TYPE(current_recall), offset[0])){
-	  free(recall_type);
+	while(offset[0] != G_TYPE_NONE){
+	  if(g_type_is_a(G_OBJECT_TYPE(current_recall), offset[0])){
+	    free(recall_type);
 	
-	  return(recall);
-	}
+	    return(recall);
+	  }
 
-	offset++;
+	  offset++;
+	}
       }
     }
 
