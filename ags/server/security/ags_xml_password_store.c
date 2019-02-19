@@ -15,6 +15,9 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * Yuri <yuri@FreeBSD.org> (tiny change) - provided FreeBSD and DrogonFly
+ *   macros.
  */
 
 #include <ags/server/security/ags_xml_password_store.h>

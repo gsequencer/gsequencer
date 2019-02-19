@@ -24,6 +24,9 @@
  * See COPYING.stk-4.3 for further deatails
  * 
  * https://ccrma.stanford.edu/~jos
+ * 
+ * provided the foundation of the modified equalizer algorithm, this
+ *   recall is based on frequency response filter.
  */
 
 #include <ags/audio/recall/ags_eq10_audio_signal.h>
