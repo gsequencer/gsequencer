@@ -1,3 +1,11 @@
+ags (2.1.59)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed missing AUTHORS files
+	* fixed ChangeLog missing mention of patch author
+	* fixed missing contribution description in ags_eq10_audio_signal.c
+	* fixed ags_parameter.c license header
+
 ags (2.1.58)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

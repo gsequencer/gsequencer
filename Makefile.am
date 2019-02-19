@@ -63,7 +63,11 @@ EXTRA_DIST = config.rpath \
 	m4/Makefile.in \
 	ags/i18n.h \
 	ags/gettext.h \
+	ags/lib/AUTHORS \
 	ags/object/README \
+	ags/server/security/AUTHORS \
+	ags/audio/AUTHORS \
+	ags/audio/recall/AUTHORS \
 	ags/widget/README \
 	docs/images/README \
 	docs/listings/README \
