@@ -1331,6 +1331,8 @@ ags_apply_sound_config_launch(AgsTask *task)
   }
 
   g_list_free(start_orig_sequencer);
+
+  g_object_unref(audio_loop);
 }
 
 /**

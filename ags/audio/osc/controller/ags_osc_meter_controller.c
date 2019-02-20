@@ -2452,6 +2452,8 @@ ags_osc_meter_controller_monitor_meter_recall(AgsOscMeterController *osc_meter_c
 		 "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_UNKNOW_ARGUMENT,
 		 NULL);
 
+    g_object_unref(task_thread);
+    
     return(start_response);
   }else if(!strncmp(path + path_offset,
 		    "/AgsPort",
@@ -2587,6 +2589,8 @@ ags_osc_meter_controller_monitor_meter_recall(AgsOscMeterController *osc_meter_c
 
 	g_list_free_full(start_port,
 			 g_object_unref);
+
+	g_object_unref(task_thread);
 	
 	return(start_response);
       }
@@ -2607,6 +2611,8 @@ ags_osc_meter_controller_monitor_meter_recall(AgsOscMeterController *osc_meter_c
 
 	g_list_free_full(start_port,
 			 g_object_unref);
+
+	g_object_unref(task_thread);
 	
 	return(start_response);
       }
@@ -2646,6 +2652,8 @@ ags_osc_meter_controller_monitor_meter_recall(AgsOscMeterController *osc_meter_c
 
 	g_list_free_full(start_port,
 			 g_object_unref);
+
+	g_object_unref(task_thread);
 	
 	return(start_response);
       }
@@ -2693,6 +2701,8 @@ ags_osc_meter_controller_monitor_meter_recall(AgsOscMeterController *osc_meter_c
 	  
 	g_list_free_full(start_port,
 			 g_object_unref);
+
+	g_object_unref(task_thread);
 	
 	return(start_response);
       }
@@ -2737,6 +2747,8 @@ ags_osc_meter_controller_monitor_meter_recall(AgsOscMeterController *osc_meter_c
       g_list_free_full(start_port,
 		       g_object_unref);
       
+      g_object_unref(task_thread);
+      
       return(start_response);
     }    
 
@@ -2754,8 +2766,12 @@ ags_osc_meter_controller_monitor_meter_recall(AgsOscMeterController *osc_meter_c
 		 "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_SERVER_FAILURE,
 		 NULL);
 
+    g_object_unref(task_thread);
+
     return(start_response);
   }
+
+  g_object_unref(task_thread);
   
   return(start_response);
 }

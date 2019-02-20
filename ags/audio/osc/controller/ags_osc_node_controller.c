@@ -2728,6 +2728,8 @@ ags_osc_node_controller_get_data_recall(AgsOscNodeController *osc_node_controlle
 		 "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_UNKNOW_ARGUMENT,
 		 NULL);
 
+    g_object_unref(task_thread);
+    
     return(start_response);
   }else if(!strncmp(path + path_offset,
 		    "/AgsPort",
@@ -2861,6 +2863,8 @@ ags_osc_node_controller_get_data_recall(AgsOscNodeController *osc_node_controlle
 	ags_osc_response_set_flags(osc_response,
 				   AGS_OSC_RESPONSE_OK);
 
+	g_object_unref(task_thread);
+
 	return(start_response);
       }
     }else if(ags_regexec(&more_access_regex, path + path_offset, index_max_matches, match_arr, 0) == 0){
@@ -2877,6 +2881,8 @@ ags_osc_node_controller_get_data_recall(AgsOscNodeController *osc_node_controlle
 	g_object_set(osc_response,
 		     "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_SERVER_FAILURE,
 		     NULL);
+
+	g_object_unref(task_thread);
 
 	return(start_response);
       }
@@ -2913,6 +2919,8 @@ ags_osc_node_controller_get_data_recall(AgsOscNodeController *osc_node_controlle
       
 	ags_osc_response_set_flags(osc_response,
 				   AGS_OSC_RESPONSE_OK);
+
+	g_object_unref(task_thread);
 
 	return(start_response);
       }
@@ -2960,6 +2968,8 @@ ags_osc_node_controller_get_data_recall(AgsOscNodeController *osc_node_controlle
 	  
 	g_list_free_full(start_port,
 			 g_object_unref);
+
+	g_object_unref(task_thread);
 	
 	return(start_response);
       }
@@ -3001,6 +3011,8 @@ ags_osc_node_controller_get_data_recall(AgsOscNodeController *osc_node_controlle
       g_list_free_full(start_port,
 		       g_object_unref);      
 
+      g_object_unref(task_thread);
+
       return(start_response);
     }    
 
@@ -3018,8 +3030,12 @@ ags_osc_node_controller_get_data_recall(AgsOscNodeController *osc_node_controlle
 		 "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_SERVER_FAILURE,
 		 NULL);
 
+    g_object_unref(task_thread);
+
     return(start_response);
   }
+
+  g_object_unref(task_thread);
   
   return(start_response);
 }

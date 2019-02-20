@@ -1586,6 +1586,10 @@ ags_core_audio_port_cached_handle_output_buffer(AgsCoreAudioPort *core_audio_por
   core_audio_port->current_cache = next_cache;
 
   pthread_mutex_unlock(core_audio_port_mutex);
+
+  /* unref */
+  g_object_unref(audio_loop);
+  g_object_unref(task_thread);
 }
 
 void
@@ -1680,6 +1684,9 @@ ags_core_audio_port_handle_output_buffer(AgsCoreAudioPort *core_audio_port,
 
   if(audio_loop == NULL){
     g_atomic_int_dec_and_test(&(core_audio_port->queued));
+
+    /* unref */
+    g_object_unref(task_thread);
 
     return;
   }
@@ -1882,6 +1889,10 @@ ags_core_audio_port_handle_output_buffer(AgsCoreAudioPort *core_audio_port,
   }
     
   g_atomic_int_dec_and_test(&(core_audio_port->queued));
+
+  /* unref */
+  g_object_unref(audio_loop);
+  g_object_unref(task_thread);
 }
 
 void
@@ -1965,6 +1976,9 @@ ags_core_audio_port_handle_input_buffer(AgsCoreAudioPort *core_audio_port,
 
   if(audio_loop == NULL){
     g_atomic_int_dec_and_test(&(core_audio_port->queued));
+
+    /* unref */
+    g_object_unref(task_thread);
 
     return;
   }
@@ -2178,6 +2192,10 @@ ags_core_audio_port_handle_input_buffer(AgsCoreAudioPort *core_audio_port,
   }
     
   g_atomic_int_dec_and_test(&(core_audio_port->queued));
+
+  /* unref */
+  g_object_unref(audio_loop);
+  g_object_unref(task_thread);
 }
   
 void

@@ -377,6 +377,8 @@ ags_osc_action_controller_real_run_action(AgsOscActionController *osc_action_con
 	free(type_tag);
 	free(path);
 	free(action);
+
+	g_object_unref(task_thread);
 	
 	return(start_response);
       }
@@ -410,6 +412,8 @@ ags_osc_action_controller_real_run_action(AgsOscActionController *osc_action_con
 	free(type_tag);
 	free(path);
 	free(action);
+
+	g_object_unref(task_thread);
 
 	return(start_response);
       }
@@ -445,6 +449,8 @@ ags_osc_action_controller_real_run_action(AgsOscActionController *osc_action_con
 	  free(path);
 	  free(action);
 	  
+	  g_object_unref(task_thread);
+	  
 	  return(start_response);
 	}
 	
@@ -475,6 +481,8 @@ ags_osc_action_controller_real_run_action(AgsOscActionController *osc_action_con
 	  free(type_tag);
 	  free(path);
 	  free(action);
+	  
+	  g_object_unref(task_thread);
 	  
 	  return(start_response);
 	}
@@ -512,6 +520,8 @@ ags_osc_action_controller_real_run_action(AgsOscActionController *osc_action_con
 	free(path);
 	free(action);
 
+	g_object_unref(task_thread);
+
 	return(start_response);
       }
 
@@ -545,6 +555,8 @@ ags_osc_action_controller_real_run_action(AgsOscActionController *osc_action_con
 	free(path);
 	free(action);
 
+	g_object_unref(task_thread);
+
 	return(start_response);
       }
     }
@@ -562,6 +574,8 @@ ags_osc_action_controller_real_run_action(AgsOscActionController *osc_action_con
   free(path);
   free(action);
   
+  g_object_unref(task_thread);
+
   return(start_response);
 }
 

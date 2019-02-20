@@ -1138,6 +1138,9 @@ ags_pulse_devin_dispose(GObject *gobject)
     g_object_unref(pulse_devin->notify_soundcard);
 
     pulse_devin->notify_soundcard = NULL;
+
+    /* unref */
+    g_object_unref(task_thread);
   }
 
   /* application context */
@@ -1199,6 +1202,9 @@ ags_pulse_devin_finalize(GObject *gobject)
 				       (AgsTask *) pulse_devin->notify_soundcard);
     
     g_object_unref(pulse_devin->notify_soundcard);
+
+    /* unref */
+    g_object_unref(task_thread);
   }
 
   /* application context */
@@ -2218,6 +2224,9 @@ ags_pulse_devin_port_record(AgsSoundcard *soundcard,
   /* append tasks */
   ags_task_thread_append_tasks((AgsTaskThread *) task_thread,
 			       task);
+
+  /* unref */
+  g_object_unref(task_thread);
 }
 
 void

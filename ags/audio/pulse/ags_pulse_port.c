@@ -1422,6 +1422,10 @@ ags_pulse_port_cached_stream_request_callback(pa_stream *stream, size_t length, 
   pulse_port->current_cache = next_cache;
 
   pthread_mutex_unlock(pulse_port_mutex);
+
+  /* unref */
+  g_object_unref(audio_loop);
+  g_object_unref(task_thread);
 }
 
 void
@@ -1547,6 +1551,9 @@ ags_pulse_port_stream_request_callback(pa_stream *stream, size_t length, AgsPuls
 
     pthread_mutex_unlock(ags_pulse_devin_get_class_mutex());
   }else{
+    g_object_unref(audio_loop);
+    g_object_unref(task_thread);
+    
     return;
   }
 
@@ -1997,6 +2004,10 @@ ags_pulse_port_stream_request_callback(pa_stream *stream, size_t length, AgsPuls
   }  
   
   g_atomic_int_dec_and_test(&(pulse_port->queued));
+
+  /* unref */
+  g_object_unref(audio_loop);
+  g_object_unref(task_thread);
 }
 
 void
@@ -2045,6 +2056,9 @@ ags_pulse_port_stream_underflow_callback(pa_stream *stream, AgsPulsePort *pulse_
     g_atomic_int_add(&(polling_thread->omit_count),
 		     4);
   }
+
+  /* unref */
+  g_object_unref(audio_loop);
 }
 #endif
 

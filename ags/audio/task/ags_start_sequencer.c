@@ -265,6 +265,9 @@ ags_start_sequencer_launch(AgsTask *task)
     
     sequencer_thread = g_atomic_pointer_get(&(sequencer_thread->next));
   }
+
+  /* unref */
+  g_object_unref(sequencer_thread);
 }
 
 /**

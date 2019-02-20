@@ -2068,6 +2068,7 @@ ags_audio_application_context_setup(AgsApplicationContext *application_context)
     ags_jack_server_connect_client(jack_server);
   }
 
+  /* unref */
   g_object_unref(main_loop);
 }
 

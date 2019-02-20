@@ -1103,18 +1103,19 @@ ags_devout_dispose(GObject *gobject)
   
   /* notify soundcard */
   if(devout->notify_soundcard != NULL){
-    if(devout->application_context != NULL){
-      AgsTaskThread *task_thread;
+    AgsTaskThread *task_thread;
     
-      task_thread = ags_concurrency_provider_get_task_thread(AGS_CONCURRENCY_PROVIDER(ags_application_context_get_instance()));
+    task_thread = ags_concurrency_provider_get_task_thread(AGS_CONCURRENCY_PROVIDER(ags_application_context_get_instance()));
       
-      ags_task_thread_remove_cyclic_task(task_thread,
-					 (AgsTask *) devout->notify_soundcard);
-    }
+    ags_task_thread_remove_cyclic_task(task_thread,
+				       (AgsTask *) devout->notify_soundcard);
 
     g_object_unref(devout->notify_soundcard);
 
     devout->notify_soundcard = NULL;
+
+    /* unref */
+    g_object_unref(task_thread);
   }
 
   /* application context */
@@ -1158,16 +1159,17 @@ ags_devout_finalize(GObject *gobject)
 
   /* notify soundcard */
   if(devout->notify_soundcard != NULL){
-    if(devout->application_context != NULL){
-      AgsTaskThread *task_thread;
+    AgsTaskThread *task_thread;
       
-      task_thread = ags_concurrency_provider_get_task_thread(AGS_CONCURRENCY_PROVIDER(ags_application_context_get_instance()));
+    task_thread = ags_concurrency_provider_get_task_thread(AGS_CONCURRENCY_PROVIDER(ags_application_context_get_instance()));
       
-      ags_task_thread_remove_cyclic_task(task_thread,
-					 (AgsTask *) devout->notify_soundcard);
-    }
+    ags_task_thread_remove_cyclic_task(task_thread,
+				       (AgsTask *) devout->notify_soundcard);
 
     g_object_unref(devout->notify_soundcard);
+
+    /* unref */
+    g_object_unref(task_thread);
   }
 
   /* application context */
@@ -2962,6 +2964,9 @@ ags_devout_oss_play(AgsSoundcard *soundcard,
   /* append tasks */
   ags_task_thread_append_tasks((AgsTaskThread *) task_thread,
 			       task);
+  
+  /* unref */
+  g_object_unref(task_thread);
 }
 
 void
@@ -3841,6 +3846,9 @@ ags_devout_alsa_play(AgsSoundcard *soundcard,
 #ifdef AGS_WITH_ALSA
   snd_pcm_prepare(devout->out.alsa.handle);
 #endif
+
+  /* unref */
+  g_object_unref(task_thread);
 }
 
 void

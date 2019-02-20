@@ -1162,6 +1162,9 @@ ags_pulse_devout_dispose(GObject *gobject)
     g_object_unref(pulse_devout->notify_soundcard);
 
     pulse_devout->notify_soundcard = NULL;
+
+    /* unref */
+    g_object_unref(task_thread);
   }
 
   /* application context */
@@ -1223,6 +1226,9 @@ ags_pulse_devout_finalize(GObject *gobject)
 				       (AgsTask *) pulse_devout->notify_soundcard);
     
     g_object_unref(pulse_devout->notify_soundcard);
+
+    /* unref */
+    g_object_unref(task_thread);
   }
 
   /* application context */
@@ -2416,6 +2422,9 @@ ags_pulse_devout_port_play(AgsSoundcard *soundcard,
   /* append tasks */
   ags_task_thread_append_tasks((AgsTaskThread *) task_thread,
 			       task);
+
+  /* unref */
+  g_object_unref(task_thread);
 }
 
 void

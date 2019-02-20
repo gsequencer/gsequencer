@@ -492,6 +492,9 @@ ags_apply_presets_soundcard(AgsApplyPresets *apply_presets,
   }
 
   g_list_free(list_start);
+
+  /* unref */
+  g_object_unref(main_loop);
 }
 
 void

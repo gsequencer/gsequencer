@@ -454,6 +454,8 @@ ags_cancel_audio_launch(AgsTask *task)
   g_list_free(midi);
 
   g_object_unref(playback_domain);
+
+  g_object_unref(audio_loop);
 }
 
 /**

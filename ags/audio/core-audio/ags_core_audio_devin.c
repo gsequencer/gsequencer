@@ -1976,6 +1976,9 @@ ags_core_audio_devin_port_record(AgsSoundcard *soundcard,
   /* append tasks */
   ags_task_thread_append_tasks((AgsTaskThread *) task_thread,
 			       task);
+
+  /* unref */
+  g_object_unref(task_thread);
 }
 
 void

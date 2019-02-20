@@ -321,6 +321,8 @@ ags_osc_config_controller_real_apply_config(AgsOscConfigController *osc_config_c
 
   free(type_tag);
   free(config_data);
+
+  g_object_unref(task_thread);
   
   return(start_response);
 }

@@ -1148,18 +1148,19 @@ ags_core_audio_devout_dispose(GObject *gobject)
 
   /* notify soundcard */
   if(core_audio_devout->notify_soundcard != NULL){
-    if(core_audio_devout->application_context != NULL){
-      AgsTaskThread *task_thread;
+    AgsTaskThread *task_thread;
     
-      task_thread = ags_concurrency_provider_get_task_thread(AGS_CONCURRENCY_PROVIDER(ags_application_context_get_instance()));
+    task_thread = ags_concurrency_provider_get_task_thread(AGS_CONCURRENCY_PROVIDER(ags_application_context_get_instance()));
       
-      ags_task_thread_remove_cyclic_task(task_thread,
-					 (AgsTask *) core_audio_devout->notify_soundcard);
-    }
+    ags_task_thread_remove_cyclic_task(task_thread,
+				       (AgsTask *) core_audio_devout->notify_soundcard);
     
     g_object_unref(core_audio_devout->notify_soundcard);
 
     core_audio_devout->notify_soundcard = NULL;
+
+    /* unref */
+    g_object_unref(task_thread);
   }
 
   /* application context */
@@ -1213,16 +1214,17 @@ ags_core_audio_devout_finalize(GObject *gobject)
 
   /* notify soundcard */
   if(core_audio_devout->notify_soundcard != NULL){
-    if(core_audio_devout->application_context != NULL){
-      AgsTaskThread *task_thread;
+    AgsTaskThread *task_thread;
       
-      task_thread = ags_concurrency_provider_get_task_thread(AGS_CONCURRENCY_PROVIDER(ags_application_context_get_instance()));
+    task_thread = ags_concurrency_provider_get_task_thread(AGS_CONCURRENCY_PROVIDER(ags_application_context_get_instance()));
 
-      ags_task_thread_remove_cyclic_task(task_thread,
-					 (AgsTask *) core_audio_devout->notify_soundcard);
-    }
+    ags_task_thread_remove_cyclic_task(task_thread,
+				       (AgsTask *) core_audio_devout->notify_soundcard);
     
     g_object_unref(core_audio_devout->notify_soundcard);
+
+    /* unref */
+    g_object_unref(task_thread);
   }
 
   /* application context */
@@ -2410,6 +2412,9 @@ ags_core_audio_devout_port_play(AgsSoundcard *soundcard,
   /* append tasks */
   ags_task_thread_append_tasks((AgsTaskThread *) task_thread,
 			       task);
+
+  /* unref */
+  g_object_unref(task_thread);
 }
 
 void

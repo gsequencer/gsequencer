@@ -249,17 +249,19 @@ ags_reset_amplitude_get_instance()
     application_context = ags_application_context_get_instance();
 
     main_loop = ags_concurrency_provider_get_main_loop(AGS_CONCURRENCY_PROVIDER(application_context));
+    task_thread = ags_concurrency_provider_get_task_thread(AGS_CONCURRENCY_PROVIDER(application_context));
 
-    /* get task thread */
-    task_thread = (AgsTaskThread *) ags_thread_find_type(main_loop,
-							 AGS_TYPE_TASK_THREAD);
-
+    /* reset amplitude */
     ags_reset_amplitude = ags_reset_amplitude_new();
 
     pthread_mutex_unlock(&mutex);
 
     ags_task_thread_append_cyclic_task(task_thread,
 				       (AgsTask *) ags_reset_amplitude);
+
+    /* unref */
+    g_object_unref(main_loop);
+    g_object_unref(task_thread);
   }else{
     pthread_mutex_unlock(&mutex);
   }

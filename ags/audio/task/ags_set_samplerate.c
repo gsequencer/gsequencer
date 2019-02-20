@@ -399,6 +399,8 @@ ags_set_samplerate_soundcard(AgsSetSamplerate *set_samplerate, GObject *soundcar
   }else{
     g_warning("buffer size can only adjusted of your very first soundcard");
   }
+
+  g_object_unref(audio_loop);
 }
 
 /**

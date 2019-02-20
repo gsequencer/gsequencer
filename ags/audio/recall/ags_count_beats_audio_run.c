@@ -1718,6 +1718,8 @@ ags_count_beats_audio_run_done(AgsRecall *recall)
   g_object_unref(recall_id);
 
   g_object_unref(delay_audio_run);
+
+  g_object_unref(task_thread);
 }
 
 /**

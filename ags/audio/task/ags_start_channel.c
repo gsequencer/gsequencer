@@ -431,6 +431,8 @@ ags_start_channel_launch(AgsTask *task)
   g_object_unref(playback);
   
   g_object_unref(playback_domain);
+
+  g_object_unref(audio_loop);
 }
 
 /**

@@ -398,6 +398,9 @@ ags_set_buffer_size_soundcard(AgsSetBufferSize *set_buffer_size, GObject *soundc
   }else{
     g_warning("buffer size can only adjusted of your very first soundcard");
   }
+
+  /* unref */
+  g_object_unref(audio_loop);
 }
 
 /**

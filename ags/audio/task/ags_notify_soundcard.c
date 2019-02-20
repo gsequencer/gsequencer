@@ -306,6 +306,8 @@ ags_notify_soundcard_launch(AgsTask *task)
 		      AGS_NOTIFY_SOUNDCARD_DONE_RETURN)));
   
   pthread_mutex_unlock(notify_soundcard->return_mutex);
+
+  g_object_unref(task_thread);
 }
 
 /**

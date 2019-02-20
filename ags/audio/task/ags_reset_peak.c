@@ -1,3 +1,4 @@
+
 /* GSequencer - Advanced GTK Sequencer
  * Copyright (C) 2005-2018 Joël Krähemann
  *
@@ -264,6 +265,9 @@ ags_reset_peak_get_instance()
 
     ags_task_thread_append_cyclic_task(task_thread,
 				       (AgsTask *) ags_reset_peak);
+
+    /* unref */
+    g_object_unref(task_thread);
   }else{
     pthread_mutex_unlock(&mutex);
   }

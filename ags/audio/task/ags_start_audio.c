@@ -464,6 +464,8 @@ ags_start_audio_launch(AgsTask *task)
   
   g_list_free_full(list_start,
 		   g_object_unref);
+
+  g_object_unref(audio_loop);
 }
 
 /**

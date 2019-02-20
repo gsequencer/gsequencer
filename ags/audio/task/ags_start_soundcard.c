@@ -324,6 +324,9 @@ ags_start_soundcard_launch(AgsTask *task)
     
     export_thread = g_atomic_pointer_get(&(export_thread->next));
   }
+
+  /* unref */
+  g_object_unref(audio_loop);
 }
 
 /**

@@ -1150,6 +1150,9 @@ ags_jack_devout_dispose(GObject *gobject)
     g_object_unref(jack_devout->notify_soundcard);
 
     jack_devout->notify_soundcard = NULL;
+
+    /* unref */
+    g_object_unref(task_thread);
   }
 
   /* application context */
@@ -1207,6 +1210,9 @@ ags_jack_devout_finalize(GObject *gobject)
 				       (AgsTask *) jack_devout->notify_soundcard);
     
     g_object_unref(jack_devout->notify_soundcard);
+
+    /* unref */
+    g_object_unref(task_thread);
   }
 
   /* application context */
@@ -2238,6 +2244,9 @@ ags_jack_devout_port_play(AgsSoundcard *soundcard,
   /* append tasks */
   ags_task_thread_append_tasks((AgsTaskThread *) task_thread,
 			       task);
+
+  /* unref */
+  g_object_unref(task_thread);
 }
 
 void

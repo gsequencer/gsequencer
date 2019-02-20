@@ -264,6 +264,8 @@ ags_stop_sequencer_launch(AgsTask *task)
     
     sequencer_thread = g_atomic_pointer_get(&(sequencer_thread->next));
   }
+
+  g_object_unref(audio_loop);
 }
 
 /**

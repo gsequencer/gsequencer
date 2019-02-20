@@ -1605,6 +1605,9 @@ ags_jack_client_process_callback(jack_nframes_t nframes, void *ptr)
   
   if(device == NULL){
     g_atomic_int_dec_and_test(&(jack_client->queued));
+
+    g_object_unref(audio_loop);
+    g_object_unref(task_thread);
     
     return(0);
   }
@@ -2108,6 +2111,10 @@ ags_jack_client_process_callback(jack_nframes_t nframes, void *ptr)
 
   g_list_free(device_start);
   g_atomic_int_dec_and_test(&(jack_client->queued));
+
+  /* unref */
+  g_object_unref(audio_loop);
+  g_object_unref(task_thread);
 
   return(0);
 }

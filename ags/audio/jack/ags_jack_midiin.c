@@ -1621,6 +1621,9 @@ ags_jack_midiin_port_record(AgsSequencer *sequencer,
   /* append tasks */
   ags_task_thread_append_tasks((AgsTaskThread *) task_thread,
 			       task);
+
+  /* unref */
+  g_object_unref(task_thread);
 }
 
 void
