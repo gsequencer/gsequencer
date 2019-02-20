@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -106,6 +106,8 @@ ags_midi_preferences_add_callback(GtkWidget *widget, AgsMidiPreferences *midi_pr
   g_signal_connect(sequencer_editor->remove, "clicked",
 		   G_CALLBACK(ags_midi_preferences_remove_sequencer_editor_callback), midi_preferences);
   gtk_widget_show_all((GtkWidget *) sequencer_editor);
+
+  g_object_unref(main_loop);
 }
 
 void

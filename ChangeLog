@@ -1,6 +1,12 @@
 ags (2.1.60)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented reposition AgsAudio in AgsSoundProvider within UI
+	* improved ags_simple_file_read_machine() to use g_list_append() to add AgsAudio
+	* improved ags_add_audio_launch() to use g_list_append() to add AgsAudio
+	* fixed missing mutex locks of AgsThreadApplicationContext
+	* fixed missing ref count of AgsSoundProvider's getter functions
+	* fixed missing ref count of AgsConcurrencyProvider's getter functions
 	* minor improvements
 
 ags (2.1.59)

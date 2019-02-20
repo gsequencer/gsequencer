@@ -1357,6 +1357,9 @@ ags_soundcard_editor_add_port(AgsSoundcardEditor *soundcard_editor,
     
     card_uri = card_uri->next;
   }
+
+  /* unref */
+  g_object_unref(main_loop);
 }
 
 void
@@ -1443,12 +1446,10 @@ ags_soundcard_editor_remove_port(AgsSoundcardEditor *soundcard_editor,
   }
   
   /* destroy soundcard */
-  main_loop = ags_concurrency_provider_get_main_loop(AGS_CONCURRENCY_PROVIDER(application_context));
-
   start_sound_server = ags_sound_provider_get_sound_server(AGS_SOUND_PROVIDER(application_context));
 
   if((sound_server = ags_list_util_find_type(start_sound_server,
-					     server_type)) == NULL){
+					     server_type)) == NULL){    
     g_list_free(start_sound_server);
     
     g_warning("sound server not found");
@@ -1457,6 +1458,8 @@ ags_soundcard_editor_remove_port(AgsSoundcardEditor *soundcard_editor,
   }
 
   g_list_free(start_sound_server);
+
+  main_loop = ags_concurrency_provider_get_main_loop(AGS_CONCURRENCY_PROVIDER(application_context));
 
   list = ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(application_context));
   
@@ -1555,6 +1558,9 @@ ags_soundcard_editor_remove_port(AgsSoundcardEditor *soundcard_editor,
     soundcard_editor->soundcard_thread = NULL;
   }
 #endif
+
+  /* unref */
+  g_object_unref(main_loop);
 }
 
 void
@@ -1611,14 +1617,14 @@ ags_soundcard_editor_add_soundcard(AgsSoundcardEditor *soundcard_editor,
   }
   
   /*  */
-  main_loop = ags_concurrency_provider_get_main_loop(AGS_CONCURRENCY_PROVIDER(application_context));
-
   if(g_list_find(ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(application_context)),
 		 soundcard) != NULL){
     soundcard_editor->flags &= (~AGS_SOUNDCARD_EDITOR_BLOCK_ADD);
     
     return;
   }
+
+  main_loop = ags_concurrency_provider_get_main_loop(AGS_CONCURRENCY_PROVIDER(application_context));
 
   if(ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(application_context)) == NULL){
     initial_soundcard = TRUE;
@@ -1692,6 +1698,9 @@ ags_soundcard_editor_add_soundcard(AgsSoundcardEditor *soundcard_editor,
 				TRUE, TRUE);
 
   soundcard_editor->flags &= (~AGS_SOUNDCARD_EDITOR_BLOCK_ADD);
+
+  /* unref */
+  g_object_unref(main_loop);
 }
 
 void
@@ -1772,6 +1781,9 @@ ags_soundcard_editor_remove_soundcard(AgsSoundcardEditor *soundcard_editor,
     soundcard_editor->soundcard_thread = NULL;
   }
 #endif
+
+  /* unref */
+  g_object_unref(main_loop);
 }
 
 void

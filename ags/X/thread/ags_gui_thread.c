@@ -1353,8 +1353,6 @@ ags_gui_thread_sync_task_dispatch(GSource *source,
   };
   
   application_context = ags_application_context_get_instance();
-  
-  task_thread = (AgsTaskThread *) ags_concurrency_provider_get_task_thread(AGS_CONCURRENCY_PROVIDER(application_context));
 
   gui_thread = ags_ui_provider_get_gui_thread(AGS_UI_PROVIDER(application_context));
 
@@ -1363,6 +1361,8 @@ ags_gui_thread_sync_task_dispatch(GSource *source,
   if(ags_ui_provider_get_show_animation(AGS_UI_PROVIDER(application_context))){
     return(G_SOURCE_CONTINUE);
   }
+  
+  task_thread = (AgsTaskThread *) ags_concurrency_provider_get_task_thread(AGS_CONCURRENCY_PROVIDER(application_context));
 
   /* ask for sync */
   if(AGS_GUI_THREAD(gui_thread)->queued_sync > 0){
@@ -1458,6 +1458,9 @@ ags_gui_thread_sync_task_dispatch(GSource *source,
   ags_gui_thread_leave();
   
   g_main_context_release(main_context);
+
+  /* unref */
+  g_object_unref(task_thread);    
   
   return(G_SOURCE_CONTINUE);
 }
@@ -1524,6 +1527,9 @@ ags_gui_thread_task_dispatch(GSource *source,
   AGS_GUI_THREAD(gui_thread)->collected_task = NULL;
 
   ags_gui_thread_complete_task((AgsGuiThread *) gui_thread);
+
+  /* unref */
+  g_object_unref(task_thread);
   
   return(G_SOURCE_CONTINUE);
 }
@@ -1854,6 +1860,9 @@ ags_gui_thread_schedule_task(AgsGuiThread *gui_thread,
 							      task);
   
   pthread_mutex_unlock(AGS_GUI_THREAD(gui_thread)->task_schedule_mutex);
+
+  /* unref */
+  g_object_unref(task_thread);
 }
 
 void
@@ -1891,6 +1900,9 @@ ags_gui_thread_schedule_task_list(AgsGuiThread *gui_thread,
 							     AGS_GUI_THREAD(gui_thread)->collected_task);
   
   pthread_mutex_unlock(AGS_GUI_THREAD(gui_thread)->task_schedule_mutex);
+
+  /* unref */
+  g_object_unref(task_thread);
 }
 
 /**

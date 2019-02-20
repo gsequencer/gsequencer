@@ -38,8 +38,8 @@
 
 #define AGS_MACHINE_AUTOMATION_PORT(ptr) ((AgsMachineAutomationPort *)(ptr))
 
-#define AGS_MACHINE_DEFAULT_VERSION "1.3.0"
-#define AGS_MACHINE_DEFAULT_BUILD_ID "Sat Dec 30 11:41:50 UTC 2017"
+#define AGS_MACHINE_DEFAULT_VERSION "2.1.60"
+#define AGS_MACHINE_DEFAULT_BUILD_ID "Wed Feb 20 18:38:17 UTC 2019"
 
 typedef struct _AgsMachine AgsMachine;
 typedef struct _AgsMachineClass AgsMachineClass;
@@ -136,6 +136,7 @@ struct _AgsMachine
   GtkDialog *properties;
   GtkDialog *rename;
   GtkDialog *rename_audio;
+  GtkDialog *reposition_audio;
   GtkDialog *connection_editor;
   GtkDialog *midi_dialog;
   GtkDialog *envelope_dialog;

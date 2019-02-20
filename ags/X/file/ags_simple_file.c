@@ -1284,7 +1284,7 @@ ags_simple_file_read_start(AgsSimpleFile *simple_file)
 void
 ags_simple_file_read_config(AgsSimpleFile *simple_file, xmlNode *node, AgsConfig **ags_config)
 {
-  AgsThread *audio_loop;
+  AgsThread *main_loop;
 
   AgsApplicationContext *application_context;
   AgsConfig *gobject;
@@ -1338,7 +1338,7 @@ ags_simple_file_read_config(AgsSimpleFile *simple_file, xmlNode *node, AgsConfig
 			    buffer, buffer_length);
 
   /* max-precision */
-  audio_loop = ags_concurrency_provider_get_main_loop(AGS_CONCURRENCY_PROVIDER(application_context));
+  main_loop = ags_concurrency_provider_get_main_loop(AGS_CONCURRENCY_PROVIDER(application_context));
 
   str = ags_config_get_value(gobject,
 			     AGS_CONFIG_THREAD,
@@ -1351,7 +1351,7 @@ ags_simple_file_read_config(AgsSimpleFile *simple_file, xmlNode *node, AgsConfig
     max_precision = g_ascii_strtod(str,
 				   NULL);
     
-    ags_simple_file_read_config_change_max_precision(audio_loop,
+    ags_simple_file_read_config_change_max_precision(main_loop,
 						     max_precision);  
   }
 
@@ -1359,8 +1359,10 @@ ags_simple_file_read_config(AgsSimpleFile *simple_file, xmlNode *node, AgsConfig
   buffer_size = ags_soundcard_helper_config_get_buffer_size(gobject);
   
   frequency = ceil((gdouble) samplerate / (gdouble) buffer_size) + AGS_SOUNDCARD_DEFAULT_OVERCLOCK;
-  ags_main_loop_change_frequency(AGS_MAIN_LOOP(audio_loop),
+  ags_main_loop_change_frequency(AGS_MAIN_LOOP(main_loop),
 				 frequency);
+
+  g_object_unref(main_loop);
 }
 
 void
@@ -2527,11 +2529,16 @@ ags_simple_file_read_machine(AgsSimpleFile *simple_file, xmlNode *node, AgsMachi
   /* add audio to soundcard */
   list = ags_sound_provider_get_audio(AGS_SOUND_PROVIDER(simple_file->application_context));
   g_object_ref(G_OBJECT(gobject->audio));
+  g_object_ref(G_OBJECT(gobject->audio));
   
-  list = g_list_prepend(list,
-			gobject->audio);
+  list = g_list_append(list,
+		       gobject->audio);
   ags_sound_provider_set_audio(AGS_SOUND_PROVIDER(simple_file->application_context),
 			       list);
+
+  g_list_foreach(list,
+		 (GFunc) g_object_unref,
+		 NULL);
   
   /* children */
   child = node->children;

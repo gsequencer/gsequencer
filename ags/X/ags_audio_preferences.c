@@ -416,6 +416,9 @@ ags_audio_preferences_reset(AgsApplicable *applicable)
   }
 
   gtk_widget_show_all((GtkWidget *) audio_preferences->soundcard_editor);
+
+  /* unref */
+  g_object_unref(main_loop);
 }
 
 /**

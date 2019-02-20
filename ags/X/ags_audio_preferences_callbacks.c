@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -74,7 +74,7 @@ ags_audio_preferences_add_callback(GtkWidget *widget, AgsAudioPreferences *audio
 
   application_context = ags_application_context_get_instance();
   main_loop = ags_concurrency_provider_get_main_loop(AGS_CONCURRENCY_PROVIDER(application_context));
-  
+
   /* retrieve first soundcard */
   soundcard = NULL;
 
@@ -121,6 +121,8 @@ ags_audio_preferences_add_callback(GtkWidget *widget, AgsAudioPreferences *audio
   g_object_set(window,
 	       "soundcard", soundcard,
 	       NULL);
+
+  g_object_unref(main_loop);  
 }
 
 void

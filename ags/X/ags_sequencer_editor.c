@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -630,6 +630,8 @@ ags_sequencer_editor_add_source(AgsSequencerEditor *sequencer_editor,
     
     card_uri = card_uri->next;
   }
+
+  g_object_unref(main_loop);
 }
 
 void
@@ -644,8 +646,8 @@ ags_sequencer_editor_remove_source(AgsSequencerEditor *sequencer_editor,
   AgsApplicationContext *application_context;
   AgsThread *main_loop;
 
-  GList *sound_server;
-  GList *sequencer;
+  GList *start_sound_server, *sound_server;
+  GList *start_sequencer, *sequencer;
   GList *card_id;
 
   preferences = (AgsPreferences *) gtk_widget_get_ancestor(GTK_WIDGET(sequencer_editor),
@@ -656,30 +658,46 @@ ags_sequencer_editor_remove_source(AgsSequencerEditor *sequencer_editor,
   /* create sequencer */
   main_loop = ags_concurrency_provider_get_main_loop(AGS_CONCURRENCY_PROVIDER(application_context));
   
-  sound_server = ags_sound_provider_get_sound_server(AGS_SOUND_PROVIDER(application_context));
+  start_sound_server = ags_sound_provider_get_sound_server(AGS_SOUND_PROVIDER(application_context));
 
-  if((sound_server = ags_list_util_find_type(sound_server,
-						    AGS_TYPE_JACK_SERVER)) == NULL){
+  if((sound_server = ags_list_util_find_type(start_sound_server,
+					     AGS_TYPE_JACK_SERVER)) == NULL){
+    g_object_unref(main_loop);
+
+    g_list_free_full(start_sound_server,
+		     g_object_unref);
+    
     g_warning("distributed manager not found");
     
     return;
   }
 
-  sequencer = ags_sound_provider_get_sequencer(AGS_SOUND_PROVIDER(application_context));
   jack_midiin = NULL;
+
+  sequencer = 
+    start_sequencer = ags_sound_provider_get_sequencer(AGS_SOUND_PROVIDER(application_context));
   
   while(sequencer != NULL){
     if(AGS_IS_JACK_MIDIIN(sequencer->data) &&
        !g_ascii_strcasecmp(ags_sequencer_get_device(AGS_SEQUENCER(sequencer->data)),
 			   device)){
       jack_midiin = sequencer->data;
+
       break;
     }
     
     sequencer = sequencer->next;
   }
-
+  
   if(jack_midiin == NULL){
+    g_object_unref(main_loop);
+
+    g_list_free_full(start_sound_server,
+		     g_object_unref);
+
+    g_list_free_full(start_sequencer,
+		     g_object_unref);
+
     return;
   }
   
@@ -689,8 +707,8 @@ ags_sequencer_editor_remove_source(AgsSequencerEditor *sequencer_editor,
 			   -1);
 
 #if 0
-  if((sound_server = ags_list_util_find_type(sound_server,
-						    AGS_TYPE_JACK_SERVER)) != NULL){
+  if((sound_server = ags_list_util_find_type(start_sound_server,
+					     AGS_TYPE_JACK_SERVER)) != NULL){
     ags_sound_server_unregister_sequencer(AGS_SOUND_SERVER(sound_server->data),
 						 jack_midiin);
   }
@@ -703,10 +721,17 @@ ags_sequencer_editor_remove_source(AgsSequencerEditor *sequencer_editor,
 
 #if 0
   if(jack_midiin != NULL){
+    GList *tmp;
+
+    tmp = ags_sound_provider_get_sequencer(AGS_SOUND_PROVIDER(application_context));
+					   
     ags_sound_provider_set_sequencer(AGS_SOUND_PROVIDER(application_context),
-				     g_list_remove(ags_sound_provider_get_sequencer(AGS_SOUND_PROVIDER(application_context)),
+				     g_list_remove(tmp,
 						   jack_midiin));
     g_object_unref(jack_midiin);
+
+    g_list_free_full(tmp,
+		     g_object_unref);
   }
 #endif
   
@@ -722,6 +747,15 @@ ags_sequencer_editor_remove_source(AgsSequencerEditor *sequencer_editor,
     sequencer_editor->sequencer_thread = NULL;
   }
 #endif
+
+  /* unref */
+  g_object_unref(main_loop);
+
+  g_list_free_full(start_sound_server,
+		   g_object_unref);
+
+  g_list_free_full(start_sequencer,
+		   g_object_unref);
 }
 
 void
@@ -736,6 +770,8 @@ ags_sequencer_editor_add_sequencer(AgsSequencerEditor *sequencer_editor,
 
   AgsApplicationContext *application_context;
 
+  GList *start_sequencer;
+  
   if(sequencer == NULL ||
      AGS_IS_JACK_MIDIIN(sequencer)){
     return;
@@ -763,13 +799,17 @@ ags_sequencer_editor_add_sequencer(AgsSequencerEditor *sequencer_editor,
   }
   
   /*  */
-  main_loop = ags_concurrency_provider_get_main_loop(AGS_CONCURRENCY_PROVIDER(application_context));
-
-  if(g_list_find(ags_sound_provider_get_sequencer(AGS_SOUND_PROVIDER(application_context)),
-		 sequencer) != NULL){
+  start_sequencer = ags_sound_provider_get_sequencer(AGS_SOUND_PROVIDER(application_context));
   
+  if(g_list_find(start_sequencer,
+		 sequencer) != NULL){
+    g_list_free_full(start_sequencer,
+		     g_object_unref);
+    
     return;
   }
+
+  main_loop = ags_concurrency_provider_get_main_loop(AGS_CONCURRENCY_PROVIDER(application_context));
   
   sequencer_editor->sequencer = sequencer;
 
@@ -785,6 +825,12 @@ ags_sequencer_editor_add_sequencer(AgsSequencerEditor *sequencer_editor,
   ags_thread_add_child_extended(main_loop,
 				sequencer_thread,
 				TRUE, TRUE);
+
+  /* unref */
+  g_list_free_full(start_sequencer,
+		   g_object_unref);
+  
+  g_object_unref(main_loop);
 }
 
 void
@@ -818,10 +864,17 @@ ags_sequencer_editor_remove_sequencer(AgsSequencerEditor *sequencer_editor,
 
 #if 0
   if(sequencer != NULL){
+    GList *tmp;
+
+    tmp = ags_sound_provider_get_sequencer(AGS_SOUND_PROVIDER(application_context));
+    
     ags_sound_provider_set_sequencer(AGS_SOUND_PROVIDER(application_context),
-				     g_list_remove(ags_sound_provider_get_sequencer(AGS_SOUND_PROVIDER(application_context)),
+				     g_list_remove(tmp,
 						   sequencer));
     g_object_unref(sequencer);
+
+    g_list_free_full(tmp,
+		     g_object_unref);
   }
 #endif
   

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -902,7 +902,8 @@ ags_xorg_application_context_get_main_loop(AgsConcurrencyProvider *concurrency_p
   pthread_mutex_lock(application_context_mutex);
 
   main_loop = (AgsThread *) AGS_APPLICATION_CONTEXT(concurrency_provider)->main_loop;
-
+  g_object_ref(main_loop);
+  
   pthread_mutex_unlock(application_context_mutex);
   
   return(main_loop);
@@ -926,6 +927,7 @@ ags_xorg_application_context_get_task_thread(AgsConcurrencyProvider *concurrency
   pthread_mutex_lock(application_context_mutex);
 
   task_thread = (AgsThread *) AGS_APPLICATION_CONTEXT(concurrency_provider)->task_thread;
+  g_object_ref(task_thread);
   
   pthread_mutex_unlock(application_context_mutex);
 
@@ -950,6 +952,7 @@ ags_xorg_application_context_get_thread_pool(AgsConcurrencyProvider *concurrency
   pthread_mutex_lock(application_context_mutex);
 
   thread_pool = AGS_XORG_APPLICATION_CONTEXT(concurrency_provider)->thread_pool;
+  g_object_ref(thread_pool);
 
   pthread_mutex_unlock(application_context_mutex);
   
@@ -973,7 +976,9 @@ ags_xorg_application_context_get_worker(AgsConcurrencyProvider *concurrency_prov
   /* get worker */
   pthread_mutex_lock(application_context_mutex);
 
-  worker = AGS_XORG_APPLICATION_CONTEXT(concurrency_provider)->worker;
+  worker = g_list_copy_deep(AGS_XORG_APPLICATION_CONTEXT(concurrency_provider)->worker,
+			    (GCopyFunc) g_object_ref,
+			    NULL);
   
   pthread_mutex_unlock(application_context_mutex);
 
@@ -993,13 +998,23 @@ ags_xorg_application_context_set_worker(AgsConcurrencyProvider *concurrency_prov
 
   pthread_mutex_unlock(ags_application_context_get_class_mutex());
 
-  /* get worker */
+  /* set worker */
   pthread_mutex_lock(application_context_mutex);
 
+  if(AGS_XORG_APPLICATION_CONTEXT(concurrency_provider)->worker == worker){
+    pthread_mutex_unlock(application_context_mutex);
+    
+    return;
+  }
+
+  g_list_free_full(AGS_XORG_APPLICATION_CONTEXT(concurrency_provider)->worker,
+		   g_object_unref);
+  
   AGS_XORG_APPLICATION_CONTEXT(concurrency_provider)->worker = worker;
 
   pthread_mutex_unlock(application_context_mutex);
 }
+
 GObject*
 ags_xorg_application_context_get_default_soundcard_thread(AgsSoundProvider *sound_provider)
 {
@@ -1018,7 +1033,8 @@ ags_xorg_application_context_get_default_soundcard_thread(AgsSoundProvider *soun
   pthread_mutex_lock(application_context_mutex);
 
   soundcard_thread = (GObject *) AGS_XORG_APPLICATION_CONTEXT(sound_provider)->default_soundcard_thread;
-
+  g_object_ref(soundcard_thread);
+  
   pthread_mutex_unlock(application_context_mutex);
   
   return(soundcard_thread);
@@ -1132,6 +1148,7 @@ ags_xorg_application_context_get_default_soundcard(AgsSoundProvider *sound_provi
   pthread_mutex_lock(application_context_mutex);
 
   soundcard = (GObject *) AGS_XORG_APPLICATION_CONTEXT(sound_provider)->default_soundcard;
+  g_object_ref(soundcard);
 
   pthread_mutex_unlock(application_context_mutex);
   
@@ -1190,7 +1207,9 @@ ags_xorg_application_context_get_soundcard(AgsSoundProvider *sound_provider)
   /* get soundcard */
   pthread_mutex_lock(application_context_mutex);
   
-  soundcard = g_list_copy(AGS_XORG_APPLICATION_CONTEXT(sound_provider)->soundcard);
+  soundcard = g_list_copy_deep(AGS_XORG_APPLICATION_CONTEXT(sound_provider)->soundcard,
+			       (GCopyFunc) g_object_ref,
+			       NULL);
 
   pthread_mutex_unlock(application_context_mutex);
   
@@ -1245,7 +1264,9 @@ ags_xorg_application_context_get_sequencer(AgsSoundProvider *sound_provider)
   /* get sequencer */
   pthread_mutex_lock(application_context_mutex);
   
-  sequencer = g_list_copy(AGS_XORG_APPLICATION_CONTEXT(sound_provider)->sequencer);
+  sequencer = g_list_copy_deep(AGS_XORG_APPLICATION_CONTEXT(sound_provider)->sequencer,
+			       (GCopyFunc) g_object_ref,
+				NULL);
 
   pthread_mutex_unlock(application_context_mutex);
   
@@ -1300,7 +1321,9 @@ ags_xorg_application_context_get_sound_server(AgsSoundProvider *sound_provider)
   /* get sound server */
   pthread_mutex_lock(application_context_mutex);
   
-  sound_server = g_list_copy(AGS_XORG_APPLICATION_CONTEXT(sound_provider)->sound_server);
+  sound_server = g_list_copy_deep(AGS_XORG_APPLICATION_CONTEXT(sound_provider)->sound_server,
+				  (GCopyFunc) g_object_ref,
+				  NULL);
 
   pthread_mutex_unlock(application_context_mutex);
   
@@ -1324,7 +1347,9 @@ ags_xorg_application_context_get_audio(AgsSoundProvider *sound_provider)
   /* get audio */
   pthread_mutex_lock(application_context_mutex);
   
-  audio = g_list_copy(AGS_XORG_APPLICATION_CONTEXT(sound_provider)->audio);
+  audio = g_list_copy_deep(AGS_XORG_APPLICATION_CONTEXT(sound_provider)->audio,
+			   (GCopyFunc) g_object_ref,
+			   NULL);
 
   pthread_mutex_unlock(application_context_mutex);
   
@@ -1379,7 +1404,9 @@ ags_xorg_application_context_get_osc_server(AgsSoundProvider *sound_provider)
   /* get osc_server */
   pthread_mutex_lock(application_context_mutex);
   
-  osc_server = g_list_copy(AGS_XORG_APPLICATION_CONTEXT(sound_provider)->osc_server);
+  osc_server = g_list_copy_deep(AGS_XORG_APPLICATION_CONTEXT(sound_provider)->osc_server,
+				(GCopyFunc) g_object_ref,
+				NULL);
 
   pthread_mutex_unlock(application_context_mutex);
   
@@ -2680,6 +2707,9 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
     window->filename = filename;
   }
   //  pthread_mutex_unlock(ags_gui_thread_get_dispatch_mutex());
+
+  /* unref */
+  g_object_unref(main_loop);
 }
 
 void
@@ -3094,23 +3124,23 @@ ags_xorg_application_context_read(AgsFile *file, xmlNode *node, GObject **applic
 void
 ags_xorg_application_context_launch(AgsFileLaunch *launch, AgsXorgApplicationContext *application_context)
 {
-  AgsThread *audio_loop, *task_thread;
+  AgsThread *main_loop;
+  AgsThread *task_thread;
 
   GList *list;
   GList *start_queue;
 
-  audio_loop = ags_concurrency_provider_get_main_loop(AGS_CONCURRENCY_PROVIDER(application_context));
+  main_loop = ags_concurrency_provider_get_main_loop(AGS_CONCURRENCY_PROVIDER(application_context));
+  task_thread = ags_concurrency_provider_get_task_thread(AGS_CONCURRENCY_PROVIDER(application_context));
 
   /* show all */
   gtk_widget_show_all((GtkWidget *) application_context->window);
 
   /* wait for audio loop */
-  task_thread = ags_thread_find_type(audio_loop,
-				     AGS_TYPE_TASK_THREAD);
   application_context->thread_pool->parent = task_thread;
 
   ags_thread_pool_start(application_context->thread_pool);
-  ags_thread_start(audio_loop);
+  ags_thread_start(main_loop);
 }
 
 xmlNode*

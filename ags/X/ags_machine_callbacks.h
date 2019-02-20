@@ -39,6 +39,7 @@ void ags_machine_popup_show_activate_callback(GtkWidget *widget, AgsMachine *mac
 void ags_machine_popup_destroy_activate_callback(GtkWidget *widget, AgsMachine *machine);
 void ags_machine_popup_rename_activate_callback(GtkWidget *widget, AgsMachine *machine);
 void ags_machine_popup_rename_audio_activate_callback(GtkWidget *widget, AgsMachine *machine);
+void ags_machine_popup_reposition_audio_activate_callback(GtkWidget *widget, AgsMachine *machine);
 void ags_machine_popup_properties_activate_callback(GtkWidget *widget, AgsMachine *machine);
 void ags_machine_popup_sticky_controls_toggled_callback(GtkWidget *widget, AgsMachine *machine);
 

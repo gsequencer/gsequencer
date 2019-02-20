@@ -141,7 +141,6 @@ ags_export_window_export_callback(GtkWidget *toggle_button,
   main_loop = ags_concurrency_provider_get_main_loop(AGS_CONCURRENCY_PROVIDER(application_context));
   
   gui_thread = ags_ui_provider_get_gui_thread(AGS_UI_PROVIDER(application_context));
-
   
   /* collect */  
   machines_start = NULL;
@@ -244,7 +243,7 @@ ags_export_window_export_callback(GtkWidget *toggle_button,
 
       if(response == GTK_RESPONSE_REJECT ||
 	 response == GTK_RESPONSE_CANCEL){
-	return;
+	goto ags_export_window_export_callback_END;
       }
 
       /* remove files */
@@ -429,8 +428,12 @@ ags_export_window_export_callback(GtkWidget *toggle_button,
     }
   }
 
+ ags_export_window_export_callback_END:
+
   /* free machine list */
   g_list_free(machines_start);
+
+  g_object_unref(main_loop);
 }
 
 void

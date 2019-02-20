@@ -44,6 +44,7 @@
 
 int ags_machine_popup_rename_response_callback(GtkWidget *widget, gint response, AgsMachine *machine);
 int ags_machine_popup_rename_audio_response_callback(GtkWidget *widget, gint response, AgsMachine *machine);
+int ags_machine_popup_reposition_audio_response_callback(GtkWidget *widget, gint response, AgsMachine *machine);
 int ags_machine_popup_properties_destroy_callback(GtkWidget *widget, AgsMachine *machine);
 
 int
@@ -215,21 +216,25 @@ ags_machine_popup_rename_activate_callback(GtkWidget *widget, AgsMachine *machin
 
   g_signal_connect((GObject *) dialog, "response",
 		   G_CALLBACK(ags_machine_popup_rename_response_callback), (gpointer) machine);
-
-  return;
 }
 
 int
 ags_machine_popup_rename_response_callback(GtkWidget *widget, gint response, AgsMachine *machine)
 {
   if(response == GTK_RESPONSE_ACCEPT){
+    GList *children;
+
     gchar *str;
+
+    children = gtk_container_get_children((GtkContainer *) GTK_DIALOG(widget)->vbox);
     
-    str = gtk_editable_get_chars(GTK_EDITABLE(gtk_container_get_children((GtkContainer *) GTK_DIALOG(widget)->vbox)->data),
+    str = gtk_editable_get_chars(GTK_EDITABLE(children->data),
 				 0, -1);
     g_object_set(machine,
 		 "machine-name", str,
 		 NULL);        
+    
+    g_list_free(children);
   }
   
   machine->rename = NULL;
@@ -291,24 +296,127 @@ ags_machine_popup_rename_audio_activate_callback(GtkWidget *widget, AgsMachine *
 
   g_signal_connect((GObject *) dialog, "response",
 		   G_CALLBACK(ags_machine_popup_rename_audio_response_callback), (gpointer) machine);
-
-  return;
 }
 
 int
 ags_machine_popup_rename_audio_response_callback(GtkWidget *widget, gint response, AgsMachine *machine)
 {
   if(response == GTK_RESPONSE_ACCEPT){
+    GList *children;
+
     gchar *str;
+
+    children = gtk_container_get_children((GtkContainer *) GTK_DIALOG(widget)->vbox);
     
-    str = gtk_editable_get_chars(GTK_EDITABLE(gtk_container_get_children((GtkContainer *) GTK_DIALOG(widget)->vbox)->data),
+    str = gtk_editable_get_chars(GTK_EDITABLE(children->data),
 				 0, -1);
     g_object_set(machine->audio,
 		 "audio-name", str,
-		 NULL);        
+		 NULL);
+    
+    g_list_free(children);
   }
   
   machine->rename_audio = NULL;
+  gtk_widget_destroy(widget);
+
+  return(0);
+}
+
+void
+ags_machine_popup_reposition_audio_activate_callback(GtkWidget *widget, AgsMachine *machine)
+{
+  GtkDialog *dialog;
+  GtkSpinButton *spin_button;
+
+  AgsAudio *audio;
+
+  AgsApplicationContext *application_context;
+
+  GList *start_list;
+
+  gint length;
+  gint position;
+    
+  if(machine->reposition_audio != NULL){
+    return;
+  }
+
+  application_context = ags_application_context_get_instance();
+  
+  audio = machine->audio;
+
+  start_list = ags_sound_provider_get_audio(AGS_SOUND_PROVIDER(application_context));
+
+  length = g_list_length(start_list);
+  position = g_list_index(start_list,
+			  audio);
+  
+  machine->reposition_audio =
+    dialog = (GtkDialog *) gtk_dialog_new_with_buttons(i18n("reposition audio"),
+						       (GtkWindow *) gtk_widget_get_toplevel(GTK_WIDGET(machine)),
+						       GTK_DIALOG_DESTROY_WITH_PARENT,
+						       GTK_STOCK_OK,
+						       GTK_RESPONSE_ACCEPT,
+						       GTK_STOCK_CANCEL,
+						       GTK_RESPONSE_REJECT,
+						       NULL);
+
+  if(position >= 0){
+    spin_button = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, (gdouble) (length - 1), 1.0);
+  }else{
+    spin_button = (GtkSpinButton *) gtk_spin_button_new_with_range(-1.0, -1.0, 0.0);
+  }
+  
+  gtk_spin_button_set_value(spin_button,
+			    (gdouble) position);
+  gtk_box_pack_start((GtkBox *) dialog->vbox,
+		     (GtkWidget *) spin_button,
+		     FALSE, FALSE,
+		     0);
+  
+  gtk_widget_show_all((GtkWidget *) dialog);
+
+  g_signal_connect((GObject *) dialog, "response",
+		   G_CALLBACK(ags_machine_popup_reposition_audio_response_callback), (gpointer) machine);
+}
+
+int
+ags_machine_popup_reposition_audio_response_callback(GtkWidget *widget, gint response, AgsMachine *machine)
+{
+  if(response == GTK_RESPONSE_ACCEPT){
+    AgsAudio *audio;
+
+    AgsApplicationContext *application_context;
+
+    GList *children;
+    GList *start_list;
+  
+    gint new_position;
+    
+    application_context = ags_application_context_get_instance();
+    
+    audio = machine->audio;
+    
+    start_list = ags_sound_provider_get_audio(AGS_SOUND_PROVIDER(application_context));
+
+    children = gtk_container_get_children((GtkContainer *) GTK_DIALOG(widget)->vbox);
+    
+    new_position = gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(children->data));
+    
+    start_list = g_list_remove(start_list,
+			       audio);
+    start_list = g_list_insert(start_list,
+			       audio,
+			       new_position);
+
+    ags_sound_provider_set_audio(AGS_SOUND_PROVIDER(application_context),
+				 start_list);
+    
+    g_list_free(children);
+  }
+  
+  machine->reposition_audio = NULL;
   gtk_widget_destroy(widget);
 
   return(0);

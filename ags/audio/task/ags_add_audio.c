@@ -316,10 +316,17 @@ ags_add_audio_launch(AgsTask *task)
 
     /* add to sound provider */
     list = ags_sound_provider_get_audio(AGS_SOUND_PROVIDER(add_audio->application_context));
-    list = g_list_prepend(list,
+    g_object_ref(add_audio->audio);
+    g_object_ref(add_audio->audio);
+    
+    list = g_list_append(list,
 			  add_audio->audio);
     ags_sound_provider_set_audio(AGS_SOUND_PROVIDER(add_audio->application_context),
 				 list);
+
+    g_list_foreach(list,
+		   (GFunc) g_object_unref,
+		   NULL);
     
     /* AgsAudio */
     ags_connectable_connect(AGS_CONNECTABLE(add_audio->audio));

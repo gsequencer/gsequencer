@@ -38,7 +38,7 @@ struct _AgsSoundProviderInterface
   GTypeInterface ginterface;
 
   void (*set_default_soundcard)(AgsSoundProvider *sound_provider,
-				       GObject *soundcard_thread);
+				GObject *soundcard_thread);
   GObject* (*get_default_soundcard)(AgsSoundProvider *sound_provider);
 
   void (*set_default_soundcard_thread)(AgsSoundProvider *sound_provider,
