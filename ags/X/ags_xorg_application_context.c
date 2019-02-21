@@ -1033,7 +1033,10 @@ ags_xorg_application_context_get_default_soundcard_thread(AgsSoundProvider *soun
   pthread_mutex_lock(application_context_mutex);
 
   soundcard_thread = (GObject *) AGS_XORG_APPLICATION_CONTEXT(sound_provider)->default_soundcard_thread;
-  g_object_ref(soundcard_thread);
+
+  if(soundcard_thread != NULL){
+    g_object_ref(soundcard_thread);
+  }
   
   pthread_mutex_unlock(application_context_mutex);
   
@@ -1148,8 +1151,11 @@ ags_xorg_application_context_get_default_soundcard(AgsSoundProvider *sound_provi
   pthread_mutex_lock(application_context_mutex);
 
   soundcard = (GObject *) AGS_XORG_APPLICATION_CONTEXT(sound_provider)->default_soundcard;
-  g_object_ref(soundcard);
 
+  if(soundcard != NULL){
+    g_object_ref(soundcard);
+  }
+  
   pthread_mutex_unlock(application_context_mutex);
   
   return(soundcard);
