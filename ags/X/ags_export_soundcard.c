@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -595,7 +595,8 @@ ags_export_soundcard_refresh_card(AgsExportSoundcard *export_soundcard)
     }
   }
 
-  g_list_free(start_soundcard);
+  g_list_free_full(start_soundcard,
+		   g_object_unref);
   
   model = gtk_combo_box_get_model(GTK_COMBO_BOX(export_soundcard->card));
   gtk_list_store_clear(GTK_LIST_STORE(model));

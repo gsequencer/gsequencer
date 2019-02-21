@@ -85,7 +85,8 @@ ags_audio_preferences_add_callback(GtkWidget *widget, AgsAudioPreferences *audio
     soundcard = list->data;
   }
 
-  g_list_free(start_list);
+  g_list_free_full(start_list,
+		   g_object_unref);
   
   /* soundcard editor */
   soundcard_editor = ags_soundcard_editor_new();

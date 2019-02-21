@@ -2980,7 +2980,8 @@ ags_xorg_application_context_quit(AgsApplicationContext *application_context)
     list = list->next;
   }
 
-  g_list_free(start_list);
+  g_list_free_full(start_list,
+		   g_object_unref);
   
   /* retrieve pulseaudio server */
   start_list = 
@@ -3000,7 +3001,8 @@ ags_xorg_application_context_quit(AgsApplicationContext *application_context)
     list = list->next;
   }
 
-  g_list_free(start_list);
+  g_list_free_full(start_list,
+		   g_object_unref);
   
   /* retrieve JACK server */
   start_list = 
@@ -3024,7 +3026,8 @@ ags_xorg_application_context_quit(AgsApplicationContext *application_context)
     list = list->next;
   }
 
-  g_list_free(start_list);
+  g_list_free_full(start_list,
+		   g_object_unref);
   
   gtk_main_quit();
 }

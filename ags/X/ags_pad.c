@@ -1091,7 +1091,8 @@ ags_pad_play(AgsPad *pad)
     no_soundcard = TRUE;
   }
 
-  g_list_free(start_list);
+  g_list_free_full(start_list,
+		   g_object_unref);
 
   if(no_soundcard){
     g_message("No soundcard available");

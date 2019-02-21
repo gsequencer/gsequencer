@@ -1131,11 +1131,19 @@ ags_machine_finalize(GObject *gobject)
   application_context = ags_application_context_get_instance();
   
   /* remove from sound provider */
-  list = ags_sound_provider_get_audio(AGS_SOUND_PROVIDER(application_context));
-  ags_sound_provider_set_audio(AGS_SOUND_PROVIDER(application_context),
-			       g_list_remove(list,
-					     machine->audio));
+  list =
+    list_start = ags_sound_provider_get_audio(AGS_SOUND_PROVIDER(application_context));
 
+  list_start = g_list_remove(list_start,
+			     machine->audio);
+  ags_sound_provider_set_audio(AGS_SOUND_PROVIDER(application_context),
+			       list_start);
+
+  g_object_unref(machine->audio);
+  g_list_foreach(list_start,
+		 (GFunc) g_object_unref,
+		 NULL);
+  
   /* remove message monitor */
   g_hash_table_remove(ags_machine_message_monitor,
 		      machine);
@@ -2203,7 +2211,8 @@ ags_machine_set_run_extended(AgsMachine *machine,
     no_soundcard = TRUE;
   }
 
-  g_list_free(start_list);
+  g_list_free_full(start_list,
+		   g_object_unref);
 
   if(no_soundcard){
     g_message("No soundcard available");
@@ -2337,7 +2346,7 @@ ags_machine_get_possible_audio_output_connections(AgsMachine *machine)
 
   GtkListStore *model;
 
-  GList *list;
+  GList *start_list, *list;
   GtkTreeIter iter;
 
   window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) machine,
@@ -2358,7 +2367,8 @@ ags_machine_get_possible_audio_output_connections(AgsMachine *machine)
 		     -1);
 
   if(application_context != NULL){
-    list = ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(application_context));
+    list =
+      start_list = ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(application_context));
 
     while(list != NULL){
       guint soundcard_capability;
@@ -2378,6 +2388,9 @@ ags_machine_get_possible_audio_output_connections(AgsMachine *machine)
 
       list = list->next;
     }
+
+    g_list_free_full(start_list,
+		     g_object_unref);
   }
   
   return(model);
@@ -2403,7 +2416,7 @@ ags_machine_get_possible_audio_input_connections(AgsMachine *machine)
 
   GtkListStore *model;
 
-  GList *list;
+  GList *start_list, *list;
   GtkTreeIter iter;
 
   window = (AgsWindow *) gtk_widget_get_ancestor((GtkWidget *) machine,
@@ -2424,7 +2437,8 @@ ags_machine_get_possible_audio_input_connections(AgsMachine *machine)
 		     -1);
 
   if(application_context != NULL){
-    list = ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(application_context));
+    list =
+      start_list = ags_sound_provider_get_soundcard(AGS_SOUND_PROVIDER(application_context));
 
     while(list != NULL){
       guint soundcard_capability;
@@ -2444,6 +2458,9 @@ ags_machine_get_possible_audio_input_connections(AgsMachine *machine)
 
       list = list->next;
     }
+
+    g_list_free_full(start_list,
+		     g_object_unref);
   }
   
   return(model);

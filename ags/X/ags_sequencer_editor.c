@@ -568,7 +568,8 @@ ags_sequencer_editor_add_source(AgsSequencerEditor *sequencer_editor,
 
   AgsApplicationContext *application_context;
 
-  GList *sound_server;
+  GList *start_sound_server, *sound_server;
+  GList *start_sequencer;
   GList *card_name, *card_uri;
 
   preferences = (AgsPreferences *) gtk_widget_get_ancestor(GTK_WIDGET(sequencer_editor),
@@ -578,21 +579,28 @@ ags_sequencer_editor_add_source(AgsSequencerEditor *sequencer_editor,
   application_context = (AgsApplicationContext *) window->application_context;
   
   /* create sequencer */
-  sound_server = ags_sound_provider_get_sound_server(AGS_SOUND_PROVIDER(application_context));
+  sound_server =
+    start_sound_server = ags_sound_provider_get_sound_server(AGS_SOUND_PROVIDER(application_context));
 
   if((sound_server = ags_list_util_find_type(sound_server,
-						    AGS_TYPE_JACK_SERVER)) != NULL){
+					     AGS_TYPE_JACK_SERVER)) != NULL){
     jack_server = AGS_JACK_SERVER(sound_server->data);
   }else{
-    g_warning("distributed manager not found");
+    g_warning("sound server not found");
     
+    g_list_free_full(start_sound_server,
+		     g_object_unref);
+
     return;
   }
   
   jack_midiin = (AgsJackMidiin *) ags_sound_server_register_sequencer(AGS_SOUND_SERVER(jack_server),
 								      FALSE);
 
-  if(jack_midiin == NULL){
+  if(jack_midiin == NULL){    
+    g_list_free_full(start_sound_server,
+		     g_object_unref);
+
     return;
   }
   
@@ -601,11 +609,15 @@ ags_sequencer_editor_add_source(AgsSequencerEditor *sequencer_editor,
   
   sequencer_editor->sequencer = (GObject *) jack_midiin;
 
-  ags_sound_provider_set_sequencer(AGS_SOUND_PROVIDER(application_context),
-				   g_list_append(ags_sound_provider_get_sequencer(AGS_SOUND_PROVIDER(application_context)),
-						 jack_midiin));
+  start_sequencer = ags_sound_provider_get_sequencer(AGS_SOUND_PROVIDER(application_context));
+  g_list_foreach(start_sequencer,
+		 (GFunc) g_object_unref,
+		 NULL);
     
-  g_object_ref(jack_midiin);
+  g_object_ref(jack_midiin);  
+  ags_sound_provider_set_sequencer(AGS_SOUND_PROVIDER(application_context),
+				   g_list_append(start_sequencer,
+						 jack_midiin));
 
   sequencer_thread = (AgsThread *) ags_sequencer_thread_new((GObject *) jack_midiin);
   sequencer_editor->sequencer_thread = (GObject *) sequencer_thread;
@@ -632,6 +644,10 @@ ags_sequencer_editor_add_source(AgsSequencerEditor *sequencer_editor,
   }
 
   g_object_unref(main_loop);
+
+  /* unref */
+  g_list_free_full(start_sound_server,
+		   g_object_unref);
 }
 
 void
@@ -667,7 +683,7 @@ ags_sequencer_editor_remove_source(AgsSequencerEditor *sequencer_editor,
     g_list_free_full(start_sound_server,
 		     g_object_unref);
     
-    g_warning("distributed manager not found");
+    g_warning("sound server not found");
     
     return;
   }
@@ -813,11 +829,14 @@ ags_sequencer_editor_add_sequencer(AgsSequencerEditor *sequencer_editor,
   
   sequencer_editor->sequencer = sequencer;
 
-  ags_sound_provider_set_sequencer(AGS_SOUND_PROVIDER(application_context),
-				   g_list_append(ags_sound_provider_get_sequencer(AGS_SOUND_PROVIDER(application_context)),
-						 sequencer));
-    
+  g_list_foreach(start_sequencer,
+		 (GFunc) g_object_unref,
+		 NULL);
+  
   g_object_ref(sequencer);
+  ags_sound_provider_set_sequencer(AGS_SOUND_PROVIDER(application_context),
+				   g_list_append(start_sequencer,
+						 sequencer));    
 
   sequencer_thread = (AgsThread *) ags_sequencer_thread_new(sequencer);
   sequencer_editor->sequencer_thread = (GObject *) sequencer_thread;
@@ -827,9 +846,6 @@ ags_sequencer_editor_add_sequencer(AgsSequencerEditor *sequencer_editor,
 				TRUE, TRUE);
 
   /* unref */
-  g_list_free_full(start_sequencer,
-		   g_object_unref);
-  
   g_object_unref(main_loop);
 }
 
@@ -902,8 +918,8 @@ ags_sequencer_editor_load_jack_card(AgsSequencerEditor *sequencer_editor)
 
   AgsApplicationContext *application_context;
 
-  GList *sound_server;
-  GList *sequencer;
+  GList *start_sound_server, *sound_server;
+  GList *start_sequencer, *sequencer;
   GList *card_id;
 
   preferences = (AgsPreferences *) gtk_widget_get_ancestor(GTK_WIDGET(sequencer_editor),
@@ -914,16 +930,21 @@ ags_sequencer_editor_load_jack_card(AgsSequencerEditor *sequencer_editor)
   application_context = (AgsApplicationContext *) window->application_context;
 
   /* create sequencer */
-  sound_server = ags_sound_provider_get_sound_server(AGS_SOUND_PROVIDER(application_context));
+  sound_server =
+    start_sound_server = ags_sound_provider_get_sound_server(AGS_SOUND_PROVIDER(application_context));
 
   if((sound_server = ags_list_util_find_type(sound_server,
-						    AGS_TYPE_JACK_SERVER)) == NULL){
-    g_warning("distributed manager not found");
+					     AGS_TYPE_JACK_SERVER)) == NULL){
+    g_warning("sound server not found");
 
+    g_list_free_full(sound_server,
+		     g_object_unref);
+    
     return;
   }
 
-  sequencer = ags_sound_provider_get_sequencer(AGS_SOUND_PROVIDER(application_context));
+  sequencer = 
+    start_sequencer = ags_sound_provider_get_sequencer(AGS_SOUND_PROVIDER(application_context));
   jack_midiin = NULL;
   
   while(sequencer != NULL){
@@ -949,6 +970,11 @@ ags_sequencer_editor_load_jack_card(AgsSequencerEditor *sequencer_editor)
     
     card_id = card_id->next;
   }
+
+  g_list_free_full(start_sound_server,
+		   g_object_unref);
+  g_list_free_full(start_sequencer,
+		   g_object_unref);
 }
 
 void

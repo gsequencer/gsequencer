@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -703,7 +703,8 @@ ags_midi_dialog_load_sequencers(AgsMidiDialog *midi_dialog)
     list = list->next;
   }
 
-  g_list_free(start_list);
+  g_list_free_full(start_list,
+		   g_object_unref);
   
   gtk_combo_box_set_model(GTK_COMBO_BOX(midi_dialog->midi_device),
 			  GTK_TREE_MODEL(model));

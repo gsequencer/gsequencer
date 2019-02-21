@@ -65,6 +65,9 @@ ags_export_soundcard_backend_callback(GtkWidget *combo_box,
 
   if(backend == NULL ||
      device == NULL){
+    g_list_free_full(start_soundcard,
+		     g_object_unref);
+    
     return;
   }
   
@@ -148,7 +151,8 @@ ags_export_soundcard_backend_callback(GtkWidget *combo_box,
     soundcard = soundcard->next;
   }
 
-  g_list_free(start_soundcard);
+  g_list_free_full(start_soundcard,
+		   g_object_unref);
   
   if(!found_card){
     g_object_set(export_soundcard,
@@ -195,6 +199,9 @@ ags_export_soundcard_card_callback(GtkWidget *combo_box,
 
   if(backend == NULL ||
      device == NULL){
+    g_list_free_full(start_soundcard,
+		     g_object_unref);
+
     return;
   }
   
@@ -278,7 +285,8 @@ ags_export_soundcard_card_callback(GtkWidget *combo_box,
     soundcard = soundcard->next;
   }
 
-  g_list_free(start_soundcard);
+  g_list_free_full(start_soundcard,
+		   g_object_unref);
   
   if(!found_card){
     g_object_set(export_soundcard,

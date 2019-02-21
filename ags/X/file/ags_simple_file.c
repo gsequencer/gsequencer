@@ -2528,17 +2528,16 @@ ags_simple_file_read_machine(AgsSimpleFile *simple_file, xmlNode *node, AgsMachi
 
   /* add audio to soundcard */
   list = ags_sound_provider_get_audio(AGS_SOUND_PROVIDER(simple_file->application_context));
-  g_object_ref(G_OBJECT(gobject->audio));
-  g_object_ref(G_OBJECT(gobject->audio));
-  
-  list = g_list_append(list,
-		       gobject->audio);
-  ags_sound_provider_set_audio(AGS_SOUND_PROVIDER(simple_file->application_context),
-			       list);
-
   g_list_foreach(list,
 		 (GFunc) g_object_unref,
 		 NULL);
+
+  g_object_ref(G_OBJECT(gobject->audio));
+  list = g_list_append(list,
+		       gobject->audio);
+  
+  ags_sound_provider_set_audio(AGS_SOUND_PROVIDER(simple_file->application_context),
+			       list);
   
   /* children */
   child = node->children;

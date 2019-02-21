@@ -43,7 +43,8 @@ ags_osc_server_preferences_start_callback(GtkButton *button, AgsOscServerPrefere
     list = list->next;
   }
 
-  g_list_free(start_list);
+  g_list_free_full(start_list,
+		   g_object_unref);
 }
 
 void
@@ -67,7 +68,8 @@ ags_osc_server_preferences_stop_callback(GtkButton *button, AgsOscServerPreferen
     list = list->next;
   }
 
-  g_list_free(start_list);
+  g_list_free_full(start_list,
+		   g_object_unref);
 }
 
 void
@@ -95,7 +97,8 @@ ags_osc_server_preferences_any_address_callback(GtkButton *button, AgsOscServerP
 				 AGS_OSC_SERVER_ANY_ADDRESS);
     }
   
-    g_list_free(start_list);
+    g_list_free_full(start_list,
+		     g_object_unref);
   }
   
   /* set address fields in-/sensitive */
@@ -139,7 +142,8 @@ ags_osc_server_preferences_enable_ip4_callback(GtkButton *button, AgsOscServerPr
 				 AGS_OSC_SERVER_INET4);
     }
   
-    g_list_free(start_list);
+    g_list_free_full(start_list,
+		     g_object_unref);
   }
 }
 
@@ -164,7 +168,8 @@ ags_osc_server_preferences_ip4_address_callback(GtkEditable *editable, AgsOscSer
 		 "ip4", gtk_entry_get_text(GTK_ENTRY(editable)),
 		 NULL);
   
-    g_list_free(start_list);
+    g_list_free_full(start_list,
+		     g_object_unref);
   }
 }
 
@@ -193,7 +198,8 @@ ags_osc_server_preferences_enable_ip6_callback(GtkButton *button, AgsOscServerPr
 				 AGS_OSC_SERVER_INET6);
     }
   
-    g_list_free(start_list);
+    g_list_free_full(start_list,
+		     g_object_unref);
   }
 }
 
@@ -218,7 +224,8 @@ ags_osc_server_preferences_ip6_address_callback(GtkEditable *editable, AgsOscSer
 		 "ip6", gtk_entry_get_text(GTK_ENTRY(editable)),
 		 NULL);
   
-    g_list_free(start_list);
+    g_list_free_full(start_list,
+		     g_object_unref);
   }
 }
   
@@ -256,6 +263,7 @@ ags_osc_server_preferences_port_callback(GtkEditable *editable, AgsOscServerPref
 		 "server-port", server_port,
 		 NULL);
   
-    g_list_free(start_list);
+    g_list_free_full(start_list,
+		     g_object_unref);
   }
 }

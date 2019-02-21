@@ -85,7 +85,8 @@ ags_midi_preferences_add_callback(GtkWidget *widget, AgsMidiPreferences *midi_pr
     sequencer = list->data;
   }
 
-  g_list_free(start_list);
+  g_list_free_full(start_list,
+		   g_object_unref);
   
   /* sequencer editor */
   sequencer_editor = ags_sequencer_editor_new();

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -591,7 +591,8 @@ ags_navigation_real_change_position(AgsNavigation *navigation,
     list = list->next;
   }
 
-  g_list_free(start_list);
+  g_list_free_full(start_list,
+		   g_object_unref);
 
   /* sequencer - start offset */
   list = 
@@ -604,7 +605,8 @@ ags_navigation_real_change_position(AgsNavigation *navigation,
     list = list->next;
   }
 
-  g_list_free(start_list);
+  g_list_free_full(start_list,
+		   g_object_unref);
 
   //TODO:JK: implement me
   

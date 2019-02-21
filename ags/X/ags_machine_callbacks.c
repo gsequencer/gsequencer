@@ -379,6 +379,9 @@ ags_machine_popup_reposition_audio_activate_callback(GtkWidget *widget, AgsMachi
 
   g_signal_connect((GObject *) dialog, "response",
 		   G_CALLBACK(ags_machine_popup_reposition_audio_response_callback), (gpointer) machine);
+
+  g_list_free_full(start_list,
+		   g_object_unref);
 }
 
 int
@@ -412,7 +415,10 @@ ags_machine_popup_reposition_audio_response_callback(GtkWidget *widget, gint res
 
     ags_sound_provider_set_audio(AGS_SOUND_PROVIDER(application_context),
 				 start_list);
-    
+    g_list_foreach(start_list,
+		   (GFunc) g_object_unref,
+		   NULL);
+
     g_list_free(children);
   }
   

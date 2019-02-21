@@ -305,7 +305,8 @@ ags_midi_preferences_reset(AgsApplicable *applicable)
     list = list->next;
   }
 
-  g_list_free(list_start);
+  g_list_free_full(list_start,
+		   g_object_unref);
   
   gtk_widget_show_all((GtkWidget *) midi_preferences->sequencer_editor);
 
