@@ -1402,6 +1402,90 @@ ags_recycling_unset_flags(AgsRecycling *recycling, guint flags)
 }
 
 /**
+ * ags_recycling_next:
+ * @recycling: the #AgsRecycling
+ * 
+ * Iterate @recycling.
+ * 
+ * Returns: the next of #AgsRecycling if available, otherwise %NULL
+ * 
+ * Since: 2.1.61
+ */
+AgsRecycling*
+ags_recycling_next(AgsRecycling *recycling)
+{
+  AgsRecycling *next;
+  
+  pthread_mutex_t *recycling_mutex;
+
+  if(!AGS_IS_RECYCLING(recycling)){
+    return(NULL);
+  }
+
+  /* get recycling mutex */
+  pthread_mutex_lock(ags_recycling_get_class_mutex());
+  
+  recycling_mutex = recycling->obj_mutex;
+  
+  pthread_mutex_unlock(ags_recycling_get_class_mutex());
+
+  /* next */
+  pthread_mutex_lock(recycling_mutex);
+
+  next = recycling->next;
+
+  if(next != NULL){
+    g_object_ref(next);
+  }
+  
+  pthread_mutex_unlock(recycling_mutex);
+
+  return(next);
+}
+
+/**
+ * ags_recycling_prev:
+ * @recycling: the #AgsRecycling
+ * 
+ * Iterate @recycling.
+ * 
+ * Returns: the prev of #AgsRecycling if available, otherwise %NULL
+ * 
+ * Since: 2.1.61
+ */
+AgsRecycling*
+ags_recycling_prev(AgsRecycling *recycling)
+{
+  AgsRecycling *prev;
+  
+  pthread_mutex_t *recycling_mutex;
+
+  if(!AGS_IS_RECYCLING(recycling)){
+    return(NULL);
+  }
+
+  /* get recycling mutex */
+  pthread_mutex_lock(ags_recycling_get_class_mutex());
+  
+  recycling_mutex = recycling->obj_mutex;
+  
+  pthread_mutex_unlock(ags_recycling_get_class_mutex());
+
+  /* prev */
+  pthread_mutex_lock(recycling_mutex);
+
+  prev = recycling->prev;
+
+  if(prev != NULL){
+    g_object_ref(prev);
+  }
+  
+  pthread_mutex_unlock(recycling_mutex);
+
+  return(prev);
+}
+
+/**
  * ags_recycling_set_output_soundcard:
  * @recycling: the #AgsRecycling
  * @output_soundcard: the #GObject to set

@@ -1,3 +1,11 @@
+ags (2.1.61)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented ags_channel_next() and ags_channel_prev()
+	* implemented ags_channel_next_pad() and ags_channel_prev_pad()
+	* TODO:JK: implemented ags_recycling_next() and ags_recycling_prev()
+	* improved ags_channel_first() and alike to return referenced AgsChannel
+
 ags (2.1.60)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

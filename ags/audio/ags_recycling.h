@@ -106,6 +106,10 @@ gboolean ags_recycling_test_flags(AgsRecycling *recycling, guint flags);
 void ags_recycling_set_flags(AgsRecycling *recycling, guint flags);
 void ags_recycling_unset_flags(AgsRecycling *recycling, guint flags);
 
+/* recycling */
+AgsRecycling* ags_recycling_next(AgsRecycling *recycling);
+AgsRecycling* ags_recycling_prev(AgsRecycling *recycling);
+
 /* soundcard */
 void ags_recycling_set_output_soundcard(AgsRecycling *recycling, GObject *output_soundcard);
 void ags_recycling_set_input_soundcard(AgsRecycling *recycling, GObject *input_soundcard);

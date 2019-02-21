@@ -289,6 +289,8 @@ ags_recycling_get_class_mutex
 ags_recycling_test_flags
 ags_recycling_set_flags
 ags_recycling_unset_flags
+ags_recycling_next
+ags_recycling_prev
 ags_recycling_set_output_soundcard
 ags_recycling_set_input_soundcard
 ags_recycling_set_samplerate
@@ -1266,6 +1268,10 @@ ags_channel_unset_behaviour_flags
 ags_channel_test_staging_flags
 ags_channel_set_staging_flags
 ags_channel_unset_staging_flags
+ags_channel_next
+ags_channel_prev
+ags_channel_next_pad
+ags_channel_prev_pad
 ags_channel_first
 ags_channel_last
 ags_channel_nth

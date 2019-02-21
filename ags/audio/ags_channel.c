@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -3607,6 +3607,174 @@ ags_channel_unset_staging_flags(AgsChannel *channel, gint sound_scope,
 }
 
 /**
+ * ags_channel_next:
+ * @channel: the #AgsChannel
+ * 
+ * Iterate @channel.
+ * 
+ * Returns: the next of #AgsChannel if available, otherwise %NULL
+ * 
+ * Since: 2.1.61
+ */
+AgsChannel*
+ags_channel_next(AgsChannel *channel)
+{
+  AgsChannel *next;
+  
+  pthread_mutex_t *channel_mutex;
+
+  if(!AGS_IS_CHANNEL(channel)){
+    return(NULL);
+  }
+
+  /* get channel mutex */
+  pthread_mutex_lock(ags_channel_get_class_mutex());
+  
+  channel_mutex = channel->obj_mutex;
+  
+  pthread_mutex_unlock(ags_channel_get_class_mutex());
+
+  /* get next */
+  pthread_mutex_lock(channel_mutex);
+
+  next = channel->next;
+
+  if(next != NULL){
+    g_object_ref(next);
+  }
+  
+  pthread_mutex_unlock(channel_mutex);
+
+  return(next);
+}
+
+/**
+ * ags_channel_prev:
+ * @channel: the #AgsChannel
+ * 
+ * Iterate @channel.
+ * 
+ * Returns: the prev of #AgsChannel if available, otherwise %NULL
+ * 
+ * Since: 2.1.61
+ */
+AgsChannel*
+ags_channel_prev(AgsChannel *channel)
+{
+  AgsChannel *prev;
+  
+  pthread_mutex_t *channel_mutex;
+
+  if(!AGS_IS_CHANNEL(channel)){
+    return(NULL);
+  }
+
+  /* get channel mutex */
+  pthread_mutex_lock(ags_channel_get_class_mutex());
+  
+  channel_mutex = channel->obj_mutex;
+  
+  pthread_mutex_unlock(ags_channel_get_class_mutex());
+
+  /* get prev */
+  pthread_mutex_lock(channel_mutex);
+
+  prev = channel->prev;
+
+  if(prev != NULL){
+    g_object_ref(prev);
+  }
+  
+  pthread_mutex_unlock(channel_mutex);
+
+  return(prev);
+}
+
+/**
+ * ags_channel_next:
+ * @channel: the #AgsChannel
+ * 
+ * Iterate @channel.
+ * 
+ * Returns: the next pad of #AgsChannel if available, otherwise %NULL
+ * 
+ * Since: 2.1.61
+ */
+AgsChannel*
+ags_channel_next_pad(AgsChannel *channel)
+{
+  AgsChannel *next_pad;
+  
+  pthread_mutex_t *channel_mutex;
+
+  if(!AGS_IS_CHANNEL(channel)){
+    return(NULL);
+  }
+
+  /* get channel mutex */
+  pthread_mutex_lock(ags_channel_get_class_mutex());
+  
+  channel_mutex = channel->obj_mutex;
+  
+  pthread_mutex_unlock(ags_channel_get_class_mutex());
+
+  /* get next pad */
+  pthread_mutex_lock(channel_mutex);
+
+  next_pad = channel->next_pad;
+
+  if(next_pad != NULL){
+    g_object_ref(next_pad);
+  }
+  
+  pthread_mutex_unlock(channel_mutex);
+
+  return(next_pad);
+}
+
+/**
+ * ags_channel_prev_pad:
+ * @channel: the #AgsChannel
+ * 
+ * Iterate @channel.
+ * 
+ * Returns: the prev pad of #AgsChannel if available, otherwise %NULL
+ * 
+ * Since: 2.1.61
+ */
+AgsChannel*
+ags_channel_prev_pad(AgsChannel *channel)
+{
+  AgsChannel *prev_pad;
+  
+  pthread_mutex_t *channel_mutex;
+
+  if(!AGS_IS_CHANNEL(channel)){
+    return(NULL);
+  }
+
+  /* get channel mutex */
+  pthread_mutex_lock(ags_channel_get_class_mutex());
+  
+  channel_mutex = channel->obj_mutex;
+  
+  pthread_mutex_unlock(ags_channel_get_class_mutex());
+
+  /* get prev pad */
+  pthread_mutex_lock(channel_mutex);
+
+  prev_pad = channel->prev_pad;
+
+  if(prev_pad != NULL){
+    g_object_ref(prev_pad);
+  }
+  
+  pthread_mutex_unlock(channel_mutex);
+
+  return(prev_pad);
+}
+
+/**
  * ags_channel_first:
  * @channel: an #AgsChannel
  *
@@ -3619,6 +3787,8 @@ ags_channel_unset_staging_flags(AgsChannel *channel, gint sound_scope,
 AgsChannel*
 ags_channel_first(AgsChannel *channel)
 {
+  AgsChannel *prev;
+  
   gboolean has_prev;
   
   pthread_mutex_t *channel_mutex;
@@ -3643,8 +3813,12 @@ ags_channel_first(AgsChannel *channel)
     
     pthread_mutex_lock(channel_mutex);
 
-    if(channel->prev == NULL){
+    prev = channel->prev;
+    
+    if(prev == NULL){
       has_prev = FALSE;
+    }else{
+      g_object_ref(prev);
     }
     
     pthread_mutex_unlock(channel_mutex);
@@ -3654,11 +3828,9 @@ ags_channel_first(AgsChannel *channel)
     }
     
     /* iterate */
-    pthread_mutex_lock(channel_mutex);
+    g_object_unref(channel);    
 
-    channel = channel->prev;
-
-    pthread_mutex_unlock(channel_mutex);
+    channel = prev;
   }
   
   return(channel);
@@ -3677,6 +3849,8 @@ ags_channel_first(AgsChannel *channel)
 AgsChannel*
 ags_channel_last(AgsChannel *channel)
 {
+  AgsChannel *next;
+  
   gboolean has_next;
   
   pthread_mutex_t *channel_mutex;
@@ -3701,8 +3875,12 @@ ags_channel_last(AgsChannel *channel)
     
     pthread_mutex_lock(channel_mutex);
 
-    if(channel->next == NULL){
+    next = channel->next;
+    
+    if(next == NULL){
       has_next = FALSE;
+    }else{
+      g_object_ref(next);
     }
 
     pthread_mutex_unlock(channel_mutex);
@@ -3712,11 +3890,9 @@ ags_channel_last(AgsChannel *channel)
     }
     
     /* iterate */
-    pthread_mutex_lock(channel_mutex);
-    
-    channel = channel->next;
-    
-    pthread_mutex_unlock(channel_mutex);
+    g_object_unref(channel);    
+
+    channel = next;
   }
 
   return(channel);
@@ -3736,6 +3912,8 @@ ags_channel_last(AgsChannel *channel)
 AgsChannel*
 ags_channel_nth(AgsChannel *channel, guint nth)
 {
+  AgsChannel *next;
+  
   guint i;
 
   pthread_mutex_t *channel_mutex;
@@ -3743,6 +3921,8 @@ ags_channel_nth(AgsChannel *channel, guint nth)
   if(!AGS_IS_CHANNEL(channel)){
     return(NULL);
   }
+
+  g_object_ref(channel);
   
   for(i = 0; i < nth && channel != NULL; i++){
     /* get channel mutex */
@@ -3752,12 +3932,21 @@ ags_channel_nth(AgsChannel *channel, guint nth)
   
     pthread_mutex_unlock(ags_channel_get_class_mutex());
 
-    /* iterate */
+    /* prepare */
     pthread_mutex_lock(channel_mutex);
     
-    channel = channel->next;
+    next = channel->next;
+
+    if(next != NULL){
+      g_object_ref(next);
+    }
     
     pthread_mutex_unlock(channel_mutex);
+
+    /* iterate */
+    g_object_unref(channel);
+
+    channel = next;
   }
 
 #ifdef AGS_DEBUG
@@ -3782,6 +3971,8 @@ ags_channel_nth(AgsChannel *channel, guint nth)
 AgsChannel*
 ags_channel_pad_first(AgsChannel *channel)
 {
+  AgsChannel *prev_pad;
+  
   gboolean has_prev_pad;
   
   pthread_mutex_t *channel_mutex;
@@ -3791,6 +3982,8 @@ ags_channel_pad_first(AgsChannel *channel)
   }
 
   /* pad first */
+  g_object_ref(channel);
+  
   while(channel != NULL){
     /* get channel mutex */
     pthread_mutex_lock(ags_channel_get_class_mutex());
@@ -3804,8 +3997,12 @@ ags_channel_pad_first(AgsChannel *channel)
     
     pthread_mutex_lock(channel_mutex);
 
-    if(channel->prev_pad == NULL){
+    prev_pad = channel->prev_pad;
+    
+    if(prev_pad == NULL){
       has_prev_pad = FALSE;
+    }else{
+      g_object_ref(prev_pad);
     }
 
     pthread_mutex_unlock(channel_mutex);
@@ -3815,11 +4012,9 @@ ags_channel_pad_first(AgsChannel *channel)
     }
     
     /* iterate */
-    pthread_mutex_lock(channel_mutex);
-
-    channel = channel->prev_pad;
-      
-    pthread_mutex_unlock(channel_mutex);
+    g_object_unref(channel);
+    
+    channel = prev_pad;
   }
 
   return(channel);
@@ -3838,6 +4033,8 @@ ags_channel_pad_first(AgsChannel *channel)
 AgsChannel*
 ags_channel_pad_last(AgsChannel *channel)
 {
+  AgsChannel *next_pad;
+  
   gboolean has_next_pad;
   
   pthread_mutex_t *channel_mutex;
@@ -3858,9 +4055,13 @@ ags_channel_pad_last(AgsChannel *channel)
     has_next_pad = TRUE;
     
     pthread_mutex_lock(channel_mutex);
+
+    next_pad = channel->next_pad;
     
-    if(channel->next_pad == NULL){
+    if(next_pad == NULL){
       has_next_pad = FALSE;
+    }else{
+      g_object_ref(next_pad);
     }
 
     pthread_mutex_unlock(channel_mutex);
@@ -3870,11 +4071,9 @@ ags_channel_pad_last(AgsChannel *channel)
     }
     
     /* iterate */
-    pthread_mutex_lock(channel_mutex);    
-
-    channel = channel->next_pad;
-
-    pthread_mutex_unlock(channel_mutex);
+    g_object_unref(channel);
+    
+    channel = next_pad;
   }
 
   return(channel);
@@ -3894,6 +4093,8 @@ ags_channel_pad_last(AgsChannel *channel)
 AgsChannel*
 ags_channel_pad_nth(AgsChannel *channel, guint nth)
 {
+  AgsChannel *next_pad;
+  
   guint i;
 
   pthread_mutex_t *channel_mutex;
@@ -3901,6 +4102,8 @@ ags_channel_pad_nth(AgsChannel *channel, guint nth)
   if(!AGS_IS_CHANNEL(channel)){
     return(NULL);
   }
+
+  g_object_ref(channel);
   
   for(i = 0; i < nth && channel != NULL; i++){
     /* get channel mutex */
@@ -3910,12 +4113,21 @@ ags_channel_pad_nth(AgsChannel *channel, guint nth)
   
     pthread_mutex_unlock(ags_channel_get_class_mutex());
 
-    /* iterate */
+    /* prepare */
     pthread_mutex_lock(channel_mutex);
 
-    channel = channel->next_pad;
+    next_pad = channel->next_pad;
+
+    if(next_pad != NULL){
+      g_object_ref(next_pad);
+    }
     
     pthread_mutex_unlock(channel_mutex);
+    
+    /* iterate */
+    g_object_unref(channel);
+    
+    channel = next_pad;
   }
 
 #ifdef AGS_DEBUG
@@ -3940,6 +4152,8 @@ ags_channel_pad_nth(AgsChannel *channel, guint nth)
 AgsChannel*
 ags_channel_first_with_recycling(AgsChannel *channel)
 {
+  AgsChannel *next_pad;
+  
   gboolean has_recycling;
   
   pthread_mutex_t *channel_mutex;
@@ -3963,9 +4177,15 @@ ags_channel_first_with_recycling(AgsChannel *channel)
     has_recycling = FALSE;
     
     pthread_mutex_lock(channel_mutex);
+
+    next_pad = channel->next_pad;
     
     if(channel->first_recycling != NULL){
       has_recycling = TRUE;
+    }else{
+      if(next_pad != NULL){
+	g_object_ref(next_pad);
+      }
     }
 
     pthread_mutex_unlock(channel_mutex);
@@ -3975,11 +4195,9 @@ ags_channel_first_with_recycling(AgsChannel *channel)
     }
     
     /* iterate */
-    pthread_mutex_lock(channel_mutex);
-
-    channel = channel->next_pad;
-
-    pthread_mutex_unlock(channel_mutex);
+    g_object_unref(channel);
+    
+    channel = next_pad;
   }
 
   return(channel);
@@ -3998,6 +4216,8 @@ ags_channel_first_with_recycling(AgsChannel *channel)
 AgsChannel*
 ags_channel_last_with_recycling(AgsChannel *channel)
 {
+  AgsChannel *prev_pad;
+  
   gboolean has_recycling;
   
   pthread_mutex_t *channel_mutex;
@@ -4020,11 +4240,17 @@ ags_channel_last_with_recycling(AgsChannel *channel)
     has_recycling = FALSE;
     
     pthread_mutex_lock(channel_mutex);
+
+    prev_pad = channel->prev_pad;
     
     if(channel->first_recycling != NULL){
       has_recycling = TRUE;
+    }else{
+      if(prev_pad != NULL){
+	g_object_ref(prev_pad);
+      }
     }
-
+    
     pthread_mutex_unlock(channel_mutex);
 
     if(has_recycling){
@@ -4032,11 +4258,9 @@ ags_channel_last_with_recycling(AgsChannel *channel)
     }
     
     /* iterate */
-    pthread_mutex_lock(channel_mutex);
-
-    channel = channel->prev_pad;
+    g_object_unref(channel);
     
-    pthread_mutex_unlock(channel_mutex);
+    channel = prev_pad;
   }
 
   return(channel);
@@ -4055,7 +4279,7 @@ ags_channel_last_with_recycling(AgsChannel *channel)
 AgsChannel*
 ags_channel_prev_with_recycling(AgsChannel *channel)
 {
-  AgsChannel *current;
+  AgsChannel *current, *prev_pad;
   AgsRecycling *recycling;
   
   pthread_mutex_t *channel_mutex;
@@ -4074,10 +4298,16 @@ ags_channel_prev_with_recycling(AgsChannel *channel)
   /* prev with recycling */
   pthread_mutex_lock(channel_mutex);
 
-  current = channel->prev_pad;
+  prev_pad = channel->prev_pad;
+
+  if(prev_pad != NULL){
+    g_object_ref(prev_pad);
+  }
   
   pthread_mutex_unlock(channel_mutex);
 
+  current = prev_pad;
+  
   while(current != NULL && current != channel){
     /* get channel mutex */
     pthread_mutex_lock(ags_channel_get_class_mutex());
@@ -4091,6 +4321,12 @@ ags_channel_prev_with_recycling(AgsChannel *channel)
 
     recycling = current->last_recycling;
 
+    prev_pad = current->prev_pad;
+    
+    if(prev_pad != NULL){
+      g_object_ref(prev_pad);
+    }
+    
     pthread_mutex_unlock(channel_mutex);
     
     if(recycling != NULL){
@@ -4098,11 +4334,9 @@ ags_channel_prev_with_recycling(AgsChannel *channel)
     }
 
     /* iterate */
-    pthread_mutex_lock(channel_mutex);
-
-    current = current->prev_pad;
+    g_object_unref(current);
     
-    pthread_mutex_unlock(channel_mutex);
+    current = prev_pad;
   }
   
   return(current);
@@ -4121,7 +4355,7 @@ ags_channel_prev_with_recycling(AgsChannel *channel)
 AgsChannel*
 ags_channel_next_with_recycling(AgsChannel *channel)
 {
-  AgsChannel *current;
+  AgsChannel *current, *next_pad;
   AgsRecycling *recycling;
   
   pthread_mutex_t *channel_mutex;
@@ -4140,9 +4374,15 @@ ags_channel_next_with_recycling(AgsChannel *channel)
   /* next with recycling */
   pthread_mutex_lock(channel_mutex);
 
-  current = channel->next_pad;
+  next_pad = channel->next_pad;
+
+  if(next_pad != NULL){
+    g_object_ref(next_pad);
+  }
 
   pthread_mutex_unlock(channel_mutex);
+
+  current = next_pad;
 
   while(current != NULL){
     /* get channel mutex */
@@ -4156,6 +4396,12 @@ ags_channel_next_with_recycling(AgsChannel *channel)
     pthread_mutex_lock(channel_mutex);
     
     recycling = current->first_recycling;
+
+    next_pad = current->next_pad;
+    
+    if(next_pad != NULL){
+      g_object_ref(next_pad);
+    }
     
     pthread_mutex_unlock(channel_mutex);
     
@@ -4164,11 +4410,9 @@ ags_channel_next_with_recycling(AgsChannel *channel)
     }
 
     /* iterate */
-    pthread_mutex_lock(channel_mutex);
+    g_object_unref(current);
     
-    current = current->next_pad;
-    
-    pthread_mutex_unlock(channel_mutex);
+    current = next_pad;
   }  
 
   return(current);

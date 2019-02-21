@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -230,6 +230,12 @@ void ags_channel_unset_staging_flags(AgsChannel *channel, gint sound_scope,
 				     guint staging_flags);
 
 /* channels */
+AgsChannel* ags_channel_next(AgsChannel *channel);
+AgsChannel* ags_channel_prev(AgsChannel *channel);
+
+AgsChannel* ags_channel_next_pad(AgsChannel *channel);
+AgsChannel* ags_channel_prev_pad(AgsChannel *channel);
+
 AgsChannel* ags_channel_first(AgsChannel *channel);
 AgsChannel* ags_channel_last(AgsChannel *channel);
 AgsChannel* ags_channel_nth(AgsChannel *channel, guint nth);
