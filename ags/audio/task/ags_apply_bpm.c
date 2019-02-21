@@ -501,7 +501,8 @@ ags_apply_bpm_application_context(AgsApplyBpm *apply_bpm, AgsApplicationContext 
     list = list->next;
   }
 
-  g_list_free(list_start);
+  g_list_free_full(list_start,
+		   g_object_unref);
 
   /* sequencer */
   list =
@@ -513,7 +514,8 @@ ags_apply_bpm_application_context(AgsApplyBpm *apply_bpm, AgsApplicationContext 
     list = list->next;
   }
 
-  g_list_free(list_start);
+  g_list_free_full(list_start,
+		   g_object_unref);
 
   /* audio */
   list =
@@ -525,7 +527,8 @@ ags_apply_bpm_application_context(AgsApplyBpm *apply_bpm, AgsApplicationContext 
     list = list->next;
   }
 
-  g_list_free(list_start);
+  g_list_free_full(list_start,
+		   g_object_unref);
 }
 
 /**

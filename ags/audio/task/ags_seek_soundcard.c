@@ -357,7 +357,8 @@ ags_seek_soundcard_launch(AgsTask *task)
     audio = audio->next;
   }
 
-  g_list_free(audio_start);
+  g_list_free_full(audio_start,
+		   g_object_unref);
 
   /* seek soundcard */
   note_offset = ags_soundcard_get_note_offset(AGS_SOUNDCARD(seek_soundcard->soundcard));

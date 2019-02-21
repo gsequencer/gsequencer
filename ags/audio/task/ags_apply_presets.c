@@ -491,7 +491,8 @@ ags_apply_presets_soundcard(AgsApplyPresets *apply_presets,
     list = list->next;
   }
 
-  g_list_free(list_start);
+  g_list_free_full(list_start,
+		   g_object_unref);
 
   /* unref */
   g_object_unref(main_loop);

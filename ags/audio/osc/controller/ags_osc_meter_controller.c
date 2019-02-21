@@ -2962,7 +2962,8 @@ ags_osc_meter_controller_monitor_meter_port(AgsOscMeterController *osc_meter_con
     nth_audio = g_list_index(start_list,
 			     audio);
 
-    g_list_free(start_list);
+    g_list_free_full(start_list,
+		     g_object_unref);
 
     osc_response = ags_osc_response_new();
     start_response = g_list_prepend(start_response,
@@ -3223,7 +3224,8 @@ ags_osc_meter_controller_monitor_meter_enable(AgsOscMeterController *osc_meter_c
       ags_osc_response_set_flags(osc_response,
 				 AGS_OSC_RESPONSE_OK);
 
-      g_list_free(start_audio);
+      g_list_free_full(start_audio,
+		       g_object_unref);
       
       return(start_response);
     }
@@ -3320,7 +3322,8 @@ ags_osc_meter_controller_monitor_meter_enable(AgsOscMeterController *osc_meter_c
 		   "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_CHUNK_SIZE_EXCEEDED,
 		   NULL);
 	  
-      g_list_free(start_audio);
+      g_list_free_full(start_audio,
+		       g_object_unref);
       
       return(start_response);
     }
@@ -3360,12 +3363,14 @@ ags_osc_meter_controller_monitor_meter_enable(AgsOscMeterController *osc_meter_c
 		 "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_SERVER_FAILURE,
 		 NULL);
 
-    g_list_free(start_audio);      
+    g_list_free_full(start_audio,
+		     g_object_unref);
 
     return(start_response);
   }    
 
-  g_list_free(start_audio);
+  g_list_free_full(start_audio,
+		   g_object_unref);
   
   return(start_response);
 }
@@ -4710,6 +4715,9 @@ ags_osc_meter_controller_expand_path(gchar *path,
       guint length;
 
       if((offset = index(path + path_offset + 2, '"')) == NULL){
+	g_list_free_full(start_audio,
+			 g_object_unref);
+	
 	return;
       }
 
@@ -4739,7 +4747,8 @@ ags_osc_meter_controller_expand_path(gchar *path,
     }
   }
 
-  g_list_free(start_audio);
+  g_list_free_full(start_audio,
+		   g_object_unref);
 }
 
 gpointer

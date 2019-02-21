@@ -494,7 +494,8 @@ ags_apply_tact_application_context(AgsApplyTact *apply_tact, AgsApplicationConte
     list = list->next;
   }
 
-  g_list_free(list_start);
+  g_list_free_full(list_start,
+		   g_object_unref);
 
   /* sequencer */
   list =
@@ -506,7 +507,8 @@ ags_apply_tact_application_context(AgsApplyTact *apply_tact, AgsApplicationConte
     list = list->next;
   }
 
-  g_list_free(list_start);
+  g_list_free_full(list_start,
+		   g_object_unref);
 
   /* audio */
   list =
@@ -518,7 +520,8 @@ ags_apply_tact_application_context(AgsApplyTact *apply_tact, AgsApplicationConte
     list = list->next;
   }
 
-  g_list_free(list_start);
+  g_list_free_full(list_start,
+		   g_object_unref);
 }
 
 /**

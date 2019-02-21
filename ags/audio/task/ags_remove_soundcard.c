@@ -304,7 +304,11 @@ ags_remove_soundcard_launch(AgsTask *task)
 						   remove_soundcard->soundcard));
 
     g_object_unref(remove_soundcard->soundcard);
+    g_object_unref(remove_soundcard->soundcard);
   }
+
+  g_list_free_full(list_start,
+		   g_object_unref);
 }
 
 /**

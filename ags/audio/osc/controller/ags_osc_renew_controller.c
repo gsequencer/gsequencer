@@ -3551,7 +3551,8 @@ ags_osc_renew_controller_real_set_data(AgsOscRenewController *osc_renew_controll
 		     "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_SERVER_FAILURE,
 		     NULL);
 
-	g_list_free(start_soundcard);
+	g_list_free_full(start_soundcard,
+			 g_object_unref);
       
 	free(type_tag);
 	free(path);
@@ -3559,7 +3560,8 @@ ags_osc_renew_controller_real_set_data(AgsOscRenewController *osc_renew_controll
 	return(start_response);
       }    
 
-      g_list_free(start_soundcard);
+      g_list_free_full(start_soundcard,
+		       g_object_unref);
     }else if(!strncmp(path + path_offset,
 		      "/AgsSequencer",
 		      13)){
@@ -3781,7 +3783,8 @@ ags_osc_renew_controller_real_set_data(AgsOscRenewController *osc_renew_controll
 		     "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_SERVER_FAILURE,
 		     NULL);
 
-	g_list_free(start_sequencer);
+	g_list_free_full(start_sequencer,
+			 g_object_unref);
       
 	free(type_tag);
 	free(path);
@@ -3789,7 +3792,8 @@ ags_osc_renew_controller_real_set_data(AgsOscRenewController *osc_renew_controll
 	return(start_response);
       }    
 
-      g_list_free(start_sequencer);
+      g_list_free_full(start_sequencer,
+		       g_object_unref);
     }else if(!strncmp(path + path_offset,
 		      "/AgsAudio",
 		      9)){
@@ -4020,7 +4024,8 @@ ags_osc_renew_controller_real_set_data(AgsOscRenewController *osc_renew_controll
 		       "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_CHUNK_SIZE_EXCEEDED,
 		       NULL);
 	  
-	  g_list_free(start_audio);
+	  g_list_free_full(start_audio,
+			   g_object_unref);
       
 	  free(type_tag);
 	  free(path);
@@ -4061,7 +4066,8 @@ ags_osc_renew_controller_real_set_data(AgsOscRenewController *osc_renew_controll
 		     "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_SERVER_FAILURE,
 		     NULL);
 
-	g_list_free(start_audio);
+	g_list_free_full(start_audio,
+			 g_object_unref);
       
 	free(type_tag);
 	free(path);
@@ -4069,7 +4075,8 @@ ags_osc_renew_controller_real_set_data(AgsOscRenewController *osc_renew_controll
 	return(start_response);
       }    
 
-      g_list_free(start_audio);
+      g_list_free_full(start_audio,
+		       g_object_unref);
     }else{
       osc_response = ags_osc_response_new();
       start_response = g_list_prepend(start_response,

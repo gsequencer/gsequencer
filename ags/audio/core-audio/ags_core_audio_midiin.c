@@ -1382,6 +1382,9 @@ ags_core_audio_midiin_list_cards(AgsSequencer *sequencer,
     list = list->next;
   }
   
+  g_list_free_full(list_start,
+		   g_object_unref);
+
   if(card_id != NULL && *card_id != NULL){
     *card_id = g_list_reverse(*card_id);
   }

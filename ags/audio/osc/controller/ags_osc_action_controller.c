@@ -450,6 +450,8 @@ ags_osc_action_controller_real_run_action(AgsOscActionController *osc_action_con
 	  free(action);
 	  
 	  g_object_unref(task_thread);
+	  g_list_free_full(start_list,
+			   g_object_unref);
 	  
 	  return(start_response);
 	}
@@ -459,7 +461,8 @@ ags_osc_action_controller_real_run_action(AgsOscActionController *osc_action_con
       
 	path_offset = index(path + path_offset, ']') - path + 1;
 	
-	g_list_free(start_list);
+	g_list_free_full(start_list,
+			 g_object_unref);
       }else if(path[path_offset + 1] == '"'){
 	gchar *audio_name;
 	gchar *offset;
@@ -503,7 +506,8 @@ ags_osc_action_controller_real_run_action(AgsOscActionController *osc_action_con
 
 	path_offset = path_offset + strlen(audio_name) + 2;
 	
-	g_list_free(start_list);
+	g_list_free_full(start_list,
+			 g_object_unref);
       }else{
 	osc_response = ags_osc_response_new();
 	start_response = g_list_prepend(start_response,

@@ -1306,8 +1306,10 @@ ags_apply_sound_config_launch(AgsTask *task)
     ags_jack_server_connect_client(jack_server);
   }
 
-  g_list_free(start_sound_server);
-  g_list_free(start_audio);  
+  g_list_free_full(start_sound_server,
+		   g_object_unref);
+  g_list_free_full(start_audio,
+		   g_object_unref);
 
   /* run dispose */
   orig_soundcard = start_orig_soundcard;
@@ -1319,7 +1321,8 @@ ags_apply_sound_config_launch(AgsTask *task)
     orig_soundcard = orig_soundcard->next;
   }
 
-  g_list_free(start_orig_soundcard);
+  g_list_free_full(start_orig_soundcard,
+		   g_object_unref);
 
   orig_sequencer = start_orig_sequencer;
   
@@ -1330,7 +1333,8 @@ ags_apply_sound_config_launch(AgsTask *task)
     orig_sequencer = orig_sequencer->next;
   }
 
-  g_list_free(start_orig_sequencer);
+  g_list_free_full(start_orig_sequencer,
+		   g_object_unref);
 
   g_object_unref(audio_loop);
 }

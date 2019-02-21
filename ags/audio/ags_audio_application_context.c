@@ -2216,7 +2216,7 @@ ags_audio_application_context_quit(AgsApplicationContext *application_context)
 
   GList *core_audio_client;
   GList *jack_client;
-  GList *list;
+  GList *start_list, *list;
 
   gchar *filename;
   gchar *str;
@@ -2242,7 +2242,8 @@ ags_audio_application_context_quit(AgsApplicationContext *application_context)
   g_object_unref(lv2_manager);
   
   /* retrieve core audio server */
-  list = ags_sound_provider_get_sound_server(AGS_SOUND_PROVIDER(application_context));
+  list =
+    start_list = ags_sound_provider_get_sound_server(AGS_SOUND_PROVIDER(application_context));
   
   while((list = ags_list_util_find_type(list,
 					AGS_TYPE_CORE_AUDIO_SERVER)) != NULL){
@@ -2261,9 +2262,13 @@ ags_audio_application_context_quit(AgsApplicationContext *application_context)
 
     list = list->next;
   }
+
+  g_list_free_full(start_list,
+		   g_object_unref);
   
   /* retrieve pulseaudio server */
-  list = ags_sound_provider_get_sound_server(AGS_SOUND_PROVIDER(application_context));
+  list =
+    start_list = ags_sound_provider_get_sound_server(AGS_SOUND_PROVIDER(application_context));
   
   while((list = ags_list_util_find_type(list,
 					AGS_TYPE_PULSE_SERVER)) != NULL){
@@ -2277,8 +2282,12 @@ ags_audio_application_context_quit(AgsApplicationContext *application_context)
     list = list->next;
   }
   
+  g_list_free_full(start_list,
+		   g_object_unref);
+
   /* retrieve JACK server */
-  list = ags_sound_provider_get_sound_server(AGS_SOUND_PROVIDER(application_context));
+  list =
+    start_list = ags_sound_provider_get_sound_server(AGS_SOUND_PROVIDER(application_context));
   
   if((list = ags_list_util_find_type(list,
 				     AGS_TYPE_JACK_SERVER)) != NULL){
@@ -2297,6 +2306,9 @@ ags_audio_application_context_quit(AgsApplicationContext *application_context)
     
     list = list->next;
   }
+
+  g_list_free_full(start_list,
+		   g_object_unref);
 
   exit(0);
 }

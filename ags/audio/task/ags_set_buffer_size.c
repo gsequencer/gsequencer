@@ -388,7 +388,8 @@ ags_set_buffer_size_soundcard(AgsSetBufferSize *set_buffer_size, GObject *soundc
       list = list->next;
     }
       
-    g_list_free(list_start);
+    g_list_free_full(list_start,
+		     g_object_unref);
     
     /* reset thread frequency */
     thread_frequency = samplerate / set_buffer_size->buffer_size + AGS_SOUNDCARD_DEFAULT_OVERCLOCK;
@@ -399,6 +400,10 @@ ags_set_buffer_size_soundcard(AgsSetBufferSize *set_buffer_size, GObject *soundc
     g_warning("buffer size can only adjusted of your very first soundcard");
   }
 
+  if(default_soundcard != NULL){
+    g_object_unref(default_soundcard);
+  }
+  
   /* unref */
   g_object_unref(audio_loop);
 }
