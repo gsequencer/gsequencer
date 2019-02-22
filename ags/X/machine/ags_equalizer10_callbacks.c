@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -59,7 +59,8 @@ ags_equalizer10_resize_audio_channels_callback(AgsEqualizer10 *equalizer10,
   
   if(audio_channels > audio_channels_old){
     if((AGS_MACHINE_MAPPED_RECALL & (AGS_MACHINE(equalizer10)->flags)) != 0){
-      AgsChannel *channel;
+      AgsChannel *start_input;
+      AgsChannel *channel, *next_channel, *nth_channel;
       AgsPort *port;
             
       guint i;
@@ -67,12 +68,8 @@ ags_equalizer10_resize_audio_channels_callback(AgsEqualizer10 *equalizer10,
       /* get some fields */
       g_object_get(audio,
 		   "audio-channels", &audio_channels,
-		   "input", &channel,
+		   "input", &start_input,
 		   NULL);
-
-      if(channel != NULL){
-	g_object_unref(channel);
-      }
   
       /* ags-analyse */
       ags_recall_factory_create(audio,
@@ -86,7 +83,12 @@ ags_equalizer10_resize_audio_channels_callback(AgsEqualizer10 *equalizer10,
 				 AGS_RECALL_FACTORY_ADD),
 				0);
 
-      channel = ags_channel_nth(channel, audio_channels_old);
+      nth_channel = ags_channel_nth(start_input,
+				    audio_channels_old);
+
+      channel = nth_channel;
+
+      next_channel = NULL;
       
       for(i = audio_channels_old; i < audio_channels; i++){
 	GList *start_play, *play;
@@ -334,13 +336,20 @@ ags_equalizer10_resize_audio_channels_callback(AgsEqualizer10 *equalizer10,
 			 g_object_unref);
 
 	/* iterate */
-	g_object_get(channel,
-		     "next", &channel,
-		     NULL);
+	next_channel = ags_channel_next(channel);
 
-	if(channel != NULL){
-	  g_object_unref(channel);
-	}
+	g_object_unref(channel);
+
+	channel = next_channel;
+      }
+
+      /* unref */
+      if(start_input != NULL){
+	g_object_unref(start_input);
+      }
+
+      if(next_channel != NULL){
+	g_object_unref(next_channel);
       }
     }
   }else{
@@ -654,7 +663,8 @@ ags_equalizer10_resize_pads_callback(AgsEqualizer10 *equalizer10,
   if(pads_old == 0 && channel_type == AGS_TYPE_INPUT){
     if((AGS_MACHINE_MAPPED_RECALL & (AGS_MACHINE(equalizer10)->flags)) != 0){
       AgsAudio *audio;
-      AgsChannel *channel;
+      AgsChannel *start_input;
+      AgsChannel *channel, *next_channel;
       AgsPort *port;
 
       GList *start_play, *play;
@@ -668,12 +678,8 @@ ags_equalizer10_resize_pads_callback(AgsEqualizer10 *equalizer10,
       /* get some fields */
       g_object_get(audio,
 		   "audio-channels", &audio_channels,
-		   "input", &channel,
+		   "input", &start_input,
 		   NULL);
-
-      if(channel != NULL){
-	g_object_unref(channel);
-      }
   
       /* ags-analyse */
       ags_recall_factory_create(audio,
@@ -687,6 +693,14 @@ ags_equalizer10_resize_pads_callback(AgsEqualizer10 *equalizer10,
 				 AGS_RECALL_FACTORY_ADD),
 				0);
 
+      channel = start_input;
+
+      if(channel != NULL){
+	g_object_ref(channel);
+      }
+
+      next_channel = NULL;
+      
       for(i = 0; i < audio_channels; i++){
 	g_object_get(channel,
 		     "play", &start_play,
@@ -930,13 +944,19 @@ ags_equalizer10_resize_pads_callback(AgsEqualizer10 *equalizer10,
 			 g_object_unref);
     
 	/* iterate */
-	g_object_get(channel,
-		     "next", &channel,
-		     NULL);
+	next_channel = ags_channel_next(channel);
 
-	if(channel != NULL){
-	  g_object_unref(channel);
-	}
+	g_object_unref(channel);
+
+	channel = next_channel;
+      }
+
+      if(start_input != NULL){
+	g_object_unref(start_input);
+      }
+      
+      if(next_channel != NULL){
+	g_object_unref(next_channel);
       }
     }
   }

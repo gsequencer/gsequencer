@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -793,8 +793,8 @@ ags_ffplayer_resize_audio_channels(AgsMachine *machine,
 				   gpointer data)
 {
   AgsAudio *audio;  
-  AgsChannel *output, *input;
-  AgsChannel *channel, *next_pad;
+  AgsChannel *start_output, *start_input;
+  AgsChannel *channel, *next_pad, *next_channel, *nth_channel;
   
   guint output_pads, input_pads;
 
@@ -804,36 +804,30 @@ ags_ffplayer_resize_audio_channels(AgsMachine *machine,
   g_object_get(audio,
 	       "input-pads", &input_pads,
 	       "output-pads", &output_pads,
-	       "output", &output,
-	       "input", &input,
+	       "output", &start_output,
+	       "input", &start_input,
 	       NULL);
-
-  if(output != NULL){
-    g_object_unref(output);
-  }
-
-  if(input != NULL){
-    g_object_unref(input);
-  }
 
   /*  */
   if(audio_channels > audio_channels_old){  
     /* AgsOutput */
-    channel = output;
+    channel = start_output;
 
+    g_object_ref(channel);
+
+    next_channel = NULL;
+    
     while(channel != NULL){
       /* get some fields */
-      g_object_get(channel,
-		   "next-pad", &next_pad,
-		   NULL);
+      next_pad = ags_channel_next_pad(channel);
 
-      if(next_pad != NULL){
-	g_object_unref(next_pad);
-      }
+      nth_channel = ags_channel_pad_nth(channel,
+					audio_channels_old);
 
-      channel = ags_channel_pad_nth(channel,
-				    audio_channels_old);
-
+      g_object_unref(channel);
+      
+      channel = nth_channel;
+      
       while(channel != next_pad){
 	AgsRecycling *recycling;
 	AgsAudioSignal *audio_signal;
@@ -864,14 +858,20 @@ ags_ffplayer_resize_audio_channels(AgsMachine *machine,
 	g_object_unref(recycling);
 	
 	/* iterate */
-	g_object_get(channel,
-		     "next", &channel,
-		     NULL);
+	next_channel = ags_channel_next(channel);
 
-	if(channel != NULL){
-	  g_object_unref(channel);
-	}
+	g_object_unref(channel);
+
+	channel = next_channel;
       }
+
+      if(next_pad != NULL){
+	g_object_unref(next_pad);
+      }
+    }
+
+    if(next_channel != NULL){
+      g_object_unref(next_channel);
     }
 
     /* ags-envelope */
@@ -887,20 +887,22 @@ ags_ffplayer_resize_audio_channels(AgsMachine *machine,
 			      0);
 
     /* AgsInput */
-    channel = input;
+    channel = start_input;
+
+    g_object_ref(channel);
 
     while(channel != NULL){
       /* get some fields */
-      g_object_get(channel,
-		   "next-pad", &next_pad,
-		   NULL);
+      next_pad = ags_channel_next_pad(channel);
 
-      if(next_pad != NULL){
-	g_object_unref(next_pad);
-      }
+      nth_channel = ags_channel_nth(channel,
+				    audio_channels_old);
 
-      channel = ags_channel_nth(channel,
-				audio_channels_old);
+      g_object_unref(channel);
+
+      channel = nth_channel;
+      
+      next_channel = NULL;
 
       while(channel != next_pad){
 	AgsPort *port;
@@ -962,14 +964,20 @@ ags_ffplayer_resize_audio_channels(AgsMachine *machine,
 	g_list_free(start_recall);
 
 	/* iterate */
-	g_object_get(channel,
-		     "next", &channel,
-		     NULL);
+	next_channel = ags_channel_next(channel);
 
-	if(channel != NULL){
-	  g_object_unref(channel);
-	}
+	g_object_unref(channel);
+
+	channel = next_channel;
       }
+
+      if(next_pad != NULL){
+	g_object_unref(next_pad);
+      }
+    }
+
+    if(next_channel != NULL){
+      g_object_unref(next_channel);
     }
 
     if(ags_recall_global_get_rt_safe() ||
@@ -1049,6 +1057,14 @@ ags_ffplayer_resize_audio_channels(AgsMachine *machine,
 				0);
     }
   }
+
+  if(start_output != NULL){
+    g_object_unref(start_output);
+  }
+
+  if(start_input != NULL){
+    g_object_unref(start_input);
+  }
 }
 
 void
@@ -1059,8 +1075,8 @@ ags_ffplayer_resize_pads(AgsMachine *machine, GType channel_type,
   AgsFFPlayer *ffplayer;
 
   AgsAudio *audio;
-  AgsChannel *output;
-  AgsChannel *channel;
+  AgsChannel *start_output;
+  AgsChannel *channel, *next_channel, *nth_channel;
 
   guint output_pads, input_pads;
   gboolean grow;
@@ -1077,12 +1093,8 @@ ags_ffplayer_resize_pads(AgsMachine *machine, GType channel_type,
   g_object_get(audio,
 	       "output-pads", &output_pads,
 	       "input-pads", &input_pads,
-	       "output", &output,
+	       "output", &start_output,
 	       NULL);
-
-  if(output != NULL){
-    g_object_unref(output);
-  }
 
   /* check grow */
   if(pads_old < pads){
@@ -1101,9 +1113,13 @@ ags_ffplayer_resize_pads(AgsMachine *machine, GType channel_type,
   }else if(channel_type == AGS_TYPE_OUTPUT){
     if(grow){
       /* AgsOutput */
-      channel = ags_channel_pad_nth(output,
-				    pads_old);
+      nth_channel = ags_channel_pad_nth(start_output,
+					pads_old);
 
+      channel = nth_channel;
+      
+      next_channel = NULL;
+      
       while(channel != NULL){
 	AgsRecycling *recycling;
 	AgsAudioSignal *audio_signal;
@@ -1134,15 +1150,17 @@ ags_ffplayer_resize_pads(AgsMachine *machine, GType channel_type,
 	g_object_unref(recycling);
 	
 	/* iterate */
-	g_object_get(channel,
-		     "next", &channel,
-		     NULL);
+	next_channel = ags_channel_next(channel);
 
-	if(channel != NULL){
-	  g_object_unref(channel);
-	}
+	g_object_unref(channel);
+
+	channel = next_channel;
       }
 
+      if(next_channel != NULL){
+	g_object_unref(next_channel);
+      }
+      
       /* depending on destination */
       ags_ffplayer_output_map_recall(ffplayer, pads_old);
     }else{
@@ -1150,6 +1168,10 @@ ags_ffplayer_resize_pads(AgsMachine *machine, GType channel_type,
     }
   }else{
     g_critical("unknown channel type");
+  }
+
+  if(start_output != NULL){
+    g_object_unref(start_output);
   }
 }
 
@@ -1353,8 +1375,8 @@ void
 ags_ffplayer_input_map_recall(AgsFFPlayer *ffplayer, guint input_pad_start)
 {
   AgsAudio *audio;
-  AgsChannel *input;
-  AgsChannel *channel;
+  AgsChannel *start_input;
+  AgsChannel *channel, *next_channel, *nth_channel;
 
   guint input_pads;
   guint audio_channels;
@@ -1369,7 +1391,7 @@ ags_ffplayer_input_map_recall(AgsFFPlayer *ffplayer, guint input_pad_start)
   g_object_get(audio,
 	       "input-pads", &input_pads,
 	       "audio-channels", &audio_channels,
-	       "input", &input,
+	       "input", &start_input,
 	       NULL);
 
   if(input != NULL){
@@ -1388,9 +1410,13 @@ ags_ffplayer_input_map_recall(AgsFFPlayer *ffplayer, guint input_pad_start)
 			     AGS_RECALL_FACTORY_ADD),
 			    0);
 
-  channel = ags_channel_pad_nth(input,
-				input_pad_start);
-    
+  nth_channel = ags_channel_pad_nth(start_input,
+				    input_pad_start);
+
+  channel = nth_channel;
+
+  next_channel = NULL;
+  
   while(channel != NULL){
     AgsPort *port;
       
@@ -1451,13 +1477,15 @@ ags_ffplayer_input_map_recall(AgsFFPlayer *ffplayer, guint input_pad_start)
     g_list_free(start_recall);
 
     /* iterate */
-    g_object_get(channel,
-		 "next", &channel,
-		 NULL);
+    next_channel = ags_channel_next(channel);
 
-    if(channel != NULL){
-      g_object_unref(channel);
-    }
+    g_object_unref(channel);
+
+    channel = next_channel;
+  }
+
+  if(next_channel != NULL){
+    g_object_unref(next_channel);
   }
   
   /* remap for input */
@@ -1536,6 +1564,10 @@ ags_ffplayer_input_map_recall(AgsFFPlayer *ffplayer, guint input_pad_start)
   }
   
   ffplayer->mapped_input_pad = input_pads;
+
+  if(start_input != NULL){
+    g_object_unref(start_input);
+  }
 }
 
 void

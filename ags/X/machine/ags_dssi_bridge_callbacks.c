@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -63,7 +63,8 @@ ags_dssi_bridge_program_changed_callback(GtkComboBox *combo_box, AgsDssiBridge *
 				   &iter)){
     AgsLadspaConversion *ladspa_conversion;
 
-    AgsChannel *channel;
+    AgsChannel *start_input;
+    AgsChannel *channel, *next_channel;
    
     GList *bulk_member, *bulk_member_start;
     GList *start_recall, *recall;
@@ -92,7 +93,16 @@ ags_dssi_bridge_program_changed_callback(GtkComboBox *combo_box, AgsDssiBridge *
 #endif
     
     /* update ports */
-    channel = AGS_MACHINE(dssi_bridge)->audio->input;
+    g_object_get(AGS_MACHINE(dssi_bridge)->audio,
+		 "input", &start_input,
+		 NULL);
+
+    channel = start_input;
+
+    if(channel != NULL){
+      g_object_ref(channel);
+    }
+    
     port_descriptor = dssi_bridge->dssi_descriptor->LADSPA_Plugin->PortDescriptors;
     
     while(channel != NULL){
@@ -159,13 +169,11 @@ ags_dssi_bridge_program_changed_callback(GtkComboBox *combo_box, AgsDssiBridge *
 		       g_object_unref);
       
       /* iterate */
-      g_object_get(channel,
-		   "next", &channel,
-		   NULL);
+      next_channel = ags_channel_next(channel);
 
-      if(channel != NULL){
-	g_object_unref(channel);
-      }
+      g_object_unref(channel);
+
+      channel = next_channel;
     }
 
     /* update UI */
@@ -229,6 +237,10 @@ ags_dssi_bridge_program_changed_callback(GtkComboBox *combo_box, AgsDssiBridge *
       }
     }
 
+    if(start_input != NULL){
+      g_object_unref(start_input);
+    }
+    
     g_list_free(bulk_member_start);
   }
 }

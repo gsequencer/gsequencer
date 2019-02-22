@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -155,19 +155,19 @@ ags_drum_input_pad_open_response_callback(GtkWidget *widget, gint response, AgsD
     task = NULL;
     
     if(AGS_PAD(drum_input_pad)->group->active){
-      AgsChannel *current, *next_pad;
+      AgsChannel *current, *next_pad, *next_current;
 
       guint i;
 
       current = AGS_PAD(drum_input_pad)->channel;
 
-      g_object_get(current,
-		   "next-pad", &next_pad,
-		   NULL);
-
-      if(next_pad != NULL){
-	g_object_unref(next_pad);
+      if(current != NULL) {
+	g_object_ref(current);
       }
+      
+      next_pad = ags_channel_next_pad(current);
+
+      next_current = NULL;
       
       for(i = 0; current != next_pad; i++){
 	open_single_file = ags_open_single_file_new(current,
@@ -177,13 +177,19 @@ ags_drum_input_pad_open_response_callback(GtkWidget *widget, gint response, AgsD
 			      open_single_file);
 
 	/* iterate */
-	g_object_get(current,
-		     "next", &current,
-		     NULL);
+	next_current = ags_channel_next(current);
 
-	if(current != NULL){
-	  g_object_unref(current);
-	}
+	g_object_unref(current);
+
+	current = next_current;
+      }
+
+      if(next_pad != NULL){
+	g_object_unref(next_pad);
+      }
+
+      if(next_current != NULL){
+	g_object_unref(next_current);
       }
     }else{
       AgsLine *line;

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -444,7 +444,9 @@ ags_link_collection_editor_apply(AgsApplicable *applicable)
     AgsThread *gui_thread;
 
     AgsAudio *audio;
-    AgsChannel *channel, *link;
+    AgsChannel *start_channel, *start_link;
+    AgsChannel *channel, *next_channel, *nth_channel;
+    AgsChannel *link, *next_link, *nth_link;
     AgsLinkChannel *link_channel;
 
     AgsApplicationContext *application_context;
@@ -474,18 +476,20 @@ ags_link_collection_editor_apply(AgsApplicable *applicable)
 
     if(g_type_is_a(link_collection_editor->channel_type, AGS_TYPE_INPUT)){
       g_object_get(audio,
-		   "input", &channel,
+		   "input", &start_channel,
 		   NULL);
-      g_object_unref(channel);
       
-      channel = ags_channel_nth(channel, first_line);
+      nth_channel = ags_channel_nth(start_channel, first_line);
+
+      channel = nth_channel;      
     }else{
       g_object_get(audio,
-		   "output", &channel,
+		   "output", &start_channel,
 		   NULL);
-      g_object_unref(channel);
 
-      channel = ags_channel_nth(channel, first_line);
+      nth_channel = ags_channel_nth(start_channel, first_line);
+
+      channel = nth_channel;      
     }
     
     model = gtk_combo_box_get_model(link_collection_editor->link);
@@ -501,6 +505,8 @@ ags_link_collection_editor_apply(AgsApplicable *applicable)
     error = NULL;
 
     if(link_machine == NULL){
+      next_channel = NULL;
+      
       for(i = 0; i < count; i++){ 
 	/* create task */
 	link_channel = ags_link_channel_new(channel,
@@ -509,13 +515,15 @@ ags_link_collection_editor_apply(AgsApplicable *applicable)
 			      link_channel);
 	
 	/* iterate */
-	g_object_get(channel,
-		     "next", &channel,
-		     NULL);
+	next_channel = ags_channel_next(channel);
 
-	if(channel != NULL){
-	  g_object_unref(channel);
-	}
+	g_object_unref(channel);
+
+	channel = next_channel;
+      }
+
+      if(next_channel != NULL){
+	g_object_unref(next_channel);
       }
       
       /* append AgsLinkChannel */
@@ -530,18 +538,21 @@ ags_link_collection_editor_apply(AgsApplicable *applicable)
       /* get link */
       if(g_type_is_a(link_collection_editor->channel_type, AGS_TYPE_INPUT)){
 	g_object_get(link_machine->audio,
-		     "output", &link,
+		     "output", &start_link,
 		     NULL);
-	g_object_unref(link);
       }else{
 	g_object_get(link_machine->audio,
-		     "input", &link,
+		     "input", &start_link,
 		     NULL);
-	g_object_unref(link);
       }
       
-      link = ags_channel_nth(link,
-			     first_link);
+      nth_link = ags_channel_nth(start_link,
+				 first_link);
+
+      link = nth_link;
+
+      next_channel = NULL;
+      next_link = NULL;
       
       for(i = 0; i < count; i++){
 	/* create task */
@@ -551,27 +562,35 @@ ags_link_collection_editor_apply(AgsApplicable *applicable)
 			      link_channel);
 
 	/* iterate */
-	g_object_get(channel,
-		     "next", &channel,
-		     NULL);
+	next_channel = ags_channel_next(channel);
 
-	if(channel != NULL){
-	  g_object_unref(channel);
-	}
+	g_object_unref(channel);
 
-	g_object_get(link,
-		     "next", &link,
-		     NULL);
+	channel = next_channel;
 
-	if(link != NULL){
-	  g_object_unref(link);
-	}
+	next_link = ags_channel_next(link);
+
+	g_object_unref(link);
+
+	link = next_link;
       }
 
       task = g_list_reverse(task);
       ags_gui_thread_schedule_task_list(gui_thread,
 					task);
+
+      g_object_unref(start_link);
+
+      if(next_channel != NULL){
+	g_object_unref(next_channel);
+      }
+
+      if(next_link != NULL){
+	g_object_unref(next_link);
+      }
     }
+
+    g_object_unref(start_channel);
   }
 }
 

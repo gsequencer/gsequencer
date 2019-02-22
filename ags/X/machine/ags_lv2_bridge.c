@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -997,8 +997,8 @@ ags_lv2_bridge_resize_audio_channels(AgsMachine *machine,
   AgsLv2Bridge *lv2_bridge;
 
   AgsAudio *audio;
-  AgsChannel *output, *input;
-  AgsChannel *channel, *next_pad;
+  AgsChannel *start_output, *start_input;
+  AgsChannel *channel, *next_pad, *next_channel, *nth_channel;
   AgsRecycling *first_recycling;
   AgsAudioSignal *audio_signal;  
 
@@ -1012,19 +1012,9 @@ ags_lv2_bridge_resize_audio_channels(AgsMachine *machine,
 
   /* get some fields */
   g_object_get(audio,
-	       "output", &output,
-	       "input", &input,
 	       "output-pads", &output_pads,
 	       "input-pads", &input_pads,
 	       NULL);
-
-  if(output != NULL){
-    g_object_unref(output);
-  }
-
-  if(input != NULL){
-    g_object_unref(input);
-  }
   
   /* check available */
   if(input_pads == 0 &&
@@ -1032,23 +1022,32 @@ ags_lv2_bridge_resize_audio_channels(AgsMachine *machine,
     return;
   }
 
+  g_object_get(audio,
+	       "output", &start_output,
+	       "input", &start_input,
+	       NULL);
+
   if(audio_channels > audio_channels_old){
     /* AgsInput */
-    channel = input;
+    channel = start_input;
 
+    if(channel != NULL){
+      g_object_ref(channel);
+    }
+
+    next_channel = NULL;
+    
     while(channel != NULL){
       /* get some fields */
-      g_object_get(channel,
-		   "next-pad", &next_pad,
-		   NULL);
-
-      if(next_pad != NULL){
-	g_object_unref(next_pad);
-      }
+      next_pad = ags_channel_next_pad(channel);
       
-      channel = ags_channel_nth(channel,
-				audio_channels_old);
+      nth_channel = ags_channel_nth(channel,
+				    audio_channels_old);
 
+      g_object_unref(channel);
+
+      channel = nth_channel;
+      
       while(channel != next_pad){
 	/* get some fields */
 	g_object_get(channel,
@@ -1077,31 +1076,41 @@ ags_lv2_bridge_resize_audio_channels(AgsMachine *machine,
 	}
 	
 	/* iterate */
-	g_object_get(channel,
-		     "next", &channel,
-		     NULL);
+	next_channel = ags_channel_next(channel);
 
-	if(channel != NULL){
-	  g_object_unref(channel);
-	}
+	g_object_unref(channel);
+
+	next_channel = channel;
       }
-    }
-
-    /* AgsOutput */
-    channel = audio->output;
-
-    while(channel != NULL){
-      /* get some fields */
-      g_object_get(channel,
-		   "next-pad", &next_pad,
-		   NULL);
 
       if(next_pad != NULL){
 	g_object_unref(next_pad);
       }
+    }
 
-      channel = ags_channel_pad_nth(channel,
-				    audio_channels_old);
+    if(next_channel != NULL){
+      g_object_unref(next_channel);
+    }
+    
+    /* AgsOutput */
+    channel = start_output;
+
+    if(channel != NULL){
+      g_object_ref(channel);
+    }
+
+    next_channel = NULL;
+
+    while(channel != NULL){
+      /* get some fields */
+      next_pad = ags_channel_next_pad(channel);
+
+      nth_channel = ags_channel_pad_nth(channel,
+					audio_channels_old);
+
+      g_object_unref(channel);
+
+      channel = nth_channel;
 
       while(channel != next_pad){
 	/* get some fields */
@@ -1134,13 +1143,15 @@ ags_lv2_bridge_resize_audio_channels(AgsMachine *machine,
 	}
 	
 	/* iterate */
-	g_object_get(channel,
-		     "next", &channel,
-		     NULL);
+	next_channel = ags_channel_next(channel);
 
-	if(channel != NULL){
-	  g_object_unref(channel);
-	}
+	g_object_unref(channel);
+
+	next_channel = channel;
+      }
+
+      if(next_pad != NULL){
+	g_object_unref(next_pad);
       }
     }
 
@@ -1155,6 +1166,14 @@ ags_lv2_bridge_resize_audio_channels(AgsMachine *machine,
 				       0);
     }
   }
+
+  if(start_output != NULL){
+    g_object_unref(start_output);
+  }
+
+  if(start_input != NULL){
+    g_object_unref(start_input);
+  }
 }
 
 void
@@ -1165,8 +1184,8 @@ ags_lv2_bridge_resize_pads(AgsMachine *machine, GType channel_type,
   AgsLv2Bridge *lv2_bridge;
 
   AgsAudio *audio;
-  AgsChannel *output, *input;
-  AgsChannel *channel;
+  AgsChannel *start_output, *start_input;
+  AgsChannel *channel, *next_channel, *nth_channel;
   AgsRecycling *first_recycling;
   AgsAudioSignal *audio_signal;
   
@@ -1181,24 +1200,19 @@ ags_lv2_bridge_resize_pads(AgsMachine *machine, GType channel_type,
 
   /* get some fields */
   g_object_get(audio,
-	       "output", &output,
-	       "input", &input,
 	       "audio-channels", &audio_channels,
 	       NULL);
-
-  if(output != NULL){
-    g_object_unref(output);
-  }
-
-  if(input != NULL){
-    g_object_unref(input);
-  }
   
   /* check available */
   if(pads == pads_old ||
      audio->audio_channels == 0){
     return;
   }
+
+  g_object_get(audio,
+	       "output", &start_output,
+	       "input", &start_input,
+	       NULL);
 
   if(pads_old < pads){
     grow = TRUE;
@@ -1209,9 +1223,13 @@ ags_lv2_bridge_resize_pads(AgsMachine *machine, GType channel_type,
   if(g_type_is_a(channel_type, AGS_TYPE_INPUT)){
     if(grow){
       /* AgsInput */
-      channel = ags_channel_pad_nth(input,
-				    pads_old);
+      nth_channel = ags_channel_pad_nth(start_input,
+					pads_old);
 
+      channel = nth_channel;
+
+      next_channel = NULL;
+      
       while(channel != NULL){
 	/* get some fields */
 	g_object_get(channel,
@@ -1240,15 +1258,17 @@ ags_lv2_bridge_resize_pads(AgsMachine *machine, GType channel_type,
 	}
 	
 	/* iterate */
-	g_object_get(channel,
-		     "next", &channel,
-		     NULL);
+	next_channel = ags_channel_next(channel);
 
-	if(channel != NULL){
-	  g_object_unref(channel);
-	}
+	g_object_unref(channel);
+
+	next_channel = channel;
       }
 
+      if(next_channel != NULL){
+	g_object_unref(next_channel);
+      }
+      
       /* recall */
       if((AGS_MACHINE_MAPPED_RECALL & (machine->flags)) != 0){
 	ags_lv2_bridge_input_map_recall(lv2_bridge,
@@ -1261,8 +1281,12 @@ ags_lv2_bridge_resize_pads(AgsMachine *machine, GType channel_type,
   }else{
     if(grow){
       /* AgsOutput */
-      channel = ags_channel_pad_nth(output,
-				    pads_old);
+      nth_channel = ags_channel_pad_nth(start_output,
+					pads_old);
+
+      channel = nth_channel;
+
+      next_channel = NULL;
 
       while(channel != NULL){
 	/* get some fields */
@@ -1294,13 +1318,15 @@ ags_lv2_bridge_resize_pads(AgsMachine *machine, GType channel_type,
 	}
 	
 	/* iterate */
-	g_object_get(channel,
-		     "next", &channel,
-		     NULL);
+	next_channel = ags_channel_next(channel);
 
-	if(channel != NULL){
-	  g_object_unref(channel);
-	}
+	g_object_unref(channel);
+
+	next_channel = channel;
+      }
+
+      if(next_channel != NULL){
+	g_object_unref(next_channel);
       }
 
       /* recall */
@@ -1312,6 +1338,14 @@ ags_lv2_bridge_resize_pads(AgsMachine *machine, GType channel_type,
     }else{
       lv2_bridge->mapped_output_pad = pads;
     }
+  }
+
+  if(start_output != NULL){
+    g_object_unref(start_output);
+  }
+
+  if(start_input != NULL){
+    g_object_unref(start_input);
   }
 }
 
@@ -1569,8 +1603,8 @@ ags_lv2_bridge_input_map_recall(AgsLv2Bridge *lv2_bridge,
 				guint input_pad_start)
 {
   AgsAudio *audio;
-  AgsChannel *input;
-  AgsChannel *source, *current;
+  AgsChannel *start_input;
+  AgsChannel *current, *next_pad_current, *nth_current;
   
   guint input_pads;
   guint audio_channels;
@@ -1583,18 +1617,14 @@ ags_lv2_bridge_input_map_recall(AgsLv2Bridge *lv2_bridge,
 
   /* get some fields */
   g_object_get(audio,
-	       "input", &input,
+	       "input", &start_input,
 	       "input-pads", &input_pads,
 	       "audio-channels", &audio_channels,
 	       NULL);
 
-  if(input != NULL){
-    g_object_unref(input);
-  }
-
   /* source */
-  source = ags_channel_nth(input,
-			   audio_channel_start + input_pad_start * audio_channels);
+  nth_current = ags_channel_nth(start_input,
+				audio_channel_start + input_pad_start * audio_channels);
 
   if((AGS_MACHINE_IS_SYNTHESIZER & (AGS_MACHINE(lv2_bridge)->flags)) != 0){
     /* ags-envelope */
@@ -1609,8 +1639,14 @@ ags_lv2_bridge_input_map_recall(AgsLv2Bridge *lv2_bridge,
 			       AGS_RECALL_FACTORY_ADD),
 			      0);
 
-    current = source;
+    current = start_input;
 
+    if(current != NULL){
+      g_object_ref(current);
+    }
+
+    next_pad_current = NULL;
+    
     while(current != NULL){
       AgsPort *port;
       
@@ -1681,13 +1717,15 @@ ags_lv2_bridge_input_map_recall(AgsLv2Bridge *lv2_bridge,
 		       g_object_unref);
 
       /* iterate */
-      g_object_get(current,
-		   "next-pad", &current,
-		   NULL);
+      next_pad_current = ags_channel_next_pad(current);
 
-      if(current != NULL){
-	g_object_unref(current);
-      }
+      g_object_unref(current);
+
+      current = next_pad_current;
+    }
+
+    if(next_pad_current != NULL){
+      g_object_unref(next_pad_current);
     }
     
     if(ags_recall_global_get_rt_safe() ||
@@ -1763,6 +1801,11 @@ ags_lv2_bridge_input_map_recall(AgsLv2Bridge *lv2_bridge,
 				 AGS_RECALL_FACTORY_ADD),
 				0);
     }      
+  }
+
+  /* unref */
+  if(start_input != NULL){
+    g_object_unref(start_input);
   }
   
   lv2_bridge->mapped_input_pad = input_pads;

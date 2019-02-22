@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -458,7 +458,8 @@ ags_matrix_resize_pads(AgsMachine *machine, GType type,
   AgsMatrix *matrix;
 
   AgsAudio *audio;
-  AgsChannel *channel, *source;
+  AgsCahnnel *start_output, *start_input;
+  AgsChannel *channel, *next_channel, *nth_channel;
   AgsAudioSignal *audio_signal;
   
   guint i, j;
@@ -497,12 +498,8 @@ ags_matrix_resize_pads(AgsMachine *machine, GType type,
   
   if(g_type_is_a(type, AGS_TYPE_INPUT)){
     g_object_get(audio,
-		 "input", &source,
+		 "input", &start_input,
 		 NULL);
-
-    if(source != NULL){
-      g_object_unref(source);
-    }
     
     if(grow){
       if((AGS_MACHINE_MAPPED_RECALL & (machine->flags)) != 0){
@@ -512,26 +509,28 @@ ags_matrix_resize_pads(AgsMachine *machine, GType type,
     }else{
       matrix->mapped_input_pad = pads;
     }
+
+    if(start_input != NULL){
+      g_object_unref(start_input);
+    }
   }else{
     if(grow){
       g_object_get(audio,
-		   "output", &source,
+		   "output", &start_ouput,
 		   NULL);
 
-      if(source != NULL){
-	g_object_unref(source);
-      }
+      nth_channel = ags_channel_nth(start_output,
+				    pads_old);
 
-      source = ags_channel_nth(source,
-			       pads_old);
-
-      while(source != NULL){
+      channel = nth_channel;
+      
+      while(channel != NULL){
 	AgsRecycling *recycling;
 	AgsAudioSignal *audio_signal;
 
 	GObject *output_soundcard;
 
-	ags_channel_set_ability_flags(source, (AGS_SOUND_ABILITY_SEQUENCER |
+	ags_channel_set_ability_flags(channel, (AGS_SOUND_ABILITY_SEQUENCER |
 						AGS_SOUND_ABILITY_NOTATION));
 	
 	g_object_get(audio,
@@ -539,7 +538,7 @@ ags_matrix_resize_pads(AgsMachine *machine, GType type,
 		     NULL);
 
 	/* get recycling */
-	g_object_get(source,
+	g_object_get(channel,
 		     "first-recycling", &recycling,
 		     NULL);
 
@@ -556,13 +555,11 @@ ags_matrix_resize_pads(AgsMachine *machine, GType type,
 	g_object_unref(recycling);
 	
 	/* iterate */
-	g_object_get(source,
-		     "next", &source,
-		     NULL);
+	next_channel = ags_channel_next(channel);
 
-	if(source != NULL){
-	  g_object_unref(source);
-	}
+	g_object_unref(channel);
+
+	channel = next_channel;
       }
 
       if((AGS_MACHINE_MAPPED_RECALL & (machine->flags)) != 0){
@@ -571,6 +568,10 @@ ags_matrix_resize_pads(AgsMachine *machine, GType type,
       }
     }else{
       matrix->mapped_output_pad = pads;
+    }
+
+    if(start_output != NULL){
+      g_object_unref(start_output);
     }
   }
 }
@@ -582,8 +583,8 @@ ags_matrix_map_recall(AgsMachine *machine)
   AgsMatrix *matrix;
 
   AgsAudio *audio;
-  AgsChannel *input;
-  AgsChannel *channel;
+  AgsChannel *start_input;
+  AgsChannel *channel, *next_channel, *nth_channel;
 
   AgsDelayAudio *play_delay_audio;
   AgsDelayAudioRun *play_delay_audio_run;
@@ -621,14 +622,10 @@ ags_matrix_map_recall(AgsMachine *machine)
 
   /* get some fields */
   g_object_get(audio,
-	       "input", &input,
+	       "input", &start_input,
 	       "input-pads", &input_pads,
 	       "audio-channels", &audio_channels,
 	       NULL);
-
-  if(input != NULL){
-    g_object_unref(input);
-  }
   
   /* ags-delay */
   ags_recall_factory_create(audio,
@@ -745,9 +742,11 @@ ags_matrix_map_recall(AgsMachine *machine)
 		   g_object_unref);
   
   /* set pattern object on port */
-  channel = ags_channel_pad_nth(input,
-				0);
-      
+  nth_channel = <ags_channel_pad_nth(start_input,
+				     0);
+
+  channel = nth_channel;
+  
   for(i = 0; i < input_pads; i++){
     for(j = 0; j < audio_channels; j++){
       AgsPort *port;
@@ -794,13 +793,11 @@ ags_matrix_map_recall(AgsMachine *machine)
 		       g_object_unref);
       
       /* iterate */
-      g_object_get(channel,
-		   "next", &channel,
-		   NULL);
+      next_channel = ags_channel_next(channel);
 
-      if(channel != NULL){
-	g_object_unref(channel);
-      }
+      g_object_unref(channel);
+
+      channel = next_channel;
     }
   }
 
@@ -883,6 +880,8 @@ ags_matrix_map_recall(AgsMachine *machine)
 			       0);
 
   AGS_MACHINE_CLASS(ags_matrix_parent_class)->map_recall(machine);
+
+  g_object_unref(start_input);
 }
 
 void
@@ -890,8 +889,8 @@ ags_matrix_input_map_recall(AgsMatrix *matrix,
 			    guint input_pad_start)
 {
   AgsAudio *audio;
-  AgsChannel *input;
-  AgsChannel *channel;
+  AgsChannel *start_input;
+  AgsChannel *channel, *next_channel, *nth_channel;
   
   AgsCopyPatternChannel *copy_pattern_channel;
 
@@ -909,14 +908,10 @@ ags_matrix_input_map_recall(AgsMatrix *matrix,
 
   /* get some fields */
   g_object_get(audio,
-	       "input", &input,
+	       "input", &start_input,
 	       "input-pads", &input_pads,
 	       "audio-channels", &audio_channels,
 	       NULL);
-
-  if(input != NULL){
-    g_object_unref(input);
-  }
 
   if(audio_channels == 0){
     return;
@@ -934,9 +929,11 @@ ags_matrix_input_map_recall(AgsMatrix *matrix,
 			    0);
 
   /* set pattern object on port */
-  channel = ags_channel_pad_nth(input,
-				input_pad_start);
-      
+  nth_channel = ags_channel_pad_nth(start_input,
+				    input_pad_start);
+
+  channel = nth_channel;
+  
   for(i = 0; i < input_pads; i++){
     for(j = 0; j < audio_channels; j++){
       AgsPort *port;
@@ -983,13 +980,11 @@ ags_matrix_input_map_recall(AgsMatrix *matrix,
 		       g_object_unref);
       
       /* iterate */
-      g_object_get(channel,
-		   "next", &channel,
-		   NULL);
+      next_channel = ags_channel_next(channel);
 
-      if(channel != NULL){
-	g_object_unref(channel);
-      }
+      g_object_unref(channel);
+
+      channel = next_channel;
     }
   }
 
@@ -1068,6 +1063,8 @@ ags_matrix_input_map_recall(AgsMatrix *matrix,
   }
   
   matrix->mapped_input_pad = input_pads;
+
+  g_object_unref(start_input);
 }
 
 void

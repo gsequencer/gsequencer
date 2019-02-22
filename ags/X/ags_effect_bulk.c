@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -2502,8 +2502,9 @@ ags_effect_bulk_real_remove_effect(AgsEffectBulk *effect_bulk,
 				   guint nth)
 {
   GtkAdjustment *adjustment;
-  
-  AgsChannel *current;
+
+  AgsChannel *start_channel;
+  AgsChannel *current, *next_current;
 
   AgsEffectBulkPlugin *effect_bulk_plugin;
   
@@ -2537,17 +2538,31 @@ ags_effect_bulk_real_remove_effect(AgsEffectBulk *effect_bulk,
 
   audio_channels = effect_bulk->audio->audio_channels;
 
-  if(effect_bulk->channel_type == AGS_TYPE_OUTPUT){
-    current = effect_bulk->audio->output;
-    
-    pads = effect_bulk->audio->output_pads;
-  }else{
-    current = effect_bulk->audio->input;
-
-    pads = effect_bulk->audio->input_pads;
-  }
-
   pthread_mutex_unlock(audio_mutex);
+
+  if(effect_bulk->channel_type == AGS_TYPE_OUTPUT){
+    g_object_get(effect_bulk->audio,
+		 "output", &start_channel,
+		 "output-pads", &pads,
+		 NULL);
+
+    current = start_channel;
+
+    if(current != NULL){
+      g_object_ref(current);
+    }
+  }else{
+    g_object_get(effect_bulk->audio,
+		 "input", &start_channel,
+		 "input-pads", &pads,
+		 NULL);
+
+    current = start_channel;
+
+    if(current != NULL){
+      g_object_ref(current);
+    }
+  }
 
   nth_effect = 0;
 
@@ -2588,6 +2603,14 @@ ags_effect_bulk_real_remove_effect(AgsEffectBulk *effect_bulk,
   }
 
   if(nth_effect == 0){
+    if(start_channel != NULL){
+      g_object_unref(start_channel);
+    }
+
+    if(current != NULL){
+      g_object_unref(current);
+    }
+    
     return;
   }
 
@@ -2635,6 +2658,8 @@ ags_effect_bulk_real_remove_effect(AgsEffectBulk *effect_bulk,
   
   /* remove recalls */
   if(current != NULL){
+    current_next = NULL;
+    
     for(i = 0; i < pads; i++){
       for(j = 0; j < audio_channels; j++){
 	/* remove effect */
@@ -2642,15 +2667,21 @@ ags_effect_bulk_real_remove_effect(AgsEffectBulk *effect_bulk,
 				  nth_effect);
 
 	/* iterate */
-	g_object_get(current,
-		     "next", &current,
-		     NULL);
+	current_next = ags_channel_next(current);
 
-	if(current != NULL){
-	  g_object_unref(current);
-	}
+	g_object_unref(current);
+
+	current = current_next;
       }
     }
+
+    if(current_next != NULL){
+      g_object_unref(current_next);
+    }
+  }
+
+  if(start_channel != NULL){
+    g_object_unref(start_channel);
   }
 }
 
@@ -2681,7 +2712,8 @@ ags_effect_bulk_real_resize_audio_channels(AgsEffectBulk *effect_bulk,
 					   guint new_size,
 					   guint old_size)
 {
-  AgsChannel *current;
+  AgsChannel *start_channel;
+  AgsChannel *current, *current_next, *nth_current;
   
   GList *start_list, *list;
 
@@ -2698,21 +2730,23 @@ ags_effect_bulk_real_resize_audio_channels(AgsEffectBulk *effect_bulk,
   pthread_mutex_unlock(ags_audio_get_class_mutex());
   
   /* retrieve channel */
-  pthread_mutex_lock(audio_mutex);
-  
   if(effect_bulk->channel_type == AGS_TYPE_OUTPUT){
-    current = effect_bulk->audio->output;
-    
-    pads = effect_bulk->audio->output_pads;
+    g_object_get(effect_bulk->audio,
+		 "output", &start_channel,
+		 "output-pads", &pads,
+		 NULL);
   }else{
-    current = effect_bulk->audio->input;
-
-    pads = effect_bulk->audio->input_pads;
+    g_object_get(effect_bulk->audio,
+		 "input", &start_channel,
+		 "input-pads", &pads,
+		 NULL);
   }
 
-  pthread_mutex_unlock(audio_mutex);
-
   if(pads == 0){
+    if(start_channel != NULL){
+      g_object_unref(start_channel);
+    }
+
     return;
   }
 
@@ -2720,11 +2754,23 @@ ags_effect_bulk_real_resize_audio_channels(AgsEffectBulk *effect_bulk,
   start_list = gtk_container_get_children((GtkContainer *) effect_bulk->table);
 
   if(new_size > old_size){  
-    /* add effect */
-    for(i = 0; i < pads; i++){
-      current = ags_channel_nth(current,
-				old_size);
+    current = start_channel;
 
+    if(current != NULL){
+      g_object_ref(current);
+    }
+
+    /* add effect */
+    next_current = NULL;
+
+    for(i = 0; i < pads; i++){
+      nth_current = ags_channel_nth(current,
+				    old_size);
+
+      g_object_unref(current);
+
+      current = nth_current;
+      
       /*  */      
       for(j = old_size; j < new_size; j++){
 	GList *effect_bulk_plugin;
@@ -2856,14 +2902,16 @@ ags_effect_bulk_real_resize_audio_channels(AgsEffectBulk *effect_bulk,
 	}
 
 	/* iterate */
-	g_object_get(current,
-		     "next", &current,
-		     NULL);
-	
-	if(current != NULL){
-	  g_object_unref(current);
-	}
+	next_current = ags_channel_next(current);
+
+	g_object_unref(current);
+
+	current = next_current;
       }
+    }
+
+    if(next_current != NULL){
+      g_object_unref(next_current);
     }
   }else{
     /* remove port */
@@ -2900,6 +2948,10 @@ ags_effect_bulk_real_resize_audio_channels(AgsEffectBulk *effect_bulk,
     }
   }
 
+  if(start_channel != NULL){
+    g_object_unref(start_channel);
+  }
+  
   g_list_free(start_list);
 }
 
@@ -2923,7 +2975,8 @@ ags_effect_bulk_real_resize_pads(AgsEffectBulk *effect_bulk,
 				 guint new_size,
 				 guint old_size)
 {
-  AgsChannel *current;
+  AgsChannel *start_channel;
+  AgsChannel *current, *next_current, *nth_current;
   
   GList *start_list, *list;
 
@@ -2944,27 +2997,35 @@ ags_effect_bulk_real_resize_pads(AgsEffectBulk *effect_bulk,
   
   audio_channels = effect_bulk->audio->audio_channels;
 
-  if(effect_bulk->channel_type == AGS_TYPE_OUTPUT){
-    current = effect_bulk->audio->output;
-  }else{
-    current = effect_bulk->audio->input;
-  }
-
   pthread_mutex_unlock(audio_mutex);
 
   if(audio_channels == 0){
     return;
   }
+
+  if(effect_bulk->channel_type == AGS_TYPE_OUTPUT){
+    g_object_get(effect_bulk->audio,
+		 "output", &start_channel,
+		 NULL);
+  }else{
+    g_object_get(effect_bulk->audio,
+		 "input", &start_channel,
+		 NULL);
+  }
   
   /* collect bulk member */
   start_list = gtk_container_get_children((GtkContainer *) effect_bulk->table);
    
-  if(new_size > old_size){ 
+  if(new_size > old_size){
     /* add effect */
-    current = ags_channel_pad_nth(current,
-				  old_size);
+    nth_current = ags_channel_pad_nth(start_channel,
+				      old_size);
 
+    current = nth_current;
+    
     /*  */
+    next_current = NULL;
+    
     for(i = old_size; i < new_size; i++){
       for(j = 0; j < audio_channels; j++){
 	GList *effect_bulk_plugin;
@@ -3096,14 +3157,16 @@ ags_effect_bulk_real_resize_pads(AgsEffectBulk *effect_bulk,
 	}
 
 	/* iterate */
-	g_object_get(current,
-		     "next", &current,
-		     NULL);
+	next_current = ags_channel_next(current);
 
-	if(current != NULL){
-	  g_object_unref(current);
-	}
+	g_object_unref(current);
+
+	current = next_current;
       }
+    }
+
+    if(next_current != NULL){
+      g_object_unref(next_current);
     }
   }else{
     /* remove port */
@@ -3140,6 +3203,8 @@ ags_effect_bulk_real_resize_pads(AgsEffectBulk *effect_bulk,
     }
   }
 
+  g_object_unref(start_channel);
+  
   g_list_free(start_list);
 }
 

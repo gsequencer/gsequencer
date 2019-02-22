@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -607,7 +607,8 @@ ags_audiorec_output_map_recall(AgsAudiorec *audiorec, guint output_pad_start)
   AgsWindow *window;
   
   AgsAudio *audio;
-  AgsChannel *start_output, *output;
+  AgsChannel *start_output;
+  AgsChannel *output, *next_output, *nth_output;
   
   guint output_pads;
   guint audio_channels;
@@ -626,10 +627,6 @@ ags_audiorec_output_map_recall(AgsAudiorec *audiorec, guint output_pad_start)
 	       "output-pads", &output_pads,
 	       "audio-channels", &audio_channels,
 	       NULL);
-
-  if(start_output != NULL){
-    g_object_unref(start_output);
-  }
   
   /* ags-peak */
   ags_recall_factory_create(audio,
@@ -653,9 +650,13 @@ ags_audiorec_output_map_recall(AgsAudiorec *audiorec, guint output_pad_start)
 			     AGS_RECALL_FACTORY_ADD),
 			    0);
 
-  output = ags_channel_pad_nth(start_output,
-			       output_pad_start);
+  nth_output = ags_channel_pad_nth(start_output,
+				   output_pad_start);
 
+  output = nth_output;
+
+  next_output = NULL;
+  
   while(output != NULL){
     GList *start_play, *play;
 
@@ -676,14 +677,17 @@ ags_audiorec_output_map_recall(AgsAudiorec *audiorec, guint output_pad_start)
 
     g_list_free_full(start_play,
 		     g_object_unref);
-    
-    g_object_get(output,
-		 "next", &output,
-		 NULL);
 
-    if(output != NULL){
-      g_object_unref(output);
-    }
+    /* iterate */
+    next_output = ags_channel_next(output);
+
+    g_object_unref(output);
+
+    output = next_output;
+  }
+
+  if(next_output != NULL){
+    g_object_unref(next_output);
   }
   
   /* ags-capture-wave */
@@ -697,9 +701,13 @@ ags_audiorec_output_map_recall(AgsAudiorec *audiorec, guint output_pad_start)
 			     AGS_RECALL_FACTORY_ADD),
 			    0);
 
-  output = ags_channel_pad_nth(start_output,
-			       output_pad_start);
+  nth_output = ags_channel_pad_nth(start_output,
+				   output_pad_start);
 
+  output = nth_output;
+
+  next_output = NULL;
+  
   while(output != NULL){
     GList *start_play, *play;
 
@@ -720,16 +728,24 @@ ags_audiorec_output_map_recall(AgsAudiorec *audiorec, guint output_pad_start)
 
     g_list_free_full(start_play,
 		     g_object_unref);
-    
-    g_object_get(output,
-		 "next", &output,
-		 NULL);
 
-    if(output != NULL){
-      g_object_unref(output);
-    }
+    /* iterate */
+    next_output = ags_channel_next(output);
+
+    g_object_unref(output);
+
+    output = next_output;
+  }  
+
+  if(next_output != NULL){
+    g_object_unref(next_output);
   }
-  
+
+  /* unref */
+  if(start_output != NULL){
+    g_object_unref(start_output);
+  }
+
   audiorec->mapped_output_pad = output_pads;
 }
 
@@ -765,8 +781,8 @@ ags_audiorec_resize_audio_channels(AgsMachine *machine,
   AgsAudiorec *audiorec;
 
   AgsAudio *audio;
-  AgsChannel *output;
-  AgsChannel *channel, *next_pad;
+  AgsChannel *start_output;
+  AgsChannel *channel, *next_pad, *next_channel, *nth_channel;
   AgsRecycling *first_recycling;
   AgsAudioSignal *audio_signal;  
 
@@ -781,12 +797,8 @@ ags_audiorec_resize_audio_channels(AgsMachine *machine,
   g_object_get(audio,
 	       "input-pads", &input_pads,
 	       "output-pads", &output_pads,
-	       "output", &output,
+	       "output", &start_output,
 	       NULL);
-
-  if(output != NULL){
-    g_object_unref(output);
-  }
   
   if(audio_channels > audio_channels_old){
     AgsHIndicator *hindicator;
@@ -794,21 +806,25 @@ ags_audiorec_resize_audio_channels(AgsMachine *machine,
     guint i;
 
     /* AgsOutput */
-    channel = output;
+    channel = start_output;
 
+    if(channel != NULL){
+      g_object_ref(channel);
+    }
+
+    next_pad = NULL;
+    
     while(channel != NULL){
       /* get some fields */
-      g_object_get(channel,
-		   "next-pad", &next_pad,
-		   NULL);
-
-      if(next_pad != NULL){
-	g_object_unref(next_pad);
-      }
+      next_pad = ags_channel_next_pad(channel),
       
-      channel = ags_channel_pad_nth(channel,
-				    audio_channels_old);
+      nth_channel = ags_channel_pad_nth(channel,
+					audio_channels_old);
 
+      g_object_unref(channel);
+
+      channel = nth_channel;
+      
       while(channel != next_pad){
 	ags_channel_set_ability_flags(channel, (AGS_SOUND_ABILITY_WAVE));
 	
@@ -837,14 +853,16 @@ ags_audiorec_resize_audio_channels(AgsMachine *machine,
 	}
 	
 	/* iterate */
-	g_object_get(channel,
-		     "next", &channel,
-		     NULL);
+	next_channel = ags_channel_next(channel);
 
-	if(channel != NULL){
-	  g_object_unref(channel);
-	}
+	g_object_unref(channel);
+
+	channel = next_channel;
       }
+    }
+
+    if(next_pad != NULL){
+      g_object_unref(next_pad);
     }
 
     if(input_pads > 0){      
@@ -913,6 +931,11 @@ ags_audiorec_resize_audio_channels(AgsMachine *machine,
 
     g_list_free(list_start);
   }
+
+  /* unref */
+  if(start_output != NULL){
+    g_object_unref(start_output);
+  }
 }
 
 void
@@ -923,8 +946,8 @@ ags_audiorec_resize_pads(AgsMachine *machine, GType type,
   AgsAudiorec *audiorec;
 
   AgsAudio *audio;
-  AgsChannel *output;
-  AgsChannel *channel;
+  AgsChannel *start_output;
+  AgsChannel *channel, *next_channel, *nth_channel;
   AgsRecycling *first_recycling;
   AgsAudioSignal *audio_signal;
 
@@ -945,18 +968,18 @@ ags_audiorec_resize_pads(AgsMachine *machine, GType type,
 
       /* get some fields */
       g_object_get(audio,
-		   "output", &output,
+		   "output", &start_output,
 		   "audio-channels", &audio_channels,
 		   NULL);
 
-      if(output != NULL){
-	g_object_unref(output);
-      }
-
       /* AgsOutput */
-      channel = ags_channel_pad_nth(output,
-				    pads_old);
+      nth_channel = ags_channel_pad_nth(start_output,
+					pads_old);
 
+      channel = nth_channel;
+
+      next_channel = NULL;
+      
       while(channel != NULL){
 	ags_channel_set_ability_flags(channel, (AGS_SOUND_ABILITY_WAVE));
 
@@ -985,15 +1008,21 @@ ags_audiorec_resize_pads(AgsMachine *machine, GType type,
 	}
 	
 	/* iterate */
-	g_object_get(channel,
-		     "next", &channel,
-		     NULL);
+	next_channel = ags_channel_next(channel);
 
-	if(channel != NULL){
-	  g_object_unref(channel);
-	}
+	g_object_unref(channel);
+
+	channel = next_channel;
       }
 
+      if(next_channel != NULL){
+	g_object_unref(next_channel);
+      }
+
+      if(start_output != NULL){
+	g_object_unref(start_output);
+      }
+      
       for(i = 0; i < audio_channels; i++){
 	hindicator = ags_hindicator_new();
 	gtk_box_pack_start((GtkBox *) audiorec->hindicator_vbox,
@@ -1190,7 +1219,8 @@ ags_audiorec_indicator_queue_draw_timeout(AgsAudiorec *audiorec)
   if(g_hash_table_lookup(ags_audiorec_indicator_queue_draw,
 			 audiorec) != NULL){
     AgsAudio *audio;
-    AgsChannel *channel;
+    AgsChannel *start_channel;
+    AgsChannel *channel, *next_channel;
     
     GList *list, *list_start;
 
@@ -1198,17 +1228,21 @@ ags_audiorec_indicator_queue_draw_timeout(AgsAudiorec *audiorec)
 
     audio = AGS_MACHINE(audiorec)->audio;
     g_object_get(audio,
-		 "output", &channel,
+		 "output", &start_channel,
 		 NULL);
-
-    if(channel != NULL){
-      g_object_unref(channel);
-    }
     
     list_start = 
       list = gtk_container_get_children((GtkContainer *) audiorec->hindicator_vbox);
     
     /* check members */
+    channel = start_channel;
+
+    if(channel != NULL){
+      g_object_ref(channel);
+    }
+
+    next_channel = NULL;
+    
     for(i = 0; list != NULL; i++){
       GtkAdjustment *adjustment;
       GtkWidget *child;
@@ -1261,15 +1295,21 @@ ags_audiorec_indicator_queue_draw_timeout(AgsAudiorec *audiorec)
       /* iterate */
       list = list->next;
 
-      g_object_get(channel,
-		   "next", &channel,
-		   NULL);
+      next_channel = ags_channel_next(channel);
 
-      if(channel != NULL){
-	g_object_unref(channel);
-      }
+      g_object_unref(channel);
+
+      channel = next_channel;
     }
 
+    if(start_channel != NULL){
+      g_object_unref(start_channel);
+    }
+
+    if(next_channel != NULL){
+      g_object_unref(next_channel);
+    }
+    
     g_list_free(list_start);
     
     return(TRUE);

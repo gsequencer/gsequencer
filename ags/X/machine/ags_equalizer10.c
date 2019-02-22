@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -753,7 +753,8 @@ ags_equalizer10_map_recall(AgsMachine *machine)
   AgsEqualizer10 *equalizer10;
   
   AgsAudio *audio;
-  AgsChannel *channel;
+  AgsChannel *start_input;
+  AgsChannel *channel, *next_cahnnel;
   
   guint audio_channels;
   guint i;
@@ -765,12 +766,8 @@ ags_equalizer10_map_recall(AgsMachine *machine)
   /* get some fields */
   g_object_get(audio,
 	       "audio-channels", &audio_channels,
-	       "input", &channel,
+	       "input", &start_input,
 	       NULL);
-
-  if(channel != NULL){
-    g_object_unref(channel);
-  }
 
   /* ags-eq10 */
   ags_recall_factory_create(audio,
@@ -783,6 +780,12 @@ ags_equalizer10_map_recall(AgsMachine *machine)
 			     AGS_RECALL_FACTORY_RECALL |
 			     AGS_RECALL_FACTORY_ADD),
 			    0);
+
+  channel = start_input;
+
+  g_object_ref(channel);
+
+  next_channel = NULL;
   
   for(i = 0; i < audio_channels; i++){
     AgsPort *port;
@@ -1032,13 +1035,19 @@ ags_equalizer10_map_recall(AgsMachine *machine)
 		     g_object_unref);
     
     /* iterate */
-    g_object_get(channel,
-		 "next", &channel,
-		 NULL);
+    next_channel = ags_channel_next(channel);
 
-    if(channel != NULL){
-      g_object_unref(channel);
-    }
+    g_object_unref(channel);
+
+    channel = next_channel;
+  }
+
+  if(start_input != NULL){
+    g_object_unref(start_input);
+  }
+
+  if(next_channel != NULL){
+    g_object_unref(next_channel);
   }
   
   /* call parent */

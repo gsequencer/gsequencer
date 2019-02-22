@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -61,7 +61,8 @@ ags_ramp_acceleration_dialog_port_callback(GtkComboBox *combo_box,
   AgsAutomationEditor *automation_editor;
   AgsMachine *machine;
 
-  AgsChannel *channel;
+  AgsChannel *start_channel;
+  AgsChannel *channel, *next_channel;
   
   AgsPluginPort *plugin_port;
 
@@ -106,13 +107,16 @@ ags_ramp_acceleration_dialog_port_callback(GtkComboBox *combo_box,
   case 1:
     {
       g_object_get(machine->audio,
-		   "output", &channel,
+		   "output", &start_channel,
 		   NULL);
 
-      if(channel != NULL){
-	g_object_unref(channel);
-      }
+      channel = start_channel;
 
+      if(channel != NULL){
+	g_object_ref(channel);
+      }
+      
+      next_channel = NULL;
       start_port = NULL;
       
       while(channel != NULL){
@@ -138,26 +142,35 @@ ags_ramp_acceleration_dialog_port_callback(GtkComboBox *combo_box,
 	}
 
 	/* iterate */
-	g_object_get(channel,
-		     "next", &channel,
-		     NULL);
+	next_channel = ags_channel_next(channel);
 
-	if(channel != NULL){
-	  g_object_unref(channel);
-	}
+	g_object_unref(channel);
+
+	channel = next_channel;
+      }
+
+      if(start_channel != NULL){
+	g_object_unref(start_channel);
+      }
+
+      if(next_channel != NULL){
+	g_object_unref(next_channel);
       }
     }
     break;
   case 2:
     {
       g_object_get(machine->audio,
-		   "input", &channel,
+		   "input", &start_channel,
 		   NULL);
 
-      if(channel != NULL){
-	g_object_unref(channel);
-      }
+      channel = start_channel;
 
+      if(channel != NULL){
+	g_object_ref(channel);
+      }
+      
+      next_channel = NULL;
       start_port = NULL;
       
       while(channel != NULL){
@@ -183,13 +196,19 @@ ags_ramp_acceleration_dialog_port_callback(GtkComboBox *combo_box,
 	}
 
 	/* iterate */
-	g_object_get(channel,
-		     "next", &channel,
-		     NULL);
+	next_channel = ags_channel_next(channel);
 
-	if(channel != NULL){
-	  g_object_unref(channel);
-	}
+	g_object_unref(channel);
+
+	channel = next_channel;
+      }
+
+      if(start_channel != NULL){
+	g_object_unref(start_channel);
+      }
+
+      if(next_channel != NULL){
+	g_object_unref(next_channel);
       }
     }
     break;

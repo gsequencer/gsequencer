@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -400,7 +400,8 @@ ags_spectrometer_map_recall(AgsMachine *machine)
   AgsPlot *fg_plot;
   
   AgsAudio *audio;
-  AgsChannel *channel;
+  AgsChannel *start_channel;
+  AgsChannel *channel, *next_channel;
   
   AgsPeakChannelRun *recall_peak_channel_run, *play_peak_channel_run;
 
@@ -416,12 +417,8 @@ ags_spectrometer_map_recall(AgsMachine *machine)
   /* get some fields */
   g_object_get(audio,
 	       "audio-channels", &audio_channels,
-	       "input", &channel,
+	       "input", &start_channel,
 	       NULL);
-
-  if(channel != NULL){
-    g_object_unref(channel);
-  }
   
   /* ags-analyse */
   ags_recall_factory_create(audio,
@@ -435,6 +432,14 @@ ags_spectrometer_map_recall(AgsMachine *machine)
 			     AGS_RECALL_FACTORY_ADD),
 			    0);
 
+  channel = start_channel;
+
+  if(channel != NULL){
+    g_object_ref(channel);
+  }
+
+  next_channel = NULL;
+  
   for(i = 0; i < audio_channels; i++){
     AgsPort *port;
 
@@ -502,13 +507,19 @@ ags_spectrometer_map_recall(AgsMachine *machine)
 		     g_object_unref);
     
     /* iterate */
-    g_object_get(channel,
-		 "next", &channel,
-		 NULL);
+    next_channel = ags_channel_next(channel);
 
-    if(channel != NULL){
-      g_object_unref(channel);
-    }
+    g_object_unref(channel);
+
+    channel = next_channel;
+  }
+
+  if(start_channel != NULL){
+    g_object_unref(start_channel);
+  }
+
+  if(next_channel != NULL){
+    g_object_unref(next_channel);
   }
   
   /* call parent */

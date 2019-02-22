@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -804,8 +804,8 @@ ags_live_dssi_bridge_resize_audio_channels(AgsMachine *machine,
   AgsLiveDssiBridge *live_dssi_bridge;
 
   AgsAudio *audio;
-  AgsChannel *output, *input;
-  AgsChannel *channel, *next_pad;
+  AgsChannel *start_output, *start_input;
+  AgsChannel *channel, *next_pad, *next_channel, *nth_channel;
   AgsRecycling *first_recycling;
   AgsAudioSignal *audio_signal;  
 
@@ -819,42 +819,41 @@ ags_live_dssi_bridge_resize_audio_channels(AgsMachine *machine,
 
   /* get some fields */
   g_object_get(audio,
-	       "output", &output,
-	       "input", &input,
 	       "output-pads", &output_pads,
 	       "input-pads", &input_pads,
 	       NULL);
-
-  if(output != NULL){
-    g_object_unref(output);
-  }
-
-  if(input != NULL){
-    g_object_unref(input);
-  }
   
   if(input_pads == 0 &&
      output_pads == 0){
     return;
   }  
 
+  g_object_get(audio,
+	       "output", &start_output,
+	       "input", &start_input,
+	       NULL);
+
   if(audio_channels > audio_channels_old){
     /* AgsInput */
-    channel = input;
+    channel = start_input;
+
+    if(channel != NULL){
+      g_object_ref(channel);
+    }
+
+    next_channel = NULL;
     
     while(channel != NULL){
       /* get some fields */
-      g_object_get(channel,
-		   "next-pad", &next_pad,
-		   NULL);
-
-      if(next_pad != NULL){
-	g_object_unref(next_pad);
-      }
+      next_pad = ags_channel_next_pad(channel);
       
-      channel = ags_channel_nth(channel,
-				audio_channels_old);
+      nth_channel = ags_channel_nth(channel,
+				    audio_channels_old);
 
+      g_object_unref(channel);
+
+      channel = nth_channel;
+      
       while(channel != next_pad){
 	ags_channel_set_ability_flags(channel, (AGS_SOUND_ABILITY_NOTATION));
 
@@ -879,27 +878,41 @@ ags_live_dssi_bridge_resize_audio_channels(AgsMachine *machine,
 	g_object_unref(first_recycling);
 
 	/* iterate */
-	g_object_get(channel,
-		     "next", &channel,
-		     NULL);
+	next_channel = ags_channel_next(channel);
 
-	if(channel != NULL){
-	  g_object_unref(channel);
-	}
+	g_object_unref(channel);
+
+	channel = next_channel;
+      }
+
+      if(next_pad != NULL){
+	g_object_unref(next_pad);
       }
     }
 
+    if(next_channel != NULL){
+      g_object_unref(next_channel);
+    }
+    
     /* AgsOutput */
     channel = output;
 
+    if(channel != NULL){
+      g_object_ref(channel);
+    }
+
+    next_channel = NULL;
+
     while(channel != NULL){
       /* get some fields */
-      g_object_get(channel,
-		   "next-pad", &next_pad,
-		   NULL);
+      next_pad = ags_channel_next_pad(channel);
 
-      channel = ags_channel_pad_nth(channel,
-				    audio_channels_old);
+      nth_channel = ags_channel_pad_nth(channel,
+					audio_channels_old);
+
+      g_object_unref(channel);
+
+      channel = nth_channel;
 
       while(channel != next_pad){
 	/* get some fields */
@@ -923,13 +936,15 @@ ags_live_dssi_bridge_resize_audio_channels(AgsMachine *machine,
 	g_object_unref(first_recycling);
 	
 	/* iterate */
-	g_object_get(channel,
-		     "next", &channel,
-		     NULL);
+	next_channel = ags_channel_next(channel);
 
-	if(channel != NULL){
-	  g_object_unref(channel);
-	}
+	g_object_unref(channel);
+
+	channel = next_channel;
+      }
+
+      if(next_pad != NULL){
+	g_object_unref(next_pad);
       }
     }
 
@@ -944,6 +959,14 @@ ags_live_dssi_bridge_resize_audio_channels(AgsMachine *machine,
 					     0);
     }
   }
+
+  if(start_output != NULL){
+    g_object_unref(start_output);
+  }
+
+  if(start_input != NULL){
+    g_object_unref(start_input);
+  }
 }
 
 void
@@ -954,8 +977,8 @@ ags_live_dssi_bridge_resize_pads(AgsMachine *machine, GType type,
   AgsLiveDssiBridge *live_dssi_bridge;
 
   AgsAudio *audio;
-  AgsChannel *output, *input;
-  AgsChannel *channel;
+  AgsChannel *start_output, *start_input;
+  AgsChannel *channel, *next_channel, *nth_channel;
   AgsRecycling *first_recycling;
   AgsAudioSignal *audio_signal;
   
@@ -970,23 +993,20 @@ ags_live_dssi_bridge_resize_pads(AgsMachine *machine, GType type,
 
   /* get some fields */
   g_object_get(audio,
-	       "output", &output,
-	       "input", &input,
+	       "output", &start_output,
+	       "input", &start_input,
 	       "audio-channels", &audio_channels,
 	       NULL);
-
-  if(output != NULL){
-    g_object_unref(output);
-  }
-
-  if(input != NULL){
-    g_object_unref(input);
-  }
 
   if(pads == pads_old ||
      audio_channels == 0){
     return;
   }
+
+  g_object_get(audio,
+	       "output", &start_output,
+	       "input", &start_input,
+	       NULL);
 
   if(pads_old < pads){
     grow = TRUE;
@@ -997,9 +1017,13 @@ ags_live_dssi_bridge_resize_pads(AgsMachine *machine, GType type,
   if(g_type_is_a(type, AGS_TYPE_INPUT)){
     if(grow){
       /* AgsInput */
-      channel = ags_channel_pad_nth(input,
-				    pads_old);
+      nth_channel = ags_channel_pad_nth(start_input,
+					pads_old);
 
+      channel = nth_channel;
+
+      next_channel = NULL;
+      
       while(channel != NULL){
 	/* get some fields */
 	g_object_get(channel,
@@ -1022,13 +1046,15 @@ ags_live_dssi_bridge_resize_pads(AgsMachine *machine, GType type,
 	g_object_unref(first_recycling);
 
 	/* iterate */
-	g_object_get(channel,
-		     "next", &channel,
-		     NULL);
+	next_channel = ags_channel_next(channel);
 
-	if(channel != NULL){
-	  g_object_unref(channel);
-	}
+	g_object_unref(channel);
+
+	channel = next_channel;
+      }
+
+      if(next_channel != NULL){
+	g_object_unref(next_channel);
       }
 
       /* recall */
@@ -1043,9 +1069,15 @@ ags_live_dssi_bridge_resize_pads(AgsMachine *machine, GType type,
   }else{
     if(grow){
       /* AgsOutput */
-      channel = ags_channel_pad_nth(output,
-				    pads_old);
+      nth_channel = ags_channel_pad_nth(start_output,
+					pads_old);
 
+      g_object_unref(channel);
+
+      channel = nth_channel;
+
+      next_channel = NULL;
+      
       while(channel != NULL){
 	ags_channel_set_ability_flags(channel, (AGS_SOUND_ABILITY_NOTATION));
 
@@ -1070,13 +1102,15 @@ ags_live_dssi_bridge_resize_pads(AgsMachine *machine, GType type,
 	g_object_unref(first_recycling);
 
 	/* iterate */
-	g_object_get(channel,
-		     "next", &channel,
-		     NULL);
+	next_channel = ags_channel_next(channel);
 
-	if(channel != NULL){
-	  g_object_unref(channel);
-	}
+	g_object_unref(channel);
+
+	channel = next_channel;
+      }
+
+      if(next_channel != NULL){
+	g_object_unref(next_channel);
       }
 
       /* recall */
@@ -1088,6 +1122,14 @@ ags_live_dssi_bridge_resize_pads(AgsMachine *machine, GType type,
     }else{
       live_dssi_bridge->mapped_output_pad = pads;
     }
+  }
+
+  if(start_output != NULL){
+    g_object_unref(start_output);
+  }
+
+  if(start_input != NULL){
+    g_object_unref(start_input);
   }
 }
 

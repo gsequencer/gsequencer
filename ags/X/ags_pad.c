@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -798,7 +798,7 @@ ags_pad_format_changed(AgsPad *pad,
 void
 ags_pad_real_set_channel(AgsPad *pad, AgsChannel *channel)
 {
-  AgsChannel *current;
+  AgsChannel *current, *next_current;
 
   GList *line, *line_start;
 
@@ -818,8 +818,15 @@ ags_pad_real_set_channel(AgsPad *pad, AgsChannel *channel)
 
   line_start = 
     line = gtk_container_get_children(GTK_CONTAINER(AGS_PAD(pad)->expander_set));
+
   current = channel;
 
+  if(current != NULL){
+    g_object_ref(current);
+  }
+
+  next_current = NULL;
+  
   /* set channel */
   while(line != NULL){
     g_object_set(G_OBJECT(line->data),
@@ -828,18 +835,20 @@ ags_pad_real_set_channel(AgsPad *pad, AgsChannel *channel)
 
     /* iterate */
     if(current != NULL){
-      g_object_get(current,
-		   "next", &current,
-		   NULL);
+      next_current = ags_channel_next(current);
 
-      if(current != NULL){
-	g_object_unref(current);
-      }
+      g_object_unref(current);
+
+      current = next_current;
     }
     
     line = line->next;
   }
 
+  if(next_current != NULL){
+    g_object_unref(next_current);
+  }
+  
   g_list_free(line_start);
 }
 
@@ -870,7 +879,7 @@ ags_pad_real_resize_lines(AgsPad *pad, GType line_type,
 {
   AgsLine *line;
 
-  AgsChannel *channel;
+  AgsChannel *channel, *next_channel;
 
   guint i, j;
 
@@ -883,6 +892,8 @@ ags_pad_real_resize_lines(AgsPad *pad, GType line_type,
     channel = ags_channel_nth(pad->channel,
 			      audio_channels_old);
 
+    next_channel = NULL;
+    
     /* create AgsLine */
     for(i = audio_channels_old; i < audio_channels;){
       for(j = audio_channels_old % pad->cols; j < pad->cols && i < audio_channels; j++, i++){
@@ -903,15 +914,17 @@ ags_pad_real_resize_lines(AgsPad *pad, GType line_type,
 	
 	/* iterate */
 	if(channel != NULL){
-	  g_object_get(channel,
-		       "next", &channel,
-		       NULL);
+	  next_channel = ags_channel_next(channel);
 
-	  if(channel != NULL){
-	    g_object_unref(channel);
-	  }
+	  g_object_unref(channel);
+
+	  channel = next_channel;
 	}
       }
+    }
+
+    if(next_channel != NULL){
+      g_object_unref(next_channel);
     }
   }else if(audio_channels < audio_channels_old){
     GList *list, *list_start;
@@ -1062,7 +1075,7 @@ ags_pad_play(AgsPad *pad)
   AgsWindow *window;
   AgsMachine *machine;
 
-  AgsChannel *channel;
+  AgsChannel *channel, *next_channel, *next_pad;
 
   AgsStartSoundcard *start_soundcard;
   AgsStartChannel *start_channel;
@@ -1104,20 +1117,16 @@ ags_pad_play(AgsPad *pad)
   start_task = NULL;
 
   play_all = gtk_toggle_button_get_active(pad->group);
-
-  channel = pad->channel;
-
+  
   if(gtk_toggle_button_get_active(pad->play)){
     if(play_all){
-      AgsChannel *next_pad;
+      channel = pad->channel;
 
-      g_object_get(channel,
-		   "next-pad", &next_pad,
-		   NULL);
-
-      if(next_pad != NULL){
-	g_object_unref(next_pad);
+      if(channel != NULL){
+	g_object_ref(channel);
       }
+
+      next_pad = ags_channel_next_pad(channel);
 
       while(channel != next_pad){
 	/* start channel for playback */
@@ -1130,19 +1139,28 @@ ags_pad_play(AgsPad *pad)
 				    start_channel);
 
 	/* iterate */
-	g_object_get(channel,
-		     "next", &channel,
-		     NULL);
+	next_channel = ags_channel_next(channel);
 
-	if(channel != NULL){
-	  g_object_unref(channel);
-	}
+	g_object_unref(channel);
+
+	channel = next_channel;
       }
+
+      /* unref */
+      if(next_pad != NULL){
+	g_object_unref(next_pad);
+      }
+      
+      if(next_channel != NULL){
+	g_object_unref(next_channel);
+      }      
     }else{
       GList *list;
 
       list = gtk_container_get_children(GTK_CONTAINER(pad->expander_set));
 
+      channel = pad->channel;
+      
       /* start channel for playback */
       start_channel = ags_start_channel_new(channel,
 					    AGS_SOUND_SCOPE_PLAYBACK);
@@ -1173,18 +1191,14 @@ ags_pad_play(AgsPad *pad)
     
     AgsCancelChannel *cancel_channel;
 
-    channel = pad->channel;
-
     if(play_all){
-      AgsChannel *next_pad;
+      channel = pad->channel;
 
-      g_object_get(channel,
-		   "next-pad", &next_pad,
-		   NULL);
-
-      if(next_pad != NULL){
-	g_object_unref(next_pad);
+      if(channel != NULL){
+	g_object_ref(channel);
       }
+
+      next_pad = ags_channel_next_pad(channel);
 
       /* cancel request */
       while(channel != next_pad){
@@ -1206,14 +1220,21 @@ ags_pad_play(AgsPad *pad)
 	g_object_unref(playback);
 	
 	/* iterate */
-	g_object_get(channel,
-		     "next", &channel,
-		     NULL);
+	next_channel = ags_channel_next(channel);
 
-	if(channel != NULL){
-	  g_object_unref(channel);
-	}
+	g_object_unref(channel);
+
+	channel = next_channel;
       }
+
+      /* unref */
+      if(next_pad != NULL){
+	g_object_unref(next_pad);
+      }
+      
+      if(next_channel != NULL){
+	g_object_unref(next_channel);
+      }      
     }else{
       AgsLine *line;
       

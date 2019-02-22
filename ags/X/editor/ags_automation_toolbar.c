@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -489,7 +489,8 @@ ags_automation_toolbar_load_port(AgsAutomationToolbar *automation_toolbar)
   GtkListStore *list_store;
   GtkTreeIter iter;
 
-  AgsChannel *channel;
+  AgsChannel *start_channel;
+  AgsChannel *channel, *next_channel;
   
   GList *start_port, *port;
 
@@ -576,12 +577,13 @@ ags_automation_toolbar_load_port(AgsAutomationToolbar *automation_toolbar)
   
   /* output */
   g_object_get(machine->audio,
-	       "output", &channel,
+	       "output", &start_channel,
 	       NULL);
 
-  if(channel != NULL){
-    g_object_unref(channel);
-  }
+  channel = start_channel;
+  g_object_ref(channel);
+
+  next_channel = NULL;
   
   while(channel != NULL){
     /* output */
@@ -639,23 +641,31 @@ ags_automation_toolbar_load_port(AgsAutomationToolbar *automation_toolbar)
     g_list_free(start_port);
     
     /* iterate */
-    g_object_get(channel,
-		 "next", &channel,
-		 NULL);
+    next_channel = ags_channel_next(channel);
 
-    if(channel != NULL){
-      g_object_unref(channel);
-    }
+    g_object_unref(channel);
+
+    channel = next_channel;
+  }
+
+  /* unref */
+  if(start_channel != NULL){
+    g_object_unref(start_channel);
+  }
+
+  if(next_channel != NULL){
+    g_object_unref(next_channel);
   }
   
   /* input */
   g_object_get(machine->audio,
-	       "input", &channel,
+	       "input", &start_channel,
 	       NULL);
 
-  if(channel != NULL){
-    g_object_unref(channel);
-  }
+  channel = start_channel;
+  g_object_ref(channel);
+
+  next_channel = NULL;
 
   while(channel != NULL){
     /* input */
@@ -713,13 +723,20 @@ ags_automation_toolbar_load_port(AgsAutomationToolbar *automation_toolbar)
     g_list_free(start_port);
     
     /* iterate */
-    g_object_get(channel,
-		 "next", &channel,
-		 NULL);
+    next_channel = ags_channel_next(channel);
 
-    if(channel != NULL){
-      g_object_unref(channel);
-    }
+    g_object_unref(channel);
+
+    channel = next_channel;
+  }
+
+  /* unref */
+  if(start_channel != NULL){
+    g_object_unref(start_channel);
+  }
+
+  if(next_channel != NULL){
+    g_object_unref(next_channel);
   }
   
   g_strfreev(collected_specifier);
@@ -755,7 +772,8 @@ ags_automation_toolbar_apply_port(AgsAutomationToolbar *automation_toolbar,
   GtkTreeModel *model;
   GtkTreeIter iter;
 
-  AgsChannel *channel;
+  AgsChannel *start_channel;
+  AgsChannel *channel, *next_channel;
 
   GList *start_automation, *automation;
   GList *start_port, *port;
@@ -819,13 +837,14 @@ ags_automation_toolbar_apply_port(AgsAutomationToolbar *automation_toolbar,
       scope = AGS_TYPE_OUTPUT;
 
       g_object_get(machine->audio,
-		   "output", &channel,
+		   "output", &start_channel,
 		   NULL);
 
-      if(channel != NULL){
-	g_object_unref(channel);
-      }
+      channel = start_channel;
+      g_object_ref(channel);
 
+      next_channel = NULL;
+      
       start_port = NULL;
       
       while(channel != NULL){
@@ -851,25 +870,33 @@ ags_automation_toolbar_apply_port(AgsAutomationToolbar *automation_toolbar,
 	}
 
 	/* iterate */
-	g_object_get(channel,
-		     "next", &channel,
-		     NULL);
+	next_channel = ags_channel_next(channel);
 
-	if(channel != NULL){
-	  g_object_unref(channel);
-	}
+	g_object_unref(channel);
+
+	channel = next_channel;
       }
+
+      /* unref */
+      if(start_channel != NULL){
+	g_object_unref(start_channel);
+      }
+
+      if(next_channel != NULL){
+	g_object_unref(next_channel);
+      }      
     }else if(!g_ascii_strcasecmp("input",
 				 str)){
       scope = AGS_TYPE_INPUT;
 
       g_object_get(machine->audio,
-		   "input", &channel,
+		   "input", &start_channel,
 		   NULL);
 
-      if(channel != NULL){
-	g_object_unref(channel);
-      }
+      channel = start_channel;
+      g_object_ref(channel);
+
+      next_channel = NULL;
 
       start_port = NULL;
       
@@ -896,13 +923,20 @@ ags_automation_toolbar_apply_port(AgsAutomationToolbar *automation_toolbar,
 	}
 
 	/* iterate */
-	g_object_get(channel,
-		     "next", &channel,
-		     NULL);
+	next_channel = ags_channel_next(channel);
 
-	if(channel != NULL){
-	  g_object_unref(channel);
-	}
+	g_object_unref(channel);
+
+	channel = next_channel;
+      }
+
+      /* unref */
+      if(start_channel != NULL){
+	g_object_unref(start_channel);
+      }
+
+      if(next_channel != NULL){
+	g_object_unref(next_channel);
       }
     }
 

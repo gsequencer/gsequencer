@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -819,7 +819,8 @@ ags_machine_set_property(GObject *gobject,
 	machine->audio = audio;
 
 	if(reset){
-	  AgsChannel *input, *output;
+	  AgsChannel *start_input, *start_output;
+	  AgsChannel *input, *next_pad_input, *output, *next_pad_output;
 	  
 	  GList *start_pad, *pad;
 	  GList *start_line, *line;
@@ -832,13 +833,19 @@ ags_machine_set_property(GObject *gobject,
 		       "audio-channels", &audio_channels,
 		       "output-pads", &output_pads,
 		       "input-pads", &input_pads,
-		       "output", &output,
-		       "input", &input,
+		       "output", &start_output,
+		       "input", &start_input,
 		       NULL);
-	  g_object_unref(output);
-	  g_object_unref(input);
 
 	  /* set channel and resize for AgsOutput */
+	  output = start_output;
+
+	  if(output != NULL){
+	    g_object_ref(output);
+	  }
+
+	  next_pad_output = NULL;
+	  
 	  if(machine->output_pad_type != G_TYPE_NONE){	    
 	    pad =
 	      start_pad = gtk_container_get_children(machine->output);
@@ -858,13 +865,11 @@ ags_machine_set_property(GObject *gobject,
 	      g_list_free(start_line);
 
 	      /* iterate */
-	      g_object_get(output,
-			   "next-pad", &output,
-			   NULL);
+	      next_pad_output = ags_channel_next_pad(output);
 
-	      if(output != NULL){
-		g_object_unref(output);
-	      }
+	      g_object_unref(output);
+
+	      output = next_pad_output;
 	      
 	      pad = pad->next;
 	      i++;
@@ -903,7 +908,23 @@ ags_machine_set_property(GObject *gobject,
 	    }
 	  }
 
+	  if(start_output != NULL){
+	    g_object_unref(start_output);
+	  }
+
+	  if(next_pad_output != NULL){
+	    g_object_unref(next_pad_output);
+	  }
+	  
 	  /* set channel and resize for AgsOutput */
+	  input = start_input;
+
+	  if(input != NULL){
+	    g_object_ref(input);
+	  }
+
+	  next_pad_input = NULL;
+
 	  if(machine->input_pad_type != G_TYPE_NONE){
 	    pad =
 	      start_pad = gtk_container_get_children(machine->input);
@@ -922,13 +943,11 @@ ags_machine_set_property(GObject *gobject,
 	      g_list_free(line);
 
 	      /* iterate */
-	      g_object_get(input,
-			   "next-pad", &input,
-			   NULL);
+	      next_pad_output = ags_channel_next_pad(output);
 
-	      if(input != NULL){
-		g_object_unref(input);
-	      }
+	      g_object_unref(output);
+
+	      output = next_pad_output;
 	      
 	      pad = pad->next;
 	      i++;
@@ -965,12 +984,20 @@ ags_machine_set_property(GObject *gobject,
 	      g_list_free(start_pad);
 	    }
 	  }
+
+	  if(start_input != NULL){
+	    g_object_unref(start_input);
+	  }
+
+	  if(next_pad_input != NULL){
+	    g_object_unref(next_pad_input);
+	  }
 	}else{
 	  AgsPad *pad;
 
-	  AgsChannel *input, *output;
-	  AgsChannel *channel;
-	  
+	  AgsChannel *start_input, *start_output;
+	  AgsChannel *input, *next_pad_input, *output, *next_pad_output;
+
 	  guint audio_channels;
 	  guint output_pads, input_pads;
 	  guint i;
@@ -979,55 +1006,80 @@ ags_machine_set_property(GObject *gobject,
 		       "audio-channels", &audio_channels,
 		       "output-pads", &output_pads,
 		       "input-pads", &input_pads,
-		       "output", &output,
-		       "input", &input,
+		       "output", &start_output,
+		       "input", &start_input,
 		       NULL);
-	  g_object_unref(output);
-	  g_object_unref(input);
 
 	  /* add pad */
-	  if(machine->output_pad_type != G_TYPE_NONE){
-	    channel = output;
+	  output = start_output;
 
+	  if(output != NULL){
+	    g_object_ref(output);
+	  }
+
+	  next_pad_output = NULL;
+
+	  if(machine->output_pad_type != G_TYPE_NONE){
 	    for(i = 0; i < output_pads; i++){
 	      pad = g_object_new(machine->output_pad_type,
-				 "channel", channel,
+				 "channel", output,
 				 NULL);
 	      gtk_container_add(machine->output,
 				GTK_WIDGET(pad));	  
 	      ags_pad_resize_lines(pad, machine->output_line_type,
 				   audio_channels, 0);
 
-	      g_object_get(channel,
-			   "next-pad", &channel,
-			   NULL);
+	      /* iterate */
+	      next_pad_output = ags_channel_next_pad(output);
 
-	      if(channel != NULL){
-		g_object_unref(channel);
-	      }
+	      g_object_unref(output);
+
+	      output = next_pad_output;
 	    }
 	  }
 
-	  if(machine->input_pad_type != G_TYPE_NONE){
-	    channel = input;
+	  if(start_output != NULL){
+	    g_object_unref(start_output);
+	  }
 
+	  if(next_pad_output != NULL){
+	    g_object_unref(next_pad_output);
+	  }
+
+	  /* add pad */
+	  input = start_input;
+
+	  if(input != NULL){
+	    g_object_ref(input);
+	  }
+
+	  next_pad_input = NULL;
+
+	  if(machine->input_pad_type != G_TYPE_NONE){
 	    for(i = 0; i < input_pads; i++){
 	      pad = g_object_new(machine->input_pad_type,
-				 "channel", channel,
+				 "channel", input,
 				 NULL);
-	      gtk_container_add(machine->output,
+	      gtk_container_add(machine->input,
 				GTK_WIDGET(pad));
 	      ags_pad_resize_lines(pad, machine->input_line_type,
 				   audio_channels, 0);
 
-	      g_object_get(channel,
-			   "next-pad", &channel,
-			   NULL);
+	      /* iterate */
+	      next_pad_input = ags_channel_next_pad(input);
 
-	      if(channel != NULL){
-		g_object_unref(channel);
-	      }
+	      g_object_unref(input);
+
+	      input = next_pad_input;
 	    }
+	  }
+
+	  if(start_input != NULL){
+	    g_object_unref(start_input);
+	  }
+
+	  if(next_pad_input != NULL){
+	    g_object_unref(next_pad_input);
 	  }
 	}
       }else{
@@ -1505,7 +1557,8 @@ ags_machine_real_resize_audio_channels(AgsMachine *machine,
 				       guint audio_channels, guint audio_channels_old)
 {
   AgsAudio *audio;
-  AgsChannel *channel;
+  AgsChannel *start_channel;
+  AgsChannel *channel, *next_pad_channel;
 
   GList *list_output_pad, *list_output_pad_start;
   GList *list_input_pad, *list_input_pad_start;
@@ -1547,10 +1600,17 @@ ags_machine_real_resize_audio_channels(AgsMachine *machine,
     if(machine->input != NULL){
       /* get input */
       g_object_get(audio,
-		   "input", &channel,
+		   "input", &start_channel,
 		   NULL);
-      g_object_unref(channel);
 
+      channel = start_channel;
+
+      if(channel != NULL){
+	g_object_ref(channel);
+      }
+
+      next_pad_channel = NULL;
+      
       for(i = 0; i < input_pads; i++){
 	/* create AgsPad's if necessary or resize */
 	if(audio_channels_old == 0){
@@ -1572,17 +1632,23 @@ ags_machine_real_resize_audio_channels(AgsMachine *machine,
 	}
 
 	/* iterate */
-	g_object_get(channel,
-		     "next-pad", &channel,
-		     NULL);
+	next_pad_channel = ags_channel_next_pad(channel);
 
-	if(channel != NULL){
-	  g_object_unref(channel);
-	}
+	g_object_unref(channel);
+
+	channel = next_pad_channel;
 	
 	if(audio_channels_old != 0){
 	  list_input_pad = list_input_pad->next;
 	}
+      }
+
+      if(start_channel != NULL){
+	g_object_unref(start_channel);
+      }
+
+      if(next_pad_channel != NULL){
+	g_object_unref(next_pad_channel);
       }
     }
 
@@ -1590,10 +1656,16 @@ ags_machine_real_resize_audio_channels(AgsMachine *machine,
     if(machine->output != NULL){
       /* get output */
       g_object_get(audio,
-		   "output", &channel,
+		   "output", &start_channel,
 		   NULL);
 
-      g_object_unref(channel);
+      channel = start_channel;
+
+      if(channel != NULL){
+	g_object_ref(channel);
+      }
+
+      next_pad_channel = NULL;
 
       for(i = 0; i < output_pads; i++){
 	/* create AgsPad's if necessary or resize */
@@ -1615,13 +1687,11 @@ ags_machine_real_resize_audio_channels(AgsMachine *machine,
 	}
 
 	/* iterate */
-	g_object_get(channel,
-		     "next-pad", &channel,
-		     NULL);
+	next_pad_channel = ags_channel_next_pad(channel);
 
-	if(channel != NULL){
-	  g_object_unref(channel);
-	}
+	g_object_unref(channel);
+
+	channel = next_pad_channel;
 
 	if(audio_channels_old != 0){
 	  list_output_pad = list_output_pad->next;
@@ -1816,8 +1886,8 @@ ags_machine_real_resize_pads(AgsMachine *machine, GType channel_type,
   AgsPad *pad;
 
   AgsAudio *audio;
-  AgsChannel *channel;
-  AgsChannel *input, *output;
+  AgsChannel *start_input, *start_output;
+  AgsChannel *input, *next_pad_input, *output, *next_pad_output;
   
   GList *list_pad_start, *list_pad;
 
@@ -1829,23 +1899,28 @@ ags_machine_real_resize_pads(AgsMachine *machine, GType channel_type,
   if(pads_old < pads){
     g_object_get(audio,
 		 "audio-channels", &audio_channels,
-		 "output", &output,
-		 "input", &input,
+		 "output", &start_output,
+		 "input", &start_input,
 		 NULL);
 
-    g_object_unref(output);
-    g_object_unref(input);
-
     /* grow input */
+    input = start_input;
+
+    if(input != NULL){
+      g_object_ref(input);
+    }
+
+    next_pad_input = NULL;
+
     if(machine->input != NULL){
       if(channel_type == AGS_TYPE_INPUT){
-	channel = ags_channel_nth(input,
-				  pads_old * audio_channels);
+	input = ags_channel_nth(start_input,
+				pads_old * audio_channels);
       
 	for(i = pads_old; i < pads; i++){
 	  /* instantiate pad */
 	  pad = g_object_new(machine->input_pad_type,
-			     "channel", channel,
+			     "channel", input,
 			     NULL);
 	  gtk_box_pack_start((GtkBox *) machine->input,
 			     (GtkWidget *) pad, FALSE, FALSE, 0);
@@ -1855,13 +1930,11 @@ ags_machine_real_resize_pads(AgsMachine *machine, GType channel_type,
 			       audio_channels, 0);
 	  
 	  /* iterate */
-	  g_object_get(channel,
-		       "next-pad", &channel,
-		       NULL);	
+	  next_pad_input = ags_channel_next_pad(input);
 
-	  if(channel != NULL){
-	    g_object_unref(channel);
-	  }
+	  g_object_unref(input);
+
+	  input = next_pad_input;
 	}
 
 	/* show all */
@@ -1879,17 +1952,33 @@ ags_machine_real_resize_pads(AgsMachine *machine, GType channel_type,
 	g_list_free(list_pad_start);
       }
     }
+
+    if(start_input != NULL){
+      g_object_unref(start_input);
+    }
+
+    if(next_pad_input != NULL){
+      g_object_unref(next_pad_input);
+    }
     
     /* grow output */
+    output = start_output;
+
+    if(output != NULL){
+      g_object_ref(output);
+    }
+
+    next_pad_output = NULL;
+
     if(machine->output != NULL){
       if(channel_type == AGS_TYPE_OUTPUT){
-	channel = ags_channel_nth(output,
-				  pads_old * audio_channels);
+	output = ags_channel_nth(start_output,
+				 pads_old * audio_channels);
     
 	for(i = pads_old; i < pads; i++){
 	  /* instantiate pad */
 	  pad = g_object_new(machine->output_pad_type,
-			     "channel", channel,
+			     "channel", output,
 			     NULL);
 	  gtk_box_pack_start((GtkBox *) machine->output, (GtkWidget *) pad, FALSE, FALSE, 0);
 
@@ -1898,13 +1987,11 @@ ags_machine_real_resize_pads(AgsMachine *machine, GType channel_type,
 			       audio_channels, 0);
 
 	  /* iterate */
-	  g_object_get(channel,
-		       "next-pad", &channel,
-		       NULL);
+	  next_pad_output = ags_channel_next_pad(output);
 
-	  if(channel != NULL){
-	    g_object_unref(channel);
-	  }
+	  g_object_unref(output);
+
+	  output = next_pad_output;
 	}
 
 	/* show all */
@@ -1921,6 +2008,14 @@ ags_machine_real_resize_pads(AgsMachine *machine, GType channel_type,
 
 	g_list_free(list_pad_start);
       }
+    }
+
+    if(start_output != NULL){
+      g_object_unref(start_output);
+    }
+
+    if(next_pad_output != NULL){
+      g_object_unref(next_pad_output);
     }
   }else if(pads_old > pads){
     GList *list, *list_start;
@@ -2598,7 +2693,8 @@ void
 ags_machine_copy_pattern(AgsMachine *machine)
 {
   AgsAudio *audio;
-  AgsChannel *channel;
+  AgsChannel *start_channel;
+  AgsChannel *channel, *next_channel;
   
   xmlDoc *clipboard;
   xmlNode *audio_node, *notation_list_node, *notation_node;
@@ -2610,9 +2706,10 @@ ags_machine_copy_pattern(AgsMachine *machine)
   int size;
   gint i;
 
-  auto xmlNode* ags_machine_copy_pattern_to_notation(AgsChannel *current);
+  auto xmlNode* ags_machine_copy_pattern_to_notation(AgsChannel *start_current);
 
-  xmlNode* ags_machine_copy_pattern_to_notation(AgsChannel *current){
+  xmlNode* ags_machine_copy_pattern_to_notation(AgsChannel *start_current){
+    AgsChannel *current, *next_current;    
     AgsPattern *pattern;
 
     xmlNode *notation_node, *current_note;
@@ -2621,6 +2718,14 @@ ags_machine_copy_pattern(AgsMachine *machine)
     
     guint x_boundary, y_boundary;
     guint bank_0, bank_1, k;
+
+    current = start_current;
+
+    if(current != NULL){
+      g_object_ref(current);
+    }
+
+    next_current = NULL;
     
     /* create root node */
     notation_node = xmlNewNode(NULL, BAD_CAST "notation");
@@ -2705,13 +2810,11 @@ ags_machine_copy_pattern(AgsMachine *machine)
       }
 
       /* iterate */
-      g_object_get(current,
-		   "next", &current,
-		   NULL);
- 
-      if(current != NULL){
-	g_object_unref(current);
-      }
+      next_current = ags_channel_next(current);
+
+      g_object_unref(current);
+
+      current = next_current;
     }
 
     xmlNewProp(notation_node, BAD_CAST "x_boundary", BAD_CAST g_strdup_printf("%u", x_boundary));
@@ -2739,11 +2842,17 @@ ags_machine_copy_pattern(AgsMachine *machine)
   g_object_get(audio,
 	       "audio-channels", &audio_channels,
 	       "input-pads", &input_pads,
-	       "input", &channel,
+	       "input", &start_channel,
 	       NULL);
 
-  g_object_unref(channel);
+  channel = start_channel;
 
+  if(channel != NULL){
+    g_object_ref(channel);
+  }
+
+  next_channel = NULL;
+  
   for(i = 0; i < audio_channels; i++){
     /* do it so */
     notation_node = ags_machine_copy_pattern_to_notation(channel);
@@ -2751,13 +2860,11 @@ ags_machine_copy_pattern(AgsMachine *machine)
 		notation_node);
 
     /* iterate */
-    g_object_get(channel,
-		 "next", &channel,
-		 NULL);
+    next_channel = ags_channel_next(channel);
 
-    if(channel != NULL){
-      g_object_unref(channel);
-    }
+    g_object_unref(channel);
+
+    channel = next_channel;
   }
   
   /* write to clipboard */
@@ -2767,6 +2874,14 @@ ags_machine_copy_pattern(AgsMachine *machine)
   gtk_clipboard_store(gtk_clipboard_get(GDK_SELECTION_CLIPBOARD));
   
   xmlFreeDoc(clipboard);
+
+  if(start_channel != NULL){
+    g_object_unref(start_channel);
+  }
+
+  if(next_channel != NULL){
+    g_object_unref(next_channel);
+  }
 }
 
 /**
@@ -2948,7 +3063,8 @@ ags_machine_generic_output_message_monitor_timeout(AgsMachine *machine)
 			 machine) != NULL){
     AgsMessageDelivery *message_delivery;
 
-    AgsChannel *output;
+    AgsChannel *start_output;
+    AgsChannel *output, *next_output;
     
     GList *message_start, *message;
     
@@ -2956,11 +3072,17 @@ ags_machine_generic_output_message_monitor_timeout(AgsMachine *machine)
     message_delivery = ags_message_delivery_get_instance();
 
     g_object_get(machine->audio,
-		 "output", &output,
+		 "output", &start_output,
 		 NULL);
 
-    g_object_unref(output);
+    output = start_output;
+    
+    if(output != NULL){
+      g_object_ref(output);
+    }
 
+    next_output = NULL;
+    
     while(output != NULL){
       message_start = 
 	message = ags_message_delivery_find_sender(message_delivery,
@@ -2977,14 +3099,21 @@ ags_machine_generic_output_message_monitor_timeout(AgsMachine *machine)
       
       g_list_free_full(message_start,
 		       (GDestroyNotify) ags_message_envelope_free);
-      
-      g_object_get(output,
-		   "next", &output,
-		   NULL);
 
-      if(output != NULL){
-	g_object_unref(output);
-      }
+      /* iterate */
+      next_output = ags_channel_next(start_output);
+
+      g_object_unref(output);
+
+      output = next_output;
+    }
+
+    if(start_output != NULL){
+      g_object_unref(start_output);
+    }
+    
+    if(next_output != NULL){
+      g_object_unref(next_output);
     }
     
     return(TRUE);
@@ -3010,18 +3139,25 @@ ags_machine_generic_input_message_monitor_timeout(AgsMachine *machine)
 			 machine) != NULL){
     AgsMessageDelivery *message_delivery;
 
-    AgsChannel *input;
-    
+    AgsChannel *start_output;
+    AgsChannel *output, *next_output;
+        
     GList *message_start, *message;
     
     /* retrieve message */
     message_delivery = ags_message_delivery_get_instance();
     
     g_object_get(machine->audio,
-		 "input", &input,
+		 "input", &start_input,
 		 NULL);
 
-    g_object_unref(input);
+    input = start_input;
+    
+    if(input != NULL){
+      g_object_ref(input);
+    }
+
+    next_input = NULL;
 
     while(input != NULL){
       message_start = 
@@ -3040,15 +3176,22 @@ ags_machine_generic_input_message_monitor_timeout(AgsMachine *machine)
       g_list_free_full(message_start,
 		       (GDestroyNotify) ags_message_envelope_free);
       
-      g_object_get(input,
-		   "next", &input,
-		   NULL);
+      /* iterate */
+      next_input = ags_channel_next(start_input);
 
-      if(input != NULL){
-	g_object_unref(input);
-      }
+      g_object_unref(input);
+
+      input = next_input;
     }
     
+    if(start_input != NULL){
+      g_object_unref(start_input);
+    }
+    
+    if(next_input != NULL){
+      g_object_unref(next_input);
+    }
+
     return(TRUE);
   }else{
     return(FALSE);

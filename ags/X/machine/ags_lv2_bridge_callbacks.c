@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -377,7 +377,8 @@ ags_lv2_bridge_program_changed_callback(GtkComboBox *combo_box, AgsLv2Bridge *lv
 
   if(gtk_combo_box_get_active_iter(combo_box,
 				   &iter)){
-    AgsChannel *channel;
+    AgsChannel *start_input;
+    AgsChannel *channel, *next_channel;
 
     AgsLv2Plugin *lv2_plugin;
     
@@ -416,12 +417,16 @@ ags_lv2_bridge_program_changed_callback(GtkComboBox *combo_box, AgsLv2Bridge *lv
 
     /* update ports */
     g_object_get(AGS_MACHINE(lv2_bridge)->audio,
-		 "input", &channel,
+		 "input", &start_input,
 		 NULL);
 
+    channel = start_input;
+    
     if(channel != NULL){
-      g_object_unref(channel);
+      g_object_ref(channel);
     }
+
+    next_channel = NULL;
     
     g_object_get(lv2_plugin,
 		 "plugin-port", &start_plugin_port,
@@ -476,9 +481,6 @@ ags_lv2_bridge_program_changed_callback(GtkComboBox *combo_box, AgsLv2Bridge *lv
 	  plugin_port = plugin_port->next;
 	}
 
-	g_list_free_full(start_plugin_port,
-			 g_object_unref);
-
 	/* iterate */
 	recall = recall->next;
       }
@@ -487,15 +489,18 @@ ags_lv2_bridge_program_changed_callback(GtkComboBox *combo_box, AgsLv2Bridge *lv
 		       g_object_unref);
       
       /* iterate */
-      g_object_get(channel,
-		   "next", &channel,
-		   NULL);
+      next_channel = ags_channel_next(channel);
 
-      if(channel != NULL){
-	g_object_unref(channel);
-      }
+      g_object_unref(channel);
+
+      channel = next_channel;
     }
 
+    /* unref */
+    if(next_channel != NULL){
+      g_object_unref(next_channel);
+    }
+    
     /* update UI */
     bulk_member_start = gtk_container_get_children((GtkContainer *) AGS_EFFECT_BULK(AGS_EFFECT_BRIDGE(AGS_MACHINE(lv2_bridge)->bridge)->bulk_input)->table);
 
@@ -559,8 +564,14 @@ ags_lv2_bridge_program_changed_callback(GtkComboBox *combo_box, AgsLv2Bridge *lv
       /* iterate */
       plugin_port = plugin_port->next;
     }
-    
-    g_list_free(start_plugin_port);      
+
+    /* unref */
+    if(start_input != NULL){
+      g_object_unref(start_input);
+    }
+
+    g_list_free_full(start_plugin_port,
+		     g_object_unref);
     
     g_list_free(bulk_member_start);
   }

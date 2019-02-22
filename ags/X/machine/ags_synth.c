@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -542,8 +542,8 @@ ags_synth_update(AgsSynth *synth)
   AgsOscillator *oscillator;
   
   AgsAudio *audio;
-  AgsChannel *channel;
-  AgsChannel *input;
+  AgsChannel *start_output, *start_input;
+  AgsChannel *channel, *next_channel;
   AgsRecycling *first_recycling;
   
   AgsClearAudioSignal *clear_audio_signal;
@@ -582,15 +582,21 @@ ags_synth_update(AgsSynth *synth)
     input_pad = gtk_container_get_children((GtkContainer *) synth->input_pad);
 
   g_object_get(audio,
-	       "output", &channel,
+	       "output", &start_output,
+	       "input", &start_input,
 	       "output-lines", &output_lines,
+	       "buffer-size", &buffer_size,
 	       NULL);
 
+  task = NULL;
+
+  channel = start_output;
+
   if(channel != NULL){
-    g_object_unref(channel);
+    g_object_ref(channel);
   }
 
-  task = NULL;
+  next_channel = NULL;
   
   while(channel != NULL){
     AgsAudioSignal *template;
@@ -618,30 +624,18 @@ ags_synth_update(AgsSynth *synth)
     g_object_unref(first_recycling);	
     
     /* iterate */
-    g_object_get(channel,
-		 "next", &channel,
-		 NULL);
+    next_channel = ags_channel_next(channel);
 
-    if(channel != NULL){
-      g_object_unref(channel);
-    }
+    g_object_unref(channel);
+
+    channel = next_channel;
+  }
+
+  if(next_channel != NULL){
+    g_object_unref(next_channel);
   }
   
-  /* write output */
-  g_object_get(audio,
-	       "output", &channel,
-	       "input", &input,
-	       "buffer-size", &buffer_size,
-	       NULL);
-
-  if(channel != NULL){
-    g_object_unref(channel);
-  }
-
-  if(input != NULL){
-    g_object_unref(input);
-  }
-
+  /* write output */  
   while(input_pad != NULL){
     AgsChannel *input;
 
@@ -657,10 +651,6 @@ ags_synth_update(AgsSynth *synth)
     g_object_get(AGS_LINE(input_line->data),
 		 "channel", &input,
 		 NULL);
-
-    if(input != NULL){
-      g_object_unref(input);
-    }
 
     g_object_get(input,
 		 "synth-generator", &start_synth_generator,
@@ -735,17 +725,20 @@ ags_synth_update(AgsSynth *synth)
 
     g_list_free_full(start_synth_generator,
 		     g_object_unref);
+
     
-    /* iterate */
-    input_pad = input_pad->next;
-
-    g_object_get(input,
-		 "next", &input,
-		 NULL);
-
+    /* unref */
     if(input != NULL){
       g_object_unref(input);
     }
+  }
+
+  if(start_output != NULL){
+    g_object_unref(start_output);
+  }
+
+  if(next_channel != NULL){
+    g_object_unref(next_channel);
   }
   
   g_list_free(input_pad_start);
