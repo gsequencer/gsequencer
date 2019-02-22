@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -533,6 +533,10 @@ ags_sound_resource_read_audio_signal(AgsSoundResource *sound_resource,
   }
 
   start_list = g_list_reverse(start_list);
+
+  g_list_foreach(start_list,
+		 (GFunc) g_object_ref,
+		 NULL);
   
   return(start_list);
 }
@@ -760,6 +764,10 @@ ags_sound_resource_read_wave(AgsSoundResource *sound_resource,
   if(data != NULL){
     free(data);
   }
+
+  g_list_foreach(start_list,
+		 (GFunc) g_object_ref,
+		 NULL);
   
   return(start_list);
 }

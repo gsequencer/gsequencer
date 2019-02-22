@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -777,7 +777,8 @@ ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *delay_au
   /*  */
   if(current_bit){
     AgsChannel *link;
-    AgsRecycling *recycling, *last_recycling;
+    AgsRecycling *first_recycling, *last_recycling;
+    AgsRecycling *recycling, *next_recycling;
     AgsRecycling *end_recycling;
     AgsAudioSignal *audio_signal;
     AgsNote *note;
@@ -788,7 +789,7 @@ ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *delay_au
     GList *preset_start, *preset;
 
     guint pad;
-    guint audio_channel;	  
+    guint audio_channel;
     guint note_offset;
     
     //    g_message("ags_copy_pattern_channel_run_sequencer_alloc_callback - playing channel: %u; playing pattern: %u",
@@ -815,26 +816,19 @@ ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *delay_au
     /* source fields */
     g_object_get(source,
 		 "link", &link,
-		 "first-recycling", &recycling,
+		 "first-recycling", &first_recycling,
 		 "last-recycling", &last_recycling,
 		 "pad", &pad,
 		 "audio-channel", &audio_channel,
 		 NULL);
 
-    g_object_unref(recycling);
+    recycling = first_recycling;
+    g_object_ref(recycling);
 
     end_recycling = NULL;
     
-    if(last_recycling != NULL){      
-      g_object_unref(last_recycling);
-      
-      g_object_get(last_recycling,
-		   "next", &end_recycling,
-		   NULL);
-
-      if(end_recycling != NULL){
-	g_object_unref(end_recycling);
-      }
+    if(last_recycling != NULL){
+      end_recycling = ags_recycling_next(last_recycling);
     }
 
     /* find preset scope envelope */
@@ -886,6 +880,8 @@ ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *delay_au
 		 NULL);
     
     /* create audio signals */
+    next_recycling = NULL;
+
     if(recycling != NULL){
       AgsRecallID *child_recall_id;
       
@@ -1051,13 +1047,13 @@ ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *delay_au
 	 * if you need a valid reference to audio_signal you have to g_object_ref(audio_signal)
 	 */
 	//	g_object_unref(audio_signal);
-	g_object_get(recycling,
-		     "next", &recycling,
-		     NULL);
 
-	if(recycling != NULL){
-	  g_object_unref(recycling);
-	}
+	/* iterate */
+	next_recycling = ags_recycling_next(recycling);
+
+	g_object_unref(recycling);
+
+	recycling = next_recycling;
       }
     }
     
@@ -1069,6 +1065,19 @@ ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *delay_au
 
     if(link != NULL){
       g_object_unref(link);
+    }
+
+    if(first_recycling != NULL){
+      g_object_unref(first_recycling);
+      g_object_unref(last_recycling);
+    }
+    
+    if(end_recycling != NULL){
+      g_object_unref(end_recycling);
+    }
+    
+    if(next_recycling != NULL){
+      g_object_unref(next_recycling);
     }
   }
 

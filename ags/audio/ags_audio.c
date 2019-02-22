@@ -10981,6 +10981,9 @@ ags_audio_real_check_scope(AgsAudio *audio, gint sound_scope)
 
   /* reverse recall id */
   recall_id = g_list_reverse(recall_id);
+  g_list_foreach(recall_id,
+		 (GFunc) g_object_ref,
+		 NULL);
   
   return(recall_id);
 }

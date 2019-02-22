@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -982,7 +982,8 @@ ags_osc_renew_controller_set_data_audio(AgsOscRenewController *osc_renew_control
 	   !strncmp(path + path_offset,
 		    "/AgsInput",
 		    9)){
-    AgsChannel *start_channel, *channel;
+    AgsChannel *start_channel;
+    AgsChannel *channel, *next_channel;
       
     regmatch_t match_arr[2];
 
@@ -1003,6 +1004,8 @@ ags_osc_renew_controller_set_data_audio(AgsOscRenewController *osc_renew_control
     static const size_t max_matches = 2;
     static const size_t index_max_matches = 1;
 
+    start_channel = NULL;
+
     if(!strncmp(path + path_offset,
 		"/AgsOutput",
 		10)){
@@ -1011,17 +1014,13 @@ ags_osc_renew_controller_set_data_audio(AgsOscRenewController *osc_renew_control
       g_object_get(audio,
 		   "output", &start_channel,
 		   NULL);
-      g_object_unref(start_channel);
     }else{
       path_offset += 9;
       
       g_object_get(audio,
 		   "input", &start_channel,
 		   NULL);
-      g_object_unref(start_channel);
     }
-
-    channel = start_channel;
     
     /* compile regex */
     pthread_mutex_lock(&regex_mutex);
@@ -1059,6 +1058,14 @@ ags_osc_renew_controller_set_data_audio(AgsOscRenewController *osc_renew_control
 								 message, message_size,
 								 type_tag,
 								 path, path_offset);
+
+      if(start_channel != NULL){
+	g_object_unref(start_channel);
+      }
+      
+      if(channel != NULL){
+	g_object_unref(channel);
+      }
     }else if(ags_regexec(&range_access_regex, path + path_offset, max_matches, match_arr, 0) == 0){
       gchar *endptr;
       
@@ -1078,8 +1085,10 @@ ags_osc_renew_controller_set_data_audio(AgsOscRenewController *osc_renew_control
 
       channel = ags_channel_nth(start_channel,
 				i_start);
+
+      next_channel = NULL;
       
-      for(i = i_start; i <= i_stop; i++){
+      for(i = i_start; i <= i_stop && channel != NULL; i++){
 	GList *retval;
 	
 	retval = ags_osc_renew_controller_set_data_channel(osc_renew_controller,
@@ -1095,14 +1104,21 @@ ags_osc_renew_controller_set_data_audio(AgsOscRenewController *osc_renew_control
 	}else{
 	  start_response = retval;
 	}
-	
-	g_object_get(channel,
-		     "next", &channel,
-		     NULL);
 
-	if(channel != NULL){
-	  g_object_unref(channel);
-	}
+	/* iterate */
+	next_channel = ags_channel_next(channel);
+
+	g_object_unref(channel);
+
+	channel = next_channel;
+      }
+
+      if(start_channel != NULL){
+	g_object_unref(start_channel);
+      }
+      
+      if(next_channel != NULL){
+	g_object_unref(next_channel);
       }
     }else if(ags_regexec(&voluntary_access_regex, path + path_offset, index_max_matches, match_arr, 0) == 0){
       path_offset += 3;
@@ -1116,6 +1132,8 @@ ags_osc_renew_controller_set_data_audio(AgsOscRenewController *osc_renew_control
 							   message, message_size,
 							   type_tag,
 							   path, path_offset);
+
+	g_object_unref(start_channel);
       }else{
 	osc_response = ags_osc_response_new();
 	start_response = g_list_prepend(start_response,
@@ -1131,7 +1149,7 @@ ags_osc_renew_controller_set_data_audio(AgsOscRenewController *osc_renew_control
     }else if(ags_regexec(&more_access_regex, path + path_offset, index_max_matches, match_arr, 0) == 0){
       path_offset += 3;
 
-      if(channel == NULL){
+      if(start_channel == NULL){
 	osc_response = ags_osc_response_new();
 	start_response = g_list_prepend(start_response,
 					osc_response);
@@ -1148,6 +1166,12 @@ ags_osc_renew_controller_set_data_audio(AgsOscRenewController *osc_renew_control
 	return(start_response);
       }
 
+      /* prepare */
+      channel = start_channel;
+      g_object_ref(channel);
+
+      next_channel = NULL;
+      
       while(channel != NULL){
 	GList *retval;
 	
@@ -1164,19 +1188,27 @@ ags_osc_renew_controller_set_data_audio(AgsOscRenewController *osc_renew_control
 	}else{
 	  start_response = retval;
 	}
-	
-	g_object_get(channel,
-		     "next", &channel,
-		     NULL);
 
-	if(channel != NULL){
-	  g_object_unref(channel);
-	}
+	/* iterate */
+	next_channel = ags_channel_next(channel);
+
+	g_object_unref(channel);
+
+	channel = next_channel;
+      }
+
+      /* unref */
+      if(start_channel != NULL){
+	g_object_unref(start_channel);
+      }
+
+      if(next_channel != NULL){
+	g_object_unref(next_channel);
       }
     }else if(ags_regexec(&wildcard_access_regex, path + path_offset, index_max_matches, match_arr, 0) == 0){
       path_offset += 3;
 
-      if(channel == NULL){
+      if(start_channel == NULL){
 	osc_response = ags_osc_response_new();
 	start_response = g_list_prepend(start_response,
 					osc_response);
@@ -1188,6 +1220,12 @@ ags_osc_renew_controller_set_data_audio(AgsOscRenewController *osc_renew_control
 
 	return(start_response);
       }
+
+      /* prepare */
+      channel = start_channel;
+      g_object_ref(channel);
+
+      next_channel = NULL;
       
       while(channel != NULL){
 	GList *retval;
@@ -1205,14 +1243,22 @@ ags_osc_renew_controller_set_data_audio(AgsOscRenewController *osc_renew_control
 	}else{
 	  start_response = retval;
 	}
-	
-	g_object_get(channel,
-		     "next", &channel,
-		     NULL);
 
-	if(channel != NULL){
-	  g_object_unref(channel);
-	}
+	/* iterate */
+	next_channel = ags_channel_next(channel);
+
+	g_object_unref(channel);
+
+	channel = next_channel;
+      }
+
+      /* unref */
+      if(start_channel != NULL){
+	g_object_unref(start_channel);
+      }
+
+      if(next_channel != NULL){
+	g_object_unref(next_channel);
       }
     }else{
       osc_response = ags_osc_response_new();
@@ -1226,7 +1272,12 @@ ags_osc_renew_controller_set_data_audio(AgsOscRenewController *osc_renew_control
 		   "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_SERVER_FAILURE,
 		   NULL);
 
+      /* unref */
       g_object_unref(task_thread);
+
+      if(start_channel != NULL){
+	g_object_unref(start_channel);
+      }
 
       return(start_response);
     }

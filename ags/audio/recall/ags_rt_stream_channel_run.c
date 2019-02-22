@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -117,7 +117,8 @@ ags_rt_stream_channel_run_check_rt_data(AgsRecall *recall)
 {
   AgsChannel *source;
   AgsRecycling *first_recycling, *last_recycling;
-  AgsRecycling *recycling, *end_recycling;
+  AgsRecycling *end_recycling;
+  AgsRecycling *recycling, *next_recycling;
   AgsRtStreamChannelRun *rt_stream_channel_run;
   AgsRecallID *recall_id;
   
@@ -136,23 +137,15 @@ ags_rt_stream_channel_run_check_rt_data(AgsRecall *recall)
 	       "first-recycling", &first_recycling,
 	       "last-recycling", &last_recycling,
 	       NULL);
-
-  if(first_recycling != NULL){
-    g_object_unref(first_recycling);
-    g_object_unref(last_recycling);
-  }
   
   /* get end */
-  g_object_get(last_recycling,
-	       "next", &end_recycling,
-	       NULL);
-
-  if(end_recycling != NULL){
-    g_object_unref(end_recycling);
-  }
+  end_recycling = ags_recycling_next(last_recycling);
   
   /* */
   recycling = first_recycling;
+  g_object_ref(recycling);
+
+  next_recycling = NULL;
   
   while(recycling != end_recycling){
     AgsAudioSignal *audio_signal;
@@ -186,13 +179,11 @@ ags_rt_stream_channel_run_check_rt_data(AgsRecall *recall)
 				   audio_signal);
 
     /* iterate */
-    g_object_get(recycling,
-		 "next", &recycling,
-		 NULL);
+    next_recycling = ags_recycling_next(recycling);
+    
+    g_object_unref(recycling);
 
-    if(recycling != NULL){
-      g_object_unref(recycling);
-    }
+    recycling = next_recycling;
   }
 
   /* unref */
@@ -201,6 +192,15 @@ ags_rt_stream_channel_run_check_rt_data(AgsRecall *recall)
   g_object_unref(output_soundcard);
 
   g_object_unref(recall_id);
+
+  if(first_recycling != NULL){
+    g_object_unref(first_recycling);
+    g_object_unref(last_recycling);
+  }
+
+  if(end_recycling != NULL){
+    g_object_unref(end_recycling);
+  }
 }
 
 void
@@ -208,7 +208,8 @@ ags_rt_stream_channel_run_done(AgsRecall *recall)
 {
   AgsChannel *source;
   AgsRecycling *first_recycling, *last_recycling;
-  AgsRecycling *recycling, *end_recycling;
+  AgsRecycling *end_recycling;
+  AgsRecycling *recycling, *next_recycling;
   AgsRecallID *recall_id;
   AgsRtStreamChannelRun *rt_stream_channel_run;
 
@@ -235,22 +236,14 @@ ags_rt_stream_channel_run_done(AgsRecall *recall)
 	       "last-recycling", &last_recycling,
 	       NULL);
 
-  if(first_recycling != NULL){
-    g_object_unref(first_recycling);
-    g_object_unref(last_recycling);
-  }
-  
   /* get end */
-  g_object_get(last_recycling,
-	       "next", &end_recycling,
-	       NULL);
-
-  if(end_recycling != NULL){
-    g_object_unref(end_recycling);
-  }
+  end_recycling = ags_recycling_next(last_recycling);
   
-  /* */
+  /* prepare */
   recycling = first_recycling;
+  g_object_ref(recycling);
+
+  next_recycling = NULL;
   
   while(recycling != end_recycling){
     GList *start_audio_signal, *audio_signal;
@@ -272,13 +265,11 @@ ags_rt_stream_channel_run_done(AgsRecall *recall)
     g_list_free(start_audio_signal);
     
     /* iterate */
-    g_object_get(recycling,
-		 "next", &recycling,
-		 NULL);
+    next_recycling = ags_recycling_next(recycling);
 
-    if(recycling != NULL){
-      g_object_unref(recycling);
-    }
+    g_object_unref(recycling);
+
+    recycling = next_recycling;
   }
   
   /* call parent */
@@ -288,6 +279,19 @@ ags_rt_stream_channel_run_done(AgsRecall *recall)
   g_object_unref(source);
 
   g_object_unref(recall_id);
+
+  if(first_recycling != NULL){
+    g_object_unref(first_recycling);
+    g_object_unref(last_recycling);
+  }
+  
+  if(end_recycling != NULL){
+    g_object_unref(end_recycling);
+  }
+
+  if(next_recycling != NULL){
+    g_object_unref(next_recycling);
+  }
 }
 
 /**

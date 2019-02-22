@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -888,7 +888,8 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
   AgsAudio *audio;
   AgsChannel *output, *input;
   AgsChannel *selected_channel, *channel, *next_pad;
-  AgsRecycling *recycling, *last_recycling;
+  AgsRecycling *first_recycling, *last_recycling;
+  AgsRecycling *recycling, *next_recycling;
   AgsRecycling *end_recycling;
   AgsAudioSignal *audio_signal;
   AgsNotation *notation;
@@ -1014,22 +1015,14 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
 
       /* recycling */
       g_object_get(selected_channel,
-		   "first-recycling", &recycling,
+		   "first-recycling", &first_recycling,
 		   "last-recycling", &last_recycling,
 		   NULL);
 
-      if(recycling != NULL){
-	g_object_unref(recycling);
-	g_object_unref(last_recycling);
-      }
-      
-      g_object_get(last_recycling,
-		   "next", &end_recycling,
-		   NULL);
+      recycling = first_recycling;
+      g_object_ref(recycling);
 
-      if(end_recycling != NULL){
-	g_object_unref(end_recycling);
-      }
+      end_recycling = ags_recycling_next(last_recycling);
       
       g_object_set(note,
 		   "rt-attack", attack,
@@ -1038,7 +1031,9 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
 #ifdef AGS_DEBUG	
       g_message("playing[%u|%u]: %u | %u\n", audio_channel, selected_channel->pad, note->x[0], note->y);
 #endif
-	
+
+      next_recycling = NULL;
+      
       while(recycling != end_recycling){
 	g_object_set(note,
 		     "rt-offset", 0,
@@ -1106,13 +1101,24 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
 	}
 	  
 	/* iterate */
-	g_object_get(recycling,
-		     "next", &recycling,
-		     NULL);
+	next_recycling = ags_recycling_next(recycling);
 
-	if(recycling != NULL){
-	  g_object_unref(recycling);
-	}
+	g_object_unref(recycling);
+
+	recycling = next_recycling;
+      }
+
+      if(first_recycling != NULL){
+	g_object_unref(first_recycling);
+	g_object_unref(last_recycling);
+      }
+      
+      if(end_recycling != NULL){
+	g_object_unref(end_recycling);
+      }
+
+      if(next_recycling != NULL){
+	g_object_unref(next_recycling);
       }
 
       /* iterate */

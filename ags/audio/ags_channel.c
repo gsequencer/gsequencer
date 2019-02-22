@@ -12048,7 +12048,8 @@ ags_channel_real_recursive_run_stage(AgsChannel *channel,
     }
 
     /* free recall id */
-    g_list_free(start_recall_id);
+    g_list_free_full(start_recall_id,
+		     g_object_unref);
 
     /* get current audio */
     pthread_mutex_lock(channel_mutex);
@@ -12083,6 +12084,9 @@ ags_channel_real_recursive_run_stage(AgsChannel *channel,
       ags_audio_add_recall_id(current_audio,
 			      (GObject *) current_recall_id);
     }
+    
+    g_list_free_full(start_recall_id,
+		     g_object_unref);
     
     /* get some fields */
     pthread_mutex_lock(current_audio_mutex);
@@ -12142,28 +12146,32 @@ ags_channel_real_recursive_run_stage(AgsChannel *channel,
     }
 
     if(next_recycling_context == NULL){
-      AgsChannel *iter;
+      AgsChannel *iter, *next_pad;
       AgsRecycling *first_recycling, *last_recycling;
       AgsRecycling *end_region;
-      AgsRecycling *recycling;
+      AgsRecycling *recycling, *next_recycling;
 
       guint64 length;
       guint64 i;
-	
+
+      current_input = NULL;	
+      length = 0;
+      
       if((AGS_AUDIO_ASYNC & (current_audio_flags)) != 0){
 	g_object_get(current_audio,
 		     "input", &current_input,
 		     NULL);
+	
+	iter = ags_channel_nth(current_input,
+			       audio_channel);
+	next_pad = NULL;
 
 	if(current_input != NULL){
 	  g_object_unref(current_input);
 	}
 	
-	iter = 
-	  current_input = ags_channel_nth(current_input,
-					  audio_channel);
-	
-	length = 0;
+	current_input = iter;
+	g_object_ref(current_input);
 	
 	while(iter != NULL){
 	  gint position;
@@ -12175,44 +12183,48 @@ ags_channel_real_recursive_run_stage(AgsChannel *channel,
 		       "last-recycling", &last_recycling,
 		       NULL);
 
-	  if(first_recycling != NULL){
-	    g_object_unref(first_recycling);
-	    g_object_unref(last_recycling);
-	  }
-	  
-	  g_object_get(last_recycling,
-		       "next", &end_region,
-		       NULL);
-
-	  if(end_region != NULL){
-	    g_object_unref(end_region);
-	  }
+	  end_region = ags_recycling_next(last_recycling);
 	  
 	  position = ags_recycling_position(first_recycling, end_region,
 					   last_recycling);
 	  length += (position + 1);
-	  
-	  /* iterate */
-	  g_object_get(iter,
-		       "next-pad", &iter,
-		       NULL);
 
-	  if(iter != NULL){
-	    g_object_unref(iter);
+	  /* unref */
+	  if(first_recycling != NULL){
+	    g_object_unref(first_recycling);
+	    g_object_unref(last_recycling);
 	  }
+
+	  if(end_region != NULL){
+	    g_object_unref(end_region);
+	  }
+
+	  /* iterate */
+	  next_pad = ags_channel_next_pad(iter);
+
+	  g_object_unref(iter);
+
+	  iter = next_pad;
+	}
+
+	if(next_pad != NULL){
+	  g_object_unref(next_pad);
 	}
       }else{
 	g_object_get(current_audio,
 		     "input", &current_input,
 		     NULL);
 
+	iter = ags_channel_nth(current_input,
+			       line);
+	next_pad = NULL;
+	
 	if(current_input != NULL){
 	  g_object_unref(current_input);
 	}
 
-	iter = 
-	  current_input = ags_channel_nth(current_input,
-					  line);
+	current_input = iter;
+	g_object_ref(current_input);
 
 	g_object_get(current_input,
 		     "first-recycling", &first_recycling,
@@ -12220,21 +12232,15 @@ ags_channel_real_recursive_run_stage(AgsChannel *channel,
 		     NULL);
 
 	if(first_recycling != NULL){
-	  g_object_unref(first_recycling);
-	  g_object_unref(last_recycling);
+	  end_region = ags_recycling_next(last_recycling);
 	  
-	  g_object_get(last_recycling,
-		       "next", &end_region,
-		       NULL);
-	    
-	  if(end_region != NULL){
-	    g_object_unref(end_region);
-	  }
-
 	  length = ags_recycling_position(first_recycling, end_region,
 					  last_recycling);
 	  length++;
 
+	  g_object_unref(first_recycling);
+	  g_object_unref(last_recycling);
+	  
 	  if(end_region != NULL){
 	    g_object_unref(end_region);
 	  }
@@ -12253,16 +12259,18 @@ ags_channel_real_recursive_run_stage(AgsChannel *channel,
 	ags_audio_add_recycling_context(current_audio,
 					(GObject *) next_recycling_context);
 	  
-	iter = current_input;
+	iter = current_input; //TODO:JK: check ref
+	next_pad = NULL;
 	
 	for(i = 0; i < length;){
 	  g_object_get(iter,
-		       "first-recycling", &recycling,
+		       "first-recycling", &first_recycling,
 		       NULL);
+
+	  recycling = first_recycling;
+	  g_object_ref(recycling);
 	  
-	  if(recycling != NULL){
-	    g_object_unref(recycling);
-	  }
+	  next_recycling = NULL;
 	  
 	  for(; i < length && recycling != NULL; i++){
 	    /* set recycling */
@@ -12273,25 +12281,38 @@ ags_channel_real_recursive_run_stage(AgsChannel *channel,
 	    /* iterate */
 	    i++;
 
-	    g_object_get(recycling,
-			 "next", &recycling,
-			 NULL);
+	    next_recycling = ags_recycling_next(recycling);
 
-	    if(recycling != NULL){
-	      g_object_unref(recycling);
-	    }
+	    g_object_unref(recycling);
+
+	    recycling = next_recycling;
 	  }
 
+	  /* unref */
+	  if(first_recycling != NULL){
+	    g_object_unref(first_recycling);
+	  }
+
+	  if(next_recycling != NULL){
+	    g_object_unref(next_recycling);
+	  }
+	  
 	  /* iterate */
-	  g_object_get(iter,
-		       "next-pad", &iter,
-		       NULL);
+	  next_pad = ags_channel_next_pad(iter);
 
-	  if(iter != NULL){
-	    g_object_unref(iter);
-	  }
+	  g_object_unref(iter);
+
+	  iter = next_pad;
 	}
-      }  
+
+	if(next_pad != NULL){
+	  g_object_unref(next_pad);
+	}
+      }
+
+      if(current_input != NULL){
+	g_object_unref(current_input);
+      }
     }
     
     if(next_recycling_context != NULL &&
@@ -12312,10 +12333,11 @@ ags_channel_real_recursive_run_stage(AgsChannel *channel,
 	ags_audio_add_recall_id(current_audio,
 				(GObject *) current_recall_id);
       }
-    }
 
-    /* free recall id */
-    g_list_free(recall_id);
+      /* free recall id */
+      g_list_free_full(start_recall_id,
+		       g_object_unref);
+    }
         
     ags_channel_recursive_setup_run_stage_down_input(channel,
 						     next_recycling_context,

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -1521,6 +1521,9 @@ ags_ipatch_get_resource_current(AgsSoundContainer *sound_container)
   }
 
   sound_resource = g_list_reverse(sound_resource);
+  g_list_foreach(sound_resource,
+		 (GFunc) g_object_ref,
+		 NULL);
   
   return(sound_resource);
 }

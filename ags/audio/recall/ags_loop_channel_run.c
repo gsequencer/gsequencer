@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -675,8 +675,9 @@ void
 ags_loop_channel_run_create_audio_signals(AgsLoopChannelRun *loop_channel_run)
 {
   AgsChannel *channel;
-  AgsRecycling *recycling;
-  AgsRecycling *last_recycling, *end_recycling;
+  AgsRecycling *first_recycling, *last_recycling;
+  AgsRecycling *end_recycling;
+  AgsRecycling *recycling, *next_recycling;
   AgsAudioSignal *audio_signal;
   AgsRecallID *recall_id;
   
@@ -693,31 +694,22 @@ ags_loop_channel_run_create_audio_signals(AgsLoopChannelRun *loop_channel_run)
 
   /* recycling */
   g_object_get(channel,
-	       "first-recycling", &recycling,
+	       "first-recycling", &first_recycling,
 	       "last-recycling", &last_recycling,
 	       NULL);
 
-  if(recycling == NULL){
+  if(first_recycling == NULL){
     g_object_unref(channel);
     
     return;
   }
 
-  g_object_unref(recycling);
-  g_object_unref(last_recycling);
-
   g_object_get(loop_channel_run,
 	       "output-soundcard", &output_soundcard,
 	       "recall-id", &recall_id,
 	       NULL);
-  
-  g_object_get(last_recycling,
-	       "next", &end_recycling,
-	       NULL);
 
-  if(end_recycling != NULL){
-    g_object_unref(end_recycling);
-  }
+  end_recycling = ags_recycling_next(last_recycling);
   
   /* delay and attack */
   //TODO:JK: unclear
@@ -728,6 +720,11 @@ ags_loop_channel_run_create_audio_signals(AgsLoopChannelRun *loop_channel_run)
   //		 0:
   //			 tic_counter_incr)];
 
+  recycling = start_recycling;
+  g_object_ref(recycling);
+
+  next_recycling = NULL;
+  
   while(recycling != end_recycling){
     audio_signal = ags_audio_signal_new((GObject *) output_soundcard,
 					(GObject *) recycling,
@@ -755,14 +752,30 @@ ags_loop_channel_run_create_audio_signals(AgsLoopChannelRun *loop_channel_run)
 	      (long long unsigned int) audio_signal, audio_signal->length);
 #endif
 
-    recycling = recycling->next;
+    next_recycling = ags_recycling_next(recycling);
+
+    g_object_unref(recycling);
+
+    recycling = next_recycling;
   }
 
+  /* unref */
   g_object_unref(channel);
 
   g_object_unref(output_soundcard);
   
   g_object_unref(recall_id);
+
+  g_object_unref(first_recycling);
+  g_object_unref(last_recycling);
+
+  if(end_recycling != NULL){
+    g_object_unref(end_recycling);
+  }
+
+  if(next_recycling != NULL){
+    g_object_unref(next_recycling);
+  }
 }
 
 void

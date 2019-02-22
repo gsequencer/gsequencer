@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -455,7 +455,8 @@ void
 ags_open_sf2_instrument_launch(AgsTask *task)
 {
   AgsAudio *audio;
-  AgsChannel *start_channel, *channel;
+  AgsChannel *start_channel;
+  AgsChannel *channel, *next;
 
   AgsIpatch *ipatch;
   
@@ -519,7 +520,6 @@ ags_open_sf2_instrument_launch(AgsTask *task)
     g_object_get(audio,
 		 "input", &start_channel,
 		 NULL);
-    g_object_unref(start_channel);
     
     list = start_list;
     i = 0;
@@ -531,6 +531,7 @@ ags_open_sf2_instrument_launch(AgsTask *task)
       
       channel = ags_channel_pad_nth(start_channel,
 				    open_sf2_instrument->start_pad + i);
+      next = NULL;
       
       ags_sound_resource_get_presets(AGS_SOUND_RESOURCE(list->data),
 				     &j_stop,
@@ -595,17 +596,24 @@ ags_open_sf2_instrument_launch(AgsTask *task)
 	
 	/* iterate */
 	audio_signal = audio_signal->next;
-	
-	g_object_get(channel,
-		     "next", &channel,
-		     NULL);
 
-	if(channel != NULL){
-	  g_object_unref(channel);
-	}
+	next = ags_channel_next(channel);
+
+	g_object_unref(channel);
+
+	channel = next;
       }
 
-      g_list_free(start_audio_signal);
+      if(start_audio_signal == NULL){
+	g_object_unref(channel);
+      }
+      
+      if(next != NULL){
+	g_object_unref(next);
+      }
+      
+      g_list_free_full(start_audio_signal,
+		       g_object_unref);
       
       /* iterate */
       list = list->next;
@@ -613,7 +621,13 @@ ags_open_sf2_instrument_launch(AgsTask *task)
       i++;
     }    
 
-    g_list_free(start_list);
+    /* unref */
+    if(start_channel != NULL){
+      g_object_unref(start_channel);
+    }
+    
+    g_list_free_full(start_list,
+		     g_object_unref);
   }
 
   g_object_unref(output_soundcard);

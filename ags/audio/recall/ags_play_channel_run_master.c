@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -637,7 +637,7 @@ ags_play_channel_run_master_remap_dependencies(AgsPlayChannelRunMaster *play_cha
 					       AgsRecycling *new_start_region, AgsRecycling *new_end_region)
 {
   AgsChannel *current;
-  AgsRecycling *recycling;
+  AgsRecycling *recycling, *next_recycling;
   AgsRecycling *end_recycling;
   AgsRecallID *recall_id;
   AgsRecyclingContext *recycling_context;
@@ -675,14 +675,11 @@ ags_play_channel_run_master_remap_dependencies(AgsPlayChannelRunMaster *play_cha
     current = NULL;
 
     recycling = old_start_region;
+    g_object_ref(recycling);
+    
+    end_recycling = ags_recycling_next(old_end_region);
 
-    g_object_get(old_end_region,
-		 "next", &end_recycling,
-		 NULL);
-
-    if(end_recycling != NULL){
-      g_object_unref(end_recycling);
-    }
+    next_recycling = NULL;
     
     while(recycling != end_recycling){
       AgsChannel *tmp_channel;
@@ -690,7 +687,6 @@ ags_play_channel_run_master_remap_dependencies(AgsPlayChannelRunMaster *play_cha
       g_object_get(recycling,
 		   "channel", &tmp_channel,
 		   NULL);
-      g_object_unref(tmp_channel);
       
       if(current != tmp_channel){
 	current = tmp_channel;
@@ -745,14 +741,24 @@ ags_play_channel_run_master_remap_dependencies(AgsPlayChannelRunMaster *play_cha
 			 g_object_unref);
       }
 
-      /* iterate */
-      g_object_get(recycling,
-		   "next", &recycling,
-		   NULL);
+      /* unref */
+      g_object_unref(tmp_channel);
 
-      if(recycling != NULL){
-	g_object_unref(recycling);
-      }
+      /* iterate */
+      next_recycling = ags_recycling_next(recycling);
+
+      g_object_unref(recycling);
+
+      recycling = next_recycling;
+    }
+
+    /* unref */
+    if(end_recycling != NULL){
+      g_object_unref(end_recycling);
+    }
+
+    if(next_recycling != NULL){
+      g_object_unref(next_recycling);
     }
   }
 
@@ -767,14 +773,11 @@ ags_play_channel_run_master_remap_dependencies(AgsPlayChannelRunMaster *play_cha
     current = NULL;
 
     recycling = new_start_region;
+    g_object_ref(recycling);
 
-    g_object_get(new_end_region,
-		 "next", &end_recycling,
-		 NULL);
+    end_recycling = ags_recycling_next(new_end_region);
 
-    if(end_recycling != NULL){
-      g_object_unref(end_recycling);
-    }
+    next_recycling = NULL;
     
     while(recycling != end_recycling){
       AgsChannel *tmp_channel;
@@ -782,7 +785,6 @@ ags_play_channel_run_master_remap_dependencies(AgsPlayChannelRunMaster *play_cha
       g_object_get(recycling,
 		   "channel", &tmp_channel,
 		   NULL);
-      g_object_unref(tmp_channel);
       
       if(current != tmp_channel){
 	current = tmp_channel;
@@ -834,14 +836,24 @@ ags_play_channel_run_master_remap_dependencies(AgsPlayChannelRunMaster *play_cha
 			 g_object_unref);
       }
 
-      /* iterate */
-      g_object_get(recycling,
-		   "next", &recycling,
-		   NULL);
+      /* unref */
+      g_object_unref(tmp_channel);
 
-      if(recycling != NULL){
-	g_object_unref(recycling);
-      }
+      /* iterate */
+      next_recycling = ags_recycling_next(recycling);
+
+      g_object_unref(recycling);
+
+      recycling = next_recycling;
+    }
+
+    /* unref */
+    if(end_recycling != NULL){
+      g_object_unref(end_recycling);
+    }
+
+    if(next_recycling != NULL){
+      g_object_unref(next_recycling);
     }
   }
 
