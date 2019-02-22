@@ -83,7 +83,7 @@ ags_pad_mute_clicked_callback(GtkWidget *widget, AgsPad *pad)
   AgsMachine *machine;
   GtkContainer *container;
 
-  AgsChannel *current, *next_pad;
+  AgsChannel *current, *next_pad, *next_current;
 
   AgsSetMuted *set_muted;
 
@@ -105,7 +105,6 @@ ags_pad_mute_clicked_callback(GtkWidget *widget, AgsPad *pad)
   gui_thread = ags_ui_provider_get_gui_thread(AGS_UI_PROVIDER(application_context));
 
   /*  */
-  current = pad->channel;
   start_task = NULL;
 
   if(gtk_toggle_button_get_active(pad->mute)){
@@ -114,13 +113,15 @@ ags_pad_mute_clicked_callback(GtkWidget *widget, AgsPad *pad)
     }
     
     /* mute */
-    g_object_get(pad->channel,
-		 "next-pad", &next_pad,
-		 NULL);
+    current = pad->channel;
 
-    if(next_pad != NULL){
-      g_object_unref(next_pad);
+    if(current != NULL){
+      g_object_ref(current);
     }
+    
+    next_pad = ags_channel_next_pad(pad->channel);
+
+    next_current = NULL;
     
     while(current != next_pad){
       /* instantiate set muted task */
@@ -130,19 +131,26 @@ ags_pad_mute_clicked_callback(GtkWidget *widget, AgsPad *pad)
 				  set_muted);
 
       /* iterate */
-      g_object_get(current,
-		   "next", &current,
-		   NULL);
+      next_current = ags_channel_next(current);
 
-      if(current != NULL){
-	g_object_unref(current);
-      }
+      g_object_unref(current);
+
+      current = next_current;
+    }
+
+    if(next_pad != NULL){
+      g_object_unref(next_pad);
+    }
+
+    if(next_current != NULL){
+      g_object_unref(next_current);
     }
   }else{
     if((AGS_MACHINE_SOLO & (machine->flags)) != 0){
       is_output = (AGS_IS_OUTPUT(pad->channel))? TRUE: FALSE;
 
       container = (GtkContainer *) (is_output ? machine->output: machine->input);
+
       list_start = 
 	list = gtk_container_get_children(container);
 
@@ -158,13 +166,15 @@ ags_pad_mute_clicked_callback(GtkWidget *widget, AgsPad *pad)
     }
 
     /* unmute */
-    g_object_get(pad->channel,
-		 "next-pad", &next_pad,
-		 NULL);
+    current = pad->channel;
 
-    if(next_pad != NULL){
-      g_object_unref(next_pad);
+    if(current != NULL){
+      g_object_ref(current);
     }
+    
+    next_pad = ags_channel_next_pad(pad->channel);
+
+    next_current = NULL;
     
     while(current != next_pad){
       /* instantiate set muted task */
@@ -174,13 +184,19 @@ ags_pad_mute_clicked_callback(GtkWidget *widget, AgsPad *pad)
 				  set_muted);
       
       /* iterate */
-      g_object_get(current,
-		   "next", &current,
-		   NULL);
+      next_current = ags_channel_next(current);
 
-      if(current != NULL){
-	g_object_unref(current);
-      }
+      g_object_unref(current);
+
+      current = next_current;
+    }
+
+    if(next_pad != NULL){
+      g_object_unref(next_pad);
+    }
+
+    if(next_current != NULL){
+      g_object_unref(next_current);
     }
   }
 
@@ -230,7 +246,7 @@ ags_pad_start_channel_launch_callback(AgsTask *task,
 				      AgsPad *input_pad)
 { 
   AgsAudio *audio;
-  AgsChannel *channel, *next;
+  AgsChannel *channel, *next, *next_channel;
   
   GObject *output_soundcard;
 
@@ -243,20 +259,19 @@ ags_pad_start_channel_launch_callback(AgsTask *task,
   g_object_get(channel,
 	       "audio", &audio,
 	       "output-soundcard", &output_soundcard,
-	       "next", &next,
 	       NULL);
 
-  if(next != NULL){
-    g_object_unref(next);
-  }
+  next = ags_channel_next(channel);
+
+  next_channel = NULL;
   
 #ifdef AGS_DEBUG
   g_message("launch");
 #endif
   
   while(channel != next){
-    AgsRecycling *last_recycling;
-    AgsRecycling *recycling, *end_recycling;
+    AgsRecycling *first_recycling, *last_recycling;
+    AgsRecycling *recycling, *next_recycling, *end_recycling;
     AgsAudioSignal *audio_signal;
     AgsNote *note;
     AgsPlayback *playback;
@@ -275,13 +290,11 @@ ags_pad_start_channel_launch_callback(AgsTask *task,
     
     if(playback == NULL ||
        recall_id == NULL){
-      g_object_get(channel,
-		   "next", &channel,
-		   NULL);
+      next_channel = ags_channel_next(channel);
 
-      if(channel != NULL){
-	g_object_unref(channel);
-      }
+      g_object_unref(channel);
+
+      channel = next_channel;
       
       continue;
     }
@@ -296,22 +309,14 @@ ags_pad_start_channel_launch_callback(AgsTask *task,
     
     /* get some fields */
     g_object_get(channel,
-		 "first-recycling", &recycling,
+		 "first-recycling", &first_recycling,
 		 "last-recycling", &last_recycling,
 		 NULL);
 
-    if(recycling != NULL){
-      g_object_unref(recycling);
-      g_object_unref(last_recycling);
-    }
-    
-    g_object_get(last_recycling,
-		 "next", &end_recycling,
-		 NULL);
+    end_recycling = ags_recycling_next(last_recycling);
 
-    if(end_recycling != NULL){
-      g_object_unref(end_recycling);
-    }
+    recycling = first_recycling;
+    g_object_ref(recycling);
     
     while(recycling != end_recycling){      
       if(!ags_recall_global_get_rt_safe()){
@@ -363,25 +368,39 @@ ags_pad_start_channel_launch_callback(AgsTask *task,
       }
 
       /* iterate */
-      g_object_get(recycling,
-		   "next", &recycling,
-		   NULL);
+      next_recycling = ags_recycling_next(recycling);
 
-      if(recycling != NULL){
-	g_object_unref(recycling);
-      }
+      g_object_unref(recycling);
+
+      recycling = next_recycling;
+    }
+
+    if(first_recycling != NULL){
+      g_object_unref(first_recycling);
+      g_object_unref(last_recycling);
+    }
+
+    if(end_recycling != NULL){
+      g_object_unref(end_recycling);
     }
 
     /* iterate */
-    g_object_get(channel,
-		 "next", &channel,
-		 NULL);
+    next_channel = ags_channel_next(channel);
 
-    if(channel != NULL){
-      g_object_unref(channel);
-    }
+    g_object_unref(channel);
+
+    channel = next_channel;
   }
 
+  if(next != NULL){
+    g_object_unref(next);
+  }
+
+  if(next_channel != NULL){
+    g_object_unref(next_channel);
+  }
+
+  /* unref */
   g_object_unref(audio);
   
   g_object_unref(output_soundcard);

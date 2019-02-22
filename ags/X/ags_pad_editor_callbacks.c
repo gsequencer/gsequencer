@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -36,23 +36,21 @@ ags_pad_editor_resize_audio_channels_callback(AgsMachine *machine,
   if(audio_channels > audio_channels_old){
     AgsLineEditor *line_editor;
 
-    AgsChannel *channel, *next_pad;
+    AgsChannel *channel, *next_pad, *next_channel, *nth_channel;
 
     guint i;
 
     /* get some channel fields */
-    g_object_get(pad_editor->pad,
-		 "next-pad", &next_pad,
-		 NULL);
-
-    if(next_pad != NULL){
-      g_object_unref(next_pad);
-    }
+    next_pad = ags_channel_next_pad(pad_editor->pad);
     
     /* get current last of pad */
-    channel = ags_channel_nth(pad_editor->pad,
-			      audio_channels_old);
+    nth_channel = ags_channel_nth(pad_editor->pad,
+				  audio_channels_old);
 
+    channel = nth_channel;
+
+    next_channel = NULL;
+    
     while(channel != next_pad){
       /* instantiate line editor */
       line_editor = ags_line_editor_new(channel);
@@ -71,13 +69,19 @@ ags_pad_editor_resize_audio_channels_callback(AgsMachine *machine,
       gtk_widget_show_all(GTK_WIDGET(line_editor));
 
       /* iterate */
-      g_object_get(channel,
-		   "next", &channel,
-		   NULL);
+      next_channel = ags_channel_next(channel);
 
-      if(channel != NULL){
-	g_object_unref(channel);
-      }
+      g_object_unref(channel);
+
+      channel = next_channel;
+    }
+
+    if(next_pad != NULL){
+      g_object_unref(next_pad);
+    }
+
+    if(next_channel != NULL){
+      g_object_unref(next_channel);
     }
   }else{
     GList *list, *list_next, *list_start;

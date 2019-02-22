@@ -543,6 +543,9 @@ ags_cell_pattern_start_channel_launch_callback(AgsTask *task, AgsNote *note)
   end_recycling = ags_recycling_next(last_recycling);
   
   /* add audio signal */
+  recycling = first_recycling;
+  g_object_ref(recycling);
+  
   next_recycling = NULL;
   
   while(recycling != end_recycling){

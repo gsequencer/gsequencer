@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -847,19 +847,23 @@ ags_effect_pad_real_resize_lines(AgsEffectPad *effect_pad, GType effect_line_typ
 {
   AgsEffectLine *effect_line;
 
-  AgsChannel *channel;
+  AgsChannel *channel, *next_channel, *nth_channel;
 
   GList *start_list, *list;
 
   guint i, j;  
   
   if(audio_channels > audio_channels_old){
-    channel = ags_channel_nth(effect_pad->channel,
-			      audio_channels_old);
+    nth_channel = ags_channel_nth(effect_pad->channel,
+				  audio_channels_old);
 
-    if(channel == NULL){
+    if(nth_channel == NULL){
       return;
     }
+
+    channel = nth_channel;
+
+    next_channel = NULL;
     
     for(i = audio_channels_old; i < audio_channels;){
       for(j = audio_channels_old % effect_pad->cols; j < effect_pad->cols && i < audio_channels; j++, i++){
@@ -873,14 +877,17 @@ ags_effect_pad_real_resize_lines(AgsEffectPad *effect_pad, GType effect_line_typ
 			 FALSE, FALSE,
 			 0, 0);
 
-	g_object_get(channel,
-		     "next", &channel,
-		     NULL);
+	/* iterate */
+	next_channel = ags_channel_next(channel);
 
-	if(channel != NULL){
-	  g_object_unref(channel);
-	}
+	g_object_unref(channel);
+
+	channel = next_channel;
       }
+    }
+
+    if(next_channel != NULL){
+      g_object_unref(next_channel);
     }
   }else{
 

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -393,7 +393,7 @@ ags_pad_editor_reset(AgsApplicable *applicable)
  * Since: 2.0.0
  */
 void
-ags_pad_editor_set_channel(AgsPadEditor *pad_editor, AgsChannel *channel)
+ags_pad_editor_set_channel(AgsPadEditor *pad_editor, AgsChannel *start_channel)
 {
   GtkVBox *vbox;
   
@@ -408,7 +408,7 @@ ags_pad_editor_set_channel(AgsPadEditor *pad_editor, AgsChannel *channel)
   if(channel != NULL){
     AgsLineEditor *line_editor;
     
-    AgsChannel *next_pad;
+    AgsChannel *next_pad, *next_channel;
 
     gchar *str;
     
@@ -416,14 +416,17 @@ ags_pad_editor_set_channel(AgsPadEditor *pad_editor, AgsChannel *channel)
     guint i;
 
     /* get some channel fields */
-    g_object_get(channel,
+    g_object_get(start_channel,
 		 "pad", &pad,
-		 "next-pad", &next_pad,
 		 NULL);
 
-    if(next_pad != NULL){
-      g_object_unref(next_pad);
+    channel = start_channel;
+
+    if(channel != NULL){
+      g_object_ref(channel);
     }
+    
+    next_pad = ags_channel_next_pad(start_channel);
     
     /* set label */
     str = g_strdup_printf("%s: %u",
@@ -438,6 +441,8 @@ ags_pad_editor_set_channel(AgsPadEditor *pad_editor, AgsChannel *channel)
     gtk_container_add(GTK_CONTAINER(pad_editor->line_editor_expander),
 		      GTK_WIDGET(pad_editor->line_editor));
 
+    next_channel = NULL;
+    
     while(channel != next_pad){
       /* instantiate line editor */
       line_editor = ags_line_editor_new(NULL);
@@ -458,13 +463,19 @@ ags_pad_editor_set_channel(AgsPadEditor *pad_editor, AgsChannel *channel)
 			 0);
 
       /* iterate */
-      g_object_get(channel,
-		   "next", &channel,
-		   NULL);
+      next_channel = ags_channel_next(channel);
 
-      if(channel != NULL){
-	g_object_unref(channel);
-      }
+      g_object_unref(channel);
+
+      channel = next_channel;
+    }
+
+    if(next_pad != NULL){
+      g_object_unref(next_pad);
+    }
+
+    if(next_channel != NULL){
+      g_object_unref(next_channel);
     }
   }else{
     gtk_expander_set_label(pad_editor->line_editor_expander,

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -1326,7 +1326,8 @@ ags_bulk_member_real_find_port(AgsBulkMember *bulk_member)
   GtkWidget *effect_bulk;
 
   AgsAudio *audio;
-  AgsChannel *channel;
+  AgsChannel *start_channel;
+  AgsChannel *channel, *next_channel;
   AgsPort *audio_port, *channel_port;
   AgsPort *recall_audio_port, *recall_channel_port;
   
@@ -1403,22 +1404,16 @@ ags_bulk_member_real_find_port(AgsBulkMember *bulk_member)
   
   if(AGS_EFFECT_BULK(effect_bulk)->channel_type == AGS_TYPE_OUTPUT){
     g_object_get(audio,
-		 "output", &channel,
+		 "output", &start_channel,
 		 NULL);
-
-    if(channel != NULL){
-      g_object_unref(channel);
-    }
   }else if(AGS_EFFECT_BULK(effect_bulk)->channel_type == AGS_TYPE_INPUT){
     g_object_get(audio,
-		 "input", &channel,
+		 "input", &start_channel,
 		 NULL);
-
-    if(channel != NULL){
-      g_object_unref(channel);
-    }
   }
 
+  next_channel = NULL;
+  
   while(channel != NULL){
     GList *list_start;
 
@@ -1461,13 +1456,19 @@ ags_bulk_member_real_find_port(AgsBulkMember *bulk_member)
 		     g_object_unref);
 
     /* iterate */
-    g_object_get(channel,
-		 "next", &channel,
-		 NULL);
+    next_channel = ags_channel_next(channel);
 
-    if(channel != NULL){
-      g_object_unref(channel);
-    }
+    g_object_unref(channel);
+
+    channel = next_channel;
+  }
+
+  if(start_channel != NULL){
+    g_object_unref(start_channel);
+  }
+
+  if(next_channel != NULL){
+    g_object_unref(next_channel);
   }
 
   /* search audio */

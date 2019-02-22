@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -95,8 +95,8 @@ ags_notation_editor_start_channel_launch_callback(AgsTask *task, AgsNote *note)
 {
   AgsAudio *audio;
   AgsChannel *channel;
-  AgsRecycling *recycling, *last_recycling;
-  AgsRecycling *end_recycling;
+  AgsRecycling *first_recycling, *last_recycling;
+  AgsRecycling *recycling, *next_recycling, *end_recycling;
   AgsAudioSignal *audio_signal;
   AgsPlayback *playback;
   AgsRecallID *recall_id;
@@ -140,24 +140,21 @@ ags_notation_editor_start_channel_launch_callback(AgsTask *task, AgsNote *note)
 
   /* get some fields */
   g_object_get(channel,
-	       "first-recycling", &recycling,
+	       "first-recycling", &first_recycling,
 	       "last-recycling", &last_recycling,
 	       NULL);
 
-  if(recycling != NULL){
-    g_object_unref(recycling);
-    g_object_unref(last_recycling);
-  }
+  end_recycling = ags_recycling_next(last_recycling);
   
-  g_object_get(last_recycling,
-	       "next", &end_recycling,
-	       NULL);
+  /* add audio signal */
+  recycling = first_recycling;
 
-  if(end_recycling != NULL){
-    g_object_unref(end_recycling);
+  if(recycling != NULL){
+    g_object_ref(recycling);
   }
+
+  next_recycling = NULL;
   
-  /* add audio signal */  
   while(recycling != end_recycling){
     if(!ags_recall_global_get_rt_safe()){
       guint note_x0, note_x1;
@@ -214,12 +211,24 @@ ags_notation_editor_start_channel_launch_callback(AgsTask *task, AgsNote *note)
 		   NULL);
     }
 
-    g_object_get(recycling,
-		 "next", &recycling,
-		 NULL);
+    /* iterate */
+    next_recycling = ags_recycling_next(recycling);
 
-    if(recycling != NULL){
-      g_object_unref(recycling);
-    }
+    g_object_unref(recycling);
+
+    recycling = next_recycling;
+  }
+
+  if(first_recycling != NULL){
+    g_object_unref(first_recycling);
+    g_object_unref(last_recycling);
+  }
+
+  if(end_recycling != NULL){
+    g_object_unref(end_recycling);
+  }
+
+  if(next_recycling != NULL){
+    g_object_unref(next_recycling);
   }
 }
