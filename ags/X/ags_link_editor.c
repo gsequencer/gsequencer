@@ -232,6 +232,7 @@ ags_link_editor_apply(AgsApplicable *applicable)
     GtkTreeModel *model;
 
     AgsAudio *audio;
+    AgsChannel *start_link;
     AgsChannel *channel, *link;
     AgsLinkChannel *link_channel;
 
@@ -319,22 +320,29 @@ ags_link_editor_apply(AgsApplicable *applicable)
       /* get link */
       if(!is_output){
 	g_object_get(link_machine->audio,
-		     "output", &link,
+		     "output", &start_link,
 		     NULL);
-	g_object_unref(link);
       }else{
 	g_object_get(link_machine->audio,
-		     "input", &link,
+		     "input", &start_link,
 		     NULL);
-	g_object_unref(link);
       }
       
-      link = ags_channel_nth(link,
+      link = ags_channel_nth(start_link,
 			     link_line);
       
       /* create task */
       link_channel = ags_link_channel_new(channel,
 					  link);
+
+      if(link != NULL){
+	g_object_unref(link);
+      }
+
+      /* unref */
+      if(start_link != NULL){
+	g_object_unref(start_link);
+      }
       
       /* append AgsLinkChannel */
       ags_gui_thread_schedule_task((AgsGuiThread *) gui_thread,

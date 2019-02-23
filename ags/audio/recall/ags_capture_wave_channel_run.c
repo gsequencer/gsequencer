@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -349,6 +349,7 @@ ags_capture_wave_channel_run_run_pre(AgsRecall *recall)
 {
   AgsAudio *audio;
   AgsChannel *channel;
+  AgsChannel *start_input;
   AgsChannel *input;
   AgsPort *port;
   AgsWave *wave;
@@ -443,13 +444,12 @@ ags_capture_wave_channel_run_run_pre(AgsRecall *recall)
   pthread_mutex_unlock(ags_audio_get_class_mutex());
 
   g_object_get(audio,
-	       "input", &input,
+	       "input", &start_input,
 	       "buffer-size", &target_buffer_size,
 	       NULL);
-  g_object_unref(input);
   
   /* get soundcard */
-  input = ags_channel_nth(input,
+  input = ags_channel_nth(start_input,
 			  line);
   
   g_object_get(input,
@@ -471,7 +471,15 @@ ags_capture_wave_channel_run_run_pre(AgsRecall *recall)
     g_object_unref(channel);
 
     g_object_unref(audio);
+
+    if(start_input != NULL){
+      g_object_unref(start_input);
+    }
     
+    if(input != NULL){
+      g_object_unref(input);
+    }
+
     return;
   }
 
@@ -927,6 +935,14 @@ ags_capture_wave_channel_run_run_pre(AgsRecall *recall)
 
   g_object_unref(output_soundcard);
   g_object_unref(input_soundcard);
+
+  if(start_input != NULL){
+    g_object_unref(start_input);
+  }
+    
+  if(input != NULL){
+    g_object_unref(input);
+  }
 }
 
 /**

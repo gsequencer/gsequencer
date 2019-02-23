@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -838,8 +838,8 @@ ags_route_lv2_audio_run_feed_midi(AgsRecall *recall,
 				  AgsNote *note)
 {
   AgsAudio *audio;
-  AgsChannel *output, *input;
-  AgsChannel *channel, *selected_channel;
+  AgsChannel *start_output, *start_input;
+  AgsChannel *channel, *selected_channel, *nth_channel;
   AgsRecallLv2 *recall_lv2;
   AgsRecallLv2Run *recall_lv2_run;
   AgsRecallID *recall_id;
@@ -900,11 +900,20 @@ ags_route_lv2_audio_run_feed_midi(AgsRecall *recall,
   midi_start_mapping = audio->midi_start_mapping;
   midi_end_mapping = audio->midi_end_mapping;
 
-  output = audio->output;
-  input = audio->input;
-
   output_pads = audio->output_pads;
   input_pads = audio->input_pads;
+
+  start_output = audio->output;
+
+  if(start_output != NULL){
+    g_object_ref(start_output);
+  }
+  
+  start_input = audio->input;
+
+  if(start_input != NULL){
+    g_object_ref(start_input);
+  }
 
   pthread_mutex_unlock(audio_mutex);
 
@@ -915,23 +924,35 @@ ags_route_lv2_audio_run_feed_midi(AgsRecall *recall,
   
   /* get channel */
   if(ags_audio_test_behaviour_flags(audio, AGS_SOUND_BEHAVIOUR_DEFAULTS_TO_INPUT)){
-    selected_channel = ags_channel_nth(input,
+    selected_channel = ags_channel_nth(start_input,
 				       audio_channel);
 
     pads = input_pads;
   }else{
-    selected_channel = ags_channel_nth(output,
+    selected_channel = ags_channel_nth(start_output,
 				       audio_channel);
 
     pads = output_pads;
   }
 
   if(ags_audio_test_behaviour_flags(audio, AGS_SOUND_BEHAVIOUR_REVERSE_MAPPING)){
-    selected_channel = ags_channel_pad_nth(selected_channel,
-					   audio_start_mapping + pads - note_y - 1);
+    nth_channel = ags_channel_pad_nth(selected_channel,
+				      audio_start_mapping + pads - note_y - 1);
+
+    if(selected_channel != NULL){
+      g_object_unref(selected_channel);
+    }
+    
+    selected_channel = nth_channel;
   }else{
-    selected_channel = ags_channel_pad_nth(selected_channel,
-					   audio_start_mapping + note_y);
+    nth_channel = ags_channel_pad_nth(selected_channel,
+				      audio_start_mapping + note_y);
+
+    if(selected_channel != NULL){
+      g_object_unref(selected_channel);
+    }
+    
+    selected_channel = nth_channel;
   }
 
   /* check within mapping */
@@ -948,6 +969,18 @@ ags_route_lv2_audio_run_feed_midi(AgsRecall *recall,
     g_object_unref(delay_audio_run);
 
     g_object_unref(recycling_context);
+
+    if(start_output != NULL){
+      g_object_unref(start_output);
+    }
+
+    if(start_input != NULL){
+      g_object_unref(start_input);
+    }
+
+    if(selected_channel != NULL){
+      g_object_unref(selected_channel);
+    }
 
     return;
   }
@@ -1135,6 +1168,18 @@ ags_route_lv2_audio_run_feed_midi(AgsRecall *recall,
   g_object_unref(delay_audio_run);
   
   g_object_unref(recycling_context);
+
+  if(start_output != NULL){
+    g_object_unref(start_output);
+  }
+
+  if(start_input != NULL){
+    g_object_unref(start_input);
+  }
+
+  if(selected_channel != NULL){
+    g_object_unref(selected_channel);
+  }
 }
 
 void

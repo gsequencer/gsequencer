@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -904,8 +904,8 @@ ags_notation_editor_do_feedback(AgsNotationEditor *notation_editor)
   }
   
   if(notation_editor->selected_machine != NULL){
-    AgsChannel *output, *input;
-    AgsChannel *channel;
+    AgsChannel *start_output, *start_input;
+    AgsChannel *channel, *nth_channel, *nth_pad;
     
     guint audio_flags;
     guint output_pads, input_pads;
@@ -939,8 +939,17 @@ ags_notation_editor_do_feedback(AgsNotationEditor *notation_editor)
     output_pads = machine->audio->output_pads;
     input_pads = machine->audio->input_pads;
 
-    output = machine->audio->output;
-    input = machine->audio->input;
+    start_output = machine->audio->output;
+
+    if(start_output != NULL){
+      g_object_ref(start_output);
+    }
+    
+    start_input = machine->audio->input;
+
+    if(start_input != NULL){
+      g_object_ref(start_input);
+    }
     
     pthread_mutex_unlock(audio_mutex);
 
@@ -970,24 +979,32 @@ ags_notation_editor_do_feedback(AgsNotationEditor *notation_editor)
 
       if(current_note != NULL){
 	if(ags_audio_test_behaviour_flags(machine->audio, AGS_SOUND_BEHAVIOUR_DEFAULTS_TO_OUTPUT)){
-	  channel = ags_channel_nth(output,
-				    i);
+	  nth_channel = ags_channel_nth(start_output,
+					i);
 	}else{
-	  channel = ags_channel_nth(input,
-				    i);
+	  nth_channel = ags_channel_nth(start_input,
+					i);
 	}
 	
 	if(ags_audio_test_behaviour_flags(machine->audio, AGS_SOUND_BEHAVIOUR_REVERSE_MAPPING)){
-	  channel = ags_channel_pad_nth(channel,
+	  nth_pad = ags_channel_pad_nth(nth_channel,
 					(ags_audio_test_behaviour_flags(machine->audio, AGS_SOUND_BEHAVIOUR_DEFAULTS_TO_OUTPUT) ? output_pads: input_pads) - notation_edit->cursor_position_y - 1);
 	}else{
-	  channel = ags_channel_pad_nth(channel,
+	  nth_pad = ags_channel_pad_nth(nth_channel,
 					notation_edit->cursor_position_y);
 	}
 
 	ags_notation_edit_play_channel(notation_edit,
-				       channel,
+				       nth_pad,
 				       current_note);
+
+	if(nth_channel != NULL){
+	  g_object_ref(nth_channel);
+	}
+
+	if(nth_pad != NULL){
+	  g_object_ref(nth_pad);
+	}
       }
 
       /* iterate */
@@ -996,6 +1013,15 @@ ags_notation_editor_do_feedback(AgsNotationEditor *notation_editor)
 
     g_list_free_full(start_list_notation,
 		     g_object_unref);
+
+    /* unref */
+    if(start_output != NULL){
+      g_object_unref(start_output);
+    }
+
+    if(start_input != NULL){
+      g_object_unref(start_input);
+    }
   }
 }
 

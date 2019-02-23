@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -386,8 +386,8 @@ ags_input_collection_editor_apply(AgsApplicable *applicable)
     AgsConnectionEditor *connection_editor;
 
     AgsAudio *audio;
-    AgsChannel *input, *output;
-    AgsChannel *channel;
+    AgsChannel *start_output, *start_input;
+    AgsChannel *channel, *nth_channel;
     
     GObject *input_soundcard;
 
@@ -422,25 +422,33 @@ ags_input_collection_editor_apply(AgsApplicable *applicable)
 		 "output", &output,
 		 "input", &input,
 		 NULL);
-    g_object_unref(output);
-    g_object_unref(input);
     
     for(i = 0; i < count; i++){
+      channel = NULL;
+      
       if(g_type_is_a(input_collection_editor->channel_type, AGS_TYPE_OUTPUT)){
 	channel = output;
       }else if(g_type_is_a(input_collection_editor->channel_type, AGS_TYPE_INPUT)){
 	channel = input;
-      }else{
-	channel = NULL;
       }
 
-      channel = ags_channel_nth(channel,
-				first_line + i);
+      nth_channel = ags_channel_nth(channel,
+				    first_line + i);
 
-      g_object_set(channel,
+      g_object_set(nth_channel,
 		   "input-soundcard", input_soundcard,
 		   "input-soundcard-channel", audio_channel,
 		   NULL);
+
+      g_object_unref(nth_channel);
+    }
+
+    if(start_output != NULL){
+      g_object_unref(start_output);
+    }
+
+    if(start_input != NULL){
+      g_object_unref(start_input);
     }
   }
 }

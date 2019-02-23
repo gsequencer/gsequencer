@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -1264,21 +1264,30 @@ ags_play_dssi_audio_run_run_pre(AgsRecall *recall)
   /* get some fields */
   pthread_mutex_lock(audio_mutex);
 
-  output = audio->output;
-  input = audio->input;
+  start_output = audio->output;
+
+  if(start_output != NULL){
+    g_object_ref(start_output);
+  }
+  
+  start_input = audio->input;
+
+  if(start_input != NULL){
+    g_object_ref(start_input);
+  }
 
   pthread_mutex_unlock(audio_mutex);
 
   /* get channel */
-  selected_channel = ags_channel_nth(output,
+  selected_channel = ags_channel_nth(start_output,
 				     audio_channel);
   
 #if 0
   if(ags_audio_test_behaviour_flags(audio, AGS_SOUND_BEHAVIOUR_DEFAULTS_TO_INPUT)){
-    selected_channel = ags_channel_nth(input,
+    selected_channel = ags_channel_nth(start_input,
 				       audio_channel);
   }else{
-    selected_channel = ags_channel_nth(output,
+    selected_channel = ags_channel_nth(start_output,
 				       audio_channel);
   }
 #endif
@@ -1287,8 +1296,7 @@ ags_play_dssi_audio_run_run_pre(AgsRecall *recall)
   g_object_get(selected_channel,
 	       "first-recycling", &recycling,
 	       NULL);
-  g_object_unref(recycling);
-  
+
   ags_recall_unset_behaviour_flags((AgsRecall *) recall, AGS_SOUND_BEHAVIOUR_PERSISTENT);
 
   if(destination == NULL){
@@ -1564,6 +1572,22 @@ ags_play_dssi_audio_run_run_pre(AgsRecall *recall)
   g_object_unref(play_dssi_audio);
 
   g_object_unref(destination);
+
+  if(start_output != NULL){
+    g_object_unref(start_output);
+  }
+
+  if(start_input != NULL){
+    g_object_unref(start_input);
+  }
+
+  if(selected_channel != NULL){
+    g_object_unref(selected_channel);
+  }
+
+  if(recycling != NULL){
+    g_object_unref(recycling);
+  }
 }
 
 void
@@ -1573,9 +1597,6 @@ ags_play_dssi_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_run,
 					     AgsPlayDssiAudioRun *play_dssi_audio_run)
 {
   AgsAudio *audio;
-  AgsChannel *output, *input;
-  AgsChannel *channel;
-  AgsChannel *selected_channel;
   AgsNotation *notation;
   AgsNote *note;
   AgsPlayDssiAudio *play_dssi_audio;
@@ -1629,10 +1650,9 @@ ags_play_dssi_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_run,
   /* get audio fields */
   pthread_mutex_lock(audio_mutex);
 
-  output = audio->output;
-  input = audio->input;
-
-  start_list = g_list_copy(audio->notation);
+  start_list = g_list_copy_deep(audio->notation,
+				(GCopyFunc) g_object_ref,
+				NULL);
 
   pthread_mutex_unlock(audio_mutex);
   
@@ -1644,17 +1664,8 @@ ags_play_dssi_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_run,
     g_object_unref(play_dssi_audio);
 
     g_object_unref(delay_audio);
-    
-    return;
-  }
 
-  /* get channel */
-  if(ags_audio_test_behaviour_flags(audio, AGS_SOUND_BEHAVIOUR_DEFAULTS_TO_INPUT)){
-    selected_channel = ags_channel_nth(input,
-				       audio_channel);
-  }else{
-    selected_channel = ags_channel_nth(output,
-				       audio_channel);
+    return;
   }
   
   /* get notation */
@@ -1866,7 +1877,8 @@ ags_play_dssi_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_run,
     remove_note = remove_note->next;
   }
 
-  g_list_free(start_list);
+  g_list_free_full(start_list,
+		   g_object_unref);
   g_list_free_full(start_current_position,
 		   g_object_unref);
   

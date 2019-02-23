@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -314,7 +314,8 @@ ags_output_listing_editor_add_children(AgsOutputListingEditor *output_listing_ed
   AgsPadEditor *pad_editor;
   GtkVBox *vbox;
 
-  AgsChannel *channel;
+  AgsChannel *start_channel;
+  AgsChannel *channel, *next_pad, *nth_channel;
 
   if(nth_channel == 0 &&
      output_listing_editor->child != NULL){
@@ -339,22 +340,22 @@ ags_output_listing_editor_add_children(AgsOutputListingEditor *output_listing_ed
   /* get current channel */
   if(g_type_is_a(output_listing_editor->channel_type, AGS_TYPE_OUTPUT)){
     g_object_get(audio,
-		 "output", &channel,
+		 "output", &start_channel,
 		 NULL);
-
-    g_object_unref(channel);
   }else if(g_type_is_a(output_listing_editor->channel_type, AGS_TYPE_INPUT)){
     g_object_get(audio,
-		 "input", &channel,
+		 "input", &start_channel,
 		 NULL); 
-
-    g_object_unref(channel);
   }else{
-    channel = NULL;
+    start_channel = NULL;
   }
   
-  channel = ags_channel_nth(channel,
-			    nth_channel);
+  nth_channel = ags_channel_nth(start_channel,
+				nth_channel);
+
+  channel = nth_channel;
+
+  next_pad = NULL;
   
   while(channel != NULL){
     /* instantiate pad editor */
@@ -379,13 +380,20 @@ ags_output_listing_editor_add_children(AgsOutputListingEditor *output_listing_ed
     }
 
     /* iterate */
-    g_object_get(channel,
-		 "next-pad", &channel,
-		 NULL);
+    next_pad = ags_channel_next_pad(channel);
 
-    if(channel != NULL){
-      g_object_unref(channel);
-    }
+    g_object_unref(channel);
+
+    channel = next_pad;
+  }
+
+  if(next_pad != NULL){
+    g_object_unref(next_pad);
+  }
+
+  /* unref */
+  if(start_channel != NULL){
+    g_object_unref(start_channel);
   }
 }
 

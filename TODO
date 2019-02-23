@@ -29,23 +29,12 @@
 * TODO:JK: implemented damping/vibration of AgsAudioSignal
 * TODO:JK: implemented exponential curve option for ags-envelope recall
 
-ags_channel_next
-ags_channel_prev
-ags_channel_next_pad
-ags_channel_prev_pad
-ags_channel_first
-ags_channel_last
 ags_channel_nth
-ags_channel_pad_first
-ags_channel_pad_last
 ags_channel_pad_nth
-ags_channel_first_with_recycling
-ags_channel_last_with_recycling
 ags_channel_prev_with_recycling
 ags_channel_next_with_recycling
-ags_recycling_next
-ags_recycling_prev
 ags_sound_resource_read_audio_signal
 ags_sound_resource_read_wave
 ags_sound_container_get_resource_current
 ags_audio_check_scope
+ags_channel_check_scope

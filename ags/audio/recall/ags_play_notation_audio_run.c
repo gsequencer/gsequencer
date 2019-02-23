@@ -1183,19 +1183,28 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
 
   input_pads = audio->input_pads;
   output_pads = audio->output_pads;
-    
-  output = audio->output;
-  input = audio->input;
   
+  start_output = audio->output;
+
+  if(start_output != NULL){
+    g_object_ref(start_output);
+  }
+  
+  start_input = audio->input;
+
+  if(start_input != NULL){
+    g_object_ref(start_input);
+  }
+
   pthread_mutex_unlock(audio_mutex);
 
   /* get channel */
   if(ags_audio_test_behaviour_flags(audio, AGS_SOUND_BEHAVIOUR_DEFAULTS_TO_INPUT)){
-    channel = ags_channel_nth(input,
+    channel = ags_channel_nth(start_input,
 			      audio_channel);
     pads = input_pads;
   }else{
-    channel = ags_channel_nth(output,
+    channel = ags_channel_nth(start_output,
 			      audio_channel);
     pads = output_pads;
   }
@@ -1236,6 +1245,18 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
 
   g_list_free_full(start_list,
 		   g_object_unref);
+
+  if(start_output != NULL){
+    g_object_unref(start_output);
+  }
+
+  if(start_input != NULL){
+    g_object_unref(start_input);
+  }
+
+  if(channel != NULL){
+    g_object_unref(channel);
+  }
 }
 
 void

@@ -1604,7 +1604,7 @@ ags_lv2_bridge_input_map_recall(AgsLv2Bridge *lv2_bridge,
 {
   AgsAudio *audio;
   AgsChannel *start_input;
-  AgsChannel *current, *next_pad_current, *nth_current;
+  AgsChannel *current, *nth_current, *next_pad_current;
   
   guint input_pads;
   guint audio_channels;
@@ -1623,9 +1623,6 @@ ags_lv2_bridge_input_map_recall(AgsLv2Bridge *lv2_bridge,
 	       NULL);
 
   /* source */
-  nth_current = ags_channel_nth(start_input,
-				audio_channel_start + input_pad_start * audio_channels);
-
   if((AGS_MACHINE_IS_SYNTHESIZER & (AGS_MACHINE(lv2_bridge)->flags)) != 0){
     /* ags-envelope */
     ags_recall_factory_create(audio,
@@ -1639,11 +1636,10 @@ ags_lv2_bridge_input_map_recall(AgsLv2Bridge *lv2_bridge,
 			       AGS_RECALL_FACTORY_ADD),
 			      0);
 
-    current = start_input;
-
-    if(current != NULL){
-      g_object_ref(current);
-    }
+    nth_current = ags_channel_nth(start_input,
+				  audio_channel_start + input_pad_start * audio_channels);
+    
+    current = nth_current;
 
     next_pad_current = NULL;
     

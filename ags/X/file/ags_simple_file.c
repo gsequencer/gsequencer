@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -2414,6 +2414,10 @@ ags_simple_file_read_machine(AgsSimpleFile *simple_file, xmlNode *node, AgsMachi
 		  }
 		}
 	      }
+
+	      if(channel != NULL){
+		g_object_unref(channel);
+	      }
 	    }
 	  }
 	  
@@ -3771,9 +3775,17 @@ ags_simple_file_read_line(AgsSimpleFile *simple_file, xmlNode *node, AgsLine **l
       if(is_output){
 	gobject = (GObject *) ags_channel_nth(machine->audio->output,
 					      nth_line);
+
+	if(gobject != NULL){
+	  g_object_unref(gobject);
+	}
       }else{
 	gobject = (GObject *) ags_channel_nth(machine->audio->input,
 					      nth_line);
+
+	if(gobject != NULL){
+	  g_object_unref(gobject);
+	}
       }
     }
   }
@@ -4201,6 +4213,10 @@ ags_simple_file_read_line_launch(AgsFileLaunch *file_launch,
     }
 
     child = child->next;
+  }
+
+  if(channel != NULL){
+    g_object_unref(channel);
   }
 }
 

@@ -750,7 +750,8 @@ ags_ramp_acceleration_dialog_apply(AgsApplicable *applicable)
   while(notebook == NULL ||
 	(line = ags_notebook_next_active_tab(notebook,
 					     line)) != -1){
-    AgsChannel *channel;
+    AgsChannel *start_channel;
+    AgsChannel *nth_channel;
     GList *play_port, *recall_port;
 
     guint j;
@@ -761,38 +762,48 @@ ags_ramp_acceleration_dialog_apply(AgsApplicable *applicable)
     
     if(channel_type == AGS_TYPE_OUTPUT){
       g_object_get(machine->audio,
-		   "output", &channel,
+		   "output", &start_channel,
 		   NULL);
-
-      if(channel != NULL){
-	g_object_unref(channel);
-      }
       
-      channel = ags_channel_nth(channel,
-				line);
+      nth_channel = ags_channel_nth(start_channel,
+				    line);
 
-      play_port = ags_channel_collect_all_channel_ports_by_specifier_and_context(channel,
+      play_port = ags_channel_collect_all_channel_ports_by_specifier_and_context(nth_channel,
 										 specifier, TRUE);
 
-      recall_port = ags_channel_collect_all_channel_ports_by_specifier_and_context(channel,
+      recall_port = ags_channel_collect_all_channel_ports_by_specifier_and_context(nth_channel,
 										   specifier, FALSE);
+
+      if(nth_channel != NULL){
+	g_object_unref(nth_channel);
+      }
+
+      /* unref */
+      if(start_channel != NULL){
+	g_object_unref(start_channel);
+      }
     }else if(channel_type == AGS_TYPE_INPUT){
       g_object_get(machine->audio,
-		   "input", &channel,
+		   "input", &start_channel,
 		   NULL);
 
-      if(channel != NULL){
-	g_object_unref(channel);
-      }
+      nth_channel = ags_channel_nth(start_channel,
+				    line);
 
-      channel = ags_channel_nth(channel,
-				line);
-
-      play_port = ags_channel_collect_all_channel_ports_by_specifier_and_context(channel,
+      play_port = ags_channel_collect_all_channel_ports_by_specifier_and_context(nth_channel,
 										 specifier, TRUE);
 
-      recall_port = ags_channel_collect_all_channel_ports_by_specifier_and_context(channel,
+      recall_port = ags_channel_collect_all_channel_ports_by_specifier_and_context(nth_channel,
 										   specifier, FALSE);
+
+      if(nth_channel != NULL){
+	g_object_unref(nth_channel);
+      }
+
+      /* unref */
+      if(start_channel != NULL){
+	g_object_unref(start_channel);
+      }
     }else{
       play_port = ags_audio_collect_all_audio_ports_by_specifier_and_context(machine->audio,
 									     specifier, TRUE);

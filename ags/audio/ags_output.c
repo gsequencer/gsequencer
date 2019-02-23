@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -117,7 +117,8 @@ AgsRecycling*
 ags_output_find_first_input_recycling(AgsOutput *output)
 {
   AgsAudio *audio;
-  AgsChannel *input;
+  AgsChannel *start_input;
+  AgsChannel *input, *first_with_recycling, *nth_input;
   AgsRecycling *recycling;
   
   guint audio_flags;
@@ -159,17 +160,29 @@ ags_output_find_first_input_recycling(AgsOutput *output)
 
   audio_flags = audio->flags;
   
-  input = audio->input;
+  start_input = audio->input;
+
+  if(start_input != NULL){
+    g_object_unref(start_input);
+  }
   
   pthread_mutex_unlock(audio_mutex);
 
   /* find first input recycling */
   if((AGS_AUDIO_ASYNC & (audio_flags)) != 0){
-    input = ags_channel_nth(input, audio_channel);
+    nth_input = ags_channel_nth(start_input, audio_channel);
 
-    input = ags_channel_first_with_recycling(input);
+    input = nth_input;
+    
+    first_with_recycling = ags_channel_first_with_recycling(input);
+
+    g_object_unref(input);
+
+    input = first_with_recycling;
   }else{
-    input = ags_channel_nth(input, line);
+    nth_input = ags_channel_nth(start_input, line);
+
+    input = nth_input;
   }
 
   /* recycling */
@@ -179,8 +192,12 @@ ags_output_find_first_input_recycling(AgsOutput *output)
     g_object_get(input,
 		 "first-recycling", &recycling,
 		 NULL);
-    g_object_unref(recycling);
   }
+
+  g_object_unref(input);
+  
+  /* unref */
+  g_object_unref(start_input);
   
   return(recycling);
 }
@@ -199,7 +216,8 @@ AgsRecycling*
 ags_output_find_last_input_recycling(AgsOutput *output)
 {
   AgsAudio *audio;
-  AgsChannel *input;
+  AgsChannel *start_input;
+  AgsChannel *input, *last_with_recycling, *nth_input;
   AgsRecycling *recycling;
   
   guint audio_flags;
@@ -241,16 +259,28 @@ ags_output_find_last_input_recycling(AgsOutput *output)
 
   audio_flags = audio->flags;
   
-  input = audio->input;
-  
+  start_input = audio->input;  
+
+  if(start_input != NULL){
+    g_object_unref(start_input);
+  }
+
   pthread_mutex_unlock(audio_mutex);
 
   if((AGS_AUDIO_ASYNC & (audio_flags)) != 0){
-    input = ags_channel_nth(input, audio_channel);
+    nth_input = ags_channel_nth(start_input, audio_channel);
 
-    input = ags_channel_last_with_recycling(input);
+    input = nth_input;
+
+    last_with_input = ags_channel_last_with_recycling(input);
+
+    g_object_unref(input);
+
+    input = last_with_recycling;
   }else{
-    input = ags_channel_nth(input, line);
+    nth_input = ags_channel_nth(start_input, line);
+
+    input = nth_input;    
   }
 
   /* recycling */
@@ -260,8 +290,12 @@ ags_output_find_last_input_recycling(AgsOutput *output)
     g_object_get(input,
 		 "last-recycling", &recycling,
 		 NULL);
-    g_object_unref(recycling);
   }
+
+  g_object_unref(input);
+  
+  /* unref */
+  g_object_unref(start_input);
   
   return(recycling);
 }

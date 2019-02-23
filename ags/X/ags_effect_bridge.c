@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -1223,8 +1223,8 @@ ags_effect_bridge_real_resize_pads(AgsEffectBridge *effect_bridge,
   GtkTable *table;
 
   AgsAudio *audio;
-  AgsChannel *output, *input;
-  AgsChannel *current;
+  AgsChannel *start_output, *start_input;
+  AgsChannel *current, *next_pad, *nth_current;
 
   guint audio_channels;
   guint i;
@@ -1237,21 +1237,23 @@ ags_effect_bridge_real_resize_pads(AgsEffectBridge *effect_bridge,
 
   g_object_get(audio,
 	       "audio-channels", &audio_channels,
-	       "output", &output,
-	       "input", &input,
+	       "output", &start_output,
+	       "input", &start_input,
 	       NULL);
-  g_object_unref(output);
-  g_object_unref(input);
-
+  
   if(new_size > old_size){
     if(channel_type == AGS_TYPE_OUTPUT){
-      current = ags_channel_nth(output,
-				old_size * audio_channels);
+      nth_current = ags_channel_nth(start_output,
+				    old_size * audio_channels);
 
     }else{
-      current = ags_channel_nth(input,
-				old_size * audio_channels);
+      nth_current = ags_channel_nth(start_input,
+				    old_size * audio_channels);
     }
+
+    current = nth_current;
+
+    next_pad = NULL;
     
     for(i = 0; i < new_size - old_size && current != NULL; i++){
       if(channel_type == AGS_TYPE_OUTPUT){
@@ -1277,15 +1279,17 @@ ags_effect_bridge_real_resize_pads(AgsEffectBridge *effect_bridge,
       }
 
       /* iterate */
-      g_object_get(current,
-		   "next-pad", &current,
-		   NULL);
+      next_pad = ags_channel_next_pad(current);
 
-      if(current != NULL){
-	g_object_unref(current);
-      }
+      g_object_unref(current);
+
+      current = next_pad;
     }
 
+    if(next_pad != NULL){
+      g_object_unref(next_pad);
+    }
+    
     /* connect and show */
     if((AGS_EFFECT_BRIDGE_CONNECTED & (effect_bridge->flags)) != 0){
       GtkContainer *container;
@@ -1336,6 +1340,14 @@ ags_effect_bridge_real_resize_pads(AgsEffectBridge *effect_bridge,
     }
     
     g_list_free(start_list);
+  }
+
+  if(start_output != NULL){
+    g_object_unref(start_output);
+  }
+
+  if(start_input != NULL){  
+    g_object_unref(start_input);
   }
 }
 

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -1273,7 +1273,8 @@ ags_automation_editor_add_acceleration(AgsAutomationEditor *automation_editor,
   }
 
   if(automation_editor->selected_machine != NULL){
-    AgsChannel *output, *input;
+    AgsChannel *start_output, *start_input;
+    AgsChannel *channel, *nth_channel;
 
     pthread_mutex_t *audio_mutex;
 
@@ -1297,8 +1298,17 @@ ags_automation_editor_add_acceleration(AgsAutomationEditor *automation_editor,
     /* get some fields */
     pthread_mutex_lock(audio_mutex);
 
-    output = machine->audio->output;
-    input = machine->audio->input;
+    start_output = machine->audio->output;
+
+    if(start_output != NULL){
+      g_object_ref(start_output);
+    }
+    
+    start_input = machine->audio->input;
+
+    if(start_input != NULL){
+      g_object_ref(start_input);
+    }
     
     pthread_mutex_unlock(audio_mutex);
     
@@ -1315,42 +1325,49 @@ ags_automation_editor_add_acceleration(AgsAutomationEditor *automation_editor,
     while(notebook == NULL ||
 	  (i = ags_notebook_next_active_tab(notebook,
 					    i)) != -1){      
-      AgsChannel *channel;
       AgsAcceleration *new_acceleration;
 
       GList *start_play_port, *play_port;
       GList *start_recall_port, *recall_port;
       GList *start_list, *list;
-      
+
       play_port = NULL;
       recall_port = NULL;
-	
+      
       if(automation_editor->focused_automation_edit->channel_type == AGS_TYPE_OUTPUT){
-	channel = ags_channel_nth(output,
-				  i);
+	nth_channel = ags_channel_nth(start_output,
+				      i);
 
 	play_port =
-	  start_play_port = ags_channel_collect_all_channel_ports_by_specifier_and_context(channel,
+	  start_play_port = ags_channel_collect_all_channel_ports_by_specifier_and_context(nth_channel,
 											   automation_editor->focused_automation_edit->control_name,
 											   TRUE);
 
 	recall_port =
-	  start_recall_port = ags_channel_collect_all_channel_ports_by_specifier_and_context(channel,
+	  start_recall_port = ags_channel_collect_all_channel_ports_by_specifier_and_context(nth_channel,
 											     automation_editor->focused_automation_edit->control_name,
 											     FALSE);
+
+	if(nth_channel != NULL){
+	  g_object_unref(nth_channel);
+	}
       }else if(automation_editor->focused_automation_edit->channel_type == AGS_TYPE_INPUT){
-	channel = ags_channel_nth(input,
-				  i);
+	nth_channel = ags_channel_nth(start_input,
+				      i);
 
 	play_port =
-	  start_play_port = ags_channel_collect_all_channel_ports_by_specifier_and_context(channel,
+	  start_play_port = ags_channel_collect_all_channel_ports_by_specifier_and_context(nth_channel,
 											   automation_editor->focused_automation_edit->control_name,
 											   TRUE);
 
 	recall_port =
-	  start_recall_port = ags_channel_collect_all_channel_ports_by_specifier_and_context(channel,
+	  start_recall_port = ags_channel_collect_all_channel_ports_by_specifier_and_context(nth_channel,
 											     automation_editor->focused_automation_edit->control_name,
 											     FALSE);
+
+	if(nth_channel != NULL){
+	  g_object_unref(nth_channel);
+	}
       }else{
 	play_port =
 	  start_play_port = ags_audio_collect_all_audio_ports_by_specifier_and_context(machine->audio,
@@ -1463,6 +1480,15 @@ ags_automation_editor_add_acceleration(AgsAutomationEditor *automation_editor,
       i++;
     }
     
+    /* unref */
+    if(start_output != NULL){
+      g_object_unref(start_output);
+    }
+
+    if(start_input != NULL){
+      g_object_unref(start_input);
+    }
+
     g_object_unref(timestamp);
     
     gtk_widget_queue_draw(GTK_WIDGET(automation_editor->focused_automation_edit));
@@ -1807,7 +1833,8 @@ ags_automation_editor_paste(AgsAutomationEditor *automation_editor)
 						  AgsTimestamp *timestamp,
 						  gboolean match_line, gboolean no_duplicates)
   {    
-    AgsChannel *output, *input;
+    AgsChannel *start_output, *start_input;
+    AgsChannel *channel, *nth_channel;
     AgsAutomation *automation;
 		
     GList *start_list_automation, *list_automation;
@@ -1830,8 +1857,17 @@ ags_automation_editor_paste(AgsAutomationEditor *automation_editor)
     /* get some fields */
     pthread_mutex_lock(audio_mutex);
 
-    output = machine->audio->output;
-    input = machine->audio->input;
+    start_output = machine->audio->output;
+
+    if(start_output != NULL){
+      g_object_ref(start_output);
+    }
+    
+    start_input = machine->audio->input;
+
+    if(start_input != NULL){
+      g_object_ref(start_input);
+    }
     
     pthread_mutex_unlock(audio_mutex);
     
@@ -1850,8 +1886,6 @@ ags_automation_editor_paste(AgsAutomationEditor *automation_editor)
 								    timestamp);
 
       if(list_automation == NULL){
-	AgsChannel *channel;
-
 	GList *start_play_port, *play_port;
 	GList *start_recall_port, *recall_port;
 	
@@ -1861,31 +1895,39 @@ ags_automation_editor_paste(AgsAutomationEditor *automation_editor)
 	recall_port = NULL;
 
 	if(automation_editor->focused_automation_edit->channel_type == AGS_TYPE_OUTPUT){
-	  channel = ags_channel_nth(output,
-				    i);
-
+	  nth_channel = ags_channel_nth(start_output,
+					i);
+	  
 	  play_port =
-	    start_play_port = ags_channel_collect_all_channel_ports_by_specifier_and_context(channel,
+	    start_play_port = ags_channel_collect_all_channel_ports_by_specifier_and_context(nth_channel,
 											     automation_editor->focused_automation_edit->control_name,
 											     TRUE);
 
 	  recall_port =
-	    start_recall_port = ags_channel_collect_all_channel_ports_by_specifier_and_context(channel,
+	    start_recall_port = ags_channel_collect_all_channel_ports_by_specifier_and_context(nth_channel,
 											       automation_editor->focused_automation_edit->control_name,
 											       FALSE);
+
+	  if(nth_channel != NULL){
+	    g_object_unref(nth_channel);
+	  }
 	}else if(automation_editor->focused_automation_edit->channel_type == AGS_TYPE_INPUT){
-	  channel = ags_channel_nth(input,
-				    i);
+	  nth_channel = ags_channel_nth(start_input,
+					i);
 
 	  play_port =
-	    start_play_port = ags_channel_collect_all_channel_ports_by_specifier_and_context(channel,
+	    start_play_port = ags_channel_collect_all_channel_ports_by_specifier_and_context(nth_channel,
 											     automation_editor->focused_automation_edit->control_name,
 											     TRUE);
 
 	  recall_port =
-	    start_recall_port = ags_channel_collect_all_channel_ports_by_specifier_and_context(channel,
+	    start_recall_port = ags_channel_collect_all_channel_ports_by_specifier_and_context(nth_channel,
 											       automation_editor->focused_automation_edit->control_name,
 											       FALSE);
+
+	  if(nth_channel != NULL){
+	    g_object_unref(nth_channel);
+	  }
 	}else{
 	  play_port =
 	    start_play_port = ags_audio_collect_all_audio_ports_by_specifier_and_context(machine->audio,
@@ -2077,6 +2119,15 @@ ags_automation_editor_paste(AgsAutomationEditor *automation_editor)
       }
 		  
       i++;
+    }
+
+    /* unref */
+    if(start_output != NULL){
+      g_object_unref(start_output);
+    }
+
+    if(start_input != NULL){
+      g_object_unref(start_input);
     }
 
     return(first_x);
