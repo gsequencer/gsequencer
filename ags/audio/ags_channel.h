@@ -249,6 +249,8 @@ AgsChannel* ags_channel_last_with_recycling(AgsChannel *channel);
 AgsChannel* ags_channel_prev_with_recycling(AgsChannel *channel);
 AgsChannel* ags_channel_next_with_recycling(AgsChannel *channel);
 
+AgsChannel* ags_channel_get_link(AgsChannel *channel);
+
 void ags_channel_set_link(AgsChannel *channel, AgsChannel *link,
 			  GError **error);
 void ags_channel_reset_recycling(AgsChannel *channel,

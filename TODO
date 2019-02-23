@@ -29,7 +29,6 @@
 * TODO:JK: implemented damping/vibration of AgsAudioSignal
 * TODO:JK: implemented exponential curve option for ags-envelope recall
 
-ags_channel_nth
 ags_channel_pad_nth
 ags_channel_prev_with_recycling
 ags_channel_next_with_recycling
