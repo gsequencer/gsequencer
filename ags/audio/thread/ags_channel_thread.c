@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -516,7 +516,8 @@ ags_channel_thread_run(AgsThread *thread)
 						      AGS_SOUND_STAGING_DO_FEEDBACK |
 						      AGS_SOUND_STAGING_FEED_OUTPUT_QUEUE));
 	  
-	g_list_free(recall_id);
+	g_list_free_full(recall_id,
+			 g_object_unref);
       }
     }
   }else{
@@ -539,7 +540,8 @@ ags_channel_thread_run(AgsThread *thread)
 						      AGS_SOUND_STAGING_DO_FEEDBACK |
 						      AGS_SOUND_STAGING_FEED_OUTPUT_QUEUE));
 	  
-	g_list_free(recall_id);
+	g_list_free_full(recall_id,
+			 g_object_unref);
       }
     }
   }

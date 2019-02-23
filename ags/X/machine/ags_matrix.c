@@ -742,8 +742,8 @@ ags_matrix_map_recall(AgsMachine *machine)
 		   g_object_unref);
   
   /* set pattern object on port */
-  nth_channel = <ags_channel_pad_nth(start_input,
-				     0);
+  nth_channel = ags_channel_pad_nth(start_input,
+				    0);
 
   channel = nth_channel;
   

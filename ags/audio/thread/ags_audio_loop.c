@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -1086,7 +1086,8 @@ ags_audio_loop_play_channel(AgsAudioLoop *audio_loop)
 	ags_channel_recursive_run_stage(channel,
 					sound_scope, playback_staging_flags);
 
-	g_list_free(recall_id);
+	g_list_free_full(recall_id,
+			 g_object_unref);
       }
     }
 
@@ -1161,7 +1162,8 @@ ags_audio_loop_play_channel_super_threaded(AgsAudioLoop *audio_loop,
       }
     }
       
-    g_list_free(recall_id);
+    g_list_free_full(recall_id,
+		     g_object_unref);
   }
 }
 
@@ -1217,7 +1219,8 @@ ags_audio_loop_sync_channel_super_threaded(AgsAudioLoop *audio_loop,
       pthread_mutex_unlock(channel_thread->done_mutex);
     }
       
-    g_list_free(recall_id);
+    g_list_free_full(recall_id,
+		     g_object_unref);
   }
 }
 
@@ -1292,7 +1295,8 @@ ags_audio_loop_play_audio(AgsAudioLoop *audio_loop)
 						      AGS_SOUND_STAGING_DO_FEEDBACK |
 						      AGS_SOUND_STAGING_FEED_OUTPUT_QUEUE));
 
-	  g_list_free(recall_id);
+	  g_list_free_full(recall_id,
+			   g_object_unref);
 	}
       }
     }
@@ -1381,7 +1385,8 @@ ags_audio_loop_play_audio_super_threaded(AgsAudioLoop *audio_loop, AgsPlaybackDo
 	}
       }
 
-      g_list_free(recall_id);
+      g_list_free_full(recall_id,
+		       g_object_unref);
     }
   }
 }
@@ -1449,7 +1454,8 @@ ags_audio_loop_sync_audio_super_threaded(AgsAudioLoop *audio_loop, AgsPlaybackDo
 	}
       }
 
-      g_list_free(recall_id);
+      g_list_free_full(recall_id,
+		       g_object_unref);
     }
   }
 }

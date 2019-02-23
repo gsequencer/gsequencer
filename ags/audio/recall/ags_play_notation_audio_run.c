@@ -1108,6 +1108,9 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
 	recycling = next_recycling;
       }
 
+      /* unref */
+      g_object_unref(selected_channel);
+
       if(first_recycling != NULL){
 	g_object_unref(first_recycling);
 	g_object_unref(last_recycling);

@@ -6851,6 +6851,8 @@ ags_audio_real_set_pads(AgsAudio *audio,
 	current = ags_channel_pad_nth(current,
 				      pads_old);
 
+	g_object_unref(current);
+	
 	for(j = pads_old; j < pads; j++){
 	  for(i = 0; i < audio_channels; i++){
 	    AgsPlayback *playback;
@@ -6958,7 +6960,9 @@ ags_audio_real_set_pads(AgsAudio *audio,
 
 	channel = ags_channel_pad_nth(channel,
 				      pads);
-      
+
+	g_object_unref(channel);
+	
 	/* remove playback */
 	pthread_mutex_lock(playback_domain_mutex);
 	  
@@ -7039,6 +7043,8 @@ ags_audio_real_set_pads(AgsAudio *audio,
 	current = ags_channel_pad_nth(current,
 				      pads_old);
 
+	g_object_unref(current);
+	
 	for(j = pads_old; j < pads; j++){
 	  for(i = 0; i < audio_channels; i++){
 	    AgsPlayback *playback;
@@ -7145,7 +7151,9 @@ ags_audio_real_set_pads(AgsAudio *audio,
       
 	channel = ags_channel_pad_nth(channel,
 				      pads);
-	
+
+	g_object_unref(channel);
+		
 	/* remove playback */
 	pthread_mutex_lock(playback_domain_mutex);
 	  
@@ -10578,13 +10586,19 @@ void
 ags_audio_recall_done_callback(AgsRecall *recall,
 			       AgsAudio *audio)
 {
+  GList *start_recall_id;
+  
   gint sound_scope;
   
   if(AGS_IS_COUNT_BEATS_AUDIO_RUN(recall)){
     sound_scope = ags_recall_get_sound_scope(recall);
-    
+
+    start_recall_id = ags_audio_check_scope(audio, sound_scope);
     ags_audio_stop(audio,
-		   ags_audio_check_scope(audio, sound_scope), sound_scope);
+		   start_recall_id, sound_scope);
+
+    g_list_free_full(start_recall_id,
+		     NULL);
   }
 }
 

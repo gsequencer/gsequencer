@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -555,7 +555,8 @@ ags_audio_thread_run(AgsThread *thread)
 							AGS_SOUND_STAGING_DO_FEEDBACK |
 							AGS_SOUND_STAGING_FEED_OUTPUT_QUEUE));
 	  
-	  g_list_free(recall_id);
+	  g_list_free_full(recall_id,
+			   g_object_unref);
 	}
       }else{
 	for(sound_scope = 0; sound_scope < AGS_SOUND_SCOPE_LAST; sound_scope++){
@@ -577,7 +578,8 @@ ags_audio_thread_run(AgsThread *thread)
 							  AGS_SOUND_STAGING_DO_FEEDBACK |
 							  AGS_SOUND_STAGING_FEED_OUTPUT_QUEUE));
 	  
-	    g_list_free(recall_id);
+	    g_list_free_full(recall_id,
+			     g_object_unref);
 	  }
 	}
       }
@@ -627,7 +629,8 @@ ags_audio_thread_run(AgsThread *thread)
 							AGS_SOUND_STAGING_DO_FEEDBACK |
 							AGS_SOUND_STAGING_FEED_OUTPUT_QUEUE));
 	  
-	  g_list_free(recall_id);
+	  g_list_free_full(recall_id,
+			   g_object_unref);
 	}
       }else{	
 	for(sound_scope = 0; sound_scope < AGS_SOUND_SCOPE_LAST; sound_scope++){
@@ -650,7 +653,8 @@ ags_audio_thread_run(AgsThread *thread)
 							  AGS_SOUND_STAGING_DO_FEEDBACK |
 							  AGS_SOUND_STAGING_FEED_OUTPUT_QUEUE));
 	  
-	    g_list_free(recall_id);
+	    g_list_free_full(recall_id,
+			     g_object_unref);
 	  }
 	}
       }
@@ -797,7 +801,8 @@ ags_audio_thread_play_channel_super_threaded(AgsAudioThread *audio_thread, AgsPl
 	  }
 	}
       
-	g_list_free(recall_id);
+	g_list_free_full(recall_id,
+			 g_object_unref);
       }
     }    
   }else{
@@ -832,7 +837,8 @@ ags_audio_thread_play_channel_super_threaded(AgsAudioThread *audio_thread, AgsPl
 	  }
 	}
       
-	g_list_free(recall_id);
+	g_list_free_full(recall_id,
+			 g_object_unref);
       }
     }
   }
@@ -891,7 +897,8 @@ ags_audio_thread_sync_channel_super_threaded(AgsAudioThread *audio_thread, AgsPl
 	  pthread_mutex_unlock(channel_thread->done_mutex);
 	}
       
-	g_list_free(recall_id);
+	g_list_free_full(recall_id,
+			 g_object_unref);
       }
     }
   }else{
@@ -931,7 +938,8 @@ ags_audio_thread_sync_channel_super_threaded(AgsAudioThread *audio_thread, AgsPl
 	  pthread_mutex_unlock(channel_thread->done_mutex);
 	}
       
-	g_list_free(recall_id);
+	g_list_free_full(recall_id,
+			 g_object_unref);
       }
     }
   }

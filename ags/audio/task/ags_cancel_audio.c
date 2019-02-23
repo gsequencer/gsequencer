@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -448,10 +448,14 @@ ags_cancel_audio_launch(AgsTask *task)
 				(GObject *) audio);
   }
 
-  g_list_free(sequencer);
-  g_list_free(notation);
-  g_list_free(wave);
-  g_list_free(midi);
+  g_list_free_full(sequencer,
+		   g_object_unref);
+  g_list_free_full(notation,
+		   g_object_unref);
+  g_list_free_full(wave,
+		   g_object_unref);
+  g_list_free_full(midi,
+		   g_object_unref);
 
   g_object_unref(playback_domain);
 

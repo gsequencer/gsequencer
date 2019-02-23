@@ -5248,7 +5248,8 @@ ags_channel_set_link(AgsChannel *channel, AgsChannel *link,
 					      AGS_SOUND_STAGING_DONE |
 					      AGS_SOUND_STAGING_REMOVE));
 
-	  g_list_free(recall_id);
+	  g_list_free_full(recall_id,
+			   g_object_unref);
 	}
       }
     }
@@ -5272,7 +5273,8 @@ ags_channel_set_link(AgsChannel *channel, AgsChannel *link,
 					      AGS_SOUND_STAGING_DONE |
 					      AGS_SOUND_STAGING_REMOVE));
 
-	  g_list_free(recall_id);
+	  g_list_free_full(recall_id,
+			   g_object_unref);
 	}
       }
     }
@@ -5294,7 +5296,8 @@ ags_channel_set_link(AgsChannel *channel, AgsChannel *link,
 					    AGS_SOUND_STAGING_RUN_INIT_INTER |
 					    AGS_SOUND_STAGING_RUN_INIT_POST));
 
-	g_list_free(recall_id);
+	g_list_free_full(recall_id,
+			   g_object_unref);
       }
     }
   }
@@ -5314,7 +5317,8 @@ ags_channel_set_link(AgsChannel *channel, AgsChannel *link,
 					    AGS_SOUND_STAGING_RUN_INIT_INTER |
 					    AGS_SOUND_STAGING_RUN_INIT_POST));
 
-	g_list_free(recall_id);
+	g_list_free_full(recall_id,
+			 g_object_unref);
       }
     }
   }
@@ -5455,10 +5459,16 @@ ags_channel_reset_recycling(AgsChannel *channel,
 
 	    complete_level_first = 1;
 	  }
+
+	  g_object_unref(nth_channel_prev);
 	}
       }else{
 	if(nth_channel_prev == NULL){
 	  nth_channel_prev = ags_channel_prev_with_recycling(input);
+
+	  if(nth_channel_prev != NULL){
+	    g_object_unref(nth_channel_prev);
+	  }
 	}
       }
       
@@ -5479,10 +5489,16 @@ ags_channel_reset_recycling(AgsChannel *channel,
 	    
 	    complete_level_last = 1;
 	  }
+
+	  g_object_unref(nth_channel_next);
 	}
       }else{
 	if(nth_channel_next == NULL){
 	  nth_channel_next = ags_channel_next_with_recycling(input);
+
+	  if(nth_channel_next != NULL){
+	    g_object_unref(nth_channel_next);
+	  }
 	}
       }
 
@@ -5729,7 +5745,8 @@ ags_channel_reset_recycling(AgsChannel *channel,
 	ags_channel_recursive_run_stage(current,
 					i, (AGS_SOUND_STAGING_CANCEL));
 
-	g_list_free(recall_id);
+	g_list_free_full(recall_id,
+			 g_object_unref);
       }
     }
 #endif
@@ -6749,7 +6766,8 @@ ags_channel_reset_recycling(AgsChannel *channel,
 	    recall_id = recall_id->next;
 	  }
 
-	  g_list_free(recall_id_start);
+	  g_list_free_full(recall_id_start,
+			   g_object_unref);
 	}
       }
     }else{
@@ -10670,14 +10688,20 @@ void
 ags_channel_recall_done_callback(AgsRecall *recall,
 				 AgsChannel *channel)
 {
+  GList *start_recall_id;
+  
   gint sound_scope;
   
   if(AGS_IS_PLAY_CHANNEL_RUN(recall)){
     sound_scope = ags_recall_get_sound_scope(recall);
 
-    if(sound_scope == AGS_SOUND_SCOPE_PLAYBACK){      
+    if(sound_scope == AGS_SOUND_SCOPE_PLAYBACK){
+      start_recall_id = ags_channel_check_scope(channel, sound_scope);
       ags_channel_stop(channel,
-		       ags_channel_check_scope(channel, sound_scope), sound_scope);
+		       start_recall_id, sound_scope);
+
+      g_list_free_full(start_recall_id,
+		       g_object_unref);
     }
   }
 }
@@ -14224,6 +14248,9 @@ ags_channel_real_recursive_run_stage(AgsChannel *channel,
     }
 
     g_object_unref(recycling);
+
+    g_list_free_full(recall_id,
+		     g_object_unref);
   }
     
   /* get channel mutex */
