@@ -720,7 +720,7 @@ ags_loop_channel_run_create_audio_signals(AgsLoopChannelRun *loop_channel_run)
   //		 0:
   //			 tic_counter_incr)];
 
-  recycling = start_recycling;
+  recycling = first_recycling;
   g_object_ref(recycling);
 
   next_recycling = NULL;

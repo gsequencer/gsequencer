@@ -419,17 +419,17 @@ ags_input_collection_editor_apply(AgsApplicable *applicable)
 
     /* apply */
     g_object_get(audio,
-		 "output", &output,
-		 "input", &input,
+		 "output", &start_output,
+		 "input", &start_input,
 		 NULL);
     
     for(i = 0; i < count; i++){
       channel = NULL;
       
       if(g_type_is_a(input_collection_editor->channel_type, AGS_TYPE_OUTPUT)){
-	channel = output;
+	channel = start_output;
       }else if(g_type_is_a(input_collection_editor->channel_type, AGS_TYPE_INPUT)){
-	channel = input;
+	channel = start_input;
       }
 
       nth_channel = ags_channel_nth(channel,

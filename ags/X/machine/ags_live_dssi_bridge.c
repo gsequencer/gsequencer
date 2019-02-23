@@ -895,7 +895,7 @@ ags_live_dssi_bridge_resize_audio_channels(AgsMachine *machine,
     }
     
     /* AgsOutput */
-    channel = output;
+    channel = start_output;
 
     if(channel != NULL){
       g_object_ref(channel);

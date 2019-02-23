@@ -651,7 +651,7 @@ ags_cell_pattern_start_channel_launch_callback(AgsTask *task, AgsNote *note)
     }
 
     /* iterate */
-    next_reycling = ags_recycling_next(recycling);
+    next_recycling = ags_recycling_next(recycling);
 
     g_object_unref(recycling);
 

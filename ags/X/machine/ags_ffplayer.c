@@ -1394,10 +1394,6 @@ ags_ffplayer_input_map_recall(AgsFFPlayer *ffplayer, guint input_pad_start)
 	       "input", &start_input,
 	       NULL);
 
-  if(input != NULL){
-    g_object_unref(input);
-  }
-
   /* ags-envelope */
   ags_recall_factory_create(audio,
 			    NULL, NULL,

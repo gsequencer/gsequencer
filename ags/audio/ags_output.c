@@ -272,7 +272,7 @@ ags_output_find_last_input_recycling(AgsOutput *output)
 
     input = nth_input;
 
-    last_with_input = ags_channel_last_with_recycling(input);
+    last_with_recycling = ags_channel_last_with_recycling(input);
 
     g_object_unref(input);
 

@@ -458,7 +458,7 @@ ags_matrix_resize_pads(AgsMachine *machine, GType type,
   AgsMatrix *matrix;
 
   AgsAudio *audio;
-  AgsCahnnel *start_output, *start_input;
+  AgsChannel *start_output, *start_input;
   AgsChannel *channel, *next_channel, *nth_channel;
   AgsAudioSignal *audio_signal;
   
@@ -516,7 +516,7 @@ ags_matrix_resize_pads(AgsMachine *machine, GType type,
   }else{
     if(grow){
       g_object_get(audio,
-		   "output", &start_ouput,
+		   "output", &start_output,
 		   NULL);
 
       nth_channel = ags_channel_nth(start_output,

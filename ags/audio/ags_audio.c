@@ -5463,7 +5463,7 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
       if(audio_channels_old != 0){
 	nth_channel = ags_channel_nth(start, j * audio_channels);
 
-	pad_next = ags_channel_pad_next(nth_channel);
+	pad_next = ags_channel_next_pad(nth_channel);
 
 	g_object_unref(nth_channel);
 	g_object_unref(pad_next);

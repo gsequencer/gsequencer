@@ -755,7 +755,8 @@ ags_cell_pattern_draw_matrix(AgsCellPattern *cell_pattern)
 {
   AgsMachine *machine;
 
-  AgsChannel *start_channel, *channel;
+  AgsChannel *start_channel;
+  AgsChannel *channel, *prev_pad;
 
   guint input_pads;
   guint gutter;

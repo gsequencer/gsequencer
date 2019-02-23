@@ -2658,7 +2658,7 @@ ags_effect_bulk_real_remove_effect(AgsEffectBulk *effect_bulk,
   
   /* remove recalls */
   if(current != NULL){
-    current_next = NULL;
+    next_current = NULL;
     
     for(i = 0; i < pads; i++){
       for(j = 0; j < audio_channels; j++){
@@ -2667,16 +2667,16 @@ ags_effect_bulk_real_remove_effect(AgsEffectBulk *effect_bulk,
 				  nth_effect);
 
 	/* iterate */
-	current_next = ags_channel_next(current);
+	next_current = ags_channel_next(current);
 
 	g_object_unref(current);
 
-	current = current_next;
+	current = next_current;
       }
     }
 
-    if(current_next != NULL){
-      g_object_unref(current_next);
+    if(next_current != NULL){
+      g_object_unref(next_current);
     }
   }
 
@@ -2713,7 +2713,7 @@ ags_effect_bulk_real_resize_audio_channels(AgsEffectBulk *effect_bulk,
 					   guint old_size)
 {
   AgsChannel *start_channel;
-  AgsChannel *current, *current_next, *nth_current;
+  AgsChannel *current, *next_current, *nth_current;
   
   GList *start_list, *list;
 

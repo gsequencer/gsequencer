@@ -5889,7 +5889,7 @@ ags_channel_reset_recycling(AgsChannel *channel,
     AgsChannel *current_input, *next_pad, *nth_input;
     AgsChannel *current_link;
 
-    GList *recall_id_start, *recall_id;
+    GList *start_recall_id, *recall_id;
 
     guint audio_flags;
     guint audio_channel, line;
@@ -5952,7 +5952,7 @@ ags_channel_reset_recycling(AgsChannel *channel,
 	  recall_id = recall_id->next;
 	}
 
-	g_list_free_full(recall_id_start,
+	g_list_free_full(start_recall_id,
 			 g_object_unref);
 
 	/* traverse the tree */
@@ -6011,7 +6011,7 @@ ags_channel_reset_recycling(AgsChannel *channel,
 	recall_id = recall_id->next;
       }
 
-      g_list_free_full(recall_id_start,
+      g_list_free_full(start_recall_id,
 		       g_object_unref);
 
       /* traverse the tree */
@@ -12121,7 +12121,7 @@ ags_channel_real_recursive_run_stage(AgsChannel *channel,
 
       length = 0;
       
-      if((AGS_AUDIO_ASYNC & (current_audio_flags)) != 0){
+      if(ags_audio_test_flags(current_audio, AGS_AUDIO_ASYNC)){
 	g_object_get(current_audio,
 		     "input", &start_input,
 		     NULL);
@@ -12763,7 +12763,7 @@ ags_channel_real_recursive_run_stage(AgsChannel *channel,
       
       next_recycling_context = NULL;
 
-      if((AGS_AUDIO_ASYNC & (current_audio_flags)) != 0){
+      if(ags_audio_test_flags(current_audio, AGS_AUDIO_ASYNC)){
 	AgsChannel *first_with_recycling;
 	  
 	nth_input = ags_channel_nth(start_input,
@@ -13560,6 +13560,7 @@ ags_channel_real_recursive_run_stage(AgsChannel *channel,
   {
     AgsAudio *current_audio;
     AgsChannel *current_channel, *nth_channel;
+    AgsChannel *current_link;
     AgsRecallID *current_recall_id;
 
     GList *start_recall_id, *recall_id;
@@ -13702,7 +13703,7 @@ ags_channel_real_recursive_run_stage(AgsChannel *channel,
 	break;
       }
 
-      if((AGS_AUDIO_ASYNC & (current_audio_flags)) != 0){
+      if(ags_audio_test_flags(current_audio, AGS_AUDIO_ASYNC)){
 	nth_channel = ags_channel_nth(current_channel,
 				      audio_channel);
 
@@ -14060,7 +14061,7 @@ ags_channel_real_recursive_run_stage(AgsChannel *channel,
 		 NULL);    
     
     /* sync/async */
-    if((AGS_AUDIO_ASYNC & (current_audio_flags)) != 0){
+    if(ags_audio_test_flags(current_audio, AGS_AUDIO_ASYNC)){
       nth_input = ags_channel_nth(start_input,
 				  audio_channel);
 

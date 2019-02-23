@@ -57,7 +57,7 @@ struct _AgsListingEditorClass
 GType ags_listing_editor_get_type();
 
 void ags_listing_editor_add_children(AgsListingEditor *listing_editor,
-				     AgsAudio *audio, guint nth_channel,
+				     AgsAudio *audio, guint nth,
 				     gboolean connect);
 AgsListingEditor* ags_listing_editor_new(GType channel_type);
 

@@ -403,11 +403,12 @@ ags_pad_editor_set_channel(AgsPadEditor *pad_editor, AgsChannel *start_channel)
     gtk_widget_destroy(GTK_WIDGET(vbox));
   }
 
-  pad_editor->pad = channel;
+  pad_editor->pad = start_channel;
   
-  if(channel != NULL){
+  if(start_channel != NULL){
     AgsLineEditor *line_editor;
     
+    AgsChannel *channel;
     AgsChannel *next_pad, *next_channel;
 
     gchar *str;

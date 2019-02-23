@@ -3139,8 +3139,8 @@ ags_machine_generic_input_message_monitor_timeout(AgsMachine *machine)
 			 machine) != NULL){
     AgsMessageDelivery *message_delivery;
 
-    AgsChannel *start_output;
-    AgsChannel *output, *next_output;
+    AgsChannel *start_input;
+    AgsChannel *input, *next_input;
         
     GList *message_start, *message;
     

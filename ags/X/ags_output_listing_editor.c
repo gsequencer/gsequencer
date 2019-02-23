@@ -299,7 +299,7 @@ ags_output_listing_editor_reset(AgsApplicable *applicable)
  * ags_output_listing_editor_add_children:
  * @output_listing_editor: the #AgsOutputListingEditor
  * @audio: the #AgsAudio to use
- * @nth_channel: nth channel to start creation until end
+ * @nth: nth channel to start creation until end
  * @connect: if %TRUE widget is connected and shown
  *
  * Creates new pad editors or destroys them.
@@ -308,7 +308,7 @@ ags_output_listing_editor_reset(AgsApplicable *applicable)
  */
 void
 ags_output_listing_editor_add_children(AgsOutputListingEditor *output_listing_editor,
-				       AgsAudio *audio, guint nth_channel,
+				       AgsAudio *audio, guint nth,
 				       gboolean connect)
 {
   AgsPadEditor *pad_editor;
@@ -317,7 +317,7 @@ ags_output_listing_editor_add_children(AgsOutputListingEditor *output_listing_ed
   AgsChannel *start_channel;
   AgsChannel *channel, *next_pad, *nth_channel;
 
-  if(nth_channel == 0 &&
+  if(nth == 0 &&
      output_listing_editor->child != NULL){
     vbox = output_listing_editor->child;
     output_listing_editor->child = NULL;
@@ -329,7 +329,7 @@ ags_output_listing_editor_add_children(AgsOutputListingEditor *output_listing_ed
   }
 
   /* instantiate pad editor vbox */
-  if(nth_channel == 0){
+  if(nth == 0){
     output_listing_editor->child = (GtkVBox *) gtk_vbox_new(FALSE, 0);
     gtk_box_pack_start(GTK_BOX(output_listing_editor),
 		       GTK_WIDGET(output_listing_editor->child),
@@ -351,7 +351,7 @@ ags_output_listing_editor_add_children(AgsOutputListingEditor *output_listing_ed
   }
   
   nth_channel = ags_channel_nth(start_channel,
-				nth_channel);
+				nth);
 
   channel = nth_channel;
 

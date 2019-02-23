@@ -754,7 +754,7 @@ ags_equalizer10_map_recall(AgsMachine *machine)
   
   AgsAudio *audio;
   AgsChannel *start_input;
-  AgsChannel *channel, *next_cahnnel;
+  AgsChannel *channel, *next_channel;
   
   guint audio_channels;
   guint i;

@@ -1158,7 +1158,7 @@ ags_play_dssi_audio_run_run_pre(AgsRecall *recall)
   AgsPlayDssiAudio *play_dssi_audio;
   AgsPlayDssiAudioRun *play_dssi_audio_run;
   AgsAudio *audio;
-  AgsChannel *output, *input;
+  AgsChannel *start_output, *start_input;
   AgsChannel *channel;
   AgsChannel *selected_channel;
   AgsRecycling *recycling;

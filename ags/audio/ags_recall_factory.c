@@ -1122,7 +1122,7 @@ ags_recall_factory_create_prepare(AgsAudio *audio,
       channel = nth_channel;
       
       for(j = 0; j < stop_audio_channel - start_audio_channel; j++){
-	current = ags_channel_nth(output,
+	current = ags_channel_nth(start_output,
 				  start_audio_channel + j);
 	
 	/* check output */
@@ -1294,7 +1294,7 @@ ags_recall_factory_create_prepare(AgsAudio *audio,
       channel = nth_channel;
       
       for(j = 0; j < stop_audio_channel - start_audio_channel; j++){
-	current = ags_channel_nth(output,
+	current = ags_channel_nth(start_output,
 				  start_audio_channel + j);
 	
 	/* check output */
@@ -1548,25 +1548,11 @@ ags_recall_factory_create_copy(AgsAudio *audio,
       channel = nth_channel;
       
       for(j = 0; j < stop_audio_channel - start_audio_channel; j++){
-	current = ags_channel_nth(output,
+	current = ags_channel_nth(start_output,
 				  start_audio_channel + j);
-
-	/* get channel mutex */
-	pthread_mutex_lock(ags_channel_get_class_mutex());
-
-	channel_mutex = channel->obj_mutex;
-  
-	pthread_mutex_unlock(ags_channel_get_class_mutex());
 	
 	/* check output */
 	while(current != NULL){
-	  /* get channel mutex */
-	  pthread_mutex_lock(ags_channel_get_class_mutex());
-
-	  current_mutex = current->obj_mutex;
-  
-	  pthread_mutex_unlock(ags_channel_get_class_mutex());
-
 	  /* check output present */
 	  g_object_get(channel,
 		       "play", &list_start,
@@ -1720,25 +1706,11 @@ ags_recall_factory_create_copy(AgsAudio *audio,
       channel = nth_channel;
       
       for(j = 0; j < stop_audio_channel - start_audio_channel; j++){
-	current = ags_channel_nth(output,
+	current = ags_channel_nth(start_output,
 				  start_audio_channel + j);
-
-	/* get channel mutex */
-	pthread_mutex_lock(ags_channel_get_class_mutex());
-
-	channel_mutex = channel->obj_mutex;
-  
-	pthread_mutex_unlock(ags_channel_get_class_mutex());
 	
 	/* check output */
 	while(current != NULL){
-	  /* get channel mutex */
-	  pthread_mutex_lock(ags_channel_get_class_mutex());
-
-	  current_mutex = current->obj_mutex;
-  
-	  pthread_mutex_unlock(ags_channel_get_class_mutex());
-
 	  /* check output present */
 	  g_object_get(channel,
 		       "recall", &list_start,
@@ -2857,7 +2829,7 @@ ags_recall_factory_create_buffer(AgsAudio *audio,
 	  break;
 	}
 	  
-	current = ags_channel_nth(output,
+	current = ags_channel_nth(start_output,
 				  start_audio_channel + j);
 	
 	/* check output */
@@ -2999,7 +2971,7 @@ ags_recall_factory_create_buffer(AgsAudio *audio,
 	  break;
 	}
 
-	current = ags_channel_nth(output,
+	current = ags_channel_nth(start_output,
 				  start_audio_channel + j);
 	
 	/* check output */

@@ -886,7 +886,7 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
 						 AgsPlayNotationAudioRun *play_notation_audio_run)
 {
   AgsAudio *audio;
-  AgsChannel *output, *input;
+  AgsChannel *start_output, *start_input;
   AgsChannel *selected_channel, *channel, *next_pad;
   AgsRecycling *first_recycling, *last_recycling;
   AgsRecycling *recycling, *next_recycling;
