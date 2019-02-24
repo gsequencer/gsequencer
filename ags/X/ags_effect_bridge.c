@@ -668,6 +668,10 @@ ags_effect_bridge_set_property(GObject *gobject,
 		     "input-pads", &input_pads,
 		     NULL);
 
+	effect_bridge->samplerate = audio->samplerate;
+	effect_bridge->buffer_size = audio->buffer_size;
+	effect_bridge->format = audio->format;
+	
 	if(output != NULL){
 	  g_object_unref(output);
 	}

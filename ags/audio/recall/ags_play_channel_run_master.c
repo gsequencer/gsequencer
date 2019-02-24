@@ -660,13 +660,13 @@ ags_play_channel_run_master_remap_dependencies(AgsPlayChannelRunMaster *play_cha
 	       "recall-id", &recall_id,
 	       NULL);
 
-  if(recall_id == NULL){
-    return;
-  }
+  recycling_context = NULL;
   
-  g_object_get(recall_id,
-	       "recycling-context", &recycling_context,
-	       NULL);
+  if(recall_id != NULL){
+    g_object_get(recall_id,
+		 "recycling-context", &recycling_context,
+		 NULL);
+  }
   
   /* remove old */
   if(old_start_region != NULL){
@@ -858,9 +858,13 @@ ags_play_channel_run_master_remap_dependencies(AgsPlayChannelRunMaster *play_cha
   }
 
   /* unref */
-  g_object_unref(recall_id);
-
-  g_object_unref(recycling_context);
+  if(recall_id != NULL){
+    g_object_unref(recall_id);
+  }
+  
+  if(recycling_context != NULL){
+    g_object_unref(recycling_context);
+  }
 }
 
 void

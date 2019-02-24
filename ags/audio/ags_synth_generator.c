@@ -706,6 +706,10 @@ ags_synth_generator_set_samplerate(AgsSynthGenerator *synth_generator, guint sam
   }
 
   old_samplerate = synth_generator->samplerate;
+
+  if(old_samplerate == samplerate){
+    return;
+  }
   
   synth_generator->samplerate = samplerate;
 

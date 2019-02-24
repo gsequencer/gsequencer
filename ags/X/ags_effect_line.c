@@ -499,6 +499,8 @@ ags_effect_line_plugin_interface_init(AgsPluginInterface *plugin)
 void
 ags_effect_line_init(AgsEffectLine *effect_line)
 {
+  AgsConfig *config;
+
   if(ags_effect_line_message_monitor == NULL){
     ags_effect_line_message_monitor = g_hash_table_new_full(g_direct_hash, g_direct_equal,
 						     NULL,
@@ -524,6 +526,12 @@ ags_effect_line_init(AgsEffectLine *effect_line)
   
   effect_line->version = AGS_EFFECT_LINE_DEFAULT_VERSION;
   effect_line->build_id = AGS_EFFECT_LINE_DEFAULT_BUILD_ID;
+
+  config = ags_config_get_instance();
+  
+  effect_line->samplerate = ags_soundcard_helper_config_get_samplerate(config);
+  effect_line->buffer_size = ags_soundcard_helper_config_get_buffer_size(config);
+  effect_line->format = ags_soundcard_helper_config_get_format(config);
 
   effect_line->channel = NULL;
 
@@ -928,6 +936,12 @@ ags_effect_line_real_set_channel(AgsEffectLine *effect_line, AgsChannel *channel
 
   if(effect_line->channel != NULL){
     effect_line->flags &= (~AGS_EFFECT_LINE_PREMAPPED_RECALL);
+  }
+
+  if(channel != NULL){
+    effect_line->samplerate = channel->samplerate;
+    effect_line->buffer_size = channel->buffer_size;
+    effect_line->format = channel->format;
   }
   
   effect_line->channel = channel;

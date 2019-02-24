@@ -408,12 +408,20 @@ ags_effect_pad_plugin_interface_init(AgsPluginInterface *plugin)
 void
 ags_effect_pad_init(AgsEffectPad *effect_pad)
 {  
+  AgsConfig *config;
+
   effect_pad->flags = 0;
 
   effect_pad->name = NULL;
   
   effect_pad->version = AGS_EFFECT_PAD_DEFAULT_VERSION;
   effect_pad->build_id = AGS_EFFECT_PAD_DEFAULT_BUILD_ID;
+
+  config = ags_config_get_instance();
+  
+  effect_pad->samplerate = ags_soundcard_helper_config_get_samplerate(config);
+  effect_pad->buffer_size = ags_soundcard_helper_config_get_buffer_size(config);
+  effect_pad->format = ags_soundcard_helper_config_get_format(config);
 
   effect_pad->channel = NULL;
 
@@ -802,6 +810,12 @@ ags_effect_pad_real_set_channel(AgsEffectPad *effect_pad, AgsChannel *channel)
 
   if(effect_pad->channel != NULL){
     effect_pad->flags &= (~AGS_EFFECT_PAD_PREMAPPED_RECALL);
+  }
+
+  if(channel != NULL){
+    effect_pad->samplerate = channel->samplerate;
+    effect_pad->buffer_size = channel->buffer_size;
+    effect_pad->format = channel->format;
   }
   
   effect_pad->channel = channel;

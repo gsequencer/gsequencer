@@ -530,6 +530,8 @@ ags_line_plugin_interface_init(AgsPluginInterface *plugin)
 void
 ags_line_init(AgsLine *line)
 {
+  AgsConfig *config;
+
   if(ags_line_message_monitor == NULL){
     ags_line_message_monitor = g_hash_table_new_full(g_direct_hash, g_direct_equal,
 						     NULL,
@@ -553,6 +555,12 @@ ags_line_init(AgsLine *line)
 
   line->version = AGS_VERSION;
   line->build_id = AGS_BUILD_ID;
+
+  config = ags_config_get_instance();
+  
+  line->samplerate = ags_soundcard_helper_config_get_samplerate(config);
+  line->buffer_size = ags_soundcard_helper_config_get_buffer_size(config);
+  line->format = ags_soundcard_helper_config_get_format(config);
 
   line->channel = NULL;
 
@@ -1000,6 +1008,12 @@ ags_line_real_set_channel(AgsLine *line, AgsChannel *channel)
 
   if(line->channel != NULL){
     line->flags &= (~AGS_LINE_PREMAPPED_RECALL);
+  }
+
+  if(channel != NULL){
+    line->samplerate = channel->samplerate;
+    line->buffer_size = channel->buffer_size;
+    line->format = channel->format;
   }
   
   line->channel = channel;

@@ -56,7 +56,7 @@ ags_equalizer10_resize_audio_channels_callback(AgsEqualizer10 *equalizer10,
   guint i;
   
   audio = AGS_MACHINE(equalizer10)->audio;
-  
+
   if(audio_channels > audio_channels_old){
     if((AGS_MACHINE_MAPPED_RECALL & (AGS_MACHINE(equalizer10)->flags)) != 0){
       AgsChannel *start_input;

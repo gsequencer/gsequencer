@@ -2830,11 +2830,15 @@ ags_recall_factory_create_buffer(AgsAudio *audio,
   if((AGS_RECALL_FACTORY_OUTPUT & (create_flags)) != 0){
     start = start_output;
     
-    g_object_ref(start);
+    if(start != NULL){
+      g_object_ref(start);
+    }
   }else{
     start = start_input;
-    
-    g_object_ref(start);
+
+    if(start != NULL){
+      g_object_ref(start);
+    }
   }
 
   recall = NULL;
@@ -6179,7 +6183,7 @@ ags_recall_factory_create_analyse(AgsAudio *audio,
 
     nth_channel = NULL;
 
-    for(i = 0; i < stop_pad - start_pad; i++){
+    for(i = 0; i < stop_pad - start_pad && channel != NULL; i++){
       nth_channel = ags_channel_nth(channel,
 				    start_audio_channel);
 
@@ -6187,7 +6191,7 @@ ags_recall_factory_create_analyse(AgsAudio *audio,
       
       channel = nth_channel;
       
-      for(j = 0; j < stop_audio_channel - start_audio_channel; j++){
+      for(j = 0; j < stop_audio_channel - start_audio_channel && channel != NULL; j++){
 	/* add recall container */
 	ags_channel_add_recall_container(channel,
 					 (GObject *) play_container);
@@ -6284,7 +6288,7 @@ ags_recall_factory_create_analyse(AgsAudio *audio,
 
     nth_channel = NULL;
 
-    for(i = 0; i < stop_pad - start_pad; i++){
+    for(i = 0; i < stop_pad - start_pad && channel != NULL; i++){
       nth_channel = ags_channel_nth(channel,
 				    start_audio_channel);
 
@@ -6292,7 +6296,7 @@ ags_recall_factory_create_analyse(AgsAudio *audio,
       
       channel = nth_channel;
       
-      for(j = 0; j < stop_audio_channel - start_audio_channel; j++){
+      for(j = 0; j < stop_audio_channel - start_audio_channel && channel != NULL; j++){
 	/* add recall container */
 	ags_channel_add_recall_container(channel,
 					 (GObject *) recall_container);
@@ -7256,7 +7260,7 @@ ags_recall_factory_create_eq10(AgsAudio *audio,
 
     nth_channel = NULL;
 
-    for(i = 0; i < stop_pad - start_pad; i++){
+    for(i = 0; i < stop_pad - start_pad && channel != NULL; i++){
       nth_channel = ags_channel_nth(channel,
 				    start_audio_channel);
 
@@ -7264,7 +7268,7 @@ ags_recall_factory_create_eq10(AgsAudio *audio,
       
       channel = nth_channel;
       
-      for(j = 0; j < stop_audio_channel - start_audio_channel; j++){
+      for(j = 0; j < stop_audio_channel - start_audio_channel && channel != NULL; j++){
 	/* add recall container */
 	ags_channel_add_recall_container(channel,
 					 (GObject *) play_container);
@@ -7361,7 +7365,7 @@ ags_recall_factory_create_eq10(AgsAudio *audio,
 
     nth_channel = NULL;
 
-    for(i = 0; i < stop_pad - start_pad; i++){
+    for(i = 0; i < stop_pad - start_pad && channel != NULL; i++){
       nth_channel = ags_channel_nth(channel,
 				    start_audio_channel);
 
@@ -7369,7 +7373,7 @@ ags_recall_factory_create_eq10(AgsAudio *audio,
       
       channel = nth_channel;
       
-      for(j = 0; j < stop_audio_channel - start_audio_channel; j++){
+      for(j = 0; j < stop_audio_channel - start_audio_channel && channel != NULL; j++){
 	/* add recall container */
 	ags_channel_add_recall_container(channel,
 					 (GObject *) recall_container);

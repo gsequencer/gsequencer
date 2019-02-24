@@ -336,6 +336,10 @@ ags_start_audio_launch(AgsTask *task)
 		   NULL);
       g_object_unref(recycling);
 
+#ifdef AGS_DEBUG
+      g_message("new recall id");
+#endif
+      
       /* create recall id and recycling context */
       audio_recall_id = ags_recall_id_new();
       ags_recall_id_set_sound_scope(audio_recall_id, sound_scope);

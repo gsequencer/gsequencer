@@ -13901,6 +13901,7 @@ ags_channel_real_recursive_run_stage(AgsChannel *channel,
       gint position;
       
       next_recycling_context = NULL;
+      first_recycling = NULL;
 
       if(ags_audio_test_flags(current_audio, AGS_AUDIO_ASYNC)){
 	AgsChannel *first_with_recycling;

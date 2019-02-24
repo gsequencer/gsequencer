@@ -718,7 +718,7 @@ ags_synth_update(AgsSynth *synth)
     }
   
     apply_synth = ags_apply_synth_new(synth_generator->data,
-				      channel,
+				      start_output,
 				      start_frequency, output_lines);
     task = g_list_prepend(task,
 			  apply_synth);
@@ -726,11 +726,8 @@ ags_synth_update(AgsSynth *synth)
     g_list_free_full(start_synth_generator,
 		     g_object_unref);
 
-    
-    /* unref */
-    if(input != NULL){
-      g_object_unref(input);
-    }
+    /* iterate */
+    input_pad = input_pad->next;
   }
 
   if(start_output != NULL){

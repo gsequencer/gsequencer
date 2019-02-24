@@ -179,8 +179,17 @@ ags_input_set_property(GObject *gobject,
 		       GParamSpec *param_spec)
 {
   AgsInput *input;
+  
+  pthread_mutex_t *channel_mutex;
 
   input = AGS_INPUT(gobject);
+
+  /* get channel mutex */
+  pthread_mutex_lock(ags_channel_get_class_mutex());
+  
+  channel_mutex = AGS_CHANNEL(input)->obj_mutex;
+  
+  pthread_mutex_unlock(ags_channel_get_class_mutex());
 
   switch(prop_id){
   case PROP_FILE_LINK:
@@ -189,7 +198,11 @@ ags_input_set_property(GObject *gobject,
 
       file_link = (AgsFileLink *) g_value_get_object(value);
 
+      pthread_mutex_lock(channel_mutex);
+
       if(input->file_link == (GObject *) file_link){
+	pthread_mutex_unlock(channel_mutex);
+
 	return;
       }
       
@@ -202,6 +215,8 @@ ags_input_set_property(GObject *gobject,
       }
 
       input->file_link = (GObject *) file_link;
+
+      pthread_mutex_unlock(channel_mutex);
     }
     break;
   case PROP_SYNTH_GENERATOR:
@@ -210,9 +225,15 @@ ags_input_set_property(GObject *gobject,
 
       synth_generator = (AgsSynthGenerator *) g_value_get_pointer(value);
 
+      pthread_mutex_lock(channel_mutex);
+
       if(g_list_find(input->synth_generator, synth_generator) != NULL){
+	pthread_mutex_unlock(channel_mutex);
+	
 	return;
       }
+
+      pthread_mutex_unlock(channel_mutex);
       
       ags_input_add_synth_generator(input, (GObject *) synth_generator);
     }
@@ -231,17 +252,36 @@ ags_input_get_property(GObject *gobject,
 {
   AgsInput *input;
 
+  pthread_mutex_t *channel_mutex;
+
   input = AGS_INPUT(gobject);
+
+  /* get channel mutex */
+  pthread_mutex_lock(ags_channel_get_class_mutex());
+  
+  channel_mutex = AGS_CHANNEL(input)->obj_mutex;
+  
+  pthread_mutex_unlock(ags_channel_get_class_mutex());
 
   switch(prop_id){
   case PROP_FILE_LINK:
     {
+      pthread_mutex_lock(channel_mutex);
+
       g_value_set_object(value, input->file_link);
+
+      pthread_mutex_unlock(channel_mutex);
     }
     break;
   case PROP_SYNTH_GENERATOR:
     {
-      g_value_set_pointer(value, g_list_copy(input->synth_generator));
+      pthread_mutex_lock(channel_mutex);
+
+      g_value_set_pointer(value, g_list_copy_deep(input->synth_generator,
+						  (GCopyFunc) g_object_ref,
+						  NULL));
+
+      pthread_mutex_unlock(channel_mutex);
     }
     break;
   default:

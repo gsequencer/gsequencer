@@ -1403,7 +1403,9 @@ ags_syncsynth_input_map_recall(AgsSyncsynth *syncsynth,
   
   syncsynth->mapped_input_pad = input_pads;
 
-  g_object_unref(start_input);
+  if(start_input != NULL){
+    g_object_unref(start_input);
+  }
 }
 
 void

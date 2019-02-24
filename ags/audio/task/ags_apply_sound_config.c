@@ -47,6 +47,7 @@
 
 #include <ags/audio/jack/ags_jack_server.h>
 #include <ags/audio/jack/ags_jack_client.h>
+#include <ags/audio/jack/ags_jack_port.h>
 #include <ags/audio/jack/ags_jack_devout.h>
 #include <ags/audio/jack/ags_jack_devin.h>
 #include <ags/audio/jack/ags_jack_midiin.h>
@@ -1043,7 +1044,7 @@ ags_apply_sound_config_launch(AgsTask *task)
       GList *start_port, *port;
 
       g_object_get(soundcard,
-		   "pulse-port", &start_port,
+		   "core-audio-port", &start_port,
 		   NULL);
 
       port = start_port;

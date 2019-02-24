@@ -285,6 +285,49 @@ ags_cancel_audio_launch(AgsTask *task)
 
   static const guint staging_flags = (AGS_SOUND_STAGING_CANCEL |
 				      AGS_SOUND_STAGING_REMOVE);
+
+  auto gboolean ags_cancel_audio_launch_check_scope(GList *recall_id);
+
+  gboolean ags_cancel_audio_launch_check_scope(GList *recall_id){
+    while(recall_id != NULL){
+      AgsRecyclingContext *recycling_context, *parent_recycling_context;
+      
+      recycling_context = NULL;
+      parent_recycling_context = NULL;
+      
+      g_object_get(recall_id->data,
+		   "recycling-context", &recycling_context,
+		   NULL);
+
+      g_object_get(recycling_context,
+		   "parent", &parent_recycling_context,
+		   NULL);
+      
+      if(parent_recycling_context == NULL){
+	if(recycling_context != NULL){
+	  g_object_unref(recycling_context);
+	}
+
+	if(parent_recycling_context != NULL){
+	  g_object_unref(parent_recycling_context);
+	}
+	
+	return(FALSE);
+      }
+
+      if(recycling_context != NULL){
+	g_object_unref(recycling_context);
+      }
+
+      if(parent_recycling_context != NULL){
+	g_object_unref(parent_recycling_context);
+      }
+
+      recall_id = recall_id->next;
+    }
+    
+    return(TRUE);
+  }
   
   cancel_audio = AGS_CANCEL_AUDIO(task);
 
@@ -439,11 +482,15 @@ ags_cancel_audio_launch(AgsTask *task)
 
   midi = ags_audio_check_scope(audio,
 			       (AGS_SOUND_SCOPE_MIDI));
+
+#ifdef AGS_DEBUG
+  g_message("!! %x %x %x %x", sequencer, notation, wave, midi);
+#endif
   
-  if(sequencer == NULL &&
-     notation == NULL &&
-     wave == NULL &&
-     midi == NULL){
+  if(ags_cancel_audio_launch_check_scope(sequencer) &&
+     ags_cancel_audio_launch_check_scope(notation) &&
+     ags_cancel_audio_launch_check_scope(wave) &&
+     ags_cancel_audio_launch_check_scope(midi)){
     ags_audio_loop_remove_audio(audio_loop,
 				(GObject *) audio);
   }

@@ -415,6 +415,8 @@ ags_pad_init(AgsPad *pad)
   GtkMenu *menu;
   GtkHBox *hbox;
 
+  AgsConfig *config;
+
   pad->flags = 0;
 
   pad->name = NULL;
@@ -422,6 +424,14 @@ ags_pad_init(AgsPad *pad)
   pad->version = AGS_VERSION;
   pad->build_id = AGS_BUILD_ID;
 
+  config = ags_config_get_instance();
+  
+  pad->samplerate = ags_soundcard_helper_config_get_samplerate(config);
+  pad->buffer_size = ags_soundcard_helper_config_get_buffer_size(config);
+  pad->format = ags_soundcard_helper_config_get_format(config);
+
+  pad->channel = NULL;
+  
   pad->cols = 2;
 
   pad->expander_set = ags_expander_set_new(1, 1);
@@ -812,6 +822,12 @@ ags_pad_real_set_channel(AgsPad *pad, AgsChannel *channel)
 
   if(channel != NULL){
     g_object_ref(G_OBJECT(channel));
+  }
+
+  if(channel != NULL){
+    pad->samplerate = channel->samplerate;
+    pad->buffer_size = channel->buffer_size;
+    pad->format = channel->format;
   }
 
   pad->channel = channel;

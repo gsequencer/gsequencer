@@ -856,11 +856,11 @@ ags_machine_stop_callback(AgsMachine *machine,
 {
   gboolean reset_active;
   
-  if((AGS_MACHINE_BLOCK_STOP & (machine->flags)) != 0){
+  if((AGS_MACHINE_BLOCK_STOP_CALLBACK & (machine->flags)) != 0){
     return;
   }
   
-  machine->flags |= AGS_MACHINE_BLOCK_STOP;
+  machine->flags |= AGS_MACHINE_BLOCK_STOP_CALLBACK;
 
   /* play button - check reset active */
   reset_active = (sound_scope == AGS_SOUND_SCOPE_SEQUENCER) ? TRUE: FALSE;
@@ -895,5 +895,5 @@ ags_machine_stop_callback(AgsMachine *machine,
   }
 #endif
 
-  machine->flags &= (~AGS_MACHINE_BLOCK_STOP);
+  machine->flags &= (~AGS_MACHINE_BLOCK_STOP_CALLBACK);
 }

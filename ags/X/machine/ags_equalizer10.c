@@ -605,6 +605,9 @@ ags_equalizer10_connect(AgsConnectable *connectable)
     return;
   }
 
+  /* call parent */
+  ags_equalizer10_parent_connectable_interface->connect(connectable);
+
   equalizer10 = AGS_EQUALIZER10(connectable);
 
   g_signal_connect_after(equalizer10, "resize-audio-channels",
@@ -646,9 +649,6 @@ ags_equalizer10_connect(AgsConnectable *connectable)
   
   g_signal_connect_after(equalizer10->pressure, "value-changed",
 			 G_CALLBACK(ags_equalizer10_pressure_callback), equalizer10);
-
-  /* call parent */
-  ags_equalizer10_parent_connectable_interface->connect(connectable);
 }
 
 void
@@ -665,80 +665,80 @@ ags_equalizer10_disconnect(AgsConnectable *connectable)
   equalizer10 = AGS_EQUALIZER10(connectable);
 
   g_object_disconnect(equalizer10,
-		      "resize-audio-channels",
+		      "any_signal::resize-audio-channels",
 		      G_CALLBACK(ags_equalizer10_resize_audio_channels_callback),
 		      NULL,
 		      NULL);
 
   g_object_disconnect(equalizer10,
-		      "resize-pads",
+		      "any_signal::resize-pads",
 		      G_CALLBACK(ags_equalizer10_resize_pads_callback),
 		      NULL,
 		      NULL);
 
   /* controls */
   g_object_disconnect(equalizer10->peak_28hz,
-		      "value-changed",
+		      "any_signal::value-changed",
 		      G_CALLBACK(ags_equalizer10_peak_28hz_callback),
 		      equalizer10,
 		      NULL);
 
   g_object_disconnect(equalizer10->peak_56hz,
-		      "value-changed",
+		      "any_signal::value-changed",
 		      G_CALLBACK(ags_equalizer10_peak_56hz_callback),
 		      equalizer10,
 		      NULL);
 
   g_object_disconnect(equalizer10->peak_112hz,
-		      "value-changed",
+		      "any_signal::value-changed",
 		      G_CALLBACK(ags_equalizer10_peak_112hz_callback),
 		      equalizer10,
 		      NULL);
 
   g_object_disconnect(equalizer10->peak_224hz,
-		      "value-changed",
+		      "any_signal::value-changed",
 		      G_CALLBACK(ags_equalizer10_peak_224hz_callback),
 		      equalizer10,
 		      NULL);
 
   g_object_disconnect(equalizer10->peak_448hz,
-		      "value-changed",
+		      "any_signal::value-changed",
 		      G_CALLBACK(ags_equalizer10_peak_448hz_callback),
 		      equalizer10,
 		      NULL);
 
   g_object_disconnect(equalizer10->peak_896hz,
-		      "value-changed",
+		      "any_signal::value-changed",
 		      G_CALLBACK(ags_equalizer10_peak_896hz_callback),
 		      equalizer10,
 		      NULL);
 
   g_object_disconnect(equalizer10->peak_1792hz,
-		      "value-changed",
+		      "any_signal::value-changed",
 		      G_CALLBACK(ags_equalizer10_peak_1792hz_callback),
 		      equalizer10,
 		      NULL);
 
   g_object_disconnect(equalizer10->peak_3584hz,
-		      "value-changed",
+		      "any_signal::value-changed",
 		      G_CALLBACK(ags_equalizer10_peak_3584hz_callback),
 		      equalizer10,
 		      NULL);
 
   g_object_disconnect(equalizer10->peak_7168hz,
-		      "value-changed",
+		      "any_signal::value-changed",
 		      G_CALLBACK(ags_equalizer10_peak_7168hz_callback),
 		      equalizer10,
 		      NULL);
 
   g_object_disconnect(equalizer10->peak_14336hz,
-		      "value-changed",
+		      "any_signal::value-changed",
 		      G_CALLBACK(ags_equalizer10_peak_14336hz_callback),
 		      equalizer10,
 		      NULL);
 
   g_object_disconnect(equalizer10->pressure,
-		      "value-changed",
+		      "any_signal::value-changed",
 		      G_CALLBACK(ags_equalizer10_pressure_callback),
 		      equalizer10,
 		      NULL);
@@ -783,11 +783,13 @@ ags_equalizer10_map_recall(AgsMachine *machine)
 
   channel = start_input;
 
-  g_object_ref(channel);
-
+  if(channel != NULL){
+    g_object_ref(channel);
+  }
+  
   next_channel = NULL;
   
-  for(i = 0; i < audio_channels; i++){
+  for(i = 0; i < audio_channels && channel != NULL; i++){
     AgsPort *port;
 
     GList *start_play, *play;

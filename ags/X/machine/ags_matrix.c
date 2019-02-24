@@ -881,7 +881,9 @@ ags_matrix_map_recall(AgsMachine *machine)
 
   AGS_MACHINE_CLASS(ags_matrix_parent_class)->map_recall(machine);
 
-  g_object_unref(start_input);
+  if(start_input != NULL){
+    g_object_unref(start_input);
+  }
 }
 
 void
