@@ -10598,7 +10598,7 @@ ags_audio_recall_done_callback(AgsRecall *recall,
 		   start_recall_id, sound_scope);
 
     g_list_free_full(start_recall_id,
-		     NULL);
+		     g_object_unref);
   }
 }
 

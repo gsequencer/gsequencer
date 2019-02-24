@@ -1282,6 +1282,7 @@ ags_channel_first_with_recycling
 ags_channel_last_with_recycling
 ags_channel_prev_with_recycling
 ags_channel_next_with_recycling
+ags_channel_get_link
 ags_channel_set_link
 ags_channel_reset_recycling
 ags_channel_recycling_changed

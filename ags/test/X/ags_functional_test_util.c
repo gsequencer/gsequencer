@@ -32,8 +32,13 @@
 
 #include <pthread.h>
 
+#ifdef AGS_FAST_FUNCTIONAL_TESTS
+#define AGS_FUNCTIONAL_TEST_UTIL_REACTION_TIME (125000)
+#define AGS_FUNCTIONAL_TEST_UTIL_REACTION_TIME_LONG (750000)
+#else
 #define AGS_FUNCTIONAL_TEST_UTIL_REACTION_TIME (1000000)
 #define AGS_FUNCTIONAL_TEST_UTIL_REACTION_TIME_LONG (2000000)
+#endif
 
 gboolean ags_functional_test_util_driver_prepare(GSource *source,
 						 gint *timeout_);

@@ -841,8 +841,11 @@ ags_audio_application_context_get_main_loop(AgsConcurrencyProvider *concurrency_
   pthread_mutex_lock(application_context_mutex);
 
   main_loop = (AgsThread *) AGS_APPLICATION_CONTEXT(concurrency_provider)->main_loop;
-  g_object_ref(main_loop);
 
+  if(main_loop != NULL){
+    g_object_ref(main_loop);
+  }
+  
   pthread_mutex_unlock(application_context_mutex);
   
   return(main_loop);
@@ -866,7 +869,10 @@ ags_audio_application_context_get_task_thread(AgsConcurrencyProvider *concurrenc
   pthread_mutex_lock(application_context_mutex);
 
   task_thread = (AgsThread *) AGS_APPLICATION_CONTEXT(concurrency_provider)->task_thread;
-  g_object_ref(task_thread);
+
+  if(task_thread != NULL){
+    g_object_ref(task_thread);
+  }
   
   pthread_mutex_unlock(application_context_mutex);
 
@@ -891,8 +897,11 @@ ags_audio_application_context_get_thread_pool(AgsConcurrencyProvider *concurrenc
   pthread_mutex_lock(application_context_mutex);
 
   thread_pool = AGS_AUDIO_APPLICATION_CONTEXT(concurrency_provider)->thread_pool;
-  g_object_ref(thread_pool);
 
+  if(thread_pool != NULL){
+    g_object_ref(thread_pool);
+  }
+  
   pthread_mutex_unlock(application_context_mutex);
   
   return(thread_pool);

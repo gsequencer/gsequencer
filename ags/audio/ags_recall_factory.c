@@ -422,9 +422,11 @@ ags_recall_factory_create_play(AgsAudio *audio,
   /* play */
   if((AGS_RECALL_FACTORY_PLAY & (create_flags)) != 0){
     channel = start;
-    
-    g_object_ref(channel);
 
+    if(channel != NULL){
+      g_object_ref(channel);
+    }
+    
     if(play_container == NULL){
       play_container = ags_recall_container_new();
     }
@@ -520,7 +522,9 @@ ags_recall_factory_create_play(AgsAudio *audio,
   if((AGS_RECALL_FACTORY_RECALL & (create_flags)) != 0){
     channel = start;
 
-    g_object_ref(channel);
+    if(channel != NULL){
+      g_object_ref(channel);
+    }
 
     if(recall_container == NULL){
       recall_container = ags_recall_container_new();
@@ -706,7 +710,9 @@ ags_recall_factory_create_play_master(AgsAudio *audio,
   if((AGS_RECALL_FACTORY_PLAY & (create_flags)) != 0){
     channel = start;
     
-    g_object_ref(channel);
+    if(channel != NULL){
+      g_object_ref(channel);
+    }
 
     if((AGS_RECALL_FACTORY_REMAP & (create_flags)) == 0){
       if(play_container == NULL){
@@ -863,7 +869,9 @@ ags_recall_factory_create_play_master(AgsAudio *audio,
   if((AGS_RECALL_FACTORY_RECALL & (create_flags)) != 0){
     channel = start;
     
-    g_object_ref(channel);
+    if(channel != NULL){
+      g_object_ref(channel);
+    }
 
     if((AGS_RECALL_FACTORY_REMAP & (create_flags)) == 0){
       if(recall_container == NULL){
@@ -1109,7 +1117,9 @@ ags_recall_factory_create_prepare(AgsAudio *audio,
 
     channel = start;
 
-    g_object_ref(channel);
+    if(channel != NULL){
+      g_object_ref(channel);
+    }
 
     nth_channel = NULL;
     
@@ -1245,11 +1255,6 @@ ags_recall_factory_create_prepare(AgsAudio *audio,
 	  g_object_unref(current);
 
 	  current = next_pad;
-	  pthread_mutex_lock(current_mutex);
-	  
-	  current = current->next_pad;
-
-	  pthread_mutex_unlock(current_mutex);
 	}
 
 	/* iterate */
@@ -1281,7 +1286,9 @@ ags_recall_factory_create_prepare(AgsAudio *audio,
     
     channel = start;
 
-    g_object_ref(channel);
+    if(channel != NULL){
+      g_object_ref(channel);
+    }
 
     nth_channel = NULL;
     
@@ -1537,7 +1544,9 @@ ags_recall_factory_create_copy(AgsAudio *audio,
 
     channel = start;
 
-    g_object_ref(channel);
+    if(channel != NULL){
+      g_object_ref(channel);
+    }
     
     for(i = 0; i < stop_pad - start_pad; i++){
       nth_channel = ags_channel_nth(channel,
@@ -1695,7 +1704,9 @@ ags_recall_factory_create_copy(AgsAudio *audio,
     
     channel = start;
 
-    g_object_ref(channel);
+    if(channel != NULL){
+      g_object_ref(channel);
+    }
     
     for(i = 0; i < stop_pad - start_pad; i++){
       nth_channel = ags_channel_nth(channel,
@@ -1939,7 +1950,9 @@ ags_recall_factory_create_feed(AgsAudio *audio,
   if((AGS_RECALL_FACTORY_PLAY & (create_flags)) != 0){
     channel = start;
     
-    g_object_ref(channel);
+    if(channel != NULL){
+      g_object_ref(channel);
+    }
 
     if(play_container == NULL){
       play_container = ags_recall_container_new();
@@ -2043,7 +2056,9 @@ ags_recall_factory_create_feed(AgsAudio *audio,
   if((AGS_RECALL_FACTORY_RECALL & (create_flags)) != 0){
     channel = start;
     
-    g_object_ref(channel);
+    if(channel != NULL){
+      g_object_ref(channel);
+    }
 
     if(recall_container == NULL){
       recall_container = ags_recall_container_new();
@@ -2222,7 +2237,9 @@ ags_recall_factory_create_stream(AgsAudio *audio,
   if((AGS_RECALL_FACTORY_PLAY & (create_flags)) != 0){
     channel = start;
 
-    g_object_ref(channel);
+    if(channel != NULL){
+      g_object_ref(channel);
+    }
 
     if(play_container == NULL){
       play_container = ags_recall_container_new();
@@ -2326,7 +2343,9 @@ ags_recall_factory_create_stream(AgsAudio *audio,
   if((AGS_RECALL_FACTORY_RECALL & (create_flags)) != 0){
     channel = start;
 
-    g_object_ref(channel);
+    if(channel != NULL){
+      g_object_ref(channel);
+    }
 
     if(recall_container == NULL){
       recall_container = ags_recall_container_new();
@@ -2518,7 +2537,9 @@ ags_recall_factory_create_rt_stream(AgsAudio *audio,
   if((AGS_RECALL_FACTORY_PLAY & (create_flags)) != 0){
     channel = start;
 
-    g_object_ref(channel);
+    if(channel != NULL){
+      g_object_ref(channel);
+    }
 
     if(play_container == NULL){
       play_container = ags_recall_container_new();
@@ -2622,7 +2643,9 @@ ags_recall_factory_create_rt_stream(AgsAudio *audio,
   if((AGS_RECALL_FACTORY_RECALL & (create_flags)) != 0){
     channel = start;
 
-    g_object_ref(channel);
+    if(channel != NULL){
+      g_object_ref(channel);
+    }
 
     if(recall_container == NULL){
       recall_container = ags_recall_container_new();
@@ -3534,7 +3557,9 @@ ags_recall_factory_create_loop(AgsAudio *audio,
   if((AGS_RECALL_FACTORY_PLAY & (create_flags)) != 0){
     channel = start;
     
-    g_object_ref(channel);
+    if(channel != NULL){
+      g_object_ref(channel);
+    }
 
     if((AGS_RECALL_FACTORY_REMAP & (create_flags)) == 0){
       if(play_container == NULL){
@@ -3644,7 +3669,9 @@ ags_recall_factory_create_loop(AgsAudio *audio,
   if((AGS_RECALL_FACTORY_RECALL & (create_flags)) != 0){
     channel = start;
 
-    g_object_ref(channel);
+    if(channel != NULL){
+      g_object_ref(channel);
+    }
 
     if((AGS_RECALL_FACTORY_REMAP & (create_flags)) == 0){
       if(recall_container == NULL){
@@ -3845,7 +3872,9 @@ ags_recall_factory_create_copy_pattern(AgsAudio *audio,
   if((AGS_RECALL_FACTORY_PLAY & (create_flags)) != 0){
     channel = start;
     
-    g_object_ref(channel);
+    if(channel != NULL){
+      g_object_ref(channel);
+    }
 
     if((AGS_RECALL_FACTORY_REMAP & (create_flags)) == 0 ||
        ags_recall_find_type(audio->play, AGS_TYPE_COPY_PATTERN_AUDIO) == NULL){
@@ -4047,7 +4076,9 @@ ags_recall_factory_create_copy_pattern(AgsAudio *audio,
   if((AGS_RECALL_FACTORY_RECALL & (create_flags)) != 0){
     channel = start;
     
-    g_object_ref(channel);
+    if(channel != NULL){
+      g_object_ref(channel);
+    }
  
     if((AGS_RECALL_FACTORY_REMAP & (create_flags)) == 0 ||
        ags_recall_find_type(audio->recall, AGS_TYPE_COPY_PATTERN_AUDIO) == NULL){
@@ -4340,7 +4371,9 @@ ags_recall_factory_create_play_wave(AgsAudio *audio,
   if((AGS_RECALL_FACTORY_PLAY & (create_flags)) != 0){
     channel = start;
     
-    g_object_ref(channel);
+    if(channel != NULL){
+      g_object_ref(channel);
+    }
 
     if((AGS_RECALL_FACTORY_REMAP & (create_flags)) == 0 ||
        ags_recall_find_type(audio->play, AGS_TYPE_PLAY_WAVE_AUDIO) == NULL){
@@ -4543,7 +4576,9 @@ ags_recall_factory_create_play_wave(AgsAudio *audio,
   if((AGS_RECALL_FACTORY_RECALL & (create_flags)) != 0){
     channel = start;
     
-    g_object_ref(channel);
+    if(channel != NULL){
+      g_object_ref(channel);
+    }
  
     if((AGS_RECALL_FACTORY_REMAP & (create_flags)) == 0 ||
        ags_recall_find_type(audio->recall, AGS_TYPE_PLAY_WAVE_AUDIO) == NULL){
@@ -4836,7 +4871,9 @@ ags_recall_factory_create_capture_wave(AgsAudio *audio,
   if((AGS_RECALL_FACTORY_PLAY & (create_flags)) != 0){
     channel = start;
     
-    g_object_ref(channel);
+    if(channel != NULL){
+      g_object_ref(channel);
+    }
 
     if((AGS_RECALL_FACTORY_REMAP & (create_flags)) == 0 ||
        ags_recall_find_type(audio->play, AGS_TYPE_CAPTURE_WAVE_AUDIO) == NULL){
@@ -5039,7 +5076,9 @@ ags_recall_factory_create_capture_wave(AgsAudio *audio,
   if((AGS_RECALL_FACTORY_RECALL & (create_flags)) != 0){
     channel = start;
     
-    g_object_ref(channel);
+    if(channel != NULL){
+      g_object_ref(channel);
+    }
  
     if((AGS_RECALL_FACTORY_REMAP & (create_flags)) == 0 ||
        ags_recall_find_type(audio->recall, AGS_TYPE_CAPTURE_WAVE_AUDIO) == NULL){
@@ -5827,7 +5866,9 @@ ags_recall_factory_create_peak(AgsAudio *audio,
   if((AGS_RECALL_FACTORY_PLAY & (create_flags)) != 0){
     channel = start;
     
-    g_object_ref(channel);
+    if(channel != NULL){
+      g_object_ref(channel);
+    }
 
     if(play_container == NULL){
       play_container = ags_recall_container_new();
@@ -5931,7 +5972,9 @@ ags_recall_factory_create_peak(AgsAudio *audio,
   if((AGS_RECALL_FACTORY_RECALL & (create_flags)) != 0){
     channel = start;
     
-    g_object_ref(channel);
+    if(channel != NULL){
+      g_object_ref(channel);
+    }
 
     if(recall_container == NULL){
       recall_container = ags_recall_container_new();
@@ -6123,7 +6166,9 @@ ags_recall_factory_create_analyse(AgsAudio *audio,
   if((AGS_RECALL_FACTORY_PLAY & (create_flags)) != 0){
     channel = start;
     
-    g_object_ref(channel);
+    if(channel != NULL){
+      g_object_ref(channel);
+    }
 
     if(play_container == NULL){
       play_container = ags_recall_container_new();
@@ -6227,7 +6272,9 @@ ags_recall_factory_create_analyse(AgsAudio *audio,
   if((AGS_RECALL_FACTORY_RECALL & (create_flags)) != 0){
     channel = start;
     
-    g_object_ref(channel);
+    if(channel != NULL){
+      g_object_ref(channel);
+    }
 
     if(recall_container == NULL){
       recall_container = ags_recall_container_new();
@@ -6421,7 +6468,9 @@ ags_recall_factory_create_mute(AgsAudio *audio,
   if((AGS_RECALL_FACTORY_PLAY & (create_flags)) != 0){
     channel = start;
     
-    g_object_ref(channel);
+    if(channel != NULL){
+      g_object_ref(channel);
+    }
 
     if((AGS_RECALL_FACTORY_REMAP & (create_flags)) == 0){
       if(play_container == NULL){
@@ -6619,7 +6668,9 @@ ags_recall_factory_create_mute(AgsAudio *audio,
   if((AGS_RECALL_FACTORY_RECALL & (create_flags)) != 0){
     channel = start;
     
-    g_object_ref(channel);
+    if(channel != NULL){
+      g_object_ref(channel);
+    }
  
     if((AGS_RECALL_FACTORY_REMAP & (create_flags)) == 0){
       if(recall_container == NULL){
@@ -6892,7 +6943,9 @@ ags_recall_factory_create_volume(AgsAudio *audio,
   if((AGS_RECALL_FACTORY_PLAY & (create_flags)) != 0){
     channel = start;
     
-    g_object_ref(channel);
+    if(channel != NULL){
+      g_object_ref(channel);
+    }
 
     if(play_container == NULL){
       play_container = ags_recall_container_new();
@@ -6996,7 +7049,9 @@ ags_recall_factory_create_volume(AgsAudio *audio,
   if((AGS_RECALL_FACTORY_RECALL & (create_flags)) != 0){
     channel = start;
     
-    g_object_ref(channel);
+    if(channel != NULL){
+      g_object_ref(channel);
+    }
 
     if(recall_container == NULL){
       recall_container = ags_recall_container_new();
@@ -7188,7 +7243,9 @@ ags_recall_factory_create_eq10(AgsAudio *audio,
   if((AGS_RECALL_FACTORY_PLAY & (create_flags)) != 0){
     channel = start;
     
-    g_object_ref(channel);
+    if(channel != NULL){
+      g_object_ref(channel);
+    }
 
     if(play_container == NULL){
       play_container = ags_recall_container_new();
@@ -7292,7 +7349,9 @@ ags_recall_factory_create_eq10(AgsAudio *audio,
   if((AGS_RECALL_FACTORY_RECALL & (create_flags)) != 0){
     channel = start;
     
-    g_object_ref(channel);
+    if(channel != NULL){
+      g_object_ref(channel);
+    }
 
     if(recall_container == NULL){
       recall_container = ags_recall_container_new();
@@ -7484,7 +7543,9 @@ ags_recall_factory_create_envelope(AgsAudio *audio,
   if((AGS_RECALL_FACTORY_PLAY & (create_flags)) != 0){
     channel = start;
     
-    g_object_ref(channel);
+    if(channel != NULL){
+      g_object_ref(channel);
+    }
 
     if(play_container == NULL){
       play_container = ags_recall_container_new();
@@ -7588,7 +7649,9 @@ ags_recall_factory_create_envelope(AgsAudio *audio,
   if((AGS_RECALL_FACTORY_RECALL & (create_flags)) != 0){
     channel = start;
     
-    g_object_ref(channel);
+    if(channel != NULL){
+      g_object_ref(channel);
+    }
 
     if(recall_container == NULL){
       recall_container = ags_recall_container_new();
@@ -7780,7 +7843,9 @@ ags_recall_factory_create_ladspa(AgsAudio *audio,
   if((AGS_RECALL_FACTORY_PLAY & (create_flags)) != 0){
     channel = start;
     
-    g_object_ref(channel);
+    if(channel != NULL){
+      g_object_ref(channel);
+    }
 
     if(play_container == NULL){
       play_container = ags_recall_container_new();
@@ -7886,7 +7951,9 @@ ags_recall_factory_create_ladspa(AgsAudio *audio,
   if((AGS_RECALL_FACTORY_RECALL & (create_flags)) != 0){
     channel = start;
     
-    g_object_ref(channel);
+    if(channel != NULL){
+      g_object_ref(channel);
+    }
 
     if(recall_container == NULL){
       recall_container = ags_recall_container_new();
@@ -8079,7 +8146,9 @@ ags_recall_factory_create_lv2(AgsAudio *audio,
   if((AGS_RECALL_FACTORY_PLAY & (create_flags)) != 0){
     channel = start;
     
-    g_object_ref(channel);
+    if(channel != NULL){
+      g_object_ref(channel);
+    }
 
     if(play_container == NULL){
       play_container = ags_recall_container_new();
@@ -8185,7 +8254,9 @@ ags_recall_factory_create_lv2(AgsAudio *audio,
   if((AGS_RECALL_FACTORY_RECALL & (create_flags)) != 0){
     channel = start;
     
-    g_object_ref(channel);
+    if(channel != NULL){
+      g_object_ref(channel);
+    }
 
     if(recall_container == NULL){
       recall_container = ags_recall_container_new();
@@ -8378,7 +8449,9 @@ ags_recall_factory_create_dssi(AgsAudio *audio,
   if((AGS_RECALL_FACTORY_PLAY & (create_flags)) != 0){
     channel = start;
     
-    g_object_ref(channel);
+    if(channel != NULL){
+      g_object_ref(channel);
+    }
 
     if(play_container == NULL){
       play_container = ags_recall_container_new();
@@ -8484,7 +8557,9 @@ ags_recall_factory_create_dssi(AgsAudio *audio,
   if((AGS_RECALL_FACTORY_RECALL & (create_flags)) != 0){
     channel = start;
     
-    g_object_ref(channel);
+    if(channel != NULL){
+      g_object_ref(channel);
+    }
 
     if(recall_container == NULL){
       recall_container = ags_recall_container_new();

@@ -5556,24 +5556,26 @@ ags_recall_real_duplicate(AgsRecall *recall,
   pthread_mutex_unlock(recall_mutex);
 
   /* recall container */
-  if(AGS_IS_RECALL_AUDIO(copy_recall)){
-    g_object_set(recall_container,
-		 "recall-audio", copy_recall,
-		 NULL);
-  }else if(AGS_IS_RECALL_AUDIO_RUN(copy_recall)){
-    g_object_set(recall_container,
-		 "recall-audio-run", copy_recall,
-		 NULL);
-  }else if(AGS_IS_RECALL_CHANNEL(copy_recall)){
-    g_object_set(recall_container,
-		 "recall-channel", copy_recall,
-		 NULL);
-  }else if(AGS_IS_RECALL_CHANNEL_RUN(copy_recall)){
-    g_object_set(recall_container,
-		 "recall-channel-run", copy_recall,
-		 NULL);
+  if(recall_container != NULL){
+    if(AGS_IS_RECALL_AUDIO(copy_recall)){
+      g_object_set(recall_container,
+		   "recall-audio", copy_recall,
+		   NULL);
+    }else if(AGS_IS_RECALL_AUDIO_RUN(copy_recall)){
+      g_object_set(recall_container,
+		   "recall-audio-run", copy_recall,
+		   NULL);
+    }else if(AGS_IS_RECALL_CHANNEL(copy_recall)){
+      g_object_set(recall_container,
+		   "recall-channel", copy_recall,
+		   NULL);
+    }else if(AGS_IS_RECALL_CHANNEL_RUN(copy_recall)){
+      g_object_set(recall_container,
+		   "recall-channel-run", copy_recall,
+		   NULL);
+    }
   }
-
+  
   return(copy_recall);
 }
 

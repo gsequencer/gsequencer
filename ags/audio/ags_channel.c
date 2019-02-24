@@ -4043,6 +4043,8 @@ ags_channel_pad_last(AgsChannel *channel)
     return(NULL);
   }
 
+  g_object_ref(channel);
+
   while(channel != NULL){
     /* get channel mutex */
     pthread_mutex_lock(ags_channel_get_class_mutex());
@@ -4673,10 +4675,6 @@ ags_channel_set_link(AgsChannel *channel, AgsChannel *link,
 	/* unref */
 	if(start_output != NULL){
 	  g_object_unref(start_output);
-	}
-
-	if(start_input != NULL){
-	  g_object_unref(start_input);
 	}
 
 	if(current_channel != NULL){
@@ -11516,14 +11514,14 @@ ags_channel_get_level(AgsChannel *channel)
 			      audio_channel);
 
       if(level != NULL){
-	g_object_unref(output); //FIXME:JK: bad ref count
+	g_object_unref(level); //FIXME:JK: bad ref count
       }      
     }else{
       level = ags_channel_nth(output,
 			      input_line);
 
       if(level != NULL){
-	g_object_unref(output); //FIXME:JK: bad ref count
+	g_object_unref(level); //FIXME:JK: bad ref count
       }
     }
 

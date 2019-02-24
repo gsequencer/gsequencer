@@ -3101,7 +3101,7 @@ ags_machine_generic_output_message_monitor_timeout(AgsMachine *machine)
 		       (GDestroyNotify) ags_message_envelope_free);
 
       /* iterate */
-      next_output = ags_channel_next(start_output);
+      next_output = ags_channel_next(output);
 
       g_object_unref(output);
 
@@ -3177,7 +3177,7 @@ ags_machine_generic_input_message_monitor_timeout(AgsMachine *machine)
 		       (GDestroyNotify) ags_message_envelope_free);
       
       /* iterate */
-      next_input = ags_channel_next(start_input);
+      next_input = ags_channel_next(input);
 
       g_object_unref(input);
 

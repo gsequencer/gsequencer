@@ -37,7 +37,7 @@ check_PROGRAMS += \
 # functional test util library
 libgsequencer_test_la_SOURCES = ags/test/X/gsequencer_setup_util.c ags/test/X/gsequencer_setup_util.h ags/test/X/ags_functional_test_util.c ags/test/X/ags_functional_test_util.h ags/test/X/libgsequencer.h
 libgsequencer_test_la_CFLAGS = $(CFLAGS) $(LIBAO_CFLAGS) $(LIBASOUND2_CFLAGS) $(LIBXML2_CFLAGS) $(SNDFILE_CFLAGS) $(LIBINSTPATCH_CFLAGS) $(GOBJECT_CFLAGS) $(JACK_CFLAGS) $(FONTCONFIG_CFLAGS) $(GDKPIXBUF_CFLAGS) $(CAIRO_CFLAGS) $(GTK_CFLAGS)
-libgsequencer_test_la_CPPFLAGS = -DSRCDIR=\"$(srcdir)\" -DDESTDIR=\"gsequencer.share\"
+libgsequencer_test_la_CPPFLAGS = -DSRCDIR=\"$(srcdir)\" -DDESTDIR=\"gsequencer.share\" # -DAGS_FAST_FUNCTIONAL_TESTS=1
 libgsequencer_test_la_LDFLAGS = -pthread $(LDFLAGS)
 libgsequencer_test_la_LIBADD = $(libgsequencer_test_LIBADD)
 
