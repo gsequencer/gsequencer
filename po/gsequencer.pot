@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gsequencer 2.1.61\n"
 "Report-Msgid-Bugs-To: jkraehemann@gmail.com\n"
-"POT-Creation-Date: 2019-02-24 12:41+0100\n"
+"POT-Creation-Date: 2019-02-24 20:18+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -187,12 +187,12 @@ msgstr ""
 msgid "Copyright"
 msgstr ""
 
-#: ags/X/ags_effect_line.c:537 ags/X/ags_line.c:570
+#: ags/X/ags_effect_line.c:545 ags/X/ags_line.c:578
 msgid "group"
 msgstr ""
 
-#: ags/X/ags_effect_line.c:944 ags/X/ags_effect_line.c:950
-#: ags/X/ags_line.c:1016 ags/X/ags_line.c:1022 ags/X/ags_notation_editor.c:283
+#: ags/X/ags_effect_line.c:958 ags/X/ags_effect_line.c:964
+#: ags/X/ags_line.c:1030 ags/X/ags_line.c:1036 ags/X/ags_notation_editor.c:283
 msgid "channel"
 msgstr ""
 
@@ -609,27 +609,27 @@ msgstr ""
 
 #: ags/X/ags_xorg_application_context.c:2088
 #: ags/audio/ags_audio_application_context.c:1743
-#: ags/audio/task/ags_apply_sound_config.c:892
+#: ags/audio/task/ags_apply_sound_config.c:893
 #, c-format
 msgid "unknown soundcard backend - %s"
 msgstr ""
 
 #: ags/X/ags_xorg_application_context.c:2098
 #: ags/audio/ags_audio_application_context.c:1753
-#: ags/audio/task/ags_apply_sound_config.c:902
+#: ags/audio/task/ags_apply_sound_config.c:903
 msgid "unknown soundcard backend - NULL"
 msgstr ""
 
 #: ags/X/ags_xorg_application_context.c:2346
 #: ags/audio/ags_audio_application_context.c:1904
-#: ags/audio/task/ags_apply_sound_config.c:1146
+#: ags/audio/task/ags_apply_sound_config.c:1147
 #, c-format
 msgid "unknown sequencer backend - %s"
 msgstr ""
 
 #: ags/X/ags_xorg_application_context.c:2356
 #: ags/audio/ags_audio_application_context.c:1914
-#: ags/audio/task/ags_apply_sound_config.c:1156
+#: ags/audio/task/ags_apply_sound_config.c:1157
 msgid "unknown sequencer backend - NULL"
 msgstr ""
 

@@ -2881,6 +2881,7 @@ ags_recall_factory_create_buffer(AgsAudio *audio,
 
 	    if(current_destination == current){
 	      found_buffer = TRUE;
+
 	      break;
 	    }
 	
@@ -3023,6 +3024,7 @@ ags_recall_factory_create_buffer(AgsAudio *audio,
 
 	    if(current_destination == current){
 	      found_buffer = TRUE;
+
 	      break;
 	    }
 	

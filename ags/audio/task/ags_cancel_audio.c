@@ -483,10 +483,6 @@ ags_cancel_audio_launch(AgsTask *task)
   midi = ags_audio_check_scope(audio,
 			       (AGS_SOUND_SCOPE_MIDI));
 
-#ifdef AGS_DEBUG
-  g_message("!! %x %x %x %x", sequencer, notation, wave, midi);
-#endif
-  
   if(ags_cancel_audio_launch_check_scope(sequencer) &&
      ags_cancel_audio_launch_check_scope(notation) &&
      ags_cancel_audio_launch_check_scope(wave) &&

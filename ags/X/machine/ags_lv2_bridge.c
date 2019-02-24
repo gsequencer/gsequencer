@@ -1080,7 +1080,7 @@ ags_lv2_bridge_resize_audio_channels(AgsMachine *machine,
 
 	g_object_unref(channel);
 
-	next_channel = channel;
+	channel = next_channel;
       }
 
       if(next_pad != NULL){
@@ -1147,7 +1147,7 @@ ags_lv2_bridge_resize_audio_channels(AgsMachine *machine,
 
 	g_object_unref(channel);
 
-	next_channel = channel;
+	channel = next_channel;
       }
 
       if(next_pad != NULL){
@@ -1262,7 +1262,7 @@ ags_lv2_bridge_resize_pads(AgsMachine *machine, GType channel_type,
 
 	g_object_unref(channel);
 
-	next_channel = channel;
+	channel = next_channel;
       }
 
       if(next_channel != NULL){
@@ -1322,7 +1322,7 @@ ags_lv2_bridge_resize_pads(AgsMachine *machine, GType channel_type,
 
 	g_object_unref(channel);
 
-	next_channel = channel;
+	channel = next_channel;
       }
 
       if(next_channel != NULL){

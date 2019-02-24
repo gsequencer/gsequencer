@@ -12114,20 +12114,19 @@ ags_channel_real_recursive_run_stage(AgsChannel *channel,
       guint64 length;
       guint64 i;
 
-      start_input = NULL;
       current_input = NULL;	
 
       length = 0;
       
       if(ags_audio_test_flags(current_audio, AGS_AUDIO_ASYNC)){
-	g_object_get(current_audio,
-		     "input", &start_input,
-		     NULL);
-	
 	nth_input = ags_channel_nth(start_input,
 				    audio_channel);
 
 	current_input = nth_input;
+
+	if(current_input != NULL){
+	  g_object_ref(current_input);
+	}
 	
 	next_pad = NULL;
 	
@@ -12168,20 +12167,15 @@ ags_channel_real_recursive_run_stage(AgsChannel *channel,
 	if(next_pad != NULL){
 	  g_object_unref(next_pad);
 	}
-
-	/* unref */
-	if(start_input != NULL){
-	  g_object_unref(start_input);
-	}
       }else{
-	g_object_get(current_audio,
-		     "input", &start_input,
-		     NULL);
-
 	nth_input = ags_channel_nth(start_input,
 				    line);
 
 	current_input = nth_input;
+
+	if(current_input != NULL){
+	  g_object_ref(current_input);
+	}
 	
 	next_pad = NULL;
 
@@ -12210,11 +12204,6 @@ ags_channel_real_recursive_run_stage(AgsChannel *channel,
 	if(current_input != NULL){
 	  g_object_unref(current_input);
 	}
-	
-	/* unref */
-	if(start_input != NULL){
-	  g_object_unref(start_input);
-	}
       }
 
       /* instantiate next recycling context */
@@ -12226,13 +12215,6 @@ ags_channel_real_recursive_run_stage(AgsChannel *channel,
 
 	ags_audio_add_recycling_context(current_audio,
 					(GObject *) next_recycling_context);
-	  
-	g_object_get(current_audio,
-		     "input", &start_input,
-		     NULL);
-
-	nth_input = ags_channel_nth(start_input,
-				    line);
 
 	current_input = nth_input;
 	
@@ -12282,11 +12264,6 @@ ags_channel_real_recursive_run_stage(AgsChannel *channel,
 	if(next_pad != NULL){
 	  g_object_unref(next_pad);
 	}
-
-	/* unref */
-	if(start_input != NULL){
-	  g_object_unref(start_input);
-	}
       }
     }
     
@@ -12321,6 +12298,10 @@ ags_channel_real_recursive_run_stage(AgsChannel *channel,
     /* unref */
     if(current_audio != NULL){
       g_object_unref(current_audio);
+    }
+
+    if(start_input != NULL){
+      g_object_unref(start_input);
     }
   }
   
@@ -12637,7 +12618,7 @@ ags_channel_real_recursive_run_stage(AgsChannel *channel,
       }
 
       /* free recall id */
-      g_list_free_full(recall_id,
+      g_list_free_full(start_recall_id,
 		       g_object_unref);
       
       /* unref current audio */
