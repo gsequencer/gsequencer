@@ -30,7 +30,10 @@
 
 #include <ags/audio/task/ags_reset_amplitude.h>
 
+#include <stdlib.h>
 #include <math.h>
+
+#include <fftw3.h>
 
 #include <ags/i18n.h>
 

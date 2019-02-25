@@ -4804,8 +4804,8 @@ ags_audio_set_ability_flags(AgsAudio *audio, guint ability_flags)
   pthread_mutex_unlock(audio_mutex);
 
   /* unref */
-  g_object_unref(audio_loop);
-}
+  g_object_unref(main_loop);
+ }
 
 /**
  * ags_audio_unset_ability_flags:
