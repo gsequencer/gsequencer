@@ -1,3 +1,8 @@
+ags (2.1.62)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed potential unitialized pointer passing to g_object_unref()
+
 ags (2.1.61)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
