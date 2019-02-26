@@ -3251,6 +3251,8 @@ ags_recall_set_staging_flags(AgsRecall *recall, guint staging_flags)
 {
   guint recall_staging_flags;
   
+  gboolean omit_event;
+
   pthread_mutex_t *recall_mutex;
 
   if(!AGS_IS_RECALL(recall)){
@@ -3261,6 +3263,8 @@ ags_recall_set_staging_flags(AgsRecall *recall, guint staging_flags)
   pthread_mutex_lock(ags_recall_get_class_mutex());
   
   recall_mutex = recall->obj_mutex;
+
+  omit_event = ags_recall_global_omit_event;
   
   pthread_mutex_unlock(ags_recall_get_class_mutex());
 
@@ -3275,57 +3279,101 @@ ags_recall_set_staging_flags(AgsRecall *recall, guint staging_flags)
   if((AGS_SOUND_STAGING_FINI & (recall_staging_flags)) == 0){
     if((AGS_SOUND_STAGING_CHECK_RT_DATA & (staging_flags)) != 0 &&
        (AGS_SOUND_STAGING_CHECK_RT_DATA & (recall_staging_flags)) == 0){    
-      ags_recall_check_rt_data(recall);
+      if(omit_event){
+	AGS_RECALL_GET_CLASS(recall)->check_rt_data(recall);
+      }else{
+	ags_recall_check_rt_data(recall);
+      }
     }
 
     if((AGS_SOUND_STAGING_RUN_INIT_PRE & (staging_flags)) != 0 &&
        (AGS_SOUND_STAGING_RUN_INIT_PRE & (recall_staging_flags)) == 0){
-      ags_recall_run_init_pre(recall);
+      if(omit_event){
+	AGS_RECALL_GET_CLASS(recall)->run_init_pre(recall);
+      }else{
+	ags_recall_run_init_pre(recall);
+      }
     }
 
     if((AGS_SOUND_STAGING_RUN_INIT_INTER & (staging_flags)) != 0 &&
        (AGS_SOUND_STAGING_RUN_INIT_INTER & (recall_staging_flags)) == 0){
-      ags_recall_run_init_inter(recall);
+      if(omit_event){
+	AGS_RECALL_GET_CLASS(recall)->run_init_inter(recall);
+      }else{
+	ags_recall_run_init_inter(recall);
+      }
     }
 
     if((AGS_SOUND_STAGING_RUN_INIT_POST & (staging_flags)) != 0 &&
        (AGS_SOUND_STAGING_RUN_INIT_POST & (recall_staging_flags)) == 0){
-      ags_recall_run_init_post(recall);
+      if(omit_event){
+	AGS_RECALL_GET_CLASS(recall)->run_init_post(recall);
+      }else{
+	ags_recall_run_init_post(recall);
+      }
     }
   
     if((AGS_SOUND_STAGING_FEED_INPUT_QUEUE & (staging_flags)) != 0 &&
        (AGS_SOUND_STAGING_FEED_INPUT_QUEUE & (recall_staging_flags)) == 0){
-      ags_recall_feed_input_queue(recall);
+      if(omit_event){
+	AGS_RECALL_GET_CLASS(recall)->feed_input_queue(recall);
+      }else{
+	ags_recall_feed_input_queue(recall);
+      }
     }
 
     if((AGS_SOUND_STAGING_AUTOMATE & (staging_flags)) != 0 &&
        (AGS_SOUND_STAGING_AUTOMATE & (recall_staging_flags)) == 0){
-      ags_recall_automate(recall);
+      if(omit_event){
+	AGS_RECALL_GET_CLASS(recall)->automate(recall);
+      }else{
+	ags_recall_automate(recall);
+      }
     }
 
     if((AGS_SOUND_STAGING_RUN_PRE & (staging_flags)) != 0 &&
        (AGS_SOUND_STAGING_RUN_PRE & (recall_staging_flags)) == 0){
-      ags_recall_run_pre(recall);
+      if(omit_event){
+	AGS_RECALL_GET_CLASS(recall)->run_pre(recall);
+      }else{
+	ags_recall_run_pre(recall);
+      }
     }
 
     if((AGS_SOUND_STAGING_RUN_INTER & (staging_flags)) != 0 &&
        (AGS_SOUND_STAGING_RUN_INTER & (recall_staging_flags)) == 0){
-      ags_recall_run_inter(recall);
+      if(omit_event){
+	AGS_RECALL_GET_CLASS(recall)->run_inter(recall);
+      }else{
+	ags_recall_run_inter(recall);
+      }
     }
 
     if((AGS_SOUND_STAGING_RUN_POST & (staging_flags)) != 0 &&
        (AGS_SOUND_STAGING_RUN_POST & (recall_staging_flags)) == 0){
-      ags_recall_run_post(recall);
+      if(omit_event){
+	AGS_RECALL_GET_CLASS(recall)->run_post(recall);
+      }else{
+	ags_recall_run_post(recall);
+      }
     }
 
     if((AGS_SOUND_STAGING_DO_FEEDBACK & (staging_flags)) != 0 &&
        (AGS_SOUND_STAGING_DO_FEEDBACK & (recall_staging_flags)) == 0){
-      ags_recall_do_feedback(recall);
+      if(omit_event){
+	AGS_RECALL_GET_CLASS(recall)->do_feedback(recall);
+      }else{
+	ags_recall_do_feedback(recall);
+      }
     }
 
     if((AGS_SOUND_STAGING_FEED_OUTPUT_QUEUE & (staging_flags)) != 0 &&
        (AGS_SOUND_STAGING_FEED_OUTPUT_QUEUE & (recall_staging_flags)) == 0){
-      ags_recall_feed_output_queue(recall);
+      if(omit_event){
+	AGS_RECALL_GET_CLASS(recall)->feed_output_queue(recall);
+      }else{
+	ags_recall_feed_output_queue(recall);
+      }
     }
   }
 
@@ -4502,7 +4550,9 @@ ags_recall_real_run_init_pre(AgsRecall *recall)
 
   if(!children_lock_free){
     list =
-      list_start = ags_list_util_copy_and_ref(recall->children);
+      list_start = g_list_copy_deep(recall->children,
+				    (GCopyFunc) g_object_ref,
+				    NULL);
   }else{
     list = recall->children;
   }
@@ -4575,7 +4625,9 @@ ags_recall_real_run_init_inter(AgsRecall *recall)
 
   if(!children_lock_free){
     list =
-      list_start = ags_list_util_copy_and_ref(recall->children);
+      list_start = g_list_copy_deep(recall->children,
+				    (GCopyFunc) g_object_ref,
+				    NULL);
   }else{
     list = recall->children;
   }
@@ -4648,7 +4700,9 @@ ags_recall_real_run_init_post(AgsRecall *recall)
 
   if(!children_lock_free){
     list =
-      list_start = ags_list_util_copy_and_ref(recall->children);
+      list_start = g_list_copy_deep(recall->children,
+				    (GCopyFunc) g_object_ref,
+				    NULL);
   }else{
     list = recall->children;
   }
@@ -4729,7 +4783,9 @@ ags_recall_real_feed_input_queue(AgsRecall *recall)
 
   if(!children_lock_free){
     list =
-      list_start = ags_list_util_copy_and_ref(recall->children);
+      list_start = g_list_copy_deep(recall->children,
+				    (GCopyFunc) g_object_ref,
+				    NULL);
   }else{
     list = recall->children;
   }
@@ -4801,7 +4857,9 @@ ags_recall_real_automate(AgsRecall *recall)
   }
 
   list =
-    list_start = ags_list_util_copy_and_ref(recall->children);
+    list_start = g_list_copy_deep(recall->children,
+				  (GCopyFunc) g_object_ref,
+				  NULL);
   
   pthread_mutex_unlock(recall_mutex);
 
@@ -4869,7 +4927,9 @@ ags_recall_real_run_pre(AgsRecall *recall)
 
   if(!children_lock_free){
     list =
-      list_start = ags_list_util_copy_and_ref(recall->children);
+      list_start = g_list_copy_deep(recall->children,
+				    (GCopyFunc) g_object_ref,
+				    NULL);
   }else{
     list = recall->children;
   }
@@ -4942,7 +5002,9 @@ ags_recall_real_run_inter(AgsRecall *recall)
 
   if(!children_lock_free){
     list =
-      list_start = ags_list_util_copy_and_ref(recall->children);
+      list_start = g_list_copy_deep(recall->children,
+				    (GCopyFunc) g_object_ref,
+				    NULL);
   }else{
     list = recall->children;
   }
@@ -5016,7 +5078,9 @@ ags_recall_real_run_post(AgsRecall *recall)
 
   if(!children_lock_free){
     list =
-      list_start = ags_list_util_copy_and_ref(recall->children);
+      list_start = g_list_copy_deep(recall->children,
+				    (GCopyFunc) g_object_ref,
+				    NULL);
   }else{
     list = recall->children;
   }
@@ -5089,7 +5153,9 @@ ags_recall_real_do_feedback(AgsRecall *recall)
 
   if(!children_lock_free){
     list =
-      list_start = ags_list_util_copy_and_ref(recall->children);
+      list_start = g_list_copy_deep(recall->children,
+				    (GCopyFunc) g_object_ref,
+				    NULL);
   }else{
     list = recall->children;
   }
@@ -5162,7 +5228,9 @@ ags_recall_real_feed_output_queue(AgsRecall *recall)
 
   if(!children_lock_free){
     list =
-      list_start = ags_list_util_copy_and_ref(recall->children);
+      list_start = g_list_copy_deep(recall->children,
+				    (GCopyFunc) g_object_ref,
+				    NULL);
   }else{
     list = recall->children;
   }

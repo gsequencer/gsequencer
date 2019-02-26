@@ -672,7 +672,8 @@ ags_record_midi_audio_run_resolve_dependency(AgsRecall *recall)
     template = AGS_RECALL(list->data);
   }
 
-  g_list_free(list_start);
+  g_list_free_full(list_start,
+		   g_object_unref);
 
   g_object_get(template,
 	       "recall-dependency", &list_start,

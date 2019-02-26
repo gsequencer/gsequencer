@@ -406,7 +406,8 @@ ags_recall_audio_automate(AgsRecall *recall)
       automation = automation->next;
     }
 
-    g_list_free(automation_start);
+    g_list_free_full(automation_start,
+		     g_object_unref);
     
     /* iterate */
     port = port->next;

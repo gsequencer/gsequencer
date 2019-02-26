@@ -558,7 +558,7 @@ ags_soundcard_thread_stop(AgsThread *thread)
       gint position;
       
       g_object_disconnect(G_OBJECT(poll_fd->data),
-			  "dispatch",
+			  "any_signal::dispatch",
 			  G_CALLBACK(ags_soundcard_thread_dispatch_callback),
 			  soundcard_thread,
 			  NULL);

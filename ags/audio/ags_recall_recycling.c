@@ -1019,7 +1019,9 @@ ags_recall_recycling_source_remove_audio_signal_callback(AgsRecycling *source,
     success = (destination_channel == NULL ||
 	       ags_recall_id_find_recycling_context(list_start,
 						    parent_recycling_context) != NULL) ? TRUE: FALSE;
-    g_list_free(list_start);
+
+    g_list_free_full(list_start,
+		     g_object_unref);
     
     if(!success){
       goto ags_recall_recycling_source_remove_audio_signal_callback_END;

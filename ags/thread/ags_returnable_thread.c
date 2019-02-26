@@ -286,7 +286,7 @@ ags_returnable_thread_finalize(GObject *gobject)
   AgsReturnableThread *returnable_thread;
 
   returnable_thread = (AgsReturnableThread *) gobject;
-
+  
   /* thread pool */
   if(returnable_thread->thread_pool != NULL){
     g_object_unref(returnable_thread->thread_pool);

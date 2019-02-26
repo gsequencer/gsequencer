@@ -1209,7 +1209,10 @@ ags_apply_sound_config_launch(AgsTask *task)
     export_thread = NULL;
     
     notify_soundcard = ags_notify_soundcard_new((AgsSoundcardThread *) soundcard_thread);
-    AGS_TASK(notify_soundcard)->task_thread = application_context->task_thread;
+
+    g_object_set(notify_soundcard,
+		 "task-thread", application_context->task_thread,
+		 NULL);
     
     if(AGS_IS_DEVOUT(list->data)){
       AGS_DEVOUT(list->data)->notify_soundcard = (GObject *) notify_soundcard;

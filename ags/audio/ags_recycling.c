@@ -1997,7 +1997,7 @@ ags_recycling_real_add_audio_signal(AgsRecycling *recycling,
       list = list->next;
     }
 
-    g_hash_table_unref(hash_table);
+    g_hash_table_destroy(hash_table);
   }else{
     /* add new audio signal */
     pthread_mutex_lock(recycling_mutex);

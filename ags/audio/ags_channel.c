@@ -11507,7 +11507,7 @@ ags_channel_get_level(AgsChannel *channel)
     g_object_get(level,
 		 "audio", &audio,
 		 "audio-channel", &audio_channel,
-		 "input-line", &input_line,
+		 "line", &input_line,
 		 NULL);
 
     if(ags_audio_test_flags(audio, AGS_AUDIO_OUTPUT_HAS_RECYCLING)){

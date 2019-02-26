@@ -556,6 +556,9 @@ ags_play_channel_run_resolve_dependency(AgsRecall *recall)
     template = AGS_RECALL(list->data);
   }
 
+  g_list_free_full(list_start,
+		   g_object_unref);
+  
   /* check recall dependency */
   g_object_get(template,
 	       "recall-dependency", &list_start,

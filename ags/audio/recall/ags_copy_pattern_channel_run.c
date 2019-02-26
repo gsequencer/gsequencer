@@ -608,7 +608,7 @@ ags_copy_pattern_channel_run_run_init_pre(AgsRecall *recall)
 
     copy_pattern_channel_run->note = g_list_prepend(copy_pattern_channel_run->note,
 						    note);
-    g_object_ref(note);
+    //    g_object_ref(note);
   }
 
   copy_pattern_channel_run->note = g_list_reverse(copy_pattern_channel_run->note);

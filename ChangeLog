@@ -1,3 +1,9 @@
+ags (2.1.64)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed accessing using wrong property name in ags_channel_get_level()
+	* minor improvements and fixed memory-leaks
+
 ags (2.1.63)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

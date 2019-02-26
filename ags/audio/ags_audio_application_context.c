@@ -1970,7 +1970,10 @@ ags_audio_application_context_setup(AgsApplicationContext *application_context)
     //    if(soundcard_capability == AGS_SOUNDCARD_CAPABILITY_PLAYBACK){
       notify_soundcard = ags_notify_soundcard_new((AgsSoundcardThread *) soundcard_thread);
       g_object_ref(notify_soundcard);
-      AGS_TASK(notify_soundcard)->task_thread = application_context->task_thread;
+
+      g_object_set(notify_soundcard,
+		   "task-thread", application_context->task_thread,
+		   NULL);
     
       if(AGS_IS_DEVOUT(list->data)){
 	AGS_DEVOUT(list->data)->notify_soundcard = (GObject *) notify_soundcard;

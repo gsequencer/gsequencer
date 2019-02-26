@@ -298,11 +298,7 @@ ags_task_finalize(GObject *gobject)
   AgsTask *task;
 
   task = AGS_TASK(gobject);
-
-  if(task->name != NULL){
-    g_free(task->name);
-  }
-
+  
   pthread_cond_destroy(&(task->wait_sync_task_cond));
   
   /* task mutex */
@@ -312,6 +308,12 @@ ags_task_finalize(GObject *gobject)
   pthread_mutex_destroy(task->obj_mutex);
   free(task->obj_mutex);
 
+  g_free(task->name);
+
+  if(task->task_thread != NULL){
+    g_object_unref(task->task_thread);
+  }
+  
   /* call parent */
   G_OBJECT_CLASS(ags_task_parent_class)->finalize(gobject);
 }
