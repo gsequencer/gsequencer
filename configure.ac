@@ -8,7 +8,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.69])
-AC_INIT([gsequencer],[2.1.62],[jkraehemann@gmail.com])
+AC_INIT([gsequencer],[2.1.63],[jkraehemann@gmail.com])
 AM_INIT_AUTOMAKE([subdir-objects])
 AC_CONFIG_SRCDIR([ags/config.h.in])
 AC_CONFIG_HEADERS([ags/config.h])
@@ -73,6 +73,11 @@ AC_ARG_ENABLE(run-functional-tests, [AS_HELP_STRING([--enable-run-functional-tes
 			          [run functional tests (default is no)])],
 	      [],
 	      [enable_run_functional_tests=no])
+
+AC_ARG_ENABLE(fast-test-mode, [AS_HELP_STRING([--enable-fast-test-mode],
+			          [fast test mode (default is no)])],
+	      [],
+	      [enable_fast_test_mode=no])
 
 # Checks for programs.
 AC_PROG_CC
@@ -285,6 +290,11 @@ AS_IF([test "x$enable_run_functional_tests" == xyes],
       [AC_MSG_NOTICE([run functional tests enabled])],
       AC_MSG_NOTICE([run functional tests disabled]))
 AM_CONDITIONAL([RUN_FUNCTIONAL_TESTS], [test "x$enable_run_functional_tests" == xyes])
+
+AS_IF([test "x$enable_fast_test_mode" == xyes],
+      [AC_MSG_NOTICE([fast test mode enabled])],
+      AC_MSG_NOTICE([fast test mode disabled]))
+AM_CONDITIONAL([FAST_TEST_MODE], [test "x$enable_fast_test_mode" == xyes])
 
 # Checks for library functions.
 AC_FUNC_MALLOC

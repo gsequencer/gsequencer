@@ -222,7 +222,8 @@ ags_ramp_acceleration_dialog_port_callback(GtkComboBox *combo_box,
 		 "plugin-port", &plugin_port,
 		 NULL);      
 
-    g_list_free(start_port);
+    g_list_free_full(start_port,
+		     g_object_unref);
   }
 
   if(plugin_port != NULL){

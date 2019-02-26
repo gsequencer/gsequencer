@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -1493,7 +1493,8 @@ ags_effect_line_add_lv2_effect(AgsEffectLine *effect_line,
 		 (GFunc) g_object_unref,
 		 NULL);
   
-  g_list_free(start_recall);
+  g_list_free_full(start_recall,
+		   g_object_unref);
 
   /* add separator */
   separator = ags_effect_separator_new();

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -183,6 +183,8 @@ ags_feed_audio_signal_run_pre(AgsRecall *recall)
 		     "recycling", &recycling,
 		     "buffer-size", &buffer_size,
 		     NULL);
+
+	template = NULL;
       
 	if(recycling != NULL){
 	  GList *list_start;
@@ -209,6 +211,10 @@ ags_feed_audio_signal_run_pre(AgsRecall *recall)
 	ags_audio_signal_feed(audio_signal,
 			      template,
 			      frame_count);
+
+	if(template != NULL){
+	  g_object_unref(template);
+	}
       }
 
       note = note->next;

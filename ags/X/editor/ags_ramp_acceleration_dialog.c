@@ -752,13 +752,16 @@ ags_ramp_acceleration_dialog_apply(AgsApplicable *applicable)
 					     line)) != -1){
     AgsChannel *start_channel;
     AgsChannel *nth_channel;
+    GList *start_play_port, *start_recall_port;
     GList *play_port, *recall_port;
 
     guint j;
     guint tmp;
     
-    play_port = NULL;
-    recall_port = NULL;
+    play_port =
+      start_play_port = NULL;
+    recall_port =
+      start_recall_port = NULL;
     
     if(channel_type == AGS_TYPE_OUTPUT){
       g_object_get(machine->audio,
@@ -768,11 +771,13 @@ ags_ramp_acceleration_dialog_apply(AgsApplicable *applicable)
       nth_channel = ags_channel_nth(start_channel,
 				    line);
 
-      play_port = ags_channel_collect_all_channel_ports_by_specifier_and_context(nth_channel,
-										 specifier, TRUE);
+      play_port =
+	start_play_port = ags_channel_collect_all_channel_ports_by_specifier_and_context(nth_channel,
+											 specifier, TRUE);
 
-      recall_port = ags_channel_collect_all_channel_ports_by_specifier_and_context(nth_channel,
-										   specifier, FALSE);
+      recall_port = 
+	start_recall_port = ags_channel_collect_all_channel_ports_by_specifier_and_context(nth_channel,
+											   specifier, FALSE);
 
       if(nth_channel != NULL){
 	g_object_unref(nth_channel);
@@ -790,11 +795,13 @@ ags_ramp_acceleration_dialog_apply(AgsApplicable *applicable)
       nth_channel = ags_channel_nth(start_channel,
 				    line);
 
-      play_port = ags_channel_collect_all_channel_ports_by_specifier_and_context(nth_channel,
-										 specifier, TRUE);
+      play_port =
+	start_play_port = ags_channel_collect_all_channel_ports_by_specifier_and_context(nth_channel,
+											 specifier, TRUE);
 
-      recall_port = ags_channel_collect_all_channel_ports_by_specifier_and_context(nth_channel,
-										   specifier, FALSE);
+      recall_port = 
+	start_recall_port = ags_channel_collect_all_channel_ports_by_specifier_and_context(nth_channel,
+											   specifier, FALSE);
 
       if(nth_channel != NULL){
 	g_object_unref(nth_channel);
@@ -805,11 +812,13 @@ ags_ramp_acceleration_dialog_apply(AgsApplicable *applicable)
 	g_object_unref(start_channel);
       }
     }else{
-      play_port = ags_audio_collect_all_audio_ports_by_specifier_and_context(machine->audio,
-									     specifier, TRUE);
+      play_port =
+	start_play_port = ags_audio_collect_all_audio_ports_by_specifier_and_context(machine->audio,
+										     specifier, TRUE);
       
-      recall_port = ags_audio_collect_all_audio_ports_by_specifier_and_context(machine->audio,
-									       specifier, FALSE);
+      recall_port =
+	start_recall_port = ags_audio_collect_all_audio_ports_by_specifier_and_context(machine->audio,
+										       specifier, FALSE);
     }
         
     if(play_port != NULL){
@@ -1010,6 +1019,12 @@ ags_ramp_acceleration_dialog_apply(AgsApplicable *applicable)
       }
     }
 
+    g_list_free_full(start_play_port,
+		     g_object_unref);
+    
+    g_list_free_full(start_recall_port,
+		     g_object_unref);
+
     if(notebook == NULL){
       break;
     }
@@ -1099,7 +1114,8 @@ ags_ramp_acceleration_dialog_reset(AgsApplicable *applicable)
     port = port->next;
   }
 
-  g_list_free(start_port);
+  g_list_free_full(start_port,
+		   g_object_unref);
     
   /* output */
   g_object_get(audio,
@@ -1158,7 +1174,8 @@ ags_ramp_acceleration_dialog_reset(AgsApplicable *applicable)
       port = port->next;
     }
 
-    g_list_free(start_port);
+    g_list_free_full(start_port,
+		     g_object_unref);
     
     /* iterate */
     next_channel = ags_channel_next(channel);
@@ -1233,7 +1250,8 @@ ags_ramp_acceleration_dialog_reset(AgsApplicable *applicable)
       port = port->next;
     }
 
-    g_list_free(start_port);
+    g_list_free_full(start_port,
+		     g_object_unref);
     
     /* iterate */
     next_channel = ags_channel_next(channel);

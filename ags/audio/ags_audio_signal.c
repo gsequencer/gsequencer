@@ -3449,32 +3449,12 @@ ags_audio_signal_remove_note(AgsAudioSignal *audio_signal,
 AgsAudioSignal*
 ags_audio_signal_get_template(GList *audio_signal)
 {
-  AgsAudioSignal *current_audio_signal;
-  
-  guint audio_signal_flags;
-  
-  pthread_mutex_t *audio_signal_mutex;
-
   while(audio_signal != NULL){
-    current_audio_signal = audio_signal->data;
-    
-    /* get audio signal mutex */
-    pthread_mutex_lock(ags_audio_signal_get_class_mutex());
-  
-    audio_signal_mutex = current_audio_signal->obj_mutex;
-
-    pthread_mutex_unlock(ags_audio_signal_get_class_mutex());
-
-    /* get some fields */
-    pthread_mutex_lock(audio_signal_mutex);
-
-    audio_signal_flags = current_audio_signal->flags;
-  
-    pthread_mutex_unlock(audio_signal_mutex);
-
     /* check flags */
-    if((AGS_AUDIO_SIGNAL_TEMPLATE & (audio_signal_flags)) != 0){
-      return(current_audio_signal);
+    if(ags_audio_signal_test_flags(audio_signal->data, AGS_AUDIO_SIGNAL_TEMPLATE)){
+      g_object_ref(audio_signal->data);
+      
+      return(audio_signal->data);
     }
     
     /* iterate */
@@ -3497,37 +3477,17 @@ ags_audio_signal_get_template(GList *audio_signal)
 GList*
 ags_audio_signal_get_rt_template(GList *audio_signal)
 {
-  AgsAudioSignal *current_audio_signal;
-  
   GList *rt_template;
-
-  guint audio_signal_flags;
-  
-  pthread_mutex_t *audio_signal_mutex;
 
   rt_template = NULL;
   
   while(audio_signal != NULL){
-    current_audio_signal = audio_signal->data;
-    
-    /* get audio signal mutex */
-    pthread_mutex_lock(ags_audio_signal_get_class_mutex());
-  
-    audio_signal_mutex = current_audio_signal->obj_mutex;
-
-    pthread_mutex_unlock(ags_audio_signal_get_class_mutex());
-
-    /* get some fields */
-    pthread_mutex_lock(audio_signal_mutex);
-
-    audio_signal_flags = current_audio_signal->flags;
-  
-    pthread_mutex_unlock(audio_signal_mutex);
-
     /* check flags */
-    if((AGS_AUDIO_SIGNAL_RT_TEMPLATE & (audio_signal_flags)) != 0){
+    if(ags_audio_signal_test_flags(audio_signal->data, AGS_AUDIO_SIGNAL_RT_TEMPLATE)){
+      g_object_ref(audio_signal->data);
+      
       rt_template = g_list_prepend(rt_template,
-				   current_audio_signal);
+				   audio_signal->data);
     }
 
     /* iterate */

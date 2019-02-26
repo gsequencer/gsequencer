@@ -622,6 +622,7 @@ ags_synth_update(AgsSynth *synth)
 		     g_object_unref);
 	
     g_object_unref(first_recycling);	
+    g_object_unref(template);
     
     /* iterate */
     next_channel = ags_channel_next(channel);

@@ -1426,7 +1426,8 @@ ags_automation_editor_add_acceleration(AgsAutomationEditor *automation_editor,
 	play_port = play_port->next;
       }
 
-      g_list_free(start_play_port);
+      g_list_free_full(start_play_port,
+		       g_object_unref);
       
       /* recall port */
       if(recall_port != NULL){
@@ -1472,6 +1473,9 @@ ags_automation_editor_add_acceleration(AgsAutomationEditor *automation_editor,
 	/* iterate */
 	recall_port = recall_port->next;
       }      
+
+      g_list_free_full(start_recall_port,
+		       g_object_unref);
 
       if(notebook == NULL){
 	break;
@@ -1968,7 +1972,8 @@ ags_automation_editor_paste(AgsAutomationEditor *automation_editor)
 	  play_port = play_port->next;
 	}
 
-	g_list_free(start_play_port);
+	g_list_free_full(start_play_port,
+			 g_object_unref);
       
 	/* recall port */
 	if(recall_port != NULL){
@@ -1997,6 +2002,9 @@ ags_automation_editor_paste(AgsAutomationEditor *automation_editor)
 	  /* iterate */
 	  recall_port = recall_port->next;
 	}
+
+	g_list_free_full(start_recall_port,
+			 g_object_unref);
       }else{
 	automation = AGS_AUTOMATION(list_automation->data);
       }

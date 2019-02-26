@@ -5250,6 +5250,8 @@ ags_channel_set_link(AgsChannel *channel, AgsChannel *link,
 			   g_object_unref);
 	}
       }
+    }else{
+      g_object_unref(old_channel_level);
     }
   }
   
@@ -5275,6 +5277,8 @@ ags_channel_set_link(AgsChannel *channel, AgsChannel *link,
 			   g_object_unref);
 	}
       }
+    }else{
+      g_object_unref(old_link_level);
     }
   }
   
@@ -6773,6 +6777,8 @@ ags_channel_reset_recycling(AgsChannel *channel,
       g_message("unexpected result as retrieving level: !AGS_IS_INPUT(level)");
 #endif
     }
+    
+    g_object_unref(level_channel);
   }else{
     if(first_recycling == NULL){
       /* reset recycling context */
@@ -11236,7 +11242,9 @@ ags_channel_collect_all_channel_ports(AgsChannel *channel)
   pthread_mutex_lock(play_mutex);
 
   recall =
-    recall_start = g_list_copy(channel->play);
+    recall_start = g_list_copy_deep(channel->play,
+				    (GCopyFunc) g_object_ref,
+				    NULL);
 
   pthread_mutex_unlock(play_mutex);
    
@@ -11257,11 +11265,15 @@ ags_channel_collect_all_channel_ports(AgsChannel *channel)
     
     if(current->port != NULL){
       if(list == NULL){
-	list = g_list_copy(current->port);
+	list = g_list_copy_deep(current->port,
+				(GCopyFunc) g_object_ref,
+				NULL);
       }else{
 	if(current->port != NULL){
 	  list = g_list_concat(list,
-			       g_list_copy(current->port));
+			       g_list_copy_deep(current->port,
+						(GCopyFunc) g_object_ref,
+						NULL));
 	}
       }
     }
@@ -11272,7 +11284,8 @@ ags_channel_collect_all_channel_ports(AgsChannel *channel)
     recall = recall->next;
   }
 
-  g_list_free(recall_start);
+  g_list_free_full(recall_start,
+		   g_object_unref);
   
   /* get recall mutex */  
   pthread_mutex_lock(ags_channel_get_class_mutex());
@@ -11285,7 +11298,9 @@ ags_channel_collect_all_channel_ports(AgsChannel *channel)
   pthread_mutex_lock(recall_mutex);
 
   recall =
-    recall_start = g_list_copy(channel->recall);
+    recall_start = g_list_copy_deep(channel->recall,
+				    (GCopyFunc) g_object_ref,
+				    NULL);
 
   pthread_mutex_unlock(recall_mutex);
    
@@ -11306,11 +11321,15 @@ ags_channel_collect_all_channel_ports(AgsChannel *channel)
     
     if(current->port != NULL){
       if(list == NULL){
-	list = g_list_copy(current->port);
+	list = g_list_copy_deep(current->port,
+				(GCopyFunc) g_object_ref,
+				NULL);
       }else{
 	if(current->port != NULL){
 	  list = g_list_concat(list,
-			       g_list_copy(current->port));
+			       g_list_copy_deep(current->port,
+						(GCopyFunc) g_object_ref,
+						NULL));
 	}
       }
     }
@@ -11321,7 +11340,8 @@ ags_channel_collect_all_channel_ports(AgsChannel *channel)
     recall = recall->next;
   }
    
-  g_list_free(recall_start);
+  g_list_free_full(recall_start,
+		   g_object_unref);
 
   /*  */
   list = g_list_reverse(list);
@@ -11368,7 +11388,9 @@ ags_channel_collect_all_channel_ports_by_specifier_and_context(AgsChannel *chann
     pthread_mutex_lock(recall_mutex);
 
     recall =
-      recall_start = g_list_copy(channel->play);
+      recall_start = g_list_copy_deep(channel->play,
+				      (GCopyFunc) g_object_ref,
+				      NULL);
     
     pthread_mutex_unlock(recall_mutex);
   }else{
@@ -11383,7 +11405,9 @@ ags_channel_collect_all_channel_ports_by_specifier_and_context(AgsChannel *chann
     pthread_mutex_lock(recall_mutex);
 
     recall =
-      recall_start = g_list_copy(channel->recall);
+      recall_start = g_list_copy_deep(channel->recall,
+				      (GCopyFunc) g_object_ref,
+				      NULL);
     
     pthread_mutex_unlock(recall_mutex);
   }
@@ -11409,7 +11433,9 @@ ags_channel_collect_all_channel_ports_by_specifier_and_context(AgsChannel *chann
     pthread_mutex_lock(mutex);
     
     port =
-      port_start = g_list_copy(current->port);
+      port_start = g_list_copy_deep(current->port,
+				    (GCopyFunc) g_object_ref,
+				    NULL);
 
     pthread_mutex_unlock(mutex);
 
@@ -11418,6 +11444,8 @@ ags_channel_collect_all_channel_ports_by_specifier_and_context(AgsChannel *chann
       AgsPort *current;
 
       current = AGS_PORT(port->data);
+
+      g_object_ref(current);
       list = g_list_prepend(list,
 			    current);
 
@@ -11425,13 +11453,15 @@ ags_channel_collect_all_channel_ports_by_specifier_and_context(AgsChannel *chann
       port = port->next;
     }
 
-    g_list_free(port_start);
+    g_list_free_full(port_start,
+		     g_object_unref);
 
     /* iterate - recall */
     recall = recall->next;
   }
 
-  g_list_free(recall_start);
+  g_list_free_full(recall_start,
+		   g_object_unref);
 
   /* reverse result */
   list = g_list_reverse(list);
@@ -11453,76 +11483,68 @@ AgsChannel*
 ags_channel_get_level(AgsChannel *channel)
 {
   AgsAudio *audio;
-  AgsChannel *output;
-  AgsChannel *level;
+  AgsChannel *start_output, *nth_output;
+  AgsChannel *level, *next_level;
 
-  guint audio_flags;
   guint audio_channel;
   guint input_line;
 	
-  pthread_mutex_t *audio_mutex;
-  pthread_mutex_t *level_mutex;
-
   /* check above recycling */
   level = channel;
 
+  if(level != NULL){
+    g_object_ref(level);
+  }
+
+  audio = NULL;
+  
   if(AGS_IS_OUTPUT(channel)){
     goto ags_channel_get_level_ITERATE;
   }
 	
   while(level != NULL){
-    /* get level mutex */
-    pthread_mutex_lock(ags_channel_get_class_mutex());
-
-    level_mutex = level->obj_mutex;
-  
-    pthread_mutex_unlock(ags_channel_get_class_mutex());
-
     /* get some fields */
-    pthread_mutex_lock(level_mutex);
+    g_object_get(level,
+		 "audio", &audio,
+		 "audio-channel", &audio_channel,
+		 "input-line", &input_line,
+		 NULL);
 
-    audio = (AgsAudio *) level->audio;
-
-    audio_channel = level->audio_channel;
-
-    input_line = level->line;
-
-    pthread_mutex_unlock(level_mutex);
-
-    /* get audio mutex */
-    pthread_mutex_lock(ags_audio_get_class_mutex());
-
-    audio_mutex = audio->obj_mutex;
-  
-    pthread_mutex_unlock(ags_audio_get_class_mutex());
-
-    /* get some fields */
-    pthread_mutex_lock(audio_mutex);
-	  
-    audio_flags = audio->flags;
-
-    output = audio->output;
-
-    pthread_mutex_unlock(audio_mutex);
-
-    if((AGS_AUDIO_OUTPUT_HAS_RECYCLING & audio_flags) != 0){
+    if(ags_audio_test_flags(audio, AGS_AUDIO_OUTPUT_HAS_RECYCLING)){
+      if(audio != NULL){
+	g_object_unref(audio);
+      }
+      
       break;
     }
+
+    /* get some fields */
+    g_object_get(audio,
+		 "output", &start_output,
+		 NULL);
 	  
-    if((AGS_AUDIO_ASYNC & audio_flags) != 0){
-      level = ags_channel_nth(output,
-			      audio_channel);
+    if(ags_audio_test_flags(audio, AGS_AUDIO_ASYNC)){
+      nth_output = ags_channel_nth(start_output,
+				   audio_channel);
 
       if(level != NULL){
-	g_object_unref(level); //FIXME:JK: bad ref count
+	g_object_unref(level);
       }      
+
+      level = nth_output;
     }else{
-      level = ags_channel_nth(output,
-			      input_line);
+      nth_output = ags_channel_nth(start_output,
+				   input_line);
 
       if(level != NULL){
-	g_object_unref(level); //FIXME:JK: bad ref count
+	g_object_unref(level);
       }
+
+      level = nth_output;
+    }
+
+    if(audio != NULL){
+      g_object_unref(audio);
     }
 
     if(level == NULL){
@@ -11530,19 +11552,13 @@ ags_channel_get_level(AgsChannel *channel)
     }
 
   ags_channel_get_level_ITERATE:
-    /* get level mutex */
-    pthread_mutex_lock(ags_channel_get_class_mutex());
-
-    level_mutex = level->obj_mutex;
-  
-    pthread_mutex_unlock(ags_channel_get_class_mutex());
 
     /* iterate */
-    pthread_mutex_lock(level_mutex);
+    next_level = ags_channel_get_link(level);
 
-    level = level->link;
+    g_object_unref(level);
 
-    pthread_mutex_unlock(level_mutex);
+    level = next_level;
   }
 
   return(level);

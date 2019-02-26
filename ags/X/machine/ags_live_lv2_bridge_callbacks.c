@@ -389,7 +389,8 @@ ags_live_lv2_bridge_lv2ui_write_function(LV2UI_Controller controller, uint32_t p
     free(control_port);
   }
 
-  g_list_free(start_effect);
+  g_list_free_full(start_effect,
+		   g_object_unref);
 
   /* recall */
   effect =
@@ -420,7 +421,8 @@ ags_live_lv2_bridge_lv2ui_write_function(LV2UI_Controller controller, uint32_t p
     free(control_port);
   }
 
-  g_list_free(start_effect);
+  g_list_free_full(start_effect,
+		   g_object_unref);
 
   g_list_free_full(start_play,
 		   g_object_unref);

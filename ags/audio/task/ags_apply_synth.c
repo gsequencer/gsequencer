@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -455,6 +455,8 @@ ags_apply_synth_launch(AgsTask *task)
       audio_signal->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;
       ags_recycling_add_audio_signal(first_recycling,
 				     audio_signal);
+
+      g_object_ref(audio_signal);
     }
 	
     /* compute audio signal */
@@ -475,11 +477,14 @@ ags_apply_synth_launch(AgsTask *task)
       rt_template = rt_template->next;
     }
 
-    g_list_free(rt_template_start);
+    g_list_free_full(rt_template_start,
+		     g_object_unref);
+    
     g_list_free_full(list_start,
 		     g_object_unref);
 	
     g_object_unref(output_soundcard);
+    g_object_unref(audio_signal);
     
     /* iterate */
     pthread_mutex_lock(channel_mutex);

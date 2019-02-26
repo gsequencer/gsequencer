@@ -1292,6 +1292,9 @@ ags_audiorec_indicator_queue_draw_timeout(AgsAudiorec *audiorec)
       /* queue draw */
       gtk_widget_queue_draw(child);
 
+      g_list_free_full(start_port,
+		       g_object_unref);
+      
       /* iterate */
       list = list->next;
 

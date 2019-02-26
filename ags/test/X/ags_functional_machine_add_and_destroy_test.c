@@ -203,7 +203,7 @@ ags_functional_machine_add_and_destroy_test_equalizer10()
 
   /* add equalizer10 */
   success = ags_functional_test_util_add_machine(NULL,
-						 "Equalizer10");
+						 "Equalizer");
 
   CU_ASSERT(success == TRUE);
 

@@ -1640,7 +1640,7 @@ ags_recycling_set_samplerate(AgsRecycling *recycling, guint samplerate)
   AgsAudioSignal *template;
 
   GList *audio_signal;
-  GList *rt_template;
+  GList *start_rt_template, *rt_template;
   
   pthread_mutex_t *recycling_mutex;
 
@@ -1673,8 +1673,11 @@ ags_recycling_set_samplerate(AgsRecycling *recycling, guint samplerate)
 		 NULL);
   }
 
+  g_object_unref(template);
+  
   /* get rt-template */
-  rt_template = ags_audio_signal_get_rt_template(audio_signal);
+  rt_template =
+    start_rt_template = ags_audio_signal_get_rt_template(audio_signal);
 
   while(rt_template != NULL){
     g_object_set(rt_template->data,
@@ -1683,6 +1686,9 @@ ags_recycling_set_samplerate(AgsRecycling *recycling, guint samplerate)
 
     rt_template = rt_template->next;
   }
+
+  g_list_free_full(start_rt_template,
+		   g_object_unref);
 
   /* free list */
   g_list_free_full(audio_signal,
@@ -1704,7 +1710,7 @@ ags_recycling_set_buffer_size(AgsRecycling *recycling, guint buffer_size)
   AgsAudioSignal *template;
 
   GList *audio_signal;
-  GList *rt_template;
+  GList *start_rt_template, *rt_template;
   
   pthread_mutex_t *recycling_mutex;
 
@@ -1737,8 +1743,11 @@ ags_recycling_set_buffer_size(AgsRecycling *recycling, guint buffer_size)
 		 NULL);
   }
 
+  g_object_unref(template);
+
   /* get rt-template */
-  rt_template = ags_audio_signal_get_rt_template(audio_signal);
+  rt_template =
+    start_rt_template = ags_audio_signal_get_rt_template(audio_signal);
 
   while(rt_template != NULL){
     g_object_set(rt_template->data,
@@ -1747,6 +1756,9 @@ ags_recycling_set_buffer_size(AgsRecycling *recycling, guint buffer_size)
 
     rt_template = rt_template->next;
   }
+
+  g_list_free_full(start_rt_template,
+		   g_object_unref);
 
   /* free list */
   g_list_free_full(audio_signal,
@@ -1768,7 +1780,7 @@ ags_recycling_set_format(AgsRecycling *recycling, guint format)
   AgsAudioSignal *template;
 
   GList *audio_signal;
-  GList *rt_template;
+  GList *start_rt_template, *rt_template;
   
   pthread_mutex_t *recycling_mutex;
 
@@ -1801,8 +1813,11 @@ ags_recycling_set_format(AgsRecycling *recycling, guint format)
 		 NULL);
   }
 
+  g_object_unref(template);
+  
   /* get rt-template */
-  rt_template = ags_audio_signal_get_rt_template(audio_signal);
+  rt_template = 
+    start_rt_template = ags_audio_signal_get_rt_template(audio_signal);
 
   while(rt_template != NULL){
     g_object_set(rt_template->data,
@@ -1811,6 +1826,9 @@ ags_recycling_set_format(AgsRecycling *recycling, guint format)
 
     rt_template = rt_template->next;
   }
+
+  g_list_free_full(start_rt_template,
+		   g_object_unref);
 
   /* free list */
   g_list_free_full(audio_signal,
@@ -1879,6 +1897,8 @@ ags_recycling_real_add_audio_signal(AgsRecycling *recycling,
     ags_recycling_remove_audio_signal(recycling,
 				      old_template);
 
+    g_object_unref(old_template);
+    
     /* add new template */
     pthread_mutex_lock(recycling_mutex);
     
@@ -2248,6 +2268,8 @@ ags_recycling_create_audio_signal_with_defaults(AgsRecycling *recycling,
 				 length);
   ags_audio_signal_duplicate_stream(audio_signal,
 				    template);  
+
+  g_object_unref(template);
 }
 
 /**
@@ -2428,6 +2450,8 @@ ags_recycling_create_audio_signal_with_frame_count(AgsRecycling *recycling,
 	       NULL);
   
   if(template_length == 0){
+    g_object_unref(template);
+    
     return;
   }
 
@@ -2506,6 +2530,8 @@ ags_recycling_create_audio_signal_with_frame_count(AgsRecycling *recycling,
   }
 
   pthread_mutex_unlock(template_stream_mutex);
+
+  g_object_unref(template);
 }
 
 /**
@@ -2524,9 +2550,7 @@ AgsRecycling*
 ags_recycling_find_next_channel(AgsRecycling *start_region, AgsRecycling *end_region,
 				GObject *prev_channel)
 {
-  AgsRecycling *recycling;
-  
-  pthread_mutex_t *recycling_mutex, *start_recycling_mutex;
+  AgsRecycling *recycling, *next_recycling;
 
   /* verify objects and get pointer for safe access */
   if(!AGS_IS_RECYCLING(start_region)){
@@ -2536,29 +2560,40 @@ ags_recycling_find_next_channel(AgsRecycling *start_region, AgsRecycling *end_re
   /* find */
   recycling = start_region;
 
+  if(recycling != NULL){
+    g_object_ref(recycling);
+  }
+  
   while(recycling != NULL &&
 	recycling != end_region){
-    /* get recycling mutex */  
-    pthread_mutex_lock(ags_recycling_get_class_mutex());
+    GObject *current_channel;
 
-    recycling_mutex = recycling->obj_mutex;
-  
-    pthread_mutex_unlock(ags_recycling_get_class_mutex());
-
+    gboolean success;
+    
+    g_object_get(recycling,
+		 "channel", &current_channel,
+		 NULL);
+    
     /* check if new match */
-    pthread_mutex_lock(recycling_mutex);
-
-    if(recycling->channel != prev_channel){
-      pthread_mutex_unlock(recycling_mutex);
-
+    success = (current_channel != prev_channel) ? TRUE: FALSE;
+    g_object_unref(current_channel);
+    
+    if(success){      
       return(recycling);
     }
+    
+    /* iterate */
+    next_recycling = ags_recycling_next(recycling);
 
-    recycling = recycling->next;
-
-    pthread_mutex_unlock(recycling_mutex);
+    g_object_unref(recycling);
+    
+    recycling = next_recycling;
   }
 
+  if(recycling != NULL){
+    g_object_unref(recycling);
+  }
+  
   /* no new channel within region */
   return(NULL);
 }

@@ -1,3 +1,17 @@
+ags (2.1.63)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed ref count of return value and calls from/to ags_audio_collect_all_audio_ports()
+	* fixed ref count of return value and calls from/to ags_audio_collect_all_audio_ports_by_specifier_and_context()
+	* fixed ref count of return value and calls from/to ags_channel_collect_all_channel_ports()
+	* fixed ref count of return value and calls from/to ags_channel_collect_all_channel_ports_by_specifier_and_context()
+	* fixed ref count of return value and calls from/to ags_channel_get_level()
+	* fixed ref count of return value from ags_recycling_find_next_channel()
+	* fixed ref count of return value and calls from/to ags_audio_signal_get_template()
+	* fixed ref count of return value and calls from/to ags_audio_signal_get_rt_template()
+	* fixed ref count of return value and calls from/to ags_recall_get_by_effect()
+	* fixed memory-leak in ags_recycling_set_samplerate(), ags_recycling_set_buffer_size() and ags_recycling_set_format()
+
 ags (2.1.62)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

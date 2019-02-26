@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -344,6 +344,8 @@ ags_drum_input_line_set_channel(AgsLine *line, AgsChannel *channel)
       audio_signal->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;
       ags_recycling_add_audio_signal(first_recycling,
 				     audio_signal);
+    }else{
+      g_object_unref(template);
     }
 
     /* reset edit button */

@@ -5757,14 +5757,10 @@ ags_recall_is_done(GList *recall, GObject *recycling_context)
 GList*
 ags_recall_get_by_effect(GList *recall, gchar *filename, gchar *effect)
 {
-  AgsRecall *current_recall;
-  
   GList *list;
 
   gchar *current_filename, *current_effect;
   
-  pthread_mutex_t *current_recall_mutex;
-
   if(recall == NULL ||
      effect == NULL){
     return(NULL);
@@ -5773,41 +5769,38 @@ ags_recall_get_by_effect(GList *recall, gchar *filename, gchar *effect)
   list = NULL;
 
   while(recall != NULL){
-    current_recall = AGS_RECALL(recall->data);
-    
-    /* get recall mutex */
-    pthread_mutex_lock(ags_recall_get_class_mutex());
-  
-    current_recall_mutex = current_recall->obj_mutex;
-
-    pthread_mutex_unlock(ags_recall_get_class_mutex());
-
     /* get some fields */
-    pthread_mutex_lock(current_recall_mutex);
+    current_filename = NULL;
+    current_effect = NULL;
+    
+    g_object_get(recall->data,
+		 "filename", &current_filename,
+		 "effect", &current_effect,
+		 NULL);
 
-    current_filename = current_recall->filename;
-    current_effect = current_recall->effect;
-    
-    pthread_mutex_unlock(current_recall_mutex);
-    
     /* check filename and effect */
     if(filename == NULL){
       if(current_filename == NULL &&
 	 current_effect != NULL &&
 	 !g_strcmp0(current_effect, effect)){
+	g_object_ref(recall->data);
 	list = g_list_prepend(list,
-			      current_recall);
+			      recall->data);
       }
     }else{
       if(current_filename != NULL &&
 	 !g_strcmp0(current_filename, filename) &&
 	 current_effect != NULL &&
 	 !g_strcmp0(current_effect, effect)){
+	g_object_ref(recall->data);
 	list = g_list_prepend(list,
-			      current_recall);
+			      recall->data);
       }
     }    
-    
+
+    g_free(current_filename);
+    g_free(current_effect);
+
     /* iterate */
     recall = recall->next;
   }

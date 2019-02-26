@@ -573,7 +573,8 @@ ags_automation_toolbar_load_port(AgsAutomationToolbar *automation_toolbar)
     port = port->next;
   }
 
-  g_list_free(start_port);
+  g_list_free_full(start_port,
+		   g_object_unref);
   
   /* output */
   g_object_get(machine->audio,
@@ -638,7 +639,8 @@ ags_automation_toolbar_load_port(AgsAutomationToolbar *automation_toolbar)
       port = port->next;
     }
 
-    g_list_free(start_port);
+    g_list_free_full(start_port,
+		     g_object_unref);
     
     /* iterate */
     next_channel = ags_channel_next(channel);
@@ -720,7 +722,8 @@ ags_automation_toolbar_load_port(AgsAutomationToolbar *automation_toolbar)
       port = port->next;
     }
 
-    g_list_free(start_port);
+    g_list_free_full(start_port,
+		     g_object_unref);
     
     /* iterate */
     next_channel = ags_channel_next(channel);
@@ -1000,7 +1003,7 @@ ags_automation_toolbar_apply_port(AgsAutomationToolbar *automation_toolbar,
     if(start_port != NULL){
       g_object_get(start_port->data,
 		   "plugin-port", &plugin_port,
-		   NULL);      
+		   NULL);   
     }
 
     if(plugin_port != NULL){
@@ -1178,6 +1181,9 @@ ags_automation_toolbar_apply_port(AgsAutomationToolbar *automation_toolbar,
   }
 
   g_list_free_full(start_automation,
+		   g_object_unref);
+
+  g_list_free_full(start_port,
 		   g_object_unref);
 }
 

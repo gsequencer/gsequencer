@@ -1154,7 +1154,8 @@ ags_line_add_ladspa_effect(AgsLine *line,
 		 NULL);
   
   /* check has output port */
-  g_list_free(start_recall);
+  g_list_free_full(start_recall,
+		   g_object_unref);
   
   /* recall - find ports */
   g_object_get(line->channel,
@@ -1186,7 +1187,8 @@ ags_line_add_ladspa_effect(AgsLine *line,
 		 (GFunc) g_object_unref,
 		 NULL);
 
-  g_list_free(start_recall);
+  g_list_free_full(start_recall,
+		   g_object_unref);
   
   /* add separator */
   separator = ags_effect_separator_new();
@@ -1538,7 +1540,8 @@ ags_line_add_lv2_effect(AgsLine *line,
 		 (GFunc) g_object_unref,
 		 NULL);
   
-  g_list_free(start_recall);
+  g_list_free_full(start_recall,
+		   g_object_unref);
   
   /* recall - find ports */
   g_object_get(line->channel,
@@ -1570,7 +1573,8 @@ ags_line_add_lv2_effect(AgsLine *line,
 		 (GFunc) g_object_unref,
 		 NULL);
 
-  g_list_free(start_recall);
+  g_list_free_full(start_recall,
+		   g_object_unref);
   
   /* add separator */
   separator = ags_effect_separator_new();

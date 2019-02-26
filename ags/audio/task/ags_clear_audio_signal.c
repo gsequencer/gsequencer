@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -293,9 +293,11 @@ ags_clear_audio_signal_launch(AgsTask *task)
       rt_template = rt_template->next;
     }
 
-    g_list_free(rt_template_start);
+    g_list_free_full(rt_template_start,
+		     g_object_unref);
+    
     g_list_free_full(list_start,
-		     g_object_unref);    
+		     g_object_unref);
 
     g_object_unref(recycling);
   }
