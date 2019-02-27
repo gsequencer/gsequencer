@@ -42,7 +42,7 @@ AgsVolumeChannel AgsConnectable AgsPlugin
 AgsRecallChannelRun AgsConnectable AgsPlugin
 AgsAnalyseChannelRun AgsConnectable AgsPlugin
 AgsBufferChannelRun AgsConnectable AgsPlugin
-AgsCaptureWaveChannelRun AgsConnectable AgsPlugin
+AgsCaptureWaveChannelRun AgsConnectable AgsPlugin AgsSeekable
 AgsCopyChannelRun AgsConnectable AgsPlugin
 AgsCopyPatternChannelRun AgsConnectable AgsPlugin
 AgsEnvelopeChannelRun AgsConnectable AgsPlugin
@@ -54,7 +54,7 @@ AgsMuteChannelRun AgsConnectable AgsPlugin
 AgsPeakChannelRun AgsConnectable AgsPlugin
 AgsPlayChannelRun AgsConnectable AgsPlugin
 AgsPlayChannelRunMaster AgsConnectable AgsPlugin
-AgsPlayWaveChannelRun AgsConnectable AgsPlugin
+AgsPlayWaveChannelRun AgsConnectable AgsPlugin AgsSeekable
 AgsPrepareChannelRun AgsConnectable AgsPlugin
 AgsRtStreamChannelRun AgsConnectable AgsPlugin
 AgsStreamChannelRun AgsConnectable AgsPlugin

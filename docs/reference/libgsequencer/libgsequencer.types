@@ -80,6 +80,7 @@ ags_notation_edit_get_type
 ags_notation_editor_get_type
 ags_notation_sheet_get_type
 ags_notation_toolbar_get_type
+ags_osc_server_preferences_get_type
 ags_oscillator_get_type
 ags_output_collection_editor_get_type
 ags_output_editor_get_type

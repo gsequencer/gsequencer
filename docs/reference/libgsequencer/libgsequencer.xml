@@ -31,15 +31,8 @@
     <xi:include href="xml/ags_audio_preferences.xml"/>
     <xi:include href="xml/ags_audio_preferences_callbacks.xml"/>
 
-    <xi:include href="xml/ags_scrolled_automation_edit_box.xml"/>
-    <xi:include href="xml/ags_automation_edit_box.xml"/>
-    <xi:include href="xml/ags_vautomation_edit_box.xml"/>
-    <xi:include href="xml/ags_automation_edit.xml"/>
-    <xi:include href="xml/ags_automation_edit_callbacks.xml"/>
     <xi:include href="xml/ags_automation_editor.xml"/>
     <xi:include href="xml/ags_automation_editor_callbacks.xml"/>
-    <xi:include href="xml/ags_automation_toolbar.xml"/>
-    <xi:include href="xml/ags_automation_toolbar_callbacks.xml"/>
     <xi:include href="xml/ags_automation_window.xml"/>
 
     <xi:include href="xml/ags_bulk_member.xml"/>
@@ -99,8 +92,10 @@
     <xi:include href="xml/ags_midi_preferences_callbacks.xml"/>
     <xi:include href="xml/ags_navigation.xml"/>
     <xi:include href="xml/ags_navigation_callbacks.xml"/>
+
     <xi:include href="xml/ags_notation_editor.xml"/>
     <xi:include href="xml/ags_notation_editor_callbacks.xml"/>
+
     <xi:include href="xml/ags_output_collection_editor.xml"/>
     <xi:include href="xml/ags_output_collection_editor_callbacks.xml"/>
     <xi:include href="xml/ags_output_editor.xml"/>
@@ -133,6 +128,11 @@
     <xi:include href="xml/ags_track_collection.xml"/>
     <xi:include href="xml/ags_track_collection_mapper.xml"/>
     <xi:include href="xml/ags_ui_provider.xml"/>
+    
+    <xi:include href="xml/ags_wave_window.xml"/>
+    <xi:include href="xml/ags_wave_editor.xml"/>
+    <xi:include href="xml/ags_wave_editor_callbacks.xml"/>
+
     <xi:include href="xml/ags_window.xml"/>
     <xi:include href="xml/ags_window_callbacks.xml"/>
     <xi:include href="xml/ags_xorg_application_context.xml"/>
@@ -140,13 +140,18 @@
     <chapter id="editor">
       <title>GUI Editor</title>
 
+      <xi:include href="xml/ags_scrolled_automation_edit_box.xml"/>
+      <xi:include href="xml/ags_automation_edit_box.xml"/>
+      <xi:include href="xml/ags_vautomation_edit_box.xml"/>
       <xi:include href="xml/ags_automation_edit.xml"/>
       <xi:include href="xml/ags_automation_edit_callbacks.xml"/>
-      <xi:include href="xml/ags_automation_editor.xml"/>
-      <xi:include href="xml/ags_automation_editor_callbacks.xml"/>
       <xi:include href="xml/ags_automation_toolbar.xml"/>
       <xi:include href="xml/ags_automation_toolbar_callbacks.xml"/>
-      <xi:include href="xml/ags_automation_window.xml"/>
+      <xi:include href="xml/ags_ramp_acceleration_dialog.xml"/>
+      <xi:include href="xml/ags_ramp_acceleration_dialog_callbacks.xml"/>
+      <xi:include href="xml/ags_select_acceleration_dialog.xml"/>
+      <xi:include href="xml/ags_select_acceleration_dialog_callbacks.xml"/>
+
       <xi:include href="xml/ags_crop_note_dialog.xml"/>
       <xi:include href="xml/ags_crop_note_dialog_callbacks.xml"/>
       <xi:include href="xml/ags_envelope_dialog.xml"/>
@@ -163,24 +168,33 @@
       <xi:include href="xml/ags_machine_selector_callbacks.xml"/>      
       <xi:include href="xml/ags_move_note_dialog.xml"/>
       <xi:include href="xml/ags_move_note_dialog_callbacks.xml"/>
+
       <xi:include href="xml/ags_notation_edit.xml"/>
       <xi:include href="xml/ags_notation_edit_callbacks.xml"/>
       <xi:include href="xml/ags_notation_toolbar.xml"/>
       <xi:include href="xml/ags_notation_toolbar_callbacks.xml"/>
-      <xi:include href="xml/ags_pattern_envelope.xml"/>
-      <xi:include href="xml/ags_pattern_envelope_callbacks.xml"/>
-      <xi:include href="xml/ags_playback_window.xml"/>
-      <xi:include href="xml/ags_ramp_acceleration_dialog.xml"/>
-      <xi:include href="xml/ags_ramp_acceleration_dialog_callbacks.xml"/>
-      <xi:include href="xml/ags_select_acceleration_dialog.xml"/>
-      <xi:include href="xml/ags_select_acceleration_dialog_callbacks.xml"/>
       <xi:include href="xml/ags_select_note_dialog.xml"/>
       <xi:include href="xml/ags_select_note_dialog_callbacks.xml"/>
+
+      <xi:include href="xml/ags_pattern_envelope.xml"/>
+      <xi:include href="xml/ags_pattern_envelope_callbacks.xml"/>
+
+      <xi:include href="xml/ags_scrolled_wave_edit_box.xml"/>
+      <xi:include href="xml/ags_wave_edit_box.xml"/>
+      <xi:include href="xml/ags_vwave_edit_box.xml"/>
+      <xi:include href="xml/ags_wave_edit.xml"/>
+      <xi:include href="xml/ags_wave_edit_callbacks.xml"/>
+      <xi:include href="xml/ags_wave_toolbar.xml"/>
+      <xi:include href="xml/ags_wave_toolbar_callbacks.xml"/>
+      <xi:include href="xml/ags_select_buffer_dialog.xml"/>
+      <xi:include href="xml/ags_select_buffer_dialog_callbacks.xml"/>
     </chapter>
 
     <chapter id="machine">
       <title>Audio machines</title>
 
+      <xi:include href="xml/ags_audiorec.xml"/>
+      <xi:include href="xml/ags_audiorec_callbacks.xml"/>
       <xi:include href="xml/ags_cell_pattern.xml"/>
       <xi:include href="xml/ags_cell_pattern_callbacks.xml"/>
       <xi:include href="xml/ags_drum.xml"/>
@@ -193,6 +207,8 @@
       <xi:include href="xml/ags_drum_output_pad.xml"/>
       <xi:include href="xml/ags_dssi_bridge.xml"/>
       <xi:include href="xml/ags_dssi_bridge_callbacks.xml"/>
+      <xi:include href="xml/ags_equalizer10.xml"/>
+      <xi:include href="xml/ags_equalizer10_callbacks.xml"/>
       <xi:include href="xml/ags_ffplayer.xml"/>
       <xi:include href="xml/ags_ffplayer_bridge.xml"/>
       <xi:include href="xml/ags_ffplayer_bulk_input.xml"/>
@@ -224,6 +240,8 @@
       <xi:include href="xml/ags_panel_input_pad.xml"/>
       <xi:include href="xml/ags_pattern_box.xml"/>
       <xi:include href="xml/ags_pattern_box_callbacks.xml"/>
+      <xi:include href="xml/ags_spectrometer.xml"/>
+      <xi:include href="xml/ags_spectrometer_callbacks.xml"/>
       <xi:include href="xml/ags_synth.xml"/>
       <xi:include href="xml/ags_synth_callbacks.xml"/>
       <xi:include href="xml/ags_synth_input_line.xml"/>
