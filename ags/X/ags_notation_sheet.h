@@ -81,8 +81,6 @@ struct _AgsNotationSheet
   AgsMachine *selected_machine;
   
   AgsNotebook *notebook;
-
-  AgsScrolledPiano *scrolled_piano;
   
   //  AgsNotationPage *notation_page;
 };
