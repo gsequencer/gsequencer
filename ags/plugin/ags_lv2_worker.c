@@ -39,7 +39,7 @@ void ags_lv2_worker_finalize(GObject *gobject);
 
 /**
  * SECTION:ags_lv2_worker
- * @short_description: task thread
+ * @short_description: LV2 worker thread
  * @title: AgsLv2Worker
  * @section_id:
  * @include: ags/plugin/ags_lv2_worker.h
