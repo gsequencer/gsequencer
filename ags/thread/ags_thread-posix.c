@@ -647,7 +647,6 @@ ags_thread_set_property(GObject *gobject,
 	return;
       }
 
-      g_message("max %f", max_precision);
       old_max_precision = thread->max_precision;
       
       thread->max_precision = max_precision;
