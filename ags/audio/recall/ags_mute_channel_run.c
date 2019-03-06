@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -26,6 +26,16 @@
 void ags_mute_channel_run_class_init(AgsMuteChannelRunClass *mute_channel_run);
 void ags_mute_channel_run_init(AgsMuteChannelRun *mute_channel_run);
 void ags_mute_channel_run_finalize(GObject *gobject);
+
+/**
+ * SECTION:ags_mute_channel_run
+ * @short_description: mutes channel
+ * @title: AgsMuteChannelRun
+ * @section_id:
+ * @include: ags/audio/recall/ags_mute_channel_run.h
+ *
+ * The #AgsMuteChannelRun class mutes the channel.
+ */
 
 static gpointer ags_mute_channel_run_parent_class = NULL;
 

@@ -45,12 +45,12 @@ void* ags_wave_loader_run(void *ptr);
 
 /**
  * SECTION:ags_wave_loader
- * @short_description: task thread
+ * @short_description: load wave asynchronously
  * @title: AgsWaveLoader
  * @section_id:
  * @include: ags/plugin/ags_wave_loader.h
  *
- * The #AgsWaveLoader acts as task queue thread.
+ * The #AgsWaveLoader loads wave audio data asynchronously.
  */
 
 enum{

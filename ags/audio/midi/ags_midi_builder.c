@@ -134,7 +134,7 @@ void ags_midi_builder_real_append_text_event(AgsMidiBuilder *midi_builder,
 
 /**
  * SECTION:ags_midi_builder
- * @short_description: MIDI buidler
+ * @short_description: MIDI builder
  * @title: AgsMidiBuilder
  * @section_id:
  * @include: ags/audio/midi/ags_midi_builder.h
