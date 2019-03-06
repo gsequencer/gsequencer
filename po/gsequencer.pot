@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: gsequencer 2.1.65\n"
+"Project-Id-Version: gsequencer 2.1.66\n"
 "Report-Msgid-Bugs-To: jkraehemann@gmail.com\n"
-"POT-Creation-Date: 2019-03-05 18:26+0100\n"
+"POT-Creation-Date: 2019-03-06 17:09+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -73,7 +73,7 @@ msgstr ""
 msgid "connect input"
 msgstr ""
 
-#: ags/X/ags_context_menu.c:151 ags/X/ags_export_window.c:347
+#: ags/X/ags_context_menu.c:151 ags/X/ags_export_window.c:348
 #: ags/X/ags_menu_bar.c:148
 msgid "export"
 msgstr ""
@@ -196,49 +196,49 @@ msgstr ""
 msgid "channel"
 msgstr ""
 
-#: ags/X/ags_export_soundcard.c:169 ags/X/ags_sequencer_editor.c:151
+#: ags/X/ags_export_soundcard.c:170 ags/X/ags_sequencer_editor.c:151
 #: ags/X/ags_soundcard_editor.c:160
 msgid "backend"
 msgstr ""
 
-#: ags/X/ags_export_soundcard.c:217 ags/X/ags_input_collection_editor.c:248
+#: ags/X/ags_export_soundcard.c:218 ags/X/ags_input_collection_editor.c:248
 #: ags/X/ags_output_collection_editor.c:248 ags/X/ags_soundcard_editor.c:208
 msgid "soundcard"
 msgstr ""
 
-#: ags/X/ags_export_soundcard.c:237 ags/X/machine/ags_audiorec.c:229
+#: ags/X/ags_export_soundcard.c:238 ags/X/machine/ags_audiorec.c:229
 msgid "file"
 msgstr ""
 
-#: ags/X/ags_export_soundcard.c:265
+#: ags/X/ags_export_soundcard.c:266
 msgid "open"
 msgstr ""
 
-#: ags/X/ags_export_soundcard.c:272
+#: ags/X/ags_export_soundcard.c:273
 msgid "output format"
 msgstr ""
 
-#: ags/X/ags_export_window.c:189
+#: ags/X/ags_export_window.c:190
 msgid "export to audio data"
 msgstr ""
 
-#: ags/X/ags_export_window.c:213
+#: ags/X/ags_export_window.c:214
 msgid "live export"
 msgstr ""
 
-#: ags/X/ags_export_window.c:225 ags/X/ags_navigation.c:306
+#: ags/X/ags_export_window.c:226 ags/X/ags_navigation.c:306
 msgid "exclude sequencers"
 msgstr ""
 
-#: ags/X/ags_export_window.c:241
+#: ags/X/ags_export_window.c:242
 msgid "mode"
 msgstr ""
 
-#: ags/X/ags_export_window.c:268
+#: ags/X/ags_export_window.c:269
 msgid "tact"
 msgstr ""
 
-#: ags/X/ags_export_window.c:290
+#: ags/X/ags_export_window.c:291
 msgid "time"
 msgstr ""
 
@@ -405,27 +405,27 @@ msgstr ""
 msgid "resize channels"
 msgstr ""
 
-#: ags/X/ags_midi_dialog.c:214
+#: ags/X/ags_midi_dialog.c:213
 msgid "midi channel"
 msgstr ""
 
-#: ags/X/ags_midi_dialog.c:257
+#: ags/X/ags_midi_dialog.c:256
 msgid "audio start mapping"
 msgstr ""
 
-#: ags/X/ags_midi_dialog.c:279
+#: ags/X/ags_midi_dialog.c:278
 msgid "audio end mapping"
 msgstr ""
 
-#: ags/X/ags_midi_dialog.c:301
+#: ags/X/ags_midi_dialog.c:300
 msgid "midi start mapping"
 msgstr ""
 
-#: ags/X/ags_midi_dialog.c:323
+#: ags/X/ags_midi_dialog.c:322
 msgid "midi end mapping"
 msgstr ""
 
-#: ags/X/ags_midi_dialog.c:359
+#: ags/X/ags_midi_dialog.c:358
 msgid "midi device"
 msgstr ""
 
@@ -542,7 +542,7 @@ msgid "server"
 msgstr ""
 
 #: ags/X/ags_property_editor.c:106 ags/X/editor/ags_envelope_editor.c:160
-#: ags/X/export/ags_machine_collection_entry.c:179
+#: ags/X/export/ags_machine_collection_entry.c:180
 #: ags/X/import/ags_track_collection_mapper.c:230
 msgid "enabled"
 msgstr ""
@@ -998,7 +998,7 @@ msgstr ""
 msgid "select audio data"
 msgstr ""
 
-#: ags/X/export/ags_machine_collection_entry.c:222
+#: ags/X/export/ags_machine_collection_entry.c:223
 #: ags/X/import/ags_track_collection_mapper.c:259
 msgid "sequence: "
 msgstr ""

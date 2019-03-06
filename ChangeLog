@@ -1,3 +1,9 @@
+ags (2.1.66)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed wrong tag in OSC server manual chap6.xml
+	* improved API reference manual
+
 ags (2.1.65)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

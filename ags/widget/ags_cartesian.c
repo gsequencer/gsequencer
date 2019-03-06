@@ -53,7 +53,7 @@ void ags_cartesian_draw(AgsCartesian *cartesian);
  * @section_id:
  * @include: ags/widget/ags_cartesian.h
  *
- * #AgsCartesian enables you to plot data and shows a check board and
+ * #AgsCartesian enables you to plot data and shows a grid pattern and
  * some scales.
  */
 
