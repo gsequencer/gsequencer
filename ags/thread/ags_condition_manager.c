@@ -115,7 +115,11 @@ ags_condition_manager_finalize(GObject *gobject)
 void
 ags_condition_manager_destroy_data(gpointer data)
 {
+#if 0
   pthread_cond_destroy((pthread_cond_t *) data);
+
+  free(data);
+#endif
 }
 
 /**
@@ -172,9 +176,6 @@ ags_condition_manager_remove(AgsConditionManager *condition_manager,
 
   g_hash_table_remove(condition_manager->lock_object,
 		      lock_object);
-
-  pthread_cond_destroy(cond);
-  free(cond);
   
   return(TRUE);
 }

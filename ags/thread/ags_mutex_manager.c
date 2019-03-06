@@ -116,7 +116,11 @@ ags_mutex_manager_finalize(GObject *gobject)
 void
 ags_mutex_manager_destroy_data(gpointer data)
 {
+#if 0
   pthread_mutex_destroy((pthread_mutex_t *) data);
+
+  free(data);
+#endif
 }
 
 /**
@@ -212,9 +216,6 @@ ags_mutex_manager_remove(AgsMutexManager *mutex_manager,
 		      lock_object);
 
   pthread_mutex_unlock(mutex);
-
-  pthread_mutex_destroy(mutex);
-  free(mutex);
   
   return(TRUE);
 }
