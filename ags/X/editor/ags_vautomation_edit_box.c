@@ -24,7 +24,7 @@ void ags_vautomation_edit_box_init(AgsVAutomationEditBox *vautomation_edit_box);
 
 /**
  * SECTION:ags_vautomation_edit_box
- * @short_description: horizontal box widget
+ * @short_description: vertical box widget
  * @title: AgsVAutomationEditBox
  * @section_id:
  * @include: ags/widget/ags_vautomation_edit_box.h

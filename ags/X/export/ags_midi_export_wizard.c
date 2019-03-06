@@ -54,7 +54,7 @@ void ags_midi_export_wizard_show(GtkWidget *widget);
 
 /**
  * SECTION:ags_midi_export_wizard
- * @short_description: pack pad editors.
+ * @short_description: Export to MIDI using wizard
  * @title: AgsMidiExportWizard
  * @section_id:
  * @include: ags/X/ags_midi_export_wizard.h

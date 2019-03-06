@@ -55,7 +55,7 @@ void ags_midi_import_wizard_show(GtkWidget *widget);
 
 /**
  * SECTION:ags_midi_import_wizard
- * @short_description: pack pad editors.
+ * @short_description: Import MIDI using wizard
  * @title: AgsMidiImportWizard
  * @section_id:
  * @include: ags/X/ags_midi_import_wizard.h

@@ -48,13 +48,13 @@ void ags_machine_collection_reset(AgsApplicable *applicable);
 
 /**
  * SECTION:ags_machine_collection
- * @short_description: Property of audio, channels or pads in bulk mode.
+ * @short_description: Pack machine entry
  * @title: AgsMachineCollection
  * @section_id:
  * @include: ags/X/ags_machine_collection.h
  *
- * #AgsMachineCollection is a composite widget to property. A property editor 
- * should be packed by a #AgsPropertyCollectionEditor.
+ * #AgsMachineCollection is a composite widget which packs
+ * several #AgsMachineCollectionEntry widgets.
  */
 
 enum{

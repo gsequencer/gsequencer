@@ -28,6 +28,16 @@ void ags_property_listing_editor_init(AgsPropertyListingEditor *property_listing
 void ags_property_listing_editor_connect(AgsConnectable *connectable);
 void ags_property_listing_editor_disconnect(AgsConnectable *connectable);
 
+/**
+ * SECTION:ags_property_listing_editor
+ * @short_description: Pack child widgets using #GtkVBox
+ * @title: AgsPropertyListingEditor
+ * @section_id:
+ * @include: ags/X/ags_property_listing_editor.h
+ *
+ * #AgsPropertyListingEditor is a composite widget to pack using a #GtkVBox.
+ */
+
 static AgsConnectableInterface* ags_property_listing_editor_parent_connectable_interface;
 
 GType

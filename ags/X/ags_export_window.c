@@ -54,7 +54,8 @@ gboolean ags_export_window_delete_event(GtkWidget *widget, GdkEventAny *event);
  * @section_id:
  * @include: ags/X/ags_export_window.h
  *
- * #AgsExportWindow lets you export to audio files.
+ * #AgsExportWindow lets you export to audio files. This widget
+ * can contain mulitple #AgsExportSoundcard widgets.
  */
 
 enum{

@@ -54,12 +54,12 @@ void ags_context_menu_disconnect(AgsConnectable *connectable);
 
 /**
  * SECTION:ags_context_menu
- * @short_description: the menu bar.
+ * @short_description: the context menu
  * @title: AgsContextMenu
  * @section_id:
  * @include: ags/X/ags_context_menu.h
  *
- * #AgsContextMenu is a composite widget to be used as application's menu bar.
+ * #AgsContextMenu is a composite widget to be used as application's context menu.
  */
 
 GType

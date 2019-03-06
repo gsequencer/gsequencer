@@ -55,13 +55,13 @@ void ags_connection_editor_real_set_machine(AgsConnectionEditor *connection_edit
 
 /**
  * SECTION:ags_connection_editor
- * @short_description: pack pad editors.
+ * @short_description: Edit audio connections
  * @title: AgsConnectionEditor
  * @section_id:
  * @include: ags/X/ags_connection_editor.h
  *
- * #AgsConnectionEditor is a composite widget to edit all aspects of #AgsAudio.
- * It consists of multiple child editors.
+ * #AgsConnectionEditor is a composite widget intended to assign output or input
+ * soundcards. It consists of multiple child editors.
  */
 
 enum{
