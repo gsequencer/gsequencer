@@ -49,7 +49,7 @@ void ags_envelope_dialog_reset(AgsApplicable *applicable);
 
 /**
  * SECTION:ags_envelope_dialog
- * @short_description: pack pad editors.
+ * @short_description: Edit envelope dialog
  * @title: AgsEnvelopeDialog
  * @section_id:
  * @include: ags/X/ags_envelope_dialog.h

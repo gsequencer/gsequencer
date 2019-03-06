@@ -72,7 +72,7 @@ void ags_osc_builder_message_check_resize(AgsOscBuilder *osc_builder,
 
 /**
  * SECTION:ags_osc_builder
- * @short_description: OSC buidler
+ * @short_description: OSC builder
  * @title: AgsOscBuilder
  * @section_id:
  * @include: ags/audio/osc/ags_osc_builder.h

@@ -51,13 +51,13 @@ gchar* ags_envelope_editor_y_label_func(gdouble value,
 
 /**
  * SECTION:ags_envelope_editor
- * @short_description: pack pad editors.
+ * @short_description: Edit envelope of notes
  * @title: AgsEnvelopeEditor
  * @section_id:
  * @include: ags/X/ags_envelope_editor.h
  *
  * #AgsEnvelopeEditor is a composite widget to edit envelope controls
- * of selected AgsNote.
+ * of selected #AgsNote.
  */
 
 static gpointer ags_envelope_editor_parent_class = NULL;

@@ -56,9 +56,9 @@
       </listitem>
     </itemizedlist>
 
-    <p>
+    <para>
       The response contains as first argument of the type the tag the matching path. Followed by type or array
       of types requested. The requested value follows the path argument.
-    </p>
+    </para>
   </sect1>
 </chapter>

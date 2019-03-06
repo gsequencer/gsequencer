@@ -30,7 +30,7 @@ gboolean ags_lv2_urid_manager_finder(gpointer key, gpointer value, gpointer user
 
 /**
  * SECTION:ags_lv2_urid_manager
- * @short_description: urid 
+ * @short_description: LV2 urid manager
  * @title: AgsLv2UridManager
  * @section_id:
  * @include: ags/plugin/ags_lv2_urid_manager.h

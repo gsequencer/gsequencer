@@ -53,12 +53,13 @@ void ags_machine_collection_entry_reset(AgsApplicable *applicable);
 
 /**
  * SECTION:ags_machine_collection_entry
- * @short_description: pack pad editors.
+ * @short_description: Machine entry
  * @title: AgsMachineCollectionEntry
  * @section_id:
  * @include: ags/X/ags_machine_collection_entry.h
  *
- * #AgsMachineCollectionEntry is a wizard to export midi files and do machine mapping.
+ * #AgsMachineCollectionEntry is a composite widget specifying machines
+ * to export.
  */
 
 enum{

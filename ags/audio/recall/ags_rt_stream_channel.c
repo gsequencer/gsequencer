@@ -30,7 +30,7 @@ void ags_rt_stream_channel_finalize(GObject *gobject);
 
 /**
  * SECTION:ags_rt_stream_channel
- * @short_description: rt_streams channel
+ * @short_description: rt streams channel
  * @title: AgsRtStreamChannel
  * @section_id:
  * @include: ags/audio/recall/ags_rt_stream_channel.h

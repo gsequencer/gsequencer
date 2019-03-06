@@ -50,13 +50,12 @@ void ags_midi_dialog_show_all(GtkWidget *widget);
 
 /**
  * SECTION:ags_midi_dialog
- * @short_description: pack pad editors.
+ * @short_description: Edit MIDI settings
  * @title: AgsMidiDialog
  * @section_id:
  * @include: ags/X/ags_midi_dialog.h
  *
- * #AgsMidiDialog is a composite widget to edit all aspects of #AgsAudio.
- * It consists of multiple child editors.
+ * #AgsMidiDialog is a composite widget to edit MIDI settings.
  */
 
 enum{

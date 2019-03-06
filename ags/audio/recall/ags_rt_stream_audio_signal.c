@@ -36,7 +36,7 @@ void ags_rt_stream_audio_signal_run_pre(AgsRecall *recall);
 
 /**
  * SECTION:ags_rt_stream_audio_signal
- * @short_description: rt_streams audio signal
+ * @short_description: rt streams audio signal
  * @title: AgsRtStreamAudioSignal
  * @section_id:
  * @include: ags/audio/recall/ags_rt_stream_audio_signal.h

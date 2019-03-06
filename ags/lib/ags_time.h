@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -23,7 +23,7 @@
 #include <glib.h>
 #include <glib-object.h>
 
-#define AGS_TIME_ZERO "0000:00.000\0"
+#define AGS_TIME_ZERO "0000:00.000"
 
 #define USEC_PER_SEC    (1000000) /* The number of msecs per sec. */
 #define NSEC_PER_SEC    (1000000000) /* The number of nsecs per sec. */

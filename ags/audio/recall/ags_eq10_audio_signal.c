@@ -56,7 +56,7 @@ AgsRecall* ags_eq10_audio_signal_duplicate(AgsRecall *recall,
 
 /**
  * SECTION:ags_eq10_audio_signal
- * @short_description: eq10s audio signal
+ * @short_description: 10 band equalizer audio signal
  * @title: AgsEq10AudioSignal
  * @section_id:
  * @include: ags/audio/recall/ags_eq10_audio_signal.h

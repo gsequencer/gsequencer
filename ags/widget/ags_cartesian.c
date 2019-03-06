@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2018 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -45,6 +45,17 @@ gboolean ags_cartesian_expose(GtkWidget *widget,
 			      GdkEventExpose *event);
 
 void ags_cartesian_draw(AgsCartesian *cartesian);
+
+/**
+ * SECTION:ags_cartesian
+ * @short_description: A cartesian widget
+ * @title: AgsCartesian
+ * @section_id:
+ * @include: ags/widget/ags_cartesian.h
+ *
+ * #AgsCartesian enables you to plot data and shows a grid pattern and
+ * some scales.
+ */
 
 enum{
   PROP_0,

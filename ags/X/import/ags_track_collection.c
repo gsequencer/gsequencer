@@ -53,7 +53,7 @@ void ags_track_collection_reset(AgsApplicable *applicable);
 
 /**
  * SECTION:ags_track_collection
- * @short_description: Property of audio, channels or pads in bulk mode.
+ * @short_description: Pack track mapper
  * @title: AgsTrackCollection
  * @section_id:
  * @include: ags/X/ags_track_collection.h

@@ -56,7 +56,7 @@ void ags_machine_editor_real_set_machine(AgsMachineEditor *machine_editor,
 
 /**
  * SECTION:ags_machine_editor
- * @short_description: pack pad editors.
+ * @short_description: Edit audio related aspects
  * @title: AgsMachineEditor
  * @section_id:
  * @include: ags/X/ags_machine_editor.h

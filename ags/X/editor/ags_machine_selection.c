@@ -50,7 +50,7 @@ void ags_machine_selection_finalize(GObject *gobject);
 
 /**
  * SECTION:ags_machine_selection
- * @short_description: machine radio buttons
+ * @short_description: machine selection
  * @title: AgsMachineSelection
  * @section_id:
  * @include: ags/X/editor/ags_machine_selection.h

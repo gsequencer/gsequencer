@@ -41,7 +41,7 @@ void ags_lv2_preset_finalize(GObject *gobject);
 
 /**
  * SECTION:ags_lv2_preset
- * @short_description: task thread
+ * @short_description: LV2 presets
  * @title: AgsLv2Preset
  * @section_id:
  * @include: ags/plugin/ags_lv2_preset.h

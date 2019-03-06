@@ -49,12 +49,13 @@ gboolean ags_export_soundcard_delete_event(GtkWidget *widget, GdkEventAny *event
 
 /**
  * SECTION:ags_export_soundcard
- * @short_description: The export dialog
+ * @short_description: The export soundcard widget
  * @title: AgsExportSoundcard
  * @section_id:
  * @include: ags/X/ags_export_soundcard.h
  *
- * #AgsExportSoundcard lets you export to audio files.
+ * #AgsExportSoundcard lets you export to audio files. This widget
+ * enables you to specify what soundcard is written to what file.
  */
 
 enum{

@@ -24,7 +24,7 @@ void ags_vwave_edit_box_init(AgsVWaveEditBox *vwave_edit_box);
 
 /**
  * SECTION:ags_vwave_edit_box
- * @short_description: horizontal box widget
+ * @short_description: vertical box widget
  * @title: AgsVWaveEditBox
  * @section_id:
  * @include: ags/widget/ags_vwave_edit_box.h

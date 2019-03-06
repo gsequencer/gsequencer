@@ -41,7 +41,7 @@ void ags_machine_selector_real_changed(AgsMachineSelector *machine_selector, Ags
 
 /**
  * SECTION:ags_machine_selector
- * @short_description: machine radio buttons
+ * @short_description: machine selector
  * @title: AgsMachineSelector
  * @section_id:
  * @include: ags/X/editor/ags_machine_selector.h

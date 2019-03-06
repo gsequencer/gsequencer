@@ -66,11 +66,11 @@ void ags_play_channel_run_resolve_dependency(AgsRecall *recall);
 /**
  * SECTION:ags_play_channel_run
  * @short_description: plays channel
- * @title: AgsPlayChannel
+ * @title: AgsPlayChannelRun
  * @section_id:
- * @include: ags/audio/recall/ags_play_channel.h
+ * @include: ags/audio/recall/ags_play_channel_run.h
  *
- * The #AgsPlayChannel class plays the channel.
+ * The #AgsPlayChannelRun class plays the channel.
  */
 
 enum{

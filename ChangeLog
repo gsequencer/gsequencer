@@ -10,6 +10,12 @@ ags (2.2.x)
 	* TODO:JK: implement Music XML support
 	* TODO:JK: implement file bundle embedding plugins and audio data
 
+ags (2.1.66)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed wrong tag in OSC server manual chap6.xml
+	* improved API reference manual
+
 ags (2.1.65)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

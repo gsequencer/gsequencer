@@ -52,13 +52,13 @@ gchar* ags_envelope_info_y_label_func(gdouble value,
 
 /**
  * SECTION:ags_envelope_info
- * @short_description: pack pad editors.
+ * @short_description: Show envelope info notes
  * @title: AgsEnvelopeInfo
  * @section_id:
  * @include: ags/X/ags_envelope_info.h
  *
  * #AgsEnvelopeInfo is a composite widget to show envelope controls
- * of selected AgsNote.
+ * of selected #AgsNote.
  */
 
 static gpointer ags_envelope_info_parent_class = NULL;

@@ -35,7 +35,7 @@ void ags_rt_stream_channel_run_done(AgsRecall *recall);
 
 /**
  * SECTION:ags_rt_stream_channel_run
- * @short_description: rt_streams channel
+ * @short_description: rt streams channel
  * @title: AgsRtStreamChannelRun
  * @section_id:
  * @include: ags/audio/recall/ags_rt_stream_channel_run.h
