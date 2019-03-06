@@ -216,6 +216,7 @@
       <xi:include href="xml/ags_export_thread.xml"/>
       <xi:include href="xml/ags_sequencer_thread.xml"/>
       <xi:include href="xml/ags_soundcard_thread.xml"/>
+      <xi:include href="xml/ags_wave_loader.xml"/>
     </chapter>
     
     <chapter id="audio-midi">
@@ -244,7 +245,7 @@
     </chapter>
 
     <chapter id="audio-osc-client">
-      <title>Audio OSC - OSC server</title>
+      <title>Audio OSC - OSC client</title>
       <para>
 	The Open Sound Control client.
       </para>
@@ -483,6 +484,7 @@
       <xi:include href="xml/ags_open_single_file.xml"/>
       <xi:include href="xml/ags_open_sf2_instrument.xml"/>
       <xi:include href="xml/ags_open_sf2_sample.xml"/>
+      <xi:include href="xml/ags_open_wave.xml"/>
       <xi:include href="xml/ags_remove_audio.xml"/>
       <xi:include href="xml/ags_remove_audio_signal.xml"/>
       <xi:include href="xml/ags_remove_note.xml"/>
