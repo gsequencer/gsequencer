@@ -17,125 +17,125 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <ags/X/ags_notation_sheet.h>
-//#include <ags/X/ags_notation_sheet_callbacks.h>
+#include <ags/X/ags_sheet_editor.h>
+//#include <ags/X/ags_sheet_editor_callbacks.h>
 
 #include <ags/i18n.h>
 
-void ags_notation_sheet_class_init(AgsNotationSheetClass *notation_sheet);
-void ags_notation_sheet_connectable_interface_init(AgsConnectableInterface *connectable);
-void ags_notation_sheet_init(AgsNotationSheet *notation_sheet);
-void ags_notation_sheet_set_property(GObject *gobject,
-				     guint prop_id,
-				     const GValue *value,
-				     GParamSpec *param_spec);
-void ags_notation_sheet_get_property(GObject *gobject,
-				     guint prop_id,
-				     GValue *value,
-				     GParamSpec *param_spec);
-void ags_notation_sheet_connect(AgsConnectable *connectable);
-void ags_notation_sheet_disconnect(AgsConnectable *connectable);
-void ags_notation_sheet_finalize(GObject *gobject);
+void ags_sheet_editor_class_init(AgsSheetEditorClass *sheet_editor);
+void ags_sheet_editor_connectable_interface_init(AgsConnectableInterface *connectable);
+void ags_sheet_editor_init(AgsSheetEditor *sheet_editor);
+void ags_sheet_editor_set_property(GObject *gobject,
+				   guint prop_id,
+				   const GValue *value,
+				   GParamSpec *param_spec);
+void ags_sheet_editor_get_property(GObject *gobject,
+				   guint prop_id,
+				   GValue *value,
+				   GParamSpec *param_spec);
+void ags_sheet_editor_connect(AgsConnectable *connectable);
+void ags_sheet_editor_disconnect(AgsConnectable *connectable);
+void ags_sheet_editor_finalize(GObject *gobject);
 
-void ags_notation_sheet_real_machine_changed(AgsNotationSheet *notation_sheet,
-					     AgsMachine *machine);
+void ags_sheet_editor_real_machine_changed(AgsSheetEditor *sheet_editor,
+					   AgsMachine *machine);
 
 enum{
-  MACHINE_CHANGED,
-  LAST_SIGNAL,
+     MACHINE_CHANGED,
+     LAST_SIGNAL,
 };
 
 enum{
-  PROP_0,
-  PROP_SOUNDCARD,
+     PROP_0,
+     PROP_SOUNDCARD,
 };
 
-static gpointer ags_notation_sheet_parent_class = NULL;
-static guint notation_sheet_signals[LAST_SIGNAL];
+static gpointer ags_sheet_editor_parent_class = NULL;
+static guint sheet_editor_signals[LAST_SIGNAL];
 
 /**
- * SECTION:ags_notation_sheet
+ * SECTION:ags_sheet_editor
  * @short_description: A composite widget to edit notation
- * @title: AgsNotationSheet
+ * @title: AgsSheetEditor
  * @section_id:
- * @include: ags/X/ags_notation_sheet.h
+ * @include: ags/X/ags_sheet_editor.h
  *
- * #AgsNotationSheet is a composite widget to edit notation. You may select machines
+ * #AgsSheetEditor is a composite widget to edit notation. You may select machines
  * or change sheet tool to do notation.
  */
 
 GType
-ags_notation_sheet_get_type(void)
+ags_sheet_editor_get_type(void)
 {
   static volatile gsize g_define_type_id__volatile = 0;
 
   if(g_once_init_enter (&g_define_type_id__volatile)){
-    GType ags_type_notation_sheet = 0;
+    GType ags_type_sheet_editor = 0;
 
-    static const GTypeInfo ags_notation_sheet_info = {
-      sizeof (AgsNotationSheetClass),
-      NULL, /* base_init */
-      NULL, /* base_finalize */
-      (GClassInitFunc) ags_notation_sheet_class_init,
-      NULL, /* class_finalize */
-      NULL, /* class_data */
-      sizeof (AgsNotationSheet),
-      0,    /* n_preallocs */
-      (GInstanceInitFunc) ags_notation_sheet_init,
+    static const GTypeInfo ags_sheet_editor_info = {
+						    sizeof (AgsSheetEditorClass),
+						    NULL, /* base_init */
+						    NULL, /* base_finalize */
+						    (GClassInitFunc) ags_sheet_editor_class_init,
+						    NULL, /* class_finalize */
+						    NULL, /* class_data */
+						    sizeof (AgsSheetEditor),
+						    0,    /* n_preallocs */
+						    (GInstanceInitFunc) ags_sheet_editor_init,
     };
 
     static const GInterfaceInfo ags_connectable_interface_info = {
-      (GInterfaceInitFunc) ags_notation_sheet_connectable_interface_init,
-      NULL, /* interface_finalize */
-      NULL, /* interface_data */
+								  (GInterfaceInitFunc) ags_sheet_editor_connectable_interface_init,
+								  NULL, /* interface_finalize */
+								  NULL, /* interface_data */
     };
 
-    ags_type_notation_sheet = g_type_register_static(GTK_TYPE_VBOX,
-						     "AgsNotationSheet", &ags_notation_sheet_info,
-						     0);
+    ags_type_sheet_editor = g_type_register_static(GTK_TYPE_VBOX,
+						   "AgsSheetEditor", &ags_sheet_editor_info,
+						   0);
     
-    g_type_add_interface_static(ags_type_notation_sheet,
+    g_type_add_interface_static(ags_type_sheet_editor,
 				AGS_TYPE_CONNECTABLE,
 				&ags_connectable_interface_info);
 
-    g_once_init_leave(&g_define_type_id__volatile, ags_type_notation_sheet);
+    g_once_init_leave(&g_define_type_id__volatile, ags_type_sheet_editor);
   }
 
   return g_define_type_id__volatile;
 }
 
 void
-ags_notation_sheet_connectable_interface_init(AgsConnectableInterface *connectable)
+ags_sheet_editor_connectable_interface_init(AgsConnectableInterface *connectable)
 {
   connectable->is_ready = NULL;
   connectable->is_connected = NULL;
-  connectable->connect = ags_notation_sheet_connect;
-  connectable->disconnect = ags_notation_sheet_disconnect;
+  connectable->connect = ags_sheet_editor_connect;
+  connectable->disconnect = ags_sheet_editor_disconnect;
 }
 
 void
-ags_notation_sheet_class_init(AgsNotationSheetClass *notation_sheet)
+ags_sheet_editor_class_init(AgsSheetEditorClass *sheet_editor)
 {
   GObjectClass *gobject;
   GParamSpec *param_spec;
 
-  ags_notation_sheet_parent_class = g_type_class_peek_parent(notation_sheet);
+  ags_sheet_editor_parent_class = g_type_class_peek_parent(sheet_editor);
 
   /* GObjectClass */
-  gobject = (GObjectClass *) notation_sheet;
+  gobject = (GObjectClass *) sheet_editor;
 
-  gobject->set_property = ags_notation_sheet_set_property;
-  gobject->get_property = ags_notation_sheet_get_property;
+  gobject->set_property = ags_sheet_editor_set_property;
+  gobject->get_property = ags_sheet_editor_get_property;
 
-  gobject->finalize = ags_notation_sheet_finalize;
+  gobject->finalize = ags_sheet_editor_finalize;
   
   /* properties */
   /**
-   * AgsNotationSheet:soundcard:
+   * AgsSheetEditor:soundcard:
    *
    * The assigned #AgsSoundcard acting as default sink.
    * 
-   * Since: 2.0.0
+   * Since: 2.2.0
    */
   param_spec = g_param_spec_object("soundcard",
 				   i18n_pspec("assigned soundcard"),
@@ -147,7 +147,7 @@ ags_notation_sheet_class_init(AgsNotationSheetClass *notation_sheet)
 				  param_spec);
 
   /* AgsSheetClass */
-  notation_sheet->machine_changed = ags_notation_sheet_real_machine_changed;
+  sheet_editor->machine_changed = ags_sheet_editor_real_machine_changed;
 
   /* signals */
   /**
@@ -157,13 +157,13 @@ ags_notation_sheet_class_init(AgsNotationSheetClass *notation_sheet)
    *
    * The ::machine-changed signal notifies about changed machine.
    * 
-   * Since: 2.0.0
+   * Since: 2.2.0
    */
-  notation_sheet_signals[MACHINE_CHANGED] =
+  sheet_editor_signals[MACHINE_CHANGED] =
     g_signal_new("machine-changed",
-                 G_TYPE_FROM_CLASS(notation_sheet),
+                 G_TYPE_FROM_CLASS(sheet_editor),
                  G_SIGNAL_RUN_LAST,
-		 G_STRUCT_OFFSET(AgsNotationSheetClass, machine_changed),
+		 G_STRUCT_OFFSET(AgsSheetEditorClass, machine_changed),
                  NULL, NULL,
                  g_cclosure_marshal_VOID__OBJECT,
                  G_TYPE_NONE, 1,
@@ -171,20 +171,20 @@ ags_notation_sheet_class_init(AgsNotationSheetClass *notation_sheet)
 }
 
 void
-ags_notation_sheet_init(AgsNotationSheet *notation_sheet)
+ags_sheet_editor_init(AgsSheetEditor *sheet_editor)
 {
   //TODO:JK: implement me
 }
 
 void
-ags_notation_sheet_set_property(GObject *gobject,
-				guint prop_id,
-				const GValue *value,
-				GParamSpec *param_spec)
+ags_sheet_editor_set_property(GObject *gobject,
+			      guint prop_id,
+			      const GValue *value,
+			      GParamSpec *param_spec)
 {
-  AgsNotationSheet *notation_sheet;
+  AgsSheetEditor *sheet_editor;
 
-  notation_sheet = AGS_NOTATION_SHEET(gobject);
+  sheet_editor = AGS_SHEET_EDITOR(gobject);
 
   switch(prop_id){
   case PROP_SOUNDCARD:
@@ -193,19 +193,19 @@ ags_notation_sheet_set_property(GObject *gobject,
 
       soundcard = g_value_get_object(value);
 
-      if(notation_sheet->soundcard == soundcard){
+      if(sheet_editor->soundcard == soundcard){
 	return;
       }
 
-      if(notation_sheet->soundcard != NULL){
-	g_object_unref(notation_sheet->soundcard);
+      if(sheet_editor->soundcard != NULL){
+	g_object_unref(sheet_editor->soundcard);
       }
       
       if(soundcard != NULL){
 	g_object_ref(soundcard);
       }
       
-      notation_sheet->soundcard = soundcard;
+      sheet_editor->soundcard = soundcard;
     }
     break;
   default:
@@ -215,19 +215,19 @@ ags_notation_sheet_set_property(GObject *gobject,
 }
 
 void
-ags_notation_sheet_get_property(GObject *gobject,
-				guint prop_id,
-				GValue *value,
-				GParamSpec *param_spec)
+ags_sheet_editor_get_property(GObject *gobject,
+			      guint prop_id,
+			      GValue *value,
+			      GParamSpec *param_spec)
 {
-  AgsNotationSheet *notation_sheet;
+  AgsSheetEditor *sheet_editor;
 
-  notation_sheet = AGS_NOTATION_SHEET(gobject);
+  sheet_editor = AGS_SHEET_EDITOR(gobject);
 
   switch(prop_id){
   case PROP_SOUNDCARD:
     {
-      g_value_set_object(value, notation_sheet->soundcard);
+      g_value_set_object(value, sheet_editor->soundcard);
     }
     break;
   default:
@@ -237,108 +237,108 @@ ags_notation_sheet_get_property(GObject *gobject,
 }
 
 void
-ags_notation_sheet_connect(AgsConnectable *connectable)
+ags_sheet_editor_connect(AgsConnectable *connectable)
 {
-  AgsNotationSheet *notation_sheet;
+  AgsSheetEditor *sheet_editor;
 
-  notation_sheet = AGS_NOTATION_SHEET(connectable);
+  sheet_editor = AGS_SHEET_EDITOR(connectable);
 
-  if((AGS_NOTATION_SHEET_CONNECTED & (notation_sheet->flags)) != 0){
+  if((AGS_SHEET_EDITOR_CONNECTED & (sheet_editor->flags)) != 0){
     return;
   }
 
-  notation_sheet->flags |= AGS_NOTATION_SHEET_CONNECTED;  
+  sheet_editor->flags |= AGS_SHEET_EDITOR_CONNECTED;  
   
-  //  g_signal_connect((GObject *) notation_sheet->machine_selector, "changed",
-  //		   G_CALLBACK(ags_notation_sheet_machine_changed_callback), (gpointer) notation_sheet);
+  //  g_signal_connect((GObject *) sheet_editor->machine_selector, "changed",
+  //		   G_CALLBACK(ags_sheet_editor_machine_changed_callback), (gpointer) sheet_editor);
 
   /* toolbar */
-  ags_connectable_connect(AGS_CONNECTABLE(notation_sheet->notation_toolbar));
+  ags_connectable_connect(AGS_CONNECTABLE(sheet_editor->notation_toolbar));
 
   /* machine selector */
-  ags_connectable_connect(AGS_CONNECTABLE(notation_sheet->machine_selector));
+  ags_connectable_connect(AGS_CONNECTABLE(sheet_editor->machine_selector));
 
   /* notation page */
-  //  ags_connectable_connect(AGS_CONNECTABLE(notation_sheet->notation_page));
+  //  ags_connectable_connect(AGS_CONNECTABLE(sheet_editor->notation_page));
 }
 
 void
-ags_notation_sheet_disconnect(AgsConnectable *connectable)
+ags_sheet_editor_disconnect(AgsConnectable *connectable)
 {
-  AgsNotationSheet *notation_sheet;
+  AgsSheetEditor *sheet_editor;
 
-  notation_sheet = AGS_NOTATION_SHEET(connectable);
+  sheet_editor = AGS_SHEET_EDITOR(connectable);
 
   /* notation toolbar */
-  ags_connectable_disconnect(AGS_CONNECTABLE(notation_sheet->notation_toolbar)); 
+  ags_connectable_disconnect(AGS_CONNECTABLE(sheet_editor->notation_toolbar)); 
 
   /* machine selector */
-  ags_connectable_disconnect(AGS_CONNECTABLE(notation_sheet->machine_selector));
+  ags_connectable_disconnect(AGS_CONNECTABLE(sheet_editor->machine_selector));
 
   /* notation page */
-  //  ags_connectable_disconnect(AGS_CONNECTABLE(notation_sheet->notation_page));
+  //  ags_connectable_disconnect(AGS_CONNECTABLE(sheet_editor->notation_page));
 }
 
 void
-ags_notation_sheet_finalize(GObject *gobject)
+ags_sheet_editor_finalize(GObject *gobject)
 {
-  AgsNotationSheet *notation_sheet;
+  AgsSheetEditor *sheet_editor;
 
-  notation_sheet = AGS_NOTATION_SHEET(gobject);
+  sheet_editor = AGS_SHEET_EDITOR(gobject);
 
-  if(notation_sheet->soundcard != NULL){
-    g_object_unref(notation_sheet->soundcard);
+  if(sheet_editor->soundcard != NULL){
+    g_object_unref(sheet_editor->soundcard);
   }
   
   /* call parent */
-  G_OBJECT_CLASS(ags_notation_sheet_parent_class)->finalize(gobject);
+  G_OBJECT_CLASS(ags_sheet_editor_parent_class)->finalize(gobject);
 }
 
 void
-ags_notation_sheet_real_machine_changed(AgsNotationSheet *notation_sheet,
-					AgsMachine *machine)
+ags_sheet_editor_real_machine_changed(AgsSheetEditor *sheet_editor,
+				      AgsMachine *machine)
 {
   //TODO:JK: implement me
 }
 
 /**
- * ags_notation_sheet_machine_changed:
- * @notation_sheet: an #AgsNotationSheet
+ * ags_sheet_editor_machine_changed:
+ * @sheet_editor: an #AgsSheetEditor
  * @machine: the new #AgsMachine
  *
- * Is emitted as machine changed of notation_sheet.
+ * Is emitted as machine changed of sheet_editor.
  *
- * Since: 2.0.0
+ * Since: 2.2.0
  */
 void
-ags_notation_sheet_machine_changed(AgsNotationSheet *notation_sheet,
-				   AgsMachine *machine)
+ags_sheet_editor_machine_changed(AgsSheetEditor *sheet_editor,
+				 AgsMachine *machine)
 {
-  g_return_if_fail(AGS_IS_NOTATION_SHEET(notation_sheet));
+  g_return_if_fail(AGS_IS_SHEET_EDITOR(sheet_editor));
 
-  g_object_ref((GObject *) notation_sheet);
-  g_signal_emit((GObject *) notation_sheet,
-		notation_sheet_signals[MACHINE_CHANGED], 0,
+  g_object_ref((GObject *) sheet_editor);
+  g_signal_emit((GObject *) sheet_editor,
+		sheet_editor_signals[MACHINE_CHANGED], 0,
 		machine);
-  g_object_unref((GObject *) notation_sheet);
+  g_object_unref((GObject *) sheet_editor);
 }
 
 /**
- * ags_notation_sheet_new:
+ * ags_sheet_editor_new:
  *
- * Creates an #AgsNotationSheet
+ * Creates an #AgsSheetEditor
  *
- * Returns: a new #AgsNotationSheet
+ * Returns: a new #AgsSheetEditor
  *
- * Since: 2.0.0
+ * Since: 2.2.0
  */
-AgsNotationSheet*
-ags_notation_sheet_new()
+AgsSheetEditor*
+ags_sheet_editor_new()
 {
-  AgsNotationSheet *notation_sheet;
+  AgsSheetEditor *sheet_editor;
 
-  notation_sheet = (AgsNotationSheet *) g_object_new(AGS_TYPE_NOTATION_SHEET,
-						     NULL);
+  sheet_editor = (AgsSheetEditor *) g_object_new(AGS_TYPE_SHEET_EDITOR,
+						 NULL);
 
-  return(notation_sheet);
+  return(sheet_editor);
 }

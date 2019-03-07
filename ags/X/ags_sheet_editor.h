@@ -17,8 +17,8 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __AGS_NOTATION_SHEET_H__
-#define __AGS_NOTATION_SHEET_H__
+#ifndef __AGS_SHEET_EDITOR_H__
+#define __AGS_SHEET_EDITOR_H__
 
 #include <glib.h>
 #include <glib-object.h>
@@ -35,29 +35,29 @@
 #include <ags/X/editor/ags_machine_selector.h>
 //#include <ags/X/editor/ags_notation_page.h>
 
-#define AGS_TYPE_NOTATION_SHEET                (ags_notation_sheet_get_type ())
-#define AGS_NOTATION_SHEET(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_NOTATION_SHEET, AgsNotationSheet))
-#define AGS_NOTATION_SHEET_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_NOTATION_SHEET, AgsNotationSheetClass))
-#define AGS_IS_NOTATION_SHEET(obj)             (G_TYPE_CHECK_INSTANCE_TYPE ((obj), AGS_TYPE_NOTATION_SHEET))
-#define AGS_IS_NOTATION_SHEET_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_NOTATION_SHEET))
-#define AGS_NOTATION_SHEET_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_NOTATION_SHEET, AgsNotationSheetClass))
+#define AGS_TYPE_SHEET_EDITOR                (ags_sheet_editor_get_type ())
+#define AGS_SHEET_EDITOR(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_SHEET_EDITOR, AgsSheetEditor))
+#define AGS_SHEET_EDITOR_CLASS(class)        (G_TYPE_CHECK_CLASS_CAST((class), AGS_TYPE_SHEET_EDITOR, AgsSheetEditorClass))
+#define AGS_IS_SHEET_EDITOR(obj)             (G_TYPE_CHECK_INSTANCE_TYPE ((obj), AGS_TYPE_SHEET_EDITOR))
+#define AGS_IS_SHEET_EDITOR_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_SHEET_EDITOR))
+#define AGS_SHEET_EDITOR_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_SHEET_EDITOR, AgsSheetEditorClass))
   
-#define AGS_NOTATION_SHEET_DEFAULT_VERSION "2.0.0"
-#define AGS_NOTATION_SHEET_DEFAULT_BUILD_ID "Sat Feb  3 16:15:50 UTC 2018"
+#define AGS_SHEET_EDITOR_DEFAULT_VERSION "2.0.0"
+#define AGS_SHEET_EDITOR_DEFAULT_BUILD_ID "Sat Feb  3 16:15:50 UTC 2018"
 
-#define AGS_NOTATION_SHEET_MAX_CONTROLS (16 * 16 * 1200)
+#define AGS_SHEET_EDITOR_MAX_CONTROLS (16 * 16 * 1200)
 
-typedef struct _AgsNotationSheet AgsNotationSheet;
-typedef struct _AgsNotationSheetClass AgsNotationSheetClass;
+typedef struct _AgsSheetEditor AgsSheetEditor;
+typedef struct _AgsSheetEditorClass AgsSheetEditorClass;
 
 typedef enum{
-  AGS_NOTATION_SHEET_CONNECTED                    = 1,
-  AGS_NOTATION_SHEET_PATTERN_MODE                 = 1 <<  1,
-  AGS_NOTATION_SHEET_PASTE_MATCH_AUDIO_CHANNEL    = 1 <<  2,
-  AGS_NOTATION_SHEET_PASTE_NO_DUPLICATES          = 1 <<  3,
-}AgsNotationSheetFlags;
+  AGS_SHEET_EDITOR_CONNECTED                    = 1,
+  AGS_SHEET_EDITOR_PATTERN_MODE                 = 1 <<  1,
+  AGS_SHEET_EDITOR_PASTE_MATCH_AUDIO_CHANNEL    = 1 <<  2,
+  AGS_SHEET_EDITOR_PASTE_NO_DUPLICATES          = 1 <<  3,
+}AgsSheetEditorFlags;
 
-struct _AgsNotationSheet
+struct _AgsSheetEditor
 {
   GtkVBox vbox;
 
@@ -85,18 +85,18 @@ struct _AgsNotationSheet
   //  AgsNotationPage *notation_page;
 };
 
-struct _AgsNotationSheetClass
+struct _AgsSheetEditorClass
 {
   GtkVBoxClass vbox;
 
-  void (*machine_changed)(AgsNotationSheet *notation_sheet, AgsMachine *machine);
+  void (*machine_changed)(AgsSheetEditor *sheet_editor, AgsMachine *machine);
 };
 
-GType ags_notation_sheet_get_type(void);
+GType ags_sheet_editor_get_type(void);
 
-void ags_notation_sheet_machine_changed(AgsNotationSheet *notation_sheet,
+void ags_sheet_editor_machine_changed(AgsSheetEditor *sheet_editor,
 					AgsMachine *machine);
 
-AgsNotationSheet* ags_notation_sheet_new();
+AgsSheetEditor* ags_sheet_editor_new();
 
-#endif /*__AGS_NOTATION_SHEET_H__*/
+#endif /*__AGS_SHEET_EDITOR_H__*/
