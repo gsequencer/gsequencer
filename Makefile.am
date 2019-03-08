@@ -1515,7 +1515,6 @@ libgsequencer_h_sources = \
 	ags/X/ags_navigation.h \
 	ags/X/ags_notation_editor_callbacks.h \
 	ags/X/ags_notation_editor.h \
-	ags/X/ags_notation_sheet.h \
 	ags/X/ags_osc_server_preferences_callbacks.h \
 	ags/X/ags_osc_server_preferences.h \
 	ags/X/ags_output_collection_editor_callbacks.h \
@@ -1548,6 +1547,10 @@ libgsequencer_h_sources = \
 	ags/X/ags_sequencer_editor.h \
 	ags/X/ags_server_preferences_callbacks.h \
 	ags/X/ags_server_preferences.h \
+	ags/X/ags_sheet_window.h \
+	ags/X/ags_sheet_window_callbacks.h \
+	ags/X/ags_sheet_editor.h \
+	ags/X/ags_sheet_editor_callbacks.h \
 	ags/X/ags_soundcard_editor_callbacks.h \
 	ags/X/ags_soundcard_editor.h \
 	ags/X/ags_ui_provider.h \
@@ -1631,7 +1634,6 @@ libgsequencer_c_sources = \
 	ags/X/ags_navigation_callbacks.c \
 	ags/X/ags_notation_editor.c \
 	ags/X/ags_notation_editor_callbacks.c \
-	ags/X/ags_notation_sheet.c \
 	ags/X/ags_osc_server_preferences_callbacks.c \
 	ags/X/ags_osc_server_preferences.c \
 	ags/X/ags_output_collection_editor_callbacks.c \
@@ -1664,6 +1666,10 @@ libgsequencer_c_sources = \
 	ags/X/ags_sequencer_editor.c \
 	ags/X/ags_server_preferences.c \
 	ags/X/ags_server_preferences_callbacks.c \
+	ags/X/ags_sheet_window.c \
+	ags/X/ags_sheet_window_callbacks.c \
+	ags/X/ags_sheet_editor.c \
+	ags/X/ags_sheet_editor_callbacks.c \
 	ags/X/ags_ui_provider.c \
 	ags/X/ags_wave_window_callbacks.c \
 	ags/X/ags_wave_window.c \
@@ -1974,6 +1980,10 @@ libgsequencer_editor_h_sources = \
 	ags/X/editor/ags_select_buffer_dialog_callbacks.h \
 	ags/X/editor/ags_select_note_dialog.h \
 	ags/X/editor/ags_select_note_dialog_callbacks.h \
+	ags/X/editor/ags_sheet_edit.h \
+	ags/X/editor/ags_sheet_edit_callbacks.h \
+	ags/X/editor/ags_sheet_toolbar.h \
+	ags/X/editor/ags_sheet_toolbar_callbacks.h \
 	ags/X/editor/ags_vautomation_edit_box.h \
 	ags/X/editor/ags_vwave_edit_box.h \
 	ags/X/editor/ags_wave_edit_callbacks.h \
@@ -2034,6 +2044,10 @@ libgsequencer_editor_c_sources = \
 	ags/X/editor/ags_select_note_dialog_callbacks.c \
 	ags/X/editor/ags_sf2_chooser.c \
 	ags/X/editor/ags_sf2_chooser_callbacks.c \
+	ags/X/editor/ags_sheet_edit.c \
+	ags/X/editor/ags_sheet_edit_callbacks.c \
+	ags/X/editor/ags_sheet_toolbar.c \
+	ags/X/editor/ags_sheet_toolbar_callbacks.c \
 	ags/X/editor/ags_vautomation_edit_box.c \
 	ags/X/editor/ags_vwave_edit_box.c \
 	ags/X/editor/ags_wave_edit.c \

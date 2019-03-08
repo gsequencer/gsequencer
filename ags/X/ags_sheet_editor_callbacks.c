@@ -79,12 +79,5 @@ ags_sheet_editor_resize_pads_callback(AgsMachine *machine, GType channel_type,
     }
   }
 
-  /*  */
-  g_object_set(sheet_editor->scrolled_piano->piano,
-	       "key-count", pads,
-	       NULL);
-  gtk_widget_queue_draw((GtkWidget *) sheet_editor->scrolled_piano->piano);
-
-  /*  */
-  gtk_widget_queue_draw((GtkWidget *) sheet_editor->sheet_edit);
+  //TODO:JK: implement me
 }

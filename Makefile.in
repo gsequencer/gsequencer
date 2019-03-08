@@ -1117,7 +1117,7 @@ am__libgsequencer_la_SOURCES_DIST =  \
 	ags/X/ags_midi_preferences_callbacks.h \
 	ags/X/ags_navigation_callbacks.h ags/X/ags_navigation.h \
 	ags/X/ags_notation_editor_callbacks.h \
-	ags/X/ags_notation_editor.h ags/X/ags_notation_sheet.h \
+	ags/X/ags_notation_editor.h \
 	ags/X/ags_osc_server_preferences_callbacks.h \
 	ags/X/ags_osc_server_preferences.h \
 	ags/X/ags_output_collection_editor_callbacks.h \
@@ -1143,7 +1143,9 @@ am__libgsequencer_la_SOURCES_DIST =  \
 	ags/X/ags_sequencer_editor_callbacks.h \
 	ags/X/ags_sequencer_editor.h \
 	ags/X/ags_server_preferences_callbacks.h \
-	ags/X/ags_server_preferences.h \
+	ags/X/ags_server_preferences.h ags/X/ags_sheet_window.h \
+	ags/X/ags_sheet_window_callbacks.h ags/X/ags_sheet_editor.h \
+	ags/X/ags_sheet_editor_callbacks.h \
 	ags/X/ags_soundcard_editor_callbacks.h \
 	ags/X/ags_soundcard_editor.h ags/X/ags_ui_provider.h \
 	ags/X/ags_wave_window_callbacks.h ags/X/ags_wave_window.h \
@@ -1278,6 +1280,10 @@ am__libgsequencer_la_SOURCES_DIST =  \
 	ags/X/editor/ags_select_buffer_dialog_callbacks.h \
 	ags/X/editor/ags_select_note_dialog.h \
 	ags/X/editor/ags_select_note_dialog_callbacks.h \
+	ags/X/editor/ags_sheet_edit.h \
+	ags/X/editor/ags_sheet_edit_callbacks.h \
+	ags/X/editor/ags_sheet_toolbar.h \
+	ags/X/editor/ags_sheet_toolbar_callbacks.h \
 	ags/X/editor/ags_vautomation_edit_box.h \
 	ags/X/editor/ags_vwave_edit_box.h \
 	ags/X/editor/ags_wave_edit_callbacks.h \
@@ -1330,7 +1336,6 @@ am__libgsequencer_la_SOURCES_DIST =  \
 	ags/X/ags_midi_preferences_callbacks.c ags/X/ags_navigation.c \
 	ags/X/ags_navigation_callbacks.c ags/X/ags_notation_editor.c \
 	ags/X/ags_notation_editor_callbacks.c \
-	ags/X/ags_notation_sheet.c \
 	ags/X/ags_osc_server_preferences_callbacks.c \
 	ags/X/ags_osc_server_preferences.c \
 	ags/X/ags_output_collection_editor_callbacks.c \
@@ -1357,6 +1362,8 @@ am__libgsequencer_la_SOURCES_DIST =  \
 	ags/X/ags_sequencer_editor_callbacks.c \
 	ags/X/ags_sequencer_editor.c ags/X/ags_server_preferences.c \
 	ags/X/ags_server_preferences_callbacks.c \
+	ags/X/ags_sheet_window.c ags/X/ags_sheet_window_callbacks.c \
+	ags/X/ags_sheet_editor.c ags/X/ags_sheet_editor_callbacks.c \
 	ags/X/ags_ui_provider.c ags/X/ags_wave_window_callbacks.c \
 	ags/X/ags_wave_window.c ags/X/ags_wave_editor.c \
 	ags/X/ags_wave_editor_callbacks.c ags/X/ags_window.c \
@@ -1490,6 +1497,10 @@ am__libgsequencer_la_SOURCES_DIST =  \
 	ags/X/editor/ags_select_note_dialog_callbacks.c \
 	ags/X/editor/ags_sf2_chooser.c \
 	ags/X/editor/ags_sf2_chooser_callbacks.c \
+	ags/X/editor/ags_sheet_edit.c \
+	ags/X/editor/ags_sheet_edit_callbacks.c \
+	ags/X/editor/ags_sheet_toolbar.c \
+	ags/X/editor/ags_sheet_toolbar_callbacks.c \
 	ags/X/editor/ags_vautomation_edit_box.c \
 	ags/X/editor/ags_vwave_edit_box.c ags/X/editor/ags_wave_edit.c \
 	ags/X/editor/ags_wave_edit_box.c \
@@ -1570,7 +1581,6 @@ am__objects_30 = $(am__objects_1) \
 	ags/X/libgsequencer_la-ags_navigation_callbacks.lo \
 	ags/X/libgsequencer_la-ags_notation_editor.lo \
 	ags/X/libgsequencer_la-ags_notation_editor_callbacks.lo \
-	ags/X/libgsequencer_la-ags_notation_sheet.lo \
 	ags/X/libgsequencer_la-ags_osc_server_preferences_callbacks.lo \
 	ags/X/libgsequencer_la-ags_osc_server_preferences.lo \
 	ags/X/libgsequencer_la-ags_output_collection_editor_callbacks.lo \
@@ -1603,6 +1613,10 @@ am__objects_30 = $(am__objects_1) \
 	ags/X/libgsequencer_la-ags_sequencer_editor.lo \
 	ags/X/libgsequencer_la-ags_server_preferences.lo \
 	ags/X/libgsequencer_la-ags_server_preferences_callbacks.lo \
+	ags/X/libgsequencer_la-ags_sheet_window.lo \
+	ags/X/libgsequencer_la-ags_sheet_window_callbacks.lo \
+	ags/X/libgsequencer_la-ags_sheet_editor.lo \
+	ags/X/libgsequencer_la-ags_sheet_editor_callbacks.lo \
 	ags/X/libgsequencer_la-ags_ui_provider.lo \
 	ags/X/libgsequencer_la-ags_wave_window_callbacks.lo \
 	ags/X/libgsequencer_la-ags_wave_window.lo \
@@ -1755,6 +1769,10 @@ am__objects_38 = $(am__objects_1) \
 	ags/X/editor/libgsequencer_la-ags_select_note_dialog_callbacks.lo \
 	ags/X/editor/libgsequencer_la-ags_sf2_chooser.lo \
 	ags/X/editor/libgsequencer_la-ags_sf2_chooser_callbacks.lo \
+	ags/X/editor/libgsequencer_la-ags_sheet_edit.lo \
+	ags/X/editor/libgsequencer_la-ags_sheet_edit_callbacks.lo \
+	ags/X/editor/libgsequencer_la-ags_sheet_toolbar.lo \
+	ags/X/editor/libgsequencer_la-ags_sheet_toolbar_callbacks.lo \
 	ags/X/editor/libgsequencer_la-ags_vautomation_edit_box.lo \
 	ags/X/editor/libgsequencer_la-ags_vwave_edit_box.lo \
 	ags/X/editor/libgsequencer_la-ags_wave_edit.lo \
@@ -3955,7 +3973,6 @@ am__depfiles_remade = ags/$(DEPDIR)/gsequencer-gsequencer_main.Po \
 	ags/X/$(DEPDIR)/libgsequencer_la-ags_navigation_callbacks.Plo \
 	ags/X/$(DEPDIR)/libgsequencer_la-ags_notation_editor.Plo \
 	ags/X/$(DEPDIR)/libgsequencer_la-ags_notation_editor_callbacks.Plo \
-	ags/X/$(DEPDIR)/libgsequencer_la-ags_notation_sheet.Plo \
 	ags/X/$(DEPDIR)/libgsequencer_la-ags_osc_server_preferences.Plo \
 	ags/X/$(DEPDIR)/libgsequencer_la-ags_osc_server_preferences_callbacks.Plo \
 	ags/X/$(DEPDIR)/libgsequencer_la-ags_output_collection_editor.Plo \
@@ -3988,6 +4005,10 @@ am__depfiles_remade = ags/$(DEPDIR)/gsequencer-gsequencer_main.Po \
 	ags/X/$(DEPDIR)/libgsequencer_la-ags_sequencer_editor_callbacks.Plo \
 	ags/X/$(DEPDIR)/libgsequencer_la-ags_server_preferences.Plo \
 	ags/X/$(DEPDIR)/libgsequencer_la-ags_server_preferences_callbacks.Plo \
+	ags/X/$(DEPDIR)/libgsequencer_la-ags_sheet_editor.Plo \
+	ags/X/$(DEPDIR)/libgsequencer_la-ags_sheet_editor_callbacks.Plo \
+	ags/X/$(DEPDIR)/libgsequencer_la-ags_sheet_window.Plo \
+	ags/X/$(DEPDIR)/libgsequencer_la-ags_sheet_window_callbacks.Plo \
 	ags/X/$(DEPDIR)/libgsequencer_la-ags_soundcard_editor.Plo \
 	ags/X/$(DEPDIR)/libgsequencer_la-ags_soundcard_editor_callbacks.Plo \
 	ags/X/$(DEPDIR)/libgsequencer_la-ags_ui_provider.Plo \
@@ -4046,6 +4067,10 @@ am__depfiles_remade = ags/$(DEPDIR)/gsequencer-gsequencer_main.Po \
 	ags/X/editor/$(DEPDIR)/libgsequencer_la-ags_select_note_dialog_callbacks.Plo \
 	ags/X/editor/$(DEPDIR)/libgsequencer_la-ags_sf2_chooser.Plo \
 	ags/X/editor/$(DEPDIR)/libgsequencer_la-ags_sf2_chooser_callbacks.Plo \
+	ags/X/editor/$(DEPDIR)/libgsequencer_la-ags_sheet_edit.Plo \
+	ags/X/editor/$(DEPDIR)/libgsequencer_la-ags_sheet_edit_callbacks.Plo \
+	ags/X/editor/$(DEPDIR)/libgsequencer_la-ags_sheet_toolbar.Plo \
+	ags/X/editor/$(DEPDIR)/libgsequencer_la-ags_sheet_toolbar_callbacks.Plo \
 	ags/X/editor/$(DEPDIR)/libgsequencer_la-ags_vautomation_edit_box.Plo \
 	ags/X/editor/$(DEPDIR)/libgsequencer_la-ags_vwave_edit_box.Plo \
 	ags/X/editor/$(DEPDIR)/libgsequencer_la-ags_wave_edit.Plo \
@@ -8317,7 +8342,6 @@ libgsequencer_h_sources = \
 	ags/X/ags_navigation.h \
 	ags/X/ags_notation_editor_callbacks.h \
 	ags/X/ags_notation_editor.h \
-	ags/X/ags_notation_sheet.h \
 	ags/X/ags_osc_server_preferences_callbacks.h \
 	ags/X/ags_osc_server_preferences.h \
 	ags/X/ags_output_collection_editor_callbacks.h \
@@ -8350,6 +8374,10 @@ libgsequencer_h_sources = \
 	ags/X/ags_sequencer_editor.h \
 	ags/X/ags_server_preferences_callbacks.h \
 	ags/X/ags_server_preferences.h \
+	ags/X/ags_sheet_window.h \
+	ags/X/ags_sheet_window_callbacks.h \
+	ags/X/ags_sheet_editor.h \
+	ags/X/ags_sheet_editor_callbacks.h \
 	ags/X/ags_soundcard_editor_callbacks.h \
 	ags/X/ags_soundcard_editor.h \
 	ags/X/ags_ui_provider.h \
@@ -8432,7 +8460,6 @@ libgsequencer_c_sources = \
 	ags/X/ags_navigation_callbacks.c \
 	ags/X/ags_notation_editor.c \
 	ags/X/ags_notation_editor_callbacks.c \
-	ags/X/ags_notation_sheet.c \
 	ags/X/ags_osc_server_preferences_callbacks.c \
 	ags/X/ags_osc_server_preferences.c \
 	ags/X/ags_output_collection_editor_callbacks.c \
@@ -8465,6 +8492,10 @@ libgsequencer_c_sources = \
 	ags/X/ags_sequencer_editor.c \
 	ags/X/ags_server_preferences.c \
 	ags/X/ags_server_preferences_callbacks.c \
+	ags/X/ags_sheet_window.c \
+	ags/X/ags_sheet_window_callbacks.c \
+	ags/X/ags_sheet_editor.c \
+	ags/X/ags_sheet_editor_callbacks.c \
 	ags/X/ags_ui_provider.c \
 	ags/X/ags_wave_window_callbacks.c \
 	ags/X/ags_wave_window.c \
@@ -8728,6 +8759,10 @@ libgsequencer_editor_h_sources = \
 	ags/X/editor/ags_select_buffer_dialog_callbacks.h \
 	ags/X/editor/ags_select_note_dialog.h \
 	ags/X/editor/ags_select_note_dialog_callbacks.h \
+	ags/X/editor/ags_sheet_edit.h \
+	ags/X/editor/ags_sheet_edit_callbacks.h \
+	ags/X/editor/ags_sheet_toolbar.h \
+	ags/X/editor/ags_sheet_toolbar_callbacks.h \
 	ags/X/editor/ags_vautomation_edit_box.h \
 	ags/X/editor/ags_vwave_edit_box.h \
 	ags/X/editor/ags_wave_edit_callbacks.h \
@@ -8787,6 +8822,10 @@ libgsequencer_editor_c_sources = \
 	ags/X/editor/ags_select_note_dialog_callbacks.c \
 	ags/X/editor/ags_sf2_chooser.c \
 	ags/X/editor/ags_sf2_chooser_callbacks.c \
+	ags/X/editor/ags_sheet_edit.c \
+	ags/X/editor/ags_sheet_edit_callbacks.c \
+	ags/X/editor/ags_sheet_toolbar.c \
+	ags/X/editor/ags_sheet_toolbar_callbacks.c \
 	ags/X/editor/ags_vautomation_edit_box.c \
 	ags/X/editor/ags_vwave_edit_box.c \
 	ags/X/editor/ags_wave_edit.c \
@@ -10336,8 +10375,6 @@ ags/X/libgsequencer_la-ags_notation_editor.lo: ags/X/$(am__dirstamp) \
 	ags/X/$(DEPDIR)/$(am__dirstamp)
 ags/X/libgsequencer_la-ags_notation_editor_callbacks.lo:  \
 	ags/X/$(am__dirstamp) ags/X/$(DEPDIR)/$(am__dirstamp)
-ags/X/libgsequencer_la-ags_notation_sheet.lo: ags/X/$(am__dirstamp) \
-	ags/X/$(DEPDIR)/$(am__dirstamp)
 ags/X/libgsequencer_la-ags_osc_server_preferences_callbacks.lo:  \
 	ags/X/$(am__dirstamp) ags/X/$(DEPDIR)/$(am__dirstamp)
 ags/X/libgsequencer_la-ags_osc_server_preferences.lo:  \
@@ -10401,6 +10438,14 @@ ags/X/libgsequencer_la-ags_sequencer_editor.lo: ags/X/$(am__dirstamp) \
 ags/X/libgsequencer_la-ags_server_preferences.lo:  \
 	ags/X/$(am__dirstamp) ags/X/$(DEPDIR)/$(am__dirstamp)
 ags/X/libgsequencer_la-ags_server_preferences_callbacks.lo:  \
+	ags/X/$(am__dirstamp) ags/X/$(DEPDIR)/$(am__dirstamp)
+ags/X/libgsequencer_la-ags_sheet_window.lo: ags/X/$(am__dirstamp) \
+	ags/X/$(DEPDIR)/$(am__dirstamp)
+ags/X/libgsequencer_la-ags_sheet_window_callbacks.lo:  \
+	ags/X/$(am__dirstamp) ags/X/$(DEPDIR)/$(am__dirstamp)
+ags/X/libgsequencer_la-ags_sheet_editor.lo: ags/X/$(am__dirstamp) \
+	ags/X/$(DEPDIR)/$(am__dirstamp)
+ags/X/libgsequencer_la-ags_sheet_editor_callbacks.lo:  \
 	ags/X/$(am__dirstamp) ags/X/$(DEPDIR)/$(am__dirstamp)
 ags/X/libgsequencer_la-ags_ui_provider.lo: ags/X/$(am__dirstamp) \
 	ags/X/$(DEPDIR)/$(am__dirstamp)
@@ -10864,6 +10909,18 @@ ags/X/editor/libgsequencer_la-ags_sf2_chooser.lo:  \
 	ags/X/editor/$(am__dirstamp) \
 	ags/X/editor/$(DEPDIR)/$(am__dirstamp)
 ags/X/editor/libgsequencer_la-ags_sf2_chooser_callbacks.lo:  \
+	ags/X/editor/$(am__dirstamp) \
+	ags/X/editor/$(DEPDIR)/$(am__dirstamp)
+ags/X/editor/libgsequencer_la-ags_sheet_edit.lo:  \
+	ags/X/editor/$(am__dirstamp) \
+	ags/X/editor/$(DEPDIR)/$(am__dirstamp)
+ags/X/editor/libgsequencer_la-ags_sheet_edit_callbacks.lo:  \
+	ags/X/editor/$(am__dirstamp) \
+	ags/X/editor/$(DEPDIR)/$(am__dirstamp)
+ags/X/editor/libgsequencer_la-ags_sheet_toolbar.lo:  \
+	ags/X/editor/$(am__dirstamp) \
+	ags/X/editor/$(DEPDIR)/$(am__dirstamp)
+ags/X/editor/libgsequencer_la-ags_sheet_toolbar_callbacks.lo:  \
 	ags/X/editor/$(am__dirstamp) \
 	ags/X/editor/$(DEPDIR)/$(am__dirstamp)
 ags/X/editor/libgsequencer_la-ags_vautomation_edit_box.lo:  \
@@ -12402,7 +12459,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@ags/X/$(DEPDIR)/libgsequencer_la-ags_navigation_callbacks.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/X/$(DEPDIR)/libgsequencer_la-ags_notation_editor.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/X/$(DEPDIR)/libgsequencer_la-ags_notation_editor_callbacks.Plo@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@ags/X/$(DEPDIR)/libgsequencer_la-ags_notation_sheet.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/X/$(DEPDIR)/libgsequencer_la-ags_osc_server_preferences.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/X/$(DEPDIR)/libgsequencer_la-ags_osc_server_preferences_callbacks.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/X/$(DEPDIR)/libgsequencer_la-ags_output_collection_editor.Plo@am__quote@ # am--include-marker
@@ -12435,6 +12491,10 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@ags/X/$(DEPDIR)/libgsequencer_la-ags_sequencer_editor_callbacks.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/X/$(DEPDIR)/libgsequencer_la-ags_server_preferences.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/X/$(DEPDIR)/libgsequencer_la-ags_server_preferences_callbacks.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@ags/X/$(DEPDIR)/libgsequencer_la-ags_sheet_editor.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@ags/X/$(DEPDIR)/libgsequencer_la-ags_sheet_editor_callbacks.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@ags/X/$(DEPDIR)/libgsequencer_la-ags_sheet_window.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@ags/X/$(DEPDIR)/libgsequencer_la-ags_sheet_window_callbacks.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/X/$(DEPDIR)/libgsequencer_la-ags_soundcard_editor.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/X/$(DEPDIR)/libgsequencer_la-ags_soundcard_editor_callbacks.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/X/$(DEPDIR)/libgsequencer_la-ags_ui_provider.Plo@am__quote@ # am--include-marker
@@ -12493,6 +12553,10 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@ags/X/editor/$(DEPDIR)/libgsequencer_la-ags_select_note_dialog_callbacks.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/X/editor/$(DEPDIR)/libgsequencer_la-ags_sf2_chooser.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/X/editor/$(DEPDIR)/libgsequencer_la-ags_sf2_chooser_callbacks.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@ags/X/editor/$(DEPDIR)/libgsequencer_la-ags_sheet_edit.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@ags/X/editor/$(DEPDIR)/libgsequencer_la-ags_sheet_edit_callbacks.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@ags/X/editor/$(DEPDIR)/libgsequencer_la-ags_sheet_toolbar.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@ags/X/editor/$(DEPDIR)/libgsequencer_la-ags_sheet_toolbar_callbacks.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/X/editor/$(DEPDIR)/libgsequencer_la-ags_vautomation_edit_box.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/X/editor/$(DEPDIR)/libgsequencer_la-ags_vwave_edit_box.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/X/editor/$(DEPDIR)/libgsequencer_la-ags_wave_edit.Plo@am__quote@ # am--include-marker
@@ -16297,13 +16361,6 @@ ags/X/libgsequencer_la-ags_notation_editor_callbacks.lo: ags/X/ags_notation_edit
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -c -o ags/X/libgsequencer_la-ags_notation_editor_callbacks.lo `test -f 'ags/X/ags_notation_editor_callbacks.c' || echo '$(srcdir)/'`ags/X/ags_notation_editor_callbacks.c
 
-ags/X/libgsequencer_la-ags_notation_sheet.lo: ags/X/ags_notation_sheet.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -MT ags/X/libgsequencer_la-ags_notation_sheet.lo -MD -MP -MF ags/X/$(DEPDIR)/libgsequencer_la-ags_notation_sheet.Tpo -c -o ags/X/libgsequencer_la-ags_notation_sheet.lo `test -f 'ags/X/ags_notation_sheet.c' || echo '$(srcdir)/'`ags/X/ags_notation_sheet.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/X/$(DEPDIR)/libgsequencer_la-ags_notation_sheet.Tpo ags/X/$(DEPDIR)/libgsequencer_la-ags_notation_sheet.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/X/ags_notation_sheet.c' object='ags/X/libgsequencer_la-ags_notation_sheet.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -c -o ags/X/libgsequencer_la-ags_notation_sheet.lo `test -f 'ags/X/ags_notation_sheet.c' || echo '$(srcdir)/'`ags/X/ags_notation_sheet.c
-
 ags/X/libgsequencer_la-ags_osc_server_preferences_callbacks.lo: ags/X/ags_osc_server_preferences_callbacks.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -MT ags/X/libgsequencer_la-ags_osc_server_preferences_callbacks.lo -MD -MP -MF ags/X/$(DEPDIR)/libgsequencer_la-ags_osc_server_preferences_callbacks.Tpo -c -o ags/X/libgsequencer_la-ags_osc_server_preferences_callbacks.lo `test -f 'ags/X/ags_osc_server_preferences_callbacks.c' || echo '$(srcdir)/'`ags/X/ags_osc_server_preferences_callbacks.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/X/$(DEPDIR)/libgsequencer_la-ags_osc_server_preferences_callbacks.Tpo ags/X/$(DEPDIR)/libgsequencer_la-ags_osc_server_preferences_callbacks.Plo
@@ -16527,6 +16584,34 @@ ags/X/libgsequencer_la-ags_server_preferences_callbacks.lo: ags/X/ags_server_pre
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/X/ags_server_preferences_callbacks.c' object='ags/X/libgsequencer_la-ags_server_preferences_callbacks.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -c -o ags/X/libgsequencer_la-ags_server_preferences_callbacks.lo `test -f 'ags/X/ags_server_preferences_callbacks.c' || echo '$(srcdir)/'`ags/X/ags_server_preferences_callbacks.c
+
+ags/X/libgsequencer_la-ags_sheet_window.lo: ags/X/ags_sheet_window.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -MT ags/X/libgsequencer_la-ags_sheet_window.lo -MD -MP -MF ags/X/$(DEPDIR)/libgsequencer_la-ags_sheet_window.Tpo -c -o ags/X/libgsequencer_la-ags_sheet_window.lo `test -f 'ags/X/ags_sheet_window.c' || echo '$(srcdir)/'`ags/X/ags_sheet_window.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/X/$(DEPDIR)/libgsequencer_la-ags_sheet_window.Tpo ags/X/$(DEPDIR)/libgsequencer_la-ags_sheet_window.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/X/ags_sheet_window.c' object='ags/X/libgsequencer_la-ags_sheet_window.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -c -o ags/X/libgsequencer_la-ags_sheet_window.lo `test -f 'ags/X/ags_sheet_window.c' || echo '$(srcdir)/'`ags/X/ags_sheet_window.c
+
+ags/X/libgsequencer_la-ags_sheet_window_callbacks.lo: ags/X/ags_sheet_window_callbacks.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -MT ags/X/libgsequencer_la-ags_sheet_window_callbacks.lo -MD -MP -MF ags/X/$(DEPDIR)/libgsequencer_la-ags_sheet_window_callbacks.Tpo -c -o ags/X/libgsequencer_la-ags_sheet_window_callbacks.lo `test -f 'ags/X/ags_sheet_window_callbacks.c' || echo '$(srcdir)/'`ags/X/ags_sheet_window_callbacks.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/X/$(DEPDIR)/libgsequencer_la-ags_sheet_window_callbacks.Tpo ags/X/$(DEPDIR)/libgsequencer_la-ags_sheet_window_callbacks.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/X/ags_sheet_window_callbacks.c' object='ags/X/libgsequencer_la-ags_sheet_window_callbacks.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -c -o ags/X/libgsequencer_la-ags_sheet_window_callbacks.lo `test -f 'ags/X/ags_sheet_window_callbacks.c' || echo '$(srcdir)/'`ags/X/ags_sheet_window_callbacks.c
+
+ags/X/libgsequencer_la-ags_sheet_editor.lo: ags/X/ags_sheet_editor.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -MT ags/X/libgsequencer_la-ags_sheet_editor.lo -MD -MP -MF ags/X/$(DEPDIR)/libgsequencer_la-ags_sheet_editor.Tpo -c -o ags/X/libgsequencer_la-ags_sheet_editor.lo `test -f 'ags/X/ags_sheet_editor.c' || echo '$(srcdir)/'`ags/X/ags_sheet_editor.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/X/$(DEPDIR)/libgsequencer_la-ags_sheet_editor.Tpo ags/X/$(DEPDIR)/libgsequencer_la-ags_sheet_editor.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/X/ags_sheet_editor.c' object='ags/X/libgsequencer_la-ags_sheet_editor.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -c -o ags/X/libgsequencer_la-ags_sheet_editor.lo `test -f 'ags/X/ags_sheet_editor.c' || echo '$(srcdir)/'`ags/X/ags_sheet_editor.c
+
+ags/X/libgsequencer_la-ags_sheet_editor_callbacks.lo: ags/X/ags_sheet_editor_callbacks.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -MT ags/X/libgsequencer_la-ags_sheet_editor_callbacks.lo -MD -MP -MF ags/X/$(DEPDIR)/libgsequencer_la-ags_sheet_editor_callbacks.Tpo -c -o ags/X/libgsequencer_la-ags_sheet_editor_callbacks.lo `test -f 'ags/X/ags_sheet_editor_callbacks.c' || echo '$(srcdir)/'`ags/X/ags_sheet_editor_callbacks.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/X/$(DEPDIR)/libgsequencer_la-ags_sheet_editor_callbacks.Tpo ags/X/$(DEPDIR)/libgsequencer_la-ags_sheet_editor_callbacks.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/X/ags_sheet_editor_callbacks.c' object='ags/X/libgsequencer_la-ags_sheet_editor_callbacks.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -c -o ags/X/libgsequencer_la-ags_sheet_editor_callbacks.lo `test -f 'ags/X/ags_sheet_editor_callbacks.c' || echo '$(srcdir)/'`ags/X/ags_sheet_editor_callbacks.c
 
 ags/X/libgsequencer_la-ags_ui_provider.lo: ags/X/ags_ui_provider.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -MT ags/X/libgsequencer_la-ags_ui_provider.lo -MD -MP -MF ags/X/$(DEPDIR)/libgsequencer_la-ags_ui_provider.Tpo -c -o ags/X/libgsequencer_la-ags_ui_provider.lo `test -f 'ags/X/ags_ui_provider.c' || echo '$(srcdir)/'`ags/X/ags_ui_provider.c
@@ -17535,6 +17620,34 @@ ags/X/editor/libgsequencer_la-ags_sf2_chooser_callbacks.lo: ags/X/editor/ags_sf2
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/X/editor/ags_sf2_chooser_callbacks.c' object='ags/X/editor/libgsequencer_la-ags_sf2_chooser_callbacks.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -c -o ags/X/editor/libgsequencer_la-ags_sf2_chooser_callbacks.lo `test -f 'ags/X/editor/ags_sf2_chooser_callbacks.c' || echo '$(srcdir)/'`ags/X/editor/ags_sf2_chooser_callbacks.c
+
+ags/X/editor/libgsequencer_la-ags_sheet_edit.lo: ags/X/editor/ags_sheet_edit.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -MT ags/X/editor/libgsequencer_la-ags_sheet_edit.lo -MD -MP -MF ags/X/editor/$(DEPDIR)/libgsequencer_la-ags_sheet_edit.Tpo -c -o ags/X/editor/libgsequencer_la-ags_sheet_edit.lo `test -f 'ags/X/editor/ags_sheet_edit.c' || echo '$(srcdir)/'`ags/X/editor/ags_sheet_edit.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/X/editor/$(DEPDIR)/libgsequencer_la-ags_sheet_edit.Tpo ags/X/editor/$(DEPDIR)/libgsequencer_la-ags_sheet_edit.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/X/editor/ags_sheet_edit.c' object='ags/X/editor/libgsequencer_la-ags_sheet_edit.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -c -o ags/X/editor/libgsequencer_la-ags_sheet_edit.lo `test -f 'ags/X/editor/ags_sheet_edit.c' || echo '$(srcdir)/'`ags/X/editor/ags_sheet_edit.c
+
+ags/X/editor/libgsequencer_la-ags_sheet_edit_callbacks.lo: ags/X/editor/ags_sheet_edit_callbacks.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -MT ags/X/editor/libgsequencer_la-ags_sheet_edit_callbacks.lo -MD -MP -MF ags/X/editor/$(DEPDIR)/libgsequencer_la-ags_sheet_edit_callbacks.Tpo -c -o ags/X/editor/libgsequencer_la-ags_sheet_edit_callbacks.lo `test -f 'ags/X/editor/ags_sheet_edit_callbacks.c' || echo '$(srcdir)/'`ags/X/editor/ags_sheet_edit_callbacks.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/X/editor/$(DEPDIR)/libgsequencer_la-ags_sheet_edit_callbacks.Tpo ags/X/editor/$(DEPDIR)/libgsequencer_la-ags_sheet_edit_callbacks.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/X/editor/ags_sheet_edit_callbacks.c' object='ags/X/editor/libgsequencer_la-ags_sheet_edit_callbacks.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -c -o ags/X/editor/libgsequencer_la-ags_sheet_edit_callbacks.lo `test -f 'ags/X/editor/ags_sheet_edit_callbacks.c' || echo '$(srcdir)/'`ags/X/editor/ags_sheet_edit_callbacks.c
+
+ags/X/editor/libgsequencer_la-ags_sheet_toolbar.lo: ags/X/editor/ags_sheet_toolbar.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -MT ags/X/editor/libgsequencer_la-ags_sheet_toolbar.lo -MD -MP -MF ags/X/editor/$(DEPDIR)/libgsequencer_la-ags_sheet_toolbar.Tpo -c -o ags/X/editor/libgsequencer_la-ags_sheet_toolbar.lo `test -f 'ags/X/editor/ags_sheet_toolbar.c' || echo '$(srcdir)/'`ags/X/editor/ags_sheet_toolbar.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/X/editor/$(DEPDIR)/libgsequencer_la-ags_sheet_toolbar.Tpo ags/X/editor/$(DEPDIR)/libgsequencer_la-ags_sheet_toolbar.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/X/editor/ags_sheet_toolbar.c' object='ags/X/editor/libgsequencer_la-ags_sheet_toolbar.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -c -o ags/X/editor/libgsequencer_la-ags_sheet_toolbar.lo `test -f 'ags/X/editor/ags_sheet_toolbar.c' || echo '$(srcdir)/'`ags/X/editor/ags_sheet_toolbar.c
+
+ags/X/editor/libgsequencer_la-ags_sheet_toolbar_callbacks.lo: ags/X/editor/ags_sheet_toolbar_callbacks.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -MT ags/X/editor/libgsequencer_la-ags_sheet_toolbar_callbacks.lo -MD -MP -MF ags/X/editor/$(DEPDIR)/libgsequencer_la-ags_sheet_toolbar_callbacks.Tpo -c -o ags/X/editor/libgsequencer_la-ags_sheet_toolbar_callbacks.lo `test -f 'ags/X/editor/ags_sheet_toolbar_callbacks.c' || echo '$(srcdir)/'`ags/X/editor/ags_sheet_toolbar_callbacks.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/X/editor/$(DEPDIR)/libgsequencer_la-ags_sheet_toolbar_callbacks.Tpo ags/X/editor/$(DEPDIR)/libgsequencer_la-ags_sheet_toolbar_callbacks.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/X/editor/ags_sheet_toolbar_callbacks.c' object='ags/X/editor/libgsequencer_la-ags_sheet_toolbar_callbacks.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -c -o ags/X/editor/libgsequencer_la-ags_sheet_toolbar_callbacks.lo `test -f 'ags/X/editor/ags_sheet_toolbar_callbacks.c' || echo '$(srcdir)/'`ags/X/editor/ags_sheet_toolbar_callbacks.c
 
 ags/X/editor/libgsequencer_la-ags_vautomation_edit_box.lo: ags/X/editor/ags_vautomation_edit_box.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -MT ags/X/editor/libgsequencer_la-ags_vautomation_edit_box.lo -MD -MP -MF ags/X/editor/$(DEPDIR)/libgsequencer_la-ags_vautomation_edit_box.Tpo -c -o ags/X/editor/libgsequencer_la-ags_vautomation_edit_box.lo `test -f 'ags/X/editor/ags_vautomation_edit_box.c' || echo '$(srcdir)/'`ags/X/editor/ags_vautomation_edit_box.c
@@ -22209,7 +22322,6 @@ distclean: distclean-recursive
 	-rm -f ags/X/$(DEPDIR)/libgsequencer_la-ags_navigation_callbacks.Plo
 	-rm -f ags/X/$(DEPDIR)/libgsequencer_la-ags_notation_editor.Plo
 	-rm -f ags/X/$(DEPDIR)/libgsequencer_la-ags_notation_editor_callbacks.Plo
-	-rm -f ags/X/$(DEPDIR)/libgsequencer_la-ags_notation_sheet.Plo
 	-rm -f ags/X/$(DEPDIR)/libgsequencer_la-ags_osc_server_preferences.Plo
 	-rm -f ags/X/$(DEPDIR)/libgsequencer_la-ags_osc_server_preferences_callbacks.Plo
 	-rm -f ags/X/$(DEPDIR)/libgsequencer_la-ags_output_collection_editor.Plo
@@ -22242,6 +22354,10 @@ distclean: distclean-recursive
 	-rm -f ags/X/$(DEPDIR)/libgsequencer_la-ags_sequencer_editor_callbacks.Plo
 	-rm -f ags/X/$(DEPDIR)/libgsequencer_la-ags_server_preferences.Plo
 	-rm -f ags/X/$(DEPDIR)/libgsequencer_la-ags_server_preferences_callbacks.Plo
+	-rm -f ags/X/$(DEPDIR)/libgsequencer_la-ags_sheet_editor.Plo
+	-rm -f ags/X/$(DEPDIR)/libgsequencer_la-ags_sheet_editor_callbacks.Plo
+	-rm -f ags/X/$(DEPDIR)/libgsequencer_la-ags_sheet_window.Plo
+	-rm -f ags/X/$(DEPDIR)/libgsequencer_la-ags_sheet_window_callbacks.Plo
 	-rm -f ags/X/$(DEPDIR)/libgsequencer_la-ags_soundcard_editor.Plo
 	-rm -f ags/X/$(DEPDIR)/libgsequencer_la-ags_soundcard_editor_callbacks.Plo
 	-rm -f ags/X/$(DEPDIR)/libgsequencer_la-ags_ui_provider.Plo
@@ -22300,6 +22416,10 @@ distclean: distclean-recursive
 	-rm -f ags/X/editor/$(DEPDIR)/libgsequencer_la-ags_select_note_dialog_callbacks.Plo
 	-rm -f ags/X/editor/$(DEPDIR)/libgsequencer_la-ags_sf2_chooser.Plo
 	-rm -f ags/X/editor/$(DEPDIR)/libgsequencer_la-ags_sf2_chooser_callbacks.Plo
+	-rm -f ags/X/editor/$(DEPDIR)/libgsequencer_la-ags_sheet_edit.Plo
+	-rm -f ags/X/editor/$(DEPDIR)/libgsequencer_la-ags_sheet_edit_callbacks.Plo
+	-rm -f ags/X/editor/$(DEPDIR)/libgsequencer_la-ags_sheet_toolbar.Plo
+	-rm -f ags/X/editor/$(DEPDIR)/libgsequencer_la-ags_sheet_toolbar_callbacks.Plo
 	-rm -f ags/X/editor/$(DEPDIR)/libgsequencer_la-ags_vautomation_edit_box.Plo
 	-rm -f ags/X/editor/$(DEPDIR)/libgsequencer_la-ags_vwave_edit_box.Plo
 	-rm -f ags/X/editor/$(DEPDIR)/libgsequencer_la-ags_wave_edit.Plo
@@ -23066,7 +23186,6 @@ maintainer-clean: maintainer-clean-recursive
 	-rm -f ags/X/$(DEPDIR)/libgsequencer_la-ags_navigation_callbacks.Plo
 	-rm -f ags/X/$(DEPDIR)/libgsequencer_la-ags_notation_editor.Plo
 	-rm -f ags/X/$(DEPDIR)/libgsequencer_la-ags_notation_editor_callbacks.Plo
-	-rm -f ags/X/$(DEPDIR)/libgsequencer_la-ags_notation_sheet.Plo
 	-rm -f ags/X/$(DEPDIR)/libgsequencer_la-ags_osc_server_preferences.Plo
 	-rm -f ags/X/$(DEPDIR)/libgsequencer_la-ags_osc_server_preferences_callbacks.Plo
 	-rm -f ags/X/$(DEPDIR)/libgsequencer_la-ags_output_collection_editor.Plo
@@ -23099,6 +23218,10 @@ maintainer-clean: maintainer-clean-recursive
 	-rm -f ags/X/$(DEPDIR)/libgsequencer_la-ags_sequencer_editor_callbacks.Plo
 	-rm -f ags/X/$(DEPDIR)/libgsequencer_la-ags_server_preferences.Plo
 	-rm -f ags/X/$(DEPDIR)/libgsequencer_la-ags_server_preferences_callbacks.Plo
+	-rm -f ags/X/$(DEPDIR)/libgsequencer_la-ags_sheet_editor.Plo
+	-rm -f ags/X/$(DEPDIR)/libgsequencer_la-ags_sheet_editor_callbacks.Plo
+	-rm -f ags/X/$(DEPDIR)/libgsequencer_la-ags_sheet_window.Plo
+	-rm -f ags/X/$(DEPDIR)/libgsequencer_la-ags_sheet_window_callbacks.Plo
 	-rm -f ags/X/$(DEPDIR)/libgsequencer_la-ags_soundcard_editor.Plo
 	-rm -f ags/X/$(DEPDIR)/libgsequencer_la-ags_soundcard_editor_callbacks.Plo
 	-rm -f ags/X/$(DEPDIR)/libgsequencer_la-ags_ui_provider.Plo
@@ -23157,6 +23280,10 @@ maintainer-clean: maintainer-clean-recursive
 	-rm -f ags/X/editor/$(DEPDIR)/libgsequencer_la-ags_select_note_dialog_callbacks.Plo
 	-rm -f ags/X/editor/$(DEPDIR)/libgsequencer_la-ags_sf2_chooser.Plo
 	-rm -f ags/X/editor/$(DEPDIR)/libgsequencer_la-ags_sf2_chooser_callbacks.Plo
+	-rm -f ags/X/editor/$(DEPDIR)/libgsequencer_la-ags_sheet_edit.Plo
+	-rm -f ags/X/editor/$(DEPDIR)/libgsequencer_la-ags_sheet_edit_callbacks.Plo
+	-rm -f ags/X/editor/$(DEPDIR)/libgsequencer_la-ags_sheet_toolbar.Plo
+	-rm -f ags/X/editor/$(DEPDIR)/libgsequencer_la-ags_sheet_toolbar_callbacks.Plo
 	-rm -f ags/X/editor/$(DEPDIR)/libgsequencer_la-ags_vautomation_edit_box.Plo
 	-rm -f ags/X/editor/$(DEPDIR)/libgsequencer_la-ags_vwave_edit_box.Plo
 	-rm -f ags/X/editor/$(DEPDIR)/libgsequencer_la-ags_wave_edit.Plo

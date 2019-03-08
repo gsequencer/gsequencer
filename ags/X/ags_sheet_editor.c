@@ -253,7 +253,7 @@ ags_sheet_editor_connect(AgsConnectable *connectable)
   //		   G_CALLBACK(ags_sheet_editor_machine_changed_callback), (gpointer) sheet_editor);
 
   /* toolbar */
-  ags_connectable_connect(AGS_CONNECTABLE(sheet_editor->notation_toolbar));
+  ags_connectable_connect(AGS_CONNECTABLE(sheet_editor->sheet_toolbar));
 
   /* machine selector */
   ags_connectable_connect(AGS_CONNECTABLE(sheet_editor->machine_selector));
@@ -269,8 +269,8 @@ ags_sheet_editor_disconnect(AgsConnectable *connectable)
 
   sheet_editor = AGS_SHEET_EDITOR(connectable);
 
-  /* notation toolbar */
-  ags_connectable_disconnect(AGS_CONNECTABLE(sheet_editor->notation_toolbar)); 
+  /* sheet toolbar */
+  ags_connectable_disconnect(AGS_CONNECTABLE(sheet_editor->sheet_toolbar)); 
 
   /* machine selector */
   ags_connectable_disconnect(AGS_CONNECTABLE(sheet_editor->machine_selector));
@@ -322,6 +322,59 @@ ags_sheet_editor_machine_changed(AgsSheetEditor *sheet_editor,
 		machine);
   g_object_unref((GObject *) sheet_editor);
 }
+
+void
+ags_sheet_editor_add_note(AgsSheetEditor *sheet_editor,
+			  AgsNote *note)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_sheet_editor_delete_note(AgsSheetEditor *sheet_editor,
+			     guint x, guint y)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_sheet_editor_select_region(AgsSheetEditor *sheet_editor,
+			       guint x0, guint y0,
+			       guint x1, guint y1)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_sheet_editor_do_feedback(AgsSheetEditor *sheet_editor)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_sheet_editor_select_all(AgsSheetEditor *sheet_editor)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_sheet_editor_paste(AgsSheetEditor *sheet_editor)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_sheet_editor_copy(AgsSheetEditor *sheet_editor)
+{
+  //TODO:JK: implement me
+}
+
+void
+ags_sheet_editor_cut(AgsSheetEditor *sheet_editor)
+{
+  //TODO:JK: implement me
+}
+
 
 /**
  * ags_sheet_editor_new:

@@ -31,9 +31,9 @@
 
 #include <ags/X/ags_machine.h>
 
-#include <ags/X/editor/ags_notation_toolbar.h>
+#include <ags/X/editor/ags_sheet_toolbar.h>
 #include <ags/X/editor/ags_machine_selector.h>
-//#include <ags/X/editor/ags_notation_page.h>
+#include <ags/X/editor/ags_sheet_edit.h>
 
 #define AGS_TYPE_SHEET_EDITOR                (ags_sheet_editor_get_type ())
 #define AGS_SHEET_EDITOR(obj)                (G_TYPE_CHECK_INSTANCE_CAST((obj), AGS_TYPE_SHEET_EDITOR, AgsSheetEditor))
@@ -75,14 +75,14 @@ struct _AgsSheetEditor
   
   GtkHPaned *paned;
 
-  AgsNotationToolbar *notation_toolbar;
+  AgsSheetToolbar *sheet_toolbar;
   
   AgsMachineSelector *machine_selector;
   AgsMachine *selected_machine;
   
   AgsNotebook *notebook;
   
-  //  AgsNotationPage *notation_page;
+  AgsSheetEdit *sheet_edit;
 };
 
 struct _AgsSheetEditorClass
@@ -96,6 +96,24 @@ GType ags_sheet_editor_get_type(void);
 
 void ags_sheet_editor_machine_changed(AgsSheetEditor *sheet_editor,
 					AgsMachine *machine);
+
+void ags_sheet_editor_add_note(AgsSheetEditor *sheet_editor,
+			       AgsNote *note);
+
+void ags_sheet_editor_delete_note(AgsSheetEditor *sheet_editor,
+				  guint x, guint y);
+
+void ags_sheet_editor_select_region(AgsSheetEditor *sheet_editor,
+				    guint x0, guint y0,
+				    guint x1, guint y1);
+
+void ags_sheet_editor_do_feedback(AgsSheetEditor *sheet_editor);
+
+void ags_sheet_editor_select_all(AgsSheetEditor *sheet_editor);
+
+void ags_sheet_editor_paste(AgsSheetEditor *sheet_editor);
+void ags_sheet_editor_copy(AgsSheetEditor *sheet_editor);
+void ags_sheet_editor_cut(AgsSheetEditor *sheet_editor);
 
 AgsSheetEditor* ags_sheet_editor_new();
 
