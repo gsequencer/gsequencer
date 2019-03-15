@@ -911,7 +911,7 @@ ags_play_notation_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_r
 
   guint audio_flags;
   guint pads;
-  guint notation_counter;
+  guint64 notation_counter;
   guint output_pads, input_pads;
   guint audio_channel;
   guint samplerate;

@@ -33,6 +33,7 @@
 #include <ags/audio/recall/ags_copy_pattern_audio_run.h>
 #include <ags/audio/recall/ags_copy_pattern_channel.h>
 #include <ags/audio/recall/ags_delay_audio_run.h>
+#include <ags/audio/recall/ags_count_beats_audio_run.h>
 
 #include <stdlib.h>
 
@@ -689,7 +690,7 @@ ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *delay_au
   AgsCopyPatternChannel *copy_pattern_channel;
   AgsCountBeatsAudioRun *count_beats_audio_run;
 
-  guint sequencer_counter;
+  guint64 sequencer_counter;
   gboolean current_bit;
 
   GValue pattern_value = { 0, };  

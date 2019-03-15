@@ -267,7 +267,7 @@ ags_start_sequencer_launch(AgsTask *task)
   }
 
   /* unref */
-  g_object_unref(sequencer_thread);
+  g_object_unref(audio_loop);
 }
 
 /**
