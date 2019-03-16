@@ -6882,7 +6882,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
 	     (xmlChar *) "bank_1",
 	     (xmlChar *) g_strdup_printf("%d", machine->bank_1));
   
-  if((AGS_SOUND_BEHAVIOUR_REVERSE_MAPPING & (machine->audio->behaviour_flags)) != 0){
+  if(ags_audio_test_behaviour_flags(machine->audio, AGS_SOUND_BEHAVIOUR_REVERSE_MAPPING)){
     xmlNewProp(node,
 	       "reverse-mapping",
 	       "true");
