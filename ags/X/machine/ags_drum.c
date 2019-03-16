@@ -211,7 +211,6 @@ ags_drum_init(AgsDrum *drum)
 				      AGS_SOUND_ABILITY_SEQUENCER |
 				      AGS_SOUND_ABILITY_NOTATION));
   ags_audio_set_behaviour_flags(audio, (AGS_SOUND_BEHAVIOUR_PATTERN_MODE |
-					AGS_SOUND_BEHAVIOUR_REVERSE_MAPPING |
 					AGS_SOUND_BEHAVIOUR_DEFAULTS_TO_INPUT));
   g_object_set(audio,
 	       "min-audio-channels", 1,
