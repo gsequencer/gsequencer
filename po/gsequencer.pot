@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: gsequencer 2.1.67\n"
+"Project-Id-Version: gsequencer 2.1.68\n"
 "Report-Msgid-Bugs-To: jkraehemann@gmail.com\n"
-"POT-Creation-Date: 2019-03-15 01:53+0100\n"
+"POT-Creation-Date: 2019-03-17 09:22+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -433,7 +433,7 @@ msgstr ""
 msgid "bpm"
 msgstr ""
 
-#: ags/X/ags_navigation.c:251 ags/X/machine/ags_drum.c:304
+#: ags/X/ags_navigation.c:251 ags/X/machine/ags_drum.c:303
 msgid "loop"
 msgstr ""
 
@@ -739,7 +739,7 @@ msgstr ""
 msgid "info"
 msgstr ""
 
-#: ags/X/editor/ags_envelope_dialog.c:453 ags/X/machine/ags_drum.c:298
+#: ags/X/editor/ags_envelope_dialog.c:453 ags/X/machine/ags_drum.c:297
 msgid "pattern"
 msgstr ""
 
@@ -1032,19 +1032,19 @@ msgstr ""
 msgid "grab"
 msgstr ""
 
-#: ags/X/machine/ags_drum.c:282
+#: ags/X/machine/ags_drum.c:281
 msgid "kit"
 msgstr ""
 
-#: ags/X/machine/ags_drum.c:289
+#: ags/X/machine/ags_drum.c:288
 msgid "default"
 msgstr ""
 
-#: ags/X/machine/ags_drum.c:310
+#: ags/X/machine/ags_drum.c:309
 msgid "run"
 msgstr ""
 
-#: ags/X/machine/ags_drum.c:363 ags/X/machine/ags_oscillator.c:213
+#: ags/X/machine/ags_drum.c:362 ags/X/machine/ags_oscillator.c:213
 msgid "length"
 msgstr ""
 

@@ -1,6 +1,7 @@
 ags (2.1.68)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* disabled defaulted AGS_SOUND_BEHAVIOUR_REVERSE_MAPPING of AgsDrum
 	* fixed missing unset of AGS_SOUND_BEHAVIOUR_REVERSE_MAPPING in ags_simple_file.c
 
 ags (2.1.67)
