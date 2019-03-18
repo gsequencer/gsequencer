@@ -669,12 +669,12 @@ ags_copy_pattern_audio_run_resolve_dependency(AgsRecall *recall)
     if(AGS_IS_DELAY_AUDIO_RUN(dependency)){
       delay_audio_run = (AgsDelayAudioRun *) ags_recall_dependency_resolve(recall_dependency,
 									   parent_recall_id);
-
+      
       i++;
     }else if(AGS_IS_COUNT_BEATS_AUDIO_RUN(dependency)){
       count_beats_audio_run = (AgsCountBeatsAudioRun *) ags_recall_dependency_resolve(recall_dependency,
 										      parent_recall_id);
-
+      
       i++;
     }
 

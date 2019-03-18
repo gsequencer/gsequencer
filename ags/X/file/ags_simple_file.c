@@ -2146,9 +2146,14 @@ ags_simple_file_read_machine(AgsSimpleFile *simple_file, xmlNode *node, AgsMachi
   /* reverse mapping */
   str = xmlGetProp(node,
 		   "reverse-mapping");
-  if(!g_strcmp0(str,
-		"true")){
+  
+  if(str != NULL &&
+     !g_ascii_strncasecmp(str,
+			  "true",
+			  5)){
     ags_audio_set_behaviour_flags(gobject->audio, (AGS_SOUND_BEHAVIOUR_REVERSE_MAPPING));
+  }else{
+    ags_audio_unset_behaviour_flags(gobject->audio, (AGS_SOUND_BEHAVIOUR_REVERSE_MAPPING));
   }
   
   /* connect AgsMachine */
@@ -6877,7 +6882,7 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
 	     (xmlChar *) "bank_1",
 	     (xmlChar *) g_strdup_printf("%d", machine->bank_1));
   
-  if((AGS_SOUND_BEHAVIOUR_REVERSE_MAPPING & (machine->audio->behaviour_flags)) != 0){
+  if(ags_audio_test_behaviour_flags(machine->audio, AGS_SOUND_BEHAVIOUR_REVERSE_MAPPING)){
     xmlNewProp(node,
 	       "reverse-mapping",
 	       "true");

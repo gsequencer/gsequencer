@@ -10,6 +10,19 @@ ags (2.2.x)
 	* TODO:JK: implement Music XML support
 	* TODO:JK: implement file bundle embedding plugins and audio data
 
+ags (2.1.68)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* disabled defaulted AGS_SOUND_BEHAVIOUR_REVERSE_MAPPING of AgsDrum
+	* fixed missing unset of AGS_SOUND_BEHAVIOUR_REVERSE_MAPPING in ags_simple_file.c
+
+ags (2.1.67)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed wrong argument to g_object_unref() in ags_start_sequencer.c
+	* fixed 64 bit issue in ags_copy_pattern_channel_run.c
+	* fixed 64 bit issue in ags_play_notation_audio_run.c
+
 ags (2.1.66)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
