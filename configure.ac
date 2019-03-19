@@ -16,7 +16,7 @@ AC_CONFIG_HEADERS([ags/ags_config.h])
 AC_CONFIG_MACRO_DIR([m4])
 
 AM_GNU_GETTEXT([external])
-AM_GNU_GETTEXT_VERSION([0.19.7])
+AM_GNU_GETTEXT_VERSION([0.19.8])
 
 # options
 AC_ARG_ENABLE(strip-rt-events, [AS_HELP_STRING([--enable-strip-rt-events],
