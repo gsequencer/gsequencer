@@ -54,12 +54,12 @@ void ags_ipatch_dls2_reader_disconnect(AgsConnectable *connectable);
 
 /**
  * SECTION:ags_ipatch_dls2_reader
- * @short_description: interfacing Soundfont2 related API of libinstpatch
+ * @short_description: interfacing DLS2 related API of libinstpatch
  * @title: AgsIpatchDLS2Reader
  * @section_id:
  * @include: ags/audio/file/ags_ipatch_dls2_reader.h
  *
- * #AgsIpatchDLS2Reader is the base object to ineract with Soundfont2 related API.
+ * #AgsIpatchDLS2Reader is the base object to ineract with DLS2 related API.
  */
 
 static gpointer ags_ipatch_dls2_reader_parent_class = NULL;
