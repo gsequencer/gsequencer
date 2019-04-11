@@ -2,6 +2,12 @@ ags (2.1.69)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* configure.ac (AM_GNU_GETTEXT_VERSION): Bump to 0.19.8.
+	* fixed non thread-safe ags_audio_loop_get_type()
+	* fixed non thread-safe ags_audio_thread_get_type()
+	* fixed non thread-safe ags_channel_thread_get_type()
+	* fixed non thread-safe ags_soundcard_thread_get_type()
+	* fixed non thread-safe ags_sequencer_thread_get_type()
+	* fixed non thread-safe ags_export_thread_get_type()
 
 ags (2.1.68)
 
