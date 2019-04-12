@@ -5565,9 +5565,9 @@ am__DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/libags.pc.in \
 	$(top_srcdir)/ags/ags_config.h.in \
 	$(top_srcdir)/ags/config.h.in \
 	$(top_srcdir)/functional-tests.mk $(top_srcdir)/unit-tests.mk \
-	AUTHORS COPYING ChangeLog INSTALL NEWS README TODO compile \
-	config.guess config.rpath config.sub depcomp install-sh \
-	ltmain.sh missing mkinstalldirs test-driver
+	ABOUT-NLS AUTHORS COPYING ChangeLog INSTALL NEWS README TODO \
+	compile config.guess config.rpath config.sub depcomp \
+	install-sh ltmain.sh missing mkinstalldirs test-driver
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 distdir = $(PACKAGE)-$(VERSION)
 top_distdir = $(distdir)
@@ -5889,9 +5889,9 @@ EXTRA_DIST = config.rpath COPYING.server COPYING.docs COPYING.stk-4.3 \
 	docs/reference/libgsequencer/libgsequencer.types \
 	docs/reference/libgsequencer/libgsequencer.interfaces \
 	clean-gtk-doc.sh lv2/lv2plug.in/ns/lv2ext/lv2_programs.h \
-	apple_script.sh gsequencer-mac-os-x.patch libags.pc.in \
-	libags_audio.pc.in libags_gui.pc.in libgsequencer.pc.in \
-	gsequencer.desktop.in application-x-gsequencer.xml \
+	apple_script.sh libags.pc.in libags_audio.pc.in \
+	libags_gui.pc.in libgsequencer.pc.in gsequencer.desktop.in \
+	application-x-gsequencer.xml \
 	org.nongnu.gsequencer.gsequencer.appdata.xml libags.sym \
 	libags_thread.sym libags_server.sym libags_audio.sym \
 	libags_gui.sym docs/reference/libags/git.mk \

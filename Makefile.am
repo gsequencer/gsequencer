@@ -124,8 +124,7 @@ EXTRA_DIST += \
 #	lv2.lib/mda/EPiano-presets.ttl
 
 EXTRA_DIST += \
-	apple_script.sh \
-	gsequencer-mac-os-x.patch
+	apple_script.sh
 
 man1_MANS = gsequencer.1 midi2xml.1
 
