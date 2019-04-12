@@ -98,10 +98,10 @@ ags_matrix_index_callback(GtkWidget *widget, AgsMatrix *matrix)
 	GValue value = {0,};
 
 	g_value_init(&value,
-		     G_TYPE_UINT64);
+		     G_TYPE_FLOAT);
 	
-	g_value_set_uint64(&value,
-			   index1);
+	g_value_set_float(&value,
+			  (gfloat) index1);
 
 	play_copy_pattern_audio = AGS_COPY_PATTERN_AUDIO(list->data);
 	g_object_get(play_copy_pattern_audio,
@@ -131,10 +131,10 @@ ags_matrix_index_callback(GtkWidget *widget, AgsMatrix *matrix)
 	GValue value = {0,};
 
 	g_value_init(&value,
-		     G_TYPE_UINT64);
+		     G_TYPE_FLOAT);
 	
-	g_value_set_uint64(&value,
-			   index1);
+	g_value_set_float(&value,
+			  (float) index1);
 
 	recall_copy_pattern_audio = AGS_COPY_PATTERN_AUDIO(list->data);
 	g_object_get(recall_copy_pattern_audio,

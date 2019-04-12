@@ -8,6 +8,8 @@ ags (2.1.69)
 	* fixed non thread-safe ags_soundcard_thread_get_type()
 	* fixed non thread-safe ags_sequencer_thread_get_type()
 	* fixed non thread-safe ags_export_thread_get_type()
+	* fixed missing apply of AgsFileLink for create_channels in ags_audio_open_audio_file_as_channel()
+	* fixed type float for modifying pattern bank index of AgsDrum and AgsMatrix
 
 ags (2.1.68)
 
