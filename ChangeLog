@@ -1,3 +1,8 @@
+ags (2.1.70)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed OSC server path in docs/oscBook/chap6.xml
+
 ags (2.1.69)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
