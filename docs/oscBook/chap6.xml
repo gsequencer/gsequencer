@@ -49,7 +49,7 @@
 
     <itemizedlist>
       <listitem>
-	/AgsSoundProvider/AgsAudio[0]/AgsMuteChannel[0]/AgsPort["./muted[0]"]:value
+	/AgsSoundProvider/AgsAudio[0]/AgsMuteAudio[0]/AgsPort["./muted[0]"]:value
       </listitem>
       <listitem>
 	/AgsSoundProvider/AgsAudio[0]/AgsInput[0]/AgsVolumeChannel[0]/AgsPort["./volume[0]"]:value
