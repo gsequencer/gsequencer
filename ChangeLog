@@ -1,6 +1,7 @@
 ags (2.1.70)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed missing ags_sound_enums.h in API reference manual
 	* fixed OSC server path in docs/oscBook/chap6.xml
 
 ags (2.1.69)
