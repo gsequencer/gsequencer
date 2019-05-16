@@ -505,7 +505,7 @@ ags_osc_meter_controller_monitor_thread(void *ptr)
 	type_tag[0] = ',';
 	type_tag[1] = 's';
 	type_tag[2] = '[';
-	type_tag[port_value_length + 4] = ']';
+	type_tag[port_value_length + 3] = ']';
 
 	if(port_value_type == G_TYPE_DOUBLE){
 	  for(i = 0; i < port_value_length; i++){
