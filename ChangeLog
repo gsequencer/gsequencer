@@ -2,6 +2,7 @@ ags (2.1.71)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* fixed OSC server meter controller type tag boundaries
+	* fixed potential SIGSEGV as expanding OSC meter path
 
 ags (2.1.70)
 

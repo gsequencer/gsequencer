@@ -574,12 +574,14 @@ ags_osc_meter_controller_monitor_thread(void *ptr)
 
 	    value = port->port_value.ags_port_double_ptr[i];
 	    
-	    ags_osc_buffer_util_put_double(packet + packet_size + 3 + (i * 8),
+	    ags_osc_buffer_util_put_double(packet + packet_size + (i * 8),
 					   value);
 	  }
 
 	  pthread_mutex_unlock(port_mutex);
 
+	  packet_size += (port_value_length * 8);
+	  
 	  /* packet size */
 	  ags_osc_buffer_util_put_int32(packet,
 					packet_size);
@@ -3468,7 +3470,8 @@ ags_osc_meter_controller_expand_path_audio(AgsAudio *audio,
   static const size_t max_matches = 3;
   static const size_t index_max_matches = 2;
 
-  if(path == NULL){
+  if(audio == NULL ||
+     path == NULL){
     return;
   }
   
@@ -4045,7 +4048,8 @@ ags_osc_meter_controller_expand_path_channel(AgsChannel *channel,
   static const size_t max_matches = 4;
   static const size_t index_max_matches = 3;
 
-  if(path == NULL){
+  if(channel == NULL ||
+     path == NULL){
     return;
   }
   
@@ -4395,7 +4399,8 @@ ags_osc_meter_controller_expand_path_recall(AgsRecall *recall,
   static const size_t max_matches = 4;
   static const size_t index_max_matches = 3;
   
-  if(path == NULL){
+  if(recall == NULL ||
+     path == NULL){
     return;
   }
   

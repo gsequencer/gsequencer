@@ -19,6 +19,8 @@
 
 #include <ags/audio/osc/ags_osc_buffer_util.h>
 
+#include <glib/gtypes.h>
+
 #include <ags/libags.h>
 
 #include <ags/audio/osc/ags_osc_util.h>
@@ -78,7 +80,7 @@ ags_osc_buffer_util_get_int32(unsigned char *buffer,
   tmp = (guint32) (tmp << 8) + (buffer[3] & 0xff);
   
   if(val != NULL){
-    *val = tmp;
+    val[0] = tmp;
   }
 }
 
@@ -222,7 +224,7 @@ ags_osc_buffer_util_get_float(unsigned char *buffer,
   data.val = (data.val << 8) + (buffer[3] & 0xff);
 
   if(val != NULL){
-    *val = data.ieee_float.v_float;
+    val[0] = data.ieee_float.v_float;
   }
 }
 
@@ -436,7 +438,7 @@ ags_osc_buffer_util_get_int64(unsigned char *buffer,
   tmp = (guint64) (tmp << 8) + (buffer[7] & 0xff);
   
   if(val != NULL){
-    *val = tmp;
+    val[0] = tmp;
   }
 }
 
@@ -506,7 +508,7 @@ ags_osc_buffer_util_get_double(unsigned char *buffer,
   data.val = (guint64) (data.val << 8) + (buffer[7] & 0xff);
 
   if(val != NULL){
-    *val = data.ieee_double.v_double;
+    val[0] = data.ieee_double.v_double;
   }
 }
 
@@ -555,7 +557,7 @@ ags_osc_buffer_util_get_char(unsigned char *buffer,
   tmp = (buffer[3] & 0xff);
 
   if(val != NULL){
-    *val = tmp;
+    val[0] = tmp;
   }
 }
 
