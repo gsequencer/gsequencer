@@ -367,6 +367,8 @@ ags_open_single_file_launch(AgsTask *task)
     
     if(error != NULL){
       g_warning("%s", error->message);
+
+      g_error_free(error);
     }
   }
   

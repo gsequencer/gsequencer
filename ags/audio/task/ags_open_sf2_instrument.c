@@ -556,6 +556,8 @@ ags_open_sf2_instrument_launch(AgsTask *task)
 	
 	if(error != NULL){
 	  g_warning("%s", error->message);
+
+	  g_error_free(error);
 	}
 
 	/* get recycling */

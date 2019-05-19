@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -650,6 +650,8 @@ ags_ladspa_manager_load_default_directory(AgsLadspaManager *ladspa_manager)
 
       ladspa_path++;
 
+      g_error_free(error);
+      
       continue;
     }
 

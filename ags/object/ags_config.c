@@ -799,6 +799,8 @@ ags_config_to_data(AgsConfig *config,
 
   if(error != NULL){
     g_warning("%s", error->message);
+
+    g_error_free(error);
   }
 
   if(buffer != NULL){
@@ -869,6 +871,10 @@ ags_config_save(AgsConfig *config)
 				 &error);
     
     if(error != NULL){
+      g_warning("%s", error->message);
+
+      g_error_free(error);
+      
       //TODO:JK: do recovery
       goto ags_config_save_END;
     }
@@ -881,6 +887,12 @@ ags_config_save(AgsConfig *config)
 			length,
 			&error);
 
+    if(error != NULL){
+      g_warning("%s", error->message);
+
+      g_error_free(error);
+    }
+    
   ags_config_save_END:
     g_free(filename);
   }
@@ -953,6 +965,12 @@ ags_config_real_get_value(AgsConfig *config, gchar *group, gchar *key)
 
   str = g_key_file_get_value(config->key_file, group, key, &error);
 
+  if(error != NULL){
+    g_warning("%s", error->message);
+    
+    g_error_free(error);
+  }
+  
   pthread_mutex_unlock(config_mutex);
 
   return(str);

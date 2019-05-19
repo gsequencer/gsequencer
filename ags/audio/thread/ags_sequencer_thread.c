@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -441,6 +441,8 @@ ags_sequencer_thread_run(AgsThread *thread)
     
     if(error != NULL){
       g_warning("ags_sequencer_thread - %s", error->message);
+
+      g_error_free(error);
     }
   }
 

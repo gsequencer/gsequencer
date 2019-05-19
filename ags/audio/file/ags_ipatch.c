@@ -401,6 +401,8 @@ ags_ipatch_set_property(GObject *gobject,
 
 	if(error != NULL){
 	  g_warning("%s", error->message);
+
+	  g_error_free(error);
 	}
       }
 #endif
@@ -875,6 +877,8 @@ ags_ipatch_open(AgsSoundContainer *sound_container, gchar *filename)
   
   if(error != NULL){
     g_warning("%s", error->message);
+
+    g_error_free(error);
   }
 
   if(handle == NULL){

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -988,6 +988,8 @@ ags_lv2ui_manager_load_default_directory(AgsLv2uiManager *lv2ui_manager)
       g_warning("%s", error->message);
 
       lv2ui_path++;
+
+      g_error_free(error);
 
       continue;
     }

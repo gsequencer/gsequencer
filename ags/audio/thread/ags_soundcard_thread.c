@@ -496,6 +496,8 @@ ags_soundcard_thread_run(AgsThread *thread)
 
 	g_warning("%s",
 		  error->message);
+
+	g_error_free(error);
       }
     }
   }
@@ -514,6 +516,8 @@ ags_soundcard_thread_run(AgsThread *thread)
 
 	g_warning("%s",
 		  error->message);
+
+	g_error_free(error);
       }
     }
   }

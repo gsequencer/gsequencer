@@ -1,11 +1,11 @@
 ags (2.1.73)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented use g_error_free()
 	* improved ref-count of AgsInput:file-link in ags_audio_open_file_as_channel()
 	* improved ref-count of AgsInput:file-link in ags_open_sf2_instrument.c
 	* improved ref-count of AgsInput:file-link in ags_open_sf2_sample.c
 	* improved ref-count of AgsInput:file-link in ags_open_single_file.c
-	* TODO:JK: use g_error_free()
 
 ags (2.1.72)
 

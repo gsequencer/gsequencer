@@ -5674,6 +5674,8 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
 
       if(error != NULL){
 	g_error("%s", error->message);
+
+	g_error_free(error);
       }
       
       channel = channel->next;
@@ -5737,6 +5739,8 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
 	
 	if(error != NULL){
 	  g_error("%s", error->message);
+
+	  g_error_free(error);
 	}
 	
 	channel = channel->next;
@@ -6570,6 +6574,8 @@ ags_audio_real_set_pads(AgsAudio *audio,
 
       if(error != NULL){
 	g_error("%s", error->message);
+
+	g_error_free(error);
       }
 
       channel = channel->next;
@@ -6591,6 +6597,8 @@ ags_audio_real_set_pads(AgsAudio *audio,
 
       if(error != NULL){
 	g_error("%s", error->message);
+
+	g_error_free(error);
       }
 #endif
       
@@ -11434,6 +11442,9 @@ ags_audio_open_audio_file_as_channel(AgsAudio *audio,
 
 	  if(error != NULL){
 	    g_warning("%s", error->message);
+
+
+	    g_error_free(error);
 	  }
 
 	  /* get channel mutex */
