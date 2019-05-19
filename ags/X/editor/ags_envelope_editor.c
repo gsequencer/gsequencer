@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -1141,6 +1141,8 @@ ags_envelope_editor_reset_control(AgsEnvelopeEditor *envelope_editor)
 
     envelope_editor->flags &= (~AGS_ENVELOPE_EDITOR_NO_UPDATE);
 
+    g_error_free(error);
+    
     return;
   }
 
@@ -1164,6 +1166,8 @@ ags_envelope_editor_reset_control(AgsEnvelopeEditor *envelope_editor)
     g_warning("%s", error->message);
 
     envelope_editor->flags &= (~AGS_ENVELOPE_EDITOR_NO_UPDATE);
+
+    g_error_free(error);
 
     return;
   }
@@ -1189,6 +1193,8 @@ ags_envelope_editor_reset_control(AgsEnvelopeEditor *envelope_editor)
 
     envelope_editor->flags &= (~AGS_ENVELOPE_EDITOR_NO_UPDATE);
 
+    g_error_free(error);
+
     return;
   }
 
@@ -1212,6 +1218,8 @@ ags_envelope_editor_reset_control(AgsEnvelopeEditor *envelope_editor)
     g_warning("%s", error->message);
 
     envelope_editor->flags &= (~AGS_ENVELOPE_EDITOR_NO_UPDATE);
+
+    g_error_free(error);
    
     return;
   }
@@ -1236,6 +1244,8 @@ ags_envelope_editor_reset_control(AgsEnvelopeEditor *envelope_editor)
     g_warning("%s", error->message);
 
     envelope_editor->flags &= (~AGS_ENVELOPE_EDITOR_NO_UPDATE);
+
+    g_error_free(error);
 
     return;
   }

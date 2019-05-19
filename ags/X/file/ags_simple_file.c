@@ -1025,6 +1025,8 @@ ags_simple_file_open_filename(AgsSimpleFile *simple_file,
 
   if(error != NULL){
     g_warning("%s", error->message);
+
+    g_error_free(error);
   }
 }
 
@@ -4157,6 +4159,8 @@ ags_simple_file_read_line_launch(AgsFileLaunch *file_launch,
 	
 	if(error != NULL){
 	  g_warning("ags_simple_file_read_line_launch() - %s", error->message);
+
+	  g_error_free(error);
 	}
 
 	break;
@@ -4172,6 +4176,8 @@ ags_simple_file_read_line_launch(AgsFileLaunch *file_launch,
 
 	if(error != NULL){
 	  g_warning("ags_simple_file_read_line_launch() - %s", error->message);
+
+	  g_error_free(error);
 	}
 
 	break;
@@ -4324,6 +4330,8 @@ ags_simple_file_read_channel_line_launch(AgsFileLaunch *file_launch,
 	
 	if(error != NULL){
 	  g_warning("ags_simple_file_read_line_launch() - %s", error->message);
+
+	  g_error_free(error);
 	}
 
 	break;
@@ -4339,6 +4347,8 @@ ags_simple_file_read_channel_line_launch(AgsFileLaunch *file_launch,
 
 	if(error != NULL){
 	  g_warning("ags_simple_file_read_line_launch() - %s", error->message);
+
+	  g_error_free(error);
 	}
 
 	break;

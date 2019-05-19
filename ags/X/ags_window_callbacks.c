@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -70,8 +70,16 @@ ags_window_delete_event_callback(GtkWidget *widget, gpointer data)
       ags_simple_file_rw_open(simple_file,
 			      TRUE,
 			      &error);
+
+      if(error != NULL){
+	g_message("%s", error->message);
+
+	g_error_free(error);
+      }
+      
       ags_simple_file_write(simple_file);
       ags_simple_file_close(simple_file);
+      
       g_object_unref(G_OBJECT(simple_file));
     }else{
       AgsFile *file;
@@ -87,8 +95,16 @@ ags_window_delete_event_callback(GtkWidget *widget, gpointer data)
       ags_file_rw_open(file,
 		       TRUE,
 		       &error);
+
+      if(error != NULL){
+	g_message("%s", error->message);
+
+	g_error_free(error);
+      }
+      
       ags_file_write(file);
       ags_file_close(file);
+      
       g_object_unref(G_OBJECT(file));
     }
   }

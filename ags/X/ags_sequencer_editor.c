@@ -432,9 +432,7 @@ ags_sequencer_editor_reset(AgsApplicable *applicable)
   guint nth;
   gboolean use_alsa;
   gboolean found_card;
-  
-  GError *error;
-  
+    
   sequencer_editor = AGS_SEQUENCER_EDITOR(applicable);
   sequencer = sequencer_editor->sequencer;
   

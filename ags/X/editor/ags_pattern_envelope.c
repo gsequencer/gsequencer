@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -1391,6 +1391,8 @@ ags_pattern_envelope_reset_control(AgsPatternEnvelope *pattern_envelope)
     g_warning("%s", error->message);
 
     pattern_envelope->flags &= (~AGS_PATTERN_ENVELOPE_NO_UPDATE);
+
+    g_error_free(error);
     
     return;
   }
@@ -1415,6 +1417,8 @@ ags_pattern_envelope_reset_control(AgsPatternEnvelope *pattern_envelope)
 
     pattern_envelope->flags &= (~AGS_PATTERN_ENVELOPE_NO_UPDATE);
 
+    g_error_free(error);
+
     return;
   }
 
@@ -1437,6 +1441,8 @@ ags_pattern_envelope_reset_control(AgsPatternEnvelope *pattern_envelope)
     g_warning("%s", error->message);
 
     pattern_envelope->flags &= (~AGS_PATTERN_ENVELOPE_NO_UPDATE);
+
+    g_error_free(error);
 
     return;
   }
@@ -1461,6 +1467,8 @@ ags_pattern_envelope_reset_control(AgsPatternEnvelope *pattern_envelope)
 
     pattern_envelope->flags &= (~AGS_PATTERN_ENVELOPE_NO_UPDATE);
 
+    g_error_free(error);
+
     return;
   }
 
@@ -1483,6 +1491,8 @@ ags_pattern_envelope_reset_control(AgsPatternEnvelope *pattern_envelope)
     g_warning("%s", error->message);
 
     pattern_envelope->flags &= (~AGS_PATTERN_ENVELOPE_NO_UPDATE);
+
+    g_error_free(error);
 
     return;
   }
@@ -1698,6 +1708,8 @@ ags_pattern_envelope_plot(AgsPatternEnvelope *pattern_envelope)
 
 	if(error != NULL){
 	  g_warning("%s", error->message);
+
+	  g_error_free(error);
 	  
 	  continue;
 	}
@@ -1718,6 +1730,8 @@ ags_pattern_envelope_plot(AgsPatternEnvelope *pattern_envelope)
 
 	if(error != NULL){
 	  g_warning("%s", error->message);
+
+	  g_error_free(error);
 	  
 	  continue;
 	}
@@ -1739,6 +1753,8 @@ ags_pattern_envelope_plot(AgsPatternEnvelope *pattern_envelope)
 
 	if(error != NULL){
 	  g_warning("%s", error->message);
+
+	  g_error_free(error);
 	  
 	  continue;
 	}
@@ -1760,6 +1776,8 @@ ags_pattern_envelope_plot(AgsPatternEnvelope *pattern_envelope)
 
 	if(error != NULL){
 	  g_warning("%s", error->message);
+
+	  g_error_free(error);
 	  
 	  continue;
 	}
@@ -1781,6 +1799,8 @@ ags_pattern_envelope_plot(AgsPatternEnvelope *pattern_envelope)
 
 	if(error != NULL){
 	  g_warning("%s", error->message);
+
+	  g_error_free(error);
 	  
 	  continue;
 	}

@@ -456,8 +456,6 @@ ags_link_collection_editor_apply(AgsApplicable *applicable)
     guint first_line, count;
     guint i;
 
-    GError *error;
-
     machine_editor = AGS_MACHINE_EDITOR(gtk_widget_get_ancestor(GTK_WIDGET(link_collection_editor),
 								AGS_TYPE_MACHINE_EDITOR));
     machine = machine_editor->machine;
@@ -501,8 +499,6 @@ ags_link_collection_editor_apply(AgsApplicable *applicable)
     task = NULL;
 
     count = (guint) gtk_spin_button_get_value_as_int(link_collection_editor->count);
-
-    error = NULL;
 
     if(link_machine == NULL){
       next_channel = NULL;

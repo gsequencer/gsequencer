@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -965,6 +965,10 @@ ags_gui_thread_launch_filename(AgsGuiThread *gui_thread,
 				     filename,
 				     error);
       ags_application_context_quit(application_context);
+
+      g_message("%s", error->message);
+      
+      g_error_free(error);
     }
           
     /* autosave thread */
@@ -1110,6 +1114,11 @@ ags_gui_thread_timer_launch_filename(AgsGuiThread *gui_thread,
       ags_gui_thread_show_file_error((AgsGuiThread *) gui_thread,
 				     filename,
 				     error);
+
+      g_message("%s", error->message);
+      
+      g_error_free(error);
+
       exit(-1);
     }
 

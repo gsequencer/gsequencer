@@ -108,6 +108,12 @@ ags_menu_action_open_response_callback(GtkFileChooserDialog *file_chooser, gint 
     g_spawn_command_line_async(str,
 			       &error);
 
+    if(error != NULL){
+      g_message("%s", error->message);
+
+      g_error_free(error);
+    }
+    
     g_free(filename);
     g_free(str);
   }
@@ -141,8 +147,16 @@ ags_menu_action_save_callback(GtkWidget *menu_item, gpointer data)
     ags_simple_file_rw_open(simple_file,
 			    TRUE,
 			    &error);
+
+    if(error != NULL){
+      g_message("%s", error->message);
+
+      g_error_free(error);
+    }
+    
     ags_simple_file_write(simple_file);
     ags_simple_file_close(simple_file);
+
     g_object_unref(G_OBJECT(simple_file));
   }else{
     AgsFile *file;
@@ -156,8 +170,16 @@ ags_menu_action_save_callback(GtkWidget *menu_item, gpointer data)
     ags_file_rw_open(file,
 		     TRUE,
 		     &error);
+
+    if(error != NULL){
+      g_message("%s", error->message);
+
+      g_error_free(error);
+    }
+
     ags_file_write(file);
     ags_file_close(file);
+
     g_object_unref(G_OBJECT(file));
   }
 }
@@ -209,8 +231,16 @@ ags_menu_action_save_as_callback(GtkWidget *menu_item, gpointer data)
       ags_simple_file_rw_open(simple_file,
 			      TRUE,
 			      &error);
+
+      if(error != NULL){
+	g_message("%s", error->message);
+
+	g_error_free(error);
+      }
+      
       ags_simple_file_write(simple_file);
       ags_simple_file_close(simple_file);
+
       g_object_unref(G_OBJECT(simple_file));
     }else{
       AgsFile *file;
@@ -224,6 +254,13 @@ ags_menu_action_save_as_callback(GtkWidget *menu_item, gpointer data)
       ags_file_rw_open(file,
 		       TRUE,
 		       &error);
+      
+      if(error != NULL){
+	g_message("%s", error->message);
+
+	g_error_free(error);
+      }
+
       ags_file_write(file);
       ags_file_close(file);
       g_object_unref(G_OBJECT(file));
@@ -1287,6 +1324,12 @@ ags_menu_action_about_callback(GtkWidget *menu_item, gpointer data)
 				      &error);
   
       //g_free(logo_filename);
+
+      if(error != NULL){
+	g_message("%s", error->message);
+
+	g_error_free(error);
+      }
   
     }
   }

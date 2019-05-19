@@ -319,8 +319,6 @@ ags_sf2_chooser_open(AgsSF2Chooser *sf2_chooser, gchar *filename)
   gchar **instrument;
   gchar **sample;
 
-  GError *error;
-
   /* clear preset, instrument and sample*/
   gtk_list_store_clear(GTK_LIST_STORE(sf2_chooser->preset));
   gtk_list_store_clear(GTK_LIST_STORE(sf2_chooser->instrument));

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -162,6 +162,8 @@ ags_soundcard_editor_card_changed_callback(GtkComboBox *combo,
     gtk_spin_button_set_range(soundcard_editor->buffer_size, 1.0, 65535.0);
 
     soundcard_editor->flags &= (~AGS_SOUNDCARD_EDITOR_BLOCK_CARD);
+
+    g_error_free(error);
     
     return;
   }

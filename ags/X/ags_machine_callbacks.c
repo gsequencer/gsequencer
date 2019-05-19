@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -683,10 +683,17 @@ ags_machine_open_extended_response_callback(GtkWidget *widget, gint response, Ag
 	  /* adding lost files */
 	  //TODO:JK: figure out if you need to copy the GSList of filenames
 	  gtk_file_chooser_select_all(GTK_FILE_CHOOSER(file_chooser));
-	  
+
+	  error = NULL;
 	  current_directory = g_dir_open(current_folder,
 					 0,
 					 &error);
+
+	  if(error != NULL){
+	    g_message("%s", error->message);
+
+	    g_error_free(error);
+	  }
 	  
 	  while((current_filename = (gchar *) g_dir_read_name(current_directory)) != NULL){
 	    if(!g_strcmp0(".", current_filename) ||
