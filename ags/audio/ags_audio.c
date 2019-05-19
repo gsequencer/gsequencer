@@ -11567,7 +11567,7 @@ ags_audio_open_audio_file_as_channel(AgsAudio *audio,
 
 	  g_object_unref(file_link);
 	}
-	  
+	
 	g_object_set(file_link,
 		     "filename", filename->data,
 		     "audio-channel", j,

@@ -1,3 +1,8 @@
+ags (2.1.73)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved ref-count of AgsInput:file-link in ags_audio_open_file_as_channel()
+
 ags (2.1.72)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
