@@ -40,6 +40,8 @@
 #include <string.h>
 #include <strings.h>
 
+#include <math.h>
+
 #include <sys/types.h>
 #include <regex.h>
 
@@ -268,19 +270,49 @@ ags_osc_meter_controller_class_init(AgsOscMeterControllerClass *osc_meter_contro
 void
 ags_osc_meter_controller_init(AgsOscMeterController *osc_meter_controller)
 {
+  AgsConfig *config;
+
+  gchar *str;
+
+  gdouble monitor_timeout;
+  
   g_object_set(osc_meter_controller,
 	       "context-path", "/meter",
 	       NULL);
 
   osc_meter_controller->flags = 0;
 
+  config = ags_config_get_instance();
+
+  /* monitor timeout */
   osc_meter_controller->monitor_timeout = (struct timespec *) malloc(sizeof(struct timespec));
 
-  osc_meter_controller->monitor_timeout->tv_sec = 0;
-  osc_meter_controller->monitor_timeout->tv_nsec = NSEC_PER_SEC / 30;
+  monitor_timeout = AGS_OSC_METER_CONTROLLER_DEFAULT_MONITOR_TIMEOUT;
+
+  str = ags_config_get_value(config,
+			     AGS_CONFIG_OSC_SERVER,
+			     "monitor-timeout");
+
+  if(str == NULL){
+    str = ags_config_get_value(config,
+			       AGS_CONFIG_OSC_SERVER_0,
+			       "monitor-timeout");
+  }
   
+  if(str != NULL){
+    monitor_timeout = g_ascii_strtod(str,
+				     NULL);
+    
+    free(str);
+  }
+
+  osc_meter_controller->monitor_timeout->tv_sec = floor(monitor_timeout);
+  osc_meter_controller->monitor_timeout->tv_nsec = (monitor_timeout - floor(monitor_timeout)) * NSEC_PER_SEC;
+
+  /* monitor thread */
   osc_meter_controller->monitor_thread = (pthread_t *) malloc(sizeof(pthread_t));
-  
+
+  /* monitor structs */
   osc_meter_controller->monitor = NULL;
 }
 

@@ -1,3 +1,8 @@
+ags (2.1.72)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented OSC meter refresh rate option
+
 ags (2.1.71)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

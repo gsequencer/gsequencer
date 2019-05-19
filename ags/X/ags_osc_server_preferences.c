@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -43,12 +43,12 @@ void ags_osc_server_preferences_reset(AgsApplicable *applicable);
 
 /**
  * SECTION:ags_osc_server_preferences
- * @short_description: A composite widget to do osc_server related preferences
+ * @short_description: A composite widget to do OSC server related preferences
  * @title: AgsOscServerPreferences
  * @section_id: 
  * @include: ags/X/ags_osc_server_preferences.h
  *
- * #AgsOscServerPreferences enables you to make osc_server related preferences.
+ * #AgsOscServerPreferences enables you to make OSC server related preferences.
  */
 
 static gpointer ags_osc_server_preferences_parent_class = NULL;
@@ -154,7 +154,7 @@ ags_osc_server_preferences_init(AgsOscServerPreferences *osc_server_preferences)
 		     2);
 
   /* table */
-  table = (GtkTable *) gtk_table_new(2, 8,
+  table = (GtkTable *) gtk_table_new(2, 9,
 				     FALSE);
   gtk_box_pack_start(GTK_BOX(osc_server_preferences),
 		     GTK_WIDGET(table),
@@ -288,6 +288,30 @@ ags_osc_server_preferences_init(AgsOscServerPreferences *osc_server_preferences)
 		   0, 0);
 
   g_free(str);
+
+  /* monitor timeout */
+  label = (GtkLabel *) g_object_new(GTK_TYPE_LABEL,
+				    "label", i18n("monitor timeout"),
+				    "xalign", 0.0,
+				    NULL);
+  gtk_table_attach(table,
+		   GTK_WIDGET(label),
+		   0, 1,
+		   8, 9,
+		   GTK_FILL, GTK_FILL,
+		   0, 0);
+
+  osc_server_preferences->monitor_timeout = (GtkSpinButton *) gtk_spin_button_new_with_range(0.000001, 10.0, 0.0001);
+  gtk_spin_button_set_digits(osc_server_preferences->monitor_timeout,
+			     9);
+  gtk_spin_button_set_value(osc_server_preferences->monitor_timeout,
+			    AGS_OSC_METER_CONTROLLER_DEFAULT_MONITOR_TIMEOUT);
+  gtk_table_attach(table,
+		   GTK_WIDGET(osc_server_preferences->monitor_timeout),
+		   1, 2,
+		   8, 9,
+		   GTK_FILL, GTK_FILL,
+		   0, 0);
 }
 
 void
@@ -514,6 +538,15 @@ ags_osc_server_preferences_apply(AgsApplicable *applicable)
 		       AGS_CONFIG_OSC_SERVER,
 		       "server-port",
 		       str);
+
+  /* monitor timeout */
+  str = g_strdup_printf("%f",
+			gtk_spin_button_get_value(osc_server_preferences->monitor_timeout));
+  
+  ags_config_set_value(config,
+		       AGS_CONFIG_OSC_SERVER,
+		       "monitor-timeout",
+		       str);
 }
 
 void
@@ -622,6 +655,17 @@ ags_osc_server_preferences_reset(AgsApplicable *applicable)
   if(str != NULL){
     gtk_entry_set_text(osc_server_preferences->port,
 		       str);
+  }
+
+  /* monitor timeout */
+  str = ags_config_get_value(config,
+			     AGS_CONFIG_OSC_SERVER,
+			     "monitor-timeout");
+
+  if(str != NULL){
+    gtk_spin_button_set_value(osc_server_preferences->monitor_timeout,
+			      g_ascii_strtod(str,
+					     NULL));
   }
   
   /* unblock update */
