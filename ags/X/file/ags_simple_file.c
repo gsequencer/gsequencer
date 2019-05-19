@@ -4122,6 +4122,8 @@ ags_simple_file_read_line_launch(AgsFileLaunch *file_launch,
 		 "file-link", file_link,
 		 NULL);
 
+    g_object_unref(file_link);
+
     if(audio_signal_list != NULL){
       AGS_AUDIO_SIGNAL(audio_signal_list->data)->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;
       
@@ -4286,6 +4288,8 @@ ags_simple_file_read_channel_line_launch(AgsFileLaunch *file_launch,
     g_object_set(G_OBJECT(channel),
 		 "file-link", file_link,
 		 NULL);
+
+    g_object_unref(file_link);
 
     if(audio_signal_list != NULL){
       AGS_AUDIO_SIGNAL(audio_signal_list->data)->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;
