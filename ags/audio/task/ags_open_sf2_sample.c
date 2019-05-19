@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -574,8 +574,6 @@ ags_open_sf2_sample_launch(AgsTask *task)
       g_object_set(channel,
 		   "file-link", file_link,
 		   NULL);
-    }else{
-      g_object_unref(file_link);
     }
     
     g_object_set(file_link,
@@ -585,6 +583,8 @@ ags_open_sf2_sample_launch(AgsTask *task)
 		 "sample", open_sf2_sample->sample,
 		 "audio-channel", open_sf2_sample->audio_channel,
 		 NULL);
+
+    g_object_unref(file_link);
   }
 
   /* add as template */

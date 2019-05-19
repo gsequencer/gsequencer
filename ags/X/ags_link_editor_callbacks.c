@@ -106,6 +106,8 @@ ags_link_editor_parent_set_callback(GtkWidget *widget, GtkObject *old_parent, Ag
 					  &iter);
 
 	    g_free(filename);
+
+	    g_object_unref(file_link);
 	  }else{
 	    gtk_list_store_set(GTK_LIST_STORE(model), &iter,
 			       0, "file://",
