@@ -6,6 +6,7 @@ ags (2.1.73)
 	* improved ref-count of AgsInput:file-link in ags_open_sf2_instrument.c
 	* improved ref-count of AgsInput:file-link in ags_open_sf2_sample.c
 	* improved ref-count of AgsInput:file-link in ags_open_single_file.c
+	* fixed potential SIGSEGV cause by attack larger than buffer size in ags_synth_generator.c
 
 ags (2.1.72)
 
