@@ -966,7 +966,7 @@ ags_config_real_get_value(AgsConfig *config, gchar *group, gchar *key)
   str = g_key_file_get_value(config->key_file, group, key, &error);
 
   if(error != NULL){
-    g_warning("%s", error->message);
+//    g_warning("%s", error->message);
     
     g_error_free(error);
   }

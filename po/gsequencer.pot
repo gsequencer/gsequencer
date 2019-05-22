@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: gsequencer 2.1.72\n"
+"Project-Id-Version: gsequencer 2.1.73\n"
 "Report-Msgid-Bugs-To: jkraehemann@gmail.com\n"
-"POT-Creation-Date: 2019-05-19 18:10+0200\n"
+"POT-Creation-Date: 2019-05-22 17:57+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -284,11 +284,11 @@ msgstr ""
 msgid "first link line"
 msgstr ""
 
-#: ags/X/ags_link_editor_callbacks.c:198
+#: ags/X/ags_link_editor_callbacks.c:200
 msgid "select audio file"
 msgstr ""
 
-#: ags/X/ags_link_editor_callbacks.c:213
+#: ags/X/ags_link_editor_callbacks.c:215
 msgid "audio channel: "
 msgstr ""
 
@@ -779,7 +779,7 @@ msgid "ratio"
 msgstr ""
 
 #: ags/X/editor/ags_envelope_editor_callbacks.c:51
-#: ags/X/editor/ags_pattern_envelope_callbacks.c:1042
+#: ags/X/editor/ags_pattern_envelope_callbacks.c:1060
 msgid "preset name"
 msgstr ""
 
