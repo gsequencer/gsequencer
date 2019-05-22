@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -59,6 +59,8 @@ struct _AgsOscServerPreferences
   GtkEntry *ip6_address;
 
   GtkEntry *port;
+
+  GtkSpinButton *monitor_timeout;
 };
 
 struct _AgsOscServerPreferencesClass

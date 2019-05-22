@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -361,6 +361,8 @@ ags_pattern_envelope_attack_x_callback(GtkWidget *range,
   if(error != NULL){
     g_message("%s", error->message);
 
+    g_error_free(error);
+    
     return;
   }
   
@@ -415,6 +417,8 @@ ags_pattern_envelope_attack_y_callback(GtkWidget *range,
   if(error != NULL){
     g_message("%s", error->message);
 
+    g_error_free(error);
+    
     return;
   }
   
@@ -469,6 +473,8 @@ ags_pattern_envelope_decay_x_callback(GtkWidget *range,
   if(error != NULL){
     g_message("%s", error->message);
 
+    g_error_free(error);
+    
     return;
   }
   
@@ -523,6 +529,8 @@ ags_pattern_envelope_decay_y_callback(GtkWidget *range,
   if(error != NULL){
     g_message("%s", error->message);
 
+    g_error_free(error);
+    
     return;
   }
   
@@ -577,6 +585,8 @@ ags_pattern_envelope_sustain_x_callback(GtkWidget *range,
   if(error != NULL){
     g_message("%s", error->message);
 
+    g_error_free(error);
+    
     return;
   }
   
@@ -631,6 +641,8 @@ ags_pattern_envelope_sustain_y_callback(GtkWidget *range,
   if(error != NULL){
     g_message("%s", error->message);
 
+    g_error_free(error);
+    
     return;
   }
   
@@ -685,6 +697,8 @@ ags_pattern_envelope_release_x_callback(GtkWidget *range,
   if(error != NULL){
     g_message("%s", error->message);
 
+    g_error_free(error);
+    
     return;
   }
   
@@ -739,6 +753,8 @@ ags_pattern_envelope_release_y_callback(GtkWidget *range,
   if(error != NULL){
     g_message("%s", error->message);
 
+    g_error_free(error);
+    
     return;
   }
   
@@ -793,6 +809,8 @@ ags_pattern_envelope_ratio_callback(GtkWidget *range,
   if(error != NULL){
     g_message("%s", error->message);
 
+    g_error_free(error);
+    
     return;
   }
   

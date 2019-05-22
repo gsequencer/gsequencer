@@ -647,8 +647,6 @@ ags_ffplayer_launch_task(AgsFileLaunch *file_launch, AgsFFPlayer *ffplayer)
     
     gchar **preset, **instrument, *selected;
 
-    GError *error;
-
     /* clear preset, instrument and sample*/
     gtk_list_store_clear(GTK_LIST_STORE(gtk_combo_box_get_model(GTK_COMBO_BOX(ffplayer->instrument))));
 
@@ -1818,8 +1816,6 @@ ags_ffplayer_load_preset(AgsFFPlayer *ffplayer)
   
   gchar **preset;
 
-  GError *error;
-
   if(!AGS_IS_FFPLAYER(ffplayer) ||
      ffplayer->audio_container == NULL ||
      ffplayer->audio_container->sound_container == NULL){
@@ -1850,8 +1846,6 @@ ags_ffplayer_load_instrument(AgsFFPlayer *ffplayer)
   gchar **instrument;
 
   gint position;
-  
-  GError *error;
   
   if(!AGS_IS_FFPLAYER(ffplayer) ||
      ffplayer->audio_container == NULL ||

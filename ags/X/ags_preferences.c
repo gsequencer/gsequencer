@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -291,7 +291,6 @@ ags_preferences_apply(AgsApplicable *applicable)
   uid_t uid;
 
   gchar **argv;
-  GError *error;
 
   preferences = AGS_PREFERENCES(applicable);
   

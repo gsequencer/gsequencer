@@ -1,4 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
+<!-- Copyright (C) 2005-2019 Jo\u00EBl Kr\u00E4hemann -->
+<!-- Copying and distribution of this file, with or without modification, -->
+<!-- are permitted in any medium without royalty provided the copyright -->
+<!-- notice and this notice are preserved.  This file is offered as-is, -->
+<!-- without any warranty. -->
+
 <mime-info xmlns="http://www.freedesktop.org/standards/shared-mime-info">
   <mime-type type="application/xml">
     <glob pattern="*.xml"/>

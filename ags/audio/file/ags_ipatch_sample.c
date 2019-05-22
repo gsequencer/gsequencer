@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -938,6 +938,8 @@ ags_ipatch_sample_read(AgsSoundResource *sound_resource,
 
   if(error != NULL){
     g_message("%s", error->message);
+
+    g_error_free(error);
   }
   
   ags_audio_buffer_util_copy_buffer_to_buffer(dbuffer, daudio_channels, 0,
@@ -1042,6 +1044,12 @@ ags_ipatch_sample_write(AgsSoundResource *sound_resource,
 				    &error);
     }
     break;
+  }
+
+  if(error != NULL){
+    g_message("%s", error->message);
+
+    g_error_free(error);
   }
   
   ipatch_sample->offset += frame_count;

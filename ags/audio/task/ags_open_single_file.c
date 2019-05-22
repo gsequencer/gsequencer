@@ -367,6 +367,8 @@ ags_open_single_file_launch(AgsTask *task)
     
     if(error != NULL){
       g_warning("%s", error->message);
+
+      g_error_free(error);
     }
   }
   
@@ -383,8 +385,6 @@ ags_open_single_file_launch(AgsTask *task)
       g_object_set(channel,
 		   "file-link", file_link,
 		   NULL);
-    }else{
-      g_object_unref(file_link);
     }
     
     g_object_set(file_link,
@@ -394,6 +394,8 @@ ags_open_single_file_launch(AgsTask *task)
 		 "sample", NULL,
 		 "audio-channel", open_single_file->audio_channel,
 		 NULL);
+
+    g_object_unref(file_link);
   }
 
   /* add as template */

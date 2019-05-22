@@ -5674,6 +5674,8 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
 
       if(error != NULL){
 	g_error("%s", error->message);
+
+	g_error_free(error);
       }
       
       channel = channel->next;
@@ -5737,6 +5739,8 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
 	
 	if(error != NULL){
 	  g_error("%s", error->message);
+
+	  g_error_free(error);
 	}
 	
 	channel = channel->next;
@@ -6570,6 +6574,8 @@ ags_audio_real_set_pads(AgsAudio *audio,
 
       if(error != NULL){
 	g_error("%s", error->message);
+
+	g_error_free(error);
       }
 
       channel = channel->next;
@@ -6591,6 +6597,8 @@ ags_audio_real_set_pads(AgsAudio *audio,
 
       if(error != NULL){
 	g_error("%s", error->message);
+
+	g_error_free(error);
       }
 #endif
       
@@ -11434,6 +11442,9 @@ ags_audio_open_audio_file_as_channel(AgsAudio *audio,
 
 	  if(error != NULL){
 	    g_warning("%s", error->message);
+
+
+	    g_error_free(error);
 	  }
 
 	  /* get channel mutex */
@@ -11460,6 +11471,8 @@ ags_audio_open_audio_file_as_channel(AgsAudio *audio,
 	    g_object_set(channel,
 			 "file-link", file_link,
 			 NULL);
+
+	    g_object_unref(file_link);
 	  }
 	  
 	  g_object_set(file_link,
@@ -11536,6 +11549,8 @@ ags_audio_open_audio_file_as_channel(AgsAudio *audio,
       for(j = 0; j < audio_channels && audio_signal != NULL; j++){
 	AgsRecycling *recycling;
 	
+	AgsFileLink *file_link;
+	
 	/* get channel mutex */
 	pthread_mutex_lock(ags_channel_get_class_mutex());
 	  
@@ -11547,8 +11562,27 @@ ags_audio_open_audio_file_as_channel(AgsAudio *audio,
 	pthread_mutex_lock(channel_mutex);
 
 	recycling = channel->first_recycling;
+
+	file_link = AGS_INPUT(channel)->file_link;
 	
 	pthread_mutex_unlock(channel_mutex);
+
+	/* set filename and channel */
+	if(file_link == NULL){
+	  file_link = g_object_new(AGS_TYPE_AUDIO_FILE_LINK,
+				   NULL);
+      
+	  g_object_set(channel,
+		       "file-link", file_link,
+		       NULL);
+
+	  g_object_unref(file_link);
+	}
+	
+	g_object_set(file_link,
+		     "filename", filename->data,
+		     "audio-channel", j,
+		     NULL);
 
 	/* get recycling mutex */
 	pthread_mutex_lock(ags_recycling_get_class_mutex());

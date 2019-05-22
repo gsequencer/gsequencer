@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -222,6 +222,10 @@ ags_window_init(AgsWindow *window)
   	       NULL);
   g_free(str);
 
+  if(error != NULL){
+    g_error_free(error);
+  }
+  
   window->application_context = NULL;
   window->application_mutex = NULL;
   
@@ -843,6 +847,10 @@ ags_window_load_file_timeout(AgsWindow *window)
       error = NULL;
       ags_simple_file_open(simple_file,
 			   &error);
+
+      if(error != NULL){
+	g_error_free(error);
+      }
 
       ags_simple_file_read(simple_file);
       ags_simple_file_close(simple_file);

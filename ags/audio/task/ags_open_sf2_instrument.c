@@ -556,6 +556,8 @@ ags_open_sf2_instrument_launch(AgsTask *task)
 	
 	if(error != NULL){
 	  g_warning("%s", error->message);
+
+	  g_error_free(error);
 	}
 
 	/* get recycling */
@@ -573,8 +575,6 @@ ags_open_sf2_instrument_launch(AgsTask *task)
 	  g_object_set(channel,
 		       "file-link", file_link,
 		       NULL);
-	}else{
-	  g_object_unref(file_link);
 	}
 	  
 	g_object_set(file_link,
@@ -584,6 +584,8 @@ ags_open_sf2_instrument_launch(AgsTask *task)
 		     "sample", ipatch_sf2_sample_get_name(AGS_IPATCH_SAMPLE(list->data)->sample),
 		     "audio-channel", j,
 		     NULL);	
+
+	g_object_unref(file_link);
 	
 	/* replace template audio signal */
 	AGS_AUDIO_SIGNAL(audio_signal->data)->flags |= AGS_AUDIO_SIGNAL_TEMPLATE;

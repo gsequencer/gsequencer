@@ -1205,6 +1205,12 @@ ags_file_read_channel_resolve_link(AgsFileLookup *file_lookup,
       ags_channel_set_link(channel,
 			   (AgsChannel *) id_ref->ref,
 			   &error);
+
+      if(error != NULL){
+	g_message("%s", error->message);
+
+	g_error_free(error);
+      }
     }
   }
 }

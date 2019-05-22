@@ -1040,6 +1040,10 @@ ags_soundcard_editor_reset(AgsApplicable *applicable)
       samplerate_max = 192000.0;
       buffer_size_min = 2.0;
       buffer_size_max = 65535.0;
+
+      g_message("%s", error);
+      
+      g_error_free(error);
     }
   }else{
     channels_min = 0.0;

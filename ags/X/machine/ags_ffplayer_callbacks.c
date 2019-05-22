@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -164,8 +164,6 @@ ags_ffplayer_instrument_changed_callback(GtkComboBox *instrument, AgsFFPlayer *f
   
   gint position;
   
-  GError *error;
-
   if((AGS_FFPLAYER_NO_LOAD & (ffplayer->flags)) != 0 ||
      ffplayer->audio_container == NULL||
      ffplayer->audio_container->sound_container == NULL){

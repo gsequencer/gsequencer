@@ -10,6 +10,46 @@ ags (2.2.x)
 	* TODO:JK: implement Music XML support
 	* TODO:JK: implement file bundle embedding plugins and audio data
 
+ags (2.1.73)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented use g_error_free()
+	* improved ref-count of AgsInput:file-link in ags_audio_open_file_as_channel()
+	* improved ref-count of AgsInput:file-link in ags_open_sf2_instrument.c
+	* improved ref-count of AgsInput:file-link in ags_open_sf2_sample.c
+	* improved ref-count of AgsInput:file-link in ags_open_single_file.c
+	* fixed potential SIGSEGV cause by attack larger than buffer size in ags_synth_generator.c
+
+ags (2.1.72)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented OSC meter refresh rate option
+
+ags (2.1.71)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed OSC server meter controller type tag boundaries
+	* fixed potential SIGSEGV as expanding OSC meter path
+
+ags (2.1.70)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed missing ags_sound_enums.h in API reference manual
+	* fixed OSC server path in docs/oscBook/chap6.xml
+
+ags (2.1.69)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* configure.ac (AM_GNU_GETTEXT_VERSION): Bump to 0.19.8.
+	* fixed non thread-safe ags_audio_loop_get_type()
+	* fixed non thread-safe ags_audio_thread_get_type()
+	* fixed non thread-safe ags_channel_thread_get_type()
+	* fixed non thread-safe ags_soundcard_thread_get_type()
+	* fixed non thread-safe ags_sequencer_thread_get_type()
+	* fixed non thread-safe ags_export_thread_get_type()
+	* fixed missing apply of AgsFileLink for create_channels in ags_audio_open_audio_file_as_channel()
+	* fixed type float for modifying pattern bank index of AgsDrum and AgsMatrix
+
 ags (2.1.68)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -154,6 +154,8 @@ ags_envelope_editor_attack_x_callback(GtkWidget *range, AgsEnvelopeEditor *envel
   if(error != NULL){
     g_message("%s", error->message);
 
+    g_error_free(error);
+
     return;
   }
   
@@ -206,6 +208,8 @@ ags_envelope_editor_attack_y_callback(GtkWidget *range, AgsEnvelopeEditor *envel
 
   if(error != NULL){
     g_message("%s", error->message);
+
+    g_error_free(error);
 
     return;
   }
@@ -260,6 +264,8 @@ ags_envelope_editor_decay_x_callback(GtkWidget *range, AgsEnvelopeEditor *envelo
   if(error != NULL){
     g_message("%s", error->message);
 
+    g_error_free(error);
+
     return;
   }
   
@@ -312,6 +318,8 @@ ags_envelope_editor_decay_y_callback(GtkWidget *range, AgsEnvelopeEditor *envelo
 
   if(error != NULL){
     g_message("%s", error->message);
+
+    g_error_free(error);
 
     return;
   }
@@ -366,6 +374,8 @@ ags_envelope_editor_sustain_x_callback(GtkWidget *range, AgsEnvelopeEditor *enve
   if(error != NULL){
     g_message("%s", error->message);
 
+    g_error_free(error);
+
     return;
   }
   
@@ -418,6 +428,8 @@ ags_envelope_editor_sustain_y_callback(GtkWidget *range, AgsEnvelopeEditor *enve
 
   if(error != NULL){
     g_message("%s", error->message);
+
+    g_error_free(error);
 
     return;
   }
@@ -472,6 +484,8 @@ ags_envelope_editor_release_x_callback(GtkWidget *range, AgsEnvelopeEditor *enve
   if(error != NULL){
     g_message("%s", error->message);
 
+    g_error_free(error);
+
     return;
   }
   
@@ -525,6 +539,8 @@ ags_envelope_editor_release_y_callback(GtkWidget *range, AgsEnvelopeEditor *enve
   if(error != NULL){
     g_message("%s", error->message);
 
+    g_error_free(error);
+
     return;
   }
   
@@ -577,6 +593,8 @@ ags_envelope_editor_ratio_callback(GtkWidget *range, AgsEnvelopeEditor *envelope
 
   if(error != NULL){
     g_message("%s", error->message);
+
+    g_error_free(error);
 
     return;
   }

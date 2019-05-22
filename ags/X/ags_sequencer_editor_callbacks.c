@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -76,8 +76,6 @@ ags_sequencer_editor_card_changed_callback(GtkComboBox *combo,
   guint channels, channels_min, channels_max;
   guint rate, rate_min, rate_max;
   guint buffer_size, buffer_size_min, buffer_size_max;
-
-  GError *error;
 
   sequencer = sequencer_editor->sequencer;
 

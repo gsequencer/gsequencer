@@ -8,7 +8,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.69])
-AC_INIT([gsequencer],[2.1.68],[jkraehemann@gmail.com])
+AC_INIT([gsequencer],[2.1.73],[jkraehemann@gmail.com])
 AM_INIT_AUTOMAKE([subdir-objects])
 AC_CONFIG_SRCDIR([ags/config.h.in])
 AC_CONFIG_HEADERS([ags/config.h])
@@ -16,7 +16,7 @@ AC_CONFIG_HEADERS([ags/ags_config.h])
 AC_CONFIG_MACRO_DIR([m4])
 
 AM_GNU_GETTEXT([external])
-AM_GNU_GETTEXT_VERSION([0.19.7])
+AM_GNU_GETTEXT_VERSION([0.19.8])
 
 # options
 AC_ARG_ENABLE(strip-rt-events, [AS_HELP_STRING([--enable-strip-rt-events],

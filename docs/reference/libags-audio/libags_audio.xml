@@ -101,6 +101,7 @@
 	The utility functions do common tasks.
       </para>
 
+      <xi:include href="xml/ags_sound_enums.xml"/>
       <xi:include href="xml/ags_soundcard_util.xml"/>
       <xi:include href="xml/ags_sequencer_util.xml"/>
       <xi:include href="xml/ags_char_buffer_util.xml"/>

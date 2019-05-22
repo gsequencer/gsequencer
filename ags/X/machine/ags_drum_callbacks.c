@@ -287,10 +287,10 @@ ags_drum_index0_callback(GtkWidget *widget, AgsDrum *drum)
 	GValue value = {0,};
 
 	g_value_init(&value,
-		     G_TYPE_UINT64);
+		     G_TYPE_FLOAT);
 	
-	g_value_set_uint64(&value,
-			   index0);
+	g_value_set_float(&value,
+			  (gfloat) index0);
 
 	copy_pattern_audio = AGS_COPY_PATTERN_AUDIO(list->data);
 	g_object_get(copy_pattern_audio,
@@ -320,10 +320,10 @@ ags_drum_index0_callback(GtkWidget *widget, AgsDrum *drum)
 	GValue value = {0,};
 
 	g_value_init(&value,
-		     G_TYPE_UINT64);
+		     G_TYPE_FLOAT);
 	
-	g_value_set_uint64(&value,
-			   index0);
+	g_value_set_float(&value,
+			  (gfloat) index0);
 
 	copy_pattern_audio = AGS_COPY_PATTERN_AUDIO(list->data);
 	g_object_get(copy_pattern_audio,
@@ -392,10 +392,10 @@ ags_drum_index1_callback(GtkWidget *widget, AgsDrum *drum)
 	GValue value = {0,};
 
 	g_value_init(&value,
-		     G_TYPE_UINT64);
+		     G_TYPE_FLOAT);
 	
-	g_value_set_uint64(&value,
-			   index1);
+	g_value_set_float(&value,
+			  (gfloat) index1);
 
 	copy_pattern_audio = AGS_COPY_PATTERN_AUDIO(list->data);
 	g_object_get(copy_pattern_audio,
@@ -425,9 +425,9 @@ ags_drum_index1_callback(GtkWidget *widget, AgsDrum *drum)
 	GValue value = {0,};
 
 	g_value_init(&value,
-		     G_TYPE_UINT64);
-	g_value_set_uint64(&value,
-			   index1);
+		     G_TYPE_FLOAT);
+	g_value_set_float(&value,
+			  (gfloat) index1);
 
 	copy_pattern_audio = AGS_COPY_PATTERN_AUDIO(list->data);
 	g_object_get(copy_pattern_audio,

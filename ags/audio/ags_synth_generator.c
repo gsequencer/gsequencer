@@ -845,7 +845,16 @@ ags_synth_generator_compute(AgsSynthGenerator *synth_generator,
   audio_buffer_util_format = ags_audio_buffer_util_format_from_soundcard(format);
 
   current_attack = attack;
-  current_count = buffer_size - attack;
+  current_count = buffer_size;
+  
+  if(attack < buffer_size){
+    current_count = buffer_size - attack;
+  }else{
+    stream = g_list_nth(stream_start,
+			(guint) floor((double) attack / (double) buffer_size));
+
+    current_count = buffer_size - (attack % buffer_size);
+  }
   
   offset = 0;
   last_sync = 0;

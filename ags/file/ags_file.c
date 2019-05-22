@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -1314,12 +1314,19 @@ ags_file_open_filename(AgsFile *file,
     ags_file_close(file);
   }
 
-  error = NULL;
   g_object_set(file,
 	       "filename", filename,
 	       NULL);
+
+  error = NULL;
   ags_file_open(file,
 		&error);
+
+  if(error != NULL){
+    g_warning("%s", error);
+
+    g_error_free(error);
+  }
 }
 
 /**

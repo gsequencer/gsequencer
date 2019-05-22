@@ -1,4 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
+<!-- Copyright (C) 2005-2019 Jo\u00EBl Kr\u00E4hemann -->
+<!-- Copying and distribution of this file, with or without modification, -->
+<!-- are permitted in any medium without royalty provided the copyright -->
+<!-- notice and this notice are preserved.  This file is offered as-is, -->
+<!-- without any warranty. -->
+
 <ags-simple-file id="47f08086-140a-11e7-8e46-24be05e12b31" version="0.7.122.12" build-id="CEST 13-10-2015 04:33">
   <ags-sf-config id="47f0819e-140a-11e7-8e46-24be05e12b31" version="0.7.0" build-id="CEST 13-10-2015 01:19"><![CDATA[[generic]
 disable-feature=experimental

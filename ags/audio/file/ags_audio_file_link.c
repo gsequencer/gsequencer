@@ -616,6 +616,8 @@ ags_audio_file_link_read_launch(AgsFileLaunch *file_launch,
 
       if(error != NULL){
 	g_warning("%s", error->message);
+
+	g_error_free(error);
       }
     }
 

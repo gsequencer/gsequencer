@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -179,7 +179,9 @@ ags_authentication_manager_login(AgsAuthenticationManager *authentication_manage
     }
 
     if(error != NULL){
-      g_warning("%s\0", error->message);
+      g_warning("%s", error->message);
+
+      g_error_free(error);
     }
     
     authentication = authentication->next;
@@ -212,7 +214,9 @@ ags_authentication_manager_is_session_active(AgsAuthenticationManager *authentic
     }
 
     if(error != NULL){
-      g_warning("%s\0", error->message);
+      g_warning("%s", error->message);
+
+      g_error_free(error);
     }
     
     authentication = authentication->next;
