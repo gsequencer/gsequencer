@@ -20,17 +20,45 @@
 #ifndef __AGS_VST_COMPONENT_BASE_H__
 #define __AGS_VST_COMPONENT_BASE_H__
 
+#include <ags/vst3-capi/pluginterfaces/base/ags_vst_iplugin_base.h>
+#include <ags/vst3-capi/pluginterfaces/vst/ags_vst_imessage.h>
+#include <ags/vst3-capi/pluginterfaces/vst/ags_vst_ihost_application.h>
+#include <ags/vst3-capi/public.sdk/source/vst/base/source/ags_vst_fobject.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-  typedef struct AgsVstComponentBase _AgsVstComponentBase;
+  typedef struct AgsVstComponentBase ComponentBase;
   
   AgsVstComponentBase* ags_vst_component_base_new();
-  void ags_vst_component_base_finalize(AgsVstComponentBase *component_base);
+  void ags_vst_component_base_delete(AgsVstComponentBase *component_base);
 
-  void ags_vst_component_base_ref(AgsVstComponentBase *component_base);
-  void ags_vst_component_base_unref(AgsVstComponentBase *component_base);
+  AgsVstFUnknown* ags_vst_component_base_get_host_context(AgsVstComponentBase *component_base);
+
+  AgsVstIConnectionPoint* ags_vst_component_base_get_peer(AgsVstComponentBase *component_base);
+
+  AgsVstIMessage* ags_vst_component_base_allocate_message(AgsVstComponentBase *component_base);
+
+  tresult ags_vst_component_base_send_message(AgsVstComponentBase *component_base,
+					      AgsVstIMessage* message);
+
+  tresult ags_vst_component_base_send_text_message(AgsVstComponentBase *component_base,
+						   gchar *text);
+
+  tresult ags_vst_component_base_receive_text(AgsVstComponentBase *component_base,
+					      gchar *text);
+
+  tresult PLUGIN_API ags_vst_component_base_initialize(AgsVstComponentBase *component_base,
+						       AgsVstFUnknown* context);
+  tresult PLUGIN_API ags_vst_component_base_terminate(AgsVstComponentBase *component_base);
+
+  tresult PLUGIN_API ags_vst_component_base_connect(AgsVstComponentBase *component_base,
+						     AgsVstIConnectionPoint* other);
+  tresult PLUGIN_API ags_vst_component_base_disconnect(AgsVstComponentBase *component_base,
+						       AgsVstIConnectionPoint* other);
+  tresult PLUGIN_API ags_vst_component_base_notify(AgsVstComponentBase *component_base,
+						   AgsVstIMessage* message);
   
 #ifdef __cplusplus
 }

@@ -22,9 +22,9 @@
 
 #include <glib.h>
 
-#include <ags/vst3-capi/public.sdk/source/vst/vstcomponentbase.h>
-#include <ags/vst3-capi/public.sdk/source/vst/vstbus.h>
-#include <ags/vst3-capi/pluginterfaces/vst/ivstcomponent.h>
+#include <ags/vst3-capi/public.sdk/source/vst/ags_vst_component_base.h>
+#include <ags/vst3-capi/public.sdk/source/vst/ags_vst_bus.h>
+#include <ags/vst3-capi/pluginterfaces/vst/ags_vst_ivst_component.h>
 
 #ifdef __cplusplus
 extern "C" {

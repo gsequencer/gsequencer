@@ -123,7 +123,7 @@ extern "C" {
   tresult PLUGIN_API ags_vst_audio_set_processing(AgsVstAudioEffect *audio_effect,
 						  gboolean state)
   {
-    return(audio_effect->setProcessing(static_cast<TBool> state));
+    return(audio_effect->setProcessing(static_cast<TBool>(state)));
   }
   
   tresult PLUGIN_API ags_vst_audio_process(AgsVstProcessData **data)

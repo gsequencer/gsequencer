@@ -24,7 +24,7 @@
 
 #include <ags/vst3-capi/public.sdk/source/vst/ags_vst_bus.h>
 #include <ags/vst3-capi/public.sdk/source/vst/ags_vst_component.h>
-#include <ags/vst3-capi/plugininterfaces/base/ags_ivst_audio_processor.h>
+#include <ags/vst3-capi/plugininterfaces/base/ags_vst_iaudio_processor.h>
 
 #ifdef __cplusplus
 extern "C" {
