@@ -20,6 +20,8 @@
 #ifndef __AGS_VST_AUDIO_EFFECT_H__
 #define __AGS_VST_AUDIO_EFFECT_H__
 
+#include <glib.h>
+
 #include <ags/vst/ags_vst_types.h>
 #include <ags/vst/ags_vst_bus.h>
 
@@ -30,50 +32,47 @@ extern "C" {
   typedef struct AgsVstAudioEffect AgsVstAudioEffect;
   
   AgsVstAudioEffect* ags_vst_audio_effect_new();
-  void ags_vst_audio_effect_finalize(AgsVstAudioEffect *audio_effect);
-
-  void ags_vst_audio_effect_ref(AgsVstAudioEffect *audio_effect);
-  void ags_vst_audio_effect_unref(AgsVstAudioEffect *audio_effect);
+  void ags_vst_audio_effect_delete(AgsVstAudioEffect *audio_effect);
 
   AgsVstAudioBus* ags_vst_audio_add_audio_input(AgsVstAudioEffect *audio_effect,
-						char *name, AgsVstSpeakerArrangement *arr, uint32 bus_type,
-						int32 flags);
+						gchar *name, AgsVstSpeakerArrangement *arr, guint bus_type,
+						gint32 flags);
   AgsVstAudioBus* ags_vst_audio_add_audio_output(AgsVstAudioEffect *audio_effect,
-						 char *name, AgsVstSpeakerArrangement *arr, uint32 bus_type,
-						 int32 flags);
+						 gchar *name, AgsVstSpeakerArrangement *arr, guint bus_type,
+						 gint32 flags);
 
   AgsVstAudioBus* ags_vst_audio_get_audio_input(AgsVstAudioEffect *audio_effect,
-						int32 index);
+						gint32 index);
   AgsVstAudioBus* ags_vst_audio_get_audio_output(AgsVstAudioEffect *audio_effect,
-						 int32 index);
+						 gint32 index);
 
   AgsVstEventBus* ags_vst_audio_add_event_input(AgsVstAudioEffect *audio_effect,
-						char *name, AgsVstSpeakerArrangement *arr, uint32 bus_type,
-						int32 flags);
+						gchar *name, gint32 channels, guint bus_type,
+						gint32 flags);
   AgsVstEventBus* ags_vst_audio_add_event_output(AgsVstAudioEffect *audio_effect,
-						 char *name, AgsVstSpeakerArrangement *arr, uint32 bus_type,
-						 int32 flags);
+						 gchar *name, gint32 channels, guint bus_type,
+						 gint32 flags);
 
   AgsVstEventBus* ags_vst_audio_get_event_input(AgsVstAudioEffect *audio_effect,
-						int32 index);
+						gint32 index);
   AgsVstEventBus* ags_vst_audio_get_event_output(AgsVstAudioEffect *audio_effect,
-						 int32 index);
+						 gint32 index);
 
-  tresult ags_vst_audio_set_bus_arrangements(AgsVstAudioEffect *audio_effect,
-					     AgsVstSpeakerArrangement *inputs, int32 num_ins,
-					     AgsVstSpeakerArrangement *outputs, int32 num_outs);
-  tresult ags_vst_audio_get_bus_arrangements(AgsVstAudioEffect *audio_effect,
-					     uint32 bus_direction, int32 bus_index,
-					     AgsVstSpeakerArrangement **arr);
-  tresult ags_vst_audio_can_process_sample_size(AgsVstAudioEffect *audio_effect,
-						int32 symbolic_sample_size);
-  uint32 ags_vst_audio_get_latency_samples(AgsVstAudioEffect *audio_effect);
-  tresult ags_vst_audio_setup_processing(AgsVstAudioEffect *audio_effect,
-					 AgsVstProcessSetup **setup);
-  tresult ags_vst_audio_set_processing(AgsVstAudioEffect *audio_effect,
-				       uint32 state);
-  tresult ags_vst_audio_process(AgsVstProcessData **data);
-  uint32 ags_vst_audio_get_tail_samples();
+  tresult PLUGIN_API ags_vst_audio_set_bus_arrangements(AgsVstAudioEffect *audio_effect,
+							AgsVstSpeakerArrangement *inputs, gint32 num_ins,
+							AgsVstSpeakerArrangement *outputs, gint32 num_outs) SMTG_OVERRIDE;
+  tresult PLUGIN_API ags_vst_audio_get_bus_arrangements(AgsVstAudioEffect *audio_effect,
+							guint bus_direction, gint32 bus_index,
+							AgsVstSpeakerArrangement **arr) SMTG_OVERRIDE;
+  tresult PLUGIN_API ags_vst_audio_can_process_sample_size(AgsVstAudioEffect *audio_effect,
+							   gint32 symbolic_sample_size) SMTG_OVERRIDE;
+  guint32 PLUGIN_API ags_vst_audio_get_latency_samples(AgsVstAudioEffect *audio_effect) SMTG_OVERRIDE;
+  tresult PLUGIN_API ags_vst_audio_setup_processing(AgsVstAudioEffect *audio_effect,
+						    AgsVstProcessSetup **setup) SMTG_OVERRIDE;
+  tresult PLUGIN_API ags_vst_audio_set_processing(AgsVstAudioEffect *audio_effect,
+						  gboolean state) SMTG_OVERRIDE;
+  tresult PLUGIN_API ags_vst_audio_process(AgsVstProcessData **data) SMTG_OVERRIDE;
+  guint32 PLUGIN_API ags_vst_audio_get_tail_samples(AgsVstAudioEffect *audio_effect) SMTG_OVERRIDE;
   
 #ifdef __cplusplus
 }
