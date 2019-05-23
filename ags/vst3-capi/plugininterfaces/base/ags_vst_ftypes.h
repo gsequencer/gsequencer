@@ -17,6 +17,41 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <ags/vst/ags_vst_audio_effect.h>
-#include <vst/vstaudioeffect.h>
+#ifndef __AGS_VST_FTYPES_H__
+#define __AGS_VST_FTYPES_H__
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+  typedef int64 TSize;
+  typedef int32 tresult;
+  
+  static const float kMaxFloat = 3.40282346638528860E38;
+  static const double kMaxDouble = 1.7976931348623158E308;
+
+  enum MediaTypes
+  {
+    kAudio = 0,
+    kEvent,
+    kNumMediaTypes,
+  };
+
+  enum BusDirections
+  {
+    kInput = 0,
+    kOutput,
+  };
+
+  enum BusTypes
+  {
+    kMain = 0,
+    kAux
+  };
+
+  
+#ifdef __cplusplus
+}
+#endif
+
+#endif /*__AGS_VST_FTYPES_H__*/
