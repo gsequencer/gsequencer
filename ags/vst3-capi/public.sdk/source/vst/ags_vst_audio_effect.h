@@ -22,14 +22,15 @@
 
 #include <glib.h>
 
-#include <ags/vst/ags_vst_types.h>
-#include <ags/vst/ags_vst_bus.h>
+#include <ags/vst3-capi/public.sdk/source/vst/ags_vst_bus.h>
+#include <ags/vst3-capi/public.sdk/source/vst/ags_vst_component.h>
+#include <ags/vst3-capi/plugininterfaces/base/ags_ivst_audio_processor.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-  typedef struct AgsVstAudioEffect AgsVstAudioEffect;
+  typedef struct AgsVstAudioEffect AudioEffect;
   
   AgsVstAudioEffect* ags_vst_audio_effect_new();
   void ags_vst_audio_effect_delete(AgsVstAudioEffect *audio_effect);
@@ -60,19 +61,19 @@ extern "C" {
 
   tresult PLUGIN_API ags_vst_audio_set_bus_arrangements(AgsVstAudioEffect *audio_effect,
 							AgsVstSpeakerArrangement *inputs, gint32 num_ins,
-							AgsVstSpeakerArrangement *outputs, gint32 num_outs) SMTG_OVERRIDE;
+							AgsVstSpeakerArrangement *outputs, gint32 num_outs);
   tresult PLUGIN_API ags_vst_audio_get_bus_arrangements(AgsVstAudioEffect *audio_effect,
 							guint bus_direction, gint32 bus_index,
-							AgsVstSpeakerArrangement **arr) SMTG_OVERRIDE;
+							AgsVstSpeakerArrangement **arr);
   tresult PLUGIN_API ags_vst_audio_can_process_sample_size(AgsVstAudioEffect *audio_effect,
-							   gint32 symbolic_sample_size) SMTG_OVERRIDE;
-  guint32 PLUGIN_API ags_vst_audio_get_latency_samples(AgsVstAudioEffect *audio_effect) SMTG_OVERRIDE;
+							   gint32 symbolic_sample_size);
+  guint32 PLUGIN_API ags_vst_audio_get_latency_samples(AgsVstAudioEffect *audio_effect);
   tresult PLUGIN_API ags_vst_audio_setup_processing(AgsVstAudioEffect *audio_effect,
-						    AgsVstProcessSetup **setup) SMTG_OVERRIDE;
+						    AgsVstProcessSetup **setup);
   tresult PLUGIN_API ags_vst_audio_set_processing(AgsVstAudioEffect *audio_effect,
-						  gboolean state) SMTG_OVERRIDE;
-  tresult PLUGIN_API ags_vst_audio_process(AgsVstProcessData **data) SMTG_OVERRIDE;
-  guint32 PLUGIN_API ags_vst_audio_get_tail_samples(AgsVstAudioEffect *audio_effect) SMTG_OVERRIDE;
+						  gboolean state);
+  tresult PLUGIN_API ags_vst_audio_process(AgsVstProcessData **data);
+  guint32 PLUGIN_API ags_vst_audio_get_tail_samples(AgsVstAudioEffect *audio_effect);
   
 #ifdef __cplusplus
 }

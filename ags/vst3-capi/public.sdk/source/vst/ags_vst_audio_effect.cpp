@@ -17,7 +17,8 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <ags/vst/ags_vst_audio_effect.h>
+#include <ags/vst3-capi/public.sdk/source/vst/ags_vst_audio_effect.h>
+
 #include <public.sdk/source/vst/vstaudioeffect.h>
 
 extern "C" {
@@ -134,4 +135,5 @@ extern "C" {
   {
     return(audio_effect->getTailSamples());
   }
+
 }
