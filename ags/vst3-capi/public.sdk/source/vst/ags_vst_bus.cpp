@@ -61,7 +61,7 @@ extern "C" {
 
   gboolean ags_vst_bus_get_info(AgsVstBus *bus, AgsVstBusInfo **info)
   {
-    return(static_cast<gboolean>(bus->getInfo(*(info[0]))));
+    return(static_cast<gboolean>(bus->getInfo(static_cast<BusInfo&>(info[0])));
   }
 
   AgsVstEventBus* ags_vst_event_bus_new(gchar *name, guint bus_type, gint32 flags, gint32 channel_count)
@@ -76,7 +76,7 @@ extern "C" {
 
   gboolean ags_vst_event_bus_get_info(AgsVstEventBus *event_bus, AgsVstBusInfo **info)
   {
-    return(static_cast<gboolean>(event_bus->getInfo(*(info[0]))));
+    return(static_cast<gboolean>(event_bus->getInfo(static_cast<BusInfo&>(info[0]))));
   }
 
   AgsVstAudioBus* ags_vst_audio_bus_new(gchar *name, guint bus_type, gint32 flags, AgsVstSpeakerArrangement *arr)
@@ -101,7 +101,7 @@ extern "C" {
 
   gboolean ags_vst_audio_bus_get_info(AgsVstAudioBus *audio_bus, AgsVstBusInfo **info)
   {
-    return(static_cast<gboolean>(audio_bus->getInfo(*(info[0]))));
+    return(static_cast<gboolean>(audio_bus->getInfo(static_cast<BusInfo&>(info[0]))));
   }
 
   AgsVstBusList* ags_vst_bus_list_new()

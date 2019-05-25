@@ -24,7 +24,7 @@
 
 #include <ags/vst3-capi/public.sdk/source/vst/ags_vst_component_base.h>
 #include <ags/vst3-capi/public.sdk/source/vst/ags_vst_bus.h>
-#include <ags/vst3-capi/pluginterfaces/vst/ags_vst_ivst_component.h>
+#include <ags/vst3-capi/pluginterfaces/vst/ags_vst_icomponent.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -36,7 +36,7 @@ extern "C" {
   void ags_vst_component_delete(AgsVstComponent *component);
 
   void ags_vst_component_set_controller_class(AgsVstComponent *component,
-					      void **cid);
+					      FUID **cid);
   
   tresult ags_vst_component_remove_audio_buses(AgsVstComponent *component); 
 

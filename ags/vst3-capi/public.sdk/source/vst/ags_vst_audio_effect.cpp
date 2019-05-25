@@ -100,7 +100,7 @@ extern "C" {
 							AgsVstSpeakerArrangement **arr)
   {
     return(audio_effect->setBusArrangements(static_cast<BusDirection>(bus_direction), bus_index,
-					    *(arr[0])));
+					    static_cast<SpeakerArrangement&>(arr[0])));
   }
   
   tresult PLUGIN_API ags_vst_audio_can_process_sample_size(AgsVstAudioEffect *audio_effect,
@@ -117,7 +117,7 @@ extern "C" {
   tresult PLUGIN_API ags_vst_audio_setup_processing(AgsVstAudioEffect *audio_effect,
 						    AgsVstProcessSetup **setup)
   {
-    return(audio_effect->setupProcessing(*(setup[0])));
+    return(audio_effect->setupProcessing(static_cast<ProcessSetup&>(setup[0])));
   }
   
   tresult PLUGIN_API ags_vst_audio_set_processing(AgsVstAudioEffect *audio_effect,
@@ -128,7 +128,7 @@ extern "C" {
   
   tresult PLUGIN_API ags_vst_audio_process(AgsVstProcessData **data)
   {
-    return(audio_effect->process(*(data[0])));
+    return(audio_effect->process(static_cast<ProcessData&>(data[0])));
   }
   
   guint32 PLUGIN_API ags_vst_audio_get_tail_samples(AgsVstAudioEffect *audio_effect)

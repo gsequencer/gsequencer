@@ -36,9 +36,9 @@ extern "C" {
   }
 
   void ags_vst_component_set_controller_class(AgsVstComponent *component,
-					      void **cid)
+					      FUID **cid)
   {
-    component->setControllerClass(*(static_cast<FUID>(cid[0])));
+    component->setControllerClass(static_cast<FUID&>(cid[0]));
   }
 
   tresult ags_vst_component_remove_audio_buses(AgsVstComponent *component) 
@@ -92,13 +92,13 @@ extern "C" {
 						    guint type, guint dir, gint32 index, AgsVstBusInfo **info)
   {
     return(component->getBusInfo(static_cast<MediaType>(type), static_cast<BusDirection>(dir), index,
-				 *(info[0])));
+				 static_cast<BusInfo&>(info[0])));
   }
 
   tresult PLUGIN_API ags_vst_component_get_routing_info(AgsVstComponent *component,
 							AgsVstRoutingInfo **in_info, AgsVstRoutingInfo **out_info)
   {
-    return(component->getRoutingInfo(*(in_info[0]), *(out_info[0])));
+    return(component->getRoutingInfo(static_cast<RoutingInfo&>(in_info[0]), static_cast<RoutingInfo&>(out_info[0])));
   }
 
   tresult PLUGIN_API ags_vst_component_activate_bus(AgsVstComponent *component,

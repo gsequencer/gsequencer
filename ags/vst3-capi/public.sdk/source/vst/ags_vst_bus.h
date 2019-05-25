@@ -22,10 +22,10 @@
 
 #include <glib.h>
 
-#include <ags/vst3-capi/base/source/fobject.h>
-#include <ags/vst3-capi/base/source/fstring.h>
-#include <ags/vst3-capi/pluginterfaces/vst/ivstcomponent.h>
-#include <ags/vst3-capi/pluginterfaces/vst/ivstaudioprocessor.h>
+#include <ags/vst3-capi/base/source/ags_fobject.h>
+#include <ags/vst3-capi/base/source/ags_fstring.h>
+#include <ags/vst3-capi/pluginterfaces/vst/ags_ivst_component.h>
+#include <ags/vst3-capi/pluginterfaces/vst/ags_ivst_audio_processor.h>
 
 #ifdef __cplusplus
 extern "C" {

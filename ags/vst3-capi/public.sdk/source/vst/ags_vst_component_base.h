@@ -21,8 +21,8 @@
 #define __AGS_VST_COMPONENT_BASE_H__
 
 #include <ags/vst3-capi/pluginterfaces/base/ags_vst_iplugin_base.h>
-#include <ags/vst3-capi/pluginterfaces/vst/ags_vst_imessage.h>
-#include <ags/vst3-capi/pluginterfaces/vst/ags_vst_ihost_application.h>
+#include <ags/vst3-capi/pluginterfaces/vst/ags_ivst_message.h>
+#include <ags/vst3-capi/pluginterfaces/vst/ags_ivst_host_application.h>
 #include <ags/vst3-capi/public.sdk/source/vst/base/source/ags_vst_fobject.h>
 
 #ifdef __cplusplus
