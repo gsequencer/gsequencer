@@ -921,7 +921,7 @@ ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *delay_au
 	    g_object_set_property((GObject *) copy_note,
 				  "attack",
 				  &value);
-
+	  }else{
 	    g_error_free(error);
 	  }
 
@@ -937,7 +937,7 @@ ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *delay_au
 	    g_object_set_property((GObject *) copy_note,
 				  "decay",
 				  &value);
-
+	  }else{
 	    g_error_free(error);
 	  }
 
@@ -953,7 +953,7 @@ ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *delay_au
 	    g_object_set_property((GObject *) copy_note,
 				  "sustain",
 				  &value);
-
+	  }else{
 	    g_error_free(error);
 	  }
 
@@ -969,7 +969,7 @@ ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *delay_au
 	    g_object_set_property((GObject *) copy_note,
 				  "release",
 				  &value);
-
+	  }else{
 	    g_error_free(error);
 	  }
 
@@ -985,7 +985,7 @@ ags_copy_pattern_channel_run_sequencer_alloc_callback(AgsDelayAudioRun *delay_au
 	    g_object_set_property((GObject *) copy_note,
 				  "ratio",
 				  &value);
-
+	  }else{
 	    g_error_free(error);
 	  }
 
