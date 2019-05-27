@@ -37,7 +37,7 @@ extern "C" {
    * 
    * Wrapper of AudioEffect constructor.
    * 
-   * Returns: the #AgsVstAudioEffect-struct pointer.
+   * Returns: the #AgsVstAudioEffect-struct pointer
    * 
    * Since: 2.2.0
    */

@@ -23,7 +23,7 @@
 
 extern "C" {
   
-  AgsVstBus* ags_vst_bus_new()
+  AgsVstBus* ags_vst_bus_new(gunichar2 *name, AgsVstBusType bus_type, gint32 flags)
   {
     return(new Bus());
   }
@@ -49,7 +49,7 @@ extern "C" {
     bus->setName(static_cast<String>(new_name));
   }
 
-  void ags_vst_bus_set_bus_type(AgsVstBus *bus, guint new_bus_type)
+  void ags_vst_bus_set_bus_type(AgsVstBus *bus, AgsVstBusType new_bus_type)
   {
     bus->setBusType(static_cast<BusType>(new_bus_type));
   }
@@ -64,7 +64,7 @@ extern "C" {
     return(static_cast<gboolean>(bus->getInfo(static_cast<BusInfo&>(info[0])));
   }
 
-  AgsVstEventBus* ags_vst_event_bus_new(gchar *name, guint bus_type, gint32 flags, gint32 channel_count)
+  AgsVstEventBus* ags_vst_event_bus_new(gunichar2 *name, AgsVstBusType bus_type, gint32 flags, gint32 channel_count)
   {
     return(new EventBus(static_cast<TChar*>(name), static_cast<BusType>(bus_type), static_cast<int32>(flags), static_cast<int32>(channel_count)));
   }
@@ -79,7 +79,7 @@ extern "C" {
     return(static_cast<gboolean>(event_bus->getInfo(static_cast<BusInfo&>(info[0]))));
   }
 
-  AgsVstAudioBus* ags_vst_audio_bus_new(gchar *name, guint bus_type, gint32 flags, AgsVstSpeakerArrangement *arr)
+  AgsVstAudioBus* ags_vst_audio_bus_new(gunichar2 *name, AgsVstBusType bus_type, gint32 flags, AgsVstSpeakerArrangement arr)
   {
     return(new AudioBus(static_cast<TChar*>(name), static_cast<BusType>(bus_type), static_cast<int32>(flags), arr));
   }
@@ -89,14 +89,14 @@ extern "C" {
     delete audio_bus;
   }
 
-  AgsVstSpeakerArrangement* ags_vst_audio_bus_get_arrangement(AgsVstAudioBus *audio_bus)
+  AgsVstSpeakerArrangement ags_vst_audio_bus_get_arrangement(AgsVstAudioBus *audio_bus)
   {
     return(audio_bus->getArrangement());
   }
 
-  void ags_vst_audio_bus_set_arrangement(AgsVstAudioBus *audio_bus, AgsVstSpeakerArrangement **arr)
+  void ags_vst_audio_bus_set_arrangement(AgsVstAudioBus *audio_bus, AgsVstSpeakerArrangement *arr)
   {
-    audio_bus->setArrangement(*(arr[0]));
+    audio_bus->setArrangement(arr);
   }
 
   gboolean ags_vst_audio_bus_get_info(AgsVstAudioBus *audio_bus, AgsVstBusInfo **info)
@@ -104,9 +104,9 @@ extern "C" {
     return(static_cast<gboolean>(audio_bus->getInfo(static_cast<BusInfo&>(info[0]))));
   }
 
-  AgsVstBusList* ags_vst_bus_list_new()
+  AgsVstBusList* ags_vst_bus_list_new(AgsVstMediaType type, AgsVstBusDirection dir)
   {
-    return(new BusList());
+    return(new BusList(type, dir));
   }
   
   void ags_vst_bus_list_delete(AgsVstBusList *bus_list)
@@ -114,12 +114,12 @@ extern "C" {
     delete bus_list;
   }
 
-  guint ags_vst_bus_list_get_type(AgsVstBusList *bus_list)
+  AgsVstMediaType ags_vst_bus_list_get_type(AgsVstBusList *bus_list)
   {
     return(static_cast<guint>(bus_list->getType()));
   }
 
-  guint ags_vst_bus_list_get_direction(AgsVstBusList *bus_list)
+  AgsVstBusDirection ags_vst_bus_list_get_direction(AgsVstBusList *bus_list)
   {
     return(static_cast<guint>(bus_list->getDirection()));
   }
