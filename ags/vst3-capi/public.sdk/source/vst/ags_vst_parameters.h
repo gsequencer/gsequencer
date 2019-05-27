@@ -32,10 +32,10 @@ extern "C" {
   
   AgsVstParameter* ags_vst_parameter_new();
   AgsVstParameter* ags_vst_parameter_new_with_info(AgsVstParameterInfo **info);
-  AgsVstParameter* ags_vst_parameter_new_full(gchar *title, guint32 tag, gchar *units,
+  AgsVstParameter* ags_vst_parameter_new_full(gunichar2 *title, guint32 tag, gunichar2 *units,
 					      gdouble default_value_normalized, gint32 step_count,
 					      gint32 flags, gint32 unit_id,
-					      gchar *short_title);
+					      gunichar2 *short_title);
   
   void ags_vst_parameters_delete(AgsVstParameter *parameter);
 
@@ -50,9 +50,9 @@ extern "C" {
 					    gdouble v);
 
   void ags_vst_parameter_to_string(AgsVstParameter *parameter,
-				   gdouble value_normalized, gchar *string);
+				   gdouble value_normalized, AgsVstString128 string);
   gboolean ags_vst_parameter_from_string(AgsVstParameter *parameter,
-					 gchar *string, gdouble *value_normalized);
+					 gunichar2 *string, gdouble *value_normalized);
   gdouble ags_vst_parameter_to_plain(AgsVstParameter *parameter,
 				     gdouble value_normalized);
   gdouble ags_vst_parameter_to_normalized(AgsVstParameter *parameter,
@@ -65,11 +65,11 @@ extern "C" {
   
   AgsVstRangeParameter* ags_vst_range_parameter_new();
   AgsVstRangeParameter* ags_vst_range_parameter_new_with_info(AgsVstParameterInfo **param_info, gdouble min, gdouble max);
-  AgsVstRangeParameter* ags_vst_range_parameter_new_full(gchar *title, guint32 tag, gchar *units,
+  AgsVstRangeParameter* ags_vst_range_parameter_new_full(gunichar2 *title, guint32 tag, gunichar2 *units,
 							 gdouble min_plain, gdouble max_plain,
 							 gdouble default_value_plain, gint32 step_count,
 							 gint32 flags, gint32 unit_id,
-							 gchar *short_title);
+							 gunichar2 *short_title);
   
   gdouble ags_vst_range_parameter_get_min(AgsVstRangeParameter *range_parameter);
   void ags_vst_range_parameter_set_min(AgsVstRangeParameter *range_parameter,
@@ -79,9 +79,9 @@ extern "C" {
 				       gdouble value);
 
   void ags_vst_range_parameter_to_string(AgsVstRangeParameter *range_parameter,
-					 gdouble _value_normalized, gchar *string);
+					 gdouble _value_normalized, AgsVstString128 string);
   gboolean ags_vst_range_parameter_from_string(AgsVstRangeParameter *range_parameter,
-					       gchar *string, gdouble *_value_normalized);
+					       gunichar2 *string, gdouble *_value_normalized);
 
   gdouble ags_vst_range_parameter_to_plain(AgsVstRangeParameter *range_parameter,
 					   gdouble _value_normalized);
@@ -92,19 +92,19 @@ extern "C" {
 
   AgsVstStringListParameter* ags_vst_string_list_parameter_new();
   AgsVstStringListParameter* ags_vst_string_list_parameter_new_with_info(AgsVstParameterInfo **param_info);
-  AgsVstStringListParameter* ags_vst_string_list_parameter_new_full(gchar *title, guint32 tag, gchar *units,
+  AgsVstStringListParameter* ags_vst_string_list_parameter_new_full(gunichar2 *title, guint32 tag, gunichar2 *units,
 								    gint32 flags,
-								    gint32 unit_id, gchar *short_title);
+								    gint32 unit_id, gunichar2 *short_title);
 
   void ags_vst_string_list_parameter_append_string(AgsVstStringListParameter *string_list_parameter,
-						   gchar *string);
+						   AgsVstString128 string);
   gboolean ags_vst_string_list_parameter_replace_string(AgsVstStringListParameter *string_list_parameter,
-							gint32 index, gchar *string);
+							gint32 index, AgsVstrString128 string);
 
   void ags_vst_string_list_parameter_to_string(AgsVstStringListParameter *string_list_parameter,
-					       gdouble _value_normalized, gchar *string);
+					       gdouble _value_normalized, AgsVstString128 string);
   gboolean ags_vst_string_list_parameter_from_string(AgsVstStringListParameter *string_list_parameter,
-						     gchar *string, gdouble *_value_normalized);
+						     gunichar2 *string, gdouble *_value_normalized);
 
   gdouble ags_vst_string_list_parameter_to_plain(AgsVstStringListParameter *string_list_parameter,
 						 gdouble _value_normalized);
@@ -123,10 +123,10 @@ extern "C" {
 								       AgsVstParameterInfo **info);
 
   AgsVstParameter* ags_vst_parameter_container_add_parameter_extended(AgsVstParameterContainer *parameter_container,
-								      gchar *title, gchar *units, gint32 step_count,
+								      gunichar2 *title, gunichar2 *units, gint32 step_count,
 								      gdouble default_value_normalized,
 								      gint32 flags, gint32 tag,
-								      gint32 unit_id, gchar *short_title);
+								      gint32 unit_id, gunichar2 *short_title);
   
   AgsVstParameter* ags_vst_parameter_container_add_parameter(AgsVstParameterContainer *parameter_container,
 							     AgsVstParameter *p);

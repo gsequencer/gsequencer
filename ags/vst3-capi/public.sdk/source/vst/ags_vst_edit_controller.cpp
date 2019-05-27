@@ -243,7 +243,7 @@ extern "C" {
     return(editor_view->removedFromParent());
   }
   
-  AgsVstUnit* ags_vst_unit_new(gchar *unit_name, gint32 unit_id, gint32 parent_unit_id,
+  AgsVstUnit* ags_vst_unit_new(gchar *unit_name, AgsVstUnitID unit_id, gint32 parent_unit_id,
 			       gint32 program_list_id)
   {
     return(new Unit(unit_name, unit_id, parent_unit_id,
@@ -293,7 +293,7 @@ extern "C" {
     return(unit->setProgramListId(new_id));
   }
 
-  AgsVstProgramList* ags_vst_program_list_new(gchar *name, gint32 list_id, gint32 unit_id)
+  AgsVstProgramList* ags_vst_program_list_new(gchar *name, gint32 list_id, AgsVstUnitID unit_id)
   {
     return(new ProgramList(name, list_id, unit_id));
   }
@@ -377,7 +377,7 @@ extern "C" {
     return(program_list->getParameter());
   }
   
-  AgsVstProgramListWithPitchNames* ags_vst_program_list_with_pitch_names_new(gchar *name, gint32 list_id, gint32 unit_id)
+  AgsVstProgramListWithPitchNames* ags_vst_program_list_with_pitch_names_new(gchar *name, gint32 list_id, AgsVstUnitID unit_id)
   {
     return(new ProgramListWithPitchNames(name, list_id, unit_id));
   }
@@ -525,7 +525,7 @@ extern "C" {
   }
 
   tresult PLUGIN_API ags_vst_edit_controller_ex1_select_unit(AgsVstEditControllerEx1 *edit_controller_ex1,
-							     gint32 unit_id)
+							     AgsVstUnitID unit_id)
   {
     return(edit_controller_ex1->selectUnit(unit_id));
   }

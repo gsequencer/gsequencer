@@ -53,7 +53,7 @@ extern "C" {
 
   tresult ags_vst_component_rename_bus(AgsVstComponent *component,
 				       guint type, guint dir, gint32 index,
-				       gchar *new_name)
+				       AgsVstString128 new_name)
   {
     gint length;
 

@@ -34,7 +34,7 @@ extern "C" {
   }
 
   AgsVstAudioBus* ags_vst_audio_effect_add_audio_input(AgsVstAudioEffect *audio_effect,
-						       gchar *name, AgsVstSpeakerArrangement *arr, AgsVstBusType bus_type,
+						       gunichar2 *name, AgsVstSpeakerArrangement arr, AgsVstBusType bus_type,
 						       gint32 flags)
   {
     return(audio_effect->addAudioInput(name, arr, static_cast<BusType>(bus_type),
@@ -42,7 +42,7 @@ extern "C" {
   }
   
   AgsVstAudioBus* ags_vst_audio_effect_add_audio_output(AgsVstAudioEffect *audio_effect,
-							gchar *name, AgsVstSpeakerArrangement *arr, AgsVstBusType bus_type,
+							gunichar2 *name, AgsVstSpeakerArrangement arr, AgsVstBusType bus_type,
 							gint32 flags)
   {
     return(audio_effect->addAudioOutput(name, arr, static_cast<BusType>(bus_type),
@@ -62,7 +62,7 @@ extern "C" {
   }
 
   AgsVstEventBus* ags_vst_audio_effect_add_event_input(AgsVstAudioEffect *audio_effect,
-						       gchar *name, gint32 channels, AgsVstBusType bus_type,
+						       gunichar2 *name, gint32 channels, AgsVstBusType bus_type,
 						       gint32 flags)
   {
     return(audio_effect->addEventInput(name, channels, static_cast<BusType>(bus_type),
@@ -70,7 +70,7 @@ extern "C" {
   }
 
   AgsVstEventBus* ags_vst_audio_effect_add_event_output(AgsVstAudioEffect *audio_effect,
-							gchar *name, gint32 channels, AgsVstBusType bus_type,
+							gunichar2 *name, gint32 channels, AgsVstBusType bus_type,
 							gint32 flags)
   {
     return(audio_effect->addEventOutput(name, channels, static_cast<BusType>(bus_type),
@@ -93,14 +93,16 @@ extern "C" {
 						   AgsVstSpeakerArrangement *inputs, gint32 num_ins,
 						   AgsVstSpeakerArrangement *outputs, gint32 num_outs)
   {
+    return(audio_effect->setBusArrangements(inputs, num_ins,
+					    outputs, num_outs);
   }
   
   gint32 ags_vst_audio_effect_get_bus_arrangements(AgsVstAudioEffect *audio_effect,
 						   AgsVstBusDirection bus_direction, gint32 bus_index,
-						   AgsVstSpeakerArrangement **arr)
+						   AgsVstSpeakerArrangement *arr)
   {
-    return(audio_effect->setBusArrangements(static_cast<BusDirection>(bus_direction), bus_index,
-					    static_cast<SpeakerArrangement&>(arr[0])));
+    return(audio_effect->getBusArrangements(static_cast<BusDirection>(bus_direction), bus_index,
+					    static_cast<SpeakerArrangement&>(arr)));
   }
   
   gint32 ags_vst_audio_effect_can_process_sample_size(AgsVstAudioEffect *audio_effect,

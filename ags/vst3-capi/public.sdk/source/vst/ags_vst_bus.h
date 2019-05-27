@@ -40,7 +40,7 @@ extern "C" {
 
   void ags_vst_bus_set_active(AgsVstBus *bus, gboolean state);
 
-  void ags_vst_bus_set_name(AgsVstBus *bus, gchar *new_name);
+  void ags_vst_bus_set_name(AgsVstBus *bus, gunichar2 *new_name);
 
   void ags_vst_bus_set_bus_type(AgsVstBus *bus, guint new_bus_type);
 
@@ -50,14 +50,14 @@ extern "C" {
 
   typedef struct AgsVstEventBus EventBus;
 
-  AgsVstEventBus* ags_vst_event_bus_new(gchar *name, guint bus_type, gint32 flags, gint32 channel_count);
+  AgsVstEventBus* ags_vst_event_bus_new(gunichar2 *name, guint bus_type, gint32 flags, gint32 channel_count);
   void ags_vst_event_bus_delete(AgsVstEventBus *event_bus);
 
   gboolean ags_vst_event_bus_get_info(AgsVstEventBus *event_bus, AgsVstBusInfo **info);
 
   typedef struct AgsVstAudioBus AudioBus;
 
-  AgsVstAudioBus* ags_vst_audio_bus_new(gchar *name, guint bus_type, gint32 flags, AgsVstSpeakerArrangement *arr);
+  AgsVstAudioBus* ags_vst_audio_bus_new(gunichar2 *name, guint bus_type, gint32 flags, AgsVstSpeakerArrangement *arr);
   void ags_vst_audio_bus_delete(AgsVstAudioBus *audio_bus);
 
   AgsVstSpeakerArrangement* ags_vst_audio_bus_get_arrangement(AgsVstAudioBus *audio_bus);

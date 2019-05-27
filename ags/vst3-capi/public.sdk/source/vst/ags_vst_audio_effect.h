@@ -57,7 +57,7 @@ extern "C" {
    * ags_vst_audio_effect_add_audio_input:
    * @audio_effect: the #AgsVstAudioEffect-struct pointer
    * @name: the name as string
-   * @arr: the #AgsVstSpeakerArrangement-struct pointer
+   * @arr: the #AgsVstSpeakerArrangement
    * @bus_type: the bus type as #AgsVstBusType-enum
    * @flags: the flags
    * 
@@ -68,14 +68,14 @@ extern "C" {
    * Since: 2.2.0
    */
   AgsVstAudioBus* ags_vst_audio_effect_add_audio_input(AgsVstAudioEffect *audio_effect,
-						       gchar *name, AgsVstSpeakerArrangement *arr, AgsVstBusType bus_type,
+						       gunichar2 *name, AgsVstSpeakerArrangement arr, AgsVstBusType bus_type,
 						       gint32 flags);
 
   /**
    * ags_vst_audio_effect_add_audio_output:
    * @audio_effect: the #AgsVstAudioEffect-struct pointer
    * @name: the name as string
-   * @arr: the #AgsVstSpeakerArrangement-struct pointer
+   * @arr: the #AgsVstSpeakerArrangement
    * @bus_type: the bus type as #AgsVstBusType-enum
    * @flags: the flags
    * 
@@ -86,7 +86,7 @@ extern "C" {
    * Since: 2.2.0
    */
   AgsVstAudioBus* ags_vst_audio_effect_add_audio_output(AgsVstAudioEffect *audio_effect,
-							gchar *name, AgsVstSpeakerArrangement *arr, AgsVstBusType bus_type,
+							gunichar2 *name, AgsVstSpeakerArrangement arr, AgsVstBusType bus_type,
 							gint32 flags);
 
   /**
@@ -132,7 +132,7 @@ extern "C" {
    * Since: 2.2.0
    */
   AgsVstEventBus* ags_vst_audio_effect_add_event_input(AgsVstAudioEffect *audio_effect,
-						       gchar *name, gint32 channels, AgsVstBusType bus_type,
+						       gunichar2 *name, gint32 channels, AgsVstBusType bus_type,
 						       gint32 flags);
 
   /**
@@ -150,7 +150,7 @@ extern "C" {
    * Since: 2.2.0
    */
   AgsVstEventBus* ags_vst_audio_effect_add_event_output(AgsVstAudioEffect *audio_effect,
-							gchar *name, gint32 channels, AgsVstBusType bus_type,
+							gunichar2 *name, gint32 channels, AgsVstBusType bus_type,
 							gint32 flags);
 
   /**
@@ -184,9 +184,9 @@ extern "C" {
   /**
    * ags_vst_audio_effect_set_bus_arrangements:
    * @audio_effect: the #AgsVstAudioEffect-struct pointer
-   * @inputs: the #AgsVstSpeakerArrangement-struct pointer
+   * @inputs: the #AgsVstSpeakerArrangement array
    * @num_ins: number of inputs as 32 bit integer
-   * @outputs: the #AgsVstSpeakerArrangement-struct pointer
+   * @outputs: the #AgsVstSpeakerArrangement array
    * @num_outs: number of outputs as 32 bit integer
    * 
    * Set bus arrangements of @audio_effect.
@@ -204,7 +204,7 @@ extern "C" {
    * @audio_effect: the #AgsVstAudioEffect-struct pointer
    * @bus_direction: the #AgsVstBusDirection-enum
    * @bus_index: the bus index
-   * @arr: the #AgsVstSpeakerArrangement-struct pointer to a pointer
+   * @arr: the #AgsVstSpeakerArrangement array
    * 
    * Get bus arrangements of @audio_effect.
    * 
@@ -214,7 +214,7 @@ extern "C" {
    */
   gint32 ags_vst_audio_effect_get_bus_arrangements(AgsVstAudioEffect *audio_effect,
 						   AgsVstBusDirection bus_direction, gint32 bus_index,
-						   AgsVstSpeakerArrangement **arr);
+						   AgsVstSpeakerArrangement *arr);
 
   /**
    * ags_vst_audio_effect_can_process_sample_size:
