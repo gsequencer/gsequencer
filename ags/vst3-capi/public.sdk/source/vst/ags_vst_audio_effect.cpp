@@ -23,6 +23,15 @@
 
 extern "C" {
 
+  /**
+   * ags_vst_audio_effect_new:
+   * 
+   * Wrapper of AudioEffect constructor.
+   * 
+   * Returns: the #AgsVstAudioEffect-struct pointer.
+   * 
+   * Since: 2.2.0
+   */
   AgsVstAudioEffect* ags_vst_audio_effect_new()
   {
     return(new AudioEffect());
