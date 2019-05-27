@@ -20,17 +20,125 @@
 #ifndef __AGS_VST_PARAMETERS_H__
 #define __AGS_VST_PARAMETERS_H__
 
+#include <ags/vst3-capi/base/source/ags_vst_fobject.h>
+#include <ags/vst3-capi/pluginterfaces/vst/ags_ivst_edit_controller.h>
+#include <ags/vst3-capi/pluginterfaces/vst/ags_ivst_units.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-  typedef struct AgsVstParameters _AgsVstParameters;
+  typedef struct AgsVstParameter Parameter;
   
-  AgsVstParameters* ags_vst_parameters_new();
-  void ags_vst_parameters_finalize(AgsVstParameters *parameters);
+  AgsVstParameter* ags_vst_parameter_new();
+  AgsVstParameter* ags_vst_parameter_new_with_info(AgsVstParameterInfo **info);
+  AgsVstParameter* ags_vst_parameter_new_full(gchar *title, guint32 tag, gchar *units,
+					      gdouble default_value_normalized, gint32 step_count,
+					      gint32 flags, gint32 unit_id,
+					      gchar *short_title);
+  
+  void ags_vst_parameters_delete(AgsVstParameter *parameter);
 
-  void ags_vst_parameters_ref(AgsVstParameters *parameters);
-  void ags_vst_parameters_unref(AgsVstParameters *parameters);
+  AgsVstParameterInfo* ags_vst_parameter_get_info(AgsVstParameter *parameter);
+
+  void ags_vst_parameter_set_unit_id(AgsVstParameter *parameter,
+				     gint32 id);
+  gint32 ags_vst_parameter_get_unit_id(AgsVstParameter *parameter);
+
+  gdouble ags_vst_parameter_get_normalized(AgsVstParameter *parameter);
+  gboolean ags_vst_parameter_set_normalized(AgsVstParameter *parameter,
+					    gdouble v);
+
+  void ags_vst_parameter_to_string(AgsVstParameter *parameter,
+				   gdouble value_normalized, gchar *string);
+  gboolean ags_vst_parameter_from_string(AgsVstParameter *parameter,
+					 gchar *string, gdouble *value_normalized);
+  gdouble ags_vst_parameter_to_plain(AgsVstParameter *parameter,
+				     gdouble value_normalized);
+  gdouble ags_vst_parameter_to_normalized(AgsVstParameter *parameter,
+					  gdouble plain_value);
+  gint32 ags_vst_parameter_get_precision(AgsVstParameter *parameter);
+  void ags_vst_parameter_set_precision(AgsVstParameter *parameter,
+				       gint32 val);
+
+  typedef struct AgsVstRangeParameter RangeParameter;
+  
+  AgsVstRangeParameter* ags_vst_range_parameter_new();
+  AgsVstRangeParameter* ags_vst_range_parameter_new_with_info(AgsVstParameterInfo **param_info, gdouble min, gdouble max);
+  AgsVstRangeParameter* ags_vst_range_parameter_new_full(gchar *title, guint32 tag, gchar *units,
+							 gdouble min_plain, gdouble max_plain,
+							 gdouble default_value_plain, gint32 step_count,
+							 gint32 flags, gint32 unit_id,
+							 gchar *short_title);
+  
+  gdouble ags_vst_range_parameter_get_min(AgsVstRangeParameter *range_parameter);
+  void ags_vst_range_parameter_set_min(AgsVstRangeParameter *range_parameter,
+				       gdouble value);
+  gdouble ags_vst_range_parameter_get_max(AgsVstRangeParameter *range_parameter);
+  void ags_vst_range_parameter_set_max(AgsVstRangeParameter *range_parameter,
+				       gdouble value);
+
+  void ags_vst_range_parameter_to_string(AgsVstRangeParameter *range_parameter,
+					 gdouble _value_normalized, gchar *string);
+  gboolean ags_vst_range_parameter_from_string(AgsVstRangeParameter *range_parameter,
+					       gchar *string, gdouble *_value_normalized);
+
+  gdouble ags_vst_range_parameter_to_plain(AgsVstRangeParameter *range_parameter,
+					   gdouble _value_normalized);
+  gdouble ags_vst_range_parameter_to_normalized(AgsVstRangeParameter *range_parameter,
+						gdouble plain_value);
+
+  typedef struct AgsVstStringListParameter StringListParameter;
+
+  AgsVstStringListParameter* ags_vst_string_list_parameter_new();
+  AgsVstStringListParameter* ags_vst_string_list_parameter_new_with_info(AgsVstParameterInfo **param_info);
+  AgsVstStringListParameter* ags_vst_string_list_parameter_new_full(gchar *title, guint32 tag, gchar *units,
+								    gint32 flags,
+								    gint32 unit_id, gchar *short_title);
+
+  void ags_vst_string_list_parameter_append_string(AgsVstStringListParameter *string_list_parameter,
+						   gchar *string);
+  gboolean ags_vst_string_list_parameter_replace_string(AgsVstStringListParameter *string_list_parameter,
+							gint32 index, gchar *string);
+
+  void ags_vst_string_list_parameter_to_string(AgsVstStringListParameter *string_list_parameter,
+					       gdouble _value_normalized, gchar *string);
+  gboolean ags_vst_string_list_parameter_from_string(AgsVstStringListParameter *string_list_parameter,
+						     gchar *string, gdouble *_value_normalized);
+
+  gdouble ags_vst_string_list_parameter_to_plain(AgsVstStringListParameter *string_list_parameter,
+						 gdouble _value_normalized);
+  gdouble ags_vst_string_list_parameter_to_normalized(AgsVstStringListParameter *string_list_parameter,
+						      gdouble plain_value);
+
+
+  typedef struct AgsVstParameterContainer ParameterContainer;
+
+  AgsVstParameterContainer* ags_vst_parameter_container_new();
+
+  void ags_vst_parameter_container_init(AgsVstParameterContainer *parameter_container,
+					gint32 initial_size, gint32 resize_delta);
+
+  AgsVstParameter* ags_vst_parameter_container_add_parameter_with_info(AgsVstParameterContainer *parameter_container,
+								       AgsVstParameterInfo **info);
+
+  AgsVstParameter* ags_vst_parameter_container_add_parameter_extended(AgsVstParameterContainer *parameter_container,
+								      gchar *title, gchar *units, gint32 step_count,
+								      gdouble default_value_normalized,
+								      gint32 flags, gint32 tag,
+								      gint32 unit_id, gchar *short_title);
+  
+  AgsVstParameter* ags_vst_parameter_container_add_parameter(AgsVstParameterContainer *parameter_container,
+							     AgsVstParameter *p);
+
+  gint32 ags_vst_parameter_container_get_parameter_count(AgsVstParameterContainer *parameter_container);
+
+  AgsVstParameter* ags_vst_parameter_container_get_parameter_by_index(AgsVstParameterContainer *parameter_container,
+								      gint32 index);
+
+  void ags_vst_parameter_container_remove_all(AgsVstParameterContainer *parameter_container);
+  AgsVstParameter* ags_vst_parameter_container_get_parameter(AgsVstParameterContainer *parameter_container,
+							     guint32 tag);
   
 #ifdef __cplusplus
 }
