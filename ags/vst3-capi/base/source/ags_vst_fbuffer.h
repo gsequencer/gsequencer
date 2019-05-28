@@ -149,15 +149,15 @@ extern "C" {
   tchar* ags_vst_buffer_to_str(AgsVstBuffer *buffer);
   gchar* ags_vst_buffer_to_str8(AgsVstBuffer *buffer);
   gunichar2* ags_vst_buffer_to_str16(AgsVstBuffer *buffer);
-  gint8* ags_vst_buffer_to_int8Ptr(AgsVstBuffer *buffer);
-  guint8* ags_vst_buffer_to_uint8Ptr(AgsVstBuffer *buffer);
-  gint16* ags_vst_buffer_to_int16Ptr(AgsVstBuffer *buffer);
-  guint16* ags_vst_buffer_to_guint16Ptr(AgsVstBuffer *buffer);
-  gint32* ags_vst_buffer_to_int32Ptr(AgsVstBuffer *buffer);
-  guint32* ags_vst_buffer_to_uint32Ptr(AgsVstBuffer *buffer);
-  gfloat* ags_vst_buffer_to_floatPtr(AgsVstBuffer *buffer);
-  gdouble* ags_vst_buffer_to_doublePtr(AgsVstBuffer *buffer);
-  gunichar* ags_vst_buffer_to_wcharPtr(AgsVstBuffer *buffer);
+  gint8* ags_vst_buffer_to_int8_ptr(AgsVstBuffer *buffer);
+  guint8* ags_vst_buffer_to_uint8_ptr(AgsVstBuffer *buffer);
+  gint16* ags_vst_buffer_to_int16_ptr(AgsVstBuffer *buffer);
+  guint16* ags_vst_buffer_to_uint16_ptr(AgsVstBuffer *buffer);
+  gint32* ags_vst_buffer_to_int32_ptr(AgsVstBuffer *buffer);
+  guint32* ags_vst_buffer_to_uint32_ptr(AgsVstBuffer *buffer);
+  gfloat* ags_vst_buffer_to_float_ptr(AgsVstBuffer *buffer);
+  gdouble* ags_vst_buffer_to_double_ptr(AgsVstBuffer *buffer);
+  gunichar2* ags_vst_buffer_to_wchar_ptr(AgsVstBuffer *buffer);
 
   gint8 ags_vst_buffer_offset(AgsVstBuffer *buffer,
 			      guint32 i);
