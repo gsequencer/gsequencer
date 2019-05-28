@@ -23,7 +23,7 @@
 
 extern "C" {
   
-  AgsVstBus* ags_vst_bus_new(gunichar2 *name, AgsVstBusType bus_type, gint32 flags)
+  AgsVstBus* ags_vst_bus_new(AgsVstTChar *name, AgsVstBusType bus_type, gint32 flags)
   {
     return(new Bus());
   }
@@ -45,8 +45,7 @@ extern "C" {
 
   void ags_vst_bus_set_name(AgsVstBus *bus, gchar *new_name)
   {
-    //FIXME:JK: check valid
-    bus->setName(static_cast<String>(new_name));
+    bus->setName(reinterpret_cast<String>(new_name));
   }
 
   void ags_vst_bus_set_bus_type(AgsVstBus *bus, AgsVstBusType new_bus_type)
@@ -64,7 +63,7 @@ extern "C" {
     return(static_cast<gboolean>(bus->getInfo(static_cast<BusInfo&>(info[0])));
   }
 
-  AgsVstEventBus* ags_vst_event_bus_new(gunichar2 *name, AgsVstBusType bus_type, gint32 flags, gint32 channel_count)
+  AgsVstEventBus* ags_vst_event_bus_new(AgsVstTChar *name, AgsVstBusType bus_type, gint32 flags, gint32 channel_count)
   {
     return(new EventBus(static_cast<TChar*>(name), static_cast<BusType>(bus_type), static_cast<int32>(flags), static_cast<int32>(channel_count)));
   }
@@ -79,7 +78,7 @@ extern "C" {
     return(static_cast<gboolean>(event_bus->getInfo(static_cast<BusInfo&>(info[0]))));
   }
 
-  AgsVstAudioBus* ags_vst_audio_bus_new(gunichar2 *name, AgsVstBusType bus_type, gint32 flags, AgsVstSpeakerArrangement arr)
+  AgsVstAudioBus* ags_vst_audio_bus_new(AgsVstTChar *name, AgsVstBusType bus_type, gint32 flags, AgsVstSpeakerArrangement arr)
   {
     return(new AudioBus(static_cast<TChar*>(name), static_cast<BusType>(bus_type), static_cast<int32>(flags), arr));
   }

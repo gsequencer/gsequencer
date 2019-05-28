@@ -45,7 +45,7 @@ extern "C" {
    * 
    * Since: 2.2.0
    */
-  AgsVstBus* ags_vst_bus_new(gunichar2 *name, AgsVstBusType bus_type, gint32 flags);
+  AgsVstBus* ags_vst_bus_new(AgsVstTChar *name, AgsVstBusType bus_type, gint32 flags);
 
   /**
    * ags_vst_bus_delete:
@@ -141,7 +141,7 @@ extern "C" {
    * 
    * Since: 2.2.0
    */
-  AgsVstEventBus* ags_vst_event_bus_new(gunichar2 *name, AgsVstBusType bus_type, gint32 flags, gint32 channel_count);
+  AgsVstEventBus* ags_vst_event_bus_new(AgsVstTChar *name, AgsVstBusType bus_type, gint32 flags, gint32 channel_count);
 
   /**
    * ags_vst_event_bus_delete:
@@ -181,7 +181,7 @@ extern "C" {
    * 
    * Since: 2.2.0
    */
-  AgsVstAudioBus* ags_vst_audio_bus_new(gunichar2 *name, AgsVstBusType bus_type, gint32 flags, AgsVstSpeakerArrangement arr);
+  AgsVstAudioBus* ags_vst_audio_bus_new(AgsVstTChar *name, AgsVstBusType bus_type, gint32 flags, AgsVstSpeakerArrangement arr);
 
   /**
    * ags_vst_audio_bus_delete:

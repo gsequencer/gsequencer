@@ -24,10 +24,6 @@
 
 #include <ags/vst3-capi/pluginterfaces/base/fstrdefs.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 #ifndef AGS_VST_VERSION_STRING
 #define AGS_VST_VERSION_STRING "VST 3.6.13"
 #endif
@@ -38,7 +34,12 @@ extern "C" {
 
 #define AGS_VST_VERSION ((AGS_VST_VERSION_MAJOR << 16) | (AGS_VST_VERSION_MINOR << 8) | AGS_VST_VERSION_SUB)
 
-  typedef gunichar2 AgsVstString128[128];
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+  typedef gunichar2 AgsVstTChar;
+  typedef AgsVstTChar AgsVstString128[128];
   
   typedef gint32 AgsVstMediaType;
   typedef gint32 AgsVstBusDirection;

@@ -92,8 +92,8 @@ extern "C" {
   /**
    * ags_vst_component_rename_bus:
    * @component: the #AgsVstComponent-struct pointer
-   * @type: the #AgsVstMediaType-enum
-   * @dir: the #AgsVstBusDirection-enum
+   * @type: the #AgsVstMediaTypes-enum
+   * @dir: the #AgsVstBusDirections-enum
    * @index: the index as integer
    * @new_name: the new name as string
    * 
@@ -138,8 +138,8 @@ extern "C" {
   /**
    * ags_vst_component_get_bus_count:
    * @component: the #AgsVstComponent-struct pointer
-   * @type: the #AgsVstMediaType-enum
-   * @dir: the #AgsVstBusDirection-enum
+   * @type: the #AgsVstMediaTypes-enum
+   * @dir: the #AgsVstBusDirections-enum
    * 
    * Get bus count of @component specified by @type and @dir.
    * 
@@ -153,8 +153,8 @@ extern "C" {
   /**
    * ags_vst_component_get_bus_info:
    * @component: the #AgsVstComponent-struct pointer
-   * @type: the #AgsVstMediaType-enum
-   * @dir: the #AgsVstBusDirection-enum
+   * @type: the #AgsVstMediaTypes-enum
+   * @dir: the #AgsVstBusDirections-enum
    * @index: the index
    * @info: the #AgsVstBusInfo-struct pointer to a pointer
    * 
@@ -185,8 +185,8 @@ extern "C" {
   /**
    * ags_vst_component_activate_bus:
    * @component: the #AgsVstComponent-struct pointer
-   * @type: the #AgsVstMediaType-enum 
-   * @dir: the #AgsVstBusDirection-enum
+   * @type: the #AgsVstMediaTypes-enum 
+   * @dir: the #AgsVstBusDirections-enum
    * @index: the index
    * @state: %TRUE if state active, else %FALSE
    * 

@@ -34,7 +34,7 @@ extern "C" {
   }
 
   AgsVstAudioBus* ags_vst_audio_effect_add_audio_input(AgsVstAudioEffect *audio_effect,
-						       gunichar2 *name, AgsVstSpeakerArrangement arr, AgsVstBusType bus_type,
+						       AgsVstTChar *name, AgsVstSpeakerArrangement arr, AgsVstBusType bus_type,
 						       gint32 flags)
   {
     return(audio_effect->addAudioInput(name, arr, static_cast<BusType>(bus_type),
@@ -42,7 +42,7 @@ extern "C" {
   }
   
   AgsVstAudioBus* ags_vst_audio_effect_add_audio_output(AgsVstAudioEffect *audio_effect,
-							gunichar2 *name, AgsVstSpeakerArrangement arr, AgsVstBusType bus_type,
+							AgsVstTChar *name, AgsVstSpeakerArrangement arr, AgsVstBusType bus_type,
 							gint32 flags)
   {
     return(audio_effect->addAudioOutput(name, arr, static_cast<BusType>(bus_type),
@@ -62,7 +62,7 @@ extern "C" {
   }
 
   AgsVstEventBus* ags_vst_audio_effect_add_event_input(AgsVstAudioEffect *audio_effect,
-						       gunichar2 *name, gint32 channels, AgsVstBusType bus_type,
+						       AgsVstTChar *name, gint32 channels, AgsVstBusType bus_type,
 						       gint32 flags)
   {
     return(audio_effect->addEventInput(name, channels, static_cast<BusType>(bus_type),
@@ -70,7 +70,7 @@ extern "C" {
   }
 
   AgsVstEventBus* ags_vst_audio_effect_add_event_output(AgsVstAudioEffect *audio_effect,
-							gunichar2 *name, gint32 channels, AgsVstBusType bus_type,
+							AgsVstTChar *name, gint32 channels, AgsVstBusType bus_type,
 							gint32 flags)
   {
     return(audio_effect->addEventOutput(name, channels, static_cast<BusType>(bus_type),
