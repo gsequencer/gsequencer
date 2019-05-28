@@ -40,13 +40,13 @@ extern "C" {
 
   static const gint32 ags_vst_kmax_long = 0x7fffffff;
   static const gint32 ags_vst_kmin_long = (-0x7fffffff - 1);
-  static const gint32 ags_vst_kmax_int32 = kMaxLong;
-  static const gint32 ags_vst_kmin_int32 = kMinLong;
+  static const gint32 ags_vst_kmax_int32 = ags_vst_kmax_long;
+  static const gint32 ags_vst_kmin_int32 = ags_vst_kmin_long;
   static const guint32 ags_vst_kmax_int32u = 0xffffffff;
 
   static const gint64 ags_vst_kmax_int64 = 0x7fffffffffffffffLL;
   static const gint64 ags_vst_kmin_int64 = (-0x7fffffffffffffffLL-1);
-  static const guint64 ags_vst_kmax_int64u = uint64 (0xffffffff) | (uint64 (0xffffffff) << 32);
+  static const guint64 ags_vst_kmax_int64u = (guint64) (0xffffffff) | ((guint64) (0xffffffff) << 32);
   
   typedef gint64 AgsVstTSize;
 
@@ -60,17 +60,17 @@ extern "C" {
   static const double ags_vst_kmax_double = 1.7976931348623158E308;
 
 #ifdef AGS_VST_UNICODE
-  typedef gunichar2 tchar;
+  typedef gunichar2 ags_vst_tchar;
 #else
-  typedef gchar tchar;
+  typedef gchar ags_vst_tchar;
 #endif
 
   typedef const gchar* AgsVstCStringA;
   typedef const gunichar2* AgsVstCStringW;
-  typedef const tchar* AgsVstCString;
-  inline bool strEmpty (const tchar* str) { return (!str || *str == 0); }
-  inline bool str8Empty (const char8* str) { return (!str || *str == 0); }
-  inline bool str16Empty (const char16* str) { return (!str || *str == 0); }
+  typedef const ags_vst_tchar* AgsVstCString;
+  gboolean ags_vst_str_empty(ags_vst_tchar *str);
+  gboolean ags_vst_str8_empty(gchar *str);
+  gboolean ags_vst_str16_empty(gunichar2 *str);
 
   typedef const gchar* AgsVstFIDString;
 

@@ -80,61 +80,61 @@ extern "C" {
   void ags_vst_buffer_set_delta(AgsVstBuffer *buffer,
 				guint32 d);
 
-  gboolean ags_vst_buffer_put_uint8(AgsVstBuffer *buffer,
-				    guint8 val);
-  gboolean ags_vst_buffer_put_unichar2(AgsVstBuffer *buffer,
-				       gunichar2 c);
-  gboolean ags_vst_buffer_put_char(AgsVstBuffer *buffer,
-				   gchar c);
-  gboolean ags_vst_buffer_put_buffer(AgsVstBuffer *buffer,
-				     void *buffer, guint32 size);
-  gboolean ags_vst_buffer_put_uint8_buffer(AgsVstBuffer *buffer,
-					   guint8 *buffer, guint32 size);
-  gboolean ags_vst_buffer_put_char_buffer(AgsVstBuffer *buffer,
-					  gchar *buffer, guint32 size);
-  gboolean ags_vst_buffer_put_string(AgsVstBuffer *buffer,
-				     gchar **string);
+  gboolean ags_vst_buffer_put_from_uint8(AgsVstBuffer *buffer,
+					 guint8 val);
+  gboolean ags_vst_buffer_put_from_unichar2(AgsVstBuffer *buffer,
+					    gunichar2 c);
+  gboolean ags_vst_buffer_put_from_char(AgsVstBuffer *buffer,
+					gchar c);
+  gboolean ags_vst_buffer_put_from_buffer(AgsVstBuffer *buffer,
+					  void *buffer, guint32 size);
+  gboolean ags_vst_buffer_put_from_uint8_buffer(AgsVstBuffer *buffer,
+						guint8 *buffer, guint32 size);
+  gboolean ags_vst_buffer_put_from_char_buffer(AgsVstBuffer *buffer,
+					       gchar *buffer, guint32 size);
+  gboolean ags_vst_buffer_put_from_string(AgsVstBuffer *buffer,
+					  gchar **string);
 
   void ags_vst_buffer_set(AgsVstBuffer *buffer,
 			  guint8 value);
         
   gboolean ags_vst_buffer_append_string(AgsVstBuffer *buffer,
-					tchar *s);
+					ags_vst_tchar *s);
   gboolean ags_vst_buffer_append_char(AgsVstBuffer *buffer,
-				      tchar c);
+				      ags_vst_tchar c);
   
-  gboolean ags_vst_buffer_append_string_char_buffer(AgsVstBuffer *buffer,
-						    gchar *s);
-  gboolean ags_vst_buffer_append_string_uchar_buffer(AgsVstBuffer *buffer,
-						     guchar *s);
-  gboolean ags_vst_buffer_append_string_unichar2_buffer(AgsVstBuffer *buffer,
-							gunichar2 *s);
+  gboolean ags_vst_buffer_append_string_from_char_buffer(AgsVstBuffer *buffer,
+							 gchar *s);
+  gboolean ags_vst_buffer_append_string_from_uchar_buffer(AgsVstBuffer *buffer,
+							  guchar *s);
+  gboolean ags_vst_buffer_append_string_from_unichar2_buffer(AgsVstBuffer *buffer,
+							     gunichar2 *s);
 
-  gboolean ags_vst_buffer_append_string_char_byte(AgsVstBuffer *buffer,
-						  gchar c);
-  gboolean ags_vst_buffer_append_string_uchar_byte(AgsVstBuffer *buffer,
-						   guchar c);
-  gboolean ags_vst_buffer_append_string_unichar2_byte(AgsVstBuffer *buffer,
-						      gunichar2 c);
+  gboolean ags_vst_buffer_append_string_from_char_byte(AgsVstBuffer *buffer,
+						       gchar c);
+  gboolean ags_vst_buffer_append_string_from_uchar_byte(AgsVstBuffer *buffer,
+							guchar c);
+  gboolean ags_vst_buffer_append_string_from_unichar2_byte(AgsVstBuffer *buffer,
+							   gunichar2 c);
 
   gboolean ags_vst_buffer_prepend_string(AgsVstBuffer *buffer,
-					 tchar *s);
+					 ags_vst_tchar *s);
   gboolean ags_vst_buffer_prepend_char(AgsVstBuffer *buffer,
-				       tchar c);
+				       ags_vst_tchar c);
   
-  gboolean ags_vst_buffer_prepend_string_char_buffer(AgsVstBuffer *buffer,
-						     gchar *s);
-  gboolean ags_vst_buffer_prepend_string_uchar_buffer(AgsVstBuffer *buffer,
-						      guchar *s);
-  gboolean ags_vst_buffer_prepend_string_unichar2_buffer(AgsVstBuffer *buffer,
-							 gunichar2 *s);
+  gboolean ags_vst_buffer_prepend_string_from_char_buffer(AgsVstBuffer *buffer,
+							  gchar *s);
+  gboolean ags_vst_buffer_prepend_string_from_uchar_buffer(AgsVstBuffer *buffer,
+							   guchar *s);
+  gboolean ags_vst_buffer_prepend_string_from_unichar2_buffer(AgsVstBuffer *buffer,
+							      gunichar2 *s);
 
-  gboolean ags_vst_buffer_prepend_string_char_byte(AgsVstBuffer *buffer,
-						   gchar c);
-  gboolean ags_vst_buffer_prepend_string_uchar_byte(AgsVstBuffer *buffer,
-						    guchar c);
-  gboolean ags_vst_buffer_prepend_string_unichar2_byte(AgsVstBuffer *buffer,
-						       gunichar2 c);
+  gboolean ags_vst_buffer_prepend_string_from_char_byte(AgsVstBuffer *buffer,
+							gchar c);
+  gboolean ags_vst_buffer_prepend_string_from_uchar_byte(AgsVstBuffer *buffer,
+							 guchar c);
+  gboolean ags_vst_buffer_prepend_string_from_unichar2_byte(AgsVstBuffer *buffer,
+							    gunichar2 c);
 
   void ags_vst_buffer_end_string(AgsVstBuffer *buffer);
   void ags_vst_buffer_end_string_char(AgsVstBuffer *buffer);
@@ -146,7 +146,7 @@ extern "C" {
 					  gchar *string);
 
   void* ags_vst_buffer_to_buffer(AgsVstBuffer *buffer);
-  tchar* ags_vst_buffer_to_str(AgsVstBuffer *buffer);
+  ags_vst_tchar* ags_vst_buffer_to_str(AgsVstBuffer *buffer);
   gchar* ags_vst_buffer_to_str8(AgsVstBuffer *buffer);
   gunichar2* ags_vst_buffer_to_str16(AgsVstBuffer *buffer);
   gint8* ags_vst_buffer_to_int8_ptr(AgsVstBuffer *buffer);
