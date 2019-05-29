@@ -953,6 +953,8 @@ ags_recycling_finalize(GObject *gobject)
   pthread_mutexattr_destroy(recycling->obj_mutexattr);
   free(recycling->obj_mutexattr);
 
+  ags_uuid_free(recycling->uuid);
+
   /* channel */
   if(recycling->channel != NULL){
     g_object_unref(recycling->channel);

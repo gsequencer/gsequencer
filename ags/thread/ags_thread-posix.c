@@ -484,6 +484,8 @@ ags_thread_init(AgsThread *thread)
   if(str != NULL){
     thread->max_precision = g_ascii_strtod(str,
 					   NULL);
+
+    g_free(str);
   }
   
   thread->mutexattr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
@@ -761,8 +763,13 @@ ags_thread_finalize(GObject *gobject)
   }
 
   /*  */
+  pthread_mutex_destroy(thread->obj_mutex);
+  free(thread->obj_mutex);
+
   pthread_mutexattr_destroy(thread->obj_mutexattr);
   free(thread->obj_mutexattr);
+
+  ags_uuid_free(thread->uuid);
   
   /*  */  
   free(thread->computing_time);
@@ -782,6 +789,8 @@ ags_thread_finalize(GObject *gobject)
 			&stackaddr, &stacksize);
   
   pthread_mutexattr_destroy(thread->mutexattr);
+  free(thread->mutexattr);
+
   pthread_mutex_destroy(thread->mutex);
   free(thread->mutex);
 
