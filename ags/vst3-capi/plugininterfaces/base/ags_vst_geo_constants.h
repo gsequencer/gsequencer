@@ -34,7 +34,6 @@ enum AgsVstDirection
   AGS_VST_KNUMBER_OF_DIRECTIONS,
 };
 
-//------------------------------------------------------------------------
 enum AgsVstOrientation 
 {
   AGS_VST_KHORIZONTAL,
