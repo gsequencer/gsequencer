@@ -17,42 +17,23 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __AGS_VST_IBSTREAM_H__
-#define __AGS_VST_IBSTREAM_H__
+#ifndef __AGS_VST_ICLONEABLE_H__
+#define __AGS_VST_ICLONEABLE_H__
 
 #include <ags/vst3-capi/pluginterfaces/base/funknown.h>
 
-#define AGS_VST_IBSTREAM_IID ((AgsVstTUID) IBStream__iid);
-#define AGS_VST_ISIZEABLE_STREAM_IID ((AgsVstTUID) ISizeableStream__iid);
+#define AGS_VST_ICLONEABLE_IID ((AgsVstTUID) ICloneable__iid);
 
 #ifdef __cplusplus
 extern "C" {
 
-  typedef struct AgsVstIBStream IBStream;
+  typedef struct AgsVstICloneable ICloneable;
 
-  enum AgsVstIStreamSeekMode
-  {
-    AGS_VST_KIB_SEEK_SET = 0,
-    AGS_VST_KIB_SEEK_CUR,
-    AGS_VST_KIB_SEEK_END,
-  };
-
-  gint32 ags_vst_ibstream_read(void *buffer, gint32 num_bytes, gint32 *num_bytes_read);
-	
-  gint32 ags_vst_ibstream_write(void *buffer, gint32 num_bytes, gint32 *num_bytes_written);
-	
-  gint32 ags_vst_ibstream_seek(gint64 pos, gint32 mode, gint64 *result);
-	
-  gint32 ags_vst_ibstream_tell(gint64 *pos);
-
-  typedef struct AgsVstISizeableStream ISizeableStream;
-
-  gint32 ags_vst_isizeable_stream_get_stream_size(gint64 *size);
-  gint32 ags_vst_isizeable_stream_set_stream_size(gint64 size);
+  AgsVstFUnknow* ags_vst_icloneable_clone(AgsVstICloneable *cloneable);
   
 #endif
 #ifdef __cplusplus
 }
 #endif
 
-#endif /*__AGS_VST_IBSTREAM_H__*/
+#endif /*__AGS_VST_ICLONEABLE_H__*/
