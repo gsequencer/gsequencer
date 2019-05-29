@@ -29,9 +29,9 @@ extern "C" {
   static const gunichar2 ags_vst_kempty_string16[] = { 0 };
 
 #ifdef UNICODE
-  static const ags_vst_tchar ags_vst_kInfiniteSymbol[] = { 0x221E, 0 };
+  static const ags_vst_tchar ags_vst_kinfinite_symbol[] = { 0x221E, 0 };
 #else
-  static const ags_vst_tchar* const ags_vst_kInfiniteSymbol = STR ("oo");
+  static const ags_vst_tchar* const ags_vst_kinfinite_symbol = STR ("oo");
 #endif
 
   gint32 ags_vst_tstrlen(ags_vst_tchar *str);
