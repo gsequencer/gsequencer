@@ -11,6 +11,13 @@ ags (2.2.x)
 	* TODO:JK: implement Music XML support
 	* TODO:JK: implement file bundle embedding plugins and audio data
 
+ags (2.1.74)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed ags-copy-pattern recall to proper free GError
+	* fixed ags_recycling_finalize() to free AgsUUID
+	* fixed ags_thread_finalize() to free AgsUUID and other memory-leaks
+
 ags (2.1.73)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
