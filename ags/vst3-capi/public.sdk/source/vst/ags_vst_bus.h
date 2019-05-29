@@ -89,7 +89,7 @@ extern "C" {
    * 
    * Since: 2.2.0
    */
-  void ags_vst_bus_set_name(AgsVstBus *bus, gchar *new_name);
+  void ags_vst_bus_set_name(AgsVstBus *bus, AgsVstString new_name);
 
   /**
    * ags_vst_bus_set_bus_type:

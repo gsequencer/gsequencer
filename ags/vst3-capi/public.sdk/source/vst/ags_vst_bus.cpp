@@ -43,7 +43,7 @@ extern "C" {
     bus->setActive(static_cast<TBool>(state));
   }
 
-  void ags_vst_bus_set_name(AgsVstBus *bus, gchar *new_name)
+  void ags_vst_bus_set_name(AgsVstBus *bus, AgsVstString new_name)
   {
     bus->setName(reinterpret_cast<String>(new_name));
   }

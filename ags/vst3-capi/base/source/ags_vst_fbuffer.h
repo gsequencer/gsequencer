@@ -166,9 +166,9 @@ extern "C" {
         
   enum AgsVstSwapSize 
   {
-    kSwap16 = 2,
-    kSwap32 = 4,
-    kSwap64 = 8,
+    AGS_VST_KSWAP16 = 2,
+    AGS_VST_KSWAP32 = 4,
+    AGS_VST_KSWAP64 = 8,
   };
 
   gboolean ags_vst_buffer_swap(AgsVstBuffer *buffer,

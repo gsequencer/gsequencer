@@ -20,6 +20,8 @@
 #ifndef __AGS_VST_CONST_STRING_TABLE_H__
 #define __AGS_VST_CONST_STRING_TABLE_H__
 
+#include <ags/vst3-capi/pluginterfaces/base/ags_vst_ftypes.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif

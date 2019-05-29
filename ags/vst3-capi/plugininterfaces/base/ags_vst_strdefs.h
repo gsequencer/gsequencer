@@ -34,29 +34,29 @@ extern "C" {
   static const ags_vst_tchar* const ags_vst_kInfiniteSymbol = STR ("oo");
 #endif
 
-  gint32 ags_vst_tstrlen (ags_vst_tchar *str);
-  gint32 ags_vst_strlen8 (gchar *str);
-  gint32 ags_vst_strlen16 (gunichar2 *str);
+  gint32 ags_vst_tstrlen(ags_vst_tchar *str);
+  gint32 ags_vst_strlen8(gchar *str);
+  gint32 ags_vst_strlen16(gunichar2 *str);
 
-  gint32 ags_vst_tstrcmp (ags_vst_tchar *src, ags_vst_tchar *dst);
-  gint32 ags_vst_strcmp8 (gchar *src, gchar *dst);
-  gint32 ags_vst_strcmp16 (gunichar2 *src, gunichar2 *dst);
+  gint32 ags_vst_tstrcmp(ags_vst_tchar *src, ags_vst_tchar *dst);
+  gint32 ags_vst_strcmp8(gchar *src, gchar *dst);
+  gint32 ags_vst_strcmp16(gunichar2 *src, gunichar2 *dst);
   
-  gint32 ags_vst_tstrncmp (ags_vst_tchar *first, ags_vst_tchar *last, guint32 count);
-  gint32 ags_vst_strncmp8 (gchar *first, gchar *last, guint32 count);
-  gint32 ags_vst_strncmp16 (gunichar2 *first, gunichar2 *last, guint32 count);
+  gint32 ags_vst_tstrncmp(ags_vst_tchar *first, ags_vst_tchar *last, guint32 count);
+  gint32 ags_vst_strncmp8(gchar *first, gchar *last, guint32 count);
+  gint32 ags_vst_strncmp16(gunichar2 *first, gunichar2 *last, guint32 count);
 
-  ags_vst_tchar* ags_vst_tstrcpy (ags_vst_tchar *dst, ags_vst_tchar *src);
-  gchar* ags_vst_strcpy8 (gchar *dst, gchar *src);
-  gunichar2* ags_vst_strcpy16 (gunichar2 *dst, gunichar2 *src);
+  ags_vst_tchar* ags_vst_tstrcpy(ags_vst_tchar *dst, ags_vst_tchar *src);
+  gchar* ags_vst_strcpy8(gchar *dst, gchar *src);
+  gunichar2* ags_vst_strcpy16(gunichar2 *dst, gunichar2 *src);
 
-  ags_vst_tchar* ags_vst_tstrncpy (ags_vst_tchar* dest, ags_vst_tchar* source, guint32 count);
-  gchar* ags_vst_strncpy8 (gchar* dest, gchar* source, guint32 count);
-  gunichar2* ags_vst_strncpy16 (gunichar2* dest, gunichar2* source, guint32 count);
+  ags_vst_tchar* ags_vst_tstrncpy(ags_vst_tchar* dest, ags_vst_tchar* source, guint32 count);
+  gchar* ags_vst_strncpy8(gchar* dest, gchar* source, guint32 count);
+  gunichar2* ags_vst_strncpy16(gunichar2* dest, gunichar2* source, guint32 count);
 
-  ags_vst_tchar* ags_vst_tstrcat (ags_vst_tchar *dst, ags_vst_tchar *src);
-  gchar* ags_vst_strcat8 (gchar *dst, gchar *src);
-  gunichar2* ags_vst_strcat16 (gunichar2 *dst, gunichar2 *src);
+  ags_vst_tchar* ags_vst_tstrcat(ags_vst_tchar *dst, ags_vst_tchar *src);
+  gchar* ags_vst_strcat8(gchar *dst, gchar *src);
+  gunichar2* ags_vst_strcat16(gunichar2 *dst, gunichar2 *src);
 
   gunichar2* ags_vst_str8_to_str16(gchar *str);
 
