@@ -27,6 +27,7 @@
 
 #ifdef __cplusplus
 extern "C" {
+#endif
 
   typedef struct AgsVstIBStream IBStream;
 

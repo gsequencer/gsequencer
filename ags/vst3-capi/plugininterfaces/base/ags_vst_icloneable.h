@@ -26,7 +26,8 @@
 
 #ifdef __cplusplus
 extern "C" {
-
+#endif
+  
   typedef struct AgsVstICloneable ICloneable;
 
   AgsVstTUID ags_vst_icloneable_get_iid();

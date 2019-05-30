@@ -28,6 +28,7 @@
 
 #ifdef __cplusplus
 extern "C" {
+#endif
 
   typedef struct AgsVstIPersistent IPersistent;
 

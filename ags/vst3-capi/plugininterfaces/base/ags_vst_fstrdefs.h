@@ -60,7 +60,7 @@ extern "C" {
 
   gunichar2* ags_vst_str8_to_str16(gchar *str);
 
-  bool ags_vst_FIDStringsEqual(AgsVstFIDString id1, AgsVstFIDString id2);
+  gboolean ags_vst_fid_strings_equal(AgsVstFIDString id1, AgsVstFIDString id2);
 
   static const guint32 ags_vst_kprintf_buffer_size = 4096;
 
