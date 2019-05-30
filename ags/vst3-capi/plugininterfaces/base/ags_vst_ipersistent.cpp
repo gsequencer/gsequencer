@@ -29,16 +29,92 @@ extern "C" {
     return(IPersistent__iid);
   }
 
+  gint32 ags_vst_ipersistent_load_attributes(AgsVstIPersistent *persistent,
+					     AgsVstIAttributes *attributes)
+  {
+    return(persistent->loadAttributes(attributes));
+  }
+
   AgsVstTUID
   ags_vst_iattributes_get_iid()
   {
     return(IAttributes__iid);
   }
 
+  gint32 ags_vst_iattributes_set(AgsVstIAttributes *attr,
+				 AgsVstIAttrID attr_id, const AgsVstFVariant **data)
+  {
+    return(attr->set(attr_id, static_cast<FVariant&>(data[0])));
+  }
+
+  gint32 ags_vst_iattributes_queue(AgsVstIAttributes *attr,
+				   AgsVstIAttrID list_id, const AgsVstFVariant **data)
+  {
+    return(attr->queue(list_id, static_cast<FVariant&>(data[0])));
+  }
+
+  gint32 ags_vst_iattributes_set_binary_data(AgsVstIAttributes *attr,
+					     AgsVstIAttrID attr_id, void *data, guint32 bytes, gboolean copy_bytes)
+  {
+    return(attr->setBinaryData(attr_id, data, bytes, copy_bytes));
+  }
+
+  gint32 ags_vst_iattributes_get(AgsVstIAttributes *attr,
+				 AgsVstIAttrID attr_id, AgsVstFVariant **data)
+  {
+    return(attr->get(attr_id, static_cast<FVariant&>(data[0])));
+  }
+
+  gint32 ags_vst_iattributes_unqueue(AgsVstIAttributes *attr,
+				     AgsVstIAttrID list_id, AgsVstFVariant **data)
+  {
+    return(attr->unqueue(list_id, static_cast<FVariant&>(data[0])));
+  }
+
+  gint32 ags_vst_iattributes_get_queue_item_count(AgsVstIAttributes *attr,
+						  AgsVstIAttrID attr_id)
+  {
+    return(attr->getQueueItemCount(attr_id));
+  }
+        
+  gint32 ags_vst_iattributes_reset_queue(AgsVstIAttributes *attr,
+					 AgsVstIAttrID attr_id)
+  {
+    return(attr->resetQueue(attr_id));
+  }
+
+  gint32 ags_vst_iattributes_reset_all_queues(AgsVstIAttributes *attr)
+  {
+    return(attr->resetAllQueues());
+  }
+
+  gint32 ags_vst_iattributes_get_binary_data(AgsVstIAttributes *attr,
+					     AgsVstIAttrID attr_id, void *data, guint32 bytes)
+  {
+    return(attr->getBinaryData(attr_id, data, bytes));
+  }
+
+  guint32 ags_vst_iattributes_get_binary_data_size(AgsVstIAttributes *attr,
+						   AgsVstIAttrID attr_id)
+  {
+    return(attr->getBinaryDataSize(attr_id));
+  }
+
   AgsVstTUID
   ags_vst_iattributes2_get_iid()
   {
     return(IAttributes2__iid);
+  }
+
+  gint32 ags_vst_iattributes2_count_attributes(AgsVstIAttributes2 *attr)
+  {
+    return(attr->countAttributes());
+  }
+
+  AgsVstIAttrID ags_vst_iattributes2_get_attribute_id(AgsVstIAttributes2 *attr,
+						      gint32 index)
+  {
+    return(attr->getAttributeID(index));
   }
 
 }

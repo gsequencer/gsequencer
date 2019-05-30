@@ -29,4 +29,10 @@ extern "C" {
     return(IErrorContext__iid);
   }
 
+  gint32 ags_vst_ierror_context_get_error_message(AgsVstIErrorContext *error_context,
+						  AgsVstIString *message)
+  {
+    return(error_context->getErrorMessage(message));
+  }
+
 }

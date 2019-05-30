@@ -29,4 +29,9 @@ extern "C" {
     return(ICloneable__iid);
   }
 
+  AgsVstFUnknow* ags_vst_icloneable_clone(AgsVstICloneable *cloneable)
+  {
+    return(cloneable->clone());
+  }
+
 }

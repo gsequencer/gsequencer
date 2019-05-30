@@ -31,7 +31,8 @@ extern "C" {
 
   AgsVstTUID ags_vst_ierror_context_get_iid();
   
-  gint32 ags_vst_ierror_context_get_error_message(AgsVstIErrorContext *error_context);
+  gint32 ags_vst_ierror_context_get_error_message(AgsVstIErrorContext *error_context,
+						  AgsVstIString *message);
   
 #endif
 #ifdef __cplusplus
