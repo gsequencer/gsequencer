@@ -31,18 +31,18 @@ extern "C" {
   typedef struct AgsVstBuffer Buffer;
 
   AgsVstBuffer* ags_vst_buffer_new();
-  AgsVstBuffer* ags_vst_buffer_new_from_string (void *b, guint32 size);
+  AgsVstBuffer* ags_vst_buffer_new_from_string(void *b, guint32 size);
   AgsVstBuffer* ags_vst_buffer_new_and_fill_up(guint32 size, guint8 init_val);
   AgsVstBuffer* ags_vst_buffer_new_with_size(guint32 size);
   AgsVstBuffer* ags_vst_buffer_new_from_buffer(AgsVstBuffer **buffer);
 
   void ags_vst_buffer_delete(AgsVstBuffer *buffer);
         
-  void ags_vst_buffer_memcpy(AgsVstBuffer *destination_buffer,
-			     AgsVstBuffer *source_buffer);
+  void ags_vst_buffer_equal(AgsVstBuffer *destination_buffer,
+			    AgsVstBuffer *source_buffer);
 
-  void ags_vst_buffer_equals(AgsVstBuffer *buffer_a,
-			     AgsVstBuffer *buffer_b);
+  gboolean ags_vst_buffer_equals(AgsVstBuffer *buffer_a,
+				 AgsVstBuffer *buffer_b);
 
   guint32 ags_vst_buffer_get_size(AgsVstBuffer *buffer);
 
@@ -60,7 +60,7 @@ extern "C" {
   gboolean ags_vst_buffer_set_fill_size(AgsVstBuffer *buffer,
 					guint32 c);
   void ags_vst_buffer_flush(AgsVstBuffer *buffer);
-  gboolean ags_vst_buffer_truncateToFillSize(AgsVstBuffer *buffer);
+  gboolean ags_vst_buffer_truncate_to_fill_size(AgsVstBuffer *buffer);
 
   gboolean ags_vst_buffer_is_full(AgsVstBuffer *buffer);
   guint32 ags_vst_buffer_get_free(AgsVstBuffer *buffer);

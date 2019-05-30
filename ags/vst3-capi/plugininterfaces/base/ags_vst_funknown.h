@@ -34,28 +34,28 @@ extern "C" {
 #if AGS_VST_SMTG_OS_WINDOWS
   enum
   {
-    AGS_VST_KNO_INTERFACE	= (gint32)(0x80004002L),	// E_NOINTERFACE
-    AGS_VST_KRESULT_OK		= (gint32)(0x00000000L),	// S_OK
+    AGS_VST_KNO_INTERFACE	= (gint32)(0x80004002L),
+    AGS_VST_KRESULT_OK		= (gint32)(0x00000000L),
     AGS_VST_KRESULT_TRUE	= AGS_VST_KRESULT_OK,
-    AGS_VST_KRESULT_FALS	= (gint32)(0x00000001L),	// S_FALSE
-    AGS_VST_KINVALID_ARGUMENT	= (gint32)(0x80070057L),	// E_INVALIDARG
-    AGS_VST_KNOT_IMPLEMENTED	= (gint32)(0x80004001L),	// E_NOTIMPL
-    AGS_VST_KINTERNAL_ERROR	= (gint32)(0x80004005L),	// E_FAIL
-    AGS_VST_KNOT_INITIALIZED	= (gint32)(0x8000FFFFL),	// E_UNEXPECTED
-    AGS_VST_KOUT_OF_MEMORY	= (gint32)(0x8007000EL),	// E_OUTOFMEMORY
+    AGS_VST_KRESULT_FALS	= (gint32)(0x00000001L),
+    AGS_VST_KINVALID_ARGUMENT	= (gint32)(0x80070057L),
+    AGS_VST_KNOT_IMPLEMENTED	= (gint32)(0x80004001L),
+    AGS_VST_KINTERNAL_ERROR	= (gint32)(0x80004005L),
+    AGS_VST_KNOT_INITIALIZED	= (gint32)(0x8000FFFFL),
+    AGS_VST_KOUT_OF_MEMORY	= (gint32)(0x8007000EL),
   };
 #else
   enum
   {
-    AGS_VST_KNO_INTERFACE	= (gint32)(0x80000004L),	// E_NOINTERFACE
-    AGS_VST_KRESULT_OK		= (gint32)(0x00000000L),	// S_OK
+    AGS_VST_KNO_INTERFACE	= (gint32)(0x80000004L),
+    AGS_VST_KRESULT_OK		= (gint32)(0x00000000L),
     AGS_VST_KRESULT_TRUE	= AGS_VST_KRESULT_OK,
-    AGS_VST_KRESULT_FALS	= (gint32)(0x00000001L),	// S_FALSE
-    AGS_VST_KINVALID_ARGUMENT	= (gint32)(0x80000003L),	// E_INVALIDARG
-    AGS_VST_KNOT_IMPLEMENTED	= (gint32)(0x80000001L),	// E_NOTIMPL
-    AGS_VST_KINTERNAL_ERROR	= (gint32)(0x80000008L),	// E_FAIL
-    AGS_VST_KNOT_INITIALIZED	= (gint32)(0x8000FFFFL),	// E_UNEXPECTED
-    AGS_VST_KOUT_OF_MEMORY	= (gint32)(0x80000002L),	// E_OUTOFMEMORY
+    AGS_VST_KRESULT_FALS	= (gint32)(0x00000001L),
+    AGS_VST_KINVALID_ARGUMENT	= (gint32)(0x80000003L),
+    AGS_VST_KNOT_IMPLEMENTED	= (gint32)(0x80000001L),
+    AGS_VST_KINTERNAL_ERROR	= (gint32)(0x80000008L),
+    AGS_VST_KNOT_INITIALIZED	= (gint32)(0x8000FFFFL),
+    AGS_VST_KOUT_OF_MEMORY	= (gint32)(0x80000002L),
   };
 #endif
 #else
@@ -73,14 +73,16 @@ extern "C" {
   };
 #endif
 
-  typedef gint64 AGS_VST_LARGE_INT; // obsolete
+  typedef gint64 AGS_VST_LARGE_INT;
 
-  typedef gint8 AgsVstTUID[16]; ///< plain UID type
+  typedef gint8 AgsVstTUID[16];
   
+#if 0
   gboolean ags_vst_funknown_private_iid_equal(const void* iid1, const void* iid2);
 
   gint32 ags_vst_funknown_private_atomic_add(gint32 *value, gint32 amount);
-
+#endif
+  
   typedef struct AgsVstFUID FUID;
 
   AgsVstFUID* ags_vst_fuid_new();
@@ -165,11 +167,13 @@ extern "C" {
   void ags_funknown_get_interface(AgsVstFUnknownPtr *funknown_ptr,
 				  AgsVstI *vst_interface);
 
+#if 0
   void ags_vst_funknown_ptr_set_funknown(AgsVstFunknownPtr *funknown_ptr,
 					 AgsVstFUnknown *funknown);
   void ags_vst_funknown_ptr_set_funknown_interface(AgsVstFunknownPtr *funknown_ptr,
 						   AgsVstFUnknown *funknown, AgsVstI *vst_interface);
-
+#endif
+  
   typedef struct AgsVstFReleaser FReleaser;
   
   AgsVstFReleaser* ags_freleaser_alloc(AgsVstFunknown *funknown);
