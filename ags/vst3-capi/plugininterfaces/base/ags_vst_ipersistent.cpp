@@ -17,25 +17,28 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __AGS_VST_ICLONEABLE_H__
-#define __AGS_VST_ICLONEABLE_H__
+#include <ags/vst3-capi/plugininterfaces/base/ags_vst_funknown.h>
 
-#include <ags/vst3-capi/pluginterfaces/base/funknown.h>
+#include <plugininterfaces/base/ipersistent.h>
 
-#define AGS_VST_ICLONEABLE_IID (ags_vst_icloneable_get_iid());
-
-#ifdef __cplusplus
 extern "C" {
 
-  typedef struct AgsVstICloneable ICloneable;
+  AgsVstTUID
+  ags_vst_ipersistent_get_iid()
+  {
+    return(IPersistent__iid);
+  }
 
-  AgsVstTUID ags_vst_icloneable_get_iid();
-  
-  AgsVstFUnknow* ags_vst_icloneable_clone(AgsVstICloneable *cloneable);
-  
-#endif
-#ifdef __cplusplus
+  AgsVstTUID
+  ags_vst_iattributes_get_iid()
+  {
+    return(IAttributes__iid);
+  }
+
+  AgsVstTUID
+  ags_vst_iattributes2_get_iid()
+  {
+    return(IAttributes2__iid);
+  }
+
 }
-#endif
-
-#endif /*__AGS_VST_ICLONEABLE_H__*/

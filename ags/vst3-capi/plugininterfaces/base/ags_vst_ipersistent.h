@@ -22,19 +22,23 @@
 
 #include <ags/vst3-capi/pluginterfaces/base/funknown.h>
 
-#define AGS_VST_IPERSISTENT_IID ((AgsVstTUID) IPersistent__iid);
-#define AGS_VST_IATTRIBUTES_IID ((AgsVstTUID) IAttributes__iid);
-#define AGS_VST_IATTRIBUTES2_IID ((AgsVstTUID) IAttributes2__iid);
+#define AGS_VST_IPERSISTENT_IID (ags_vst_ipersistent_get_iid());
+#define AGS_VST_IATTRIBUTES_IID (ags_vst_iattributes_get_iid());
+#define AGS_VST_IATTRIBUTES2_IID (ags_vst_iattributes2_get_iid());
 
 #ifdef __cplusplus
 extern "C" {
 
   typedef struct AgsVstIPersistent IPersistent;
 
+  AgsVstTUID ags_vst_ipersistent_get_iid();
+  
   gint32 ags_vst_ipersistent_load_attributes(AgsVstIPersistent *persistent,
 					     AgsVstIAttributes *attributes);
   
   typedef struct AgsVstIAttributes IAttributes;
+
+  AgsVstTUID ags_vst_iattributes_get_iid();
 
   gint32 ags_vst_iattributes_set(AgsVstIAttributes *attr,
 				 AgsVstIAttrID attr_id, const AgsVstFVariant **data);
@@ -64,6 +68,8 @@ extern "C" {
 						   AgsVstIAttrID attr_id);
 
   typedef struct AgsVstIAttributes2 IAttributes2;
+
+  AgsVstTUID ags_vst_iattributes2_get_iid();
 
   gint32 ags_vst_iattributes2_count_attributes(AgsVstIAttributes2 *attr);
   AgsVstIAttrID ags_vst_iattributes2_get_attribute_id(AgsVstIAttributes2 *attr,

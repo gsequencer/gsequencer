@@ -22,13 +22,15 @@
 
 #include <ags/vst3-capi/pluginterfaces/base/funknown.h>
 
-#define AGS_VST_IERROR_CONTEXT_IID ((AgsVstTUID) IError_Context__iid);
+#define AGS_VST_IERROR_CONTEXT_IID (ags_vst_ierror_context_get_iid());
 
 #ifdef __cplusplus
 extern "C" {
 
   typedef struct AgsVstIErrorContext IErrorContext;
 
+  AgsVstTUID ags_vst_ierror_context_get_iid();
+  
   gint32 ags_vst_ierror_context_get_error_message(AgsVstIErrorContext *error_context);
   
 #endif

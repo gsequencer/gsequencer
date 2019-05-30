@@ -17,52 +17,58 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __AGS_VST_IBSTREAM_H__
-#define __AGS_VST_IBSTREAM_H__
+#include <ags/vst3-capi/plugininterfaces/base/ags_vst_funknown.h>
 
-#include <ags/vst3-capi/pluginterfaces/base/funknown.h>
+#include <plugininterfaces/base/ibstream.h>
 
-#define AGS_VST_IBSTREAM_IID (ags_vst_ibstream_get_iid);
-#define AGS_VST_ISIZEABLE_STREAM_IID (ags_vst_isizeable_stream_get_iid());
-
-#ifdef __cplusplus
 extern "C" {
 
-  typedef struct AgsVstIBStream IBStream;
-
-  enum AgsVstIStreamSeekMode
+  AgsVstTUID
+  ags_vst_ibstream_get_iid()
   {
-    AGS_VST_KIB_SEEK_SET = 0,
-    AGS_VST_KIB_SEEK_CUR,
-    AGS_VST_KIB_SEEK_END,
-  };
+    return(IBStream__iid);
+  }
 
-  AgsVstTUID ags_vst_ibstream_get_iid();
-  
   gint32 ags_vst_ibstream_read(AgsVstIBStream *ibstream,
-			       void *buffer, gint32 num_bytes, gint32 *num_bytes_read);
+			       void *buffer, gint32 num_bytes, gint32 *num_bytes_read)
+  {
+    return(ibstream->read(buffer, num_bytes, num_bytes_read));
+  }
 	
   gint32 ags_vst_ibstream_write(AgsVstIBStream *ibstream,
-				void *buffer, gint32 num_bytes, gint32 *num_bytes_written);
+				void *buffer, gint32 num_bytes, gint32 *num_bytes_written)
+  {
+    return(ibstream->write(buffer, num_bytes, num_bytes_read)));
+  }
 	
   gint32 ags_vst_ibstream_seek(AgsVstIBStream *ibstream,
-			       gint64 pos, gint32 mode, gint64 *result);
-	
+			       gint64 pos, gint32 mode, gint64 *result)
+  {
+    return(ibstream->seek(pos, mode, result));
+  }
+
   gint32 ags_vst_ibstream_tell(AgsVstIBStream *ibstream,
-			       gint64 *pos);
+			       gint64 *pos)
+  {
+    return(ibstream->tell(pos));
+  }
 
-  typedef struct AgsVstISizeableStream ISizeableStream;
-
-  AgsVstTUID ags_vst_isizeable_stream_get_iid();
-  
+  AgsVstTUID
+  ags_vst_isizeable_stream_get_iid()
+  {
+    return(ISizeableStream__iid);
+  }
+    
   gint32 ags_vst_isizeable_stream_get_stream_size(AgsVstISizeableStream *isizeable_stream,
-						  gint64 *size);
-  gint32 ags_vst_isizeable_stream_set_stream_size(AgsVstISizeableStream *isizeable_stream,
-						  gint64 size);
-  
-#endif
-#ifdef __cplusplus
-}
-#endif
+						  gint64 *size)
+  {
+    return(ibstream->getStreamSize(size));
+  }
 
-#endif /*__AGS_VST_IBSTREAM_H__*/
+  gint32 ags_vst_isizeable_stream_set_stream_size(AgsVstISizeableStream *isizeable_stream,
+						  gint64 size)
+  {
+    return(ibstream->setStreamSize(size));
+  }
+
+}

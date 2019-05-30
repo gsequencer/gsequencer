@@ -24,6 +24,8 @@
 #include <ags/vst3-capi/pluginterfaces/base/ags_vst_ftypes.h>
 #include <ags/vst3-capi/pluginterfaces/base/smartpointer.h>
 
+#define AGS_VST_FUNKNOWN_IID (ags_vst_funknown_get_iid());
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -75,12 +77,9 @@ extern "C" {
 
   typedef gint8 AgsVstTUID[16]; ///< plain UID type
 
+  AgsVstTUID ags_vst_funknown_get_iid();
+  
   gboolean ags_vst_funknown_private_iid_equal(const void* iid1, const void* iid2)
-  {
-    const guint64* p1 = reinterpret_cast<const uint64*> (iid1);
-    const guint64* p2 = reinterpret_cast<const uint64*> (iid2);
-    return p1[0] == p2[0] && p1[1] == p2[1];
-  }
 
   gint32 ags_vst_funknown_private_atomic_add(gint32 *value, gint32 amount);
 
