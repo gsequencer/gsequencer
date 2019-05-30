@@ -59,12 +59,11 @@ extern "C" {
   void ags_vst_fvariant_set_double(AgsVstFVariant *fvariant,
 				   gdouble val);
   void ags_vst_fvariant_set_string(AgsVstFVariant *fvariant,
-				   gchar *val);
+				   gchar *str);
   void ags_vst_fvariant_set_wstring(AgsVstFVariant *fvariant,
-				    gunichar2 *val);
+				    gunichar2 *str);
   void ags_vst_fvariant_set_object(AgsVstFVariant *fvariant,
 				   AgsVstFunknown *obj);
-
 
   gboolean ags_vst_fvariant_get_boolean(AgsVstFVariant *fvariant);
   guint32 ags_vst_fvariant_get_uint32(AgsVstFVariant *fvariant);
@@ -73,7 +72,6 @@ extern "C" {
   gchar* ags_vst_fvariant_get_string(AgsVstFVariant *fvariant);
   gunichar2* ags_vst_fvariant_get_wstring(AgsVstFVariant *fvariant);
   AgsVstFUnknown* ags_vst_fvariant_get_object(AgsVstFVariant *fvariant);
-
 
   guint16 ags_vst_fvariant_get_type(AgsVstFVariant *fvariant);
   gboolean ags_vst_fvariant_is_empty(AgsVstFVariant *fvariant);

@@ -17,7 +17,7 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <ags/vst3-capi/plugininterfaces/base/ags_vst_funknown.h>
+#include <ags/vst3-capi/plugininterfaces/base/ags_vst_icloneable.h>
 
 #include <plugininterfaces/base/icloneable.h>
 
