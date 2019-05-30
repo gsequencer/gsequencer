@@ -24,6 +24,9 @@
 #include <ags/vst3-capi/pluginterfaces/base/fstrdefs.h>
 
 #define AGS_VST_IPLUGIN_BASE_IID (ags_vst_iplugin_base_get_iid());
+#define AGS_VST_IPLUGIN_FACTORY_IID (ags_vst_iplugin_factory_get_iid());
+#define AGS_VST_IPLUGIN_FACTORY2_IID (ags_vst_iplugin_factory2_get_iid());
+#define AGS_VST_IPLUGIN_FACTORY3_IID (ags_vst_iplugin_factory3_get_iid());
 
 #ifdef __cplusplus
 extern "C" {
@@ -36,6 +39,47 @@ extern "C" {
 					 AgsVstFUnknown *context);
 
   gint32 ags_vst_iplugin_base_terminate(AgsVstIPluginBase *plugin_base);
+
+  typedef struct AgsVstPFactoryInfo PFactoryInfo;
+  typedef struct AgsVstPClassInfo PClassInfo;
+
+  typedef struct AgsVstIPluginFactory IPluginFactory;
+
+  AgsVstTUID ags_vst_iplugin_factory_get_iid();
+
+  gint32 ags_vst_iplugin_factory_get_factory_info(AgsVstIPluginFactory *factory,
+						  AgsVstPFactoryInfo *info);
+
+  gint32 ags_vst_iplugin_factory_count_classes(AgsVstIPluginFactory *factory);
+
+  gint32 ags_vst_iplugin_factory_get_clas_info(AgsVstIPluginFactory *factory,
+					       gint32 index, AgsVstPClassInfo *info);
+
+  gint32 ags_vst_iplugin_factory_create_instance(AgsVstIPluginFactory *factory,
+						 AgsVstFIDString cid, AgsVstFIDString _iid, void **obj);
+
+  typedef struct AgsVstPClassInfo2 PClassInfo2;
+  typedef struct AgsVstIPluginFactory2 IPluginFactory2;
+
+  AgsVstTUID ags_vst_iplugin_factory2_get_iid();
+
+  gint32 ags_vst_iplugin_factory2_get_class_info2(AgsVstIPluginFactory2 *factory,
+						  gint32 index, AgsVstPClassInfo2 *info);
+
+  typedef struct AgsVstPClassInfoW PClassInfoW;
+
+  typedef struct AgsVstIPluginFactory3 IPluginFactory3;
+
+  AgsVstTUID ags_vst_iplugin_factory3_get_iid();
+
+  gint32 ags_vst_iplugin_factory3_get_class_info_unicode(AgsVstIPluginFactory3 *factory,
+							 gint32 index, AgsVstPClassInfoW *info);
+
+  gint32 ags_vst_iplugin_factory3_set_host_context(AgsVstIPluginFactory3 *factory,
+						   AgsVstFUnknown *context);
+
+  AgsVstIPluginFactory*  ags_vst_get_plugin_factory();
+  typedef AgsVstIPluginFactory* (*GetFactoryProc)();
 
 #endif
 #ifdef __cplusplus
