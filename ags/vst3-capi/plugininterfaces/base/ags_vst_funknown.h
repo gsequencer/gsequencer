@@ -76,10 +76,8 @@ extern "C" {
   typedef gint64 AGS_VST_LARGE_INT; // obsolete
 
   typedef gint8 AgsVstTUID[16]; ///< plain UID type
-
-  AgsVstTUID ags_vst_funknown_get_iid();
   
-  gboolean ags_vst_funknown_private_iid_equal(const void* iid1, const void* iid2)
+  gboolean ags_vst_funknown_private_iid_equal(const void* iid1, const void* iid2);
 
   gint32 ags_vst_funknown_private_atomic_add(gint32 *value, gint32 amount);
 
@@ -94,8 +92,8 @@ extern "C" {
   gboolean ags_vst_fuid_generate(AgsVstFUID *fuid);
   gboolean ags_vst_fuid_is_valid(AgsVstFUID *fuid);
 
-  void ags_vst_fuid_memcpy(AgsVstFUID *destination_fuid,
-			   AgsVstFUID *source_fuid);
+  AgsVstFUID* ags_vst_fuid_equal(AgsVstFUID *destination_fuid,
+				 AgsVstFUID *source_fuid);
   void ags_vst_fuid_equals(AgsVstFUID *fuid_a,
 			   AgsVstFUID *fuid_b);
   void ags_vst_fuid_smaller(AgsVstFUID *fuid_a,
@@ -136,9 +134,8 @@ extern "C" {
   void ags_vst_fuid_print(AgsVstFUID *fuid,
 			  gchar *string, gint32 style);
 
-  void ags_vst_fuid_to_tuid_with_result(AgsVstFUID *fuid,
-					AgsVstTUID tuid,
-					AgsVstTUID result);
+  void ags_vst_fuid_to_tuid(AgsVstFUID *fuid,
+			    AgsVstTUID result);
   AgsVstTUID ags_vst_tuid_get_data(AgsVstFUID *fuid,
 				   AgsVstTUID tuid);
   AgsVstTUID ags_vst_fuid_to_tuid(AgsVstFUID *fuid,
@@ -148,6 +145,8 @@ extern "C" {
 				     AgsVstTUID uid);
   
   typedef struct AgsVstFUnknown FUnknown;
+
+  AgsVstTUID ags_vst_funknown_get_iid();
 
   gint32 ags_vst_funknown_query_interface(AgsVstFUnknown *funknown,
 					  TUID _iid, void** obj);
