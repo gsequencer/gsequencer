@@ -20,9 +20,9 @@
 #ifndef __AGS_VST_FUNKNOWN_H__
 #define __AGS_VST_FUNKNOWN_H__
 
-#include <ags/vst3-capi/pluginterfaces/base/fplatform.h>
+#include <ags/vst3-capi/pluginterfaces/base/ags_vst_fplatform.h>
 #include <ags/vst3-capi/pluginterfaces/base/ags_vst_ftypes.h>
-#include <ags/vst3-capi/pluginterfaces/base/smartpointer.h>
+#include <ags/vst3-capi/pluginterfaces/base/ags_vst_smart_pointer.h>
 
 #define AGS_VST_FUNKNOWN_IID (ags_vst_funknown_get_iid());
 

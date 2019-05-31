@@ -272,6 +272,7 @@ AM_CONDITIONAL([WITH_LIBINSTPATCH], [test "x$enable_libinstpatch" == xyes])
 AS_IF([test "x$enable_vst" != xno],
       [AC_DEFINE([AGS_WITH_VST], [1], [VST enabled])
 
+      AM_CONDITIONAL(VST_ALL, 0)
       AC_SUBST(VST_CXXFLAGS)
       AC_SUBST(VST_LIBS)
       

@@ -680,6 +680,8 @@ FONTCONFIG_LIBS
 FONTCONFIG_CFLAGS
 VST_LIBS
 VST_CXXFLAGS
+VST_ALL_FALSE
+VST_ALL_TRUE
 WITH_LIBINSTPATCH_FALSE
 WITH_LIBINSTPATCH_TRUE
 LIBINSTPATCH_LIBS
@@ -688,6 +690,8 @@ GIO_LIBS
 GIO_CFLAGS
 GOBJECT_LIBS
 GOBJECT_CFLAGS
+GLIB_LIBS
+GLIB_CFLAGS
 FFTW_LIBS
 FFTW_CFLAGS
 SNDFILE_LIBS
@@ -930,6 +934,8 @@ SNDFILE_CFLAGS
 SNDFILE_LIBS
 FFTW_CFLAGS
 FFTW_LIBS
+GLIB_CFLAGS
+GLIB_LIBS
 GOBJECT_CFLAGS
 GOBJECT_LIBS
 GIO_CFLAGS
@@ -1679,6 +1685,8 @@ Some influential environment variables:
               linker flags for SNDFILE, overriding pkg-config
   FFTW_CFLAGS C compiler flags for FFTW, overriding pkg-config
   FFTW_LIBS   linker flags for FFTW, overriding pkg-config
+  GLIB_CFLAGS C compiler flags for GLIB, overriding pkg-config
+  GLIB_LIBS   linker flags for GLIB, overriding pkg-config
   GOBJECT_CFLAGS
               C compiler flags for GOBJECT, overriding pkg-config
   GOBJECT_LIBS
@@ -21360,6 +21368,100 @@ fi
 
 
 pkg_failed=no
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for GLIB" >&5
+$as_echo_n "checking for GLIB... " >&6; }
+
+if test -n "$GLIB_CFLAGS"; then
+    pkg_cv_GLIB_CFLAGS="$GLIB_CFLAGS"
+ elif test -n "$PKG_CONFIG"; then
+    if test -n "$PKG_CONFIG" && \
+    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"glib-2.0 >= 2.32.3\""; } >&5
+  ($PKG_CONFIG --exists --print-errors "glib-2.0 >= 2.32.3") 2>&5
+  ac_status=$?
+  $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+  test $ac_status = 0; }; then
+  pkg_cv_GLIB_CFLAGS=`$PKG_CONFIG --cflags "glib-2.0 >= 2.32.3" 2>/dev/null`
+		      test "x$?" != "x0" && pkg_failed=yes
+else
+  pkg_failed=yes
+fi
+ else
+    pkg_failed=untried
+fi
+if test -n "$GLIB_LIBS"; then
+    pkg_cv_GLIB_LIBS="$GLIB_LIBS"
+ elif test -n "$PKG_CONFIG"; then
+    if test -n "$PKG_CONFIG" && \
+    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"glib-2.0 >= 2.32.3\""; } >&5
+  ($PKG_CONFIG --exists --print-errors "glib-2.0 >= 2.32.3") 2>&5
+  ac_status=$?
+  $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+  test $ac_status = 0; }; then
+  pkg_cv_GLIB_LIBS=`$PKG_CONFIG --libs "glib-2.0 >= 2.32.3" 2>/dev/null`
+		      test "x$?" != "x0" && pkg_failed=yes
+else
+  pkg_failed=yes
+fi
+ else
+    pkg_failed=untried
+fi
+
+
+
+if test $pkg_failed = yes; then
+   	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+
+if $PKG_CONFIG --atleast-pkgconfig-version 0.20; then
+        _pkg_short_errors_supported=yes
+else
+        _pkg_short_errors_supported=no
+fi
+        if test $_pkg_short_errors_supported = yes; then
+	        GLIB_PKG_ERRORS=`$PKG_CONFIG --short-errors --print-errors --cflags --libs "glib-2.0 >= 2.32.3" 2>&1`
+        else
+	        GLIB_PKG_ERRORS=`$PKG_CONFIG --print-errors --cflags --libs "glib-2.0 >= 2.32.3" 2>&1`
+        fi
+	# Put the nasty error message in config.log where it belongs
+	echo "$GLIB_PKG_ERRORS" >&5
+
+	as_fn_error $? "Package requirements (glib-2.0 >= 2.32.3) were not met:
+
+$GLIB_PKG_ERRORS
+
+Consider adjusting the PKG_CONFIG_PATH environment variable if you
+installed software in a non-standard prefix.
+
+Alternatively, you may set the environment variables GLIB_CFLAGS
+and GLIB_LIBS to avoid the need to call pkg-config.
+See the pkg-config man page for more details." "$LINENO" 5
+elif test $pkg_failed = untried; then
+     	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+	{ { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
+$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
+as_fn_error $? "The pkg-config script could not be found or is too old.  Make sure it
+is in your PATH or set the PKG_CONFIG environment variable to the full
+path to pkg-config.
+
+Alternatively, you may set the environment variables GLIB_CFLAGS
+and GLIB_LIBS to avoid the need to call pkg-config.
+See the pkg-config man page for more details.
+
+To get pkg-config, see <http://pkg-config.freedesktop.org/>.
+See \`config.log' for more details" "$LINENO" 5; }
+else
+	GLIB_CFLAGS=$pkg_cv_GLIB_CFLAGS
+	GLIB_LIBS=$pkg_cv_GLIB_LIBS
+        { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+$as_echo "yes" >&6; }
+
+fi
+
+
+
+
+pkg_failed=no
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for GOBJECT" >&5
 $as_echo_n "checking for GOBJECT... " >&6; }
 
@@ -21831,6 +21933,14 @@ if test "x$enable_vst" != xno; then :
 
 $as_echo "#define AGS_WITH_VST 1" >>confdefs.h
 
+
+       if 0; then
+  VST_ALL_TRUE=
+  VST_ALL_FALSE='#'
+else
+  VST_ALL_TRUE='#'
+  VST_ALL_FALSE=
+fi
 
 
 
@@ -23236,6 +23346,10 @@ Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 if test -z "${WITH_LIBINSTPATCH_TRUE}" && test -z "${WITH_LIBINSTPATCH_FALSE}"; then
   as_fn_error $? "conditional \"WITH_LIBINSTPATCH\" was never defined.
+Usually this means the macro was only invoked conditionally." "$LINENO" 5
+fi
+if test -z "${VST_ALL_TRUE}" && test -z "${VST_ALL_FALSE}"; then
+  as_fn_error $? "conditional \"VST_ALL\" was never defined.
 Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 if test -z "${RUN_FUNCTIONAL_TESTS_TRUE}" && test -z "${RUN_FUNCTIONAL_TESTS_FALSE}"; then

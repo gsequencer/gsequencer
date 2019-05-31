@@ -1,4 +1,4 @@
-# Copyright (C) 2005-2018 Jo\u00EBl Kr\u00E4hemann
+#Copyright (C) 2005-2019 Jo\u00EBl Kr\u00E4hemann
 # 
 # Copying and distribution of this file, with or without modification,
 # are permitted in any medium without royalty provided the copyright
@@ -2069,23 +2069,60 @@ deprecated_libags_vst_h_sources =
 
 libags_vst_h_sources = \
 	$(deprecated_libags_vst_h_sources) \
+	ags/vst3-capi/pluginterfaces/vst/ags_vst_types.h \
+	ags/vst3-capi/pluginterfaces/base/ags_vst_icloneable.h \
+	ags/vst3-capi/pluginterfaces/base/ags_vst_geo_constants.h \
+	ags/vst3-capi/pluginterfaces/base/ags_vst_ierror_context.h \
+	ags/vst3-capi/pluginterfaces/base/ags_vst_fvariant.h \
+	ags/vst3-capi/pluginterfaces/base/ags_vst_funknown.h \
+	ags/vst3-capi/pluginterfaces/base/ags_vst_ftypes.h \
+	ags/vst3-capi/pluginterfaces/base/ags_vst_iplugin_base.h \
+	ags/vst3-capi/pluginterfaces/base/ags_vst_futil.h \
+	ags/vst3-capi/pluginterfaces/base/ags_vst_ibstream.h \
+	ags/vst3-capi/pluginterfaces/base/ags_vst_fstrdefs.h \
+	ags/vst3-capi/pluginterfaces/base/ags_vst_const_string_table.h \
+	ags/vst3-capi/pluginterfaces/base/ags_vst_ipersistent.h \
+	ags/vst3-capi/pluginterfaces/base/ags_vst_fplatform.h \
+	ags/vst3-capi/pluginterfaces/base/ags_vst_smart_pointer.h \
+	ags/vst3-capi/util/ags_vst_string_util.h \
+	ags/vst3-capi/base/source/ags_vst_fbuffer.h
+
+if VST_ALL
 	ags/vst3-capi/public.sdk/source/vst/ags_vst_audio_effect.h \
 	ags/vst3-capi/public.sdk/source/vst/ags_vst_component.h \
 	ags/vst3-capi/public.sdk/source/vst/ags_vst_component_base.h \
 	ags/vst3-capi/public.sdk/source/vst/ags_vst_edit_controller.h \
 	ags/vst3-capi/public.sdk/source/vst/ags_vst_bus.h \
 	ags/vst3-capi/public.sdk/source/vst/ags_vst_parameters.h
+endif
 
 deprecated_libags_vst_c_sources =
 
 libags_vst_c_sources = \
 	$(deprecated_libags_vst_c_sources) \
+	ags/vst3-capi/pluginterfaces/base/ags_vst_icloneable.cpp \
+	ags/vst3-capi/pluginterfaces/base/ags_vst_geo_constants.cpp \
+	ags/vst3-capi/pluginterfaces/base/ags_vst_ierror_context.cpp \
+	ags/vst3-capi/pluginterfaces/base/ags_vst_fvariant.cpp \
+	ags/vst3-capi/pluginterfaces/base/ags_vst_funknown.cpp \
+	ags/vst3-capi/pluginterfaces/base/ags_vst_ftypes.cpp \
+	ags/vst3-capi/pluginterfaces/base/ags_vst_iplugin_base.cpp \
+	ags/vst3-capi/pluginterfaces/base/ags_vst_futil.cpp \
+	ags/vst3-capi/pluginterfaces/base/ags_vst_ibstream.cpp \
+	ags/vst3-capi/pluginterfaces/base/ags_vst_fstrdefs.cpp \
+	ags/vst3-capi/pluginterfaces/base/ags_vst_const_string_table.cpp \
+	ags/vst3-capi/pluginterfaces/base/ags_vst_ipersistent.cpp \
+	ags/vst3-capi/util/ags_vst_string_util.cpp \
+	ags/vst3-capi/base/source/ags_vst_fbuffer.cpp
+
+if VST_ALL
 	ags/vst3-capi/public.sdk/source/vst/ags_vst_audio_effect.cpp \
 	ags/vst3-capi/public.sdk/source/vst/ags_vst_component.cpp \
 	ags/vst3-capi/public.sdk/source/vst/ags_vst_component_base.cpp \
 	ags/vst3-capi/public.sdk/source/vst/ags_vst_edit_controller.cpp \
 	ags/vst3-capi/public.sdk/source/vst/ags_vst_bus.cpp \
 	ags/vst3-capi/public.sdk/source/vst/ags_vst_parameters.cpp
+endif
 
 # gsequencer all files
 gsequencerheaders = \

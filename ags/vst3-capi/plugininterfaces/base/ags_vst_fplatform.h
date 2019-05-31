@@ -17,26 +17,28 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __AGS_VST_ICLONEABLE_H__
-#define __AGS_VST_ICLONEABLE_H__
+#ifndef __AGS_VST_FPLATFORM_H__
+#define __AGS_VST_FPLATFORM_H__
 
-#include <ags/vst3-capi/plugininterfaces/base/ags_vst_funknown.h>
+#define AGS_VST_KLITTLE_ENDIAN    (0)
+#define AGS_VST_KBIG_ENDIAN       (1)
 
-#define AGS_VST_ICLONEABLE_IID (ags_vst_icloneable_get_iid());
+#include <endian.h>
+
+#if __BYTE_ORDER == __LITTLE_ENDIAN
+#define AGS_VST_BYTEORDER AGS_VST_KLITTLE_ENDIAN
+#else
+#define AGS_VST_BYTEORDER AGS_VST_KBIG_ENDIAN
+#endif
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-  
-  typedef struct AgsVstICloneable ICloneable;
 
-  AgsVstTUID ags_vst_icloneable_get_iid();
   
-  AgsVstFUnknow* ags_vst_icloneable_clone(AgsVstICloneable *cloneable);
   
-#endif
 #ifdef __cplusplus
 }
 #endif
 
-#endif /*__AGS_VST_ICLONEABLE_H__*/
+#endif /*__AGS_VST_FPLATFORM_H__*/
