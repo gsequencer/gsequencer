@@ -21,6 +21,8 @@
 
 #include <pluginterfaces/base/funknown.h>
 
+using namespace Steinberg;
+
 extern "C" {
 
   gboolean ags_vst_funknown_private_iid_equal(const void* iid1, const void* iid2)
@@ -35,17 +37,19 @@ extern "C" {
   
   AgsVstFUID* ags_vst_fuid_new()
   {
-    return(new FUID());
+    return((AgsVstFUID *) new Steinberg::FUID());
   }
   
   AgsVstFUID* ags_vst_fuid_new_with_iid(guint32 l1, guint32 l2, guint32 l3, guint32 l4)
   {
-    return(new FUID(l1, l2, l3, l4));
+    return((AgsVstFUID *) new Steinberg::FUID(l1, l2, l3, l4));
   }
   
   AgsVstFUID* ags_vst_fuid_new_from_fuid(AgsVstFUID *fuid)
   {
-    return(new FUID(fuid));
+    const Steinberg::FUID &this_fuid = (Steinberg::FUID &) fuid;
+    
+    return((AgsVstFUID *) new Steinberg::FUID(this_fuid));
   }
   
   void ags_vst_fuid_delete(AgsVstFUID *fuid)
@@ -55,12 +59,12 @@ extern "C" {
     
   gboolean ags_vst_fuid_generate(AgsVstFUID *fuid)
   {
-    return(static_cast<gboolean>(fuid->generate()));
+    return(static_cast<gboolean>(((Steinberg::FUID *) fuid)->generate()));
   }
   
   gboolean ags_vst_fuid_is_valid(AgsVstFUID *fuid)
   {
-    return(static_cast<gboolean>(fuid->isValid()));
+    return(static_cast<gboolean>(((Steinberg::FUID *) fuid)->isValid()));
   }
   
   AgsVstFUID* ags_vst_fuid_equal(AgsVstFUID *destination_fuid,
@@ -89,89 +93,86 @@ extern "C" {
   
   guint32 ags_vst_fuid_get_long1(AgsVstFUID *fuid)
   {
-    return(fuid->getLong1());
+    return(((Steinberg::FUID *) fuid)->getLong1());
   }
   
   guint32 ags_vst_fuid_get_long2(AgsVstFUID *fuid)
   {
-    return(fuid->getLong2());
+    return(((Steinberg::FUID *) fuid)->getLong2());
   }
   
   guint32 ags_vst_fuid_get_long3(AgsVstFUID *fuid)
   {
-    return(fuid->getLong3());
+    return(((Steinberg::FUID *) fuid)->getLong3());
   }
   
   guint32 ags_vst_fuid_get_long4(AgsVstFUID *fuid)
   {
-    return(fuid->getLong4());
+    return(((Steinberg::FUID *) fuid)->getLong4());
   }
   
   void ags_vst_fuid_from_uint32(AgsVstFUID *fuid,
 				guint32 d1, guint32 d2, guint32 d3, guint32 d4)
   {
-    fuid->from4Int(d1, d2, d3, d4);
+    ((Steinberg::FUID *) fuid)->from4Int(d1, d2, d3, d4);
   }
   
   void ags_vst_fuid_to_uint32(AgsVstFUID *fuid,
 			      guint32 *d1, guint32 *d2, guint32 *d3, guint32 *d4)
   {
-    fuid->to4Int(static_cast<uint32&>(d1[0]), static_cast<uint32&>(d2[0]), static_cast<uint32&>(d3[0]), static_cast<uint32&>(d4[0]));
+    ((Steinberg::FUID *) fuid)->to4Int(static_cast<uint32&>(d1[0]), static_cast<uint32&>(d2[0]), static_cast<uint32&>(d3[0]), static_cast<uint32&>(d4[0]));
   }
   
   void ags_vst_fuid_to_string(AgsVstFUID *fuid,
 			      gchar *string)
   {
-    fuid->toString(string);
+    ((Steinberg::FUID *) fuid)->toString(string);
   }
   
   gboolean ags_vst_fuid_from_string(AgsVstFUID *fuid,
 				    gchar *string)
   {
-    return(static_cast<gboolean>(fuid->fromString(string)));
+    return(static_cast<gboolean>(((Steinberg::FUID *) fuid)->fromString(string)));
   }
   
   void ags_vst_fuid_to_registry_string(AgsVstFUID *fuid,
 				       gchar *string)
   {
-    fuid->toRegistryString(string);
+    ((Steinberg::FUID *) fuid)->toRegistryString(string);
   }
   
   gboolean ags_vst_fuid_from_registry_string(AgsVstFUID *fuid,
 					     gchar *string)
   {
-    return(static_cast<gboolean>(fuid->fromRegistryString(string)));
+    return(static_cast<gboolean>(((Steinberg::FUID *) fuid)->fromRegistryString(string)));
   }
   
   void ags_vst_fuid_print(AgsVstFUID *fuid,
 			  gchar *string, gint32 style)
   {
-    fuid->print(string, style);
+    ((Steinberg::FUID *) fuid)->print(string, style);
   }
   
   void ags_vst_fuid_to_tuid_with_result(AgsVstFUID *fuid,
-					AgsVstTUID tuid,
-					AgsVstTUID result)
+					AgsVstTUID *result)
   {
-    tuid = fuid->toTUID(result);
+    ((Steinberg::FUID *) fuid)->toTUID(*(reinterpret_cast<Steinberg::TUID *>(result)));
   }
-  
-  AgsVstTUID* ags_vst_tuid_get_data(AgsVstFUID *fuid,
-				    AgsVstTUID tuid)
+    
+  AgsVstTUID* ags_vst_fuid_to_tuid(AgsVstFUID *fuid)
   {
-    return(reinterpret_cast<const AgsVstTUID*>(fuid->getData(tuid)));
-  }
-  
-  AgsVstTUID* ags_vst_fuid_to_tuid(AgsVstFUID *fuid,
-				   AgsVstTUID tuid)
-  {
-    return(reinterpret_cast<const AgsVstTUID*>(fuid->toTUID(tuid)));
+    return((AgsVstTUID *)(&(((Steinberg::FUID *) fuid)->toTUID())));
   }
   
   AgsVstFUID* ags_vst_fuid_from_tuid(AgsVstFUID *fuid,
-				     AgsVstTUID uid)
+				     AgsVstTUID *tuid)
   {
-    return(fuid->fromTUID(uid));
+    Steinberg::FUID *retval;
+
+    retval = (Steinberg::FUID *) new Steinberg::FUID();
+    retval[0] = ((Steinberg::FUID *) fuid)->fromTUID(((Steinberg::TUID *) tuid)[0]); 
+    
+    return((AgsVstFUID *) retval);
   }  
 
   const AgsVstTUID*
@@ -181,57 +182,57 @@ extern "C" {
   }
 
   gint32 ags_vst_funknown_query_interface(AgsVstFUnknown *funknown,
-					  TUID _iid, void** obj)
+					  AgsVstTUID *_iid, void **obj)
   {
-    return(funknown->queryInterface(_iid, obj));
+    return(((Steinberg::FUnknown *) funknown)->queryInterface(((Steinberg::TUID *) _iid)[0], obj));
   }
   
   guint32 ags_vst_funknown_add_ref(AgsVstFUnknown *funknown)
   {
-    return(funknown->addRef());
+    return(((Steinberg::FUnknown *) funknown)->addRef());
   }
   
   guint32 ags_vst_funknown_release(AgsVstFUnknown *funknown)
   {
-    return(funknown->release());
+    return(((Steinberg::FUnknown *) funknown)->release());
+  }
+
+  AgsVstFUnknownPtr* ags_vst_funknown_ptr_new()
+  {
+    return((AgsVstFUnknownPtr *) new Steinberg::FUnknownPtr());
   }
   
-  AgsVstFunknownPtr* ags_vst_funknown_ptr_new()
+  AgsVstFUnknownPtr* ags_vst_funknown_ptr_new_from_funknown_ptr(AgsVstFUnknownPtr *funknown_ptr)
   {
-    return(new FUnknownPtr());
+    return((AgsVstFUnknownPtr *) new Steinberg::FUnknownPtr((Steinberg::FUnknownPtr *) funknown_ptr));
   }
   
-  AgsVstFunknownPtr* ags_vst_funknown_ptr_new_from_template(AgsVstFUnknownPtr *funknown_ptr)
+  AgsVstFUnknownPtr* ags_vst_funknown_ptr_new_from_funknown(AgsVstFUnknown *funknown)
   {
-    return(new FUnknownPtr(funknown_ptr));
-  }
-  
-  AgsVstFunknownPtr* ags_vst_funknown_ptr_new_from_funknown(AgsVstFUnknown *funknown)
-  {
-    return(new FUnknownPtr(funknown));
+    return((AgsVstFUnknownPtr *) new Steinberg::FUnknownPtr((Steinberg::FUnknown *) funknown));
   }
     
-  void ags_funknown_get_interface(AgsVstFUnknownPtr *funknown_ptr,
-				  AgsVstI *vst_interface)
+  AgsVstI* ags_funknown_get_interface(AgsVstFUnknownPtr *funknown_ptr,
+				      AgsVstI *vst_interface)
   {
-    return(funknown_ptr->getInterface(vst_interface));
+    return((AgsVstI *) ((Steinberg::FUnknownPtr *)<((I*) vst_interface)[0]> funknown_ptr)->getInterface((I*) vst_interface));
   }
   
-  void ags_vst_funknown_ptr_set_funknown(AgsVstFunknownPtr *funknown_ptr,
+  void ags_vst_funknown_ptr_set_funknown(AgsVstFUnknownPtr *funknown_ptr,
 					 AgsVstFUnknown *funknown)
   {
     //TODO:JK: implement me
   }
   
-  void ags_vst_funknown_ptr_set_funknown_interface(AgsVstFunknownPtr *funknown_ptr,
+  void ags_vst_funknown_ptr_set_funknown_interface(AgsVstFUnknownPtr *funknown_ptr,
 						   AgsVstFUnknown *funknown, AgsVstI *vst_interface)
   {
     //TODO:JK: implement me
   }
   
-  AgsVstFReleaser* ags_freleaser_alloc(AgsVstFunknown *funknown)
+  AgsVstFReleaser* ags_freleaser_alloc(AgsVstFUnknown *funknown)
   {
-    return(new FReleaser());
+    return((AgsVstFReleaser *) new Steinberg::FReleaser((Steinberg::FUnknown *) funknown));
   }
   
   void ags_freleaser_free(AgsVstFReleaser *freleaser)

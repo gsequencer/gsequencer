@@ -96,12 +96,12 @@ extern "C" {
 
   AgsVstFUID* ags_vst_fuid_equal(AgsVstFUID *destination_fuid,
 				 AgsVstFUID *source_fuid);
-  void ags_vst_fuid_equals(AgsVstFUID *fuid_a,
-			   AgsVstFUID *fuid_b);
-  void ags_vst_fuid_smaller(AgsVstFUID *fuid_a,
-			    AgsVstFUID *fuid_b);
-  void ags_vst_fuid_not_equals(AgsVstFUID *fuid_a,
+  gboolean ags_vst_fuid_equals(AgsVstFUID *fuid_a,
 			       AgsVstFUID *fuid_b);
+  gboolean ags_vst_fuid_smaller(AgsVstFUID *fuid_a,
+				AgsVstFUID *fuid_b);
+  gboolean ags_vst_fuid_not_equals(AgsVstFUID *fuid_a,
+				   AgsVstFUID *fuid_b);
 
   guint32 ags_vst_fuid_get_long1(AgsVstFUID *fuid);
   guint32 ags_vst_fuid_get_long2(AgsVstFUID *fuid);
@@ -137,21 +137,18 @@ extern "C" {
 			  gchar *string, gint32 style);
 
   void ags_vst_fuid_to_tuid_with_result(AgsVstFUID *fuid,
-					AgsVstTUID result);
-  AgsVstTUID* ags_vst_tuid_get_data(AgsVstFUID *fuid,
-				    AgsVstTUID tuid);
-  AgsVstTUID* ags_vst_fuid_to_tuid(AgsVstFUID *fuid,
-				   AgsVstTUID tuid);
+					AgsVstTUID *result);
+  AgsVstTUID* ags_vst_fuid_to_tuid(AgsVstFUID *fuid);
 
   AgsVstFUID* ags_vst_fuid_from_tuid(AgsVstFUID *fuid,
-				     AgsVstTUID uid);
+				     AgsVstTUID *tuid);
   
   typedef struct AgsVstFUnknown FUnknown;
 
   const AgsVstTUID* ags_vst_funknown_get_iid();
 
   gint32 ags_vst_funknown_query_interface(AgsVstFUnknown *funknown,
-					  AgsVstTUID _iid, void** obj);
+					  AgsVstTUID *_iid, void **obj);
 
   guint32 ags_vst_funknown_add_ref(AgsVstFUnknown *funknown);
 
@@ -161,11 +158,11 @@ extern "C" {
   typedef struct AgsVstFUnknownPtr FUnknownPtr;
 
   AgsVstFUnknownPtr* ags_vst_funknown_ptr_new();
-  AgsVstFUnknownPtr* ags_vst_funknown_ptr_new_from_template(AgsVstFUnknownPtr *funknown_ptr);
+  AgsVstFUnknownPtr* ags_vst_funknown_ptr_new_from_funknown_ptr(AgsVstFUnknownPtr *funknown_ptr);
   AgsVstFUnknownPtr* ags_vst_funknown_ptr_new_from_funknown(AgsVstFUnknown *funknown);
   
-  void ags_funknown_get_interface(AgsVstFUnknownPtr *funknown_ptr,
-				  AgsVstI *vst_interface);
+  AgsVstI*  ags_funknown_get_interface(AgsVstFUnknownPtr *funknown_ptr,
+				       AgsVstI *vst_interface);
 
 #if 0
   void ags_vst_funknown_ptr_set_funknown(AgsVstFUnknownPtr *funknown_ptr,

@@ -2077,7 +2077,7 @@ libags_vst_h_sources = \
 	ags/vst3-capi/pluginterfaces/base/ags_vst_funknown.h \
 	ags/vst3-capi/pluginterfaces/base/ags_vst_ftypes.h \
 	ags/vst3-capi/pluginterfaces/base/ags_vst_iplugin_base.h \
-	ags/vst3-capi/pluginterfaces/base/ags_vst_futil.h \
+	ags/vst3-capi/pluginterfaces/base/ags_vst_futils.h \
 	ags/vst3-capi/pluginterfaces/base/ags_vst_ibstream.h \
 	ags/vst3-capi/pluginterfaces/base/ags_vst_fstrdefs.h \
 	ags/vst3-capi/pluginterfaces/base/ags_vst_const_string_table.h \
@@ -2107,7 +2107,7 @@ libags_vst_c_sources = \
 	ags/vst3-capi/pluginterfaces/base/ags_vst_funknown.cpp \
 	ags/vst3-capi/pluginterfaces/base/ags_vst_ftypes.cpp \
 	ags/vst3-capi/pluginterfaces/base/ags_vst_iplugin_base.cpp \
-	ags/vst3-capi/pluginterfaces/base/ags_vst_futil.cpp \
+	ags/vst3-capi/pluginterfaces/base/ags_vst_futils.cpp \
 	ags/vst3-capi/pluginterfaces/base/ags_vst_ibstream.cpp \
 	ags/vst3-capi/pluginterfaces/base/ags_vst_fstrdefs.cpp \
 	ags/vst3-capi/pluginterfaces/base/ags_vst_const_string_table.cpp \

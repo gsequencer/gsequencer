@@ -1071,7 +1071,7 @@ am__objects_27 = $(am__objects_1) \
 	ags/vst3-capi/pluginterfaces/base/libags_vst_la-ags_vst_funknown.lo \
 	ags/vst3-capi/pluginterfaces/base/libags_vst_la-ags_vst_ftypes.lo \
 	ags/vst3-capi/pluginterfaces/base/libags_vst_la-ags_vst_iplugin_base.lo \
-	ags/vst3-capi/pluginterfaces/base/libags_vst_la-ags_vst_futil.lo \
+	ags/vst3-capi/pluginterfaces/base/libags_vst_la-ags_vst_futils.lo \
 	ags/vst3-capi/pluginterfaces/base/libags_vst_la-ags_vst_ibstream.lo \
 	ags/vst3-capi/pluginterfaces/base/libags_vst_la-ags_vst_fstrdefs.lo \
 	ags/vst3-capi/pluginterfaces/base/libags_vst_la-ags_vst_const_string_table.lo \
@@ -4723,7 +4723,7 @@ am__depfiles_remade = ags/$(DEPDIR)/gsequencer-gsequencer_main.Po \
 	ags/vst3-capi/pluginterfaces/base/$(DEPDIR)/libags_vst_la-ags_vst_fstrdefs.Plo \
 	ags/vst3-capi/pluginterfaces/base/$(DEPDIR)/libags_vst_la-ags_vst_ftypes.Plo \
 	ags/vst3-capi/pluginterfaces/base/$(DEPDIR)/libags_vst_la-ags_vst_funknown.Plo \
-	ags/vst3-capi/pluginterfaces/base/$(DEPDIR)/libags_vst_la-ags_vst_futil.Plo \
+	ags/vst3-capi/pluginterfaces/base/$(DEPDIR)/libags_vst_la-ags_vst_futils.Plo \
 	ags/vst3-capi/pluginterfaces/base/$(DEPDIR)/libags_vst_la-ags_vst_fvariant.Plo \
 	ags/vst3-capi/pluginterfaces/base/$(DEPDIR)/libags_vst_la-ags_vst_geo_constants.Plo \
 	ags/vst3-capi/pluginterfaces/base/$(DEPDIR)/libags_vst_la-ags_vst_ibstream.Plo \
@@ -8919,7 +8919,7 @@ libags_vst_h_sources = \
 	ags/vst3-capi/pluginterfaces/base/ags_vst_funknown.h \
 	ags/vst3-capi/pluginterfaces/base/ags_vst_ftypes.h \
 	ags/vst3-capi/pluginterfaces/base/ags_vst_iplugin_base.h \
-	ags/vst3-capi/pluginterfaces/base/ags_vst_futil.h \
+	ags/vst3-capi/pluginterfaces/base/ags_vst_futils.h \
 	ags/vst3-capi/pluginterfaces/base/ags_vst_ibstream.h \
 	ags/vst3-capi/pluginterfaces/base/ags_vst_fstrdefs.h \
 	ags/vst3-capi/pluginterfaces/base/ags_vst_const_string_table.h \
@@ -8939,7 +8939,7 @@ libags_vst_c_sources = \
 	ags/vst3-capi/pluginterfaces/base/ags_vst_funknown.cpp \
 	ags/vst3-capi/pluginterfaces/base/ags_vst_ftypes.cpp \
 	ags/vst3-capi/pluginterfaces/base/ags_vst_iplugin_base.cpp \
-	ags/vst3-capi/pluginterfaces/base/ags_vst_futil.cpp \
+	ags/vst3-capi/pluginterfaces/base/ags_vst_futils.cpp \
 	ags/vst3-capi/pluginterfaces/base/ags_vst_ibstream.cpp \
 	ags/vst3-capi/pluginterfaces/base/ags_vst_fstrdefs.cpp \
 	ags/vst3-capi/pluginterfaces/base/ags_vst_const_string_table.cpp \
@@ -10373,7 +10373,7 @@ ags/vst3-capi/pluginterfaces/base/libags_vst_la-ags_vst_ftypes.lo:  \
 ags/vst3-capi/pluginterfaces/base/libags_vst_la-ags_vst_iplugin_base.lo:  \
 	ags/vst3-capi/pluginterfaces/base/$(am__dirstamp) \
 	ags/vst3-capi/pluginterfaces/base/$(DEPDIR)/$(am__dirstamp)
-ags/vst3-capi/pluginterfaces/base/libags_vst_la-ags_vst_futil.lo:  \
+ags/vst3-capi/pluginterfaces/base/libags_vst_la-ags_vst_futils.lo:  \
 	ags/vst3-capi/pluginterfaces/base/$(am__dirstamp) \
 	ags/vst3-capi/pluginterfaces/base/$(DEPDIR)/$(am__dirstamp)
 ags/vst3-capi/pluginterfaces/base/libags_vst_la-ags_vst_ibstream.lo:  \
@@ -13368,7 +13368,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@ags/vst3-capi/pluginterfaces/base/$(DEPDIR)/libags_vst_la-ags_vst_fstrdefs.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/vst3-capi/pluginterfaces/base/$(DEPDIR)/libags_vst_la-ags_vst_ftypes.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/vst3-capi/pluginterfaces/base/$(DEPDIR)/libags_vst_la-ags_vst_funknown.Plo@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@ags/vst3-capi/pluginterfaces/base/$(DEPDIR)/libags_vst_la-ags_vst_futil.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@ags/vst3-capi/pluginterfaces/base/$(DEPDIR)/libags_vst_la-ags_vst_futils.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/vst3-capi/pluginterfaces/base/$(DEPDIR)/libags_vst_la-ags_vst_fvariant.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/vst3-capi/pluginterfaces/base/$(DEPDIR)/libags_vst_la-ags_vst_geo_constants.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/vst3-capi/pluginterfaces/base/$(DEPDIR)/libags_vst_la-ags_vst_ibstream.Plo@am__quote@ # am--include-marker
@@ -20501,12 +20501,12 @@ ags/vst3-capi/pluginterfaces/base/libags_vst_la-ags_vst_iplugin_base.lo: ags/vst
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_vst_la_CXXFLAGS) $(CXXFLAGS) -c -o ags/vst3-capi/pluginterfaces/base/libags_vst_la-ags_vst_iplugin_base.lo `test -f 'ags/vst3-capi/pluginterfaces/base/ags_vst_iplugin_base.cpp' || echo '$(srcdir)/'`ags/vst3-capi/pluginterfaces/base/ags_vst_iplugin_base.cpp
 
-ags/vst3-capi/pluginterfaces/base/libags_vst_la-ags_vst_futil.lo: ags/vst3-capi/pluginterfaces/base/ags_vst_futil.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_vst_la_CXXFLAGS) $(CXXFLAGS) -MT ags/vst3-capi/pluginterfaces/base/libags_vst_la-ags_vst_futil.lo -MD -MP -MF ags/vst3-capi/pluginterfaces/base/$(DEPDIR)/libags_vst_la-ags_vst_futil.Tpo -c -o ags/vst3-capi/pluginterfaces/base/libags_vst_la-ags_vst_futil.lo `test -f 'ags/vst3-capi/pluginterfaces/base/ags_vst_futil.cpp' || echo '$(srcdir)/'`ags/vst3-capi/pluginterfaces/base/ags_vst_futil.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) ags/vst3-capi/pluginterfaces/base/$(DEPDIR)/libags_vst_la-ags_vst_futil.Tpo ags/vst3-capi/pluginterfaces/base/$(DEPDIR)/libags_vst_la-ags_vst_futil.Plo
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='ags/vst3-capi/pluginterfaces/base/ags_vst_futil.cpp' object='ags/vst3-capi/pluginterfaces/base/libags_vst_la-ags_vst_futil.lo' libtool=yes @AMDEPBACKSLASH@
+ags/vst3-capi/pluginterfaces/base/libags_vst_la-ags_vst_futils.lo: ags/vst3-capi/pluginterfaces/base/ags_vst_futils.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_vst_la_CXXFLAGS) $(CXXFLAGS) -MT ags/vst3-capi/pluginterfaces/base/libags_vst_la-ags_vst_futils.lo -MD -MP -MF ags/vst3-capi/pluginterfaces/base/$(DEPDIR)/libags_vst_la-ags_vst_futils.Tpo -c -o ags/vst3-capi/pluginterfaces/base/libags_vst_la-ags_vst_futils.lo `test -f 'ags/vst3-capi/pluginterfaces/base/ags_vst_futils.cpp' || echo '$(srcdir)/'`ags/vst3-capi/pluginterfaces/base/ags_vst_futils.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) ags/vst3-capi/pluginterfaces/base/$(DEPDIR)/libags_vst_la-ags_vst_futils.Tpo ags/vst3-capi/pluginterfaces/base/$(DEPDIR)/libags_vst_la-ags_vst_futils.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='ags/vst3-capi/pluginterfaces/base/ags_vst_futils.cpp' object='ags/vst3-capi/pluginterfaces/base/libags_vst_la-ags_vst_futils.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_vst_la_CXXFLAGS) $(CXXFLAGS) -c -o ags/vst3-capi/pluginterfaces/base/libags_vst_la-ags_vst_futil.lo `test -f 'ags/vst3-capi/pluginterfaces/base/ags_vst_futil.cpp' || echo '$(srcdir)/'`ags/vst3-capi/pluginterfaces/base/ags_vst_futil.cpp
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_vst_la_CXXFLAGS) $(CXXFLAGS) -c -o ags/vst3-capi/pluginterfaces/base/libags_vst_la-ags_vst_futils.lo `test -f 'ags/vst3-capi/pluginterfaces/base/ags_vst_futils.cpp' || echo '$(srcdir)/'`ags/vst3-capi/pluginterfaces/base/ags_vst_futils.cpp
 
 ags/vst3-capi/pluginterfaces/base/libags_vst_la-ags_vst_ibstream.lo: ags/vst3-capi/pluginterfaces/base/ags_vst_ibstream.cpp
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_vst_la_CXXFLAGS) $(CXXFLAGS) -MT ags/vst3-capi/pluginterfaces/base/libags_vst_la-ags_vst_ibstream.lo -MD -MP -MF ags/vst3-capi/pluginterfaces/base/$(DEPDIR)/libags_vst_la-ags_vst_ibstream.Tpo -c -o ags/vst3-capi/pluginterfaces/base/libags_vst_la-ags_vst_ibstream.lo `test -f 'ags/vst3-capi/pluginterfaces/base/ags_vst_ibstream.cpp' || echo '$(srcdir)/'`ags/vst3-capi/pluginterfaces/base/ags_vst_ibstream.cpp
@@ -23376,7 +23376,7 @@ distclean: distclean-recursive
 	-rm -f ags/vst3-capi/pluginterfaces/base/$(DEPDIR)/libags_vst_la-ags_vst_fstrdefs.Plo
 	-rm -f ags/vst3-capi/pluginterfaces/base/$(DEPDIR)/libags_vst_la-ags_vst_ftypes.Plo
 	-rm -f ags/vst3-capi/pluginterfaces/base/$(DEPDIR)/libags_vst_la-ags_vst_funknown.Plo
-	-rm -f ags/vst3-capi/pluginterfaces/base/$(DEPDIR)/libags_vst_la-ags_vst_futil.Plo
+	-rm -f ags/vst3-capi/pluginterfaces/base/$(DEPDIR)/libags_vst_la-ags_vst_futils.Plo
 	-rm -f ags/vst3-capi/pluginterfaces/base/$(DEPDIR)/libags_vst_la-ags_vst_fvariant.Plo
 	-rm -f ags/vst3-capi/pluginterfaces/base/$(DEPDIR)/libags_vst_la-ags_vst_geo_constants.Plo
 	-rm -f ags/vst3-capi/pluginterfaces/base/$(DEPDIR)/libags_vst_la-ags_vst_ibstream.Plo
@@ -24254,7 +24254,7 @@ maintainer-clean: maintainer-clean-recursive
 	-rm -f ags/vst3-capi/pluginterfaces/base/$(DEPDIR)/libags_vst_la-ags_vst_fstrdefs.Plo
 	-rm -f ags/vst3-capi/pluginterfaces/base/$(DEPDIR)/libags_vst_la-ags_vst_ftypes.Plo
 	-rm -f ags/vst3-capi/pluginterfaces/base/$(DEPDIR)/libags_vst_la-ags_vst_funknown.Plo
-	-rm -f ags/vst3-capi/pluginterfaces/base/$(DEPDIR)/libags_vst_la-ags_vst_futil.Plo
+	-rm -f ags/vst3-capi/pluginterfaces/base/$(DEPDIR)/libags_vst_la-ags_vst_futils.Plo
 	-rm -f ags/vst3-capi/pluginterfaces/base/$(DEPDIR)/libags_vst_la-ags_vst_fvariant.Plo
 	-rm -f ags/vst3-capi/pluginterfaces/base/$(DEPDIR)/libags_vst_la-ags_vst_geo_constants.Plo
 	-rm -f ags/vst3-capi/pluginterfaces/base/$(DEPDIR)/libags_vst_la-ags_vst_ibstream.Plo
