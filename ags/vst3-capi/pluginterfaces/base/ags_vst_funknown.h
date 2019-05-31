@@ -86,7 +86,7 @@ extern "C" {
   typedef struct AgsVstFUID FUID;
 
   AgsVstFUID* ags_vst_fuid_new();
-  AgsVstFUID* ags_vst_fuid_new_with_iid(uint32 l1, uint32 l2, uint32 l3, uint32 l4);
+  AgsVstFUID* ags_vst_fuid_new_with_iid(guint32 l1, guint32 l2, guint32 l3, guint32 l4);
   AgsVstFUID* ags_vst_fuid_new_from_fuid(AgsVstFUID *fuid);
 
   void ags_vst_fuid_delete(AgsVstFUID *fuid);
@@ -136,22 +136,22 @@ extern "C" {
   void ags_vst_fuid_print(AgsVstFUID *fuid,
 			  gchar *string, gint32 style);
 
-  void ags_vst_fuid_to_tuid(AgsVstFUID *fuid,
-			    AgsVstTUID result);
-  AgsVstTUID ags_vst_tuid_get_data(AgsVstFUID *fuid,
+  void ags_vst_fuid_to_tuid_with_result(AgsVstFUID *fuid,
+					AgsVstTUID result);
+  AgsVstTUID* ags_vst_tuid_get_data(AgsVstFUID *fuid,
+				    AgsVstTUID tuid);
+  AgsVstTUID* ags_vst_fuid_to_tuid(AgsVstFUID *fuid,
 				   AgsVstTUID tuid);
-  AgsVstTUID ags_vst_fuid_to_tuid(AgsVstFUID *fuid,
-				  AgsVstTUID tuid);
 
   AgsVstFUID* ags_vst_fuid_from_tuid(AgsVstFUID *fuid,
 				     AgsVstTUID uid);
   
   typedef struct AgsVstFUnknown FUnknown;
 
-  AgsVstTUID ags_vst_funknown_get_iid();
+  const AgsVstTUID* ags_vst_funknown_get_iid();
 
   gint32 ags_vst_funknown_query_interface(AgsVstFUnknown *funknown,
-					  TUID _iid, void** obj);
+					  AgsVstTUID _iid, void** obj);
 
   guint32 ags_vst_funknown_add_ref(AgsVstFUnknown *funknown);
 
@@ -160,23 +160,23 @@ extern "C" {
   typedef struct AgsVstI I;
   typedef struct AgsVstFUnknownPtr FUnknownPtr;
 
-  AgsVstFunknownPtr* ags_vst_funknown_ptr_new();
-  AgsVstFunknownPtr* ags_vst_funknown_ptr_new_from_template(AgsVstFUnknownPtr *funknown_ptr);
-  AgsVstFunknownPtr* ags_vst_funknown_ptr_new_from_funknown(AgsVstFUnknown *funknown);
+  AgsVstFUnknownPtr* ags_vst_funknown_ptr_new();
+  AgsVstFUnknownPtr* ags_vst_funknown_ptr_new_from_template(AgsVstFUnknownPtr *funknown_ptr);
+  AgsVstFUnknownPtr* ags_vst_funknown_ptr_new_from_funknown(AgsVstFUnknown *funknown);
   
   void ags_funknown_get_interface(AgsVstFUnknownPtr *funknown_ptr,
 				  AgsVstI *vst_interface);
 
 #if 0
-  void ags_vst_funknown_ptr_set_funknown(AgsVstFunknownPtr *funknown_ptr,
+  void ags_vst_funknown_ptr_set_funknown(AgsVstFUnknownPtr *funknown_ptr,
 					 AgsVstFUnknown *funknown);
-  void ags_vst_funknown_ptr_set_funknown_interface(AgsVstFunknownPtr *funknown_ptr,
+  void ags_vst_funknown_ptr_set_funknown_interface(AgsVstFUnknownPtr *funknown_ptr,
 						   AgsVstFUnknown *funknown, AgsVstI *vst_interface);
 #endif
   
   typedef struct AgsVstFReleaser FReleaser;
   
-  AgsVstFReleaser* ags_freleaser_alloc(AgsVstFunknown *funknown);
+  AgsVstFReleaser* ags_freleaser_alloc(AgsVstFUnknown *funknown);
   void ags_freleaser_free(AgsVstFReleaser *freleaser);
   
 #ifdef __cplusplus

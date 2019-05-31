@@ -20,7 +20,7 @@
 #ifndef __AGS_VST_ICLONEABLE_H__
 #define __AGS_VST_ICLONEABLE_H__
 
-#include <ags/vst3-capi/plugininterfaces/base/ags_vst_funknown.h>
+#include <ags/vst3-capi/pluginterfaces/base/ags_vst_funknown.h>
 
 #define AGS_VST_ICLONEABLE_IID (ags_vst_icloneable_get_iid());
 
@@ -30,11 +30,11 @@ extern "C" {
   
   typedef struct AgsVstICloneable ICloneable;
 
-  AgsVstTUID ags_vst_icloneable_get_iid();
+  const AgsVstTUID* ags_vst_icloneable_get_iid();
   
-  AgsVstFUnknow* ags_vst_icloneable_clone(AgsVstICloneable *cloneable);
+  AgsVstFUnknown* ags_vst_icloneable_clone(AgsVstICloneable *cloneable);
   
-#endif
+
 #ifdef __cplusplus
 }
 #endif

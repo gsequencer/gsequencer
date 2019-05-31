@@ -76,7 +76,7 @@ extern "C" {
   AgsVstIAttrID ags_vst_iattributes2_get_attribute_id(AgsVstIAttributes2 *attr,
 						      gint32 index);
 
-#endif
+
 #ifdef __cplusplus
 }
 #endif

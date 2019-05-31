@@ -17,22 +17,24 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <ags/vst3-capi/plugininterfaces/base/ags_vst_ierror_context.h>
+#include <ags/vst3-capi/pluginterfaces/base/ags_vst_ierror_context.h>
 
-#include <plugininterfaces/base/ierrorcontext.h>
+#include <pluginterfaces/base/ierrorcontext.h>
+
+using namespace Steinberg;
 
 extern "C" {
 
-  AgsVstTUID
+  const AgsVstTUID*
   ags_vst_ierror_context_get_iid()
   {
-    return(IErrorContext__iid);
+    return(reinterpret_cast<const AgsVstTUID*>(&INLINE_UID_OF(Steinberg::IErrorContext)));
   }
 
   gint32 ags_vst_ierror_context_get_error_message(AgsVstIErrorContext *error_context,
 						  AgsVstIString *message)
   {
-    return(error_context->getErrorMessage(message));
+    return(((Steinberg::IErrorContext *) error_context)->getErrorMessage((Steinberg::IString *) message));
   }
 
 }

@@ -17,50 +17,52 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <ags/vst3-capi/plugininterfaces/base/ags_vst_fvariant.h>
+#include <ags/vst3-capi/pluginterfaces/base/ags_vst_fvariant.h>
 
-#include <plugininterfaces/base/fvariant.h>
+#include <pluginterfaces/base/fvariant.h>
+
+using namespace Steinberg;
 
 extern "C" {
 
   AgsVstFVariant* ags_vst_fvariant_new()
   {
-    return(new FVariant());
+    return((AgsVstFVariant *) new Steinberg::FVariant());
   }
   
   AgsVstFVariant* ags_vst_fvariant_new_boolean(gboolean val)
   {
-    return(new FVariant(static_cast<bool>(val)));
+    return((AgsVstFVariant *) new Steinberg::FVariant(static_cast<bool>(val)));
   }
   
   AgsVstFVariant* ags_vst_fvariant_new_uint32(guint32 val)
   {
-    return(new FVariant(val));
+    return((AgsVstFVariant *) new Steinberg::FVariant(static_cast<uint32>(val)));
   }
   
   AgsVstFVariant* ags_vst_fvariant_new_int64(gint64 val)
   {
-    return(new FVariant(val));
+    return((AgsVstFVariant *) new Steinberg::FVariant(static_cast<int64>(val)));
   }
   
   AgsVstFVariant* ags_vst_fvariant_new_double(gdouble val)
   {
-    return(new FVariant(val));
+    return((AgsVstFVariant *) new Steinberg::FVariant(static_cast<double>(val)));
   }
   
   AgsVstFVariant* ags_vst_fvariant_new_string(gchar *str)
   {
-    return(new FVariant(str));
+    return((AgsVstFVariant *) new Steinberg::FVariant(static_cast<const char8 *>(str)));
   }
   
   AgsVstFVariant* ags_vst_fvariant_new_wstring(gunichar2 *str)
   {
-    return(new FVariant(str));
+    return((AgsVstFVariant *) new Steinberg::FVariant(str));
   }
   
   AgsVstFVariant* ags_vst_fvariant_new_funknown(AgsVstFUnknown *funknown, gboolean owner)
   {
-    return(new FVariant(funknown, owner));
+    return((AgsVstFVariant *) new Steinberg::FVariant((Steinberg::FUnknown *) funknown, static_cast<bool>(owner)));
   }
   
   void ags_vst_fvariant_delete(AgsVstFVariant *fvariant)
@@ -71,109 +73,109 @@ extern "C" {
   void ags_vst_fvariant_set_boolean(AgsVstFVariant *fvariant,
 				    gboolean val)
   {
-    fvariant->set(static_cast<bool>(val));
+    ((Steinberg::FVariant *) fvariant)->set(static_cast<bool>(val));
   }
   
   void ags_vst_fvariant_set_uin32(AgsVstFVariant *fvariant,
 				  guint32 val)
   {
-    fvariant->set(val);
+    ((Steinberg::FVariant *) fvariant)->set(static_cast<uint32>(val));
   }
   
   void ags_vst_fvariant_set_int64(AgsVstFVariant *fvariant,
 				  gint64 val)
   {
-    fvariant->set(val);
+    ((Steinberg::FVariant *) fvariant)->set(static_cast<int64>(val));
   }
   
   void ags_vst_fvariant_set_double(AgsVstFVariant *fvariant,
 				   gdouble val)
   {
-    fvariant->set(val);
+    ((Steinberg::FVariant *) fvariant)->set(static_cast<double>(val));
   }
   
   void ags_vst_fvariant_set_string(AgsVstFVariant *fvariant,
 				   gchar *str)
   {
-    fvariant->set(str);
+    ((Steinberg::FVariant *) fvariant)->set(static_cast<char8 *>(str));
   }
   
   void ags_vst_fvariant_set_wstring(AgsVstFVariant *fvariant,
 				    gunichar2 *str)
   {
-    fvariant->set(str);
+    ((Steinberg::FVariant *) fvariant)->set(reinterpret_cast<char16 *>(str));
   }
   
   void ags_vst_fvariant_set_object(AgsVstFVariant *fvariant,
-				   AgsVstFunknown *obj)
+				   AgsVstFUnknown *obj)
   {
-    fvariant->set(obj);
+    ((Steinberg::FVariant *) fvariant)->set((Steinberg::FUnknown *) obj);
   }
   
   gboolean ags_vst_fvariant_get_boolean(AgsVstFVariant *fvariant)
   {
-    return(fvariant->get<bool>());
+    return(((Steinberg::FVariant *) fvariant)->get<bool>());
   }
   
   guint32 ags_vst_fvariant_get_uint32(AgsVstFVariant *fvariant)
   {
-    return(fvariant->get<uint32>());
+    return(((Steinberg::FVariant *) fvariant)->get<uint32>());
   }
   
   gint64 ags_vst_fvariant_get_int64(AgsVstFVariant *fvariant)
   {
-    return(fvariant->get<int64>());
+    return(((Steinberg::FVariant *) fvariant)->get<int64>());
   }
   
   gdouble ags_vst_fvariant_get_double(AgsVstFVariant *fvariant)
   {
-    return(fvariant->get<double>());
+    return(((Steinberg::FVariant *) fvariant)->get<double>());
   }
   
   gchar* ags_vst_fvariant_get_string(AgsVstFVariant *fvariant)
   {
-    return(fvariant->get<char8*>());
+    return(((Steinberg::FVariant *) fvariant)->get<char8*>());
   }
   
   gunichar2* ags_vst_fvariant_get_wstring(AgsVstFVariant *fvariant)
   {
-    return(fvariant->get<char16*>());
+    return(reinterpret_cast<gunichar2 *>(((Steinberg::FVariant *) fvariant)->get<char16*>()));
   }
   
   AgsVstFUnknown* ags_vst_fvariant_get_object(AgsVstFVariant *fvariant)
   {
-    return(fvariant->get<FUnknown*>());
+    return((AgsVstFUnknown *) ((Steinberg::FVariant *) fvariant)->getObject());
   }
   
   guint16 ags_vst_fvariant_get_type(AgsVstFVariant *fvariant)
   {
-    return(fvariant->getType());
+    return(((Steinberg::FVariant *) fvariant)->getType());
   }
   
   gboolean ags_vst_fvariant_is_empty(AgsVstFVariant *fvariant)
   {
-    return(static_cast<gboolean>(fvariant->isEmpty()));
+    return(static_cast<gboolean>(((Steinberg::FVariant *) fvariant)->isEmpty()));
   }
   
   gboolean ags_vst_fvariant_is_owner(AgsVstFVariant *fvariant)
   {
-    return(static_cast<gboolean>(fvariant->isOwner()));
+    return(static_cast<gboolean>(((Steinberg::FVariant *) fvariant)->isOwner()));
   }
   
   gboolean ags_vst_fvariant_is_string(AgsVstFVariant *fvariant)
   {
-    return(static_cast<gboolean>(fvariant->isString()));
+    return(static_cast<gboolean>(((Steinberg::FVariant *) fvariant)->isString()));
   }
   
   void ags_vst_fvariant_set_owner(AgsVstFVariant *fvariant,
 				  gboolean state)
   {
-    fvariant->setOwner(static_cast<bool>(state));
+    ((Steinberg::FVariant *) fvariant)->setOwner(static_cast<bool>(state));
   }
   
   void ags_vst_fvariant_empty(AgsVstFVariant *fvariant)
   {
-    fvariant->empty()
+    ((Steinberg::FVariant *) fvariant)->empty();
   }  
 
 }

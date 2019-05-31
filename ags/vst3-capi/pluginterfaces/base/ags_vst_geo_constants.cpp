@@ -17,28 +17,25 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __AGS_VST_IERROR_CONTEXT_H__
-#define __AGS_VST_IERROR_CONTEXT_H__
+#include <ags/vst3-capi/pluginterfaces/base/ags_vst_geo_constants.h>
 
-#include <ags/vst3-capi/pluginterfaces/base/ags_vst_funknown.h>
+#include <pluginterfaces/base/geoconstants.h>
 
-#define AGS_VST_IERROR_CONTEXT_IID (ags_vst_ierror_context_get_iid());
-
-#ifdef __cplusplus
 extern "C" {
-#endif
 
-  typedef struct AgsVstIString IString;
-  typedef struct AgsVstIErrorContext IErrorContext;
-
-  const AgsVstTUID* ags_vst_ierror_context_get_iid();
+  AgsVstDirection ags_vst_geo_constants_to_oposite(AgsVstDirection dir)
+  {
+    //TODO:JK: implement me
+  }
   
-  gint32 ags_vst_ierror_context_get_error_message(AgsVstIErrorContext *error_context,
-						  AgsVstIString *message);
+  AgsVstOrientation ags_vst_geo_constants_to_orientation(AgsVstDirection dir)
+  {
+    //TODO:JK: implement me
+  }
   
-
-#ifdef __cplusplus
+  AgsVstOrientation ags_vst_geo_constants_to_orthogonal_orientation(AgsVstOrientation dir)
+  {
+    //TODO:JK: implement me
+  }
+  
 }
-#endif
-
-#endif /*__AGS_VST_IERROR_CONTEXT_H__*/

@@ -20,6 +20,10 @@
 #ifndef __AGS_VST_STRDEFS_H__
 #define __AGS_VST_STRDEFS_H__
 
+#include <glib.h>
+
+#include <ags/vst3-capi/pluginterfaces/base/ags_vst_ftypes.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -31,7 +35,7 @@ extern "C" {
 #ifdef UNICODE
   static const ags_vst_tchar ags_vst_kinfinite_symbol[] = { 0x221E, 0 };
 #else
-  static const ags_vst_tchar* const ags_vst_kinfinite_symbol = STR ("oo");
+//  static const ags_vst_tchar* const ags_vst_kinfinite_symbol = "oo";
 #endif
 
   gint32 ags_vst_tstrlen(ags_vst_tchar *str);

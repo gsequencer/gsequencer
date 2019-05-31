@@ -20,8 +20,8 @@
 #ifndef __AGS_VST_IPLUGIN_BASE_H__
 #define __AGS_VST_IPLUGIN_BASE_H__
 
-#include <ags/vst3-capi/pluginterfaces/base/funknown.h>
-#include <ags/vst3-capi/pluginterfaces/base/fstrdefs.h>
+#include <ags/vst3-capi/pluginterfaces/base/ags_vst_funknown.h>
+#include <ags/vst3-capi/pluginterfaces/base/ags_vst_fstrdefs.h>
 
 #define AGS_VST_IPLUGIN_BASE_IID (ags_vst_iplugin_base_get_iid());
 #define AGS_VST_IPLUGIN_FACTORY_IID (ags_vst_iplugin_factory_get_iid());
@@ -82,7 +82,7 @@ extern "C" {
   AgsVstIPluginFactory*  ags_vst_get_plugin_factory();
   typedef AgsVstIPluginFactory* (*GetFactoryProc)();
 
-#endif
+
 #ifdef __cplusplus
 }
 #endif

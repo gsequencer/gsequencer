@@ -20,6 +20,8 @@
 #ifndef __AGS_VST_FPLATFORM_H__
 #define __AGS_VST_FPLATFORM_H__
 
+#include <glib.h>
+
 #define AGS_VST_KLITTLE_ENDIAN    (0)
 #define AGS_VST_KBIG_ENDIAN       (1)
 

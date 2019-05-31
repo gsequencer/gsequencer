@@ -28,8 +28,28 @@ extern "C" {
 
   typedef struct AgsVstIPtr IPtr;
 
-  
-  
+  AgsVstIPtr* ags_vst_iptr_new();
+  void ags_vst_iptr_delete(AgsVstIPtr *iptr);
+
+  void* ags_vst_iptr_get(AgsVstIPtr *iptr);
+
+  AgsVstIPtr* ags_vst_iptr_move_ptr(AgsVstIPtr **iptr);
+
+  void ags_vst_iptr_reset(void *obj);
+
+  void* ags_vst_iptr_take(AgsVstIPtr *iptr);
+  AgsVstIPtr* ags_vst_iptr_adopt(AgsVstIPtr *iptr,
+				 void *obj);
+
+  typedef struct AgsVstOPtr OPtr;
+
+  AgsVstOPtr* ags_vst_optr_new();
+  void ags_vst_optr_delete(AgsVstOPtr *optr);
+
+  typedef struct AgsVstUsed Used;
+
+  typedef struct AgsVstAdopt Adopt;
+
 #ifdef __cplusplus
 }
 #endif

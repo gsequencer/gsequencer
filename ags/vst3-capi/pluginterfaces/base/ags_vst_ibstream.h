@@ -61,7 +61,7 @@ extern "C" {
   gint32 ags_vst_isizeable_stream_set_stream_size(AgsVstISizeableStream *isizeable_stream,
 						  gint64 size);
   
-#endif
+
 #ifdef __cplusplus
 }
 #endif

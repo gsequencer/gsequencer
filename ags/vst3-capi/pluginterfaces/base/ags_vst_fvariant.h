@@ -20,7 +20,10 @@
 #ifndef __AGS_VST_FVARIANT_H__
 #define __AGS_VST_FVARIANT_H__
 
-#include <ags/vst3-capi/pluginterfaces/base/ags_vst_ftypes.h>
+#include <glib.h>
+
+#include <ags/vst3-capi/pluginterfaces/base/ags_vst_fstrdefs.h>
+#include <ags/vst3-capi/pluginterfaces/base/ags_vst_funknown.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -63,7 +66,7 @@ extern "C" {
   void ags_vst_fvariant_set_wstring(AgsVstFVariant *fvariant,
 				    gunichar2 *str);
   void ags_vst_fvariant_set_object(AgsVstFVariant *fvariant,
-				   AgsVstFunknown *obj);
+				   AgsVstFUnknown *obj);
 
   gboolean ags_vst_fvariant_get_boolean(AgsVstFVariant *fvariant);
   guint32 ags_vst_fvariant_get_uint32(AgsVstFVariant *fvariant);

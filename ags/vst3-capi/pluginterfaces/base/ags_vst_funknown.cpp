@@ -17,9 +17,9 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <ags/vst3-capi/plugininterfaces/base/ags_vst_funknown.h>
+#include <ags/vst3-capi/pluginterfaces/base/ags_vst_funknown.h>
 
-#include <plugininterfaces/base/funknown.h>
+#include <pluginterfaces/base/funknown.h>
 
 extern "C" {
 
@@ -38,7 +38,7 @@ extern "C" {
     return(new FUID());
   }
   
-  AgsVstFUID* ags_vst_fuid_new_with_iid(uint32 l1, uint32 l2, uint32 l3, uint32 l4)
+  AgsVstFUID* ags_vst_fuid_new_with_iid(guint32 l1, guint32 l2, guint32 l3, guint32 l4)
   {
     return(new FUID(l1, l2, l3, l4));
   }
@@ -156,16 +156,16 @@ extern "C" {
     tuid = fuid->toTUID(result);
   }
   
-  AgsVstTUID ags_vst_tuid_get_data(AgsVstFUID *fuid,
-				   AgsVstTUID tuid)
+  AgsVstTUID* ags_vst_tuid_get_data(AgsVstFUID *fuid,
+				    AgsVstTUID tuid)
   {
-    return(fuid->getData(tuid));
+    return(reinterpret_cast<const AgsVstTUID*>(fuid->getData(tuid)));
   }
   
-  AgsVstTUID ags_vst_fuid_to_tuid(AgsVstFUID *fuid,
-				  AgsVstTUID tuid)
+  AgsVstTUID* ags_vst_fuid_to_tuid(AgsVstFUID *fuid,
+				   AgsVstTUID tuid)
   {
-    return(fuid->toTUID(tuid));
+    return(reinterpret_cast<const AgsVstTUID*>(fuid->toTUID(tuid)));
   }
   
   AgsVstFUID* ags_vst_fuid_from_tuid(AgsVstFUID *fuid,
@@ -174,10 +174,10 @@ extern "C" {
     return(fuid->fromTUID(uid));
   }  
 
-  AgsVstTUID
+  const AgsVstTUID*
   ags_vst_funknown_get_iid()
   {
-    return(FUnkown__iid);
+    return(reinterpret_cast<const AgsVstTUID*>(&INLINE_UID_OF(Steinberg::FUnknown)));
   }
 
   gint32 ags_vst_funknown_query_interface(AgsVstFUnknown *funknown,

@@ -17,21 +17,23 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <ags/vst3-capi/plugininterfaces/base/ags_vst_icloneable.h>
+#include <ags/vst3-capi/pluginterfaces/base/ags_vst_icloneable.h>
 
-#include <plugininterfaces/base/icloneable.h>
+#include <pluginterfaces/base/icloneable.h>
 
 extern "C" {
 
-  AgsVstTUID
+  const AgsVstTUID*
   ags_vst_icloneable_get_iid()
   {
-    return(ICloneable__iid);
+    return(reinterpret_cast<const AgsVstTUID*>(&INLINE_UID_OF(Steinberg::ICloneable)));
   }
 
-  AgsVstFUnknow* ags_vst_icloneable_clone(AgsVstICloneable *cloneable)
+#if 0  
+  AgsVstFUnknown* ags_vst_icloneable_clone(AgsVstICloneable *cloneable)
   {
     return(cloneable->clone());
   }
-
+#endif
+  
 }
