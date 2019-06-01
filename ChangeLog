@@ -4,6 +4,7 @@ ags (2.1.74)
 	* fixed ags-copy-pattern recall to proper free GError
 	* fixed ags_recycling_finalize() to free AgsUUID
 	* fixed ags_thread_finalize() to free AgsUUID and other memory-leaks
+	* fixed potential SIGSEGV in ags_simple_file.c
 
 ags (2.1.73)
 
