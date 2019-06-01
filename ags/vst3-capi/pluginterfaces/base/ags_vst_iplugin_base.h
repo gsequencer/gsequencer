@@ -20,6 +20,8 @@
 #ifndef __AGS_VST_IPLUGIN_BASE_H__
 #define __AGS_VST_IPLUGIN_BASE_H__
 
+#include <glib.h>
+
 #include <ags/vst3-capi/pluginterfaces/base/ags_vst_funknown.h>
 #include <ags/vst3-capi/pluginterfaces/base/ags_vst_fstrdefs.h>
 

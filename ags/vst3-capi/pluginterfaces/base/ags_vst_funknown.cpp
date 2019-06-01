@@ -24,7 +24,7 @@
 using namespace Steinberg;
 
 extern "C" {
-
+  
   gboolean ags_vst_funknown_private_iid_equal(const void* iid1, const void* iid2)
   {
     //TODO:JK: implement me
@@ -76,19 +76,19 @@ extern "C" {
   gboolean ags_vst_fuid_equals(AgsVstFUID *fuid_a,
 			       AgsVstFUID *fuid_b)
   {
-    return(fuid_a == fuid_b);
+    return(static_cast<gboolean>(fuid_a == fuid_b));
   }
   
   gboolean ags_vst_fuid_smaller(AgsVstFUID *fuid_a,
 				AgsVstFUID *fuid_b)
   {
-    return(fuid_a < fuid_b);
+    return(static_cast<gboolean>(fuid_a < fuid_b));
   }
   
   gboolean ags_vst_fuid_not_equals(AgsVstFUID *fuid_a,
 				   AgsVstFUID *fuid_b)
   {
-    return(fuid_a != fuid_b);
+    return(static_cast<gboolean>(fuid_a != fuid_b));
   }
   
   guint32 ags_vst_fuid_get_long1(AgsVstFUID *fuid)
@@ -197,25 +197,17 @@ extern "C" {
     return(((Steinberg::FUnknown *) funknown)->release());
   }
 
-  AgsVstFUnknownPtr* ags_vst_funknown_ptr_new()
+#if 0
+  AgsVstFUnknownPtr* ags_vst_funknown_ptr_new_from_funknown(AgsVstFUnknown *funknown,
+							    AgsVstTUID *tuid)
   {
-    return((AgsVstFUnknownPtr *) new Steinberg::FUnknownPtr());
-  }
-  
-  AgsVstFUnknownPtr* ags_vst_funknown_ptr_new_from_funknown_ptr(AgsVstFUnknownPtr *funknown_ptr)
-  {
-    return((AgsVstFUnknownPtr *) new Steinberg::FUnknownPtr((Steinberg::FUnknownPtr *) funknown_ptr));
-  }
-  
-  AgsVstFUnknownPtr* ags_vst_funknown_ptr_new_from_funknown(AgsVstFUnknown *funknown)
-  {
-    return((AgsVstFUnknownPtr *) new Steinberg::FUnknownPtr((Steinberg::FUnknown *) funknown));
+    //TODO:JK: implement me
   }
     
-  AgsVstI* ags_funknown_get_interface(AgsVstFUnknownPtr *funknown_ptr,
-				      AgsVstI *vst_interface)
-  {
-    return((AgsVstI *) ((Steinberg::FUnknownPtr *)<((I*) vst_interface)[0]> funknown_ptr)->getInterface((I*) vst_interface));
+  AgsVstI* ags_funknown_ptr_get_interface(AgsVstFUnknownPtr *funknown_ptr,
+					  AgsVstTUID *tuid)
+  {    
+    //TODO:JK: implement me
   }
   
   void ags_vst_funknown_ptr_set_funknown(AgsVstFUnknownPtr *funknown_ptr,
@@ -229,6 +221,7 @@ extern "C" {
   {
     //TODO:JK: implement me
   }
+#endif
   
   AgsVstFReleaser* ags_freleaser_alloc(AgsVstFUnknown *funknown)
   {

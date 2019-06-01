@@ -20,6 +20,8 @@
 #ifndef __AGS_VST_FTYPES_H__
 #define __AGS_VST_FTYPES_H__
 
+#include <glib.h>
+
 //#define UNICODE_OFF   // disable / enable unicode
 
 #ifdef AGS_VST_UNICODE_OFF

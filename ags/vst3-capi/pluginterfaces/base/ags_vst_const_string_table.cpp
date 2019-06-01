@@ -17,27 +17,27 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <ags/vst3-capi/pluginterfaces/base/ags_vst_ftypes.h>
+#include <ags/vst3-capi/pluginterfaces/base/ags_vst_const_string_table.h>
 
-#include <pluginterfaces/base/ftypes.h>
+#include <pluginterfaces/base/conststringtable.h>
 
 using namespace Steinberg;
 
 extern "C" {
 
-  gboolean ags_vst_str_empty(ags_vst_tchar *str)
+  AgsVstConstStringTable* ags_vst_const_string_table_new()
   {
-    return(static_cast<gboolean>(strEmpty(reinterpret_cast<tchar *>(str))));
+    //TODO:JK: implement me
+  }
+
+  gunichar2* get_string_from_char_buffer(gchar *str)
+  {
+    //TODO:JK: implement me
   }
   
-  gboolean ags_vst_str8_empty(gchar *str)
+  gunichar2 get_string_from_char_byte(gchar str)
   {
-    return(static_cast<gboolean>(str8Empty(reinterpret_cast<char8 *>(str))));
+    //TODO:JK: implement me
   }
-  
-  gboolean ags_vst_str16_empty(gunichar2 *str)
-  {
-    return(static_cast<gboolean>(str16Empty(reinterpret_cast<char16 *>(str))));
-  }
-  
+
 }

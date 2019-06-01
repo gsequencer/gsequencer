@@ -20,6 +20,8 @@
 #ifndef __AGS_VST_FUNKNOWN_H__
 #define __AGS_VST_FUNKNOWN_H__
 
+#include <glib.h>
+
 #include <ags/vst3-capi/pluginterfaces/base/ags_vst_fplatform.h>
 #include <ags/vst3-capi/pluginterfaces/base/ags_vst_ftypes.h>
 #include <ags/vst3-capi/pluginterfaces/base/ags_vst_smart_pointer.h>
@@ -157,14 +159,13 @@ extern "C" {
   typedef struct AgsVstI I;
   typedef struct AgsVstFUnknownPtr FUnknownPtr;
 
-  AgsVstFUnknownPtr* ags_vst_funknown_ptr_new();
-  AgsVstFUnknownPtr* ags_vst_funknown_ptr_new_from_funknown_ptr(AgsVstFUnknownPtr *funknown_ptr);
-  AgsVstFUnknownPtr* ags_vst_funknown_ptr_new_from_funknown(AgsVstFUnknown *funknown);
+#if 0  
+  AgsVstFUnknownPtr* ags_vst_funknown_ptr_new_from_funknown(AgsVstFUnknown *funknown,
+							    AgsVstTUID *tuid);
   
-  AgsVstI*  ags_funknown_get_interface(AgsVstFUnknownPtr *funknown_ptr,
-				       AgsVstI *vst_interface);
+  AgsVstI*  ags_funknown_ptr_get_interface(AgsVstFUnknownPtr *funknown_ptr,
+					   AgsVstTUID *tuid);
 
-#if 0
   void ags_vst_funknown_ptr_set_funknown(AgsVstFUnknownPtr *funknown_ptr,
 					 AgsVstFUnknown *funknown);
   void ags_vst_funknown_ptr_set_funknown_interface(AgsVstFUnknownPtr *funknown_ptr,

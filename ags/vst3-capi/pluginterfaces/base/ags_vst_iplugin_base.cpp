@@ -17,9 +17,9 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <ags/vst3-capi/plugininterfaces/base/ags_vst_iplugin_base.h>
+#include <ags/vst3-capi/pluginterfaces/base/ags_vst_iplugin_base.h>
 
-#include <plugininterfaces/base/ipluginbase.h>
+#include <pluginterfaces/base/ipluginbase.h>
 
 extern "C" {
 

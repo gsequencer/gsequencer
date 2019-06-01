@@ -1,5 +1,5 @@
-ags/vst3-capi/pluginterfaces/base/libags_vst_la-ags_vst_funknown.lo: \
- ags/vst3-capi/pluginterfaces/base/ags_vst_funknown.cpp \
+ags/vst3-capi/pluginterfaces/base/libags_vst_la-ags_vst_iplugin_base.lo: \
+ ags/vst3-capi/pluginterfaces/base/ags_vst_iplugin_base.cpp \
  /usr/include/stdc-predef.h /usr/include/errno.h /usr/include/features.h \
  /usr/include/x86_64-linux-gnu/sys/cdefs.h \
  /usr/include/x86_64-linux-gnu/bits/wordsize.h \
@@ -10,8 +10,7 @@ ags/vst3-capi/pluginterfaces/base/libags_vst_la-ags_vst_funknown.lo: \
  /usr/include/x86_64-linux-gnu/asm/errno.h \
  /usr/include/asm-generic/errno.h /usr/include/asm-generic/errno-base.h \
  /usr/include/x86_64-linux-gnu/bits/types/error_t.h \
- ags/vst3-capi/pluginterfaces/base/ags_vst_funknown.h \
- ags/vst3-capi/pluginterfaces/base/ags_vst_fplatform.h \
+ ags/vst3-capi/pluginterfaces/base/ags_vst_iplugin_base.h \
  /usr/include/glib-2.0/glib.h /usr/include/glib-2.0/glib/galloca.h \
  /usr/include/glib-2.0/glib/gtypes.h \
  /usr/lib/x86_64-linux-gnu/glib-2.0/include/glibconfig.h \
@@ -160,8 +159,12 @@ ags/vst3-capi/pluginterfaces/base/libags_vst_la-ags_vst_funknown.lo: \
  /usr/include/x86_64-linux-gnu/bits/cpu-set.h \
  /usr/include/x86_64-linux-gnu/bits/setjmp.h \
  /usr/include/glib-2.0/glib/glib-autocleanups.h \
+ ags/vst3-capi/pluginterfaces/base/ags_vst_funknown.h \
+ ags/vst3-capi/pluginterfaces/base/ags_vst_fplatform.h \
  ags/vst3-capi/pluginterfaces/base/ags_vst_ftypes.h \
  ags/vst3-capi/pluginterfaces/base/ags_vst_smart_pointer.h \
+ ags/vst3-capi/pluginterfaces/base/ags_vst_fstrdefs.h \
+ /home/joelkraehemann/github/vst3sdk/pluginterfaces/base/ipluginbase.h \
  /home/joelkraehemann/github/vst3sdk/pluginterfaces/base/funknown.h \
  /home/joelkraehemann/github/vst3sdk/pluginterfaces/base/fplatform.h \
  /usr/include/c++/8/cstddef \
@@ -170,7 +173,8 @@ ags/vst3-capi/pluginterfaces/base/libags_vst_la-ags_vst_funknown.lo: \
  /usr/include/c++/8/utility /usr/include/c++/8/bits/stl_relops.h \
  /usr/include/c++/8/bits/stl_pair.h /usr/include/c++/8/bits/move.h \
  /usr/include/c++/8/bits/concept_check.h /usr/include/c++/8/type_traits \
- /usr/include/c++/8/initializer_list
+ /usr/include/c++/8/initializer_list \
+ /home/joelkraehemann/github/vst3sdk/pluginterfaces/base/fstrdefs.h
 
 /usr/include/stdc-predef.h:
 
@@ -200,9 +204,7 @@ ags/vst3-capi/pluginterfaces/base/libags_vst_la-ags_vst_funknown.lo: \
 
 /usr/include/x86_64-linux-gnu/bits/types/error_t.h:
 
-ags/vst3-capi/pluginterfaces/base/ags_vst_funknown.h:
-
-ags/vst3-capi/pluginterfaces/base/ags_vst_fplatform.h:
+ags/vst3-capi/pluginterfaces/base/ags_vst_iplugin_base.h:
 
 /usr/include/glib-2.0/glib.h:
 
@@ -548,9 +550,17 @@ ags/vst3-capi/pluginterfaces/base/ags_vst_fplatform.h:
 
 /usr/include/glib-2.0/glib/glib-autocleanups.h:
 
+ags/vst3-capi/pluginterfaces/base/ags_vst_funknown.h:
+
+ags/vst3-capi/pluginterfaces/base/ags_vst_fplatform.h:
+
 ags/vst3-capi/pluginterfaces/base/ags_vst_ftypes.h:
 
 ags/vst3-capi/pluginterfaces/base/ags_vst_smart_pointer.h:
+
+ags/vst3-capi/pluginterfaces/base/ags_vst_fstrdefs.h:
+
+/home/joelkraehemann/github/vst3sdk/pluginterfaces/base/ipluginbase.h:
 
 /home/joelkraehemann/github/vst3sdk/pluginterfaces/base/funknown.h:
 
@@ -575,3 +585,5 @@ ags/vst3-capi/pluginterfaces/base/ags_vst_smart_pointer.h:
 /usr/include/c++/8/type_traits:
 
 /usr/include/c++/8/initializer_list:
+
+/home/joelkraehemann/github/vst3sdk/pluginterfaces/base/fstrdefs.h:
