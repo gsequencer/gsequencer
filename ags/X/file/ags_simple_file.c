@@ -4888,18 +4888,23 @@ ags_simple_file_read_notation_editor_launch(AgsFileLaunch *file_launch,
 	    if(str != NULL){
 	      file_id_ref = ags_simple_file_find_id_ref_by_xpath((AgsSimpleFile *) file_launch->file,
 								 str);
-	      machine = AGS_FILE_ID_REF(file_id_ref->data)->ref;
+
+	      if(file_id_ref != NULL &&
+		 file_id_ref->data != NULL &&
+		 AGS_FILE_ID_REF(file_id_ref->data)->ref != NULL){
+		machine = AGS_FILE_ID_REF(file_id_ref->data)->ref;
 	    
-	      ags_machine_selector_add_index(notation_editor->machine_selector);
+		ags_machine_selector_add_index(notation_editor->machine_selector);
 
-	      list_start = gtk_container_get_children((GtkContainer *) notation_editor->machine_selector);
-	      list = g_list_last(list_start);
+		list_start = gtk_container_get_children((GtkContainer *) notation_editor->machine_selector);
+		list = g_list_last(list_start);
 
-	      gtk_button_clicked(list->data);
-	      ags_machine_selector_link_index(notation_editor->machine_selector,
-					      machine);
+		gtk_button_clicked(list->data);
+		ags_machine_selector_link_index(notation_editor->machine_selector,
+						machine);
 	      
-	      g_list_free(list_start);
+		g_list_free(list_start);
+	      }
 	    }
 	  }else{
 	    g_object_set_property((GObject *) notation_editor,
