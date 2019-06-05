@@ -19,8 +19,6 @@
 
 #include <ags/object/ags_cursor.h>
 
-#include <ags/object/ags_marshal.h>
-
 void ags_cursor_class_init(AgsCursorInterface *interface);
 
 /**
@@ -30,8 +28,7 @@ void ags_cursor_class_init(AgsCursorInterface *interface);
  * @section_id: AgsCursor
  * @include: ags/object/ags_cursor.h
  *
- * The #AgsCursor interface gives you the #AgsCursor::seek() signal
- * what notifies about changed offset of pattern or notation.
+ * The #AgsCursor interface does cursor position abstraction.
  */
 
 GType
@@ -215,7 +212,7 @@ ags_cursor_get_delay_counter(AgsCursor *cursor)
 
   g_return_val_if_fail(AGS_IS_CURSOR(cursor), 0.0);
   cursor_interface = AGS_CURSOR_GET_INTERFACE(cursor);
-  g_return_val_if_fail(cursor_interface->get_delay_counter, 0.);
+  g_return_val_if_fail(cursor_interface->get_delay_counter, 0.0);
 
   return(cursor_interface->get_delay_counter(cursor));
 }
@@ -240,4 +237,92 @@ ags_cursor_get_offset(AgsCursor *cursor)
   g_return_val_if_fail(cursor_interface->get_offset, 0);
 
   return(cursor_interface->get_offset(cursor));
+}
+
+/**
+ * ags_cursor_get_prev:
+ * @cursor: the #AgsCursor interface
+ * 
+ * Get prev.
+ * 
+ * Returns: the #GList-struct pointing to previous
+ * 
+ * Since: 2.2.0
+ */
+GList*
+ags_cursor_get_prev(AgsCursor *cursor)
+{
+  AgsCursorInterface *cursor_interface;
+
+  g_return_val_if_fail(AGS_IS_CURSOR(cursor), NULL);
+  cursor_interface = AGS_CURSOR_GET_INTERFACE(cursor);
+  g_return_val_if_fail(cursor_interface->get_prev, NULL);
+
+  return(cursor_interface->get_prev(cursor));
+}
+
+/**
+ * ags_cursor_get_next:
+ * @cursor: the #AgsCursor interface
+ * 
+ * Get next.
+ * 
+ * Returns: the #GList-struct pointing to next
+ * 
+ * Since: 2.2.0
+ */
+GList*
+ags_cursor_get_next(AgsCursor *cursor)
+{
+  AgsCursorInterface *cursor_interface;
+
+  g_return_val_if_fail(AGS_IS_CURSOR(cursor), NULL);
+  cursor_interface = AGS_CURSOR_GET_INTERFACE(cursor);
+  g_return_val_if_fail(cursor_interface->get_next, NULL);
+
+  return(cursor_interface->get_next(cursor));
+}
+
+/**
+ * ags_cursor_get_current_copy:
+ * @cursor: the #AgsCursor interface
+ * 
+ * Get current as copy.
+ * 
+ * Returns: the #GList-struct of current as copy
+ * 
+ * Since: 2.2.0
+ */
+GList*
+ags_cursor_get_current_copy(AgsCursor *cursor)
+{
+  AgsCursorInterface *cursor_interface;
+
+  g_return_val_if_fail(AGS_IS_CURSOR(cursor), NULL);
+  cursor_interface = AGS_CURSOR_GET_INTERFACE(cursor);
+  g_return_val_if_fail(cursor_interface->get_current_copy, NULL);
+
+  return(cursor_interface->get_current_copy(cursor));
+}
+
+/**
+ * ags_cursor_get_current:
+ * @cursor: the #AgsCursor interface
+ * 
+ * Get current.
+ * 
+ * Returns: the #GList-struct pointing to current
+ * 
+ * Since: 2.2.0
+ */
+GList*
+ags_cursor_get_current(AgsCursor *cursor)
+{
+  AgsCursorInterface *cursor_interface;
+
+  g_return_val_if_fail(AGS_IS_CURSOR(cursor), NULL);
+  cursor_interface = AGS_CURSOR_GET_INTERFACE(cursor);
+  g_return_val_if_fail(cursor_interface->get_current, NULL);
+
+  return(cursor_interface->get_current(cursor));
 }

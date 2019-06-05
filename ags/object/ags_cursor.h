@@ -49,6 +49,12 @@ struct _AgsCursorInterface
 
   gdouble (*get_delay_counter)(AgsCursor *cursor);
   guint64 (*get_offset)(AgsCursor *cursor);
+
+  GList* (*get_prev)(AgsCursor *cursor);
+  GList* (*get_next)(AgsCursor *cursor);
+
+  GList* (*get_current_copy)(AgsCursor *cursor);
+  GList* (*get_current)(AgsCursor *cursor);
 };
 
 GType ags_cursor_get_type();
@@ -65,5 +71,11 @@ guint ags_cursor_cursor_get_duration(AgsCursor *cursor);
 
 gdouble ags_cursor_get_delay_counter(AgsCursor *cursor);
 guint64 ags_cursor_get_offset(AgsCursor *cursor);
+
+GList* ags_cursor_get_prev(AgsCursor *cursor);
+GList* ags_cursor_get_next(AgsCursor *cursor);
+
+GList* ags_cursor_get_current_copy(AgsCursor *cursor);
+GList* ags_cursor_get_current(AgsCursor *cursor);
 
 #endif /*__AGS_CURSOR_H__*/
