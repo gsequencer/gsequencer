@@ -202,6 +202,7 @@ enum{
   PROP_PRESET,
   PROP_SYNTH_GENERATOR,
   PROP_PLAYBACK_DOMAIN,
+  PROP_CURSOR,
   PROP_NOTATION,
   PROP_AUTOMATION,
   PROP_WAVE,
@@ -994,6 +995,21 @@ ags_audio_class_init(AgsAudioClass *audio)
 				  param_spec);
 
   /**
+   * AgsAudio:cursor:
+   *
+   * The #GObject implementing #AgsCursor interface.
+   * 
+   * Since: 2.2.0
+   */
+  param_spec = g_param_spec_pointer("cursor",
+				    i18n_pspec("cursor"),
+				    i18n_pspec("The cursor object"),
+				    G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_CURSOR,
+				  param_spec);
+
+  /**
    * AgsAudio:notation:
    *
    * The #AgsNotation it contains.
@@ -1636,9 +1652,17 @@ ags_audio_init(AgsAudio *audio)
 
   /* synth generator */
   audio->synth_generator = NULL;
-  
-  /* notation and automation */
+
+  /*
+   * Storage objects
+   */
+  /* cursor */
+  audio->cursor = NULL;
+
+  /* notation */
   audio->notation = NULL;
+
+  /* automation */
   audio->automation = NULL;
   
   /* wave */
@@ -2184,6 +2208,28 @@ ags_audio_set_property(GObject *gobject,
       audio->playback_domain = (GObject *) playback_domain;
 
       pthread_mutex_unlock(audio_mutex);
+    }
+    break;
+  case PROP_CURSOR:
+    {
+      GObject *cursor;
+
+      cursor = (GObject *) g_value_get_pointer(value);
+
+      pthread_mutex_lock(audio_mutex);
+
+      if(cursor == NULL ||
+	 g_list_find(audio->cursor,
+		     cursor) != NULL){
+	pthread_mutex_unlock(audio_mutex);
+	
+	return;
+      }
+
+      pthread_mutex_unlock(audio_mutex);
+
+      ags_audio_add_cursor(audio,
+			   (GObject *) cursor);
     }
     break;
   case PROP_NOTATION:
@@ -2945,6 +2991,18 @@ ags_audio_get_property(GObject *gobject,
 
       g_value_set_object(value,
 			 audio->playback_domain);
+
+      pthread_mutex_unlock(audio_mutex);
+    }
+    break;
+  case PROP_CURSOR:
+    {
+      pthread_mutex_lock(audio_mutex);
+
+      g_value_set_pointer(value,
+			  g_list_copy_deep(audio->cursor,
+					   (GCopyFunc) g_object_ref,
+					   NULL));
 
       pthread_mutex_unlock(audio_mutex);
     }
@@ -8523,6 +8581,109 @@ ags_audio_remove_synth_generator(AgsAudio *audio,
   }
   
   pthread_mutex_unlock(audio_mutex);
+}
+
+/**
+ * ags_audio_add_cursor:
+ * @audio: the #AgsAudio
+ * @cursor: the #GObject implementing #AgsCursor
+ *
+ * Adds a cursor.
+ *
+ * Since: 2.2.0
+ */
+void
+ags_audio_add_cursor(AgsAudio *audio, GObject *cursor)
+{
+  gboolean success;
+  
+  pthread_mutex_t *audio_mutex;
+
+  if(!AGS_IS_AUDIO(audio) ||
+     !AGS_IS_CURSOR(cursor)){
+    return;
+  }
+
+  /* get audio mutex */
+  pthread_mutex_lock(ags_audio_get_class_mutex());
+
+  audio_mutex = audio->obj_mutex;
+  
+  pthread_mutex_unlock(ags_audio_get_class_mutex());
+
+  /* add cursor */
+  success = FALSE;
+  
+  pthread_mutex_lock(audio_mutex);
+
+  if(g_list_find(audio->cursor,
+		 cursor) == NULL){
+    success = TRUE;
+    
+    g_object_ref(cursor);
+    audio->cursor = ags_cursor_add(audio->cursor,
+				   (GObject *) cursor);
+  }
+  
+  pthread_mutex_unlock(audio_mutex);
+
+  if(success){
+    g_object_set(cursor,
+		 "audio", audio,
+		 NULL);
+  }
+}
+
+/**
+ * ags_audio_remove_cursor:
+ * @audio: the #AgsAudio
+ * @cursor: the #GObject implementing #AgsCursor
+ *
+ * Removes a cursor.
+ *
+ * Since: 2.2.0
+ */
+void
+ags_audio_remove_cursor(AgsAudio *audio, GObject *cursor)
+{
+  gboolean success;
+  
+  pthread_mutex_t *audio_mutex;
+
+  if(!AGS_IS_AUDIO(audio) ||
+     !AGS_IS_CURSOR(cursor)){
+    return;
+  }
+
+  /* get audio mutex */
+  pthread_mutex_lock(ags_audio_get_class_mutex());
+
+  audio_mutex = audio->obj_mutex;
+  
+  pthread_mutex_unlock(ags_audio_get_class_mutex());
+
+  /* remove cursor */
+  success = FALSE;
+  
+  pthread_mutex_lock(audio_mutex);
+
+  if(g_list_find(audio->cursor,
+		 cursor) != NULL){
+    success = TRUE;
+    
+    audio->cursor = g_list_remove(audio->cursor,
+				  cursor);
+  }
+  
+  pthread_mutex_unlock(audio_mutex);
+
+  if(success){
+    g_object_set(cursor,
+		 "audio", NULL,
+		 NULL);
+    
+    g_object_unref(cursor);
+  }
 }
 
 /**

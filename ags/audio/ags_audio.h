@@ -161,6 +161,8 @@ struct _AgsAudio
   GObject *playback_domain;
 
   GList *synth_generator;
+
+  GList *cursor;
   
   GList *notation;
   GList *automation;
@@ -300,6 +302,9 @@ void ags_audio_remove_preset(AgsAudio *audio, GObject *preset);
 
 void ags_audio_add_synth_generator(AgsAudio *audio, GObject *synth_generator);
 void ags_audio_remove_synth_generator(AgsAudio *audio, GObject *synth_generator);
+
+void ags_audio_add_cursor(AgsAudio *audio, GObject *cursor);
+void ags_audio_remove_cursor(AgsAudio *audio, GObject *cursor);
 
 void ags_audio_add_notation(AgsAudio *audio, GObject *notation);
 void ags_audio_remove_notation(AgsAudio *audio, GObject *notation);
