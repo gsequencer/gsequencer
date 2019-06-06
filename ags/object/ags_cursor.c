@@ -183,7 +183,7 @@ ags_cursor_cursor_get_delay(AgsCursor *cursor)
  * 
  * Since: 2.2.0
  */
-guint
+guint64
 ags_cursor_cursor_get_duration(AgsCursor *cursor)
 {
   AgsCursorInterface *cursor_interface;
