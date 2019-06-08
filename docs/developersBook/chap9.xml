@@ -230,7 +230,7 @@
       <itemizedlist mark="bullet">
 	<listitem>
 	  <para>
-	    recall_class-&gt;resolve_dependencies
+	    recall_class-&gt;resolve_dependency
 	  </para>
 	  <itemizedlist mark="circle">
 	    <listitem>
