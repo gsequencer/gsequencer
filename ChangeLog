@@ -1,7 +1,7 @@
 ags (2.1.75)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
-	* fixed developer's handbook deprecated use of AgsGroupId
+	* fixed developer's handbook deprecated use of AgsGroupId, replaced by AgsRecallID
 
 ags (2.1.74)
 
