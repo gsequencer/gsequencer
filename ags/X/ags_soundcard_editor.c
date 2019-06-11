@@ -889,7 +889,7 @@ ags_soundcard_editor_reset(AgsApplicable *applicable)
 	
 	i++;
       }while(gtk_tree_model_iter_next(GTK_TREE_MODEL(model),
-				      &iter));
+				      &current));
     }
     
     if(!g_ascii_strncasecmp(backend,
