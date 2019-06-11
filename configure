@@ -637,6 +637,8 @@ ac_header_list=
 ac_subst_vars='am__EXEEXT_FALSE
 am__EXEEXT_TRUE
 LTLIBOBJS
+WITH_SYSTEM_TESTS_FALSE
+WITH_SYSTEM_TESTS_TRUE
 GTK_DOC_USE_REBASE_FALSE
 GTK_DOC_USE_REBASE_TRUE
 GTK_DOC_USE_LIBTOOL_FALSE
@@ -871,6 +873,7 @@ enable_xmlrpc
 enable_quartz
 enable_run_functional_tests
 enable_fast_test_mode
+enable_run_system_tests
 enable_shared
 enable_static
 with_pic
@@ -1587,6 +1590,8 @@ Optional Features:
   --enable-run-functional-tests
                           run functional tests (default is no)
   --enable-fast-test-mode fast test mode (default is no)
+  --enable-run-system-tests
+                          run system tests (default is no)
   --enable-shared[=PKGS]  build shared libraries [default=yes]
   --enable-static[=PKGS]  build static libraries [default=yes]
   --enable-fast-install[=PKGS]
@@ -6830,6 +6835,14 @@ if test "${enable_fast_test_mode+set}" = set; then :
   enableval=$enable_fast_test_mode;
 else
   enable_fast_test_mode=no
+fi
+
+
+# Check whether --enable-run-system-tests was given.
+if test "${enable_run_system_tests+set}" = set; then :
+  enableval=$enable_run_system_tests;
+else
+  enable_run_system_tests=no
 fi
 
 
@@ -19174,6 +19187,15 @@ fi
 
 
 
+ if test "x$enable_run_system_tests" == xyes; then
+  WITH_SYSTEM_TESTS_TRUE=
+  WITH_SYSTEM_TESTS_FALSE='#'
+else
+  WITH_SYSTEM_TESTS_TRUE='#'
+  WITH_SYSTEM_TESTS_FALSE=
+fi
+
+
 
   { $as_echo "$as_me:${as_lineno-$LINENO}: generating libags.sym" >&5
 $as_echo "$as_me: generating libags.sym" >&6;}
@@ -19201,12 +19223,8 @@ $as_echo "$as_me: generating libags_gui.sym" >&6;}
 
 
 
-ac_config_files="$ac_config_files Makefile docs/reference/libags/Makefile docs/reference/libags-audio/Makefile docs/reference/libags-gui/Makefile docs/reference/libgsequencer/Makefile m4/Makefile po/Makefile.in libags.pc libags_audio.pc libags_gui.pc libgsequencer.pc"
+ac_config_files="$ac_config_files Makefile unit-system-tests.mk functional-system-tests.mk docs/reference/libags/Makefile docs/reference/libags-audio/Makefile docs/reference/libags-gui/Makefile docs/reference/libgsequencer/Makefile m4/Makefile po/Makefile.in libags.pc libags_audio.pc libags_gui.pc libgsequencer.pc"
 
-
-#NOTE:JK: you may add the following files to AC_CONFIG_FILES
-# unit-system-tests.mk
-# functional-system-tests.mk
 
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
@@ -19379,6 +19397,10 @@ Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 if test -z "${GTK_DOC_USE_REBASE_TRUE}" && test -z "${GTK_DOC_USE_REBASE_FALSE}"; then
   as_fn_error $? "conditional \"GTK_DOC_USE_REBASE\" was never defined.
+Usually this means the macro was only invoked conditionally." "$LINENO" 5
+fi
+if test -z "${WITH_SYSTEM_TESTS_TRUE}" && test -z "${WITH_SYSTEM_TESTS_FALSE}"; then
+  as_fn_error $? "conditional \"WITH_SYSTEM_TESTS\" was never defined.
 Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 
@@ -20269,6 +20291,8 @@ do
     "depfiles") CONFIG_COMMANDS="$CONFIG_COMMANDS depfiles" ;;
     "libtool") CONFIG_COMMANDS="$CONFIG_COMMANDS libtool" ;;
     "Makefile") CONFIG_FILES="$CONFIG_FILES Makefile" ;;
+    "unit-system-tests.mk") CONFIG_FILES="$CONFIG_FILES unit-system-tests.mk" ;;
+    "functional-system-tests.mk") CONFIG_FILES="$CONFIG_FILES functional-system-tests.mk" ;;
     "docs/reference/libags/Makefile") CONFIG_FILES="$CONFIG_FILES docs/reference/libags/Makefile" ;;
     "docs/reference/libags-audio/Makefile") CONFIG_FILES="$CONFIG_FILES docs/reference/libags-audio/Makefile" ;;
     "docs/reference/libags-gui/Makefile") CONFIG_FILES="$CONFIG_FILES docs/reference/libags-gui/Makefile" ;;

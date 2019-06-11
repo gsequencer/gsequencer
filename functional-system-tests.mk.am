@@ -38,7 +38,9 @@ installcheck_programs = \
 	ags_check_system_functional_notation_edit_test \
 	ags_check_system_functional_audio_config_test
 
+if WITH_SYSTEM_TESTS
 noinst_PROGRAMS = $(installcheck_programs)
+endif
 
 # functional test util library
 libgsequencer_check_system_test_la_SOURCES = ags/test/X/gsequencer_setup_util.c ags/test/X/gsequencer_setup_util.h ags/test/X/ags_functional_test_util.c ags/test/X/ags_functional_test_util.h ags/test/X/libgsequencer.h

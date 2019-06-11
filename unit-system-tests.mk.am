@@ -190,7 +190,9 @@ libags_audio_installcheck_programs += \
 libgsequencer_installcheck_programs = \
 	ags_check_system_xorg_application_context_test
 
+if WITH_SYSTEM_TESTS
 noinst_PROGRAMS = $(libags_installcheck_programs) $(libags_audio_installcheck_programs) $(libgsequencer_installcheck_programs)
+endif
 
 # buffer util unit test
 ags_check_system_buffer_util_test_SOURCES = ags/test/lib/ags_buffer_util_test.c
