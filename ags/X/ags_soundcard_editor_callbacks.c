@@ -56,8 +56,8 @@ ags_soundcard_editor_backend_changed_callback(GtkComboBox *combo,
 
       gtk_widget_show_all((GtkWidget *) soundcard_editor->port_hbox);
     }else if(!g_ascii_strncasecmp(str,
-			    "pulse",
-			    6)){
+				  "pulse",
+				  6)){
       gtk_combo_box_set_active(GTK_COMBO_BOX(soundcard_editor->capability),
 			       0);
       gtk_widget_set_sensitive(GTK_WIDGET(soundcard_editor->capability),
@@ -72,8 +72,8 @@ ags_soundcard_editor_backend_changed_callback(GtkComboBox *combo,
 
       gtk_widget_show_all((GtkWidget *) soundcard_editor->port_hbox);
     }else if(!g_ascii_strncasecmp(str,
-			    "jack",
-			    5)){
+				  "jack",
+				  5)){
       gtk_widget_set_sensitive(GTK_WIDGET(soundcard_editor->use_cache),
 			       FALSE);
       gtk_widget_set_sensitive(GTK_WIDGET(soundcard_editor->cache_buffer_size),
@@ -113,8 +113,6 @@ ags_soundcard_editor_card_changed_callback(GtkComboBox *combo,
 					   AgsSoundcardEditor *soundcard_editor)
 {
   GObject *soundcard;
-
-  GtkTreeIter current;
   
   gchar *card;
 

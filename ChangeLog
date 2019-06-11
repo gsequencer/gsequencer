@@ -3,6 +3,7 @@ ags (2.1.75)
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* fixed developer's handbook deprecated use of AgsGroupId, replaced by AgsRecallID
 	* fixed developer's handbook deprecated use of AgsRecall ::resolve-dependencies(), it is now ::resolve-dependency()
+	* improved ags_sound_card_editor_reset() to apply backend properly
 
 ags (2.1.74)
 
