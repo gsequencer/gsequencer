@@ -858,7 +858,7 @@ ags_soundcard_editor_reset(AgsApplicable *applicable)
     
     GValue value =  {0,};
     
-    model = gtk_combo_box_get_model(GTK_COMBO_BOX(soundcard_editor->card));
+    model = gtk_combo_box_get_model(GTK_COMBO_BOX(soundcard_editor->backend));
     nth_backend = -1;
     
     if(gtk_tree_model_get_iter_first(GTK_TREE_MODEL(model),
@@ -874,18 +874,18 @@ ags_soundcard_editor_reset(AgsApplicable *applicable)
 				 &value);
 
 	str = g_value_get_string(&value);
-	
+		
 	if(str != NULL &&
 	   !g_strcmp0(backend,
 		      str)){
 	  nth_backend = i;
 
-	  g_free(str);
-
+	  g_value_unset(&value);
+	  
 	  break;
 	}
 
-	g_free(str);
+	g_value_unset(&value);
 	
 	i++;
       }while(gtk_tree_model_iter_next(GTK_TREE_MODEL(model),
@@ -1093,7 +1093,7 @@ ags_soundcard_editor_reset(AgsApplicable *applicable)
       buffer_size_min = 2.0;
       buffer_size_max = 65535.0;
 
-      g_message("%s", error);
+      g_message("%s", error->message);
       
       g_error_free(error);
     }
