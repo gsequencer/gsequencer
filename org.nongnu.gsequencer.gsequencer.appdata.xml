@@ -37,6 +37,12 @@
   <url type="homepage">http://nongnu.org/gsequencer</url>
 
   <releases>
+    <release version="2.1.76" date="2019-06-12">
+      <description>
+        <p>Improved mutexes.</p>
+      </description>
+    </release>
+
     <release version="2.1.74" date="2019-06-01">
       <description>
         <p>Fixed some memory-leaks.</p>
