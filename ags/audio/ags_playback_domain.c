@@ -698,7 +698,6 @@ ags_playback_domain_get_audio_thread(AgsPlaybackDomain *playback_domain,
   pthread_mutex_t *playback_domain_mutex;
 
   if(!AGS_PLAYBACK_DOMAIN(playback_domain) ||
-     playback_domain->audio_thread == NULL ||
      sound_scope >= AGS_SOUND_SCOPE_LAST){
     return(NULL);
   }
@@ -713,7 +712,7 @@ ags_playback_domain_get_audio_thread(AgsPlaybackDomain *playback_domain,
   /* get */
   pthread_mutex_lock(playback_domain_mutex);
 
-  thread = playback_domain->audio_thread[sound_scope];
+  thread = (playback_domain->audio_thread != NULL) ? playback_domain->audio_thread[sound_scope]: NULL;
 
   pthread_mutex_unlock(playback_domain_mutex);
   

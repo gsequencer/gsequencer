@@ -775,11 +775,7 @@ ags_playback_get_channel_thread(AgsPlayback *playback,
   /* get channel thread */
   pthread_mutex_lock(playback_mutex);
 
-  if(playback->channel_thread == NULL){
-    return(NULL);
-  }
-
-  channel_thread = playback->channel_thread[sound_scope];
+  channel_thread = (playback->channel_thread != NULL) ? playback->channel_thread[sound_scope]: NULL;
 
   pthread_mutex_unlock(playback_mutex);
   

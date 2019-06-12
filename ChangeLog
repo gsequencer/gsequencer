@@ -2,6 +2,9 @@ ags (2.1.76)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* improved running integration tests using automake conditional
+	* improved mutexes with AgsUiProvider in ags_xorg_application_context.c
+	* improved mutex in ags_playback_domain_get_audio_thread()
+	* improved mutexes in ags_recall_set_staging_flags()
 
 ags (2.1.75)
 

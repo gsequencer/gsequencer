@@ -1,14 +1,18 @@
-# Copyright (C) 2005-2018 Jo\u00EBl Kr\u00E4hemann
+# Copyright (C) 2005-2019 Joël Krähemann
 # 
 # Copying and distribution of this file, with or without modification,
 # are permitted in any medium without royalty provided the copyright
 # notice and this notice are preserved.  This file is offered as-is,
 # without any warranty.
 
-AUTOMAKE_OPTIONS = foreign
+AUTOMAKE_OPTIONS = foreign no-dependencies
 SUBDIRS = po
 
 AM_CPPFLAGS = -std=gnu99 -include errno.h -DSRCDIR=\"$(srcdir)\"
+
+noinst_PROGRAMS =
+
+if WITH_SYSTEM_TESTS
 
 # unit system tests - libags
 libags_installcheck_programs = \
@@ -190,9 +194,7 @@ libags_audio_installcheck_programs += \
 libgsequencer_installcheck_programs = \
 	ags_check_system_xorg_application_context_test
 
-if WITH_SYSTEM_TESTS
-noinst_PROGRAMS = $(libags_installcheck_programs) $(libags_audio_installcheck_programs) $(libgsequencer_installcheck_programs)
-endif
+noinst_PROGRAMS += $(libags_installcheck_programs) $(libags_audio_installcheck_programs) $(libgsequencer_installcheck_programs)
 
 # buffer util unit test
 ags_check_system_buffer_util_test_SOURCES = ags/test/lib/ags_buffer_util_test.c
@@ -1335,3 +1337,6 @@ ags-check-system-unit-tests: $(libags_installcheck_programs) $(libags_audio_inst
 	./ags_check_system_set_samplerate_test
 	./ags_check_system_start_audio_test
 	./ags_check_system_start_channel_test
+
+# WITH_SYSTEM_TESTS
+endif

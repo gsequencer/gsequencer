@@ -1,20 +1,25 @@
-# Copyright (C) 2005-2018 Jo\u00EBl Kr\u00E4hemann
+# Copyright (C) 2005-2019 Joël Krähemann
 # 
 # Copying and distribution of this file, with or without modification,
 # are permitted in any medium without royalty provided the copyright
 # notice and this notice are preserved.  This file is offered as-is,
 # without any warranty.
 
-AUTOMAKE_OPTIONS = foreign
+AUTOMAKE_OPTIONS = foreign no-dependencies
+
+localedir = $(datadir)/locale
+DEFS = -DLOCALEDIR=\"$(localedir)\" @DEFS@
+
 SUBDIRS = po
+
+noinst_PROGRAMS =
+
+if WITH_SYSTEM_TESTS
 
 # libadd and ldadd
 libgsequencer_check_system_test_LIBADD = -L$(libdir) -lags -lags_thread -lags_server -lags_audio -lags_gui -L$(libdir)/gsequencer/ -lgsequencer -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS) $(FONTCONFIG_LIBS) $(GDKPIXBUF_LIBS) $(CAIRO_LIBS) $(GTK_LIBS)
 
 gsequencer_check_system_functional_test_LDADD = -lags -lags_thread -lags_server -lags_audio -lags_gui -L$(DESTDIR)/$(libdir)/gsequencer/ -lgsequencer libgsequencer_check_system_test.la -lcunit -lrt -lm $(LIBAO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(SNDFILE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(JACK_LIBS) $(FONTCONFIG_LIBS) $(GDKPIXBUF_LIBS) $(CAIRO_LIBS) $(GTK_LIBS)
-
-localedir = $(datadir)/locale
-DEFS = -DLOCALEDIR=\"$(localedir)\" @DEFS@
 
 AGS_RESOURCES = -DAGS_RC_FILENAME=\"/usr/share/gsequencer/styles/ags.rc\" -DAGS_ANIMATION_FILENAME=\"/usr/share/gsequencer/images/ags_supermoon-800x450.png\" -DAGS_LOGO_FILENAME=\"/usr/share/gsequencer/images/ags.png\" -DAGS_LICENSE_FILENAME=\"/usr/share/common-licenses/GPL-3\"
 
@@ -38,9 +43,7 @@ installcheck_programs = \
 	ags_check_system_functional_notation_edit_test \
 	ags_check_system_functional_audio_config_test
 
-if WITH_SYSTEM_TESTS
-noinst_PROGRAMS = $(installcheck_programs)
-endif
+noinst_PROGRAMS += $(installcheck_programs)
 
 # functional test util library
 libgsequencer_check_system_test_la_SOURCES = ags/test/X/gsequencer_setup_util.c ags/test/X/gsequencer_setup_util.h ags/test/X/ags_functional_test_util.c ags/test/X/ags_functional_test_util.h ags/test/X/libgsequencer.h
@@ -167,3 +170,6 @@ ags-check-system-functional-test: $(installcheck_programs)
 	./ags_check_system_functional_ffplayer_test
 	./ags_check_system_functional_notation_edit_test
 	./ags_check_system_functional_audio_config_test
+
+# WITH_SYSTEM_TESTS
+endif
