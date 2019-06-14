@@ -850,18 +850,70 @@ ags_soundcard_editor_reset(AgsApplicable *applicable)
   }
 
   if(backend != NULL){
+    GtkTreeModel *model;
+    GtkTreeIter current;
+    
+    gint nth_backend;
+    guint i;
+    
+    GValue value =  {0,};
+    
+    model = gtk_combo_box_get_model(GTK_COMBO_BOX(soundcard_editor->backend));
+    nth_backend = -1;
+    
+    if(gtk_tree_model_get_iter_first(GTK_TREE_MODEL(model),
+				     &current)){
+      i = 0;
+      
+      do{
+	gchar *str;
+	
+	gtk_tree_model_get_value(GTK_TREE_MODEL(model),
+				 &current,
+				 0,
+				 &value);
+
+	str = g_value_get_string(&value);
+		
+	if(str != NULL &&
+	   !g_strcmp0(backend,
+		      str)){
+	  nth_backend = i;
+
+	  g_value_unset(&value);
+	  
+	  break;
+	}
+
+	g_value_unset(&value);
+	
+	i++;
+      }while(gtk_tree_model_iter_next(GTK_TREE_MODEL(model),
+				      &current));
+    }
+    
     if(!g_ascii_strncasecmp(backend,
 			    "core-audio",
 			    11)){
+#ifdef AGS_WITH_CORE_AUDIO
       gtk_combo_box_set_active(GTK_COMBO_BOX(soundcard_editor->backend),
-			       0);
+			       nth_backend);
+#else
+      gtk_combo_box_set_active(GTK_COMBO_BOX(soundcard_editor->backend),
+			       -1);
+#endif
       
       //      ags_soundcard_editor_load_core_audio_card(soundcard_editor);
     }else if(!g_ascii_strncasecmp(backend,
-			    "pulse",
-			    6)){
+				  "pulse",
+				  6)){
+#ifdef AGS_WITH_PULSE
       gtk_combo_box_set_active(GTK_COMBO_BOX(soundcard_editor->backend),
-			       0);
+			       nth_backend);
+#else
+      gtk_combo_box_set_active(GTK_COMBO_BOX(soundcard_editor->backend),
+			       -1);
+#endif
       
       gtk_combo_box_set_active(GTK_COMBO_BOX(soundcard_editor->capability),
 			       0);
@@ -869,10 +921,15 @@ ags_soundcard_editor_reset(AgsApplicable *applicable)
 			       FALSE);
       //      ags_soundcard_editor_load_pulse_card(soundcard_editor);
     }else if(!g_ascii_strncasecmp(backend,
-			    "jack",
-			    5)){
+				  "jack",
+				  5)){
+#ifdef AGS_WITH_JACK
       gtk_combo_box_set_active(GTK_COMBO_BOX(soundcard_editor->backend),
-			       1);
+			       nth_backend);
+#else
+      gtk_combo_box_set_active(GTK_COMBO_BOX(soundcard_editor->backend),
+			       -1);
+#endif
       
       //      ags_soundcard_editor_load_jack_card(soundcard_editor);
     }else if(!g_ascii_strncasecmp(backend,
@@ -880,24 +937,19 @@ ags_soundcard_editor_reset(AgsApplicable *applicable)
 				  5)){
 #ifdef AGS_WITH_ALSA
       gtk_combo_box_set_active(GTK_COMBO_BOX(soundcard_editor->backend),
-			       2);
+			       nth_backend);
+#else
+      gtk_combo_box_set_active(GTK_COMBO_BOX(soundcard_editor->backend),
+			       -1);
 #endif
       
       //      ags_soundcard_editor_load_alsa_card(soundcard_editor);
     }else if(!g_ascii_strncasecmp(backend,
 				  "oss",
 				  4)){
-#ifdef AGS_WITH_OSS
-      
-#ifdef AGS_WITH_ALSA
+#ifdef AGS_WITH_OSS      
       gtk_combo_box_set_active(GTK_COMBO_BOX(soundcard_editor->backend),
-			       3);
-      
-#else
-      gtk_combo_box_set_active(GTK_COMBO_BOX(soundcard_editor->backend),
-			       2);
-#endif
-      
+			       nth_backend);      
 #else
       gtk_combo_box_set_active(GTK_COMBO_BOX(soundcard_editor->backend),
 			       -1);
@@ -1041,7 +1093,7 @@ ags_soundcard_editor_reset(AgsApplicable *applicable)
       buffer_size_min = 2.0;
       buffer_size_max = 65535.0;
 
-      g_message("%s", error);
+      g_message("%s", error->message);
       
       g_error_free(error);
     }

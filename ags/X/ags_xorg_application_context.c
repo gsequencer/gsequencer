@@ -1462,27 +1462,91 @@ ags_xorg_application_context_set_osc_server(AgsSoundProvider *sound_provider,
 GtkWidget*
 ags_xorg_application_context_get_window(AgsUiProvider *ui_provider)
 {
-  return(GTK_WIDGET(AGS_XORG_APPLICATION_CONTEXT(ui_provider)->window));
+  GtkWidget *window;
+  
+  pthread_mutex_t *application_context_mutex;
+
+  /* get mutex */
+  pthread_mutex_lock(ags_application_context_get_class_mutex());
+  
+  application_context_mutex = AGS_APPLICATION_CONTEXT(ui_provider)->obj_mutex;
+
+  pthread_mutex_unlock(ags_application_context_get_class_mutex());
+
+  /* get window */
+  pthread_mutex_lock(application_context_mutex);
+
+  window = AGS_XORG_APPLICATION_CONTEXT(ui_provider)->window;
+  
+  pthread_mutex_unlock(application_context_mutex);
+
+  return(window);
 }
 
 void
 ags_xorg_application_context_set_window(AgsUiProvider *ui_provider,
 					GtkWidget *widget)
 {
+  pthread_mutex_t *application_context_mutex;
+
+  /* get mutex */
+  pthread_mutex_lock(ags_application_context_get_class_mutex());
+  
+  application_context_mutex = AGS_APPLICATION_CONTEXT(ui_provider)->obj_mutex;
+
+  pthread_mutex_unlock(ags_application_context_get_class_mutex());
+
+  /* set window */
+  pthread_mutex_lock(application_context_mutex);
+
   AGS_XORG_APPLICATION_CONTEXT(ui_provider)->window = (AgsWindow *) widget;
+   
+  pthread_mutex_unlock(application_context_mutex);
 }
 
 AgsThread*
 ags_xorg_application_context_get_gui_thread(AgsUiProvider *ui_provider)
 {
-  return(AGS_XORG_APPLICATION_CONTEXT(ui_provider)->gui_thread);
+  AgsThread *gui_thread;
+  
+  pthread_mutex_t *application_context_mutex;
+
+  /* get mutex */
+  pthread_mutex_lock(ags_application_context_get_class_mutex());
+  
+  application_context_mutex = AGS_APPLICATION_CONTEXT(ui_provider)->obj_mutex;
+
+  pthread_mutex_unlock(ags_application_context_get_class_mutex());
+
+  /* get gui thread */
+  pthread_mutex_lock(application_context_mutex);
+
+  gui_thread = AGS_XORG_APPLICATION_CONTEXT(ui_provider)->gui_thread;
+  
+  pthread_mutex_unlock(application_context_mutex);
+
+  return(gui_thread);
 }
 
 void
 ags_xorg_application_context_set_gui_thread(AgsUiProvider *ui_provider,
 					    AgsThread *gui_thread)
 {
+  pthread_mutex_t *application_context_mutex;
+
+  /* get mutex */
+  pthread_mutex_lock(ags_application_context_get_class_mutex());
+  
+  application_context_mutex = AGS_APPLICATION_CONTEXT(ui_provider)->obj_mutex;
+
+  pthread_mutex_unlock(ags_application_context_get_class_mutex());
+
+  /* set gui thread */
+  pthread_mutex_lock(application_context_mutex);
+
   AGS_XORG_APPLICATION_CONTEXT(ui_provider)->gui_thread = gui_thread;
+   
+  pthread_mutex_unlock(application_context_mutex);
 }
 
 gboolean

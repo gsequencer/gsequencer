@@ -8,7 +8,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.69])
-AC_INIT([gsequencer],[2.1.74],[jkraehemann@gmail.com])
+AC_INIT([gsequencer],[2.1.76],[jkraehemann@gmail.com])
 AM_INIT_AUTOMAKE([subdir-objects])
 AC_CONFIG_SRCDIR([ags/config.h.in])
 AC_CONFIG_HEADERS([ags/config.h])
@@ -80,14 +80,19 @@ AC_ARG_ENABLE(quartz, [AS_HELP_STRING([--enable-quartz],
 	      [enable_quartz=no])
 
 AC_ARG_ENABLE(run-functional-tests, [AS_HELP_STRING([--enable-run-functional-tests],
-			          [run functional tests (default is no)])],
+			            [run functional tests (default is no)])],
 	      [],
 	      [enable_run_functional_tests=no])
 
 AC_ARG_ENABLE(fast-test-mode, [AS_HELP_STRING([--enable-fast-test-mode],
-			          [fast test mode (default is no)])],
+			      [fast test mode (default is no)])],
 	      [],
 	      [enable_fast_test_mode=no])
+
+AC_ARG_ENABLE(run-system-tests, [AS_HELP_STRING([--enable-run-system-tests],
+		       	    	[run system tests (default is no)])],
+	      [],
+	      [enable_run_system_tests=no])
 
 # Checks for programs.
 AC_PROG_CC
@@ -334,6 +339,8 @@ GTK_DOC_CHECK([1.14],[--flavour no-tmpl])
 AM_CONDITIONAL([ENABLE_GTK_DOC], false)
 ])
 
+AM_CONDITIONAL([WITH_SYSTEM_TESTS], [test "x$enable_run_system_tests" == xyes])
+
 LIBAGS_SYMBOLS([])
 LIBAGS_THREAD_SYMBOLS([])
 LIBAGS_SERVER_SYMBOLS([])
@@ -343,6 +350,8 @@ LIBAGS_GUI_SYMBOLS([])
 AM_EXTRA_RECURSIVE_TARGETS([ags-docs])
 AC_CONFIG_FILES([
 Makefile
+unit-system-tests.mk
+functional-system-tests.mk
 docs/reference/libags/Makefile
 docs/reference/libags-audio/Makefile
 docs/reference/libags-gui/Makefile
@@ -353,9 +362,5 @@ libags.pc
 libags_audio.pc
 libags_gui.pc
 libgsequencer.pc])
-
-#NOTE:JK: you may add the following files to AC_CONFIG_FILES
-# unit-system-tests.mk
-# functional-system-tests.mk
 
 AC_OUTPUT

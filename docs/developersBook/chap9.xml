@@ -230,7 +230,7 @@
       <itemizedlist mark="bullet">
 	<listitem>
 	  <para>
-	    recall_class-&gt;resolve_dependencies
+	    recall_class-&gt;resolve_dependency
 	  </para>
 	  <itemizedlist mark="circle">
 	    <listitem>
@@ -251,7 +251,7 @@
 	  <itemizedlist mark="circle">
 	    <listitem>
 	      <para>
-		Will be called only once for the run reffering to dedicated AgsGroupId.
+		Will be called only once for the run reffering to dedicated AgsRecallID.
 	      </para>
 	    </listitem>
 	  </itemizedlist>
@@ -265,12 +265,12 @@
 	  <itemizedlist mark="circle">
 	    <listitem>
 	      <para>
-		Will be called for each cycle of a run reffering to AgsGroupId.
+		Will be called for each cycle of a run reffering to AgsRecallID.
 	      </para>
 	    </listitem>
 	    <listitem>
 	      <para>
-		There may be more than one AgsGroupId for a template i.e. there can
+		There may be more than one AgsRecallID for a template i.e. there can
 		exist more than one run at the very same time.
 	      </para>
 	    </listitem>

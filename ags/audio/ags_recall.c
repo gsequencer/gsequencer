@@ -3280,7 +3280,15 @@ ags_recall_set_staging_flags(AgsRecall *recall, guint staging_flags)
     if((AGS_SOUND_STAGING_CHECK_RT_DATA & (staging_flags)) != 0 &&
        (AGS_SOUND_STAGING_CHECK_RT_DATA & (recall_staging_flags)) == 0){    
       if(omit_event){
-	AGS_RECALL_GET_CLASS(recall)->check_rt_data(recall);
+	void (*check_rt_data)(AgsRecall *recall);
+	
+	pthread_mutex_lock(ags_recall_get_class_mutex());
+
+	check_rt_data = AGS_RECALL_GET_CLASS(recall)->check_rt_data;
+	
+	pthread_mutex_unlock(ags_recall_get_class_mutex());
+	
+	check_rt_data(recall);
       }else{
 	ags_recall_check_rt_data(recall);
       }
@@ -3289,7 +3297,15 @@ ags_recall_set_staging_flags(AgsRecall *recall, guint staging_flags)
     if((AGS_SOUND_STAGING_RUN_INIT_PRE & (staging_flags)) != 0 &&
        (AGS_SOUND_STAGING_RUN_INIT_PRE & (recall_staging_flags)) == 0){
       if(omit_event){
-	AGS_RECALL_GET_CLASS(recall)->run_init_pre(recall);
+	void (*run_init_pre)(AgsRecall *recall);
+	
+	pthread_mutex_lock(ags_recall_get_class_mutex());
+
+	run_init_pre = AGS_RECALL_GET_CLASS(recall)->run_init_pre;
+	
+	pthread_mutex_unlock(ags_recall_get_class_mutex());
+
+	run_init_pre(recall);
       }else{
 	ags_recall_run_init_pre(recall);
       }
@@ -3298,7 +3314,15 @@ ags_recall_set_staging_flags(AgsRecall *recall, guint staging_flags)
     if((AGS_SOUND_STAGING_RUN_INIT_INTER & (staging_flags)) != 0 &&
        (AGS_SOUND_STAGING_RUN_INIT_INTER & (recall_staging_flags)) == 0){
       if(omit_event){
-	AGS_RECALL_GET_CLASS(recall)->run_init_inter(recall);
+	void (*run_init_inter)(AgsRecall *recall);
+	
+	pthread_mutex_lock(ags_recall_get_class_mutex());
+
+	run_init_inter = AGS_RECALL_GET_CLASS(recall)->run_init_inter;
+	
+	pthread_mutex_unlock(ags_recall_get_class_mutex());
+
+	run_init_inter(recall);
       }else{
 	ags_recall_run_init_inter(recall);
       }
@@ -3307,7 +3331,15 @@ ags_recall_set_staging_flags(AgsRecall *recall, guint staging_flags)
     if((AGS_SOUND_STAGING_RUN_INIT_POST & (staging_flags)) != 0 &&
        (AGS_SOUND_STAGING_RUN_INIT_POST & (recall_staging_flags)) == 0){
       if(omit_event){
-	AGS_RECALL_GET_CLASS(recall)->run_init_post(recall);
+	void (*run_init_post)(AgsRecall *recall);
+	
+	pthread_mutex_lock(ags_recall_get_class_mutex());
+
+	run_init_post = AGS_RECALL_GET_CLASS(recall)->run_init_post;
+	
+	pthread_mutex_unlock(ags_recall_get_class_mutex());
+
+	run_init_post(recall);
       }else{
 	ags_recall_run_init_post(recall);
       }
@@ -3316,7 +3348,15 @@ ags_recall_set_staging_flags(AgsRecall *recall, guint staging_flags)
     if((AGS_SOUND_STAGING_FEED_INPUT_QUEUE & (staging_flags)) != 0 &&
        (AGS_SOUND_STAGING_FEED_INPUT_QUEUE & (recall_staging_flags)) == 0){
       if(omit_event){
-	AGS_RECALL_GET_CLASS(recall)->feed_input_queue(recall);
+	void (*feed_input_queue)(AgsRecall *recall);
+	
+	pthread_mutex_lock(ags_recall_get_class_mutex());
+
+	feed_input_queue = AGS_RECALL_GET_CLASS(recall)->feed_input_queue;
+	
+	pthread_mutex_unlock(ags_recall_get_class_mutex());
+
+	feed_input_queue(recall);
       }else{
 	ags_recall_feed_input_queue(recall);
       }
@@ -3325,7 +3365,15 @@ ags_recall_set_staging_flags(AgsRecall *recall, guint staging_flags)
     if((AGS_SOUND_STAGING_AUTOMATE & (staging_flags)) != 0 &&
        (AGS_SOUND_STAGING_AUTOMATE & (recall_staging_flags)) == 0){
       if(omit_event){
-	AGS_RECALL_GET_CLASS(recall)->automate(recall);
+	void (*automate)(AgsRecall *recall);
+	
+	pthread_mutex_lock(ags_recall_get_class_mutex());
+
+	automate = AGS_RECALL_GET_CLASS(recall)->automate;
+	
+	pthread_mutex_unlock(ags_recall_get_class_mutex());
+
+	automate(recall);
       }else{
 	ags_recall_automate(recall);
       }
@@ -3334,7 +3382,15 @@ ags_recall_set_staging_flags(AgsRecall *recall, guint staging_flags)
     if((AGS_SOUND_STAGING_RUN_PRE & (staging_flags)) != 0 &&
        (AGS_SOUND_STAGING_RUN_PRE & (recall_staging_flags)) == 0){
       if(omit_event){
-	AGS_RECALL_GET_CLASS(recall)->run_pre(recall);
+	void (*run_pre)(AgsRecall *recall);
+	
+	pthread_mutex_lock(ags_recall_get_class_mutex());
+
+	run_pre = AGS_RECALL_GET_CLASS(recall)->run_pre;
+	
+	pthread_mutex_unlock(ags_recall_get_class_mutex());
+
+	run_pre(recall);
       }else{
 	ags_recall_run_pre(recall);
       }
@@ -3343,7 +3399,15 @@ ags_recall_set_staging_flags(AgsRecall *recall, guint staging_flags)
     if((AGS_SOUND_STAGING_RUN_INTER & (staging_flags)) != 0 &&
        (AGS_SOUND_STAGING_RUN_INTER & (recall_staging_flags)) == 0){
       if(omit_event){
-	AGS_RECALL_GET_CLASS(recall)->run_inter(recall);
+	void (*run_inter)(AgsRecall *recall);
+	
+	pthread_mutex_lock(ags_recall_get_class_mutex());
+
+	run_inter = AGS_RECALL_GET_CLASS(recall)->run_inter;
+	
+	pthread_mutex_unlock(ags_recall_get_class_mutex());
+
+	run_inter(recall);
       }else{
 	ags_recall_run_inter(recall);
       }
@@ -3352,7 +3416,15 @@ ags_recall_set_staging_flags(AgsRecall *recall, guint staging_flags)
     if((AGS_SOUND_STAGING_RUN_POST & (staging_flags)) != 0 &&
        (AGS_SOUND_STAGING_RUN_POST & (recall_staging_flags)) == 0){
       if(omit_event){
-	AGS_RECALL_GET_CLASS(recall)->run_post(recall);
+	void (*run_post)(AgsRecall *recall);
+	
+	pthread_mutex_lock(ags_recall_get_class_mutex());
+
+	run_post = AGS_RECALL_GET_CLASS(recall)->run_post;
+	
+	pthread_mutex_unlock(ags_recall_get_class_mutex());
+
+	run_post(recall);
       }else{
 	ags_recall_run_post(recall);
       }
@@ -3361,7 +3433,15 @@ ags_recall_set_staging_flags(AgsRecall *recall, guint staging_flags)
     if((AGS_SOUND_STAGING_DO_FEEDBACK & (staging_flags)) != 0 &&
        (AGS_SOUND_STAGING_DO_FEEDBACK & (recall_staging_flags)) == 0){
       if(omit_event){
-	AGS_RECALL_GET_CLASS(recall)->do_feedback(recall);
+	void (*do_feedback)(AgsRecall *recall);
+	
+	pthread_mutex_lock(ags_recall_get_class_mutex());
+
+	do_feedback = AGS_RECALL_GET_CLASS(recall)->do_feedback;
+	
+	pthread_mutex_unlock(ags_recall_get_class_mutex());
+
+	do_feedback(recall);
       }else{
 	ags_recall_do_feedback(recall);
       }
@@ -3370,7 +3450,15 @@ ags_recall_set_staging_flags(AgsRecall *recall, guint staging_flags)
     if((AGS_SOUND_STAGING_FEED_OUTPUT_QUEUE & (staging_flags)) != 0 &&
        (AGS_SOUND_STAGING_FEED_OUTPUT_QUEUE & (recall_staging_flags)) == 0){
       if(omit_event){
-	AGS_RECALL_GET_CLASS(recall)->feed_output_queue(recall);
+	void (*feed_output_queue)(AgsRecall *recall);
+	
+	pthread_mutex_lock(ags_recall_get_class_mutex());
+
+	feed_output_queue = AGS_RECALL_GET_CLASS(recall)->feed_output_queue;
+	
+	pthread_mutex_unlock(ags_recall_get_class_mutex());
+
+	feed_output_queue(recall);
       }else{
 	ags_recall_feed_output_queue(recall);
       }

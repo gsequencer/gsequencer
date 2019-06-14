@@ -15,6 +15,21 @@ ags (2.2.x)
 	* TODO:JK: implement file bundle embedding plugins and audio data
 	* TODO:JK: improve ags-simple.xsl
 
+ags (2.1.76)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved running integration tests using automake conditional
+	* improved mutexes with AgsUiProvider in ags_xorg_application_context.c
+	* improved mutex in ags_playback_domain_get_audio_thread()
+	* improved mutexes in ags_recall_set_staging_flags()
+
+ags (2.1.75)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed developer's handbook deprecated use of AgsGroupId, replaced by AgsRecallID
+	* fixed developer's handbook deprecated use of AgsRecall ::resolve-dependencies(), it is now ::resolve-dependency()
+	* improved ags_sound_card_editor_reset() to apply backend properly
+
 ags (2.1.74)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
