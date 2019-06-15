@@ -1,3 +1,8 @@
+ags (2.1.77)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented AgsOscExportController launching AgsExportOutput task
+
 ags (2.1.76)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
