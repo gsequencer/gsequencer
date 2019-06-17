@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -66,12 +66,12 @@ gpointer ags_osc_action_controller_real_run_action(AgsOscActionController *osc_a
  */
 
 enum{
-     PROP_0,
+  PROP_0,
 };
 
 enum{
-     RUN_ACTION,
-     LAST_SIGNAL,
+  RUN_ACTION,
+  LAST_SIGNAL,
 };
 
 static gpointer ags_osc_action_controller_parent_class = NULL;
@@ -86,15 +86,15 @@ ags_osc_action_controller_get_type()
     GType ags_type_osc_action_controller = 0;
 
     static const GTypeInfo ags_osc_action_controller_info = {
-							     sizeof (AgsOscActionControllerClass),
-							     NULL, /* base_init */
-							     NULL, /* base_finalize */
-							     (GClassInitFunc) ags_osc_action_controller_class_init,
-							     NULL, /* class_finalize */
-							     NULL, /* class_data */
-							     sizeof (AgsOscActionController),
-							     0,    /* n_preallocs */
-							     (GInstanceInitFunc) ags_osc_action_controller_init,
+      sizeof (AgsOscActionControllerClass),
+      NULL, /* base_init */
+      NULL, /* base_finalize */
+      (GClassInitFunc) ags_osc_action_controller_class_init,
+      NULL, /* class_finalize */
+      NULL, /* class_data */
+      sizeof (AgsOscActionController),
+      0,    /* n_preallocs */
+      (GInstanceInitFunc) ags_osc_action_controller_init,
     };
     
     ags_type_osc_action_controller = g_type_register_static(AGS_TYPE_OSC_CONTROLLER,

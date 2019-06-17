@@ -338,7 +338,6 @@ ags_export_window_export_callback(GtkWidget *toggle_button,
 	
 	filename = gtk_entry_get_text(AGS_EXPORT_SOUNDCARD(child->data)->filename);
 
-	g_message("do");
 	export_output = ags_export_output_new(current_export_thread,
 					      AGS_EXPORT_SOUNDCARD(child->data)->soundcard,
 					      filename,
