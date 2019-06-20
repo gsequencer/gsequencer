@@ -47,6 +47,7 @@
 #include <ags/object/ags_config.h>
 #include <ags/object/ags_connectable.h>
 #include <ags/object/ags_countable.h>
+#include <ags/object/ags_cursor.h>
 #include <ags/object/ags_macros.h>
 #include <ags/object/ags_main_loop.h>
 #include <ags/object/ags_marshal.h>

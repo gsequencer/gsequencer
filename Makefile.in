@@ -114,6 +114,7 @@ build_triplet = @build@
 host_triplet = @host@
 # -msse2 -O3 -ftree-vectorize -ftree-slp-vectorize -ffast-math -ftree-vectorizer-verbose=2
 @WITH_LIBINSTPATCH_TRUE@am__append_1 = -DAGS_WITH_LIBINSTPATCH=1
+@WITH_EXPERIMENTAL_TRUE@am__append_2 = libags_vst.la 
 bin_PROGRAMS = gsequencer$(EXEEXT) midi2xml$(EXEEXT)
 check_PROGRAMS = ags_buffer_util_test$(EXEEXT) \
 	ags_complex_test$(EXEEXT) ags_conversion_test$(EXEEXT) \
@@ -238,7 +239,7 @@ check_PROGRAMS = ags_buffer_util_test$(EXEEXT) \
 
 #TODO:JK: fix tests after refactoring
 # functional tests
-@RUN_FUNCTIONAL_TESTS_TRUE@am__append_2 = \
+@RUN_FUNCTIONAL_TESTS_TRUE@am__append_3 = \
 @RUN_FUNCTIONAL_TESTS_TRUE@	ags_functional_audio_test \
 @RUN_FUNCTIONAL_TESTS_TRUE@	ags_functional_osc_server_test \
 @RUN_FUNCTIONAL_TESTS_TRUE@	ags_functional_machine_add_and_destroy_test \
@@ -255,30 +256,30 @@ check_PROGRAMS = ags_buffer_util_test$(EXEEXT) \
 @RUN_FUNCTIONAL_TESTS_TRUE@	ags_functional_notation_edit_test \
 @RUN_FUNCTIONAL_TESTS_TRUE@	ags_functional_audio_config_test
 
-@FAST_TEST_MODE_TRUE@@RUN_FUNCTIONAL_TESTS_TRUE@am__append_3 = -DAGS_FAST_FUNCTIONAL_TESTS=1
-@WITH_LIBINSTPATCH_TRUE@am__append_4 = \
+@FAST_TEST_MODE_TRUE@@RUN_FUNCTIONAL_TESTS_TRUE@am__append_4 = -DAGS_FAST_FUNCTIONAL_TESTS=1
+@WITH_LIBINSTPATCH_TRUE@am__append_5 = \
 @WITH_LIBINSTPATCH_TRUE@	ags/audio/file/ags_ipatch.h \
 @WITH_LIBINSTPATCH_TRUE@	ags/audio/file/ags_ipatch_sample.h \
 @WITH_LIBINSTPATCH_TRUE@	ags/audio/file/ags_ipatch_dls2_reader.h \
 @WITH_LIBINSTPATCH_TRUE@	ags/audio/file/ags_ipatch_gig_reader.h \
 @WITH_LIBINSTPATCH_TRUE@	ags/audio/file/ags_ipatch_sf2_reader.h
 
-@WITH_LIBINSTPATCH_TRUE@am__append_5 = \
+@WITH_LIBINSTPATCH_TRUE@am__append_6 = \
 @WITH_LIBINSTPATCH_TRUE@	ags/audio/file/ags_ipatch.c \
 @WITH_LIBINSTPATCH_TRUE@	ags/audio/file/ags_ipatch_sample.c \
 @WITH_LIBINSTPATCH_TRUE@	ags/audio/file/ags_ipatch_dls2_reader.c \
 @WITH_LIBINSTPATCH_TRUE@	ags/audio/file/ags_ipatch_gig_reader.c \
 @WITH_LIBINSTPATCH_TRUE@	ags/audio/file/ags_ipatch_sf2_reader.c
 
-@WITH_LIBINSTPATCH_TRUE@am__append_6 = \
+@WITH_LIBINSTPATCH_TRUE@am__append_7 = \
 @WITH_LIBINSTPATCH_TRUE@	ags/audio/task/ags_open_sf2_instrument.h \
 @WITH_LIBINSTPATCH_TRUE@	ags/audio/task/ags_open_sf2_sample.h
 
-@WITH_LIBINSTPATCH_TRUE@am__append_7 = \
+@WITH_LIBINSTPATCH_TRUE@am__append_8 = \
 @WITH_LIBINSTPATCH_TRUE@	ags/audio/task/ags_open_sf2_instrument.c \
 @WITH_LIBINSTPATCH_TRUE@	ags/audio/task/ags_open_sf2_sample.c
 
-@WITH_LIBINSTPATCH_TRUE@am__append_8 = \
+@WITH_LIBINSTPATCH_TRUE@am__append_9 = \
 @WITH_LIBINSTPATCH_TRUE@	ags/X/machine/ags_ffplayer_callbacks.h \
 @WITH_LIBINSTPATCH_TRUE@	ags/X/machine/ags_ffplayer.h \
 @WITH_LIBINSTPATCH_TRUE@	ags/X/machine/ags_ffplayer_bridge_callbacks.h \
@@ -290,7 +291,7 @@ check_PROGRAMS = ags_buffer_util_test$(EXEEXT) \
 @WITH_LIBINSTPATCH_TRUE@	ags/X/machine/ags_ffplayer_input_pad_callbacks.h \
 @WITH_LIBINSTPATCH_TRUE@	ags/X/machine/ags_ffplayer_input_pad.h
 
-@WITH_LIBINSTPATCH_TRUE@am__append_9 = \
+@WITH_LIBINSTPATCH_TRUE@am__append_10 = \
 @WITH_LIBINSTPATCH_TRUE@	ags/X/machine/ags_ffplayer.c \
 @WITH_LIBINSTPATCH_TRUE@	ags/X/machine/ags_ffplayer_callbacks.c \
 @WITH_LIBINSTPATCH_TRUE@	ags/X/machine/ags_ffplayer_bridge.c \
@@ -403,6 +404,7 @@ am__objects_4 = $(am__objects_1) \
 	ags/object/libags_la-ags_config.lo \
 	ags/object/libags_la-ags_connectable.lo \
 	ags/object/libags_la-ags_countable.lo \
+	ags/object/libags_la-ags_cursor.lo \
 	ags/object/libags_la-ags_globals.lo \
 	ags/object/libags_la-ags_main_loop.lo \
 	ags/object/libags_la-ags_marshal.lo \
@@ -660,8 +662,8 @@ am__libags_audio_la_SOURCES_DIST = ags/audio/ags_acceleration.c \
 	ags/plugin/ags_ladspa_conversion.c \
 	ags/plugin/ags_ladspa_manager.c ags/plugin/ags_ladspa_plugin.c \
 	ags/plugin/ags_lv2_conversion.c ags/plugin/ags_lv2_manager.c \
-	ags/plugin/ags_lv2_plugin.c ags/plugin/ags_lv2_preset.c \
-	ags/plugin/ags_lv2_log_manager.c \
+	ags/plugin/ags_lv2_turtle_parser.c ags/plugin/ags_lv2_plugin.c \
+	ags/plugin/ags_lv2_preset.c ags/plugin/ags_lv2_log_manager.c \
 	ags/plugin/ags_lv2_event_manager.c \
 	ags/plugin/ags_lv2_option_manager.c \
 	ags/plugin/ags_lv2_uri_map_manager.c \
@@ -934,6 +936,7 @@ am__objects_19 = $(am__objects_1) \
 	ags/plugin/libags_audio_la-ags_ladspa_plugin.lo \
 	ags/plugin/libags_audio_la-ags_lv2_conversion.lo \
 	ags/plugin/libags_audio_la-ags_lv2_manager.lo \
+	ags/plugin/libags_audio_la-ags_lv2_turtle_parser.lo \
 	ags/plugin/libags_audio_la-ags_lv2_plugin.lo \
 	ags/plugin/libags_audio_la-ags_lv2_preset.lo \
 	ags/plugin/libags_audio_la-ags_lv2_log_manager.lo \
@@ -1061,8 +1064,30 @@ libags_thread_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
 	$(libags_thread_la_CFLAGS) $(CFLAGS) \
 	$(libags_thread_la_LDFLAGS) $(LDFLAGS) -o $@
-libags_vst_la_DEPENDENCIES = $(am__DEPENDENCIES_1) \
-	$(am__DEPENDENCIES_1)
+@WITH_EXPERIMENTAL_TRUE@libags_vst_la_DEPENDENCIES =  \
+@WITH_EXPERIMENTAL_TRUE@	$(am__DEPENDENCIES_1) \
+@WITH_EXPERIMENTAL_TRUE@	$(am__DEPENDENCIES_1)
+am__libags_vst_la_SOURCES_DIST =  \
+	ags/vst3-capi/pluginterfaces/base/ags_vst_icloneable.cpp \
+	ags/vst3-capi/pluginterfaces/base/ags_vst_geo_constants.cpp \
+	ags/vst3-capi/pluginterfaces/base/ags_vst_ierror_context.cpp \
+	ags/vst3-capi/pluginterfaces/base/ags_vst_fvariant.cpp \
+	ags/vst3-capi/pluginterfaces/base/ags_vst_funknown.cpp \
+	ags/vst3-capi/pluginterfaces/base/ags_vst_ftypes.cpp \
+	ags/vst3-capi/pluginterfaces/base/ags_vst_iplugin_base.cpp \
+	ags/vst3-capi/pluginterfaces/base/ags_vst_futils.cpp \
+	ags/vst3-capi/pluginterfaces/base/ags_vst_ibstream.cpp \
+	ags/vst3-capi/pluginterfaces/base/ags_vst_fstrdefs.cpp \
+	ags/vst3-capi/pluginterfaces/base/ags_vst_const_string_table.cpp \
+	ags/vst3-capi/pluginterfaces/base/ags_vst_ipersistent.cpp \
+	ags/vst3-capi/util/ags_vst_string_util.cpp \
+	ags/vst3-capi/base/source/ags_vst_fbuffer.cpp \
+	ags/vst3-capi/public.sdk/source/vst/ags_vst_audio_effect.cpp \
+	ags/vst3-capi/public.sdk/source/vst/ags_vst_component.cpp \
+	ags/vst3-capi/public.sdk/source/vst/ags_vst_component_base.cpp \
+	ags/vst3-capi/public.sdk/source/vst/ags_vst_edit_controller.cpp \
+	ags/vst3-capi/public.sdk/source/vst/ags_vst_bus.cpp \
+	ags/vst3-capi/public.sdk/source/vst/ags_vst_parameters.cpp
 am__objects_27 = $(am__objects_1) \
 	ags/vst3-capi/pluginterfaces/base/libags_vst_la-ags_vst_icloneable.lo \
 	ags/vst3-capi/pluginterfaces/base/libags_vst_la-ags_vst_geo_constants.lo \
@@ -1077,13 +1102,20 @@ am__objects_27 = $(am__objects_1) \
 	ags/vst3-capi/pluginterfaces/base/libags_vst_la-ags_vst_const_string_table.lo \
 	ags/vst3-capi/pluginterfaces/base/libags_vst_la-ags_vst_ipersistent.lo \
 	ags/vst3-capi/util/libags_vst_la-ags_vst_string_util.lo \
-	ags/vst3-capi/base/source/libags_vst_la-ags_vst_fbuffer.lo
-am_libags_vst_la_OBJECTS = $(am__objects_27)
+	ags/vst3-capi/base/source/libags_vst_la-ags_vst_fbuffer.lo \
+	ags/vst3-capi/public.sdk/source/vst/libags_vst_la-ags_vst_audio_effect.lo \
+	ags/vst3-capi/public.sdk/source/vst/libags_vst_la-ags_vst_component.lo \
+	ags/vst3-capi/public.sdk/source/vst/libags_vst_la-ags_vst_component_base.lo \
+	ags/vst3-capi/public.sdk/source/vst/libags_vst_la-ags_vst_edit_controller.lo \
+	ags/vst3-capi/public.sdk/source/vst/libags_vst_la-ags_vst_bus.lo \
+	ags/vst3-capi/public.sdk/source/vst/libags_vst_la-ags_vst_parameters.lo
+@WITH_EXPERIMENTAL_TRUE@am_libags_vst_la_OBJECTS = $(am__objects_27)
 libags_vst_la_OBJECTS = $(am_libags_vst_la_OBJECTS)
 libags_vst_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CXX \
 	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CXXLD) \
 	$(libags_vst_la_CXXFLAGS) $(CXXFLAGS) $(libags_vst_la_LDFLAGS) \
 	$(LDFLAGS) -o $@
+@WITH_EXPERIMENTAL_TRUE@am_libags_vst_la_rpath = -rpath $(libdir)
 libgsequencer_la_DEPENDENCIES = libags_audio.la libags_server.la \
 	libags_gui.la libags_thread.la libags.la $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
@@ -4457,6 +4489,7 @@ am__depfiles_remade = ags/$(DEPDIR)/gsequencer-gsequencer_main.Po \
 	ags/object/$(DEPDIR)/libags_la-ags_config.Plo \
 	ags/object/$(DEPDIR)/libags_la-ags_connectable.Plo \
 	ags/object/$(DEPDIR)/libags_la-ags_countable.Plo \
+	ags/object/$(DEPDIR)/libags_la-ags_cursor.Plo \
 	ags/object/$(DEPDIR)/libags_la-ags_globals.Plo \
 	ags/object/$(DEPDIR)/libags_la-ags_main_loop.Plo \
 	ags/object/$(DEPDIR)/libags_la-ags_marshal.Plo \
@@ -4481,6 +4514,7 @@ am__depfiles_remade = ags/$(DEPDIR)/gsequencer-gsequencer_main.Po \
 	ags/plugin/$(DEPDIR)/libags_audio_la-ags_lv2_option_manager.Plo \
 	ags/plugin/$(DEPDIR)/libags_audio_la-ags_lv2_plugin.Plo \
 	ags/plugin/$(DEPDIR)/libags_audio_la-ags_lv2_preset.Plo \
+	ags/plugin/$(DEPDIR)/libags_audio_la-ags_lv2_turtle_parser.Plo \
 	ags/plugin/$(DEPDIR)/libags_audio_la-ags_lv2_uri_map_manager.Plo \
 	ags/plugin/$(DEPDIR)/libags_audio_la-ags_lv2_urid_manager.Plo \
 	ags/plugin/$(DEPDIR)/libags_audio_la-ags_lv2_worker.Plo \
@@ -4731,6 +4765,12 @@ am__depfiles_remade = ags/$(DEPDIR)/gsequencer-gsequencer_main.Po \
 	ags/vst3-capi/pluginterfaces/base/$(DEPDIR)/libags_vst_la-ags_vst_ierror_context.Plo \
 	ags/vst3-capi/pluginterfaces/base/$(DEPDIR)/libags_vst_la-ags_vst_ipersistent.Plo \
 	ags/vst3-capi/pluginterfaces/base/$(DEPDIR)/libags_vst_la-ags_vst_iplugin_base.Plo \
+	ags/vst3-capi/public.sdk/source/vst/$(DEPDIR)/libags_vst_la-ags_vst_audio_effect.Plo \
+	ags/vst3-capi/public.sdk/source/vst/$(DEPDIR)/libags_vst_la-ags_vst_bus.Plo \
+	ags/vst3-capi/public.sdk/source/vst/$(DEPDIR)/libags_vst_la-ags_vst_component.Plo \
+	ags/vst3-capi/public.sdk/source/vst/$(DEPDIR)/libags_vst_la-ags_vst_component_base.Plo \
+	ags/vst3-capi/public.sdk/source/vst/$(DEPDIR)/libags_vst_la-ags_vst_edit_controller.Plo \
+	ags/vst3-capi/public.sdk/source/vst/$(DEPDIR)/libags_vst_la-ags_vst_parameters.Plo \
 	ags/vst3-capi/util/$(DEPDIR)/libags_vst_la-ags_vst_string_util.Plo \
 	ags/widget/$(DEPDIR)/libags_gui_la-ags_cartesian.Plo \
 	ags/widget/$(DEPDIR)/libags_gui_la-ags_container.Plo \
@@ -4952,7 +4992,8 @@ SOURCES = $(libags_la_SOURCES) $(libags_audio_la_SOURCES) \
 DIST_SOURCES = $(libags_la_SOURCES) \
 	$(am__libags_audio_la_SOURCES_DIST) $(libags_gui_la_SOURCES) \
 	$(libags_server_la_SOURCES) $(libags_thread_la_SOURCES) \
-	$(libags_vst_la_SOURCES) $(am__libgsequencer_la_SOURCES_DIST) \
+	$(am__libags_vst_la_SOURCES_DIST) \
+	$(am__libgsequencer_la_SOURCES_DIST) \
 	$(am__libgsequencer_test_la_SOURCES_DIST) \
 	$(ags_acceleration_test_SOURCES) \
 	$(ags_add_audio_signal_test_SOURCES) \
@@ -5134,16 +5175,17 @@ am__nobase_include_HEADERS_DIST = ags/libags.h \
 	ags/object/ags_application_context.h \
 	ags/object/ags_async_queue.h ags/object/ags_config.h \
 	ags/object/ags_connectable.h ags/object/ags_countable.h \
-	ags/object/ags_globals.h ags/object/ags_macros.h \
-	ags/object/ags_main_loop.h ags/object/ags_marshal.h \
-	ags/object/ags_mutable.h ags/object/ags_plugin.h \
-	ags/object/ags_portlet.h ags/object/ags_seekable.h \
-	ags/object/ags_sequencer.h ags/object/ags_soundcard.h \
-	ags/object/ags_sound_server.h ags/object/ags_tactable.h \
-	ags/file/ags_file.h ags/file/ags_file_id_ref.h \
-	ags/file/ags_file_launch.h ags/file/ags_file_link.h \
-	ags/file/ags_file_lookup.h ags/file/ags_file_stock.h \
-	ags/file/ags_file_util.h ags/thread/ags_autosave_thread.h \
+	ags/object/ags_cursor.h ags/object/ags_globals.h \
+	ags/object/ags_macros.h ags/object/ags_main_loop.h \
+	ags/object/ags_marshal.h ags/object/ags_mutable.h \
+	ags/object/ags_plugin.h ags/object/ags_portlet.h \
+	ags/object/ags_seekable.h ags/object/ags_sequencer.h \
+	ags/object/ags_soundcard.h ags/object/ags_sound_server.h \
+	ags/object/ags_tactable.h ags/file/ags_file.h \
+	ags/file/ags_file_id_ref.h ags/file/ags_file_launch.h \
+	ags/file/ags_file_link.h ags/file/ags_file_lookup.h \
+	ags/file/ags_file_stock.h ags/file/ags_file_util.h \
+	ags/thread/ags_autosave_thread.h \
 	ags/thread/ags_concurrency_provider.h \
 	ags/thread/ags_condition_manager.h \
 	ags/thread/ags_destroy_worker.h \
@@ -5406,8 +5448,8 @@ am__nobase_include_HEADERS_DIST = ags/libags.h \
 	ags/plugin/ags_ladspa_conversion.h \
 	ags/plugin/ags_ladspa_manager.h ags/plugin/ags_ladspa_plugin.h \
 	ags/plugin/ags_lv2_conversion.h ags/plugin/ags_lv2_manager.h \
-	ags/plugin/ags_lv2_plugin.h ags/plugin/ags_lv2_preset.h \
-	ags/plugin/ags_lv2_event_manager.h \
+	ags/plugin/ags_lv2_turtle_parser.h ags/plugin/ags_lv2_plugin.h \
+	ags/plugin/ags_lv2_preset.h ags/plugin/ags_lv2_event_manager.h \
 	ags/plugin/ags_lv2_log_manager.h \
 	ags/plugin/ags_lv2_option_manager.h \
 	ags/plugin/ags_lv2_uri_map_manager.h \
@@ -5930,7 +5972,7 @@ midi2xml_LDFLAGS = @GSEQUENCER_LDFLAGS@ -ldl $(LIBXML2_LIBS) \
 # this lists the binaries to produce, the (non-PHONY, binary) targets in
 # the previous manual Makefile
 lib_LTLIBRARIES = libags.la libags_thread.la libags_server.la \
-	libags_audio.la libags_gui.la libags_vst.la
+	libags_audio.la libags_gui.la $(am__append_2)
 libgsequencerdir = $(libdir)/gsequencer
 libgsequencer_LTLIBRARIES = libgsequencer.la
 
@@ -6195,8 +6237,8 @@ libags_gui_la_SOURCES = $(libags_gui_c_sources)
 libags_gui_la_HEADERS_0 = ags/libags-gui.h $(libags_gui_h_sources)
 libgsequencer_la_HEADERS_0 = $(libgsequencer_h_sources) $(libgsequencer_file_h_sources) $(libgsequencer_thread_h_sources) $(libgsequencer_task_h_sources) $(libgsequencer_import_h_sources) $(libgsequencer_export_h_sources) $(libgsequencer_machine_h_sources) $(libgsequencer_editor_h_sources)
 libgsequencer_la_SOURCES = $(libgsequencer_la_HEADERS_0) $(libgsequencer_c_sources) $(libgsequencer_file_c_sources) $(libgsequencer_thread_c_sources) $(libgsequencer_task_c_sources) $(libgsequencer_import_c_sources) $(libgsequencer_export_c_sources) $(libgsequencer_machine_c_sources) $(libgsequencer_editor_c_sources)
-libags_vst_la_SOURCES = $(libags_vst_c_sources)
-libags_vst_la_HEADERS_0 = ags/libags-vst.h $(libags_vst_h_sources)
+@WITH_EXPERIMENTAL_TRUE@libags_vst_la_SOURCES = $(libags_vst_c_sources)
+@WITH_EXPERIMENTAL_TRUE@libags_vst_la_HEADERS_0 = ags/libags-vst.h $(libags_vst_h_sources)
 
 # library libags
 libags_la_CFLAGS = $(CFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ -I/usr/include $(UUID_CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(GIO_CFLAGS)
@@ -6229,9 +6271,9 @@ libgsequencer_la_LDFLAGS = $(LDFLAGS) -version-info 0:1:0 -shared -fPIC -Wl,-son
 libgsequencer_la_LIBADD = libags_audio.la libags_server.la libags_gui.la libags_thread.la libags.la -ldl -lm $(CORE_AUDIO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(FFTW_LIBS) $(SNDFILE_LIBS) $(JACK_LIBS) $(PULSE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(GDKPIXBUF_LIBS) $(CAIRO_LIBS) $(GTK_LIBS) $(GTK_MAC_INTEGRATION_LIBS)
 
 # library libags-vst
-libags_vst_la_CXXFLAGS = $(CXXFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ -I/usr/include $(GLIB_CFLAGS) $(VST_CXXFLAGS)
-libags_vst_la_LDFLAGS = $(LDFLAGS) -export-symbols libags_vst.sym -version-info 2:0:0 -shared -fPIC -soname,libags_vst.so -pthread 
-libags_vst_la_LIBADD = -ldl -lm $(GLIB_LIBS) $(VST_LIBS)
+@WITH_EXPERIMENTAL_TRUE@libags_vst_la_CXXFLAGS = $(CXXFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ -I/usr/include $(GLIB_CFLAGS) $(VST_CXXFLAGS)
+@WITH_EXPERIMENTAL_TRUE@libags_vst_la_LDFLAGS = $(LDFLAGS) -export-symbols libags_vst.sym -version-info 2:0:0 -shared -fPIC -soname,libags_vst.so -pthread 
+@WITH_EXPERIMENTAL_TRUE@libags_vst_la_LIBADD = -ldl -lm $(GLIB_LIBS) $(VST_LIBS)
 
 # gsequencer
 gsequencer_SOURCES = $(gsequencer_c_sources) $(gsequencerheaders)
@@ -7252,7 +7294,7 @@ ags_xorg_application_context_test_LDADD = libgsequencer.la libags_gui.la libags_
 @RUN_FUNCTIONAL_TESTS_TRUE@libgsequencer_test_la_CPPFLAGS =  \
 @RUN_FUNCTIONAL_TESTS_TRUE@	-DSRCDIR=\"$(srcdir)\" \
 @RUN_FUNCTIONAL_TESTS_TRUE@	-DDESTDIR=\"gsequencer.share\" \
-@RUN_FUNCTIONAL_TESTS_TRUE@	$(am__append_3)
+@RUN_FUNCTIONAL_TESTS_TRUE@	$(am__append_4)
 @RUN_FUNCTIONAL_TESTS_TRUE@libgsequencer_test_la_LDFLAGS = -pthread $(LDFLAGS)
 @RUN_FUNCTIONAL_TESTS_TRUE@libgsequencer_test_la_LIBADD = $(libgsequencer_test_LIBADD)
 
@@ -7427,6 +7469,7 @@ libags_object_h_sources = \
 	ags/object/ags_config.h \
 	ags/object/ags_connectable.h \
 	ags/object/ags_countable.h \
+	ags/object/ags_cursor.h \
 	ags/object/ags_globals.h \
 	ags/object/ags_macros.h \
 	ags/object/ags_main_loop.h \
@@ -7449,6 +7492,7 @@ libags_object_c_sources = \
 	ags/object/ags_config.c \
 	ags/object/ags_connectable.c \
 	ags/object/ags_countable.c \
+	ags/object/ags_cursor.c \
 	ags/object/ags_globals.c \
 	ags/object/ags_main_loop.c \
 	ags/object/ags_marshal.c \
@@ -7796,6 +7840,7 @@ libags_plugin_h_sources = \
 	ags/plugin/ags_ladspa_plugin.h \
 	ags/plugin/ags_lv2_conversion.h \
 	ags/plugin/ags_lv2_manager.h \
+	ags/plugin/ags_lv2_turtle_parser.h \
 	ags/plugin/ags_lv2_plugin.h \
 	ags/plugin/ags_lv2_preset.h \
 	ags/plugin/ags_lv2_event_manager.h \
@@ -7821,6 +7866,7 @@ libags_plugin_c_sources = \
 	ags/plugin/ags_ladspa_plugin.c \
 	ags/plugin/ags_lv2_conversion.c \
 	ags/plugin/ags_lv2_manager.c \
+	ags/plugin/ags_lv2_turtle_parser.c \
 	ags/plugin/ags_lv2_plugin.c \
 	ags/plugin/ags_lv2_preset.c \
 	ags/plugin/ags_lv2_log_manager.c \
@@ -7845,7 +7891,7 @@ libags_audio_file_h_sources =  \
 	ags/audio/file/ags_audio_file_xml.h \
 	ags/audio/file/ags_sound_container.h \
 	ags/audio/file/ags_sound_resource.h \
-	ags/audio/file/ags_sndfile.h $(am__append_4)
+	ags/audio/file/ags_sndfile.h $(am__append_5)
 deprecated_libags_audio_file_c_sources = 
 libags_audio_file_c_sources =  \
 	$(deprecated_libags_audio_file_c_sources) \
@@ -7855,7 +7901,7 @@ libags_audio_file_c_sources =  \
 	ags/audio/file/ags_audio_file_xml.c \
 	ags/audio/file/ags_sound_container.c \
 	ags/audio/file/ags_sound_resource.c \
-	ags/audio/file/ags_sndfile.c $(am__append_5)
+	ags/audio/file/ags_sndfile.c $(am__append_6)
 
 # libags-audio - midi
 deprecated_libags_audio_midi_h_sources = 
@@ -8226,7 +8272,7 @@ libags_audio_task_h_sources =  \
 	ags/audio/task/ags_apply_tact.h \
 	ags/audio/task/ags_reset_amplitude.h \
 	ags/audio/task/ags_reset_peak.h ags/audio/task/ags_set_muted.h \
-	$(am__append_6)
+	$(am__append_7)
 deprecated_libags_audio_task_c_sources = 
 libags_audio_task_c_sources =  \
 	$(deprecated_libags_audio_task_c_sources) \
@@ -8275,7 +8321,7 @@ libags_audio_task_c_sources =  \
 	ags/audio/task/ags_apply_tact.c \
 	ags/audio/task/ags_reset_amplitude.c \
 	ags/audio/task/ags_reset_peak.c ags/audio/task/ags_set_muted.c \
-	$(am__append_7)
+	$(am__append_8)
 
 # libags-gui all files
 deprecated_libags_gui_h_sources = 
@@ -8722,7 +8768,7 @@ libgsequencer_machine_h_sources =  \
 	ags/X/machine/ags_synth_input_line_callbacks.h \
 	ags/X/machine/ags_synth_input_pad.h \
 	ags/X/machine/ags_spectrometer.h \
-	ags/X/machine/ags_spectrometer_callbacks.h $(am__append_8)
+	ags/X/machine/ags_spectrometer_callbacks.h $(am__append_9)
 deprecated_libgsequencer_machine_c_sources = 
 libgsequencer_machine_c_sources =  \
 	$(deprecated_libgsequencer_machine_c_sources) \
@@ -8777,7 +8823,7 @@ libgsequencer_machine_c_sources =  \
 	ags/X/machine/ags_synth_input_line_callbacks.c \
 	ags/X/machine/ags_synth_input_pad.c \
 	ags/X/machine/ags_spectrometer.c \
-	ags/X/machine/ags_spectrometer_callbacks.c $(am__append_9)
+	ags/X/machine/ags_spectrometer_callbacks.c $(am__append_10)
 
 # libgsequencer - editor
 deprecated_libgsequencer_editor_h_sources = 
@@ -8927,7 +8973,13 @@ libags_vst_h_sources = \
 	ags/vst3-capi/pluginterfaces/base/ags_vst_fplatform.h \
 	ags/vst3-capi/pluginterfaces/base/ags_vst_smart_pointer.h \
 	ags/vst3-capi/util/ags_vst_string_util.h \
-	ags/vst3-capi/base/source/ags_vst_fbuffer.h
+	ags/vst3-capi/base/source/ags_vst_fbuffer.h \
+	ags/vst3-capi/public.sdk/source/vst/ags_vst_audio_effect.h \
+	ags/vst3-capi/public.sdk/source/vst/ags_vst_component.h \
+	ags/vst3-capi/public.sdk/source/vst/ags_vst_component_base.h \
+	ags/vst3-capi/public.sdk/source/vst/ags_vst_edit_controller.h \
+	ags/vst3-capi/public.sdk/source/vst/ags_vst_bus.h \
+	ags/vst3-capi/public.sdk/source/vst/ags_vst_parameters.h
 
 deprecated_libags_vst_c_sources = 
 libags_vst_c_sources = \
@@ -8945,7 +8997,13 @@ libags_vst_c_sources = \
 	ags/vst3-capi/pluginterfaces/base/ags_vst_const_string_table.cpp \
 	ags/vst3-capi/pluginterfaces/base/ags_vst_ipersistent.cpp \
 	ags/vst3-capi/util/ags_vst_string_util.cpp \
-	ags/vst3-capi/base/source/ags_vst_fbuffer.cpp
+	ags/vst3-capi/base/source/ags_vst_fbuffer.cpp \
+	ags/vst3-capi/public.sdk/source/vst/ags_vst_audio_effect.cpp \
+	ags/vst3-capi/public.sdk/source/vst/ags_vst_component.cpp \
+	ags/vst3-capi/public.sdk/source/vst/ags_vst_component_base.cpp \
+	ags/vst3-capi/public.sdk/source/vst/ags_vst_edit_controller.cpp \
+	ags/vst3-capi/public.sdk/source/vst/ags_vst_bus.cpp \
+	ags/vst3-capi/public.sdk/source/vst/ags_vst_parameters.cpp
 
 
 # gsequencer all files
@@ -9229,6 +9287,8 @@ ags/object/libags_la-ags_config.lo: ags/object/$(am__dirstamp) \
 ags/object/libags_la-ags_connectable.lo: ags/object/$(am__dirstamp) \
 	ags/object/$(DEPDIR)/$(am__dirstamp)
 ags/object/libags_la-ags_countable.lo: ags/object/$(am__dirstamp) \
+	ags/object/$(DEPDIR)/$(am__dirstamp)
+ags/object/libags_la-ags_cursor.lo: ags/object/$(am__dirstamp) \
 	ags/object/$(DEPDIR)/$(am__dirstamp)
 ags/object/libags_la-ags_globals.lo: ags/object/$(am__dirstamp) \
 	ags/object/$(DEPDIR)/$(am__dirstamp)
@@ -10053,6 +10113,9 @@ ags/plugin/libags_audio_la-ags_lv2_conversion.lo:  \
 ags/plugin/libags_audio_la-ags_lv2_manager.lo:  \
 	ags/plugin/$(am__dirstamp) \
 	ags/plugin/$(DEPDIR)/$(am__dirstamp)
+ags/plugin/libags_audio_la-ags_lv2_turtle_parser.lo:  \
+	ags/plugin/$(am__dirstamp) \
+	ags/plugin/$(DEPDIR)/$(am__dirstamp)
 ags/plugin/libags_audio_la-ags_lv2_plugin.lo:  \
 	ags/plugin/$(am__dirstamp) \
 	ags/plugin/$(DEPDIR)/$(am__dirstamp)
@@ -10406,9 +10469,33 @@ ags/vst3-capi/base/source/$(DEPDIR)/$(am__dirstamp):
 ags/vst3-capi/base/source/libags_vst_la-ags_vst_fbuffer.lo:  \
 	ags/vst3-capi/base/source/$(am__dirstamp) \
 	ags/vst3-capi/base/source/$(DEPDIR)/$(am__dirstamp)
+ags/vst3-capi/public.sdk/source/vst/$(am__dirstamp):
+	@$(MKDIR_P) ags/vst3-capi/public.sdk/source/vst
+	@: > ags/vst3-capi/public.sdk/source/vst/$(am__dirstamp)
+ags/vst3-capi/public.sdk/source/vst/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) ags/vst3-capi/public.sdk/source/vst/$(DEPDIR)
+	@: > ags/vst3-capi/public.sdk/source/vst/$(DEPDIR)/$(am__dirstamp)
+ags/vst3-capi/public.sdk/source/vst/libags_vst_la-ags_vst_audio_effect.lo:  \
+	ags/vst3-capi/public.sdk/source/vst/$(am__dirstamp) \
+	ags/vst3-capi/public.sdk/source/vst/$(DEPDIR)/$(am__dirstamp)
+ags/vst3-capi/public.sdk/source/vst/libags_vst_la-ags_vst_component.lo:  \
+	ags/vst3-capi/public.sdk/source/vst/$(am__dirstamp) \
+	ags/vst3-capi/public.sdk/source/vst/$(DEPDIR)/$(am__dirstamp)
+ags/vst3-capi/public.sdk/source/vst/libags_vst_la-ags_vst_component_base.lo:  \
+	ags/vst3-capi/public.sdk/source/vst/$(am__dirstamp) \
+	ags/vst3-capi/public.sdk/source/vst/$(DEPDIR)/$(am__dirstamp)
+ags/vst3-capi/public.sdk/source/vst/libags_vst_la-ags_vst_edit_controller.lo:  \
+	ags/vst3-capi/public.sdk/source/vst/$(am__dirstamp) \
+	ags/vst3-capi/public.sdk/source/vst/$(DEPDIR)/$(am__dirstamp)
+ags/vst3-capi/public.sdk/source/vst/libags_vst_la-ags_vst_bus.lo:  \
+	ags/vst3-capi/public.sdk/source/vst/$(am__dirstamp) \
+	ags/vst3-capi/public.sdk/source/vst/$(DEPDIR)/$(am__dirstamp)
+ags/vst3-capi/public.sdk/source/vst/libags_vst_la-ags_vst_parameters.lo:  \
+	ags/vst3-capi/public.sdk/source/vst/$(am__dirstamp) \
+	ags/vst3-capi/public.sdk/source/vst/$(DEPDIR)/$(am__dirstamp)
 
 libags_vst.la: $(libags_vst_la_OBJECTS) $(libags_vst_la_DEPENDENCIES) $(EXTRA_libags_vst_la_DEPENDENCIES) 
-	$(AM_V_CXXLD)$(libags_vst_la_LINK) -rpath $(libdir) $(libags_vst_la_OBJECTS) $(libags_vst_la_LIBADD) $(LIBS)
+	$(AM_V_CXXLD)$(libags_vst_la_LINK) $(am_libags_vst_la_rpath) $(libags_vst_la_OBJECTS) $(libags_vst_la_LIBADD) $(LIBS)
 ags/X/$(am__dirstamp):
 	@$(MKDIR_P) ags/X
 	@: > ags/X/$(am__dirstamp)
@@ -12563,6 +12650,8 @@ mostlyclean-compile:
 	-rm -f ags/vst3-capi/base/source/*.lo
 	-rm -f ags/vst3-capi/pluginterfaces/base/*.$(OBJEXT)
 	-rm -f ags/vst3-capi/pluginterfaces/base/*.lo
+	-rm -f ags/vst3-capi/public.sdk/source/vst/*.$(OBJEXT)
+	-rm -f ags/vst3-capi/public.sdk/source/vst/*.lo
 	-rm -f ags/vst3-capi/util/*.$(OBJEXT)
 	-rm -f ags/vst3-capi/util/*.lo
 	-rm -f ags/widget/*.$(OBJEXT)
@@ -13102,6 +13191,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@ags/object/$(DEPDIR)/libags_la-ags_config.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/object/$(DEPDIR)/libags_la-ags_connectable.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/object/$(DEPDIR)/libags_la-ags_countable.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@ags/object/$(DEPDIR)/libags_la-ags_cursor.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/object/$(DEPDIR)/libags_la-ags_globals.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/object/$(DEPDIR)/libags_la-ags_main_loop.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/object/$(DEPDIR)/libags_la-ags_marshal.Plo@am__quote@ # am--include-marker
@@ -13126,6 +13216,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@ags/plugin/$(DEPDIR)/libags_audio_la-ags_lv2_option_manager.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/plugin/$(DEPDIR)/libags_audio_la-ags_lv2_plugin.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/plugin/$(DEPDIR)/libags_audio_la-ags_lv2_preset.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@ags/plugin/$(DEPDIR)/libags_audio_la-ags_lv2_turtle_parser.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/plugin/$(DEPDIR)/libags_audio_la-ags_lv2_uri_map_manager.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/plugin/$(DEPDIR)/libags_audio_la-ags_lv2_urid_manager.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/plugin/$(DEPDIR)/libags_audio_la-ags_lv2_worker.Plo@am__quote@ # am--include-marker
@@ -13376,6 +13467,12 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@ags/vst3-capi/pluginterfaces/base/$(DEPDIR)/libags_vst_la-ags_vst_ierror_context.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/vst3-capi/pluginterfaces/base/$(DEPDIR)/libags_vst_la-ags_vst_ipersistent.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/vst3-capi/pluginterfaces/base/$(DEPDIR)/libags_vst_la-ags_vst_iplugin_base.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@ags/vst3-capi/public.sdk/source/vst/$(DEPDIR)/libags_vst_la-ags_vst_audio_effect.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@ags/vst3-capi/public.sdk/source/vst/$(DEPDIR)/libags_vst_la-ags_vst_bus.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@ags/vst3-capi/public.sdk/source/vst/$(DEPDIR)/libags_vst_la-ags_vst_component.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@ags/vst3-capi/public.sdk/source/vst/$(DEPDIR)/libags_vst_la-ags_vst_component_base.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@ags/vst3-capi/public.sdk/source/vst/$(DEPDIR)/libags_vst_la-ags_vst_edit_controller.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@ags/vst3-capi/public.sdk/source/vst/$(DEPDIR)/libags_vst_la-ags_vst_parameters.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/vst3-capi/util/$(DEPDIR)/libags_vst_la-ags_vst_string_util.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/widget/$(DEPDIR)/libags_gui_la-ags_cartesian.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/widget/$(DEPDIR)/libags_gui_la-ags_container.Plo@am__quote@ # am--include-marker
@@ -13595,6 +13692,13 @@ ags/object/libags_la-ags_countable.lo: ags/object/ags_countable.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/object/ags_countable.c' object='ags/object/libags_la-ags_countable.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_la_CFLAGS) $(CFLAGS) -c -o ags/object/libags_la-ags_countable.lo `test -f 'ags/object/ags_countable.c' || echo '$(srcdir)/'`ags/object/ags_countable.c
+
+ags/object/libags_la-ags_cursor.lo: ags/object/ags_cursor.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_la_CFLAGS) $(CFLAGS) -MT ags/object/libags_la-ags_cursor.lo -MD -MP -MF ags/object/$(DEPDIR)/libags_la-ags_cursor.Tpo -c -o ags/object/libags_la-ags_cursor.lo `test -f 'ags/object/ags_cursor.c' || echo '$(srcdir)/'`ags/object/ags_cursor.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/object/$(DEPDIR)/libags_la-ags_cursor.Tpo ags/object/$(DEPDIR)/libags_la-ags_cursor.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/object/ags_cursor.c' object='ags/object/libags_la-ags_cursor.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_la_CFLAGS) $(CFLAGS) -c -o ags/object/libags_la-ags_cursor.lo `test -f 'ags/object/ags_cursor.c' || echo '$(srcdir)/'`ags/object/ags_cursor.c
 
 ags/object/libags_la-ags_globals.lo: ags/object/ags_globals.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_la_CFLAGS) $(CFLAGS) -MT ags/object/libags_la-ags_globals.lo -MD -MP -MF ags/object/$(DEPDIR)/libags_la-ags_globals.Tpo -c -o ags/object/libags_la-ags_globals.lo `test -f 'ags/object/ags_globals.c' || echo '$(srcdir)/'`ags/object/ags_globals.c
@@ -15485,6 +15589,13 @@ ags/plugin/libags_audio_la-ags_lv2_manager.lo: ags/plugin/ags_lv2_manager.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/plugin/ags_lv2_manager.c' object='ags/plugin/libags_audio_la-ags_lv2_manager.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -c -o ags/plugin/libags_audio_la-ags_lv2_manager.lo `test -f 'ags/plugin/ags_lv2_manager.c' || echo '$(srcdir)/'`ags/plugin/ags_lv2_manager.c
+
+ags/plugin/libags_audio_la-ags_lv2_turtle_parser.lo: ags/plugin/ags_lv2_turtle_parser.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -MT ags/plugin/libags_audio_la-ags_lv2_turtle_parser.lo -MD -MP -MF ags/plugin/$(DEPDIR)/libags_audio_la-ags_lv2_turtle_parser.Tpo -c -o ags/plugin/libags_audio_la-ags_lv2_turtle_parser.lo `test -f 'ags/plugin/ags_lv2_turtle_parser.c' || echo '$(srcdir)/'`ags/plugin/ags_lv2_turtle_parser.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/plugin/$(DEPDIR)/libags_audio_la-ags_lv2_turtle_parser.Tpo ags/plugin/$(DEPDIR)/libags_audio_la-ags_lv2_turtle_parser.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/plugin/ags_lv2_turtle_parser.c' object='ags/plugin/libags_audio_la-ags_lv2_turtle_parser.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -c -o ags/plugin/libags_audio_la-ags_lv2_turtle_parser.lo `test -f 'ags/plugin/ags_lv2_turtle_parser.c' || echo '$(srcdir)/'`ags/plugin/ags_lv2_turtle_parser.c
 
 ags/plugin/libags_audio_la-ags_lv2_plugin.lo: ags/plugin/ags_lv2_plugin.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_audio_la_CFLAGS) $(CFLAGS) -MT ags/plugin/libags_audio_la-ags_lv2_plugin.lo -MD -MP -MF ags/plugin/$(DEPDIR)/libags_audio_la-ags_lv2_plugin.Tpo -c -o ags/plugin/libags_audio_la-ags_lv2_plugin.lo `test -f 'ags/plugin/ags_lv2_plugin.c' || echo '$(srcdir)/'`ags/plugin/ags_lv2_plugin.c
@@ -20550,6 +20661,48 @@ ags/vst3-capi/base/source/libags_vst_la-ags_vst_fbuffer.lo: ags/vst3-capi/base/s
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_vst_la_CXXFLAGS) $(CXXFLAGS) -c -o ags/vst3-capi/base/source/libags_vst_la-ags_vst_fbuffer.lo `test -f 'ags/vst3-capi/base/source/ags_vst_fbuffer.cpp' || echo '$(srcdir)/'`ags/vst3-capi/base/source/ags_vst_fbuffer.cpp
 
+ags/vst3-capi/public.sdk/source/vst/libags_vst_la-ags_vst_audio_effect.lo: ags/vst3-capi/public.sdk/source/vst/ags_vst_audio_effect.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_vst_la_CXXFLAGS) $(CXXFLAGS) -MT ags/vst3-capi/public.sdk/source/vst/libags_vst_la-ags_vst_audio_effect.lo -MD -MP -MF ags/vst3-capi/public.sdk/source/vst/$(DEPDIR)/libags_vst_la-ags_vst_audio_effect.Tpo -c -o ags/vst3-capi/public.sdk/source/vst/libags_vst_la-ags_vst_audio_effect.lo `test -f 'ags/vst3-capi/public.sdk/source/vst/ags_vst_audio_effect.cpp' || echo '$(srcdir)/'`ags/vst3-capi/public.sdk/source/vst/ags_vst_audio_effect.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) ags/vst3-capi/public.sdk/source/vst/$(DEPDIR)/libags_vst_la-ags_vst_audio_effect.Tpo ags/vst3-capi/public.sdk/source/vst/$(DEPDIR)/libags_vst_la-ags_vst_audio_effect.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='ags/vst3-capi/public.sdk/source/vst/ags_vst_audio_effect.cpp' object='ags/vst3-capi/public.sdk/source/vst/libags_vst_la-ags_vst_audio_effect.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_vst_la_CXXFLAGS) $(CXXFLAGS) -c -o ags/vst3-capi/public.sdk/source/vst/libags_vst_la-ags_vst_audio_effect.lo `test -f 'ags/vst3-capi/public.sdk/source/vst/ags_vst_audio_effect.cpp' || echo '$(srcdir)/'`ags/vst3-capi/public.sdk/source/vst/ags_vst_audio_effect.cpp
+
+ags/vst3-capi/public.sdk/source/vst/libags_vst_la-ags_vst_component.lo: ags/vst3-capi/public.sdk/source/vst/ags_vst_component.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_vst_la_CXXFLAGS) $(CXXFLAGS) -MT ags/vst3-capi/public.sdk/source/vst/libags_vst_la-ags_vst_component.lo -MD -MP -MF ags/vst3-capi/public.sdk/source/vst/$(DEPDIR)/libags_vst_la-ags_vst_component.Tpo -c -o ags/vst3-capi/public.sdk/source/vst/libags_vst_la-ags_vst_component.lo `test -f 'ags/vst3-capi/public.sdk/source/vst/ags_vst_component.cpp' || echo '$(srcdir)/'`ags/vst3-capi/public.sdk/source/vst/ags_vst_component.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) ags/vst3-capi/public.sdk/source/vst/$(DEPDIR)/libags_vst_la-ags_vst_component.Tpo ags/vst3-capi/public.sdk/source/vst/$(DEPDIR)/libags_vst_la-ags_vst_component.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='ags/vst3-capi/public.sdk/source/vst/ags_vst_component.cpp' object='ags/vst3-capi/public.sdk/source/vst/libags_vst_la-ags_vst_component.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_vst_la_CXXFLAGS) $(CXXFLAGS) -c -o ags/vst3-capi/public.sdk/source/vst/libags_vst_la-ags_vst_component.lo `test -f 'ags/vst3-capi/public.sdk/source/vst/ags_vst_component.cpp' || echo '$(srcdir)/'`ags/vst3-capi/public.sdk/source/vst/ags_vst_component.cpp
+
+ags/vst3-capi/public.sdk/source/vst/libags_vst_la-ags_vst_component_base.lo: ags/vst3-capi/public.sdk/source/vst/ags_vst_component_base.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_vst_la_CXXFLAGS) $(CXXFLAGS) -MT ags/vst3-capi/public.sdk/source/vst/libags_vst_la-ags_vst_component_base.lo -MD -MP -MF ags/vst3-capi/public.sdk/source/vst/$(DEPDIR)/libags_vst_la-ags_vst_component_base.Tpo -c -o ags/vst3-capi/public.sdk/source/vst/libags_vst_la-ags_vst_component_base.lo `test -f 'ags/vst3-capi/public.sdk/source/vst/ags_vst_component_base.cpp' || echo '$(srcdir)/'`ags/vst3-capi/public.sdk/source/vst/ags_vst_component_base.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) ags/vst3-capi/public.sdk/source/vst/$(DEPDIR)/libags_vst_la-ags_vst_component_base.Tpo ags/vst3-capi/public.sdk/source/vst/$(DEPDIR)/libags_vst_la-ags_vst_component_base.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='ags/vst3-capi/public.sdk/source/vst/ags_vst_component_base.cpp' object='ags/vst3-capi/public.sdk/source/vst/libags_vst_la-ags_vst_component_base.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_vst_la_CXXFLAGS) $(CXXFLAGS) -c -o ags/vst3-capi/public.sdk/source/vst/libags_vst_la-ags_vst_component_base.lo `test -f 'ags/vst3-capi/public.sdk/source/vst/ags_vst_component_base.cpp' || echo '$(srcdir)/'`ags/vst3-capi/public.sdk/source/vst/ags_vst_component_base.cpp
+
+ags/vst3-capi/public.sdk/source/vst/libags_vst_la-ags_vst_edit_controller.lo: ags/vst3-capi/public.sdk/source/vst/ags_vst_edit_controller.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_vst_la_CXXFLAGS) $(CXXFLAGS) -MT ags/vst3-capi/public.sdk/source/vst/libags_vst_la-ags_vst_edit_controller.lo -MD -MP -MF ags/vst3-capi/public.sdk/source/vst/$(DEPDIR)/libags_vst_la-ags_vst_edit_controller.Tpo -c -o ags/vst3-capi/public.sdk/source/vst/libags_vst_la-ags_vst_edit_controller.lo `test -f 'ags/vst3-capi/public.sdk/source/vst/ags_vst_edit_controller.cpp' || echo '$(srcdir)/'`ags/vst3-capi/public.sdk/source/vst/ags_vst_edit_controller.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) ags/vst3-capi/public.sdk/source/vst/$(DEPDIR)/libags_vst_la-ags_vst_edit_controller.Tpo ags/vst3-capi/public.sdk/source/vst/$(DEPDIR)/libags_vst_la-ags_vst_edit_controller.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='ags/vst3-capi/public.sdk/source/vst/ags_vst_edit_controller.cpp' object='ags/vst3-capi/public.sdk/source/vst/libags_vst_la-ags_vst_edit_controller.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_vst_la_CXXFLAGS) $(CXXFLAGS) -c -o ags/vst3-capi/public.sdk/source/vst/libags_vst_la-ags_vst_edit_controller.lo `test -f 'ags/vst3-capi/public.sdk/source/vst/ags_vst_edit_controller.cpp' || echo '$(srcdir)/'`ags/vst3-capi/public.sdk/source/vst/ags_vst_edit_controller.cpp
+
+ags/vst3-capi/public.sdk/source/vst/libags_vst_la-ags_vst_bus.lo: ags/vst3-capi/public.sdk/source/vst/ags_vst_bus.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_vst_la_CXXFLAGS) $(CXXFLAGS) -MT ags/vst3-capi/public.sdk/source/vst/libags_vst_la-ags_vst_bus.lo -MD -MP -MF ags/vst3-capi/public.sdk/source/vst/$(DEPDIR)/libags_vst_la-ags_vst_bus.Tpo -c -o ags/vst3-capi/public.sdk/source/vst/libags_vst_la-ags_vst_bus.lo `test -f 'ags/vst3-capi/public.sdk/source/vst/ags_vst_bus.cpp' || echo '$(srcdir)/'`ags/vst3-capi/public.sdk/source/vst/ags_vst_bus.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) ags/vst3-capi/public.sdk/source/vst/$(DEPDIR)/libags_vst_la-ags_vst_bus.Tpo ags/vst3-capi/public.sdk/source/vst/$(DEPDIR)/libags_vst_la-ags_vst_bus.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='ags/vst3-capi/public.sdk/source/vst/ags_vst_bus.cpp' object='ags/vst3-capi/public.sdk/source/vst/libags_vst_la-ags_vst_bus.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_vst_la_CXXFLAGS) $(CXXFLAGS) -c -o ags/vst3-capi/public.sdk/source/vst/libags_vst_la-ags_vst_bus.lo `test -f 'ags/vst3-capi/public.sdk/source/vst/ags_vst_bus.cpp' || echo '$(srcdir)/'`ags/vst3-capi/public.sdk/source/vst/ags_vst_bus.cpp
+
+ags/vst3-capi/public.sdk/source/vst/libags_vst_la-ags_vst_parameters.lo: ags/vst3-capi/public.sdk/source/vst/ags_vst_parameters.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_vst_la_CXXFLAGS) $(CXXFLAGS) -MT ags/vst3-capi/public.sdk/source/vst/libags_vst_la-ags_vst_parameters.lo -MD -MP -MF ags/vst3-capi/public.sdk/source/vst/$(DEPDIR)/libags_vst_la-ags_vst_parameters.Tpo -c -o ags/vst3-capi/public.sdk/source/vst/libags_vst_la-ags_vst_parameters.lo `test -f 'ags/vst3-capi/public.sdk/source/vst/ags_vst_parameters.cpp' || echo '$(srcdir)/'`ags/vst3-capi/public.sdk/source/vst/ags_vst_parameters.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) ags/vst3-capi/public.sdk/source/vst/$(DEPDIR)/libags_vst_la-ags_vst_parameters.Tpo ags/vst3-capi/public.sdk/source/vst/$(DEPDIR)/libags_vst_la-ags_vst_parameters.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='ags/vst3-capi/public.sdk/source/vst/ags_vst_parameters.cpp' object='ags/vst3-capi/public.sdk/source/vst/libags_vst_la-ags_vst_parameters.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_vst_la_CXXFLAGS) $(CXXFLAGS) -c -o ags/vst3-capi/public.sdk/source/vst/libags_vst_la-ags_vst_parameters.lo `test -f 'ags/vst3-capi/public.sdk/source/vst/ags_vst_parameters.cpp' || echo '$(srcdir)/'`ags/vst3-capi/public.sdk/source/vst/ags_vst_parameters.cpp
+
 mostlyclean-libtool:
 	-rm -f *.lo
 
@@ -20588,6 +20741,7 @@ clean-libtool:
 	-rm -rf ags/util/.libs ags/util/_libs
 	-rm -rf ags/vst3-capi/base/source/.libs ags/vst3-capi/base/source/_libs
 	-rm -rf ags/vst3-capi/pluginterfaces/base/.libs ags/vst3-capi/pluginterfaces/base/_libs
+	-rm -rf ags/vst3-capi/public.sdk/source/vst/.libs ags/vst3-capi/public.sdk/source/vst/_libs
 	-rm -rf ags/vst3-capi/util/.libs ags/vst3-capi/util/_libs
 	-rm -rf ags/widget/.libs ags/widget/_libs
 
@@ -22558,6 +22712,8 @@ distclean-generic:
 	-rm -f ags/vst3-capi/base/source/$(am__dirstamp)
 	-rm -f ags/vst3-capi/pluginterfaces/base/$(DEPDIR)/$(am__dirstamp)
 	-rm -f ags/vst3-capi/pluginterfaces/base/$(am__dirstamp)
+	-rm -f ags/vst3-capi/public.sdk/source/vst/$(DEPDIR)/$(am__dirstamp)
+	-rm -f ags/vst3-capi/public.sdk/source/vst/$(am__dirstamp)
 	-rm -f ags/vst3-capi/util/$(DEPDIR)/$(am__dirstamp)
 	-rm -f ags/vst3-capi/util/$(am__dirstamp)
 	-rm -f ags/widget/$(DEPDIR)/$(am__dirstamp)
@@ -23110,6 +23266,7 @@ distclean: distclean-recursive
 	-rm -f ags/object/$(DEPDIR)/libags_la-ags_config.Plo
 	-rm -f ags/object/$(DEPDIR)/libags_la-ags_connectable.Plo
 	-rm -f ags/object/$(DEPDIR)/libags_la-ags_countable.Plo
+	-rm -f ags/object/$(DEPDIR)/libags_la-ags_cursor.Plo
 	-rm -f ags/object/$(DEPDIR)/libags_la-ags_globals.Plo
 	-rm -f ags/object/$(DEPDIR)/libags_la-ags_main_loop.Plo
 	-rm -f ags/object/$(DEPDIR)/libags_la-ags_marshal.Plo
@@ -23134,6 +23291,7 @@ distclean: distclean-recursive
 	-rm -f ags/plugin/$(DEPDIR)/libags_audio_la-ags_lv2_option_manager.Plo
 	-rm -f ags/plugin/$(DEPDIR)/libags_audio_la-ags_lv2_plugin.Plo
 	-rm -f ags/plugin/$(DEPDIR)/libags_audio_la-ags_lv2_preset.Plo
+	-rm -f ags/plugin/$(DEPDIR)/libags_audio_la-ags_lv2_turtle_parser.Plo
 	-rm -f ags/plugin/$(DEPDIR)/libags_audio_la-ags_lv2_uri_map_manager.Plo
 	-rm -f ags/plugin/$(DEPDIR)/libags_audio_la-ags_lv2_urid_manager.Plo
 	-rm -f ags/plugin/$(DEPDIR)/libags_audio_la-ags_lv2_worker.Plo
@@ -23384,6 +23542,12 @@ distclean: distclean-recursive
 	-rm -f ags/vst3-capi/pluginterfaces/base/$(DEPDIR)/libags_vst_la-ags_vst_ierror_context.Plo
 	-rm -f ags/vst3-capi/pluginterfaces/base/$(DEPDIR)/libags_vst_la-ags_vst_ipersistent.Plo
 	-rm -f ags/vst3-capi/pluginterfaces/base/$(DEPDIR)/libags_vst_la-ags_vst_iplugin_base.Plo
+	-rm -f ags/vst3-capi/public.sdk/source/vst/$(DEPDIR)/libags_vst_la-ags_vst_audio_effect.Plo
+	-rm -f ags/vst3-capi/public.sdk/source/vst/$(DEPDIR)/libags_vst_la-ags_vst_bus.Plo
+	-rm -f ags/vst3-capi/public.sdk/source/vst/$(DEPDIR)/libags_vst_la-ags_vst_component.Plo
+	-rm -f ags/vst3-capi/public.sdk/source/vst/$(DEPDIR)/libags_vst_la-ags_vst_component_base.Plo
+	-rm -f ags/vst3-capi/public.sdk/source/vst/$(DEPDIR)/libags_vst_la-ags_vst_edit_controller.Plo
+	-rm -f ags/vst3-capi/public.sdk/source/vst/$(DEPDIR)/libags_vst_la-ags_vst_parameters.Plo
 	-rm -f ags/vst3-capi/util/$(DEPDIR)/libags_vst_la-ags_vst_string_util.Plo
 	-rm -f ags/widget/$(DEPDIR)/libags_gui_la-ags_cartesian.Plo
 	-rm -f ags/widget/$(DEPDIR)/libags_gui_la-ags_container.Plo
@@ -23988,6 +24152,7 @@ maintainer-clean: maintainer-clean-recursive
 	-rm -f ags/object/$(DEPDIR)/libags_la-ags_config.Plo
 	-rm -f ags/object/$(DEPDIR)/libags_la-ags_connectable.Plo
 	-rm -f ags/object/$(DEPDIR)/libags_la-ags_countable.Plo
+	-rm -f ags/object/$(DEPDIR)/libags_la-ags_cursor.Plo
 	-rm -f ags/object/$(DEPDIR)/libags_la-ags_globals.Plo
 	-rm -f ags/object/$(DEPDIR)/libags_la-ags_main_loop.Plo
 	-rm -f ags/object/$(DEPDIR)/libags_la-ags_marshal.Plo
@@ -24012,6 +24177,7 @@ maintainer-clean: maintainer-clean-recursive
 	-rm -f ags/plugin/$(DEPDIR)/libags_audio_la-ags_lv2_option_manager.Plo
 	-rm -f ags/plugin/$(DEPDIR)/libags_audio_la-ags_lv2_plugin.Plo
 	-rm -f ags/plugin/$(DEPDIR)/libags_audio_la-ags_lv2_preset.Plo
+	-rm -f ags/plugin/$(DEPDIR)/libags_audio_la-ags_lv2_turtle_parser.Plo
 	-rm -f ags/plugin/$(DEPDIR)/libags_audio_la-ags_lv2_uri_map_manager.Plo
 	-rm -f ags/plugin/$(DEPDIR)/libags_audio_la-ags_lv2_urid_manager.Plo
 	-rm -f ags/plugin/$(DEPDIR)/libags_audio_la-ags_lv2_worker.Plo
@@ -24262,6 +24428,12 @@ maintainer-clean: maintainer-clean-recursive
 	-rm -f ags/vst3-capi/pluginterfaces/base/$(DEPDIR)/libags_vst_la-ags_vst_ierror_context.Plo
 	-rm -f ags/vst3-capi/pluginterfaces/base/$(DEPDIR)/libags_vst_la-ags_vst_ipersistent.Plo
 	-rm -f ags/vst3-capi/pluginterfaces/base/$(DEPDIR)/libags_vst_la-ags_vst_iplugin_base.Plo
+	-rm -f ags/vst3-capi/public.sdk/source/vst/$(DEPDIR)/libags_vst_la-ags_vst_audio_effect.Plo
+	-rm -f ags/vst3-capi/public.sdk/source/vst/$(DEPDIR)/libags_vst_la-ags_vst_bus.Plo
+	-rm -f ags/vst3-capi/public.sdk/source/vst/$(DEPDIR)/libags_vst_la-ags_vst_component.Plo
+	-rm -f ags/vst3-capi/public.sdk/source/vst/$(DEPDIR)/libags_vst_la-ags_vst_component_base.Plo
+	-rm -f ags/vst3-capi/public.sdk/source/vst/$(DEPDIR)/libags_vst_la-ags_vst_edit_controller.Plo
+	-rm -f ags/vst3-capi/public.sdk/source/vst/$(DEPDIR)/libags_vst_la-ags_vst_parameters.Plo
 	-rm -f ags/vst3-capi/util/$(DEPDIR)/libags_vst_la-ags_vst_string_util.Plo
 	-rm -f ags/widget/$(DEPDIR)/libags_gui_la-ags_cartesian.Plo
 	-rm -f ags/widget/$(DEPDIR)/libags_gui_la-ags_container.Plo
@@ -24348,20 +24520,6 @@ uninstall-man: uninstall-man1
 
 .PRECIOUS: Makefile
 
-
-@VST_ALL_TRUE@	ags/vst3-capi/public.sdk/source/vst/ags_vst_audio_effect.h \
-@VST_ALL_TRUE@	ags/vst3-capi/public.sdk/source/vst/ags_vst_component.h \
-@VST_ALL_TRUE@	ags/vst3-capi/public.sdk/source/vst/ags_vst_component_base.h \
-@VST_ALL_TRUE@	ags/vst3-capi/public.sdk/source/vst/ags_vst_edit_controller.h \
-@VST_ALL_TRUE@	ags/vst3-capi/public.sdk/source/vst/ags_vst_bus.h \
-@VST_ALL_TRUE@	ags/vst3-capi/public.sdk/source/vst/ags_vst_parameters.h
-
-@VST_ALL_TRUE@	ags/vst3-capi/public.sdk/source/vst/ags_vst_audio_effect.cpp \
-@VST_ALL_TRUE@	ags/vst3-capi/public.sdk/source/vst/ags_vst_component.cpp \
-@VST_ALL_TRUE@	ags/vst3-capi/public.sdk/source/vst/ags_vst_component_base.cpp \
-@VST_ALL_TRUE@	ags/vst3-capi/public.sdk/source/vst/ags_vst_edit_controller.cpp \
-@VST_ALL_TRUE@	ags/vst3-capi/public.sdk/source/vst/ags_vst_bus.cpp \
-@VST_ALL_TRUE@	ags/vst3-capi/public.sdk/source/vst/ags_vst_parameters.cpp
 
 ags-integration-unit-test: 
 	$(MAKE) -C $(top_srcdir) -f unit-system-tests.mk ags-check-system-unit-tests

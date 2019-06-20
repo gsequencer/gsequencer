@@ -39,13 +39,13 @@ struct _AgsCursorInterface
 
   gdouble (*get_default_offset)(AgsCursor *cursor);
   
-  gdouble (*cursor_get_tact)(AgsCursor *cursor);
-  gdouble (*cursor_get_bpm)(AgsCursor *cursor);
+  gdouble (*get_tact)(AgsCursor *cursor);
+  gdouble (*get_bpm)(AgsCursor *cursor);
 
-  guint (*cursor_get_rate)(AgsCursor *cursor);
+  guint (*get_rate)(AgsCursor *cursor);
 
-  gdouble (*cursor_get_delay)(AgsCursor *cursor);
-  guint64 (*cursor_get_duration)(AgsCursor *cursor);
+  gdouble (*get_delay)(AgsCursor *cursor);
+  guint64 (*get_duration)(AgsCursor *cursor);
 
   gdouble (*get_delay_counter)(AgsCursor *cursor);
   guint64 (*get_offset)(AgsCursor *cursor);

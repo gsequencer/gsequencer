@@ -8621,7 +8621,7 @@ ags_audio_add_cursor(AgsAudio *audio, GObject *cursor)
     success = TRUE;
     
     g_object_ref(cursor);
-    audio->cursor = ags_cursor_add(audio->cursor,
+    audio->cursor = g_list_prepend(audio->cursor,
 				   (GObject *) cursor);
   }
   

@@ -94,6 +94,11 @@ AC_ARG_ENABLE(run-system-tests, [AS_HELP_STRING([--enable-run-system-tests],
 	      [],
 	      [enable_run_system_tests=no])
 
+AC_ARG_ENABLE(experimental, [AS_HELP_STRING([--enable-experimental],
+		       	    	[experimental (default is no)])],
+	      [],
+	      [enable_experimental=no])
+
 # Checks for programs.
 AC_PROG_CC
 AC_PROG_CPP
@@ -277,7 +282,6 @@ AM_CONDITIONAL([WITH_LIBINSTPATCH], [test "x$enable_libinstpatch" == xyes])
 AS_IF([test "x$enable_vst" != xno],
       [AC_DEFINE([AGS_WITH_VST], [1], [VST enabled])
 
-      AM_CONDITIONAL(VST_ALL, 0)
       AC_SUBST(VST_CXXFLAGS)
       AC_SUBST(VST_LIBS)
       
@@ -340,6 +344,7 @@ AM_CONDITIONAL([ENABLE_GTK_DOC], false)
 ])
 
 AM_CONDITIONAL([WITH_SYSTEM_TESTS], [test "x$enable_run_system_tests" == xyes])
+AM_CONDITIONAL([WITH_EXPERIMENTAL], [test "x$enable_experimental" == xyes])
 
 LIBAGS_SYMBOLS([])
 LIBAGS_THREAD_SYMBOLS([])

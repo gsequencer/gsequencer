@@ -19,6 +19,7 @@
 
 #include <ags/plugin/ags_lv2_turtle_parser.h>
 
+#include <ags/plugin/ags_lv2_manager.h>
 #include <ags/plugin/ags_lv2_plugin.h>
 #include <ags/plugin/ags_lv2ui_plugin.h>
 
@@ -113,7 +114,7 @@ ags_lv2_turtle_parser_class_init(AgsLv2TurtleParserClass *lv2_turtle_parser)
    *
    * The assigned #GList-struct containing #AgsTurtle.
    * 
-   * Since: 2.1.78
+   * Since: 2.2.0
    */
   param_spec = g_param_spec_pointer("turtle",
 				    i18n_pspec("related turtles"),
@@ -128,7 +129,7 @@ ags_lv2_turtle_parser_class_init(AgsLv2TurtleParserClass *lv2_turtle_parser)
    *
    * The assigned #GList-struct containing #AgsLv2Plugin.
    * 
-   * Since: 2.1.78
+   * Since: 2.2.0
    */
   param_spec = g_param_spec_pointer("plugin",
 				    i18n_pspec("lv2 plugins"),
@@ -143,7 +144,7 @@ ags_lv2_turtle_parser_class_init(AgsLv2TurtleParserClass *lv2_turtle_parser)
    *
    * The assigned #GList-struct containing #AgsLv2uiPlugin.
    * 
-   * Since: 2.1.78
+   * Since: 2.2.0
    */
   param_spec = g_param_spec_pointer("ui-plugin",
 				    i18n_pspec("lv2 UI plugins"),
@@ -373,7 +374,7 @@ ags_lv2_turtle_parser_finalize(GObject *gobject)
  *
  * Returns: the class mutex
  * 
- * Since: 2.1.78
+ * Since: 2.2.0
  */
 pthread_mutex_t*
 ags_lv2_turtle_parser_get_class_mutex()
@@ -389,7 +390,7 @@ ags_lv2_turtle_parser_get_class_mutex()
  * 
  * Parse manifest and refered turtles. 
  * 
- * Since: 2.1.78
+ * Since: 2.2.0
  */
 void
 ags_lv2_turtle_parser_parse(AgsLv2TurtleParser *lv2_turtle_parser,
@@ -403,6 +404,10 @@ ags_lv2_turtle_parser_parse(AgsLv2TurtleParser *lv2_turtle_parser,
   
   pthread_mutex_t *lv2_turtle_parser_mutex;
 
+  auto gboolean ags_lv2_turtle_parser_parse_find_pname(gpointer key,
+						       gpointer value,
+						       gpointer user_data);
+  
   auto void ags_lv2_turtle_parser_parse_statement(AgsTurtle *current_turtle,
 						  xmlNode **node,
 						  AgsTurtle **turtle, guint *n_turtle);
@@ -418,6 +423,20 @@ ags_lv2_turtle_parser_parse(AgsLv2TurtleParser *lv2_turtle_parser,
 								 gchar *subject_iriref,
 								 xmlNode **node,
 								 AgsTurtle **turtle, guint *n_turtle);
+
+  gboolean ags_lv2_turtle_parser_parse_find_pname(gpointer key,
+						  gpointer value,
+						  gpointer user_data)
+  {
+    if(value != NULL &&
+       user_data != NULL &&
+       !g_strcmp0(value,
+		  user_data)){
+      return(TRUE);
+    }
+
+    return(FALSE);
+  }
   
   void ags_lv2_turtle_parser_parse_statement(AgsTurtle *current_turtle,
 					     xmlNode **node,
@@ -486,13 +505,37 @@ ags_lv2_turtle_parser_parse(AgsLv2TurtleParser *lv2_turtle_parser,
 								 xpath,
 								 (xmlNode *) child);
 	  
+	  g_free(xpath);
+	  
 	  if(xpath_result != NULL){
 	    subject_iriref = xmlNodeGetContent((xmlNode *) xpath_result->data);
+	  }else{
+	    AgsTurtle **turtle_iter;
+	    
+	    gchar *pname;
+	    
+	    xpath = g_strdup_printf("./rdf-iri/rdf-prefixed-name/rdf-pname-ln");
+	    
+	    xpath_result = ags_turtle_find_xpath_with_context_node(current_turtle,
+								   xpath,
+								   (xmlNode *) child);
+	    
+	    pname = xmlNodeGetContent((xmlNode *) xpath_result->data);
+
+	    for(turtle_iter = turtle; turtle_iter[0] != NULL; turtle_iter++){
+	      gchar *str;
+	    
+	      str = g_hash_table_find(turtle_iter[0],
+				      (GHRFunc) ags_lv2_turtle_parser_parse_find_pname,
+				      pname);
+
+	      if(str != NULL){
+		subject_iriref = str;
+	      }
+	    }
 	  }
 
 	  g_list_free(xpath_result);
-	  
-	  g_free(xpath);
 	}else if(!g_ascii_strncasecmp(child->name,
 				      "rdf-predicate-object-list",
 				      27)){
@@ -519,9 +562,12 @@ ags_lv2_turtle_parser_parse(AgsLv2TurtleParser *lv2_turtle_parser,
 							 xmlNode **node,
 							 AgsTurtle **turtle, guint *n_turtle)
   {
+    AgsLv2Manager *lv2_manager;
+    AgsLv2Plugin *lv2_plugin;
+    
     xmlNode *child;
 
-    GList *xpath_result;
+    GList *start_xpath_result, *xpath_result;
 
     gchar *xpath;
 
@@ -531,6 +577,9 @@ ags_lv2_turtle_parser_parse(AgsLv2TurtleParser *lv2_turtle_parser,
       return;
     }
 
+    lv2_manager = ags_lv2_manager_get_instance();
+    lv2_plugin = NULL;
+    
     child = node[0]->children;
 
     is_plugin = FALSE;
@@ -539,33 +588,36 @@ ags_lv2_turtle_parser_parse(AgsLv2TurtleParser *lv2_turtle_parser,
     /* parse verbs */
     xpath = g_strdup_printf("./rdf-verb[@verb = 'a']");
 
-    xpath_result = ags_turtle_find_xpath_with_context_node(current_turtle,
-							   xpath,
-							   (xmlNode *) node[0]);
+    xpath_result =
+      start_xpath_result = ags_turtle_find_xpath_with_context_node(current_turtle,
+								   xpath,
+								   (xmlNode *) node[0]);
     
     g_free(xpath);
 
-    while(xpath_result != NULL){
+    while(start_xpath_result != NULL){
       xmlNode *current;
 
-      GList *current_xpath_result;
+      GList *current_start_xpath_result, *current_xpath_result;
       
       gchar *current_xpath;
       
       current = ((xmlNode *) xpath_result->data)->next;
 
+      /* check plugin */
       current_xpath = g_strdup_printf("./rdf-object/rdf-iri/rdf-iriref[text() = '<http://lv2plug.in/ns/lv2core#plugin>']");
 
-      current_xpath_result = ags_turtle_find_xpath_with_context_node(current_turtle,
-								     current_xpath,
-								     (xmlNode *) current);
+      current_xpath_result =
+	current_start_xpath_result = ags_turtle_find_xpath_with_context_node(current_turtle,
+									     current_xpath,
+									     (xmlNode *) current);
 
       g_free(current_xpath);
 	  
-      if(current_xpath_result != NULL){
+      if(current_start_xpath_result != NULL){
 	is_plugin = TRUE;
       }else{
-	AgsTurtle *turtle_iter;
+	AgsTurtle **turtle_iter;
 	
 	gchar *prefix_id;
 
@@ -584,6 +636,51 @@ ags_lv2_turtle_parser_parse(AgsLv2TurtleParser *lv2_turtle_parser,
 					prefix_id,
 					"plugin");
 
+	current_xpath_result =
+	  current_start_xpath_result = ags_turtle_find_xpath_with_context_node(current_turtle,
+									       current_xpath,
+									       (xmlNode *) current);
+
+	g_free(current_xpath);
+	
+	if(current_start_xpath_result != NULL){
+	  is_plugin = TRUE;
+	}
+      }
+      
+      g_list_free(current_start_xpath_result);
+      
+      /* check UI plugin */
+      current_xpath = g_strdup_printf("./rdf-object/rdf-iri/rdf-iriref[text() = '<http://lv2plug.in/ns/extensions/ui#gtkui>']");
+
+      current_xpath_result = ags_turtle_find_xpath_with_context_node(current_turtle,
+								     current_xpath,
+								     (xmlNode *) current);
+
+      g_free(current_xpath);
+	  
+      if(current_xpath_result != NULL){
+	is_plugin = TRUE;
+      }else{
+	AgsTurtle **turtle_iter;
+	
+	gchar *prefix_id;
+
+	prefix_id = NULL;
+
+	for(turtle_iter = turtle; turtle_iter[0] != NULL; turtle_iter++){
+	  gchar *str;
+	  
+	  if((str = g_hash_table_lookup(turtle_iter[0]->prefix_id,
+					"<http://lv2plug.in/ns/extensions/ui#>")) != NULL){
+	    prefix_id = str;
+	  }
+	}
+	
+	current_xpath = g_strdup_printf("./rdf-object/rdf-iri/rdf-prefixed-name/rdf-pname-ln[text() = '<%s%s>']",
+					prefix_id,
+					"gtkui");
+
 	current_xpath_result = ags_turtle_find_xpath_with_context_node(current_turtle,
 								       current_xpath,
 								       (xmlNode *) current);
@@ -595,13 +692,200 @@ ags_lv2_turtle_parser_parse(AgsLv2TurtleParser *lv2_turtle_parser,
 	}
       }
       
-      g_list_free(current_xpath_result);
-	  
+      g_list_free(current_start_xpath_result);
+      
       /* iterate */
       xpath_result = xpath_result->next;
     }
     
-    g_list_free(xpath_result);
+    g_list_free(start_xpath_result);
+
+    /* plugin create instance */
+    if(is_plugin){
+      GList *list;
+      
+      list = ags_lv2_plugin_find_uri(lv2_manager->lv2_plugin,
+				     subject_iriref);
+
+      if(list != NULL){
+	lv2_plugin = list->data;
+      }
+      
+      if(lv2_plugin == NULL){
+	AgsUUID *current_uuid;
+
+	xmlNode *node_binary;
+	
+	gchar *path;
+	gchar *so_filename;
+	gchar *filename;
+	gchar *effect;
+	
+	guint effect_index;
+
+	current_uuid = ags_uuid_alloc();
+	ags_uuid_generate(current_uuid);
+
+	/* so filename */
+	node_binary = NULL;
+	
+	xpath = g_strdup_printf("./rdf-verb/rdf-predicate/rdf-iri/rdf-iriref[text() = '<http://lv2plug.in/ns/lv2core#binary>']");
+
+	xpath_result = ags_turtle_find_xpath_with_context_node(current_turtle,
+							       xpath,
+							       (xmlNode *) node[0]);
+	  
+	g_free(xpath);
+	  
+	if(xpath_result != NULL){
+	  node_binary = ((xmlNode *) xpath_result->data)->parent->parent->parent->next;
+	}else{
+	  gchar *prefix_id;
+	  
+	  xpath = g_strdup_printf("./rdf-verb/rdf-predicate/rdf-iri/rdf-prefixed-name/rdf-pname-ln[text() = '<%s%s>']",
+				  prefix_id,
+				  "binary");
+
+	  xpath_result = ags_turtle_find_xpath_with_context_node(current_turtle,
+								 xpath,
+								 (xmlNode *) node[0]);
+	  
+	  g_free(xpath);
+
+	  if(xpath_result != NULL){
+	    node_binary = ((xmlNode *) xpath_result->data)->parent->parent->parent->parent->next;
+	  }
+	}
+	
+	g_list_free(start_xpath_result);
+	
+	path = dirname(turtle[0]->filename);
+	so_filename = NULL;
+
+	if(node_binary != NULL){
+	  xmlNode *current;
+
+	  GList *current_start_xpath_result, *current_xpath_result;
+      
+	  gchar *current_xpath;
+
+	  current_xpath = g_strdup_printf("./rdf-object-list/rdf-object/rdf-iri/rdf-iriref");
+
+	  current_xpath_result =
+	    current_start_xpath_result = ags_turtle_find_xpath_with_context_node(current_turtle,
+										 current_xpath,
+										 (xmlNode *) node_binary);
+
+	  g_free(current_xpath);
+
+	  if(current_start_xpath_result != NULL){
+	    so_filename = xmlNodeGetContent(current_start_xpath_result->data);
+	  }
+	  
+	  g_list_free(current_start_xpath_result);
+	}
+	
+	filename = g_strdup_printf("%s/%s",
+				   path,
+				   so_filename);
+	effect = NULL;
+	
+	lv2_plugin = g_object_new(AGS_TYPE_LV2_PLUGIN,
+				  "manifest", turtle[0],
+				  "turtle", turtle[n_turtle[0] - 1],
+				  "uuid", current_uuid,
+				  "filename", filename,
+				  "effect", effect,
+				  "uri", subject_iriref,
+				  NULL);
+	
+      }
+    }
+    
+    /* plugin - read ports */
+    if(is_plugin){
+      xmlNode *current;
+      
+      current = NULL;
+      
+      xpath = g_strdup_printf("./rdf-verb/rdf-predicate/rdf-iri/rdf-iriref[text() = '<http://lv2plug.in/ns/lv2core#port>']");
+      
+      xpath_result =
+	start_xpath_result = ags_turtle_find_xpath_with_context_node(current_turtle,
+								     xpath,
+								     (xmlNode *) node[0]);
+      
+      g_free(xpath);
+
+      if(start_xpath_result != NULL){
+	current = ((xmlNode *) start_xpath_result->data)->parent->parent->parent->next;
+      }else{
+	AgsTurtle **turtle_iter;
+	
+	gchar *prefix_id;
+
+	prefix_id = NULL;
+
+	for(turtle_iter = turtle; turtle_iter[0] != NULL; turtle_iter++){
+	  gchar *str;
+	  
+	  if((str = g_hash_table_lookup(turtle_iter[0]->prefix_id,
+					"<http://lv2plug.in/ns/lv2core#>")) != NULL){
+	    prefix_id = str;
+	  }
+	}
+
+	xpath = g_strdup_printf("./rdf-verb/rdf-predicate/rdf-iri/rdf-prefixed-name/rdf-pname-ln[text() = '<%s%s>']",
+				prefix_id,
+				"port");
+
+	xpath_result =
+	  start_xpath_result = ags_turtle_find_xpath_with_context_node(current_turtle,
+								       xpath,
+								       (xmlNode *) node[0]);
+
+	g_free(xpath);	
+
+	if(start_xpath_result != NULL){
+	  current = ((xmlNode *) start_xpath_result->data)->parent->parent->parent->parent->next;
+	}
+      }
+
+      g_list_free(start_xpath_result);
+      
+      if(current != NULL &&
+	 !g_ascii_strncasecmp(current->name,
+			      "rdf-object-list",
+			      16)){
+	xmlNode *current_child;
+
+	current_child = current->children;
+
+	while(current_child != NULL){
+	  if(current_child->type == XML_ELEMENT_NODE){
+	    if(!g_ascii_strncasecmp(current_child->name,
+				    "rdf-object",
+				    12)){
+	      GList *current_child_start_xpath_result, *current_child_xpath_result;
+      
+	      gchar *current_child_xpath;
+
+	      current_child_xpath = g_strdup_printf("./rdf-verb[@verb = 'a']");
+
+	      current_child_xpath_result =
+		current_child_start_xpath_result = ags_turtle_find_xpath_with_context_node(current_turtle,
+											   xpath,
+											   (xmlNode *) current_child);
+    
+	      g_free(current_child_xpath);
+	      
+	    }
+	  }
+
+	  current_child = current_child->next;
+	}
+      }
+    }
   }
 
   void ags_lv2_turtle_parser_parse_blank_node_property_list(AgsTurtle *current_turtle,
@@ -683,7 +967,7 @@ ags_lv2_turtle_parser_parse(AgsLv2TurtleParser *lv2_turtle_parser,
  *
  * Returns: a new #AgsLv2TurtleParser
  *
- * Since: 2.1.78
+ * Since: 2.2.0
  */
 AgsLv2TurtleParser*
 ags_lv2_turtle_parser_new(AgsTurtle *manifest)

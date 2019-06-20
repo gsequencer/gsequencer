@@ -1,9 +1,10 @@
 ags (2.2.x)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
-	* TODO:JK: implement AgsEnvelope curves
+	* TODO:JK: implement AgsLv2TurtleParser
 	* implemented AgsCursor interface
 	* implemented AgsOscExportController
+	* TODO:JK: implement AgsEnvelope curves
 	* TODO:JK: implement AgsNoteCursor, AgsAccelerationCursor, AgsBufferCursor and AgsTrackCursor
 	* TODO:JK: implement VST support
 	* TODO:JK: implement AudioUnit support on Apple Mac OS X

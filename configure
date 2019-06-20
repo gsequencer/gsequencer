@@ -637,6 +637,8 @@ ac_header_list=
 ac_subst_vars='am__EXEEXT_FALSE
 am__EXEEXT_TRUE
 LTLIBOBJS
+WITH_EXPERIMENTAL_FALSE
+WITH_EXPERIMENTAL_TRUE
 WITH_SYSTEM_TESTS_FALSE
 WITH_SYSTEM_TESTS_TRUE
 GTK_DOC_USE_REBASE_FALSE
@@ -682,8 +684,6 @@ FONTCONFIG_LIBS
 FONTCONFIG_CFLAGS
 VST_LIBS
 VST_CXXFLAGS
-VST_ALL_FALSE
-VST_ALL_TRUE
 WITH_LIBINSTPATCH_FALSE
 WITH_LIBINSTPATCH_TRUE
 LIBINSTPATCH_LIBS
@@ -888,6 +888,7 @@ enable_quartz
 enable_run_functional_tests
 enable_fast_test_mode
 enable_run_system_tests
+enable_experimental
 enable_shared
 enable_static
 with_pic
@@ -1613,6 +1614,7 @@ Optional Features:
   --enable-fast-test-mode fast test mode (default is no)
   --enable-run-system-tests
                           run system tests (default is no)
+  --enable-experimental   experimental (default is no)
   --enable-shared[=PKGS]  build shared libraries [default=yes]
   --enable-static[=PKGS]  build static libraries [default=yes]
   --enable-fast-install[=PKGS]
@@ -7006,6 +7008,14 @@ if test "${enable_run_system_tests+set}" = set; then :
   enableval=$enable_run_system_tests;
 else
   enable_run_system_tests=no
+fi
+
+
+# Check whether --enable-experimental was given.
+if test "${enable_experimental+set}" = set; then :
+  enableval=$enable_experimental;
+else
+  enable_experimental=no
 fi
 
 
@@ -21947,14 +21957,6 @@ if test "x$enable_vst" != xno; then :
 $as_echo "#define AGS_WITH_VST 1" >>confdefs.h
 
 
-       if 0; then
-  VST_ALL_TRUE=
-  VST_ALL_FALSE='#'
-else
-  VST_ALL_TRUE='#'
-  VST_ALL_FALSE=
-fi
-
 
 
 
@@ -23190,6 +23192,14 @@ else
   WITH_SYSTEM_TESTS_FALSE=
 fi
 
+ if test "x$enable_experimental" == xyes; then
+  WITH_EXPERIMENTAL_TRUE=
+  WITH_EXPERIMENTAL_FALSE='#'
+else
+  WITH_EXPERIMENTAL_TRUE='#'
+  WITH_EXPERIMENTAL_FALSE=
+fi
+
 
 
   { $as_echo "$as_me:${as_lineno-$LINENO}: generating libags.sym" >&5
@@ -23366,10 +23376,6 @@ if test -z "${WITH_LIBINSTPATCH_TRUE}" && test -z "${WITH_LIBINSTPATCH_FALSE}"; 
   as_fn_error $? "conditional \"WITH_LIBINSTPATCH\" was never defined.
 Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
-if test -z "${VST_ALL_TRUE}" && test -z "${VST_ALL_FALSE}"; then
-  as_fn_error $? "conditional \"VST_ALL\" was never defined.
-Usually this means the macro was only invoked conditionally." "$LINENO" 5
-fi
 if test -z "${RUN_FUNCTIONAL_TESTS_TRUE}" && test -z "${RUN_FUNCTIONAL_TESTS_FALSE}"; then
   as_fn_error $? "conditional \"RUN_FUNCTIONAL_TESTS\" was never defined.
 Usually this means the macro was only invoked conditionally." "$LINENO" 5
@@ -23404,6 +23410,10 @@ Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 if test -z "${WITH_SYSTEM_TESTS_TRUE}" && test -z "${WITH_SYSTEM_TESTS_FALSE}"; then
   as_fn_error $? "conditional \"WITH_SYSTEM_TESTS\" was never defined.
+Usually this means the macro was only invoked conditionally." "$LINENO" 5
+fi
+if test -z "${WITH_EXPERIMENTAL_TRUE}" && test -z "${WITH_EXPERIMENTAL_FALSE}"; then
+  as_fn_error $? "conditional \"WITH_EXPERIMENTAL\" was never defined.
 Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 

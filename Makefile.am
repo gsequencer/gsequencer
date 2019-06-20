@@ -35,7 +35,11 @@ DEFS = -DLOCALEDIR=\"$(localedir)\" @DEFS@
 # this lists the binaries to produce, the (non-PHONY, binary) targets in
 # the previous manual Makefile
 lib_LTLIBRARIES = libags.la libags_thread.la libags_server.la libags_audio.la libags_gui.la
+
+if WITH_EXPERIMENTAL
 lib_LTLIBRARIES += libags_vst.la 
+endif
+
 # lib_LTLIBRARIES += libgsequencer.la
 
 bin_PROGRAMS = gsequencer midi2xml
@@ -351,8 +355,10 @@ libags_gui_la_HEADERS_0 = ags/libags-gui.h $(libags_gui_h_sources)
 libgsequencer_la_HEADERS_0 = $(libgsequencer_h_sources) $(libgsequencer_file_h_sources) $(libgsequencer_thread_h_sources) $(libgsequencer_task_h_sources) $(libgsequencer_import_h_sources) $(libgsequencer_export_h_sources) $(libgsequencer_machine_h_sources) $(libgsequencer_editor_h_sources)
 libgsequencer_la_SOURCES = $(libgsequencer_la_HEADERS_0) $(libgsequencer_c_sources) $(libgsequencer_file_c_sources) $(libgsequencer_thread_c_sources) $(libgsequencer_task_c_sources) $(libgsequencer_import_c_sources) $(libgsequencer_export_c_sources) $(libgsequencer_machine_c_sources) $(libgsequencer_editor_c_sources)
 
+if WITH_EXPERIMENTAL
 libags_vst_la_SOURCES = $(libags_vst_c_sources)
 libags_vst_la_HEADERS_0 = ags/libags-vst.h $(libags_vst_h_sources)
+endif
 
 # library libags
 libags_la_CFLAGS = $(CFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ -I/usr/include $(UUID_CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(GIO_CFLAGS)
@@ -385,9 +391,11 @@ libgsequencer_la_LDFLAGS = $(LDFLAGS) -version-info 0:1:0 -shared -fPIC -Wl,-son
 libgsequencer_la_LIBADD = libags_audio.la libags_server.la libags_gui.la libags_thread.la libags.la -ldl -lm $(CORE_AUDIO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(FFTW_LIBS) $(SNDFILE_LIBS) $(JACK_LIBS) $(PULSE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(GDKPIXBUF_LIBS) $(CAIRO_LIBS) $(GTK_LIBS) $(GTK_MAC_INTEGRATION_LIBS)
 
 # library libags-vst
+if WITH_EXPERIMENTAL
 libags_vst_la_CXXFLAGS = $(CXXFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ -I/usr/include $(GLIB_CFLAGS) $(VST_CXXFLAGS)
 libags_vst_la_LDFLAGS = $(LDFLAGS) -export-symbols libags_vst.sym -version-info 2:0:0 -shared -fPIC -soname,libags_vst.so -pthread 
 libags_vst_la_LIBADD = -ldl -lm $(GLIB_LIBS) $(VST_LIBS)
+endif
 
 # gsequencer
 gsequencer_SOURCES = $(gsequencer_c_sources) $(gsequencerheaders)
@@ -477,6 +485,7 @@ libags_object_h_sources =  \
 	ags/object/ags_config.h \
 	ags/object/ags_connectable.h \
 	ags/object/ags_countable.h \
+	ags/object/ags_cursor.h \
 	ags/object/ags_globals.h \
 	ags/object/ags_macros.h \
 	ags/object/ags_main_loop.h \
@@ -500,6 +509,7 @@ libags_object_c_sources = \
 	ags/object/ags_config.c \
 	ags/object/ags_connectable.c \
 	ags/object/ags_countable.c \
+	ags/object/ags_cursor.c \
 	ags/object/ags_globals.c \
 	ags/object/ags_main_loop.c \
 	ags/object/ags_marshal.c \
@@ -857,6 +867,7 @@ libags_plugin_h_sources = \
 	ags/plugin/ags_ladspa_plugin.h \
 	ags/plugin/ags_lv2_conversion.h \
 	ags/plugin/ags_lv2_manager.h \
+	ags/plugin/ags_lv2_turtle_parser.h \
 	ags/plugin/ags_lv2_plugin.h \
 	ags/plugin/ags_lv2_preset.h \
 	ags/plugin/ags_lv2_event_manager.h \
@@ -883,6 +894,7 @@ libags_plugin_c_sources = \
 	ags/plugin/ags_ladspa_plugin.c \
 	ags/plugin/ags_lv2_conversion.c \
 	ags/plugin/ags_lv2_manager.c \
+	ags/plugin/ags_lv2_turtle_parser.c \
 	ags/plugin/ags_lv2_plugin.c \
 	ags/plugin/ags_lv2_preset.c \
 	ags/plugin/ags_lv2_log_manager.c \
@@ -2085,16 +2097,13 @@ libags_vst_h_sources = \
 	ags/vst3-capi/pluginterfaces/base/ags_vst_fplatform.h \
 	ags/vst3-capi/pluginterfaces/base/ags_vst_smart_pointer.h \
 	ags/vst3-capi/util/ags_vst_string_util.h \
-	ags/vst3-capi/base/source/ags_vst_fbuffer.h
-
-if VST_ALL
+	ags/vst3-capi/base/source/ags_vst_fbuffer.h \
 	ags/vst3-capi/public.sdk/source/vst/ags_vst_audio_effect.h \
 	ags/vst3-capi/public.sdk/source/vst/ags_vst_component.h \
 	ags/vst3-capi/public.sdk/source/vst/ags_vst_component_base.h \
 	ags/vst3-capi/public.sdk/source/vst/ags_vst_edit_controller.h \
 	ags/vst3-capi/public.sdk/source/vst/ags_vst_bus.h \
 	ags/vst3-capi/public.sdk/source/vst/ags_vst_parameters.h
-endif
 
 deprecated_libags_vst_c_sources =
 
@@ -2113,16 +2122,13 @@ libags_vst_c_sources = \
 	ags/vst3-capi/pluginterfaces/base/ags_vst_const_string_table.cpp \
 	ags/vst3-capi/pluginterfaces/base/ags_vst_ipersistent.cpp \
 	ags/vst3-capi/util/ags_vst_string_util.cpp \
-	ags/vst3-capi/base/source/ags_vst_fbuffer.cpp
-
-if VST_ALL
+	ags/vst3-capi/base/source/ags_vst_fbuffer.cpp \
 	ags/vst3-capi/public.sdk/source/vst/ags_vst_audio_effect.cpp \
 	ags/vst3-capi/public.sdk/source/vst/ags_vst_component.cpp \
 	ags/vst3-capi/public.sdk/source/vst/ags_vst_component_base.cpp \
 	ags/vst3-capi/public.sdk/source/vst/ags_vst_edit_controller.cpp \
 	ags/vst3-capi/public.sdk/source/vst/ags_vst_bus.cpp \
 	ags/vst3-capi/public.sdk/source/vst/ags_vst_parameters.cpp
-endif
 
 # gsequencer all files
 gsequencerheaders = \
