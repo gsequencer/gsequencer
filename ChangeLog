@@ -16,6 +16,16 @@ ags (2.2.x)
 	* TODO:JK: implement file bundle embedding plugins and audio data
 	* TODO:JK: improve ags-simple.xsl
 
+ags (2.1.78)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented prefix id hash table of AgsTurtle
+
+ags (2.1.77)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed potential SIGSEGV in ags_simple_file.c
+
 ags (2.1.76)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

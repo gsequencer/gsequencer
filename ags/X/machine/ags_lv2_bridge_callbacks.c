@@ -116,9 +116,11 @@ ags_lv2_bridge_show_gui_callback(GtkMenuItem *item, AgsLv2Bridge *lv2_bridge)
 
     LV2_Feature **feature;
 
+    LV2_URID_Map *urid_map;
+
     /* feature array */
     lv2_bridge->ui_feature = 
-      feature = (LV2_Feature **) malloc(3 * sizeof(LV2_Feature *));
+      feature = (LV2_Feature **) malloc(4 * sizeof(LV2_Feature *));
 
     /* idle interface */
     feature[0] = (LV2_Feature *) malloc(sizeof(LV2_Feature));    
@@ -130,7 +132,16 @@ ags_lv2_bridge_show_gui_callback(GtkMenuItem *item, AgsLv2Bridge *lv2_bridge)
     feature[1]->URI = LV2_UI__showInterface;
     feature[1]->data = NULL;
 
-    feature[2] = NULL;
+    /* URID map */
+    urid_map = (LV2_URID_Map *) malloc(sizeof(LV2_URID_Map));
+    urid_map->handle = NULL;
+    urid_map->map = ags_lv2_urid_manager_map;
+
+    feature[2] = (LV2_Feature *) malloc(sizeof(LV2_Feature));
+    feature[2]->URI = LV2_URID_MAP_URI;
+    feature[2]->data = urid_map;
+
+    feature[3] = NULL;
     
     if(AGS_BASE_PLUGIN(lv2ui_plugin)->ui_plugin_so == NULL){
       AGS_BASE_PLUGIN(lv2ui_plugin)->ui_plugin_so = dlopen(AGS_BASE_PLUGIN(lv2ui_plugin)->ui_filename,

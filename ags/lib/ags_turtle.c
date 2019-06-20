@@ -177,6 +177,10 @@ ags_turtle_init(AgsTurtle *turtle)
   turtle->filename = NULL;
 
   turtle->doc = NULL;
+
+  turtle->prefix_id = g_hash_table_new_full(g_direct_hash, g_string_equal,
+					    NULL,
+					    NULL);
 }
 
 void
@@ -2315,6 +2319,9 @@ ags_turtle_load(AgsTurtle *turtle,
 	xmlAddChild(node,
 		    rdf_iriref_node);
 	
+	g_hash_table_insert(turtle->prefix_id,
+			    xmlNodeGetContent(rdf_iriref_node), xmlNodeGetContent(rdf_pname_ns_node));
+	
 	*iter = look_ahead;
       }
     }
@@ -3269,7 +3276,7 @@ ags_turtle_load(AgsTurtle *turtle,
   
   free(sb);
   free(buffer);
-
+  
   return(doc);
 }
 

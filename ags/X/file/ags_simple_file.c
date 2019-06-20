@@ -4886,6 +4886,8 @@ ags_simple_file_read_notation_editor_launch(AgsFileLaunch *file_launch,
 	    str = g_value_get_string(&(((GParameter *) property->data)->value));
 
 	    if(str != NULL){
+	      ags_machine_selector_add_index(notation_editor->machine_selector);
+
 	      file_id_ref = ags_simple_file_find_id_ref_by_xpath((AgsSimpleFile *) file_launch->file,
 								 str);
 
@@ -4894,8 +4896,6 @@ ags_simple_file_read_notation_editor_launch(AgsFileLaunch *file_launch,
 		 AGS_FILE_ID_REF(file_id_ref->data)->ref != NULL){
 		machine = AGS_FILE_ID_REF(file_id_ref->data)->ref;
 	    
-		ags_machine_selector_add_index(notation_editor->machine_selector);
-
 		list_start = gtk_container_get_children((GtkContainer *) notation_editor->machine_selector);
 		list = g_list_last(list_start);
 
@@ -5025,84 +5025,89 @@ ags_simple_file_read_automation_editor_launch(AgsFileLaunch *file_launch,
 	    str = g_value_get_string(&(((GParameter *) property->data)->value));
 	    
 	    if(str != NULL){
-	      file_id_ref =  ags_simple_file_find_id_ref_by_xpath((AgsSimpleFile *) file_launch->file,
-										  str);
-	      machine = AGS_FILE_ID_REF(file_id_ref->data)->ref;
-
 	      ags_machine_selector_add_index(automation_editor->machine_selector);
 
-	      list_start = gtk_container_get_children((GtkContainer *) automation_editor->machine_selector);
-	      list = g_list_last(list_start);
+	      file_id_ref =  ags_simple_file_find_id_ref_by_xpath((AgsSimpleFile *) file_launch->file,
+								  str);
+	      
+	      if(file_id_ref != NULL &&
+		 file_id_ref->data != NULL &&
+		 AGS_FILE_ID_REF(file_id_ref->data)->ref != NULL){
+		machine = AGS_FILE_ID_REF(file_id_ref->data)->ref;
 
-	      gtk_button_clicked(list->data);
-	      ags_machine_selector_link_index(automation_editor->machine_selector,
-					      machine);
+		list_start = gtk_container_get_children((GtkContainer *) automation_editor->machine_selector);
+		list = g_list_last(list_start);
 
-	      /* apply automation ports */
-	      machine_child = AGS_FILE_ID_REF(file_id_ref->data)->node->children;
+		gtk_button_clicked(list->data);
+		ags_machine_selector_link_index(automation_editor->machine_selector,
+						machine);
 
-	      while(machine_child != NULL){
-		if(machine_child->type == XML_ELEMENT_NODE){
-		  if(!xmlStrncmp(machine_child->name,
-				 "ags-sf-automation-port-list",
-				 27)){
-		    xmlNode *automation_port;
+		/* apply automation ports */
+		machine_child = AGS_FILE_ID_REF(file_id_ref->data)->node->children;
 
-		    automation_port = machine_child->children;
+		while(machine_child != NULL){
+		  if(machine_child->type == XML_ELEMENT_NODE){
+		    if(!xmlStrncmp(machine_child->name,
+				   "ags-sf-automation-port-list",
+				   27)){
+		      xmlNode *automation_port;
 
-		    while(automation_port != NULL){
-		      if(automation_port->type == XML_ELEMENT_NODE){
-			if(!xmlStrncmp(automation_port->name,
-				       "ags-sf-automation-port",
-				       22)){
-			  gchar *scope;
-			  gchar *specifier;
+		      automation_port = machine_child->children;
 
-			  specifier = xmlGetProp(automation_port,
-						 "specifier");
+		      while(automation_port != NULL){
+			if(automation_port->type == XML_ELEMENT_NODE){
+			  if(!xmlStrncmp(automation_port->name,
+					 "ags-sf-automation-port",
+					 22)){
+			    gchar *scope;
+			    gchar *specifier;
 
-			  specifier = xmlGetProp(automation_port,
-						 "scope");
+			    specifier = xmlGetProp(automation_port,
+						   "specifier");
 
-			  if(specifier != NULL){
-			    GtkTreeModel *model;
-			    GtkTreeIter iter;
+			    specifier = xmlGetProp(automation_port,
+						   "scope");
 
-			    gchar *value0, *value1;
+			    if(specifier != NULL){
+			      GtkTreeModel *model;
+			      GtkTreeIter iter;
+
+			      gchar *value0, *value1;
 			  
-			    model = gtk_combo_box_get_model(GTK_COMBO_BOX(automation_editor->automation_toolbar->port));
+			      model = gtk_combo_box_get_model(GTK_COMBO_BOX(automation_editor->automation_toolbar->port));
 			  
-			    if(gtk_tree_model_get_iter_first(model, &iter)){
-			      do{
-				gtk_tree_model_get(model, &iter,
-						   1, &value0,
-						   2, &value1,
-						   -1);
+			      if(gtk_tree_model_get_iter_first(model, &iter)){
+				do{
+				  gtk_tree_model_get(model, &iter,
+						     1, &value0,
+						     2, &value1,
+						     -1);
 
-				if((scope == NULL ||
-				    !g_ascii_strcasecmp(scope,
-							value0)) &&
-				   !g_ascii_strcasecmp(specifier,
-						       value1)){
-				  gtk_combo_box_set_active_iter(automation_editor->automation_toolbar->port,
-								&iter);
-				}
-			      }while(gtk_tree_model_iter_next(model,
-							      &iter));
+				  if((scope == NULL ||
+				      !g_ascii_strcasecmp(scope,
+							  value0)) &&
+				     !g_ascii_strcasecmp(specifier,
+							 value1)){
+				    gtk_combo_box_set_active_iter(automation_editor->automation_toolbar->port,
+								  &iter);
+				  }
+				}while(gtk_tree_model_iter_next(model,
+								&iter));
+			      }
 			    }
 			  }
 			}
-		      }
 
-		      automation_port = automation_port->next;
+			automation_port = automation_port->next;
+		      }
 		    }
 		  }
-		}
 	      
-		machine_child = machine_child->next;
-	      }
+		  machine_child = machine_child->next;
+		}
 	    
-	      g_list_free(list_start);
+		g_list_free(list_start);
+	      }
 	    }
 	  }else{
 	    g_object_set_property((GObject *) automation_editor,
@@ -5223,20 +5228,25 @@ ags_simple_file_read_wave_editor_launch(AgsFileLaunch *file_launch,
 	    str = g_value_get_string(&(((GParameter *) property->data)->value));
 	    
 	    if(str != NULL){
-	      file_id_ref =  ags_simple_file_find_id_ref_by_xpath((AgsSimpleFile *) file_launch->file,
-										  str);
-	      machine = AGS_FILE_ID_REF(file_id_ref->data)->ref;
-
 	      ags_machine_selector_add_index(wave_editor->machine_selector);
 
-	      list_start = gtk_container_get_children((GtkContainer *) wave_editor->machine_selector);
-	      list = g_list_last(list_start);
+	      file_id_ref =  ags_simple_file_find_id_ref_by_xpath((AgsSimpleFile *) file_launch->file,
+										  str);
 
-	      gtk_button_clicked(list->data);
-	      ags_machine_selector_link_index(wave_editor->machine_selector,
-					      machine);
+	      if(file_id_ref != NULL &&
+		 file_id_ref->data != NULL &&
+		 AGS_FILE_ID_REF(file_id_ref->data)->ref != NULL){
+		machine = AGS_FILE_ID_REF(file_id_ref->data)->ref;
+
+		list_start = gtk_container_get_children((GtkContainer *) wave_editor->machine_selector);
+		list = g_list_last(list_start);
+
+		gtk_button_clicked(list->data);
+		ags_machine_selector_link_index(wave_editor->machine_selector,
+						machine);
 	    
-	      g_list_free(list_start);
+		g_list_free(list_start);
+	      }
 	    }
 	  }else{
 	    g_object_set_property((GObject *) wave_editor,

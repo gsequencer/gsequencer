@@ -1254,6 +1254,8 @@ ags_recall_lv2_run_load_ports(AgsRecallLv2Run *recall_lv2_run)
 
   AgsLv2Plugin *lv2_plugin;
   
+  LV2_Handle lv2_handle;
+	  
   GList *plugin_port_start, *plugin_port;
   GList *port;
   GList *list;
@@ -1305,6 +1307,12 @@ ags_recall_lv2_run_load_ports(AgsRecallLv2Run *recall_lv2_run)
   /* get some fields */
   pthread_mutex_lock(recall_mutex);
 
+  lv2_handle = NULL;
+
+  if(recall_lv2_run->lv2_handle != NULL){
+    lv2_handle = recall_lv2_run->lv2_handle[0];
+  }
+  
   filename = g_strdup(AGS_RECALL(recall_lv2)->filename);
   effect = g_strdup(AGS_RECALL(recall_lv2)->effect);
 
@@ -1313,6 +1321,10 @@ ags_recall_lv2_run_load_ports(AgsRecallLv2Run *recall_lv2_run)
   connect_port = recall_lv2->plugin_descriptor->connect_port;
   
   pthread_mutex_unlock(recall_mutex);
+
+  if(lv2_handle == NULL){
+    return;
+  }
   
   lv2_plugin = ags_lv2_manager_find_lv2_plugin(ags_lv2_manager_get_instance(),
 					       filename, effect);
@@ -1356,6 +1368,7 @@ ags_recall_lv2_run_load_ports(AgsRecallLv2Run *recall_lv2_run)
 	  float *port_pointer;
 	  
 	  guint port_index;
+	  uint32_t lv2_port_index;
 	  
 	  current_port = list->data;
 	  
@@ -1369,20 +1382,22 @@ ags_recall_lv2_run_load_ports(AgsRecallLv2Run *recall_lv2_run)
 	  /* get port pointer */
 	  pthread_mutex_lock(port_mutex);
 	    
-	  port_pointer = (float *) &(current_port->port_value.ags_port_float);
+	  port_pointer = (float *) &(current_port->port_value.ags_port_ladspa);
 
 	  pthread_mutex_unlock(port_mutex);
 
 	  g_object_get(current_plugin_port,
 		       "port-index", &port_index,
 		       NULL);
-	  
-	  connect_port(recall_lv2_run->lv2_handle[0],
-		       (uint32_t) port_index,
-		       (float *) port_pointer);
+
+	  lv2_port_index = (uint32_t) port_index;
+
+	  connect_port(lv2_handle,
+		       lv2_port_index,
+		       (void *) port_pointer);
 
 #ifdef AGS_DEBUG
-	g_message("connect port: %d", port_index);
+	  g_message("connect port: %d", port_index);	  
 #endif
 	}
       }
