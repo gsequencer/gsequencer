@@ -608,6 +608,8 @@ ags_lv2_turtle_parser_parse(AgsLv2TurtleParser *lv2_turtle_parser,
 
     GList *start_xpath_result, *xpath_result;
 
+    gchar *prefix_id_rdfs;
+    gchar *prefix_id_rdf;
     gchar *prefix_id_lv2_core;
     gchar *prefix_id_lv2ui;
     gchar *xpath;
@@ -624,6 +626,16 @@ ags_lv2_turtle_parser_parse(AgsLv2TurtleParser *lv2_turtle_parser,
     for(turtle_iter = turtle; turtle_iter[0] != NULL; turtle_iter++){
       gchar *str;
 	  
+      if((str = g_hash_table_lookup(turtle_iter[0]->prefix_id,
+				    "<http://www.w3.org/2000/01/rdf-schema#>")) != NULL){
+	prefix_id_rdfs = str;
+      }
+
+      if((str = g_hash_table_lookup(turtle_iter[0]->prefix_id,
+				    "<http://www.w3.org/1999/02/22-rdf-syntax-ns#>")) != NULL){
+	prefix_id_rdf = str;
+      }
+
       if((str = g_hash_table_lookup(turtle_iter[0]->prefix_id,
 				    "<http://lv2plug.in/ns/lv2core#>")) != NULL){
 	prefix_id_lv2_core = str;
@@ -911,6 +923,8 @@ ags_lv2_turtle_parser_parse(AgsLv2TurtleParser *lv2_turtle_parser,
 	      
 	      gboolean is_audio_port, is_atom_port, is_event_port, is_control_port;
 	      gboolean is_output_port, is_input_port;
+	      guint scale_point_count;
+	      gboolean scale_point_has_pname;		
 
 	      plugin_port = ags_plugin_port_new();
 	      g_object_set(lv2_plugin,
@@ -1796,6 +1810,218 @@ ags_lv2_turtle_parser_parse(AgsLv2TurtleParser *lv2_turtle_parser,
 
 		g_list_free(start_value_xpath_result);
 	      }
+
+	      /* scale point */
+	      scale_point_has_pname = FALSE;
+	      
+	      port_predicate_xpath = g_strdup_printf("./rdf-verb/rdf-predicate/rdf-iri/rdf-iriref[text() = '<http://lv2plug.in/ns/lv2core#scalepoint>']");
+		
+	      port_predicate_xpath_result =
+		start_port_predicate_xpath_result = ags_turtle_find_xpath_with_context_node(current_turtle,
+											    port_predicate_xpath,
+											    (xmlNode *) current);
+
+	      g_free(port_predicate_xpath);
+		
+	      if(start_port_predicate_xpath_result != NULL){
+		//empty
+	      }else{
+		gchar *prefix_id;
+
+		prefix_id = prefix_id_lv2_core;
+	
+		port_predicate_xpath = g_strdup_printf("./rdf-verb/rdf-predicate/rdf-iri/rdf-prefixed-name/rdf-pname-ln[text() = '<%s%s>']",
+						       prefix_id,
+						       "scalepoint");
+
+		port_predicate_xpath_result =
+		  start_port_predicate_xpath_result = ags_turtle_find_xpath_with_context_node(current_turtle,
+											      port_predicate_xpath,
+											      (xmlNode *) current);
+
+		g_free(port_predicate_xpath);
+
+		if(start_port_predicate_xpath_result != NULL){
+		  scale_point_has_pname = TRUE;
+		}
+	      }
+
+	      for(scale_point_count = 0; port_predicate_xpath_result != NULL; scale_point_count++){
+		xmlNode *scale_point_predicate;
+		
+		GList *start_label_xpath_result, *label_xpath_result;
+		GList *start_value_xpath_result, *value_xpath_result;
+
+		gchar *label_xpath;
+		gchar *value_xpath;
+
+		plugin_port->scale_steps = scale_point_count + 1;
+		
+		if(plugin_port->scale_point == NULL){
+		  plugin_port->scale_point = (gchar **) malloc(2 * sizeof(gchar *));
+
+		  plugin_port->scale_point[0] = NULL;
+		  plugin_port->scale_point[1] = NULL;
+
+		  plugin_port->scale_value = (gdouble *) malloc(1 * sizeof(gdouble));
+
+		  plugin_port->scale_value[0] = 0.0;
+		}else{
+		  plugin_port->scale_point = (gchar **) realloc(plugin_port->scale_point,
+								(scale_point_count + 2) * sizeof(gchar *));
+
+		  plugin_port->scale_point[scale_point_count] = NULL;
+		  plugin_port->scale_point[scale_point_count + 1] = NULL;
+
+		  plugin_port->scale_value = (gdouble *) realloc(plugin_port->scale_value,
+								 (scale_point_count + 1) * sizeof(gdouble));
+
+		  plugin_port->scale_value[scale_point_count] = 0.0;
+		}
+		
+		current_predicate = NULL;
+
+		if(!scale_point_has_pname){
+		  current_predicate = ((xmlNode *) port_predicate_xpath_result->data)->parent->parent->parent->next;
+		}else{
+		  current_predicate = ((xmlNode *) port_predicate_xpath_result->data)->parent->parent->parent->parent->next;
+		}
+		
+		/* label */
+		scale_point_predicate = NULL;
+	      
+		port_predicate_xpath = g_strdup_printf("./rdf-object/rdf-blank-node-property-list/rdf-predicate-object-list/rdf-verb/rdf-predicate/rdf-iri/rdf-iriref[text() = '<http://www.w3.org/2000/01/rdf-schema#label>']");
+		
+		port_predicate_xpath_result =
+		  start_port_predicate_xpath_result = ags_turtle_find_xpath_with_context_node(current_turtle,
+											      port_predicate_xpath,
+											      (xmlNode *) current_predicate);
+
+		g_free(port_predicate_xpath);
+		
+		if(start_port_predicate_xpath_result != NULL){
+		  scale_point_predicate = ((xmlNode *) start_xpath_result->data)->parent->parent->parent->next;
+		}else{
+		  gchar *prefix_id;
+
+		  prefix_id = prefix_id_rdfs;
+	
+		  port_predicate_xpath = g_strdup_printf("./rdf-object/rdf-blank-node-property-list/rdf-predicate-object-list/rdf-verb/rdf-predicate/rdf-iri/rdf-prefixed-name/rdf-pname-ln[text() = '<%s%s>']",
+							 prefix_id,
+							 "label");
+
+		  port_predicate_xpath_result =
+		    start_port_predicate_xpath_result = ags_turtle_find_xpath_with_context_node(current_turtle,
+												port_predicate_xpath,
+												(xmlNode *) current_predicate);
+
+		  g_free(port_predicate_xpath);
+
+		  if(start_port_predicate_xpath_result != NULL){
+		    scale_point_predicate = ((xmlNode *) start_xpath_result->data)->parent->parent->parent->parent->next;
+		  }
+		}
+
+		g_list_free(start_port_predicate_xpath_result);
+
+		if(scale_point_predicate != NULL){
+		  GList *start_label_xpath_result, *label_xpath_result;
+
+		  gchar *label_xpath;
+
+		  label_xpath = g_strdup("./rdf-object-list/rdf-object/rdf-literal/rdf-string");
+
+		  label_xpath_result =
+		    start_label_xpath_result = ags_turtle_find_xpath_with_context_node(current_turtle,
+										       label_xpath,
+										       (xmlNode *) current);
+
+		  g_free(label_xpath);
+
+		  if(start_label_xpath_result != NULL){
+		    gchar *str;
+
+		    str = xmlNodeGetContent((xmlNode *) start_label_xpath_result->data);
+
+		    if(str != NULL){
+		      plugin_port->scale_point[scale_point_count] = g_strdup(str);
+		    }
+		  }
+
+		  g_list_free(start_label_xpath_result);
+		}
+		
+		/* value */
+		scale_point_predicate = NULL;
+	      
+		port_predicate_xpath = g_strdup_printf("./rdf-object/rdf-blank-node-property-list/rdf-predicate-object-list/rdf-verb/rdf-predicate/rdf-iri/rdf-iriref[text() = '<http://www.w3.org/1999/02/22-rdf-syntax-ns#value>']");
+		
+		port_predicate_xpath_result =
+		  start_port_predicate_xpath_result = ags_turtle_find_xpath_with_context_node(current_turtle,
+											      port_predicate_xpath,
+											      (xmlNode *) current_predicate);
+
+		g_free(port_predicate_xpath);
+		
+		if(start_port_predicate_xpath_result != NULL){
+		  scale_point_predicate = ((xmlNode *) start_xpath_result->data)->parent->parent->parent->next;
+		}else{
+		  gchar *prefix_id;
+
+		  prefix_id = prefix_id_rdf;
+	
+		  port_predicate_xpath = g_strdup_printf("./rdf-object/rdf-blank-node-property-list/rdf-predicate-object-list/rdf-verb/rdf-predicate/rdf-iri/rdf-prefixed-name/rdf-pname-ln[text() = '<%s%s>']",
+							 prefix_id,
+							 "value");
+
+		  port_predicate_xpath_result =
+		    start_port_predicate_xpath_result = ags_turtle_find_xpath_with_context_node(current_turtle,
+												port_predicate_xpath,
+												(xmlNode *) current_predicate);
+
+		  g_free(port_predicate_xpath);
+
+		  if(start_port_predicate_xpath_result != NULL){
+		    scale_point_predicate = ((xmlNode *) start_xpath_result->data)->parent->parent->parent->parent->next;
+		  }
+		}
+
+		g_list_free(start_port_predicate_xpath_result);
+
+		if(scale_point_predicate != NULL){
+		  GList *start_label_xpath_result, *label_xpath_result;
+
+		  gchar *label_xpath;
+
+		  label_xpath = g_strdup("./rdf-object-list/rdf-object/rdf-literal/rdf-string");
+
+		  label_xpath_result =
+		    start_label_xpath_result = ags_turtle_find_xpath_with_context_node(current_turtle,
+										       label_xpath,
+										       (xmlNode *) current);
+
+		  g_free(label_xpath);
+
+		  if(start_label_xpath_result != NULL){
+		    gchar *str;
+
+		    str = xmlNodeGetContent((xmlNode *) start_label_xpath_result->data);
+
+		    if(str != NULL){
+		      plugin_port->scale_value[scale_point_count] = g_ascii_strtod(str,
+										   NULL);
+		    }
+		  }
+
+		  g_list_free(start_label_xpath_result);
+		}
+
+		/* iterate */
+		port_predicate_xpath_result = port_predicate_xpath_result->next;
+	      }
+
+	      g_list_free(start_port_predicate_xpath_result);
+
 	      
 	      g_object_unref(plugin_port);
 	    }
