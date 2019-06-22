@@ -53,6 +53,7 @@ enum{
   PROP_0,
   PROP_LV2_PLUGIN,
   PROP_URI,
+  PROP_APPLIES_TO,
   PROP_BANK,
   PROP_PRESET_LABEL,
   PROP_MANIFEST,
@@ -142,6 +143,22 @@ ags_lv2_preset_class_init(AgsLv2PresetClass *lv2_preset)
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_URI,
+				  param_spec);
+
+  /**
+   * AgsLv2Preset:applies-to:
+   *
+   * The assigned applies to.
+   * 
+   * Since: 2.2.0
+   */
+  param_spec = g_param_spec_string("applies-to",
+				   i18n_pspec("applies to plugin"),
+				   i18n_pspec("The applies to plugin"),
+				   NULL,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_APPLIES_TO,
 				  param_spec);
 
   /**
@@ -248,6 +265,8 @@ ags_lv2_preset_init(AgsLv2Preset *lv2_preset)
 
   lv2_preset->uri = NULL;
 
+  lv2_preset->applies_to = NULL;
+
   lv2_preset->bank = NULL;
   lv2_preset->preset_label = NULL;
 
@@ -324,6 +343,29 @@ ags_lv2_preset_set_property(GObject *gobject,
       }
 
       lv2_preset->uri = g_strdup(uri);
+
+      pthread_mutex_unlock(lv2_preset_mutex);
+    }
+    break;
+  case PROP_APPLIES_TO:
+    {
+      gchar *applies_to;
+
+      applies_to = (gchar *) g_value_get_string(value);
+
+      pthread_mutex_lock(lv2_preset_mutex);
+
+      if(lv2_preset->applies_to == applies_to){
+	pthread_mutex_unlock(lv2_preset_mutex);
+
+	return;
+      }
+      
+      if(lv2_preset->applies_to != NULL){
+	g_free(lv2_preset->applies_to);
+      }
+
+      lv2_preset->applies_to = g_strdup(applies_to);
 
       pthread_mutex_unlock(lv2_preset_mutex);
     }
@@ -472,6 +514,15 @@ ags_lv2_preset_get_property(GObject *gobject,
       pthread_mutex_unlock(lv2_preset_mutex);
     }
     break;
+  case PROP_APPLIES_TO:
+    {
+      pthread_mutex_lock(lv2_preset_mutex);
+
+      g_value_set_string(value, lv2_preset->applies_to);
+
+      pthread_mutex_unlock(lv2_preset_mutex);
+    }
+    break;
   case PROP_BANK:
     {
       pthread_mutex_lock(lv2_preset_mutex);
@@ -538,6 +589,11 @@ ags_lv2_preset_finalize(GObject *gobject)
   /* uri */
   if(lv2_preset->uri != NULL){
     free(lv2_preset->uri);
+  }
+
+  /* applies to */
+  if(lv2_preset->applies_to != NULL){
+    free(lv2_preset->applies_to);
   }
 
   /* bank and preset label */

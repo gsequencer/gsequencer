@@ -65,6 +65,8 @@ struct _AgsLv2Preset
 
   gchar *uri;
 
+  gchar *applies_to;
+  
   gchar *bank;
   gchar *preset_label;
   
@@ -90,7 +92,7 @@ GType ags_lv2_preset_get_type(void);
 
 pthread_mutex_t* ags_lv2_preset_get_class_mutex();
 
-AgsLv2PortPreset* ags_lv2_port_preset_alloc(gchar *port_symobl,
+AgsLv2PortPreset* ags_lv2_port_preset_alloc(gchar *port_symbol,
 					    GType port_type);
 void ags_lv2_port_preset_free(AgsLv2PortPreset *lv2_port_preset);
 
