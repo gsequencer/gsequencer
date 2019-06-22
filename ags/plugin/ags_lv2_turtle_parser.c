@@ -612,9 +612,11 @@ ags_lv2_turtle_parser_parse(AgsLv2TurtleParser *lv2_turtle_parser,
     gchar *prefix_id_rdf;
     gchar *prefix_id_lv2_core;
     gchar *prefix_id_lv2ui;
+    gchar *prefix_id_lv2p;
     gchar *xpath;
 
     gboolean is_plugin, is_ui_plugin;
+    gboolean is_preset;
     
     if(node == NULL){
       return;
@@ -645,6 +647,11 @@ ags_lv2_turtle_parser_parse(AgsLv2TurtleParser *lv2_turtle_parser,
 				    "<http://lv2plug.in/ns/extensions/ui#>")) != NULL){
 	prefix_id_lv2ui = str;
       }
+
+      if((str = g_hash_table_lookup(turtle_iter[0]->prefix_id,
+				    "<http://lv2plug.in/ns/ext/presets#>")) != NULL){
+	prefix_id_lv2p = str;
+      }
     }
     
     lv2_manager = ags_lv2_manager_get_instance();
@@ -654,6 +661,8 @@ ags_lv2_turtle_parser_parse(AgsLv2TurtleParser *lv2_turtle_parser,
 
     is_plugin = FALSE;
     is_ui_plugin = FALSE;
+
+    is_preset = FALSE;
     
     /* parse verbs */
     xpath = g_strdup_printf("./rdf-verb[@verb = 'a']");
@@ -719,7 +728,7 @@ ags_lv2_turtle_parser_parse(AgsLv2TurtleParser *lv2_turtle_parser,
       g_free(current_xpath);
 	  
       if(current_xpath_result != NULL){
-	is_plugin = TRUE;
+	is_ui_plugin = TRUE;
       }else{
 	gchar *prefix_id;
 
@@ -736,7 +745,40 @@ ags_lv2_turtle_parser_parse(AgsLv2TurtleParser *lv2_turtle_parser,
 	g_free(current_xpath);
 	
 	if(current_xpath_result != NULL){
-	  is_plugin = TRUE;
+	  is_ui_plugin = TRUE;
+	}
+      }
+      
+      g_list_free(current_start_xpath_result);
+
+      /* check preset */
+      current_xpath = g_strdup_printf("./rdf-object/rdf-iri/rdf-iriref[text() = '<http://lv2plug.in/ns/ext/presets#preset>']");
+
+      current_xpath_result = ags_turtle_find_xpath_with_context_node(current_turtle,
+								     current_xpath,
+								     (xmlNode *) current);
+
+      g_free(current_xpath);
+	  
+      if(current_xpath_result != NULL){
+	is_preset = TRUE;
+      }else{
+	gchar *prefix_id;
+
+	prefix_id = prefix_id_lv2p;
+	
+	current_xpath = g_strdup_printf("./rdf-object/rdf-iri/rdf-prefixed-name/rdf-pname-ln[text() = '<%s%s>']",
+					prefix_id,
+					"preset");
+
+	current_xpath_result = ags_turtle_find_xpath_with_context_node(current_turtle,
+								       current_xpath,
+								       (xmlNode *) current);
+
+	g_free(current_xpath);
+	
+	if(current_xpath_result != NULL){
+	  is_preset = TRUE;
 	}
       }
       
@@ -851,6 +893,14 @@ ags_lv2_turtle_parser_parse(AgsLv2TurtleParser *lv2_turtle_parser,
       }
     }
 
+    if(is_ui_plugin){
+      //TODO:JK: implement me
+    }
+    
+    if(is_preset){
+      //TODO:JK: implement me
+    }
+    
     /* plugin - read metadata */
     //TODO:JK: implement me
     
