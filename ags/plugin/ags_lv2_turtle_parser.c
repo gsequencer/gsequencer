@@ -20,8 +20,11 @@
 #include <ags/plugin/ags_lv2_turtle_parser.h>
 
 #include <ags/plugin/ags_lv2_manager.h>
+#include <ags/plugin/ags_lv2ui_manager.h>
+#include <ags/plugin/ags_lv2_preset_manager.h>
 #include <ags/plugin/ags_lv2_plugin.h>
 #include <ags/plugin/ags_lv2ui_plugin.h>
+#include <ags/plugin/ags_lv2_preset.h>
 #include <ags/plugin/ags_plugin_port.h>
 
 #include <ags/i18n.h>
@@ -58,6 +61,7 @@ enum{
   PROP_TURTLE,
   PROP_PLUGIN,
   PROP_UI_PLUGIN,
+  PROP_PRESET,
 };
 
 GType
@@ -141,7 +145,7 @@ ags_lv2_turtle_parser_class_init(AgsLv2TurtleParserClass *lv2_turtle_parser)
 				  param_spec);
 
   /**
-   * AgsLv2TurtleParser:turtle:
+   * AgsLv2TurtleParser:ui-pluin:
    *
    * The assigned #GList-struct containing #AgsLv2uiPlugin.
    * 
@@ -153,6 +157,21 @@ ags_lv2_turtle_parser_class_init(AgsLv2TurtleParserClass *lv2_turtle_parser)
 				    G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_UI_PLUGIN,
+				  param_spec);
+
+  /**
+   * AgsLv2TurtleParser:preset:
+   *
+   * The assigned #GList-struct containing #AgsLv2Preset.
+   * 
+   * Since: 2.2.0
+   */
+  param_spec = g_param_spec_pointer("preset",
+				    i18n_pspec("lv2 presets"),
+				    i18n_pspec("The parsed lv2 presets"),
+				    G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_PRESET,
 				  param_spec);
 }
 
@@ -186,6 +205,7 @@ ags_lv2_turtle_parser_init(AgsLv2TurtleParser *lv2_turtle_parser)
   
   lv2_turtle_parser->plugin = NULL;
   lv2_turtle_parser->ui_plugin = NULL;
+  lv2_turtle_parser->preset = NULL;
 }
 
 void
@@ -274,6 +294,28 @@ ags_lv2_turtle_parser_set_property(GObject *gobject,
       pthread_mutex_unlock(lv2_turtle_parser_mutex);
     }
     break;
+  case PROP_PRESET:
+    {
+      AgsLv2Preset *lv2_preset;
+
+      lv2_preset = (AgsLv2Preset *) g_value_get_pointer(value);
+
+      pthread_mutex_lock(lv2_turtle_parser_mutex);
+
+      if(!AGS_IS_LV2_PRESET(lv2_preset) ||
+	 g_list_find(lv2_turtle_parser->preset, lv2_preset) != NULL){
+	pthread_mutex_unlock(lv2_turtle_parser_mutex);
+	
+	return;
+      }
+
+      g_object_ref(lv2_preset);
+      lv2_turtle_parser->preset = g_list_prepend(lv2_turtle_parser->preset,
+						 lv2_preset);
+
+      pthread_mutex_unlock(lv2_turtle_parser_mutex);
+    }
+    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -333,6 +375,17 @@ ags_lv2_turtle_parser_get_property(GObject *gobject,
       pthread_mutex_unlock(lv2_turtle_parser_mutex);
     }
     break;
+  case PROP_PRESET:
+    {
+      pthread_mutex_lock(lv2_turtle_parser_mutex);
+      
+      g_value_set_pointer(value, g_list_copy_deep(lv2_turtle_parser->preset,
+						  (GCopyFunc) g_object_ref,
+						  NULL));
+
+      pthread_mutex_unlock(lv2_turtle_parser_mutex);
+    }
+    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -367,6 +420,13 @@ ags_lv2_turtle_parser_dispose(GObject *gobject)
     lv2_turtle_parser->ui_plugin = NULL;
   }
   
+  if(lv2_turtle_parser->preset != NULL){
+    g_list_free_full(lv2_turtle_parser->preset,
+		     g_object_unref);
+
+    lv2_turtle_parser->preset = NULL;
+  }
+
   /* call parent */
   G_OBJECT_CLASS(ags_lv2_turtle_parser_parent_class)->dispose(gobject);
 }
@@ -397,6 +457,11 @@ ags_lv2_turtle_parser_finalize(GObject *gobject)
 
   if(lv2_turtle_parser->ui_plugin != NULL){
     g_list_free_full(lv2_turtle_parser->ui_plugin,
+		     g_object_unref);
+  }
+
+  if(lv2_turtle_parser->preset != NULL){
+    g_list_free_full(lv2_turtle_parser->preset,
 		     g_object_unref);
   }
   
@@ -600,7 +665,11 @@ ags_lv2_turtle_parser_parse(AgsLv2TurtleParser *lv2_turtle_parser,
 							 AgsTurtle **turtle, guint *n_turtle)
   {
     AgsLv2Manager *lv2_manager;
+    AgsLv2uiManager *lv2ui_manager;
+    AgsLv2PresetManager *lv2_preset_manager;
     AgsLv2Plugin *lv2_plugin;
+    AgsLv2uiPlugin *lv2ui_plugin;
+    AgsLv2Preset *lv2_preset;
     
     AgsTurtle **turtle_iter;
     
@@ -655,6 +724,9 @@ ags_lv2_turtle_parser_parse(AgsLv2TurtleParser *lv2_turtle_parser,
     }
     
     lv2_manager = ags_lv2_manager_get_instance();
+    lv2ui_manager = ags_lv2ui_manager_get_instance();
+    lv2_preset_manager = ags_lv2_preset_manager_get_instance();
+
     lv2_plugin = NULL;
     
     child = node->children;
@@ -809,9 +881,6 @@ ags_lv2_turtle_parser_parse(AgsLv2TurtleParser *lv2_turtle_parser,
 	gchar *path;
 	gchar *so_filename;
 	gchar *filename;
-	gchar *effect;
-	
-	guint effect_index;
 
 	current_uuid = ags_uuid_alloc();
 	ags_uuid_generate(current_uuid);
@@ -888,17 +957,133 @@ ags_lv2_turtle_parser_parse(AgsLv2TurtleParser *lv2_turtle_parser,
 				  "filename", filename,
 				  "uri", subject_iriref,
 				  NULL);
-
+	lv2_manager->lv2_plugin = g_list_prepend(lv2_manager->lv2_plugin,
+						 lv2_plugin);
+	
 	g_free(filename);
       }
     }
 
     if(is_ui_plugin){
-      //TODO:JK: implement me
+      GList *list;
+      
+      list = ags_lv2ui_plugin_find_gui_uri(lv2ui_manager->lv2ui_plugin,
+					   subject_iriref);
+
+      if(list != NULL){
+	lv2ui_plugin = list->data;
+      }
+      
+      if(lv2ui_plugin == NULL){
+	AgsUUID *current_uuid;
+
+	xmlNode *node_binary;
+	
+	gchar *path;
+	gchar *so_filename;
+	gchar *filename;
+
+	current_uuid = ags_uuid_alloc();
+	ags_uuid_generate(current_uuid);
+
+	/* so filename */
+	node_binary = NULL;
+	
+	xpath = g_strdup_printf("./rdf-verb/rdf-predicate/rdf-iri/rdf-iriref[text() = '<http://lv2plug.in/ns/extensions/ui#binary>']");
+
+	xpath_result = ags_turtle_find_xpath_with_context_node(current_turtle,
+							       xpath,
+							       (xmlNode *) node);
+	  
+	g_free(xpath);
+	  
+	if(xpath_result != NULL){
+	  node_binary = ((xmlNode *) xpath_result->data)->parent->parent->parent->next;
+	}else{
+	  gchar *prefix_id;
+
+	  prefix_id = prefix_id_lv2ui;
+	  
+	  xpath = g_strdup_printf("./rdf-verb/rdf-predicate/rdf-iri/rdf-prefixed-name/rdf-pname-ln[text() = '<%s%s>']",
+				  prefix_id,
+				  "binary");
+
+	  xpath_result = ags_turtle_find_xpath_with_context_node(current_turtle,
+								 xpath,
+								 (xmlNode *) node);
+	  
+	  g_free(xpath);
+
+	  if(xpath_result != NULL){
+	    node_binary = ((xmlNode *) xpath_result->data)->parent->parent->parent->parent->next;
+	  }
+	}
+	
+	g_list_free(start_xpath_result);
+	
+	path = dirname(turtle[0]->filename);
+	so_filename = NULL;
+
+	if(node_binary != NULL){
+	  xmlNode *current;
+
+	  GList *current_start_xpath_result, *current_xpath_result;
+      
+	  gchar *current_xpath;
+
+	  current_xpath = g_strdup_printf("./rdf-object-list/rdf-object/rdf-iri/rdf-iriref");
+
+	  current_xpath_result =
+	    current_start_xpath_result = ags_turtle_find_xpath_with_context_node(current_turtle,
+										 current_xpath,
+										 (xmlNode *) node_binary);
+
+	  g_free(current_xpath);
+
+	  if(current_start_xpath_result != NULL){
+	    so_filename = xmlNodeGetContent(current_start_xpath_result->data);
+	  }
+	  
+	  g_list_free(current_start_xpath_result);
+	}
+	
+	filename = g_strdup_printf("%s/%s",
+				   path,
+				   so_filename);
+	lv2ui_plugin = g_object_new(AGS_TYPE_LV2UI_PLUGIN,
+				    "manifest", turtle[0],
+				    "gui-turtle", turtle[n_turtle[0] - 1],
+				    "uuid", current_uuid,
+				    "ui-filename", filename,
+				    "gui-uri", subject_iriref,
+				    NULL);
+	lv2ui_manager->lv2ui_plugin = g_list_prepend(lv2ui_manager->lv2ui_plugin,
+						     lv2ui_plugin);
+
+	g_free(filename);
+      }
     }
     
     if(is_preset){
-      //TODO:JK: implement me
+      GList *list;
+      
+      list = ags_lv2_preset_find_uri(lv2_preset_manager->lv2_preset,
+				     subject_iriref);
+
+      if(list != NULL){
+	lv2_preset = list->data;
+      }
+      
+      if(lv2_preset == NULL){
+	lv2_preset = g_object_new(AGS_TYPE_LV2_PRESET,
+				  "manifest", turtle[0],
+				  "turtle", turtle[n_turtle[0] - 1],
+				  "uri", subject_iriref,
+				  NULL);
+
+	lv2_preset_manager->lv2_preset = g_list_prepend(lv2_preset_manager->lv2_preset,
+							lv2_preset);
+      }
     }
     
     /* plugin - read metadata */

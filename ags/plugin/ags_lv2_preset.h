@@ -68,6 +68,7 @@ struct _AgsLv2Preset
   gchar *bank;
   gchar *preset_label;
   
+  AgsTurtle *manifest;
   AgsTurtle *turtle;
 
   GList *port_preset;
@@ -95,6 +96,8 @@ void ags_lv2_port_preset_free(AgsLv2PortPreset *lv2_port_preset);
 
 void ags_lv2_preset_parse_turtle(AgsLv2Preset *lv2_preset);
 
+GList* ags_lv2_preset_find_preset_uri(GList *lv2_preset,
+				      gchar *preset_uri);
 GList* ags_lv2_preset_find_preset_label(GList *lv2_preset,
 					gchar *preset_label);
 

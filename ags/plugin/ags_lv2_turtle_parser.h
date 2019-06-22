@@ -48,6 +48,7 @@ struct _AgsLv2TurtleParser
 
   GList *plugin;
   GList *ui_plugin;
+  GList *preset;
 };
 
 struct _AgsLv2TurtleParserClass

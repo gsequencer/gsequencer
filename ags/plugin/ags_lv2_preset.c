@@ -55,6 +55,7 @@ enum{
   PROP_URI,
   PROP_BANK,
   PROP_PRESET_LABEL,
+  PROP_MANIFEST,
   PROP_TURTLE,
   PROP_PORT_PRESET,
 };
@@ -176,6 +177,22 @@ ags_lv2_preset_class_init(AgsLv2PresetClass *lv2_preset)
 				  param_spec);
 
   /**
+   * AgsLv2Preset:manifest:
+   *
+   * The assigned manifest.
+   * 
+   * Since: 2.2.0
+   */
+  param_spec = g_param_spec_object("manifest",
+				   i18n_pspec("manifest of the preset"),
+				   i18n_pspec("The manifest this preset is refered by"),
+				   AGS_TYPE_TURTLE,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_MANIFEST,
+				  param_spec);
+
+  /**
    * AgsLv2Preset:turtle:
    *
    * The assigned turtle.
@@ -190,7 +207,7 @@ ags_lv2_preset_class_init(AgsLv2PresetClass *lv2_preset)
   g_object_class_install_property(gobject,
 				  PROP_TURTLE,
 				  param_spec);
-
+  
   /**
    * AgsLv2Preset:port-preset:
    *
@@ -234,6 +251,7 @@ ags_lv2_preset_init(AgsLv2Preset *lv2_preset)
   lv2_preset->bank = NULL;
   lv2_preset->preset_label = NULL;
 
+  lv2_preset->manifest = NULL;
   lv2_preset->turtle = NULL;
 
   lv2_preset->port_preset = NULL;
@@ -356,6 +374,33 @@ ags_lv2_preset_set_property(GObject *gobject,
       pthread_mutex_unlock(lv2_preset_mutex);
     }
     break;
+  case PROP_MANIFEST:
+    {
+      AgsTurtle *manifest;
+
+      manifest = (AgsTurtle *) g_value_get_object(value);
+
+      pthread_mutex_lock(lv2_preset_mutex);
+
+      if(lv2_preset->manifest == manifest){
+	pthread_mutex_unlock(lv2_preset_mutex);
+
+	return;
+      }
+
+      if(lv2_preset->manifest != NULL){
+	g_object_unref(lv2_preset->manifest);
+      }
+
+      if(manifest != NULL){
+	g_object_ref(manifest);
+      }
+      
+      lv2_preset->manifest = manifest;
+
+      pthread_mutex_unlock(lv2_preset_mutex);
+    }
+    break;
   case PROP_TURTLE:
     {
       AgsTurtle *turtle;
@@ -441,6 +486,15 @@ ags_lv2_preset_get_property(GObject *gobject,
       pthread_mutex_lock(lv2_preset_mutex);
 
       g_value_set_string(value, lv2_preset->preset_label);
+
+      pthread_mutex_unlock(lv2_preset_mutex);
+    }
+    break;
+  case PROP_MANIFEST:
+    {
+      pthread_mutex_lock(lv2_preset_mutex);
+
+      g_value_set_object(value, lv2_preset->manifest);
 
       pthread_mutex_unlock(lv2_preset_mutex);
     }
@@ -766,6 +820,37 @@ ags_lv2_preset_parse_turtle(AgsLv2Preset *lv2_preset)
 
   g_object_unref(turtle);
   g_free(uri);
+}
+
+/**
+ * ags_lv2_preset_find_preset_uri:
+ * @lv2_preset: the #GList-struct containing #AgsLv2Preset
+ * @preset_uri: the preset URI
+ * 
+ * Find @preset_uri within @lv2_preset.
+ * 
+ * Returns: the matching #GList-struct containing #AgsLv2Preset
+ * 
+ * Since: 2.2.0
+ */
+GList*
+ags_lv2_preset_find_preset_uri(GList *lv2_preset,
+			       gchar *preset_uri)
+{
+  if(preset_uri == NULL){
+    return(NULL);
+  }
+
+  while(lv2_preset != NULL){
+    if(!g_strcmp0(preset_uri,
+		  AGS_LV2_PRESET(lv2_preset->data)->uri)){
+      return(lv2_preset);
+    }
+
+    lv2_preset = lv2_preset->next;
+  }
+  
+  return(NULL);
 }
 
 /**
