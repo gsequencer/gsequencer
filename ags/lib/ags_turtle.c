@@ -2566,6 +2566,7 @@ ags_turtle_load(AgsTurtle *turtle,
     xmlNode *rdf_directive_node, *rdf_triple_node;
     
     gchar *look_ahead;
+    gchar *next;
     
     node = NULL;
     look_ahead = *iter;    
@@ -2582,8 +2583,16 @@ ags_turtle_load(AgsTurtle *turtle,
       g_message("====");
 #endif
       
-      *iter = index(look_ahead,
-		    '.') + 1;
+      next = index(look_ahead,
+		   '.');
+
+      if(next != NULL){
+	*iter = next + 1;
+      }else{
+	*iter = &(buffer[sb->st_size]);
+	
+	g_critical("malformed RDF Turtle");
+      }
     }else{
       rdf_triple_node = ags_turtle_load_read_triple(&look_ahead);
 
@@ -2597,8 +2606,16 @@ ags_turtle_load(AgsTurtle *turtle,
 	g_message("-----");
 #endif
 	
-	*iter = index(look_ahead,
-		      '.') + 1;
+	next = index(look_ahead,
+		     '.');
+
+	if(next != NULL){
+	  *iter = next + 1;
+	}else{
+	  *iter = &(buffer[sb->st_size]);
+	
+	  g_critical("malformed RDF Turtle");
+	}
       }
     }
     
@@ -3224,7 +3241,8 @@ ags_turtle_load(AgsTurtle *turtle,
   file = fopen(turtle->filename,
 	       "r");
 
-  if(file == NULL){
+  if(file == NULL ||
+     sb->st_size <= 0){
     return(NULL);
   }
 

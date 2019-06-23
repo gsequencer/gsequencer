@@ -505,12 +505,11 @@ ags_lv2_turtle_parser_parse(AgsLv2TurtleParser *lv2_turtle_parser,
 
   xmlNode *root_node;
   xmlNode *node;
-
+  
+  GList *list;
   GList *start_plugin, *plugin;
   GList *start_ui_plugin, *ui_plugin;
   GList *start_preset, *preset;
-  
-  GList *list;
   
   pthread_mutex_t *lv2_turtle_parser_mutex;
 
@@ -697,6 +696,7 @@ ags_lv2_turtle_parser_parse(AgsLv2TurtleParser *lv2_turtle_parser,
     gchar *xpath;
 
     gboolean is_plugin, is_ui_plugin;
+    gboolean is_instrument;
     gboolean is_preset;
     
     if(node == NULL){
@@ -769,6 +769,8 @@ ags_lv2_turtle_parser_parse(AgsLv2TurtleParser *lv2_turtle_parser,
     is_plugin = FALSE;
     is_ui_plugin = FALSE;
 
+    is_instrument = FALSE;
+
     is_preset = FALSE;
     
     /* parse verbs */
@@ -825,6 +827,39 @@ ags_lv2_turtle_parser_parse(AgsLv2TurtleParser *lv2_turtle_parser,
 	g_list_free(current_start_xpath_result);
       }
       
+      /* check instrument */
+      current_xpath = "./rdf-object/rdf-iri/rdf-iriref[text() = '<http://lv2plug.in/ns/lv2core#instrumentplugin>']";
+
+      current_start_xpath_result = ags_turtle_find_xpath_with_context_node(current_turtle,
+									   current_xpath,
+									   (xmlNode *) current);
+	  
+      if(current_start_xpath_result != NULL){
+	is_instrument = TRUE;
+      }else if(prefix_id_lv2_core != NULL){
+	gchar *prefix_id;
+
+	prefix_id = prefix_id_lv2_core;
+
+	current_xpath = g_strdup_printf("./rdf-object/rdf-iri/rdf-prefixed-name/rdf-pname-ln[text() = '%s%s']",
+					prefix_id,
+					"instrumentplugin");
+	  
+	current_start_xpath_result = ags_turtle_find_xpath_with_context_node(current_turtle,
+									     current_xpath,
+									     (xmlNode *) current);
+	
+	if(current_start_xpath_result != NULL){
+	  is_instrument = TRUE;
+	}
+
+	g_free(current_xpath);
+      }
+      
+      if(current_start_xpath_result != NULL){
+	g_list_free(current_start_xpath_result);
+      }
+
       /* check UI plugin */
       current_xpath = "./rdf-object/rdf-iri/rdf-iriref[text() = '<http://lv2plug.in/ns/extensions/ui#gtkui>']";
 
@@ -994,6 +1029,7 @@ ags_lv2_turtle_parser_parse(AgsLv2TurtleParser *lv2_turtle_parser,
 				  "filename", filename,
 				  "uri", subject_iriref,
 				  NULL);
+	
 	lv2_manager->lv2_plugin = g_list_prepend(lv2_manager->lv2_plugin,
 						 lv2_plugin);
 
@@ -1003,6 +1039,15 @@ ags_lv2_turtle_parser_parse(AgsLv2TurtleParser *lv2_turtle_parser,
 	
 	g_free(filename);
       }
+
+      if(lv2_plugin == NULL){
+	g_warning("no plugin");
+      }
+    }
+
+    if(is_instrument){
+      ags_lv2_plugin_set_flags(lv2_plugin,
+			       AGS_LV2_PLUGIN_IS_SYNTHESIZER);
     }
 
     if(is_ui_plugin){
@@ -1560,8 +1605,10 @@ ags_lv2_turtle_parser_parse(AgsLv2TurtleParser *lv2_turtle_parser,
 	      xmlNode *current_predicate;
 	      
 	      GList *start_port_predicate_xpath_result, *port_predicate_xpath_result;
+	      GList *start_property_xpath_result, *property_xpath_result;
       
 	      gchar *port_predicate_xpath;
+	      gchar *property_xpath;
 	      
 	      gboolean is_audio_port, is_atom_port, is_event_port, is_control_port;
 	      gboolean is_output_port, is_input_port;
@@ -1609,7 +1656,7 @@ ags_lv2_turtle_parser_parse(AgsLv2TurtleParser *lv2_turtle_parser,
 											    port_predicate_xpath,
 											    (xmlNode *) current_child);
 	      
-	      if(start_port_predicate_xpath_result != NULL){
+	      while(port_predicate_xpath_result != NULL){
 		xmlNode *node_port_type;
 		
 		GList *start_port_type_xpath_result, *port_type_xpath_result;
@@ -1815,6 +1862,9 @@ ags_lv2_turtle_parser_parse(AgsLv2TurtleParser *lv2_turtle_parser,
 		}		
 
 		g_list_free(start_port_type_xpath_result);
+
+		/* iterate */
+		port_predicate_xpath_result = port_predicate_xpath_result->next;
 	      }
 	      
 	      g_list_free(start_port_predicate_xpath_result);
@@ -1973,13 +2023,13 @@ ags_lv2_turtle_parser_parse(AgsLv2TurtleParser *lv2_turtle_parser,
 		  if(str != NULL &&
 		     strlen(str) > 2){
 		    gchar *tmp;
-		    
+
 		    tmp = g_strndup(str + 1,
 				    strlen(str) - 2);
 		    
 		    g_object_set(plugin_port,
 				 "port-name", tmp,
-				 NULL);
+				 NULL);		    
 
 		    g_free(tmp);
 		  }
@@ -2095,14 +2145,14 @@ ags_lv2_turtle_parser_parse(AgsLv2TurtleParser *lv2_turtle_parser,
 
 	      if(current_predicate != NULL){
 		/* toggled */
-		port_predicate_xpath = "./rdf-object/rdf-iri/rdf-iriref[text() = '<http://lv2plug.in/ns/lv2core#toggled>']";
+		property_xpath = "./rdf-object/rdf-iri/rdf-iriref[text() = '<http://lv2plug.in/ns/lv2core#toggled>']";
 
-		port_predicate_xpath_result =
-		  start_port_predicate_xpath_result = ags_turtle_find_xpath_with_context_node(current_turtle,
-											      port_predicate_xpath,
-											      (xmlNode *) current_predicate);
+		property_xpath_result =
+		  start_property_xpath_result = ags_turtle_find_xpath_with_context_node(current_turtle,
+											property_xpath,
+											(xmlNode *) current_predicate);
 
-		if(start_port_predicate_xpath_result != NULL){
+		if(start_property_xpath_result != NULL){
 		  ags_plugin_port_set_flags(plugin_port,
 					    AGS_PLUGIN_PORT_TOGGLED);
 		}else if(prefix_id_lv2_core != NULL){
@@ -2110,34 +2160,34 @@ ags_lv2_turtle_parser_parse(AgsLv2TurtleParser *lv2_turtle_parser,
 
 		  prefix_id = prefix_id_lv2_core;
 	
-		  port_predicate_xpath = g_strdup_printf("./rdf-object/rdf-iri/rdf-prefixed-name/rdf-pname-ln[text() = '%s%s']",
-							 prefix_id,
-							 "toggled");
+		  property_xpath = g_strdup_printf("./rdf-object/rdf-iri/rdf-prefixed-name/rdf-pname-ln[text() = '%s%s']",
+						   prefix_id,
+						   "toggled");
 
-		  port_predicate_xpath_result =
-		    start_port_predicate_xpath_result = ags_turtle_find_xpath_with_context_node(current_turtle,
-												port_predicate_xpath,
-												(xmlNode *) current_predicate);
+		  property_xpath_result =
+		    start_property_xpath_result = ags_turtle_find_xpath_with_context_node(current_turtle,
+											  property_xpath,
+											  (xmlNode *) current_predicate);
 
-		  g_free(port_predicate_xpath);
+		  g_free(property_xpath);
 
-		  if(start_port_predicate_xpath_result != NULL){
+		  if(start_property_xpath_result != NULL){
 		    ags_plugin_port_set_flags(plugin_port,
 					      AGS_PLUGIN_PORT_TOGGLED);
 		  }
 		}
 		
-		g_list_free(start_port_predicate_xpath_result);
+		g_list_free(start_property_xpath_result);
 
 		/* enumeration */
-		port_predicate_xpath = "./rdf-object/rdf-iri/rdf-iriref[text() = '<http://lv2plug.in/ns/lv2core#enumeration>']";
+		property_xpath = "./rdf-object/rdf-iri/rdf-iriref[text() = '<http://lv2plug.in/ns/lv2core#enumeration>']";
 
-		port_predicate_xpath_result =
-		  start_port_predicate_xpath_result = ags_turtle_find_xpath_with_context_node(current_turtle,
-											      port_predicate_xpath,
-											      (xmlNode *) current_predicate);
+		property_xpath_result =
+		  start_property_xpath_result = ags_turtle_find_xpath_with_context_node(current_turtle,
+											property_xpath,
+											(xmlNode *) current_predicate);
 
-		if(start_port_predicate_xpath_result != NULL){
+		if(start_property_xpath_result != NULL){
 		  ags_plugin_port_set_flags(plugin_port,
 					    AGS_PLUGIN_PORT_ENUMERATION);
 		}else if(prefix_id_lv2_core != NULL){
@@ -2145,34 +2195,34 @@ ags_lv2_turtle_parser_parse(AgsLv2TurtleParser *lv2_turtle_parser,
 
 		  prefix_id = prefix_id_lv2_core;
 	
-		  port_predicate_xpath = g_strdup_printf("./rdf-object/rdf-iri/rdf-prefixed-name/rdf-pname-ln[text() = '%s%s']",
-							 prefix_id,
-							 "enumeration");
+		  property_xpath = g_strdup_printf("./rdf-object/rdf-iri/rdf-prefixed-name/rdf-pname-ln[text() = '%s%s']",
+						   prefix_id,
+						   "enumeration");
 
-		  port_predicate_xpath_result =
-		    start_port_predicate_xpath_result = ags_turtle_find_xpath_with_context_node(current_turtle,
-												port_predicate_xpath,
-												(xmlNode *) current_predicate);
+		  property_xpath_result =
+		    start_property_xpath_result = ags_turtle_find_xpath_with_context_node(current_turtle,
+											  property_xpath,
+											  (xmlNode *) current_predicate);
 
-		  g_free(port_predicate_xpath);
+		  g_free(property_xpath);
 
-		  if(start_port_predicate_xpath_result != NULL){
+		  if(start_property_xpath_result != NULL){
 		    ags_plugin_port_set_flags(plugin_port,
 					      AGS_PLUGIN_PORT_ENUMERATION);
 		  }
 		}
 		
-		g_list_free(start_port_predicate_xpath_result);
+		g_list_free(start_property_xpath_result);
 
 		/* logarithmic */
-		port_predicate_xpath = "./rdf-object/rdf-iri/rdf-iriref[text() = '<http://lv2plug.in/ns/lv2core#logarithmic>']";
+		property_xpath = "./rdf-object/rdf-iri/rdf-iriref[text() = '<http://lv2plug.in/ns/lv2core#logarithmic>']";
 
-		port_predicate_xpath_result =
-		  start_port_predicate_xpath_result = ags_turtle_find_xpath_with_context_node(current_turtle,
-											      port_predicate_xpath,
-											      (xmlNode *) current_predicate);
+		property_xpath_result =
+		  start_property_xpath_result = ags_turtle_find_xpath_with_context_node(current_turtle,
+											property_xpath,
+											(xmlNode *) current_predicate);
 
-		if(start_port_predicate_xpath_result != NULL){
+		if(start_property_xpath_result != NULL){
 		  ags_plugin_port_set_flags(plugin_port,
 					    AGS_PLUGIN_PORT_LOGARITHMIC);
 		}else if(prefix_id_lv2_core != NULL){
@@ -2180,34 +2230,34 @@ ags_lv2_turtle_parser_parse(AgsLv2TurtleParser *lv2_turtle_parser,
 
 		  prefix_id = prefix_id_lv2_core;
 	
-		  port_predicate_xpath = g_strdup_printf("./rdf-object/rdf-iri/rdf-prefixed-name/rdf-pname-ln[text() = '%s%s']",
-							 prefix_id,
-							 "logarithmic");
+		  property_xpath = g_strdup_printf("./rdf-object/rdf-iri/rdf-prefixed-name/rdf-pname-ln[text() = '%s%s']",
+						   prefix_id,
+						   "logarithmic");
 
-		  port_predicate_xpath_result =
-		    start_port_predicate_xpath_result = ags_turtle_find_xpath_with_context_node(current_turtle,
-												port_predicate_xpath,
-												(xmlNode *) current_predicate);
+		  property_xpath_result =
+		    start_property_xpath_result = ags_turtle_find_xpath_with_context_node(current_turtle,
+											  property_xpath,
+											  (xmlNode *) current_predicate);
 
-		  g_free(port_predicate_xpath);
+		  g_free(property_xpath);
 
-		  if(start_port_predicate_xpath_result != NULL){
+		  if(start_property_xpath_result != NULL){
 		    ags_plugin_port_set_flags(plugin_port,
 					      AGS_PLUGIN_PORT_LOGARITHMIC);
 		  }
 		}
 		
-		g_list_free(start_port_predicate_xpath_result);
+		g_list_free(start_property_xpath_result);
 
 		/* integer */
-		port_predicate_xpath = "./rdf-object/rdf-iri/rdf-iriref[text() = '<http://lv2plug.in/ns/lv2core#integer>']";
+		property_xpath = "./rdf-object/rdf-iri/rdf-iriref[text() = '<http://lv2plug.in/ns/lv2core#integer>']";
 
-		port_predicate_xpath_result =
-		  start_port_predicate_xpath_result = ags_turtle_find_xpath_with_context_node(current_turtle,
-											      port_predicate_xpath,
-											      (xmlNode *) current_predicate);
+		property_xpath_result =
+		  start_property_xpath_result = ags_turtle_find_xpath_with_context_node(current_turtle,
+											property_xpath,
+											(xmlNode *) current_predicate);
 
-		if(start_port_predicate_xpath_result != NULL){
+		if(start_property_xpath_result != NULL){
 		  ags_plugin_port_set_flags(plugin_port,
 					    AGS_PLUGIN_PORT_INTEGER);
 		}else if(prefix_id_lv2_core != NULL){
@@ -2215,24 +2265,24 @@ ags_lv2_turtle_parser_parse(AgsLv2TurtleParser *lv2_turtle_parser,
 
 		  prefix_id = prefix_id_lv2_core;
 	
-		  port_predicate_xpath = g_strdup_printf("./rdf-object/rdf-iri/rdf-prefixed-name/rdf-pname-ln[text() = '%s%s']",
-							 prefix_id,
-							 "integer");
+		  property_xpath = g_strdup_printf("./rdf-object/rdf-iri/rdf-prefixed-name/rdf-pname-ln[text() = '%s%s']",
+						   prefix_id,
+						   "integer");
 
-		  port_predicate_xpath_result =
-		    start_port_predicate_xpath_result = ags_turtle_find_xpath_with_context_node(current_turtle,
-												port_predicate_xpath,
-												(xmlNode *) current_predicate);
+		  property_xpath_result =
+		    start_property_xpath_result = ags_turtle_find_xpath_with_context_node(current_turtle,
+											  property_xpath,
+											  (xmlNode *) current_predicate);
 
-		  g_free(port_predicate_xpath);
+		  g_free(property_xpath);
 
-		  if(start_port_predicate_xpath_result != NULL){
+		  if(start_property_xpath_result != NULL){
 		    ags_plugin_port_set_flags(plugin_port,
 					      AGS_PLUGIN_PORT_INTEGER);
 		  }
 		}
 		
-		g_list_free(start_port_predicate_xpath_result);
+		g_list_free(start_property_xpath_result);
 	      }
 
               /* default */
@@ -2648,8 +2698,6 @@ ags_lv2_turtle_parser_parse(AgsLv2TurtleParser *lv2_turtle_parser,
     
     if(is_preset){
       xmlNode *current;
-
-//      xmlSaveFormatFileEnc("-", current_turtle->doc, "UTF-8", 1);
 
       /* label */
       current = NULL;
@@ -3293,67 +3341,73 @@ ags_lv2_turtle_parser_parse(AgsLv2TurtleParser *lv2_turtle_parser,
     }
 
     node = node->next;
-  }
-  
+  }  
+
   /* post-process */
-  g_object_get(lv2_turtle_parser,
-	       "plugin", &start_plugin,
-	       NULL);
-
-  /* post-process - preset */
-  g_object_get(lv2_turtle_parser,
-	       "preset", &start_preset,
-	       NULL);
-
-  preset = start_preset;
-
-  while(preset != NULL){
-    gchar *applies_to;
-
-    g_object_get(preset->data,
-		 "applies-to", &applies_to,
+  if(current_turtle == turtle[0]){
+    g_object_get(lv2_turtle_parser,
+		 "plugin", &start_plugin,
 		 NULL);
 
-    plugin = ags_lv2_plugin_find_uri(start_plugin,
-				     applies_to);
-    
-    if(plugin != NULL){
-      g_object_set(plugin->data,
-		   "preset", preset->data,
+    /* post-process - preset */
+    g_object_get(lv2_turtle_parser,
+		 "preset", &start_preset,
+		 NULL);
+
+    preset = start_preset;
+
+    while(preset != NULL){
+      gchar *applies_to;
+
+      g_object_get(preset->data,
+		   "applies-to", &applies_to,
 		   NULL);
+
+      plugin = ags_lv2_plugin_find_uri(start_plugin,
+				       applies_to);
+    
+      if(plugin != NULL){
+	g_object_set(plugin->data,
+		     "preset", preset->data,
+		     NULL);
       
-    }else{
-      g_warning("plugin not found %s", applies_to);
+      }else{
+	g_warning("plugin not found %s", applies_to);
+      }
+
+      g_free(applies_to);
+    
+      preset = preset->next;
     }
 
-    g_free(applies_to);
-    
-    preset = preset->next;
-  }
-
-  g_list_free_full(start_preset,
-		   g_object_unref);
+    g_list_free_full(start_preset,
+		     g_object_unref);
   
-  /* post-process - ui plugin */
+    /* post-process - ui plugin */
 #if 0
-  g_object_get(lv2_turtle_parser,
-	       "ui-plugin", &start_ui_plugin,
-	       NULL);
+    g_object_get(lv2_turtle_parser,
+		 "ui-plugin", &start_ui_plugin,
+		 NULL);
 
-  ui_plugin = start_ui_plugin;
+    ui_plugin = start_ui_plugin;
 
-  while(ui_plugin != NULL){
+    while(ui_plugin != NULL){
 
     
-    ui_plugin = ui_plugin->next;
-  }
+      ui_plugin = ui_plugin->next;
+    }
 
-  g_list_free_full(start_ui_plugin,
-		   g_object_unref);
+    g_list_free_full(start_ui_plugin,
+		     g_object_unref);
 #endif
   
-  g_list_free_full(start_plugin,
-		   g_object_unref);
+    g_list_free_full(start_plugin,
+		     g_object_unref);
+  }
+
+  if(strstr(current_turtle->filename, "calf.lv2") != NULL){
+//    xmlSaveFormatFileEnc("-", current_turtle->doc, "UTF-8", 1);
+  }
 }
 
 /**
