@@ -465,7 +465,7 @@ ags_lv2ui_plugin_finalize(GObject *gobject)
 void
 ags_lv2ui_plugin_load_plugin(AgsBasePlugin *base_plugin)
 {
-  //TODO:JK: implement me  
+  //NOTE:JK: deprecated  
 }
 
 /**

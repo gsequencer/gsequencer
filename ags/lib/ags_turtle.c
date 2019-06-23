@@ -178,7 +178,7 @@ ags_turtle_init(AgsTurtle *turtle)
 
   turtle->doc = NULL;
 
-  turtle->prefix_id = g_hash_table_new_full(g_direct_hash, g_string_equal,
+  turtle->prefix_id = g_hash_table_new_full(g_str_hash, g_str_equal,
 					    NULL,
 					    NULL);
 }
@@ -2318,7 +2318,7 @@ ags_turtle_load(AgsTurtle *turtle,
 		    rdf_pname_ns_node);
 	xmlAddChild(node,
 		    rdf_iriref_node);
-	
+
 	g_hash_table_insert(turtle->prefix_id,
 			    xmlNodeGetContent(rdf_iriref_node), xmlNodeGetContent(rdf_pname_ns_node));
 	

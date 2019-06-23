@@ -1223,6 +1223,11 @@ ags_base_plugin_sort(GList *base_plugin)
     
     pthread_mutex_unlock(b_plugin_mutex);
 
+    if(a_effect == NULL ||
+       b_effect == 0){
+      return(-1);
+    }
+    
     /* compare and free */
     retval = strcmp(a_effect,
 		    b_effect);

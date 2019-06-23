@@ -1,7 +1,7 @@
 ags (2.2.x)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
-	* TODO:JK: implement AgsLv2TurtleParser
+	* implemented AgsLv2TurtleParser
 	* implemented AgsCursor interface
 	* implemented AgsOscExportController
 	* TODO:JK: implement AgsEnvelope curves

@@ -713,169 +713,7 @@ ags_lv2_port_preset_free(AgsLv2PortPreset *lv2_port_preset)
 void
 ags_lv2_preset_parse_turtle(AgsLv2Preset *lv2_preset)
 {
-  AgsLv2PortPreset *lv2_port_preset;
-
-  AgsTurtle *turtle;
-  
-  xmlNode *triple_node;
-  xmlNode *port_node;
-  xmlNode *current;
-  
-  GList *label_list;
-  GList *bank_list;
-  GList *port_list, *list;
-
-  gchar *uri;
-  
-  gchar *str;
-  gchar *xpath;
-  
-  if(!AGS_LV2_PRESET(lv2_preset)){
-    return;
-  }
-  
-  g_object_get(lv2_preset,
-	       "turtle", &turtle,
-	       "uri", &uri,
-	       NULL);
-    
-
-  if(turtle == NULL){
-    return;
-  }
-  
-  if(uri == NULL){
-    g_object_unref(turtle);
-    
-    return;
-  }
-  
-  /* retrieve triple by uri */
-  xpath = g_strdup_printf("(//rdf-triple/rdf-subject/rdf-iri/rdf-iriref[text() = '%s'])/ancestor::*[self::rdf-triple][1]",
-			  uri);
-    
-  list = ags_turtle_find_xpath(turtle,
-			       xpath);
-
-  free(xpath);
-
-  if(list != NULL){
-    triple_node = (xmlNode *) list->data;
-
-    g_list_free(list);
-  }else{
-    xpath = g_strdup_printf("//rdf-triple//rdf-iriref[text() = '<%s>']/ancestor::*[self::rdf-triple][1]",
-			    lv2_preset->uri);
-    
-    list = ags_turtle_find_xpath(turtle,
-				 xpath);
-
-    free(xpath);
-    
-    if(list != NULL){
-      triple_node = (xmlNode *) list->data;
-
-      g_list_free(list);
-    }else{
-      g_warning("rdf-triple not found");
-      
-      g_object_unref(turtle);
-      g_free(uri);
-      
-      return;
-    }
-  }
-
-  /* preset label */
-  xpath = ".//rdf-pname-ln[text()='rdfs:label']/ancestor::*[self::rdf-verb][1]/following-sibling::*[self::rdf-object-list][1]//rdf-string";
-  label_list = ags_turtle_find_xpath_with_context_node(turtle,
-						       xpath,
-						       triple_node);
-
-  if(label_list != NULL){
-    lv2_preset->preset_label = xmlNodeGetContent((xmlNode *) label_list->data);
-
-    g_list_free(label_list);
-  }
-
-  /* bank */
-  xpath = ".//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':bank') + 1) = ':bank']/ancestor::*[self::rdf-verb][1]/following-sibling::*[self::rdf-object-list][1]//rdf-iriref";
-  bank_list = ags_turtle_find_xpath_with_context_node(turtle,
-						      xpath,
-						      triple_node);
-
-  if(bank_list != NULL){
-    str = xmlNodeGetContent((xmlNode *) bank_list->data);
-
-    lv2_preset->bank = g_strndup(&(str[1]),
-				 strlen(str) - 2);
-
-    g_list_free(bank_list);
-  }
-
-  /* load ports */
-  xpath = ".//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':port') + 1) = ':port']/ancestor::*[self::rdf-verb][1]/following-sibling::*[self::rdf-object-list]/rdf-object";
-  port_list = ags_turtle_find_xpath_with_context_node(turtle,
-						      xpath,
-						      triple_node);
-
-  while(port_list != NULL){
-    lv2_port_preset = ags_lv2_port_preset_alloc(NULL,
-						G_TYPE_FLOAT);
-    lv2_preset->port_preset = g_list_prepend(lv2_preset->port_preset,
-					     lv2_port_preset);
-    port_node = port_list->data;
-    
-    /* load symbol */
-    xpath = g_ascii_strdown(".//rdf-object-list//rdf-string[ancestor::*[self::rdf-object-list][1]/preceding-sibling::*[self::rdf-verb][1]//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':symbol') + 1) = ':symbol']]",
-			    -1);
-    list = ags_turtle_find_xpath_with_context_node(turtle,
-						   xpath,
-						   port_node);
-
-    if(list != NULL){
-      gchar *str;
-	
-      current = (xmlNode *) list->data;
-      str = xmlNodeGetContent(current);
-
-      if(strlen(str) > 2){
-	lv2_port_preset->port_symbol = g_strndup(str + 1,
-						 strlen(str) - 2);
-      }
-
-      g_list_free(list);
-    }
-
-    /* port value */
-    xpath = g_ascii_strdown(".//rdf-verb//rdf-pname-ln[substring(text(), string-length(text()) - string-length(':value') + 1) = ':value']/ancestor::*[self::rdf-verb][1]/following-sibling::*[self::rdf-object-list][1]//rdf-numeric",
-			    -1);
-    list = ags_turtle_find_xpath_with_context_node(turtle,
-						   xpath,
-						   port_node);
-
-    if(list != NULL){
-      current = (xmlNode *) list->data;
-
-      g_value_set_float(lv2_port_preset->port_value,
-			g_ascii_strtod(xmlNodeGetContent(current),
-				       NULL));
-
-      g_list_free(list);
-    }
-
-    /* iterate */
-    port_list = port_list->next;
-  }
-
-  lv2_preset->port_preset = g_list_reverse(lv2_preset->port_preset);
-  
-  if(port_list != NULL){
-    g_list_free(port_list);
-  }
-
-  g_object_unref(turtle);
-  g_free(uri);
+  //NOTE:JK: deprecated
 }
 
 /**
@@ -898,11 +736,12 @@ ags_lv2_preset_find_preset_uri(GList *lv2_preset,
   }
 
   while(lv2_preset != NULL){
-    if(!g_strcmp0(preset_uri,
-		  AGS_LV2_PRESET(lv2_preset->data)->uri)){
+    if(AGS_LV2_PRESET(lv2_preset->data)->uri != NULL &&
+       !g_ascii_strcasecmp(preset_uri,
+			   AGS_LV2_PRESET(lv2_preset->data)->uri)){
       return(lv2_preset);
     }
-
+    
     lv2_preset = lv2_preset->next;
   }
   

@@ -227,7 +227,7 @@ ags_turtle_manager_add(AgsTurtleManager *turtle_manager,
   }
 
   if(g_list_find(turtle_manager->turtle,
-		 turtle) != NULL){
+		 turtle) == NULL){
     turtle_manager->turtle = g_list_prepend(turtle_manager->turtle,
 					    turtle);
     g_object_ref(turtle);
