@@ -918,16 +918,19 @@ ags_lv2_bridge_menu_new()
     pthread_mutex_unlock(base_plugin_mutex);
       
     /* create item */
-    item = (GtkImageMenuItem *) gtk_menu_item_new_with_label(effect);
+    if(filename != NULL &&
+      effect != NULL){
+      item = (GtkImageMenuItem *) gtk_menu_item_new_with_label(effect);
     
-    g_object_set_data((GObject *) item,
-		      AGS_MENU_ITEM_FILENAME_KEY, filename);
-    g_object_set_data((GObject *) item,
-		      AGS_MENU_ITEM_EFFECT_KEY, effect);
+      g_object_set_data((GObject *) item,
+			AGS_MENU_ITEM_FILENAME_KEY, filename);
+      g_object_set_data((GObject *) item,
+			AGS_MENU_ITEM_EFFECT_KEY, effect);
     
-    gtk_menu_shell_append((GtkMenuShell *) menu,
-			  (GtkWidget *) item);
-
+      gtk_menu_shell_append((GtkMenuShell *) menu,
+			    (GtkWidget *) item);
+    }
+    
     list = list->next;
   }
 

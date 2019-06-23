@@ -966,7 +966,8 @@ ags_recall_lv2_load(AgsRecallLv2 *recall_lv2)
   gchar *effect;
 
   guint effect_index;
-
+  guint i;
+  
   void *plugin_so;
   LV2_Descriptor_Function lv2_descriptor;
   LV2_Descriptor *plugin_descriptor;
@@ -989,30 +990,50 @@ ags_recall_lv2_load(AgsRecallLv2 *recall_lv2)
 
   filename = g_strdup(AGS_RECALL(recall_lv2)->filename);
   effect = g_strdup(AGS_RECALL(recall_lv2)->effect);
-  
-  effect_index = AGS_RECALL(recall_lv2)->effect_index;
 
   pthread_mutex_unlock(recall_mutex);
   
   /* find lv2 plugin */
   lv2_plugin = ags_lv2_manager_find_lv2_plugin(ags_lv2_manager_get_instance(),
 					       filename, effect);
-  g_free(filename);
-  g_free(effect);
 
   g_object_get(lv2_plugin,
 	       "plugin-so", &plugin_so,
 	       NULL);
+
+  if(plugin_so == NULL){
+    g_message("open %s", filename);
+    
+    plugin_so = dlopen(filename,
+		       RTLD_NOW);
+    
+    g_object_set(lv2_plugin,
+		 "plugin-so", plugin_so,
+		 NULL);
+  }
   
+  g_free(filename);
+  g_free(effect);
+
   if(plugin_so != NULL){
     lv2_descriptor = (LV2_Descriptor_Function) dlsym(plugin_so,
 						     "lv2_descriptor");
 
     if(dlerror() == NULL && lv2_descriptor){
+      effect_index = 0;
+  
+      for(i = 0; (plugin_descriptor = lv2_descriptor((unsigned long) i)) != NULL; i++){
+	 if(!g_ascii_strcasecmp(plugin_descriptor->URI,
+				lv2_plugin->uri)){
+	   effect_index = i;
+	   
+	   break;
+	 }
+      }
+      
       pthread_mutex_lock(recall_mutex);
       
-      recall_lv2->plugin_descriptor = 
-	plugin_descriptor = lv2_descriptor((unsigned long) effect_index);
+      recall_lv2->plugin_descriptor = plugin_descriptor;
 
       pthread_mutex_unlock(recall_mutex);
       

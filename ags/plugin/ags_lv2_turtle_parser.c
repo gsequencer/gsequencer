@@ -1000,7 +1000,7 @@ ags_lv2_turtle_parser_parse(AgsLv2TurtleParser *lv2_turtle_parser,
       
 	  gchar *current_xpath;
 
-	  current_xpath = "./rdf-object-list/rdf-object/rdf-iri/rdf-iriref";
+	  current_xpath = "./rdf-object/rdf-iri/rdf-iriref";
 
 	  current_xpath_result =
 	    current_start_xpath_result = ags_turtle_find_xpath_with_context_node(current_turtle,
@@ -1008,16 +1008,29 @@ ags_lv2_turtle_parser_parse(AgsLv2TurtleParser *lv2_turtle_parser,
 										 (xmlNode *) node_binary);
 
 	  if(current_start_xpath_result != NULL){
-	    so_filename = xmlNodeGetContent(current_start_xpath_result->data);
+	    gchar *str;
+
+	    str = xmlNodeGetContent(current_start_xpath_result->data);
+
+	    if(str != NULL &&
+	       strlen(str) > 2){
+	      so_filename = g_strndup(str + 1,
+				      strlen(str) - 2);
+	    }
 	  }
 	  
 	  g_list_free(current_start_xpath_result);
 	}
-	
-	filename = g_strdup_printf("%s/%s",
-				   path,
-				   so_filename);
 
+	filename = NULL;
+	
+	if(path != NULL &&
+	   so_filename != NULL){
+	  filename = g_strdup_printf("%s/%s",
+				     path,
+				     so_filename);
+	}
+	
 #if AGS_DEBUG	
 	g_message("new lv2 plugin - %s", subject_iriref);
 #endif

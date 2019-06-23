@@ -1884,7 +1884,8 @@ ags_turtle_load(AgsTurtle *turtle,
   
   gchar* ags_turtle_load_skip_comments_and_blanks(gchar **iter){
     gchar *look_ahead;
-
+    gchar *next;
+    
     if(iter == NULL){
       return(NULL);
     }
@@ -1900,11 +1901,29 @@ ags_turtle_load(AgsTurtle *turtle,
       /* skip comments */
       if(buffer == look_ahead){
 	if(*buffer == '#'){
-	  look_ahead = index(look_ahead, '\n') + 1;
+	  next = index(look_ahead, '\n');
+
+	  if(next != NULL){
+	    look_ahead = next + 1;
+	  }else{
+	    look_ahead = &(buffer[sb->st_size]);
+
+	    break;
+	  }
+	  
 	  continue;
 	}
       }else if(buffer[look_ahead - buffer - 1] == '\n' && *look_ahead == '#'){
-	look_ahead = index(look_ahead, '\n') + 1;
+	next = index(look_ahead, '\n');
+
+	if(next != NULL){
+	  look_ahead = next + 1;
+	}else{
+	  look_ahead = &(buffer[sb->st_size]);
+
+	  break;
+	}
+	
 	continue;
       }
 
@@ -3127,7 +3146,11 @@ ags_turtle_load(AgsTurtle *turtle,
       end_ptr = index(look_ahead,
 		      ')');
 
-      *iter = end_ptr + 1;
+      if(end_ptr != NULL){
+	*iter = end_ptr + 1;
+      }else{
+	*iter = &(buffer[sb->st_size]);
+      }
     }
 
     return(node);
@@ -3222,8 +3245,12 @@ ags_turtle_load(AgsTurtle *turtle,
 
 	end_ptr = index(look_ahead,
 			']');
-	
-	*iter = end_ptr + 1;
+
+	if(end_ptr != NULL){
+	  *iter = end_ptr + 1;
+	}else{
+	  *iter = &(buffer[sb->st_size]);
+	}
       }
     }
     
