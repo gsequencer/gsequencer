@@ -153,15 +153,30 @@ ags_lv2_bridge_show_gui_callback(GtkMenuItem *item, AgsLv2Bridge *lv2_bridge)
 						    "lv2ui_descriptor");
       
       if(dlerror() == NULL && lv2ui_descriptor){
-	lv2_bridge->ui_descriptor = 
-	  ui_descriptor = lv2ui_descriptor(AGS_BASE_PLUGIN(lv2ui_plugin)->ui_effect_index);
+	uint32_t ui_effect_index;
+	guint i;
+
+	ui_effect_index = 0;
+
+	for(i = 0; (ui_descriptor = lv2ui_descriptor(i)) != NULL; i++){
+	  if(!g_ascii_strcasecmp(ui_descriptor->URI,
+				 lv2ui_plugin->gui_uri)){
+	    lv2_bridge->ui_descriptor = ui_descriptor;
+	    ui_effect_index = i;
+	    
+	    break;
+	  }
+	}
+
+	/*  */
 	ui_filename = AGS_BASE_PLUGIN(lv2ui_plugin)->ui_filename;
+	
+	g_message("LV2UI showing %s", ui_filename);
 	
 	/* instantiate */
 	plugin_widget = NULL;
 	
-	bundle_path = g_strndup(ui_filename,
-				rindex(ui_filename, '/') - ui_filename);
+	bundle_path = g_path_get_dirname(ui_filename);
 
 	lv2_bridge->ui_handle = ui_descriptor->instantiate(ui_descriptor,
 							   lv2_bridge->uri,
