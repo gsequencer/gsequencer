@@ -21,11 +21,11 @@
 AC_DEFUN([LIBAGS_MARSHALLERS],
 [
   AC_MSG_NOTICE([generating ags/object/ags_marshallers.list])
-  `tail -n +18 $srcdir/ags/object/ags_marshallers.list.in > $srcdir/ags/object/ags_marshallers.list`
+  `tail -n +19 $srcdir/ags/object/ags_marshallers.list.in > $srcdir/ags/object/ags_marshallers.list`
 ])
 
 AC_DEFUN([LIBAGS_GUI_MARSHALLERS],
 [
   AC_MSG_NOTICE([generating ags/widget/ags_widget_marshallers.list])
-  `tail -n +18 $srcdir/ags/widget/ags_widget_marshallers.list.in > $srcdir/ags/widget/ags_widget_marshallers.list`
+  `tail -n +19 $srcdir/ags/widget/ags_widget_marshallers.list.in > $srcdir/ags/widget/ags_widget_marshallers.list`
 ])
