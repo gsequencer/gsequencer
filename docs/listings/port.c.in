@@ -1,0 +1,30 @@
+/* Copyright (C) 2005-2018 Joël Krähemann
+ * Permission is granted to copy, distribute and/or modify this document
+ * under the terms of the GNU Free Documentation License, Version 1.3
+ * or any later version published by the Free Software Foundation;
+ * with no Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.
+ * A copy of the license is included in the section entitled "GNU
+ * Free Documentation License".
+ */
+
+#include <glib.h>
+#include <glib-object.h>
+
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+
+AgsPort *port;
+GValue value = {0,};
+
+/* create port */
+port = ags_port_new();
+
+/* initialize and set value */
+g_value_init(&value,
+	     G_TYPE_FLOAT);
+g_value_set_float(&value,
+		  0.0);
+
+/* perform thread-safe operation */
+ags_port_safe_write(port,
+		    &value);

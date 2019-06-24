@@ -141,8 +141,32 @@ CLEANFILES = \
 	libags_server.sym \
 	libags_audio.sym \
 	libags_gui.sym \
-	ags/object/ags_marshallers.list \
-	ags/widget/ags_widget_marshallers.list
+	$(srcdir)/ags/object/ags_marshallers.list \
+	$(srcdir)/ags/widget/ags_widget_marshallers.list \
+	$(srcdir)/docs/listings/add_pattern.c \
+	$(srcdir)/docs/listings/application_mutex.c \
+	$(srcdir)/docs/listings/audio.c \
+	$(srcdir)/docs/listings/audio_application_context.c \
+	$(srcdir)/docs/listings/complete_example.c \
+	$(srcdir)/docs/listings/config.c \
+	$(srcdir)/docs/listings/effects_echo_audio.c \
+	$(srcdir)/docs/listings/effects_echo_audio_run.c \
+	$(srcdir)/docs/listings/effects_echo_channel.c \
+	$(srcdir)/docs/listings/effects_echo_channel_run.c \
+	$(srcdir)/docs/listings/effects_recall_container.c \
+	$(srcdir)/docs/listings/file_property.c \
+	$(srcdir)/docs/listings/file_read.c \
+	$(srcdir)/docs/listings/file_write.c \
+	$(srcdir)/docs/listings/linking_prerequisites.c \
+	$(srcdir)/docs/listings/linking_safe.c \
+	$(srcdir)/docs/listings/linking_unsafe.c \
+	$(srcdir)/docs/listings/pcm_info.c \
+	$(srcdir)/docs/listings/port.c \
+	$(srcdir)/docs/listings/pull_thread.c \
+	$(srcdir)/docs/listings/recycling.c \
+	$(srcdir)/docs/listings/start_thread.c \
+	$(srcdir)/docs/listings/thread_application_context.c \
+	$(srcdir)/docs/listings/thread_obj_mutex.c
 
 # pkg-config
 pkgconfigdir = $(libdir)/pkgconfig

@@ -305,7 +305,8 @@ check_PROGRAMS = ags_buffer_util_test$(EXEEXT) \
 
 subdir = .
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
-am__aclocal_m4_deps = $(top_srcdir)/m4/ags-marshallers.m4 \
+am__aclocal_m4_deps = $(top_srcdir)/m4/ags-listings.m4 \
+	$(top_srcdir)/m4/ags-marshallers.m4 \
 	$(top_srcdir)/m4/ags-symbols.m4 $(top_srcdir)/m4/gettext.m4 \
 	$(top_srcdir)/m4/gtk-doc.m4 $(top_srcdir)/m4/iconv.m4 \
 	$(top_srcdir)/m4/intlmacosx.m4 $(top_srcdir)/m4/lib-ld.m4 \
@@ -6078,8 +6079,32 @@ man1_MANS = gsequencer.1 midi2xml.1
 # clean
 CLEANFILES = functional-system-tests.mk m4/Makefile libags.sym \
 	libags_thread.sym libags_server.sym libags_audio.sym \
-	libags_gui.sym ags/object/ags_marshallers.list \
-	ags/widget/ags_widget_marshallers.list $(appdata_DATA) \
+	libags_gui.sym $(srcdir)/ags/object/ags_marshallers.list \
+	$(srcdir)/ags/widget/ags_widget_marshallers.list \
+	$(srcdir)/docs/listings/add_pattern.c \
+	$(srcdir)/docs/listings/application_mutex.c \
+	$(srcdir)/docs/listings/audio.c \
+	$(srcdir)/docs/listings/audio_application_context.c \
+	$(srcdir)/docs/listings/complete_example.c \
+	$(srcdir)/docs/listings/config.c \
+	$(srcdir)/docs/listings/effects_echo_audio.c \
+	$(srcdir)/docs/listings/effects_echo_audio_run.c \
+	$(srcdir)/docs/listings/effects_echo_channel.c \
+	$(srcdir)/docs/listings/effects_echo_channel_run.c \
+	$(srcdir)/docs/listings/effects_recall_container.c \
+	$(srcdir)/docs/listings/file_property.c \
+	$(srcdir)/docs/listings/file_read.c \
+	$(srcdir)/docs/listings/file_write.c \
+	$(srcdir)/docs/listings/linking_prerequisites.c \
+	$(srcdir)/docs/listings/linking_safe.c \
+	$(srcdir)/docs/listings/linking_unsafe.c \
+	$(srcdir)/docs/listings/pcm_info.c \
+	$(srcdir)/docs/listings/port.c \
+	$(srcdir)/docs/listings/pull_thread.c \
+	$(srcdir)/docs/listings/recycling.c \
+	$(srcdir)/docs/listings/start_thread.c \
+	$(srcdir)/docs/listings/thread_application_context.c \
+	$(srcdir)/docs/listings/thread_obj_mutex.c $(appdata_DATA) \
 	$(pkgconfig_DATA)
 
 # pkg-config
