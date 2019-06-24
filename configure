@@ -23204,27 +23204,38 @@ fi
 
   { $as_echo "$as_me:${as_lineno-$LINENO}: generating libags.sym" >&5
 $as_echo "$as_me: generating libags.sym" >&6;}
-  `tail -n +17 $srcdir/libags.sym.in > $PWD/libags.sym`
+  `tail -n +18 $srcdir/libags.sym.in > $PWD/libags.sym`
 
 
   { $as_echo "$as_me:${as_lineno-$LINENO}: generating libags_thread.sym" >&5
 $as_echo "$as_me: generating libags_thread.sym" >&6;}
-  `tail -n +17 $srcdir/libags_thread.sym.in > $PWD/libags_thread.sym`
+  `tail -n +18 $srcdir/libags_thread.sym.in > $PWD/libags_thread.sym`
 
 
   { $as_echo "$as_me:${as_lineno-$LINENO}: generating libags_server.sym" >&5
 $as_echo "$as_me: generating libags_server.sym" >&6;}
-  `tail -n +17 $srcdir/libags_server.sym.in > $PWD/libags_server.sym`
+  `tail -n +19 $srcdir/libags_server.sym.in > $PWD/libags_server.sym`
 
 
   { $as_echo "$as_me:${as_lineno-$LINENO}: generating libags_audio.sym" >&5
 $as_echo "$as_me: generating libags_audio.sym" >&6;}
-  `tail -n +17 $srcdir/libags_audio.sym.in > $PWD/libags_audio.sym`
+  `tail -n +18 $srcdir/libags_audio.sym.in > $PWD/libags_audio.sym`
 
 
   { $as_echo "$as_me:${as_lineno-$LINENO}: generating libags_gui.sym" >&5
 $as_echo "$as_me: generating libags_gui.sym" >&6;}
-  `tail -n +17 $srcdir/libags_gui.sym.in > $PWD/libags_gui.sym`
+  `tail -n +18 $srcdir/libags_gui.sym.in > $PWD/libags_gui.sym`
+
+
+
+  { $as_echo "$as_me:${as_lineno-$LINENO}: generating ags/object/ags_marshallers.list" >&5
+$as_echo "$as_me: generating ags/object/ags_marshallers.list" >&6;}
+  `tail -n +18 $srcdir/ags/object/ags_marshallers.list.in > $srcdir/ags/object/ags_marshallers.list`
+
+
+  { $as_echo "$as_me:${as_lineno-$LINENO}: generating ags/widget/ags_widget_marshallers.list" >&5
+$as_echo "$as_me: generating ags/widget/ags_widget_marshallers.list" >&6;}
+  `tail -n +18 $srcdir/ags/widget/ags_widget_marshallers.list.in > $srcdir/ags/widget/ags_widget_marshallers.list`
 
 
 

@@ -15,6 +15,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
+
 ags_dial_get_type
 ags_dial_draw
 ags_dial_value_changed

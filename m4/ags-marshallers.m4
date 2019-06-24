@@ -18,32 +18,14 @@
 # You should have received a copy of the GNU General Public License
 # along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
 
-AC_DEFUN([LIBAGS_SYMBOLS],
+AC_DEFUN([LIBAGS_MARSHALLERS],
 [
-  AC_MSG_NOTICE([generating libags.sym])
-  `tail -n +18 $srcdir/libags.sym.in > $PWD/libags.sym`
+  AC_MSG_NOTICE([generating ags/object/ags_marshallers.list])
+  `tail -n +18 $srcdir/ags/object/ags_marshallers.list.in > $srcdir/ags/object/ags_marshallers.list`
 ])
 
-AC_DEFUN([LIBAGS_THREAD_SYMBOLS],
+AC_DEFUN([LIBAGS_GUI_MARSHALLERS],
 [
-  AC_MSG_NOTICE([generating libags_thread.sym])
-  `tail -n +18 $srcdir/libags_thread.sym.in > $PWD/libags_thread.sym`
-])
-
-AC_DEFUN([LIBAGS_SERVER_SYMBOLS],
-[
-  AC_MSG_NOTICE([generating libags_server.sym])
-  `tail -n +19 $srcdir/libags_server.sym.in > $PWD/libags_server.sym`
-])
-
-AC_DEFUN([LIBAGS_AUDIO_SYMBOLS],
-[
-  AC_MSG_NOTICE([generating libags_audio.sym])
-  `tail -n +18 $srcdir/libags_audio.sym.in > $PWD/libags_audio.sym`
-])
-
-AC_DEFUN([LIBAGS_GUI_SYMBOLS],
-[
-  AC_MSG_NOTICE([generating libags_gui.sym])
-  `tail -n +18 $srcdir/libags_gui.sym.in > $PWD/libags_gui.sym`
+  AC_MSG_NOTICE([generating ags/widget/ags_widget_marshallers.list])
+  `tail -n +18 $srcdir/ags/widget/ags_widget_marshallers.list.in > $srcdir/ags/widget/ags_widget_marshallers.list`
 ])

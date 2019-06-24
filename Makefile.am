@@ -140,7 +140,9 @@ CLEANFILES = \
 	libags_thread.sym \
 	libags_server.sym \
 	libags_audio.sym \
-	libags_gui.sym
+	libags_gui.sym \
+	ags/object/ags_marshallers.list \
+	ags/widget/ags_widget_marshallers.list
 
 # pkg-config
 pkgconfigdir = $(libdir)/pkgconfig
@@ -332,7 +334,10 @@ EXTRA_DIST += \
 	$(top_srcdir)/ags/audio/osc/ags_osc_file.dtd \
 	$(top_srcdir)/ags/file/ags_file.dtd \
 	$(top_srcdir)/ags/X/file/ags_simple_file.dtd \
-	$(top_srcdir)/ags.xsl $(top_srcdir)/ags-simple.xsl $(top_srcdir)/ags/object/ags_marshallers.list
+	$(top_srcdir)/ags.xsl \
+	$(top_srcdir)/ags-simple.xsl \
+	$(top_srcdir)/ags/object/ags_marshallers.list.in \
+	$(top_srcdir)/ags/widget/ags_widget_marshallers.list.in
 
 # conditional objects
 

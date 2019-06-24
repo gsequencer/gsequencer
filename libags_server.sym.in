@@ -15,6 +15,7 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
+
 ags_service_provider_get_type
 ags_service_provider_is_operating
 ags_service_provider_server_status

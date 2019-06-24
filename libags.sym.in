@@ -15,6 +15,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
+
 ags_id_generator_create_uuid
 ags_destroy_util_dispose_and_unref
 ags_soundcard_helper_config_get_dsp_channels

@@ -15,6 +15,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
+
 ags_concurrency_provider_get_type
 ags_concurrency_provider_get_mutex_manager
 ags_concurrency_provider_get_main_loop

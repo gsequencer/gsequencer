@@ -15,6 +15,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
+
 ags_lv2_turtle_parser_get_type
 ags_lv2_turtle_parser_get_class_mutex
 ags_lv2_turtle_parser_parse
