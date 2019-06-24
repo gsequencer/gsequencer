@@ -718,17 +718,23 @@ ags_recall_lv2_set_ports(AgsPlugin *plugin, GList *port)
 	g_free(specifier);
       }else if(ags_plugin_port_test_flags(current_plugin_port,
 					  AGS_PLUGIN_PORT_AUDIO)){
+	guint port_index;
+
+	g_object_get(current_plugin_port,
+		     "port-index", &port_index,
+		     NULL);
+	
 	pthread_mutex_lock(recall_mutex);
 
 	if(ags_plugin_port_test_flags(current_plugin_port,
 				      AGS_PLUGIN_PORT_INPUT)){
 	  if(recall_lv2->input_port == NULL){
 	    recall_lv2->input_port = (guint *) malloc(sizeof(guint));
-	    recall_lv2->input_port[0] = i;
+	    recall_lv2->input_port[0] = port_index;
 	  }else{
 	    recall_lv2->input_port = (guint *) realloc(recall_lv2->input_port,
 						       (recall_lv2->input_lines + 1) * sizeof(guint));
-	    recall_lv2->input_port[recall_lv2->input_lines] = i;
+	    recall_lv2->input_port[recall_lv2->input_lines] = port_index;
 	  }
 
 	  recall_lv2->input_lines += 1;
@@ -736,11 +742,11 @@ ags_recall_lv2_set_ports(AgsPlugin *plugin, GList *port)
 					    AGS_PLUGIN_PORT_OUTPUT)){
 	  if(recall_lv2->output_port == NULL){
 	    recall_lv2->output_port = (guint *) malloc(sizeof(guint));
-	    recall_lv2->output_port[0] = i;
+	    recall_lv2->output_port[0] = port_index;
 	  }else{
 	    recall_lv2->output_port = (guint *) realloc(recall_lv2->output_port,
 							(recall_lv2->output_lines + 1) * sizeof(guint));
-	    recall_lv2->output_port[recall_lv2->output_lines] = i;
+	    recall_lv2->output_port[recall_lv2->output_lines] = port_index;
 	  }
 
 	  recall_lv2->output_lines += 1;
@@ -1268,17 +1274,23 @@ ags_recall_lv2_load_ports(AgsRecallLv2 *recall_lv2)
 	g_free(specifier);
       }else if(ags_plugin_port_test_flags(current_plugin_port,
 					  AGS_PLUGIN_PORT_AUDIO)){
+	guint port_index;
+
+	g_object_get(current_plugin_port,
+		     "port-index", &port_index,
+		     NULL);
+
 	pthread_mutex_lock(recall_mutex);
 
 	if(ags_plugin_port_test_flags(current_plugin_port,
 				      AGS_PLUGIN_PORT_INPUT)){
 	  if(recall_lv2->input_port == NULL){
 	    recall_lv2->input_port = (guint *) malloc(sizeof(guint));
-	    recall_lv2->input_port[0] = i;
+	    recall_lv2->input_port[0] = port_index;
 	  }else{
 	    recall_lv2->input_port = (guint *) realloc(recall_lv2->input_port,
 						       (recall_lv2->input_lines + 1) * sizeof(guint));
-	    recall_lv2->input_port[recall_lv2->input_lines] = i;
+	    recall_lv2->input_port[recall_lv2->input_lines] = port_index;
 	  }
 	  
 	  recall_lv2->input_lines += 1;
@@ -1286,11 +1298,11 @@ ags_recall_lv2_load_ports(AgsRecallLv2 *recall_lv2)
 					    AGS_PLUGIN_PORT_OUTPUT)){
 	  if(recall_lv2->output_port == NULL){
 	    recall_lv2->output_port = (guint *) malloc(sizeof(guint));
-	    recall_lv2->output_port[0] = i;
+	    recall_lv2->output_port[0] = port_index;
 	  }else{
 	    recall_lv2->output_port = (guint *) realloc(recall_lv2->output_port,
 							(recall_lv2->output_lines + 1) * sizeof(guint));
-	    recall_lv2->output_port[recall_lv2->output_lines] = i;
+	    recall_lv2->output_port[recall_lv2->output_lines] = port_index;
 	  }
 	  
 	  recall_lv2->output_lines += 1;

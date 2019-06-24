@@ -1727,9 +1727,7 @@ ags_lv2_turtle_parser_parse(AgsLv2TurtleParser *lv2_turtle_parser,
 		  gboolean scale_point_has_pname;		
 
 #if AGS_DEBUG	      
-		  if(strstr(current_turtle->filename, "synthv1") != NULL){
-		    g_message("new LV2 plugin port");
-		  }
+		  g_message("new LV2 plugin port");
 #endif
 	      
 		  plugin_port = ags_plugin_port_new();
