@@ -33,6 +33,7 @@ ags_connectable_get_type
 ags_controller_get_type
 ags_conversion_get_type
 ags_countable_get_type
+ags_cursor_get_type
 ags_destroy_worker_get_type
 ags_file_get_type
 ags_file_id_ref_get_type

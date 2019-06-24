@@ -135,6 +135,7 @@ AgsSequencerThread AgsConnectable
 AgsSoundcardThread AgsConnectable
 AgsTaskThread AgsConnectable AgsAsyncQueue
 AgsReturnableThread AgsConnectable
+AgsWorkerThread AgsConnectable
 AgsAudioSignal AgsConnectable
 AgsChannel AgsConnectable
 AgsInput AgsConnectable

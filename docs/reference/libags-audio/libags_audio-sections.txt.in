@@ -299,6 +299,8 @@ ags_audio_add_preset
 ags_audio_remove_preset
 ags_audio_add_synth_generator
 ags_audio_remove_synth_generator
+ags_audio_add_cursor
+ags_audio_remove_cursor
 ags_audio_add_notation
 ags_audio_remove_notation
 ags_audio_add_automation
@@ -2522,6 +2524,7 @@ ags_lv2_preset_get_class_mutex
 ags_lv2_port_preset_alloc
 ags_lv2_port_preset_free
 ags_lv2_preset_parse_turtle
+ags_lv2_preset_find_preset_uri
 ags_lv2_preset_find_preset_label
 ags_lv2_preset_new
 <SUBSECTION Public>
@@ -2533,6 +2536,40 @@ AGS_TYPE_LV2_PRESET
 AgsLv2Preset
 AgsLv2PresetClass
 ags_lv2_preset_get_type
+</SECTION>
+
+<SECTION>
+<FILE>ags_lv2_preset_manager</FILE>
+<TITLE>AgsLv2PresetManager</TITLE>
+ags_lv2_preset_manager_get_class_mutex
+ags_lv2_preset_manager_get_instance
+ags_lv2_preset_manager_new
+<SUBSECTION Public>
+AGS_IS_LV2_PRESET_MANAGER
+AGS_LV2_PRESET_MANAGER
+AGS_LV2_PRESET_MANAGER_CLASS
+AGS_LV2_PRESET_MANAGER_GET_CLASS
+AGS_TYPE_LV2_PRESET_MANAGER
+AgsLv2PresetManager
+AgsLv2PresetManagerClass
+ags_lv2_preset_manager_get_type
+</SECTION>
+
+<SECTION>
+<FILE>ags_lv2_turtle_parser</FILE>
+<TITLE>AgsLv2TurtleParser</TITLE>
+ags_lv2_turtle_parser_get_class_mutex
+ags_lv2_turtle_parser_parse
+ags_lv2_turtle_parser_new
+<SUBSECTION Public>
+AGS_IS_LV2_TURTLE_PARSER
+AGS_LV2_TURTLE_PARSER
+AGS_LV2_TURTLE_PARSER_CLASS
+AGS_LV2_TURTLE_PARSER_GET_CLASS
+AGS_TYPE_LV2_TURTLE_PARSER
+AgsLv2TurtleParser
+AgsLv2TurtleParserClass
+ags_lv2_turtle_parser_get_type
 </SECTION>
 
 <SECTION>
@@ -2594,6 +2631,7 @@ ags_lv2_worker_alloc_response_data
 ags_lv2_worker_free_response_data
 ags_lv2_worker_respond
 ags_lv2_worker_schedule_work
+ags_lv2_worker_do_poll
 ags_lv2_worker_safe_run
 ags_lv2_worker_interrupted_callback
 ags_lv2_worker_new
@@ -3446,6 +3484,22 @@ ags_osc_controller_get_type
 </SECTION>
 
 <SECTION>
+<FILE>ags_osc_export_controller</FILE>
+<TITLE>AgsOscExportController</TITLE>
+ags_osc_export_controller_do_export
+ags_osc_export_controller_new
+<SUBSECTION Public>
+AGS_IS_OSC_EXPORT_CONTROLLER
+AGS_OSC_EXPORT_CONTROLLER
+AGS_OSC_EXPORT_CONTROLLER_CLASS
+AGS_OSC_EXPORT_CONTROLLER_GET_CLASS
+AGS_TYPE_OSC_EXPORT_CONTROLLER
+AgsOscExportController
+AgsOscExportControllerClass
+ags_osc_export_controller_get_type
+</SECTION>
+
+<SECTION>
 <FILE>ags_osc_front_controller</FILE>
 <TITLE>AgsOscFrontController</TITLE>
 AGS_OSC_FRONT_CONTROLLER_MESSAGE
@@ -3493,6 +3547,7 @@ ags_osc_info_controller_get_type
 <SECTION>
 <FILE>ags_osc_meter_controller</FILE>
 <TITLE>AgsOscMeterController</TITLE>
+AGS_OSC_METER_CONTROLLER_DEFAULT_MONITOR_TIMEOUT
 AGS_OSC_METER_CONTROLLER_MONITOR
 AgsOscMeterControllerFlags
 AgsOscMeterControllerMonitor

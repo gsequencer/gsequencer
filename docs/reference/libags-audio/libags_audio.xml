@@ -168,16 +168,12 @@
 
       <xi:include href="xml/ags_notation.xml"/>
       <xi:include href="xml/ags_note.xml"/>
-      <xi:include href="xml/ags_note_cursor.xml"/>
       <xi:include href="xml/ags_automation.xml"/>
       <xi:include href="xml/ags_acceleration.xml"/>
-      <xi:include href="xml/ags_acceleration_cursor.xml"/>
       <xi:include href="xml/ags_wave.xml"/>
       <xi:include href="xml/ags_buffer.xml"/>
-      <xi:include href="xml/ags_buffer_cursor.xml"/>
       <xi:include href="xml/ags_midi.xml"/>
       <xi:include href="xml/ags_track.xml"/>
-      <xi:include href="xml/ags_track_cursor.xml"/>
       <xi:include href="xml/ags_pattern.xml"/>
       <xi:include href="xml/ags_preset.xml"/>
     </chapter>

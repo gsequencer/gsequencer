@@ -96,7 +96,6 @@ ags_move_note_dialog_get_type
 ags_navigation_get_type
 ags_notation_edit_get_type
 ags_notation_editor_get_type
-ags_notation_sheet_get_type
 ags_notation_toolbar_get_type
 ags_osc_server_preferences_get_type
 ags_oscillator_get_type
@@ -130,6 +129,10 @@ ags_select_note_dialog_get_type
 ags_sequencer_editor_get_type
 ags_server_preferences_get_type
 ags_sf2_chooser_get_type
+ags_sheet_edit_get_type
+ags_sheet_editor_get_type
+ags_sheet_toolbar_get_type
+ags_sheet_window_get_type
 ags_simple_autosave_thread_get_type
 ags_simple_file_get_type
 ags_simple_file_read_get_type

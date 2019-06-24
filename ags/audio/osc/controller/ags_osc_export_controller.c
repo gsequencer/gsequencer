@@ -33,14 +33,6 @@
 
 void ags_osc_export_controller_class_init(AgsOscExportControllerClass *osc_export_controller);
 void ags_osc_export_controller_init(AgsOscExportController *osc_export_controller);
-void ags_osc_export_controller_set_property(GObject *gobject,
-					    guint prop_id,
-					    const GValue *value,
-					    GParamSpec *param_spec);
-void ags_osc_export_controller_get_property(GObject *gobject,
-					    guint prop_id,
-					    GValue *value,
-					    GParamSpec *param_spec);
 void ags_osc_export_controller_dispose(GObject *gobject);
 void ags_osc_export_controller_finalize(GObject *gobject);
 
@@ -69,6 +61,8 @@ enum{
 
 static gpointer ags_osc_export_controller_parent_class = NULL;
 static guint osc_export_controller_signals[LAST_SIGNAL];
+
+static pthread_mutex_t regex_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 GType
 ags_osc_export_controller_get_type()
@@ -111,9 +105,6 @@ ags_osc_export_controller_class_init(AgsOscExportControllerClass *osc_export_con
 
   /* GObjectClass */
   gobject = (GObjectClass *) osc_export_controller;
-
-  gobject->set_property = ags_osc_export_controller_set_property;
-  gobject->get_property = ags_osc_export_controller_get_property;
 
   gobject->dispose = ags_osc_export_controller_dispose;
   gobject->finalize = ags_osc_export_controller_finalize;
@@ -289,7 +280,7 @@ ags_osc_export_controller_real_do_export(AgsOscExportController *osc_export_cont
 
   /* read format */
   ags_osc_buffer_util_get_int32(message + 12 + length,
-				&format, NULL);
+				&format);
 
   /* check argument */
   if(format == 0){
@@ -313,7 +304,7 @@ ags_osc_export_controller_real_do_export(AgsOscExportController *osc_export_cont
   
   /* read tic */
   ags_osc_buffer_util_get_int64(message + 16 + length,
-				&tic, NULL);
+				&tic);
 
   /* check argument */
   if(tic == 0){
@@ -336,7 +327,7 @@ ags_osc_export_controller_real_do_export(AgsOscExportController *osc_export_cont
   }
 
   /* read live export */
-  live_export = (type_tag[6] == 'T') ? TRUE: FALSE;
+  live_performance = (type_tag[6] == 'T') ? TRUE: FALSE;
 
   /* get sound provider */
   application_context = ags_application_context_get_instance();

@@ -1057,6 +1057,7 @@ libags_audio_osc_controller_h_sources = \
 	ags/audio/osc/controller/ags_osc_controller.h \
 	ags/audio/osc/controller/ags_osc_action_controller.h \
 	ags/audio/osc/controller/ags_osc_config_controller.h \
+	ags/audio/osc/controller/ags_osc_export_controller.h \
 	ags/audio/osc/controller/ags_osc_front_controller.h \
 	ags/audio/osc/controller/ags_osc_info_controller.h \
 	ags/audio/osc/controller/ags_osc_meter_controller.h \
@@ -1072,6 +1073,7 @@ libags_audio_osc_controller_c_sources = \
 	ags/audio/osc/controller/ags_osc_controller.c \
 	ags/audio/osc/controller/ags_osc_action_controller.c \
 	ags/audio/osc/controller/ags_osc_config_controller.c \
+	ags/audio/osc/controller/ags_osc_export_controller.c \
 	ags/audio/osc/controller/ags_osc_front_controller.c \
 	ags/audio/osc/controller/ags_osc_info_controller.c \
 	ags/audio/osc/controller/ags_osc_meter_controller.c \

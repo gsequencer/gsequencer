@@ -422,6 +422,33 @@ ags_countable_get_type
 </SECTION>
 
 <SECTION>
+<FILE>ags_cursor</FILE>
+<TITLE>AgsCursor</TITLE>
+ags_cursor_get_default_offset
+ags_cursor_cursor_get_tact
+ags_cursor_cursor_get_bpm
+ags_cursor_cursor_get_rate
+ags_cursor_cursor_get_delay
+ags_cursor_cursor_get_duration
+ags_cursor_get_delay_counter
+ags_cursor_get_offset
+ags_cursor_get_prev
+ags_cursor_get_next
+ags_cursor_get_current_copy
+ags_cursor_get_current
+<SUBSECTION Public>
+AGS_CURSOR
+AGS_CURSOR_GET_INTERFACE
+AGS_CURSOR_INTERFACE
+AGS_IS_CURSOR
+AGS_IS_CURSOR_INTERFACE
+AGS_TYPE_CURSOR
+AgsCursor
+AgsCursorInterface
+ags_cursor_get_type
+</SECTION>
+
+<SECTION>
 <FILE>ags_destroy_util</FILE>
 ags_destroy_util_dispose_and_unref
 </SECTION>
