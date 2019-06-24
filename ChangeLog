@@ -5,6 +5,9 @@ ags (2.2.0)
 	* implemented AgsCursor interface
 	* implemented AgsOscExportController
 	* fixed potential SIGSEGV as reading malformed RDF Turtle
+	* improved license and copyright notices for various files
+	* minor improvements and fixes
+	* added NEWS entry
 
 ags (2.1.78)
 

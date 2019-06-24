@@ -21,28 +21,29 @@
 AC_DEFUN([AGS_DEVELOPER_BOOK_LISTINGS],
 [
   AC_MSG_NOTICE([generating docs/listings/*])
-  `tail -n +10 $srcdir/docs/listings/add_pattern.c.in > $srcdir/docs/listings/add_pattern.c`
-  `tail -n +10 $srcdir/docs/listings/application_mutex.c.in > $srcdir/docs/listings/application_mutex.c`
-  `tail -n +10 $srcdir/docs/listings/audio.c.in > $srcdir/docs/listings/audio.c`
-  `tail -n +10 $srcdir/docs/listings/audio_application_context.c.in > $srcdir/docs/listings/audio_application_context.c`
-  `tail -n +10 $srcdir/docs/listings/complete_example.c.in > $srcdir/docs/listings/complete_example.c`
-  `tail -n +10 $srcdir/docs/listings/config.c.in > $srcdir/docs/listings/config.c`
-  `tail -n +10 $srcdir/docs/listings/effects_echo_audio.c.in > $srcdir/docs/listings/effects_echo_audio.c`
-  `tail -n +10 $srcdir/docs/listings/effects_echo_audio_run.c.in > $srcdir/docs/listings/effects_echo_audio_run.c`
-  `tail -n +10 $srcdir/docs/listings/effects_echo_channel.c.in > $srcdir/docs/listings/effects_echo_channel.c`
-  `tail -n +10 $srcdir/docs/listings/effects_echo_channel_run.c.in > $srcdir/docs/listings/effects_echo_channel_run.c`
-  `tail -n +10 $srcdir/docs/listings/effects_recall_container.c.in > $srcdir/docs/listings/effects_recall_container.c`
-  `tail -n +10 $srcdir/docs/listings/file_property.c.in > $srcdir/docs/listings/file_property.c`
-  `tail -n +10 $srcdir/docs/listings/file_read.c.in > $srcdir/docs/listings/file_read.c`
-  `tail -n +10 $srcdir/docs/listings/file_write.c.in > $srcdir/docs/listings/file_write.c`
-  `tail -n +10 $srcdir/docs/listings/linking_prerequisites.c.in > $srcdir/docs/listings/linking_prerequisites.c`
-  `tail -n +10 $srcdir/docs/listings/linking_safe.c.in > $srcdir/docs/listings/linking_safe.c`
-  `tail -n +10 $srcdir/docs/listings/linking_unsafe.c.in > $srcdir/docs/listings/linking_unsafe.c`
-  `tail -n +10 $srcdir/docs/listings/pcm_info.c.in > $srcdir/docs/listings/pcm_info.c`
-  `tail -n +10 $srcdir/docs/listings/port.c.in > $srcdir/docs/listings/port.c`
-  `tail -n +10 $srcdir/docs/listings/pull_thread.c.in > $srcdir/docs/listings/pull_thread.c`
-  `tail -n +10 $srcdir/docs/listings/recycling.c.in > $srcdir/docs/listings/recycling.c`
-  `tail -n +10 $srcdir/docs/listings/start_thread.c.in > $srcdir/docs/listings/start_thread.c`
-  `tail -n +10 $srcdir/docs/listings/thread_application_context.c.in > $srcdir/docs/listings/thread_application_context.c`
-  `tail -n +10 $srcdir/docs/listings/thread_obj_mutex.c.in > $srcdir/docs/listings/thread_obj_mutex.c`
+  `mkdir -p docs/listings/`
+  `tail -n +10 $srcdir/docs/listings/add_pattern.c.in > docs/listings/add_pattern.c`
+  `tail -n +10 $srcdir/docs/listings/application_mutex.c.in > docs/listings/application_mutex.c`
+  `tail -n +10 $srcdir/docs/listings/audio.c.in > docs/listings/audio.c`
+  `tail -n +10 $srcdir/docs/listings/audio_application_context.c.in > docs/listings/audio_application_context.c`
+  `tail -n +10 $srcdir/docs/listings/complete_example.c.in > docs/listings/complete_example.c`
+  `tail -n +10 $srcdir/docs/listings/config.c.in > docs/listings/config.c`
+  `tail -n +10 $srcdir/docs/listings/effects_echo_audio.c.in > docs/listings/effects_echo_audio.c`
+  `tail -n +10 $srcdir/docs/listings/effects_echo_audio_run.c.in > docs/listings/effects_echo_audio_run.c`
+  `tail -n +10 $srcdir/docs/listings/effects_echo_channel.c.in > docs/listings/effects_echo_channel.c`
+  `tail -n +10 $srcdir/docs/listings/effects_echo_channel_run.c.in > docs/listings/effects_echo_channel_run.c`
+  `tail -n +10 $srcdir/docs/listings/effects_recall_container.c.in > docs/listings/effects_recall_container.c`
+  `tail -n +10 $srcdir/docs/listings/file_property.c.in > docs/listings/file_property.c`
+  `tail -n +10 $srcdir/docs/listings/file_read.c.in > docs/listings/file_read.c`
+  `tail -n +10 $srcdir/docs/listings/file_write.c.in > docs/listings/file_write.c`
+  `tail -n +10 $srcdir/docs/listings/linking_prerequisites.c.in > docs/listings/linking_prerequisites.c`
+  `tail -n +10 $srcdir/docs/listings/linking_safe.c.in > docs/listings/linking_safe.c`
+  `tail -n +10 $srcdir/docs/listings/linking_unsafe.c.in > docs/listings/linking_unsafe.c`
+  `tail -n +10 $srcdir/docs/listings/pcm_info.c.in > docs/listings/pcm_info.c`
+  `tail -n +10 $srcdir/docs/listings/port.c.in > docs/listings/port.c`
+  `tail -n +10 $srcdir/docs/listings/pull_thread.c.in > docs/listings/pull_thread.c`
+  `tail -n +10 $srcdir/docs/listings/recycling.c.in > docs/listings/recycling.c`
+  `tail -n +10 $srcdir/docs/listings/start_thread.c.in > docs/listings/start_thread.c`
+  `tail -n +10 $srcdir/docs/listings/thread_application_context.c.in > docs/listings/thread_application_context.c`
+  `tail -n +10 $srcdir/docs/listings/thread_obj_mutex.c.in > docs/listings/thread_obj_mutex.c`
 ])

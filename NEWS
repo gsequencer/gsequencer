@@ -10,6 +10,15 @@ with no Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.
 A copy of the license is included in the section entitled "GNU
 Free Documentation License".
 
+Overview of Changes in AGS 2.2.0
+================================
+
+* Implemented OSC export controller. Allowing you to trigger AgsExportOutput
+  task by the OSC server.
+* Reworked parsing LV2 RDF Turtles. Providing a better conforming
+  interpretation of prefixes and faster XPath expressions.
+* Improved copyright and licenses notices for many files.
+
 Overview of Changes in AGS 2.1.0
 ================================
 

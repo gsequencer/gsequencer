@@ -129,7 +129,8 @@ EXTRA_DIST += \
 #	lv2.lib/mda/EPiano-presets.ttl
 
 EXTRA_DIST += \
-	apple_script.sh
+	apple_script.sh \
+	prepare-distribution.sh
 
 man1_MANS = gsequencer.1 midi2xml.1
 
@@ -141,44 +142,44 @@ CLEANFILES = \
 	libags_server.sym \
 	libags_audio.sym \
 	libags_gui.sym \
-	$(srcdir)/ags/object/ags_marshallers.list \
-	$(srcdir)/ags/widget/ags_widget_marshallers.list \
-	$(srcdir)/docs/listings/add_pattern.c \
-	$(srcdir)/docs/listings/application_mutex.c \
-	$(srcdir)/docs/listings/audio.c \
-	$(srcdir)/docs/listings/audio_application_context.c \
-	$(srcdir)/docs/listings/complete_example.c \
-	$(srcdir)/docs/listings/config.c \
-	$(srcdir)/docs/listings/effects_echo_audio.c \
-	$(srcdir)/docs/listings/effects_echo_audio_run.c \
-	$(srcdir)/docs/listings/effects_echo_channel.c \
-	$(srcdir)/docs/listings/effects_echo_channel_run.c \
-	$(srcdir)/docs/listings/effects_recall_container.c \
-	$(srcdir)/docs/listings/file_property.c \
-	$(srcdir)/docs/listings/file_read.c \
-	$(srcdir)/docs/listings/file_write.c \
-	$(srcdir)/docs/listings/linking_prerequisites.c \
-	$(srcdir)/docs/listings/linking_safe.c \
-	$(srcdir)/docs/listings/linking_unsafe.c \
-	$(srcdir)/docs/listings/pcm_info.c \
-	$(srcdir)/docs/listings/port.c \
-	$(srcdir)/docs/listings/pull_thread.c \
-	$(srcdir)/docs/listings/recycling.c \
-	$(srcdir)/docs/listings/start_thread.c \
-	$(srcdir)/docs/listings/thread_application_context.c \
-	$(srcdir)/docs/listings/thread_obj_mutex.c \
-	$(srcdir)/docs/reference/libags/libags-sections.txt \
-	$(srcdir)/docs/reference/libags/libags.types \
-	$(srcdir)/docs/reference/libags/libags.interfaces \
-	$(srcdir)/docs/reference/libags-audio/libags_audio-sections.txt \
-	$(srcdir)/docs/reference/libags-audio/libags_audio.types \
-	$(srcdir)/docs/reference/libags-audio/libags_audio.interfaces \
-	$(srcdir)/docs/reference/libags-gui/libags_gui-sections.txt \
-	$(srcdir)/docs/reference/libags-gui/libags_gui.types \
-	$(srcdir)/docs/reference/libags-gui/libags_gui.interfaces \
-	$(srcdir)/docs/reference/libgsequencer/libgsequencer-sections.txt \
-	$(srcdir)/docs/reference/libgsequencer/libgsequencer.types \
-	$(srcdir)/docs/reference/libgsequencer/libgsequencer.interfaces
+	ags/object/ags_marshallers.list \
+	ags/widget/ags_widget_marshallers.list \
+	docs/listings/add_pattern.c \
+	docs/listings/application_mutex.c \
+	docs/listings/audio.c \
+	docs/listings/audio_application_context.c \
+	docs/listings/complete_example.c \
+	docs/listings/config.c \
+	docs/listings/effects_echo_audio.c \
+	docs/listings/effects_echo_audio_run.c \
+	docs/listings/effects_echo_channel.c \
+	docs/listings/effects_echo_channel_run.c \
+	docs/listings/effects_recall_container.c \
+	docs/listings/file_property.c \
+	docs/listings/file_read.c \
+	docs/listings/file_write.c \
+	docs/listings/linking_prerequisites.c \
+	docs/listings/linking_safe.c \
+	docs/listings/linking_unsafe.c \
+	docs/listings/pcm_info.c \
+	docs/listings/port.c \
+	docs/listings/pull_thread.c \
+	docs/listings/recycling.c \
+	docs/listings/start_thread.c \
+	docs/listings/thread_application_context.c \
+	docs/listings/thread_obj_mutex.c \
+	docs/reference/libags/libags-sections.txt \
+	docs/reference/libags/libags.types \
+	docs/reference/libags/libags.interfaces \
+	docs/reference/libags-audio/libags_audio-sections.txt \
+	docs/reference/libags-audio/libags_audio.types \
+	docs/reference/libags-audio/libags_audio.interfaces \
+	docs/reference/libags-gui/libags_gui-sections.txt \
+	docs/reference/libags-gui/libags_gui.types \
+	docs/reference/libags-gui/libags_gui.interfaces \
+	docs/reference/libgsequencer/libgsequencer-sections.txt \
+	docs/reference/libgsequencer/libgsequencer.types \
+	docs/reference/libgsequencer/libgsequencer.interfaces
 
 # pkg-config
 pkgconfigdir = $(libdir)/pkgconfig
@@ -299,8 +300,10 @@ devdoclistings = \
 	docs/listings/linking_unsafe.c.in \
 	docs/listings/pcm_info.c.in \
 	docs/listings/pull_thread.c.in \
+	docs/listings/port.c.in \
 	docs/listings/recycling.c.in \
 	docs/listings/start_thread.c.in \
+	docs/listings/thread_obj_mutex.c.in \
 	docs/listings/thread_application_context.c.in
 
 devdocimages = \
@@ -387,8 +390,13 @@ libags_thread_la_HEADERS_0 = $(libags_thread_h_sources) $(libags_thread_file_h_s
 libags_server_la_SOURCES = $(libags_server_c_sources) $(libags_server_security_c_sources) $(libags_server_controller_c_sources) $(libags_server_thread_c_sources)
 libags_server_la_HEADERS_0 = $(libags_server_h_sources) $(libags_server_security_h_sources) $(libags_server_controller_h_sources) $(libags_server_thread_h_sources)
 
-libags_audio_la_SOURCES = $(libags_audio_c_sources) $(libags_audio_thread_c_sources) $(libags_audio_file_c_sources) $(libags_audio_midi_c_sources) $(libags_audio_osc_c_sources) $(libags_audio_osc_controller_c_sources) $(libags_audio_jack_c_sources) $(libags_audio_pulse_c_sources) $(libags_audio_core_audio_c_sources)  $(libags_audio_task_c_sources) $(libags_audio_task_recall_c_sources) $(libags_audio_recall_c_sources)  $(libags_plugin_c_sources)
+libags_audio_la_SOURCES = $(libags_audio_c_sources) $(libags_audio_thread_c_sources) $(libags_audio_file_c_sources) $(libags_audio_midi_c_sources) $(libags_audio_osc_c_sources) $(libags_audio_osc_controller_c_sources) $(libags_audio_jack_c_sources) $(libags_audio_pulse_c_sources) $(libags_audio_core_audio_c_sources) $(libags_audio_task_c_sources) $(libags_audio_task_recall_c_sources) $(libags_audio_recall_c_sources)  $(libags_plugin_c_sources)
 libags_audio_la_HEADERS_0 = ags/libags-audio.h $(libags_audio_h_sources) $(libags_audio_thread_h_sources) $(libags_audio_file_h_sources) $(libags_audio_midi_h_sources) $(libags_audio_osc_h_sources) $(libags_audio_osc_controller_h_sources) $(libags_audio_jack_h_sources) $(libags_audio_pulse_h_sources) $(libags_audio_core_audio_h_sources) $(libags_audio_task_h_sources) $(libags_audio_task_recall_h_sources) $(libags_audio_recall_h_sources)  $(libags_plugin_h_sources)
+
+if WITH_EXPERIMENTAL
+libags_audio_la_SOURCES += $(libags_audio_audio_unit_c_sources)
+libags_audio_la_HEADERS_0 += $(libags_audio_audio_unit_h_sources)
+endif
 
 libags_gui_la_SOURCES = $(libags_gui_c_sources)
 libags_gui_la_HEADERS_0 = ags/libags-gui.h $(libags_gui_h_sources)
@@ -1138,6 +1146,23 @@ libags_audio_core_audio_c_sources = \
 	ags/audio/core-audio/ags_core_audio_devin.c \
 	ags/audio/core-audio/ags_core_audio_port.c \
 	ags/audio/core-audio/ags_core_audio_server.c
+
+# libags-audio - audio-unit
+deprecated_libags_audio_audio_unit_h_sources =
+
+libags_audio_audio_unit_h_sources = \
+	$(deprecated_libags_audio_audio_unit_h_sources) \
+	ags/audio/audio-unit/ags_audio_unit_client.h \
+	ags/audio/audio-unit/ags_audio_unit_port.h \
+	ags/audio/audio-unit/ags_audio_unit_server.h
+
+deprecated_libags_audio_audio_unit_c_sources =
+
+libags_audio_audio_unit_c_sources = \
+	$(deprecated_libags_audio_audio_unit_c_sources) \
+	ags/audio/audio-unit/ags_audio_unit_client.c \
+	ags/audio/audio-unit/ags_audio_unit_port.c \
+	ags/audio/audio-unit/ags_audio_unit_server.c
 
 # libags-audio - recall
 deprecated_libags_audio_recall_h_sources =
@@ -2399,6 +2424,7 @@ gen-symbols-ags:
 	rm -f libags.sym.in
 	touch libags.sym.in
 	cat license-notice-gnu-gpl-3-0+-sym.txt >> libags.sym.in
+	echo -e -n "\n" >> libags.sym.in
 	find ags/util -name "*.h" | xargs grep --no-filename -o -P "(?<=\s)(ags_[a-z0-9_]+)(?=[\s]*\()" >> libags.sym.in
 	find ags/lib -name "*.h" | xargs grep --no-filename -o -P "(?<=\s)(ags_[a-z0-9_]+)(?=[\s]*\()" >> libags.sym.in
 	echo "ags_application_context" >> libags.sym.in
@@ -2410,25 +2436,29 @@ gen-symbols-ags-thread:
 	rm -f libags_thread.sym.in
 	touch libags_thread.sym.in
 	cat license-notice-gnu-gpl-3-0+-sym.txt >> libags_thread.sym.in
+	echo -e -n "\n" >> libags_thread.sym.in
 	find ags/thread -name "*.h" | xargs grep --no-filename -o -P "(?<=\s)(ags_[a-z0-9_]+)(?=[\s]*\()" >> libags_thread.sym.in
 
 gen-symbols-ags-server:
 	rm -f libags_server.sym.in
 	touch libags_server.sym.in
 	cat license-notice-gnu-agpl-3-0+-sym.txt >> libags_server.sym.in
+	echo -e -n "\n" >> libags_server.sym.in
 	find ags/server -name "*.h" | xargs grep --no-filename -o -P "(?<=\s)(ags_[a-z0-9_]+)(?=[\s]*\()" >> libags_server.sym.in
 
 gen-symbols-ags-audio:
 	rm -f libags_audio.sym.in
 	touch libags_audio.sym.in
 	cat license-notice-gnu-gpl-3-0+-sym.txt >> libags_audio.sym.in
+	echo -e -n "\n" >> libags_audio.sym.in
 	find ags/plugin -name "*.h" | xargs grep --no-filename -o -P "(?<=\s)(ags_[a-z0-9_]+)(?=[\s]*\()" >> libags_audio.sym.in
-	find ags/audio -name "*.h" | xargs grep --no-filename -o -P "(?<=\s)(ags_[a-z0-9_]+)(?=[\s]*\()" >> libags_audio.sym.in
+	find ags/audio -path ags/audio/audio-unit -prune -o -name "*.h" -print | xargs grep --no-filename -o -P "(?<=\s)(ags_[a-z0-9_]+)(?=[\s]*\()" >> libags_audio.sym.in
 
 gen-symbols-ags-gui:
 	rm -f libags_gui.sym.in
 	touch libags_gui.sym.in
 	cat license-notice-gnu-gpl-3-0+-sym.txt >> libags_gui.sym.in
+	echo -e -n "\n" >> libags_gui.sym.in
 	find ags/widget -name "*.h" | xargs grep --no-filename -o -P "(?<=\s)(ags_[a-z0-9_]+)(?=[\s]*\()" >> libags_gui.sym.in
 	find ags/widget -name "ags_widget_marshal.h" | xargs grep --no-filename -o -P "(ags_widget_cclosure_marshal_[a-zA-Z0-9_]+)" >> libags_gui.sym.in
 
@@ -2452,7 +2482,7 @@ check-gettext:
 	"'checking whether to use NLS... yes'!" ; exit 1 ; fi
 
 update-po: check-gettext
-	@find $(srcdir)/ags/{util,lib,object,thread,file,server,plugin,audio,widget,X}/ -name "*.c" -print | sort > $(srcdir)/po/POTFILES.in.2 ; \
+	@find $(srcdir)/ags/{util,lib,object,thread,file,server,plugin,audio,widget,X}/ -path $(srcdir)/ags/audio/audio-unit -prune -o -name "*.c" -print | sort > $(srcdir)/po/POTFILES.in.2 ; \
 	if diff $(srcdir)/po/POTFILES.in $(srcdir)/po/POTFILES.in.2 >/dev/null 2>&1 ; then \
 		rm -f $(srcdir)/po/POTFILES.in.2 ; \
 	else \

@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: gsequencer 2.1.77\n"
+"Project-Id-Version: gsequencer 2.2.0\n"
 "Report-Msgid-Bugs-To: jkraehemann@gmail.com\n"
-"POT-Creation-Date: 2019-06-17 20:41+0200\n"
+"POT-Creation-Date: 2019-06-24 18:25+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -611,39 +611,41 @@ msgstr ""
 msgid "wave"
 msgstr ""
 
-#: ags/X/ags_xorg_application_context.c:2152
+#: ags/X/ags_xorg_application_context.c:2149
 #: ags/audio/ags_audio_application_context.c:1743
 #: ags/audio/task/ags_apply_sound_config.c:893
 #, c-format
 msgid "unknown soundcard backend - %s"
 msgstr ""
 
-#: ags/X/ags_xorg_application_context.c:2162
+#: ags/X/ags_xorg_application_context.c:2159
 #: ags/audio/ags_audio_application_context.c:1753
 #: ags/audio/task/ags_apply_sound_config.c:903
 msgid "unknown soundcard backend - NULL"
 msgstr ""
 
-#: ags/X/ags_xorg_application_context.c:2410
+#: ags/X/ags_xorg_application_context.c:2407
 #: ags/audio/ags_audio_application_context.c:1904
 #: ags/audio/task/ags_apply_sound_config.c:1147
 #, c-format
 msgid "unknown sequencer backend - %s"
 msgstr ""
 
-#: ags/X/ags_xorg_application_context.c:2420
+#: ags/X/ags_xorg_application_context.c:2417
 #: ags/audio/ags_audio_application_context.c:1914
 #: ags/audio/task/ags_apply_sound_config.c:1157
 msgid "unknown sequencer backend - NULL"
 msgstr ""
 
 #: ags/X/editor/ags_automation_toolbar.c:123
-#: ags/X/editor/ags_notation_toolbar.c:119 ags/X/editor/ags_wave_toolbar.c:122
+#: ags/X/editor/ags_notation_toolbar.c:119 ags/X/editor/ags_sheet_toolbar.c:114
+#: ags/X/editor/ags_wave_toolbar.c:122
 msgid "Position"
 msgstr ""
 
 #: ags/X/editor/ags_automation_toolbar.c:149
-#: ags/X/editor/ags_notation_toolbar.c:140 ags/X/editor/ags_wave_toolbar.c:131
+#: ags/X/editor/ags_notation_toolbar.c:140 ags/X/editor/ags_sheet_toolbar.c:185
+#: ags/X/editor/ags_wave_toolbar.c:131
 msgid "Select"
 msgstr ""
 
@@ -691,7 +693,8 @@ msgstr ""
 
 #: ags/X/editor/ags_automation_toolbar.c:1215
 #: ags/X/editor/ags_notation_toolbar.c:122
-#: ags/X/editor/ags_notation_toolbar.c:457 ags/X/editor/ags_wave_toolbar.c:386
+#: ags/X/editor/ags_notation_toolbar.c:457 ags/X/editor/ags_sheet_toolbar.c:117
+#: ags/X/editor/ags_wave_toolbar.c:386
 msgid "position cursor"
 msgstr ""
 
@@ -840,37 +843,38 @@ msgstr ""
 msgid "move y"
 msgstr ""
 
-#: ags/X/editor/ags_notation_toolbar.c:129
+#: ags/X/editor/ags_notation_toolbar.c:129 ags/X/editor/ags_sheet_toolbar.c:174
 msgid "edit notes"
 msgstr ""
 
-#: ags/X/editor/ags_notation_toolbar.c:136
+#: ags/X/editor/ags_notation_toolbar.c:136 ags/X/editor/ags_sheet_toolbar.c:181
 msgid "clear notes"
 msgstr ""
 
 #: ags/X/editor/ags_notation_toolbar.c:145
 #: ags/X/editor/ags_notation_toolbar.c:454
 #: ags/X/editor/ags_select_note_dialog.c:204
+#: ags/X/editor/ags_sheet_toolbar.c:190
 msgid "select notes"
 msgstr ""
 
-#: ags/X/editor/ags_notation_toolbar.c:154
+#: ags/X/editor/ags_notation_toolbar.c:154 ags/X/editor/ags_sheet_toolbar.c:199
 msgid "copy notes"
 msgstr ""
 
-#: ags/X/editor/ags_notation_toolbar.c:161
+#: ags/X/editor/ags_notation_toolbar.c:161 ags/X/editor/ags_sheet_toolbar.c:206
 msgid "cut notes"
 msgstr ""
 
-#: ags/X/editor/ags_notation_toolbar.c:171
+#: ags/X/editor/ags_notation_toolbar.c:171 ags/X/editor/ags_sheet_toolbar.c:216
 msgid "match audio channel"
 msgstr ""
 
-#: ags/X/editor/ags_notation_toolbar.c:178
+#: ags/X/editor/ags_notation_toolbar.c:178 ags/X/editor/ags_sheet_toolbar.c:223
 msgid "no duplicates"
 msgstr ""
 
-#: ags/X/editor/ags_notation_toolbar.c:188
+#: ags/X/editor/ags_notation_toolbar.c:188 ags/X/editor/ags_sheet_toolbar.c:233
 msgid "paste notes"
 msgstr ""
 
@@ -996,6 +1000,30 @@ msgstr ""
 
 #: ags/X/editor/ags_select_note_dialog.c:305
 msgid "select y1"
+msgstr ""
+
+#: ags/X/editor/ags_sheet_toolbar.c:127
+msgid "1/1"
+msgstr ""
+
+#: ags/X/editor/ags_sheet_toolbar.c:134
+msgid "1/2"
+msgstr ""
+
+#: ags/X/editor/ags_sheet_toolbar.c:141
+msgid "1/4"
+msgstr ""
+
+#: ags/X/editor/ags_sheet_toolbar.c:148
+msgid "1/8"
+msgstr ""
+
+#: ags/X/editor/ags_sheet_toolbar.c:155
+msgid "1/16"
+msgstr ""
+
+#: ags/X/editor/ags_sheet_toolbar.c:162
+msgid "1/32"
 msgstr ""
 
 #: ags/X/editor/ags_wave_toolbar.c:383
