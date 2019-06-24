@@ -22,7 +22,7 @@
 #                  are tested. Not matching files are listed and the end of
 #                  output as "Verify: <filename>". They have a need for manual
 #                  review. Note README files are excluded from the check.
-# author:          Jo\u00EBl Kr\u00E4hemann
+# author:          Joël Krähemann
 # date:            Sun Oct  7 00:17:53 UTC 2018
 # version:         v1.0.0
 # usage:           bash test-copyright-and-license.sh

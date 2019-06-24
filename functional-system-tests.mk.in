@@ -100,7 +100,8 @@ noinst_PROGRAMS = $(am__EXEEXT_2)
 @WITH_SYSTEM_TESTS_TRUE@am__append_1 = $(installcheck_programs)
 subdir = .
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
-am__aclocal_m4_deps = $(top_srcdir)/m4/ags-listings.m4 \
+am__aclocal_m4_deps = $(top_srcdir)/m4/ags-docs-api.m4 \
+	$(top_srcdir)/m4/ags-listings.m4 \
 	$(top_srcdir)/m4/ags-marshallers.m4 \
 	$(top_srcdir)/m4/ags-symbols.m4 $(top_srcdir)/m4/gettext.m4 \
 	$(top_srcdir)/m4/gtk-doc.m4 $(top_srcdir)/m4/iconv.m4 \

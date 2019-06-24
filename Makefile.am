@@ -108,18 +108,18 @@ EXTRA_DIST += \
 	functional-system-tests.mk.in
 
 EXTRA_DIST += \
-	docs/reference/libags/libags-sections.txt \
-	docs/reference/libags/libags.types \
-	docs/reference/libags/libags.interfaces \
-	docs/reference/libags-audio/libags_audio-sections.txt \
-	docs/reference/libags-audio/libags_audio.types \
-	docs/reference/libags-audio/libags_audio.interfaces \
-	docs/reference/libags-gui/libags_gui-sections.txt \
-	docs/reference/libags-gui/libags_gui.types \
-	docs/reference/libags-gui/libags_gui.interfaces \
-	docs/reference/libgsequencer/libgsequencer-sections.txt \
-	docs/reference/libgsequencer/libgsequencer.types \
-	docs/reference/libgsequencer/libgsequencer.interfaces \
+	docs/reference/libags/libags-sections.txt.in \
+	docs/reference/libags/libags.types.in \
+	docs/reference/libags/libags.interfaces.in \
+	docs/reference/libags-audio/libags_audio-sections.txt.in \
+	docs/reference/libags-audio/libags_audio.types.in \
+	docs/reference/libags-audio/libags_audio.interfaces.in \
+	docs/reference/libags-gui/libags_gui-sections.txt.in \
+	docs/reference/libags-gui/libags_gui.types.in \
+	docs/reference/libags-gui/libags_gui.interfaces.in \
+	docs/reference/libgsequencer/libgsequencer-sections.txt.in \
+	docs/reference/libgsequencer/libgsequencer.types.in \
+	docs/reference/libgsequencer/libgsequencer.interfaces.in \
 	clean-gtk-doc.sh
 
 EXTRA_DIST += \
@@ -166,7 +166,19 @@ CLEANFILES = \
 	$(srcdir)/docs/listings/recycling.c \
 	$(srcdir)/docs/listings/start_thread.c \
 	$(srcdir)/docs/listings/thread_application_context.c \
-	$(srcdir)/docs/listings/thread_obj_mutex.c
+	$(srcdir)/docs/listings/thread_obj_mutex.c \
+	$(srcdir)/docs/reference/libags/libags-sections.txt \
+	$(srcdir)/docs/reference/libags/libags.types \
+	$(srcdir)/docs/reference/libags/libags.interfaces \
+	$(srcdir)/docs/reference/libags-audio/libags_audio-sections.txt \
+	$(srcdir)/docs/reference/libags-audio/libags_audio.types \
+	$(srcdir)/docs/reference/libags-audio/libags_audio.interfaces \
+	$(srcdir)/docs/reference/libags-gui/libags_gui-sections.txt \
+	$(srcdir)/docs/reference/libags-gui/libags_gui.types \
+	$(srcdir)/docs/reference/libags-gui/libags_gui.interfaces \
+	$(srcdir)/docs/reference/libgsequencer/libgsequencer-sections.txt \
+	$(srcdir)/docs/reference/libgsequencer/libgsequencer.types \
+	$(srcdir)/docs/reference/libgsequencer/libgsequencer.interfaces
 
 # pkg-config
 pkgconfigdir = $(libdir)/pkgconfig
@@ -268,28 +280,28 @@ oscdoc = \
 	docs/oscBook/appb.xml
 
 devdoclistings = \
-	docs/listings/add_pattern.c \
-	docs/listings/application_mutex.c \
-	docs/listings/audio_application_context.c \
-	docs/listings/audio.c \
-	docs/listings/complete_example.c \
-	docs/listings/config.c \
-	docs/listings/effects_echo_audio.c \
-	docs/listings/effects_echo_audio_run.c \
-	docs/listings/effects_echo_channel.c \
-	docs/listings/effects_echo_channel_run.c \
-	docs/listings/effects_recall_container.c \
-	docs/listings/file_property.c \
-	docs/listings/file_read.c \
-	docs/listings/file_write.c \
-	docs/listings/linking_prerequisites.c \
-	docs/listings/linking_safe.c \
-	docs/listings/linking_unsafe.c \
-	docs/listings/pcm_info.c \
-	docs/listings/pull_thread.c \
-	docs/listings/recycling.c \
-	docs/listings/start_thread.c \
-	docs/listings/thread_application_context.c
+	docs/listings/add_pattern.c.in \
+	docs/listings/application_mutex.c.in \
+	docs/listings/audio_application_context.c.in \
+	docs/listings/audio.c.in \
+	docs/listings/complete_example.c.in \
+	docs/listings/config.c.in \
+	docs/listings/effects_echo_audio.c.in \
+	docs/listings/effects_echo_audio_run.c.in \
+	docs/listings/effects_echo_channel.c.in \
+	docs/listings/effects_echo_channel_run.c.in \
+	docs/listings/effects_recall_container.c.in \
+	docs/listings/file_property.c.in \
+	docs/listings/file_read.c.in \
+	docs/listings/file_write.c.in \
+	docs/listings/linking_prerequisites.c.in \
+	docs/listings/linking_safe.c.in \
+	docs/listings/linking_unsafe.c.in \
+	docs/listings/pcm_info.c.in \
+	docs/listings/pull_thread.c.in \
+	docs/listings/recycling.c.in \
+	docs/listings/start_thread.c.in \
+	docs/listings/thread_application_context.c.in
 
 devdocimages = \
 	$(top_srcdir)/docs/images/AGS_iterator.png \
