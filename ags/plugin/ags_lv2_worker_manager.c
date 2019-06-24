@@ -124,30 +124,17 @@ ags_lv2_worker_manager_pull_worker(AgsLv2WorkerManager *worker_manager)
     return(NULL);
   }
   
-  thread = ags_thread_pool_pull(worker_manager->thread_pool);
+  thread = ags_worker_thread_new();
   
-  g_atomic_int_or(&(thread->sync_flags),
-		  (AGS_THREAD_RESUME_INTERRUPTED));
-  
-  lv2_worker = ags_lv2_worker_new(thread);
-  
-  pthread_mutex_lock(AGS_RETURNABLE_THREAD(thread)->reset_mutex);
+  lv2_worker = g_object_new(AGS_TYPE_LV2_WORKER,
+			    "worker-thread", thread,
+			    NULL);
 
-  g_atomic_pointer_set(&(AGS_RETURNABLE_THREAD(thread)->safe_data),
-		       lv2_worker);
-  
-  ags_returnable_thread_connect_safe_run(AGS_RETURNABLE_THREAD(thread),
-					 ags_lv2_worker_safe_run);
-  g_signal_connect(thread, "interrupted",
-		   G_CALLBACK(ags_lv2_worker_interrupted_callback), lv2_worker);
-  
-  g_atomic_int_or(&(AGS_RETURNABLE_THREAD(thread)->flags),
-		  AGS_RETURNABLE_THREAD_IN_USE);
-  g_atomic_int_and(&(AGS_RETURNABLE_THREAD(thread)->flags),
-		   (~AGS_RETURNABLE_THREAD_RUN_ONCE));
-  
-  pthread_mutex_unlock(AGS_RETURNABLE_THREAD(thread)->reset_mutex);
+  g_signal_connect(thread, "do-poll",
+		   G_CALLBACK(ags_lv2_worker_do_poll), lv2_worker);
 
+  ags_thread_start(thread);
+  
   return(lv2_worker);
 }
 

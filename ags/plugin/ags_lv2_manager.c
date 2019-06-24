@@ -450,6 +450,12 @@ ags_lv2_manager_get_filenames(AgsLv2Manager *lv2_manager)
 
     pthread_mutex_unlock(base_plugin_mutex);
 
+    if(filename == NULL){
+      lv2_plugin = lv2_plugin->next;
+
+      continue;
+    }
+    
     if(filenames == NULL){
       filenames = (gchar **) malloc(2 * sizeof(gchar *));
       filenames[i] = filename;

@@ -1026,6 +1026,10 @@ ags_recall_lv2_load(AgsRecallLv2 *recall_lv2)
 	 if(!g_ascii_strcasecmp(plugin_descriptor->URI,
 				lv2_plugin->uri)){
 	   effect_index = i;
+
+	   g_object_set(lv2_plugin,
+			"effect-index", effect_index,
+			NULL);
 	   
 	   break;
 	 }

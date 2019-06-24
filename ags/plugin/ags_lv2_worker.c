@@ -54,6 +54,7 @@ enum{
   PROP_WORK_DATA,
   PROP_RESPONSE_DATA,
   PROP_RETURNABLE_THREAD,
+  PROP_WORKER_THREAD,
 };
 
 static gpointer ags_lv2_worker_parent_class = NULL;
@@ -199,6 +200,22 @@ ags_lv2_worker_class_init(AgsLv2WorkerClass *lv2_worker)
   g_object_class_install_property(gobject,
 				  PROP_RETURNABLE_THREAD,
 				  param_spec);
+
+  /**
+   * AgsLv2Worker:worker-thread:
+   *
+   * The assigned worker-thread.
+   * 
+   * Since: 2.2.0
+   */
+  param_spec = g_param_spec_object("worker-thread",
+				   i18n_pspec("worker thread"),
+				   i18n_pspec("The worker thread"),
+				   AGS_TYPE_WORKER_THREAD,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_WORKER_THREAD,
+				  param_spec);
 }
 
 void
@@ -242,6 +259,7 @@ ags_lv2_worker_init(AgsLv2Worker *lv2_worker)
   lv2_worker->response_data = NULL;
   
   lv2_worker->returnable_thread = NULL;
+  lv2_worker->worker_thread = NULL;
 }
 
 void
@@ -339,6 +357,33 @@ ags_lv2_worker_set_property(GObject *gobject,
       pthread_mutex_unlock(lv2_worker_mutex);
     }
     break;
+  case PROP_WORKER_THREAD:
+    {
+      AgsWorkerThread *worker_thread;
+
+      worker_thread = g_value_get_object(value);
+      
+      pthread_mutex_lock(lv2_worker_mutex);
+
+      if(lv2_worker->worker_thread == worker_thread){
+	pthread_mutex_unlock(lv2_worker_mutex);
+
+	return;
+      }
+
+      if(lv2_worker->worker_thread != NULL){
+	g_object_unref(lv2_worker->worker_thread);
+      }
+
+      if(worker_thread != NULL){
+	g_object_ref(worker_thread);
+      }
+
+      lv2_worker->worker_thread = worker_thread;
+      
+      pthread_mutex_unlock(lv2_worker_mutex);
+    }
+    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -412,6 +457,15 @@ ags_lv2_worker_get_property(GObject *gobject,
       pthread_mutex_unlock(lv2_worker_mutex);
     }
     break;
+  case PROP_WORKER_THREAD:
+    {
+      pthread_mutex_lock(lv2_worker_mutex);
+      
+      g_value_set_object(value, lv2_worker->worker_thread);
+
+      pthread_mutex_unlock(lv2_worker_mutex);
+    }
+    break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -431,6 +485,12 @@ ags_lv2_worker_dispose(GObject *gobject)
     lv2_worker->returnable_thread = NULL;
   }
   
+  if(lv2_worker->worker_thread != NULL){
+    g_object_unref(lv2_worker->worker_thread);
+
+    lv2_worker->worker_thread = NULL;
+  }
+
   /* call parent */
   G_OBJECT_CLASS(ags_lv2_worker_parent_class)->dispose(gobject);
 }
@@ -456,6 +516,10 @@ ags_lv2_worker_finalize(GObject *gobject)
     g_object_unref(lv2_worker->returnable_thread);
   }
   
+  if(lv2_worker->worker_thread != NULL){
+    g_object_unref(lv2_worker->worker_thread);
+  }
+
   /* call parent */
   G_OBJECT_CLASS(ags_lv2_worker_parent_class)->finalize(gobject);
 }
@@ -708,6 +772,118 @@ ags_lv2_worker_schedule_work(LV2_Worker_Schedule_Handle handle,
 }
 
 /**
+ * ags_lv2_worker_do_poll:
+ * @worker_thread: the #AgsWorkerThread
+ * @data: the data
+ * 
+ * Safe run callback.
+ * 
+ * Since: 2.2.0
+ */
+void
+ags_lv2_worker_do_poll(AgsWorkerThread *worker_thread, gpointer data)
+{
+  AgsLv2Worker *lv2_worker;
+
+  LV2_Handle handle;
+  
+  GList *response_data_start, *response_data;
+
+  guint work_size;
+  gpointer work_data;
+
+  LV2_Worker_Status (*work)(LV2_Handle instance,
+			    LV2_Worker_Respond_Function respond,
+			    LV2_Worker_Respond_Handle handle,
+			    uint32_t data_size,
+			    const void* data);
+  LV2_Worker_Status (*work_response)(LV2_Handle instance,
+				     uint32_t size,
+				     const void* body);
+  LV2_Worker_Status (*end_run)(LV2_Handle instance);
+  
+  pthread_mutex_t *lv2_worker_mutex;
+
+  lv2_worker = data;
+
+  /* get lv2 worker mutex */
+  pthread_mutex_lock(ags_lv2_worker_get_class_mutex());
+  
+  lv2_worker_mutex = lv2_worker->obj_mutex;
+  
+  pthread_mutex_unlock(ags_lv2_worker_get_class_mutex());
+
+  /* get some fields */
+  pthread_mutex_lock(lv2_worker_mutex);
+
+  handle = lv2_worker->handle;
+  
+  work_size = lv2_worker->work_size;
+  work_data = lv2_worker->work_data;
+
+  if(lv2_worker->worker_interface == NULL){
+    pthread_mutex_unlock(lv2_worker_mutex);
+    
+    return;    
+  }
+  
+  work = lv2_worker->worker_interface->work;
+  work_response = lv2_worker->worker_interface->work_response;
+  end_run = lv2_worker->worker_interface->end_run;
+  
+  pthread_mutex_unlock(lv2_worker_mutex);
+
+  /* work */
+  if(ags_lv2_worker_test_flags(lv2_worker, AGS_LV2_WORKER_RUN)){
+    work(handle,
+	 ags_lv2_worker_respond,
+	 lv2_worker,
+	 (uint32_t) (work_size),
+	 work_data);
+    
+    pthread_mutex_lock(lv2_worker_mutex);
+
+    lv2_worker->work_size = 0;
+    lv2_worker->work_data = NULL;
+
+    pthread_mutex_unlock(lv2_worker_mutex);
+    
+    /* response data */
+    pthread_mutex_lock(lv2_worker_mutex);
+
+    response_data =
+      response_data_start = g_list_copy(lv2_worker->response_data);
+
+    pthread_mutex_lock(lv2_worker_mutex);
+  
+    while(response_data != NULL){
+      work_response(handle,
+		    AGS_LV2_WORKER_RESPONSE_DATA(response_data->data)->data_size,
+		    AGS_LV2_WORKER_RESPONSE_DATA(response_data->data)->data);
+      
+      response_data = response_data->next;
+    }
+
+    /* free response data */
+    pthread_mutex_lock(lv2_worker_mutex);
+    
+    g_list_free_full(response_data_start,
+		     (GDestroyNotify) ags_lv2_worker_free_response_data);
+    
+    g_list_free(lv2_worker->response_data);
+    lv2_worker->response_data = NULL;
+    
+    pthread_mutex_unlock(lv2_worker_mutex);
+
+    /* end run */
+    end_run(handle);
+
+    /* reset */
+    ags_lv2_worker_unset_flags(lv2_worker, AGS_LV2_WORKER_RUN);
+  }
+}
+
+/**
  * ags_lv2_worker_safe_run:
  * @returnable_thread: the #AgsReturnableThread
  * @data: the data
@@ -757,6 +933,10 @@ ags_lv2_worker_safe_run(AgsReturnableThread *returnable_thread, gpointer data)
   work_size = lv2_worker->work_size;
   work_data = lv2_worker->work_data;
 
+  if(lv2_worker->worker_interface == NULL){
+    return;    
+  }
+  
   work = lv2_worker->worker_interface->work;
   work_response = lv2_worker->worker_interface->work_response;
   end_run = lv2_worker->worker_interface->end_run;

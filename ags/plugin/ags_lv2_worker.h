@@ -69,7 +69,8 @@ struct _AgsLv2Worker
   
   GList *response_data;
   
-  AgsThread *returnable_thread;
+  AgsThread *returnable_thread;  
+  AgsThread *worker_thread;
 };
 
 struct _AgsLv2WorkerClass
@@ -101,6 +102,8 @@ LV2_Worker_Status ags_lv2_worker_respond(LV2_Worker_Respond_Handle handle,
 LV2_Worker_Status ags_lv2_worker_schedule_work(LV2_Worker_Schedule_Handle handle,
 					       uint32_t size,
 					       const void* data);
+
+void ags_lv2_worker_do_poll(AgsWorkerThread *worker_thread, gpointer data);
 
 void ags_lv2_worker_safe_run(AgsReturnableThread *returnable_thread, gpointer data);
 void ags_lv2_worker_interrupted_callback(AgsThread *thread,

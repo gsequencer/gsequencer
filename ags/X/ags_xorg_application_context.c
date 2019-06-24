@@ -1985,9 +1985,6 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
 
   ags_lv2ui_manager_load_default_directory(lv2ui_manager);
   
-  /* fix cross-references in managers */
-  lv2_worker_manager->thread_pool = ((AgsXorgApplicationContext *) ags_application_context)->thread_pool;
-
   /* launch GUI */
   ags_log_add_message(log,
 		      "* Launch user interface");
@@ -2768,6 +2765,9 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
   
   /* AgsThreadPool */
   xorg_application_context->thread_pool = AGS_TASK_THREAD(application_context->task_thread)->thread_pool;
+
+  /* fix cross-references in managers */
+  lv2_worker_manager->thread_pool = ((AgsXorgApplicationContext *) ags_application_context)->thread_pool;
 
   /* launch */
   if(has_core_audio){

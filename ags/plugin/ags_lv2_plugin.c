@@ -907,10 +907,45 @@ ags_lv2_plugin_instantiate(AgsBasePlugin *base_plugin,
 
   plugin_so = base_plugin->plugin_so;
 
+  if(plugin_so == NULL){
+    LV2_Descriptor_Function lv2_descriptor;
+    LV2_Descriptor *plugin_descriptor;
+
+    guint i;
+    
+    g_message("open %s", base_plugin->filename);
+    
+    plugin_so = dlopen(base_plugin->filename,
+		       RTLD_NOW);
+    
+    g_object_set(lv2_plugin,
+		 "plugin-so", plugin_so,
+		 NULL);
+
+    lv2_descriptor = (LV2_Descriptor_Function) dlsym(plugin_so,
+						     "lv2_descriptor");
+
+    if(dlerror() == NULL && lv2_descriptor){
+      effect_index = 0;
+  
+      for(i = 0; (plugin_descriptor = lv2_descriptor((unsigned long) i)) != NULL; i++){
+	if(!g_ascii_strcasecmp(plugin_descriptor->URI,
+			       lv2_plugin->uri)){
+	  effect_index = i;
+
+	  g_object_set(lv2_plugin,
+		       "effect-index", effect_index,
+		       NULL);
+	   
+	  break;
+	}
+      }
+    }
+  }
+  
   feature = lv2_plugin->feature;
 
-  path = g_strndup(base_plugin->filename,
-		   rindex(base_plugin->filename, '/') - base_plugin->filename + 1);
+  path = g_path_get_dirname(base_plugin->filename);
 
   effect_index = base_plugin->effect_index;
   
@@ -1152,12 +1187,16 @@ ags_lv2_plugin_instantiate(AgsBasePlugin *base_plugin,
   
   /*  */  
   if(worker_handle != NULL){
+    if(plugin_descriptor->extension_data != NULL){
+      AGS_LV2_WORKER(worker_handle)->worker_interface = plugin_descriptor->extension_data("http://lv2plug.in/ns/ext/worker#interface");
+    }
+    
     g_object_set(worker_handle,
 		 "handle", lv2_handle[0],
 		 NULL);
   }
 
-  free(path);
+  g_free(path);
   
   return(lv2_handle);
 }

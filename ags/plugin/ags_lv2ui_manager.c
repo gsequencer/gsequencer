@@ -368,6 +368,12 @@ ags_lv2ui_manager_get_filenames(AgsLv2uiManager *lv2ui_manager)
 
     pthread_mutex_unlock(base_plugin_mutex);
 
+    if(ui_filename == NULL){
+      lv2ui_plugin = lv2ui_plugin->next;
+
+      continue;
+    }
+    
     if(filenames == NULL){
       filenames = (gchar **) malloc(2 * sizeof(gchar *));
       filenames[i] = ui_filename;
