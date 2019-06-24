@@ -93,7 +93,6 @@
 #include <ags/X/ags_navigation_callbacks.h>
 #include <ags/X/ags_notation_editor.h>
 #include <ags/X/ags_notation_editor_callbacks.h>
-#include <ags/X/ags_notation_sheet.h>
 #include <ags/X/ags_output_collection_editor.h>
 #include <ags/X/ags_output_collection_editor_callbacks.h>
 #include <ags/X/ags_output_editor.h>

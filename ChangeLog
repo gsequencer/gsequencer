@@ -1,3 +1,9 @@
+ags (2.2.2)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed AppStream metadata license
+	* fixed ags/test/X/libgsequencer.h removed include
+
 ags (2.2.1)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
