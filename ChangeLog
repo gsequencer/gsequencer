@@ -3,6 +3,7 @@ ags (2.2.3)
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* fixed check NULL of filename and effect in ags_lv2_manager_find_lv2_plugin()
 	* fixed check NULL of filename in ags_base_plugin_find_filename()
+	* improved LV2 RDF Turtle parser to handle prefixed names
 
 ags (2.2.2)
 

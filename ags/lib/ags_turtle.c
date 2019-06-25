@@ -2331,6 +2331,8 @@ ags_turtle_load(AgsTurtle *turtle,
       /* create node if complete prefix id */
       if(rdf_pname_ns_node != NULL &&
 	 rdf_iriref_node != NULL){
+	gchar *str;
+	
 	node = xmlNewNode(NULL,
 			  "rdf-prefix-id");
 	xmlAddChild(node,
@@ -2338,8 +2340,18 @@ ags_turtle_load(AgsTurtle *turtle,
 	xmlAddChild(node,
 		    rdf_iriref_node);
 
-	g_hash_table_insert(turtle->prefix_id,
-			    xmlNodeGetContent(rdf_iriref_node), xmlNodeGetContent(rdf_pname_ns_node));
+	str = xmlNodeGetContent(rdf_iriref_node);
+
+	if(str != NULL &&
+	   strlen(str) > 2){
+	  gchar *iriref;
+
+	  iriref = g_strndup(str + 1,
+			     strlen(str) - 2);
+	  
+	  g_hash_table_insert(turtle->prefix_id,
+			      iriref, g_strdup(xmlNodeGetContent(rdf_pname_ns_node)));
+	}
 	
 	*iter = look_ahead;
       }
