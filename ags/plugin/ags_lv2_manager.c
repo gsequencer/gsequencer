@@ -552,7 +552,9 @@ ags_lv2_manager_find_lv2_plugin(AgsLv2Manager *lv2_manager,
     /* check filename and effect */
     pthread_mutex_lock(base_plugin_mutex);
 
-    success = (!g_strcmp0(AGS_BASE_PLUGIN(lv2_plugin)->filename,
+    success = (AGS_BASE_PLUGIN(lv2_plugin)->filename != NULL &&
+	       AGS_BASE_PLUGIN(lv2_plugin)->effect != NULL &&
+	       !g_strcmp0(AGS_BASE_PLUGIN(lv2_plugin)->filename,
 			  filename) &&
 	       !g_strcmp0(AGS_BASE_PLUGIN(lv2_plugin)->effect,
 			  effect)) ? TRUE: FALSE;

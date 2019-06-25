@@ -1039,6 +1039,10 @@ ags_base_plugin_find_filename(GList *base_plugin, gchar *filename)
   
   pthread_mutex_t *base_plugin_mutex;
 
+  if(filename == NULL){
+    return(NULL);
+  }
+
   while(base_plugin != NULL){
     current_base_plugin = AGS_BASE_PLUGIN(base_plugin->data);
     
@@ -1052,7 +1056,8 @@ ags_base_plugin_find_filename(GList *base_plugin, gchar *filename)
     /* check filename */
     pthread_mutex_lock(base_plugin_mutex);
 
-    success = (!g_ascii_strcasecmp(current_base_plugin->filename,
+    success = (current_base_plugin->filename != NULL &&
+	       !g_ascii_strcasecmp(current_base_plugin->filename,
 				   filename)) ? TRUE: FALSE;
     
     pthread_mutex_unlock(base_plugin_mutex);
