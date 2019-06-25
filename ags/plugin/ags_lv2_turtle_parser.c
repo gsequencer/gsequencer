@@ -513,10 +513,6 @@ ags_lv2_turtle_parser_parse(AgsLv2TurtleParser *lv2_turtle_parser,
   
   pthread_mutex_t *lv2_turtle_parser_mutex;
 
-  auto gboolean ags_lv2_turtle_parser_parse_find_pname(gpointer key,
-						       gpointer value,
-						       gpointer user_data);
-  
   auto void ags_lv2_turtle_parser_parse_statement(AgsTurtle *current_turtle,
 						  xmlNode *node,
 						  AgsTurtle **turtle, guint n_turtle,
@@ -538,20 +534,6 @@ ags_lv2_turtle_parser_parse(AgsLv2TurtleParser *lv2_turtle_parser,
 								 gchar *subject_iriref,
 								 xmlNode *node,
 								 AgsTurtle **turtle, guint n_turtle);
-
-  gboolean ags_lv2_turtle_parser_parse_find_pname(gpointer key,
-						  gpointer value,
-						  gpointer user_data)
-  {
-    if(value != NULL &&
-       user_data != NULL &&
-       !g_ascii_strcasecmp(value,
-			   user_data)){
-      return(TRUE);
-    }
-
-    return(FALSE);
-  }
   
   void ags_lv2_turtle_parser_parse_statement(AgsTurtle *current_turtle,
 					     xmlNode *node,
@@ -638,6 +620,8 @@ ags_lv2_turtle_parser_parse(AgsLv2TurtleParser *lv2_turtle_parser,
 	      pname = xmlNodeGetContent((xmlNode *) xpath_result->data);
 
 	      for(turtle_iter = turtle; turtle_iter[0] != NULL; turtle_iter++){
+		GList *start_list, *list;
+
 		gchar *str;
 		gchar *prefix, *suffix;
 
@@ -649,10 +633,29 @@ ags_lv2_turtle_parser_parse(AgsLv2TurtleParser *lv2_turtle_parser,
 				     suffix - pname + 1);
 		  suffix = g_strdup(suffix + 1);
 		}
-		
-		str = g_hash_table_find(turtle_iter[0]->prefix_id,
-					(GHRFunc) ags_lv2_turtle_parser_parse_find_pname,
-					prefix);
+
+		list =
+		  start_list = g_hash_table_get_keys(turtle_iter[0]->prefix_id);
+
+		str = NULL;
+
+		while(list != NULL){
+		  gchar *value;		  
+
+		  value = g_hash_table_lookup(turtle_iter[0]->prefix_id,
+					      list->data);
+
+		  if(!g_ascii_strcasecmp(prefix,
+					 value)){
+		    str = list->data;
+
+		    break;
+		  }
+		  
+		  list = list->next;
+		}
+
+		g_list_free(start_list);
 
 		if(str != NULL &&
 		   suffix != NULL){		  
@@ -3065,17 +3068,52 @@ ags_lv2_turtle_parser_parse(AgsLv2TurtleParser *lv2_turtle_parser,
 	    applies_to_iriref = NULL;
 	    
 	    for(turtle_iter = turtle; turtle_iter[0] != NULL; turtle_iter++){
+	      GList *start_list, *list;
+
 	      gchar *str;
+	      gchar *prefix, *suffix;
 	    
-	      str = g_hash_table_find(turtle_iter[0]->prefix_id,
-				      (GHRFunc) ags_lv2_turtle_parser_parse_find_pname,
-				      applies_to_pname);
+	      prefix = NULL;
+	      suffix = strchr(applies_to_pname, ':');
+
+	      if(suffix != NULL){
+		prefix = g_strndup(applies_to_pname,
+				   suffix - applies_to_pname + 1);
+		suffix = g_strdup(suffix + 1);
+	      }
+	      
+	      list =
+		start_list = g_hash_table_get_keys(turtle_iter[0]->prefix_id);
+
+	      str = NULL;
+
+	      while(list != NULL){
+		gchar *value;		  
+
+		value = g_hash_table_lookup(turtle_iter[0]->prefix_id,
+					    list->data);
+
+		if(!g_ascii_strcasecmp(prefix,
+				       value)){
+		  str = list->data;
+
+		  break;
+		}
+		  
+		list = list->next;
+	      }
+
+	      g_list_free(start_list);
 
 	      if(str != NULL &&
-		 strlen(str) > 2){
-		applies_to_iriref = g_strndup(str + 1,
-					      strlen(str) - 2);
+		 suffix != NULL){
+		applies_to_iriref = g_strdup_printf("%s%s",
+						    str,
+						    suffix);
 	      }
+
+	      g_free(prefix);
+	      g_free(suffix);
 
 	      if(turtle_iter[0] == current_turtle){
 		break;
@@ -3563,7 +3601,6 @@ ags_lv2_turtle_parser_parse(AgsLv2TurtleParser *lv2_turtle_parser,
 	g_object_set(plugin->data,
 		     "preset", preset->data,
 		     NULL);
-      
       }else{
 	g_warning("plugin not found %s", applies_to);
       }

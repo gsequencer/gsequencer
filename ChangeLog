@@ -1,3 +1,8 @@
+ags (2.2.4)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved LV2 RDF Turtle parser to handle applies to
+
 ags (2.2.3)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
