@@ -730,6 +730,7 @@ ags_lv2_turtle_parser_parse(AgsLv2TurtleParser *lv2_turtle_parser,
     gchar *prefix_id_lv2p;
     gchar *prefix_id_lv2_worker;
     gchar *prefix_id_lv2_atom;
+    gchar *prefix_id_lv2_midi;
     gchar *xpath;
 
     gboolean is_plugin, is_ui_plugin;
@@ -751,6 +752,7 @@ ags_lv2_turtle_parser_parse(AgsLv2TurtleParser *lv2_turtle_parser,
     prefix_id_lv2p = NULL;
     prefix_id_lv2_worker = NULL;
     prefix_id_lv2_atom = NULL;
+    prefix_id_lv2_midi = NULL;
     
     for(turtle_iter = turtle; turtle_iter[0] != NULL; turtle_iter++){
       gchar *str;
@@ -798,6 +800,11 @@ ags_lv2_turtle_parser_parse(AgsLv2TurtleParser *lv2_turtle_parser,
       if((str = g_hash_table_lookup(turtle_iter[0]->prefix_id,
 				    "http://lv2plug.in/ns/ext/atom#")) != NULL){
 	prefix_id_lv2_atom = str;
+      }
+
+      if((str = g_hash_table_lookup(turtle_iter[0]->prefix_id,
+				    "http://lv2plug.in/ns/ext/midi#")) != NULL){
+	prefix_id_lv2_midi = str;
       }
 
       if(turtle_iter[0] == current_turtle){
@@ -1756,7 +1763,8 @@ ags_lv2_turtle_parser_parse(AgsLv2TurtleParser *lv2_turtle_parser,
 		  gchar *port_predicate_xpath;
 		  gchar *property_xpath;
 	      
-		  gboolean is_audio_port, is_atom_port, is_event_port, is_control_port;
+		  gboolean is_audio_port, is_control_port;
+		  gboolean is_atom_port, is_event_port;
 		  gboolean is_output_port, is_input_port;
 		  guint scale_point_count;
 		  gboolean scale_point_has_pname;		
@@ -1771,9 +1779,10 @@ ags_lv2_turtle_parser_parse(AgsLv2TurtleParser *lv2_turtle_parser,
 			       NULL);
 
 		  is_audio_port = FALSE;
+		  is_control_port = FALSE;
+
 		  is_atom_port = FALSE;
 		  is_event_port = FALSE;
-		  is_control_port = FALSE;
 
 		  is_output_port = FALSE;
 		  is_input_port = FALSE;
@@ -1844,6 +1853,39 @@ ags_lv2_turtle_parser_parse(AgsLv2TurtleParser *lv2_turtle_parser,
 
 		    g_list_free(start_port_type_xpath_result);
 
+		    /* check control port */
+		    port_type_xpath = "./rdf-object/rdf-iri/rdf-iriref[text() = '<http://lv2plug.in/ns/lv2core#controlport>']";
+		
+		    port_type_xpath_result =
+		      start_port_type_xpath_result = ags_turtle_find_xpath_with_context_node(current_turtle,
+											     port_type_xpath,
+											     (xmlNode *) node_port_type);
+		
+		    if(start_port_type_xpath_result != NULL){
+		      is_control_port = TRUE;
+		    }else if(prefix_id_lv2_core != NULL){
+		      gchar *prefix_id;
+
+		      prefix_id = prefix_id_lv2_core;
+	
+		      port_type_xpath = g_strdup_printf("./rdf-object/rdf-iri/rdf-prefixed-name/rdf-pname-ln[text() = '%s%s']",
+							prefix_id,
+							"controlport");
+
+		      port_type_xpath_result =
+			start_port_type_xpath_result = ags_turtle_find_xpath_with_context_node(current_turtle,
+											       port_type_xpath,
+											       (xmlNode *) node_port_type);
+
+		      g_free(port_type_xpath);
+
+		      if(start_port_type_xpath_result != NULL){
+			is_control_port = TRUE;
+		      }
+		    }		
+
+		    g_list_free(start_port_type_xpath_result);
+
 		    /* check atom port */
 		    port_type_xpath = "./rdf-object/rdf-iri/rdf-iriref[text() = '<http://lv2plug.in/ns/ext/atom#atomport>']";
 		
@@ -1905,39 +1947,6 @@ ags_lv2_turtle_parser_parse(AgsLv2TurtleParser *lv2_turtle_parser,
 
 		      if(start_port_type_xpath_result != NULL){
 			is_event_port = TRUE;
-		      }
-		    }		
-
-		    g_list_free(start_port_type_xpath_result);
-
-		    /* check control port */
-		    port_type_xpath = "./rdf-object/rdf-iri/rdf-iriref[text() = '<http://lv2plug.in/ns/lv2core#controlport>']";
-		
-		    port_type_xpath_result =
-		      start_port_type_xpath_result = ags_turtle_find_xpath_with_context_node(current_turtle,
-											     port_type_xpath,
-											     (xmlNode *) node_port_type);
-		
-		    if(start_port_type_xpath_result != NULL){
-		      is_control_port = TRUE;
-		    }else if(prefix_id_lv2_core != NULL){
-		      gchar *prefix_id;
-
-		      prefix_id = prefix_id_lv2_core;
-	
-		      port_type_xpath = g_strdup_printf("./rdf-object/rdf-iri/rdf-prefixed-name/rdf-pname-ln[text() = '%s%s']",
-							prefix_id,
-							"controlport");
-
-		      port_type_xpath_result =
-			start_port_type_xpath_result = ags_turtle_find_xpath_with_context_node(current_turtle,
-											       port_type_xpath,
-											       (xmlNode *) node_port_type);
-
-		      g_free(port_type_xpath);
-
-		      if(start_port_type_xpath_result != NULL){
-			is_control_port = TRUE;
 		      }
 		    }		
 

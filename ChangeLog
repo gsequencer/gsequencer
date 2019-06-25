@@ -1,3 +1,8 @@
+ags (2.2.5)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed port index for ags-play-lv2 recall
+
 ags (2.2.4)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

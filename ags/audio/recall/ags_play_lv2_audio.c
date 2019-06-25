@@ -647,16 +647,22 @@ ags_play_lv2_audio_set_ports(AgsPlugin *plugin, GList *port)
 #endif
 	}
       }else if(ags_plugin_port_test_flags((AgsPluginPort *) plugin_port->data, AGS_PLUGIN_PORT_AUDIO)){
+	guint port_index;
+
+	g_object_get(plugin_port->data,
+		     "port-index", &port_index,
+		     NULL);
+
 	if(ags_plugin_port_test_flags((AgsPluginPort *) plugin_port->data, AGS_PLUGIN_PORT_INPUT)){
 	  pthread_mutex_lock(recall_mutex);
 
 	  if(play_lv2_audio->input_port == NULL){
 	    play_lv2_audio->input_port = (uint32_t *) malloc(sizeof(uint32_t));
-	    play_lv2_audio->input_port[0] = i;
+	    play_lv2_audio->input_port[0] = port_index;
 	  }else{
 	    play_lv2_audio->input_port = (uint32_t *) realloc(play_lv2_audio->input_port,
 							      (play_lv2_audio->input_lines + 1) * sizeof(uint32_t));
-	    play_lv2_audio->input_port[play_lv2_audio->input_lines] = i;
+	    play_lv2_audio->input_port[play_lv2_audio->input_lines] = port_index;
 	  }
 
 	  play_lv2_audio->input_lines += 1;
@@ -667,11 +673,11 @@ ags_play_lv2_audio_set_ports(AgsPlugin *plugin, GList *port)
 
 	  if(play_lv2_audio->output_port == NULL){
 	    play_lv2_audio->output_port = (uint32_t *) malloc(sizeof(uint32_t));
-	    play_lv2_audio->output_port[0] = i;
+	    play_lv2_audio->output_port[0] = port_index;
 	  }else{
 	    play_lv2_audio->output_port = (uint32_t *) realloc(play_lv2_audio->output_port,
 							       (play_lv2_audio->output_lines + 1) * sizeof(uint32_t));
-	    play_lv2_audio->output_port[play_lv2_audio->output_lines] = i;
+	    play_lv2_audio->output_port[play_lv2_audio->output_lines] = port_index;
 	  }
 
 	  play_lv2_audio->output_lines += 1;
