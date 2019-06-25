@@ -1,7 +1,8 @@
 ags (2.2.5)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
-	* fixed port index for ags-play-lv2 recall
+	* fixed port index of audio port for ags-play-lv2 recall
+	* fixed load of plugin for ags-play-lv2 recall
 
 ags (2.2.4)
 

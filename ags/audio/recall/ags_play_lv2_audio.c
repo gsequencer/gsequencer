@@ -917,7 +917,8 @@ ags_play_lv2_audio_load(AgsPlayLv2Audio *play_lv2_audio)
 
   gchar *filename, *effect;
 
-  unsigned long effect_index;
+  guint effect_index;
+  guint i;
 
   void *plugin_so;
   LV2_Descriptor_Function lv2_descriptor;
@@ -948,24 +949,49 @@ ags_play_lv2_audio_load(AgsPlayLv2Audio *play_lv2_audio)
   lv2_plugin = ags_lv2_manager_find_lv2_plugin(ags_lv2_manager_get_instance(),
 					       filename, effect);
 
-  /* get some fields */
-  g_object_get(play_lv2_audio,
-	       "effect-index", &effect_index,
-	       NULL);
-
-  play_lv2_audio->plugin = lv2_plugin;
-  
   g_object_get(lv2_plugin,
 	       "plugin-so", &plugin_so,
 	       NULL);
+
+  if(plugin_so == NULL){
+    g_message("open %s", filename);
+    
+    plugin_so = dlopen(filename,
+		       RTLD_NOW);
+    
+    g_object_set(lv2_plugin,
+		 "plugin-so", plugin_so,
+		 NULL);
+  }
+
+  /* get some fields */
+  play_lv2_audio->plugin = lv2_plugin;
   
   if(plugin_so != NULL){
     lv2_descriptor = (LV2_Descriptor_Function) dlsym(plugin_so,
 						     "lv2_descriptor");
 
     if(dlerror() == NULL && lv2_descriptor){
-      play_lv2_audio->plugin_descriptor = 
-	plugin_descriptor = lv2_descriptor(effect_index);
+      effect_index = 0;
+  
+      for(i = 0; (plugin_descriptor = lv2_descriptor((unsigned long) i)) != NULL; i++){
+	 if(!g_ascii_strcasecmp(plugin_descriptor->URI,
+				lv2_plugin->uri)){
+	   effect_index = i;
+
+	   g_object_set(lv2_plugin,
+			"effect-index", effect_index,
+			NULL);
+	   
+	   break;
+	 }
+      }
+
+      pthread_mutex_lock(recall_mutex);
+
+      play_lv2_audio->plugin_descriptor = plugin_descriptor;
+
+      pthread_mutex_unlock(recall_mutex);
 
       if(ags_lv2_plugin_test_flags(lv2_plugin, AGS_LV2_PLUGIN_NEEDS_WORKER)){
 	ags_play_lv2_audio_set_flags(play_lv2_audio, AGS_PLAY_LV2_AUDIO_HAS_WORKER);
@@ -1154,16 +1180,22 @@ ags_play_lv2_audio_load_ports(AgsPlayLv2Audio *play_lv2_audio)
 	start_port = g_list_prepend(start_port,
 				    current);
       }else if(ags_plugin_port_test_flags((AgsPluginPort *) plugin_port->data, AGS_PLUGIN_PORT_AUDIO)){
+	guint port_index;
+
+	g_object_get(plugin_port->data,
+		     "port-index", &port_index,
+		     NULL);
+
 	if(ags_plugin_port_test_flags((AgsPluginPort *) plugin_port->data, AGS_PLUGIN_PORT_INPUT)){
 	  pthread_mutex_lock(recall_mutex);
 
 	  if(play_lv2_audio->input_port == NULL){
 	    play_lv2_audio->input_port = (uint32_t *) malloc(sizeof(uint32_t));
-	    play_lv2_audio->input_port[0] = AGS_PLUGIN_PORT(plugin_port->data)->port_index;
+	    play_lv2_audio->input_port[0] = port_index;
 	  }else{
 	    play_lv2_audio->input_port = (uint32_t *) realloc(play_lv2_audio->input_port,
 							      (play_lv2_audio->input_lines + 1) * sizeof(uint32_t));
-	    play_lv2_audio->input_port[play_lv2_audio->input_lines] = AGS_PLUGIN_PORT(plugin_port->data)->port_index;
+	    play_lv2_audio->input_port[play_lv2_audio->input_lines] = port_index;
 	  }
 	  
 	  play_lv2_audio->input_lines += 1;
@@ -1174,11 +1206,11 @@ ags_play_lv2_audio_load_ports(AgsPlayLv2Audio *play_lv2_audio)
 
 	  if(play_lv2_audio->output_port == NULL){
 	    play_lv2_audio->output_port = (uint32_t *) malloc(sizeof(uint32_t));
-	    play_lv2_audio->output_port[0] = AGS_PLUGIN_PORT(plugin_port->data)->port_index;
+	    play_lv2_audio->output_port[0] = port_index;
 	  }else{
 	    play_lv2_audio->output_port = (uint32_t *) realloc(play_lv2_audio->output_port,
 							       (play_lv2_audio->output_lines + 1) * sizeof(uint32_t));
-	    play_lv2_audio->output_port[play_lv2_audio->output_lines] = AGS_PLUGIN_PORT(plugin_port->data)->port_index;
+	    play_lv2_audio->output_port[play_lv2_audio->output_lines] = port_index;
 	  }
 	  
 	  play_lv2_audio->output_lines += 1;
