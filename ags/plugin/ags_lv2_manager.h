@@ -66,6 +66,8 @@ GType ags_lv2_manager_get_type(void);
 
 pthread_mutex_t* ags_lv2_manager_get_class_mutex();
 
+gboolean ags_lv2_manager_global_get_preseve_turtle();
+
 gchar** ags_lv2_manager_get_default_path();
 void ags_lv2_manager_set_default_path(gchar** default_path);
 

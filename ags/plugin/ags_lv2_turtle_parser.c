@@ -1092,12 +1092,17 @@ ags_lv2_turtle_parser_parse(AgsLv2TurtleParser *lv2_turtle_parser,
 #endif
 	
 	lv2_plugin = g_object_new(AGS_TYPE_LV2_PLUGIN,
-				  "manifest", turtle[0],
-				  "turtle", turtle[n_turtle - 1],
 				  "uuid", current_uuid,
 				  "filename", filename,
 				  "uri", subject_iriref,
 				  NULL);
+
+	if(ags_lv2_manager_global_get_preserve_turtle()){
+	  g_object_set(lv2_plugin,
+		       "manifest", turtle[0],
+		       "turtle", turtle[n_turtle - 1],
+		       NULL);
+	}
 	
 	lv2_manager->lv2_plugin = g_list_prepend(lv2_manager->lv2_plugin,
 						 lv2_plugin);
@@ -1217,8 +1222,6 @@ ags_lv2_turtle_parser_parse(AgsLv2TurtleParser *lv2_turtle_parser,
 #endif
 	
 	lv2ui_plugin = g_object_new(AGS_TYPE_LV2UI_PLUGIN,
-				    "manifest", turtle[0],
-				    "gui-turtle", turtle[n_turtle - 1],
 				    "uuid", current_uuid,
 				    "ui-filename", filename,
 				    "gui-uri", subject_iriref,
@@ -1226,6 +1229,13 @@ ags_lv2_turtle_parser_parse(AgsLv2TurtleParser *lv2_turtle_parser,
 	lv2ui_manager->lv2ui_plugin = g_list_prepend(lv2ui_manager->lv2ui_plugin,
 						     lv2ui_plugin);
 
+	if(ags_lv2_manager_global_get_preserve_turtle()){
+	  g_object_set(lv2ui_plugin,
+		       "manifest", turtle[0],
+		       "gui-turtle", turtle[n_turtle - 1],
+		       NULL);
+	}
+	
 	g_object_set(lv2_turtle_parser,
 		     "ui-plugin", lv2ui_plugin,
 		     NULL);
@@ -1250,13 +1260,19 @@ ags_lv2_turtle_parser_parse(AgsLv2TurtleParser *lv2_turtle_parser,
 #endif
 	
 	lv2_preset = g_object_new(AGS_TYPE_LV2_PRESET,
-				  "manifest", turtle[0],
-				  "turtle", turtle[n_turtle - 1],
 				  "uri", subject_iriref,
 				  NULL);
 	lv2_preset_manager->lv2_preset = g_list_prepend(lv2_preset_manager->lv2_preset,
 							lv2_preset);
 
+
+	if(ags_lv2_manager_global_get_preserve_turtle()){
+	  g_object_set(lv2_preset,
+		       "manifest", turtle[0],
+		       "turtle", turtle[n_turtle - 1],
+		       NULL);
+	}
+	
 	g_object_set(lv2_turtle_parser,
 		     "preset", lv2_preset,
 		     NULL);
@@ -3455,12 +3471,19 @@ ags_lv2_turtle_parser_parse(AgsLv2TurtleParser *lv2_turtle_parser,
 	    g_message("new turtle - %s", filename);
 	      
 	    next = ags_turtle_new(filename);
+	    g_object_set(lv2_turtle_parser,
+			 "turtle", next,
+			 NULL);
+
 	    ags_turtle_load(next,
 			    NULL);
+	    
 	    ags_turtle_manager_add(ags_turtle_manager_get_instance(),
 				   (GObject *) next);
 
 	    skip = FALSE;
+	    
+	    g_object_unref(next);
 	  }
 	    
 	  if(next != NULL &&
@@ -3479,6 +3502,9 @@ ags_lv2_turtle_parser_parse(AgsLv2TurtleParser *lv2_turtle_parser,
 
 	    free(next_turtle);
 	  }
+
+	  g_free(path);
+	  g_free(filename);
 	}
       }
 

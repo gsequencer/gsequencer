@@ -70,6 +70,8 @@ static pthread_mutex_t ags_lv2_manager_class_mutex = PTHREAD_MUTEX_INITIALIZER;
 AgsLv2Manager *ags_lv2_manager = NULL;
 gchar **ags_lv2_default_path = NULL;
 
+static gboolean ags_lv2_manager_global_preserve_turtle = TRUE;
+
 GType
 ags_lv2_manager_get_type (void)
 {
@@ -358,6 +360,29 @@ pthread_mutex_t*
 ags_lv2_manager_get_class_mutex()
 {
   return(&ags_lv2_manager_class_mutex);
+}
+
+/**
+ * ags_lv2_manager_global_get_preserve_turtle:
+ * 
+ * Get global config value preserve turtle.
+ *
+ * Returns: if %TRUE preserve turtles, else not
+ * 
+ * Since: 2.2.6
+ */
+gboolean
+ags_lv2_manager_global_get_preserve_turtle()
+{
+  gboolean preserve_turtle;
+
+  pthread_mutex_lock(ags_lv2_manager_get_class_mutex());
+
+  preserve_turtle = ags_lv2_manager_global_preserve_turtle;
+
+  pthread_mutex_unlock(ags_lv2_manager_get_class_mutex());
+  
+  return(preserve_turtle);
 }
 
 /**
@@ -675,8 +700,12 @@ ags_lv2_manager_load_preset(AgsLv2Manager *lv2_manager,
 void
 ags_lv2_manager_load_default_directory(AgsLv2Manager *lv2_manager)
 {
+  AgsTurtleManager *turtle_manager;
+  
   GDir *dir;
 
+  GList *start_list, *list;
+  
   gchar **lv2_path;
   gchar *path, *plugin_path;
   gchar *str;
@@ -686,6 +715,8 @@ ags_lv2_manager_load_default_directory(AgsLv2Manager *lv2_manager)
   if(!AGS_IS_LV2_MANAGER(lv2_manager)){
     return;
   }
+
+  turtle_manager = ags_turtle_manager_get_instance();
   
   lv2_path = ags_lv2_default_path;
 
@@ -742,6 +773,8 @@ ags_lv2_manager_load_default_directory(AgsLv2Manager *lv2_manager)
 
 	if(!g_file_test(manifest_filename,
 			G_FILE_TEST_EXISTS)){
+	  g_free(manifest_filename);
+	  
 	  continue;
 	}
 	
@@ -750,7 +783,7 @@ ags_lv2_manager_load_default_directory(AgsLv2Manager *lv2_manager)
 	manifest = ags_turtle_new(manifest_filename);
 	ags_turtle_load(manifest,
 			NULL);
-	ags_turtle_manager_add(ags_turtle_manager_get_instance(),
+	ags_turtle_manager_add(turtle_manager,
 			       (GObject *) manifest);
 
 	lv2_turtle_parser = ags_lv2_turtle_parser_new(manifest);
@@ -763,6 +796,34 @@ ags_lv2_manager_load_default_directory(AgsLv2Manager *lv2_manager)
 	
 	ags_lv2_turtle_parser_parse(lv2_turtle_parser,
 				    turtle, n_turtle);
+
+	if(!ags_lv2_manager_global_get_preserve_turtle()){
+	  g_object_get(lv2_turtle_parser,
+		       "turtle", &start_list,
+		       NULL);
+
+	  list = start_list;
+
+	  while(list != NULL){
+	    turtle_manager->turtle = g_list_remove(turtle_manager->turtle,
+						   list->data);
+	    g_object_unref(list->data);
+
+	    list = list->next;
+	  }
+
+	  g_list_free_full(start_list,
+			   g_object_unref);
+	}
+	
+	g_object_run_dispose(lv2_turtle_parser);
+	g_object_unref(lv2_turtle_parser);
+	
+	g_object_unref(manifest);
+
+	g_free(manifest_filename);
+	
+	free(turtle);
       }
     }
 
