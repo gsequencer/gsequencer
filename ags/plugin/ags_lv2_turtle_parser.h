@@ -60,6 +60,9 @@ GType ags_lv2_turtle_parser_get_type(void);
 
 pthread_mutex_t* ags_lv2_turtle_parser_get_class_mutex();
 
+void ags_lv2_turtle_parser_parse_names(AgsLv2TurtleParser *lv2_turtle_parser,
+				       AgsTurtle **turtle, guint n_turtle);
+
 void ags_lv2_turtle_parser_parse(AgsLv2TurtleParser *lv2_turtle_parser,
 				 AgsTurtle **turtle, guint n_turtle);
 

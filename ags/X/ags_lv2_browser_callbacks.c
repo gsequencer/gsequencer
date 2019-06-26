@@ -144,6 +144,38 @@ ags_lv2_browser_plugin_uri_callback(GtkComboBoxText *combo_box,
 					       gtk_combo_box_text_get_active_text(filename),
 					       gtk_combo_box_text_get_active_text(effect));
 
+  if(lv2_plugin != NULL &&
+     AGS_BASE_PLUGIN(lv2_plugin)->plugin_port == NULL){
+    AgsLv2TurtleParser *lv2_turtle_parser;
+	
+    AgsTurtle *manifest;
+    AgsTurtle **turtle;
+	
+    guint n_turtle;
+
+    g_object_get(lv2_plugin,
+		 "manifest", &manifest,
+		 NULL);
+
+    lv2_turtle_parser = ags_lv2_turtle_parser_new(manifest);
+
+    n_turtle = 1;
+    turtle = (AgsTurtle **) malloc(2 * sizeof(AgsTurtle *));
+
+    turtle[0] = manifest;
+    turtle[1] = NULL;
+	
+    ags_lv2_turtle_parser_parse(lv2_turtle_parser,
+				turtle, n_turtle);
+    
+    g_object_run_dispose(lv2_turtle_parser);
+    g_object_unref(lv2_turtle_parser);
+	
+    g_object_unref(manifest);
+	
+    free(turtle);
+  }
+
   if(lv2_plugin != NULL){
     GList *start_plugin_port, *plugin_port;
     

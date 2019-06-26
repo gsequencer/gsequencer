@@ -70,6 +70,7 @@ static pthread_mutex_t ags_lv2_manager_class_mutex = PTHREAD_MUTEX_INITIALIZER;
 AgsLv2Manager *ags_lv2_manager = NULL;
 gchar **ags_lv2_default_path = NULL;
 
+static gboolean ags_lv2_manager_global_parse_names = TRUE;
 static gboolean ags_lv2_manager_global_preserve_turtle = TRUE;
 
 GType
@@ -360,6 +361,29 @@ pthread_mutex_t*
 ags_lv2_manager_get_class_mutex()
 {
   return(&ags_lv2_manager_class_mutex);
+}
+
+/**
+ * ags_lv2_manager_global_get_parse_names:
+ * 
+ * Get global config value parse names.
+ *
+ * Returns: if %TRUE parse only names, else not
+ * 
+ * Since: 2.2.6
+ */
+gboolean
+ags_lv2_manager_global_get_parse_names()
+{
+  gboolean parse_names;
+
+  pthread_mutex_lock(ags_lv2_manager_get_class_mutex());
+
+  parse_names = ags_lv2_manager_global_parse_names;
+
+  pthread_mutex_unlock(ags_lv2_manager_get_class_mutex());
+  
+  return(parse_names);
 }
 
 /**
@@ -794,10 +818,10 @@ ags_lv2_manager_load_default_directory(AgsLv2Manager *lv2_manager)
 	turtle[0] = manifest;
 	turtle[1] = NULL;
 	
-	ags_lv2_turtle_parser_parse(lv2_turtle_parser,
-				    turtle, n_turtle);
-
 	if(!ags_lv2_manager_global_get_preserve_turtle()){
+	  ags_lv2_turtle_parser_parse(lv2_turtle_parser,
+				      turtle, n_turtle);
+
 	  g_object_get(lv2_turtle_parser,
 		       "turtle", &start_list,
 		       NULL);
@@ -814,6 +838,14 @@ ags_lv2_manager_load_default_directory(AgsLv2Manager *lv2_manager)
 
 	  g_list_free_full(start_list,
 			   g_object_unref);
+	}else{
+	  if(!ags_lv2_manager_global_get_parse_names()){
+	    ags_lv2_turtle_parser_parse(lv2_turtle_parser,
+					turtle, n_turtle);
+	  }else{
+	    ags_lv2_turtle_parser_parse_names(lv2_turtle_parser,
+					      turtle, n_turtle);
+	  }
 	}
 	
 	g_object_run_dispose(lv2_turtle_parser);

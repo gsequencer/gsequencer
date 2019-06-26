@@ -2066,7 +2066,39 @@ ags_simple_file_read_machine(AgsSimpleFile *simple_file, xmlNode *node, AgsMachi
     
     lv2_plugin = ags_lv2_manager_find_lv2_plugin(ags_lv2_manager_get_instance(),
 						 filename, effect);
-  
+
+    if(lv2_plugin != NULL &&
+       AGS_BASE_PLUGIN(lv2_plugin)->plugin_port == NULL){
+      AgsLv2TurtleParser *lv2_turtle_parser;
+	
+      AgsTurtle *manifest;
+      AgsTurtle **turtle;
+
+      guint n_turtle;
+
+      g_object_get(lv2_plugin,
+		   "manifest", &manifest,
+		   NULL);
+
+      lv2_turtle_parser = ags_lv2_turtle_parser_new(manifest);
+
+      n_turtle = 1;
+      turtle = (AgsTurtle **) malloc(2 * sizeof(AgsTurtle *));
+
+      turtle[0] = manifest;
+      turtle[1] = NULL;
+	
+      ags_lv2_turtle_parser_parse(lv2_turtle_parser,
+				  turtle, n_turtle);
+    
+      g_object_run_dispose(lv2_turtle_parser);
+      g_object_unref(lv2_turtle_parser);
+	
+      g_object_unref(manifest);
+	
+      free(turtle);
+    }
+      
     if(lv2_plugin != NULL &&
        (AGS_LV2_PLUGIN_IS_SYNTHESIZER & (lv2_plugin->flags)) != 0){
       
@@ -2104,6 +2136,38 @@ ags_simple_file_read_machine(AgsSimpleFile *simple_file, xmlNode *node, AgsMachi
     
     lv2_plugin = ags_lv2_manager_find_lv2_plugin(ags_lv2_manager_get_instance(),
 						 filename, effect);
+
+    if(lv2_plugin != NULL &&
+       AGS_BASE_PLUGIN(lv2_plugin)->plugin_port == NULL){
+      AgsLv2TurtleParser *lv2_turtle_parser;
+	
+      AgsTurtle *manifest;
+      AgsTurtle **turtle;
+
+      guint n_turtle;
+
+      g_object_get(lv2_plugin,
+		   "manifest", &manifest,
+		   NULL);
+
+      lv2_turtle_parser = ags_lv2_turtle_parser_new(manifest);
+
+      n_turtle = 1;
+      turtle = (AgsTurtle **) malloc(2 * sizeof(AgsTurtle *));
+
+      turtle[0] = manifest;
+      turtle[1] = NULL;
+	
+      ags_lv2_turtle_parser_parse(lv2_turtle_parser,
+				  turtle, n_turtle);
+    
+      g_object_run_dispose(lv2_turtle_parser);
+      g_object_unref(lv2_turtle_parser);
+	
+      g_object_unref(manifest);
+	
+      free(turtle);
+    }
   
     if(lv2_plugin != NULL &&
        (AGS_LV2_PLUGIN_IS_SYNTHESIZER & (lv2_plugin->flags)) != 0){

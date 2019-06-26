@@ -18,6 +18,7 @@
 
 ags_lv2_turtle_parser_get_type
 ags_lv2_turtle_parser_get_class_mutex
+ags_lv2_turtle_parser_parse_names
 ags_lv2_turtle_parser_parse
 ags_lv2_turtle_parser_new
 ags_lv2_plugin_get_type
@@ -107,6 +108,8 @@ ags_ladspa_conversion_unset_flags
 ags_ladspa_conversion_new
 ags_lv2_manager_get_type
 ags_lv2_manager_get_class_mutex
+ags_lv2_manager_global_get_parse_names
+ags_lv2_manager_global_get_preserve_turtle
 ags_lv2_manager_get_default_path
 ags_lv2_manager_set_default_path
 ags_lv2_manager_get_filenames
@@ -862,6 +865,9 @@ ags_automation_find_channel_type_with_control_name
 ags_automation_find_specifier_with_type_and_line
 ags_automation_get_value
 ags_automation_new
+ags_note_cursor_get_type
+ags_note_cursor_get_class_mutex
+ags_note_cursor_new
 ags_jack_client_get_type
 ags_jack_client_get_class_mutex
 ags_jack_client_test_flags
@@ -1415,6 +1421,9 @@ ags_recall_container_get_recall_channel
 ags_recall_container_get_recall_channel_run
 ags_recall_container_find
 ags_recall_container_new
+ags_acceleration_cursor_get_type
+ags_acceleration_cursor_get_class_mutex
+ags_acceleration_cursor_new
 ags_audio_application_context_get_type
 ags_audio_application_context_new
 ags_track_get_type
@@ -1425,6 +1434,9 @@ ags_track_unset_flags
 ags_track_sort_func
 ags_track_duplicate
 ags_track_new
+ags_track_cursor_get_type
+ags_track_cursor_get_class_mutex
+ags_track_cursor_new
 ags_wave_get_type
 ags_wave_get_class_mutex
 ags_wave_test_flags
@@ -1450,6 +1462,9 @@ ags_wave_cut_selection
 ags_wave_insert_from_clipboard
 ags_wave_insert_from_clipboard_extended
 ags_wave_new
+ags_buffer_cursor_get_type
+ags_buffer_cursor_get_class_mutex
+ags_buffer_cursor_new
 ags_playback_get_type
 ags_playback_get_class_mutex
 ags_playback_test_flags

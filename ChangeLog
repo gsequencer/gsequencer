@@ -1,6 +1,8 @@
 ags (2.2.6)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented ags_lv2_turtle_parser_parse_names()
+	* implemented partial parse of lv2 plugins
 	* fixed some memory-leaks in ags_turtle_finalize()
 
 ags (2.2.5)

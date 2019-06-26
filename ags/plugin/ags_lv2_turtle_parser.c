@@ -487,6 +487,806 @@ ags_lv2_turtle_parser_get_class_mutex()
 }
 
 /**
+ * ags_lv2_turtle_parser_parse_names:
+ * @lv2_turtle_parser: the #AgsLv2TurtleParser
+ * @turtle: the %NULL terminated array of #AgsTurtle
+ * @n_turtle: the turtle count
+ * 
+ * Parse names only from manifest and refered turtles. 
+ * 
+ * Since: 2.2.6
+ */
+void
+ags_lv2_turtle_parser_parse_names(AgsLv2TurtleParser *lv2_turtle_parser,
+				  AgsTurtle **turtle, guint n_turtle)
+{
+  AgsTurtle *manifest;
+  AgsTurtle *current_turtle;
+
+  xmlNode *root_node;
+  xmlNode *node;
+  
+  GList *list;
+  GList *start_plugin, *plugin;
+
+  pthread_mutex_t *lv2_turtle_parser_mutex;
+
+  auto void ags_lv2_turtle_parser_parse_names_statement(AgsTurtle *current_turtle,
+							xmlNode *node,
+							AgsTurtle **turtle, guint n_turtle,
+							gboolean see_also);
+  auto void ags_lv2_turtle_parser_parse_names_triple(AgsTurtle *current_turtle,
+						     xmlNode *node,
+						     AgsTurtle **turtle, guint n_turtle,
+						     gboolean see_also);
+
+  auto void ags_lv2_turtle_parser_parse_names_predicate_object_list(AgsTurtle *current_turtle,
+								    gchar *subject_iriref,
+								    xmlNode *node,
+								    AgsTurtle **turtle, guint n_turtle);
+  auto void ags_lv2_turtle_parser_parse_names_predicate_object_list_see_also(AgsTurtle *current_turtle,
+									     gchar *subject_iriref,
+									     xmlNode *node,
+									     AgsTurtle **turtle, guint n_turtle);
+  auto void ags_lv2_turtle_parser_parse_names_blank_node_property_list(AgsTurtle *current_turtle,
+								       gchar *subject_iriref,
+								       xmlNode *node,
+								       AgsTurtle **turtle, guint n_turtle);
+  
+  void ags_lv2_turtle_parser_parse_names_statement(AgsTurtle *current_turtle,
+						   xmlNode *node,
+						   AgsTurtle **turtle, guint n_turtle,
+						   gboolean see_also)
+  {
+    xmlNode *child;
+
+    if(node == NULL){
+      return;
+    }
+    
+    child = node->children;
+    
+    while(child != NULL){
+      if(child->type == XML_ELEMENT_NODE){
+	if(!g_ascii_strncasecmp(child->name,
+				"rdf-triple",
+				11)){
+	  ags_lv2_turtle_parser_parse_names_triple(current_turtle,
+						   child,
+						   turtle, n_turtle,
+						   see_also);
+	}
+      }
+
+      child = child->next;
+    }
+  }
+
+  void ags_lv2_turtle_parser_parse_names_triple(AgsTurtle *current_turtle,
+						xmlNode *node,
+						AgsTurtle **turtle, guint n_turtle,
+						gboolean see_also)
+  {
+    xmlNode *child;
+
+    gchar *subject_iriref;
+    
+    if(node == NULL){
+      return;
+    }
+    
+    child = node->children;
+    
+    subject_iriref = NULL;
+    
+    while(child != NULL){
+      if(child->type == XML_ELEMENT_NODE){
+	if(!g_ascii_strncasecmp(child->name,
+				"rdf-subject",
+				12)){
+	  GList *xpath_result;
+	  
+	  gchar *xpath;
+	  
+	  xpath = "./rdf-iri/rdf-iriref";
+
+	  xpath_result = ags_turtle_find_xpath_with_context_node(current_turtle,
+								 xpath,
+								 (xmlNode *) child);
+	  
+	  if(xpath_result != NULL){
+	    gchar *str;
+
+	    str = xmlNodeGetContent((xmlNode *) xpath_result->data);
+
+	    if(strlen(str) > 2){
+	      subject_iriref = g_strndup(str + 1,
+					 strlen(str) - 2);
+	    }
+	  }else{
+	    AgsTurtle **turtle_iter;
+	    
+	    gchar *pname;
+	    
+	    xpath = "./rdf-iri/rdf-prefixed-name/rdf-pname-ln";
+	    
+	    xpath_result = ags_turtle_find_xpath_with_context_node(current_turtle,
+								   xpath,
+								   (xmlNode *) child);
+
+	    if(xpath_result != NULL){
+	      pname = xmlNodeGetContent((xmlNode *) xpath_result->data);
+
+	      for(turtle_iter = turtle; turtle_iter[0] != NULL; turtle_iter++){
+		GList *start_list, *list;
+
+		gchar *str;
+		gchar *prefix, *suffix;
+
+		prefix = NULL;
+		suffix = strchr(pname, ':');
+
+		if(suffix != NULL){
+		  prefix = g_strndup(pname,
+				     suffix - pname + 1);
+		  suffix = g_strdup(suffix + 1);
+		}
+
+		list =
+		  start_list = g_hash_table_get_keys(turtle_iter[0]->prefix_id);
+
+		str = NULL;
+
+		while(list != NULL){
+		  gchar *value;		  
+
+		  value = g_hash_table_lookup(turtle_iter[0]->prefix_id,
+					      list->data);
+
+		  if(!g_ascii_strcasecmp(prefix,
+					 value)){
+		    str = list->data;
+
+		    break;
+		  }
+		  
+		  list = list->next;
+		}
+
+		g_list_free(start_list);
+
+		if(str != NULL &&
+		   suffix != NULL){		  
+		  subject_iriref = g_strdup_printf("%s%s",
+						   str,
+						   suffix);
+		}
+
+		g_free(prefix);
+		g_free(suffix);
+
+		if(turtle_iter[0] == current_turtle){
+		  break;
+		}
+	      }
+	    }
+	  }
+	  
+	  g_list_free(xpath_result);
+	}else if(!g_ascii_strncasecmp(child->name,
+				      "rdf-predicate-object-list",
+				      27)){
+	  if(!see_also){
+	    ags_lv2_turtle_parser_parse_names_predicate_object_list(current_turtle,
+								    subject_iriref,
+								    child,
+								    turtle, n_turtle);
+	  }else{
+	    ags_lv2_turtle_parser_parse_names_predicate_object_list_see_also(current_turtle,
+									     subject_iriref,
+									     child,
+									     turtle, n_turtle);
+	  }
+	}else if(!g_ascii_strncasecmp(child->name,
+				      "rdf-blank-node-property-list",
+				      29)){
+	  ags_lv2_turtle_parser_parse_names_blank_node_property_list(current_turtle,
+								     subject_iriref,
+								     child,
+								     turtle, n_turtle);
+	}
+      }
+
+      child = child->next;
+    }    
+  }
+
+  void ags_lv2_turtle_parser_parse_names_predicate_object_list(AgsTurtle *current_turtle,
+							       gchar *subject_iriref,
+							       xmlNode *node,
+							       AgsTurtle **turtle, guint n_turtle)
+  {
+    AgsLv2Manager *lv2_manager;
+    AgsLv2Plugin *lv2_plugin;
+
+    AgsTurtle **turtle_iter;
+    
+    xmlNode *child;
+
+    GList *start_xpath_result, *xpath_result;
+
+    gchar *prefix_id_doap;
+    gchar *prefix_id_rdfs;
+    gchar *prefix_id_lv2_core;
+    gchar *xpath;
+
+    gboolean is_plugin;
+
+    if(node == NULL){
+      return;
+    }
+    
+    prefix_id_doap = NULL;
+
+    prefix_id_rdfs = NULL;
+
+    prefix_id_lv2_core = NULL;
+
+    for(turtle_iter = turtle; turtle_iter[0] != NULL; turtle_iter++){
+      gchar *str;
+
+      if((str = g_hash_table_lookup(turtle_iter[0]->prefix_id,
+				    "http://usefulinc.com/ns/doap#")) != NULL){
+	prefix_id_doap = str;
+      }
+
+      if((str = g_hash_table_lookup(turtle_iter[0]->prefix_id,
+				    "http://www.w3.org/2000/01/rdf-schema#")) != NULL){
+	prefix_id_rdfs = str;
+      }
+
+      if((str = g_hash_table_lookup(turtle_iter[0]->prefix_id,
+				    "http://lv2plug.in/ns/lv2core#")) != NULL){
+	prefix_id_lv2_core = str;
+      }
+
+      if(turtle_iter[0] == current_turtle){
+	break;
+      }
+    }
+
+    lv2_manager = ags_lv2_manager_get_instance();
+
+    lv2_plugin = NULL;
+    is_plugin = FALSE;
+
+    /* parse verbs */
+    xpath = "./rdf-verb[@verb = 'a']";
+
+    xpath_result =
+      start_xpath_result = ags_turtle_find_xpath_with_context_node(current_turtle,
+								   xpath,
+								   (xmlNode *) node);
+
+    while(xpath_result != NULL){
+      xmlNode *current;
+
+      GList *current_start_xpath_result;
+      
+      gchar *current_xpath;
+
+      current = (xmlNode *) xpath_result->data;
+      
+      do{
+	current = current->next;
+      }while(current != NULL && current->type != XML_ELEMENT_NODE);
+      
+      /* check plugin */
+      current_xpath = "./rdf-object/rdf-iri/rdf-iriref[text() = '<http://lv2plug.in/ns/lv2core#plugin>']";
+
+      current_start_xpath_result = ags_turtle_find_xpath_with_context_node(current_turtle,
+									   current_xpath,
+									   (xmlNode *) current);
+	  
+      if(current_start_xpath_result != NULL){
+	is_plugin = TRUE;
+
+	break;
+      }else if(prefix_id_lv2_core != NULL){
+	gchar *prefix_id;
+
+	prefix_id = prefix_id_lv2_core;
+
+	current_xpath = g_strdup_printf("./rdf-object/rdf-iri/rdf-prefixed-name/rdf-pname-ln[text() = '%s%s']",
+					prefix_id,
+					"plugin");
+	  
+	current_start_xpath_result = ags_turtle_find_xpath_with_context_node(current_turtle,
+									     current_xpath,
+									     (xmlNode *) current);
+	
+	if(current_start_xpath_result != NULL){
+	  is_plugin = TRUE;
+
+	  break;
+	}
+
+	g_free(current_xpath);
+      }
+      
+      g_list_free(current_start_xpath_result);
+      
+      /* iterate */
+      xpath_result = xpath_result->next;
+    }
+    
+    g_list_free(start_xpath_result);
+
+    /* plugin create instance */
+    if(is_plugin){
+      GList *list;
+      
+      list = ags_lv2_plugin_find_uri(lv2_manager->lv2_plugin,
+				     subject_iriref);
+
+      if(list != NULL){
+	lv2_plugin = list->data;
+      }
+      
+      if(lv2_plugin == NULL){
+	AgsUUID *current_uuid;
+
+	xmlNode *node_binary;
+	
+	gchar *path;
+	gchar *so_filename;
+	gchar *filename;
+
+	current_uuid = ags_uuid_alloc();
+	ags_uuid_generate(current_uuid);
+
+	/* so filename */
+	node_binary = NULL;
+	
+	xpath = "./rdf-verb/rdf-predicate/rdf-iri/rdf-iriref[text() = '<http://lv2plug.in/ns/lv2core#binary>']";
+
+	xpath_result =
+	  start_xpath_result = ags_turtle_find_xpath_with_context_node(current_turtle,
+								       xpath,
+								       (xmlNode *) node);
+	  
+	if(xpath_result != NULL){
+	  node_binary = ((xmlNode *) xpath_result->data)->parent->parent->parent->next;
+	}else if(prefix_id_lv2_core != NULL){
+	  gchar *prefix_id;
+
+	  prefix_id = prefix_id_lv2_core;
+	  
+	  xpath = g_strdup_printf("./rdf-verb/rdf-predicate/rdf-iri/rdf-prefixed-name/rdf-pname-ln[text() = '%s%s']",
+				  prefix_id,
+				  "binary");
+
+	  xpath_result =
+	    start_xpath_result = ags_turtle_find_xpath_with_context_node(current_turtle,
+									 xpath,
+									 (xmlNode *) node);
+	  
+	  g_free(xpath);
+
+	  if(xpath_result != NULL){
+	    node_binary = ((xmlNode *) xpath_result->data)->parent->parent->parent->parent->next;
+	  }
+	}
+	
+	g_list_free(start_xpath_result);
+	
+	path = g_path_get_dirname(turtle[0]->filename);
+	so_filename = NULL;
+
+	if(node_binary != NULL){
+	  xmlNode *current;
+
+	  GList *current_start_xpath_result, *current_xpath_result;
+      
+	  gchar *current_xpath;
+
+	  current_xpath = "./rdf-object/rdf-iri/rdf-iriref";
+
+	  current_xpath_result =
+	    current_start_xpath_result = ags_turtle_find_xpath_with_context_node(current_turtle,
+										 current_xpath,
+										 (xmlNode *) node_binary);
+
+	  if(current_start_xpath_result != NULL){
+	    gchar *str;
+
+	    str = xmlNodeGetContent(current_start_xpath_result->data);
+
+	    if(str != NULL &&
+	       strlen(str) > 2){
+	      so_filename = g_strndup(str + 1,
+				      strlen(str) - 2);
+	    }
+	  }
+	  
+	  g_list_free(current_start_xpath_result);
+	}
+
+	filename = NULL;
+	
+	if(path != NULL &&
+	   so_filename != NULL){
+	  filename = g_strdup_printf("%s/%s",
+				     path,
+				     so_filename);
+	}
+	
+#if AGS_DEBUG	
+	g_message("new lv2 plugin - %s", subject_iriref);
+#endif
+	
+	lv2_plugin = g_object_new(AGS_TYPE_LV2_PLUGIN,
+				  "uuid", current_uuid,
+				  "filename", filename,
+				  "uri", subject_iriref,
+				  NULL);
+
+	g_object_set(lv2_plugin,
+		     "manifest", turtle[0],
+		     "turtle", turtle[n_turtle - 1],
+		     NULL);
+	
+	lv2_manager->lv2_plugin = g_list_prepend(lv2_manager->lv2_plugin,
+						 lv2_plugin);
+
+	g_object_set(lv2_turtle_parser,
+		     "plugin", lv2_plugin,
+		     NULL);
+	
+	g_free(filename);
+      }
+
+      if(lv2_plugin == NULL){
+	g_warning("no plugin");
+      }
+    }
+
+    /* plugin - read metadata */
+    if(is_plugin){
+      xmlNode *current;
+
+      GList *current_start_xpath_result, *current_xpath_result;
+      
+      gchar *current_xpath;
+      
+      /* effect */
+      current = NULL;
+      
+      current_xpath = "./rdf-verb/rdf-predicate/rdf-iri/rdf-iriref[text() = '<http://usefulinc.com/ns/doap#name>']";
+      
+      current_xpath_result =
+	current_start_xpath_result = ags_turtle_find_xpath_with_context_node(current_turtle,
+									     current_xpath,
+									     (xmlNode *) node);
+
+      if(current_start_xpath_result != NULL){
+	current = ((xmlNode *) current_start_xpath_result->data)->parent->parent->parent->next;
+      }else if(prefix_id_doap != NULL){
+	gchar *prefix_id;
+
+	prefix_id = prefix_id_doap;
+
+	current_xpath = g_strdup_printf("./rdf-verb/rdf-predicate/rdf-iri/rdf-prefixed-name/rdf-pname-ln[text() = '%s%s']",
+					prefix_id,
+					"name");
+
+	current_xpath_result =
+	  current_start_xpath_result = ags_turtle_find_xpath_with_context_node(current_turtle,
+									       current_xpath,
+									       (xmlNode *) node);
+
+	g_free(current_xpath);	
+
+	if(current_start_xpath_result != NULL){
+	  current = ((xmlNode *) current_start_xpath_result->data)->parent->parent->parent->parent->next;
+	}
+      }
+
+      g_list_free(current_start_xpath_result);
+
+      if(current != NULL){
+	GList *start_label_xpath_result, *label_xpath_result;
+	
+	gchar *label_xpath;
+
+	label_xpath = "./rdf-object/rdf-literal/rdf-string";
+
+	label_xpath_result =
+	  start_label_xpath_result = ags_turtle_find_xpath_with_context_node(current_turtle,
+									     label_xpath,
+									     (xmlNode *) current);
+
+	if(start_label_xpath_result != NULL){
+	  gchar *str;
+
+	  str = xmlNodeGetContent((xmlNode *) start_label_xpath_result->data);
+
+	  if(str != NULL &&
+	     strlen(str) > 2){
+	    gchar *tmp;
+	    
+	    tmp = g_strndup(str + 1,
+			    strlen(str) - 2);
+	    
+#if AGS_DEBUG
+	    g_message(" `-- effect %s %s %s", AGS_BASE_PLUGIN(lv2_plugin)->filename, subject_iriref, tmp);
+#endif
+
+	    g_object_set(lv2_plugin,
+			 "effect", tmp,
+			 NULL);
+
+	    g_free(tmp);
+	  }
+	}
+
+	g_list_free(start_label_xpath_result);
+      }
+    }
+  }
+
+  void ags_lv2_turtle_parser_parse_names_predicate_object_list_see_also(AgsTurtle *current_turtle,
+									gchar *subject_iriref,
+									xmlNode *node,
+									AgsTurtle **turtle, guint n_turtle)
+  {
+    AgsTurtle **turtle_iter;
+
+    xmlNode *current;
+
+    GList *start_xpath_result, *xpath_result;
+    
+    gchar *prefix_id_rdfs;
+    gchar *xpath;
+    
+    prefix_id_rdfs = NULL;
+
+    for(turtle_iter = turtle; turtle_iter[0] != NULL; turtle_iter++){
+      gchar *str;
+
+      if((str = g_hash_table_lookup(turtle_iter[0]->prefix_id,
+				    "http://www.w3.org/2000/01/rdf-schema#")) != NULL){
+	prefix_id_rdfs = str;
+      }
+
+      if(turtle_iter[0] == current_turtle){
+	break;
+      }
+    }
+    
+    /* label */
+    current = NULL;
+      
+    xpath = "./rdf-verb/rdf-predicate/rdf-iri/rdf-iriref[text() = '<http://www.w3.org/2000/01/rdf-schema#seealso>']";
+      
+    xpath_result =
+      start_xpath_result = ags_turtle_find_xpath_with_context_node(current_turtle,
+								   xpath,
+								   (xmlNode *) node);
+
+    if(start_xpath_result != NULL){
+      current = ((xmlNode *) start_xpath_result->data)->parent->parent->parent->next;
+    }else if(prefix_id_rdfs != NULL){
+      gchar *prefix_id;
+
+      prefix_id = prefix_id_rdfs;
+
+      xpath = g_strdup_printf("./rdf-verb/rdf-predicate/rdf-iri/rdf-prefixed-name/rdf-pname-ln[text() = '%s%s']",
+			      prefix_id,
+			      "seealso");
+
+      xpath_result =
+	start_xpath_result = ags_turtle_find_xpath_with_context_node(current_turtle,
+								     xpath,
+								     (xmlNode *) node);
+
+      g_free(xpath);	
+
+      if(start_xpath_result != NULL){
+	current = ((xmlNode *) start_xpath_result->data)->parent->parent->parent->parent->next;
+      }
+    }
+
+    g_list_free(start_xpath_result);
+
+    if(current != NULL){
+      GList *start_iriref_xpath_result, *iriref_xpath_result;
+	
+      gchar *iriref_xpath;
+
+      iriref_xpath = "./rdf-object/rdf-iri/rdf-iriref";
+
+      iriref_xpath_result =
+	start_iriref_xpath_result = ags_turtle_find_xpath_with_context_node(current_turtle,
+									    iriref_xpath,
+									    (xmlNode *) current);
+
+      if(start_iriref_xpath_result != NULL){
+	gchar *str;
+
+	str = xmlNodeGetContent((xmlNode *) start_iriref_xpath_result->data);
+
+	if(str != NULL &&
+	   g_str_has_suffix(str,
+			    ".ttl>")){
+	  AgsTurtle **next_turtle;
+	  AgsTurtle *next;
+	    
+	  gchar *path;
+	  gchar *filename;
+
+	  int ttl_length;
+	  guint next_n_turtle;
+	  gboolean skip;
+	    
+	  path = g_path_get_dirname(turtle[0]->filename);
+
+	  ttl_length = strlen(str) - 2;
+	  filename = g_strdup_printf("%s/%.*s",
+				     path,
+				     ttl_length, &(str[1]));
+
+	  skip = TRUE;
+	  next = ags_turtle_manager_find(ags_turtle_manager_get_instance(),
+					 filename);
+	    
+	  if(next == NULL){
+	    g_message("new turtle - %s", filename);
+	      
+	    next = ags_turtle_new(filename);
+	    g_object_set(lv2_turtle_parser,
+			 "turtle", next,
+			 NULL);
+
+	    ags_turtle_load(next,
+			    NULL);
+	    
+	    ags_turtle_manager_add(ags_turtle_manager_get_instance(),
+				   (GObject *) next);
+
+	    skip = FALSE;
+	    
+	    g_object_unref(next);
+	  }
+	    
+	  if(next != NULL &&
+	     !skip){
+	    next_n_turtle = n_turtle + 1;
+
+	    next_turtle = (AgsTurtle **) malloc((next_n_turtle + 1) * sizeof(AgsTurtle *));
+	      
+	    memcpy(next_turtle, turtle, n_turtle * sizeof(AgsTurtle *));
+
+	    next_turtle[n_turtle] = next;
+	    next_turtle[n_turtle + 1] = NULL;
+	      
+	    ags_lv2_turtle_parser_parse_names(lv2_turtle_parser,
+					      next_turtle, next_n_turtle);
+
+	    free(next_turtle);
+	  }
+
+	  g_free(path);
+	  g_free(filename);
+	}
+      }
+
+      g_list_free(start_iriref_xpath_result);
+    }
+  }
+  
+  void ags_lv2_turtle_parser_parse_names_blank_node_property_list(AgsTurtle *current_turtle,
+								  gchar *subject_iriref,
+								  xmlNode *node,
+								  AgsTurtle **turtle, guint n_turtle)
+  {
+  }
+  
+  if(!AGS_IS_LV2_TURTLE_PARSER(lv2_turtle_parser)){
+    return;
+  }
+
+  /* get lv2 turtle parser mutex */
+  pthread_mutex_lock(ags_lv2_turtle_parser_get_class_mutex());
+  
+  lv2_turtle_parser_mutex = lv2_turtle_parser->obj_mutex;
+  
+  pthread_mutex_unlock(ags_lv2_turtle_parser_get_class_mutex());
+
+  /* get manifest */
+  manifest = NULL;
+  
+  pthread_mutex_lock(lv2_turtle_parser_mutex);
+    
+  list = g_list_last(lv2_turtle_parser->turtle);
+
+  if(list != NULL){
+    manifest = list->data;
+  }
+  
+  pthread_mutex_unlock(lv2_turtle_parser_mutex);
+
+  if(turtle == NULL){
+    if(manifest == NULL){
+      return;
+    }else{
+      guint turtle_count;
+
+      turtle_count = 1;
+
+      turtle = (AgsTurtle **) malloc(2 * sizeof(AgsTurtle *));
+      turtle[0] = manifest;
+      turtle[1] = NULL;
+        
+      n_turtle = turtle_count;
+    }
+  }
+
+  if(n_turtle == 0){
+    g_warning("missing argument");
+    
+    return;
+  }
+
+  current_turtle = turtle[n_turtle - 1];  
+
+  /* get root node */
+  root_node = xmlDocGetRootElement(current_turtle->doc);
+
+  /* start parse */
+  node = NULL;
+
+  if(root_node != NULL){
+    node = root_node->children;
+  }
+  
+  while(node != NULL){
+    if(node->type == XML_ELEMENT_NODE){
+      if(!g_ascii_strncasecmp(node->name,
+			      "rdf-statement",
+			      14)){
+	ags_lv2_turtle_parser_parse_names_statement(current_turtle,
+						    node,
+						    turtle, n_turtle,
+						    FALSE);
+      }
+    }
+
+    node = node->next;
+  }  
+
+  /* parse see also */
+  if(root_node != NULL){
+    node = root_node->children;
+  }
+  
+  while(node != NULL){
+    if(node->type == XML_ELEMENT_NODE){
+      if(!g_ascii_strncasecmp(node->name,
+			      "rdf-statement",
+			      14)){
+	ags_lv2_turtle_parser_parse_names_statement(current_turtle,
+						    node,
+						    turtle, n_turtle,
+						    TRUE);
+      }
+    }
+
+    node = node->next;
+  }  
+}
+
+/**
  * ags_lv2_turtle_parser_parse:
  * @lv2_turtle_parser: the #AgsLv2TurtleParser
  * @turtle: the %NULL terminated array of #AgsTurtle
@@ -997,6 +1797,13 @@ ags_lv2_turtle_parser_parse(AgsLv2TurtleParser *lv2_turtle_parser,
 
       if(list != NULL){
 	lv2_plugin = list->data;
+	g_object_set(lv2_turtle_parser,
+		     "plugin", lv2_plugin,
+		     NULL);
+
+#if AGS_DEBUG
+	g_message("found lv2 plugin - %s", subject_iriref);
+#endif
       }
       
       if(lv2_plugin == NULL){
@@ -1113,7 +1920,7 @@ ags_lv2_turtle_parser_parse(AgsLv2TurtleParser *lv2_turtle_parser,
 	
 	g_free(filename);
       }
-
+      
       if(lv2_plugin == NULL){
 	g_warning("no plugin");
       }
@@ -1132,6 +1939,9 @@ ags_lv2_turtle_parser_parse(AgsLv2TurtleParser *lv2_turtle_parser,
 
       if(list != NULL){
 	lv2ui_plugin = list->data;
+	g_object_set(lv2_turtle_parser,
+		     "ui-plugin", lv2ui_plugin,
+		     NULL);
       }
       
       if(lv2ui_plugin == NULL){
@@ -1252,6 +2062,9 @@ ags_lv2_turtle_parser_parse(AgsLv2TurtleParser *lv2_turtle_parser,
 
       if(list != NULL){
 	lv2_preset = AGS_LV2_PRESET(list->data);
+	g_object_set(lv2_turtle_parser,
+		     "preset", lv2_preset,
+		     NULL);
       }
       
       if(lv2_preset == NULL){
@@ -3378,6 +4191,7 @@ ags_lv2_turtle_parser_parse(AgsLv2TurtleParser *lv2_turtle_parser,
     gchar *xpath;
     
     prefix_id_rdfs = NULL;
+
     for(turtle_iter = turtle; turtle_iter[0] != NULL; turtle_iter++){
       gchar *str;
 
@@ -3463,7 +4277,12 @@ ags_lv2_turtle_parser_parse(AgsLv2TurtleParser *lv2_turtle_parser,
 				     path,
 				     ttl_length, &(str[1]));
 
-	  skip = TRUE;
+	  if(ags_lv2_manager_global_get_parse_names()){
+	    skip = FALSE;
+	  }else{
+	    skip = TRUE;
+	  }
+	  
 	  next = ags_turtle_manager_find(ags_turtle_manager_get_instance(),
 					 filename);
 	    
