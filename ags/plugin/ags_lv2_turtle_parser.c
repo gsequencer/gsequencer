@@ -3476,6 +3476,8 @@ ags_lv2_turtle_parser_parse(AgsLv2TurtleParser *lv2_turtle_parser,
 	      
 	    ags_lv2_turtle_parser_parse(lv2_turtle_parser,
 					next_turtle, next_n_turtle);
+
+	    free(next_turtle);
 	  }
 	}
       }

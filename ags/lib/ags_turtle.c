@@ -179,8 +179,8 @@ ags_turtle_init(AgsTurtle *turtle)
   turtle->doc = NULL;
 
   turtle->prefix_id = g_hash_table_new_full(g_str_hash, g_str_equal,
-					    NULL,
-					    NULL);
+					    g_free,
+					    g_free);
 }
 
 void
@@ -297,6 +297,13 @@ ags_turtle_finalize(GObject *gobject)
   
   turtle = AGS_TURTLE(gobject);
 
+  /* turtle mutex */
+  pthread_mutexattr_destroy(turtle->obj_mutexattr);
+  free(turtle->obj_mutexattr);
+
+  pthread_mutex_destroy(turtle->obj_mutex);
+  free(turtle->obj_mutex);
+
   if(turtle->filename != NULL){
     g_free(turtle->filename);
   }
@@ -304,6 +311,8 @@ ags_turtle_finalize(GObject *gobject)
   if(turtle->doc != NULL){
     xmlFreeDoc(turtle->doc);
   }
+
+  g_hash_table_destroy(turtle->prefix_id);
   
   /* call parent */
   G_OBJECT_CLASS(ags_turtle_parent_class)->finalize(gobject);
