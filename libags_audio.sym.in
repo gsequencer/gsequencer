@@ -52,6 +52,7 @@ ags_plugin_port_test_flags
 ags_plugin_port_set_flags
 ags_plugin_port_unset_flags
 ags_plugin_port_find_symbol
+ags_plugin_port_find_port_index
 ags_plugin_port_new
 ags_lv2_state_manager_get_type
 ags_lv2_state_manager_get_instance
