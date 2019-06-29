@@ -36,7 +36,7 @@ DEFS = -DLOCALEDIR=\"$(localedir)\" @DEFS@
 # the previous manual Makefile
 lib_LTLIBRARIES = libags.la libags_thread.la libags_server.la libags_audio.la libags_gui.la
 
-if WITH_EXPERIMENTAL
+if WITH_VST3
 lib_LTLIBRARIES += libags_vst.la 
 endif
 
@@ -404,7 +404,7 @@ libags_gui_la_HEADERS_0 = ags/libags-gui.h $(libags_gui_h_sources)
 libgsequencer_la_HEADERS_0 = $(libgsequencer_h_sources) $(libgsequencer_file_h_sources) $(libgsequencer_thread_h_sources) $(libgsequencer_task_h_sources) $(libgsequencer_import_h_sources) $(libgsequencer_export_h_sources) $(libgsequencer_machine_h_sources) $(libgsequencer_editor_h_sources)
 libgsequencer_la_SOURCES = $(libgsequencer_la_HEADERS_0) $(libgsequencer_c_sources) $(libgsequencer_file_c_sources) $(libgsequencer_thread_c_sources) $(libgsequencer_task_c_sources) $(libgsequencer_import_c_sources) $(libgsequencer_export_c_sources) $(libgsequencer_machine_c_sources) $(libgsequencer_editor_c_sources)
 
-if WITH_EXPERIMENTAL
+if WITH_VST3
 libags_vst_la_SOURCES = $(libags_vst_c_sources)
 libags_vst_la_HEADERS_0 = ags/libags-vst.h $(libags_vst_h_sources)
 endif
@@ -440,10 +440,10 @@ libgsequencer_la_LDFLAGS = $(LDFLAGS) -version-info 0:1:0 -shared -fPIC -Wl,-son
 libgsequencer_la_LIBADD = libags_audio.la libags_server.la libags_gui.la libags_thread.la libags.la -ldl -lm $(CORE_AUDIO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(FFTW_LIBS) $(SNDFILE_LIBS) $(JACK_LIBS) $(PULSE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(GDKPIXBUF_LIBS) $(CAIRO_LIBS) $(GTK_LIBS) $(GTK_MAC_INTEGRATION_LIBS)
 
 # library libags-vst
-if WITH_EXPERIMENTAL
-libags_vst_la_CXXFLAGS = $(CXXFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ -I/usr/include $(GLIB_CFLAGS) $(VST_CXXFLAGS)
+if WITH_VST3
+libags_vst_la_CXXFLAGS = $(CXXFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ -I/usr/include $(GLIB_CFLAGS) $(VST3_CXXFLAGS)
 libags_vst_la_LDFLAGS = $(LDFLAGS) -export-symbols libags_vst.sym -version-info 2:0:0 -shared -fPIC -soname,libags_vst.so -pthread 
-libags_vst_la_LIBADD = -ldl -lm $(GLIB_LIBS) $(VST_LIBS)
+libags_vst_la_LIBADD = -ldl -lm $(GLIB_LIBS) $(VST3_LIBS)
 endif
 
 # gsequencer

@@ -59,10 +59,10 @@ AC_ARG_ENABLE(libinstpatch, [AS_HELP_STRING([--enable-libinstpatch],
 	      [],
 	      [enable_libinstpatch=yes])
 
-AC_ARG_ENABLE(vst, [AS_HELP_STRING([--enable-vst],
-				    [enable vst (default is no)])],
+AC_ARG_ENABLE(vst3, [AS_HELP_STRING([--enable-vst3],
+				    [enable vst3 (default is no)])],
 	      [],
-	      [enable_vst=no])
+	      [enable_vst3=no])
 
 AC_ARG_ENABLE(pulse, [AS_HELP_STRING([--enable-pulse],
 				     [enable pulse (default is yes)])],
@@ -279,14 +279,14 @@ AS_IF([test "x$enable_libinstpatch" != xno],
       AC_MSG_NOTICE([libinstpatch disabled]))
 AM_CONDITIONAL([WITH_LIBINSTPATCH], [test "x$enable_libinstpatch" == xyes])
 
-AS_IF([test "x$enable_vst" != xno],
-      [AC_DEFINE([AGS_WITH_VST], [1], [VST enabled])
+AS_IF([test "x$enable_vst3" != xno],
+      [AC_DEFINE([AGS_WITH_VST3], [1], [VST3 enabled])
 
-      AC_SUBST(VST_CXXFLAGS)
-      AC_SUBST(VST_LIBS)
+      AC_SUBST(VST3_CXXFLAGS)
+      AC_SUBST(VST3_LIBS)
       
-      AC_MSG_NOTICE([VST enabled])],
-      AC_MSG_NOTICE([VST disabled]))
+      AC_MSG_NOTICE([VST3 enabled])],
+      AC_MSG_NOTICE([VST3 disabled]))
 
 PKG_CHECK_MODULES([FONTCONFIG], [fontconfig >= 2.9.0])
 AC_SUBST(FONTCONFIG_CFLAGS)
@@ -344,6 +344,7 @@ AM_CONDITIONAL([ENABLE_GTK_DOC], false)
 ])
 
 AM_CONDITIONAL([WITH_SYSTEM_TESTS], [test "x$enable_run_system_tests" == xyes])
+AM_CONDITIONAL([WITH_VST3], [test "x$enable_vst3" == xyes])
 AM_CONDITIONAL([WITH_EXPERIMENTAL], [test "x$enable_experimental" == xyes])
 
 LIBAGS_SYMBOLS([])

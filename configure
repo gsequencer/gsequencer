@@ -639,6 +639,8 @@ am__EXEEXT_TRUE
 LTLIBOBJS
 WITH_EXPERIMENTAL_FALSE
 WITH_EXPERIMENTAL_TRUE
+WITH_VST3_FALSE
+WITH_VST3_TRUE
 WITH_SYSTEM_TESTS_FALSE
 WITH_SYSTEM_TESTS_TRUE
 GTK_DOC_USE_REBASE_FALSE
@@ -682,8 +684,8 @@ GDKPIXBUF_LIBS
 GDKPIXBUF_CFLAGS
 FONTCONFIG_LIBS
 FONTCONFIG_CFLAGS
-VST_LIBS
-VST_CXXFLAGS
+VST3_LIBS
+VST3_CXXFLAGS
 WITH_LIBINSTPATCH_FALSE
 WITH_LIBINSTPATCH_TRUE
 LIBINSTPATCH_LIBS
@@ -882,7 +884,7 @@ enable_jack
 enable_pulse
 enable_core_audio
 enable_libinstpatch
-enable_vst
+enable_vst3
 enable_xmlrpc
 enable_quartz
 enable_run_functional_tests
@@ -1606,7 +1608,7 @@ Optional Features:
   --enable-pulse          enable pulse (default is yes)
   --enable-core-audio     enable core audio (default is no)
   --enable-libinstpatch   enable libinstpatch (default is yes)
-  --enable-vst            enable vst (default is no)
+  --enable-vst3           enable vst3 (default is no)
   --enable-xmlrpc         enable xmlrpc (default is no)
   --enable-quartz         enable quartz (default is no)
   --enable-run-functional-tests
@@ -6955,11 +6957,11 @@ else
 fi
 
 
-# Check whether --enable-vst was given.
-if test "${enable_vst+set}" = set; then :
-  enableval=$enable_vst;
+# Check whether --enable-vst3 was given.
+if test "${enable_vst3+set}" = set; then :
+  enableval=$enable_vst3;
 else
-  enable_vst=no
+  enable_vst3=no
 fi
 
 
@@ -21952,19 +21954,19 @@ else
 fi
 
 
-if test "x$enable_vst" != xno; then :
+if test "x$enable_vst3" != xno; then :
 
-$as_echo "#define AGS_WITH_VST 1" >>confdefs.h
-
-
+$as_echo "#define AGS_WITH_VST3 1" >>confdefs.h
 
 
 
-      { $as_echo "$as_me:${as_lineno-$LINENO}: VST enabled" >&5
-$as_echo "$as_me: VST enabled" >&6;}
+
+
+      { $as_echo "$as_me:${as_lineno-$LINENO}: VST3 enabled" >&5
+$as_echo "$as_me: VST3 enabled" >&6;}
 else
-  { $as_echo "$as_me:${as_lineno-$LINENO}: VST disabled" >&5
-$as_echo "$as_me: VST disabled" >&6;}
+  { $as_echo "$as_me:${as_lineno-$LINENO}: VST3 disabled" >&5
+$as_echo "$as_me: VST3 disabled" >&6;}
 fi
 
 
@@ -23192,6 +23194,14 @@ else
   WITH_SYSTEM_TESTS_FALSE=
 fi
 
+ if test "x$enable_vst3" == xyes; then
+  WITH_VST3_TRUE=
+  WITH_VST3_FALSE='#'
+else
+  WITH_VST3_TRUE='#'
+  WITH_VST3_FALSE=
+fi
+
  if test "x$enable_experimental" == xyes; then
   WITH_EXPERIMENTAL_TRUE=
   WITH_EXPERIMENTAL_FALSE='#'
@@ -23474,6 +23484,10 @@ Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 if test -z "${WITH_SYSTEM_TESTS_TRUE}" && test -z "${WITH_SYSTEM_TESTS_FALSE}"; then
   as_fn_error $? "conditional \"WITH_SYSTEM_TESTS\" was never defined.
+Usually this means the macro was only invoked conditionally." "$LINENO" 5
+fi
+if test -z "${WITH_VST3_TRUE}" && test -z "${WITH_VST3_FALSE}"; then
+  as_fn_error $? "conditional \"WITH_VST3\" was never defined.
 Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 if test -z "${WITH_EXPERIMENTAL_TRUE}" && test -z "${WITH_EXPERIMENTAL_FALSE}"; then

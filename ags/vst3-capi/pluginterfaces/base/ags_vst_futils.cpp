@@ -17,9 +17,9 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <ags/vst3-capi/pluginterfaces/base/ags_vst_futil.h>
+#include <ags/vst3-capi/pluginterfaces/base/ags_vst_futils.h>
 
-#include <pluginterfaces/base/futil.h>
+#include <pluginterfaces/base/futils.h>
 
 extern "C" {
 
@@ -57,12 +57,12 @@ extern "C" {
   {
   }
   
-  void ags_vst_util_to_normalized(void *value, int32 num_steps,
+  void ags_vst_util_to_normalized(void *value, gint32 num_steps,
 				  void *retval)
   {
   }
   
-  gint32 ags_vst_util_from_normalized(void *norm, int32 num_steps)
+  gint32 ags_vst_util_from_normalized(void *norm, gint32 num_steps)
   {
   }
 }

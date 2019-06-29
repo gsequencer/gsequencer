@@ -21,85 +21,43 @@
 
 #include <pluginterfaces/base/ipluginbase.h>
 
+using namespace Steinberg;
+
 extern "C" {
 
-  AgsVstTUID
+  AgsVstTUID*
   ags_vst_iplugin_base_get_iid()
   {
-    return(IPluginBase__iid);
+    extern const Steinberg::TUID IPluginBase__iid;
+    
+    return((AgsVstTUID *) (&IPluginBase__iid));
   }
 
-  gint32 ags_vst_iplugin_base_initialize(AgsVstIPluginBase *plugin_base,
-					 AgsVstFUnknown *context)
-  {
-    return(plugin_base->initialize(context));
-  }
-
-  gint32 ags_vst_iplugin_base_terminate(AgsVstIPluginBase *plugin_base)
-  {
-    return(plugin_base->terminate());
-  }
-
-  AgsVstTUID
+  AgsVstTUID*
   ags_vst_iplugin_factory_get_iid()
   {
-    return(IPluginFactory__iid);
+    extern const Steinberg::TUID IPluginFactory__iid;
+    
+    return((AgsVstTUID *) (&IPluginFactory__iid));
   }
 
-  gint32 ags_vst_iplugin_factory_get_factory_info(AgsVstIPluginFactory *factory,
-						  AgsVstPFactoryInfo *info)
+  AgsVstTUID* ags_vst_iplugin_factory2_get_iid()
   {
-    return(factory->getFactoryInfo(info));
-  }
-  
-  gint32 ags_vst_iplugin_factory_count_classes(AgsVstIPluginFactory *factory)
-  {
-    return(factory->countClasses());
+    extern const Steinberg::TUID IPluginFactory2__iid;
+    
+    return((AgsVstTUID *) (&IPluginFactory2__iid));
   }
 
-  gint32 ags_vst_iplugin_factory_get_clas_info(AgsVstIPluginFactory *factory,
-					       gint32 index, AgsVstPClassInfo *info)
+  AgsVstTUID* ags_vst_iplugin_factory3_get_iid()
   {
-    return(factory->getClassInfo(index, info));
-  }
-
-  gint32 ags_vst_iplugin_factory_create_instance(AgsVstIPluginFactory *factory,
-						 AgsVstFIDString cid, AgsVstFIDString _iid, void **obj)
-  {
-    return(factory->createInstance(cid, _iid, obj));
-  }
-
-  AgsVstTUID ags_vst_iplugin_factory2_get_iid()
-  {
-    return(IPluginFactory2__iid);
-  }
-
-  gint32 ags_vst_iplugin_factory2_get_class_info2(AgsVstIPluginFactory2 *factory,
-						  gint32 index, AgsVstPClassInfo2 *info)
-  {
-    return(factory->getClassInfo2(index, info));
-  }
-
-  AgsVstTUID ags_vst_iplugin_factory3_get_iid()
-  {
-    return(IPluginFactory3__iid);
-  }
-  
-  gint32 ags_vst_iplugin_factory3_get_class_info_unicode(AgsVstIPluginFactory3 *factory,
-							 gint32 index, AgsVstPClassInfoW *info)
-  {
-    return(factory->getClassInfoUnicode(index, info));
-  }
-
-  gint32 ags_vst_iplugin_factory3_set_host_context(AgsVstIPluginFactory3 *factory,
-						   AgsVstFUnknown *context)
-  {
-    return(factory->setHostContext(context));
+    extern const Steinberg::TUID IPluginFactory3__iid;
+    
+    return((AgsVstTUID *) (&IPluginFactory3__iid));
   }
 
   AgsVstIPluginFactory*  ags_vst_get_plugin_factory()
   {
-    return(GetPluginFactory());
+    return((AgsVstIPluginFactory *) GetPluginFactory());
   }
 
 }

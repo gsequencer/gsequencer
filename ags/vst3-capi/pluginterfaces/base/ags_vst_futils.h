@@ -46,10 +46,10 @@ extern "C" {
   gboolean ags_vst_util_is_approximate_equal(void *t1, void *t2, void *epsilon,
 					     void *retval);
   
-  void ags_vst_util_to_normalized(void *value, int32 num_steps,
+  void ags_vst_util_to_normalized(void *value, gint32 num_steps,
 				  void *retval);
   
-  gint32 ags_vst_util_from_normalized(void *norm, int32 num_steps);
+  gint32 ags_vst_util_from_normalized(void *norm, gint32 num_steps);
   
 #ifdef __cplusplus
 }

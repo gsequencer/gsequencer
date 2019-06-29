@@ -36,54 +36,29 @@ extern "C" {
 
   typedef struct AgsVstIPluginBase IPluginBase;
 
-  AgsVstTUID ags_vst_iplugin_base_get_iid();
-
-  gint32 ags_vst_iplugin_base_initialize(AgsVstIPluginBase *plugin_base,
-					 AgsVstFUnknown *context);
-
-  gint32 ags_vst_iplugin_base_terminate(AgsVstIPluginBase *plugin_base);
+  AgsVstTUID* ags_vst_iplugin_base_get_iid();
 
   typedef struct AgsVstPFactoryInfo PFactoryInfo;
   typedef struct AgsVstPClassInfo PClassInfo;
 
   typedef struct AgsVstIPluginFactory IPluginFactory;
 
-  AgsVstTUID ags_vst_iplugin_factory_get_iid();
-
-  gint32 ags_vst_iplugin_factory_get_factory_info(AgsVstIPluginFactory *factory,
-						  AgsVstPFactoryInfo *info);
-
-  gint32 ags_vst_iplugin_factory_count_classes(AgsVstIPluginFactory *factory);
-
-  gint32 ags_vst_iplugin_factory_get_clas_info(AgsVstIPluginFactory *factory,
-					       gint32 index, AgsVstPClassInfo *info);
-
-  gint32 ags_vst_iplugin_factory_create_instance(AgsVstIPluginFactory *factory,
-						 AgsVstFIDString cid, AgsVstFIDString _iid, void **obj);
+  AgsVstTUID* ags_vst_iplugin_factory_get_iid();
 
   typedef struct AgsVstPClassInfo2 PClassInfo2;
   typedef struct AgsVstIPluginFactory2 IPluginFactory2;
 
-  AgsVstTUID ags_vst_iplugin_factory2_get_iid();
-
-  gint32 ags_vst_iplugin_factory2_get_class_info2(AgsVstIPluginFactory2 *factory,
-						  gint32 index, AgsVstPClassInfo2 *info);
+  AgsVstTUID* ags_vst_iplugin_factory2_get_iid();
 
   typedef struct AgsVstPClassInfoW PClassInfoW;
 
   typedef struct AgsVstIPluginFactory3 IPluginFactory3;
 
-  AgsVstTUID ags_vst_iplugin_factory3_get_iid();
-
-  gint32 ags_vst_iplugin_factory3_get_class_info_unicode(AgsVstIPluginFactory3 *factory,
-							 gint32 index, AgsVstPClassInfoW *info);
-
-  gint32 ags_vst_iplugin_factory3_set_host_context(AgsVstIPluginFactory3 *factory,
-						   AgsVstFUnknown *context);
+  AgsVstTUID* ags_vst_iplugin_factory3_get_iid();
 
   AgsVstIPluginFactory*  ags_vst_get_plugin_factory();
-  typedef AgsVstIPluginFactory* (*GetFactoryProc)();
 
+  typedef AgsVstIPluginFactory* (*AgsVstGetFactoryProc)();
 
 #ifdef __cplusplus
 }
