@@ -112,6 +112,8 @@ void ags_plugin_port_unset_flags(AgsPluginPort *plugin_port, guint flags);
 
 GList* ags_plugin_port_find_symbol(GList *plugin_port,
 				   gchar *port_symbol);
+GList* ags_plugin_port_find_port_index(GList *plugin_port,
+				       guint port_index);
 
 AgsPluginPort* ags_plugin_port_new();
 
