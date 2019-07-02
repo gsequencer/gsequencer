@@ -1616,8 +1616,10 @@ ags_automation_edit_draw_cursor(AgsAutomationEdit *automation_edit)
 
   GtkStyle *automation_edit_style;
 
-  gdouble c_range;
   double zoom_factor;
+  gdouble value, step;
+  gdouble upper, lower, step_count;
+  gdouble c_range;
   double x, y;
   double width, height;
 
@@ -1648,7 +1650,7 @@ ags_automation_edit_draw_cursor(AgsAutomationEdit *automation_edit)
   }
 
   if((AGS_AUTOMATION_EDIT_LOGARITHMIC & (automation_edit->flags)) != 0){
-    c_range = exp(automation_edit->upper) - exp(automation_edit->lower);
+    c_range = (gdouble) AGS_AUTOMATION_EDIT_DEFAULT_HEIGHT;
   }else{
     c_range = automation_edit->upper - automation_edit->lower;
   }
@@ -1660,7 +1662,14 @@ ags_automation_edit_draw_cursor(AgsAutomationEdit *automation_edit)
   x = ((double) automation_edit->cursor_position_x) - (GTK_RANGE(automation_edit->hscrollbar)->adjustment->value * zoom_factor);
   
   if((AGS_AUTOMATION_EDIT_LOGARITHMIC & (automation_edit->flags)) != 0){
-    y = GTK_WIDGET(automation_edit->drawing_area)->allocation.height - ((((double) exp(automation_edit->cursor_position_y) / c_range) * GTK_WIDGET(automation_edit->drawing_area)->allocation.height) - GTK_RANGE(automation_edit->vscrollbar)->adjustment->value);
+    lower = 0.0;
+    upper = (gdouble) AGS_AUTOMATION_EDIT_DEFAULT_HEIGHT;
+
+    step_count = upper + 1.0;
+    
+    value = automation_edit->cursor_position_y;
+    
+    y = (step_count - 1) * log(value / lower) / log(upper / lower);
   }else{
     y = GTK_WIDGET(automation_edit->drawing_area)->allocation.height - ((((double) automation_edit->cursor_position_y / c_range) * GTK_WIDGET(automation_edit->drawing_area)->allocation.height) - GTK_RANGE(automation_edit->vscrollbar)->adjustment->value);
   }
@@ -1819,10 +1828,11 @@ ags_automation_edit_draw_acceleration(AgsAutomationEdit *automation_edit,
   AgsAutomationEditor *automation_editor;
   AgsAutomationToolbar *automation_toolbar;
 
-  gdouble c_range;
-  gdouble y_upper;
   double zoom_factor;
   double viewport_x, viewport_y;
+  gdouble value, step;
+  gdouble upper, lower, step_count;
+  gdouble c_range;
   guint x, y;
   guint a_x, b_x;
   gdouble a_y, b_y;
@@ -1846,7 +1856,7 @@ ags_automation_edit_draw_acceleration(AgsAutomationEdit *automation_edit,
   automation_toolbar = automation_editor->automation_toolbar;
   
   if((AGS_AUTOMATION_EDIT_LOGARITHMIC & (automation_edit->flags)) != 0){
-    c_range = exp(automation_edit->upper) - exp(automation_edit->lower);
+    c_range = (gdouble) AGS_AUTOMATION_EDIT_DEFAULT_HEIGHT;
   }else{
     c_range = automation_edit->upper - automation_edit->lower;
   }
@@ -1871,7 +1881,14 @@ ags_automation_edit_draw_acceleration(AgsAutomationEdit *automation_edit,
   x = ((double) a_x) - viewport_x;
 
   if((AGS_AUTOMATION_EDIT_LOGARITHMIC & (automation_edit->flags)) != 0){
-    y = GTK_WIDGET(automation_edit->drawing_area)->allocation.height - ((double) exp(a_y) / c_range) * GTK_WIDGET(automation_edit->drawing_area)->allocation.height - viewport_y;
+    lower = 0.0;
+    upper = (gdouble) AGS_AUTOMATION_EDIT_DEFAULT_HEIGHT;
+
+    step_count = upper + 1.0;
+    
+    value = a_y;
+    
+    y = (step_count - 1) * log(value / lower) / log(upper / lower);
   }else{
     y = GTK_WIDGET(automation_edit->drawing_area)->allocation.height - ((double) a_y / c_range) * GTK_WIDGET(automation_edit->drawing_area)->allocation.height - viewport_y;
   }
