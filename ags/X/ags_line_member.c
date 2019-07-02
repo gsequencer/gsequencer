@@ -1198,7 +1198,8 @@ ags_line_member_real_change_port(AgsLineMember *line_member,
 	g_value_set_uint64(&value,
 			   ((guint *) port_data)[0]);
       }else if(port->port_value_type == G_TYPE_FLOAT){
-	gfloat val;
+	gdouble val;
+	gfloat port_val;
 	
 	if(GTK_IS_TOGGLE_BUTTON(gtk_bin_get_child((GtkBin *) line_member))){
 	  if(((gboolean *) port_data)[0]){
@@ -1210,72 +1211,38 @@ ags_line_member_real_change_port(AgsLineMember *line_member,
 	  val = ((gdouble *) port_data)[0];
 	}
 
-	if(line_member->conversion != NULL){
-	  gfloat upper, lower, range, step;
-	  gfloat c_upper, c_lower, c_range;
+	port_val = (gfloat) val;
 
+	if(line_member->conversion != NULL){
 	  gboolean success;
 
 	  success = FALSE;
 	    
 	  if(AGS_IS_DIAL(gtk_bin_get_child((GtkBin *) line_member))){
-	    AgsDial *dial;
-
-	    dial = (AgsDial *) gtk_bin_get_child((GtkBin *) line_member);
-
-	    upper = dial->adjustment->upper;
-	    lower = dial->adjustment->lower;
-
 	    success = TRUE;
 	  }else if(GTK_IS_RANGE(gtk_bin_get_child((GtkBin *) line_member))){
-	    GtkRange *range;
-
-	    range = (GtkRange *) gtk_bin_get_child((GtkBin *) line_member);
-
-	    upper = range->adjustment->upper;
-	    lower = range->adjustment->lower;
-
 	    success = TRUE;
 	  }else if(GTK_IS_SPIN_BUTTON(gtk_bin_get_child((GtkBin *) line_member))){
-	    GtkSpinButton *spin_button;
-
-	    spin_button = (GtkSpinButton *) gtk_bin_get_child((GtkBin *) line_member);
-
-	    upper = spin_button->adjustment->upper;
-	    lower = spin_button->adjustment->lower;
-
 	    success = TRUE;
 	  }else{
 	    g_warning("unsupported child type in conversion");
 	  }
 
 	  if(success){
-	    range = upper - lower;
-	    step = range / val;
-
-	    val = ags_conversion_convert(line_member->conversion,
-					 val,
-					 FALSE);
-	    c_upper = ags_conversion_convert(line_member->conversion,
-					     upper,
-					     FALSE);
-	    c_lower = ags_conversion_convert(line_member->conversion,
-					     lower,
-					     FALSE);
-	    c_range = c_upper - c_lower;
-	    
-	    val = ags_conversion_convert(line_member->conversion,
-					 c_lower + (c_range / step),
-					 TRUE);
+	    port_val = ags_conversion_convert(line_member->conversion,
+					      val,
+					      FALSE);
 	  }
 	}
 
 	g_value_init(&value,
 		     G_TYPE_FLOAT);
+
 	g_value_set_float(&value,
-			  (gfloat) val);
+			  (gfloat) port_val);
       }else if(port->port_value_type == G_TYPE_DOUBLE){
 	gdouble val;
+	gdouble port_val;
 
 	if(GTK_IS_TOGGLE_BUTTON(gtk_bin_get_child((GtkBin *) line_member))){
 	  if(((gboolean *) port_data)[0]){
@@ -1286,6 +1253,8 @@ ags_line_member_real_change_port(AgsLineMember *line_member,
 	}else{
 	  val = ((gdouble *) port_data)[0];
 	}
+	
+	port_val = val;
 	
 	if(line_member->conversion != NULL){
 	  gdouble upper, lower, range, step;
@@ -1296,55 +1265,19 @@ ags_line_member_real_change_port(AgsLineMember *line_member,
 	  success = FALSE;
 	    
 	  if(AGS_IS_DIAL(gtk_bin_get_child((GtkBin *) line_member))){
-	    AgsDial *dial;
-
-	    dial = (AgsDial *) gtk_bin_get_child((GtkBin *) line_member);
-
-	    upper = dial->adjustment->upper;
-	    lower = dial->adjustment->lower;
-
 	    success = TRUE;
 	  }else if(GTK_IS_RANGE(gtk_bin_get_child((GtkBin *) line_member))){
-	    GtkRange *range;
-
-	    range = (GtkRange *) gtk_bin_get_child((GtkBin *) line_member);
-
-	    upper = range->adjustment->upper;
-	    lower = range->adjustment->lower;
-
 	    success = TRUE;
 	  }else if(GTK_IS_SPIN_BUTTON(gtk_bin_get_child((GtkBin *) line_member))){
-	    GtkSpinButton *spin_button;
-
-	    spin_button = (GtkSpinButton *) gtk_bin_get_child((GtkBin *) line_member);
-
-	    upper = spin_button->adjustment->upper;
-	    lower = spin_button->adjustment->lower;
-
 	    success = TRUE;
 	  }else{
 	    g_warning("unsupported child type in conversion");
 	  }
 
 	  if(success){
-	    range = upper - lower;
-	    step = range / val;
-
-	    val = ags_conversion_convert(line_member->conversion,
-					 val,
-					 FALSE);
-	    c_upper = ags_conversion_convert(line_member->conversion,
-					     upper,
-					     FALSE);
-	    c_lower = ags_conversion_convert(line_member->conversion,
-					     lower,
-					     FALSE);
-	    c_range = c_upper - c_lower;
-
-	    
-	    val = ags_conversion_convert(line_member->conversion,
-					 c_lower + (c_range / step),
-					 TRUE);
+	    port_val = ags_conversion_convert(line_member->conversion,
+					      val,
+					      FALSE);
 	  }
 	}
 
@@ -1352,7 +1285,7 @@ ags_line_member_real_change_port(AgsLineMember *line_member,
 		     G_TYPE_DOUBLE);
 
 	g_value_set_double(&value,
-			   val);
+			   port_val);
       }
     }else{
       if(port->port_value_type == G_TYPE_OBJECT){
