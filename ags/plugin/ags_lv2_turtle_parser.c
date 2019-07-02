@@ -1531,6 +1531,7 @@ ags_lv2_turtle_parser_parse(AgsLv2TurtleParser *lv2_turtle_parser,
     gchar *prefix_id_lv2_worker;
     gchar *prefix_id_lv2_atom;
     gchar *prefix_id_lv2_midi;
+    gchar *prefix_id_lv2_port_info;
     gchar *xpath;
 
     gboolean is_plugin, is_ui_plugin;
@@ -1553,6 +1554,7 @@ ags_lv2_turtle_parser_parse(AgsLv2TurtleParser *lv2_turtle_parser,
     prefix_id_lv2_worker = NULL;
     prefix_id_lv2_atom = NULL;
     prefix_id_lv2_midi = NULL;
+    prefix_id_lv2_port_info = NULL;
     
     for(turtle_iter = turtle; turtle_iter[0] != NULL; turtle_iter++){
       gchar *str;
@@ -1605,6 +1607,11 @@ ags_lv2_turtle_parser_parse(AgsLv2TurtleParser *lv2_turtle_parser,
       if((str = g_hash_table_lookup(turtle_iter[0]->prefix_id,
 				    "http://lv2plug.in/ns/ext/midi#")) != NULL){
 	prefix_id_lv2_midi = str;
+      }
+
+      if((str = g_hash_table_lookup(turtle_iter[0]->prefix_id,
+				    "http://lv2plug.in/ns/dev/extportinfo#")) != NULL){
+	prefix_id_lv2_port_info = str;
       }
 
       if(turtle_iter[0] == current_turtle){
@@ -3225,7 +3232,7 @@ ags_lv2_turtle_parser_parse(AgsLv2TurtleParser *lv2_turtle_parser,
 		    g_list_free(start_property_xpath_result);
 
 		    /* logarithmic */
-		    property_xpath = "./rdf-object/rdf-iri/rdf-iriref[text() = '<http://lv2plug.in/ns/lv2core#logarithmic>']";
+		    property_xpath = "./rdf-object/rdf-iri/rdf-iriref[text() = '<http://lv2plug.in/ns/dev/extportinfo#logarithmic>']";
 
 		    property_xpath_result =
 		      start_property_xpath_result = ags_turtle_find_xpath_with_context_node(current_turtle,
@@ -3235,10 +3242,10 @@ ags_lv2_turtle_parser_parse(AgsLv2TurtleParser *lv2_turtle_parser,
 		    if(start_property_xpath_result != NULL){
 		      ags_plugin_port_set_flags(plugin_port,
 						AGS_PLUGIN_PORT_LOGARITHMIC);
-		    }else if(prefix_id_lv2_core != NULL){
+		    }else if(prefix_id_lv2_port_info != NULL){
 		      gchar *prefix_id;
 
-		      prefix_id = prefix_id_lv2_core;
+		      prefix_id = prefix_id_lv2_port_info;
 	
 		      property_xpath = g_strdup_printf("./rdf-object/rdf-iri/rdf-prefixed-name/rdf-pname-ln[text() = '%s%s']",
 						       prefix_id,

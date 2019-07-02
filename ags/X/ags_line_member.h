@@ -78,7 +78,8 @@ struct _AgsLineMember
 
   gchar *control_port;
 
-  guint steps;
+  guint scale_precision;
+  gdouble step_count;
 
   AgsConversion *conversion;
   

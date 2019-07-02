@@ -49,7 +49,7 @@ struct _AgsConversionClass
   GObjectClass gobject;
 
   gdouble (*convert)(AgsConversion *conversion,
-		     gdouble value,
+		     gdouble x,
 		     gboolean reverse);
 };
 
@@ -58,7 +58,7 @@ GType ags_conversion_get_type(void);
 pthread_mutex_t* ags_conversion_get_class_mutex();
 
 gdouble ags_conversion_convert(AgsConversion *conversion,
-			       gdouble value,
+			       gdouble x,
 			       gboolean reverse);
 
 AgsConversion* ags_conversion_new();

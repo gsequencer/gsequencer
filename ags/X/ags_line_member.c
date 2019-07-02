@@ -83,7 +83,8 @@ enum{
   PROP_EFFECT,
   PROP_SPECIFIER,
   PROP_CONTROL_PORT,
-  PROP_STEPS,
+  PROP_SCALE_PRECISION,
+  PROP_STEP_COUNT,
   PROP_CONVERSION,
   PROP_PORT,
   PROP_PORT_DATA,
@@ -266,21 +267,39 @@ ags_line_member_class_init(AgsLineMemberClass *line_member)
 				  param_spec);
 
   /**
-   * AgsLineMember:steps:
+   * AgsLineMember:scale-precision:
    *
    * If line member has integer ports, this is the number of steps.
    * 
-   * Since: 2.0.0
+   * Since: 2.2.8
    */
-  param_spec = g_param_spec_uint("steps",
-				 i18n_pspec("steps of line members port"),
-				 i18n_pspec("The steps this line members port has"),
+  param_spec = g_param_spec_uint("scale-precision",
+				 i18n_pspec("scale precision of line members port"),
+				 i18n_pspec("The scale precision this line members port has"),
 				 0,
 				 G_MAXUINT,
-				 AGS_DIAL_DEFAULT_PRECISION,
+				 (guint) AGS_DIAL_DEFAULT_PRECISION,
 				 G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
-				  PROP_STEPS,
+				  PROP_SCALE_PRECISION,
+				  param_spec);
+
+  /**
+   * AgsLineMember:step-count:
+   *
+   * If line member has logarithmic ports, this is the number of step count.
+   * 
+   * Since: 2.2.8
+   */
+  param_spec = g_param_spec_double("step-count",
+				   i18n_pspec("step count of line members port"),
+				   i18n_pspec("The step count this line members port has"),
+				   0.0,
+				   G_MAXDOUBLE,
+				   AGS_LADSPA_CONVERSION_DEFAULT_STEP_COUNT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_STEP_COUNT,
 				  param_spec);
 
   /**
@@ -459,7 +478,8 @@ ags_line_member_init(AgsLineMember *line_member)
 
   line_member->control_port = NULL;
 
-  line_member->steps = 0;
+  line_member->scale_precision = AGS_DIAL_DEFAULT_PRECISION;
+  line_member->step_count = AGS_LADSPA_CONVERSION_DEFAULT_STEP_COUNT;
 
   line_member->conversion = NULL;
   
@@ -683,23 +703,33 @@ ags_line_member_set_property(GObject *gobject,
       line_member->control_port = g_strdup(control_port);
     }
     break;
-  case PROP_STEPS:
+  case PROP_SCALE_PRECISION:
     {
       GtkWidget *child;
       
-      guint steps;
+      guint scale_precision;
 
-      steps = g_value_get_uint(value);
+      scale_precision = g_value_get_uint(value);
 
-      line_member->steps = steps;
-
+      line_member->scale_precision = scale_precision;
       child = gtk_bin_get_child(GTK_BIN(line_member));
 
       if(AGS_IS_DIAL(child)){
 	g_object_set(child,
-		     "scale-precision", steps,
+		     "scale-precision", scale_precision,
 		     NULL);
       }
+    }
+    break;
+  case PROP_STEP_COUNT:
+    {
+      GtkWidget *child;
+      
+      gdouble step_count;
+
+      step_count = g_value_get_double(value);
+
+      line_member->step_count = step_count;
     }
     break;
   case PROP_CONVERSION:
@@ -868,9 +898,14 @@ ags_line_member_get_property(GObject *gobject,
       g_value_set_string(value, line_member->control_port);
     }
     break;
-  case PROP_STEPS:
+  case PROP_SCALE_PRECISION:
     {
-      g_value_set_uint(value, line_member->steps);
+      g_value_set_uint(value, line_member->scale_precision);
+    }
+    break;
+  case PROP_STEP_COUNT:
+    {
+      g_value_set_double(value, line_member->step_count);
     }
     break;
   case PROP_CONVERSION:

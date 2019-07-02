@@ -1,3 +1,9 @@
+ags (2.2.8)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved AgsBulkMember to support logarithmic ports
+	* TODO:JK: improved AgsLineMember to support logarithmic ports
+
 ags (2.2.7)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

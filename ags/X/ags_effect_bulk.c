@@ -1173,12 +1173,15 @@ ags_effect_bulk_add_ladspa_effect(AgsEffectBulk *effect_bulk,
       gchar *port_name;
 
       guint unique_id;
-      guint step_count;
+      guint scale_precision;
+      gdouble step_count;
       gboolean disable_seemless;
-
+      gboolean do_step_conversion;
+      
       pthread_mutex_t *plugin_port_mutex;
       
       disable_seemless = FALSE;
+      do_step_conversion = FALSE;
       
       if(x == AGS_EFFECT_BULK_COLUMNS_COUNT){
 	x = 0;
@@ -1203,13 +1206,19 @@ ags_effect_bulk_add_ladspa_effect(AgsEffectBulk *effect_bulk,
 	}
       }
       
-      step_count = AGS_DIAL_DEFAULT_PRECISION;
-
+      scale_precision = AGS_DIAL_DEFAULT_PRECISION;
+      step_count = AGS_LADSPA_CONVERSION_DEFAULT_STEP_COUNT;
+      
       if(ags_plugin_port_test_flags(plugin_port->data, AGS_PLUGIN_PORT_INTEGER)){
+	guint scale_steps;
+	
 	g_object_get(plugin_port->data,
-		     "scale-steps", &step_count,
+		     "scale-steps", &scale_steps,
 		     NULL);
 
+	step_count =
+	  scale_precision = (gdouble) scale_steps;
+	
 	disable_seemless = TRUE;	
       }
 
@@ -1243,7 +1252,8 @@ ags_effect_bulk_add_ladspa_effect(AgsEffectBulk *effect_bulk,
 						   "effect", effect,
 						   "specifier", port_name,
 						   "control-port", control_port,
-						   "steps", step_count,
+						   "scale-precision", scale_precision,
+						   "step-count", step_count,
 						   NULL);
 
       child_widget = ags_bulk_member_get_widget(bulk_member);
@@ -1288,6 +1298,8 @@ ags_effect_bulk_add_ladspa_effect(AgsEffectBulk *effect_bulk,
 	}
     
 	ladspa_conversion->flags |= AGS_LADSPA_CONVERSION_LOGARITHMIC;
+
+	do_step_conversion = TRUE;
       }
 
       g_object_set(bulk_member,
@@ -1309,6 +1321,8 @@ ags_effect_bulk_add_ladspa_effect(AgsEffectBulk *effect_bulk,
 	GtkAdjustment *adjustment;
 
 	LADSPA_Data lower_bound, upper_bound;
+	gdouble lower, upper;
+	gdouble control_value;
 	
 	dial = (AgsDial *) child_widget;
 
@@ -1323,26 +1337,47 @@ ags_effect_bulk_add_ladspa_effect(AgsEffectBulk *effect_bulk,
 	upper_bound = g_value_get_float(AGS_PLUGIN_PORT(plugin_port->data)->upper_value);
 
 	pthread_mutex_unlock(plugin_port_mutex);
+
+	if(do_step_conversion){
+	  g_object_set(ladspa_conversion,
+		       "lower", lower_bound,
+		       "upper", upper_bound,
+		       NULL);
+
+	  lower = 0.0;
+	  upper = AGS_LADSPA_CONVERSION_DEFAULT_STEP_COUNT - 1.0;
+
+#if 0
+	  if(!disable_seemless){
+	    g_object_get(ladspa_conversion,
+			 "step-count", &step_count,
+			 NULL);
+	  }
+#endif
+	}else{
+	  lower = lower_bound;
+	  upper = upper_bound;
+	}
 	
 	adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 0.1, 0.1, 0.0);
 	g_object_set(dial,
 		     "adjustment", adjustment,
 		     NULL);
-
-	if(upper_bound >= 0.0 && lower_bound >= 0.0){
-	  step = (upper_bound - lower_bound) / step_count;
-	}else if(upper_bound < 0.0 && lower_bound < 0.0){
-	  step = -1.0 * (lower_bound - upper_bound) / step_count;
+	
+	if(upper >= 0.0 && lower >= 0.0){
+	  step = (upper - lower) / step_count;
+	}else if(upper < 0.0 && lower < 0.0){
+	  step = -1.0 * (lower - upper) / step_count;
 	}else{
-	  step = (upper_bound - lower_bound) / step_count;
+	  step = (upper - lower) / step_count;
 	}
 
 	gtk_adjustment_set_step_increment(adjustment,
 					  step);
 	gtk_adjustment_set_lower(adjustment,
-				 lower_bound);
+				 lower);
 	gtk_adjustment_set_upper(adjustment,
-				 upper_bound);
+				 upper);
 
 	/* get/set default value */
 	pthread_mutex_lock(plugin_port_mutex);
@@ -1350,9 +1385,17 @@ ags_effect_bulk_add_ladspa_effect(AgsEffectBulk *effect_bulk,
 	default_value = g_value_get_float(AGS_PLUGIN_PORT(plugin_port->data)->default_value);
 
 	pthread_mutex_unlock(plugin_port_mutex);
+
+	control_value = default_value;
+	
+	if(ladspa_conversion != NULL){
+	  control_value = ags_conversion_convert(ladspa_conversion,
+						 default_value,
+						 TRUE);
+	}
 	
 	gtk_adjustment_set_value(adjustment,
-				 default_value);
+				 control_value);
       }else if(AGS_IS_INDICATOR(child_widget) ||
 	       AGS_IS_LED(child_widget)){
 	g_hash_table_insert(ags_effect_bulk_indicator_queue_draw,
@@ -1367,7 +1410,7 @@ ags_effect_bulk_add_ladspa_effect(AgsEffectBulk *effect_bulk,
       }
 
 #ifdef AGS_DEBUG
-      g_message("ladspa bounds: %f %f", lower_bound, upper_bound);
+      g_message("ladspa bounds: %f %f", lower, upper);
 #endif
 
       gtk_table_attach(effect_bulk->table,
@@ -1691,12 +1734,15 @@ ags_effect_bulk_add_dssi_effect(AgsEffectBulk *effect_bulk,
       gchar *port_name;
       gchar *control_port;
 
-      guint step_count;
+      guint scale_precision;
+      gdouble step_count;
       gboolean disable_seemless;
+      gboolean do_step_conversion;
 
       pthread_mutex_t *plugin_port_mutex;
 
       disable_seemless = FALSE;
+      do_step_conversion = FALSE;
       
       if(x == AGS_EFFECT_BULK_COLUMNS_COUNT){
 	x = 0;
@@ -1721,12 +1767,18 @@ ags_effect_bulk_add_dssi_effect(AgsEffectBulk *effect_bulk,
 	}
       }
 
-      step_count = AGS_DIAL_DEFAULT_PRECISION;
+      scale_precision = AGS_DIAL_DEFAULT_PRECISION;
+      step_count = AGS_LADSPA_CONVERSION_DEFAULT_STEP_COUNT;
 
       if(ags_plugin_port_test_flags(plugin_port->data, AGS_PLUGIN_PORT_INTEGER)){
+	guint scale_steps;
+	
 	g_object_get(plugin_port->data,
-		     "scale-steps", &step_count,
+		     "scale-steps", &scale_steps,
 		     NULL);
+
+	step_count =
+	  scale_precision = (gdouble) scale_steps;
 
 	disable_seemless = TRUE;	
       }
@@ -1759,7 +1811,8 @@ ags_effect_bulk_add_dssi_effect(AgsEffectBulk *effect_bulk,
 						   "effect", effect,
 						   "specifier", port_name,
 						   "control-port", control_port,
-						   "steps", step_count,
+						   "scale-precision", scale_precision,
+						   "step-count", step_count,
 						   NULL);
       child_widget = ags_bulk_member_get_widget(bulk_member);
 
@@ -1803,6 +1856,8 @@ ags_effect_bulk_add_dssi_effect(AgsEffectBulk *effect_bulk,
 	}
     
 	ladspa_conversion->flags |= AGS_LADSPA_CONVERSION_LOGARITHMIC;
+
+	do_step_conversion = TRUE;
       }
 
       g_object_set(bulk_member,
@@ -1823,7 +1878,9 @@ ags_effect_bulk_add_dssi_effect(AgsEffectBulk *effect_bulk,
 	GtkAdjustment *adjustment;
 
 	LADSPA_Data lower_bound, upper_bound;
+	gdouble lower, upper;
 	LADSPA_Data default_value;
+	gdouble control_value;
 	
 	dial = (AgsDial *) child_widget;
 
@@ -1839,25 +1896,46 @@ ags_effect_bulk_add_dssi_effect(AgsEffectBulk *effect_bulk,
 
 	pthread_mutex_unlock(plugin_port_mutex);
 
+	if(do_step_conversion){
+	  g_object_set(ladspa_conversion,
+		       "lower", lower_bound,
+		       "upper", upper_bound,
+		       NULL);
+
+	  lower = 0.0;
+	  upper = AGS_LADSPA_CONVERSION_DEFAULT_STEP_COUNT - 1.0;
+
+#if 0
+	  if(!disable_seemless){
+	    g_object_get(ladspa_conversion,
+			 "step-count", &step_count,
+			 NULL);
+	  }
+#endif
+	}else{
+	  lower = lower_bound;
+	  upper = upper_bound;
+	}
+	
 	adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 0.1, 0.1, 0.0);
 	g_object_set(dial,
 		     "adjustment", adjustment,
 		     NULL);
 
-	if(upper_bound >= 0.0 && lower_bound >= 0.0){
-	  step = (upper_bound - lower_bound) / step_count;
-	}else if(upper_bound < 0.0 && lower_bound < 0.0){
-	  step = -1.0 * (lower_bound - upper_bound) / step_count;
+	if(upper >= 0.0 && lower >= 0.0){
+	  step = (upper - lower) / step_count;
+	}else if(upper < 0.0 && lower < 0.0){
+	  step = -1.0 * (lower - upper) / step_count;
 	}else{
-	  step = (upper_bound - lower_bound) / step_count;
+	  step = (upper - lower) / step_count;
 	}
 
 	gtk_adjustment_set_step_increment(adjustment,
 					  step);
 	gtk_adjustment_set_lower(adjustment,
-				 lower_bound);
+				 lower);
 	gtk_adjustment_set_upper(adjustment,
-				 upper_bound);
+				 upper);
 
 	pthread_mutex_lock(plugin_port_mutex);
 	
@@ -1865,17 +1943,19 @@ ags_effect_bulk_add_dssi_effect(AgsEffectBulk *effect_bulk,
 
 	pthread_mutex_unlock(plugin_port_mutex);
 
+	control_value = default_value;
+	
 	if(ladspa_conversion != NULL){
-	  //	  default_value = ags_ladspa_conversion_convert(ladspa_conversion,
-	  //						default_value,
-	  //						TRUE);
+	  control_value = ags_conversion_convert(ladspa_conversion,
+						 default_value,
+						 TRUE);
 	}
 	
 	gtk_adjustment_set_value(adjustment,
-				 default_value);
+				 control_value);
 
 #ifdef AGS_DEBUG
-	g_message("dssi bounds: %f %f", lower_bound, upper_bound);
+	g_message("dssi bounds: %f %f", lower, upper);
 #endif
       }else if(AGS_IS_INDICATOR(child_widget) ||
 	       AGS_IS_LED(child_widget)){
@@ -2211,12 +2291,15 @@ ags_effect_bulk_add_lv2_effect(AgsEffectBulk *effect_bulk,
       gchar *plugin_name;
       gchar *control_port;
       
-      guint step_count;
+      guint scale_precision;
+      gdouble step_count;
       gboolean disable_seemless;
+      gboolean do_step_conversion;
 
       pthread_mutex_t *plugin_port_mutex;
 
       disable_seemless = FALSE;
+      do_step_conversion = FALSE;
             
       if(x == AGS_EFFECT_BULK_COLUMNS_COUNT){
 	x = 0;
@@ -2241,12 +2324,18 @@ ags_effect_bulk_add_lv2_effect(AgsEffectBulk *effect_bulk,
 	}
       }
 
-      step_count = AGS_DIAL_DEFAULT_PRECISION;
+      scale_precision = AGS_DIAL_DEFAULT_PRECISION;
+      step_count = AGS_LV2_CONVERSION_DEFAULT_STEP_COUNT;
 
       if((AGS_PLUGIN_PORT_INTEGER & (AGS_PLUGIN_PORT(plugin_port->data)->flags)) != 0){
+	guint scale_steps;
+	
 	g_object_get(plugin_port->data,
-		     "scale-steps", &step_count,
+		     "scale-steps", &scale_steps,
 		     NULL);
+
+	step_count =
+	  scale_precision = (gdouble) scale_steps;
 
 	disable_seemless = TRUE;	
       }
@@ -2281,7 +2370,8 @@ ags_effect_bulk_add_lv2_effect(AgsEffectBulk *effect_bulk,
 						   "effect", effect,
 						   "specifier", port_name,
 						   "control-port", control_port,
-						   "steps", step_count,
+						   "scale-precision", scale_precision,
+						   "step-count", step_count,
 						   NULL);
       child_widget = ags_bulk_member_get_widget(bulk_member);
 
@@ -2292,13 +2382,15 @@ ags_effect_bulk_add_lv2_effect(AgsEffectBulk *effect_bulk,
       /* lv2 conversion */
       lv2_conversion = NULL;
 
-      if((AGS_PLUGIN_PORT_LOGARITHMIC & (AGS_PLUGIN_PORT(plugin_port->data)->flags)) != 0){
+      if(ags_plugin_port_test_flags(plugin_port->data, AGS_PLUGIN_PORT_LOGARITHMIC)){
 	if(lv2_conversion == NULL ||
 	   !AGS_IS_LV2_CONVERSION(lv2_conversion)){
 	  lv2_conversion = ags_lv2_conversion_new();
 	}
     
 	lv2_conversion->flags |= AGS_LV2_CONVERSION_LOGARITHMIC;
+
+	do_step_conversion = TRUE;
       }
 
       g_object_set(bulk_member,
@@ -2319,7 +2411,9 @@ ags_effect_bulk_add_lv2_effect(AgsEffectBulk *effect_bulk,
 	GtkAdjustment *adjustment;
 
 	float lower_bound, upper_bound;
+	gdouble lower, upper;
 	float default_value;
+	gdouble control_value;
 	
 	dial = (AgsDial *) child_widget;
 
@@ -2334,26 +2428,47 @@ ags_effect_bulk_add_lv2_effect(AgsEffectBulk *effect_bulk,
 	upper_bound = g_value_get_float(AGS_PLUGIN_PORT(plugin_port->data)->upper_value);
 
 	pthread_mutex_unlock(plugin_port_mutex);
+
+	if(do_step_conversion){
+	  g_object_set(lv2_conversion,
+		       "lower", lower_bound,
+		       "upper", upper_bound,
+		       NULL);
+
+	  lower = 0.0;
+	  upper = AGS_LV2_CONVERSION_DEFAULT_STEP_COUNT - 1.0;
+	  
+#if 0
+	  if(!disable_seemless){
+	    g_object_get(lv2_conversion,
+			 "step-count", &step_count,
+			 NULL);
+	  }
+#endif
+	}else{
+	  lower = lower_bound;
+	  upper = upper_bound;
+	}
 	
 	adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 0.1, 0.1, 0.0);
 	g_object_set(dial,
 		     "adjustment", adjustment,
 		     NULL);
 
-	if(upper_bound >= 0.0 && lower_bound >= 0.0){
-	  step = (upper_bound - lower_bound) / step_count;
-	}else if(upper_bound < 0.0 && lower_bound < 0.0){
-	  step = -1.0 * (lower_bound - upper_bound) / step_count;
+	if(upper >= 0.0 && lower >= 0.0){
+	  step = (upper - lower) / step_count;
+	}else if(upper < 0.0 && lower < 0.0){
+	  step = -1.0 * (lower - upper) / step_count;
 	}else{
-	  step = (upper_bound - lower_bound) / step_count;
+	  step = (upper - lower) / step_count;
 	}
 	
 	gtk_adjustment_set_step_increment(adjustment,
 					  step);
 	gtk_adjustment_set_lower(adjustment,
-				 lower_bound);
+				 lower);
 	gtk_adjustment_set_upper(adjustment,
-				 upper_bound);
+				 upper);
 
 	/* get/set default value */
 	pthread_mutex_lock(plugin_port_mutex);
@@ -2362,8 +2477,16 @@ ags_effect_bulk_add_lv2_effect(AgsEffectBulk *effect_bulk,
 
 	pthread_mutex_unlock(plugin_port_mutex);
 
+	control_value = default_value;
+	
+	if(lv2_conversion != NULL){
+	  control_value = ags_conversion_convert(lv2_conversion,
+						 default_value,
+						 TRUE);
+	}
+
 	gtk_adjustment_set_value(adjustment,
-				 default_value);
+				 control_value);
       }else if(AGS_IS_INDICATOR(child_widget) ||
 	       AGS_IS_LED(child_widget)){
 	g_hash_table_insert(ags_effect_bulk_indicator_queue_draw,
@@ -2378,7 +2501,7 @@ ags_effect_bulk_add_lv2_effect(AgsEffectBulk *effect_bulk,
       }
 
 #ifdef AGS_DEBUG
-      g_message("lv2 bounds: %f %f", lower_bound, upper_bound);
+      g_message("lv2 bounds: %f %f", lower, upper);
 #endif
       
       gtk_table_attach(effect_bulk->table,

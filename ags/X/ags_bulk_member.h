@@ -82,7 +82,8 @@ struct _AgsBulkMember
 
   gchar *control_port;
 
-  guint steps;
+  guint scale_precision;
+  gdouble step_count;
 
   AgsConversion *conversion;
   
