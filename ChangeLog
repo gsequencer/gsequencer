@@ -5,6 +5,7 @@ ags (2.2.8)
 	* improved AgsLine, AgsEffectLine and AgsLineMember to support logarithmic ports
 	* improved AgsAutomationArea to support logarithmic ports
 	* improved AgsLine to properly support GtkRange and GtkSpinButton
+	* TODO:JK: fixed synced Lv2ui controls
 
 ags (2.2.7)
 

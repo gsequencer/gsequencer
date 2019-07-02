@@ -1067,6 +1067,11 @@ ags_automation_toolbar_apply_port(AgsAutomationToolbar *automation_toolbar,
 		 "default-value", default_value,
 		 NULL);
 
+    if(plugin_port != NULL &&
+       ags_plugin_port_test_flags(plugin_port, AGS_PLUGIN_PORT_LOGARITHMIC)){
+      automation_edit->flags |= AGS_AUTOMATION_EDIT_LOGARITHMIC;
+    }
+    
     if(channel_type == G_TYPE_NONE){
       gtk_box_pack_start((GtkBox *) automation_editor->audio_scrolled_automation_edit_box->automation_edit_box,
 			 (GtkWidget *) automation_edit,
