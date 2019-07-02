@@ -544,9 +544,18 @@ ags_live_lv2_bridge_program_changed_callback(GtkComboBox *combo_box, AgsLiveLv2B
 					       TRUE);
 		}
 	      }else if(AGS_IS_DIAL(child_widget)){
+		gfloat port_val;
 		gdouble val;
 
-		val = live_lv2_bridge->port_value[i];
+		port_val = live_lv2_bridge->port_value[i];
+
+		val = port_val;
+
+		if(AGS_BULK_MEMBER(bulk_member->data)->conversion != NULL){
+		  val = ags_conversion_convert(AGS_BULK_MEMBER(bulk_member->data)->conversion,
+					       port_val,
+					       TRUE);
+		}
 		
 		AGS_DIAL(child_widget)->adjustment->value = val;
 		ags_dial_draw((AgsDial *) child_widget);
@@ -592,8 +601,6 @@ ags_live_lv2_bridge_preset_changed_callback(GtkComboBox *combo_box, AgsLiveLv2Br
 
   gchar *preset_label;
   
-  gdouble value;
-  
   preset_label = gtk_combo_box_text_get_active_text(GTK_COMBO_BOX_TEXT(combo_box));
 
   /* retrieve lv2 plugin */
@@ -632,7 +639,12 @@ ags_live_lv2_bridge_preset_changed_callback(GtkComboBox *combo_box, AgsLiveLv2Br
 					      AGS_LV2_PORT_PRESET(port_preset->data)->port_symbol);
 
     if(plugin_port != NULL){
-      value = (gdouble) g_value_get_float(AGS_LV2_PORT_PRESET(port_preset->data)->port_value);
+      gfloat port_value;
+      gdouble value;
+      
+      port_value = g_value_get_float(AGS_LV2_PORT_PRESET(port_preset->data)->port_value);
+
+      value = port_value;
     
       list_start = 
 	list = gtk_container_get_children(container);
@@ -659,9 +671,9 @@ ags_live_lv2_bridge_preset_changed_callback(GtkComboBox *combo_box, AgsLiveLv2Br
 	  }else if(AGS_IS_DIAL(child_widget)){
 	    
 	    if(lv2_conversion != NULL){
-	      //	      val = ags_lv2_conversion_convert(lv2_conversion,
-	      //				  value,
-	      //				  TRUE);
+	      value = ags_conversion_convert(lv2_conversion,
+					     port_value,
+					     TRUE);
 	    }
 	    
 	    gtk_adjustment_set_value(AGS_DIAL(child_widget)->adjustment,
