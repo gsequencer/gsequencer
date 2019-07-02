@@ -88,9 +88,10 @@ ags_automation_edit_drawing_area_button_press_event(GtkWidget *widget, GdkEventB
       lower = automation_edit->lower;
       upper = automation_edit->upper;
 
-      step_count = AGS_AUTOMATION_EDIT_DEFAULT_UPPER + 1.0;
+      step_count = AGS_AUTOMATION_EDIT_DEFAULT_HEIGHT + 1.0;
 
-      step = GTK_WIDGET(automation_edit->drawing_area)->allocation.height - event->y;
+      step = (gdouble) GTK_WIDGET(automation_edit->drawing_area)->allocation.height - (gdouble) event->y;
+      
       automation_edit->cursor_position_y = lower * pow(upper / lower, step / (step_count - 1));
     }else{
       automation_edit->cursor_position_y = (((GTK_WIDGET(automation_edit->drawing_area)->allocation.height - event->y) / g_range) * c_range);
@@ -130,9 +131,10 @@ ags_automation_edit_drawing_area_button_press_event(GtkWidget *widget, GdkEventB
       lower = automation_edit->lower;
       upper = automation_edit->upper;
 
-      step_count = AGS_AUTOMATION_EDIT_DEFAULT_UPPER + 1.0;
+      step_count = AGS_AUTOMATION_EDIT_DEFAULT_HEIGHT + 1.0;
 
-      step = GTK_WIDGET(automation_edit->drawing_area)->allocation.height - event->y;
+      step = (gdouble) GTK_WIDGET(automation_edit->drawing_area)->allocation.height - (gdouble) event->y;
+
       acceleration->y = lower * pow(upper / lower, step / (step_count - 1));
     }else{
       acceleration->y = (((GTK_WIDGET(automation_edit->drawing_area)->allocation.height - event->y) / g_range) * c_range);
@@ -235,9 +237,9 @@ ags_automation_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEven
       lower = automation_edit->lower;
       upper = automation_edit->upper;
 
-      step_count = AGS_AUTOMATION_EDIT_DEFAULT_UPPER + 1.0;
+      step_count = AGS_AUTOMATION_EDIT_DEFAULT_HEIGHT + 1.0;
 
-      step = GTK_WIDGET(automation_edit->drawing_area)->allocation.height - event->y;
+      step = (gdouble) GTK_WIDGET(automation_edit->drawing_area)->allocation.height - (gdouble) event->y;
       automation_edit->cursor_position_y = lower * pow(upper / lower, step / (step_count - 1));
     }else{
       automation_edit->cursor_position_y = (((GTK_WIDGET(automation_edit->drawing_area)->allocation.height - event->y) / g_range) * c_range);
@@ -282,9 +284,10 @@ ags_automation_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEven
       lower = automation_edit->lower;
       upper = automation_edit->upper;
 
-      step_count = AGS_AUTOMATION_EDIT_DEFAULT_UPPER + 1.0;
+      step_count = AGS_AUTOMATION_EDIT_DEFAULT_HEIGHT + 1.0;
 
-      step = GTK_WIDGET(automation_edit->drawing_area)->allocation.height - event->y;
+      step = (gdouble) GTK_WIDGET(automation_edit->drawing_area)->allocation.height - (gdouble) event->y;
+
       acceleration->y = lower * pow(upper / lower, step / (step_count - 1));
     }else{
       acceleration->y = (((GTK_WIDGET(automation_edit->drawing_area)->allocation.height - event->y) / g_range) * c_range);
@@ -330,9 +333,9 @@ ags_automation_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEven
       lower = automation_edit->lower;
       upper = automation_edit->upper;
 
-      step_count = AGS_AUTOMATION_EDIT_DEFAULT_UPPER + 1.0;
+      step_count = AGS_AUTOMATION_EDIT_DEFAULT_HEIGHT + 1.0;
 
-      step = GTK_WIDGET(automation_edit->drawing_area)->allocation.height - event->y;
+      step = (gdouble) GTK_WIDGET(automation_edit->drawing_area)->allocation.height - (gdouble) event->y;
       y = lower * pow(upper / lower, step / (step_count - 1));
     }else{
       y = (((GTK_WIDGET(automation_edit->drawing_area)->allocation.height - event->y) / g_range) * c_range);
@@ -371,10 +374,11 @@ ags_automation_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEven
       lower = automation_edit->lower;
       upper = automation_edit->upper;
 
-      step_count = AGS_AUTOMATION_EDIT_DEFAULT_UPPER + 1.0;
+      step_count = AGS_AUTOMATION_EDIT_DEFAULT_HEIGHT + 1.0;
 
-      value = GTK_WIDGET(automation_edit->drawing_area)->allocation.height - automation_edit->selection_y0;
-      y0 = (step_count - 1) * log(value / lower) / log(upper / lower);
+      step = (gdouble) GTK_WIDGET(automation_edit->drawing_area)->allocation.height - (gdouble) automation_edit->selection_y0;
+      
+      y0 = lower * pow(upper / lower, step / (step_count - 1));
     }else{
       y0 = ((gdouble) (GTK_WIDGET(automation_edit->drawing_area)->allocation.height - automation_edit->selection_y0) / g_range) * c_range;
     }
@@ -385,10 +389,11 @@ ags_automation_edit_drawing_area_button_release_event(GtkWidget *widget, GdkEven
       lower = automation_edit->lower;
       upper = automation_edit->upper;
 
-      step_count = AGS_AUTOMATION_EDIT_DEFAULT_UPPER + 1.0;
+      step_count = AGS_AUTOMATION_EDIT_DEFAULT_HEIGHT + 1.0;
 
-      value = GTK_WIDGET(automation_edit->drawing_area)->allocation.height - event->y;
-      y1 = (step_count - 1) * log(value / lower) / log(upper / lower);
+      step = (gdouble) GTK_WIDGET(automation_edit->drawing_area)->allocation.height - (gdouble) event->y;
+      
+      y1 = lower * pow(upper / lower, step / (step_count - 1));
     }else{
       y1 = (((GTK_WIDGET(automation_edit->drawing_area)->allocation.height - event->y) + GTK_RANGE(automation_edit->vscrollbar)->adjustment->value) / g_range) * c_range;
     }
@@ -467,9 +472,9 @@ ags_automation_edit_drawing_area_motion_notify_event(GtkWidget *widget, GdkEvent
       lower = automation_edit->lower;
       upper = automation_edit->upper;
 
-      step_count = AGS_AUTOMATION_EDIT_DEFAULT_UPPER + 1.0;
+      step_count = AGS_AUTOMATION_EDIT_DEFAULT_HEIGHT + 1.0;
 
-      step = GTK_WIDGET(automation_edit->drawing_area)->allocation.height - event->y;
+      step = (gdouble) GTK_WIDGET(automation_edit->drawing_area)->allocation.height - (gdouble) event->y;
       automation_edit->cursor_position_y = lower * pow(upper / lower, step / (step_count - 1));
     }else{
       automation_edit->cursor_position_y = (((GTK_WIDGET(automation_edit->drawing_area)->allocation.height - event->y) / g_range) * c_range);
@@ -517,9 +522,10 @@ ags_automation_edit_drawing_area_motion_notify_event(GtkWidget *widget, GdkEvent
       lower = automation_edit->lower;
       upper = automation_edit->upper;
 
-      step_count = AGS_AUTOMATION_EDIT_DEFAULT_UPPER + 1.0;
+      step_count = AGS_AUTOMATION_EDIT_DEFAULT_HEIGHT + 1.0;
 
-      step = GTK_WIDGET(automation_edit->drawing_area)->allocation.height - event->y;
+      step = (gdouble) GTK_WIDGET(automation_edit->drawing_area)->allocation.height - (gdouble) event->y;
+
       acceleration->y = lower * pow(upper / lower, step / (step_count - 1));
     }else{
       acceleration->y = (((GTK_WIDGET(automation_edit->drawing_area)->allocation.height - event->y) / g_range) * c_range);

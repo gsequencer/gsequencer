@@ -1065,6 +1065,8 @@ ags_automation_toolbar_apply_port(AgsAutomationToolbar *automation_toolbar,
 		 "upper", upper,
 		 "lower", lower,
 		 "default-value", default_value,
+		 "upper", upper,
+		 "lower", lower,
 		 NULL);
 
     if(plugin_port != NULL &&

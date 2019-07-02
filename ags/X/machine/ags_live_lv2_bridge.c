@@ -743,8 +743,11 @@ void
 ags_live_lv2_bridge_connect(AgsConnectable *connectable)
 {
   AgsLiveLv2Bridge *live_lv2_bridge;
+  AgsEffectBridge *effect_bridge;
+  AgsBulkMember *bulk_member;
+  GtkWidget *control;
 
-  GList *list;
+  GList *list, *list_start;
   
   if((AGS_MACHINE_CONNECTED & (AGS_MACHINE(connectable)->flags)) != 0){
     return;
@@ -755,16 +758,58 @@ ags_live_lv2_bridge_connect(AgsConnectable *connectable)
   live_lv2_bridge = AGS_LIVE_LV2_BRIDGE(connectable);
 
   /* menu */
-  list = gtk_container_get_children((GtkContainer *) live_lv2_bridge->lv2_menu);
+  list =
+    list_start = gtk_container_get_children((GtkContainer *) live_lv2_bridge->lv2_menu);
 
   g_signal_connect(G_OBJECT(list->data), "activate",
 		   G_CALLBACK(ags_live_lv2_bridge_show_gui_callback), live_lv2_bridge);
+
+  g_list_free(list_start);
 
   /* program */
   if(live_lv2_bridge->program != NULL){
     g_signal_connect_after(G_OBJECT(live_lv2_bridge->program), "changed",
 			   G_CALLBACK(ags_live_lv2_bridge_program_changed_callback), live_lv2_bridge);
   }
+
+  /* bulk member */
+  effect_bridge = AGS_EFFECT_BRIDGE(AGS_MACHINE(live_lv2_bridge)->bridge);
+  
+  list =
+    list_start = gtk_container_get_children((GtkContainer *) AGS_EFFECT_BULK(effect_bridge->bulk_input)->table);
+
+  while(list != NULL){
+    bulk_member = list->data;
+
+    control = gtk_bin_get_child(GTK_BIN(bulk_member));
+
+    if(bulk_member->widget_type == AGS_TYPE_DIAL){
+      g_signal_connect_after(GTK_WIDGET(control), "value-changed",
+			     G_CALLBACK(ags_live_lv2_bridge_dial_changed_callback), live_lv2_bridge);
+    }else if(bulk_member->widget_type == GTK_TYPE_VSCALE){
+      g_signal_connect_after(GTK_WIDGET(control), "value-changed",
+			     G_CALLBACK(ags_live_lv2_bridge_vscale_changed_callback), live_lv2_bridge);
+    }else if(bulk_member->widget_type == GTK_TYPE_HSCALE){
+      g_signal_connect_after(GTK_WIDGET(control), "value-changed",
+			     G_CALLBACK(ags_live_lv2_bridge_hscale_changed_callback), live_lv2_bridge);
+    }else if(bulk_member->widget_type == GTK_TYPE_SPIN_BUTTON){
+      g_signal_connect_after(GTK_WIDGET(control), "value-changed",
+			     G_CALLBACK(ags_live_lv2_bridge_spin_button_changed_callback), live_lv2_bridge);
+    }else if(bulk_member->widget_type == GTK_TYPE_CHECK_BUTTON){
+      g_signal_connect_after(GTK_WIDGET(control), "clicked",
+			     G_CALLBACK(ags_live_lv2_bridge_check_button_clicked_callback), live_lv2_bridge);
+    }else if(bulk_member->widget_type == GTK_TYPE_TOGGLE_BUTTON){
+      g_signal_connect_after(GTK_WIDGET(control), "clicked",
+			     G_CALLBACK(ags_live_lv2_bridge_toggle_button_clicked_callback), live_lv2_bridge);
+    }else if(bulk_member->widget_type == GTK_TYPE_BUTTON){
+      g_signal_connect_after(GTK_WIDGET(control), "clicked",
+			     G_CALLBACK(ags_live_lv2_bridge_button_clicked_callback), live_lv2_bridge);
+    }
+
+    list = list->next;
+  }
+
+  g_list_free(list_start);
 }
 
 void

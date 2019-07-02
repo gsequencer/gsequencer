@@ -80,6 +80,7 @@ struct _AgsBulkMember
   gchar *plugin_name;
   gchar *specifier;
 
+  guint port_index;
   gchar *control_port;
 
   guint scale_precision;

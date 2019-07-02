@@ -197,17 +197,18 @@ ags_live_lv2_bridge_show_gui_callback(GtkMenuItem *item, AgsLiveLv2Bridge *live_
       float val;
 
       child_widget = gtk_bin_get_child(GTK_BIN(AGS_BULK_MEMBER(list_bulk_member->data)));
-      sscanf(AGS_BULK_MEMBER(list_bulk_member->data)->control_port,
-	     "%d/",
-	     &port_index);
 
-      if(port_index > 0){
-	port_index--;
-      }
+      port_index = AGS_BULK_MEMBER(list_bulk_member->data)->port_index;
       
       if(AGS_IS_DIAL(child_widget)){
 	val = AGS_DIAL(child_widget)->adjustment->value;
 	    
+	if(AGS_BULK_MEMBER(list_bulk_member->data)->conversion != NULL){
+	  val = (gfloat) ags_conversion_convert(AGS_BULK_MEMBER(list_bulk_member->data)->conversion,
+						val,
+						FALSE);
+	}
+
 	live_lv2_bridge->ui_descriptor->port_event(live_lv2_bridge->ui_handle,
 						   port_index,
 						   sizeof(float),
@@ -216,6 +217,12 @@ ags_live_lv2_bridge_show_gui_callback(GtkMenuItem *item, AgsLiveLv2Bridge *live_
       }else if(GTK_IS_SPIN_BUTTON(child_widget)){
 	val = GTK_SPIN_BUTTON(child_widget)->adjustment->value;
 	    
+	if(AGS_BULK_MEMBER(list_bulk_member->data)->conversion != NULL){
+	  val = (gfloat) ags_conversion_convert(AGS_BULK_MEMBER(list_bulk_member->data)->conversion,
+						val,
+						FALSE);
+	}
+
 	live_lv2_bridge->ui_descriptor->port_event(live_lv2_bridge->ui_handle,
 						   port_index,
 						   sizeof(float),
@@ -224,6 +231,12 @@ ags_live_lv2_bridge_show_gui_callback(GtkMenuItem *item, AgsLiveLv2Bridge *live_
       }else if(GTK_IS_SCALE(child_widget)){
 	val = GTK_RANGE(child_widget)->adjustment->value;
 	    
+	if(AGS_BULK_MEMBER(list_bulk_member->data)->conversion != NULL){
+	  val = (gfloat) ags_conversion_convert(AGS_BULK_MEMBER(list_bulk_member->data)->conversion,
+						val,
+						FALSE);
+	}
+
 	live_lv2_bridge->ui_descriptor->port_event(live_lv2_bridge->ui_handle,
 						   port_index,
 						   sizeof(float),
@@ -232,6 +245,12 @@ ags_live_lv2_bridge_show_gui_callback(GtkMenuItem *item, AgsLiveLv2Bridge *live_
       }else if(GTK_IS_TOGGLE_BUTTON(child_widget)){
 	val = ((gtk_toggle_button_get_active(child_widget)) ? 1.0: 0.0);
 	    
+	if(AGS_BULK_MEMBER(list_bulk_member->data)->conversion != NULL){
+	  val = (gfloat) ags_conversion_convert(AGS_BULK_MEMBER(list_bulk_member->data)->conversion,
+						val,
+						FALSE);
+	}
+
 	live_lv2_bridge->ui_descriptor->port_event(live_lv2_bridge->ui_handle,
 						   port_index,
 						   sizeof(float),
@@ -240,6 +259,12 @@ ags_live_lv2_bridge_show_gui_callback(GtkMenuItem *item, AgsLiveLv2Bridge *live_
       }else if(GTK_IS_BUTTON(child_widget)){
 	val = 0.0;
 	    
+	if(AGS_BULK_MEMBER(list_bulk_member->data)->conversion != NULL){
+	  val = (gfloat) ags_conversion_convert(AGS_BULK_MEMBER(list_bulk_member->data)->conversion,
+						val,
+						FALSE);
+	}
+
 	live_lv2_bridge->ui_descriptor->port_event(live_lv2_bridge->ui_handle,
 						   port_index,
 						   sizeof(float),
@@ -314,120 +339,76 @@ ags_live_lv2_bridge_lv2ui_cleanup_function(LV2UI_Handle handle)
 void
 ags_live_lv2_bridge_lv2ui_write_function(LV2UI_Controller controller, uint32_t port_index, uint32_t buffer_size, uint32_t port_protocol, const void *buffer)
 {
-  AgsLiveLv2Bridge *live_lv2_bridge;
-  GtkWidget *widget;
+  AgsLiveLv2Bridge *live_lv2_bridge;  
+  AgsEffectBridge *effect_bridge;
+  GtkWidget *child_widget;
 
-  AgsAudio *audio;
-  AgsPlayLv2Audio *play_lv2_audio;
-  
-  GList *effect_plugin;
-  GList *start_play;
-  GList *start_recall;
-  GList *start_effect, *effect;
-  GList *port;
+  GList *list_bulk_member, *list_bulk_member_start;
 
-  gchar *control_port;
+  gfloat val;
 
-  GValue value = {0,};
-  
   live_lv2_bridge = (AgsLiveLv2Bridge *) controller;
   
   if(live_lv2_bridge == NULL){
     g_warning("ags_live_lv2_bridge_lv2ui_write_function() - live_lv2_bridge == NULL");
+
     return;
   }
 
-  audio = AGS_MACHINE(live_lv2_bridge)->audio;
- 
-  switch(port_protocol){
-  case 0:
-    {
-      if(buffer_size == sizeof(float)){
-	g_value_init(&value, G_TYPE_FLOAT);
-	g_value_set_float(&value, * ((float *) buffer));
-      }else{
-	g_value_init(&value, G_TYPE_POINTER);
-	g_value_set_pointer(&value, buffer);
-      }
-    }
-    break;
-  default:
-    g_warning("unknown lv2 port protocol");
+  if((AGS_LIVE_LV2_BRIDGE_NO_UPDATE & (live_lv2_bridge->flags)) != 0){
+    return;
+  }
+  
+  if(port_protocol != 0){
+    g_warning("ags_live_lv2_bridge_lv2ui_write_function() - unknown lv2 port protocol");
+
+    return;
   }
 
-  g_object_get(audio,
-	       "play", &start_play,
-	       "recall", &start_recall,
-	       NULL);
+  effect_bridge = AGS_EFFECT_BRIDGE(AGS_MACHINE(live_lv2_bridge)->bridge);
   
-  /* play */
-  effect =
-    start_effect = ags_recall_get_by_effect(start_play,
-					    live_lv2_bridge->filename, live_lv2_bridge->effect);
-  
-  if(effect != NULL){
-    play_lv2_audio = effect->data;
+  list_bulk_member =
+    list_bulk_member_start = gtk_container_get_children((GtkContainer *) AGS_EFFECT_BULK(effect_bridge->bulk_input)->table);
 
-    port = AGS_RECALL(play_lv2_audio)->port;
-    control_port = g_strdup_printf("%d/%d",
-				   port_index + 1,
-				   g_list_length(port));
-	
-    while(port != NULL){
-      if(!g_ascii_strncasecmp(AGS_PORT(port->data)->control_port,
-			      control_port,
-			      strlen(control_port))){
-	ags_port_safe_write(port->data,
-			    &value);
-	    
-	break;
+  while(list_bulk_member != NULL){
+    if(port_index == AGS_BULK_MEMBER(list_bulk_member->data)->port_index){
+      live_lv2_bridge->flags |= AGS_LIVE_LV2_BRIDGE_NO_UPDATE;
+
+      child_widget = gtk_bin_get_child(GTK_BIN(AGS_BULK_MEMBER(list_bulk_member->data)));
+
+      val = ((float *) buffer)[0];
+
+      if(AGS_BULK_MEMBER(list_bulk_member->data)->conversion != NULL){
+	val = (gfloat) ags_conversion_convert(AGS_BULK_MEMBER(list_bulk_member->data)->conversion,
+					      val,
+					      TRUE);
       }
-	  
-      port = port->next;
+      
+      if(AGS_IS_DIAL(child_widget)){
+	ags_dial_set_value((AgsDial *) child_widget,
+			   val);	
+      }else if(GTK_IS_SPIN_BUTTON(child_widget)){
+	gtk_spin_button_set_value((GtkSpinButton *) child_widget,
+				  val);
+      }else if(GTK_IS_SCALE(child_widget)){
+	gtk_range_set_value((GtkRange *) child_widget,
+			    val);
+      }else if(GTK_IS_TOGGLE_BUTTON(child_widget)){
+	gtk_toggle_button_set_active((GtkToggleButton *) child_widget,
+				     ((val != 0.0) ? TRUE: FALSE));
+      }else if(GTK_IS_BUTTON(child_widget)){
+	gtk_button_clicked((GtkButton *) child_widget);
+      }
+	      
+      live_lv2_bridge->flags &= (~AGS_LIVE_LV2_BRIDGE_NO_UPDATE);
+      
+      break;
     }
 
-    free(control_port);
+    list_bulk_member = list_bulk_member->next;
   }
 
-  g_list_free_full(start_effect,
-		   g_object_unref);
-
-  /* recall */
-  effect =
-    start_effect = ags_recall_get_by_effect(start_recall,
-					    live_lv2_bridge->filename, live_lv2_bridge->effect);
-  
-  if(effect != NULL){
-    play_lv2_audio = effect->data;
-
-    port = AGS_RECALL(play_lv2_audio)->port;
-    control_port = g_strdup_printf("%d/%d",
-				   port_index + 1,
-				   g_list_length(port));
-	
-    while(port != NULL){
-      if(!g_ascii_strncasecmp(AGS_PORT(port->data)->control_port,
-			      control_port,
-			      strlen(control_port))){
-	ags_port_safe_write(port->data,
-			    &value);
-	    
-	break;
-      }
-	  
-      port = port->next;
-    }
-
-    free(control_port);
-  }
-
-  g_list_free_full(start_effect,
-		   g_object_unref);
-
-  g_list_free_full(start_play,
-		   g_object_unref);
-  g_list_free_full(start_recall,
-		   g_object_unref);
+  g_list_free(list_bulk_member_start);
 }
 
 void
@@ -705,4 +686,283 @@ ags_live_lv2_bridge_preset_changed_callback(GtkComboBox *combo_box, AgsLiveLv2Br
 		   g_object_unref);
 
   g_list_free(start_port_preset);
+}
+
+void
+ags_live_lv2_bridge_dial_changed_callback(GtkWidget *dial, AgsLiveLv2Bridge *live_lv2_bridge)
+{
+  AgsBulkMember *bulk_member;
+  GtkAdjustment *adjustment;
+
+  uint32_t port_index;
+  float val;
+
+  if((AGS_LIVE_LV2_BRIDGE_NO_UPDATE & (live_lv2_bridge->flags)) != 0 ||
+     live_lv2_bridge->ui_handle == NULL){
+    return;
+  }
+
+  bulk_member = (AgsBulkMember *) gtk_widget_get_ancestor(dial,
+							  AGS_TYPE_BULK_MEMBER);
+
+  g_object_get(dial,
+	       "adjustment", &adjustment,
+	       NULL);
+
+  port_index = bulk_member->port_index;
+  val = adjustment->value;
+  
+  if(bulk_member->conversion != NULL){
+    val = (gfloat) ags_conversion_convert(bulk_member->conversion,
+					  val,
+					  FALSE);
+  }
+  
+  live_lv2_bridge->flags |= AGS_LIVE_LV2_BRIDGE_NO_UPDATE;
+
+  live_lv2_bridge->ui_descriptor->port_event(live_lv2_bridge->ui_handle,
+					port_index,
+					sizeof(float),
+					0,
+					&val);
+  
+  live_lv2_bridge->flags &= (~AGS_LIVE_LV2_BRIDGE_NO_UPDATE);
+}
+
+void
+ags_live_lv2_bridge_vscale_changed_callback(GtkWidget *vscale, AgsLiveLv2Bridge *live_lv2_bridge)
+{
+  AgsBulkMember *bulk_member;
+  GtkAdjustment *adjustment;
+
+  uint32_t port_index;
+  float val;
+
+  if((AGS_LIVE_LV2_BRIDGE_NO_UPDATE & (live_lv2_bridge->flags)) != 0 ||
+     live_lv2_bridge->ui_handle == NULL){
+    return;
+  }
+
+  bulk_member = (AgsBulkMember *) gtk_widget_get_ancestor(vscale,
+							  AGS_TYPE_BULK_MEMBER);
+
+  g_object_get(vscale,
+	       "adjustment", &adjustment,
+	       NULL);
+
+  port_index = bulk_member->port_index;  val = adjustment->value;
+  
+  if(bulk_member->conversion != NULL){
+    val = (gfloat) ags_conversion_convert(bulk_member->conversion,
+					  val,
+					  FALSE);
+  }
+
+  live_lv2_bridge->flags |= AGS_LIVE_LV2_BRIDGE_NO_UPDATE;
+
+  live_lv2_bridge->ui_descriptor->port_event(live_lv2_bridge->ui_handle,
+					port_index,
+					sizeof(float),
+					0,
+					&val);
+  
+  live_lv2_bridge->flags &= (~AGS_LIVE_LV2_BRIDGE_NO_UPDATE);
+}
+
+void
+ags_live_lv2_bridge_hscale_changed_callback(GtkWidget *hscale, AgsLiveLv2Bridge *live_lv2_bridge)
+{
+  AgsBulkMember *bulk_member;
+  GtkAdjustment *adjustment;
+
+  uint32_t port_index;
+  float val;
+
+  if((AGS_LIVE_LV2_BRIDGE_NO_UPDATE & (live_lv2_bridge->flags)) != 0 ||
+     live_lv2_bridge->ui_handle == NULL){
+    return;
+  }
+
+  bulk_member = (AgsBulkMember *) gtk_widget_get_ancestor(hscale,
+							  AGS_TYPE_BULK_MEMBER);
+
+  g_object_get(hscale,
+	       "adjustment", &adjustment,
+	       NULL);
+
+  port_index = bulk_member->port_index;  val = adjustment->value;
+  
+  if(bulk_member->conversion != NULL){
+    val = (gfloat) ags_conversion_convert(bulk_member->conversion,
+					  val,
+					  FALSE);
+  }
+
+  live_lv2_bridge->flags |= AGS_LIVE_LV2_BRIDGE_NO_UPDATE;
+
+  live_lv2_bridge->ui_descriptor->port_event(live_lv2_bridge->ui_handle,
+					port_index,
+					sizeof(float),
+					0,
+					&val);
+  
+  live_lv2_bridge->flags &= (~AGS_LIVE_LV2_BRIDGE_NO_UPDATE);
+}
+
+void
+ags_live_lv2_bridge_spin_button_changed_callback(GtkWidget *spin_button, AgsLiveLv2Bridge *live_lv2_bridge)
+{
+  AgsBulkMember *bulk_member;
+  GtkAdjustment *adjustment;
+
+  uint32_t port_index;
+  float val;
+
+  if((AGS_LIVE_LV2_BRIDGE_NO_UPDATE & (live_lv2_bridge->flags)) != 0 ||
+     live_lv2_bridge->ui_handle == NULL){
+    return;
+  }
+
+  bulk_member = (AgsBulkMember *) gtk_widget_get_ancestor(spin_button,
+							  AGS_TYPE_BULK_MEMBER);
+
+  g_object_get(spin_button,
+	       "adjustment", &adjustment,
+	       NULL);
+
+  port_index = bulk_member->port_index;  val = adjustment->value;
+  
+  if(bulk_member->conversion != NULL){
+    val = (gfloat) ags_conversion_convert(bulk_member->conversion,
+					  val,
+					  FALSE);
+  }
+
+  live_lv2_bridge->flags |= AGS_LIVE_LV2_BRIDGE_NO_UPDATE;
+
+  live_lv2_bridge->ui_descriptor->port_event(live_lv2_bridge->ui_handle,
+					port_index,
+					sizeof(float),
+					0,
+					&val);
+  
+  live_lv2_bridge->flags &= (~AGS_LIVE_LV2_BRIDGE_NO_UPDATE);
+}
+
+void
+ags_live_lv2_bridge_check_button_clicked_callback(GtkWidget *check_button, AgsLiveLv2Bridge *live_lv2_bridge)
+{
+  AgsBulkMember *bulk_member;
+  GtkAdjustment *adjustment;
+
+  gboolean is_active;
+  uint32_t port_index;
+  float val;
+
+  if((AGS_LIVE_LV2_BRIDGE_NO_UPDATE & (live_lv2_bridge->flags)) != 0 ||
+     live_lv2_bridge->ui_handle == NULL){
+    return;
+  }
+
+  bulk_member = (AgsBulkMember *) gtk_widget_get_ancestor(check_button,
+							  AGS_TYPE_BULK_MEMBER);
+
+  is_active = gtk_toggle_button_get_active((GtkToggleButton *) check_button);
+  
+  port_index = bulk_member->port_index;
+  val = is_active ? 1.0: 0.0;
+  
+  if(bulk_member->conversion != NULL){
+    val = (gfloat) ags_conversion_convert(bulk_member->conversion,
+					  val,
+					  FALSE);
+  }
+
+  live_lv2_bridge->flags |= AGS_LIVE_LV2_BRIDGE_NO_UPDATE;
+
+  live_lv2_bridge->ui_descriptor->port_event(live_lv2_bridge->ui_handle,
+					port_index,
+					sizeof(float),
+					0,
+					&val);
+  
+  live_lv2_bridge->flags &= (~AGS_LIVE_LV2_BRIDGE_NO_UPDATE);
+}
+
+void
+ags_live_lv2_bridge_toggle_button_clicked_callback(GtkWidget *toggle_button, AgsLiveLv2Bridge *live_lv2_bridge)
+{
+  AgsBulkMember *bulk_member;
+  GtkAdjustment *adjustment;
+
+  gboolean is_active;
+  uint32_t port_index;
+  float val;
+
+  if((AGS_LIVE_LV2_BRIDGE_NO_UPDATE & (live_lv2_bridge->flags)) != 0 ||
+     live_lv2_bridge->ui_handle == NULL){
+    return;
+  }
+
+  bulk_member = (AgsBulkMember *) gtk_widget_get_ancestor(toggle_button,
+							  AGS_TYPE_BULK_MEMBER);
+
+  is_active = gtk_toggle_button_get_active((GtkToggleButton *) toggle_button);
+  
+  port_index = bulk_member->port_index;
+  val = is_active ? 1.0: 0.0;
+  
+  if(bulk_member->conversion != NULL){
+    val = (gfloat) ags_conversion_convert(bulk_member->conversion,
+					  val,
+					  FALSE);
+  }
+
+  live_lv2_bridge->flags |= AGS_LIVE_LV2_BRIDGE_NO_UPDATE;
+
+  live_lv2_bridge->ui_descriptor->port_event(live_lv2_bridge->ui_handle,
+					port_index,
+					sizeof(float),
+					0,
+					&val);
+  
+  live_lv2_bridge->flags &= (~AGS_LIVE_LV2_BRIDGE_NO_UPDATE);
+}
+
+void
+ags_live_lv2_bridge_button_clicked_callback(GtkWidget *button, AgsLiveLv2Bridge *live_lv2_bridge)
+{
+  AgsBulkMember *bulk_member;
+  GtkAdjustment *adjustment;
+
+  gboolean is_active;
+  uint32_t port_index;
+  float val;
+
+  if((AGS_LIVE_LV2_BRIDGE_NO_UPDATE & (live_lv2_bridge->flags)) != 0 ||
+     live_lv2_bridge->ui_handle == NULL){
+    return;
+  }
+
+  bulk_member = (AgsBulkMember *) gtk_widget_get_ancestor(button,
+							  AGS_TYPE_BULK_MEMBER);
+
+  port_index = bulk_member->port_index;
+  val = 0.0;
+  
+  if(bulk_member->conversion != NULL){
+    val = (gfloat) ags_conversion_convert(bulk_member->conversion,
+					  val,
+					  FALSE);
+  }
+
+  live_lv2_bridge->flags |= AGS_LIVE_LV2_BRIDGE_NO_UPDATE;
+
+  live_lv2_bridge->ui_descriptor->port_event(live_lv2_bridge->ui_handle,
+					port_index,
+					sizeof(float),
+					0,
+					&val);
+  
+  live_lv2_bridge->flags &= (~AGS_LIVE_LV2_BRIDGE_NO_UPDATE);
 }

@@ -78,6 +78,7 @@ enum{
   PROP_FILENAME,
   PROP_EFFECT,
   PROP_SPECIFIER,
+  PROP_PORT_INDEX,
   PROP_CONTROL_PORT,
   PROP_SCALE_PRECISION,
   PROP_STEP_COUNT,
@@ -242,6 +243,24 @@ ags_bulk_member_class_init(AgsBulkMemberClass *bulk_member)
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_EFFECT,
+				  param_spec);
+
+  /**
+   * AgsBulkMember:port-index:
+   *
+   * The port index.
+   * 
+   * Since: 2.2.8
+   */
+  param_spec = g_param_spec_uint("port-index",
+				 i18n_pspec("port index"),
+				 i18n_pspec("The port's index"),
+				 0,
+				 G_MAXUINT,
+				 0,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_PORT_INDEX,
 				  param_spec);
 
   /**
@@ -443,6 +462,7 @@ ags_bulk_member_init(AgsBulkMember *bulk_member)
   bulk_member->effect = NULL;
   bulk_member->specifier = NULL;
 
+  bulk_member->port_index = 0;
   bulk_member->control_port = NULL;
 
   bulk_member->scale_precision = AGS_DIAL_DEFAULT_PRECISION;
@@ -607,6 +627,15 @@ ags_bulk_member_set_property(GObject *gobject,
       bulk_member->specifier = g_strdup(specifier);
     }
     break;
+  case PROP_PORT_INDEX:
+    {
+      guint port_index;
+
+      port_index = g_value_get_uint(value);
+
+      bulk_member->port_index = port_index;
+    }
+    break;
   case PROP_CONTROL_PORT:
     {
       gchar *control_port;
@@ -620,7 +649,6 @@ ags_bulk_member_set_property(GObject *gobject,
       if(bulk_member->control_port != NULL){
 	g_free(bulk_member->control_port);
       }
-
       
       bulk_member->control_port = g_strdup(control_port);
     }
@@ -787,6 +815,11 @@ ags_bulk_member_get_property(GObject *gobject,
   case PROP_SPECIFIER:
     {
       g_value_set_string(value, bulk_member->specifier);
+    }
+    break;
+  case PROP_PORT_INDEX:
+    {
+      g_value_set_uint(value, bulk_member->port_index);
     }
     break;
   case PROP_CONTROL_PORT:

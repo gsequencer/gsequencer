@@ -1174,6 +1174,7 @@ ags_effect_bulk_add_ladspa_effect(AgsEffectBulk *effect_bulk,
 
       guint unique_id;
       guint scale_precision;
+      guint port_index;
       gdouble step_count;
       gboolean disable_seemless;
       gboolean do_step_conversion;
@@ -1233,6 +1234,7 @@ ags_effect_bulk_add_ladspa_effect(AgsEffectBulk *effect_bulk,
       pthread_mutex_lock(plugin_port_mutex);
 
       port_name = g_strdup(AGS_PLUGIN_PORT(plugin_port->data)->port_name);
+      port_index = AGS_PLUGIN_PORT(plugin_port->data)->port_index;
 
       unique_id = ladspa_plugin->unique_id;
       
@@ -1250,6 +1252,7 @@ ags_effect_bulk_add_ladspa_effect(AgsEffectBulk *effect_bulk,
 						   "plugin-name", plugin_name,
 						   "filename", filename,
 						   "effect", effect,
+						   "port-index", port_index,
 						   "specifier", port_name,
 						   "control-port", control_port,
 						   "scale-precision", scale_precision,
@@ -1735,6 +1738,7 @@ ags_effect_bulk_add_dssi_effect(AgsEffectBulk *effect_bulk,
       gchar *control_port;
 
       guint scale_precision;
+      guint port_index;
       gdouble step_count;
       gboolean disable_seemless;
       gboolean do_step_conversion;
@@ -1794,6 +1798,7 @@ ags_effect_bulk_add_dssi_effect(AgsEffectBulk *effect_bulk,
       pthread_mutex_lock(plugin_port_mutex);
 
       port_name = g_strdup(AGS_PLUGIN_PORT(plugin_port->data)->port_name);
+      port_index = AGS_PLUGIN_PORT(plugin_port->data)->port_index;
 	
       pthread_mutex_unlock(plugin_port_mutex);
 
@@ -1809,6 +1814,7 @@ ags_effect_bulk_add_dssi_effect(AgsEffectBulk *effect_bulk,
 						   "plugin-name", plugin_name,
 						   "filename", filename,
 						   "effect", effect,
+						   "port-index", port_index,
 						   "specifier", port_name,
 						   "control-port", control_port,
 						   "scale-precision", scale_precision,
@@ -2290,7 +2296,8 @@ ags_effect_bulk_add_lv2_effect(AgsEffectBulk *effect_bulk,
 
       gchar *plugin_name;
       gchar *control_port;
-      
+
+      guint port_index;
       guint scale_precision;
       gdouble step_count;
       gboolean disable_seemless;
@@ -2351,7 +2358,8 @@ ags_effect_bulk_add_lv2_effect(AgsEffectBulk *effect_bulk,
       pthread_mutex_lock(plugin_port_mutex);
 
       port_name = g_strdup(AGS_PLUGIN_PORT(plugin_port->data)->port_name);
-	
+      port_index = AGS_PLUGIN_PORT(plugin_port->data)->port_index;
+      
       pthread_mutex_unlock(plugin_port_mutex);
 
       /* add bulk member */
@@ -2369,6 +2377,7 @@ ags_effect_bulk_add_lv2_effect(AgsEffectBulk *effect_bulk,
 						   "filename", filename,
 						   "effect", effect,
 						   "specifier", port_name,
+						   "port-index", port_index,
 						   "control-port", control_port,
 						   "scale-precision", scale_precision,
 						   "step-count", step_count,

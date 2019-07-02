@@ -1665,7 +1665,7 @@ ags_automation_edit_draw_cursor(AgsAutomationEdit *automation_edit)
     lower = automation_edit->lower;
     upper = automation_edit->upper;
 
-    step_count = AGS_AUTOMATION_EDIT_DEFAULT_UPPER + 1.0;
+    step_count = AGS_AUTOMATION_EDIT_DEFAULT_HEIGHT + 1.0;
     
     value = automation_edit->cursor_position_y;
     
@@ -1884,7 +1884,7 @@ ags_automation_edit_draw_acceleration(AgsAutomationEdit *automation_edit,
     lower = automation_edit->lower;
     upper = automation_edit->upper;
 
-    step_count = AGS_AUTOMATION_EDIT_DEFAULT_UPPER + 1.0;
+    step_count = AGS_AUTOMATION_EDIT_DEFAULT_HEIGHT + 1.0;
     
     value = a_y;
     
@@ -1905,6 +1905,15 @@ ags_automation_edit_draw_acceleration(AgsAutomationEdit *automation_edit,
 
   height = GTK_WIDGET(automation_edit->drawing_area)->allocation.height - y;
 
+  if((AGS_AUTOMATION_EDIT_LOGARITHMIC & (automation_edit->flags)) != 0){
+    gdouble tmp;
+
+    tmp = height;
+
+    height = y;
+    y = tmp;
+  }
+  
   /* apply zoom */
   x /= zoom_factor;
   
