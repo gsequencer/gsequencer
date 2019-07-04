@@ -34,6 +34,7 @@ ags_returnable_thread_new
 ags_thread_resume
 ags_thread_get_type
 ags_thread_get_class_mutex
+ags_thread_global_get_use_sync_counter
 ags_thread_test_flags
 ags_thread_set_flags
 ags_thread_unset_flags

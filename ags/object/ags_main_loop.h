@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -63,6 +63,10 @@ struct _AgsMainLoopInterface
 
   void (*change_frequency)(AgsMainLoop *main_loop,
 			   gdouble frequency);
+
+  void (*sync_counter_inc)(AgsMainLoop *main_loop, guint tic);
+  void (*sync_counter_dec)(AgsMainLoop *main_loop, guint tic);
+  gboolean (*sync_counter_test)(AgsMainLoop *main_loop, guint tic);
 };
 
 GType ags_main_loop_get_type();
@@ -89,5 +93,9 @@ gboolean ags_main_loop_monitor(AgsMainLoop *main_loop,
 
 void ags_main_loop_change_frequency(AgsMainLoop *main_loop,
 				    gdouble frequency);
+
+void ags_main_loop_sync_counter_inc(AgsMainLoop *main_loop, guint tic);
+void ags_main_loop_sync_counter_dec(AgsMainLoop *main_loop, guint tic);
+gboolean ags_main_loop_sync_counter_test(AgsMainLoop *main_loop, guint tic);
 
 #endif /*__AGS_MAIN_LOOP_H__*/

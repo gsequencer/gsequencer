@@ -84,6 +84,8 @@ struct _AgsAudioLoop
 
   guint time_cycle;
   volatile guint time_spent;
+
+  guint sync_counter[3];
   
   GObject *application_context;
   GObject *default_output_soundcard;

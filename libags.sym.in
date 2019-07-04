@@ -261,6 +261,9 @@ ags_main_loop_get_last_sync
 ags_main_loop_interrupt
 ags_main_loop_monitor
 ags_main_loop_change_frequency
+ags_main_loop_sync_counter_inc
+ags_main_loop_sync_counter_dec
+ags_main_loop_sync_counter_test
 ags_seekable_get_type
 ags_seekable_seek
 ags_cursor_get_type

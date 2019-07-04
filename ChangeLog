@@ -1,3 +1,12 @@
+ags (2.2.10)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented ags_thread_global_get_use_sync_counter() synchronize threads with reduced overhead
+	* implemented ags_main_loop_sync_counter_inc()
+	* implemented ags_main_loop_sync_counter_dec()
+	* implemented ags_main_loop_sync_counter_test()
+	* fixed memory-leak in ags_message_envelope_free()
+
 ags (2.2.9)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

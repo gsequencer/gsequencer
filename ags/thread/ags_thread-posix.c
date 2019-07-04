@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -123,6 +123,8 @@ static pthread_key_t ags_thread_key;
 static pthread_once_t ags_thread_key_once = PTHREAD_ONCE_INIT;
 
 static pthread_mutex_t ags_thread_class_mutex = PTHREAD_MUTEX_INITIALIZER;
+
+static gboolean ags_thread_global_use_sync_counter = TRUE;
 
 GType
 ags_thread_get_type()
@@ -1055,6 +1057,29 @@ pthread_mutex_t*
 ags_thread_get_class_mutex()
 {
   return(&ags_thread_class_mutex);
+}
+
+/**
+ * ags_thread_global_get_use_sync_counter:
+ * 
+ * Get global config value use sync counter.
+ *
+ * Returns: if %TRUE use sync counter, else not
+ * 
+ * Since: 2.2.10
+ */
+gboolean
+ags_thread_global_get_use_sync_counter()
+{
+  gboolean use_sync_counter;
+
+  pthread_mutex_lock(ags_thread_get_class_mutex());
+
+  use_sync_counter = ags_thread_global_use_sync_counter;
+
+  pthread_mutex_unlock(ags_thread_get_class_mutex());
+  
+  return(use_sync_counter);
 }
 
 /**
@@ -2108,8 +2133,12 @@ ags_thread_is_tree_ready(AgsThread *thread,
 
   main_loop = ags_thread_get_toplevel(thread);
 
-  retval = ags_thread_is_tree_ready_recursive(main_loop);
-
+  if(ags_thread_global_get_use_sync_counter()){    
+    retval = ags_main_loop_sync_counter_test(AGS_MAIN_LOOP(main_loop), tic);
+  }else{
+    retval = ags_thread_is_tree_ready_recursive(main_loop);
+  }
+  
   return(retval);
 }
 
@@ -2747,10 +2776,18 @@ ags_thread_real_clock(AgsThread *thread)
   void ags_thread_clock_sync(AgsThread *thread){
     guint next_tic, current_tic;
 
+    gboolean skip_sync_counter;
+    
     /* sync */
+    skip_sync_counter = FALSE;
+    
     pthread_mutex_lock(ags_main_loop_get_tree_lock(AGS_MAIN_LOOP(main_loop)));
 
     if((AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(thread->flags)))) != 0){
+      if((AGS_THREAD_IMMEDIATE_SYNC & (g_atomic_int_get(&(thread->flags)))) == 0){
+	skip_sync_counter = TRUE;
+      }
+
       g_atomic_int_or(&(thread->sync_flags),
 		      AGS_THREAD_MARK_SYNCED);
       
@@ -2828,6 +2865,16 @@ ags_thread_real_clock(AgsThread *thread)
       }
       break;
     }
+
+    if(ags_thread_global_get_use_sync_counter()){
+      if(!skip_sync_counter){
+	ags_main_loop_sync_counter_dec(AGS_MAIN_LOOP(main_loop),
+				       thread->current_tic);
+      }
+
+      ags_main_loop_sync_counter_inc(AGS_MAIN_LOOP(main_loop),
+				     next_tic);
+    }
     
     if(!ags_thread_is_tree_ready(thread,
 				 current_tic)){
@@ -2871,7 +2918,7 @@ ags_thread_real_clock(AgsThread *thread)
       ags_thread_reset_all(main_loop);
 
       pthread_mutex_unlock(ags_main_loop_get_tree_lock(AGS_MAIN_LOOP(main_loop)));
-    }  
+    }
   }
   
   void ags_thread_clock_wait_async(){
@@ -3378,7 +3425,7 @@ ags_thread_loop(void *ptr)
     
     thread->current_tic = ags_main_loop_get_tic(AGS_MAIN_LOOP(main_loop));
     
-    pthread_mutex_unlock(ags_main_loop_get_tree_lock(AGS_MAIN_LOOP(main_loop)));
+    pthread_mutex_unlock(ags_main_loop_get_tree_lock(AGS_MAIN_LOOP(main_loop)));  
   }else{
     thread->current_tic = 0;
   }
@@ -3785,6 +3832,11 @@ ags_thread_loop(void *ptr)
     break;
   }
 
+  if(ags_thread_global_get_use_sync_counter()){
+    ags_main_loop_sync_counter_dec(AGS_MAIN_LOOP(main_loop),
+				   thread->current_tic);
+  }
+  
   if(ags_thread_is_tree_ready(thread,
 			      thread->current_tic)){
     guint next_tic, current_tic;
