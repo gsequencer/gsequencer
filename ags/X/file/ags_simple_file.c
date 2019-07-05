@@ -3348,7 +3348,7 @@ ags_simple_file_read_machine_launch(AgsFileLaunch *file_launch,
 	   (major == 2 &&
 	    minor < 2 ||
 	    (minor == 2
-	     micro <= 10))){
+	     micro <= 8))){
 	  val = ags_conversion_convert(line_member->conversion,
 				       val,
 				       TRUE);
@@ -3367,7 +3367,7 @@ ags_simple_file_read_machine_launch(AgsFileLaunch *file_launch,
 	   (major == 2 &&
 	    minor < 2 ||
 	    (minor == 2
-	     micro <= 10))){
+	     micro <= 8))){
 	  val = ags_conversion_convert(line_member->conversion,
 				       val,
 				       TRUE);
@@ -3386,7 +3386,7 @@ ags_simple_file_read_machine_launch(AgsFileLaunch *file_launch,
 	   (major == 2 &&
 	    minor < 2 ||
 	    (minor == 2
-	     micro <= 10))){
+	     micro <= 8))){
 	  val = ags_conversion_convert(line_member->conversion,
 				       val,
 				       TRUE);
@@ -3818,7 +3818,7 @@ ags_simple_file_read_line(AgsSimpleFile *simple_file, xmlNode *node, AgsLine **l
 	   (major == 2 &&
 	    minor < 2 ||
 	    (minor == 2
-	     micro <= 10))){
+	     micro <= 8))){
 	  val = ags_conversion_convert(line_member->conversion,
 				       val,
 				       TRUE);
@@ -3835,7 +3835,7 @@ ags_simple_file_read_line(AgsSimpleFile *simple_file, xmlNode *node, AgsLine **l
 	   (major == 2 &&
 	    minor < 2 ||
 	    (minor == 2
-	     micro <= 10))){
+	     micro <= 8))){
 	  val = ags_conversion_convert(line_member->conversion,
 				       val,
 				       TRUE);
@@ -3852,7 +3852,7 @@ ags_simple_file_read_line(AgsSimpleFile *simple_file, xmlNode *node, AgsLine **l
 	   (major == 2 &&
 	    minor < 2 ||
 	    (minor == 2
-	     micro <= 10))){
+	     micro <= 8))){
 	  val = ags_conversion_convert(line_member->conversion,
 				       val,
 				       TRUE);
