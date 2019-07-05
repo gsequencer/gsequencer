@@ -371,7 +371,7 @@ ags_osc_action_controller_real_run_action(AgsOscActionController *osc_action_con
 				   AGS_OSC_RESPONSE_ERROR);
 
 	g_object_set(osc_response,
-		     "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_UNKNOW_ARGUMENT,
+		     "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_UNKNOWN_ARGUMENT,
 		     NULL);
 
 	free(type_tag);
@@ -406,7 +406,7 @@ ags_osc_action_controller_real_run_action(AgsOscActionController *osc_action_con
 				   AGS_OSC_RESPONSE_ERROR);
 
 	g_object_set(osc_response,
-		     "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_UNKNOW_ARGUMENT,
+		     "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_UNKNOWN_ARGUMENT,
 		     NULL);
 
 	free(type_tag);
@@ -552,7 +552,7 @@ ags_osc_action_controller_real_run_action(AgsOscActionController *osc_action_con
 				   AGS_OSC_RESPONSE_ERROR);
 
 	g_object_set(osc_response,
-		     "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_UNKNOW_ARGUMENT,
+		     "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_UNKNOWN_ARGUMENT,
 		     NULL);
 
 	free(type_tag);

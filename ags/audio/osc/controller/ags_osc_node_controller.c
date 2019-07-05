@@ -646,7 +646,7 @@ ags_osc_node_controller_get_data_soundcard(AgsOscNodeController *osc_node_contro
 				 AGS_OSC_RESPONSE_ERROR);
 
       g_object_set(osc_response,
-		   "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_UNKNOW_ARGUMENT,
+		   "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_UNKNOWN_ARGUMENT,
 		   NULL);
 
       return(start_response);
@@ -664,7 +664,7 @@ ags_osc_node_controller_get_data_soundcard(AgsOscNodeController *osc_node_contro
 			       AGS_OSC_RESPONSE_ERROR);
 
     g_object_set(osc_response,
-		 "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_UNKNOW_PATH,
+		 "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_UNKNOWN_PATH,
 		 NULL);
 
     return(start_response);
@@ -805,7 +805,7 @@ ags_osc_node_controller_get_data_sequencer(AgsOscNodeController *osc_node_contro
 				 AGS_OSC_RESPONSE_ERROR);
 
       g_object_set(osc_response,
-		   "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_UNKNOW_ARGUMENT,
+		   "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_UNKNOWN_ARGUMENT,
 		   NULL);
 
       return(start_response);
@@ -823,7 +823,7 @@ ags_osc_node_controller_get_data_sequencer(AgsOscNodeController *osc_node_contro
 			       AGS_OSC_RESPONSE_ERROR);
 
     g_object_set(osc_response,
-		 "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_UNKNOW_PATH,
+		 "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_UNKNOWN_PATH,
 		 NULL);
 
     return(start_response);
@@ -1219,7 +1219,7 @@ ags_osc_node_controller_get_data_audio(AgsOscNodeController *osc_node_controller
 				 AGS_OSC_RESPONSE_ERROR);
 
       g_object_set(osc_response,
-		   "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_UNKNOW_ARGUMENT,
+		   "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_UNKNOWN_ARGUMENT,
 		   NULL);
 
       return(start_response);
@@ -1590,7 +1590,7 @@ ags_osc_node_controller_get_data_audio(AgsOscNodeController *osc_node_controller
 				 AGS_OSC_RESPONSE_ERROR);
 
       g_object_set(osc_response,
-		   "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_UNKNOW_PATH,
+		   "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_UNKNOWN_PATH,
 		   NULL);
 
       return(start_response);
@@ -2241,7 +2241,7 @@ ags_osc_node_controller_get_data_channel(AgsOscNodeController *osc_node_controll
 				 AGS_OSC_RESPONSE_ERROR);
 
       g_object_set(osc_response,
-		   "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_UNKNOW_ARGUMENT,
+		   "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_UNKNOWN_ARGUMENT,
 		   NULL);
 
       return(start_response);
@@ -2317,7 +2317,7 @@ ags_osc_node_controller_get_data_channel(AgsOscNodeController *osc_node_controll
 				 AGS_OSC_RESPONSE_ERROR);
 
       g_object_set(osc_response,
-		   "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_UNKNOW_PATH,
+		   "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_UNKNOWN_PATH,
 		   NULL);
 
       return(start_response);
@@ -2783,7 +2783,7 @@ ags_osc_node_controller_get_data_recall(AgsOscNodeController *osc_node_controlle
 			       AGS_OSC_RESPONSE_ERROR);
 
     g_object_set(osc_response,
-		 "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_UNKNOW_ARGUMENT,
+		 "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_UNKNOWN_ARGUMENT,
 		 NULL);
 
     g_object_unref(task_thread);
@@ -4594,7 +4594,7 @@ ags_osc_node_controller_real_get_data(AgsOscNodeController *osc_node_controller,
 				 AGS_OSC_RESPONSE_ERROR);
 
       g_object_set(osc_response,
-		   "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_UNKNOW_ARGUMENT,
+		   "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_UNKNOWN_ARGUMENT,
 		   NULL);
 
       free(type_tag);

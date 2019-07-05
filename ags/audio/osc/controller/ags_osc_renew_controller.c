@@ -520,7 +520,7 @@ ags_osc_renew_controller_set_data_soundcard(AgsOscRenewController *osc_renew_con
 				 AGS_OSC_RESPONSE_ERROR);
 
       g_object_set(osc_response,
-		   "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_UNKNOW_ARGUMENT,
+		   "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_UNKNOWN_ARGUMENT,
 		   NULL);
 
       g_object_unref(task_thread);
@@ -540,7 +540,7 @@ ags_osc_renew_controller_set_data_soundcard(AgsOscRenewController *osc_renew_con
 			       AGS_OSC_RESPONSE_ERROR);
 
     g_object_set(osc_response,
-		 "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_UNKNOW_PATH,
+		 "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_UNKNOWN_PATH,
 		 NULL);
 
     g_object_unref(task_thread);
@@ -653,7 +653,7 @@ ags_osc_renew_controller_set_data_sequencer(AgsOscRenewController *osc_renew_con
 				 AGS_OSC_RESPONSE_ERROR);
 
       g_object_set(osc_response,
-		   "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_UNKNOW_ARGUMENT,
+		   "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_UNKNOWN_ARGUMENT,
 		   NULL);
 
       g_object_unref(task_thread);
@@ -673,7 +673,7 @@ ags_osc_renew_controller_set_data_sequencer(AgsOscRenewController *osc_renew_con
 			       AGS_OSC_RESPONSE_ERROR);
 
     g_object_set(osc_response,
-		 "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_UNKNOW_PATH,
+		 "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_UNKNOWN_PATH,
 		 NULL);
 
     g_object_unref(task_thread);
@@ -965,7 +965,7 @@ ags_osc_renew_controller_set_data_audio(AgsOscRenewController *osc_renew_control
 				 AGS_OSC_RESPONSE_ERROR);
 
       g_object_set(osc_response,
-		   "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_UNKNOW_ARGUMENT,
+		   "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_UNKNOWN_ARGUMENT,
 		   NULL);
 
       g_object_unref(task_thread);
@@ -1348,7 +1348,7 @@ ags_osc_renew_controller_set_data_audio(AgsOscRenewController *osc_renew_control
 				 AGS_OSC_RESPONSE_ERROR);
 
       g_object_set(osc_response,
-		   "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_UNKNOW_PATH,
+		   "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_UNKNOWN_PATH,
 		   NULL);
 
       g_object_unref(task_thread);
@@ -1924,7 +1924,7 @@ ags_osc_renew_controller_set_data_channel(AgsOscRenewController *osc_renew_contr
 				 AGS_OSC_RESPONSE_ERROR);
 
       g_object_set(osc_response,
-		   "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_UNKNOW_ARGUMENT,
+		   "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_UNKNOWN_ARGUMENT,
 		   NULL);
 
       g_object_unref(task_thread);
@@ -2002,7 +2002,7 @@ ags_osc_renew_controller_set_data_channel(AgsOscRenewController *osc_renew_contr
 				 AGS_OSC_RESPONSE_ERROR);
 
       g_object_set(osc_response,
-		   "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_UNKNOW_PATH,
+		   "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_UNKNOWN_PATH,
 		   NULL);
 
       g_object_unref(task_thread);
@@ -2478,7 +2478,7 @@ ags_osc_renew_controller_set_data_recall(AgsOscRenewController *osc_renew_contro
 			       AGS_OSC_RESPONSE_ERROR);
 
     g_object_set(osc_response,
-		 "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_UNKNOW_ARGUMENT,
+		 "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_UNKNOWN_ARGUMENT,
 		 NULL);
 
     g_object_unref(task_thread);
@@ -4137,7 +4137,7 @@ ags_osc_renew_controller_real_set_data(AgsOscRenewController *osc_renew_controll
 				 AGS_OSC_RESPONSE_ERROR);
 
       g_object_set(osc_response,
-		   "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_UNKNOW_ARGUMENT,
+		   "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_UNKNOWN_ARGUMENT,
 		   NULL);
 
       free(type_tag);

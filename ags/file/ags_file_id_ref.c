@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -115,7 +115,7 @@ ags_file_id_ref_class_init(AgsFileIdRefClass *file_id_ref)
   /**
    * AgsFileIdRef:node:
    *
-   * The assigned xmlNode being refered by this #AgsFileIdRef.
+   * The assigned xmlNode being referred by this #AgsFileIdRef.
    *
    * Since: 2.0.0
    */
@@ -146,7 +146,7 @@ ags_file_id_ref_class_init(AgsFileIdRefClass *file_id_ref)
   /**
    * AgsFileIdRef:reference:
    *
-   * The object refered by this #AgsFileIdRef.
+   * The object referred by this #AgsFileIdRef.
    *
    * Since: 2.0.0
    */

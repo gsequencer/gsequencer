@@ -1575,7 +1575,7 @@ ags_osc_meter_controller_monitor_meter_audio(AgsOscMeterController *osc_meter_co
 				 AGS_OSC_RESPONSE_ERROR);
 
       g_object_set(osc_response,
-		   "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_UNKNOW_PATH,
+		   "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_UNKNOWN_PATH,
 		   NULL);
 
       return(start_response);
@@ -2067,7 +2067,7 @@ ags_osc_meter_controller_monitor_meter_channel(AgsOscMeterController *osc_meter_
 			       AGS_OSC_RESPONSE_ERROR);
 
     g_object_set(osc_response,
-		 "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_UNKNOW_PATH,
+		 "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_UNKNOWN_PATH,
 		 NULL);
 
     return(start_response);
@@ -2527,7 +2527,7 @@ ags_osc_meter_controller_monitor_meter_recall(AgsOscMeterController *osc_meter_c
 			       AGS_OSC_RESPONSE_ERROR);
 
     g_object_set(osc_response,
-		 "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_UNKNOW_ARGUMENT,
+		 "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_UNKNOWN_ARGUMENT,
 		 NULL);
 
     g_object_unref(task_thread);
@@ -3177,7 +3177,7 @@ ags_osc_meter_controller_monitor_meter_enable(AgsOscMeterController *osc_meter_c
 			       AGS_OSC_RESPONSE_ERROR);
 
     g_object_set(osc_response,
-		 "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_UNKNOW_ARGUMENT,
+		 "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_UNKNOWN_ARGUMENT,
 		 NULL);
 
     return(start_response);
@@ -3194,7 +3194,7 @@ ags_osc_meter_controller_monitor_meter_enable(AgsOscMeterController *osc_meter_c
 			       AGS_OSC_RESPONSE_ERROR);
 
     g_object_set(osc_response,
-		 "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_UNKNOW_ARGUMENT,
+		 "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_UNKNOWN_ARGUMENT,
 		 NULL);
 
     return(start_response);

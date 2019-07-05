@@ -492,7 +492,7 @@ ags_lv2_turtle_parser_get_class_mutex()
  * @turtle: the %NULL terminated array of #AgsTurtle
  * @n_turtle: the turtle count
  * 
- * Parse names only from manifest and refered turtles. 
+ * Parse names only from manifest and referred turtles. 
  * 
  * Since: 2.2.6
  */
@@ -1292,7 +1292,7 @@ ags_lv2_turtle_parser_parse_names(AgsLv2TurtleParser *lv2_turtle_parser,
  * @turtle: the %NULL terminated array of #AgsTurtle
  * @n_turtle: the turtle count
  * 
- * Parse manifest and refered turtles. 
+ * Parse manifest and referred turtles. 
  * 
  * Since: 2.2.0
  */

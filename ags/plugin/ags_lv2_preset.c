@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -202,7 +202,7 @@ ags_lv2_preset_class_init(AgsLv2PresetClass *lv2_preset)
    */
   param_spec = g_param_spec_object("manifest",
 				   i18n_pspec("manifest of the preset"),
-				   i18n_pspec("The manifest this preset is refered by"),
+				   i18n_pspec("The manifest this preset is referred by"),
 				   AGS_TYPE_TURTLE,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
