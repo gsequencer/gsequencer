@@ -1,6 +1,7 @@
 ags (2.2.11)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved ags_simple_file.c to apply logarithmic port fixup
 	* fixed spelling errors
 
 ags (2.2.10)

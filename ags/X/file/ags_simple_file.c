@@ -3314,8 +3314,24 @@ ags_simple_file_read_machine_launch(AgsFileLaunch *file_launch,
     GtkWidget *child_widget;
 
     xmlChar *str;
-    
+    gchar *version;
+
     gdouble val;
+    guint major, minor, micro;
+
+    /* logarithmic port fixup */
+    version = xmlGetProp(simple_file->root_node,
+			 "version");
+    major = 0;
+    minor = 0;
+    micro = 0;
+
+    if(version != NULL){
+      sscanf(version, "%d.%d.%d",
+	     &major,
+	     &minor,
+	     &micro);
+    }
 
     str = xmlGetProp(node,
 		     "value");
@@ -3327,6 +3343,17 @@ ags_simple_file_read_machine_launch(AgsFileLaunch *file_launch,
 	val = g_ascii_strtod(str,
 			     NULL);
 		      
+	if(line_member->conversion != NULL &&
+	   major == 1 || 
+	   (major == 2 &&
+	    minor < 2 ||
+	    (minor == 2
+	     micro <= 10))){
+	  val = ags_conversion_convert(line_member->conversion,
+				       val,
+				       TRUE);
+	}
+
 	gtk_adjustment_set_value(GTK_RANGE(child_widget)->adjustment,
 				 val);
       }      
@@ -3335,6 +3362,17 @@ ags_simple_file_read_machine_launch(AgsFileLaunch *file_launch,
 	val = g_ascii_strtod(str,
 			     NULL);
 		      
+	if(line_member->conversion != NULL &&
+	   major == 1 || 
+	   (major == 2 &&
+	    minor < 2 ||
+	    (minor == 2
+	     micro <= 10))){
+	  val = ags_conversion_convert(line_member->conversion,
+				       val,
+				       TRUE);
+	}
+
 	gtk_adjustment_set_value(GTK_SPIN_BUTTON(child_widget)->adjustment,
 				 val);
       }
@@ -3343,6 +3381,17 @@ ags_simple_file_read_machine_launch(AgsFileLaunch *file_launch,
 	val = g_ascii_strtod(str,
 			     NULL);
 		      
+	if(line_member->conversion != NULL &&
+	   major == 1 || 
+	   (major == 2 &&
+	    minor < 2 ||
+	    (minor == 2
+	     micro <= 10))){
+	  val = ags_conversion_convert(line_member->conversion,
+				       val,
+				       TRUE);
+	}
+
 	gtk_adjustment_set_value(AGS_DIAL(child_widget)->adjustment,
 				 val);
 	ags_dial_draw((AgsDial *) child_widget);
@@ -3742,21 +3791,73 @@ ags_simple_file_read_line(AgsSimpleFile *simple_file, xmlNode *node, AgsLine **l
 		     "value");
 
     if(str != NULL){
-       if(AGS_IS_DIAL(child_widget)){
+      gchar *version;
+
+      guint major, minor, micro;
+
+      /* logarithmic port fixup */
+      version = xmlGetProp(simple_file->root_node,
+			   "version");
+      major = 0;
+      minor = 0;
+      micro = 0;
+
+      if(version != NULL){
+	sscanf(version, "%d.%d.%d",
+	       &major,
+	       &minor,
+	       &micro);
+      }
+
+      if(AGS_IS_DIAL(child_widget)){
 	val = g_ascii_strtod(str,
 			     NULL);
+
+	if(line_member->conversion != NULL &&
+	   major == 1 || 
+	   (major == 2 &&
+	    minor < 2 ||
+	    (minor == 2
+	     micro <= 10))){
+	  val = ags_conversion_convert(line_member->conversion,
+				       val,
+				       TRUE);
+	}
+	
 	gtk_adjustment_set_value(AGS_DIAL(child_widget)->adjustment,
 				 val);
       }else if(GTK_IS_RANGE(child_widget)){
 	val = g_ascii_strtod(str,
 			     NULL);    
       
+	if(line_member->conversion != NULL &&
+	   major == 1 || 
+	   (major == 2 &&
+	    minor < 2 ||
+	    (minor == 2
+	     micro <= 10))){
+	  val = ags_conversion_convert(line_member->conversion,
+				       val,
+				       TRUE);
+	}
+
 	gtk_adjustment_set_value(GTK_RANGE(child_widget)->adjustment,
 				 val);
       }else if(GTK_IS_SPIN_BUTTON(child_widget)){
 	val = g_ascii_strtod(str,
 			     NULL);    
       
+	if(line_member->conversion != NULL &&
+	   major == 1 || 
+	   (major == 2 &&
+	    minor < 2 ||
+	    (minor == 2
+	     micro <= 10))){
+	  val = ags_conversion_convert(line_member->conversion,
+				       val,
+				       TRUE);
+	}
+
 	gtk_adjustment_set_value(GTK_SPIN_BUTTON(child_widget)->adjustment,
 				 val);
       }else if(GTK_IS_TOGGLE_BUTTON(child_widget)){
