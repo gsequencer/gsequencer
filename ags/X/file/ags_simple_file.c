@@ -3343,13 +3343,13 @@ ags_simple_file_read_machine_launch(AgsFileLaunch *file_launch,
 	val = g_ascii_strtod(str,
 			     NULL);
 		      
-	if(line_member->conversion != NULL &&
+	if(bulk_member->conversion != NULL &&
 	   major == 1 || 
 	   (major == 2 &&
 	    minor < 2 ||
-	    (minor == 2
+	    (minor == 2 &&
 	     micro <= 8))){
-	  val = ags_conversion_convert(line_member->conversion,
+	  val = ags_conversion_convert(bulk_member->conversion,
 				       val,
 				       TRUE);
 	}
@@ -3362,13 +3362,13 @@ ags_simple_file_read_machine_launch(AgsFileLaunch *file_launch,
 	val = g_ascii_strtod(str,
 			     NULL);
 		      
-	if(line_member->conversion != NULL &&
+	if(bulk_member->conversion != NULL &&
 	   major == 1 || 
 	   (major == 2 &&
 	    minor < 2 ||
-	    (minor == 2
+	    (minor == 2 &&
 	     micro <= 8))){
-	  val = ags_conversion_convert(line_member->conversion,
+	  val = ags_conversion_convert(bulk_member->conversion,
 				       val,
 				       TRUE);
 	}
@@ -3381,13 +3381,13 @@ ags_simple_file_read_machine_launch(AgsFileLaunch *file_launch,
 	val = g_ascii_strtod(str,
 			     NULL);
 		      
-	if(line_member->conversion != NULL &&
+	if(bulk_member->conversion != NULL &&
 	   major == 1 || 
 	   (major == 2 &&
 	    minor < 2 ||
-	    (minor == 2
+	    (minor == 2 &&
 	     micro <= 8))){
-	  val = ags_conversion_convert(line_member->conversion,
+	  val = ags_conversion_convert(bulk_member->conversion,
 				       val,
 				       TRUE);
 	}
@@ -3817,7 +3817,7 @@ ags_simple_file_read_line(AgsSimpleFile *simple_file, xmlNode *node, AgsLine **l
 	   major == 1 || 
 	   (major == 2 &&
 	    minor < 2 ||
-	    (minor == 2
+	    (minor == 2 &&
 	     micro <= 8))){
 	  val = ags_conversion_convert(line_member->conversion,
 				       val,
@@ -3834,7 +3834,7 @@ ags_simple_file_read_line(AgsSimpleFile *simple_file, xmlNode *node, AgsLine **l
 	   major == 1 || 
 	   (major == 2 &&
 	    minor < 2 ||
-	    (minor == 2
+	    (minor == 2 &&
 	     micro <= 8))){
 	  val = ags_conversion_convert(line_member->conversion,
 				       val,
@@ -3851,7 +3851,7 @@ ags_simple_file_read_line(AgsSimpleFile *simple_file, xmlNode *node, AgsLine **l
 	   major == 1 || 
 	   (major == 2 &&
 	    minor < 2 ||
-	    (minor == 2
+	    (minor == 2 &&
 	     micro <= 8))){
 	  val = ags_conversion_convert(line_member->conversion,
 				       val,
