@@ -39,6 +39,8 @@ if(list != NULL){
                          &buffer_size_min, &buffer_size_max,
                          &error);
   if(error != NULL){
-    g_warning("%s\0", error->msg);
+    g_warning("%s", error->msg);
+
+    g_error_free(error);
   }
 }

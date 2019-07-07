@@ -73,54 +73,6 @@
       AgsMainLoop interface. &libagsthreadso; provides you the AgsGenericMainLoop object or
       if you intend to use &libagsaudioso;, this property shall point to AgsAudioLoop.
     </para>
-
-    <sect2>
-      <title>AgsMainLoop interface</title>
-      <para>
-	As it shall be implemented by AGS_TYPE_THREAD subtypes, this parent object provides
-	a mutex to properly lock the object. You should obtain the pthread_mutex_t pointer
-	by accessing its field:
-      <programlisting language="C">
-<xi:include href="../listings/thread_obj_mutex.c" parse="text" />
-      </programlisting>
-      </para>
-
-      <para>
-	The main loop specifies some signals like ::interrupt, ::monitor and ::change-frequency.
-	They are all related to realtime behavior of an application. Assumed you have a thread
-	you want to run within the thread tree, but it is not mandatory to run it. With these
-	functions you can determine if you shall pause your thread during ::interrupt signal.
-	How many time you are allowed to consume or running at all, can be concluded by using
-	::monitor. In order to get notified about modified refreshing rate of your thread, listen
-	to ::change-frequency signal.
-      </para>
-
-      <para>
-	The interface provides some other function pointers. If you want to provide AgsTaskThread
-	to your application, use <code language="C">void ags_main_loop_set_async_queue(AgsMainLoop*, GObject*)</code>
-	and <code language="C">GObject* ags_main_loop_get_async_queue(AgsMainLoop*)</code>.
-      </para>
-
-      <para>
-	To control the AgsThread::clock signal AgsMainLoop's methods are going to be invoked.
-	The involved functions are:
-      </para>
-
-      <itemizedlist>
-	<listitem>
-	  <code language="C">void ags_main_loop_set_tic(AgsMainLoop*, guint)</code>
-	</listitem>
-	<listitem>
-	  <code language="C">guint ags_main_loop_get_tic(AgsMainLoop*)</code>
-	</listitem>
-	<listitem>
-	  <code language="C">void ags_main_loop_set_last_sync(AgsMainLoop*, guint)</code>
-	</listitem>
-	<listitem>
-	  <code language="C">guint ags_main_loop_get_last_sync(AgsMainLoop*)</code>
-	</listitem>
-      </itemizedlist>
-    </sect2>
   </sect1>
 
   <sect1>
@@ -204,10 +156,10 @@
   <sect1>
     <title>Common interfaces</title>
     <para>
-      Use AgsConnectable or AgsDynamicConnectable if you intend to listen to a particular
+      Use AgsConnectable if you intend to listen to a particular
       event. If you want to connect an event of an object known during instantiation time
       use ::connect and ::disconnect. Assumed the object needs to be resolved, you can
-      ::connect-dynamic ::disconnect-dynamic, later.
+      ::connect-connection ::disconnect-connection, later.
     </para>
 
     <para>
