@@ -1,3 +1,8 @@
+ags (2.2.16)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* reverted sync counter by using conditional build
+
 ags (2.2.15)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
