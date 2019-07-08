@@ -865,6 +865,8 @@ ags_audio_loop_sync_counter_dec(AgsMainLoop *main_loop, guint tic)
 
   if(audio_loop->sync_counter[tic] > 0){
     audio_loop->sync_counter[tic] -= 1;
+  }else{
+    g_critical("sync counter already equals 0");
   }
   
   pthread_mutex_unlock(thread_mutex);

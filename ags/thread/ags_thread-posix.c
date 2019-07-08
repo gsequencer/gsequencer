@@ -3398,6 +3398,7 @@ ags_thread_loop(void *ptr)
   guint val, running, locked_greedy;
   guint i, i_stop;
   gboolean wait_for_parent, wait_for_sibling, wait_for_children;
+  gboolean skip_sync_counter;
   
   pthread_mutex_t *mutex;
   
@@ -3771,12 +3772,20 @@ ags_thread_loop(void *ptr)
   if(main_loop != NULL){
     pthread_mutex_lock(ags_main_loop_get_tree_lock(AGS_MAIN_LOOP(main_loop)));
   }
+
+  skip_sync_counter = FALSE;  
+	
+  if((AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(thread->flags)))) != 0){
+    if((AGS_THREAD_IMMEDIATE_SYNC & (g_atomic_int_get(&(thread->flags)))) == 0){
+      skip_sync_counter = TRUE;
+    }
+  }
   
   if(main_loop != NULL &&
      (AGS_THREAD_INITIAL_RUN & (g_atomic_int_get(&(thread->flags)))) != 0  ||
      (AGS_THREAD_INITIAL_SYNC & (g_atomic_int_get(&(thread->flags)))) != 0){
     AgsThread *chaos_tree;
-	
+    
     chaos_tree = main_loop;//ags_thread_chaos_tree(thread);
 
     /* ordinary sync */
@@ -3833,8 +3842,10 @@ ags_thread_loop(void *ptr)
   }
 
   if(ags_thread_global_get_use_sync_counter()){
-    ags_main_loop_sync_counter_dec(AGS_MAIN_LOOP(main_loop),
-				   thread->current_tic);
+    if(!skip_sync_counter){
+      ags_main_loop_sync_counter_dec(AGS_MAIN_LOOP(main_loop),
+				     thread->current_tic);
+    }
   }
   
   if(ags_thread_is_tree_ready(thread,

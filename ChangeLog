@@ -1,4 +1,9 @@
-ags (2.2.11)
+ags (2.2.12)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed potential dead-lock
+
+gs (2.2.11)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* improved ags_simple_file.c to apply logarithmic port fixup
