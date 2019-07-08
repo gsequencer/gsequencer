@@ -1,3 +1,8 @@
+ags (2.2.15)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented ags_main_loop_set_sync_tic() and ags_main_loop_get_sync_tic()
+
 ags (2.2.14)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
