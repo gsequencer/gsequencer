@@ -345,6 +345,10 @@ ags_audio_loop_init(AgsAudioLoop *audio_loop)
   audio_loop->play_audio = NULL;
 
   audio_loop->sync_thread = NULL;
+
+  audio_loop->sync_counter[0] = 0;
+  audio_loop->sync_counter[1] = 0;
+  audio_loop->sync_counter[2] = 0;
 }
 
 void
@@ -636,7 +640,7 @@ ags_audio_loop_get_tree_lock(AgsMainLoop *main_loop)
   /* get tree lock mutex */
   pthread_mutex_lock(ags_thread_get_class_mutex());
   
-  tree_lock = AGS_THREAD(main_loop)->obj_mutex;
+  tree_lock = AGS_AUDIO_LOOP(main_loop)->tree_lock;
   
   pthread_mutex_unlock(ags_thread_get_class_mutex());
   
@@ -914,6 +918,16 @@ ags_audio_loop_start(AgsThread *thread)
   AgsAudioLoop *audio_loop;
   
   audio_loop = AGS_AUDIO_LOOP(thread);
+
+  g_atomic_int_set(&(audio_loop->tic), 0);
+  g_atomic_int_set(&(audio_loop->last_sync), 0);
+
+  audio_loop->sync_counter[0] = 0;
+  audio_loop->sync_counter[1] = 0;
+  audio_loop->sync_counter[2] = 0;
+
+  g_atomic_int_or(&(thread->sync_flags),
+		  AGS_THREAD_SYNCED);
 
   if((AGS_THREAD_SINGLE_LOOP & (g_atomic_int_get(&(thread->flags)))) == 0){
     /*  */

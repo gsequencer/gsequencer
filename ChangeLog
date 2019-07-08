@@ -1,3 +1,9 @@
+ags (2.2.14)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed potential dead-lock, it is some procedural code that makes paralellism work
+	* reverted previous tree lock change
+
 ags (2.2.13)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
