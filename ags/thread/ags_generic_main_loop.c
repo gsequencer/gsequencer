@@ -292,7 +292,7 @@ ags_generic_main_loop_finalize(GObject *gobject)
 pthread_mutex_t*
 ags_generic_main_loop_get_tree_lock(AgsMainLoop *main_loop)
 {
-  return(AGS_GENERIC_MAIN_LOOP(main_loop)->tree_lock);
+  return(AGS_THREAD(main_loop)->obj_mutex);
 }
 
 void

@@ -1385,7 +1385,6 @@ ags_thread_set_sync_all(AgsThread *thread, guint tic)
   void ags_thread_set_sync_all_reset(AgsThread *thread){
     AgsThread *child;
 
-    /* reset chaos tree */
     g_atomic_int_and(&(thread->flags),
 		    ~AGS_THREAD_IS_CHAOS_TREE);
 
@@ -2835,7 +2834,7 @@ ags_thread_real_clock(AgsThread *thread)
     }
 
     /* thread tree */
-    current_tic = thread->current_tic;
+    current_tic = ags_main_loop_get_tic(AGS_MAIN_LOOP(main_loop));
     
     if(current_tic == 2){
       next_tic = 0;
@@ -2845,7 +2844,7 @@ ags_thread_real_clock(AgsThread *thread)
       next_tic = 2;
     }
 
-    switch(thread->current_tic){
+    switch(current_tic){
     case 0:
       {
 	g_atomic_int_or(&(thread->sync_flags),
@@ -2869,7 +2868,7 @@ ags_thread_real_clock(AgsThread *thread)
     if(ags_thread_global_get_use_sync_counter()){
       if(!skip_sync_counter){
 	ags_main_loop_sync_counter_dec(AGS_MAIN_LOOP(main_loop),
-				       thread->current_tic);
+				       current_tic);
       }
 
       ags_main_loop_sync_counter_inc(AGS_MAIN_LOOP(main_loop),
@@ -3308,6 +3307,11 @@ ags_thread_add_start_queue_all(AgsThread *thread,
   
   pthread_mutex_t *mutex;
 
+  if(!AGS_IS_THREAD(thread) ||
+     child == NULL){
+    return;
+  }
+  
   /* mutex */
   pthread_mutex_lock(ags_thread_get_class_mutex());
 
@@ -3844,12 +3848,12 @@ ags_thread_loop(void *ptr)
   if(ags_thread_global_get_use_sync_counter()){
     if(!skip_sync_counter){
       ags_main_loop_sync_counter_dec(AGS_MAIN_LOOP(main_loop),
-				     thread->current_tic);
+				     ags_main_loop_get_tic(AGS_MAIN_LOOP(main_loop)));
     }
   }
   
   if(ags_thread_is_tree_ready(thread,
-			      thread->current_tic)){
+			      ags_main_loop_get_tic(AGS_MAIN_LOOP(main_loop)))){
     guint next_tic, current_tic;
 
     current_tic = thread->current_tic;

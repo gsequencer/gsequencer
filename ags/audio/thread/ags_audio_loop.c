@@ -636,7 +636,7 @@ ags_audio_loop_get_tree_lock(AgsMainLoop *main_loop)
   /* get tree lock mutex */
   pthread_mutex_lock(ags_thread_get_class_mutex());
   
-  tree_lock = AGS_AUDIO_LOOP(main_loop)->tree_lock;
+  tree_lock = AGS_THREAD(main_loop)->obj_mutex;
   
   pthread_mutex_unlock(ags_thread_get_class_mutex());
   
