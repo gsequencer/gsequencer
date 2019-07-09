@@ -1,3 +1,8 @@
+ags (2.2.17)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* reenabled sync counter increment before decrement fixes a race condition
+
 ags (2.2.16)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
