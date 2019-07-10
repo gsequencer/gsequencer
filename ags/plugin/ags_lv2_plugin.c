@@ -851,6 +851,8 @@ ags_lv2_plugin_instantiate(AgsBasePlugin *base_plugin,
   LV2_Descriptor *plugin_descriptor;
 
   LV2_Handle *lv2_handle;
+  LV2_Descriptor_Function lv2_descriptor;
+  LV2_Descriptor *plugin_descriptor;
   
   LV2_URI_Map_Feature *uri_map_feature;
   
@@ -882,6 +884,7 @@ ags_lv2_plugin_instantiate(AgsBasePlugin *base_plugin,
   double rate;
   guint total_feature;
   guint nth;
+  guint i;
   gboolean initial_call;
   
   LV2_Handle (*instantiate)(const struct _LV2_Descriptor * descriptor,
@@ -892,7 +895,7 @@ ags_lv2_plugin_instantiate(AgsBasePlugin *base_plugin,
   pthread_mutex_t *base_plugin_mutex;
   
   lv2_plugin = AGS_LV2_PLUGIN(base_plugin);
-
+  
   /* get base plugin mutex */
   pthread_mutex_lock(ags_base_plugin_get_class_mutex());
   
@@ -907,12 +910,7 @@ ags_lv2_plugin_instantiate(AgsBasePlugin *base_plugin,
 
   plugin_so = base_plugin->plugin_so;
 
-  if(plugin_so == NULL){
-    LV2_Descriptor_Function lv2_descriptor;
-    LV2_Descriptor *plugin_descriptor;
-
-    guint i;
-    
+  if(plugin_so == NULL){    
     g_message("open %s", base_plugin->filename);
     
     plugin_so = dlopen(base_plugin->filename,
@@ -921,16 +919,16 @@ ags_lv2_plugin_instantiate(AgsBasePlugin *base_plugin,
     g_object_set(lv2_plugin,
 		 "plugin-so", plugin_so,
 		 NULL);
-
-    lv2_descriptor = (LV2_Descriptor_Function) dlsym(plugin_so,
-						     "lv2_descriptor");
-
+    
+    base_plugin->plugin_handle = 
+      lv2_descriptor = (LV2_Descriptor_Function) dlsym(plugin_so,
+						       "lv2_descriptor");
+    
     if(dlerror() == NULL && lv2_descriptor){
-      effect_index = 0;
-  
       for(i = 0; (plugin_descriptor = lv2_descriptor((unsigned long) i)) != NULL; i++){
 	if(!g_ascii_strcasecmp(plugin_descriptor->URI,
 			       lv2_plugin->uri)){
+	  base_plugin->plugin_descriptor = plugin_descriptor;
 	  effect_index = i;
 
 	  g_object_set(lv2_plugin,
@@ -943,6 +941,9 @@ ags_lv2_plugin_instantiate(AgsBasePlugin *base_plugin,
     }
   }
   
+  lv2_descriptor = base_plugin->plugin_handle;
+  plugin_descriptor = base_plugin->plugin_descriptor;
+
   feature = lv2_plugin->feature;
 
   path = g_path_get_dirname(base_plugin->filename);

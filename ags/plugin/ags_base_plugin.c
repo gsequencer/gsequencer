@@ -53,6 +53,7 @@ void ags_base_plugin_finalize(GObject *gobject);
 
 enum{
   INSTANTIATE,
+  INSTANTIATE_WITH_PARAMS,
   CONNECT_PORT,
   ACTIVATE,
   DEACTIVATE,
@@ -309,6 +310,7 @@ ags_base_plugin_class_init(AgsBasePluginClass *base_plugin)
 
   /* AgsBasePluginClass */
   base_plugin->instantiate = NULL;
+  base_plugin->instantiate_with_params = NULL;
 
   base_plugin->connect_port = NULL;
   
@@ -318,7 +320,8 @@ ags_base_plugin_class_init(AgsBasePluginClass *base_plugin)
   base_plugin->run = NULL;
 
   base_plugin->load_plugin = NULL;
-  
+
+  /* signals */
   /**
    * AgsBasePlugin::instantiate:
    * @base_plugin: the plugin to instantiate
@@ -342,6 +345,31 @@ ags_base_plugin_class_init(AgsBasePluginClass *base_plugin)
 		 G_TYPE_UINT,
 		 G_TYPE_UINT);
 
+  /**
+   * AgsBasePlugin::instantiate-with-params:
+   * @base_plugin: the plugin to instantiate
+   * @n_params: pointer to array length
+   * @parameter_name: parameter name string vector
+   * @value: the #GValue-struct array
+   *
+   * The ::instantiate-with-params signal creates a new instance of plugin.
+   * 
+   * Returns: the new plugin instance
+   * 
+   * Since: 2.2.18
+   */
+  base_plugin_signals[INSTANTIATE_WITH_PARAMS] =
+    g_signal_new("instantiate-with-params",
+		 G_TYPE_FROM_CLASS (base_plugin),
+		 G_SIGNAL_RUN_LAST,
+		 G_STRUCT_OFFSET (AgsBasePluginClass, instantiate_with_params),
+		 NULL, NULL,
+		 ags_cclosure_marshal_POINTER__POINTER_POINTER_POINTER,
+		 G_TYPE_POINTER, 3,
+		 G_TYPE_POINTER,
+		 G_TYPE_POINTER,
+		 G_TYPE_POINTER);
+  
   /**
    * AgsBasePlugin::connect-port:
    * @base_plugin: the plugin to connect-port
@@ -1291,6 +1319,40 @@ ags_base_plugin_instantiate(AgsBasePlugin *base_plugin,
   g_signal_emit(G_OBJECT(base_plugin),
 		base_plugin_signals[INSTANTIATE], 0,
 		samplerate, buffer_size,
+		&retval);
+  g_object_unref(G_OBJECT(base_plugin));
+
+  return(retval);
+}
+
+/**
+ * ags_base_plugin_instantiate_with_params:
+ * @base_plugin: the #AgsBasePlugin
+ * @n_params: guint pointer to parameter count
+ * @parameter_name: string vector containing parameter names
+ * @value: the #GValue-struct array
+ *
+ * Instantiate the plugin
+ *
+ * Returns: the new plugin instance handle
+ *
+ * Since: 2.2.18
+ */
+gpointer
+ags_base_plugin_instantiate_with_params(AgsBasePlugin *base_plugin,
+					guint *n_params,
+					gchar **parameter_name,
+					GValue *value)
+{
+  gpointer retval;
+  
+  g_return_val_if_fail(AGS_IS_BASE_PLUGIN(base_plugin),
+		       NULL);
+  
+  g_object_ref(G_OBJECT(base_plugin));
+  g_signal_emit(G_OBJECT(base_plugin),
+		base_plugin_signals[INSTANTIATE], 0,
+		n_params, parameter_name, value,
 		&retval);
   g_object_unref(G_OBJECT(base_plugin));
 

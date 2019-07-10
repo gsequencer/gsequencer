@@ -45,8 +45,11 @@ void ags_lv2ui_plugin_get_property(GObject *gobject,
 void ags_lv2ui_plugin_dispose(GObject *gobject);
 void ags_lv2ui_plugin_finalize(GObject *gobject);
 
-gpointer ags_lv2ui_plugin_instantiate(AgsBasePlugin *base_plugin,
-				      guint samplerate);
+gpointer ags_lv2ui_plugin_instantiate_with_params(AgsBasePlugin *base_plugin,
+						  guint *n_params,
+						  gchar **parameter_name,
+						  GValue *value);
+
 void ags_lv2ui_plugin_connect_port(AgsBasePlugin *base_plugin,
 				   gpointer plugin_handle,
 				   guint port_index,
@@ -200,6 +203,7 @@ ags_lv2ui_plugin_class_init(AgsLv2uiPluginClass *lv2ui_plugin)
   /* AgsBasePluginClass */
   base_plugin = (AgsBasePluginClass *) lv2ui_plugin;
 
+  base_plugin->instantiate_with_params = ags_lv2ui_plugin_instantiate_with_params;
   base_plugin->load_plugin = ags_lv2ui_plugin_load_plugin;
 }
 
@@ -498,6 +502,372 @@ ags_lv2ui_plugin_find_gui_uri(GList *lv2ui_plugin,
   }
 
   return(NULL);
+}
+
+gpointer
+ags_lv2ui_plugin_instantiate_with_params(AgsBasePlugin *base_plugin,
+					 guint *n_params,
+					 gchar **parameter_name,
+					 GValue *value)
+{
+  AgsLv2uiPlugin *lv2ui_plugin;
+  
+  AgsConfig *config;
+  
+  void *plugin_so;
+  LV2UI_DescriptorFunction lv2ui_descriptor;
+  LV2UI_Descriptor *plugin_descriptor;    
+
+  LV2UI_Handle *ui_handle;
+  
+  LV2_URI_Map_Feature *uri_map_feature;
+  
+  LV2_Worker_Schedule_Handle worker_handle;
+  LV2_Worker_Schedule *worker_schedule;
+
+  LV2_Log_Log *log_feature;
+
+  LV2_Event_Feature *event_feature;
+
+  LV2_URID_Map *urid_map;
+  LV2_URID_Unmap *urid_unmap;
+
+  LV2_Options_Interface *options_interface;
+  LV2_Options_Option *options;
+  
+  LV2_Feature **feature;
+
+  gchar *filename;
+  char *path;  
+  gchar *str;
+  
+  float *ptr_samplerate;
+  float *ptr_buffer_size;
+
+  uint32_t ui_effect_index;
+  guint conf_buffer_size;
+  guint conf_samplerate;
+  guint total_feature;
+  guint nth;
+  guint i;
+  gboolean initial_call;
+
+  LV2UI_Handle (*instantiate)(const struct _LV2UI_Descriptor* descriptor,
+			      const char *plugin_uri,
+			      const char *bundle_path,
+			      LV2UI_Write_Function write_function,
+			      LV2UI_Controller controller,
+			      LV2UI_Widget *widget,
+			      const LV2_Feature *const *features);
+  
+  pthread_mutex_t *base_plugin_mutex;
+  
+  lv2ui_plugin = AGS_LV2UI_PLUGIN(base_plugin);
+  
+  /* get base plugin mutex */
+  pthread_mutex_lock(ags_base_plugin_get_class_mutex());
+  
+  base_plugin_mutex = base_plugin->obj_mutex;
+  
+  pthread_mutex_unlock(ags_base_plugin_get_class_mutex());
+
+  /* get some fields */
+  pthread_mutex_lock(base_plugin_mutex);
+
+  plugin_so = base_plugin->plugin_so;
+  ui_effect_index = 0;
+
+  if(plugin_so == NULL){
+    g_message("open %s", base_plugin->filename);
+    
+    plugin_so = dlopen(base_plugin->filename,
+		       RTLD_NOW);
+    
+    g_object_set(lv2_plugin,
+		 "ui-plugin-so", plugin_so,
+		 NULL);
+
+    base_plugin->ui_plugin_handle = 
+      lv2ui_descriptor = (LV2_Descriptor_Function) dlsym(plugin_so,
+						       "lv2ui_descriptor");
+
+    if(dlerror() == NULL && lv2_descriptor){  
+      for(i = 0; (plugin_descriptor = lv2ui_descriptor((uint32_t) i)) != NULL; i++){
+	if(!g_ascii_strcasecmp(plugin_descriptor->URI,
+			       lv2ui_plugin->gui_uri)){
+	  base_plugin->ui_plugin_descriptor = plugin_descriptor;
+	  ui_effect_index = i;
+
+	  g_object_set(lv2ui_plugin,
+		       "ui-effect-index", ui_effect_index,
+		       NULL);
+	   
+	  break;
+	}
+      }
+    }
+  }
+  
+  lv2ui_descriptor = base_plugin->ui_plugin_handle;
+  plugin_descriptor = base_plugin->ui_plugin_descriptor;
+
+  feature = lv2_plugin->feature;
+  
+  path = g_path_get_dirname(base_plugin->filename);
+
+  ui_effect_index = base_plugin->ui_effect_index;
+  
+  pthread_mutex_unlock(base_plugin_mutex);
+
+  if(plugin_so == NULL){
+    return(NULL);
+  }
+
+  /* get some config values */
+  initial_call = FALSE;
+  
+  config = ags_config_get_instance();
+
+  conf_samplerate = ags_soundcard_helper_config_get_samplerate(config);
+  conf_buffer_size = ags_soundcard_helper_config_get_buffer_size(config);
+
+  worker_handle = NULL;
+
+  if(feature == NULL){    
+    initial_call = TRUE;
+
+    /**/
+    total_feature = 8;
+    nth = 0;  
+
+    feature = (LV2_Feature **) malloc(total_feature * sizeof(LV2_Feature *));
+  
+    /* URI map feature */  
+    uri_map_feature = (LV2_URI_Map_Feature *) malloc(sizeof(LV2_URI_Map_Feature));
+    uri_map_feature->callback_data = NULL;
+    uri_map_feature->uri_to_id = ags_lv2_uri_map_manager_uri_to_id;
+  
+    feature[nth] = (LV2_Feature *) malloc(sizeof(LV2_Feature));
+    feature[nth]->URI = LV2_URI_MAP_URI;
+    feature[nth]->data = uri_map_feature;
+
+    nth++;
+  
+    /* worker feature */
+    if(ags_lv2_plugin_test_flags(lv2_plugin, AGS_LV2_PLUGIN_NEEDS_WORKER)){
+      worker_handle = ags_lv2_worker_manager_pull_worker(ags_lv2_worker_manager_get_instance());
+  
+      worker_schedule = (LV2_Worker_Schedule *) malloc(sizeof(LV2_Worker_Schedule));
+      worker_schedule->handle = worker_handle;
+      worker_schedule->schedule_work = ags_lv2_worker_schedule_work;
+  
+      feature[nth] = (LV2_Feature *) malloc(sizeof(LV2_Feature));
+      feature[nth]->URI = LV2_WORKER__schedule;
+      feature[nth]->data = worker_schedule;
+
+      nth++;
+    }
+  
+    /* log feature */
+    log_feature = (LV2_Log_Log *) malloc(sizeof(LV2_Log_Log));
+  
+    log_feature->handle = NULL;
+    log_feature->printf = ags_lv2_log_manager_printf;
+    log_feature->vprintf = ags_lv2_log_manager_vprintf;
+
+    feature[nth] = (LV2_Feature *) malloc(sizeof(LV2_Feature));
+    feature[nth]->URI = LV2_LOG__log;
+    feature[nth]->data = log_feature;
+
+    nth++;
+  
+    /* event feature */
+    event_feature = (LV2_Event_Feature *) malloc(sizeof(LV2_Event_Feature));
+  
+    event_feature->callback_data = NULL;
+    event_feature->lv2_event_ref = ags_lv2_event_manager_lv2_event_ref;
+    event_feature->lv2_event_unref = ags_lv2_event_manager_lv2_event_unref;
+  
+    feature[nth] = (LV2_Feature *) malloc(sizeof(LV2_Feature));
+    feature[nth]->URI = LV2_EVENT_URI;
+    feature[nth]->data = event_feature;
+
+    nth++;
+    
+    /* URID map feature */
+    urid_map = (LV2_URID_Map *) malloc(sizeof(LV2_URID_Map));
+    urid_map->handle = NULL;
+    urid_map->map = ags_lv2_urid_manager_map;
+  
+    feature[nth] = (LV2_Feature *) malloc(sizeof(LV2_Feature));
+    feature[nth]->URI = LV2_URID_MAP_URI;
+    feature[nth]->data = urid_map;
+
+    nth++;
+  
+    /* URID unmap feature */
+    urid_unmap = (LV2_URID_Unmap *) malloc(sizeof(LV2_URID_Unmap));
+    urid_unmap->handle = NULL;
+    urid_unmap->unmap = ags_lv2_urid_manager_unmap;
+  
+    feature[nth] = (LV2_Feature *) malloc(sizeof(LV2_Feature));
+    feature[nth]->URI = LV2_URID_UNMAP_URI;
+    feature[nth]->data = urid_unmap;
+
+    nth++;
+
+    /* Options interface */
+    options_interface = (LV2_Options_Interface *) malloc(sizeof(LV2_Options_Interface));
+    options_interface->set = ags_lv2_option_manager_lv2_options_set;
+    options_interface->get = ags_lv2_option_manager_lv2_options_get;
+  
+    feature[nth] = (LV2_Feature *) malloc(sizeof(LV2_Feature));
+    feature[nth]->URI = LV2_OPTIONS_URI;
+    feature[nth]->data = options_interface;
+
+    nth++;
+
+    /* terminate */
+    for(; nth < total_feature; nth++){
+      feature[nth] = NULL;
+    }
+  
+    pthread_mutex_lock(base_plugin_mutex);
+
+    lv2_plugin->feature = feature;
+    
+    pthread_mutex_unlock(base_plugin_mutex);
+  }
+  
+  if(plugin_so != NULL){
+    lv2_descriptor = (LV2_Descriptor_Function) dlsym(plugin_so,
+						     "lv2_descriptor");
+
+    if(dlerror() == NULL && lv2_descriptor){
+      pthread_mutex_lock(base_plugin_mutex);
+      
+      base_plugin->plugin_descriptor = 
+	plugin_descriptor = lv2_descriptor(effect_index);
+
+      instantiate = plugin_descriptor->instantiate;
+      
+      pthread_mutex_unlock(base_plugin_mutex);
+    }
+  }
+
+  /* alloc handle and path */
+  lv2ui_handle = (LV2UI_Handle *) malloc(sizeof(LV2UI_Handle));
+
+  /* instantiate */
+  lv2ui_handle[0] = instantiate(plugin_descriptor,
+				lv2ui_plugin->gui_uri,
+				bundle_path,
+				parent_widget,
+				&plugin_widget,
+				feature);
+  
+  if(initial_call){
+    /* some options */
+    options = (LV2_Options_Option *) malloc(6 * sizeof(LV2_Options_Option));
+
+    /* samplerate */
+    options[0].context = LV2_OPTIONS_INSTANCE;
+    options[0].subject = 0;
+    options[0].key = ags_lv2_urid_manager_lookup(ags_lv2_urid_manager_get_instance(),
+						 LV2_PARAMETERS__sampleRate);
+
+    ptr_samplerate = (float *) malloc(sizeof(float));
+    ptr_samplerate[0] = conf_samplerate;
+  
+    options[0].size = sizeof(float);
+    options[0].type = ags_lv2_urid_manager_lookup(ags_lv2_urid_manager_get_instance(),
+						  LV2_ATOM__Float);
+    options[0].value = ptr_samplerate;
+  
+    /* min-block-length */
+    options[1].context = LV2_OPTIONS_INSTANCE;
+    options[1].subject = 0;
+    options[1].key = ags_lv2_urid_manager_lookup(ags_lv2_urid_manager_get_instance(),
+						 LV2_BUF_SIZE__minBlockLength);
+
+    ptr_buffer_size = (float *) malloc(sizeof(float));
+    ptr_buffer_size[0] = conf_buffer_size;
+  
+    options[1].size = sizeof(float);
+    options[1].type = ags_lv2_urid_manager_lookup(ags_lv2_urid_manager_get_instance(),
+						  LV2_ATOM__Int);
+    options[1].value = ptr_buffer_size;
+
+    /* max-block-length */
+    options[2].context = LV2_OPTIONS_INSTANCE;
+    options[2].subject = 0;
+    options[2].key = ags_lv2_urid_manager_lookup(ags_lv2_urid_manager_get_instance(),
+						 LV2_BUF_SIZE__maxBlockLength);
+
+    ptr_buffer_size = (float *) malloc(sizeof(float));
+    ptr_buffer_size[0] = conf_buffer_size;
+
+    options[2].size = sizeof(float);
+    options[2].type = ags_lv2_urid_manager_lookup(ags_lv2_urid_manager_get_instance(),
+						  LV2_ATOM__Int);
+    options[2].value = ptr_buffer_size;
+
+    /* bounded-block-length */
+    options[3].context = LV2_OPTIONS_INSTANCE;
+    options[3].subject = 0;
+    options[3].key = ags_lv2_urid_manager_lookup(ags_lv2_urid_manager_get_instance(),
+						 LV2_BUF_SIZE__boundedBlockLength);
+
+    ptr_buffer_size = (float *) malloc(sizeof(float));
+    ptr_buffer_size[0] = conf_buffer_size;
+
+    options[3].size = sizeof(float);
+    options[3].type = ags_lv2_urid_manager_lookup(ags_lv2_urid_manager_get_instance(),
+						  LV2_ATOM__Int);
+    options[3].value = ptr_buffer_size;
+
+    /* fixed-block-length */
+    options[4].context = LV2_OPTIONS_INSTANCE;
+    options[4].subject = 0;
+    options[4].key = ags_lv2_urid_manager_lookup(ags_lv2_urid_manager_get_instance(),
+						 LV2_BUF_SIZE__fixedBlockLength);
+
+    ptr_buffer_size = (float *) malloc(sizeof(float));
+    ptr_buffer_size[0] = conf_buffer_size;
+
+    options[4].size = sizeof(float);
+    options[4].type = ags_lv2_urid_manager_lookup(ags_lv2_urid_manager_get_instance(),
+						  LV2_ATOM__Int);
+    options[4].value = ptr_buffer_size;
+    
+    /* instance */
+    options[5].context = LV2_OPTIONS_INSTANCE;
+    options[5].subject = 0;
+    options[5].key = 0;
+    
+    options[5].size = 0;
+    options[5].type = 0;
+    options[5].value = NULL;
+    
+    /* set options */
+    ags_lv2_option_manager_lv2_options_set(lv2_handle[0],
+					   options);
+  }
+  
+  /*  */  
+  if(worker_handle != NULL){
+    if(plugin_descriptor->extension_data != NULL){
+      AGS_LV2_WORKER(worker_handle)->worker_interface = plugin_descriptor->extension_data("http://lv2plug.in/ns/ext/worker#interface");
+    }
+    
+    g_object_set(worker_handle,
+		 "handle", lv2_handle[0],
+		 NULL);
+  }
+
+  g_free(path);
+  
+  return(lv2_handle);
 }
 
 /**
