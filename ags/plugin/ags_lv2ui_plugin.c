@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -22,6 +22,10 @@
 #include <ags/lib/ags_string_util.h>
 
 #include <ags/plugin/ags_lv2_plugin.h>
+#include <ags/plugin/ags_lv2_event_manager.h>
+#include <ags/plugin/ags_lv2_uri_map_manager.h>
+#include <ags/plugin/ags_lv2_log_manager.h>
+#include <ags/plugin/ags_lv2_urid_manager.h>
 
 #include <dlfcn.h>
 #include <stdio.h>
@@ -223,6 +227,8 @@ ags_lv2ui_plugin_init(AgsLv2uiPlugin *lv2ui_plugin)
   lv2ui_plugin->gui_turtle = NULL;
 
   lv2ui_plugin->lv2_plugin = NULL;
+
+  lv2ui_plugin->feature = NULL;
 }
 
 void
@@ -540,6 +546,12 @@ ags_lv2ui_plugin_instantiate_with_params(AgsBasePlugin *base_plugin,
   
   pthread_mutex_unlock(ags_base_plugin_get_class_mutex());
 
+  local_n_params = 0;
+  
+  if(n_params == NULL){
+    n_params = &local_n_params;
+  }
+
   /* get some fields */
   pthread_mutex_lock(base_plugin_mutex);
 
@@ -552,13 +564,13 @@ ags_lv2ui_plugin_instantiate_with_params(AgsBasePlugin *base_plugin,
     plugin_so = dlopen(base_plugin->filename,
 		       RTLD_NOW);
     
-    g_object_set(lv2_plugin,
+    g_object_set(lv2ui_plugin,
 		 "ui-plugin-so", plugin_so,
 		 NULL);
 
     base_plugin->ui_plugin_handle = 
-      lv2ui_descriptor = (LV2_Descriptor_Function) dlsym(plugin_so,
-						       "lv2ui_descriptor");
+      lv2ui_descriptor = (LV2UI_DescriptorFunction) dlsym(plugin_so,
+							  "lv2ui_descriptor");
 
     if(dlerror() == NULL && lv2_descriptor){  
       for(i = 0; (plugin_descriptor = lv2ui_descriptor((uint32_t) i)) != NULL; i++){
@@ -720,14 +732,14 @@ ags_lv2ui_plugin_instantiate_with_params(AgsBasePlugin *base_plugin,
   }
   
   if(plugin_so != NULL){
-    lv2ui_descriptor = (LV2UI_Descriptor_Function) dlsym(plugin_so,
-							 "lv2ui_descriptor");
+    lv2ui_descriptor = (LV2UI_DescriptorFunction) dlsym(plugin_so,
+							"lv2ui_descriptor");
 
     if(dlerror() == NULL && lv2ui_descriptor){
       pthread_mutex_lock(base_plugin_mutex);
       
       base_plugin->plugin_descriptor = 
-	plugin_descriptor = lv2ui_descriptor(effect_index);
+	plugin_descriptor = lv2ui_descriptor(ui_effect_index);
 
       instantiate = plugin_descriptor->instantiate;
       
@@ -736,16 +748,16 @@ ags_lv2ui_plugin_instantiate_with_params(AgsBasePlugin *base_plugin,
   }
 
   /* alloc handle */
-  lv2ui_handle = (LV2UI_Handle *) malloc(sizeof(LV2UI_Handle));
+  ui_handle = (LV2UI_Handle *) malloc(sizeof(LV2UI_Handle));
 
   /* instantiate */
-  lv2ui_handle[0] = instantiate(plugin_descriptor,
-				lv2ui_plugin->gui_uri,
-				path,
-				write_function,
-				controller,
-				&widget,
-				feature);
+  ui_handle[0] = instantiate(plugin_descriptor,
+			     lv2ui_plugin->gui_uri,
+			     path,
+			     write_function,
+			     controller,
+			     &widget,
+			     feature);
   
   if(n_params[0] == 0){
     parameter_name = (gchar **) malloc(2 * sizeof(gchar *));
@@ -768,7 +780,7 @@ ags_lv2ui_plugin_instantiate_with_params(AgsBasePlugin *base_plugin,
 
   n_params[0] += 1;
   
-  return(lv2ui_handle);
+  return(ui_handle);
 }
 
 /**

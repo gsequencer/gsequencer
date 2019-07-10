@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -851,8 +851,6 @@ ags_lv2_plugin_instantiate(AgsBasePlugin *base_plugin,
   LV2_Descriptor *plugin_descriptor;
 
   LV2_Handle *lv2_handle;
-  LV2_Descriptor_Function lv2_descriptor;
-  LV2_Descriptor *plugin_descriptor;
   
   LV2_URI_Map_Feature *uri_map_feature;
   
@@ -878,7 +876,6 @@ ags_lv2_plugin_instantiate(AgsBasePlugin *base_plugin,
   float *ptr_samplerate;
   float *ptr_buffer_size;
 
-  guint local_n_params;
   uint32_t effect_index;
   guint conf_buffer_size;
   guint conf_samplerate;
@@ -896,13 +893,7 @@ ags_lv2_plugin_instantiate(AgsBasePlugin *base_plugin,
   pthread_mutex_t *base_plugin_mutex;
   
   lv2_plugin = AGS_LV2_PLUGIN(base_plugin);
-  
-  local_n_params = 0;
-  
-  if(n_params == NULL){
-    n_params = &local_n_params;
-  }
-  
+    
   /* get base plugin mutex */
   pthread_mutex_lock(ags_base_plugin_get_class_mutex());
   
@@ -1107,28 +1098,6 @@ ags_lv2_plugin_instantiate(AgsBasePlugin *base_plugin,
 			      path,
 			      feature);
 
-  if(n_params[0] == 0){
-    parameter_name = (gchar **) malloc(2 * sizeof(gchar *));
-    value = g_new0(GValue,
-		   1);
-  }else{
-    parameter_name = (gchar **) realloc(parameter_name,
-					(n_params[0] + 2) * sizeof(gchar *));
-    value = g_renew(GValue,
-		    value,
-		    n_params[0] + 1);
-  }
-
-  parameter_name[n_params[0]] = "widget";
-  memset(&(value[n_params[0]]), 0, sizeof(GValue));
-  g_value_init(&(value[n_params[0]]),
-	       G_TYPE_POINTER);
-  g_value_set_pointer(&(value[n_params[0]]), widget);
-
-  parameter_name[n_params[0] + 1] = NULL;
-
-  n_params[0] += 1;
-  
   if(initial_call){
     /* some options */
     options = (LV2_Options_Option *) malloc(6 * sizeof(LV2_Options_Option));

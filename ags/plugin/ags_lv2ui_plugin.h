@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -70,6 +70,8 @@ struct _AgsLv2uiPlugin
   AgsTurtle *gui_turtle;
 
   GObject *lv2_plugin;
+
+  LV2_Feature **feature;
 };
 
 struct _AgsLv2uiPluginClass
