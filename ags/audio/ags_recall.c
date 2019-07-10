@@ -45,11 +45,11 @@
 #include <ags/audio/ags_recall_recycling.h>
 #include <ags/audio/ags_recall_audio_signal.h>
 
-#include <ags/i18n.h>
-
 #include <libxml/tree.h>
 
 #include <string.h>
+
+#include <ags/i18n.h>
 
 void ags_recall_class_init(AgsRecallClass *recall_class);
 void ags_recall_connectable_interface_init(AgsConnectableInterface *connectable);

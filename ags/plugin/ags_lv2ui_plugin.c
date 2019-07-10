@@ -32,6 +32,11 @@
 
 #include <math.h>
 
+#include <lv2.h>
+#include <lv2/lv2plug.in/ns/extensions/ui/ui.h>
+
+#include <ags/i18n.h>
+
 void ags_lv2ui_plugin_class_init(AgsLv2uiPluginClass *lv2ui_plugin);
 void ags_lv2ui_plugin_init (AgsLv2uiPlugin *lv2ui_plugin);
 void ags_lv2ui_plugin_set_property(GObject *gobject,
@@ -144,8 +149,8 @@ ags_lv2ui_plugin_class_init(AgsLv2uiPluginClass *lv2ui_plugin)
    * Since: 2.0.0
    */
   param_spec = g_param_spec_string("gui-uri",
-				   "GUI URI of the plugin",
-				   "The GUI URI this plugin is located in",
+				   i18n_pspec("GUI URI of the plugin"),
+				   i18n_pspec("The GUI URI this plugin is located in"),
 				   NULL,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -160,8 +165,8 @@ ags_lv2ui_plugin_class_init(AgsLv2uiPluginClass *lv2ui_plugin)
    * Since: 2.0.0
    */
   param_spec = g_param_spec_object("manifest",
-				   "manifest of the plugin",
-				   "The manifest this plugin is located in",
+				   i18n_pspec("manifest of the plugin"),
+				   i18n_pspec("The manifest this plugin is located in"),
 				   AGS_TYPE_TURTLE,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -176,8 +181,8 @@ ags_lv2ui_plugin_class_init(AgsLv2uiPluginClass *lv2ui_plugin)
    * Since: 2.0.0
    */
   param_spec = g_param_spec_object("gui-turtle",
-				   "GUI turtle of the plugin",
-				   "The GUI turtle this plugin is located in",
+				   i18n_pspec("GUI turtle of the plugin"),
+				   i18n_pspec("The GUI turtle this plugin is located in"),
 				   AGS_TYPE_TURTLE,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -192,8 +197,8 @@ ags_lv2ui_plugin_class_init(AgsLv2uiPluginClass *lv2ui_plugin)
    * Since: 2.0.0
    */
   param_spec = g_param_spec_object("lv2-plugin",
-				   "LV2 plugin of the plugin",
-				   "The LV2 plugin this plugin is located in",
+				   i18n_pspec("LV2 plugin of the plugin"),
+				   i18n_pspec("The LV2 plugin this plugin is located in"),
 				   AGS_TYPE_LV2_PLUGIN,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -472,38 +477,6 @@ ags_lv2ui_plugin_load_plugin(AgsBasePlugin *base_plugin)
   //NOTE:JK: deprecated  
 }
 
-/**
- * ags_lv2ui_plugin_find_gui_uri:
- * @lv2ui_plugin: the #GList-struct containing #AgsLv2uiPlugin
- * @gui_uri: the gui-uri as string
- * 
- * Find next matching gui-uri in @lv2ui_plugin.
- * 
- * Returns: the next matching #GList-struct
- * 
- * Since: 2.0.0
- */
-GList*
-ags_lv2ui_plugin_find_gui_uri(GList *lv2ui_plugin,
-			      gchar *gui_uri)
-{
-  if(gui_uri == NULL){
-    return(NULL);
-  }
-  
-  while(lv2ui_plugin != NULL){
-    if(AGS_LV2UI_PLUGIN(lv2ui_plugin->data)->gui_uri != NULL &&
-       !g_ascii_strcasecmp(AGS_LV2UI_PLUGIN(lv2ui_plugin->data)->gui_uri,
-			   gui_uri)){
-      return(lv2ui_plugin);
-    }
-
-    lv2ui_plugin = lv2ui_plugin->next;
-  }
-
-  return(NULL);
-}
-
 gpointer
 ags_lv2ui_plugin_instantiate_with_params(AgsBasePlugin *base_plugin,
 					 guint *n_params,
@@ -511,11 +484,9 @@ ags_lv2ui_plugin_instantiate_with_params(AgsBasePlugin *base_plugin,
 					 GValue *value)
 {
   AgsLv2uiPlugin *lv2ui_plugin;
-  
-  AgsConfig *config;
-  
+    
   LV2UI_Controller controller;
-  LV2UI_Widget plugin_widget;
+  LV2UI_Widget widget;
   
   void *plugin_so;
   LV2UI_DescriptorFunction lv2ui_descriptor;
@@ -525,18 +496,12 @@ ags_lv2ui_plugin_instantiate_with_params(AgsBasePlugin *base_plugin,
     
   LV2_URI_Map_Feature *uri_map_feature;
   
-  LV2_Worker_Schedule_Handle worker_handle;
-  LV2_Worker_Schedule *worker_schedule;
-
   LV2_Log_Log *log_feature;
 
   LV2_Event_Feature *event_feature;
 
   LV2_URID_Map *urid_map;
   LV2_URID_Unmap *urid_unmap;
-
-  LV2_Options_Interface *options_interface;
-  LV2_Options_Option *options;
 
   LV2UI_Write_Function write_function;
   
@@ -550,8 +515,7 @@ ags_lv2ui_plugin_instantiate_with_params(AgsBasePlugin *base_plugin,
   float *ptr_buffer_size;
 
   uint32_t ui_effect_index;
-  guint conf_buffer_size;
-  guint conf_samplerate;
+  guint local_n_params;
   guint total_feature;
   guint nth;
   guint i;
@@ -616,7 +580,7 @@ ags_lv2ui_plugin_instantiate_with_params(AgsBasePlugin *base_plugin,
   lv2ui_descriptor = base_plugin->ui_plugin_handle;
   plugin_descriptor = base_plugin->ui_plugin_descriptor;
 
-  feature = lv2_plugin->feature;
+  feature = lv2ui_plugin->feature;
   
   path = g_path_get_dirname(base_plugin->filename);
 
@@ -630,15 +594,36 @@ ags_lv2ui_plugin_instantiate_with_params(AgsBasePlugin *base_plugin,
     return(NULL);
   }
 
-  /* get some config values */
-  initial_call = FALSE;
+  /* check args */
+  controller = NULL;  
+  widget = NULL;
+
+  write_function = NULL;
+
+  local_n_params = 0;
   
-  config = ags_config_get_instance();
+  if(n_params == NULL){
+    n_params = &local_n_params;
+  }
 
-  conf_samplerate = ags_soundcard_helper_config_get_samplerate(config);
-  conf_buffer_size = ags_soundcard_helper_config_get_buffer_size(config);
-
-  worker_handle = NULL;
+  if(n_params != NULL &&
+     parameter_name != NULL &&
+     value != NULL){
+    for(i = 0; i < n_params[0] && parameter_name[i] != NULL; i++){
+      if(!g_ascii_strncasecmp(parameter_name[i],
+			      "controller",
+			      11)){
+	controller = g_value_get_pointer(&(value[i]));
+      }else if(!g_ascii_strncasecmp(parameter_name[i],
+				    "write-function",
+				    15)){
+	write_function = g_value_get_pointer(&(value[i]));
+      }
+    }
+  }
+  
+  /* features */
+  initial_call = FALSE;
 
   if(feature == NULL){    
     initial_call = TRUE;
@@ -648,6 +633,20 @@ ags_lv2ui_plugin_instantiate_with_params(AgsBasePlugin *base_plugin,
     nth = 0;  
 
     feature = (LV2_Feature **) malloc(total_feature * sizeof(LV2_Feature *));
+    
+    /* idle interface */
+    feature[nth] = (LV2_Feature *) malloc(sizeof(LV2_Feature));    
+    feature[nth]->URI = LV2_UI__idleInterface;
+    feature[nth]->data = NULL;
+
+    nth++;
+      
+    /* show interface */
+    feature[nth] = (LV2_Feature *) malloc(sizeof(LV2_Feature));
+    feature[nth]->URI = LV2_UI__showInterface;
+    feature[nth]->data = NULL;
+
+    nth++;  
   
     /* URI map feature */  
     uri_map_feature = (LV2_URI_Map_Feature *) malloc(sizeof(LV2_URI_Map_Feature));
@@ -659,21 +658,6 @@ ags_lv2ui_plugin_instantiate_with_params(AgsBasePlugin *base_plugin,
     feature[nth]->data = uri_map_feature;
 
     nth++;
-  
-    /* worker feature */
-    if(ags_lv2_plugin_test_flags(lv2_plugin, AGS_LV2_PLUGIN_NEEDS_WORKER)){
-      worker_handle = ags_lv2_worker_manager_pull_worker(ags_lv2_worker_manager_get_instance());
-  
-      worker_schedule = (LV2_Worker_Schedule *) malloc(sizeof(LV2_Worker_Schedule));
-      worker_schedule->handle = worker_handle;
-      worker_schedule->schedule_work = ags_lv2_worker_schedule_work;
-  
-      feature[nth] = (LV2_Feature *) malloc(sizeof(LV2_Feature));
-      feature[nth]->URI = LV2_WORKER__schedule;
-      feature[nth]->data = worker_schedule;
-
-      nth++;
-    }
   
     /* log feature */
     log_feature = (LV2_Log_Log *) malloc(sizeof(LV2_Log_Log));
@@ -723,17 +707,6 @@ ags_lv2ui_plugin_instantiate_with_params(AgsBasePlugin *base_plugin,
 
     nth++;
 
-    /* Options interface */
-    options_interface = (LV2_Options_Interface *) malloc(sizeof(LV2_Options_Interface));
-    options_interface->set = ags_lv2_option_manager_lv2_options_set;
-    options_interface->get = ags_lv2_option_manager_lv2_options_get;
-  
-    feature[nth] = (LV2_Feature *) malloc(sizeof(LV2_Feature));
-    feature[nth]->URI = LV2_OPTIONS_URI;
-    feature[nth]->data = options_interface;
-
-    nth++;
-
     /* terminate */
     for(; nth < total_feature; nth++){
       feature[nth] = NULL;
@@ -741,20 +714,20 @@ ags_lv2ui_plugin_instantiate_with_params(AgsBasePlugin *base_plugin,
   
     pthread_mutex_lock(base_plugin_mutex);
 
-    lv2_plugin->feature = feature;
+    lv2ui_plugin->feature = feature;
     
     pthread_mutex_unlock(base_plugin_mutex);
   }
   
   if(plugin_so != NULL){
-    lv2_descriptor = (LV2_Descriptor_Function) dlsym(plugin_so,
-						     "lv2_descriptor");
+    lv2ui_descriptor = (LV2UI_Descriptor_Function) dlsym(plugin_so,
+							 "lv2ui_descriptor");
 
-    if(dlerror() == NULL && lv2_descriptor){
+    if(dlerror() == NULL && lv2ui_descriptor){
       pthread_mutex_lock(base_plugin_mutex);
       
       base_plugin->plugin_descriptor = 
-	plugin_descriptor = lv2_descriptor(effect_index);
+	plugin_descriptor = lv2ui_descriptor(effect_index);
 
       instantiate = plugin_descriptor->instantiate;
       
@@ -765,143 +738,174 @@ ags_lv2ui_plugin_instantiate_with_params(AgsBasePlugin *base_plugin,
   /* alloc handle */
   lv2ui_handle = (LV2UI_Handle *) malloc(sizeof(LV2UI_Handle));
 
-  controller = NULL;  
-  plugin_widget = NULL;
-
-  write_function = NULL;
-
-  if(n_params != NULL &&
-     parameter_name != NULL &&
-     value != NULL){
-    for(i = 0; i < n_params[0] && parameter_name[i] != NULL; i++){
-      if(!g_ascii_strncasecmp(parameter_name[i],
-			      "controller",
-			      11)){
-	controller = g_value_get_pointer(&(value[i]));
-      }else if(!g_ascii_strncasecmp(parameter_name[i],
-				    "write-function",
-				    15)){
-	write_function = g_value_get_pointer(&(value[i]));
-      }
-    }
-  }
-    
   /* instantiate */
   lv2ui_handle[0] = instantiate(plugin_descriptor,
 				lv2ui_plugin->gui_uri,
 				path,
 				write_function,
 				controller,
-				&plugin_widget,
+				&widget,
 				feature);
   
-  if(initial_call){
-    /* some options */
-    options = (LV2_Options_Option *) malloc(6 * sizeof(LV2_Options_Option));
-
-    /* samplerate */
-    options[0].context = LV2_OPTIONS_INSTANCE;
-    options[0].subject = 0;
-    options[0].key = ags_lv2_urid_manager_lookup(ags_lv2_urid_manager_get_instance(),
-						 LV2_PARAMETERS__sampleRate);
-
-    ptr_samplerate = (float *) malloc(sizeof(float));
-    ptr_samplerate[0] = conf_samplerate;
-  
-    options[0].size = sizeof(float);
-    options[0].type = ags_lv2_urid_manager_lookup(ags_lv2_urid_manager_get_instance(),
-						  LV2_ATOM__Float);
-    options[0].value = ptr_samplerate;
-  
-    /* min-block-length */
-    options[1].context = LV2_OPTIONS_INSTANCE;
-    options[1].subject = 0;
-    options[1].key = ags_lv2_urid_manager_lookup(ags_lv2_urid_manager_get_instance(),
-						 LV2_BUF_SIZE__minBlockLength);
-
-    ptr_buffer_size = (float *) malloc(sizeof(float));
-    ptr_buffer_size[0] = conf_buffer_size;
-  
-    options[1].size = sizeof(float);
-    options[1].type = ags_lv2_urid_manager_lookup(ags_lv2_urid_manager_get_instance(),
-						  LV2_ATOM__Int);
-    options[1].value = ptr_buffer_size;
-
-    /* max-block-length */
-    options[2].context = LV2_OPTIONS_INSTANCE;
-    options[2].subject = 0;
-    options[2].key = ags_lv2_urid_manager_lookup(ags_lv2_urid_manager_get_instance(),
-						 LV2_BUF_SIZE__maxBlockLength);
-
-    ptr_buffer_size = (float *) malloc(sizeof(float));
-    ptr_buffer_size[0] = conf_buffer_size;
-
-    options[2].size = sizeof(float);
-    options[2].type = ags_lv2_urid_manager_lookup(ags_lv2_urid_manager_get_instance(),
-						  LV2_ATOM__Int);
-    options[2].value = ptr_buffer_size;
-
-    /* bounded-block-length */
-    options[3].context = LV2_OPTIONS_INSTANCE;
-    options[3].subject = 0;
-    options[3].key = ags_lv2_urid_manager_lookup(ags_lv2_urid_manager_get_instance(),
-						 LV2_BUF_SIZE__boundedBlockLength);
-
-    ptr_buffer_size = (float *) malloc(sizeof(float));
-    ptr_buffer_size[0] = conf_buffer_size;
-
-    options[3].size = sizeof(float);
-    options[3].type = ags_lv2_urid_manager_lookup(ags_lv2_urid_manager_get_instance(),
-						  LV2_ATOM__Int);
-    options[3].value = ptr_buffer_size;
-
-    /* fixed-block-length */
-    options[4].context = LV2_OPTIONS_INSTANCE;
-    options[4].subject = 0;
-    options[4].key = ags_lv2_urid_manager_lookup(ags_lv2_urid_manager_get_instance(),
-						 LV2_BUF_SIZE__fixedBlockLength);
-
-    ptr_buffer_size = (float *) malloc(sizeof(float));
-    ptr_buffer_size[0] = conf_buffer_size;
-
-    options[4].size = sizeof(float);
-    options[4].type = ags_lv2_urid_manager_lookup(ags_lv2_urid_manager_get_instance(),
-						  LV2_ATOM__Int);
-    options[4].value = ptr_buffer_size;
-    
-    /* instance */
-    options[5].context = LV2_OPTIONS_INSTANCE;
-    options[5].subject = 0;
-    options[5].key = 0;
-    
-    options[5].size = 0;
-    options[5].type = 0;
-    options[5].value = NULL;
-    
-    /* set options */
-    ags_lv2_option_manager_lv2_options_set(lv2_handle[0],
-					   options);
-  }
-  
-  /*  */  
-  if(worker_handle != NULL){
-    if(plugin_descriptor->extension_data != NULL){
-      AGS_LV2_WORKER(worker_handle)->worker_interface = plugin_descriptor->extension_data("http://lv2plug.in/ns/ext/worker#interface");
-    }
-    
-    g_object_set(worker_handle,
-		 "handle", lv2_handle[0],
-		 NULL);
+  if(n_params[0] == 0){
+    parameter_name = (gchar **) malloc(2 * sizeof(gchar *));
+    value = g_new0(GValue,
+		   1);
+  }else{
+    parameter_name = (gchar **) realloc(parameter_name,
+					(n_params[0] + 1) * sizeof(gchar *));
+    value = g_renew(GValue,
+		    value,
+		    n_params[0] + 1);
   }
 
-  g_free(path);
+  parameter_name[n_params[0]] = g_strdup("widget");
+  g_value_init(&(value[n_params[0]]),
+	       G_TYPE_POINTER);
+  g_value_set_pointer(&(value[n_params[0]]), widget);
   
-  if(n_params != NULL &&
-     parameter_name != NULL &&
-     value != NULL){
-  }
+  parameter_name[n_params[0] + 1] = NULL;
 
+  n_params[0] += 1;
+  
   return(lv2ui_handle);
+}
+
+/**
+ * ags_lv2ui_plugin_test_flags:
+ * @lv2ui_plugin: the #AgsLv2uiPlugin
+ * @flags: the flags
+ * 
+ * Test @flags to be set on @recall.
+ * 
+ * Returns: %TRUE if flags are set, else %FALSE
+ * 
+ * Since: 2.2.18
+ */
+gboolean
+ags_lv2ui_plugin_test_flags(AgsLv2uiPlugin *lv2ui_plugin, guint flags)
+{
+  gboolean retval;
+  
+  pthread_mutex_t *base_plugin_mutex;
+
+  if(!AGS_IS_LV2UI_PLUGIN(lv2ui_plugin)){
+    return(FALSE);
+  }
+  
+  /* get base plugin mutex */
+  pthread_mutex_lock(ags_base_plugin_get_class_mutex());
+  
+  base_plugin_mutex = AGS_BASE_PLUGIN(lv2ui_plugin)->obj_mutex;
+  
+  pthread_mutex_unlock(ags_base_plugin_get_class_mutex());
+
+  /* test flags */
+  pthread_mutex_lock(base_plugin_mutex);
+
+  retval = ((flags & (lv2ui_plugin->flags)) != 0) ? TRUE: FALSE;
+  
+  pthread_mutex_unlock(base_plugin_mutex);
+
+  return(retval);
+}
+
+/**
+ * ags_lv2ui_plugin_set_flags:
+ * @lv2ui_plugin: the #AgsLv2uiPlugin
+ * @flags: the flags
+ *
+ * Set flags.
+ * 
+ * Since: 2.2.18
+ */
+void
+ags_lv2ui_plugin_set_flags(AgsLv2uiPlugin *lv2ui_plugin, guint flags)
+{
+  pthread_mutex_t *base_plugin_mutex;
+
+  if(!AGS_IS_LV2UI_PLUGIN(lv2ui_plugin)){
+    return;
+  }
+  
+  /* get base plugin mutex */
+  pthread_mutex_lock(ags_base_plugin_get_class_mutex());
+  
+  base_plugin_mutex = AGS_BASE_PLUGIN(lv2ui_plugin)->obj_mutex;
+  
+  pthread_mutex_unlock(ags_base_plugin_get_class_mutex());
+
+  /* set flags */
+  pthread_mutex_lock(base_plugin_mutex);
+
+  lv2ui_plugin->flags |= flags;
+  
+  pthread_mutex_unlock(base_plugin_mutex);
+}
+
+/**
+ * ags_lv2ui_plugin_unset_flags:
+ * @lv2ui_plugin: the #AgsLv2uiPlugin
+ * @flags: the flags
+ *
+ * Unset flags.
+ * 
+ * Since: 2.2.18
+ */
+void
+ags_lv2ui_plugin_unset_flags(AgsLv2uiPlugin *lv2ui_plugin, guint flags)
+{
+  pthread_mutex_t *base_plugin_mutex;
+
+  if(!AGS_IS_LV2UI_PLUGIN(lv2ui_plugin)){
+    return;
+  }
+  
+  /* get base plugin mutex */
+  pthread_mutex_lock(ags_base_plugin_get_class_mutex());
+  
+  base_plugin_mutex = AGS_BASE_PLUGIN(lv2ui_plugin)->obj_mutex;
+  
+  pthread_mutex_unlock(ags_base_plugin_get_class_mutex());
+
+  /* unset flags */
+  pthread_mutex_lock(base_plugin_mutex);
+
+  lv2ui_plugin->flags &= (~flags);
+  
+  pthread_mutex_unlock(base_plugin_mutex);
+}
+
+/**
+ * ags_lv2ui_plugin_find_gui_uri:
+ * @lv2ui_plugin: the #GList-struct containing #AgsLv2uiPlugin
+ * @gui_uri: the gui-uri as string
+ * 
+ * Find next matching gui-uri in @lv2ui_plugin.
+ * 
+ * Returns: the next matching #GList-struct
+ * 
+ * Since: 2.0.0
+ */
+GList*
+ags_lv2ui_plugin_find_gui_uri(GList *lv2ui_plugin,
+			      gchar *gui_uri)
+{
+  if(gui_uri == NULL){
+    return(NULL);
+  }
+  
+  while(lv2ui_plugin != NULL){
+    if(AGS_LV2UI_PLUGIN(lv2ui_plugin->data)->gui_uri != NULL &&
+       !g_ascii_strcasecmp(AGS_LV2UI_PLUGIN(lv2ui_plugin->data)->gui_uri,
+			   gui_uri)){
+      return(lv2ui_plugin);
+    }
+
+    lv2ui_plugin = lv2ui_plugin->next;
+  }
+
+  return(NULL);
 }
 
 /**
