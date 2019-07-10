@@ -514,12 +514,15 @@ ags_lv2ui_plugin_instantiate_with_params(AgsBasePlugin *base_plugin,
   
   AgsConfig *config;
   
+  LV2UI_Controller controller;
+  LV2UI_Widget plugin_widget;
+  
   void *plugin_so;
   LV2UI_DescriptorFunction lv2ui_descriptor;
   LV2UI_Descriptor *plugin_descriptor;    
 
   LV2UI_Handle *ui_handle;
-  
+    
   LV2_URI_Map_Feature *uri_map_feature;
   
   LV2_Worker_Schedule_Handle worker_handle;
@@ -534,6 +537,8 @@ ags_lv2ui_plugin_instantiate_with_params(AgsBasePlugin *base_plugin,
 
   LV2_Options_Interface *options_interface;
   LV2_Options_Option *options;
+
+  LV2UI_Write_Function write_function;
   
   LV2_Feature **feature;
 
@@ -620,6 +625,8 @@ ags_lv2ui_plugin_instantiate_with_params(AgsBasePlugin *base_plugin,
   pthread_mutex_unlock(base_plugin_mutex);
 
   if(plugin_so == NULL){
+    g_free(path);
+    
     return(NULL);
   }
 
@@ -755,14 +762,36 @@ ags_lv2ui_plugin_instantiate_with_params(AgsBasePlugin *base_plugin,
     }
   }
 
-  /* alloc handle and path */
+  /* alloc handle */
   lv2ui_handle = (LV2UI_Handle *) malloc(sizeof(LV2UI_Handle));
 
+  controller = NULL;  
+  plugin_widget = NULL;
+
+  write_function = NULL;
+
+  if(n_params != NULL &&
+     parameter_name != NULL &&
+     value != NULL){
+    for(i = 0; i < n_params[0] && parameter_name[i] != NULL; i++){
+      if(!g_ascii_strncasecmp(parameter_name[i],
+			      "controller",
+			      11)){
+	controller = g_value_get_pointer(&(value[i]));
+      }else if(!g_ascii_strncasecmp(parameter_name[i],
+				    "write-function",
+				    15)){
+	write_function = g_value_get_pointer(&(value[i]));
+      }
+    }
+  }
+    
   /* instantiate */
   lv2ui_handle[0] = instantiate(plugin_descriptor,
 				lv2ui_plugin->gui_uri,
-				bundle_path,
-				parent_widget,
+				path,
+				write_function,
+				controller,
 				&plugin_widget,
 				feature);
   
@@ -867,7 +896,12 @@ ags_lv2ui_plugin_instantiate_with_params(AgsBasePlugin *base_plugin,
 
   g_free(path);
   
-  return(lv2_handle);
+  if(n_params != NULL &&
+     parameter_name != NULL &&
+     value != NULL){
+  }
+
+  return(lv2ui_handle);
 }
 
 /**
