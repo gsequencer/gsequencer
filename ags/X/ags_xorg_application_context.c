@@ -1608,33 +1608,22 @@ ags_xorg_application_context_prepare(AgsApplicationContext *application_context)
   /* AgsAudioLoop */
   application_context->main_loop = (GObject *) ags_audio_loop_new((GObject *) NULL,
 								  (GObject *) xorg_application_context);
-  g_object_ref(application_context->main_loop);
   
   audio_loop = (AgsThread *) application_context->main_loop;
-  
-  g_object_set(xorg_application_context,
-	       "main-loop", audio_loop,
-	       NULL);
-
-  g_object_ref(audio_loop);
   ags_connectable_connect(AGS_CONNECTABLE(audio_loop));
 
   /* AgsPollingThread */
   xorg_application_context->polling_thread = (AgsPollingThread *) ags_polling_thread_new();
+
   polling_thread = (AgsThread *) xorg_application_context->polling_thread;
-  g_object_ref(xorg_application_context->polling_thread);
-  
   ags_thread_add_child_extended(AGS_THREAD(audio_loop),
 				(AgsThread *) polling_thread,
 				TRUE, TRUE);
   
   /* AgsTaskThread */
   application_context->task_thread = (GObject *) ags_task_thread_new();
-  g_object_ref(application_context->task_thread);
   
   task_thread = (AgsThread *) application_context->task_thread;
-  
-  thread_pool = AGS_TASK_THREAD(task_thread)->thread_pool;
   ags_main_loop_set_async_queue(AGS_MAIN_LOOP(audio_loop),
 				(GObject *) task_thread);
   ags_thread_add_child_extended(AGS_THREAD(audio_loop),
@@ -1643,11 +1632,11 @@ ags_xorg_application_context_prepare(AgsApplicationContext *application_context)
   g_signal_connect(application_context->task_thread, "clear-cache",
 		   G_CALLBACK(ags_xorg_application_context_clear_cache), NULL);
   
+  thread_pool = AGS_TASK_THREAD(task_thread)->thread_pool;
+  
   /* AgsGuiThread */
   gui_thread = 
     xorg_application_context->gui_thread = (AgsThread *) ags_gui_thread_new();
-  g_object_ref(gui_thread);
-
   ags_thread_add_child_extended(AGS_THREAD(audio_loop),
   				(AgsThread *) gui_thread,
   				TRUE, TRUE);
@@ -1660,12 +1649,14 @@ ags_xorg_application_context_prepare(AgsApplicationContext *application_context)
 			       polling_thread);
   start_queue = g_list_prepend(start_queue,
 			       task_thread);
-
-  g_atomic_pointer_set(&(audio_loop->start_queue),
-		       start_queue);
   
   pthread_mutex_unlock(audio_loop->start_mutex);
 
+  ags_thread_add_start_queue_all(audio_loop,
+				 start_queue);
+  
+  g_list_free(start_queue);
+  
   /* start audio loop and thread pool*/
   ags_thread_start(audio_loop);
   
@@ -2494,7 +2485,6 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
     
     //    if(soundcard_capability == AGS_SOUNDCARD_CAPABILITY_PLAYBACK){
       notify_soundcard = ags_notify_soundcard_new((AgsSoundcardThread *) soundcard_thread);
-      g_object_ref(notify_soundcard);
 
       g_object_set(notify_soundcard,
 		   "task-thread", application_context->task_thread,
@@ -2540,10 +2530,12 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
       }
 
       /* default export thread */
-      if(export_thread != NULL &&
-	 xorg_application_context->default_export_thread == NULL){
-	xorg_application_context->default_export_thread = export_thread;
-	g_object_ref(export_thread);
+      if(export_thread != NULL){
+	if(xorg_application_context->default_export_thread == NULL){
+	  xorg_application_context->default_export_thread = export_thread;
+	}else{
+	  g_object_unref(export_thread);
+	}
       }
 
       /* iterate */
@@ -2755,7 +2747,6 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
 
   /* AgsDestroyWorker */
   destroy_worker = ags_destroy_worker_get_instance();
-  g_object_ref(destroy_worker);
   ags_thread_add_child_extended(main_loop,
 				(AgsThread *) destroy_worker,
 				TRUE, TRUE);
@@ -2788,9 +2779,6 @@ ags_xorg_application_context_setup(AgsApplicationContext *application_context)
     window->filename = filename;
   }
   //  pthread_mutex_unlock(ags_gui_thread_get_dispatch_mutex());
-
-  /* unref */
-  g_object_unref(main_loop);
 }
 
 void
