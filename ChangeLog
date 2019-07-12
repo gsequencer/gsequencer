@@ -1,11 +1,12 @@
 ags (2.2.18)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
-	* refactored AgsLv2Bridge
 	* implemented ags_lv2ui_plugin_test_flags(), ags_lv2ui_plugin_set_flags() and ags_lv2ui_plugin_get_flags()
 	* implemented ags_base_plugin_instantiate_with_params()
 	* implemented ags_lv2ui_plugin_instantiate_with_params()
+	* refactored AgsLv2Bridge and AgsLiveLv2Bridge
 	* improved AgsAudioApplicationContext and AgsXorgApplicationContext
+	* improved lv2 plugin set flag AGS_LV2_PLUGIN_IS_SYNTHESIZER as parsing names
 
 gs (2.2.17)
 

@@ -494,7 +494,7 @@ ags_lv2ui_plugin_instantiate_with_params(AgsBasePlugin *base_plugin,
   LV2UI_Controller controller;
   LV2UI_Widget widget;
   
-  void *plugin_so;
+  void *ui_plugin_so;
   LV2UI_DescriptorFunction lv2ui_descriptor;
   LV2UI_Descriptor *plugin_descriptor;    
 
@@ -555,21 +555,21 @@ ags_lv2ui_plugin_instantiate_with_params(AgsBasePlugin *base_plugin,
   /* get some fields */
   pthread_mutex_lock(base_plugin_mutex);
 
-  plugin_so = base_plugin->plugin_so;
+  ui_plugin_so = base_plugin->ui_plugin_so;
   ui_effect_index = 0;
 
-  if(plugin_so == NULL){
-    g_message("open %s", base_plugin->filename);
+  if(ui_plugin_so == NULL){
+    g_message("open %s", base_plugin->ui_filename);
     
-    plugin_so = dlopen(base_plugin->filename,
-		       RTLD_NOW);
+    ui_plugin_so = dlopen(base_plugin->ui_filename,
+			  RTLD_NOW);
     
     g_object_set(lv2ui_plugin,
-		 "ui-plugin-so", plugin_so,
+		 "ui-plugin-so", ui_plugin_so,
 		 NULL);
 
     base_plugin->ui_plugin_handle = 
-      lv2ui_descriptor = (LV2UI_DescriptorFunction) dlsym(plugin_so,
+      lv2ui_descriptor = (LV2UI_DescriptorFunction) dlsym(ui_plugin_so,
 							  "lv2ui_descriptor");
 
     if(dlerror() == NULL && lv2_descriptor){  
@@ -594,13 +594,13 @@ ags_lv2ui_plugin_instantiate_with_params(AgsBasePlugin *base_plugin,
 
   feature = lv2ui_plugin->feature;
   
-  path = g_path_get_dirname(base_plugin->filename);
+  path = g_path_get_dirname(base_plugin->ui_filename);
 
   ui_effect_index = base_plugin->ui_effect_index;
   
   pthread_mutex_unlock(base_plugin_mutex);
 
-  if(plugin_so == NULL){
+  if(ui_plugin_so == NULL){
     g_free(path);
     
     return(NULL);
@@ -611,12 +611,6 @@ ags_lv2ui_plugin_instantiate_with_params(AgsBasePlugin *base_plugin,
   widget = NULL;
 
   write_function = NULL;
-
-  local_n_params = 0;
-  
-  if(n_params == NULL){
-    n_params = &local_n_params;
-  }
 
   if(n_params != NULL &&
      parameter_name != NULL &&
@@ -733,26 +727,19 @@ ags_lv2ui_plugin_instantiate_with_params(AgsBasePlugin *base_plugin,
     pthread_mutex_unlock(base_plugin_mutex);
   }
   
-  if(plugin_so != NULL){
-    lv2ui_descriptor = (LV2UI_DescriptorFunction) dlsym(plugin_so,
-							"lv2ui_descriptor");
-
-    if(dlerror() == NULL && lv2ui_descriptor){
-      pthread_mutex_lock(base_plugin_mutex);
+  if(plugin_descriptor != NULL){
+    pthread_mutex_lock(base_plugin_mutex);
+    
+    instantiate = plugin_descriptor->instantiate;
       
-      base_plugin->plugin_descriptor = 
-	plugin_descriptor = lv2ui_descriptor(ui_effect_index);
-
-      instantiate = plugin_descriptor->instantiate;
-      
-      pthread_mutex_unlock(base_plugin_mutex);
-    }
+    pthread_mutex_unlock(base_plugin_mutex);
   }
 
-  /* alloc handle */
-  ui_handle = (LV2UI_Handle *) malloc(sizeof(LV2UI_Handle));
-
   /* instantiate */
+  ui_handle = (LV2UI_Handle *) malloc(sizeof(LV2UI_Handle));
+  
+  g_message("LV2UI instantiate");
+	    
   ui_handle[0] = instantiate(plugin_descriptor,
 			     lv2ui_plugin->gui_uri,
 			     path,
@@ -760,7 +747,7 @@ ags_lv2ui_plugin_instantiate_with_params(AgsBasePlugin *base_plugin,
 			     controller,
 			     &widget,
 			     feature);
-
+  
   if(parameter_name != NULL &&
      value != NULL){
     if(n_params[0] == 0){
@@ -769,7 +756,7 @@ ags_lv2ui_plugin_instantiate_with_params(AgsBasePlugin *base_plugin,
 			1);
     }else{
       parameter_name[0] = (gchar **) realloc(parameter_name[0],
-					     (n_params[0] + 1) * sizeof(gchar *));
+					     (n_params[0] + 2) * sizeof(gchar *));
       value[0] = g_renew(GValue,
 			 value[0],
 			 n_params[0] + 1);

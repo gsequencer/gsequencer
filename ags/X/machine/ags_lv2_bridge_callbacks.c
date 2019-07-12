@@ -118,6 +118,7 @@ ags_lv2_bridge_show_gui_callback(GtkMenuItem *item, AgsLv2Bridge *lv2_bridge)
         
     lv2_bridge->ui_handle = ags_base_plugin_instantiate_with_params(lv2ui_plugin,
 								    &n_params, &parameter_name, &value);
+    lv2_bridge->ui_descriptor = AGS_BASE_PLUGIN(lv2ui_plugin)->ui_plugin_descriptor;
 
     if(lv2_bridge->ui_handle != NULL){
       if(n_params > local_n_params){
@@ -125,6 +126,8 @@ ags_lv2_bridge_show_gui_callback(GtkMenuItem *item, AgsLv2Bridge *lv2_bridge)
 	  if(!g_ascii_strncasecmp(parameter_name[i],
 				  "widget",
 				  7)){
+	    g_message("LV2UI found widget");
+	    
 	    lv2_bridge->ui_widget = g_value_get_pointer(&(value[i]));
 	  }
 	}
@@ -133,22 +136,26 @@ ags_lv2_bridge_show_gui_callback(GtkMenuItem *item, AgsLv2Bridge *lv2_bridge)
       g_hash_table_insert(ags_lv2_bridge_lv2ui_handle,
 			  lv2_bridge->ui_handle, lv2_bridge);
 
-      plugin_descriptor = AGS_LV2UI_PLUGIN_DESCRIPTOR(AGS_BASE_PLUGIN(lv2ui_plugin)->ui_plugin_descriptor);
+      plugin_descriptor = lv2_bridge->ui_descriptor;
       
       if(plugin_descriptor->extension_data != NULL){
-	lv2_bridge->ui_feature[0]->data = plugin_descriptor->extension_data(LV2_UI__idleInterface);
-	lv2_bridge->ui_feature[1]->data = plugin_descriptor->extension_data(LV2_UI__showInterface);
+	g_message("LV2UI found extension data");
+	
+	lv2ui_plugin->feature[0]->data = plugin_descriptor->extension_data(LV2_UI__idleInterface);
+	lv2ui_plugin->feature[1]->data = plugin_descriptor->extension_data(LV2_UI__showInterface);
 
 	g_hash_table_insert(ags_lv2_bridge_lv2ui_idle,
 			    lv2_bridge->ui_handle, lv2_bridge);
 	g_timeout_add(1000 / 30, (GSourceFunc) ags_lv2_bridge_lv2ui_idle_timeout, (gpointer) lv2_bridge->ui_handle);
       }
     }
-
+    
+#if 0
     for(i = 0; i < n_params; i++){
       g_value_unset(&(value[i]));
     }
-
+#endif
+    
     g_free(value);
     g_strfreev(parameter_name);
   }
@@ -255,10 +262,11 @@ ags_lv2_bridge_show_gui_callback(GtkMenuItem *item, AgsLv2Bridge *lv2_bridge)
 
     g_list_free(list_bulk_member_start);
   }
-
-  if(lv2_bridge->ui_feature != NULL &&
-     lv2_bridge->ui_feature[1]->data != NULL){
-    ((struct _LV2UI_Show_Interface *) lv2_bridge->ui_feature[1]->data)->show(lv2_bridge->ui_handle[0]);
+  
+  if(lv2_bridge->ui_handle != NULL &&
+     lv2ui_plugin->feature != NULL &&
+     lv2ui_plugin->feature[1]->data != NULL){
+    ((struct _LV2UI_Show_Interface *) lv2ui_plugin->feature[1]->data)->show(lv2_bridge->ui_handle[0]);
   }else if(lv2_bridge->ui_widget != NULL){
     GtkWindow *window;
 
@@ -295,8 +303,6 @@ ags_lv2_bridge_lv2ui_cleanup_function(LV2UI_Handle handle)
   if(lv2_bridge != NULL){
     g_hash_table_remove(ags_lv2_bridge_lv2ui_handle,
 			lv2_bridge->ui_handle);
-
-    free(lv2_bridge->ui_handle);
     
     lv2_bridge->ui_handle = NULL;
   }
@@ -400,7 +406,6 @@ ags_lv2_bridge_program_changed_callback(GtkComboBox *combo_box, AgsLv2Bridge *lv
     gchar *specifier;
     
     guint bank, program;
-    guint i;
 
     lv2_plugin = ags_lv2_manager_find_lv2_plugin(ags_lv2_manager_get_instance(),
 						 lv2_bridge->filename,
@@ -452,7 +457,7 @@ ags_lv2_bridge_program_changed_callback(GtkComboBox *combo_box, AgsLv2Bridge *lv
 	
 	plugin_port = start_plugin_port;
 	
-	for(i = 0; plugin_port != NULL;){
+	while(plugin_port != NULL){
 	  if(ags_plugin_port_test_flags(plugin_port->data, AGS_PLUGIN_PORT_CONTROL)){
 	    if(ags_plugin_port_test_flags(plugin_port->data, AGS_PLUGIN_PORT_INPUT)){
 	      specifier = AGS_PLUGIN_PORT(plugin_port->data)->port_name;
@@ -464,13 +469,13 @@ ags_lv2_bridge_program_changed_callback(GtkComboBox *combo_box, AgsLv2Bridge *lv
 		  GValue value = {0,};
 
 #ifdef AGS_DEBUG
-		  g_message("%s %f", specifier, lv2_bridge->port_value[i]);
+		  g_message("%s %f", specifier, lv2_bridge->port_value[AGS_PLUGIN_PORT(plugin_port->data)->port_index]);
 #endif
 		  
 		  g_value_init(&value,
 			       G_TYPE_FLOAT);
 		  g_value_set_float(&value,
-				    lv2_bridge->port_value[i]);
+				    lv2_bridge->port_value[AGS_PLUGIN_PORT(plugin_port->data)->port_index]);
 		  ags_port_safe_write_raw(port->data,
 					  &value);
 		
@@ -479,8 +484,6 @@ ags_lv2_bridge_program_changed_callback(GtkComboBox *combo_box, AgsLv2Bridge *lv
 	
 		port = port->next;
 	      }
-	      
-	      i++;
 	    }
 	  }
 
@@ -513,7 +516,7 @@ ags_lv2_bridge_program_changed_callback(GtkComboBox *combo_box, AgsLv2Bridge *lv
 
     plugin_port = start_plugin_port;
   
-    for(i = 0; plugin_port != NULL;){
+    while(plugin_port != NULL){
       if(ags_plugin_port_test_flags(plugin_port->data, AGS_PLUGIN_PORT_CONTROL)){
 	if(ags_plugin_port_test_flags(plugin_port->data, AGS_PLUGIN_PORT_INPUT)){
 	  /* find bulk member */
@@ -536,7 +539,7 @@ ags_lv2_bridge_program_changed_callback(GtkComboBox *combo_box, AgsLv2Bridge *lv
 	      child_widget = gtk_bin_get_child((GtkBin *) AGS_BULK_MEMBER(bulk_member->data));
 	  	  
 	      if(GTK_IS_TOGGLE_BUTTON(child_widget)){
-		if(lv2_bridge->port_value[i] == 0.0){
+		if(lv2_bridge->port_value[AGS_PLUGIN_PORT(plugin_port->data)->port_index] == 0.0){
 		  gtk_toggle_button_set_active((GtkToggleButton *) child_widget,
 					       FALSE);
 		}else{
@@ -547,7 +550,7 @@ ags_lv2_bridge_program_changed_callback(GtkComboBox *combo_box, AgsLv2Bridge *lv
 		gfloat port_val;
 		gdouble val;
 		
-		port_val = lv2_bridge->port_value[i];
+		port_val = lv2_bridge->port_value[AGS_PLUGIN_PORT(plugin_port->data)->port_index];
 
 		val = port_val;
 
@@ -561,13 +564,11 @@ ags_lv2_bridge_program_changed_callback(GtkComboBox *combo_box, AgsLv2Bridge *lv
 		ags_dial_draw((AgsDial *) child_widget);
 
 #ifdef AGS_DEBUG
-		g_message(" --- %f", lv2_bridge->port_value[i]);
+		g_message(" --- %f", lv2_bridge->port_value[AGS_PLUGIN_PORT(plugin_port->data)->port_index]);
 #endif
 	      }
 	
 	      AGS_BULK_MEMBER(bulk_member->data)->flags &= (~AGS_BULK_MEMBER_NO_UPDATE);
-
-	      i++;
 
 	      break;
 	    }
@@ -607,13 +608,26 @@ ags_lv2_bridge_preset_changed_callback(GtkComboBox *combo_box, AgsLv2Bridge *lv2
   GList *start_plugin_port, *plugin_port;
 
   gchar *preset_label;
-  
-  preset_label = gtk_combo_box_text_get_active_text(GTK_COMBO_BOX_TEXT(combo_box));
 
   /* retrieve lv2 plugin */
-  lv2_plugin = ags_lv2_manager_find_lv2_plugin(ags_lv2_manager_get_instance(),
-					       lv2_bridge->filename,
-					       lv2_bridge->effect);
+  lv2_plugin = lv2_bridge->lv2_plugin;
+  
+  if(lv2_plugin == NULL){
+    lv2_plugin =
+      lv2_bridge->lv2_plugin = ags_lv2_manager_find_lv2_plugin(ags_lv2_manager_get_instance(),
+							       lv2_bridge->filename,
+							       lv2_bridge->effect);
+    g_object_ref(lv2_plugin);
+
+    lv2_bridge->lv2_descriptor = AGS_BASE_PLUGIN(lv2_plugin)->plugin_descriptor;
+  }
+  
+  if(lv2_plugin == NULL){
+    return;
+  }
+
+  /* preset label */
+  preset_label = gtk_combo_box_text_get_active_text(GTK_COMBO_BOX_TEXT(combo_box));
   
   /* preset */
   lv2_preset = NULL;

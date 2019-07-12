@@ -512,6 +512,14 @@ ags_base_plugin_init(AgsBasePlugin *base_plugin)
   base_plugin->plugin_descriptor = NULL;
   base_plugin->plugin_handle = NULL;
 
+  base_plugin->ui_filename = NULL;
+  base_plugin->ui_effect = NULL;
+
+  base_plugin->ui_effect_index = 0;
+  base_plugin->ui_plugin_so = NULL;
+  base_plugin->ui_plugin_descriptor = NULL;
+  base_plugin->ui_plugin_handle = NULL;
+
   base_plugin->ui_plugin = NULL;
 }
 
@@ -1351,7 +1359,7 @@ ags_base_plugin_instantiate_with_params(AgsBasePlugin *base_plugin,
   
   g_object_ref(G_OBJECT(base_plugin));
   g_signal_emit(G_OBJECT(base_plugin),
-		base_plugin_signals[INSTANTIATE], 0,
+		base_plugin_signals[INSTANTIATE_WITH_PARAMS], 0,
 		n_params, parameter_name, value,
 		&retval);
   g_object_unref(G_OBJECT(base_plugin));

@@ -721,6 +721,7 @@ ags_lv2_turtle_parser_parse_names(AgsLv2TurtleParser *lv2_turtle_parser,
     gchar *xpath;
 
     gboolean is_plugin;
+    gboolean is_instrument;
 
     if(node == NULL){
       return;
@@ -759,6 +760,8 @@ ags_lv2_turtle_parser_parse_names(AgsLv2TurtleParser *lv2_turtle_parser,
 
     lv2_plugin = NULL;
     is_plugin = FALSE;
+
+    is_instrument = FALSE;
 
     /* parse verbs */
     xpath = "./rdf-verb[@verb = 'a']";
@@ -807,14 +810,45 @@ ags_lv2_turtle_parser_parse_names(AgsLv2TurtleParser *lv2_turtle_parser,
 	
 	if(current_start_xpath_result != NULL){
 	  is_plugin = TRUE;
-
-	  break;
 	}
 
 	g_free(current_xpath);
       }
       
       g_list_free(current_start_xpath_result);
+
+      /* check instrument */
+      current_xpath = "./rdf-object/rdf-iri/rdf-iriref[text() = '<http://lv2plug.in/ns/lv2core#instrumentplugin>']";
+
+      current_start_xpath_result = ags_turtle_find_xpath_with_context_node(current_turtle,
+									   current_xpath,
+									   (xmlNode *) current);
+	  
+      if(current_start_xpath_result != NULL){
+	is_instrument = TRUE;
+      }else if(prefix_id_lv2_core != NULL){
+	gchar *prefix_id;
+
+	prefix_id = prefix_id_lv2_core;
+
+	current_xpath = g_strdup_printf("./rdf-object/rdf-iri/rdf-prefixed-name/rdf-pname-ln[text() = '%s%s']",
+					prefix_id,
+					"instrumentplugin");
+	  
+	current_start_xpath_result = ags_turtle_find_xpath_with_context_node(current_turtle,
+									     current_xpath,
+									     (xmlNode *) current);
+	
+	if(current_start_xpath_result != NULL){
+	  is_instrument = TRUE;
+	}
+
+	g_free(current_xpath);
+      }
+      
+      if(current_start_xpath_result != NULL){
+	g_list_free(current_start_xpath_result);
+      }
       
       /* iterate */
       xpath_result = xpath_result->next;
@@ -949,6 +983,11 @@ ags_lv2_turtle_parser_parse_names(AgsLv2TurtleParser *lv2_turtle_parser,
       if(lv2_plugin == NULL){
 	g_warning("no plugin");
       }
+    }
+
+    if(is_instrument){
+      ags_lv2_plugin_set_flags(lv2_plugin,
+			       AGS_LV2_PLUGIN_IS_SYNTHESIZER);
     }
 
     /* plugin - read metadata */
