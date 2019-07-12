@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: gsequencer 2.2.17\n"
+"Project-Id-Version: gsequencer 2.2.18\n"
 "Report-Msgid-Bugs-To: jkraehemann@gmail.com\n"
-"POT-Creation-Date: 2019-07-10 20:44+0200\n"
+"POT-Creation-Date: 2019-07-12 18:09+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -611,28 +611,28 @@ msgstr ""
 msgid "wave"
 msgstr ""
 
-#: ags/X/ags_xorg_application_context.c:2149
-#: ags/audio/ags_audio_application_context.c:1743
+#: ags/X/ags_xorg_application_context.c:2140
+#: ags/audio/ags_audio_application_context.c:1744
 #: ags/audio/task/ags_apply_sound_config.c:893
 #, c-format
 msgid "unknown soundcard backend - %s"
 msgstr ""
 
-#: ags/X/ags_xorg_application_context.c:2159
-#: ags/audio/ags_audio_application_context.c:1753
+#: ags/X/ags_xorg_application_context.c:2150
+#: ags/audio/ags_audio_application_context.c:1754
 #: ags/audio/task/ags_apply_sound_config.c:903
 msgid "unknown soundcard backend - NULL"
 msgstr ""
 
-#: ags/X/ags_xorg_application_context.c:2407
-#: ags/audio/ags_audio_application_context.c:1904
+#: ags/X/ags_xorg_application_context.c:2398
+#: ags/audio/ags_audio_application_context.c:2001
 #: ags/audio/task/ags_apply_sound_config.c:1147
 #, c-format
 msgid "unknown sequencer backend - %s"
 msgstr ""
 
-#: ags/X/ags_xorg_application_context.c:2417
-#: ags/audio/ags_audio_application_context.c:1914
+#: ags/X/ags_xorg_application_context.c:2408
+#: ags/audio/ags_audio_application_context.c:2011
 #: ags/audio/task/ags_apply_sound_config.c:1157
 msgid "unknown sequencer backend - NULL"
 msgstr ""
@@ -752,7 +752,7 @@ msgstr ""
 
 #: ags/X/editor/ags_envelope_editor.c:170
 #: ags/X/editor/ags_pattern_envelope.c:239 ags/X/machine/ags_ffplayer.c:286
-#: ags/X/machine/ags_live_lv2_bridge.c:1741 ags/X/machine/ags_lv2_bridge.c:2031
+#: ags/X/machine/ags_live_lv2_bridge.c:1798 ags/X/machine/ags_lv2_bridge.c:2088
 msgid "preset"
 msgstr ""
 
@@ -1089,7 +1089,7 @@ msgid "channel: "
 msgstr ""
 
 #: ags/X/machine/ags_dssi_bridge.c:333 ags/X/machine/ags_live_dssi_bridge.c:336
-#: ags/X/machine/ags_live_lv2_bridge.c:1680 ags/X/machine/ags_lv2_bridge.c:1970
+#: ags/X/machine/ags_live_lv2_bridge.c:1720 ags/X/machine/ags_lv2_bridge.c:2010
 msgid "program"
 msgstr ""
 
@@ -1137,7 +1137,7 @@ msgstr ""
 msgid "pressure"
 msgstr ""
 
-#: ags/X/machine/ags_live_lv2_bridge.c:477 ags/X/machine/ags_lv2_bridge.c:454
+#: ags/X/machine/ags_live_lv2_bridge.c:486 ags/X/machine/ags_lv2_bridge.c:464
 msgid "show GUI"
 msgstr ""
 
