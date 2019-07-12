@@ -1,3 +1,9 @@
+ags (2.2.19)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented instance access from LV2UI
+	* minor improvements
+
 ags (2.2.18)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

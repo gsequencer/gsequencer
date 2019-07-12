@@ -38,6 +38,7 @@
 
 #include <lv2.h>
 #include <lv2/lv2plug.in/ns/extensions/ui/ui.h>
+#include <lv2/lv2plug.in/ns/ext/instance-access/instance-access.h>
 
 #include <ags/i18n.h>
 
@@ -498,6 +499,7 @@ ags_lv2ui_plugin_instantiate_with_params(AgsBasePlugin *base_plugin,
   LV2UI_DescriptorFunction lv2ui_descriptor;
   LV2UI_Descriptor *plugin_descriptor;    
 
+  LV2_Handle *lv2_handle;
   LV2UI_Handle *ui_handle;
     
   LV2_URI_Map_Feature *uri_map_feature;
@@ -513,6 +515,7 @@ ags_lv2ui_plugin_instantiate_with_params(AgsBasePlugin *base_plugin,
   
   LV2_Feature **feature;
 
+  gchar *uri;
   gchar *filename;
   char *path;  
   gchar *str;
@@ -572,7 +575,7 @@ ags_lv2ui_plugin_instantiate_with_params(AgsBasePlugin *base_plugin,
       lv2ui_descriptor = (LV2UI_DescriptorFunction) dlsym(ui_plugin_so,
 							  "lv2ui_descriptor");
 
-    if(dlerror() == NULL && lv2_descriptor){  
+    if(dlerror() == NULL && lv2_descriptor){
       for(i = 0; (plugin_descriptor = lv2ui_descriptor((uint32_t) i)) != NULL; i++){
 	if(!g_ascii_strcasecmp(plugin_descriptor->URI,
 			       lv2ui_plugin->gui_uri)){
@@ -607,11 +610,15 @@ ags_lv2ui_plugin_instantiate_with_params(AgsBasePlugin *base_plugin,
   }
 
   /* check args */
+  uri = NULL;
+
   controller = NULL;  
   widget = NULL;
 
   write_function = NULL;
 
+  lv2_handle = NULL;
+  
   if(n_params != NULL &&
      parameter_name != NULL &&
      parameter_name[0] != NULL &&
@@ -619,6 +626,10 @@ ags_lv2ui_plugin_instantiate_with_params(AgsBasePlugin *base_plugin,
      value[0] != NULL){
     for(i = 0; i < n_params[0] && parameter_name[0][i] != NULL; i++){
       if(!g_ascii_strncasecmp(parameter_name[0][i],
+			      "uri",
+			      4)){
+	uri = g_value_get_pointer(&(value[0][i]));
+      }else if(!g_ascii_strncasecmp(parameter_name[0][i],
 			      "controller",
 			      11)){
 	controller = g_value_get_pointer(&(value[0][i]));
@@ -626,6 +637,10 @@ ags_lv2ui_plugin_instantiate_with_params(AgsBasePlugin *base_plugin,
 				    "write-function",
 				    15)){
 	write_function = g_value_get_pointer(&(value[0][i]));
+      }else if(!g_ascii_strncasecmp(parameter_name[0][i],
+				    "instance",
+				    9)){
+	lv2_handle = g_value_get_pointer(&(value[0][i]));
       }
     }
   }
@@ -637,7 +652,7 @@ ags_lv2ui_plugin_instantiate_with_params(AgsBasePlugin *base_plugin,
     initial_call = TRUE;
 
     /**/
-    total_feature = 8;
+    total_feature = 9;
     nth = 0;  
 
     feature = (LV2_Feature **) malloc(total_feature * sizeof(LV2_Feature *));
@@ -656,6 +671,17 @@ ags_lv2ui_plugin_instantiate_with_params(AgsBasePlugin *base_plugin,
 
     nth++;  
   
+    /* instance access */
+    feature[nth] = (LV2_Feature *) malloc(sizeof(LV2_Feature));
+    feature[nth]->URI = LV2_INSTANCE_ACCESS_URI;
+    feature[nth]->data = NULL;
+
+    if(lv2_handle != NULL){
+      feature[nth]->data = lv2_handle[0];
+    }
+    
+    nth++;  
+
     /* URI map feature */  
     uri_map_feature = (LV2_URI_Map_Feature *) malloc(sizeof(LV2_URI_Map_Feature));
     uri_map_feature->callback_data = NULL;
@@ -738,15 +764,15 @@ ags_lv2ui_plugin_instantiate_with_params(AgsBasePlugin *base_plugin,
   /* instantiate */
   ui_handle = (LV2UI_Handle *) malloc(sizeof(LV2UI_Handle));
   
-  g_message("LV2UI instantiate");
-	    
   ui_handle[0] = instantiate(plugin_descriptor,
-			     lv2ui_plugin->gui_uri,
+			     uri,
 			     path,
 			     write_function,
 			     controller,
 			     &widget,
 			     feature);
+  
+  g_message("LV2UI handle = %p", ui_handle[0]);
   
   if(parameter_name != NULL &&
      value != NULL){

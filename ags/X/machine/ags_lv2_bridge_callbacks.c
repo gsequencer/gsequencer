@@ -80,11 +80,14 @@ ags_lv2_bridge_delete_event_callback(GtkWidget *widget, GdkEvent *event, AgsLv2B
 void
 ags_lv2_bridge_show_gui_callback(GtkMenuItem *item, AgsLv2Bridge *lv2_bridge)
 {
+  AgsLv2Plugin *lv2_plugin;
   AgsLv2uiPlugin *lv2ui_plugin;
 
+  lv2_plugin = lv2_bridge->lv2_plugin;
   lv2ui_plugin = lv2_bridge->lv2ui_plugin;
   
-  if(lv2ui_plugin == NULL){
+  if(lv2_plugin == NULL ||
+     lv2ui_plugin == NULL){
     return;
   }
 
@@ -98,23 +101,33 @@ ags_lv2_bridge_show_gui_callback(GtkMenuItem *item, AgsLv2Bridge *lv2_bridge)
     guint n_params;
     guint i;
     
-    local_n_params = 2;
-    n_params = 2;
-    parameter_name = (gchar **) malloc(3 * sizeof(gchar *));
+    local_n_params = 4;
+    n_params = 4;
+    parameter_name = (gchar **) malloc(5 * sizeof(gchar *));
     value = g_new0(GValue,
-		   2);
+		   4);
 
-    parameter_name[0] = g_strdup("controller");
+    parameter_name[0] = g_strdup("uri");
     g_value_init(&(value[0]),
 		 G_TYPE_POINTER);
-    g_value_set_pointer(&(value[0]), lv2_bridge);
+    g_value_set_pointer(&(value[0]), lv2_plugin->uri);
 
-    parameter_name[1] = g_strdup("write-function");
+    parameter_name[1] = g_strdup("controller");
     g_value_init(&(value[1]),
 		 G_TYPE_POINTER);
-    g_value_set_pointer(&(value[1]), ags_lv2_bridge_lv2ui_write_function);
+    g_value_set_pointer(&(value[1]), lv2_bridge);
 
-    parameter_name[2] = NULL;
+    parameter_name[2] = g_strdup("write-function");
+    g_value_init(&(value[2]),
+		 G_TYPE_POINTER);
+    g_value_set_pointer(&(value[2]), ags_lv2_bridge_lv2ui_write_function);
+
+    parameter_name[3] = g_strdup("instance");
+    g_value_init(&(value[3]),
+		 G_TYPE_POINTER);
+    g_value_set_pointer(&(value[3]), lv2_bridge->lv2_handle);
+
+    parameter_name[4] = NULL;
         
     lv2_bridge->ui_handle = ags_base_plugin_instantiate_with_params(lv2ui_plugin,
 								    &n_params, &parameter_name, &value);
@@ -126,8 +139,6 @@ ags_lv2_bridge_show_gui_callback(GtkMenuItem *item, AgsLv2Bridge *lv2_bridge)
 	  if(!g_ascii_strncasecmp(parameter_name[i],
 				  "widget",
 				  7)){
-	    g_message("LV2UI found widget");
-	    
 	    lv2_bridge->ui_widget = g_value_get_pointer(&(value[i]));
 	  }
 	}
@@ -139,8 +150,6 @@ ags_lv2_bridge_show_gui_callback(GtkMenuItem *item, AgsLv2Bridge *lv2_bridge)
       plugin_descriptor = lv2_bridge->ui_descriptor;
       
       if(plugin_descriptor->extension_data != NULL){
-	g_message("LV2UI found extension data");
-	
 	lv2ui_plugin->feature[0]->data = plugin_descriptor->extension_data(LV2_UI__idleInterface);
 	lv2ui_plugin->feature[1]->data = plugin_descriptor->extension_data(LV2_UI__showInterface);
 
