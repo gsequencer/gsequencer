@@ -80,125 +80,77 @@ ags_lv2_bridge_delete_event_callback(GtkWidget *widget, GdkEvent *event, AgsLv2B
 void
 ags_lv2_bridge_show_gui_callback(GtkMenuItem *item, AgsLv2Bridge *lv2_bridge)
 {
-  GtkWidget *plugin_widget;
-  
   AgsLv2uiPlugin *lv2ui_plugin;
-  
-  GList *list;
-  
-  gchar *uri;
-  
-  LV2UI_DescriptorFunction lv2ui_descriptor;
-  LV2UI_Descriptor *ui_descriptor;
-  
-  uint32_t ui_index;
 
-  static const LV2_Feature **feature = {
-    NULL,
-  };
+  lv2ui_plugin = lv2_bridge->lv2ui_plugin;
   
-  if(lv2_bridge->gui_uri == NULL){
+  if(lv2ui_plugin == NULL){
     return;
   }
-  
-  list = ags_lv2ui_plugin_find_gui_uri(ags_lv2ui_manager_get_instance()->lv2ui_plugin,
-				       lv2_bridge->gui_uri);
-  
-  if(list == NULL){
-    return;
-  }
-
-  lv2ui_plugin = list->data;
 
   if(lv2_bridge->ui_handle == NULL){
-    gchar *ui_filename;
-    gchar *bundle_path;	
-
-    LV2_Feature **feature;
-
-    LV2_URID_Map *urid_map;
-
-    /* feature array */
-    lv2_bridge->ui_feature = 
-      feature = (LV2_Feature **) malloc(4 * sizeof(LV2_Feature *));
-
-    /* idle interface */
-    feature[0] = (LV2_Feature *) malloc(sizeof(LV2_Feature));    
-    feature[0]->URI = LV2_UI__idleInterface;
-    feature[0]->data = NULL;
+    LV2UI_Descriptor *plugin_descriptor;
     
-    /* show interface */
-    feature[1] = (LV2_Feature *) malloc(sizeof(LV2_Feature));
-    feature[1]->URI = LV2_UI__showInterface;
-    feature[1]->data = NULL;
-
-    /* URID map */
-    urid_map = (LV2_URID_Map *) malloc(sizeof(LV2_URID_Map));
-    urid_map->handle = NULL;
-    urid_map->map = ags_lv2_urid_manager_map;
-
-    feature[2] = (LV2_Feature *) malloc(sizeof(LV2_Feature));
-    feature[2]->URI = LV2_URID_MAP_URI;
-    feature[2]->data = urid_map;
-
-    feature[3] = NULL;
+    GValue *value;
+    gchar **parameter_name;
     
-    if(AGS_BASE_PLUGIN(lv2ui_plugin)->ui_plugin_so == NULL){
-      AGS_BASE_PLUGIN(lv2ui_plugin)->ui_plugin_so = dlopen(AGS_BASE_PLUGIN(lv2ui_plugin)->ui_filename,
-							   RTLD_NOW);
-    }
+    guint local_n_params;
+    guint n_params;
+    guint i;
     
-    if(AGS_BASE_PLUGIN(lv2ui_plugin)->ui_plugin_so){
-      lv2ui_descriptor = (LV2UI_Descriptor *) dlsym(AGS_BASE_PLUGIN(lv2ui_plugin)->ui_plugin_so,
-						    "lv2ui_descriptor");
-      
-      if(dlerror() == NULL && lv2ui_descriptor){
-	uint32_t ui_effect_index;
-	guint i;
+    local_n_params = 2;
+    n_params = 2;
+    parameter_name = (gchar **) malloc(3 * sizeof(gchar *));
+    value = g_new0(GValue,
+		   2);
 
-	ui_effect_index = 0;
+    parameter_name[0] = g_strdup("controller");
+    g_value_init(&(value[0]),
+		 G_TYPE_POINTER);
+    g_value_set_pointer(&(value[0]), lv2_bridge);
 
-	for(i = 0; (ui_descriptor = lv2ui_descriptor(i)) != NULL; i++){
-	  if(!g_ascii_strcasecmp(ui_descriptor->URI,
-				 lv2ui_plugin->gui_uri)){
-	    lv2_bridge->ui_descriptor = ui_descriptor;
-	    ui_effect_index = i;
-	    
-	    break;
+    parameter_name[1] = g_strdup("write-function");
+    g_value_init(&(value[1]),
+		 G_TYPE_POINTER);
+    g_value_set_pointer(&(value[1]), ags_lv2_bridge_lv2ui_write_function);
+
+    parameter_name[2] = NULL;
+        
+    lv2_bridge->ui_handle = ags_base_plugin_instantiate_with_params(lv2ui_plugin,
+								    &n_params, &parameter_name, &value);
+
+    if(lv2_bridge->ui_handle != NULL){
+      if(n_params > local_n_params){
+	for(i = local_n_params; i < n_params; i++){
+	  if(!g_ascii_strncasecmp(parameter_name[i],
+				  "widget",
+				  7)){
+	    lv2_bridge->ui_widget = g_value_get_pointer(&(value[i]));
 	  }
 	}
+      }
+      
+      g_hash_table_insert(ags_lv2_bridge_lv2ui_handle,
+			  lv2_bridge->ui_handle, lv2_bridge);
 
-	/*  */
-	ui_filename = AGS_BASE_PLUGIN(lv2ui_plugin)->ui_filename;
-	
-	g_message("LV2UI showing %s", ui_filename);
-	
-	/* instantiate */
-	plugin_widget = NULL;
-	
-	bundle_path = g_path_get_dirname(ui_filename);
+      plugin_descriptor = AGS_LV2UI_PLUGIN_DESCRIPTOR(AGS_BASE_PLUGIN(lv2ui_plugin)->ui_plugin_descriptor);
+      
+      if(plugin_descriptor->extension_data != NULL){
+	lv2_bridge->ui_feature[0]->data = plugin_descriptor->extension_data(LV2_UI__idleInterface);
+	lv2_bridge->ui_feature[1]->data = plugin_descriptor->extension_data(LV2_UI__showInterface);
 
-	lv2_bridge->ui_handle = ui_descriptor->instantiate(ui_descriptor,
-							   lv2_bridge->uri,
-							   bundle_path,
-							   ags_lv2_bridge_lv2ui_write_function,
-							   lv2_bridge,
-							   &plugin_widget,
-							   feature);
-	g_hash_table_insert(ags_lv2_bridge_lv2ui_handle,
+	g_hash_table_insert(ags_lv2_bridge_lv2ui_idle,
 			    lv2_bridge->ui_handle, lv2_bridge);
-	//	ui_descriptor->cleanup = ags_lv2_bridge_lv2ui_cleanup_function;
-	
-	if(ui_descriptor->extension_data != NULL){
-	  lv2_bridge->ui_feature[0]->data = ui_descriptor->extension_data(LV2_UI__idleInterface);
-	  lv2_bridge->ui_feature[1]->data = ui_descriptor->extension_data(LV2_UI__showInterface);
-
-	  g_hash_table_insert(ags_lv2_bridge_lv2ui_idle,
-			      lv2_bridge->ui_handle, lv2_bridge);
-	  g_timeout_add(1000 / 30, (GSourceFunc) ags_lv2_bridge_lv2ui_idle_timeout, (gpointer) lv2_bridge->ui_handle);
-	}
+	g_timeout_add(1000 / 30, (GSourceFunc) ags_lv2_bridge_lv2ui_idle_timeout, (gpointer) lv2_bridge->ui_handle);
       }
     }
+
+    for(i = 0; i < n_params; i++){
+      g_value_unset(&(value[i]));
+    }
+
+    g_free(value);
+    g_strfreev(parameter_name);
   }
 
   if(lv2_bridge->ui_handle != NULL){
@@ -233,7 +185,7 @@ ags_lv2_bridge_show_gui_callback(GtkMenuItem *item, AgsLv2Bridge *lv2_bridge)
 						FALSE);
 	}
 	
-	lv2_bridge->ui_descriptor->port_event(lv2_bridge->ui_handle,
+	lv2_bridge->ui_descriptor->port_event(lv2_bridge->ui_handle[0],
 					      port_index,
 					      sizeof(float),
 					      0,
@@ -247,7 +199,7 @@ ags_lv2_bridge_show_gui_callback(GtkMenuItem *item, AgsLv2Bridge *lv2_bridge)
 						FALSE);
 	}
 
-	lv2_bridge->ui_descriptor->port_event(lv2_bridge->ui_handle,
+	lv2_bridge->ui_descriptor->port_event(lv2_bridge->ui_handle[0],
 					      port_index,
 					      sizeof(float),
 					      0,
@@ -261,7 +213,7 @@ ags_lv2_bridge_show_gui_callback(GtkMenuItem *item, AgsLv2Bridge *lv2_bridge)
 						FALSE);
 	}
 
-	lv2_bridge->ui_descriptor->port_event(lv2_bridge->ui_handle,
+	lv2_bridge->ui_descriptor->port_event(lv2_bridge->ui_handle[0],
 					      port_index,
 					      sizeof(float),
 					      0,
@@ -275,7 +227,7 @@ ags_lv2_bridge_show_gui_callback(GtkMenuItem *item, AgsLv2Bridge *lv2_bridge)
 						FALSE);
 	}
 
-	lv2_bridge->ui_descriptor->port_event(lv2_bridge->ui_handle,
+	lv2_bridge->ui_descriptor->port_event(lv2_bridge->ui_handle[0],
 					      port_index,
 					      sizeof(float),
 					      0,
@@ -289,7 +241,7 @@ ags_lv2_bridge_show_gui_callback(GtkMenuItem *item, AgsLv2Bridge *lv2_bridge)
 						FALSE);
 	}
 
-	lv2_bridge->ui_descriptor->port_event(lv2_bridge->ui_handle,
+	lv2_bridge->ui_descriptor->port_event(lv2_bridge->ui_handle[0],
 					      port_index,
 					      sizeof(float),
 					      0,
@@ -306,15 +258,15 @@ ags_lv2_bridge_show_gui_callback(GtkMenuItem *item, AgsLv2Bridge *lv2_bridge)
 
   if(lv2_bridge->ui_feature != NULL &&
      lv2_bridge->ui_feature[1]->data != NULL){
-    ((struct _LV2UI_Show_Interface *) lv2_bridge->ui_feature[1]->data)->show(lv2_bridge->ui_handle);
-  }else if(plugin_widget != NULL){
+    ((struct _LV2UI_Show_Interface *) lv2_bridge->ui_feature[1]->data)->show(lv2_bridge->ui_handle[0]);
+  }else if(lv2_bridge->ui_widget != NULL){
     GtkWindow *window;
 
     if(lv2_bridge->lv2_window == NULL){
       lv2_bridge->lv2_window = 
 	window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
       gtk_container_add(window,
-			plugin_widget);
+			lv2_bridge->ui_widget);
       gtk_window_set_title(window,
 			   lv2_bridge->gui_uri);
       
@@ -344,6 +296,8 @@ ags_lv2_bridge_lv2ui_cleanup_function(LV2UI_Handle handle)
     g_hash_table_remove(ags_lv2_bridge_lv2ui_handle,
 			lv2_bridge->ui_handle);
 
+    free(lv2_bridge->ui_handle);
+    
     lv2_bridge->ui_handle = NULL;
   }
 }
@@ -785,7 +739,7 @@ ags_lv2_bridge_dial_changed_callback(GtkWidget *dial, AgsLv2Bridge *lv2_bridge)
   
   lv2_bridge->flags |= AGS_LV2_BRIDGE_NO_UPDATE;
 
-  lv2_bridge->ui_descriptor->port_event(lv2_bridge->ui_handle,
+  lv2_bridge->ui_descriptor->port_event(lv2_bridge->ui_handle[0],
 					port_index,
 					sizeof(float),
 					0,
@@ -825,7 +779,7 @@ ags_lv2_bridge_vscale_changed_callback(GtkWidget *vscale, AgsLv2Bridge *lv2_brid
 
   lv2_bridge->flags |= AGS_LV2_BRIDGE_NO_UPDATE;
 
-  lv2_bridge->ui_descriptor->port_event(lv2_bridge->ui_handle,
+  lv2_bridge->ui_descriptor->port_event(lv2_bridge->ui_handle[0],
 					port_index,
 					sizeof(float),
 					0,
@@ -865,7 +819,7 @@ ags_lv2_bridge_hscale_changed_callback(GtkWidget *hscale, AgsLv2Bridge *lv2_brid
 
   lv2_bridge->flags |= AGS_LV2_BRIDGE_NO_UPDATE;
 
-  lv2_bridge->ui_descriptor->port_event(lv2_bridge->ui_handle,
+  lv2_bridge->ui_descriptor->port_event(lv2_bridge->ui_handle[0],
 					port_index,
 					sizeof(float),
 					0,
@@ -905,7 +859,7 @@ ags_lv2_bridge_spin_button_changed_callback(GtkWidget *spin_button, AgsLv2Bridge
 
   lv2_bridge->flags |= AGS_LV2_BRIDGE_NO_UPDATE;
 
-  lv2_bridge->ui_descriptor->port_event(lv2_bridge->ui_handle,
+  lv2_bridge->ui_descriptor->port_event(lv2_bridge->ui_handle[0],
 					port_index,
 					sizeof(float),
 					0,
@@ -945,7 +899,7 @@ ags_lv2_bridge_check_button_clicked_callback(GtkWidget *check_button, AgsLv2Brid
 
   lv2_bridge->flags |= AGS_LV2_BRIDGE_NO_UPDATE;
 
-  lv2_bridge->ui_descriptor->port_event(lv2_bridge->ui_handle,
+  lv2_bridge->ui_descriptor->port_event(lv2_bridge->ui_handle[0],
 					port_index,
 					sizeof(float),
 					0,
@@ -985,7 +939,7 @@ ags_lv2_bridge_toggle_button_clicked_callback(GtkWidget *toggle_button, AgsLv2Br
 
   lv2_bridge->flags |= AGS_LV2_BRIDGE_NO_UPDATE;
 
-  lv2_bridge->ui_descriptor->port_event(lv2_bridge->ui_handle,
+  lv2_bridge->ui_descriptor->port_event(lv2_bridge->ui_handle[0],
 					port_index,
 					sizeof(float),
 					0,
@@ -1023,7 +977,7 @@ ags_lv2_bridge_button_clicked_callback(GtkWidget *button, AgsLv2Bridge *lv2_brid
 
   lv2_bridge->flags |= AGS_LV2_BRIDGE_NO_UPDATE;
 
-  lv2_bridge->ui_descriptor->port_event(lv2_bridge->ui_handle,
+  lv2_bridge->ui_descriptor->port_event(lv2_bridge->ui_handle[0],
 					port_index,
 					sizeof(float),
 					0,

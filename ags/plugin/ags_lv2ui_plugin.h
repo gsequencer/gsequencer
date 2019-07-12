@@ -36,6 +36,8 @@
 #define AGS_IS_LV2UI_PLUGIN_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_LV2UI_PLUGIN))
 #define AGS_LV2UI_PLUGIN_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_LV2UI_PLUGIN, AgsLv2uiPluginClass))
 
+#define AGS_LV2UI_PLUGIN_DESCRIPTOR(ptr) ((LV2UI_Descriptor *)(ptr))
+
 typedef struct _AgsLv2uiPlugin AgsLv2uiPlugin;
 typedef struct _AgsLv2uiPluginClass AgsLv2uiPluginClass;
 

@@ -91,8 +91,8 @@ struct _AgsBasePluginClass
 
   gpointer (*instantiate_with_params)(AgsBasePlugin *base_plugin,
 				      guint *n_params,
-				      gchar **parameter_name,
-				      GValue *value);
+				      gchar ***parameter_name,
+				      GValue **value);
   
   void (*connect_port)(AgsBasePlugin *base_plugin, gpointer plugin_handle, guint port_index, gpointer data_location);
   
@@ -128,8 +128,8 @@ gpointer ags_base_plugin_instantiate(AgsBasePlugin *base_plugin,
 				     guint samplerate, guint buffer_size);
 gpointer ags_base_plugin_instantiate_with_params(AgsBasePlugin *base_plugin,
 						 guint *n_params,
-						 gchar **parameter_name,
-						 GValue *value);
+						 gchar ***parameter_name,
+						 GValue **value);
 
 void ags_base_plugin_connect_port(AgsBasePlugin *base_plugin, gpointer plugin_handle, guint port_index, gpointer data_location);
 

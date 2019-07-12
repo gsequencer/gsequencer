@@ -56,8 +56,8 @@ void ags_lv2ui_plugin_finalize(GObject *gobject);
 
 gpointer ags_lv2ui_plugin_instantiate_with_params(AgsBasePlugin *base_plugin,
 						  guint *n_params,
-						  gchar **parameter_name,
-						  GValue *value);
+						  gchar ***parameter_name,
+						  GValue **value);
 
 void ags_lv2ui_plugin_connect_port(AgsBasePlugin *base_plugin,
 				   gpointer plugin_handle,
@@ -486,8 +486,8 @@ ags_lv2ui_plugin_load_plugin(AgsBasePlugin *base_plugin)
 gpointer
 ags_lv2ui_plugin_instantiate_with_params(AgsBasePlugin *base_plugin,
 					 guint *n_params,
-					 gchar **parameter_name,
-					 GValue *value)
+					 gchar ***parameter_name,
+					 GValue **value)
 {
   AgsLv2uiPlugin *lv2ui_plugin;
     
@@ -620,16 +620,18 @@ ags_lv2ui_plugin_instantiate_with_params(AgsBasePlugin *base_plugin,
 
   if(n_params != NULL &&
      parameter_name != NULL &&
-     value != NULL){
-    for(i = 0; i < n_params[0] && parameter_name[i] != NULL; i++){
-      if(!g_ascii_strncasecmp(parameter_name[i],
+     parameter_name[0] != NULL &&
+     value != NULL &&
+     value[0] != NULL){
+    for(i = 0; i < n_params[0] && parameter_name[0][i] != NULL; i++){
+      if(!g_ascii_strncasecmp(parameter_name[0][i],
 			      "controller",
 			      11)){
-	controller = g_value_get_pointer(&(value[i]));
-      }else if(!g_ascii_strncasecmp(parameter_name[i],
+	controller = g_value_get_pointer(&(value[0][i]));
+      }else if(!g_ascii_strncasecmp(parameter_name[0][i],
 				    "write-function",
 				    15)){
-	write_function = g_value_get_pointer(&(value[i]));
+	write_function = g_value_get_pointer(&(value[0][i]));
       }
     }
   }
@@ -758,27 +760,30 @@ ags_lv2ui_plugin_instantiate_with_params(AgsBasePlugin *base_plugin,
 			     controller,
 			     &widget,
 			     feature);
+
+  if(parameter_name != NULL &&
+     value != NULL){
+    if(n_params[0] == 0){
+      parameter_name[0] = (gchar **) malloc(2 * sizeof(gchar *));
+      value[0] = g_new0(GValue,
+			1);
+    }else{
+      parameter_name[0] = (gchar **) realloc(parameter_name[0],
+					     (n_params[0] + 1) * sizeof(gchar *));
+      value[0] = g_renew(GValue,
+			 value[0],
+			 n_params[0] + 1);
+    }
+
+    parameter_name[0][n_params[0]] = g_strdup("widget");
+    g_value_init(&(value[0][n_params[0]]),
+		 G_TYPE_POINTER);
+    g_value_set_pointer(&(value[0][n_params[0]]), widget);
   
-  if(n_params[0] == 0){
-    parameter_name = (gchar **) malloc(2 * sizeof(gchar *));
-    value = g_new0(GValue,
-		   1);
-  }else{
-    parameter_name = (gchar **) realloc(parameter_name,
-					(n_params[0] + 1) * sizeof(gchar *));
-    value = g_renew(GValue,
-		    value,
-		    n_params[0] + 1);
+    parameter_name[0][n_params[0] + 1] = NULL;
+
+    n_params[0] += 1;
   }
-
-  parameter_name[n_params[0]] = g_strdup("widget");
-  g_value_init(&(value[n_params[0]]),
-	       G_TYPE_POINTER);
-  g_value_set_pointer(&(value[n_params[0]]), widget);
-  
-  parameter_name[n_params[0] + 1] = NULL;
-
-  n_params[0] += 1;
   
   return(ui_handle);
 }

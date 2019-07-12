@@ -1341,8 +1341,8 @@ ags_base_plugin_instantiate(AgsBasePlugin *base_plugin,
 gpointer
 ags_base_plugin_instantiate_with_params(AgsBasePlugin *base_plugin,
 					guint *n_params,
-					gchar **parameter_name,
-					GValue *value)
+					gchar ***parameter_name,
+					GValue **value)
 {
   gpointer retval;
   

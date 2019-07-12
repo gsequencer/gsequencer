@@ -1,7 +1,7 @@
 ags (2.2.18)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
-	* TODO:JK: improved LV2 UI and providing all available LV2 features
+	* refactored AgsLv2Bridge
 	* implemented ags_lv2ui_plugin_test_flags(), ags_lv2ui_plugin_set_flags() and ags_lv2ui_plugin_get_flags()
 	* implemented ags_base_plugin_instantiate_with_params()
 	* implemented ags_lv2ui_plugin_instantiate_with_params()
