@@ -3,7 +3,9 @@ ags (2.2.20)
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* TODO:JK: implemented GUI scale factor
 	* implemented AgsIndicator properties
-	* improved ags_vindicator_draw() and ags_hindicator_draw()
+	* implemented AgsDial properties
+	* improved ags_vindicator_draw() and ags_hindicator_draw() to use properties
+	* improved ags_dial_draw() properties
 
 ags (2.2.19)
 
