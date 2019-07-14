@@ -436,6 +436,10 @@ ags_bulk_member_init(AgsBulkMember *bulk_member)
 {
   AgsDial *dial;
   
+  AgsConfig *config;
+
+  gchar *str;
+
   g_signal_connect_after((GObject *) bulk_member, "parent_set",
 			 G_CALLBACK(ags_bulk_member_parent_set_callback), (gpointer) bulk_member);
 
@@ -443,14 +447,33 @@ ags_bulk_member_init(AgsBulkMember *bulk_member)
 			AGS_BULK_MEMBER_APPLY_RECALL);
   bulk_member->port_flags = 0;
   
+  config = ags_config_get_instance();
+
   bulk_member->widget_type = AGS_TYPE_DIAL;
   dial = (AgsDial *) g_object_new(AGS_TYPE_DIAL,
 				  "adjustment", gtk_adjustment_new(0.0, 0.0, 1.0, 0.1, 0.1, 0.0),
 				  NULL);
-  gtk_widget_set_size_request((GtkWidget *) dial,
-			      2 * (dial->radius + dial->outline_strength + dial->button_width + 4),
-			      2 * (dial->radius + dial->outline_strength + 1));
   
+  str = ags_config_get_value(config,
+			     AGS_CONFIG_GENERIC,
+			     "gui-scale");
+
+  if(str != NULL){
+    gdouble gui_scale_factor;
+
+    gui_scale_factor = g_ascii_strtod(str,
+				      NULL);
+
+    g_object_set(dial,
+		 "radius", (guint) (gui_scale_factor * AGS_DIAL_DEFAULT_RADIUS),
+		 "font-size", (guint) (gui_scale_factor * AGS_DIAL_DEFAULT_FONT_SIZE),
+		 "button-width", (gint) (gui_scale_factor * AGS_DIAL_DEFAULT_BUTTON_WIDTH),
+		 "button-height", (gint) (gui_scale_factor * AGS_DIAL_DEFAULT_BUTTON_HEIGHT),
+		 NULL);
+
+    g_free(str);
+  }
+
   gtk_container_add(GTK_CONTAINER(bulk_member),
 		    (GtkWidget *) dial);
 
@@ -490,7 +513,12 @@ ags_bulk_member_set_property(GObject *gobject,
   case PROP_WIDGET_TYPE:
     {
       GtkWidget *child, *new_child;
+
+      AgsConfig *config;
+
       GType widget_type;
+
+      gchar *str;
 
       widget_type = g_value_get_ulong(value);
 
@@ -508,14 +536,49 @@ ags_bulk_member_set_property(GObject *gobject,
       new_child = (GtkWidget *) g_object_new(widget_type,
 					     NULL);
 
-      if(AGS_IS_DIAL(new_child)){
-	AgsDial *dial;
+      config = ags_config_get_instance();
+
+      str = ags_config_get_value(config,
+				 AGS_CONFIG_GENERIC,
+				 "gui-scale");
+
+      if(str != NULL){
+	gdouble gui_scale_factor;
+	  
+	gui_scale_factor = g_ascii_strtod(str,
+					  NULL);
+
+	if(AGS_IS_DIAL(new_child)){
+	  g_object_set(new_child,
+		       "radius", (guint) (gui_scale_factor * AGS_DIAL_DEFAULT_RADIUS),
+		       "font-size", (guint) (gui_scale_factor * AGS_DIAL_DEFAULT_FONT_SIZE),
+		       "button-width", (gint) (gui_scale_factor * AGS_DIAL_DEFAULT_BUTTON_WIDTH),
+		       "button-height", (gint) (gui_scale_factor * AGS_DIAL_DEFAULT_BUTTON_HEIGHT),
+		       NULL);
+	}else if(GTK_IS_VSCALE(new_child)){
+	  gtk_widget_set_size_request(new_child,
+				      gui_scale_factor * 16, gui_scale_factor * 100);
+	}else if(GTK_IS_HSCALE(new_child)){
+	  gtk_widget_set_size_request(new_child,
+				      gui_scale_factor * 100, gui_scale_factor * 16);
+	}else if(AGS_IS_VINDICATOR(new_child)){
+	  g_object_set(new_child,
+		       "segment-width", (guint) (gui_scale_factor * AGS_VINDICATOR_DEFAULT_SEGMENT_WIDTH),
+		       "segment-height", (guint) (gui_scale_factor * AGS_VINDICATOR_DEFAULT_SEGMENT_HEIGHT),
+		       "segment-padding", (guint) (gui_scale_factor * AGS_INDICATOR_DEFAULT_SEGMENT_PADDING),
+		       NULL);
+	}else if(AGS_IS_HINDICATOR(new_child)){
+	  g_object_set(new_child,
+		       "segment-width", (guint) (gui_scale_factor * AGS_HINDICATOR_DEFAULT_SEGMENT_WIDTH),
+		       "segment-height", (guint) (gui_scale_factor * AGS_HINDICATOR_DEFAULT_SEGMENT_HEIGHT),
+		       "segment-padding", (guint) (gui_scale_factor * AGS_INDICATOR_DEFAULT_SEGMENT_PADDING),
+		       NULL);
+	}
 	
-	dial = (AgsDial *) new_child;
+	gtk_widget_queue_resize_no_redraw(new_child);
+	gtk_widget_queue_draw(new_child);
 	
-	gtk_widget_set_size_request((GtkWidget *) dial,
-				    2 * (dial->radius + dial->outline_strength + dial->button_width + 4),
-				    2 * (dial->radius + dial->outline_strength + 1));
+	g_free(str);
       }
 
       gtk_container_add(GTK_CONTAINER(bulk_member),

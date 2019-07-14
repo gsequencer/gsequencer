@@ -123,16 +123,15 @@ ags_hindicator_size_allocate(GtkWidget *widget,
 
   indicator = AGS_INDICATOR(widget);
 
-  if(allocation->height < indicator->segment_height){
-    allocation->height = indicator->segment_height;
-  }
+  widget->allocation = *allocation;
   
   allocation->width = (indicator->segment_count * indicator->segment_width) + ((indicator->segment_count - 1) * indicator->segment_padding);
   
-  widget->allocation = *allocation;
+  if(allocation->height < indicator->segment_height){
+    allocation->height = indicator->segment_height;
+  }
 
-  GTK_WIDGET_CLASS(ags_hindicator_parent_class)->size_allocate(widget,
-							       allocation);
+  GTK_WIDGET_CLASS(ags_hindicator_parent_class)->size_allocate(widget, allocation);
 }
 
 gboolean

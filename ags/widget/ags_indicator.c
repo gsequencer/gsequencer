@@ -159,7 +159,7 @@ ags_indicator_class_init(AgsIndicatorClass *indicator)
   param_spec = g_param_spec_uint("segment-padding",
 				 "segment padding",
 				 "The indicator's segment padding",
-				 1,
+				 0,
 				 G_MAXUINT,
 				 AGS_INDICATOR_DEFAULT_SEGMENT_PADDING,
 				 G_PARAM_READABLE | G_PARAM_WRITABLE);
@@ -342,8 +342,8 @@ ags_indicator_realize(GtkWidget *widget)
   gint buttons_width;
   gint border_left, border_top;
 
-  g_return_if_fail (widget != NULL);
-  g_return_if_fail (AGS_IS_INDICATOR (widget));
+  g_return_if_fail(widget != NULL);
+  g_return_if_fail(AGS_IS_INDICATOR (widget));
 
   indicator = AGS_INDICATOR(widget);
 

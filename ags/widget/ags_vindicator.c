@@ -101,9 +101,6 @@ ags_vindicator_init(AgsVIndicator *indicator)
 	       "segment-width", AGS_VINDICATOR_DEFAULT_SEGMENT_WIDTH,
 	       "segment-height", AGS_VINDICATOR_DEFAULT_SEGMENT_HEIGHT,
 	       NULL);
-  gtk_widget_set_size_request((GtkWidget *) indicator,
-			      16,
-			      100);
 }
 
 void
@@ -114,8 +111,8 @@ ags_vindicator_size_request(GtkWidget *widget,
 
   indicator = AGS_INDICATOR(widget);
   
-  requisition->height = (indicator->segment_count * indicator->segment_height) + ((indicator->segment_count - 1) * indicator->segment_padding);
   requisition->width = indicator->segment_width;
+  requisition->height = (indicator->segment_count * indicator->segment_height) + ((indicator->segment_count - 1) * indicator->segment_padding);
 }
 
 void
@@ -125,17 +122,13 @@ ags_vindicator_size_allocate(GtkWidget *widget,
   AgsIndicator *indicator;
 
   indicator = AGS_INDICATOR(widget);
-
-  allocation->height = (indicator->segment_count * indicator->segment_height) + ((indicator->segment_count - 1) * indicator->segment_padding);
-
-  if(allocation->width < indicator->segment_width){
-    allocation->width = indicator->segment_width;
-  }
   
   widget->allocation = *allocation;
 
-  GTK_WIDGET_CLASS(ags_vindicator_parent_class)->size_allocate(widget,
-							       allocation);
+  widget->allocation.width = indicator->segment_width;
+  widget->allocation.height = (indicator->segment_count * indicator->segment_height) + ((indicator->segment_count - 1) * indicator->segment_padding);
+
+  GTK_WIDGET_CLASS(ags_vindicator_parent_class)->size_allocate(widget, allocation);
 }
 
 gboolean

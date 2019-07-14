@@ -185,10 +185,6 @@ ags_drum_input_line_init(AgsDrumInputLine *drum_input_line)
 	       "adjustment", adjustment,
 	       NULL);
 
-  gtk_widget_set_size_request(widget,
-			      16, 100);
-  gtk_widget_queue_draw(widget);
-
   //TODO:JK: fix me
   //  g_object_set(G_OBJECT(line_member),
   //	       "port-data", (gpointer) &(adjustment->value),
@@ -219,9 +215,6 @@ ags_drum_input_line_init(AgsDrumInputLine *drum_input_line)
 		      1.0);
   gtk_range_set_inverted(GTK_RANGE(widget),
 			 TRUE);
-
-  gtk_widget_set_size_request(widget,
-			      -1, 100);
 
   //  g_object_set(G_OBJECT(line_member),
   //	       "port-data", (gpointer) &(GTK_RANGE(widget)->adjustment->value),

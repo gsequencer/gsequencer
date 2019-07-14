@@ -149,10 +149,6 @@ ags_mixer_input_line_init(AgsMixerInputLine *mixer_input_line)
 	       "adjustment", adjustment,
 	       NULL);
 
-  gtk_widget_set_size_request(widget,
-			      16, 100);
-  gtk_widget_queue_draw(widget);
-
   /* volume */
   line_member = (AgsLineMember *) g_object_new(AGS_TYPE_LINE_MEMBER,
 					       "widget-type", GTK_TYPE_VSCALE,
@@ -178,9 +174,6 @@ ags_mixer_input_line_init(AgsMixerInputLine *mixer_input_line)
 		      1.0);
   gtk_range_set_inverted(GTK_RANGE(widget),
 			 TRUE);
-
-  gtk_widget_set_size_request(widget,
-			      -1, 100);
 }
 
 void
