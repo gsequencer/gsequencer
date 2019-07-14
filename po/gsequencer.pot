@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: gsequencer 2.2.19\n"
+"Project-Id-Version: gsequencer 2.2.20\n"
 "Report-Msgid-Bugs-To: jkraehemann@gmail.com\n"
-"POT-Creation-Date: 2019-07-12 21:23+0200\n"
+"POT-Creation-Date: 2019-07-14 17:39+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -56,7 +56,7 @@ msgstr ""
 msgid "input"
 msgstr ""
 
-#: ags/X/ags_bulk_member.c:584 ags/X/machine/ags_dssi_bridge.c:423
+#: ags/X/ags_bulk_member.c:647 ags/X/machine/ags_dssi_bridge.c:423
 #: ags/X/machine/ags_live_dssi_bridge.c:426
 msgid "Plugin file not present"
 msgstr ""
@@ -242,20 +242,24 @@ msgstr ""
 msgid "time"
 msgstr ""
 
-#: ags/X/ags_generic_preferences.c:143
+#: ags/X/ags_generic_preferences.c:144
 msgid "autosave thread"
 msgstr ""
 
-#: ags/X/ags_generic_preferences.c:157
+#: ags/X/ags_generic_preferences.c:158
 msgid "segmentation"
 msgstr ""
 
-#: ags/X/ags_generic_preferences.c:181
+#: ags/X/ags_generic_preferences.c:182
 msgid "engine mode"
 msgstr ""
 
-#: ags/X/ags_generic_preferences.c:201
+#: ags/X/ags_generic_preferences.c:202
 msgid "rt-safe"
+msgstr ""
+
+#: ags/X/ags_generic_preferences.c:216
+msgid "GUI scale factor"
 msgstr ""
 
 #: ags/X/ags_input_collection_editor.c:200
