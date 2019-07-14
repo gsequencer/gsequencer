@@ -1569,8 +1569,8 @@ ags_dial_draw(AgsDial *dial)
 		       dial_style->fg[0].blue / white_gc);
 
   cairo_rectangle(cr,
-		  padding_left, padding_top,
-		  width, height);
+		  0, 0,
+		  GTK_WIDGET(dial)->allocation.width, GTK_WIDGET(dial)->allocation.height);
   cairo_fill(cr);
 
   if((AGS_DIAL_WITH_BUTTONS & (dial->flags)) != 0){
