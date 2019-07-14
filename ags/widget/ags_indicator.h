@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -31,6 +31,11 @@
 #define AGS_IS_INDICATOR_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE((class), AGS_TYPE_INDICATOR))
 #define AGS_INDICATOR_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_INDICATOR, AgsIndicatorClass))
 
+#define AGS_INDICATOR_DEFAULT_SEGMENT_WIDTH (7)
+#define AGS_INDICATOR_DEFAULT_SEGMENT_HEIGHT (7)
+#define AGS_INDICATOR_DEFAULT_SEGMENT_PADDING (3)
+#define AGS_INDICATOR_DEFAULT_SEGMENT_COUNT (10)
+
 typedef struct _AgsIndicator AgsIndicator;
 typedef struct _AgsIndicatorClass AgsIndicatorClass;
 
@@ -38,6 +43,13 @@ struct _AgsIndicator
 {
   GtkWidget widget;
 
+  guint segment_width;
+  guint segment_height;
+
+  guint segment_padding;
+  
+  guint segment_count;
+  
   GtkAdjustment *adjustment;
 };
 

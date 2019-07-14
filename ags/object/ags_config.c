@@ -517,6 +517,7 @@ ags_config_real_load_defaults(AgsConfig *config)
   ags_config_set_value(config, AGS_CONFIG_GENERIC, "simple-file", "true");
   ags_config_set_value(config, AGS_CONFIG_GENERIC, "disable-feature", "experimental");
   ags_config_set_value(config, AGS_CONFIG_GENERIC, "engine-mode", "performance");
+  ags_config_set_value(config, AGS_CONFIG_GENERIC, "gui-scale", "1.0");
 
   ags_config_set_value(config, AGS_CONFIG_THREAD, "model", "super-threaded");
   ags_config_set_value(config, AGS_CONFIG_THREAD, "super-threaded-scope", "audio");
@@ -524,12 +525,18 @@ ags_config_real_load_defaults(AgsConfig *config)
   ags_config_set_value(config, AGS_CONFIG_THREAD, "lock-parent", "ags-recycling-thread");
   ags_config_set_value(config, AGS_CONFIG_THREAD, "max-precision", "250");
 
-#ifdef AGS_WITH_CORE_AUDIO
+#if defined(AGS_WITH_CORE_AUDIO)
   ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "backend", "core-audio");
   ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "device", "ags-core-audio-devout-0");
-#else
+#elseif defined(AGS_WITH_PULSE)
   ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "backend", "pulse");
   ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "device", "ags-pulse-devout-0");
+#elseif defined(AGS_WITH_ALSA)
+  ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "backend", "alsa");
+  ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "device", "default");
+#elseif defined(AGS_WITH_OSS)
+  ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "backend", "oss");
+  ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "device", "/dev/dsp");
 #endif
   
   ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "pcm-channels", "2");

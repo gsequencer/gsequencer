@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -53,6 +53,8 @@ struct _AgsGenericPreferences
 
   GtkComboBoxText *engine_mode;
   GtkCheckButton *rt_safe;
+
+  GtkComboBoxText *gui_scale;
 };
 
 struct _AgsGenericPreferencesClass

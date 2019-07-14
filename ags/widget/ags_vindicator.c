@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -22,6 +22,11 @@
 void ags_vindicator_class_init(AgsVIndicatorClass *indicator);
 void ags_vindicator_init(AgsVIndicator *indicator);
 void ags_vindicator_show(GtkWidget *widget);
+
+void ags_vindicator_size_request(GtkWidget *widget,
+				 GtkRequisition *requisition);
+void ags_vindicator_size_allocate(GtkWidget *widget,
+				  GtkAllocation *allocation);
 
 gboolean ags_vindicator_expose(GtkWidget *widget,
 			       GdkEventExpose *event);
@@ -82,6 +87,9 @@ ags_vindicator_class_init(AgsVIndicatorClass *indicator)
   /* GtkWidgetClass */
   widget = (GtkWidgetClass *) indicator;
 
+  widget->size_request = ags_vindicator_size_request;
+  widget->size_allocate = ags_vindicator_size_allocate;
+
   widget->expose_event = ags_vindicator_expose;
   widget->configure_event = ags_vindicator_configure;
 }
@@ -89,9 +97,45 @@ ags_vindicator_class_init(AgsVIndicatorClass *indicator)
 void
 ags_vindicator_init(AgsVIndicator *indicator)
 {
+  g_object_set(indicator,
+	       "segment-width", AGS_VINDICATOR_DEFAULT_SEGMENT_WIDTH,
+	       "segment-height", AGS_VINDICATOR_DEFAULT_SEGMENT_HEIGHT,
+	       NULL);
   gtk_widget_set_size_request((GtkWidget *) indicator,
 			      16,
 			      100);
+}
+
+void
+ags_vindicator_size_request(GtkWidget *widget,
+			    GtkRequisition *requisition)
+{
+  AgsIndicator *indicator;
+
+  indicator = AGS_INDICATOR(widget);
+  
+  requisition->height = (indicator->segment_count * indicator->segment_height) + ((indicator->segment_count - 1) * indicator->segment_padding);
+  requisition->width = indicator->segment_width;
+}
+
+void
+ags_vindicator_size_allocate(GtkWidget *widget,
+			     GtkAllocation *allocation)
+{
+  AgsIndicator *indicator;
+
+  indicator = AGS_INDICATOR(widget);
+
+  allocation->height = (indicator->segment_count * indicator->segment_height) + ((indicator->segment_count - 1) * indicator->segment_padding);
+
+  if(allocation->width < indicator->segment_width){
+    allocation->width = indicator->segment_width;
+  }
+  
+  widget->allocation = *allocation;
+
+  GTK_WIDGET_CLASS(ags_vindicator_parent_class)->size_allocate(widget,
+							       allocation);
 }
 
 gboolean
@@ -123,6 +167,7 @@ ags_vindicator_draw(AgsVIndicator *indicator)
   
   gdouble value;
   guint width, height;
+  guint padding_top, padding_left;
   guint segment_width, segment_height;
   guint padding;
   guint i;
@@ -138,7 +183,7 @@ ags_vindicator_draw(AgsVIndicator *indicator)
     return;
   }
   
-  //  g_message("draw %f\0", adjustment->value);
+  //  g_message("draw %f", adjustment->value);
 
   cr = gdk_cairo_create(widget->window);
 
@@ -146,20 +191,23 @@ ags_vindicator_draw(AgsVIndicator *indicator)
     return;
   }
   
-  width = 16;
-  height = 100;
+  width = AGS_INDICATOR(indicator)->segment_width;
+  height = (AGS_INDICATOR(indicator)->segment_count * AGS_INDICATOR(indicator)->segment_height) + ((AGS_INDICATOR(indicator)->segment_count - 1) * AGS_INDICATOR(indicator)->segment_padding);
 
-  segment_width = width;
-  segment_height = 7;
+  padding_top = (GTK_WIDGET(indicator)->allocation.height - height) / 2;
+  padding_left = (GTK_WIDGET(indicator)->allocation.width - width) / 2;
+  
+  segment_width = AGS_INDICATOR(indicator)->segment_width;
+  segment_height = AGS_INDICATOR(indicator)->segment_height;
 
-  padding = 3;
+  padding = AGS_INDICATOR(indicator)->segment_padding;
 
   cairo_surface_flush(cairo_get_target(cr));
   cairo_push_group(cr);
 
-  for(i = 0; i < height / (segment_height + padding); i++){
+  for(i = 0; i < AGS_INDICATOR(indicator)->segment_count; i++){
     if(adjustment->value > 0.0 &&
-       (1.0 / adjustment->value * i < (height / (segment_height + padding)))){
+       (1.0 / adjustment->value * i < AGS_INDICATOR(indicator)->segment_count)){
       /* active */
       cairo_set_source_rgb(cr,
 			   indicator_style->light[0].red / white_gc,
@@ -174,7 +222,7 @@ ags_vindicator_draw(AgsVIndicator *indicator)
     }
 
     cairo_rectangle(cr,
-		    0, height - i * (segment_height + padding) - segment_height,
+		    padding_left, padding_top + (height - i * (segment_height + padding) - segment_height),
 		    segment_width, segment_height);
     cairo_fill(cr);
 
@@ -184,7 +232,7 @@ ags_vindicator_draw(AgsVIndicator *indicator)
 			 indicator_style->fg[0].green / white_gc,
 			 indicator_style->fg[0].blue / white_gc);
     cairo_rectangle(cr,
-		    0, height - i * (segment_height + padding) - segment_height,
+		    padding_left, padding_top + (height - i * (segment_height + padding) - segment_height),
 		    segment_width, segment_height);
     cairo_stroke(cr);
   }
@@ -214,7 +262,7 @@ ags_vindicator_new()
   adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 0.1, 0.1, 0.0);
 
   indicator = (AgsVIndicator *) g_object_new(AGS_TYPE_VINDICATOR,
-					     "adjustment\0", adjustment,
+					     "adjustment", adjustment,
 					     NULL);
   
   return(indicator);

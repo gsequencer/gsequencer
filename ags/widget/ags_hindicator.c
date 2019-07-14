@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -22,6 +22,11 @@
 void ags_hindicator_class_init(AgsHIndicatorClass *indicator);
 void ags_hindicator_init(AgsHIndicator *indicator);
 void ags_hindicator_show(GtkWidget *widget);
+
+void ags_hindicator_size_request(GtkWidget *widget,
+				 GtkRequisition *requisition);
+void ags_hindicator_size_allocate(GtkWidget *widget,
+				  GtkAllocation *allocation);
 
 gboolean ags_hindicator_expose(GtkWidget *widget,
 			       GdkEventExpose *event);
@@ -82,6 +87,9 @@ ags_hindicator_class_init(AgsHIndicatorClass *indicator)
   /* GtkWidgetClass */
   widget = (GtkWidgetClass *) indicator;
 
+  widget->size_request = ags_hindicator_size_request;
+  widget->size_allocate = ags_hindicator_size_allocate;
+
   widget->expose_event = ags_hindicator_expose;
   widget->configure_event = ags_hindicator_configure;
 }
@@ -89,10 +97,44 @@ ags_hindicator_class_init(AgsHIndicatorClass *indicator)
 void
 ags_hindicator_init(AgsHIndicator *indicator)
 {
-  gtk_widget_set_size_request((GtkWidget *) indicator,
-			      100,
-			      16);
+  g_object_set(indicator,
+	       "segment-width", AGS_HINDICATOR_DEFAULT_SEGMENT_WIDTH,
+	       "segment-height", AGS_HINDICATOR_DEFAULT_SEGMENT_HEIGHT,
+	       NULL);
 }
+
+void
+ags_hindicator_size_request(GtkWidget *widget,
+			    GtkRequisition *requisition)
+{
+  AgsIndicator *indicator;
+
+  indicator = AGS_INDICATOR(widget);
+  
+  requisition->height = indicator->segment_height;
+  requisition->width = (indicator->segment_count * indicator->segment_width) + (indicator->segment_count * indicator->segment_padding);
+}
+
+void
+ags_hindicator_size_allocate(GtkWidget *widget,
+			     GtkAllocation *allocation)
+{
+  AgsIndicator *indicator;
+
+  indicator = AGS_INDICATOR(widget);
+
+  if(allocation->height < indicator->segment_height){
+    allocation->height = indicator->segment_height;
+  }
+  
+  allocation->width = (indicator->segment_count * indicator->segment_width) + ((indicator->segment_count - 1) * indicator->segment_padding);
+  
+  widget->allocation = *allocation;
+
+  GTK_WIDGET_CLASS(ags_hindicator_parent_class)->size_allocate(widget,
+							       allocation);
+}
+
 gboolean
 ags_hindicator_configure(GtkWidget *widget,
 			 GdkEventConfigure *event)
@@ -122,6 +164,7 @@ ags_hindicator_draw(AgsHIndicator *indicator)
   
   gdouble value;
   guint width, height;
+  guint padding_top, padding_left;
   guint segment_width, segment_height;
   guint padding;
   guint i;
@@ -136,7 +179,7 @@ ags_hindicator_draw(AgsHIndicator *indicator)
   if(adjustment == NULL){
     return;
   }
-  //  g_message("draw %f\0", adjustment->value);
+  //  g_message("draw %f", adjustment->value);
 
   cr = gdk_cairo_create(widget->window);
 
@@ -144,20 +187,23 @@ ags_hindicator_draw(AgsHIndicator *indicator)
     return;
   }
   
-  width = 100;
-  height = 16;
+  width = (AGS_INDICATOR(indicator)->segment_count * AGS_INDICATOR(indicator)->segment_width) + ((AGS_INDICATOR(indicator)->segment_count - 1) * AGS_INDICATOR(indicator)->segment_padding);
+  height = AGS_INDICATOR(indicator)->segment_height;
 
-  segment_width = 7;
-  segment_height = height;
+  padding_top = (GTK_WIDGET(indicator)->allocation.height - height) / 2;
+  padding_left = (GTK_WIDGET(indicator)->allocation.width - width) / 2;
 
-  padding = 3;
+  segment_width = AGS_INDICATOR(indicator)->segment_width;
+  segment_height = AGS_INDICATOR(indicator)->segment_height;
+
+  padding = AGS_INDICATOR(indicator)->segment_padding;
 
   cairo_surface_flush(cairo_get_target(cr));
   cairo_push_group(cr);
 
-  for(i = 0; i < width / (segment_width + padding); i++){
+  for(i = 0; i < AGS_INDICATOR(indicator)->segment_count; i++){
     if(adjustment->value > 0.0 &&
-       (1.0 / adjustment->value * i < (width / (segment_width + padding)))){
+       (1.0 / adjustment->value * i < AGS_INDICATOR(indicator)->segment_count)){
       /* active */
       cairo_set_source_rgb(cr,
 			   indicator_style->light[0].red / white_gc,
@@ -212,7 +258,7 @@ ags_hindicator_new()
   adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 0.1, 0.1, 0.0);
 
   indicator = (AgsHIndicator *) g_object_new(AGS_TYPE_HINDICATOR,
-					     "adjustment\0", adjustment,
+					     "adjustment", adjustment,
 					     NULL);
   
   return(indicator);

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -34,7 +34,7 @@ void ags_indicator_show(GtkWidget *widget);
 void ags_indicator_map(GtkWidget *widget);
 void ags_indicator_realize(GtkWidget *widget);
 void ags_indicator_size_request(GtkWidget *widget,
-				GtkRequisition   *requisition);
+				GtkRequisition *requisition);
 void ags_indicator_size_allocate(GtkWidget *widget,
 				 GtkAllocation *allocation);
 
@@ -50,6 +50,10 @@ void ags_indicator_size_allocate(GtkWidget *widget,
 
 enum{
   PROP_0,
+  PROP_SEGMENT_WIDTH,
+  PROP_SEGMENT_HEIGHT,
+  PROP_SEGMENT_PADDING,
+  PROP_SEGMENT_COUNT,
   PROP_ADJUSTMENT,
 };
 
@@ -110,15 +114,87 @@ ags_indicator_class_init(AgsIndicatorClass *indicator)
 
   /* properties */
   /**
+   * AgsIndicator:segment-width:
+   *
+   * The indicator's segment width.
+   * 
+   * Since: 2.2.20
+   */
+  param_spec = g_param_spec_uint("segment-width",
+				 "segment width",
+				 "The indicator's segment width",
+				 1,
+				 G_MAXUINT,
+				 AGS_INDICATOR_DEFAULT_SEGMENT_WIDTH,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_SEGMENT_WIDTH,
+				  param_spec);
+
+  /**
+   * AgsIndicator:segment-height:
+   *
+   * The indicator's segment height.
+   * 
+   * Since: 2.2.20
+   */
+  param_spec = g_param_spec_uint("segment-height",
+				 "segment height",
+				 "The indicator's segment height",
+				 1,
+				 G_MAXUINT,
+				 AGS_INDICATOR_DEFAULT_SEGMENT_HEIGHT,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_SEGMENT_HEIGHT,
+				  param_spec);
+
+  /**
+   * AgsIndicator:segment-padding:
+   *
+   * The indicator's segment padding.
+   * 
+   * Since: 2.2.20
+   */
+  param_spec = g_param_spec_uint("segment-padding",
+				 "segment padding",
+				 "The indicator's segment padding",
+				 1,
+				 G_MAXUINT,
+				 AGS_INDICATOR_DEFAULT_SEGMENT_PADDING,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_SEGMENT_PADDING,
+				  param_spec);
+
+  /**
+   * AgsIndicator:segment-count:
+   *
+   * The indicator's segment count.
+   * 
+   * Since: 2.2.20
+   */
+  param_spec = g_param_spec_uint("segment-count",
+				 "segment count",
+				 "The indicator's segment count",
+				 1,
+				 G_MAXUINT,
+				 AGS_INDICATOR_DEFAULT_SEGMENT_COUNT,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_SEGMENT_COUNT,
+				  param_spec);
+
+  /**
    * AgsIndicator:adjustment:
    *
    * The adjustment giving indicator value.
    * 
    * Since: 2.0.0
    */
-  param_spec = g_param_spec_object("adjustment\0",
-				   "assigned adjustment\0",
-				   "The adjustment it is assigned with\0",
+  param_spec = g_param_spec_object("adjustment",
+				   "assigned adjustment",
+				   "The adjustment it is assigned with",
 				   G_TYPE_OBJECT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
@@ -130,9 +206,18 @@ void
 ags_indicator_init(AgsIndicator *indicator)
 {
   g_object_set(G_OBJECT(indicator),
-	       "app-paintable\0", TRUE,
+	       "app-paintable", TRUE,
 	       NULL);
 
+  /* segment alignment */
+  indicator->segment_width = AGS_INDICATOR_DEFAULT_SEGMENT_WIDTH;
+  indicator->segment_height = AGS_INDICATOR_DEFAULT_SEGMENT_HEIGHT;
+  
+  indicator->segment_padding = AGS_INDICATOR_DEFAULT_SEGMENT_PADDING;
+
+  indicator->segment_count = AGS_INDICATOR_DEFAULT_SEGMENT_COUNT;
+
+  /* adjustment */
   indicator->adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 10.0, 1.0, 1.0, 10.0);
   g_object_ref(indicator->adjustment);
 }
@@ -148,6 +233,26 @@ ags_indicator_set_property(GObject *gobject,
   indicator = AGS_INDICATOR(gobject);
 
   switch(prop_id){
+  case PROP_SEGMENT_WIDTH:
+  {
+    indicator->segment_width = g_value_get_uint(value);
+  }
+  break;
+  case PROP_SEGMENT_HEIGHT:
+  {
+    indicator->segment_height = g_value_get_uint(value);
+  }
+  break;
+  case PROP_SEGMENT_PADDING:
+  {
+    indicator->segment_padding = g_value_get_uint(value);
+  }
+  break;
+  case PROP_SEGMENT_COUNT:
+  {
+    indicator->segment_count = g_value_get_uint(value);
+  }
+  break;
   case PROP_ADJUSTMENT:
     {
       GtkAdjustment *adjustment;
@@ -186,6 +291,26 @@ ags_indicator_get_property(GObject *gobject,
   indicator = AGS_INDICATOR(gobject);
 
   switch(prop_id){
+  case PROP_SEGMENT_WIDTH:
+    {
+      g_value_set_uint(value, indicator->segment_width);
+    }
+    break;
+  case PROP_SEGMENT_HEIGHT:
+    {
+      g_value_set_uint(value, indicator->segment_height);
+    }
+    break;
+  case PROP_SEGMENT_PADDING:
+    {
+      g_value_set_uint(value, indicator->segment_padding);
+    }
+    break;
+  case PROP_SEGMENT_COUNT:
+    {
+      g_value_set_uint(value, indicator->segment_count);
+    }
+    break;
   case PROP_ADJUSTMENT:
     {
       g_value_set_object(value, indicator->adjustment);
@@ -257,7 +382,7 @@ ags_indicator_realize(GtkWidget *widget)
   widget->style = gtk_style_attach(widget->style, widget->window);
   gtk_style_set_background(widget->style, widget->window, GTK_STATE_NORMAL);
 
-  gtk_widget_queue_resize (widget);
+  gtk_widget_queue_resize(widget);
 }
 
 void
