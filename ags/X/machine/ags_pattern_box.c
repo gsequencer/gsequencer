@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -214,8 +214,11 @@ ags_pattern_box_init(AgsPatternBox *pattern_box)
   GtkToggleButton *toggle_button;
   GtkRadioButton *radio_button;
 
+  AgsConfig *config;
+
   gchar *str;
   
+  gdouble gui_scale_factor;
   guint i;
 
   g_object_set(pattern_box,
@@ -233,19 +236,33 @@ ags_pattern_box_init(AgsPatternBox *pattern_box)
 
   pattern_box->key_mask = 0;
 
+  config = ags_config_get_instance();
+
   pattern_box->n_controls = AGS_PATTERN_BOX_N_CONTROLS;
   pattern_box->n_indices = AGS_PATTERN_BOX_N_INDICES;
   
   /* led */
+  gui_scale_factor = 1.0;
+  
+  str = ags_config_get_value(config,
+			     AGS_CONFIG_GENERIC,
+			     "gui-scale");
+
+  if(str != NULL){
+    gui_scale_factor = g_ascii_strtod(str,
+				      NULL);
+
+  }
+  
   pattern_box->active_led = 0;
   pattern_box->hled_array = (AgsHLedArray *) ags_hled_array_new();
   g_object_set(pattern_box->hled_array,
-	       "led-width", AGS_PATTERN_BOX_LED_DEFAULT_WIDTH,
-	       "led-height", AGS_PATTERN_BOX_LED_DEFAULT_HEIGHT,
+	       "led-width", (guint) (gui_scale_factor * AGS_PATTERN_BOX_LED_DEFAULT_WIDTH),
+	       "led-height", (guint) (gui_scale_factor * AGS_PATTERN_BOX_LED_DEFAULT_HEIGHT),
 	       "led-count", pattern_box->n_controls,
 	       NULL);
   gtk_widget_set_size_request((GtkWidget *) pattern_box->hled_array,
-			      pattern_box->n_controls * AGS_PATTERN_BOX_DEFAULT_PAD_WIDTH, 10);
+			      (guint) (gui_scale_factor * pattern_box->n_controls * AGS_PATTERN_BOX_DEFAULT_PAD_WIDTH), (guint) (gui_scale_factor * AGS_PATTERN_BOX_LED_DEFAULT_HEIGHT));
   gtk_table_attach((GtkTable *) pattern_box,
 		   (GtkWidget *) pattern_box->hled_array,
 		   0, 1,
@@ -276,7 +293,7 @@ ags_pattern_box_init(AgsPatternBox *pattern_box)
   for(i = 0; i < pattern_box->n_controls; i++){
     toggle_button = (GtkToggleButton *) gtk_toggle_button_new();
     gtk_widget_set_size_request((GtkWidget *) toggle_button,
-				AGS_PATTERN_BOX_DEFAULT_PAD_WIDTH, AGS_PATTERN_BOX_DEFAULT_PAD_HEIGHT);
+				gui_scale_factor * AGS_PATTERN_BOX_DEFAULT_PAD_WIDTH, gui_scale_factor * AGS_PATTERN_BOX_DEFAULT_PAD_HEIGHT);
     gtk_box_pack_start((GtkBox *) pattern_box->pattern,
 		       (GtkWidget *) toggle_button,
 		       FALSE, FALSE,
