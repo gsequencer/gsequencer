@@ -435,10 +435,16 @@ main(int argc, char **argv)
 
   /* some scaling */
   if(!builtin_theme_disabled){
+    GParamSpec *param_spec;
+    
     gchar *str;
-
+    
     gdouble gui_scale_factor;
+    gint default_slider_width;
+    gint default_stepper_size;
 
+    GValue *value;
+    
     gui_scale_factor = 1.0;
 
     str = ags_config_get_value(config,
@@ -451,30 +457,88 @@ main(int argc, char **argv)
 
       g_free(str);
     }
+    
+    /* horizontal scrollbar */
+    default_slider_width = 14;
+    default_stepper_size = 14;
 
-    /* scrollbar */
+    param_spec = gtk_widget_class_find_style_property(g_type_class_ref(GTK_TYPE_VSCROLLBAR),
+						      "slider-width");
+    value = g_param_spec_get_default_value(param_spec);
+
+    if(value != NULL){
+      default_slider_width = g_value_get_int(value);
+    }
+
+    param_spec = gtk_widget_class_find_style_property(g_type_class_ref(GTK_TYPE_VSCROLLBAR),
+						      "stepper-size");
+    value = g_param_spec_get_default_value(param_spec);
+
+    if(value != NULL){
+      default_stepper_size = g_value_get_int(value);
+    }
+    
     str = g_strdup_printf("style \"ags-default-vscrollbar-style\"\n{\n\tGtkVScrollbar::slider-width = %d\nGtkVScrollbar::stepper-size = %d\n}\n\nwidget_class \"*<GtkVScrollbar>*\" style \"ags-default-vscrollbar-style\"\n",
-			  (gint) (gui_scale_factor * 14),
-			  (gint) (gui_scale_factor * 14));
+			  (gint) (gui_scale_factor * default_slider_width),
+			  (gint) (gui_scale_factor * default_stepper_size));
     gtk_rc_parse_string(str);
     g_free(str);
+
+    /* vertical scrollbar */
+    default_slider_width = 14;
+    default_stepper_size = 14;
+
+    param_spec = gtk_widget_class_find_style_property(g_type_class_ref(GTK_TYPE_HSCROLLBAR),
+						      "slider-width");
+    value = g_param_spec_get_default_value(param_spec);
+
+    if(value != NULL){
+      default_slider_width = g_value_get_int(value);
+    }
+
+    param_spec = gtk_widget_class_find_style_property(g_type_class_ref(GTK_TYPE_HSCROLLBAR),
+						      "stepper-size");
+    value = g_param_spec_get_default_value(param_spec);
+
+    if(value != NULL){
+      default_stepper_size = g_value_get_int(value);
+    }
 
     str = g_strdup_printf("style \"ags-default-hscrollbar-style\"\n{\n\tGtkHScrollbar::slider-width = %d\nGtkHScrollbar::stepper-size = %d\n}\n\nwidget_class \"*<GtkHScrollbar>*\" style \"ags-default-hscrollbar-style\"\n",
-			  (gint) (gui_scale_factor * 14),
-			  (gint) (gui_scale_factor * 14));
+			  (gint) (gui_scale_factor * default_slider_width),
+			  (gint) (gui_scale_factor * default_stepper_size));
     gtk_rc_parse_string(str);
     g_free(str);
 
-    /* scale */
+    /* horizontal scale */
+    default_slider_width = 14;
+
+    param_spec = gtk_widget_class_find_style_property(g_type_class_ref(GTK_TYPE_HSCALE),
+						      "slider-width");
+    value = g_param_spec_get_default_value(param_spec);
+
+    if(value != NULL){
+      default_slider_width = g_value_get_int(value);
+    }
+
     str = g_strdup_printf("style \"ags-default-vscale-style\"\n{\n\tGtkVScale::slider-width = %d\n}\n\nwidget_class \"*<GtkVScale>*\" style \"ags-default-vscale-style\"\n",
-			  (gint) (gui_scale_factor * 14),
-			  (gint) (gui_scale_factor * 14));
+			  (gint) (gui_scale_factor * default_slider_width));
     gtk_rc_parse_string(str);
     g_free(str);
+
+    /* vertical scale */
+    default_slider_width = 14;
+
+    param_spec = gtk_widget_class_find_style_property(g_type_class_ref(GTK_TYPE_VSCALE),
+						      "slider-width");
+    value = g_param_spec_get_default_value(param_spec);
+
+    if(value != NULL){
+      default_slider_width = g_value_get_int(value);
+    }
 
     str = g_strdup_printf("style \"ags-default-hscale-style\"\n{\n\tGtkHScale::slider-width = %d\n}\n\nwidget_class \"*<GtkHScale>*\" style \"ags-default-hscale-style\"\n",
-			  (gint) (gui_scale_factor * 14),
-			  (gint) (gui_scale_factor * 14));
+			  (gint) (gui_scale_factor * default_slider_width));
     gtk_rc_parse_string(str);
     g_free(str);
   }

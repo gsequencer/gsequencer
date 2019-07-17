@@ -2,6 +2,8 @@ ags (2.2.21)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
 	* implemented AgsCellPattern and AgsPatternBox to use GUI scale factor
+	* implemented GtkVScrollbar and GtkHScrollbar to GUI scale using slider-width and stepper-size
+	* implemented GtkVScale and GtkHScale to GUI scale using slider-width
 
 ags (2.2.20)
 
