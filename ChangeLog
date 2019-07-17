@@ -1,3 +1,8 @@
+ags (2.2.21)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented AgsCellPattern and AgsPatternBox to use GUI scale factor
+
 ags (2.2.20)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

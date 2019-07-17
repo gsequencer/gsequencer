@@ -40,6 +40,8 @@
 #define _GNU_SOURCE
 #include <locale.h>
 
+#include <stdlib.h>
+
 #include <ags/libags.h>
 #include <ags/libags-audio.h>
 #include <ags/libags-gui.h>
@@ -335,7 +337,7 @@ main(int argc, char **argv)
 
   uid = getuid();
   pw = getpwuid(uid);
-    
+
   /* parse rc file */
   if(!builtin_theme_disabled){
     rc_filename = g_strdup_printf("%s/%s/ags.rc",
@@ -372,7 +374,7 @@ main(int argc, char **argv)
   //  g_thread_init(NULL);
   ags_gui_init(&argc, &argv);  
   gtk_init(&argc, &argv);
-  
+
   if(!builtin_theme_disabled){
     g_object_set(gtk_settings_get_default(),
 		 "gtk-theme-name", "Raleigh",
@@ -430,7 +432,53 @@ main(int argc, char **argv)
     g_free(wdir);
     g_free(config_file);
   }
-  
+
+  /* some scaling */
+  if(!builtin_theme_disabled){
+    gchar *str;
+
+    gdouble gui_scale_factor;
+
+    gui_scale_factor = 1.0;
+
+    str = ags_config_get_value(config,
+			       AGS_CONFIG_GENERIC,
+			       "gui-scale");
+
+    if(str != NULL){
+      gui_scale_factor = g_ascii_strtod(str,
+					NULL);
+
+      g_free(str);
+    }
+
+    /* scrollbar */
+    str = g_strdup_printf("style \"ags-default-vscrollbar-style\"\n{\n\tGtkVScrollbar::slider-width = %d\nGtkVScrollbar::stepper-size = %d\n}\n\nwidget_class \"*<GtkVScrollbar>*\" style \"ags-default-vscrollbar-style\"\n",
+			  (gint) (gui_scale_factor * 14),
+			  (gint) (gui_scale_factor * 14));
+    gtk_rc_parse_string(str);
+    g_free(str);
+
+    str = g_strdup_printf("style \"ags-default-hscrollbar-style\"\n{\n\tGtkHScrollbar::slider-width = %d\nGtkHScrollbar::stepper-size = %d\n}\n\nwidget_class \"*<GtkHScrollbar>*\" style \"ags-default-hscrollbar-style\"\n",
+			  (gint) (gui_scale_factor * 14),
+			  (gint) (gui_scale_factor * 14));
+    gtk_rc_parse_string(str);
+    g_free(str);
+
+    /* scale */
+    str = g_strdup_printf("style \"ags-default-vscale-style\"\n{\n\tGtkVScale::slider-width = %d\n}\n\nwidget_class \"*<GtkVScale>*\" style \"ags-default-vscale-style\"\n",
+			  (gint) (gui_scale_factor * 14),
+			  (gint) (gui_scale_factor * 14));
+    gtk_rc_parse_string(str);
+    g_free(str);
+
+    str = g_strdup_printf("style \"ags-default-hscale-style\"\n{\n\tGtkHScale::slider-width = %d\n}\n\nwidget_class \"*<GtkHScale>*\" style \"ags-default-hscale-style\"\n",
+			  (gint) (gui_scale_factor * 14),
+			  (gint) (gui_scale_factor * 14));
+    gtk_rc_parse_string(str);
+    g_free(str);
+  }
+
   ags_setup(argc, argv);
     
   //  muntrace();

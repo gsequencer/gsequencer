@@ -239,6 +239,7 @@ ags_cell_pattern_init(AgsCellPattern *cell_pattern)
     gui_scale_factor = g_ascii_strtod(str,
 				      NULL);
 
+    g_free(str);
   }
 
   cell_pattern->cell_width = (guint) (gui_scale_factor * AGS_CELL_PATTERN_DEFAULT_CELL_WIDTH);
