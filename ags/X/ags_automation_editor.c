@@ -193,12 +193,34 @@ ags_automation_editor_init(AgsAutomationEditor *automation_editor)
   GtkTable *table;
 
   GtkAdjustment *adjustment;
+
+  AgsConfig *config;
+
+  gchar *str;
+  
+  gdouble gui_scale_factor;
   
   automation_editor->flags = (AGS_AUTOMATION_EDITOR_PASTE_MATCH_LINE |
 			      AGS_AUTOMATION_EDITOR_PASTE_NO_DUPLICATES);
 
   automation_editor->version = AGS_AUTOMATION_EDITOR_DEFAULT_VERSION;
   automation_editor->build_id = AGS_AUTOMATION_EDITOR_DEFAULT_BUILD_ID;
+
+  config = ags_config_get_instance();
+
+  /* scale factor */
+  gui_scale_factor = 1.0;
+  
+  str = ags_config_get_value(config,
+			     AGS_CONFIG_GENERIC,
+			     "gui-scale");
+
+  if(str != NULL){
+    gui_scale_factor = g_ascii_strtod(str,
+				      NULL);
+
+    g_free(str);
+  }
 
   /* offset */
   automation_editor->tact_counter = 0;
@@ -275,7 +297,7 @@ ags_automation_editor_init(AgsAutomationEditor *automation_editor)
 			   gtk_label_new(i18n("audio")));
 
   /* audio - scrollbars */
-  adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 1.0, AGS_AUTOMATION_EDIT_DEFAULT_CONTROL_HEIGHT, 1.0);
+  adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 1.0, (guint) (gui_scale_factor * AGS_AUTOMATION_EDIT_DEFAULT_CONTROL_HEIGHT), 1.0);
   automation_editor->audio_vscrollbar = (GtkVScrollbar *) gtk_vscrollbar_new(adjustment);
   gtk_table_attach(table,
 		   (GtkWidget *) automation_editor->audio_vscrollbar,
@@ -284,7 +306,7 @@ ags_automation_editor_init(AgsAutomationEditor *automation_editor)
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
 
-  adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 1.0, AGS_AUTOMATION_EDIT_DEFAULT_CONTROL_WIDTH, 1.0);
+  adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 1.0, (guint) (gui_scale_factor * AGS_AUTOMATION_EDIT_DEFAULT_CONTROL_WIDTH), 1.0);
   automation_editor->audio_hscrollbar = (GtkHScrollbar *) gtk_hscrollbar_new(adjustment);
   gtk_table_attach(table,
 		   (GtkWidget *) automation_editor->audio_hscrollbar,
@@ -295,6 +317,14 @@ ags_automation_editor_init(AgsAutomationEditor *automation_editor)
   
   /* audio - ruler */
   automation_editor->audio_ruler = ags_ruler_new();
+  g_object_set(automation_editor->audio_ruler,
+	       "step", (guint) (gui_scale_factor * AGS_RULER_DEFAULT_STEP),
+	       "large-step", (guint) (gui_scale_factor * AGS_RULER_DEFAULT_LARGE_STEP),
+	       "small-step", (guint) (gui_scale_factor * AGS_RULER_DEFAULT_SMALL_STEP),
+	       NULL);
+  gtk_widget_set_size_request((GtkWidget *) automation_editor->audio_ruler,
+			      -1,
+			      (gint) (gui_scale_factor * AGS_RULER_DEFAULT_HEIGHT));
   gtk_table_attach(table,
 		   (GtkWidget *) automation_editor->audio_ruler,
 		   1, 2,
@@ -304,8 +334,16 @@ ags_automation_editor_init(AgsAutomationEditor *automation_editor)
 
   /* audio - scale */
   automation_editor->audio_scrolled_scale_box = ags_scrolled_scale_box_new();
+  g_object_set(automation_editor->audio_scrolled_scale_box,
+	       "margin-top", (gint) (gui_scale_factor * AGS_RULER_DEFAULT_HEIGHT),
+	       NULL);
 
   automation_editor->audio_scrolled_scale_box->scale_box = (AgsScaleBox *) ags_vscale_box_new();
+  g_object_set(automation_editor->audio_scrolled_scale_box->scale_box,
+	       "fixed-scale-width", (guint) (gui_scale_factor * AGS_SCALE_BOX_DEFAULT_FIXED_SCALE_WIDTH),
+	       "fixed-scale-height", (guint) (gui_scale_factor * AGS_SCALE_BOX_DEFAULT_FIXED_SCALE_HEIGHT),
+	       NULL);
+
   gtk_container_add(GTK_CONTAINER(automation_editor->audio_scrolled_scale_box->viewport),
 		    GTK_WIDGET(automation_editor->audio_scrolled_scale_box->scale_box));
 
@@ -320,6 +358,9 @@ ags_automation_editor_init(AgsAutomationEditor *automation_editor)
   automation_editor->audio_scrolled_automation_edit_box = ags_scrolled_automation_edit_box_new();
 
   automation_editor->audio_scrolled_automation_edit_box->automation_edit_box = (AgsAutomationEditBox *) ags_vautomation_edit_box_new();
+  g_object_set(automation_editor->audio_scrolled_automation_edit_box->automation_edit_box,
+	       "fixed-edit-height", (guint) (gui_scale_factor * AGS_SCALE_BOX_DEFAULT_FIXED_SCALE_HEIGHT),
+	       NULL);
   gtk_container_add(GTK_CONTAINER(automation_editor->audio_scrolled_automation_edit_box->viewport),
 		    GTK_WIDGET(automation_editor->audio_scrolled_automation_edit_box->automation_edit_box));
 
@@ -346,7 +387,7 @@ ags_automation_editor_init(AgsAutomationEditor *automation_editor)
 			   gtk_label_new(i18n("output")));
 
   /* output - scrollbars */
-  adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 1.0, AGS_AUTOMATION_EDIT_DEFAULT_CONTROL_HEIGHT, 1.0);
+  adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 1.0, (guint) (gui_scale_factor * AGS_AUTOMATION_EDIT_DEFAULT_CONTROL_HEIGHT), 1.0);
   automation_editor->output_vscrollbar = (GtkVScrollbar *) gtk_vscrollbar_new(adjustment);
   gtk_table_attach(table,
 		   (GtkWidget *) automation_editor->output_vscrollbar,
@@ -355,7 +396,7 @@ ags_automation_editor_init(AgsAutomationEditor *automation_editor)
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
 
-  adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 1.0, AGS_AUTOMATION_EDIT_DEFAULT_CONTROL_WIDTH, 1.0);
+  adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 1.0, (guint) (gui_scale_factor * AGS_AUTOMATION_EDIT_DEFAULT_CONTROL_WIDTH), 1.0);
   automation_editor->output_hscrollbar = (GtkHScrollbar *) gtk_hscrollbar_new(adjustment);
   gtk_table_attach(table,
 		   (GtkWidget *) automation_editor->output_hscrollbar,
@@ -379,6 +420,14 @@ ags_automation_editor_init(AgsAutomationEditor *automation_editor)
 
   /* output - ruler */
   automation_editor->output_ruler = ags_ruler_new();
+  gtk_widget_set_size_request((GtkWidget *) automation_editor->output_ruler,
+			      -1,
+			      (gint) (gui_scale_factor * AGS_RULER_DEFAULT_HEIGHT));
+  g_object_set(automation_editor->output_ruler,
+	       "step", (guint) (gui_scale_factor * AGS_RULER_DEFAULT_STEP),
+	       "large-step", (guint) (gui_scale_factor * AGS_RULER_DEFAULT_LARGE_STEP),
+	       "small-step", (guint) (gui_scale_factor * AGS_RULER_DEFAULT_SMALL_STEP),
+	       NULL);
   gtk_table_attach(table,
 		   (GtkWidget *) automation_editor->output_ruler,
 		   1, 2,
@@ -388,8 +437,16 @@ ags_automation_editor_init(AgsAutomationEditor *automation_editor)
 
   /* output - scale */
   automation_editor->output_scrolled_scale_box = ags_scrolled_scale_box_new();
+  g_object_set(automation_editor->output_scrolled_scale_box,
+	       "margin-top", (gint) (gui_scale_factor * AGS_RULER_DEFAULT_HEIGHT),
+	       NULL);
 
   automation_editor->output_scrolled_scale_box->scale_box = (AgsScaleBox *) ags_vscale_box_new();
+  g_object_set(automation_editor->output_scrolled_scale_box->scale_box,
+	       "fixed-scale-width", (guint) (gui_scale_factor * AGS_SCALE_BOX_DEFAULT_FIXED_SCALE_WIDTH),
+	       "fixed-scale-height", (guint) (gui_scale_factor * AGS_SCALE_BOX_DEFAULT_FIXED_SCALE_HEIGHT),
+	       NULL);
+
   gtk_container_add(GTK_CONTAINER(automation_editor->output_scrolled_scale_box->viewport),
 		    GTK_WIDGET(automation_editor->output_scrolled_scale_box->scale_box));
 
@@ -404,6 +461,9 @@ ags_automation_editor_init(AgsAutomationEditor *automation_editor)
   automation_editor->output_scrolled_automation_edit_box = ags_scrolled_automation_edit_box_new();
 
   automation_editor->output_scrolled_automation_edit_box->automation_edit_box = (AgsAutomationEditBox *) ags_vautomation_edit_box_new();
+  g_object_set(automation_editor->output_scrolled_automation_edit_box->automation_edit_box,
+	       "fixed-edit-height", (guint) (gui_scale_factor * AGS_SCALE_BOX_DEFAULT_FIXED_SCALE_HEIGHT),
+	       NULL);
   gtk_container_add(GTK_CONTAINER(automation_editor->output_scrolled_automation_edit_box->viewport),
 		    GTK_WIDGET(automation_editor->output_scrolled_automation_edit_box->automation_edit_box));
 
@@ -430,7 +490,7 @@ ags_automation_editor_init(AgsAutomationEditor *automation_editor)
 			   gtk_label_new(i18n("input")));
 
   /* input - scrollbars */
-  adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 1.0, AGS_AUTOMATION_EDIT_DEFAULT_CONTROL_HEIGHT, 1.0);
+  adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 1.0, (guint) (gui_scale_factor * AGS_AUTOMATION_EDIT_DEFAULT_CONTROL_HEIGHT), 1.0);
   automation_editor->input_vscrollbar = (GtkVScrollbar *) gtk_vscrollbar_new(adjustment);
   gtk_table_attach(table,
 		   (GtkWidget *) automation_editor->input_vscrollbar,
@@ -439,7 +499,7 @@ ags_automation_editor_init(AgsAutomationEditor *automation_editor)
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
 
-  adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 1.0, AGS_AUTOMATION_EDIT_DEFAULT_CONTROL_WIDTH, 1.0);
+  adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 1.0, (guint) (gui_scale_factor * AGS_AUTOMATION_EDIT_DEFAULT_CONTROL_WIDTH), 1.0);
   automation_editor->input_hscrollbar = (GtkHScrollbar *) gtk_hscrollbar_new(adjustment);
   gtk_table_attach(table,
 		   (GtkWidget *) automation_editor->input_hscrollbar,
@@ -463,6 +523,14 @@ ags_automation_editor_init(AgsAutomationEditor *automation_editor)
 
   /* input - ruler */
   automation_editor->input_ruler = ags_ruler_new();
+  gtk_widget_set_size_request((GtkWidget *) automation_editor->input_ruler,
+			      -1,
+			      (gint) (gui_scale_factor * AGS_RULER_DEFAULT_HEIGHT));
+  g_object_set(automation_editor->input_ruler,
+	       "step", (guint) (gui_scale_factor * AGS_RULER_DEFAULT_STEP),
+	       "large-step", (guint) (gui_scale_factor * AGS_RULER_DEFAULT_LARGE_STEP),
+	       "small-step", (guint) (gui_scale_factor * AGS_RULER_DEFAULT_SMALL_STEP),
+	       NULL);
   gtk_table_attach(table,
 		   (GtkWidget *) automation_editor->input_ruler,
 		   1, 2,
@@ -472,8 +540,16 @@ ags_automation_editor_init(AgsAutomationEditor *automation_editor)
 
   /* input - scale */
   automation_editor->input_scrolled_scale_box = ags_scrolled_scale_box_new();
+  g_object_set(automation_editor->input_scrolled_scale_box,
+	       "margin-top", (gint) (gui_scale_factor * AGS_RULER_DEFAULT_HEIGHT),
+	       NULL);
 
   automation_editor->input_scrolled_scale_box->scale_box = (AgsScaleBox *) ags_vscale_box_new();
+  g_object_set(automation_editor->input_scrolled_scale_box->scale_box,
+	       "fixed-scale-width", (guint) (gui_scale_factor * AGS_SCALE_BOX_DEFAULT_FIXED_SCALE_WIDTH),
+	       "fixed-scale-height", (guint) (gui_scale_factor * AGS_SCALE_BOX_DEFAULT_FIXED_SCALE_HEIGHT),
+	       NULL);
+
   gtk_container_add(GTK_CONTAINER(automation_editor->input_scrolled_scale_box->viewport),
 		    GTK_WIDGET(automation_editor->input_scrolled_scale_box->scale_box));
 
@@ -490,6 +566,9 @@ ags_automation_editor_init(AgsAutomationEditor *automation_editor)
   automation_editor->input_scrolled_automation_edit_box = ags_scrolled_automation_edit_box_new();
 
   automation_editor->input_scrolled_automation_edit_box->automation_edit_box = (AgsAutomationEditBox *) ags_vautomation_edit_box_new();
+  g_object_set(automation_editor->input_scrolled_automation_edit_box->automation_edit_box,
+	       "fixed-edit-height", (guint) (gui_scale_factor * AGS_SCALE_BOX_DEFAULT_FIXED_SCALE_HEIGHT),
+	       NULL);
   gtk_container_add(GTK_CONTAINER(automation_editor->input_scrolled_automation_edit_box->viewport),
 		    GTK_WIDGET(automation_editor->input_scrolled_automation_edit_box->automation_edit_box));
 
@@ -913,9 +992,14 @@ ags_automation_editor_real_machine_changed(AgsAutomationEditor *automation_edito
 {  
   AgsMachine *old_machine;
   
+  AgsConfig *config;
+
   GList *list_start, *list;
   GList *tab;
   
+  gchar *str;
+  
+  gdouble gui_scale_factor;
   guint length;
   guint output_pads, input_pads;
   guint audio_channels;
@@ -936,6 +1020,22 @@ ags_automation_editor_real_machine_changed(AgsAutomationEditor *automation_edito
 			G_CALLBACK(ags_automation_editor_resize_pads_callback),
 			(gpointer) automation_editor,
 			NULL);
+  }
+
+  config = ags_config_get_instance();
+
+  /* scale factor */
+  gui_scale_factor = 1.0;
+  
+  str = ags_config_get_value(config,
+			     AGS_CONFIG_GENERIC,
+			     "gui-scale");
+
+  if(str != NULL){
+    gui_scale_factor = g_ascii_strtod(str,
+				      NULL);
+
+    g_free(str);
   }
 
   /* get audio mutex */
@@ -1121,6 +1221,10 @@ ags_automation_editor_real_machine_changed(AgsAutomationEditor *automation_edito
 	
 	/* scale */
 	scale = ags_scale_new();
+	g_object_set(scale,
+		     "scale-width", (guint) (gui_scale_factor * AGS_SCALE_DEFAULT_SCALE_WIDTH),
+		     "scale-height", (guint) (gui_scale_factor * AGS_SCALE_DEFAULT_SCALE_HEIGHT),
+		     NULL);
 
 	pthread_mutex_lock(automation_mutex);
 

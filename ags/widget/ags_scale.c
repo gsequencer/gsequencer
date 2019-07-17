@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -111,6 +111,8 @@ enum{
 
 enum{
   PROP_0,
+  PROP_SCALE_WIDTH,
+  PROP_SCALE_HEIGHT,
   PROP_CONTROL_NAME,
   PROP_LOWER,
   PROP_UPPER,
@@ -218,6 +220,42 @@ ags_scale_class_init(AgsScaleClass *scale)
   gobject->finalize = ags_scale_finalize;
 
   /* properties */
+  /**
+   * AgsScale:scale-width:
+   *
+   * The scale width to use for drawing a scale.
+   * 
+   * Since: 2.2.22
+   */
+  param_spec = g_param_spec_uint("scale-width",
+				 "scale width",
+				 "The scale width to use for drawing",
+				 0,
+				 G_MAXUINT,
+				 AGS_SCALE_DEFAULT_SCALE_WIDTH,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_SCALE_WIDTH,
+				  param_spec);
+
+  /**
+   * AgsScale:scale-height:
+   *
+   * The scale height to use for drawing a scale.
+   * 
+   * Since: 2.2.22
+   */
+  param_spec = g_param_spec_uint("scale-height",
+				 "scale height",
+				 "The scale height to use for drawing",
+				 0,
+				 G_MAXUINT,
+				 AGS_SCALE_DEFAULT_SCALE_HEIGHT,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_SCALE_HEIGHT,
+				  param_spec);
+
   /**
    * AgsScale:control-name:
    *
@@ -389,8 +427,8 @@ ags_scale_init(AgsScale *scale)
 
   scale->font_size = 11;
 
-  scale->scale_width = AGS_SCALE_DEFAULT_WIDTH;
-  scale->scale_height = AGS_SCALE_DEFAULT_HEIGHT;
+  scale->scale_width = AGS_SCALE_DEFAULT_SCALE_WIDTH;
+  scale->scale_height = AGS_SCALE_DEFAULT_SCALE_HEIGHT;
 
   scale->control_name = NULL;
 
@@ -418,38 +456,48 @@ ags_scale_set_property(GObject *gobject,
   scale = AGS_SCALE(gobject);
 
   switch(prop_id){
+  case PROP_SCALE_WIDTH:
+  {
+    scale->scale_width = g_value_get_uint(value);
+  }
+  break;
+  case PROP_SCALE_HEIGHT:
+  {
+    scale->scale_height = g_value_get_uint(value);
+  }
+  break;
   case PROP_CONTROL_NAME:
-    {
-      gchar *control_name;
+  {
+    gchar *control_name;
 
-      control_name = g_value_get_string(value);
+    control_name = g_value_get_string(value);
 
-      g_free(scale->control_name);
+    g_free(scale->control_name);
 
-      scale->control_name = g_strdup(control_name);
-    }
-    break;
+    scale->control_name = g_strdup(control_name);
+  }
+  break;
   case PROP_LOWER:
-    {
-      scale->lower = g_value_get_double(value);
+  {
+    scale->lower = g_value_get_double(value);
 
-      gtk_widget_queue_draw((GtkWidget *) scale);
-    }
-    break;
+    gtk_widget_queue_draw((GtkWidget *) scale);
+  }
+  break;
   case PROP_UPPER:
-    {
-      scale->upper = g_value_get_double(value);
+  {
+    scale->upper = g_value_get_double(value);
 
-      gtk_widget_queue_draw((GtkWidget *) scale);
-    }
-    break;
+    gtk_widget_queue_draw((GtkWidget *) scale);
+  }
+  break;
   case PROP_DEFAULT_VALUE:
-    {
-      scale->default_value = g_value_get_double(value);
+  {
+    scale->default_value = g_value_get_double(value);
 
-      gtk_widget_queue_draw((GtkWidget *) scale);
-    }
-    break;
+    gtk_widget_queue_draw((GtkWidget *) scale);
+  }
+  break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -467,30 +515,42 @@ ags_scale_get_property(GObject *gobject,
   scale = AGS_SCALE(gobject);
 
   switch(prop_id){
+  case PROP_SCALE_WIDTH:
+  {
+    g_value_set_uint(value,
+		     scale->scale_width);
+  }
+  break;
+  case PROP_SCALE_HEIGHT:
+  {
+    g_value_set_uint(value,
+		     scale->scale_height);
+  }
+  break;
   case PROP_CONTROL_NAME:
-    {
-      g_value_set_string(value,
-			 scale->control_name);
-    }
-    break;
+  {
+    g_value_set_string(value,
+		       scale->control_name);
+  }
+  break;
   case PROP_LOWER:
-    {
-      g_value_set_double(value,
-			 scale->lower);
-    }
-    break;
+  {
+    g_value_set_double(value,
+		       scale->lower);
+  }
+  break;
   case PROP_UPPER:
-    {
-      g_value_set_double(value,
-			 scale->upper);
-    }
-    break;
+  {
+    g_value_set_double(value,
+		       scale->upper);
+  }
+  break;
   case PROP_DEFAULT_VALUE:
-    {
-      g_value_set_double(value,
-			 scale->default_value);
-    }
-    break;
+  {
+    g_value_set_double(value,
+		       scale->default_value);
+  }
+  break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -747,8 +807,8 @@ ags_scale_realize(GtkWidget *widget)
   
   attributes.x = widget->allocation.x;
   attributes.y = widget->allocation.y;
-  attributes.width = AGS_SCALE_DEFAULT_WIDTH;
-  attributes.height = AGS_SCALE_DEFAULT_HEIGHT;
+  attributes.width = scale->scale_width;
+  attributes.height = scale->scale_height;
 
   attributes_mask = GDK_WA_X | GDK_WA_Y | GDK_WA_VISUAL | GDK_WA_COLORMAP;
 

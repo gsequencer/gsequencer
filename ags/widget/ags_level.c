@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -486,24 +486,36 @@ ags_level_get_property(GObject *gobject,
   level = AGS_LEVEL(gobject);
 
   switch(prop_id){
+  case PROP_LEVEL_WIDTH:
+  {
+    g_value_set_uint(value,
+		     level->level_width);
+  }
+  break;
+  case PROP_LEVEL_HEIGHT:
+  {
+    g_value_set_uint(value,
+		     level->level_height);
+  }
+  break;
   case PROP_LOWER:
-    {
-      g_value_set_double(value,
-			 level->lower);
-    }
-    break;
+  {
+    g_value_set_double(value,
+		       level->lower);
+  }
+  break;
   case PROP_UPPER:
-    {
-      g_value_set_double(value,
-			 level->upper);
-    }
-    break;
+  {
+    g_value_set_double(value,
+		       level->upper);
+  }
+  break;
   case PROP_NORMALIZED_VOLUME:
-    {
-      g_value_set_double(value,
-			 level->normalized_volume);
-    }
-    break;
+  {
+    g_value_set_double(value,
+		       level->normalized_volume);
+  }
+  break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;

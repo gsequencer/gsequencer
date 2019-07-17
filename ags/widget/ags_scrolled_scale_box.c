@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -347,7 +347,7 @@ ags_scrolled_scale_box_size_request(GtkWidget *widget,
 {
   GtkRequisition child_requisition;
 
-  requisition->width = AGS_SCALE_DEFAULT_WIDTH;
+  requisition->width = AGS_SCALE_DEFAULT_SCALE_WIDTH;
   requisition->height = -1;
   
   gtk_widget_size_request(gtk_bin_get_child((GtkBin *) widget),

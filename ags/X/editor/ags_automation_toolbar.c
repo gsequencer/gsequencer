@@ -778,9 +778,14 @@ ags_automation_toolbar_apply_port(AgsAutomationToolbar *automation_toolbar,
   AgsChannel *start_channel;
   AgsChannel *channel, *next_channel;
 
+  AgsConfig *config;
+
   GList *start_automation, *automation;
   GList *start_port, *port;
   
+  gchar *str;
+  
+  gdouble gui_scale_factor;
   guint length;
   gboolean contains_specifier;
   gboolean is_active;
@@ -796,6 +801,22 @@ ags_automation_toolbar_apply_port(AgsAutomationToolbar *automation_toolbar,
   machine = automation_editor->selected_machine;
 
   model = gtk_combo_box_get_model(automation_toolbar->port);
+
+  config = ags_config_get_instance();
+  
+  /* scale factor */
+  gui_scale_factor = 1.0;
+  
+  str = ags_config_get_value(config,
+			     AGS_CONFIG_GENERIC,
+			     "gui-scale");
+
+  if(str != NULL){
+    gui_scale_factor = g_ascii_strtod(str,
+				      NULL);
+
+    g_free(str);
+  }
 
   /* update port combo box */
   start_port = NULL;
@@ -996,6 +1017,10 @@ ags_automation_toolbar_apply_port(AgsAutomationToolbar *automation_toolbar,
     
     /* scale */
     scale = ags_scale_new();
+    g_object_set(scale,
+		 "scale-width", (guint) (gui_scale_factor * AGS_SCALE_DEFAULT_SCALE_WIDTH),
+		 "scale-height", (guint) (gui_scale_factor * AGS_SCALE_DEFAULT_SCALE_HEIGHT),
+		 NULL);
 
     /* get some fields */
     plugin_port = NULL;

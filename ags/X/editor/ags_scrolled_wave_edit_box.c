@@ -19,7 +19,9 @@
 
 #include <ags/X/editor/ags_scrolled_wave_edit_box.h>
 
-#include <ags/widget/ags_level.h>
+#include <ags/libags.h>
+#include <ags/libags-audio.h>
+#include <ags/libags-gui.h>
 
 void ags_scrolled_wave_edit_box_class_init(AgsScrolledWaveEditBoxClass *scrolled_wave_edit_box);
 void ags_scrolled_wave_edit_box_init(AgsScrolledWaveEditBox *scrolled_wave_edit_box);
@@ -304,14 +306,36 @@ ags_scrolled_wave_edit_box_size_allocate(GtkWidget *widget,
 {
   AgsScrolledWaveEditBox *scrolled_wave_edit_box;
 
+  AgsConfig *config;
+
   GtkAllocation child_allocation;
-  GtkRequisition child_requisition;
+  GtkRequisition child_requisition;  
+
+  gchar *str;
   
+  gdouble gui_scale_factor;
+
   scrolled_wave_edit_box = AGS_SCROLLED_WAVE_EDIT_BOX(widget);
+
+  config = ags_config_get_instance();
+  
+  /* scale factor */
+  gui_scale_factor = 1.0;
+  
+  str = ags_config_get_value(config,
+			     AGS_CONFIG_GENERIC,
+			     "gui-scale");
+
+  if(str != NULL){
+    gui_scale_factor = g_ascii_strtod(str,
+				      NULL);
+
+    g_free(str);
+  }
 
   widget->allocation = *allocation;
 
-  widget->allocation.height = AGS_LEVEL_DEFAULT_LEVEL_HEIGHT;
+  widget->allocation.height = (gint) (gui_scale_factor * AGS_LEVEL_DEFAULT_LEVEL_HEIGHT);
   
   /* viewport allocation */
   gtk_widget_get_child_requisition((GtkWidget *) scrolled_wave_edit_box->viewport,
@@ -344,12 +368,34 @@ void
 ags_scrolled_wave_edit_box_size_request(GtkWidget *widget,
 					GtkRequisition *requisition)
 {
+  AgsConfig *config;
+
   GtkRequisition child_requisition;
 
+  gchar *str;
+  
   GtkOrientation orientation;
+  
+  gdouble gui_scale_factor;
 
-  requisition->width = AGS_LEVEL_DEFAULT_LEVEL_HEIGHT;
-  requisition->height = AGS_LEVEL_DEFAULT_LEVEL_HEIGHT;
+  config = ags_config_get_instance();
+  
+  /* scale factor */
+  gui_scale_factor = 1.0;
+  
+  str = ags_config_get_value(config,
+			     AGS_CONFIG_GENERIC,
+			     "gui-scale");
+
+  if(str != NULL){
+    gui_scale_factor = g_ascii_strtod(str,
+				      NULL);
+
+    g_free(str);
+  }
+
+  requisition->width = (gint) (gui_scale_factor * AGS_LEVEL_DEFAULT_LEVEL_WIDTH);
+  requisition->height = (gint) (gui_scale_factor * AGS_LEVEL_DEFAULT_LEVEL_HEIGHT);
   
   gtk_widget_size_request(gtk_bin_get_child((GtkBin *) widget),
 			  &child_requisition);

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -379,6 +379,12 @@ ags_automation_edit_init(AgsAutomationEdit *automation_edit)
 {
   GtkAdjustment *adjustment;
 
+  AgsConfig *config;
+
+  gchar *str;
+  
+  gdouble gui_scale_factor;
+
   g_object_set(automation_edit,
 	       "can-focus", FALSE,
 	       "n-columns", 3,
@@ -392,18 +398,34 @@ ags_automation_edit_init(AgsAutomationEdit *automation_edit)
   automation_edit->button_mask = 0;
   automation_edit->key_mask = 0;
   
+  config = ags_config_get_instance();
+  
+  /* scale factor */
+  gui_scale_factor = 1.0;
+  
+  str = ags_config_get_value(config,
+			     AGS_CONFIG_GENERIC,
+			     "gui-scale");
+
+  if(str != NULL){
+    gui_scale_factor = g_ascii_strtod(str,
+				      NULL);
+
+    g_free(str);
+  }
+
   automation_edit->note_offset = 0;
   automation_edit->note_offset_absolute = 0;
 
-  automation_edit->point_radius = AGS_AUTOMATION_EDIT_DEFAULT_POINT_RADIUS;
+  automation_edit->point_radius = (guint) (gui_scale_factor * AGS_AUTOMATION_EDIT_DEFAULT_POINT_RADIUS);
 
-  automation_edit->scan_width = AGS_AUTOMATION_EDIT_DEFAULT_SCAN_WIDTH;
-  automation_edit->scan_height = AGS_AUTOMATION_EDIT_DEFAULT_SCAN_HEIGHT;
+  automation_edit->scan_width = (guint) (gui_scale_factor * AGS_AUTOMATION_EDIT_DEFAULT_SCAN_WIDTH);
+  automation_edit->scan_height = (guint) (gui_scale_factor * AGS_AUTOMATION_EDIT_DEFAULT_SCAN_HEIGHT);
 
-  automation_edit->control_width = AGS_AUTOMATION_EDIT_DEFAULT_CONTROL_WIDTH;
-  automation_edit->control_height = AGS_AUTOMATION_EDIT_DEFAULT_CONTROL_HEIGHT;
+  automation_edit->control_width = (guint) (gui_scale_factor * AGS_AUTOMATION_EDIT_DEFAULT_CONTROL_WIDTH);
+  automation_edit->control_height = (guint) (gui_scale_factor * AGS_AUTOMATION_EDIT_DEFAULT_CONTROL_HEIGHT);
 
-  automation_edit->step_count = AGS_AUTOMATION_EDIT_DEFAULT_STEP_COUNT;
+  automation_edit->step_count = (guint) (AGS_AUTOMATION_EDIT_DEFAULT_STEP_COUNT);
   
   automation_edit->cursor_position_x = AGS_AUTOMATION_EDIT_DEFAULT_CURSOR_POSITION_X;
   automation_edit->cursor_position_y = AGS_AUTOMATION_EDIT_DEFAULT_CURSOR_POSITION_Y;
@@ -421,6 +443,9 @@ ags_automation_edit_init(AgsAutomationEdit *automation_edit)
 
   automation_edit->ruler = ags_ruler_new();
   g_object_set(automation_edit->ruler,
+	       "step", (guint) (gui_scale_factor * AGS_RULER_DEFAULT_STEP),
+	       "large-step", (guint) (gui_scale_factor * AGS_RULER_DEFAULT_LARGE_STEP),
+	       "small-step", (guint) (gui_scale_factor * AGS_RULER_DEFAULT_SMALL_STEP),
 	       "no-show-all", TRUE,
 	       NULL);
   gtk_table_attach(GTK_TABLE(automation_edit),
@@ -457,7 +482,7 @@ ags_automation_edit_init(AgsAutomationEdit *automation_edit)
 			   TRUE);
 
   gtk_widget_set_size_request((GtkWidget *) automation_edit->drawing_area,
-			      -1, AGS_SCALE_DEFAULT_HEIGHT);
+			      -1, (guint) (gui_scale_factor * AGS_SCALE_DEFAULT_SCALE_HEIGHT));
   gtk_table_attach(GTK_TABLE(automation_edit),
 		   (GtkWidget *) automation_edit->drawing_area,
 		   0, 1,
@@ -472,7 +497,7 @@ ags_automation_edit_init(AgsAutomationEdit *automation_edit)
 	       "no-show-all", TRUE,
 	       NULL);
   gtk_widget_set_size_request((GtkWidget *) automation_edit->vscrollbar,
-			      -1, AGS_SCALE_DEFAULT_HEIGHT);
+			      -1, (guint) (gui_scale_factor * AGS_SCALE_DEFAULT_SCALE_HEIGHT));
   gtk_table_attach(GTK_TABLE(automation_edit),
 		   (GtkWidget *) automation_edit->vscrollbar,
 		   1, 2,
@@ -1128,8 +1153,30 @@ void
 ags_automation_edit_size_request(GtkWidget *widget,
 				 GtkRequisition *requisition)
 {
+  AgsConfig *config;
+
+  gchar *str;
+  
+  gdouble gui_scale_factor;
+
+  config = ags_config_get_instance();
+  
+  /* scale factor */
+  gui_scale_factor = 1.0;
+  
+  str = ags_config_get_value(config,
+			     AGS_CONFIG_GENERIC,
+			     "gui-scale");
+
+  if(str != NULL){
+    gui_scale_factor = g_ascii_strtod(str,
+				      NULL);
+
+    g_free(str);
+  }
+  
   requisition->width = -1;
-  requisition->height = AGS_SCALE_DEFAULT_HEIGHT;  
+  requisition->height = (gint) (gui_scale_factor * AGS_SCALE_DEFAULT_SCALE_HEIGHT);  
 }
 
 void
@@ -1142,18 +1189,40 @@ ags_automation_edit_size_allocate(GtkWidget *widget,
 
   GdkWindow *window;
 
+  AgsConfig *config;
+
+  gchar *str;
+  
+  gdouble gui_scale_factor;
+
   automation_edit = AGS_AUTOMATION_EDIT(widget);
+
+  config = ags_config_get_instance();
+  
+  /* scale factor */
+  gui_scale_factor = 1.0;
+  
+  str = ags_config_get_value(config,
+			     AGS_CONFIG_GENERIC,
+			     "gui-scale");
+
+  if(str != NULL){
+    gui_scale_factor = g_ascii_strtod(str,
+				      NULL);
+
+    g_free(str);
+  }
 
   widget->allocation = *allocation;
   
-  widget->allocation.height = AGS_SCALE_DEFAULT_HEIGHT;
-  allocation->height = AGS_SCALE_DEFAULT_HEIGHT;
+  widget->allocation.height = (gint) (gui_scale_factor * AGS_SCALE_DEFAULT_SCALE_HEIGHT);
+  allocation->height = (gint) (gui_scale_factor * AGS_SCALE_DEFAULT_SCALE_HEIGHT);
   
   child_allocation.x = allocation->x;
   child_allocation.y = allocation->y;
   
   child_allocation.width = allocation->width;
-  child_allocation.height = AGS_SCALE_DEFAULT_HEIGHT;
+  child_allocation.height = (gint) (gui_scale_factor * AGS_SCALE_DEFAULT_SCALE_HEIGHT);
 
   gtk_widget_size_allocate((GtkWidget *) automation_edit->drawing_area,
   			   &child_allocation);
@@ -1374,8 +1443,13 @@ ags_automation_edit_draw_segment(AgsAutomationEdit *automation_edit)
   
   GtkStyle *automation_edit_style;
 
+  AgsConfig *config;
+
   cairo_t *cr;
 
+  gchar *str;
+  
+  gdouble gui_scale_factor;
   gdouble x_offset;
   gdouble translated_ground;
   double tact;
@@ -1401,6 +1475,22 @@ ags_automation_edit_draw_segment(AgsAutomationEdit *automation_edit)
 
   if(automation_editor->selected_machine == NULL){
     return;
+  }
+
+  config = ags_config_get_instance();
+  
+  /* scale factor */
+  gui_scale_factor = 1.0;
+  
+  str = ags_config_get_value(config,
+			     AGS_CONFIG_GENERIC,
+			     "gui-scale");
+
+  if(str != NULL){
+    gui_scale_factor = g_ascii_strtod(str,
+				      NULL);
+
+    g_free(str);
   }
 
   automation_toolbar = automation_editor->automation_toolbar;
@@ -1446,7 +1536,7 @@ ags_automation_edit_draw_segment(AgsAutomationEdit *automation_edit)
   
   map_height = (gdouble) height;
 
-  control_width = AGS_AUTOMATION_EDIT_DEFAULT_CONTROL_WIDTH;
+  control_width = (gint) (gui_scale_factor * AGS_AUTOMATION_EDIT_DEFAULT_CONTROL_WIDTH);
   i = control_width - (guint) x_offset % control_width;
   
   if(i < width &&
@@ -1548,8 +1638,13 @@ ags_automation_edit_draw_position(AgsAutomationEdit *automation_edit)
 
   GtkStyle *automation_edit_style;
 
+  AgsConfig *config;
+
   cairo_t *cr;
 
+  gchar *str;
+  
+  gdouble gui_scale_factor;
   double position;
   double x, y;
   double width, height;
@@ -1568,6 +1663,22 @@ ags_automation_edit_draw_position(AgsAutomationEdit *automation_edit)
     return;
   }
   
+  config = ags_config_get_instance();
+  
+  /* scale factor */
+  gui_scale_factor = 1.0;
+  
+  str = ags_config_get_value(config,
+			     AGS_CONFIG_GENERIC,
+			     "gui-scale");
+
+  if(str != NULL){
+    gui_scale_factor = g_ascii_strtod(str,
+				      NULL);
+
+    g_free(str);
+  }
+
   automation_edit_style = gtk_widget_get_style(GTK_WIDGET(automation_edit->drawing_area));
 
   /* create cairo context */
@@ -1583,7 +1694,7 @@ ags_automation_edit_draw_position(AgsAutomationEdit *automation_edit)
   y = 0.0;
   x = (position) - (GTK_RANGE(automation_edit->hscrollbar)->adjustment->value);
 
-  width = (double) AGS_AUTOMATION_EDIT_DEFAULT_FADER_WIDTH;
+  width = (double) ((guint) (gui_scale_factor * AGS_AUTOMATION_EDIT_DEFAULT_FADER_WIDTH));
   height = automation_edit->step_count * automation_edit->control_height;
 
   /* push group */
@@ -1616,14 +1727,19 @@ ags_automation_edit_draw_cursor(AgsAutomationEdit *automation_edit)
 
   GtkStyle *automation_edit_style;
 
+  AgsConfig *config;
+
+  cairo_t *cr;
+
+  gchar *str;
+  
+  gdouble gui_scale_factor;
   double zoom_factor;
   gdouble value, step;
   gdouble upper, lower, step_count;
   gdouble c_range;
   double x, y;
   double width, height;
-
-  cairo_t *cr;
 
   static const gdouble white_gc = 65535.0;
 
@@ -1638,6 +1754,22 @@ ags_automation_edit_draw_cursor(AgsAutomationEdit *automation_edit)
     return;
   }
 
+  config = ags_config_get_instance();
+
+  /* scale factor */
+  gui_scale_factor = 1.0;
+  
+  str = ags_config_get_value(config,
+			     AGS_CONFIG_GENERIC,
+			     "gui-scale");
+
+  if(str != NULL){
+    gui_scale_factor = g_ascii_strtod(str,
+				      NULL);
+
+    g_free(str);
+  }
+
   automation_toolbar = automation_editor->automation_toolbar;
 
   automation_edit_style = gtk_widget_get_style(GTK_WIDGET(automation_edit->drawing_area));
@@ -1650,7 +1782,7 @@ ags_automation_edit_draw_cursor(AgsAutomationEdit *automation_edit)
   }
 
   if((AGS_AUTOMATION_EDIT_LOGARITHMIC & (automation_edit->flags)) != 0){
-    c_range = (gdouble) AGS_AUTOMATION_EDIT_DEFAULT_HEIGHT;
+    c_range = (gdouble) ((guint) (gui_scale_factor * AGS_AUTOMATION_EDIT_DEFAULT_HEIGHT));
   }else{
     c_range = automation_edit->upper - automation_edit->lower;
   }
@@ -1665,7 +1797,7 @@ ags_automation_edit_draw_cursor(AgsAutomationEdit *automation_edit)
     lower = automation_edit->lower;
     upper = automation_edit->upper;
 
-    step_count = AGS_AUTOMATION_EDIT_DEFAULT_HEIGHT + 1.0;
+    step_count = ((guint) (gui_scale_factor * AGS_AUTOMATION_EDIT_DEFAULT_HEIGHT)) + 1.0;
     
     value = automation_edit->cursor_position_y;
     
@@ -1828,6 +1960,11 @@ ags_automation_edit_draw_acceleration(AgsAutomationEdit *automation_edit,
   AgsAutomationEditor *automation_editor;
   AgsAutomationToolbar *automation_toolbar;
 
+  AgsConfig *config;
+
+  gchar *str;
+  
+  gdouble gui_scale_factor;
   double zoom_factor;
   double viewport_x, viewport_y;
   gdouble value, step;
@@ -1853,10 +1990,26 @@ ags_automation_edit_draw_acceleration(AgsAutomationEdit *automation_edit,
     return;
   }
 
+  config = ags_config_get_instance();
+
+  /* scale factor */
+  gui_scale_factor = 1.0;
+  
+  str = ags_config_get_value(config,
+			     AGS_CONFIG_GENERIC,
+			     "gui-scale");
+
+  if(str != NULL){
+    gui_scale_factor = g_ascii_strtod(str,
+				      NULL);
+
+    g_free(str);
+  }
+
   automation_toolbar = automation_editor->automation_toolbar;
   
   if((AGS_AUTOMATION_EDIT_LOGARITHMIC & (automation_edit->flags)) != 0){
-    c_range = (gdouble) AGS_AUTOMATION_EDIT_DEFAULT_HEIGHT;
+    c_range = (gdouble) ((guint) (gui_scale_factor * AGS_AUTOMATION_EDIT_DEFAULT_HEIGHT));
   }else{
     c_range = automation_edit->upper - automation_edit->lower;
   }
@@ -1884,7 +2037,7 @@ ags_automation_edit_draw_acceleration(AgsAutomationEdit *automation_edit,
     lower = automation_edit->lower;
     upper = automation_edit->upper;
 
-    step_count = AGS_AUTOMATION_EDIT_DEFAULT_HEIGHT + 1.0;
+    step_count = ((guint) (gui_scale_factor * AGS_AUTOMATION_EDIT_DEFAULT_HEIGHT)) + 1.0;
     
     value = a_y;
     

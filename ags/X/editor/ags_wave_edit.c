@@ -831,11 +831,11 @@ ags_wave_edit_size_allocate(GtkWidget *widget,
 {
   AgsWaveEdit *wave_edit;
 
-  GtkAllocation child_allocation;
-
   GdkWindow *window;
 
   AgsConfig *config;
+
+  GtkAllocation child_allocation;
 
   gchar *str;
   
@@ -1089,8 +1089,13 @@ ags_wave_edit_draw_segment(AgsWaveEdit *wave_edit)
   
   GtkStyle *wave_edit_style;
 
+  AgsConfig *config;
+
   cairo_t *cr;
 
+  gchar *str;
+  
+  gdouble gui_scale_factor;
   gdouble x_offset, y_offset;
   gdouble translated_ground;
   double tact;
@@ -1116,6 +1121,22 @@ ags_wave_edit_draw_segment(AgsWaveEdit *wave_edit)
 
   if(wave_editor->selected_machine == NULL){
     return;
+  }
+
+  config = ags_config_get_instance();
+  
+  /* scale factor */
+  gui_scale_factor = 1.0;
+  
+  str = ags_config_get_value(config,
+			     AGS_CONFIG_GENERIC,
+			     "gui-scale");
+
+  if(str != NULL){
+    gui_scale_factor = g_ascii_strtod(str,
+				      NULL);
+
+    g_free(str);
   }
 
   wave_toolbar = wave_editor->wave_toolbar;
@@ -1160,7 +1181,7 @@ ags_wave_edit_draw_segment(AgsWaveEdit *wave_edit)
   
   map_height = (gdouble) height;
 
-  control_width = AGS_WAVE_EDIT_DEFAULT_CONTROL_WIDTH;
+  control_width = (guint) (gui_scale_factor * AGS_WAVE_EDIT_DEFAULT_CONTROL_WIDTH);
   i = control_width - (guint) x_offset % control_width;
   
   if(i < width &&
@@ -1318,8 +1339,8 @@ ags_wave_edit_draw_position(AgsWaveEdit *wave_edit)
   y = 0.0;
   x = (position) - (GTK_RANGE(wave_edit->hscrollbar)->adjustment->value);
 
-  width = gui_scale_factor * (double) AGS_WAVE_EDIT_DEFAULT_FADER_WIDTH;
-  height = gui_scale_factor * (double) AGS_WAVE_EDIT_DEFAULT_HEIGHT;
+  width = (double) ((guint) (gui_scale_factor * AGS_WAVE_EDIT_DEFAULT_FADER_WIDTH));
+  height = (double) ((guint) (gui_scale_factor * AGS_WAVE_EDIT_DEFAULT_HEIGHT));
 
   /* push group */
   cairo_push_group(cr);
@@ -1410,8 +1431,8 @@ ags_wave_edit_draw_cursor(AgsWaveEdit *wave_edit)
   y = 0.0;
   x = (((double) wave_edit->cursor_position_x) - (GTK_RANGE(wave_edit->hscrollbar)->adjustment->value)) /  zoom_factor;
 
-  width = gui_scale_factor * (double) AGS_WAVE_EDIT_DEFAULT_FADER_WIDTH;
-  height = gui_scale_factor * (double) AGS_WAVE_EDIT_DEFAULT_HEIGHT;
+  width = (double) ((guint) (gui_scale_factor * AGS_WAVE_EDIT_DEFAULT_FADER_WIDTH));
+  height = (double) ((guint) (gui_scale_factor * AGS_WAVE_EDIT_DEFAULT_HEIGHT));
 
   /* push group */
   cairo_push_group(cr);
