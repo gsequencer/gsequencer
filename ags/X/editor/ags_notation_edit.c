@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -213,6 +213,12 @@ ags_notation_edit_init(AgsNotationEdit *notation_edit)
 {
   GtkAdjustment *adjustment;
 
+  AgsConfig *config;
+
+  gchar *str;
+  
+  gdouble gui_scale_factor;
+
   notation_edit->flags = (AGS_NOTATION_EDIT_SHOW_RULER |
 			  AGS_NOTATION_EDIT_SHOW_VSCROLLBAR |
 			  AGS_NOTATION_EDIT_SHOW_HSCROLLBAR);
@@ -221,11 +227,27 @@ ags_notation_edit_init(AgsNotationEdit *notation_edit)
   notation_edit->button_mask = 0;
   notation_edit->key_mask = 0;
 
+  config = ags_config_get_instance();
+  
+  /* scale factor */
+  gui_scale_factor = 1.0;
+  
+  str = ags_config_get_value(config,
+			     AGS_CONFIG_GENERIC,
+			     "gui-scale");
+
+  if(str != NULL){
+    gui_scale_factor = g_ascii_strtod(str,
+				      NULL);
+
+    g_free(str);
+  }
+  
   notation_edit->note_offset = 0;
   notation_edit->note_offset_absolute = 0;
 
-  notation_edit->control_width = AGS_NOTATION_EDIT_DEFAULT_CONTROL_WIDTH;
-  notation_edit->control_height = AGS_NOTATION_EDIT_DEFAULT_CONTROL_HEIGHT;
+  notation_edit->control_width = (guint) (gui_scale_factor * AGS_NOTATION_EDIT_DEFAULT_CONTROL_WIDTH);
+  notation_edit->control_height = (guint) (gui_scale_factor * AGS_NOTATION_EDIT_DEFAULT_CONTROL_HEIGHT);
 
   notation_edit->control_margin_x = AGS_NOTATION_EDIT_DEFAULT_CONTROL_MARGIN_X;
   notation_edit->control_margin_y = AGS_NOTATION_EDIT_DEFAULT_CONTROL_MARGIN_Y;
@@ -246,8 +268,14 @@ ags_notation_edit_init(AgsNotationEdit *notation_edit)
 
   notation_edit->ruler = ags_ruler_new();
   g_object_set(notation_edit->ruler,
+	       "step", (guint) (gui_scale_factor * AGS_RULER_DEFAULT_STEP),
+	       "large-step", (guint) (gui_scale_factor * AGS_RULER_DEFAULT_LARGE_STEP),
+	       "small-step", (guint) (gui_scale_factor * AGS_RULER_DEFAULT_SMALL_STEP),
 	       "no-show-all", TRUE,
 	       NULL);
+  gtk_widget_set_size_request((GtkWidget *) notation_edit->ruler,
+			      -1,
+			      (gint) (gui_scale_factor * AGS_RULER_DEFAULT_HEIGHT));
   gtk_table_attach(GTK_TABLE(notation_edit),
 		   (GtkWidget *) notation_edit->ruler,
 		   0, 1,

@@ -1,6 +1,8 @@
 ags (2.2.22)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented AgsNotationEditor to use GUI scale factor
+	* implemented AgsRuler properties
 	* implemented AgsFFPlayer to use GUI scale factor
 	* improved AgsCellPattern to use GUI scale factor
 

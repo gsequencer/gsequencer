@@ -216,7 +216,7 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
 
   config = ags_config_get_instance();
   
-  /* cell */
+  /* scale factor */
   gui_scale_factor = 1.0;
   
   str = ags_config_get_value(config,
