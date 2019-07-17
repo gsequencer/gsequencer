@@ -478,7 +478,7 @@ main(int argc, char **argv)
       default_stepper_size = g_value_get_int(value);
     }
     
-    str = g_strdup_printf("style \"ags-default-vscrollbar-style\"\n{\n\tGtkVScrollbar::slider-width = %d\nGtkVScrollbar::stepper-size = %d\n}\n\nwidget_class \"*<GtkVScrollbar>*\" style \"ags-default-vscrollbar-style\"\n",
+    str = g_strdup_printf("style \"ags-default-vscrollbar-style\"\n{\n\tGtkVScrollbar::slider-width = %d\nGtkVScrollbar::stepper-size = %d\n}\n\nwidget_class \"*GtkVScrollbar*\" style \"ags-default-vscrollbar-style\"\n",
 			  (gint) (gui_scale_factor * default_slider_width),
 			  (gint) (gui_scale_factor * default_stepper_size));
     gtk_rc_parse_string(str);
@@ -504,7 +504,7 @@ main(int argc, char **argv)
       default_stepper_size = g_value_get_int(value);
     }
 
-    str = g_strdup_printf("style \"ags-default-hscrollbar-style\"\n{\n\tGtkHScrollbar::slider-width = %d\nGtkHScrollbar::stepper-size = %d\n}\n\nwidget_class \"*<GtkHScrollbar>*\" style \"ags-default-hscrollbar-style\"\n",
+    str = g_strdup_printf("style \"ags-default-hscrollbar-style\"\n{\n\tGtkHScrollbar::slider-width = %d\nGtkHScrollbar::stepper-size = %d\n}\n\nwidget_class \"*GtkHScrollbar*\" style \"ags-default-hscrollbar-style\"\n",
 			  (gint) (gui_scale_factor * default_slider_width),
 			  (gint) (gui_scale_factor * default_stepper_size));
     gtk_rc_parse_string(str);

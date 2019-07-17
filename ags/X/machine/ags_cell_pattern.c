@@ -433,15 +433,17 @@ ags_cell_pattern_realize(GtkWidget *widget)
   /* call parent */
   GTK_WIDGET_CLASS(ags_cell_pattern_parent_class)->realize(widget);
 
+#if 0
   if(cell_pattern_style == NULL){
-    cell_pattern_style = gtk_style_copy(gtk_widget_get_style((GtkWidget *) cell_pattern));
+    cell_pattern_style = gtk_style_copy(gtk_rc_get_style((GtkWidget *) cell_pattern));
   }
-
+#endif
+  
   gtk_widget_set_style((GtkWidget *) cell_pattern->drawing_area,
-		       cell_pattern_style);
+		       NULL);  
 
   gtk_widget_set_style((GtkWidget *) cell_pattern->vscrollbar,
-		       cell_pattern_style);
+		       NULL);
 }
 
 void
