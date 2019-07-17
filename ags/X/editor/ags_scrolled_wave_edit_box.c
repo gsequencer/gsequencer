@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -311,7 +311,7 @@ ags_scrolled_wave_edit_box_size_allocate(GtkWidget *widget,
 
   widget->allocation = *allocation;
 
-  widget->allocation.height = AGS_LEVEL_DEFAULT_HEIGHT;
+  widget->allocation.height = AGS_LEVEL_DEFAULT_LEVEL_HEIGHT;
   
   /* viewport allocation */
   gtk_widget_get_child_requisition((GtkWidget *) scrolled_wave_edit_box->viewport,
@@ -348,8 +348,8 @@ ags_scrolled_wave_edit_box_size_request(GtkWidget *widget,
 
   GtkOrientation orientation;
 
-  requisition->width = AGS_LEVEL_DEFAULT_HEIGHT;
-  requisition->height = AGS_LEVEL_DEFAULT_HEIGHT;
+  requisition->width = AGS_LEVEL_DEFAULT_LEVEL_HEIGHT;
+  requisition->height = AGS_LEVEL_DEFAULT_LEVEL_HEIGHT;
   
   gtk_widget_size_request(gtk_bin_get_child((GtkBin *) widget),
 			  &child_requisition);

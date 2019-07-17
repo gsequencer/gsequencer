@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -276,46 +276,61 @@ ags_drum_init(AgsDrum *drum)
 
   /*  */
   hbox = (GtkHBox *) gtk_hbox_new(FALSE, 0);
-  gtk_box_pack_start((GtkBox *) drum->vbox, (GtkWidget *) hbox, FALSE, FALSE, 0);
+  gtk_box_pack_start((GtkBox *) drum->vbox,
+		     (GtkWidget *) hbox,
+		     FALSE, FALSE,
+		     0);
 
   frame = (GtkFrame *) gtk_frame_new(i18n("kit"));
-  gtk_box_pack_start((GtkBox *) hbox, (GtkWidget *) frame, FALSE, FALSE, 0);
+  gtk_box_pack_start((GtkBox *) hbox,
+		     (GtkWidget *) frame,
+		     FALSE, FALSE,
+		     0);
 
   vbox = (GtkVBox *) gtk_vbox_new(FALSE, 0);
-  gtk_container_add((GtkContainer*) frame, (GtkWidget *) vbox);
+  gtk_container_add((GtkContainer*) frame,
+		    (GtkWidget *) vbox);
 
   gtk_box_pack_start((GtkBox *) vbox,
 		     (GtkWidget *) gtk_label_new(i18n("default")), 
-		     FALSE, FALSE, 0);
+		     FALSE, FALSE,
+		     0);
  
   gtk_box_pack_start((GtkBox *) vbox,
 		     (GtkWidget *) (drum->open = (GtkButton *) gtk_button_new_from_stock(GTK_STOCK_OPEN)),
-		     FALSE, FALSE, 0);
+		     FALSE, FALSE,
+		     0);
   drum->open_dialog = NULL;
   
   /* sequencer */
   frame = (GtkFrame *) gtk_frame_new(i18n("pattern"));
-  gtk_box_pack_start((GtkBox *) hbox, (GtkWidget *) frame, FALSE, FALSE, 0);
+  gtk_box_pack_start((GtkBox *) hbox, (GtkWidget *) frame,
+		     FALSE, FALSE,
+		     0);
 
   table0 = (GtkTable *) gtk_table_new(8, 4, FALSE);
-  gtk_container_add((GtkContainer*) frame, (GtkWidget *) table0);
+  gtk_container_add((GtkContainer*) frame,
+		    (GtkWidget *) table0);
 
   drum->loop_button = (GtkCheckButton *) gtk_check_button_new_with_label(i18n("loop"));
   gtk_table_attach_defaults(table0,
 			    (GtkWidget *) drum->loop_button,
-			    0, 1, 2, 3);
+			    0, 1,
+			    2, 3);
 
   AGS_MACHINE(drum)->play = 
     drum->run = (GtkToggleButton *) gtk_toggle_button_new_with_label(i18n("run"));
   gtk_table_attach_defaults(table0,
 			    (GtkWidget *) drum->run,
-			    1, 2, 0, 3);
+			    1, 2,
+			    0, 3);
 
   /* bank 1 */
   table1 = (GtkTable *) gtk_table_new(3, 5, TRUE);
   gtk_table_attach_defaults(table0,
 			    (GtkWidget *) table1,
-			    2, 3, 0, 3);
+			    2, 3,
+			    0, 3);
 
   drum->selected1 = NULL;
 
@@ -326,7 +341,8 @@ ags_drum_init(AgsDrum *drum)
       drum->index1[4 * i + j] = (GtkToggleButton *) gtk_toggle_button_new_with_label(str);
       gtk_table_attach_defaults(table1,
 				(GtkWidget *) (drum->index1[4 * i + j]),
-				j, j + 1, i, i + 1);
+				j, j + 1,
+				i, i + 1);
 
       g_free(str);
     }
@@ -344,7 +360,8 @@ ags_drum_init(AgsDrum *drum)
     drum->index0[j] = (GtkToggleButton *) gtk_toggle_button_new_with_label(str);
     gtk_table_attach_defaults(table1,
 			      (GtkWidget *) (drum->index0[j]),
-			      j, j + 1, 4, 5);
+			      j, j + 1,
+			      4, 5);
 
     g_free(str);
   }
@@ -356,7 +373,8 @@ ags_drum_init(AgsDrum *drum)
   hbox = (GtkHBox *) gtk_hbox_new(FALSE, 0);
   gtk_table_attach(table0,
 		   (GtkWidget *) hbox,
-		   6, 7, 0, 1,
+		   6, 7,
+		   0, 1,
 		   GTK_EXPAND, GTK_EXPAND,
 		   0, 0);
   gtk_box_pack_start((GtkBox*) hbox, gtk_label_new(i18n("length")), FALSE, FALSE, 0);
@@ -368,7 +386,8 @@ ags_drum_init(AgsDrum *drum)
   drum->pattern_box = ags_pattern_box_new();
   gtk_table_attach(table0,
 		   (GtkWidget *) drum->pattern_box,
-		   7, 8, 0, 3,
+		   7, 8,
+		   0, 3,
 		   GTK_EXPAND, GTK_EXPAND,
 		   0, 0);  
 }

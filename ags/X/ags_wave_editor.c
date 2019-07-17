@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -194,10 +194,32 @@ ags_wave_editor_init(AgsWaveEditor *wave_editor)
   
   GtkAdjustment *adjustment;
 
+  AgsConfig *config;
+
+  gchar *str;
+  
+  gdouble gui_scale_factor;
+
   wave_editor->flags = AGS_WAVE_EDITOR_PASTE_MATCH_LINE;
 
   wave_editor->version = AGS_WAVE_EDITOR_DEFAULT_VERSION;
   wave_editor->build_id = AGS_WAVE_EDITOR_DEFAULT_BUILD_ID;
+
+  config = ags_config_get_instance();
+
+  /* scale factor */
+  gui_scale_factor = 1.0;
+  
+  str = ags_config_get_value(config,
+			     AGS_CONFIG_GENERIC,
+			     "gui-scale");
+
+  if(str != NULL){
+    gui_scale_factor = g_ascii_strtod(str,
+				      NULL);
+
+    g_free(str);
+  }
 
   /* offset */
   wave_editor->tact_counter = 0;
@@ -277,6 +299,14 @@ ags_wave_editor_init(AgsWaveEditor *wave_editor)
 
   /* ruler */
   wave_editor->ruler = ags_ruler_new();
+  g_object_set(wave_editor->ruler,
+	       "step", (guint) (gui_scale_factor * AGS_RULER_DEFAULT_STEP),
+	       "large-step", (guint) (gui_scale_factor * AGS_RULER_DEFAULT_LARGE_STEP),
+	       "small-step", (guint) (gui_scale_factor * AGS_RULER_DEFAULT_SMALL_STEP),
+	       NULL);
+  gtk_widget_set_size_request((GtkWidget *) wave_editor->ruler,
+			      -1,
+			      (gint) (gui_scale_factor * AGS_RULER_DEFAULT_HEIGHT));
   gtk_table_attach(table,
 		   (GtkWidget *) wave_editor->ruler,
 		   1, 2,
@@ -287,8 +317,16 @@ ags_wave_editor_init(AgsWaveEditor *wave_editor)
 
   /* level */
   wave_editor->scrolled_level_box = ags_scrolled_level_box_new();
+  g_object_set(wave_editor->scrolled_level_box,
+	       "margin-top", (gint) (gui_scale_factor * AGS_RULER_DEFAULT_HEIGHT),
+	       NULL);
 
   wave_editor->scrolled_level_box->level_box = (AgsLevelBox *) ags_vlevel_box_new();
+  g_object_set(wave_editor->scrolled_level_box->level_box,
+	       "fixed-level-width", (guint) (gui_scale_factor * AGS_LEVEL_BOX_DEFAULT_FIXED_LEVEL_WIDTH),
+	       "fixed-level-height", (guint) (gui_scale_factor * AGS_LEVEL_BOX_DEFAULT_FIXED_LEVEL_HEIGHT),
+	       NULL);
+  
   gtk_container_add(GTK_CONTAINER(wave_editor->scrolled_level_box->viewport),
 		    GTK_WIDGET(wave_editor->scrolled_level_box->level_box));
 
@@ -303,6 +341,9 @@ ags_wave_editor_init(AgsWaveEditor *wave_editor)
   wave_editor->scrolled_wave_edit_box = ags_scrolled_wave_edit_box_new();
 
   wave_editor->scrolled_wave_edit_box->wave_edit_box = (AgsWaveEditBox *) ags_vwave_edit_box_new();
+  g_object_set(wave_editor->scrolled_wave_edit_box->wave_edit_box,
+	       "fixed-edit-height", (guint) (gui_scale_factor * AGS_LEVEL_BOX_DEFAULT_FIXED_LEVEL_HEIGHT),
+	       NULL);
   gtk_container_add(GTK_CONTAINER(wave_editor->scrolled_wave_edit_box->viewport),
 		    GTK_WIDGET(wave_editor->scrolled_wave_edit_box->wave_edit_box));
 
@@ -564,9 +605,14 @@ ags_wave_editor_real_machine_changed(AgsWaveEditor *wave_editor, AgsMachine *mac
   AgsWaveEdit *wave_edit;
   AgsLevel *level;
 
+  AgsConfig *config;
+
   GList *list_start, *list;
   GList *tab;
 
+  gchar *str;
+  
+  gdouble gui_scale_factor;
   guint length;
   guint output_lines, input_lines;
   guint pads;
@@ -587,6 +633,22 @@ ags_wave_editor_real_machine_changed(AgsWaveEditor *wave_editor, AgsMachine *mac
 			G_CALLBACK(ags_wave_editor_resize_pads_callback),
 			(gpointer) wave_editor,
 			NULL);
+  }
+
+  config = ags_config_get_instance();
+
+  /* scale factor */
+  gui_scale_factor = 1.0;
+  
+  str = ags_config_get_value(config,
+			     AGS_CONFIG_GENERIC,
+			     "gui-scale");
+
+  if(str != NULL){
+    gui_scale_factor = g_ascii_strtod(str,
+				      NULL);
+
+    g_free(str);
   }
 
   /* notebook - remove tabs */
@@ -658,6 +720,10 @@ ags_wave_editor_real_machine_changed(AgsWaveEditor *wave_editor, AgsMachine *mac
 
       /* level */
       level = ags_level_new();
+      g_object_set(level,
+		   "level-width", (guint) (gui_scale_factor * AGS_LEVEL_DEFAULT_LEVEL_WIDTH),
+		   "level-height", (guint) (gui_scale_factor * AGS_LEVEL_DEFAULT_LEVEL_HEIGHT),
+		   NULL);
       gtk_box_pack_start(GTK_BOX(wave_editor->scrolled_level_box->level_box),
 			 GTK_WIDGET(level),
 			 FALSE, FALSE,

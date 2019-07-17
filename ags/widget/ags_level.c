@@ -111,6 +111,8 @@ enum{
 
 enum{
   PROP_0,
+  PROP_LEVEL_WIDTH,
+  PROP_LEVEL_HEIGHT,
   PROP_LOWER,
   PROP_UPPER,
   PROP_NORMALIZED_VOLUME,
@@ -217,6 +219,42 @@ ags_level_class_init(AgsLevelClass *level)
   gobject->finalize = ags_level_finalize;
 
   /* properties */
+  /**
+   * AgsLevel:level-width:
+   *
+   * The level width to use for drawing a level.
+   * 
+   * Since: 2.2.22
+   */
+  param_spec = g_param_spec_uint("level-width",
+				 "level width",
+				 "The level width to use for drawing",
+				 0,
+				 G_MAXUINT,
+				 AGS_LEVEL_DEFAULT_LEVEL_WIDTH,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_LEVEL_WIDTH,
+				  param_spec);
+
+  /**
+   * AgsLevel:level-height:
+   *
+   * The level height to use for drawing a level.
+   * 
+   * Since: 2.2.22
+   */
+  param_spec = g_param_spec_uint("level-height",
+				 "level height",
+				 "The level height to use for drawing",
+				 0,
+				 G_MAXUINT,
+				 AGS_LEVEL_DEFAULT_LEVEL_HEIGHT,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_LEVEL_HEIGHT,
+				  param_spec);
+
   /**
    * AgsLevel:lower:
    *
@@ -372,8 +410,8 @@ ags_level_init(AgsLevel *level)
 
   level->font_size = 11;
 
-  level->level_width = AGS_LEVEL_DEFAULT_WIDTH;
-  level->level_height = AGS_LEVEL_DEFAULT_HEIGHT;
+  level->level_width = AGS_LEVEL_DEFAULT_LEVEL_WIDTH;
+  level->level_height = AGS_LEVEL_DEFAULT_LEVEL_HEIGHT;
 
   level->lower = AGS_LEVEL_DEFAULT_LOWER;
   level->upper = AGS_LEVEL_DEFAULT_UPPER;
@@ -400,6 +438,16 @@ ags_level_set_property(GObject *gobject,
   level = AGS_LEVEL(gobject);
 
   switch(prop_id){
+  case PROP_LEVEL_WIDTH:
+    {
+      level->level_width = g_value_get_uint(value);
+    }
+    break;
+  case PROP_LEVEL_HEIGHT:
+    {
+      level->level_height = g_value_get_uint(value);
+    }
+    break;
   case PROP_LOWER:
     {
       level->lower = g_value_get_double(value);
@@ -710,8 +758,8 @@ ags_level_realize(GtkWidget *widget)
   
   attributes.x = widget->allocation.x;
   attributes.y = widget->allocation.y;
-  attributes.width = AGS_LEVEL_DEFAULT_WIDTH;
-  attributes.height = AGS_LEVEL_DEFAULT_HEIGHT;
+  attributes.width = level->level_width;
+  attributes.height = level->level_height;
 
   attributes_mask = GDK_WA_X | GDK_WA_Y | GDK_WA_VISUAL | GDK_WA_COLORMAP;
 
