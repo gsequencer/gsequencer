@@ -346,7 +346,10 @@ ags_automation_editor_init(AgsAutomationEditor *automation_editor)
 
   gtk_container_add(GTK_CONTAINER(automation_editor->audio_scrolled_scale_box->viewport),
 		    GTK_WIDGET(automation_editor->audio_scrolled_scale_box->scale_box));
-
+  gtk_widget_set_size_request((GtkWidget *) automation_editor->audio_scrolled_scale_box,
+			      (gint) (gui_scale_factor * AGS_SCALE_BOX_DEFAULT_FIXED_SCALE_WIDTH),
+			      -1);
+  
   gtk_table_attach(table,
 		   (GtkWidget *) automation_editor->audio_scrolled_scale_box,
 		   0, 1,
@@ -449,6 +452,9 @@ ags_automation_editor_init(AgsAutomationEditor *automation_editor)
 
   gtk_container_add(GTK_CONTAINER(automation_editor->output_scrolled_scale_box->viewport),
 		    GTK_WIDGET(automation_editor->output_scrolled_scale_box->scale_box));
+  gtk_widget_set_size_request((GtkWidget *) automation_editor->output_scrolled_scale_box,
+			      (gint) (gui_scale_factor * AGS_SCALE_BOX_DEFAULT_FIXED_SCALE_WIDTH),
+			      -1);
 
   gtk_table_attach(table,
 		   (GtkWidget *) automation_editor->output_scrolled_scale_box,
@@ -552,6 +558,9 @@ ags_automation_editor_init(AgsAutomationEditor *automation_editor)
 
   gtk_container_add(GTK_CONTAINER(automation_editor->input_scrolled_scale_box->viewport),
 		    GTK_WIDGET(automation_editor->input_scrolled_scale_box->scale_box));
+  gtk_widget_set_size_request((GtkWidget *) automation_editor->input_scrolled_scale_box,
+			      (gint) (gui_scale_factor * AGS_SCALE_BOX_DEFAULT_FIXED_SCALE_WIDTH),
+			      -1);
 
   gtk_table_attach(table,
 		   (GtkWidget *) automation_editor->input_scrolled_scale_box,

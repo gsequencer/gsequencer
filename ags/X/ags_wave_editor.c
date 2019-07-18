@@ -329,6 +329,9 @@ ags_wave_editor_init(AgsWaveEditor *wave_editor)
   
   gtk_container_add(GTK_CONTAINER(wave_editor->scrolled_level_box->viewport),
 		    GTK_WIDGET(wave_editor->scrolled_level_box->level_box));
+  gtk_widget_set_size_request((GtkWidget *) wave_editor->scrolled_level_box,
+			      (gint) (gui_scale_factor * AGS_LEVEL_BOX_DEFAULT_FIXED_LEVEL_WIDTH),
+			      -1);
 
   gtk_table_attach(table,
 		   (GtkWidget *) wave_editor->scrolled_level_box,
