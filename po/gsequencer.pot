@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: gsequencer 2.2.21\n"
+"Project-Id-Version: gsequencer 2.2.22\n"
 "Report-Msgid-Bugs-To: jkraehemann@gmail.com\n"
-"POT-Creation-Date: 2019-07-17 14:39+0200\n"
+"POT-Creation-Date: 2019-07-18 11:01+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -33,25 +33,25 @@ msgstr ""
 msgid "stop"
 msgstr ""
 
-#: ags/X/ags_automation_editor.c:243
+#: ags/X/ags_automation_editor.c:265
 msgid "automation"
 msgstr ""
 
-#: ags/X/ags_automation_editor.c:275 ags/X/ags_preferences.c:180
+#: ags/X/ags_automation_editor.c:297 ags/X/ags_preferences.c:180
 msgid "audio"
 msgstr ""
 
-#: ags/X/ags_automation_editor.c:346 ags/X/ags_connection_editor.c:428
+#: ags/X/ags_automation_editor.c:390 ags/X/ags_connection_editor.c:428
 #: ags/X/ags_machine_editor.c:228
 msgid "output"
 msgstr ""
 
-#: ags/X/ags_automation_editor.c:371 ags/X/ags_automation_editor.c:455
-#: ags/X/ags_wave_editor.c:269
+#: ags/X/ags_automation_editor.c:415 ags/X/ags_automation_editor.c:521
+#: ags/X/ags_wave_editor.c:291
 msgid "line"
 msgstr ""
 
-#: ags/X/ags_automation_editor.c:430 ags/X/ags_connection_editor.c:448
+#: ags/X/ags_automation_editor.c:496 ags/X/ags_connection_editor.c:448
 #: ags/X/ags_machine_editor.c:235 ags/X/machine/ags_audiorec.c:309
 msgid "input"
 msgstr ""
@@ -192,7 +192,7 @@ msgid "group"
 msgstr ""
 
 #: ags/X/ags_effect_line.c:958 ags/X/ags_effect_line.c:964
-#: ags/X/ags_line.c:1030 ags/X/ags_line.c:1036 ags/X/ags_notation_editor.c:283
+#: ags/X/ags_line.c:1030 ags/X/ags_line.c:1036 ags/X/ags_notation_editor.c:305
 msgid "channel"
 msgstr ""
 
@@ -437,7 +437,7 @@ msgstr ""
 msgid "bpm"
 msgstr ""
 
-#: ags/X/ags_navigation.c:251 ags/X/machine/ags_drum.c:303
+#: ags/X/ags_navigation.c:251 ags/X/machine/ags_drum.c:315
 msgid "loop"
 msgstr ""
 
@@ -449,7 +449,7 @@ msgstr ""
 msgid "loop R"
 msgstr ""
 
-#: ags/X/ags_notation_editor.c:251
+#: ags/X/ags_notation_editor.c:273
 msgid "notation"
 msgstr ""
 
@@ -611,7 +611,7 @@ msgstr ""
 msgid "cache buffer size"
 msgstr ""
 
-#: ags/X/ags_wave_editor.c:239 ags/X/machine/ags_oscillator.c:156
+#: ags/X/ags_wave_editor.c:261 ags/X/machine/ags_oscillator.c:156
 msgid "wave"
 msgstr ""
 
@@ -685,29 +685,29 @@ msgstr ""
 msgid "Opacity"
 msgstr ""
 
-#: ags/X/editor/ags_automation_toolbar.c:1216
+#: ags/X/editor/ags_automation_toolbar.c:1241
 #: ags/X/editor/ags_select_acceleration_dialog.c:205
 msgid "select accelerations"
 msgstr ""
 
-#: ags/X/editor/ags_automation_toolbar.c:1219
+#: ags/X/editor/ags_automation_toolbar.c:1244
 #: ags/X/editor/ags_ramp_acceleration_dialog.c:207
 msgid "ramp accelerations"
 msgstr ""
 
-#: ags/X/editor/ags_automation_toolbar.c:1222
+#: ags/X/editor/ags_automation_toolbar.c:1247
 #: ags/X/editor/ags_notation_toolbar.c:122
 #: ags/X/editor/ags_notation_toolbar.c:457 ags/X/editor/ags_sheet_toolbar.c:117
 #: ags/X/editor/ags_wave_toolbar.c:386
 msgid "position cursor"
 msgstr ""
 
-#: ags/X/editor/ags_automation_toolbar.c:1228
+#: ags/X/editor/ags_automation_toolbar.c:1253
 #: ags/X/editor/ags_wave_toolbar.c:392
 msgid "enable all lines"
 msgstr ""
 
-#: ags/X/editor/ags_automation_toolbar.c:1231
+#: ags/X/editor/ags_automation_toolbar.c:1256
 #: ags/X/editor/ags_wave_toolbar.c:395
 msgid "disable all lines"
 msgstr ""
@@ -750,12 +750,12 @@ msgstr ""
 msgid "info"
 msgstr ""
 
-#: ags/X/editor/ags_envelope_dialog.c:453 ags/X/machine/ags_drum.c:297
+#: ags/X/editor/ags_envelope_dialog.c:453 ags/X/machine/ags_drum.c:306
 msgid "pattern"
 msgstr ""
 
 #: ags/X/editor/ags_envelope_editor.c:170
-#: ags/X/editor/ags_pattern_envelope.c:239 ags/X/machine/ags_ffplayer.c:286
+#: ags/X/editor/ags_pattern_envelope.c:239 ags/X/machine/ags_ffplayer.c:309
 #: ags/X/machine/ags_live_lv2_bridge.c:1798 ags/X/machine/ags_lv2_bridge.c:2088
 msgid "preset"
 msgstr ""
@@ -1044,7 +1044,7 @@ msgid "instrument: "
 msgstr ""
 
 #: ags/X/import/ags_track_collection_mapper.c:346
-#: ags/X/machine/ags_ffplayer.c:301
+#: ags/X/machine/ags_ffplayer.c:324
 msgid "instrument"
 msgstr ""
 
@@ -1068,19 +1068,19 @@ msgstr ""
 msgid "grab"
 msgstr ""
 
-#: ags/X/machine/ags_drum.c:281
+#: ags/X/machine/ags_drum.c:284
 msgid "kit"
 msgstr ""
 
-#: ags/X/machine/ags_drum.c:288
+#: ags/X/machine/ags_drum.c:295
 msgid "default"
 msgstr ""
 
-#: ags/X/machine/ags_drum.c:309
+#: ags/X/machine/ags_drum.c:322
 msgid "run"
 msgstr ""
 
-#: ags/X/machine/ags_drum.c:362 ags/X/machine/ags_oscillator.c:213
+#: ags/X/machine/ags_drum.c:380 ags/X/machine/ags_oscillator.c:213
 msgid "length"
 msgstr ""
 
