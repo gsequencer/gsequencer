@@ -1,3 +1,9 @@
+ags (2.2.23)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* TODO:JK: improved replacing hard-coded font
+	* refactored AgsDial to use PangoLayout
+
 ags (2.2.22)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

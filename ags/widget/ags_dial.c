@@ -1517,7 +1517,7 @@ ags_dial_draw(AgsDial *dial)
   GtkStyle *dial_style;
   cairo_t *cr;
   cairo_text_extents_t te_up, te_down;
-
+  
   gdouble button_width, button_height, margin_left, margin_right;
   gdouble radius, outline_strength;
   guint width, height;
@@ -1555,13 +1555,7 @@ ags_dial_draw(AgsDial *dial)
   
   padding_top = (GTK_WIDGET(dial)->allocation.height - height) / 2;
   padding_left = (GTK_WIDGET(dial)->allocation.width - width) / 2;
-
-  cairo_select_font_face(cr, "Georgia",
-			 CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
-  cairo_set_font_size (cr, (gdouble) dial->font_size);
-  cairo_text_extents (cr, "-", &te_down);
-  cairo_text_extents (cr, "+", &te_up);
-
+  
   /* clear bg */
   cairo_set_source_rgb(cr,
 		       dial_style->fg[0].red / white_gc,
@@ -1574,6 +1568,21 @@ ags_dial_draw(AgsDial *dial)
   cairo_fill(cr);
 
   if((AGS_DIAL_WITH_BUTTONS & (dial->flags)) != 0){
+    PangoContext *context;
+    PangoLayout *layout;
+    PangoFontDescription *desc;
+
+    PangoRectangle ink_rect, logical_rect;
+    
+    gchar *font_name;
+    gchar *text;
+
+    text = "-";
+
+    g_object_get(gtk_settings_get_default(),
+		 "gtk-font-name", &font_name,
+		 NULL);
+        
     /* bg */
     cairo_set_source_rgb(cr,
 			 dial_style->bg[0].red / white_gc,
@@ -1599,14 +1608,45 @@ ags_dial_draw(AgsDial *dial)
     cairo_set_line_join(cr, CAIRO_LINE_JOIN_MITER);
     cairo_stroke(cr);
 
+    /* text */
+    layout = pango_cairo_create_layout(cr);
+    pango_layout_set_text(layout,
+			  text,
+			  -1);
+    desc = pango_font_description_from_string(font_name);
+    pango_layout_set_font_description(layout,
+				      desc);
+    pango_font_description_free(desc);    
+
+    pango_layout_get_extents(layout,
+			      &ink_rect,
+			      &logical_rect);
+
     cairo_move_to(cr,
-		  padding_left + 1.0 + 0.5 - te_down.width / 2.0 - te_down.x_bearing + button_width / 2.25,
-		  padding_top + 0.5 - te_down.height / 2.0 - te_down.y_bearing + (radius * 2.0) - button_height / 2.0 + outline_strength);
-    cairo_show_text(cr, "-");
+		  padding_left + 1.0 + 0.5 - (logical_rect.width / PANGO_SCALE) / 2.0 + button_width / 2.25,
+		  padding_top + 0.5 - (logical_rect.height / PANGO_SCALE) / 2.0 + (radius * 2.0) - button_height / 2.0 + outline_strength);
+
+    pango_cairo_show_layout(cr,
+			    layout);
   }
 
   
   if((AGS_DIAL_WITH_BUTTONS & (dial->flags)) != 0){
+    PangoContext *context;
+    PangoLayout *layout;
+    PangoFontDescription *desc;
+
+    PangoRectangle ink_rect, logical_rect;
+    
+    gchar *font_name;
+    gchar *text;
+
+    text = "+";
+
+    g_object_get(gtk_settings_get_default(),
+		 "gtk-font-name", &font_name,
+		 NULL);
+    
     /* bg */
     cairo_set_source_rgb(cr,
 			 dial_style->bg[0].red / white_gc,
@@ -1632,10 +1672,26 @@ ags_dial_draw(AgsDial *dial)
     cairo_set_line_join(cr, CAIRO_LINE_JOIN_MITER);
     cairo_stroke(cr);
 
-    cairo_move_to (cr,
-		   padding_left + 1.0 + 0.5 - te_up.width / 2.0 - te_up.x_bearing + (radius * 2.0) + margin_left + margin_right + button_width + button_width / 2.25,
-		   padding_top + 0.5 - te_up.height / 2.0 - te_up.y_bearing + (radius * 2.0) - button_height / 2.0 + outline_strength);
-    cairo_show_text (cr, "+");
+    /* text */
+    layout = pango_cairo_create_layout(cr);
+    pango_layout_set_text(layout,
+			  text,
+			  -1);
+    desc = pango_font_description_from_string(font_name);
+    pango_layout_set_font_description(layout,
+				      desc);
+    pango_font_description_free(desc);    
+
+    pango_layout_get_extents(layout,
+			      &ink_rect,
+			      &logical_rect);
+
+    cairo_move_to(cr,
+		  padding_left + 1.0 + 0.5 - (logical_rect.width / PANGO_SCALE) / 2.0 + (radius * 2.0) + margin_left + margin_right + button_width + button_width / 2.25,
+		  padding_top + 0.5 - (logical_rect.height / PANGO_SCALE) / 2.0 + (radius * 2.0) - button_height / 2.0 + outline_strength);
+
+    pango_cairo_show_layout(cr,
+			    layout);
   }
 
   /* border fill * /
