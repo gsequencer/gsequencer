@@ -1568,16 +1568,14 @@ ags_dial_draw(AgsDial *dial)
   cairo_fill(cr);
 
   if((AGS_DIAL_WITH_BUTTONS & (dial->flags)) != 0){
-    PangoContext *context;
     PangoLayout *layout;
     PangoFontDescription *desc;
 
     PangoRectangle ink_rect, logical_rect;
     
     gchar *font_name;
-    gchar *text;
 
-    text = "-";
+    static const gchar *text = "-";
 
     g_object_get(gtk_settings_get_default(),
 		 "gtk-font-name", &font_name,
@@ -1614,6 +1612,8 @@ ags_dial_draw(AgsDial *dial)
 			  text,
 			  -1);
     desc = pango_font_description_from_string(font_name);
+    pango_font_description_set_size(desc,
+				    dial->font_size * PANGO_SCALE);
     pango_layout_set_font_description(layout,
 				      desc);
     pango_font_description_free(desc);    
@@ -1624,24 +1624,25 @@ ags_dial_draw(AgsDial *dial)
 
     cairo_move_to(cr,
 		  padding_left + 1.0 + 0.5 - (logical_rect.width / PANGO_SCALE) / 2.0 + button_width / 2.25,
-		  padding_top + 0.5 - (logical_rect.height / PANGO_SCALE) / 2.0 + (radius * 2.0) - button_height / 2.0 + outline_strength);
+		  padding_top + 0.5 - (logical_rect.height / PANGO_SCALE) / 2.0 + (radius * 2.0) - button_height / 2.0 + outline_strength - 1.0);
 
     pango_cairo_show_layout(cr,
 			    layout);
-  }
 
+    g_object_unref(layout);
+
+    g_free(font_name);
+  }
   
   if((AGS_DIAL_WITH_BUTTONS & (dial->flags)) != 0){
-    PangoContext *context;
     PangoLayout *layout;
     PangoFontDescription *desc;
 
     PangoRectangle ink_rect, logical_rect;
     
     gchar *font_name;
-    gchar *text;
 
-    text = "+";
+    static const gchar *text = "+";
 
     g_object_get(gtk_settings_get_default(),
 		 "gtk-font-name", &font_name,
@@ -1678,6 +1679,8 @@ ags_dial_draw(AgsDial *dial)
 			  text,
 			  -1);
     desc = pango_font_description_from_string(font_name);
+    pango_font_description_set_size(desc,
+				    dial->font_size * PANGO_SCALE);
     pango_layout_set_font_description(layout,
 				      desc);
     pango_font_description_free(desc);    
@@ -1688,10 +1691,14 @@ ags_dial_draw(AgsDial *dial)
 
     cairo_move_to(cr,
 		  padding_left + 1.0 + 0.5 - (logical_rect.width / PANGO_SCALE) / 2.0 + (radius * 2.0) + margin_left + margin_right + button_width + button_width / 2.25,
-		  padding_top + 0.5 - (logical_rect.height / PANGO_SCALE) / 2.0 + (radius * 2.0) - button_height / 2.0 + outline_strength);
+		  padding_top + 0.5 - (logical_rect.height / PANGO_SCALE) / 2.0 + (radius * 2.0) - button_height / 2.0 + outline_strength - 1.0);
 
     pango_cairo_show_layout(cr,
 			    layout);
+
+    g_object_unref(layout);
+
+    g_free(font_name);
   }
 
   /* border fill * /

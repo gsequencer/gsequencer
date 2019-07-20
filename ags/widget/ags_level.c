@@ -1142,34 +1142,17 @@ ags_level_draw(AgsLevel *level)
 {
   cairo_t *cr;
 
-  gchar *str;
-  
+  PangoLayout *layout;
+  PangoFontDescription *desc;
+
+  PangoRectangle ink_rect, logical_rect;
+    
+  gchar *font_name;
+  gchar *text;
+
   guint width, height;
   guint x_start, y_start;
 
-  auto void ags_level_draw_string(cairo_t *cr, gchar *str);
-  
-  void ags_level_draw_string(cairo_t *cr, gchar *str){
-    PangoLayout *layout;
-    PangoFontDescription *desc;
-
-    layout = pango_cairo_create_layout(cr);
-    pango_layout_set_text(layout, str, -1);
-    desc = pango_font_description_from_string("Sans Slant"); //pango_font_description_copy_static("Georgia Bold 11");
-    pango_font_description_set_size(desc,
-				    level->font_size * PANGO_SCALE);
-    pango_layout_set_font_description(layout, desc);
-    pango_font_description_free(desc);
-
-    pango_cairo_update_layout(cr, layout);
-    pango_cairo_show_layout(cr, layout);
-
-#ifndef __APPLE__
-    //    pango_fc_font_map_cache_clear(pango_cairo_font_map_get_default());
-#endif
-    g_object_unref(layout);
-  }
-  
   static const gdouble white_gc = 65535.0;
 
   if(!AGS_IS_LEVEL(level)){
@@ -1181,6 +1164,10 @@ ags_level_draw(AgsLevel *level)
   if(cr == NULL){
     return;
   }
+
+  g_object_get(gtk_settings_get_default(),
+	       "gtk-font-name", &font_name,
+	       NULL);
   
   width = GTK_WIDGET(level)->allocation.width;
   height = GTK_WIDGET(level)->allocation.height;
@@ -1213,24 +1200,46 @@ ags_level_draw(AgsLevel *level)
   //TODO:JK: implement me
 
   /* show samplerate */
-  str = g_strdup_printf("%u [Hz]", level->samplerate);
+  text = g_strdup_printf("%u [Hz]", level->samplerate);
+
+  layout = pango_cairo_create_layout(cr);
+  pango_layout_set_text(layout,
+			text,
+			-1);
+  desc = pango_font_description_from_string(font_name);
+  pango_font_description_set_size(desc,
+				  level->font_size * PANGO_SCALE);
+  pango_layout_set_font_description(layout,
+				    desc);
+  pango_font_description_free(desc);    
+
+  pango_layout_get_extents(layout,
+			   &ink_rect,
+			   &logical_rect);
   
   cairo_set_source_rgb(cr,
 		       1.0, 1.0, 1.0);
 
   if(level->layout == AGS_LEVEL_LAYOUT_VERTICAL){
     cairo_move_to(cr,
-		  x_start + level->font_size, y_start + height - 1.0);
+		  x_start + (logical_rect.height / PANGO_SCALE) / 2.0,
+		  y_start + height - 1.0);
     cairo_rotate(cr,
 		 2 * M_PI * 0.75);
   }else{
     cairo_move_to(cr,
-		  x_start + level->font_size, y_start + 1.0);
+		  x_start,
+		  y_start + (logical_rect.height / PANGO_SCALE) / 2.0 + 1.0);
   }
-  
-  ags_level_draw_string(cr,
-			str);
 
+  pango_cairo_show_layout(cr,
+			  layout);
+
+  g_object_unref(layout);
+
+  g_free(font_name);
+  g_free(text);
+  
   cairo_pop_group_to_source(cr);
   cairo_paint(cr);
 

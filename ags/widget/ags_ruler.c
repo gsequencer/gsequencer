@@ -420,8 +420,8 @@ ags_ruler_draw(AgsRuler *ruler)
   GtkWidget *widget;
 
   cairo_t *cr;
-
-  gchar *str;
+    
+  gchar *font_name;
 
   gdouble tact_factor, zoom_factor;
   gdouble tact;
@@ -431,27 +431,11 @@ ags_ruler_draw(AgsRuler *ruler)
   guint x0;
   guint z;
   guint i, i_stop;
-
-  auto void ags_ruler_draw_string(cairo_t *cr, gchar *str);
-
-  void ags_ruler_draw_string(cairo_t *cr, gchar *str){
-    PangoLayout *layout;
-    PangoFontDescription *desc;
-
-    layout = pango_cairo_create_layout(cr);
-    pango_layout_set_text(layout, str, -1);
-    desc = pango_font_description_from_string("Sans Slant"); //pango_font_description_copy_static("Georgia Bold 11");
-    pango_font_description_set_size(desc,
-				    ruler->font_size * PANGO_SCALE);
-    pango_layout_set_font_description(layout, desc);
-    pango_font_description_free(desc);
-
-    pango_cairo_update_layout(cr, layout);
-    pango_cairo_show_layout(cr, layout);
-
-    g_object_unref(layout);
-  }
   
+  if(!AGS_IS_RULER(ruler)){
+    return;
+  }
+
   widget = GTK_WIDGET(ruler);
 
   cr = gdk_cairo_create(widget->window);
@@ -459,7 +443,11 @@ ags_ruler_draw(AgsRuler *ruler)
   if(cr == NULL){
     return;
   }
-  
+
+  g_object_get(gtk_settings_get_default(),
+	       "gtk-font-name", &font_name,
+	       NULL);
+    
   cairo_surface_flush(cairo_get_target(cr));
   cairo_push_group(cr);
 
@@ -497,6 +485,31 @@ ags_ruler_draw(AgsRuler *ruler)
 		  (double) (widget->allocation.height));
     
     if(tact < 1.0){
+      PangoLayout *layout;
+      PangoFontDescription *desc;
+
+      PangoRectangle ink_rect, logical_rect;
+
+      gchar *text;
+
+      text = g_strdup_printf("%u",
+			     (guint) ((gdouble) z / tact));
+
+      layout = pango_cairo_create_layout(cr);
+      pango_layout_set_text(layout,
+			    text,
+			    -1);
+      desc = pango_font_description_from_string(font_name);
+      pango_font_description_set_size(desc,
+				      ruler->font_size * PANGO_SCALE);
+      pango_layout_set_font_description(layout,
+					desc);
+      pango_font_description_free(desc);    
+
+      pango_layout_get_extents(layout,
+			       &ink_rect,
+			       &logical_rect);  
+      
       /* draw large step */
       cairo_set_line_width(cr,
 			   1.75);
@@ -510,13 +523,39 @@ ags_ruler_draw(AgsRuler *ruler)
 		    (double) (i * step - x0),
 		    (double) (widget->allocation.height - ruler->large_step - (ruler->font_size + AGS_RULER_FREE_SPACE)));
       
-      str = g_strdup_printf("%u",
-			    (guint) ((gdouble) z / tact));
-      ags_ruler_draw_string(cr, str);
+      pango_cairo_show_layout(cr,
+			      layout);
       
-      g_free(str);
+      g_object_unref(layout);
+      
+      g_free(text);
     }else{
       if(z % (guint) floor(tact) == 0){
+	PangoLayout *layout;
+	PangoFontDescription *desc;
+
+	PangoRectangle ink_rect, logical_rect;
+
+	gchar *text;
+
+	text = g_strdup_printf("%u",
+			       (guint) ((gdouble) z / tact));
+	
+	layout = pango_cairo_create_layout(cr);
+	pango_layout_set_text(layout,
+			      text,
+			      -1);
+	desc = pango_font_description_from_string(font_name);
+	pango_font_description_set_size(desc,
+					ruler->font_size * PANGO_SCALE);
+	pango_layout_set_font_description(layout,
+					  desc);
+	pango_font_description_free(desc);    
+
+	pango_layout_get_extents(layout,
+				 &ink_rect,
+				 &logical_rect);
+
 	/* draw large step */
 	cairo_set_line_width(cr,
 			     1.75);
@@ -529,12 +568,13 @@ ags_ruler_draw(AgsRuler *ruler)
 	cairo_move_to(cr,
 		      (double) (i * step - x0),
 		      (double) (widget->allocation.height - ruler->large_step - (ruler->font_size + AGS_RULER_FREE_SPACE)));
-
-	str = g_strdup_printf("%u",
-			      (guint) ((gdouble) z / tact));
-	ags_ruler_draw_string(cr, str);
       
-	g_free(str);
+	pango_cairo_show_layout(cr,
+				layout);
+      
+	g_object_unref(layout);
+      
+	g_free(text);
       }else{
 	/* draw small step */
 	cairo_set_line_width(cr,
@@ -548,6 +588,8 @@ ags_ruler_draw(AgsRuler *ruler)
 
     cairo_stroke(cr);
   }
+
+  g_free(font_name);
 
   cairo_pop_group_to_source(cr);
   cairo_paint(cr);

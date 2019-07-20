@@ -1207,31 +1207,15 @@ ags_scale_draw(AgsScale *scale)
 {
   cairo_t *cr;
 
+  PangoLayout *layout;
+  PangoFontDescription *desc;
+
+  PangoRectangle ink_rect, logical_rect;
+    
+  gchar *font_name;
+
   guint width, height;
   guint x_start, y_start;
-
-  auto void ags_scale_draw_string(cairo_t *cr, gchar *str);
-  
-  void ags_scale_draw_string(cairo_t *cr, gchar *str){
-    PangoLayout *layout;
-    PangoFontDescription *desc;
-
-    layout = pango_cairo_create_layout(cr);
-    pango_layout_set_text(layout, str, -1);
-    desc = pango_font_description_from_string("Sans Slant"); //pango_font_description_copy_static("Georgia Bold 11");
-    pango_font_description_set_size(desc,
-				    scale->font_size * PANGO_SCALE);
-    pango_layout_set_font_description(layout, desc);
-    pango_font_description_free(desc);
-
-    pango_cairo_update_layout(cr, layout);
-    pango_cairo_show_layout(cr, layout);
-
-#ifndef __APPLE__
-    //    pango_fc_font_map_cache_clear(pango_cairo_font_map_get_default());
-#endif
-    g_object_unref(layout);
-  }
   
   static const gdouble white_gc = 65535.0;
 
@@ -1244,6 +1228,10 @@ ags_scale_draw(AgsScale *scale)
   if(cr == NULL){
     return;
   }
+
+  g_object_get(gtk_settings_get_default(),
+	       "gtk-font-name", &font_name,
+	       NULL);
   
   width = GTK_WIDGET(scale)->allocation.width;
   height = GTK_WIDGET(scale)->allocation.height;
@@ -1276,6 +1264,21 @@ ags_scale_draw(AgsScale *scale)
   //TODO:JK: implement me
 
   /* show control name */
+  layout = pango_cairo_create_layout(cr);
+  pango_layout_set_text(layout,
+			scale->control_name,
+			-1);
+  desc = pango_font_description_from_string(font_name);
+  pango_font_description_set_size(desc,
+				  scale->font_size * PANGO_SCALE);
+  pango_layout_set_font_description(layout,
+				    desc);
+  pango_font_description_free(desc);    
+
+  pango_layout_get_extents(layout,
+			   &ink_rect,
+			   &logical_rect);
+
   cairo_set_source_rgb(cr,
 		       1.0, 1.0, 1.0);
 
@@ -1289,8 +1292,12 @@ ags_scale_draw(AgsScale *scale)
 		  x_start + scale->font_size, y_start + 1.0);
   }
   
-  ags_scale_draw_string(cr,
-			scale->control_name);
+  pango_cairo_show_layout(cr,
+			  layout);
+
+  g_object_unref(layout);
+
+  g_free(font_name);
 
   cairo_pop_group_to_source(cr);
   cairo_paint(cr);
