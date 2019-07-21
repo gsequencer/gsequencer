@@ -91,8 +91,8 @@ guint ags_midi_util_delta_time_to_offset(glong division,
 					 glong bpm,
 					 glong delta_time);
 glong ags_midi_util_offset_to_delta_time(glong division,
-				   glong tempo,
-				   glong bpm,
-				   guint x);
+					 glong tempo,
+					 glong bpm,
+					 guint x);
 
 #endif /*__AGS_MIDI_UTIL_H__*/

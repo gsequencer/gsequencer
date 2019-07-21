@@ -457,6 +457,8 @@ ags_delay_audio_run_run_init_pre(AgsRecall *recall)
 {
   AgsDelayAudioRun *delay_audio_run;
 
+  gdouble absolute_delay;
+
   void (*parent_class_run_init_pre)(AgsRecall *recall);
   
   pthread_mutex_t *recall_mutex;
@@ -476,9 +478,16 @@ ags_delay_audio_run_run_init_pre(AgsRecall *recall)
   parent_class_run_init_pre(recall);
 
   /* run order */
+  absolute_delay = ags_soundcard_get_absolute_delay(AGS_SOUNDCARD(recall->output_soundcard));
+  
   pthread_mutex_lock(recall_mutex);
 
   delay_audio_run->hide_ref_counter = 0;
+
+  delay_audio_run->sequencer_counter = floor(absolute_delay);
+  delay_audio_run->notation_counter = floor(absolute_delay);
+  delay_audio_run->wave_counter = floor(absolute_delay);
+  delay_audio_run->midi_counter = floor(absolute_delay);
 
   pthread_mutex_unlock(recall_mutex);
 }

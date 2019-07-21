@@ -685,7 +685,7 @@ ags_jack_devin_init(AgsJackDevin *jack_devin)
   
   /* counters */
   jack_devin->tact_counter = 0.0;
-  jack_devin->delay_counter = 0;
+  jack_devin->delay_counter = 0.0;
   jack_devin->tic_counter = 0;
 
   jack_devin->start_note_offset = 0;
@@ -2058,7 +2058,7 @@ ags_jack_devin_port_init(AgsSoundcard *soundcard,
 
   /*  */
   jack_devin->tact_counter = 0.0;
-  jack_devin->delay_counter = 0.0;
+  jack_devin->delay_counter = floor(ags_soundcard_get_absolute_delay(AGS_SOUNDCARD(jack_devin)));
   jack_devin->tic_counter = 0;
 
   jack_devin->flags |= (AGS_JACK_DEVIN_INITIALIZED |

@@ -1480,7 +1480,7 @@ ags_jack_midiin_port_init(AgsSequencer *sequencer,
   
   /*  */
   jack_midiin->tact_counter = 0.0;
-  jack_midiin->delay_counter = 0.0;
+  jack_midiin->delay_counter = floor(jack_midiin->delay);
   jack_midiin->tic_counter = 0;
 
   jack_midiin->flags |= (AGS_JACK_MIDIIN_INITIALIZED |

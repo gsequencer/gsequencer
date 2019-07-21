@@ -2622,7 +2622,7 @@ ags_devin_oss_init(AgsSoundcard *soundcard,
 #endif
   
   devin->tact_counter = 0.0;
-  devin->delay_counter = 0.0;
+  devin->delay_counter = floor(ags_soundcard_get_absolute_delay(AGS_SOUNDCARD(devin)));
   devin->tic_counter = 0;
 
   devin->nth_ring_buffer = 0;

@@ -2095,7 +2095,7 @@ ags_pulse_devout_port_init(AgsSoundcard *soundcard,
 
   /*  */
   pulse_devout->tact_counter = 0.0;
-  pulse_devout->delay_counter = 0.0;
+  pulse_devout->delay_counter = floor(ags_soundcard_get_absolute_delay(AGS_SOUNDCARD(pulse_devout)));
   pulse_devout->tic_counter = 0;
 
   pulse_devout->flags |= (AGS_PULSE_DEVOUT_INITIALIZED |

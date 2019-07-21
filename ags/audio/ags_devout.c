@@ -2674,7 +2674,7 @@ ags_devout_oss_init(AgsSoundcard *soundcard,
 #endif
   
   devout->tact_counter = 0.0;
-  devout->delay_counter = 0.0;
+  devout->delay_counter = floor(ags_soundcard_get_absolute_delay(AGS_SOUNDCARD(devout)));
   devout->tic_counter = 0;
 
   devout->nth_ring_buffer = 0;
@@ -3499,7 +3499,7 @@ ags_devout_alsa_init(AgsSoundcard *soundcard,
 #endif
 
   devout->tact_counter = 0.0;
-  devout->delay_counter = 0.0;
+  devout->delay_counter = floor(ags_soundcard_get_absolute_delay(AGS_SOUNDCARD(devout)));
   devout->tic_counter = 0;
 
   devout->nth_ring_buffer = 0;

@@ -685,7 +685,7 @@ ags_jack_devout_init(AgsJackDevout *jack_devout)
   
   /* counters */
   jack_devout->tact_counter = 0.0;
-  jack_devout->delay_counter = 0;
+  jack_devout->delay_counter = 0.0;
   jack_devout->tic_counter = 0;
 
   jack_devout->start_note_offset = 0;
@@ -2046,7 +2046,7 @@ ags_jack_devout_port_init(AgsSoundcard *soundcard,
 
   /*  */
   jack_devout->tact_counter = 0.0;
-  jack_devout->delay_counter = 0.0;
+  jack_devout->delay_counter = floor(ags_soundcard_get_absolute_delay(AGS_SOUNDCARD(jack_devout)));
   jack_devout->tic_counter = 0;
 
   jack_devout->flags |= (AGS_JACK_DEVOUT_INITIALIZED |

@@ -7,6 +7,7 @@ with no Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.
 A copy of the license is included in the section entitled "GNU
 Free Documentation License".
 
+* TODO:JK: fix envelope related functions in ags_midi_util.h
 * TODO:JK: check recall id cleanup
 * TODO:JK: improved AgsRecallContainer detection of ags_recall_factory.c
 * TODO:JK: implemented AgsSoundContainer manager

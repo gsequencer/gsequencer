@@ -1912,7 +1912,7 @@ ags_midiin_alsa_init(AgsSequencer *sequencer,
 #endif
 
   midiin->tact_counter = 0.0;
-  midiin->delay_counter = 0.0;
+  midiin->delay_counter = floor(midiin->delay);
   midiin->tic_counter = 0;
 
 #ifdef AGS_WITH_ALSA

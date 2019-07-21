@@ -1481,7 +1481,7 @@ ags_core_audio_midiin_port_init(AgsSequencer *sequencer,
   
   /*  */
   core_audio_midiin->tact_counter = 0.0;
-  core_audio_midiin->delay_counter = 0.0;
+  core_audio_midiin->delay_counter = floor(core_audio_midiin->delay);
   core_audio_midiin->tic_counter = 0;
 
   core_audio_midiin->flags |= (AGS_CORE_AUDIO_MIDIIN_INITIALIZED |

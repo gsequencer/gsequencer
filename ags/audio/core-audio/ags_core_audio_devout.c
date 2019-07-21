@@ -689,7 +689,7 @@ ags_core_audio_devout_init(AgsCoreAudioDevout *core_audio_devout)
   
   /* counters */
   core_audio_devout->tact_counter = 0.0;
-  core_audio_devout->delay_counter = 0;
+  core_audio_devout->delay_counter = 0.0;
   core_audio_devout->tic_counter = 0;
 
   core_audio_devout->start_note_offset = 0;
@@ -2084,7 +2084,7 @@ ags_core_audio_devout_port_init(AgsSoundcard *soundcard,
 
   /*  */
   core_audio_devout->tact_counter = 0.0;
-  core_audio_devout->delay_counter = 0.0;
+  core_audio_devout->delay_counter = floor(ags_soundcard_get_absolute_delay(AGS_SOUNDCARD(core_audio_devout)));
   core_audio_devout->tic_counter = 0;
 
   core_audio_devout->flags |= (AGS_CORE_AUDIO_DEVOUT_INITIALIZED |

@@ -2040,7 +2040,7 @@ ags_pulse_devin_port_init(AgsSoundcard *soundcard,
 
   /*  */
   pulse_devin->tact_counter = 0.0;
-  pulse_devin->delay_counter = 0.0;
+  pulse_devin->delay_counter = floor(ags_soundcard_get_absolute_delay(AGS_SOUNDCARD(pulse_devin)));
   pulse_devin->tic_counter = 0;
 
   pulse_devin->flags |= (AGS_PULSE_DEVIN_INITIALIZED |

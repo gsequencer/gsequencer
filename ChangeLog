@@ -1,7 +1,7 @@
 ags (2.2.23)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
-	* improved relative counters
+	* fixed relative counters and time fraction issues
 	* improved replacing hard-coded font
 	* refactored AgsDial to use PangoLayout
 	* refactored AgsLevel to use PangoLayout
