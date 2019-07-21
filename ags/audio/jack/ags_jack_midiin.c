@@ -1755,7 +1755,7 @@ ags_jack_midiin_tic(AgsSequencer *sequencer)
 
   pthread_mutex_unlock(jack_midiin_mutex);
 
-  if((guint) delay_counter + 1 >= (guint) delay){
+  if(delay_counter + 1.0 >= delay){
     ags_sequencer_set_note_offset(sequencer,
 				  note_offset + 1);
     
@@ -1766,7 +1766,7 @@ ags_jack_midiin_tic(AgsSequencer *sequencer)
     /* reset - delay counter */
     pthread_mutex_lock(jack_midiin_mutex);
 
-    jack_midiin->delay_counter = 0.0;
+    jack_midiin->delay_counter = delay_counter + 1.0 - delay;
     jack_midiin->tact_counter += 1.0;
 
     pthread_mutex_unlock(jack_midiin_mutex);

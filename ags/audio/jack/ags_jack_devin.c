@@ -2439,7 +2439,7 @@ ags_jack_devin_tic(AgsSoundcard *soundcard)
 
   pthread_mutex_unlock(jack_devin_mutex);
 
-  if((guint) delay_counter + 1 >= (guint) delay){
+  if(delay_counter + 1 >= delay){
     if(do_loop &&
        note_offset + 1 == loop_right){
       ags_soundcard_set_note_offset(soundcard,
@@ -2459,7 +2459,7 @@ ags_jack_devin_tic(AgsSoundcard *soundcard)
     /* reset - delay counter */
     pthread_mutex_lock(jack_devin_mutex);
     
-    jack_devin->delay_counter = 0.0;
+    jack_devin->delay_counter = delay_counter + 1.0 - delay;
     jack_devin->tact_counter += 1.0;
 
     pthread_mutex_unlock(jack_devin_mutex);

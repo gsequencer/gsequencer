@@ -2369,7 +2369,7 @@ ags_count_beats_audio_run_sequencer_count_callback(AgsDelayAudioRun *delay_audio
 
   pthread_mutex_t *recall_mutex;
 
-  if((guint) floor(delay) != 0){
+  if(delay != 0.0){
     return;
   }
   
@@ -2506,7 +2506,7 @@ ags_count_beats_audio_run_notation_count_callback(AgsDelayAudioRun *delay_audio_
 
   pthread_mutex_t *recall_mutex;
 
-  if((guint) floor(delay) != 0){
+  if(delay != 0.0){
     return;
   }
 
@@ -2625,7 +2625,7 @@ ags_count_beats_audio_run_wave_count_callback(AgsDelayAudioRun *delay_audio_run,
 
   pthread_mutex_t *recall_mutex;
 
-  if((guint) floor(delay) != 0){
+  if(delay != 0.0){
     return;
   }
 
@@ -2744,7 +2744,7 @@ ags_count_beats_audio_run_midi_count_callback(AgsDelayAudioRun *delay_audio_run,
 
   pthread_mutex_t *recall_mutex;
 
-  if((guint) floor(delay) != 0){
+  if(delay != 0.0){
     return;
   }
 

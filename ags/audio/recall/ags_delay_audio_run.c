@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -439,10 +439,10 @@ ags_delay_audio_run_init(AgsDelayAudioRun *delay_audio_run)
   delay_audio_run->hide_ref = 0;
   delay_audio_run->hide_ref_counter = 0;
 
-  delay_audio_run->sequencer_counter = 0;
-  delay_audio_run->notation_counter = 0;
-  delay_audio_run->wave_counter = 0;
-  delay_audio_run->midi_counter = 0;
+  delay_audio_run->sequencer_counter = 0.0;
+  delay_audio_run->notation_counter = 0.0;
+  delay_audio_run->wave_counter = 0.0;
+  delay_audio_run->midi_counter = 0.0;
 }
 
 void
@@ -529,10 +529,10 @@ ags_delay_audio_run_run_pre(AgsRecall *recall)
      dependency_ref == 0){
     pthread_mutex_lock(recall_mutex);
   
-    delay_audio_run->sequencer_counter = 0;
-    delay_audio_run->notation_counter = 0;
-    delay_audio_run->wave_counter = 0;
-    delay_audio_run->midi_counter = 0;
+    delay_audio_run->sequencer_counter = 0.0;
+    delay_audio_run->notation_counter = 0.0;
+    delay_audio_run->wave_counter = 0.0;
+    delay_audio_run->midi_counter = 0.0;
 
     pthread_mutex_unlock(recall_mutex);
 
@@ -548,7 +548,6 @@ ags_delay_audio_run_run_pre(AgsRecall *recall)
 	       NULL);
 
   nth_run = 0;  
-  delay = 0.0;
   attack = ags_soundcard_get_attack(AGS_SOUNDCARD(output_soundcard));
 
   /* sequencer scope */
@@ -556,7 +555,8 @@ ags_delay_audio_run_run_pre(AgsRecall *recall)
     AgsPort *sequencer_delay;
     
     gdouble current_delay;
-    guint sequencer_counter;
+    gdouble sequencer_counter;
+    gboolean alloc_sequencer;
     
     GValue value = { 0, };
     
@@ -577,12 +577,16 @@ ags_delay_audio_run_run_pre(AgsRecall *recall)
     g_object_unref(sequencer_delay);
     
     /* counter */
+    alloc_sequencer = FALSE;
+    
     pthread_mutex_lock(recall_mutex);
     
-    if(delay_audio_run->sequencer_counter + 1 >= (guint) current_delay){
-      delay_audio_run->sequencer_counter = 0;
+    if(delay_audio_run->sequencer_counter + 1.0 >= current_delay){
+      alloc_sequencer = TRUE;
+      
+      delay_audio_run->sequencer_counter = delay_audio_run->sequencer_counter + 1.0 - current_delay;
     }else{
-      delay_audio_run->sequencer_counter += 1;
+      delay_audio_run->sequencer_counter += 1.0;
     }
 
     sequencer_counter = delay_audio_run->sequencer_counter;
@@ -590,7 +594,9 @@ ags_delay_audio_run_run_pre(AgsRecall *recall)
     pthread_mutex_unlock(recall_mutex);
 
     /* sequencer */
-    if(sequencer_counter == 0){
+    if(alloc_sequencer){
+      delay = 0.0;
+      
       /* sequencer speed */
       ags_delay_audio_run_sequencer_alloc_output(delay_audio_run,
 						 nth_run,
@@ -626,6 +632,7 @@ ags_delay_audio_run_run_pre(AgsRecall *recall)
     
     gdouble current_delay;
     guint notation_counter;
+    gboolean alloc_notation;
     
     GValue value = { 0, };
 
@@ -646,12 +653,16 @@ ags_delay_audio_run_run_pre(AgsRecall *recall)
     g_object_unref(notation_delay);
 
     /* counter */
+    alloc_notation = FALSE;
+    
     pthread_mutex_lock(recall_mutex);
     
-    if(delay_audio_run->notation_counter + 1 >= (guint) current_delay){
-      delay_audio_run->notation_counter = 0;
+    if(delay_audio_run->notation_counter + 1.0 >= current_delay){
+      alloc_notation = TRUE;
+      
+      delay_audio_run->notation_counter = delay_audio_run->notation_counter + 1.0 - current_delay;
     }else{
-      delay_audio_run->notation_counter += 1;
+      delay_audio_run->notation_counter += 1.0;
     }
 
     notation_counter = delay_audio_run->notation_counter;
@@ -659,7 +670,9 @@ ags_delay_audio_run_run_pre(AgsRecall *recall)
     pthread_mutex_unlock(recall_mutex);
 
     /* notation */
-    if(notation_counter == 0){
+    if(alloc_notation){
+      delay = 0.0;
+      
       /* notation speed */
       ags_delay_audio_run_notation_alloc_output(delay_audio_run,
 						nth_run,
@@ -695,6 +708,7 @@ ags_delay_audio_run_run_pre(AgsRecall *recall)
     
     gdouble current_delay;
     guint wave_counter;
+    gboolean alloc_wave;
     
     GValue value = { 0, };
 
@@ -715,12 +729,16 @@ ags_delay_audio_run_run_pre(AgsRecall *recall)
     g_object_unref(wave_delay);
 
     /* counter */
+    alloc_wave = FALSE;
+    
     pthread_mutex_lock(recall_mutex);
     
-    if(delay_audio_run->wave_counter + 1 >= (guint) current_delay){
-      delay_audio_run->wave_counter = 0;
+    if(delay_audio_run->wave_counter + 1.0 >= current_delay){
+      alloc_wave = TRUE;
+      
+      delay_audio_run->wave_counter = delay_audio_run->wave_counter + 1.0 - current_delay;
     }else{
-      delay_audio_run->wave_counter += 1;
+      delay_audio_run->wave_counter += 1.0;
     }
 
     wave_counter = delay_audio_run->wave_counter;
@@ -728,7 +746,9 @@ ags_delay_audio_run_run_pre(AgsRecall *recall)
     pthread_mutex_unlock(recall_mutex);
 
     /* wave */
-    if(wave_counter == 0){
+    if(alloc_wave){
+      delay = 0.0;
+      
       /* wave speed */
       ags_delay_audio_run_wave_alloc_output(delay_audio_run,
 					    nth_run,
@@ -764,6 +784,7 @@ ags_delay_audio_run_run_pre(AgsRecall *recall)
     
     gdouble current_delay;
     guint midi_counter;
+    gboolean alloc_midi;
     
     GValue value = { 0, };
 
@@ -784,12 +805,16 @@ ags_delay_audio_run_run_pre(AgsRecall *recall)
     g_object_unref(midi_delay);
 
     /* counter */
+    alloc_midi = FALSE;
+    
     pthread_mutex_lock(recall_mutex);
     
-    if(delay_audio_run->midi_counter + 1 >= (guint) current_delay){
-      delay_audio_run->midi_counter = 0;
+    if(delay_audio_run->midi_counter + 1.0 >= current_delay){
+      alloc_midi = TRUE;
+      
+      delay_audio_run->midi_counter = delay_audio_run->midi_counter + 1.0 - current_delay;
     }else{
-      delay_audio_run->midi_counter += 1;
+      delay_audio_run->midi_counter += 1.0;
     }
 
     midi_counter = delay_audio_run->midi_counter;
@@ -797,7 +822,9 @@ ags_delay_audio_run_run_pre(AgsRecall *recall)
     pthread_mutex_unlock(recall_mutex);
 
     /* midi */
-    if(midi_counter == 0){
+    if(alloc_midi){
+      delay = 0.0;
+      
       /* midi speed */
       ags_delay_audio_run_midi_alloc_output(delay_audio_run,
 					    nth_run,

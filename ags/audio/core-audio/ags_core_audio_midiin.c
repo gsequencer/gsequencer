@@ -1773,7 +1773,7 @@ ags_core_audio_midiin_tic(AgsSequencer *sequencer)
 
   pthread_mutex_unlock(core_audio_midiin_mutex);
 
-  if((guint) delay_counter + 1 >= (guint) delay){
+  if(delay_counter + 1.0 >= delay){
     ags_sequencer_set_note_offset(sequencer,
 				  note_offset + 1);
     
@@ -1784,7 +1784,7 @@ ags_core_audio_midiin_tic(AgsSequencer *sequencer)
     /* reset - delay counter */
     pthread_mutex_lock(core_audio_midiin_mutex);
 
-    core_audio_midiin->delay_counter = 0.0;
+    core_audio_midiin->delay_counter = delay_counter + 1.0 - delay;
     core_audio_midiin->tact_counter += 1.0;
 
     pthread_mutex_unlock(core_audio_midiin_mutex);
