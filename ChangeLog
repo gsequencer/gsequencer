@@ -1,3 +1,8 @@
+ags (2.2.24)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed SIGSEGV as open file
+
 ags (2.2.23)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

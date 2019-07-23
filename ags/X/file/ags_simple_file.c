@@ -1365,6 +1365,9 @@ ags_simple_file_read_config(AgsSimpleFile *simple_file, xmlNode *node, AgsConfig
 				 frequency);
 
   g_object_unref(main_loop);
+
+  /* some GUI scaling */
+  ags_xorg_application_context_load_gui_scale(application_context);
 }
 
 void
