@@ -210,7 +210,10 @@ typedef enum{
   AGS_AUDIO_BUFFER_UTIL_COPY_S64_TO_FLOAT32,
 }AgsAudioBufferUtilCopyMode;
 
+typedef gint8 v8s8 __attribute__ ((vector_size(8 * sizeof(gint8))));
 typedef gint16 v8s16 __attribute__ ((vector_size(8 * sizeof(gint16))));
+typedef gint32 v8s32 __attribute__ ((vector_size(8 * sizeof(gint32))));
+typedef gint64 v8s64 __attribute__ ((vector_size(8 * sizeof(gint64))));
 typedef gfloat v8float __attribute__ ((vector_size(8 * sizeof(gfloat))));
 typedef gdouble v8double __attribute__ ((vector_size(8 * sizeof(gdouble))));
 
