@@ -3564,7 +3564,7 @@ ags_devout_alsa_play(AgsSoundcard *soundcard,
     int big_endian;
     int to_unsigned;
 
-    int res;
+    int res[8];
 
     gint count;
     guint i, chn;
@@ -3607,42 +3607,138 @@ ags_devout_alsa_play(AgsSoundcard *soundcard,
     to_unsigned = snd_pcm_format_unsigned(format) == 1;
 
     /* fill the channel areas */
-    for(count = 0; count < buffer_size; count++){
+    for(count = 0; count < buffer_size - (buffer_size % 8);){
       for(chn = 0; chn < channels; chn++){
 	switch(ags_format){
 	case AGS_SOUNDCARD_SIGNED_8_BIT:
 	  {
-	    res = (int) ((gint8 *) buffer)[count * channels + chn];
+	    res[0] = (int) ((gint8 *) buffer)[count * channels + chn];
+	    res[1] = (int) ((gint8 *) buffer)[(count + 1) * channels + chn];
+	    res[2] = (int) ((gint8 *) buffer)[(count + 2) * channels + chn];
+	    res[3] = (int) ((gint8 *) buffer)[(count + 3) * channels + chn];
+	    res[4] = (int) ((gint8 *) buffer)[(count + 4) * channels + chn];
+	    res[5] = (int) ((gint8 *) buffer)[(count + 5) * channels + chn];
+	    res[6] = (int) ((gint8 *) buffer)[(count + 6) * channels + chn];
+	    res[7] = (int) ((gint8 *) buffer)[(count + 7) * channels + chn];
 	  }
 	  break;
 	case AGS_SOUNDCARD_SIGNED_16_BIT:
 	  {
-	    res = (int) ((gint16 *) buffer)[count * channels + chn];
+	    res[0] = (int) ((gint16 *) buffer)[count * channels + chn];
+	    res[1] = (int) ((gint16 *) buffer)[(count + 1) * channels + chn];
+	    res[2] = (int) ((gint16 *) buffer)[(count + 2) * channels + chn];
+	    res[3] = (int) ((gint16 *) buffer)[(count + 3) * channels + chn];
+	    res[4] = (int) ((gint16 *) buffer)[(count + 4) * channels + chn];
+	    res[5] = (int) ((gint16 *) buffer)[(count + 5) * channels + chn];
+	    res[6] = (int) ((gint16 *) buffer)[(count + 6) * channels + chn];
+	    res[7] = (int) ((gint16 *) buffer)[(count + 7) * channels + chn];
 	  }
 	  break;
 	case AGS_SOUNDCARD_SIGNED_24_BIT:
 	  {
-	    res = (int) ((gint32 *) buffer)[count * channels + chn];
+	    res[0] = (int) ((gint32 *) buffer)[count * channels + chn];
+	    res[1] = (int) ((gint32 *) buffer)[(count + 1) * channels + chn];
+	    res[2] = (int) ((gint32 *) buffer)[(count + 2) * channels + chn];
+	    res[3] = (int) ((gint32 *) buffer)[(count + 3) * channels + chn];
+	    res[4] = (int) ((gint32 *) buffer)[(count + 4) * channels + chn];
+	    res[5] = (int) ((gint32 *) buffer)[(count + 5) * channels + chn];
+	    res[6] = (int) ((gint32 *) buffer)[(count + 6) * channels + chn];
+	    res[7] = (int) ((gint32 *) buffer)[(count + 7) * channels + chn];
 	  }
 	  break;
 	case AGS_SOUNDCARD_SIGNED_32_BIT:
 	  {
-	    res = (int) ((gint32 *) buffer)[count * channels + chn];
+	    res[0] = (int) ((gint32 *) buffer)[count * channels + chn];
+	    res[1] = (int) ((gint32 *) buffer)[(count + 1) * channels + chn];
+	    res[2] = (int) ((gint32 *) buffer)[(count + 2) * channels + chn];
+	    res[3] = (int) ((gint32 *) buffer)[(count + 3) * channels + chn];
+	    res[4] = (int) ((gint32 *) buffer)[(count + 4) * channels + chn];
+	    res[5] = (int) ((gint32 *) buffer)[(count + 5) * channels + chn];
+	    res[6] = (int) ((gint32 *) buffer)[(count + 6) * channels + chn];
+	    res[7] = (int) ((gint32 *) buffer)[(count + 7) * channels + chn];
 	  }
 	  break;
 	}
 
 	if(to_unsigned){
-	  res ^= 1U << (format_bits - 1);
+	  res[0] ^= 1U << (format_bits - 1);
+	  res[1] ^= 1U << (format_bits - 1);
+	  res[2] ^= 1U << (format_bits - 1);
+	  res[3] ^= 1U << (format_bits - 1);
+	  res[4] ^= 1U << (format_bits - 1);
+	  res[5] ^= 1U << (format_bits - 1);
+	  res[6] ^= 1U << (format_bits - 1);
+	  res[7] ^= 1U << (format_bits - 1);
 	}
 	
 	/* Generate data in native endian format */
-	if (big_endian) {
-	  for (i = 0; i < bps; i++)
-	    *(ring_buffer + chn * bps + phys_bps - 1 - i) = (res >> i * 8) & 0xff;
-	} else {
-	  for (i = 0; i < bps; i++)
-	    *(ring_buffer + chn * bps + i) = (res >>  i * 8) & 0xff;
+	if(big_endian){
+	  for(i = 0; i < bps; i++){
+	    *(ring_buffer + chn * bps + phys_bps - 1 - i) = (res[0] >> i * 8) & 0xff;
+	    *(ring_buffer + channels * bps + chn * bps + phys_bps - 1 - i) = (res[1] >> i * 8) & 0xff;
+	    *(ring_buffer + 2 * channels * bps + chn * bps + phys_bps - 1 - i) = (res[2] >> i * 8) & 0xff;
+	    *(ring_buffer + 3 * channels * bps + chn * bps + phys_bps - 1 - i) = (res[3] >> i * 8) & 0xff;
+	    *(ring_buffer + 4 * channels * bps + chn * bps + phys_bps - 1 - i) = (res[4] >> i * 8) & 0xff;
+	    *(ring_buffer + 5 * channels * bps + chn * bps + phys_bps - 1 - i) = (res[5] >> i * 8) & 0xff;
+	    *(ring_buffer + 6 * channels * bps + chn * bps + phys_bps - 1 - i) = (res[6] >> i * 8) & 0xff;
+	    *(ring_buffer + 7 * channels * bps + chn * bps + phys_bps - 1 - i) = (res[7] >> i * 8) & 0xff;
+	  }
+	}else{
+	  for(i = 0; i < bps; i++){
+	    *(ring_buffer + chn * bps + i) = (res[0] >> i * 8) & 0xff;
+	    *(ring_buffer + channels * bps + chn * bps + i) = (res[1] >>  i * 8) & 0xff;
+	    *(ring_buffer + 2 * channels * bps + chn * bps + i) = (res[2] >>  i * 8) & 0xff;
+	    *(ring_buffer + 3 * channels * bps + chn * bps + i) = (res[3] >>  i * 8) & 0xff;
+	    *(ring_buffer + 4 * channels * bps + chn * bps + i) = (res[4] >>  i * 8) & 0xff;
+	    *(ring_buffer + 5 * channels * bps + chn * bps + i) = (res[5] >>  i * 8) & 0xff;
+	    *(ring_buffer + 6 * channels * bps + chn * bps + i) = (res[6] >>  i * 8) & 0xff;
+	    *(ring_buffer + 7 * channels * bps + chn * bps + i) = (res[7] >>  i * 8) & 0xff;
+	  }
+	}
+      }
+
+      ring_buffer += 8 * channels * bps;
+      count += 8;
+    }
+
+    for(; count < buffer_size; count++){
+      for(chn = 0; chn < channels; chn++){
+	switch(ags_format){
+	case AGS_SOUNDCARD_SIGNED_8_BIT:
+	  {
+	    res[0] = (int) ((gint8 *) buffer)[count * channels + chn];
+	  }
+	  break;
+	case AGS_SOUNDCARD_SIGNED_16_BIT:
+	  {
+	    res[0] = (int) ((gint16 *) buffer)[count * channels + chn];
+	  }
+	  break;
+	case AGS_SOUNDCARD_SIGNED_24_BIT:
+	  {
+	    res[0] = (int) ((gint32 *) buffer)[count * channels + chn];
+	  }
+	  break;
+	case AGS_SOUNDCARD_SIGNED_32_BIT:
+	  {
+	    res[0] = (int) ((gint32 *) buffer)[count * channels + chn];
+	  }
+	  break;
+	}
+
+	if(to_unsigned){
+	  res[0] ^= 1U << (format_bits - 1);
+	}
+	
+	/* Generate data in native endian format */
+	if(big_endian){
+	  for(i = 0; i < bps; i++){
+	    *(ring_buffer + chn * bps + phys_bps - 1 - i) = (res[0] >> i * 8) & 0xff;
+	  }
+	}else{
+	  for(i = 0; i < bps; i++){
+	    *(ring_buffer + chn * bps + i) = (res[0] >>  i * 8) & 0xff;
+	  }
 	}	
       }
 

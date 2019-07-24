@@ -112,7 +112,6 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-# -msse2 -O3 -ftree-vectorize -ftree-slp-vectorize -ffast-math -ftree-vectorizer-verbose=2
 @WITH_LIBINSTPATCH_TRUE@am__append_1 = -DAGS_WITH_LIBINSTPATCH=1
 @WITH_VST3_TRUE@am__append_2 = libags_vst.la 
 bin_PROGRAMS = gsequencer$(EXEEXT) midi2xml$(EXEEXT)
@@ -5772,6 +5771,8 @@ CAIRO_LIBS = @CAIRO_LIBS@
 CC = @CC@
 CCDEPMODE = @CCDEPMODE@
 
+# AM_CPPFLAGS += -march=native -msse3 -O3 -ftree-vectorize -ftree-slp-vectorize -ffast-math -ftree-vectorizer-verbose=2
+
 # what flags you want to pass to the C compiler & linker
 CFLAGS = @CFLAGS@
 CORE_AUDIO_CFLAGS = @CORE_AUDIO_CFLAGS@
@@ -5973,9 +5974,9 @@ ACLOCAL_AMFLAGS = -I m4
 AM_CPPFLAGS = -std=gnu99 -include errno.h -I$(top_srcdir) \
 	-DSRCDIR=\"$(srcdir)\" -DDESTDIR=\"$(DESTDIR)$(datadir)\" \
 	-DPACKAGE_VERSION=\"$(PACKAGE_VERSION)\" \
-	-DAGS_REDUCE_RT_EVENTS=1 -DAGS_LIBRARY_SUFFIX=\".so\" \
-	-D_FORTIFY_SOURCE=2 -Wformat -Werror=format-security \
-	$(am__append_1)
+	-DAGS_REDUCE_RT_EVENTS=1 -DAGS_VECTORIZED_BUILTIN_FUNCTIONS=1 \
+	-DAGS_LIBRARY_SUFFIX=\".so\" -D_FORTIFY_SOURCE=2 -Wformat \
+	-Werror=format-security $(am__append_1)
 gsequencer_CFLAGS = @GSEQUENCER_CFLAGS@ $(LIBASOUND2_CFLAGS) \
 	$(LIBAO_CFLAGS) $(LIBXML2_CFLAGS) $(OPENSSL_CFLAGS) \
 	$(XMLRPC_CFLAGS) $(XMLRPC_UTIL_CFLAGS) \

@@ -595,9 +595,34 @@ ags_audio_buffer_util_envelope_s16(gint16 *buffer, guint channels,
   start_volume = current_volume;
   i = 0;
   
+#if defined(AGS_VECTORIZED_BUILTIN_FUNCTIONS)
+  /* vectorized function */
+  if(buffer_length > 8){
+    limit = buffer_length - (buffer_length % 8);
+
+    for(; i < limit; i += 8){
+      v8double v_buffer = {(gdouble) buffer[0], (gdouble) buffer[1 * channels], (gdouble) buffer[2 * channels], (gdouble) buffer[3 * channels], (gdouble) buffer[4 * channels], (gdouble) buffer[5 * channels], (gdouble) buffer[6 * channels], (gdouble) buffer[7 * channels]};
+
+      v_buffer *= current_volume;
+      
+      buffer[0] = (gint16) v_buffer[0];
+      buffer[1 * channels] = (gint16) v_buffer[1];
+      buffer[2 * channels] = (gint16) v_buffer[2];
+      buffer[3 * channels] = (gint16) v_buffer[3];
+      buffer[4 * channels] = (gint16) v_buffer[4];
+      buffer[5 * channels] = (gint16) v_buffer[5];
+      buffer[6 * channels] = (gint16) v_buffer[6];
+      buffer[7 * channels] = (gint16) v_buffer[7];
+
+      buffer += (8 * channels);
+
+      current_volume = start_volume + i * ratio;
+    }
+  }  
+#else
   /* unrolled function */
   if(buffer_length > 8){
-    limit = buffer_length - 8;
+    limit = buffer_length - (buffer_length % 8);
   
     for(; i < limit; i += 8){
       *buffer = (gint16) 0xffff & ((gint32) ((*buffer) * current_volume));
@@ -614,7 +639,8 @@ ags_audio_buffer_util_envelope_s16(gint16 *buffer, guint channels,
       current_volume = start_volume + i * ratio;
     }
   }
-
+#endif
+  
   for(; i < buffer_length; i++){
     *buffer = (gint16) 0xffff & ((gint32) ((*buffer) * current_volume));
 
@@ -1073,9 +1099,32 @@ ags_audio_buffer_util_volume_s16(gint16 *buffer, guint channels,
 
   i = 0;
   
+#if defined(AGS_VECTORIZED_BUILTIN_FUNCTIONS)
+  /* vectorized function */
+  if(buffer_length > 8){
+    limit = buffer_length - (buffer_length % 8);
+
+    for(; i < limit; i += 8){
+      v8double v_buffer = {(gdouble) buffer[0], (gdouble) buffer[1 * channels], (gdouble) buffer[2 * channels], (gdouble) buffer[3 * channels], (gdouble) buffer[4 * channels], (gdouble) buffer[5 * channels], (gdouble) buffer[6 * channels], (gdouble) buffer[7 * channels]};
+
+      v_buffer *= volume;
+      
+      buffer[0] = (gint16) v_buffer[0];
+      buffer[1 * channels] = (gint16) v_buffer[1];
+      buffer[2 * channels] = (gint16) v_buffer[2];
+      buffer[3 * channels] = (gint16) v_buffer[3];
+      buffer[4 * channels] = (gint16) v_buffer[4];
+      buffer[5 * channels] = (gint16) v_buffer[5];
+      buffer[6 * channels] = (gint16) v_buffer[6];
+      buffer[7 * channels] = (gint16) v_buffer[7];
+
+      buffer += (8 * channels);
+    }
+  }  
+#else
   /* unrolled function */
   if(buffer_length > 8){
-    limit = buffer_length - 8;
+    limit = buffer_length - (buffer_length % 8);
   
     for(; i < limit; i += 8){
       *buffer = (gint16) 0xffff & ((gint32) ((*buffer) * volume));
@@ -1090,7 +1139,8 @@ ags_audio_buffer_util_volume_s16(gint16 *buffer, guint channels,
       buffer += (8 * channels);
     }
   }
-
+#endif
+  
   for(; i < buffer_length; i++){
     *buffer = (gint16) 0xffff & ((gint32) ((*buffer) * volume));
 
@@ -1515,49 +1565,107 @@ ags_audio_buffer_util_peak_s16(gint16 *buffer, guint channels,
 
   i = 0;
   
-  /* unrolled function */
-  if(buffer_length > 0){
-    limit = buffer_length - 8;
+#if defined(AGS_VECTORIZED_BUILTIN_FUNCTIONS)
+  /* vectorized function */
+  if(buffer_length > 8){
+    limit = buffer_length - (buffer_length % 8);
 
     for(; i < limit; i += 8){
-      if(buffer[i] != 0){
-	current_value += (1.0 / ((1.0 / (gdouble) G_MAXUINT16 * pressure_factor) * buffer[i]));
+      v8double v_buffer = {(gdouble) buffer[0], (gdouble) buffer[1 * channels], (gdouble) buffer[2 * channels], (gdouble) buffer[3 * channels], (gdouble) buffer[4 * channels], (gdouble) buffer[5 * channels], (gdouble) buffer[6 * channels], (gdouble) buffer[7 * channels]};
+      v8double v_zero = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
+      
+      v_buffer = (1.0 / (gdouble) G_MAXUINT16 * pressure_factor) * v_buffer;
+
+      v_zero = v_buffer == v_zero;
+
+      if(v_zero[0] != 0.0){
+	v_buffer[0] = 1.0;
       }
 
-      if(buffer[i + 1] != 0){
-	current_value += (1.0 / ((1.0 / (gdouble) G_MAXUINT16 * pressure_factor) * buffer[i + 1]));
+      if(v_zero[1] != 0.0){
+	v_buffer[1] = 1.0;
       }
 
-      if(buffer[i + 2] != 0){
-	current_value += (1.0 / ((1.0 / (gdouble) G_MAXUINT16 * pressure_factor) * buffer[i + 2]));
+      if(v_zero[2] != 0.0){
+	v_buffer[2] = 1.0;
       }
 
-      if(buffer[i + 3] != 0){
-	current_value += (1.0 / ((1.0 / (gdouble) G_MAXUINT16 * pressure_factor) * buffer[i + 3]));
+      if(v_zero[3] != 0.0){
+	v_buffer[3] = 1.0;
+      }
+
+      if(v_zero[4] != 0.0){
+	v_buffer[4] = 1.0;
+      }
+
+      if(v_zero[5] != 0.0){
+	v_buffer[5] = 1.0;
+      }
+
+      if(v_zero[6] != 0.0){
+	v_buffer[6] = 1.0;
+      }
+
+      if(v_zero[7] != 0.0){
+	v_buffer[7] = 1.0;
+      }
+      
+      v_buffer = 1.0 / v_buffer;
+
+      current_value += v_buffer[0] + v_buffer[1] + v_buffer[2] + v_buffer[3] + v_buffer[4] + v_buffer[5] + v_buffer[6] + v_buffer[7];
+
+      buffer += (8 * channels);
+    }
+  }  
+#else
+  /* unrolled function */
+  if(buffer_length > 0){
+    limit = buffer_length - (buffer_length % 8);
+
+    for(; i < limit; i += 8){
+      if(buffer[0] != 0){
+	current_value += (1.0 / ((1.0 / (gdouble) G_MAXUINT16 * pressure_factor) * buffer[0]));
+      }
+
+      if(buffer[1 * channels] != 0){
+	current_value += (1.0 / ((1.0 / (gdouble) G_MAXUINT16 * pressure_factor) * buffer[1 * channels]));
+      }
+
+      if(buffer[2 * channels] != 0){
+	current_value += (1.0 / ((1.0 / (gdouble) G_MAXUINT16 * pressure_factor) * buffer[2 * channels]));
+      }
+
+      if(buffer[3 * channels] != 0){
+	current_value += (1.0 / ((1.0 / (gdouble) G_MAXUINT16 * pressure_factor) * buffer[3 * channels]));
       }
     
-      if(buffer[i + 4] != 0){
-	current_value += (1.0 / ((1.0 / (gdouble) G_MAXUINT16 * pressure_factor) * buffer[i + 4]));
+      if(buffer[4 * channels] != 0){
+	current_value += (1.0 / ((1.0 / (gdouble) G_MAXUINT16 * pressure_factor) * buffer[4 * channels]));
       }
 
-      if(buffer[i + 5] != 0){
-	current_value += (1.0 / ((1.0 / (gdouble) G_MAXUINT16 * pressure_factor) * buffer[i + 5]));
+      if(buffer[5 * channels] != 0){
+	current_value += (1.0 / ((1.0 / (gdouble) G_MAXUINT16 * pressure_factor) * buffer[5 * channels]));
       }
     
-      if(buffer[i + 6] != 0){
-	current_value += (1.0 / ((1.0 / (gdouble) G_MAXUINT16 * pressure_factor) * buffer[i + 6]));
+      if(buffer[6 * channels] != 0){
+	current_value += (1.0 / ((1.0 / (gdouble) G_MAXUINT16 * pressure_factor) * buffer[6 * channels]));
       }
 
-      if(buffer[i + 7] != 0){
-	current_value += (1.0 / ((1.0 / (gdouble) G_MAXUINT16 * pressure_factor) * buffer[i + 7]));
+      if(buffer[7 * channels] != 0){
+	current_value += (1.0 / ((1.0 / (gdouble) G_MAXUINT16 * pressure_factor) * buffer[7 * channels]));
       }
+
+      buffer += (8 * channels);
     }
   }
+#endif
   
   for(; i < buffer_length; i++){
-    if(buffer[i] != 0){
-      current_value += (1.0 / ((1.0 / (gdouble) G_MAXUINT16 * pressure_factor) * buffer[i]));
+    if(buffer[0] != 0){
+      current_value += (1.0 / ((1.0 / (gdouble) G_MAXUINT16 * pressure_factor) * buffer[0]));
     }
+
+    buffer += channels;
   }
 
   if(current_value != 0.0){
@@ -2937,10 +3045,35 @@ ags_audio_buffer_util_copy_s16_to_s16(gint16 *destination, guint dchannels,
   guint i;
 
   i = 0;
+
+#if defined(AGS_VECTORIZED_BUILTIN_FUNCTIONS)
+  /* vectorized function */
+  if(count > 8){
+    limit = count - (count % 8);
   
+    for(; i < limit; i += 8){
+      v8s16 v_destination = {destination[0], destination[1 * dchannels], destination[2 * dchannels], destination[3 * dchannels], destination[4 * dchannels], destination[5 * dchannels], destination[6 * dchannels], destination[7 * dchannels]};
+      v8s16 v_source = {source[0], source[1 * schannels], source[2 * schannels], source[3 * schannels], source[4 * schannels], source[5 * schannels], source[6 * schannels], source[7 * schannels]};
+
+      v_destination += v_source;
+      
+      destination[0] = v_destination[0];
+      destination[1 * dchannels] = v_destination[1];
+      destination[2 * dchannels] = v_destination[2];
+      destination[3 * dchannels] = v_destination[3];
+      destination[4 * dchannels] = v_destination[4];
+      destination[5 * dchannels] = v_destination[5];
+      destination[6 * dchannels] = v_destination[6];
+      destination[7 * dchannels] = v_destination[7];
+
+      destination += (8 * dchannels);
+      source += (8 * schannels);
+    }
+  }
+#else  
   /* unrolled function */
   if(count > 8){
-    limit = count - 8;
+    limit = count - (count % 8);
   
     for(; i < limit; i += 8){
       *destination = (gint16) 0xffff & ((gint32) ((*destination) + (*source)));
@@ -2956,6 +3089,7 @@ ags_audio_buffer_util_copy_s16_to_s16(gint16 *destination, guint dchannels,
       source += (8 * schannels);
     }
   }
+#endif
 
   for(; i < count; i++){
     *destination = (gint16) 0xffff & ((gint32) ((*destination) + (*source)));
@@ -3142,9 +3276,34 @@ ags_audio_buffer_util_copy_s16_to_float(gfloat *destination, guint dchannels,
 
   i = 0;
   
+#if defined(AGS_VECTORIZED_BUILTIN_FUNCTIONS)
+  /* vectorized function */
+  if(count > 8){
+    limit = count - (count % 8);
+  
+    for(; i < limit; i += 8){
+      v8float v_destination = {destination[0], destination[1 * dchannels], destination[2 * dchannels], destination[3 * dchannels], destination[4 * dchannels], destination[5 * dchannels], destination[6 * dchannels], destination[7 * dchannels]};
+      v8float v_source = {(gfloat) source[0], (gfloat) source[1 * schannels], (gfloat) source[2 * schannels], (gfloat) source[3 * schannels], (gfloat) source[4 * schannels], (gfloat) source[5 * schannels], (gfloat) source[6 * schannels], (gfloat) source[7 * schannels]};
+
+      v_destination += v_source;
+      
+      destination[0] = v_destination[0];
+      destination[1 * dchannels] = v_destination[1];
+      destination[2 * dchannels] = v_destination[2];
+      destination[3 * dchannels] = v_destination[3];
+      destination[4 * dchannels] = v_destination[4];
+      destination[5 * dchannels] = v_destination[5];
+      destination[6 * dchannels] = v_destination[6];
+      destination[7 * dchannels] = v_destination[7];
+
+      destination += (8 * dchannels);
+      source += (8 * schannels);
+    }
+  }
+#else  
   /* unrolled function */
   if(count > 8){
-    limit = count - 8;
+    limit = count - (count % 8);
   
     for(; i < limit; i += 8){
       *destination = (gfloat) ((gdouble) ((*destination) + (gdouble) (source[0] / exp2(15.0))));
@@ -3160,7 +3319,8 @@ ags_audio_buffer_util_copy_s16_to_float(gfloat *destination, guint dchannels,
       source += (8 * schannels);
     }
   }
-
+#endif
+  
   for(; i < count; i++){
     *destination = (gfloat) ((gdouble) ((*destination) + (gdouble) (source[0] / exp2(15.0))));
 

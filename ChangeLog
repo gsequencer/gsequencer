@@ -1,3 +1,9 @@
+ags (2.2.25)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* TODO:JK: refactored ags_audio_buffer_util.c to support builtin vector functions
+	* TODO:JK: fixed ags_char_buffer_util.c
+
 ags (2.2.24)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

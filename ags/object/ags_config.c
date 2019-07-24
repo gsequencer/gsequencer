@@ -528,13 +528,13 @@ ags_config_real_load_defaults(AgsConfig *config)
 #if defined(AGS_WITH_CORE_AUDIO)
   ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "backend", "core-audio");
   ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "device", "ags-core-audio-devout-0");
-#elseif defined(AGS_WITH_PULSE)
+#elif defined(AGS_WITH_PULSE)
   ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "backend", "pulse");
   ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "device", "ags-pulse-devout-0");
-#elseif defined(AGS_WITH_ALSA)
+#elif defined(AGS_WITH_ALSA)
   ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "backend", "alsa");
   ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "device", "default");
-#elseif defined(AGS_WITH_OSS)
+#elif defined(AGS_WITH_OSS)
   ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "backend", "oss");
   ags_config_set_value(config, AGS_CONFIG_SOUNDCARD_0, "device", "/dev/dsp");
 #endif
