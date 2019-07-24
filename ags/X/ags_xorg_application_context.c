@@ -3296,15 +3296,27 @@ ags_xorg_application_context_load_gui_scale(AgsXorgApplicationContext *xorg_appl
   AgsConfig *config;
   
   GParamSpec *param_spec;
-    
+
+  char **argv;
   gchar *str;
-    
+
+  int argc;    
   gdouble gui_scale_factor;
   gint default_slider_width;
   gint default_stepper_size;
-
+  guint i;
+  
   GValue *value;
 
+  argc = AGS_APPLICATION_CONTEXT(xorg_application_context)->argc;
+  argv = AGS_APPLICATION_CONTEXT(xorg_application_context)->argv;
+
+  for(i = 0; i < argc; i++){
+    if(!strncmp(argv[i], "--no-builtin-theme", 19)){
+      return;
+    }
+  }
+  
   config = ags_config_get_instance();
   
   gui_scale_factor = 1.0;
