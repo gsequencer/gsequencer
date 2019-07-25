@@ -269,7 +269,7 @@ ags_navigation_init(AgsNavigation *navigation)
 	       "label", "0000:00.000",
 	       NULL);
   gtk_box_pack_start((GtkBox *) hbox, (GtkWidget *) navigation->duration_time, FALSE, FALSE, 2);
-  g_timeout_add(1000 / 30, (GSourceFunc) ags_navigation_duration_time_queue_draw, (gpointer) navigation);
+  g_timeout_add(AGS_UI_PROVIDER_DEFAULT_TIMEOUT * 1000.0, (GSourceFunc) ags_navigation_duration_time_queue_draw, (gpointer) navigation);
 
   navigation->duration_tact = NULL;
   //  navigation->duration_tact = (GtkSpinButton *) gtk_spin_button_new_with_range(0.0, AGS_NOTATION_EDITOR_MAX_CONTROLS, 1.0);

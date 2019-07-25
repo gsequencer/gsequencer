@@ -24,6 +24,7 @@
 #include <ags/libags-audio.h>
 #include <ags/libags-gui.h>
 
+#include <ags/X/ags_ui_provider.h>
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_machine.h>
 #include <ags/X/ags_effect_pad.h>
@@ -510,7 +511,7 @@ ags_effect_line_init(AgsEffectLine *effect_line)
   g_hash_table_insert(ags_effect_line_message_monitor,
 		      effect_line, ags_effect_line_message_monitor_timeout);
   
-  g_timeout_add(1000 / 30,
+  g_timeout_add(AGS_UI_PROVIDER_DEFAULT_TIMEOUT * 1000.0,
 		(GSourceFunc) ags_effect_line_message_monitor_timeout,
 		(gpointer) effect_line);
 
@@ -1534,7 +1535,7 @@ ags_effect_line_add_ladspa_effect(AgsEffectLine *effect_line,
 	effect_line->queued_drawing = g_list_prepend(effect_line->queued_drawing,
 						     child_widget);
 
-	g_timeout_add(1000 / 30,
+	g_timeout_add(AGS_UI_PROVIDER_DEFAULT_TIMEOUT * 1000.0,
 		      (GSourceFunc) ags_effect_line_indicator_queue_draw_timeout,
 		      (gpointer) child_widget);
       }
@@ -2101,7 +2102,7 @@ ags_effect_line_add_lv2_effect(AgsEffectLine *effect_line,
 	effect_line->queued_drawing = g_list_prepend(effect_line->queued_drawing,
 						     child_widget);
 	
-	g_timeout_add(1000 / 30,
+	g_timeout_add(AGS_UI_PROVIDER_DEFAULT_TIMEOUT * 1000.0,
 		      (GSourceFunc) ags_effect_line_indicator_queue_draw_timeout,
 		      (gpointer) child_widget);
       }

@@ -1407,7 +1407,7 @@ ags_effect_bulk_add_ladspa_effect(AgsEffectBulk *effect_bulk,
 	effect_bulk->queued_drawing = g_list_prepend(effect_bulk->queued_drawing,
 						     child_widget);
 
-	g_timeout_add(1000 / 30,
+	g_timeout_add(AGS_UI_PROVIDER_DEFAULT_TIMEOUT * 1000.0,
 		      (GSourceFunc) ags_effect_bulk_indicator_queue_draw_timeout,
 		      (gpointer) child_widget);
       }
@@ -1969,7 +1969,7 @@ ags_effect_bulk_add_dssi_effect(AgsEffectBulk *effect_bulk,
 			    child_widget, ags_effect_bulk_indicator_queue_draw_timeout);
 	effect_bulk->queued_drawing = g_list_prepend(effect_bulk->queued_drawing,
 						     child_widget);
-	g_timeout_add(1000 / 30, (GSourceFunc) ags_effect_bulk_indicator_queue_draw_timeout, (gpointer) child_widget);
+	g_timeout_add(AGS_UI_PROVIDER_DEFAULT_TIMEOUT * 1000.0, (GSourceFunc) ags_effect_bulk_indicator_queue_draw_timeout, (gpointer) child_widget);
       }
 
       gtk_table_attach(effect_bulk->table,
@@ -2504,7 +2504,7 @@ ags_effect_bulk_add_lv2_effect(AgsEffectBulk *effect_bulk,
 	effect_bulk->queued_drawing = g_list_prepend(effect_bulk->queued_drawing,
 						     child_widget);
 
-	g_timeout_add(1000 / 30,
+	g_timeout_add(AGS_UI_PROVIDER_DEFAULT_TIMEOUT * 1000.0,
 		      (GSourceFunc) ags_effect_bulk_indicator_queue_draw_timeout,
 		      (gpointer) child_widget);
       }

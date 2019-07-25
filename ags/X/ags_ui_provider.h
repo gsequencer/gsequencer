@@ -34,6 +34,8 @@
 #define AGS_IS_UI_PROVIDER_INTERFACE(vtable)    (G_TYPE_CHECK_CLASS_TYPE((vtable), AGS_TYPE_UI_PROVIDER))
 #define AGS_UI_PROVIDER_GET_INTERFACE(obj)      (G_TYPE_INSTANCE_GET_INTERFACE((obj), AGS_TYPE_UI_PROVIDER, AgsUiProviderInterface))
 
+#define AGS_UI_PROVIDER_DEFAULT_TIMEOUT (1.0 / 60.0)
+  
 typedef struct _AgsUiProvider AgsUiProvider;
 typedef struct _AgsUiProviderInterface AgsUiProviderInterface;
 

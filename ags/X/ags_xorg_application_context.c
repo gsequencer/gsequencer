@@ -1679,7 +1679,7 @@ ags_xorg_application_context_prepare(AgsApplicationContext *application_context)
   pthread_mutex_unlock(audio_loop->start_mutex);
 
   /* start gui thread */
-  g_timeout_add(1000 / 30,
+  g_timeout_add(AGS_UI_PROVIDER_DEFAULT_TIMEOUT * 1000.0,
 		(GSourceFunc) ags_xorg_application_context_message_monitor_timeout,
 		(gpointer) xorg_application_context);
   

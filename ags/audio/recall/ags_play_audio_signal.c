@@ -41,6 +41,10 @@ void ags_play_audio_signal_class_init(AgsPlayAudioSignalClass *play_audio_signal
 void ags_play_audio_signal_init(AgsPlayAudioSignal *play_audio_signal);
 void ags_play_audio_signal_finalize(GObject *gobject);
 
+void ags_play_audio_signal_notify_output_soundcard_after_callback(GObject *gobject,
+								  GParamSpec *pspec,
+								  gpointer user_data);
+
 void ags_play_audio_signal_run_inter(AgsRecall *recall);
 
 /**
@@ -110,6 +114,13 @@ void
 ags_play_audio_signal_init(AgsPlayAudioSignal *play_audio_signal)
 {
   AGS_RECALL(play_audio_signal)->child_type = G_TYPE_NONE;
+
+  play_audio_signal->sub_block_count = 0;
+  
+  play_audio_signal->completed_sub_block = NULL;
+
+  g_signal_connect_after(play_audio_signal, "notify::output-soundcard",
+			 G_CALLBACK(ags_play_audio_signal_notify_output_soundcard_after_callback), NULL);
 }
 
 void
@@ -117,6 +128,35 @@ ags_play_audio_signal_finalize(GObject *gobject)
 {  
   /* call parent */
   G_OBJECT_CLASS(ags_play_audio_signal_parent_class)->finalize(gobject);
+}
+
+void
+ags_play_audio_signal_notify_output_soundcard_after_callback(GObject *gobject,
+							     GParamSpec *pspec,
+							     gpointer user_data)
+{
+  AgsPlayAudioSignal *play_audio_signal;
+
+  GObject *output_soundcard;
+
+  g_object_get(gobject,
+	       "output-soundcard", &output_soundcard,
+	       NULL);
+
+  if(output_soundcard == NULL){
+    return;
+  }
+
+  play_audio_signal = AGS_PLAY_AUDIO_SIGNAL(gobject);
+
+  if(play_audio_signal->completed_sub_block != NULL){
+    free(play_audio_signal->completed_sub_block);
+  }
+
+  play_audio_signal->sub_block_count = ags_soundcard_get_sub_block_count(AGS_SOUNDCARD(output_soundcard));
+  
+  play_audio_signal->completed_sub_block = (gboolean *) malloc(play_audio_signal->sub_block_count * sizeof(gboolean));
+  memset(play_audio_signal->completed_sub_block, 0, play_audio_signal->sub_block_count * sizeof(gboolean));
 }
 
 void
@@ -144,9 +184,12 @@ ags_play_audio_signal_run_inter(AgsRecall *recall)
   guint pcm_channels;
   guint samplerate, soundcard_samplerate;
   guint buffer_size, soundcard_buffer_size;
+  guint sub_block_size;
   guint format, soundcard_format;
   guint attack;
   guint copy_mode;
+  guint completed_sub_block_count;
+  guint i;
   gboolean resample;
   
   GValue muted_value = {0,};
@@ -325,6 +368,38 @@ ags_play_audio_signal_run_inter(AgsRecall *recall)
       }
 
       /* copy */
+      sub_block_size = (buffer_size / play_audio_signal->sub_block_count);
+      
+      completed_sub_block_count = 0;
+      
+      memset(play_audio_signal->completed_sub_block, 0, play_audio_signal->sub_block_count * sizeof(gboolean));
+
+      while(completed_sub_block_count < play_audio_signal->sub_block_count){
+	for(i = 0; i < play_audio_signal->sub_block_count; i++){
+	  gboolean success;
+	  
+	  if(play_audio_signal->completed_sub_block[i]){
+	    continue;
+	  }
+	  
+	  success = ags_soundcard_trylock_sub_block(AGS_SOUNDCARD(output_soundcard),
+						    buffer0, audio_channel + i * pcm_channels);
+
+	  if(success){
+	    ags_audio_buffer_util_copy_buffer_to_buffer(buffer0, pcm_channels, audio_channel + (i * sub_block_size) * pcm_channels,
+							buffer_source, 1, (i * sub_block_size),
+							sub_block_size, copy_mode);
+
+	    ags_soundcard_unlock_sub_block(AGS_SOUNDCARD(output_soundcard),
+					   buffer0, audio_channel + i * pcm_channels);
+
+	    completed_sub_block_count++;
+	    play_audio_signal->completed_sub_block[i] = TRUE;
+	  }
+	}
+      }
+      
+#if 0
       ags_soundcard_lock_buffer(AGS_SOUNDCARD(output_soundcard),
 				buffer0);
       
@@ -334,7 +409,8 @@ ags_play_audio_signal_run_inter(AgsRecall *recall)
 
       ags_soundcard_unlock_buffer(AGS_SOUNDCARD(output_soundcard),
 				  buffer0);
-  
+#endif
+      
       if(resample){
 	free(buffer_source);
       }
@@ -342,6 +418,10 @@ ags_play_audio_signal_run_inter(AgsRecall *recall)
       note = note->next;
     }
   }else{
+    void *buffer_source_prev;
+    
+    gboolean initial_run;
+
     stream = source->stream_current;
         
     if(stream == NULL){
@@ -375,7 +455,91 @@ ags_play_audio_signal_run_inter(AgsRecall *recall)
       
       resample = TRUE;
     }
+
+    buffer_source_prev = NULL;
+
+    initial_run = ags_recall_test_flags(recall, AGS_RECALL_INITIAL_RUN);
+
+    if(!initial_run){
+      if(source->attack != 0 && stream->prev != NULL){
+	buffer_source_prev = stream->prev->data;
+
+	if(resample){
+	  buffer_source_prev = ags_audio_buffer_util_resample(buffer_source_prev, 1,
+							      ags_audio_buffer_util_format_from_soundcard(format), samplerate,
+							      buffer_size,
+							      soundcard_samplerate);
+
+	}
+      }
+    }
     
+    /* copy */
+    sub_block_size = (buffer_size / play_audio_signal->sub_block_count);
+      
+    completed_sub_block_count = 0;
+      
+    memset(play_audio_signal->completed_sub_block, 0, play_audio_signal->sub_block_count * sizeof(gboolean));
+
+    while(completed_sub_block_count < play_audio_signal->sub_block_count){
+      for(i = 0; i < play_audio_signal->sub_block_count; i++){
+	gboolean success;
+	  
+	if(play_audio_signal->completed_sub_block[i]){
+	  continue;
+	}
+	  
+	success = ags_soundcard_trylock_sub_block(AGS_SOUNDCARD(output_soundcard),
+						  buffer0, audio_channel + i * pcm_channels);
+
+	if(success){	  
+	  if(initial_run){
+	    if(attack < i * sub_block_size &&
+	       attack + sub_block_size > i * sub_block_size){
+	      ags_audio_buffer_util_copy_buffer_to_buffer(buffer0, pcm_channels, audio_channel + attack * pcm_channels,
+							  buffer_source, 1, i * sub_block_size,
+							  (attack + sub_block_size) - (i * sub_block_size), copy_mode);
+	    }else if(attack < i * sub_block_size){
+	      ags_audio_buffer_util_copy_buffer_to_buffer(buffer0, pcm_channels, audio_channel + (i * sub_block_size) * pcm_channels,
+							  buffer_source, 1, i * sub_block_size,
+							  sub_block_size, copy_mode);
+	    }
+	  }else{
+	    if(source->attack != 0 && stream->prev != NULL){
+	      if(i * sub_block_size < attack &&
+		 (i + 1) * sub_block_size > attack){
+		ags_audio_buffer_util_copy_buffer_to_buffer(buffer0, pcm_channels, audio_channel + (i * sub_block_size) * pcm_channels,
+							    buffer_source, 1, i * sub_block_size,
+							    ((i + 1) * sub_block_size) - attack, copy_mode);
+	      }else if(i * sub_block_size < attack){
+		ags_audio_buffer_util_copy_buffer_to_buffer(buffer0, pcm_channels, audio_channel + (i * sub_block_size) * pcm_channels,
+							    buffer_source, 1, i * sub_block_size,
+							    sub_block_size, copy_mode);
+	      }
+	    }
+	    
+	    if(attack < i * sub_block_size &&
+	       attack + sub_block_size > i * sub_block_size){
+	      ags_audio_buffer_util_copy_buffer_to_buffer(buffer0, pcm_channels, audio_channel + attack * pcm_channels,
+							  buffer_source, 1, i * sub_block_size,
+							  (attack + sub_block_size) - (i * sub_block_size), copy_mode);
+	    }else if(attack < i * sub_block_size){
+	      ags_audio_buffer_util_copy_buffer_to_buffer(buffer0, pcm_channels, audio_channel + (i * sub_block_size) * pcm_channels,
+							  buffer_source, 1, i * sub_block_size,
+							  sub_block_size, copy_mode);
+	    }
+	  }
+
+	  ags_soundcard_unlock_sub_block(AGS_SOUNDCARD(output_soundcard),
+					 buffer0, audio_channel + i * pcm_channels);
+
+	  completed_sub_block_count++;
+	  play_audio_signal->completed_sub_block[i] = TRUE;
+	}
+      }
+    }
+    
+#if 0
     if(ags_recall_test_flags(recall, AGS_RECALL_INITIAL_RUN)){
       /* copy */
       ags_soundcard_lock_buffer(AGS_SOUNDCARD(output_soundcard),
@@ -428,6 +592,7 @@ ags_play_audio_signal_run_inter(AgsRecall *recall)
       ags_soundcard_unlock_buffer(AGS_SOUNDCARD(output_soundcard),
 				  buffer0);
     }
+#endif
   
     if(resample){
       free(buffer_source);

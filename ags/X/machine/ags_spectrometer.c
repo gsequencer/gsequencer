@@ -24,6 +24,8 @@
 #include <ags/libags-audio.h>
 #include <ags/libags-gui.h>
 
+#include <ags/X/ags_ui_provider.h>
+
 void ags_spectrometer_class_init(AgsSpectrometerClass *spectrometer);
 void ags_spectrometer_connectable_interface_init(AgsConnectableInterface *connectable);
 void ags_spectrometer_plugin_interface_init(AgsPluginInterface *plugin);
@@ -287,14 +289,14 @@ ags_spectrometer_init(AgsSpectrometer *spectrometer)
   /* queue draw */
   g_hash_table_insert(ags_spectrometer_cartesian_queue_draw,
 		      cartesian, ags_spectrometer_cartesian_queue_draw_timeout);
-  g_timeout_add(1000 / 30, (GSourceFunc) ags_spectrometer_cartesian_queue_draw_timeout, (gpointer) cartesian);
+  g_timeout_add(AGS_UI_PROVIDER_DEFAULT_TIMEOUT * 1000.0, (GSourceFunc) ags_spectrometer_cartesian_queue_draw_timeout, (gpointer) cartesian);
 
   /* output - discard messages */
   g_hash_table_insert(ags_machine_generic_output_message_monitor,
 		      spectrometer,
 		      ags_machine_generic_output_message_monitor_timeout);
 
-  g_timeout_add(1000 / 30,
+  g_timeout_add(AGS_UI_PROVIDER_DEFAULT_TIMEOUT * 1000.0,
 		(GSourceFunc) ags_machine_generic_output_message_monitor_timeout,
 		(gpointer) spectrometer);
 
@@ -303,7 +305,7 @@ ags_spectrometer_init(AgsSpectrometer *spectrometer)
 		      spectrometer,
 		      ags_machine_generic_input_message_monitor_timeout);
 
-  g_timeout_add(1000 / 30,
+  g_timeout_add(AGS_UI_PROVIDER_DEFAULT_TIMEOUT * 1000.0,
 		(GSourceFunc) ags_machine_generic_input_message_monitor_timeout,
 		(gpointer) spectrometer);
 }

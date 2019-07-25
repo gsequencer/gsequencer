@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -73,6 +73,8 @@
 #else
 #define AGS_SOUNDCARD_DEFAULT_OVERCLOCK (0.0)
 #endif
+
+#define AGS_SOUNDCARD_DEFAULT_SUB_BLOCK_COUNT (8)
 
 typedef struct _AgsSoundcard AgsSoundcard;
 typedef struct _AgsSoundcardInterface AgsSoundcardInterface;
@@ -208,6 +210,13 @@ struct _AgsSoundcardInterface
 		   gboolean *do_loop);
 
   guint (*get_loop_offset)(AgsSoundcard *soundcard);
+
+  guint (*get_sub_block_count)(AgsSoundcard *soundcard);
+
+  gboolean (*trylock_sub_block)(AgsSoundcard *soundcard,
+				void *buffer, guint sub_block);
+  void (*unlock_sub_block)(AgsSoundcard *soundcard,
+			   void *buffer, guint sub_block);
 };
 
 GType ags_soundcard_get_type();
@@ -310,5 +319,12 @@ void ags_soundcard_get_loop(AgsSoundcard *soundcard,
 			    gboolean *do_loop);
 
 guint ags_soundcard_get_loop_offset(AgsSoundcard *soundcard);
+
+guint ags_soundcard_get_sub_block_count(AgsSoundcard *soundcard);
+
+gboolean ags_soundcard_trylock_sub_block(AgsSoundcard *soundcard,
+					 void *buffer, guint sub_block);
+void ags_soundcard_unlock_sub_block(AgsSoundcard *soundcard,
+				    void *buffer, guint sub_block);
 
 #endif /*__AGS_SOUNDCARD_H__*/

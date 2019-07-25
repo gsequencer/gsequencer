@@ -340,7 +340,7 @@ ags_audiorec_init(AgsAudiorec *audiorec)
 
   g_hash_table_insert(ags_audiorec_indicator_queue_draw,
 		      audiorec, ags_audiorec_indicator_queue_draw_timeout);
-  g_timeout_add(1000 / 30, (GSourceFunc) ags_audiorec_indicator_queue_draw_timeout, (gpointer) audiorec);
+  g_timeout_add(AGS_UI_PROVIDER_DEFAULT_TIMEOUT * 1000.0, (GSourceFunc) ags_audiorec_indicator_queue_draw_timeout, (gpointer) audiorec);
 }
 
 void

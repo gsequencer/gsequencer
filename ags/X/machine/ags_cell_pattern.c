@@ -23,6 +23,7 @@
 #include <ags/libags.h>
 #include <ags/libags-audio.h>
 
+#include <ags/X/ags_ui_provider.h>
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_machine.h>
 
@@ -308,7 +309,7 @@ ags_cell_pattern_init(AgsCellPattern *cell_pattern)
 
   g_hash_table_insert(ags_cell_pattern_led_queue_draw,
 		      cell_pattern, ags_cell_pattern_led_queue_draw_timeout);
-  g_timeout_add(1000 / 30, (GSourceFunc) ags_cell_pattern_led_queue_draw_timeout, (gpointer) cell_pattern);
+  g_timeout_add(AGS_UI_PROVIDER_DEFAULT_TIMEOUT * 1000.0, (GSourceFunc) ags_cell_pattern_led_queue_draw_timeout, (gpointer) cell_pattern);
 }
 
 void

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -41,6 +41,10 @@ typedef struct _AgsPlayAudioSignalClass AgsPlayAudioSignalClass;
 struct _AgsPlayAudioSignal
 {
   AgsRecallAudioSignal recall_audio_signal;
+
+  guint sub_block_count;
+  
+  gboolean *completed_sub_block;
 };
 
 struct _AgsPlayAudioSignalClass
