@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -157,6 +157,13 @@ void ags_jack_devout_get_loop(AgsSoundcard *soundcard,
 			      gboolean *do_loop);
 
 guint ags_jack_devout_get_loop_offset(AgsSoundcard *soundcard);
+
+guint ags_jack_devout_get_sub_block_count(AgsSoundcard *soundcard);
+
+gboolean ags_jack_devout_trylock_sub_block(AgsSoundcard *soundcard,
+					   void *buffer, guint sub_block);
+void ags_jack_devout_unlock_sub_block(AgsSoundcard *soundcard,
+				      void *buffer, guint sub_block);
 
 /**
  * SECTION:ags_jack_devout
@@ -577,6 +584,11 @@ ags_jack_devout_soundcard_interface_init(AgsSoundcardInterface *soundcard)
   soundcard->get_loop = ags_jack_devout_get_loop;
 
   soundcard->get_loop_offset = ags_jack_devout_get_loop_offset;
+
+  soundcard->get_sub_block_count = ags_jack_devout_get_sub_block_count;
+
+  soundcard->trylock_sub_block = ags_jack_devout_trylock_sub_block;
+  soundcard->unlock_sub_block = ags_jack_devout_unlock_sub_block;
 }
 
 void
@@ -644,6 +656,16 @@ ags_jack_devout_init(AgsJackDevout *jack_devout)
 		       NULL);
   }
   
+  jack_devout->sub_block_count = AGS_SOUNDCARD_DEFAULT_SUB_BLOCK_COUNT;
+  jack_devout->sub_block_mutex = (pthread_mutex_t **) malloc(4 * jack_devout->sub_block_count * jack_devout->pcm_channels * sizeof(pthread_mutex_t *));
+
+  for(i = 0; i < 4 * jack_devout->sub_block_count * jack_devout->pcm_channels; i++){
+    jack_devout->sub_block_mutex[i] = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
+
+    pthread_mutex_init(jack_devout->sub_block_mutex[i],
+		       NULL);
+  }
+
   jack_devout->buffer = (void **) malloc(4 * sizeof(void*));
 
   jack_devout->buffer[0] = NULL;
@@ -800,7 +822,8 @@ ags_jack_devout_set_property(GObject *gobject,
     break;
   case PROP_PCM_CHANNELS:
     {
-      guint pcm_channels;
+      guint pcm_channels, old_pcm_channels;
+      guint i;
 
       pcm_channels = g_value_get_uint(value);
 
@@ -810,6 +833,26 @@ ags_jack_devout_set_property(GObject *gobject,
 	pthread_mutex_unlock(jack_devout_mutex);
 
 	return;
+      }
+
+      old_pcm_channels = jack_devout->pcm_channels;
+
+      /* destroy if less pcm-channels */
+      for(i = 4 * jack_devout->sub_block_count * pcm_channels; i < 4 * jack_devout->sub_block_count * old_pcm_channels; i++){
+	pthread_mutex_destroy(jack_devout->sub_block_mutex[i]);
+
+	free(jack_devout->sub_block_mutex[i]);
+      }
+
+      jack_devout->sub_block_mutex = (pthread_mutex_t **) realloc(jack_devout->sub_block_mutex,
+								  4 * jack_devout->sub_block_count * pcm_channels * sizeof(pthread_mutex_t *));
+      
+      /* create if more pcm-channels */
+      for(i = 4 * jack_devout->sub_block_count * old_pcm_channels; i < 4 * jack_devout->sub_block_count * pcm_channels; i++){
+	jack_devout->sub_block_mutex[i] = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
+
+	pthread_mutex_init(jack_devout->sub_block_mutex[i],
+			   NULL);
       }
 
       jack_devout->pcm_channels = pcm_channels;
@@ -3105,6 +3148,137 @@ ags_jack_devout_get_loop_offset(AgsSoundcard *soundcard)
   pthread_mutex_unlock(jack_devout_mutex);
 
   return(loop_offset);
+}
+
+guint
+ags_jack_devout_get_sub_block_count(AgsSoundcard *soundcard)
+{
+  AgsJackDevout *jack_devout;
+
+  guint sub_block_count;
+  
+  pthread_mutex_t *jack_devout_mutex;  
+
+  jack_devout = AGS_JACK_DEVOUT(soundcard);
+
+  /* get jack devout mutex */
+  pthread_mutex_lock(ags_jack_devout_get_class_mutex());
+  
+  jack_devout_mutex = jack_devout->obj_mutex;
+  
+  pthread_mutex_unlock(ags_jack_devout_get_class_mutex());
+
+  /* get loop offset */
+  pthread_mutex_lock(jack_devout_mutex);
+
+  sub_block_count = jack_devout->sub_block_count;
+  
+  pthread_mutex_unlock(jack_devout_mutex);
+
+  return(sub_block_count);
+}
+
+gboolean
+ags_jack_devout_trylock_sub_block(AgsSoundcard *soundcard,
+				  void *buffer, guint sub_block)
+{
+  AgsJackDevout *jack_devout;
+
+  guint pcm_channels;
+  guint sub_block_count;
+  gboolean success;
+  
+  pthread_mutex_t *jack_devout_mutex;  
+  pthread_mutex_t *sub_block_mutex;
+
+  jack_devout = AGS_JACK_DEVOUT(soundcard);
+
+  /* get jack devout mutex */
+  pthread_mutex_lock(ags_jack_devout_get_class_mutex());
+  
+  jack_devout_mutex = jack_devout->obj_mutex;
+  
+  pthread_mutex_unlock(ags_jack_devout_get_class_mutex());
+
+  /* get loop offset */
+  pthread_mutex_lock(jack_devout_mutex);
+
+  pcm_channels = jack_devout->pcm_channels;
+  sub_block_count = jack_devout->sub_block_count;
+  
+  pthread_mutex_unlock(jack_devout_mutex);
+  
+  sub_block_mutex = NULL;
+
+  success = FALSE;
+  
+  if(jack_devout->buffer != NULL){
+    if(buffer == jack_devout->buffer[0]){
+      sub_block_mutex = jack_devout->sub_block_mutex[sub_block];
+    }else if(buffer == jack_devout->buffer[1]){
+      sub_block_mutex = jack_devout->sub_block_mutex[pcm_channels * sub_block_count + sub_block];
+    }else if(buffer == jack_devout->buffer[2]){
+      sub_block_mutex = jack_devout->sub_block_mutex[2 * pcm_channels * sub_block_count + sub_block];
+    }else if(buffer == jack_devout->buffer[3]){
+      sub_block_mutex = jack_devout->sub_block_mutex[3 * pcm_channels * sub_block_count + sub_block];
+    }
+  }
+
+  if(sub_block_mutex != NULL){
+    if(pthread_mutex_trylock(sub_block_mutex) == 0){
+      success = TRUE;
+    }
+  }
+
+  return(success);
+}
+
+void
+ags_jack_devout_unlock_sub_block(AgsSoundcard *soundcard,
+				 void *buffer, guint sub_block)
+{
+  AgsJackDevout *jack_devout;
+
+  guint pcm_channels;
+  guint sub_block_count;
+  
+  pthread_mutex_t *jack_devout_mutex;  
+  pthread_mutex_t *sub_block_mutex;
+
+  jack_devout = AGS_JACK_DEVOUT(soundcard);
+
+  /* get jack devout mutex */
+  pthread_mutex_lock(ags_jack_devout_get_class_mutex());
+  
+  jack_devout_mutex = jack_devout->obj_mutex;
+  
+  pthread_mutex_unlock(ags_jack_devout_get_class_mutex());
+
+  /* get loop offset */
+  pthread_mutex_lock(jack_devout_mutex);
+
+  pcm_channels = jack_devout->pcm_channels;
+  sub_block_count = jack_devout->sub_block_count;
+  
+  pthread_mutex_unlock(jack_devout_mutex);
+  
+  sub_block_mutex = NULL;
+  
+  if(jack_devout->buffer != NULL){
+    if(buffer == jack_devout->buffer[0]){
+      sub_block_mutex = jack_devout->sub_block_mutex[sub_block];
+    }else if(buffer == jack_devout->buffer[1]){
+      sub_block_mutex = jack_devout->sub_block_mutex[pcm_channels * sub_block_count + sub_block];
+    }else if(buffer == jack_devout->buffer[2]){
+      sub_block_mutex = jack_devout->sub_block_mutex[2 * pcm_channels * sub_block_count + sub_block];
+    }else if(buffer == jack_devout->buffer[3]){
+      sub_block_mutex = jack_devout->sub_block_mutex[3 * pcm_channels * sub_block_count + sub_block];
+    }
+  }
+
+  if(sub_block_mutex != NULL){
+    pthread_mutex_unlock(sub_block_mutex);
+  }
 }
 
 /**

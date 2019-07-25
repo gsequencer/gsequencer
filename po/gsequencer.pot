@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: gsequencer 2.2.25\n"
+"Project-Id-Version: gsequencer 2.2.26\n"
 "Report-Msgid-Bugs-To: jkraehemann@gmail.com\n"
-"POT-Creation-Date: 2019-07-24 16:58+0200\n"
+"POT-Creation-Date: 2019-07-25 21:37+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -187,12 +187,12 @@ msgstr ""
 msgid "Copyright"
 msgstr ""
 
-#: ags/X/ags_effect_line.c:545 ags/X/ags_line.c:578
+#: ags/X/ags_effect_line.c:546 ags/X/ags_line.c:579
 msgid "group"
 msgstr ""
 
-#: ags/X/ags_effect_line.c:958 ags/X/ags_effect_line.c:964
-#: ags/X/ags_line.c:1030 ags/X/ags_line.c:1036 ags/X/ags_notation_editor.c:305
+#: ags/X/ags_effect_line.c:959 ags/X/ags_effect_line.c:965
+#: ags/X/ags_line.c:1031 ags/X/ags_line.c:1037 ags/X/ags_notation_editor.c:305
 msgid "channel"
 msgstr ""
 

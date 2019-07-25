@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -129,6 +129,10 @@ struct _AgsPulseDevout
   guint samplerate;
 
   pthread_mutex_t **buffer_mutex;
+
+  guint sub_block_count;
+  pthread_mutex_t **sub_block_mutex;
+
   void **buffer;
 
   double bpm; // beats per minute

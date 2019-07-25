@@ -1,3 +1,12 @@
+ags (2.2.26)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented lock-free soundcard buffer in ags-play recall
+	* implemented ags_soundcard_get_sub_block_count()
+	* implemented ags_soundcard_trylock_sub_block()
+	* implemented ags_soundcard_unlock_sub_block()
+	* improved AgsDevout, AgsPulseDevout, AgsJackDevout and AgsCoreAudioDevout
+
 ags (2.2.25)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
