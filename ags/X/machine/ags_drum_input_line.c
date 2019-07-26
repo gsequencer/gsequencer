@@ -24,6 +24,7 @@
 #include <ags/libags-audio.h>
 #include <ags/libags-gui.h>
 
+#include <ags/X/ags_ui_provider.h>
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_line_callbacks.h>
 #include <ags/X/ags_line_member.h>
@@ -178,7 +179,7 @@ ags_drum_input_line_init(AgsDrumInputLine *drum_input_line)
   AGS_LINE(drum_input_line)->indicator = widget;
   g_hash_table_insert(ags_line_indicator_queue_draw,
 		      widget, ags_line_indicator_queue_draw_timeout);
-  g_timeout_add(1000 / 30, (GSourceFunc) ags_line_indicator_queue_draw_timeout, (gpointer) widget);
+  g_timeout_add(AGS_UI_PROVIDER_DEFAULT_TIMEOUT * 1000.0, (GSourceFunc) ags_line_indicator_queue_draw_timeout, (gpointer) widget);
 
   adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 10.0, 1.0, 1.0, 10.0);
   g_object_set(widget,

@@ -24,6 +24,7 @@
 #include <ags/libags-audio.h>
 #include <ags/libags-gui.h>
 
+#include <ags/X/ags_ui_provider.h>
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_machine.h>
 #include <ags/X/ags_pad.h>
@@ -279,7 +280,7 @@ ags_pattern_box_init(AgsPatternBox *pattern_box)
 
   g_hash_table_insert(ags_pattern_box_led_queue_draw,
 		      pattern_box, ags_pattern_box_led_queue_draw_timeout);
-  g_timeout_add(1000 / 30, (GSourceFunc) ags_pattern_box_led_queue_draw_timeout, (gpointer) pattern_box);
+  g_timeout_add(AGS_UI_PROVIDER_DEFAULT_TIMEOUT * 1000.0, (GSourceFunc) ags_pattern_box_led_queue_draw_timeout, (gpointer) pattern_box);
 
   /* pattern */
   pattern_box->pattern = (GtkHBox *) gtk_hbox_new(FALSE, 0);

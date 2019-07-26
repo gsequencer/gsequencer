@@ -1645,8 +1645,10 @@ ags_xorg_application_context_prepare(AgsApplicationContext *application_context)
   pthread_mutex_lock(audio_loop->start_mutex);
   
   start_queue = NULL;
+
   start_queue = g_list_prepend(start_queue,
 			       polling_thread);
+  
   start_queue = g_list_prepend(start_queue,
 			       task_thread);
   

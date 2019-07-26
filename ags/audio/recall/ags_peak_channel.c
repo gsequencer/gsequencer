@@ -428,11 +428,7 @@ ags_peak_channel_set_property(GObject *gobject,
   peak_channel = AGS_PEAK_CHANNEL(gobject);
 
   /* get recall mutex */
-  pthread_mutex_lock(ags_recall_get_class_mutex());
-  
-  recall_mutex = AGS_RECALL(gobject)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_recall_get_class_mutex());
+  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(peak_channel);
 
   switch(prop_id){
   case PROP_SAMPLERATE:
@@ -589,11 +585,7 @@ ags_peak_channel_get_property(GObject *gobject,
   peak_channel = AGS_PEAK_CHANNEL(gobject);
 
   /* get recall mutex */
-  pthread_mutex_lock(ags_recall_get_class_mutex());
-  
-  recall_mutex = AGS_RECALL(gobject)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_recall_get_class_mutex());
+  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(peak_channel);
 
   switch(prop_id){
   case PROP_SAMPLERATE:
@@ -833,11 +825,7 @@ ags_peak_channel_buffer_add(AgsPeakChannel *peak_channel,
   }
 
   /* get buffer mutex */
-  pthread_mutex_lock(ags_recall_get_class_mutex());
-  
   buffer_mutex = peak_channel->buffer_mutex;
-  
-  pthread_mutex_unlock(ags_recall_get_class_mutex());
 
   g_object_get(peak_channel,
 	       "samplerate", &target_samplerate,
@@ -896,11 +884,7 @@ ags_peak_channel_retrieve_peak_internal(AgsPeakChannel *peak_channel)
   }
 
   /* get buffer mutex */
-  pthread_mutex_lock(ags_recall_get_class_mutex());
-  
   buffer_mutex = peak_channel->buffer_mutex;
-  
-  pthread_mutex_unlock(ags_recall_get_class_mutex());
 
   /* calculate average value */
   g_object_get(peak_channel,

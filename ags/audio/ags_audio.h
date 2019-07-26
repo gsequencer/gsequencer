@@ -38,6 +38,10 @@
 #define AGS_IS_AUDIO_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE((class), AGS_TYPE_AUDIO))
 #define AGS_AUDIO_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_AUDIO, AgsAudioClass))
 
+#define AGS_AUDIO_GET_OBJ_MUTEX(obj) (((AgsAudio *) obj)->obj_mutex)
+#define AGS_AUDIO_GET_PLAY_MUTEX(obj) (((AgsAudio *) obj)->play_mutex)
+#define AGS_AUDIO_GET_RECALL_MUTEX(obj) (((AgsAudio *) obj)->recall_mutex)
+
 typedef struct _AgsAudio AgsAudio;
 typedef struct _AgsAudioClass AgsAudioClass;
 

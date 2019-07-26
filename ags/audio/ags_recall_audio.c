@@ -176,11 +176,7 @@ ags_recall_audio_set_property(GObject *gobject,
   recall_audio = AGS_RECALL_AUDIO(gobject);
 
   /* get recall mutex */
-  pthread_mutex_lock(ags_recall_get_class_mutex());
-  
-  recall_mutex = AGS_RECALL(gobject)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_recall_get_class_mutex());
+  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(gobject);
 
   switch(prop_id){
   case PROP_AUDIO:
@@ -229,11 +225,7 @@ ags_recall_audio_get_property(GObject *gobject,
   recall_audio = AGS_RECALL_AUDIO(gobject);
 
   /* get recall mutex */
-  pthread_mutex_lock(ags_recall_get_class_mutex());
-  
-  recall_mutex = AGS_RECALL(gobject)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_recall_get_class_mutex());
+  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(gobject);
 
   switch(prop_id){
   case PROP_AUDIO:
@@ -363,11 +355,7 @@ ags_recall_audio_automate(AgsRecall *recall)
       current_automation = automation->data;
 
       /* get automation mutex */
-      pthread_mutex_lock(ags_automation_get_class_mutex());
-
-      automation_mutex = current_automation->obj_mutex;
-      
-      pthread_mutex_unlock(ags_automation_get_class_mutex());
+      automation_mutex = AGS_AUTOMATION_GET_OBJ_MUTEX(current_automation);
 
       /* get some fields */
       pthread_mutex_lock(automation_mutex);

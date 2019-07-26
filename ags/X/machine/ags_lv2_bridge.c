@@ -26,6 +26,7 @@
 
 #include <lv2/lv2plug.in/ns/lv2ext/lv2_programs.h>
 
+#include <ags/X/ags_ui_provider.h>
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_effect_bridge.h>
 #include <ags/X/ags_effect_bulk.h>
@@ -478,7 +479,7 @@ ags_lv2_bridge_init(AgsLv2Bridge *lv2_bridge)
 		      lv2_bridge,
 		      ags_machine_generic_output_message_monitor_timeout);
 
-  g_timeout_add(1000 / 30,
+  g_timeout_add(AGS_UI_PROVIDER_DEFAULT_TIMEOUT * 1000.0,
 		(GSourceFunc) ags_machine_generic_output_message_monitor_timeout,
 		(gpointer) lv2_bridge);
 
@@ -487,7 +488,7 @@ ags_lv2_bridge_init(AgsLv2Bridge *lv2_bridge)
 		      lv2_bridge,
 		      ags_machine_generic_input_message_monitor_timeout);
 
-  g_timeout_add(1000 / 30,
+  g_timeout_add(AGS_UI_PROVIDER_DEFAULT_TIMEOUT * 1000.0,
 		(GSourceFunc) ags_machine_generic_input_message_monitor_timeout,
 		(gpointer) lv2_bridge);
 }

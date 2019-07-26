@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -482,7 +482,7 @@ ags_thread_pool_creation_thread(void *ptr)
       }
 
       pthread_mutex_unlock(returnable_thread->start_mutex);
-
+      
       //      start_queue = g_list_prepend(start_queue,
       //			   returnable_thread);
       

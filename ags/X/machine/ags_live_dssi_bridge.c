@@ -24,6 +24,7 @@
 #include <ags/libags-audio.h>
 #include <ags/libags-gui.h>
 
+#include <ags/X/ags_ui_provider.h>
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_effect_bridge.h>
 #include <ags/X/ags_effect_bulk.h>
@@ -375,7 +376,7 @@ ags_live_dssi_bridge_init(AgsLiveDssiBridge *live_dssi_bridge)
 		      live_dssi_bridge,
 		      ags_machine_generic_output_message_monitor_timeout);
 
-  g_timeout_add(1000 / 30,
+  g_timeout_add(AGS_UI_PROVIDER_DEFAULT_TIMEOUT * 1000.0,
 		(GSourceFunc) ags_machine_generic_output_message_monitor_timeout,
 		(gpointer) live_dssi_bridge);
 
@@ -384,7 +385,7 @@ ags_live_dssi_bridge_init(AgsLiveDssiBridge *live_dssi_bridge)
 		      live_dssi_bridge,
 		      ags_machine_generic_input_message_monitor_timeout);
 
-  g_timeout_add(1000 / 30,
+  g_timeout_add(AGS_UI_PROVIDER_DEFAULT_TIMEOUT * 1000.0,
 		(GSourceFunc) ags_machine_generic_input_message_monitor_timeout,
 		(gpointer) live_dssi_bridge);
 }

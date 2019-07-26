@@ -140,14 +140,15 @@ ags_peak_channel_run_run_pre(AgsRecall *recall)
 	       NULL);
 
   /* get mutex */
-  pthread_mutex_lock(ags_recall_get_class_mutex());
-
-  recall_mutex = recall->obj_mutex;
+  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall);
   buffer_mutex = peak_channel->buffer_mutex;
   
+  /* get parent class */
+  AGS_RECALL_LOCK_CLASS();
+
   parent_class_run_pre = AGS_RECALL_CLASS(ags_peak_channel_run_parent_class)->run_pre;
 
-  pthread_mutex_unlock(ags_recall_get_class_mutex());
+  AGS_RECALL_UNLOCK_CLASS()
 
   /* call parent */
   parent_class_run_pre(recall);

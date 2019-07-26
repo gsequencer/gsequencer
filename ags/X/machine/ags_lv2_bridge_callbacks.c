@@ -25,6 +25,7 @@
 
 #include <lv2/lv2plug.in/ns/lv2ext/lv2_programs.h>
 
+#include <ags/X/ags_ui_provider.h>
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_machine.h>
 #include <ags/X/ags_effect_bridge.h>
@@ -155,7 +156,7 @@ ags_lv2_bridge_show_gui_callback(GtkMenuItem *item, AgsLv2Bridge *lv2_bridge)
 
 	g_hash_table_insert(ags_lv2_bridge_lv2ui_idle,
 			    lv2_bridge->ui_handle, lv2_bridge);
-	g_timeout_add(1000 / 30, (GSourceFunc) ags_lv2_bridge_lv2ui_idle_timeout, (gpointer) lv2_bridge->ui_handle);
+	g_timeout_add(AGS_UI_PROVIDER_DEFAULT_TIMEOUT * 1000.0, (GSourceFunc) ags_lv2_bridge_lv2ui_idle_timeout, (gpointer) lv2_bridge->ui_handle);
       }
     }
     

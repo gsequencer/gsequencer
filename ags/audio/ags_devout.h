@@ -42,6 +42,8 @@
 #define AGS_IS_DEVOUT_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_DEVOUT))
 #define AGS_DEVOUT_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS(obj, AGS_TYPE_DEVOUT, AgsDevoutClass))
 
+#define AGS_DEVOUT_GET_OBJ_MUTEX(obj) (((AgsDevout *) obj)->obj_mutex)
+
 #define AGS_DEVOUT_DEFAULT_ALSA_DEVICE "hw:0,0"
 #define AGS_DEVOUT_DEFAULT_OSS_DEVICE "/dev/dsp"
 

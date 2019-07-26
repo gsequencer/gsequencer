@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -34,6 +34,8 @@
 #define AGS_IS_RECYCLING_CONTEXT(obj)             (G_TYPE_CHECK_INSTANCE_TYPE ((obj), AGS_TYPE_RECYCLING_CONTEXT))
 #define AGS_IS_RECYCLING_CONTEXT_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_RECYCLING_CONTEXT))
 #define AGS_RECYCLING_CONTEXT_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_RECYCLING_CONTEXT, AgsRecyclingContextClass))
+
+#define AGS_RECYCLING_CONTEXT_GET_OBJ_MUTEX(obj) (((AgsRecyclingContext *) obj)->obj_mutex)
 
 typedef struct _AgsRecyclingContext AgsRecyclingContext;
 typedef struct _AgsRecyclingContextClass AgsRecyclingContextClass;
