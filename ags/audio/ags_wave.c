@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -306,11 +306,7 @@ ags_wave_set_property(GObject *gobject,
   wave = AGS_WAVE(gobject);
 
   /* get wave mutex */
-  pthread_mutex_lock(ags_wave_get_class_mutex());
-  
-  wave_mutex = wave->obj_mutex;
-  
-  pthread_mutex_unlock(ags_wave_get_class_mutex());
+  wave_mutex = AGS_WAVE_GET_OBJ_MUTEX(wave);
 
   switch(prop_id){
   case PROP_AUDIO:
@@ -451,11 +447,7 @@ ags_wave_get_property(GObject *gobject,
   wave = AGS_WAVE(gobject);
 
   /* get wave mutex */
-  pthread_mutex_lock(ags_wave_get_class_mutex());
-  
-  wave_mutex = wave->obj_mutex;
-  
-  pthread_mutex_unlock(ags_wave_get_class_mutex());
+  wave_mutex = AGS_WAVE_GET_OBJ_MUTEX(wave);
 
   switch(prop_id){
   case PROP_AUDIO:
@@ -645,11 +637,7 @@ ags_wave_test_flags(AgsWave *wave, guint flags)
   }
       
   /* get wave mutex */
-  pthread_mutex_lock(ags_wave_get_class_mutex());
-  
-  wave_mutex = wave->obj_mutex;
-  
-  pthread_mutex_unlock(ags_wave_get_class_mutex());
+  wave_mutex = AGS_WAVE_GET_OBJ_MUTEX(wave);
 
   /* test */
   pthread_mutex_lock(wave_mutex);
@@ -680,11 +668,7 @@ ags_wave_set_flags(AgsWave *wave, guint flags)
   }
       
   /* get wave mutex */
-  pthread_mutex_lock(ags_wave_get_class_mutex());
-  
-  wave_mutex = wave->obj_mutex;
-  
-  pthread_mutex_unlock(ags_wave_get_class_mutex());
+  wave_mutex = AGS_WAVE_GET_OBJ_MUTEX(wave);
 
   /* set */
   pthread_mutex_lock(wave_mutex);
@@ -713,11 +697,7 @@ ags_wave_unset_flags(AgsWave *wave, guint flags)
   }
       
   /* get wave mutex */
-  pthread_mutex_lock(ags_wave_get_class_mutex());
-  
-  wave_mutex = wave->obj_mutex;
-  
-  pthread_mutex_unlock(ags_wave_get_class_mutex());
+  wave_mutex = AGS_WAVE_GET_OBJ_MUTEX(wave);
 
   /* set */
   pthread_mutex_lock(wave_mutex);
@@ -762,11 +742,7 @@ ags_wave_set_samplerate(AgsWave *wave,
   }
   
   /* get wave mutex */
-  pthread_mutex_lock(ags_wave_get_class_mutex());
-  
-  wave_mutex = wave->obj_mutex;
-  
-  pthread_mutex_unlock(ags_wave_get_class_mutex());
+  wave_mutex = AGS_WAVE_GET_OBJ_MUTEX(wave);
 
   /* check resample */
   pthread_mutex_lock(wave_mutex);
@@ -864,11 +840,7 @@ ags_wave_set_samplerate(AgsWave *wave,
     pthread_mutex_t *buffer_mutex;
   
     /* get buffer mutex */
-    pthread_mutex_lock(ags_buffer_get_class_mutex());
-  
-    buffer_mutex = AGS_BUFFER(list->data)->obj_mutex;
-  
-    pthread_mutex_unlock(ags_buffer_get_class_mutex());
+    buffer_mutex = AGS_BUFFER_GET_OBJ_MUTEX(list->data);
 
     /*  */
     pthread_mutex_lock(buffer_mutex);
@@ -939,11 +911,7 @@ ags_wave_set_samplerate(AgsWave *wave,
     pthread_mutex_t *buffer_mutex;
   
     /* get buffer mutex */
-    pthread_mutex_lock(ags_buffer_get_class_mutex());
-  
-    buffer_mutex = AGS_BUFFER(list->data)->obj_mutex;
-  
-    pthread_mutex_unlock(ags_buffer_get_class_mutex());
+    buffer_mutex = AGS_BUFFER_GET_OBJ_MUTEX(list->data);
 
     /*  */
     ags_buffer_set_samplerate(list->data,
@@ -1020,11 +988,7 @@ ags_wave_set_buffer_size(AgsWave *wave,
   }
   
   /* get wave mutex */
-  pthread_mutex_lock(ags_wave_get_class_mutex());
-  
-  wave_mutex = wave->obj_mutex;
-  
-  pthread_mutex_unlock(ags_wave_get_class_mutex());
+  wave_mutex = AGS_WAVE_GET_OBJ_MUTEX(wave);
 
   pthread_mutex_lock(wave_mutex);
 
@@ -1122,11 +1086,7 @@ ags_wave_set_buffer_size(AgsWave *wave,
     pthread_mutex_t *buffer_mutex;
   
     /* get buffer mutex */
-    pthread_mutex_lock(ags_buffer_get_class_mutex());
-  
-    buffer_mutex = AGS_BUFFER(list->data)->obj_mutex;
-  
-    pthread_mutex_unlock(ags_buffer_get_class_mutex());
+    buffer_mutex = AGS_BUFFER_GET_OBJ_MUTEX(list->data);
 
     /*  */
     pthread_mutex_lock(buffer_mutex);
@@ -1188,11 +1148,7 @@ ags_wave_set_buffer_size(AgsWave *wave,
     pthread_mutex_t *buffer_mutex;
   
     /* get buffer mutex */
-    pthread_mutex_lock(ags_buffer_get_class_mutex());
-  
-    buffer_mutex = AGS_BUFFER(list->data)->obj_mutex;
-  
-    pthread_mutex_unlock(ags_buffer_get_class_mutex());
+    buffer_mutex = AGS_BUFFER_GET_OBJ_MUTEX(list->data);
 
     /*  */
     g_object_set(list->data,
@@ -1256,11 +1212,7 @@ ags_wave_set_format(AgsWave *wave,
   }
   
   /* get wave mutex */
-  pthread_mutex_lock(ags_wave_get_class_mutex());
-  
-  wave_mutex = wave->obj_mutex;
-  
-  pthread_mutex_unlock(ags_wave_get_class_mutex());
+  wave_mutex = AGS_WAVE_GET_OBJ_MUTEX(wave);
 
   /* apply format */
   pthread_mutex_lock(wave_mutex);
@@ -1620,11 +1572,7 @@ ags_wave_add_buffer(AgsWave *wave,
   }
 
   /* get wave mutex */
-  pthread_mutex_lock(ags_wave_get_class_mutex());
-  
-  wave_mutex = wave->obj_mutex;
-  
-  pthread_mutex_unlock(ags_wave_get_class_mutex());
+  wave_mutex = AGS_WAVE_GET_OBJ_MUTEX(wave);
 
   /* insert sorted */
   g_object_ref(buffer);
@@ -1669,11 +1617,7 @@ ags_wave_remove_buffer(AgsWave *wave,
   }
 
   /* get wave mutex */
-  pthread_mutex_lock(ags_wave_get_class_mutex());
-  
-  wave_mutex = wave->obj_mutex;
-  
-  pthread_mutex_unlock(ags_wave_get_class_mutex());
+  wave_mutex = AGS_WAVE_GET_OBJ_MUTEX(wave);
 
   /* remove if found */
   pthread_mutex_lock(wave_mutex);
@@ -1719,11 +1663,7 @@ ags_wave_get_selection(AgsWave *wave)
   }
 
   /* get wave mutex */
-  pthread_mutex_lock(ags_wave_get_class_mutex());
-  
-  wave_mutex = wave->obj_mutex;
-  
-  pthread_mutex_unlock(ags_wave_get_class_mutex());
+  wave_mutex = AGS_WAVE_GET_OBJ_MUTEX(wave);
 
   /* selection */
   pthread_mutex_lock(wave_mutex);
@@ -1763,11 +1703,7 @@ ags_wave_is_buffer_selected(AgsWave *wave, AgsBuffer *buffer)
   }
 
   /* get wave mutex */
-  pthread_mutex_lock(ags_wave_get_class_mutex());
-  
-  wave_mutex = wave->obj_mutex;
-  
-  pthread_mutex_unlock(ags_wave_get_class_mutex());
+  wave_mutex = AGS_WAVE_GET_OBJ_MUTEX(wave);
 
   /* get x */
   g_object_get(buffer,
@@ -1838,11 +1774,7 @@ ags_wave_find_point(AgsWave *wave,
   }
 
   /* get wave mutex */
-  pthread_mutex_lock(ags_wave_get_class_mutex());
-  
-  wave_mutex = wave->obj_mutex;
-  
-  pthread_mutex_unlock(ags_wave_get_class_mutex());
+  wave_mutex = AGS_WAVE_GET_OBJ_MUTEX(wave);
 
   /* find buffer */
   pthread_mutex_lock(wave_mutex);
@@ -1970,11 +1902,7 @@ ags_wave_find_region(AgsWave *wave,
   }
 
   /* get wave mutex */
-  pthread_mutex_lock(ags_wave_get_class_mutex());
-  
-  wave_mutex = wave->obj_mutex;
-  
-  pthread_mutex_unlock(ags_wave_get_class_mutex());
+  wave_mutex = AGS_WAVE_GET_OBJ_MUTEX(wave);
 
   if(x0 > x1){
     guint tmp;
@@ -2052,11 +1980,7 @@ ags_wave_free_selection(AgsWave *wave)
   }
 
   /* get wave mutex */
-  pthread_mutex_lock(ags_wave_get_class_mutex());
-  
-  wave_mutex = wave->obj_mutex;
-  
-  pthread_mutex_unlock(ags_wave_get_class_mutex());
+  wave_mutex = AGS_WAVE_GET_OBJ_MUTEX(wave);
 
   /* free selection */
   pthread_mutex_lock(wave_mutex);
@@ -2106,11 +2030,7 @@ ags_wave_add_region_to_selection(AgsWave *wave,
   }
 
   /* get wave mutex */
-  pthread_mutex_lock(ags_wave_get_class_mutex());
-  
-  wave_mutex = wave->obj_mutex;
-  
-  pthread_mutex_unlock(ags_wave_get_class_mutex());
+  wave_mutex = AGS_WAVE_GET_OBJ_MUTEX(wave);
 
   /* find region */
   region = ags_wave_find_region(wave,
@@ -2252,11 +2172,7 @@ ags_wave_remove_region_from_selection(AgsWave *wave,
   }
 
   /* get wave mutex */
-  pthread_mutex_lock(ags_wave_get_class_mutex());
-  
-  wave_mutex = wave->obj_mutex;
-  
-  pthread_mutex_unlock(ags_wave_get_class_mutex());
+  wave_mutex = AGS_WAVE_GET_OBJ_MUTEX(wave);
 
   /* find region */
   region = ags_wave_find_region(wave,
@@ -2307,11 +2223,7 @@ ags_wave_add_all_to_selection(AgsWave *wave)
   }
 
   /* get wave mutex */
-  pthread_mutex_lock(ags_wave_get_class_mutex());
-  
-  wave_mutex = wave->obj_mutex;
-  
-  pthread_mutex_unlock(ags_wave_get_class_mutex());
+  wave_mutex = AGS_WAVE_GET_OBJ_MUTEX(wave);
 
   /* select all */
   pthread_mutex_lock(wave_mutex);
@@ -2374,11 +2286,7 @@ ags_wave_copy_selection(AgsWave *wave)
   }
 
   /* get wave mutex */
-  pthread_mutex_lock(ags_wave_get_class_mutex());
-  
-  wave_mutex = wave->obj_mutex;
-  
-  pthread_mutex_unlock(ags_wave_get_class_mutex());
+  wave_mutex = AGS_WAVE_GET_OBJ_MUTEX(wave);
 
   /* create root node */
   wave_node = xmlNewNode(NULL,
@@ -2494,11 +2402,7 @@ ags_wave_copy_selection(AgsWave *wave)
 
     buffer = AGS_BUFFER(selection->data);
 
-    pthread_mutex_lock(ags_buffer_get_class_mutex());
-
-    buffer_mutex = buffer->obj_mutex;
-    
-    pthread_mutex_unlock(ags_buffer_get_class_mutex());
+    buffer_mutex = AGS_BUFFER_GET_OBJ_MUTEX(buffer);
     
     current_buffer = xmlNewChild(wave_node,
 				 NULL,
@@ -2658,11 +2562,7 @@ ags_wave_cut_selection(AgsWave *wave)
   }
 
   /* get wave mutex */
-  pthread_mutex_lock(ags_wave_get_class_mutex());
-  
-  wave_mutex = wave->obj_mutex;
-  
-  pthread_mutex_unlock(ags_wave_get_class_mutex());
+  wave_mutex = AGS_WAVE_GET_OBJ_MUTEX(wave);
 
   /* copy selection */
   wave_node = ags_wave_copy_selection(wave);

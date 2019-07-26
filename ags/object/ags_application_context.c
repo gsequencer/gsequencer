@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -411,11 +411,7 @@ ags_application_context_set_property(GObject *gobject,
   application_context = AGS_APPLICATION_CONTEXT(gobject);
 
   /* get application context mutex */
-  pthread_mutex_lock(ags_application_context_get_class_mutex());
-  
-  application_context_mutex = application_context->obj_mutex;
-  
-  pthread_mutex_unlock(ags_application_context_get_class_mutex());
+  application_context_mutex = AGS_APPLICATION_CONTEXT_GET_OBJ_MUTEX(application_context);
   
   switch(prop_id){
   case PROP_MAIN_LOOP:
@@ -546,11 +542,7 @@ ags_application_context_get_property(GObject *gobject,
   application_context = AGS_APPLICATION_CONTEXT(gobject);
 
   /* get application context mutex */
-  pthread_mutex_lock(ags_application_context_get_class_mutex());
-  
-  application_context_mutex = application_context->obj_mutex;
-  
-  pthread_mutex_unlock(ags_application_context_get_class_mutex());
+  application_context_mutex = AGS_APPLICATION_CONTEXT_GET_OBJ_MUTEX(application_context);
 
   switch(prop_id){
   case PROP_MAIN_LOOP:
@@ -736,11 +728,7 @@ ags_application_context_get_uuid(AgsConnectable *connectable)
   application_context = AGS_APPLICATION_CONTEXT(connectable);
 
   /* get application_context mutex */
-  pthread_mutex_lock(ags_application_context_get_class_mutex());
-  
-  application_context_mutex = application_context->obj_mutex;
-  
-  pthread_mutex_unlock(ags_application_context_get_class_mutex());
+  application_context_mutex = AGS_APPLICATION_CONTEXT_GET_OBJ_MUTEX(application_context);
 
   /* get UUID */
   pthread_mutex_lock(application_context_mutex);
@@ -770,11 +758,7 @@ ags_application_context_is_ready(AgsConnectable *connectable)
   application_context = AGS_APPLICATION_CONTEXT(connectable);
 
   /* get application_context mutex */
-  pthread_mutex_lock(ags_application_context_get_class_mutex());
-  
-  application_context_mutex = application_context->obj_mutex;
-  
-  pthread_mutex_unlock(ags_application_context_get_class_mutex());
+  application_context_mutex = AGS_APPLICATION_CONTEXT_GET_OBJ_MUTEX(application_context);
 
   /* check is added */
   pthread_mutex_lock(application_context_mutex);
@@ -857,11 +841,7 @@ ags_application_context_is_connected(AgsConnectable *connectable)
   application_context = AGS_APPLICATION_CONTEXT(connectable);
 
   /* get application_context mutex */
-  pthread_mutex_lock(ags_application_context_get_class_mutex());
-  
-  application_context_mutex = application_context->obj_mutex;
-  
-  pthread_mutex_unlock(ags_application_context_get_class_mutex());
+  application_context_mutex = AGS_APPLICATION_CONTEXT_GET_OBJ_MUTEX(application_context);
 
   /* check is connected */
   pthread_mutex_lock(application_context_mutex);
@@ -939,11 +919,7 @@ ags_application_context_test_flags(AgsApplicationContext *application_context, g
   }
 
   /* get application_context mutex */
-  pthread_mutex_lock(ags_application_context_get_class_mutex());
-  
-  application_context_mutex = application_context->obj_mutex;
-  
-  pthread_mutex_unlock(ags_application_context_get_class_mutex());
+  application_context_mutex = AGS_APPLICATION_CONTEXT_GET_OBJ_MUTEX(application_context);
 
   /* test */
   pthread_mutex_lock(application_context_mutex);
@@ -976,11 +952,7 @@ ags_application_context_set_flags(AgsApplicationContext *application_context, gu
   }
 
   /* get application_context mutex */
-  pthread_mutex_lock(ags_application_context_get_class_mutex());
-  
-  application_context_mutex = application_context->obj_mutex;
-  
-  pthread_mutex_unlock(ags_application_context_get_class_mutex());
+  application_context_mutex = AGS_APPLICATION_CONTEXT_GET_OBJ_MUTEX(application_context);
 
   /* set flags */
   pthread_mutex_lock(application_context_mutex);
@@ -1011,11 +983,7 @@ ags_application_context_unset_flags(AgsApplicationContext *application_context, 
   }
 
   /* get application_context mutex */
-  pthread_mutex_lock(ags_application_context_get_class_mutex());
-  
-  application_context_mutex = application_context->obj_mutex;
-  
-  pthread_mutex_unlock(ags_application_context_get_class_mutex());
+  application_context_mutex = AGS_APPLICATION_CONTEXT_GET_OBJ_MUTEX(application_context);
 
   /* unset flags */
   pthread_mutex_lock(application_context_mutex);

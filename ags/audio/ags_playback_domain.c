@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -175,7 +175,6 @@ ags_playback_domain_init(AgsPlaybackDomain *playback_domain)
   gboolean super_threaded_audio;
   guint i;
 
-  pthread_mutex_t *config_mutex;
   pthread_mutex_t *mutex;
   pthread_mutexattr_t *attr;
 
@@ -201,16 +200,8 @@ ags_playback_domain_init(AgsPlaybackDomain *playback_domain)
   /* config */
   config = ags_config_get_instance();
 
-  pthread_mutex_lock(ags_config_get_class_mutex());
-  
-  config_mutex = config->obj_mutex;
-
-  pthread_mutex_unlock(ags_config_get_class_mutex());
-
   /* thread model */
   super_threaded_audio = FALSE;
-  
-  pthread_mutex_lock(config_mutex);
 
   thread_model = ags_config_get_value(config,
 				      AGS_CONFIG_THREAD,
@@ -237,8 +228,6 @@ ags_playback_domain_init(AgsPlaybackDomain *playback_domain)
   }
 
   g_free(thread_model);
-
-  pthread_mutex_unlock(config_mutex);
     
   /* default flags */
   if(super_threaded_audio){
@@ -273,11 +262,7 @@ ags_playback_domain_set_property(GObject *gobject,
   playback_domain = AGS_PLAYBACK_DOMAIN(gobject);
 
   /* get playback_domain mutex */
-  pthread_mutex_lock(ags_playback_domain_get_class_mutex());
-  
-  playback_domain_mutex = playback_domain->obj_mutex;
-  
-  pthread_mutex_unlock(ags_playback_domain_get_class_mutex());
+  playback_domain_mutex = AGS_PLAYBACK_DOMAIN_GET_OBJ_MUTEX(playback_domain);
 
   switch(prop_id){
   case PROP_AUDIO:
@@ -370,11 +355,7 @@ ags_playback_domain_get_property(GObject *gobject,
   playback_domain = AGS_PLAYBACK_DOMAIN(gobject);
 
   /* get playback_domain mutex */
-  pthread_mutex_lock(ags_playback_domain_get_class_mutex());
-  
-  playback_domain_mutex = playback_domain->obj_mutex;
-  
-  pthread_mutex_unlock(ags_playback_domain_get_class_mutex());
+  playback_domain_mutex = AGS_PLAYBACK_DOMAIN_GET_OBJ_MUTEX(playback_domain);
 
   switch(prop_id){
   case PROP_AUDIO:
@@ -546,11 +527,7 @@ ags_playback_domain_test_flags(AgsPlaybackDomain *playback_domain, guint flags)
   }
 
   /* get playback_domain mutex */
-  pthread_mutex_lock(ags_playback_domain_get_class_mutex());
-  
-  playback_domain_mutex = playback_domain->obj_mutex;
-  
-  pthread_mutex_unlock(ags_playback_domain_get_class_mutex());
+  playback_domain_mutex = AGS_PLAYBACK_DOMAIN_GET_OBJ_MUTEX(playback_domain);
 
   /* test */
   pthread_mutex_lock(playback_domain_mutex);
@@ -581,11 +558,7 @@ ags_playback_domain_set_flags(AgsPlaybackDomain *playback_domain, guint flags)
   }
 
   /* get playback_domain mutex */
-  pthread_mutex_lock(ags_playback_domain_get_class_mutex());
-  
-  playback_domain_mutex = playback_domain->obj_mutex;
-  
-  pthread_mutex_unlock(ags_playback_domain_get_class_mutex());
+  playback_domain_mutex = AGS_PLAYBACK_DOMAIN_GET_OBJ_MUTEX(playback_domain);
 
   /* set flags */
   pthread_mutex_lock(playback_domain_mutex);
@@ -614,11 +587,7 @@ ags_playback_domain_unset_flags(AgsPlaybackDomain *playback_domain, guint flags)
   }
 
   /* get playback_domain mutex */
-  pthread_mutex_lock(ags_playback_domain_get_class_mutex());
-  
-  playback_domain_mutex = playback_domain->obj_mutex;
-  
-  pthread_mutex_unlock(ags_playback_domain_get_class_mutex());
+  playback_domain_mutex = AGS_PLAYBACK_DOMAIN_GET_OBJ_MUTEX(playback_domain);
 
   /* set flags */
   pthread_mutex_lock(playback_domain_mutex);
@@ -651,11 +620,7 @@ ags_playback_domain_set_audio_thread(AgsPlaybackDomain *playback_domain,
   }
 
   /* get playback domain mutex */
-  pthread_mutex_lock(ags_playback_domain_get_class_mutex());
-	  
-  playback_domain_mutex = playback_domain->obj_mutex;
-	  
-  pthread_mutex_unlock(ags_playback_domain_get_class_mutex());
+  playback_domain_mutex = AGS_PLAYBACK_DOMAIN_GET_OBJ_MUTEX(playback_domain);
 
   /* set */
   pthread_mutex_lock(playback_domain_mutex);
@@ -703,11 +668,7 @@ ags_playback_domain_get_audio_thread(AgsPlaybackDomain *playback_domain,
   }
 
   /* get playback domain mutex */
-  pthread_mutex_lock(ags_playback_domain_get_class_mutex());
-	  
-  playback_domain_mutex = playback_domain->obj_mutex;
-	  
-  pthread_mutex_unlock(ags_playback_domain_get_class_mutex());
+  playback_domain_mutex = AGS_PLAYBACK_DOMAIN_GET_OBJ_MUTEX(playback_domain);
 
   /* get */
   pthread_mutex_lock(playback_domain_mutex);
@@ -742,11 +703,7 @@ ags_playback_domain_add_playback(AgsPlaybackDomain *playback_domain,
   }
 
   /* get playback domain mutex */
-  pthread_mutex_lock(ags_playback_domain_get_class_mutex());
-	  
-  playback_domain_mutex = playback_domain->obj_mutex;
-	  
-  pthread_mutex_unlock(ags_playback_domain_get_class_mutex());
+  playback_domain_mutex = AGS_PLAYBACK_DOMAIN_GET_OBJ_MUTEX(playback_domain);
 
   /* append */
   pthread_mutex_lock(playback_domain_mutex);
@@ -789,11 +746,7 @@ ags_playback_domain_remove_playback(AgsPlaybackDomain *playback_domain,
   }
 
   /* get playback domain mutex */
-  pthread_mutex_lock(ags_playback_domain_get_class_mutex());
-	  
-  playback_domain_mutex = playback_domain->obj_mutex;
-	  
-  pthread_mutex_unlock(ags_playback_domain_get_class_mutex());
+  playback_domain_mutex = AGS_PLAYBACK_DOMAIN_GET_OBJ_MUTEX(playback_domain);
 
   /* remove */
   pthread_mutex_lock(playback_domain_mutex);

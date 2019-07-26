@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -259,11 +259,7 @@ ags_config_set_property(GObject *gobject,
   config = AGS_CONFIG(gobject);
 
   /* get config mutex */
-  pthread_mutex_lock(ags_config_get_class_mutex());
-  
-  config_mutex = config->obj_mutex;
-
-  pthread_mutex_unlock(ags_config_get_class_mutex());
+  config_mutex = AGS_CONFIG_GET_OBJ_MUTEX(config);
 
   switch(prop_id){
   case PROP_APPLICATION_CONTEXT:
@@ -312,11 +308,7 @@ ags_config_get_property(GObject *gobject,
   config = AGS_CONFIG(gobject);
 
   /* get config mutex */
-  pthread_mutex_lock(ags_config_get_class_mutex());
-  
-  config_mutex = config->obj_mutex;
-
-  pthread_mutex_unlock(ags_config_get_class_mutex());
+  config_mutex = AGS_CONFIG_GET_OBJ_MUTEX(config);
   
   switch(prop_id){
   case PROP_APPLICATION_CONTEXT:
@@ -394,11 +386,7 @@ ags_config_get_version(AgsConfig *config)
     return(NULL);
   }
   
-  pthread_mutex_lock(ags_config_get_class_mutex());
-  
-  config_mutex = config->obj_mutex;
-
-  pthread_mutex_unlock(ags_config_get_class_mutex());
+  config_mutex = AGS_CONFIG_GET_OBJ_MUTEX(config);
 
   /* get version */
   pthread_mutex_lock(config_mutex);
@@ -419,11 +407,7 @@ ags_config_set_version(AgsConfig *config, gchar *version)
     return;
   }
   
-  pthread_mutex_lock(ags_config_get_class_mutex());
-  
-  config_mutex = config->obj_mutex;
-
-  pthread_mutex_unlock(ags_config_get_class_mutex());
+  config_mutex = AGS_CONFIG_GET_OBJ_MUTEX(config);
 
   /* set version */
   pthread_mutex_lock(config_mutex);
@@ -444,11 +428,7 @@ ags_config_get_build_id(AgsConfig *config)
     return(NULL);
   }
   
-  pthread_mutex_lock(ags_config_get_class_mutex());
-  
-  config_mutex = config->obj_mutex;
-
-  pthread_mutex_unlock(ags_config_get_class_mutex());
+  config_mutex = AGS_CONFIG_GET_OBJ_MUTEX(config);
 
   /* get build id */
   pthread_mutex_lock(config_mutex);
@@ -469,11 +449,7 @@ ags_config_set_build_id(AgsConfig *config, gchar *build_id)
     return;
   }
   
-  pthread_mutex_lock(ags_config_get_class_mutex());
-  
-  config_mutex = config->obj_mutex;
-
-  pthread_mutex_unlock(ags_config_get_class_mutex());
+  config_mutex = AGS_CONFIG_GET_OBJ_MUTEX(config);
 
   /* set version */
   pthread_mutex_lock(config_mutex);
@@ -504,11 +480,7 @@ ags_config_real_load_defaults(AgsConfig *config)
 
   pthread_mutex_t *config_mutex;
   
-  pthread_mutex_lock(ags_config_get_class_mutex());
-  
-  config_mutex = config->obj_mutex;
-
-  pthread_mutex_unlock(ags_config_get_class_mutex());
+  config_mutex = AGS_CONFIG_GET_OBJ_MUTEX(config);
 
   /* load defaults */
   pthread_mutex_lock(config_mutex);
@@ -593,11 +565,7 @@ ags_config_load_from_file(AgsConfig *config, gchar *filename)
     return;
   }
   
-  pthread_mutex_lock(ags_config_get_class_mutex());
-  
-  config_mutex = config->obj_mutex;
-
-  pthread_mutex_unlock(ags_config_get_class_mutex());
+  config_mutex = AGS_CONFIG_GET_OBJ_MUTEX(config);
 
   file = g_file_new_for_path(filename);
 
@@ -690,11 +658,7 @@ ags_config_load_from_data(AgsConfig *config,
     return;
   }
   
-  pthread_mutex_lock(ags_config_get_class_mutex());
-  
-  config_mutex = config->obj_mutex;
-
-  pthread_mutex_unlock(ags_config_get_class_mutex());
+  config_mutex = AGS_CONFIG_GET_OBJ_MUTEX(config);
 
   /* load from data */
   //#ifdef AGS_DEBUG
@@ -790,11 +754,7 @@ ags_config_to_data(AgsConfig *config,
     return;
   }
   
-  pthread_mutex_lock(ags_config_get_class_mutex());
-  
-  config_mutex = config->obj_mutex;
-
-  pthread_mutex_unlock(ags_config_get_class_mutex());
+  config_mutex = AGS_CONFIG_GET_OBJ_MUTEX(config);
 
   /* to data */
   pthread_mutex_lock(config_mutex);
@@ -847,11 +807,7 @@ ags_config_save(AgsConfig *config)
     return;
   }
   
-  pthread_mutex_lock(ags_config_get_class_mutex());
-  
-  config_mutex = config->obj_mutex;
-
-  pthread_mutex_unlock(ags_config_get_class_mutex());
+  config_mutex = AGS_CONFIG_GET_OBJ_MUTEX(config);
 
   /* save */
   pthread_mutex_lock(config_mutex);
@@ -914,11 +870,7 @@ ags_config_real_set_value(AgsConfig *config, gchar *group, gchar *key, gchar *va
 {
   pthread_mutex_t *config_mutex;
   
-  pthread_mutex_lock(ags_config_get_class_mutex());
-  
-  config_mutex = config->obj_mutex;
-
-  pthread_mutex_unlock(ags_config_get_class_mutex());
+  config_mutex = AGS_CONFIG_GET_OBJ_MUTEX(config);
 
   /* set value */
   pthread_mutex_lock(config_mutex);
@@ -959,11 +911,7 @@ ags_config_real_get_value(AgsConfig *config, gchar *group, gchar *key)
   
   pthread_mutex_t *config_mutex;
   
-  pthread_mutex_lock(ags_config_get_class_mutex());
-  
-  config_mutex = config->obj_mutex;
-
-  pthread_mutex_unlock(ags_config_get_class_mutex());
+  config_mutex = AGS_CONFIG_GET_OBJ_MUTEX(config);
 
   /* get value */
   pthread_mutex_lock(config_mutex);
@@ -1034,11 +982,7 @@ ags_config_clear(AgsConfig *config)
     return;
   }
     
-  pthread_mutex_lock(ags_config_get_class_mutex());
-  
-  config_mutex = config->obj_mutex;
-
-  pthread_mutex_unlock(ags_config_get_class_mutex());
+  config_mutex = AGS_CONFIG_GET_OBJ_MUTEX(config);
   
   /* clear */
   pthread_mutex_lock(config_mutex);

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -389,11 +389,7 @@ ags_automation_set_property(GObject *gobject,
   automation = AGS_AUTOMATION(gobject);
 
   /* get automation mutex */
-  pthread_mutex_lock(ags_automation_get_class_mutex());
-  
-  automation_mutex = automation->obj_mutex;
-  
-  pthread_mutex_unlock(ags_automation_get_class_mutex());
+  automation_mutex = AGS_AUTOMATION_GET_OBJ_MUTEX(automation);
 
   switch(prop_id){
   case PROP_AUDIO:
@@ -511,11 +507,7 @@ ags_automation_set_property(GObject *gobject,
 	pthread_mutex_t *plugin_port_mutex;	
 
 	/* get plugin port mutex */
-	pthread_mutex_lock(ags_plugin_port_get_class_mutex());
-
-	plugin_port_mutex = plugin_port->obj_mutex;
-	
-	pthread_mutex_unlock(ags_plugin_port_get_class_mutex());
+	plugin_port_mutex = AGS_PLUGIN_PORT_GET_OBJ_MUTEX(plugin_port);
 
 	/* get some fields */
 	pthread_mutex_lock(plugin_port_mutex);
@@ -668,11 +660,7 @@ ags_automation_get_property(GObject *gobject,
   automation = AGS_AUTOMATION(gobject);
 
   /* get automation mutex */
-  pthread_mutex_lock(ags_automation_get_class_mutex());
-  
-  automation_mutex = automation->obj_mutex;
-  
-  pthread_mutex_unlock(ags_automation_get_class_mutex());
+  automation_mutex = AGS_AUTOMATION_GET_OBJ_MUTEX(automation);
 
   switch(prop_id){
   case PROP_AUDIO:
@@ -929,11 +917,7 @@ ags_automation_test_flags(AgsAutomation *automation, guint flags)
   }
       
   /* get automation mutex */
-  pthread_mutex_lock(ags_automation_get_class_mutex());
-  
-  automation_mutex = automation->obj_mutex;
-  
-  pthread_mutex_unlock(ags_automation_get_class_mutex());
+  automation_mutex = AGS_AUTOMATION_GET_OBJ_MUTEX(automation);
 
   /* test */
   pthread_mutex_lock(automation_mutex);
@@ -964,11 +948,7 @@ ags_automation_set_flags(AgsAutomation *automation, guint flags)
   }
       
   /* get automation mutex */
-  pthread_mutex_lock(ags_automation_get_class_mutex());
-  
-  automation_mutex = automation->obj_mutex;
-  
-  pthread_mutex_unlock(ags_automation_get_class_mutex());
+  automation_mutex = AGS_AUTOMATION_GET_OBJ_MUTEX(automation);
 
   /* set */
   pthread_mutex_lock(automation_mutex);
@@ -997,11 +977,7 @@ ags_automation_unset_flags(AgsAutomation *automation, guint flags)
   }
       
   /* get automation mutex */
-  pthread_mutex_lock(ags_automation_get_class_mutex());
-  
-  automation_mutex = automation->obj_mutex;
-  
-  pthread_mutex_unlock(ags_automation_get_class_mutex());
+  automation_mutex = AGS_AUTOMATION_GET_OBJ_MUTEX(automation);
 
   /* set */
   pthread_mutex_lock(automation_mutex);
@@ -1669,11 +1645,7 @@ ags_automation_add_acceleration(AgsAutomation *automation,
   }
 
   /* get automation mutex */
-  pthread_mutex_lock(ags_automation_get_class_mutex());
-  
-  automation_mutex = automation->obj_mutex;
-  
-  pthread_mutex_unlock(ags_automation_get_class_mutex());
+  automation_mutex = AGS_AUTOMATION_GET_OBJ_MUTEX(automation);
 
   /* insert sorted */
   g_object_ref(acceleration);
@@ -1718,11 +1690,7 @@ ags_automation_remove_acceleration(AgsAutomation *automation,
   }
 
   /* get automation mutex */
-  pthread_mutex_lock(ags_automation_get_class_mutex());
-  
-  automation_mutex = automation->obj_mutex;
-  
-  pthread_mutex_unlock(ags_automation_get_class_mutex());
+  automation_mutex = AGS_AUTOMATION_GET_OBJ_MUTEX(automation);
 
   /* remove if found */
   pthread_mutex_lock(automation_mutex);
@@ -1778,11 +1746,7 @@ ags_automation_remove_acceleration_at_position(AgsAutomation *automation,
   }
 
   /* get automation mutex */
-  pthread_mutex_lock(ags_automation_get_class_mutex());
-  
-  automation_mutex = automation->obj_mutex;
-  
-  pthread_mutex_unlock(ags_automation_get_class_mutex());
+  automation_mutex = AGS_AUTOMATION_GET_OBJ_MUTEX(automation);
 
   /* find acceleration */
   pthread_mutex_lock(automation_mutex);
@@ -1861,11 +1825,7 @@ ags_automation_get_selection(AgsAutomation *automation)
   }
 
   /* get automation mutex */
-  pthread_mutex_lock(ags_automation_get_class_mutex());
-  
-  automation_mutex = automation->obj_mutex;
-  
-  pthread_mutex_unlock(ags_automation_get_class_mutex());
+  automation_mutex = AGS_AUTOMATION_GET_OBJ_MUTEX(automation);
 
   /* selection */
   pthread_mutex_lock(automation_mutex);
@@ -1904,11 +1864,7 @@ ags_automation_is_acceleration_selected(AgsAutomation *automation, AgsAccelerati
   }
 
   /* get automation mutex */
-  pthread_mutex_lock(ags_automation_get_class_mutex());
-  
-  automation_mutex = automation->obj_mutex;
-  
-  pthread_mutex_unlock(ags_automation_get_class_mutex());
+  automation_mutex = AGS_AUTOMATION_GET_OBJ_MUTEX(automation);
 
   /* get x */
   g_object_get(acceleration,
@@ -1976,11 +1932,7 @@ ags_automation_find_point(AgsAutomation *automation,
   }
 
   /* get automation mutex */
-  pthread_mutex_lock(ags_automation_get_class_mutex());
-  
-  automation_mutex = automation->obj_mutex;
-  
-  pthread_mutex_unlock(ags_automation_get_class_mutex());
+  automation_mutex = AGS_AUTOMATION_GET_OBJ_MUTEX(automation);
 
   /* find acceleration */
   pthread_mutex_lock(automation_mutex);
@@ -2050,11 +2002,7 @@ ags_automation_find_region(AgsAutomation *automation,
   }
 
   /* get automation mutex */
-  pthread_mutex_lock(ags_automation_get_class_mutex());
-  
-  automation_mutex = automation->obj_mutex;
-  
-  pthread_mutex_unlock(ags_automation_get_class_mutex());
+  automation_mutex = AGS_AUTOMATION_GET_OBJ_MUTEX(automation);
 
   if(x0 > x1){
     guint tmp;
@@ -2142,11 +2090,7 @@ ags_automation_free_selection(AgsAutomation *automation)
   }
 
   /* get automation mutex */
-  pthread_mutex_lock(ags_automation_get_class_mutex());
-  
-  automation_mutex = automation->obj_mutex;
-  
-  pthread_mutex_unlock(ags_automation_get_class_mutex());
+  automation_mutex = AGS_AUTOMATION_GET_OBJ_MUTEX(automation);
 
   /* free selection */
   pthread_mutex_lock(automation_mutex);
@@ -2194,11 +2138,7 @@ ags_automation_add_point_to_selection(AgsAutomation *automation,
   }
 
   /* get automation mutex */
-  pthread_mutex_lock(ags_automation_get_class_mutex());
-  
-  automation_mutex = automation->obj_mutex;
-  
-  pthread_mutex_unlock(ags_automation_get_class_mutex());
+  automation_mutex = AGS_AUTOMATION_GET_OBJ_MUTEX(automation);
 
   /* find acceleration */
   acceleration = ags_automation_find_point(automation,
@@ -2263,11 +2203,7 @@ ags_automation_remove_point_from_selection(AgsAutomation *automation,
   }
 
   /* get automation mutex */
-  pthread_mutex_lock(ags_automation_get_class_mutex());
-  
-  automation_mutex = automation->obj_mutex;
-  
-  pthread_mutex_unlock(ags_automation_get_class_mutex());
+  automation_mutex = AGS_AUTOMATION_GET_OBJ_MUTEX(automation);
 
   /* find point */
   acceleration = ags_automation_find_point(automation,
@@ -2320,11 +2256,7 @@ ags_automation_add_region_to_selection(AgsAutomation *automation,
   }
 
   /* get automation mutex */
-  pthread_mutex_lock(ags_automation_get_class_mutex());
-  
-  automation_mutex = automation->obj_mutex;
-  
-  pthread_mutex_unlock(ags_automation_get_class_mutex());
+  automation_mutex = AGS_AUTOMATION_GET_OBJ_MUTEX(automation);
 
   /* find region */
   region = ags_automation_find_region(automation,
@@ -2398,11 +2330,7 @@ ags_automation_remove_region_from_selection(AgsAutomation *automation,
   }
 
   /* get automation mutex */
-  pthread_mutex_lock(ags_automation_get_class_mutex());
-  
-  automation_mutex = automation->obj_mutex;
-  
-  pthread_mutex_unlock(ags_automation_get_class_mutex());
+  automation_mutex = AGS_AUTOMATION_GET_OBJ_MUTEX(automation);
 
   /* find region */
   region = ags_automation_find_region(automation,
@@ -2453,11 +2381,7 @@ ags_automation_add_all_to_selection(AgsAutomation *automation)
   }
 
   /* get automation mutex */
-  pthread_mutex_lock(ags_automation_get_class_mutex());
-  
-  automation_mutex = automation->obj_mutex;
-  
-  pthread_mutex_unlock(ags_automation_get_class_mutex());
+  automation_mutex = AGS_AUTOMATION_GET_OBJ_MUTEX(automation);
 
   /* select all */
   pthread_mutex_lock(automation_mutex);
@@ -2506,11 +2430,7 @@ ags_automation_copy_selection(AgsAutomation *automation)
   }
 
   /* get automation mutex */
-  pthread_mutex_lock(ags_automation_get_class_mutex());
-  
-  automation_mutex = automation->obj_mutex;
-  
-  pthread_mutex_unlock(ags_automation_get_class_mutex());
+  automation_mutex = AGS_AUTOMATION_GET_OBJ_MUTEX(automation);
 
   /* create root node */
   pthread_mutex_lock(automation_mutex);
@@ -2603,11 +2523,7 @@ ags_automation_cut_selection(AgsAutomation *automation)
   }
 
   /* get automation mutex */
-  pthread_mutex_lock(ags_automation_get_class_mutex());
-  
-  automation_mutex = automation->obj_mutex;
-  
-  pthread_mutex_unlock(ags_automation_get_class_mutex());
+  automation_mutex = AGS_AUTOMATION_GET_OBJ_MUTEX(automation);
 
   /* copy selection */
   automation_node = ags_automation_copy_selection(automation);
@@ -2981,11 +2897,7 @@ ags_automation_get_specifier_unique(GList *automation)
     current_automation = automation->data;
     
     /* get automation mutex */
-    pthread_mutex_lock(ags_automation_get_class_mutex());
-  
-    automation_mutex = current_automation->obj_mutex;
-  
-    pthread_mutex_unlock(ags_automation_get_class_mutex());
+    automation_mutex = AGS_AUTOMATION_GET_OBJ_MUTEX(current_automation);
 
     /* duplicate control name */
     pthread_mutex_lock(automation_mutex);
@@ -3059,11 +2971,7 @@ ags_automation_get_specifier_unique_with_channel_type(GList *automation,
     current_automation = automation->data;
     
     /* get automation mutex */
-    pthread_mutex_lock(ags_automation_get_class_mutex());
-  
-    automation_mutex = current_automation->obj_mutex;
-  
-    pthread_mutex_unlock(ags_automation_get_class_mutex());
+    automation_mutex = AGS_AUTOMATION_GET_OBJ_MUTEX(current_automation);
 
     /* get channel type */
     pthread_mutex_lock(automation_mutex);
@@ -3138,11 +3046,7 @@ ags_automation_find_specifier(GList *automation,
     current_automation = automation->data;
 
     /* get automation mutex */
-    pthread_mutex_lock(ags_automation_get_class_mutex());
-  
-    automation_mutex = current_automation->obj_mutex;
-  
-    pthread_mutex_unlock(ags_automation_get_class_mutex());
+    automation_mutex = AGS_AUTOMATION_GET_OBJ_MUTEX(current_automation);
 
     /* duplicate control name */
     pthread_mutex_lock(automation_mutex);
@@ -3199,11 +3103,7 @@ ags_automation_find_channel_type_with_control_name(GList *automation,
     current_automation = automation->data;
     
     /* get automation mutex */
-    pthread_mutex_lock(ags_automation_get_class_mutex());
-  
-    automation_mutex = current_automation->obj_mutex;
-  
-    pthread_mutex_unlock(ags_automation_get_class_mutex());
+    automation_mutex = AGS_AUTOMATION_GET_OBJ_MUTEX(current_automation);
 
     /* duplicate control name */
     pthread_mutex_lock(automation_mutex);
@@ -3269,11 +3169,7 @@ ags_automation_find_specifier_with_type_and_line(GList *automation,
     current_automation = automation->data;
     
     /* get automation mutex */
-    pthread_mutex_lock(ags_automation_get_class_mutex());
-  
-    automation_mutex = current_automation->obj_mutex;
-  
-    pthread_mutex_unlock(ags_automation_get_class_mutex());
+    automation_mutex = AGS_AUTOMATION_GET_OBJ_MUTEX(current_automation);
 
     /* duplicate control name */
     pthread_mutex_lock(automation_mutex);
@@ -3347,11 +3243,7 @@ ags_automation_get_value(AgsAutomation *automation,
   }
 
   /* get automation mutex */
-  pthread_mutex_lock(ags_automation_get_class_mutex());
-  
-  automation_mutex = automation->obj_mutex;
-  
-  pthread_mutex_unlock(ags_automation_get_class_mutex());
+  automation_mutex = AGS_AUTOMATION_GET_OBJ_MUTEX(automation);
 
   /*  */
   pthread_mutex_lock(automation_mutex);

@@ -1,3 +1,8 @@
+ags (2.2.27)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* refactored get object mutex
+
 ags (2.2.26)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -185,11 +185,7 @@ ags_input_set_property(GObject *gobject,
   input = AGS_INPUT(gobject);
 
   /* get channel mutex */
-  pthread_mutex_lock(ags_channel_get_class_mutex());
-  
-  channel_mutex = AGS_CHANNEL(input)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_channel_get_class_mutex());
+  channel_mutex = AGS_CHANNEL_GET_OBJ_MUTEX(input);
 
   switch(prop_id){
   case PROP_FILE_LINK:
@@ -257,11 +253,7 @@ ags_input_get_property(GObject *gobject,
   input = AGS_INPUT(gobject);
 
   /* get channel mutex */
-  pthread_mutex_lock(ags_channel_get_class_mutex());
-  
-  channel_mutex = AGS_CHANNEL(input)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_channel_get_class_mutex());
+  channel_mutex = AGS_CHANNEL_GET_OBJ_MUTEX(input);
 
   switch(prop_id){
   case PROP_FILE_LINK:
@@ -481,11 +473,7 @@ ags_input_is_active(AgsInput *input,
   channel = (AgsChannel *) input;
 
   /* get channel mutex */
-  pthread_mutex_lock(ags_channel_get_class_mutex());
-  
-  channel_mutex = channel->obj_mutex;
-  
-  pthread_mutex_unlock(ags_channel_get_class_mutex());
+  channel_mutex = AGS_CHANNEL_GET_OBJ_MUTEX(channel);
     
   /* get recycling */
   pthread_mutex_lock(channel_mutex);
@@ -503,11 +491,7 @@ ags_input_is_active(AgsInput *input,
   active_context = (AgsRecyclingContext *) recycling_context;
   
   /* get recycling mutex */
-  pthread_mutex_lock(ags_recycling_get_class_mutex());
-  
-  recycling_mutex = last_recycling->obj_mutex;
-  
-  pthread_mutex_unlock(ags_recycling_get_class_mutex());
+  recycling_mutex = AGS_RECYCLING_GET_OBJ_MUTEX(last_recycling);
 
   /* get end region */  
   pthread_mutex_lock(recycling_mutex);
@@ -521,17 +505,15 @@ ags_input_is_active(AgsInput *input,
 
   while(recycling != end_region){
     /* get recycling mutex */
-    pthread_mutex_lock(ags_recycling_get_class_mutex());
-  
-    recycling_mutex = recycling->obj_mutex;
-  
-    pthread_mutex_unlock(ags_recycling_get_class_mutex());
+    recycling_mutex = AGS_RECYCLING_GET_OBJ_MUTEX(recycling);
     
     /* get audio signal */
     pthread_mutex_lock(recycling_mutex);
 
     list = 
-      list_start = g_list_copy(recycling->audio_signal);
+      list_start = g_list_copy_deep(recycling->audio_signal,
+				    (GCopyFunc) g_object_ref,
+				    NULL);
 
     pthread_mutex_unlock(recycling_mutex);  
 
@@ -544,11 +526,7 @@ ags_input_is_active(AgsInput *input,
       audio_signal = list->data;
 
       /* get audio signal mutex */
-      pthread_mutex_lock(ags_audio_signal_get_class_mutex());
-  
-      audio_signal_mutex = audio_signal->obj_mutex;
-  
-      pthread_mutex_unlock(ags_audio_signal_get_class_mutex());
+      audio_signal_mutex = AGS_AUDIO_SIGNAL_GET_OBJ_MUTEX(audio_signal);
 
       /* get recall id */
       pthread_mutex_lock(audio_signal_mutex);
@@ -564,11 +542,7 @@ ags_input_is_active(AgsInput *input,
       }
 
       /* get recall id mutex */
-      pthread_mutex_lock(ags_recall_id_get_class_mutex());
-  
-      current_recall_id_mutex = current_recall_id->obj_mutex;
-  
-      pthread_mutex_unlock(ags_recall_id_get_class_mutex());
+      current_recall_id_mutex = AGS_RECALL_ID_GET_OBJ_MUTEX(current_recall_id);
 
       /* get recycling context */
       pthread_mutex_lock(current_recall_id_mutex);
@@ -586,7 +560,8 @@ ags_input_is_active(AgsInput *input,
       list = list->next;
     }
 
-    g_list_free(list_start);
+    g_list_free_full(list_start,
+		     g_object_unref);
     
     /* iterate */
     pthread_mutex_lock(recycling_mutex);
@@ -636,11 +611,7 @@ ags_input_next_active(AgsInput *input,
   /* check if active */
   while(channel != NULL){
     /* get channel mutex */
-    pthread_mutex_lock(ags_channel_get_class_mutex());
-  
-    channel_mutex = channel->obj_mutex;
-  
-    pthread_mutex_unlock(ags_channel_get_class_mutex());
+    channel_mutex = AGS_CHANNEL_GET_OBJ_MUTEX(channel);
     
     /* get recycling */
     pthread_mutex_lock(channel_mutex);
@@ -665,11 +636,7 @@ ags_input_next_active(AgsInput *input,
     active_context = (AgsRecyclingContext *) recycling_context;
   
     /* get recycling mutex */
-    pthread_mutex_lock(ags_recycling_get_class_mutex());
-  
-    recycling_mutex = last_recycling->obj_mutex;
-  
-    pthread_mutex_unlock(ags_recycling_get_class_mutex());
+    recycling_mutex = AGS_RECYCLING_GET_OBJ_MUTEX(last_recycling);
 
     /* get end region */  
     pthread_mutex_lock(recycling_mutex);
@@ -683,17 +650,15 @@ ags_input_next_active(AgsInput *input,
     
     while(recycling != end_region){
       /* get recycling mutex */
-      pthread_mutex_lock(ags_recycling_get_class_mutex());
-  
-      recycling_mutex = recycling->obj_mutex;
-  
-      pthread_mutex_unlock(ags_recycling_get_class_mutex());
+      recycling_mutex = AGS_RECYCLING_GET_OBJ_MUTEX(recycling);
     
       /* get audio signal */
       pthread_mutex_lock(recycling_mutex);
 
       list = 
-	list_start = g_list_copy(recycling->audio_signal);
+	list_start = g_list_copy_deep(recycling->audio_signal,
+				      (GCopyFunc) g_object_ref,
+				      NULL);
 
       pthread_mutex_unlock(recycling_mutex);  
 
@@ -707,11 +672,7 @@ ags_input_next_active(AgsInput *input,
 	audio_signal = list->data;
 
 	/* get audio signal mutex */
-	pthread_mutex_lock(ags_audio_signal_get_class_mutex());
-  
-	audio_signal_mutex = audio_signal->obj_mutex;
-  
-	pthread_mutex_unlock(ags_audio_signal_get_class_mutex());
+	audio_signal_mutex = AGS_AUDIO_SIGNAL_GET_OBJ_MUTEX(audio_signal);
 
 	/* get recall id */
 	pthread_mutex_lock(audio_signal_mutex);
@@ -727,11 +688,7 @@ ags_input_next_active(AgsInput *input,
 	}
 
 	/* get recall id mutex */
-	pthread_mutex_lock(ags_recall_id_get_class_mutex());
-  
-	current_recall_id_mutex = current_recall_id->obj_mutex;
-  
-	pthread_mutex_unlock(ags_recall_id_get_class_mutex());
+	current_recall_id_mutex = AGS_RECALL_ID_GET_OBJ_MUTEX(current_recall_id);
 
 	/* get recycling context */
 	pthread_mutex_lock(current_recall_id_mutex);
@@ -749,7 +706,8 @@ ags_input_next_active(AgsInput *input,
 	list = list->next;
       }
 
-      g_list_free(list_start);
+      g_list_free_full(list_start,
+		       g_object_unref);
 
       /* iterate */
       pthread_mutex_lock(recycling_mutex);

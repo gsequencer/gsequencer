@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -192,7 +192,6 @@ ags_playback_init(AgsPlayback *playback)
   gboolean super_threaded_channel;
   guint i;
   
-  pthread_mutex_t *config_mutex;
   pthread_mutex_t *mutex;
   pthread_mutexattr_t *attr;
 
@@ -217,18 +216,10 @@ ags_playback_init(AgsPlayback *playback)
 
   /* config */
   config = ags_config_get_instance();
-
-  pthread_mutex_lock(ags_config_get_class_mutex());
-  
-  config_mutex = config->obj_mutex;
-
-  pthread_mutex_unlock(ags_config_get_class_mutex());
   
   /* thread model */
   super_threaded_channel = FALSE;
   
-  pthread_mutex_lock(config_mutex);
-
   thread_model = ags_config_get_value(config,
 				      AGS_CONFIG_THREAD,
 				      "model");
@@ -251,8 +242,6 @@ ags_playback_init(AgsPlayback *playback)
   }
 
   g_free(thread_model);
-
-  pthread_mutex_unlock(config_mutex);
 
   /* default flags */
   if(super_threaded_channel){
@@ -297,11 +286,7 @@ ags_playback_set_property(GObject *gobject,
   playback = AGS_PLAYBACK(gobject);
 
   /* get playback mutex */
-  pthread_mutex_lock(ags_playback_get_class_mutex());
-  
-  playback_mutex = playback->obj_mutex;
-  
-  pthread_mutex_unlock(ags_playback_get_class_mutex());
+  playback_mutex = AGS_PLAYBACK_GET_OBJ_MUTEX(playback);
 
   switch(prop_id){
   case PROP_PLAYBACK_DOMAIN:
@@ -415,11 +400,7 @@ ags_playback_get_property(GObject *gobject,
   playback = AGS_PLAYBACK(gobject);
 
   /* get playback mutex */
-  pthread_mutex_lock(ags_playback_get_class_mutex());
-  
-  playback_mutex = playback->obj_mutex;
-  
-  pthread_mutex_unlock(ags_playback_get_class_mutex());
+  playback_mutex = AGS_PLAYBACK_GET_OBJ_MUTEX(playback);
 
   switch(prop_id){
   case PROP_PLAYBACK_DOMAIN:
@@ -608,11 +589,7 @@ ags_playback_test_flags(AgsPlayback *playback, guint flags)
   }
 
   /* get playback mutex */
-  pthread_mutex_lock(ags_playback_get_class_mutex());
-  
-  playback_mutex = playback->obj_mutex;
-  
-  pthread_mutex_unlock(ags_playback_get_class_mutex());
+  playback_mutex = AGS_PLAYBACK_GET_OBJ_MUTEX(playback);
 
   /* test */
   pthread_mutex_lock(playback_mutex);
@@ -643,11 +620,7 @@ ags_playback_set_flags(AgsPlayback *playback, guint flags)
   }
 
   /* get playback mutex */
-  pthread_mutex_lock(ags_playback_get_class_mutex());
-  
-  playback_mutex = playback->obj_mutex;
-  
-  pthread_mutex_unlock(ags_playback_get_class_mutex());
+  playback_mutex = AGS_PLAYBACK_GET_OBJ_MUTEX(playback);
 
   /* set flags */
   pthread_mutex_lock(playback_mutex);
@@ -676,11 +649,7 @@ ags_playback_unset_flags(AgsPlayback *playback, guint flags)
   }
 
   /* get playback mutex */
-  pthread_mutex_lock(ags_playback_get_class_mutex());
-  
-  playback_mutex = playback->obj_mutex;
-  
-  pthread_mutex_unlock(ags_playback_get_class_mutex());
+  playback_mutex = AGS_PLAYBACK_GET_OBJ_MUTEX(playback);
 
   /* set flags */
   pthread_mutex_lock(playback_mutex);
@@ -713,11 +682,7 @@ ags_playback_set_channel_thread(AgsPlayback *playback,
   }
 
   /* get playback mutex */
-  pthread_mutex_lock(ags_playback_get_class_mutex());
-	  
-  playback_mutex = playback->obj_mutex;
-	  
-  pthread_mutex_unlock(ags_playback_get_class_mutex());
+  playback_mutex = AGS_PLAYBACK_GET_OBJ_MUTEX(playback);
 
   /* unset old */
   pthread_mutex_lock(playback_mutex);
@@ -766,11 +731,7 @@ ags_playback_get_channel_thread(AgsPlayback *playback,
   }
 
   /* get playback mutex */
-  pthread_mutex_lock(ags_playback_get_class_mutex());
-	  
-  playback_mutex = playback->obj_mutex;
-	  
-  pthread_mutex_unlock(ags_playback_get_class_mutex());
+  playback_mutex = AGS_PLAYBACK_GET_OBJ_MUTEX(playback);
 
   /* get channel thread */
   pthread_mutex_lock(playback_mutex);
@@ -805,11 +766,7 @@ ags_playback_set_recall_id(AgsPlayback *playback,
   }
 
   /* get playback mutex */
-  pthread_mutex_lock(ags_playback_get_class_mutex());
-	  
-  playback_mutex = playback->obj_mutex;
-	  
-  pthread_mutex_unlock(ags_playback_get_class_mutex());
+  playback_mutex = AGS_PLAYBACK_GET_OBJ_MUTEX(playback);
 
   /* unref old */
   pthread_mutex_lock(playback_mutex);
@@ -854,11 +811,7 @@ ags_playback_get_recall_id(AgsPlayback *playback,
   }
 
   /* get playback mutex */
-  pthread_mutex_lock(ags_playback_get_class_mutex());
-	  
-  playback_mutex = playback->obj_mutex;
-	  
-  pthread_mutex_unlock(ags_playback_get_class_mutex());
+  playback_mutex = AGS_PLAYBACK_GET_OBJ_MUTEX(playback);
 
   /* get recall id */
   pthread_mutex_lock(playback_mutex);
@@ -895,11 +848,7 @@ ags_playback_find_channel(GList *playback,
 
   while(playback != NULL){
     /* get playback mutex */
-    pthread_mutex_lock(ags_playback_get_class_mutex());
-	  
-    playback_mutex = AGS_PLAYBACK(playback->data)->obj_mutex;
-	  
-    pthread_mutex_unlock(ags_playback_get_class_mutex());
+    playback_mutex = AGS_PLAYBACK_GET_OBJ_MUTEX(playback->data);
 
     /* check channel */
     pthread_mutex_lock(playback_mutex);
