@@ -385,11 +385,7 @@ ags_thread_pool_creation_thread(void *ptr)
 
   /* get parent mutex */
   if(thread_pool->parent != NULL){
-    pthread_mutex_lock(ags_thread_get_class_mutex());
-
-    parent_mutex = thread_pool->parent->obj_mutex;
-  
-    pthread_mutex_unlock(ags_thread_get_class_mutex());
+    parent_mutex = AGS_THREAD_GET_OBJ_MUTEX(thread_pool->parent);
   }else{
     parent_mutex = NULL;
   }
@@ -602,11 +598,7 @@ ags_thread_pool_real_start(AgsThreadPool *thread_pool)
 
   /* get parent mutex */
   if(thread_pool->parent != NULL){
-    pthread_mutex_lock(ags_thread_get_class_mutex());
-
-    parent_mutex = thread_pool->parent->obj_mutex;
-  
-    pthread_mutex_unlock(ags_thread_get_class_mutex());
+    parent_mutex = AGS_THREAD_GET_OBJ_MUTEX(thread_pool->parent);
   }else{
     parent_mutex = NULL;
   }

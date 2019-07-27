@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -201,11 +201,7 @@ ags_lv2_conversion_set_property(GObject *gobject,
   lv2_conversion = AGS_LV2_CONVERSION(gobject);
 
   /* get base plugin mutex */
-  pthread_mutex_lock(ags_conversion_get_class_mutex());
-  
-  conversion_mutex = AGS_CONVERSION(gobject)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_conversion_get_class_mutex());
+  conversion_mutex = AGS_CONVERSION_GET_OBJ_MUTEX(lv2_conversion);
 
   switch(prop_id){
   case PROP_LOWER:
@@ -266,11 +262,7 @@ ags_lv2_conversion_get_property(GObject *gobject,
   lv2_conversion = AGS_LV2_CONVERSION(gobject);
 
   /* get base plugin mutex */
-  pthread_mutex_lock(ags_conversion_get_class_mutex());
-  
-  conversion_mutex = AGS_CONVERSION(gobject)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_conversion_get_class_mutex());
+  conversion_mutex = AGS_CONVERSION_GET_OBJ_MUTEX(lv2_conversion);
 
   switch(prop_id){
   case PROP_LOWER:
@@ -329,11 +321,7 @@ ags_lv2_conversion_test_flags(AgsLv2Conversion *lv2_conversion, guint flags)
   }
   
   /* get base plugin mutex */
-  pthread_mutex_lock(ags_conversion_get_class_mutex());
-  
-  conversion_mutex = AGS_CONVERSION(lv2_conversion)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_conversion_get_class_mutex());
+  conversion_mutex = AGS_CONVERSION_GET_OBJ_MUTEX(lv2_conversion);
 
   /* test flags */
   pthread_mutex_lock(conversion_mutex);
@@ -364,11 +352,7 @@ ags_lv2_conversion_set_flags(AgsLv2Conversion *lv2_conversion, guint flags)
   }
   
   /* get base plugin mutex */
-  pthread_mutex_lock(ags_conversion_get_class_mutex());
-  
-  conversion_mutex = AGS_CONVERSION(lv2_conversion)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_conversion_get_class_mutex());
+  conversion_mutex = AGS_CONVERSION_GET_OBJ_MUTEX(lv2_conversion);
 
   /* set flags */
   pthread_mutex_lock(conversion_mutex);
@@ -397,11 +381,7 @@ ags_lv2_conversion_unset_flags(AgsLv2Conversion *lv2_conversion, guint flags)
   }
   
   /* get base plugin mutex */
-  pthread_mutex_lock(ags_conversion_get_class_mutex());
-  
-  conversion_mutex = AGS_CONVERSION(lv2_conversion)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_conversion_get_class_mutex());
+  conversion_mutex = AGS_CONVERSION_GET_OBJ_MUTEX(lv2_conversion);
 
   /* unset flags */
   pthread_mutex_lock(conversion_mutex);

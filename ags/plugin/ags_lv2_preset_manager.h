@@ -30,6 +30,8 @@
 #define AGS_IS_LV2_PRESET_MANAGER_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_LV2_PRESET_MANAGER))
 #define AGS_LV2_PRESET_MANAGER_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_LV2_PRESET_MANAGER, AgsLv2PresetManagerClass))
 
+#define AGS_LV2_PRESET_MANAGER_GET_OBJ_MUTEX(obj) (((AgsLv2PresetManager *) obj)->obj_mutex)
+
 typedef struct _AgsLv2PresetManager AgsLv2PresetManager;
 typedef struct _AgsLv2PresetManagerClass AgsLv2PresetManagerClass;
 

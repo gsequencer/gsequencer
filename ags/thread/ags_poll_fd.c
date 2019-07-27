@@ -189,16 +189,12 @@ ags_poll_fd_dispatch(AgsPollFd *poll_fd)
 {
   pthread_mutex_t *mutex;
 
-  pthread_mutex_lock(ags_poll_fd_get_class_mutex());
-  
-  mutex = poll_fd->obj_mutex;
-  
-  pthread_mutex_unlock(ags_poll_fd_get_class_mutex());
+  g_return_if_fail(AGS_IS_POLL_FD(poll_fd));
+
+  mutex = AGS_POLL_FD_GET_OBJ_MUTEX(poll_fd);
 
   pthread_mutex_lock(mutex);
   
-  g_return_if_fail(AGS_IS_POLL_FD(poll_fd));
-
   g_object_ref(G_OBJECT(poll_fd));
   g_signal_emit(G_OBJECT(poll_fd),
 		poll_fd_signals[DISPATCH], 0);

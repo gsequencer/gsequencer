@@ -223,11 +223,7 @@ ags_lv2_turtle_parser_set_property(GObject *gobject,
   lv2_turtle_parser = AGS_LV2_TURTLE_PARSER(gobject);
 
   /* get lv2 turtle parser mutex */
-  pthread_mutex_lock(ags_lv2_turtle_parser_get_class_mutex());
-  
-  lv2_turtle_parser_mutex = lv2_turtle_parser->obj_mutex;
-  
-  pthread_mutex_unlock(ags_lv2_turtle_parser_get_class_mutex());
+  lv2_turtle_parser_mutex = AGS_LV2_TURTLE_PARSER_GET_OBJ_MUTEX(lv2_turtle_parser);
 
   switch(prop_id){
   case PROP_TURTLE:
@@ -337,11 +333,7 @@ ags_lv2_turtle_parser_get_property(GObject *gobject,
   lv2_turtle_parser = AGS_LV2_TURTLE_PARSER(gobject);
 
   /* get lv2 turtle parser mutex */
-  pthread_mutex_lock(ags_lv2_turtle_parser_get_class_mutex());
-  
-  lv2_turtle_parser_mutex = lv2_turtle_parser->obj_mutex;
-  
-  pthread_mutex_unlock(ags_lv2_turtle_parser_get_class_mutex());
+  lv2_turtle_parser_mutex = AGS_LV2_TURTLE_PARSER_GET_OBJ_MUTEX(lv2_turtle_parser);
 
   switch(prop_id){
   case PROP_TURTLE:
@@ -1236,11 +1228,7 @@ ags_lv2_turtle_parser_parse_names(AgsLv2TurtleParser *lv2_turtle_parser,
   }
 
   /* get lv2 turtle parser mutex */
-  pthread_mutex_lock(ags_lv2_turtle_parser_get_class_mutex());
-  
-  lv2_turtle_parser_mutex = lv2_turtle_parser->obj_mutex;
-  
-  pthread_mutex_unlock(ags_lv2_turtle_parser_get_class_mutex());
+  lv2_turtle_parser_mutex = AGS_LV2_TURTLE_PARSER_GET_OBJ_MUTEX(lv2_turtle_parser);
 
   /* get manifest */
   manifest = NULL;
@@ -4415,11 +4403,7 @@ ags_lv2_turtle_parser_parse(AgsLv2TurtleParser *lv2_turtle_parser,
   }
 
   /* get lv2 turtle parser mutex */
-  pthread_mutex_lock(ags_lv2_turtle_parser_get_class_mutex());
-  
-  lv2_turtle_parser_mutex = lv2_turtle_parser->obj_mutex;
-  
-  pthread_mutex_unlock(ags_lv2_turtle_parser_get_class_mutex());
+  lv2_turtle_parser_mutex = AGS_LV2_TURTLE_PARSER_GET_OBJ_MUTEX(lv2_turtle_parser);
 
   /* get manifest */
   manifest = NULL;

@@ -211,12 +211,8 @@ ags_conversion_set_property(GObject *gobject,
   
   conversion = AGS_CONVERSION(gobject);
 
-  /* get conversion mutex */
-  pthread_mutex_lock(ags_conversion_get_class_mutex());
-  
-  conversion_mutex = conversion->obj_mutex;
-
-  pthread_mutex_unlock(ags_conversion_get_class_mutex());
+  /* get conversion mutex */  
+  conversion_mutex = AGS_CONVERSION_GET_OBJ_MUTEX(conversion);
   
   switch(prop_id){
   case PROP_NAME:
@@ -284,11 +280,7 @@ ags_conversion_get_property(GObject *gobject,
   conversion = AGS_CONVERSION(gobject);
 
   /* get conversion mutex */
-  pthread_mutex_lock(ags_conversion_get_class_mutex());
-  
-  conversion_mutex = conversion->obj_mutex;
-
-  pthread_mutex_unlock(ags_conversion_get_class_mutex());
+  conversion_mutex = AGS_CONVERSION_GET_OBJ_MUTEX(conversion);
 
   switch(prop_id){
   case PROP_NAME:

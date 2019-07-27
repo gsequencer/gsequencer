@@ -33,6 +33,8 @@
 #define AGS_IS_LV2_URI_MAP_MANAGER_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_LV2_URI_MAP_MANAGER))
 #define AGS_LV2_URI_MAP_MANAGER_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_LV2_URI_MAP_MANAGER, AgsLv2UriMapManagerClass))
 
+#define AGS_LV2_URI_MAP_MANAGER_GET_OBJ_MUTEX(obj) (((AgsLv2UriMapManager *) obj)->obj_mutex)
+
 typedef struct _AgsLv2UriMapManager AgsLv2UriMapManager;
 typedef struct _AgsLv2UriMapManagerClass AgsLv2UriMapManagerClass;
 

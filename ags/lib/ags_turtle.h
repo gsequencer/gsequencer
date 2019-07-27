@@ -34,6 +34,8 @@
 #define AGS_IS_TURTLE_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_TURTLE))
 #define AGS_TURTLE_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_TURTLE, AgsTurtleClass))
 
+#define AGS_TURTLE_GET_OBJ_MUTEX(obj) (((AgsTurtle *) obj)->obj_mutex)
+
 #define AGS_TURTLE_DEFAULT_ENCODING "UTF-8"
 
 #define AGS_TURTLE_DEFAULT_VERSION "0.7.3"

@@ -251,11 +251,7 @@ ags_file_id_ref_set_property(GObject *gobject,
   file_id_ref = AGS_FILE_ID_REF(gobject);
 
   /* get file id ref mutex */
-  pthread_mutex_lock(ags_file_id_ref_get_class_mutex());
-  
-  file_id_ref_mutex = file_id_ref->obj_mutex;
-  
-  pthread_mutex_unlock(ags_file_id_ref_get_class_mutex());
+  file_id_ref_mutex = AGS_FILE_ID_REF_GET_OBJ_MUTEX(file_id_ref);
   
   switch(prop_id){
   case PROP_NODE:
@@ -362,11 +358,7 @@ ags_file_id_ref_get_property(GObject *gobject,
   file_id_ref = AGS_FILE_ID_REF(gobject);
 
   /* get file id ref mutex */
-  pthread_mutex_lock(ags_file_id_ref_get_class_mutex());
-  
-  file_id_ref_mutex = file_id_ref->obj_mutex;
-  
-  pthread_mutex_unlock(ags_file_id_ref_get_class_mutex());
+  file_id_ref_mutex = AGS_FILE_ID_REF_GET_OBJ_MUTEX(file_id_ref);
   
   switch(prop_id){
   case PROP_NODE:

@@ -217,11 +217,7 @@ ags_task_set_property(GObject *gobject,
   task = AGS_TASK(gobject);
 
   /* get task mutex */
-  pthread_mutex_lock(ags_task_get_class_mutex());
-
-  task_mutex = task->obj_mutex;
-  
-  pthread_mutex_unlock(ags_task_get_class_mutex());
+  task_mutex = AGS_TASK_GET_OBJ_MUTEX(task);
 
   switch(prop_id){
   case PROP_TASK_THREAD:
@@ -270,11 +266,7 @@ ags_task_get_property(GObject *gobject,
   task = AGS_TASK(gobject);
 
   /* get task mutex */
-  pthread_mutex_lock(ags_task_get_class_mutex());
-
-  task_mutex = task->obj_mutex;
-  
-  pthread_mutex_unlock(ags_task_get_class_mutex());
+  task_mutex = AGS_TASK_GET_OBJ_MUTEX(task);
 
   switch(prop_id){
   case PROP_TASK_THREAD:
@@ -356,11 +348,7 @@ ags_task_test_flags(AgsTask *task, guint flags)
   }
 
   /* get task mutex */
-  pthread_mutex_lock(ags_task_get_class_mutex());
-  
-  task_mutex = task->obj_mutex;
-  
-  pthread_mutex_unlock(ags_task_get_class_mutex());
+  task_mutex = AGS_TASK_GET_OBJ_MUTEX(task);
 
   /* test */
   pthread_mutex_lock(task_mutex);
@@ -393,11 +381,7 @@ ags_task_set_flags(AgsTask *task, guint flags)
   }
 
   /* get task mutex */
-  pthread_mutex_lock(ags_task_get_class_mutex());
-  
-  task_mutex = task->obj_mutex;
-  
-  pthread_mutex_unlock(ags_task_get_class_mutex());
+  task_mutex = AGS_TASK_GET_OBJ_MUTEX(task);
 
   /* set flags */
   pthread_mutex_lock(task_mutex);
@@ -428,11 +412,7 @@ ags_task_unset_flags(AgsTask *task, guint flags)
   }
 
   /* get task mutex */
-  pthread_mutex_lock(ags_task_get_class_mutex());
-  
-  task_mutex = task->obj_mutex;
-  
-  pthread_mutex_unlock(ags_task_get_class_mutex());
+  task_mutex = AGS_TASK_GET_OBJ_MUTEX(task);
 
   /* unset flags */
   pthread_mutex_lock(task_mutex);

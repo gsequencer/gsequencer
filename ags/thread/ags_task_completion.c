@@ -247,11 +247,7 @@ ags_task_completion_set_property(GObject *gobject,
   task_completion = AGS_TASK_COMPLETION(gobject);
 
   /* get task completion mutex */
-  pthread_mutex_lock(ags_task_completion_get_class_mutex());
-  
-  task_completion_mutex = task_completion->obj_mutex;
-  
-  pthread_mutex_unlock(ags_task_completion_get_class_mutex());
+  task_completion_mutex = AGS_TASK_COMPLETION_GET_OBJ_MUTEX(task_completion);
 
   switch(prop_id){
   case PROP_TASK:
@@ -300,11 +296,7 @@ ags_task_completion_get_property(GObject *gobject,
   task_completion = AGS_TASK_COMPLETION(gobject);
 
   /* get task completion mutex */
-  pthread_mutex_lock(ags_task_completion_get_class_mutex());
-  
-  task_completion_mutex = task_completion->obj_mutex;
-  
-  pthread_mutex_unlock(ags_task_completion_get_class_mutex());
+  task_completion_mutex = AGS_TASK_COMPLETION_GET_OBJ_MUTEX(task_completion);
 
   switch(prop_id){
   case PROP_TASK:
@@ -357,11 +349,7 @@ ags_task_completion_get_uuid(AgsConnectable *connectable)
   task_completion = AGS_TASK_COMPLETION(connectable);
 
   /* get task_completion mutex */
-  pthread_mutex_lock(ags_task_completion_get_class_mutex());
-  
-  task_completion_mutex = task_completion->obj_mutex;
-  
-  pthread_mutex_unlock(ags_task_completion_get_class_mutex());
+  task_completion_mutex = AGS_TASK_COMPLETION_GET_OBJ_MUTEX(task_completion);
 
   /* get UUID */
   pthread_mutex_lock(task_completion_mutex);
@@ -391,11 +379,7 @@ ags_task_completion_is_ready(AgsConnectable *connectable)
   task_completion = AGS_TASK_COMPLETION(connectable);
 
   /* get task_completion mutex */
-  pthread_mutex_lock(ags_task_completion_get_class_mutex());
-  
-  task_completion_mutex = task_completion->obj_mutex;
-  
-  pthread_mutex_unlock(ags_task_completion_get_class_mutex());
+  task_completion_mutex = AGS_TASK_COMPLETION_GET_OBJ_MUTEX(task_completion);
 
   /* check is added */
   pthread_mutex_lock(task_completion_mutex);
@@ -478,11 +462,7 @@ ags_task_completion_is_connected(AgsConnectable *connectable)
   task_completion = AGS_TASK_COMPLETION(connectable);
 
   /* get task_completion mutex */
-  pthread_mutex_lock(ags_task_completion_get_class_mutex());
-  
-  task_completion_mutex = task_completion->obj_mutex;
-  
-  pthread_mutex_unlock(ags_task_completion_get_class_mutex());
+  task_completion_mutex = AGS_TASK_COMPLETION_GET_OBJ_MUTEX(task_completion);
 
   /* check is connected */
   pthread_mutex_lock(task_completion_mutex);
@@ -568,11 +548,7 @@ ags_task_completion_test_flags(AgsTaskCompletion *task_completion, guint flags)
   }
 
   /* get task_completion mutex */
-  pthread_mutex_lock(ags_task_completion_get_class_mutex());
-  
-  task_completion_mutex = task_completion->obj_mutex;
-  
-  pthread_mutex_unlock(ags_task_completion_get_class_mutex());
+  task_completion_mutex = AGS_TASK_COMPLETION_GET_OBJ_MUTEX(task_completion);
 
   /* test */
   pthread_mutex_lock(task_completion_mutex);
@@ -605,11 +581,7 @@ ags_task_completion_set_flags(AgsTaskCompletion *task_completion, guint flags)
   }
 
   /* get task_completion mutex */
-  pthread_mutex_lock(ags_task_completion_get_class_mutex());
-  
-  task_completion_mutex = task_completion->obj_mutex;
-  
-  pthread_mutex_unlock(ags_task_completion_get_class_mutex());
+  task_completion_mutex = AGS_TASK_COMPLETION_GET_OBJ_MUTEX(task_completion);
 
   /* set flags */
   pthread_mutex_lock(task_completion_mutex);
@@ -640,11 +612,7 @@ ags_task_completion_unset_flags(AgsTaskCompletion *task_completion, guint flags)
   }
 
   /* get task_completion mutex */
-  pthread_mutex_lock(ags_task_completion_get_class_mutex());
-  
-  task_completion_mutex = task_completion->obj_mutex;
-  
-  pthread_mutex_unlock(ags_task_completion_get_class_mutex());
+  task_completion_mutex = AGS_TASK_COMPLETION_GET_OBJ_MUTEX(task_completion);
 
   /* unset flags */
   pthread_mutex_lock(task_completion_mutex);

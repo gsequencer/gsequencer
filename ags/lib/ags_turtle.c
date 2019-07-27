@@ -196,11 +196,7 @@ ags_turtle_set_property(GObject *gobject,
   turtle = AGS_TURTLE(gobject);
 
   /* get turtle mutex */
-  pthread_mutex_lock(ags_turtle_get_class_mutex());
-  
-  turtle_mutex = turtle->obj_mutex;
-  
-  pthread_mutex_unlock(ags_turtle_get_class_mutex());
+  turtle_mutex = AGS_TURTLE_GET_OBJ_MUTEX(turtle);
 
   switch(prop_id){
   case PROP_FILENAME:
@@ -258,11 +254,7 @@ ags_turtle_get_property(GObject *gobject,
   turtle = AGS_TURTLE(gobject);
 
   /* get turtle mutex */
-  pthread_mutex_lock(ags_turtle_get_class_mutex());
-  
-  turtle_mutex = turtle->obj_mutex;
-  
-  pthread_mutex_unlock(ags_turtle_get_class_mutex());
+  turtle_mutex = AGS_TURTLE_GET_OBJ_MUTEX(turtle);
 
   switch(prop_id){
   case PROP_FILENAME:

@@ -290,11 +290,7 @@ ags_lv2_preset_set_property(GObject *gobject,
   lv2_preset = AGS_LV2_PRESET(gobject);
 
   /* get base plugin mutex */
-  pthread_mutex_lock(ags_lv2_preset_get_class_mutex());
-  
-  lv2_preset_mutex = lv2_preset->obj_mutex;
-  
-  pthread_mutex_unlock(ags_lv2_preset_get_class_mutex());
+  lv2_preset_mutex = AGS_LV2_PRESET_GET_OBJ_MUTEX(lv2_preset);
 
   switch(prop_id){
   case PROP_LV2_PLUGIN:
@@ -489,11 +485,7 @@ ags_lv2_preset_get_property(GObject *gobject,
   lv2_preset = AGS_LV2_PRESET(gobject);
 
   /* get base plugin mutex */
-  pthread_mutex_lock(ags_lv2_preset_get_class_mutex());
-  
-  lv2_preset_mutex = lv2_preset->obj_mutex;
-  
-  pthread_mutex_unlock(ags_lv2_preset_get_class_mutex());
+  lv2_preset_mutex = AGS_LV2_PRESET_GET_OBJ_MUTEX(lv2_preset);
 
   switch(prop_id){
   case PROP_LV2_PLUGIN:

@@ -377,11 +377,11 @@ ags_lv2_manager_global_get_parse_names()
 {
   gboolean parse_names;
 
-  pthread_mutex_lock(ags_lv2_manager_get_class_mutex());
+//  pthread_mutex_lock(ags_lv2_manager_get_class_mutex());
 
   parse_names = ags_lv2_manager_global_parse_names;
 
-  pthread_mutex_unlock(ags_lv2_manager_get_class_mutex());
+//  pthread_mutex_unlock(ags_lv2_manager_get_class_mutex());
   
   return(parse_names);
 }
@@ -400,11 +400,11 @@ ags_lv2_manager_global_get_preserve_turtle()
 {
   gboolean preserve_turtle;
 
-  pthread_mutex_lock(ags_lv2_manager_get_class_mutex());
+//  pthread_mutex_lock(ags_lv2_manager_get_class_mutex());
 
   preserve_turtle = ags_lv2_manager_global_preserve_turtle;
 
-  pthread_mutex_unlock(ags_lv2_manager_get_class_mutex());
+//  pthread_mutex_unlock(ags_lv2_manager_get_class_mutex());
   
   return(preserve_turtle);
 }
@@ -466,11 +466,7 @@ ags_lv2_manager_get_filenames(AgsLv2Manager *lv2_manager)
   }
   
   /* get lv2 manager mutex */
-  pthread_mutex_lock(ags_lv2_manager_get_class_mutex());
-  
-  lv2_manager_mutex = lv2_manager->obj_mutex;
-  
-  pthread_mutex_unlock(ags_lv2_manager_get_class_mutex());
+  lv2_manager_mutex = AGS_LV2_MANAGER_GET_OBJ_MUTEX(lv2_manager);
 
   /* collect */
   pthread_mutex_lock(lv2_manager_mutex);
@@ -486,11 +482,7 @@ ags_lv2_manager_get_filenames(AgsLv2Manager *lv2_manager)
     gchar *filename;
     
     /* get base plugin mutex */
-    pthread_mutex_lock(ags_base_plugin_get_class_mutex());
-  
-    base_plugin_mutex = AGS_BASE_PLUGIN(lv2_plugin->data)->obj_mutex;
-    
-    pthread_mutex_unlock(ags_base_plugin_get_class_mutex());
+    base_plugin_mutex = AGS_BASE_PLUGIN_GET_OBJ_MUTEX(lv2_plugin->data);
 
     /* duplicate filename */
     pthread_mutex_lock(base_plugin_mutex);
@@ -572,11 +564,7 @@ ags_lv2_manager_find_lv2_plugin(AgsLv2Manager *lv2_manager,
   }
   
   /* get lv2 manager mutex */
-  pthread_mutex_lock(ags_lv2_manager_get_class_mutex());
-  
-  lv2_manager_mutex = lv2_manager->obj_mutex;
-  
-  pthread_mutex_unlock(ags_lv2_manager_get_class_mutex());
+  lv2_manager_mutex = AGS_LV2_MANAGER_GET_OBJ_MUTEX(lv2_manager);
 
   /* collect */
   pthread_mutex_lock(lv2_manager_mutex);
@@ -592,11 +580,7 @@ ags_lv2_manager_find_lv2_plugin(AgsLv2Manager *lv2_manager,
     lv2_plugin = AGS_LV2_PLUGIN(list->data);
 
     /* get base plugin mutex */
-    pthread_mutex_lock(ags_base_plugin_get_class_mutex());
-  
-    base_plugin_mutex = AGS_BASE_PLUGIN(lv2_plugin)->obj_mutex;
-    
-    pthread_mutex_unlock(ags_base_plugin_get_class_mutex());
+    base_plugin_mutex = AGS_BASE_PLUGIN_GET_OBJ_MUTEX(lv2_plugin);
 
     /* check filename and effect */
     pthread_mutex_lock(base_plugin_mutex);
@@ -647,11 +631,7 @@ ags_lv2_manager_load_blacklist(AgsLv2Manager *lv2_manager,
   }
   
   /* get lv2 manager mutex */
-  pthread_mutex_lock(ags_lv2_manager_get_class_mutex());
-  
-  lv2_manager_mutex = lv2_manager->obj_mutex;
-  
-  pthread_mutex_unlock(ags_lv2_manager_get_class_mutex());
+  lv2_manager_mutex = AGS_LV2_MANAGER_GET_OBJ_MUTEX(lv2_manager);
 
   /* fill in */
   pthread_mutex_lock(lv2_manager_mutex);

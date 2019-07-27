@@ -600,11 +600,7 @@ ags_thread_set_property(GObject *gobject,
   thread = AGS_THREAD(gobject);
 
   /* get thread mutex */
-  pthread_mutex_lock(ags_thread_get_class_mutex());
-  
-  thread_mutex = thread->obj_mutex;
-  
-  pthread_mutex_unlock(ags_thread_get_class_mutex());
+  thread_mutex = AGS_THREAD_GET_OBJ_MUTEX(thread);
 
   switch(prop_id){
   case PROP_FREQUENCY:
@@ -689,11 +685,7 @@ ags_thread_get_property(GObject *gobject,
   thread = AGS_THREAD(gobject);
 
   /* get thread mutex */
-  pthread_mutex_lock(ags_thread_get_class_mutex());
-  
-  thread_mutex = thread->obj_mutex;
-  
-  pthread_mutex_unlock(ags_thread_get_class_mutex());
+  thread_mutex = AGS_THREAD_GET_OBJ_MUTEX(thread);
 
   switch(prop_id){
   case PROP_FREQUENCY:
@@ -867,11 +859,7 @@ ags_thread_get_uuid(AgsConnectable *connectable)
   thread = AGS_THREAD(connectable);
 
   /* get thread mutex */
-  pthread_mutex_lock(ags_thread_get_class_mutex());
-  
-  thread_mutex = thread->obj_mutex;
-  
-  pthread_mutex_unlock(ags_thread_get_class_mutex());
+  thread_mutex = AGS_THREAD_GET_OBJ_MUTEX(thread);
 
   /* get UUID */
   pthread_mutex_lock(thread_mutex);
@@ -901,11 +889,7 @@ ags_thread_is_ready(AgsConnectable *connectable)
   thread = AGS_THREAD(connectable);
 
   /* get thread mutex */
-  pthread_mutex_lock(ags_thread_get_class_mutex());
-  
-  thread_mutex = thread->obj_mutex;
-  
-  pthread_mutex_unlock(ags_thread_get_class_mutex());
+  thread_mutex = AGS_THREAD_GET_OBJ_MUTEX(thread);
 
   /* check is added */
   pthread_mutex_lock(thread_mutex);
@@ -984,11 +968,7 @@ ags_thread_is_connected(AgsConnectable *connectable)
   thread = AGS_THREAD(connectable);
 
   /* get thread mutex */
-  pthread_mutex_lock(ags_thread_get_class_mutex());
-  
-  thread_mutex = thread->obj_mutex;
-  
-  pthread_mutex_unlock(ags_thread_get_class_mutex());
+  thread_mutex = AGS_THREAD_GET_OBJ_MUTEX(thread);
 
   /* check is connected */
   pthread_mutex_lock(thread_mutex);
@@ -1073,11 +1053,11 @@ ags_thread_global_get_use_sync_counter()
 {
   gboolean use_sync_counter;
 
-  pthread_mutex_lock(ags_thread_get_class_mutex());
+//  pthread_mutex_lock(ags_thread_get_class_mutex());
 
   use_sync_counter = ags_thread_global_use_sync_counter;
 
-  pthread_mutex_unlock(ags_thread_get_class_mutex());
+//  pthread_mutex_unlock(ags_thread_get_class_mutex());
   
   return(use_sync_counter);
 }
@@ -1529,11 +1509,7 @@ ags_thread_lock(AgsThread *thread)
   }
 
   /* mutex */
-  pthread_mutex_lock(ags_thread_get_class_mutex());
-
-  mutex = thread->obj_mutex;
-  
-  pthread_mutex_unlock(ags_thread_get_class_mutex());
+  mutex = AGS_THREAD_GET_OBJ_MUTEX(thread);
 
   /* lock */
   pthread_mutex_lock(mutex);
@@ -1563,11 +1539,7 @@ ags_thread_trylock(AgsThread *thread)
   }
 
   /* lookup mutices */
-  pthread_mutex_lock(ags_thread_get_class_mutex());
-
-  mutex = thread->obj_mutex;
-  
-  pthread_mutex_unlock(ags_thread_get_class_mutex());
+  mutex = AGS_THREAD_GET_OBJ_MUTEX(thread);
 
   /* lock */
   if(pthread_mutex_trylock(mutex) != 0){      
@@ -1598,11 +1570,7 @@ ags_thread_unlock(AgsThread *thread)
   }
 
   /* mutex */
-  pthread_mutex_lock(ags_thread_get_class_mutex());
-
-  mutex = thread->obj_mutex;
-  
-  pthread_mutex_unlock(ags_thread_get_class_mutex());
+  mutex = AGS_THREAD_GET_OBJ_MUTEX(thread);
 
   /* unlock */
   g_atomic_int_and(&(thread->flags),
@@ -2987,15 +2955,11 @@ ags_thread_real_clock(AgsThread *thread)
   }
 
   /* mutex */
-  pthread_mutex_lock(ags_thread_get_class_mutex());
-
   if(main_loop != NULL){
-    main_loop_mutex = main_loop->obj_mutex;
+    main_loop_mutex = AGS_THREAD_GET_OBJ_MUTEX(main_loop);
   }
   
-  mutex = thread->obj_mutex;
-
-  pthread_mutex_unlock(ags_thread_get_class_mutex());
+  mutex = AGS_THREAD_GET_OBJ_MUTEX(thread);
 
   if(!AGS_IS_MAIN_LOOP(main_loop)){
     if(thread->tic_delay == 0){
@@ -3302,11 +3266,7 @@ ags_thread_add_start_queue(AgsThread *thread,
   }
 
   /* mutex */
-  pthread_mutex_lock(ags_thread_get_class_mutex());
-
-  mutex = thread->obj_mutex;
-  
-  pthread_mutex_unlock(ags_thread_get_class_mutex());
+  mutex = AGS_THREAD_GET_OBJ_MUTEX(thread);
 
   /* add */
   pthread_mutex_lock(mutex);
@@ -3341,11 +3301,7 @@ ags_thread_add_start_queue_all(AgsThread *thread,
   }
 
   /* mutex */
-  pthread_mutex_lock(ags_thread_get_class_mutex());
-
-  mutex = thread->obj_mutex;
-  
-  pthread_mutex_unlock(ags_thread_get_class_mutex());
+  mutex = AGS_THREAD_GET_OBJ_MUTEX(thread);
 
   /* add all */
   pthread_mutex_lock(mutex);
@@ -3449,15 +3405,11 @@ ags_thread_loop(void *ptr)
   }
 
   /* mutex */
-  pthread_mutex_lock(ags_thread_get_class_mutex());
-
-  mutex = thread->obj_mutex;
-
   if(main_loop != NULL){
-    main_loop_mutex = main_loop->obj_mutex;
+    main_loop_mutex = AGS_THREAD_GET_OBJ_MUTEX(main_loop);
   }
   
-  pthread_mutex_unlock(ags_thread_get_class_mutex());
+  mutex = AGS_THREAD_GET_OBJ_MUTEX(thread);
   
   if(main_loop != NULL){
     pthread_mutex_lock(ags_main_loop_get_tree_lock(AGS_MAIN_LOOP(main_loop)));

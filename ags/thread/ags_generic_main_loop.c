@@ -94,9 +94,9 @@ ags_generic_main_loop_get_type()
     };
 
     ags_type_generic_main_loop = g_type_register_static(AGS_TYPE_THREAD,
-						 "AgsGenericMainLoop",
-						 &ags_generic_main_loop_info,
-						 0);
+							"AgsGenericMainLoop",
+							&ags_generic_main_loop_info,
+							0);
     
     g_type_add_interface_static(ags_type_generic_main_loop,
 				AGS_TYPE_MAIN_LOOP,
@@ -207,11 +207,7 @@ ags_generic_main_loop_set_property(GObject *gobject,
   generic_main_loop = AGS_GENERIC_MAIN_LOOP(gobject);
 
   /* get thread mutex */
-  pthread_mutex_lock(ags_thread_get_class_mutex());
-  
-  thread_mutex = AGS_THREAD(gobject)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_thread_get_class_mutex());
+  thread_mutex = AGS_THREAD_GET_OBJ_MUTEX(generic_main_loop);
 
   switch(prop_id){
   case PROP_APPLICATION_CONTEXT:
@@ -260,11 +256,7 @@ ags_generic_main_loop_get_property(GObject *gobject,
   generic_main_loop = AGS_GENERIC_MAIN_LOOP(gobject);
 
   /* get thread mutex */
-  pthread_mutex_lock(ags_thread_get_class_mutex());
-  
-  thread_mutex = AGS_THREAD(gobject)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_thread_get_class_mutex());
+  thread_mutex = AGS_THREAD_GET_OBJ_MUTEX(generic_main_loop);
 
   switch(prop_id){
   case PROP_APPLICATION_CONTEXT:
@@ -351,11 +343,7 @@ ags_generic_main_loop_sync_counter_inc(AgsMainLoop *main_loop, guint tic)
   generic_main_loop = AGS_GENERIC_MAIN_LOOP(main_loop);
 
   /* get thread mutex */
-  pthread_mutex_lock(ags_thread_get_class_mutex());
-  
-  thread_mutex = AGS_THREAD(generic_main_loop)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_thread_get_class_mutex());
+  thread_mutex = AGS_THREAD_GET_OBJ_MUTEX(generic_main_loop);
 
   /* increment */
   pthread_mutex_lock(thread_mutex);
@@ -379,11 +367,7 @@ ags_generic_main_loop_sync_counter_dec(AgsMainLoop *main_loop, guint tic)
   generic_main_loop = AGS_GENERIC_MAIN_LOOP(main_loop);
 
   /* get thread mutex */
-  pthread_mutex_lock(ags_thread_get_class_mutex());
-  
-  thread_mutex = AGS_THREAD(generic_main_loop)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_thread_get_class_mutex());
+  thread_mutex = AGS_THREAD_GET_OBJ_MUTEX(generic_main_loop);
 
   /* increment */
   pthread_mutex_lock(thread_mutex);
@@ -411,11 +395,7 @@ ags_generic_main_loop_sync_counter_test(AgsMainLoop *main_loop, guint tic)
   generic_main_loop = AGS_GENERIC_MAIN_LOOP(main_loop);
 
   /* get thread mutex */
-  pthread_mutex_lock(ags_thread_get_class_mutex());
-  
-  thread_mutex = AGS_THREAD(generic_main_loop)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_thread_get_class_mutex());
+  thread_mutex = AGS_THREAD_GET_OBJ_MUTEX(generic_main_loop);
 
   /* test */
   success = FALSE;

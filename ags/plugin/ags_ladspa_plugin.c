@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -184,11 +184,7 @@ ags_ladspa_plugin_set_property(GObject *gobject,
   ladspa_plugin = AGS_LADSPA_PLUGIN(gobject);
 
   /* get base plugin mutex */
-  pthread_mutex_lock(ags_base_plugin_get_class_mutex());
-  
-  base_plugin_mutex = AGS_BASE_PLUGIN(gobject)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_base_plugin_get_class_mutex());
+  base_plugin_mutex = AGS_BASE_PLUGIN_GET_OBJ_MUTEX(ladspa_plugin);
 
   switch(prop_id){
   case PROP_UNIQUE_ID:
@@ -219,11 +215,7 @@ ags_ladspa_plugin_get_property(GObject *gobject,
   ladspa_plugin = AGS_LADSPA_PLUGIN(gobject);
 
   /* get base plugin mutex */
-  pthread_mutex_lock(ags_base_plugin_get_class_mutex());
-  
-  base_plugin_mutex = AGS_BASE_PLUGIN(gobject)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_base_plugin_get_class_mutex());
+  base_plugin_mutex = AGS_BASE_PLUGIN_GET_OBJ_MUTEX(ladspa_plugin);
 
   switch(prop_id){
   case PROP_UNIQUE_ID:
@@ -261,11 +253,7 @@ ags_ladspa_plugin_instantiate(AgsBasePlugin *base_plugin,
   pthread_mutex_t *base_plugin_mutex;
 
   /* get base plugin mutex */
-  pthread_mutex_lock(ags_base_plugin_get_class_mutex());
-  
-  base_plugin_mutex = base_plugin->obj_mutex;
-  
-  pthread_mutex_unlock(ags_base_plugin_get_class_mutex());
+  base_plugin_mutex = AGS_BASE_PLUGIN_GET_OBJ_MUTEX(base_plugin);
 
   /* get instantiate */
   pthread_mutex_lock(base_plugin_mutex);
@@ -296,11 +284,7 @@ ags_ladspa_plugin_connect_port(AgsBasePlugin *base_plugin,
   pthread_mutex_t *base_plugin_mutex;
 
   /* get base plugin mutex */
-  pthread_mutex_lock(ags_base_plugin_get_class_mutex());
-  
-  base_plugin_mutex = base_plugin->obj_mutex;
-  
-  pthread_mutex_unlock(ags_base_plugin_get_class_mutex());
+  base_plugin_mutex = AGS_BASE_PLUGIN_GET_OBJ_MUTEX(base_plugin);
 
   /* get connect port */
   pthread_mutex_lock(base_plugin_mutex);
@@ -324,11 +308,7 @@ ags_ladspa_plugin_activate(AgsBasePlugin *base_plugin,
   pthread_mutex_t *base_plugin_mutex;
 
   /* get base plugin mutex */
-  pthread_mutex_lock(ags_base_plugin_get_class_mutex());
-  
-  base_plugin_mutex = base_plugin->obj_mutex;
-  
-  pthread_mutex_unlock(ags_base_plugin_get_class_mutex());
+  base_plugin_mutex = AGS_BASE_PLUGIN_GET_OBJ_MUTEX(base_plugin);
 
   /* activate */
   pthread_mutex_lock(base_plugin_mutex);
@@ -351,11 +331,7 @@ ags_ladspa_plugin_deactivate(AgsBasePlugin *base_plugin,
   pthread_mutex_t *base_plugin_mutex;
 
   /* get base plugin mutex */
-  pthread_mutex_lock(ags_base_plugin_get_class_mutex());
-  
-  base_plugin_mutex = base_plugin->obj_mutex;
-  
-  pthread_mutex_unlock(ags_base_plugin_get_class_mutex());
+  base_plugin_mutex = AGS_BASE_PLUGIN_GET_OBJ_MUTEX(base_plugin);
 
   /* deactivate */
   pthread_mutex_lock(base_plugin_mutex);
@@ -381,11 +357,7 @@ ags_ladspa_plugin_run(AgsBasePlugin *base_plugin,
   pthread_mutex_t *base_plugin_mutex;
 
   /* get base plugin mutex */
-  pthread_mutex_lock(ags_base_plugin_get_class_mutex());
-  
-  base_plugin_mutex = base_plugin->obj_mutex;
-  
-  pthread_mutex_unlock(ags_base_plugin_get_class_mutex());
+  base_plugin_mutex = AGS_BASE_PLUGIN_GET_OBJ_MUTEX(base_plugin);
 
   /* run */
   pthread_mutex_lock(base_plugin_mutex);
@@ -421,11 +393,7 @@ ags_ladspa_plugin_load_plugin(AgsBasePlugin *base_plugin)
   ladspa_plugin = AGS_LADSPA_PLUGIN(base_plugin);  
 
   /* get base plugin mutex */
-  pthread_mutex_lock(ags_base_plugin_get_class_mutex());
-  
-  base_plugin_mutex = base_plugin->obj_mutex;
-  
-  pthread_mutex_unlock(ags_base_plugin_get_class_mutex());
+  base_plugin_mutex = AGS_BASE_PLUGIN_GET_OBJ_MUTEX(base_plugin);
 
   /* dlopen */
   pthread_mutex_lock(base_plugin_mutex);
