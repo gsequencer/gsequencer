@@ -340,11 +340,7 @@ ags_ipatch_sample_set_property(GObject *gobject,
   ipatch_sample = AGS_IPATCH_SAMPLE(gobject);
 
   /* get ipatch sample mutex */
-  pthread_mutex_lock(ags_ipatch_sample_get_class_mutex());
-  
-  ipatch_sample_mutex = ipatch_sample->obj_mutex;
-  
-  pthread_mutex_unlock(ags_ipatch_sample_get_class_mutex());
+  ipatch_sample_mutex = AGS_IPATCH_SAMPLE_GET_OBJ_MUTEX(ipatch_sample);
 
   switch(prop_id){
   case PROP_BUFFER_SIZE:
@@ -440,11 +436,7 @@ ags_ipatch_sample_get_property(GObject *gobject,
   ipatch_sample = (AgsIpatchSample *) gobject;
 
   /* get ipatch sample mutex */
-  pthread_mutex_lock(ags_ipatch_sample_get_class_mutex());
-  
-  ipatch_sample_mutex = ipatch_sample->obj_mutex;
-  
-  pthread_mutex_unlock(ags_ipatch_sample_get_class_mutex());
+  ipatch_sample_mutex = AGS_IPATCH_SAMPLE_GET_OBJ_MUTEX(ipatch_sample);
   
   switch(prop_id){
   case PROP_BUFFER_SIZE:
@@ -531,11 +523,7 @@ ags_ipatch_sample_get_uuid(AgsConnectable *connectable)
   ipatch_sample = AGS_IPATCH_SAMPLE(connectable);
 
   /* get audio file mutex */
-  pthread_mutex_lock(ags_ipatch_sample_get_class_mutex());
-  
-  ipatch_sample_mutex = ipatch_sample->obj_mutex;
-  
-  pthread_mutex_unlock(ags_ipatch_sample_get_class_mutex());
+  ipatch_sample_mutex = AGS_IPATCH_SAMPLE_GET_OBJ_MUTEX(ipatch_sample);
 
   /* get UUID */
   pthread_mutex_lock(ipatch_sample_mutex);
@@ -565,11 +553,7 @@ ags_ipatch_sample_is_ready(AgsConnectable *connectable)
   ipatch_sample = AGS_IPATCH_SAMPLE(connectable);
 
   /* get audio file mutex */
-  pthread_mutex_lock(ags_ipatch_sample_get_class_mutex());
-  
-  ipatch_sample_mutex = ipatch_sample->obj_mutex;
-  
-  pthread_mutex_unlock(ags_ipatch_sample_get_class_mutex());
+  ipatch_sample_mutex = AGS_IPATCH_SAMPLE_GET_OBJ_MUTEX(ipatch_sample);
 
   /* check is ready */
   pthread_mutex_lock(ipatch_sample_mutex);
@@ -665,11 +649,7 @@ ags_ipatch_sample_is_connected(AgsConnectable *connectable)
   ipatch_sample = AGS_IPATCH_SAMPLE(connectable);
 
   /* get audio file mutex */
-  pthread_mutex_lock(ags_ipatch_sample_get_class_mutex());
-  
-  ipatch_sample_mutex = ipatch_sample->obj_mutex;
-  
-  pthread_mutex_unlock(ags_ipatch_sample_get_class_mutex());
+  ipatch_sample_mutex = AGS_IPATCH_SAMPLE_GET_OBJ_MUTEX(ipatch_sample);
 
   /* check is connected */
   pthread_mutex_lock(ipatch_sample_mutex);
@@ -1150,11 +1130,7 @@ ags_ipatch_sample_test_flags(AgsIpatchSample *ipatch_sample, guint flags)
   }
 
   /* get ipatch_sample mutex */
-  pthread_mutex_lock(ags_ipatch_sample_get_class_mutex());
-  
-  ipatch_sample_mutex = ipatch_sample->obj_mutex;
-  
-  pthread_mutex_unlock(ags_ipatch_sample_get_class_mutex());
+  ipatch_sample_mutex = AGS_IPATCH_SAMPLE_GET_OBJ_MUTEX(ipatch_sample);
 
   /* test */
   pthread_mutex_lock(ipatch_sample_mutex);
@@ -1185,11 +1161,7 @@ ags_ipatch_sample_set_flags(AgsIpatchSample *ipatch_sample, guint flags)
   }
 
   /* get ipatch_sample mutex */
-  pthread_mutex_lock(ags_ipatch_sample_get_class_mutex());
-  
-  ipatch_sample_mutex = ipatch_sample->obj_mutex;
-  
-  pthread_mutex_unlock(ags_ipatch_sample_get_class_mutex());
+  ipatch_sample_mutex = AGS_IPATCH_SAMPLE_GET_OBJ_MUTEX(ipatch_sample);
 
   //TODO:JK: add more?
 
@@ -1220,11 +1192,7 @@ ags_ipatch_sample_unset_flags(AgsIpatchSample *ipatch_sample, guint flags)
   }
 
   /* get ipatch_sample mutex */
-  pthread_mutex_lock(ags_ipatch_sample_get_class_mutex());
-  
-  ipatch_sample_mutex = ipatch_sample->obj_mutex;
-  
-  pthread_mutex_unlock(ags_ipatch_sample_get_class_mutex());
+  ipatch_sample_mutex = AGS_IPATCH_SAMPLE_GET_OBJ_MUTEX(ipatch_sample);
 
   //TODO:JK: add more?
 

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -185,11 +185,7 @@ ags_track_set_property(GObject *gobject,
   track = AGS_TRACK(gobject);
 
   /* get track mutex */
-  pthread_mutex_lock(ags_track_get_class_mutex());
-  
-  track_mutex = track->obj_mutex;
-  
-  pthread_mutex_unlock(ags_track_get_class_mutex());
+  track_mutex = AGS_TRACK_GET_OBJ_MUTEX(track);
 
   switch(prop_id){
   case PROP_X:
@@ -229,11 +225,7 @@ ags_track_get_property(GObject *gobject,
   track = AGS_TRACK(gobject);
 
   /* get track mutex */
-  pthread_mutex_lock(ags_track_get_class_mutex());
-  
-  track_mutex = track->obj_mutex;
-  
-  pthread_mutex_unlock(ags_track_get_class_mutex());
+  track_mutex = AGS_TRACK_GET_OBJ_MUTEX(track);
 
   switch(prop_id){
   case PROP_X:
@@ -321,11 +313,7 @@ ags_track_test_flags(AgsTrack *track, guint flags)
   }
       
   /* get track mutex */
-  pthread_mutex_lock(ags_track_get_class_mutex());
-  
-  track_mutex = track->obj_mutex;
-  
-  pthread_mutex_unlock(ags_track_get_class_mutex());
+  track_mutex = AGS_TRACK_GET_OBJ_MUTEX(track);
 
   /* test */
   pthread_mutex_lock(track_mutex);
@@ -356,11 +344,7 @@ ags_track_set_flags(AgsTrack *track, guint flags)
   }
       
   /* get track mutex */
-  pthread_mutex_lock(ags_track_get_class_mutex());
-  
-  track_mutex = track->obj_mutex;
-  
-  pthread_mutex_unlock(ags_track_get_class_mutex());
+  track_mutex = AGS_TRACK_GET_OBJ_MUTEX(track);
 
   /* set */
   pthread_mutex_lock(track_mutex);
@@ -389,11 +373,7 @@ ags_track_unset_flags(AgsTrack *track, guint flags)
   }
       
   /* get track mutex */
-  pthread_mutex_lock(ags_track_get_class_mutex());
-  
-  track_mutex = track->obj_mutex;
-  
-  pthread_mutex_unlock(ags_track_get_class_mutex());
+  track_mutex = AGS_TRACK_GET_OBJ_MUTEX(track);
 
   /* unset */
   pthread_mutex_lock(track_mutex);
@@ -467,11 +447,7 @@ ags_track_duplicate(AgsTrack *track)
   }
   
   /* get track mutex */
-  pthread_mutex_lock(ags_track_get_class_mutex());
-  
-  track_mutex = track->obj_mutex;
-  
-  pthread_mutex_unlock(ags_track_get_class_mutex());
+  track_mutex = AGS_TRACK_GET_OBJ_MUTEX(track);
 
   /* instantiate track */  
   track_copy = ags_track_new();

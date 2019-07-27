@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -428,11 +428,7 @@ ags_audio_file_set_property(GObject *gobject,
   audio_file = AGS_AUDIO_FILE(gobject);
 
   /* get audio file mutex */
-  pthread_mutex_lock(ags_audio_file_get_class_mutex());
-  
-  audio_file_mutex = audio_file->obj_mutex;
-  
-  pthread_mutex_unlock(ags_audio_file_get_class_mutex());
+  audio_file_mutex = AGS_AUDIO_FILE_GET_OBJ_MUTEX(audio_file);
 
   switch(prop_id){
   case PROP_SOUNDCARD:
@@ -609,11 +605,7 @@ ags_audio_file_get_property(GObject *gobject,
   audio_file = AGS_AUDIO_FILE(gobject);
 
   /* get audio file mutex */
-  pthread_mutex_lock(ags_audio_file_get_class_mutex());
-  
-  audio_file_mutex = audio_file->obj_mutex;
-  
-  pthread_mutex_unlock(ags_audio_file_get_class_mutex());
+  audio_file_mutex = AGS_AUDIO_FILE_GET_OBJ_MUTEX(audio_file);
 
   switch(prop_id){
   case PROP_SOUNDCARD:
@@ -767,11 +759,7 @@ ags_audio_file_get_uuid(AgsConnectable *connectable)
   audio_file = AGS_AUDIO_FILE(connectable);
 
   /* get audio file mutex */
-  pthread_mutex_lock(ags_audio_file_get_class_mutex());
-  
-  audio_file_mutex = audio_file->obj_mutex;
-  
-  pthread_mutex_unlock(ags_audio_file_get_class_mutex());
+  audio_file_mutex = AGS_AUDIO_FILE_GET_OBJ_MUTEX(audio_file);
 
   /* get UUID */
   pthread_mutex_lock(audio_file_mutex);
@@ -801,11 +789,7 @@ ags_audio_file_is_ready(AgsConnectable *connectable)
   audio_file = AGS_AUDIO_FILE(connectable);
 
   /* get audio file mutex */
-  pthread_mutex_lock(ags_audio_file_get_class_mutex());
-  
-  audio_file_mutex = audio_file->obj_mutex;
-  
-  pthread_mutex_unlock(ags_audio_file_get_class_mutex());
+  audio_file_mutex = AGS_AUDIO_FILE_GET_OBJ_MUTEX(audio_file);
 
   /* check is ready */
   pthread_mutex_lock(audio_file_mutex);
@@ -901,11 +885,7 @@ ags_audio_file_is_connected(AgsConnectable *connectable)
   audio_file = AGS_AUDIO_FILE(connectable);
 
   /* get audio file mutex */
-  pthread_mutex_lock(ags_audio_file_get_class_mutex());
-  
-  audio_file_mutex = audio_file->obj_mutex;
-  
-  pthread_mutex_unlock(ags_audio_file_get_class_mutex());
+  audio_file_mutex = AGS_AUDIO_FILE_GET_OBJ_MUTEX(audio_file);
 
   /* check is connected */
   pthread_mutex_lock(audio_file_mutex);
@@ -983,11 +963,7 @@ ags_audio_file_test_flags(AgsAudioFile *audio_file, guint flags)
   }
 
   /* get audio_file mutex */
-  pthread_mutex_lock(ags_audio_file_get_class_mutex());
-  
-  audio_file_mutex = audio_file->obj_mutex;
-  
-  pthread_mutex_unlock(ags_audio_file_get_class_mutex());
+  audio_file_mutex = AGS_AUDIO_FILE_GET_OBJ_MUTEX(audio_file);
 
   /* test */
   pthread_mutex_lock(audio_file_mutex);
@@ -1018,11 +994,7 @@ ags_audio_file_set_flags(AgsAudioFile *audio_file, guint flags)
   }
 
   /* get audio_file mutex */
-  pthread_mutex_lock(ags_audio_file_get_class_mutex());
-  
-  audio_file_mutex = audio_file->obj_mutex;
-  
-  pthread_mutex_unlock(ags_audio_file_get_class_mutex());
+  audio_file_mutex = AGS_AUDIO_FILE_GET_OBJ_MUTEX(audio_file);
 
   //TODO:JK: add more?
 
@@ -1053,11 +1025,7 @@ ags_audio_file_unset_flags(AgsAudioFile *audio_file, guint flags)
   }
 
   /* get audio_file mutex */
-  pthread_mutex_lock(ags_audio_file_get_class_mutex());
-  
-  audio_file_mutex = audio_file->obj_mutex;
-  
-  pthread_mutex_unlock(ags_audio_file_get_class_mutex());
+  audio_file_mutex = AGS_AUDIO_FILE_GET_OBJ_MUTEX(audio_file);
 
   //TODO:JK: add more?
 
@@ -1112,11 +1080,7 @@ ags_audio_file_add_audio_signal(AgsAudioFile *audio_file, GObject *audio_signal)
   }
 
   /* get audio_file mutex */
-  pthread_mutex_lock(ags_audio_file_get_class_mutex());
-  
-  audio_file_mutex = audio_file->obj_mutex;
-  
-  pthread_mutex_unlock(ags_audio_file_get_class_mutex());
+  audio_file_mutex = AGS_AUDIO_FILE_GET_OBJ_MUTEX(audio_file);
 
   /*  */
   pthread_mutex_lock(audio_file_mutex);
@@ -1150,11 +1114,7 @@ ags_audio_file_remove_audio_signal(AgsAudioFile *audio_file, GObject *audio_sign
   }
 
   /* get audio_file mutex */
-  pthread_mutex_lock(ags_audio_file_get_class_mutex());
-  
-  audio_file_mutex = audio_file->obj_mutex;
-  
-  pthread_mutex_unlock(ags_audio_file_get_class_mutex());
+  audio_file_mutex = AGS_AUDIO_FILE_GET_OBJ_MUTEX(audio_file);
 
   /*  */
   pthread_mutex_lock(audio_file_mutex);
@@ -1188,11 +1148,7 @@ ags_audio_file_add_wave(AgsAudioFile *audio_file, GObject *wave)
   }
 
   /* get audio_file mutex */
-  pthread_mutex_lock(ags_audio_file_get_class_mutex());
-  
-  audio_file_mutex = audio_file->obj_mutex;
-  
-  pthread_mutex_unlock(ags_audio_file_get_class_mutex());
+  audio_file_mutex = AGS_AUDIO_FILE_GET_OBJ_MUTEX(audio_file);
 
   /*  */
   pthread_mutex_lock(audio_file_mutex);
@@ -1226,11 +1182,7 @@ ags_audio_file_remove_wave(AgsAudioFile *audio_file, GObject *wave)
   }
 
   /* get audio_file mutex */
-  pthread_mutex_lock(ags_audio_file_get_class_mutex());
-  
-  audio_file_mutex = audio_file->obj_mutex;
-  
-  pthread_mutex_unlock(ags_audio_file_get_class_mutex());
+  audio_file_mutex = AGS_AUDIO_FILE_GET_OBJ_MUTEX(audio_file);
 
   /*  */
   pthread_mutex_lock(audio_file_mutex);
@@ -1276,11 +1228,7 @@ ags_audio_file_open(AgsAudioFile *audio_file)
 #endif
 
   /* get audio_file mutex */
-  pthread_mutex_lock(ags_audio_file_get_class_mutex());
-  
-  audio_file_mutex = audio_file->obj_mutex;
-  
-  pthread_mutex_unlock(ags_audio_file_get_class_mutex());
+  audio_file_mutex = AGS_AUDIO_FILE_GET_OBJ_MUTEX(audio_file);
 
   sound_resource = NULL;
 
@@ -1367,11 +1315,7 @@ ags_audio_file_rw_open(AgsAudioFile *audio_file,
 #endif
 
   /* get audio_file mutex */
-  pthread_mutex_lock(ags_audio_file_get_class_mutex());
-  
-  audio_file_mutex = audio_file->obj_mutex;
-  
-  pthread_mutex_unlock(ags_audio_file_get_class_mutex());
+  audio_file_mutex = AGS_AUDIO_FILE_GET_OBJ_MUTEX(audio_file);
 
   sound_resource = NULL;
   
@@ -1451,11 +1395,7 @@ ags_audio_file_open_from_data(AgsAudioFile *audio_file, gchar *data)
 #endif
 
   /* get audio_file mutex */
-  pthread_mutex_lock(ags_audio_file_get_class_mutex());
-  
-  audio_file_mutex = audio_file->obj_mutex;
-  
-  pthread_mutex_unlock(ags_audio_file_get_class_mutex());
+  audio_file_mutex = AGS_AUDIO_FILE_GET_OBJ_MUTEX(audio_file);
 
   sound_resource = NULL;
 
@@ -1539,11 +1479,7 @@ ags_audio_file_close(AgsAudioFile *audio_file)
   }
 
   /* get audio_file mutex */
-  pthread_mutex_lock(ags_audio_file_get_class_mutex());
-  
-  audio_file_mutex = audio_file->obj_mutex;
-  
-  pthread_mutex_unlock(ags_audio_file_get_class_mutex());
+  audio_file_mutex = AGS_AUDIO_FILE_GET_OBJ_MUTEX(audio_file);
 
   /* get sound resource */
   pthread_mutex_lock(audio_file_mutex);
@@ -1586,11 +1522,7 @@ ags_audio_file_read(AgsAudioFile *audio_file,
   }
 
   /* get audio_file mutex */
-  pthread_mutex_lock(ags_audio_file_get_class_mutex());
-  
-  audio_file_mutex = audio_file->obj_mutex;
-  
-  pthread_mutex_unlock(ags_audio_file_get_class_mutex());
+  audio_file_mutex = AGS_AUDIO_FILE_GET_OBJ_MUTEX(audio_file);
 
   /* get sound resource */
   pthread_mutex_lock(audio_file_mutex);
@@ -1638,11 +1570,7 @@ ags_audio_file_read_audio_signal(AgsAudioFile *audio_file)
   }
 
   /* get audio_file mutex */
-  pthread_mutex_lock(ags_audio_file_get_class_mutex());
-  
-  audio_file_mutex = audio_file->obj_mutex;
-  
-  pthread_mutex_unlock(ags_audio_file_get_class_mutex());
+  audio_file_mutex = AGS_AUDIO_FILE_GET_OBJ_MUTEX(audio_file);
 
   /* get sound resource */
   pthread_mutex_lock(audio_file_mutex);
@@ -1694,11 +1622,7 @@ ags_audio_file_read_wave(AgsAudioFile *audio_file,
   }
 
   /* get audio_file mutex */
-  pthread_mutex_lock(ags_audio_file_get_class_mutex());
-  
-  audio_file_mutex = audio_file->obj_mutex;
-  
-  pthread_mutex_unlock(ags_audio_file_get_class_mutex());
+  audio_file_mutex = AGS_AUDIO_FILE_GET_OBJ_MUTEX(audio_file);
 
   /* get sound resource */
   pthread_mutex_lock(audio_file_mutex);
@@ -1747,11 +1671,7 @@ ags_audio_file_seek(AgsAudioFile *audio_file, guint frames, gint whence)
   }
 
   /* get audio_file mutex */
-  pthread_mutex_lock(ags_audio_file_get_class_mutex());
-  
-  audio_file_mutex = audio_file->obj_mutex;
-  
-  pthread_mutex_unlock(ags_audio_file_get_class_mutex());
+  audio_file_mutex = AGS_AUDIO_FILE_GET_OBJ_MUTEX(audio_file);
 
   /* get sound resource */
   pthread_mutex_lock(audio_file_mutex);
@@ -1795,11 +1715,7 @@ ags_audio_file_write(AgsAudioFile *audio_file,
   }
 
   /* get audio_file mutex */
-  pthread_mutex_lock(ags_audio_file_get_class_mutex());
-  
-  audio_file_mutex = audio_file->obj_mutex;
-  
-  pthread_mutex_unlock(ags_audio_file_get_class_mutex());
+  audio_file_mutex = AGS_AUDIO_FILE_GET_OBJ_MUTEX(audio_file);
 
   /* get sound resource */
   pthread_mutex_lock(audio_file_mutex);
@@ -1846,11 +1762,7 @@ ags_audio_file_flush(AgsAudioFile *audio_file)
   }
 
   /* get audio_file mutex */
-  pthread_mutex_lock(ags_audio_file_get_class_mutex());
-  
-  audio_file_mutex = audio_file->obj_mutex;
-  
-  pthread_mutex_unlock(ags_audio_file_get_class_mutex());
+  audio_file_mutex = AGS_AUDIO_FILE_GET_OBJ_MUTEX(audio_file);
   
   /* get sound resource */
   pthread_mutex_lock(audio_file_mutex);

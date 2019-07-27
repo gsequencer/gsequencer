@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -224,11 +224,7 @@ ags_file_link_set_property(GObject *gobject,
   file_link = AGS_FILE_LINK(gobject);
 
   /* get file link mutex */
-  pthread_mutex_lock(ags_file_link_get_class_mutex());
-  
-  file_link_mutex = file_link->obj_mutex;
-  
-  pthread_mutex_unlock(ags_file_link_get_class_mutex());
+  file_link_mutex = AGS_FILE_LINK_GET_OBJ_MUTEX(file_link);
   
   switch(prop_id){
   case PROP_FILENAME:
@@ -292,11 +288,7 @@ ags_file_link_get_property(GObject *gobject,
   file_link = AGS_FILE_LINK(gobject);
   
   /* get file link mutex */
-  pthread_mutex_lock(ags_file_link_get_class_mutex());
-  
-  file_link_mutex = file_link->obj_mutex;
-  
-  pthread_mutex_unlock(ags_file_link_get_class_mutex());
+  file_link_mutex = AGS_FILE_LINK_GET_OBJ_MUTEX(file_link);
 
   switch(prop_id){
   case PROP_FILENAME:

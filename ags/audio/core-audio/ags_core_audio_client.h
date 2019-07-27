@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -41,6 +41,8 @@
 #define AGS_IS_CORE_AUDIO_CLIENT_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_CORE_AUDIO_CLIENT))
 #define AGS_CORE_AUDIO_CLIENT_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS(obj, AGS_TYPE_CORE_AUDIO_CLIENT, AgsCoreAudioClientClass))
 
+#define AGS_CORE_AUDIO_CLIENT_GET_OBJ_MUTEX(obj) (((AgsCoreAudioClient *) obj)->obj_mutex)
+
 typedef struct _AgsCoreAudioClient AgsCoreAudioClient;
 typedef struct _AgsCoreAudioClientClass AgsCoreAudioClientClass;
 
@@ -66,6 +68,7 @@ struct _AgsCoreAudioClient
   GObject object;
 
   guint flags;
+
   pthread_mutex_t *obj_mutex;
   pthread_mutexattr_t *obj_mutexattr;
 

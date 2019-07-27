@@ -253,11 +253,7 @@ ags_audio_file_link_set_property(GObject *gobject,
   audio_file_link = AGS_AUDIO_FILE_LINK(gobject);
 
   /* get file link mutex */
-  pthread_mutex_lock(ags_file_link_get_class_mutex());
-  
-  file_link_mutex = AGS_FILE_LINK(audio_file_link)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_file_link_get_class_mutex());
+  file_link_mutex = AGS_FILE_LINK_GET_OBJ_MUTEX(audio_file_link);
   
   switch(prop_id){
   case PROP_PRESET:
@@ -384,11 +380,7 @@ ags_audio_file_link_get_property(GObject *gobject,
   audio_file_link = AGS_AUDIO_FILE_LINK(gobject);
 
   /* get file link mutex */
-  pthread_mutex_lock(ags_file_link_get_class_mutex());
-  
-  file_link_mutex = AGS_FILE_LINK(audio_file_link)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_file_link_get_class_mutex());
+  file_link_mutex = AGS_FILE_LINK_GET_OBJ_MUTEX(audio_file_link);
   
   switch(prop_id){
   case PROP_PRESET:

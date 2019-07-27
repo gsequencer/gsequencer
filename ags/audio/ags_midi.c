@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -231,11 +231,7 @@ ags_midi_set_property(GObject *gobject,
   midi = AGS_MIDI(gobject);
 
   /* get midi mutex */
-  pthread_mutex_lock(ags_midi_get_class_mutex());
-  
-  midi_mutex = midi->obj_mutex;
-  
-  pthread_mutex_unlock(ags_midi_get_class_mutex());
+  midi_mutex = AGS_MIDI_GET_OBJ_MUTEX(midi);  
 
   switch(prop_id){
   case PROP_AUDIO:
@@ -346,11 +342,7 @@ ags_midi_get_property(GObject *gobject,
   midi = AGS_MIDI(gobject);
 
   /* get midi mutex */
-  pthread_mutex_lock(ags_midi_get_class_mutex());
-  
-  midi_mutex = midi->obj_mutex;
-  
-  pthread_mutex_unlock(ags_midi_get_class_mutex());
+  midi_mutex = AGS_MIDI_GET_OBJ_MUTEX(midi);  
 
   switch(prop_id){
   case PROP_AUDIO:
@@ -513,11 +505,7 @@ ags_midi_test_flags(AgsMidi *midi, guint flags)
   }
       
   /* get midi mutex */
-  pthread_mutex_lock(ags_midi_get_class_mutex());
-  
-  midi_mutex = midi->obj_mutex;
-  
-  pthread_mutex_unlock(ags_midi_get_class_mutex());
+  midi_mutex = AGS_MIDI_GET_OBJ_MUTEX(midi);  
 
   /* test */
   pthread_mutex_lock(midi_mutex);
@@ -548,11 +536,7 @@ ags_midi_set_flags(AgsMidi *midi, guint flags)
   }
       
   /* get midi mutex */
-  pthread_mutex_lock(ags_midi_get_class_mutex());
-  
-  midi_mutex = midi->obj_mutex;
-  
-  pthread_mutex_unlock(ags_midi_get_class_mutex());
+  midi_mutex = AGS_MIDI_GET_OBJ_MUTEX(midi);  
 
   /* set */
   pthread_mutex_lock(midi_mutex);
@@ -581,11 +565,7 @@ ags_midi_unset_flags(AgsMidi *midi, guint flags)
   }
       
   /* get midi mutex */
-  pthread_mutex_lock(ags_midi_get_class_mutex());
-  
-  midi_mutex = midi->obj_mutex;
-  
-  pthread_mutex_unlock(ags_midi_get_class_mutex());
+  midi_mutex = AGS_MIDI_GET_OBJ_MUTEX(midi);  
 
   /* set */
   pthread_mutex_lock(midi_mutex);
@@ -915,11 +895,7 @@ ags_midi_add_track(AgsMidi *midi,
   }
 
   /* get midi mutex */
-  pthread_mutex_lock(ags_midi_get_class_mutex());
-  
-  midi_mutex = midi->obj_mutex;
-  
-  pthread_mutex_unlock(ags_midi_get_class_mutex());
+  midi_mutex = AGS_MIDI_GET_OBJ_MUTEX(midi);  
 
   /* insert sorted */
   g_object_ref(track);
@@ -964,11 +940,7 @@ ags_midi_remove_track(AgsMidi *midi,
   }
 
   /* get midi mutex */
-  pthread_mutex_lock(ags_midi_get_class_mutex());
-  
-  midi_mutex = midi->obj_mutex;
-  
-  pthread_mutex_unlock(ags_midi_get_class_mutex());
+  midi_mutex = AGS_MIDI_GET_OBJ_MUTEX(midi);  
 
   /* remove if found */
   pthread_mutex_lock(midi_mutex);
