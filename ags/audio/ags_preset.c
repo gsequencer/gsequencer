@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -339,11 +339,7 @@ ags_preset_set_property(GObject *gobject,
   preset = AGS_PRESET(gobject);
 
   /* get preset mutex */
-  pthread_mutex_lock(ags_preset_get_class_mutex());
-  
-  preset_mutex = preset->obj_mutex;
-  
-  pthread_mutex_unlock(ags_preset_get_class_mutex());
+  preset_mutex = AGS_PRESET_GET_OBJ_MUTEX(preset);
 
   switch(prop_id){
   case PROP_AUDIO:
@@ -479,11 +475,7 @@ ags_preset_get_property(GObject *gobject,
   preset = AGS_PRESET(gobject);
 
   /* get preset mutex */
-  pthread_mutex_lock(ags_preset_get_class_mutex());
-  
-  preset_mutex = preset->obj_mutex;
-  
-  pthread_mutex_unlock(ags_preset_get_class_mutex());
+  preset_mutex = AGS_PRESET_GET_OBJ_MUTEX(preset);
 
   switch(prop_id){
   case PROP_AUDIO:
@@ -654,11 +646,7 @@ ags_preset_test_flags(AgsPreset *preset, guint flags)
   }
 
   /* get preset mutex */
-  pthread_mutex_lock(ags_preset_get_class_mutex());
-  
-  preset_mutex = preset->obj_mutex;
-  
-  pthread_mutex_unlock(ags_preset_get_class_mutex());
+  preset_mutex = AGS_PRESET_GET_OBJ_MUTEX(preset);
 
   /* test */
   pthread_mutex_lock(preset_mutex);
@@ -689,11 +677,7 @@ ags_preset_set_flags(AgsPreset *preset, guint flags)
   }
 
   /* get preset mutex */
-  pthread_mutex_lock(ags_preset_get_class_mutex());
-  
-  preset_mutex = preset->obj_mutex;
-  
-  pthread_mutex_unlock(ags_preset_get_class_mutex());
+  preset_mutex = AGS_PRESET_GET_OBJ_MUTEX(preset);
 
   /* set flags */
   pthread_mutex_lock(preset_mutex);
@@ -722,11 +706,7 @@ ags_preset_unset_flags(AgsPreset *preset, guint flags)
   }
 
   /* get preset mutex */
-  pthread_mutex_lock(ags_preset_get_class_mutex());
-  
-  preset_mutex = preset->obj_mutex;
-  
-  pthread_mutex_unlock(ags_preset_get_class_mutex());
+  preset_mutex = AGS_PRESET_GET_OBJ_MUTEX(preset);
 
   /* set flags */
   pthread_mutex_lock(preset_mutex);
@@ -755,11 +735,7 @@ ags_preset_find_scope(GList *preset,
 
   while(preset != NULL){
     /* get preset mutex */
-    pthread_mutex_lock(ags_preset_get_class_mutex());
-  
-    preset_mutex = AGS_PRESET(preset->data)->obj_mutex;
-  
-    pthread_mutex_unlock(ags_preset_get_class_mutex());
+    preset_mutex = AGS_PRESET_GET_OBJ_MUTEX(preset->data);
 
     /* compare scope */
     pthread_mutex_lock(preset_mutex);
@@ -799,11 +775,7 @@ ags_preset_find_name(GList *preset,
 
   while(preset != NULL){
     /* get preset mutex */
-    pthread_mutex_lock(ags_preset_get_class_mutex());
-  
-    preset_mutex = AGS_PRESET(preset->data)->obj_mutex;
-  
-    pthread_mutex_unlock(ags_preset_get_class_mutex());
+    preset_mutex = AGS_PRESET_GET_OBJ_MUTEX(preset->data);
 
     /* compare scope */
     pthread_mutex_lock(preset_mutex);
@@ -849,11 +821,7 @@ ags_preset_add_parameter(AgsPreset *preset,
   }
 
   /* get preset mutex */
-  pthread_mutex_lock(ags_preset_get_class_mutex());
-  
-  preset_mutex = preset->obj_mutex;
-  
-  pthread_mutex_unlock(ags_preset_get_class_mutex());
+  preset_mutex = AGS_PRESET_GET_OBJ_MUTEX(preset);
 
   /* match or allocate */
   pthread_mutex_lock(preset_mutex);
@@ -943,11 +911,7 @@ ags_preset_remove_parameter(AgsPreset *preset,
   }
 
   /* get preset mutex */
-  pthread_mutex_lock(ags_preset_get_class_mutex());
-  
-  preset_mutex = preset->obj_mutex;
-  
-  pthread_mutex_unlock(ags_preset_get_class_mutex());
+  preset_mutex = AGS_PRESET_GET_OBJ_MUTEX(preset);
 
   /* check boundaries */
   pthread_mutex_lock(preset_mutex);
@@ -1035,11 +999,7 @@ ags_preset_get_parameter(AgsPreset *preset,
   }
 
   /* get preset mutex */
-  pthread_mutex_lock(ags_preset_get_class_mutex());
-  
-  preset_mutex = preset->obj_mutex;
-  
-  pthread_mutex_unlock(ags_preset_get_class_mutex());
+  preset_mutex = AGS_PRESET_GET_OBJ_MUTEX(preset);
 
   /* find */
   pthread_mutex_lock(preset_mutex);

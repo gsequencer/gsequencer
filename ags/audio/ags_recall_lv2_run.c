@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -252,11 +252,7 @@ ags_recall_lv2_run_set_property(GObject *gobject,
   recall_lv2_run = AGS_RECALL_LV2_RUN(gobject);
 
   /* get recall mutex */
-  pthread_mutex_lock(ags_recall_get_class_mutex());
-  
-  recall_mutex = AGS_RECALL(gobject)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_recall_get_class_mutex());
+  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall_lv2_run);
 
   switch(prop_id){
   case PROP_ROUTE_LV2_AUDIO_RUN:
@@ -327,11 +323,7 @@ ags_recall_lv2_run_get_property(GObject *gobject,
   recall_lv2_run = AGS_RECALL_LV2_RUN(gobject);
 
   /* get recall mutex */
-  pthread_mutex_lock(ags_recall_get_class_mutex());
-  
-  recall_mutex = AGS_RECALL(gobject)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_recall_get_class_mutex());
+  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall_lv2_run);
 
   switch(prop_id){
   case PROP_ROUTE_LV2_AUDIO_RUN:
@@ -450,11 +442,11 @@ ags_recall_lv2_run_run_init_pre(AgsRecall *recall)
   pthread_mutex_t *recall_lv2_mutex;
 
   /* get recall mutex */
-  pthread_mutex_lock(ags_recall_get_class_mutex());
+  AGS_RECALL_LOCK_CLASS();
 
   parent_class_run_init_pre = AGS_RECALL_CLASS(ags_recall_lv2_run_parent_class)->run_init_pre;
-  
-  pthread_mutex_unlock(ags_recall_get_class_mutex());
+
+  AGS_RECALL_UNLOCK_CLASS();
 
   /* call parent */
   parent_class_run_init_pre(recall);
@@ -484,11 +476,7 @@ ags_recall_lv2_run_run_init_pre(AgsRecall *recall)
 	       NULL);
   
   /* get recall lv2 mutex */
-  pthread_mutex_lock(ags_recall_get_class_mutex());
-  
-  recall_lv2_mutex = AGS_RECALL(recall_lv2)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_recall_get_class_mutex());
+  recall_lv2_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall_lv2);
 
   /* get some fields */
   pthread_mutex_lock(recall_lv2_mutex);
@@ -616,11 +604,7 @@ ags_recall_lv2_run_run_init_pre(AgsRecall *recall)
     pthread_mutex_unlock(recall_lv2_mutex);
 
     /* get base plugin mutex */
-    pthread_mutex_lock(ags_base_plugin_get_class_mutex());
-  
-    base_plugin_mutex = AGS_BASE_PLUGIN(lv2_plugin)->obj_mutex;
-  
-    pthread_mutex_unlock(ags_base_plugin_get_class_mutex());
+    base_plugin_mutex = AGS_BASE_PLUGIN_GET_OBJ_MUTEX(lv2_plugin);
     
     /* get plugin port */
     pthread_mutex_lock(base_plugin_mutex);
@@ -644,11 +628,7 @@ ags_recall_lv2_run_run_init_pre(AgsRecall *recall)
       current_plugin_port = AGS_PLUGIN_PORT(plugin_port->data);
 
       /* get plugin port mutex */
-      pthread_mutex_lock(ags_plugin_port_get_class_mutex());
-      
-      plugin_port_mutex = current_plugin_port->obj_mutex;
-
-      pthread_mutex_unlock(ags_plugin_port_get_class_mutex());
+      plugin_port_mutex = AGS_PLUGIN_PORT_GET_OBJ_MUTEX(current_plugin_port);
 
       /* get specifier */
       pthread_mutex_lock(plugin_port_mutex);
@@ -698,11 +678,7 @@ ags_recall_lv2_run_run_init_pre(AgsRecall *recall)
       current_plugin_port = AGS_PLUGIN_PORT(plugin_port->data);
 
       /* get plugin port mutex */
-      pthread_mutex_lock(ags_plugin_port_get_class_mutex());
-      
-      plugin_port_mutex = current_plugin_port->obj_mutex;
-
-      pthread_mutex_unlock(ags_plugin_port_get_class_mutex());
+      plugin_port_mutex = AGS_PLUGIN_PORT_GET_OBJ_MUTEX(current_plugin_port);
 
       /* get specifier */
       pthread_mutex_lock(plugin_port_mutex);
@@ -787,11 +763,11 @@ ags_recall_lv2_run_run_pre(AgsRecall *recall)
   pthread_mutex_t *port_mutex;
   
   /* get parent class */
-  pthread_mutex_lock(ags_recall_get_class_mutex());
+  AGS_RECALL_LOCK_CLASS();
 
   parent_class_run_pre = AGS_RECALL_CLASS(ags_recall_lv2_run_parent_class)->run_pre;
   
-  pthread_mutex_unlock(ags_recall_get_class_mutex());
+  AGS_RECALL_UNLOCK_CLASS();
 
   /* call parent */
   parent_class_run_pre(recall);
@@ -869,11 +845,7 @@ ags_recall_lv2_run_run_pre(AgsRecall *recall)
   }
 
   /* get recall lv2 mutex */
-  pthread_mutex_lock(ags_recall_get_class_mutex());
-  
-  recall_lv2_mutex = AGS_RECALL(recall_lv2)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_recall_get_class_mutex());
+  recall_lv2_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall_lv2);
 
   g_object_get(route_lv2_audio_run,
 	       "count-beats-audio-run", &count_beats_audio_run,
@@ -1061,11 +1033,11 @@ ags_recall_lv2_run_run_inter(AgsRecall *recall)
   pthread_mutex_t *recall_lv2_mutex;
 
   /* get recall mutex */
-  pthread_mutex_lock(ags_recall_get_class_mutex());
+  AGS_RECALL_LOCK_CLASS();
 
   parent_class_run_inter = AGS_RECALL_CLASS(ags_recall_lv2_run_parent_class)->run_inter;
   
-  pthread_mutex_unlock(ags_recall_get_class_mutex());
+  AGS_RECALL_UNLOCK_CLASS();
 
   /* call parent */
   parent_class_run_inter(recall);
@@ -1146,11 +1118,7 @@ ags_recall_lv2_run_run_inter(AgsRecall *recall)
   }
 
   /* get recall lv2 mutex */
-  pthread_mutex_lock(ags_recall_get_class_mutex());
-  
-  recall_lv2_mutex = AGS_RECALL(recall_lv2)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_recall_get_class_mutex());
+  recall_lv2_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall_lv2);
 
   g_object_get(audio_signal,
 	       "buffer-size", &buffer_size,
@@ -1287,11 +1255,7 @@ ags_recall_lv2_run_load_ports(AgsRecallLv2Run *recall_lv2_run)
   }
   
   /* get recall mutex */
-  pthread_mutex_lock(ags_recall_get_class_mutex());
-
-  recall_mutex = AGS_RECALL(recall_lv2_run)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_recall_get_class_mutex());
+  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall_lv2_run);
 
   g_object_get(recall_lv2_run,
 	       "parent", &recall_recycling,
@@ -1306,11 +1270,7 @@ ags_recall_lv2_run_load_ports(AgsRecallLv2Run *recall_lv2_run)
 	       NULL);
   
   /* get recall lv2 mutex */
-  pthread_mutex_lock(ags_recall_get_class_mutex());
-  
-  recall_lv2_mutex = AGS_RECALL(recall_lv2)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_recall_get_class_mutex());
+  recall_lv2_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall_lv2);
 
   /* get some fields */
   pthread_mutex_lock(recall_mutex);
@@ -1355,11 +1315,7 @@ ags_recall_lv2_run_load_ports(AgsRecallLv2Run *recall_lv2_run)
       current_plugin_port = AGS_PLUGIN_PORT(plugin_port->data);
 
       /* get plugin port mutex */
-      pthread_mutex_lock(ags_plugin_port_get_class_mutex());
-      
-      plugin_port_mutex = current_plugin_port->obj_mutex;
-
-      pthread_mutex_unlock(ags_plugin_port_get_class_mutex());
+      plugin_port_mutex = AGS_PLUGIN_PORT_GET_OBJ_MUTEX(current_plugin_port);
 
       if(ags_plugin_port_test_flags(current_plugin_port,
 				    AGS_PLUGIN_PORT_CONTROL)){
@@ -1381,11 +1337,7 @@ ags_recall_lv2_run_load_ports(AgsRecallLv2Run *recall_lv2_run)
 	  current_port = list->data;
 	  
 	  /* get port mutex */
-	  pthread_mutex_lock(ags_port_get_class_mutex());
-
-	  port_mutex = current_port->obj_mutex;
-      
-	  pthread_mutex_unlock(ags_port_get_class_mutex());
+	  port_mutex = AGS_PORT_GET_OBJ_MUTEX(current_port);
 
 	  /* get port pointer */
 	  pthread_mutex_lock(port_mutex);
