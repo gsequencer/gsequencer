@@ -226,11 +226,7 @@ ags_osc_node_controller_set_property(GObject *gobject,
   osc_node_controller = AGS_OSC_NODE_CONTROLLER(gobject);
 
   /* get osc controller mutex */
-  pthread_mutex_lock(ags_osc_controller_get_class_mutex());
-  
-  osc_controller_mutex = AGS_OSC_CONTROLLER(osc_node_controller)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_osc_controller_get_class_mutex());
+  osc_controller_mutex = AGS_OSC_CONTROLLER_GET_OBJ_MUTEX(osc_node_controller);
   
   switch(prop_id){
   default:
@@ -252,11 +248,7 @@ ags_osc_node_controller_get_property(GObject *gobject,
   osc_node_controller = AGS_OSC_NODE_CONTROLLER(gobject);
 
   /* get osc controller mutex */
-  pthread_mutex_lock(ags_osc_controller_get_class_mutex());
-  
-  osc_controller_mutex = AGS_OSC_CONTROLLER(osc_node_controller)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_osc_controller_get_class_mutex());
+  osc_controller_mutex = AGS_OSC_CONTROLLER_GET_OBJ_MUTEX(osc_node_controller);
   
   switch(prop_id){
   default:
@@ -3202,11 +3194,7 @@ ags_osc_node_controller_get_data_port(AgsOscNodeController *osc_node_controller,
       pthread_mutex_t *port_mutex;
 
       /* get port mutex */
-      pthread_mutex_lock(ags_port_get_class_mutex());
-      
-      port_mutex = port->obj_mutex;
-      
-      pthread_mutex_unlock(ags_port_get_class_mutex());
+      port_mutex = AGS_PORT_GET_OBJ_MUTEX(port);
 
       /* create current path */
       pthread_mutex_lock(port_mutex);

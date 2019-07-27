@@ -41,6 +41,8 @@
 #define AGS_IS_JACK_SERVER_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_JACK_SERVER))
 #define AGS_JACK_SERVER_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS(obj, AGS_TYPE_JACK_SERVER, AgsJackServerClass))
 
+#define AGS_JACK_SERVER_GET_OBJ_MUTEX(obj) (((AgsJackServer *) obj)->obj_mutex)
+
 #define AGS_JACK_SERVER_DEFAULT_PROTOCOL "udp"
 #define AGS_JACK_SERVER_DEFAULT_HOST "localhost"
 #define AGS_JACK_SERVER_DEFAULT_PORT (3000)

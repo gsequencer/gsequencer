@@ -847,11 +847,7 @@ ags_midi_builder_set_property(GObject *gobject,
   midi_builder = AGS_MIDI_BUILDER(gobject);
 
   /* get midi builder mutex */
-  pthread_mutex_lock(ags_midi_builder_get_class_mutex());
-  
-  midi_builder_mutex = midi_builder->obj_mutex;
-  
-  pthread_mutex_unlock(ags_midi_builder_get_class_mutex());
+  midi_builder_mutex = AGS_MIDI_BUILDER_GET_OBJ_MUTEX(midi_builder);
   
   switch(prop_id){
   case PROP_FILE:
@@ -882,11 +878,7 @@ ags_midi_builder_get_property(GObject *gobject,
   midi_builder = AGS_MIDI_BUILDER(gobject);
 
   /* get midi builder mutex */
-  pthread_mutex_lock(ags_midi_builder_get_class_mutex());
-  
-  midi_builder_mutex = midi_builder->obj_mutex;
-  
-  pthread_mutex_unlock(ags_midi_builder_get_class_mutex());
+  midi_builder_mutex = AGS_MIDI_BUILDER_GET_OBJ_MUTEX(midi_builder);
   
   switch(prop_id){
   case PROP_FILE:

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -732,11 +732,7 @@ ags_jack_devin_set_property(GObject *gobject,
   jack_devin = AGS_JACK_DEVIN(gobject);
 
   /* get jack devin mutex */
-  pthread_mutex_lock(ags_jack_devin_get_class_mutex());
-  
-  jack_devin_mutex = jack_devin->obj_mutex;
-  
-  pthread_mutex_unlock(ags_jack_devin_get_class_mutex());
+  jack_devin_mutex = AGS_JACK_DEVIN_GET_OBJ_MUTEX(jack_devin);
   
   switch(prop_id){
   case PROP_APPLICATION_CONTEXT:
@@ -987,11 +983,7 @@ ags_jack_devin_get_property(GObject *gobject,
   jack_devin = AGS_JACK_DEVIN(gobject);
 
   /* get jack devin mutex */
-  pthread_mutex_lock(ags_jack_devin_get_class_mutex());
-  
-  jack_devin_mutex = jack_devin->obj_mutex;
-  
-  pthread_mutex_unlock(ags_jack_devin_get_class_mutex());
+  jack_devin_mutex = AGS_JACK_DEVIN_GET_OBJ_MUTEX(jack_devin);
   
   switch(prop_id){
   case PROP_APPLICATION_CONTEXT:
@@ -1238,11 +1230,7 @@ ags_jack_devin_get_uuid(AgsConnectable *connectable)
   jack_devin = AGS_JACK_DEVIN(connectable);
 
   /* get jack devin signal mutex */
-  pthread_mutex_lock(ags_jack_devin_get_class_mutex());
-  
-  jack_devin_mutex = jack_devin->obj_mutex;
-  
-  pthread_mutex_unlock(ags_jack_devin_get_class_mutex());
+  jack_devin_mutex = AGS_JACK_DEVIN_GET_OBJ_MUTEX(jack_devin);
 
   /* get UUID */
   pthread_mutex_lock(jack_devin_mutex);
@@ -1272,11 +1260,7 @@ ags_jack_devin_is_ready(AgsConnectable *connectable)
   jack_devin = AGS_JACK_DEVIN(connectable);
 
   /* get jack devin mutex */
-  pthread_mutex_lock(ags_jack_devin_get_class_mutex());
-  
-  jack_devin_mutex = jack_devin->obj_mutex;
-  
-  pthread_mutex_unlock(ags_jack_devin_get_class_mutex());
+  jack_devin_mutex = AGS_JACK_DEVIN_GET_OBJ_MUTEX(jack_devin);
 
   /* check is added */
   pthread_mutex_lock(jack_devin_mutex);
@@ -1359,11 +1343,7 @@ ags_jack_devin_is_connected(AgsConnectable *connectable)
   jack_devin = AGS_JACK_DEVIN(connectable);
 
   /* get jack devin mutex */
-  pthread_mutex_lock(ags_jack_devin_get_class_mutex());
-  
-  jack_devin_mutex = jack_devin->obj_mutex;
-  
-  pthread_mutex_unlock(ags_jack_devin_get_class_mutex());
+  jack_devin_mutex = AGS_JACK_DEVIN_GET_OBJ_MUTEX(jack_devin);
 
   /* check is connected */
   pthread_mutex_lock(jack_devin_mutex);
@@ -1442,11 +1422,7 @@ ags_jack_devin_test_flags(AgsJackDevin *jack_devin, guint flags)
   }
 
   /* get jack devin mutex */
-  pthread_mutex_lock(ags_jack_devin_get_class_mutex());
-  
-  jack_devin_mutex = jack_devin->obj_mutex;
-  
-  pthread_mutex_unlock(ags_jack_devin_get_class_mutex());
+  jack_devin_mutex = AGS_JACK_DEVIN_GET_OBJ_MUTEX(jack_devin);
 
   /* test */
   pthread_mutex_lock(jack_devin_mutex);
@@ -1477,11 +1453,7 @@ ags_jack_devin_set_flags(AgsJackDevin *jack_devin, guint flags)
   }
 
   /* get jack devin mutex */
-  pthread_mutex_lock(ags_jack_devin_get_class_mutex());
-  
-  jack_devin_mutex = jack_devin->obj_mutex;
-  
-  pthread_mutex_unlock(ags_jack_devin_get_class_mutex());
+  jack_devin_mutex = AGS_JACK_DEVIN_GET_OBJ_MUTEX(jack_devin);
 
   //TODO:JK: add more?
 
@@ -1512,11 +1484,7 @@ ags_jack_devin_unset_flags(AgsJackDevin *jack_devin, guint flags)
   }
 
   /* get jack devin mutex */
-  pthread_mutex_lock(ags_jack_devin_get_class_mutex());
-  
-  jack_devin_mutex = jack_devin->obj_mutex;
-  
-  pthread_mutex_unlock(ags_jack_devin_get_class_mutex());
+  jack_devin_mutex = AGS_JACK_DEVIN_GET_OBJ_MUTEX(jack_devin);
 
   //TODO:JK: add more?
 
@@ -1539,11 +1507,7 @@ ags_jack_devin_set_application_context(AgsSoundcard *soundcard,
   jack_devin = AGS_JACK_DEVIN(soundcard);
 
   /* get jack devin mutex */
-  pthread_mutex_lock(ags_jack_devin_get_class_mutex());
-  
-  jack_devin_mutex = jack_devin->obj_mutex;
-  
-  pthread_mutex_unlock(ags_jack_devin_get_class_mutex());
+  jack_devin_mutex = AGS_JACK_DEVIN_GET_OBJ_MUTEX(jack_devin);
 
   /* set application context */
   pthread_mutex_lock(jack_devin_mutex);
@@ -1565,11 +1529,7 @@ ags_jack_devin_get_application_context(AgsSoundcard *soundcard)
   jack_devin = AGS_JACK_DEVIN(soundcard);
 
   /* get jack devin mutex */
-  pthread_mutex_lock(ags_jack_devin_get_class_mutex());
-  
-  jack_devin_mutex = jack_devin->obj_mutex;
-  
-  pthread_mutex_unlock(ags_jack_devin_get_class_mutex());
+  jack_devin_mutex = AGS_JACK_DEVIN_GET_OBJ_MUTEX(jack_devin);
 
   /* get application context */
   pthread_mutex_lock(jack_devin_mutex);
@@ -1601,11 +1561,7 @@ ags_jack_devin_set_device(AgsSoundcard *soundcard,
   jack_devin = AGS_JACK_DEVIN(soundcard);
 
   /* get jack devin mutex */
-  pthread_mutex_lock(ags_jack_devin_get_class_mutex());
-  
-  jack_devin_mutex = jack_devin->obj_mutex;
-  
-  pthread_mutex_unlock(ags_jack_devin_get_class_mutex());
+  jack_devin_mutex = AGS_JACK_DEVIN_GET_OBJ_MUTEX(jack_devin);
 
   /* check device */
   pthread_mutex_lock(jack_devin_mutex);
@@ -1680,11 +1636,7 @@ ags_jack_devin_get_device(AgsSoundcard *soundcard)
   jack_devin = AGS_JACK_DEVIN(soundcard);
   
   /* get jack devin mutex */
-  pthread_mutex_lock(ags_jack_devin_get_class_mutex());
-  
-  jack_devin_mutex = jack_devin->obj_mutex;
-  
-  pthread_mutex_unlock(ags_jack_devin_get_class_mutex());
+  jack_devin_mutex = AGS_JACK_DEVIN_GET_OBJ_MUTEX(jack_devin);
 
   device = NULL;
 
@@ -1731,11 +1683,7 @@ ags_jack_devin_get_presets(AgsSoundcard *soundcard,
   jack_devin = AGS_JACK_DEVIN(soundcard);
   
   /* get jack devin mutex */
-  pthread_mutex_lock(ags_jack_devin_get_class_mutex());
-  
-  jack_devin_mutex = jack_devin->obj_mutex;
-  
-  pthread_mutex_unlock(ags_jack_devin_get_class_mutex());
+  jack_devin_mutex = AGS_JACK_DEVIN_GET_OBJ_MUTEX(jack_devin);
 
   /* get presets */
   pthread_mutex_lock(jack_devin_mutex);
@@ -1904,11 +1852,7 @@ ags_jack_devin_is_starting(AgsSoundcard *soundcard)
   jack_devin = AGS_JACK_DEVIN(soundcard);
 
   /* get jack devin mutex */
-  pthread_mutex_lock(ags_jack_devin_get_class_mutex());
-  
-  jack_devin_mutex = jack_devin->obj_mutex;
-  
-  pthread_mutex_unlock(ags_jack_devin_get_class_mutex());
+  jack_devin_mutex = AGS_JACK_DEVIN_GET_OBJ_MUTEX(jack_devin);
 
   /* check is starting */
   pthread_mutex_lock(jack_devin_mutex);
@@ -1932,11 +1876,7 @@ ags_jack_devin_is_recording(AgsSoundcard *soundcard)
   jack_devin = AGS_JACK_DEVIN(soundcard);
   
   /* get jack devin mutex */
-  pthread_mutex_lock(ags_jack_devin_get_class_mutex());
-  
-  jack_devin_mutex = jack_devin->obj_mutex;
-  
-  pthread_mutex_unlock(ags_jack_devin_get_class_mutex());
+  jack_devin_mutex = AGS_JACK_DEVIN_GET_OBJ_MUTEX(jack_devin);
 
   /* check is starting */
   pthread_mutex_lock(jack_devin_mutex);
@@ -2001,11 +1941,7 @@ ags_jack_devin_port_init(AgsSoundcard *soundcard,
   jack_devin = AGS_JACK_DEVIN(soundcard);
   
   /* get jack devin mutex */
-  pthread_mutex_lock(ags_jack_devin_get_class_mutex());
-  
-  jack_devin_mutex = jack_devin->obj_mutex;
-  
-  pthread_mutex_unlock(ags_jack_devin_get_class_mutex());
+  jack_devin_mutex = AGS_JACK_DEVIN_GET_OBJ_MUTEX(jack_devin);
 
   /* retrieve word size */
   pthread_mutex_lock(jack_devin_mutex);
@@ -2104,11 +2040,7 @@ ags_jack_devin_port_record(AgsSoundcard *soundcard,
   application_context = ags_application_context_get_instance();
 
   /* get jack devin mutex */
-  pthread_mutex_lock(ags_jack_devin_get_class_mutex());
-  
-  jack_devin_mutex = jack_devin->obj_mutex;
-  
-  pthread_mutex_unlock(ags_jack_devin_get_class_mutex());
+  jack_devin_mutex = AGS_JACK_DEVIN_GET_OBJ_MUTEX(jack_devin);
 
   /* client */
   pthread_mutex_lock(jack_devin_mutex);
@@ -2170,11 +2102,7 @@ ags_jack_devin_port_record(AgsSoundcard *soundcard,
   pthread_mutex_unlock(jack_devin_mutex);
 
   /* get client mutex */
-  pthread_mutex_lock(ags_jack_client_get_class_mutex());
-  
-  jack_client_mutex = jack_client->obj_mutex;
-  
-  pthread_mutex_unlock(ags_jack_client_get_class_mutex());
+  jack_client_mutex = AGS_JACK_CLIENT_GET_OBJ_MUTEX(jack_client);
 
   /* get activated */
   pthread_mutex_lock(jack_client_mutex);
@@ -2282,11 +2210,7 @@ ags_jack_devin_port_free(AgsSoundcard *soundcard)
   jack_devin = AGS_JACK_DEVIN(soundcard);
 
   /* get jack devin mutex */
-  pthread_mutex_lock(ags_jack_devin_get_class_mutex());
-  
-  jack_devin_mutex = jack_devin->obj_mutex;
-  
-  pthread_mutex_unlock(ags_jack_devin_get_class_mutex());
+  jack_devin_mutex = AGS_JACK_DEVIN_GET_OBJ_MUTEX(jack_devin);
 
   /*  */
   pthread_mutex_lock(jack_devin_mutex);
@@ -2417,11 +2341,7 @@ ags_jack_devin_tic(AgsSoundcard *soundcard)
   jack_devin = AGS_JACK_DEVIN(soundcard);
 
   /* get jack devin mutex */
-  pthread_mutex_lock(ags_jack_devin_get_class_mutex());
-  
-  jack_devin_mutex = jack_devin->obj_mutex;
-  
-  pthread_mutex_unlock(ags_jack_devin_get_class_mutex());
+  jack_devin_mutex = AGS_JACK_DEVIN_GET_OBJ_MUTEX(jack_devin);
   
   /* determine if attack should be switched */
   pthread_mutex_lock(jack_devin_mutex);
@@ -2483,11 +2403,7 @@ ags_jack_devin_offset_changed(AgsSoundcard *soundcard,
   jack_devin = AGS_JACK_DEVIN(soundcard);
 
   /* get jack devin mutex */
-  pthread_mutex_lock(ags_jack_devin_get_class_mutex());
-  
-  jack_devin_mutex = jack_devin->obj_mutex;
-  
-  pthread_mutex_unlock(ags_jack_devin_get_class_mutex());
+  jack_devin_mutex = AGS_JACK_DEVIN_GET_OBJ_MUTEX(jack_devin);
 
   /* offset changed */
   pthread_mutex_lock(jack_devin_mutex);
@@ -2513,11 +2429,7 @@ ags_jack_devin_set_bpm(AgsSoundcard *soundcard,
   jack_devin = AGS_JACK_DEVIN(soundcard);
 
   /* get jack devin mutex */
-  pthread_mutex_lock(ags_jack_devin_get_class_mutex());
-  
-  jack_devin_mutex = jack_devin->obj_mutex;
-  
-  pthread_mutex_unlock(ags_jack_devin_get_class_mutex());
+  jack_devin_mutex = AGS_JACK_DEVIN_GET_OBJ_MUTEX(jack_devin);
 
   /* set bpm */
   pthread_mutex_lock(jack_devin_mutex);
@@ -2541,11 +2453,7 @@ ags_jack_devin_get_bpm(AgsSoundcard *soundcard)
   jack_devin = AGS_JACK_DEVIN(soundcard);
 
   /* get jack devin mutex */
-  pthread_mutex_lock(ags_jack_devin_get_class_mutex());
-  
-  jack_devin_mutex = jack_devin->obj_mutex;
-  
-  pthread_mutex_unlock(ags_jack_devin_get_class_mutex());
+  jack_devin_mutex = AGS_JACK_DEVIN_GET_OBJ_MUTEX(jack_devin);
 
   /* get bpm */
   pthread_mutex_lock(jack_devin_mutex);
@@ -2568,11 +2476,7 @@ ags_jack_devin_set_delay_factor(AgsSoundcard *soundcard,
   jack_devin = AGS_JACK_DEVIN(soundcard);
 
   /* get jack devin mutex */
-  pthread_mutex_lock(ags_jack_devin_get_class_mutex());
-  
-  jack_devin_mutex = jack_devin->obj_mutex;
-  
-  pthread_mutex_unlock(ags_jack_devin_get_class_mutex());
+  jack_devin_mutex = AGS_JACK_DEVIN_GET_OBJ_MUTEX(jack_devin);
 
   /* set delay factor */
   pthread_mutex_lock(jack_devin_mutex);
@@ -2596,11 +2500,7 @@ ags_jack_devin_get_delay_factor(AgsSoundcard *soundcard)
   jack_devin = AGS_JACK_DEVIN(soundcard);
 
   /* get jack devin mutex */
-  pthread_mutex_lock(ags_jack_devin_get_class_mutex());
-  
-  jack_devin_mutex = jack_devin->obj_mutex;
-  
-  pthread_mutex_unlock(ags_jack_devin_get_class_mutex());
+  jack_devin_mutex = AGS_JACK_DEVIN_GET_OBJ_MUTEX(jack_devin);
 
   /* get delay factor */
   pthread_mutex_lock(jack_devin_mutex);
@@ -2625,11 +2525,7 @@ ags_jack_devin_get_delay(AgsSoundcard *soundcard)
   jack_devin = AGS_JACK_DEVIN(soundcard);
 
   /* get jack devin mutex */
-  pthread_mutex_lock(ags_jack_devin_get_class_mutex());
-  
-  jack_devin_mutex = jack_devin->obj_mutex;
-  
-  pthread_mutex_unlock(ags_jack_devin_get_class_mutex());
+  jack_devin_mutex = AGS_JACK_DEVIN_GET_OBJ_MUTEX(jack_devin);
 
   /* get delay */
   pthread_mutex_lock(jack_devin_mutex);
@@ -2655,11 +2551,7 @@ ags_jack_devin_get_absolute_delay(AgsSoundcard *soundcard)
   jack_devin = AGS_JACK_DEVIN(soundcard);
   
   /* get jack devin mutex */
-  pthread_mutex_lock(ags_jack_devin_get_class_mutex());
-  
-  jack_devin_mutex = jack_devin->obj_mutex;
-  
-  pthread_mutex_unlock(ags_jack_devin_get_class_mutex());
+  jack_devin_mutex = AGS_JACK_DEVIN_GET_OBJ_MUTEX(jack_devin);
 
   /* get absolute delay */
   pthread_mutex_lock(jack_devin_mutex);
@@ -2684,11 +2576,7 @@ ags_jack_devin_get_attack(AgsSoundcard *soundcard)
   jack_devin = AGS_JACK_DEVIN(soundcard);
   
   /* get jack devin mutex */
-  pthread_mutex_lock(ags_jack_devin_get_class_mutex());
-  
-  jack_devin_mutex = jack_devin->obj_mutex;
-  
-  pthread_mutex_unlock(ags_jack_devin_get_class_mutex());
+  jack_devin_mutex = AGS_JACK_DEVIN_GET_OBJ_MUTEX(jack_devin);
 
   /* get attack */
   pthread_mutex_lock(jack_devin_mutex);
@@ -2850,11 +2738,7 @@ ags_jack_devin_get_delay_counter(AgsSoundcard *soundcard)
   jack_devin = AGS_JACK_DEVIN(soundcard);
   
   /* get jack devin mutex */
-  pthread_mutex_lock(ags_jack_devin_get_class_mutex());
-  
-  jack_devin_mutex = jack_devin->obj_mutex;
-  
-  pthread_mutex_unlock(ags_jack_devin_get_class_mutex());
+  jack_devin_mutex = AGS_JACK_DEVIN_GET_OBJ_MUTEX(jack_devin);
 
   /* delay counter */
   pthread_mutex_lock(jack_devin_mutex);
@@ -2877,11 +2761,7 @@ ags_jack_devin_set_start_note_offset(AgsSoundcard *soundcard,
   jack_devin = AGS_JACK_DEVIN(soundcard);
 
   /* get jack devin mutex */
-  pthread_mutex_lock(ags_jack_devin_get_class_mutex());
-  
-  jack_devin_mutex = jack_devin->obj_mutex;
-  
-  pthread_mutex_unlock(ags_jack_devin_get_class_mutex());
+  jack_devin_mutex = AGS_JACK_DEVIN_GET_OBJ_MUTEX(jack_devin);
 
   /* set note offset */
   pthread_mutex_lock(jack_devin_mutex);
@@ -2903,11 +2783,7 @@ ags_jack_devin_get_start_note_offset(AgsSoundcard *soundcard)
   jack_devin = AGS_JACK_DEVIN(soundcard);
 
   /* get jack devin mutex */
-  pthread_mutex_lock(ags_jack_devin_get_class_mutex());
-  
-  jack_devin_mutex = jack_devin->obj_mutex;
-  
-  pthread_mutex_unlock(ags_jack_devin_get_class_mutex());
+  jack_devin_mutex = AGS_JACK_DEVIN_GET_OBJ_MUTEX(jack_devin);
 
   /* set note offset */
   pthread_mutex_lock(jack_devin_mutex);
@@ -2930,11 +2806,7 @@ ags_jack_devin_set_note_offset(AgsSoundcard *soundcard,
   jack_devin = AGS_JACK_DEVIN(soundcard);
 
   /* get jack devin mutex */
-  pthread_mutex_lock(ags_jack_devin_get_class_mutex());
-  
-  jack_devin_mutex = jack_devin->obj_mutex;
-  
-  pthread_mutex_unlock(ags_jack_devin_get_class_mutex());
+  jack_devin_mutex = AGS_JACK_DEVIN_GET_OBJ_MUTEX(jack_devin);
 
   /* set note offset */
   pthread_mutex_lock(jack_devin_mutex);
@@ -2956,11 +2828,7 @@ ags_jack_devin_get_note_offset(AgsSoundcard *soundcard)
   jack_devin = AGS_JACK_DEVIN(soundcard);
 
   /* get jack devin mutex */
-  pthread_mutex_lock(ags_jack_devin_get_class_mutex());
-  
-  jack_devin_mutex = jack_devin->obj_mutex;
-  
-  pthread_mutex_unlock(ags_jack_devin_get_class_mutex());
+  jack_devin_mutex = AGS_JACK_DEVIN_GET_OBJ_MUTEX(jack_devin);
 
   /* set note offset */
   pthread_mutex_lock(jack_devin_mutex);
@@ -2983,11 +2851,7 @@ ags_jack_devin_set_note_offset_absolute(AgsSoundcard *soundcard,
   jack_devin = AGS_JACK_DEVIN(soundcard);
 
   /* get jack devin mutex */
-  pthread_mutex_lock(ags_jack_devin_get_class_mutex());
-  
-  jack_devin_mutex = jack_devin->obj_mutex;
-  
-  pthread_mutex_unlock(ags_jack_devin_get_class_mutex());
+  jack_devin_mutex = AGS_JACK_DEVIN_GET_OBJ_MUTEX(jack_devin);
 
   /* set note offset */
   pthread_mutex_lock(jack_devin_mutex);
@@ -3009,11 +2873,7 @@ ags_jack_devin_get_note_offset_absolute(AgsSoundcard *soundcard)
   jack_devin = AGS_JACK_DEVIN(soundcard);
 
   /* get jack devin mutex */
-  pthread_mutex_lock(ags_jack_devin_get_class_mutex());
-  
-  jack_devin_mutex = jack_devin->obj_mutex;
-  
-  pthread_mutex_unlock(ags_jack_devin_get_class_mutex());
+  jack_devin_mutex = AGS_JACK_DEVIN_GET_OBJ_MUTEX(jack_devin);
 
   /* set note offset */
   pthread_mutex_lock(jack_devin_mutex);
@@ -3037,11 +2897,7 @@ ags_jack_devin_set_loop(AgsSoundcard *soundcard,
   jack_devin = AGS_JACK_DEVIN(soundcard);
 
   /* get jack devin mutex */
-  pthread_mutex_lock(ags_jack_devin_get_class_mutex());
-  
-  jack_devin_mutex = jack_devin->obj_mutex;
-  
-  pthread_mutex_unlock(ags_jack_devin_get_class_mutex());
+  jack_devin_mutex = AGS_JACK_DEVIN_GET_OBJ_MUTEX(jack_devin);
 
   /* set loop */
   pthread_mutex_lock(jack_devin_mutex);
@@ -3069,11 +2925,7 @@ ags_jack_devin_get_loop(AgsSoundcard *soundcard,
   jack_devin = AGS_JACK_DEVIN(soundcard);
 
   /* get jack devin mutex */
-  pthread_mutex_lock(ags_jack_devin_get_class_mutex());
-  
-  jack_devin_mutex = jack_devin->obj_mutex;
-  
-  pthread_mutex_unlock(ags_jack_devin_get_class_mutex());
+  jack_devin_mutex = AGS_JACK_DEVIN_GET_OBJ_MUTEX(jack_devin);
 
   /* get loop */
   pthread_mutex_lock(jack_devin_mutex);
@@ -3105,11 +2957,7 @@ ags_jack_devin_get_loop_offset(AgsSoundcard *soundcard)
   jack_devin = AGS_JACK_DEVIN(soundcard);
 
   /* get jack devin mutex */
-  pthread_mutex_lock(ags_jack_devin_get_class_mutex());
-  
-  jack_devin_mutex = jack_devin->obj_mutex;
-  
-  pthread_mutex_unlock(ags_jack_devin_get_class_mutex());
+  jack_devin_mutex = AGS_JACK_DEVIN_GET_OBJ_MUTEX(jack_devin);
 
   /* get loop offset */
   pthread_mutex_lock(jack_devin_mutex);
@@ -3139,11 +2987,7 @@ ags_jack_devin_switch_buffer_flag(AgsJackDevin *jack_devin)
   }
 
   /* get jack devin mutex */
-  pthread_mutex_lock(ags_jack_devin_get_class_mutex());
-  
-  jack_devin_mutex = jack_devin->obj_mutex;
-  
-  pthread_mutex_unlock(ags_jack_devin_get_class_mutex());
+  jack_devin_mutex = AGS_JACK_DEVIN_GET_OBJ_MUTEX(jack_devin);
 
   /* switch buffer flag */
   pthread_mutex_lock(jack_devin_mutex);
@@ -3190,11 +3034,7 @@ ags_jack_devin_adjust_delay_and_attack(AgsJackDevin *jack_devin)
   }
 
   /* get jack devin mutex */
-  pthread_mutex_lock(ags_jack_devin_get_class_mutex());
-  
-  jack_devin_mutex = jack_devin->obj_mutex;
-  
-  pthread_mutex_unlock(ags_jack_devin_get_class_mutex());
+  jack_devin_mutex = AGS_JACK_DEVIN_GET_OBJ_MUTEX(jack_devin);
   
   /* get some initial values */
   delay = ags_jack_devin_get_absolute_delay(AGS_SOUNDCARD(jack_devin));
@@ -3317,11 +3157,7 @@ ags_jack_devin_realloc_buffer(AgsJackDevin *jack_devin)
   }
 
   /* get jack devin mutex */
-  pthread_mutex_lock(ags_jack_devin_get_class_mutex());
-  
-  jack_devin_mutex = jack_devin->obj_mutex;
-  
-  pthread_mutex_unlock(ags_jack_devin_get_class_mutex());
+  jack_devin_mutex = AGS_JACK_DEVIN_GET_OBJ_MUTEX(jack_devin);
 
   /* get word size */  
   pthread_mutex_lock(jack_devin_mutex);

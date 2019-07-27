@@ -329,11 +329,7 @@ ags_osc_meter_controller_set_property(GObject *gobject,
   osc_meter_controller = AGS_OSC_METER_CONTROLLER(gobject);
 
   /* get osc controller mutex */
-  pthread_mutex_lock(ags_osc_controller_get_class_mutex());
-  
-  osc_controller_mutex = AGS_OSC_CONTROLLER(osc_meter_controller)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_osc_controller_get_class_mutex());
+  osc_controller_mutex = AGS_OSC_CONTROLLER_GET_OBJ_MUTEX(osc_meter_controller);
   
   switch(prop_id){
   default:
@@ -355,11 +351,7 @@ ags_osc_meter_controller_get_property(GObject *gobject,
   osc_meter_controller = AGS_OSC_METER_CONTROLLER(gobject);
 
   /* get osc controller mutex */
-  pthread_mutex_lock(ags_osc_controller_get_class_mutex());
-  
-  osc_controller_mutex = AGS_OSC_CONTROLLER(osc_meter_controller)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_osc_controller_get_class_mutex());
+  osc_controller_mutex = AGS_OSC_CONTROLLER_GET_OBJ_MUTEX(osc_meter_controller);
   
   switch(prop_id){
   default:
@@ -418,11 +410,7 @@ ags_osc_meter_controller_monitor_thread(void *ptr)
   osc_meter_controller = AGS_OSC_METER_CONTROLLER(ptr);
 
   /* get OSC meter controller mutex */
-  pthread_mutex_lock(ags_osc_controller_get_class_mutex());
-  
-  osc_controller_mutex = AGS_OSC_CONTROLLER(osc_meter_controller)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_osc_controller_get_class_mutex());
+  osc_controller_mutex = AGS_OSC_CONTROLLER_GET_OBJ_MUTEX(osc_meter_controller);
 
   /* run */
   ags_osc_meter_controller_set_flags(osc_meter_controller, AGS_OSC_METER_CONTROLLER_MONITOR_RUNNING);
@@ -492,11 +480,7 @@ ags_osc_meter_controller_monitor_thread(void *ptr)
       packet_size += 8;
 
       /* get port mutex */
-      pthread_mutex_lock(ags_port_get_class_mutex());
-      
-      port_mutex = port->obj_mutex;
-      
-      pthread_mutex_unlock(ags_port_get_class_mutex());
+      port_mutex = AGS_PORT_GET_OBJ_MUTEX(port);
 
       /* check array type */
       g_object_get(port,
@@ -729,11 +713,7 @@ ags_osc_meter_controller_test_flags(AgsOscMeterController *osc_meter_controller,
   }
 
   /* get OSC meter controller mutex */
-  pthread_mutex_lock(ags_osc_controller_get_class_mutex());
-  
-  osc_controller_mutex = AGS_OSC_CONTROLLER(osc_meter_controller)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_osc_controller_get_class_mutex());
+  osc_controller_mutex = AGS_OSC_CONTROLLER_GET_OBJ_MUTEX(osc_meter_controller);
 
   /* test */
   pthread_mutex_lock(osc_controller_mutex);
@@ -764,11 +744,7 @@ ags_osc_meter_controller_set_flags(AgsOscMeterController *osc_meter_controller, 
   }
 
   /* get OSC meter controller mutex */
-  pthread_mutex_lock(ags_osc_controller_get_class_mutex());
-  
-  osc_controller_mutex = AGS_OSC_CONTROLLER(osc_meter_controller)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_osc_controller_get_class_mutex());
+  osc_controller_mutex = AGS_OSC_CONTROLLER_GET_OBJ_MUTEX(osc_meter_controller);
 
   /* set flags */
   pthread_mutex_lock(osc_controller_mutex);
@@ -797,11 +773,7 @@ ags_osc_meter_controller_unset_flags(AgsOscMeterController *osc_meter_controller
   }
 
   /* get OSC meter controller mutex */
-  pthread_mutex_lock(ags_osc_controller_get_class_mutex());
-  
-  osc_controller_mutex = AGS_OSC_CONTROLLER(osc_meter_controller)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_osc_controller_get_class_mutex());
+  osc_controller_mutex = AGS_OSC_CONTROLLER_GET_OBJ_MUTEX(osc_meter_controller);
 
   /* set flags */
   pthread_mutex_lock(osc_controller_mutex);
@@ -988,11 +960,7 @@ ags_osc_meter_controller_add_monitor(AgsOscMeterController *osc_meter_controller
   }
 
   /* get OSC meter controller mutex */
-  pthread_mutex_lock(ags_osc_controller_get_class_mutex());
-  
-  osc_controller_mutex = AGS_OSC_CONTROLLER(osc_meter_controller)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_osc_controller_get_class_mutex());
+  osc_controller_mutex = AGS_OSC_CONTROLLER_GET_OBJ_MUTEX(osc_meter_controller);
 
   /* add monitor */
   pthread_mutex_lock(osc_controller_mutex);
@@ -1026,11 +994,7 @@ ags_osc_meter_controller_remove_monitor(AgsOscMeterController *osc_meter_control
   }
 
   /* get OSC meter controller mutex */
-  pthread_mutex_lock(ags_osc_controller_get_class_mutex());
-  
-  osc_controller_mutex = AGS_OSC_CONTROLLER(osc_meter_controller)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_osc_controller_get_class_mutex());
+  osc_controller_mutex = AGS_OSC_CONTROLLER_GET_OBJ_MUTEX(osc_meter_controller);
 
   /* remove monitor */
   pthread_mutex_lock(osc_controller_mutex);
@@ -1072,11 +1036,7 @@ ags_osc_meter_controller_contains_monitor(AgsOscMeterController *osc_meter_contr
   }
   
   /* get OSC meter controller mutex */
-  pthread_mutex_lock(ags_osc_controller_get_class_mutex());
-  
-  osc_controller_mutex = AGS_OSC_CONTROLLER(osc_meter_controller)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_osc_controller_get_class_mutex());
+  osc_controller_mutex = AGS_OSC_CONTROLLER_GET_OBJ_MUTEX(osc_meter_controller);
 
   /* check if contains OSC connection and port */
   pthread_mutex_lock(osc_controller_mutex);
@@ -1105,11 +1065,7 @@ ags_osc_meter_controller_real_start_monitor(AgsOscMeterController *osc_meter_con
   pthread_mutex_t *osc_controller_mutex;
 
   /* get OSC meter controller mutex */
-  pthread_mutex_lock(ags_osc_controller_get_class_mutex());
-  
-  osc_controller_mutex = AGS_OSC_CONTROLLER(osc_meter_controller)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_osc_controller_get_class_mutex());
+  osc_controller_mutex = AGS_OSC_CONTROLLER_GET_OBJ_MUTEX(osc_meter_controller);
 
   /* test if already started */
   pthread_mutex_lock(osc_controller_mutex);
@@ -3070,11 +3026,7 @@ ags_osc_meter_controller_monitor_meter_port(AgsOscMeterController *osc_meter_con
       pthread_mutex_t *port_mutex;
 
       /* get port mutex */
-      pthread_mutex_lock(ags_port_get_class_mutex());
-      
-      port_mutex = port->obj_mutex;
-      
-      pthread_mutex_unlock(ags_port_get_class_mutex());
+      port_mutex = AGS_PORT_GET_OBJ_MUTEX(port);
 
       /* create current path */
       pthread_mutex_lock(port_mutex);
@@ -4897,11 +4849,7 @@ ags_osc_meter_controller_monitor_meter_disable(AgsOscMeterController *osc_meter_
 			     AGS_OSC_RESPONSE_OK);
 
   /* get OSC meter controller mutex */
-  pthread_mutex_lock(ags_osc_controller_get_class_mutex());
-  
-  osc_controller_mutex = AGS_OSC_CONTROLLER(osc_meter_controller)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_osc_controller_get_class_mutex());
+  osc_controller_mutex = AGS_OSC_CONTROLLER_GET_OBJ_MUTEX(osc_meter_controller);
 
   /* find path and connection */
   strv = NULL;

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -411,11 +411,7 @@ ags_osc_server_set_property(GObject *gobject,
   osc_server = AGS_OSC_SERVER(gobject);
 
   /* get osc server mutex */
-  pthread_mutex_lock(ags_osc_server_get_class_mutex());
-  
-  osc_server_mutex = osc_server->obj_mutex;
-  
-  pthread_mutex_unlock(ags_osc_server_get_class_mutex());
+  osc_server_mutex = AGS_OSC_SERVER_GET_OBJ_MUTEX(osc_server);
   
   switch(prop_id){
   case PROP_DOMAIN:
@@ -580,11 +576,7 @@ ags_osc_server_get_property(GObject *gobject,
   osc_server = AGS_OSC_SERVER(gobject);
 
   /* get osc server mutex */
-  pthread_mutex_lock(ags_osc_server_get_class_mutex());
-  
-  osc_server_mutex = osc_server->obj_mutex;
-  
-  pthread_mutex_unlock(ags_osc_server_get_class_mutex());
+  osc_server_mutex = AGS_OSC_SERVER_GET_OBJ_MUTEX(osc_server);
   
   switch(prop_id){
   case PROP_DOMAIN:
@@ -766,11 +758,7 @@ ags_osc_server_test_flags(AgsOscServer *osc_server, guint flags)
   }
 
   /* get osc_server mutex */
-  pthread_mutex_lock(ags_osc_server_get_class_mutex());
-  
-  osc_server_mutex = osc_server->obj_mutex;
-  
-  pthread_mutex_unlock(ags_osc_server_get_class_mutex());
+  osc_server_mutex = AGS_OSC_SERVER_GET_OBJ_MUTEX(osc_server);
 
   /* test */
   pthread_mutex_lock(osc_server_mutex);
@@ -801,11 +789,7 @@ ags_osc_server_set_flags(AgsOscServer *osc_server, guint flags)
   }
 
   /* get osc_server mutex */
-  pthread_mutex_lock(ags_osc_server_get_class_mutex());
-  
-  osc_server_mutex = osc_server->obj_mutex;
-  
-  pthread_mutex_unlock(ags_osc_server_get_class_mutex());
+  osc_server_mutex = AGS_OSC_SERVER_GET_OBJ_MUTEX(osc_server);
 
   /* set flags */
   pthread_mutex_lock(osc_server_mutex);
@@ -834,11 +818,7 @@ ags_osc_server_unset_flags(AgsOscServer *osc_server, guint flags)
   }
 
   /* get osc_server mutex */
-  pthread_mutex_lock(ags_osc_server_get_class_mutex());
-  
-  osc_server_mutex = osc_server->obj_mutex;
-  
-  pthread_mutex_unlock(ags_osc_server_get_class_mutex());
+  osc_server_mutex = AGS_OSC_SERVER_GET_OBJ_MUTEX(osc_server);
 
   /* set flags */
   pthread_mutex_lock(osc_server_mutex);
@@ -1084,11 +1064,7 @@ ags_osc_server_real_start(AgsOscServer *osc_server)
   ags_osc_server_set_flags(osc_server, AGS_OSC_SERVER_STARTED);
 
   /* get osc_server mutex */
-  pthread_mutex_lock(ags_osc_server_get_class_mutex());
-  
-  osc_server_mutex = osc_server->obj_mutex;
-  
-  pthread_mutex_unlock(ags_osc_server_get_class_mutex());
+  osc_server_mutex = AGS_OSC_SERVER_GET_OBJ_MUTEX(osc_server);
 
   any_address = ags_osc_server_test_flags(osc_server, AGS_OSC_SERVER_ANY_ADDRESS);
   
@@ -1299,11 +1275,7 @@ ags_osc_server_real_stop(AgsOscServer *osc_server)
   }
   
   /* get OSC server mutex */
-  pthread_mutex_lock(ags_osc_server_get_class_mutex());
-  
-  osc_server_mutex = osc_server->obj_mutex;
-  
-  pthread_mutex_unlock(ags_osc_server_get_class_mutex());
+  osc_server_mutex = AGS_OSC_SERVER_GET_OBJ_MUTEX(osc_server);
 
   /* stop */
   ags_osc_server_set_flags(osc_server, AGS_OSC_SERVER_TERMINATING);
@@ -1504,11 +1476,7 @@ ags_osc_server_real_dispatch(AgsOscServer *osc_server)
     pthread_mutex_t *osc_connection_mutex;
 
     /* get osc_connection mutex */
-    pthread_mutex_lock(ags_osc_connection_get_class_mutex());
-  
-    osc_connection_mutex = AGS_OSC_CONNECTION(list->data)->obj_mutex;
-  
-    pthread_mutex_unlock(ags_osc_connection_get_class_mutex());
+    osc_connection_mutex = AGS_OSC_CONNECTION_GET_OBJ_MUTEX(list->data);
     
     /* get fd */
     pthread_mutex_lock(osc_connection_mutex);

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -369,11 +369,7 @@ ags_osc_client_set_property(GObject *gobject,
   osc_client = AGS_OSC_CLIENT(gobject);
 
   /* get osc client mutex */
-  pthread_mutex_lock(ags_osc_client_get_class_mutex());
-  
-  osc_client_mutex = osc_client->obj_mutex;
-  
-  pthread_mutex_unlock(ags_osc_client_get_class_mutex());
+  osc_client_mutex = AGS_OSC_CLIENT_GET_OBJ_MUTEX(osc_client);
   
   switch(prop_id){
   case PROP_DOMAIN:
@@ -471,11 +467,7 @@ ags_osc_client_get_property(GObject *gobject,
   osc_client = AGS_OSC_CLIENT(gobject);
 
   /* get osc client mutex */
-  pthread_mutex_lock(ags_osc_client_get_class_mutex());
-  
-  osc_client_mutex = osc_client->obj_mutex;
-  
-  pthread_mutex_unlock(ags_osc_client_get_class_mutex());
+  osc_client_mutex = AGS_OSC_CLIENT_GET_OBJ_MUTEX(osc_client);
   
   switch(prop_id){
   case PROP_DOMAIN:
@@ -598,11 +590,7 @@ ags_osc_client_test_flags(AgsOscClient *osc_client, guint flags)
   }
 
   /* get osc_client mutex */
-  pthread_mutex_lock(ags_osc_client_get_class_mutex());
-  
-  osc_client_mutex = osc_client->obj_mutex;
-  
-  pthread_mutex_unlock(ags_osc_client_get_class_mutex());
+  osc_client_mutex = AGS_OSC_CLIENT_GET_OBJ_MUTEX(osc_client);
 
   /* test */
   pthread_mutex_lock(osc_client_mutex);
@@ -633,11 +621,7 @@ ags_osc_client_set_flags(AgsOscClient *osc_client, guint flags)
   }
 
   /* get osc_client mutex */
-  pthread_mutex_lock(ags_osc_client_get_class_mutex());
-  
-  osc_client_mutex = osc_client->obj_mutex;
-  
-  pthread_mutex_unlock(ags_osc_client_get_class_mutex());
+  osc_client_mutex = AGS_OSC_CLIENT_GET_OBJ_MUTEX(osc_client);
 
   /* set flags */
   pthread_mutex_lock(osc_client_mutex);
@@ -666,11 +650,7 @@ ags_osc_client_unset_flags(AgsOscClient *osc_client, guint flags)
   }
 
   /* get osc_client mutex */
-  pthread_mutex_lock(ags_osc_client_get_class_mutex());
-  
-  osc_client_mutex = osc_client->obj_mutex;
-  
-  pthread_mutex_unlock(ags_osc_client_get_class_mutex());
+  osc_client_mutex = AGS_OSC_CLIENT_GET_OBJ_MUTEX(osc_client);
 
   /* set flags */
   pthread_mutex_lock(osc_client_mutex);
@@ -750,11 +730,7 @@ ags_osc_client_real_resolve(AgsOscClient *osc_client)
   pthread_mutex_t *osc_client_mutex;
 
   /* get osc client mutex */
-  pthread_mutex_lock(ags_osc_client_get_class_mutex());
-  
-  osc_client_mutex = osc_client->obj_mutex;
-  
-  pthread_mutex_unlock(ags_osc_client_get_class_mutex());
+  osc_client_mutex = AGS_OSC_CLIENT_GET_OBJ_MUTEX(osc_client);
 
   /* lock */
   pthread_mutex_lock(osc_client_mutex);
@@ -824,11 +800,7 @@ ags_osc_client_real_connect(AgsOscClient *osc_client)
   pthread_mutex_t *osc_client_mutex;
 
   /* get osc client mutex */
-  pthread_mutex_lock(ags_osc_client_get_class_mutex());
-  
-  osc_client_mutex = osc_client->obj_mutex;
-  
-  pthread_mutex_unlock(ags_osc_client_get_class_mutex());
+  osc_client_mutex = AGS_OSC_CLIENT_GET_OBJ_MUTEX(osc_client);
 
   ip4_success = FALSE;
   ip6_success = FALSE;
@@ -1035,11 +1007,7 @@ ags_osc_client_real_read_bytes(AgsOscClient *osc_client,
   pthread_mutex_t *osc_client_mutex;
 
   /* get osc_client mutex */
-  pthread_mutex_lock(ags_osc_client_get_class_mutex());
-  
-  osc_client_mutex = osc_client->obj_mutex;
-  
-  pthread_mutex_unlock(ags_osc_client_get_class_mutex());
+  osc_client_mutex = AGS_OSC_CLIENT_GET_OBJ_MUTEX(osc_client);
 
   /* get fd */
   pthread_mutex_lock(osc_client_mutex);
@@ -1353,11 +1321,7 @@ ags_osc_client_real_write_bytes(AgsOscClient *osc_client,
   pthread_mutex_t *osc_client_mutex;
 
   /* get osc client mutex */
-  pthread_mutex_lock(ags_osc_client_get_class_mutex());
-  
-  osc_client_mutex = osc_client->obj_mutex;
-  
-  pthread_mutex_unlock(ags_osc_client_get_class_mutex());
+  osc_client_mutex = AGS_OSC_CLIENT_GET_OBJ_MUTEX(osc_client);
 
   /* get fd */
   pthread_mutex_lock(osc_client_mutex);

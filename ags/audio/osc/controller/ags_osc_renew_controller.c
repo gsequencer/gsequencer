@@ -231,11 +231,7 @@ ags_osc_renew_controller_set_property(GObject *gobject,
   osc_renew_controller = AGS_OSC_RENEW_CONTROLLER(gobject);
 
   /* get osc controller mutex */
-  pthread_mutex_lock(ags_osc_controller_get_class_mutex());
-  
-  osc_controller_mutex = AGS_OSC_CONTROLLER(osc_renew_controller)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_osc_controller_get_class_mutex());
+  osc_controller_mutex = AGS_OSC_CONTROLLER_GET_OBJ_MUTEX(osc_renew_controller);
   
   switch(prop_id){
   default:
@@ -257,11 +253,7 @@ ags_osc_renew_controller_get_property(GObject *gobject,
   osc_renew_controller = AGS_OSC_RENEW_CONTROLLER(gobject);
 
   /* get osc controller mutex */
-  pthread_mutex_lock(ags_osc_controller_get_class_mutex());
-  
-  osc_controller_mutex = AGS_OSC_CONTROLLER(osc_renew_controller)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_osc_controller_get_class_mutex());
+  osc_controller_mutex = AGS_OSC_CONTROLLER_GET_OBJ_MUTEX(osc_renew_controller);
   
   switch(prop_id){
   default:
@@ -2861,11 +2853,7 @@ ags_osc_renew_controller_set_data_port(AgsOscRenewController *osc_renew_controll
       pthread_mutex_t *port_mutex;
 
       /* get port mutex */
-      pthread_mutex_lock(ags_port_get_class_mutex());
-      
-      port_mutex = port->obj_mutex;
-      
-      pthread_mutex_unlock(ags_port_get_class_mutex());
+      port_mutex = AGS_PORT_GET_OBJ_MUTEX(port);
 
       /* check array type */
       g_object_get(port,

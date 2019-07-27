@@ -250,11 +250,7 @@ ags_osc_front_controller_set_property(GObject *gobject,
   osc_front_controller = AGS_OSC_FRONT_CONTROLLER(gobject);
 
   /* get osc controller mutex */
-  pthread_mutex_lock(ags_osc_controller_get_class_mutex());
-  
-  osc_controller_mutex = AGS_OSC_CONTROLLER(osc_front_controller)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_osc_controller_get_class_mutex());
+  osc_controller_mutex = AGS_OSC_CONTROLLER_GET_OBJ_MUTEX(osc_front_controller);
   
   switch(prop_id){
   default:
@@ -276,11 +272,7 @@ ags_osc_front_controller_get_property(GObject *gobject,
   osc_front_controller = AGS_OSC_FRONT_CONTROLLER(gobject);
 
   /* get osc controller mutex */
-  pthread_mutex_lock(ags_osc_controller_get_class_mutex());
-  
-  osc_controller_mutex = AGS_OSC_CONTROLLER(osc_front_controller)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_osc_controller_get_class_mutex());
+  osc_controller_mutex = AGS_OSC_CONTROLLER_GET_OBJ_MUTEX(osc_front_controller);
   
   switch(prop_id){
   default:
@@ -362,11 +354,7 @@ ags_osc_front_controller_delegate_thread(void *ptr)
 	       NULL);
   
   /* get OSC front controller mutex */
-  pthread_mutex_lock(ags_osc_controller_get_class_mutex());
-  
-  osc_controller_mutex = AGS_OSC_CONTROLLER(osc_front_controller)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_osc_controller_get_class_mutex());
+  osc_controller_mutex = AGS_OSC_CONTROLLER_GET_OBJ_MUTEX(osc_front_controller);
 
   time_next.tv_sec = 0;
   time_next.tv_nsec = 0;
@@ -489,11 +477,7 @@ ags_osc_front_controller_delegate_thread(void *ptr)
 	pthread_mutex_t *mutex;
 
 	/* get OSC front controller mutex */
-	pthread_mutex_lock(ags_osc_controller_get_class_mutex());
-	
-	mutex = AGS_OSC_CONTROLLER(controller->data)->obj_mutex;
-	
-	pthread_mutex_unlock(ags_osc_controller_get_class_mutex());
+	mutex = AGS_OSC_CONTROLLER_GET_OBJ_MUTEX(controller->data);
 
 	/* match path */
 	pthread_mutex_lock(mutex);
@@ -629,11 +613,7 @@ ags_osc_front_controller_test_flags(AgsOscFrontController *osc_front_controller,
   }
 
   /* get OSC front controller mutex */
-  pthread_mutex_lock(ags_osc_controller_get_class_mutex());
-  
-  osc_controller_mutex = AGS_OSC_CONTROLLER(osc_front_controller)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_osc_controller_get_class_mutex());
+  osc_controller_mutex = AGS_OSC_CONTROLLER_GET_OBJ_MUTEX(osc_front_controller);
 
   /* test */
   pthread_mutex_lock(osc_controller_mutex);
@@ -664,12 +644,8 @@ ags_osc_front_controller_set_flags(AgsOscFrontController *osc_front_controller, 
   }
 
   /* get OSC front controller mutex */
-  pthread_mutex_lock(ags_osc_controller_get_class_mutex());
+  osc_controller_mutex = AGS_OSC_CONTROLLER_GET_OBJ_MUTEX(osc_front_controller);
   
-  osc_controller_mutex = AGS_OSC_CONTROLLER(osc_front_controller)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_osc_controller_get_class_mutex());
-
   /* set flags */
   pthread_mutex_lock(osc_controller_mutex);
 
@@ -697,12 +673,8 @@ ags_osc_front_controller_unset_flags(AgsOscFrontController *osc_front_controller
   }
 
   /* get OSC front controller mutex */
-  pthread_mutex_lock(ags_osc_controller_get_class_mutex());
+  osc_controller_mutex = AGS_OSC_CONTROLLER_GET_OBJ_MUTEX(osc_front_controller);
   
-  osc_controller_mutex = AGS_OSC_CONTROLLER(osc_front_controller)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_osc_controller_get_class_mutex());
-
   /* set flags */
   pthread_mutex_lock(osc_controller_mutex);
 
@@ -838,11 +810,7 @@ ags_osc_front_controller_add_message(AgsOscFrontController *osc_front_controller
   }
 
   /* get OSC front controller mutex */
-  pthread_mutex_lock(ags_osc_controller_get_class_mutex());
-  
-  osc_controller_mutex = AGS_OSC_CONTROLLER(osc_front_controller)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_osc_controller_get_class_mutex());
+  osc_controller_mutex = AGS_OSC_CONTROLLER_GET_OBJ_MUTEX(osc_front_controller);
   
   /* add */
   pthread_mutex_lock(osc_controller_mutex);
@@ -877,11 +845,7 @@ ags_osc_front_controller_remove_message(AgsOscFrontController *osc_front_control
   }
 
   /* get OSC front controller mutex */
-  pthread_mutex_lock(ags_osc_controller_get_class_mutex());
-  
-  osc_controller_mutex = AGS_OSC_CONTROLLER(osc_front_controller)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_osc_controller_get_class_mutex());
+  osc_controller_mutex = AGS_OSC_CONTROLLER_GET_OBJ_MUTEX(osc_front_controller);
 
   /* remove */
   pthread_mutex_lock(osc_controller_mutex);
@@ -900,11 +864,7 @@ ags_osc_front_controller_real_start_delegate(AgsOscFrontController *osc_front_co
   pthread_mutex_t *osc_controller_mutex;
 
   /* get OSC front controller mutex */
-  pthread_mutex_lock(ags_osc_controller_get_class_mutex());
-  
-  osc_controller_mutex = AGS_OSC_CONTROLLER(osc_front_controller)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_osc_controller_get_class_mutex());
+  osc_controller_mutex = AGS_OSC_CONTROLLER_GET_OBJ_MUTEX(osc_front_controller);
 
   /* test if already started */
   pthread_mutex_lock(osc_controller_mutex);

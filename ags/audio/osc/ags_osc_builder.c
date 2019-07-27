@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -327,11 +327,7 @@ ags_osc_builder_set_property(GObject *gobject,
   osc_builder = AGS_OSC_BUILDER(gobject);
 
   /* get osc builder mutex */
-  pthread_mutex_lock(ags_osc_builder_get_class_mutex());
-  
-  osc_builder_mutex = osc_builder->obj_mutex;
-  
-  pthread_mutex_unlock(ags_osc_builder_get_class_mutex());
+  osc_builder_mutex = AGS_OSC_BUILDER_GET_OBJ_MUTEX(osc_builder);
   
   switch(prop_id){
   default:
@@ -353,11 +349,7 @@ ags_osc_builder_get_property(GObject *gobject,
   osc_builder = AGS_OSC_BUILDER(gobject);
 
   /* get osc builder mutex */
-  pthread_mutex_lock(ags_osc_builder_get_class_mutex());
-  
-  osc_builder_mutex = osc_builder->obj_mutex;
-  
-  pthread_mutex_unlock(ags_osc_builder_get_class_mutex());
+  osc_builder_mutex = AGS_OSC_BUILDER_GET_OBJ_MUTEX(osc_builder);
   
   switch(prop_id){
   default:
