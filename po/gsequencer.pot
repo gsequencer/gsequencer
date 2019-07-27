@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: gsequencer 2.2.26\n"
+"Project-Id-Version: gsequencer 2.2.27\n"
 "Report-Msgid-Bugs-To: jkraehemann@gmail.com\n"
-"POT-Creation-Date: 2019-07-25 21:37+0200\n"
+"POT-Creation-Date: 2019-07-27 18:27+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -56,8 +56,8 @@ msgstr ""
 msgid "input"
 msgstr ""
 
-#: ags/X/ags_bulk_member.c:647 ags/X/machine/ags_dssi_bridge.c:423
-#: ags/X/machine/ags_live_dssi_bridge.c:426
+#: ags/X/ags_bulk_member.c:647 ags/X/machine/ags_dssi_bridge.c:424
+#: ags/X/machine/ags_live_dssi_bridge.c:427
 msgid "Plugin file not present"
 msgstr ""
 
@@ -615,27 +615,27 @@ msgstr ""
 msgid "wave"
 msgstr ""
 
-#: ags/X/ags_xorg_application_context.c:2140
+#: ags/X/ags_xorg_application_context.c:2141
 #: ags/audio/ags_audio_application_context.c:1744
 #: ags/audio/task/ags_apply_sound_config.c:893
 #, c-format
 msgid "unknown soundcard backend - %s"
 msgstr ""
 
-#: ags/X/ags_xorg_application_context.c:2150
+#: ags/X/ags_xorg_application_context.c:2151
 #: ags/audio/ags_audio_application_context.c:1754
 #: ags/audio/task/ags_apply_sound_config.c:903
 msgid "unknown soundcard backend - NULL"
 msgstr ""
 
-#: ags/X/ags_xorg_application_context.c:2398
+#: ags/X/ags_xorg_application_context.c:2399
 #: ags/audio/ags_audio_application_context.c:2001
 #: ags/audio/task/ags_apply_sound_config.c:1147
 #, c-format
 msgid "unknown sequencer backend - %s"
 msgstr ""
 
-#: ags/X/ags_xorg_application_context.c:2408
+#: ags/X/ags_xorg_application_context.c:2409
 #: ags/audio/ags_audio_application_context.c:2011
 #: ags/audio/task/ags_apply_sound_config.c:1157
 msgid "unknown sequencer backend - NULL"
@@ -755,8 +755,8 @@ msgid "pattern"
 msgstr ""
 
 #: ags/X/editor/ags_envelope_editor.c:170
-#: ags/X/editor/ags_pattern_envelope.c:239 ags/X/machine/ags_ffplayer.c:309
-#: ags/X/machine/ags_live_lv2_bridge.c:1798 ags/X/machine/ags_lv2_bridge.c:2088
+#: ags/X/editor/ags_pattern_envelope.c:239 ags/X/machine/ags_ffplayer.c:311
+#: ags/X/machine/ags_live_lv2_bridge.c:1799 ags/X/machine/ags_lv2_bridge.c:2089
 msgid "preset"
 msgstr ""
 
@@ -1044,7 +1044,7 @@ msgid "instrument: "
 msgstr ""
 
 #: ags/X/import/ags_track_collection_mapper.c:346
-#: ags/X/machine/ags_ffplayer.c:324
+#: ags/X/machine/ags_ffplayer.c:326
 msgid "instrument"
 msgstr ""
 
@@ -1092,56 +1092,56 @@ msgstr ""
 msgid "channel: "
 msgstr ""
 
-#: ags/X/machine/ags_dssi_bridge.c:333 ags/X/machine/ags_live_dssi_bridge.c:336
-#: ags/X/machine/ags_live_lv2_bridge.c:1720 ags/X/machine/ags_lv2_bridge.c:2010
+#: ags/X/machine/ags_dssi_bridge.c:334 ags/X/machine/ags_live_dssi_bridge.c:337
+#: ags/X/machine/ags_live_lv2_bridge.c:1721 ags/X/machine/ags_lv2_bridge.c:2011
 msgid "program"
 msgstr ""
 
-#: ags/X/machine/ags_equalizer10.c:204
+#: ags/X/machine/ags_equalizer10.c:206
 msgid "28Hz"
 msgstr ""
 
-#: ags/X/machine/ags_equalizer10.c:230
+#: ags/X/machine/ags_equalizer10.c:232
 msgid "56Hz"
 msgstr ""
 
-#: ags/X/machine/ags_equalizer10.c:256
+#: ags/X/machine/ags_equalizer10.c:258
 msgid "112Hz"
 msgstr ""
 
-#: ags/X/machine/ags_equalizer10.c:282
+#: ags/X/machine/ags_equalizer10.c:284
 msgid "224Hz"
 msgstr ""
 
-#: ags/X/machine/ags_equalizer10.c:308
+#: ags/X/machine/ags_equalizer10.c:310
 msgid "448Hz"
 msgstr ""
 
-#: ags/X/machine/ags_equalizer10.c:334
+#: ags/X/machine/ags_equalizer10.c:336
 msgid "896Hz"
 msgstr ""
 
-#: ags/X/machine/ags_equalizer10.c:360
+#: ags/X/machine/ags_equalizer10.c:362
 msgid "1792Hz"
 msgstr ""
 
-#: ags/X/machine/ags_equalizer10.c:386
+#: ags/X/machine/ags_equalizer10.c:388
 msgid "3584Hz"
 msgstr ""
 
-#: ags/X/machine/ags_equalizer10.c:412
+#: ags/X/machine/ags_equalizer10.c:414
 msgid "7168Hz"
 msgstr ""
 
-#: ags/X/machine/ags_equalizer10.c:438
+#: ags/X/machine/ags_equalizer10.c:440
 msgid "14336Hz"
 msgstr ""
 
-#: ags/X/machine/ags_equalizer10.c:464
+#: ags/X/machine/ags_equalizer10.c:466
 msgid "pressure"
 msgstr ""
 
-#: ags/X/machine/ags_live_lv2_bridge.c:486 ags/X/machine/ags_lv2_bridge.c:464
+#: ags/X/machine/ags_live_lv2_bridge.c:487 ags/X/machine/ags_lv2_bridge.c:465
 msgid "show GUI"
 msgstr ""
 
