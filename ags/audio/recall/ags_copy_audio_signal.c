@@ -363,7 +363,7 @@ ags_copy_audio_signal_run_inter(AgsRecall *recall)
 
   parent_class_run_inter = AGS_RECALL_CLASS(ags_copy_audio_signal_parent_class)->run_inter;
 
-  AGS_RECALL_UnLOCK_CLASS();
+  AGS_RECALL_UNLOCK_CLASS();
 
   /* get mutex */
   recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall);

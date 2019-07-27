@@ -302,11 +302,11 @@ ags_route_lv2_audio_get_property(GObject *gobject,
 				 GValue *value,
 				 GParamSpec *param_spec)
 {
-  AgsRouteLv2Audio *route_lv2;
+  AgsRouteLv2Audio *route_lv2_audio;
   
   pthread_mutex_t *recall_mutex;
 
-  route_lv2 = AGS_ROUTE_LV2_AUDIO(gobject);
+  route_lv2_audio = AGS_ROUTE_LV2_AUDIO(gobject);
 
   /* get recall mutex */
   recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(route_lv2_audio);
@@ -316,7 +316,7 @@ ags_route_lv2_audio_get_property(GObject *gobject,
     {
       pthread_mutex_lock(recall_mutex);
 
-      g_value_set_object(value, route_lv2->notation_input);
+      g_value_set_object(value, route_lv2_audio->notation_input);
 
       pthread_mutex_unlock(recall_mutex);
     }
@@ -325,7 +325,7 @@ ags_route_lv2_audio_get_property(GObject *gobject,
     {
       pthread_mutex_lock(recall_mutex);
 
-      g_value_set_object(value, route_lv2->sequencer_input);
+      g_value_set_object(value, route_lv2_audio->sequencer_input);
 
       pthread_mutex_unlock(recall_mutex);
     }

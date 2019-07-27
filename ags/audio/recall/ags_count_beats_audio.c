@@ -987,11 +987,11 @@ ags_count_beats_audio_get_property(GObject *gobject,
 				   GValue *value,
 				   GParamSpec *param_spec)
 {
-  AgsCountBeatsAudio *count_beats;
+  AgsCountBeatsAudio *count_beats_audio;
   
   pthread_mutex_t *recall_mutex;
 
-  count_beats = AGS_COUNT_BEATS_AUDIO(gobject);
+  count_beats_audio = AGS_COUNT_BEATS_AUDIO(gobject);
 
   /* get recall mutex */
   recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(count_beats_audio);
@@ -1001,7 +1001,7 @@ ags_count_beats_audio_get_property(GObject *gobject,
     {
       pthread_mutex_lock(recall_mutex);
 
-      g_value_set_object(value, count_beats->sequencer_loop);
+      g_value_set_object(value, count_beats_audio->sequencer_loop);
 
       pthread_mutex_unlock(recall_mutex);
     }
@@ -1010,7 +1010,7 @@ ags_count_beats_audio_get_property(GObject *gobject,
     {
       pthread_mutex_lock(recall_mutex);
 
-      g_value_set_object(value, count_beats->sequencer_loop_start);
+      g_value_set_object(value, count_beats_audio->sequencer_loop_start);
 
       pthread_mutex_unlock(recall_mutex);
     }
@@ -1019,7 +1019,7 @@ ags_count_beats_audio_get_property(GObject *gobject,
     {
       pthread_mutex_lock(recall_mutex);
 
-      g_value_set_object(value, count_beats->sequencer_loop_end);
+      g_value_set_object(value, count_beats_audio->sequencer_loop_end);
 
       pthread_mutex_unlock(recall_mutex);
     }
@@ -1028,7 +1028,7 @@ ags_count_beats_audio_get_property(GObject *gobject,
     {
       pthread_mutex_lock(recall_mutex);
 
-      g_value_set_object(value, count_beats->notation_loop);
+      g_value_set_object(value, count_beats_audio->notation_loop);
 
       pthread_mutex_unlock(recall_mutex);
     }
@@ -1037,7 +1037,7 @@ ags_count_beats_audio_get_property(GObject *gobject,
     {
       pthread_mutex_lock(recall_mutex);
 
-      g_value_set_object(value, count_beats->notation_loop_start);
+      g_value_set_object(value, count_beats_audio->notation_loop_start);
 
       pthread_mutex_unlock(recall_mutex);
     }
@@ -1046,7 +1046,7 @@ ags_count_beats_audio_get_property(GObject *gobject,
     {
       pthread_mutex_lock(recall_mutex);
 
-      g_value_set_object(value, count_beats->notation_loop_end);
+      g_value_set_object(value, count_beats_audio->notation_loop_end);
 
       pthread_mutex_unlock(recall_mutex);
     }
@@ -1055,7 +1055,7 @@ ags_count_beats_audio_get_property(GObject *gobject,
     {
       pthread_mutex_lock(recall_mutex);
 
-      g_value_set_object(value, count_beats->wave_loop);
+      g_value_set_object(value, count_beats_audio->wave_loop);
 
       pthread_mutex_unlock(recall_mutex);
     }
@@ -1064,7 +1064,7 @@ ags_count_beats_audio_get_property(GObject *gobject,
     {
       pthread_mutex_lock(recall_mutex);
 
-      g_value_set_object(value, count_beats->wave_loop_start);
+      g_value_set_object(value, count_beats_audio->wave_loop_start);
 
       pthread_mutex_unlock(recall_mutex);
     }
@@ -1073,7 +1073,7 @@ ags_count_beats_audio_get_property(GObject *gobject,
     {
       pthread_mutex_lock(recall_mutex);
 
-      g_value_set_object(value, count_beats->wave_loop_end);
+      g_value_set_object(value, count_beats_audio->wave_loop_end);
 
       pthread_mutex_unlock(recall_mutex);
     }
@@ -1082,7 +1082,7 @@ ags_count_beats_audio_get_property(GObject *gobject,
     {
       pthread_mutex_lock(recall_mutex);
 
-      g_value_set_object(value, count_beats->midi_loop);
+      g_value_set_object(value, count_beats_audio->midi_loop);
 
       pthread_mutex_unlock(recall_mutex);
     }
@@ -1091,7 +1091,7 @@ ags_count_beats_audio_get_property(GObject *gobject,
     {
       pthread_mutex_lock(recall_mutex);
 
-      g_value_set_object(value, count_beats->midi_loop_start);
+      g_value_set_object(value, count_beats_audio->midi_loop_start);
 
       pthread_mutex_unlock(recall_mutex);
     }
@@ -1100,7 +1100,7 @@ ags_count_beats_audio_get_property(GObject *gobject,
     {
       pthread_mutex_lock(recall_mutex);
 
-      g_value_set_object(value, count_beats->midi_loop_end);
+      g_value_set_object(value, count_beats_audio->midi_loop_end);
 
       pthread_mutex_unlock(recall_mutex);
     }

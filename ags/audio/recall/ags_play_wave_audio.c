@@ -367,11 +367,11 @@ ags_play_wave_audio_get_property(GObject *gobject,
 				 GValue *value,
 				 GParamSpec *param_spec)
 {
-  AgsPlayWaveAudio *play_wave;
+  AgsPlayWaveAudio *play_wave_audio;
   
   pthread_mutex_t *recall_mutex;
 
-  play_wave = AGS_PLAY_WAVE_AUDIO(gobject);
+  play_wave_audio = AGS_PLAY_WAVE_AUDIO(gobject);
 
   /* get recall mutex */
   recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(play_wave_audio);
@@ -381,7 +381,7 @@ ags_play_wave_audio_get_property(GObject *gobject,
     {
       pthread_mutex_lock(recall_mutex);
 
-      g_value_set_object(value, play_wave->wave_loop);
+      g_value_set_object(value, play_wave_audio->wave_loop);
 
       pthread_mutex_unlock(recall_mutex);
     }
@@ -390,7 +390,7 @@ ags_play_wave_audio_get_property(GObject *gobject,
     {
       pthread_mutex_lock(recall_mutex);
 
-      g_value_set_object(value, play_wave->wave_loop_start);
+      g_value_set_object(value, play_wave_audio->wave_loop_start);
 
       pthread_mutex_unlock(recall_mutex);
     }
@@ -399,7 +399,7 @@ ags_play_wave_audio_get_property(GObject *gobject,
     {
       pthread_mutex_lock(recall_mutex);
 
-      g_value_set_object(value, play_wave->wave_loop_end);
+      g_value_set_object(value, play_wave_audio->wave_loop_end);
 
       pthread_mutex_unlock(recall_mutex);
     }
