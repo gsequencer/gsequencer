@@ -888,8 +888,8 @@ ags_audio_signal_init(AgsAudioSignal *audio_signal)
   audio_signal->stream_mutexattr = 
     attr = (pthread_mutexattr_t *) malloc(sizeof(pthread_mutexattr_t));
   pthread_mutexattr_init(attr);
-//  pthread_mutexattr_settype(attr,
-//			    PTHREAD_MUTEX_RECURSIVE);
+  pthread_mutexattr_settype(attr,
+			    PTHREAD_MUTEX_RECURSIVE);
 
   audio_signal->stream_mutex = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
   pthread_mutex_init(audio_signal->stream_mutex,
