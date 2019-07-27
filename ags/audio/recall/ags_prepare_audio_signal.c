@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -145,11 +145,11 @@ ags_prepare_audio_signal_run_init_pre(AgsRecall *recall)
   prepare_audio_signal = (AgsPrepareAudioSignal *) recall;
 
   /* get parent class */
-  pthread_mutex_lock(ags_recall_get_class_mutex());
-
+  AGS_RECALL_LOCK_CLASS();
+  
   parent_class_run_init_pre = AGS_RECALL_CLASS(ags_prepare_audio_signal_parent_class)->run_init_pre;
 
-  pthread_mutex_unlock(ags_recall_get_class_mutex());
+  AGS_RECALL_UNLOCK_CLASS();
 
   /* get some fields */
   ags_recall_unset_behaviour_flags(recall, AGS_SOUND_BEHAVIOUR_PERSISTENT);
@@ -231,11 +231,11 @@ ags_prepare_audio_signal_run_pre(AgsRecall *recall)
   void (*parent_class_run_pre)(AgsRecall *recall);  
   
   /* get parent class */
-  pthread_mutex_lock(ags_recall_get_class_mutex());
+  AGS_RECALL_LOCK_CLASS();
 
   parent_class_run_pre = AGS_RECALL_CLASS(ags_prepare_audio_signal_parent_class)->run_pre;
 
-  pthread_mutex_unlock(ags_recall_get_class_mutex());
+  AGS_RECALL_UNLOCK_CLASS();
 
   /* call parent */
   parent_class_run_pre(recall);

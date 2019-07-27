@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -693,11 +693,7 @@ ags_count_beats_audio_run_set_property(GObject *gobject,
   count_beats_audio_run = AGS_COUNT_BEATS_AUDIO_RUN(gobject);
 
   /* get recall mutex */
-  pthread_mutex_lock(ags_recall_get_class_mutex());
-  
-  recall_mutex = AGS_RECALL(gobject)->obj_mutex;
-
-  pthread_mutex_unlock(ags_recall_get_class_mutex());
+  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(count_beats_audio_run);
 
   switch(prop_id){
   case PROP_DELAY_AUDIO_RUN:
@@ -853,11 +849,7 @@ ags_count_beats_audio_run_get_property(GObject *gobject,
   count_beats_audio_run = AGS_COUNT_BEATS_AUDIO_RUN(gobject);
 
   /* get recall mutex */
-  pthread_mutex_lock(ags_recall_get_class_mutex());
-  
-  recall_mutex = AGS_RECALL(gobject)->obj_mutex;
-
-  pthread_mutex_unlock(ags_recall_get_class_mutex());
+  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(count_beats_audio_run);
 
   switch(prop_id){
   case PROP_DELAY_AUDIO_RUN:
@@ -1454,11 +1446,7 @@ ags_count_beats_audio_run_resolve_dependency(AgsRecall *recall)
   }
 
   /* get mutex */
-  pthread_mutex_lock(ags_recall_get_class_mutex());
-
-  recall_mutex = recall->obj_mutex;
-  
-  pthread_mutex_unlock(ags_recall_get_class_mutex());
+  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall);
 
   /* get template */
   g_object_get(recall,
@@ -1573,11 +1561,7 @@ ags_count_beats_audio_run_notify_dependency(AgsRecall *recall,
   count_beats_audio_run = AGS_COUNT_BEATS_AUDIO_RUN(recall);
 
   /* get mutex */
-  pthread_mutex_lock(ags_recall_get_class_mutex());
-
-  recall_mutex = recall->obj_mutex;
-  
-  pthread_mutex_unlock(ags_recall_get_class_mutex());
+  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall);
 
   /* notify */
   pthread_mutex_lock(recall_mutex);
@@ -1624,14 +1608,15 @@ ags_count_beats_audio_run_run_init_pre(AgsRecall *recall)
 
   count_beats_audio_run = AGS_COUNT_BEATS_AUDIO_RUN(recall);
   
-  /* get parent class and mutex */
-  pthread_mutex_lock(ags_recall_get_class_mutex());
+  /* get parent class */
+  AGS_RECALL_LOCK_CLASS();
   
   parent_class_run_init_pre = AGS_RECALL_CLASS(ags_count_beats_audio_run_parent_class)->run_init_pre;
 
-  recall_mutex = recall->obj_mutex;
+  AGS_RECALL_UNLOCK_CLASS();
   
-  pthread_mutex_unlock(ags_recall_get_class_mutex());
+  /* get recall mutex */
+  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall);
 
   /* call parent */
   parent_class_run_init_pre(recall);
@@ -1672,11 +1657,11 @@ ags_count_beats_audio_run_done(AgsRecall *recall)
   count_beats_audio_run = AGS_COUNT_BEATS_AUDIO_RUN(recall);
   
   /* get parent class */
-  pthread_mutex_lock(ags_recall_get_class_mutex());
+  AGS_RECALL_LOCK_CLASS();
   
   parent_class_done = AGS_RECALL_CLASS(ags_count_beats_audio_run_parent_class)->done;
   
-  pthread_mutex_unlock(ags_recall_get_class_mutex());
+  AGS_RECALL_UNLOCK_CLASS();
 
   g_object_get(count_beats_audio_run,
 	       "audio", &audio,
@@ -2036,11 +2021,7 @@ ags_count_beats_audio_run_sequencer_alloc_output_callback(AgsDelayAudioRun *dela
   g_object_unref(sequencer_loop);
   
   /* get recall mutex */
-  pthread_mutex_lock(ags_recall_get_class_mutex());
-
-  recall_mutex = AGS_RECALL(count_beats_audio_run)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_recall_get_class_mutex());
+  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(count_beats_audio_run);
 
   /* get some fields */
   pthread_mutex_lock(recall_mutex);
@@ -2125,11 +2106,7 @@ ags_count_beats_audio_run_notation_alloc_output_callback(AgsDelayAudioRun *delay
   g_object_unref(notation_loop);
 
   /* get recall mutex */
-  pthread_mutex_lock(ags_recall_get_class_mutex());
-
-  recall_mutex = AGS_RECALL(count_beats_audio_run)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_recall_get_class_mutex());
+  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(count_beats_audio_run);
 
   /* get some fields */
   pthread_mutex_lock(recall_mutex);
@@ -2194,11 +2171,7 @@ ags_count_beats_audio_run_wave_alloc_output_callback(AgsDelayAudioRun *delay_aud
   }
 
   /* get recall mutex */
-  pthread_mutex_lock(ags_recall_get_class_mutex());
-
-  recall_mutex = AGS_RECALL(count_beats_audio_run)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_recall_get_class_mutex());
+  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(count_beats_audio_run);
 
   /* get some fields */
   g_object_get(count_beats_audio_run,
@@ -2304,11 +2277,7 @@ ags_count_beats_audio_run_midi_alloc_output_callback(AgsDelayAudioRun *delay_aud
   g_object_unref(midi_loop);
 
   /* get recall mutex */
-  pthread_mutex_lock(ags_recall_get_class_mutex());
-
-  recall_mutex = AGS_RECALL(count_beats_audio_run)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_recall_get_class_mutex());
+  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(count_beats_audio_run);
 
   /* get some fields */
   pthread_mutex_lock(recall_mutex);
@@ -2384,11 +2353,7 @@ ags_count_beats_audio_run_sequencer_count_callback(AgsDelayAudioRun *delay_audio
   }
 
   /* get recall mutex */
-  pthread_mutex_lock(ags_recall_get_class_mutex());
-
-  recall_mutex = AGS_RECALL(count_beats_audio_run)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_recall_get_class_mutex());
+  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(count_beats_audio_run);
 
   /* get some fields */
   g_object_get(count_beats_audio_run,
@@ -2521,11 +2486,7 @@ ags_count_beats_audio_run_notation_count_callback(AgsDelayAudioRun *delay_audio_
   }
 
   /* get recall mutex */
-  pthread_mutex_lock(ags_recall_get_class_mutex());
-
-  recall_mutex = AGS_RECALL(count_beats_audio_run)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_recall_get_class_mutex());
+  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(count_beats_audio_run);
 
   /* get some fields */
   g_object_get(count_beats_audio_run,
@@ -2640,11 +2601,7 @@ ags_count_beats_audio_run_wave_count_callback(AgsDelayAudioRun *delay_audio_run,
   }
 
   /* get recall mutex */
-  pthread_mutex_lock(ags_recall_get_class_mutex());
-
-  recall_mutex = AGS_RECALL(count_beats_audio_run)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_recall_get_class_mutex());
+  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(count_beats_audio_run);
 
   /* get some fields */
   g_object_get(count_beats_audio_run,
@@ -2759,11 +2716,7 @@ ags_count_beats_audio_run_midi_count_callback(AgsDelayAudioRun *delay_audio_run,
   }
 
   /* get recall mutex */
-  pthread_mutex_lock(ags_recall_get_class_mutex());
-
-  recall_mutex = AGS_RECALL(count_beats_audio_run)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_recall_get_class_mutex());
+  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(count_beats_audio_run);
 
   /* get some fields */
   g_object_get(count_beats_audio_run,
@@ -2889,21 +2842,21 @@ ags_count_beats_audio_run_write_resolve_dependency(AgsFileLookup *file_lookup,
 gdouble
 ags_count_beats_audio_run_get_bpm(AgsTactable *tactable)
 {
+  AgsCountBeatsAudioRun *count_beats_audio_run;
+  
   gdouble bpm;
   
   pthread_mutex_t *recall_mutex;
 
-  /* get recall mutex */
-  pthread_mutex_lock(ags_recall_get_class_mutex());
-
-  recall_mutex = AGS_RECALL(tactable)->obj_mutex;
+  count_beats_audio_run = AGS_COUNT_BEATS_AUDIO_RUN(tactable);
   
-  pthread_mutex_unlock(ags_recall_get_class_mutex());
+  /* get recall mutex */
+  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(count_beats_audio_run);
 
   /* bpm */
   pthread_mutex_lock(recall_mutex);
 
-  bpm = AGS_COUNT_BEATS_AUDIO_RUN(tactable)->bpm;
+  bpm = count_beats_audio_run->bpm;
   
   pthread_mutex_unlock(recall_mutex);
 
@@ -2913,21 +2866,21 @@ ags_count_beats_audio_run_get_bpm(AgsTactable *tactable)
 gdouble
 ags_count_beats_audio_run_get_tact(AgsTactable *tactable)
 {
+  AgsCountBeatsAudioRun *count_beats_audio_run;
+  
   gdouble tact;
   
   pthread_mutex_t *recall_mutex;
 
-  /* get recall mutex */
-  pthread_mutex_lock(ags_recall_get_class_mutex());
-
-  recall_mutex = AGS_RECALL(tactable)->obj_mutex;
+  count_beats_audio_run = AGS_COUNT_BEATS_AUDIO_RUN(tactable);
   
-  pthread_mutex_unlock(ags_recall_get_class_mutex());
+  /* get recall mutex */
+  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(count_beats_audio_run);
 
   /* tact */
   pthread_mutex_lock(recall_mutex);
 
-  tact = AGS_COUNT_BEATS_AUDIO_RUN(tactable)->tact;
+  tact = count_beats_audio_run->tact;
   
   pthread_mutex_unlock(recall_mutex);
 

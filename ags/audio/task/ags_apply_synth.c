@@ -388,11 +388,7 @@ ags_apply_synth_launch(AgsTask *task)
   count = apply_synth->count;
 
   /* get channel mutex */
-  pthread_mutex_lock(ags_channel_get_class_mutex());
-
-  channel_mutex = channel->obj_mutex;
-  
-  pthread_mutex_unlock(ags_channel_get_class_mutex());
+  channel_mutex = AGS_CHANNEL_GET_OBJ_MUTEX(channel);
 
   /* get some fields */
   pthread_mutex_lock(channel_mutex);
@@ -402,11 +398,7 @@ ags_apply_synth_launch(AgsTask *task)
   pthread_mutex_unlock(channel_mutex);
 
   /* get audio mutex */
-  pthread_mutex_lock(ags_audio_get_class_mutex());
-
-  audio_mutex = audio->obj_mutex;
-  
-  pthread_mutex_unlock(ags_audio_get_class_mutex());
+  audio_mutex = AGS_AUDIO_GET_OBJ_MUTEX(audio);
 
   /* get some fields */
   pthread_mutex_lock(audio_mutex);
@@ -420,11 +412,7 @@ ags_apply_synth_launch(AgsTask *task)
 	
   for(i = 0; channel != NULL && i < apply_synth->count; i++){
     /* get channel mutex */
-    pthread_mutex_lock(ags_channel_get_class_mutex());
-
-    channel_mutex = channel->obj_mutex;
-  
-    pthread_mutex_unlock(ags_channel_get_class_mutex());
+    channel_mutex = AGS_CHANNEL_GET_OBJ_MUTEX(channel);
 
     /* get some fields */
     pthread_mutex_lock(channel_mutex);
@@ -434,11 +422,7 @@ ags_apply_synth_launch(AgsTask *task)
     pthread_mutex_unlock(channel_mutex);
 
     /* get recycling mutex */
-    pthread_mutex_lock(ags_recycling_get_class_mutex());
-
-    recycling_mutex = first_recycling->obj_mutex;
-  
-    pthread_mutex_unlock(ags_recycling_get_class_mutex());
+    recycling_mutex = AGS_RECYCLING_GET_OBJ_MUTEX(first_recycling);
 	
     /* get template */
     g_object_get(first_recycling,

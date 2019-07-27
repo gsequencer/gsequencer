@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -219,14 +219,15 @@ ags_envelope_audio_signal_run_inter(AgsRecall *recall)
 
   envelope_audio_signal = AGS_ENVELOPE_AUDIO_SIGNAL(recall);
 
-  /* get mutex */
-  pthread_mutex_lock(ags_recall_get_class_mutex());
-
-  recall_mutex = recall->obj_mutex;
+  /* get parent class */
+  AGS_RECALL_LOCK_CLASS();
   
   parent_class_run_inter = AGS_RECALL_CLASS(ags_envelope_audio_signal_parent_class)->run_inter;
 
-  pthread_mutex_unlock(ags_recall_get_class_mutex());
+  AGS_RECALL_UNLOCK_CLASS();
+  
+  /* get mutex */
+  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall);
 
   /* call parent */
   parent_class_run_inter(recall);
@@ -357,11 +358,7 @@ ags_envelope_audio_signal_run_inter(AgsRecall *recall)
 		   NULL);
       
       /* get note mutex */
-      pthread_mutex_lock(ags_note_get_class_mutex());
-  
-      note_mutex = current->obj_mutex;
-  
-      pthread_mutex_unlock(ags_note_get_class_mutex());
+      note_mutex = AGS_NOTE_GET_OBJ_MUTEX(current);
 
       /*  */
       pthread_mutex_lock(note_mutex);

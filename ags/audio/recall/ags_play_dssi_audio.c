@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -284,11 +284,7 @@ ags_play_dssi_audio_set_property(GObject *gobject,
   play_dssi_audio = AGS_PLAY_DSSI_AUDIO(gobject);
 
   /* get recall mutex */
-  pthread_mutex_lock(ags_recall_get_class_mutex());
-  
-  recall_mutex = AGS_RECALL(gobject)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_recall_get_class_mutex());
+  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(play_dssi_audio);
 
   switch(prop_id){
   case PROP_BANK:
@@ -393,11 +389,7 @@ ags_play_dssi_audio_get_property(GObject *gobject,
   play_dssi_audio = AGS_PLAY_DSSI_AUDIO(gobject);
 
   /* get recall mutex */
-  pthread_mutex_lock(ags_recall_get_class_mutex());
-  
-  recall_mutex = AGS_RECALL(gobject)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_recall_get_class_mutex());
+  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(play_dssi_audio);
 
   switch(prop_id){
   case PROP_BANK:
@@ -602,11 +594,7 @@ ags_play_dssi_audio_load(AgsPlayDssiAudio *play_dssi_audio)
   }
   
   /* get recall mutex */
-  pthread_mutex_lock(ags_recall_get_class_mutex());
-  
-  recall_mutex = AGS_RECALL(play_dssi_audio)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_recall_get_class_mutex());
+  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(play_dssi_audio);
 
   /* get filename and effect */
   pthread_mutex_lock(recall_mutex);
@@ -685,11 +673,7 @@ ags_play_dssi_audio_load_ports(AgsPlayDssiAudio *play_dssi_audio)
   }
 
   /* get recall mutex */
-  pthread_mutex_lock(ags_recall_get_class_mutex());
-  
-  recall_mutex = AGS_RECALL(play_dssi_audio)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_recall_get_class_mutex());
+  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(play_dssi_audio);
 
   /* get filename and effect */
   pthread_mutex_lock(recall_mutex);
@@ -711,11 +695,7 @@ ags_play_dssi_audio_load_ports(AgsPlayDssiAudio *play_dssi_audio)
 	       NULL);
 
   /* get base plugin mutex */
-  pthread_mutex_lock(ags_base_plugin_get_class_mutex());
-  
-  base_plugin_mutex = AGS_BASE_PLUGIN(dssi_plugin)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_base_plugin_get_class_mutex());
+  base_plugin_mutex = AGS_BASE_PLUGIN_GET_OBJ_MUTEX(dssi_plugin);
   
   /* get plugin name */
   pthread_mutex_lock(base_plugin_mutex);
@@ -740,11 +720,7 @@ ags_play_dssi_audio_load_ports(AgsPlayDssiAudio *play_dssi_audio)
 	pthread_mutex_t *plugin_port_mutex;
 
 	/* get plugin port mutex */
-	pthread_mutex_lock(ags_plugin_port_get_class_mutex());
-	
-	plugin_port_mutex = AGS_PLUGIN_PORT(plugin_port->data)->obj_mutex;
-	
-	pthread_mutex_unlock(ags_plugin_port_get_class_mutex());
+	plugin_port_mutex = AGS_PLUGIN_PORT_GET_OBJ_MUTEX(plugin_port->data);
 
 	/* get specifier */
 	pthread_mutex_lock(plugin_port_mutex);
@@ -951,11 +927,7 @@ ags_play_dssi_audio_find(GList *recall,
       pthread_mutex_t *recall_mutex;
 
       /* get recall mutex */
-      pthread_mutex_lock(ags_recall_get_class_mutex());
-  
-      recall_mutex = AGS_RECALL(recall->data)->obj_mutex;
-  
-      pthread_mutex_unlock(ags_recall_get_class_mutex());
+      recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall->data);
 
       /* check current filename and effect */
       pthread_mutex_lock(recall_mutex);

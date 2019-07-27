@@ -465,14 +465,11 @@ ags_delay_audio_run_run_init_pre(AgsRecall *recall)
 
   delay_audio_run = AGS_DELAY_AUDIO_RUN(recall);
 
-  /* get mutex */
-  pthread_mutex_lock(ags_recall_get_class_mutex());
-
-  recall_mutex = recall->obj_mutex;
-  
+  /* get parent class */
   parent_class_run_init_pre = AGS_RECALL_CLASS(ags_delay_audio_run_parent_class)->run_init_pre;
 
-  pthread_mutex_unlock(ags_recall_get_class_mutex());
+  /* get mutex */
+  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall);
 
   /* call parent class */
   parent_class_run_init_pre(recall);
@@ -512,14 +509,15 @@ ags_delay_audio_run_run_pre(AgsRecall *recall)
 
   delay_audio_run = AGS_DELAY_AUDIO_RUN(recall);
 
-  /* get mutex */
-  pthread_mutex_lock(ags_recall_get_class_mutex());
+  /* get parent class */
+  AGS_RECALL_LOCK_CLASS();
 
-  recall_mutex = recall->obj_mutex;
-  
   parent_class_run_pre = AGS_RECALL_CLASS(ags_delay_audio_run_parent_class)->run_pre;
 
-  pthread_mutex_unlock(ags_recall_get_class_mutex());
+  AGS_RECALL_UNLOCK_CLASS();
+
+  /* get mutex */
+  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall);
 
   /* call parent */
   parent_class_run_pre(recall);
@@ -885,14 +883,15 @@ ags_delay_audio_run_duplicate(AgsRecall *recall,
   
   delay_audio_run = (AgsDelayAudioRun *) recall;
 
-  /* get mutex */
-  pthread_mutex_lock(ags_recall_get_class_mutex());
-
-  recall_mutex = recall->obj_mutex;
-
-  parent_class_duplicate = AGS_RECALL_CLASS(ags_delay_audio_run_parent_class)->duplicate;
+  /* get parent class */
+  AGS_RECALL_LOCK_CLASS();
   
-  pthread_mutex_unlock(ags_recall_get_class_mutex());
+  parent_class_duplicate = AGS_RECALL_CLASS(ags_delay_audio_run_parent_class)->duplicate;
+
+  AGS_RECALL_UNLOCK_CLASS();
+  
+  /* get mutex */
+  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall);
 
   /* duplicate */
   copy_delay_audio_run = (AgsDelayAudioRun *) parent_class_duplicate(recall,
@@ -929,11 +928,7 @@ ags_delay_audio_run_notify_dependency(AgsRecall *recall,
   delay_audio_run = AGS_DELAY_AUDIO_RUN(recall);
 
   /* get mutex */
-  pthread_mutex_lock(ags_recall_get_class_mutex());
-
-  recall_mutex = recall->obj_mutex;
-  
-  pthread_mutex_unlock(ags_recall_get_class_mutex());
+  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall);
 
   /* notify */
   pthread_mutex_lock(recall_mutex);

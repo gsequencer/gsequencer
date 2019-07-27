@@ -266,11 +266,7 @@ ags_route_dssi_audio_run_set_property(GObject *gobject,
   route_dssi_audio_run = AGS_ROUTE_DSSI_AUDIO_RUN(gobject);
 
   /* get recall mutex */
-  pthread_mutex_lock(ags_recall_get_class_mutex());
-  
-  recall_mutex = AGS_RECALL(gobject)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_recall_get_class_mutex());
+  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(route_dssi_audio_run);
 
   switch(prop_id){
   case PROP_DELAY_AUDIO_RUN:
@@ -447,11 +443,7 @@ ags_route_dssi_audio_run_get_property(GObject *gobject,
   route_dssi_audio_run = AGS_ROUTE_DSSI_AUDIO_RUN(gobject);
 
   /* get recall mutex */
-  pthread_mutex_lock(ags_recall_get_class_mutex());
-  
-  recall_mutex = AGS_RECALL(gobject)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_recall_get_class_mutex());
+  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(route_dssi_audio_run);
 
   switch(prop_id){
   case PROP_DELAY_AUDIO_RUN:
@@ -882,11 +874,7 @@ ags_route_dssi_audio_run_feed_midi(AgsRecall *recall,
 	       NULL);
   
   /* audio mutex */
-  pthread_mutex_lock(ags_audio_get_class_mutex());
-
-  audio_mutex = audio->obj_mutex;
-  
-  pthread_mutex_unlock(ags_audio_get_class_mutex());
+  audio_mutex = AGS_AUDIO_GET_OBJ_MUTEX(audio);
 
   /* get audio fields */
   pthread_mutex_lock(audio_mutex);

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -451,11 +451,7 @@ ags_analyse_channel_set_property(GObject *gobject,
   analyse_channel = AGS_ANALYSE_CHANNEL(gobject);
 
   /* get recall mutex */
-  pthread_mutex_lock(ags_recall_get_class_mutex());
-  
-  recall_mutex = AGS_RECALL(gobject)->obj_mutex;
-
-  pthread_mutex_unlock(ags_recall_get_class_mutex());
+  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(analyse_channel);
 
   switch(prop_id){
   case PROP_CACHE_SAMPLERATE:
@@ -612,11 +608,7 @@ ags_analyse_channel_get_property(GObject *gobject,
   analyse_channel = AGS_ANALYSE_CHANNEL(gobject);
 
   /* get recall mutex */
-  pthread_mutex_lock(ags_recall_get_class_mutex());
-  
-  recall_mutex = AGS_RECALL(gobject)->obj_mutex;
-
-  pthread_mutex_unlock(ags_recall_get_class_mutex());
+  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(analyse_channel);
 
   switch(prop_id){
   case PROP_CACHE_SAMPLERATE:
@@ -828,11 +820,7 @@ ags_analyse_channel_buffer_add(AgsAnalyseChannel *analyse_channel,
   }
 
   /* get buffer mutex */
-  pthread_mutex_lock(ags_recall_get_class_mutex());
-
-  buffer_mutex = analyse_channel->buffer_mutex;
-  
-  pthread_mutex_unlock(ags_recall_get_class_mutex());
+  buffer_mutex = AGS_ANALYSE_CHANNEL_GET_BUFFER_MUTEX(analyse_channel);
 
   /* get some fields */
   g_object_get(analyse_channel,
@@ -894,11 +882,7 @@ ags_analyse_channel_retrieve_frequency_and_magnitude(AgsAnalyseChannel *analyse_
   }
 
   /* get buffer mutex */
-  pthread_mutex_lock(ags_recall_get_class_mutex());
-  
-  buffer_mutex = analyse_channel->buffer_mutex;
-  
-  pthread_mutex_unlock(ags_recall_get_class_mutex());
+  buffer_mutex = AGS_ANALYSE_CHANNEL_GET_BUFFER_MUTEX(analyse_channel);
 
   /* get some fields */
   g_object_get(analyse_channel,

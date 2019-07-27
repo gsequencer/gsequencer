@@ -146,16 +146,17 @@ ags_analyse_channel_run_run_pre(AgsRecall *recall)
   g_object_get(recall,
 	       "recall-channel", &analyse_channel,
 	       NULL);
+
+  /* get parent class */
+  AGS_RECALL_LOCK_CLASS();
   
-  /* get mutex and buffer mutex */
-  pthread_mutex_lock(ags_recall_get_class_mutex());
-
-  recall_mutex = recall->obj_mutex;
-  buffer_mutex = analyse_channel->buffer_mutex;
-
   parent_class_run_pre = AGS_RECALL_CLASS(ags_analyse_channel_run_parent_class)->run_pre;
 
-  pthread_mutex_unlock(ags_recall_get_class_mutex());
+  AGS_RECALL_UNLOCK_CLASS();
+  
+  /* get mutex and buffer mutex */
+  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall);
+  buffer_mutex = AGS_ANALYSE_CHANNEL_GET_BUFFER_MUTEX(analyse_channel);
 
   /* call parent */
   parent_class_run_pre(recall);

@@ -218,11 +218,7 @@ ags_play_channel_run_master_set_property(GObject *gobject,
   play_channel_run_master = AGS_PLAY_CHANNEL_RUN_MASTER(gobject);
 
   /* get recall mutex */
-  pthread_mutex_lock(ags_recall_get_class_mutex());
-  
-  recall_mutex = AGS_RECALL(gobject)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_recall_get_class_mutex());
+  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(play_channel_run_master);
 
   switch(prop_id){
   case PROP_STREAM_CHANNEL_RUN:
@@ -288,11 +284,7 @@ ags_play_channel_run_master_get_property(GObject *gobject,
   play_channel_run_master = AGS_PLAY_CHANNEL_RUN_MASTER(gobject);
 
   /* get recall mutex */
-  pthread_mutex_lock(ags_recall_get_class_mutex());
-  
-  recall_mutex = AGS_RECALL(gobject)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_recall_get_class_mutex());
+  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(play_channel_run_master);
 
   switch(prop_id){
   case PROP_STREAM_CHANNEL_RUN:
@@ -514,14 +506,15 @@ ags_play_channel_run_master_run_init_pre(AgsRecall *recall)
   play_channel_run_master = AGS_PLAY_CHANNEL_RUN_MASTER(recall);
 
   /* get recall mutex */
-  pthread_mutex_lock(ags_recall_get_class_mutex());
-  
-  recall_mutex = recall->obj_mutex;
+  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall);
 
+  /* get parent class */
+  AGS_RECALL_LOCK_CLASS();
+  
   parent_class_run_init_pre = AGS_RECALL_CLASS(ags_play_channel_run_master_parent_class)->run_init_pre;
-  
-  pthread_mutex_unlock(ags_recall_get_class_mutex());
 
+  AGS_RECALL_UNLOCK_CLASS();
+  
   /* call parent */
   parent_class_run_init_pre(recall);
 
@@ -649,11 +642,7 @@ ags_play_channel_run_master_remap_dependencies(AgsPlayChannelRunMaster *play_cha
   }
   
   /* get recall mutex */
-  pthread_mutex_lock(ags_recall_get_class_mutex());
-  
-  recall_mutex = AGS_RECALL(play_channel_run_master)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_recall_get_class_mutex());
+  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(play_channel_run_master);
 
   /* get recycling context */
   g_object_get(play_channel_run_master,
@@ -889,11 +878,7 @@ ags_play_channel_run_master_stream_channel_done_callback(AgsRecall *recall,
   pthread_mutex_t *recall_mutex;
 
   /* get recall mutex */
-  pthread_mutex_lock(ags_recall_get_class_mutex());
-  
-  recall_mutex = AGS_RECALL(play_channel_run_master)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_recall_get_class_mutex());
+  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(play_channel_run_master);
 
   /* remove stream channel run */
   pthread_mutex_lock(recall_mutex);

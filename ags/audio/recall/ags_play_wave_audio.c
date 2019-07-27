@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -271,11 +271,7 @@ ags_play_wave_audio_set_property(GObject *gobject,
   play_wave_audio = AGS_PLAY_WAVE_AUDIO(gobject);
 
   /* get recall mutex */
-  pthread_mutex_lock(ags_recall_get_class_mutex());
-  
-  recall_mutex = AGS_RECALL(gobject)->obj_mutex;
-
-  pthread_mutex_unlock(ags_recall_get_class_mutex());
+  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(play_wave_audio);
 
   switch(prop_id){
   case PROP_WAVE_LOOP:
@@ -378,11 +374,7 @@ ags_play_wave_audio_get_property(GObject *gobject,
   play_wave = AGS_PLAY_WAVE_AUDIO(gobject);
 
   /* get recall mutex */
-  pthread_mutex_lock(ags_recall_get_class_mutex());
-  
-  recall_mutex = AGS_RECALL(gobject)->obj_mutex;
-
-  pthread_mutex_unlock(ags_recall_get_class_mutex());
+  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(play_wave_audio);
 
   switch(prop_id){
   case PROP_WAVE_LOOP:
