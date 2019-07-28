@@ -657,9 +657,9 @@ ags_core_audio_devout_init(AgsCoreAudioDevout *core_audio_devout)
   }
 
   core_audio_devout->sub_block_count = AGS_SOUNDCARD_DEFAULT_SUB_BLOCK_COUNT;
-  core_audio_devout->sub_block_mutex = (pthread_mutex_t **) malloc(4 * core_audio_devout->sub_block_count * core_audio_devout->pcm_channels * sizeof(pthread_mutex_t *));
+  core_audio_devout->sub_block_mutex = (pthread_mutex_t **) malloc(8 * core_audio_devout->sub_block_count * core_audio_devout->pcm_channels * sizeof(pthread_mutex_t *));
 
-  for(i = 0; i < 4 * core_audio_devout->sub_block_count * core_audio_devout->pcm_channels; i++){
+  for(i = 0; i < 8 * core_audio_devout->sub_block_count * core_audio_devout->pcm_channels; i++){
     core_audio_devout->sub_block_mutex[i] = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
 
     pthread_mutex_init(core_audio_devout->sub_block_mutex[i],
@@ -838,17 +838,17 @@ ags_core_audio_devout_set_property(GObject *gobject,
       old_pcm_channels = core_audio_devout->pcm_channels;
 
       /* destroy if less pcm-channels */
-      for(i = 4 * core_audio_devout->sub_block_count * pcm_channels; i < 4 * core_audio_devout->sub_block_count * old_pcm_channels; i++){
+      for(i = 8 * core_audio_devout->sub_block_count * pcm_channels; i < 8 * core_audio_devout->sub_block_count * old_pcm_channels; i++){
 	pthread_mutex_destroy(core_audio_devout->sub_block_mutex[i]);
 
 	free(core_audio_devout->sub_block_mutex[i]);
       }
 
       core_audio_devout->sub_block_mutex = (pthread_mutex_t **) realloc(core_audio_devout->sub_block_mutex,
-									4 * core_audio_devout->sub_block_count * pcm_channels * sizeof(pthread_mutex_t *));
+									8 * core_audio_devout->sub_block_count * pcm_channels * sizeof(pthread_mutex_t *));
 
       /* create if more pcm-channels */
-      for(i = 4 * core_audio_devout->sub_block_count * old_pcm_channels; i < 4 * core_audio_devout->sub_block_count * pcm_channels; i++){
+      for(i = 8 * core_audio_devout->sub_block_count * old_pcm_channels; i < 8 * core_audio_devout->sub_block_count * pcm_channels; i++){
 	core_audio_devout->sub_block_mutex[i] = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
 
 	pthread_mutex_init(core_audio_devout->sub_block_mutex[i],
@@ -3342,6 +3342,14 @@ ags_core_audio_devout_trylock_sub_block(AgsSoundcard *soundcard,
       sub_block_mutex = core_audio_devout->sub_block_mutex[2 * pcm_channels * sub_block_count + sub_block];
     }else if(buffer == core_audio_devout->buffer[3]){
       sub_block_mutex = core_audio_devout->sub_block_mutex[3 * pcm_channels * sub_block_count + sub_block];
+    }else if(buffer == core_audio_devout->buffer[4]){
+      sub_block_mutex = core_audio_devout->sub_block_mutex[4 * pcm_channels * sub_block_count + sub_block];
+    }else if(buffer == core_audio_devout->buffer[5]){
+      sub_block_mutex = core_audio_devout->sub_block_mutex[5 * pcm_channels * sub_block_count + sub_block];
+    }else if(buffer == core_audio_devout->buffer[6]){
+      sub_block_mutex = core_audio_devout->sub_block_mutex[6 * pcm_channels * sub_block_count + sub_block];
+    }else if(buffer == core_audio_devout->buffer[7]){
+      sub_block_mutex = core_audio_devout->sub_block_mutex[7 * pcm_channels * sub_block_count + sub_block];
     }
   }
 
@@ -3390,6 +3398,14 @@ ags_core_audio_devout_unlock_sub_block(AgsSoundcard *soundcard,
       sub_block_mutex = core_audio_devout->sub_block_mutex[2 * pcm_channels * sub_block_count + sub_block];
     }else if(buffer == core_audio_devout->buffer[3]){
       sub_block_mutex = core_audio_devout->sub_block_mutex[3 * pcm_channels * sub_block_count + sub_block];
+    }else if(buffer == core_audio_devout->buffer[4]){
+      sub_block_mutex = core_audio_devout->sub_block_mutex[4 * pcm_channels * sub_block_count + sub_block];
+    }else if(buffer == core_audio_devout->buffer[5]){
+      sub_block_mutex = core_audio_devout->sub_block_mutex[5 * pcm_channels * sub_block_count + sub_block];
+    }else if(buffer == core_audio_devout->buffer[6]){
+      sub_block_mutex = core_audio_devout->sub_block_mutex[6 * pcm_channels * sub_block_count + sub_block];
+    }else if(buffer == core_audio_devout->buffer[7]){
+      sub_block_mutex = core_audio_devout->sub_block_mutex[7 * pcm_channels * sub_block_count + sub_block];
     }
   }
 

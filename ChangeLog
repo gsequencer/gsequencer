@@ -1,7 +1,9 @@
 ags (2.2.28)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
-	* fixed ags_audio_buffer_util_peak_*() to handle 0.0 correctly
+	* fixed ags_audio_buffer_util_peak_*() to handle 0.0 correct
+	* fixed dead-lock AgsPulseDevout provide for each buffer sub-block lock
+	* fixed dead-lock AgsCoreAudioDevout provide for each buffer sub-block lock
 
 ags (2.2.27)
 

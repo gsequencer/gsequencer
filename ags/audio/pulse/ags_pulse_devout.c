@@ -657,9 +657,9 @@ ags_pulse_devout_init(AgsPulseDevout *pulse_devout)
   }
 
   pulse_devout->sub_block_count = AGS_SOUNDCARD_DEFAULT_SUB_BLOCK_COUNT;
-  pulse_devout->sub_block_mutex = (pthread_mutex_t **) malloc(4 * pulse_devout->sub_block_count * pulse_devout->pcm_channels * sizeof(pthread_mutex_t *));
+  pulse_devout->sub_block_mutex = (pthread_mutex_t **) malloc(8 * pulse_devout->sub_block_count * pulse_devout->pcm_channels * sizeof(pthread_mutex_t *));
 
-  for(i = 0; i < 4 * pulse_devout->sub_block_count * pulse_devout->pcm_channels; i++){
+  for(i = 0; i < 8 * pulse_devout->sub_block_count * pulse_devout->pcm_channels; i++){
     pulse_devout->sub_block_mutex[i] = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
 
     pthread_mutex_init(pulse_devout->sub_block_mutex[i],
@@ -838,17 +838,17 @@ ags_pulse_devout_set_property(GObject *gobject,
       old_pcm_channels = pulse_devout->pcm_channels;
 
       /* destroy if less pcm-channels */
-      for(i = 4 * pulse_devout->sub_block_count * pcm_channels; i < 4 * pulse_devout->sub_block_count * old_pcm_channels; i++){
+      for(i = 8 * pulse_devout->sub_block_count * pcm_channels; i < 8 * pulse_devout->sub_block_count * old_pcm_channels; i++){
 	pthread_mutex_destroy(pulse_devout->sub_block_mutex[i]);
 
 	free(pulse_devout->sub_block_mutex[i]);
       }
 
       pulse_devout->sub_block_mutex = (pthread_mutex_t **) realloc(pulse_devout->sub_block_mutex,
-								   4 * pulse_devout->sub_block_count * pcm_channels * sizeof(pthread_mutex_t *));
+								   8 * pulse_devout->sub_block_count * pcm_channels * sizeof(pthread_mutex_t *));
 
       /* create if more pcm-channels */
-      for(i = 4 * pulse_devout->sub_block_count * old_pcm_channels; i < 4 * pulse_devout->sub_block_count * pcm_channels; i++){
+      for(i = 8 * pulse_devout->sub_block_count * old_pcm_channels; i < 8 * pulse_devout->sub_block_count * pcm_channels; i++){
 	pulse_devout->sub_block_mutex[i] = (pthread_mutex_t *) malloc(sizeof(pthread_mutex_t));
 
 	pthread_mutex_init(pulse_devout->sub_block_mutex[i],
@@ -3352,6 +3352,14 @@ ags_pulse_devout_trylock_sub_block(AgsSoundcard *soundcard,
       sub_block_mutex = pulse_devout->sub_block_mutex[2 * pcm_channels * sub_block_count + sub_block];
     }else if(buffer == pulse_devout->buffer[3]){
       sub_block_mutex = pulse_devout->sub_block_mutex[3 * pcm_channels * sub_block_count + sub_block];
+    }else if(buffer == pulse_devout->buffer[4]){
+      sub_block_mutex = pulse_devout->sub_block_mutex[4 * pcm_channels * sub_block_count + sub_block];
+    }else if(buffer == pulse_devout->buffer[5]){
+      sub_block_mutex = pulse_devout->sub_block_mutex[5 * pcm_channels * sub_block_count + sub_block];
+    }else if(buffer == pulse_devout->buffer[6]){
+      sub_block_mutex = pulse_devout->sub_block_mutex[6 * pcm_channels * sub_block_count + sub_block];
+    }else if(buffer == pulse_devout->buffer[7]){
+      sub_block_mutex = pulse_devout->sub_block_mutex[7 * pcm_channels * sub_block_count + sub_block];
     }
   }
 
@@ -3400,6 +3408,14 @@ ags_pulse_devout_unlock_sub_block(AgsSoundcard *soundcard,
       sub_block_mutex = pulse_devout->sub_block_mutex[2 * pcm_channels * sub_block_count + sub_block];
     }else if(buffer == pulse_devout->buffer[3]){
       sub_block_mutex = pulse_devout->sub_block_mutex[3 * pcm_channels * sub_block_count + sub_block];
+    }else if(buffer == pulse_devout->buffer[4]){
+      sub_block_mutex = pulse_devout->sub_block_mutex[4 * pcm_channels * sub_block_count + sub_block];
+    }else if(buffer == pulse_devout->buffer[5]){
+      sub_block_mutex = pulse_devout->sub_block_mutex[5 * pcm_channels * sub_block_count + sub_block];
+    }else if(buffer == pulse_devout->buffer[6]){
+      sub_block_mutex = pulse_devout->sub_block_mutex[6 * pcm_channels * sub_block_count + sub_block];
+    }else if(buffer == pulse_devout->buffer[7]){
+      sub_block_mutex = pulse_devout->sub_block_mutex[7 * pcm_channels * sub_block_count + sub_block];
     }
   }
 
