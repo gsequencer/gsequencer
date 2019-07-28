@@ -1829,6 +1829,38 @@ ags_audio_buffer_util_peak_s8(gint8 *buffer, guint channels,
       
       v_buffer = 1.0 / v_buffer;
 
+      if(v_zero[0] != 0.0){
+	v_buffer[0] = 0.0;
+      }
+
+      if(v_zero[1] != 0.0){
+	v_buffer[1] = 0.0;
+      }
+
+      if(v_zero[2] != 0.0){
+	v_buffer[2] = 0.0;
+      }
+
+      if(v_zero[3] != 0.0){
+	v_buffer[3] = 0.0;
+      }
+
+      if(v_zero[4] != 0.0){
+	v_buffer[4] = 0.0;
+      }
+
+      if(v_zero[5] != 0.0){
+	v_buffer[5] = 0.0;
+      }
+
+      if(v_zero[6] != 0.0){
+	v_buffer[6] = 0.0;
+      }
+
+      if(v_zero[7] != 0.0){
+	v_buffer[7] = 0.0;
+      }
+      
       current_value += v_buffer[0] + v_buffer[1] + v_buffer[2] + v_buffer[3] + v_buffer[4] + v_buffer[5] + v_buffer[6] + v_buffer[7];
 
       buffer += (8 * channels);
@@ -1969,6 +2001,38 @@ ags_audio_buffer_util_peak_s16(gint16 *buffer, guint channels,
       }
       
       v_buffer = 1.0 / v_buffer;
+
+      if(v_zero[0] != 0.0){
+	v_buffer[0] = 0.0;
+      }
+
+      if(v_zero[1] != 0.0){
+	v_buffer[1] = 0.0;
+      }
+
+      if(v_zero[2] != 0.0){
+	v_buffer[2] = 0.0;
+      }
+
+      if(v_zero[3] != 0.0){
+	v_buffer[3] = 0.0;
+      }
+
+      if(v_zero[4] != 0.0){
+	v_buffer[4] = 0.0;
+      }
+
+      if(v_zero[5] != 0.0){
+	v_buffer[5] = 0.0;
+      }
+
+      if(v_zero[6] != 0.0){
+	v_buffer[6] = 0.0;
+      }
+
+      if(v_zero[7] != 0.0){
+	v_buffer[7] = 0.0;
+      }
 
       current_value += v_buffer[0] + v_buffer[1] + v_buffer[2] + v_buffer[3] + v_buffer[4] + v_buffer[5] + v_buffer[6] + v_buffer[7];
 
@@ -2111,6 +2175,38 @@ ags_audio_buffer_util_peak_s24(gint32 *buffer, guint channels,
       
       v_buffer = 1.0 / v_buffer;
 
+      if(v_zero[0] != 0.0){
+	v_buffer[0] = 0.0;
+      }
+
+      if(v_zero[1] != 0.0){
+	v_buffer[1] = 0.0;
+      }
+
+      if(v_zero[2] != 0.0){
+	v_buffer[2] = 0.0;
+      }
+
+      if(v_zero[3] != 0.0){
+	v_buffer[3] = 0.0;
+      }
+
+      if(v_zero[4] != 0.0){
+	v_buffer[4] = 0.0;
+      }
+
+      if(v_zero[5] != 0.0){
+	v_buffer[5] = 0.0;
+      }
+
+      if(v_zero[6] != 0.0){
+	v_buffer[6] = 0.0;
+      }
+
+      if(v_zero[7] != 0.0){
+	v_buffer[7] = 0.0;
+      }
+
       current_value += v_buffer[0] + v_buffer[1] + v_buffer[2] + v_buffer[3] + v_buffer[4] + v_buffer[5] + v_buffer[6] + v_buffer[7];
 
       buffer += (8 * channels);
@@ -2251,6 +2347,38 @@ ags_audio_buffer_util_peak_s32(gint32 *buffer, guint channels,
       }
       
       v_buffer = 1.0 / v_buffer;
+
+      if(v_zero[0] != 0.0){
+	v_buffer[0] = 0.0;
+      }
+
+      if(v_zero[1] != 0.0){
+	v_buffer[1] = 0.0;
+      }
+
+      if(v_zero[2] != 0.0){
+	v_buffer[2] = 0.0;
+      }
+
+      if(v_zero[3] != 0.0){
+	v_buffer[3] = 0.0;
+      }
+
+      if(v_zero[4] != 0.0){
+	v_buffer[4] = 0.0;
+      }
+
+      if(v_zero[5] != 0.0){
+	v_buffer[5] = 0.0;
+      }
+
+      if(v_zero[6] != 0.0){
+	v_buffer[6] = 0.0;
+      }
+
+      if(v_zero[7] != 0.0){
+	v_buffer[7] = 0.0;
+      }
 
       current_value += v_buffer[0] + v_buffer[1] + v_buffer[2] + v_buffer[3] + v_buffer[4] + v_buffer[5] + v_buffer[6] + v_buffer[7];
 
@@ -2393,6 +2521,38 @@ ags_audio_buffer_util_peak_s64(gint64 *buffer, guint channels,
       
       v_buffer = 1.0 / v_buffer;
 
+      if(v_zero[0] != 0.0){
+	v_buffer[0] = 0.0;
+      }
+
+      if(v_zero[1] != 0.0){
+	v_buffer[1] = 0.0;
+      }
+
+      if(v_zero[2] != 0.0){
+	v_buffer[2] = 0.0;
+      }
+
+      if(v_zero[3] != 0.0){
+	v_buffer[3] = 0.0;
+      }
+
+      if(v_zero[4] != 0.0){
+	v_buffer[4] = 0.0;
+      }
+
+      if(v_zero[5] != 0.0){
+	v_buffer[5] = 0.0;
+      }
+
+      if(v_zero[6] != 0.0){
+	v_buffer[6] = 0.0;
+      }
+
+      if(v_zero[7] != 0.0){
+	v_buffer[7] = 0.0;
+      }
+
       current_value += v_buffer[0] + v_buffer[1] + v_buffer[2] + v_buffer[3] + v_buffer[4] + v_buffer[5] + v_buffer[6] + v_buffer[7];
 
       buffer += (8 * channels);
@@ -2534,6 +2694,38 @@ ags_audio_buffer_util_peak_float(gfloat *buffer, guint channels,
       
       v_buffer = 1.0 / v_buffer;
 
+      if(v_zero[0] != 0.0){
+	v_buffer[0] = 0.0;
+      }
+
+      if(v_zero[1] != 0.0){
+	v_buffer[1] = 0.0;
+      }
+
+      if(v_zero[2] != 0.0){
+	v_buffer[2] = 0.0;
+      }
+
+      if(v_zero[3] != 0.0){
+	v_buffer[3] = 0.0;
+      }
+
+      if(v_zero[4] != 0.0){
+	v_buffer[4] = 0.0;
+      }
+
+      if(v_zero[5] != 0.0){
+	v_buffer[5] = 0.0;
+      }
+
+      if(v_zero[6] != 0.0){
+	v_buffer[6] = 0.0;
+      }
+
+      if(v_zero[7] != 0.0){
+	v_buffer[7] = 0.0;
+      }
+
       current_value += v_buffer[0] + v_buffer[1] + v_buffer[2] + v_buffer[3] + v_buffer[4] + v_buffer[5] + v_buffer[6] + v_buffer[7];
 
       buffer += (8 * channels);
@@ -2674,6 +2866,38 @@ ags_audio_buffer_util_peak_double(gdouble *buffer, guint channels,
       }
       
       v_buffer = 1.0 / v_buffer;
+
+      if(v_zero[0] != 0.0){
+	v_buffer[0] = 0.0;
+      }
+
+      if(v_zero[1] != 0.0){
+	v_buffer[1] = 0.0;
+      }
+
+      if(v_zero[2] != 0.0){
+	v_buffer[2] = 0.0;
+      }
+
+      if(v_zero[3] != 0.0){
+	v_buffer[3] = 0.0;
+      }
+
+      if(v_zero[4] != 0.0){
+	v_buffer[4] = 0.0;
+      }
+
+      if(v_zero[5] != 0.0){
+	v_buffer[5] = 0.0;
+      }
+
+      if(v_zero[6] != 0.0){
+	v_buffer[6] = 0.0;
+      }
+
+      if(v_zero[7] != 0.0){
+	v_buffer[7] = 0.0;
+      }
 
       current_value += v_buffer[0] + v_buffer[1] + v_buffer[2] + v_buffer[3] + v_buffer[4] + v_buffer[5] + v_buffer[6] + v_buffer[7];
 
