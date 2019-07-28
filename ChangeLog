@@ -4,6 +4,7 @@ ags (2.2.28)
 	* fixed ags_audio_buffer_util_peak_*() to handle 0.0 correct
 	* fixed dead-lock AgsPulseDevout provide for each buffer sub-block lock
 	* fixed dead-lock AgsCoreAudioDevout provide for each buffer sub-block lock
+	* fixed AgsSimpleFile audio loop start/end of AgsSyncsynth to round
 
 ags (2.2.27)
 

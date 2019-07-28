@@ -7376,11 +7376,11 @@ ags_simple_file_write_machine(AgsSimpleFile *simple_file, xmlNode *parent, AgsMa
 
     xmlNewProp(node,
 	       "audio-loop-start",
-	       g_strdup_printf("%u", (guint) syncsynth->loop_start->adjustment->value));
+	       g_strdup_printf("%u", (guint) round(syncsynth->loop_start->adjustment->value)));
 
     xmlNewProp(node,
 	       "audio-loop-end",
-	       g_strdup_printf("%u", (guint) syncsynth->loop_end->adjustment->value));
+	       g_strdup_printf("%u", (guint) round(syncsynth->loop_end->adjustment->value)));
 #ifdef AGS_WITH_LIBINSTPATCH
   }else if(AGS_IS_FFPLAYER(machine)){
     AgsFFPlayer *ffplayer;
