@@ -5975,8 +5975,9 @@ AM_CPPFLAGS = -std=gnu99 -include errno.h -I$(top_srcdir) \
 	-DSRCDIR=\"$(srcdir)\" -DDESTDIR=\"$(DESTDIR)$(datadir)\" \
 	-DPACKAGE_VERSION=\"$(PACKAGE_VERSION)\" \
 	-DAGS_REDUCE_RT_EVENTS=1 -DAGS_VECTORIZED_BUILTIN_FUNCTIONS=1 \
-	-DAGS_LIBRARY_SUFFIX=\".so\" -D_FORTIFY_SOURCE=2 -Wformat \
-	-Werror=format-security $(am__append_1)
+	-DAGS_LIBRARY_SUFFIX=\".so\" -D_FORTIFY_SOURCE=2 -Wall \
+	-Wformat -Werror=format-security -Werror=return-type \
+	$(am__append_1)
 gsequencer_CFLAGS = @GSEQUENCER_CFLAGS@ $(LIBASOUND2_CFLAGS) \
 	$(LIBAO_CFLAGS) $(LIBXML2_CFLAGS) $(OPENSSL_CFLAGS) \
 	$(XMLRPC_CFLAGS) $(XMLRPC_UTIL_CFLAGS) \

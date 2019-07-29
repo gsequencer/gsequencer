@@ -907,7 +907,7 @@ ags_notation_add(GList *notation,
   if(list != NULL){
     g_critical("timestamp already preset");
 
-    return;
+    return(notation);
   }
   
   notation = g_list_insert_sorted(notation,

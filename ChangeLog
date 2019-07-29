@@ -1,3 +1,9 @@
+ags (2.2.29)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved AgsThreadPool make AgsReturnableThread returning
+	* minor improvements added -Werror=return-type
+
 ags (2.2.28)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
