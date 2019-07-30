@@ -405,9 +405,9 @@ ags_main_loop_sync_counter_inc(AgsMainLoop *main_loop, guint tic)
 {
   AgsMainLoopInterface *main_loop_interface;
 
-  g_return_val_if_fail(AGS_IS_MAIN_LOOP(main_loop), FALSE);
+  g_return_if_fail(AGS_IS_MAIN_LOOP(main_loop));
   main_loop_interface = AGS_MAIN_LOOP_GET_INTERFACE(main_loop);
-  g_return_val_if_fail(main_loop_interface->sync_counter_inc, FALSE);
+  g_return_if_fail(main_loop_interface->sync_counter_inc);
 
   main_loop_interface->sync_counter_inc(main_loop, tic);
 }
@@ -426,9 +426,9 @@ ags_main_loop_sync_counter_dec(AgsMainLoop *main_loop, guint tic)
 {
   AgsMainLoopInterface *main_loop_interface;
 
-  g_return_val_if_fail(AGS_IS_MAIN_LOOP(main_loop), FALSE);
+  g_return_if_fail(AGS_IS_MAIN_LOOP(main_loop));
   main_loop_interface = AGS_MAIN_LOOP_GET_INTERFACE(main_loop);
-  g_return_val_if_fail(main_loop_interface->sync_counter_dec, FALSE);
+  g_return_if_fail(main_loop_interface->sync_counter_dec);
 
   main_loop_interface->sync_counter_dec(main_loop, tic);
 }

@@ -1,3 +1,8 @@
+ags (2.2.30)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed AgsMainLoop ::sync-counter-inc() and ::sync-counter-dec() return type
+
 ags (2.2.29)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
