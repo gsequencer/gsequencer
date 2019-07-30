@@ -1,7 +1,7 @@
 ags (2.2.30)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
-	* fixed AgsMainLoop ::sync-counter-inc() and ::sync-counter-dec() return type
+	* fixed AgsMainLoop ::sync-counter-inc() and ::sync-counter-dec() no return type
 
 ags (2.2.29)
 
