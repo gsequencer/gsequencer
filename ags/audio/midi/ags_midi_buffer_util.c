@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -2279,6 +2279,8 @@ ags_midi_buffer_util_seek_message(unsigned char *buffer,
   /* seek message count */
   current_delta_time = 0;
   initial_run = TRUE;
+
+  prev_status = 0;
   
   for(i = 0; i < message_count; i++){
     /* check for track */

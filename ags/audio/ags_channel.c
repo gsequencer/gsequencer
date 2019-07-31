@@ -2527,6 +2527,8 @@ ags_channel_connect(AgsConnectable *connectable)
   pthread_mutex_unlock(channel_mutex);
   
   /* connect recycling */
+  recycling = first_recycling;
+  
   if(recycling != NULL &&
      (AGS_IS_OUTPUT(channel) ||
       (AGS_IS_INPUT(channel) && link == NULL))){
@@ -2670,6 +2672,8 @@ ags_channel_disconnect(AgsConnectable *connectable)
   pthread_mutex_unlock(channel_mutex);
   
   /* disconnect recycling */
+  recycling = first_recycling;
+
   if(recycling != NULL &&
      (AGS_IS_OUTPUT(channel) ||
       (AGS_IS_INPUT(channel) && link == NULL))){
@@ -5209,12 +5213,10 @@ ags_channel_reset_recycling(AgsChannel *channel,
 	  g_object_unref(nth_channel_prev);
 	}
       }else{
-	if(nth_channel_prev == NULL){
-	  nth_channel_prev = ags_channel_prev_with_recycling(input);
+	nth_channel_prev = ags_channel_prev_with_recycling(input);
 
-	  if(nth_channel_prev != NULL){
-	    g_object_unref(nth_channel_prev);
-	  }
+	if(nth_channel_prev != NULL){
+	  g_object_unref(nth_channel_prev);
 	}
       }
       
@@ -5239,12 +5241,10 @@ ags_channel_reset_recycling(AgsChannel *channel,
 	  g_object_unref(nth_channel_next);
 	}
       }else{
-	if(nth_channel_next == NULL){
-	  nth_channel_next = ags_channel_next_with_recycling(input);
+	nth_channel_next = ags_channel_next_with_recycling(input);
 
-	  if(nth_channel_next != NULL){
-	    g_object_unref(nth_channel_next);
-	  }
+	if(nth_channel_next != NULL){
+	  g_object_unref(nth_channel_next);
 	}
       }
 
@@ -6300,7 +6300,6 @@ ags_channel_reset_recycling(AgsChannel *channel,
     pthread_mutex_unlock(level_audio_mutex);
 
     if(AGS_IS_INPUT(level_channel)){
-      guint level_audio_flags;
       gboolean reset_recycling_context;
       
       reset_recycling_context = FALSE;
@@ -11324,6 +11323,8 @@ ags_channel_real_recursive_run_stage(AgsChannel *channel,
 		 NULL);
 
     /* check next recycling context */
+    current_input = NULL;
+    
     if(ags_audio_test_flags(current_audio, AGS_AUDIO_OUTPUT_HAS_RECYCLING)){
       AgsRecycling *first_recycling;
       AgsRecycling *recycling;
@@ -11683,6 +11684,8 @@ ags_channel_real_recursive_run_stage(AgsChannel *channel,
       nth_input = ags_channel_nth(start_input,
 				  line);
       
+      current_input = nth_input;
+
       /* get some fields */
       current_link = ags_channel_get_link(current_input);
       

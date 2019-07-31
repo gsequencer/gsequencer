@@ -1523,6 +1523,8 @@ ags_recall_factory_create_copy(AgsAudio *audio,
     if(channel != NULL){
       g_object_ref(channel);
     }
+
+    nth_channel = NULL;
     
     for(i = 0; i < stop_pad - start_pad; i++){
       nth_channel = ags_channel_nth(channel,
@@ -1685,6 +1687,8 @@ ags_recall_factory_create_copy(AgsAudio *audio,
     if(channel != NULL){
       g_object_ref(channel);
     }
+
+    nth_channel = NULL;
     
     for(i = 0; i < stop_pad - start_pad; i++){
       nth_channel = ags_channel_nth(channel,
@@ -6481,10 +6485,6 @@ ags_recall_factory_create_mute(AgsAudio *audio,
 				mute_audio);
       }
     }    
-
-    if(nth_channel != NULL){
-      g_object_unref(nth_channel);
-    }
   }
   
   if((AGS_RECALL_FACTORY_PLAY & (create_flags)) != 0){

@@ -422,6 +422,8 @@ ags_file_util_write_value(AgsFile *file,
 
   content = NULL;
 
+  type_str = NULL;
+  
   switch(G_VALUE_TYPE(value)){
   case G_TYPE_CHAR:
     {

@@ -255,6 +255,8 @@ ags_play_audio_signal_run_inter(AgsRecall *recall)
 		 "parent", &play_channel_run,
 		 NULL);
   }
+
+  current_muted = FALSE;
   
   if(play_recycling == NULL ||
      play_channel_run == NULL){

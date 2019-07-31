@@ -2892,7 +2892,7 @@ ags_file_write_port(AgsFile *file, xmlNode *parent, AgsPort *port)
   GValue *a;
 
   if(!AGS_IS_PORT(port)){
-    return(node);
+    return(NULL);
   }
 
   id = ags_id_generator_create_uuid();

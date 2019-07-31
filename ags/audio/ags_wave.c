@@ -773,6 +773,8 @@ ags_wave_set_samplerate(AgsWave *wave,
 
   buffer_length = g_list_length(start_list);
 
+  copy_mode = G_MAXUINT;
+  
   switch(format){
   case AGS_SOUNDCARD_SIGNED_8_BIT:
     {
@@ -835,7 +837,8 @@ ags_wave_set_samplerate(AgsWave *wave,
   }
 
   list = start_list;
-
+  offset = 0;
+  
   while(list != NULL){
     pthread_mutex_t *buffer_mutex;
   
@@ -1003,6 +1006,8 @@ ags_wave_set_buffer_size(AgsWave *wave,
   /* apply buffer size */
   pthread_mutex_lock(wave_mutex);
 
+  x = ags_timestamp_get_ags_offset(wave->timestamp);
+
   format = wave->format;
   
   wave->buffer_size = buffer_size;
@@ -1016,6 +1021,8 @@ ags_wave_set_buffer_size(AgsWave *wave,
   
   buffer_length = g_list_length(start_list);
   word_size = 1;  
+
+  copy_mode = G_MAXUINT;
   
   switch(format){
   case AGS_SOUNDCARD_SIGNED_8_BIT:
@@ -1287,6 +1294,8 @@ ags_wave_find_near_timestamp(GList *wave, guint line,
   }else{
     return(NULL);
   }
+
+  current_x = 0;
   
   retval = NULL;
   success = FALSE;
@@ -2062,7 +2071,7 @@ ags_wave_add_region_to_selection(AgsWave *wave,
       if(current_x + buffer_size < x1){
 	selection_x1 = current_x + buffer_size;
       }else{
-	selection_x0 = current_x + ((current_x + buffer_size) - x1);
+	selection_x1 = current_x + ((current_x + buffer_size) - x1);
       }
       
       ags_buffer_set_flags(list->data,
@@ -2105,7 +2114,7 @@ ags_wave_add_region_to_selection(AgsWave *wave,
       if(current_x + buffer_size < x1){
 	selection_x1 = current_x + buffer_size;
       }else{
-	selection_x0 = current_x + ((current_x + buffer_size) - x1);
+	selection_x1 = current_x + ((current_x + buffer_size) - x1);
       }
 
       if(!ags_wave_is_buffer_selected(wave, list->data)){
@@ -2122,8 +2131,8 @@ ags_wave_add_region_to_selection(AgsWave *wave,
 	guint64 current_selection_x0, current_selection_x1;
 
 	g_object_get(list->data,
-		     "selection-x0", current_selection_x0,
-		     "selection-x1", current_selection_x1,
+		     "selection-x0", &current_selection_x0,
+		     "selection-x1", &current_selection_x1,
 		     NULL);
 	
 	if(selection_x0 < current_selection_x0){
@@ -2659,6 +2668,9 @@ ags_wave_insert_native_level_from_clipboard(AgsWave *wave,
     node = root_node->children;
 
     /* retrieve x values for resetting */
+    base_x_difference = 0;
+    subtract_x = FALSE;
+
     x_boundary_val = 0;
     
     if(reset_x_offset){
@@ -2697,7 +2709,8 @@ ags_wave_insert_native_level_from_clipboard(AgsWave *wave,
 		       node->name,
 		       7)){
 	  void *target_data;
-	  
+
+	  samplerate_val = 0;
 	  samplerate = xmlGetProp(node,
 				  "samplerate");
 
@@ -2706,7 +2719,8 @@ ags_wave_insert_native_level_from_clipboard(AgsWave *wave,
 					      NULL,
 					      10);
 	  }
-	  
+
+	  buffer_size_val = 0;
 	  buffer_size = xmlGetProp(node,
 				   "buffer-size");
 

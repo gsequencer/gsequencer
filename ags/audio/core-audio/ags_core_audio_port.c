@@ -386,6 +386,8 @@ ags_core_audio_port_init(AgsCoreAudioPort *core_audio_port)
   core_audio_port->midi_port = NULL;
 #endif
 
+  word_size = 0;
+  
   switch(core_audio_port->format){
   case AGS_SOUNDCARD_SIGNED_16_BIT:
     {
@@ -2040,6 +2042,8 @@ ags_core_audio_port_handle_input_buffer(AgsCoreAudioPort *core_audio_port,
     empty_run = TRUE;
   }
 
+  word_size = 0;
+  
   switch(core_audio_port->format){
   case AGS_SOUNDCARD_SIGNED_8_BIT:
     {
@@ -2483,6 +2487,8 @@ ags_core_audio_port_get_latency(AgsCoreAudioPort *core_audio_port)
   /* lock core_audio port */
   pthread_mutex_lock(core_audio_port_mutex);
 
+  latency = 0;
+  
 #ifdef AGS_WITH_CORE_AUDIO
   if(core_audio_port->use_cache){
     latency = (guint) floor((gdouble) NSEC_PER_SEC / (gdouble) core_audio_port->samplerate * (gdouble) core_audio_port->cache_buffer_size);

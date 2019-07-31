@@ -312,6 +312,8 @@ ags_pulse_port_init(AgsPulsePort *pulse_port)
   pulse_port->sample_spec = NULL;
 #endif
 
+  word_size = 0;
+  
   switch(pulse_port->format){
   case AGS_SOUNDCARD_SIGNED_16_BIT:
     {
@@ -1260,6 +1262,8 @@ ags_pulse_port_cached_stream_request_callback(pa_stream *stream, size_t length, 
   pulse_devin = (AgsPulseDevin *) pulse_port->pulse_devin;
 
   current_cache = pulse_port->current_cache;
+
+  word_size = 0;
   
   switch(pulse_port->format){
   case AGS_SOUNDCARD_SIGNED_16_BIT:
@@ -1509,6 +1513,8 @@ ags_pulse_port_stream_request_callback(pa_stream *stream, size_t length, AgsPuls
 
   /* check buffer flag */
   pthread_mutex_lock(pulse_port_mutex);
+
+  word_size = 0;
   
   switch(pulse_port->format){
   case AGS_SOUNDCARD_SIGNED_16_BIT:

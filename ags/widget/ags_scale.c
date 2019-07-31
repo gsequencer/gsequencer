@@ -946,6 +946,8 @@ ags_scale_button_press(GtkWidget *widget,
       }else{
 	c_range = scale->upper - scale->lower;
       }
+
+      default_value = 0.0;
       
       if(scale->layout == AGS_SCALE_LAYOUT_VERTICAL){
 	default_value = event->y / c_range;
@@ -987,6 +989,8 @@ ags_scale_button_release(GtkWidget *widget,
 	c_range = scale->upper - scale->lower;
       }
       
+      default_value = 0.0;
+
       if(scale->layout == AGS_SCALE_LAYOUT_VERTICAL){
 	default_value = event->y / c_range;
       }else if(scale->layout == AGS_SCALE_LAYOUT_HORIZONTAL){
@@ -1184,6 +1188,8 @@ ags_scale_motion_notify(GtkWidget *widget,
       c_range = scale->upper - scale->lower;
     }
       
+    new_default_value = 0.0;
+
     if(scale->layout == AGS_SCALE_LAYOUT_VERTICAL){
       new_default_value = event->y / c_range;
     }else if(scale->layout == AGS_SCALE_LAYOUT_HORIZONTAL){

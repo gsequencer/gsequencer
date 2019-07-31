@@ -242,10 +242,10 @@ ags_recall_dssi_run_set_property(GObject *gobject,
 
   pthread_mutex_t *recall_mutex;
 
-  recall_dssi_run = AGS_RECALL_DSSI_RUN(recall_dssi_run);
+  recall_dssi_run = AGS_RECALL_DSSI_RUN(gobject);
 
   /* get recall mutex */
-  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(gobject);
+  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall_dssi_run);
 
   switch(prop_id){
   case PROP_ROUTE_DSSI_AUDIO_RUN:

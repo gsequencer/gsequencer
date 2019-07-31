@@ -5679,7 +5679,8 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
 
     pthread_mutex_lock(audio_mutex);
 
-    list_start = g_list_copy(audio->notation);
+    list = 
+      list_start = g_list_copy(audio->notation);
 
     while(list != NULL){
       if(AGS_NOTATION(list->data)->audio_channel >= audio_channels){
@@ -5703,7 +5704,8 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
 
     pthread_mutex_lock(audio_mutex);
 
-    list_start = g_list_copy(audio->automation);
+    list = 
+      list_start = g_list_copy(audio->automation);
 
     while(list != NULL){
       if(AGS_AUTOMATION(list->data)->line % audio_channels_old >= audio_channels){
@@ -5731,7 +5733,8 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
 
     pthread_mutex_lock(audio_mutex);
 
-    list_start = g_list_copy(audio->wave);
+    list = 
+      list_start = g_list_copy(audio->wave);
 
     while(list != NULL){
       if(AGS_WAVE(list->data)->line % audio_channels_old >= audio_channels){
@@ -5755,7 +5758,8 @@ ags_audio_real_set_audio_channels(AgsAudio *audio,
 
     pthread_mutex_lock(audio_mutex);
 
-    list_start = g_list_copy(audio->midi);
+    list = 
+      list_start = g_list_copy(audio->midi);
 
     while(list != NULL){
       if(AGS_MIDI(list->data)->audio_channel >= audio_channels){

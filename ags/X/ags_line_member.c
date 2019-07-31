@@ -1128,8 +1128,10 @@ ags_line_member_disconnect(AgsConnectable *connectable)
   }
 
   line_member->flags &= (~AGS_LINE_MEMBER_CONNECTED);
-  
+
   /* widget callback */
+  control = gtk_bin_get_child(GTK_BIN(line_member));
+  
   if(line_member->widget_type == AGS_TYPE_DIAL){
     g_object_disconnect(GTK_WIDGET(control),
 			"any_signal::value-changed",

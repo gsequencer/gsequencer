@@ -1514,6 +1514,9 @@ ags_notation_find_offset(AgsNotation *notation,
   }
 
   if(retval != NULL){
+    next = NULL;
+    prev = NULL;
+    
     if(current_start->data == retval->data){
       next = current_start->next;
       prev = current_start->prev;
@@ -2129,6 +2132,9 @@ ags_notation_insert_native_piano_from_clipboard(AgsNotation *notation,
     node = root_node->children;
 
     /* retrieve x values for resetting */
+    base_x_difference = 0;
+    subtract_x = FALSE;
+    
     if(reset_x_offset){
       if(x_boundary != NULL){
 	errno = 0;
@@ -2158,6 +2164,9 @@ ags_notation_insert_native_piano_from_clipboard(AgsNotation *notation,
     }
 
     /* retrieve y values for resetting */
+    base_y_difference = 0;
+    subtract_y = FALSE;
+
     if(reset_y_offset){
       if(y_boundary != NULL){
 	errno = 0;

@@ -1270,6 +1270,8 @@ ags_thread_set_sync(AgsThread *thread, guint tic)
   }
 
   /* get next tic and check waiting */
+  next_tic = 0;
+  
   switch(tic){
   case 0:
     {
@@ -2806,6 +2808,7 @@ ags_thread_real_clock(AgsThread *thread)
     }
 
     sync_tic = ags_main_loop_get_sync_tic(AGS_MAIN_LOOP(main_loop));
+    next_sync_tic = 0;
 
     if(sync_tic == 5){
       next_sync_tic = 0;
@@ -2831,6 +2834,7 @@ ags_thread_real_clock(AgsThread *thread)
 
     /* thread tree */
     current_tic = thread->current_tic;
+    next_tic = 0;
     
     if(current_tic == 2){
       next_tic = 0;
@@ -3404,9 +3408,13 @@ ags_thread_loop(void *ptr)
     main_loop = NULL;
   }
 
-  /* mutex */
+  /* async queue and mutex */
+  async_queue = NULL;
+  
   if(main_loop != NULL){
     main_loop_mutex = AGS_THREAD_GET_OBJ_MUTEX(main_loop);
+
+    async_queue = (AgsThread *) ags_main_loop_get_async_queue(AGS_MAIN_LOOP(main_loop));
   }
   
   mutex = AGS_THREAD_GET_OBJ_MUTEX(thread);
@@ -3812,6 +3820,8 @@ ags_thread_loop(void *ptr)
 
   sync_tic = ags_main_loop_get_sync_tic(AGS_MAIN_LOOP(main_loop));
 
+  next_sync_tic = 0;
+
   if(sync_tic == 5){
     next_sync_tic = 0;
   }else if(sync_tic == 0){
@@ -3859,6 +3869,8 @@ ags_thread_loop(void *ptr)
     current_tic = thread->current_tic;
     
     /* thread tree */
+    next_tic = 0;
+    
     if(current_tic == 2){
       next_tic = 0;
     }else if(current_tic == 0){

@@ -1608,6 +1608,9 @@ ags_midiin_oss_record(AgsSequencer *sequencer,
   device_fd = midiin->in.oss.device_fd;
 
   /* nth buffer */
+  nth_buffer = 0;
+  nth_ring_buffer = 1;
+  
   if((AGS_MIDIIN_BUFFER0 & (midiin->flags)) != 0){
     nth_buffer = 1;
     nth_ring_buffer = 0;
@@ -1899,6 +1902,9 @@ ags_midiin_alsa_record(AgsSequencer *sequencer,
   device_handle = midiin->in.alsa.handle;
       
   /* nth buffer */
+  nth_buffer = 0;
+  nth_ring_buffer = 1;
+
   if((AGS_MIDIIN_BUFFER0 & (midiin->flags)) != 0){
     nth_buffer = 1;
     nth_ring_buffer = 0;

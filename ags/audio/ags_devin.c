@@ -2070,6 +2070,8 @@ ags_devin_get_poll_fd(AgsSoundcard *soundcard)
     }
   }
 
+  fds = NULL;
+  
   if(devin->poll_fd == NULL){
     count = 0;
     
@@ -2980,6 +2982,8 @@ ags_devin_alsa_init(AgsSoundcard *soundcard,
     return;
   }
 
+  format = 0;
+  
   switch(devin->format){
   case AGS_SOUNDCARD_SIGNED_8_BIT:
     {
@@ -3231,8 +3235,7 @@ ags_devin_alsa_init(AgsSoundcard *soundcard,
       g_set_error(error,
 		  AGS_DEVIN_ERROR,
 		  AGS_DEVIN_ERROR_SAMPLERATE_NOT_AVAILABLE,
-		  "unable to open pcm device: %s",
-		  str);
+		  "unable to open pcm device");
     }
 
     devin->out.alsa.handle = NULL;
@@ -3591,6 +3594,8 @@ ags_devin_alsa_record(AgsSoundcard *soundcard,
   //				AGS_DEVIN_BUFFER3) & (devin->flags)));
 
   /* check buffer flag */
+  nth_buffer = 0;
+  
   if((AGS_DEVIN_BUFFER0 & (devin->flags)) != 0){
     nth_buffer = 0;
   }else if((AGS_DEVIN_BUFFER1 & (devin->flags)) != 0){

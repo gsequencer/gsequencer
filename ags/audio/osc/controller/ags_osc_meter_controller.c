@@ -2848,6 +2848,8 @@ ags_osc_meter_controller_monitor_meter_port(AgsOscMeterController *osc_meter_con
 
   application_context = ags_application_context_get_instance();
 
+  nth_recall = 0;
+  
   if(!strncmp(path + path_offset,
 	      ":",
 	      1)){
@@ -3005,6 +3007,8 @@ ags_osc_meter_controller_monitor_meter_port(AgsOscMeterController *osc_meter_con
 
     packet = (unsigned char *) malloc(AGS_OSC_RESPONSE_DEFAULT_CHUNK_SIZE * sizeof(unsigned char));
     memset(packet, 0, AGS_OSC_RESPONSE_DEFAULT_CHUNK_SIZE * sizeof(unsigned char));
+
+    packet_size = 0;
     
     g_object_set(osc_response,
 		 "packet", packet,
@@ -3012,8 +3016,10 @@ ags_osc_meter_controller_monitor_meter_port(AgsOscMeterController *osc_meter_con
 		 NULL);
   
     real_packet_size = AGS_OSC_RESPONSE_DEFAULT_CHUNK_SIZE;
-    
+
     path_offset += 1;
+
+    current_path = NULL;    
 
     if(!strncmp(path + path_offset,
 		"value",
@@ -3889,8 +3895,11 @@ ags_osc_meter_controller_expand_path_audio(AgsAudio *audio,
       prefix = g_strndup(path,
 			 path_offset);
 
-      if((play = ags_recall_template_find_type(start_play, recall_type)) == NULL &&
-	 (recall = ags_recall_template_find_type(start_recall, recall_type)) == NULL){
+      play = ags_recall_template_find_type(start_play, recall_type);
+      recall = ags_recall_template_find_type(start_recall, recall_type);
+
+      if(play == NULL &&
+	 recall == NULL){
 	g_list_free_full(start_play,
 			 g_object_unref);
 	g_list_free_full(start_recall,
@@ -4230,9 +4239,8 @@ ags_osc_meter_controller_expand_path_channel(AgsChannel *channel,
     }
 
     if(current != NULL){
-      next_path = g_strdup_printf("%s[%d]%s",
+      next_path = g_strdup_printf("%s[0]%s",
 				  prefix,
-				  i_stop,
 				  path + path_offset + 3);
 
       ags_osc_meter_controller_expand_path_recall(current,
@@ -4244,14 +4252,19 @@ ags_osc_meter_controller_expand_path_channel(AgsChannel *channel,
   }else if(ags_regexec(&more_access_regex, path, index_max_matches, match_arr, 0) == 0){
     AgsRecall *current;
 
+    guint i;
+    
     offset = path + match_arr[2].rm_eo;
     path_offset = offset - path;
       
     prefix = g_strndup(path,
 		       path_offset);
 
-    if((play = ags_recall_template_find_type(start_play, recall_type)) == NULL &&
-       (recall = ags_recall_template_find_type(start_recall, recall_type)) == NULL){
+    play = ags_recall_template_find_type(start_play, recall_type);
+    recall = ags_recall_template_find_type(start_recall, recall_type);
+    
+    if(play == NULL &&
+       recall == NULL){
       g_list_free_full(start_play,
 		       g_object_unref);
       g_list_free_full(start_recall,
@@ -4259,11 +4272,13 @@ ags_osc_meter_controller_expand_path_channel(AgsChannel *channel,
       
       return;
     }      
-      
+
+    i = 0;
+    
     while(play != NULL || recall != NULL){
       next_path = g_strdup_printf("%s[%d]%s",
 				  prefix,
-				  i_stop,
+				  i,
 				  path + path_offset + 3);
 
       current = NULL;
@@ -4293,10 +4308,14 @@ ags_osc_meter_controller_expand_path_channel(AgsChannel *channel,
 	recall = ags_recall_template_find_type(recall,
 					       recall_type);
       }
+
+      i++;
     }
   }else if(ags_regexec(&wildcard_access_regex, path, index_max_matches, match_arr, 0) == 0){
     AgsRecall *current;
 
+    guint i;
+    
     offset = path + match_arr[2].rm_eo;
     path_offset = offset - path;
       
@@ -4305,11 +4324,13 @@ ags_osc_meter_controller_expand_path_channel(AgsChannel *channel,
 
     play = ags_recall_template_find_type(start_play, recall_type);    
     recall = ags_recall_template_find_type(start_recall, recall_type);
-      
+
+    i = 0;
+    
     while(play != NULL || recall != NULL){
       next_path = g_strdup_printf("%s[%d]%s",
 				  prefix,
-				  i_stop,
+				  i,
 				  path + path_offset + 3);
 
       current = NULL;
@@ -4339,6 +4360,8 @@ ags_osc_meter_controller_expand_path_channel(AgsChannel *channel,
 	recall = ags_recall_template_find_type(recall,
 					       recall_type);
       }
+
+      i++;
     }
   }
 
@@ -4403,6 +4426,8 @@ ags_osc_meter_controller_expand_path_recall(AgsRecall *recall,
   pthread_mutex_unlock(&regex_mutex);
 
   prefix = NULL;
+
+  path_offset = 0;
 
   if((offset = strstr(path, "/AgsPort")) != NULL){
     path_offset = offset - path + 8;

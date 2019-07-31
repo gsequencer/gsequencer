@@ -404,6 +404,8 @@ ags_lv2_conversion_convert(AgsConversion *conversion,
 
   lv2_conversion = AGS_LV2_CONVERSION(conversion);
 
+  retval = x;
+  
   if(reverse){
     if(ags_lv2_conversion_test_flags(lv2_conversion, AGS_LV2_CONVERSION_LOGARITHMIC)){
       g_object_get(lv2_conversion,

@@ -1070,6 +1070,9 @@ ags_automation_find_near_timestamp(GList *automation, guint line,
   current = g_list_nth(current_start,
 		       position);
 
+  x = 0;
+  use_ags_offset = FALSE;
+  
   if(ags_timestamp_test_flags(timestamp,
 			      AGS_TIMESTAMP_OFFSET)){
     x = ags_timestamp_get_ags_offset(timestamp);
@@ -1318,6 +1321,9 @@ ags_automation_find_near_timestamp_extended(GList *automation, guint line,
 
   current = g_list_nth(current_start,
 		       position);
+
+  x = 0;
+  use_ags_offset = FALSE;
 
   if(ags_timestamp_test_flags(timestamp,
 			      AGS_TIMESTAMP_OFFSET)){
@@ -2584,6 +2590,9 @@ ags_automation_insert_native_scale_from_clipboard(AgsAutomation *automation,
     node = root_node->children;
 
     /* retrieve x values for resetting */
+    base_x_difference = 0;
+    subtract_x = FALSE;
+
     if(from_x_offset){
       if(x_boundary != NULL){
 	errno = 0;
@@ -2611,6 +2620,9 @@ ags_automation_insert_native_scale_from_clipboard(AgsAutomation *automation,
     }
 
     /* retrieve y values for resetting */
+    base_y_difference = 0;
+    subtract_y = FALSE;
+    
     if(from_y_offset){
       if(y_boundary != NULL){
 	errno = 0;
@@ -3340,6 +3352,8 @@ ags_automation_get_value(AgsAutomation *automation,
   if(matching_acceleration != NULL){
     guint tmp_x;
 
+    next = NULL;
+    
     if(current_start->data == matching_acceleration){
       next = current_start->next;
 

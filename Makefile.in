@@ -5712,9 +5712,9 @@ am__DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/libags.pc.in \
 	$(top_srcdir)/ags/ags_config.h.in \
 	$(top_srcdir)/ags/config.h.in \
 	$(top_srcdir)/functional-tests.mk $(top_srcdir)/unit-tests.mk \
-	ABOUT-NLS AUTHORS COPYING ChangeLog INSTALL NEWS README TODO \
-	compile config.guess config.rpath config.sub depcomp \
-	install-sh ltmain.sh missing mkinstalldirs test-driver
+	AUTHORS COPYING ChangeLog INSTALL NEWS README TODO compile \
+	config.guess config.rpath config.sub depcomp install-sh \
+	ltmain.sh missing mkinstalldirs test-driver
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 distdir = $(PACKAGE)-$(VERSION)
 top_distdir = $(distdir)
@@ -5977,6 +5977,7 @@ AM_CPPFLAGS = -std=gnu99 -include errno.h -I$(top_srcdir) \
 	-DAGS_REDUCE_RT_EVENTS=1 -DAGS_VECTORIZED_BUILTIN_FUNCTIONS=1 \
 	-DAGS_LIBRARY_SUFFIX=\".so\" -D_FORTIFY_SOURCE=2 -Wall \
 	-Wformat -Werror=format-security -Werror=return-type \
+	-Werror=uninitialized -Werror=maybe-uninitialized \
 	$(am__append_1)
 gsequencer_CFLAGS = @GSEQUENCER_CFLAGS@ $(LIBASOUND2_CFLAGS) \
 	$(LIBAO_CFLAGS) $(LIBXML2_CFLAGS) $(OPENSSL_CFLAGS) \

@@ -1534,6 +1534,8 @@ ags_core_audio_server_register_sequencer(AgsSoundServer *sound_server,
   
   pthread_mutex_unlock(core_audio_server_mutex);
 
+  core_audio_client_mutex = AGS_CORE_AUDIO_CLIENT_GET_OBJ_MUTEX(default_client);
+
 #ifdef AGS_WITH_CORE_AUDIO
   if(n_sequencers >= MIDIGetNumberOfDestinations()){
     return(NULL);

@@ -741,6 +741,8 @@ ags_lv2ui_plugin_instantiate_with_params(AgsBasePlugin *base_plugin,
     pthread_mutex_unlock(base_plugin_mutex);
   }
   
+  instantiate = NULL;
+  
   if(plugin_descriptor != NULL){
     pthread_mutex_lock(base_plugin_mutex);
     

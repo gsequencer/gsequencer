@@ -1059,6 +1059,8 @@ ags_lv2_plugin_instantiate(AgsBasePlugin *base_plugin,
     
     pthread_mutex_unlock(base_plugin_mutex);
   }
+
+  instantiate = NULL;
   
   if(plugin_so != NULL){
     lv2_descriptor = (LV2_Descriptor_Function) dlsym(plugin_so,

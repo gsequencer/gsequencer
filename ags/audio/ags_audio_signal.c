@@ -2251,6 +2251,8 @@ ags_audio_signal_set_samplerate(AgsAudioSignal *audio_signal, guint samplerate)
   
   stream_length = g_list_length(audio_signal->stream);
 
+  copy_mode = G_MAXUINT;
+  
   switch(format){
   case AGS_SOUNDCARD_SIGNED_8_BIT:
     {
@@ -2440,7 +2442,9 @@ ags_audio_signal_set_buffer_size(AgsAudioSignal *audio_signal, guint buffer_size
   data = NULL;
   
   stream_length = g_list_length(audio_signal->stream);
-  word_size = 1;  
+  word_size = 1;
+
+  copy_mode = G_MAXUINT;
   
   switch(format){
   case AGS_SOUNDCARD_SIGNED_8_BIT:

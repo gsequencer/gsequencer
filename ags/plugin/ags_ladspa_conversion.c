@@ -451,6 +451,8 @@ ags_ladspa_conversion_convert(AgsConversion *conversion,
   
   ladspa_conversion = AGS_LADSPA_CONVERSION(conversion);
 
+  retval = x;
+  
   if(reverse){
     if(ags_ladspa_conversion_test_flags(ladspa_conversion, AGS_LADSPA_CONVERSION_SAMPLERATE)){
       guint samplerate;

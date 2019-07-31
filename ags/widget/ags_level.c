@@ -905,6 +905,8 @@ ags_level_button_press(GtkWidget *widget,
       level->button_state |= AGS_LEVEL_BUTTON_1_PRESSED;
 
       c_range = level->upper - level->lower;
+
+      normalized_volume = 0.0;
       
       if(level->layout == AGS_LEVEL_LAYOUT_VERTICAL){
 	normalized_volume = event->y / c_range;
@@ -942,6 +944,8 @@ ags_level_button_release(GtkWidget *widget,
 
       c_range = level->upper - level->lower;
       
+      normalized_volume = 0.0;
+
       if(level->layout == AGS_LEVEL_LAYOUT_VERTICAL){
 	normalized_volume = event->y / c_range;
       }else if(level->layout == AGS_LEVEL_LAYOUT_HORIZONTAL){
@@ -1118,7 +1122,9 @@ ags_level_motion_notify(GtkWidget *widget,
     level->button_state |= AGS_LEVEL_BUTTON_1_PRESSED;
 
     c_range = level->upper - level->lower;
-      
+
+    new_normalized_volume = 0.0;
+            
     if(level->layout == AGS_LEVEL_LAYOUT_VERTICAL){
       new_normalized_volume = event->y / c_range;
     }else if(level->layout == AGS_LEVEL_LAYOUT_HORIZONTAL){

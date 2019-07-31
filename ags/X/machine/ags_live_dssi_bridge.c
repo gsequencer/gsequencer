@@ -1073,8 +1073,6 @@ ags_live_dssi_bridge_resize_pads(AgsMachine *machine, GType type,
       nth_channel = ags_channel_pad_nth(start_output,
 					pads_old);
 
-      g_object_unref(channel);
-
       channel = nth_channel;
 
       next_channel = NULL;

@@ -1743,6 +1743,8 @@ ags_play_lv2_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_run,
     }
     
     /* write to port */
+    success = FALSE;
+    
     if(ags_play_lv2_audio_test_flags(play_lv2_audio, AGS_PLAY_LV2_AUDIO_HAS_ATOM_PORT)){
       success = ags_lv2_plugin_atom_sequence_remove_midi(play_lv2_audio_run->atom_port,
 							 AGS_PLAY_LV2_AUDIO_DEFAULT_MIDI_LENGHT,

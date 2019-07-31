@@ -487,6 +487,8 @@ ags_capture_wave_channel_run_run_pre(AgsRecall *recall)
   delay_counter = ags_soundcard_get_delay_counter(AGS_SOUNDCARD(output_soundcard));
 
   x_offset = capture_wave_channel_run->x_offset;
+
+  relative_offset = AGS_WAVE_DEFAULT_BUFFER_LENGTH * samplerate;
   
   /* read playback */
   g_object_get(capture_wave_audio,
@@ -799,7 +801,9 @@ ags_capture_wave_channel_run_run_pre(AgsRecall *recall)
 
     file_copy_mode = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(file_format),
 							 ags_audio_buffer_util_format_from_soundcard(format));
-    
+
+    //TODO:JK: implement me
+#if 0    
     ags_soundcard_lock_buffer(AGS_SOUNDCARD(input_soundcard), data);
 
     ags_audio_buffer_util_copy_buffer_to_buffer(file_data, file_audio_channels, line,
@@ -820,6 +824,7 @@ ags_capture_wave_channel_run_run_pre(AgsRecall *recall)
 			 file_format);
 
     pthread_mutex_unlock(capture_wave_audio->audio_file_mutex);
+#endif
   }
 
   /* check loop */

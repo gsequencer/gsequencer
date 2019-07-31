@@ -2162,6 +2162,8 @@ ags_devout_get_poll_fd(AgsSoundcard *soundcard)
       return(NULL);
     }
   }
+
+  fds = NULL;
   
   if(devout->poll_fd == NULL){
     count = 0;
@@ -3067,6 +3069,8 @@ ags_devout_alsa_init(AgsSoundcard *soundcard,
     return;
   }
 
+  format = 0;
+
   switch(devout->format){
   case AGS_SOUNDCARD_SIGNED_8_BIT:
     {
@@ -3310,7 +3314,7 @@ ags_devout_alsa_init(AgsSoundcard *soundcard,
     return;
   }
 
-  if (rrate != rate) {
+  if(rrate != rate){
     pthread_mutex_unlock(devout_mutex);
     g_warning("Rate doesn't match (requested %iHz, get %iHz)", rate, err);
 
@@ -3318,8 +3322,7 @@ ags_devout_alsa_init(AgsSoundcard *soundcard,
       g_set_error(error,
 		  AGS_DEVOUT_ERROR,
 		  AGS_DEVOUT_ERROR_SAMPLERATE_NOT_AVAILABLE,
-		  "unable to open pcm device: %s",
-		  str);
+		  "unable to open pcm device");
     }
 
     devout->out.alsa.handle = NULL;
@@ -3560,6 +3563,8 @@ ags_devout_alsa_play(AgsSoundcard *soundcard,
     big_endian = snd_pcm_format_big_endian(format) == 1;
     to_unsigned = snd_pcm_format_unsigned(format) == 1;
 
+    memset(res, 0, 8 * sizeof(int));
+    
     /* fill the channel areas */
     for(count = 0; count < buffer_size - (buffer_size % 8);){
       for(chn = 0; chn < channels; chn++){
@@ -3775,6 +3780,8 @@ ags_devout_alsa_play(AgsSoundcard *soundcard,
   //				AGS_DEVOUT_BUFFER3) & (devout->flags)));
 
   /* check buffer flag */
+  nth_buffer = 0;
+  
   if((AGS_DEVOUT_BUFFER0 & (devout->flags)) != 0){
     nth_buffer = 0;
   }else if((AGS_DEVOUT_BUFFER1 & (devout->flags)) != 0){

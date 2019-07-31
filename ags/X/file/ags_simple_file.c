@@ -3871,6 +3871,8 @@ ags_simple_file_read_line(AgsSimpleFile *simple_file, xmlNode *node, AgsLine **l
       }
     }
   }
+
+  pad = NULL;
   
   if(line != NULL &&
      line[0] != NULL){
@@ -4146,7 +4148,7 @@ ags_simple_file_read_line(AgsSimpleFile *simple_file, xmlNode *node, AgsLine **l
 	GList *property_start, *property;
 
 	property_start = NULL;
-	ags_simple_file_read_property_list((AgsSimpleFile *) file_launch->file,
+	ags_simple_file_read_property_list((AgsSimpleFile *) simple_file,
 					   child,
 					   &property_start);
 
@@ -5233,8 +5235,8 @@ ags_simple_file_read_automation_editor_launch(AgsFileLaunch *file_launch,
 			    specifier = xmlGetProp(automation_port,
 						   "specifier");
 
-			    specifier = xmlGetProp(automation_port,
-						   "scope");
+			    scope = xmlGetProp(automation_port,
+					       "scope");
 
 			    if(specifier != NULL){
 			      GtkTreeModel *model;
