@@ -154,6 +154,8 @@ ags_conversion_test_stub_convert(AgsConversion *conversion,
 {
   gdouble retval;
 
+  retval = value;
+  
   switch(ags_conversion_test_convert_invoked){
   case 0:
     {

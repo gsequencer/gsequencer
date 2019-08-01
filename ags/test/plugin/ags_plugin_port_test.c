@@ -380,6 +380,8 @@ ags_plugin_port_test_find_symbol()
   GList *list;
   GList *current;
 
+  list = NULL;
+  
   /* volume */
   plugin_port = g_object_new(AGS_TYPE_PLUGIN_PORT,
 			     "port-symbol", AGS_PLUGIN_PORT_TEST_PORT_SYMBOL_VOLUME,

@@ -35,6 +35,12 @@
   <url type="homepage">http://nongnu.org/gsequencer</url>
 
   <releases>
+    <release version="2.2.31" date="2019-07-31">
+      <description>
+        <p>Fixed uninitialized values.</p>
+      </description>
+    </release>
+
     <release version="2.2.22" date="2019-07-18">
       <description>
         <p>Implemented GUI scale factor.</p>

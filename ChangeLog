@@ -1,3 +1,8 @@
+ags (2.2.31)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* fixed uninitialized values
+
 ags (2.2.30)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
