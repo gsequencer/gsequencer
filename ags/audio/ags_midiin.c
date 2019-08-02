@@ -1312,7 +1312,7 @@ ags_midiin_list_cards(AgsSequencer *sequencer,
     
     int mixerfd = -1;
 
-    int next, n;
+    int n;
     int i;
 
     if((mixer_device = getenv("OSS_MIXERDEV")) == NULL){
@@ -1379,10 +1379,6 @@ ags_midiin_list_cards(AgsSequencer *sequencer,
 	  *card_name = g_list_prepend(*card_name,
 				      g_strdup(mi.name));
 	}
-      }
-
-      if(next <= 0){
-	break;
       }
     }
 #endif
