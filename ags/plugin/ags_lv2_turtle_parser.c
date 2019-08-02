@@ -595,6 +595,10 @@ ags_lv2_turtle_parser_parse_names(AgsLv2TurtleParser *lv2_turtle_parser,
 	      subject_iriref = g_strndup(str + 1,
 					 strlen(str) - 2);
 	    }
+
+	    if(str != NULL){
+	      xmlFree(str);
+	    }
 	  }else{
 	    AgsTurtle **turtle_iter;
 	    
@@ -660,6 +664,10 @@ ags_lv2_turtle_parser_parse_names(AgsLv2TurtleParser *lv2_turtle_parser,
 		if(turtle_iter[0] == current_turtle){
 		  break;
 		}
+	      }
+
+	      if(pname != NULL){
+		xmlFree(pname);
 	      }
 	    }
 	  }
@@ -928,10 +936,13 @@ ags_lv2_turtle_parser_parse_names(AgsLv2TurtleParser *lv2_turtle_parser,
 
 	    str = xmlNodeGetContent(current_start_xpath_result->data);
 
-	    if(str != NULL &&
-	       strlen(str) > 2){
-	      so_filename = g_strndup(str + 1,
-				      strlen(str) - 2);
+	    if(str != NULL){
+	      if(strlen(str) > 2){
+		so_filename = g_strndup(str + 1,
+					strlen(str) - 2);
+	      }
+
+	      xmlFree(str);
 	    }
 	  }
 	  
@@ -1042,22 +1053,25 @@ ags_lv2_turtle_parser_parse_names(AgsLv2TurtleParser *lv2_turtle_parser,
 
 	  str = xmlNodeGetContent((xmlNode *) start_label_xpath_result->data);
 
-	  if(str != NULL &&
-	     strlen(str) > 2){
-	    gchar *tmp;
+	  if(str != NULL){
+	    if(strlen(str) > 2){
+	      gchar *tmp;
 	    
-	    tmp = g_strndup(str + 1,
-			    strlen(str) - 2);
-	    
+	      tmp = g_strndup(str + 1,
+			      strlen(str) - 2);
+	      
 #if AGS_DEBUG
-	    g_message(" `-- effect %s %s %s", AGS_BASE_PLUGIN(lv2_plugin)->filename, subject_iriref, tmp);
+	      g_message(" `-- effect %s %s %s", AGS_BASE_PLUGIN(lv2_plugin)->filename, subject_iriref, tmp);
 #endif
-
-	    g_object_set(lv2_plugin,
-			 "effect", tmp,
-			 NULL);
-
-	    g_free(tmp);
+	    
+	      g_object_set(lv2_plugin,
+			   "effect", tmp,
+			   NULL);
+	    
+	      g_free(tmp);
+	    }
+	    
+	    xmlFree(str);
 	  }
 	}
 
@@ -1147,68 +1161,71 @@ ags_lv2_turtle_parser_parse_names(AgsLv2TurtleParser *lv2_turtle_parser,
 
 	str = xmlNodeGetContent((xmlNode *) start_iriref_xpath_result->data);
 
-	if(str != NULL &&
-	   g_str_has_suffix(str,
-			    ".ttl>")){
-	  AgsTurtle **next_turtle;
-	  AgsTurtle *next;
+	if(str != NULL){
+	  if(g_str_has_suffix(str,
+			      ".ttl>")){
+	    AgsTurtle **next_turtle;
+	    AgsTurtle *next;
 	    
-	  gchar *path;
-	  gchar *filename;
+	    gchar *path;
+	    gchar *filename;
 
-	  int ttl_length;
-	  guint next_n_turtle;
-	  gboolean skip;
+	    int ttl_length;
+	    guint next_n_turtle;
+	    gboolean skip;
 	    
-	  path = g_path_get_dirname(turtle[0]->filename);
+	    path = g_path_get_dirname(turtle[0]->filename);
 
-	  ttl_length = strlen(str) - 2;
-	  filename = g_strdup_printf("%s/%.*s",
-				     path,
-				     ttl_length, &(str[1]));
+	    ttl_length = strlen(str) - 2;
+	    filename = g_strdup_printf("%s/%.*s",
+				       path,
+				       ttl_length, &(str[1]));
 
-	  skip = TRUE;
-	  next = ags_turtle_manager_find(ags_turtle_manager_get_instance(),
-					 filename);
+	    skip = TRUE;
+	    next = ags_turtle_manager_find(ags_turtle_manager_get_instance(),
+					   filename);
 	    
-	  if(next == NULL){
-	    g_message("new turtle - %s", filename);
+	    if(next == NULL){
+	      g_message("new turtle - %s", filename);
 	      
-	    next = ags_turtle_new(filename);
-	    g_object_set(lv2_turtle_parser,
-			 "turtle", next,
-			 NULL);
+	      next = ags_turtle_new(filename);
+	      g_object_set(lv2_turtle_parser,
+			   "turtle", next,
+			   NULL);
 
-	    ags_turtle_load(next,
-			    NULL);
+	      ags_turtle_load(next,
+			      NULL);
 	    
-	    ags_turtle_manager_add(ags_turtle_manager_get_instance(),
-				   (GObject *) next);
+	      ags_turtle_manager_add(ags_turtle_manager_get_instance(),
+				     (GObject *) next);
 
-	    skip = FALSE;
+	      skip = FALSE;
 	    
-	    g_object_unref(next);
+	      g_object_unref(next);
+	    }
+	    
+	    if(next != NULL &&
+	       !skip){
+	      next_n_turtle = n_turtle + 1;
+
+	      next_turtle = (AgsTurtle **) malloc((next_n_turtle + 1) * sizeof(AgsTurtle *));
+	      
+	      memcpy(next_turtle, turtle, n_turtle * sizeof(AgsTurtle *));
+
+	      next_turtle[n_turtle] = next;
+	      next_turtle[n_turtle + 1] = NULL;
+	      
+	      ags_lv2_turtle_parser_parse_names(lv2_turtle_parser,
+						next_turtle, next_n_turtle);
+
+	      free(next_turtle);
+	    }
+
+	    g_free(path);
+	    g_free(filename);
 	  }
-	    
-	  if(next != NULL &&
-	     !skip){
-	    next_n_turtle = n_turtle + 1;
 
-	    next_turtle = (AgsTurtle **) malloc((next_n_turtle + 1) * sizeof(AgsTurtle *));
-	      
-	    memcpy(next_turtle, turtle, n_turtle * sizeof(AgsTurtle *));
-
-	    next_turtle[n_turtle] = next;
-	    next_turtle[n_turtle + 1] = NULL;
-	      
-	    ags_lv2_turtle_parser_parse_names(lv2_turtle_parser,
-					      next_turtle, next_n_turtle);
-
-	    free(next_turtle);
-	  }
-
-	  g_free(path);
-	  g_free(filename);
+	  xmlFree(str);
 	}
       }
 
@@ -1432,6 +1449,10 @@ ags_lv2_turtle_parser_parse(AgsLv2TurtleParser *lv2_turtle_parser,
 	      subject_iriref = g_strndup(str + 1,
 					 strlen(str) - 2);
 	    }
+
+	    if(str != NULL){
+	      xmlFree(str);
+	    }
 	  }else{
 	    AgsTurtle **turtle_iter;
 	    
@@ -1497,6 +1518,10 @@ ags_lv2_turtle_parser_parse(AgsLv2TurtleParser *lv2_turtle_parser,
 		if(turtle_iter[0] == current_turtle){
 		  break;
 		}
+	      }
+
+	      if(pname != NULL){
+		g_free(pname);
 	      }
 	    }
 	  }
@@ -1909,10 +1934,13 @@ ags_lv2_turtle_parser_parse(AgsLv2TurtleParser *lv2_turtle_parser,
 
 	    str = xmlNodeGetContent(current_start_xpath_result->data);
 
-	    if(str != NULL &&
-	       strlen(str) > 2){
-	      so_filename = g_strndup(str + 1,
-				      strlen(str) - 2);
+	    if(str != NULL){
+	      if(strlen(str) > 2){
+		so_filename = g_strndup(str + 1,
+					strlen(str) - 2);
+	      }
+
+	      xmlFree(str);
 	    }
 	  }
 	  
@@ -2047,10 +2075,13 @@ ags_lv2_turtle_parser_parse(AgsLv2TurtleParser *lv2_turtle_parser,
 	    
 	    str = xmlNodeGetContent(current_start_xpath_result->data);
 
-	    if(str != NULL &&
-	       strlen(str) > 2){
-	      so_filename = g_strndup(str + 1,
-				      strlen(str) - 2);
+	    if(str != NULL){
+	      if(strlen(str) > 2){
+		so_filename = g_strndup(str + 1,
+					strlen(str) - 2);
+	      }
+
+	      xmlFree(str);
 	    }
 	  }
 	  
@@ -2190,22 +2221,25 @@ ags_lv2_turtle_parser_parse(AgsLv2TurtleParser *lv2_turtle_parser,
 
 	  str = xmlNodeGetContent((xmlNode *) start_label_xpath_result->data);
 
-	  if(str != NULL &&
-	     strlen(str) > 2){
-	    gchar *tmp;
+	  if(str != NULL){
+	    if(strlen(str) > 2){
+	      gchar *tmp;
 	    
 #if AGS_DEBUG
-	    g_message(" `-- effect %s", str);
+	      g_message(" `-- effect %s", str);
 #endif
 
-	    tmp = g_strndup(str + 1,
-			    strlen(str) - 2);
+	      tmp = g_strndup(str + 1,
+			      strlen(str) - 2);
 	    
-	    g_object_set(lv2_plugin,
-			 "effect", tmp,
-			 NULL);
+	      g_object_set(lv2_plugin,
+			   "effect", tmp,
+			   NULL);
 
-	    g_free(tmp);
+	      g_free(tmp);
+	    }
+
+	    xmlFree(str);
 	  }
 	}
 
@@ -2264,22 +2298,25 @@ ags_lv2_turtle_parser_parse(AgsLv2TurtleParser *lv2_turtle_parser,
 
 	  str = xmlNodeGetContent((xmlNode *) start_label_xpath_result->data);
 
-	  if(str != NULL &&
-	     strlen(str) > 2){
-	    gchar *tmp;
+	  if(str != NULL){
+	    if(strlen(str) > 2){
+	      gchar *tmp;
 	    
 #if AGS_DEBUG
-	    g_message(" `-- ui %s", str);
+	      g_message(" `-- ui %s", str);
 #endif
 
-	    tmp = g_strndup(str + 1,
-			    strlen(str) - 2);
+	      tmp = g_strndup(str + 1,
+			      strlen(str) - 2);
 	    
-	    g_object_set(lv2_plugin,
-			 "ui-uri", tmp,
-			 NULL);
+	      g_object_set(lv2_plugin,
+			   "ui-uri", tmp,
+			   NULL);
 
-	    g_free(tmp);
+	      g_free(tmp);
+	    }
+
+	    xmlFree(str);
 	  }
 	}
 
@@ -2417,6 +2454,8 @@ ags_lv2_turtle_parser_parse(AgsLv2TurtleParser *lv2_turtle_parser,
 	    g_object_set(lv2_plugin,
 			 "foaf-name", str,
 			 NULL);
+
+	    xmlFree(str);
 	  }
 	}
 
@@ -2479,6 +2518,8 @@ ags_lv2_turtle_parser_parse(AgsLv2TurtleParser *lv2_turtle_parser,
 	    g_object_set(lv2_plugin,
 			 "foaf-homepage", str,
 			 NULL);
+
+	    xmlFree(str);
 	  }
 	}
 
@@ -2541,6 +2582,8 @@ ags_lv2_turtle_parser_parse(AgsLv2TurtleParser *lv2_turtle_parser,
 	    g_object_set(lv2_plugin,
 			 "foaf-mbox", str,
 			 NULL);
+
+	    xmlFree(str);
 	  }
 	}
 
@@ -2703,7 +2746,8 @@ ags_lv2_turtle_parser_parse(AgsLv2TurtleParser *lv2_turtle_parser,
 			port_index = g_ascii_strtoull(str,
 						      NULL,
 						      10);
-
+			xmlFree(str);
+			
 			g_object_get(lv2_plugin,
 				     "plugin-port", &start_list,
 				     NULL);
@@ -3064,18 +3108,21 @@ ags_lv2_turtle_parser_parse(AgsLv2TurtleParser *lv2_turtle_parser,
 
 		      str = xmlNodeGetContent((xmlNode *) start_value_xpath_result->data);
 
-		      if(str != NULL &&
-			 strlen(str) > 2){
-			gchar *tmp;
+		      if(str != NULL){
+			if(strlen(str) > 2){
+			  gchar *tmp;
 
-			tmp = g_strndup(str + 1,
-					strlen(str) - 2);
+			  tmp = g_strndup(str + 1,
+					  strlen(str) - 2);
 		    
-			g_object_set(plugin_port,
-				     "port-name", tmp,
-				     NULL);		    
+			  g_object_set(plugin_port,
+				       "port-name", tmp,
+				       NULL);		    
 
-			g_free(tmp);
+			  g_free(tmp);
+			}
+
+			xmlFree(str);
 		      }
 		    }
 
@@ -3134,18 +3181,21 @@ ags_lv2_turtle_parser_parse(AgsLv2TurtleParser *lv2_turtle_parser,
 
 		      str = xmlNodeGetContent((xmlNode *) start_value_xpath_result->data);
 
-		      if(str != NULL &&
-			 strlen(str) > 2){
-			gchar *tmp;
+		      if(str != NULL){
+			if(strlen(str) > 2){
+			  gchar *tmp;
 
-			tmp = g_strndup(str + 1,
-					strlen(str) - 2);
+			  tmp = g_strndup(str + 1,
+					  strlen(str) - 2);
 
-			g_object_set(plugin_port,
-				     "port-symbol", tmp,
-				     NULL);
+			  g_object_set(plugin_port,
+				       "port-symbol", tmp,
+				       NULL);
 
-			g_free(tmp);
+			  g_free(tmp);
+			}
+
+			xmlFree(str);
 		      }
 		    }
 
@@ -3388,6 +3438,8 @@ ags_lv2_turtle_parser_parse(AgsLv2TurtleParser *lv2_turtle_parser,
 						       NULL);
 			g_value_set_float(plugin_port->default_value,
 					  default_value);
+
+			xmlFree(str);
 		      }
 		    }
 
@@ -3453,6 +3505,8 @@ ags_lv2_turtle_parser_parse(AgsLv2TurtleParser *lv2_turtle_parser,
 						       NULL);
 			g_value_set_float(plugin_port->lower_value,
 					  minimum_value);
+
+			xmlFree(str);
 		      }
 		    }
 
@@ -3518,6 +3572,8 @@ ags_lv2_turtle_parser_parse(AgsLv2TurtleParser *lv2_turtle_parser,
 						       NULL);
 			g_value_set_float(plugin_port->upper_value,
 					  maximum_value);
+
+			xmlFree(str);
 		      }
 		    }
 
@@ -3654,6 +3710,8 @@ ags_lv2_turtle_parser_parse(AgsLv2TurtleParser *lv2_turtle_parser,
 
 			if(str != NULL){
 			  plugin_port->scale_point[scale_point_count] = g_strdup(str);
+
+			  xmlFree(str);
 			}
 		      }
 
@@ -3715,6 +3773,8 @@ ags_lv2_turtle_parser_parse(AgsLv2TurtleParser *lv2_turtle_parser,
 			if(str != NULL){
 			  plugin_port->scale_value[scale_point_count] = g_ascii_strtod(str,
 										       NULL);
+
+			  xmlFree(str);
 			}
 		      }
 
@@ -3803,18 +3863,21 @@ ags_lv2_turtle_parser_parse(AgsLv2TurtleParser *lv2_turtle_parser,
 
 	  str = xmlNodeGetContent((xmlNode *) start_label_xpath_result->data);
 
-	  if(str != NULL &&
-	     strlen(str) > 2){
-	    gchar *tmp;
+	  if(str != NULL){
+	    if(strlen(str) > 2){
+	      gchar *tmp;
+	      
+	      tmp = g_strndup(str + 1,
+			      strlen(str) - 2);
+	      
+	      g_object_set(lv2_preset,
+			   "preset-label", str,
+			   NULL);
+	      
+	      g_free(tmp);
+	    }
 
-	    tmp = g_strndup(str + 1,
-			    strlen(str) - 2);
-	    
-	    g_object_set(lv2_preset,
-			 "preset-label", str,
-			 NULL);
-
-	    g_free(tmp);
+	    xmlFree(str);
 	  }
 	}
 
@@ -3877,6 +3940,8 @@ ags_lv2_turtle_parser_parse(AgsLv2TurtleParser *lv2_turtle_parser,
 	    g_object_set(lv2_preset,
 			 "bank", str,
 			 NULL);
+
+	    xmlFree(str);
 	  }
 	}
 
@@ -3935,18 +4000,21 @@ ags_lv2_turtle_parser_parse(AgsLv2TurtleParser *lv2_turtle_parser,
 
 	  str = xmlNodeGetContent((xmlNode *) start_applies_to_xpath_result->data);
 
-	  if(str != NULL &&
-	     strlen(str) > 2){
-	    gchar *tmp;
+	  if(str != NULL){
+	    if(strlen(str) > 2){
+	      gchar *tmp;
 
-	    tmp = g_strndup(str + 1,
-			    strlen(str) - 2);
+	      tmp = g_strndup(str + 1,
+			      strlen(str) - 2);
 	      
-	    g_object_set(lv2_preset,
-			 "applies-to", tmp,
-			 NULL);
+	      g_object_set(lv2_preset,
+			   "applies-to", tmp,
+			   NULL);
 
-	    g_free(tmp);
+	      g_free(tmp);
+	    }
+
+	    xmlFree(str);
 	  }
 	}else{
 	  applies_to_xpath = "./rdf-object/rdf-iri/rdf-prefixed-name/rdf-pname-ln";
@@ -4022,6 +4090,10 @@ ags_lv2_turtle_parser_parse(AgsLv2TurtleParser *lv2_turtle_parser,
 			 "applies-to", applies_to_iriref,
 			 NULL);
 
+	    if(applies_to_pname){
+	      xmlFree(applies_to_pname);
+	    }
+	    
 	    g_free(applies_to_iriref);
 	  }
 	}
@@ -4147,10 +4219,13 @@ ags_lv2_turtle_parser_parse(AgsLv2TurtleParser *lv2_turtle_parser,
 
 		  str = xmlNodeGetContent((xmlNode *) start_value_xpath_result->data);
 
-		  if(str != NULL &&
-		     strlen(str) > 2){
-		    port_symbol = g_strndup(str + 1,
-					    strlen(str) - 2);
+		  if(str != NULL){
+		    if(strlen(str) > 2){
+		      port_symbol = g_strndup(str + 1,
+					      strlen(str) - 2);
+		    }
+
+		    xmlFree(str);
 		  }
 		}
 
@@ -4212,6 +4287,8 @@ ags_lv2_turtle_parser_parse(AgsLv2TurtleParser *lv2_turtle_parser,
 		  if(str != NULL){
 		    value = g_ascii_strtod(str,
 					   NULL);
+
+		    xmlFree(str);
 		  }
 		}
 
@@ -4384,6 +4461,10 @@ ags_lv2_turtle_parser_parse(AgsLv2TurtleParser *lv2_turtle_parser,
 
 	  g_free(path);
 	  g_free(filename);
+	}
+
+	if(str != NULL){
+	  xmlFree(str);
 	}
       }
 
