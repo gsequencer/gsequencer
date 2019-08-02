@@ -2748,6 +2748,8 @@ ags_devin_oss_record(AgsSoundcard *soundcard,
   }
 
   /* check buffer flag */
+  nth_buffer = 0;
+  
   if((AGS_DEVIN_BUFFER0 & (devin->flags)) != 0){
     nth_buffer = 0;
   }else if((AGS_DEVIN_BUFFER1 & (devin->flags)) != 0){

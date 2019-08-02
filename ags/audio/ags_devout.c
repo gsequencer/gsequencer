@@ -2732,6 +2732,8 @@ ags_devout_oss_play(AgsSoundcard *soundcard,
     /* fill the channel areas */
     for(count = 0; count < buffer_size; count++){
       for(chn = 0; chn < channels; chn++){
+	res = 0;
+	
 	switch(ags_format){
 	case AGS_SOUNDCARD_SIGNED_8_BIT:
 	  {
@@ -2837,6 +2839,8 @@ ags_devout_oss_play(AgsSoundcard *soundcard,
   }
 
   /* check buffer flag */
+  nth_buffer = 0;
+  
   if((AGS_DEVOUT_BUFFER0 & (devout->flags)) != 0){
     nth_buffer = 0;
   }else if((AGS_DEVOUT_BUFFER1 & (devout->flags)) != 0){
