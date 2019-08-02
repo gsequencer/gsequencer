@@ -2340,6 +2340,8 @@ ags_pulse_port_get_latency(AgsPulsePort *pulse_port)
   /* lock pulse port */
   pthread_mutex_lock(pulse_port_mutex);
 
+  latency = 0;
+  
 #ifdef AGS_WITH_PULSE
   if(pulse_port->use_cache){
     latency = (guint) floor((gdouble) NSEC_PER_SEC / (gdouble) pulse_port->sample_spec->rate * (gdouble) pulse_port->cache_buffer_size);
