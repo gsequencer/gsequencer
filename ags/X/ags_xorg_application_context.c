@@ -140,6 +140,9 @@ void ags_xorg_application_context_set_show_animation(AgsUiProvider *ui_provider,
 gboolean ags_xorg_application_context_get_gui_ready(AgsUiProvider *ui_provider);
 void ags_xorg_application_context_set_gui_ready(AgsUiProvider *ui_provider,
 						gboolean is_gui_ready);
+GtkWidget* ags_xorg_application_context_get_animation_window(AgsUiProvider *ui_provider);
+void ags_xorg_application_context_set_animation_window(AgsUiProvider *ui_provider,
+						       GtkWidget *widget);
 
 void ags_xorg_application_context_load_config(AgsApplicationContext *application_context);
 
@@ -416,6 +419,9 @@ ags_xorg_application_context_ui_provider_interface_init(AgsUiProviderInterface *
 
   ui_provider->get_gui_ready = ags_xorg_application_context_get_gui_ready;
   ui_provider->set_gui_ready = ags_xorg_application_context_set_gui_ready;
+
+  ui_provider->get_animation_window = ags_xorg_application_context_get_animation_window;
+  ui_provider->set_animation_window = ags_xorg_application_context_set_animation_window;
 }
 
 void
@@ -475,6 +481,8 @@ ags_xorg_application_context_init(AgsXorgApplicationContext *xorg_application_co
   xorg_application_context->osc_server = NULL;
 
   xorg_application_context->window = NULL;
+
+  xorg_application_context->animation_window = NULL;
 }
 
 void
@@ -1499,6 +1507,51 @@ ags_xorg_application_context_set_window(AgsUiProvider *ui_provider,
   pthread_mutex_lock(application_context_mutex);
 
   AGS_XORG_APPLICATION_CONTEXT(application_context)->window = (AgsWindow *) widget;
+   
+  pthread_mutex_unlock(application_context_mutex);
+}
+
+GtkWidget*
+ags_xorg_application_context_get_animation_window(AgsUiProvider *ui_provider)
+{
+  GtkWidget *animation_window;
+  
+  AgsApplicationContext *application_context;
+
+  pthread_mutex_t *application_context_mutex;
+
+  application_context = AGS_APPLICATION_CONTEXT(ui_provider);
+  
+  /* get mutex */
+  application_context_mutex = AGS_APPLICATION_CONTEXT_GET_OBJ_MUTEX(application_context);
+
+  /* get animation window */
+  pthread_mutex_lock(application_context_mutex);
+
+  animation_window = AGS_XORG_APPLICATION_CONTEXT(application_context)->animation_window;
+  
+  pthread_mutex_unlock(application_context_mutex);
+
+  return(animation_window);
+}
+
+void
+ags_xorg_application_context_set_animation_window(AgsUiProvider *ui_provider,
+						  GtkWidget *widget)
+{
+  AgsApplicationContext *application_context;
+
+  pthread_mutex_t *application_context_mutex;
+
+  application_context = AGS_APPLICATION_CONTEXT(ui_provider);
+  
+  /* get mutex */
+  application_context_mutex = AGS_APPLICATION_CONTEXT_GET_OBJ_MUTEX(application_context);
+
+  /* set animation_window */
+  pthread_mutex_lock(application_context_mutex);
+
+  AGS_XORG_APPLICATION_CONTEXT(application_context)->animation_window = (GtkWindow *) widget;
    
   pthread_mutex_unlock(application_context_mutex);
 }
