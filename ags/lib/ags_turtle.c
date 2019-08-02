@@ -1759,6 +1759,10 @@ ags_turtle_find_xpath(AgsTurtle *turtle,
     }
   }
 
+  if(xpath_object != NULL){
+    free(xpath_object);
+  }
+
   list = g_list_reverse(list);
   
   return(list);
@@ -1812,6 +1816,10 @@ ags_turtle_find_xpath_with_context_node(AgsTurtle *turtle,
 			      node[i]);
       }
     }
+  }
+
+  if(xpath_object != NULL){
+    free(xpath_object);
   }
 
   if(list != NULL){
