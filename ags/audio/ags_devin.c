@@ -2140,7 +2140,9 @@ ags_devin_is_available(AgsSoundcard *soundcard)
 
   while(list !=	NULL){
     signed short revents;
-
+    
+    revents = 0;
+      
     if((AGS_DEVIN_ALSA & (devin->flags)) != 0){
 #ifdef AGS_WITH_ALSA
       snd_pcm_poll_descriptors_revents(devin->out.alsa.handle, AGS_POLL_FD(list->data)->poll_fd, 1, &revents);
@@ -2982,7 +2984,9 @@ ags_devin_alsa_init(AgsSoundcard *soundcard,
     return;
   }
 
+#ifdef AGS_WITH_ALSA
   format = 0;
+#endif
   
   switch(devin->format){
   case AGS_SOUNDCARD_SIGNED_8_BIT:

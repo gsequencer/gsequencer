@@ -2234,9 +2234,9 @@ ags_devout_is_available(AgsSoundcard *soundcard)
   while(list !=	NULL){
     gint16 revents;
 
-    if((AGS_DEVOUT_ALSA & (devout->flags)) != 0){
-      revents = 0;
+    revents = 0;
       
+    if((AGS_DEVOUT_ALSA & (devout->flags)) != 0){
 #ifdef AGS_WITH_ALSA
       snd_pcm_poll_descriptors_revents(devout->out.alsa.handle, AGS_POLL_FD(list->data)->poll_fd, 1, &revents);
 #endif
@@ -2676,8 +2676,6 @@ ags_devout_oss_play(AgsSoundcard *soundcard,
   GList *task;
   GList *list;
 
-  gchar *str;
-  
   guint word_size;
   guint nth_buffer;
 
@@ -3069,8 +3067,10 @@ ags_devout_alsa_init(AgsSoundcard *soundcard,
     return;
   }
 
+#ifdef AGS_WITH_ALSA
   format = 0;
-
+#endif
+  
   switch(devout->format){
   case AGS_SOUNDCARD_SIGNED_8_BIT:
     {
