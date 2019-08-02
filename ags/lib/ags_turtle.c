@@ -1759,9 +1759,8 @@ ags_turtle_find_xpath(AgsTurtle *turtle,
     }
   }
 
-  if(xpath_object != NULL){
-    free(xpath_object);
-  }
+  xmlXPathFreeObject(xpath_object);
+  xmlXPathFreeContext(xpath_context);
 
   list = g_list_reverse(list);
   
@@ -1818,9 +1817,8 @@ ags_turtle_find_xpath_with_context_node(AgsTurtle *turtle,
     }
   }
 
-  if(xpath_object != NULL){
-    free(xpath_object);
-  }
+  xmlXPathFreeObject(xpath_object);
+  xmlXPathFreeContext(xpath_context);
 
   if(list != NULL){
     list = g_list_reverse(list);
@@ -3359,6 +3357,9 @@ ags_turtle_load(AgsTurtle *turtle,
   
   free(sb);
   free(buffer);
+
+  xmlCleanupParser();
+  xmlMemoryDump();
   
   return(doc);
 }
