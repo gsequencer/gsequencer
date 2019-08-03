@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -485,11 +485,7 @@ ags_port_set_property(GObject *gobject,
   port = AGS_PORT(gobject);
 
   /* get port mutex */
-  pthread_mutex_lock(ags_port_get_class_mutex());
-  
-  port_mutex = port->obj_mutex;
-  
-  pthread_mutex_unlock(ags_port_get_class_mutex());
+  port_mutex = AGS_PORT_GET_OBJ_MUTEX(port);
 
   switch(prop_id){
   case PROP_PLUGIN_NAME:
@@ -692,11 +688,7 @@ ags_port_get_property(GObject *gobject,
   port = AGS_PORT(gobject);
 
   /* get port mutex */
-  pthread_mutex_lock(ags_port_get_class_mutex());
-  
-  port_mutex = port->obj_mutex;
-  
-  pthread_mutex_unlock(ags_port_get_class_mutex());
+  port_mutex = AGS_PORT_GET_OBJ_MUTEX(port);
 
   switch(prop_id){
   case PROP_PLUGIN_NAME:
@@ -874,11 +866,7 @@ ags_port_get_uuid(AgsConnectable *connectable)
   port = AGS_PORT(connectable);
 
   /* get port mutex */
-  pthread_mutex_lock(ags_port_get_class_mutex());
-  
-  port_mutex = port->obj_mutex;
-  
-  pthread_mutex_unlock(ags_port_get_class_mutex());
+  port_mutex = AGS_PORT_GET_OBJ_MUTEX(port);
 
   /* get UUID */
   pthread_mutex_lock(port_mutex);
@@ -908,11 +896,7 @@ ags_port_is_ready(AgsConnectable *connectable)
   port = AGS_PORT(connectable);
 
   /* get port mutex */
-  pthread_mutex_lock(ags_port_get_class_mutex());
-  
-  port_mutex = port->obj_mutex;
-  
-  pthread_mutex_unlock(ags_port_get_class_mutex());
+  port_mutex = AGS_PORT_GET_OBJ_MUTEX(port);
 
   /* check is added */
   pthread_mutex_lock(port_mutex);
@@ -1012,11 +996,7 @@ ags_port_is_connected(AgsConnectable *connectable)
   port = AGS_PORT(connectable);
 
   /* get port mutex */
-  pthread_mutex_lock(ags_port_get_class_mutex());
-  
-  port_mutex = port->obj_mutex;
-  
-  pthread_mutex_unlock(ags_port_get_class_mutex());
+  port_mutex = AGS_PORT_GET_OBJ_MUTEX(port);
 
   /* check is connected */
   pthread_mutex_lock(port_mutex);
@@ -1102,11 +1082,7 @@ ags_port_test_flags(AgsPort *port, guint flags)
   }
 
   /* get port mutex */
-  pthread_mutex_lock(ags_port_get_class_mutex());
-  
-  port_mutex = port->obj_mutex;
-  
-  pthread_mutex_unlock(ags_port_get_class_mutex());
+  port_mutex = AGS_PORT_GET_OBJ_MUTEX(port);
 
   /* test */
   pthread_mutex_lock(port_mutex);
@@ -1137,11 +1113,7 @@ ags_port_set_flags(AgsPort *port, guint flags)
   }
 
   /* get port mutex */
-  pthread_mutex_lock(ags_port_get_class_mutex());
-  
-  port_mutex = port->obj_mutex;
-  
-  pthread_mutex_unlock(ags_port_get_class_mutex());
+  port_mutex = AGS_PORT_GET_OBJ_MUTEX(port);
 
   /* set flags */
   pthread_mutex_lock(port_mutex);
@@ -1170,11 +1142,7 @@ ags_port_unset_flags(AgsPort *port, guint flags)
   }
 
   /* get port mutex */
-  pthread_mutex_lock(ags_port_get_class_mutex());
-  
-  port_mutex = port->obj_mutex;
-  
-  pthread_mutex_unlock(ags_port_get_class_mutex());
+  port_mutex = AGS_PORT_GET_OBJ_MUTEX(port);
 
   /* set flags */
   pthread_mutex_lock(port_mutex);
@@ -1193,11 +1161,7 @@ ags_port_real_safe_read(AgsPort *port, GValue *value)
   pthread_mutex_t *port_mutex;
 
   /* get port mutex */
-  pthread_mutex_lock(ags_port_get_class_mutex());
-  
-  port_mutex = port->obj_mutex;
-  
-  pthread_mutex_unlock(ags_port_get_class_mutex());
+  port_mutex = AGS_PORT_GET_OBJ_MUTEX(port);
 
   /* safe read */
   pthread_mutex_lock(port_mutex);
@@ -1325,11 +1289,7 @@ ags_port_safe_read_raw(AgsPort *port, GValue *value)
   pthread_mutex_t *port_mutex;
 
   /* get port mutex */
-  pthread_mutex_lock(ags_port_get_class_mutex());
-  
-  port_mutex = port->obj_mutex;
-  
-  pthread_mutex_unlock(ags_port_get_class_mutex());
+  port_mutex = AGS_PORT_GET_OBJ_MUTEX(port);
 
   /* safe read */
   pthread_mutex_lock(port_mutex);
@@ -1412,11 +1372,7 @@ ags_port_real_safe_write(AgsPort *port, GValue *value)
   pthread_mutex_t *port_mutex;
 
   /* get port mutex */
-  pthread_mutex_lock(ags_port_get_class_mutex());
-  
-  port_mutex = port->obj_mutex;
-  
-  pthread_mutex_unlock(ags_port_get_class_mutex());
+  port_mutex = AGS_PORT_GET_OBJ_MUTEX(port);
 
   /* write */
   pthread_mutex_lock(port_mutex);
@@ -1528,11 +1484,7 @@ ags_port_safe_write_raw(AgsPort *port, GValue *value)
   }
 
   /* get port mutex */
-  pthread_mutex_lock(ags_port_get_class_mutex());
-  
-  port_mutex = port->obj_mutex;
-  
-  pthread_mutex_unlock(ags_port_get_class_mutex());
+  port_mutex = AGS_PORT_GET_OBJ_MUTEX(port);
 
   /* write raw */
   pthread_mutex_lock(port_mutex);
@@ -1594,11 +1546,7 @@ ags_port_real_safe_get_property(AgsPort *port, gchar *property_name, GValue *val
   pthread_mutex_t *port_mutex;
 
   /* get port mutex */
-  pthread_mutex_lock(ags_port_get_class_mutex());
-  
-  port_mutex = port->obj_mutex;
-  
-  pthread_mutex_unlock(ags_port_get_class_mutex());
+  port_mutex = AGS_PORT_GET_OBJ_MUTEX(port);
 
   /* get property */
   pthread_mutex_lock(port_mutex);
@@ -1637,11 +1585,7 @@ ags_port_real_safe_set_property(AgsPort *port, gchar *property_name, GValue *val
   pthread_mutex_t *port_mutex;
 
   /* get port mutex */
-  pthread_mutex_lock(ags_port_get_class_mutex());
-  
-  port_mutex = port->obj_mutex;
-  
-  pthread_mutex_unlock(ags_port_get_class_mutex());
+  port_mutex = AGS_PORT_GET_OBJ_MUTEX(port);
 
   /* set property */
   pthread_mutex_lock(port_mutex);
@@ -1698,11 +1642,7 @@ ags_port_find_specifier(GList *port, gchar *specifier)
     current_port = port->data;
 
     /* get port mutex */
-    pthread_mutex_lock(ags_port_get_class_mutex());
-  
-    port_mutex = current_port->obj_mutex;
-  
-    pthread_mutex_unlock(ags_port_get_class_mutex());
+    port_mutex = AGS_PORT_GET_OBJ_MUTEX(current_port);
 
     /* check specifier */
     pthread_mutex_lock(port_mutex);
@@ -1742,11 +1682,7 @@ ags_port_add_automation(AgsPort *port, GObject *automation)
   }
 
   /* get port mutex */
-  pthread_mutex_lock(ags_port_get_class_mutex());
-
-  port_mutex = port->obj_mutex;
-  
-  pthread_mutex_unlock(ags_port_get_class_mutex());
+  port_mutex = AGS_PORT_GET_OBJ_MUTEX(port);
 
   /* add recall id */
   pthread_mutex_lock(port_mutex);
@@ -1785,11 +1721,7 @@ ags_port_remove_automation(AgsPort *port, GObject *automation)
   }
 
   /* get port mutex */
-  pthread_mutex_lock(ags_port_get_class_mutex());
-
-  port_mutex = port->obj_mutex;
-  
-  pthread_mutex_unlock(ags_port_get_class_mutex());
+  port_mutex = AGS_PORT_GET_OBJ_MUTEX(port);
 
   /* remove automation */
   pthread_mutex_lock(port_mutex);

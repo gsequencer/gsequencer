@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -197,11 +197,7 @@ ags_osc_response_set_property(GObject *gobject,
   osc_response = AGS_OSC_RESPONSE(gobject);
 
   /* get osc response mutex */
-  pthread_mutex_lock(ags_osc_response_get_class_mutex());
-  
-  osc_response_mutex = osc_response->obj_mutex;
-  
-  pthread_mutex_unlock(ags_osc_response_get_class_mutex());
+  osc_response_mutex = AGS_OSC_RESPONSE_GET_OBJ_MUTEX(osc_response);
   
   switch(prop_id){
   case PROP_PACKET:
@@ -276,11 +272,7 @@ ags_osc_response_get_property(GObject *gobject,
   osc_response = AGS_OSC_RESPONSE(gobject);
 
   /* get osc response mutex */
-  pthread_mutex_lock(ags_osc_response_get_class_mutex());
-  
-  osc_response_mutex = osc_response->obj_mutex;
-  
-  pthread_mutex_unlock(ags_osc_response_get_class_mutex());
+  osc_response_mutex = AGS_OSC_RESPONSE_GET_OBJ_MUTEX(osc_response);
   
   switch(prop_id){
   case PROP_PACKET:
@@ -389,11 +381,7 @@ ags_osc_response_test_flags(AgsOscResponse *osc_response, guint flags)
   }
 
   /* get osc_response mutex */
-  pthread_mutex_lock(ags_osc_response_get_class_mutex());
-  
-  osc_response_mutex = osc_response->obj_mutex;
-  
-  pthread_mutex_unlock(ags_osc_response_get_class_mutex());
+  osc_response_mutex = AGS_OSC_RESPONSE_GET_OBJ_MUTEX(osc_response);
 
   /* test */
   pthread_mutex_lock(osc_response_mutex);
@@ -424,11 +412,7 @@ ags_osc_response_set_flags(AgsOscResponse *osc_response, guint flags)
   }
 
   /* get osc_response mutex */
-  pthread_mutex_lock(ags_osc_response_get_class_mutex());
-  
-  osc_response_mutex = osc_response->obj_mutex;
-  
-  pthread_mutex_unlock(ags_osc_response_get_class_mutex());
+  osc_response_mutex = AGS_OSC_RESPONSE_GET_OBJ_MUTEX(osc_response);
 
   /* set flags */
   pthread_mutex_lock(osc_response_mutex);
@@ -457,11 +441,7 @@ ags_osc_response_unset_flags(AgsOscResponse *osc_response, guint flags)
   }
 
   /* get osc_response mutex */
-  pthread_mutex_lock(ags_osc_response_get_class_mutex());
-  
-  osc_response_mutex = osc_response->obj_mutex;
-  
-  pthread_mutex_unlock(ags_osc_response_get_class_mutex());
+  osc_response_mutex = AGS_OSC_RESPONSE_GET_OBJ_MUTEX(osc_response);
 
   /* set flags */
   pthread_mutex_lock(osc_response_mutex);

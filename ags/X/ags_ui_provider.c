@@ -236,3 +236,48 @@ ags_ui_provider_set_gui_ready(AgsUiProvider *ui_provider,
   ui_provider_interface->set_gui_ready(ui_provider,
 				       is_gui_ready);
 }
+
+/**
+ * ags_ui_provider_get_animation_window:
+ * @ui_provider: the #AgsUiProvider
+ * 
+ * Get animation window.
+ * 
+ * Returns: the #GtkWidget
+ * 
+ * Since: 2.2.33
+ */
+GtkWidget*
+ags_ui_provider_get_animation_window(AgsUiProvider *ui_provider)
+{
+  AgsUiProviderInterface *ui_provider_interface;
+
+  g_return_val_if_fail(AGS_IS_UI_PROVIDER(ui_provider), NULL);
+  ui_provider_interface = AGS_UI_PROVIDER_GET_INTERFACE(ui_provider);
+  g_return_val_if_fail(ui_provider_interface->get_animation_window, NULL);
+
+  return(ui_provider_interface->get_animation_window(ui_provider));
+}
+
+/**
+ * ags_ui_provider_get_animation_window:
+ * @ui_provider: the #AgsUiProvider
+ * @animation_window: the #GtkWidget
+ * 
+ * Set animation window.
+ * 
+ * Since: 2.2.33
+ */
+void
+ags_ui_provider_set_animation_window(AgsUiProvider *ui_provider,
+				     GtkWidget *animation_window)
+{
+  AgsUiProviderInterface *ui_provider_interface;
+
+  g_return_if_fail(AGS_IS_UI_PROVIDER(ui_provider));
+  ui_provider_interface = AGS_UI_PROVIDER_GET_INTERFACE(ui_provider);
+  g_return_if_fail(ui_provider_interface->set_animation_window);
+
+  ui_provider_interface->set_animation_window(ui_provider,
+					      animation_window);
+}

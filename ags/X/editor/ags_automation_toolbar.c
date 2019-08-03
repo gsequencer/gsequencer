@@ -778,9 +778,14 @@ ags_automation_toolbar_apply_port(AgsAutomationToolbar *automation_toolbar,
   AgsChannel *start_channel;
   AgsChannel *channel, *next_channel;
 
+  AgsConfig *config;
+
   GList *start_automation, *automation;
   GList *start_port, *port;
   
+  gchar *str;
+  
+  gdouble gui_scale_factor;
   guint length;
   gboolean contains_specifier;
   gboolean is_active;
@@ -796,6 +801,22 @@ ags_automation_toolbar_apply_port(AgsAutomationToolbar *automation_toolbar,
   machine = automation_editor->selected_machine;
 
   model = gtk_combo_box_get_model(automation_toolbar->port);
+
+  config = ags_config_get_instance();
+  
+  /* scale factor */
+  gui_scale_factor = 1.0;
+  
+  str = ags_config_get_value(config,
+			     AGS_CONFIG_GENERIC,
+			     "gui-scale");
+
+  if(str != NULL){
+    gui_scale_factor = g_ascii_strtod(str,
+				      NULL);
+
+    g_free(str);
+  }
 
   /* update port combo box */
   start_port = NULL;
@@ -996,6 +1017,10 @@ ags_automation_toolbar_apply_port(AgsAutomationToolbar *automation_toolbar,
     
     /* scale */
     scale = ags_scale_new();
+    g_object_set(scale,
+		 "scale-width", (guint) (gui_scale_factor * AGS_SCALE_DEFAULT_SCALE_WIDTH),
+		 "scale-height", (guint) (gui_scale_factor * AGS_SCALE_DEFAULT_SCALE_HEIGHT),
+		 NULL);
 
     /* get some fields */
     plugin_port = NULL;
@@ -1065,8 +1090,15 @@ ags_automation_toolbar_apply_port(AgsAutomationToolbar *automation_toolbar,
 		 "upper", upper,
 		 "lower", lower,
 		 "default-value", default_value,
+		 "upper", upper,
+		 "lower", lower,
 		 NULL);
 
+    if(plugin_port != NULL &&
+       ags_plugin_port_test_flags(plugin_port, AGS_PLUGIN_PORT_LOGARITHMIC)){
+      automation_edit->flags |= AGS_AUTOMATION_EDIT_LOGARITHMIC;
+    }
+    
     if(channel_type == G_TYPE_NONE){
       gtk_box_pack_start((GtkBox *) automation_editor->audio_scrolled_automation_edit_box->automation_edit_box,
 			 (GtkWidget *) automation_edit,

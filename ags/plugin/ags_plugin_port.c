@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -315,11 +315,7 @@ ags_plugin_port_set_property(GObject *gobject,
   plugin_port = AGS_PLUGIN_PORT(gobject);
 
   /* get plugin port mutex */
-  pthread_mutex_lock(ags_plugin_port_get_class_mutex());
-  
-  plugin_port_mutex = plugin_port->obj_mutex;
-  
-  pthread_mutex_unlock(ags_plugin_port_get_class_mutex());
+  plugin_port_mutex = AGS_PLUGIN_PORT_GET_OBJ_MUTEX(plugin_port);
 
   switch(prop_id){
   case PROP_PORT_INDEX:
@@ -484,11 +480,7 @@ ags_plugin_port_get_property(GObject *gobject,
   plugin_port = AGS_PLUGIN_PORT(gobject);
 
   /* get plugin port mutex */
-  pthread_mutex_lock(ags_plugin_port_get_class_mutex());
-  
-  plugin_port_mutex = plugin_port->obj_mutex;
-  
-  pthread_mutex_unlock(ags_plugin_port_get_class_mutex());
+  plugin_port_mutex = AGS_PLUGIN_PORT_GET_OBJ_MUTEX(plugin_port);
 
   switch(prop_id){
   case PROP_PORT_INDEX:
@@ -671,11 +663,7 @@ ags_plugin_port_test_flags(AgsPluginPort *plugin_port, guint flags)
   }
       
   /* get plugin_port mutex */
-  pthread_mutex_lock(ags_plugin_port_get_class_mutex());
-  
-  plugin_port_mutex = plugin_port->obj_mutex;
-  
-  pthread_mutex_unlock(ags_plugin_port_get_class_mutex());
+  plugin_port_mutex = AGS_PLUGIN_PORT_GET_OBJ_MUTEX(plugin_port);
 
   /* test */
   pthread_mutex_lock(plugin_port_mutex);
@@ -706,11 +694,7 @@ ags_plugin_port_set_flags(AgsPluginPort *plugin_port, guint flags)
   }
       
   /* get plugin_port mutex */
-  pthread_mutex_lock(ags_plugin_port_get_class_mutex());
-  
-  plugin_port_mutex = plugin_port->obj_mutex;
-  
-  pthread_mutex_unlock(ags_plugin_port_get_class_mutex());
+  plugin_port_mutex = AGS_PLUGIN_PORT_GET_OBJ_MUTEX(plugin_port);
 
   /* set */
   pthread_mutex_lock(plugin_port_mutex);
@@ -739,11 +723,7 @@ ags_plugin_port_unset_flags(AgsPluginPort *plugin_port, guint flags)
   }
       
   /* get plugin_port mutex */
-  pthread_mutex_lock(ags_plugin_port_get_class_mutex());
-  
-  plugin_port_mutex = plugin_port->obj_mutex;
-  
-  pthread_mutex_unlock(ags_plugin_port_get_class_mutex());
+  plugin_port_mutex = AGS_PLUGIN_PORT_GET_OBJ_MUTEX(plugin_port);
 
   /* unset */
   pthread_mutex_lock(plugin_port_mutex);
@@ -782,17 +762,57 @@ ags_plugin_port_find_symbol(GList *plugin_port,
     current_plugin_port = AGS_PLUGIN_PORT(plugin_port->data);
     
     /* get plugin port mutex */
-    pthread_mutex_lock(ags_plugin_port_get_class_mutex());
-  
-    plugin_port_mutex = current_plugin_port->obj_mutex;
-  
-    pthread_mutex_unlock(ags_plugin_port_get_class_mutex());
+    plugin_port_mutex = AGS_PLUGIN_PORT_GET_OBJ_MUTEX(current_plugin_port);
     
     /* check port symbol */
     pthread_mutex_lock(plugin_port_mutex);
 
     success = (!g_strcmp0(port_symbol,
 			  current_plugin_port->port_symbol)) ? TRUE: FALSE;
+    
+    pthread_mutex_unlock(plugin_port_mutex);
+
+    if(success){
+      return(plugin_port);
+    }
+    
+    plugin_port = plugin_port->next;
+  }
+  
+  return(NULL);
+}
+
+/**
+ * ags_plugin_port_find_port_index:
+ * @plugin_port: the #GList-struct containing #AgsPluginPort
+ * @port_index: the port index
+ * 
+ * Find @port_index within @plugin_port.
+ * 
+ * Returns: the matching #GList-struct containing #AgsPluginPort
+ * 
+ * Since: 2.2.7
+ */
+GList*
+ags_plugin_port_find_port_index(GList *plugin_port,
+				guint port_index)
+{
+  AgsPluginPort *current_plugin_port;
+
+  gboolean success;
+  
+  pthread_mutex_t *plugin_port_mutex;
+
+  while(plugin_port != NULL){
+    current_plugin_port = AGS_PLUGIN_PORT(plugin_port->data);
+    
+    /* get plugin port mutex */
+    plugin_port_mutex = AGS_PLUGIN_PORT_GET_OBJ_MUTEX(current_plugin_port);
+    
+    /* check port symbol */
+    pthread_mutex_lock(plugin_port_mutex);
+
+    success = (port_index == current_plugin_port->port_index) ? TRUE: FALSE;
     
     pthread_mutex_unlock(plugin_port_mutex);
 

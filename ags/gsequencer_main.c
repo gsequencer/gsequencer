@@ -40,6 +40,8 @@
 #define _GNU_SOURCE
 #include <locale.h>
 
+#include <stdlib.h>
+
 #include <ags/libags.h>
 #include <ags/libags-audio.h>
 #include <ags/libags-gui.h>
@@ -263,6 +265,8 @@ main(int argc, char **argv)
   
   single_thread_enabled = FALSE;
   builtin_theme_disabled = FALSE;
+
+  config = NULL;
   
   //  mtrace();
 
@@ -335,7 +339,7 @@ main(int argc, char **argv)
 
   uid = getuid();
   pw = getpwuid(uid);
-    
+
   /* parse rc file */
   if(!builtin_theme_disabled){
     rc_filename = g_strdup_printf("%s/%s/ags.rc",
@@ -372,7 +376,7 @@ main(int argc, char **argv)
   //  g_thread_init(NULL);
   ags_gui_init(&argc, &argv);  
   gtk_init(&argc, &argv);
-  
+
   if(!builtin_theme_disabled){
     g_object_set(gtk_settings_get_default(),
 		 "gtk-theme-name", "Raleigh",
@@ -430,7 +434,13 @@ main(int argc, char **argv)
     g_free(wdir);
     g_free(config_file);
   }
-  
+
+  /* some GUI scaling */
+  if(!builtin_theme_disabled &&
+     !has_file){
+    ags_xorg_application_context_load_gui_scale(ags_application_context_get_instance());
+  }
+
   ags_setup(argc, argv);
     
   //  muntrace();

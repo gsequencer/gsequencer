@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -52,10 +52,32 @@ ags_wave_editor_vscrollbar_value_changed(GtkRange *range, AgsWaveEditor *wave_ed
 void
 ags_wave_editor_hscrollbar_value_changed(GtkRange *range, AgsWaveEditor *wave_editor)
 {
+  AgsConfig *config;
+
   GList *list_start, *list;
+
+  gchar *str;
+  
+  gdouble gui_scale_factor;
+
+  config = ags_config_get_instance();
+  
+  /* scale factor */
+  gui_scale_factor = 1.0;
+  
+  str = ags_config_get_value(config,
+			     AGS_CONFIG_GENERIC,
+			     "gui-scale");
+
+  if(str != NULL){
+    gui_scale_factor = g_ascii_strtod(str,
+				      NULL);
+
+    g_free(str);
+  }
   
   gtk_adjustment_set_value(wave_editor->ruler->adjustment,
-			   range->adjustment->value / AGS_WAVE_EDIT_DEFAULT_CONTROL_WIDTH);
+			   range->adjustment->value / (guint) (gui_scale_factor * AGS_WAVE_EDIT_DEFAULT_CONTROL_WIDTH));
   gtk_widget_queue_draw(GTK_WIDGET(wave_editor->ruler));
     
   /* wave edit */
@@ -77,10 +99,32 @@ ags_wave_editor_hscrollbar_value_changed(GtkRange *range, AgsWaveEditor *wave_ed
 void
 ags_wave_editor_wave_edit_hscrollbar_value_changed(GtkRange *range, AgsWaveEditor *wave_editor)
 {
+  AgsConfig *config;
+
   GList *list_start, *list;
 
+  gchar *str;
+  
+  gdouble gui_scale_factor;
+
+  config = ags_config_get_instance();
+  
+  /* scale factor */
+  gui_scale_factor = 1.0;
+  
+  str = ags_config_get_value(config,
+			     AGS_CONFIG_GENERIC,
+			     "gui-scale");
+
+  if(str != NULL){
+    gui_scale_factor = g_ascii_strtod(str,
+				      NULL);
+
+    g_free(str);
+  }
+
   gtk_adjustment_set_value(wave_editor->ruler->adjustment,
-			   range->adjustment->value / AGS_WAVE_EDIT_DEFAULT_CONTROL_WIDTH);
+			   range->adjustment->value / (guint) (gui_scale_factor * AGS_WAVE_EDIT_DEFAULT_CONTROL_WIDTH));
   gtk_widget_queue_draw(GTK_WIDGET(wave_editor->ruler));
   
   /* wave edit */

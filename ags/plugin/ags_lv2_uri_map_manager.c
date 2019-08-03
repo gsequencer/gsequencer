@@ -177,11 +177,7 @@ ags_lv2_uri_map_manager_insert(AgsLv2UriMapManager *lv2_uri_map_manager,
   }
 
   /* get lv2 uri map manager mutex */
-  pthread_mutex_lock(ags_lv2_uri_map_manager_get_class_mutex());
-  
-  lv2_uri_map_manager_mutex = lv2_uri_map_manager->obj_mutex;
-  
-  pthread_mutex_unlock(ags_lv2_uri_map_manager_get_class_mutex());
+  lv2_uri_map_manager_mutex = AGS_LV2_URI_MAP_MANAGER_GET_OBJ_MUTEX(lv2_uri_map_manager);
 
   /*  */
   pthread_mutex_lock(lv2_uri_map_manager_mutex);
@@ -218,11 +214,7 @@ ags_lv2_uri_map_manager_remove(AgsLv2UriMapManager *lv2_uri_map_manager,
   }
   
   /* get lv2 uri map manager mutex */
-  pthread_mutex_lock(ags_lv2_uri_map_manager_get_class_mutex());
-  
-  lv2_uri_map_manager_mutex = lv2_uri_map_manager->obj_mutex;
-  
-  pthread_mutex_unlock(ags_lv2_uri_map_manager_get_class_mutex());
+  lv2_uri_map_manager_mutex = AGS_LV2_URI_MAP_MANAGER_GET_OBJ_MUTEX(lv2_uri_map_manager);
 
   /*  */
   pthread_mutex_lock(lv2_uri_map_manager_mutex);
@@ -264,11 +256,7 @@ ags_lv2_uri_map_manager_lookup(AgsLv2UriMapManager *lv2_uri_map_manager,
   }
 
   /* get lv2 uri map manager mutex */
-  pthread_mutex_lock(ags_lv2_uri_map_manager_get_class_mutex());
-  
-  lv2_uri_map_manager_mutex = lv2_uri_map_manager->obj_mutex;
-  
-  pthread_mutex_unlock(ags_lv2_uri_map_manager_get_class_mutex());
+  lv2_uri_map_manager_mutex = AGS_LV2_URI_MAP_MANAGER_GET_OBJ_MUTEX(lv2_uri_map_manager);
 
   /*  */
   pthread_mutex_lock(lv2_uri_map_manager_mutex);

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -404,19 +404,19 @@ ags_thread_application_context_get_main_loop(AgsConcurrencyProvider *concurrency
 {
   AgsThread *main_loop;
 
+  AgsApplicationContext *application_context;
+  
   pthread_mutex_t *application_context_mutex;
 
+  application_context = AGS_APPLICATION_CONTEXT(concurrency_provider);
+  
   /* get mutex */
-  pthread_mutex_lock(ags_application_context_get_class_mutex());
-  
-  application_context_mutex = AGS_APPLICATION_CONTEXT(concurrency_provider)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_application_context_get_class_mutex());
+  application_context_mutex = AGS_APPLICATION_CONTEXT_GET_OBJ_MUTEX(application_context);
 
   /*  */
   pthread_mutex_lock(application_context_mutex);
 
-  main_loop = (AgsThread *) AGS_APPLICATION_CONTEXT(concurrency_provider)->main_loop;
+  main_loop = (AgsThread *) application_context->main_loop;
   g_object_ref(main_loop);
   
   pthread_mutex_unlock(application_context_mutex);
@@ -429,19 +429,19 @@ ags_thread_application_context_get_task_thread(AgsConcurrencyProvider *concurren
 {
   AgsTaskThread *task_thread;
 
+  AgsApplicationContext *application_context;
+
   pthread_mutex_t *application_context_mutex;
 
+  application_context = AGS_APPLICATION_CONTEXT(concurrency_provider);
+
   /* get mutex */
-  pthread_mutex_lock(ags_application_context_get_class_mutex());
-  
-  application_context_mutex = AGS_APPLICATION_CONTEXT(concurrency_provider)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_application_context_get_class_mutex());
+  application_context_mutex = AGS_APPLICATION_CONTEXT_GET_OBJ_MUTEX(application_context);
 
   /* get task thread */
   pthread_mutex_lock(application_context_mutex);
 
-  task_thread = (AgsThread *) AGS_APPLICATION_CONTEXT(concurrency_provider)->task_thread;
+  task_thread = (AgsThread *) application_context->task_thread;
   g_object_ref(task_thread);
 
   pthread_mutex_unlock(application_context_mutex);
@@ -454,19 +454,19 @@ ags_thread_application_context_get_thread_pool(AgsConcurrencyProvider *concurren
 {
   AgsThreadPool *thread_pool;
 
+  AgsApplicationContext *application_context;
+
   pthread_mutex_t *application_context_mutex;
 
+  application_context = AGS_APPLICATION_CONTEXT(concurrency_provider);
+
   /* get mutex */
-  pthread_mutex_lock(ags_application_context_get_class_mutex());
-  
-  application_context_mutex = AGS_APPLICATION_CONTEXT(concurrency_provider)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_application_context_get_class_mutex());
+  application_context_mutex = AGS_APPLICATION_CONTEXT_GET_OBJ_MUTEX(application_context);
 
   /* get thread pool */
   pthread_mutex_lock(application_context_mutex);
 
-  thread_pool = (AgsThreadPool *) AGS_THREAD_APPLICATION_CONTEXT(concurrency_provider)->thread_pool;
+  thread_pool = (AgsThreadPool *) AGS_THREAD_APPLICATION_CONTEXT(application_context)->thread_pool;
   g_object_ref(thread_pool);
 
   pthread_mutex_unlock(application_context_mutex);
@@ -477,21 +477,21 @@ ags_thread_application_context_get_thread_pool(AgsConcurrencyProvider *concurren
 GList*
 ags_thread_application_context_get_worker(AgsConcurrencyProvider *concurrency_provider)
 {
+  AgsApplicationContext *application_context;
+
   GList *worker;
 
   pthread_mutex_t *application_context_mutex;
 
+  application_context = AGS_APPLICATION_CONTEXT(concurrency_provider);
+
   /* get mutex */
-  pthread_mutex_lock(ags_application_context_get_class_mutex());
-  
-  application_context_mutex = AGS_APPLICATION_CONTEXT(concurrency_provider)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_application_context_get_class_mutex());
+  application_context_mutex = AGS_APPLICATION_CONTEXT_GET_OBJ_MUTEX(application_context);
   
   /* get worker */
   pthread_mutex_lock(application_context_mutex);
   
-  worker = g_list_copy_deep(AGS_THREAD_APPLICATION_CONTEXT(concurrency_provider)->worker,
+  worker = g_list_copy_deep(AGS_THREAD_APPLICATION_CONTEXT(application_context)->worker,
 			    (GCopyFunc) g_object_ref,
 			    NULL);
   
@@ -504,28 +504,28 @@ void
 ags_thread_application_context_set_worker(AgsConcurrencyProvider *concurrency_provider,
 					  GList *worker)
 {
+  AgsApplicationContext *application_context;
+
   pthread_mutex_t *application_context_mutex;
 
+  application_context = AGS_APPLICATION_CONTEXT(concurrency_provider);
+
   /* get mutex */
-  pthread_mutex_lock(ags_application_context_get_class_mutex());
-  
-  application_context_mutex = AGS_APPLICATION_CONTEXT(concurrency_provider)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_application_context_get_class_mutex());
+  application_context_mutex = AGS_APPLICATION_CONTEXT_GET_OBJ_MUTEX(application_context);
 
   /* set worker */
   pthread_mutex_lock(application_context_mutex);
 
-  if(AGS_THREAD_APPLICATION_CONTEXT(concurrency_provider)->worker == worker){
+  if(AGS_THREAD_APPLICATION_CONTEXT(application_context)->worker == worker){
     pthread_mutex_unlock(application_context_mutex);
     
     return;
   }
   
-  g_list_free_full(AGS_THREAD_APPLICATION_CONTEXT(concurrency_provider)->worker,
+  g_list_free_full(AGS_THREAD_APPLICATION_CONTEXT(application_context)->worker,
 		   g_object_unref);
   
-  AGS_THREAD_APPLICATION_CONTEXT(concurrency_provider)->worker = worker;
+  AGS_THREAD_APPLICATION_CONTEXT(application_context)->worker = worker;
 
   pthread_mutex_unlock(application_context_mutex);
 }

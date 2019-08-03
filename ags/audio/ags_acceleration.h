@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -29,6 +29,8 @@
 #define AGS_IS_ACCELERATION(obj)             (G_TYPE_CHECK_INSTANCE_TYPE((obj), AGS_TYPE_ACCELERATION))
 #define AGS_IS_ACCELERATION_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE((class), AGS_TYPE_ACCELERATION))
 #define AGS_ACCELERATION_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS((obj), AGS_TYPE_ACCELERATION, AgsAccelerationClass))
+
+#define AGS_ACCELERATION_GET_OBJ_MUTEX(obj) (((AgsAcceleration *) obj)->obj_mutex)
 
 typedef struct _AgsAcceleration AgsAcceleration;
 typedef struct _AgsAccelerationClass AgsAccelerationClass;

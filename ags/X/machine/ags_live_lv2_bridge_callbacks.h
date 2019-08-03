@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -40,5 +40,13 @@ void ags_live_lv2_bridge_lv2ui_write_function(LV2UI_Controller controller, uint3
 
 void ags_live_lv2_bridge_program_changed_callback(GtkComboBox *combo_box, AgsLiveLv2Bridge *live_lv2_bridge);
 void ags_live_lv2_bridge_preset_changed_callback(GtkComboBox *combo_box, AgsLiveLv2Bridge *live_lv2_bridge);
+
+void ags_live_lv2_bridge_dial_changed_callback(GtkWidget *dial, AgsLiveLv2Bridge *live_lv2_bridge);
+void ags_live_lv2_bridge_vscale_changed_callback(GtkWidget *vscale, AgsLiveLv2Bridge *live_lv2_bridge);
+void ags_live_lv2_bridge_hscale_changed_callback(GtkWidget *hscale, AgsLiveLv2Bridge *live_lv2_bridge);
+void ags_live_lv2_bridge_spin_button_changed_callback(GtkWidget *spin_button, AgsLiveLv2Bridge *live_lv2_bridge);
+void ags_live_lv2_bridge_check_button_clicked_callback(GtkWidget *check_button, AgsLiveLv2Bridge *live_lv2_bridge);
+void ags_live_lv2_bridge_toggle_button_clicked_callback(GtkWidget *toggle_button, AgsLiveLv2Bridge *live_lv2_bridge);
+void ags_live_lv2_bridge_button_clicked_callback(GtkWidget *button, AgsLiveLv2Bridge *live_lv2_bridge);
 
 #endif /*__AGS_LIVE_LV2_BRIDGE_CALLBACKS_H__*/

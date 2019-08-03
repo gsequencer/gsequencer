@@ -26,8 +26,8 @@
 
 #include <lv2/lv2plug.in/ns/lv2ext/lv2_programs.h>
 
+#include <ags/X/ags_ui_provider.h>
 #include <ags/X/ags_window.h>
-#include <ags/X/ags_machine.h>
 #include <ags/X/ags_effect_bridge.h>
 #include <ags/X/ags_effect_bulk.h>
 #include <ags/X/ags_bulk_member.h>
@@ -415,14 +415,37 @@ ags_live_lv2_bridge_init(AgsLiveLv2Bridge *live_lv2_bridge)
 
   live_lv2_bridge->has_midi = FALSE;
 
-  live_lv2_bridge->vbox = (GtkVBox *) gtk_vbox_new(FALSE, 0);
-  gtk_container_add((GtkContainer *) gtk_bin_get_child((GtkBin *) live_lv2_bridge),
-		    (GtkWidget *) live_lv2_bridge->vbox);
+  live_lv2_bridge->lv2_plugin = NULL;
 
   live_lv2_bridge->lv2_descriptor = NULL;
   live_lv2_bridge->lv2_handle = NULL;
   live_lv2_bridge->port_value = NULL;
   
+  live_lv2_bridge->has_gui = FALSE;
+  live_lv2_bridge->gui_filename = NULL;
+  live_lv2_bridge->gui_uri = NULL;
+
+  live_lv2_bridge->lv2ui_plugin = NULL;
+
+  live_lv2_bridge->ui_descriptor = NULL;
+
+  live_lv2_bridge->ui_feature = (LV2_Feature **) malloc(3 * sizeof(LV2_Feature *));
+
+  live_lv2_bridge->ui_feature[0] = (LV2_Feature *) malloc(sizeof(LV2_Feature));
+  live_lv2_bridge->ui_feature[0]->data = NULL;
+  
+  live_lv2_bridge->ui_feature[1] = (LV2_Feature *) malloc(sizeof(LV2_Feature));
+  live_lv2_bridge->ui_feature[1]->data = NULL;
+
+  live_lv2_bridge->ui_feature[2] = NULL;
+
+  live_lv2_bridge->ui_handle = NULL;
+
+  /**/
+  live_lv2_bridge->vbox = (GtkVBox *) gtk_vbox_new(FALSE, 0);
+  gtk_container_add((GtkContainer *) gtk_bin_get_child((GtkBin *) live_lv2_bridge),
+		    (GtkWidget *) live_lv2_bridge->vbox);
+
   live_lv2_bridge->program = NULL;
   live_lv2_bridge->preset = NULL;
   
@@ -450,20 +473,7 @@ ags_live_lv2_bridge_init(AgsLiveLv2Bridge *live_lv2_bridge)
 		   0, 1,
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
-
-  live_lv2_bridge->has_gui = FALSE;
-  live_lv2_bridge->gui_filename = NULL;
-  live_lv2_bridge->gui_uri = NULL;
-
-  live_lv2_bridge->ui_descriptor = NULL;
-  live_lv2_bridge->ui_feature = NULL;
-  live_lv2_bridge->ui_handle = NULL;
   
-  live_lv2_bridge->lv2_gui = NULL;
-  live_lv2_bridge->ui_widget = NULL;
-
-  live_lv2_bridge->lv2_window = NULL;
-
   /* lv2 menu */
   item = (GtkImageMenuItem *) gtk_image_menu_item_new_with_label("Lv2");
   gtk_menu_shell_append((GtkMenuShell *) AGS_MACHINE(live_lv2_bridge)->popup,
@@ -480,12 +490,18 @@ ags_live_lv2_bridge_init(AgsLiveLv2Bridge *live_lv2_bridge)
 
   gtk_widget_show_all((GtkWidget *) live_lv2_bridge->lv2_menu);
 
+  /* plugin widget */
+  live_lv2_bridge->lv2_gui = NULL;
+  live_lv2_bridge->ui_widget = NULL;
+
+  live_lv2_bridge->lv2_window = NULL;
+
   /* output - discard messages */
   g_hash_table_insert(ags_machine_generic_output_message_monitor,
 		      live_lv2_bridge,
 		      ags_machine_generic_output_message_monitor_timeout);
 
-  g_timeout_add(1000 / 30,
+  g_timeout_add(AGS_UI_PROVIDER_DEFAULT_TIMEOUT * 1000.0,
 		(GSourceFunc) ags_machine_generic_output_message_monitor_timeout,
 		(gpointer) live_lv2_bridge);
 
@@ -494,7 +510,7 @@ ags_live_lv2_bridge_init(AgsLiveLv2Bridge *live_lv2_bridge)
 		      live_lv2_bridge,
 		      ags_machine_generic_input_message_monitor_timeout);
 
-  g_timeout_add(1000 / 30,
+  g_timeout_add(AGS_UI_PROVIDER_DEFAULT_TIMEOUT * 1000.0,
 		(GSourceFunc) ags_machine_generic_input_message_monitor_timeout,
 		(gpointer) live_lv2_bridge);
 }
@@ -716,13 +732,27 @@ ags_live_lv2_bridge_finalize(GObject *gobject)
 
   live_lv2_bridge = AGS_LIVE_LV2_BRIDGE(gobject);
 
+  /* message queue */
   g_hash_table_remove(ags_machine_generic_output_message_monitor,
 		      gobject);
 
   g_hash_table_remove(ags_machine_generic_input_message_monitor,
 		      gobject);
   
+  /* lv2 plugin */
+  if(live_lv2_bridge->lv2_plugin != NULL){
+    g_object_unref(live_lv2_bridge->lv2_plugin);
+  }
+
+  /* lv2ui plugin */
+  if(live_lv2_bridge->lv2ui_plugin != NULL){
+    g_object_unref(live_lv2_bridge->lv2ui_plugin);
+  }
+
+  /* plugin widget */
   if(live_lv2_bridge->ui_handle != NULL){
+    live_lv2_bridge->ui_descriptor->cleanup(live_lv2_bridge->ui_handle[0]);
+    
     g_hash_table_remove(ags_live_lv2_bridge_lv2ui_handle,
 			live_lv2_bridge->ui_handle);
     
@@ -734,7 +764,6 @@ ags_live_lv2_bridge_finalize(GObject *gobject)
     gtk_widget_destroy(live_lv2_bridge->lv2_window);
   }
   
-
   /* call parent */
   G_OBJECT_CLASS(ags_live_lv2_bridge_parent_class)->finalize(gobject);
 }
@@ -743,8 +772,11 @@ void
 ags_live_lv2_bridge_connect(AgsConnectable *connectable)
 {
   AgsLiveLv2Bridge *live_lv2_bridge;
+  AgsEffectBridge *effect_bridge;
+  AgsBulkMember *bulk_member;
+  GtkWidget *control;
 
-  GList *list;
+  GList *list, *list_start;
   
   if((AGS_MACHINE_CONNECTED & (AGS_MACHINE(connectable)->flags)) != 0){
     return;
@@ -755,16 +787,58 @@ ags_live_lv2_bridge_connect(AgsConnectable *connectable)
   live_lv2_bridge = AGS_LIVE_LV2_BRIDGE(connectable);
 
   /* menu */
-  list = gtk_container_get_children((GtkContainer *) live_lv2_bridge->lv2_menu);
+  list =
+    list_start = gtk_container_get_children((GtkContainer *) live_lv2_bridge->lv2_menu);
 
   g_signal_connect(G_OBJECT(list->data), "activate",
 		   G_CALLBACK(ags_live_lv2_bridge_show_gui_callback), live_lv2_bridge);
+
+  g_list_free(list_start);
 
   /* program */
   if(live_lv2_bridge->program != NULL){
     g_signal_connect_after(G_OBJECT(live_lv2_bridge->program), "changed",
 			   G_CALLBACK(ags_live_lv2_bridge_program_changed_callback), live_lv2_bridge);
   }
+
+  /* bulk member */
+  effect_bridge = AGS_EFFECT_BRIDGE(AGS_MACHINE(live_lv2_bridge)->bridge);
+  
+  list =
+    list_start = gtk_container_get_children((GtkContainer *) AGS_EFFECT_BULK(effect_bridge->bulk_output)->table);
+
+  while(list != NULL){
+    bulk_member = list->data;
+
+    control = gtk_bin_get_child(GTK_BIN(bulk_member));
+
+    if(bulk_member->widget_type == AGS_TYPE_DIAL){
+      g_signal_connect_after(GTK_WIDGET(control), "value-changed",
+			     G_CALLBACK(ags_live_lv2_bridge_dial_changed_callback), live_lv2_bridge);
+    }else if(bulk_member->widget_type == GTK_TYPE_VSCALE){
+      g_signal_connect_after(GTK_WIDGET(control), "value-changed",
+			     G_CALLBACK(ags_live_lv2_bridge_vscale_changed_callback), live_lv2_bridge);
+    }else if(bulk_member->widget_type == GTK_TYPE_HSCALE){
+      g_signal_connect_after(GTK_WIDGET(control), "value-changed",
+			     G_CALLBACK(ags_live_lv2_bridge_hscale_changed_callback), live_lv2_bridge);
+    }else if(bulk_member->widget_type == GTK_TYPE_SPIN_BUTTON){
+      g_signal_connect_after(GTK_WIDGET(control), "value-changed",
+			     G_CALLBACK(ags_live_lv2_bridge_spin_button_changed_callback), live_lv2_bridge);
+    }else if(bulk_member->widget_type == GTK_TYPE_CHECK_BUTTON){
+      g_signal_connect_after(GTK_WIDGET(control), "clicked",
+			     G_CALLBACK(ags_live_lv2_bridge_check_button_clicked_callback), live_lv2_bridge);
+    }else if(bulk_member->widget_type == GTK_TYPE_TOGGLE_BUTTON){
+      g_signal_connect_after(GTK_WIDGET(control), "clicked",
+			     G_CALLBACK(ags_live_lv2_bridge_toggle_button_clicked_callback), live_lv2_bridge);
+    }else if(bulk_member->widget_type == GTK_TYPE_BUTTON){
+      g_signal_connect_after(GTK_WIDGET(control), "clicked",
+			     G_CALLBACK(ags_live_lv2_bridge_button_clicked_callback), live_lv2_bridge);
+    }
+
+    list = list->next;
+  }
+
+  g_list_free(list_start);
 }
 
 void
@@ -857,7 +931,7 @@ ags_live_lv2_bridge_launch_task(AgsFileLaunch *file_launch, AgsLiveLv2Bridge *li
 
   /* block update bulk port */
   list_start = 
-    list = gtk_container_get_children((GtkContainer *) AGS_EFFECT_BULK(AGS_EFFECT_BRIDGE(AGS_MACHINE(live_lv2_bridge)->bridge)->bulk_input)->table);
+    list = gtk_container_get_children((GtkContainer *) AGS_EFFECT_BULK(AGS_EFFECT_BRIDGE(AGS_MACHINE(live_lv2_bridge)->bridge)->bulk_output)->table);
 
   while(list != NULL){
     if(AGS_IS_BULK_MEMBER(list->data)){
@@ -1554,11 +1628,24 @@ ags_live_lv2_bridge_load_program(AgsLiveLv2Bridge *live_lv2_bridge)
   LV2_Descriptor *plugin_descriptor;
   LV2_Programs_Interface *program_interface;
 
-  lv2_plugin = ags_lv2_manager_find_lv2_plugin(ags_lv2_manager_get_instance(),
-					       live_lv2_bridge->filename,
-					       live_lv2_bridge->effect);
-  live_lv2_bridge->lv2_descriptor = 
-    plugin_descriptor = AGS_LV2_PLUGIN_DESCRIPTOR(AGS_BASE_PLUGIN(lv2_plugin)->plugin_descriptor);
+  /* retrieve lv2 plugin */
+  lv2_plugin = live_lv2_bridge->lv2_plugin;
+  
+  if(lv2_plugin == NULL){
+    lv2_plugin =
+      live_lv2_bridge->lv2_plugin = ags_lv2_manager_find_lv2_plugin(ags_lv2_manager_get_instance(),
+								    live_lv2_bridge->filename,
+								    live_lv2_bridge->effect);
+    g_object_ref(lv2_plugin);
+
+    live_lv2_bridge->lv2_descriptor = AGS_BASE_PLUGIN(lv2_plugin)->plugin_descriptor;
+  }
+  
+  if(lv2_plugin == NULL){
+    return;
+  }
+
+  plugin_descriptor = live_lv2_bridge->lv2_descriptor;
   
   if(plugin_descriptor != NULL &&
      plugin_descriptor->extension_data != NULL &&
@@ -1601,13 +1688,12 @@ ags_live_lv2_bridge_load_program(AgsLiveLv2Bridge *live_lv2_bridge)
       
       plugin_port = start_plugin_port;
       
-      for(i = 0; plugin_port != NULL;){
+      while(plugin_port != NULL){
 	if(ags_plugin_port_test_flags(plugin_port->data, AGS_PLUGIN_PORT_CONTROL)){
 	  if(ags_plugin_port_test_flags(plugin_port->data, AGS_PLUGIN_PORT_INPUT)){
 	    plugin_descriptor->connect_port(live_lv2_bridge->lv2_handle[0],
 					    AGS_PLUGIN_PORT(plugin_port->data)->port_index,
-					    &(live_lv2_bridge->port_value[i]));
-	    i++;
+					    &(live_lv2_bridge->port_value[AGS_PLUGIN_PORT(plugin_port->data)->port_index]));
 	  }
 	}
 
@@ -1682,6 +1768,23 @@ ags_live_lv2_bridge_load_preset(AgsLiveLv2Bridge *live_lv2_bridge)
   AgsLv2Plugin *lv2_plugin;
 
   GList *list;  
+
+  /* retrieve lv2 plugin */
+  lv2_plugin = live_lv2_bridge->lv2_plugin;
+  
+  if(lv2_plugin == NULL){
+    lv2_plugin =
+      live_lv2_bridge->lv2_plugin = ags_lv2_manager_find_lv2_plugin(ags_lv2_manager_get_instance(),
+								    live_lv2_bridge->filename,
+								    live_lv2_bridge->effect);
+    g_object_ref(lv2_plugin);
+
+    live_lv2_bridge->lv2_descriptor = AGS_BASE_PLUGIN(lv2_plugin)->plugin_descriptor;
+  }
+  
+  if(lv2_plugin == NULL){
+    return;
+  }
   
   /* preset */
   hbox = (GtkHBox *) gtk_hbox_new(FALSE, 0);
@@ -1705,11 +1808,6 @@ ags_live_lv2_bridge_load_preset(AgsLiveLv2Bridge *live_lv2_bridge)
 		     FALSE, FALSE,
 		     0);
   
-  /* retrieve lv2 plugin */
-  lv2_plugin = ags_lv2_manager_find_lv2_plugin(ags_lv2_manager_get_instance(),
-					       live_lv2_bridge->filename,
-					       live_lv2_bridge->effect);
-
   /* preset */
   list = lv2_plugin->preset;
 
@@ -1744,9 +1842,17 @@ ags_live_lv2_bridge_load_gui(AgsLiveLv2Bridge *live_lv2_bridge)
   GList *list;
   
   /* retrieve lv2 plugin */
-  lv2_plugin = ags_lv2_manager_find_lv2_plugin(ags_lv2_manager_get_instance(),
-					       live_lv2_bridge->filename,
-					       live_lv2_bridge->effect);
+  lv2_plugin = live_lv2_bridge->lv2_plugin;
+  
+  if(lv2_plugin == NULL){
+    lv2_plugin =
+      live_lv2_bridge->lv2_plugin = ags_lv2_manager_find_lv2_plugin(ags_lv2_manager_get_instance(),
+								    live_lv2_bridge->filename,
+								    live_lv2_bridge->effect);
+    g_object_ref(lv2_plugin);
+
+    live_lv2_bridge->lv2_descriptor = AGS_BASE_PLUGIN(lv2_plugin)->plugin_descriptor;
+  }
   
   if(lv2_plugin == NULL ||
      lv2_plugin->ui_uri == NULL){
@@ -1754,17 +1860,25 @@ ags_live_lv2_bridge_load_gui(AgsLiveLv2Bridge *live_lv2_bridge)
   }
 
   /* retrieve lv2ui plugin */
-  list = ags_lv2ui_plugin_find_gui_uri(ags_lv2ui_manager_get_instance()->lv2ui_plugin,
-				       lv2_plugin->ui_uri);
+  lv2ui_plugin = live_lv2_bridge->lv2ui_plugin;
+  
+  if(lv2ui_plugin == NULL){
+    list = ags_lv2ui_plugin_find_gui_uri(ags_lv2ui_manager_get_instance()->lv2ui_plugin,
+					 lv2_plugin->ui_uri);
 
-  if(list == NULL){
-    return;
+    if(list == NULL){
+      return;
+    }
+
+    lv2ui_plugin =
+      live_lv2_bridge->lv2ui_plugin = list->data;
+    g_object_ref(lv2ui_plugin);
+
+    live_lv2_bridge->ui_descriptor = AGS_BASE_PLUGIN(lv2ui_plugin)->ui_plugin_descriptor;
   }
-
-  lv2ui_plugin = list->data;
   
 #ifdef AGS_DEBUG
-  g_message("ui filename - %s", AGS_BASE_PLUGIN(lv2ui_plugin)->ui_filename);
+  g_message("ui filename - %s, %s", AGS_BASE_PLUGIN(lv2ui_plugin)->ui_filename, lv2_plugin->ui_uri);
 #endif
 
   /* apply ui */
@@ -1784,10 +1898,13 @@ ags_live_lv2_bridge_load(AgsLiveLv2Bridge *live_lv2_bridge)
   GtkTreeIter iter;
 
   AgsLv2Plugin *lv2_plugin;
-
+  
   GList *list;
   GList *start_plugin_port, *plugin_port;
-  
+
+  gchar *uri;
+  gchar *port_name;
+
   guint samplerate;
   guint buffer_size;
   gdouble step;
@@ -1797,27 +1914,50 @@ ags_live_lv2_bridge_load(AgsLiveLv2Bridge *live_lv2_bridge)
   guint x, y;
   unsigned long i, j;
   guint k;
-    
-  lv2_plugin = ags_lv2_manager_find_lv2_plugin(ags_lv2_manager_get_instance(),
-					       live_lv2_bridge->filename,
-					       live_lv2_bridge->effect);
 
+  pthread_mutex_t *base_plugin_mutex;
+  
+  /* retrieve lv2 plugin */
+  lv2_plugin = live_lv2_bridge->lv2_plugin;
+
+  if(lv2_plugin == NULL){
+    lv2_plugin =
+      live_lv2_bridge->lv2_plugin = ags_lv2_manager_find_lv2_plugin(ags_lv2_manager_get_instance(),
+								    live_lv2_bridge->filename,
+								    live_lv2_bridge->effect);
+    g_object_ref(lv2_plugin);
+
+    live_lv2_bridge->lv2_descriptor = AGS_BASE_PLUGIN(lv2_plugin)->plugin_descriptor;
+  }
+  
   if(lv2_plugin == NULL){
     return;
   }
 
+  /* get base plugin mutex */
+  pthread_mutex_lock(ags_base_plugin_get_class_mutex());
+  
+  base_plugin_mutex = AGS_BASE_PLUGIN(lv2_plugin)->obj_mutex;
+  
+  pthread_mutex_unlock(ags_base_plugin_get_class_mutex());
+
+  /* get uri */
+  pthread_mutex_lock(base_plugin_mutex);
+
+  uri = g_strdup(lv2_plugin->uri);
+  
+  pthread_mutex_unlock(base_plugin_mutex);
+  
   /* URI */
   g_object_set(live_lv2_bridge,
-	       "uri", lv2_plugin->uri,
+	       "uri", uri,
 	       NULL);
 
   /* samplerate and buffer size */
   samplerate = ags_soundcard_helper_config_get_samplerate(ags_config_get_instance());
   buffer_size = ags_soundcard_helper_config_get_buffer_size(ags_config_get_instance());
 
-  g_message("ags_live_lv2_bridge.c - load %s %s", live_lv2_bridge->filename, live_lv2_bridge->effect);
-  
-  /*  */
+ /*  */
   effect_bulk = AGS_EFFECT_BULK(AGS_EFFECT_BRIDGE(AGS_MACHINE(live_lv2_bridge)->bridge)->bulk_output);
 
   /* retrieve position within table  */
@@ -1855,10 +1995,16 @@ ags_live_lv2_bridge_load(AgsLiveLv2Bridge *live_lv2_bridge)
       gchar *plugin_name;
       gchar *control_port;
       
-      guint step_count;
+      guint port_index;
+      guint scale_precision;
+      gdouble step_count;
       gboolean disable_seemless;
+      gboolean do_step_conversion;
+
+      pthread_mutex_t *plugin_port_mutex;
 
       disable_seemless = FALSE;
+      do_step_conversion = FALSE;
       
       if(x == AGS_EFFECT_BULK_COLUMNS_COUNT){
 	x = 0;
@@ -1881,20 +2027,45 @@ ags_live_lv2_bridge_load(AgsLiveLv2Bridge *live_lv2_bridge)
 	}
       }
 
-      step_count = AGS_DIAL_DEFAULT_PRECISION;
+      scale_precision = AGS_DIAL_DEFAULT_PRECISION;
+      step_count = AGS_LV2_CONVERSION_DEFAULT_STEP_COUNT;
 
       if(ags_plugin_port_test_flags(AGS_PLUGIN_PORT(plugin_port->data), AGS_PLUGIN_PORT_INTEGER)){
-	step_count = AGS_PLUGIN_PORT(plugin_port->data)->scale_steps;
+	guint scale_steps;
+	
+	g_object_get(plugin_port->data,
+		     "scale-steps", &scale_steps,
+		     NULL);
+
+	step_count =
+	  scale_precision = (gdouble) scale_steps;
 
 	disable_seemless = TRUE;	
       }
 
+      /* get plugin port mutex */
+      pthread_mutex_lock(ags_plugin_port_get_class_mutex());
+
+      plugin_port_mutex = AGS_PLUGIN_PORT(plugin_port->data)->obj_mutex;
+      
+      pthread_mutex_unlock(ags_plugin_port_get_class_mutex());
+
+      /* get port name */
+      pthread_mutex_lock(plugin_port_mutex);
+
+      port_name = g_strdup(AGS_PLUGIN_PORT(plugin_port->data)->port_name);
+      port_index = AGS_PLUGIN_PORT(plugin_port->data)->port_index;
+      
+      pthread_mutex_unlock(plugin_port_mutex);
+
       /* add bulk member */
       plugin_name = g_strdup_printf("lv2-<%s>",
-				    lv2_plugin->uri);
-      control_port = g_strdup_printf("%u/%lu",
-				     k,
+				    uri);
+
+      control_port = g_strdup_printf("%u/%u",
+				     k + 1,
 				     port_count);
+
       bulk_member = (AgsBulkMember *) g_object_new(AGS_TYPE_BULK_MEMBER,
 						   "widget-type", widget_type,
 						   "widget-label", AGS_PLUGIN_PORT(plugin_port->data)->port_name,
@@ -1902,8 +2073,10 @@ ags_live_lv2_bridge_load(AgsLiveLv2Bridge *live_lv2_bridge)
 						   "filename", live_lv2_bridge->filename,
 						   "effect", live_lv2_bridge->effect,
 						   "specifier", AGS_PLUGIN_PORT(plugin_port->data)->port_name,
+						   "port-index", port_index,
 						   "control-port", control_port,
-						   "steps", step_count,
+						   "scale-precision", scale_precision,
+						   "step-count", step_count,
 						   NULL);
       child_widget = ags_bulk_member_get_widget(bulk_member);
 
@@ -1920,9 +2093,13 @@ ags_live_lv2_bridge_load(AgsLiveLv2Bridge *live_lv2_bridge)
 	}
     
 	lv2_conversion->flags |= AGS_LV2_CONVERSION_LOGARITHMIC;
+
+	do_step_conversion = TRUE;
       }
 
-      bulk_member->conversion = (AgsConversion *) lv2_conversion;
+      g_object_set(bulk_member,
+		   "conversion", lv2_conversion,
+		   NULL);
 
       /* child widget */
       if(ags_plugin_port_test_flags(AGS_PLUGIN_PORT(plugin_port->data), AGS_PLUGIN_PORT_TOGGLED)){
@@ -1938,6 +2115,9 @@ ags_live_lv2_bridge_load(AgsLiveLv2Bridge *live_lv2_bridge)
 	GtkAdjustment *adjustment;
 
 	float lower_bound, upper_bound;
+	gdouble lower, upper;
+	float default_value;
+	gdouble control_value;
 	
 	dial = (AgsDial *) child_widget;
 
@@ -1946,30 +2126,71 @@ ags_live_lv2_bridge_load(AgsLiveLv2Bridge *live_lv2_bridge)
 	}
 
 	/* add controls of ports and apply range  */
+	pthread_mutex_lock(plugin_port_mutex);
+	
 	lower_bound = g_value_get_float(AGS_PLUGIN_PORT(plugin_port->data)->lower_value);
 	upper_bound = g_value_get_float(AGS_PLUGIN_PORT(plugin_port->data)->upper_value);
 
+	pthread_mutex_unlock(plugin_port_mutex);
+
+	if(do_step_conversion){
+	  g_object_set(lv2_conversion,
+		       "lower", lower_bound,
+		       "upper", upper_bound,
+		       NULL);
+
+	  lower = 0.0;
+	  upper = AGS_LV2_CONVERSION_DEFAULT_STEP_COUNT - 1.0;
+	  
+#if 0
+	  if(!disable_seemless){
+	    g_object_get(lv2_conversion,
+			 "step-count", &step_count,
+			 NULL);
+	  }
+#endif
+	}else{
+	  lower = lower_bound;
+	  upper = upper_bound;
+	}
+	
 	adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 0.1, 0.1, 0.0);
 	g_object_set(dial,
 		     "adjustment", adjustment,
 		     NULL);
 
-	if(upper_bound >= 0.0 && lower_bound >= 0.0){
-	  step = (upper_bound - lower_bound) / step_count;
-	}else if(upper_bound < 0.0 && lower_bound < 0.0){
-	  step = -1.0 * (lower_bound - upper_bound) / step_count;
+	if(upper >= 0.0 && lower >= 0.0){
+	  step = (upper - lower) / step_count;
+	}else if(upper < 0.0 && lower < 0.0){
+	  step = -1.0 * (lower - upper) / step_count;
 	}else{
-	  step = (upper_bound - lower_bound) / step_count;
+	  step = (upper - lower) / step_count;
 	}
-
+	
 	gtk_adjustment_set_step_increment(adjustment,
 					  step);
 	gtk_adjustment_set_lower(adjustment,
-				 lower_bound);
+				 lower);
 	gtk_adjustment_set_upper(adjustment,
-				 upper_bound);
+				 upper);
+
+	/* get/set default value */
+	pthread_mutex_lock(plugin_port_mutex);
+	
+	default_value = (float) g_value_get_float(AGS_PLUGIN_PORT(plugin_port->data)->default_value);
+
+	pthread_mutex_unlock(plugin_port_mutex);
+
+	control_value = default_value;
+	
+	if(lv2_conversion != NULL){
+	  control_value = ags_conversion_convert(lv2_conversion,
+						 default_value,
+						 TRUE);
+	}
+
 	gtk_adjustment_set_value(adjustment,
-				 g_value_get_float(AGS_PLUGIN_PORT(plugin_port->data)->default_value));
+				 control_value);
       }else if(AGS_IS_INDICATOR(child_widget) ||
 	       AGS_IS_LED(child_widget)){
 	g_hash_table_insert(ags_effect_bulk_indicator_queue_draw,
@@ -2033,12 +2254,27 @@ gboolean
 ags_live_lv2_bridge_lv2ui_idle_timeout(GtkWidget *widget)
 {
   AgsLiveLv2Bridge *live_lv2_bridge;
+
+  AgsLv2uiPlugin *lv2ui_plugin;
+
+  int retval;
     
   if((live_lv2_bridge = g_hash_table_lookup(ags_live_lv2_bridge_lv2ui_idle,
 					    widget)) != NULL){    
-    if(live_lv2_bridge->ui_feature != NULL &&
-       live_lv2_bridge->ui_feature[0]->data != NULL){
-      ((struct _LV2UI_Idle_Interface *) live_lv2_bridge->ui_feature[0]->data)->idle(live_lv2_bridge->ui_handle);
+    lv2ui_plugin = live_lv2_bridge->lv2ui_plugin;
+
+    if(lv2ui_plugin->feature != NULL &&
+       lv2ui_plugin->feature[0]->data != NULL){
+      retval = ((struct _LV2UI_Idle_Interface *) lv2ui_plugin->feature[0]->data)->idle(live_lv2_bridge->ui_handle[0]);
+
+      if(retval != 0){
+	g_hash_table_remove(ags_live_lv2_bridge_lv2ui_handle,
+			    live_lv2_bridge->ui_handle);
+	
+	live_lv2_bridge->ui_handle = NULL;
+
+	return(FALSE);
+      }
     }
     
     return(TRUE);

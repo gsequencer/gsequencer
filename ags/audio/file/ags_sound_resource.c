@@ -446,15 +446,15 @@ ags_sound_resource_read_audio_signal(AgsSoundResource *sound_resource,
     i_start = audio_channel;
     i_stop = i_start + 1;
   }
+  
+  copy_mode = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(target_format),
+						  ags_audio_buffer_util_format_from_soundcard(format));
 
   data = NULL;
 
   if(samplerate != target_samplerate){
     data = ags_stream_alloc(buffer_size,
 			    format);
-    
-    copy_mode = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(target_format),
-						    ags_audio_buffer_util_format_from_soundcard(format));
   }
     
   for(i = i_start; i < i_stop; i++){
@@ -623,14 +623,14 @@ ags_sound_resource_read_wave(AgsSoundResource *sound_resource,
     i_stop = i_start + 1;
   }
 
+  copy_mode = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(target_format),
+						  ags_audio_buffer_util_format_from_soundcard(format));
+  
   data = NULL;
 
   if(samplerate != target_samplerate){
     data = ags_stream_alloc(buffer_size,
 			    format);
-    
-    copy_mode = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(target_format),
-						    ags_audio_buffer_util_format_from_soundcard(format));
   }
   
   for(i = i_start; i < i_stop; i++){

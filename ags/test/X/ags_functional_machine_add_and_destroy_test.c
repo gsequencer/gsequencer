@@ -324,7 +324,7 @@ main(int argc, char **argv)
   }
 
   /* add a suite to the registry */
-  pSuite = CU_add_suite("AgsFuncitonalMachineAddAndDestroyTest", ags_functional_machine_add_and_destroy_test_init_suite, ags_functional_machine_add_and_destroy_test_clean_suite);
+  pSuite = CU_add_suite("AgsFunctionalMachineAddAndDestroyTest", ags_functional_machine_add_and_destroy_test_init_suite, ags_functional_machine_add_and_destroy_test_clean_suite);
   
   if(pSuite == NULL){
     CU_cleanup_registry();

@@ -17,7 +17,7 @@ void thread_run_callback(AgsThread *thread, gpointer data);
 void
 thread_run_callback(AgsThread *thread, gpointer data)
 {
-  g_message("%s\0", (gchar *) data);
+  g_message("%s", (gchar *) data);
 }
 
 int
@@ -31,8 +31,7 @@ main(int argc, char **argv)
 
   application_context = ags_thread_application_context();
 
-  main_loop = application_context->main_loop;
-  
+  main_loop = ags_concurrency_provider_get_main_loop(AGS_CONCURRENCY_PROVIDER(application_context));
   thread_pool = ags_concurrency_provider_get_thread_pool(AGS_CONCURRENCY_PROVIDER(application_context));
 
   ags_thread_start(main_loop);
@@ -44,7 +43,7 @@ main(int argc, char **argv)
   pthread_mutex_lock(AGS_RETURNABLE_THREAD(thread_0)->reset_mutex);
 
   g_atomic_pointer_set(&(AGS_RETURNABLE_THREAD(thread_0)->safe_data),
-                       "thread 0\0");
+                       "thread 0");
 
   ags_returnable_thread_connect_safe_run(AGS_RETURNABLE_THREAD(thread_0),
                                          ags_task_thread_append_task_queue);
@@ -60,7 +59,7 @@ main(int argc, char **argv)
   pthread_mutex_lock(AGS_RETURNABLE_THREAD(thread_1)->reset_mutex);
 
   g_atomic_pointer_set(&(AGS_RETURNABLE_THREAD(thread_1)->safe_data),
-                       "thread 1\0");
+                       "thread 1");
 
   ags_returnable_thread_connect_safe_run(AGS_RETURNABLE_THREAD(thread_1),
                                          ags_task_thread_append_task_queue);

@@ -60,6 +60,11 @@ gboolean ags_audio_loop_monitor(AgsMainLoop *main_loop,
 				guint time_cycle, guint *time_spent);
 void ags_audio_loop_change_frequency(AgsMainLoop *main_loop,
 				     gdouble frequency);
+void ags_audio_loop_sync_counter_inc(AgsMainLoop *main_loop, guint tic);
+void ags_audio_loop_sync_counter_dec(AgsMainLoop *main_loop, guint tic);
+gboolean ags_audio_loop_sync_counter_test(AgsMainLoop *main_loop, guint tic);
+void ags_audio_loop_set_sync_tic(AgsMainLoop *main_loop, guint tic);
+guint ags_audio_loop_get_sync_tic(AgsMainLoop *main_loop);
 
 void ags_audio_loop_start(AgsThread *thread);
 void ags_audio_loop_run(AgsThread *thread);
@@ -253,15 +258,27 @@ void
 ags_audio_loop_main_loop_interface_init(AgsMainLoopInterface *main_loop)
 {
   main_loop->get_tree_lock = ags_audio_loop_get_tree_lock;
+
   main_loop->set_async_queue = ags_audio_loop_set_async_queue;
   main_loop->get_async_queue = ags_audio_loop_get_async_queue;
+
   main_loop->set_tic = ags_audio_loop_set_tic;
   main_loop->get_tic = ags_audio_loop_get_tic;
+
   main_loop->set_last_sync = ags_audio_loop_set_last_sync;
   main_loop->get_last_sync = ags_audio_loop_get_last_sync;
+
   main_loop->interrupt = NULL;
   main_loop->monitor = ags_audio_loop_monitor;
+
   main_loop->change_frequency = ags_audio_loop_change_frequency;
+
+  main_loop->sync_counter_inc = ags_audio_loop_sync_counter_inc;
+  main_loop->sync_counter_dec = ags_audio_loop_sync_counter_dec;
+  main_loop->sync_counter_test = ags_audio_loop_sync_counter_test;
+
+  main_loop->set_sync_tic = ags_audio_loop_set_sync_tic;
+  main_loop->get_sync_tic = ags_audio_loop_get_sync_tic;
 }
 
 void
@@ -273,7 +290,8 @@ ags_audio_loop_init(AgsAudioLoop *audio_loop)
   
   guint samplerate;
   guint buffer_size;
-
+  guint i;
+  
   thread = (AgsThread *) audio_loop;
 
   g_signal_connect_after(thread, "notify::frequency",
@@ -297,7 +315,14 @@ ags_audio_loop_init(AgsAudioLoop *audio_loop)
 
   audio_loop->time_cycle = NSEC_PER_SEC / thread->freq;
   g_atomic_int_set(&(audio_loop->time_spent), 0);
+
+  audio_loop->sync_tic = 0;
   
+  for(i = 0; i < 6; i++){
+    audio_loop->sync_counter[i] = 0;
+  }
+
+
   audio_loop->application_context = NULL;
   audio_loop->default_output_soundcard = NULL;
 
@@ -801,11 +826,165 @@ ags_audio_loop_change_frequency(AgsMainLoop *main_loop,
 }
 
 void
+ags_audio_loop_sync_counter_inc(AgsMainLoop *main_loop, guint tic)
+{
+  AgsAudioLoop *audio_loop;
+
+  pthread_mutex_t *thread_mutex;
+
+  if(tic >= 6){
+    return;
+  }
+  
+  audio_loop = AGS_AUDIO_LOOP(main_loop);
+
+  /* get thread mutex */
+  pthread_mutex_lock(ags_thread_get_class_mutex());
+  
+  thread_mutex = AGS_THREAD(audio_loop)->obj_mutex;
+  
+  pthread_mutex_unlock(ags_thread_get_class_mutex());
+
+  /* increment */
+  pthread_mutex_lock(thread_mutex);
+  
+  audio_loop->sync_counter[tic] += 1;
+
+  pthread_mutex_unlock(thread_mutex);
+}
+
+void
+ags_audio_loop_sync_counter_dec(AgsMainLoop *main_loop, guint tic)
+{
+  AgsAudioLoop *audio_loop;
+
+  pthread_mutex_t *thread_mutex;
+
+  if(tic >= 6){
+    return;
+  }
+  
+  audio_loop = AGS_AUDIO_LOOP(main_loop);
+
+  /* get thread mutex */
+  pthread_mutex_lock(ags_thread_get_class_mutex());
+  
+  thread_mutex = AGS_THREAD(audio_loop)->obj_mutex;
+  
+  pthread_mutex_unlock(ags_thread_get_class_mutex());
+
+  /* increment */
+  pthread_mutex_lock(thread_mutex);
+
+  if(audio_loop->sync_counter[tic] > 0){
+    audio_loop->sync_counter[tic] -= 1;
+  }else{
+    g_critical("sync counter already equals 0");
+  }
+  
+  pthread_mutex_unlock(thread_mutex);
+}
+
+gboolean
+ags_audio_loop_sync_counter_test(AgsMainLoop *main_loop, guint tic)
+{
+  AgsAudioLoop *audio_loop;
+
+  gboolean success;
+  
+  pthread_mutex_t *thread_mutex;
+
+  if(tic >= 6){
+    return(FALSE);
+  }
+  
+  audio_loop = AGS_AUDIO_LOOP(main_loop);
+
+  /* get thread mutex */
+  pthread_mutex_lock(ags_thread_get_class_mutex());
+  
+  thread_mutex = AGS_THREAD(audio_loop)->obj_mutex;
+  
+  pthread_mutex_unlock(ags_thread_get_class_mutex());
+
+  /* test */
+  success = FALSE;
+  
+  pthread_mutex_lock(thread_mutex);
+
+  if(audio_loop->sync_counter[tic] == 0){
+    success = TRUE;
+  }
+  
+  pthread_mutex_unlock(thread_mutex);
+
+  return(success);
+}
+
+void
+ags_audio_loop_set_sync_tic(AgsMainLoop *main_loop, guint sync_tic)
+{
+  AgsAudioLoop *audio_loop;
+  
+  pthread_mutex_t *thread_mutex;
+  
+  audio_loop = AGS_AUDIO_LOOP(main_loop);
+
+  /* get thread mutex */
+  pthread_mutex_lock(ags_thread_get_class_mutex());
+  
+  thread_mutex = AGS_THREAD(audio_loop)->obj_mutex;
+  
+  pthread_mutex_unlock(ags_thread_get_class_mutex());
+
+  /* test */
+  pthread_mutex_lock(thread_mutex);
+
+  audio_loop->sync_tic = sync_tic;
+  
+  pthread_mutex_unlock(thread_mutex);
+}
+
+guint
+ags_audio_loop_get_sync_tic(AgsMainLoop *main_loop)
+{
+  AgsAudioLoop *audio_loop;
+
+  guint sync_tic;
+  
+  pthread_mutex_t *thread_mutex;
+  
+  audio_loop = AGS_AUDIO_LOOP(main_loop);
+
+  /* get thread mutex */
+  pthread_mutex_lock(ags_thread_get_class_mutex());
+  
+  thread_mutex = AGS_THREAD(audio_loop)->obj_mutex;
+  
+  pthread_mutex_unlock(ags_thread_get_class_mutex());
+
+  /* test */
+  pthread_mutex_lock(thread_mutex);
+
+  sync_tic = audio_loop->sync_tic;
+  
+  pthread_mutex_unlock(thread_mutex);
+
+  return(sync_tic);
+}
+
+void
 ags_audio_loop_start(AgsThread *thread)
 {
   AgsAudioLoop *audio_loop;
   
   audio_loop = AGS_AUDIO_LOOP(thread);
+
+  g_atomic_int_set(&(audio_loop->tic), 0);
+  g_atomic_int_set(&(audio_loop->last_sync), 0);
+
+  g_atomic_int_or(&(thread->sync_flags),
+		  AGS_THREAD_SYNCED);
 
   if((AGS_THREAD_SINGLE_LOOP & (g_atomic_int_get(&(thread->flags)))) == 0){
     /*  */

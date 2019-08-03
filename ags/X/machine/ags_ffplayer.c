@@ -24,6 +24,8 @@
 #include <ags/libags-audio.h>
 #include <ags/libags-gui.h>
 
+#include <ags/X/ags_ui_provider.h>
+
 #include <ags/X/file/ags_gui_file_xml.h>
 
 #include <ags/X/machine/ags_ffplayer_bridge.h>
@@ -194,6 +196,12 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
 
   AgsAudio *audio;
   
+  AgsConfig *config;
+
+  gchar *str;
+  
+  gdouble gui_scale_factor;
+
   g_signal_connect_after((GObject *) ffplayer, "parent_set",
 			 G_CALLBACK(ags_ffplayer_parent_set_callback), (gpointer) ffplayer);
 
@@ -207,6 +215,23 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
 				      AGS_SOUND_ABILITY_NOTATION));
   ags_audio_set_behaviour_flags(audio, (AGS_SOUND_BEHAVIOUR_REVERSE_MAPPING |
 					AGS_SOUND_BEHAVIOUR_DEFAULTS_TO_INPUT));
+
+  config = ags_config_get_instance();
+  
+  /* scale factor */
+  gui_scale_factor = 1.0;
+  
+  str = ags_config_get_value(config,
+			     AGS_CONFIG_GENERIC,
+			     "gui-scale");
+
+  if(str != NULL){
+    gui_scale_factor = g_ascii_strtod(str,
+				      NULL);
+
+    g_free(str);
+  }
+
   g_object_set(audio,
 	       "min-audio-channels", 1,
 	       "min-output-pads", 1,
@@ -329,8 +354,8 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
 		   GTK_FILL, GTK_FILL,
 		   0, 0);
 
-  ffplayer->control_width = 12;
-  ffplayer->control_height = 40;
+  ffplayer->control_width = (guint) (gui_scale_factor * AGS_FFPLAYER_DEFAULT_CONTROL_WIDTH);
+  ffplayer->control_height = (guint) (gui_scale_factor * AGS_FFPLAYER_DEFAULT_CONTROL_HEIGHT);
 
   ffplayer->drawing_area = (GtkDrawingArea *) gtk_drawing_area_new();
   gtk_widget_set_size_request((GtkWidget *) ffplayer->drawing_area,
@@ -371,7 +396,7 @@ ags_ffplayer_init(AgsFFPlayer *ffplayer)
 		      ffplayer,
 		      ags_machine_generic_output_message_monitor_timeout);
 
-  g_timeout_add(1000 / 30,
+  g_timeout_add(AGS_UI_PROVIDER_DEFAULT_TIMEOUT * 1000.0,
 		(GSourceFunc) ags_machine_generic_output_message_monitor_timeout,
 		(gpointer) ffplayer);
 }
@@ -502,10 +527,10 @@ ags_ffplayer_realize(GtkWidget *widget)
   }
   
   gtk_widget_set_style((GtkWidget *) ffplayer->drawing_area,
-		       ffplayer_style);
+		       NULL);
 
   gtk_widget_set_style((GtkWidget *) ffplayer->hscrollbar,
-		       ffplayer_style);
+		       NULL);
 }
 
 gchar*

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -183,11 +183,7 @@ ags_midi_file_set_property(GObject *gobject,
   midi_file = AGS_MIDI_FILE(gobject);
 
   /* get midi file mutex */
-  pthread_mutex_lock(ags_midi_file_get_class_mutex());
-  
-  midi_file_mutex = midi_file->obj_mutex;
-  
-  pthread_mutex_unlock(ags_midi_file_get_class_mutex());
+  midi_file_mutex = AGS_MIDI_FILE_GET_OBJ_MUTEX(midi_file);
   
   switch(prop_id){
   case PROP_FILENAME:
@@ -232,11 +228,7 @@ ags_midi_file_get_property(GObject *gobject,
   midi_file = AGS_MIDI_FILE(gobject);
 
   /* get midi file mutex */
-  pthread_mutex_lock(ags_midi_file_get_class_mutex());
-  
-  midi_file_mutex = midi_file->obj_mutex;
-  
-  pthread_mutex_unlock(ags_midi_file_get_class_mutex());
+  midi_file_mutex = AGS_MIDI_FILE_GET_OBJ_MUTEX(midi_file);
   
   switch(prop_id){
   case PROP_FILENAME:

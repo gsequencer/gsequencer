@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -21,6 +21,7 @@
 #include <ags/X/ags_generic_preferences_callbacks.h>
 
 #include <ags/libags.h>
+#include <ags/libags-audio.h>
 
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_preferences.h>
@@ -203,6 +204,35 @@ ags_generic_preferences_init(AgsGenericPreferences *generic_preferences)
 		     GTK_WIDGET(generic_preferences->rt_safe),
 		     FALSE, FALSE,
 		     0);
+
+  /* GUI scale factor */
+  hbox = (GtkHBox *) gtk_hbox_new(FALSE,
+				  0);
+  gtk_box_pack_start(GTK_BOX(generic_preferences),
+		     GTK_WIDGET(hbox),
+		     FALSE, FALSE,
+		     0);
+
+  label = (GtkLabel *) gtk_label_new(i18n("GUI scale factor"));
+  gtk_box_pack_start(GTK_BOX(hbox),
+		     GTK_WIDGET(label),
+		     FALSE, FALSE,
+		     0);
+
+  generic_preferences->gui_scale = (GtkComboBoxText *) gtk_combo_box_text_new();
+  gtk_combo_box_text_append_text(generic_preferences->gui_scale,
+				 "1.0");
+  gtk_combo_box_text_append_text(generic_preferences->gui_scale,
+				 "1.25");
+  gtk_combo_box_text_append_text(generic_preferences->gui_scale,
+				 "2.0");
+  gtk_combo_box_set_active(GTK_COMBO_BOX(generic_preferences->gui_scale),
+			   0);
+  
+  gtk_box_pack_start(GTK_BOX(hbox),
+		     GTK_WIDGET(generic_preferences->gui_scale),
+		     FALSE, FALSE,
+		     0);
 }
 
 static void
@@ -297,6 +327,11 @@ ags_generic_preferences_apply(AgsApplicable *applicable)
 		       AGS_CONFIG_GENERIC,
 		       "rt-safe",
 		       (gtk_toggle_button_get_active((GtkToggleButton *) generic_preferences->rt_safe) ? "true": "false"));
+
+  ags_config_set_value(config,
+		       AGS_CONFIG_GENERIC,
+		       "gui-scale",
+		       gtk_combo_box_text_get_active_text(generic_preferences->gui_scale));
 }
 
 void
@@ -361,6 +396,32 @@ ags_generic_preferences_reset(AgsApplicable *applicable)
 				 TRUE);
   }
 
+  g_free(str);
+
+  /* GUI scale factor */
+  str = ags_config_get_value(config,
+			     AGS_CONFIG_GENERIC,
+			     "gui-scale");
+
+  if(str != NULL){
+    if(!g_ascii_strncasecmp(str,
+			    "1.0",
+			    4)){
+      gtk_combo_box_set_active((GtkComboBox *) generic_preferences->gui_scale,
+			       0);
+    }else if(!g_ascii_strncasecmp(str,
+				  "1.25",
+				  5)){
+      gtk_combo_box_set_active((GtkComboBox *) generic_preferences->gui_scale,
+			       1);
+    }else if(!g_ascii_strncasecmp(str,
+				  "2.0",
+				  4)){
+      gtk_combo_box_set_active((GtkComboBox *) generic_preferences->gui_scale,
+			       2);
+    }
+  }
+  
   g_free(str);
 }
 

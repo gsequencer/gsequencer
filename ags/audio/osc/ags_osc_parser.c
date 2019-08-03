@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -352,11 +352,7 @@ ags_osc_parser_set_property(GObject *gobject,
   osc_parser = AGS_OSC_PARSER(gobject);
 
   /* get osc parser mutex */
-  pthread_mutex_lock(ags_osc_parser_get_class_mutex());
-  
-  osc_parser_mutex = osc_parser->obj_mutex;
-  
-  pthread_mutex_unlock(ags_osc_parser_get_class_mutex());
+  osc_parser_mutex = AGS_OSC_PARSER_GET_OBJ_MUTEX(osc_parser);
   
   switch(prop_id){
   default:
@@ -378,11 +374,7 @@ ags_osc_parser_get_property(GObject *gobject,
   osc_parser = AGS_OSC_PARSER(gobject);
 
   /* get osc parser mutex */
-  pthread_mutex_lock(ags_osc_parser_get_class_mutex());
-  
-  osc_parser_mutex = osc_parser->obj_mutex;
-  
-  pthread_mutex_unlock(ags_osc_parser_get_class_mutex());
+  osc_parser_mutex = AGS_OSC_PARSER_GET_OBJ_MUTEX(osc_parser);
   
   switch(prop_id){
   default:

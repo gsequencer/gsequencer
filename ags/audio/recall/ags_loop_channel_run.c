@@ -232,11 +232,7 @@ ags_loop_channel_run_set_property(GObject *gobject,
   loop_channel_run = AGS_LOOP_CHANNEL_RUN(gobject);
 
   /* get recall mutex */
-  pthread_mutex_lock(ags_recall_get_class_mutex());
-  
-  recall_mutex = AGS_RECALL(gobject)->obj_mutex;
-
-  pthread_mutex_unlock(ags_recall_get_class_mutex());
+  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(loop_channel_run);
 
   switch(prop_id){
   case PROP_COUNT_BEATS_AUDIO_RUN:
@@ -322,11 +318,7 @@ ags_loop_channel_run_get_property(GObject *gobject,
   loop_channel_run = AGS_LOOP_CHANNEL_RUN(gobject);
 
   /* get recall mutex */
-  pthread_mutex_lock(ags_recall_get_class_mutex());
-  
-  recall_mutex = AGS_RECALL(gobject)->obj_mutex;
-
-  pthread_mutex_unlock(ags_recall_get_class_mutex());
+  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(loop_channel_run);
 
   switch(prop_id){
   case PROP_COUNT_BEATS_AUDIO_RUN:

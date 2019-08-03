@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -214,11 +214,7 @@ ags_stream_channel_set_property(GObject *gobject,
   stream_channel = AGS_STREAM_CHANNEL(gobject);
 
   /* get recall mutex */
-  pthread_mutex_lock(ags_recall_get_class_mutex());
-  
-  recall_mutex = AGS_RECALL(gobject)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_recall_get_class_mutex());
+  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(stream_channel);
 
   switch(prop_id){
   case PROP_AUTO_SENSE:
@@ -267,11 +263,7 @@ ags_stream_channel_get_property(GObject *gobject,
   stream_channel = AGS_STREAM_CHANNEL(gobject);
 
   /* get recall mutex */
-  pthread_mutex_lock(ags_recall_get_class_mutex());
-  
-  recall_mutex = AGS_RECALL(gobject)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_recall_get_class_mutex());
+  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(stream_channel);
 
   switch(prop_id){
   case PROP_AUTO_SENSE:

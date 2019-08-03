@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -452,11 +452,7 @@ ags_note_set_property(GObject *gobject,
   note = AGS_NOTE(gobject);
 
   /* get note mutex */
-  pthread_mutex_lock(ags_note_get_class_mutex());
-  
-  note_mutex = note->obj_mutex;
-  
-  pthread_mutex_unlock(ags_note_get_class_mutex());
+  note_mutex = AGS_NOTE_GET_OBJ_MUTEX(note);
 
   switch(prop_id){
   case PROP_X0:
@@ -652,11 +648,7 @@ ags_note_get_property(GObject *gobject,
   note = AGS_NOTE(gobject);
 
   /* get note mutex */
-  pthread_mutex_lock(ags_note_get_class_mutex());
-  
-  note_mutex = note->obj_mutex;
-  
-  pthread_mutex_unlock(ags_note_get_class_mutex());
+  note_mutex = AGS_NOTE_GET_OBJ_MUTEX(note);
 
   switch(prop_id){
   case PROP_X0:
@@ -860,11 +852,7 @@ ags_note_test_flags(AgsNote *note, guint flags)
   }
       
   /* get note mutex */
-  pthread_mutex_lock(ags_note_get_class_mutex());
-  
-  note_mutex = note->obj_mutex;
-  
-  pthread_mutex_unlock(ags_note_get_class_mutex());
+  note_mutex = AGS_NOTE_GET_OBJ_MUTEX(note);
 
   /* test */
   pthread_mutex_lock(note_mutex);
@@ -895,11 +883,7 @@ ags_note_set_flags(AgsNote *note, guint flags)
   }
       
   /* get note mutex */
-  pthread_mutex_lock(ags_note_get_class_mutex());
-  
-  note_mutex = note->obj_mutex;
-  
-  pthread_mutex_unlock(ags_note_get_class_mutex());
+  note_mutex = AGS_NOTE_GET_OBJ_MUTEX(note);
 
   /* set */
   pthread_mutex_lock(note_mutex);
@@ -928,11 +912,7 @@ ags_note_unset_flags(AgsNote *note, guint flags)
   }
       
   /* get note mutex */
-  pthread_mutex_lock(ags_note_get_class_mutex());
-  
-  note_mutex = note->obj_mutex;
-  
-  pthread_mutex_unlock(ags_note_get_class_mutex());
+  note_mutex = AGS_NOTE_GET_OBJ_MUTEX(note);
 
   /* unset */
   pthread_mutex_lock(note_mutex);
@@ -1569,11 +1549,7 @@ ags_note_duplicate(AgsNote *note)
   }
   
   /* get note mutex */
-  pthread_mutex_lock(ags_note_get_class_mutex());
-  
-  note_mutex = note->obj_mutex;
-  
-  pthread_mutex_unlock(ags_note_get_class_mutex());
+  note_mutex = AGS_NOTE_GET_OBJ_MUTEX(note);
 
   /* instantiate note */  
   note_copy = ags_note_new();

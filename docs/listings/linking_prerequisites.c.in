@@ -16,19 +16,22 @@
 AgsAudio *master_audio, *slave_audio;
 AgsLinkChannel *linkChannel;
 
+AgsApplicationContext *application_context;
+AgsTaskThread *task_thread;
+
 GObject *soundcard;
 
 GError *error;
 
-/* instantiate AgsDevout */
-soundcard = ags_devout_new(NULL);
+application_context = ags_application_context_get_instance();
+task_thread = application_context->task_thread;
 
 /* create AgsAudio objects */
 master_audio = (AgsAudio *) g_object_new(AGS_TYPE_AUDIO,
-                                         "soundcard\0", soundcard,
+                                         "soundcard", soundcard,
                                          NULL);
 slave_audio = (AgsAudio *) g_object_new(AGS_TYPE_AUDIO,
-                                        "soundcard\0", soundcard,
+                                        "soundcard", soundcard,
                                         NULL);
 
 /* assign AgsAudioSignal objects to master_audio and slave_audio */

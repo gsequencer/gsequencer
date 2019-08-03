@@ -178,11 +178,7 @@ ags_osc_action_controller_set_property(GObject *gobject,
   osc_action_controller = AGS_OSC_ACTION_CONTROLLER(gobject);
 
   /* get osc controller mutex */
-  pthread_mutex_lock(ags_osc_controller_get_class_mutex());
-  
-  osc_controller_mutex = AGS_OSC_CONTROLLER(osc_action_controller)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_osc_controller_get_class_mutex());
+  osc_controller_mutex = AGS_OSC_CONTROLLER_GET_OBJ_MUTEX(osc_action_controller);
   
   switch(prop_id){
   default:
@@ -204,11 +200,7 @@ ags_osc_action_controller_get_property(GObject *gobject,
   osc_action_controller = AGS_OSC_ACTION_CONTROLLER(gobject);
 
   /* get osc controller mutex */
-  pthread_mutex_lock(ags_osc_controller_get_class_mutex());
-  
-  osc_controller_mutex = AGS_OSC_CONTROLLER(osc_action_controller)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_osc_controller_get_class_mutex());
+  osc_controller_mutex = AGS_OSC_CONTROLLER_GET_OBJ_MUTEX(osc_action_controller);
   
   switch(prop_id){
   default:
@@ -371,7 +363,7 @@ ags_osc_action_controller_real_run_action(AgsOscActionController *osc_action_con
 				   AGS_OSC_RESPONSE_ERROR);
 
 	g_object_set(osc_response,
-		     "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_UNKNOW_ARGUMENT,
+		     "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_UNKNOWN_ARGUMENT,
 		     NULL);
 
 	free(type_tag);
@@ -406,7 +398,7 @@ ags_osc_action_controller_real_run_action(AgsOscActionController *osc_action_con
 				   AGS_OSC_RESPONSE_ERROR);
 
 	g_object_set(osc_response,
-		     "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_UNKNOW_ARGUMENT,
+		     "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_UNKNOWN_ARGUMENT,
 		     NULL);
 
 	free(type_tag);
@@ -552,7 +544,7 @@ ags_osc_action_controller_real_run_action(AgsOscActionController *osc_action_con
 				   AGS_OSC_RESPONSE_ERROR);
 
 	g_object_set(osc_response,
-		     "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_UNKNOW_ARGUMENT,
+		     "error-message", AGS_OSC_RESPONSE_ERROR_MESSAGE_UNKNOWN_ARGUMENT,
 		     NULL);
 
 	free(type_tag);

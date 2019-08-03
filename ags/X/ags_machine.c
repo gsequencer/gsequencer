@@ -502,7 +502,7 @@ ags_machine_init(AgsMachine *machine)
 		      machine,
 		      ags_machine_message_monitor_timeout);
 
-  g_timeout_add(1000 / 30,
+  g_timeout_add(AGS_UI_PROVIDER_DEFAULT_TIMEOUT * 1000.0,
 		(GSourceFunc) ags_machine_message_monitor_timeout,
 		(gpointer) machine);
 
@@ -1568,6 +1568,12 @@ ags_machine_real_resize_audio_channels(AgsMachine *machine,
   guint i, j;
 
   audio = machine->audio;
+
+  list_output_pad =
+    list_output_pad_start = NULL;
+
+  list_input_pad =
+    list_input_pad_start = NULL;
   
   if(audio_channels > audio_channels_old){
     /* grow lines */
@@ -1585,15 +1591,11 @@ ags_machine_real_resize_audio_channels(AgsMachine *machine,
     if(machine->input != NULL){
       list_input_pad_start = 
 	list_input_pad = g_list_reverse(gtk_container_get_children((GtkContainer *) machine->input));
-    }else{
-      list_input_pad_start = NULL;
     }
 
     if(machine->output != NULL){
       list_output_pad_start = 
 	list_output_pad = g_list_reverse(gtk_container_get_children((GtkContainer *) machine->output));
-    }else{
-      list_output_pad_start = NULL;
     }
     
     /* AgsInput */
@@ -1704,15 +1706,11 @@ ags_machine_real_resize_audio_channels(AgsMachine *machine,
       if(machine->input != NULL){
 	list_input_pad_start = 
 	  list_input_pad = g_list_reverse(gtk_container_get_children((GtkContainer *) machine->input));
-      }else{
-	list_input_pad_start = NULL;
       }
 
       if(machine->output != NULL){
 	list_output_pad_start = 
 	  list_output_pad = g_list_reverse(gtk_container_get_children((GtkContainer *) machine->output));
-      }else{
-	list_output_pad_start = NULL;
       }
     }
     
@@ -1794,15 +1792,11 @@ ags_machine_real_resize_audio_channels(AgsMachine *machine,
     if(machine->output != NULL){
       list_output_pad_start = 
 	list_output_pad = gtk_container_get_children((GtkContainer *) machine->output);
-    }else{
-      list_output_pad_start = NULL;
     }
 
     if(machine->input != NULL){
       list_input_pad_start = 
 	list_input_pad = gtk_container_get_children((GtkContainer *) machine->input);
-    }else{
-      list_input_pad_start = NULL;
     }
 	
     if(audio_channels == 0){

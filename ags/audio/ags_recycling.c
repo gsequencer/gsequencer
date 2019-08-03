@@ -529,11 +529,7 @@ ags_recycling_set_property(GObject *gobject,
   recycling = AGS_RECYCLING(gobject);
 
   /* get recycling mutex */
-  pthread_mutex_lock(ags_recycling_get_class_mutex());
-  
-  recycling_mutex = recycling->obj_mutex;
-  
-  pthread_mutex_unlock(ags_recycling_get_class_mutex());
+  recycling_mutex = AGS_RECYCLING_GET_OBJ_MUTEX(recycling);
 
   switch(prop_id){
   case PROP_CHANNEL:
@@ -750,11 +746,7 @@ ags_recycling_get_property(GObject *gobject,
   recycling = AGS_RECYCLING(gobject);
 
   /* get recycling mutex */
-  pthread_mutex_lock(ags_recycling_get_class_mutex());
-  
-  recycling_mutex = recycling->obj_mutex;
-  
-  pthread_mutex_unlock(ags_recycling_get_class_mutex());
+  recycling_mutex = AGS_RECYCLING_GET_OBJ_MUTEX(recycling);
   
   switch(prop_id){
   case PROP_CHANNEL:
@@ -1012,11 +1004,7 @@ ags_recycling_get_uuid(AgsConnectable *connectable)
   recycling = AGS_RECYCLING(connectable);
 
   /* get recycling signal mutex */
-  pthread_mutex_lock(ags_recycling_get_class_mutex());
-  
-  recycling_mutex = recycling->obj_mutex;
-  
-  pthread_mutex_unlock(ags_recycling_get_class_mutex());
+  recycling_mutex = AGS_RECYCLING_GET_OBJ_MUTEX(recycling);
 
   /* get UUID */
   pthread_mutex_lock(recycling_mutex);
@@ -1046,11 +1034,7 @@ ags_recycling_is_ready(AgsConnectable *connectable)
   recycling = AGS_RECYCLING(connectable);
 
   /* get recycling mutex */
-  pthread_mutex_lock(ags_recycling_get_class_mutex());
-  
-  recycling_mutex = recycling->obj_mutex;
-  
-  pthread_mutex_unlock(ags_recycling_get_class_mutex());
+  recycling_mutex = AGS_RECYCLING_GET_OBJ_MUTEX(recycling);
 
   /* check is added */
   pthread_mutex_lock(recycling_mutex);
@@ -1097,11 +1081,7 @@ ags_recycling_add_to_registry(AgsConnectable *connectable)
   }
   
   /* get recycling mutex */
-  pthread_mutex_lock(ags_recycling_get_class_mutex());
-  
-  recycling_mutex = recycling->obj_mutex;
-  
-  pthread_mutex_unlock(ags_recycling_get_class_mutex());
+  recycling_mutex = AGS_RECYCLING_GET_OBJ_MUTEX(recycling);
 
   /* add audio signal */
   pthread_mutex_lock(recycling_mutex);
@@ -1173,11 +1153,7 @@ ags_recycling_is_connected(AgsConnectable *connectable)
   recycling = AGS_RECYCLING(connectable);
 
   /* get recycling mutex */
-  pthread_mutex_lock(ags_recycling_get_class_mutex());
-  
-  recycling_mutex = recycling->obj_mutex;
-  
-  pthread_mutex_unlock(ags_recycling_get_class_mutex());
+  recycling_mutex = AGS_RECYCLING_GET_OBJ_MUTEX(recycling);
 
   /* check is connected */
   pthread_mutex_lock(recycling_mutex);
@@ -1211,11 +1187,7 @@ ags_recycling_connect(AgsConnectable *connectable)
 #endif
 
   /* get recycling mutex */
-  pthread_mutex_lock(ags_recycling_get_class_mutex());
-  
-  recycling_mutex = recycling->obj_mutex;
-  
-  pthread_mutex_unlock(ags_recycling_get_class_mutex());
+  recycling_mutex = AGS_RECYCLING_GET_OBJ_MUTEX(recycling);
 
   /* audio signal */
   pthread_mutex_lock(recycling_mutex);
@@ -1256,11 +1228,7 @@ ags_recycling_disconnect(AgsConnectable *connectable)
 #endif
 
   /* get recycling mutex */
-  pthread_mutex_lock(ags_recycling_get_class_mutex());
-  
-  recycling_mutex = recycling->obj_mutex;
-  
-  pthread_mutex_unlock(ags_recycling_get_class_mutex());
+  recycling_mutex = AGS_RECYCLING_GET_OBJ_MUTEX(recycling);
 
   /* audio signal */
   pthread_mutex_lock(recycling_mutex);
@@ -1317,11 +1285,7 @@ ags_recycling_test_flags(AgsRecycling *recycling, guint flags)
   }
 
   /* get recycling mutex */
-  pthread_mutex_lock(ags_recycling_get_class_mutex());
-  
-  recycling_mutex = recycling->obj_mutex;
-  
-  pthread_mutex_unlock(ags_recycling_get_class_mutex());
+  recycling_mutex = AGS_RECYCLING_GET_OBJ_MUTEX(recycling);
 
   /* test */
   pthread_mutex_lock(recycling_mutex);
@@ -1352,11 +1316,7 @@ ags_recycling_set_flags(AgsRecycling *recycling, guint flags)
   }
 
   /* get recycling mutex */
-  pthread_mutex_lock(ags_recycling_get_class_mutex());
-  
-  recycling_mutex = recycling->obj_mutex;
-  
-  pthread_mutex_unlock(ags_recycling_get_class_mutex());
+  recycling_mutex = AGS_RECYCLING_GET_OBJ_MUTEX(recycling);
 
   //TODO:JK: add more?
 
@@ -1387,11 +1347,7 @@ ags_recycling_unset_flags(AgsRecycling *recycling, guint flags)
   }
 
   /* get recycling mutex */
-  pthread_mutex_lock(ags_recycling_get_class_mutex());
-  
-  recycling_mutex = recycling->obj_mutex;
-  
-  pthread_mutex_unlock(ags_recycling_get_class_mutex());
+  recycling_mutex = AGS_RECYCLING_GET_OBJ_MUTEX(recycling);
 
   //TODO:JK: add more?
 
@@ -1425,11 +1381,7 @@ ags_recycling_next(AgsRecycling *recycling)
   }
 
   /* get recycling mutex */
-  pthread_mutex_lock(ags_recycling_get_class_mutex());
-  
-  recycling_mutex = recycling->obj_mutex;
-  
-  pthread_mutex_unlock(ags_recycling_get_class_mutex());
+  recycling_mutex = AGS_RECYCLING_GET_OBJ_MUTEX(recycling);
 
   /* next */
   pthread_mutex_lock(recycling_mutex);
@@ -1467,11 +1419,7 @@ ags_recycling_prev(AgsRecycling *recycling)
   }
 
   /* get recycling mutex */
-  pthread_mutex_lock(ags_recycling_get_class_mutex());
-  
-  recycling_mutex = recycling->obj_mutex;
-  
-  pthread_mutex_unlock(ags_recycling_get_class_mutex());
+  recycling_mutex = AGS_RECYCLING_GET_OBJ_MUTEX(recycling);
 
   /* prev */
   pthread_mutex_lock(recycling_mutex);
@@ -1508,11 +1456,7 @@ ags_recycling_set_output_soundcard(AgsRecycling *recycling, GObject *output_soun
   }
 
   /* get recycling mutex */
-  pthread_mutex_lock(ags_recycling_get_class_mutex());
-  
-  recycling_mutex = recycling->obj_mutex;
-  
-  pthread_mutex_unlock(ags_recycling_get_class_mutex());
+  recycling_mutex = AGS_RECYCLING_GET_OBJ_MUTEX(recycling);
 
   /* recycling */
   pthread_mutex_lock(recycling_mutex);
@@ -1578,11 +1522,7 @@ ags_recycling_set_input_soundcard(AgsRecycling *recycling, GObject *input_soundc
   }
 
   /* get recycling mutex */
-  pthread_mutex_lock(ags_recycling_get_class_mutex());
-  
-  recycling_mutex = recycling->obj_mutex;
-  
-  pthread_mutex_unlock(ags_recycling_get_class_mutex());
+  recycling_mutex = AGS_RECYCLING_GET_OBJ_MUTEX(recycling);
 
   /* recycling */
   pthread_mutex_lock(recycling_mutex);
@@ -1651,11 +1591,7 @@ ags_recycling_set_samplerate(AgsRecycling *recycling, guint samplerate)
   }
 
   /* get recycling mutex */  
-  pthread_mutex_lock(ags_recycling_get_class_mutex());
-
-  recycling_mutex = recycling->obj_mutex;
-  
-  pthread_mutex_unlock(ags_recycling_get_class_mutex());
+  recycling_mutex = AGS_RECYCLING_GET_OBJ_MUTEX(recycling);
 
   /* get audio signal */
   pthread_mutex_lock(recycling_mutex);
@@ -1721,11 +1657,7 @@ ags_recycling_set_buffer_size(AgsRecycling *recycling, guint buffer_size)
   }
 
   /* get recycling mutex */  
-  pthread_mutex_lock(ags_recycling_get_class_mutex());
-
-  recycling_mutex = recycling->obj_mutex;
-  
-  pthread_mutex_unlock(ags_recycling_get_class_mutex());
+  recycling_mutex = AGS_RECYCLING_GET_OBJ_MUTEX(recycling);
 
   /* get audio signal */
   pthread_mutex_lock(recycling_mutex);
@@ -1791,11 +1723,7 @@ ags_recycling_set_format(AgsRecycling *recycling, guint format)
   }
 
   /* get recycling mutex */  
-  pthread_mutex_lock(ags_recycling_get_class_mutex());
-
-  recycling_mutex = recycling->obj_mutex;
-  
-  pthread_mutex_unlock(ags_recycling_get_class_mutex());
+  recycling_mutex = AGS_RECYCLING_GET_OBJ_MUTEX(recycling);
 
   /* get audio signal */
   pthread_mutex_lock(recycling_mutex);
@@ -1854,11 +1782,7 @@ ags_recycling_real_add_audio_signal(AgsRecycling *recycling,
   pthread_mutex_t *audio_signal_mutex;
 
   /* get recycling mutex */  
-  pthread_mutex_lock(ags_recycling_get_class_mutex());
-
-  recycling_mutex = recycling->obj_mutex;
-  
-  pthread_mutex_unlock(ags_recycling_get_class_mutex());
+  recycling_mutex = AGS_RECYCLING_GET_OBJ_MUTEX(recycling);
 
   /* get audio signal */
   pthread_mutex_lock(recycling_mutex);
@@ -1878,11 +1802,7 @@ ags_recycling_real_add_audio_signal(AgsRecycling *recycling,
   pthread_mutex_unlock(recycling_mutex);
 
   /* get audio signal mutex */  
-  pthread_mutex_lock(ags_audio_signal_get_class_mutex());
-
-  audio_signal_mutex = audio_signal->obj_mutex;
-  
-  pthread_mutex_unlock(ags_audio_signal_get_class_mutex());
+  audio_signal_mutex = AGS_AUDIO_SIGNAL_GET_OBJ_MUTEX(audio_signal);
 
   /* get some fields */
   pthread_mutex_lock(audio_signal_mutex);
@@ -1927,11 +1847,7 @@ ags_recycling_real_add_audio_signal(AgsRecycling *recycling,
       current_audio_signal = list->data;
       
       /* get audio signal mutex */  
-      pthread_mutex_lock(ags_audio_signal_get_class_mutex());
-
-      current_audio_signal_mutex = current_audio_signal->obj_mutex;
-  
-      pthread_mutex_unlock(ags_audio_signal_get_class_mutex());
+      current_audio_signal_mutex = AGS_AUDIO_SIGNAL_GET_OBJ_MUTEX(current_audio_signal);
 
       /* get some fields */
       pthread_mutex_lock(current_audio_signal_mutex);
@@ -1976,11 +1892,7 @@ ags_recycling_real_add_audio_signal(AgsRecycling *recycling,
       current_audio_signal = list->data;
       
       /* get audio signal mutex */  
-      pthread_mutex_lock(ags_audio_signal_get_class_mutex());
-
-      current_audio_signal_mutex = current_audio_signal->obj_mutex;
-  
-      pthread_mutex_unlock(ags_audio_signal_get_class_mutex());
+      current_audio_signal_mutex = AGS_AUDIO_SIGNAL_GET_OBJ_MUTEX(current_audio_signal);
 
       /* get some fields */
       pthread_mutex_lock(current_audio_signal_mutex);
@@ -2051,11 +1963,7 @@ ags_recycling_real_remove_audio_signal(AgsRecycling *recycling,
   pthread_mutex_t *recycling_mutex;
 
   /* get recycling mutex */  
-  pthread_mutex_lock(ags_recycling_get_class_mutex());
-
-  recycling_mutex = recycling->obj_mutex;
-  
-  pthread_mutex_unlock(ags_recycling_get_class_mutex());
+  recycling_mutex = AGS_RECYCLING_GET_OBJ_MUTEX(recycling);
 
   /* check audio signal */
   pthread_mutex_lock(recycling_mutex);
@@ -2167,18 +2075,10 @@ ags_recycling_create_audio_signal_with_defaults(AgsRecycling *recycling,
   }
 
   /* get recycling mutex */  
-  pthread_mutex_lock(ags_recycling_get_class_mutex());
-
-  recycling_mutex = recycling->obj_mutex;
-  
-  pthread_mutex_unlock(ags_recycling_get_class_mutex());
+  recycling_mutex = AGS_RECYCLING_GET_OBJ_MUTEX(recycling);
 
   /* get audio signal mutex */  
-  pthread_mutex_lock(ags_audio_signal_get_class_mutex());
-
-  audio_signal_mutex = audio_signal->obj_mutex;
-  
-  pthread_mutex_unlock(ags_audio_signal_get_class_mutex());
+  audio_signal_mutex = AGS_AUDIO_SIGNAL_GET_OBJ_MUTEX(audio_signal);
 
   /* get audio signal list */
   pthread_mutex_lock(recycling_mutex);
@@ -2211,11 +2111,7 @@ ags_recycling_create_audio_signal_with_defaults(AgsRecycling *recycling,
   }
 
   /* get template mutex */  
-  pthread_mutex_lock(ags_audio_signal_get_class_mutex());
-
-  template_mutex = template->obj_mutex;
-  
-  pthread_mutex_unlock(ags_audio_signal_get_class_mutex());
+  template_mutex = AGS_AUDIO_SIGNAL_GET_OBJ_MUTEX(template);
 
   /* get some fields */
   pthread_mutex_lock(template_mutex);
@@ -2326,18 +2222,10 @@ ags_recycling_create_audio_signal_with_frame_count(AgsRecycling *recycling,
   }
 
   /* get recycling mutex */  
-  pthread_mutex_lock(ags_recycling_get_class_mutex());
-
-  recycling_mutex = recycling->obj_mutex;
-  
-  pthread_mutex_unlock(ags_recycling_get_class_mutex());
+  recycling_mutex = AGS_RECYCLING_GET_OBJ_MUTEX(recycling);
 
   /* get audio signal mutex */  
-  pthread_mutex_lock(ags_audio_signal_get_class_mutex());
-
-  audio_signal_mutex = audio_signal->obj_mutex;
-  
-  pthread_mutex_unlock(ags_audio_signal_get_class_mutex());
+  audio_signal_mutex = AGS_AUDIO_SIGNAL_GET_OBJ_MUTEX(audio_signal);
 
   /* get audio signal list */
   pthread_mutex_lock(recycling_mutex);
@@ -2376,11 +2264,7 @@ ags_recycling_create_audio_signal_with_frame_count(AgsRecycling *recycling,
   }
 
   /* get template mutex */  
-  pthread_mutex_lock(ags_audio_signal_get_class_mutex());
-
-  template_mutex = template->obj_mutex;
-  
-  pthread_mutex_unlock(ags_audio_signal_get_class_mutex());
+  template_mutex = AGS_AUDIO_SIGNAL_GET_OBJ_MUTEX(template);
 
   /* get some fields */
   pthread_mutex_lock(template_mutex);
@@ -2458,11 +2342,7 @@ ags_recycling_create_audio_signal_with_frame_count(AgsRecycling *recycling,
   }
 
   /* get template stream mutex */  
-  pthread_mutex_lock(ags_audio_signal_get_class_mutex());
-
-  template_stream_mutex = template->stream_mutex;
-  
-  pthread_mutex_unlock(ags_audio_signal_get_class_mutex());
+  template_stream_mutex = AGS_AUDIO_SIGNAL_GET_STREAM_MUTEX(template);
 
   /* loop related copying */
   copy_mode = ags_audio_buffer_util_get_copy_mode(ags_audio_buffer_util_format_from_soundcard(format),
@@ -2639,11 +2519,7 @@ ags_recycling_position(AgsRecycling *start_region, AgsRecycling *end_region,
     }
 
     /* get recycling mutex */  
-    pthread_mutex_lock(ags_recycling_get_class_mutex());
-
-    current_mutex = current->obj_mutex;
-  
-    pthread_mutex_unlock(ags_recycling_get_class_mutex());
+    current_mutex = AGS_RECYCLING_GET_OBJ_MUTEX(current);
 
     /* iterate */
     pthread_mutex_lock(current_mutex);
@@ -2695,11 +2571,7 @@ ags_recycling_is_active(AgsRecycling *start_region, AgsRecycling *end_region,
 
   while(current != end_region){
     /* get recycling mutex */  
-    pthread_mutex_lock(ags_recycling_get_class_mutex());
-
-    current_mutex = current->obj_mutex;
-  
-    pthread_mutex_unlock(ags_recycling_get_class_mutex());
+    current_mutex = AGS_RECYCLING_GET_OBJ_MUTEX(current);
 
     /* get audio signal */
     pthread_mutex_lock(current_mutex);

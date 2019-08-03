@@ -80,9 +80,11 @@ struct _AgsBulkMember
   gchar *plugin_name;
   gchar *specifier;
 
+  guint port_index;
   gchar *control_port;
 
-  guint steps;
+  guint scale_precision;
+  gdouble step_count;
 
   AgsConversion *conversion;
   

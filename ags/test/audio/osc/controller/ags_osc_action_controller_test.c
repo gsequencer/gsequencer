@@ -128,6 +128,8 @@ ags_osc_action_controller_test_init_suite()
   ags_sound_provider_set_audio(AGS_SOUND_PROVIDER(application_context),
 			       g_list_prepend(start_audio,
 					      drum));
+
+  return(0);
 }
 
 /* The suite cleanup function.

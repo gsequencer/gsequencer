@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -62,6 +62,9 @@ void ags_ruler_draw(AgsRuler *ruler);
 
 enum{
   PROP_0,
+  PROP_STEP,
+  PROP_LARGE_STEP,
+  PROP_SMALL_STEP,
   PROP_ADJUSTMENT,
 };
 
@@ -88,7 +91,7 @@ ags_ruler_get_type()
     };
 
     ags_type_ruler = g_type_register_static(GTK_TYPE_WIDGET,
-					    "AgsRuler\0", &ags_ruler_info,
+					    "AgsRuler", &ags_ruler_info,
 					    0);
 
     g_once_init_leave(&g_define_type_id__volatile, ags_type_ruler);
@@ -123,13 +126,67 @@ ags_ruler_class_init(AgsRulerClass *ruler)
   widget->show = ags_ruler_show;
 
   /* properties */
-  param_spec = g_param_spec_object("adjustment\0",
-				   "assigned adjustment\0",
-				   "The adjustment it is assigned with\0",
+  param_spec = g_param_spec_object("adjustment",
+				   "assigned adjustment",
+				   "The adjustment it is assigned with",
 				   G_TYPE_OBJECT,
 				   G_PARAM_READABLE | G_PARAM_WRITABLE);
   g_object_class_install_property(gobject,
 				  PROP_ADJUSTMENT,
+				  param_spec);
+
+  /**
+   * AgsRuler:step:
+   *
+   * The step's width.
+   * 
+   * Since: 2.2.22
+   */
+  param_spec = g_param_spec_uint("step",
+				 "step",
+				 "The width of a step",
+				 0,
+				 G_MAXUINT,
+				 AGS_RULER_DEFAULT_STEP,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_STEP,
+				  param_spec);
+
+  /**
+   * AgsRuler:large-step:
+   *
+   * The large step's width.
+   * 
+   * Since: 2.2.22
+   */
+  param_spec = g_param_spec_uint("large-step",
+				 "large step",
+				 "The width of a large step",
+				 0,
+				 G_MAXUINT,
+				 AGS_RULER_DEFAULT_LARGE_STEP,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_LARGE_STEP,
+				  param_spec);
+
+  /**
+   * AgsRuler:small-step:
+   *
+   * The small step's width.
+   * 
+   * Since: 2.2.22
+   */
+  param_spec = g_param_spec_uint("small-step",
+				 "small step",
+				 "The width of a small step",
+				 0,
+				 G_MAXUINT,
+				 AGS_RULER_DEFAULT_SMALL_STEP,
+				 G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_SMALL_STEP,
 				  param_spec);
 }
 
@@ -137,7 +194,7 @@ void
 ags_ruler_init(AgsRuler *ruler)
 {
   g_object_set(G_OBJECT(ruler),
-  	       "app-paintable\0", TRUE,
+  	       "app-paintable", TRUE,
   	       NULL);
 
   ruler->flags = 0;
@@ -147,6 +204,8 @@ ags_ruler_init(AgsRuler *ruler)
   ruler->adjustment = NULL;
 
   ruler->step = AGS_RULER_DEFAULT_STEP;
+  ruler->large_step = AGS_RULER_DEFAULT_LARGE_STEP;
+  ruler->small_step = AGS_RULER_DEFAULT_SMALL_STEP;
 
   ruler->factor = 16.0;
   ruler->precision = 1.0;
@@ -154,7 +213,7 @@ ags_ruler_init(AgsRuler *ruler)
 
   gtk_widget_set_size_request((GtkWidget *) ruler,
 			      20,
-			      24);
+			      AGS_RULER_DEFAULT_HEIGHT);
 }
 
 
@@ -169,6 +228,21 @@ ags_ruler_set_property(GObject *gobject,
   ruler = AGS_RULER(gobject);
 
   switch(prop_id){
+  case PROP_STEP:
+  {
+    ruler->step = g_value_get_uint(value);
+  }
+  break;
+  case PROP_LARGE_STEP:
+  {
+    ruler->large_step = g_value_get_uint(value);
+  }
+  break;
+  case PROP_SMALL_STEP:
+  {
+    ruler->small_step = g_value_get_uint(value);
+  }
+  break;
   case PROP_ADJUSTMENT:
     {
       GtkAdjustment *adjustment;
@@ -206,9 +280,26 @@ ags_ruler_get_property(GObject *gobject,
   ruler = AGS_RULER(gobject);
 
   switch(prop_id){
+  case PROP_STEP:
+  {
+    g_value_set_uint(value, ruler->step);
+  }
+  break;
+  case PROP_LARGE_STEP:
+  {
+    g_value_set_uint(value, ruler->large_step);
+  }
+  break;
+  case PROP_SMALL_STEP:
+  {
+    g_value_set_uint(value, ruler->small_step);
+  }
+  break;
   case PROP_ADJUSTMENT:
+  {
     g_value_set_object(value, ruler->adjustment);
-    break;
+  }
+  break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
     break;
@@ -305,7 +396,7 @@ ags_ruler_size_request(GtkWidget *widget,
   ruler = AGS_RULER(widget);
   
   requisition->width = -1;
-  requisition->height = (gint) (ruler->font_size + AGS_RULER_LARGE_STEP + (2 * AGS_RULER_FREE_SPACE));
+  requisition->height = (gint) AGS_RULER_DEFAULT_HEIGHT;
 }
 
 gboolean
@@ -329,8 +420,8 @@ ags_ruler_draw(AgsRuler *ruler)
   GtkWidget *widget;
 
   cairo_t *cr;
-
-  gchar *str;
+    
+  gchar *font_name;
 
   gdouble tact_factor, zoom_factor;
   gdouble tact;
@@ -340,27 +431,11 @@ ags_ruler_draw(AgsRuler *ruler)
   guint x0;
   guint z;
   guint i, i_stop;
-
-  auto void ags_ruler_draw_string(cairo_t *cr, gchar *str);
-
-  void ags_ruler_draw_string(cairo_t *cr, gchar *str){
-    PangoLayout *layout;
-    PangoFontDescription *desc;
-
-    layout = pango_cairo_create_layout(cr);
-    pango_layout_set_text(layout, str, -1);
-    desc = pango_font_description_from_string("Sans Slant"); //pango_font_description_copy_static("Georgia Bold 11");
-    pango_font_description_set_size(desc,
-				    ruler->font_size * PANGO_SCALE);
-    pango_layout_set_font_description(layout, desc);
-    pango_font_description_free(desc);
-
-    pango_cairo_update_layout(cr, layout);
-    pango_cairo_show_layout(cr, layout);
-
-    g_object_unref(layout);
-  }
   
+  if(!AGS_IS_RULER(ruler)){
+    return;
+  }
+
   widget = GTK_WIDGET(ruler);
 
   cr = gdk_cairo_create(widget->window);
@@ -368,7 +443,11 @@ ags_ruler_draw(AgsRuler *ruler)
   if(cr == NULL){
     return;
   }
-  
+
+  g_object_get(gtk_settings_get_default(),
+	       "gtk-font-name", &font_name,
+	       NULL);
+    
   cairo_surface_flush(cairo_get_target(cr));
   cairo_push_group(cr);
 
@@ -406,44 +485,96 @@ ags_ruler_draw(AgsRuler *ruler)
 		  (double) (widget->allocation.height));
     
     if(tact < 1.0){
+      PangoLayout *layout;
+      PangoFontDescription *desc;
+
+      PangoRectangle ink_rect, logical_rect;
+
+      gchar *text;
+
+      text = g_strdup_printf("%u",
+			     (guint) ((gdouble) z / tact));
+
+      layout = pango_cairo_create_layout(cr);
+      pango_layout_set_text(layout,
+			    text,
+			    -1);
+      desc = pango_font_description_from_string(font_name);
+      pango_font_description_set_size(desc,
+				      ruler->font_size * PANGO_SCALE);
+      pango_layout_set_font_description(layout,
+					desc);
+      pango_font_description_free(desc);    
+
+      pango_layout_get_extents(layout,
+			       &ink_rect,
+			       &logical_rect);  
+      
       /* draw large step */
       cairo_set_line_width(cr,
 			   1.75);
 
       cairo_line_to(cr,
 		    (double) (i * step - x0),
-		    (double) (widget->allocation.height - AGS_RULER_LARGE_STEP));
+		    (double) (widget->allocation.height - ruler->large_step));
 
       /* draw scale step */
       cairo_move_to(cr,
 		    (double) (i * step - x0),
-		    (double) (widget->allocation.height - AGS_RULER_LARGE_STEP - (ruler->font_size + AGS_RULER_FREE_SPACE)));
+		    (double) (widget->allocation.height - ruler->large_step - (ruler->font_size + AGS_RULER_FREE_SPACE)));
       
-      str = g_strdup_printf("%u\0",
-			    (guint) ((gdouble) z / tact));
-      ags_ruler_draw_string(cr, str);
+      pango_cairo_show_layout(cr,
+			      layout);
       
-      g_free(str);
+      g_object_unref(layout);
+      
+      g_free(text);
     }else{
       if(z % (guint) floor(tact) == 0){
+	PangoLayout *layout;
+	PangoFontDescription *desc;
+
+	PangoRectangle ink_rect, logical_rect;
+
+	gchar *text;
+
+	text = g_strdup_printf("%u",
+			       (guint) ((gdouble) z / tact));
+	
+	layout = pango_cairo_create_layout(cr);
+	pango_layout_set_text(layout,
+			      text,
+			      -1);
+	desc = pango_font_description_from_string(font_name);
+	pango_font_description_set_size(desc,
+					ruler->font_size * PANGO_SCALE);
+	pango_layout_set_font_description(layout,
+					  desc);
+	pango_font_description_free(desc);    
+
+	pango_layout_get_extents(layout,
+				 &ink_rect,
+				 &logical_rect);
+
 	/* draw large step */
 	cairo_set_line_width(cr,
 			     1.75);
 
 	cairo_line_to(cr,
 		      (double) (i * step - x0),
-		      (double) (widget->allocation.height - AGS_RULER_LARGE_STEP));
+		      (double) (widget->allocation.height - ruler->large_step));
 
 	/* draw scale step */
 	cairo_move_to(cr,
 		      (double) (i * step - x0),
-		      (double) (widget->allocation.height - AGS_RULER_LARGE_STEP - (ruler->font_size + AGS_RULER_FREE_SPACE)));
-
-	str = g_strdup_printf("%u\0",
-			      (guint) ((gdouble) z / tact));
-	ags_ruler_draw_string(cr, str);
+		      (double) (widget->allocation.height - ruler->large_step - (ruler->font_size + AGS_RULER_FREE_SPACE)));
       
-	g_free(str);
+	pango_cairo_show_layout(cr,
+				layout);
+      
+	g_object_unref(layout);
+      
+	g_free(text);
       }else{
 	/* draw small step */
 	cairo_set_line_width(cr,
@@ -451,12 +582,14 @@ ags_ruler_draw(AgsRuler *ruler)
 
 	cairo_line_to(cr,
 		      (double) (i * step - x0),
-		      (double) (widget->allocation.height - AGS_RULER_SMALL_STEP));
+		      (double) (widget->allocation.height - ruler->small_step));
       }
     }
 
     cairo_stroke(cr);
   }
+
+  g_free(font_name);
 
   cairo_pop_group_to_source(cr);
   cairo_paint(cr);
@@ -483,7 +616,7 @@ ags_ruler_new()
   adjustment = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 0.1, 0.1, 0.0);
 
   ruler = (AgsRuler *) g_object_new(AGS_TYPE_RULER,
-				    "adjustment\0", adjustment,
+				    "adjustment", adjustment,
 				    NULL);
 
   return(ruler);

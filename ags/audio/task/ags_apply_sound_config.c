@@ -736,6 +736,8 @@ ags_apply_sound_config_launch(AgsTask *task)
   while(orig_soundcard != NULL){
     AgsNotifySoundcard *notify_soundcard;
 
+    notify_soundcard = NULL;
+    
     if(AGS_IS_DEVOUT(orig_soundcard->data)){
       notify_soundcard = (AgsNotifySoundcard *) AGS_DEVOUT(orig_soundcard->data)->notify_soundcard;
     }else if(AGS_IS_JACK_DEVOUT(orig_soundcard->data)){

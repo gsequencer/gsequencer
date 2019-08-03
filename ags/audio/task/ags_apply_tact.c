@@ -376,11 +376,7 @@ ags_apply_tact_audio(AgsApplyTact *apply_tact, AgsAudio *audio)
   pthread_mutex_t *channel_mutex;
 
   /* get audio mutex */
-  pthread_mutex_lock(ags_audio_get_class_mutex());
-
-  audio_mutex = audio->obj_mutex;
-
-  pthread_mutex_unlock(ags_audio_get_class_mutex());
+  audio_mutex = AGS_AUDIO_GET_OBJ_MUTEX(audio);
 
   /* get some fields */
   pthread_mutex_lock(audio_mutex);
@@ -427,11 +423,7 @@ ags_apply_tact_audio(AgsApplyTact *apply_tact, AgsAudio *audio)
 
   while(channel != NULL){
     /* get channel mutex */
-    pthread_mutex_lock(ags_channel_get_class_mutex());
-
-    channel_mutex = channel->obj_mutex;
-
-    pthread_mutex_unlock(ags_channel_get_class_mutex());
+    channel_mutex = AGS_CHANNEL_GET_OBJ_MUTEX(channel);
 
     /* apply tact */
     ags_apply_tact_channel(apply_tact, channel);
@@ -449,11 +441,7 @@ ags_apply_tact_audio(AgsApplyTact *apply_tact, AgsAudio *audio)
 
   while(channel != NULL){
     /* get channel mutex */
-    pthread_mutex_lock(ags_channel_get_class_mutex());
-
-    channel_mutex = channel->obj_mutex;
-
-    pthread_mutex_unlock(ags_channel_get_class_mutex());
+    channel_mutex = AGS_CHANNEL_GET_OBJ_MUTEX(channel);
 
     /* apply tact */
     ags_apply_tact_channel(apply_tact, channel);

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -40,6 +40,8 @@
 #define AGS_IS_THREAD(obj)             (G_TYPE_CHECK_INSTANCE_TYPE ((obj), AGS_TYPE_THREAD))
 #define AGS_IS_THREAD_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_THREAD))
 #define AGS_THREAD_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS(obj, AGS_TYPE_THREAD, AgsThreadClass))
+
+#define AGS_THREAD_GET_OBJ_MUTEX(obj) (((AgsThread *) obj)->obj_mutex)
 
 #define AGS_THREAD_RESUME_SIG SIGUSR2
 #define AGS_THREAD_SUSPEND_SIG SIGUSR1
@@ -288,6 +290,8 @@ struct _AgsThreadClass
 GType ags_thread_get_type();
 
 pthread_mutex_t* ags_thread_get_class_mutex();
+
+gboolean ags_thread_global_get_use_sync_counter();
 
 gboolean ags_thread_test_flags(AgsThread *thread, guint flags);
 void ags_thread_set_flags(AgsThread *thread, guint flags);

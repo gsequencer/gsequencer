@@ -114,18 +114,18 @@ void
 ags_functional_machine_link_test_add_test()
 {
   /* add the tests to the suite */
-  if((CU_add_test(pSuite, "functional test of GSequencer machine link master mixer\0", ags_functional_machine_link_test_master_mixer) == NULL) ||
-     (CU_add_test(pSuite, "functional test of GSequencer machine link slave mixer\0", ags_functional_machine_link_test_slave_mixer) == NULL) ||
-     (CU_add_test(pSuite, "functional test of GSequencer machine link drum\0", ags_functional_machine_link_test_drum) == NULL) ||
-     (CU_add_test(pSuite, "functional test of GSequencer machine link matrix\0", ags_functional_machine_link_test_matrix) == NULL) ||
-     (CU_add_test(pSuite, "functional test of GSequencer machine link synth\0", ags_functional_machine_link_test_synth) == NULL) ||
+  if((CU_add_test(pSuite, "functional test of GSequencer machine link master mixer", ags_functional_machine_link_test_master_mixer) == NULL) ||
+     (CU_add_test(pSuite, "functional test of GSequencer machine link slave mixer", ags_functional_machine_link_test_slave_mixer) == NULL) ||
+     (CU_add_test(pSuite, "functional test of GSequencer machine link drum", ags_functional_machine_link_test_drum) == NULL) ||
+     (CU_add_test(pSuite, "functional test of GSequencer machine link matrix", ags_functional_machine_link_test_matrix) == NULL) ||
+     (CU_add_test(pSuite, "functional test of GSequencer machine link synth", ags_functional_machine_link_test_synth) == NULL) ||
 #ifdef AGS_WITH_LIBINSTPATCH
-     (CU_add_test(pSuite, "functional test of GSequencer machine link fplayer #0\0", ags_functional_machine_link_test_ffplayer_0) == NULL) ||
-     (CU_add_test(pSuite, "functional test of GSequencer machine link fplayer #1\0", ags_functional_machine_link_test_ffplayer_1) == NULL) ||
+     (CU_add_test(pSuite, "functional test of GSequencer machine link fplayer #0", ags_functional_machine_link_test_ffplayer_0) == NULL) ||
+     (CU_add_test(pSuite, "functional test of GSequencer machine link fplayer #1", ags_functional_machine_link_test_ffplayer_1) == NULL) ||
 #endif
-     (CU_add_test(pSuite, "functional test of GSequencer machine relink all\0", ags_functional_machine_link_test_relink_all) == NULL) ||
-     (CU_add_test(pSuite, "functional test of GSequencer machine reset link all\0", ags_functional_machine_link_test_reset_link_all) == NULL) ||
-     (CU_add_test(pSuite, "functional test of GSequencer machine link destroy all\0", ags_functional_machine_link_test_destroy_all) == NULL)){
+     (CU_add_test(pSuite, "functional test of GSequencer machine relink all", ags_functional_machine_link_test_relink_all) == NULL) ||
+     (CU_add_test(pSuite, "functional test of GSequencer machine reset link all", ags_functional_machine_link_test_reset_link_all) == NULL) ||
+     (CU_add_test(pSuite, "functional test of GSequencer machine link destroy all", ags_functional_machine_link_test_destroy_all) == NULL)){
     CU_cleanup_registry();
     
     exit(CU_get_error());
@@ -302,7 +302,7 @@ ags_functional_machine_link_test_master_mixer()
   /* set link */
   ags_test_enter();
 
-  link_name = g_strdup_printf("%s: %s\0",
+  link_name = g_strdup_printf("%s: %s",
 			      G_OBJECT_TYPE_NAME(panel),
 			      AGS_MACHINE(panel)->machine_name);
 
@@ -403,7 +403,7 @@ ags_functional_machine_link_test_slave_mixer()
   /* set link */
   ags_test_enter();
 
-  link_name = g_strdup_printf("%s: %s\0",
+  link_name = g_strdup_printf("%s: %s",
 			      G_OBJECT_TYPE_NAME(master_mixer),
 			      AGS_MACHINE(master_mixer)->machine_name);
 
@@ -506,7 +506,7 @@ ags_functional_machine_link_test_drum()
   /* set link */
   ags_test_enter();
 
-  link_name = g_strdup_printf("%s: %s\0",
+  link_name = g_strdup_printf("%s: %s",
 			      G_OBJECT_TYPE_NAME(drum),
 			      AGS_MACHINE(drum)->machine_name);
 
@@ -648,7 +648,7 @@ ags_functional_machine_link_test_matrix()
   /* set link */
   ags_test_enter();
 
-  link_name = g_strdup_printf("%s: %s\0",
+  link_name = g_strdup_printf("%s: %s",
 			      G_OBJECT_TYPE_NAME(matrix),
 			      AGS_MACHINE(matrix)->machine_name);
 
@@ -751,7 +751,7 @@ ags_functional_machine_link_test_synth()
   /* set link */
   ags_test_enter();
 
-  link_name = g_strdup_printf("%s: %s\0",
+  link_name = g_strdup_printf("%s: %s",
 			      G_OBJECT_TYPE_NAME(synth),
 			      AGS_MACHINE(synth)->machine_name);
 
@@ -861,7 +861,7 @@ ags_functional_machine_link_test_ffplayer_0()
   /* set link */
   ags_test_enter();
 
-  link_name = g_strdup_printf("%s: %s\0",
+  link_name = g_strdup_printf("%s: %s",
 			      G_OBJECT_TYPE_NAME(ffplayer_0),
 			      AGS_MACHINE(ffplayer_0)->machine_name);
 
@@ -964,7 +964,7 @@ ags_functional_machine_link_test_ffplayer_1()
   /* set link */
   ags_test_enter();
 
-  link_name = g_strdup_printf("%s: %s\0",
+  link_name = g_strdup_printf("%s: %s",
 			      G_OBJECT_TYPE_NAME(ffplayer_1),
 			      AGS_MACHINE(ffplayer_1)->machine_name);
 
@@ -1045,7 +1045,7 @@ ags_functional_machine_link_test_relink_all()
   /* set link */
   ags_test_enter();
 
-  link_name = g_strdup_printf("%s: %s\0",
+  link_name = g_strdup_printf("%s: %s",
 			      G_OBJECT_TYPE_NAME(ffplayer_0),
 			      AGS_MACHINE(ffplayer_0)->machine_name);
 
@@ -1104,7 +1104,7 @@ ags_functional_machine_link_test_relink_all()
   /* set link */
   ags_test_enter();
 
-  link_name = g_strdup_printf("%s: %s\0",
+  link_name = g_strdup_printf("%s: %s",
 			      G_OBJECT_TYPE_NAME(drum),
 			      AGS_MACHINE(drum)->machine_name);
 
@@ -1162,7 +1162,7 @@ ags_functional_machine_link_test_relink_all()
   /* set link */
   ags_test_enter();
 
-  link_name = g_strdup_printf("%s: %s\0",
+  link_name = g_strdup_printf("%s: %s",
 			      G_OBJECT_TYPE_NAME(matrix),
 			      AGS_MACHINE(matrix)->machine_name);
 
@@ -1237,7 +1237,7 @@ ags_functional_machine_link_test_reset_link_all()
   /* set link */
   ags_test_enter();
 
-  link_name = g_strdup_printf("%s: %s\0",
+  link_name = g_strdup_printf("%s: %s",
 			      G_OBJECT_TYPE_NAME(ffplayer_0),
 			      AGS_MACHINE(ffplayer_0)->machine_name);
 
@@ -1296,7 +1296,7 @@ ags_functional_machine_link_test_reset_link_all()
   /* set link */
   ags_test_enter();
 
-  link_name = g_strdup_printf("%s: %s\0",
+  link_name = g_strdup_printf("%s: %s",
 			      G_OBJECT_TYPE_NAME(drum),
 			      AGS_MACHINE(drum)->machine_name);
 
@@ -1354,7 +1354,7 @@ ags_functional_machine_link_test_reset_link_all()
   /* set link */
   ags_test_enter();
 
-  link_name = g_strdup_printf("%s: %s\0",
+  link_name = g_strdup_printf("%s: %s",
 			      G_OBJECT_TYPE_NAME(matrix),
 			      AGS_MACHINE(matrix)->machine_name);
 
@@ -1412,7 +1412,7 @@ ags_functional_machine_link_test_reset_link_all()
   /* set link */
   ags_test_enter();
 
-  link_name = g_strdup_printf("%s: %s\0",
+  link_name = g_strdup_printf("%s: %s",
 			      G_OBJECT_TYPE_NAME(drum),
 			      AGS_MACHINE(drum)->machine_name);
 
@@ -1499,7 +1499,7 @@ main(int argc, char **argv)
   }
 
   /* add a suite to the registry */
-  pSuite = CU_add_suite("AgsFuncitonalMachineLinkTest\0", ags_functional_machine_link_test_init_suite, ags_functional_machine_link_test_clean_suite);
+  pSuite = CU_add_suite("AgsFunctionalMachineLinkTest", ags_functional_machine_link_test_init_suite, ags_functional_machine_link_test_clean_suite);
   
   if(pSuite == NULL){
     CU_cleanup_registry();

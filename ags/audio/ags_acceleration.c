@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -205,11 +205,7 @@ ags_acceleration_set_property(GObject *gobject,
   acceleration = AGS_ACCELERATION(gobject);
 
   /* get acceleration mutex */
-  pthread_mutex_lock(ags_acceleration_get_class_mutex());
-  
-  acceleration_mutex = acceleration->obj_mutex;
-  
-  pthread_mutex_unlock(ags_acceleration_get_class_mutex());
+  acceleration_mutex = AGS_ACCELERATION_GET_OBJ_MUTEX(acceleration);
 
   switch(prop_id){
   case PROP_X:
@@ -272,11 +268,7 @@ ags_acceleration_get_property(GObject *gobject,
   acceleration = AGS_ACCELERATION(gobject);
 
   /* get acceleration mutex */
-  pthread_mutex_lock(ags_acceleration_get_class_mutex());
-  
-  acceleration_mutex = acceleration->obj_mutex;
-  
-  pthread_mutex_unlock(ags_acceleration_get_class_mutex());
+  acceleration_mutex = AGS_ACCELERATION_GET_OBJ_MUTEX(acceleration);
 
   switch(prop_id){
   case PROP_X:
@@ -371,11 +363,7 @@ ags_acceleration_test_flags(AgsAcceleration *acceleration, guint flags)
   }
       
   /* get acceleration mutex */
-  pthread_mutex_lock(ags_acceleration_get_class_mutex());
-  
-  acceleration_mutex = acceleration->obj_mutex;
-  
-  pthread_mutex_unlock(ags_acceleration_get_class_mutex());
+  acceleration_mutex = AGS_ACCELERATION_GET_OBJ_MUTEX(acceleration);
 
   /* test */
   pthread_mutex_lock(acceleration_mutex);
@@ -406,11 +394,7 @@ ags_acceleration_set_flags(AgsAcceleration *acceleration, guint flags)
   }
       
   /* get acceleration mutex */
-  pthread_mutex_lock(ags_acceleration_get_class_mutex());
-  
-  acceleration_mutex = acceleration->obj_mutex;
-  
-  pthread_mutex_unlock(ags_acceleration_get_class_mutex());
+  acceleration_mutex = AGS_ACCELERATION_GET_OBJ_MUTEX(acceleration);
 
   /* set */
   pthread_mutex_lock(acceleration_mutex);
@@ -439,11 +423,7 @@ ags_acceleration_unset_flags(AgsAcceleration *acceleration, guint flags)
   }
       
   /* get acceleration mutex */
-  pthread_mutex_lock(ags_acceleration_get_class_mutex());
-  
-  acceleration_mutex = acceleration->obj_mutex;
-  
-  pthread_mutex_unlock(ags_acceleration_get_class_mutex());
+  acceleration_mutex = AGS_ACCELERATION_GET_OBJ_MUTEX(acceleration);
 
   /* unset */
   pthread_mutex_lock(acceleration_mutex);
@@ -514,11 +494,7 @@ ags_acceleration_duplicate(AgsAcceleration *acceleration)
   }
   
   /* get acceleration mutex */
-  pthread_mutex_lock(ags_acceleration_get_class_mutex());
-  
-  acceleration_mutex = acceleration->obj_mutex;
-  
-  pthread_mutex_unlock(ags_acceleration_get_class_mutex());
+  acceleration_mutex = AGS_ACCELERATION_GET_OBJ_MUTEX(acceleration);
 
   /* instantiate acceleration */
   acceleration_copy = ags_acceleration_new();

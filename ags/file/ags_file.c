@@ -504,11 +504,7 @@ ags_file_set_property(GObject *gobject,
   file = AGS_FILE(gobject);
 
   /* get file mutex */
-  pthread_mutex_lock(ags_file_get_class_mutex());
-  
-  file_mutex = file->obj_mutex;
-  
-  pthread_mutex_unlock(ags_file_get_class_mutex());
+  file_mutex = AGS_FILE_GET_OBJ_MUTEX(file);
 
   switch(prop_id){
   case PROP_FILENAME:
@@ -632,11 +628,7 @@ ags_file_get_property(GObject *gobject,
   file = AGS_FILE(gobject);
 
   /* get file mutex */
-  pthread_mutex_lock(ags_file_get_class_mutex());
-  
-  file_mutex = file->obj_mutex;
-  
-  pthread_mutex_unlock(ags_file_get_class_mutex());
+  file_mutex = AGS_FILE_GET_OBJ_MUTEX(file);
 
   switch(prop_id){
   case PROP_FILENAME:
@@ -796,11 +788,7 @@ ags_file_add_id_ref(AgsFile *file, GObject *id_ref)
   }
 
   /* get file mutex */
-  pthread_mutex_lock(ags_file_get_class_mutex());
-  
-  file_mutex = file->obj_mutex;
-  
-  pthread_mutex_unlock(ags_file_get_class_mutex());
+  file_mutex = AGS_FILE_GET_OBJ_MUTEX(file);
 
   /* add */
   pthread_mutex_lock(file_mutex);
@@ -843,11 +831,7 @@ ags_file_find_id_ref_by_node(AgsFile *file, xmlNode *node)
   }
 
   /* get file mutex */
-  pthread_mutex_lock(ags_file_get_class_mutex());
-  
-  file_mutex = file->obj_mutex;
-  
-  pthread_mutex_unlock(ags_file_get_class_mutex());
+  file_mutex = AGS_FILE_GET_OBJ_MUTEX(file);
 
   /* find */
   file_id_ref = NULL;
@@ -968,11 +952,7 @@ ags_file_find_id_ref_by_reference(AgsFile *file, gpointer ref)
   }  
 
   /* get file mutex */
-  pthread_mutex_lock(ags_file_get_class_mutex());
-  
-  file_mutex = file->obj_mutex;
-  
-  pthread_mutex_unlock(ags_file_get_class_mutex());
+  file_mutex = AGS_FILE_GET_OBJ_MUTEX(file);
 
   /* find */
   file_id_ref = NULL;
@@ -1022,11 +1002,7 @@ ags_file_add_lookup(AgsFile *file, GObject *file_lookup)
   }
 
   /* get file mutex */
-  pthread_mutex_lock(ags_file_get_class_mutex());
-  
-  file_mutex = file->obj_mutex;
-  
-  pthread_mutex_unlock(ags_file_get_class_mutex());
+  file_mutex = AGS_FILE_GET_OBJ_MUTEX(file);
 
   /* add */
   pthread_mutex_lock(file_mutex);
@@ -1061,11 +1037,7 @@ ags_file_add_launch(AgsFile *file, GObject *file_launch)
   }
 
   /* get file mutex */
-  pthread_mutex_lock(ags_file_get_class_mutex());
-  
-  file_mutex = file->obj_mutex;
-  
-  pthread_mutex_unlock(ags_file_get_class_mutex());
+  file_mutex = AGS_FILE_GET_OBJ_MUTEX(file);
 
   /* add */
   pthread_mutex_lock(file_mutex);
@@ -1094,11 +1066,7 @@ ags_file_real_open(AgsFile *file,
   }
 
   /* get file mutex */
-  pthread_mutex_lock(ags_file_get_class_mutex());
-  
-  file_mutex = file->obj_mutex;
-  
-  pthread_mutex_unlock(ags_file_get_class_mutex());
+  file_mutex = AGS_FILE_GET_OBJ_MUTEX(file);
 
   /* parse the file and get the DOM */
   doc = xmlReadFile(file->filename, NULL, 0);
@@ -1161,11 +1129,7 @@ ags_file_real_open_from_data(AgsFile *file,
   }
 
   /* get file mutex */
-  pthread_mutex_lock(ags_file_get_class_mutex());
-  
-  file_mutex = file->obj_mutex;
-  
-  pthread_mutex_unlock(ags_file_get_class_mutex());
+  file_mutex = AGS_FILE_GET_OBJ_MUTEX(file);
 
   /* parse */
   doc = xmlReadMemory(data, length, file->filename, NULL, 0);
@@ -1230,11 +1194,7 @@ ags_file_real_rw_open(AgsFile *file,
   }
 
   /* get file mutex */
-  pthread_mutex_lock(ags_file_get_class_mutex());
-  
-  file_mutex = file->obj_mutex;
-  
-  pthread_mutex_unlock(ags_file_get_class_mutex());
+  file_mutex = AGS_FILE_GET_OBJ_MUTEX(file);
 
   /* create */
   pthread_mutex_lock(file_mutex);
@@ -1297,11 +1257,7 @@ ags_file_open_filename(AgsFile *file,
   }
 
   /* get file mutex */
-  pthread_mutex_lock(ags_file_get_class_mutex());
-  
-  file_mutex = file->obj_mutex;
-  
-  pthread_mutex_unlock(ags_file_get_class_mutex());
+  file_mutex = AGS_FILE_GET_OBJ_MUTEX(file);
 
   /* check close */
   pthread_mutex_lock(file_mutex);
@@ -1347,11 +1303,7 @@ ags_file_close(AgsFile *file)
   }
 
   /* get file mutex */
-  pthread_mutex_lock(ags_file_get_class_mutex());
-  
-  file_mutex = file->obj_mutex;
-  
-  pthread_mutex_unlock(ags_file_get_class_mutex());
+  file_mutex = AGS_FILE_GET_OBJ_MUTEX(file);
 
   /* close */
   pthread_mutex_lock(file_mutex);
@@ -1391,11 +1343,7 @@ ags_file_real_write(AgsFile *file)
   pthread_mutex_t *file_mutex;
 
   /* get file mutex */
-  pthread_mutex_lock(ags_file_get_class_mutex());
-  
-  file_mutex = file->obj_mutex;
-  
-  pthread_mutex_unlock(ags_file_get_class_mutex());
+  file_mutex = AGS_FILE_GET_OBJ_MUTEX(file);
 
   //  ags_file_rw_open(file,
   //		   TRUE);
@@ -1562,11 +1510,7 @@ ags_file_real_write_resolve(AgsFile *file)
   pthread_mutex_t *file_mutex;
 
   /* get file mutex */
-  pthread_mutex_lock(ags_file_get_class_mutex());
-  
-  file_mutex = file->obj_mutex;
-  
-  pthread_mutex_unlock(ags_file_get_class_mutex());
+  file_mutex = AGS_FILE_GET_OBJ_MUTEX(file);
 
   /* resolve */
   pthread_mutex_lock(file_mutex);
@@ -1619,11 +1563,7 @@ ags_file_real_read(AgsFile *file)
   pthread_mutex_t *file_mutex;
 
   /* get file mutex */
-  pthread_mutex_lock(ags_file_get_class_mutex());
-  
-  file_mutex = file->obj_mutex;
-  
-  pthread_mutex_unlock(ags_file_get_class_mutex());
+  file_mutex = AGS_FILE_GET_OBJ_MUTEX(file);
 
   
   /* child elements */
@@ -1702,11 +1642,7 @@ ags_file_real_read_resolve(AgsFile *file)
   pthread_mutex_t *file_mutex;
 
   /* get file mutex */
-  pthread_mutex_lock(ags_file_get_class_mutex());
-  
-  file_mutex = file->obj_mutex;
-  
-  pthread_mutex_unlock(ags_file_get_class_mutex());
+  file_mutex = AGS_FILE_GET_OBJ_MUTEX(file);
 
   /* resolve */
   pthread_mutex_lock(file_mutex);
@@ -1754,11 +1690,7 @@ ags_file_real_read_start(AgsFile *file)
   pthread_mutex_t *file_mutex;
 
   /* get file mutex */
-  pthread_mutex_lock(ags_file_get_class_mutex());
-  
-  file_mutex = file->obj_mutex;
-  
-  pthread_mutex_unlock(ags_file_get_class_mutex());
+  file_mutex = AGS_FILE_GET_OBJ_MUTEX(file);
 
   /* start */
   pthread_mutex_lock(file_mutex);

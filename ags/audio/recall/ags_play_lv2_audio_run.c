@@ -339,11 +339,7 @@ ags_play_lv2_audio_run_set_property(GObject *gobject,
   play_lv2_audio_run = AGS_PLAY_LV2_AUDIO_RUN(gobject);
 
   /* get recall mutex */
-  pthread_mutex_lock(ags_recall_get_class_mutex());
-  
-  recall_mutex = AGS_RECALL(gobject)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_recall_get_class_mutex());
+  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(play_lv2_audio_run);
 
   switch(prop_id){
   case PROP_DELAY_AUDIO_RUN:
@@ -574,11 +570,7 @@ ags_play_lv2_audio_run_get_property(GObject *gobject,
   play_lv2_audio_run = AGS_PLAY_LV2_AUDIO_RUN(gobject);
 
   /* get recall mutex */
-  pthread_mutex_lock(ags_recall_get_class_mutex());
-  
-  recall_mutex = AGS_RECALL(gobject)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_recall_get_class_mutex());
+  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(play_lv2_audio_run);
 
   switch(prop_id){
   case PROP_DELAY_AUDIO_RUN:
@@ -1021,11 +1013,11 @@ ags_play_lv2_audio_run_run_init_pre(AgsRecall *recall)
   pthread_mutex_t *play_lv2_audio_mutex;
 
   /* get parent class */
-  pthread_mutex_lock(ags_recall_get_class_mutex());
-
+  AGS_RECALL_LOCK_CLASS();
+  
   parent_class_run_init_pre = AGS_RECALL_CLASS(ags_play_lv2_audio_run_parent_class)->run_init_pre;
 
-  pthread_mutex_unlock(ags_recall_get_class_mutex());
+  AGS_RECALL_UNLOCK_CLASS();
   
   /* call parent */
   parent_class_run_init_pre(recall);
@@ -1046,11 +1038,7 @@ ags_play_lv2_audio_run_run_init_pre(AgsRecall *recall)
 			    NULL);
 
   /* recall mutex */
-  pthread_mutex_lock(ags_recall_get_class_mutex());
-
-  play_lv2_audio_mutex = AGS_RECALL(play_lv2_audio)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_recall_get_class_mutex());
+  play_lv2_audio_mutex = AGS_RECALL_GET_OBJ_MUTEX(play_lv2_audio);
 
   /* get some fields */
   pthread_mutex_lock(play_lv2_audio_mutex);
@@ -1170,11 +1158,7 @@ ags_play_lv2_audio_run_run_init_pre(AgsRecall *recall)
     pthread_mutex_unlock(play_lv2_audio_mutex);
 
     /* get base plugin mutex */
-    pthread_mutex_lock(ags_base_plugin_get_class_mutex());
-  
-    base_plugin_mutex = AGS_BASE_PLUGIN(lv2_plugin)->obj_mutex;
-  
-    pthread_mutex_unlock(ags_base_plugin_get_class_mutex());
+    base_plugin_mutex = AGS_BASE_PLUGIN_GET_OBJ_MUTEX(lv2_plugin);
     
     /* get plugin port */
     pthread_mutex_lock(base_plugin_mutex);
@@ -1199,11 +1183,7 @@ ags_play_lv2_audio_run_run_init_pre(AgsRecall *recall)
       current_plugin_port = AGS_PLUGIN_PORT(plugin_port->data);
 
       /* get plugin port mutex */
-      pthread_mutex_lock(ags_plugin_port_get_class_mutex());
-      
-      plugin_port_mutex = current_plugin_port->obj_mutex;
-
-      pthread_mutex_unlock(ags_plugin_port_get_class_mutex());
+      plugin_port_mutex = AGS_PLUGIN_PORT_GET_OBJ_MUTEX(current_plugin_port);
 
       /* get specifier */
       pthread_mutex_lock(plugin_port_mutex);
@@ -1252,11 +1232,7 @@ ags_play_lv2_audio_run_run_init_pre(AgsRecall *recall)
       current_plugin_port = AGS_PLUGIN_PORT(plugin_port->data);
 
       /* get plugin port mutex */
-      pthread_mutex_lock(ags_plugin_port_get_class_mutex());
-      
-      plugin_port_mutex = current_plugin_port->obj_mutex;
-
-      pthread_mutex_unlock(ags_plugin_port_get_class_mutex());
+      plugin_port_mutex = AGS_PLUGIN_PORT_GET_OBJ_MUTEX(current_plugin_port);
 
       /* get specifier */
       pthread_mutex_lock(plugin_port_mutex);
@@ -1336,12 +1312,12 @@ ags_play_lv2_audio_run_run_pre(AgsRecall *recall)
   pthread_mutex_t *play_lv2_audio_mutex;
 
   /* get parent class */
-  pthread_mutex_lock(ags_recall_get_class_mutex());
-
+  AGS_RECALL_LOCK_CLASS();
+  
   parent_class_run_pre = AGS_RECALL_CLASS(ags_play_lv2_audio_run_parent_class)->run_pre;
 
-  pthread_mutex_unlock(ags_recall_get_class_mutex());
-
+  AGS_RECALL_UNLOCK_CLASS();
+  
   /* call parent */
   parent_class_run_pre(recall);
 
@@ -1365,11 +1341,7 @@ ags_play_lv2_audio_run_run_pre(AgsRecall *recall)
 			    NULL);
 
   /* recall mutex */
-  pthread_mutex_lock(ags_recall_get_class_mutex());
-
-  play_lv2_audio_mutex = AGS_RECALL(play_lv2_audio)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_recall_get_class_mutex());
+  play_lv2_audio_mutex = AGS_RECALL_GET_OBJ_MUTEX(play_lv2_audio);
 
   /* get some fields */
   pthread_mutex_lock(play_lv2_audio_mutex);
@@ -1582,11 +1554,7 @@ ags_play_lv2_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_run,
 	       NULL);
 
   /* audio mutex */
-  pthread_mutex_lock(ags_audio_get_class_mutex());
-
-  audio_mutex = audio->obj_mutex;
-  
-  pthread_mutex_unlock(ags_audio_get_class_mutex());
+  audio_mutex = AGS_AUDIO_GET_OBJ_MUTEX(audio);
 
   /* get audio fields */
   pthread_mutex_lock(audio_mutex);
@@ -1775,6 +1743,8 @@ ags_play_lv2_audio_run_alloc_input_callback(AgsDelayAudioRun *delay_audio_run,
     }
     
     /* write to port */
+    success = FALSE;
+    
     if(ags_play_lv2_audio_test_flags(play_lv2_audio, AGS_PLAY_LV2_AUDIO_HAS_ATOM_PORT)){
       success = ags_lv2_plugin_atom_sequence_remove_midi(play_lv2_audio_run->atom_port,
 							 AGS_PLAY_LV2_AUDIO_DEFAULT_MIDI_LENGHT,
@@ -1886,11 +1856,7 @@ ags_play_lv2_audio_run_load_ports(AgsPlayLv2AudioRun *play_lv2_audio_run)
 	       NULL);
 
   /* recall mutex */
-  pthread_mutex_lock(ags_recall_get_class_mutex());
-
-  play_lv2_audio_mutex = AGS_RECALL(play_lv2_audio)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_recall_get_class_mutex());
+  play_lv2_audio_mutex = AGS_RECALL_GET_OBJ_MUTEX(play_lv2_audio);
 
   /* get some fields */
   pthread_mutex_lock(play_lv2_audio_mutex);
@@ -1921,11 +1887,7 @@ ags_play_lv2_audio_run_load_ports(AgsPlayLv2AudioRun *play_lv2_audio_run)
     
     if(ags_plugin_port_test_flags(list->data, AGS_PLUGIN_PORT_CONTROL)){      
       /* get plugin port mutex */
-      pthread_mutex_lock(ags_plugin_port_get_class_mutex());
-	
-      plugin_port_mutex = AGS_PLUGIN_PORT(list->data)->obj_mutex;
-	
-      pthread_mutex_unlock(ags_plugin_port_get_class_mutex());
+      plugin_port_mutex = AGS_PLUGIN_PORT_GET_OBJ_MUTEX(list->data);
 
       /* get specifier */
       pthread_mutex_lock(plugin_port_mutex);
@@ -1942,11 +1904,7 @@ ags_play_lv2_audio_run_load_ports(AgsPlayLv2AudioRun *play_lv2_audio_run)
 
 	pthread_mutex_t *port_mutex;
 
-	pthread_mutex_lock(ags_port_get_class_mutex());
-	  
-	port_mutex = AGS_PORT(port->data)->obj_mutex;
-	  
-	pthread_mutex_unlock(ags_port_get_class_mutex());
+	port_mutex = AGS_PORT_GET_OBJ_MUTEX(port->data);
 
 	/* check success */
 	pthread_mutex_lock(port_mutex);

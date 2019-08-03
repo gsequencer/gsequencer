@@ -245,7 +245,7 @@ ags_polling_thread_run(AgsThread *thread)
       }
     }else{
       if(thread->freq > AGS_THREAD_HERTZ_JIFFIE){
-	timeout.tv_nsec = (NSEC_PER_SEC / thread->freq + AGS_POLLING_THREAD_UNDERLOAD);
+	timeout.tv_nsec = (NSEC_PER_SEC / thread->max_precision + AGS_POLLING_THREAD_UNDERLOAD);
       }else{
 	timeout.tv_nsec = (NSEC_PER_SEC / AGS_THREAD_HERTZ_JIFFIE + AGS_POLLING_THREAD_UNDERLOAD);
       }
@@ -268,8 +268,8 @@ ags_polling_thread_run(AgsThread *thread)
       }
 
       list = list->next;
-    }  
-
+    }
+    
     /* poll */	
     if(polling_thread->fds != NULL){
 #ifndef __APPLE__
@@ -283,7 +283,7 @@ ags_polling_thread_run(AgsThread *thread)
 	   timeout.tv_nsec / 1000);
 #endif
     }
-
+    
     /* post flag */
     list = polling_thread->poll_fd;
 

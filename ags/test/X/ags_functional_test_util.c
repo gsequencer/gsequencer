@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -911,6 +911,71 @@ ags_functional_test_util_button_click(GtkButton *button)
 }
 
 gboolean
+ags_functional_test_util_tool_button_click(GtkToolButton *tool_button)
+{
+  GtkWidget *widget;
+
+  GdkWindow *window;
+
+  gint x, y;
+  gint origin_x, origin_y;
+  gboolean is_realized;
+  
+  if(tool_button == NULL ||
+     !GTK_IS_TOOL_BUTTON(tool_button)){
+    return(FALSE);
+  }
+  
+  widget = tool_button;
+
+  ags_functional_test_util_idle_condition_and_timeout(AGS_FUNCTIONAL_TEST_UTIL_IDLE_CONDITION(ags_functional_test_util_idle_test_widget_realized),
+						      &ags_functional_test_util_default_timeout,
+						      &widget);
+  
+  /*  */
+  ags_test_enter();
+
+  window = gtk_widget_get_window(widget);
+
+  x = widget->allocation.x + widget->allocation.width / 2.0;
+  y = widget->allocation.y + widget->allocation.height / 2.0;
+
+  gdk_window_get_origin(window, &origin_x, &origin_y);
+
+  gdk_display_warp_pointer(gtk_widget_get_display(widget),
+			   gtk_widget_get_screen(widget),
+			   origin_x + x + 15, origin_y + y + 5);
+
+  ags_test_leave();
+
+  /*  */
+  ags_functional_test_util_reaction_time();
+	
+  gdk_test_simulate_button(window,
+			   x + 5,
+			   y + 5,
+			   1,
+			   GDK_BUTTON1_MASK,
+			   GDK_BUTTON_PRESS);
+
+
+  ags_functional_test_util_reaction_time();
+
+  gdk_test_simulate_button(window,
+			   x + 5,
+			   y + 5,
+			   1,
+			   GDK_BUTTON1_MASK,
+			   GDK_BUTTON_RELEASE);
+  	
+  ags_functional_test_util_reaction_time();
+
+  ags_functional_test_util_reaction_time_long();
+  
+  return(TRUE);
+}
+
+gboolean
 ags_functional_test_util_menu_tool_button_click(GtkButton *button)
 {
   GtkWidget *widget;
@@ -1464,7 +1529,7 @@ ags_functional_test_util_export_close()
 }
 
 gboolean
-ags_funcitonal_test_util_export_add()
+ags_functional_test_util_export_add()
 {
   AgsXorgApplicationContext *xorg_application_context;
   AgsExportWindow *export_window;
@@ -1502,7 +1567,7 @@ ags_funcitonal_test_util_export_add()
 }
 
 gboolean
-ags_funcitonal_test_util_export_tact(gdouble tact)
+ags_functional_test_util_export_tact(gdouble tact)
 {
   AgsXorgApplicationContext *xorg_application_context;
 
@@ -1524,7 +1589,7 @@ ags_funcitonal_test_util_export_tact(gdouble tact)
 }
 
 gboolean
-ags_funcitonal_test_util_export_remove(guint nth)
+ags_functional_test_util_export_remove(guint nth)
 {
   AgsXorgApplicationContext *xorg_application_context;
 
@@ -1597,7 +1662,7 @@ ags_funcitonal_test_util_export_remove(guint nth)
 }
 
 gboolean
-ags_funcitonal_test_util_export_set_backend(guint nth,
+ags_functional_test_util_export_set_backend(guint nth,
 					    gchar *backend)
 {
   AgsXorgApplicationContext *xorg_application_context;
@@ -1674,7 +1739,7 @@ ags_funcitonal_test_util_export_set_backend(guint nth,
 }
 
 gboolean
-ags_funcitonal_test_util_export_set_device(guint nth,
+ags_functional_test_util_export_set_device(guint nth,
 					   gchar *device)
 {
   AgsXorgApplicationContext *xorg_application_context;
@@ -1751,7 +1816,7 @@ ags_funcitonal_test_util_export_set_device(guint nth,
 }
 
 gboolean
-ags_funcitonal_test_util_export_set_filename(guint nth,
+ags_functional_test_util_export_set_filename(guint nth,
 					     gchar *filename)
 {
   AgsXorgApplicationContext *xorg_application_context;
@@ -1806,20 +1871,20 @@ ags_funcitonal_test_util_export_set_filename(guint nth,
 }
 
 gboolean
-ags_funcitonal_test_util_export_open(guint nth)
+ags_functional_test_util_export_nth(guint nth)
 {
   //TODO:JK: 
 }
 
 gboolean
-ags_funcitonal_test_util_export_set_format(guint nth,
+ags_functional_test_util_export_set_format(guint nth,
 					   gchar *format)
 {
   //TODO:JK: 
 }
 
 gboolean
-ags_funcitonal_test_util_export_do_export(guint nth,
+ags_functional_test_util_export_do_export(guint nth,
 					  gchar *format)
 {
   //TODO:JK: 
@@ -2086,7 +2151,7 @@ ags_functional_test_util_notation_toolbar_cursor_click()
   AgsNotationEditor *notation_editor;
   AgsNotationToolbar *notation_toolbar;
   
-  GtkButton *position;
+  GtkToolButton *position;
 
   gboolean success;
   
@@ -2102,7 +2167,7 @@ ags_functional_test_util_notation_toolbar_cursor_click()
   
   ags_test_leave();
 
-  success = ags_functional_test_util_button_click(position);
+  success = ags_functional_test_util_tool_button_click(position);
 
   return(success);
 }
@@ -2115,7 +2180,7 @@ ags_functional_test_util_notation_toolbar_edit_click()
   AgsNotationEditor *notation_editor;
   AgsNotationToolbar *notation_toolbar;
   
-  GtkButton *edit;
+  GtkToolButton *edit;
 
   gboolean success;
   
@@ -2131,7 +2196,7 @@ ags_functional_test_util_notation_toolbar_edit_click()
   
   ags_test_leave();
 
-  success = ags_functional_test_util_button_click(edit);
+  success = ags_functional_test_util_tool_button_click(edit);
 
   return(success);
 }
@@ -2144,7 +2209,7 @@ ags_functional_test_util_notation_toolbar_delete_click()
   AgsNotationEditor *notation_editor;
   AgsNotationToolbar *notation_toolbar;
   
-  GtkButton *clear;
+  GtkToolButton *clear;
 
   gboolean success;
   
@@ -2160,7 +2225,7 @@ ags_functional_test_util_notation_toolbar_delete_click()
   
   ags_test_leave();
 
-  success = ags_functional_test_util_button_click(clear);
+  success = ags_functional_test_util_tool_button_click(clear);
 
   return(success);
 }
@@ -2173,7 +2238,7 @@ ags_functional_test_util_notation_toolbar_select_click()
   AgsNotationEditor *notation_editor;
   AgsNotationToolbar *notation_toolbar;
   
-  GtkButton *select;
+  GtkToolButton *select;
 
   gboolean success;
   
@@ -2189,7 +2254,7 @@ ags_functional_test_util_notation_toolbar_select_click()
   
   ags_test_leave();
 
-  success = ags_functional_test_util_button_click(select);
+  success = ags_functional_test_util_tool_button_click(select);
 
   return(success);
 }
@@ -2202,7 +2267,7 @@ ags_functional_test_util_notation_toolbar_invert_click()
   AgsNotationEditor *notation_editor;
   AgsNotationToolbar *notation_toolbar;
   
-  GtkButton *invert;
+  GtkToolButton *invert;
 
   gboolean success;
   
@@ -2218,7 +2283,7 @@ ags_functional_test_util_notation_toolbar_invert_click()
   
   ags_test_leave();
 
-  success = ags_functional_test_util_button_click(invert);
+  success = ags_functional_test_util_tool_button_click(invert);
 
   return(success);
 }
@@ -2231,7 +2296,7 @@ ags_functional_test_util_notation_toolbar_paste_click()
   AgsNotationEditor *notation_editor;
   AgsNotationToolbar *notation_toolbar;
   
-  GtkButton *paste;
+  GtkToolButton *paste;
 
   gboolean success;
   
@@ -2247,7 +2312,7 @@ ags_functional_test_util_notation_toolbar_paste_click()
   
   ags_test_leave();
 
-  success = ags_functional_test_util_button_click(paste);
+  success = ags_functional_test_util_tool_button_click(paste);
 
   return(success);
 }
@@ -2260,7 +2325,7 @@ ags_functional_test_util_notation_toolbar_copy_click()
   AgsNotationEditor *notation_editor;
   AgsNotationToolbar *notation_toolbar;
   
-  GtkButton *copy;
+  GtkToolButton *copy;
 
   gboolean success;
   
@@ -2276,7 +2341,7 @@ ags_functional_test_util_notation_toolbar_copy_click()
   
   ags_test_leave();
 
-  success = ags_functional_test_util_button_click(copy);
+  success = ags_functional_test_util_tool_button_click(copy);
 
   return(success);
 }
@@ -2289,7 +2354,7 @@ ags_functional_test_util_notation_toolbar_cut_click()
   AgsNotationEditor *notation_editor;
   AgsNotationToolbar *notation_toolbar;
   
-  GtkButton *cut;
+  GtkToolButton *cut;
 
   gboolean success;
   
@@ -2305,7 +2370,7 @@ ags_functional_test_util_notation_toolbar_cut_click()
   
   ags_test_leave();
 
-  success = ags_functional_test_util_button_click(cut);
+  success = ags_functional_test_util_tool_button_click(cut);
 
   return(success);
 }

@@ -32,6 +32,10 @@
 #define AGS_IS_LADSPA_CONVERSION_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_CONVERSION))
 #define AGS_LADSPA_CONVERSION_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS (obj, AGS_TYPE_CONVERSION, AgsLadspaConversionClass))
 
+#define AGS_LADSPA_CONVERSION_DEFAULT_LOWER (0.00001)
+#define AGS_LADSPA_CONVERSION_DEFAULT_UPPER (1.0)
+#define AGS_LADSPA_CONVERSION_DEFAULT_STEP_COUNT (1025.0)
+
 typedef struct _AgsLadspaConversion AgsLadspaConversion;
 typedef struct _AgsLadspaConversionClass AgsLadspaConversionClass;
 
@@ -59,6 +63,10 @@ struct _AgsLadspaConversion
   guint flags;
 
   guint samplerate;
+
+  gdouble lower;
+  gdouble upper;
+  gdouble step_count;
 };
 
 struct _AgsLadspaConversionClass

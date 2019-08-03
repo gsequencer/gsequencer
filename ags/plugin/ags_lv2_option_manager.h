@@ -33,6 +33,8 @@
 #define AGS_IS_LV2_OPTION_MANAGER_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_LV2_OPTION_MANAGER))
 #define AGS_LV2_OPTION_MANAGER_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_LV2_OPTION_MANAGER, AgsLv2OptionManagerClass))
 
+#define AGS_LV2_OPTION_MANAGER_GET_OBJ_MUTEX(obj) (((AgsLv2OptionManager *) obj)->obj_mutex)
+
 #define AGS_LV2_OPTION_RESSOURCE(ptr) ((AgsLv2OptionRessource *)(ptr))
 #define AGS_LV2_OPTIONS_OPTION(ptr) ((LV2_Options_Option *)(ptr))
 

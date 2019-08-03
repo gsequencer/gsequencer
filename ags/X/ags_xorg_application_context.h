@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -84,6 +84,8 @@ struct _AgsXorgApplicationContext
   GList *osc_server;
   
   AgsWindow *window;
+
+  GtkWindow *animation_window;
 };
 
 struct _AgsXorgApplicationContextClass
@@ -93,6 +95,7 @@ struct _AgsXorgApplicationContextClass
 
 GType ags_xorg_application_context_get_type();
 
+void ags_xorg_application_context_load_gui_scale(AgsXorgApplicationContext *xorg_application_context);
 gboolean ags_xorg_application_context_message_monitor_timeout(AgsXorgApplicationContext *xorg_application_context);
 
 AgsXorgApplicationContext* ags_xorg_application_context_new();

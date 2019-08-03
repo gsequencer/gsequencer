@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -33,6 +33,8 @@
 #define AGS_IS_PULSE_DEVIN(obj)             (G_TYPE_CHECK_INSTANCE_TYPE ((obj), AGS_TYPE_PULSE_DEVIN))
 #define AGS_IS_PULSE_DEVIN_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_PULSE_DEVIN))
 #define AGS_PULSE_DEVIN_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS(obj, AGS_TYPE_PULSE_DEVIN, AgsPulseDevinClass))
+
+#define AGS_PULSE_DEVIN_GET_OBJ_MUTEX(obj) (((AgsPulseDevin *) obj)->obj_mutex)
 
 typedef struct _AgsPulseDevin AgsPulseDevin;
 typedef struct _AgsPulseDevinClass AgsPulseDevinClass;

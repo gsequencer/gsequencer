@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -37,6 +37,8 @@
 #define AGS_IS_PULSE_PORT(obj)             (G_TYPE_CHECK_INSTANCE_TYPE ((obj), AGS_TYPE_PULSE_PORT))
 #define AGS_IS_PULSE_PORT_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_PULSE_PORT))
 #define AGS_PULSE_PORT_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS(obj, AGS_TYPE_PULSE_PORT, AgsPulsePortClass))
+
+#define AGS_PULSE_PORT_GET_OBJ_MUTEX(obj) (((AgsPulsePort *) obj)->obj_mutex)
 
 #define AGS_PULSE_PORT_DEFAULT_CACHE_BUFFER_SIZE (4096)
 

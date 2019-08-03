@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -351,11 +351,7 @@ ags_set_muted_audio(AgsSetMuted *set_muted, AgsAudio *audio)
   pthread_mutex_t *channel_mutex;
 
   /* get audio mutex */
-  pthread_mutex_lock(ags_audio_get_class_mutex());
-
-  audio_mutex = audio->obj_mutex;
-
-  pthread_mutex_unlock(ags_audio_get_class_mutex());
+  audio_mutex = AGS_AUDIO_GET_OBJ_MUTEX(audio);
 
   /* get some fields */
   pthread_mutex_lock(audio_mutex);
@@ -402,11 +398,7 @@ ags_set_muted_audio(AgsSetMuted *set_muted, AgsAudio *audio)
 
   while(channel != NULL){
     /* get channel mutex */
-    pthread_mutex_lock(ags_channel_get_class_mutex());
-
-    channel_mutex = channel->obj_mutex;
-
-    pthread_mutex_unlock(ags_channel_get_class_mutex());
+    channel_mutex = AGS_CHANNEL_GET_OBJ_MUTEX(channel);
 
     /* set muted */
     ags_set_muted_channel(set_muted, channel);
@@ -424,11 +416,7 @@ ags_set_muted_audio(AgsSetMuted *set_muted, AgsAudio *audio)
 
   while(channel != NULL){
     /* get channel mutex */
-    pthread_mutex_lock(ags_channel_get_class_mutex());
-
-    channel_mutex = channel->obj_mutex;
-
-    pthread_mutex_unlock(ags_channel_get_class_mutex());
+    channel_mutex = AGS_CHANNEL_GET_OBJ_MUTEX(channel);
 
     /* set muted */
     ags_set_muted_channel(set_muted, channel);

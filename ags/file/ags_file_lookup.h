@@ -34,6 +34,8 @@
 #define AGS_IS_FILE_LOOKUP_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_FILE_LOOKUP))
 #define AGS_FILE_LOOKUP_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_FILE_LOOKUP, AgsFileLookupClass))
 
+#define AGS_FILE_LOOKUP_GET_OBJ_MUTEX(obj) (((AgsFileLookup *) obj)->obj_mutex)
+
 typedef struct _AgsFileLookup AgsFileLookup;
 typedef struct _AgsFileLookupClass AgsFileLookupClass;
 

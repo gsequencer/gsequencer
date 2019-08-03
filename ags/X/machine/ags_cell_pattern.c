@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -23,6 +23,7 @@
 #include <ags/libags.h>
 #include <ags/libags-audio.h>
 
+#include <ags/X/ags_ui_provider.h>
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_machine.h>
 
@@ -208,6 +209,11 @@ ags_cell_pattern_init(AgsCellPattern *cell_pattern)
   GtkAdjustment *adjustment;
   AgsLed *led;
 
+  AgsConfig *config;
+
+  gchar *str;
+  
+  gdouble gui_scale_factor;
   guint i;
 
   g_object_set(cell_pattern,
@@ -220,9 +226,25 @@ ags_cell_pattern_init(AgsCellPattern *cell_pattern)
   cell_pattern->flags = 0;
 
   cell_pattern->key_mask = 0;
+
+  config = ags_config_get_instance();
   
-  cell_pattern->cell_width = AGS_CELL_PATTERN_DEFAULT_CELL_WIDTH;
-  cell_pattern->cell_height = AGS_CELL_PATTERN_DEFAULT_CELL_HEIGHT;
+  /* cell */
+  gui_scale_factor = 1.0;
+  
+  str = ags_config_get_value(config,
+			     AGS_CONFIG_GENERIC,
+			     "gui-scale");
+
+  if(str != NULL){
+    gui_scale_factor = g_ascii_strtod(str,
+				      NULL);
+
+    g_free(str);
+  }
+
+  cell_pattern->cell_width = (guint) (gui_scale_factor * AGS_CELL_PATTERN_DEFAULT_CELL_WIDTH);
+  cell_pattern->cell_height = (guint) (gui_scale_factor * AGS_CELL_PATTERN_DEFAULT_CELL_HEIGHT);
 
   cell_pattern->n_cols = AGS_CELL_PATTERN_DEFAULT_CONTROLS_HORIZONTALLY;
   cell_pattern->n_rows = AGS_CELL_PATTERN_DEFAULT_CONTROLS_VERTICALLY;
@@ -268,7 +290,7 @@ ags_cell_pattern_init(AgsCellPattern *cell_pattern)
   cell_pattern->hled_array = ags_hled_array_new();
   g_object_set(cell_pattern->hled_array,
 	       "led-width", cell_pattern->cell_width,
-	       "led-height", AGS_CELL_PATTERN_DEFAULT_CELL_HEIGHT,
+	       "led-height", (guint) (gui_scale_factor * AGS_CELL_PATTERN_DEFAULT_CELL_HEIGHT),
 	       "led-count", cell_pattern->n_cols,
 	       NULL);
   gtk_table_attach((GtkTable *) cell_pattern,
@@ -287,7 +309,7 @@ ags_cell_pattern_init(AgsCellPattern *cell_pattern)
 
   g_hash_table_insert(ags_cell_pattern_led_queue_draw,
 		      cell_pattern, ags_cell_pattern_led_queue_draw_timeout);
-  g_timeout_add(1000 / 30, (GSourceFunc) ags_cell_pattern_led_queue_draw_timeout, (gpointer) cell_pattern);
+  g_timeout_add(AGS_UI_PROVIDER_DEFAULT_TIMEOUT * 1000.0, (GSourceFunc) ags_cell_pattern_led_queue_draw_timeout, (gpointer) cell_pattern);
 }
 
 void
@@ -412,15 +434,17 @@ ags_cell_pattern_realize(GtkWidget *widget)
   /* call parent */
   GTK_WIDGET_CLASS(ags_cell_pattern_parent_class)->realize(widget);
 
+#if 0
   if(cell_pattern_style == NULL){
-    cell_pattern_style = gtk_style_copy(gtk_widget_get_style((GtkWidget *) cell_pattern));
+    cell_pattern_style = gtk_style_copy(gtk_rc_get_style((GtkWidget *) cell_pattern));
   }
-
+#endif
+  
   gtk_widget_set_style((GtkWidget *) cell_pattern->drawing_area,
-		       cell_pattern_style);
+		       NULL);  
 
   gtk_widget_set_style((GtkWidget *) cell_pattern->vscrollbar,
-		       cell_pattern_style);
+		       NULL);
 }
 
 void
@@ -698,7 +722,7 @@ ags_cell_pattern_draw_gutter(AgsCellPattern *cell_pattern)
 		     GTK_WIDGET(cell_pattern->drawing_area)->style->bg_gc[0],
 		     TRUE,
 		     0, 0,
-		     AGS_CELL_PATTERN_DEFAULT_CELL_WIDTH * AGS_CELL_PATTERN_MAX_CONTROLS_SHOWN_HORIZONTALLY, gutter * AGS_CELL_PATTERN_DEFAULT_CELL_HEIGHT);
+		     cell_pattern->cell_width * AGS_CELL_PATTERN_MAX_CONTROLS_SHOWN_HORIZONTALLY, gutter * cell_pattern->cell_height);
 
   if(input_pads - ((guint) current_gutter + AGS_CELL_PATTERN_MAX_CONTROLS_SHOWN_VERTICALLY) > AGS_CELL_PATTERN_MAX_CONTROLS_SHOWN_VERTICALLY){
     channel = ags_channel_nth(start_channel,
@@ -726,8 +750,8 @@ ags_cell_pattern_draw_gutter(AgsCellPattern *cell_pattern)
       gdk_draw_rectangle(GTK_WIDGET(cell_pattern->drawing_area)->window,
 			 GTK_WIDGET(cell_pattern->drawing_area)->style->fg_gc[0],
 			 FALSE,
-			 j * AGS_CELL_PATTERN_DEFAULT_CELL_WIDTH, i * AGS_CELL_PATTERN_DEFAULT_CELL_HEIGHT,
-			 AGS_CELL_PATTERN_DEFAULT_CELL_WIDTH, AGS_CELL_PATTERN_DEFAULT_CELL_HEIGHT);
+			 j * cell_pattern->cell_width, i * cell_pattern->cell_height,
+			 cell_pattern->cell_width, cell_pattern->cell_height);
 
       ags_cell_pattern_redraw_gutter_point(cell_pattern, channel, j, i);
     }
@@ -902,7 +926,7 @@ ags_cell_pattern_highlight_gutter_point(AgsCellPattern *cell_pattern, guint j, g
 		     GTK_WIDGET(cell_pattern->drawing_area)->style->fg_gc[0],
 		     TRUE,
 		     j * cell_pattern->cell_width + 1, i * cell_pattern->cell_height + 1,
-		     AGS_CELL_PATTERN_DEFAULT_CELL_WIDTH - 1, AGS_CELL_PATTERN_DEFAULT_CELL_HEIGHT - 1);
+		     cell_pattern->cell_width - 1, cell_pattern->cell_height - 1);
 }
 
 void
@@ -912,7 +936,7 @@ ags_cell_pattern_unpaint_gutter_point(AgsCellPattern *cell_pattern, guint j, gui
 		     GTK_WIDGET(cell_pattern->drawing_area)->style->bg_gc[0],
 		     TRUE,
 		     j * cell_pattern->cell_width + 1, i * cell_pattern->cell_height +1,
-		     AGS_CELL_PATTERN_DEFAULT_CELL_WIDTH - 1, AGS_CELL_PATTERN_DEFAULT_CELL_HEIGHT - 1);
+		     cell_pattern->cell_width - 1, cell_pattern->cell_height - 1);
 }
 
 /**
@@ -1051,7 +1075,7 @@ ags_cell_pattern_led_queue_draw_timeout(AgsCellPattern *cell_pattern)
  *
  * Returns: a new #AgsCellPattern
  *
- * Since: 0.5
+ * Since: 2.0.0
  */
 AgsCellPattern*
 ags_cell_pattern_new()

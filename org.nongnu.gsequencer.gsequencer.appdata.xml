@@ -35,6 +35,36 @@
   <url type="homepage">http://nongnu.org/gsequencer</url>
 
   <releases>
+    <release version="2.2.33" date="2019-08-03">
+      <description>
+        <p>Fixed various memory-leaks.</p>
+      </description>
+    </release>
+
+    <release version="2.2.31" date="2019-07-31">
+      <description>
+        <p>Fixed uninitialized values.</p>
+      </description>
+    </release>
+
+    <release version="2.2.22" date="2019-07-18">
+      <description>
+        <p>Implemented GUI scale factor.</p>
+      </description>
+    </release>
+
+    <release version="2.2.9" date="2019-07-02">
+      <description>
+        <p>Improved LV2 logarithmic conversion.</p>
+      </description>
+    </release>
+
+    <release version="2.2.7" date="2019-06-29">
+      <description>
+        <p>Improved check if LV2 plugin port already exists.</p>
+      </description>
+    </release>
+
     <release version="2.2.0" date="2019-06-17">
       <description>
         <p>Improved LV2 RDF Turtle parser.</p>

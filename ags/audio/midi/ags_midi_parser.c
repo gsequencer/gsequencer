@@ -775,11 +775,7 @@ ags_midi_parser_set_property(GObject *gobject,
   midi_parser = AGS_MIDI_PARSER(gobject);
 
   /* get midi parser mutex */
-  pthread_mutex_lock(ags_midi_parser_get_class_mutex());
-  
-  midi_parser_mutex = midi_parser->obj_mutex;
-  
-  pthread_mutex_unlock(ags_midi_parser_get_class_mutex());
+  midi_parser_mutex = AGS_MIDI_PARSER_GET_OBJ_MUTEX(midi_parser);
   
   switch(prop_id){
   case PROP_FILE:
@@ -821,11 +817,7 @@ ags_midi_parser_get_property(GObject *gobject,
   midi_parser = AGS_MIDI_PARSER(gobject);
 
   /* get midi parser mutex */
-  pthread_mutex_lock(ags_midi_parser_get_class_mutex());
-  
-  midi_parser_mutex = midi_parser->obj_mutex;
-  
-  pthread_mutex_unlock(ags_midi_parser_get_class_mutex());
+  midi_parser_mutex = AGS_MIDI_PARSER_GET_OBJ_MUTEX(midi_parser);
   
   switch(prop_id){
   case PROP_FILE:

@@ -35,6 +35,8 @@
 #define AGS_IS_LV2_WORKER_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_LV2_WORKER))
 #define AGS_LV2_WORKER_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_LV2_WORKER, AgsLv2WorkerClass))
 
+#define AGS_LV2_WORKER_GET_OBJ_MUTEX(obj) (((AgsLv2Worker *) obj)->obj_mutex)
+
 #define AGS_LV2_WORKER_RESPONSE_DATA(ptr) ((AgsLv2WorkerResponseData *)(ptr))
 
 typedef struct _AgsLv2Worker AgsLv2Worker;

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -41,6 +41,8 @@
 #define AGS_IS_DEVOUT(obj)             (G_TYPE_CHECK_INSTANCE_TYPE ((obj), AGS_TYPE_DEVOUT))
 #define AGS_IS_DEVOUT_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_DEVOUT))
 #define AGS_DEVOUT_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS(obj, AGS_TYPE_DEVOUT, AgsDevoutClass))
+
+#define AGS_DEVOUT_GET_OBJ_MUTEX(obj) (((AgsDevout *) obj)->obj_mutex)
 
 #define AGS_DEVOUT_DEFAULT_ALSA_DEVICE "hw:0,0"
 #define AGS_DEVOUT_DEFAULT_OSS_DEVICE "/dev/dsp"
@@ -125,8 +127,12 @@ struct _AgsDevout
   guint format;
   guint buffer_size;
   guint samplerate; // sample_rate
-
+  
   pthread_mutex_t **buffer_mutex;
+
+  guint sub_block_count;
+  pthread_mutex_t **sub_block_mutex;
+
   void **buffer;
 
   volatile gboolean available;

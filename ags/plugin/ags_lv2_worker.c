@@ -275,11 +275,7 @@ ags_lv2_worker_set_property(GObject *gobject,
   lv2_worker = AGS_LV2_WORKER(gobject);
 
   /* get base plugin mutex */
-  pthread_mutex_lock(ags_lv2_worker_get_class_mutex());
-  
-  lv2_worker_mutex = lv2_worker->obj_mutex;
-  
-  pthread_mutex_unlock(ags_lv2_worker_get_class_mutex());
+  lv2_worker_mutex = AGS_LV2_WORKER_GET_OBJ_MUTEX(lv2_worker);
 
   switch(prop_id){
   case PROP_HANDLE:
@@ -403,11 +399,7 @@ ags_lv2_worker_get_property(GObject *gobject,
   lv2_worker = AGS_LV2_WORKER(gobject);
 
   /* get base plugin mutex */
-  pthread_mutex_lock(ags_lv2_worker_get_class_mutex());
-  
-  lv2_worker_mutex = lv2_worker->obj_mutex;
-  
-  pthread_mutex_unlock(ags_lv2_worker_get_class_mutex());
+  lv2_worker_mutex = AGS_LV2_WORKER_GET_OBJ_MUTEX(lv2_worker);
 
   switch(prop_id){
   case PROP_HANDLE:
@@ -562,11 +554,7 @@ ags_lv2_worker_test_flags(AgsLv2Worker *lv2_worker, guint flags)
   }
   
   /* get lv2 worker mutex */
-  pthread_mutex_lock(ags_lv2_worker_get_class_mutex());
-  
-  lv2_worker_mutex = lv2_worker->obj_mutex;
-  
-  pthread_mutex_unlock(ags_lv2_worker_get_class_mutex());
+  lv2_worker_mutex = AGS_LV2_WORKER_GET_OBJ_MUTEX(lv2_worker);
 
   /* test flags */
   pthread_mutex_lock(lv2_worker_mutex);
@@ -597,11 +585,7 @@ ags_lv2_worker_set_flags(AgsLv2Worker *lv2_worker, guint flags)
   }
   
   /* get lv2 worker mutex */
-  pthread_mutex_lock(ags_lv2_worker_get_class_mutex());
-  
-  lv2_worker_mutex = lv2_worker->obj_mutex;
-  
-  pthread_mutex_unlock(ags_lv2_worker_get_class_mutex());
+  lv2_worker_mutex = AGS_LV2_WORKER_GET_OBJ_MUTEX(lv2_worker);
 
   /* set flags */
   pthread_mutex_lock(lv2_worker_mutex);
@@ -630,11 +614,7 @@ ags_lv2_worker_unset_flags(AgsLv2Worker *lv2_worker, guint flags)
   }
   
   /* get lv2 worker mutex */
-  pthread_mutex_lock(ags_lv2_worker_get_class_mutex());
-  
-  lv2_worker_mutex = lv2_worker->obj_mutex;
-  
-  pthread_mutex_unlock(ags_lv2_worker_get_class_mutex());
+  lv2_worker_mutex = AGS_LV2_WORKER_GET_OBJ_MUTEX(lv2_worker);
 
   /* unset flags */
   pthread_mutex_lock(lv2_worker_mutex);
@@ -705,11 +685,7 @@ ags_lv2_worker_respond(LV2_Worker_Respond_Handle handle,
   lv2_worker = AGS_LV2_WORKER(handle);
   
   /* get lv2 worker mutex */
-  pthread_mutex_lock(ags_lv2_worker_get_class_mutex());
-  
-  lv2_worker_mutex = lv2_worker->obj_mutex;
-  
-  pthread_mutex_unlock(ags_lv2_worker_get_class_mutex());
+  lv2_worker_mutex = AGS_LV2_WORKER_GET_OBJ_MUTEX(lv2_worker);
 
   /* allocate response data */
   response_data = ags_lv2_worker_alloc_response_data();
@@ -751,11 +727,7 @@ ags_lv2_worker_schedule_work(LV2_Worker_Schedule_Handle handle,
   lv2_worker = AGS_LV2_WORKER(handle);
   
   /* get lv2 worker mutex */
-  pthread_mutex_lock(ags_lv2_worker_get_class_mutex());
-  
-  lv2_worker_mutex = lv2_worker->obj_mutex;
-  
-  pthread_mutex_unlock(ags_lv2_worker_get_class_mutex());
+  lv2_worker_mutex = AGS_LV2_WORKER_GET_OBJ_MUTEX(lv2_worker);
 
   /* apply work data and size */
   pthread_mutex_lock(lv2_worker_mutex);
@@ -807,11 +779,7 @@ ags_lv2_worker_do_poll(AgsWorkerThread *worker_thread, gpointer data)
   lv2_worker = data;
 
   /* get lv2 worker mutex */
-  pthread_mutex_lock(ags_lv2_worker_get_class_mutex());
-  
-  lv2_worker_mutex = lv2_worker->obj_mutex;
-  
-  pthread_mutex_unlock(ags_lv2_worker_get_class_mutex());
+  lv2_worker_mutex = AGS_LV2_WORKER_GET_OBJ_MUTEX(lv2_worker);
 
   /* get some fields */
   pthread_mutex_lock(lv2_worker_mutex);
@@ -919,11 +887,7 @@ ags_lv2_worker_safe_run(AgsReturnableThread *returnable_thread, gpointer data)
   lv2_worker = g_atomic_pointer_get(&(returnable_thread->safe_data));
 
   /* get lv2 worker mutex */
-  pthread_mutex_lock(ags_lv2_worker_get_class_mutex());
-  
-  lv2_worker_mutex = lv2_worker->obj_mutex;
-  
-  pthread_mutex_unlock(ags_lv2_worker_get_class_mutex());
+  lv2_worker_mutex = AGS_LV2_WORKER_GET_OBJ_MUTEX(lv2_worker);
 
   /* get some fields */
   pthread_mutex_lock(lv2_worker_mutex);

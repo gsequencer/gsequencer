@@ -31,7 +31,7 @@ style "default"
 {	
 	GtkScrollbar::has-backward-stepper = 1
 	GtkScrollbar::has-forward-stepper = 1
-	GtkScrollbar::stepper-size = 14
+#	GtkScrollbar::stepper-size = 14
 
 	GtkScale::slider-length = 31
 	GtkScale::slider-width = 14
@@ -156,6 +156,8 @@ widget_class "*AgsNotebook*GtkButton*" style "default_widget"
 widget_class "*AgsNotebook*GtkToggleButton*" style "inverse_widget"
 
 widget_class "*AgsMachineSelector*GtkMenuToolButton*" style "default_widget"
+
+widget_class "*AgsCellPattern*GtkVScrollbar*" style "default_widget"
 
 widget_class "*AgsCartesian" style "cartesian_widget"
 

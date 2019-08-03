@@ -200,11 +200,33 @@ ags_notation_editor_init(AgsNotationEditor *notation_editor)
   GtkScrolledWindow *scrolled_window;
   GtkTable *table;
   
+  AgsConfig *config;
+
+  gchar *str;
+  
+  gdouble gui_scale_factor;
+
   notation_editor->flags = (AGS_NOTATION_EDITOR_PASTE_MATCH_AUDIO_CHANNEL |
 			    AGS_NOTATION_EDITOR_PASTE_NO_DUPLICATES);
 
   notation_editor->version = AGS_NOTATION_EDITOR_DEFAULT_VERSION;
   notation_editor->build_id = AGS_NOTATION_EDITOR_DEFAULT_BUILD_ID;
+
+  config = ags_config_get_instance();
+
+  /* scale factor */
+  gui_scale_factor = 1.0;
+  
+  str = ags_config_get_value(config,
+			     AGS_CONFIG_GENERIC,
+			     "gui-scale");
+
+  if(str != NULL){
+    gui_scale_factor = g_ascii_strtod(str,
+				      NULL);
+
+    g_free(str);
+  }
 
   /* offset */
   notation_editor->tact_counter = 0;
@@ -292,7 +314,11 @@ ags_notation_editor_init(AgsNotationEditor *notation_editor)
   /* scrolled piano */
   notation_editor->scrolled_piano = ags_scrolled_piano_new();
   g_object_set(notation_editor->scrolled_piano,
-	       "margin-top", (guint) ((AGS_RULER_FONT_SIZE + (2 * AGS_RULER_FREE_SPACE) + AGS_RULER_LARGE_STEP) - (ceil(AGS_PIANO_DEFAULT_KEY_HEIGHT / 4.0))),
+	       "margin-top", (gint) (gui_scale_factor * AGS_RULER_DEFAULT_HEIGHT),
+	       NULL);
+  g_object_set(notation_editor->scrolled_piano->piano,
+	       "key-width", (guint) (gui_scale_factor * AGS_PIANO_DEFAULT_KEY_WIDTH),
+	       "key-height", (guint) (gui_scale_factor * AGS_PIANO_DEFAULT_KEY_HEIGHT),
 	       NULL);
   gtk_table_attach(table,
 		   (GtkWidget *) notation_editor->scrolled_piano,

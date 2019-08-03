@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -233,11 +233,7 @@ ags_route_dssi_audio_set_property(GObject *gobject,
   route_dssi_audio = AGS_ROUTE_DSSI_AUDIO(gobject);
 
   /* get recall mutex */
-  pthread_mutex_lock(ags_recall_get_class_mutex());
-  
-  recall_mutex = AGS_RECALL(gobject)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_recall_get_class_mutex());
+  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(route_dssi_audio);
 
   switch(prop_id){
   case PROP_NOTATION_INPUT:
@@ -306,25 +302,21 @@ ags_route_dssi_audio_get_property(GObject *gobject,
 				  GValue *value,
 				  GParamSpec *param_spec)
 {
-  AgsRouteDssiAudio *route_dssi;
+  AgsRouteDssiAudio *route_dssi_audio;
   
   pthread_mutex_t *recall_mutex;
 
-  route_dssi = AGS_ROUTE_DSSI_AUDIO(gobject);
+  route_dssi_audio = AGS_ROUTE_DSSI_AUDIO(gobject);
 
   /* get recall mutex */
-  pthread_mutex_lock(ags_recall_get_class_mutex());
-  
-  recall_mutex = AGS_RECALL(gobject)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_recall_get_class_mutex());
+  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(route_dssi_audio);
 
   switch(prop_id){
   case PROP_NOTATION_INPUT:
     {
       pthread_mutex_lock(recall_mutex);
 
-      g_value_set_object(value, route_dssi->notation_input);
+      g_value_set_object(value, route_dssi_audio->notation_input);
 
       pthread_mutex_unlock(recall_mutex);
     }
@@ -333,7 +325,7 @@ ags_route_dssi_audio_get_property(GObject *gobject,
     {
       pthread_mutex_lock(recall_mutex);
 
-      g_value_set_object(value, route_dssi->sequencer_input);
+      g_value_set_object(value, route_dssi_audio->sequencer_input);
 
       pthread_mutex_unlock(recall_mutex);
     }

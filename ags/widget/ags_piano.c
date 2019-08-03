@@ -1094,6 +1094,8 @@ ags_piano_motion_notify(GtkWidget *widget,
   y_start = 0;
 
   if((AGS_PIANO_BUTTON_1_PRESSED & (piano->button_state)) != 0){
+    new_current_key = 0;
+    
     if(piano->layout == AGS_PIANO_LAYOUT_VERTICAL){
       new_current_key = floor(event->y / piano->key_height);
     }else if(piano->layout == AGS_PIANO_LAYOUT_HORIZONTAL){
@@ -1167,6 +1169,9 @@ ags_piano_draw(AgsPiano *piano)
     return;
   }
 
+  width  = 0;
+  height = 0;
+
   if(piano->layout == AGS_PIANO_LAYOUT_VERTICAL){
     width = GTK_WIDGET(piano)->allocation.width;
 
@@ -1201,6 +1206,12 @@ ags_piano_draw(AgsPiano *piano)
   /* draw */
   control_x0 = x_start;
   control_y0 = y_start;
+
+  big_control_width = 0;
+  big_control_height = 0;
+    
+  small_control_width = 0;
+  small_control_height = 0;
   
   if(piano->layout == AGS_PIANO_LAYOUT_VERTICAL){
     big_control_width = piano->key_width;

@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -390,11 +390,7 @@ ags_sndfile_set_property(GObject *gobject,
   sndfile = AGS_SNDFILE(gobject);
 
   /* get audio file mutex */
-  pthread_mutex_lock(ags_sndfile_get_class_mutex());
-  
-  sndfile_mutex = sndfile->obj_mutex;
-  
-  pthread_mutex_unlock(ags_sndfile_get_class_mutex());
+  sndfile_mutex = AGS_SNDFILE_GET_OBJ_MUTEX(sndfile);
 
   switch(prop_id){
   case PROP_AUDIO_CHANNELS:
@@ -516,11 +512,7 @@ ags_sndfile_get_property(GObject *gobject,
   sndfile = AGS_SNDFILE(gobject);
 
   /* get audio file mutex */
-  pthread_mutex_lock(ags_sndfile_get_class_mutex());
-  
-  sndfile_mutex = sndfile->obj_mutex;
-  
-  pthread_mutex_unlock(ags_sndfile_get_class_mutex());
+  sndfile_mutex = AGS_SNDFILE_GET_OBJ_MUTEX(sndfile);
   
   switch(prop_id){
   case PROP_AUDIO_CHANNELS:
@@ -591,11 +583,7 @@ ags_sndfile_get_uuid(AgsConnectable *connectable)
   sndfile = AGS_SNDFILE(connectable);
 
   /* get audio file mutex */
-  pthread_mutex_lock(ags_sndfile_get_class_mutex());
-  
-  sndfile_mutex = sndfile->obj_mutex;
-  
-  pthread_mutex_unlock(ags_sndfile_get_class_mutex());
+  sndfile_mutex = AGS_SNDFILE_GET_OBJ_MUTEX(sndfile);
 
   /* get UUID */
   pthread_mutex_lock(sndfile_mutex);
@@ -625,11 +613,7 @@ ags_sndfile_is_ready(AgsConnectable *connectable)
   sndfile = AGS_SNDFILE(connectable);
 
   /* get audio file mutex */
-  pthread_mutex_lock(ags_sndfile_get_class_mutex());
-  
-  sndfile_mutex = sndfile->obj_mutex;
-  
-  pthread_mutex_unlock(ags_sndfile_get_class_mutex());
+  sndfile_mutex = AGS_SNDFILE_GET_OBJ_MUTEX(sndfile);
 
   /* check is ready */
   pthread_mutex_lock(sndfile_mutex);
@@ -725,11 +709,7 @@ ags_sndfile_is_connected(AgsConnectable *connectable)
   sndfile = AGS_SNDFILE(connectable);
 
   /* get audio file mutex */
-  pthread_mutex_lock(ags_sndfile_get_class_mutex());
-  
-  sndfile_mutex = sndfile->obj_mutex;
-  
-  pthread_mutex_unlock(ags_sndfile_get_class_mutex());
+  sndfile_mutex = AGS_SNDFILE_GET_OBJ_MUTEX(sndfile);
 
   /* check is connected */
   pthread_mutex_lock(sndfile_mutex);
@@ -807,11 +787,7 @@ ags_sndfile_test_flags(AgsSndfile *sndfile, guint flags)
   }
 
   /* get sndfile mutex */
-  pthread_mutex_lock(ags_sndfile_get_class_mutex());
-  
-  sndfile_mutex = sndfile->obj_mutex;
-  
-  pthread_mutex_unlock(ags_sndfile_get_class_mutex());
+  sndfile_mutex = AGS_SNDFILE_GET_OBJ_MUTEX(sndfile);
 
   /* test */
   pthread_mutex_lock(sndfile_mutex);
@@ -842,11 +818,7 @@ ags_sndfile_set_flags(AgsSndfile *sndfile, guint flags)
   }
 
   /* get sndfile mutex */
-  pthread_mutex_lock(ags_sndfile_get_class_mutex());
-  
-  sndfile_mutex = sndfile->obj_mutex;
-  
-  pthread_mutex_unlock(ags_sndfile_get_class_mutex());
+  sndfile_mutex = AGS_SNDFILE_GET_OBJ_MUTEX(sndfile);
 
   //TODO:JK: add more?
 
@@ -877,11 +849,7 @@ ags_sndfile_unset_flags(AgsSndfile *sndfile, guint flags)
   }
 
   /* get sndfile mutex */
-  pthread_mutex_lock(ags_sndfile_get_class_mutex());
-  
-  sndfile_mutex = sndfile->obj_mutex;
-  
-  pthread_mutex_unlock(ags_sndfile_get_class_mutex());
+  sndfile_mutex = AGS_SNDFILE_GET_OBJ_MUTEX(sndfile);
 
   //TODO:JK: add more?
 
@@ -904,11 +872,7 @@ ags_sndfile_open(AgsSoundResource *sound_resource,
   sndfile = AGS_SNDFILE(sound_resource);
 
   /* get sndfile mutex */
-  pthread_mutex_lock(ags_sndfile_get_class_mutex());
-  
-  sndfile_mutex = sndfile->obj_mutex;
-  
-  pthread_mutex_unlock(ags_sndfile_get_class_mutex());
+  sndfile_mutex = AGS_SNDFILE_GET_OBJ_MUTEX(sndfile);
 
   /* info */
   pthread_mutex_lock(sndfile_mutex);
@@ -964,11 +928,7 @@ ags_sndfile_rw_open(AgsSoundResource *sound_resource,
   sndfile = AGS_SNDFILE(sound_resource);
 
   /* get sndfile mutex */
-  pthread_mutex_lock(ags_sndfile_get_class_mutex());
-  
-  sndfile_mutex = sndfile->obj_mutex;
-  
-  pthread_mutex_unlock(ags_sndfile_get_class_mutex());
+  sndfile_mutex = AGS_SNDFILE_GET_OBJ_MUTEX(sndfile);
 
   /* info */
   pthread_mutex_lock(sndfile_mutex);
@@ -1080,11 +1040,7 @@ ags_sndfile_info(AgsSoundResource *sound_resource,
   sndfile = AGS_SNDFILE(sound_resource);
 
   /* get sndfile mutex */
-  pthread_mutex_lock(ags_sndfile_get_class_mutex());
-  
-  sndfile_mutex = sndfile->obj_mutex;
-  
-  pthread_mutex_unlock(ags_sndfile_get_class_mutex());
+  sndfile_mutex = AGS_SNDFILE_GET_OBJ_MUTEX(sndfile);
 
   if(loop_start != NULL){
     *loop_start = 0;
@@ -1190,11 +1146,7 @@ ags_sndfile_get_presets(AgsSoundResource *sound_resource,
   sndfile = AGS_SNDFILE(sound_resource);
 
   /* get sndfile mutex */
-  pthread_mutex_lock(ags_sndfile_get_class_mutex());
-  
-  sndfile_mutex = sndfile->obj_mutex;
-  
-  pthread_mutex_unlock(ags_sndfile_get_class_mutex());
+  sndfile_mutex = AGS_SNDFILE_GET_OBJ_MUTEX(sndfile);
 
   if(sndfile->info == NULL){
     if(channels != NULL){
@@ -1293,11 +1245,7 @@ ags_sndfile_read(AgsSoundResource *sound_resource,
   sndfile = AGS_SNDFILE(sound_resource);
 
   /* get sndfile mutex */
-  pthread_mutex_lock(ags_sndfile_get_class_mutex());
-  
-  sndfile_mutex = sndfile->obj_mutex;
-  
-  pthread_mutex_unlock(ags_sndfile_get_class_mutex());
+  sndfile_mutex = AGS_SNDFILE_GET_OBJ_MUTEX(sndfile);
 
   ags_sound_resource_info(sound_resource,
 			  &total_frame_count,
@@ -1429,11 +1377,7 @@ ags_sndfile_write(AgsSoundResource *sound_resource,
   sndfile = AGS_SNDFILE(sound_resource);
 
   /* get sndfile mutex */
-  pthread_mutex_lock(ags_sndfile_get_class_mutex());
-  
-  sndfile_mutex = sndfile->obj_mutex;
-  
-  pthread_mutex_unlock(ags_sndfile_get_class_mutex());
+  sndfile_mutex = AGS_SNDFILE_GET_OBJ_MUTEX(sndfile);
   
   pthread_mutex_lock(sndfile_mutex);
 
@@ -1540,11 +1484,7 @@ ags_sndfile_seek(AgsSoundResource *sound_resource,
   sndfile = AGS_SNDFILE(sound_resource);
 
   /* get sndfile mutex */
-  pthread_mutex_lock(ags_sndfile_get_class_mutex());
-  
-  sndfile_mutex = sndfile->obj_mutex;
-  
-  pthread_mutex_unlock(ags_sndfile_get_class_mutex());
+  sndfile_mutex = AGS_SNDFILE_GET_OBJ_MUTEX(sndfile);
 
   ags_sound_resource_info(sound_resource,
 			  &total_frame_count,
@@ -1607,11 +1547,7 @@ ags_sndfile_close(AgsSoundResource *sound_resource)
   sndfile = AGS_SNDFILE(sound_resource);
 
   /* get sndfile mutex */
-  pthread_mutex_lock(ags_sndfile_get_class_mutex());
-  
-  sndfile_mutex = sndfile->obj_mutex;
-  
-  pthread_mutex_unlock(ags_sndfile_get_class_mutex());
+  sndfile_mutex = AGS_SNDFILE_GET_OBJ_MUTEX(sndfile);
 
   if(sndfile->file == NULL){
     return;

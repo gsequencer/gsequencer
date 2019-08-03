@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -246,11 +246,7 @@ ags_record_midi_audio_run_set_property(GObject *gobject,
   record_midi_audio_run = AGS_RECORD_MIDI_AUDIO_RUN(gobject);
 
   /* get recall mutex */
-  pthread_mutex_lock(ags_recall_get_class_mutex());
-  
-  recall_mutex = AGS_RECALL(gobject)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_recall_get_class_mutex());
+  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(record_midi_audio_run);
 
   switch(prop_id){
   case PROP_DELAY_AUDIO_RUN:
@@ -444,11 +440,7 @@ ags_record_midi_audio_run_get_property(GObject *gobject,
   record_midi_audio_run = AGS_RECORD_MIDI_AUDIO_RUN(gobject);
 
   /* get recall mutex */
-  pthread_mutex_lock(ags_recall_get_class_mutex());
-  
-  recall_mutex = AGS_RECALL(gobject)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_recall_get_class_mutex());
+  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(record_midi_audio_run);
 
   switch(prop_id){
   case PROP_DELAY_AUDIO_RUN:
@@ -748,11 +740,11 @@ ags_record_midi_audio_run_run_init_pre(AgsRecall *recall)
   record_midi_audio_run = AGS_RECORD_MIDI_AUDIO_RUN(recall);
 
   /* get parent class */
-  pthread_mutex_lock(ags_recall_get_class_mutex());
-
+  AGS_RECALL_LOCK_CLASS();
+   
   parent_class_run_init_pre = AGS_RECALL_CLASS(ags_record_midi_audio_run_parent_class)->run_init_pre;
 
-  pthread_mutex_unlock(ags_recall_get_class_mutex());
+  AGS_RECALL_UNLOCK_CLASS();
 
   /* get some fields */
   g_object_get(record_midi_audio_run,
@@ -854,11 +846,11 @@ ags_record_midi_audio_run_run_pre(AgsRecall *recall)
   record_midi_audio_run = AGS_RECORD_MIDI_AUDIO_RUN(recall);
 
   /* get parent class */
-  pthread_mutex_lock(ags_recall_get_class_mutex());
+  AGS_RECALL_LOCK_CLASS();
 
   parent_class_run_pre = AGS_RECALL_CLASS(ags_record_midi_audio_run_parent_class)->run_pre;
 
-  pthread_mutex_unlock(ags_recall_get_class_mutex());
+  AGS_RECALL_UNLOCK_CLASS();
 
   /* get some fields */
   g_object_get(record_midi_audio_run,
@@ -994,11 +986,7 @@ ags_record_midi_audio_run_run_pre(AgsRecall *recall)
 					 &buffer_length);
 
   /* get audio mutex */
-  pthread_mutex_lock(ags_audio_get_class_mutex());
-
-  audio_mutex = audio->obj_mutex;
-  
-  pthread_mutex_unlock(ags_audio_get_class_mutex());
+  audio_mutex = AGS_AUDIO_GET_OBJ_MUTEX(audio);
 
   /* playback */
   ags_sequencer_lock_buffer(AGS_SEQUENCER(input_sequencer),

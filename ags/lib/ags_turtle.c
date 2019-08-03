@@ -196,11 +196,7 @@ ags_turtle_set_property(GObject *gobject,
   turtle = AGS_TURTLE(gobject);
 
   /* get turtle mutex */
-  pthread_mutex_lock(ags_turtle_get_class_mutex());
-  
-  turtle_mutex = turtle->obj_mutex;
-  
-  pthread_mutex_unlock(ags_turtle_get_class_mutex());
+  turtle_mutex = AGS_TURTLE_GET_OBJ_MUTEX(turtle);
 
   switch(prop_id){
   case PROP_FILENAME:
@@ -258,11 +254,7 @@ ags_turtle_get_property(GObject *gobject,
   turtle = AGS_TURTLE(gobject);
 
   /* get turtle mutex */
-  pthread_mutex_lock(ags_turtle_get_class_mutex());
-  
-  turtle_mutex = turtle->obj_mutex;
-  
-  pthread_mutex_unlock(ags_turtle_get_class_mutex());
+  turtle_mutex = AGS_TURTLE_GET_OBJ_MUTEX(turtle);
 
   switch(prop_id){
   case PROP_FILENAME:
@@ -1042,7 +1034,8 @@ ags_turtle_read_string_literal_long_quote(gchar *offset,
       end++;
     }
 
-    if(end != NULL){
+    if(end != NULL &&
+       end > offset){
       str = g_strndup(offset,
 		      end - offset + 3);
     }
@@ -1080,7 +1073,8 @@ ags_turtle_read_string_literal_long_single_quote(gchar *offset,
       end++;
     }
 
-    if(end != NULL){
+    if(end != NULL &&
+       end > offset){
       str = g_strndup(offset,
 		      end - offset + 3);
     }
@@ -1765,6 +1759,9 @@ ags_turtle_find_xpath(AgsTurtle *turtle,
     }
   }
 
+  xmlXPathFreeObject(xpath_object);
+  xmlXPathFreeContext(xpath_context);
+
   list = g_list_reverse(list);
   
   return(list);
@@ -1819,6 +1816,9 @@ ags_turtle_find_xpath_with_context_node(AgsTurtle *turtle,
       }
     }
   }
+
+  xmlXPathFreeObject(xpath_object);
+  xmlXPathFreeContext(xpath_context);
 
   if(list != NULL){
     list = g_list_reverse(list);
@@ -1975,6 +1975,7 @@ ags_turtle_load(AgsTurtle *turtle,
 #endif
       
       *iter = look_ahead + strlen(str);
+      g_free(str);
     }
     
     return(node);
@@ -2006,8 +2007,9 @@ ags_turtle_load(AgsTurtle *turtle,
 #ifdef AGS_DEBUG
       g_message("anon - %s", str);
 #endif
-      
+            
       *iter = look_ahead + strlen(str);
+      g_free(str);
     }
     
     return(node);
@@ -2041,6 +2043,7 @@ ags_turtle_load(AgsTurtle *turtle,
 #endif
       
       *iter = look_ahead + strlen(str);
+      g_free(str);      
     }
     
     return(node);
@@ -2074,6 +2077,7 @@ ags_turtle_load(AgsTurtle *turtle,
 #endif
       
       *iter = look_ahead + strlen(str);
+      g_free(str);      
     }
     
     return(node);
@@ -2124,8 +2128,9 @@ ags_turtle_load(AgsTurtle *turtle,
 #ifdef AGS_DEBUG
       g_message("numeric - %s", str);
 #endif
-      
+            
       *iter = look_ahead + strlen(str);
+      g_free(str);
     }
     
     return(node);
@@ -2136,6 +2141,7 @@ ags_turtle_load(AgsTurtle *turtle,
 
     gchar *look_ahead;
     gchar *str;
+    gchar *encoded_str;  
     
     node = NULL;
     look_ahead = *iter;
@@ -2150,15 +2156,21 @@ ags_turtle_load(AgsTurtle *turtle,
     if(str != NULL){
       node = xmlNewNode(NULL,
 			"rdf-string");
+
+      encoded_str = xmlEncodeSpecialChars(doc,
+					  str);
+      
       xmlNodeSetContent(node,
-			xmlEncodeSpecialChars(doc,
-					      str));
+			encoded_str);
 
 #ifdef AGS_DEBUG
       g_message("string - %s", str);
 #endif
+
+      g_free(encoded_str);
       
       *iter = look_ahead + strlen(str);
+      g_free(str);
     }
     
     return(node);
@@ -2190,8 +2202,9 @@ ags_turtle_load(AgsTurtle *turtle,
 #ifdef AGS_DEBUG
       g_message("langtag - %s", str);
 #endif
-      
+            
       *iter = look_ahead + strlen(str);
+      g_free(str);
     }
     
     return(node);
@@ -2584,6 +2597,8 @@ ags_turtle_load(AgsTurtle *turtle,
 			g_ascii_strdown(rdf_blank_node_label,
 					-1));
 
+      g_free(rdf_blank_node_label);
+      
       *iter = look_ahead;
     }else{
       rdf_anon_node = ags_turtle_load_read_anon(&look_ahead);
@@ -3342,6 +3357,9 @@ ags_turtle_load(AgsTurtle *turtle,
   
   free(sb);
   free(buffer);
+
+  xmlCleanupParser();
+  xmlMemoryDump();
   
   return(doc);
 }

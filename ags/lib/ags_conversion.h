@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -30,6 +30,8 @@
 #define AGS_IS_CONVERSION_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_CONVERSION))
 #define AGS_CONVERSION_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS (obj, AGS_TYPE_CONVERSION, AgsConversionClass))
 
+#define AGS_CONVERSION_GET_OBJ_MUTEX(obj) (((AgsConversion *) obj)->obj_mutex)
+
 typedef struct _AgsConversion AgsConversion;
 typedef struct _AgsConversionClass AgsConversionClass;
 
@@ -49,7 +51,7 @@ struct _AgsConversionClass
   GObjectClass gobject;
 
   gdouble (*convert)(AgsConversion *conversion,
-		     gdouble value,
+		     gdouble x,
 		     gboolean reverse);
 };
 
@@ -58,7 +60,7 @@ GType ags_conversion_get_type(void);
 pthread_mutex_t* ags_conversion_get_class_mutex();
 
 gdouble ags_conversion_convert(AgsConversion *conversion,
-			       gdouble value,
+			       gdouble x,
 			       gboolean reverse);
 
 AgsConversion* ags_conversion_new();

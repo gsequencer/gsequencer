@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -47,10 +47,10 @@ struct _AgsDelayAudioRun
   guint hide_ref;
   guint hide_ref_counter;
 
-  guint sequencer_counter;
-  guint notation_counter;  
-  guint wave_counter;  
-  guint midi_counter;
+  gdouble sequencer_counter;
+  gdouble notation_counter;  
+  gdouble wave_counter;  
+  gdouble midi_counter;
 };
 
 struct _AgsDelayAudioRunClass

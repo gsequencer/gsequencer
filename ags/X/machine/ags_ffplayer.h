@@ -36,6 +36,9 @@
 #define AGS_IS_FFPLAYER_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_FFPLAYER))
 #define AGS_FFPLAYER_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS (obj, AGS_TYPE_FFPLAYER, AgsFFPlayerClass))
 
+#define AGS_FFPLAYER_DEFAULT_CONTROL_WIDTH (12)
+#define AGS_FFPLAYER_DEFAULT_CONTROL_HEIGHT (40)
+
 typedef struct _AgsFFPlayer AgsFFPlayer;
 typedef struct _AgsFFPlayerClass AgsFFPlayerClass;
 

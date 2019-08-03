@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -218,11 +218,11 @@ ags_recall_ladspa_run_run_init_pre(AgsRecall *recall)
   pthread_mutex_t *recall_ladspa_mutex;
 
   /* get recall mutex */
-  pthread_mutex_lock(ags_recall_get_class_mutex());
-
+  AGS_RECALL_LOCK_CLASS();
+  
   parent_class_run_init_pre = AGS_RECALL_CLASS(ags_recall_ladspa_run_parent_class)->run_init_pre;
   
-  pthread_mutex_unlock(ags_recall_get_class_mutex());
+  AGS_RECALL_UNLOCK_CLASS();
 
   /* call parent */
   parent_class_run_init_pre(recall);
@@ -253,11 +253,7 @@ ags_recall_ladspa_run_run_init_pre(AgsRecall *recall)
 	       NULL);
 
   /* get recall ladspa mutex */
-  pthread_mutex_lock(ags_recall_get_class_mutex());
-  
-  recall_ladspa_mutex = AGS_RECALL(recall_ladspa)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_recall_get_class_mutex());
+  recall_ladspa_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall_ladspa);
 
   /* get some fields */
   pthread_mutex_lock(recall_ladspa_mutex);
@@ -370,11 +366,11 @@ ags_recall_ladspa_run_run_inter(AgsRecall *recall)
   pthread_mutex_t *recall_ladspa_mutex;
 
   /* get recall mutex */
-  pthread_mutex_lock(ags_recall_get_class_mutex());
-
+  AGS_RECALL_LOCK_CLASS();
+  
   parent_class_run_inter = AGS_RECALL_CLASS(ags_recall_ladspa_run_parent_class)->run_inter;
   
-  pthread_mutex_unlock(ags_recall_get_class_mutex());
+  AGS_RECALL_UNLOCK_CLASS();
 
   /* call parent */
   parent_class_run_inter(recall);
@@ -428,11 +424,7 @@ ags_recall_ladspa_run_run_inter(AgsRecall *recall)
   recall_ladspa_run = AGS_RECALL_LADSPA_RUN(recall);
 
   /* get recall ladspa mutex */
-  pthread_mutex_lock(ags_recall_get_class_mutex());
-  
-  recall_ladspa_mutex = AGS_RECALL(recall_ladspa)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_recall_get_class_mutex());
+  recall_ladspa_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall_ladspa);
 
   g_object_get(audio_signal,
 	       "buffer-size", &buffer_size,
@@ -574,11 +566,7 @@ ags_recall_ladspa_run_load_ports(AgsRecallLadspaRun *recall_ladspa_run)
 	       NULL);
   
   /* get recall ladspa mutex */
-  pthread_mutex_lock(ags_recall_get_class_mutex());
-  
-  recall_ladspa_mutex = AGS_RECALL(recall_ladspa)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_recall_get_class_mutex());
+  recall_ladspa_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall_ladspa);
 
   /* get some fields */
   pthread_mutex_lock(recall_ladspa_mutex);
@@ -630,11 +618,7 @@ ags_recall_ladspa_run_load_ports(AgsRecallLadspaRun *recall_ladspa_run)
 	  current_port = list->data;
 	  
 	  /* get port mutex */
-	  pthread_mutex_lock(ags_port_get_class_mutex());
-
-	  port_mutex = current_port->obj_mutex;
-      
-	  pthread_mutex_unlock(ags_port_get_class_mutex());
+	  port_mutex = AGS_PORT_GET_OBJ_MUTEX(current_port);
 
 	  for(j = 0; j < j_stop; j++){
 #ifdef AGS_DEBUG

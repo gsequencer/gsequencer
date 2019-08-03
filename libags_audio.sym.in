@@ -52,6 +52,7 @@ ags_plugin_port_test_flags
 ags_plugin_port_set_flags
 ags_plugin_port_unset_flags
 ags_plugin_port_find_symbol
+ags_plugin_port_find_port_index
 ags_plugin_port_new
 ags_lv2_state_manager_get_type
 ags_lv2_state_manager_get_instance
@@ -131,6 +132,7 @@ ags_base_plugin_find_ui_effect_index
 ags_base_plugin_sort
 ags_base_plugin_apply_port_group_by_prefix
 ags_base_plugin_instantiate
+ags_base_plugin_instantiate_with_params
 ags_base_plugin_connect_port
 ags_base_plugin_activate
 ags_base_plugin_deactivate
@@ -143,6 +145,9 @@ ags_lv2_log_manager_vprintf
 ags_lv2_log_manager_get_instance
 ags_lv2_log_manager_new
 ags_lv2ui_plugin_get_type
+ags_lv2ui_plugin_test_flags
+ags_lv2ui_plugin_set_flags
+ags_lv2ui_plugin_unset_flags
 ags_lv2ui_plugin_find_gui_uri
 ags_lv2ui_plugin_new
 ags_dssi_plugin_get_type

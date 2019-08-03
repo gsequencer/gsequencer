@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -402,7 +402,9 @@ ags_line_member_editor_remove_callback(GtkWidget *button,
     AgsEffectLine *effect_line;
 	
     effect_bridge = AGS_EFFECT_BRIDGE(machine->bridge);
-	
+
+    effect_line = NULL;
+    
     /* retrieve effect line and effect pad */
     if(is_output){
       pad_start = 
@@ -438,7 +440,6 @@ ags_line_member_editor_remove_callback(GtkWidget *button,
     /* iterate line member */
     if(effect_line != NULL){
       for(nth = 0; line_member != NULL; nth++){
-
 	children = gtk_container_get_children(GTK_CONTAINER(line_member->data));
 
 	if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(children->data))){
@@ -448,7 +449,9 @@ ags_line_member_editor_remove_callback(GtkWidget *button,
 	  ags_effect_line_remove_effect(effect_line,
 					nth);
 	}
-      
+
+	g_list_free(children);
+	
 	line_member = line_member->next;
       }
     }

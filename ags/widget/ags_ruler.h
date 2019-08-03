@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -34,9 +34,10 @@
 #define AGS_RULER_FONT_SIZE (12)
 #define AGS_RULER_FREE_SPACE (4.0)
 
+#define AGS_RULER_DEFAULT_HEIGHT (24)
 #define AGS_RULER_DEFAULT_STEP (16)
-#define AGS_RULER_LARGE_STEP (8.0)
-#define AGS_RULER_SMALL_STEP (6.0)
+#define AGS_RULER_DEFAULT_LARGE_STEP (8.0)
+#define AGS_RULER_DEFAULT_SMALL_STEP (6.0)
 
 typedef struct _AgsRuler AgsRuler;
 typedef struct _AgsRulerClass AgsRulerClass;
@@ -52,7 +53,9 @@ struct _AgsRuler
   GtkAdjustment *adjustment;
 
   guint step;
-
+  guint large_step;
+  guint small_step;
+  
   gdouble factor;
   gdouble precision;
   gdouble scale_precision;

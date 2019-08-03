@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -88,10 +88,32 @@ ags_automation_editor_audio_vscrollbar_value_changed(GtkRange *range, AgsAutomat
 void
 ags_automation_editor_audio_hscrollbar_value_changed(GtkRange *range, AgsAutomationEditor *automation_editor)
 {
+  AgsConfig *config;
+
   GList *list_start, *list;
   
+  gchar *str;
+  
+  gdouble gui_scale_factor;
+
+  config = ags_config_get_instance();
+  
+  /* scale factor */
+  gui_scale_factor = 1.0;
+  
+  str = ags_config_get_value(config,
+			     AGS_CONFIG_GENERIC,
+			     "gui-scale");
+
+  if(str != NULL){
+    gui_scale_factor = g_ascii_strtod(str,
+				      NULL);
+
+    g_free(str);
+  }
+
   gtk_adjustment_set_value(automation_editor->audio_ruler->adjustment,
-			   range->adjustment->value / AGS_AUTOMATION_EDIT_DEFAULT_CONTROL_WIDTH);
+			   range->adjustment->value / (guint) (gui_scale_factor * AGS_AUTOMATION_EDIT_DEFAULT_CONTROL_WIDTH));
   gtk_widget_queue_draw(GTK_WIDGET(automation_editor->audio_ruler));
     
   /* automation edit */
@@ -128,10 +150,32 @@ ags_automation_editor_output_vscrollbar_value_changed(GtkRange *range, AgsAutoma
 void
 ags_automation_editor_output_hscrollbar_value_changed(GtkRange *range, AgsAutomationEditor *automation_editor)
 {
+  AgsConfig *config;
+
   GList *list_start, *list;
 
+  gchar *str;
+  
+  gdouble gui_scale_factor;
+
+  config = ags_config_get_instance();
+  
+  /* scale factor */
+  gui_scale_factor = 1.0;
+  
+  str = ags_config_get_value(config,
+			     AGS_CONFIG_GENERIC,
+			     "gui-scale");
+
+  if(str != NULL){
+    gui_scale_factor = g_ascii_strtod(str,
+				      NULL);
+
+    g_free(str);
+  }
+
   gtk_adjustment_set_value(automation_editor->output_ruler->adjustment,
-			   range->adjustment->value / AGS_AUTOMATION_EDIT_DEFAULT_CONTROL_WIDTH);
+			   range->adjustment->value / (guint) (gui_scale_factor * AGS_AUTOMATION_EDIT_DEFAULT_CONTROL_WIDTH));
   gtk_widget_queue_draw(GTK_WIDGET(automation_editor->output_ruler));
   
   /* automation edit */
@@ -167,10 +211,32 @@ ags_automation_editor_input_vscrollbar_value_changed(GtkRange *range, AgsAutomat
 void
 ags_automation_editor_input_hscrollbar_value_changed(GtkRange *range, AgsAutomationEditor *automation_editor)
 {
+  AgsConfig *config;
+
   GList *list_start, *list;
 
+  gchar *str;
+  
+  gdouble gui_scale_factor;
+
+  config = ags_config_get_instance();
+  
+  /* scale factor */
+  gui_scale_factor = 1.0;
+  
+  str = ags_config_get_value(config,
+			     AGS_CONFIG_GENERIC,
+			     "gui-scale");
+
+  if(str != NULL){
+    gui_scale_factor = g_ascii_strtod(str,
+				      NULL);
+
+    g_free(str);
+  }
+
   gtk_adjustment_set_value(automation_editor->input_ruler->adjustment,
-			   range->adjustment->value / AGS_AUTOMATION_EDIT_DEFAULT_CONTROL_WIDTH);
+			   range->adjustment->value / (guint) (gui_scale_factor * AGS_AUTOMATION_EDIT_DEFAULT_CONTROL_WIDTH));
   gtk_widget_queue_draw(GTK_WIDGET(automation_editor->input_ruler));
   
   /* automation edit */
@@ -195,6 +261,10 @@ ags_automation_editor_audio_automation_edit_hscrollbar_value_changed(GtkRange *r
   AgsAutomationEdit *automation_edit;
   
   GList *list_start, *list;
+
+  gchar *str;
+  
+  gdouble gui_scale_factor;
 
   if((AGS_AUTOMATION_EDITOR_RESET_AUDIO_HSCROLLBAR & (automation_editor->flags)) != 0){
     return;

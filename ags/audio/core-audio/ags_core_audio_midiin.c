@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -553,11 +553,7 @@ ags_core_audio_midiin_set_property(GObject *gobject,
   core_audio_midiin = AGS_CORE_AUDIO_MIDIIN(gobject);
 
   /* get core-audio client mutex */
-  pthread_mutex_lock(ags_core_audio_midiin_get_class_mutex());
-  
-  core_audio_midiin_mutex = core_audio_midiin->obj_mutex;
-  
-  pthread_mutex_unlock(ags_core_audio_midiin_get_class_mutex());
+  core_audio_midiin_mutex = AGS_CORE_AUDIO_MIDIIN_GET_OBJ_MUTEX(core_audio_midiin);
 
   switch(prop_id){
   case PROP_APPLICATION_CONTEXT:
@@ -700,11 +696,7 @@ ags_core_audio_midiin_get_property(GObject *gobject,
   core_audio_midiin = AGS_CORE_AUDIO_MIDIIN(gobject);  
 
   /* get core_audio midiin mutex */
-  pthread_mutex_lock(ags_core_audio_midiin_get_class_mutex());
-  
-  core_audio_midiin_mutex = core_audio_midiin->obj_mutex;
-  
-  pthread_mutex_unlock(ags_core_audio_midiin_get_class_mutex());
+  core_audio_midiin_mutex = AGS_CORE_AUDIO_MIDIIN_GET_OBJ_MUTEX(core_audio_midiin);
   
   switch(prop_id){
   case PROP_APPLICATION_CONTEXT:
@@ -865,11 +857,7 @@ ags_core_audio_midiin_get_uuid(AgsConnectable *connectable)
   core_audio_midiin = AGS_CORE_AUDIO_MIDIIN(connectable);
 
   /* get core_audio_midiin signal mutex */
-  pthread_mutex_lock(ags_core_audio_midiin_get_class_mutex());
-  
-  core_audio_midiin_mutex = core_audio_midiin->obj_mutex;
-  
-  pthread_mutex_unlock(ags_core_audio_midiin_get_class_mutex());
+  core_audio_midiin_mutex = AGS_CORE_AUDIO_MIDIIN_GET_OBJ_MUTEX(core_audio_midiin);
 
   /* get UUID */
   pthread_mutex_lock(core_audio_midiin_mutex);
@@ -899,11 +887,7 @@ ags_core_audio_midiin_is_ready(AgsConnectable *connectable)
   core_audio_midiin = AGS_CORE_AUDIO_MIDIIN(connectable);
 
   /* get core_audio_midiin mutex */
-  pthread_mutex_lock(ags_core_audio_midiin_get_class_mutex());
-  
-  core_audio_midiin_mutex = core_audio_midiin->obj_mutex;
-  
-  pthread_mutex_unlock(ags_core_audio_midiin_get_class_mutex());
+  core_audio_midiin_mutex = AGS_CORE_AUDIO_MIDIIN_GET_OBJ_MUTEX(core_audio_midiin);
 
   /* check is added */
   pthread_mutex_lock(core_audio_midiin_mutex);
@@ -986,11 +970,7 @@ ags_core_audio_midiin_is_connected(AgsConnectable *connectable)
   core_audio_midiin = AGS_CORE_AUDIO_MIDIIN(connectable);
 
   /* get core_audio_midiin mutex */
-  pthread_mutex_lock(ags_core_audio_midiin_get_class_mutex());
-  
-  core_audio_midiin_mutex = core_audio_midiin->obj_mutex;
-  
-  pthread_mutex_unlock(ags_core_audio_midiin_get_class_mutex());
+  core_audio_midiin_mutex = AGS_CORE_AUDIO_MIDIIN_GET_OBJ_MUTEX(core_audio_midiin);
 
   /* check is connected */
   pthread_mutex_lock(core_audio_midiin_mutex);
@@ -1069,11 +1049,7 @@ ags_core_audio_midiin_test_flags(AgsCoreAudioMidiin *core_audio_midiin, guint fl
   }
 
   /* get core_audio_midiin mutex */
-  pthread_mutex_lock(ags_core_audio_midiin_get_class_mutex());
-  
-  core_audio_midiin_mutex = core_audio_midiin->obj_mutex;
-  
-  pthread_mutex_unlock(ags_core_audio_midiin_get_class_mutex());
+  core_audio_midiin_mutex = AGS_CORE_AUDIO_MIDIIN_GET_OBJ_MUTEX(core_audio_midiin);
 
   /* test */
   pthread_mutex_lock(core_audio_midiin_mutex);
@@ -1104,11 +1080,7 @@ ags_core_audio_midiin_set_flags(AgsCoreAudioMidiin *core_audio_midiin, guint fla
   }
 
   /* get core_audio_midiin mutex */
-  pthread_mutex_lock(ags_core_audio_midiin_get_class_mutex());
-  
-  core_audio_midiin_mutex = core_audio_midiin->obj_mutex;
-  
-  pthread_mutex_unlock(ags_core_audio_midiin_get_class_mutex());
+  core_audio_midiin_mutex = AGS_CORE_AUDIO_MIDIIN_GET_OBJ_MUTEX(core_audio_midiin);
 
   //TODO:JK: add more?
 
@@ -1139,11 +1111,7 @@ ags_core_audio_midiin_unset_flags(AgsCoreAudioMidiin *core_audio_midiin, guint f
   }
 
   /* get core_audio_midiin mutex */
-  pthread_mutex_lock(ags_core_audio_midiin_get_class_mutex());
-  
-  core_audio_midiin_mutex = core_audio_midiin->obj_mutex;
-  
-  pthread_mutex_unlock(ags_core_audio_midiin_get_class_mutex());
+  core_audio_midiin_mutex = AGS_CORE_AUDIO_MIDIIN_GET_OBJ_MUTEX(core_audio_midiin);
 
   //TODO:JK: add more?
 
@@ -1166,11 +1134,7 @@ ags_core_audio_midiin_set_application_context(AgsSequencer *sequencer,
   core_audio_midiin = AGS_CORE_AUDIO_MIDIIN(sequencer);
 
   /* get core_audio_midiin mutex */
-  pthread_mutex_lock(ags_core_audio_midiin_get_class_mutex());
-  
-  core_audio_midiin_mutex = core_audio_midiin->obj_mutex;
-  
-  pthread_mutex_unlock(ags_core_audio_midiin_get_class_mutex());
+  core_audio_midiin_mutex = AGS_CORE_AUDIO_MIDIIN_GET_OBJ_MUTEX(core_audio_midiin);
 
   /* set application context */
   pthread_mutex_lock(core_audio_midiin_mutex);
@@ -1192,11 +1156,7 @@ ags_core_audio_midiin_get_application_context(AgsSequencer *sequencer)
   core_audio_midiin = AGS_CORE_AUDIO_MIDIIN(sequencer);
 
   /* get core_audio_midiin mutex */
-  pthread_mutex_lock(ags_core_audio_midiin_get_class_mutex());
-  
-  core_audio_midiin_mutex = core_audio_midiin->obj_mutex;
-  
-  pthread_mutex_unlock(ags_core_audio_midiin_get_class_mutex());
+  core_audio_midiin_mutex = AGS_CORE_AUDIO_MIDIIN_GET_OBJ_MUTEX(core_audio_midiin);
 
   /* get application context */
   pthread_mutex_lock(core_audio_midiin_mutex);
@@ -1227,11 +1187,7 @@ ags_core_audio_midiin_set_device(AgsSequencer *sequencer,
   core_audio_midiin = AGS_CORE_AUDIO_MIDIIN(sequencer);
 
   /* get core_audio_midiin mutex */
-  pthread_mutex_lock(ags_core_audio_midiin_get_class_mutex());
-  
-  core_audio_midiin_mutex = core_audio_midiin->obj_mutex;
-  
-  pthread_mutex_unlock(ags_core_audio_midiin_get_class_mutex());
+  core_audio_midiin_mutex = AGS_CORE_AUDIO_MIDIIN_GET_OBJ_MUTEX(core_audio_midiin);
 
   pthread_mutex_lock(core_audio_midiin_mutex);
 
@@ -1299,11 +1255,7 @@ ags_core_audio_midiin_get_device(AgsSequencer *sequencer)
   core_audio_midiin = AGS_CORE_AUDIO_MIDIIN(sequencer);
   
   /* get core_audio_midiin mutex */
-  pthread_mutex_lock(ags_core_audio_midiin_get_class_mutex());
-  
-  core_audio_midiin_mutex = core_audio_midiin->obj_mutex;
-  
-  pthread_mutex_unlock(ags_core_audio_midiin_get_class_mutex());
+  core_audio_midiin_mutex = AGS_CORE_AUDIO_MIDIIN_GET_OBJ_MUTEX(core_audio_midiin);
 
   device = NULL;
   
@@ -1406,11 +1358,7 @@ ags_core_audio_midiin_is_starting(AgsSequencer *sequencer)
   core_audio_midiin = AGS_CORE_AUDIO_MIDIIN(sequencer);
 
   /* get core_audio_midiin mutex */
-  pthread_mutex_lock(ags_core_audio_midiin_get_class_mutex());
-  
-  core_audio_midiin_mutex = core_audio_midiin->obj_mutex;
-  
-  pthread_mutex_unlock(ags_core_audio_midiin_get_class_mutex());
+  core_audio_midiin_mutex = AGS_CORE_AUDIO_MIDIIN_GET_OBJ_MUTEX(core_audio_midiin);
 
   /* check is starting */
   pthread_mutex_lock(core_audio_midiin_mutex);
@@ -1434,11 +1382,7 @@ ags_core_audio_midiin_is_recording(AgsSequencer *sequencer)
   core_audio_midiin = AGS_CORE_AUDIO_MIDIIN(sequencer);
   
   /* get core_audio_midiin mutex */
-  pthread_mutex_lock(ags_core_audio_midiin_get_class_mutex());
-  
-  core_audio_midiin_mutex = core_audio_midiin->obj_mutex;
-  
-  pthread_mutex_unlock(ags_core_audio_midiin_get_class_mutex());
+  core_audio_midiin_mutex = AGS_CORE_AUDIO_MIDIIN_GET_OBJ_MUTEX(core_audio_midiin);
 
   /* check is starting */
   pthread_mutex_lock(core_audio_midiin_mutex);
@@ -1461,11 +1405,7 @@ ags_core_audio_midiin_port_init(AgsSequencer *sequencer,
   core_audio_midiin = AGS_CORE_AUDIO_MIDIIN(sequencer);
   
   /* get core_audio midiin mutex */
-  pthread_mutex_lock(ags_core_audio_midiin_get_class_mutex());
-  
-  core_audio_midiin_mutex = core_audio_midiin->obj_mutex;
-  
-  pthread_mutex_unlock(ags_core_audio_midiin_get_class_mutex());
+  core_audio_midiin_mutex = AGS_CORE_AUDIO_MIDIIN_GET_OBJ_MUTEX(core_audio_midiin);
 
   /*  */
   pthread_mutex_lock(core_audio_midiin_mutex);
@@ -1481,7 +1421,7 @@ ags_core_audio_midiin_port_init(AgsSequencer *sequencer,
   
   /*  */
   core_audio_midiin->tact_counter = 0.0;
-  core_audio_midiin->delay_counter = 0.0;
+  core_audio_midiin->delay_counter = floor(core_audio_midiin->delay);
   core_audio_midiin->tic_counter = 0;
 
   core_audio_midiin->flags |= (AGS_CORE_AUDIO_MIDIIN_INITIALIZED |
@@ -1526,11 +1466,7 @@ ags_core_audio_midiin_port_record(AgsSequencer *sequencer,
   application_context = ags_application_context_get_instance();
 
   /* get core_audio midiin mutex */
-  pthread_mutex_lock(ags_core_audio_midiin_get_class_mutex());
-  
-  core_audio_midiin_mutex = core_audio_midiin->obj_mutex;
-  
-  pthread_mutex_unlock(ags_core_audio_midiin_get_class_mutex());
+  core_audio_midiin_mutex = AGS_CORE_AUDIO_MIDIIN_GET_OBJ_MUTEX(core_audio_midiin);
 
   /* client */
   pthread_mutex_lock(core_audio_midiin_mutex);
@@ -1556,11 +1492,7 @@ ags_core_audio_midiin_port_record(AgsSequencer *sequencer,
   pthread_mutex_unlock(core_audio_midiin_mutex);
 
   /* get core_audio client mutex */
-  pthread_mutex_lock(ags_core_audio_client_get_class_mutex());
-  
-  core_audio_client_mutex = core_audio_client->obj_mutex;
-  
-  pthread_mutex_unlock(ags_core_audio_client_get_class_mutex());
+  core_audio_client_mutex = AGS_CORE_AUDIO_CLIENT_GET_OBJ_MUTEX(core_audio_client);
 
   /* check activated */
   pthread_mutex_lock(core_audio_client_mutex);
@@ -1659,11 +1591,7 @@ ags_core_audio_midiin_port_free(AgsSequencer *sequencer)
   core_audio_midiin = AGS_CORE_AUDIO_MIDIIN(sequencer);
   
   /* get core_audio_midiin mutex */
-  pthread_mutex_lock(ags_core_audio_midiin_get_class_mutex());
-  
-  core_audio_midiin_mutex = core_audio_midiin->obj_mutex;
-  
-  pthread_mutex_unlock(ags_core_audio_midiin_get_class_mutex());
+  core_audio_midiin_mutex = AGS_CORE_AUDIO_MIDIIN_GET_OBJ_MUTEX(core_audio_midiin);
 
   /* check initialized */
   pthread_mutex_lock(core_audio_midiin_mutex);
@@ -1757,11 +1685,7 @@ ags_core_audio_midiin_tic(AgsSequencer *sequencer)
   core_audio_midiin = AGS_CORE_AUDIO_MIDIIN(sequencer);
   
   /* get core_audio_midiin mutex */
-  pthread_mutex_lock(ags_core_audio_midiin_get_class_mutex());
-  
-  core_audio_midiin_mutex = core_audio_midiin->obj_mutex;
-  
-  pthread_mutex_unlock(ags_core_audio_midiin_get_class_mutex());
+  core_audio_midiin_mutex = AGS_CORE_AUDIO_MIDIIN_GET_OBJ_MUTEX(core_audio_midiin);
   
   /* determine if attack should be switched */
   pthread_mutex_lock(core_audio_midiin_mutex);
@@ -1773,7 +1697,7 @@ ags_core_audio_midiin_tic(AgsSequencer *sequencer)
 
   pthread_mutex_unlock(core_audio_midiin_mutex);
 
-  if((guint) delay_counter + 1 >= (guint) delay){
+  if(delay_counter + 1.0 >= delay){
     ags_sequencer_set_note_offset(sequencer,
 				  note_offset + 1);
     
@@ -1784,7 +1708,7 @@ ags_core_audio_midiin_tic(AgsSequencer *sequencer)
     /* reset - delay counter */
     pthread_mutex_lock(core_audio_midiin_mutex);
 
-    core_audio_midiin->delay_counter = 0.0;
+    core_audio_midiin->delay_counter = delay_counter + 1.0 - delay;
     core_audio_midiin->tact_counter += 1.0;
 
     pthread_mutex_unlock(core_audio_midiin_mutex);
@@ -1808,11 +1732,7 @@ ags_core_audio_midiin_offset_changed(AgsSequencer *sequencer,
   core_audio_midiin = AGS_CORE_AUDIO_MIDIIN(sequencer);
 
   /* get core_audio_midiin mutex */
-  pthread_mutex_lock(ags_core_audio_midiin_get_class_mutex());
-  
-  core_audio_midiin_mutex = core_audio_midiin->obj_mutex;
-  
-  pthread_mutex_unlock(ags_core_audio_midiin_get_class_mutex());
+  core_audio_midiin_mutex = AGS_CORE_AUDIO_MIDIIN_GET_OBJ_MUTEX(core_audio_midiin);
 
   /* offset changed */
   pthread_mutex_lock(core_audio_midiin_mutex);
@@ -1838,11 +1758,7 @@ ags_core_audio_midiin_set_bpm(AgsSequencer *sequencer,
   core_audio_midiin = AGS_CORE_AUDIO_MIDIIN(sequencer);
 
   /* get core_audio_midiin mutex */
-  pthread_mutex_lock(ags_core_audio_midiin_get_class_mutex());
-  
-  core_audio_midiin_mutex = core_audio_midiin->obj_mutex;
-  
-  pthread_mutex_unlock(ags_core_audio_midiin_get_class_mutex());
+  core_audio_midiin_mutex = AGS_CORE_AUDIO_MIDIIN_GET_OBJ_MUTEX(core_audio_midiin);
 
   /* set bpm */
   pthread_mutex_lock(core_audio_midiin_mutex);
@@ -1864,11 +1780,7 @@ ags_core_audio_midiin_get_bpm(AgsSequencer *sequencer)
   core_audio_midiin = AGS_CORE_AUDIO_MIDIIN(sequencer);
 
   /* get core_audio_midiin mutex */
-  pthread_mutex_lock(ags_core_audio_midiin_get_class_mutex());
-  
-  core_audio_midiin_mutex = core_audio_midiin->obj_mutex;
-  
-  pthread_mutex_unlock(ags_core_audio_midiin_get_class_mutex());
+  core_audio_midiin_mutex = AGS_CORE_AUDIO_MIDIIN_GET_OBJ_MUTEX(core_audio_midiin);
 
   /* get bpm */
   pthread_mutex_lock(core_audio_midiin_mutex);
@@ -1891,11 +1803,7 @@ ags_core_audio_midiin_set_delay_factor(AgsSequencer *sequencer,
   core_audio_midiin = AGS_CORE_AUDIO_MIDIIN(sequencer);
 
   /* get core_audio_midiin mutex */
-  pthread_mutex_lock(ags_core_audio_midiin_get_class_mutex());
-  
-  core_audio_midiin_mutex = core_audio_midiin->obj_mutex;
-  
-  pthread_mutex_unlock(ags_core_audio_midiin_get_class_mutex());
+  core_audio_midiin_mutex = AGS_CORE_AUDIO_MIDIIN_GET_OBJ_MUTEX(core_audio_midiin);
 
   /* set delay factor */
   pthread_mutex_lock(core_audio_midiin_mutex);
@@ -1917,11 +1825,7 @@ ags_core_audio_midiin_get_delay_factor(AgsSequencer *sequencer)
   core_audio_midiin = AGS_CORE_AUDIO_MIDIIN(sequencer);
 
   /* get core_audio_midiin mutex */
-  pthread_mutex_lock(ags_core_audio_midiin_get_class_mutex());
-  
-  core_audio_midiin_mutex = core_audio_midiin->obj_mutex;
-  
-  pthread_mutex_unlock(ags_core_audio_midiin_get_class_mutex());
+  core_audio_midiin_mutex = AGS_CORE_AUDIO_MIDIIN_GET_OBJ_MUTEX(core_audio_midiin);
 
   /* get delay factor */
   pthread_mutex_lock(core_audio_midiin_mutex);
@@ -2082,11 +1986,7 @@ ags_core_audio_midiin_set_start_note_offset(AgsSequencer *sequencer,
   core_audio_midiin = AGS_CORE_AUDIO_MIDIIN(sequencer);
 
   /* get core_audio midiin mutex */
-  pthread_mutex_lock(ags_core_audio_midiin_get_class_mutex());
-  
-  core_audio_midiin_mutex = core_audio_midiin->obj_mutex;
-  
-  pthread_mutex_unlock(ags_core_audio_midiin_get_class_mutex());
+  core_audio_midiin_mutex = AGS_CORE_AUDIO_MIDIIN_GET_OBJ_MUTEX(core_audio_midiin);
 
   /* set note offset */
   pthread_mutex_lock(core_audio_midiin_mutex);
@@ -2108,11 +2008,7 @@ ags_core_audio_midiin_get_start_note_offset(AgsSequencer *sequencer)
   core_audio_midiin = AGS_CORE_AUDIO_MIDIIN(sequencer);
 
   /* get core_audio midiin mutex */
-  pthread_mutex_lock(ags_core_audio_midiin_get_class_mutex());
-  
-  core_audio_midiin_mutex = core_audio_midiin->obj_mutex;
-  
-  pthread_mutex_unlock(ags_core_audio_midiin_get_class_mutex());
+  core_audio_midiin_mutex = AGS_CORE_AUDIO_MIDIIN_GET_OBJ_MUTEX(core_audio_midiin);
 
   /* set note offset */
   pthread_mutex_lock(core_audio_midiin_mutex);
@@ -2135,11 +2031,7 @@ ags_core_audio_midiin_set_note_offset(AgsSequencer *sequencer,
   core_audio_midiin = AGS_CORE_AUDIO_MIDIIN(sequencer);
 
   /* get core_audio midiin mutex */
-  pthread_mutex_lock(ags_core_audio_midiin_get_class_mutex());
-  
-  core_audio_midiin_mutex = core_audio_midiin->obj_mutex;
-  
-  pthread_mutex_unlock(ags_core_audio_midiin_get_class_mutex());
+  core_audio_midiin_mutex = AGS_CORE_AUDIO_MIDIIN_GET_OBJ_MUTEX(core_audio_midiin);
 
   /* set note offset */
   pthread_mutex_lock(core_audio_midiin_mutex);
@@ -2161,11 +2053,7 @@ ags_core_audio_midiin_get_note_offset(AgsSequencer *sequencer)
   core_audio_midiin = AGS_CORE_AUDIO_MIDIIN(sequencer);
 
   /* get core_audio midiin mutex */
-  pthread_mutex_lock(ags_core_audio_midiin_get_class_mutex());
-  
-  core_audio_midiin_mutex = core_audio_midiin->obj_mutex;
-  
-  pthread_mutex_unlock(ags_core_audio_midiin_get_class_mutex());
+  core_audio_midiin_mutex = AGS_CORE_AUDIO_MIDIIN_GET_OBJ_MUTEX(core_audio_midiin);
 
   /* set note offset */
   pthread_mutex_lock(core_audio_midiin_mutex);
@@ -2191,11 +2079,7 @@ ags_core_audio_midiin_switch_buffer_flag(AgsCoreAudioMidiin *core_audio_midiin)
   pthread_mutex_t *core_audio_midiin_mutex;  
 
   /* get core_audio midiin mutex */
-  pthread_mutex_lock(ags_core_audio_midiin_get_class_mutex());
-  
-  core_audio_midiin_mutex = core_audio_midiin->obj_mutex;
-  
-  pthread_mutex_unlock(ags_core_audio_midiin_get_class_mutex());
+  core_audio_midiin_mutex = AGS_CORE_AUDIO_MIDIIN_GET_OBJ_MUTEX(core_audio_midiin);
 
   /* switch buffer flag */
   pthread_mutex_lock(core_audio_midiin_mutex);

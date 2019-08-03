@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -35,6 +35,8 @@
 #define AGS_IS_MIDI_PARSER(obj)             (G_TYPE_CHECK_INSTANCE_TYPE ((obj), AGS_TYPE_MIDI_PARSER))
 #define AGS_IS_MIDI_PARSER_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_MIDI_PARSER))
 #define AGS_MIDI_PARSER_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_MIDI_PARSER, AgsMidiParserClass))
+
+#define AGS_MIDI_PARSER_GET_OBJ_MUTEX(obj) (((AgsMidiParser *) obj)->obj_mutex)
 
 #define AGS_MIDI_PARSER_MAX_TEXT_LENGTH (4096)
 

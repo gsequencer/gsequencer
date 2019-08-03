@@ -112,9 +112,8 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-# -msse2 -O3 -ftree-vectorize -ftree-slp-vectorize -ffast-math -ftree-vectorizer-verbose=2
 @WITH_LIBINSTPATCH_TRUE@am__append_1 = -DAGS_WITH_LIBINSTPATCH=1
-@WITH_EXPERIMENTAL_TRUE@am__append_2 = libags_vst.la 
+@WITH_VST3_TRUE@am__append_2 = libags_vst.la 
 bin_PROGRAMS = gsequencer$(EXEEXT) midi2xml$(EXEEXT)
 @WITH_EXPERIMENTAL_TRUE@am__append_3 = $(libags_audio_audio_unit_c_sources)
 @WITH_EXPERIMENTAL_TRUE@am__append_4 = $(libags_audio_audio_unit_h_sources)
@@ -1081,9 +1080,8 @@ libags_thread_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
 	$(libags_thread_la_CFLAGS) $(CFLAGS) \
 	$(libags_thread_la_LDFLAGS) $(LDFLAGS) -o $@
-@WITH_EXPERIMENTAL_TRUE@libags_vst_la_DEPENDENCIES =  \
-@WITH_EXPERIMENTAL_TRUE@	$(am__DEPENDENCIES_1) \
-@WITH_EXPERIMENTAL_TRUE@	$(am__DEPENDENCIES_1)
+@WITH_VST3_TRUE@libags_vst_la_DEPENDENCIES = $(am__DEPENDENCIES_1) \
+@WITH_VST3_TRUE@	$(am__DEPENDENCIES_1)
 am__libags_vst_la_SOURCES_DIST =  \
 	ags/vst3-capi/pluginterfaces/base/ags_vst_icloneable.cpp \
 	ags/vst3-capi/pluginterfaces/base/ags_vst_geo_constants.cpp \
@@ -1126,13 +1124,13 @@ am__objects_29 = $(am__objects_1) \
 	ags/vst3-capi/public.sdk/source/vst/libags_vst_la-ags_vst_edit_controller.lo \
 	ags/vst3-capi/public.sdk/source/vst/libags_vst_la-ags_vst_bus.lo \
 	ags/vst3-capi/public.sdk/source/vst/libags_vst_la-ags_vst_parameters.lo
-@WITH_EXPERIMENTAL_TRUE@am_libags_vst_la_OBJECTS = $(am__objects_29)
+@WITH_VST3_TRUE@am_libags_vst_la_OBJECTS = $(am__objects_29)
 libags_vst_la_OBJECTS = $(am_libags_vst_la_OBJECTS)
 libags_vst_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CXX \
 	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CXXLD) \
 	$(libags_vst_la_CXXFLAGS) $(CXXFLAGS) $(libags_vst_la_LDFLAGS) \
 	$(LDFLAGS) -o $@
-@WITH_EXPERIMENTAL_TRUE@am_libags_vst_la_rpath = -rpath $(libdir)
+@WITH_VST3_TRUE@am_libags_vst_la_rpath = -rpath $(libdir)
 libgsequencer_la_DEPENDENCIES = libags_audio.la libags_server.la \
 	libags_gui.la libags_thread.la libags.la $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
@@ -1141,7 +1139,7 @@ libgsequencer_la_DEPENDENCIES = libags_audio.la libags_server.la \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
-am__libgsequencer_la_SOURCES_DIST =  \
+am__libgsequencer_la_SOURCES_DIST = ags/X/ags_animation_window.h \
 	ags/X/ags_automation_editor_callbacks.h \
 	ags/X/ags_automation_editor.h \
 	ags/X/ags_automation_window_callbacks.h \
@@ -1361,7 +1359,8 @@ am__libgsequencer_la_SOURCES_DIST =  \
 	ags/X/editor/ags_wave_edit_callbacks.h \
 	ags/X/editor/ags_wave_edit.h ags/X/editor/ags_wave_edit_box.h \
 	ags/X/editor/ags_wave_toolbar_callbacks.h \
-	ags/X/editor/ags_wave_toolbar.h ags/X/ags_automation_editor.c \
+	ags/X/editor/ags_wave_toolbar.h ags/X/ags_animation_window.c \
+	ags/X/ags_automation_editor.c \
 	ags/X/ags_automation_editor_callbacks.c \
 	ags/X/ags_automation_window.c \
 	ags/X/ags_automation_window_callbacks.c \
@@ -1585,6 +1584,7 @@ am__objects_32 = $(am__objects_30) $(am__objects_30) $(am__objects_30) \
 	$(am__objects_30) $(am__objects_30) $(am__objects_30) \
 	$(am__objects_31) $(am__objects_30)
 am__objects_33 = $(am__objects_1) \
+	ags/X/libgsequencer_la-ags_animation_window.lo \
 	ags/X/libgsequencer_la-ags_automation_editor.lo \
 	ags/X/libgsequencer_la-ags_automation_editor_callbacks.lo \
 	ags/X/libgsequencer_la-ags_automation_window.lo \
@@ -3977,6 +3977,7 @@ depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__maybe_remake_depfiles = depfiles
 am__depfiles_remade = ags/$(DEPDIR)/gsequencer-gsequencer_main.Po \
 	ags/$(DEPDIR)/midi2xml-midi2xml_main.Po \
+	ags/X/$(DEPDIR)/libgsequencer_la-ags_animation_window.Plo \
 	ags/X/$(DEPDIR)/libgsequencer_la-ags_audio_preferences.Plo \
 	ags/X/$(DEPDIR)/libgsequencer_la-ags_audio_preferences_callbacks.Plo \
 	ags/X/$(DEPDIR)/libgsequencer_la-ags_automation_editor.Plo \
@@ -5773,6 +5774,8 @@ CAIRO_LIBS = @CAIRO_LIBS@
 CC = @CC@
 CCDEPMODE = @CCDEPMODE@
 
+# AM_CPPFLAGS += -march=native -msse3 -O3 -ftree-vectorize -ftree-slp-vectorize -ffast-math -ftree-vectorizer-verbose=2
+
 # what flags you want to pass to the C compiler & linker
 CFLAGS = @CFLAGS@
 CORE_AUDIO_CFLAGS = @CORE_AUDIO_CFLAGS@
@@ -5896,8 +5899,8 @@ USE_NLS = @USE_NLS@
 UUID_CFLAGS = @UUID_CFLAGS@
 UUID_LIBS = @UUID_LIBS@
 VERSION = @VERSION@
-VST_CXXFLAGS = @VST_CXXFLAGS@
-VST_LIBS = @VST_LIBS@
+VST3_CXXFLAGS = @VST3_CXXFLAGS@
+VST3_LIBS = @VST3_LIBS@
 XGETTEXT = @XGETTEXT@
 XGETTEXT_015 = @XGETTEXT_015@
 XGETTEXT_EXTRA_OPTIONS = @XGETTEXT_EXTRA_OPTIONS@
@@ -5974,8 +5977,10 @@ ACLOCAL_AMFLAGS = -I m4
 AM_CPPFLAGS = -std=gnu99 -include errno.h -I$(top_srcdir) \
 	-DSRCDIR=\"$(srcdir)\" -DDESTDIR=\"$(DESTDIR)$(datadir)\" \
 	-DPACKAGE_VERSION=\"$(PACKAGE_VERSION)\" \
-	-DAGS_REDUCE_RT_EVENTS=1 -DAGS_LIBRARY_SUFFIX=\".so\" \
-	-D_FORTIFY_SOURCE=2 -Wformat -Werror=format-security \
+	-DAGS_REDUCE_RT_EVENTS=1 -DAGS_VECTORIZED_BUILTIN_FUNCTIONS=1 \
+	-DAGS_LIBRARY_SUFFIX=\".so\" -D_FORTIFY_SOURCE=2 -Wall \
+	-Wformat -Werror=format-security -Werror=return-type \
+	-Werror=uninitialized -Werror=maybe-uninitialized \
 	$(am__append_1)
 gsequencer_CFLAGS = @GSEQUENCER_CFLAGS@ $(LIBASOUND2_CFLAGS) \
 	$(LIBAO_CFLAGS) $(LIBXML2_CFLAGS) $(OPENSSL_CFLAGS) \
@@ -6319,8 +6324,8 @@ libags_gui_la_SOURCES = $(libags_gui_c_sources)
 libags_gui_la_HEADERS_0 = ags/libags-gui.h $(libags_gui_h_sources)
 libgsequencer_la_HEADERS_0 = $(libgsequencer_h_sources) $(libgsequencer_file_h_sources) $(libgsequencer_thread_h_sources) $(libgsequencer_task_h_sources) $(libgsequencer_import_h_sources) $(libgsequencer_export_h_sources) $(libgsequencer_machine_h_sources) $(libgsequencer_editor_h_sources)
 libgsequencer_la_SOURCES = $(libgsequencer_la_HEADERS_0) $(libgsequencer_c_sources) $(libgsequencer_file_c_sources) $(libgsequencer_thread_c_sources) $(libgsequencer_task_c_sources) $(libgsequencer_import_c_sources) $(libgsequencer_export_c_sources) $(libgsequencer_machine_c_sources) $(libgsequencer_editor_c_sources)
-@WITH_EXPERIMENTAL_TRUE@libags_vst_la_SOURCES = $(libags_vst_c_sources)
-@WITH_EXPERIMENTAL_TRUE@libags_vst_la_HEADERS_0 = ags/libags-vst.h $(libags_vst_h_sources)
+@WITH_VST3_TRUE@libags_vst_la_SOURCES = $(libags_vst_c_sources)
+@WITH_VST3_TRUE@libags_vst_la_HEADERS_0 = ags/libags-vst.h $(libags_vst_h_sources)
 
 # library libags
 libags_la_CFLAGS = $(CFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ -I/usr/include $(UUID_CFLAGS) $(LIBXML2_CFLAGS) $(GOBJECT_CFLAGS) $(GIO_CFLAGS)
@@ -6353,9 +6358,9 @@ libgsequencer_la_LDFLAGS = $(LDFLAGS) -version-info 0:1:0 -shared -fPIC -Wl,-son
 libgsequencer_la_LIBADD = libags_audio.la libags_server.la libags_gui.la libags_thread.la libags.la -ldl -lm $(CORE_AUDIO_LIBS) $(LIBASOUND2_LIBS) $(LIBXML2_LIBS) $(FFTW_LIBS) $(SNDFILE_LIBS) $(JACK_LIBS) $(PULSE_LIBS) $(LIBINSTPATCH_LIBS) $(GOBJECT_LIBS) $(GDKPIXBUF_LIBS) $(CAIRO_LIBS) $(GTK_LIBS) $(GTK_MAC_INTEGRATION_LIBS)
 
 # library libags-vst
-@WITH_EXPERIMENTAL_TRUE@libags_vst_la_CXXFLAGS = $(CXXFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ -I/usr/include $(GLIB_CFLAGS) $(VST_CXXFLAGS)
-@WITH_EXPERIMENTAL_TRUE@libags_vst_la_LDFLAGS = $(LDFLAGS) -export-symbols libags_vst.sym -version-info 2:0:0 -shared -fPIC -soname,libags_vst.so -pthread 
-@WITH_EXPERIMENTAL_TRUE@libags_vst_la_LIBADD = -ldl -lm $(GLIB_LIBS) $(VST_LIBS)
+@WITH_VST3_TRUE@libags_vst_la_CXXFLAGS = $(CXXFLAGS) $(COMPILER_FLAGS) $(WARN_FLAGS) -O -I./ -I/usr/include $(GLIB_CFLAGS) $(VST3_CXXFLAGS)
+@WITH_VST3_TRUE@libags_vst_la_LDFLAGS = $(LDFLAGS) -export-symbols libags_vst.sym -version-info 2:0:0 -shared -fPIC -soname,libags_vst.so -pthread 
+@WITH_VST3_TRUE@libags_vst_la_LIBADD = -ldl -lm $(GLIB_LIBS) $(VST3_LIBS)
 
 # gsequencer
 gsequencer_SOURCES = $(gsequencer_c_sources) $(gsequencerheaders)
@@ -8494,6 +8499,7 @@ libags_gui_c_sources = \
 deprecated_libgsequencer_h_sources = 
 libgsequencer_h_sources = \
 	$(deprecated_libgsequencer_h_sources) \
+	ags/X/ags_animation_window.h \
 	ags/X/ags_automation_editor_callbacks.h \
 	ags/X/ags_automation_editor.h \
 	ags/X/ags_automation_window_callbacks.h \
@@ -8612,6 +8618,7 @@ libgsequencer_h_sources = \
 deprecated_libgsequencer_c_sources = 
 libgsequencer_c_sources = \
 	$(deprecated_libgsequencer_c_sources) \
+	ags/X/ags_animation_window.c \
 	ags/X/ags_automation_editor.c \
 	ags/X/ags_automation_editor_callbacks.c \
 	ags/X/ags_automation_window.c \
@@ -10625,6 +10632,8 @@ ags/X/$(am__dirstamp):
 ags/X/$(DEPDIR)/$(am__dirstamp):
 	@$(MKDIR_P) ags/X/$(DEPDIR)
 	@: > ags/X/$(DEPDIR)/$(am__dirstamp)
+ags/X/libgsequencer_la-ags_animation_window.lo: ags/X/$(am__dirstamp) \
+	ags/X/$(DEPDIR)/$(am__dirstamp)
 ags/X/libgsequencer_la-ags_automation_editor.lo:  \
 	ags/X/$(am__dirstamp) ags/X/$(DEPDIR)/$(am__dirstamp)
 ags/X/libgsequencer_la-ags_automation_editor_callbacks.lo:  \
@@ -12787,6 +12796,7 @@ distclean-compile:
 
 @AMDEP_TRUE@@am__include@ @am__quote@ags/$(DEPDIR)/gsequencer-gsequencer_main.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/$(DEPDIR)/midi2xml-midi2xml_main.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@ags/X/$(DEPDIR)/libgsequencer_la-ags_animation_window.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/X/$(DEPDIR)/libgsequencer_la-ags_audio_preferences.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/X/$(DEPDIR)/libgsequencer_la-ags_audio_preferences_callbacks.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ags/X/$(DEPDIR)/libgsequencer_la-ags_automation_editor.Plo@am__quote@ # am--include-marker
@@ -16356,6 +16366,13 @@ ags/thread/file/libags_thread_la-ags_thread_file_xml.lo: ags/thread/file/ags_thr
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/thread/file/ags_thread_file_xml.c' object='ags/thread/file/libags_thread_la-ags_thread_file_xml.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libags_thread_la_CFLAGS) $(CFLAGS) -c -o ags/thread/file/libags_thread_la-ags_thread_file_xml.lo `test -f 'ags/thread/file/ags_thread_file_xml.c' || echo '$(srcdir)/'`ags/thread/file/ags_thread_file_xml.c
+
+ags/X/libgsequencer_la-ags_animation_window.lo: ags/X/ags_animation_window.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -MT ags/X/libgsequencer_la-ags_animation_window.lo -MD -MP -MF ags/X/$(DEPDIR)/libgsequencer_la-ags_animation_window.Tpo -c -o ags/X/libgsequencer_la-ags_animation_window.lo `test -f 'ags/X/ags_animation_window.c' || echo '$(srcdir)/'`ags/X/ags_animation_window.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ags/X/$(DEPDIR)/libgsequencer_la-ags_animation_window.Tpo ags/X/$(DEPDIR)/libgsequencer_la-ags_animation_window.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='ags/X/ags_animation_window.c' object='ags/X/libgsequencer_la-ags_animation_window.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -c -o ags/X/libgsequencer_la-ags_animation_window.lo `test -f 'ags/X/ags_animation_window.c' || echo '$(srcdir)/'`ags/X/ags_animation_window.c
 
 ags/X/libgsequencer_la-ags_automation_editor.lo: ags/X/ags_automation_editor.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgsequencer_la_CFLAGS) $(CFLAGS) -MT ags/X/libgsequencer_la-ags_automation_editor.lo -MD -MP -MF ags/X/$(DEPDIR)/libgsequencer_la-ags_automation_editor.Tpo -c -o ags/X/libgsequencer_la-ags_automation_editor.lo `test -f 'ags/X/ags_automation_editor.c' || echo '$(srcdir)/'`ags/X/ags_automation_editor.c
@@ -22905,6 +22922,7 @@ distclean: distclean-recursive
 	-rm -f $(am__CONFIG_DISTCLEAN_FILES)
 		-rm -f ags/$(DEPDIR)/gsequencer-gsequencer_main.Po
 	-rm -f ags/$(DEPDIR)/midi2xml-midi2xml_main.Po
+	-rm -f ags/X/$(DEPDIR)/libgsequencer_la-ags_animation_window.Plo
 	-rm -f ags/X/$(DEPDIR)/libgsequencer_la-ags_audio_preferences.Plo
 	-rm -f ags/X/$(DEPDIR)/libgsequencer_la-ags_audio_preferences_callbacks.Plo
 	-rm -f ags/X/$(DEPDIR)/libgsequencer_la-ags_automation_editor.Plo
@@ -23796,6 +23814,7 @@ maintainer-clean: maintainer-clean-recursive
 	-rm -rf $(top_srcdir)/autom4te.cache
 		-rm -f ags/$(DEPDIR)/gsequencer-gsequencer_main.Po
 	-rm -f ags/$(DEPDIR)/midi2xml-midi2xml_main.Po
+	-rm -f ags/X/$(DEPDIR)/libgsequencer_la-ags_animation_window.Plo
 	-rm -f ags/X/$(DEPDIR)/libgsequencer_la-ags_audio_preferences.Plo
 	-rm -f ags/X/$(DEPDIR)/libgsequencer_la-ags_audio_preferences_callbacks.Plo
 	-rm -f ags/X/$(DEPDIR)/libgsequencer_la-ags_automation_editor.Plo

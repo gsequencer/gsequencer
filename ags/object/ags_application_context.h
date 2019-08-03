@@ -36,6 +36,8 @@
 #define AGS_IS_APPLICATION_CONTEXT_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_APPLICATION_CONTEXT))
 #define AGS_APPLICATION_CONTEXT_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS(obj, AGS_TYPE_APPLICATION_CONTEXT, AgsApplicationContextClass))
 
+#define AGS_APPLICATION_CONTEXT_GET_OBJ_MUTEX(obj) (((AgsApplicationContext *) obj)->obj_mutex)
+
 #ifndef PACKAGE_VERSION
 #define AGS_VERSION "1.2.0"
 #else

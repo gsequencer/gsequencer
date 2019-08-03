@@ -44,6 +44,8 @@
 #define AGS_IS_CORE_AUDIO_PORT_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_CORE_AUDIO_PORT))
 #define AGS_CORE_AUDIO_PORT_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS(obj, AGS_TYPE_CORE_AUDIO_PORT, AgsCoreAudioPortClass))
 
+#define AGS_CORE_AUDIO_PORT_GET_OBJ_MUTEX(obj) (((AgsCoreAudioPort *) obj)->obj_mutex)
+
 #define AGS_CORE_AUDIO_PORT_DEFAULT_CACHE_BUFFER_SIZE (4096)
 
 typedef struct _AgsCoreAudioPort AgsCoreAudioPort;

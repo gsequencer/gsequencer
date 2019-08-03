@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -199,11 +199,7 @@ ags_recall_audio_run_set_property(GObject *gobject,
   recall_audio_run = AGS_RECALL_AUDIO_RUN(gobject);
 
   /* get recall mutex */
-  pthread_mutex_lock(ags_recall_get_class_mutex());
-  
-  recall_mutex = AGS_RECALL(gobject)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_recall_get_class_mutex());
+  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall_audio_run);
 
   switch(prop_id){
   case PROP_AUDIO:
@@ -279,11 +275,7 @@ ags_recall_audio_run_get_property(GObject *gobject,
   recall_audio_run = AGS_RECALL_AUDIO_RUN(gobject);
 
   /* get recall mutex */
-  pthread_mutex_lock(ags_recall_get_class_mutex());
-  
-  recall_mutex = AGS_RECALL(gobject)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_recall_get_class_mutex());
+  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall_audio_run);
 
   switch(prop_id){
   case PROP_AUDIO:
@@ -393,11 +385,7 @@ ags_recall_audio_run_notify_recall_container_callback(GObject *gobject,
   recall_audio_run = AGS_RECALL_AUDIO_RUN(gobject);
 
   /* get recall mutex */
-  pthread_mutex_lock(ags_recall_get_class_mutex());
-  
-  recall_mutex = AGS_RECALL(recall_audio_run)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_recall_get_class_mutex());
+  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall_audio_run);
 
   /* get some fields */
   pthread_mutex_lock(recall_mutex);
@@ -442,11 +430,7 @@ ags_recall_audio_run_duplicate(AgsRecall *recall,
   recall_audio_run = AGS_RECALL_AUDIO_RUN(recall);
 
   /* get recall mutex */
-  pthread_mutex_lock(ags_recall_get_class_mutex());
-  
-  recall_mutex = recall->obj_mutex;
-  
-  pthread_mutex_unlock(ags_recall_get_class_mutex());
+  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall_audio_run);
 
   /* get some fields */
   pthread_mutex_lock(recall_mutex);

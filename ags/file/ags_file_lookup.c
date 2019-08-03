@@ -213,11 +213,7 @@ ags_file_lookup_set_property(GObject *gobject,
   file_lookup = AGS_FILE_LOOKUP(gobject);
 
   /* get file id ref mutex */
-  pthread_mutex_lock(ags_file_lookup_get_class_mutex());
-  
-  file_lookup_mutex = file_lookup->obj_mutex;
-  
-  pthread_mutex_unlock(ags_file_lookup_get_class_mutex());
+  file_lookup_mutex = AGS_FILE_LOOKUP_GET_OBJ_MUTEX(file_lookup);
   
   switch(prop_id){
   case PROP_FILE:
@@ -292,11 +288,7 @@ ags_file_lookup_get_property(GObject *gobject,
   file_lookup = AGS_FILE_LOOKUP(gobject);
 
   /* get file id ref mutex */
-  pthread_mutex_lock(ags_file_lookup_get_class_mutex());
-  
-  file_lookup_mutex = file_lookup->obj_mutex;
-  
-  pthread_mutex_unlock(ags_file_lookup_get_class_mutex());
+  file_lookup_mutex = AGS_FILE_LOOKUP_GET_OBJ_MUTEX(file_lookup);
     
   switch(prop_id){
   case PROP_FILE:

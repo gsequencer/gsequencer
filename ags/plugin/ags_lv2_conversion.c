@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -23,8 +23,18 @@
 
 #include <math.h>
 
+#include <ags/i18n.h>
+
 void ags_lv2_conversion_class_init(AgsLv2ConversionClass *conversion);
 void ags_lv2_conversion_init (AgsLv2Conversion *conversion);
+void ags_lv2_conversion_set_property(GObject *gobject,
+				     guint prop_id,
+				     const GValue *value,
+				     GParamSpec *param_spec);
+void ags_lv2_conversion_get_property(GObject *gobject,
+				     guint prop_id,
+				     GValue *value,
+				     GParamSpec *param_spec);
 void ags_lv2_conversion_finalize(GObject *gobject);
 
 gdouble ags_lv2_conversion_convert(AgsConversion *conversion,
@@ -40,6 +50,13 @@ gdouble ags_lv2_conversion_convert(AgsConversion *conversion,
  *
  * The #AgsLv2Conversion converts values.
  */
+
+enum{
+  PROP_0,
+  PROP_LOWER,
+  PROP_UPPER,
+  PROP_STEP_COUNT,
+};
 
 static gpointer ags_lv2_conversion_parent_class = NULL;
 
@@ -86,7 +103,65 @@ ags_lv2_conversion_class_init(AgsLv2ConversionClass *lv2_conversion)
   /* GObjectClass */
   gobject = (GObjectClass *) lv2_conversion;
   
+  gobject->set_property = ags_lv2_conversion_set_property;
+  gobject->get_property = ags_lv2_conversion_get_property;
+
   gobject->finalize = ags_lv2_conversion_finalize;
+
+  /* properties */
+  /**
+   * AgsLv2Conversion:lower:
+   *
+   * The lower to be used.
+   * 
+   * Since: 2.2.8
+   */
+  param_spec = g_param_spec_double("lower",
+				   i18n_pspec("using lower"),
+				   i18n_pspec("The lower to be used"),
+				   -1.0 * G_MAXDOUBLE,
+				   G_MAXDOUBLE,
+				   AGS_LV2_CONVERSION_DEFAULT_LOWER,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_LOWER,
+				  param_spec);
+
+  /**
+   * AgsLv2Conversion:upper:
+   *
+   * The upper to be used.
+   * 
+   * Since: 2.2.8
+   */
+  param_spec = g_param_spec_double("upper",
+				   i18n_pspec("using upper"),
+				   i18n_pspec("The upper to be used"),
+				   -1.0 * G_MAXDOUBLE,
+				   G_MAXDOUBLE,
+				   AGS_LV2_CONVERSION_DEFAULT_UPPER,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_UPPER,
+				  param_spec);
+
+  /**
+   * AgsLv2Conversion:step-count:
+   *
+   * The step count to be used.
+   * 
+   * Since: 2.2.8
+   */
+  param_spec = g_param_spec_double("step-count",
+				   i18n_pspec("using step count"),
+				   i18n_pspec("The step count to be used"),
+				   0.0,
+				   G_MAXDOUBLE,
+				   AGS_LV2_CONVERSION_DEFAULT_STEP_COUNT,
+				   G_PARAM_READABLE | G_PARAM_WRITABLE);
+  g_object_class_install_property(gobject,
+				  PROP_STEP_COUNT,
+				  param_spec);
 
   /* AgsConversionClass */
   conversion = (AgsConversionClass *) lv2_conversion;
@@ -98,6 +173,11 @@ void
 ags_lv2_conversion_init(AgsLv2Conversion *lv2_conversion)
 {
   lv2_conversion->flags = 0;
+
+  lv2_conversion->lower = AGS_LV2_CONVERSION_DEFAULT_LOWER;
+  lv2_conversion->upper = AGS_LV2_CONVERSION_DEFAULT_UPPER;
+
+  lv2_conversion->step_count = AGS_LV2_CONVERSION_DEFAULT_STEP_COUNT;
 }
 
 void
@@ -105,6 +185,117 @@ ags_lv2_conversion_finalize(GObject *gobject)
 {
   /* call parent */
   G_OBJECT_CLASS(ags_lv2_conversion_parent_class)->finalize(gobject);
+}
+
+
+void
+ags_lv2_conversion_set_property(GObject *gobject,
+				guint prop_id,
+				const GValue *value,
+				GParamSpec *param_spec)
+{
+  AgsLv2Conversion *lv2_conversion;
+
+  pthread_mutex_t *conversion_mutex;
+
+  lv2_conversion = AGS_LV2_CONVERSION(gobject);
+
+  /* get base plugin mutex */
+  conversion_mutex = AGS_CONVERSION_GET_OBJ_MUTEX(lv2_conversion);
+
+  switch(prop_id){
+  case PROP_LOWER:
+  {
+    gdouble lower;
+
+    lower = g_value_get_double(value);
+
+    pthread_mutex_lock(conversion_mutex);
+
+    lv2_conversion->lower = lower;
+      
+    pthread_mutex_unlock(conversion_mutex);
+  }
+  break;
+  case PROP_UPPER:
+  {
+    gdouble upper;
+
+    upper = g_value_get_double(value);
+
+    pthread_mutex_lock(conversion_mutex);
+
+    lv2_conversion->upper = upper;
+      
+    pthread_mutex_unlock(conversion_mutex);
+  }
+  break;
+  case PROP_STEP_COUNT:
+  {
+    gdouble step_count;
+
+    step_count = g_value_get_double(value);
+
+    pthread_mutex_lock(conversion_mutex);
+
+    lv2_conversion->step_count = step_count;
+      
+    pthread_mutex_unlock(conversion_mutex);
+  }
+  break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
+}
+
+void
+ags_lv2_conversion_get_property(GObject *gobject,
+				guint prop_id,
+				GValue *value,
+				GParamSpec *param_spec)
+{
+  AgsLv2Conversion *lv2_conversion;
+
+  pthread_mutex_t *conversion_mutex;
+
+  lv2_conversion = AGS_LV2_CONVERSION(gobject);
+
+  /* get base plugin mutex */
+  conversion_mutex = AGS_CONVERSION_GET_OBJ_MUTEX(lv2_conversion);
+
+  switch(prop_id){
+  case PROP_LOWER:
+  {
+    pthread_mutex_lock(conversion_mutex);
+
+    g_value_set_double(value, lv2_conversion->lower);
+
+    pthread_mutex_unlock(conversion_mutex);
+  }
+  break;
+  case PROP_UPPER:
+  {
+    pthread_mutex_lock(conversion_mutex);
+
+    g_value_set_double(value, lv2_conversion->upper);
+
+    pthread_mutex_unlock(conversion_mutex);
+  }
+  break;
+  case PROP_STEP_COUNT:
+  {
+    pthread_mutex_lock(conversion_mutex);
+
+    g_value_set_double(value, lv2_conversion->step_count);
+
+    pthread_mutex_unlock(conversion_mutex);
+  }
+  break;
+  default:
+    G_OBJECT_WARN_INVALID_PROPERTY_ID(gobject, prop_id, param_spec);
+    break;
+  }
 }
 
 /**
@@ -130,11 +321,7 @@ ags_lv2_conversion_test_flags(AgsLv2Conversion *lv2_conversion, guint flags)
   }
   
   /* get base plugin mutex */
-  pthread_mutex_lock(ags_conversion_get_class_mutex());
-  
-  conversion_mutex = AGS_CONVERSION(lv2_conversion)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_conversion_get_class_mutex());
+  conversion_mutex = AGS_CONVERSION_GET_OBJ_MUTEX(lv2_conversion);
 
   /* test flags */
   pthread_mutex_lock(conversion_mutex);
@@ -165,11 +352,7 @@ ags_lv2_conversion_set_flags(AgsLv2Conversion *lv2_conversion, guint flags)
   }
   
   /* get base plugin mutex */
-  pthread_mutex_lock(ags_conversion_get_class_mutex());
-  
-  conversion_mutex = AGS_CONVERSION(lv2_conversion)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_conversion_get_class_mutex());
+  conversion_mutex = AGS_CONVERSION_GET_OBJ_MUTEX(lv2_conversion);
 
   /* set flags */
   pthread_mutex_lock(conversion_mutex);
@@ -198,11 +381,7 @@ ags_lv2_conversion_unset_flags(AgsLv2Conversion *lv2_conversion, guint flags)
   }
   
   /* get base plugin mutex */
-  pthread_mutex_lock(ags_conversion_get_class_mutex());
-  
-  conversion_mutex = AGS_CONVERSION(lv2_conversion)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_conversion_get_class_mutex());
+  conversion_mutex = AGS_CONVERSION_GET_OBJ_MUTEX(lv2_conversion);
 
   /* unset flags */
   pthread_mutex_lock(conversion_mutex);
@@ -214,24 +393,46 @@ ags_lv2_conversion_unset_flags(AgsLv2Conversion *lv2_conversion, guint flags)
 
 gdouble
 ags_lv2_conversion_convert(AgsConversion *conversion,
-			   gdouble value,
+			   gdouble x,
 			   gboolean reverse)
 {
   AgsLv2Conversion *lv2_conversion;
 
+  gdouble value, step;
+  gdouble upper, lower, step_count;
+  gdouble retval;
+
   lv2_conversion = AGS_LV2_CONVERSION(conversion);
 
+  retval = x;
+  
   if(reverse){
     if(ags_lv2_conversion_test_flags(lv2_conversion, AGS_LV2_CONVERSION_LOGARITHMIC)){
-      value = log(value);
+      g_object_get(lv2_conversion,
+		   "lower", &lower,
+		   "upper", &upper,
+		   "step_count", &step_count,
+		   NULL);      
+
+      value = x;
+      step =
+	retval = (step_count - 1) * log(value / lower) / log(upper / lower);
     }
   }else{
     if(ags_lv2_conversion_test_flags(lv2_conversion, AGS_LV2_CONVERSION_LOGARITHMIC)){
-      value = exp(value);
+      g_object_get(lv2_conversion,
+		   "lower", &lower,
+		   "upper", &upper,
+		   "step_count", &step_count,
+		   NULL);      
+
+      step = x;
+      value = 
+	retval = lower * pow(upper / lower, step / (step_count - 1));
     }
   }
   
-  return(value);
+  return(retval);
 }
 
 /**

@@ -373,6 +373,8 @@ ags_automation_toolbar_port_callback(GtkComboBox *combo_box,
 		     2, &control_name,
 		     -1);
 
+  channel_type = G_TYPE_NONE;
+  
   if(!g_strcmp0("audio",
 		scope)){
     channel_type = G_TYPE_NONE;

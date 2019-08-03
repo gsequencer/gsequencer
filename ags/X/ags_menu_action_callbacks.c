@@ -1147,17 +1147,17 @@ ags_menu_action_add_live_lv2_bridge_callback(GtkWidget *menu_item, gpointer data
 
   gui_thread = ags_ui_provider_get_gui_thread(AGS_UI_PROVIDER(application_context));
 
-  /* create live lv2 bridge */  
+  /* create live lv2 bridge */    
   lv2_plugin = ags_lv2_manager_find_lv2_plugin(ags_lv2_manager_get_instance(),
 					       filename, effect);
-  
+
   if(lv2_plugin != NULL &&
      AGS_BASE_PLUGIN(lv2_plugin)->plugin_port == NULL){
     AgsLv2TurtleParser *lv2_turtle_parser;
 	
     AgsTurtle *manifest;
     AgsTurtle **turtle;
-	
+
     guint n_turtle;
 
     g_object_get(lv2_plugin,
@@ -1182,7 +1182,7 @@ ags_menu_action_add_live_lv2_bridge_callback(GtkWidget *menu_item, gpointer data
 	
     free(turtle);
   }
-
+  
   live_lv2_bridge = ags_live_lv2_bridge_new(G_OBJECT(window->soundcard),
 					    filename,
 					    effect);

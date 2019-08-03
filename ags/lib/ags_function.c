@@ -568,6 +568,7 @@ ags_function_literal_solve(AgsFunction *function)
       offset = g_strdup(transformed_function);
     close_offset = NULL;
 
+    close_paranthesis = NULL;
     regexec_result = 0;
     
     while(regexec_result != REG_NOMATCH){

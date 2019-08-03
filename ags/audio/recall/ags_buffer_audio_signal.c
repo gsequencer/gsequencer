@@ -160,13 +160,14 @@ ags_buffer_audio_signal_run_init_pre(AgsRecall *recall)
   buffer_audio_signal = AGS_BUFFER_AUDIO_SIGNAL(recall);
 
   /* get mutex */
-  pthread_mutex_lock(ags_recall_get_class_mutex());
+  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall);
 
-  recall_mutex = recall->obj_mutex;
-  
+  /* get parent class */
+  AGS_RECALL_LOCK_CLASS();
+
   parent_class_run_init_pre = AGS_RECALL_CLASS(ags_buffer_audio_signal_parent_class)->run_init_pre;
 
-  pthread_mutex_unlock(ags_recall_get_class_mutex());
+  AGS_RECALL_UNLOCK_CLASS()
 
   /* get some fields */
   g_object_get(buffer_audio_signal,
@@ -306,13 +307,14 @@ ags_buffer_audio_signal_run_inter(AgsRecall *recall)
   buffer_audio_signal = AGS_BUFFER_AUDIO_SIGNAL(recall);
 
   /* get mutex */
-  pthread_mutex_lock(ags_recall_get_class_mutex());
+  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall);
 
-  recall_mutex = recall->obj_mutex;
-  
+  /* get parent class */
+  AGS_RECALL_LOCK_CLASS();
+
   parent_class_run_inter = AGS_RECALL_CLASS(ags_buffer_audio_signal_parent_class)->run_inter;
 
-  pthread_mutex_unlock(ags_recall_get_class_mutex());
+  AGS_RECALL_UNLOCK_CLASS()
 
   /* call parent */
   parent_class_run_inter(recall);

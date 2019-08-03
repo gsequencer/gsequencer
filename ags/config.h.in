@@ -27,8 +27,8 @@
 /* rt enabled */
 #undef AGS_WITH_RT
 
-/* VST enabled */
-#undef AGS_WITH_VST
+/* VST3 enabled */
+#undef AGS_WITH_VST3
 
 /* Disable if you don't want xmlrpc-c */
 #undef AGS_WITH_XMLRPC_C

@@ -519,6 +519,7 @@ ags_select_acceleration_dialog_apply(AgsApplicable *applicable)
   }
 
   notebook = NULL;
+  channel_type = G_TYPE_NONE;
 
   if(automation_editor->focused_automation_edit->channel_type == G_TYPE_NONE){
     notebook = NULL;
@@ -550,6 +551,8 @@ ags_select_acceleration_dialog_apply(AgsApplicable *applicable)
   
   specifier = NULL;
 
+  audio_node = NULL;
+  
   if(copy_selection){
     /* create document */
     clipboard = xmlNewDoc(BAD_CAST XML_DEFAULT_VERSION);

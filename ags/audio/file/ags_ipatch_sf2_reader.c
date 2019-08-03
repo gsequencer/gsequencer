@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -238,11 +238,7 @@ ags_ipatch_sf2_reader_set_property(GObject *gobject,
   ipatch_sf2_reader = AGS_IPATCH_SF2_READER(gobject);
 
   /* get ipatch sample mutex */
-  pthread_mutex_lock(ags_ipatch_sf2_reader_get_class_mutex());
-  
-  ipatch_sf2_reader_mutex = ipatch_sf2_reader->obj_mutex;
-  
-  pthread_mutex_unlock(ags_ipatch_sf2_reader_get_class_mutex());
+  ipatch_sf2_reader_mutex = AGS_IPATCH_SF2_READER_GET_OBJ_MUTEX(ipatch_sf2_reader);
 
   switch(prop_id){
   case PROP_IPATCH:
@@ -291,11 +287,7 @@ ags_ipatch_sf2_reader_get_property(GObject *gobject,
   ipatch_sf2_reader = AGS_IPATCH_SF2_READER(gobject);
 
   /* get ipatch sample mutex */
-  pthread_mutex_lock(ags_ipatch_sf2_reader_get_class_mutex());
-  
-  ipatch_sf2_reader_mutex = ipatch_sf2_reader->obj_mutex;
-  
-  pthread_mutex_unlock(ags_ipatch_sf2_reader_get_class_mutex());
+  ipatch_sf2_reader_mutex = AGS_IPATCH_SF2_READER_GET_OBJ_MUTEX(ipatch_sf2_reader);
 
   switch(prop_id){
   case PROP_IPATCH:
@@ -363,11 +355,7 @@ ags_ipatch_sf2_reader_get_uuid(AgsConnectable *connectable)
   ipatch_sf2_reader = AGS_IPATCH_SF2_READER(connectable);
 
   /* get audio file mutex */
-  pthread_mutex_lock(ags_ipatch_sf2_reader_get_class_mutex());
-  
-  ipatch_sf2_reader_mutex = ipatch_sf2_reader->obj_mutex;
-  
-  pthread_mutex_unlock(ags_ipatch_sf2_reader_get_class_mutex());
+  ipatch_sf2_reader_mutex = AGS_IPATCH_SF2_READER_GET_OBJ_MUTEX(ipatch_sf2_reader);
 
   /* get UUID */
   pthread_mutex_lock(ipatch_sf2_reader_mutex);
@@ -397,11 +385,7 @@ ags_ipatch_sf2_reader_is_ready(AgsConnectable *connectable)
   ipatch_sf2_reader = AGS_IPATCH_SF2_READER(connectable);
 
   /* get audio file mutex */
-  pthread_mutex_lock(ags_ipatch_sf2_reader_get_class_mutex());
-  
-  ipatch_sf2_reader_mutex = ipatch_sf2_reader->obj_mutex;
-  
-  pthread_mutex_unlock(ags_ipatch_sf2_reader_get_class_mutex());
+  ipatch_sf2_reader_mutex = AGS_IPATCH_SF2_READER_GET_OBJ_MUTEX(ipatch_sf2_reader);
 
   /* check is ready */
   pthread_mutex_lock(ipatch_sf2_reader_mutex);
@@ -497,11 +481,7 @@ ags_ipatch_sf2_reader_is_connected(AgsConnectable *connectable)
   ipatch_sf2_reader = AGS_IPATCH_SF2_READER(connectable);
 
   /* get audio file mutex */
-  pthread_mutex_lock(ags_ipatch_sf2_reader_get_class_mutex());
-  
-  ipatch_sf2_reader_mutex = ipatch_sf2_reader->obj_mutex;
-  
-  pthread_mutex_unlock(ags_ipatch_sf2_reader_get_class_mutex());
+  ipatch_sf2_reader_mutex = AGS_IPATCH_SF2_READER_GET_OBJ_MUTEX(ipatch_sf2_reader);
 
   /* check is connected */
   pthread_mutex_lock(ipatch_sf2_reader_mutex);
@@ -579,11 +559,7 @@ ags_ipatch_sf2_reader_test_flags(AgsIpatchSF2Reader *ipatch_sf2_reader, guint fl
   }
 
   /* get ipatch_sf2_reader mutex */
-  pthread_mutex_lock(ags_ipatch_sf2_reader_get_class_mutex());
-  
-  ipatch_sf2_reader_mutex = ipatch_sf2_reader->obj_mutex;
-  
-  pthread_mutex_unlock(ags_ipatch_sf2_reader_get_class_mutex());
+  ipatch_sf2_reader_mutex = AGS_IPATCH_SF2_READER_GET_OBJ_MUTEX(ipatch_sf2_reader);
 
   /* test */
   pthread_mutex_lock(ipatch_sf2_reader_mutex);
@@ -614,11 +590,7 @@ ags_ipatch_sf2_reader_set_flags(AgsIpatchSF2Reader *ipatch_sf2_reader, guint fla
   }
 
   /* get ipatch_sf2_reader mutex */
-  pthread_mutex_lock(ags_ipatch_sf2_reader_get_class_mutex());
-  
-  ipatch_sf2_reader_mutex = ipatch_sf2_reader->obj_mutex;
-  
-  pthread_mutex_unlock(ags_ipatch_sf2_reader_get_class_mutex());
+  ipatch_sf2_reader_mutex = AGS_IPATCH_SF2_READER_GET_OBJ_MUTEX(ipatch_sf2_reader);
 
   //TODO:JK: add more?
 
@@ -649,11 +621,7 @@ ags_ipatch_sf2_reader_unset_flags(AgsIpatchSF2Reader *ipatch_sf2_reader, guint f
   }
 
   /* get ipatch_sf2_reader mutex */
-  pthread_mutex_lock(ags_ipatch_sf2_reader_get_class_mutex());
-  
-  ipatch_sf2_reader_mutex = ipatch_sf2_reader->obj_mutex;
-  
-  pthread_mutex_unlock(ags_ipatch_sf2_reader_get_class_mutex());
+  ipatch_sf2_reader_mutex = AGS_IPATCH_SF2_READER_GET_OBJ_MUTEX(ipatch_sf2_reader);
 
   //TODO:JK: add more?
 

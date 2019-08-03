@@ -326,11 +326,7 @@ ags_ipatch_set_property(GObject *gobject,
   ipatch = AGS_IPATCH(gobject);
 
   /* get audio file mutex */
-  pthread_mutex_lock(ags_ipatch_get_class_mutex());
-  
-  ipatch_mutex = ipatch->obj_mutex;
-  
-  pthread_mutex_unlock(ags_ipatch_get_class_mutex());
+  ipatch_mutex = AGS_IPATCH_GET_OBJ_MUTEX(ipatch);
 
   switch(prop_id){
   case PROP_SOUNDCARD:
@@ -427,11 +423,7 @@ ags_ipatch_get_property(GObject *gobject,
   ipatch = AGS_IPATCH(gobject);
 
   /* get audio file mutex */
-  pthread_mutex_lock(ags_ipatch_get_class_mutex());
-  
-  ipatch_mutex = ipatch->obj_mutex;
-  
-  pthread_mutex_unlock(ags_ipatch_get_class_mutex());
+  ipatch_mutex = AGS_IPATCH_GET_OBJ_MUTEX(ipatch);
 
   switch(prop_id){
   case PROP_SOUNDCARD:
@@ -510,11 +502,7 @@ ags_ipatch_get_uuid(AgsConnectable *connectable)
   ipatch = AGS_IPATCH(connectable);
 
   /* get audio file mutex */
-  pthread_mutex_lock(ags_ipatch_get_class_mutex());
-  
-  ipatch_mutex = ipatch->obj_mutex;
-  
-  pthread_mutex_unlock(ags_ipatch_get_class_mutex());
+  ipatch_mutex = AGS_IPATCH_GET_OBJ_MUTEX(ipatch);
 
   /* get UUID */
   pthread_mutex_lock(ipatch_mutex);
@@ -544,11 +532,7 @@ ags_ipatch_is_ready(AgsConnectable *connectable)
   ipatch = AGS_IPATCH(connectable);
 
   /* get audio file mutex */
-  pthread_mutex_lock(ags_ipatch_get_class_mutex());
-  
-  ipatch_mutex = ipatch->obj_mutex;
-  
-  pthread_mutex_unlock(ags_ipatch_get_class_mutex());
+  ipatch_mutex = AGS_IPATCH_GET_OBJ_MUTEX(ipatch);
 
   /* check is ready */
   pthread_mutex_lock(ipatch_mutex);
@@ -644,11 +628,7 @@ ags_ipatch_is_connected(AgsConnectable *connectable)
   ipatch = AGS_IPATCH(connectable);
 
   /* get audio file mutex */
-  pthread_mutex_lock(ags_ipatch_get_class_mutex());
-  
-  ipatch_mutex = ipatch->obj_mutex;
-  
-  pthread_mutex_unlock(ags_ipatch_get_class_mutex());
+  ipatch_mutex = AGS_IPATCH_GET_OBJ_MUTEX(ipatch);
 
   /* check is connected */
   pthread_mutex_lock(ipatch_mutex);
@@ -726,11 +706,7 @@ ags_ipatch_test_flags(AgsIpatch *ipatch, guint flags)
   }
 
   /* get ipatch mutex */
-  pthread_mutex_lock(ags_ipatch_get_class_mutex());
-  
-  ipatch_mutex = ipatch->obj_mutex;
-  
-  pthread_mutex_unlock(ags_ipatch_get_class_mutex());
+  ipatch_mutex = AGS_IPATCH_GET_OBJ_MUTEX(ipatch);
 
   /* test */
   pthread_mutex_lock(ipatch_mutex);
@@ -761,11 +737,7 @@ ags_ipatch_set_flags(AgsIpatch *ipatch, guint flags)
   }
 
   /* get ipatch mutex */
-  pthread_mutex_lock(ags_ipatch_get_class_mutex());
-  
-  ipatch_mutex = ipatch->obj_mutex;
-  
-  pthread_mutex_unlock(ags_ipatch_get_class_mutex());
+  ipatch_mutex = AGS_IPATCH_GET_OBJ_MUTEX(ipatch);
 
   //TODO:JK: add more?
 
@@ -796,11 +768,7 @@ ags_ipatch_unset_flags(AgsIpatch *ipatch, guint flags)
   }
 
   /* get ipatch mutex */
-  pthread_mutex_lock(ags_ipatch_get_class_mutex());
-  
-  ipatch_mutex = ipatch->obj_mutex;
-  
-  pthread_mutex_unlock(ags_ipatch_get_class_mutex());
+  ipatch_mutex = AGS_IPATCH_GET_OBJ_MUTEX(ipatch);
 
   //TODO:JK: add more?
 
@@ -835,11 +803,7 @@ ags_ipatch_open(AgsSoundContainer *sound_container, gchar *filename)
   ipatch = AGS_IPATCH(sound_container);
 
   /* get ipatch mutex */
-  pthread_mutex_lock(ags_ipatch_get_class_mutex());
-  
-  ipatch_mutex = ipatch->obj_mutex;
-  
-  pthread_mutex_unlock(ags_ipatch_get_class_mutex());
+  ipatch_mutex = AGS_IPATCH_GET_OBJ_MUTEX(ipatch);
 
   /* get some fields */
   pthread_mutex_lock(ipatch_mutex);
@@ -959,11 +923,7 @@ ags_ipatch_get_nesting_level(AgsSoundContainer *sound_container)
   ipatch = AGS_IPATCH(sound_container);
 
   /* get ipatch mutex */
-  pthread_mutex_lock(ags_ipatch_get_class_mutex());
-  
-  ipatch_mutex = ipatch->obj_mutex;
-  
-  pthread_mutex_unlock(ags_ipatch_get_class_mutex());
+  ipatch_mutex = AGS_IPATCH_GET_OBJ_MUTEX(ipatch);
 
   /* get nesting level */
   pthread_mutex_lock(ipatch_mutex);
@@ -987,11 +947,7 @@ ags_ipatch_get_level_id(AgsSoundContainer *sound_container)
   ipatch = AGS_IPATCH(sound_container);
 
   /* get ipatch mutex */
-  pthread_mutex_lock(ags_ipatch_get_class_mutex());
-  
-  ipatch_mutex = ipatch->obj_mutex;
-  
-  pthread_mutex_unlock(ags_ipatch_get_class_mutex());
+  ipatch_mutex = AGS_IPATCH_GET_OBJ_MUTEX(ipatch);
 
   /* get level id */
   pthread_mutex_lock(ipatch_mutex);
@@ -1015,11 +971,7 @@ ags_ipatch_get_level_index(AgsSoundContainer *sound_container)
   ipatch = AGS_IPATCH(sound_container);
 
   /* get ipatch mutex */
-  pthread_mutex_lock(ags_ipatch_get_class_mutex());
-  
-  ipatch_mutex = ipatch->obj_mutex;
-  
-  pthread_mutex_unlock(ags_ipatch_get_class_mutex());
+  ipatch_mutex = AGS_IPATCH_GET_OBJ_MUTEX(ipatch);
   
   /* get nesting level */
   pthread_mutex_lock(ipatch_mutex);
@@ -1043,11 +995,7 @@ ags_ipatch_get_sublevel_name(AgsSoundContainer *sound_container)
   ipatch = AGS_IPATCH(sound_container);
 
   /* get ipatch mutex */
-  pthread_mutex_lock(ags_ipatch_get_class_mutex());
-  
-  ipatch_mutex = ipatch->obj_mutex;
-  
-  pthread_mutex_unlock(ags_ipatch_get_class_mutex());
+  ipatch_mutex = AGS_IPATCH_GET_OBJ_MUTEX(ipatch);
 
   /* sublevel */
   sublevel = ags_sound_container_get_nesting_level(AGS_SOUND_CONTAINER(ipatch));
@@ -1174,11 +1122,7 @@ ags_ipatch_level_up(AgsSoundContainer *sound_container,
   ipatch = AGS_IPATCH(sound_container);
 
   /* get ipatch mutex */
-  pthread_mutex_lock(ags_ipatch_get_class_mutex());
-  
-  ipatch_mutex = ipatch->obj_mutex;
-  
-  pthread_mutex_unlock(ags_ipatch_get_class_mutex());
+  ipatch_mutex = AGS_IPATCH_GET_OBJ_MUTEX(ipatch);
 
   /* check boundaries */
   if(ags_sound_container_get_nesting_level(AGS_SOUND_CONTAINER(ipatch)) >= level_count){
@@ -1225,11 +1169,7 @@ ags_ipatch_select_level_by_index(AgsSoundContainer *sound_container,
   ipatch = AGS_IPATCH(sound_container);
 
   /* get ipatch mutex */
-  pthread_mutex_lock(ags_ipatch_get_class_mutex());
-  
-  ipatch_mutex = ipatch->obj_mutex;
-  
-  pthread_mutex_unlock(ags_ipatch_get_class_mutex());
+  ipatch_mutex = AGS_IPATCH_GET_OBJ_MUTEX(ipatch);
 
   /* sublevel */
   sublevel = ags_sound_container_get_nesting_level(AGS_SOUND_CONTAINER(ipatch));
@@ -1402,11 +1342,7 @@ ags_ipatch_get_resource_current(AgsSoundContainer *sound_container)
   ipatch = AGS_IPATCH(sound_container);
 
   /* get ipatch mutex */
-  pthread_mutex_lock(ags_ipatch_get_class_mutex());
-  
-  ipatch_mutex = ipatch->obj_mutex;
-  
-  pthread_mutex_unlock(ags_ipatch_get_class_mutex());
+  ipatch_mutex = AGS_IPATCH_GET_OBJ_MUTEX(ipatch);
 
   /* get sound resource */
   sound_resource = NULL;

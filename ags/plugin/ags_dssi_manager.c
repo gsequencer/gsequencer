@@ -313,11 +313,7 @@ ags_dssi_manager_get_filenames(AgsDssiManager *dssi_manager)
   }
   
   /* get dssi manager mutex */
-  pthread_mutex_lock(ags_dssi_manager_get_class_mutex());
-  
-  dssi_manager_mutex = dssi_manager->obj_mutex;
-  
-  pthread_mutex_unlock(ags_dssi_manager_get_class_mutex());
+  dssi_manager_mutex = AGS_DSSI_MANAGER_GET_OBJ_MUTEX(dssi_manager);
 
   /* collect */
   pthread_mutex_lock(dssi_manager_mutex);
@@ -333,11 +329,7 @@ ags_dssi_manager_get_filenames(AgsDssiManager *dssi_manager)
     gchar *filename;
     
     /* get base plugin mutex */
-    pthread_mutex_lock(ags_base_plugin_get_class_mutex());
-  
-    base_plugin_mutex = AGS_BASE_PLUGIN(dssi_plugin->data)->obj_mutex;
-    
-    pthread_mutex_unlock(ags_base_plugin_get_class_mutex());
+    base_plugin_mutex = AGS_BASE_PLUGIN_GET_OBJ_MUTEX(dssi_plugin->data);
 
     /* duplicate filename */
     pthread_mutex_lock(base_plugin_mutex);
@@ -416,11 +408,7 @@ ags_dssi_manager_find_dssi_plugin(AgsDssiManager *dssi_manager,
   }
   
   /* get dssi manager mutex */
-  pthread_mutex_lock(ags_dssi_manager_get_class_mutex());
-  
-  dssi_manager_mutex = dssi_manager->obj_mutex;
-  
-  pthread_mutex_unlock(ags_dssi_manager_get_class_mutex());
+  dssi_manager_mutex = AGS_DSSI_MANAGER_GET_OBJ_MUTEX(dssi_manager);
 
   /* collect */
   pthread_mutex_lock(dssi_manager_mutex);
@@ -436,11 +424,7 @@ ags_dssi_manager_find_dssi_plugin(AgsDssiManager *dssi_manager,
     dssi_plugin = AGS_DSSI_PLUGIN(list->data);
 
     /* get base plugin mutex */
-    pthread_mutex_lock(ags_base_plugin_get_class_mutex());
-  
-    base_plugin_mutex = AGS_BASE_PLUGIN(dssi_plugin)->obj_mutex;
-    
-    pthread_mutex_unlock(ags_base_plugin_get_class_mutex());
+    base_plugin_mutex = AGS_BASE_PLUGIN_GET_OBJ_MUTEX(dssi_plugin);
 
     /* check filename and effect */
     pthread_mutex_lock(base_plugin_mutex);
@@ -489,11 +473,7 @@ ags_dssi_manager_load_blacklist(AgsDssiManager *dssi_manager,
   } 
   
   /* get dssi manager mutex */
-  pthread_mutex_lock(ags_dssi_manager_get_class_mutex());
-  
-  dssi_manager_mutex = dssi_manager->obj_mutex;
-  
-  pthread_mutex_unlock(ags_dssi_manager_get_class_mutex());
+  dssi_manager_mutex = AGS_DSSI_MANAGER_GET_OBJ_MUTEX(dssi_manager);
 
   /* fill in */
   pthread_mutex_lock(dssi_manager_mutex);
@@ -551,11 +531,7 @@ ags_dssi_manager_load_file(AgsDssiManager *dssi_manager,
   }
   
   /* get dssi manager mutex */
-  pthread_mutex_lock(ags_dssi_manager_get_class_mutex());
-  
-  dssi_manager_mutex = dssi_manager->obj_mutex;
-  
-  pthread_mutex_unlock(ags_dssi_manager_get_class_mutex());
+  dssi_manager_mutex = AGS_DSSI_MANAGER_GET_OBJ_MUTEX(dssi_manager);
 
   /* load */
   pthread_mutex_lock(dssi_manager_mutex);

@@ -17,58 +17,26 @@
  * along with GSequencer.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <ags/vst3-capi/plugininterfaces/base/ags_vst_ibstream.h>
+#include <ags/vst3-capi/pluginterfaces/base/ags_vst_ibstream.h>
 
-#include <plugininterfaces/base/ibstream.h>
+#include <pluginterfaces/base/ibstream.h>
 
 extern "C" {
 
-  AgsVstTUID
+  AgsVstTUID*
   ags_vst_ibstream_get_iid()
   {
-    return(IBStream__iid);
+    extern const Steinberg::TUID IBStream__iid;
+
+    return((AgsVstTUID *) (&IBStream__iid));
   }
 
-  gint32 ags_vst_ibstream_read(AgsVstIBStream *ibstream,
-			       void *buffer, gint32 num_bytes, gint32 *num_bytes_read)
-  {
-    return(ibstream->read(buffer, num_bytes, num_bytes_read));
-  }
-	
-  gint32 ags_vst_ibstream_write(AgsVstIBStream *ibstream,
-				void *buffer, gint32 num_bytes, gint32 *num_bytes_written)
-  {
-    return(ibstream->write(buffer, num_bytes, num_bytes_read)));
-  }
-	
-  gint32 ags_vst_ibstream_seek(AgsVstIBStream *ibstream,
-			       gint64 pos, gint32 mode, gint64 *result)
-  {
-    return(ibstream->seek(pos, mode, result));
-  }
-
-  gint32 ags_vst_ibstream_tell(AgsVstIBStream *ibstream,
-			       gint64 *pos)
-  {
-    return(ibstream->tell(pos));
-  }
-
-  AgsVstTUID
+  AgsVstTUID*
   ags_vst_isizeable_stream_get_iid()
   {
-    return(ISizeableStream__iid);
-  }
-    
-  gint32 ags_vst_isizeable_stream_get_stream_size(AgsVstISizeableStream *isizeable_stream,
-						  gint64 *size)
-  {
-    return(ibstream->getStreamSize(size));
-  }
+    extern const Steinberg::TUID ISizeableStream__iid;
 
-  gint32 ags_vst_isizeable_stream_set_stream_size(AgsVstISizeableStream *isizeable_stream,
-						  gint64 size)
-  {
-    return(ibstream->setStreamSize(size));
+    return((AgsVstTUID *) (&ISizeableStream__iid));
   }
 
 }

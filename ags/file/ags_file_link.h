@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2015 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -29,6 +29,8 @@
 #define AGS_IS_FILE_LINK(obj)             (G_TYPE_CHECK_INSTANCE_TYPE ((obj), AGS_TYPE_FILE_LINK))
 #define AGS_IS_FILE_LINK_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_FILE_LINK))
 #define AGS_FILE_LINK_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS(obj, AGS_TYPE_FILE_LINK, AgsFileLinkClass))
+
+#define AGS_FILE_LINK_GET_OBJ_MUTEX(obj) (((AgsFileLink *) obj)->obj_mutex)
 
 #define AGS_FILE_LINK_DEFAULT_VERSION "0.7.0"
 #define AGS_FILE_LINK_DEFAULT_BUILD_ID "CEST 13-10-2015 15:53"

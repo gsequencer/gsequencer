@@ -318,11 +318,7 @@ ags_ladspa_manager_get_filenames(AgsLadspaManager *ladspa_manager)
   }
   
   /* get ladspa manager mutex */
-  pthread_mutex_lock(ags_ladspa_manager_get_class_mutex());
-  
-  ladspa_manager_mutex = ladspa_manager->obj_mutex;
-  
-  pthread_mutex_unlock(ags_ladspa_manager_get_class_mutex());
+  ladspa_manager_mutex = AGS_LADSPA_MANAGER_GET_OBJ_MUTEX(ladspa_manager);
 
   /* collect */
   pthread_mutex_lock(ladspa_manager_mutex);
@@ -338,11 +334,7 @@ ags_ladspa_manager_get_filenames(AgsLadspaManager *ladspa_manager)
     gchar *filename;
     
     /* get base plugin mutex */
-    pthread_mutex_lock(ags_base_plugin_get_class_mutex());
-  
-    base_plugin_mutex = AGS_BASE_PLUGIN(ladspa_plugin->data)->obj_mutex;
-    
-    pthread_mutex_unlock(ags_base_plugin_get_class_mutex());
+    base_plugin_mutex = AGS_BASE_PLUGIN_GET_OBJ_MUTEX(ladspa_plugin->data);
 
     /* duplicate filename */
     pthread_mutex_lock(base_plugin_mutex);
@@ -420,11 +412,7 @@ ags_ladspa_manager_find_ladspa_plugin(AgsLadspaManager *ladspa_manager,
   }
   
   /* get ladspa manager mutex */
-  pthread_mutex_lock(ags_ladspa_manager_get_class_mutex());
-  
-  ladspa_manager_mutex = ladspa_manager->obj_mutex;
-  
-  pthread_mutex_unlock(ags_ladspa_manager_get_class_mutex());
+  ladspa_manager_mutex = AGS_LADSPA_MANAGER_GET_OBJ_MUTEX(ladspa_manager);
 
   /* collect */
   pthread_mutex_lock(ladspa_manager_mutex);
@@ -440,11 +428,7 @@ ags_ladspa_manager_find_ladspa_plugin(AgsLadspaManager *ladspa_manager,
     ladspa_plugin = AGS_LADSPA_PLUGIN(list->data);
 
     /* get base plugin mutex */
-    pthread_mutex_lock(ags_base_plugin_get_class_mutex());
-  
-    base_plugin_mutex = AGS_BASE_PLUGIN(ladspa_plugin)->obj_mutex;
-    
-    pthread_mutex_unlock(ags_base_plugin_get_class_mutex());
+    base_plugin_mutex = AGS_BASE_PLUGIN_GET_OBJ_MUTEX(ladspa_plugin);
 
     /* check filename and effect */
     pthread_mutex_lock(base_plugin_mutex);
@@ -493,11 +477,7 @@ ags_ladspa_manager_load_blacklist(AgsLadspaManager *ladspa_manager,
   }
   
   /* get ladspa manager mutex */
-  pthread_mutex_lock(ags_ladspa_manager_get_class_mutex());
-  
-  ladspa_manager_mutex = ladspa_manager->obj_mutex;
-  
-  pthread_mutex_unlock(ags_ladspa_manager_get_class_mutex());
+  ladspa_manager_mutex = AGS_LADSPA_MANAGER_GET_OBJ_MUTEX(ladspa_manager);
 
   /* fill in */
   pthread_mutex_lock(ladspa_manager_mutex);
@@ -555,11 +535,7 @@ ags_ladspa_manager_load_file(AgsLadspaManager *ladspa_manager,
   }
   
   /* get ladspa manager mutex */
-  pthread_mutex_lock(ags_ladspa_manager_get_class_mutex());
-  
-  ladspa_manager_mutex = ladspa_manager->obj_mutex;
-  
-  pthread_mutex_unlock(ags_ladspa_manager_get_class_mutex());
+  ladspa_manager_mutex = AGS_LADSPA_MANAGER_GET_OBJ_MUTEX(ladspa_manager);
 
   /* load */
   pthread_mutex_lock(ladspa_manager_mutex);

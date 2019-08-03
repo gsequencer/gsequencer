@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2017 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -255,6 +255,12 @@ ags_wave_edit_init(AgsWaveEdit *wave_edit)
 {
   GtkAdjustment *adjustment;
 
+  AgsConfig *config;
+
+  gchar *str;
+  
+  gdouble gui_scale_factor;
+
   g_object_set(wave_edit,
 	       "can-focus", FALSE,
 	       "n-columns", 3,
@@ -268,13 +274,29 @@ ags_wave_edit_init(AgsWaveEdit *wave_edit)
   wave_edit->button_mask = 0;
   wave_edit->key_mask = 0;
 
+  config = ags_config_get_instance();
+  
+  /* scale factor */
+  gui_scale_factor = 1.0;
+  
+  str = ags_config_get_value(config,
+			     AGS_CONFIG_GENERIC,
+			     "gui-scale");
+
+  if(str != NULL){
+    gui_scale_factor = g_ascii_strtod(str,
+				      NULL);
+
+    g_free(str);
+  }
+
   wave_edit->line = 0;
   
   wave_edit->note_offset = 0;
   wave_edit->note_offset_absolute = 0;
 
-  wave_edit->control_width = AGS_WAVE_EDIT_DEFAULT_CONTROL_WIDTH;
-  wave_edit->control_height = AGS_WAVE_EDIT_DEFAULT_CONTROL_HEIGHT;
+  wave_edit->control_width = (guint) (gui_scale_factor * AGS_WAVE_EDIT_DEFAULT_CONTROL_WIDTH);
+  wave_edit->control_height = (guint) (gui_scale_factor * AGS_WAVE_EDIT_DEFAULT_CONTROL_HEIGHT);
   
   wave_edit->cursor_position_x = AGS_WAVE_EDIT_DEFAULT_CURSOR_POSITION_X;
   wave_edit->cursor_position_y = AGS_WAVE_EDIT_DEFAULT_CURSOR_POSITION_Y;
@@ -290,8 +312,14 @@ ags_wave_edit_init(AgsWaveEdit *wave_edit)
 
   wave_edit->ruler = ags_ruler_new();
   g_object_set(wave_edit->ruler,
+	       "step", (guint) (gui_scale_factor * AGS_RULER_DEFAULT_STEP),
+	       "large-step", (guint) (gui_scale_factor * AGS_RULER_DEFAULT_LARGE_STEP),
+	       "small-step", (guint) (gui_scale_factor * AGS_RULER_DEFAULT_SMALL_STEP),
 	       "no-show-all", TRUE,
 	       NULL);
+  gtk_widget_set_size_request((GtkWidget *) wave_edit->ruler,
+			      -1,
+			      (gint) (gui_scale_factor * AGS_RULER_DEFAULT_HEIGHT));
   gtk_table_attach(GTK_TABLE(wave_edit),
 		   (GtkWidget *) wave_edit->ruler,
 		   0, 1,
@@ -319,7 +347,7 @@ ags_wave_edit_init(AgsWaveEdit *wave_edit)
 			   TRUE);
     
   gtk_widget_set_size_request((GtkWidget *) wave_edit->drawing_area,
-			      -1, AGS_LEVEL_DEFAULT_HEIGHT);
+			      -1, (gint) (gui_scale_factor * AGS_LEVEL_DEFAULT_LEVEL_HEIGHT));
   gtk_table_attach(GTK_TABLE(wave_edit),
 		   (GtkWidget *) wave_edit->drawing_area,
 		   0, 1,
@@ -338,7 +366,7 @@ ags_wave_edit_init(AgsWaveEdit *wave_edit)
 	       "no-show-all", TRUE,
 	       NULL);
   gtk_widget_set_size_request((GtkWidget *) wave_edit->vscrollbar,
-			      -1, AGS_LEVEL_DEFAULT_HEIGHT);
+			      -1, (gint) (gui_scale_factor * AGS_LEVEL_DEFAULT_LEVEL_HEIGHT));
   gtk_table_attach(GTK_TABLE(wave_edit),
 		   (GtkWidget *) wave_edit->vscrollbar,
 		   1, 2,
@@ -771,8 +799,30 @@ void
 ags_wave_edit_size_request(GtkWidget *widget,
 			   GtkRequisition *requisition)
 {
+  AgsConfig *config;
+
+  gchar *str;
+  
+  gdouble gui_scale_factor;
+
+  config = ags_config_get_instance();
+  
+  /* scale factor */
+  gui_scale_factor = 1.0;
+  
+  str = ags_config_get_value(config,
+			     AGS_CONFIG_GENERIC,
+			     "gui-scale");
+
+  if(str != NULL){
+    gui_scale_factor = g_ascii_strtod(str,
+				      NULL);
+
+    g_free(str);
+  }
+
   requisition->width = -1;
-  requisition->height = AGS_LEVEL_DEFAULT_HEIGHT;  
+  requisition->height = (gint) (gui_scale_factor * AGS_LEVEL_DEFAULT_LEVEL_HEIGHT);
 }
 
 void
@@ -781,22 +831,44 @@ ags_wave_edit_size_allocate(GtkWidget *widget,
 {
   AgsWaveEdit *wave_edit;
 
+  GdkWindow *window;
+
+  AgsConfig *config;
+
   GtkAllocation child_allocation;
 
-  GdkWindow *window;
+  gchar *str;
+  
+  gdouble gui_scale_factor;
 
   wave_edit = AGS_WAVE_EDIT(widget);
 
+  config = ags_config_get_instance();
+  
+  /* scale factor */
+  gui_scale_factor = 1.0;
+  
+  str = ags_config_get_value(config,
+			     AGS_CONFIG_GENERIC,
+			     "gui-scale");
+
+  if(str != NULL){
+    gui_scale_factor = g_ascii_strtod(str,
+				      NULL);
+
+    g_free(str);
+  }
+
   widget->allocation = *allocation;
   
-  widget->allocation.height = AGS_LEVEL_DEFAULT_HEIGHT;
-  allocation->height = AGS_LEVEL_DEFAULT_HEIGHT;
+  widget->allocation.height = (gint) (gui_scale_factor * AGS_LEVEL_DEFAULT_LEVEL_HEIGHT);
+  allocation->height = (gint) (gui_scale_factor * AGS_LEVEL_DEFAULT_LEVEL_HEIGHT);
   
   child_allocation.x = allocation->x;
   child_allocation.y = allocation->y;
   
   child_allocation.width = allocation->width;
-  child_allocation.height = AGS_LEVEL_DEFAULT_HEIGHT;
+  child_allocation.height = (gint) (gui_scale_factor * AGS_LEVEL_DEFAULT_LEVEL_HEIGHT);
 
   gtk_widget_size_allocate((GtkWidget *) wave_edit->drawing_area,
   			   &child_allocation);
@@ -1017,8 +1089,13 @@ ags_wave_edit_draw_segment(AgsWaveEdit *wave_edit)
   
   GtkStyle *wave_edit_style;
 
+  AgsConfig *config;
+
   cairo_t *cr;
 
+  gchar *str;
+  
+  gdouble gui_scale_factor;
   gdouble x_offset, y_offset;
   gdouble translated_ground;
   double tact;
@@ -1044,6 +1121,22 @@ ags_wave_edit_draw_segment(AgsWaveEdit *wave_edit)
 
   if(wave_editor->selected_machine == NULL){
     return;
+  }
+
+  config = ags_config_get_instance();
+  
+  /* scale factor */
+  gui_scale_factor = 1.0;
+  
+  str = ags_config_get_value(config,
+			     AGS_CONFIG_GENERIC,
+			     "gui-scale");
+
+  if(str != NULL){
+    gui_scale_factor = g_ascii_strtod(str,
+				      NULL);
+
+    g_free(str);
   }
 
   wave_toolbar = wave_editor->wave_toolbar;
@@ -1088,7 +1181,7 @@ ags_wave_edit_draw_segment(AgsWaveEdit *wave_edit)
   
   map_height = (gdouble) height;
 
-  control_width = AGS_WAVE_EDIT_DEFAULT_CONTROL_WIDTH;
+  control_width = (guint) (gui_scale_factor * AGS_WAVE_EDIT_DEFAULT_CONTROL_WIDTH);
   i = control_width - (guint) x_offset % control_width;
   
   if(i < width &&
@@ -1190,8 +1283,13 @@ ags_wave_edit_draw_position(AgsWaveEdit *wave_edit)
 
   GtkStyle *wave_edit_style;
 
+  AgsConfig *config;
+
   cairo_t *cr;
 
+  gchar *str;
+  
+  gdouble gui_scale_factor;
   double position;
   double x, y;
   double width, height;
@@ -1209,6 +1307,22 @@ ags_wave_edit_draw_position(AgsWaveEdit *wave_edit)
   if(wave_editor->selected_machine == NULL){
     return;
   }
+
+  config = ags_config_get_instance();
+  
+  /* scale factor */
+  gui_scale_factor = 1.0;
+  
+  str = ags_config_get_value(config,
+			     AGS_CONFIG_GENERIC,
+			     "gui-scale");
+
+  if(str != NULL){
+    gui_scale_factor = g_ascii_strtod(str,
+				      NULL);
+
+    g_free(str);
+  }
   
   wave_edit_style = gtk_widget_get_style(GTK_WIDGET(wave_edit->drawing_area));
 
@@ -1225,8 +1339,8 @@ ags_wave_edit_draw_position(AgsWaveEdit *wave_edit)
   y = 0.0;
   x = (position) - (GTK_RANGE(wave_edit->hscrollbar)->adjustment->value);
 
-  width = (double) AGS_WAVE_EDIT_DEFAULT_FADER_WIDTH;
-  height = AGS_WAVE_EDIT_DEFAULT_HEIGHT;
+  width = (double) ((guint) (gui_scale_factor * AGS_WAVE_EDIT_DEFAULT_FADER_WIDTH));
+  height = (double) ((guint) (gui_scale_factor * AGS_WAVE_EDIT_DEFAULT_HEIGHT));
 
   /* push group */
   cairo_push_group(cr);
@@ -1258,8 +1372,13 @@ ags_wave_edit_draw_cursor(AgsWaveEdit *wave_edit)
 
   GtkStyle *wave_edit_style;
 
+  AgsConfig *config;
+
   cairo_t *cr;
 
+  gchar *str;
+  
+  gdouble gui_scale_factor;
   double zoom, zoom_factor;
   double x, y;
   double width, height;
@@ -1276,6 +1395,22 @@ ags_wave_edit_draw_cursor(AgsWaveEdit *wave_edit)
 
   if(wave_editor->selected_machine == NULL){
     return;
+  }
+
+  config = ags_config_get_instance();
+  
+  /* scale factor */
+  gui_scale_factor = 1.0;
+  
+  str = ags_config_get_value(config,
+			     AGS_CONFIG_GENERIC,
+			     "gui-scale");
+
+  if(str != NULL){
+    gui_scale_factor = g_ascii_strtod(str,
+				      NULL);
+
+    g_free(str);
   }
   
   wave_toolbar = wave_editor->wave_toolbar;
@@ -1296,8 +1431,8 @@ ags_wave_edit_draw_cursor(AgsWaveEdit *wave_edit)
   y = 0.0;
   x = (((double) wave_edit->cursor_position_x) - (GTK_RANGE(wave_edit->hscrollbar)->adjustment->value)) /  zoom_factor;
 
-  width = (double) AGS_WAVE_EDIT_DEFAULT_FADER_WIDTH;
-  height = AGS_WAVE_EDIT_DEFAULT_HEIGHT;
+  width = (double) ((guint) (gui_scale_factor * AGS_WAVE_EDIT_DEFAULT_FADER_WIDTH));
+  height = (double) ((guint) (gui_scale_factor * AGS_WAVE_EDIT_DEFAULT_HEIGHT));
 
   /* push group */
   cairo_push_group(cr);

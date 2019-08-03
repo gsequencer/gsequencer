@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -209,11 +209,7 @@ ags_recall_ladspa_set_property(GObject *gobject,
   recall_ladspa = AGS_RECALL_LADSPA(gobject);
 
   /* get recall mutex */
-  pthread_mutex_lock(ags_recall_get_class_mutex());
-  
-  recall_mutex = AGS_RECALL(gobject)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_recall_get_class_mutex());
+  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall_ladspa);
 
   switch(prop_id){
   case PROP_PLUGIN:
@@ -262,11 +258,7 @@ ags_recall_ladspa_get_property(GObject *gobject,
   recall_ladspa = AGS_RECALL_LADSPA(gobject);
 
   /* get recall mutex */
-  pthread_mutex_lock(ags_recall_get_class_mutex());
-  
-  recall_mutex = AGS_RECALL(gobject)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_recall_get_class_mutex());
+  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall_ladspa);
 
   switch(prop_id){
   case PROP_PLUGIN:
@@ -326,11 +318,7 @@ ags_recall_ladspa_set_ports(AgsPlugin *plugin, GList *port)
   recall_ladspa = AGS_RECALL_LADSPA(plugin);
 
   /* get recall mutex */
-  pthread_mutex_lock(ags_recall_get_class_mutex());
-  
-  recall_mutex = AGS_RECALL(recall_ladspa)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_recall_get_class_mutex());
+  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall_ladspa);
 
   /* get some fields */
   pthread_mutex_lock(recall_mutex);
@@ -347,11 +335,7 @@ ags_recall_ladspa_set_ports(AgsPlugin *plugin, GList *port)
   g_free(effect);
 
   /* get base plugin mutex */
-  pthread_mutex_lock(ags_base_plugin_get_class_mutex());
-  
-  base_plugin_mutex = AGS_BASE_PLUGIN(ladspa_plugin)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_base_plugin_get_class_mutex());
+  base_plugin_mutex = AGS_BASE_PLUGIN_GET_OBJ_MUTEX(ladspa_plugin);
 
   /* get plugin port */
   pthread_mutex_lock(base_plugin_mutex);
@@ -373,11 +357,7 @@ ags_recall_ladspa_set_ports(AgsPlugin *plugin, GList *port)
       current_plugin_port = AGS_PLUGIN_PORT(plugin_port->data);
 
       /* get plugin port mutex */
-      pthread_mutex_lock(ags_plugin_port_get_class_mutex());
-      
-      plugin_port_mutex = current_plugin_port->obj_mutex;
-
-      pthread_mutex_unlock(ags_plugin_port_get_class_mutex());
+      plugin_port_mutex = AGS_PLUGIN_PORT_GET_OBJ_MUTEX(current_plugin_port);
 
       if(ags_plugin_port_test_flags(current_plugin_port,
 				    AGS_PLUGIN_PORT_CONTROL)){
@@ -556,11 +536,7 @@ ags_recall_ladspa_load(AgsRecallLadspa *recall_ladspa)
   }
 
   /* get recall mutex */
-  pthread_mutex_lock(ags_recall_get_class_mutex());
-  
-  recall_mutex = AGS_RECALL(recall_ladspa)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_recall_get_class_mutex());
+  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall_ladspa);
 
   /* get some fields */
   pthread_mutex_lock(recall_mutex);
@@ -633,11 +609,7 @@ ags_recall_ladspa_load_ports(AgsRecallLadspa *recall_ladspa)
   }
 
   /* get recall mutex */
-  pthread_mutex_lock(ags_recall_get_class_mutex());
-  
-  recall_mutex = AGS_RECALL(recall_ladspa)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_recall_get_class_mutex());
+  recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall_ladspa);
 
   /* get some fields */
   pthread_mutex_lock(recall_mutex);
@@ -656,11 +628,7 @@ ags_recall_ladspa_load_ports(AgsRecallLadspa *recall_ladspa)
   g_free(effect);
 
   /* get base plugin mutex */
-  pthread_mutex_lock(ags_base_plugin_get_class_mutex());
-  
-  base_plugin_mutex = AGS_BASE_PLUGIN(ladspa_plugin)->obj_mutex;
-  
-  pthread_mutex_unlock(ags_base_plugin_get_class_mutex());
+  base_plugin_mutex = AGS_BASE_PLUGIN_GET_OBJ_MUTEX(ladspa_plugin);
 
   /* get port descriptor */
   pthread_mutex_lock(base_plugin_mutex);
@@ -684,11 +652,7 @@ ags_recall_ladspa_load_ports(AgsRecallLadspa *recall_ladspa)
       current_plugin_port = AGS_PLUGIN_PORT(plugin_port->data);
 
       /* get plugin port mutex */
-      pthread_mutex_lock(ags_plugin_port_get_class_mutex());
-      
-      plugin_port_mutex = current_plugin_port->obj_mutex;
-
-      pthread_mutex_unlock(ags_plugin_port_get_class_mutex());
+      plugin_port_mutex = AGS_PLUGIN_PORT_GET_OBJ_MUTEX(current_plugin_port);
 
       if(ags_plugin_port_test_flags(current_plugin_port,
 				    AGS_PLUGIN_PORT_CONTROL)){
@@ -901,11 +865,7 @@ ags_recall_ladspa_find(GList *recall,
   while(recall != NULL){
     if(AGS_IS_RECALL_LADSPA(recall->data)){
       /* get recall mutex */
-      pthread_mutex_lock(ags_recall_get_class_mutex());
-  
-      recall_mutex = AGS_RECALL(recall->data)->obj_mutex;
-  
-      pthread_mutex_unlock(ags_recall_get_class_mutex());
+      recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall->data);
 
       /* check filename and effect */
       pthread_mutex_lock(recall_mutex);

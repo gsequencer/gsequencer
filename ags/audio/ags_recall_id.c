@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -170,11 +170,7 @@ ags_recall_id_set_property(GObject *gobject,
   recall_id = AGS_RECALL_ID(gobject);
 
   /* get recall id mutex */
-  pthread_mutex_lock(ags_recall_id_get_class_mutex());
-  
-  recall_id_mutex = recall_id->obj_mutex;
-  
-  pthread_mutex_unlock(ags_recall_id_get_class_mutex());
+  recall_id_mutex = AGS_RECALL_ID_GET_OBJ_MUTEX(recall_id);
 
   switch(prop_id){
   case PROP_RECYCLING_CONTEXT:
@@ -223,11 +219,7 @@ ags_recall_id_get_property(GObject *gobject,
   recall_id = AGS_RECALL_ID(gobject);
 
   /* get recall id mutex */
-  pthread_mutex_lock(ags_recall_id_get_class_mutex());
-  
-  recall_id_mutex = recall_id->obj_mutex;
-  
-  pthread_mutex_unlock(ags_recall_id_get_class_mutex());
+  recall_id_mutex = AGS_RECALL_ID_GET_OBJ_MUTEX(recall_id);
 
   switch(prop_id){
   case PROP_RECYCLING_CONTEXT:
@@ -319,11 +311,7 @@ ags_recall_id_set_sound_scope(AgsRecallID *recall_id, gint sound_scope)
   }
 
   /* get recall id mutex */
-  pthread_mutex_lock(ags_recall_id_get_class_mutex());
-  
-  recall_id_mutex = recall_id->obj_mutex;
-  
-  pthread_mutex_unlock(ags_recall_id_get_class_mutex());
+  recall_id_mutex = AGS_RECALL_ID_GET_OBJ_MUTEX(recall_id);
 
   /* set sound scope */
   pthread_mutex_lock(recall_id_mutex);
@@ -356,11 +344,7 @@ ags_recall_id_check_sound_scope(AgsRecallID *recall_id, gint sound_scope)
   }
 
   /* get recall id mutex */
-  pthread_mutex_lock(ags_recall_id_get_class_mutex());
-  
-  recall_id_mutex = recall_id->obj_mutex;
-  
-  pthread_mutex_unlock(ags_recall_id_get_class_mutex());
+  recall_id_mutex = AGS_RECALL_ID_GET_OBJ_MUTEX(recall_id);
 
   /* get sound scope */
   pthread_mutex_lock(recall_id_mutex);
@@ -414,11 +398,7 @@ ags_recall_id_test_staging_flags(AgsRecallID *recall_id,
   }
 
   /* get recall id mutex */
-  pthread_mutex_lock(ags_recall_id_get_class_mutex());
-  
-  recall_id_mutex = recall_id->obj_mutex;
-  
-  pthread_mutex_unlock(ags_recall_id_get_class_mutex());
+  recall_id_mutex = AGS_RECALL_ID_GET_OBJ_MUTEX(recall_id);
 
   /* test */
   pthread_mutex_lock(recall_id_mutex);
@@ -449,11 +429,7 @@ ags_recall_id_set_staging_flags(AgsRecallID *recall_id, guint staging_flags)
   }
 
   /* get recall id mutex */
-  pthread_mutex_lock(ags_recall_id_get_class_mutex());
-  
-  recall_id_mutex = recall_id->obj_mutex;
-  
-  pthread_mutex_unlock(ags_recall_id_get_class_mutex());
+  recall_id_mutex = AGS_RECALL_ID_GET_OBJ_MUTEX(recall_id);
 
   /* set staging flags */
   pthread_mutex_lock(recall_id_mutex);
@@ -482,11 +458,7 @@ ags_recall_id_unset_staging_flags(AgsRecallID *recall_id, guint staging_flags)
   }
 
   /* get recall id mutex */
-  pthread_mutex_lock(ags_recall_id_get_class_mutex());
-  
-  recall_id_mutex = recall_id->obj_mutex;
-  
-  pthread_mutex_unlock(ags_recall_id_get_class_mutex());
+  recall_id_mutex = AGS_RECALL_ID_GET_OBJ_MUTEX(recall_id);
 
   /* unset staging flags */
   pthread_mutex_lock(recall_id_mutex);
@@ -519,11 +491,7 @@ ags_recall_id_check_staging_flags(AgsRecallID *recall_id, guint staging_flags)
   }
 
   /* get recall id mutex */
-  pthread_mutex_lock(ags_recall_id_get_class_mutex());
-  
-  recall_id_mutex = recall_id->obj_mutex;
-  
-  pthread_mutex_unlock(ags_recall_id_get_class_mutex());
+  recall_id_mutex = AGS_RECALL_ID_GET_OBJ_MUTEX(recall_id);
 
   /* get staging flags */
   pthread_mutex_lock(recall_id_mutex);
@@ -635,11 +603,7 @@ ags_recall_id_test_state_flags(AgsRecallID *recall_id,
   }
 
   /* get recall_id mutex */
-  pthread_mutex_lock(ags_recall_id_get_class_mutex());
-  
-  recall_id_mutex = recall_id->obj_mutex;
-  
-  pthread_mutex_unlock(ags_recall_id_get_class_mutex());
+  recall_id_mutex = AGS_RECALL_ID_GET_OBJ_MUTEX(recall_id);
 
   /* test */
   pthread_mutex_lock(recall_id_mutex);
@@ -670,11 +634,7 @@ ags_recall_id_set_state_flags(AgsRecallID *recall_id, guint state_flags)
   }
 
   /* get recall id mutex */
-  pthread_mutex_lock(ags_recall_id_get_class_mutex());
-  
-  recall_id_mutex = recall_id->obj_mutex;
-  
-  pthread_mutex_unlock(ags_recall_id_get_class_mutex());
+  recall_id_mutex = AGS_RECALL_ID_GET_OBJ_MUTEX(recall_id);
 
   /* set state flags */
   pthread_mutex_lock(recall_id_mutex);
@@ -703,11 +663,7 @@ ags_recall_id_unset_state_flags(AgsRecallID *recall_id, guint state_flags)
   }
 
   /* get recall id mutex */
-  pthread_mutex_lock(ags_recall_id_get_class_mutex());
-  
-  recall_id_mutex = recall_id->obj_mutex;
-  
-  pthread_mutex_unlock(ags_recall_id_get_class_mutex());
+  recall_id_mutex = AGS_RECALL_ID_GET_OBJ_MUTEX(recall_id);
 
   /* unset state flags */
   pthread_mutex_lock(recall_id_mutex);
@@ -740,11 +696,7 @@ ags_recall_id_check_state_flags(AgsRecallID *recall_id, guint state_flags)
   }
   
   /* get recall id mutex */
-  pthread_mutex_lock(ags_recall_id_get_class_mutex());
-  
-  recall_id_mutex = recall_id->obj_mutex;
-  
-  pthread_mutex_unlock(ags_recall_id_get_class_mutex());
+  recall_id_mutex = AGS_RECALL_ID_GET_OBJ_MUTEX(recall_id);
 
   /* get state flags */
   pthread_mutex_lock(recall_id_mutex);

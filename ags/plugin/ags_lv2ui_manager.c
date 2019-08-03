@@ -335,11 +335,7 @@ ags_lv2ui_manager_get_filenames(AgsLv2uiManager *lv2ui_manager)
   }
   
   /* get lv2ui manager mutex */
-  pthread_mutex_lock(ags_lv2ui_manager_get_class_mutex());
-  
-  lv2ui_manager_mutex = lv2ui_manager->obj_mutex;
-  
-  pthread_mutex_unlock(ags_lv2ui_manager_get_class_mutex());
+  lv2ui_manager_mutex = AGS_LV2UI_MANAGER_GET_OBJ_MUTEX(lv2ui_manager);
 
   /* collect */
   pthread_mutex_lock(lv2ui_manager_mutex);
@@ -355,11 +351,7 @@ ags_lv2ui_manager_get_filenames(AgsLv2uiManager *lv2ui_manager)
     gchar *ui_filename;
 
     /* get base plugin mutex */
-    pthread_mutex_lock(ags_base_plugin_get_class_mutex());
-  
-    base_plugin_mutex = AGS_BASE_PLUGIN(lv2ui_plugin->data)->obj_mutex;
-    
-    pthread_mutex_unlock(ags_base_plugin_get_class_mutex());
+    base_plugin_mutex = AGS_BASE_PLUGIN_GET_OBJ_MUTEX(lv2ui_plugin->data);
 
     /* duplicate filename */
     pthread_mutex_lock(base_plugin_mutex);
@@ -441,11 +433,7 @@ ags_lv2ui_manager_find_lv2ui_plugin(AgsLv2uiManager *lv2ui_manager,
   }
   
   /* get lv2 manager mutex */
-  pthread_mutex_lock(ags_lv2ui_manager_get_class_mutex());
-  
-  lv2ui_manager_mutex = lv2ui_manager->obj_mutex;
-  
-  pthread_mutex_unlock(ags_lv2ui_manager_get_class_mutex());
+  lv2ui_manager_mutex = AGS_LV2UI_MANAGER_GET_OBJ_MUTEX(lv2ui_manager);
 
   /* collect */
   pthread_mutex_lock(lv2ui_manager_mutex);
@@ -459,11 +447,7 @@ ags_lv2ui_manager_find_lv2ui_plugin(AgsLv2uiManager *lv2ui_manager,
     lv2ui_plugin = AGS_LV2UI_PLUGIN(list->data);
     
     /* get base plugin mutex */
-    pthread_mutex_lock(ags_base_plugin_get_class_mutex());
-  
-    base_plugin_mutex = AGS_BASE_PLUGIN(lv2ui_plugin)->obj_mutex;
-    
-    pthread_mutex_unlock(ags_base_plugin_get_class_mutex());
+    base_plugin_mutex = AGS_BASE_PLUGIN_GET_OBJ_MUTEX(lv2ui_plugin);
 
     /* check filename and effect */
     pthread_mutex_lock(base_plugin_mutex);
@@ -523,11 +507,7 @@ ags_lv2ui_manager_find_lv2ui_plugin_with_index(AgsLv2uiManager *lv2ui_manager,
   }
   
   /* get lv2 manager mutex */
-  pthread_mutex_lock(ags_lv2ui_manager_get_class_mutex());
-  
-  lv2ui_manager_mutex = lv2ui_manager->obj_mutex;
-  
-  pthread_mutex_unlock(ags_lv2ui_manager_get_class_mutex());
+  lv2ui_manager_mutex = AGS_LV2UI_MANAGER_GET_OBJ_MUTEX(lv2ui_manager);
 
   /* collect */
   pthread_mutex_lock(lv2ui_manager_mutex);
@@ -543,11 +523,7 @@ ags_lv2ui_manager_find_lv2ui_plugin_with_index(AgsLv2uiManager *lv2ui_manager,
     lv2ui_plugin = AGS_LV2UI_PLUGIN(list->data);
     
     /* get base plugin mutex */
-    pthread_mutex_lock(ags_base_plugin_get_class_mutex());
-  
-    base_plugin_mutex = AGS_BASE_PLUGIN(lv2ui_plugin)->obj_mutex;
-    
-    pthread_mutex_unlock(ags_base_plugin_get_class_mutex());
+    base_plugin_mutex = AGS_BASE_PLUGIN_GET_OBJ_MUTEX(lv2ui_plugin);
 
     /* check filename and ui effect index */
     pthread_mutex_lock(base_plugin_mutex);
@@ -597,11 +573,7 @@ ags_lv2ui_manager_load_blacklist(AgsLv2uiManager *lv2ui_manager,
   }
 
   /* get lv2 manager mutex */
-  pthread_mutex_lock(ags_lv2ui_manager_get_class_mutex());
-  
-  lv2ui_manager_mutex = lv2ui_manager->obj_mutex;
-  
-  pthread_mutex_unlock(ags_lv2ui_manager_get_class_mutex());
+  lv2ui_manager_mutex = AGS_LV2UI_MANAGER_GET_OBJ_MUTEX(lv2ui_manager);
 
   /* fill in */
   pthread_mutex_lock(lv2ui_manager_mutex);

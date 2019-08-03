@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -78,7 +78,8 @@ struct _AgsLineMember
 
   gchar *control_port;
 
-  guint steps;
+  guint scale_precision;
+  gdouble step_count;
 
   AgsConversion *conversion;
   

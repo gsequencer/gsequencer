@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -333,11 +333,7 @@ ags_recall_container_set_property(GObject *gobject,
   recall_container = AGS_RECALL_CONTAINER(gobject);
 
   /* get recall container mutex */
-  pthread_mutex_lock(ags_recall_container_get_class_mutex());
-  
-  recall_container_mutex = recall_container->obj_mutex;
-  
-  pthread_mutex_unlock(ags_recall_container_get_class_mutex());
+  recall_container_mutex = AGS_RECALL_CONTAINER_GET_OBJ_MUTEX(recall_container);
 
   switch(prop_id){
   case PROP_RECALL_AUDIO_TYPE:
@@ -479,11 +475,7 @@ ags_recall_container_set_property(GObject *gobject,
       pthread_mutex_unlock(recall_container_mutex);
       
       /* get recall mutex */
-      pthread_mutex_lock(ags_recall_get_class_mutex());
-  
-      recall_mutex = AGS_RECALL(recall_audio_run)->obj_mutex;
-  
-      pthread_mutex_unlock(ags_recall_get_class_mutex());
+      recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall_audio_run);
 
       /* set recall audio run - recall channel run */      
       pthread_mutex_lock(recall_mutex);
@@ -577,11 +569,7 @@ ags_recall_container_set_property(GObject *gobject,
       pthread_mutex_unlock(recall_container_mutex);
       
       /* get recall mutex */
-      pthread_mutex_lock(ags_recall_get_class_mutex());
-  
-      recall_mutex = AGS_RECALL(recall_channel)->obj_mutex;
-  
-      pthread_mutex_unlock(ags_recall_get_class_mutex());
+      recall_mutex = AGS_RECALL_GET_OBJ_MUTEX(recall_channel);
 
       /* set recall channel - recall channel run */
       pthread_mutex_lock(recall_mutex);
@@ -662,11 +650,7 @@ ags_recall_container_get_property(GObject *gobject,
   recall_container = AGS_RECALL_CONTAINER(gobject);
 
   /* get recall container mutex */
-  pthread_mutex_lock(ags_recall_container_get_class_mutex());
-  
-  recall_container_mutex = recall_container->obj_mutex;
-  
-  pthread_mutex_unlock(ags_recall_container_get_class_mutex());
+  recall_container_mutex = AGS_RECALL_CONTAINER_GET_OBJ_MUTEX(recall_container);
 
   switch(prop_id){
   case PROP_RECALL_AUDIO_TYPE:
@@ -828,11 +812,7 @@ ags_recall_container_get_uuid(AgsConnectable *connectable)
   recall_container = AGS_RECALL_CONTAINER(connectable);
 
   /* get recall_container mutex */
-  pthread_mutex_lock(ags_recall_container_get_class_mutex());
-  
-  recall_container_mutex = recall_container->obj_mutex;
-  
-  pthread_mutex_unlock(ags_recall_container_get_class_mutex());
+  recall_container_mutex = AGS_RECALL_CONTAINER_GET_OBJ_MUTEX(recall_container);
 
   /* get UUID */
   pthread_mutex_lock(recall_container_mutex);
@@ -862,11 +842,7 @@ ags_recall_container_is_ready(AgsConnectable *connectable)
   recall_container = AGS_RECALL_CONTAINER(connectable);
 
   /* get recall_container mutex */
-  pthread_mutex_lock(ags_recall_container_get_class_mutex());
-  
-  recall_container_mutex = recall_container->obj_mutex;
-  
-  pthread_mutex_unlock(ags_recall_container_get_class_mutex());
+  recall_container_mutex = AGS_RECALL_CONTAINER_GET_OBJ_MUTEX(recall_container);
 
   /* check is added */
   pthread_mutex_lock(recall_container_mutex);
@@ -966,11 +942,7 @@ ags_recall_container_is_connected(AgsConnectable *connectable)
   recall_container = AGS_RECALL_CONTAINER(connectable);
 
   /* get recall_container mutex */
-  pthread_mutex_lock(ags_recall_container_get_class_mutex());
-  
-  recall_container_mutex = recall_container->obj_mutex;
-  
-  pthread_mutex_unlock(ags_recall_container_get_class_mutex());
+  recall_container_mutex = AGS_RECALL_CONTAINER_GET_OBJ_MUTEX(recall_container);
 
   /* check is connected */
   pthread_mutex_lock(recall_container_mutex);
@@ -1057,11 +1029,7 @@ ags_recall_container_test_flags(AgsRecallContainer *recall_container, guint flag
   }
 
   /* get recall_container mutex */
-  pthread_mutex_lock(ags_recall_container_get_class_mutex());
-  
-  recall_container_mutex = recall_container->obj_mutex;
-  
-  pthread_mutex_unlock(ags_recall_container_get_class_mutex());
+  recall_container_mutex = AGS_RECALL_CONTAINER_GET_OBJ_MUTEX(recall_container);
 
   /* test */
   pthread_mutex_lock(recall_container_mutex);
@@ -1092,11 +1060,7 @@ ags_recall_container_set_flags(AgsRecallContainer *recall_container, guint flags
   }
 
   /* get recall_container mutex */
-  pthread_mutex_lock(ags_recall_container_get_class_mutex());
-  
-  recall_container_mutex = recall_container->obj_mutex;
-  
-  pthread_mutex_unlock(ags_recall_container_get_class_mutex());
+  recall_container_mutex = AGS_RECALL_CONTAINER_GET_OBJ_MUTEX(recall_container);
 
   /* set flags */
   pthread_mutex_lock(recall_container_mutex);
@@ -1125,11 +1089,7 @@ ags_recall_container_unset_flags(AgsRecallContainer *recall_container, guint fla
   }
 
   /* get recall_container mutex */
-  pthread_mutex_lock(ags_recall_container_get_class_mutex());
-  
-  recall_container_mutex = recall_container->obj_mutex;
-  
-  pthread_mutex_unlock(ags_recall_container_get_class_mutex());
+  recall_container_mutex = AGS_RECALL_CONTAINER_GET_OBJ_MUTEX(recall_container);
 
   /* set flags */
   pthread_mutex_lock(recall_container_mutex);

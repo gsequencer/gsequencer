@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -554,11 +554,7 @@ ags_jack_midiin_set_property(GObject *gobject,
   jack_midiin = AGS_JACK_MIDIIN(gobject);
 
   /* get jack midiin mutex */
-  pthread_mutex_lock(ags_jack_midiin_get_class_mutex());
-  
-  jack_midiin_mutex = jack_midiin->obj_mutex;
-  
-  pthread_mutex_unlock(ags_jack_midiin_get_class_mutex());
+  jack_midiin_mutex = AGS_JACK_MIDIIN_GET_OBJ_MUTEX(jack_midiin);
   
   switch(prop_id){
   case PROP_APPLICATION_CONTEXT:
@@ -701,11 +697,7 @@ ags_jack_midiin_get_property(GObject *gobject,
   jack_midiin = AGS_JACK_MIDIIN(gobject);
 
   /* get jack midiin mutex */
-  pthread_mutex_lock(ags_jack_midiin_get_class_mutex());
-  
-  jack_midiin_mutex = jack_midiin->obj_mutex;
-  
-  pthread_mutex_unlock(ags_jack_midiin_get_class_mutex());
+  jack_midiin_mutex = AGS_JACK_MIDIIN_GET_OBJ_MUTEX(jack_midiin);
   
   switch(prop_id){
   case PROP_APPLICATION_CONTEXT:
@@ -866,11 +858,7 @@ ags_jack_midiin_get_uuid(AgsConnectable *connectable)
   jack_midiin = AGS_JACK_MIDIIN(connectable);
 
   /* get jack_midiin signal mutex */
-  pthread_mutex_lock(ags_jack_midiin_get_class_mutex());
-  
-  jack_midiin_mutex = jack_midiin->obj_mutex;
-  
-  pthread_mutex_unlock(ags_jack_midiin_get_class_mutex());
+  jack_midiin_mutex = AGS_JACK_MIDIIN_GET_OBJ_MUTEX(jack_midiin);
 
   /* get UUID */
   pthread_mutex_lock(jack_midiin_mutex);
@@ -900,11 +888,7 @@ ags_jack_midiin_is_ready(AgsConnectable *connectable)
   jack_midiin = AGS_JACK_MIDIIN(connectable);
 
   /* get jack_midiin mutex */
-  pthread_mutex_lock(ags_jack_midiin_get_class_mutex());
-  
-  jack_midiin_mutex = jack_midiin->obj_mutex;
-  
-  pthread_mutex_unlock(ags_jack_midiin_get_class_mutex());
+  jack_midiin_mutex = AGS_JACK_MIDIIN_GET_OBJ_MUTEX(jack_midiin);
 
   /* check is added */
   pthread_mutex_lock(jack_midiin_mutex);
@@ -987,11 +971,7 @@ ags_jack_midiin_is_connected(AgsConnectable *connectable)
   jack_midiin = AGS_JACK_MIDIIN(connectable);
 
   /* get jack_midiin mutex */
-  pthread_mutex_lock(ags_jack_midiin_get_class_mutex());
-  
-  jack_midiin_mutex = jack_midiin->obj_mutex;
-  
-  pthread_mutex_unlock(ags_jack_midiin_get_class_mutex());
+  jack_midiin_mutex = AGS_JACK_MIDIIN_GET_OBJ_MUTEX(jack_midiin);
 
   /* check is connected */
   pthread_mutex_lock(jack_midiin_mutex);
@@ -1070,11 +1050,7 @@ ags_jack_midiin_test_flags(AgsJackMidiin *jack_midiin, guint flags)
   }
 
   /* get jack_midiin mutex */
-  pthread_mutex_lock(ags_jack_midiin_get_class_mutex());
-  
-  jack_midiin_mutex = jack_midiin->obj_mutex;
-  
-  pthread_mutex_unlock(ags_jack_midiin_get_class_mutex());
+  jack_midiin_mutex = AGS_JACK_MIDIIN_GET_OBJ_MUTEX(jack_midiin);
 
   /* test */
   pthread_mutex_lock(jack_midiin_mutex);
@@ -1105,11 +1081,7 @@ ags_jack_midiin_set_flags(AgsJackMidiin *jack_midiin, guint flags)
   }
 
   /* get jack_midiin mutex */
-  pthread_mutex_lock(ags_jack_midiin_get_class_mutex());
-  
-  jack_midiin_mutex = jack_midiin->obj_mutex;
-  
-  pthread_mutex_unlock(ags_jack_midiin_get_class_mutex());
+  jack_midiin_mutex = AGS_JACK_MIDIIN_GET_OBJ_MUTEX(jack_midiin);
 
   //TODO:JK: add more?
 
@@ -1140,11 +1112,7 @@ ags_jack_midiin_unset_flags(AgsJackMidiin *jack_midiin, guint flags)
   }
 
   /* get jack_midiin mutex */
-  pthread_mutex_lock(ags_jack_midiin_get_class_mutex());
-  
-  jack_midiin_mutex = jack_midiin->obj_mutex;
-  
-  pthread_mutex_unlock(ags_jack_midiin_get_class_mutex());
+  jack_midiin_mutex = AGS_JACK_MIDIIN_GET_OBJ_MUTEX(jack_midiin);
 
   //TODO:JK: add more?
 
@@ -1167,11 +1135,7 @@ ags_jack_midiin_set_application_context(AgsSequencer *sequencer,
   jack_midiin = AGS_JACK_MIDIIN(sequencer);
 
   /* get jack_midiin mutex */
-  pthread_mutex_lock(ags_jack_midiin_get_class_mutex());
-  
-  jack_midiin_mutex = jack_midiin->obj_mutex;
-  
-  pthread_mutex_unlock(ags_jack_midiin_get_class_mutex());
+  jack_midiin_mutex = AGS_JACK_MIDIIN_GET_OBJ_MUTEX(jack_midiin);
 
   /* set application context */
   pthread_mutex_lock(jack_midiin_mutex);
@@ -1193,11 +1157,7 @@ ags_jack_midiin_get_application_context(AgsSequencer *sequencer)
   jack_midiin = AGS_JACK_MIDIIN(sequencer);
 
   /* get jack_midiin mutex */
-  pthread_mutex_lock(ags_jack_midiin_get_class_mutex());
-  
-  jack_midiin_mutex = jack_midiin->obj_mutex;
-  
-  pthread_mutex_unlock(ags_jack_midiin_get_class_mutex());
+  jack_midiin_mutex = AGS_JACK_MIDIIN_GET_OBJ_MUTEX(jack_midiin);
 
   /* get application context */
   pthread_mutex_lock(jack_midiin_mutex);
@@ -1228,11 +1188,7 @@ ags_jack_midiin_set_device(AgsSequencer *sequencer,
   jack_midiin = AGS_JACK_MIDIIN(sequencer);
 
   /* get jack_midiin mutex */
-  pthread_mutex_lock(ags_jack_midiin_get_class_mutex());
-  
-  jack_midiin_mutex = jack_midiin->obj_mutex;
-  
-  pthread_mutex_unlock(ags_jack_midiin_get_class_mutex());
+  jack_midiin_mutex = AGS_JACK_MIDIIN_GET_OBJ_MUTEX(jack_midiin);
 
   pthread_mutex_lock(jack_midiin_mutex);
 
@@ -1300,11 +1256,7 @@ ags_jack_midiin_get_device(AgsSequencer *sequencer)
   jack_midiin = AGS_JACK_MIDIIN(sequencer);
   
   /* get jack_midiin mutex */
-  pthread_mutex_lock(ags_jack_midiin_get_class_mutex());
-  
-  jack_midiin_mutex = jack_midiin->obj_mutex;
-  
-  pthread_mutex_unlock(ags_jack_midiin_get_class_mutex());
+  jack_midiin_mutex = AGS_JACK_MIDIIN_GET_OBJ_MUTEX(jack_midiin);
 
   device = NULL;
   
@@ -1405,11 +1357,7 @@ ags_jack_midiin_is_starting(AgsSequencer *sequencer)
   jack_midiin = AGS_JACK_MIDIIN(sequencer);
 
   /* get jack_midiin mutex */
-  pthread_mutex_lock(ags_jack_midiin_get_class_mutex());
-  
-  jack_midiin_mutex = jack_midiin->obj_mutex;
-  
-  pthread_mutex_unlock(ags_jack_midiin_get_class_mutex());
+  jack_midiin_mutex = AGS_JACK_MIDIIN_GET_OBJ_MUTEX(jack_midiin);
 
   /* check is starting */
   pthread_mutex_lock(jack_midiin_mutex);
@@ -1433,11 +1381,7 @@ ags_jack_midiin_is_recording(AgsSequencer *sequencer)
   jack_midiin = AGS_JACK_MIDIIN(sequencer);
   
   /* get jack_midiin mutex */
-  pthread_mutex_lock(ags_jack_midiin_get_class_mutex());
-  
-  jack_midiin_mutex = jack_midiin->obj_mutex;
-  
-  pthread_mutex_unlock(ags_jack_midiin_get_class_mutex());
+  jack_midiin_mutex = AGS_JACK_MIDIIN_GET_OBJ_MUTEX(jack_midiin);
 
   /* check is starting */
   pthread_mutex_lock(jack_midiin_mutex);
@@ -1460,11 +1404,7 @@ ags_jack_midiin_port_init(AgsSequencer *sequencer,
   jack_midiin = AGS_JACK_MIDIIN(sequencer);
   
   /* get jack midiin mutex */
-  pthread_mutex_lock(ags_jack_midiin_get_class_mutex());
-  
-  jack_midiin_mutex = jack_midiin->obj_mutex;
-  
-  pthread_mutex_unlock(ags_jack_midiin_get_class_mutex());
+  jack_midiin_mutex = AGS_JACK_MIDIIN_GET_OBJ_MUTEX(jack_midiin);
 
   /*  */
   pthread_mutex_lock(jack_midiin_mutex);
@@ -1480,7 +1420,7 @@ ags_jack_midiin_port_init(AgsSequencer *sequencer,
   
   /*  */
   jack_midiin->tact_counter = 0.0;
-  jack_midiin->delay_counter = 0.0;
+  jack_midiin->delay_counter = floor(jack_midiin->delay);
   jack_midiin->tic_counter = 0;
 
   jack_midiin->flags |= (AGS_JACK_MIDIIN_INITIALIZED |
@@ -1523,11 +1463,7 @@ ags_jack_midiin_port_record(AgsSequencer *sequencer,
   application_context = ags_application_context_get_instance();
     
   /* get jack midiin mutex */
-  pthread_mutex_lock(ags_jack_midiin_get_class_mutex());
-  
-  jack_midiin_mutex = jack_midiin->obj_mutex;
-  
-  pthread_mutex_unlock(ags_jack_midiin_get_class_mutex());
+  jack_midiin_mutex = AGS_JACK_MIDIIN_GET_OBJ_MUTEX(jack_midiin);
 
   /* client */
   pthread_mutex_lock(jack_midiin_mutex);
@@ -1553,11 +1489,7 @@ ags_jack_midiin_port_record(AgsSequencer *sequencer,
   pthread_mutex_unlock(jack_midiin_mutex);
 
   /* get jack client mutex */
-  pthread_mutex_lock(ags_jack_client_get_class_mutex());
-  
-  jack_client_mutex = jack_client->obj_mutex;
-  
-  pthread_mutex_unlock(ags_jack_client_get_class_mutex());
+  jack_client_mutex = AGS_JACK_CLIENT_GET_OBJ_MUTEX(jack_client);
 
   /* check activated */
   pthread_mutex_lock(jack_client_mutex);
@@ -1641,11 +1573,7 @@ ags_jack_midiin_port_free(AgsSequencer *sequencer)
   jack_midiin = AGS_JACK_MIDIIN(sequencer);
   
   /* get jack_midiin mutex */
-  pthread_mutex_lock(ags_jack_midiin_get_class_mutex());
-  
-  jack_midiin_mutex = jack_midiin->obj_mutex;
-  
-  pthread_mutex_unlock(ags_jack_midiin_get_class_mutex());
+  jack_midiin_mutex = AGS_JACK_MIDIIN_GET_OBJ_MUTEX(jack_midiin);
 
   /* check initialized */
   pthread_mutex_lock(jack_midiin_mutex);
@@ -1739,11 +1667,7 @@ ags_jack_midiin_tic(AgsSequencer *sequencer)
   jack_midiin = AGS_JACK_MIDIIN(sequencer);
   
   /* get jack_midiin mutex */
-  pthread_mutex_lock(ags_jack_midiin_get_class_mutex());
-  
-  jack_midiin_mutex = jack_midiin->obj_mutex;
-  
-  pthread_mutex_unlock(ags_jack_midiin_get_class_mutex());
+  jack_midiin_mutex = AGS_JACK_MIDIIN_GET_OBJ_MUTEX(jack_midiin);
   
   /* determine if attack should be switched */
   pthread_mutex_lock(jack_midiin_mutex);
@@ -1755,7 +1679,7 @@ ags_jack_midiin_tic(AgsSequencer *sequencer)
 
   pthread_mutex_unlock(jack_midiin_mutex);
 
-  if((guint) delay_counter + 1 >= (guint) delay){
+  if(delay_counter + 1.0 >= delay){
     ags_sequencer_set_note_offset(sequencer,
 				  note_offset + 1);
     
@@ -1766,7 +1690,7 @@ ags_jack_midiin_tic(AgsSequencer *sequencer)
     /* reset - delay counter */
     pthread_mutex_lock(jack_midiin_mutex);
 
-    jack_midiin->delay_counter = 0.0;
+    jack_midiin->delay_counter = delay_counter + 1.0 - delay;
     jack_midiin->tact_counter += 1.0;
 
     pthread_mutex_unlock(jack_midiin_mutex);
@@ -1790,11 +1714,7 @@ ags_jack_midiin_offset_changed(AgsSequencer *sequencer,
   jack_midiin = AGS_JACK_MIDIIN(sequencer);
 
   /* get jack_midiin mutex */
-  pthread_mutex_lock(ags_jack_midiin_get_class_mutex());
-  
-  jack_midiin_mutex = jack_midiin->obj_mutex;
-  
-  pthread_mutex_unlock(ags_jack_midiin_get_class_mutex());
+  jack_midiin_mutex = AGS_JACK_MIDIIN_GET_OBJ_MUTEX(jack_midiin);
 
   /* offset changed */
   pthread_mutex_lock(jack_midiin_mutex);
@@ -1820,11 +1740,7 @@ ags_jack_midiin_set_bpm(AgsSequencer *sequencer,
   jack_midiin = AGS_JACK_MIDIIN(sequencer);
 
   /* get jack_midiin mutex */
-  pthread_mutex_lock(ags_jack_midiin_get_class_mutex());
-  
-  jack_midiin_mutex = jack_midiin->obj_mutex;
-  
-  pthread_mutex_unlock(ags_jack_midiin_get_class_mutex());
+  jack_midiin_mutex = AGS_JACK_MIDIIN_GET_OBJ_MUTEX(jack_midiin);
 
   /* set bpm */
   pthread_mutex_lock(jack_midiin_mutex);
@@ -1846,11 +1762,7 @@ ags_jack_midiin_get_bpm(AgsSequencer *sequencer)
   jack_midiin = AGS_JACK_MIDIIN(sequencer);
 
   /* get jack_midiin mutex */
-  pthread_mutex_lock(ags_jack_midiin_get_class_mutex());
-  
-  jack_midiin_mutex = jack_midiin->obj_mutex;
-  
-  pthread_mutex_unlock(ags_jack_midiin_get_class_mutex());
+  jack_midiin_mutex = AGS_JACK_MIDIIN_GET_OBJ_MUTEX(jack_midiin);
 
   /* get bpm */
   pthread_mutex_lock(jack_midiin_mutex);
@@ -1873,11 +1785,7 @@ ags_jack_midiin_set_delay_factor(AgsSequencer *sequencer,
   jack_midiin = AGS_JACK_MIDIIN(sequencer);
 
   /* get jack_midiin mutex */
-  pthread_mutex_lock(ags_jack_midiin_get_class_mutex());
-  
-  jack_midiin_mutex = jack_midiin->obj_mutex;
-  
-  pthread_mutex_unlock(ags_jack_midiin_get_class_mutex());
+  jack_midiin_mutex = AGS_JACK_MIDIIN_GET_OBJ_MUTEX(jack_midiin);
 
   /* set delay factor */
   pthread_mutex_lock(jack_midiin_mutex);
@@ -1899,11 +1807,7 @@ ags_jack_midiin_get_delay_factor(AgsSequencer *sequencer)
   jack_midiin = AGS_JACK_MIDIIN(sequencer);
 
   /* get jack_midiin mutex */
-  pthread_mutex_lock(ags_jack_midiin_get_class_mutex());
-  
-  jack_midiin_mutex = jack_midiin->obj_mutex;
-  
-  pthread_mutex_unlock(ags_jack_midiin_get_class_mutex());
+  jack_midiin_mutex = AGS_JACK_MIDIIN_GET_OBJ_MUTEX(jack_midiin);
 
   /* get delay factor */
   pthread_mutex_lock(jack_midiin_mutex);
@@ -2064,11 +1968,7 @@ ags_jack_midiin_set_start_note_offset(AgsSequencer *sequencer,
   jack_midiin = AGS_JACK_MIDIIN(sequencer);
 
   /* get jack midiin mutex */
-  pthread_mutex_lock(ags_jack_midiin_get_class_mutex());
-  
-  jack_midiin_mutex = jack_midiin->obj_mutex;
-  
-  pthread_mutex_unlock(ags_jack_midiin_get_class_mutex());
+  jack_midiin_mutex = AGS_JACK_MIDIIN_GET_OBJ_MUTEX(jack_midiin);
 
   /* set note offset */
   pthread_mutex_lock(jack_midiin_mutex);
@@ -2090,11 +1990,7 @@ ags_jack_midiin_get_start_note_offset(AgsSequencer *sequencer)
   jack_midiin = AGS_JACK_MIDIIN(sequencer);
 
   /* get jack midiin mutex */
-  pthread_mutex_lock(ags_jack_midiin_get_class_mutex());
-  
-  jack_midiin_mutex = jack_midiin->obj_mutex;
-  
-  pthread_mutex_unlock(ags_jack_midiin_get_class_mutex());
+  jack_midiin_mutex = AGS_JACK_MIDIIN_GET_OBJ_MUTEX(jack_midiin);
 
   /* set note offset */
   pthread_mutex_lock(jack_midiin_mutex);
@@ -2118,11 +2014,7 @@ ags_jack_midiin_set_note_offset(AgsSequencer *sequencer,
   jack_midiin = AGS_JACK_MIDIIN(sequencer);
 
   /* get jack midiin mutex */
-  pthread_mutex_lock(ags_jack_midiin_get_class_mutex());
-  
-  jack_midiin_mutex = jack_midiin->obj_mutex;
-  
-  pthread_mutex_unlock(ags_jack_midiin_get_class_mutex());
+  jack_midiin_mutex = AGS_JACK_MIDIIN_GET_OBJ_MUTEX(jack_midiin);
 
   /* set note offset */
   pthread_mutex_lock(jack_midiin_mutex);
@@ -2144,11 +2036,7 @@ ags_jack_midiin_get_note_offset(AgsSequencer *sequencer)
   jack_midiin = AGS_JACK_MIDIIN(sequencer);
 
   /* get jack midiin mutex */
-  pthread_mutex_lock(ags_jack_midiin_get_class_mutex());
-  
-  jack_midiin_mutex = jack_midiin->obj_mutex;
-  
-  pthread_mutex_unlock(ags_jack_midiin_get_class_mutex());
+  jack_midiin_mutex = AGS_JACK_MIDIIN_GET_OBJ_MUTEX(jack_midiin);
 
   /* set note offset */
   pthread_mutex_lock(jack_midiin_mutex);
@@ -2178,11 +2066,7 @@ ags_jack_midiin_switch_buffer_flag(AgsJackMidiin *jack_midiin)
   }
     
   /* get jack midiin mutex */
-  pthread_mutex_lock(ags_jack_midiin_get_class_mutex());
-  
-  jack_midiin_mutex = jack_midiin->obj_mutex;
-  
-  pthread_mutex_unlock(ags_jack_midiin_get_class_mutex());
+  jack_midiin_mutex = AGS_JACK_MIDIIN_GET_OBJ_MUTEX(jack_midiin);
 
   /* switch buffer flag */
   pthread_mutex_lock(jack_midiin_mutex);

@@ -151,7 +151,7 @@ ags_functional_audio_test_playback()
       /* ags-play */
       ags_recall_factory_create(audio,
 				NULL, NULL,
-				"ags-play-master\0",
+				"ags-play-master",
 				channel->audio_channel, channel->audio_channel + 1,
 				channel->pad, channel->pad + 1,
 				(AGS_RECALL_FACTORY_INPUT,
@@ -203,7 +203,7 @@ ags_functional_audio_test_playback()
       /* ags-mute */
       ags_recall_factory_create(audio,
 				NULL, NULL,
-				"ags-mute\0",
+				"ags-mute",
 				channel->audio_channel, channel->audio_channel + 1,
 				channel->pad, channel->pad + 1,
 				(AGS_RECALL_FACTORY_INPUT |
@@ -245,7 +245,7 @@ ags_functional_audio_test_playback()
       /* ags-volume */
       ags_recall_factory_create(audio,
 				NULL, NULL,
-				"ags-volume\0",
+				"ags-volume",
 				channel->audio_channel, channel->audio_channel + 1,
 				channel->pad, channel->pad + 1,
 				(AGS_RECALL_FACTORY_INPUT |
@@ -298,8 +298,6 @@ ags_functional_audio_test_playback()
     AgsCountBeatsAudioRun *play_count_beats_audio_run;
     AgsPlayNotationAudio *recall_notation_audio;
     AgsPlayNotationAudioRun *recall_notation_audio_run;
-    AgsBufferChannel *buffer_channel;
-    AgsBufferChannelRun *buffer_channel_run;
 
     GList *list;
 
@@ -308,13 +306,17 @@ ags_functional_audio_test_playback()
     /* ags-delay */
     ags_recall_factory_create(audio,
 			      NULL, NULL,
-			      "ags-delay\0",
+			      "ags-delay",
 			      0, 0,
 			      0, 0,
 			      (AGS_RECALL_FACTORY_OUTPUT |
 			       AGS_RECALL_FACTORY_ADD |
 			       AGS_RECALL_FACTORY_PLAY),
 			      0);
+
+    play_delay_audio = NULL;
+    play_delay_audio_run = NULL;
+    
     list = audio->play;
     n_recall = 0;
       
@@ -345,7 +347,7 @@ ags_functional_audio_test_playback()
     /* ags-count-beats */
     ags_recall_factory_create(audio,
 			      NULL, NULL,
-			      "ags-count-beats\0",
+			      "ags-count-beats",
 			      0, 0,
 			      0, 0,
 			      (AGS_RECALL_FACTORY_OUTPUT |
@@ -353,6 +355,9 @@ ags_functional_audio_test_playback()
 			       AGS_RECALL_FACTORY_PLAY),
 			      0);
 
+    play_count_beats_audio = NULL;
+    play_count_beats_audio_run = NULL;
+    
     list = audio->play;
     n_recall = 0;
       
@@ -387,7 +392,7 @@ ags_functional_audio_test_playback()
       
       /* set dependency */  
       g_object_set(G_OBJECT(play_count_beats_audio_run),
-		   "delay-audio-run\0", play_delay_audio_run,
+		   "delay-audio-run", play_delay_audio_run,
 		   NULL);
 
       ags_seekable_seek(AGS_SEEKABLE(play_count_beats_audio_run),
@@ -404,7 +409,7 @@ ags_functional_audio_test_playback()
     /* ags-play-notation */
     ags_recall_factory_create(audio,
 			      NULL, NULL,
-			      "ags-play-notation\0",
+			      "ags-play-notation",
 			      0, 0,
 			      0, 0,
 			      (AGS_RECALL_FACTORY_INPUT |
@@ -412,6 +417,9 @@ ags_functional_audio_test_playback()
 			       AGS_RECALL_FACTORY_RECALL),
 			      0);
 
+    recall_notation_audio = NULL;
+    recall_notation_audio_run = NULL;
+    
     list = audio->recall;
     n_recall = 0;
       
@@ -433,12 +441,12 @@ ags_functional_audio_test_playback()
     
       /* set dependency */
       g_object_set(G_OBJECT(recall_notation_audio_run),
-		   "delay-audio-run\0", play_delay_audio_run,
+		   "delay-audio-run", play_delay_audio_run,
 		   NULL);
 
       /* set dependency */
       g_object_set(G_OBJECT(recall_notation_audio_run),
-		   "count-beats-audio-run\0", play_count_beats_audio_run,
+		   "count-beats-audio-run", play_count_beats_audio_run,
 		   NULL);
     }
 
@@ -448,7 +456,7 @@ ags_functional_audio_test_playback()
       /* ags-stream */
       ags_recall_factory_create(audio,
 				NULL, NULL,
-				"ags-stream\0",
+				"ags-stream",
 				channel->audio_channel, channel->audio_channel + 1, 
 				channel->pad, channel->pad + 1,
 				(AGS_RECALL_FACTORY_OUTPUT |
@@ -464,7 +472,7 @@ ags_functional_audio_test_playback()
 	/* ags-buffer */
 	ags_recall_factory_create(audio,
 				  NULL, NULL,
-				  "ags-buffer\0",
+				  "ags-buffer",
 				  0, audio->audio_channels, 
 				  input->pad, input->pad + 1,
 				  (AGS_RECALL_FACTORY_INPUT |
@@ -484,7 +492,7 @@ ags_functional_audio_test_playback()
       /* ags-stream */
       ags_recall_factory_create(audio,
 				NULL, NULL,
-				"ags-stream\0",
+				"ags-stream",
 				channel->audio_channel, channel->audio_channel + 1, 
 				channel->pad, channel->pad + 1,
 				(AGS_RECALL_FACTORY_INPUT |
@@ -528,7 +536,7 @@ ags_functional_audio_test_playback()
       usleep(USEC_PER_SEC);
       clock_gettime(CLOCK_MONOTONIC, &sleep_time);
 
-      g_message("ags_functional_audio_test_playback_stop_audio() - usleep %ds [%x]\0",
+      g_message("ags_functional_audio_test_playback_stop_audio() - usleep %ds [%x]",
 		start_time.tv_sec + AGS_FUNCTIONAL_AUDIO_TEST_PLAYBACK_STOP_DELAY - sleep_time.tv_sec,
 		audio);
     }
@@ -817,7 +825,7 @@ ags_functional_audio_test_playback()
   pthread_mutex_unlock(audio_loop->start_mutex);
 
   /* start playback */
-  g_message("start playback\0");
+  g_message("start playback");
   
   for(i = 0; i < AGS_FUNCTIONAL_AUDIO_TEST_PLAYBACK_N_AUDIO; i++){
     ags_functional_audio_test_playback_start_audio(audio[i]);
@@ -830,7 +838,7 @@ ags_functional_audio_test_playback()
     ags_functional_audio_test_playback_stop_audio(audio[i]);
   }
 
-  g_message("playback stopped\0");
+  g_message("playback stopped");
 }
 
 int

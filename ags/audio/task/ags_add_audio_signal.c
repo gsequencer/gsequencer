@@ -446,11 +446,7 @@ ags_add_audio_signal_launch(AgsTask *task)
   recall_id = add_audio_signal->recall_id;
   
   /* get recycling mutex */
-  pthread_mutex_lock(ags_recycling_get_class_mutex());
-
-  recycling_mutex = recycling->obj_mutex;
-
-  pthread_mutex_unlock(ags_recycling_get_class_mutex());
+  recycling_mutex = AGS_RECYCLING_GET_OBJ_MUTEX(recycling);
   
   /* check for template to remove */
   old_template = NULL;

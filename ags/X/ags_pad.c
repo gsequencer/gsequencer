@@ -1143,7 +1143,8 @@ ags_pad_play(AgsPad *pad)
       }
 
       next_pad = ags_channel_next_pad(channel);
-
+      next_channel = NULL;
+      
       while(channel != next_pad){
 	/* start channel for playback */
 	start_channel = ags_start_channel_new(channel,
@@ -1215,6 +1216,7 @@ ags_pad_play(AgsPad *pad)
       }
 
       next_pad = ags_channel_next_pad(channel);
+      next_channel = NULL;
 
       /* cancel request */
       while(channel != next_pad){

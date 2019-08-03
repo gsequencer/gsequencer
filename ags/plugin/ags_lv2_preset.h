@@ -35,6 +35,8 @@
 #define AGS_IS_LV2_PRESET_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_LV2_PRESET))
 #define AGS_LV2_PRESET_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_LV2_PRESET, AgsLv2PresetClass))
 
+#define AGS_LV2_PRESET_GET_OBJ_MUTEX(obj) (((AgsLv2Preset *) obj)->obj_mutex)
+
 #define AGS_LV2_PORT_PRESET(ptr) ((AgsLv2PortPreset*)(ptr))
 
 typedef struct _AgsLv2Preset AgsLv2Preset;

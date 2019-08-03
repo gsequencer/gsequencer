@@ -38,7 +38,7 @@ void ags_conversion_get_property(GObject *gobject,
 void ags_conversion_finalize(GObject *gobject);
 
 gdouble ags_conversion_real_convert(AgsConversion *conversion,
-				    gdouble value,
+				    gdouble x,
 				    gboolean reverse);
 
 /**
@@ -156,7 +156,7 @@ ags_conversion_class_init(AgsConversionClass *conversion)
   /**
    * AgsConversion::convert:
    * @conversion: the #AgsConversion to modify
-   * @value: the value to convert
+   * @x: the value to convert
    * @reverse: the direction to translate
    *
    * The ::convert signal notifies about converted value.
@@ -211,12 +211,8 @@ ags_conversion_set_property(GObject *gobject,
   
   conversion = AGS_CONVERSION(gobject);
 
-  /* get conversion mutex */
-  pthread_mutex_lock(ags_conversion_get_class_mutex());
-  
-  conversion_mutex = conversion->obj_mutex;
-
-  pthread_mutex_unlock(ags_conversion_get_class_mutex());
+  /* get conversion mutex */  
+  conversion_mutex = AGS_CONVERSION_GET_OBJ_MUTEX(conversion);
   
   switch(prop_id){
   case PROP_NAME:
@@ -284,11 +280,7 @@ ags_conversion_get_property(GObject *gobject,
   conversion = AGS_CONVERSION(gobject);
 
   /* get conversion mutex */
-  pthread_mutex_lock(ags_conversion_get_class_mutex());
-  
-  conversion_mutex = conversion->obj_mutex;
-
-  pthread_mutex_unlock(ags_conversion_get_class_mutex());
+  conversion_mutex = AGS_CONVERSION_GET_OBJ_MUTEX(conversion);
 
   switch(prop_id){
   case PROP_NAME:
@@ -369,7 +361,7 @@ ags_conversion_real_convert(AgsConversion *conversion,
 /**
  * ags_conversion_convert:
  * @conversion: the #AgsConversion
- * @value: the value to convert
+ * @x: the value to convert
  * @reverse: the direction to convert
  *
  * Convert a value if @reverse is %FALSE then use the target format
@@ -381,18 +373,18 @@ ags_conversion_real_convert(AgsConversion *conversion,
  */
 gdouble
 ags_conversion_convert(AgsConversion *conversion,
-		       gdouble value,
+		       gdouble x,
 		       gboolean reverse)
 {
   gdouble retval;
   
   g_return_val_if_fail(AGS_IS_CONVERSION(conversion),
-		       value);
+		       x);
 
   g_object_ref((GObject *) conversion);
   g_signal_emit(G_OBJECT(conversion),
 		conversion_signals[CONVERT], 0,
-		value,
+		x,
 		reverse,
 		&retval);
   g_object_unref((GObject *) conversion);

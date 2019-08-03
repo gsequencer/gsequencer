@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -35,6 +35,8 @@
 #define AGS_IS_MIDI(obj)             (G_TYPE_CHECK_INSTANCE_TYPE ((obj), AGS_TYPE_MIDI))
 #define AGS_IS_MIDI_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_MIDI))
 #define AGS_MIDI_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS (obj, AGS_TYPE_MIDI, AgsMidiClass))
+
+#define AGS_MIDI_GET_OBJ_MUTEX(obj) (((AgsMidi *) obj)->obj_mutex)
 
 #define AGS_MIDI_DEFAULT_BPM (120.0)
 

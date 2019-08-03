@@ -1,5 +1,5 @@
 /* GSequencer - Advanced GTK Sequencer
- * Copyright (C) 2005-2018 Joël Krähemann
+ * Copyright (C) 2005-2019 Joël Krähemann
  *
  * This file is part of GSequencer.
  *
@@ -29,6 +29,8 @@
 #define AGS_IS_PLUGIN_PORT(obj)             (G_TYPE_CHECK_INSTANCE_TYPE ((obj), AGS_TYPE_PLUGIN_PORT))
 #define AGS_IS_PLUGIN_PORT_CLASS(class)     (G_TYPE_CHECK_CLASS_TYPE ((class), AGS_TYPE_PLUGIN_PORT))
 #define AGS_PLUGIN_PORT_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), AGS_TYPE_PLUGIN_PORT, AgsPluginPortClass))
+
+#define AGS_PLUGIN_PORT_GET_OBJ_MUTEX(obj) (((AgsPluginPort *) obj)->obj_mutex)
 
 typedef struct _AgsPluginPort AgsPluginPort;
 typedef struct _AgsPluginPortClass AgsPluginPortClass;
@@ -112,6 +114,8 @@ void ags_plugin_port_unset_flags(AgsPluginPort *plugin_port, guint flags);
 
 GList* ags_plugin_port_find_symbol(GList *plugin_port,
 				   gchar *port_symbol);
+GList* ags_plugin_port_find_port_index(GList *plugin_port,
+				       guint port_index);
 
 AgsPluginPort* ags_plugin_port_new();
 
