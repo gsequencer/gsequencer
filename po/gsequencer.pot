@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: gsequencer 2.2.32\n"
+"Project-Id-Version: gsequencer 2.2.33\n"
 "Report-Msgid-Bugs-To: jkraehemann@gmail.com\n"
-"POT-Creation-Date: 2019-08-02 10:38+0200\n"
+"POT-Creation-Date: 2019-08-03 14:10+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -615,27 +615,27 @@ msgstr ""
 msgid "wave"
 msgstr ""
 
-#: ags/X/ags_xorg_application_context.c:2141
+#: ags/X/ags_xorg_application_context.c:2194
 #: ags/audio/ags_audio_application_context.c:1744
 #: ags/audio/task/ags_apply_sound_config.c:895
 #, c-format
 msgid "unknown soundcard backend - %s"
 msgstr ""
 
-#: ags/X/ags_xorg_application_context.c:2151
+#: ags/X/ags_xorg_application_context.c:2204
 #: ags/audio/ags_audio_application_context.c:1754
 #: ags/audio/task/ags_apply_sound_config.c:905
 msgid "unknown soundcard backend - NULL"
 msgstr ""
 
-#: ags/X/ags_xorg_application_context.c:2399
+#: ags/X/ags_xorg_application_context.c:2452
 #: ags/audio/ags_audio_application_context.c:2001
 #: ags/audio/task/ags_apply_sound_config.c:1149
 #, c-format
 msgid "unknown sequencer backend - %s"
 msgstr ""
 
-#: ags/X/ags_xorg_application_context.c:2409
+#: ags/X/ags_xorg_application_context.c:2462
 #: ags/audio/ags_audio_application_context.c:2011
 #: ags/audio/task/ags_apply_sound_config.c:1159
 msgid "unknown sequencer backend - NULL"

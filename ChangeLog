@@ -1,8 +1,10 @@
 ags (2.2.33)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* implemented AgsAnimationWindow
 	* fixed memory-leaks in ags_turtle.c
 	* fixed memory-leaks in ags_lv2_turtle_parser.c
+	* fixed memory-leaks in ags_simple_file.c
 
 ags (2.2.32)
 

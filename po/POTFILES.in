@@ -1,3 +1,4 @@
+./ags/X/ags_animation_window.c
 ./ags/X/ags_audio_preferences.c
 ./ags/X/ags_audio_preferences_callbacks.c
 ./ags/X/ags_automation_editor.c
