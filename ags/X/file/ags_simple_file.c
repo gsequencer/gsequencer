@@ -1583,8 +1583,7 @@ ags_simple_file_read_value(AgsSimpleFile *simple_file, xmlNode *node, GValue **v
   type = xmlGetProp(node,
 		    "type");
 
-  if(str != NULL &&
-     type != NULL){
+  if(str != NULL){
     if(!g_strcmp0(type,
 		  "gboolean")){
       g_value_init(current,
