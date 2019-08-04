@@ -1,3 +1,9 @@
+ags (2.2.34)
+
+	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved ref-count of AgsReturnableThread
+	* improved resetting AgsReturnableThread
+
 ags (2.2.33)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]

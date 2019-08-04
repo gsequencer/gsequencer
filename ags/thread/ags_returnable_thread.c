@@ -345,7 +345,11 @@ ags_returnable_thread_run(AgsThread *thread)
       
       pthread_mutex_unlock(thread_mutex);
 
-      g_object_ref(returnable_thread);
+      /* give returnable thread back to thread pool */
+      g_atomic_pointer_set(&(returnable_thread->safe_data),
+			   NULL);
+      ags_returnable_thread_disconnect_safe_run(returnable_thread);
+
       g_atomic_pointer_set(&(thread_pool->returnable_thread),
 			   g_list_prepend(g_atomic_pointer_get(&(thread_pool->returnable_thread)),
 					  returnable_thread));      

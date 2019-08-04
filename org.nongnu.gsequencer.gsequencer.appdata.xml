@@ -35,6 +35,12 @@
   <url type="homepage">http://nongnu.org/gsequencer</url>
 
   <releases>
+    <release version="2.2.34" date="2019-08-03">
+      <description>
+        <p>Improved AgsReturnableThread safety.</p>
+      </description>
+    </release>
+
     <release version="2.2.33" date="2019-08-03">
       <description>
         <p>Fixed various memory-leaks.</p>
