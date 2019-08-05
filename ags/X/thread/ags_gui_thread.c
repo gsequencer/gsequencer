@@ -1811,6 +1811,7 @@ ags_gui_thread_do_run(AgsGuiThread *gui_thread)
 #endif
   
   /* task functions */
+#if 0
   task_funcs.prepare = ags_gui_thread_task_prepare;
   task_funcs.check = ags_gui_thread_task_check;
   task_funcs.dispatch = ags_gui_thread_task_dispatch;
@@ -1820,7 +1821,8 @@ ags_gui_thread_do_run(AgsGuiThread *gui_thread)
 					 sizeof(GSource));
   g_source_attach(gui_thread->task_source,
   		  main_context);
-
+#endif
+  
   /* sync functions */
 #if 0
   sync_funcs.prepare = ags_gui_thread_sync_task_prepare;
