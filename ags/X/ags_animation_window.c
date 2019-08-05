@@ -27,6 +27,9 @@ void ags_animation_window_class_init(AgsAnimationWindowClass *animation_window);
 void ags_animation_window_init(AgsAnimationWindow *animation_window);
 void ags_animation_window_show(GtkWidget *widget);
 
+gboolean ags_animation_window_expose(GtkWidget *widget,
+				     GdkEventExpose *event);
+
 static gpointer ags_animation_window_parent_class = NULL;
 
 GType
@@ -68,6 +71,7 @@ ags_animation_window_class_init(AgsAnimationWindowClass *animation_window)
 
   widget = (GtkWidgetClass *) animation_window;
 
+  widget->expose_event = ags_animation_window_expose;
 //  widget->show = ags_animation_window_show;
 }
 
@@ -104,6 +108,7 @@ ags_animation_window_init(AgsAnimationWindow *animation_window)
   animation_window->image_size = 3 * 800 * 600;
   
   animation_window->bg_data = (unsigned char *) malloc(animation_window->image_size * sizeof(unsigned char));
+  animation_window->cache_data = (unsigned char *) malloc(animation_window->image_size * sizeof(unsigned char));
 
   if(filename != NULL){
     surface = cairo_image_surface_create_from_png(filename);
@@ -123,12 +128,19 @@ ags_animation_window_init(AgsAnimationWindow *animation_window)
   g_timeout_add(AGS_UI_PROVIDER_DEFAULT_TIMEOUT * 1000.0, (GSourceFunc) ags_animation_window_progress_timeout, (gpointer) animation_window);
 }
 
+gboolean
+ags_animation_window_expose(GtkWidget *widget,
+			    GdkEventExpose *event)
+{
+  ags_animation_window_draw(AGS_ANIMATION_WINDOW(widget));
+
+  return(FALSE);
+}
+
 void
 ags_animation_window_show(GtkWidget *widget)
 {
   GTK_WIDGET_CLASS(ags_animation_window_parent_class)->show(widget);
-
-  ags_animation_window_draw(widget);
 }
 
 void
@@ -273,7 +285,21 @@ ags_animation_window_progress_timeout(AgsAnimationWindow *animation_window)
   application_context = ags_application_context_get_instance();
 
   if(ags_ui_provider_get_show_animation(AGS_UI_PROVIDER(application_context))){
-    ags_animation_window_draw(animation_window);
+    AgsLog *log;
+    
+    GList *start_list;
+
+    guint i_stop;
+    
+    log = ags_log_get_instance();
+
+    start_list = ags_log_get_messages(log);
+  
+    i_stop = g_list_length(start_list);
+    
+    if(animation_window->message_count < i_stop){
+      ags_animation_window_draw(animation_window);
+    }
 
     return(TRUE);
   }else{

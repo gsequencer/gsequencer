@@ -47,6 +47,7 @@ struct _AgsAnimationWindow
 
   guint image_size;
   unsigned char *bg_data;
+  unsigned char *cache_data;
 };
 
 struct _AgsAnimationWindowClass

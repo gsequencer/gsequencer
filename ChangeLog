@@ -1,6 +1,7 @@
 ags (2.2.34)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* improved AgsAnimationWindow draw only as needed
 	* improved ref-count of AgsReturnableThread
 	* improved resetting AgsReturnableThread
 
