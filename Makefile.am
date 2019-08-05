@@ -15,7 +15,7 @@ if WITH_LIBINSTPATCH
 AM_CPPFLAGS += -DAGS_WITH_LIBINSTPATCH=1
 endif
 
-# AM_CPPFLAGS += -march=native -O3 -ftree-vectorize -ftree-slp-vectorize -ffast-math -ftree-vectorizer-verbose=2
+AM_CPPFLAGS += -march=native -O3 -ftree-vectorize -ftree-slp-vectorize -ffast-math -ftree-vectorizer-verbose=2
 
 # what flags you want to pass to the C compiler & linker
 CFLAGS =  @CFLAGS@
