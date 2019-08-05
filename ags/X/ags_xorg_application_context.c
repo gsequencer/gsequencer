@@ -454,6 +454,9 @@ ags_xorg_application_context_init(AgsXorgApplicationContext *xorg_application_co
   g_atomic_int_set(&(xorg_application_context->file_ready),
 		   FALSE);
 
+  xorg_application_context->collected_task = NULL;
+  xorg_application_context->task_completion = NULL;
+  
   xorg_application_context->thread_pool = NULL;
 
   xorg_application_context->polling_thread = NULL;
@@ -1737,6 +1740,10 @@ ags_xorg_application_context_prepare(AgsApplicationContext *application_context)
 		(GSourceFunc) ags_xorg_application_context_message_monitor_timeout,
 		(gpointer) xorg_application_context);
   
+  g_timeout_add(1000.0,
+		(GSourceFunc) ags_xorg_application_context_task_timeout,
+		(gpointer) xorg_application_context);
+
   ags_gui_thread_do_run((AgsGuiThread *) gui_thread);
 }
 
@@ -3471,6 +3478,70 @@ ags_xorg_application_context_load_gui_scale(AgsXorgApplicationContext *xorg_appl
   g_free(str);
 }
 
+void
+ags_xorg_application_context_schedule_task(AgsXorgApplicationContext *xorg_application_context,
+					   GObject *task)
+{
+  AgsThread *task_thread;
+
+  pthread_mutex_t *application_context_mutex;
+
+  if(!AGS_IS_XORG_APPLICATION_CONTEXT(xorg_application_context) ||
+     !AGS_IS_TASK(task)){
+    return;
+  }
+
+  application_context_mutex = AGS_APPLICATION_CONTEXT_GET_OBJ_MUTEX(xorg_application_context);
+
+  task_thread = ags_concurrency_provider_get_task_thread(AGS_CONCURRENCY_PROVIDER(xorg_application_context));
+
+  if(task_thread == NULL){
+    return;
+  }
+  
+  pthread_mutex_lock(application_context_mutex);
+
+  xorg_application_context->collected_task = g_list_prepend(xorg_application_context->collected_task,
+							    task);
+  
+  pthread_mutex_unlock(application_context_mutex);
+
+  /* unref */
+  g_object_unref(task_thread);
+}
+
+void
+ags_xorg_application_context_schedule_task_list(AgsXorgApplicationContext *xorg_application_context,
+						GList *task)
+{
+  AgsThread *task_thread;
+
+  pthread_mutex_t *application_context_mutex;
+
+  if(!AGS_IS_XORG_APPLICATION_CONTEXT(xorg_application_context) ||
+     task == NULL){
+    return;
+  }
+  
+  application_context_mutex = AGS_APPLICATION_CONTEXT_GET_OBJ_MUTEX(xorg_application_context);
+
+  task_thread = ags_concurrency_provider_get_task_thread(AGS_CONCURRENCY_PROVIDER(xorg_application_context));
+
+  if(task_thread == NULL){
+    return;
+  }
+
+  pthread_mutex_lock(application_context_mutex);
+
+  xorg_application_context->collected_task = g_list_concat(g_list_reverse(task),
+							   xorg_application_context->collected_task);
+  
+  pthread_mutex_unlock(application_context_mutex);
+
+  /* unref */
+  g_object_unref(task_thread);
+}
+
 gboolean
 ags_xorg_application_context_message_monitor_timeout(AgsXorgApplicationContext *xorg_application_context)
 {
@@ -3524,6 +3595,51 @@ ags_xorg_application_context_message_monitor_timeout(AgsXorgApplicationContext *
 
   g_list_free_full(message_start,
 		   (GDestroyNotify) ags_message_envelope_free);
+
+  return(TRUE);
+}
+
+gboolean
+ags_xorg_application_context_task_timeout(AgsXorgApplicationContext *xorg_application_context)
+{
+  AgsThread *task_thread;
+
+  GList *list, *list_next, *list_start;
+
+  pthread_mutex_t *application_context_mutex;
+
+  application_context_mutex = AGS_APPLICATION_CONTEXT_GET_OBJ_MUTEX(xorg_application_context);
+  
+  task_thread = ags_concurrency_provider_get_task_thread(AGS_CONCURRENCY_PROVIDER(xorg_application_context));
+
+  ags_task_thread_append_tasks((AgsTaskThread *) task_thread,
+			       g_list_reverse(xorg_application_context->collected_task));
+  
+  xorg_application_context->collected_task = NULL;
+  
+  g_object_unref(task_thread);
+
+  /* complete task */
+  pthread_mutex_lock(application_context_mutex);
+  
+  list =
+    list_start = xorg_application_context->task_completion;
+
+  xorg_application_context->task_completion = NULL;
+    
+  pthread_mutex_unlock(application_context_mutex);
+    
+  while(list != NULL){
+    list_next = list->next;
+      
+    if((AGS_TASK_COMPLETION_READY & (g_atomic_int_get(&(AGS_TASK_COMPLETION(list->data)->flags)))) != 0){
+      ags_task_completion_complete(AGS_TASK_COMPLETION(list->data));
+    }
+
+    list = list_next;
+  }
+
+  g_list_free(list_start);
 
   return(TRUE);
 }

@@ -29,8 +29,6 @@
 #include <ags/X/ags_window.h>
 #include <ags/X/ags_line_callbacks.h>
 
-#include <ags/X/thread/ags_gui_thread.h>
-
 #include <math.h>
 
 #include <ags/i18n.h>
@@ -117,8 +115,6 @@ ags_drum_input_pad_open_response_callback(GtkWidget *widget, gint response, AgsD
 
   AgsOpenSingleFile *open_single_file;
 
-  AgsThread *gui_thread;
-  
   AgsApplicationContext *application_context;
 
   GList *task;
@@ -134,8 +130,6 @@ ags_drum_input_pad_open_response_callback(GtkWidget *widget, gint response, AgsD
 
   
   application_context = (AgsApplicationContext *) window->application_context;
-
-  gui_thread = ags_ui_provider_get_gui_thread(AGS_UI_PROVIDER(application_context));
 
   if(response == GTK_RESPONSE_ACCEPT){
     name0 = gtk_file_chooser_get_filename((GtkFileChooser *) file_chooser);
@@ -207,8 +201,8 @@ ags_drum_input_pad_open_response_callback(GtkWidget *widget, gint response, AgsD
       g_list_free(list);
     }
 
-    ags_gui_thread_schedule_task_list((AgsGuiThread *) gui_thread,
-				      task);
+    ags_xorg_application_context_schedule_task_list(application_context,
+						    task);
 
     gtk_widget_destroy((GtkWidget *) file_chooser);
   }else if(response == GTK_RESPONSE_CANCEL){

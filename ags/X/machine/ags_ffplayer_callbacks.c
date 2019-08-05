@@ -27,8 +27,6 @@
 #include <ags/X/ags_ui_provider.h>
 #include <ags/X/ags_window.h>
 
-#include <ags/X/thread/ags_gui_thread.h>
-
 #ifdef AGS_WITH_LIBINSTPATCH
 #include <libinstpatch/libinstpatch.h>
 #endif
@@ -152,8 +150,6 @@ ags_ffplayer_instrument_changed_callback(GtkComboBox *instrument, AgsFFPlayer *f
 {
   AgsWindow *window;
 
-  AgsThread *gui_thread;
-
   AgsAudio *audio;
 
   AgsAudioContainer *audio_container;
@@ -173,8 +169,6 @@ ags_ffplayer_instrument_changed_callback(GtkComboBox *instrument, AgsFFPlayer *f
   window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) ffplayer);
 
   application_context = (AgsApplicationContext *) window->application_context;
-
-  gui_thread = ags_ui_provider_get_gui_thread(AGS_UI_PROVIDER(application_context));
 
   audio = AGS_MACHINE(ffplayer)->audio;
 
@@ -217,8 +211,8 @@ ags_ffplayer_instrument_changed_callback(GtkComboBox *instrument, AgsFFPlayer *f
 						    0);
   
   /* append task */
-  ags_gui_thread_schedule_task((AgsGuiThread *) gui_thread,
-			       (GObject *) open_sf2_instrument);
+  ags_xorg_application_context_schedule_task(application_context,
+					     (GObject *) open_sf2_instrument);
 }
 
 gboolean

@@ -1,6 +1,7 @@
 ags (2.2.34)
 
 	[ Joël Krähemann (Maintainer of Advanced Gtk+ Sequencer) ]
+	* refactored scheduling tasks to be done by AgsXorgApplicationContext
 	* improved AgsAnimationWindow draw only as needed
 	* improved AgsSoundcardEditor set sensitive
 	* improved ref-count of AgsReturnableThread

@@ -30,8 +30,6 @@
 #include <ags/X/ags_pad.h>
 #include <ags/X/ags_line.h>
 
-#include <ags/X/thread/ags_gui_thread.h>
-
 #include <ags/X/file/ags_gui_file_xml.h>
 
 #include <math.h>
@@ -1627,8 +1625,6 @@ ags_syncsynth_update(AgsSyncsynth *syncsynth)
   AgsClearAudioSignal *clear_audio_signal;
   AgsApplySynth *apply_synth;
 
-  AgsThread *gui_thread;
-
   AgsApplicationContext *application_context;
   
   GList *list, *list_start;
@@ -1650,7 +1646,6 @@ ags_syncsynth_update(AgsSyncsynth *syncsynth)
   window = (AgsWindow *) gtk_widget_get_toplevel((GtkWidget *) syncsynth);
 
   application_context = (AgsApplicationContext *) window->application_context;
-  gui_thread = ags_ui_provider_get_gui_thread(AGS_UI_PROVIDER(application_context));
 
   audio = AGS_MACHINE(syncsynth)->audio;
 
@@ -1819,8 +1814,8 @@ ags_syncsynth_update(AgsSyncsynth *syncsynth)
   
   g_list_free(list_start);
 
-  ags_gui_thread_schedule_task_list((AgsGuiThread *) gui_thread,
-				    g_list_reverse(task));
+  ags_xorg_application_context_schedule_task_list(application_context,
+						  g_list_reverse(task));
 }
 
 /**
