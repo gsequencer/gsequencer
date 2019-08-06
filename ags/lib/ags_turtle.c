@@ -1428,8 +1428,10 @@ ags_turtle_read_pn_chars_base(gchar *offset,
     }
   }
 
-  str = g_strndup(offset,
-		  look_ahead - offset);
+  if(look_ahead != offset){
+    str = g_strndup(offset,
+		    look_ahead - offset);
+  }
 #endif
   
   return(str);
